@@ -1,0 +1,246 @@
+/**
+ * sf_state_transition 核心逻辑
+ * 执行 Work Item 的状态流转，验证合法性并更新权威状态
+ *
+ * 提取为独立模块以便单元测试（不依赖 @opencode-ai/plugin 运行时）
+ *
+ * Requirements: 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8
+ */
+
+import { readFile, writeFile, mkdir } from "node:fs/promises"
+import { join, dirname } from "node:path"
+import { isValidTransition } from "./state_machine"
+import { appendJsonl } from "./utils"
+import type { StateFile, WorkItemState } from "./sf_state_read_core"
+
+// ============================================================
+// Types
+// ============================================================
+
+export interface TransitionInput {
+  work_item_id: string
+  from_state: string
+  to_state: string
+  evidence?: string
+  workflow_type?: string
+}
+
+export interface TransitionSuccess {
+  success: true
+  work_item_id: string
+  previous_state: string
+  current_state: string
+  timestamp: string
+}
+
+export interface TransitionFailure {
+  success: false
+  error: string
+  work_item_id: string
+  current_state: string
+}
+
+export type TransitionResult = TransitionSuccess | TransitionFailure
+
+// ============================================================
+// Core Logic
+// ============================================================
+
+/**
+ * 执行状态流转
+ *
+ * @param input - 流转输入参数
+ * @param baseDir - 项目根目录路径
+ * @returns 流转结果（成功或失败）
+ */
+export async function executeTransition(
+  input: TransitionInput,
+  baseDir: string
+): Promise<TransitionResult> {
+  const stateFilePath = join(baseDir, "specforge", "runtime", "state.json")
+  const eventsFilePath = join(baseDir, "specforge", "runtime", "events.jsonl")
+
+  // 1. 读取 state.json
+  let fileContent: string
+  try {
+    fileContent = await readFile(stateFilePath, "utf-8")
+  } catch (err: unknown) {
+    const error = err as NodeJS.ErrnoException
+    if (error.code === "ENOENT") {
+      return {
+        success: false,
+        error: `state.json not found at ${stateFilePath}. Please initialize the SpecForge runtime.`,
+        work_item_id: input.work_item_id,
+        current_state: "",
+      }
+    }
+    return {
+      success: false,
+      error: `Failed to read state.json: ${error.message}`,
+      work_item_id: input.work_item_id,
+      current_state: "",
+    }
+  }
+
+  // 2. 解析 JSON
+  let state: StateFile
+  try {
+    state = JSON.parse(fileContent)
+  } catch {
+    return {
+      success: false,
+      error: "state.json is malformed and cannot be parsed as valid JSON.",
+      work_item_id: input.work_item_id,
+      current_state: "",
+    }
+  }
+
+  // 3. 验证基本结构
+  if (!state || typeof state !== "object" || !state.work_items) {
+    return {
+      success: false,
+      error: 'state.json has invalid structure. Expected an object with a "work_items" field.',
+      work_item_id: input.work_item_id,
+      current_state: "",
+    }
+  }
+
+  const timestamp = new Date().toISOString()
+
+  // 4. 处理新 Work Item 创建（from_state 为空字符串）
+  if (input.from_state === "") {
+    return handleNewWorkItem(input, state, stateFilePath, eventsFilePath, timestamp)
+  }
+
+  // 5. 查找现有 Work Item
+  const workItem = state.work_items[input.work_item_id]
+  if (!workItem) {
+    return {
+      success: false,
+      error: `Work item not found: ${input.work_item_id}`,
+      work_item_id: input.work_item_id,
+      current_state: "",
+    }
+  }
+
+  // 6. 验证 from_state 与当前状态一致（乐观锁）
+  if (workItem.current_state !== input.from_state) {
+    return {
+      success: false,
+      error: `State mismatch: expected ${workItem.current_state}, got ${input.from_state}`,
+      work_item_id: input.work_item_id,
+      current_state: workItem.current_state,
+    }
+  }
+
+  // 7. 验证 to_state 是合法后继状态
+  if (!isValidTransition(input.from_state, input.to_state)) {
+    return {
+      success: false,
+      error: `Invalid transition: ${input.from_state} → ${input.to_state} is not allowed`,
+      work_item_id: input.work_item_id,
+      current_state: workItem.current_state,
+    }
+  }
+
+  // 8. 更新 state.json
+  state.work_items[input.work_item_id] = {
+    ...workItem,
+    current_state: input.to_state,
+    updated_at: timestamp,
+  }
+
+  await writeFile(stateFilePath, JSON.stringify(state, null, 2), "utf-8")
+
+  // 9. 追加 state.transitioned 事件到 events.jsonl
+  const event = {
+    timestamp,
+    event_type: "state.transitioned",
+    work_item_id: input.work_item_id,
+    payload: {
+      from_state: input.from_state,
+      to_state: input.to_state,
+      evidence: input.evidence || "",
+    },
+  }
+
+  await appendJsonl(eventsFilePath, event)
+
+  // 10. 返回成功结果
+  return {
+    success: true,
+    work_item_id: input.work_item_id,
+    previous_state: input.from_state,
+    current_state: input.to_state,
+    timestamp,
+  }
+}
+
+/**
+ * 处理新 Work Item 创建
+ * 当 from_state 为空字符串时，创建新的 Work Item 条目
+ */
+async function handleNewWorkItem(
+  input: TransitionInput,
+  state: StateFile,
+  stateFilePath: string,
+  eventsFilePath: string,
+  timestamp: string
+): Promise<TransitionResult> {
+  // 新 Work Item 的 to_state 必须是 "intake"
+  if (input.to_state !== "intake") {
+    return {
+      success: false,
+      error: `Invalid transition: new work items must start at "intake", got "${input.to_state}"`,
+      work_item_id: input.work_item_id,
+      current_state: "",
+    }
+  }
+
+  // 检查 work_item_id 是否已存在
+  if (state.work_items[input.work_item_id]) {
+    return {
+      success: false,
+      error: `Work item already exists: ${input.work_item_id}. Use from_state="${state.work_items[input.work_item_id].current_state}" for transitions.`,
+      work_item_id: input.work_item_id,
+      current_state: state.work_items[input.work_item_id].current_state,
+    }
+  }
+
+  // 创建新 Work Item 条目
+  const workflowType = input.workflow_type || "feature_spec"
+  const newWorkItem: WorkItemState = {
+    work_item_id: input.work_item_id,
+    workflow_type: workflowType,
+    current_state: "intake",
+    created_at: timestamp,
+    updated_at: timestamp,
+  }
+
+  state.work_items[input.work_item_id] = newWorkItem
+
+  // 确保目录存在并写入 state.json
+  await mkdir(dirname(stateFilePath), { recursive: true })
+  await writeFile(stateFilePath, JSON.stringify(state, null, 2), "utf-8")
+
+  // 追加 work_item.created 事件到 events.jsonl
+  const event = {
+    timestamp,
+    event_type: "work_item.created",
+    work_item_id: input.work_item_id,
+    payload: {
+      workflow_type: workflowType,
+    },
+  }
+
+  await appendJsonl(eventsFilePath, event)
+
+  // 返回成功结果
+  return {
+    success: true,
+    work_item_id: input.work_item_id,
+    previous_state: "",
+    current_state: "intake",
+    timestamp,
+  }
+}
