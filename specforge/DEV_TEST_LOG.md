@@ -222,6 +222,20 @@
   - Orchestrator：25 条消息 / 80 行 JSONL
 - V3.1 会话记录功能验证通过
 
+### 第 16 轮：V3.2 Orchestrator Prompt 拆分验证（2026-05-04）
+- 测试内容：V3.2 Skill 加载协议验证（sf-orchestrator.md 从 1369 行精简为 399 行）
+- WI-001（字体颜色改橘红色 quick_change）：✅ 完整闭环跑通
+  - Skill 加载协议正常工作 ✅（`→ Skill "sf-workflow-quick-change"` 成功加载）
+  - Quick Change 工作流完整闭环 ✅
+  - 子 Agent 正确调度（task-planner 6 toolcalls、executor 7 toolcalls、verifier 4 toolcalls）✅
+  - 核心行为约束生效（Orchestrator Thinking 中犹豫是否自己改，最终遵守约束）✅
+  - 会话自动保存（sf_session_recorder Plugin）✅
+- V3.2 关键指标：
+  - sf-orchestrator.md：1369 行 → 399 行（-71%）
+  - Skill 按需加载：仅加载 quick_change Skill（158 行），总上下文 ~557 行
+  - 4 个 Workflow Skill 文件：feature_spec 204 行、bugfix_spec 184 行、design_first 218 行、quick_change 158 行
+- V3.2 Orchestrator Prompt 拆分验证通过
+
 ---
 
 ## V2.0 最终评估
