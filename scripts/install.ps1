@@ -117,7 +117,7 @@ Write-Host "================================================"
 Write-Host ""
 
 # ============================================================
-# 写入 OpenCode 全局配置（autoCompact）
+# 写入 OpenCode 全局配置（compaction）
 # ============================================================
 
 Write-Host "📁 配置 OpenCode 全局自动压缩 ..."
@@ -139,15 +139,18 @@ if (Test-Path $globalConfigPath) {
     }
 }
 
-# 设置 autoCompact（OpenCode 官方配置项）
-# 当 token 使用量达到模型上下文窗口的 95% 时自动压缩
-$globalConfig["autoCompact"] = $true
+# 设置 compaction 配置（OpenCode 官方 schema 确认的合法顶层字段）
+$globalConfig["compaction"] = @{
+    "auto" = $true
+    "prune" = $true
+    "reserved" = 20000
+}
 
 # 写回全局配置
 try {
     $globalConfig | ConvertTo-Json -Depth 10 | Set-Content $globalConfigPath -Encoding UTF8
     Write-Host "✅ OpenCode 全局配置已更新: $globalConfigPath"
-    Write-Host "   autoCompact: true（token 达到上下文窗口 95% 时自动压缩）"
+    Write-Host "   compaction: auto=true, prune=true, reserved=20000"
 } catch {
     Write-Host "⚠️  全局配置写入失败: $_"
     Write-Host "    请手动配置 $globalConfigPath"
