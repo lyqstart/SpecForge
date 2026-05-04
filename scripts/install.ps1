@@ -115,6 +115,55 @@ Write-Host "================================================"
 Write-Host "  ✅ SpecForge 文件复制完成"
 Write-Host "================================================"
 Write-Host ""
+
+# ============================================================
+# 写入 OpenCode 全局配置（compaction + models）
+# ============================================================
+
+Write-Host "📁 配置 OpenCode 全局压缩和模型参数 ..."
+
+$globalConfigDir = Join-Path $env:USERPROFILE ".config\opencode"
+$globalConfigPath = Join-Path $globalConfigDir "opencode.json"
+
+# 确保目录存在
+New-Item -ItemType Directory -Path $globalConfigDir -Force | Out-Null
+
+# 读取现有全局配置（如存在）
+$globalConfig = @{}
+if (Test-Path $globalConfigPath) {
+    try {
+        $globalConfig = Get-Content $globalConfigPath -Raw | ConvertFrom-Json -AsHashtable
+    } catch {
+        Write-Host "⚠️  现有全局配置解析失败，将创建新配置"
+        $globalConfig = @{}
+    }
+}
+
+# 合并 compaction 配置
+$globalConfig["compaction"] = @{
+    "auto" = $true
+    "prune" = $true
+    "reserved" = 20000
+}
+
+# 合并 models 配置（保留其他模型配置）
+if (-not $globalConfig.ContainsKey("models")) {
+    $globalConfig["models"] = @{}
+}
+$globalConfig["models"]["zai-coding-plan/glm-5.1"] = @{
+    "context" = 90000
+}
+
+# 写回全局配置
+try {
+    $globalConfig | ConvertTo-Json -Depth 10 | Set-Content $globalConfigPath -Encoding UTF8
+    Write-Host "✅ OpenCode 全局配置已更新: $globalConfigPath"
+} catch {
+    Write-Host "⚠️  全局配置写入失败: $_"
+    Write-Host "    请手动配置 $globalConfigPath"
+}
+
+Write-Host ""
 Write-Host "后续步骤:"
 Write-Host "  1. cd $Target"
 Write-Host "  2. bun install          # 安装依赖"

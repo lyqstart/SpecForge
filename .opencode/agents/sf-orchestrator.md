@@ -543,6 +543,47 @@ sf-reviewer 返回 request_changes
 
 ---
 
+# Context_Exhaustion 处理协议（V3.1 新增）
+
+## 识别上下文耗尽
+
+当子 Agent 执行失败时，检查错误信息是否包含以下关键词来判断是否为上下文耗尽：
+- "context length exceeded"
+- "context window"
+- "token limit"
+- "maximum context"
+
+## 处理流程
+
+WHEN 子 Agent 因上下文耗尽失败时：
+
+1. **不在同一 Session 中重试**（上下文已满，重试无意义）
+2. **保存完整会话记录**：
+   a. 调用 `client.session.messages()` 获取该 Session 的完整会话历史
+   b. 转换并保存到 Agent_Run_Archive 的 `conversation.jsonl`
+3. **向用户报告**：
+   ```
+   ⚠️ 子 Agent 上下文耗尽
+   ━━━━━━━━━━━━━━━━━━━━
+   Agent: <agent_name>
+   Session: <session_id>
+   状态: 上下文窗口已满，无法继续执行
+   ━━━━━━━━━━━━━━━━━━━━
+   完整会话已保存到: specforge/archive/agent_runs/<run_id>/conversation.jsonl
+   建议: 可以创建新的子 Agent Session 继续执行剩余任务
+   ```
+4. **在 result.json 中标记**：
+   ```json
+   {
+     "status": "failure",
+     "error_type": "context_exhaustion",
+     "error_summary": "Session context window exceeded"
+   }
+   ```
+5. **不进入常规失败重试协议**：上下文耗尽不同于普通执行错误，不应在同一 Session 中重试。直接标记 task 为 blocked，向用户报告。
+
+---
+
 # Work Item 生命周期（Work Item Lifecycle）
 
 ## 创建新 Work Item
@@ -651,6 +692,25 @@ specforge/specs/<work_item_id>/
    - 从返回结果中提取 `summary` 作为 `cost_summary`，并计算 `entry_count`（groups 中所有 entry_count 之和）
    - 如果返回的 groups 为空（无成本数据），将 `cost_summary` 设为 `null`
 
+0.5 ★V3.1 新增：保存完整会话记录
+   a. 调用 `client.session.messages({ path: { id: <agent_session_id> } })` 获取子 Agent 的完整会话历史
+   b. 将消息数组传递给 sf_conversation_recorder_core 的 `convertToConversationJsonl()` 转换为 JSONL 格式
+   c. 将 JSONL 内容写入 `specforge/archive/agent_runs/<run_id>/conversation.jsonl`
+   d. 如果步骤 a-c 任一失败，静默跳过，在 result.json 中标记 `conversation_recorded: false`
+   e. 如果成功，在 result.json 中标记 `conversation_recorded: true`
+
+0.7 ★V3.1 新增：检查压缩事件
+   a. 读取 `specforge/runtime/events.jsonl`
+   b. 查找 start_time 到 end_time 之间的 `context.compacted` 事件（event_type 为 "context.compacted"）
+   c. 如果找到压缩事件，设置 `compaction_occurred: true`，并向用户报告：
+      ```
+      ℹ️ 子 Agent 执行期间发生了上下文压缩
+      Agent: <agent_name>, Session: <session_id>
+      压缩前的完整会话快照已保存。
+      ```
+   d. 如果未找到，设置 `compaction_occurred: false`
+   e. 如果读取/解析失败，设置 `compaction_occurred: null`
+
 1. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="agent_run_result", run_id=<run_id>, content=<result JSON>）写入 `result.json`，包含以下字段：
 
 ```json
@@ -674,7 +734,9 @@ specforge/specs/<work_item_id>/
       "cache_write": 2000
     },
     "entry_count": 12
-  }
+  },
+  "compaction_occurred": true | false | null,
+  "conversation_recorded": true | false
 }
 ```
 
