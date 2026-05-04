@@ -647,6 +647,10 @@ specforge/specs/<work_item_id>/
 
 **每次子 Agent 执行完成后（无论成功或失败），执行以下步骤：**
 
+0. 调用 `sf_cost_report`（session_id=<agent_session_id>）获取该次执行的成本数据
+   - 从返回结果中提取 `summary` 作为 `cost_summary`，并计算 `entry_count`（groups 中所有 entry_count 之和）
+   - 如果返回的 groups 为空（无成本数据），将 `cost_summary` 设为 `null`
+
 1. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="agent_run_result", run_id=<run_id>, content=<result JSON>）写入 `result.json`，包含以下字段：
 
 ```json
@@ -659,9 +663,22 @@ specforge/specs/<work_item_id>/
   "duration_ms": <执行耗时毫秒数>,
   "status": "success | failure",
   "task_description": "<任务描述摘要>",
-  "retry_count": <重试次数，首次为 0>
+  "retry_count": <重试次数，首次为 0>,
+  "cost_summary": {
+    "total_cost": 0.0234,
+    "total_tokens": {
+      "input": 15000,
+      "output": 3000,
+      "reasoning": 500,
+      "cache_read": 8000,
+      "cache_write": 2000
+    },
+    "entry_count": 12
+  }
 }
 ```
+
+**注意：** 当无成本数据时，`cost_summary` 设为 `null`，不阻断归档流程。
 
 2. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<子 Agent 的工作摘要>）写入 `work_log.md`
    - sf_artifact_write 会自动从 trace.jsonl 提取执行统计并合并
@@ -732,8 +749,9 @@ archive_path: specforge/archive/agent_runs/WI-001-sf-requirements-1/
 4. 调用 `task` 工具，prompt 中包含 `archive_path`
 5. 等待子 Agent 完成
 6. 记录 `end_time`
-7. 调用 `sf_artifact_write`（file_type="agent_run_result"）写入 result.json
-8. 调用 `sf_artifact_write`（file_type="work_log"）写入 work_log.md（自动合并 trace 统计）
+7. 调用 `sf_cost_report`（session_id=<agent_session_id>）获取成本数据，提取 cost_summary（无数据时设为 null）
+8. 调用 `sf_artifact_write`（file_type="agent_run_result"）写入 result.json（content 中包含 cost_summary）
+9. 调用 `sf_artifact_write`（file_type="work_log"）写入 work_log.md（自动合并 trace 统计）
 
 ---
 
@@ -1026,6 +1044,49 @@ workflow_type: quick_change
 
 3. 如果没有任何 Work Item，显示："当前无活跃的 Work Item。"
 
+## /sf-cost 命令
+
+**当用户输入 `/sf-cost` 时，执行以下操作：**
+
+1. 调用 `sf_cost_report`（无参数，默认 group_by="work_item"）
+2. 以结构化格式展示成本摘要：
+
+```
+💰 SpecForge 成本报告
+━━━━━━━━━━━━━━━━━━━━
+总成本: $X.XXXX
+总 Token 数: input=XXX, output=XXX, reasoning=XXX, cache_read=XXX, cache_write=XXX
+━━━━━━━━━━━━━━━━━━━━
+按 Work Item 分组:
+| Work Item | 成本 | Token 总数 | 记录数 |
+|-----------|------|-----------|--------|
+| WI-001    | $X.XX | XXXXX    | XX     |
+| WI-002    | $X.XX | XXXXX    | XX     |
+━━━━━━━━━━━━━━━━━━━━
+```
+
+3. 如果返回的 groups 为空，显示："暂无成本数据。成本追踪将在 sf_cost_tracker Plugin 启用后自动开始。"
+
+**当用户输入 `/sf-cost <work_item_id>` 时：**
+
+1. 调用 `sf_cost_report`（work_item_id=<指定值>，group_by="work_item"）
+2. 展示该 Work Item 的成本明细
+
+**当用户输入 `/sf-cost --by agent` 时：**
+
+1. 调用 `sf_cost_report`（group_by="agent"）
+2. 展示按 Agent 分组的成本分布
+
+**当用户输入 `/sf-cost --by phase` 时：**
+
+1. 调用 `sf_cost_report`（group_by="phase"）
+2. 展示按工作流阶段分组的成本分布
+
+**当用户输入 `/sf-cost --by model` 时：**
+
+1. 调用 `sf_cost_report`（group_by="model"）
+2. 展示按模型分组的成本分布
+
 ---
 
 # Gate 格式匹配一致性规则（Gate Format Consistency）
@@ -1173,6 +1234,7 @@ intake → requirements → requirements_gate → design → design_gate → tas
 | `sf_verification_gate` | 检查验证结果（含 e2e 检查） | verification 阶段完成后 |
 | `sf_doc_lint` | 检查文档结构合规性 | 子 Agent 生成文档后、Gate 前 |
 | `sf_trace_matrix` | 检查需求→设计→任务追溯完整性 | verification 阶段 |
+| `sf_cost_report` | 读取成本日志并按多维度聚合分析，返回成本报告 | /sf-cost 命令时、Agent Run Archive 归档时 |
 | `sf_doctor` | 系统健康检查 | 会话启动自检时 |
 
 ---

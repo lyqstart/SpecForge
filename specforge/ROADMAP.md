@@ -83,12 +83,14 @@
 
 | # | 需求 | 说明 |
 |---|------|------|
-| 1 | change_request 工作流 | 变更请求流程 |
-| 2 | refactor 工作流 | 重构流程 |
-| 3 | ops_task 工作流 | 运维任务流程 |
-| 4 | investigation 工作流 | 调查分析流程 |
-| 5 | 并行任务控制 | 多 executor 并行执行 |
-| 6 | Context Monitor | 上下文限制检测 |
+| 1 | Token 监控与主动压缩 | 实时监控 token 累计量，达到阈值（如 80%）时主动触发压缩 |
+| 2 | 跨会话续接 | 子 Agent Session 压缩/耗尽后，提取关键上下文传递到新 Session 继续 |
+| 3 | change_request 工作流 | 变更请求流程 |
+| 4 | refactor 工作流 | 重构流程 |
+| 5 | ops_task 工作流 | 运维任务流程 |
+| 6 | investigation 工作流 | 调查分析流程 |
+| 7 | 并行任务控制 | 多 executor 并行执行 |
+| 8 | Context Monitor | 上下文限制检测 |
 
 ---
 
