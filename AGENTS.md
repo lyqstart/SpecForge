@@ -90,7 +90,7 @@ intake → requirements → requirements_gate → design → design_gate → tas
 | requirements | sf-requirements | superpowers-brainstorming | requirements.md | sf_requirements_gate |
 | design | sf-design | — | design.md | sf_design_gate |
 | tasks | sf-task-planner | — | tasks.md | sf_tasks_gate |
-| development | sf-executor | — | 代码文件 | — |
+| development | sf-executor | — | 代码文件（支持独立 Task 并行调度，V3.3） | — |
 | review | sf-reviewer | — | 审查意见 | — |
 | verification | sf-verifier | superpowers-verification-before-completion | 验证报告 | sf_verification_gate |
 
@@ -107,6 +107,7 @@ intake → requirements → requirements_gate → design → design_gate → tas
 - **executor 失败**：最多重试 2 次（首次 + 1 次重试）
 - **debugger 介入**：executor 重试耗尽后调度 sf-debugger，最多 1 次
 - **review repair loop**：review 发现问题时最多 1 次修复循环
+- **并行失败重试**：并行批次中失败的 Task 移出批次后按串行方式重试，不阻塞后续批次（V3.3 新增）
 - **超过限制**：标记 task 为 blocked，停止自动重试，等待用户指示
 
 ---
@@ -161,3 +162,31 @@ Orchestrator 在以下两种场景加载 Workflow Skill：
 - 每次工作流执行只加载一个 Workflow_Skill
 - 加载失败时停止工作流，不降级
 - Workflow_Skill 中不包含共享协议（Gate、重试等），这些保留在路由层
+
+---
+
+## 8. 并行任务调度（V3.3 新增）
+
+### 8.1 概述
+
+V3.3 为 development 阶段引入并行 executor 调度能力。当 tasks.md 中的多个 Task 修改不同文件且无依赖关系时，Orchestrator 可以在同一消息中发起多个 `task` 工具调用，实现并行执行。
+
+### 8.2 Independence_Analysis
+
+Orchestrator 在 development 阶段开始前分析 tasks.md 中各 Task 的独立性：
+- **文件冲突检测**：两两比较 `修改文件` 列表，交集非空即为冲突
+- **依赖关系检测**：检查显式依赖声明
+- **独立性判定**：无文件冲突且无依赖关系
+
+### 8.3 Execution_Plan
+
+基于分析结果生成执行计划：
+- 独立 Task 分组为 Parallel_Batch（每批次 ≤ max_parallel_executors）
+- 有依赖的 Task 按顺序串行执行
+- 全部冲突时回退到串行（Serial_Fallback）
+
+### 8.4 配置
+
+| 配置项 | 文件 | 默认值 | 说明 |
+|--------|------|--------|------|
+| max_parallel_executors | specforge/config/project.json | 3 | 单批次最大并行 executor 数量，设为 1 等同于禁用并行 |

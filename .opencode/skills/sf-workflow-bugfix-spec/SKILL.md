@@ -123,19 +123,92 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 
 ### 阶段 8：development（开发执行）
 
-**目标：** 执行修复任务，同时编写回归测试
+**目标：** 执行修复任务，同时编写回归测试，支持独立 Task 并行执行
 
 **执行步骤：**
+
+#### Step 1：读取 tasks.md 和配置
+
 1. 调用 `sf_state_read` 确认当前状态为 `development`
-2. 读取 tasks.md，解析 task 列表
-3. 对每个 task：
-   a. 生成 run_id，记录 start_time
-   b. **使用 `task` 工具调度子 Agent `sf-executor`**，在 prompt 中包含：
-      - task 描述、verification_commands
-      - 指令：加载 `superpowers-tdd` skill，先编写回归测试再修复代码
-   c. 等待子 Agent 完成，创建 Agent Run Archive
-   d. 如果执行失败，进入失败重试协议
-4. 所有 task 完成后，调用 `sf_state_transition`（from_state="development"，to_state="verification"，evidence="all tasks completed with regression tests"）
+2. 读取 `specforge/specs/<work_item_id>/tasks.md`，解析每个 Task 的：
+   - Task 编号和描述
+   - `修改文件`（files_to_modify）列表
+   - `依赖` 声明
+   - `verification_commands`
+3. 读取 `specforge/config/project.json`，获取 `max_parallel_executors` 值（字段不存在时默认为 3）
+
+#### Step 2：Independence_Analysis（独立性分析）
+
+对所有 Task 执行独立性分析：
+
+1. **文件冲突检测**：对所有 Task 两两比较 `修改文件` 列表，如果两个 Task 的列表存在交集（至少一个相同文件路径），标记为 File_Conflict
+2. **依赖关系检测**：检查每个 Task 的 `依赖` 字段，如果 Task B 声明依赖 Task A（如"依赖 Task 1"、"在 Task N 完成后执行"），标记 B 依赖 A
+3. **独立性判定**：两个 Task 满足 Task_Independence 当且仅当：无 File_Conflict 且无依赖关系
+
+#### Step 3：生成 Execution_Plan
+
+基于 Independence_Analysis 结果生成执行计划：
+
+1. 将所有互相独立的 Task 分组为 Parallel_Batch
+2. 每个 Parallel_Batch 内的 Task 数量不超过 `max_parallel_executors`，超过时拆分为多个子批次
+3. 存在依赖关系的 Task 按依赖顺序排列为串行 Task
+4. 如果所有 Task 之间都存在冲突或依赖，生成全串行的 Execution_Plan（Serial_Fallback）
+
+#### Step 4：向用户展示 Execution_Plan
+
+向用户展示结构化的执行计划摘要：
+
+```
+📋 Task 执行计划
+━━━━━━━━━━━━━━━━━━━━
+总任务数: N
+执行模式: 并行（M 个批次）/ 串行
+最大并行数: <max_parallel_executors>
+━━━━━━━━━━━━━━━━━━━━
+批次 1（并行）: Task 1, Task 3, Task 5
+批次 2（并行）: Task 2, Task 4
+串行: Task 6（原因: 依赖 Task 5 的输出文件 xxx.ts）
+━━━━━━━━━━━━━━━━━━━━
+```
+
+#### Step 5：按 Execution_Plan 执行
+
+**5a. 并行批次执行：**
+
+对每个 Parallel_Batch：
+
+1. 向用户报告批次启动信息（批次编号、包含的 Task 列表）
+2. 为该批次中的每个 Task 生成独立的 run_id（格式 `<work_item_id>-sf-executor-<全局序号>`）
+3. 记录每个 Task 的 start_time
+4. **在同一条 assistant 消息中**，为该批次的所有 Task 各发起一个 `task` 工具调用，调度独立的 sf-executor 子 Agent，每个调用包含：
+   - task 描述、verification_commands、修改文件列表、相关上下文
+   - 指令：加载 `superpowers-tdd` skill，先编写回归测试再修复代码
+   - 独立的 run_id 和 archive_path（`specforge/archive/agent_runs/<run_id>/`）
+5. 等待该批次所有 executor 返回结果
+6. 记录每个 Task 的 end_time
+7. 为该批次中的每个 executor 创建 Agent_Run_Archive（见并行 Archive 协议）
+8. 向用户报告 Batch_Result 摘要（成功/失败的 Task 列表及耗时）
+9. 如果有失败的 Task，将其移出并行批次，进入并行失败重试协议（见路由层）
+10. 确认当前批次处理完成后，继续执行下一个 Parallel_Batch
+
+**5b. 串行 Task 执行：**
+
+对每个串行 Task，按 V3.2 的串行协议执行：
+1. 生成 run_id，记录 start_time
+2. 使用 `task` 工具调度 sf-executor，指令中包含：加载 `superpowers-tdd` skill，先编写回归测试再修复代码
+3. 等待完成，记录 end_time
+4. 创建 Agent_Run_Archive
+5. 如果失败，进入标准失败重试协议
+
+**5c. Serial_Fallback 模式：**
+
+当 Execution_Plan 为全串行时，按 V3.2 的串行协议逐个执行所有 Task，行为完全不变。
+
+#### Step 6：development 阶段完成
+
+所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
+1. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
+2. 调用 `sf_state_transition`（from_state="development"，to_state="verification"，evidence="all tasks completed with regression tests"）
 
 **注意：** Bugfix 工作流**没有 review 阶段**，development 直接进入 verification。
 
