@@ -1,12 +1,12 @@
 /**
  * SpecForge Session Recorder Plugin
  *
- * 自动保存子 Agent 会话记录：当 `task` 工具完成时，
- * 通过 OpenCode SDK client.session.messages() API 获取子 Session 的完整会话，
- * 转换为 JSONL 格式并保存到 specforge/sessions/{session_id}/conversation.jsonl
+ * 自动保存所有会话记录：
+ * 1. 子 Agent 会话：当 `task` 工具完成时自动保存
+ * 2. 主 Agent 会话：当 `session.idle` 事件触发时自动保存（增量更新）
  *
- * 数据获取方式：使用 Plugin 初始化时的 ctx.client（OpenCode SDK 客户端）
- * 调用 client.session.messages() 获取完整会话历史，而非读取文件系统。
+ * 通过 OpenCode SDK client.session.messages() API 获取完整会话历史，
+ * 转换为 JSONL 格式并保存到 specforge/sessions/{session_id}/conversation.jsonl
  *
  * 关键约束：
  * - 自包含（不引用外部模块，只使用 node: 内置模块）
@@ -129,9 +129,54 @@ function convertMessagesToJsonl(messages: Array<{ info: any; parts: any[] }>): s
 // ============================================================
 
 export const sf_session_recorder: Plugin = async ({ directory, client }) => {
-  // 保存 client 引用，用于调用 session.messages() API
   const savedClient = client
   const childSessions: ChildSession[] = []
+  // Track all known sessions (including primary/main agent sessions)
+  const knownSessions = new Map<string, { title: string; isChild: boolean; lastSavedMessageCount: number }>()
+
+  /**
+   * Save a session's conversation to specforge/sessions/{session_id}/
+   * Returns true if saved successfully, false otherwise.
+   */
+  async function saveSession(sessionID: string, title: string, parentID?: string): Promise<boolean> {
+    if (!savedClient?.session?.messages) return false
+
+    let messagesResponse: any
+    try {
+      messagesResponse = await savedClient.session.messages({
+        path: { id: sessionID }
+      })
+    } catch {
+      return false
+    }
+
+    const messages: Array<{ info: any; parts: any[] }> = Array.isArray(messagesResponse)
+      ? messagesResponse
+      : Array.isArray(messagesResponse?.data)
+        ? messagesResponse.data
+        : []
+
+    if (messages.length === 0) return false
+
+    const jsonlContent = convertMessagesToJsonl(messages)
+    if (!jsonlContent) return false
+
+    const sessionDir = join(directory, "specforge", "sessions", sessionID)
+    await mkdir(sessionDir, { recursive: true })
+
+    const metadata = {
+      session_id: sessionID,
+      parent_session_id: parentID || null,
+      title: title,
+      is_primary: !parentID,
+      saved_at: new Date().toISOString(),
+      message_count: messages.length,
+    }
+    await writeFile(join(sessionDir, "metadata.json"), JSON.stringify(metadata, null, 2), "utf-8")
+    await writeFile(join(sessionDir, "conversation.jsonl"), jsonlContent, "utf-8")
+
+    return true
+  }
 
   return {
     event: async ({ event }) => {
@@ -139,16 +184,45 @@ export const sf_session_recorder: Plugin = async ({ directory, client }) => {
         // Track child sessions (sessions with parentID)
         if (event.type === "session.created" || event.type === "session.updated") {
           const info = (event as any).properties?.info
-          if (info?.parentID && info?.id) {
-            const existing = childSessions.find(s => s.sessionID === info.id)
-            if (!existing) {
-              childSessions.push({
-                sessionID: info.id,
-                parentID: info.parentID,
+          if (info?.id) {
+            if (info.parentID) {
+              // Child session (sub-agent)
+              const existing = childSessions.find(s => s.sessionID === info.id)
+              if (!existing) {
+                childSessions.push({
+                  sessionID: info.id,
+                  parentID: info.parentID,
+                  title: info.title || "",
+                  createdAt: info.time?.created || Date.now(),
+                })
+              }
+              knownSessions.set(info.id, {
                 title: info.title || "",
-                createdAt: info.time?.created || Date.now(),
+                isChild: true,
+                lastSavedMessageCount: 0,
+              })
+            } else {
+              // Primary session (main agent / orchestrator)
+              knownSessions.set(info.id, {
+                title: info.title || "",
+                isChild: false,
+                lastSavedMessageCount: 0,
               })
             }
+          }
+        }
+
+        // Save primary agent session on session.idle
+        if (event.type === "session.idle") {
+          const sessionID = (event as any).properties?.sessionID
+          if (!sessionID) return
+
+          const sessionInfo = knownSessions.get(sessionID)
+          // Only save primary (non-child) sessions on idle
+          if (sessionInfo && !sessionInfo.isChild) {
+            try {
+              await saveSession(sessionID, sessionInfo.title)
+            } catch { /* silent */ }
           }
         }
       } catch { /* silent */ }
@@ -164,47 +238,9 @@ export const sf_session_recorder: Plugin = async ({ directory, client }) => {
         const latestChild = [...childSessions].sort((a, b) => b.createdAt - a.createdAt)[0]
         if (!latestChild) return
 
-        // Use SDK client to get session messages
-        if (!savedClient?.session?.messages) return
-
-        let messagesResponse: any
         try {
-          messagesResponse = await savedClient.session.messages({
-            path: { id: latestChild.sessionID }
-          })
-        } catch {
-          // SDK call failed — silent
-          return
-        }
-
-        // Normalize response: could be { data: [...] } or direct array
-        const messages: Array<{ info: any; parts: any[] }> = Array.isArray(messagesResponse)
-          ? messagesResponse
-          : Array.isArray(messagesResponse?.data)
-            ? messagesResponse.data
-            : []
-
-        if (messages.length === 0) return
-
-        // Convert to JSONL
-        const jsonlContent = convertMessagesToJsonl(messages)
-        if (!jsonlContent) return
-
-        // Save to specforge/sessions/{session_id}/
-        const sessionDir = join(directory, "specforge", "sessions", latestChild.sessionID)
-        await mkdir(sessionDir, { recursive: true })
-
-        // Save session metadata
-        const metadata = {
-          session_id: latestChild.sessionID,
-          parent_session_id: latestChild.parentID,
-          title: latestChild.title,
-          created_at: new Date(latestChild.createdAt).toISOString(),
-          saved_at: new Date().toISOString(),
-          message_count: messages.length,
-        }
-        await writeFile(join(sessionDir, "metadata.json"), JSON.stringify(metadata, null, 2), "utf-8")
-        await writeFile(join(sessionDir, "conversation.jsonl"), jsonlContent, "utf-8")
+          await saveSession(latestChild.sessionID, latestChild.title, latestChild.parentID)
+        } catch { /* silent */ }
       } catch { /* silent failure — never block OpenCode's tool execution flow */ }
     },
   }
