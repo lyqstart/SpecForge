@@ -306,21 +306,62 @@ No tasks defined yet.
     it("should extract task sections from markdown", () => {
       const content = `# Title
 
-## Section 1
+## Task 1: Setup
 
 Content 1
 
-## Section 2
+## Task 2: Implementation
 
 Content 2
 `
       const sections = getTaskSections(content)
       expect(sections).toHaveLength(2)
-      expect(sections[0].title).toBe("Section 1")
-      expect(sections[1].title).toBe("Section 2")
+      expect(sections[0].title).toBe("Task 1: Setup")
+      expect(sections[1].title).toBe("Task 2: Implementation")
     })
 
-    it("should return empty array when no ## headings", () => {
+    it("should extract Chinese task headings", () => {
+      const content = `# 任务列表
+
+## 任务 1: 初始化
+
+内容 1
+
+## 任务 2: 实现
+
+内容 2
+`
+      const sections = getTaskSections(content)
+      expect(sections).toHaveLength(2)
+      expect(sections[0].title).toBe("任务 1: 初始化")
+      expect(sections[1].title).toBe("任务 2: 实现")
+    })
+
+    it("should ignore non-task headings like 任务依赖图", () => {
+      const content = `# 任务列表
+
+## 概述
+
+一些概述内容
+
+## Task 1: Setup
+
+Content 1
+
+## 任务依赖图
+
+依赖关系
+
+## 备注
+
+一些备注
+`
+      const sections = getTaskSections(content)
+      expect(sections).toHaveLength(1)
+      expect(sections[0].title).toBe("Task 1: Setup")
+    })
+
+    it("should return empty array when no task headings", () => {
       const content = `# Title
 
 Just some content.

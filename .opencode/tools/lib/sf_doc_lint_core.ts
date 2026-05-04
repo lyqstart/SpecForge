@@ -320,9 +320,13 @@ export function getTaskSections(content: string): TaskSection[] {
   let currentTitle = ""
   let currentContent: string[] = []
 
+  // Task heading patterns - only match actual task headings, not auxiliary sections
+  // Matches: "## Task 1: ...", "## 任务 1: ...", "### Task 1: ...", "### 任务 1: ..."
+  const taskHeadingPattern = /^#{2,3}\s+(Task\s+\d|任务\s*\d)/i
+
   for (const line of lines) {
-    const headingMatch = line.match(/^##\s+(.+)$/)
-    if (headingMatch) {
+    const headingMatch = line.match(/^#{2,3}\s+(.+)$/)
+    if (headingMatch && taskHeadingPattern.test(line)) {
       // Save previous section if it exists
       if (currentTitle) {
         sections.push({

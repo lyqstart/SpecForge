@@ -48,7 +48,7 @@ verification_commands:
     it("should pass with single task having verification_commands", async () => {
       const content = `# Tasks
 
-## Setup
+## Task 1: Setup
 
 Initialize the project.
 

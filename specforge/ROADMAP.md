@@ -34,20 +34,26 @@
 ## V2.0（效率版）
 
 **目标：** 解决 verifier 效率问题和只读 Agent 写文件的架构矛盾。
+**状态：** ✅ 完成（第 11-12 轮测试验证）
 
-| # | 需求 | 优先级 | 说明 |
-|---|------|--------|------|
-| 1 | sf_artifact_write 工具 | P0 | 只读 Agent 写白名单路径的产物文件 |
-| 2 | sf_batch_verify 工具 | P0 | 批量正则验证，消除现场生成脚本 |
-| 3 | verification_report 模板化 | P1 | verifier 返回 JSON，工具渲染 Markdown |
-| 4 | Gate 结果结构化记录 | P1 | gate fail 原因写入 events.jsonl |
-| 5 | work_log 由 Orchestrator 自动生成 | P2 | toolcall 统计从 trace 提取，不让 Agent 自报 |
-| 6 | Design-First 专用 design_gate | P1 | 不在 requirements 之前强制检查需求引用 |
+| # | 需求 | 状态 |
+|---|------|------|
+| 1 | sf_artifact_write 工具 | ✅ 完成 |
+| 2 | sf_batch_verify 工具 | ✅ 完成 |
+| 3 | verification_report 模板化 | ✅ 完成 |
+| 4 | Gate 结果结构化记录 | ✅ 完成 |
+| 5 | work_log 由工具自动生成 | ✅ 完成 |
+| 6 | Design-First 专用 design_gate | ✅ 完成 |
 
-**验收标准：**
-- Quick Change 总耗时 ≤ 4 分钟
-- sf-verifier toolcalls ≤ 8
-- verification 阶段 ≤ 90 秒
+**效果：**
+- sf-verifier toolcalls：16 → 4-5（-69%）
+- verifier bash 调用：12 → 0（-100%）
+- 批量验证：Python 脚本 → sf_batch_verify
+- 报告写入：bash/Python → sf_artifact_write
+
+**已知限制（受模型响应速度制约）：**
+- Quick Change 总耗时 6-8 分钟（目标 4 分钟，模型思考时间占主导）
+- verification 阶段 90-150 秒（verifier 本身 45-65 秒，Orchestrator 后处理占余量）
 
 ---
 

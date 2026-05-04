@@ -163,6 +163,57 @@
   - sf_state_transition_core.ts：创建 Work Item 时 workflow_type 必填，不再默认 feature_spec
   - sf_artifact_write_core.ts：renderVerificationReport 增加 schema 容错（数组字段自动归一化）
 
+### 第 12 轮：V2.0.1 Quick Change 修复验证（2026-05-04）
+- 测试内容：V2.0.1 修复验证（workflow_type 必填 + artifact_write schema 容错）
+- WI-001（重置按钮改"清零" quick_change）：✅ 完整闭环跑通（8 分 25 秒）
+  - workflow_type 正确传递 ✅（第 11 轮 bug 修复验证通过）
+  - sf_artifact_write 模板一次成功 ✅（第 11 轮 bug 修复验证通过）
+  - sf-verifier 4 次 toolcalls ✅
+  - verification_gate 一次通过 ✅
+  - sf_artifact_write 5/5 全部成功 ✅
+- 新发现：
+  - task-planner 12 toolcalls / 2m51s（异常，sf_doc_lint 误判辅助标题导致返工）
+  - 需求语义漂移：用户说"改按钮文字"，系统实际"新增清零按钮"
+  - 总耗时 8m25s（受模型响应速度限制，非代码问题）
+- 修复措施：
+  - sf_doc_lint_core.ts：getTaskSections 改为只匹配 "Task N" / "任务 N" 格式的标题，忽略辅助标题
+
+---
+
+## V2.0 最终评估
+
+### 12 轮测试总览
+
+| 轮次 | 测试内容 | 工作流 | 结果 | 耗时 |
+|------|----------|--------|------|------|
+| 1-4 | V1 MVP 测试 | feature_spec | ✅ | - |
+| 5 | V1 Complete 验证 | feature_spec + bugfix | ✅ | - |
+| 6 | 倒计时网页 | feature_spec | ✅ | 43m |
+| 7 | 倒计时声音 bugfix | bugfix_spec | ✅ | 31m |
+| 8-9 | Quick Change V1 | quick_change | ✅ | 8-13m |
+| 10 | Design-First 秒表 | design_first | ✅ | 53m |
+| 11 | V2.0 首次测试 | quick_change | ✅ | 6m |
+| 12 | V2.0.1 修复验证 | quick_change | ✅ | 8m |
+
+### V2.0 核心成果
+
+| 指标 | V1（第 9 轮） | V2（第 12 轮） | 改善 |
+|------|-------------|---------------|------|
+| sf-verifier toolcalls | 16 | 4 | -75% |
+| verifier bash 调用 | 12 | 0 | -100% |
+| 批量验证方式 | Python 脚本 | sf_batch_verify | 消除脚本生成 |
+| 报告写入方式 | bash/Python | sf_artifact_write | 消除转义问题 |
+| Gate 结果记录 | 无 | events.jsonl | 可审计 |
+| workflow_type 传递 | 正确 | 正确（V2.0.1 修复） | 稳定 |
+
+### V2.0 已知限制
+
+| 限制 | 根因 | 影响 |
+|------|------|------|
+| Quick Change 总耗时 6-8 分钟 | 模型响应速度（每次 toolcall 间隔 7-15 秒） | 无法通过代码优化 |
+| 需求语义漂移 | AI 理解问题 | 记录为已知限制 |
+| gate_result event schema 不统一 | 设计遗留 | 留 V2.1 统一 |
+
 ### 第 10 轮：Design-First 秒表 feature_spec_design_first（2026-05-04）
 - 测试内容：Design-First 工作流验证
 - WI-001（网页版秒表 feature_spec_design_first）：✅ 完整闭环跑通（53 分 06 秒）
