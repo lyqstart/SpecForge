@@ -321,6 +321,7 @@ describe("sf_state_transition", () => {
           work_item_id: "WI-001",
           from_state: "",
           to_state: "intake",
+          workflow_type: "feature_spec",
         },
         testDir
       )
@@ -357,10 +358,10 @@ describe("sf_state_transition", () => {
       expect(item.updated_at).toBeDefined()
     })
 
-    it("should default workflow_type to feature_spec", async () => {
+    it("should require workflow_type when creating a new work item", async () => {
       await writeState({ work_items: {} })
 
-      await executeTransition(
+      const result = await executeTransition(
         {
           work_item_id: "WI-003",
           from_state: "",
@@ -369,8 +370,10 @@ describe("sf_state_transition", () => {
         testDir
       )
 
-      const state = await readState()
-      expect(state.work_items["WI-003"].workflow_type).toBe("feature_spec")
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error).toContain("workflow_type is required")
+      }
     })
 
     it("should append work_item.created event for new work items", async () => {
@@ -402,6 +405,7 @@ describe("sf_state_transition", () => {
           work_item_id: "WI-001",
           from_state: "",
           to_state: "requirements",
+          workflow_type: "feature_spec",
         },
         testDir
       )
@@ -431,6 +435,7 @@ describe("sf_state_transition", () => {
           work_item_id: "WI-001",
           from_state: "",
           to_state: "intake",
+          workflow_type: "feature_spec",
         },
         testDir
       )
@@ -546,6 +551,7 @@ describe("sf_state_transition", () => {
           work_item_id: "WI-AUTO-001",
           from_state: "",
           to_state: "intake",
+          workflow_type: "feature_spec",
         },
         testDir
       )
@@ -589,6 +595,7 @@ describe("sf_state_transition", () => {
           work_item_id: "WI-AUTO-003",
           from_state: "",
           to_state: "intake",
+          workflow_type: "feature_spec",
         },
         testDir
       )
@@ -606,6 +613,7 @@ describe("sf_state_transition", () => {
           work_item_id: "WI-AUTO-004",
           from_state: "",
           to_state: "intake",
+          workflow_type: "feature_spec",
         },
         testDir
       )
@@ -634,6 +642,7 @@ describe("sf_state_transition", () => {
           work_item_id: "WI-AUTO-005",
           from_state: "",
           to_state: "intake",
+          workflow_type: "feature_spec",
         },
         testDir
       )

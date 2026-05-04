@@ -147,6 +147,22 @@
   - sf-verifier.md：统一文件写入方式为 Python lines.append，禁止多种方式尝试
   - sf-orchestrator.md：Quick Change 调度 verifier 时传递 workflow_type 和轻量验证指令
 
+### 第 11 轮：V2.0 Quick Change 首次测试（2026-05-04）
+- 测试内容：V2.0 新工具首次实战（sf_batch_verify + sf_artifact_write）
+- WI-001（按钮文字改"启动" quick_change）：✅ 完整闭环跑通（6 分 04 秒）
+  - sf-verifier 5 次 toolcalls ✅（目标 ≤8）
+  - sf_batch_verify 使用 ✅
+  - sf_artifact_write 使用 ✅（1 次模板渲染失败后修正）
+  - verification_gate 一次通过 ✅
+  - Gate 结果结构化记录到 events.jsonl ✅
+- 新发现：
+  - Orchestrator 创建 Work Item 时未传 workflow_type，导致状态机流转失败
+  - Orchestrator 手动修改 state.json/spec.json 修正（违反规则）
+  - sf_artifact_write 模板渲染 e2e_tests 字段类型错误（字符串 vs 数组）
+- 修复措施：
+  - sf_state_transition_core.ts：创建 Work Item 时 workflow_type 必填，不再默认 feature_spec
+  - sf_artifact_write_core.ts：renderVerificationReport 增加 schema 容错（数组字段自动归一化）
+
 ### 第 10 轮：Design-First 秒表 feature_spec_design_first（2026-05-04）
 - 测试内容：Design-First 工作流验证
 - WI-001（网页版秒表 feature_spec_design_first）：✅ 完整闭环跑通（53 分 06 秒）

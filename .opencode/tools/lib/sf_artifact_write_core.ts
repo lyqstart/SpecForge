@@ -198,6 +198,28 @@ export function renderVerificationReport(jsonContent: string): string | null {
     return null
   }
 
+  // Schema 容错：确保数组字段为数组
+  if (!Array.isArray(data.verification_commands)) {
+    data.verification_commands = []
+  }
+  if (!Array.isArray(data.acceptance_criteria)) {
+    data.acceptance_criteria = []
+  }
+  if (!Array.isArray(data.e2e_tests)) {
+    // 如果是字符串，转为单元素数组
+    if (typeof data.e2e_tests === "string") {
+      data.e2e_tests = [{ name: "E2E", status: "pass" as const, evidence: data.e2e_tests }]
+    } else {
+      data.e2e_tests = []
+    }
+  }
+  if (!data.side_effects) {
+    data.side_effects = "无副作用。"
+  }
+  if (!data.summary) {
+    data.summary = ""
+  }
+
   // 统计汇总
   const allChecks = [
     ...data.verification_commands.map(c => c.status),

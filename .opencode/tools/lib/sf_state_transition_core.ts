@@ -200,6 +200,16 @@ async function handleNewWorkItem(
   timestamp: string,
   baseDir: string
 ): Promise<TransitionResult> {
+  // workflow_type 必填（创建新 Work Item 时不允许默认值）
+  if (!input.workflow_type) {
+    return {
+      success: false,
+      error: `workflow_type is required when creating a new work item. Please pass workflow_type (feature_spec, bugfix_spec, feature_spec_design_first, or quick_change).`,
+      work_item_id: input.work_item_id,
+      current_state: "",
+    }
+  }
+
   // 新 Work Item 的 to_state 必须是 "intake"
   if (input.to_state !== "intake") {
     return {
@@ -220,8 +230,8 @@ async function handleNewWorkItem(
     }
   }
 
-  // 创建新 Work Item 条目
-  const workflowType = input.workflow_type || "feature_spec"
+  // 创建新 Work Item 条目（workflow_type 已在上面验证为必填）
+  const workflowType = input.workflow_type!
   const newWorkItem: WorkItemState = {
     work_item_id: input.work_item_id,
     workflow_type: workflowType,
