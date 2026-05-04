@@ -25,8 +25,8 @@
 
 | 任务 | 状态 |
 |------|------|
-| Design-First 工作流测试 | 待做 |
-| 会话恢复测试 | 待做 |
+| Design-First 工作流测试 | ✅ 第 10 轮验证通过 |
+| 会话恢复测试 | 待做（降级为 V2 补充测试） |
 | 更新 README.md | 待做 |
 
 ---
@@ -42,6 +42,7 @@
 | 3 | verification_report 模板化 | P1 | verifier 返回 JSON，工具渲染 Markdown |
 | 4 | Gate 结果结构化记录 | P1 | gate fail 原因写入 events.jsonl |
 | 5 | work_log 由 Orchestrator 自动生成 | P2 | toolcall 统计从 trace 提取，不让 Agent 自报 |
+| 6 | Design-First 专用 design_gate | P1 | 不在 requirements 之前强制检查需求引用 |
 
 **验收标准：**
 - Quick Change 总耗时 ≤ 4 分钟

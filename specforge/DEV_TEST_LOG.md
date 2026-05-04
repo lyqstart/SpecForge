@@ -147,6 +147,19 @@
   - sf-verifier.md：统一文件写入方式为 Python lines.append，禁止多种方式尝试
   - sf-orchestrator.md：Quick Change 调度 verifier 时传递 workflow_type 和轻量验证指令
 
+### 第 10 轮：Design-First 秒表 feature_spec_design_first（2026-05-04）
+- 测试内容：Design-First 工作流验证
+- WI-001（网页版秒表 feature_spec_design_first）：✅ 完整闭环跑通（53 分 06 秒）
+  - Design-First 阶段顺序正确：design → design_gate → requirements → requirements_gate
+  - design_gate 第一次 fail（缺需求引用）→ 回退 → 修订 → pass
+  - sf-reviewer 生成了 work_log.md（ISS-018 修复验证通过）
+  - 110/110 验证全部通过
+- 新发现：
+  - sf-verifier 27 次 toolcalls / 17m46s（严重异常，模型等待 1055s vs 工具执行 10.5s）
+  - Design-First 的 design_gate 在 requirements 之前强制检查需求引用（语义冲突）
+  - verification evidence 计数不一致（transition 写 110/110，report 口径 77 项）
+- 已记录为 V2 需求：Design-First 专用 gate
+
 ---
 
 ## V1 最终评估
