@@ -686,20 +686,24 @@ specforge/specs/<work_item_id>/
 
 ## 归档创建流程
 
-**每次子 Agent 执行完成后（无论成功或失败），执行以下步骤：**
+**每次子 Agent 执行完成后（无论成功或失败），必须按顺序执行以下所有步骤（不可跳过任何步骤）：**
 
 0. 调用 `sf_cost_report`（session_id=<agent_session_id>）获取该次执行的成本数据
    - 从返回结果中提取 `summary` 作为 `cost_summary`，并计算 `entry_count`（groups 中所有 entry_count 之和）
    - 如果返回的 groups 为空（无成本数据），将 `cost_summary` 设为 `null`
 
-0.5 ★V3.1 新增：保存完整会话记录
-   a. 调用 `sf_conversation_recorder` 工具，传入参数：
-      - session_id: 子 Agent 的 Session ID（从 task 工具返回的上下文中获取）
-      - run_id: 当前的 run_id
-      - work_item_id: 当前的 work_item_id
-   b. 检查返回结果中的 `success` 字段
-   c. 如果 success=true，在 result.json 中标记 `conversation_recorded: true`
-   d. 如果 success=false，在 result.json 中标记 `conversation_recorded: false`，不阻断归档流程
+0.5 **（强制执行）保存完整会话记录**
+   **⚠️ 此步骤不可跳过。每次子 Agent 完成后都必须执行。**
+   a. 从 `specforge/runtime/events.jsonl` 中查找最近的 `session.created` 事件，提取子 Agent 的 Session ID
+      - 如果找不到 Session ID，尝试从 `specforge/logs/trace.jsonl` 中最近的 `agent.dispatched` 事件提取
+      - 如果仍然找不到，使用 "unknown" 作为 session_id
+   b. 调用 `sf_conversation_recorder` 工具，传入参数：
+      - session_id: 上一步获取的子 Agent Session ID
+      - run_id: 当前的 run_id（如 WI-001-sf-executor-1）
+      - work_item_id: 当前的 work_item_id（如 WI-001）
+   c. 检查返回结果中的 `success` 字段
+   d. 如果 success=true，设置 `conversation_recorded: true`
+   e. 如果 success=false 或调用失败，设置 `conversation_recorded: false`，不阻断归档流程
 
 0.7 ★V3.1 新增：检查压缩事件
    a. 读取 `specforge/runtime/events.jsonl`
