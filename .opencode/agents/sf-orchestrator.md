@@ -693,11 +693,13 @@ specforge/specs/<work_item_id>/
    - 如果返回的 groups 为空（无成本数据），将 `cost_summary` 设为 `null`
 
 0.5 ★V3.1 新增：保存完整会话记录
-   a. 调用 `client.session.messages({ path: { id: <agent_session_id> } })` 获取子 Agent 的完整会话历史
-   b. 将消息数组传递给 sf_conversation_recorder_core 的 `convertToConversationJsonl()` 转换为 JSONL 格式
-   c. 将 JSONL 内容写入 `specforge/archive/agent_runs/<run_id>/conversation.jsonl`
-   d. 如果步骤 a-c 任一失败，静默跳过，在 result.json 中标记 `conversation_recorded: false`
-   e. 如果成功，在 result.json 中标记 `conversation_recorded: true`
+   a. 调用 `sf_conversation_recorder` 工具，传入参数：
+      - session_id: 子 Agent 的 Session ID（从 task 工具返回的上下文中获取）
+      - run_id: 当前的 run_id
+      - work_item_id: 当前的 work_item_id
+   b. 检查返回结果中的 `success` 字段
+   c. 如果 success=true，在 result.json 中标记 `conversation_recorded: true`
+   d. 如果 success=false，在 result.json 中标记 `conversation_recorded: false`，不阻断归档流程
 
 0.7 ★V3.1 新增：检查压缩事件
    a. 读取 `specforge/runtime/events.jsonl`
