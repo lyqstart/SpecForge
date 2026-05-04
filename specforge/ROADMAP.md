@@ -91,18 +91,91 @@
 
 ---
 
-## V3.1（扩展版）
+## V3.1（上下文压缩感知与会话记录版）
+
+**目标：** 上下文压缩配置、压缩感知、完整会话记录。
+**状态：** ✅ 完成（第 14-15 轮测试验证）
+
+| # | 需求 | 状态 |
+|---|------|------|
+| 1 | OpenCode 压缩配置（compaction） | ✅ 完成 |
+| 2 | sf_checkpoint 压缩上下文增强 | ✅ 完成 |
+| 3 | 压缩事件记录与 Orchestrator 感知 | ✅ 完成 |
+| 4 | 会话完整记录（sf_session_recorder Plugin） | ✅ 完成 |
+| 5 | 向后兼容（424 个测试通过） | ✅ 完成 |
+
+**效果：**
+- 子 Agent 会话自动保存（task 工具完成时触发）
+- 主 Agent 会话自动保存（session.idle 时触发）
+- 保存到 specforge/sessions/{session_id}/（conversation.jsonl + metadata.json）
+- 压缩前注入 SpecForge 业务上下文到压缩提示词
+- 压缩事件记录到 events.jsonl
+
+**已知限制：**
+- 压缩功能未实际触发（17 轮测试中 token 消耗未达阈值）
+- 跨会话续接推迟到 V3.4
+
+---
+
+## V3.2（Orchestrator Prompt 拆分版）
+
+**目标：** 将 1369 行单体 sf-orchestrator.md 拆分为路由层 + 工作流 Skill。
+**状态：** ✅ 完成（第 16 轮测试验证）
+
+| # | 需求 | 状态 |
+|---|------|------|
+| 1 | sf-orchestrator.md 精简为路由层（≤400 行） | ✅ 完成（399 行） |
+| 2 | sf-workflow-feature-spec Skill | ✅ 完成（204 行） |
+| 3 | sf-workflow-bugfix-spec Skill | ✅ 完成（184 行） |
+| 4 | sf-workflow-design-first Skill | ✅ 完成（218 行） |
+| 5 | sf-workflow-quick-change Skill | ✅ 完成（158 行） |
+| 6 | Skill 加载协议 | ✅ 完成 |
+| 7 | 向后兼容（424 个测试通过） | ✅ 完成 |
+
+**效果：**
+- sf-orchestrator.md：1369 行 → 399 行（-71%）
+- Skill 按需加载，总上下文量减少 55%
+- AI 指令遵从性提升（Skill 加载协议正确执行）
+- 新增工作流只需创建 Skill 文件 + 路由表加一行
+
+---
+
+## V3.3（并行任务控制版）
+
+**目标：** development 阶段支持独立 Task 并行执行。
+**状态：** ✅ 完成（第 17 轮测试验证）
+
+| # | 需求 | 状态 |
+|---|------|------|
+| 1 | Task 独立性分析（Independence_Analysis） | ✅ 完成 |
+| 2 | 并行调度协议（max_parallel_executors 可配置） | ✅ 完成 |
+| 3 | 并行执行结果处理 | ✅ 完成 |
+| 4 | 并行失败重试适配 | ✅ 完成 |
+| 5 | Agent Run Archive 并行适配 | ✅ 完成 |
+| 6 | 4 个 Workflow Skill 更新 | ✅ 完成 |
+| 7 | 向后兼容与串行回退 | ✅ 完成 |
+| 8 | 并行执行可观测性 | ✅ 完成 |
+
+**效果：**
+- Independence_Analysis 基于 files_to_modify 交集判断
+- 独立 Task 在同一消息中并行调度（最大并行数可配置，默认 3）
+- 文件冲突时自动回退串行（Serial_Fallback）
+- result.json 新增 parallel_batch/parallel_peers 字段
+
+**已知限制：**
+- 并行实际触发待多文件项目验证（单文件项目所有 Task 修改同一文件，必然串行）
+
+---
+
+## V3.4（扩展版 — 新工作流 + 跨会话续接）
 
 | # | 需求 | 说明 |
 |---|------|------|
-| 1 | Token 监控与主动压缩 | 实时监控 token 累计量，达到阈值（如 80%）时主动触发压缩 |
-| 2 | 跨会话续接 | 子 Agent Session 压缩/耗尽后，提取关键上下文传递到新 Session 继续 |
-| 3 | change_request 工作流 | 变更请求流程 |
-| 4 | refactor 工作流 | 重构流程 |
-| 5 | ops_task 工作流 | 运维任务流程 |
-| 6 | investigation 工作流 | 调查分析流程 |
-| 7 | 并行任务控制 | 多 executor 并行执行 |
-| 8 | Context Monitor | 上下文限制检测 |
+| 1 | 跨会话续接 | 子 Agent Session 压缩/耗尽后，提取关键上下文传递到新 Session 继续 |
+| 2 | change_request 工作流 | 变更请求流程 |
+| 3 | refactor 工作流 | 重构流程 |
+| 4 | ops_task 工作流 | 运维任务流程 |
+| 5 | investigation 工作流 | 调查分析流程 |
 
 ---
 
