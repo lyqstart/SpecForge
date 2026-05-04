@@ -31,6 +31,7 @@ export interface TransitionSuccess {
   previous_state: string
   current_state: string
   timestamp: string
+  created_paths?: string[]
 }
 
 export interface TransitionFailure {
@@ -109,7 +110,7 @@ export async function executeTransition(
 
   // 4. 处理新 Work Item 创建（from_state 为空字符串）
   if (input.from_state === "") {
-    return handleNewWorkItem(input, state, stateFilePath, eventsFilePath, timestamp)
+    return handleNewWorkItem(input, state, stateFilePath, eventsFilePath, timestamp, baseDir)
   }
 
   // 5. 查找现有 Work Item
@@ -196,7 +197,8 @@ async function handleNewWorkItem(
   state: StateFile,
   stateFilePath: string,
   eventsFilePath: string,
-  timestamp: string
+  timestamp: string,
+  baseDir: string
 ): Promise<TransitionResult> {
   // 新 Work Item 的 to_state 必须是 "intake"
   if (input.to_state !== "intake") {
@@ -246,6 +248,29 @@ async function handleNewWorkItem(
 
   await appendJsonl(eventsFilePath, event)
 
+  // === 自动创建基础设施 ===
+  const createdPaths: string[] = []
+
+  // 创建 spec 目录
+  const specDir = join(baseDir, "specforge", "specs", input.work_item_id)
+  await mkdir(specDir, { recursive: true })
+  createdPaths.push(`specforge/specs/${input.work_item_id}/`)
+
+  // 创建 spec.json
+  const specJsonPath = join(specDir, "spec.json")
+  const specJson = {
+    work_item_id: input.work_item_id,
+    workflow_type: workflowType,
+    created_at: timestamp,
+  }
+  await writeFile(specJsonPath, JSON.stringify(specJson, null, 2), "utf-8")
+  createdPaths.push(`specforge/specs/${input.work_item_id}/spec.json`)
+
+  // 创建 archive/agent_runs/ 目录（如不存在）
+  const archiveDir = join(baseDir, "specforge", "archive", "agent_runs")
+  await mkdir(archiveDir, { recursive: true })
+  createdPaths.push("specforge/archive/agent_runs/")
+
   // 返回成功结果
   return {
     success: true,
@@ -253,5 +278,6 @@ async function handleNewWorkItem(
     previous_state: "",
     current_state: "intake",
     timestamp,
+    created_paths: createdPaths,
   }
 }

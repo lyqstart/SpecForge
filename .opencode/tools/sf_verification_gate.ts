@@ -10,6 +10,7 @@
 
 import { tool } from "@opencode-ai/plugin"
 import { checkVerificationGate } from "./lib/sf_verification_gate_core"
+import { recordGateResult } from "./lib/utils"
 
 export default tool({
   description: "检查验证阶段是否满足最低质量标准",
@@ -19,6 +20,9 @@ export default tool({
   async execute(args, context) {
     const baseDir = context.directory || context.worktree || process.cwd()
     const result = await checkVerificationGate(args.work_item_id, baseDir)
+
+    await recordGateResult(args.work_item_id, "sf_verification_gate", result, baseDir)
+
     return JSON.stringify(result, null, 2)
   },
 })

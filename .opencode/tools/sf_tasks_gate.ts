@@ -10,6 +10,7 @@
 
 import { tool } from "@opencode-ai/plugin"
 import { checkTasksGate } from "./lib/sf_tasks_gate_core"
+import { recordGateResult } from "./lib/utils"
 
 export default tool({
   description: "检查 tasks.md 是否满足最低质量标准",
@@ -19,6 +20,9 @@ export default tool({
   async execute(args, context) {
     const baseDir = context.directory || context.worktree || process.cwd()
     const result = await checkTasksGate(args.work_item_id, baseDir)
+
+    await recordGateResult(args.work_item_id, "sf_tasks_gate", result, baseDir)
+
     return JSON.stringify(result, null, 2)
   },
 })

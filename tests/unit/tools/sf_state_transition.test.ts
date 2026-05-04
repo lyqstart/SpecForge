@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { executeTransition } from "../../../.opencode/tools/lib/sf_state_transition_core"
-import { writeFile, rm, mkdir, readFile } from "node:fs/promises"
+import { writeFile, rm, mkdir, readFile, stat } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 
@@ -534,6 +534,215 @@ describe("sf_state_transition", () => {
         expect(result.error).toContain("WI-999")
         expect(result.current_state).toBe("")
       }
+    })
+  })
+
+  describe("auto-create infrastructure on new work item", () => {
+    it("should auto-create spec directory when creating new Work Item", async () => {
+      await writeState({ work_items: {} })
+
+      await executeTransition(
+        {
+          work_item_id: "WI-AUTO-001",
+          from_state: "",
+          to_state: "intake",
+        },
+        testDir
+      )
+
+      const specDir = join(testDir, "specforge", "specs", "WI-AUTO-001")
+      const dirStat = await stat(specDir)
+      expect(dirStat.isDirectory()).toBe(true)
+    })
+
+    it("should auto-create spec.json with correct fields", async () => {
+      await writeState({ work_items: {} })
+
+      const result = await executeTransition(
+        {
+          work_item_id: "WI-AUTO-002",
+          from_state: "",
+          to_state: "intake",
+          workflow_type: "bugfix_spec",
+        },
+        testDir
+      )
+
+      const specJsonPath = join(testDir, "specforge", "specs", "WI-AUTO-002", "spec.json")
+      const specJsonContent = await readFile(specJsonPath, "utf-8")
+      const specJson = JSON.parse(specJsonContent)
+
+      expect(specJson.work_item_id).toBe("WI-AUTO-002")
+      expect(specJson.workflow_type).toBe("bugfix_spec")
+      expect(specJson.created_at).toBeDefined()
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(specJson.created_at).toBe(result.timestamp)
+      }
+    })
+
+    it("should auto-create archive/agent_runs directory", async () => {
+      await writeState({ work_items: {} })
+
+      await executeTransition(
+        {
+          work_item_id: "WI-AUTO-003",
+          from_state: "",
+          to_state: "intake",
+        },
+        testDir
+      )
+
+      const archiveDir = join(testDir, "specforge", "archive", "agent_runs")
+      const dirStat = await stat(archiveDir)
+      expect(dirStat.isDirectory()).toBe(true)
+    })
+
+    it("should include created_paths array in result", async () => {
+      await writeState({ work_items: {} })
+
+      const result = await executeTransition(
+        {
+          work_item_id: "WI-AUTO-004",
+          from_state: "",
+          to_state: "intake",
+        },
+        testDir
+      )
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.created_paths).toBeDefined()
+        expect(Array.isArray(result.created_paths)).toBe(true)
+        expect(result.created_paths).toContain("specforge/specs/WI-AUTO-004/")
+        expect(result.created_paths).toContain("specforge/specs/WI-AUTO-004/spec.json")
+        expect(result.created_paths).toContain("specforge/archive/agent_runs/")
+      }
+    })
+
+    it("should not error when directory already exists", async () => {
+      await writeState({ work_items: {} })
+
+      // Pre-create the directories
+      const specDir = join(testDir, "specforge", "specs", "WI-AUTO-005")
+      const archiveDir = join(testDir, "specforge", "archive", "agent_runs")
+      await mkdir(specDir, { recursive: true })
+      await mkdir(archiveDir, { recursive: true })
+
+      const result = await executeTransition(
+        {
+          work_item_id: "WI-AUTO-005",
+          from_state: "",
+          to_state: "intake",
+        },
+        testDir
+      )
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.created_paths).toBeDefined()
+        expect(result.created_paths!.length).toBe(3)
+      }
+    })
+
+    it("should not trigger auto-create for non-creation transitions (from_state not empty)", async () => {
+      await writeState({
+        work_items: {
+          "WI-EXISTING": {
+            work_item_id: "WI-EXISTING",
+            workflow_type: "feature_spec",
+            current_state: "intake",
+            created_at: "2025-01-01T00:00:00Z",
+            updated_at: "2025-01-01T00:00:00Z",
+          },
+        },
+      })
+
+      const result = await executeTransition(
+        {
+          work_item_id: "WI-EXISTING",
+          from_state: "intake",
+          to_state: "requirements",
+        },
+        testDir
+      )
+
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.created_paths).toBeUndefined()
+      }
+    })
+  })
+
+  describe("Property Tests", () => {
+    it("Property 11: state transition auto-creation", async () => {
+      // Feature: specforge-v2-efficiency, Property 11: state transition auto-creation
+      // **Validates: Requirements 9.1, 9.2, 9.3, 9.4**
+      const fc = await import("fast-check")
+
+      await fc.assert(
+        fc.asyncProperty(
+          fc.stringMatching(/^[A-Za-z0-9][A-Za-z0-9_-]{0,20}$/).filter(s => s.length > 0),
+          fc.constantFrom("feature_spec", "bugfix_spec", "feature_spec_design_first"),
+          async (workItemId, workflowType) => {
+            // Create a unique temp dir for each run
+            const propTestDir = join(tmpdir(), `specforge-prop11-${Date.now()}-${Math.random().toString(36).slice(2)}`)
+            const propStateDir = join(propTestDir, "specforge", "runtime")
+            await mkdir(propStateDir, { recursive: true })
+            await writeFile(
+              join(propStateDir, "state.json"),
+              JSON.stringify({ work_items: {} }),
+              "utf-8"
+            )
+
+            try {
+              const result = await executeTransition(
+                {
+                  work_item_id: workItemId,
+                  from_state: "",
+                  to_state: "intake",
+                  workflow_type: workflowType,
+                },
+                propTestDir
+              )
+
+              // Verify success
+              expect(result.success).toBe(true)
+              if (!result.success) return
+
+              // Verify spec directory was created
+              const specDir = join(propTestDir, "specforge", "specs", workItemId)
+              const specDirStat = await stat(specDir)
+              expect(specDirStat.isDirectory()).toBe(true)
+
+              // Verify spec.json was created with correct fields
+              const specJsonPath = join(specDir, "spec.json")
+              const specJsonContent = await readFile(specJsonPath, "utf-8")
+              const specJson = JSON.parse(specJsonContent)
+              expect(specJson.work_item_id).toBe(workItemId)
+              expect(specJson.workflow_type).toBe(workflowType)
+              expect(specJson.created_at).toBeDefined()
+              expect(typeof specJson.created_at).toBe("string")
+
+              // Verify archive directory was created
+              const archiveDir = join(propTestDir, "specforge", "archive", "agent_runs")
+              const archiveDirStat = await stat(archiveDir)
+              expect(archiveDirStat.isDirectory()).toBe(true)
+
+              // Verify result includes created_paths
+              expect(result.created_paths).toBeDefined()
+              expect(Array.isArray(result.created_paths)).toBe(true)
+              expect(result.created_paths!.length).toBe(3)
+              expect(result.created_paths).toContain(`specforge/specs/${workItemId}/`)
+              expect(result.created_paths).toContain(`specforge/specs/${workItemId}/spec.json`)
+              expect(result.created_paths).toContain("specforge/archive/agent_runs/")
+            } finally {
+              await rm(propTestDir, { recursive: true, force: true })
+            }
+          }
+        ),
+        { numRuns: 100 }
+      )
     })
   })
 })

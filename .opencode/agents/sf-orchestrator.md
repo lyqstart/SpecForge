@@ -232,13 +232,12 @@ intake → requirements → requirements_gate → design → design_gate → tas
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前无进行中的同名 Work Item
 2. 调用 `sf_state_transition`（from_state=""，to_state="intake"）创建新 Work Item
-3. 创建 Spec 目录 `specforge/specs/<work_item_id>/`
-4. 创建 `specforge/specs/<work_item_id>/spec.json` 元数据文件
-5. 与用户对话，收集功能描述的关键信息
-6. 将收集到的信息整理为 `specforge/specs/<work_item_id>/intake.md`
-7. 调用 `sf_state_transition`（from_state="intake"，to_state="requirements"，evidence="intake.md generated"）
+   - sf_state_transition 会自动创建 Spec 目录、spec.json 和 archive 目录（无需手动 mkdir）
+3. 与用户对话，收集功能描述的关键信息
+4. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="intake", content=<整理后的信息>）写入 intake.md
+5. 调用 `sf_state_transition`（from_state="intake"，to_state="requirements"，evidence="intake.md generated"）
 
-**产物：** `intake.md`、`spec.json`
+**产物：** `intake.md`、`spec.json`（自动创建）
 
 ### 阶段 2：requirements（需求分析）
 
@@ -288,6 +287,8 @@ intake → requirements → requirements_gate → design → design_gate → tas
 
 **执行步骤：**
 1. 调用 `sf_design_gate`（work_item_id）
+   - 对于 feature_spec 和 bugfix_spec 工作流：不传递 workflow_type（使用默认值 "feature_spec"）
+   - 对于 feature_spec_design_first 工作流：传递 `workflow_type: "feature_spec_design_first"`
 2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
 
 **工具：** `sf_design_gate`
@@ -364,26 +365,31 @@ intake → requirements → requirements_gate → design → design_gate → tas
    - tasks.md 的路径（含 verification_commands）
    - requirements.md 或 bugfix.md 的路径（含验收标准）
    - 指令：加载 `superpowers-verification-before-completion` skill，执行所有验证命令，逐项确认验收标准
-   - **必须明确告知 verification_report.md 的完整要求**：
+   - **必须明确告知返回验证 JSON 的完整要求**：
      ```
-     verification_report.md 必须包含以下章节，缺少任何一项都会导致 verification_gate 不通过：
-     1. 验证命令执行结果（逐条列出 PASS/FAIL）
-     2. 验收标准逐项确认
-     3. 端到端测试 / E2E 测试 / 功能测试章节（验证核心功能可正常工作）
-     4. 无副作用检查（确认未破坏已有功能）
-     5. 最终结论（pass/fail/blocked + JSON summary）
+     你必须返回验证 JSON 对象，包含以下字段：
+     1. conclusion: "pass" | "fail" | "blocked"
+     2. verification_commands: 逐条列出 PASS/FAIL
+     3. acceptance_criteria: 验收标准逐项确认
+     4. e2e_tests: 端到端测试结果
+     5. side_effects: 无副作用检查
+     6. summary: 验证总结
      ```
-3. 等待子 Agent 完成，获取验证报告
-4. **先调用 `sf_verification_gate`** 检查验证结果
-5. 如果 Gate pass：调用 `sf_state_transition`（from_state="verification"，to_state="verification_gate"，evidence="verification_gate passed"），然后调用 `sf_state_transition`（from_state="verification_gate"，to_state="completed"，evidence="verification_gate passed, project completed"）
-6. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
+3. 等待子 Agent 完成，获取验证 JSON
+4. **调用 `sf_artifact_write`** 渲染并写入验证报告：
+   - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
+5. **调用 `sf_artifact_write`** 写入工作日志：
+   - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
+6. **调用 `sf_verification_gate`** 检查验证结果
+7. 如果 Gate pass：调用 `sf_state_transition`（from_state="verification"，to_state="verification_gate"，evidence="verification_gate passed"），然后调用 `sf_state_transition`（from_state="verification_gate"，to_state="completed"，evidence="verification_gate passed, project completed"）
+8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
 - 必须先调用 sf_verification_gate 工具，确认 pass 后再流转状态
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
-- 调度 verifier 时必须把 gate 的完整要求写进 prompt，避免因缺少 e2e 等章节导致返工
+- sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
 
-**产物：** 验证报告
+**产物：** 验证报告（由 sf_artifact_write 渲染写入）
 
 ### 阶段 11：verification_gate（验证质量门禁）
 
@@ -584,7 +590,7 @@ sf-reviewer 返回 request_changes
 
 ## 目录创建
 
-当新 Work Item 创建时，执行以下步骤：
+当新 Work Item 创建时，`sf_state_transition`（from_state=""）会自动执行以下步骤：
 
 1. 创建目录：`specforge/specs/<work_item_id>/`
 2. 创建 `spec.json` 元数据文件：
@@ -597,7 +603,9 @@ sf-reviewer 返回 request_changes
 }
 ```
 
-3. 验证目录和文件创建成功
+3. 创建 `specforge/archive/agent_runs/` 基础目录
+
+**无需手动 mkdir 或 bash 创建目录。** sf_state_transition 返回值中包含 `created_paths` 数组，列出所有自动创建的路径。
 
 ## 目录结构
 
@@ -639,8 +647,7 @@ specforge/specs/<work_item_id>/
 
 **每次子 Agent 执行完成后（无论成功或失败），执行以下步骤：**
 
-1. 创建归档目录：`specforge/archive/agent_runs/<run_id>/`
-2. 创建 `result.json` 文件，包含以下字段：
+1. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="agent_run_result", run_id=<run_id>, content=<result JSON>）写入 `result.json`，包含以下字段：
 
 ```json
 {
@@ -656,17 +663,10 @@ specforge/specs/<work_item_id>/
 }
 ```
 
-3. 创建 `files_changed.json` 文件，记录子 Agent 在本次执行中创建或修改的文件列表：
+2. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<子 Agent 的工作摘要>）写入 `work_log.md`
+   - sf_artifact_write 会自动从 trace.jsonl 提取执行统计并合并
 
-```json
-{
-  "files": [
-    { "path": "<文件路径>", "action": "created | modified" }
-  ]
-}
-```
-
-4. **失败时**额外在 `result.json` 中包含：
+3. **失败时**额外在 result.json 中包含：
 
 ```json
 {
@@ -728,13 +728,12 @@ archive_path: specforge/archive/agent_runs/WI-001-sf-requirements-1/
 
 1. 生成 `run_id`（按 run_id 生成规则）
 2. 计算 `archive_path`：`specforge/archive/agent_runs/<run_id>/`
-3. 创建归档目录（确保目录存在）
-4. 记录 `start_time`
-5. 调用 `task` 工具，prompt 中包含 `archive_path`
-6. 等待子 Agent 完成
-7. 记录 `end_time`
-8. 创建 `result.json` 和 `files_changed.json`
-9. 确认子 Agent 是否已写入 `work_log.md`（如未写入，不阻塞流程）
+3. 记录 `start_time`
+4. 调用 `task` 工具，prompt 中包含 `archive_path`
+5. 等待子 Agent 完成
+6. 记录 `end_time`
+7. 调用 `sf_artifact_write`（file_type="agent_run_result"）写入 result.json
+8. 调用 `sf_artifact_write`（file_type="work_log"）写入 work_log.md（自动合并 trace 统计）
 
 ---
 
@@ -754,11 +753,10 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 
 **执行步骤：**
 1. 调用 `sf_state_transition`（from_state=""，to_state="intake"）创建新 Work Item，workflow_type 设为 `bugfix_spec`
-2. 创建 Spec 目录 `specforge/specs/<work_item_id>/`
-3. 创建 `spec.json`（workflow_type 为 "bugfix_spec"）
-4. 与用户对话，收集 Bug 描述：当前行为、预期行为、复现步骤、环境信息
-5. 将收集到的信息整理为 `specforge/specs/<work_item_id>/intake.md`
-6. 调用 `sf_state_transition`（from_state="intake"，to_state="bugfix_analysis"，evidence="intake.md generated"）
+   - sf_state_transition 会自动创建 Spec 目录、spec.json 和 archive 目录（无需手动 mkdir）
+2. 与用户对话，收集 Bug 描述：当前行为、预期行为、复现步骤、环境信息
+3. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="intake", content=<整理后的信息>）写入 intake.md
+4. 调用 `sf_state_transition`（from_state="intake"，to_state="bugfix_analysis"，evidence="intake.md generated"）
 
 ### 阶段 2：bugfix_analysis（缺陷分析）
 
@@ -867,7 +865,11 @@ intake → design → design_gate → requirements → requirements_gate → tas
 
 ### 阶段 3：design_gate
 
-与标准 Feature Spec 相同。pass 后进入 requirements（而非 tasks）。
+**执行步骤：**
+1. 调用 `sf_design_gate`（work_item_id, workflow_type="feature_spec_design_first"）
+   - Design-First 工作流必须传递 workflow_type，以启用架构完整性检查（而非需求引用检查）
+2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
+3. pass 后进入 requirements（而非 tasks）。
 
 ### 阶段 4：requirements（基于 design 反向推导）
 

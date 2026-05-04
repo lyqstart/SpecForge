@@ -19,6 +19,7 @@
 
 import { tool } from "@opencode-ai/plugin"
 import { checkRequirementsGate, checkBugfixGate } from "./lib/sf_requirements_gate_core"
+import { recordGateResult } from "./lib/utils"
 
 export default tool({
   description: "检查 requirements.md 或 bugfix.md 是否满足最低质量标准",
@@ -34,6 +35,9 @@ export default tool({
     const result = args.mode === "bugfix"
       ? await checkBugfixGate(args.work_item_id, baseDir)
       : await checkRequirementsGate(args.work_item_id, baseDir)
+
+    await recordGateResult(args.work_item_id, "sf_requirements_gate", result, baseDir)
+
     return JSON.stringify(result, null, 2)
   },
 })

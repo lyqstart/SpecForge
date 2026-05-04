@@ -4,7 +4,7 @@
  */
 
 import { mkdir, appendFile } from "node:fs/promises"
-import { dirname } from "node:path"
+import { dirname, join } from "node:path"
 
 // ============================================================
 // Types
@@ -136,5 +136,63 @@ export function createLogEntry(
     event,
     message,
     payload,
+  }
+}
+
+// ============================================================
+// Gate Result Recording
+// ============================================================
+
+export interface GateResultEntry {
+  type: "gate_result"
+  timestamp: string
+  work_item_id: string
+  gate: string
+  status: "pass" | "fail" | "blocked"
+  blocking_issues: string[]
+  warnings: string[]
+}
+
+/**
+ * 记录 Gate 结果到 events.jsonl
+ * 如果写入失败，记录错误到 error.log 但不阻塞工作流
+ */
+export async function recordGateResult(
+  workItemId: string,
+  gateName: string,
+  result: { status: string; blocking_issues: string[]; warnings: string[] },
+  baseDir: string
+): Promise<void> {
+  const eventsPath = join(baseDir, "specforge", "runtime", "events.jsonl")
+  const errorLogPath = join(baseDir, "specforge", "logs", "error.log")
+
+  const entry: GateResultEntry = {
+    type: "gate_result",
+    timestamp: new Date().toISOString(),
+    work_item_id: workItemId,
+    gate: gateName,
+    status: result.status as "pass" | "fail" | "blocked",
+    blocking_issues: result.blocking_issues,
+    warnings: result.warnings,
+  }
+
+  try {
+    await appendJsonl(eventsPath, entry)
+  } catch (err) {
+    // 写入 events.jsonl 失败时，记录到 error.log
+    try {
+      const errorEntry = {
+        timestamp: new Date().toISOString(),
+        level: "ERROR",
+        component: gateName,
+        event: "gate_result_write_failed",
+        message: `Failed to write gate result: ${(err as Error).message}`,
+        payload: { work_item_id: workItemId, gate_status: result.status },
+      }
+      await mkdir(dirname(errorLogPath), { recursive: true })
+      await appendFile(errorLogPath, JSON.stringify(errorEntry) + "\n", "utf-8")
+    } catch {
+      // 完全静默
+    }
   }
 }
