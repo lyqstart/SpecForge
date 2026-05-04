@@ -191,6 +191,37 @@
   - cost 显示 $0.00（glm-5.1 模型未配置单价，OpenCode 返回 cost=0）
   - work_item_id 全部为 "unknown"（Plugin event hook 无法获取 SpecForge 业务概念）
 
+### 第 14 轮：V3.1 Quick Change 首次测试（2026-05-04）
+- 测试内容：V3.1 会话记录功能首次验证（sf_session_recorder Plugin）
+- WI-001（标题改绿色 quick_change）：✅ 完整闭环跑通
+  - sf_session_recorder Plugin 成功保存 3 个子 Agent 会话 ✅
+  - conversation.jsonl 包含完整对话（prompt + 回复 + tool_call）✅
+  - metadata.json 包含 session 元数据 ✅
+  - 主 Agent 会话未保存（session.idle 触发尚未实现）
+- 新发现：
+  - OpenCode 存储路径为 `~/.local/share/opencode/storage/`，不是 `~/.opencode/storage/`
+  - OpenCode 使用数据库存储消息，不是 JSON 文件——从文件系统读取消息的方案不可行
+  - 改用 SDK client.session.messages() API 成功获取完整会话
+  - sf_conversation_recorder Custom Tool 方案被 Plugin 方案替代
+- 修复措施：
+  - sf_session_recorder Plugin 改用 SDK API 而非文件系统读取
+  - 删除 sf_conversation_recorder Custom Tool（不再需要）
+
+### 第 15 轮：V3.1 完整会话记录验证（2026-05-04）
+- 测试内容：V3.1 完整会话记录验证（含主 Agent 会话保存）
+- WI-001（标题背景改红色 quick_change）：✅ 完整闭环跑通
+  - sf_session_recorder Plugin 成功保存 3 个子 Agent 会话 ✅
+  - sf_session_recorder Plugin 成功保存 1 个主 Agent 会话 ✅（session.idle 触发）
+  - 主 Agent 会话：25 条消息、80 行 JSONL ✅
+  - metadata.json 新增 is_primary 字段区分主/子 Agent ✅
+- 统计数据：
+  - 保存的 Session 数：4（3 子 Agent + 1 主 Agent）
+  - sf-task-planner：7 条消息 / 20 行 JSONL
+  - sf-executor：8 条消息 / 21 行 JSONL
+  - sf-verifier：5 条消息 / 17 行 JSONL
+  - Orchestrator：25 条消息 / 80 行 JSONL
+- V3.1 会话记录功能验证通过
+
 ---
 
 ## V2.0 最终评估
