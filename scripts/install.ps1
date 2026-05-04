@@ -117,10 +117,10 @@ Write-Host "================================================"
 Write-Host ""
 
 # ============================================================
-# 写入 OpenCode 全局配置（compaction + models）
+# 写入 OpenCode 全局配置（autoCompact）
 # ============================================================
 
-Write-Host "📁 配置 OpenCode 全局压缩和模型参数 ..."
+Write-Host "📁 配置 OpenCode 全局自动压缩 ..."
 
 $globalConfigDir = Join-Path $env:USERPROFILE ".config\opencode"
 $globalConfigPath = Join-Path $globalConfigDir "opencode.json"
@@ -139,25 +139,15 @@ if (Test-Path $globalConfigPath) {
     }
 }
 
-# 合并 compaction 配置
-$globalConfig["compaction"] = @{
-    "auto" = $true
-    "prune" = $true
-    "reserved" = 20000
-}
-
-# 合并 models 配置（保留其他模型配置）
-if (-not $globalConfig.ContainsKey("models")) {
-    $globalConfig["models"] = @{}
-}
-$globalConfig["models"]["zai-coding-plan/glm-5.1"] = @{
-    "context" = 90000
-}
+# 设置 autoCompact（OpenCode 官方配置项）
+# 当 token 使用量达到模型上下文窗口的 95% 时自动压缩
+$globalConfig["autoCompact"] = $true
 
 # 写回全局配置
 try {
     $globalConfig | ConvertTo-Json -Depth 10 | Set-Content $globalConfigPath -Encoding UTF8
     Write-Host "✅ OpenCode 全局配置已更新: $globalConfigPath"
+    Write-Host "   autoCompact: true（token 达到上下文窗口 95% 时自动压缩）"
 } catch {
     Write-Host "⚠️  全局配置写入失败: $_"
     Write-Host "    请手动配置 $globalConfigPath"
