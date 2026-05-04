@@ -2,8 +2,11 @@
  * SpecForge Session Recorder Plugin
  *
  * 自动保存子 Agent 会话记录：当 `task` 工具完成时，
- * 从 OpenCode 文件存储中读取子 Session 的消息和 parts，
+ * 通过 OpenCode SDK client.session.messages() API 获取子 Session 的完整会话，
  * 转换为 JSONL 格式并保存到 specforge/sessions/{session_id}/conversation.jsonl
+ *
+ * 数据获取方式：使用 Plugin 初始化时的 ctx.client（OpenCode SDK 客户端）
+ * 调用 client.session.messages() 获取完整会话历史，而非读取文件系统。
  *
  * 关键约束：
  * - 自包含（不引用外部模块，只使用 node: 内置模块）
@@ -12,9 +15,8 @@
  */
 
 import type { Plugin } from "@opencode-ai/plugin"
-import { readdir, readFile, writeFile, mkdir } from "node:fs/promises"
+import { writeFile, mkdir } from "node:fs/promises"
 import { join } from "node:path"
-import { homedir } from "node:os"
 
 // ============================================================
 // Types
@@ -123,81 +125,13 @@ function convertMessagesToJsonl(messages: Array<{ info: any; parts: any[] }>): s
 }
 
 // ============================================================
-// Storage Helpers
-// ============================================================
-
-/** Find OpenCode storage directory */
-async function findStorageDir(): Promise<string | null> {
-  const home = homedir()
-  const candidates = [
-    join(home, ".opencode", "storage"),
-    join(home, "AppData", "Local", "opencode", "storage"),
-  ]
-  for (const p of candidates) {
-    try {
-      await readdir(p)
-      return p
-    } catch {
-      continue
-    }
-  }
-  return null
-}
-
-/** Read session messages from OpenCode file storage */
-async function readSessionMessages(storageDir: string, sessionID: string): Promise<Array<{ info: any; parts: any[] }>> {
-  const messageDir = join(storageDir, "message", sessionID)
-  let messageFiles: string[]
-  try {
-    messageFiles = await readdir(messageDir)
-  } catch {
-    return []
-  }
-
-  messageFiles.sort()
-  const messages: Array<{ info: any; parts: any[] }> = []
-
-  for (const msgFile of messageFiles) {
-    if (!msgFile.endsWith(".json")) continue
-    try {
-      const msgContent = await readFile(join(messageDir, msgFile), "utf-8")
-      const msgInfo = JSON.parse(msgContent)
-      const messageId = msgInfo.id || msgFile.replace(".json", "")
-
-      // Read parts for this message
-      const partDir = join(storageDir, "part", messageId)
-      const parts: any[] = []
-      try {
-        const partFiles = await readdir(partDir)
-        partFiles.sort()
-        for (const partFile of partFiles) {
-          if (!partFile.endsWith(".json")) continue
-          try {
-            const partContent = await readFile(join(partDir, partFile), "utf-8")
-            parts.push(JSON.parse(partContent))
-          } catch { /* skip invalid part */ }
-        }
-      } catch { /* no parts directory */ }
-
-      messages.push({ info: msgInfo, parts })
-    } catch { /* skip invalid message */ }
-  }
-
-  return messages
-}
-
-// ============================================================
 // Plugin Export
 // ============================================================
 
-export const sf_session_recorder: Plugin = async ({ directory }) => {
+export const sf_session_recorder: Plugin = async ({ directory, client }) => {
+  // 保存 client 引用，用于调用 session.messages() API
+  const savedClient = client
   const childSessions: ChildSession[] = []
-  let storageDir: string | null = null
-
-  // Find storage dir on init
-  try {
-    storageDir = await findStorageDir()
-  } catch { /* silent */ }
 
   return {
     event: async ({ event }) => {
@@ -206,7 +140,6 @@ export const sf_session_recorder: Plugin = async ({ directory }) => {
         if (event.type === "session.created" || event.type === "session.updated") {
           const info = (event as any).properties?.info
           if (info?.parentID && info?.id) {
-            // Check if already tracked
             const existing = childSessions.find(s => s.sessionID === info.id)
             if (!existing) {
               childSessions.push({
@@ -225,25 +158,39 @@ export const sf_session_recorder: Plugin = async ({ directory }) => {
       try {
         // Only process task tool (sub-agent dispatch)
         if (input.tool !== "task") return
-        if (!storageDir) {
-          storageDir = await findStorageDir()
-          if (!storageDir) return
-        }
 
         // Find the most recently created child session
         if (childSessions.length === 0) return
-        const latestChild = childSessions.sort((a, b) => b.createdAt - a.createdAt)[0]
+        const latestChild = [...childSessions].sort((a, b) => b.createdAt - a.createdAt)[0]
         if (!latestChild) return
 
-        // Read messages from OpenCode file storage
-        const messages = await readSessionMessages(storageDir, latestChild.sessionID)
+        // Use SDK client to get session messages
+        if (!savedClient?.session?.messages) return
+
+        let messagesResponse: any
+        try {
+          messagesResponse = await savedClient.session.messages({
+            path: { id: latestChild.sessionID }
+          })
+        } catch {
+          // SDK call failed — silent
+          return
+        }
+
+        // Normalize response: could be { data: [...] } or direct array
+        const messages: Array<{ info: any; parts: any[] }> = Array.isArray(messagesResponse)
+          ? messagesResponse
+          : Array.isArray(messagesResponse?.data)
+            ? messagesResponse.data
+            : []
+
         if (messages.length === 0) return
 
         // Convert to JSONL
         const jsonlContent = convertMessagesToJsonl(messages)
         if (!jsonlContent) return
 
-        // Save to specforge/sessions/{session_id}/conversation.jsonl
+        // Save to specforge/sessions/{session_id}/
         const sessionDir = join(directory, "specforge", "sessions", latestChild.sessionID)
         await mkdir(sessionDir, { recursive: true })
 
