@@ -236,6 +236,20 @@
   - 4 个 Workflow Skill 文件：feature_spec 204 行、bugfix_spec 184 行、design_first 218 行、quick_change 158 行
 - V3.2 Orchestrator Prompt 拆分验证通过
 
+### 第 17 轮：V3.3 并行任务控制验证（2026-05-05）
+- 测试内容：V3.3 并行调度决策逻辑验证（Independence_Analysis + Serial_Fallback）
+- WI-001（countdown.html 添加 footer/副标题/favicon feature_spec）：串行执行
+  - Independence_Analysis 正确执行 ✅
+  - File_Conflict 检测正确：4 个 Task 都修改 countdown.html，正确识别冲突 ✅
+  - Serial_Fallback 正确触发 ✅
+  - Execution_Plan 结构化展示正确 ✅（显示总任务数、执行模式、原因）
+  - Skill 加载正常（sf-workflow-feature-spec）✅
+  - feature_spec 完整工作流闭环 ✅
+- 并行调度未触发原因：
+  - 单文件项目（只有 countdown.html），所有 Task 必然修改同一文件
+  - 并行调度需要多文件项目（不同 Task 修改不同文件）才能触发
+- V3.3 决策逻辑验证通过（Independence_Analysis + Serial_Fallback），并行实际触发待多文件项目验证
+
 ---
 
 ## V2.0 最终评估
