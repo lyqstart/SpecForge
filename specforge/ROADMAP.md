@@ -68,14 +68,26 @@
 
 ---
 
-## V3.0（智能版）
+## V3.0（智能版 — 成本追踪）
 
-| # | 需求 | 说明 |
+**目标：** Token 消耗和成本追踪能力。
+**状态：** ✅ 完成（第 13 轮测试验证）
+
+| # | 需求 | 状态 |
 |---|------|------|
-| 1 | sf-retro-agent | 复盘 Agent，分析失败模式 |
-| 2 | 复盘工作流 | retro 阶段，生成改进建议 |
-| 3 | 知识候选与全局知识合并 | 从复盘中提取可复用知识 |
-| 4 | 成本记录与审计 | token 消耗按 Agent/阶段统计 |
+| 1 | sf_cost_tracker Plugin | ✅ 完成 |
+| 2 | sf_cost_report Custom Tool | ✅ 完成 |
+| 3 | /sf-cost 命令 | ✅ 完成 |
+| 4 | Agent Run Archive 成本集成 | ✅ 完成 |
+
+**效果：**
+- 自动捕获真实 Token 使用量（input/output/reasoning/cache）
+- 支持按 Work Item / Agent / Phase / Model 四维度聚合
+- 用户可通过"查看成本报告"获取成本摘要
+
+**已知限制：**
+- cost=$0 当模型未配置单价时（如 glm-5.1）
+- work_item_id="unknown"（Plugin 无法获取 SpecForge 业务概念）
 
 ---
 

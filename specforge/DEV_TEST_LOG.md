@@ -178,6 +178,19 @@
 - 修复措施：
   - sf_doc_lint_core.ts：getTaskSections 改为只匹配 "Task N" / "任务 N" 格式的标题，忽略辅助标题
 
+### 第 13 轮：V3.0 成本追踪首次测试（2026-05-04）
+- 测试内容：V3.0 成本追踪功能验证（sf_cost_tracker Plugin + sf_cost_report Tool）
+- WI-001（标题改红色 quick_change）：✅ 完整闭环跑通
+  - sf_cost_tracker Plugin 成功加载，cost.jsonl 写入 35 条记录 ✅
+  - Token 数据正确捕获：input 81,965 / output 8,175 / reasoning 731 / cache_read 876,096 ✅
+  - sf_cost_report 工具正确聚合并返回结构化结果 ✅
+  - Orchestrator 识别"查看成本报告"并调用 sf_cost_report ✅
+  - sf-verifier 4 次 toolcalls ✅
+  - verification_gate 一次通过 ✅
+- 已知限制：
+  - cost 显示 $0.00（glm-5.1 模型未配置单价，OpenCode 返回 cost=0）
+  - work_item_id 全部为 "unknown"（Plugin event hook 无法获取 SpecForge 业务概念）
+
 ---
 
 ## V2.0 最终评估
