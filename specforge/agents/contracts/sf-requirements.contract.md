@@ -28,6 +28,8 @@
 - 不得直接向用户提问
 - 不得创建未授权子 Agent
 
+- 不得调用 sf_state_transition 工具（状态流转由 Orchestrator 集中管控）
+
 ## 升级条件
 - 当 intake 信息不足以确定功能范围时，向 Orchestrator 报告
 - 当发现需求之间存在不可调和的矛盾时，向 Orchestrator 报告

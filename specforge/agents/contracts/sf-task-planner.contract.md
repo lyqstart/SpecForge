@@ -28,6 +28,8 @@
 - 不得直接向用户提问
 - 不得创建未授权子 Agent
 
+- 不得调用 sf_state_transition 工具（状态流转由 Orchestrator 集中管控）
+
 ## 升级条件
 - 当设计文档中某个组件的实现方式不明确，无法拆分为具体任务时，向 Orchestrator 报告
 - 当任务之间存在循环依赖无法解决时，向 Orchestrator 报告

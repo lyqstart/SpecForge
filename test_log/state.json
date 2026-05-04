@@ -1,11 +1,18 @@
 {
   "work_items": {
-    "WI-1": {
-      "work_item_id": "WI-1",
+    "WI-001": {
+      "work_item_id": "WI-001",
       "workflow_type": "feature_spec",
       "current_state": "completed",
-      "created_at": "2026-05-03T08:44:28.846Z",
-      "updated_at": "2026-05-03T09:35:02.674Z"
+      "created_at": "2026-05-03T13:58:44.727Z",
+      "updated_at": "2026-05-03T14:59:57.778Z"
+    },
+    "WI-002": {
+      "work_item_id": "WI-002",
+      "workflow_type": "bugfix_spec",
+      "current_state": "completed",
+      "created_at": "2026-05-03T15:38:59.988Z",
+      "updated_at": "2026-05-03T16:35:34.480Z"
     }
   }
 }

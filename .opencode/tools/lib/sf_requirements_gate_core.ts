@@ -1,10 +1,10 @@
 /**
  * sf_requirements_gate 核心逻辑
- * 检查 requirements.md 是否满足最低质量标准
+ * 检查 requirements.md 或 bugfix.md 是否满足最低质量标准
  *
  * 提取为独立模块以便单元测试（不依赖 @opencode-ai/plugin 运行时）
  *
- * Requirements: 8.3, 8.4
+ * Requirements: 1.5, 8.3, 8.4, 20.1, 20.2, 20.4
  */
 
 import { readFile } from "node:fs/promises"
@@ -134,5 +134,141 @@ export function hasAcceptanceCriteria(content: string): boolean {
  */
 export function hasGlossary(content: string): boolean {
   const patterns = [/术语表/i, /glossary/i]
+  return patterns.some((pattern) => pattern.test(content))
+}
+
+
+// ============================================================
+// Bugfix Gate Logic
+// ============================================================
+
+/**
+ * 执行 bugfix gate 检查
+ *
+ * 检查项：
+ * 1. bugfix.md 是否存在
+ * 2. 是否包含当前行为（"当前行为" / "Current Behavior"）
+ * 3. 是否包含预期行为（"预期行为" / "Expected Behavior"）
+ * 4. 是否包含不变行为（"不变行为" / "Unchanged Behavior"）
+ * 5. 是否包含根因分析（"根因分析" / "Root Cause Analysis"）
+ *
+ * @param workItemId - Work Item ID
+ * @param baseDir - 项目根目录路径
+ * @returns Gate 检查结果
+ */
+export async function checkBugfixGate(
+  workItemId: string,
+  baseDir: string
+): Promise<GateResult> {
+  const specDir = join(baseDir, "specforge", "specs", workItemId)
+  const docPath = join(specDir, "bugfix.md")
+
+  // 1. 读取 bugfix.md
+  let content: string
+  try {
+    content = await readFile(docPath, "utf-8")
+  } catch (err: unknown) {
+    const error = err as NodeJS.ErrnoException
+    if (error.code === "ENOENT") {
+      return {
+        status: "fail",
+        blocking_issues: ["bugfix.md not found"],
+        warnings: [],
+        next_action: "revise",
+      }
+    }
+    return {
+      status: "blocked",
+      blocking_issues: [`Failed to read bugfix.md: ${error.message}`],
+      warnings: [],
+      next_action: "ask_user",
+    }
+  }
+
+  const blockingIssues: string[] = []
+  const warnings: string[] = []
+
+  // 2. 检查当前行为
+  if (!hasCurrentBehavior(content)) {
+    blockingIssues.push(
+      '缺少当前行为（"当前行为" / "Current Behavior"）'
+    )
+  }
+
+  // 3. 检查预期行为
+  if (!hasExpectedBehavior(content)) {
+    blockingIssues.push(
+      '缺少预期行为（"预期行为" / "Expected Behavior"）'
+    )
+  }
+
+  // 4. 检查不变行为
+  if (!hasUnchangedBehavior(content)) {
+    blockingIssues.push(
+      '缺少不变行为（"不变行为" / "Unchanged Behavior"）'
+    )
+  }
+
+  // 5. 检查根因分析
+  if (!hasRootCauseAnalysis(content)) {
+    blockingIssues.push(
+      '缺少根因分析（"根因分析" / "Root Cause Analysis"）'
+    )
+  }
+
+  if (blockingIssues.length > 0) {
+    return {
+      status: "fail",
+      blocking_issues: blockingIssues,
+      warnings,
+      next_action: "revise",
+    }
+  }
+
+  return {
+    status: "pass",
+    blocking_issues: [],
+    warnings,
+    next_action: "continue",
+  }
+}
+
+// ============================================================
+// Bugfix Helper functions
+// ============================================================
+
+/**
+ * 检查是否包含当前行为
+ * 匹配: "当前行为", "Current Behavior"
+ */
+export function hasCurrentBehavior(content: string): boolean {
+  const patterns = [/当前行为/i, /current\s+behavior/i]
+  return patterns.some((pattern) => pattern.test(content))
+}
+
+/**
+ * 检查是否包含预期行为
+ * 匹配: "预期行为", "Expected Behavior"
+ */
+export function hasExpectedBehavior(content: string): boolean {
+  const patterns = [/预期行为/i, /expected\s+behavior/i]
+  return patterns.some((pattern) => pattern.test(content))
+}
+
+/**
+ * 检查是否包含不变行为
+ * 匹配: "不变行为", "Unchanged Behavior"
+ */
+export function hasUnchangedBehavior(content: string): boolean {
+  const patterns = [/不变行为/i, /unchanged\s+behavior/i]
+  return patterns.some((pattern) => pattern.test(content))
+}
+
+/**
+ * 检查是否包含根因分析
+ * 匹配: "根因分析", "Root Cause Analysis"
+ */
+export function hasRootCauseAnalysis(content: string): boolean {
+  const patterns = [/根因分析/i, /root\s+cause\s+analysis/i]
   return patterns.some((pattern) => pattern.test(content))
 }

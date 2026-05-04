@@ -3,6 +3,7 @@ import {
   checkVerificationGate,
   findVerificationFiles,
   checkTestResults,
+  hasE2ETestResults,
 } from "../../../.opencode/tools/lib/sf_verification_gate_core"
 import { writeFile, rm, mkdir } from "node:fs/promises"
 import { join } from "node:path"
@@ -22,7 +23,7 @@ describe("sf_verification_gate", () => {
   })
 
   describe("gate pass", () => {
-    it("should pass when verification_report.md exists with passing results", async () => {
+    it("should pass when verification_report.md exists with passing results and e2e evidence", async () => {
       const content = `# Verification Report
 
 ## Test Results
@@ -31,6 +32,7 @@ All tests passed successfully.
 
 ✅ Unit tests: 42 passed
 ✅ Integration tests: 8 passed
+✅ E2E tests: 5 passed
 `
       await writeFile(
         join(specDir, "verification_report.md"),
@@ -45,9 +47,10 @@ All tests passed successfully.
       expect(result.next_action).toBe("continue")
     })
 
-    it("should pass when test_results file exists with passing results", async () => {
+    it("should pass when test_results file exists with passing results and e2e evidence", async () => {
       const content = `Tests: 10 passed, 0 failed
 All tests passed.
+E2E functional test suite: 3 passed
 `
       await writeFile(join(specDir, "test_results.txt"), content, "utf-8")
 
@@ -103,7 +106,7 @@ Tests failed:
   })
 
   describe("gate with warnings", () => {
-    it("should pass with warning when report has both pass and fail indicators", async () => {
+    it("should pass with warning when report has both pass and fail indicators but has e2e", async () => {
       const content = `# Verification Report
 
 ## Test Results
@@ -113,6 +116,10 @@ Tests completed:
 - 1 test failed (flaky, re-run passed)
 
 Overall: All tests passed on retry.
+
+## 端到端测试
+
+E2E tests all passed.
 `
       await writeFile(
         join(specDir, "verification_report.md"),
@@ -197,6 +204,84 @@ Overall: All tests passed on retry.
       )
       expect(result.failed).toBe(false)
       expect(result.warning).toBeDefined()
+    })
+  })
+
+  describe("helper: hasE2ETestResults", () => {
+    it("should detect '端到端'", () => {
+      expect(hasE2ETestResults("端到端测试通过")).toBe(true)
+    })
+
+    it("should detect 'e2e'", () => {
+      expect(hasE2ETestResults("E2E tests passed")).toBe(true)
+    })
+
+    it("should detect 'end-to-end'", () => {
+      expect(hasE2ETestResults("end-to-end tests passed")).toBe(true)
+    })
+
+    it("should detect 'end_to_end'", () => {
+      expect(hasE2ETestResults("end_to_end tests passed")).toBe(true)
+    })
+
+    it("should detect '功能测试'", () => {
+      expect(hasE2ETestResults("功能测试全部通过")).toBe(true)
+    })
+
+    it("should detect 'functional test'", () => {
+      expect(hasE2ETestResults("functional test suite passed")).toBe(true)
+    })
+
+    it("should return false when no e2e keywords present", () => {
+      expect(hasE2ETestResults("Unit tests: 10 passed")).toBe(false)
+    })
+  })
+
+  describe("e2e gate check", () => {
+    it("should fail when verification report has no e2e evidence", async () => {
+      const content = `# Verification Report
+
+## Test Results
+
+All tests passed successfully.
+
+✅ Unit tests: 42 passed
+✅ Integration tests: 8 passed
+`
+      await writeFile(
+        join(specDir, "verification_report.md"),
+        content,
+        "utf-8"
+      )
+
+      const result = await checkVerificationGate(workItemId, testDir)
+
+      expect(result.status).toBe("fail")
+      expect(
+        result.blocking_issues.some((i) => i.includes("端到端测试结果"))
+      ).toBe(true)
+    })
+
+    it("should pass when verification report includes e2e evidence (Chinese)", async () => {
+      const content = `# Verification Report
+
+## Test Results
+
+All tests passed successfully.
+
+✅ Unit tests: 42 passed
+✅ 端到端测试: 5 passed
+`
+      await writeFile(
+        join(specDir, "verification_report.md"),
+        content,
+        "utf-8"
+      )
+
+      const result = await checkVerificationGate(workItemId, testDir)
+
+      expect(result.status).toBe("pass")
+      expect(result.blocking_issues).toHaveLength(0)
     })
   })
 })

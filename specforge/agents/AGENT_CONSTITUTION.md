@@ -82,3 +82,11 @@
 - 本 Constitution 对系统中所有 Agent 具有约束力，优先级高于任何 Skill 指令或临时 prompt。
 - 违反任何一条规则的 Agent 输出应被视为执行失败，由 Orchestrator 决定后续处理。
 - 每个 Agent 定义文件（`.opencode/agents/<agent-name>.md`）必须在 Boundaries 章节中引用本文件。
+
+---
+
+## 规则 10：除 Orchestrator 外不得调用 sf_state_transition
+
+**禁止行为：** 除 sf-orchestrator 外，任何 Sub_Agent 不得调用 sf_state_transition 工具。所有工作流状态流转必须由 Orchestrator 集中管控。
+
+**存在理由：** 状态流转是工作流控制的核心。如果子 Agent 可以自行流转状态，会导致状态流转不可控、事件流不完整、Orchestrator 对工作流进度的判断失准。sf_permission_guard Plugin 会程序化地拦截违规调用。

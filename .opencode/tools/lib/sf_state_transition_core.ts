@@ -9,7 +9,7 @@
 
 import { readFile, writeFile, mkdir } from "node:fs/promises"
 import { join, dirname } from "node:path"
-import { isValidTransition } from "./state_machine"
+import { isValidTransition, type WorkflowType } from "./state_machine"
 import { appendJsonl } from "./utils"
 import type { StateFile, WorkItemState } from "./sf_state_read_core"
 
@@ -134,7 +134,18 @@ export async function executeTransition(
   }
 
   // 7. 验证 to_state 是合法后继状态
-  if (!isValidTransition(input.from_state, input.to_state)) {
+  const workflowType = workItem.workflow_type as WorkflowType | undefined
+  const knownWorkflowTypes: string[] = ["feature_spec", "bugfix_spec", "feature_spec_design_first", "quick_change"]
+  if (workflowType && !knownWorkflowTypes.includes(workflowType)) {
+    return {
+      success: false,
+      error: `Unknown workflow type: ${workflowType}`,
+      work_item_id: input.work_item_id,
+      current_state: workItem.current_state,
+    }
+  }
+  const effectiveWorkflowType: WorkflowType = (workflowType as WorkflowType) || "feature_spec"
+  if (!isValidTransition(input.from_state, input.to_state, effectiveWorkflowType)) {
     return {
       success: false,
       error: `Invalid transition: ${input.from_state} → ${input.to_state} is not allowed`,

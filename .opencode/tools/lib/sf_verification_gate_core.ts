@@ -4,7 +4,7 @@
  *
  * 提取为独立模块以便单元测试（不依赖 @opencode-ai/plugin 运行时）
  *
- * Requirements: 8.3, 8.7
+ * Requirements: 8.3, 8.7, 17.2
  */
 
 import { readFile, readdir } from "node:fs/promises"
@@ -85,6 +85,13 @@ export async function checkVerificationGate(
       } else if (result.warning) {
         warnings.push(result.warning)
       }
+
+      // 4. 检查是否包含端到端测试结果
+      if (!hasE2ETestResults(content)) {
+        blockingIssues.push(
+          `验证文件 ${fileName} 中未包含端到端测试结果（e2e / 端到端 / 功能测试）`
+        )
+      }
     } catch {
       warnings.push(`无法读取验证文件: ${fileName}`)
     }
@@ -125,6 +132,21 @@ export function findVerificationFiles(dirEntries: string[]): string[] {
   return dirEntries.filter((entry) =>
     verificationPatterns.some((pattern) => pattern.test(entry))
   )
+}
+
+/**
+ * 检查验证报告是否包含端到端测试结果
+ * 匹配: "端到端", "e2e", "end-to-end", "end_to_end", "功能测试", "functional test"
+ */
+export function hasE2ETestResults(content: string): boolean {
+  const patterns = [
+    /端到端/i,
+    /e2e/i,
+    /end[_\-\s]?to[_\-\s]?end/i,
+    /功能测试/i,
+    /functional\s+test/i,
+  ]
+  return patterns.some((p) => p.test(content))
 }
 
 /**

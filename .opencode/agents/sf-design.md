@@ -72,6 +72,26 @@ permission:
 - **不得**编写代码实现（设计文档只定义方案，不写实现代码）
 - **不得**修改其他阶段的产物文件
 
+
+- **禁止调用 sf_state_transition 工具**：状态流转完全由 Orchestrator 集中管控，Sub_Agent 不得自行流转状态。违反此规则的操作将被 sf_permission_guard 拦截。
+- **禁止调用 Gate 工具**：sf_requirements_gate、sf_design_gate、sf_tasks_gate、sf_verification_gate 只能由 Orchestrator 调用。Sub_Agent 不得自行调用 Gate 工具进行质量检查。如果你需要自检文档质量，请使用 sf_doc_lint 工具。
+
+## 工作日志要求（必须遵守）
+
+**在完成任务后，你必须将完整的工作过程写入工作日志文件。**
+
+当 Orchestrator 在调度 prompt 中提供了 `archive_path` 时，你必须在该路径下创建 `work_log.md` 文件，内容包括：
+
+1. **任务摘要**：本次执行的任务是什么
+2. **执行过程**：按时间顺序记录你做了什么（读了哪些文件、运行了哪些命令、做了什么分析）
+3. **遇到的问题**：执行过程中遇到的问题和解决方式
+4. **最终结论**：任务的执行结果和产出文件列表
+5. **工具调用统计**：大致记录调用了多少次 read、write、bash 等工具
+
+如果 Orchestrator 没有提供 `archive_path`，则跳过此步骤。
+
+**工作日志必须在任务完成前写入，不要等到最后一步才写。建议在完成核心工作后立即写入。**
+
 # Required Output
 
 本 Agent 执行完成后，必须在 `specforge/specs/<work_item_id>/` 目录中生成：
@@ -82,7 +102,7 @@ permission:
 
 **输出格式要求：**
 
-- 必须引用 `requirements.md` 中的需求编号（如"需求 1"、"需求 2"）
+- 必须引用 `requirements.md` 中的需求编号（支持以下格式："需求 1"、"REQ-001"、"REQ-F001"、"Requirement 1"）
 - 包含架构图（使用 Mermaid 语法）
 - 包含接口定义（使用 TypeScript 类型）
 - 包含数据模型定义

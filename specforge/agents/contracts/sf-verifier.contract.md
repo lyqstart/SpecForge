@@ -30,6 +30,8 @@
 - 不得直接向用户提问
 - 不得创建未授权子 Agent
 
+- 不得调用 sf_state_transition 工具（状态流转由 Orchestrator 集中管控）
+
 ## 升级条件
 - 当测试环境无法正常运行时，向 Orchestrator 报告
 - 当验证命令执行超时或异常退出时，向 Orchestrator 报告

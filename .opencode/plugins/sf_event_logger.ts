@@ -145,6 +145,16 @@ export const sf_event_logger: Plugin = async ({ directory }) => {
           "session.error", "session.compacted", "session.updated",
           "permission.asked", "permission.replied", "file.edited",
         ]
+
+        // 记录 Agent 消息内容到专门的会话日志
+        if (event.type === "message.updated" || event.type === "message.part.updated") {
+          const conversationFile = join(directory, "specforge/logs/conversations.jsonl")
+          const msgEntry = buildLogEntry("INFO", event.type, `Message: ${event.type}`, {
+            event_data: redactSensitive(event),
+          })
+          try { await appendJsonl(conversationFile, msgEntry) } catch { /* 静默 */ }
+        }
+
         if (trackedEvents.includes(event.type)) {
           const entry = buildLogEntry("INFO", event.type, `Event: ${event.type}`, {
             event_data: redactSensitive(event),

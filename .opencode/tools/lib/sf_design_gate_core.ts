@@ -64,7 +64,7 @@ export async function checkDesignGate(
   // 2. 检查是否引用了需求编号
   if (!hasRequirementReferences(content)) {
     blockingIssues.push(
-      '设计文档未引用需求编号（需要包含"需求 X"或"Requirement X"格式的引用）'
+      '设计文档未引用需求编号（需要包含"需求 X"、"REQ-XXX"或"Requirement X"格式的引用）'
     )
   }
 
@@ -94,6 +94,6 @@ export async function checkDesignGate(
  * 匹配: "需求 1", "需求 12", "Requirement 1", "Requirement 12" 等
  */
 export function hasRequirementReferences(content: string): boolean {
-  const patterns = [/需求\s*\d+/i, /requirement\s*\d+/i]
+  const patterns = [/需求\s*\d+/i, /requirement\s*\d+/i, /REQ[-_]?\w*\d+/i]
   return patterns.some((pattern) => pattern.test(content))
 }

@@ -29,6 +29,8 @@
 - 不得直接向用户提问
 - 不得创建未授权子 Agent
 
+- 不得调用 sf_state_transition 工具（状态流转由 Orchestrator 集中管控）
+
 ## 升级条件
 - 当发现 blocking 级别问题数量过多（超过 5 个）时，向 Orchestrator 报告
 - 当发现安全漏洞时，向 Orchestrator 报告

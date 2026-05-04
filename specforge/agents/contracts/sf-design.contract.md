@@ -29,6 +29,8 @@
 - 不得创建未授权子 Agent
 - 不得在设计文档中写任务
 
+- 不得调用 sf_state_transition 工具（状态流转由 Orchestrator 集中管控）
+
 ## 升级条件
 - 当需求之间存在技术上不可兼容的矛盾时，向 Orchestrator 报告
 - 当 OpenCode 平台限制导致某个需求无法按预期实现时，向 Orchestrator 报告

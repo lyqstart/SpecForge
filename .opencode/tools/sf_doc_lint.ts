@@ -5,8 +5,9 @@
  * - requirements: 检查必需章节（简介、术语表、需求）
  * - design: 检查设计章节存在且不包含任务拆分内容
  * - tasks: 检查每个 task 包含 verification_commands
+ * - bugfix: 检查必需章节（当前行为、预期行为、不变行为、根因分析）
  *
- * Requirements: 10.2, 10.3, 10.4, 10.5, 10.6
+ * Requirements: 10.2, 10.3, 10.4, 10.5, 10.6, 20.3, 20.4
  */
 
 import { tool } from "@opencode-ai/plugin"
@@ -17,7 +18,7 @@ export default tool({
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     doc_type: tool.schema
-      .enum(["requirements", "design", "tasks"])
+      .enum(["requirements", "design", "tasks", "bugfix"])
       .describe("文档类型"),
   },
   async execute(args, context) {

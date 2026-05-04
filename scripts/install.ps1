@@ -49,14 +49,16 @@ Copy-Item "$SpecForgeDir\.opencode\tools\lib\*.ts" "$Target\.opencode\tools\lib\
 
 # 复制 Plugin
 Write-Host "📁 复制 Plugin ..."
-Copy-Item "$SpecForgeDir\.opencode\plugins\sf_event_logger.ts" "$Target\.opencode\plugins\" -Force
+Copy-Item "$SpecForgeDir\.opencode\plugins\*.ts" "$Target\.opencode\plugins\" -Force
 
-# 复制 Skills
+# 复制 Skills（所有 Skill 目录）
 Write-Host "📁 复制 Skills ..."
-Copy-Item "$SpecForgeDir\.opencode\skills\superpowers-brainstorming\SKILL.md" `
-    "$Target\.opencode\skills\superpowers-brainstorming\" -Force
-Copy-Item "$SpecForgeDir\.opencode\skills\superpowers-verification-before-completion\SKILL.md" `
-    "$Target\.opencode\skills\superpowers-verification-before-completion\" -Force
+$skillDirs = Get-ChildItem "$SpecForgeDir\.opencode\skills" -Directory
+foreach ($skillDir in $skillDirs) {
+    $targetSkillDir = Join-Path $Target ".opencode\skills\$($skillDir.Name)"
+    New-Item -ItemType Directory -Path $targetSkillDir -Force | Out-Null
+    Copy-Item "$($skillDir.FullName)\SKILL.md" "$targetSkillDir\" -Force -ErrorAction SilentlyContinue
+}
 
 # 复制 specforge 目录
 Write-Host "📁 复制 specforge 配置 ..."

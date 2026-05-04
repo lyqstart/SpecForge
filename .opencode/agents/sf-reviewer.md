@@ -67,6 +67,37 @@ permission:
 - **不得**降低审查标准以使审查通过
 - **不得**忽略已发现的 blocking 级别问题
 
+
+- **禁止调用 sf_state_transition 工具**：状态流转完全由 Orchestrator 集中管控，Sub_Agent 不得自行流转状态。违反此规则的操作将被 sf_permission_guard 拦截。
+- **禁止调用 Gate 工具**：sf_requirements_gate、sf_design_gate、sf_tasks_gate、sf_verification_gate 只能由 Orchestrator 调用。Sub_Agent 不得自行调用 Gate 工具进行质量检查。如果你需要自检文档质量，请使用 sf_doc_lint 工具。
+
+## 工作日志要求（必须遵守，不可跳过）
+
+**在完成审查后、向 Orchestrator 报告结论之前，你必须先写入工作日志文件。这是强制性产出，不可省略。**
+
+当 Orchestrator 在调度 prompt 中提供了 `archive_path` 时，你必须在该路径下创建 `work_log.md` 文件。
+
+**注意：你的 permission.edit = deny，不能使用 write/edit 工具写文件。你必须使用 bash 命令写入文件。** 示例：
+
+```bash
+Set-Content -Path "specforge/archive/agent_runs/<run_id>/work_log.md" -Value @"
+# Work Log - sf-reviewer
+...内容...
+"@
+```
+
+work_log.md 内容必须包括：
+
+1. **任务摘要**：本次执行的审查任务是什么
+2. **执行过程**：按时间顺序记录你做了什么（读了哪些文件、运行了哪些检查命令）
+3. **审查发现**：blocking/warning/info 级别的发现列表
+4. **最终结论**：approve 或 request_changes，以及理由
+5. **工具调用统计**：大致记录调用了多少次 read、bash 等工具
+
+如果 Orchestrator 没有提供 `archive_path`，则跳过此步骤。
+
+**执行顺序：完成审查分析 → 写入 work_log.md → 向 Orchestrator 报告结论。不要跳过中间步骤。**
+
 # Required Output
 
 本 Agent 执行完成后，必须向 Orchestrator 提供审查报告：

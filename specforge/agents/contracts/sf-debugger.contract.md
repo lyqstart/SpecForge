@@ -29,6 +29,8 @@
 - 不得直接向用户提问
 - 不得创建未授权子 Agent
 
+- 不得调用 sf_state_transition 工具（状态流转由 Orchestrator 集中管控）
+
 ## 升级条件
 - 当根本原因涉及设计缺陷需要修改 design.md 时，向 Orchestrator 报告
 - 当修复方案会影响其他已完成任务时，向 Orchestrator 报告

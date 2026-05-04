@@ -14,7 +14,7 @@ import { join } from "node:path"
 // Types
 // ============================================================
 
-export type DocType = "requirements" | "design" | "tasks"
+export type DocType = "requirements" | "design" | "tasks" | "bugfix"
 
 export interface LintIssue {
   severity: "error" | "warning"
@@ -86,6 +86,8 @@ export async function lintDocument(
       return lintDesign(content, docFileName)
     case "tasks":
       return lintTasks(content, docFileName)
+    case "bugfix":
+      return lintBugfix(content, docFileName)
   }
 }
 
@@ -207,6 +209,52 @@ function lintTasks(content: string, fileName: string): DocLintResult {
   }
 }
 
+/**
+ * 检查 bugfix.md 的结构
+ * 必须包含: 当前行为/Current Behavior, 预期行为/Expected Behavior,
+ *           不变行为/Unchanged Behavior, 根因分析/Root Cause Analysis
+ */
+function lintBugfix(content: string, fileName: string): DocLintResult {
+  const issues: LintIssue[] = []
+
+  if (!hasHeading(content, ["当前行为", "current behavior"])) {
+    issues.push({
+      severity: "error",
+      message: '缺少"当前行为"/"Current Behavior"章节',
+      location: fileName,
+    })
+  }
+
+  if (!hasHeading(content, ["预期行为", "expected behavior"])) {
+    issues.push({
+      severity: "error",
+      message: '缺少"预期行为"/"Expected Behavior"章节',
+      location: fileName,
+    })
+  }
+
+  if (!hasHeading(content, ["不变行为", "unchanged behavior"])) {
+    issues.push({
+      severity: "error",
+      message: '缺少"不变行为"/"Unchanged Behavior"章节',
+      location: fileName,
+    })
+  }
+
+  if (!hasHeading(content, ["根因分析", "root cause analysis"])) {
+    issues.push({
+      severity: "error",
+      message: '缺少"根因分析"/"Root Cause Analysis"章节',
+      location: fileName,
+    })
+  }
+
+  return {
+    status: issues.length === 0 ? "pass" : "fail",
+    issues,
+  }
+}
+
 // ============================================================
 // Helper functions
 // ============================================================
@@ -219,6 +267,8 @@ function getDocFileName(docType: DocType): string {
       return "design.md"
     case "tasks":
       return "tasks.md"
+    case "bugfix":
+      return "bugfix.md"
   }
 }
 

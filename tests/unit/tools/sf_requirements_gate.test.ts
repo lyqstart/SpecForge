@@ -1,9 +1,14 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import {
   checkRequirementsGate,
+  checkBugfixGate,
   hasUserStories,
   hasAcceptanceCriteria,
   hasGlossary,
+  hasCurrentBehavior,
+  hasExpectedBehavior,
+  hasUnchangedBehavior,
+  hasRootCauseAnalysis,
 } from "../../../.opencode/tools/lib/sf_requirements_gate_core"
 import { writeFile, rm, mkdir } from "node:fs/promises"
 import { join } from "node:path"
@@ -208,6 +213,168 @@ Just some random content.
 
     it("should return false when not present", () => {
       expect(hasGlossary("Some content")).toBe(false)
+    })
+  })
+
+  describe("bugfix gate pass", () => {
+    it("should pass when all bugfix sections are present (Chinese)", async () => {
+      const content = `# Bugfix 分析
+
+## 当前行为
+
+系统返回 500 错误。
+
+## 预期行为
+
+系统应返回 200 成功。
+
+## 不变行为
+
+其他 API 端点不受影响。
+
+## 根因分析
+
+数据库连接池耗尽导致超时。
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await checkBugfixGate(workItemId, testDir)
+
+      expect(result.status).toBe("pass")
+      expect(result.blocking_issues).toHaveLength(0)
+      expect(result.next_action).toBe("continue")
+    })
+
+    it("should pass when all bugfix sections are present (English)", async () => {
+      const content = `# Bugfix Analysis
+
+## Current Behavior
+
+System returns 500 error.
+
+## Expected Behavior
+
+System should return 200 success.
+
+## Unchanged Behavior
+
+Other API endpoints are not affected.
+
+## Root Cause Analysis
+
+Database connection pool exhaustion causes timeout.
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await checkBugfixGate(workItemId, testDir)
+
+      expect(result.status).toBe("pass")
+      expect(result.blocking_issues).toHaveLength(0)
+      expect(result.next_action).toBe("continue")
+    })
+  })
+
+  describe("bugfix gate fail", () => {
+    it("should fail when bugfix.md does not exist", async () => {
+      const result = await checkBugfixGate(workItemId, testDir)
+
+      expect(result.status).toBe("fail")
+      expect(result.blocking_issues).toContain("bugfix.md not found")
+      expect(result.next_action).toBe("revise")
+    })
+
+    it("should fail when missing current behavior", async () => {
+      const content = `# Bugfix
+
+## 预期行为
+
+Expected.
+
+## 不变行为
+
+Unchanged.
+
+## 根因分析
+
+Root cause.
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await checkBugfixGate(workItemId, testDir)
+
+      expect(result.status).toBe("fail")
+      expect(
+        result.blocking_issues.some((i) => i.includes("当前行为"))
+      ).toBe(true)
+    })
+
+    it("should fail when missing all sections", async () => {
+      const content = `# Bugfix
+
+Just some random content.
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await checkBugfixGate(workItemId, testDir)
+
+      expect(result.status).toBe("fail")
+      expect(result.blocking_issues).toHaveLength(4)
+    })
+  })
+
+  describe("bugfix helper: hasCurrentBehavior", () => {
+    it("should detect '当前行为'", () => {
+      expect(hasCurrentBehavior("## 当前行为")).toBe(true)
+    })
+
+    it("should detect 'Current Behavior'", () => {
+      expect(hasCurrentBehavior("## Current Behavior")).toBe(true)
+    })
+
+    it("should return false when not present", () => {
+      expect(hasCurrentBehavior("Some content")).toBe(false)
+    })
+  })
+
+  describe("bugfix helper: hasExpectedBehavior", () => {
+    it("should detect '预期行为'", () => {
+      expect(hasExpectedBehavior("## 预期行为")).toBe(true)
+    })
+
+    it("should detect 'Expected Behavior'", () => {
+      expect(hasExpectedBehavior("## Expected Behavior")).toBe(true)
+    })
+
+    it("should return false when not present", () => {
+      expect(hasExpectedBehavior("Some content")).toBe(false)
+    })
+  })
+
+  describe("bugfix helper: hasUnchangedBehavior", () => {
+    it("should detect '不变行为'", () => {
+      expect(hasUnchangedBehavior("## 不变行为")).toBe(true)
+    })
+
+    it("should detect 'Unchanged Behavior'", () => {
+      expect(hasUnchangedBehavior("## Unchanged Behavior")).toBe(true)
+    })
+
+    it("should return false when not present", () => {
+      expect(hasUnchangedBehavior("Some content")).toBe(false)
+    })
+  })
+
+  describe("bugfix helper: hasRootCauseAnalysis", () => {
+    it("should detect '根因分析'", () => {
+      expect(hasRootCauseAnalysis("## 根因分析")).toBe(true)
+    })
+
+    it("should detect 'Root Cause Analysis'", () => {
+      expect(hasRootCauseAnalysis("## Root Cause Analysis")).toBe(true)
+    })
+
+    it("should return false when not present", () => {
+      expect(hasRootCauseAnalysis("Some content")).toBe(false)
     })
   })
 })

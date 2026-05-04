@@ -124,3 +124,69 @@ export async function readStateFile(
 
   return workItem
 }
+
+
+/**
+ * Agent Run 摘要数据结构
+ */
+export interface AgentRunSummary {
+  run_id: string
+  agent_name: string
+  status: string
+  start_time: string
+  end_time: string
+  duration_ms: number
+  retry_count: number
+}
+
+/**
+ * 读取指定 Work Item 的 Agent Run 记录
+ *
+ * 从 specforge/archive/agent_runs/ 目录中读取匹配 workItemId 的目录，
+ * 解析每个目录下的 result.json，返回 AgentRunSummary 列表。
+ *
+ * @param workItemId - Work Item ID
+ * @param baseDir - 项目根目录路径
+ * @returns AgentRunSummary 列表（目录不存在时返回空数组，result.json 解析失败时跳过该记录）
+ */
+export async function readAgentRuns(
+  workItemId: string,
+  baseDir: string
+): Promise<AgentRunSummary[]> {
+  const { readdir } = await import("node:fs/promises")
+  const archiveDir = join(baseDir, "specforge", "archive", "agent_runs")
+
+  let entries: string[]
+  try {
+    entries = await readdir(archiveDir)
+  } catch {
+    // Directory not found → return empty array
+    return []
+  }
+
+  // Filter directories starting with workItemId
+  const matchingDirs = entries.filter(e => e.startsWith(workItemId))
+
+  const runs: AgentRunSummary[] = []
+  for (const dir of matchingDirs) {
+    const resultPath = join(archiveDir, dir, "result.json")
+    try {
+      const content = await readFile(resultPath, "utf-8")
+      const result = JSON.parse(content)
+      runs.push({
+        run_id: result.run_id || dir,
+        agent_name: result.agent_name || "unknown",
+        status: result.status || "unknown",
+        start_time: result.start_time || "",
+        end_time: result.end_time || "",
+        duration_ms: result.duration_ms || 0,
+        retry_count: result.retry_count || 0,
+      })
+    } catch {
+      // Skip records with parse errors
+      continue
+    }
+  }
+
+  return runs
+}

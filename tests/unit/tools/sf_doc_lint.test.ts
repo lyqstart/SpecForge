@@ -347,4 +347,106 @@ Just some content.
       expect(hasVerificationCommands("Just some task description")).toBe(false)
     })
   })
+
+  describe("bugfix lint", () => {
+    it("should pass when all required bugfix sections are present (Chinese)", async () => {
+      const content = `# Bugfix 分析
+
+## 当前行为
+
+系统返回 500 错误。
+
+## 预期行为
+
+系统应返回 200 成功。
+
+## 不变行为
+
+其他 API 端点不受影响。
+
+## 根因分析
+
+数据库连接池耗尽导致超时。
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "bugfix", testDir)
+
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
+    })
+
+    it("should pass when all required bugfix sections are present (English)", async () => {
+      const content = `# Bugfix Analysis
+
+## Current Behavior
+
+System returns 500 error.
+
+## Expected Behavior
+
+System should return 200 success.
+
+## Unchanged Behavior
+
+Other API endpoints are not affected.
+
+## Root Cause Analysis
+
+Database connection pool exhaustion causes timeout.
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "bugfix", testDir)
+
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
+    })
+
+    it("should fail when missing all required sections", async () => {
+      const content = `# Bugfix
+
+Some random content without proper sections.
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "bugfix", testDir)
+
+      expect(result.status).toBe("fail")
+      expect(result.issues).toHaveLength(4)
+    })
+
+    it("should fail when bugfix.md does not exist", async () => {
+      const result = await lintDocument(workItemId, "bugfix", testDir)
+
+      expect(result.status).toBe("fail")
+      expect(result.issues).toHaveLength(1)
+      expect(result.issues[0].severity).toBe("error")
+      expect(result.issues[0].message).toContain("File not found")
+    })
+
+    it("should fail when missing only root cause analysis", async () => {
+      const content = `# Bugfix
+
+## 当前行为
+
+Current.
+
+## 预期行为
+
+Expected.
+
+## 不变行为
+
+Unchanged.
+`
+      await writeFile(join(specDir, "bugfix.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "bugfix", testDir)
+
+      expect(result.status).toBe("fail")
+      expect(result.issues).toHaveLength(1)
+      expect(result.issues[0].message).toContain("根因分析")
+    })
+  })
 })
