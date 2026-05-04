@@ -131,3 +131,33 @@ intake → requirements → requirements_gate → design → design_gate → tas
 |------------|----------|------|----------|
 | superpowers-brainstorming | `.opencode/skills/superpowers-brainstorming/SKILL.md` | 指导 Agent 从 7 个维度进行需求头脑风暴 | requirements 阶段（sf-requirements 加载） |
 | superpowers-verification-before-completion | `.opencode/skills/superpowers-verification-before-completion/SKILL.md` | 要求 Agent 在声明完成前提供验证证据 | verification 阶段（sf-verifier 加载） |
+| sf-workflow-feature-spec | `.opencode/skills/sf-workflow-feature-spec/SKILL.md` | Feature Spec 工作流阶段执行协议 | 意图分类为 feature_spec 后（Orchestrator 加载） |
+| sf-workflow-bugfix-spec | `.opencode/skills/sf-workflow-bugfix-spec/SKILL.md` | Bugfix Spec 工作流阶段执行协议 | 意图分类为 bugfix_spec 后（Orchestrator 加载） |
+| sf-workflow-design-first | `.opencode/skills/sf-workflow-design-first/SKILL.md` | Design-First 工作流阶段执行协议 | 意图分类为 feature_spec_design_first 后（Orchestrator 加载） |
+| sf-workflow-quick-change | `.opencode/skills/sf-workflow-quick-change/SKILL.md` | Quick Change 工作流阶段执行协议 | 意图分类为 quick_change 后（Orchestrator 加载） |
+
+---
+
+## 7. 工作流 Skill 加载协议（V3.2 新增）
+
+### 7.1 加载时机
+
+Orchestrator 在以下两种场景加载 Workflow Skill：
+
+1. **新工作流**：意图分类完成 → 确定 Workflow_Type → 加载 Skill → 创建 Work Item
+2. **会话恢复**：检测到进行中的 Work Item → 读取 workflow_type → 加载 Skill → 继续执行
+
+### 7.2 路由映射
+
+| Workflow_Type | Workflow_Skill |
+|---------------|---------------|
+| feature_spec | sf-workflow-feature-spec |
+| bugfix_spec | sf-workflow-bugfix-spec |
+| feature_spec_design_first | sf-workflow-design-first |
+| quick_change | sf-workflow-quick-change |
+
+### 7.3 加载规则
+
+- 每次工作流执行只加载一个 Workflow_Skill
+- 加载失败时停止工作流，不降级
+- Workflow_Skill 中不包含共享协议（Gate、重试等），这些保留在路由层
