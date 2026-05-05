@@ -90,3 +90,15 @@
 **禁止行为：** 除 sf-orchestrator 外，任何 Sub_Agent 不得调用 sf_state_transition 工具。所有工作流状态流转必须由 Orchestrator 集中管控。
 
 **存在理由：** 状态流转是工作流控制的核心。如果子 Agent 可以自行流转状态，会导致状态流转不可控、事件流不完整、Orchestrator 对工作流进度的判断失准。sf_permission_guard Plugin 会程序化地拦截违规调用。
+
+---
+
+## 规则 11：Spec 文档必须使用标准化标记格式
+
+**强制行为：** 所有 Agent 在生成或修改 spec 文档（requirements.md、design.md、tasks.md）时，必须使用以下标准化标记格式：
+
+- **requirements.md**：需求标题使用 `### REQ-N 标题` 格式（如 `### REQ-1 用户登录`）
+- **design.md**：设计决策标题使用 `### DD-N 标题` 格式（如 `### DD-1 数据模型设计`），引用需求使用 `refs: [REQ-1, REQ-3]` 格式
+- **tasks.md**：任务标题使用 `### TASK-N 标题` 格式（如 `### TASK-1 实现核心模块`），引用设计决策使用 `refs: [DD-1, DD-2]` 格式，修改文件使用 `files: [path1, path2]` 格式
+
+**存在理由：** Knowledge Graph 的 syncFromSpec 功能依赖正则解析 spec 文档中的标记来自动构建节点和边。格式不统一会导致解析失败（+0 nodes），使知识图谱无法正确反映需求→设计→任务→代码的追溯关系。标准化格式确保三层保障（Agent Prompt 约束 → sf_doc_lint 格式检查 → AGENT_CONSTITUTION 底线规则）的一致性。

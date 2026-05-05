@@ -98,6 +98,7 @@ export async function lintDocument(
 /**
  * 检查 requirements.md 的结构
  * 必须包含: 简介/Introduction, 术语表/Glossary, 需求/Requirements 章节
+ * 警告: 需求标题应使用 REQ-N 标准化格式
  */
 function lintRequirements(content: string, fileName: string): DocLintResult {
   const issues: LintIssue[] = []
@@ -129,8 +130,17 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
     })
   }
 
+  // Check for standardized REQ-N marker format (warning level)
+  if (!hasStandardizedMarkers(content, "requirements")) {
+    issues.push({
+      severity: "warning",
+      message: '需求标题未使用标准化格式"### REQ-N 标题"，Knowledge Graph 解析可能失败',
+      location: fileName,
+    })
+  }
+
   return {
-    status: issues.length === 0 ? "pass" : "fail",
+    status: issues.filter((i) => i.severity === "error").length === 0 ? "pass" : "fail",
     issues,
   }
 }
@@ -139,6 +149,7 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
  * 检查 design.md 的结构
  * - 检查是否包含设计相关章节
  * - 检查是否不包含任务拆分内容
+ * - 警告: 设计决策标题应使用 DD-N 标准化格式
  */
 function lintDesign(content: string, fileName: string): DocLintResult {
   const issues: LintIssue[] = []
@@ -167,8 +178,17 @@ function lintDesign(content: string, fileName: string): DocLintResult {
     })
   }
 
+  // Check for standardized DD-N marker format (warning level)
+  if (!hasStandardizedMarkers(content, "design")) {
+    issues.push({
+      severity: "warning",
+      message: '设计决策标题未使用标准化格式"### DD-N 标题"，Knowledge Graph 解析可能失败',
+      location: fileName,
+    })
+  }
+
   return {
-    status: issues.length === 0 ? "pass" : "fail",
+    status: issues.filter((i) => i.severity === "error").length === 0 ? "pass" : "fail",
     issues,
   }
 }
@@ -176,6 +196,7 @@ function lintDesign(content: string, fileName: string): DocLintResult {
 /**
  * 检查 tasks.md 的结构
  * 每个 task 必须包含 verification_commands 字段
+ * 警告: 任务标题应使用 TASK-N 标准化格式
  */
 function lintTasks(content: string, fileName: string): DocLintResult {
   const issues: LintIssue[] = []
@@ -203,8 +224,17 @@ function lintTasks(content: string, fileName: string): DocLintResult {
     }
   }
 
+  // Check for standardized TASK-N marker format (warning level)
+  if (!hasStandardizedMarkers(content, "tasks")) {
+    issues.push({
+      severity: "warning",
+      message: '任务标题未使用标准化格式"### TASK-N 标题"，Knowledge Graph 解析可能失败',
+      location: fileName,
+    })
+  }
+
   return {
-    status: issues.length === 0 ? "pass" : "fail",
+    status: issues.filter((i) => i.severity === "error").length === 0 ? "pass" : "fail",
     issues,
   }
 }
@@ -320,12 +350,13 @@ export function getTaskSections(content: string): TaskSection[] {
   let currentTitle = ""
   let currentContent: string[] = []
 
-  // Task heading patterns - only match actual task headings, not auxiliary sections
-  // Matches: "## Task 1: ...", "## 任务 1: ...", "### Task 1: ...", "### 任务 1: ..."
-  const taskHeadingPattern = /^#{2,3}\s+(Task\s+\d|任务\s*\d)/i
+  // Task heading patterns - match actual task headings, not auxiliary sections
+  // Standardized: "### TASK-1 ...", "## TASK-1 ..."
+  // Legacy: "## Task 1: ...", "## 任务 1: ...", "### Task 1: ...", "### 任务 1: ..."
+  const taskHeadingPattern = /^#{2,6}\s+(TASK-\d|Task\s+\d|任务\s*\d)/i
 
   for (const line of lines) {
-    const headingMatch = line.match(/^#{2,3}\s+(.+)$/)
+    const headingMatch = line.match(/^#{2,6}\s+(.+)$/)
     if (headingMatch && taskHeadingPattern.test(line)) {
       // Save previous section if it exists
       if (currentTitle) {
@@ -357,4 +388,29 @@ export function getTaskSections(content: string): TaskSection[] {
  */
 export function hasVerificationCommands(content: string): boolean {
   return /verification_commands/i.test(content)
+}
+
+/**
+ * 检查文档是否包含标准化标记格式
+ * - requirements: 至少一个 ### REQ-N 标题
+ * - design: 至少一个 ### DD-N 标题
+ * - tasks: 至少一个 ### TASK-N 标题
+ *
+ * 也接受兼容的旧格式（不报 warning）：
+ * - requirements: ### 需求 N 或 ### Requirement N
+ * - design: ### N.N 标题（数字章节号）
+ * - tasks: ## Task N: 或 - [ ] N.
+ */
+export function hasStandardizedMarkers(content: string, docType: "requirements" | "design" | "tasks"): boolean {
+  switch (docType) {
+    case "requirements":
+      // Standardized: REQ-N, also accept legacy: 需求 N, Requirement N
+      return /^#{1,6}\s+(?:REQ-\d+|(?:需求|Requirement)\s+\d+)/m.test(content)
+    case "design":
+      // Standardized: DD-N, also accept legacy: N.N Title (numbered sections)
+      return /^#{1,6}\s+(?:DD-\d+|\d+(?:\.\d+)?[.、：:\s]+.+)/m.test(content)
+    case "tasks":
+      // Standardized: TASK-N, also accept legacy: Task N:, - [ ] N.
+      return /(?:^#{1,6}\s+(?:TASK-\d+|Task\s+\d+)|^-\s+\[[ x~-]\]\s+\d+\.)/m.test(content)
+  }
 }

@@ -1,0 +1,47 @@
+{
+  "version": "1.0",
+  "fragments": [
+    {
+      "fragment_id": "brainstorming-7-dimensions",
+      "skill_file": ".opencode/skills/superpowers-brainstorming/SKILL.md",
+      "section_heading": "7 个维度",
+      "triggers": ["需求分析", "头脑风暴", "brainstorming", "requirements"],
+      "description": "从 7 个维度进行需求头脑风暴的方法论"
+    },
+    {
+      "fragment_id": "tdd-red-green-refactor",
+      "skill_file": ".opencode/skills/superpowers-tdd/SKILL.md",
+      "section_heading": "Red-Green-Refactor",
+      "triggers": ["测试驱动", "TDD", "单元测试", "test"],
+      "description": "TDD 的 Red-Green-Refactor 循环方法论"
+    },
+    {
+      "fragment_id": "verification-evidence-types",
+      "skill_file": ".opencode/skills/superpowers-verification-before-completion/SKILL.md",
+      "section_heading": "四类证据",
+      "triggers": ["验证", "verification", "证据", "evidence"],
+      "description": "验证完成前需要提供的四类证据"
+    },
+    {
+      "fragment_id": "debugging-systematic",
+      "skill_file": ".opencode/skills/superpowers-systematic-debugging/SKILL.md",
+      "section_heading": "系统化调试",
+      "triggers": ["调试", "debug", "错误", "error", "失败", "failure"],
+      "description": "系统化调试方法论"
+    },
+    {
+      "fragment_id": "code-review-checklist",
+      "skill_file": ".opencode/skills/superpowers-code-review/SKILL.md",
+      "section_heading": "审查清单",
+      "triggers": ["审查", "review", "代码质量", "code quality"],
+      "description": "代码审查检查清单"
+    },
+    {
+      "fragment_id": "writing-plans-structure",
+      "skill_file": ".opencode/skills/superpowers-writing-plans/SKILL.md",
+      "section_heading": "任务拆分",
+      "triggers": ["任务拆分", "task planning", "计划", "plan"],
+      "description": "任务拆分和计划编写方法论"
+    }
+  ]
+}

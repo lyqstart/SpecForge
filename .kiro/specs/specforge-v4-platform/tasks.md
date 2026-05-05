@@ -1,0 +1,229 @@
+# 实施任务
+
+## 任务总览
+
+V4.0 共 10 个 Task，按依赖关系分为 4 个阶段：
+- **阶段 1**（Task 1-2）：KG 核心模块（无外部依赖，可并行）
+- **阶段 2**（Task 3-5）：KG 查询 + Context Builder + 配置文件（依赖 Task 1）
+- **阶段 3**（Task 6-7）：Gate 集成 + Prompt 更新（依赖 Task 1-5）
+- **阶段 4**（Task 8-10）：文档 + 回归测试 + 集成验证（依赖全部）
+
+## 任务列表
+
+- [x] 1. 实现 sf_knowledge_graph_core.ts — KG 数据模型与读写核心
+  - [x] 1.1 创建 `.opencode/tools/lib/sf_knowledge_graph_core.ts`，实现类型定义（GraphNode、GraphEdge、GraphStore、NodeMetadata、SyncSummary、KGOperationResult）和验证函数（isValidNodeId、isValidNodeType、isValidEdgeType）
+    - 节点 ID 格式验证：用最后两个 `:` 分割，work_item_id 匹配 `/^[A-Za-z0-9][A-Za-z0-9_-]*$/`
+    - code_file 节点必须包含 metadata.path
+    - 边的 inferred 字段默认 false
+    - 修改文件: `.opencode/tools/lib/sf_knowledge_graph_core.ts`
+    - _需求: 1.1, 1.2, 1.3, 1.4, 1.5_
+  - [x] 1.2 实现 loadGraphStore、saveGraphStore（atomic write + .lock 文件）、isKGEnabled
+    - loadGraphStore：文件不存在且 enabled=true 时创建空图；JSON 解析失败时返回错误不返回空图
+    - saveGraphStore：写临时文件→rename；.lock 文件串行化写操作（排他创建 + 超时）
+    - isKGEnabled：读取 project.json 的 knowledge_graph_enabled 字段，不存在时默认 true
+    - 修改文件: `.opencode/tools/lib/sf_knowledge_graph_core.ts`
+    - _需求: 1.6, 1.7, 1.8, 1.9, 1.11, 1.12, 2.10_
+  - [x] 1.3 实现 addNodes、addEdges、removeNodes、updateNode
+    - addNodes：验证 ID 格式、类型合法性、唯一性；code_file 验证 metadata.path 必填
+    - addEdges：验证 source/target 存在、类型合法、不重复
+    - removeNodes：级联删除关联边
+    - updateNode：更新 label 和 metadata
+    - 所有写操作返回 SyncSummary
+    - 修改文件: `.opencode/tools/lib/sf_knowledge_graph_core.ts`
+    - _需求: 2.2, 2.3, 2.4, 2.5, 2.9_
+  - [x] 1.4 实现 syncFromSpec（含 scope 参数和 implements 推导）
+    - scope="requirements"：解析 requirements.md，生成 requirement 节点
+    - scope="design"：解析 design.md，生成 design_decision 节点和 traces_to 边
+    - scope="tasks"：解析 tasks.md，生成 task/code_file 节点和 decomposes_to/modifies 边，推导 implements 边
+    - scope="verification"：全量同步 + implements 推导
+    - 幂等策略：已存在节点更新 label/metadata/updated_at，已删除条目移除节点和边
+    - task→design 关联：启发式规则（检测 Task 描述中的设计章节引用），匹配失败跳过并记录警告
+    - 修改文件: `.opencode/tools/lib/sf_knowledge_graph_core.ts`
+    - _需求: 2.6, 2.7, 2.8_
+  - [x] 1.5 创建 `tests/unit/tools/lib/sf_knowledge_graph_core.test.ts`，编写单元测试
+    - 覆盖：loadGraphStore（正常/不存在/损坏）、saveGraphStore（atomic write）、isKGEnabled（true/false/不存在）
+    - 覆盖：addNodes（正常/ID 非法/重复/metadata.path 必填）、addEdges（正常/source 不存在/重复/边方向验证）
+    - 覆盖：removeNodes（级联删除）、syncFromSpec（4 个 scope、幂等性、implements 推导、空 spec）
+    - 覆盖：isValidNodeId（合法/非法 ID，含复杂 work_item_id）
+    - 修改文件: `tests/unit/tools/lib/sf_knowledge_graph_core.test.ts`
+    - _需求: 9.9, 9.10_
+  - verification_commands: `bun test tests/unit/tools/lib/sf_knowledge_graph_core.test.ts`
+
+- [x] 2. 创建 sf_knowledge_graph.ts — KG 读写工具 thin wrapper
+  - [x] 2.1 创建 `.opencode/tools/sf_knowledge_graph.ts`，定义 Zod schema 和 execute 函数
+    - operation 参数：add_nodes、add_edges、remove_nodes、update_node、sync_from_spec
+    - sync_from_spec 需要 scope 参数
+    - 调用 sf_knowledge_graph_core 中的对应函数
+    - 修改文件: `.opencode/tools/sf_knowledge_graph.ts`
+    - _需求: 2.1, 2.2_
+  - verification_commands: `bun test tests/unit/tools/lib/sf_knowledge_graph_core.test.ts`
+
+- [x] 3. 实现 sf_knowledge_query_core.ts — KG 查询核心
+  - [x] 3.1 创建 `.opencode/tools/lib/sf_knowledge_query_core.ts`，实现类型定义和查询函数
+    - getNode、getNeighbors、getSubgraph、getOverview
+    - impactAnalysis：BFS + direction（downstream/upstream/both）+ maxDepth + 默认排除 inferred 边 + include_inferred 参数
+    - tracePath：最短路径优先 + max_depth（默认 5）+ max_paths（默认 10）
+    - filter 支持：work_item_id、node_type、edge_type
+    - 修改文件: `.opencode/tools/lib/sf_knowledge_query_core.ts`
+    - _需求: 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10_
+  - [x] 3.2 创建 `tests/unit/tools/lib/sf_knowledge_query_core.test.ts`，编写单元测试
+    - 覆盖：getNode（存在/不存在）、getNeighbors、getSubgraph、getOverview
+    - 覆盖：impactAnalysis（downstream/upstream/both、深度限制、环形引用、排除 inferred、include_inferred=true）
+    - 覆盖：tracePath（有路径/无路径、max_depth/max_paths 限制）
+    - 覆盖：filter（work_item_id/node_type/edge_type）
+    - 修改文件: `tests/unit/tools/lib/sf_knowledge_query_core.test.ts`
+    - _需求: 9.9, 9.10_
+  - [x] 3.3 创建 `.opencode/tools/sf_knowledge_query.ts`，thin wrapper
+    - 修改文件: `.opencode/tools/sf_knowledge_query.ts`
+    - _需求: 3.1_
+  - 依赖: Task 1（需要 GraphNode/GraphEdge 类型定义和 loadGraphStore）
+  - verification_commands: `bun test tests/unit/tools/lib/sf_knowledge_query_core.test.ts`
+
+- [x] 4. 实现 sf_context_build_core.ts — Context Builder + Capability Broker 核心
+  - [x] 4.1 创建 `.opencode/tools/lib/sf_context_build_core.ts`，实现 ContextDataSource 接口和内置数据源
+    - TaskQueryParams（含 task_description、workflow_type、target_files、file_types）
+    - ContextFragment、ContextDataSource 接口
+    - KnowledgeGraphSource：upstream 遍历 task→design→requirement
+    - ArchiveSource：files_changed.json 交集匹配，KG 无数据时 tasks.md fallback
+    - 修改文件: `.opencode/tools/lib/sf_context_build_core.ts`
+    - _需求: 5.1, 5.3, 5.4, 5.9, 5.10_
+  - [x] 4.2 实现 buildTaskContext 和 Task_Context 格式化
+    - 遍历所有已注册数据源收集 ContextFragment
+    - 格式化为结构化文本（相关需求/设计决策/历史经验/注意事项）
+    - 长度截断（≤3000 字符），优先级：历史经验 > 注意事项 > 设计决策 > 需求
+    - 空结果处理：所有数据源无结果才返回空上下文
+    - 修改文件: `.opencode/tools/lib/sf_context_build_core.ts`
+    - _需求: 5.5, 5.6, 5.7, 5.8_
+  - [x] 4.3 实现 Capability Broker（recommendCapabilities）
+    - 读取 skill_fragments.json
+    - 按 task_description 关键词匹配 triggers
+    - 从 Skill 文件按 section_heading 提取完整片段内容
+    - 估算 Token 量
+    - 无匹配时返回空推荐列表
+    - 修改文件: `.opencode/tools/lib/sf_context_build_core.ts`
+    - _需求: 6.1, 6.2, 6.5, 6.6, 6.7_
+  - [x] 4.4 实现 Phase Context 跨 Work Item 匹配
+    - 按 phase 确定目标 node_type
+    - 查找其他 Work Item 的同类型节点
+    - 按 label 关键词相似度排序，取 top-5
+    - 修改文件: `.opencode/tools/lib/sf_context_build_core.ts`
+    - _需求: 7.4_
+  - [x] 4.5 创建 `tests/unit/tools/lib/sf_context_build_core.test.ts`，编写单元测试
+    - 覆盖：buildTaskContext（有 KG 数据/KG 无数据但 Archive 有/所有无数据/长度截断）
+    - 覆盖：ArchiveSource（文件交集匹配/tasks.md fallback/archive 不存在）
+    - 覆盖：ContextDataSource 自定义数据源注册
+    - 覆盖：recommendCapabilities（有匹配含完整 content/无匹配/配置不存在）
+    - 覆盖：Phase Context 跨 Work Item 匹配
+    - 修改文件: `tests/unit/tools/lib/sf_context_build_core.test.ts`
+    - _需求: 9.9, 9.10_
+  - 依赖: Task 1（KG core）、Task 3（KG query）
+  - verification_commands: `bun test tests/unit/tools/lib/sf_context_build_core.test.ts`
+
+- [x] 5. 创建配置文件和 sf_context_build.ts wrapper
+  - [x] 5.1 创建 `specforge/config/skill_fragments.json`，包含 6 个初始 fragment 条目
+    - 修改文件: `specforge/config/skill_fragments.json`
+    - _需求: 6.3, 6.4_
+  - [x] 5.2 更新 `specforge/config/project.json`，新增 `knowledge_graph_enabled: true`
+    - 修改文件: `specforge/config/project.json`
+    - _需求: 1.7_
+  - [x] 5.3 创建 `.opencode/tools/sf_context_build.ts`，thin wrapper
+    - 修改文件: `.opencode/tools/sf_context_build.ts`
+    - _需求: 5.1_
+  - verification_commands: `bun test`
+
+- [x] 6. 修改 4 个 Gate 工具 — 集成 KG 同步
+  - [x] 6.1 修改 `.opencode/tools/lib/sf_requirements_gate_core.ts`
+    - import syncFromSpec 和 isKGEnabled
+    - Gate pass 后：检查 isKGEnabled → 调用 syncFromSpec(workItemId, baseDir, "requirements")
+    - 同步失败添加到 warnings，不影响 pass 结果
+    - GateResult 新增可选 kg_sync 字段
+    - 修改文件: `.opencode/tools/lib/sf_requirements_gate_core.ts`
+    - _需求: 4.1, 4.5, 4.6, 4.7, 4.8, 9.2_
+  - [x] 6.2 修改 `.opencode/tools/lib/sf_design_gate_core.ts`
+    - 同上模式，scope="design"
+    - 修改文件: `.opencode/tools/lib/sf_design_gate_core.ts`
+    - _需求: 4.2, 4.5, 4.6, 4.7, 4.8, 9.2_
+  - [x] 6.3 修改 `.opencode/tools/lib/sf_tasks_gate_core.ts`
+    - 同上模式，scope="tasks"
+    - 修改文件: `.opencode/tools/lib/sf_tasks_gate_core.ts`
+    - _需求: 4.3, 4.5, 4.6, 4.7, 4.8, 9.2_
+  - [x] 6.4 修改 `.opencode/tools/lib/sf_verification_gate_core.ts`
+    - 同上模式，scope="verification"
+    - 修改文件: `.opencode/tools/lib/sf_verification_gate_core.ts`
+    - _需求: 4.4, 4.5, 4.6, 4.7, 4.8, 9.2_
+  - [x] 6.5 为 4 个 Gate 新增 KG 同步单元测试
+    - 每个 Gate 新增 3 个测试：pass+enabled+同步成功、pass+enabled+同步失败、pass+disabled
+    - 修改文件: `tests/unit/tools/lib/sf_requirements_gate_core.test.ts`, `tests/unit/tools/lib/sf_design_gate_core.test.ts`, `tests/unit/tools/lib/sf_tasks_gate_core.test.ts`, `tests/unit/tools/lib/sf_verification_gate_core.test.ts`
+    - _需求: 9.11_
+  - 依赖: Task 1（syncFromSpec、isKGEnabled）
+  - verification_commands: `bun test tests/unit/tools/lib/sf_requirements_gate_core.test.ts tests/unit/tools/lib/sf_design_gate_core.test.ts tests/unit/tools/lib/sf_tasks_gate_core.test.ts tests/unit/tools/lib/sf_verification_gate_core.test.ts`
+
+- [x] 7. 更新 Prompt 文件 — Orchestrator + 4 个 Workflow Skill
+  - [x] 7.1 更新 `.opencode/agents/sf-orchestrator.md`
+    - 新增 /sf-graph 调试命令（get_overview、get_subgraph、impact_analysis）
+    - 更新可用工具清单（新增 sf_knowledge_graph、sf_knowledge_query、sf_context_build）
+    - 修改文件: `.opencode/agents/sf-orchestrator.md`
+    - _需求: 8.1, 8.2, 8.3, 8.4, 8.5_
+  - [x] 7.2 更新 `.opencode/skills/sf-workflow-feature-spec/SKILL.md`
+    - development 阶段新增 Step 4.5（sf_context_build 调用）
+    - requirements/design/tasks 阶段新增 Context Builder 调用
+    - 修改文件: `.opencode/skills/sf-workflow-feature-spec/SKILL.md`
+    - _需求: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7_
+  - [x] 7.3 更新 `.opencode/skills/sf-workflow-bugfix-spec/SKILL.md`
+    - 同 7.2 模式
+    - 修改文件: `.opencode/skills/sf-workflow-bugfix-spec/SKILL.md`
+    - _需求: 7.5_
+  - [x] 7.4 更新 `.opencode/skills/sf-workflow-design-first/SKILL.md`
+    - 同 7.2 模式
+    - 修改文件: `.opencode/skills/sf-workflow-design-first/SKILL.md`
+    - _需求: 7.5_
+  - [x] 7.5 更新 `.opencode/skills/sf-workflow-quick-change/SKILL.md`
+    - 同 7.2 模式
+    - 修改文件: `.opencode/skills/sf-workflow-quick-change/SKILL.md`
+    - _需求: 7.5_
+  - 依赖: Task 1-6（所有 Tool 实现完成后再更新 Prompt）
+  - verification_commands: `bun test`
+
+- [x] 8. 更新 AGENTS.md 文档
+  - [x] 8.1 更新 AGENTS.md
+    - 新增 V4.0 Custom Tool 说明（sf_knowledge_graph、sf_knowledge_query、sf_context_build）
+    - 更新 Gate 工具说明（新增 KG 自动同步能力）
+    - 新增 Knowledge Graph 维护协议章节
+    - 新增 knowledge_graph_enabled 配置说明
+    - 修改文件: `AGENTS.md`
+    - _需求: 9.12_
+  - 依赖: Task 1-7
+  - verification_commands: `echo "Manual review required"`
+
+- [x] 9. 回归测试 — 确保 424 个现有测试通过
+  - [x] 9.1 运行全量测试套件，确认 424 个现有测试 + 新增测试全部通过
+    - 修改文件: 无（只运行测试）
+    - _需求: 9.1_
+  - [x] 9.2 验证不变组件未被修改
+    - 检查 opencode.json、7 个子 Agent prompt、8 个不变 Tool、5 个 Plugin 未被修改
+    - 修改文件: 无（只检查）
+    - _需求: 9.3, 9.4, 9.5, 9.6_
+  - 依赖: Task 1-8
+  - verification_commands: `bun test`
+
+- [x] 10. 集成验证 — 端到端功能确认
+  - [x] 10.1 验证 knowledge_graph_enabled=true 时的完整工作流
+    - Gate pass 后 graph.json 自动更新
+    - syncFromSpec 各 scope 正确同步
+    - implements 边正确推导
+    - /sf-graph 命令可用
+    - 修改文件: 无（只验证）
+    - _需求: 1, 2, 3, 4, 8_
+  - [x] 10.2 验证 knowledge_graph_enabled=false 时的兼容性
+    - Gate 行为与 V3.3 完全一致
+    - Context Builder 跳过 KG 查询
+    - 修改文件: 无（只验证）
+    - _需求: 9.7_
+  - [x] 10.3 验证 Context Builder 和 Capability Broker
+    - sf_context_build 返回非空上下文
+    - Capability Broker 返回含完整 content 的推荐
+    - sf_context_build 失败时 Orchestrator 回退到 V3.3
+    - 修改文件: 无（只验证）
+    - _需求: 5, 6, 7_
+  - 依赖: Task 1-9
+  - verification_commands: `bun test`

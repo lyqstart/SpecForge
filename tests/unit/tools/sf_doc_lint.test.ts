@@ -5,6 +5,7 @@ import {
   hasTaskBreakdownContent,
   getTaskSections,
   hasVerificationCommands,
+  hasStandardizedMarkers,
 } from "../../../.opencode/tools/lib/sf_doc_lint_core"
 import { writeFile, rm, mkdir } from "node:fs/promises"
 import { join } from "node:path"
@@ -81,6 +82,8 @@ Terms here.
 
 ## 需求
 
+### REQ-1 用户登录
+
 Requirements here.
 `
       await writeFile(join(specDir, "requirements.md"), content, "utf-8")
@@ -88,7 +91,7 @@ Requirements here.
       const result = await lintDocument(workItemId, "requirements", testDir)
 
       expect(result.status).toBe("fail")
-      expect(result.issues).toHaveLength(1)
+      expect(result.issues.filter((i) => i.severity === "error")).toHaveLength(1)
       expect(result.issues[0].severity).toBe("error")
       expect(result.issues[0].message).toContain("简介")
     })
@@ -103,7 +106,7 @@ Some random content without proper sections.
       const result = await lintDocument(workItemId, "requirements", testDir)
 
       expect(result.status).toBe("fail")
-      expect(result.issues).toHaveLength(3)
+      expect(result.issues.filter((i) => i.severity === "error")).toHaveLength(3)
     })
 
     it("should fail when file does not exist", async () => {
@@ -123,6 +126,10 @@ Some random content without proper sections.
 ## 架构
 
 System architecture description.
+
+### DD-1 核心模块设计
+
+Core module design.
 
 ## 接口
 
@@ -386,6 +393,84 @@ Just some content.
 
     it("should return false when not present", () => {
       expect(hasVerificationCommands("Just some task description")).toBe(false)
+    })
+  })
+
+  describe("standardized marker format warnings", () => {
+    it("should not warn when requirements uses REQ-N format", async () => {
+      const content = `# 需求文档\n\n## 简介\n\nIntro.\n\n## 术语表\n\nTerms.\n\n## 需求\n\n### REQ-1 用户登录\n\nDesc.\n`
+      await writeFile(join(specDir, "requirements.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "requirements", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
+    })
+
+    it("should not warn when requirements uses legacy 需求 N format", async () => {
+      const content = `# 需求文档\n\n## 简介\n\nIntro.\n\n## 术语表\n\nTerms.\n\n## 需求\n\n### 需求 1 用户登录\n\nDesc.\n`
+      await writeFile(join(specDir, "requirements.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "requirements", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
+    })
+
+    it("should warn when requirements has no recognizable markers", async () => {
+      const content = `# 需求文档\n\n## 简介\n\nIntro.\n\n## 术语表\n\nTerms.\n\n## 需求\n\n### 用户登录功能\n\nDesc.\n`
+      await writeFile(join(specDir, "requirements.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "requirements", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(1)
+      expect(result.issues[0].severity).toBe("warning")
+      expect(result.issues[0].message).toContain("REQ-N")
+    })
+
+    it("should not warn when design uses DD-N format", async () => {
+      const content = `# 设计文档\n\n## 架构\n\nArch.\n\n### DD-1 数据模型\n\nModel.\n`
+      await writeFile(join(specDir, "design.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "design", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
+    })
+
+    it("should not warn when design uses legacy numbered sections", async () => {
+      const content = `# 设计文档\n\n## 架构\n\nArch.\n\n### 3.1 数据模型设计\n\nModel.\n`
+      await writeFile(join(specDir, "design.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "design", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
+    })
+
+    it("should warn when design has no recognizable markers", async () => {
+      const content = `# 设计文档\n\n## 架构\n\nArch.\n\n### 数据模型设计\n\nModel.\n`
+      await writeFile(join(specDir, "design.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "design", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(1)
+      expect(result.issues[0].severity).toBe("warning")
+      expect(result.issues[0].message).toContain("DD-N")
+    })
+
+    it("should not warn when tasks uses TASK-N format", async () => {
+      const content = `# 任务列表\n\n### TASK-1 实现核心\n\nverification_commands:\n- bun test\n`
+      await writeFile(join(specDir, "tasks.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "tasks", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
+    })
+
+    it("should not warn when tasks uses legacy Task N format", async () => {
+      const content = `# 任务列表\n\n## Task 1: 实现核心\n\nverification_commands:\n- bun test\n`
+      await writeFile(join(specDir, "tasks.md"), content, "utf-8")
+
+      const result = await lintDocument(workItemId, "tasks", testDir)
+      expect(result.status).toBe("pass")
+      expect(result.issues).toHaveLength(0)
     })
   })
 

@@ -11,6 +11,8 @@ import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import type { GateResult } from "./sf_requirements_gate_core"
 import { getTaskSections, hasVerificationCommands } from "./sf_doc_lint_core"
+import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
+import type { SyncSummary } from "./sf_knowledge_graph_core"
 
 // Re-export GateResult for convenience
 export type { GateResult }
@@ -92,10 +94,26 @@ export async function checkTasksGate(
     }
   }
 
+  // ★ V4.0: KG sync on pass
+  let kgSync: SyncSummary | null = null
+  try {
+    if (await isKGEnabled(baseDir)) {
+      const kgResult = await syncFromSpec(workItemId, baseDir, "tasks")
+      if (kgResult.success && kgResult.summary) {
+        kgSync = kgResult.summary
+      } else if (kgResult.error) {
+        warnings.push(`KG sync warning: ${kgResult.error}`)
+      }
+    }
+  } catch (err) {
+    warnings.push(`KG sync failed: ${(err as Error).message}`)
+  }
+
   return {
     status: "pass",
     blocking_issues: [],
     warnings,
     next_action: "continue",
+    kg_sync: kgSync,
   }
 }

@@ -181,11 +181,38 @@
 
 ## V4.0（平台版）
 
+**目标：** Knowledge Graph + Context Builder / Capability Broker（跳过 Provider Fallback）。
+
 | # | 需求 | 说明 |
 |---|------|------|
-| 1 | Knowledge Graph | 需求→设计→任务→代码关系图 |
-| 2 | Provider Fallback | 通过网关层实现模型切换 |
-| 3 | Context Builder / Capability Broker | 按需加载上下文和能力 |
+| 1 | Knowledge Graph 数据模型与存储 | 需求→设计→任务→代码关系图，JSON 文件持久化 |
+| 2 | Knowledge Graph 读写工具 | sf_knowledge_graph Custom Tool，支持 CRUD 和 sync_from_spec |
+| 3 | Knowledge Graph 查询与影响分析 | sf_knowledge_query Custom Tool，支持影响分析和路径追溯 |
+| 4 | Knowledge Graph 自动维护协议 | Gate 工具内部自动同步 Graph（pass 时触发） |
+| 5 | Context Builder 基础版 | sf_context_build Custom Tool，数据源：Knowledge Graph + Agent_Run_Archive（files_changed.json + result.json）。数据源接口可扩展，为 V5.0 知识库接入预留扩展点 |
+| 6 | Capability Broker | 集成到 sf_context_build，Skill Fragment 按需提取和注入 |
+| 7 | Orchestrator 调度协议更新 | 集成 Context Builder 到 4 个 Workflow Skill |
+| 8 | Knowledge Graph 可视化查询 | /sf-graph 调试命令 |
+| 9 | 向后兼容与测试完整性 | 424 个现有测试通过，Gate 工具保持输入输出契约不变 |
+
+**已跳过：** Provider Fallback（通过网关层实现模型切换），推迟到后续版本。
+
+---
+
+## V5.0（知识积累闭环版）
+
+**目标：** 基于 V3.1 的完整会话记录和 V4.0 的 Knowledge Graph，实现会话复盘→知识提取→知识库→智能检索的完整闭环。
+
+| # | 需求 | 说明 |
+|---|------|------|
+| 1 | 会话复盘与分析工具 | 解析 specforge/sessions/ 下的 conversation.jsonl，对完整会话进行结构化分析（关键决策、错误模式、解决方案、执行路径） |
+| 2 | 知识提取与分类 | 从会话分析结果中自动提取可复用的知识条目，按类别分类（修改模式、常见错误解决方案、框架最佳实践、文件类型特定经验等） |
+| 3 | 知识库持久化存储 | 结构化知识库（如 specforge/knowledge/insights.json），支持知识条目的增删改查和版本管理 |
+| 4 | 知识检索与匹配 | 根据 Task 特征（修改文件、任务描述、工作流阶段）从知识库中检索相关知识条目 |
+| 5 | Context Builder 升级版 | 扩展 sf_context_build 的数据源，从 V4.0 的 Agent_Run_Archive 基本匹配升级为知识库语义检索，注入更精准的历史经验 |
+| 6 | 知识质量管理 | 知识条目的有效性评估、过期清理、冲突检测 |
+
+**与 V4.0 的关系：** V4.0 的 Context Builder 数据源接口设计为可扩展，V5.0 通过新增知识库数据源适配器接入，不需要重构 Context Builder 核心逻辑。
 
 ---
 

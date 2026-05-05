@@ -10,6 +10,8 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import type { GateResult } from "./sf_requirements_gate_core"
+import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
+import type { SyncSummary } from "./sf_knowledge_graph_core"
 
 // Re-export GateResult for convenience
 export type { GateResult }
@@ -68,7 +70,25 @@ export async function checkDesignGate(
 
   // 2. 根据 workflow_type 选择检查标准
   if (workflowType === "feature_spec_design_first") {
-    return checkDesignGateDesignFirst(content)
+    const designFirstResult = checkDesignGateDesignFirst(content)
+    if (designFirstResult.status === "pass") {
+      // ★ V4.0: KG sync on pass
+      let kgSync: SyncSummary | null = null
+      try {
+        if (await isKGEnabled(baseDir)) {
+          const kgResult = await syncFromSpec(workItemId, baseDir, "design")
+          if (kgResult.success && kgResult.summary) {
+            kgSync = kgResult.summary
+          } else if (kgResult.error) {
+            designFirstResult.warnings.push(`KG sync warning: ${kgResult.error}`)
+          }
+        }
+      } catch (err) {
+        designFirstResult.warnings.push(`KG sync failed: ${(err as Error).message}`)
+      }
+      designFirstResult.kg_sync = kgSync
+    }
+    return designFirstResult
   }
 
   // 3. 默认行为（feature_spec / bugfix_spec）：检查需求引用（V1 行为不变）
@@ -90,11 +110,27 @@ export async function checkDesignGate(
     }
   }
 
+  // ★ V4.0: KG sync on pass
+  let kgSync: SyncSummary | null = null
+  try {
+    if (await isKGEnabled(baseDir)) {
+      const kgResult = await syncFromSpec(workItemId, baseDir, "design")
+      if (kgResult.success && kgResult.summary) {
+        kgSync = kgResult.summary
+      } else if (kgResult.error) {
+        warnings.push(`KG sync warning: ${kgResult.error}`)
+      }
+    }
+  } catch (err) {
+    warnings.push(`KG sync failed: ${(err as Error).message}`)
+  }
+
   return {
     status: "pass",
     blocking_issues: [],
     warnings,
     next_action: "continue",
+    kg_sync: kgSync,
   }
 }
 
@@ -140,10 +176,11 @@ export function checkDesignGateDesignFirst(content: string): GateResult {
 
 /**
  * 检查是否引用了需求编号
- * 匹配: "需求 1", "需求 12", "Requirement 1", "Requirement 12" 等
+ * Standardized: refs: [REQ-1, REQ-3]
+ * Legacy: "需求 1", "需求 12", "Requirement 1", "Requirement 12", "REQ-001" 等
  */
 export function hasRequirementReferences(content: string): boolean {
-  const patterns = [/需求\s*\d+/i, /requirement\s*\d+/i, /REQ[-_]?\w*\d+/i]
+  const patterns = [/refs:\s*\[[^\]]*REQ-\d+/i, /需求\s*\d+/i, /requirement\s*\d+/i, /REQ[-_]?\w*\d+/i]
   return patterns.some((pattern) => pattern.test(content))
 }
 

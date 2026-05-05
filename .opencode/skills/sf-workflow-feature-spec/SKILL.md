@@ -46,7 +46,8 @@ intake → requirements → requirements_gate → design → design_gate → tas
 
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `requirements`
-2. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
+2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
+3. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容
    - 指令：加载 `superpowers-brainstorming` skill，从 7 个维度进行头脑风暴，生成 requirements.md
@@ -72,7 +73,8 @@ intake → requirements → requirements_gate → design → design_gate → tas
 
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `design`
-2. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
+3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - requirements.md 的内容或路径
    - 指令：基于需求生成 design.md，必须引用需求编号
@@ -100,13 +102,14 @@ intake → requirements → requirements_gate → design → design_gate → tas
 
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `tasks`
-2. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
+2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
+3. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - requirements.md 和 design.md 的内容或路径
    - 指令：将设计拆分为可执行任务，每个 task 必须包含 verification_commands
-3. 等待子 Agent 完成，确认 `specforge/specs/<work_item_id>/tasks.md` 已生成
-4. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
-5. 如果 lint 通过，调用 `sf_state_transition`（from_state="tasks"，to_state="tasks_gate"，evidence="tasks.md generated, doc_lint passed"）
+4. 等待子 Agent 完成，确认 `specforge/specs/<work_item_id>/tasks.md` 已生成
+5. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
+6. 如果 lint 通过，调用 `sf_state_transition`（from_state="tasks"，to_state="tasks_gate"，evidence="tasks.md generated, doc_lint passed"）
 
 **产物：** `tasks.md`
 
@@ -169,6 +172,15 @@ intake → requirements → requirements_gate → design → design_gate → tas
 串行: Task 6（原因: 依赖 Task 5 的输出文件 xxx.ts）
 ━━━━━━━━━━━━━━━━━━━━
 ```
+
+#### Step 4.5：构建 Task Context（V4.0 新增）
+
+对每个即将调度的 Task：
+1. 调用 `sf_context_build`（task_id=<task_id>, work_item_id=<id>, include_capabilities=true, task_description=<task 描述>）
+2. 如果返回非空 task_context.context → 注入到 sf-executor 的调度 prompt 中（位于任务描述之后）
+3. 如果返回非空 capabilities.recommended_fragments → 将推荐的 Skill Fragment 完整内容注入到调度 prompt 中，替代全量 Skill 加载
+4. 向用户报告 Context Builder 摘要（引用的 Graph 节点数、历史经验数、推荐 Fragment 数、预估 Token 量）
+5. 如果 sf_context_build 调用失败 → 回退到 V3.3 协议（不注入额外上下文），记录警告
 
 #### Step 5：按 Execution_Plan 执行
 

@@ -102,7 +102,8 @@ permission:
 
 **输出格式要求：**
 
-- 必须引用 `requirements.md` 中的需求编号（支持以下格式："需求 1"、"REQ-001"、"REQ-F001"、"Requirement 1"）
+- 每个设计决策使用标准化标记格式：`### DD-N 标题`（如 `### DD-1 数据模型设计`、`### DD-2 API 设计`）
+- 每个设计决策必须包含需求引用，使用 `refs: [REQ-1, REQ-3]` 格式（也兼容 "需求 1"、"REQ-001"、"REQ-F001"、"Requirement 1" 格式）
 - 包含架构图（使用 Mermaid 语法）
 - 包含接口定义（使用 TypeScript 类型）
 - 包含数据模型定义
