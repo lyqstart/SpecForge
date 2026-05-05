@@ -1,0 +1,324 @@
+# 实施计划：SpecForge 统一安装命令系统
+
+## 概述
+
+将现有平台特定安装脚本（`install.ps1`、`install.sh`、`reinstall.ps1`）替换为统一的跨平台 TypeScript CLI 工具 `scripts/sf-installer.ts`。所有逻辑集中在单文件中，通过 helper 函数组织。实现 install/upgrade/uninstall/verify 四个子命令，支持版本追踪、冲突检测、安全操作。
+
+## 任务列表
+
+- [-] 1. 实现核心工具函数 — 校验和计算与文件注册表
+  - [x] 1.1 创建 `scripts/sf-installer.ts`，实现 SHA-256 校验和计算函数和文件注册表常量
+    - 实现 `computeSHA256(filePath: string): Promise<string>` — 使用 bun 内置 crypto 计算文件 SHA-256
+    - 定义 `FILE_REGISTRY: string[]` — 通过扫描仓库当前实际文件生成硬编码列表，包含所有 `.opencode/agents/sf-*.md`、`.opencode/tools/sf_*.ts`、`.opencode/tools/lib/*.ts`、`.opencode/plugins/sf_*.ts`、`.opencode/skills/sf-*/SKILL.md`、`.opencode/skills/superpowers-*/SKILL.md`、`specforge/agents/**`、`specforge/config/*.json`、`specforge/runtime/state.json`、`specforge/runtime/events.jsonl`、`AGENTS.md`
+    - 定义 `MERGE_FILES` 常量（`opencode.json`、`package.json`）
+    - 定义 `RUNTIME_DIRS` 常量（运行时数据目录列表）
+    - 定义 `ManifestFile` 接口（version、installed_at、source_dir、files）
+    - refs: [DD-2, DD-3, REQ-4]
+    - files: [`scripts/sf-installer.ts`]
+  - [x] 1.2 实现清单管理函数
+    - 实现 `readManifest(targetDir: string): ManifestFile | null` — 读取并解析 manifest.json
+    - 实现 `writeManifest(targetDir: string, manifest: ManifestFile): void` — 写入清单文件
+    - 实现 `buildManifest(sourceDir, targetDir, deployedFiles): Promise<ManifestFile>` — 构建完整清单
+    - 版本号从源目录 `package.json` 的 `version` 字段读取
+    - refs: [DD-3, REQ-4]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts --help`
+
+- [ ] 2. 实现参数解析与用法显示
+  - [x] 2.1 实现 CLI 参数解析函数
+    - 实现 `parseArgs(args: string[]): CLIOptions` — 解析 process.argv
+    - 支持子命令：`install`、`upgrade`、`uninstall`、`verify`
+    - 支持选项：`--target <path>`、`--force`、`--purge`、`--dry-run`、`--skip-deps`、`--version`
+    - 无子命令时 `subcommand` 为 null
+    - `--target` 省略时默认使用 `process.cwd()`
+    - refs: [DD-1, REQ-1]
+    - files: [`scripts/sf-installer.ts`]
+  - [x] 2.2 实现用法显示和版本显示
+    - 实现 `showUsage(): void` — 列出可用子命令和选项说明
+    - 实现 `showVersion(targetDir: string): void` — 读取目标项目清单显示已安装版本
+    - 无子命令时调用 showUsage 并退出
+    - `--version` 时调用 showVersion 并退出
+    - refs: [DD-1, REQ-1.5, REQ-4.5]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts && bun run scripts/sf-installer.ts --version`
+
+- [ ] 3. 实现冲突检测模块
+  - [x] 3.1 实现冲突检测核心函数
+    - 实现 `isSpecForgeFile(filename: string): boolean` — 检查文件名是否以 `sf-` 或 `sf_` 开头
+    - 实现 `detectConflicts(targetDir, manifest): ConflictReport` — 遍历 FILE_REGISTRY 检测冲突
+    - 冲突逻辑：目标路径已存在文件 + 不在现有清单中 → 用户文件占据 SF 路径
+    - 实现 `checkOpenCodeJsonConflicts(targetDir): ConflictReport` — 检查 opencode.json 中非 SF 安装的同名 agent
+    - refs: [DD-4, REQ-3, REQ-7]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts --help`
+
+- [ ] 4. 实现配置合并模块
+  - [x] 4.1 实现 opencode.json 合并函数
+    - 实现 `mergeOpenCodeJson(targetDir, sourceDir, mode: "add" | "remove"): void`
+    - `mode="add"`：将源文件 agent 对象中 `sf-` 开头的条目写入目标 agent 对象
+    - `mode="remove"`：删除目标 agent 对象中 `sf-` 开头的条目
+    - 保留 `$schema`、`permission`、非 `sf-` agent 不变
+    - JSON 解析失败时中止并报告错误
+    - refs: [DD-5, REQ-10.1, REQ-10.2, REQ-10.5, REQ-10.6]
+    - files: [`scripts/sf-installer.ts`]
+  - [x] 4.2 实现 package.json 合并函数
+    - 实现 `mergePackageJson(targetDir, sourceDir, mode: "add" | "remove"): void`
+    - `mode="add"`：将源文件 devDependencies 合并到目标 devDependencies
+    - `mode="remove"`：从目标 devDependencies 中删除源文件 devDependencies 列出的包名
+    - 保留 `name`、`version`、`scripts`、`dependencies` 等其他字段不变
+    - refs: [DD-5, REQ-10.3, REQ-10.4]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts --help`
+
+- [ ] 5. 实现文件操作模块
+  - [x] 5.1 实现文件部署与删除函数
+    - 实现 `deployFile(sourceDir, targetDir, relativePath, dryRun): FileOperation` — 复制单个文件
+    - 实现 `removeFile(targetDir, relativePath, dryRun): FileOperation` — 删除单个文件
+    - 实现 `removeEmptyDirs(targetDir, dirs, dryRun): FileOperation[]` — 删除空目录
+    - 实现 `logOperation(op: FileOperation): void` — 输出操作日志（创建/更新/删除/跳过/合并）
+    - dry-run 模式下仅记录不执行
+    - 权限错误时跳过该文件并继续
+    - refs: [DD-6, REQ-7.5, REQ-7.6, REQ-2.3, REQ-2.8]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts --help`
+
+- [ ] 6. 实现 install 子命令
+  - [x] 6.1 实现 `cmdInstall(opts, sourceDir): Promise<void>`
+    - 检查清单是否已存在 → 已存在则中止，提示使用 upgrade
+    - 执行冲突检测 → 有冲突且无 --force 则中止并列出冲突
+    - 创建目录结构 → 部署 FILE_REGISTRY 中所有文件
+    - 合并 opencode.json（mode="add"）
+    - 合并 package.json（mode="add"）
+    - 构建并写入清单文件
+    - 执行完整性校验
+    - 显示部署摘要和后续步骤
+    - refs: [DD-7, REQ-2, REQ-3]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts install --dry-run`
+
+- [ ] 7. 实现 upgrade 子命令
+  - [x] 7.1 实现 `cmdUpgrade(opts, sourceDir): Promise<void>`
+    - 检查清单是否存在 → 不存在则中止，提示使用 install
+    - 比较版本 → 相同则报告已是最新并退出
+    - 执行冲突检测
+    - 计算差异：比较源文件校验和与清单记录
+    - 仅部署校验和不同的文件和新增文件
+    - 检测已修改的 SF 文件（用户修改过的）→ 非 --force 时提示确认
+    - 删除清单中有但源目录已移除的文件
+    - 合并 opencode.json 和 package.json
+    - 更新清单文件
+    - 显示摘要（新增/更新/删除）
+    - refs: [DD-7, REQ-5]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts upgrade --dry-run`
+
+- [ ] 8. 实现 uninstall 子命令
+  - [x] 8.1 实现 `cmdUninstall(opts): Promise<void>`
+    - 检查清单是否存在 → 不存在则中止，提示未安装
+    - 删除清单中列出的所有文件
+    - 从 opencode.json 移除 sf-* agent 定义（mode="remove"）
+    - 从 package.json 移除 SF devDependencies（mode="remove"）
+    - 删除仅为 SF 文件创建的空目录
+    - 默认保留运行时数据；`--purge` 时删除所有 specforge 目录
+    - 删除清单文件本身
+    - 显示已删除文件和目录摘要
+    - refs: [DD-7, REQ-6]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts uninstall --dry-run`
+
+- [ ] 9. 实现 verify 子命令与依赖管理
+  - [x] 9.1 实现 `cmdVerify(opts): Promise<void>`
+    - 读取清单文件
+    - 遍历清单中每个文件：计算当前 SHA-256 与记录比较
+    - 分类报告：完整 / 已修改 / 缺失
+    - 全部通过时报告安装完整
+    - 有问题时建议运行 `upgrade --force`
+    - refs: [DD-7, REQ-9]
+    - files: [`scripts/sf-installer.ts`]
+  - [x] 9.2 实现依赖管理集成
+    - 实现 `isBunAvailable(): boolean` — 检查 PATH 中是否有 bun
+    - 实现 `runBunInstall(targetDir): { success: boolean; output: string }` — 执行 bun install
+    - install/upgrade 完成后：bun 可用且未 --skip-deps → 自动执行 bun install
+    - bun 不可用时显示提示信息
+    - refs: [DD-8, REQ-8]
+    - files: [`scripts/sf-installer.ts`]
+  - verification_commands: `bun run scripts/sf-installer.ts verify --help`
+
+- [ ] 10. 实现主入口与命令路由
+  - [x] 10.1 实现主函数和命令路由
+    - 实现 `main()` — 解析参数，路由到对应子命令
+    - 处理退出码：0=成功，1=失败，2=部分成功
+    - 错误输出格式：`❌ 错误: <描述>\n   路径: <路径>\n   建议: <步骤>`
+    - 在 package.json 中添加 `"sf-install": "bun scripts/sf-installer.ts"` 脚本条目
+    - refs: [DD-1, DD-7, REQ-1]
+    - files: [`scripts/sf-installer.ts`, `package.json`]
+  - verification_commands: `bun run sf-install --help`
+
+- [x] 11. 检查点 — 确保 CLI 基本功能正常
+  - 确保所有子命令可调用，--help 和 --dry-run 正常工作，ask the user if questions arise.
+
+- [-] 12. 编写单元测试 — 参数解析与文件识别
+  - [x] 12.1 创建 `tests/unit/installer/parseArgs.test.ts`
+    - 测试各种 CLI 参数组合（子命令、选项、默认值）
+    - 测试无效子命令处理
+    - 测试 --target 默认值为 cwd
+    - 测试多选项组合（--force --dry-run --skip-deps）
+    - refs: [DD-1, REQ-1]
+    - files: [`tests/unit/installer/parseArgs.test.ts`]
+  - [x] 12.2 创建 `tests/unit/installer/isSpecForgeFile.test.ts`
+    - 测试 sf- 前缀识别（agent/skill）
+    - 测试 sf_ 前缀识别（tool/plugin）
+    - 测试无前缀文件返回 false
+    - 测试边界情况（空字符串、仅前缀、含路径分隔符）
+    - refs: [DD-4, REQ-3.3]
+    - files: [`tests/unit/installer/isSpecForgeFile.test.ts`]
+  - verification_commands: `bun test tests/unit/installer/`
+
+- [ ] 13. 编写单元测试 — 配置合并与冲突检测
+  - [x] 13.1 创建 `tests/unit/installer/mergeOpenCodeJson.test.ts`
+    - 测试 add 模式：正确添加 sf-* agent，保留非 sf-* agent
+    - 测试 add 模式：保留 $schema 和 permission 字段
+    - 测试 remove 模式：正确移除 sf-* agent，保留其他
+    - 测试 JSON 解析错误时抛出异常
+    - 测试目标文件不存在时的行为（install 场景）
+    - refs: [DD-5, REQ-10]
+    - files: [`tests/unit/installer/mergeOpenCodeJson.test.ts`]
+  - [x] 13.2 创建 `tests/unit/installer/mergePackageJson.test.ts`
+    - 测试 add 模式：正确合并 devDependencies
+    - 测试 add 模式：保留 name/version/scripts/dependencies 不变
+    - 测试 remove 模式：正确移除 SF devDependencies
+    - 测试目标文件不存在时的行为
+    - refs: [DD-5, REQ-10.3, REQ-10.4]
+    - files: [`tests/unit/installer/mergePackageJson.test.ts`]
+  - [x] 13.3 创建 `tests/unit/installer/detectConflicts.test.ts`
+    - 测试无冲突场景
+    - 测试用户文件占据 SF 路径的冲突
+    - 测试 opencode.json 中非 SF 同名 agent 冲突
+    - 测试 --force 忽略冲突
+    - refs: [DD-4, REQ-3, REQ-7]
+    - files: [`tests/unit/installer/detectConflicts.test.ts`]
+  - verification_commands: `bun test tests/unit/installer/`
+
+- [ ] 14. 编写单元测试 — 命令守卫与错误处理
+  - [x] 14.1 创建 `tests/unit/installer/commands.test.ts`
+    - 测试 install 已安装时中止
+    - 测试 upgrade 未安装时中止
+    - 测试 uninstall 未安装时中止
+    - 测试 upgrade 版本相同时报告已是最新
+    - 测试 dry-run 不执行文件操作
+    - 测试权限错误跳过并继续
+    - 测试源文件缺失时警告并跳过
+    - refs: [DD-7, REQ-2.2, REQ-5.2, REQ-5.7, REQ-6.8, REQ-7.5]
+    - files: [`tests/unit/installer/commands.test.ts`]
+  - verification_commands: `bun test tests/unit/installer/`
+
+- [x] 15. 检查点 — 确保单元测试全部通过
+  - 确保所有测试通过，ask the user if questions arise.
+  - verification_commands: `bun test tests/unit/installer/`
+
+- [x] 16. 编写属性测试 — 核心正确性属性
+  - [ ]* 16.1 创建 `tests/unit/installer/properties.test.ts` — Property 2: opencode.json 合并安全性
+    - **Property 2: opencode.json 合并安全性**
+    - 对于任意包含非 sf-* agent 和任意 $schema/permission 的有效 opencode.json，合并后非 sf-* 条目和 $schema/permission 保持不变
+    - 使用 fast-check 生成随机 opencode.json 结构
+    - **验证: REQ-2.4, REQ-5.5, REQ-10.1, REQ-10.2, REQ-10.5**
+    - refs: [DD-5, REQ-10]
+    - files: [`tests/unit/installer/properties.test.ts`]
+  - [ ]* 16.2 Property 3: package.json 合并安全性
+    - **Property 3: package.json 合并安全性**
+    - 对于任意包含 name/version/scripts/dependencies/devDependencies 的有效 package.json，合并后 devDependencies 以外字段保持不变
+    - **验证: REQ-2.5, REQ-10.3, REQ-10.4**
+    - refs: [DD-5, REQ-10]
+    - files: [`tests/unit/installer/properties.test.ts`]
+  - [ ]* 16.3 Property 5: 冲突检测阻止用户文件覆盖
+    - **Property 5: 冲突检测阻止用户文件覆盖**
+    - 对于任意目标目录中存在的非清单文件，如果路径与 FILE_REGISTRY 相同，应检测到冲突
+    - **验证: REQ-3.2, REQ-7.1, REQ-7.3**
+    - refs: [DD-4, REQ-3, REQ-7]
+    - files: [`tests/unit/installer/properties.test.ts`]
+  - [ ]* 16.4 Property 6: SpecForge 文件前缀识别
+    - **Property 6: SpecForge 文件前缀识别**
+    - 对于任意文件名，isSpecForgeFile 返回 true 当且仅当文件名以 sf- 或 sf_ 开头
+    - **验证: REQ-3.3**
+    - refs: [DD-4, REQ-3.3]
+    - files: [`tests/unit/installer/properties.test.ts`]
+  - [ ]* 16.5 Property 14: Dry-run 幂等性
+    - **Property 14: Dry-run 幂等性**
+    - 对于任意子命令和 --dry-run 标志，执行后文件系统状态与执行前完全一致
+    - **验证: REQ-7.5**
+    - refs: [DD-6, REQ-7.5]
+    - files: [`tests/unit/installer/properties.test.ts`]
+  - verification_commands: `bun test tests/unit/installer/properties.test.ts`
+
+- [x] 17. 编写属性测试 — 校验和与升级属性
+  - [ ]* 17.1 Property 4: 清单校验和正确性
+    - **Property 4: 清单校验和正确性**
+    - 对于任意文件内容，清单中记录的 SHA-256 应等于文件实际内容的 SHA-256 哈希值
+    - **验证: REQ-2.6, REQ-4.3**
+    - refs: [DD-3, REQ-4]
+    - files: [`tests/unit/installer/properties-checksum.test.ts`]
+  - [ ]* 17.2 Property 7: 升级选择性部署
+    - **Property 7: 升级选择性部署**
+    - 对于任意清单和源文件集合，upgrade 仅部署校验和不同的文件或新文件
+    - **验证: REQ-5.3**
+    - refs: [DD-7, REQ-5.3]
+    - files: [`tests/unit/installer/properties-checksum.test.ts`]
+  - [ ]* 17.3 Property 9: 升级清理已移除文件
+    - **Property 9: 升级清理已移除文件**
+    - 对于任意清单中记录但源目录注册表中已不存在的文件，upgrade 应删除该文件
+    - **验证: REQ-5.6**
+    - refs: [DD-7, REQ-5.6]
+    - files: [`tests/unit/installer/properties-checksum.test.ts`]
+  - [ ]* 17.4 Property 15: 完整性校验正确性
+    - **Property 15: 完整性校验正确性**
+    - 对于任意清单和文件状态，verify 应正确分类为完整/已修改/缺失
+    - **验证: REQ-9.2, REQ-9.3, REQ-9.4**
+    - refs: [DD-7, REQ-9]
+    - files: [`tests/unit/installer/properties-checksum.test.ts`]
+  - verification_commands: `bun test tests/unit/installer/properties-checksum.test.ts`
+
+- [x] 18. 编写属性测试 — 安装/卸载属性
+  - [ ]* 18.1 Property 1: 安装部署完整性
+    - **Property 1: 安装部署完整性**
+    - 对于任意文件注册表和空目标目录，install 后注册表中每个文件都应存在于目标目录
+    - **验证: REQ-2.1**
+    - refs: [DD-7, REQ-2.1]
+    - files: [`tests/unit/installer/properties-install.test.ts`]
+  - [ ]* 18.2 Property 10: 卸载移除所有清单文件
+    - **Property 10: 卸载移除所有清单文件**
+    - 对于任意清单文件列表，uninstall 后清单中每个文件都不应存在于目标目录
+    - **验证: REQ-6.1**
+    - refs: [DD-7, REQ-6.1]
+    - files: [`tests/unit/installer/properties-install.test.ts`]
+  - [ ]* 18.3 Property 11: 卸载配置清理
+    - **Property 11: 卸载配置清理**
+    - 对于任意包含 sf-* 和非 sf-* 条目的配置文件，uninstall 后 sf-* 被移除，非 sf-* 保持不变
+    - **验证: REQ-6.2, REQ-6.3**
+    - refs: [DD-5, DD-7, REQ-6.2, REQ-6.3]
+    - files: [`tests/unit/installer/properties-install.test.ts`]
+  - [ ]* 18.4 Property 12: 卸载不删除用户文件
+    - **Property 12: 卸载不删除用户文件**
+    - 对于任意目标目录中不在清单中的文件，uninstall 后该文件仍然存在且内容不变
+    - **验证: REQ-7.2**
+    - refs: [DD-7, REQ-7.2]
+    - files: [`tests/unit/installer/properties-install.test.ts`]
+  - [ ]* 18.5 Property 8: 运行时数据不可变性
+    - **Property 8: 运行时数据不可变性**
+    - 对于任意 install/upgrade/uninstall（无 --purge）操作，运行时数据文件内容保持不变
+    - **验证: REQ-5.4, REQ-6.5**
+    - refs: [DD-7, REQ-5.4, REQ-6.5]
+    - files: [`tests/unit/installer/properties-install.test.ts`]
+  - verification_commands: `bun test tests/unit/installer/properties-install.test.ts`
+
+- [x] 19. 最终检查点 — 确保所有测试通过
+  - 运行全量测试套件，确保现有测试 + 新增安装器测试全部通过，ask the user if questions arise.
+  - verification_commands: `bun test`
+
+## 备注
+
+- 标记 `*` 的子任务为可选，可跳过以加速 MVP 交付
+- 每个任务引用具体需求（REQ-N）和设计决策（DD-N）以确保可追溯性
+- 检查点确保增量验证
+- 属性测试验证通用正确性属性（使用 fast-check）
+- 单元测试验证具体示例和边界情况
+- 文件注册表（DD-2）应通过扫描仓库实际文件生成，确保与当前代码库一致

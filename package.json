@@ -6,7 +6,8 @@
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "sf-install": "bun scripts/sf-installer.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.3.13",
