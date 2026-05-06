@@ -15,6 +15,10 @@ export type WorkflowType =
   | "bugfix_spec"
   | "feature_spec_design_first"
   | "quick_change"
+  | "change_request"
+  | "refactor"
+  | "ops_task"
+  | "investigation"
 
 // ============================================================
 // States
@@ -112,6 +116,68 @@ export const QUICK_CHANGE_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
     ["verification_gate", ["completed", "development", "blocked"]],
   ])
 
+/**
+ * Change Request 工作流合法状态流转表
+ */
+export const CHANGE_REQUEST_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
+  new Map<string, readonly string[]>([
+    ["intake", ["impact_analysis"]],
+    ["impact_analysis", ["impact_analysis_gate"]],
+    ["impact_analysis_gate", ["design_delta", "impact_analysis", "blocked"]],
+    ["design_delta", ["design_gate"]],
+    ["design_gate", ["tasks", "design_delta", "blocked"]],
+    ["tasks", ["tasks_gate"]],
+    ["tasks_gate", ["development", "tasks", "blocked"]],
+    ["development", ["review"]],
+    ["review", ["verification"]],
+    ["verification", ["verification_gate"]],
+    ["verification_gate", ["completed", "development", "blocked"]],
+  ])
+
+/**
+ * Refactor 工作流合法状态流转表
+ */
+export const REFACTOR_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
+  new Map<string, readonly string[]>([
+    ["intake", ["refactor_analysis"]],
+    ["refactor_analysis", ["refactor_analysis_gate"]],
+    ["refactor_analysis_gate", ["refactor_plan", "refactor_analysis", "blocked"]],
+    ["refactor_plan", ["refactor_plan_gate"]],
+    ["refactor_plan_gate", ["development", "refactor_plan", "blocked"]],
+    ["development", ["review", "verification"]],
+    ["review", ["verification"]],
+    ["verification", ["verification_gate"]],
+    ["verification_gate", ["completed", "development", "blocked"]],
+  ])
+
+/**
+ * Ops Task 工作流合法状态流转表
+ */
+export const OPS_TASK_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
+  new Map<string, readonly string[]>([
+    ["intake", ["ops_plan"]],
+    ["ops_plan", ["ops_plan_gate"]],
+    ["ops_plan_gate", ["tasks", "ops_plan", "blocked"]],
+    ["tasks", ["tasks_gate"]],
+    ["tasks_gate", ["execution", "tasks", "blocked"]],
+    ["execution", ["verification"]],
+    ["verification", ["verification_gate"]],
+    ["verification_gate", ["completed", "execution", "blocked"]],
+  ])
+
+/**
+ * Investigation 工作流合法状态流转表
+ */
+export const INVESTIGATION_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
+  new Map<string, readonly string[]>([
+    ["intake", ["investigation_plan"]],
+    ["investigation_plan", ["investigation_plan_gate"]],
+    ["investigation_plan_gate", ["research", "investigation_plan", "blocked"]],
+    ["research", ["findings_report"]],
+    ["findings_report", ["findings_report_gate"]],
+    ["findings_report_gate", ["completed", "research", "findings_report", "blocked"]],
+  ])
+
 // ============================================================
 // Transition Table Lookup
 // ============================================================
@@ -133,6 +199,14 @@ export function getTransitionTable(
       return DESIGN_FIRST_TRANSITIONS
     case "quick_change":
       return QUICK_CHANGE_TRANSITIONS
+    case "change_request":
+      return CHANGE_REQUEST_TRANSITIONS
+    case "refactor":
+      return REFACTOR_TRANSITIONS
+    case "ops_task":
+      return OPS_TASK_TRANSITIONS
+    case "investigation":
+      return INVESTIGATION_TRANSITIONS
   }
 }
 

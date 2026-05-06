@@ -18,6 +18,7 @@ export interface WorkItemState {
   current_state: string
   created_at: string
   updated_at: string
+  metadata?: Record<string, unknown>
 }
 
 /**

@@ -4,7 +4,7 @@
  *
  * 提取为独立模块以便单元测试（不依赖 @opencode-ai/plugin 运行时）
  *
- * Requirements: 1.5, 8.3, 8.4, 20.1, 20.2, 20.4
+ * Requirements: 1.5, 8.3, 8.4, 20.1, 20.2, 20.4, 11.1, 11.5, 11.6, 2.6, 3.6, 5.6
  */
 
 import { readFile } from "node:fs/promises"
@@ -25,6 +25,166 @@ export interface GateResult {
   kg_sync?: SyncSummary | null
 }
 
+/**
+ * Gate Mode Spec 策略表接口
+ * 定义每种 mode 的目标文件、必需 sections 和检查函数
+ */
+export interface GateModeSpec {
+  mode: string
+  targetFile: string
+  requiredSections: string[]
+  checkFn: (content: string, sections: Record<string, string>) => GateResult
+}
+
+/**
+ * Requirements Gate 支持的 mode 类型
+ */
+export type RequirementsGateMode = "change_request" | "refactor" | "investigation"
+
+// ============================================================
+// Gate Mode Strategy Table
+// ============================================================
+
+/**
+ * 检查 impact_analysis.md 内容（change_request mode）
+ * pass 条件：所有 section 非空，风险评估为合法值（高/中/低）
+ */
+export function checkImpactAnalysisContent(
+  _content: string,
+  sections: Record<string, string>
+): GateResult {
+  const validRiskLevels = ["高", "中", "低"]
+  const riskValue = sections["风险评估"]?.trim()
+  if (!validRiskLevels.includes(riskValue)) {
+    return {
+      status: "fail",
+      blocking_issues: [`风险评估值不合法（当前值: "${riskValue}"），合法值: 高/中/低`],
+      warnings: [],
+      next_action: "revise",
+    }
+  }
+  return {
+    status: "pass",
+    blocking_issues: [],
+    warnings: [],
+    next_action: "continue",
+  }
+}
+
+/**
+ * 检查 refactor_analysis.md 内容（refactor mode）
+ * pass 条件：所有 section 非空，不变行为声明明确（非模糊表述）
+ */
+export function checkRefactorAnalysisContent(
+  _content: string,
+  sections: Record<string, string>
+): GateResult {
+  const invariantDeclaration = sections["不变行为声明"]?.trim()
+  // 不变行为声明必须明确：不能只是"无"、"N/A"、"待定"等模糊表述
+  const vaguePatterns = [/^无$/i, /^n\/?a$/i, /^待定$/i, /^tbd$/i, /^none$/i, /^未定$/i]
+  if (vaguePatterns.some((p) => p.test(invariantDeclaration))) {
+    return {
+      status: "fail",
+      blocking_issues: ["不变行为声明不明确（不能为\"无\"、\"N/A\"、\"待定\"等模糊表述）"],
+      warnings: [],
+      next_action: "revise",
+    }
+  }
+  return {
+    status: "pass",
+    blocking_issues: [],
+    warnings: [],
+    next_action: "continue",
+  }
+}
+
+/**
+ * 检查 investigation_plan.md 内容（investigation mode）
+ * pass 条件：所有 section 非空（轻量级检查）
+ */
+export function checkInvestigationPlanContent(
+  _content: string,
+  _sections: Record<string, string>
+): GateResult {
+  // 轻量级检查：只要所有 section 非空即可（已在外层检查）
+  return {
+    status: "pass",
+    blocking_issues: [],
+    warnings: [],
+    next_action: "continue",
+  }
+}
+
+/**
+ * Requirements Gate 策略表
+ * 定义 3 种 mode 的检查规则
+ */
+export const REQUIREMENTS_GATE_SPECS: GateModeSpec[] = [
+  {
+    mode: "change_request",
+    targetFile: "impact_analysis.md",
+    requiredSections: ["变更范围", "风险评估", "回归测试范围", "KG 关联"],
+    checkFn: checkImpactAnalysisContent,
+  },
+  {
+    mode: "refactor",
+    targetFile: "refactor_analysis.md",
+    requiredSections: ["代码问题识别", "重构目标", "不变行为声明", "风险评估"],
+    checkFn: checkRefactorAnalysisContent,
+  },
+  {
+    mode: "investigation",
+    targetFile: "investigation_plan.md",
+    requiredSections: ["调查目标", "调查范围", "调查方法", "预期产出格式"],
+    checkFn: checkInvestigationPlanContent,
+  },
+]
+
+// ============================================================
+// Section Parsing
+// ============================================================
+
+/**
+ * 从 Markdown 内容中解析指定 sections
+ * 匹配 ## 或 ### 标题，提取标题下的内容直到下一个同级或更高级标题
+ */
+export function parseSections(
+  content: string,
+  requiredSections: string[]
+): Record<string, string> {
+  const sections: Record<string, string> = {}
+  for (const sectionName of requiredSections) {
+    // 转义正则特殊字符
+    const escapedName = escapeRegExp(sectionName)
+    const pattern = new RegExp(
+      `^#{2,3}\\s*${escapedName}\\s*$`,
+      "im"
+    )
+    const match = pattern.exec(content)
+    if (match) {
+      const startIdx = match.index + match[0].length
+      // 找到下一个同级或更高级标题
+      const nextHeadingPattern = /^#{1,3}\s+/m
+      const remaining = content.slice(startIdx)
+      const nextMatch = nextHeadingPattern.exec(remaining)
+      const sectionContent = nextMatch
+        ? remaining.slice(0, nextMatch.index).trim()
+        : remaining.trim()
+      sections[sectionName] = sectionContent
+    } else {
+      sections[sectionName] = ""
+    }
+  }
+  return sections
+}
+
+/**
+ * 转义正则表达式特殊字符
+ */
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
 // ============================================================
 // Core Logic
 // ============================================================
@@ -32,23 +192,93 @@ export interface GateResult {
 /**
  * 执行 requirements gate 检查
  *
- * 检查项：
+ * 检查项（默认模式，无 mode 参数）：
  * 1. requirements.md 是否存在
  * 2. 是否包含用户故事（"用户故事" / "User Story" / "作为"）
  * 3. 是否包含验收标准（"验收标准" / "Acceptance Criteria"）
  * 4. 是否包含术语表（"术语表" / "Glossary"）
  *
+ * 当传入 mode 参数时，按 REQUIREMENTS_GATE_SPECS 策略表执行对应检查。
+ *
  * @param workItemId - Work Item ID
  * @param baseDir - 项目根目录路径
+ * @param options - 可选参数，包含 mode 字段
  * @returns Gate 检查结果
  */
 export async function checkRequirementsGate(
   workItemId: string,
-  baseDir: string
+  baseDir: string,
+  options?: { mode?: RequirementsGateMode }
 ): Promise<GateResult> {
   // V3.4.0: 版本兼容性检查
   checkCompatibilityAtEntry(baseDir)
 
+  const mode = options?.mode
+
+  // 无 mode：现有行为（向后兼容）
+  if (mode === undefined) {
+    return existingRequirementsGateCheck(workItemId, baseDir)
+  }
+
+  // 查找策略表
+  const spec = REQUIREMENTS_GATE_SPECS.find((s) => s.mode === mode)
+  if (spec === undefined) {
+    return {
+      status: "fail",
+      blocking_issues: [],
+      warnings: [`Unsupported mode: "${mode}"`],
+      next_action: "ask_user",
+    }
+  }
+
+  // 读取目标文件
+  const specDir = join(baseDir, "specforge", "specs", workItemId)
+  const filePath = join(specDir, spec.targetFile)
+  let content: string
+  try {
+    content = await readFile(filePath, "utf-8")
+  } catch (err: unknown) {
+    const error = err as NodeJS.ErrnoException
+    if (error.code === "ENOENT") {
+      return {
+        status: "fail",
+        blocking_issues: [`File not found: ${spec.targetFile}`],
+        warnings: [],
+        next_action: "revise",
+      }
+    }
+    return {
+      status: "blocked",
+      blocking_issues: [`Failed to read ${spec.targetFile}: ${error.message}`],
+      warnings: [],
+      next_action: "ask_user",
+    }
+  }
+
+  // 解析 sections 并检查完整性
+  const sections = parseSections(content, spec.requiredSections)
+  const missing = spec.requiredSections.filter((s) => !sections[s]?.trim())
+  if (missing.length > 0) {
+    return {
+      status: "fail",
+      blocking_issues: missing.map((s) => `Missing section: ${s}`),
+      warnings: [],
+      next_action: "revise",
+    }
+  }
+
+  // 调用 mode 特定的检查函数
+  return spec.checkFn(content, sections)
+}
+
+/**
+ * 现有 requirements gate 检查逻辑（无 mode 参数时的默认行为）
+ * 提取为独立函数以保持向后兼容
+ */
+async function existingRequirementsGateCheck(
+  workItemId: string,
+  baseDir: string
+): Promise<GateResult> {
   const specDir = join(baseDir, "specforge", "specs", workItemId)
   const docPath = join(specDir, "requirements.md")
 

@@ -14,11 +14,12 @@
  * 4. 是否包含不变行为 / Unchanged Behavior
  * 5. 是否包含根因分析 / Root Cause Analysis
  *
- * Requirements: 1.5, 8.3, 8.4, 20.1, 20.2, 20.4
+ * Requirements: 1.5, 8.3, 8.4, 20.1, 20.2, 20.4, 11.1, 11.5
  */
 
 import { tool } from "@opencode-ai/plugin"
 import { checkRequirementsGate, checkBugfixGate } from "./lib/sf_requirements_gate_core"
+import type { RequirementsGateMode } from "./lib/sf_requirements_gate_core"
 import { recordGateResult } from "./lib/utils"
 
 export default tool({
@@ -29,9 +30,25 @@ export default tool({
       .enum(["standard", "bugfix"])
       .default("standard")
       .describe("检查模式: standard 检查 requirements.md, bugfix 检查 bugfix.md"),
+    gate_mode: tool.schema
+      .string()
+      .optional()
+      .describe("Gate mode 参数（V3.6）: change_request, refactor, investigation。传入时按策略表执行对应检查"),
   },
   async execute(args, context) {
     const baseDir = context.directory || context.worktree || process.cwd()
+
+    // 如果传入 gate_mode，使用 mode dispatch
+    if (args.gate_mode) {
+      const result = await checkRequirementsGate(
+        args.work_item_id,
+        baseDir,
+        { mode: args.gate_mode as RequirementsGateMode }
+      )
+      await recordGateResult(args.work_item_id, "sf_requirements_gate", result, baseDir)
+      return JSON.stringify(result, null, 2)
+    }
+
     const result = args.mode === "bugfix"
       ? await checkBugfixGate(args.work_item_id, baseDir)
       : await checkRequirementsGate(args.work_item_id, baseDir)

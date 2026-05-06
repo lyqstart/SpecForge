@@ -575,6 +575,18 @@ describe("executeInitialize", () => {
     expect(new Date(content.created_at).toISOString()).toBe(content.created_at)
   })
 
+  it("should create project.json with continuity config section (V3.6)", async () => {
+    await executeInitialize(testDir)
+
+    const configPath = join(testDir, "specforge/config/project.json")
+    const content = JSON.parse(await readFile(configPath, "utf-8"))
+
+    // V3.6: continuity section must be present
+    expect(content.continuity).toBeDefined()
+    expect(content.continuity.max_continuations).toBe(1)
+    expect(content.continuity.key_messages_count).toBe(20)
+  })
+
   it("should create risk_policy.json with correct initial content", async () => {
     await executeInitialize(testDir)
 

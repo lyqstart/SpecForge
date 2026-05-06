@@ -15,8 +15,8 @@ import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 // Types
 // ============================================================
 
-export type NodeType = "requirement" | "design_decision" | "task" | "code_file"
-export type EdgeType = "traces_to" | "decomposes_to" | "modifies" | "implements"
+export type NodeType = "requirement" | "design_decision" | "task" | "code_file" | "refactor_target" | "ops_action"
+export type EdgeType = "traces_to" | "decomposes_to" | "modifies" | "implements" | "affects"
 export type SyncScope = "requirements" | "design" | "tasks" | "verification"
 
 export interface NodeMetadata {
@@ -26,6 +26,18 @@ export interface NodeMetadata {
   design_id?: string
   task_id?: string
   path?: string
+}
+
+export interface RefactorTargetMetadata extends NodeMetadata {
+  smell_type?: string
+  risk_level?: "low" | "high"
+  target_files?: string[]
+}
+
+export interface OpsActionMetadata extends NodeMetadata {
+  action_type?: string
+  target_environment?: string
+  rollback_defined?: boolean
 }
 
 export interface GraphNode {
@@ -72,8 +84,8 @@ export interface KGOperationResult {
 // Constants
 // ============================================================
 
-const VALID_NODE_TYPES: NodeType[] = ["requirement", "design_decision", "task", "code_file"]
-const VALID_EDGE_TYPES: EdgeType[] = ["traces_to", "decomposes_to", "modifies", "implements"]
+const VALID_NODE_TYPES: NodeType[] = ["requirement", "design_decision", "task", "code_file", "refactor_target", "ops_action"]
+const VALID_EDGE_TYPES: EdgeType[] = ["traces_to", "decomposes_to", "modifies", "implements", "affects"]
 const LOCK_TIMEOUT = 5000
 const GRAPH_RELATIVE_PATH = join("specforge", "knowledge", "graph.json")
 const CONFIG_RELATIVE_PATH = join("specforge", "config", "project.json")

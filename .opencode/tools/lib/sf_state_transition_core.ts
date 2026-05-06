@@ -24,6 +24,12 @@ export interface TransitionInput {
   to_state: string
   evidence?: string
   workflow_type?: string
+  transition_context?: Record<string, unknown>
+}
+
+export interface GuardResult {
+  allowed: boolean
+  reason?: string
 }
 
 export interface TransitionSuccess {
@@ -43,6 +49,56 @@ export interface TransitionFailure {
 }
 
 export type TransitionResult = TransitionSuccess | TransitionFailure
+
+// ============================================================
+// Workflow-Specific Guards
+// ============================================================
+
+/**
+ * 检查工作流特定的守卫条件（在 isValidTransition 通过后执行）
+ *
+ * Guard 1: refactor risk_path — 当 workflowType="refactor" 且 from="development" 时，
+ *   根据 metadata.risk_path 强制执行路径约束
+ * Guard 2: investigation user_accepted — 当 workflowType="investigation" 且
+ *   from="findings_report_gate" 且 to="completed" 时，要求 transitionContext.user_accepted === true
+ *
+ * @param workflowType - 工作流类型
+ * @param from - 当前状态
+ * @param to - 目标状态
+ * @param workItem - Work Item 数据（含 metadata）
+ * @param transitionContext - 可选的流转上下文参数
+ * @returns GuardResult 表示是否允许流转
+ */
+export function checkWorkflowGuards(
+  workflowType: WorkflowType,
+  from: string,
+  to: string,
+  workItem: WorkItemState,
+  transitionContext?: Record<string, unknown>
+): GuardResult {
+  // Guard 1: refactor risk_path
+  if (workflowType === "refactor" && from === "development") {
+    const riskPath = workItem.metadata?.risk_path
+    if (riskPath === undefined) {
+      return { allowed: false, reason: "risk_path missing in metadata, cannot determine path" }
+    }
+    if (riskPath === "high" && to !== "review") {
+      return { allowed: false, reason: "risk_path=high requires transition to review" }
+    }
+    if (riskPath === "low" && to !== "verification") {
+      return { allowed: false, reason: "risk_path=low requires transition to verification" }
+    }
+  }
+
+  // Guard 2: investigation user_accepted
+  if (workflowType === "investigation" && from === "findings_report_gate" && to === "completed") {
+    if (transitionContext?.user_accepted !== true) {
+      return { allowed: false, reason: "user_accepted must be true to complete investigation" }
+    }
+  }
+
+  return { allowed: true }
+}
 
 // ============================================================
 // Core Logic
@@ -140,7 +196,7 @@ export async function executeTransition(
 
   // 7. 验证 to_state 是合法后继状态
   const workflowType = workItem.workflow_type as WorkflowType | undefined
-  const knownWorkflowTypes: string[] = ["feature_spec", "bugfix_spec", "feature_spec_design_first", "quick_change"]
+  const knownWorkflowTypes: string[] = ["feature_spec", "bugfix_spec", "feature_spec_design_first", "quick_change", "change_request", "refactor", "ops_task", "investigation"]
   if (workflowType && !knownWorkflowTypes.includes(workflowType)) {
     return {
       success: false,
@@ -154,6 +210,23 @@ export async function executeTransition(
     return {
       success: false,
       error: `Invalid transition: ${input.from_state} → ${input.to_state} is not allowed`,
+      work_item_id: input.work_item_id,
+      current_state: workItem.current_state,
+    }
+  }
+
+  // 7b. 检查工作流特定守卫条件
+  const guardResult = checkWorkflowGuards(
+    effectiveWorkflowType,
+    input.from_state,
+    input.to_state,
+    workItem,
+    input.transition_context
+  )
+  if (!guardResult.allowed) {
+    return {
+      success: false,
+      error: `Workflow guard rejected: ${guardResult.reason}`,
       work_item_id: input.work_item_id,
       current_state: workItem.current_state,
     }

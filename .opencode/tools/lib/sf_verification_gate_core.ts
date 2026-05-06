@@ -4,12 +4,13 @@
  *
  * 提取为独立模块以便单元测试（不依赖 @opencode-ai/plugin 运行时）
  *
- * Requirements: 8.3, 8.7, 17.2
+ * Requirements: 8.3, 8.7, 17.2, 11.4, 11.5, 11.6, 3.9, 4.8
  */
 
 import { readFile, readdir } from "node:fs/promises"
 import { join } from "node:path"
-import type { GateResult } from "./sf_requirements_gate_core"
+import type { GateResult, GateModeSpec } from "./sf_requirements_gate_core"
+import { parseSections } from "./sf_requirements_gate_core"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
 import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 import type { SyncSummary } from "./sf_knowledge_graph_core"
@@ -18,26 +19,203 @@ import type { SyncSummary } from "./sf_knowledge_graph_core"
 export type { GateResult }
 
 // ============================================================
+// Verification Gate Mode Types and Strategy Table
+// ============================================================
+
+/**
+ * Verification Gate 支持的 mode 类型
+ */
+export type VerificationGateMode = "refactor" | "ops_task" | "change_request"
+
+/**
+ * 检查 refactor 模式的验证结果
+ * 额外检查：所有现有测试通过 + 代码质量改善
+ */
+export function checkRefactorVerification(
+  content: string,
+  sections: Record<string, string>
+): GateResult {
+  const blockingIssues: string[] = []
+  const warnings: string[] = []
+
+  // 检查所有现有测试是否通过
+  const testResults = sections["测试结果"]?.trim() || ""
+  if (!testResults) {
+    blockingIssues.push("缺少测试结果，需要证明所有现有测试通过（行为不变性）")
+  } else {
+    // 检查是否有失败的测试
+    const failPatterns = [/fail(ed|ure)?/i, /✗|✘|❌/, /FAILED/]
+    const hasFailures = failPatterns.some((p) => p.test(testResults))
+    if (hasFailures) {
+      blockingIssues.push("存在失败的测试，重构不得破坏现有行为")
+    }
+  }
+
+  // 检查代码质量改善
+  const qualityImprovement = sections["代码质量改善"]?.trim() || ""
+  if (!qualityImprovement) {
+    warnings.push("未提供代码质量改善指标")
+  }
+
+  if (blockingIssues.length > 0) {
+    return {
+      status: "fail",
+      blocking_issues: blockingIssues,
+      warnings,
+      next_action: "revise",
+    }
+  }
+
+  return {
+    status: "pass",
+    blocking_issues: [],
+    warnings,
+    next_action: "continue",
+  }
+}
+
+/**
+ * 检查 ops_task 模式的验证结果
+ * 额外检查：操作结果与 ops_plan.md 预期结果一致
+ */
+export function checkOpsTaskVerification(
+  content: string,
+  sections: Record<string, string>
+): GateResult {
+  const blockingIssues: string[] = []
+  const warnings: string[] = []
+
+  // 检查操作结果是否与预期一致
+  const operationResults = sections["操作结果"]?.trim() || ""
+  const expectedResults = sections["预期结果对比"]?.trim() || ""
+
+  if (!operationResults) {
+    blockingIssues.push("缺少操作结果记录")
+  }
+
+  if (!expectedResults) {
+    blockingIssues.push("缺少预期结果对比，需要证明操作结果与 ops_plan.md 预期一致")
+  } else {
+    // 检查是否有不匹配的标记
+    const mismatchPatterns = [/不匹配/i, /mismatch/i, /不一致/i, /unexpected/i, /异常/i]
+    if (mismatchPatterns.some((p) => p.test(expectedResults))) {
+      blockingIssues.push("操作结果与预期不一致")
+    }
+  }
+
+  if (blockingIssues.length > 0) {
+    return {
+      status: "fail",
+      blocking_issues: blockingIssues,
+      warnings,
+      next_action: "revise",
+    }
+  }
+
+  return {
+    status: "pass",
+    blocking_issues: [],
+    warnings,
+    next_action: "continue",
+  }
+}
+
+/**
+ * 检查 change_request 模式的验证结果
+ * 额外检查：回归测试覆盖受影响区域
+ */
+export function checkChangeRequestVerification(
+  content: string,
+  sections: Record<string, string>
+): GateResult {
+  const blockingIssues: string[] = []
+  const warnings: string[] = []
+
+  // 检查回归测试覆盖
+  const regressionCoverage = sections["回归测试覆盖"]?.trim() || ""
+  if (!regressionCoverage) {
+    blockingIssues.push("缺少回归测试覆盖说明，需要证明受影响区域已被回归测试覆盖")
+  }
+
+  // 检查受影响区域是否都有测试
+  const affectedAreas = sections["受影响区域验证"]?.trim() || ""
+  if (!affectedAreas) {
+    warnings.push("未提供受影响区域验证详情")
+  }
+
+  if (blockingIssues.length > 0) {
+    return {
+      status: "fail",
+      blocking_issues: blockingIssues,
+      warnings,
+      next_action: "revise",
+    }
+  }
+
+  return {
+    status: "pass",
+    blocking_issues: [],
+    warnings,
+    next_action: "continue",
+  }
+}
+
+/**
+ * Verification Gate 策略表
+ * 定义 3 种 mode 的检查规则
+ */
+export const VERIFICATION_GATE_SPECS: GateModeSpec[] = [
+  {
+    mode: "refactor",
+    targetFile: "verification_report.md",
+    requiredSections: ["测试结果", "代码质量改善"],
+    checkFn: checkRefactorVerification,
+  },
+  {
+    mode: "ops_task",
+    targetFile: "verification_report.md",
+    requiredSections: ["操作结果", "预期结果对比"],
+    checkFn: checkOpsTaskVerification,
+  },
+  {
+    mode: "change_request",
+    targetFile: "verification_report.md",
+    requiredSections: ["回归测试覆盖", "受影响区域验证"],
+    checkFn: checkChangeRequestVerification,
+  },
+]
+
+// ============================================================
 // Core Logic
 // ============================================================
 
 /**
  * 执行 verification gate 检查
  *
- * 检查项：
+ * 检查项（默认模式，无 mode 参数）：
  * 1. 是否存在验证结果（verification_report.md 或测试输出文件）
  * 2. 测试是否通过
  *
+ * 当传入 options.mode 参数时，按 VERIFICATION_GATE_SPECS 策略表执行对应检查。
+ *
  * @param workItemId - Work Item ID
  * @param baseDir - 项目根目录路径
+ * @param options - 可选参数，包含 mode 字段
  * @returns Gate 检查结果
  */
 export async function checkVerificationGate(
   workItemId: string,
-  baseDir: string
+  baseDir: string,
+  options?: { mode?: VerificationGateMode }
 ): Promise<GateResult> {
   // V3.4.0: 版本兼容性检查
   checkCompatibilityAtEntry(baseDir)
+
+  // V3.6: Mode dispatch — 当传入 mode 参数时，按策略表执行
+  const mode = options?.mode
+  if (mode !== undefined) {
+    return executeVerificationGateMode(workItemId, baseDir, mode)
+  }
 
   const specDir = join(baseDir, "specforge", "specs", workItemId)
 
@@ -134,6 +312,70 @@ export async function checkVerificationGate(
     next_action: "continue",
     kg_sync: kgSync,
   }
+}
+
+// ============================================================
+// Verification Gate Mode Dispatch
+// ============================================================
+
+/**
+ * 执行 Verification Gate mode 分发逻辑
+ * 按 VERIFICATION_GATE_SPECS 策略表查找并执行对应 mode 的检查
+ */
+async function executeVerificationGateMode(
+  workItemId: string,
+  baseDir: string,
+  mode: VerificationGateMode
+): Promise<GateResult> {
+  // 查找策略表
+  const spec = VERIFICATION_GATE_SPECS.find((s) => s.mode === mode)
+  if (spec === undefined) {
+    return {
+      status: "fail",
+      blocking_issues: [],
+      warnings: [`Unsupported mode: "${mode}"`],
+      next_action: "ask_user",
+    }
+  }
+
+  // 读取目标文件
+  const specDir = join(baseDir, "specforge", "specs", workItemId)
+  const filePath = join(specDir, spec.targetFile)
+  let content: string
+  try {
+    content = await readFile(filePath, "utf-8")
+  } catch (err: unknown) {
+    const error = err as NodeJS.ErrnoException
+    if (error.code === "ENOENT") {
+      return {
+        status: "fail",
+        blocking_issues: [`File not found: ${spec.targetFile}`],
+        warnings: [],
+        next_action: "revise",
+      }
+    }
+    return {
+      status: "blocked",
+      blocking_issues: [`Failed to read ${spec.targetFile}: ${error.message}`],
+      warnings: [],
+      next_action: "ask_user",
+    }
+  }
+
+  // 解析 sections 并检查完整性
+  const sections = parseSections(content, spec.requiredSections)
+  const missing = spec.requiredSections.filter((s) => !sections[s]?.trim())
+  if (missing.length > 0) {
+    return {
+      status: "fail",
+      blocking_issues: missing.map((s) => `Missing section: ${s}`),
+      warnings: [],
+      next_action: "revise",
+    }
+  }
+
+  // 调用 mode 特定的检查函数
+  return spec.checkFn(content, sections)
 }
 
 // ============================================================

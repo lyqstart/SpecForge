@@ -10,6 +10,7 @@
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { homedir } from "node:os"
+import type { WorkflowType } from "./state_machine"
 
 // ============================================================
 // Types
@@ -41,6 +42,8 @@ export interface KnowledgeEntry {
   created_at: string // ISO8601
   updated_at: string // ISO8601
   version: number
+  // V3.6 新增字段
+  workflow_type?: WorkflowType // 知识来源工作流类型
 }
 
 export interface KnowledgeCategory {
@@ -75,6 +78,8 @@ export interface AddEntryParams {
   anti_conditions: string[]
   applicability: string
   normalized_key: string
+  // V3.6 新增字段
+  workflow_type?: WorkflowType // 知识来源工作流类型
 }
 
 export interface UpdateEntryParams {
@@ -370,6 +375,13 @@ export async function addEntry(params: AddEntryParams): Promise<OperationResult>
   try {
     const store = await loadStore()
     const now = new Date().toISOString()
+
+    // V3.6: investigation 工作流默认 status="candidate", confidence="medium"
+    // 其他工作流默认 status="candidate"（由 sf-knowledge 在 activate 时设为 "active"）
+    const isInvestigation = params.workflow_type === "investigation"
+    const entryStatus: EntryStatus = "candidate"
+    const entryConfidence: ConfidenceLevel = isInvestigation ? "medium" : params.confidence
+
     const entry: KnowledgeEntry = {
       id: generateEntryId(),
       title: params.title,
@@ -377,8 +389,8 @@ export async function addEntry(params: AddEntryParams): Promise<OperationResult>
       category: params.category,
       tags: params.tags || [],
       applicable_file_patterns: params.applicable_file_patterns || [],
-      confidence: params.confidence,
-      status: "candidate",
+      confidence: entryConfidence,
+      status: entryStatus,
       source_project: params.source_project,
       source_work_item: params.source_work_item,
       usage_count: 0,
@@ -392,6 +404,8 @@ export async function addEntry(params: AddEntryParams): Promise<OperationResult>
       created_at: now,
       updated_at: now,
       version: 1,
+      // V3.6 新增字段
+      workflow_type: params.workflow_type,
     }
 
     store.entries.push(entry)

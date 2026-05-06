@@ -678,6 +678,10 @@ function buildInitialProjectConfig(): object {
     max_parallel_executors: 3,
     knowledge_graph_enabled: true,
     auto_archive: true,
+    continuity: {
+      max_continuations: 1,
+      key_messages_count: 20,
+    },
     created_at: now,
   }
 }

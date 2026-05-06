@@ -27,6 +27,10 @@ export default tool({
       .string()
       .optional()
       .describe('工作流类型，仅创建新 Work Item 时使用，默认 "feature_spec"'),
+    transition_context: tool.schema
+      .record(tool.schema.unknown())
+      .optional()
+      .describe("流转上下文参数，用于工作流特定守卫检查（如 investigation 的 user_accepted）"),
   },
   async execute(args, context) {
     const baseDir = context.directory || context.worktree || process.cwd()
@@ -37,6 +41,7 @@ export default tool({
         to_state: args.to_state,
         evidence: args.evidence,
         workflow_type: args.workflow_type,
+        transition_context: args.transition_context as Record<string, unknown> | undefined,
       },
       baseDir
     )
