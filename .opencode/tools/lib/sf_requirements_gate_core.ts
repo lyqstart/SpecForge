@@ -10,6 +10,7 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
+import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 import type { SyncSummary } from "./sf_knowledge_graph_core"
 
 // ============================================================
@@ -45,6 +46,9 @@ export async function checkRequirementsGate(
   workItemId: string,
   baseDir: string
 ): Promise<GateResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const specDir = join(baseDir, "specforge", "specs", workItemId)
   const docPath = join(specDir, "requirements.md")
 
@@ -179,6 +183,9 @@ export async function checkBugfixGate(
   workItemId: string,
   baseDir: string
 ): Promise<GateResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const specDir = join(baseDir, "specforge", "specs", workItemId)
   const docPath = join(specDir, "bugfix.md")
 

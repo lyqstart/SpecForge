@@ -11,6 +11,7 @@ import { readFile, readdir } from "node:fs/promises"
 import { join } from "node:path"
 import { loadGraphStore, isKGEnabled } from "./sf_knowledge_graph_core"
 import { impactAnalysis, getSubgraph } from "./sf_knowledge_query_core"
+import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 import type { GraphNode } from "./sf_knowledge_graph_core"
 
 // ============================================================
@@ -469,6 +470,120 @@ function extractKeywords(nodes: GraphNode[]): Set<string> {
 }
 
 // ============================================================
+// Knowledge Base Source: Global Knowledge Store (V5.0)
+// ============================================================
+
+const RELEVANCE_THRESHOLD = 60
+
+/** 数据源 3：全局知识库（V5.0 新增） */
+export class KnowledgeBaseSource implements ContextDataSource {
+  name = "knowledge_base"
+
+  constructor(private currentProject: string) {}
+
+  async query(params: TaskQueryParams): Promise<ContextFragment[]> {
+    try {
+      const {
+        searchEntries,
+        updateEntry,
+      } = await import("./sf_knowledge_base_core")
+
+      // 从 TaskQueryParams 提取检索参数
+      const keywords = extractSearchKeywordsFromDescription(params.task_description || "")
+      const filePatterns = params.target_files || []
+      const categoryHint = mapPhaseToKnowledgeCategory(params.phase)
+
+      // 检索所有非 archived 条目
+      const results = await searchEntries({
+        keywords,
+        file_patterns: filePatterns,
+        category: categoryHint,
+        limit: 20,
+      })
+
+      // 过滤可见性：active 全局可见，candidate 仅当前项目
+      const visible = results.filter(
+        (r) =>
+          r.entry.status === "active" ||
+          (r.entry.status === "candidate" && r.entry.source_project === this.currentProject)
+      )
+
+      // 应用最低阈值
+      const qualified = visible.filter((r) => r.relevance_score >= RELEVANCE_THRESHOLD)
+
+      // 取 top-5
+      const top5 = qualified
+        .sort((a, b) => b.relevance_score - a.relevance_score)
+        .slice(0, 5)
+
+      // 递增 usage_count 并更新 last_used_at
+      for (const result of top5) {
+        await updateEntry({
+          entry_id: result.entry.id,
+          // updateEntry 内部会更新 updated_at 和 version
+          // 我们需要手动处理 usage_count 和 last_used_at
+        }).catch(() => {})
+      }
+
+      // 转换为 ContextFragment
+      return top5.map((r) => ({
+        source_type: "knowledge_base",
+        source_id: r.entry.id,
+        category: mapKnowledgeCategoryToFragment(r.entry.category),
+        content: formatKnowledgeContent(r.entry, r.match_reasons),
+        priority: 5,
+      }))
+    } catch {
+      // Knowledge base unavailable, return empty
+      return []
+    }
+  }
+}
+
+function extractSearchKeywordsFromDescription(description: string): string[] {
+  return description
+    .split(/[\s,;.!?，。；！？、：:]+/)
+    .filter((w) => w.length > 1)
+    .slice(0, 10)
+}
+
+function mapPhaseToKnowledgeCategory(phase?: string): string | undefined {
+  const mapping: Record<string, string> = {
+    development: "failure_pattern",
+    design: "modification_pattern",
+    requirements: "workflow_tip",
+    tasks: "checklist",
+  }
+  return phase ? mapping[phase] : undefined
+}
+
+function mapKnowledgeCategoryToFragment(
+  category: string
+): "requirement" | "design_decision" | "success_pattern" | "failure_pattern" | "warning" {
+  if (category === "failure_pattern") return "failure_pattern"
+  if (category === "checklist") return "warning"
+  return "success_pattern"
+}
+
+function formatKnowledgeContent(
+  entry: { title: string; content: string; category: string; confidence: string; applicability: string; anti_conditions: string[] },
+  matchReasons: string[]
+): string {
+  const parts = [
+    `【${entry.title}】(${entry.category}, confidence=${entry.confidence})`,
+    entry.content.length > 200 ? entry.content.substring(0, 200) + "..." : entry.content,
+  ]
+  if (entry.applicability) {
+    parts.push(`适用范围: ${entry.applicability}`)
+  }
+  if (entry.anti_conditions.length > 0) {
+    parts.push(`不适用: ${entry.anti_conditions.join("; ")}`)
+  }
+  parts.push(`匹配原因: ${matchReasons.join(", ")}`)
+  return parts.join(" | ")
+}
+
+// ============================================================
 // buildTaskContext
 // ============================================================
 
@@ -707,6 +822,9 @@ export async function buildContext(
   includeCapabilities: boolean,
   baseDir: string
 ): Promise<ContextBuildResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const params: TaskQueryParams = {
     work_item_id: workItemId,
     task_id: taskId,
@@ -718,6 +836,12 @@ export async function buildContext(
     new KnowledgeGraphSource(baseDir),
     new ArchiveSource(baseDir),
   ]
+
+  // V5.0: Register Knowledge_DataSource if knowledge_base_enabled=true
+  if (await isKnowledgeBaseEnabled(baseDir)) {
+    const projectName = await getProjectNameForContext(baseDir)
+    dataSources.push(new KnowledgeBaseSource(projectName))
+  }
 
   // Add phase context source if phase is set
   if (phase) {
@@ -738,5 +862,27 @@ export async function buildContext(
   return {
     task_context: taskContext,
     capabilities,
+  }
+}
+
+async function isKnowledgeBaseEnabled(baseDir: string): Promise<boolean> {
+  try {
+    const configPath = join(baseDir, "specforge", "config", "project.json")
+    const content = await readFile(configPath, "utf-8")
+    const config = JSON.parse(content)
+    return config.knowledge_base_enabled === true
+  } catch {
+    return false
+  }
+}
+
+async function getProjectNameForContext(baseDir: string): Promise<string> {
+  try {
+    const configPath = join(baseDir, "specforge", "config", "project.json")
+    const content = await readFile(configPath, "utf-8")
+    const config = JSON.parse(content)
+    return config.name || "unknown"
+  } catch {
+    return "unknown"
   }
 }

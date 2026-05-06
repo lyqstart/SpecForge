@@ -11,6 +11,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { isValidTransition, type WorkflowType } from "./state_machine"
 import { appendJsonl } from "./utils"
+import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 import type { StateFile, WorkItemState } from "./sf_state_read_core"
 
 // ============================================================
@@ -58,6 +59,9 @@ export async function executeTransition(
   input: TransitionInput,
   baseDir: string
 ): Promise<TransitionResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const stateFilePath = join(baseDir, "specforge", "runtime", "state.json")
   const eventsFilePath = join(baseDir, "specforge", "runtime", "events.jsonl")
 

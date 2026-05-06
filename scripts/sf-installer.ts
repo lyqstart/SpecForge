@@ -1,1146 +1,768 @@
 #!/usr/bin/env bun
 /**
- * SpecForge Unified Installer CLI
- * 
- * 统一的跨平台安装命令工具，替代平台特定脚本。
- * 通过 `bun scripts/sf-installer.ts <subcommand>` 调用。
- * 
- * 子命令: install | upgrade | uninstall | verify
- * 选项: --target <path> | --force | --purge | --dry-run | --skip-deps | --version
+ * SpecForge V3.5.0 — Unified Installer CLI
+ *
+ * 纯用户级操作工具。CLI 仅负责共享组件的 install/upgrade/verify/uninstall。
+ * 项目级运行时由 Unified Plugin 自动初始化。
+ *
+ * 子命令: install | upgrade | verify | uninstall
+ * 选项: --force | --version
+ *
+ * 已移除: --target、--project-level、--runtime-only
  */
 
-import * as fs from "fs";
-import * as path from "path";
-import * as crypto from "crypto";
+import * as fs from "node:fs"
+import * as path from "node:path"
+import * as crypto from "node:crypto"
+
+import { InstallerError, InstallerErrorCode, EXIT_CODES } from "./lib/errors"
+import { resolveUserLevelDirectory } from "./lib/paths"
+import { acquireInstallLock, releaseInstallLock } from "./lib/install_lock"
+import { readUserManifest, writeUserManifest, buildUserManifest } from "./lib/manifest"
+import { computeSHA256 } from "./lib/crypto"
+import { atomicWriteFile, backupFile } from "./lib/atomic"
+import { mergeOpenCodeJsonUserLevel } from "./lib/opencode_merge"
+import { SHARED_COMPONENT_REGISTRY, SPECFORGE_AGENT_DEFINITIONS, getAgentDefinitions } from "./lib/registry"
+import { posixToNative } from "./lib/paths"
+import type { CLIOptions, UserLevelManifest, FileEntry } from "./lib/types"
 
 // ============================================================================
-// DD-2: 文件注册表 — SpecForge 部署的所有文件
+// 参数解析
 // ============================================================================
 
-const FILE_REGISTRY: string[] = [
-  // Agent 定义
-  ".opencode/agents/sf-orchestrator.md",
-  ".opencode/agents/sf-requirements.md",
-  ".opencode/agents/sf-design.md",
-  ".opencode/agents/sf-task-planner.md",
-  ".opencode/agents/sf-executor.md",
-  ".opencode/agents/sf-debugger.md",
-  ".opencode/agents/sf-reviewer.md",
-  ".opencode/agents/sf-verifier.md",
-
-  // Custom Tools
-  ".opencode/tools/sf_artifact_write.ts",
-  ".opencode/tools/sf_batch_verify.ts",
-  ".opencode/tools/sf_context_build.ts",
-  ".opencode/tools/sf_cost_report.ts",
-  ".opencode/tools/sf_design_gate.ts",
-  ".opencode/tools/sf_doc_lint.ts",
-  ".opencode/tools/sf_doctor.ts",
-  ".opencode/tools/sf_knowledge_graph.ts",
-  ".opencode/tools/sf_knowledge_query.ts",
-  ".opencode/tools/sf_requirements_gate.ts",
-  ".opencode/tools/sf_state_read.ts",
-  ".opencode/tools/sf_state_transition.ts",
-  ".opencode/tools/sf_tasks_gate.ts",
-  ".opencode/tools/sf_trace_matrix.ts",
-  ".opencode/tools/sf_verification_gate.ts",
-
-  // Tool 核心库
-  ".opencode/tools/lib/sf_artifact_write_core.ts",
-  ".opencode/tools/lib/sf_batch_verify_core.ts",
-  ".opencode/tools/lib/sf_context_build_core.ts",
-  ".opencode/tools/lib/sf_conversation_recorder_core.ts",
-  ".opencode/tools/lib/sf_cost_report_core.ts",
-  ".opencode/tools/lib/sf_design_gate_core.ts",
-  ".opencode/tools/lib/sf_doc_lint_core.ts",
-  ".opencode/tools/lib/sf_knowledge_graph_core.ts",
-  ".opencode/tools/lib/sf_knowledge_query_core.ts",
-  ".opencode/tools/lib/sf_requirements_gate_core.ts",
-  ".opencode/tools/lib/sf_state_read_core.ts",
-  ".opencode/tools/lib/sf_state_transition_core.ts",
-  ".opencode/tools/lib/sf_tasks_gate_core.ts",
-  ".opencode/tools/lib/sf_trace_matrix_core.ts",
-  ".opencode/tools/lib/sf_verification_gate_core.ts",
-  ".opencode/tools/lib/state_machine.ts",
-  ".opencode/tools/lib/utils.ts",
-
-  // Plugins
-  ".opencode/plugins/sf_checkpoint.ts",
-  ".opencode/plugins/sf_cost_tracker.ts",
-  ".opencode/plugins/sf_event_logger.ts",
-  ".opencode/plugins/sf_permission_guard.ts",
-  ".opencode/plugins/sf_session_recorder.ts",
-
-  // Skills
-  ".opencode/skills/sf-workflow-feature-spec/SKILL.md",
-  ".opencode/skills/sf-workflow-bugfix-spec/SKILL.md",
-  ".opencode/skills/sf-workflow-design-first/SKILL.md",
-  ".opencode/skills/sf-workflow-quick-change/SKILL.md",
-  ".opencode/skills/superpowers-brainstorming/SKILL.md",
-  ".opencode/skills/superpowers-code-review/SKILL.md",
-  ".opencode/skills/superpowers-subagent-driven-development/SKILL.md",
-  ".opencode/skills/superpowers-systematic-debugging/SKILL.md",
-  ".opencode/skills/superpowers-tdd/SKILL.md",
-  ".opencode/skills/superpowers-verification-before-completion/SKILL.md",
-  ".opencode/skills/superpowers-writing-plans/SKILL.md",
-
-  // SpecForge 核心配置
-  "specforge/agents/AGENT_CONSTITUTION.md",
-  "specforge/agents/contracts/sf-orchestrator.contract.md",
-  "specforge/agents/contracts/sf-requirements.contract.md",
-  "specforge/agents/contracts/sf-design.contract.md",
-  "specforge/agents/contracts/sf-executor.contract.md",
-  "specforge/agents/contracts/sf-task-planner.contract.md",
-  "specforge/agents/contracts/sf-debugger.contract.md",
-  "specforge/agents/contracts/sf-reviewer.contract.md",
-  "specforge/agents/contracts/sf-verifier.contract.md",
-  "specforge/config/project.json",
-  "specforge/config/risk_policy.json",
-  "specforge/config/skill_fragments.json",
-
-  // SpecForge 运行时初始文件
-  "specforge/runtime/state.json",
-  "specforge/runtime/events.jsonl",
-
-  // 根目录文件
-  "AGENTS.md",
-];
-
-/** 需要合并而非直接复制的配置文件 */
-const MERGE_FILES = ["opencode.json", "package.json"] as const;
-
-/** 运行时数据目录（卸载时默认保留） */
-const RUNTIME_DIRS = [
-  "specforge/runtime/checkpoints",
-  "specforge/sessions",
-  "specforge/specs",
-  "specforge/archive",
-  "specforge/logs",
-] as const;
-
-// ============================================================================
-// DD-3: 清单管理模块
-// ============================================================================
-
-interface ManifestFile {
-  version: string;
-  installed_at: string;
-  source_dir: string;
-  files: Record<string, string>;
+/** 已移除的参数及其错误提示（每项包含错误行和说明行） */
+const REMOVED_PARAMS: Record<string, { error: string; hint: string }> = {
+  "--target": {
+    error: "参数 --target 已不再支持。",
+    hint: "V3.5 起所有组件统一部署到用户级目录。",
+  },
+  "--project-level": {
+    error: "参数 --project-level 已不再支持。",
+    hint: "V3.5 起项目级运行时由 Plugin 自动初始化，无需手动操作。",
+  },
+  "--runtime-only": {
+    error: "参数 --runtime-only 已不再支持。",
+    hint: "V3.5 起项目级运行时由 Plugin 自动初始化，无需手动操作。",
+  },
 }
 
-
-/** 计算文件的 SHA-256 校验和 */
-async function computeSHA256(filePath: string): Promise<string> {
-  const content = fs.readFileSync(filePath);
-  const hash = crypto.createHash("sha256");
-  hash.update(content);
-  return hash.digest("hex");
-}
-
-/** 读取清单文件，不存在时返回 null */
-function readManifest(targetDir: string): ManifestFile | null {
-  const manifestPath = path.join(targetDir, "specforge", "manifest.json");
-  if (!fs.existsSync(manifestPath)) return null;
-  try {
-    const content = fs.readFileSync(manifestPath, "utf-8");
-    return JSON.parse(content) as ManifestFile;
-  } catch {
-    return null;
-  }
-}
-
-/** 写入清单文件 */
-function writeManifest(targetDir: string, manifest: ManifestFile): void {
-  const manifestPath = path.join(targetDir, "specforge", "manifest.json");
-  const dir = path.dirname(manifestPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf-8");
-}
-
-/** 构建完整清单 */
-async function buildManifest(
-  sourceDir: string,
-  targetDir: string,
-  deployedFiles: string[]
-): Promise<ManifestFile> {
-  const version = getSourceVersion(sourceDir);
-  const files: Record<string, string> = {};
-
-  for (const relativePath of deployedFiles) {
-    const targetPath = path.join(targetDir, relativePath);
-    if (fs.existsSync(targetPath)) {
-      files[relativePath] = await computeSHA256(targetPath);
-    }
-  }
-
-  return {
-    version,
-    installed_at: new Date().toISOString(),
-    source_dir: path.resolve(sourceDir),
-    files,
-  };
-}
-
-/** 从源目录 package.json 读取版本号 */
-function getSourceVersion(sourceDir: string): string {
-  const pkgPath = path.join(sourceDir, "package.json");
-  if (!fs.existsSync(pkgPath)) return "0.0.0";
-  try {
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
-    return pkg.version || "0.0.0";
-  } catch {
-    return "0.0.0";
-  }
-}
-
-// ============================================================================
-// DD-1: 参数解析模块
-// ============================================================================
-
-interface CLIOptions {
-  subcommand: "install" | "upgrade" | "uninstall" | "verify" | null;
-  target: string;
-  force: boolean;
-  purge: boolean;
-  dryRun: boolean;
-  skipDeps: boolean;
-  showVersion: boolean;
-}
-
-function parseArgs(args: string[]): CLIOptions {
+export function parseArgs(args: string[]): CLIOptions {
   const opts: CLIOptions = {
     subcommand: null,
-    target: process.cwd(),
     force: false,
-    purge: false,
-    dryRun: false,
-    skipDeps: false,
     showVersion: false,
-  };
+  }
 
-  const validSubcommands = ["install", "upgrade", "uninstall", "verify"];
+  const validSubcommands = ["install", "upgrade", "uninstall", "verify"]
 
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
+    const arg = args[i]
 
-    if (arg === "--target" && i + 1 < args.length) {
-      opts.target = path.resolve(args[++i]);
-    } else if (arg === "--force") {
-      opts.force = true;
-    } else if (arg === "--purge") {
-      opts.purge = true;
-    } else if (arg === "--dry-run") {
-      opts.dryRun = true;
-    } else if (arg === "--skip-deps") {
-      opts.skipDeps = true;
+    // 检查已移除的参数
+    if (arg in REMOVED_PARAMS) {
+      const { error, hint } = REMOVED_PARAMS[arg]
+      console.error(`错误: ${error}`)
+      console.error(hint)
+      process.exit(1)
+    }
+
+    if (arg === "--force") {
+      opts.force = true
     } else if (arg === "--version") {
-      opts.showVersion = true;
+      opts.showVersion = true
     } else if (arg === "--help" || arg === "-h") {
-      showUsage();
-      process.exit(0);
+      showUsage()
+      process.exit(0)
+    } else if (arg.startsWith("--")) {
+      throw new InstallerError(
+        InstallerErrorCode.E_INVALID_JSON,
+        `未知参数 ${arg}`
+      )
     } else if (!arg.startsWith("-") && opts.subcommand === null) {
       if (validSubcommands.includes(arg)) {
-        opts.subcommand = arg as CLIOptions["subcommand"];
+        opts.subcommand = arg as CLIOptions["subcommand"]
       } else {
-        console.error(`❌ 错误: 未知子命令 "${arg}"`);
-        console.error(`   建议: 可用子命令为 install, upgrade, uninstall, verify`);
-        process.exit(1);
+        console.error(`❌ 错误: 未知子命令 "${arg}"`)
+        console.error(`   建议: 可用子命令为 install, upgrade, verify, uninstall`)
+        process.exit(1)
       }
     }
   }
 
-  return opts;
+  return opts
 }
 
 function showUsage(): void {
   console.log(`
-SpecForge 统一安装器 — 跨平台 CLI 工具
+SpecForge 安装器 V3.5 — 用户级共享组件管理
 
 用法:
   bun scripts/sf-installer.ts <subcommand> [options]
 
 子命令:
-  install     将 SpecForge 安装到目标项目
-  upgrade     升级目标项目中的 SpecForge 到新版本
-  uninstall   从目标项目中移除 SpecForge
-  verify      校验目标项目中 SpecForge 安装的完整性
+  install     部署共享组件到 ~/.config/opencode/
+  upgrade     原子升级共享组件
+  verify      校验共享组件完整性（SHA-256）
+  uninstall   卸载共享组件
 
 选项:
-  --target <path>   目标项目路径（默认: 当前工作目录）
-  --force           忽略冲突，强制执行操作
-  --purge           卸载时删除所有运行时数据
-  --dry-run         仅显示将执行的操作，不实际执行
-  --skip-deps       跳过自动执行 bun install
-  --version         显示已安装的 SpecForge 版本
-  --help, -h        显示此帮助信息
+  --force     upgrade 时强制覆盖所有文件
+  --version   显示已安装的 SpecForge 版本
+  --help, -h  显示此帮助信息
 
 示例:
-  bun scripts/sf-installer.ts install --target ./my-project
-  bun scripts/sf-installer.ts upgrade
-  bun scripts/sf-installer.ts uninstall --purge
+  bun scripts/sf-installer.ts install
+  bun scripts/sf-installer.ts upgrade --force
   bun scripts/sf-installer.ts verify
-`);
+  bun scripts/sf-installer.ts uninstall
+`)
 }
 
-function showVersion(targetDir: string): void {
-  const manifest = readManifest(targetDir);
-  if (manifest) {
-    console.log(`SpecForge v${manifest.version}`);
-    console.log(`安装时间: ${manifest.installed_at}`);
-    console.log(`源目录: ${manifest.source_dir}`);
-    console.log(`已部署文件: ${Object.keys(manifest.files).length} 个`);
+function showVersion(userLevelDir: string): void {
+  const manifestPath = path.join(userLevelDir, "specforge-manifest.json")
+  if (fs.existsSync(manifestPath)) {
+    try {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"))
+      console.log(`SpecForge v${manifest.shared_version}`)
+      console.log(`安装时间: ${manifest.installed_at}`)
+      console.log(`更新时间: ${manifest.updated_at}`)
+      console.log(`已部署文件: ${Object.keys(manifest.files).length} 个`)
+      console.log(`目录: ${userLevelDir}`)
+    } catch {
+      console.log("SpecForge Manifest 解析失败")
+    }
   } else {
-    console.log("SpecForge 未安装在此目录中");
+    console.log("SpecForge 未安装")
   }
 }
 
 // ============================================================================
-// DD-4: 冲突检测模块
+// 辅助函数
 // ============================================================================
 
-interface ConflictReport {
-  hasConflicts: boolean;
-  conflicts: Array<{
-    path: string;
-    reason: "user_file_at_sf_path" | "non_sf_agent_in_config";
-    detail: string;
-  }>;
+/** 获取源目录（sf-installer.ts 所在目录的父目录） */
+function getSourceDir(): string {
+  return path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
 }
 
-/** 检查文件名是否为 SpecForge 文件（以 sf- 或 sf_ 开头） */
-function isSpecForgeFile(filename: string): boolean {
-  return filename.startsWith("sf-") || filename.startsWith("sf_");
+/** 显示成功摘要 */
+function showSuccessSummary(fileCount: number, userLevelDir: string, action: "安装" | "升级"): void {
+  console.log("")
+  console.log(`✅ ${action}完成`)
+  console.log(`   已部署: ${fileCount} 个共享组件文件`)
+  console.log(`   目录: ${userLevelDir}`)
+  console.log(`   提示: 需要重启 OpenCode 才能加载新版 Plugin`)
 }
 
-/** 检测文件冲突 */
-function detectConflicts(targetDir: string, manifest: ManifestFile | null): ConflictReport {
-  const conflicts: ConflictReport["conflicts"] = [];
+// ============================================================================
+// cmdInstall — 部署共享组件
+// ============================================================================
 
-  for (const relativePath of FILE_REGISTRY) {
-    const targetPath = path.join(targetDir, relativePath);
-    if (fs.existsSync(targetPath)) {
-      // 如果文件在现有清单中，是 SF 文件，无冲突
-      if (manifest && manifest.files[relativePath]) continue;
-      // 否则是用户文件占据了 SF 路径
-      conflicts.push({
-        path: relativePath,
-        reason: "user_file_at_sf_path",
-        detail: `用户文件占据了 SpecForge 需要部署的路径: ${relativePath}`,
-      });
+export async function cmdInstall(opts: CLIOptions): Promise<void> {
+  const userLevelDir = resolveUserLevelDirectory()
+  const sourceDir = getSourceDir()
+
+  console.log("📦 正在安装 SpecForge 共享组件...")
+  console.log(`   目标目录: ${userLevelDir}`)
+  console.log("")
+
+  await acquireInstallLock(userLevelDir, "install")
+  try {
+    // 部署所有 SHARED_COMPONENT_REGISTRY 文件（逐文件原子替换）
+    let deployedCount = 0
+    for (const entry of SHARED_COMPONENT_REGISTRY) {
+      const sourcePath = path.join(sourceDir, ".opencode", entry.path)
+      const targetPath = path.join(userLevelDir, posixToNative(entry.path))
+
+      if (!fs.existsSync(sourcePath)) {
+        continue
+      }
+
+      // 确保目标目录存在
+      const dir = path.dirname(targetPath)
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+      }
+
+      // 计算源文件 SHA-256
+      const sourceHash = await computeSHA256(sourcePath)
+
+      // 原子写入：写入临时文件 → 校验 SHA-256 → rename 替换
+      const tmpPath = targetPath + `.tmp.${crypto.randomUUID().slice(0, 8)}`
+      try {
+        fs.copyFileSync(sourcePath, tmpPath)
+
+        // 校验临时文件 SHA-256 与源文件一致
+        const tmpHash = await computeSHA256(tmpPath)
+        if (tmpHash !== sourceHash) {
+          fs.unlinkSync(tmpPath)
+          throw new InstallerError(
+            InstallerErrorCode.E_CHECKSUM_MISMATCH,
+            `文件 ${entry.path} 写入后校验失败（源: ${sourceHash.slice(0, 16)}..., 临时: ${tmpHash.slice(0, 16)}...）`
+          )
+        }
+
+        // 原子替换
+        fs.renameSync(tmpPath, targetPath)
+      } catch (err) {
+        // 清理临时文件
+        if (fs.existsSync(tmpPath)) {
+          fs.unlinkSync(tmpPath)
+        }
+        throw err
+      }
+
+      deployedCount++
+    }
+
+    // Merge_Write opencode.json（仅 sf-* agents）
+    const sourceAgents = getAgentDefinitions(sourceDir)
+    const existingManifest = await readUserManifest(userLevelDir).catch(() => null)
+    await mergeOpenCodeJsonUserLevel(userLevelDir, sourceAgents, existingManifest, opts.force)
+
+    // 构建并写入 User_Manifest
+    const manifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
+    await writeUserManifest(userLevelDir, manifest)
+
+    showSuccessSummary(deployedCount, userLevelDir, "安装")
+  } finally {
+    await releaseInstallLock(userLevelDir)
+  }
+}
+
+// ============================================================================
+// cmdUpgrade — 原子升级共享组件
+// ============================================================================
+
+/** Per-file entry in the upgrade journal */
+interface UpgradeJournalFileEntry {
+  path: string
+  status: "replaced" | "skipped"
+  backupPath?: string
+  newHash?: string
+  oldHash?: string
+}
+
+/** Top-level upgrade_journal.json structure */
+interface UpgradeJournal {
+  timestamp: string
+  from_version: string
+  to_version: string
+  files_updated: UpgradeJournalFileEntry[]
+  status: "in_progress" | "success" | "failed" | "rolled_back"
+}
+
+/** 从 package.json 读取源版本号 */
+function getSourceVersion(sourceDir: string): string {
+  const pkgPath = path.join(sourceDir, "package.json")
+  if (!fs.existsSync(pkgPath)) return "0.0.0"
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"))
+    return pkg.version || "0.0.0"
+  } catch {
+    return "0.0.0"
+  }
+}
+
+export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
+  const userLevelDir = resolveUserLevelDirectory()
+  const sourceDir = getSourceDir()
+
+  console.log("🔄 正在升级 SpecForge 共享组件...")
+  console.log(`   目标目录: ${userLevelDir}`)
+  console.log("")
+
+  await acquireInstallLock(userLevelDir, "upgrade")
+  try {
+    // Step 1: 读取现有 Manifest
+    const existingManifest = await readUserManifest(userLevelDir)
+    const fromVersion = existingManifest?.shared_version || "0.0.0"
+    const toVersion = getSourceVersion(sourceDir)
+
+    // Step 2: 备份 User_Manifest 和 opencode.json
+    const manifestBackupPath = await backupFile(userLevelDir, "specforge-manifest.json")
+    const opencodeBackupPath = await backupFile(userLevelDir, "opencode.json")
+
+    // Step 3: Initialize upgrade journal
+    const journalPath = path.join(userLevelDir, "upgrade_journal.json")
+    const journal: UpgradeJournal = {
+      timestamp: new Date().toISOString(),
+      from_version: fromVersion,
+      to_version: toVersion,
+      files_updated: [],
+      status: "in_progress",
+    }
+    // Write initial journal (marks upgrade as in_progress for crash recovery)
+    fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
+
+    let upgradedCount = 0
+    let skippedCount = 0
+
+    // Step 4: Per-file atomic replacement
+    for (const entry of SHARED_COMPONENT_REGISTRY) {
+      const sourcePath = path.join(sourceDir, ".opencode", entry.path)
+      const targetPath = path.join(userLevelDir, posixToNative(entry.path))
+
+      if (!fs.existsSync(sourcePath)) {
+        journal.files_updated.push({ path: entry.path, status: "skipped" })
+        skippedCount++
+        continue
+      }
+
+      // 计算源文件 SHA-256
+      const sourceHash = await computeSHA256(sourcePath)
+
+      // 如果目标文件存在且 hash 相同（非 --force），跳过
+      const existingEntry = existingManifest?.files[entry.path]
+      if (!opts.force && existingEntry && existingEntry.sha256 === sourceHash) {
+        journal.files_updated.push({ path: entry.path, status: "skipped", oldHash: existingEntry.sha256 })
+        skippedCount++
+        continue
+      }
+
+      // 备份现有文件
+      let fileBackupPath: string | undefined
+      if (fs.existsSync(targetPath)) {
+        fileBackupPath = (await backupFile(userLevelDir, entry.path)) || undefined
+      }
+
+      // 确保目标目录存在
+      const dir = path.dirname(targetPath)
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+      }
+
+      // 写入临时文件 → 校验 SHA-256 → rename 原子替换
+      const tmpPath = targetPath + `.tmp.${process.pid}`
+      try {
+        fs.copyFileSync(sourcePath, tmpPath)
+        // 校验临时文件 SHA-256 与源文件一致
+        const tmpHash = await computeSHA256(tmpPath)
+        if (tmpHash !== sourceHash) {
+          fs.unlinkSync(tmpPath)
+          throw new InstallerError(
+            InstallerErrorCode.E_CHECKSUM_MISMATCH,
+            `文件 ${entry.path} 写入后校验失败（源: ${sourceHash.slice(0, 16)}..., 临时: ${tmpHash.slice(0, 16)}...）`
+          )
+        }
+        // 原子替换
+        fs.renameSync(tmpPath, targetPath)
+      } catch (err) {
+        // 清理临时文件
+        if (fs.existsSync(tmpPath)) fs.unlinkSync(tmpPath)
+        throw err
+      }
+
+      journal.files_updated.push({
+        path: entry.path,
+        status: "replaced",
+        backupPath: fileBackupPath,
+        newHash: sourceHash,
+        oldHash: existingEntry?.sha256,
+      })
+      upgradedCount++
+    }
+
+    // Step 5: 写入新 User_Manifest
+    const sourceAgents = getAgentDefinitions(sourceDir)
+    const newManifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
+    await writeUserManifest(userLevelDir, newManifest)
+
+    // Step 6: Merge_Write opencode.json
+    await mergeOpenCodeJsonUserLevel(userLevelDir, sourceAgents, newManifest, opts.force)
+
+    // Step 7: Mark journal as success and clean up
+    journal.status = "success"
+    fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
+
+    // 成功后删除 journal（操作已完成，不再需要恢复信息）
+    if (fs.existsSync(journalPath)) {
+      fs.unlinkSync(journalPath)
+    }
+
+    console.log(`   已升级: ${upgradedCount} 个文件`)
+    console.log(`   已跳过: ${skippedCount} 个文件（无变化）`)
+    showSuccessSummary(upgradedCount, userLevelDir, "升级")
+  } catch (err) {
+    // 失败时尝试回滚
+    const journalPath = path.join(userLevelDir, "upgrade_journal.json")
+    if (fs.existsSync(journalPath)) {
+      try {
+        const journal: UpgradeJournal = JSON.parse(
+          fs.readFileSync(journalPath, "utf-8")
+        )
+        console.warn("  ⚠️ 升级失败，尝试回滚...")
+
+        // 回滚已替换的文件
+        for (const entry of journal.files_updated) {
+          if (entry.status === "replaced" && entry.backupPath && fs.existsSync(entry.backupPath)) {
+            const targetPath = path.join(userLevelDir, posixToNative(entry.path))
+            fs.copyFileSync(entry.backupPath, targetPath)
+          }
+        }
+
+        // 回滚 User_Manifest（从备份恢复）
+        const manifestBackup = path.join(userLevelDir, ".backup")
+        if (fs.existsSync(manifestBackup)) {
+          // Find the manifest backup (most recent specforge-manifest.json.bak.*)
+          const backupFiles = fs.readdirSync(manifestBackup)
+            .filter(f => f.startsWith("specforge-manifest.json.bak."))
+            .sort()
+          if (backupFiles.length > 0) {
+            const latestBackup = path.join(manifestBackup, backupFiles[backupFiles.length - 1])
+            const manifestTarget = path.join(userLevelDir, "specforge-manifest.json")
+            fs.copyFileSync(latestBackup, manifestTarget)
+          }
+        }
+
+        // 回滚 opencode.json（从备份恢复）
+        if (fs.existsSync(manifestBackup)) {
+          const backupFiles = fs.readdirSync(manifestBackup)
+            .filter(f => f.startsWith("opencode.json.bak."))
+            .sort()
+          if (backupFiles.length > 0) {
+            const latestBackup = path.join(manifestBackup, backupFiles[backupFiles.length - 1])
+            const opencodeTarget = path.join(userLevelDir, "opencode.json")
+            fs.copyFileSync(latestBackup, opencodeTarget)
+          }
+        }
+
+        // Update journal status to rolled_back (preserve for diagnostics)
+        journal.status = "rolled_back"
+        fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
+
+        console.warn("  ✅ 回滚完成")
+      } catch {
+        // Update journal status to failed if rollback itself fails
+        try {
+          const journal: UpgradeJournal = JSON.parse(
+            fs.readFileSync(journalPath, "utf-8")
+          )
+          journal.status = "failed"
+          fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
+        } catch { /* best effort */ }
+        console.warn("  ⚠️ 回滚失败，请手动检查 .backup/ 目录和 upgrade_journal.json")
+      }
+    }
+    throw err
+  } finally {
+    await releaseInstallLock(userLevelDir)
+  }
+}
+
+// ============================================================================
+// cmdVerify — SHA-256 校验
+// ============================================================================
+
+export async function cmdVerify(): Promise<void> {
+  const userLevelDir = resolveUserLevelDirectory()
+
+  console.log("🔍 正在校验 SpecForge 共享组件完整性...")
+  console.log(`   目录: ${userLevelDir}`)
+  console.log("")
+
+  // 不获取锁，但检查锁是否存在
+  const lockPath = path.join(userLevelDir, ".specforge.lock")
+  if (fs.existsSync(lockPath)) {
+    console.warn("  ⚠️ 安装正在进行，校验结果可能不准确")
+    console.log("")
+  }
+
+  // 读取 User_Manifest
+  const manifest = await readUserManifest(userLevelDir)
+  if (!manifest) {
+    console.error("❌ 未找到 specforge-manifest.json，SpecForge 可能未安装")
+    process.exit(1)
+    return // unreachable but satisfies TypeScript after mocked process.exit in tests
+  }
+
+  const totalFiles = Object.keys(manifest.files).length
+  let failedCount = 0
+  let okCount = 0
+  let missingCount = 0
+
+  for (const [relativePath, entry] of Object.entries(manifest.files)) {
+    const fullPath = path.join(userLevelDir, posixToNative(relativePath))
+
+    if (!fs.existsSync(fullPath)) {
+      console.log(`  ❌ 缺失: ${relativePath}`)
+      missingCount++
+      continue
+    }
+
+    const actualHash = await computeSHA256(fullPath)
+    if (actualHash !== entry.sha256) {
+      console.log(`  ❌ 校验失败: ${relativePath}`)
+      console.log(`     预期: ${entry.sha256.slice(0, 16)}...`)
+      console.log(`     实际: ${actualHash.slice(0, 16)}...`)
+      failedCount++
+    } else {
+      console.log(`  ✅ 通过: ${relativePath}`)
+      okCount++
     }
   }
 
-  // 检查 opencode.json 中的冲突
-  const openCodeConflicts = checkOpenCodeJsonConflicts(targetDir);
-  conflicts.push(...openCodeConflicts.conflicts);
+  // 显示摘要
+  console.log("")
+  console.log(`   总计: ${totalFiles} 个文件`)
+  console.log(`   通过: ${okCount}`)
+  console.log(`   失败: ${failedCount}`)
+  console.log(`   缺失: ${missingCount}`)
+  console.log("")
 
-  return {
-    hasConflicts: conflicts.length > 0,
-    conflicts,
-  };
+  if (failedCount === 0 && missingCount === 0) {
+    console.log(`✅ 校验通过（${okCount} 个文件完整）`)
+  } else {
+    console.log(`❌ 校验失败: ${failedCount + missingCount} 个问题（缺失: ${missingCount}, 不一致: ${failedCount}）`)
+    console.log(`   建议: 执行 \`upgrade --force\` 恢复共享组件`)
+    process.exit(EXIT_CODES[InstallerErrorCode.E_CHECKSUM_MISMATCH])
+  }
 }
 
-/** 检查 opencode.json 中非 SF 安装的同名 agent */
-function checkOpenCodeJsonConflicts(targetDir: string): ConflictReport {
-  const conflicts: ConflictReport["conflicts"] = [];
-  const configPath = path.join(targetDir, "opencode.json");
+// ============================================================================
+// cmdUninstall — 卸载共享组件
+// ============================================================================
 
-  if (!fs.existsSync(configPath)) {
-    return { hasConflicts: false, conflicts: [] };
+export async function cmdUninstall(): Promise<void> {
+  const userLevelDir = resolveUserLevelDirectory()
+
+  console.log("🗑️ 正在卸载 SpecForge 共享组件...")
+  console.log(`   目录: ${userLevelDir}`)
+  console.log("")
+
+  await acquireInstallLock(userLevelDir, "uninstall")
+  try {
+    // Step 1: 读取 User_Manifest
+    const manifest = await readUserManifest(userLevelDir)
+    if (!manifest) {
+      console.log("  ℹ️ 未找到 Manifest，SpecForge 可能未安装")
+      return
+    }
+
+    // Step 2: 备份 opencode.json（修改前必须备份）
+    await backupFile(userLevelDir, "opencode.json")
+
+    // Step 3: 删除 Manifest 中记录的文件
+    let deletedCount = 0
+    let missingCount = 0
+    for (const relativePath of Object.keys(manifest.files)) {
+      const fullPath = path.join(userLevelDir, posixToNative(relativePath))
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath)
+        deletedCount++
+      } else {
+        missingCount++
+      }
+    }
+
+    // Step 4: 检查未在 Manifest 中记录的 sf-* 文件（仅警告，不删除）
+    const warnFiles = findUnknownSfFiles(userLevelDir, manifest)
+    if (warnFiles.length > 0) {
+      console.log("")
+      console.log("  ⚠️ 发现未在 Manifest 中记录的 sf-* 文件（未删除）:")
+      for (const f of warnFiles) {
+        console.log(`     ${f}`)
+      }
+    }
+
+    // Step 5: 从 opencode.json 移除 sf-* agents（Merge_Write 反向操作）
+    await removeSfAgentsFromOpenCodeJson(userLevelDir)
+
+    // Step 6: 删除 User_Manifest
+    const manifestPath = path.join(userLevelDir, "specforge-manifest.json")
+    if (fs.existsSync(manifestPath)) {
+      fs.unlinkSync(manifestPath)
+    }
+
+    // Step 7: 显示卸载摘要
+    console.log("")
+    console.log(`✅ 卸载完成`)
+    console.log(`   已删除: ${deletedCount} 个文件`)
+    if (missingCount > 0) {
+      console.log(`   已缺失: ${missingCount} 个文件（Manifest 中记录但文件不存在）`)
+    }
+    if (warnFiles.length > 0) {
+      console.log(`   未管理: ${warnFiles.length} 个 sf-* 文件（未删除，需手动处理）`)
+    }
+  } finally {
+    await releaseInstallLock(userLevelDir)
+  }
+}
+
+/**
+ * 查找未在 Manifest 中记录的 sf-* 文件
+ *
+ * 扫描 agents/、tools/、tools/lib/、plugins/、skills/ 目录，
+ * 查找以 sf- 或 sf_ 开头的文件/目录，但不在 Manifest 中记录。
+ */
+function findUnknownSfFiles(userLevelDir: string, manifest: UserLevelManifest): string[] {
+  const unknown: string[] = []
+  const managedPaths = new Set(Object.keys(manifest.files))
+
+  // 检查 agents/ 目录
+  const agentsDir = path.join(userLevelDir, "agents")
+  if (fs.existsSync(agentsDir)) {
+    for (const file of fs.readdirSync(agentsDir)) {
+      if (file.startsWith("sf-") || file.startsWith("sf_")) {
+        const rel = `agents/${file}`
+        if (!managedPaths.has(rel)) {
+          unknown.push(rel)
+        }
+      }
+    }
   }
 
-  try {
-    const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    if (config.agent && typeof config.agent === "object") {
-      for (const agentName of Object.keys(config.agent)) {
-        if (agentName.startsWith("sf-")) {
-          // 如果存在 sf- 前缀的 agent 但不在清单中，可能是冲突
-          const manifest = readManifest(targetDir);
-          if (!manifest) {
-            conflicts.push({
-              path: "opencode.json",
-              reason: "non_sf_agent_in_config",
-              detail: `opencode.json 中已存在 agent "${agentName}"，但非 SpecForge 安装`,
-            });
+  // 检查 tools/ 目录（顶层）
+  const toolsDir = path.join(userLevelDir, "tools")
+  if (fs.existsSync(toolsDir)) {
+    for (const file of fs.readdirSync(toolsDir)) {
+      if (file.startsWith("sf_")) {
+        const fullItemPath = path.join(toolsDir, file)
+        // 只检查文件，跳过目录（如 lib/）
+        if (fs.statSync(fullItemPath).isFile()) {
+          const rel = `tools/${file}`
+          if (!managedPaths.has(rel)) {
+            unknown.push(rel)
           }
         }
       }
     }
-  } catch {
-    // JSON 解析失败不算冲突，后续合并时会处理
   }
 
-  return { hasConflicts: conflicts.length > 0, conflicts };
-}
-
-
-// ============================================================================
-// DD-5: 配置合并模块
-// ============================================================================
-
-/** 合并 opencode.json：仅操作 agent 对象中 sf-* 条目 */
-function mergeOpenCodeJson(targetDir: string, sourceDir: string, mode: "add" | "remove"): void {
-  const targetPath = path.join(targetDir, "opencode.json");
-  const sourcePath = path.join(sourceDir, "opencode.json");
-
-  if (mode === "add") {
-    // 读取源文件
-    if (!fs.existsSync(sourcePath)) return;
-    let sourceConfig: any;
-    try {
-      sourceConfig = JSON.parse(fs.readFileSync(sourcePath, "utf-8"));
-    } catch (e) {
-      throw new Error(`源文件 opencode.json 解析失败: ${e}`);
-    }
-
-    // 读取或创建目标文件
-    let targetConfig: any = {};
-    if (fs.existsSync(targetPath)) {
-      try {
-        targetConfig = JSON.parse(fs.readFileSync(targetPath, "utf-8"));
-      } catch (e) {
-        throw new Error(`目标文件 opencode.json 解析失败: ${e}\n   建议: 请修复 JSON 语法后重试`);
-      }
-    }
-
-    // 保留目标文件的 $schema 和 permission
-    // 仅将源文件中 sf-* agent 写入目标
-    if (!targetConfig.agent) targetConfig.agent = {};
-    if (sourceConfig.agent && typeof sourceConfig.agent === "object") {
-      for (const [name, value] of Object.entries(sourceConfig.agent)) {
-        if (name.startsWith("sf-")) {
-          targetConfig.agent[name] = value;
+  // 检查 tools/lib/ 目录
+  const toolsLibDir = path.join(userLevelDir, "tools", "lib")
+  if (fs.existsSync(toolsLibDir)) {
+    for (const file of fs.readdirSync(toolsLibDir)) {
+      if (file.startsWith("sf_")) {
+        const rel = `tools/lib/${file}`
+        if (!managedPaths.has(rel)) {
+          unknown.push(rel)
         }
       }
     }
+  }
 
-    // 如果目标没有 $schema 但源有，添加
-    if (!targetConfig.$schema && sourceConfig.$schema) {
-      targetConfig.$schema = sourceConfig.$schema;
-    }
-    // 如果目标没有 permission 但源有，添加
-    if (targetConfig.permission === undefined && sourceConfig.permission !== undefined) {
-      targetConfig.permission = sourceConfig.permission;
-    }
-
-    fs.writeFileSync(targetPath, JSON.stringify(targetConfig, null, 2) + "\n", "utf-8");
-  } else {
-    // mode === "remove"
-    if (!fs.existsSync(targetPath)) return;
-    let targetConfig: any;
-    try {
-      targetConfig = JSON.parse(fs.readFileSync(targetPath, "utf-8"));
-    } catch (e) {
-      throw new Error(`目标文件 opencode.json 解析失败: ${e}`);
-    }
-
-    if (targetConfig.agent && typeof targetConfig.agent === "object") {
-      for (const name of Object.keys(targetConfig.agent)) {
-        if (name.startsWith("sf-")) {
-          delete targetConfig.agent[name];
+  // 检查 plugins/ 目录
+  const pluginsDir = path.join(userLevelDir, "plugins")
+  if (fs.existsSync(pluginsDir)) {
+    for (const file of fs.readdirSync(pluginsDir)) {
+      if (file.startsWith("sf_")) {
+        const rel = `plugins/${file}`
+        if (!managedPaths.has(rel)) {
+          unknown.push(rel)
         }
       }
     }
-
-    fs.writeFileSync(targetPath, JSON.stringify(targetConfig, null, 2) + "\n", "utf-8");
-  }
-}
-
-/** 合并 package.json：仅操作 devDependencies 中 SF 所需条目 */
-function mergePackageJson(targetDir: string, sourceDir: string, mode: "add" | "remove"): void {
-  const targetPath = path.join(targetDir, "package.json");
-  const sourcePath = path.join(sourceDir, "package.json");
-
-  if (mode === "add") {
-    if (!fs.existsSync(sourcePath)) return;
-    let sourcePkg: any;
-    try {
-      sourcePkg = JSON.parse(fs.readFileSync(sourcePath, "utf-8"));
-    } catch (e) {
-      throw new Error(`源文件 package.json 解析失败: ${e}`);
-    }
-
-    let targetPkg: any = {};
-    if (fs.existsSync(targetPath)) {
-      try {
-        targetPkg = JSON.parse(fs.readFileSync(targetPath, "utf-8"));
-      } catch (e) {
-        throw new Error(`目标文件 package.json 解析失败: ${e}\n   建议: 请修复 JSON 语法后重试`);
-      }
-    }
-
-    // 合并 devDependencies
-    if (sourcePkg.devDependencies) {
-      if (!targetPkg.devDependencies) targetPkg.devDependencies = {};
-      for (const [name, version] of Object.entries(sourcePkg.devDependencies)) {
-        targetPkg.devDependencies[name] = version;
-      }
-    }
-
-    fs.writeFileSync(targetPath, JSON.stringify(targetPkg, null, 2) + "\n", "utf-8");
-  } else {
-    // mode === "remove"
-    if (!fs.existsSync(targetPath)) return;
-    if (!fs.existsSync(sourcePath)) return;
-
-    let targetPkg: any;
-    try {
-      targetPkg = JSON.parse(fs.readFileSync(targetPath, "utf-8"));
-    } catch (e) {
-      throw new Error(`目标文件 package.json 解析失败: ${e}`);
-    }
-
-    let sourcePkg: any;
-    try {
-      sourcePkg = JSON.parse(fs.readFileSync(sourcePath, "utf-8"));
-    } catch {
-      return; // 源文件解析失败时跳过
-    }
-
-    if (targetPkg.devDependencies && sourcePkg.devDependencies) {
-      for (const name of Object.keys(sourcePkg.devDependencies)) {
-        delete targetPkg.devDependencies[name];
-      }
-    }
-
-    fs.writeFileSync(targetPath, JSON.stringify(targetPkg, null, 2) + "\n", "utf-8");
-  }
-}
-
-// ============================================================================
-// DD-6: 文件操作模块
-// ============================================================================
-
-type OpType = "创建" | "更新" | "删除" | "跳过" | "合并";
-
-interface FileOperation {
-  type: OpType;
-  path: string;
-  reason?: string;
-}
-
-/** 部署单个文件 */
-function deployFile(
-  sourceDir: string,
-  targetDir: string,
-  relativePath: string,
-  dryRun: boolean
-): FileOperation {
-  const sourcePath = path.join(sourceDir, relativePath);
-  const targetPath = path.join(targetDir, relativePath);
-
-  if (!fs.existsSync(sourcePath)) {
-    return { type: "跳过", path: relativePath, reason: "源文件不存在" };
   }
 
-  const exists = fs.existsSync(targetPath);
-  const opType: OpType = exists ? "更新" : "创建";
-
-  if (!dryRun) {
-    try {
-      const dir = path.dirname(targetPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      fs.copyFileSync(sourcePath, targetPath);
-    } catch (e: any) {
-      if (e.code === "EACCES" || e.code === "EPERM") {
-        return { type: "跳过", path: relativePath, reason: `权限错误: ${e.message}` };
-      }
-      throw e;
-    }
-  }
-
-  return { type: opType, path: relativePath };
-}
-
-/** 删除单个文件 */
-function removeFile(targetDir: string, relativePath: string, dryRun: boolean): FileOperation {
-  const targetPath = path.join(targetDir, relativePath);
-
-  if (!fs.existsSync(targetPath)) {
-    return { type: "跳过", path: relativePath, reason: "文件不存在" };
-  }
-
-  if (!dryRun) {
-    try {
-      fs.unlinkSync(targetPath);
-    } catch (e: any) {
-      if (e.code === "EACCES" || e.code === "EPERM") {
-        return { type: "跳过", path: relativePath, reason: `权限错误: ${e.message}` };
-      }
-      throw e;
-    }
-  }
-
-  return { type: "删除", path: relativePath };
-}
-
-/** 删除空目录 */
-function removeEmptyDirs(targetDir: string, dirs: string[], dryRun: boolean): FileOperation[] {
-  const ops: FileOperation[] = [];
-
-  // 按路径深度降序排列，先删除深层目录
-  const sorted = [...dirs].sort((a, b) => b.split("/").length - a.split("/").length);
-
-  for (const dir of sorted) {
-    const fullPath = path.join(targetDir, dir);
-    if (!fs.existsSync(fullPath)) continue;
-
-    try {
-      const entries = fs.readdirSync(fullPath);
-      if (entries.length === 0 || (entries.length === 1 && entries[0] === ".gitkeep")) {
-        if (!dryRun) {
-          // Remove .gitkeep if present
-          const gitkeepPath = path.join(fullPath, ".gitkeep");
-          if (fs.existsSync(gitkeepPath)) fs.unlinkSync(gitkeepPath);
-          fs.rmdirSync(fullPath);
-        }
-        ops.push({ type: "删除", path: dir });
-      }
-    } catch {
-      // 忽略无法读取的目录
-    }
-  }
-
-  return ops;
-}
-
-/** 输出操作日志 */
-function logOperation(op: FileOperation): void {
-  const icons: Record<OpType, string> = {
-    "创建": "📄",
-    "更新": "🔄",
-    "删除": "🗑️",
-    "跳过": "⏭️",
-    "合并": "🔀",
-  };
-  const icon = icons[op.type] || "•";
-  const suffix = op.reason ? ` (${op.reason})` : "";
-  console.log(`  ${icon} [${op.type}] ${op.path}${suffix}`);
-}
-
-
-// ============================================================================
-// DD-7: 命令实现
-// ============================================================================
-
-/** install 子命令 */
-async function cmdInstall(opts: CLIOptions, sourceDir: string): Promise<void> {
-  const { target, force, dryRun, skipDeps } = opts;
-
-  // 检查是否已安装
-  const existingManifest = readManifest(target);
-  if (existingManifest) {
-    console.error(`❌ 错误: SpecForge 已安装 (v${existingManifest.version})`);
-    console.error(`   建议: 使用 \`upgrade\` 子命令来更新版本`);
-    process.exit(1);
-  }
-
-  // 冲突检测
-  if (!force) {
-    const report = detectConflicts(target, null);
-    if (report.hasConflicts) {
-      console.error(`❌ 错误: 检测到 ${report.conflicts.length} 个文件冲突`);
-      for (const c of report.conflicts) {
-        console.error(`   • ${c.path}: ${c.detail}`);
-      }
-      console.error(`   建议: 解决冲突后重试，或使用 --force 强制安装`);
-      process.exit(1);
-    }
-  }
-
-  console.log(dryRun ? "🔍 [DRY-RUN] 模拟安装..." : "📦 正在安装 SpecForge...");
-  console.log(`   源目录: ${sourceDir}`);
-  console.log(`   目标目录: ${target}`);
-  console.log("");
-
-  // 部署文件
-  const deployedFiles: string[] = [];
-  const ops: FileOperation[] = [];
-
-  for (const relativePath of FILE_REGISTRY) {
-    const op = deployFile(sourceDir, target, relativePath, dryRun);
-    ops.push(op);
-    logOperation(op);
-    if (op.type === "创建" || op.type === "更新") {
-      deployedFiles.push(relativePath);
-    }
-  }
-
-  // 合并配置文件
-  console.log("");
-  console.log("  🔀 [合并] opencode.json");
-  if (!dryRun) {
-    mergeOpenCodeJson(target, sourceDir, "add");
-  }
-
-  console.log("  🔀 [合并] package.json");
-  if (!dryRun) {
-    mergePackageJson(target, sourceDir, "add");
-  }
-
-  // 写入清单
-  if (!dryRun) {
-    const manifest = await buildManifest(sourceDir, target, deployedFiles);
-    writeManifest(target, manifest);
-    console.log("");
-    console.log(`  📋 清单已写入 (v${manifest.version}, ${Object.keys(manifest.files).length} 个文件)`);
-
-    // 完整性校验
-    let integrityOk = true;
-    for (const [filePath, expectedHash] of Object.entries(manifest.files)) {
-      const fullPath = path.join(target, filePath);
-      if (fs.existsSync(fullPath)) {
-        const actualHash = await computeSHA256(fullPath);
-        if (actualHash !== expectedHash) {
-          console.error(`  ⚠️ 完整性校验失败: ${filePath}`);
-          integrityOk = false;
+  // 检查 skills/ 目录（sf-* 前缀的子目录）
+  const skillsDir = path.join(userLevelDir, "skills")
+  if (fs.existsSync(skillsDir)) {
+    for (const dir of fs.readdirSync(skillsDir)) {
+      if (dir.startsWith("sf-") || dir.startsWith("sf_")) {
+        const skillMdPath = `skills/${dir}/SKILL.md`
+        if (!managedPaths.has(skillMdPath)) {
+          unknown.push(skillMdPath)
         }
       }
     }
-    if (integrityOk) {
-      console.log("  ✅ 完整性校验通过");
-    }
   }
 
-  // 摘要
-  const created = ops.filter((o) => o.type === "创建").length;
-  const updated = ops.filter((o) => o.type === "更新").length;
-  const skipped = ops.filter((o) => o.type === "跳过").length;
-
-  console.log("");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log(`✅ 安装完成: ${created} 创建, ${updated} 更新, ${skipped} 跳过`);
-  console.log("");
-  console.log("后续步骤:");
-  console.log("  1. 运行 `bun install` 安装依赖");
-  console.log("  2. 运行 `bun scripts/sf-installer.ts verify` 验证安装完整性");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-  // 自动依赖安装
-  if (!dryRun && !skipDeps) {
-    runDepsInstall(target);
-  }
+  return unknown
 }
 
-/** upgrade 子命令 */
-async function cmdUpgrade(opts: CLIOptions, sourceDir: string): Promise<void> {
-  const { target, force, dryRun, skipDeps } = opts;
+/**
+ * 从 opencode.json 移除 sf-* agents（Merge_Write 反向操作）
+ *
+ * 行为：
+ * - 删除 agent 对象中所有 sf-* 前缀的条目
+ * - 保留所有非 sf-* 的 agent 条目和其他顶层键
+ * - 即使 agent 对象变空，仍保留 $schema 和其他键
+ */
+async function removeSfAgentsFromOpenCodeJson(userLevelDir: string): Promise<void> {
+  const configPath = path.join(userLevelDir, "opencode.json")
+  if (!fs.existsSync(configPath)) return
 
-  // 检查是否已安装
-  const manifest = readManifest(target);
-  if (!manifest) {
-    console.error(`❌ 错误: SpecForge 未安装`);
-    console.error(`   建议: 使用 \`install\` 子命令来安装`);
-    process.exit(1);
-  }
-
-  // 比较版本
-  const sourceVersion = getSourceVersion(sourceDir);
-  if (sourceVersion === manifest.version && !force) {
-    console.log(`✅ 已是最新版本 (v${manifest.version})`);
-    process.exit(0);
-  }
-
-  // 冲突检测
-  if (!force) {
-    const report = detectConflicts(target, manifest);
-    if (report.hasConflicts) {
-      console.error(`❌ 错误: 检测到 ${report.conflicts.length} 个文件冲突`);
-      for (const c of report.conflicts) {
-        console.error(`   • ${c.path}: ${c.detail}`);
-      }
-      console.error(`   建议: 解决冲突后重试，或使用 --force 强制升级`);
-      process.exit(1);
-    }
-  }
-
-  console.log(dryRun ? "🔍 [DRY-RUN] 模拟升级..." : "⬆️ 正在升级 SpecForge...");
-  console.log(`   当前版本: v${manifest.version}`);
-  console.log(`   目标版本: v${sourceVersion}`);
-  console.log("");
-
-  const newFiles: string[] = [];
-  const updatedFiles: string[] = [];
-  const removedFiles: string[] = [];
-  const ops: FileOperation[] = [];
-
-  // 计算差异并部署
-  for (const relativePath of FILE_REGISTRY) {
-    const sourcePath = path.join(sourceDir, relativePath);
-    const targetPath = path.join(target, relativePath);
-
-    if (!fs.existsSync(sourcePath)) {
-      ops.push({ type: "跳过", path: relativePath, reason: "源文件不存在" });
-      continue;
-    }
-
-    const sourceHash = await computeSHA256(sourcePath);
-    const manifestHash = manifest.files[relativePath];
-
-    if (!manifestHash) {
-      // 新文件
-      const op = deployFile(sourceDir, target, relativePath, dryRun);
-      ops.push(op);
-      logOperation(op);
-      newFiles.push(relativePath);
-    } else if (sourceHash !== manifestHash) {
-      // 文件已变化，检查用户是否修改过
-      if (fs.existsSync(targetPath) && !force) {
-        const currentHash = await computeSHA256(targetPath);
-        if (currentHash !== manifestHash) {
-          // 用户修改过此文件
-          console.log(`  ⚠️ [已修改] ${relativePath} — 用户已修改，使用 --force 覆盖`);
-          ops.push({ type: "跳过", path: relativePath, reason: "用户已修改" });
-          continue;
-        }
-      }
-      const op = deployFile(sourceDir, target, relativePath, dryRun);
-      ops.push(op);
-      logOperation(op);
-      updatedFiles.push(relativePath);
-    } else {
-      // 校验和相同，跳过
-    }
-  }
-
-  // 删除清单中有但源目录已移除的文件
-  for (const manifestPath of Object.keys(manifest.files)) {
-    if (!FILE_REGISTRY.includes(manifestPath)) {
-      const op = removeFile(target, manifestPath, dryRun);
-      ops.push(op);
-      logOperation(op);
-      if (op.type === "删除") removedFiles.push(manifestPath);
-    }
-  }
-
-  // 合并配置
-  console.log("");
-  console.log("  🔀 [合并] opencode.json");
-  if (!dryRun) mergeOpenCodeJson(target, sourceDir, "add");
-
-  console.log("  🔀 [合并] package.json");
-  if (!dryRun) mergePackageJson(target, sourceDir, "add");
-
-  // 更新清单
-  if (!dryRun) {
-    const allDeployed = FILE_REGISTRY.filter((f) =>
-      fs.existsSync(path.join(target, f))
-    );
-    const newManifest = await buildManifest(sourceDir, target, allDeployed);
-    writeManifest(target, newManifest);
-  }
-
-  // 摘要
-  console.log("");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log(`✅ 升级完成: ${newFiles.length} 新增, ${updatedFiles.length} 更新, ${removedFiles.length} 删除`);
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-  // 自动依赖安装
-  if (!dryRun && !skipDeps) {
-    runDepsInstall(target);
-  }
-}
-
-/** uninstall 子命令 */
-async function cmdUninstall(opts: CLIOptions): Promise<void> {
-  const { target, purge, dryRun } = opts;
-
-  // 检查是否已安装
-  const manifest = readManifest(target);
-  if (!manifest) {
-    console.error(`❌ 错误: SpecForge 未安装`);
-    console.error(`   建议: 目标目录中未找到清单文件`);
-    process.exit(1);
-  }
-
-  console.log(dryRun ? "🔍 [DRY-RUN] 模拟卸载..." : "🗑️ 正在卸载 SpecForge...");
-  console.log(`   版本: v${manifest.version}`);
-  console.log("");
-
-  const ops: FileOperation[] = [];
-
-  // 删除清单中的所有文件
-  for (const relativePath of Object.keys(manifest.files)) {
-    const op = removeFile(target, relativePath, dryRun);
-    ops.push(op);
-    logOperation(op);
-  }
-
-  // 从 opencode.json 移除 sf-* agent
-  console.log("");
-  console.log("  🔀 [合并] opencode.json — 移除 sf-* agents");
-  if (!dryRun) {
-    mergeOpenCodeJson(target, manifest.source_dir, "remove");
-  }
-
-  // 从 package.json 移除 SF devDependencies
-  console.log("  🔀 [合并] package.json — 移除 SF devDependencies");
-  if (!dryRun) {
-    mergePackageJson(target, manifest.source_dir, "remove");
-  }
-
-  // 删除空目录
-  const sfDirs = [
-    ".opencode/agents",
-    ".opencode/tools/lib",
-    ".opencode/tools",
-    ".opencode/plugins",
-    ".opencode/skills/sf-workflow-feature-spec",
-    ".opencode/skills/sf-workflow-bugfix-spec",
-    ".opencode/skills/sf-workflow-design-first",
-    ".opencode/skills/sf-workflow-quick-change",
-    ".opencode/skills/superpowers-brainstorming",
-    ".opencode/skills/superpowers-code-review",
-    ".opencode/skills/superpowers-subagent-driven-development",
-    ".opencode/skills/superpowers-systematic-debugging",
-    ".opencode/skills/superpowers-tdd",
-    ".opencode/skills/superpowers-verification-before-completion",
-    ".opencode/skills/superpowers-writing-plans",
-    ".opencode/skills",
-    ".opencode",
-    "specforge/agents/contracts",
-    "specforge/agents",
-    "specforge/config",
-  ];
-
-  console.log("");
-  const dirOps = removeEmptyDirs(target, sfDirs, dryRun);
-  for (const op of dirOps) {
-    logOperation(op);
-    ops.push(op);
-  }
-
-  // --purge: 删除运行时数据
-  if (purge) {
-    console.log("");
-    console.log("  🗑️ [PURGE] 删除运行时数据...");
-    const allSpecforgeDirs = [
-      ...RUNTIME_DIRS,
-      "specforge/runtime",
-      "specforge",
-    ];
-    for (const dir of allSpecforgeDirs) {
-      const fullPath = path.join(target, dir);
-      if (fs.existsSync(fullPath)) {
-        if (!dryRun) {
-          fs.rmSync(fullPath, { recursive: true, force: true });
-        }
-        ops.push({ type: "删除", path: dir });
-        logOperation({ type: "删除", path: dir });
-      }
-    }
-  }
-
-  // 删除清单文件本身
-  if (!dryRun) {
-    const manifestPath = path.join(target, "specforge", "manifest.json");
-    if (fs.existsSync(manifestPath)) {
-      fs.unlinkSync(manifestPath);
-    }
-  }
-
-  // 摘要
-  const deleted = ops.filter((o) => o.type === "删除").length;
-  const skipped = ops.filter((o) => o.type === "跳过").length;
-
-  console.log("");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log(`✅ 卸载完成: ${deleted} 删除, ${skipped} 跳过`);
-  if (!purge) {
-    console.log("   运行时数据已保留。使用 --purge 完全删除。");
-  }
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-}
-
-/** verify 子命令 */
-async function cmdVerify(opts: CLIOptions): Promise<void> {
-  const { target } = opts;
-
-  const manifest = readManifest(target);
-  if (!manifest) {
-    console.error(`❌ 错误: SpecForge 未安装`);
-    console.error(`   建议: 目标目录中未找到清单文件`);
-    process.exit(1);
-  }
-
-  console.log(`🔍 正在校验 SpecForge 安装完整性...`);
-  console.log(`   版本: v${manifest.version}`);
-  console.log(`   安装时间: ${manifest.installed_at}`);
-  console.log("");
-
-  const intact: string[] = [];
-  const modified: string[] = [];
-  const missing: string[] = [];
-
-  for (const [relativePath, expectedHash] of Object.entries(manifest.files)) {
-    const fullPath = path.join(target, relativePath);
-
-    if (!fs.existsSync(fullPath)) {
-      missing.push(relativePath);
-      console.log(`  ❌ [缺失] ${relativePath}`);
-    } else {
-      const actualHash = await computeSHA256(fullPath);
-      if (actualHash === expectedHash) {
-        intact.push(relativePath);
-      } else {
-        modified.push(relativePath);
-        console.log(`  ⚠️ [已修改] ${relativePath}`);
-      }
-    }
-  }
-
-  console.log("");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-  if (modified.length === 0 && missing.length === 0) {
-    console.log(`✅ 安装完整: ${intact.length} 个文件全部通过校验`);
-  } else {
-    console.log(`⚠️ 发现问题: ${intact.length} 完整, ${modified.length} 已修改, ${missing.length} 缺失`);
-    console.log("");
-    console.log("   建议: 运行 `bun scripts/sf-installer.ts upgrade --force` 恢复文件到预期状态");
-  }
-
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-  if (modified.length > 0 || missing.length > 0) {
-    process.exit(1);
-  }
-}
-
-// ============================================================================
-// DD-8: 依赖管理集成
-// ============================================================================
-
-/** 检查 bun 是否可用 */
-function isBunAvailable(): boolean {
   try {
-    const result = Bun.spawnSync(["bun", "--version"]);
-    return result.exitCode === 0;
-  } catch {
-    return false;
-  }
-}
+    const content = fs.readFileSync(configPath, "utf-8")
+    const config = JSON.parse(content)
 
-/** 执行 bun install */
-function runBunInstall(targetDir: string): { success: boolean; output: string } {
-  try {
-    const result = Bun.spawnSync(["bun", "install"], {
-      cwd: targetDir,
-      stdout: "pipe",
-      stderr: "pipe",
-    });
-    const output = result.stdout.toString() + result.stderr.toString();
-    return { success: result.exitCode === 0, output };
-  } catch (e: any) {
-    return { success: false, output: e.message };
-  }
-}
-
-/** 运行依赖安装 */
-function runDepsInstall(targetDir: string): void {
-  console.log("");
-  if (isBunAvailable()) {
-    console.log("📦 正在执行 bun install...");
-    const result = runBunInstall(targetDir);
-    if (result.success) {
-      console.log("  ✅ 依赖安装完成");
-    } else {
-      console.log("  ⚠️ 依赖安装失败，请手动运行 `bun install`");
+    // 移除 sf-* agent 条目
+    if (config.agent && typeof config.agent === "object") {
+      for (const name of Object.keys(config.agent)) {
+        if (name.startsWith("sf-")) {
+          delete config.agent[name]
+        }
+      }
     }
-  } else {
-    console.log("💡 提示: 请手动运行 `bun install` 安装依赖");
+
+    // 原子写入更新后的配置
+    await atomicWriteFile(configPath, JSON.stringify(config, null, 2) + "\n")
+  } catch {
+    console.warn("  ⚠️ 无法更新 opencode.json")
   }
 }
 
 // ============================================================================
-// 主入口
+// main
 // ============================================================================
 
-async function main(): Promise<void> {
-  // 获取源目录（安装器所在目录的父目录）
-  const scriptDir = path.dirname(path.resolve(process.argv[1] || __filename));
-  const sourceDir = path.dirname(scriptDir);
+export async function main(): Promise<void> {
+  const args = process.argv.slice(2)
 
-  // 解析参数（跳过 bun 和脚本路径）
-  const args = process.argv.slice(2);
-  const opts = parseArgs(args);
+  let opts: CLIOptions
+  try {
+    opts = parseArgs(args)
+  } catch (err) {
+    if (err instanceof InstallerError) {
+      console.error(`❌ 错误: ${err.message}`)
+      process.exit(EXIT_CODES[err.code] || 1)
+    }
+    throw err
+  }
 
-  // --version 处理
+  const userLevelDir = resolveUserLevelDirectory()
+
   if (opts.showVersion) {
-    showVersion(opts.target);
-    process.exit(0);
+    showVersion(userLevelDir)
+    return
   }
 
-  // 无子命令时显示用法
   if (!opts.subcommand) {
-    showUsage();
-    process.exit(0);
+    showUsage()
+    process.exit(1)
   }
 
-  // 路由到对应子命令
   try {
     switch (opts.subcommand) {
       case "install":
-        await cmdInstall(opts, sourceDir);
-        break;
+        await cmdInstall(opts)
+        break
       case "upgrade":
-        await cmdUpgrade(opts, sourceDir);
-        break;
-      case "uninstall":
-        await cmdUninstall(opts);
-        break;
+        await cmdUpgrade(opts)
+        break
       case "verify":
-        await cmdVerify(opts);
-        break;
+        await cmdVerify()
+        break
+      case "uninstall":
+        await cmdUninstall()
+        break
     }
-  } catch (e: any) {
-    console.error(`❌ 错误: ${e.message}`);
-    if (e.path) console.error(`   路径: ${e.path}`);
-    console.error(`   建议: 检查文件权限和路径是否正确`);
-    process.exit(1);
+  } catch (err) {
+    if (err instanceof InstallerError) {
+      console.error(`❌ 错误 [${err.code}]: ${err.message}`)
+      process.exit(EXIT_CODES[err.code] || 1)
+    }
+    console.error(`❌ 未预期的错误:`, err)
+    process.exit(1)
   }
 }
 
-// 导出供测试使用
-export {
-  computeSHA256,
-  readManifest,
-  writeManifest,
-  buildManifest,
-  getSourceVersion,
-  parseArgs,
-  showUsage,
-  showVersion,
-  isSpecForgeFile,
-  detectConflicts,
-  checkOpenCodeJsonConflicts,
-  mergeOpenCodeJson,
-  mergePackageJson,
-  deployFile,
-  removeFile,
-  removeEmptyDirs,
-  logOperation,
-  isBunAvailable,
-  runBunInstall,
-  FILE_REGISTRY,
-  MERGE_FILES,
-  RUNTIME_DIRS,
-};
-
-export type { CLIOptions, ManifestFile, ConflictReport, FileOperation, OpType };
-
-// 执行主函数（仅在直接运行时，不在测试导入时）
-const isMainModule =
-  typeof Bun !== "undefined" &&
-  Bun.main !== undefined &&
-  import.meta.path === Bun.main;
+// 直接执行时运行 main（被 import 时不执行）
+const isMainModule = typeof Bun !== "undefined"
+  ? Bun.main === import.meta.path
+  : import.meta.url === `file://${process.argv[1]}`
 
 if (isMainModule) {
-  main();
+  main()
 }

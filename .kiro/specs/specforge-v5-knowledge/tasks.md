@@ -1,0 +1,51 @@
+# 实施任务
+
+## 任务列表
+
+- [x] 1. 实现 sf_knowledge_base_core 核心模块
+  - [x] 1.1 实现 GlobalKnowledgeStore 类型定义和存储层（loadStore / saveStore / getGlobalStorePath）
+  - [x] 1.2 实现文件锁机制（acquireLock / releaseLock，含 PID 检查、超时、崩溃恢复）
+  - [x] 1.3 实现 CRUD 操作（addEntry / updateEntry / removeEntry / getEntry / listEntries）
+  - [x] 1.4 实现检索功能（searchEntries / calculateRelevanceScore，含最低阈值 60）
+  - [x] 1.5 实现去重检测（checkDuplicate，normalized_key + 适用范围重叠）
+  - [x] 1.6 实现效果反馈（recordFeedback，含自动降级逻辑）
+  - [x] 1.7 实现质量管理（qualityCheck / cleanup）
+  - [x] 1.8 实现分类管理（addCategory）
+- [x] 2. 实现 sf_knowledge_base Tool wrapper
+  - [x] 2.1 创建 `.opencode/tools/sf_knowledge_base.ts`（thin wrapper，Zod schema 验证，路由到 core 函数）
+  - [x] 2.2 定义工具输入 schema（支持 add / update / remove / get / list / search / add_category / quality_check / cleanup / record_feedback 操作）
+- [x] 3. 实现 Knowledge_DataSource 并集成到 Context Builder
+  - [x] 3.1 在 sf_context_build_core.ts 中新增 KnowledgeBaseSource 类（实现 ContextDataSource 接口）
+  - [x] 3.2 实现 extractSearchKeywords / mapPhaseToCategory / formatKnowledgeFragment 辅助函数
+  - [x] 3.3 修改 buildContext 函数，条件注册 KnowledgeBaseSource（knowledge_base_enabled=true 时）
+  - [x] 3.4 扩展 Task_Context 输出格式，新增「知识库经验」章节（含 match_reasons）
+- [x] 4. 创建 sf-knowledge Agent 定义
+  - [x] 4.1 创建 `.opencode/agents/sf-knowledge.md`（mode=subagent, task=deny, edit=ask, bash=allow）
+  - [x] 4.2 在 opencode.json 中注册 sf-knowledge Agent
+- [x] 5. 创建 superpowers-knowledge-extraction Skill
+  - [x] 5.1 创建 `.opencode/skills/superpowers-knowledge-extraction/SKILL.md`（6 Phase 框架流程）
+  - [x] 5.2 定义各 Phase 输出 JSON Schema（Phase 2 / Phase 4 / Phase 5）
+  - [x] 5.3 定义置信度硬规则（high/medium/low 判定条件）
+  - [x] 5.4 定义去重规则和敏感信息扫描规则
+- [x] 6. 更新 Orchestrator 调度协议
+  - [x] 6.1 在 sf-orchestrator.md 中新增 completed 后处理逻辑（调度 sf-knowledge）
+  - [x] 6.2 新增效果反馈记录逻辑（Task completed/blocked 时调用 record_feedback）
+  - [x] 6.3 新增 /sf-knowledge 命令族（概览 / search / review / detail）
+- [x] 7. 更新安装器
+  - [x] 7.1 在 sf-installer.ts 中新增全局知识库目录创建逻辑
+  - [x] 7.2 新增一键启用选项（新项目询问、升级默认关闭、--enable-knowledge 参数）
+  - [x] 7.3 更新 project.json 写入逻辑（新增 knowledge_base_enabled 字段，默认 false）
+- [x] 8. 更新配置和文档
+  - [x] 8.1 更新 specforge/config/project.json（新增 knowledge_base_enabled: false）
+  - [x] 8.2 更新 AGENTS.md（新增 sf-knowledge Agent、sf_knowledge_base Tool、superpowers-knowledge-extraction Skill）
+- [x] 9. 编写单元测试
+  - [x] 9.1 tests/unit/knowledge_base/core.test.ts — CRUD、搜索、去重（~40 用例）
+  - [x] 9.2 tests/unit/knowledge_base/lock.test.ts — 文件锁获取/释放/超时/崩溃恢复（~15 用例）
+  - [x] 9.3 tests/unit/knowledge_base/relevance.test.ts — Relevance_Score 计算、阈值过滤（~20 用例）
+  - [x] 9.4 tests/unit/knowledge_base/feedback.test.ts — record_feedback、自动降级（~10 用例）
+  - [x] 9.5 tests/unit/knowledge_base/quality.test.ts — quality_check、cleanup（~15 用例）
+  - [x] 9.6 tests/unit/context_build/knowledge_source.test.ts — KnowledgeBaseSource 集成（~15 用例）
+  - [x] 9.7 tests/unit/installer/knowledge_setup.test.ts — 安装器知识库初始化（~10 用例）
+- [x] 10. 回归验证
+  - [x] 10.1 运行全部 657 个现有测试，确认全部通过
+  - [x] 10.2 验证 knowledge_base_enabled=false 时系统行为与 V4.0 完全一致

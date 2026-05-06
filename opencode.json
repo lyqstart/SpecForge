@@ -89,6 +89,17 @@
         "bash": "allow",
         "skill": "allow"
       }
+    },
+    "sf-knowledge": {
+      "mode": "subagent",
+      "model": "zai-coding-plan/glm-5.1",
+      "prompt": "{file:./.opencode/agents/sf-knowledge.md}",
+      "permission": {
+        "task": "deny",
+        "edit": "ask",
+        "bash": "allow",
+        "skill": "allow"
+      }
     }
   }
 }

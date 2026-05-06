@@ -11,6 +11,7 @@ import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import type { GateResult } from "./sf_requirements_gate_core"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
+import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 import type { SyncSummary } from "./sf_knowledge_graph_core"
 
 // Re-export GateResult for convenience
@@ -43,6 +44,9 @@ export async function checkDesignGate(
   baseDir: string,
   workflowType: string = "feature_spec"
 ): Promise<GateResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const specDir = join(baseDir, "specforge", "specs", workItemId)
   const docPath = join(specDir, "design.md")
 

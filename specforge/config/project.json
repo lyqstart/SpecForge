@@ -3,5 +3,6 @@
   "version": "0.5.0",
   "description": "运行在 OpenCode 上的规格驱动 AI 开发控制系统",
   "max_parallel_executors": 3,
-  "knowledge_graph_enabled": true
+  "knowledge_graph_enabled": true,
+  "knowledge_base_enabled": false
 }

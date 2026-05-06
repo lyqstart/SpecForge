@@ -7,6 +7,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 
 /**
  * Work Item 状态数据结构
@@ -97,6 +98,9 @@ export async function readStateFile(
   workItemId: string,
   baseDir: string
 ): Promise<ReadStateResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const result = await loadStateFile(baseDir)
 
   // 如果加载失败，返回错误

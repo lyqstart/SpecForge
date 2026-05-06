@@ -343,6 +343,41 @@ WHEN 一个 Parallel_Batch 中某个 executor 失败时：
 
 ---
 
+# 知识积累后处理（V5.0 新增）
+
+## completed 后自动知识提取
+
+WHEN Work Item 状态流转到 `completed` 且 `knowledge_base_enabled=true`（读取 specforge/config/project.json）：
+
+1. 调度 `sf-knowledge` Agent（加载 `superpowers-knowledge-extraction` Skill）
+2. 传入参数：work_item_id, session_id
+3. sf-knowledge 执行完成后：
+   - 成功：展示一行摘要（"📚 知识提取完成：N 条新知识，M 条待审核"）
+   - 失败：记录警告到 events.jsonl，不影响 completed 状态，向用户展示"⚠️ 知识提取跳过（原因：...）"
+
+**注意：** sf-knowledge 的执行失败绝不回滚 Work Item 状态。
+
+## 效果反馈记录
+
+WHEN Task 状态流转到 `completed` 或 `blocked` 且该 Task 的 Context 中包含知识条目（sources 中 type="knowledge_base" 的条目）：
+
+1. 获取注入的知识条目 ID 列表（从 Task_Context.sources 中 type="knowledge_base" 的条目）
+2. 判断 outcome：
+   - completed 且无重试/debugger 介入 → "helpful"
+   - completed 但有重试/debugger 介入 → "rejected"
+   - blocked → "rejected"
+3. 对每个知识条目调用 `sf_knowledge_base`（operation="record_feedback", entry_id=<id>, outcome=<outcome>）
+4. 反馈记录失败时仅记录警告，不影响 Task 状态
+
+## /sf-knowledge 命令族
+
+- `/sf-knowledge`：调用 `sf_knowledge_base`（operation="list"），展示知识库概览（按分类和状态分组的总条目数、最近 5 条、待审核数）
+- `/sf-knowledge search <关键词>`：调用 `sf_knowledge_base`（operation="search", keywords=<关键词>），展示匹配结果（含 relevance_score 和 match_reasons）
+- `/sf-knowledge review`：调用 `sf_knowledge_base`（operation="list", status="candidate"），展示所有候选条目，用户可逐条确认（activate）或拒绝（archive）
+- `/sf-knowledge detail <entry_id>`：调用 `sf_knowledge_base`（operation="get", entry_id=<id>），展示完整信息
+
+---
+
 # Gate 格式匹配一致性规则
 
 ## requirements.md 必需章节

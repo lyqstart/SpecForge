@@ -8,6 +8,7 @@
  */
 
 import { loadGraphStore } from "./sf_knowledge_graph_core"
+import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 import type { GraphNode, GraphEdge, GraphStore, NodeType, EdgeType } from "./sf_knowledge_graph_core"
 
 // ============================================================
@@ -52,6 +53,9 @@ export interface QueryFilter {
 // ============================================================
 
 async function loadStore(baseDir: string): Promise<{ store?: GraphStore; error?: QueryResult }> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {
     return {

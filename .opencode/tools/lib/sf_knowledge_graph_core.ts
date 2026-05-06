@@ -9,6 +9,7 @@
 
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
+import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
 
 // ============================================================
 // Types
@@ -248,6 +249,9 @@ export async function saveGraphStore(store: GraphStore, baseDir: string): Promis
  * Validates ID format, type legality, uniqueness, and code_file metadata.path required.
  */
 export async function addNodes(nodes: GraphNode[], baseDir: string): Promise<KGOperationResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {
     return { success: false, error: loadResult.error }
@@ -313,6 +317,9 @@ export async function addNodes(nodes: GraphNode[], baseDir: string): Promise<KGO
  * Validates source/target exist, type legal, no duplicates.
  */
 export async function addEdges(edges: GraphEdge[], baseDir: string): Promise<KGOperationResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {
     return { success: false, error: loadResult.error }
@@ -387,6 +394,9 @@ export async function addEdges(edges: GraphEdge[], baseDir: string): Promise<KGO
  * Remove nodes and cascade delete associated edges.
  */
 export async function removeNodes(nodeIds: string[], baseDir: string): Promise<KGOperationResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {
     return { success: false, error: loadResult.error }
@@ -428,6 +438,9 @@ export async function updateNode(
   updates: { label?: string; metadata?: Partial<NodeMetadata> },
   baseDir: string
 ): Promise<KGOperationResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {
     return { success: false, error: loadResult.error }
@@ -920,6 +933,9 @@ export async function syncFromSpec(
   baseDir: string,
   scope: SyncScope
 ): Promise<KGOperationResult> {
+  // V3.4.0: 版本兼容性检查
+  checkCompatibilityAtEntry(baseDir)
+
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {
     return { success: false, error: loadResult.error }
