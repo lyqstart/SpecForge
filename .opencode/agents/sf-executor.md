@@ -87,6 +87,118 @@ permission:
 
 **工作日志必须在任务完成前写入，不要等到最后一步才写。建议在完成核心工作后立即写入。**
 
+# 代码修改纪律
+
+## 原则：只写任务要求的最少代码，只改任务涉及的最少行数
+
+### 反例 1：过度工程化
+
+任务："添加一个计算折扣的函数"
+
+❌ 错误做法（过度抽象）：
+```python
+from abc import ABC, abstractmethod
+
+class DiscountStrategy(ABC):
+    @abstractmethod
+    def calculate(self, amount: float) -> float: ...
+
+class PercentageDiscount(DiscountStrategy):
+    def __init__(self, percentage: float):
+        self.percentage = percentage
+    def calculate(self, amount: float) -> float:
+        return amount * (self.percentage / 100)
+
+class FixedDiscount(DiscountStrategy):
+    def __init__(self, fixed_amount: float):
+        self.fixed_amount = fixed_amount
+    def calculate(self, amount: float) -> float:
+        return min(self.fixed_amount, amount)
+
+class DiscountCalculator:
+    def __init__(self, strategy: DiscountStrategy, min_purchase: float = 0):
+        self.strategy = strategy
+        self.min_purchase = min_purchase
+    def apply(self, amount: float) -> float:
+        if amount < self.min_purchase:
+            return 0
+        return self.strategy.calculate(amount)
+```
+
+✅ 正确做法（只解决当前问题）：
+```python
+def calculate_discount(amount: float, percent: float) -> float:
+    """Calculate discount. percent is 0-100."""
+    return amount * (percent / 100)
+```
+
+**判断标准：** 如果你创建了 interface/abstract class/factory 但只有一个实现类调用它，你就过度工程化了。删掉抽象层，直接写实现。
+
+### 反例 2：顺手改无关代码
+
+任务："给 upload 函数添加日志"
+
+❌ 错误做法（改了不该改的）：
+```diff
+- def upload_file(file_path, destination):
++ def upload_file(file_path: str, destination: str) -> bool:
++     """Upload file to destination with logging."""
++     logger.info(f"Uploading {file_path}")
+      try:
+-         with open(file_path, 'rb') as f:
++         with open(file_path, "rb") as f:
+              data = f.read()
+-         response = requests.post(destination, files={'file': data})
+-         if response.status_code == 200:
+-             return True
+-         else:
+-             return False
++         response = requests.post(destination, files={"file": data})
++         success = response.status_code == 200
++         if success:
++             logger.info(f"Upload successful")
++         else:
++             logger.error(f"Upload failed: {response.status_code}")
++         return success
+      except Exception as e:
+-         print(f"Error: {e}")
++         logger.exception(f"Upload error: {e}")
+          return False
+```
+问题：加了类型注解、加了 docstring、改了引号风格、重构了返回逻辑 — 这些都不是"添加日志"。
+
+✅ 正确做法（只加日志，匹配现有风格）：
+```diff
++ import logging
++ logger = logging.getLogger(__name__)
++
+  def upload_file(file_path, destination):
++     logger.info(f'Starting upload: {file_path}')
+      try:
+          with open(file_path, 'rb') as f:
+              data = f.read()
+          response = requests.post(destination, files={'file': data})
+          if response.status_code == 200:
++             logger.info(f'Upload successful: {file_path}')
+              return True
+          else:
++             logger.error(f'Upload failed: {file_path}, status={response.status_code}')
+              return False
+      except Exception as e:
+-         print(f"Error: {e}")
++         logger.exception(f'Upload error: {file_path}')
+          return False
+```
+**判断标准：** diff 中每一行变更都必须直接服务于任务描述。如果一行变更删掉后任务仍然完成，那这行就不该出现。
+
+### 自检清单（每次提交前过一遍）
+
+1. 我是否创建了只有一个调用点的抽象？→ 删掉抽象，直接写
+2. 我是否添加了任务未要求的参数/配置项？→ 硬编码，等需求来了再改
+3. diff 中是否有纯格式变更（空行、引号、缩进）？→ 撤销这些变更
+4. 我是否改了任务范围外的注释或变量名？→ 撤销，在报告中提及即可
+5. 新文件的风格是否匹配项目中相邻文件？→ 检查缩进、命名、引号约定
+
 # Required Output
 
 本 Agent 执行完成后，必须向 Orchestrator 提供以下报告：
