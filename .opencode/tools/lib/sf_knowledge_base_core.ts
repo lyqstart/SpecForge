@@ -11,6 +11,7 @@ import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { homedir } from "node:os"
 import type { WorkflowType } from "./state_machine"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -175,13 +176,18 @@ export function getLockPath(): string {
  * 获取项目名称（从 specforge/config/project.json 读取）
  */
 export async function getProjectName(baseDir: string): Promise<string> {
-  const configPath = join(baseDir, "specforge", "config", "project.json")
   try {
-    const content = await readFile(configPath, "utf-8")
-    const config = JSON.parse(content)
-    return config.name || "unknown"
-  } catch {
-    return "unknown"
+    const configPath = join(baseDir, "specforge", "config", "project.json")
+    try {
+      const content = await readFile(configPath, "utf-8")
+      const config = JSON.parse(content)
+      return config.name || "unknown"
+    } catch {
+      return "unknown"
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_base_core", "getProjectName", err)
+    throw err
   }
 }
 
@@ -206,31 +212,36 @@ function createEmptyStore(): GlobalKnowledgeStore {
  * - JSON 解析失败时抛出错误（不覆盖原文件，不返回空库）
  */
 export async function loadStore(): Promise<GlobalKnowledgeStore> {
-  const storePath = getGlobalStorePath()
-
-  let content: string
   try {
-    content = await readFile(storePath, "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
-      // 文件不存在，创建空库
-      const emptyStore = createEmptyStore()
-      await mkdir(dirname(storePath), { recursive: true })
-      await writeFile(storePath, JSON.stringify(emptyStore, null, 2), "utf-8")
-      return emptyStore
+    const storePath = getGlobalStorePath()
+
+    let content: string
+    try {
+      content = await readFile(storePath, "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        // 文件不存在，创建空库
+        const emptyStore = createEmptyStore()
+        await mkdir(dirname(storePath), { recursive: true })
+        await writeFile(storePath, JSON.stringify(emptyStore, null, 2), "utf-8")
+        return emptyStore
+      }
+      throw new Error(`Failed to read knowledge store: ${error.message}`)
     }
-    throw new Error(`Failed to read knowledge store: ${error.message}`)
-  }
 
-  // JSON 解析失败时抛出错误
-  try {
-    const store = JSON.parse(content) as GlobalKnowledgeStore
-    return store
-  } catch {
-    throw new Error(
-      "insights.json is corrupted: JSON parse failed. File preserved for manual recovery."
-    )
+    // JSON 解析失败时抛出错误
+    try {
+      const store = JSON.parse(content) as GlobalKnowledgeStore
+      return store
+    } catch {
+      throw new Error(
+        "insights.json is corrupted: JSON parse failed. File preserved for manual recovery."
+      )
+    }
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "loadStore", err)
+    throw err
   }
 }
 
@@ -239,16 +250,21 @@ export async function loadStore(): Promise<GlobalKnowledgeStore> {
  * 自动更新 metadata.total_entries 和 metadata.last_updated
  */
 export async function saveStore(store: GlobalKnowledgeStore): Promise<void> {
-  const storePath = getGlobalStorePath()
-  const tempPath = storePath + ".tmp"
+  try {
+    const storePath = getGlobalStorePath()
+    const tempPath = storePath + ".tmp"
 
-  // 更新 metadata
-  store.metadata.total_entries = store.entries.length
-  store.metadata.last_updated = new Date().toISOString()
+    // 更新 metadata
+    store.metadata.total_entries = store.entries.length
+    store.metadata.last_updated = new Date().toISOString()
 
-  await mkdir(dirname(storePath), { recursive: true })
-  await writeFile(tempPath, JSON.stringify(store, null, 2), "utf-8")
-  await rename(tempPath, storePath)
+    await mkdir(dirname(storePath), { recursive: true })
+    await writeFile(tempPath, JSON.stringify(store, null, 2), "utf-8")
+    await rename(tempPath, storePath)
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "saveStore", err)
+    throw err
+  }
 }
 
 // ============================================================
@@ -273,61 +289,66 @@ const LOCK_RETRY_INTERVAL_MS = 1000
  * - 失败返回 false（不阻塞主流程）
  */
 export async function acquireLock(projectName?: string): Promise<boolean> {
-  const lockPath = getLockPath()
+  try {
+    const lockPath = getLockPath()
 
-  for (let attempt = 0; attempt < LOCK_RETRY_COUNT; attempt++) {
-    // 检查现有锁
-    try {
-      const content = await readFile(lockPath, "utf-8")
-      const existing = JSON.parse(content) as LockInfo
-
-      // 检查 PID 是否存活
-      let pidAlive = false
+    for (let attempt = 0; attempt < LOCK_RETRY_COUNT; attempt++) {
+      // 检查现有锁
       try {
-        process.kill(existing.pid, 0) // 信号 0 仅检查存活性
-        pidAlive = true
-      } catch {
-        // PID 不存在，清除过期锁（崩溃恢复）
-      }
+        const content = await readFile(lockPath, "utf-8")
+        const existing = JSON.parse(content) as LockInfo
 
-      if (!pidAlive) {
-        await unlink(lockPath).catch(() => {})
-        // 继续尝试获取
-      } else {
-        // PID 存活，检查锁超时
-        const elapsed = Date.now() - new Date(existing.acquired_at).getTime()
-        if (elapsed > LOCK_TIMEOUT_MS) {
-          // 超时，强制接管
+        // 检查 PID 是否存活
+        let pidAlive = false
+        try {
+          process.kill(existing.pid, 0) // 信号 0 仅检查存活性
+          pidAlive = true
+        } catch {
+          // PID 不存在，清除过期锁（崩溃恢复）
+        }
+
+        if (!pidAlive) {
           await unlink(lockPath).catch(() => {})
           // 继续尝试获取
         } else {
-          // 锁有效，等待重试
-          await new Promise(r => setTimeout(r, LOCK_RETRY_INTERVAL_MS))
-          continue
+          // PID 存活，检查锁超时
+          const elapsed = Date.now() - new Date(existing.acquired_at).getTime()
+          if (elapsed > LOCK_TIMEOUT_MS) {
+            // 超时，强制接管
+            await unlink(lockPath).catch(() => {})
+            // 继续尝试获取
+          } else {
+            // 锁有效，等待重试
+            await new Promise(r => setTimeout(r, LOCK_RETRY_INTERVAL_MS))
+            continue
+          }
         }
+      } catch {
+        // 锁文件不存在或解析失败，可以获取
       }
-    } catch {
-      // 锁文件不存在或解析失败，可以获取
+
+      // 尝试获取锁（排他创建）
+      try {
+        const lockInfo: LockInfo = {
+          pid: process.pid,
+          acquired_at: new Date().toISOString(),
+          project: projectName || "unknown",
+        }
+        await mkdir(dirname(lockPath), { recursive: true })
+        await writeFile(lockPath, JSON.stringify(lockInfo), { flag: "wx" })
+        return true
+      } catch {
+        // 竞争失败，重试
+        await new Promise(r => setTimeout(r, LOCK_RETRY_INTERVAL_MS))
+      }
     }
 
-    // 尝试获取锁（排他创建）
-    try {
-      const lockInfo: LockInfo = {
-        pid: process.pid,
-        acquired_at: new Date().toISOString(),
-        project: projectName || "unknown",
-      }
-      await mkdir(dirname(lockPath), { recursive: true })
-      await writeFile(lockPath, JSON.stringify(lockInfo), { flag: "wx" })
-      return true
-    } catch {
-      // 竞争失败，重试
-      await new Promise(r => setTimeout(r, LOCK_RETRY_INTERVAL_MS))
-    }
+    // 重试耗尽
+    return false
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "acquireLock", err)
+    throw err
   }
-
-  // 重试耗尽
-  return false
 }
 
 /**
@@ -335,9 +356,14 @@ export async function acquireLock(projectName?: string): Promise<boolean> {
  */
 export async function releaseLock(): Promise<void> {
   try {
-    await unlink(getLockPath())
-  } catch {
-    // 忽略释放失败（文件可能不存在）
+    try {
+      await unlink(getLockPath())
+    } catch {
+      // 忽略释放失败（文件可能不存在）
+    }
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "releaseLock", err)
+    throw err
   }
 }
 
@@ -356,65 +382,70 @@ function generateEntryId(): string {
  * 添加知识条目（status 默认 candidate）
  */
 export async function addEntry(params: AddEntryParams): Promise<OperationResult> {
-  // 验证
-  if (!params.title || params.title.length > 100) {
-    return { success: false, error: "title is required and must be ≤100 characters" }
-  }
-  if (!params.content || params.content.length > 2000) {
-    return { success: false, error: "content is required and must be ≤2000 characters" }
-  }
-  if (!params.category) {
-    return { success: false, error: "category is required" }
-  }
-
-  const locked = await acquireLock(params.source_project)
-  if (!locked) {
-    return { success: false, error: "Failed to acquire lock after 3 retries" }
-  }
-
   try {
-    const store = await loadStore()
-    const now = new Date().toISOString()
-
-    // V3.6: investigation 工作流默认 status="candidate", confidence="medium"
-    // 其他工作流默认 status="candidate"（由 sf-knowledge 在 activate 时设为 "active"）
-    const isInvestigation = params.workflow_type === "investigation"
-    const entryStatus: EntryStatus = "candidate"
-    const entryConfidence: ConfidenceLevel = isInvestigation ? "medium" : params.confidence
-
-    const entry: KnowledgeEntry = {
-      id: generateEntryId(),
-      title: params.title,
-      content: params.content,
-      category: params.category,
-      tags: params.tags || [],
-      applicable_file_patterns: params.applicable_file_patterns || [],
-      confidence: entryConfidence,
-      status: entryStatus,
-      source_project: params.source_project,
-      source_work_item: params.source_work_item,
-      usage_count: 0,
-      helpful_count: 0,
-      rejected_count: 0,
-      last_used_at: null,
-      anti_conditions: params.anti_conditions || [],
-      applicability: params.applicability || "",
-      verification_status: "unverified",
-      normalized_key: params.normalized_key || "",
-      created_at: now,
-      updated_at: now,
-      version: 1,
-      // V3.6 新增字段
-      workflow_type: params.workflow_type,
+    // 验证
+    if (!params.title || params.title.length > 100) {
+      return { success: false, error: "title is required and must be ≤100 characters" }
+    }
+    if (!params.content || params.content.length > 2000) {
+      return { success: false, error: "content is required and must be ≤2000 characters" }
+    }
+    if (!params.category) {
+      return { success: false, error: "category is required" }
     }
 
-    store.entries.push(entry)
-    await saveStore(store)
-    return { success: true, entry_id: entry.id }
+    const locked = await acquireLock(params.source_project)
+    if (!locked) {
+      return { success: false, error: "Failed to acquire lock after 3 retries" }
+    }
+
+    try {
+      const store = await loadStore()
+      const now = new Date().toISOString()
+
+      // V3.6: investigation 工作流默认 status="candidate", confidence="medium"
+      // 其他工作流默认 status="candidate"（由 sf-knowledge 在 activate 时设为 "active"）
+      const isInvestigation = params.workflow_type === "investigation"
+      const entryStatus: EntryStatus = "candidate"
+      const entryConfidence: ConfidenceLevel = isInvestigation ? "medium" : params.confidence
+
+      const entry: KnowledgeEntry = {
+        id: generateEntryId(),
+        title: params.title,
+        content: params.content,
+        category: params.category,
+        tags: params.tags || [],
+        applicable_file_patterns: params.applicable_file_patterns || [],
+        confidence: entryConfidence,
+        status: entryStatus,
+        source_project: params.source_project,
+        source_work_item: params.source_work_item,
+        usage_count: 0,
+        helpful_count: 0,
+        rejected_count: 0,
+        last_used_at: null,
+        anti_conditions: params.anti_conditions || [],
+        applicability: params.applicability || "",
+        verification_status: "unverified",
+        normalized_key: params.normalized_key || "",
+        created_at: now,
+        updated_at: now,
+        version: 1,
+        // V3.6 新增字段
+        workflow_type: params.workflow_type,
+      }
+
+      store.entries.push(entry)
+      await saveStore(store)
+      return { success: true, entry_id: entry.id }
+    } catch (err) {
+      return { success: false, error: (err as Error).message }
+    } finally {
+      await releaseLock()
+    }
   } catch (err) {
-    return { success: false, error: (err as Error).message }
-  } finally {
-    await releaseLock()
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "addEntry", err)
+    throw err
   }
 }
 
@@ -422,42 +453,47 @@ export async function addEntry(params: AddEntryParams): Promise<OperationResult>
  * 更新知识条目（递增 version）
  */
 export async function updateEntry(params: UpdateEntryParams): Promise<OperationResult> {
-  if (!params.entry_id) {
-    return { success: false, error: "entry_id is required" }
-  }
-
-  const locked = await acquireLock()
-  if (!locked) {
-    return { success: false, error: "Failed to acquire lock after 3 retries" }
-  }
-
   try {
-    const store = await loadStore()
-    const entry = store.entries.find(e => e.id === params.entry_id)
-    if (!entry) {
-      return { success: false, error: `Entry not found: ${params.entry_id}` }
+    if (!params.entry_id) {
+      return { success: false, error: "entry_id is required" }
     }
 
-    // 应用更新
-    if (params.title !== undefined) entry.title = params.title
-    if (params.content !== undefined) entry.content = params.content
-    if (params.tags !== undefined) entry.tags = params.tags
-    if (params.applicable_file_patterns !== undefined) entry.applicable_file_patterns = params.applicable_file_patterns
-    if (params.confidence !== undefined) entry.confidence = params.confidence
-    if (params.status !== undefined) entry.status = params.status
-    if (params.anti_conditions !== undefined) entry.anti_conditions = params.anti_conditions
-    if (params.applicability !== undefined) entry.applicability = params.applicability
-    if (params.verification_status !== undefined) entry.verification_status = params.verification_status
+    const locked = await acquireLock()
+    if (!locked) {
+      return { success: false, error: "Failed to acquire lock after 3 retries" }
+    }
 
-    entry.updated_at = new Date().toISOString()
-    entry.version += 1
+    try {
+      const store = await loadStore()
+      const entry = store.entries.find(e => e.id === params.entry_id)
+      if (!entry) {
+        return { success: false, error: `Entry not found: ${params.entry_id}` }
+      }
 
-    await saveStore(store)
-    return { success: true, entry_id: entry.id }
+      // 应用更新
+      if (params.title !== undefined) entry.title = params.title
+      if (params.content !== undefined) entry.content = params.content
+      if (params.tags !== undefined) entry.tags = params.tags
+      if (params.applicable_file_patterns !== undefined) entry.applicable_file_patterns = params.applicable_file_patterns
+      if (params.confidence !== undefined) entry.confidence = params.confidence
+      if (params.status !== undefined) entry.status = params.status
+      if (params.anti_conditions !== undefined) entry.anti_conditions = params.anti_conditions
+      if (params.applicability !== undefined) entry.applicability = params.applicability
+      if (params.verification_status !== undefined) entry.verification_status = params.verification_status
+
+      entry.updated_at = new Date().toISOString()
+      entry.version += 1
+
+      await saveStore(store)
+      return { success: true, entry_id: entry.id }
+    } catch (err) {
+      return { success: false, error: (err as Error).message }
+    } finally {
+      await releaseLock()
+    }
   } catch (err) {
-    return { success: false, error: (err as Error).message }
-  } finally {
-    await releaseLock()
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "updateEntry", err)
+    throw err
   }
 }
 
@@ -465,15 +501,25 @@ export async function updateEntry(params: UpdateEntryParams): Promise<OperationR
  * 移除知识条目（标记 archived，非物理删除）
  */
 export async function removeEntry(entryId: string): Promise<OperationResult> {
-  return updateEntry({ entry_id: entryId, status: "archived" })
+  try {
+    return await updateEntry({ entry_id: entryId, status: "archived" })
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "removeEntry", err)
+    throw err
+  }
 }
 
 /**
  * 获取单个知识条目
  */
 export async function getEntry(entryId: string): Promise<KnowledgeEntry | null> {
-  const store = await loadStore()
-  return store.entries.find(e => e.id === entryId) || null
+  try {
+    const store = await loadStore()
+    return store.entries.find(e => e.id === entryId) || null
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "getEntry", err)
+    throw err
+  }
 }
 
 /**
@@ -484,22 +530,27 @@ export async function listEntries(filter?: {
   tags?: string[]
   status?: EntryStatus
 }): Promise<KnowledgeEntry[]> {
-  const store = await loadStore()
-  let results = store.entries
+  try {
+    const store = await loadStore()
+    let results = store.entries
 
-  if (filter?.category) {
-    results = results.filter(e => e.category === filter.category)
-  }
-  if (filter?.status) {
-    results = results.filter(e => e.status === filter.status)
-  }
-  if (filter?.tags && filter.tags.length > 0) {
-    results = results.filter(e =>
-      filter.tags!.some(t => e.tags.includes(t))
-    )
-  }
+    if (filter?.category) {
+      results = results.filter(e => e.category === filter.category)
+    }
+    if (filter?.status) {
+      results = results.filter(e => e.status === filter.status)
+    }
+    if (filter?.tags && filter.tags.length > 0) {
+      results = results.filter(e =>
+        filter.tags!.some(t => e.tags.includes(t))
+      )
+    }
 
-  return results
+    return results
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "listEntries", err)
+    throw err
+  }
 }
 
 // ============================================================
@@ -592,43 +643,48 @@ export function calculateRelevanceScore(
  * 返回按 relevance_score 降序排列的结果
  */
 export async function searchEntries(params: SearchParams): Promise<SearchResult[]> {
-  const store = await loadStore()
-  let candidates = store.entries
+  try {
+    const store = await loadStore()
+    let candidates = store.entries
 
-  // 状态过滤
-  if (params.status) {
-    candidates = candidates.filter(e => e.status === params.status)
+    // 状态过滤
+    if (params.status) {
+      candidates = candidates.filter(e => e.status === params.status)
+    }
+
+    // 分类过滤
+    if (params.category) {
+      candidates = candidates.filter(e => e.category === params.category)
+    }
+
+    // 标签过滤
+    if (params.tags && params.tags.length > 0) {
+      candidates = candidates.filter(e =>
+        params.tags!.some(t => e.tags.includes(t))
+      )
+    }
+
+    // 计算 relevance_score
+    const results: SearchResult[] = candidates.map(entry => {
+      const { score, reasons } = calculateRelevanceScore(
+        entry,
+        params.keywords || [],
+        params.file_patterns || [],
+        params.category
+      )
+      return { entry, relevance_score: score, match_reasons: reasons }
+    })
+
+    // 按 relevance_score 降序排列
+    results.sort((a, b) => b.relevance_score - a.relevance_score)
+
+    // 限制返回数量
+    const limit = params.limit || 20
+    return results.slice(0, limit)
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "searchEntries", err)
+    throw err
   }
-
-  // 分类过滤
-  if (params.category) {
-    candidates = candidates.filter(e => e.category === params.category)
-  }
-
-  // 标签过滤
-  if (params.tags && params.tags.length > 0) {
-    candidates = candidates.filter(e =>
-      params.tags!.some(t => e.tags.includes(t))
-    )
-  }
-
-  // 计算 relevance_score
-  const results: SearchResult[] = candidates.map(entry => {
-    const { score, reasons } = calculateRelevanceScore(
-      entry,
-      params.keywords || [],
-      params.file_patterns || [],
-      params.category
-    )
-    return { entry, relevance_score: score, match_reasons: reasons }
-  })
-
-  // 按 relevance_score 降序排列
-  results.sort((a, b) => b.relevance_score - a.relevance_score)
-
-  // 限制返回数量
-  const limit = params.limit || 20
-  return results.slice(0, limit)
 }
 
 // ============================================================
@@ -645,36 +701,41 @@ export async function checkDuplicate(
   filePatterns: string[],
   tags: string[]
 ): Promise<{ isDuplicate: boolean; existingEntryId?: string }> {
-  const store = await loadStore()
+  try {
+    const store = await loadStore()
 
-  // Step 1: normalized_key 精确比对
-  const keyMatch = store.entries.find(
-    e => e.status !== "archived" && e.normalized_key === normalizedKey
-  )
-  if (keyMatch) {
-    return { isDuplicate: true, existingEntryId: keyMatch.id }
-  }
-
-  // Step 2: 适用范围重叠判断
-  for (const entry of store.entries) {
-    if (entry.status === "archived") continue
-
-    // 文件模式交集 >= 50%
-    if (filePatterns.length === 0) continue
-    const patternOverlap = filePatterns.filter(fp =>
-      entry.applicable_file_patterns.some(ep => patternsOverlap(fp, ep))
+    // Step 1: normalized_key 精确比对
+    const keyMatch = store.entries.find(
+      e => e.status !== "archived" && e.normalized_key === normalizedKey
     )
-    const patternRatio = patternOverlap.length / filePatterns.length
-
-    // tags 交集 >= 2
-    const tagOverlap = tags.filter(t => entry.tags.includes(t))
-
-    if (patternRatio >= 0.5 && tagOverlap.length >= 2) {
-      return { isDuplicate: true, existingEntryId: entry.id }
+    if (keyMatch) {
+      return { isDuplicate: true, existingEntryId: keyMatch.id }
     }
-  }
 
-  return { isDuplicate: false }
+    // Step 2: 适用范围重叠判断
+    for (const entry of store.entries) {
+      if (entry.status === "archived") continue
+
+      // 文件模式交集 >= 50%
+      if (filePatterns.length === 0) continue
+      const patternOverlap = filePatterns.filter(fp =>
+        entry.applicable_file_patterns.some(ep => patternsOverlap(fp, ep))
+      )
+      const patternRatio = patternOverlap.length / filePatterns.length
+
+      // tags 交集 >= 2
+      const tagOverlap = tags.filter(t => entry.tags.includes(t))
+
+      if (patternRatio >= 0.5 && tagOverlap.length >= 2) {
+        return { isDuplicate: true, existingEntryId: entry.id }
+      }
+    }
+
+    return { isDuplicate: false }
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "checkDuplicate", err)
+    throw err
+  }
 }
 
 // ============================================================
@@ -686,45 +747,50 @@ export async function checkDuplicate(
  * 自动降级：rejected_count >= 5 且 helpful_count = 0 → archived
  */
 export async function recordFeedback(params: RecordFeedbackParams): Promise<OperationResult> {
-  if (!params.entry_id) {
-    return { success: false, error: "entry_id is required" }
-  }
-  if (!params.outcome || !["helpful", "rejected"].includes(params.outcome)) {
-    return { success: false, error: "outcome must be 'helpful' or 'rejected'" }
-  }
-
-  const locked = await acquireLock()
-  if (!locked) {
-    return { success: false, error: "Failed to acquire lock after 3 retries" }
-  }
-
   try {
-    const store = await loadStore()
-    const entry = store.entries.find(e => e.id === params.entry_id)
-    if (!entry) {
-      return { success: false, error: `Entry not found: ${params.entry_id}` }
+    if (!params.entry_id) {
+      return { success: false, error: "entry_id is required" }
+    }
+    if (!params.outcome || !["helpful", "rejected"].includes(params.outcome)) {
+      return { success: false, error: "outcome must be 'helpful' or 'rejected'" }
     }
 
-    // 递增计数
-    if (params.outcome === "helpful") {
-      entry.helpful_count += 1
-    } else {
-      entry.rejected_count += 1
+    const locked = await acquireLock()
+    if (!locked) {
+      return { success: false, error: "Failed to acquire lock after 3 retries" }
     }
 
-    entry.updated_at = new Date().toISOString()
+    try {
+      const store = await loadStore()
+      const entry = store.entries.find(e => e.id === params.entry_id)
+      if (!entry) {
+        return { success: false, error: `Entry not found: ${params.entry_id}` }
+      }
 
-    // 自动降级：rejected_count >= 5 且 helpful_count = 0
-    if (entry.rejected_count >= 5 && entry.helpful_count === 0) {
-      entry.status = "archived"
+      // 递增计数
+      if (params.outcome === "helpful") {
+        entry.helpful_count += 1
+      } else {
+        entry.rejected_count += 1
+      }
+
+      entry.updated_at = new Date().toISOString()
+
+      // 自动降级：rejected_count >= 5 且 helpful_count = 0
+      if (entry.rejected_count >= 5 && entry.helpful_count === 0) {
+        entry.status = "archived"
+      }
+
+      await saveStore(store)
+      return { success: true, entry_id: entry.id }
+    } catch (err) {
+      return { success: false, error: (err as Error).message }
+    } finally {
+      await releaseLock()
     }
-
-    await saveStore(store)
-    return { success: true, entry_id: entry.id }
   } catch (err) {
-    return { success: false, error: (err as Error).message }
-  } finally {
-    await releaseLock()
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "recordFeedback", err)
+    throw err
   }
 }
 
@@ -739,59 +805,64 @@ export async function recordFeedback(params: RecordFeedbackParams): Promise<Oper
  * - 冲突条目：相同 category + tags 交集 >= 2
  */
 export async function qualityCheck(): Promise<QualityReport> {
-  const store = await loadStore()
-  const now = Date.now()
+  try {
+    const store = await loadStore()
+    const now = Date.now()
 
-  const stale: KnowledgeEntry[] = []
-  const unconfirmedCandidates: KnowledgeEntry[] = []
-  const conflictingPairs: Array<{ entry_a: string; entry_b: string; reason: string }> = []
+    const stale: KnowledgeEntry[] = []
+    const unconfirmedCandidates: KnowledgeEntry[] = []
+    const conflictingPairs: Array<{ entry_a: string; entry_b: string; reason: string }> = []
 
-  for (const entry of store.entries) {
-    if (entry.status === "archived") continue
+    for (const entry of store.entries) {
+      if (entry.status === "archived") continue
 
-    // 过期检测：last_used_at > 90 天且 usage_count < 3
-    if (entry.status === "active" && entry.last_used_at) {
-      const daysSinceUse = (now - new Date(entry.last_used_at).getTime()) / (1000 * 60 * 60 * 24)
-      if (daysSinceUse > 90 && entry.usage_count < 3) {
-        stale.push(entry)
+      // 过期检测：last_used_at > 90 天且 usage_count < 3
+      if (entry.status === "active" && entry.last_used_at) {
+        const daysSinceUse = (now - new Date(entry.last_used_at).getTime()) / (1000 * 60 * 60 * 24)
+        if (daysSinceUse > 90 && entry.usage_count < 3) {
+          stale.push(entry)
+        }
+      }
+
+      // 未确认候选：candidate 且 created_at > 30 天
+      if (entry.status === "candidate") {
+        const daysSinceCreate = (now - new Date(entry.created_at).getTime()) / (1000 * 60 * 60 * 24)
+        if (daysSinceCreate > 30) {
+          unconfirmedCandidates.push(entry)
+        }
       }
     }
 
-    // 未确认候选：candidate 且 created_at > 30 天
-    if (entry.status === "candidate") {
-      const daysSinceCreate = (now - new Date(entry.created_at).getTime()) / (1000 * 60 * 60 * 24)
-      if (daysSinceCreate > 30) {
-        unconfirmedCandidates.push(entry)
+    // 冲突检测：相同 category + tags 交集 >= 2
+    const activeEntries = store.entries.filter(e => e.status === "active")
+    for (let i = 0; i < activeEntries.length; i++) {
+      for (let j = i + 1; j < activeEntries.length; j++) {
+        const a = activeEntries[i]
+        const b = activeEntries[j]
+        if (a.category !== b.category) continue
+        const tagOverlap = a.tags.filter(t => b.tags.includes(t))
+        if (tagOverlap.length >= 2) {
+          conflictingPairs.push({
+            entry_a: a.id,
+            entry_b: b.id,
+            reason: `同分类 ${a.category}，共享标签: ${tagOverlap.join(", ")}`,
+          })
+        }
       }
     }
-  }
 
-  // 冲突检测：相同 category + tags 交集 >= 2
-  const activeEntries = store.entries.filter(e => e.status === "active")
-  for (let i = 0; i < activeEntries.length; i++) {
-    for (let j = i + 1; j < activeEntries.length; j++) {
-      const a = activeEntries[i]
-      const b = activeEntries[j]
-      if (a.category !== b.category) continue
-      const tagOverlap = a.tags.filter(t => b.tags.includes(t))
-      if (tagOverlap.length >= 2) {
-        conflictingPairs.push({
-          entry_a: a.id,
-          entry_b: b.id,
-          reason: `同分类 ${a.category}，共享标签: ${tagOverlap.join(", ")}`,
-        })
-      }
+    const healthy = activeEntries.filter(e => !stale.includes(e)).length
+
+    return {
+      total_active: activeEntries.length,
+      stale,
+      unconfirmed_candidates: unconfirmedCandidates,
+      conflicting_pairs: conflictingPairs,
+      healthy,
     }
-  }
-
-  const healthy = activeEntries.filter(e => !stale.includes(e)).length
-
-  return {
-    total_active: activeEntries.length,
-    stale,
-    unconfirmed_candidates: unconfirmedCandidates,
-    conflicting_pairs: conflictingPairs,
-    healthy,
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "qualityCheck", err)
+    throw err
   }
 }
 
@@ -799,34 +870,39 @@ export async function qualityCheck(): Promise<QualityReport> {
  * 批量清理 stale 条目（标记 archived）
  */
 export async function cleanup(): Promise<{ archived_count: number }> {
-  const locked = await acquireLock()
-  if (!locked) {
-    return { archived_count: 0 }
-  }
-
   try {
-    const store = await loadStore()
-    const now = Date.now()
-    let archivedCount = 0
+    const locked = await acquireLock()
+    if (!locked) {
+      return { archived_count: 0 }
+    }
 
-    for (const entry of store.entries) {
-      if (entry.status !== "active") continue
-      if (!entry.last_used_at) continue
+    try {
+      const store = await loadStore()
+      const now = Date.now()
+      let archivedCount = 0
 
-      const daysSinceUse = (now - new Date(entry.last_used_at).getTime()) / (1000 * 60 * 60 * 24)
-      if (daysSinceUse > 90 && entry.usage_count < 3) {
-        entry.status = "archived"
-        entry.updated_at = new Date().toISOString()
-        archivedCount++
+      for (const entry of store.entries) {
+        if (entry.status !== "active") continue
+        if (!entry.last_used_at) continue
+
+        const daysSinceUse = (now - new Date(entry.last_used_at).getTime()) / (1000 * 60 * 60 * 24)
+        if (daysSinceUse > 90 && entry.usage_count < 3) {
+          entry.status = "archived"
+          entry.updated_at = new Date().toISOString()
+          archivedCount++
+        }
       }
-    }
 
-    if (archivedCount > 0) {
-      await saveStore(store)
+      if (archivedCount > 0) {
+        await saveStore(store)
+      }
+      return { archived_count: archivedCount }
+    } finally {
+      await releaseLock()
     }
-    return { archived_count: archivedCount }
-  } finally {
-    await releaseLock()
+  } catch (err) {
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "cleanup", err)
+    throw err
   }
 }
 
@@ -842,29 +918,34 @@ export async function addCategory(
   name: string,
   description: string
 ): Promise<OperationResult> {
-  if (!id || !name) {
-    return { success: false, error: "id and name are required" }
-  }
-
-  const locked = await acquireLock()
-  if (!locked) {
-    return { success: false, error: "Failed to acquire lock after 3 retries" }
-  }
-
   try {
-    const store = await loadStore()
-
-    // 检查是否已存在
-    if (store.categories.some(c => c.id === id)) {
-      return { success: false, error: `Category already exists: ${id}` }
+    if (!id || !name) {
+      return { success: false, error: "id and name are required" }
     }
 
-    store.categories.push({ id, name, description })
-    await saveStore(store)
-    return { success: true }
+    const locked = await acquireLock()
+    if (!locked) {
+      return { success: false, error: "Failed to acquire lock after 3 retries" }
+    }
+
+    try {
+      const store = await loadStore()
+
+      // 检查是否已存在
+      if (store.categories.some(c => c.id === id)) {
+        return { success: false, error: `Category already exists: ${id}` }
+      }
+
+      store.categories.push({ id, name, description })
+      await saveStore(store)
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: (err as Error).message }
+    } finally {
+      await releaseLock()
+    }
   } catch (err) {
-    return { success: false, error: (err as Error).message }
-  } finally {
-    await releaseLock()
+    await logErrorToFile(process.cwd(), "sf_knowledge_base_core", "addCategory", err)
+    throw err
   }
 }

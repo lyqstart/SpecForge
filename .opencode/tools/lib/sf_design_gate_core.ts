@@ -9,10 +9,11 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import type { GateResult, GateModeSpec } from "./sf_requirements_gate_core"
+import type { GateResult, GateModeSpec } from "./sf_gate_types"
 import { parseSections } from "./sf_requirements_gate_core"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
-import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
+import { tryCheckCompatibility, logErrorToFile } from "./utils"
+import { isValidVerificationType } from "./sf_verification_types"
 import type { SyncSummary } from "./sf_knowledge_graph_core"
 
 // Re-export GateResult for convenience
@@ -220,103 +221,118 @@ export async function checkDesignGate(
   workflowType: string = "feature_spec",
   options?: { workflowType?: string; mode?: DesignGateMode }
 ): Promise<GateResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
-
-  // V3.6: Mode dispatch — 当传入 mode 参数时，按策略表执行
-  const mode = options?.mode
-  if (mode !== undefined) {
-    return executeDesignGateMode(workItemId, baseDir, mode)
-  }
-
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
-  const docPath = join(specDir, "design.md")
-
-  // 1. 读取 design.md
-  let content: string
   try {
-    content = await readFile(docPath, "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
+    // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
+    await tryCheckCompatibility(baseDir, "sf_design_gate_core")
+
+    // V3.6: Mode dispatch — 当传入 mode 参数时，按策略表执行
+    const mode = options?.mode
+    if (mode !== undefined) {
+      return executeDesignGateMode(workItemId, baseDir, mode)
+    }
+
+    const specDir = join(baseDir, "specforge", "specs", workItemId)
+    const docPath = join(specDir, "design.md")
+
+    // 1. 读取 design.md
+    let content: string
+    try {
+      content = await readFile(docPath, "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        return {
+          status: "fail",
+          blocking_issues: ["design.md not found"],
+          warnings: [],
+          next_action: "revise",
+        }
+      }
+      return {
+        status: "blocked",
+        blocking_issues: [`Failed to read design.md: ${error.message}`],
+        warnings: [],
+        next_action: "ask_user",
+      }
+    }
+
+    // 2. 根据 workflow_type 选择检查标准
+    if (workflowType === "feature_spec_design_first") {
+      const designFirstResult = checkDesignGateDesignFirst(content)
+      if (designFirstResult.status === "pass") {
+        // ★ V4.0: KG sync on pass
+        let kgSync: SyncSummary | null = null
+        try {
+          if (await isKGEnabled(baseDir)) {
+            const kgResult = await syncFromSpec(workItemId, baseDir, "design")
+            if (kgResult.success && kgResult.summary) {
+              kgSync = kgResult.summary
+            } else if (kgResult.error) {
+              designFirstResult.warnings.push(`KG sync warning: ${kgResult.error}`)
+            }
+          }
+        } catch (err) {
+          designFirstResult.warnings.push(`KG sync failed: ${(err as Error).message}`)
+        }
+        designFirstResult.kg_sync = kgSync
+      }
+      return designFirstResult
+    }
+
+    // 3. 默认行为（feature_spec / bugfix_spec）：检查需求引用（V1 行为不变）
+    const blockingIssues: string[] = []
+    const warnings: string[] = []
+
+    if (!hasRequirementReferences(content)) {
+      blockingIssues.push(
+        '设计文档未引用需求编号（需要包含"需求 X"、"REQ-XXX"或"Requirement X"格式的引用）'
+      )
+    }
+
+    // V3.7: 验证 Correctness Properties 中 test_type 字段的合法性（本地语法检查）
+    const cpTestTypes = extractCPTestTypes(content)
+    for (const { cpId, testType } of cpTestTypes) {
+      if (!isValidVerificationType(testType)) {
+        blockingIssues.push(
+          `${cpId}: test_type 值非法 "${testType}"，合法值为: unit, property, integration, e2e, regression`
+        )
+      }
+    }
+
+    if (blockingIssues.length > 0) {
       return {
         status: "fail",
-        blocking_issues: ["design.md not found"],
-        warnings: [],
+        blocking_issues: blockingIssues,
+        warnings,
         next_action: "revise",
       }
     }
-    return {
-      status: "blocked",
-      blocking_issues: [`Failed to read design.md: ${error.message}`],
-      warnings: [],
-      next_action: "ask_user",
-    }
-  }
 
-  // 2. 根据 workflow_type 选择检查标准
-  if (workflowType === "feature_spec_design_first") {
-    const designFirstResult = checkDesignGateDesignFirst(content)
-    if (designFirstResult.status === "pass") {
-      // ★ V4.0: KG sync on pass
-      let kgSync: SyncSummary | null = null
-      try {
-        if (await isKGEnabled(baseDir)) {
-          const kgResult = await syncFromSpec(workItemId, baseDir, "design")
-          if (kgResult.success && kgResult.summary) {
-            kgSync = kgResult.summary
-          } else if (kgResult.error) {
-            designFirstResult.warnings.push(`KG sync warning: ${kgResult.error}`)
-          }
+    // ★ V4.0: KG sync on pass
+    let kgSync: SyncSummary | null = null
+    try {
+      if (await isKGEnabled(baseDir)) {
+        const kgResult = await syncFromSpec(workItemId, baseDir, "design")
+        if (kgResult.success && kgResult.summary) {
+          kgSync = kgResult.summary
+        } else if (kgResult.error) {
+          warnings.push(`KG sync warning: ${kgResult.error}`)
         }
-      } catch (err) {
-        designFirstResult.warnings.push(`KG sync failed: ${(err as Error).message}`)
       }
-      designFirstResult.kg_sync = kgSync
+    } catch (err) {
+      warnings.push(`KG sync failed: ${(err as Error).message}`)
     }
-    return designFirstResult
-  }
 
-  // 3. 默认行为（feature_spec / bugfix_spec）：检查需求引用（V1 行为不变）
-  const blockingIssues: string[] = []
-  const warnings: string[] = []
-
-  if (!hasRequirementReferences(content)) {
-    blockingIssues.push(
-      '设计文档未引用需求编号（需要包含"需求 X"、"REQ-XXX"或"Requirement X"格式的引用）'
-    )
-  }
-
-  if (blockingIssues.length > 0) {
     return {
-      status: "fail",
-      blocking_issues: blockingIssues,
+      status: "pass",
+      blocking_issues: [],
       warnings,
-      next_action: "revise",
-    }
-  }
-
-  // ★ V4.0: KG sync on pass
-  let kgSync: SyncSummary | null = null
-  try {
-    if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, "design")
-      if (kgResult.success && kgResult.summary) {
-        kgSync = kgResult.summary
-      } else if (kgResult.error) {
-        warnings.push(`KG sync warning: ${kgResult.error}`)
-      }
+      next_action: "continue",
+      kg_sync: kgSync,
     }
   } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`)
-  }
-
-  return {
-    status: "pass",
-    blocking_issues: [],
-    warnings,
-    next_action: "continue",
-    kg_sync: kgSync,
+    await logErrorToFile(baseDir, "sf_design_gate_core", "checkDesignGate", err)
+    throw err
   }
 }
 
@@ -463,4 +479,56 @@ export function hasModuleBoundaries(content: string): boolean {
 export function hasDataModelOrInterface(content: string): boolean {
   const patterns = [/数据模型/i, /接口/i, /data\s*model/i, /interface/i, /类型定义/i, /type\s*defin/i]
   return patterns.some((p) => p.test(content))
+}
+
+// ============================================================
+// V3.7: Correctness Properties test_type 验证
+// ============================================================
+
+/**
+ * 从 design.md 内容中提取所有 Correctness Properties 的 test_type、test_file、requirement_ref 字段
+ *
+ * @param content - design.md 文件内容
+ * @returns 提取的 CP 信息列表
+ */
+export function extractCPTestTypes(
+  content: string
+): Array<{ cpId: string; testType: string; testFile?: string; requirementRef?: string }> {
+  const results: Array<{ cpId: string; testType: string; testFile?: string; requirementRef?: string }> = []
+
+  // 匹配 CP-N 标题
+  const cpPattern = /^#{1,6}\s+(CP-\d+[^\n]*)/gm
+  let match: RegExpExecArray | null
+
+  while ((match = cpPattern.exec(content)) !== null) {
+    const cpIdMatch = match[1].match(/CP-\d+/)
+    if (!cpIdMatch) continue
+
+    const cpId = cpIdMatch[0]
+    const afterCP = content.slice(match.index + match[0].length)
+    const nextHeading = /^#{1,6}\s/m.exec(afterCP)
+    const cpSection = nextHeading ? afterCP.slice(0, nextHeading.index) : afterCP
+
+    const testTypeMatch = /\*\*test_type\*\*\s*:\s*(\S+)/i.exec(cpSection)
+    if (testTypeMatch) {
+      const entry: { cpId: string; testType: string; testFile?: string; requirementRef?: string } = {
+        cpId,
+        testType: testTypeMatch[1].trim(),
+      }
+
+      const testFileMatch = /\*\*test_file\*\*\s*:\s*(.+)/i.exec(cpSection)
+      if (testFileMatch) {
+        entry.testFile = testFileMatch[1].trim()
+      }
+
+      const reqRefMatch = /\*\*requirement_ref\*\*\s*:\s*(\S+)/i.exec(cpSection)
+      if (reqRefMatch) {
+        entry.requirementRef = reqRefMatch[1].trim()
+      }
+
+      results.push(entry)
+    }
+  }
+
+  return results
 }

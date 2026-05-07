@@ -9,6 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -61,73 +62,78 @@ export async function batchVerify(
   checks: CheckPattern[],
   baseDir: string
 ): Promise<BatchVerifyResult> {
-  // 1. 空检查数组
-  if (checks.length === 0) {
-    return { success: true, total: 0, passed: 0, failed: 0, results: [] }
-  }
-
-  // 2. 读取目标文件
-  const absolutePath = join(baseDir, targetFile)
-  let fileContent: string
   try {
-    fileContent = await readFile(absolutePath, "utf-8")
-  } catch {
-    return {
-      success: false,
-      error: "target file not found",
-      total: 0,
-      passed: 0,
-      failed: 0,
-      results: [],
+    // 1. 空检查数组
+    if (checks.length === 0) {
+      return { success: true, total: 0, passed: 0, failed: 0, results: [] }
     }
-  }
 
-  // 3. 逐个执行检查
-  const results: CheckResult[] = []
-
-  for (const check of checks) {
-    let regex: RegExp
+    // 2. 读取目标文件
+    const absolutePath = join(baseDir, targetFile)
+    let fileContent: string
     try {
-      regex = new RegExp(check.pattern, "g")
-    } catch (err) {
-      // 无效正则：标记为 fail，继续处理
-      results.push({
-        name: check.name,
-        status: "fail",
-        found: false,
-        match_count: 0,
-        error: `Invalid regex: ${(err as Error).message}`,
-      })
-      continue
+      fileContent = await readFile(absolutePath, "utf-8")
+    } catch {
+      return {
+        success: false,
+        error: "target file not found",
+        total: 0,
+        passed: 0,
+        failed: 0,
+        results: [],
+      }
     }
 
-    const matches = fileContent.match(regex)
-    const matchCount = matches ? matches.length : 0
-    const found = matchCount > 0
+    // 3. 逐个执行检查
+    const results: CheckResult[] = []
 
-    // 判断 pass/fail
-    let status: "pass" | "fail"
+    for (const check of checks) {
+      let regex: RegExp
+      try {
+        regex = new RegExp(check.pattern, "g")
+      } catch (err) {
+        // 无效正则：标记为 fail，继续处理
+        results.push({
+          name: check.name,
+          status: "fail",
+          found: false,
+          match_count: 0,
+          error: `Invalid regex: ${(err as Error).message}`,
+        })
+        continue
+      }
 
-    if (check.count !== undefined) {
-      // count 模式：实际匹配次数 >= 指定次数
-      status = matchCount >= check.count ? "pass" : "fail"
-    } else if (check.should_exist) {
-      status = found ? "pass" : "fail"
-    } else {
-      status = found ? "fail" : "pass"
+      const matches = fileContent.match(regex)
+      const matchCount = matches ? matches.length : 0
+      const found = matchCount > 0
+
+      // 判断 pass/fail
+      let status: "pass" | "fail"
+
+      if (check.count !== undefined) {
+        // count 模式：实际匹配次数 >= 指定次数
+        status = matchCount >= check.count ? "pass" : "fail"
+      } else if (check.should_exist) {
+        status = found ? "pass" : "fail"
+      } else {
+        status = found ? "fail" : "pass"
+      }
+
+      results.push({ name: check.name, status, found, match_count: matchCount })
     }
 
-    results.push({ name: check.name, status, found, match_count: matchCount })
-  }
+    const passed = results.filter((r) => r.status === "pass").length
+    const failed = results.filter((r) => r.status === "fail").length
 
-  const passed = results.filter((r) => r.status === "pass").length
-  const failed = results.filter((r) => r.status === "fail").length
-
-  return {
-    success: true,
-    total: results.length,
-    passed,
-    failed,
-    results,
+    return {
+      success: true,
+      total: results.length,
+      passed,
+      failed,
+      results,
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_batch_verify_core", "batchVerify", err)
+    throw err
   }
 }

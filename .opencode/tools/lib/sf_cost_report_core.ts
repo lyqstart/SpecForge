@@ -9,6 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -116,8 +117,14 @@ export async function readJsonlFile<T>(filePath: string): Promise<T[]> {
   try {
     const content = await readFile(filePath, "utf-8")
     return parseJsonl<T>(content)
-  } catch {
-    return []
+  } catch (err: unknown) {
+    // 文件不存在是正常情况，直接返回空数组
+    const error = err as NodeJS.ErrnoException
+    if (error.code === "ENOENT") {
+      return []
+    }
+    await logErrorToFile(process.cwd(), "sf_cost_report_core", "readJsonlFile", err)
+    throw err
   }
 }
 
@@ -268,70 +275,75 @@ export async function generateCostReport(
   input: CostReportInput,
   baseDir: string
 ): Promise<CostReportResult> {
-  const costFilePath = join(baseDir, "specforge", "logs", "cost.jsonl")
-  const eventsFilePath = join(baseDir, "specforge", "runtime", "events.jsonl")
+  try {
+    const costFilePath = join(baseDir, "specforge", "logs", "cost.jsonl")
+    const eventsFilePath = join(baseDir, "specforge", "runtime", "events.jsonl")
 
-  // 1. 读取 Cost_Entry 记录
-  let entries = await readJsonlFile<CostEntry>(costFilePath)
+    // 1. 读取 Cost_Entry 记录
+    let entries = await readJsonlFile<CostEntry>(costFilePath)
 
-  // 2. 应用过滤
-  if (input.work_item_id) {
-    entries = entries.filter(e => e.work_item_id === input.work_item_id)
-  }
-  if (input.session_id) {
-    entries = entries.filter(e => e.session_id === input.session_id)
-  }
+    // 2. 应用过滤
+    if (input.work_item_id) {
+      entries = entries.filter(e => e.work_item_id === input.work_item_id)
+    }
+    if (input.session_id) {
+      entries = entries.filter(e => e.session_id === input.session_id)
+    }
 
-  // 3. 应用 source 优先级
-  entries = applySourcePriority(entries)
+    // 3. 应用 source 优先级
+    entries = applySourcePriority(entries)
 
-  // 4. 空结果快速返回
-  if (entries.length === 0) {
+    // 4. 空结果快速返回
+    if (entries.length === 0) {
+      return {
+        success: true,
+        summary: { total_cost: 0, total_tokens: emptyTokens() },
+        groups: [],
+      }
+    }
+
+    // 5. 构建阶段时间线（仅 phase 聚合时需要）
+    const groupBy = input.group_by || "work_item"
+    let timeline: PhaseInterval[] = []
+    if (groupBy === "phase") {
+      const events = await readJsonlFile<StateTransitionEvent>(eventsFilePath)
+      timeline = buildPhaseTimeline(events)
+    }
+
+    // 6. 聚合
+    const groupMap = new Map<string, CostGroup>()
+    const totalTokens = emptyTokens()
+    let totalCost = 0
+
+    for (const entry of entries) {
+      const key = getGroupKey(entry, groupBy, timeline)
+
+      // 更新总计
+      totalCost += entry.cost || 0
+      addTokens(totalTokens, entry.tokens)
+
+      // 更新分组
+      let group = groupMap.get(key)
+      if (!group) {
+        group = { key, cost: 0, tokens: emptyTokens(), entry_count: 0 }
+        groupMap.set(key, group)
+      }
+      group.cost += entry.cost || 0
+      addTokens(group.tokens, entry.tokens)
+      group.entry_count += 1
+    }
+
+    // 7. 按成本降序排列
+    const groups = Array.from(groupMap.values())
+      .sort((a, b) => b.cost - a.cost)
+
     return {
       success: true,
-      summary: { total_cost: 0, total_tokens: emptyTokens() },
-      groups: [],
+      summary: { total_cost: totalCost, total_tokens: totalTokens },
+      groups,
     }
-  }
-
-  // 5. 构建阶段时间线（仅 phase 聚合时需要）
-  const groupBy = input.group_by || "work_item"
-  let timeline: PhaseInterval[] = []
-  if (groupBy === "phase") {
-    const events = await readJsonlFile<StateTransitionEvent>(eventsFilePath)
-    timeline = buildPhaseTimeline(events)
-  }
-
-  // 6. 聚合
-  const groupMap = new Map<string, CostGroup>()
-  const totalTokens = emptyTokens()
-  let totalCost = 0
-
-  for (const entry of entries) {
-    const key = getGroupKey(entry, groupBy, timeline)
-
-    // 更新总计
-    totalCost += entry.cost || 0
-    addTokens(totalTokens, entry.tokens)
-
-    // 更新分组
-    let group = groupMap.get(key)
-    if (!group) {
-      group = { key, cost: 0, tokens: emptyTokens(), entry_count: 0 }
-      groupMap.set(key, group)
-    }
-    group.cost += entry.cost || 0
-    addTokens(group.tokens, entry.tokens)
-    group.entry_count += 1
-  }
-
-  // 7. 按成本降序排列
-  const groups = Array.from(groupMap.values())
-    .sort((a, b) => b.cost - a.cost)
-
-  return {
-    success: true,
-    summary: { total_cost: totalCost, total_tokens: totalTokens },
-    groups,
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_cost_report_core", "generateCostReport", err)
+    throw err
   }
 }

@@ -7,7 +7,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
+import { tryCheckCompatibility, logErrorToFile } from "./utils"
 
 /**
  * Work Item 状态数据结构
@@ -99,35 +99,40 @@ export async function readStateFile(
   workItemId: string,
   baseDir: string
 ): Promise<ReadStateResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  try {
+    // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
+    await tryCheckCompatibility(baseDir, "sf_state_read_core")
 
-  const result = await loadStateFile(baseDir)
+    const result = await loadStateFile(baseDir)
 
-  // 如果加载失败，返回错误
-  if ("error" in result) {
-    return result
-  }
-
-  const state = result
-
-  // 如果请求所有 Work Item
-  if (workItemId === "all") {
-    return {
-      work_items: state.work_items,
-      count: Object.keys(state.work_items).length,
+    // 如果加载失败，返回错误
+    if ("error" in result) {
+      return result
     }
-  }
 
-  // 查找指定 work_item_id
-  const workItem = state.work_items[workItemId]
-  if (!workItem) {
-    return {
-      error: `Work item not found: ${workItemId}`,
+    const state = result
+
+    // 如果请求所有 Work Item
+    if (workItemId === "all") {
+      return {
+        work_items: state.work_items,
+        count: Object.keys(state.work_items).length,
+      }
     }
-  }
 
-  return workItem
+    // 查找指定 work_item_id
+    const workItem = state.work_items[workItemId]
+    if (!workItem) {
+      return {
+        error: `Work item not found: ${workItemId}`,
+      }
+    }
+
+    return workItem
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_state_read_core", "readStateFile", err)
+    throw err
+  }
 }
 
 
@@ -158,40 +163,45 @@ export async function readAgentRuns(
   workItemId: string,
   baseDir: string
 ): Promise<AgentRunSummary[]> {
-  const { readdir } = await import("node:fs/promises")
-  const archiveDir = join(baseDir, "specforge", "archive", "agent_runs")
-
-  let entries: string[]
   try {
-    entries = await readdir(archiveDir)
-  } catch {
-    // Directory not found → return empty array
-    return []
-  }
+    const { readdir } = await import("node:fs/promises")
+    const archiveDir = join(baseDir, "specforge", "archive", "agent_runs")
 
-  // Filter directories starting with workItemId
-  const matchingDirs = entries.filter(e => e.startsWith(workItemId))
-
-  const runs: AgentRunSummary[] = []
-  for (const dir of matchingDirs) {
-    const resultPath = join(archiveDir, dir, "result.json")
+    let entries: string[]
     try {
-      const content = await readFile(resultPath, "utf-8")
-      const result = JSON.parse(content)
-      runs.push({
-        run_id: result.run_id || dir,
-        agent_name: result.agent_name || "unknown",
-        status: result.status || "unknown",
-        start_time: result.start_time || "",
-        end_time: result.end_time || "",
-        duration_ms: result.duration_ms || 0,
-        retry_count: result.retry_count || 0,
-      })
+      entries = await readdir(archiveDir)
     } catch {
-      // Skip records with parse errors
-      continue
+      // Directory not found → return empty array
+      return []
     }
-  }
 
-  return runs
+    // Filter directories starting with workItemId
+    const matchingDirs = entries.filter(e => e.startsWith(workItemId))
+
+    const runs: AgentRunSummary[] = []
+    for (const dir of matchingDirs) {
+      const resultPath = join(archiveDir, dir, "result.json")
+      try {
+        const content = await readFile(resultPath, "utf-8")
+        const result = JSON.parse(content)
+        runs.push({
+          run_id: result.run_id || dir,
+          agent_name: result.agent_name || "unknown",
+          status: result.status || "unknown",
+          start_time: result.start_time || "",
+          end_time: result.end_time || "",
+          duration_ms: result.duration_ms || 0,
+          retry_count: result.retry_count || 0,
+        })
+      } catch {
+        // Skip records with parse errors
+        continue
+      }
+    }
+
+    return runs
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_state_read_core", "readAgentRuns", err)
+    throw err
+  }
 }

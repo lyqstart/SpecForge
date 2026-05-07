@@ -9,6 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -178,98 +179,103 @@ export async function checkTraceMatrix(
   workItemId: string,
   baseDir: string
 ): Promise<TraceMatrixResult> {
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
-
-  // Read requirements.md
-  let requirementsContent: string
   try {
-    requirementsContent = await readFile(join(specDir, "requirements.md"), "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
-      return createFailResult([], [], "requirements.md not found")
+    const specDir = join(baseDir, "specforge", "specs", workItemId)
+
+    // Read requirements.md
+    let requirementsContent: string
+    try {
+      requirementsContent = await readFile(join(specDir, "requirements.md"), "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        return createFailResult([], [], "requirements.md not found")
+      }
+      return createFailResult([], [], `Failed to read requirements.md: ${error.message}`)
     }
-    return createFailResult([], [], `Failed to read requirements.md: ${error.message}`)
-  }
 
-  // Read design.md
-  let designContent: string
-  try {
-    designContent = await readFile(join(specDir, "design.md"), "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
-      return createFailResult([], [], "design.md not found")
+    // Read design.md
+    let designContent: string
+    try {
+      designContent = await readFile(join(specDir, "design.md"), "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        return createFailResult([], [], "design.md not found")
+      }
+      return createFailResult([], [], `Failed to read design.md: ${error.message}`)
     }
-    return createFailResult([], [], `Failed to read design.md: ${error.message}`)
-  }
 
-  // Read tasks.md
-  let tasksContent: string
-  try {
-    tasksContent = await readFile(join(specDir, "tasks.md"), "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
-      return createFailResult([], [], "tasks.md not found")
+    // Read tasks.md
+    let tasksContent: string
+    try {
+      tasksContent = await readFile(join(specDir, "tasks.md"), "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        return createFailResult([], [], "tasks.md not found")
+      }
+      return createFailResult([], [], `Failed to read tasks.md: ${error.message}`)
     }
-    return createFailResult([], [], `Failed to read tasks.md: ${error.message}`)
-  }
 
-  // Extract data
-  const requirementIds = extractRequirementIds(requirementsContent)
-  const designReqRefs = extractDesignReqReferences(designContent)
-  const designSections = extractDesignSections(designContent)
-  const taskDesignRefs = extractTaskDesignReferences(tasksContent)
+    // Extract data
+    const requirementIds = extractRequirementIds(requirementsContent)
+    const designReqRefs = extractDesignReqReferences(designContent)
+    const designSections = extractDesignSections(designContent)
+    const taskDesignRefs = extractTaskDesignReferences(tasksContent)
 
-  // Check requirement coverage: every requirement ID should be referenced in design.md
-  const uncoveredRequirements: string[] = []
-  for (const reqId of requirementIds) {
-    if (!designReqRefs.includes(reqId)) {
-      uncoveredRequirements.push(reqId)
+    // Check requirement coverage: every requirement ID should be referenced in design.md
+    const uncoveredRequirements: string[] = []
+    for (const reqId of requirementIds) {
+      if (!designReqRefs.includes(reqId)) {
+        uncoveredRequirements.push(reqId)
+      }
     }
-  }
 
-  // Check design coverage: every design section should be referenced in tasks.md
-  // We match design sections by checking if any task design reference appears in the section title
-  const uncoveredDesigns: string[] = []
-  for (const section of designSections) {
-    const isCovered = taskDesignRefs.some((ref) => section.includes(ref)) ||
-      isDesignSectionReferencedInTasks(section, tasksContent)
-    if (!isCovered) {
-      uncoveredDesigns.push(section)
+    // Check design coverage: every design section should be referenced in tasks.md
+    // We match design sections by checking if any task design reference appears in the section title
+    const uncoveredDesigns: string[] = []
+    for (const section of designSections) {
+      const isCovered = taskDesignRefs.some((ref) => section.includes(ref)) ||
+        isDesignSectionReferencedInTasks(section, tasksContent)
+      if (!isCovered) {
+        uncoveredDesigns.push(section)
+      }
     }
-  }
 
-  // Calculate coverage
-  const totalRequirements = requirementIds.length
-  const coveredRequirements = totalRequirements - uncoveredRequirements.length
-  const totalDesignSections = designSections.length
-  const coveredDesignSections = totalDesignSections - uncoveredDesigns.length
+    // Calculate coverage
+    const totalRequirements = requirementIds.length
+    const coveredRequirements = totalRequirements - uncoveredRequirements.length
+    const totalDesignSections = designSections.length
+    const coveredDesignSections = totalDesignSections - uncoveredDesigns.length
 
-  const requirementCoveragePct = totalRequirements > 0
-    ? Math.round((coveredRequirements / totalRequirements) * 100)
-    : 100
-  const designCoveragePct = totalDesignSections > 0
-    ? Math.round((coveredDesignSections / totalDesignSections) * 100)
-    : 100
+    const requirementCoveragePct = totalRequirements > 0
+      ? Math.round((coveredRequirements / totalRequirements) * 100)
+      : 100
+    const designCoveragePct = totalDesignSections > 0
+      ? Math.round((coveredDesignSections / totalDesignSections) * 100)
+      : 100
 
-  const status = uncoveredRequirements.length === 0 && uncoveredDesigns.length === 0
-    ? "pass"
-    : "fail"
+    const status = uncoveredRequirements.length === 0 && uncoveredDesigns.length === 0
+      ? "pass"
+      : "fail"
 
-  return {
-    status,
-    uncovered_requirements: uncoveredRequirements,
-    uncovered_designs: uncoveredDesigns,
-    coverage_summary: {
-      total_requirements: totalRequirements,
-      covered_requirements: coveredRequirements,
-      total_design_sections: totalDesignSections,
-      covered_design_sections: coveredDesignSections,
-      requirement_coverage_pct: requirementCoveragePct,
-      design_coverage_pct: designCoveragePct,
-    },
+    return {
+      status,
+      uncovered_requirements: uncoveredRequirements,
+      uncovered_designs: uncoveredDesigns,
+      coverage_summary: {
+        total_requirements: totalRequirements,
+        covered_requirements: coveredRequirements,
+        total_design_sections: totalDesignSections,
+        covered_design_sections: coveredDesignSections,
+        requirement_coverage_pct: requirementCoveragePct,
+        design_coverage_pct: designCoveragePct,
+      },
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_trace_matrix_core", "checkTraceMatrix", err)
+    throw err
   }
 }
 

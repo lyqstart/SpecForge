@@ -304,6 +304,14 @@ describe("E2E: syncFromSpec with standardized markers", () => {
     expect(designLint.issues).toHaveLength(0) // No warnings — DD-N format recognized
 
     expect(tasksLint.status).toBe("pass")
-    expect(tasksLint.issues).toHaveLength(0) // No warnings — TASK-N format recognized
+    // V3.7: legacy format verification_commands produce non-blocking warnings
+    const taskErrors = tasksLint.issues.filter((i) => i.severity === "error")
+    expect(taskErrors).toHaveLength(0)
+    // 4 tasks with legacy format → 4 non-blocking warnings
+    const taskWarnings = tasksLint.issues.filter((i) => i.severity === "warning")
+    expect(taskWarnings).toHaveLength(4)
+    for (const w of taskWarnings) {
+      expect(w.message).toContain("旧格式 verification_commands")
+    }
   })
 })

@@ -11,7 +11,7 @@ import { readFile, readdir } from "node:fs/promises"
 import { join } from "node:path"
 import { loadGraphStore, isKGEnabled } from "./sf_knowledge_graph_core"
 import { impactAnalysis, getSubgraph } from "./sf_knowledge_query_core"
-import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
+import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import type { GraphNode } from "./sf_knowledge_graph_core"
 
 // ============================================================
@@ -599,6 +599,7 @@ export async function buildTaskContext(
   dataSources: ContextDataSource[],
   baseDir: string
 ): Promise<TaskContext> {
+  try {
   // Collect fragments from all data sources
   const allFragments: ContextFragment[] = []
   const sources: Array<{ type: string; id: string }> = []
@@ -682,6 +683,10 @@ export async function buildTaskContext(
     sources,
     estimated_tokens: estimatedTokens,
   }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_context_build_core", "buildTaskContext", err)
+    throw err
+  }
 }
 
 // ============================================================
@@ -696,6 +701,7 @@ export async function recommendCapabilities(
   params: TaskQueryParams,
   baseDir: string
 ): Promise<CapabilityRecommendation> {
+  try {
   const emptyResult: CapabilityRecommendation = {
     recommended_fragments: [],
     estimated_tokens: 0,
@@ -764,6 +770,10 @@ export async function recommendCapabilities(
     recommended_fragments: recommended,
     estimated_tokens: totalTokens,
   }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_context_build_core", "recommendCapabilities", err)
+    throw err
+  }
 }
 
 /**
@@ -822,8 +832,9 @@ export async function buildContext(
   includeCapabilities: boolean,
   baseDir: string
 ): Promise<ContextBuildResult> {
+  try {
   // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  await tryCheckCompatibility(baseDir, "sf_context_build_core")
 
   const params: TaskQueryParams = {
     work_item_id: workItemId,
@@ -862,6 +873,10 @@ export async function buildContext(
   return {
     task_context: taskContext,
     capabilities,
+  }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_context_build_core", "buildContext", err)
+    throw err
   }
 }
 

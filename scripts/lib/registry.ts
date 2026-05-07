@@ -51,35 +51,44 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_trace_matrix.ts", type: "tool" },
   { path: "tools/sf_verification_gate.ts", type: "tool" },
 
-  // Tool 核心库（19 个）
+  // Tool 核心库（24 个）
   { path: "tools/lib/sf_artifact_write_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_batch_verify_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_context_build_core.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_continuity_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_conversation_recorder_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_cost_report_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_design_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_doc_lint_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_doctor_core.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_gate_types.ts", type: "tool_lib" },
   { path: "tools/lib/sf_knowledge_base_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_knowledge_graph_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_knowledge_query_core.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_markdown_verification_parser.ts", type: "tool_lib" },
   { path: "tools/lib/sf_requirements_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_state_read_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_state_transition_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_tasks_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_trace_matrix_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_verification_gate_core.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_verification_types.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_verifier_execution_core.ts", type: "tool_lib" },
   { path: "tools/lib/state_machine.ts", type: "tool_lib" },
   { path: "tools/lib/utils.ts", type: "tool_lib" },
 
   // Plugin（1 个 — 统一 Plugin，替代原来的 5 个）
   { path: "plugins/sf_specforge.ts", type: "plugin" },
 
-  // Skills（12 个目录的 SKILL.md）
+  // Skills（16 个目录的 SKILL.md）
   { path: "skills/sf-workflow-feature-spec/SKILL.md", type: "skill" },
   { path: "skills/sf-workflow-bugfix-spec/SKILL.md", type: "skill" },
   { path: "skills/sf-workflow-design-first/SKILL.md", type: "skill" },
   { path: "skills/sf-workflow-quick-change/SKILL.md", type: "skill" },
+  { path: "skills/sf-workflow-change-request/SKILL.md", type: "skill" },
+  { path: "skills/sf-workflow-investigation/SKILL.md", type: "skill" },
+  { path: "skills/sf-workflow-ops-task/SKILL.md", type: "skill" },
+  { path: "skills/sf-workflow-refactor/SKILL.md", type: "skill" },
   { path: "skills/superpowers-brainstorming/SKILL.md", type: "skill" },
   { path: "skills/superpowers-code-review/SKILL.md", type: "skill" },
   { path: "skills/superpowers-knowledge-extraction/SKILL.md", type: "skill" },

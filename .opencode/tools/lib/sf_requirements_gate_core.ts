@@ -10,31 +10,14 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
-import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
+import { tryCheckCompatibility, logErrorToFile } from "./utils"
+import { parseAllVerificationStrategies } from "./sf_verification_types"
 import type { SyncSummary } from "./sf_knowledge_graph_core"
+import type { GateResult, GateModeSpec } from "./sf_gate_types"
 
-// ============================================================
-// Types
-// ============================================================
-
-export interface GateResult {
-  status: "pass" | "fail" | "blocked"
-  blocking_issues: string[]
-  warnings: string[]
-  next_action: "continue" | "revise" | "ask_user"
-  kg_sync?: SyncSummary | null
-}
-
-/**
- * Gate Mode Spec 策略表接口
- * 定义每种 mode 的目标文件、必需 sections 和检查函数
- */
-export interface GateModeSpec {
-  mode: string
-  targetFile: string
-  requiredSections: string[]
-  checkFn: (content: string, sections: Record<string, string>) => GateResult
-}
+// 向后兼容 re-export：现有消费方可继续从此文件导入
+export type { GateResult, SyncSummary } from "./sf_gate_types"
+export type { GateModeSpec } from "./sf_gate_types"
 
 /**
  * Requirements Gate 支持的 mode 类型
@@ -152,7 +135,7 @@ export function parseSections(
   content: string,
   requiredSections: string[]
 ): Record<string, string> {
-  const sections: Record<string, string> = {}
+  const sections: Record<string, string> = Object.create(null)
   for (const sectionName of requiredSections) {
     // 转义正则特殊字符
     const escapedName = escapeRegExp(sectionName)
@@ -210,65 +193,70 @@ export async function checkRequirementsGate(
   baseDir: string,
   options?: { mode?: RequirementsGateMode }
 ): Promise<GateResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
-
-  const mode = options?.mode
-
-  // 无 mode：现有行为（向后兼容）
-  if (mode === undefined) {
-    return existingRequirementsGateCheck(workItemId, baseDir)
-  }
-
-  // 查找策略表
-  const spec = REQUIREMENTS_GATE_SPECS.find((s) => s.mode === mode)
-  if (spec === undefined) {
-    return {
-      status: "fail",
-      blocking_issues: [],
-      warnings: [`Unsupported mode: "${mode}"`],
-      next_action: "ask_user",
-    }
-  }
-
-  // 读取目标文件
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
-  const filePath = join(specDir, spec.targetFile)
-  let content: string
   try {
-    content = await readFile(filePath, "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
+    // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
+    await tryCheckCompatibility(baseDir, "sf_requirements_gate_core")
+
+    const mode = options?.mode
+
+    // 无 mode：现有行为（向后兼容）
+    if (mode === undefined) {
+      return await existingRequirementsGateCheck(workItemId, baseDir)
+    }
+
+    // 查找策略表
+    const spec = REQUIREMENTS_GATE_SPECS.find((s) => s.mode === mode)
+    if (spec === undefined) {
       return {
         status: "fail",
-        blocking_issues: [`File not found: ${spec.targetFile}`],
+        blocking_issues: [],
+        warnings: [`Unsupported mode: "${mode}"`],
+        next_action: "ask_user",
+      }
+    }
+
+    // 读取目标文件
+    const specDir = join(baseDir, "specforge", "specs", workItemId)
+    const filePath = join(specDir, spec.targetFile)
+    let content: string
+    try {
+      content = await readFile(filePath, "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        return {
+          status: "fail",
+          blocking_issues: [`File not found: ${spec.targetFile}`],
+          warnings: [],
+          next_action: "revise",
+        }
+      }
+      return {
+        status: "blocked",
+        blocking_issues: [`Failed to read ${spec.targetFile}: ${error.message}`],
+        warnings: [],
+        next_action: "ask_user",
+      }
+    }
+
+    // 解析 sections 并检查完整性
+    const sections = parseSections(content, spec.requiredSections)
+    const missing = spec.requiredSections.filter((s) => !sections[s]?.trim())
+    if (missing.length > 0) {
+      return {
+        status: "fail",
+        blocking_issues: missing.map((s) => `Missing section: ${s}`),
         warnings: [],
         next_action: "revise",
       }
     }
-    return {
-      status: "blocked",
-      blocking_issues: [`Failed to read ${spec.targetFile}: ${error.message}`],
-      warnings: [],
-      next_action: "ask_user",
-    }
-  }
 
-  // 解析 sections 并检查完整性
-  const sections = parseSections(content, spec.requiredSections)
-  const missing = spec.requiredSections.filter((s) => !sections[s]?.trim())
-  if (missing.length > 0) {
-    return {
-      status: "fail",
-      blocking_issues: missing.map((s) => `Missing section: ${s}`),
-      warnings: [],
-      next_action: "revise",
-    }
+    // 调用 mode 特定的检查函数
+    return spec.checkFn(content, sections)
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_requirements_gate_core", "checkRequirementsGate", err)
+    throw err
   }
-
-  // 调用 mode 特定的检查函数
-  return spec.checkFn(content, sections)
 }
 
 /**
@@ -324,6 +312,17 @@ async function existingRequirementsGateCheck(
   // 4. 检查术语表
   if (!hasGlossary(content)) {
     blockingIssues.push('缺少术语表（"术语表" / "Glossary"）')
+  }
+
+  // 5. V3.7: 检查 verification_strategy 字段合法性
+  const strategyResults = parseAllVerificationStrategies(content)
+  for (const [reqId, result] of strategyResults) {
+    for (const error of result.errors) {
+      blockingIssues.push(`${reqId}: ${error}`)
+    }
+    for (const warning of result.warnings) {
+      warnings.push(`${reqId}: ${warning}`)
+    }
   }
 
   if (blockingIssues.length > 0) {
@@ -413,95 +412,100 @@ export async function checkBugfixGate(
   workItemId: string,
   baseDir: string
 ): Promise<GateResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
-
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
-  const docPath = join(specDir, "bugfix.md")
-
-  // 1. 读取 bugfix.md
-  let content: string
   try {
-    content = await readFile(docPath, "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
+    // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
+    await tryCheckCompatibility(baseDir, "sf_requirements_gate_core")
+
+    const specDir = join(baseDir, "specforge", "specs", workItemId)
+    const docPath = join(specDir, "bugfix.md")
+
+    // 1. 读取 bugfix.md
+    let content: string
+    try {
+      content = await readFile(docPath, "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        return {
+          status: "fail",
+          blocking_issues: ["bugfix.md not found"],
+          warnings: [],
+          next_action: "revise",
+        }
+      }
+      return {
+        status: "blocked",
+        blocking_issues: [`Failed to read bugfix.md: ${error.message}`],
+        warnings: [],
+        next_action: "ask_user",
+      }
+    }
+
+    const blockingIssues: string[] = []
+    const warnings: string[] = []
+
+    // 2. 检查当前行为
+    if (!hasCurrentBehavior(content)) {
+      blockingIssues.push(
+        '缺少当前行为（"当前行为" / "Current Behavior"）'
+      )
+    }
+
+    // 3. 检查预期行为
+    if (!hasExpectedBehavior(content)) {
+      blockingIssues.push(
+        '缺少预期行为（"预期行为" / "Expected Behavior"）'
+      )
+    }
+
+    // 4. 检查不变行为
+    if (!hasUnchangedBehavior(content)) {
+      blockingIssues.push(
+        '缺少不变行为（"不变行为" / "Unchanged Behavior"）'
+      )
+    }
+
+    // 5. 检查根因分析
+    if (!hasRootCauseAnalysis(content)) {
+      blockingIssues.push(
+        '缺少根因分析（"根因分析" / "Root Cause Analysis"）'
+      )
+    }
+
+    if (blockingIssues.length > 0) {
       return {
         status: "fail",
-        blocking_issues: ["bugfix.md not found"],
-        warnings: [],
+        blocking_issues: blockingIssues,
+        warnings,
         next_action: "revise",
       }
     }
-    return {
-      status: "blocked",
-      blocking_issues: [`Failed to read bugfix.md: ${error.message}`],
-      warnings: [],
-      next_action: "ask_user",
-    }
-  }
 
-  const blockingIssues: string[] = []
-  const warnings: string[] = []
-
-  // 2. 检查当前行为
-  if (!hasCurrentBehavior(content)) {
-    blockingIssues.push(
-      '缺少当前行为（"当前行为" / "Current Behavior"）'
-    )
-  }
-
-  // 3. 检查预期行为
-  if (!hasExpectedBehavior(content)) {
-    blockingIssues.push(
-      '缺少预期行为（"预期行为" / "Expected Behavior"）'
-    )
-  }
-
-  // 4. 检查不变行为
-  if (!hasUnchangedBehavior(content)) {
-    blockingIssues.push(
-      '缺少不变行为（"不变行为" / "Unchanged Behavior"）'
-    )
-  }
-
-  // 5. 检查根因分析
-  if (!hasRootCauseAnalysis(content)) {
-    blockingIssues.push(
-      '缺少根因分析（"根因分析" / "Root Cause Analysis"）'
-    )
-  }
-
-  if (blockingIssues.length > 0) {
-    return {
-      status: "fail",
-      blocking_issues: blockingIssues,
-      warnings,
-      next_action: "revise",
-    }
-  }
-
-  // ★ V4.0: KG sync on pass
-  let kgSync: SyncSummary | null = null
-  try {
-    if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, "requirements")
-      if (kgResult.success && kgResult.summary) {
-        kgSync = kgResult.summary
-      } else if (kgResult.error) {
-        warnings.push(`KG sync warning: ${kgResult.error}`)
+    // ★ V4.0: KG sync on pass
+    let kgSync: SyncSummary | null = null
+    try {
+      if (await isKGEnabled(baseDir)) {
+        const kgResult = await syncFromSpec(workItemId, baseDir, "requirements")
+        if (kgResult.success && kgResult.summary) {
+          kgSync = kgResult.summary
+        } else if (kgResult.error) {
+          warnings.push(`KG sync warning: ${kgResult.error}`)
+        }
       }
+    } catch (err) {
+      warnings.push(`KG sync failed: ${(err as Error).message}`)
+    }
+
+    return {
+      status: "pass",
+      blocking_issues: [],
+      warnings,
+      next_action: "continue",
+      kg_sync: kgSync,
     }
   } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`)
-  }
-
-  return {
-    status: "pass",
-    blocking_issues: [],
-    warnings,
-    next_action: "continue",
-    kg_sync: kgSync,
+    await logErrorToFile(baseDir, "sf_requirements_gate_core", "checkBugfixGate", err)
+    throw err
   }
 }
 

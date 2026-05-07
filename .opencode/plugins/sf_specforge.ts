@@ -13,7 +13,7 @@
  */
 
 import type { Plugin } from "@opencode-ai/plugin"
-import { readFile, writeFile, appendFile, mkdir, access, unlink, stat } from "node:fs/promises"
+import { readFile, writeFile, appendFile, mkdir, access, unlink, stat, rename } from "node:fs/promises"
 import { join, dirname, resolve, normalize } from "node:path"
 import { homedir, hostname } from "node:os"
 import { randomUUID } from "node:crypto"
@@ -107,6 +107,12 @@ const REQUIRED_FILES = [
   "specforge/runtime/state.json",
   "specforge/config/project.json",
 ]
+
+/** 日志轮转阈值（100MB） */
+const LOG_ROTATION_THRESHOLD_BYTES = 100 * 1024 * 1024
+
+/** 日志轮转最大历史文件数 */
+const LOG_ROTATION_MAX_HISTORY = 3
 
 // ============================================================
 // Version Utilities (inline, no external deps)
@@ -361,6 +367,68 @@ async function logError(projectRoot: string, component: string, error: unknown):
     event: "error",
     message: error instanceof Error ? error.message : String(error),
   })
+}
+
+/**
+ * 检查并执行 conversations.jsonl 日志轮转
+ *
+ * 轮转策略：
+ * 1. 检查文件大小是否超过阈值
+ * 2. 删除超过 MAX_HISTORY 的历史文件
+ * 3. 将现有历史文件编号递增（从高到低避免覆盖）
+ * 4. 将当前文件重命名为 .1
+ * 5. 创建新的空文件
+ *
+ * 失败时抛出异常（由调用方捕获并记录）
+ */
+async function rotateConversationsLog(filePath: string): Promise<void> {
+  // Step 1: 检查文件是否存在及大小
+  let fileSize: number
+  try {
+    const stats = await stat(filePath)
+    fileSize = stats.size
+  } catch {
+    // 文件不存在或无法 stat → 无需轮转
+    return
+  }
+
+  if (fileSize < LOG_ROTATION_THRESHOLD_BYTES) {
+    return // 未超过阈值，无需轮转
+  }
+
+  // Step 2: 删除编号超过 MAX_HISTORY 的历史文件
+  for (let i = LOG_ROTATION_MAX_HISTORY + 1; ; i++) {
+    try {
+      await unlink(`${filePath}.${i}`)
+    } catch {
+      break // 文件不存在，停止
+    }
+  }
+
+  // Step 3: 将现有历史文件编号递增（从高到低避免覆盖）
+  // 先删除最高编号文件（为递增腾出空间）
+  try {
+    await unlink(`${filePath}.${LOG_ROTATION_MAX_HISTORY}`)
+  } catch {
+    // 不存在则忽略
+  }
+  // 然后从高到低递增编号
+  for (let i = LOG_ROTATION_MAX_HISTORY - 1; i >= 1; i--) {
+    const src = `${filePath}.${i}`
+    const dst = `${filePath}.${i + 1}`
+    try {
+      await access(src)
+      await rename(src, dst)
+    } catch {
+      // 源文件不存在则跳过
+    }
+  }
+
+  // Step 4: 将当前文件重命名为 .1
+  await rename(filePath, `${filePath}.1`)
+
+  // Step 5: 创建新的空文件
+  await writeFile(filePath, "", "utf-8")
 }
 
 // ============================================================
@@ -2327,6 +2395,16 @@ function createUnifiedEventHandler(projectRoot: string, savedClient?: any, toolA
         const msgEntry = buildLogEntry("INFO", event.type, `Message: ${event.type}`, {
           event_data: redactSensitive(event),
         })
+        // Attempt log rotation before writing (Req 4.5, 4.6)
+        try {
+          await rotateConversationsLog(conversationFile)
+        } catch (rotErr) {
+          try {
+            await logError(projectRoot, "log_rotation", rotErr)
+          } catch {
+            // Silently swallow secondary failures
+          }
+        }
         await appendJsonlSafe(conversationFile, msgEntry)
       }
 
@@ -2610,12 +2688,47 @@ function createCompactionHandler(projectRoot: string, savedClient?: any) {
 // ============================================================
 
 export const sf_specforge: Plugin = async ({ directory, client }) => {
-  // 1. 启动流程决策
-  const mode = await determineStartupMode(directory)
-
-  // 2. 执行启动流程
-  const finalMode = await executeStartupFlow(mode, detectProjectRoot(directory))
   const projectRoot = detectProjectRoot(directory)
+  let finalMode: StartupMode
+
+  // 1. 启动流程决策 + 2. 执行启动流程
+  try {
+    const mode = await determineStartupMode(directory)
+    finalMode = await executeStartupFlow(mode, projectRoot)
+  } catch (err: unknown) {
+    // Log the startup failure, but wrap logError itself in try-catch for secondary failure protection
+    try {
+      await logError(projectRoot, "sf_specforge.startup", err)
+    } catch {
+      // Silently swallow secondary failures — cannot let logging break the plugin
+    }
+    // Fall back to degraded mode so handler registration still proceeds
+    finalMode = "degraded"
+  }
+
+  // wrapHandler: wraps any handler function with try-catch to prevent unexpected exceptions from escaping.
+  // Permission guard throws (intentional blocks) are re-thrown to preserve tool-blocking behavior.
+  function wrapHandler<T extends (...args: any[]) => any>(
+    handler: T,
+    handlerName: string
+  ): T {
+    return (async (...args: any[]) => {
+      try {
+        return await handler(...args)
+      } catch (err: unknown) {
+        // Re-throw intentional permission guard blocks — these are expected by OpenCode runtime
+        if (err instanceof Error && err.message.startsWith("[PermissionGuard]")) {
+          throw err
+        }
+        try {
+          await logError(projectRoot, `sf_specforge.${handlerName}`, err)
+        } catch {
+          // Secondary failure protection: silently swallow logError failures
+        }
+        // Silently return — handlers must not crash the plugin
+      }
+    }) as unknown as T
+  }
 
   // 3. 根据模式注册处理器
   if (finalMode === "noop") {
@@ -2625,17 +2738,17 @@ export const sf_specforge: Plugin = async ({ directory, client }) => {
 
   if (finalMode === "degraded" || finalMode === "init_failed" || finalMode === "runtime_busy") {
     return {
-      "tool.execute.before": createDegradedToolBeforeHandler(projectRoot),
-      event: createDegradedEventHandler(projectRoot),
+      "tool.execute.before": wrapHandler(createDegradedToolBeforeHandler(projectRoot), "tool.execute.before"),
+      event: wrapHandler(createDegradedEventHandler(projectRoot), "event"),
     }
   }
 
   // Full mode: initialize, repair, migrate, skip
   const toolAfterHandler = createToolAfterHandler(projectRoot, client)
   return {
-    "experimental.session.compacting": createCompactionHandler(projectRoot, client),
-    "tool.execute.before": createToolBeforeHandler(projectRoot),
-    "tool.execute.after": toolAfterHandler,
-    event: createUnifiedEventHandler(projectRoot, client, toolAfterHandler),
+    "experimental.session.compacting": wrapHandler(createCompactionHandler(projectRoot, client), "experimental.session.compacting"),
+    "tool.execute.before": wrapHandler(createToolBeforeHandler(projectRoot), "tool.execute.before"),
+    "tool.execute.after": wrapHandler(toolAfterHandler, "tool.execute.after"),
+    event: wrapHandler(createUnifiedEventHandler(projectRoot, client, toolAfterHandler), "event"),
   }
 }

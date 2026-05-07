@@ -42,6 +42,11 @@ export enum InstallerErrorCode {
    * @suggestedFix 执行 `upgrade --force` 强制重新部署
    */
   E_SHARED_COMPONENTS_INVALID = "E_SHARED_COMPONENTS_INVALID",
+  /**
+   * 所有注册的源文件均不存在（源目录路径可能错误）
+   * @suggestedFix 检查是否在正确的 SpecForge 仓库目录中运行 install
+   */
+  E_SOURCE_MISSING = "E_SOURCE_MISSING",
 }
 
 // ============================================================
@@ -71,4 +76,5 @@ export const EXIT_CODES: Record<InstallerErrorCode, number> = {
   [InstallerErrorCode.E_LOCK_TIMEOUT]: 14,
   [InstallerErrorCode.E_CHECKSUM_MISMATCH]: 15,
   [InstallerErrorCode.E_SHARED_COMPONENTS_INVALID]: 16,
+  [InstallerErrorCode.E_SOURCE_MISSING]: 17,
 }

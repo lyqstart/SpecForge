@@ -14,6 +14,7 @@
 import { readFile, access, readdir } from "node:fs/promises"
 import { join } from "node:path"
 import type { WorkflowType } from "./state_machine"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -463,142 +464,147 @@ export async function extractContextSnapshot(
 ): Promise<ContextSnapshot | null> {
   const { workItemId, runId, sessionId, workflowType, stage, baseDir } = options
 
-  // Initialize snapshot with workflow context
-  const snapshot: ContextSnapshot = {
-    completed_work: {
-      files_created: [],
-      files_modified: [],
-      verification_commands_passed: [],
-      description: "",
-    },
-    artifacts: {
-      files: [],
-      reports: [],
-      commands: [],
-      data: {},
-    },
-    pending_work: {
-      description: "",
-      remaining_tasks: [],
-      expected_output: "",
-    },
-    key_decisions: [],
-    workflow_context: {
-      workflow_type: workflowType,
-      stage,
-      expected_output: getExpectedOutput(workflowType, stage),
-      work_item_id: workItemId,
-      run_id: runId,
-    },
-  }
-
-  // Step 1: Read tool_calls.jsonl from archive
-  const toolCalls = await readToolCallsFromArchive(runId, baseDir)
-
-  // Step 2: Read trace entries
-  const traceEntries = await readTraceEntriesForRun(runId, sessionId, baseDir)
-
-  // Step 3: Extract files_created / files_modified from write/edit tool calls
-  const writeToolCalls = toolCalls.filter(
-    (tc) => tc.tool === "write" || tc.tool === "edit" || tc.tool === "create"
-  )
-  const candidateFiles = writeToolCalls
-    .map((tc) => tc.arguments?.path as string)
-    .filter(Boolean)
-
-  // Determine which files are new vs modified based on trace context
-  const { created, modified } = categorizeFiles(candidateFiles, traceEntries)
-
-  // Disk verification: confirm files actually exist
-  snapshot.completed_work.files_created = await verifyFilesExist(created, baseDir)
-  snapshot.completed_work.files_modified = await verifyFilesExist(modified, baseDir)
-
-  // Step 4: Extract verification_commands_passed from bash calls with exit_code=0
-  const bashCalls = toolCalls.filter(
-    (tc) => tc.tool === "bash" && tc.exit_code === 0
-  )
-  snapshot.completed_work.verification_commands_passed = bashCalls
-    .map((tc) => tc.arguments?.command as string)
-    .filter(Boolean)
-
-  // Step 5: Extract key_decisions (priority: work_log.md → agent_summary → empty)
-  const workLog = await readWorkLog(runId, baseDir)
-  if (workLog) {
-    const decisions = parseDecisionSections(workLog)
-    if (decisions.length > 0) {
-      snapshot.key_decisions = decisions
+  try {
+    // Initialize snapshot with workflow context
+    const snapshot: ContextSnapshot = {
+      completed_work: {
+        files_created: [],
+        files_modified: [],
+        verification_commands_passed: [],
+        description: "",
+      },
+      artifacts: {
+        files: [],
+        reports: [],
+        commands: [],
+        data: {},
+      },
+      pending_work: {
+        description: "",
+        remaining_tasks: [],
+        expected_output: "",
+      },
+      key_decisions: [],
+      workflow_context: {
+        workflow_type: workflowType,
+        stage,
+        expected_output: getExpectedOutput(workflowType, stage),
+        work_item_id: workItemId,
+        run_id: runId,
+      },
     }
-  }
 
-  if (snapshot.key_decisions.length === 0) {
-    // Priority 2: from conversation key messages
-    const config = await readContinuityConfig(baseDir)
-    const conversation = await readConversationMessages(sessionId, baseDir)
-    const keyMessages = filterKeyMessages(conversation, config.key_messages_count)
-    const summaryMessages = keyMessages.filter(
-      (m) => classifyMessage(m) === "agent_summary"
+    // Step 1: Read tool_calls.jsonl from archive
+    const toolCalls = await readToolCallsFromArchive(runId, baseDir)
+
+    // Step 2: Read trace entries
+    const traceEntries = await readTraceEntriesForRun(runId, sessionId, baseDir)
+
+    // Step 3: Extract files_created / files_modified from write/edit tool calls
+    const writeToolCalls = toolCalls.filter(
+      (tc) => tc.tool === "write" || tc.tool === "edit" || tc.tool === "create"
     )
-    const decisions = extractDecisionsFromSummaries(summaryMessages)
-    if (decisions.length > 0) {
-      snapshot.key_decisions = decisions
-    }
-  }
-  // Priority 3: empty array (never fabricate) — already initialized as []
+    const candidateFiles = writeToolCalls
+      .map((tc) => tc.arguments?.path as string)
+      .filter(Boolean)
 
-  // Step 6: Extract pending_work (priority: work_log.md → infer from stage)
-  if (workLog) {
-    const pending = parsePendingSections(workLog)
-    if (pending) {
-      snapshot.pending_work = pending
-    }
-  }
+    // Determine which files are new vs modified based on trace context
+    const { created, modified } = categorizeFiles(candidateFiles, traceEntries)
 
-  if (!snapshot.pending_work.description && !workLog) {
-    // Priority 2: infer from stage expected_output
-    snapshot.pending_work = {
-      description: `Continue ${stage} stage work`,
-      remaining_tasks: [],
-      expected_output: getExpectedOutput(workflowType, stage),
-      inferred: true,
-    }
-  }
+    // Disk verification: confirm files actually exist
+    snapshot.completed_work.files_created = await verifyFilesExist(created, baseDir)
+    snapshot.completed_work.files_modified = await verifyFilesExist(modified, baseDir)
 
-  // Step 7: Extract artifacts
-  snapshot.artifacts = extractArtifacts(toolCalls, traceEntries)
-
-  // Step 8: Generate description for completed_work
-  snapshot.completed_work.description = generateCompletedWorkDescription(snapshot.completed_work)
-
-  // Step 9: Conditional optional fields based on workflow_type
-  if (CODE_WORKFLOWS.includes(workflowType)) {
-    snapshot.files_state = buildFilesState(
-      snapshot.completed_work.files_created,
-      snapshot.completed_work.files_modified
+    // Step 4: Extract verification_commands_passed from bash calls with exit_code=0
+    const bashCalls = toolCalls.filter(
+      (tc) => tc.tool === "bash" && tc.exit_code === 0
     )
-    snapshot.verification_results = extractVerificationResults(toolCalls)
+    snapshot.completed_work.verification_commands_passed = bashCalls
+      .map((tc) => tc.arguments?.command as string)
+      .filter(Boolean)
+
+    // Step 5: Extract key_decisions (priority: work_log.md → agent_summary → empty)
+    const workLog = await readWorkLog(runId, baseDir)
+    if (workLog) {
+      const decisions = parseDecisionSections(workLog)
+      if (decisions.length > 0) {
+        snapshot.key_decisions = decisions
+      }
+    }
+
+    if (snapshot.key_decisions.length === 0) {
+      // Priority 2: from conversation key messages
+      const config = await readContinuityConfig(baseDir)
+      const conversation = await readConversationMessages(sessionId, baseDir)
+      const keyMessages = filterKeyMessages(conversation, config.key_messages_count)
+      const summaryMessages = keyMessages.filter(
+        (m) => classifyMessage(m) === "agent_summary"
+      )
+      const decisions = extractDecisionsFromSummaries(summaryMessages)
+      if (decisions.length > 0) {
+        snapshot.key_decisions = decisions
+      }
+    }
+    // Priority 3: empty array (never fabricate) — already initialized as []
+
+    // Step 6: Extract pending_work (priority: work_log.md → infer from stage)
+    if (workLog) {
+      const pending = parsePendingSections(workLog)
+      if (pending) {
+        snapshot.pending_work = pending
+      }
+    }
+
+    if (!snapshot.pending_work.description && !workLog) {
+      // Priority 2: infer from stage expected_output
+      snapshot.pending_work = {
+        description: `Continue ${stage} stage work`,
+        remaining_tasks: [],
+        expected_output: getExpectedOutput(workflowType, stage),
+        inferred: true,
+      }
+    }
+
+    // Step 7: Extract artifacts
+    snapshot.artifacts = extractArtifacts(toolCalls, traceEntries)
+
+    // Step 8: Generate description for completed_work
+    snapshot.completed_work.description = generateCompletedWorkDescription(snapshot.completed_work)
+
+    // Step 9: Conditional optional fields based on workflow_type
+    if (CODE_WORKFLOWS.includes(workflowType)) {
+      snapshot.files_state = buildFilesState(
+        snapshot.completed_work.files_created,
+        snapshot.completed_work.files_modified
+      )
+      snapshot.verification_results = extractVerificationResults(toolCalls)
+    }
+
+    if (workflowType === "investigation") {
+      snapshot.evidence_collected = extractEvidence(toolCalls, traceEntries)
+      snapshot.open_questions = extractOpenQuestions(traceEntries)
+      snapshot.hypotheses = extractHypotheses(traceEntries)
+    }
+
+    // Step 10: Completeness check — return null if extraction failed
+    const hasCompletedWork =
+      snapshot.completed_work.files_created.length > 0 ||
+      snapshot.completed_work.files_modified.length > 0 ||
+      snapshot.completed_work.verification_commands_passed.length > 0
+    const hasArtifacts =
+      snapshot.artifacts.files.length > 0 ||
+      snapshot.artifacts.reports.length > 0 ||
+      snapshot.artifacts.commands.length > 0
+
+    if (!hasCompletedWork && !hasArtifacts) {
+      return null // Extraction failed
+    }
+
+    return snapshot
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_continuity_core", "extractContextSnapshot", err)
+    throw err
   }
-
-  if (workflowType === "investigation") {
-    snapshot.evidence_collected = extractEvidence(toolCalls, traceEntries)
-    snapshot.open_questions = extractOpenQuestions(traceEntries)
-    snapshot.hypotheses = extractHypotheses(traceEntries)
-  }
-
-  // Step 10: Completeness check — return null if extraction failed
-  const hasCompletedWork =
-    snapshot.completed_work.files_created.length > 0 ||
-    snapshot.completed_work.files_modified.length > 0 ||
-    snapshot.completed_work.verification_commands_passed.length > 0
-  const hasArtifacts =
-    snapshot.artifacts.files.length > 0 ||
-    snapshot.artifacts.reports.length > 0 ||
-    snapshot.artifacts.commands.length > 0
-
-  if (!hasCompletedWork && !hasArtifacts) {
-    return null // Extraction failed
-  }
-
-  return snapshot
 }
 
 // ============================================================
@@ -1464,34 +1470,39 @@ export function mergeArchives(
  * Requirements: 1.6
  */
 export async function readContinuityConfig(baseDir: string): Promise<ContinuityConfig> {
-  const configPath = join(baseDir, "specforge", "config", "project.json")
-
   try {
-    const content = await readFile(configPath, "utf-8")
-    const config = JSON.parse(content)
+    const configPath = join(baseDir, "specforge", "config", "project.json")
 
-    const continuity = config?.continuity
-    if (!continuity || typeof continuity !== "object") {
+    try {
+      const content = await readFile(configPath, "utf-8")
+      const config = JSON.parse(content)
+
+      const continuity = config?.continuity
+      if (!continuity || typeof continuity !== "object") {
+        return { ...DEFAULT_CONTINUITY_CONFIG }
+      }
+
+      let maxContinuations = DEFAULT_CONTINUITY_CONFIG.max_continuations
+      if (typeof continuity.max_continuations === "number" && continuity.max_continuations >= 0) {
+        maxContinuations = Math.min(
+          Math.floor(continuity.max_continuations),
+          MAX_CONTINUATIONS_CEILING
+        )
+      }
+
+      let keyMessagesCount = DEFAULT_CONTINUITY_CONFIG.key_messages_count
+      if (typeof continuity.key_messages_count === "number" && continuity.key_messages_count > 0) {
+        keyMessagesCount = Math.floor(continuity.key_messages_count)
+      }
+
+      return { max_continuations: maxContinuations, key_messages_count: keyMessagesCount }
+    } catch {
+      // Config file not found or invalid — use defaults
       return { ...DEFAULT_CONTINUITY_CONFIG }
     }
-
-    let maxContinuations = DEFAULT_CONTINUITY_CONFIG.max_continuations
-    if (typeof continuity.max_continuations === "number" && continuity.max_continuations >= 0) {
-      maxContinuations = Math.min(
-        Math.floor(continuity.max_continuations),
-        MAX_CONTINUATIONS_CEILING
-      )
-    }
-
-    let keyMessagesCount = DEFAULT_CONTINUITY_CONFIG.key_messages_count
-    if (typeof continuity.key_messages_count === "number" && continuity.key_messages_count > 0) {
-      keyMessagesCount = Math.floor(continuity.key_messages_count)
-    }
-
-    return { max_continuations: maxContinuations, key_messages_count: keyMessagesCount }
-  } catch {
-    // Config file not found or invalid — use defaults
-    return { ...DEFAULT_CONTINUITY_CONFIG }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_continuity_core", "readContinuityConfig", err)
+    throw err
   }
 }
 

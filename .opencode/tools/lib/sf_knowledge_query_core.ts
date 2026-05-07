@@ -8,7 +8,7 @@
  */
 
 import { loadGraphStore } from "./sf_knowledge_graph_core"
-import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
+import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import type { GraphNode, GraphEdge, GraphStore, NodeType, EdgeType } from "./sf_knowledge_graph_core"
 
 // ============================================================
@@ -53,8 +53,8 @@ export interface QueryFilter {
 // ============================================================
 
 async function loadStore(baseDir: string): Promise<{ store?: GraphStore; error?: QueryResult }> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  // V3.4.0: 版本兼容性检查（動態導入，失敗時靜默跳過）
+  await tryCheckCompatibility(baseDir, "sf_knowledge_query_core")
 
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {
@@ -80,6 +80,7 @@ async function loadStore(baseDir: string): Promise<{ store?: GraphStore; error?:
  * Get a single node and its direct neighbors (connected nodes and edges).
  */
 export async function getNode(nodeId: string, baseDir: string): Promise<QueryResult> {
+  try {
   const { store, error } = await loadStore(baseDir)
   if (error) return error
 
@@ -116,6 +117,10 @@ export async function getNode(nodeId: string, baseDir: string): Promise<QueryRes
     edges: directEdges,
     found: true,
   }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_query_core", "getNode", err)
+    throw err
+  }
 }
 
 /**
@@ -126,6 +131,7 @@ export async function getNeighbors(
   baseDir: string,
   filter?: QueryFilter
 ): Promise<QueryResult> {
+  try {
   const { store, error } = await loadStore(baseDir)
   if (error) return error
 
@@ -176,12 +182,17 @@ export async function getNeighbors(
     edges: directEdges,
     found: true,
   }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_query_core", "getNeighbors", err)
+    throw err
+  }
 }
 
 /**
  * Get all nodes and edges for a specific work item.
  */
 export async function getSubgraph(workItemId: string, baseDir: string): Promise<QueryResult> {
+  try {
   const { store, error } = await loadStore(baseDir)
   if (error) return error
 
@@ -195,12 +206,17 @@ export async function getSubgraph(workItemId: string, baseDir: string): Promise<
     edges,
     found: nodes.length > 0,
   }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_query_core", "getSubgraph", err)
+    throw err
+  }
 }
 
 /**
  * Get overview statistics of the graph store.
  */
 export async function getOverview(baseDir: string): Promise<OverviewResult> {
+  try {
   const { store, error } = await loadStore(baseDir)
   if (error) {
     return {
@@ -243,6 +259,10 @@ export async function getOverview(baseDir: string): Promise<OverviewResult> {
     total_nodes: store!.nodes.length,
     total_edges: store!.edges.length,
   }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_query_core", "getOverview", err)
+    throw err
+  }
 }
 
 /**
@@ -258,6 +278,7 @@ export async function impactAnalysis(
   filter?: QueryFilter,
   includeInferred?: boolean
 ): Promise<QueryResult> {
+  try {
   const { store, error } = await loadStore(baseDir)
   if (error) return error
 
@@ -348,6 +369,10 @@ export async function impactAnalysis(
     edges: resultEdges,
     found: true,
   }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_query_core", "impactAnalysis", err)
+    throw err
+  }
 }
 
 /**
@@ -360,6 +385,7 @@ export async function tracePath(
   baseDir: string,
   options?: { max_depth?: number; max_paths?: number }
 ): Promise<QueryResult> {
+  try {
   const { store, error } = await loadStore(baseDir)
   if (error) return error
 
@@ -471,5 +497,9 @@ export async function tracePath(
     edges: allEdges,
     found: foundPaths.length > 0,
     paths: foundPaths,
+  }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_query_core", "tracePath", err)
+    throw err
   }
 }

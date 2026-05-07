@@ -10,8 +10,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { isValidTransition, type WorkflowType } from "./state_machine"
-import { appendJsonl } from "./utils"
-import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
+import { appendJsonl, tryCheckCompatibility, logErrorToFile } from "./utils"
 import type { StateFile, WorkItemState } from "./sf_state_read_core"
 
 // ============================================================
@@ -115,153 +114,181 @@ export async function executeTransition(
   input: TransitionInput,
   baseDir: string
 ): Promise<TransitionResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
-
-  const stateFilePath = join(baseDir, "specforge", "runtime", "state.json")
-  const eventsFilePath = join(baseDir, "specforge", "runtime", "events.jsonl")
-
-  // 1. 读取 state.json
-  let fileContent: string
   try {
-    fileContent = await readFile(stateFilePath, "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
+    // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
+    await tryCheckCompatibility(baseDir, "sf_state_transition_core")
+
+    const stateFilePath = join(baseDir, "specforge", "runtime", "state.json")
+    const eventsFilePath = join(baseDir, "specforge", "runtime", "events.jsonl")
+
+    // 1. 读取 state.json
+    let fileContent: string
+    try {
+      fileContent = await readFile(stateFilePath, "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        // Auto-initialize runtime if creating a new Work Item
+        if (input.from_state === "") {
+          await mkdir(dirname(stateFilePath), { recursive: true })
+          const initialState: StateFile = { work_items: {} }
+          await writeFile(stateFilePath, JSON.stringify(initialState, null, 2), "utf-8")
+          // Also create essential directories
+          await mkdir(join(baseDir, "specforge", "logs"), { recursive: true }).catch(() => {})
+          await mkdir(join(baseDir, "specforge", "config"), { recursive: true }).catch(() => {})
+          await mkdir(join(baseDir, "specforge", "sessions"), { recursive: true }).catch(() => {})
+          await mkdir(join(baseDir, "specforge", "knowledge"), { recursive: true }).catch(() => {})
+          await mkdir(join(baseDir, "specforge", "specs"), { recursive: true }).catch(() => {})
+          await mkdir(join(baseDir, "specforge", "archive", "agent_runs"), { recursive: true }).catch(() => {})
+          await mkdir(join(baseDir, "specforge", "runtime", "checkpoints"), { recursive: true }).catch(() => {})
+          await mkdir(join(baseDir, "specforge", "agents", "contracts"), { recursive: true }).catch(() => {})
+          // Create project.json if missing
+          const projectJsonPath = join(baseDir, "specforge", "config", "project.json")
+          try { await readFile(projectJsonPath, "utf-8") } catch {
+            await writeFile(projectJsonPath, JSON.stringify({ schema_version: "1.0", max_parallel_executors: 3, knowledge_graph_enabled: true, continuity: { max_continuations: 1, key_messages_count: 20 }, created_at: new Date().toISOString() }, null, 2), "utf-8")
+          }
+          fileContent = JSON.stringify(initialState, null, 2)
+        } else {
+          return {
+            success: false,
+            error: `state.json not found at ${stateFilePath}. Please initialize the SpecForge runtime by creating a Work Item (from_state="").`,
+            work_item_id: input.work_item_id,
+            current_state: "",
+          }
+        }
+      } else {
+        return {
+          success: false,
+          error: `Failed to read state.json: ${error.message}`,
+          work_item_id: input.work_item_id,
+          current_state: "",
+        }
+      }
+    }
+
+    // 2. 解析 JSON
+    let state: StateFile
+    try {
+      state = JSON.parse(fileContent)
+    } catch {
       return {
         success: false,
-        error: `state.json not found at ${stateFilePath}. Please initialize the SpecForge runtime.`,
+        error: "state.json is malformed and cannot be parsed as valid JSON.",
         work_item_id: input.work_item_id,
         current_state: "",
       }
     }
-    return {
-      success: false,
-      error: `Failed to read state.json: ${error.message}`,
-      work_item_id: input.work_item_id,
-      current_state: "",
+
+    // 3. 验证基本结构
+    if (!state || typeof state !== "object" || !state.work_items) {
+      return {
+        success: false,
+        error: 'state.json has invalid structure. Expected an object with a "work_items" field.',
+        work_item_id: input.work_item_id,
+        current_state: "",
+      }
     }
-  }
 
-  // 2. 解析 JSON
-  let state: StateFile
-  try {
-    state = JSON.parse(fileContent)
-  } catch {
-    return {
-      success: false,
-      error: "state.json is malformed and cannot be parsed as valid JSON.",
-      work_item_id: input.work_item_id,
-      current_state: "",
+    const timestamp = new Date().toISOString()
+
+    // 4. 处理新 Work Item 创建（from_state 为空字符串）
+    if (input.from_state === "") {
+      return handleNewWorkItem(input, state, stateFilePath, eventsFilePath, timestamp, baseDir)
     }
-  }
 
-  // 3. 验证基本结构
-  if (!state || typeof state !== "object" || !state.work_items) {
-    return {
-      success: false,
-      error: 'state.json has invalid structure. Expected an object with a "work_items" field.',
-      work_item_id: input.work_item_id,
-      current_state: "",
+    // 5. 查找现有 Work Item
+    const workItem = state.work_items[input.work_item_id]
+    if (!workItem) {
+      return {
+        success: false,
+        error: `Work item not found: ${input.work_item_id}`,
+        work_item_id: input.work_item_id,
+        current_state: "",
+      }
     }
-  }
 
-  const timestamp = new Date().toISOString()
-
-  // 4. 处理新 Work Item 创建（from_state 为空字符串）
-  if (input.from_state === "") {
-    return handleNewWorkItem(input, state, stateFilePath, eventsFilePath, timestamp, baseDir)
-  }
-
-  // 5. 查找现有 Work Item
-  const workItem = state.work_items[input.work_item_id]
-  if (!workItem) {
-    return {
-      success: false,
-      error: `Work item not found: ${input.work_item_id}`,
-      work_item_id: input.work_item_id,
-      current_state: "",
+    // 6. 验证 from_state 与当前状态一致（乐观锁）
+    if (workItem.current_state !== input.from_state) {
+      return {
+        success: false,
+        error: `State mismatch: expected ${workItem.current_state}, got ${input.from_state}`,
+        work_item_id: input.work_item_id,
+        current_state: workItem.current_state,
+      }
     }
-  }
 
-  // 6. 验证 from_state 与当前状态一致（乐观锁）
-  if (workItem.current_state !== input.from_state) {
-    return {
-      success: false,
-      error: `State mismatch: expected ${workItem.current_state}, got ${input.from_state}`,
-      work_item_id: input.work_item_id,
-      current_state: workItem.current_state,
+    // 7. 验证 to_state 是合法后继状态
+    const workflowType = workItem.workflow_type as WorkflowType | undefined
+    const knownWorkflowTypes: string[] = ["feature_spec", "bugfix_spec", "feature_spec_design_first", "quick_change", "change_request", "refactor", "ops_task", "investigation"]
+    if (workflowType && !knownWorkflowTypes.includes(workflowType)) {
+      return {
+        success: false,
+        error: `Unknown workflow type: ${workflowType}`,
+        work_item_id: input.work_item_id,
+        current_state: workItem.current_state,
+      }
     }
-  }
-
-  // 7. 验证 to_state 是合法后继状态
-  const workflowType = workItem.workflow_type as WorkflowType | undefined
-  const knownWorkflowTypes: string[] = ["feature_spec", "bugfix_spec", "feature_spec_design_first", "quick_change", "change_request", "refactor", "ops_task", "investigation"]
-  if (workflowType && !knownWorkflowTypes.includes(workflowType)) {
-    return {
-      success: false,
-      error: `Unknown workflow type: ${workflowType}`,
-      work_item_id: input.work_item_id,
-      current_state: workItem.current_state,
+    const effectiveWorkflowType: WorkflowType = (workflowType as WorkflowType) || "feature_spec"
+    if (!isValidTransition(input.from_state, input.to_state, effectiveWorkflowType)) {
+      return {
+        success: false,
+        error: `Invalid transition: ${input.from_state} → ${input.to_state} is not allowed`,
+        work_item_id: input.work_item_id,
+        current_state: workItem.current_state,
+      }
     }
-  }
-  const effectiveWorkflowType: WorkflowType = (workflowType as WorkflowType) || "feature_spec"
-  if (!isValidTransition(input.from_state, input.to_state, effectiveWorkflowType)) {
-    return {
-      success: false,
-      error: `Invalid transition: ${input.from_state} → ${input.to_state} is not allowed`,
-      work_item_id: input.work_item_id,
-      current_state: workItem.current_state,
+
+    // 7b. 检查工作流特定守卫条件
+    const guardResult = checkWorkflowGuards(
+      effectiveWorkflowType,
+      input.from_state,
+      input.to_state,
+      workItem,
+      input.transition_context
+    )
+    if (!guardResult.allowed) {
+      return {
+        success: false,
+        error: `Workflow guard rejected: ${guardResult.reason}`,
+        work_item_id: input.work_item_id,
+        current_state: workItem.current_state,
+      }
     }
-  }
 
-  // 7b. 检查工作流特定守卫条件
-  const guardResult = checkWorkflowGuards(
-    effectiveWorkflowType,
-    input.from_state,
-    input.to_state,
-    workItem,
-    input.transition_context
-  )
-  if (!guardResult.allowed) {
-    return {
-      success: false,
-      error: `Workflow guard rejected: ${guardResult.reason}`,
-      work_item_id: input.work_item_id,
-      current_state: workItem.current_state,
+    // 8. 更新 state.json
+    state.work_items[input.work_item_id] = {
+      ...workItem,
+      current_state: input.to_state,
+      updated_at: timestamp,
     }
-  }
 
-  // 8. 更新 state.json
-  state.work_items[input.work_item_id] = {
-    ...workItem,
-    current_state: input.to_state,
-    updated_at: timestamp,
-  }
+    await writeFile(stateFilePath, JSON.stringify(state, null, 2), "utf-8")
 
-  await writeFile(stateFilePath, JSON.stringify(state, null, 2), "utf-8")
+    // 9. 追加 state.transitioned 事件到 events.jsonl
+    const event = {
+      timestamp,
+      event_type: "state.transitioned",
+      work_item_id: input.work_item_id,
+      payload: {
+        from_state: input.from_state,
+        to_state: input.to_state,
+        evidence: input.evidence || "",
+      },
+    }
 
-  // 9. 追加 state.transitioned 事件到 events.jsonl
-  const event = {
-    timestamp,
-    event_type: "state.transitioned",
-    work_item_id: input.work_item_id,
-    payload: {
-      from_state: input.from_state,
-      to_state: input.to_state,
-      evidence: input.evidence || "",
-    },
-  }
+    await appendJsonl(eventsFilePath, event)
 
-  await appendJsonl(eventsFilePath, event)
-
-  // 10. 返回成功结果
-  return {
-    success: true,
-    work_item_id: input.work_item_id,
-    previous_state: input.from_state,
-    current_state: input.to_state,
-    timestamp,
+    // 10. 返回成功结果
+    return {
+      success: true,
+      work_item_id: input.work_item_id,
+      previous_state: input.from_state,
+      current_state: input.to_state,
+      timestamp,
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_state_transition_core", "executeTransition", err)
+    throw err
   }
 }
 

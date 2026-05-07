@@ -28,7 +28,7 @@ export default tool({
       .optional()
       .describe('工作流类型，仅创建新 Work Item 时使用，默认 "feature_spec"'),
     transition_context: tool.schema
-      .record(tool.schema.unknown())
+      .record(tool.schema.string(), tool.schema.any())
       .optional()
       .describe("流转上下文参数，用于工作流特定守卫检查（如 investigation 的 user_accepted）"),
   },

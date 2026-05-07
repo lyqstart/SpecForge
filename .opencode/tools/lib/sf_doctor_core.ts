@@ -14,6 +14,7 @@ import { join } from "node:path"
 import { resolveUserLevelDirectory } from "../../../scripts/lib/paths"
 import { assertCompatibility } from "../../../scripts/lib/compatibility"
 import type { CompatibilityResult } from "../../../scripts/lib/compatibility"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -57,109 +58,114 @@ const PROJECT_RUNTIME_KEY_FILES = [
  * @param baseDir - 项目根目录
  * @returns 检查报告
  */
-export function checkUserLevelInstallation(baseDir: string): UserLevelDoctorReport {
-  const checks: DoctorCheckItem[] = []
-
-  // --- 1. 用户级目录关键文件检查 ---
-  let userLevelDir: string
+export async function checkUserLevelInstallation(baseDir: string): Promise<UserLevelDoctorReport> {
   try {
-    userLevelDir = resolveUserLevelDirectory()
-  } catch {
-    checks.push({
-      name: "用户级目录解析",
-      status: "error",
-      detail: "无法解析用户级目录路径",
-    })
-    return { checks, overall: "error" }
-  }
+    const checks: DoctorCheckItem[] = []
 
-  for (const relPath of USER_LEVEL_KEY_FILES) {
-    const fullPath = join(userLevelDir, relPath)
-    if (existsSync(fullPath)) {
+    // --- 1. 用户级目录关键文件检查 ---
+    let userLevelDir: string
+    try {
+      userLevelDir = resolveUserLevelDirectory()
+    } catch {
       checks.push({
-        name: `用户级文件: ${relPath}`,
-        status: "ok",
-        detail: fullPath,
+        name: "用户级目录解析",
+        status: "error",
+        detail: "无法解析用户级目录路径",
+      })
+      return { checks, overall: "error" }
+    }
+
+    for (const relPath of USER_LEVEL_KEY_FILES) {
+      const fullPath = join(userLevelDir, relPath)
+      if (existsSync(fullPath)) {
+        checks.push({
+          name: `用户级文件: ${relPath}`,
+          status: "ok",
+          detail: fullPath,
+        })
+      } else {
+        checks.push({
+          name: `用户级文件: ${relPath}`,
+          status: "error",
+          detail: `缺失: ${fullPath}`,
+        })
+      }
+    }
+
+    // --- 2. 项目运行时关键文件检查 ---
+    for (const relPath of PROJECT_RUNTIME_KEY_FILES) {
+      const fullPath = join(baseDir, relPath)
+      if (existsSync(fullPath)) {
+        checks.push({
+          name: `项目运行时: ${relPath}`,
+          status: "ok",
+          detail: fullPath,
+        })
+      } else {
+        checks.push({
+          name: `项目运行时: ${relPath}`,
+          status: "error",
+          detail: `缺失: ${fullPath}`,
+        })
+      }
+    }
+
+    // --- 3. 混合模式检测 ---
+    const projectLevelAgent = join(baseDir, ".opencode", "agents", "sf-orchestrator.md")
+    const userLevelAgent = join(userLevelDir, "agents", "sf-orchestrator.md")
+
+    if (existsSync(projectLevelAgent) && existsSync(userLevelAgent)) {
+      checks.push({
+        name: "混合模式检测",
+        status: "warning",
+        detail:
+          "同时存在项目级和用户级 sf-orchestrator.md，可能导致配置冲突。" +
+          "建议删除项目级 .opencode/agents/sf-orchestrator.md 或使用 --project-level 模式。",
       })
     } else {
       checks.push({
-        name: `用户级文件: ${relPath}`,
-        status: "error",
-        detail: `缺失: ${fullPath}`,
+        name: "混合模式检测",
+        status: "ok",
+        detail: "未检测到混合模式冲突",
       })
     }
-  }
 
-  // --- 2. 项目运行时关键文件检查 ---
-  for (const relPath of PROJECT_RUNTIME_KEY_FILES) {
-    const fullPath = join(baseDir, relPath)
-    if (existsSync(fullPath)) {
+    // --- 4. 版本兼容性检查 ---
+    let compatResult: CompatibilityResult
+    try {
+      compatResult = assertCompatibility(baseDir)
+    } catch {
       checks.push({
-        name: `项目运行时: ${relPath}`,
+        name: "版本兼容性",
+        status: "error",
+        detail: "兼容性检查执行失败",
+      })
+      return { checks, overall: deriveOverall(checks) }
+    }
+
+    if (compatResult.compatible) {
+      const detail =
+        compatResult.installMode === "user_level"
+          ? `兼容（共享版本 ${compatResult.sharedVersion}，要求 ${compatResult.requiredRange}）`
+          : `兼容（${compatResult.installMode} 模式，跳过用户级检查）`
+      checks.push({
+        name: "版本兼容性",
         status: "ok",
-        detail: fullPath,
+        detail,
       })
     } else {
       checks.push({
-        name: `项目运行时: ${relPath}`,
+        name: "版本兼容性",
         status: "error",
-        detail: `缺失: ${fullPath}`,
+        detail: compatResult.error || "版本不兼容",
       })
     }
-  }
 
-  // --- 3. 混合模式检测 ---
-  const projectLevelAgent = join(baseDir, ".opencode", "agents", "sf-orchestrator.md")
-  const userLevelAgent = join(userLevelDir, "agents", "sf-orchestrator.md")
-
-  if (existsSync(projectLevelAgent) && existsSync(userLevelAgent)) {
-    checks.push({
-      name: "混合模式检测",
-      status: "warning",
-      detail:
-        "同时存在项目级和用户级 sf-orchestrator.md，可能导致配置冲突。" +
-        "建议删除项目级 .opencode/agents/sf-orchestrator.md 或使用 --project-level 模式。",
-    })
-  } else {
-    checks.push({
-      name: "混合模式检测",
-      status: "ok",
-      detail: "未检测到混合模式冲突",
-    })
-  }
-
-  // --- 4. 版本兼容性检查 ---
-  let compatResult: CompatibilityResult
-  try {
-    compatResult = assertCompatibility(baseDir)
-  } catch {
-    checks.push({
-      name: "版本兼容性",
-      status: "error",
-      detail: "兼容性检查执行失败",
-    })
     return { checks, overall: deriveOverall(checks) }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_doctor_core", "checkUserLevelInstallation", err)
+    throw err
   }
-
-  if (compatResult.compatible) {
-    const detail =
-      compatResult.installMode === "user_level"
-        ? `兼容（共享版本 ${compatResult.sharedVersion}，要求 ${compatResult.requiredRange}）`
-        : `兼容（${compatResult.installMode} 模式，跳过用户级检查）`
-    checks.push({
-      name: "版本兼容性",
-      status: "ok",
-      detail,
-    })
-  } else {
-    checks.push({
-      name: "版本兼容性",
-      status: "error",
-      detail: compatResult.error || "版本不兼容",
-    })
-  }
-
-  return { checks, overall: deriveOverall(checks) }
 }
 
 /**

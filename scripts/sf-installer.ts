@@ -14,6 +14,7 @@
 import * as fs from "node:fs"
 import * as path from "node:path"
 import * as crypto from "node:crypto"
+import { fileURLToPath } from "node:url"
 
 import { InstallerError, InstallerErrorCode, EXIT_CODES } from "./lib/errors"
 import { resolveUserLevelDirectory } from "./lib/paths"
@@ -142,7 +143,8 @@ function showVersion(userLevelDir: string): void {
 
 /** 获取源目录（sf-installer.ts 所在目录的父目录） */
 function getSourceDir(): string {
-  return path.resolve(path.dirname(new URL(import.meta.url).pathname), "..")
+  const thisFile = fileURLToPath(import.meta.url)
+  return path.resolve(path.dirname(thisFile), "..")
 }
 
 /** 显示成功摘要 */
@@ -170,11 +172,13 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
   try {
     // 部署所有 SHARED_COMPONENT_REGISTRY 文件（逐文件原子替换）
     let deployedCount = 0
+    const skippedFiles: string[] = []
     for (const entry of SHARED_COMPONENT_REGISTRY) {
       const sourcePath = path.join(sourceDir, ".opencode", entry.path)
       const targetPath = path.join(userLevelDir, posixToNative(entry.path))
 
       if (!fs.existsSync(sourcePath)) {
+        skippedFiles.push(entry.path)
         continue
       }
 
@@ -213,6 +217,54 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       }
 
       deployedCount++
+    }
+
+    // Bug fix: 源文件缺失时报错而非静默成功
+    if (skippedFiles.length > 0) {
+      console.warn(`⚠️  以下 ${skippedFiles.length} 个注册文件在源目录中不存在（已跳过）:`)
+      for (const f of skippedFiles) {
+        console.warn(`   - ${f}`)
+      }
+      console.warn(`   源目录: ${path.join(sourceDir, ".opencode")}`)
+      if (deployedCount === 0) {
+        throw new InstallerError(
+          InstallerErrorCode.E_SOURCE_MISSING,
+          `所有注册文件均不存在于源目录，安装中止。请检查源目录路径是否正确: ${sourceDir}`
+        )
+      }
+    }
+
+    // Bug fix: 清理目标目录中不在 registry 里的 sf_* / sf-* 残留文件
+    const orphanFiles = findOrphanSfFiles(userLevelDir)
+    if (orphanFiles.length > 0) {
+      console.log(`🧹 清理 ${orphanFiles.length} 个旧版本残留文件:`)
+      for (const orphan of orphanFiles) {
+        const orphanPath = path.join(userLevelDir, orphan)
+        try {
+          fs.unlinkSync(orphanPath)
+          console.log(`   ✓ 已删除: ${orphan}`)
+        } catch {
+          console.warn(`   ⚠ 无法删除: ${orphan}`)
+        }
+      }
+    }
+
+    // 部署 scripts/lib/ 依赖文件（tools/lib/*.ts 通过相对路径 ../../../scripts/lib/ 引用）
+    // 目标位置：userLevelDir 上三级 + scripts/lib/ = path.resolve(userLevelDir, "../scripts/lib/")
+    const scriptsLibTarget = path.resolve(userLevelDir, "..", "scripts", "lib")
+    const scriptsLibSource = path.join(sourceDir, "scripts", "lib")
+    if (fs.existsSync(scriptsLibSource)) {
+      if (!fs.existsSync(scriptsLibTarget)) {
+        fs.mkdirSync(scriptsLibTarget, { recursive: true })
+      }
+      const scriptsLibFiles = fs.readdirSync(scriptsLibSource).filter((f) => f.endsWith(".ts"))
+      for (const file of scriptsLibFiles) {
+        fs.copyFileSync(
+          path.join(scriptsLibSource, file),
+          path.join(scriptsLibTarget, file)
+        )
+      }
+      deployedCount += scriptsLibFiles.length
     }
 
     // Merge_Write opencode.json（仅 sf-* agents）
@@ -363,12 +415,29 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
       upgradedCount++
     }
 
-    // Step 5: 写入新 User_Manifest
+    // Step 5: 部署 scripts/lib/ 依赖文件
+    const scriptsLibTarget = path.resolve(userLevelDir, "..", "scripts", "lib")
+    const scriptsLibSource = path.join(sourceDir, "scripts", "lib")
+    if (fs.existsSync(scriptsLibSource)) {
+      if (!fs.existsSync(scriptsLibTarget)) {
+        fs.mkdirSync(scriptsLibTarget, { recursive: true })
+      }
+      const scriptsLibFiles = fs.readdirSync(scriptsLibSource).filter((f) => f.endsWith(".ts"))
+      for (const file of scriptsLibFiles) {
+        fs.copyFileSync(
+          path.join(scriptsLibSource, file),
+          path.join(scriptsLibTarget, file)
+        )
+      }
+      upgradedCount += scriptsLibFiles.length
+    }
+
+    // Step 6: 写入新 User_Manifest
     const sourceAgents = getAgentDefinitions(sourceDir)
     const newManifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
     await writeUserManifest(userLevelDir, newManifest)
 
-    // Step 6: Merge_Write opencode.json
+    // Step 7: Merge_Write opencode.json
     await mergeOpenCodeJsonUserLevel(userLevelDir, sourceAgents, newManifest, opts.force)
 
     // Step 7: Mark journal as success and clean up
@@ -701,6 +770,42 @@ async function removeSfAgentsFromOpenCodeJson(userLevelDir: string): Promise<voi
   } catch {
     console.warn("  ⚠️ 无法更新 opencode.json")
   }
+}
+
+// ============================================================================
+// findOrphanSfFiles — 查找目标目录中不在 registry 里的 sf_*/sf-* 残留文件
+// ============================================================================
+
+/**
+ * 扫描用户级目录中的 agents/、tools/、tools/lib/、plugins/ 目录，
+ * 查找以 sf- 或 sf_ 开头但不在 SHARED_COMPONENT_REGISTRY 中的文件。
+ * 返回相对路径列表。
+ */
+function findOrphanSfFiles(userLevelDir: string): string[] {
+  const registryPaths = new Set(SHARED_COMPONENT_REGISTRY.map((e) => posixToNative(e.path)))
+  const orphans: string[] = []
+
+  const dirsToScan: Array<{ dir: string; prefix: string; pattern: RegExp }> = [
+    { dir: path.join(userLevelDir, "agents"), prefix: "agents", pattern: /^sf[-_]/ },
+    { dir: path.join(userLevelDir, "tools"), prefix: "tools", pattern: /^sf_/ },
+    { dir: path.join(userLevelDir, "tools", "lib"), prefix: path.join("tools", "lib"), pattern: /^sf_/ },
+    { dir: path.join(userLevelDir, "plugins"), prefix: "plugins", pattern: /^sf_/ },
+  ]
+
+  for (const { dir, prefix, pattern } of dirsToScan) {
+    if (!fs.existsSync(dir)) continue
+    for (const file of fs.readdirSync(dir)) {
+      if (!pattern.test(file)) continue
+      const fullPath = path.join(dir, file)
+      if (!fs.statSync(fullPath).isFile()) continue
+      const relPath = path.join(prefix, file)
+      if (!registryPaths.has(relPath)) {
+        orphans.push(relPath)
+      }
+    }
+  }
+
+  return orphans
 }
 
 // ============================================================================

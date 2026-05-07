@@ -140,6 +140,43 @@ export function createLogEntry(
 }
 
 // ============================================================
+// Error Log Helper
+// ============================================================
+
+/**
+ * 错误日志写入路径常量（相对于 baseDir）
+ */
+export const ERROR_LOG_RELATIVE_PATH = "specforge/logs/error.log"
+
+/**
+ * 将错误信息写入 Error_Log（specforge/logs/error.log）
+ * 写入失败时静默，不抛出异常 — 日志写入失败不应影响调用方
+ */
+export async function logErrorToFile(
+  baseDir: string,
+  component: string,
+  event: string,
+  error: unknown
+): Promise<void> {
+  try {
+    const errorLogPath = join(baseDir, ERROR_LOG_RELATIVE_PATH)
+    // Ensure directory exists
+    const dir = join(baseDir, "specforge", "logs")
+    await mkdir(dir, { recursive: true })
+    // Write error entry
+    await appendJsonl(errorLogPath, {
+      timestamp: new Date().toISOString(),
+      level: "ERROR",
+      component,
+      event,
+      message: error instanceof Error ? error.message : String(error),
+    })
+  } catch {
+    // Silently swallow — log write failure must not affect caller
+  }
+}
+
+// ============================================================
 // Gate Result Recording
 // ============================================================
 
@@ -194,5 +231,29 @@ export async function recordGateResult(
     } catch {
       // 完全静默
     }
+  }
+}
+
+// ============================================================
+// Dynamic Import: Compatibility Check
+// ============================================================
+
+/**
+ * Dynamically import and execute checkCompatibilityAtEntry.
+ * On import or execution failure, logs the error and silently continues.
+ * Never throws — safe to call at the start of any tool core function.
+ */
+export async function tryCheckCompatibility(
+  baseDir: string,
+  component: string
+): Promise<void> {
+  try {
+    const mod = await import("../../../scripts/lib/compatibility")
+    if (mod && typeof mod.checkCompatibilityAtEntry === "function") {
+      mod.checkCompatibilityAtEntry(baseDir)
+    }
+  } catch (err) {
+    // Import or execution failed — log and silently continue
+    await logErrorToFile(baseDir, component, "dynamic_import_failed", err)
   }
 }

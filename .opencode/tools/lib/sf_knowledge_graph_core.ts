@@ -9,7 +9,7 @@
 
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
-import { checkCompatibilityAtEntry } from "../../../scripts/lib/compatibility"
+import { tryCheckCompatibility, logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -261,67 +261,72 @@ export async function saveGraphStore(store: GraphStore, baseDir: string): Promis
  * Validates ID format, type legality, uniqueness, and code_file metadata.path required.
  */
 export async function addNodes(nodes: GraphNode[], baseDir: string): Promise<KGOperationResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  try {
+    // V3.4.0: 版本兼容性检查（動態導入，失敗時靜默跳過）
+    await tryCheckCompatibility(baseDir, "sf_knowledge_graph_core")
 
-  const loadResult = await loadGraphStore(baseDir)
-  if (!loadResult.success || !loadResult.store) {
-    return { success: false, error: loadResult.error }
-  }
-
-  const store = loadResult.store
-  const existingIds = new Set(store.nodes.map((n) => n.id))
-  const errors: string[] = []
-  const added: GraphNode[] = []
-
-  for (const node of nodes) {
-    // Validate ID format
-    if (!isValidNodeId(node.id)) {
-      errors.push(`Invalid node ID format: ${node.id}`)
-      continue
+    const loadResult = await loadGraphStore(baseDir)
+    if (!loadResult.success || !loadResult.store) {
+      return { success: false, error: loadResult.error }
     }
 
-    // Validate type
-    if (!isValidNodeType(node.type)) {
-      errors.push(`Invalid node type: ${node.type}`)
-      continue
+    const store = loadResult.store
+    const existingIds = new Set(store.nodes.map((n) => n.id))
+    const errors: string[] = []
+    const added: GraphNode[] = []
+
+    for (const node of nodes) {
+      // Validate ID format
+      if (!isValidNodeId(node.id)) {
+        errors.push(`Invalid node ID format: ${node.id}`)
+        continue
+      }
+
+      // Validate type
+      if (!isValidNodeType(node.type)) {
+        errors.push(`Invalid node type: ${node.type}`)
+        continue
+      }
+
+      // Validate uniqueness
+      if (existingIds.has(node.id)) {
+        errors.push(`Duplicate node ID: ${node.id}`)
+        continue
+      }
+
+      // Validate code_file must have metadata.path
+      if (node.type === "code_file" && (!node.metadata || !node.metadata.path)) {
+        errors.push(`code_file node must have metadata.path: ${node.id}`)
+        continue
+      }
+
+      existingIds.add(node.id)
+      added.push(node)
     }
 
-    // Validate uniqueness
-    if (existingIds.has(node.id)) {
-      errors.push(`Duplicate node ID: ${node.id}`)
-      continue
+    if (errors.length > 0 && added.length === 0) {
+      return { success: false, error: errors.join("; ") }
     }
 
-    // Validate code_file must have metadata.path
-    if (node.type === "code_file" && (!node.metadata || !node.metadata.path)) {
-      errors.push(`code_file node must have metadata.path: ${node.id}`)
-      continue
+    store.nodes.push(...added)
+    await saveGraphStore(store, baseDir)
+
+    const summary: SyncSummary = {
+      nodes_added: added.length,
+      nodes_updated: 0,
+      nodes_removed: 0,
+      edges_added: 0,
+      edges_removed: 0,
     }
 
-    existingIds.add(node.id)
-    added.push(node)
+    if (errors.length > 0) {
+      return { success: true, summary, warnings: errors }
+    }
+    return { success: true, summary }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_graph_core", "addNodes", err)
+    throw err
   }
-
-  if (errors.length > 0 && added.length === 0) {
-    return { success: false, error: errors.join("; ") }
-  }
-
-  store.nodes.push(...added)
-  await saveGraphStore(store, baseDir)
-
-  const summary: SyncSummary = {
-    nodes_added: added.length,
-    nodes_updated: 0,
-    nodes_removed: 0,
-    edges_added: 0,
-    edges_removed: 0,
-  }
-
-  if (errors.length > 0) {
-    return { success: true, summary, warnings: errors }
-  }
-  return { success: true, summary }
 }
 
 /**
@@ -329,116 +334,126 @@ export async function addNodes(nodes: GraphNode[], baseDir: string): Promise<KGO
  * Validates source/target exist, type legal, no duplicates.
  */
 export async function addEdges(edges: GraphEdge[], baseDir: string): Promise<KGOperationResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  try {
+    // V3.4.0: 版本兼容性检查（動態導入，失敗時靜默跳過）
+    await tryCheckCompatibility(baseDir, "sf_knowledge_graph_core")
 
-  const loadResult = await loadGraphStore(baseDir)
-  if (!loadResult.success || !loadResult.store) {
-    return { success: false, error: loadResult.error }
-  }
-
-  const store = loadResult.store
-  const nodeIds = new Set(store.nodes.map((n) => n.id))
-  const existingEdgeKeys = new Set(
-    store.edges.map((e) => `${e.source}|${e.target}|${e.type}`)
-  )
-  const errors: string[] = []
-  const added: GraphEdge[] = []
-
-  for (const edge of edges) {
-    // Validate edge type
-    if (!isValidEdgeType(edge.type)) {
-      errors.push(`Invalid edge type: ${edge.type}`)
-      continue
+    const loadResult = await loadGraphStore(baseDir)
+    if (!loadResult.success || !loadResult.store) {
+      return { success: false, error: loadResult.error }
     }
 
-    // Validate source exists
-    if (!nodeIds.has(edge.source)) {
-      errors.push(`Source node not found: ${edge.source}`)
-      continue
+    const store = loadResult.store
+    const nodeIds = new Set(store.nodes.map((n) => n.id))
+    const existingEdgeKeys = new Set(
+      store.edges.map((e) => `${e.source}|${e.target}|${e.type}`)
+    )
+    const errors: string[] = []
+    const added: GraphEdge[] = []
+
+    for (const edge of edges) {
+      // Validate edge type
+      if (!isValidEdgeType(edge.type)) {
+        errors.push(`Invalid edge type: ${edge.type}`)
+        continue
+      }
+
+      // Validate source exists
+      if (!nodeIds.has(edge.source)) {
+        errors.push(`Source node not found: ${edge.source}`)
+        continue
+      }
+
+      // Validate target exists
+      if (!nodeIds.has(edge.target)) {
+        errors.push(`Target node not found: ${edge.target}`)
+        continue
+      }
+
+      // Check for duplicates
+      const key = `${edge.source}|${edge.target}|${edge.type}`
+      if (existingEdgeKeys.has(key)) {
+        errors.push(`Duplicate edge: ${edge.source} → ${edge.target} (${edge.type})`)
+        continue
+      }
+
+      // Set inferred default
+      const edgeToAdd: GraphEdge = {
+        ...edge,
+        inferred: edge.inferred ?? false,
+      }
+
+      existingEdgeKeys.add(key)
+      added.push(edgeToAdd)
     }
 
-    // Validate target exists
-    if (!nodeIds.has(edge.target)) {
-      errors.push(`Target node not found: ${edge.target}`)
-      continue
+    if (errors.length > 0 && added.length === 0) {
+      return { success: false, error: errors.join("; ") }
     }
 
-    // Check for duplicates
-    const key = `${edge.source}|${edge.target}|${edge.type}`
-    if (existingEdgeKeys.has(key)) {
-      errors.push(`Duplicate edge: ${edge.source} → ${edge.target} (${edge.type})`)
-      continue
+    store.edges.push(...added)
+    await saveGraphStore(store, baseDir)
+
+    const summary: SyncSummary = {
+      nodes_added: 0,
+      nodes_updated: 0,
+      nodes_removed: 0,
+      edges_added: added.length,
+      edges_removed: 0,
     }
 
-    // Set inferred default
-    const edgeToAdd: GraphEdge = {
-      ...edge,
-      inferred: edge.inferred ?? false,
+    if (errors.length > 0) {
+      return { success: true, summary, warnings: errors }
     }
-
-    existingEdgeKeys.add(key)
-    added.push(edgeToAdd)
+    return { success: true, summary }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_graph_core", "addEdges", err)
+    throw err
   }
-
-  if (errors.length > 0 && added.length === 0) {
-    return { success: false, error: errors.join("; ") }
-  }
-
-  store.edges.push(...added)
-  await saveGraphStore(store, baseDir)
-
-  const summary: SyncSummary = {
-    nodes_added: 0,
-    nodes_updated: 0,
-    nodes_removed: 0,
-    edges_added: added.length,
-    edges_removed: 0,
-  }
-
-  if (errors.length > 0) {
-    return { success: true, summary, warnings: errors }
-  }
-  return { success: true, summary }
 }
 
 /**
  * Remove nodes and cascade delete associated edges.
  */
 export async function removeNodes(nodeIds: string[], baseDir: string): Promise<KGOperationResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  try {
+    // V3.4.0: 版本兼容性检查（動態導入，失敗時靜默跳過）
+    await tryCheckCompatibility(baseDir, "sf_knowledge_graph_core")
 
-  const loadResult = await loadGraphStore(baseDir)
-  if (!loadResult.success || !loadResult.store) {
-    return { success: false, error: loadResult.error }
-  }
+    const loadResult = await loadGraphStore(baseDir)
+    if (!loadResult.success || !loadResult.store) {
+      return { success: false, error: loadResult.error }
+    }
 
-  const store = loadResult.store
-  const idsToRemove = new Set(nodeIds)
+    const store = loadResult.store
+    const idsToRemove = new Set(nodeIds)
 
-  const originalNodeCount = store.nodes.length
-  const originalEdgeCount = store.edges.length
+    const originalNodeCount = store.nodes.length
+    const originalEdgeCount = store.edges.length
 
-  store.nodes = store.nodes.filter((n) => !idsToRemove.has(n.id))
-  store.edges = store.edges.filter(
-    (e) => !idsToRemove.has(e.source) && !idsToRemove.has(e.target)
-  )
+    store.nodes = store.nodes.filter((n) => !idsToRemove.has(n.id))
+    store.edges = store.edges.filter(
+      (e) => !idsToRemove.has(e.source) && !idsToRemove.has(e.target)
+    )
 
-  const nodesRemoved = originalNodeCount - store.nodes.length
-  const edgesRemoved = originalEdgeCount - store.edges.length
+    const nodesRemoved = originalNodeCount - store.nodes.length
+    const edgesRemoved = originalEdgeCount - store.edges.length
 
-  await saveGraphStore(store, baseDir)
+    await saveGraphStore(store, baseDir)
 
-  return {
-    success: true,
-    summary: {
-      nodes_added: 0,
-      nodes_updated: 0,
-      nodes_removed: nodesRemoved,
-      edges_added: 0,
-      edges_removed: edgesRemoved,
-    },
+    return {
+      success: true,
+      summary: {
+        nodes_added: 0,
+        nodes_updated: 0,
+        nodes_removed: nodesRemoved,
+        edges_added: 0,
+        edges_removed: edgesRemoved,
+      },
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_graph_core", "removeNodes", err)
+    throw err
   }
 }
 
@@ -450,39 +465,44 @@ export async function updateNode(
   updates: { label?: string; metadata?: Partial<NodeMetadata> },
   baseDir: string
 ): Promise<KGOperationResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  try {
+    // V3.4.0: 版本兼容性检查（動態導入，失敗時靜默跳過）
+    await tryCheckCompatibility(baseDir, "sf_knowledge_graph_core")
 
-  const loadResult = await loadGraphStore(baseDir)
-  if (!loadResult.success || !loadResult.store) {
-    return { success: false, error: loadResult.error }
-  }
+    const loadResult = await loadGraphStore(baseDir)
+    if (!loadResult.success || !loadResult.store) {
+      return { success: false, error: loadResult.error }
+    }
 
-  const store = loadResult.store
-  const node = store.nodes.find((n) => n.id === nodeId)
-  if (!node) {
-    return { success: false, error: `Node not found: ${nodeId}` }
-  }
+    const store = loadResult.store
+    const node = store.nodes.find((n) => n.id === nodeId)
+    if (!node) {
+      return { success: false, error: `Node not found: ${nodeId}` }
+    }
 
-  if (updates.label !== undefined) {
-    node.label = updates.label
-  }
-  if (updates.metadata !== undefined) {
-    node.metadata = { ...node.metadata, ...updates.metadata }
-  }
-  node.updated_at = new Date().toISOString()
+    if (updates.label !== undefined) {
+      node.label = updates.label
+    }
+    if (updates.metadata !== undefined) {
+      node.metadata = { ...node.metadata, ...updates.metadata }
+    }
+    node.updated_at = new Date().toISOString()
 
-  await saveGraphStore(store, baseDir)
+    await saveGraphStore(store, baseDir)
 
-  return {
-    success: true,
-    summary: {
-      nodes_added: 0,
-      nodes_updated: 1,
-      nodes_removed: 0,
-      edges_added: 0,
-      edges_removed: 0,
-    },
+    return {
+      success: true,
+      summary: {
+        nodes_added: 0,
+        nodes_updated: 1,
+        nodes_removed: 0,
+        edges_added: 0,
+        edges_removed: 0,
+      },
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_knowledge_graph_core", "updateNode", err)
+    throw err
   }
 }
 
@@ -945,8 +965,8 @@ export async function syncFromSpec(
   baseDir: string,
   scope: SyncScope
 ): Promise<KGOperationResult> {
-  // V3.4.0: 版本兼容性检查
-  checkCompatibilityAtEntry(baseDir)
+  // V3.4.0: 版本兼容性检查（动态导入）
+  await tryCheckCompatibility(baseDir, "sf_knowledge_graph_core")
 
   const loadResult = await loadGraphStore(baseDir)
   if (!loadResult.success || !loadResult.store) {

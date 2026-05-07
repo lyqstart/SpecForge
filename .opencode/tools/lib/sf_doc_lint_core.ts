@@ -4,11 +4,14 @@
  *
  * 提取为独立模块以便单元测试（不依赖 @opencode-ai/plugin 运行时）
  *
- * Requirements: 10.2, 10.3, 10.4, 10.5, 10.6
+ * Requirements: 10.2, 10.3, 10.4, 10.5, 10.6, REQ-3 AC-8, REQ-8 AC-6
  */
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { parseTaskVerification } from "./sf_markdown_verification_parser"
+import { isValidVerificationType } from "./sf_verification_types"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -44,50 +47,55 @@ export async function lintDocument(
   docType: DocType,
   baseDir: string
 ): Promise<DocLintResult> {
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
-  const docFileName = getDocFileName(docType)
-  const docPath = join(specDir, docFileName)
-
-  // 1. 读取文档
-  let content: string
   try {
-    content = await readFile(docPath, "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
+    const specDir = join(baseDir, "specforge", "specs", workItemId)
+    const docFileName = getDocFileName(docType)
+    const docPath = join(specDir, docFileName)
+
+    // 1. 读取文档
+    let content: string
+    try {
+      content = await readFile(docPath, "utf-8")
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") {
+        return {
+          status: "fail",
+          issues: [
+            {
+              severity: "error",
+              message: `File not found: ${docFileName}`,
+              location: docFileName,
+            },
+          ],
+        }
+      }
       return {
         status: "fail",
         issues: [
           {
             severity: "error",
-            message: `File not found: ${docFileName}`,
+            message: `Failed to read ${docFileName}: ${error.message}`,
             location: docFileName,
           },
         ],
       }
     }
-    return {
-      status: "fail",
-      issues: [
-        {
-          severity: "error",
-          message: `Failed to read ${docFileName}: ${error.message}`,
-          location: docFileName,
-        },
-      ],
-    }
-  }
 
-  // 2. 根据 doc_type 执行对应检查
-  switch (docType) {
-    case "requirements":
-      return lintRequirements(content, docFileName)
-    case "design":
-      return lintDesign(content, docFileName)
-    case "tasks":
-      return lintTasks(content, docFileName)
-    case "bugfix":
-      return lintBugfix(content, docFileName)
+    // 2. 根据 doc_type 执行对应检查
+    switch (docType) {
+      case "requirements":
+        return lintRequirements(content, docFileName)
+      case "design":
+        return lintDesign(content, docFileName)
+      case "tasks":
+        return lintTasks(content, docFileName)
+      case "bugfix":
+        return lintBugfix(content, docFileName)
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_doc_lint_core", "lintDocument", err)
+    throw err
   }
 }
 
@@ -196,6 +204,7 @@ function lintDesign(content: string, fileName: string): DocLintResult {
 /**
  * 检查 tasks.md 的结构
  * 每个 task 必须包含 verification_commands 字段
+ * V3.7: 对 typed 格式验证类型键合法性，对 legacy 格式添加非阻塞警告
  * 警告: 任务标题应使用 TASK-N 标准化格式
  */
 function lintTasks(content: string, fileName: string): DocLintResult {
@@ -213,14 +222,76 @@ function lintTasks(content: string, fileName: string): DocLintResult {
     return { status: "fail", issues }
   }
 
-  // Check each task section for verification_commands
+  // Check each task section for verification_commands using V3.7 parser
   for (const section of taskSections) {
-    if (!hasVerificationCommands(section.content)) {
+    const taskVerification = parseTaskVerification(section.content)
+
+    if (taskVerification.format === "empty") {
+      // V3.7 parser didn't find **verification_commands**: field
+      // Fall back to basic existence check for backward compatibility
+      // (handles plain `verification_commands:` without bold markdown formatting)
+      if (!hasVerificationCommands(section.content)) {
+        issues.push({
+          severity: "error",
+          message: `任务"${section.title}"缺少 verification_commands 字段`,
+          location: `${fileName}#${section.title}`,
+        })
+      }
+    } else if (taskVerification.format === "typed") {
+      // Typed format: validate type key legality
+
+      // Check invalidTypedKeys (MUST include this check per DD-10)
+      if (taskVerification.invalidTypedKeys) {
+        for (const key of taskVerification.invalidTypedKeys) {
+          issues.push({
+            severity: "error",
+            message: `任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`,
+            location: `${fileName}#${section.title}`,
+          })
+        }
+      }
+
+      // Also validate typed command keys using isValidVerificationType
+      if (taskVerification.typedCommands) {
+        for (const key of Object.keys(taskVerification.typedCommands)) {
+          if (!isValidVerificationType(key)) {
+            issues.push({
+              severity: "error",
+              message: `任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`,
+              location: `${fileName}#${section.title}`,
+            })
+          }
+        }
+      }
+    } else if (taskVerification.format === "legacy") {
+      // Legacy format: pass + non-blocking warning (consistent with sf_tasks_gate)
       issues.push({
-        severity: "error",
-        message: `任务"${section.title}"缺少 verification_commands 字段`,
+        severity: "warning",
+        message: `任务"${section.title}"使用旧格式 verification_commands，建议迁移到类型化格式`,
         location: `${fileName}#${section.title}`,
       })
+    }
+
+    // Validate manual_verification_checks structure (must be string list)
+    if (taskVerification.manualChecks !== undefined) {
+      // Accept the field — only validate structure
+      if (!Array.isArray(taskVerification.manualChecks)) {
+        issues.push({
+          severity: "error",
+          message: `任务"${section.title}"的 manual_verification_checks 必须为字符串列表`,
+          location: `${fileName}#${section.title}`,
+        })
+      } else {
+        for (let i = 0; i < taskVerification.manualChecks.length; i++) {
+          if (typeof taskVerification.manualChecks[i] !== "string") {
+            issues.push({
+              severity: "error",
+              message: `任务"${section.title}"的 manual_verification_checks[${i}] 不是字符串`,
+              location: `${fileName}#${section.title}`,
+            })
+          }
+        }
+      }
     }
   }
 

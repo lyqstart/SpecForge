@@ -7,6 +7,8 @@
  * Requirements: 4.4, 4.5, 4.6, 4.7, 4.9, 4.10, 4.11, 4.13
  */
 
+import { logErrorToFile } from "./utils"
+
 // ============================================================
 // Types
 // ============================================================
@@ -148,13 +150,18 @@ function extractTimestamp(info: any): string {
  * 从 assistant 消息 info 中提取 tokens 结构
  */
 export function extractMessageTokens(info: any): TextRecord["tokens"] {
-  if (!info?.tokens) return null
-  return {
-    input: info.tokens.input ?? null,
-    output: info.tokens.output ?? null,
-    reasoning: info.tokens.reasoning ?? null,
-    cache_read: info.tokens.cache?.read ?? null,
-    cache_write: info.tokens.cache?.write ?? null,
+  try {
+    if (!info?.tokens) return null
+    return {
+      input: info.tokens.input ?? null,
+      output: info.tokens.output ?? null,
+      reasoning: info.tokens.reasoning ?? null,
+      cache_read: info.tokens.cache?.read ?? null,
+      cache_write: info.tokens.cache?.write ?? null,
+    }
+  } catch (err) {
+    void logErrorToFile(process.cwd(), "sf_conversation_recorder_core", "extractMessageTokens", err)
+    throw err
   }
 }
 
@@ -167,115 +174,125 @@ export function extractMessageTokens(info: any): TextRecord["tokens"] {
 export function convertToRecords(
   messages: OpenCodeMessage[]
 ): ConversationRecord[] {
-  const records: ConversationRecord[] = []
-  let seq = 0
+  try {
+    const records: ConversationRecord[] = []
+    let seq = 0
 
-  for (const msg of messages) {
-    const info = msg.info || ({} as any)
-    const parts = msg.parts || []
-    const role = info.role || "unknown"
-    const timestamp = extractTimestamp(info)
+    for (const msg of messages) {
+      const info = msg.info || ({} as any)
+      const parts = msg.parts || []
+      const role = info.role || "unknown"
+      const timestamp = extractTimestamp(info)
 
-    for (const part of parts) {
-      seq++
-      try {
-        if (!part || typeof part !== "object") {
+      for (const part of parts) {
+        seq++
+        try {
+          if (!part || typeof part !== "object") {
+            records.push({
+              seq, type: "parse_error",
+              raw_type: "null_part",
+              error: "Part is null or not an object",
+            })
+            continue
+          }
+
+          const partType = (part as any).type || "unknown"
+
+          // TextPart
+          if (partType === "text") {
+            const record: TextRecord = {
+              seq, role, timestamp,
+              content: typeof (part as TextPart).text === "string"
+                ? (part as TextPart).text
+                : String((part as any).text || ""),
+            }
+            if (role === "assistant") {
+              record.tokens = extractMessageTokens(info)
+              record.cost = info.cost ?? null
+            }
+            records.push(record)
+            continue
+          }
+
+          // ToolPart
+          if (partType === "tool-invocation" || partType === "tool") {
+            const tp = part as ToolPart
+            const result = tp.result ?? tp.output ?? ""
+            const resultStr = typeof result === "string"
+              ? result : JSON.stringify(result)
+            records.push({
+              seq, role: "assistant", timestamp,
+              type: "tool_call",
+              tool: tp.toolName || tp.tool || "unknown",
+              args: tp.args || tp.input || {},
+              result_preview: truncate(resultStr, RESULT_PREVIEW_MAX_LENGTH),
+              status: tp.state === "error" ? "error" : "completed",
+              duration_ms: tp.duration ?? null,
+            })
+            continue
+          }
+
+          // StepFinishPart — 跳过（不占用序号）
+          if (partType === "step-finish") {
+            seq-- // 不占用序号
+            continue
+          }
+
+          // ReasoningPart
+          if (partType === "reasoning") {
+            records.push({
+              seq, role, timestamp,
+              content: typeof (part as ReasoningPart).text === "string"
+                ? (part as ReasoningPart).text
+                : String((part as any).text || ""),
+            } as TextRecord)
+            continue
+          }
+
+          // 未知类型
           records.push({
             seq, type: "parse_error",
-            raw_type: "null_part",
-            error: "Part is null or not an object",
+            raw_type: partType,
+            error: `Unsupported part type: ${partType}`,
           })
-          continue
-        }
-
-        const partType = (part as any).type || "unknown"
-
-        // TextPart
-        if (partType === "text") {
-          const record: TextRecord = {
-            seq, role, timestamp,
-            content: typeof (part as TextPart).text === "string"
-              ? (part as TextPart).text
-              : String((part as any).text || ""),
-          }
-          if (role === "assistant") {
-            record.tokens = extractMessageTokens(info)
-            record.cost = info.cost ?? null
-          }
-          records.push(record)
-          continue
-        }
-
-        // ToolPart
-        if (partType === "tool-invocation" || partType === "tool") {
-          const tp = part as ToolPart
-          const result = tp.result ?? tp.output ?? ""
-          const resultStr = typeof result === "string"
-            ? result : JSON.stringify(result)
+        } catch (err: unknown) {
           records.push({
-            seq, role: "assistant", timestamp,
-            type: "tool_call",
-            tool: tp.toolName || tp.tool || "unknown",
-            args: tp.args || tp.input || {},
-            result_preview: truncate(resultStr, RESULT_PREVIEW_MAX_LENGTH),
-            status: tp.state === "error" ? "error" : "completed",
-            duration_ms: tp.duration ?? null,
+            seq, type: "parse_error",
+            raw_type: "exception",
+            error: (err as Error).message || "Unknown error",
           })
-          continue
         }
+      }
 
-        // StepFinishPart — 跳过（不占用序号）
-        if (partType === "step-finish") {
-          seq-- // 不占用序号
-          continue
-        }
-
-        // ReasoningPart
-        if (partType === "reasoning") {
-          records.push({
-            seq, role, timestamp,
-            content: typeof (part as ReasoningPart).text === "string"
-              ? (part as ReasoningPart).text
-              : String((part as any).text || ""),
-          } as TextRecord)
-          continue
-        }
-
-        // 未知类型
+      // 无 parts 的纯 user 消息（info.content 存在）
+      if (parts.length === 0 && info.content) {
+        seq++
         records.push({
-          seq, type: "parse_error",
-          raw_type: partType,
-          error: `Unsupported part type: ${partType}`,
-        })
-      } catch (err: unknown) {
-        records.push({
-          seq, type: "parse_error",
-          raw_type: "exception",
-          error: (err as Error).message || "Unknown error",
-        })
+          seq, role, timestamp,
+          content: typeof info.content === "string"
+            ? info.content : String(info.content),
+        } as TextRecord)
       }
     }
 
-    // 无 parts 的纯 user 消息（info.content 存在）
-    if (parts.length === 0 && info.content) {
-      seq++
-      records.push({
-        seq, role, timestamp,
-        content: typeof info.content === "string"
-          ? info.content : String(info.content),
-      } as TextRecord)
-    }
+    return records
+  } catch (err) {
+    void logErrorToFile(process.cwd(), "sf_conversation_recorder_core", "convertToRecords", err)
+    throw err
   }
-
-  return records
 }
 
 /**
  * 将 ConversationRecord 数组转换为 JSONL 字符串
  */
 export function recordsToJsonl(records: ConversationRecord[]): string {
-  if (records.length === 0) return ""
-  return records.map(r => JSON.stringify(r)).join("\n") + "\n"
+  try {
+    if (records.length === 0) return ""
+    return records.map(r => JSON.stringify(r)).join("\n") + "\n"
+  } catch (err) {
+    void logErrorToFile(process.cwd(), "sf_conversation_recorder_core", "recordsToJsonl", err)
+    throw err
+  }
 }
 
 /**
@@ -285,6 +302,11 @@ export function recordsToJsonl(records: ConversationRecord[]): string {
 export function convertToConversationJsonl(
   messages: OpenCodeMessage[]
 ): string {
-  const records = convertToRecords(messages)
-  return recordsToJsonl(records)
+  try {
+    const records = convertToRecords(messages)
+    return recordsToJsonl(records)
+  } catch (err) {
+    void logErrorToFile(process.cwd(), "sf_conversation_recorder_core", "convertToConversationJsonl", err)
+    throw err
+  }
 }

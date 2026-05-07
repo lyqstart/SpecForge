@@ -10,6 +10,7 @@
 
 import { readFile, writeFile, mkdir } from "node:fs/promises"
 import { join, dirname } from "node:path"
+import { logErrorToFile } from "./utils"
 
 // ============================================================
 // Types
@@ -135,51 +136,56 @@ export async function writeArtifact(
   input: ArtifactWriteInput,
   baseDir: string
 ): Promise<ArtifactWriteResult> {
-  // 1. 参数验证
-  if (!input.work_item_id || !input.content) {
-    return { success: false, error: "missing required parameter" }
-  }
-
-  if ((input.file_type === "work_log" || input.file_type === "agent_run_result") && !input.run_id) {
-    return { success: false, error: "run_id is required for work_log and agent_run_result" }
-  }
-
-  // 2. 解析目标路径
-  const relativePath = resolveArtifactPath(input.file_type, input.work_item_id, input.run_id)
-
-  // 3. 白名单检查
-  if (!isPathWhitelisted(relativePath)) {
-    return { success: false, error: "path not in whitelist" }
-  }
-
-  const absolutePath = join(baseDir, relativePath)
-
-  // 4. 确定写入内容
-  let finalContent: string
-
-  if (input.template === "verification_report") {
-    // 模板渲染模式：将 JSON content 渲染为 Markdown
-    const rendered = renderVerificationReport(input.content)
-    if (rendered === null) {
-      return { success: false, error: "invalid JSON content" }
+  try {
+    // 1. 参数验证
+    if (!input.work_item_id || !input.content) {
+      return { success: false, error: "missing required parameter" }
     }
-    finalContent = rendered
-  } else if (input.file_type === "work_log" && input.agent_content) {
-    // work_log 自动生成模式：合并 Agent 内容 + trace 统计
-    finalContent = await generateWorkLog(input.agent_content, input.run_id!, baseDir)
-  } else {
-    finalContent = input.content
+
+    if ((input.file_type === "work_log" || input.file_type === "agent_run_result") && !input.run_id) {
+      return { success: false, error: "run_id is required for work_log and agent_run_result" }
+    }
+
+    // 2. 解析目标路径
+    const relativePath = resolveArtifactPath(input.file_type, input.work_item_id, input.run_id)
+
+    // 3. 白名单检查
+    if (!isPathWhitelisted(relativePath)) {
+      return { success: false, error: "path not in whitelist" }
+    }
+
+    const absolutePath = join(baseDir, relativePath)
+
+    // 4. 确定写入内容
+    let finalContent: string
+
+    if (input.template === "verification_report") {
+      // 模板渲染模式：将 JSON content 渲染为 Markdown
+      const rendered = renderVerificationReport(input.content)
+      if (rendered === null) {
+        return { success: false, error: "invalid JSON content" }
+      }
+      finalContent = rendered
+    } else if (input.file_type === "work_log" && input.agent_content) {
+      // work_log 自动生成模式：合并 Agent 内容 + trace 统计
+      finalContent = await generateWorkLog(input.agent_content, input.run_id!, baseDir)
+    } else {
+      finalContent = input.content
+    }
+
+    // 5. 递归创建父目录
+    await mkdir(dirname(absolutePath), { recursive: true })
+
+    // 6. 写入文件
+    await writeFile(absolutePath, finalContent, "utf-8")
+
+    // 7. 返回成功结果
+    const size = Buffer.byteLength(finalContent, "utf-8")
+    return { success: true, path: relativePath, size }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_artifact_write_core", "writeArtifact", err)
+    throw err
   }
-
-  // 5. 递归创建父目录
-  await mkdir(dirname(absolutePath), { recursive: true })
-
-  // 6. 写入文件
-  await writeFile(absolutePath, finalContent, "utf-8")
-
-  // 7. 返回成功结果
-  const size = Buffer.byteLength(finalContent, "utf-8")
-  return { success: true, path: relativePath, size }
 }
 
 // ============================================================
@@ -345,51 +351,56 @@ export async function extractTraceStats(
   runId: string,
   baseDir: string
 ): Promise<TraceStats | null> {
-  const tracePath = join(baseDir, "specforge", "logs", "trace.jsonl")
-
-  let traceContent: string
   try {
-    traceContent = await readFile(tracePath, "utf-8")
-  } catch {
-    return null
-  }
+    const tracePath = join(baseDir, "specforge", "logs", "trace.jsonl")
 
-  const lines = traceContent.trim().split("\n").filter(Boolean)
-  const entries = lines.map(line => {
-    try { return JSON.parse(line) } catch { return null }
-  }).filter(Boolean)
-
-  // 过滤 tool.execute.after 事件
-  const toolCallEntries = entries.filter((e: any) =>
-    e.event === "tool.execute.after" &&
-    e.payload?.tool
-  )
-
-  if (toolCallEntries.length === 0) {
-    return null
-  }
-
-  // 统计
-  const byCategory: Record<string, number> = {}
-  const filesChanged: Set<string> = new Set()
-
-  for (const entry of toolCallEntries) {
-    const toolName = (entry as any).payload.tool as string
-    const category = categorizeToolCall(toolName)
-    byCategory[category] = (byCategory[category] || 0) + 1
-
-    // 提取修改的文件
-    const args = (entry as any).payload.args as any
-    if (args?.path || args?.file) {
-      filesChanged.add(args.path || args.file)
+    let traceContent: string
+    try {
+      traceContent = await readFile(tracePath, "utf-8")
+    } catch {
+      return null
     }
-  }
 
-  return {
-    total_tool_calls: toolCallEntries.length,
-    by_category: byCategory,
-    files_changed: Array.from(filesChanged),
-    duration_estimate: "从 trace 时间戳计算",
+    const lines = traceContent.trim().split("\n").filter(Boolean)
+    const entries = lines.map(line => {
+      try { return JSON.parse(line) } catch { return null }
+    }).filter(Boolean)
+
+    // 过滤 tool.execute.after 事件
+    const toolCallEntries = entries.filter((e: any) =>
+      e.event === "tool.execute.after" &&
+      e.payload?.tool
+    )
+
+    if (toolCallEntries.length === 0) {
+      return null
+    }
+
+    // 统计
+    const byCategory: Record<string, number> = {}
+    const filesChanged: Set<string> = new Set()
+
+    for (const entry of toolCallEntries) {
+      const toolName = (entry as any).payload.tool as string
+      const category = categorizeToolCall(toolName)
+      byCategory[category] = (byCategory[category] || 0) + 1
+
+      // 提取修改的文件
+      const args = (entry as any).payload.args as any
+      if (args?.path || args?.file) {
+        filesChanged.add(args.path || args.file)
+      }
+    }
+
+    return {
+      total_tool_calls: toolCallEntries.length,
+      by_category: byCategory,
+      files_changed: Array.from(filesChanged),
+      duration_estimate: "从 trace 时间戳计算",
+    }
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_artifact_write_core", "extractTraceStats", err)
+    throw err
   }
 }
 
@@ -407,50 +418,55 @@ export async function generateWorkLog(
   runId: string,
   baseDir: string
 ): Promise<string> {
-  const lines: string[] = []
+  try {
+    const lines: string[] = []
 
-  lines.push("# 工作日志")
-  lines.push("")
-  lines.push(`> Run ID: ${runId}`)
-  lines.push(`> 生成时间: ${new Date().toISOString()}`)
-  lines.push("")
-
-  // 第一部分：Agent 报告
-  lines.push("## Agent 报告")
-  lines.push("")
-  lines.push(agentContent)
-  lines.push("")
-
-  // 第二部分：执行统计（从 trace 自动提取）
-  lines.push("## 执行统计")
-  lines.push("")
-
-  const stats = await extractTraceStats(runId, baseDir)
-
-  if (stats === null) {
-    lines.push("> ⚠️ trace 数据不可用")
+    lines.push("# 工作日志")
     lines.push("")
-  } else {
-    lines.push(`- **总工具调用次数**: ${stats.total_tool_calls}`)
-    lines.push("")
-    lines.push("### 按类别统计")
-    lines.push("")
-    lines.push("| 类别 | 次数 |")
-    lines.push("|------|------|")
-    for (const [category, count] of Object.entries(stats.by_category)) {
-      lines.push(`| ${category} | ${count} |`)
-    }
+    lines.push(`> Run ID: ${runId}`)
+    lines.push(`> 生成时间: ${new Date().toISOString()}`)
     lines.push("")
 
-    if (stats.files_changed.length > 0) {
-      lines.push("### 涉及文件")
+    // 第一部分：Agent 报告
+    lines.push("## Agent 报告")
+    lines.push("")
+    lines.push(agentContent)
+    lines.push("")
+
+    // 第二部分：执行统计（从 trace 自动提取）
+    lines.push("## 执行统计")
+    lines.push("")
+
+    const stats = await extractTraceStats(runId, baseDir)
+
+    if (stats === null) {
+      lines.push("> ⚠️ trace 数据不可用")
       lines.push("")
-      for (const file of stats.files_changed) {
-        lines.push(`- ${file}`)
+    } else {
+      lines.push(`- **总工具调用次数**: ${stats.total_tool_calls}`)
+      lines.push("")
+      lines.push("### 按类别统计")
+      lines.push("")
+      lines.push("| 类别 | 次数 |")
+      lines.push("|------|------|")
+      for (const [category, count] of Object.entries(stats.by_category)) {
+        lines.push(`| ${category} | ${count} |`)
       }
       lines.push("")
-    }
-  }
 
-  return lines.join("\n")
+      if (stats.files_changed.length > 0) {
+        lines.push("### 涉及文件")
+        lines.push("")
+        for (const file of stats.files_changed) {
+          lines.push(`- ${file}`)
+        }
+        lines.push("")
+      }
+    }
+
+    return lines.join("\n")
+  } catch (err) {
+    await logErrorToFile(baseDir, "sf_artifact_write_core", "generateWorkLog", err)
+    throw err
+  }
 }
