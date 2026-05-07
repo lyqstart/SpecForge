@@ -122,3 +122,104 @@ permission:
 - 生成的文件路径
 - 需求总数
 - 识别的风险或待确认项（如有）
+
+# EARS 格式编写指令
+
+## 概述
+
+EARS（Easy Approach to Requirements Syntax）是本系统验收标准的**必需**书写格式。所有新生成的 `requirements.md` 中的 AC 必须使用 EARS 格式编写，确保需求的可测试性和结构化一致性。
+
+## Front-matter 声明
+
+生成 `requirements.md` 时，**必须**在文档顶部的 YAML front-matter 中包含以下声明：
+
+```yaml
+---
+requirements_format: ears
+---
+```
+
+此声明启用 strict mode 验证，确保所有 AC 符合 EARS 格式规范。
+
+## 六种 EARS Pattern
+
+### 1. Ubiquitous（无条件始终成立）
+
+**格式：** `THE <system> SHALL <response>.`
+
+无条件子句，表示系统在所有情况下都必须满足的行为。
+
+**示例：** `THE system SHALL log all authentication attempts.`
+
+### 2. Event-driven（事件触发）
+
+**格式：** `WHEN <trigger>, THE <system> SHALL <response>.`
+
+由特定事件触发的行为。
+
+**示例：** `WHEN the user submits the form, THE system SHALL validate all fields.`
+
+### 3. State-driven（状态驱动）
+
+**格式：** `WHILE <state>, THE <system> SHALL <response>.`
+
+在特定状态下持续生效的行为。
+
+**示例：** `WHILE the system is in maintenance mode, THE system SHALL reject new requests.`
+
+### 4. Optional-feature（可选功能）
+
+**格式：** `WHERE <feature>, THE <system> SHALL <response>.`
+
+可选或可配置功能的行为。
+
+**示例：** `WHERE caching is enabled, THE system SHALL store responses locally.`
+
+### 5. Unwanted-behavior（异常处理）
+
+**格式：** `IF <condition>, THEN THE <system> SHALL <response>.`
+
+错误处理或异常情况的行为。
+
+**示例：** `IF the connection times out, THEN THE system SHALL retry up to 3 times.`
+
+### 6. Complex（组合模式）
+
+**格式：** 组合 2 个或以上条件子句，子句顺序为 WHERE → WHILE → WHEN/IF。
+
+**示例：** `WHERE debug mode is enabled, WHEN an error occurs, THE system SHALL log the full stack trace.`
+
+## AC 标准输出格式
+
+每条验收标准必须按以下格式输出：
+
+```
+N. [Pattern-label] EARS句式.
+```
+
+- `N` — 编号（从 1 开始）
+- `[Pattern-label]` — 模式标签，必须是以下之一：`Ubiquitous`、`Event-driven`、`State-driven`、`Optional-feature`、`Unwanted-behavior`、`Complex`
+- `EARS句式` — 完整的 EARS 语句
+
+**示例：**
+```
+1. [Event-driven] WHEN the user clicks submit, THE system SHALL save the data.
+2. [Ubiquitous] THE system SHALL encrypt all stored passwords.
+3. [Unwanted-behavior] IF the database connection fails, THEN THE system SHALL return a 503 error.
+```
+
+## 编写规则
+
+1. **关键词大写**：EARS 关键词（WHEN、WHILE、WHERE、IF、THEN、THE、SHALL）必须全部大写。
+2. **条件子句末尾逗号**：所有条件子句（WHEN、WHILE、WHERE、IF）末尾必须添加逗号，再接 THE 或 THEN。
+   - 正确：`WHEN the user logs in, THE system SHALL ...`
+   - 错误：`WHEN the user logs in THE system SHALL ...`
+3. **WHEN 和 IF 互斥**：在 Complex 模式中，WHEN 和 IF 不允许同时出现。
+4. **Complex 子句顺序**：组合模式的条件子句必须按 WHERE → WHILE → WHEN/IF 顺序排列。
+5. **每条 AC 必须包含 SHALL**：SHALL 表示系统义务，是 EARS 格式的核心关键词。
+
+## Glossary 规则
+
+- 每条 AC 中 `THE <system>` 的 system subject（如 `THE sf-requirements Agent`、`THE system`、`THE sf_requirements_gate`）**必须**在 requirements.md 的 Glossary（术语表）部分定义。
+- 相同的 system subject 只需定义一次，不重复定义。
+- 确保术语表覆盖文档中出现的所有唯一 system subject。

@@ -12,6 +12,8 @@ import { join } from "node:path"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import { parseAllVerificationStrategies } from "./sf_verification_types"
+import { resolveRequirementsPath, checkEarsCompliance } from "./sf_ears_parser"
+import { FILE_SIZE_LIMIT } from "./sf_ears_types"
 import type { SyncSummary } from "./sf_knowledge_graph_core"
 import type { GateResult, GateModeSpec } from "./sf_gate_types"
 
@@ -322,6 +324,23 @@ async function existingRequirementsGateCheck(
     }
     for (const warning of result.warnings) {
       warnings.push(`${reqId}: ${warning}`)
+    }
+  }
+
+  // 6. V3.7+: EARS Format Validation
+  // Step 6a: Resolve requirements path safely
+  const pathResult = resolveRequirementsPath("requirements.md", specDir)
+  if (!pathResult.ok) {
+    blockingIssues.push(pathResult.error)
+  } else {
+    // Step 6b: Check file size
+    if (content.length > FILE_SIZE_LIMIT) {
+      blockingIssues.push(`Requirements file exceeds size limit (${FILE_SIZE_LIMIT} bytes)`)
+    } else {
+      // Step 6c: Execute EARS compliance check
+      const earsResult = checkEarsCompliance(content)
+      blockingIssues.push(...earsResult.blocking_issues)
+      warnings.push(...earsResult.warnings)
     }
   }
 
