@@ -61,6 +61,8 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_design_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_doc_lint_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_doctor_core.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_ears_parser.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_ears_types.ts", type: "tool_lib" },
   { path: "tools/lib/sf_gate_types.ts", type: "tool_lib" },
   { path: "tools/lib/sf_knowledge_base_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_knowledge_graph_core.ts", type: "tool_lib" },
