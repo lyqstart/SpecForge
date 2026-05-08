@@ -99,24 +99,24 @@ describe("compareVersion", () => {
 
 describe("satisfiesRange", () => {
   it("should return true when version is within range", () => {
-    expect(satisfiesRange("3.5.0", ">=3.5.0 <4.0.0")).toBe(true)
-    expect(satisfiesRange("3.5.1", ">=3.5.0 <4.0.0")).toBe(true)
-    expect(satisfiesRange("3.9.9", ">=3.5.0 <4.0.0")).toBe(true)
+    expect(satisfiesRange("3.5.0", ">=3.5.0 <6.0.0")).toBe(true)
+    expect(satisfiesRange("3.5.1", ">=3.5.0 <6.0.0")).toBe(true)
+    expect(satisfiesRange("3.9.9", ">=3.5.0 <6.0.0")).toBe(true)
   })
 
   it("should return false when version is below range", () => {
-    expect(satisfiesRange("3.4.9", ">=3.5.0 <4.0.0")).toBe(false)
-    expect(satisfiesRange("2.0.0", ">=3.5.0 <4.0.0")).toBe(false)
+    expect(satisfiesRange("3.4.9", ">=3.5.0 <6.0.0")).toBe(false)
+    expect(satisfiesRange("2.0.0", ">=3.5.0 <6.0.0")).toBe(false)
   })
 
   it("should return false when version is at or above upper bound", () => {
-    expect(satisfiesRange("4.0.0", ">=3.5.0 <4.0.0")).toBe(false)
-    expect(satisfiesRange("4.0.1", ">=3.5.0 <4.0.0")).toBe(false)
-    expect(satisfiesRange("5.0.0", ">=3.5.0 <4.0.0")).toBe(false)
+    expect(satisfiesRange("6.0.0", ">=3.5.0 <6.0.0")).toBe(false)
+    expect(satisfiesRange("6.0.1", ">=3.5.0 <6.0.0")).toBe(false)
+    expect(satisfiesRange("7.0.0", ">=3.5.0 <6.0.0")).toBe(false)
   })
 
   it("should return true when version equals lower bound (inclusive)", () => {
-    expect(satisfiesRange("3.5.0", ">=3.5.0 <4.0.0")).toBe(true)
+    expect(satisfiesRange("3.5.0", ">=3.5.0 <6.0.0")).toBe(true)
   })
 
   it("should return false for unsupported range formats", () => {
@@ -302,7 +302,7 @@ describe("determineStartupMode", () => {
       join(testDir, "specforge/manifest.json"),
       JSON.stringify({
         runtime_schema_version: "1.1",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
       })
     )
 
@@ -320,7 +320,7 @@ describe("determineStartupMode", () => {
       join(testDir, "specforge/manifest.json"),
       JSON.stringify({
         runtime_schema_version: "1.0",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
       })
     )
 
@@ -338,7 +338,7 @@ describe("determineStartupMode", () => {
       join(testDir, "specforge/manifest.json"),
       JSON.stringify({
         runtime_schema_version: "1.1",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
       })
     )
     // manifest.json exists but runtime/state.json and config/project.json don't
@@ -358,7 +358,7 @@ describe("determineStartupMode", () => {
       join(testDir, "specforge/manifest.json"),
       JSON.stringify({
         runtime_schema_version: "1.1",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
       })
     )
     await writeFile(
@@ -1128,9 +1128,9 @@ describe("buildInitialRuntimeManifest", () => {
     expect(manifest.install_mode).toBe("user_level")
   })
 
-  it("should return manifest with required_shared_version_range '>=3.5.0 <4.0.0'", () => {
+  it("should return manifest with required_shared_version_range '>=3.5.0 <6.0.0'", () => {
     const manifest = buildInitialRuntimeManifest()
-    expect(manifest.required_shared_version_range).toBe(">=3.5.0 <4.0.0")
+    expect(manifest.required_shared_version_range).toBe(">=3.5.0 <6.0.0")
   })
 
   it("should return manifest with initialized_at as valid ISO8601 timestamp", () => {
@@ -1182,7 +1182,7 @@ describe("writeRuntimeManifest", () => {
     expect(content.schema_version).toBe("1.0")
     expect(content.runtime_schema_version).toBe("1.1.0")
     expect(content.install_mode).toBe("user_level")
-    expect(content.required_shared_version_range).toBe(">=3.5.0 <4.0.0")
+    expect(content.required_shared_version_range).toBe(">=3.5.0 <6.0.0")
     expect(content.initialized_at).toBeDefined()
     expect(content.updated_at).toBeDefined()
     expect(content.project_files).toEqual({})
@@ -1297,7 +1297,7 @@ describe("executeInitialize writes Runtime_Manifest", () => {
 
     const manifestPath = join(testDir, "specforge", "manifest.json")
     const content = JSON.parse(await readFile(manifestPath, "utf-8"))
-    expect(content.required_shared_version_range).toBe(">=3.5.0 <4.0.0")
+    expect(content.required_shared_version_range).toBe(">=3.5.0 <6.0.0")
   })
 
   it("should write manifest with initialized_at as ISO8601 timestamp", async () => {
@@ -1435,7 +1435,7 @@ describe("executeRepair", () => {
     const content = JSON.parse(await readFile(manifestPath, "utf-8"))
     expect(content.schema_version).toBe("1.0")
     expect(content.runtime_schema_version).toBe("1.1.0")
-    expect(content.required_shared_version_range).toBe(">=3.5.0 <4.0.0")
+    expect(content.required_shared_version_range).toBe(">=3.5.0 <6.0.0")
   })
 
   it("should NOT overwrite existing state.json", async () => {
@@ -1479,7 +1479,7 @@ describe("executeRepair", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.0.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: "2026-01-01T00:00:00.000Z",
       updated_at: "2026-01-01T00:00:00.000Z",
       project_files: {},
@@ -1737,7 +1737,7 @@ describe("executeMigration", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.0.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       project_files: {},
@@ -1763,7 +1763,7 @@ describe("executeMigration", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.0.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       project_files: {},
@@ -1791,7 +1791,7 @@ describe("executeMigration", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.0.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       project_files: {},
@@ -1823,7 +1823,7 @@ describe("executeMigration", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.0.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       project_files: {},
@@ -1845,7 +1845,7 @@ describe("executeMigration", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.0.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       project_files: {},
@@ -1877,7 +1877,7 @@ describe("executeMigration", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.0.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       project_files: {},
@@ -1903,7 +1903,7 @@ describe("executeMigration", () => {
       schema_version: "1.0",
       runtime_schema_version: "1.1.0",
       install_mode: "user_level",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
       initialized_at: new Date().toISOString(),
       updated_at: "2024-01-01T00:00:00.000Z",
       project_files: {},
@@ -2059,7 +2059,7 @@ describe("recoverCorruptedManifest", () => {
     expect(manifest.runtime_schema_version).toBe("1.0.0")
     expect(manifest.recovery_required).toBeUndefined()
     expect(manifest.schema_version).toBe("1.0")
-    expect(manifest.required_shared_version_range).toBe(">=3.5.0 <4.0.0")
+    expect(manifest.required_shared_version_range).toBe(">=3.5.0 <6.0.0")
   })
 
   it("should mark recovery_required when version cannot be inferred", async () => {

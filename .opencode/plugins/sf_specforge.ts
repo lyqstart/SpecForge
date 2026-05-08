@@ -1509,7 +1509,7 @@ export async function recoverCorruptedManifest(projectDir: string): Promise<Runt
 // Runtime Manifest Constants
 // ============================================================
 
-const REQUIRED_SHARED_VERSION_RANGE = ">=3.5.0 <4.0.0"
+const REQUIRED_SHARED_VERSION_RANGE = ">=3.5.0 <6.0.0"
 
 // ============================================================
 // Runtime Manifest Writing
@@ -1748,6 +1748,11 @@ async function executeStartupFlow(
     case "repair":
       try {
         await withRuntimeLock(projectRoot, mode, async () => {
+          // Diagnostic: write a marker file to confirm repair was reached
+          const diagPath = join(projectRoot, "specforge", "logs", "repair_diagnostic.txt")
+          try { await mkdir(join(projectRoot, "specforge", "logs"), { recursive: true }) } catch {}
+          try { await writeFile(diagPath, `repair started at ${new Date().toISOString()}\n`, "utf-8") } catch {}
+
           // Check if manifest needs recovery (repair is triggered when manifest is invalid)
           const manifestPath = join(projectRoot, "specforge", "manifest.json")
           const manifestExists = existsSync(manifestPath)
@@ -1768,12 +1773,21 @@ async function executeStartupFlow(
           }
 
           await executeRepair(projectRoot)
+
+          // Diagnostic: confirm repair completed
+          try { await appendFile(diagPath, `repair completed at ${new Date().toISOString()}\n`, "utf-8") } catch {}
         })
         return mode
       } catch (err) {
         if (err instanceof RuntimeLockBusyError) {
           return "runtime_busy"
         }
+        // Enhanced error logging: write to a diagnostic file even if logError fails
+        try {
+          const diagPath = join(projectRoot, "specforge", "logs", "repair_diagnostic.txt")
+          await mkdir(join(projectRoot, "specforge", "logs"), { recursive: true })
+          await appendFile(diagPath, `repair FAILED at ${new Date().toISOString()}: ${err instanceof Error ? err.message : String(err)}\n`, "utf-8")
+        } catch {}
         await logError(projectRoot, "sf_specforge.startup", err)
         return "init_failed"
       }

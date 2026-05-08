@@ -86,7 +86,7 @@ describe("Integration: Plugin startup initialize → skip (idempotency)", () => 
     )
     expect(manifestContent.schema_version).toBe("1.0")
     expect(manifestContent.runtime_schema_version).toBeDefined()
-    expect(manifestContent.required_shared_version_range).toBe(">=3.5.0 <4.0.0")
+    expect(manifestContent.required_shared_version_range).toBe(">=3.5.0 <6.0.0")
     expect(manifestContent.initialized_at).toBeDefined()
 
     // Step 3: determineStartupMode should now return "skip" (idempotent)

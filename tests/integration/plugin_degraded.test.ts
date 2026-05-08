@@ -68,7 +68,7 @@ describe("Integration: Plugin degraded mode (version incompatible)", () => {
         schema_version: "1.0",
         runtime_schema_version: "1.1.0",
         install_mode: "user_level",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
         initialized_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         project_files: {},
@@ -80,12 +80,12 @@ describe("Integration: Plugin degraded mode (version incompatible)", () => {
   })
 
   it("should return 'degraded' when shared_version is above upper bound", async () => {
-    // Setup: User manifest with version 4.0.0 (at upper bound, exclusive)
+    // Setup: User manifest with version 6.0.0 (at upper bound, exclusive)
     await writeFile(
       path.join(userLevelDir, "specforge-manifest.json"),
       JSON.stringify({
         schema_version: "1.0",
-        shared_version: "4.0.0",
+        shared_version: "6.0.0",
         install_mode: "user_level",
         installed_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -102,7 +102,7 @@ describe("Integration: Plugin degraded mode (version incompatible)", () => {
         schema_version: "1.0",
         runtime_schema_version: "1.1.0",
         install_mode: "user_level",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
         initialized_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         project_files: {},
@@ -166,7 +166,7 @@ describe("Integration: Plugin degraded mode (version incompatible)", () => {
         schema_version: "1.0",
         runtime_schema_version: "1.1.0",
         install_mode: "user_level",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
         initialized_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         project_files: {},
@@ -209,7 +209,7 @@ describe("Integration: Plugin degraded mode (version incompatible)", () => {
         schema_version: "1.0",
         runtime_schema_version: "1.1.0",
         install_mode: "user_level",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
         initialized_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         project_files: {},

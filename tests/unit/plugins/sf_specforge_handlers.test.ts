@@ -110,7 +110,7 @@ describe("Permission Guard Sub-Module", () => {
       await mkdir(join(testDir, "specforge/config"), { recursive: true })
       await writeFile(join(testDir, "specforge/manifest.json"), JSON.stringify({
         runtime_schema_version: "1.1.0",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
       }))
       await writeFile(join(testDir, "specforge/runtime/state.json"), JSON.stringify({ work_items: {} }))
       await writeFile(join(testDir, "specforge/config/project.json"), JSON.stringify({}))
@@ -169,7 +169,7 @@ describe("Event Logger Sub-Module", () => {
     await mkdir(join(testDir, "specforge/config"), { recursive: true })
     await writeFile(join(testDir, "specforge/manifest.json"), JSON.stringify({
       runtime_schema_version: "1.1.0",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
     }))
     await writeFile(join(testDir, "specforge/runtime/state.json"), JSON.stringify({ work_items: {} }))
     await writeFile(join(testDir, "specforge/config/project.json"), JSON.stringify({}))
@@ -421,7 +421,7 @@ describe("Cost Tracker Sub-Module", () => {
       await mkdir(join(testDir, "specforge/config"), { recursive: true })
       await writeFile(join(testDir, "specforge/manifest.json"), JSON.stringify({
         runtime_schema_version: "1.1.0",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
       }))
       await writeFile(join(testDir, "specforge/runtime/state.json"), JSON.stringify({ work_items: {} }))
       await writeFile(join(testDir, "specforge/config/project.json"), JSON.stringify({}))
@@ -846,7 +846,7 @@ describe("Error Isolation", () => {
     await mkdir(join(testDir, "specforge/config"), { recursive: true })
     await writeFile(join(testDir, "specforge/manifest.json"), JSON.stringify({
       runtime_schema_version: "1.1.0",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
     }))
     await writeFile(join(testDir, "specforge/runtime/state.json"), JSON.stringify({ work_items: {} }))
     await writeFile(join(testDir, "specforge/config/project.json"), JSON.stringify({}))
@@ -965,7 +965,7 @@ describe("Hook Execution Order", () => {
     await mkdir(join(testDir, "specforge/config"), { recursive: true })
     await writeFile(join(testDir, "specforge/manifest.json"), JSON.stringify({
       runtime_schema_version: "1.1.0",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
     }))
     await writeFile(join(testDir, "specforge/runtime/state.json"), JSON.stringify({ work_items: {} }))
     await writeFile(join(testDir, "specforge/runtime/events.jsonl"), "")
@@ -1116,10 +1116,10 @@ describe("Degraded Mode Behavior", () => {
     await mkdir(join(testDir, "specforge/runtime"), { recursive: true })
     await mkdir(join(testDir, "specforge/config"), { recursive: true })
 
-    // Set version incompatible: shared_version 3.4.0 doesn't satisfy >=3.5.0 <4.0.0
+    // Set version incompatible: shared_version 3.4.0 doesn't satisfy >=3.5.0 <6.0.0
     await writeFile(join(testDir, "specforge/manifest.json"), JSON.stringify({
       runtime_schema_version: "1.1.0",
-      required_shared_version_range: ">=3.5.0 <4.0.0",
+      required_shared_version_range: ">=3.5.0 <6.0.0",
     }))
     await writeFile(join(testDir, "specforge/runtime/state.json"), JSON.stringify({ work_items: {} }))
     await writeFile(join(testDir, "specforge/config/project.json"), JSON.stringify({}))

@@ -77,7 +77,7 @@ describe("Regression: Old 5 Plugin output file format compatibility", () => {
         schema_version: "1.0",
         runtime_schema_version: "1.1.0",
         install_mode: "user_level",
-        required_shared_version_range: ">=3.5.0 <4.0.0",
+        required_shared_version_range: ">=3.5.0 <6.0.0",
         initialized_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         project_files: {},
