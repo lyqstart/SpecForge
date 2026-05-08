@@ -474,7 +474,11 @@ async function readRuntimeManifest(projectRoot: string): Promise<RuntimeManifest
   try {
     const manifestPath = join(projectRoot, "specforge/manifest.json")
     const content = await readFile(manifestPath, "utf-8")
-    return JSON.parse(content) as RuntimeManifest
+    const parsed = JSON.parse(content)
+    // Validate required fields — reject old/invalid format manifests
+    if (!parsed || typeof parsed !== "object") return null
+    if (!parsed.runtime_schema_version || !parsed.required_shared_version_range) return null
+    return parsed as RuntimeManifest
   } catch {
     return null
   }
