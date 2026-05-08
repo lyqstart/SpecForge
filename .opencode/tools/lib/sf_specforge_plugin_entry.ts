@@ -106,6 +106,16 @@ const REQUIRED_FILES = [
   "specforge/manifest.json",
   "specforge/runtime/state.json",
   "specforge/config/project.json",
+  "specforge/agents/AGENT_CONSTITUTION.md",
+  "specforge/agents/contracts/sf-orchestrator.contract.md",
+  "specforge/agents/contracts/sf-requirements.contract.md",
+  "specforge/agents/contracts/sf-design.contract.md",
+  "specforge/agents/contracts/sf-task-planner.contract.md",
+  "specforge/agents/contracts/sf-executor.contract.md",
+  "specforge/agents/contracts/sf-debugger.contract.md",
+  "specforge/agents/contracts/sf-reviewer.contract.md",
+  "specforge/agents/contracts/sf-verifier.contract.md",
+  "specforge/agents/contracts/sf-knowledge.contract.md",
 ]
 
 /** 日志轮转阈值（100MB） */

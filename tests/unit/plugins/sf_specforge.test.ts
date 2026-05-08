@@ -370,6 +370,14 @@ describe("determineStartupMode", () => {
       JSON.stringify({})
     )
 
+    // Create required contract files
+    await mkdir(join(testDir, "specforge/agents/contracts"), { recursive: true })
+    await writeFile(join(testDir, "specforge/agents/AGENT_CONSTITUTION.md"), "# Constitution")
+    const contracts = ["sf-orchestrator", "sf-requirements", "sf-design", "sf-task-planner", "sf-executor", "sf-debugger", "sf-reviewer", "sf-verifier", "sf-knowledge"]
+    for (const agent of contracts) {
+      await writeFile(join(testDir, `specforge/agents/contracts/${agent}.contract.md`), `# ${agent}`)
+    }
+
     const mode = await determineStartupMode(testDir)
     expect(mode).toBe("skip")
   })
