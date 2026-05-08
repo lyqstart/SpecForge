@@ -440,7 +440,23 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
     // Step 7: Merge_Write opencode.json
     await mergeOpenCodeJsonUserLevel(userLevelDir, sourceAgents, newManifest, opts.force)
 
-    // Step 7: Mark journal as success and clean up
+    // Step 8: 清理目标目录中不在 registry 里的 sf_* / sf-* 残留文件
+    const orphanFiles = findOrphanSfFiles(userLevelDir)
+    if (orphanFiles.length > 0) {
+      console.log(`🧹 清理 ${orphanFiles.length} 个旧版本残留文件:`)
+      for (const orphan of orphanFiles) {
+        const orphanPath = path.join(userLevelDir, posixToNative(orphan))
+        try {
+          fs.unlinkSync(orphanPath)
+          console.log(`   ✓ 已删除: ${orphan}`)
+          journal.files_updated.push({ path: orphan, status: "removed" as any })
+        } catch {
+          console.warn(`   ⚠ 无法删除: ${orphan}`)
+        }
+      }
+    }
+
+    // Step 9: Mark journal as success and clean up
     journal.status = "success"
     fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
 
