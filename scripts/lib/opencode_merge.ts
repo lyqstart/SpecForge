@@ -136,6 +136,16 @@ export async function mergeOpenCodeJsonUserLevel(
     }
   }
 
+  // Step 5.5: 确保 plugin 数组包含 sf_specforge.ts
+  const pluginEntry = "./plugins/sf_specforge.ts"
+  if (!Array.isArray(targetConfig.plugin)) {
+    targetConfig.plugin = []
+  }
+  const plugins = targetConfig.plugin as string[]
+  if (!plugins.includes(pluginEntry)) {
+    plugins.push(pluginEntry)
+  }
+
   // Step 6: 原子写入
   const jsonContent = JSON.stringify(targetConfig, null, 2) + "\n"
 
