@@ -923,8 +923,8 @@ describe("Agent Contract Templates", () => {
   })
 
   describe("AGENT_CONTRACT_FILES registry", () => {
-    it("should contain exactly 6 entries", () => {
-      expect(AGENT_CONTRACT_FILES).toHaveLength(6)
+    it("should contain exactly 10 entries", () => {
+      expect(AGENT_CONTRACT_FILES).toHaveLength(10)
     })
 
     it("should include AGENT_CONSTITUTION.md", () => {

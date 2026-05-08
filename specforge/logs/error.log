@@ -15,3 +15,6 @@
 {"timestamp":"2026-05-08T03:59:51.024Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
 {"timestamp":"2026-05-08T04:31:57.071Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
 {"timestamp":"2026-05-08T04:32:50.114Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
+{"timestamp":"2026-05-08T04:38:32.948Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
+{"timestamp":"2026-05-08T04:39:01.618Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
+{"timestamp":"2026-05-08T04:39:55.199Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}

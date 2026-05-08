@@ -1103,6 +1103,132 @@ export function getDebuggerContractTemplate(): string {
 }
 
 /**
+ * Returns the content for sf-task-planner.contract.md
+ */
+export function getTaskPlannerContractTemplate(): string {
+  return `# sf-task-planner 契约
+
+## 调用方
+- sf-orchestrator（在 tasks 阶段调度）
+
+## 输入格式
+- work_item_id: string
+- spec_directory: string
+- requirements_file: string（只读输入）
+- design_file: string（只读输入）
+
+## 输出格式
+- 在 spec_directory 中生成 \`tasks.md\` 文件
+- 每个 Task 包含：编号、标题、描述、修改文件列表、验证命令
+
+## 禁止行为
+- 不得修改 requirements.md 或 design.md
+- 不得编写代码
+- 不得调用 sf_state_transition 工具
+- 不得调用 Gate 工具
+- 不得直接向用户提问
+
+## 升级条件
+- 当设计文档中存在无法拆分为独立 Task 的耦合模块时，向 Orchestrator 报告
+`
+}
+
+/**
+ * Returns the content for sf-reviewer.contract.md
+ */
+export function getReviewerContractTemplate(): string {
+  return `# sf-reviewer 契约
+
+## 调用方
+- sf-orchestrator（在 review 阶段调度）
+
+## 输入格式
+- work_item_id: string
+- spec_directory: string
+- 规格文档（requirements.md、design.md、tasks.md）作为只读参考
+
+## 输出格式
+- 审查意见（通过/不通过 + 具体问题列表）
+
+## 禁止行为
+- 不得编辑任何文件（permission.edit = deny）
+- 不得修改代码
+- 不得调用 sf_state_transition 工具
+- 不得调用 Gate 工具
+- 不得直接向用户提问
+
+## 升级条件
+- 当发现严重架构问题需要重新设计时，向 Orchestrator 报告
+`
+}
+
+/**
+ * Returns the content for sf-verifier.contract.md
+ */
+export function getVerifierContractTemplate(): string {
+  return `# sf-verifier 契约
+
+## 调用方
+- sf-orchestrator（在 verification 阶段调度）
+
+## 输入格式
+- work_item_id: string
+- spec_directory: string
+- tasks.md 中的 verification_commands
+
+## 输出格式
+- verification_report.json（V3.7 结构化报告）
+- verification_report.md（V3.6 兼容报告）
+
+## 禁止行为
+- 不得编辑任何文件（permission.edit = deny）
+- 不得修改代码
+- 不得跳过验证命令
+- 不得伪造测试结果
+- 不得调用 sf_state_transition 工具
+- 不得调用 Gate 工具
+- 不得直接向用户提问
+
+## 升级条件
+- 当验证命令因环境问题无法执行时，向 Orchestrator 报告
+`
+}
+
+/**
+ * Returns the content for sf-knowledge.contract.md
+ */
+export function getKnowledgeContractTemplate(): string {
+  return `# sf-knowledge 契约
+
+## 调用方
+- sf-orchestrator（在 Work Item completed 后调度）
+
+## 输入格式
+- work_item_id: string
+- session_id: string
+- archive_path: string
+
+## 输出格式
+- 知识条目写入 Knowledge Base（通过 sf_knowledge_base 工具）
+- work_log.md 写入 archive_path
+
+## 禁止行为
+- 不得修改已完成的 Work Item 状态
+- 不得修改 spec 文档（requirements.md、design.md、tasks.md）
+- 不得修改项目业务代码
+- 不得调用 sf_state_transition 工具
+- 不得调用 Gate 工具
+- 不得直接向用户提问
+- 不得创建未授权子 Agent
+- 不得把推测当事实写入知识库
+
+## 升级条件
+- 当知识提取过程中发现矛盾信息时，向 Orchestrator 报告
+- 当无法确定知识条目的泛化程度时，向 Orchestrator 报告
+`
+}
+
+/**
  * Contract file registry: maps relative paths to their template functions.
  */
 export const AGENT_CONTRACT_FILES: Array<{ path: string; getContent: () => string }> = [
@@ -1112,6 +1238,10 @@ export const AGENT_CONTRACT_FILES: Array<{ path: string; getContent: () => strin
   { path: "specforge/agents/contracts/sf-design.contract.md", getContent: getDesignContractTemplate },
   { path: "specforge/agents/contracts/sf-executor.contract.md", getContent: getExecutorContractTemplate },
   { path: "specforge/agents/contracts/sf-debugger.contract.md", getContent: getDebuggerContractTemplate },
+  { path: "specforge/agents/contracts/sf-task-planner.contract.md", getContent: getTaskPlannerContractTemplate },
+  { path: "specforge/agents/contracts/sf-reviewer.contract.md", getContent: getReviewerContractTemplate },
+  { path: "specforge/agents/contracts/sf-verifier.contract.md", getContent: getVerifierContractTemplate },
+  { path: "specforge/agents/contracts/sf-knowledge.contract.md", getContent: getKnowledgeContractTemplate },
 ]
 
 /**
