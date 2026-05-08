@@ -79,6 +79,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_verifier_execution_core.ts", type: "tool_lib" },
   { path: "tools/lib/state_machine.ts", type: "tool_lib" },
   { path: "tools/lib/utils.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_specforge_plugin_entry.ts", type: "tool_lib" },
 
   // Plugin（1 个 — 统一 Plugin，替代原来的 5 个）
   { path: "plugins/sf_specforge.ts", type: "plugin" },

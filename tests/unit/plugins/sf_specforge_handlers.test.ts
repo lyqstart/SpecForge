@@ -13,7 +13,7 @@ import {
   generateRecoverySummary,
   buildCompactionContext,
   sf_specforge,
-} from "../../../.opencode/plugins/sf_specforge"
+} from "../../../.opencode/tools/lib/sf_specforge_plugin_entry"
 
 // ============================================================
 // 1. Permission Guard Sub-Module Tests

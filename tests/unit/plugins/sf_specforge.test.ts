@@ -28,8 +28,8 @@ import {
   AGENT_CONTRACT_FILES,
   writeRuntimeManifest,
   buildInitialRuntimeManifest,
-} from "../../../.opencode/plugins/sf_specforge"
-import type { StartupMode } from "../../../.opencode/plugins/sf_specforge"
+} from "../../../.opencode/tools/lib/sf_specforge_plugin_entry"
+import type { StartupMode } from "../../../.opencode/tools/lib/sf_specforge_plugin_entry"
 import { existsSync } from "node:fs"
 
 // ============================================================
@@ -1638,8 +1638,8 @@ import {
   executeMigration,
   inferRuntimeSchemaVersion,
   recoverCorruptedManifest,
-} from "../../../.opencode/plugins/sf_specforge"
-import type { Migration } from "../../../.opencode/plugins/sf_specforge"
+} from "../../../.opencode/tools/lib/sf_specforge_plugin_entry"
+import type { Migration } from "../../../.opencode/tools/lib/sf_specforge_plugin_entry"
 
 // ============================================================
 // 5.1: MIGRATIONS Registry Validation
@@ -2164,7 +2164,7 @@ import {
   generateRecoverySummary,
   buildCompactionContext,
   redactSensitive,
-} from "../../../.opencode/plugins/sf_specforge"
+} from "../../../.opencode/tools/lib/sf_specforge_plugin_entry"
 
 // ============================================================
 // extractTokens() Tests

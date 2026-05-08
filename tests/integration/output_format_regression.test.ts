@@ -16,7 +16,7 @@ import {
   buildCostEntry,
   extractTokens,
   hasCostData,
-} from "../../.opencode/plugins/sf_specforge"
+} from "../../.opencode/tools/lib/sf_specforge_plugin_entry"
 
 describe("Regression: Old 5 Plugin output file format compatibility", () => {
   let tempDir: string

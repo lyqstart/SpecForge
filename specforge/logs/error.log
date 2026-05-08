@@ -13,3 +13,5 @@
 {"timestamp":"2026-05-08T03:58:54.431Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
 {"timestamp":"2026-05-08T03:59:21.693Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
 {"timestamp":"2026-05-08T03:59:51.024Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
+{"timestamp":"2026-05-08T04:31:57.071Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}
+{"timestamp":"2026-05-08T04:32:50.114Z","level":"ERROR","component":"sf_knowledge_base_core","event":"loadStore","message":"insights.json is corrupted: JSON parse failed. File preserved for manual recovery."}

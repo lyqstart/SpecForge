@@ -17,7 +17,7 @@ import {
   checkToolCallPermission,
   checkFileEditPermission,
   sf_specforge,
-} from "../../.opencode/plugins/sf_specforge"
+} from "../../.opencode/tools/lib/sf_specforge_plugin_entry"
 
 describe("Integration: Plugin degraded mode (version incompatible)", () => {
   let tempDir: string

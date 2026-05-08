@@ -15,7 +15,7 @@ import { tmpdir } from "node:os"
 import {
   determineStartupMode,
   executeInitialize,
-} from "../../.opencode/plugins/sf_specforge"
+} from "../../.opencode/tools/lib/sf_specforge_plugin_entry"
 
 describe("Integration: Plugin startup initialize → skip (idempotency)", () => {
   let tempDir: string
