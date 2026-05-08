@@ -106,17 +106,26 @@ const REQUIRED_FILES = [
   "specforge/manifest.json",
   "specforge/runtime/state.json",
   "specforge/config/project.json",
-  "specforge/agents/AGENT_CONSTITUTION.md",
-  "specforge/agents/contracts/sf-orchestrator.contract.md",
-  "specforge/agents/contracts/sf-requirements.contract.md",
-  "specforge/agents/contracts/sf-design.contract.md",
-  "specforge/agents/contracts/sf-task-planner.contract.md",
-  "specforge/agents/contracts/sf-executor.contract.md",
-  "specforge/agents/contracts/sf-debugger.contract.md",
-  "specforge/agents/contracts/sf-reviewer.contract.md",
-  "specforge/agents/contracts/sf-verifier.contract.md",
-  "specforge/agents/contracts/sf-knowledge.contract.md",
 ]
+
+/**
+ * 检查所有必需文件是否存在（含动态生成的 contract 文件列表）
+ */
+function allRequiredFilesExist(projectRoot: string): boolean {
+  // 静态必需文件
+  for (const file of REQUIRED_FILES) {
+    if (!existsSync(join(projectRoot, file))) {
+      return false
+    }
+  }
+  // 动态：从 AGENT_CONTRACT_FILES 模板注册表生成
+  for (const { path: relativePath } of AGENT_CONTRACT_FILES) {
+    if (!existsSync(join(projectRoot, relativePath))) {
+      return false
+    }
+  }
+  return true
+}
 
 /** 日志轮转阈值（100MB） */
 const LOG_ROTATION_THRESHOLD_BYTES = 100 * 1024 * 1024
@@ -469,18 +478,6 @@ async function readRuntimeManifest(projectRoot: string): Promise<RuntimeManifest
   } catch {
     return null
   }
-}
-
-/**
- * 检查所有必需文件是否存在
- */
-function allRequiredFilesExist(projectRoot: string): boolean {
-  for (const file of REQUIRED_FILES) {
-    if (!existsSync(join(projectRoot, file))) {
-      return false
-    }
-  }
-  return true
 }
 
 /**
