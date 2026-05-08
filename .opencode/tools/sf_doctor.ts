@@ -231,7 +231,7 @@ async function runChecks(projectDir: string): Promise<DoctorReport> {
     try {
       const content = await readFile(manifestPath, "utf-8")
       const parsed = JSON.parse(content)
-      const valid = parsed && typeof parsed === "object" && "version" in parsed
+      const valid = parsed && typeof parsed === "object" && ("shared_version" in parsed || "version" in parsed)
       runtimeResults.push({
         name: "用户级 Manifest: 格式正确",
         status: valid ? "ok" : "error",
@@ -294,7 +294,7 @@ async function runChecks(projectDir: string): Promise<DoctorReport> {
   }
 
   // === Project-level runtime files ===
-  const statePath = join(projectDir, "specforge/state.json")
+  const statePath = join(projectDir, "specforge/runtime/state.json")
   const stateExists = await fileExists(statePath)
   runtimeResults.push({
     name: "运行时: state.json",
@@ -339,7 +339,7 @@ async function runChecks(projectDir: string): Promise<DoctorReport> {
     repair_suggestions.push(`创建项目 manifest: specforge/manifest.json`)
   }
 
-  const projectJsonPath = join(projectDir, "specforge/project.json")
+  const projectJsonPath = join(projectDir, "specforge/config/project.json")
   const projectJsonExists = await fileExists(projectJsonPath)
   runtimeResults.push({
     name: "运行时: project.json",
