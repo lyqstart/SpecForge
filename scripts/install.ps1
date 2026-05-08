@@ -1,4 +1,4 @@
-# SpecForge 安装脚本 (PowerShell)
+﻿# SpecForge 安装脚本 (PowerShell)
 # 用法: .\scripts\install.ps1 -Target "D:\code\temp\test1"
 
 param(

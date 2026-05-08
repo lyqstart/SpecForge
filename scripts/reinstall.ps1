@@ -1,4 +1,4 @@
-# SpecForge 卸载重装脚本
+﻿# SpecForge 卸载重装脚本
 # 在测试项目目录中执行：powershell -File <SpecForge路径>\scripts\reinstall.ps1
 #
 # 用法：
