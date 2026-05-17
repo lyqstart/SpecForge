@@ -1,88 +1,154 @@
 /**
- * SpecForge V3.4.0 — 路径解析工具
+ * Path discovery for Kiro task metadata.
  *
- * 解析 User_Level_Directory 路径，处理跨平台路径转换。
+ * Kiro stores meta files at:
+ *   ~/.kiro/tasks/<workspaceHash>/<specName>.meta.json
+ *
+ * Rather than reverse-engineering Kiro's workspace_hash algorithm, we
+ * glob the tasks dir and pick the workspace whose meta files reference
+ * the current repo root. In the common case there is exactly one hash
+ * per machine per repo.
+ *
+ * schema_version: 1.0
  */
 
-import { homedir } from "node:os"
-import { resolve, normalize, join } from "node:path"
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import * as os from 'node:os';
+import { pathToFileURL } from 'node:url';
 
-/**
- * 解析 User_Level_Directory 路径
- *
- * 优先级：
- *   (a) OPENCODE_CONFIG_DIR 环境变量（OpenCode 原生支持）
- *   (b) 所有平台统一使用 ~/.config/opencode/
- *       OpenCode 在所有平台（包括 Windows）都使用 ~/.config/opencode/ 作为
- *       用户级配置目录，不使用 %APPDATA%。
- *   (c) 不读取 config.json 或 configDir 字段
- *
- * 所有路径通过 path.resolve() / path.normalize() 归一化
- */
-export function resolveUserLevelDirectory(): string {
-  // (a) 环境变量覆盖
-  const envDir = process.env.OPENCODE_CONFIG_DIR
-  if (envDir) {
-    return resolve(normalize(envDir))
-  }
-
-  // (b) 所有平台统一：~/.config/opencode/
-  // OpenCode 在 Windows 上也使用此路径，不使用 %APPDATA%
-  return resolve(normalize(join(homedir(), ".config", "opencode")))
+export interface KiroWorkspace {
+  hash: string;
+  tasksDir: string;
 }
 
-/**
- * 将 POSIX 风格路径转换为平台原生路径
- * 用于将 Manifest 中记录的 POSIX 路径转换为实际文件系统路径
- */
-export function posixToNative(posixPath: string): string {
-  if (process.platform === "win32") {
-    return posixPath.replace(/\//g, "\\")
-  }
-  return posixPath
-}
+export class KiroPaths {
+  constructor(public readonly repoRoot: string) {}
 
-/**
- * 将平台原生路径转换为 POSIX 风格
- * 用于将文件系统路径写入 Manifest
- */
-export function nativeToPosix(nativePath: string): string {
-  return nativePath.replace(/\\/g, "/")
-}
-
-/**
- * Windows 长路径规范化
- *
- * 策略说明：
- * - Windows 传统 MAX_PATH 限制为 260 字符
- * - 当路径超过 260 字符时，添加 \\?\ 前缀以启用长路径支持
- * - 已有 \\?\ 前缀的路径不重复添加
- * - UNC 路径（\\server\share）转换为 \\?\UNC\server\share 格式
- * - 非 Windows 平台直接返回原路径
- *
- * 注意：Bun 运行时在 Windows 上已内置长路径支持（通过 manifest 声明），
- * 此函数作为额外保障层，确保在所有环境下都能正确处理长路径。
- */
-export function normalizeLongPathForWindows(filePath: string): string {
-  if (process.platform !== "win32") {
-    return filePath
+  get kiroTasksRoot(): string {
+    return path.join(os.homedir(), '.kiro', 'tasks');
   }
 
-  // 已有长路径前缀，不重复添加
-  if (filePath.startsWith("\\\\?\\")) {
-    return filePath
+  get specsRoot(): string {
+    return path.join(this.repoRoot, '.kiro', 'specs');
   }
 
-  // 路径未超过 260 字符限制，无需处理
-  if (filePath.length <= 260) {
-    return filePath
+  /**
+   * Locate the workspace hash dir used by Kiro for this repo.
+   *
+   * Strategy:
+   *   1. If ~/.kiro/tasks has exactly one child dir, use it (fast path).
+   *   2. Otherwise, scan each child's *.meta.json and match `specUri`
+   *      against the current repo root. The first hit wins.
+   *   3. If nothing matches and there is at least one hash dir, fall
+   *      back to the most-recently-modified hash dir.
+   *
+   * Throws if ~/.kiro/tasks does not exist or is empty.
+   */
+  async findWorkspace(): Promise<KiroWorkspace> {
+    const root = this.kiroTasksRoot;
+    let entries: string[];
+    try {
+      entries = await fs.readdir(root);
+    } catch (err: any) {
+      if (err.code === 'ENOENT') {
+        throw new Error(
+          `Kiro tasks root not found: ${root}. Has Kiro ever run tasks on this machine?`,
+        );
+      }
+      throw err;
+    }
+
+    const dirs: { name: string; fullPath: string; mtimeMs: number }[] = [];
+    for (const name of entries) {
+      const full = path.join(root, name);
+      try {
+        const st = await fs.stat(full);
+        if (st.isDirectory()) {
+          dirs.push({ name, fullPath: full, mtimeMs: st.mtimeMs });
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    if (dirs.length === 0) {
+      throw new Error(`Kiro tasks root is empty: ${root}`);
+    }
+
+    if (dirs.length === 1) {
+      return { hash: dirs[0]!.name, tasksDir: dirs[0]!.fullPath };
+    }
+
+    // Multiple hashes — match by specUri in meta files.
+    const repoUriPrefix = this.specUriPrefix();
+    for (const d of dirs) {
+      const metas = (await fs.readdir(d.fullPath)).filter((f) =>
+        f.endsWith('.meta.json'),
+      );
+      for (const meta of metas) {
+        try {
+          const raw = await fs.readFile(path.join(d.fullPath, meta), 'utf-8');
+          const parsed = JSON.parse(raw);
+          const first = Object.values(parsed?.tasks ?? {})[0] as
+            | { specUri?: string }
+            | undefined;
+          if (first?.specUri && first.specUri.startsWith(repoUriPrefix)) {
+            return { hash: d.name, tasksDir: d.fullPath };
+          }
+        } catch {
+          /* keep scanning */
+        }
+      }
+    }
+
+    // Fallback: newest hash dir.
+    dirs.sort((a, b) => b.mtimeMs - a.mtimeMs);
+    return { hash: dirs[0]!.name, tasksDir: dirs[0]!.fullPath };
   }
 
-  // UNC 路径（\\server\share）→ \\?\UNC\server\share
-  if (filePath.startsWith("\\\\")) {
-    return "\\\\?\\UNC\\" + filePath.slice(2)
+  private specUriPrefix(): string {
+    // Kiro's specUri is file:///<drive>%3A/... so a simple file:// prefix
+    // is enough for match purposes.
+    return pathToFileURL(this.repoRoot).toString().split('://')[0] + '://';
   }
 
-  // 普通长路径 → \\?\path
-  return "\\\\?\\" + filePath
+  /**
+   * Absolute path to the meta file for a given spec. Does not check existence.
+   */
+  metaPathFor(ws: KiroWorkspace, specName: string): string {
+    return path.join(ws.tasksDir, `${specName}.meta.json`);
+  }
+
+  /**
+   * Absolute path to a spec's tasks.md.
+   */
+  tasksMdPathFor(specName: string): string {
+    return path.join(this.specsRoot, specName, 'tasks.md');
+  }
+
+  /**
+   * Absolute path to a spec's PBT metadata file. Kiro derives this by
+   * replacing `.md` with `.meta.json` on the tasks.md path (see
+   * kiro.kiro-agent/dist/extension.js function `a30`). This file holds
+   * `pbtResults[taskId]` and is written by Kiro's `update_pbt_status`
+   * tool, which on Windows intermittently fails with EPERM because the
+   * VS Code extension host holds a watcher handle on the file. We
+   * write to the same location using a copy-based atomic writer to
+   * dodge the rename race.
+   */
+  tasksMetaPathFor(specName: string): string {
+    return path.join(this.specsRoot, specName, 'tasks.meta.json');
+  }
+
+  /**
+   * Enumerate active spec names under .kiro/specs (skips _archive and files).
+   */
+  async listActiveSpecs(): Promise<string[]> {
+    const entries = await fs.readdir(this.specsRoot, { withFileTypes: true });
+    return entries
+      .filter((e) => e.isDirectory() && !e.name.startsWith('_'))
+      .map((e) => e.name)
+      .sort();
+  }
 }

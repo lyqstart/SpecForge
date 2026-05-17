@@ -1,0 +1,10 @@
+{
+  "projectId": "test-project",
+  "eventCount": 1,
+  "firstEventTs": 1778695108955000000,
+  "lastEventTs": 1778695108955000000,
+  "eventIds": [
+    "test-event-1778695108955-0.5334152966867587"
+  ],
+  "lastUpdated": 1778695108957
+}

@@ -1,0 +1,60 @@
+name: Code Quality
+
+# 触发时机：向 main 推送，或提交 PR 到 main
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── 异步资源规范审查 ────────────────────────────────────────────────────────
+  async-resource-audit:
+    name: 异步资源规范审查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      - name: 运行异步资源规范审查
+        run: bun run scripts/audit-async-resources.ts
+        # 脚本发现 error 级别问题时返回 exit code 1，GitHub Actions 自动标记失败
+
+  # ─── 单元测试 ────────────────────────────────────────────────────────────────
+  test:
+    name: 单元测试
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      - name: 运行测试（各模块）
+        run: |
+          for pkg in packages/*/; do
+            if [ -f "$pkg/package.json" ] && grep -q '"test"' "$pkg/package.json"; then
+              echo "=== 测试 $pkg ==="
+              cd "$pkg"
+              bun run test 2>&1 || exit 1
+              cd ../..
+            fi
+          done

@@ -49,16 +49,48 @@ bun scripts/sf-installer.ts install
 ### 升级
 
 ```bash
-bun scripts/sf-installer.ts upgrade         # 常规升级
-bun scripts/sf-installer.ts upgrade --force  # 强制覆盖
+bun scripts/sf-installer.ts upgrade         # 常规升级（保留用户自定义）
+bun scripts/sf-installer.ts upgrade --force  # 强制覆盖（覆盖用户自定义）
 ```
 
-### 校验 / 卸载
+**升级特性：**
+- ✅ **原子升级**：要么全部成功，要么回滚到之前状态
+- ✅ **降级检测**：如果源版本低于已安装版本，会提示降级警告
+- ✅ **用户自定义保护**：检测用户修改，避免意外覆盖
+- ✅ **孤儿文件清理**：自动清理新版本中移除的文件
+- ✅ **并发安全**：锁机制防止并发操作
+
+### 校验
 
 ```bash
 bun scripts/sf-installer.ts verify
+```
+
+**校验特性：**
+- ✅ **完整性检查**：验证所有文件的 SHA-256 校验和
+- ✅ **Manifest 验证**：检查 Manifest 完整性
+- ✅ **只读操作**：不修改任何文件
+- ✅ **详细报告**：报告缺失、损坏或不匹配的文件
+
+### 卸载
+
+```bash
 bun scripts/sf-installer.ts uninstall
 ```
+
+**卸载特性：**
+- ✅ **完整清理**：删除 Manifest 中记录的所有文件
+- ✅ **配置清理**：从 `opencode.json` 中移除 sf-* agent 条目
+- ✅ **安全保留**：保留用户其他配置不变
+- ✅ **残留检测**：报告未在 Manifest 中记录的 sf-* 文件
+
+### 版本信息
+
+```bash
+bun scripts/sf-installer.ts --version
+```
+
+显示已安装的 SpecForge 版本、安装时间、更新时间和已部署文件数量。
 
 ### 安装后
 
@@ -69,9 +101,48 @@ opencode             # 启动 OpenCode
 # 按 Tab 切换到 sf-orchestrator
 ```
 
+**注意：** 安装/升级后需要重启 OpenCode 才能加载新版 Plugin。
+
+### 安装器设计优势
+
+1. **零维护**：文件增删无需修改代码，运行时自动扫描 `.opencode/` 目录
+2. **统一引擎**：install/upgrade/repair 共用同一个 Reconcile 函数
+3. **幂等性**：多次执行相同操作不产生额外变更
+4. **原子性**：每个文件写入都是原子的（temp + SHA-256 验证 + rename）
+5. **作用域隔离**：用户级 vs 项目级使用不同策略
+6. **完整测试**：16 个正确性属性 + 端到端测试覆盖
+
 ---
 
 ## 目录结构
+
+### 本仓库（开发视角）
+
+```
+SpecForge/                        # 仓库根目录
+├── .kiro/
+│   ├── specs/                   # 设计文档（requirements/design/tasks）
+│   │   ├── v6-architecture-overview/  # 父规范
+│   │   ├── daemon-core/         # 各模块 spec（只放文档）
+│   │   ├── configuration/
+│   │   ├── ...
+│   │   └── _archive/            # 历史 spec（V1–V5）
+│   └── steering/                # AI 开发规则
+├── packages/                    # V6 模块源码（monorepo）
+│   ├── daemon-core/
+│   ├── configuration/
+│   ├── permission-engine/
+│   ├── observability/
+│   ├── scope-gate/
+│   ├── workflow-runtime/
+│   └── types/
+├── .opencode/                   # SpecForge 框架（Agent/Tool/Skill/Plugin）
+├── scripts/                     # 安装器脚本
+├── tests/                       # 跨模块集成/e2e 测试
+└── docs/archive/                # 历史设计文档
+```
+
+### 安装后（用户项目视角）
 
 ```
 ~/.config/opencode/              # 用户级共享组件（一次安装，所有项目共享）
@@ -177,6 +248,121 @@ bun run test:coverage  # 带覆盖率
 ```
 
 ---
+
+## 安装器详细使用指南
+
+### 基本命令
+
+```bash
+# 安装 SpecForge 共享组件
+bun scripts/sf-installer.ts install
+
+# 升级 SpecForge 共享组件
+bun scripts/sf-installer.ts upgrade
+bun scripts/sf-installer.ts upgrade --force  # 强制覆盖用户自定义
+
+# 校验安装完整性
+bun scripts/sf-installer.ts verify
+
+# 卸载 SpecForge 共享组件
+bun scripts/sf-installer.ts uninstall
+
+# 显示版本信息
+bun scripts/sf-installer.ts --version
+
+# 显示帮助信息
+bun scripts/sf-installer.ts --help
+```
+
+### 使用示例
+
+#### 完整安装流程
+```bash
+# 1. 首次安装
+bun scripts/sf-installer.ts install
+
+# 2. 验证安装
+bun scripts/sf-installer.ts verify
+
+# 3. 重启 OpenCode 加载 Plugin
+# （需要重启 OpenCode 才能加载新版 Plugin）
+```
+
+#### 升级流程
+```bash
+# 1. 常规升级（保留用户自定义）
+bun scripts/sf-installer.ts upgrade
+
+# 2. 强制升级（覆盖所有文件）
+bun scripts/sf-installer.ts upgrade --force
+
+# 3. 验证升级结果
+bun scripts/sf-installer.ts verify
+```
+
+#### 故障排查
+```bash
+# 检查安装状态
+bun scripts/sf-installer.ts --version
+
+# 验证完整性
+bun scripts/sf-installer.ts verify
+
+# 如果验证失败，重新安装
+bun scripts/sf-installer.ts upgrade --force
+```
+
+### 安装位置
+
+**用户级共享组件目录：**
+```
+~/.config/opencode/
+├── agents/           # 9 个 sf-* Agent 定义文件
+├── tools/           # 16 个 Tool + 19 个 lib 文件
+├── skills/          # 12 个 Skill 目录
+├── plugins/         # 1 个统一 Plugin (sf_specforge.ts)
+├── opencode.json    # Agent 注册配置
+└── specforge-manifest.json  # 用户级 Manifest
+```
+
+**项目级运行时目录（Plugin 自动初始化）：**
+```
+项目根目录/specforge/
+├── config/          # 项目配置
+├── runtime/         # 运行时状态
+├── knowledge/       # 知识库（V5.0）
+└── archive/         # 工作项归档
+```
+
+### 退出码
+
+| 退出码 | 含义 |
+|--------|------|
+| 0 | 成功 |
+| 1 | 通用错误 |
+| 2 | 源文件缺失 |
+| 3 | 校验和不匹配 |
+| 4 | 磁盘空间不足 |
+| 5 | 并发锁冲突 |
+| 6 | 降级检测（需要 --force） |
+
+### 设计原理
+
+安装器采用 **声明式期望状态 + 自动协调（Reconcile）** 架构：
+
+1. **自动发现机制**：运行时扫描 `.opencode/` 目录，无需手动维护注册表
+2. **三方哈希比较**：源文件 vs 目标文件 vs Manifest 记录，精确检测用户修改
+3. **原子写入**：temp 文件 + SHA-256 验证 + rename，确保文件完整性
+4. **提交中断恢复**：partial_commit.journal 机制，崩溃后自动恢复
+5. **孤儿文件清理**：自动清理新版本中移除的 `sf-*` 和 `sf_*` 文件
+
+### 注意事项
+
+1. **重启要求**：安装/升级后需要重启 OpenCode 才能加载新版 Plugin
+2. **并发安全**：安装器使用心跳锁机制防止并发操作
+3. **向后兼容**：支持从旧版 Manifest 格式迁移
+4. **性能保证**：Plugin 启动时间 < 500ms（硬断言）
+5. **错误处理**：详细的错误代码和退出码
 
 ## 详细文档
 

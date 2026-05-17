@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "files": {
+    "source": [
+      "src/index.ts",
+      "src/types.ts",
+      "src/constants.ts",
+      "src/config-loader.ts",
+      "src/config-merge.ts",
+      "src/config-validator.ts",
+      "src/hot-reload.ts"
+    ],
+    "test": [
+      "tests/index.test.ts",
+      "tests/config-loader.test.ts",
+      "tests/config-merge.test.ts",
+      "tests/config-validator.test.ts",
+      "tests/hot-reload.test.ts",
+      "tests/property/property-11.test.ts",
+      "tests/property/property-19.test.ts"
+    ],
+    "config": [
+      "package.json",
+      "tsconfig.json",
+      ".eslintrc.json",
+      ".prettierrc",
+      "vitest.config.ts"
+    ]
+  }
+}

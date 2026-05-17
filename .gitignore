@@ -1,1 +1,32 @@
+# Dependencies
 node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# SpecForge project runtime (Plugin auto-generated)
+specforge/
+
+# Temporary / debug artifacts
+test_log/
+.backup/
+test_output.txt
+*.log
+
+# Kiro PBT runtime state (written to spec dirs by update_pbt_status /
+# set-pbt; runtime only, not source of truth)
+.kiro/specs/**/tasks.meta.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# npm lock file (project uses bun exclusively)
+package-lock.json
+packages/*/package-lock.json

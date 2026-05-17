@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "requirements": [
+    {
+      "id": "1.1",
+      "title": "Configuration Schema",
+      "description": "Define TypeScript interfaces for configuration layers and merged config"
+    },
+    {
+      "id": "1.2",
+      "title": "Sensitive Fields",
+      "description": "Define list of sensitive fields that cannot be overridden"
+    },
+    {
+      "id": "1.3",
+      "title": "File Loading",
+      "description": "Load configuration from user and project directories"
+    },
+    {
+      "id": "1.4",
+      "title": "Sensitive Field Protection",
+      "description": "Reject project-level overrides of sensitive fields"
+    },
+    {
+      "id": "2.1",
+      "title": "Four-layer Merge",
+      "description": "Implement merge logic for builtin, user, project, and runtime layers"
+    },
+    {
+      "id": "2.2",
+      "title": "Deterministic Merge",
+      "description": "Ensure same inputs always produce same outputs"
+    },
+    {
+      "id": "2.3",
+      "title": "Hot-reload Activation Boundary",
+      "description": "Apply new config only to workflows starting after reload time"
+    }
+  ]
+}

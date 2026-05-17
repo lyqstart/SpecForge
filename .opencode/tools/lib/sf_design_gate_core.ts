@@ -509,7 +509,7 @@ export function extractCPTestTypes(
     const nextHeading = /^#{1,6}\s/m.exec(afterCP)
     const cpSection = nextHeading ? afterCP.slice(0, nextHeading.index) : afterCP
 
-    const testTypeMatch = /\*\*test_type\*\*\s*:\s*(\S+)/i.exec(cpSection)
+    const testTypeMatch = /\*\*test_type\*\*\s*:\s*(.*)/i.exec(cpSection)
     if (testTypeMatch) {
       const entry: { cpId: string; testType: string; testFile?: string; requirementRef?: string } = {
         cpId,

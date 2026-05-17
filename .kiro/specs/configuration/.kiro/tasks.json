@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "tasks": [
+    {
+      "id": "1.1",
+      "title": "Set up project structure and build configuration",
+      "status": "completed",
+      "completedAt": "2026-05-11T00:00:00Z"
+    }
+  ]
+}

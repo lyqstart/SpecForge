@@ -1,0 +1,18 @@
+{
+  "name": "@specforge/types",
+  "version": "0.1.0",
+  "description": "Shared TypeScript types for SpecForge V6 modules",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["specforge", "types"],
+  "author": "SpecForge Team",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  },
+  "schema_version": "1.0"
+}

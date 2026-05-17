@@ -1,0 +1,1 @@
+{"schema_version":"1.0","eventId":"test-event-1778689742987-0.0364910484325528","ts":1778689742987000000,"monotonicSeq":1,"projectId":"test-project","workItemId":"test-workitem","actor":{"id":"test-agent","name":"TestAgent","type":"agent"},"category":"workflow","action":"workflow.stuck","payload":{"state":"pending"}}

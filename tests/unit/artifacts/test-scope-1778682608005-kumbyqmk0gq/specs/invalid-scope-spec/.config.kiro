@@ -1,0 +1,6 @@
+{
+  "specId": "invalid-scope-spec",
+  "workflowType": "requirements-first",
+  "specType": "feature",
+  "scopeTag": "invalid-value"
+}

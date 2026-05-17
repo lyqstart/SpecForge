@@ -1,0 +1,7 @@
+{
+  "specId": "migration",
+  "workflowType": "requirements-first",
+  "specType": "feature",
+  "scopeTag": "p0",
+  "parentSpec": "v6-architecture-overview"
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "properties": [
+    {
+      "id": 11,
+      "title": "Configuration Merge Determinism",
+      "description": "Configuration merge produces identical results for same inputs across different environments",
+      "testFile": "tests/property/property-11.test.ts"
+    },
+    {
+      "id": 19,
+      "title": "Hot-reload Activation Boundary",
+      "description": "Hot-reload applies new config only to workflows starting after reload time",
+      "testFile": "tests/property/property-19.test.ts"
+    }
+  ]
+}

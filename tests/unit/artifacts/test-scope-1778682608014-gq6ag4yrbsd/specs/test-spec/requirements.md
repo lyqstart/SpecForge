@@ -1,0 +1,1 @@
+This spec only uses P0 capabilities like Daemon and Session Registry.

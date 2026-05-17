@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, afterEach } from "vitest"
 import { mkdtemp, rm, writeFile, mkdir } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
@@ -38,17 +38,27 @@ function makeUserManifest(overrides?: Record<string, unknown>) {
 describe("assertCompatibility", () => {
   let projectDir: string
   let userLevelDir: string
+  let originalOpenCodeConfigDir: string | undefined
 
   beforeEach(async () => {
     projectDir = await mkdtemp(join(tmpdir(), "sf-compat-project-"))
     userLevelDir = await mkdtemp(join(tmpdir(), "sf-compat-user-"))
 
+    // Save original environment variable
+    originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR
+    
     // Point OPENCODE_CONFIG_DIR to our temp user-level dir
-    vi.stubEnv("OPENCODE_CONFIG_DIR", userLevelDir)
+    process.env.OPENCODE_CONFIG_DIR = userLevelDir
   })
 
   afterEach(async () => {
-    vi.unstubAllEnvs()
+    // Restore original environment variable
+    if (originalOpenCodeConfigDir !== undefined) {
+      process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir
+    } else {
+      delete process.env.OPENCODE_CONFIG_DIR
+    }
+    
     await rm(projectDir, { recursive: true, force: true })
     await rm(userLevelDir, { recursive: true, force: true })
   })

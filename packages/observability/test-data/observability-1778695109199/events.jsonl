@@ -1,0 +1,1 @@
+{"schema_version":"1.0","eventId":"test-event-1778695109202-0.40919438404891073","ts":1778695109202000000,"monotonicSeq":1,"projectId":"test-project","workItemId":"test-workitem","actor":{"id":"test-agent","name":"TestAgent","type":"agent"},"category":"session","action":"session.prompt","payload":{"sessionId":"session-1"}}

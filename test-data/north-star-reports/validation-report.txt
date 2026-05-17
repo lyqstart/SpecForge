@@ -1,0 +1,102 @@
+================================================================================
+North Star Goal Validation Report
+================================================================================
+
+Generated: 2026-05-14T18:59:53.924Z
+Schema Version: 1.0
+
+Summary:
+  Total Scenarios: 10
+  Passed: 10
+  Failed: 0
+  Average Time: 2.70ms
+  Min Time: 1ms
+  Max Time: 9ms
+
+✅ All 10 scenarios passed the North Star goal (< 5 minutes to root cause)
+
+--------------------------------------------------------------------------------
+Detailed Results:
+--------------------------------------------------------------------------------
+
+✅ PASS [gate-repeated-failure]
+  Description: Gate反复失败 (Gate repeatedly fails)
+  Time to Identify: 9ms
+  Root Cause: Gate "RequirementsGate" failed 5 times
+  Confidence: 100.0%
+  Evidence Count: 5
+  Recommendations: 3
+
+✅ PASS [agent-deviation]
+  Description: Agent偏离prompt (Agent deviates from prompt)
+  Time to Identify: 3ms
+  Root Cause: Most frequent action: session.started (1 occurrences)
+  Confidence: 50.0%
+  Evidence Count: 3
+  Recommendations: 1
+
+✅ PASS [tool-invocation-error]
+  Description: Tool调用错误 (Tool invocation errors)
+  Time to Identify: 2ms
+  Root Cause: Most frequent action: tool.invoke (1 occurrences)
+  Confidence: 50.0%
+  Evidence Count: 2
+  Recommendations: 1
+
+✅ PASS [permission-denial]
+  Description: 权限拒绝 (Permission denials)
+  Time to Identify: 2ms
+  Root Cause: Permission denied by rule "deny-protected-files" (3 times)
+  Confidence: 100.0%
+  Evidence Count: 3
+  Recommendations: 3
+
+✅ PASS [upgrade-installation-failure]
+  Description: 升级/安装失败 (Upgrade/installation failures)
+  Time to Identify: 2ms
+  Root Cause: Most frequent action: system.upgrade (1 occurrences)
+  Confidence: 50.0%
+  Evidence Count: 1
+  Recommendations: 1
+
+✅ PASS [state-machine-stuck]
+  Description: 状态机卡住 (State machine stuck)
+  Time to Identify: 2ms
+  Root Cause: Workflow stuck at: running
+  Confidence: 80.0%
+  Evidence Count: 1
+  Recommendations: 3
+
+✅ PASS [concurrency-deadlock]
+  Description: 并发死锁 (Concurrency deadlocks)
+  Time to Identify: 1ms
+  Root Cause: Most frequent action: workflow.transition (2 occurrences)
+  Confidence: 50.0%
+  Evidence Count: 2
+  Recommendations: 1
+
+✅ PASS [skill-invocation-check]
+  Description: Skill是否被调用 (Whether Skill was invoked)
+  Time to Identify: 1ms
+  Root Cause: Most frequent action: skill.invoked (1 occurrences)
+  Confidence: 50.0%
+  Evidence Count: 2
+  Recommendations: 1
+
+✅ PASS [workflow-execution-check]
+  Description: Workflow是否按预期执行 (Whether Workflow executed as expected)
+  Time to Identify: 3ms
+  Root Cause: Most frequent action: workflow.executing (2 occurrences)
+  Confidence: 50.0%
+  Evidence Count: 3
+  Recommendations: 1
+
+✅ PASS [workflow-result-deviation]
+  Description: Workflow执行结果偏离预期 (Workflow execution results deviate from expectations)
+  Time to Identify: 2ms
+  Root Cause: 1 workflow results deviated from expected
+  Confidence: 90.0%
+  Evidence Count: 1
+  Recommendations: 3
+
+================================================================================

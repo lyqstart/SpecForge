@@ -7,11 +7,14 @@ import { existsSync, readFileSync, mkdirSync, writeFileSync } from "node:fs"
 // Mock resolveUserLevelDirectory before importing cmdUninstall
 let mockUserLevelDir: string
 
-vi.mock("../../../scripts/lib/paths", async (importOriginal) => {
-  const actual = await importOriginal() as Record<string, unknown>
+// Simple mock without importOriginal
+vi.mock("../../../scripts/lib/paths", () => {
   return {
-    ...actual,
     resolveUserLevelDirectory: () => mockUserLevelDir,
+    toPosix: (path: string) => path.replace(/\\/g, '/'),
+    toNative: (path: string) => path.replace(/\//g, '\\'),
+    normalizeSeparators: (path: string) => path.replace(/\\/g, '/'),
+    resolveTargetDir: () => mockUserLevelDir,
   }
 })
 

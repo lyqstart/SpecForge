@@ -1,0 +1,4 @@
+specType: "feature"
+scopeTag: p0
+parentSpec: "v6-architecture-overview"
+description: "Plugin Loader with static permission checking (P0) and runtime sandbox (P2)"

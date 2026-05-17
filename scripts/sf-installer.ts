@@ -553,54 +553,25 @@ export async function cmdVerify(): Promise<void> {
     console.log("")
   }
 
-  // 读取 User_Manifest
-  const manifest = await readUserManifest(userLevelDir)
-  if (!manifest) {
-    console.error("❌ 未找到 specforge-manifest.json，SpecForge 可能未安装")
-    process.exit(1)
-    return // unreachable but satisfies TypeScript after mocked process.exit in tests
-  }
-
-  const totalFiles = Object.keys(manifest.files).length
-  let failedCount = 0
-  let okCount = 0
-  let missingCount = 0
-
-  for (const [relativePath, entry] of Object.entries(manifest.files)) {
-    const fullPath = path.join(userLevelDir, posixToNative(relativePath))
-
-    if (!fs.existsSync(fullPath)) {
-      console.log(`  ❌ 缺失: ${relativePath}`)
-      missingCount++
-      continue
+  try {
+    // 使用新的 verify 模块
+    const { verifyInstallation, printVerifyReport } = await import("./lib/verify")
+    const result = await verifyInstallation(userLevelDir)
+    
+    // 输出结果并获取退出码
+    const exitCode = printVerifyReport(result)
+    
+    if (exitCode !== 0) {
+      process.exit(exitCode)
     }
-
-    const actualHash = await computeSHA256(fullPath)
-    if (actualHash !== entry.sha256) {
-      console.log(`  ❌ 校验失败: ${relativePath}`)
-      console.log(`     预期: ${entry.sha256.slice(0, 16)}...`)
-      console.log(`     实际: ${actualHash.slice(0, 16)}...`)
-      failedCount++
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("Manifest 无效或不存在")) {
+      console.error("❌ 未找到有效的 specforge-manifest.json，SpecForge 可能未安装")
+      process.exit(1)
     } else {
-      console.log(`  ✅ 通过: ${relativePath}`)
-      okCount++
+      console.error(`❌ 校验过程中发生错误: ${error}`)
+      process.exit(1)
     }
-  }
-
-  // 显示摘要
-  console.log("")
-  console.log(`   总计: ${totalFiles} 个文件`)
-  console.log(`   通过: ${okCount}`)
-  console.log(`   失败: ${failedCount}`)
-  console.log(`   缺失: ${missingCount}`)
-  console.log("")
-
-  if (failedCount === 0 && missingCount === 0) {
-    console.log(`✅ 校验通过（${okCount} 个文件完整）`)
-  } else {
-    console.log(`❌ 校验失败: ${failedCount + missingCount} 个问题（缺失: ${missingCount}, 不一致: ${failedCount}）`)
-    console.log(`   建议: 执行 \`upgrade --force\` 恢复共享组件`)
-    process.exit(EXIT_CODES[InstallerErrorCode.E_CHECKSUM_MISMATCH])
   }
 }
 

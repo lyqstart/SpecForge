@@ -1,22 +1,283 @@
 /**
- * SpecForge V3.4.0 — opencode.json 合并与校验模块
+ * SpecForge Installer Reconcile — opencode.json 合并与校验模块
  *
  * 实现用户级 opencode.json 的局部合并写入和 managed_agents 校验。
  * 混合所有权文件：sf-* Agent 由 SpecForge 管理，其余由用户管理。
+ *
+ * V2（Reconcile Redesign）新增：
+ * - mergeOpenCodeJson(): 基于 DesiredState 的声明式合并
+ * - agentKeyFromPath(): 从文件路径提取 agent key
+ * - MergeFieldPolicy / DEFAULT_MERGE_FIELD_POLICY: 字段级合并策略
+ *
+ * Requirements: 9.1, 9.2, 9.3, 9.4, 12.1, 12.2, 12.3, 12.4, 12.5, 12.6
  */
 
 import { readFile } from "node:fs/promises"
 import { existsSync } from "node:fs"
-import { join } from "node:path"
+import { join, basename } from "node:path"
 import { InstallerError, InstallerErrorCode } from "./errors"
-import { atomicWriteFile, backupFile } from "./atomic"
+import { atomicWrite, atomicWriteFile, backupFile } from "./atomic"
 import { computeAgentConfigHash } from "./crypto"
-import type { UserLevelManifest } from "./types"
+import type { UserLevelManifest, DesiredStateEntry, AgentConfig } from "./types"
 
 // ============================================================
-// 合并结果类型
+// Reconcile Redesign — 新接口定义
 // ============================================================
 
+/**
+ * OpenCode Merge 选项（Reconcile Redesign）
+ */
+export interface OpenCodeMergeOptions {
+  /** 目标目录（User_Level_Directory） */
+  targetDir: string
+  /** 当前 DesiredState 中的 agent 条目 */
+  agents: DesiredStateEntry[]
+  /** 源仓库 opencode.json 中的 agent 配置模板 */
+  sourceConfig: Record<string, AgentConfig>
+  /** 用户覆盖保留策略 */
+  preserveUserOverrides: boolean
+  /** 降级前是否备份 */
+  backupBeforeDowngrade: boolean
+}
+
+/**
+ * OpenCode Merge 结果
+ */
+export interface OpenCodeMergeResult {
+  success: boolean
+  agentsAdded: string[]
+  agentsRemoved: string[]
+  agentsUpdated: string[]
+  /** 用户覆盖的字段被保留的 agent 列表 */
+  userOverridesPreserved: string[]
+  error?: string
+  /** 是否创建了备份 */
+  backupCreated?: boolean
+  backupPath?: string
+}
+
+/**
+ * 字段级合并策略
+ *
+ * 当 preserveUserOverrides=true 时：
+ * - userOverridable 字段保留用户值（如 model）
+ * - installerManaged 字段强制使用源配置覆盖（如 mode, prompt, permission）
+ *
+ * 当 preserveUserOverrides=false 时（--force 或降级）：
+ * - 所有字段使用源配置覆盖
+ */
+export interface MergeFieldPolicy {
+  /** 用户可覆盖的字段 */
+  userOverridable: string[]
+  /** 安装器强制管理的字段 */
+  installerManaged: string[]
+}
+
+/**
+ * 默认合并字段策略
+ */
+export const DEFAULT_MERGE_FIELD_POLICY: MergeFieldPolicy = {
+  userOverridable: ["model"],
+  installerManaged: ["mode", "prompt", "permission"],
+}
+
+/**
+ * R9.4: 从文件相对路径提取 agent key
+ *
+ * 规则：取文件名（不含扩展名）作为 agent key
+ *
+ * @example
+ * agentKeyFromPath("agents/sf-orchestrator.md") → "sf-orchestrator"
+ * agentKeyFromPath("agents/sf-executor.md") → "sf-executor"
+ */
+export function agentKeyFromPath(relativePath: string): string {
+  // 处理 POSIX 和 Windows 路径
+  const fileName = basename(relativePath.replace(/\\/g, "/"))
+  // 移除扩展名
+  const dotIndex = fileName.lastIndexOf(".")
+  if (dotIndex > 0) {
+    return fileName.substring(0, dotIndex)
+  }
+  return fileName
+}
+
+/**
+ * 合并 opencode.json 中的 sf-* Agent 注册（Reconcile Redesign）
+ *
+ * 合并策略：
+ * 1. 读取目标 opencode.json（不存在则创建空结构）
+ * 2. JSON 解析失败 → 备份到 .backup/ → 创建新文件
+ * 3. 保留所有非 sf-* 条目不变
+ * 4. sf-* 条目：
+ *    - DesiredState 中有且目标无 → 添加（使用源配置）
+ *    - DesiredState 中有且目标有 → 更新（按 MergeFieldPolicy 保留用户覆盖）
+ *    - DesiredState 中无且目标有 → 删除
+ * 5. 原子写入（temp + rename）
+ *
+ * Requirements: 9.1, 9.2, 9.3, 9.4, 12.1, 12.2, 12.3, 12.4, 12.5, 12.6
+ */
+export async function mergeOpenCodeJson(
+  options: OpenCodeMergeOptions
+): Promise<OpenCodeMergeResult> {
+  const { targetDir, agents, sourceConfig, preserveUserOverrides, backupBeforeDowngrade } = options
+  const targetPath = join(targetDir, "opencode.json")
+
+  const result: OpenCodeMergeResult = {
+    success: false,
+    agentsAdded: [],
+    agentsRemoved: [],
+    agentsUpdated: [],
+    userOverridesPreserved: [],
+  }
+
+  // Step 1: 从 DesiredState 中的 agent 条目构建期望的 agent key 集合
+  const desiredAgentKeys = new Set<string>()
+  for (const entry of agents) {
+    if (entry.componentType === "agent") {
+      const key = agentKeyFromPath(entry.relativePath)
+      if (key.startsWith("sf-")) {
+        desiredAgentKeys.add(key)
+      }
+    }
+  }
+
+  // Step 2: 读取目标 opencode.json
+  let targetConfig: Record<string, unknown> = {}
+  let jsonParseFailed = false
+
+  if (existsSync(targetPath)) {
+    try {
+      const content = await readFile(targetPath, "utf-8")
+      targetConfig = JSON.parse(content)
+    } catch {
+      // JSON 解析失败：备份到 .backup/，创建新文件
+      jsonParseFailed = true
+      const backupPath = await backupFile(targetDir, "opencode.json")
+      if (backupPath) {
+        result.backupCreated = true
+        result.backupPath = backupPath
+      }
+      targetConfig = {}
+    }
+  }
+
+  // 降级备份（backupBeforeDowngrade=true 且文件存在且未因解析失败已备份）
+  if (backupBeforeDowngrade && !jsonParseFailed && existsSync(targetPath)) {
+    const backupPath = await backupFile(targetDir, "opencode.json")
+    if (backupPath) {
+      result.backupCreated = true
+      result.backupPath = backupPath
+    }
+  }
+
+  // Step 3: 确保 agent 对象存在
+  if (!targetConfig.agent || typeof targetConfig.agent !== "object") {
+    targetConfig.agent = {}
+  }
+  const targetAgents = targetConfig.agent as Record<string, unknown>
+
+  // Step 4: 处理 sf-* 条目
+
+  // 4a: 找出当前 opencode.json 中所有 sf-* 条目
+  const existingSfKeys = new Set<string>()
+  for (const key of Object.keys(targetAgents)) {
+    if (key.startsWith("sf-")) {
+      existingSfKeys.add(key)
+    }
+  }
+
+  // 4b: 添加新 agent 和更新现有 agent
+  for (const agentKey of desiredAgentKeys) {
+    const sourceConf = sourceConfig[agentKey]
+    if (!sourceConf) continue // 没有源配置模板则跳过
+
+    if (existingSfKeys.has(agentKey)) {
+      // 更新现有 agent（按 MergeFieldPolicy）
+      const existingConf = targetAgents[agentKey] as Record<string, unknown> | undefined
+      if (existingConf && typeof existingConf === "object" && preserveUserOverrides) {
+        // 保留用户可覆盖字段，强制覆盖安装器管理字段
+        const merged: Record<string, unknown> = { ...existingConf }
+        let overridePreserved = false
+
+        for (const field of DEFAULT_MERGE_FIELD_POLICY.installerManaged) {
+          if (field in sourceConf) {
+            merged[field] = (sourceConf as unknown as Record<string, unknown>)[field]
+          }
+        }
+
+        for (const field of DEFAULT_MERGE_FIELD_POLICY.userOverridable) {
+          const sourceValue = (sourceConf as unknown as Record<string, unknown>)[field]
+          const existingValue = existingConf[field]
+          // 如果用户已修改（值不同于源），保留用户值
+          if (existingValue !== undefined && existingValue !== sourceValue) {
+            // 保留用户值
+            merged[field] = existingValue
+            overridePreserved = true
+          } else {
+            // 使用源值
+            merged[field] = sourceValue
+          }
+        }
+
+        targetAgents[agentKey] = merged
+        if (overridePreserved) {
+          result.userOverridesPreserved.push(agentKey)
+        }
+      } else {
+        // preserveUserOverrides=false 或现有条目无效 → 完全覆盖
+        targetAgents[agentKey] = { ...sourceConf }
+      }
+      result.agentsUpdated.push(agentKey)
+    } else {
+      // 添加新 agent
+      targetAgents[agentKey] = { ...sourceConf }
+      result.agentsAdded.push(agentKey)
+    }
+  }
+
+  // 4c: 移除不在 DesiredState 中的 sf-* 条目
+  for (const existingKey of existingSfKeys) {
+    if (!desiredAgentKeys.has(existingKey)) {
+      delete targetAgents[existingKey]
+      result.agentsRemoved.push(existingKey)
+    }
+  }
+
+  // Step 5: 确保 plugin 数组包含 sf_specforge.ts
+  const pluginEntry = "./plugins/sf_specforge.ts"
+  if (!Array.isArray(targetConfig.plugin)) {
+    targetConfig.plugin = []
+  }
+  const plugins = targetConfig.plugin as string[]
+  if (!plugins.includes(pluginEntry)) {
+    plugins.push(pluginEntry)
+  }
+
+  // Step 6: 原子写入
+  const jsonContent = JSON.stringify(targetConfig, null, 2) + "\n"
+
+  try {
+    const writeResult = await atomicWrite(targetPath, jsonContent)
+    if (!writeResult.success) {
+      result.error = writeResult.error ?? "Atomic write failed"
+      return result
+    }
+  } catch (err) {
+    result.error = err instanceof Error ? err.message : String(err)
+    return result
+  }
+
+  result.success = true
+  return result
+}
+
+// ============================================================
+// Legacy 合并结果类型（向后兼容）
+// ============================================================
+
+/**
+ * @deprecated 使用 OpenCodeMergeResult 替代
+ */
 export interface MergeResult {
   /** 成功写入的 Agent 列表 */
   written: string[]

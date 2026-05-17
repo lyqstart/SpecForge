@@ -4,6 +4,10 @@ import {
   posixToNative,
   nativeToPosix,
   normalizeLongPathForWindows,
+  toPosix,
+  toNative,
+  normalizeSeparators,
+  resolveTargetDir,
 } from "../../../scripts/lib/paths"
 import * as path from "node:path"
 import * as os from "node:os"
@@ -149,6 +153,179 @@ describe("paths module", () => {
       Object.defineProperty(process, "platform", { value: "win32" })
       const uncPath = "\\\\server\\share\\file.txt"
       expect(normalizeLongPathForWindows(uncPath)).toBe(uncPath)
+    })
+  })
+
+  describe("toPosix", () => {
+    it("should replace all backslashes with forward slashes", () => {
+      expect(toPosix("agents\\sf-orchestrator.md")).toBe("agents/sf-orchestrator.md")
+    })
+
+    it("should handle nested paths with backslashes", () => {
+      expect(toPosix("tools\\lib\\sf_state_read_core.ts")).toBe(
+        "tools/lib/sf_state_read_core.ts"
+      )
+    })
+
+    it("should leave forward slashes unchanged", () => {
+      expect(toPosix("agents/sf-orchestrator.md")).toBe("agents/sf-orchestrator.md")
+    })
+
+    it("should handle mixed separators", () => {
+      expect(toPosix("tools\\lib/sf_state_read_core.ts")).toBe(
+        "tools/lib/sf_state_read_core.ts"
+      )
+    })
+
+    it("should handle paths without separators", () => {
+      expect(toPosix("file.txt")).toBe("file.txt")
+    })
+
+    it("should handle empty string", () => {
+      expect(toPosix("")).toBe("")
+    })
+
+    it("should handle Windows absolute paths", () => {
+      expect(toPosix("C:\\Users\\test\\file.txt")).toBe("C:/Users/test/file.txt")
+    })
+  })
+
+  describe("toNative", () => {
+    it("should convert forward slashes to native separator", () => {
+      const input = "agents/sf-orchestrator.md"
+      const result = toNative(input)
+
+      if (process.platform === "win32") {
+        expect(result).toBe("agents\\sf-orchestrator.md")
+      } else {
+        expect(result).toBe("agents/sf-orchestrator.md")
+      }
+    })
+
+    it("should handle nested paths", () => {
+      const input = "tools/lib/sf_state_read_core.ts"
+      const result = toNative(input)
+
+      if (process.platform === "win32") {
+        expect(result).toBe("tools\\lib\\sf_state_read_core.ts")
+      } else {
+        expect(result).toBe("tools/lib/sf_state_read_core.ts")
+      }
+    })
+
+    it("should handle paths without separators", () => {
+      expect(toNative("file.txt")).toBe("file.txt")
+    })
+
+    it("should handle empty string", () => {
+      expect(toNative("")).toBe("")
+    })
+  })
+
+  describe("normalizeSeparators", () => {
+    it("should replace all backslashes with forward slashes", () => {
+      expect(normalizeSeparators("agents\\sf-orchestrator.md")).toBe(
+        "agents/sf-orchestrator.md"
+      )
+    })
+
+    it("should handle mixed separators", () => {
+      expect(normalizeSeparators("tools\\lib/sf_state_read_core.ts")).toBe(
+        "tools/lib/sf_state_read_core.ts"
+      )
+    })
+
+    it("should leave forward slashes unchanged", () => {
+      expect(normalizeSeparators("agents/sf-orchestrator.md")).toBe(
+        "agents/sf-orchestrator.md"
+      )
+    })
+
+    it("should handle multiple consecutive backslashes", () => {
+      expect(normalizeSeparators("path\\\\to\\\\file.txt")).toBe(
+        "path//to//file.txt"
+      )
+    })
+
+    it("should handle empty string", () => {
+      expect(normalizeSeparators("")).toBe("")
+    })
+  })
+
+  describe("resolveTargetDir", () => {
+    const originalEnv = process.env
+
+    beforeEach(() => {
+      process.env = { ...originalEnv }
+    })
+
+    afterEach(() => {
+      process.env = originalEnv
+      vi.restoreAllMocks()
+    })
+
+    it("should use OPENCODE_CONFIG_DIR when set", () => {
+      process.env.OPENCODE_CONFIG_DIR = "/custom/opencode/dir"
+      const result = resolveTargetDir()
+      expect(result).toBe(path.resolve(path.normalize("/custom/opencode/dir")))
+    })
+
+    it("should use OPENCODE_CONFIG_DIR with relative path", () => {
+      process.env.OPENCODE_CONFIG_DIR = "./relative/path"
+      const result = resolveTargetDir()
+      expect(result).toBe(path.resolve(path.normalize("./relative/path")))
+    })
+
+    it("should return an absolute path", () => {
+      delete process.env.OPENCODE_CONFIG_DIR
+      const result = resolveTargetDir()
+      expect(path.isAbsolute(result)).toBe(true)
+    })
+
+    it("should use platform default when OPENCODE_CONFIG_DIR is not set", () => {
+      delete process.env.OPENCODE_CONFIG_DIR
+      const result = resolveTargetDir()
+
+      if (process.platform === "win32") {
+        // Windows: uses APPDATA if available, otherwise ~/.config/opencode/
+        const appData = originalEnv.APPDATA
+        if (appData) {
+          expect(result).toBe(path.resolve(path.join(appData, "opencode")))
+        } else {
+          expect(result).toBe(
+            path.resolve(path.join(os.homedir(), ".config", "opencode"))
+          )
+        }
+      } else {
+        // Unix: ~/.config/opencode/
+        expect(result).toBe(
+          path.resolve(path.join(os.homedir(), ".config", "opencode"))
+        )
+      }
+    })
+
+    it("should fall back to ~/.config/opencode/ on Windows when APPDATA is not set", () => {
+      delete process.env.OPENCODE_CONFIG_DIR
+      delete process.env.APPDATA
+
+      if (process.platform === "win32") {
+        const result = resolveTargetDir()
+        expect(result).toBe(
+          path.resolve(path.join(os.homedir(), ".config", "opencode"))
+        )
+      }
+    })
+  })
+
+  describe("backward compatibility", () => {
+    it("posixToNative should delegate to toNative", () => {
+      const input = "agents/sf-orchestrator.md"
+      expect(posixToNative(input)).toBe(toNative(input))
+    })
+
+    it("nativeToPosix should delegate to toPosix", () => {
+      const input = "agents\\sf-orchestrator.md"
+      expect(nativeToPosix(input)).toBe(toPosix(input))
     })
   })
 })

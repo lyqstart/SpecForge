@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "specId": "configuration",
+  "description": "Configuration subsystem for SpecForge V6",
+  "wave": 0,
+  "parentSpec": "v6-architecture-overview",
+  "scopeTag": "p0",
+  "correctnessProperties": [11, 19]
+}

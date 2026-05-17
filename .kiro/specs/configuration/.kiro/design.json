@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "architecture": {
+    "layers": [
+      "builtin",
+      "user",
+      "project",
+      "runtime"
+    ],
+    "mergeStrategy": "deterministic",
+    "sensitiveFieldProtection": true,
+    "hotReload": {
+      "enabled": true,
+      "activationBoundary": true
+    }
+  },
+  "modules": [
+    {
+      "name": "config-loader",
+      "responsibility": "Load configuration from files"
+    },
+    {
+      "name": "config-merge",
+      "responsibility": "Merge configuration layers"
+    },
+    {
+      "name": "config-validator",
+      "responsibility": "Validate configuration"
+    },
+    {
+      "name": "hot-reload",
+      "responsibility": "Hot-reload configuration"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "dependencies": {
+    "runtime": [
+      "chokidar",
+      "lru-cache",
+      "zod"
+    ],
+    "dev": [
+      "@types/node",
+      "@typescript-eslint/eslint-plugin",
+      "@typescript-eslint/parser",
+      "@vitest/coverage-v8",
+      "eslint",
+      "eslint-config-prettier",
+      "eslint-plugin-prettier",
+      "prettier",
+      "typescript",
+      "vitest"
+    ]
+  }
+}
