@@ -1,0 +1,10 @@
+{
+  "specId": "integration-tests",
+  "title": "V6.0 集成测试与质量收敛（W3）",
+  "parentSpec": "v6-architecture-overview",
+  "scopeTag": "p0",
+  "workflowType": "feature_spec",
+  "specType": "feature",
+  "wave": "W3",
+  "schema_version": "1.0"
+}

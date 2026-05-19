@@ -105,6 +105,18 @@ export class StaticAnalyzer {
    * @returns 分析结果
    */
   analyzeFile(source: string, filePath: string): StaticAnalysisResult {
+    // 处理空源码 - 空源码是有效的，返回成功
+    if (!source || source.trim() === '') {
+      return {
+        success: true,
+        filePath,
+        violations: [],
+        functionCallCount: 0,
+        importCount: 0,
+        variableRefCount: 0,
+      };
+    }
+
     // 解析 AST
     const parseResult = this.astParser.parse(source, filePath);
     if (!parseResult.success || !parseResult.ast) {

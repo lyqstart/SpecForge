@@ -1,0 +1,45 @@
+bun test v1.3.11 (af24e281)
+
+tests\integration\distribution\upgrade-in-place.test.ts:
+(fail) Integration: upgrade-in-place > should preserve user data when upgrading from baseline 1.0 to 2.0 [30016.00ms]
+  ^ this test timed out after 30000ms.
+Error [INIT_LOCKED]: Another init process is currently running (lockPath="C:\\Users\\luo\\AppData\\Local\\Temp\\sf-upgrade-Lcj7qr\\.specforge\\.init.lock") | Remedy: Wait for the other process to complete or kill it
+
+# Unhandled error between tests
+-------------------------------
+237 |     }
+238 | 
+239 |     const capturedStderr = getStderr();
+240 | 
+241 |     // 鈹€鈹€ Step 5: 楠岃瘉 init 閫€鍑虹爜涓?0锛圧EQ-7.3锛夆攢鈹€
+242 |     expect(resultV2.exitCode).toBe(0);
+                                    ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 2
+
+      at <anonymous> (D:\code\temp\SpecForge\tests\integration\distribution\upgrade-in-place.test.ts:242:31)
+-------------------------------
+
+(fail) Integration: upgrade-in-place > should only overwrite config.yaml and .installation.json when --force is used after upgrade [30015.00ms]
+  ^ this test timed out after 30000ms.
+Error [INIT_LOCKED]: Another init process is currently running (lockPath="C:\\Users\\luo\\AppData\\Local\\Temp\\sf-upgrade-5MDgzh\\.specforge\\.init.lock") | Remedy: Wait for the other process to complete or kill it
+
+# Unhandled error between tests
+-------------------------------
+319 |       force: true,
+320 |       json: false,
+321 |       installRootOverride,
+322 |     });
+323 | 
+324 |     expect(resultV2.exitCode).toBe(0);
+                                    ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 2
+
+      at <anonymous> (D:\code\temp\SpecForge\tests\integration\distribution\upgrade-in-place.test.ts:324:31)
+-------------------------------
+

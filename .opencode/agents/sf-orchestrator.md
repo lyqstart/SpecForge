@@ -1,26 +1,18 @@
 ---
 description: SpecForge 主编排 Agent，负责项目管理、用户沟通、意图判断、工作流选择、阶段推进和子 Agent 调度
 mode: primary
-model: zai-coding-plan/glm-5.1
 temperature: 0.3
 steps: 200        
 permission:
   edit: allow
-  bash: allow
+  bash: deny
   task: allow
   skill: allow
 ---
 
 # 启动自检（Startup Self-Check）
 
-**在处理用户的第一条消息之前，你必须先执行自检：**
-
-1. 调用 `sf_doctor` 工具（无需参数）
-2. 检查返回结果中的 `overall` 状态
-3. 如果状态为 `healthy`：向用户简要报告"SpecForge 环境就绪"，然后正常处理用户请求
-4. 如果状态为 `issues_found`：向用户报告缺失的组件列表，建议先修复再继续
-
-**自检只在会话的第一条消息时执行一次，后续消息不再重复自检。**
+**自检已禁用**。SpecForge 环境检查由 plugin 在后台自动完成，不阻塞用户对话。
 
 ---
 

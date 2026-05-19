@@ -1,0 +1,75 @@
+bun test v1.3.11 (af24e281)
+
+tests\integration\distribution\upgrade-in-place.test.ts:
+(fail) Integration: upgrade-in-place > should preserve user data when upgrading from baseline 1.0 to 2.0 [30047.00ms]
+  ^ this test timed out after 30000ms.
+
+# Unhandled error between tests
+-------------------------------
+241 |     // 鈹€鈹€ Step 5: 楠岃瘉 init 閫€鍑虹爜涓?0锛圧EQ-7.3锛夆攢鈹€
+242 |     expect(resultV2.exitCode).toBe(0);
+243 | 
+244 |     // 鈹€鈹€ Step 6: 楠岃瘉 stderr 鍖呭惈鍗囩骇鎻愮ず鐨勫叧閿瓧闈㈤噺锛圧EQ-7.3锛夆攢鈹€
+245 |     // stderr 搴斿寘鍚細CLI 鐗堟湰銆乥aseline銆佺鐩?schema_version銆佽縼绉诲懡浠?246 |     expect(capturedStderr).toContain('2.0');           // CLI baseline
+                                 ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "2.0"
+Received: ""
+
+      at <anonymous> (D:\code\temp\SpecForge\tests\integration\distribution\upgrade-in-place.test.ts:246:28)
+-------------------------------
+
+error: ENOENT: no such file or directory, stat 'C:\Users\luo\AppData\Local\Temp\sf-upgrade-c9fJvS\.specforge\.init.lock.lock'
+    path: "C:\\Users\\luo\\AppData\\Local\\Temp\\sf-upgrade-c9fJvS\\.specforge\\.init.lock.lock",
+ syscall: "stat",
+   errno: -2,
+    code: "ECOMPROMISED"
+
+(fail) Integration: upgrade-in-place > should only overwrite config.yaml and .installation.json when --force is used after upgrade [15016.00ms]
+Error [INIT_LOCKED]: Another init process is currently running (lockPath="C:\\Users\\luo\\AppData\\Local\\Temp\\sf-upgrade-T90ciR\\.specforge\\.init.lock") | Remedy: Wait for the other process to complete or kill it
+
+# Unhandled error between tests
+-------------------------------
+319 |       force: true,
+320 |       json: false,
+321 |       installRootOverride,
+322 |     });
+323 | 
+324 |     expect(resultV2.exitCode).toBe(0);
+                                    ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 2
+
+      at <anonymous> (D:\code\temp\SpecForge\tests\integration\distribution\upgrade-in-place.test.ts:324:31)
+-------------------------------
+
+(fail) Integration: upgrade-in-place > should emit upgrade notice with all required fields in stderr [30031.00ms]
+  ^ this test timed out after 30000ms.
+Error [INIT_LOCKED]: Another init process is currently running (lockPath="C:\\Users\\luo\\AppData\\Local\\Temp\\sf-upgrade-qlVoBs\\.specforge\\.init.lock") | Remedy: Wait for the other process to complete or kill it
+
+# Unhandled error between tests
+-------------------------------
+369 |     const capturedStderr = getStderr();
+370 | 
+371 |     // Step 4: 楠岃瘉 stderr 鍖呭惈鎵€鏈夊繀闇€瀛楁锛圧EQ-7.3锛?372 |     // 1. CLI 鐗堟湰锛坈liVersion锛?373 |     const cliVersion = process.env.npm_package_version || '0.1.0';
+374 |     expect(capturedStderr).toContain(cliVersion);
+                                 ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "0.1.0"
+Received: "Error [INIT_LOCKED]: Another init process is currently running (lockPath=\"C:\\\\Users\\\\luo\\\\AppData\\\\Local\\\\Temp\\\\sf-upgrade-T90ciR\\\\.specforge\\\\.init.lock\") | Remedy: Wait for the other process to complete or kill it\nError [INIT_LOCKED]: Another init process is currently running (lockPath=\"C:\\\\Users\\\\luo\\\\AppData\\\\Local\\\\Temp\\\\sf-upgrade-qlVoBs\\\\.specforge\\\\.init.lock\") | Remedy: Wait for the other process to complete or kill it\n"
+
+      at <anonymous> (D:\code\temp\SpecForge\tests\integration\distribution\upgrade-in-place.test.ts:374:28)
+-------------------------------
+
+(fail) Integration: upgrade-in-place > should not emit upgrade notice when baseline is the same [30016.00ms]
+  ^ this test timed out after 30000ms.
+
+ 0 pass
+ 4 fail
+ 3 errors
+ 21 expect() calls
+Ran 4 tests across 1 file. [105.22s]

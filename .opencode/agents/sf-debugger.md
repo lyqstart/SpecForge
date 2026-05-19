@@ -1,12 +1,11 @@
 ---
 description: SpecForge 调试 Agent，负责分析和修复 executor 执行失败的技术问题
 mode: subagent
-model: zai-coding-plan/glm-5.1
 temperature: 0.2
 steps: 30
 permission:
   edit: allow
-  bash: allow
+  bash: deny
   task: deny
   skill: allow
 ---

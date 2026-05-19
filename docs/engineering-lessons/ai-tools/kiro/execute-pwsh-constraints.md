@@ -6,10 +6,13 @@ roles: [executor, orchestrator, debugger]
 severity: high
 tags: [shell, command-execution, kiro-tool]
 created: 2026-05-16
-updated: 2026-05-16
+updated: 2026-05-19
+related: [shell-command-execution, host-environment-detection]
 ---
 
 # Kiro `execute_pwsh` 受控壳的硬约束
+
+> **上层经验**：本文是 Kiro 这个具体工具的实现层约束。如果你在做 SpecForge / OpenCode / 自己的 shell 工具，应先看 [shell-command-execution](../../universal/shell-command-execution.md)（通用规范）和 [host-environment-detection](../../universal/host-environment-detection.md)（环境探测规范）。本文是给"已经在用 Kiro 的人"的应急指南。
 
 ## 症状
 

@@ -1,0 +1,34 @@
+bun test v1.3.11 (af24e281)
+
+tests\integration\distribution\upgrade-in-place.test.ts:
+SpecForge upgrade detected:
+  CLI version: 0.1.0
+  CLI baseline: 2.0
+  On-disk schema_version: 1.0
+  Run migration: specforge migration run
+275 |     expect(nonProtectedHashesAfter.size).toBe(nonProtectedHashesBefore.size);
+276 | 
+277 |     // 姣忎釜闈炰繚鎶ゆ枃浠剁殑鍝堝笇搴旂浉鍚?278 |     for (const [relPath, hashBefore] of nonProtectedHashesBefore) {
+279 |       const hashAfter = nonProtectedHashesAfter.get(relPath);
+280 |       expect(hashAfter).toBe(hashBefore);
+                              ^
+error: expect(received).toBe(expected)
+
+Expected: "3d17581ccd5953cfc2d9574c80ddfd93bd9c517b75f9dd690e4c86cb8db47924"
+Received: "6fdff1bf21371a301da07c48a4094df76b41c71ae5ee6bbf6df248dc29432a29"
+
+      at <anonymous> (D:\code\temp\SpecForge\tests\integration\distribution\upgrade-in-place.test.ts:280:25)
+(fail) Integration: upgrade-in-place > should preserve user data when upgrading from baseline 1.0 to 2.0 [78.00ms]
+(pass) Integration: upgrade-in-place > should only overwrite config.yaml and .installation.json when --force is used after upgrade [31.00ms]
+SpecForge upgrade detected:
+  CLI version: 0.1.0
+  CLI baseline: 2.0
+  On-disk schema_version: 1.0
+  Run migration: specforge migration run
+(pass) Integration: upgrade-in-place > should emit upgrade notice with all required fields in stderr [31.00ms]
+(pass) Integration: upgrade-in-place > should not emit upgrade notice when baseline is the same [16.00ms]
+
+ 3 pass
+ 1 fail
+ 39 expect() calls
+Ran 4 tests across 1 file. [274.00ms]

@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "id": "data-processor",
+  "name": "Data Processor Plugin",
+  "version": "1.0.0",
+  "entry": "./index.js",
+  "description": "A plugin that demonstrates plugin dependencies - depends on logger-base plugin",
+  "author": "SpecForge Team",
+  "license": "MIT",
+  "dependencies": {
+    "logger-base": "1.0.0"
+  }
+}

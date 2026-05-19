@@ -1,0 +1,10 @@
+{
+  "specId": "distribution",
+  "title": "V6.0 分发与安装（W4）",
+  "parentSpec": "v6-architecture-overview",
+  "scopeTag": "p0",
+  "workflowType": "requirements-first",
+  "specType": "feature",
+  "wave": "W4",
+  "schema_version": "1.0"
+}

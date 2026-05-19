@@ -478,9 +478,11 @@ export const DEFAULT_RULE_SET: RuleSet = {
  */
 export class RuleMatcher {
   private rules: StaticCheckRule[];
+  private patternCache: Map<string, RegExp>;
 
   constructor(ruleSet: RuleSet = DEFAULT_RULE_SET) {
     this.rules = ruleSet.rules.filter((rule) => rule.enabled);
+    this.patternCache = new Map();
   }
 
   /**
@@ -517,7 +519,7 @@ export class RuleMatcher {
   }
 
   /**
-   * 检查 API 是否匹配模式
+   * 检查 API 是否匹配模式（带缓存）
    *
    * @param api - API 名称
    * @param pattern - 规则模式（支持通配符 *）
@@ -529,11 +531,15 @@ export class RuleMatcher {
       return true;
     }
 
-    // 通配符匹配
+    // 通配符匹配（使用缓存的正则表达式）
     if (pattern.includes('*')) {
-      const regex = new RegExp(
-        `^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`
-      );
+      let regex = this.patternCache.get(pattern);
+      if (!regex) {
+        regex = new RegExp(
+          `^${pattern.replace(/\./g, '\\.').replace(/\*/g, '.*')}$`
+        );
+        this.patternCache.set(pattern, regex);
+      }
       return regex.test(api);
     }
 

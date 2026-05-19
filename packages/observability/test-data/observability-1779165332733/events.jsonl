@@ -1,0 +1,1 @@
+{"schema_version":"1.0","eventId":"test-event-1779165332737-0.4496456821297883","ts":1779165332738000000,"monotonicSeq":1,"projectId":"test-project","workItemId":"test-workitem","actor":{"id":"test-agent","name":"TestAgent","type":"agent"},"category":"permission","action":"permission.evaluated","payload":{"effect":"deny","matched_rule":"rule-1"}}

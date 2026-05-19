@@ -45,10 +45,10 @@
 - [x] 编写持久化测试
 
 #### 2.2 实现错误处理
-- [ ] 实现 Gate 执行错误处理
-- [ ] 实现 workflow 暂停/恢复
-- [ ] 实现错误重试机制
-- [ ] 编写错误处理测试
+- [x] 实现 Gate 执行错误处理
+- [x] 实现 workflow 暂停/恢复
+- [x] 实现错误重试机制
+- [x] 编写错误处理测试
 
 #### 2.3 实现基础 Gate 类型
 - [x] 实现 requirements Gate
@@ -99,57 +99,57 @@
 - [x] 编写测试辅助函数
 
 #### 4.2 实现 Property 1 测试
-- [ ] 编写 Workflow State Machine Consistency 属性测试
-- [ ] 生成随机 workflow 定义
-- [ ] 验证状态转换一致性
-- [ ] **Validates: Requirements 1.2**
+- [x] 编写 Workflow State Machine Consistency 属性测试
+- [x] 生成随机 workflow 定义
+- [x] 验证状态转换一致性
+- [x] **Validates: Requirements 1.2**
 
 #### 4.3 实现 Property 2 测试
-- [ ] 编写 Gate Execution Determinism 属性测试
-- [ ] 生成随机 Gate 输入
-- [ ] 验证执行确定性
-- [ ] **Validates: Requirements 2.2**
+- [x] 编写 Gate Execution Determinism 属性测试
+- [x] 生成随机 Gate 输入
+- [x] 验证执行确定性
+- [x] **Validates: Requirements 2.2**
 
 #### 4.3 实现 Property 3 测试
-- [ ] 编写 Composite Gate Sequential Execution 属性测试
-- [ ] 生成随机 compositeGate 定义（sequential 模式）
-- [ ] 验证顺序执行
-- [ ] **Validates: Requirements 3.3**
+- [x] 编写 Composite Gate Sequential Execution 属性测试
+- [x] 生成随机 compositeGate 定义（sequential 模式）
+- [x] 验证顺序执行
+- [x] **Validates: Requirements 3.3**
 
 #### 4.4 实现 Property 4 测试
-- [ ] 编写 Composite Gate Parallel Execution 属性测试
-- [ ] 生成随机 compositeGate 定义（parallel 模式）
-- [ ] 验证并发执行
-- [ ] **Validates: Requirements 3.4**
+- [x] 编写 Composite Gate Parallel Execution 属性测试
+- [x] 生成随机 compositeGate 定义（parallel 模式）
+- [x] 验证并发执行
+- [x] **Validates: Requirements 3.4**
 
 #### 4.5 实现 Property 5 测试
-- [ ] 编写 Fail Fast with Parallel Mode 属性测试
-- [ ] 生成包含失败子 Gate 的 compositeGate
-- [ ] 验证 fail_fast 策略
-- [ ] **Validates: Requirements 3.5**
+- [x] 编写 Fail Fast with Parallel Mode 属性测试
+- [x] 生成包含失败子 Gate 的 compositeGate
+- [x] 验证 fail_fast 策略
+- [x] **Validates: Requirements 3.5**
 
 #### 4.6 实现 Property 6 测试
-- [ ] 编写 Event Ordering 属性测试
-- [ ] 生成随机 workflow 执行序列
-- [ ] 验证事件顺序
-- [ ] **Validates: Requirements 4.3**
+- [x] 编写 Event Ordering 属性测试
+- [x] 生成随机 workflow 执行序列
+- [x] 验证事件顺序
+- [x] **Validates: Requirements 4.3**
 
 ### 阶段 5: 集成与验证 (p0)
 
 #### 5.1 端到端测试
-- [ ] 编写完整 workflow 执行测试
-- [ ] 测试与父 spec 的集成
-- [ ] 验证 Property 29 的实现
+- [x] 编写完整 workflow 执行测试
+- [x] 测试与父 spec 的集成
+- [x] 验证 Property 29 的实现
 
 #### 5.2 性能测试
-- [ ] 测试 workflow 执行性能
-- [ ] 测试 compositeGate 并发性能
-- [ ] 测试事件系统性能
+- [x] 测试 workflow 执行性能
+- [x] 测试 compositeGate 并发性能
+- [x] 测试事件系统性能
 
 #### 5.3 文档与示例
-- [ ] 编写 API 文档
-- [ ] 创建使用示例
-- [ ] 编写部署指南
+- [x] 编写 API 文档
+- [x] 创建使用示例
+- [x] 编写部署指南
 
 ## 依赖关系
 
@@ -162,18 +162,18 @@
 ## 验收标准
 
 ### p0 基础能力验收
-- [ ] WorkflowEngine 能够加载和执行基础 workflow
-- [ ] GateRunner 能够执行单个 Gate
-- [ ] 事件系统能够记录和发布 workflow 事件
-- [ ] 能够从崩溃中恢复 workflow 状态
-- [ ] Property 1, 2, 6 测试通过
+- [x] WorkflowEngine 能够加载和执行基础 workflow
+- [x] GateRunner 能够执行单个 Gate
+- [x] 事件系统能够记录和发布 workflow 事件
+- [x] 能够从崩溃中恢复 workflow 状态
+- [x] Property 1, 2, 6 测试通过
 
 ### p1 组合能力验收
-- [ ] CompositeGateRunner 能够执行 compositeGate
-- [ ] 支持 `sequential` 和 `parallel` 模式
-- [ ] 支持 `fail_fast` 和 `collect_all` 失败策略
-- [ ] 能够取消未完成的子 Gate
-- [ ] Property 3, 4, 5 测试通过
+- [x] CompositeGateRunner 能够执行 compositeGate
+- [x] 支持 `sequential` 和 `parallel` 模式
+- [x] 支持 `fail_fast` 和 `collect_all` 失败策略
+- [x] 能够取消未完成的子 Gate
+- [x] Property 3, 4, 5 测试通过
 
 ## 备注
 

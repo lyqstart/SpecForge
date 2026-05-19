@@ -24,7 +24,7 @@ export async function commandHelp(
     json?: boolean;
   }>
 ): Promise<void> {
-  const modeSwitch = createModeSwitchFromYargs(argv);
+  const modeSwitch = new ModeSwitch(argv);
   const helpSystem = createDefaultHelpSystem();
   
   if (argv.command) {
@@ -62,8 +62,7 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
           });
       },
       async (argv: Arguments) => {
-        const modeSwitch = new ModeSwitch(argv);
-        await commandHelp(argv, modeSwitch);
+        await commandHelp(argv);
       }
     )
     .help(false) // Disable default yargs help to use our custom implementation
@@ -89,7 +88,7 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
           // Show help for specific command
           const command = argv._[0] as string;
           const subcommand = argv._[1] as string | undefined;
-          const helpText = helpSystem.generateCommandHelp(command, subcommand, modeSwitch);
+          const helpText = helpSystem.generateCommandHelp(command, modeSwitch, subcommand);
           console.log(helpText);
           process.exit(0);
         } else {
@@ -179,8 +178,7 @@ export async function runHelpCommand(
           });
       },
       async (argv: Arguments) => {
-        const modeSwitch = new ModeSwitch(argv);
-        await commandHelp(argv, modeSwitch);
+        await commandHelp(argv);
       }
     )
     .demandCommand(0, '')

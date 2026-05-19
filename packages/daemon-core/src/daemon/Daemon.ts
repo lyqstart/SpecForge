@@ -14,6 +14,7 @@ import { RecoverySubsystem } from '../recovery/RecoverySubsystem';
 import { HandshakeManager } from './HandshakeManager';
 import { DaemonConfig } from './DaemonConfig';
 import { Event } from '../types';
+import { ExtensionLoader } from '../extensions';
 
 export class Daemon {
   private httpServer: HTTPServer;
@@ -27,6 +28,7 @@ export class Daemon {
   private projectManager: ProjectManager;
   private idleTimeoutHandle: NodeJS.Timeout | null = null;
   private lastActivityTime: number = 0;
+  private extensionLoader: ExtensionLoader | null = null;
 
   constructor() {
     this.config = new DaemonConfig();
@@ -37,6 +39,10 @@ export class Daemon {
     this.handshakeManager = new HandshakeManager(this.config);
     this.sessionRegistry = new SessionRegistry(this.eventBus);
     this.projectManager = new ProjectManager(this.eventBus);
+    
+    // Initialize Extension Loader (Task 6.1.1)
+    // Pass eventBus so extension loading events are published to the Daemon's event bus
+    this.extensionLoader = new ExtensionLoader({}, this.eventBus);
   }
 
   async start(): Promise<void> {
@@ -70,6 +76,19 @@ export class Daemon {
     // 7. Start session registry and project manager
     this.sessionRegistry.start();
     this.projectManager.start();
+
+    // 8. Load extensions (Plugin Loader, Skills, Tools, etc.) - Task 6.1.1
+    console.log('[EXTENSIONS] Loading extensions...');
+    const extensionResult = await this.extensionLoader!.loadAll();
+    if (extensionResult.success) {
+      console.log(`[EXTENSIONS] All extensions loaded successfully in ${extensionResult.totalLoadTimeMs}ms`);
+    } else {
+      const failed = extensionResult.extensions.filter(e => !e.loaded);
+      console.log(`[EXTENSIONS] ${failed.length} extension(s) failed to load:`);
+      failed.forEach(e => {
+        console.log(`  - ${e.type}: ${e.error?.message || 'Unknown error'}`);
+      });
+    }
 
     // Property 21: Attempt to reconnect old sessions from previous Daemon run
     // This only succeeds because we're still in the startup phase
@@ -116,7 +135,11 @@ export class Daemon {
     // 3. Stop HTTP server
     await this.httpServer.stop();
 
-    // 4. Cleanup handshake file and release lock
+    // 4. Cleanup extensions (unload plugins, etc.) - Task 6.1.1
+    console.log('[EXTENSIONS] Cleaning up extensions...');
+    this.extensionLoader = null;
+
+    // 5. Cleanup handshake file and release lock
     await this.handshakeManager.cleanup();
 
     this.isRunning = false;
@@ -129,6 +152,16 @@ export class Daemon {
 
   isDaemonRunning(): boolean {
     return this.isRunning;
+  }
+
+  /**
+   * 获取扩展加载器实例
+   * 供外部组件访问插件加载器等功能
+   * 
+   * @returns ExtensionLoader 实例
+   */
+  getExtensionLoader(): ExtensionLoader | null {
+    return this.extensionLoader;
   }
 
   /**

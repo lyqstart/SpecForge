@@ -152,3 +152,35 @@ export class KiroPaths {
       .sort();
   }
 }
+
+// =============================================================================
+// Installer path utilities (sf-installer.ts + scripts/lib/*.ts)
+// =============================================================================
+
+import * as osModule from 'node:os';
+import * as pathModule from 'node:path';
+
+/**
+ * Resolve the user-level directory where SpecForge shared components are installed.
+ * Defaults to ~/.config/opencode on all platforms.
+ */
+export function resolveUserLevelDirectory(): string {
+  const home = osModule.homedir();
+  return pathModule.join(home, '.config', 'opencode');
+}
+
+/**
+ * Convert a POSIX-style relative path (forward slashes) to the native
+ * path separator for the current OS.
+ */
+export function posixToNative(posixPath: string): string {
+  if (pathModule.sep === '/') return posixPath;
+  return posixPath.replace(/\//g, pathModule.sep);
+}
+
+/**
+ * Convert a native path to POSIX style (forward slashes).
+ */
+export function toPosix(nativePath: string): string {
+  return nativePath.replace(/\\/g, '/');
+}

@@ -49,7 +49,7 @@ This implementation plan covers the development of the **Configuration Subsystem
   - **Property 11 Test**: Verify same inputs → same output
   - _Requirements: 1.2, Property 11_
 
-- [ ] 2.3 Implement sensitive field protection
+- [x] 2.3 Implement sensitive field protection
   - Detect project-level attempts to override sensitive fields
   - Reject overrides with clear error messages
   - Log security events for observability
@@ -68,7 +68,7 @@ This implementation plan covers the development of the **Configuration Subsystem
   - Clear error reporting
   - _Requirements: 3.2_
 
-- [ ] 3.3 Implement configuration access API
+- [x] 3.3 Implement configuration access API
   - Typed configuration access
   - Layer source tracking (for debugging)
   - Value interpolation (env var expansion)
@@ -81,7 +81,7 @@ This implementation plan covers the development of the **Configuration Subsystem
   - Reload event recording
   - _Requirements: 2.5_
 
-- [ ] 4.2 Implement activation boundary
+- [x] 4.2 Implement activation boundary
   - Track reload timestamp t
   - Apply new config to workflows/work items with start time > t
   - Maintain old config for workflows/work items with start time ≤ t
@@ -101,7 +101,7 @@ This implementation plan covers the development of the **Configuration Subsystem
   - **Property 11 Test**: Configuration Merge Determinism
   - _Requirements: Property 11_
 
-- [ ] 5.2 Implement Property 19 test suite
+- [x] 5.2 Implement Property 19 test suite
   - Generate reload events and workflow timings
   - Verify activation boundary enforcement
   - **Property 19 Test**: Hot-reload Activation Boundary

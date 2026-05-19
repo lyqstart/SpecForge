@@ -54,7 +54,7 @@ This implementation plan covers the development of the **Daemon Core** module fo
   - Record permission denied events
   - _Requirements: 2.4, 2.5_
 
-- [ ] 2.3 Implement payload size handling
+- [x] 2.3 Implement payload size handling
   - Detect content > 64 KiB
   - CAS blob reference generation
   - Error handling for oversized payloads
@@ -95,7 +95,7 @@ This implementation plan covers the development of the **Daemon Core** module fo
   - **Property 6 Test**: Verify idempotent recovery
   - _Requirements: 5.2, Property 6_
 
-- [ ] 4.3 Implement event schema
+- [x] 4.3 Implement event schema
   - UUIDv7 generation for eventId
   - Monotonic timestamps
   - ProjectId aggregation support
@@ -103,7 +103,7 @@ This implementation plan covers the development of the **Daemon Core** module fo
   - _Requirements: 6.1-6.3, Property 30_
 
 ### Phase 5: Recovery & Resilience
-- [ ] 5.1 Implement Recovery Subsystem
+- [x] 5.1 Implement Recovery Subsystem
   - State inconsistency detection
   - Predefined repair rules
   - **Property 20 Test**: Verify recovery consistency repair
@@ -152,7 +152,7 @@ This implementation plan covers the development of the **Daemon Core** module fo
   - Error codes
   - _Requirements: All_
 
-- [ ] 7.2 Create usage examples
+- [x] 7.2 Create usage examples
   - CLI integration
   - Thin Plugin integration
   - Error handling scenarios

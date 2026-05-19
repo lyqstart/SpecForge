@@ -1,0 +1,1 @@
+{"schema_version":"1.0","eventId":"test-event-1779165332758-0.008590470688344953","ts":1779165332758000000,"monotonicSeq":1,"projectId":"test-project","workItemId":"workitem-1","actor":{"id":"test-agent","name":"TestAgent","type":"agent"},"category":"gate","action":"gate.evaluated","payload":{"effect":"deny","gateType":"test-gate"}}

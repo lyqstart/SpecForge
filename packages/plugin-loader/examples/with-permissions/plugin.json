@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "id": "with-permissions",
+  "name": "Plugin With Permissions Demo",
+  "version": "1.0.0",
+  "entry": "./index.js",
+  "description": "A demonstration plugin that declares various permissions for filesystem, network, and subprocess access",
+  "author": "SpecForge Team",
+  "license": "MIT",
+  "permissions": [
+    "filesystem.read",
+    "filesystem.write",
+    "network",
+    "child_process"
+  ]
+}

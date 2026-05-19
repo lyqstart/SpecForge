@@ -1,0 +1,20 @@
+bun test v1.3.11 (af24e281)
+
+packages\plugin-loader\tests\unit\error-recovery.test.ts:
+(pass) ErrorClassifier > 缃戠粶閿欒鍒嗙被 > 搴斿皢缃戠粶杩炴帴閿欒鍒嗙被涓哄彲鎭㈠
+(pass) ErrorClassifier > 缃戠粶閿欒鍒嗙被 > 搴斿皢缃戠粶瓒呮椂閿欒鍒嗙被涓哄彲鎭㈠
+(pass) ErrorClassifier > 缃戠粶閿欒鍒嗙被 > 搴斿皢 socket 閿欒鍒嗙被涓哄彲鎭㈠
+(pass) ErrorClassifier > 瓒呮椂閿欒鍒嗙被 > 搴斿皢瓒呮椂閿欒鍒嗙被涓哄彲鎭㈠
+(pass) ErrorClassifier > 瓒呮椂閿欒鍒嗙被 > 搴斿皢 TimeoutError 鍒嗙被涓哄彲鎭㈠
+(pass) ErrorClassifier > 璧勬簮绔炰簤閿欒鍒嗙被 > 搴斿皢閿佸啿绐侀敊璇垎绫讳负鍙仮澶?(pass) ErrorClassifier > 璧勬簮绔炰簤閿欒鍒嗙被 > 搴斿皢蹇欑姸鎬侀敊璇垎绫讳负鍙仮澶?(pass) ErrorClassifier > 鏉冮檺閿欒鍒嗙被 > 搴斿皢鏉冮檺鎷掔粷閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 鏉冮檺閿欒鍒嗙被 > 搴斿皢鎺堟潈閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 鏉冮檺閿欒鍒嗙被 > 搴斿皢璁块棶鎷掔粷閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 閰嶇疆閿欒鍒嗙被 > 搴斿皢閰嶇疆閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 閰嶇疆閿欒鍒嗙被 > 搴斿皢 JSON 瑙ｆ瀽閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 閰嶇疆閿欒鍒嗙被 > 搴斿皢楠岃瘉閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 鏂囦欢閿欒鍒嗙被 > 搴斿皢鏂囦欢涓嶅瓨鍦ㄩ敊璇垎绫讳负涓嶅彲鎭㈠
+(pass) ErrorClassifier > 鏂囦欢閿欒鍒嗙被 > 搴斿皢 I/O 閿欒鍒嗙被涓哄彲鎭㈠
+(pass) ErrorClassifier > 鍐呴儴閿欒鍒嗙被 > 搴斿皢鍐呴儴閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 鍐呴儴閿欒鍒嗙被 > 搴斿皢鏂█閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 鏈煡閿欒鍒嗙被 > 搴斿皢鏈煡閿欒鍒嗙被涓轰笉鍙仮澶?(pass) ErrorClassifier > 閿欒寤鸿 > 搴旀彁渚涚綉缁滈敊璇殑寤鸿
+(pass) ErrorClassifier > 閿欒寤鸿 > 搴旀彁渚涙潈闄愰敊璇殑寤鸿
+(pass) ErrorClassifier > 閿欒寤鸿 > 搴旀彁渚涢厤缃敊璇殑寤鸿
+(pass) RetryStrategy > calculateDelay > 搴斾娇鐢ㄩ粯璁ら厤缃纭绠楀欢杩?(pass) RetryStrategy > calculateDelay > 搴旈檺鍒舵渶澶у欢杩?(pass) RetryStrategy > calculateDelay > 搴旂鐢ㄩ殢鏈烘姈鍔ㄥ綋 jitter 涓?false
+(pass) RetryStrategy > calculateDelay > 搴斾娇鐢ㄨ嚜瀹氫箟 backoffMultiplier
+(pass) RetryStrategy > shouldRetry > 搴斿湪杈惧埌鏈€澶ч噸璇曟鏁板悗杩斿洖 false
+(pass) RetryStrategy > shouldRetry > 搴斿涓嶅彲鎭㈠閿欒杩斿洖 false
+(pass) RetryStrategy > shouldRetry > 搴斿涓嶅彲鎭㈠閿欒锛堥厤缃敊璇級杩斿洖 false
+(pass) RetryStrategy > shouldRetry > 搴斿鍙仮澶嶉敊璇繑鍥?true
+(pass) RetryStrategy > shouldRetry > 搴斿彧閲嶈瘯鍙厤缃被鍒殑閿欒

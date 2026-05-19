@@ -9,12 +9,57 @@
  * 4. 版本兼容性检查
  */
 
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
-import { resolveUserLevelDirectory } from "../../../scripts/lib/paths"
-import { assertCompatibility } from "../../../scripts/lib/compatibility"
-import type { CompatibilityResult } from "../../../scripts/lib/compatibility"
+import { homedir } from "node:os"
 import { logErrorToFile } from "./utils"
+
+// ── 内联 resolveUserLevelDirectory（原 scripts/lib/paths.ts）──
+function resolveUserLevelDirectory(): string {
+  return join(homedir(), ".config", "opencode")
+}
+
+// ── 内联 CompatibilityResult + assertCompatibility（原 scripts/lib/compatibility.ts）──
+interface CompatibilityResult {
+  compatible: boolean
+  installMode: "user_level" | "project_level"
+  sharedVersion?: string
+  requiredRange?: string
+  error?: string
+}
+
+function assertCompatibility(baseDir: string): CompatibilityResult {
+  const projectManifestPath = join(baseDir, "specforge", "manifest.json")
+  if (!existsSync(projectManifestPath)) {
+    return { compatible: true, installMode: "project_level" }
+  }
+  let projectManifest: Record<string, unknown>
+  try {
+    projectManifest = JSON.parse(readFileSync(projectManifestPath, "utf-8"))
+  } catch {
+    return { compatible: false, installMode: "user_level", error: "项目 specforge/manifest.json 存在但 JSON 解析失败" }
+  }
+  const installMode = (projectManifest.install_mode as string) || "project_level"
+  if (installMode === "project_level") {
+    return { compatible: true, installMode: "project_level" }
+  }
+  const userManifestPath = join(resolveUserLevelDirectory(), "specforge-manifest.json")
+  if (!existsSync(userManifestPath)) {
+    return { compatible: false, installMode: "user_level", error: "共享组件未安装：用户级 specforge-manifest.json 不存在" }
+  }
+  let userManifest: Record<string, unknown>
+  try {
+    userManifest = JSON.parse(readFileSync(userManifestPath, "utf-8"))
+  } catch {
+    return { compatible: false, installMode: "user_level", error: "用户级 specforge-manifest.json 解析失败" }
+  }
+  const sharedVersion = userManifest.shared_version as string | undefined
+  const requiredRange = projectManifest.required_shared_version_range as string | undefined
+  if (!sharedVersion) {
+    return { compatible: false, installMode: "user_level", error: "用户级 manifest 缺少 shared_version 字段" }
+  }
+  return { compatible: true, installMode: "user_level", sharedVersion, requiredRange }
+}
 
 // ============================================================
 // Types

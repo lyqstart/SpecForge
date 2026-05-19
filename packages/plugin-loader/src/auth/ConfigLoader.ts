@@ -95,11 +95,11 @@ export interface ConfigLoadResult {
  */
 function getUserHomeDir(): string {
   // 尝试从环境变量获取
-  if (process.env.HOME) {
-    return process.env.HOME;
+  if (process.env['HOME']) {
+    return process.env['HOME']!;
   }
-  if (process.env.USERPROFILE) {
-    return process.env.USERPROFILE;
+  if (process.env['USERPROFILE']) {
+    return process.env['USERPROFILE']!;
   }
   // 尝试使用 os 模块
   try {

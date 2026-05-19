@@ -1,12 +1,11 @@
 ---
 description: SpecForge 需求分析 Agent，负责需求澄清、业务分析、边界分类，生成结构化需求文档
 mode: subagent
-model: zai-coding-plan/glm-5.1
 temperature: 0.2
 steps: 30
 permission:
   edit: allow
-  bash: allow
+  bash: deny
   task: deny
   skill: allow
 ---

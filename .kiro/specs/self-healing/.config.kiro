@@ -3,5 +3,7 @@
   "workflowType": "requirements-first",
   "specType": "feature",
   "scopeTag": "p0",
-  "parentSpec": "v6-architecture-overview"
+  "parentSpec": "v6-architecture-overview",
+  "deferredTo": "v6.1",
+  "deferredReason": "Diagnose-only phase is enhancement capability, not core dependency for V6.0 deployment"
 }

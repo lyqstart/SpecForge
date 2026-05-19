@@ -1,12 +1,11 @@
 ---
 description: SpecForge 设计 Agent，负责架构设计、环境约束收集、接口定义、数据模型和测试策略
 mode: subagent
-model: zai-coding-plan/glm-5.1
 temperature: 0.2
 steps: 30
 permission:
   edit: allow
-  bash: allow
+  bash: deny
   task: deny
   skill: allow
 ---

@@ -1,12 +1,11 @@
 ---
 description: SpecForge 审查 Agent，负责规格审查和代码审查，验证实现与规格的一致性和代码质量
 mode: subagent
-model: zai-coding-plan/glm-5.1
 temperature: 0.2
 steps: 30
 permission:
   edit: deny
-  bash: allow
+  bash: deny
   task: deny
   skill: allow
 ---

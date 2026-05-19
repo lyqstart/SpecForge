@@ -121,7 +121,7 @@ const DEFAULT_SPECFORGE_DIR = '.specforge';
  * 获取默认的用户配置目录
  */
 function getDefaultUserConfigDir(): string {
-  const homeDir = process.env.HOME || process.env.USERPROFILE || process.cwd();
+  const homeDir = process.env['HOME'] || process.env['USERPROFILE'] || process.cwd();
   return path.join(homeDir, '.specforge', 'config');
 }
 
@@ -232,7 +232,7 @@ export class ConfigHotReloader {
   /**
    * 停止配置热重载
    */
-  async stop(): void {
+  async stop(): Promise<void> {
     if (!this.isRunning) {
       return;
     }

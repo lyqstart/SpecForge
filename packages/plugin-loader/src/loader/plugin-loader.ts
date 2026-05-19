@@ -26,6 +26,7 @@ import { StaticAnalyzer, type StaticAnalysisResult, type ViolationReport } from 
 import { discoverPlugins, type DiscoveryOptions, type DiscoveredPlugin, type DiscoveryResult } from './discovery';
 import { PluginRegistry, type PluginRegistryOptions, getPluginRegistry, createLoadedPlugin } from '../registry';
 import type { LoadedPlugin } from '../loaded-plugin';
+import { AuditLogger, getAuditLogger, type AuditLoggerConfig } from '../audit-log';
 
 // ---------------------------------------------------------------------------
 // 加载错误类型
@@ -105,6 +106,8 @@ export interface PluginLoaderConfig {
   enableStaticCheck?: boolean;
   /** 是否启用权限验证（默认 true） */
   enablePermissionCheck?: boolean;
+  /** 审计日志配置 */
+  auditLogger?: AuditLoggerConfig;
 }
 
 // ---------------------------------------------------------------------------
@@ -115,6 +118,7 @@ export interface PluginLoaderConfig {
  * 插件加载器
  *
  * 负责协调完整加载流程：发现 → 验证清单 → 静态检查 → 权限验证 → 加载 → 注册
+ * 所有加载操作都会记录到审计日志（任务 5.3.1）
  *
  * 使用示例：
  * ```typescript
@@ -135,6 +139,7 @@ export class PluginLoader {
   private permissionValidator: PermissionValidator;
   private staticAnalyzer: StaticAnalyzer;
   private registry: PluginRegistry;
+  private auditLogger: AuditLogger;
 
   constructor(config: PluginLoaderConfig = {}) {
     // 合并默认配置
@@ -147,6 +152,7 @@ export class PluginLoader {
       staticAnalyzerOptions: config.staticAnalyzerOptions || {},
       enableStaticCheck: config.enableStaticCheck ?? true,
       enablePermissionCheck: config.enablePermissionCheck ?? true,
+      auditLogger: config.auditLogger || {},
     };
 
     // 初始化权限验证器
@@ -161,6 +167,9 @@ export class PluginLoader {
 
     // 初始化注册表
     this.registry = getPluginRegistry();
+
+    // 初始化审计日志记录器
+    this.auditLogger = getAuditLogger(this.config.auditLogger);
   }
 
   /**
@@ -188,15 +197,36 @@ export class PluginLoader {
   }
 
   /**
+   * 获取审计日志记录器
+   */
+  getAuditLogger(): AuditLogger {
+    return this.auditLogger;
+  }
+
+  /**
    * 加载单个插件
    *
    * @param pluginDir 插件目录路径
    * @returns 加载结果
    */
   async loadPlugin(pluginDir: string): Promise<LoadResult> {
+    const startTime = Date.now();
+
     // 步骤 1: 检查插件是否已加载
     const manifestResult = await this.parseManifest(pluginDir);
     if (!manifestResult.success || !manifestResult.manifest) {
+      const duration = Date.now() - startTime;
+      // 记录审计日志 - 清单解析失败
+      this.auditLogger.logLoad(
+        manifestResult.error?.pluginId || 'unknown',
+        false,
+        {
+          reason: manifestResult.error?.message,
+          errorCode: manifestResult.error?.code,
+          errorDetails: manifestResult.error?.details,
+          duration,
+        },
+      );
       return {
         success: false,
         error: manifestResult.error,
@@ -208,6 +238,16 @@ export class PluginLoader {
     // 检查是否已加载
     const existing = this.registry.get(manifest.id);
     if (existing) {
+      const duration = Date.now() - startTime;
+      // 记录审计日志 - 插件已加载
+      this.auditLogger.logLoad(manifest.id, false, {
+        version: manifest.version,
+        reason: '插件已加载',
+        errorCode: 'ALREADY_LOADED',
+        requires: manifest.permissions,
+        grants: this.config.grants,
+        duration,
+      });
       return {
         success: false,
         error: {
@@ -219,9 +259,30 @@ export class PluginLoader {
     }
 
     // 步骤 2: 静态检查
+    let staticCheckPassed = true;
+    let staticCheckDuration = 0;
     if (this.config.enableStaticCheck) {
+      const staticCheckStart = Date.now();
       const staticCheckResult = await this.performStaticCheck(pluginDir, manifest);
+      staticCheckDuration = Date.now() - staticCheckStart;
+      
       if (!staticCheckResult.success) {
+        const duration = Date.now() - startTime;
+        // 记录审计日志 - 静态检查失败
+        this.auditLogger.logLoad(manifest.id, false, {
+          version: manifest.version,
+          reason: staticCheckResult.error?.message,
+          errorCode: staticCheckResult.error?.code,
+          errorDetails: staticCheckResult.error?.details,
+          requires: manifest.permissions,
+          grants: this.config.grants,
+          staticCheckPassed: false,
+          staticCheckResult: {
+            violations: staticCheckResult.error?.details?.violations || [],
+            duration: staticCheckDuration,
+          },
+          duration,
+        });
         return {
           success: false,
           error: staticCheckResult.error,
@@ -230,12 +291,31 @@ export class PluginLoader {
     }
 
     // 步骤 3: 权限验证
+    let permissionCheckResult: { authorized: boolean; missing?: string[] } = { authorized: true };
     if (this.config.enablePermissionCheck && manifest.permissions) {
-      const permissionResult = await this.performPermissionCheck(manifest.permissions);
-      if (!permissionResult.success) {
+      const permResult = await this.performPermissionCheck(manifest.permissions);
+      permissionCheckResult = {
+        authorized: permResult.success,
+        missing: permResult.error?.details?.missing?.map((m: any) => m.permission),
+      };
+      
+      if (!permResult.success) {
+        const duration = Date.now() - startTime;
+        // 记录审计日志 - 权限验证失败
+        this.auditLogger.logLoad(manifest.id, false, {
+          version: manifest.version,
+          reason: permResult.error?.message,
+          errorCode: permResult.error?.code,
+          errorDetails: permResult.error?.details,
+          requires: manifest.permissions,
+          grants: this.config.grants,
+          staticCheckPassed,
+          permissionCheckResult,
+          duration,
+        });
         return {
           success: false,
-          error: permissionResult.error,
+          error: permResult.error,
         };
       }
     }
@@ -243,6 +323,19 @@ export class PluginLoader {
     // 步骤 4: 加载模块
     const loadResult = await this.loadModule(pluginDir, manifest);
     if (!loadResult.success) {
+      const duration = Date.now() - startTime;
+      // 记录审计日志 - 模块加载失败
+      this.auditLogger.logLoad(manifest.id, false, {
+        version: manifest.version,
+        reason: loadResult.error?.message,
+        errorCode: loadResult.error?.code,
+        errorDetails: loadResult.error?.details,
+        requires: manifest.permissions,
+        grants: this.config.grants,
+        staticCheckPassed,
+        permissionCheckResult,
+        duration,
+      });
       return loadResult;
     }
 
@@ -256,6 +349,17 @@ export class PluginLoader {
     // 步骤 6: 注册插件
     this.registry.register(loadedPlugin);
 
+    const duration = Date.now() - startTime;
+    // 记录审计日志 - 加载成功
+    this.auditLogger.logLoad(manifest.id, true, {
+      version: manifest.version,
+      requires: manifest.permissions,
+      grants: this.config.grants,
+      staticCheckPassed,
+      permissionCheckResult,
+      duration,
+    });
+
     return {
       success: true,
       plugin: loadedPlugin,
@@ -263,13 +367,18 @@ export class PluginLoader {
   }
 
   /**
-   * 批量加载目录下所有插件
+   * 批量加载目录下所有插件（并行优化）
    *
    * @param pluginDir 可选的插件目录（覆盖构造时配置）
+   * @param options 并行加载选项
    * @returns 批量加载结果
    */
-  async loadPlugins(pluginDir?: string): Promise<BatchLoadResult> {
+  async loadPlugins(
+    pluginDir?: string,
+    options?: { concurrency?: number }
+  ): Promise<BatchLoadResult> {
     const targetDir = pluginDir || this.config.pluginDir;
+    const concurrency = options?.concurrency ?? 10; // 默认并发 10 个
 
     if (!targetDir) {
       return {
@@ -303,21 +412,30 @@ export class PluginLoader {
       };
     }
 
-    // 逐个加载插件
+    // 并行加载插件（使用信号量控制并发数）
     const loaded: LoadedPlugin[] = [];
     const failed: Array<{ pluginId: string; error: LoadError }> = [];
+    const plugins = discoveryResult.plugins;
+    
+    // 使用分批并行加载
+    for (let i = 0; i < plugins.length; i += concurrency) {
+      const batch = plugins.slice(i, i + concurrency);
+      const results = await Promise.all(
+        batch.map(discovered => this.loadPlugin(discovered.dirPath))
+      );
 
-    for (const discovered of discoveryResult.plugins) {
-      const result = await this.loadPlugin(discovered.dirPath);
-
-      if (result.success && result.plugin) {
-        loaded.push(result.plugin);
-      } else if (result.error) {
-        failed.push({
-          pluginId: discovered.manifest.id,
-          error: result.error,
-        });
-      }
+      // 收集结果
+      results.forEach((result, index) => {
+        const discovered = batch[index];
+        if (result.success && result.plugin) {
+          loaded.push(result.plugin);
+        } else if (result.error) {
+          failed.push({
+            pluginId: discovered.manifest.id,
+            error: result.error,
+          });
+        }
+      });
     }
 
     return {
@@ -338,6 +456,11 @@ export class PluginLoader {
     const existing = this.registry.get(pluginId);
 
     if (!existing) {
+      // 记录审计日志 - 重载失败（插件未加载）
+      this.auditLogger.logReload(pluginId, false, {
+        reason: 'Plugin not loaded, cannot reload',
+        errorCode: 'LOAD_ERROR',
+      });
       return {
         success: false,
         error: {
@@ -353,8 +476,31 @@ export class PluginLoader {
     // 卸载旧实例
     this.registry.unregister(pluginId);
 
+    // 记录审计日志 - 开始重载
+    this.auditLogger.logReload(pluginId, true, {
+      version: existing.manifest.version,
+      reason: 'Reload requested',
+    });
+
     // 重新加载
-    return this.loadPlugin(pluginDir);
+    const result = await this.loadPlugin(pluginDir);
+    
+    // 记录审计日志 - 重载结果
+    if (result.success) {
+      this.auditLogger.logReload(pluginId, true, {
+        version: result.plugin?.manifest.version,
+        requires: result.plugin?.manifest.permissions,
+        grants: this.config.grants,
+      });
+    } else {
+      this.auditLogger.logReload(pluginId, false, {
+        reason: result.error?.message,
+        errorCode: result.error?.code,
+        errorDetails: result.error?.details,
+      });
+    }
+
+    return result;
   }
 
   /**
@@ -363,7 +509,13 @@ export class PluginLoader {
    * @param pluginId 插件 ID
    */
   unloadPlugin(pluginId: string): void {
+    const plugin = this.registry.get(pluginId);
     this.registry.unregister(pluginId);
+    
+    // 记录审计日志 - 卸载插件
+    this.auditLogger.logUnload(pluginId, true, {
+      reason: plugin ? 'User requested unload' : 'Plugin not found',
+    });
   }
 
   // ---------------------------------------------------------------------------

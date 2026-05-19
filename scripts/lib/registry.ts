@@ -51,6 +51,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_trace_matrix.ts", type: "tool" },
   { path: "tools/sf_verification_gate.ts", type: "tool" },
   { path: "tools/sf_continuity.ts", type: "tool" },
+  { path: "tools/sf_safe_bash.ts", type: "tool" },
 
   // Tool 核心库（24 个）
   { path: "tools/lib/sf_artifact_write_core.ts", type: "tool_lib" },
@@ -80,6 +81,10 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/state_machine.ts", type: "tool_lib" },
   { path: "tools/lib/utils.ts", type: "tool_lib" },
   { path: "tools/lib/sf_specforge_plugin_entry.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_safe_bash_core.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_safe_bash_executor.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_safe_bash_rules.ts", type: "tool_lib" },
+  { path: "tools/lib/sf_safe_bash_types.ts", type: "tool_lib" },
 
   // Plugin（1 个 — 统一 Plugin，替代原来的 5 个）
   { path: "plugins/sf_specforge.ts", type: "plugin" },
@@ -116,55 +121,46 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
 export const SPECFORGE_AGENT_DEFINITIONS: Record<string, AgentConfig> = {
   "sf-orchestrator": {
     mode: "primary",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-orchestrator.md}",
     permission: { task: "allow", edit: "allow", bash: "allow", skill: "allow" },
   },
   "sf-requirements": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-requirements.md}",
     permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
   },
   "sf-design": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-design.md}",
     permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
   },
   "sf-task-planner": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-task-planner.md}",
     permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
   },
   "sf-executor": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-executor.md}",
     permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
   },
   "sf-debugger": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-debugger.md}",
     permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
   },
   "sf-reviewer": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-reviewer.md}",
     permission: { task: "deny", edit: "deny", bash: "allow", skill: "allow" },
   },
   "sf-verifier": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-verifier.md}",
     permission: { task: "deny", edit: "deny", bash: "allow", skill: "allow" },
   },
   "sf-knowledge": {
     mode: "subagent",
-    model: "anthropic/claude-sonnet-4-20250514",
     prompt: "{file:./agents/sf-knowledge.md}",
     permission: { task: "deny", edit: "ask", bash: "allow", skill: "allow" },
   },

@@ -156,7 +156,11 @@ export function normalizeVersion(v: string): string {
  * 含 NaN 校验 + /^\d+\.\d+\.\d+$/ 正则验证
  */
 export function parseVersion(v: string): [number, number, number] {
-  const cleaned = normalizeVersion(v.replace(/^[>=<]+/, "").trim())
+  // 去除前导操作符和空格
+  let cleaned = v.replace(/^[>=<]+/, "").trim()
+  // 去除预发布后缀（-dev、-beta.1、-rc.2 等）和构建元数据（+build123）
+  cleaned = cleaned.replace(/[-+].*$/, "")
+  cleaned = normalizeVersion(cleaned)
   if (!/^\d+\.\d+\.\d+$/.test(cleaned)) {
     throw new Error(`Invalid version format: "${v}"`)
   }

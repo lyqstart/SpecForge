@@ -1,10 +1,9 @@
 ---
-model: anthropic/claude-sonnet-4-20250514
 mode: subagent
 permission:
   task: deny
   edit: ask
-  bash: allow
+  bash: deny
   skill: ask
 ---
 

@@ -1,12 +1,11 @@
 ---
 description: SpecForge 验证 Agent，负责执行测试、验收、冒烟和回归验证，提供验证证据
 mode: subagent
-model: zai-coding-plan/glm-5.1
 temperature: 0.2
 steps: 45
 permission:
   edit: deny
-  bash: allow
+  bash: deny
   task: deny
   skill: allow
 ---

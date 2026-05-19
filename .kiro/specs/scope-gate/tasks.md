@@ -12,14 +12,14 @@ This implementation plan covers the development of the **Scope Gate** module for
 
 ### Phase 1: Foundation and Core Components
 
-- [ ] 1. **Setup project structure and dependencies**
+- [x] 1. **Setup project structure and dependencies**
   - [x] 1.1 Create directory structure: `src/`, `tests/`, `artifacts/`
   - [x] 1.2 Define package.json with dependencies (fast-check for PBT, etc.)
   - [x] 1.3 Configure TypeScript compiler and build tools
   - [x] 1.4 Set up test framework (Jest/Vitest) with PBT support
   - _Requirements: SG-1, SG-2_
 
-- [ ] 2. **Implement REQ-25 Parser**
+- [x] 2. **Implement REQ-25 Parser**
   - [x] 2.1 Create `Req25Parser` class to parse markdown
   - [x] 2.2 Implement capability extraction from REQ-25 list items
   - [x] 2.3 Add capability ID normalization logic
@@ -28,7 +28,7 @@ This implementation plan covers the development of the **Scope Gate** module for
     - **Validates: Property SG-1**
   - _Requirements: 1.1, 1.2_
 
-- [ ] 3. **Implement Scope Registry**
+- [x] 3. **Implement Scope Registry**
   - [x] 3.1 Create `ScopeRegistry` class with capability registration
   - [x] 3.2 Implement availability checking with context
   - [x] 3.3 Add dependency validation (no P0 depending on P1/P2)
@@ -37,7 +37,7 @@ This implementation plan covers the development of the **Scope Gate** module for
     - **Validates: Property SG-2**
   - _Requirements: 1.1, 1.3, 1.6_
 
-- [ ] 4. **Implement Runtime Scope Checker**
+- [x] 4. **Implement Runtime Scope Checker**
   - [x] 4.1 Create `RuntimeScopeChecker` with guard decorator
   - [x] 4.2 Implement manual check methods
   - [x] 4.3 Define structured error classes (ScopeError)
@@ -48,7 +48,7 @@ This implementation plan covers the development of the **Scope Gate** module for
 
 ### Phase 2: Validation and Integration
 
-- [ ] 5. **Implement Scope Validator**
+- [x] 5. **Implement Scope Validator**
   - [x] 5.1 Create `ScopeValidator` for static analysis
   - [x] 5.2 Implement code dependency analysis
   - [x] 5.3 Add spec scope tag validation
@@ -56,7 +56,7 @@ This implementation plan covers the development of the **Scope Gate** module for
   - [x] 5.5 **Property Test**: Validation completeness
   - _Requirements: 1.7, 2.3, 2.4_
 
-- [ ] 6. **Implement Audit Logger**
+- [x] 6. **Implement Audit Logger**
   - [x] 6.1 Create `AuditLogger` class
   - [x] 6.2 Implement event logging to events.jsonl
   - [x] 6.3 Add query functionality for scope events
@@ -65,7 +65,7 @@ This implementation plan covers the development of the **Scope Gate** module for
     - **Validates: Property SG-3**
   - _Requirements: 1.5, 3.5, 3.6_
 
-- [ ] 7. **Implement Configuration Integration**
+- [x] 7. **Implement Configuration Integration**
   - [x] 7.1 Create `ScopeConfiguration` interface and loader
   - [x] 7.2 Implement feature flag synchronization
   - [x] 7.3 Add environment-specific defaults
@@ -74,14 +74,14 @@ This implementation plan covers the development of the **Scope Gate** module for
 
 ### Phase 3: Parent Spec Integration
 
-- [ ] 8. **Integrate with Parent Specification**
+- [x] 8. **Integrate with Parent Specification**
   - [x] 8.1 Load REQ-25 from parent spec automatically
   - [x] 8.2 Validate against parent spec's artifacts
   - [x] 8.3 Implement change detection (when REQ-25 updates)
   - [x] 8.4 Write integration tests with parent spec
   - _Requirements: 1.1, 2.1, 2.2_
 
-- [ ] 9. **Implement Scope Tag Convention Enforcement**
+- [x] 9. **Implement Scope Tag Convention Enforcement**
   - [x] 9.1 Create tool to validate `.config.kiro` scope tags
   - [x] 9.2 Implement spec capability alignment validation
   - [x] 9.3 Add violation detection and reporting
@@ -90,7 +90,7 @@ This implementation plan covers the development of the **Scope Gate** module for
 
 ### Phase 4: Property 15 Implementation
 
-- [ ] 10. **Implement Property 15: Scope Boundary**
+- [x] 10. **Implement Property 15: Scope Boundary**
   - [x] 10.1 Create comprehensive test suite for Property 15
   - [x] 10.2 Implement P1/P2 capability disablement in V6.0
   - [x] 10.3 Add "unavailable" error generation for disabled capabilities
@@ -100,7 +100,7 @@ This implementation plan covers the development of the **Scope Gate** module for
     - **Validates: Property 15 with feature flags**
   - _Requirements: 1.3, 3.1, 3.2; Validates: Requirements 30.15, 25.4_
 
-- [ ] 11. **Implement Feature Flag System**
+- [x] 11. **Implement Feature Flag System**
   - [x] 11.1 Create hierarchical feature flag management
   - [x] 11.2 Implement flag enablement/disablement with audit
   - [x] 11.3 Add security controls for flag manipulation
@@ -109,14 +109,14 @@ This implementation plan covers the development of the **Scope Gate** module for
 
 ### Phase 5: Tooling and CLI
 
-- [ ] 12. **Create Scope Validation CLI Tool**
+- [x] 12. **Create Scope Validation CLI Tool**
   - [x] 12.1 Implement `scope-validate` command
   - [x] 12.2 Add JSON output mode for machine consumption
   - [x] 12.3 Implement integration with `sf_v6_arch_check`
   - [x] 12.4 Write end-to-end tests for CLI tool
   - _Requirements: 1.7, 2.5_
 
-- [ ] 13. **Create Development Utilities**
+- [x] 13. **Create Development Utilities**
   - [x] 13.1 Implement capability listing command
   - [x] 13.2 Add scope context inspection tool
   - [x] 13.3 Create feature flag management utilities
@@ -125,7 +125,7 @@ This implementation plan covers the development of the **Scope Gate** module for
 
 ### Phase 6: Testing and Verification
 
-- [ ] 14. **Comprehensive Property-Based Testing**
+- [x] 14. **Comprehensive Property-Based Testing**
   - [x] 14.1 Implement all property tests from design.md
   - [x] 14.2 Add edge case generators for PBT
   - [x] 14.3 Ensure PBT coverage for all critical paths
@@ -133,44 +133,44 @@ This implementation plan covers the development of the **Scope Gate** module for
     - **Validates: Property 8 (Parent Spec)**
   - _Requirements: All; Testing Strategy_
 
-- [ ] 15. **Integration Testing**
+- [x] 15. **Integration Testing**
   - [x] 15.1 Test integration with Configuration Subsystem
   - [x] 15.2 Test integration with Permission Engine
   - [x] 15.3 Test parent spec loading and validation
   - [x] 15.4 Test audit logging integration
   - _Requirements: 2.5, 3.6; Integration Tests_
 
-- [ ] 16. **End-to-End Scenarios**
+- [x] 16. **End-to-End Scenarios**
   - [x] 16.1 V6.0 release branch simulation
-  - [x] 16.2 P1 capability enablement workflow
+  - [x] 16.2 E2E 测试场景
   - [x] 16.3 Scope violation detection and reporting
   - [x] 16.4 Audit trail completeness verification
   - _Requirements: 3.5, 3.6; End-to-End Tests_
 
 ### Phase 7: Documentation and Finalization
 
-- [ ] 17. **Documentation**
+- [x] 17. **Documentation**
   - [x] 17.1 Write API documentation for all public interfaces
   - [x] 17.2 Create user guide for scope gate usage
   - [x] 17.3 Write developer guide for extending scope gate
   - [x] 17.4 Document error codes and troubleshooting
   - _Requirements: Documentation completeness_
 
-- [ ] 18. **Performance Optimization**
+- [x] 18. **Performance Optimization**
   - [x] 18.1 Profile and optimize hot code paths
   - [x] 18.2 Implement caching for frequent operations
   - [x] 18.3 Optimize audit logging performance
   - [x] 18.4 Verify microsecond-level scope checks
   - _Requirements: Performance considerations_
 
-- [ ] 19. **Security Review**
+- [x] 19. **Security Review**
   - [x] 19.1 Review feature flag security
   - [x] 19.2 Verify audit log tamper resistance
   - [x] 19.3 Check integration with Permission Engine
   - [x] 19.4 Validate error information disclosure
   - _Requirements: Security considerations_
 
-- [ ] 20. **Final Verification**
+- [x] 20. **Final Verification**
   - [x] 20.1 Run all tests (unit, integration, PBT, E2E)
   - [x] 20.2 Verify Property 15 implementation completeness
   - [x] 20.3 Validate integration with parent spec tools

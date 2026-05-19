@@ -42,8 +42,28 @@ export * from './loader/hot-reload';
 // Re-export plugin registry (Task 4.2.1)
 export * from './registry';
 
-// Re-export plugin registry (Task 4.2.1)
-export * from './registry';
+// Re-export error recovery (Task 5.2.3)
+export * from './error-recovery';
 
-// Re-export plugin registry (Task 4.2.1)
-export * from './registry';
+// Re-export audit logger (Task 5.3.1)
+export * from './audit-log';
+
+// Re-export DaemonInit (Task 6.1.2)
+export * from './daemon-init';
+
+// Re-export Tool Registry integration (Task 8.3.2)
+// 只导出接口和类名，实际实现在 tool-registry-integration.ts
+export type {
+  PluginTool,
+  PluginToolRegistration,
+  ToolRegistry,
+  ToolCallRequest,
+  ToolCallResult,
+  PermissionChecker,
+} from './tool-registry-integration';
+
+export {
+  InMemoryToolRegistry,
+  ToolInvoker,
+  PluginToolManager,
+} from './tool-registry-integration';

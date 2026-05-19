@@ -64,6 +64,18 @@ The CLI supports two output modes:
 - `heal` - Trigger self-healing
 - `config` - Show configuration
 
+## Complete Removal Including User Data
+
+To completely remove SpecForge including all user data, run the following commands in order:
+
+1. npm uninstall -g @specforge/cli
+2. rm -rf ~/.specforge/
+
+For Windows PowerShell, use:
+
+1. npm uninstall -g @specforge/cli
+2. Remove-Item -Recurse -Force $env:USERPROFILE\.specforge
+
 ## Development
 
 ```bash

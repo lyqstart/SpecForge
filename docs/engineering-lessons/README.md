@@ -99,10 +99,16 @@ bun run scripts/lessons/render-kiro-steering.ts --no-project
 
 - [async-resource-lifecycle.md](universal/async-resource-lifecycle.md) ⚠️ HIGH — Promise.race / while 轮询 / setTimeout 资源泄漏的预防与修复
 - [javascript-explicit-resource-management.md](universal/javascript-explicit-resource-management.md) ⚠️ HIGH — JS 没有析构函数；Disposable 协议 + 默认安全 + 自检 API + 测试断言四层防护体系
+- [shell-command-execution.md](universal/shell-command-execution.md) ⚠️ HIGH — Shell 命令执行规范（跨平台 shell 选择 + UTF-8 强制 + 危险命令拦截 + 双层超时 + 结构化返回 + 审计日志）
+- [host-environment-detection.md](universal/host-environment-detection.md) ⚠️ HIGH — 宿主机环境探测与 host-profile 规范（OS / locale / shell / 工具版本扫描，Windows 优先 pwsh）
 
 ### AI Tools / Kiro
 
 - [execute-pwsh-constraints.md](ai-tools/kiro/execute-pwsh-constraints.md) ⚠️ HIGH — Kiro `execute_pwsh` 受控壳的硬约束（禁用 cd、heredoc、单行限制等）
+
+### AI Tools / OpenCode
+
+- [custom-tool-self-contained.md](ai-tools/opencode/custom-tool-self-contained.md) ⚠️ HIGH — OpenCode 自定义工具必须完全自包含（禁止跨目录 import，否则所有 agent 卡死）
 
 ### Projects / SpecForge
 
@@ -114,7 +120,7 @@ bun run scripts/lessons/render-kiro-steering.ts --no-project
 
 | 指标 | 值 |
 |------|-----|
-| 经验数 | 2 篇 |
+| 经验数 | 5 篇 |
 | 适配器数 | 1 个（render-kiro-steering） |
 | 支持工具 | Kiro |
 | 角色定义 | 6 个（executor / orchestrator / reviewer / debugger / architect / *） |
@@ -127,5 +133,6 @@ bun run scripts/lessons/render-kiro-steering.ts --no-project
 
 ## §5 变更记录
 
+- **2026-05-19 v0.3**：新增两篇核心 shell 经验——`shell-command-execution.md`（执行规范）和 `host-environment-detection.md`（环境探测），为 sf_safe_bash 工具和宿主机档案提供完整规则依据；更新 `kiro/execute-pwsh-constraints.md` 增加 related 引用
 - **2026-05-16 v0.2**：README 简化为导航文档，详细规则迁移到 `ARCHITECTURE.md`（避免重复）；ARCHITECTURE.md 重写为 Part A（AI 操作手册）+ Part B（设计文档）结构
 - **2026-05-16 v0.1**：初版骨架建立，三层目录 + 第一篇 Kiro 经验 + Kiro 适配器

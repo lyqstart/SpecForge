@@ -45,7 +45,12 @@ describe('Audit Logging Integration (Task 15.4)', () => {
 
   beforeEach(async () => {
     testLogDir = getTestLogDir();
-    logger = new AuditLogger(testLogDir);
+    // Use enableTimer: false and highWaterMark: 1 for immediate flush in tests
+    // This ensures events are written to disk immediately (matching audit-logger.test.ts pattern)
+    logger = new AuditLogger(testLogDir, undefined, { 
+      enableTimer: false,
+      highWaterMark: 1 
+    });
     
     // Create registry with test capabilities
     registry = new ScopeRegistry();
@@ -198,6 +203,9 @@ describe('Audit Logging Integration (Task 15.4)', () => {
         code: 'SCOPE_BOUNDARY_VIOLATION'
       };
       await logger.logViolationAttempt(violation);
+      
+      // Flush to ensure events are written to file
+      await logger.flush();
 
       // Verify events.jsonl file exists
       const logFile = join(testLogDir, 'events.jsonl');

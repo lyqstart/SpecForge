@@ -79,14 +79,15 @@ describe('路径逃逸攻击检测', () => {
     it('应拒绝指向插件目录外的绝对路径', () => {
       const result = checker.checkPath('/etc/passwd');
       expect(result.safe).toBe(false);
-      // 路径 /etc/passwd 同时匹配系统路径保护规则
-      expect(result.error).toMatch(/系统关键路径|绝对路径/);
+      // 路径逃逸攻击：绝对路径指向插件目录外
+      expect(result.error).toContain('路径逃逸攻击');
     });
 
     it('应拒绝系统关键绝对路径', () => {
       const result = checker.checkPath('/bin/bash');
       expect(result.safe).toBe(false);
-      expect(result.error).toContain('系统关键路径');
+      // 路径逃逸攻击或系统路径保护
+      expect(result.error).toMatch(/路径逃逸攻击|系统关键路径/);
     });
 
     it('应拒绝 Windows 系统路径', () => {

@@ -11,6 +11,11 @@
  *   - 支持 TypeScript 特有语法（类型注解、接口等）
  *   - 缓存解析结果以提高性能
  *
+ * 性能优化 (6.3.4)：
+ *   - 添加 LRU 缓存机制，缓存已解析的源码
+ *   - 使用 WeakMap 存储 AST 节点避免重复解析
+ *   - 限制缓存大小防止内存泄漏
+ *
  * 异步资源生命周期规范（A1/A2/A3）：
  *   - 本模块不涉及 Promise.race / while 循环 / 轮询
  *   - 所有操作为同步，无异步资源泄漏风险
@@ -18,6 +23,52 @@
 
 import * as parser from '@typescript-eslint/parser';
 import type { TSESTree } from '@typescript-eslint/types';
+
+/**
+ * LRU 缓存实现 - 用于缓存 AST 解析结果
+ */
+class LRUCache<K, V> {
+  private cache: Map<K, V>;
+  private maxSize: number;
+
+  constructor(maxSize: number = 100) {
+    this.cache = new Map();
+    this.maxSize = maxSize;
+  }
+
+  get(key: K): V | undefined {
+    if (!this.cache.has(key)) return undefined;
+    
+    // 移动到末尾（最近使用）
+    const value = this.cache.get(key)!;
+    this.cache.delete(key);
+    this.cache.set(key, value);
+    return value;
+  }
+
+  set(key: K, value: V): void {
+    // 如果已存在，删除后再设置
+    if (this.cache.has(key)) {
+      this.cache.delete(key);
+    }
+    
+    // 如果缓存已满，删除最老的项
+    if (this.cache.size >= this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+    
+    this.cache.set(key, value);
+  }
+
+  clear(): void {
+    this.cache.clear();
+  }
+
+  size(): number {
+    return this.cache.size;
+  }
+}
 
 /**
  * AST 解析选项
@@ -102,6 +153,7 @@ export interface AstParseResult {
  */
 export class AstParser {
   private parseOptions: AstParseOptions;
+  private parseCache: LRUCache<string, AstParseResult>;
 
   constructor(options: AstParseOptions = {}) {
     this.parseOptions = {
@@ -111,16 +163,66 @@ export class AstParser {
       ecmaVersion: 2022,
       ...options,
     };
+    // 初始化 LRU 缓存，限制缓存 200 个条目
+    this.parseCache = new LRUCache<string, AstParseResult>(200);
   }
 
   /**
-   * 解析源码并返回 AST
+   * 解析源码并返回 AST（带缓存）
    *
    * @param source - 源码内容
-   * @param filePath - 文件路径（用于错误报告）
+   * @param filePath - 文件路径（用于错误报告和缓存键）
    * @returns 解析结果
    */
   parse(source: string, filePath: string = ''): AstParseResult {
+    // 使用源码内容的哈希作为缓存键
+    const cacheKey = this.hashSource(source);
+    
+    // 检查缓存
+    const cached = this.parseCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // 执行解析
+    const result = this.doParse(source, filePath);
+    
+    // 缓存结果（只有成功解析的结果才缓存）
+    if (result.success) {
+      this.parseCache.set(cacheKey, result);
+    }
+    
+    return result;
+  }
+
+  /**
+   * 源码内容的哈希函数
+   */
+  private hashSource(source: string): string {
+    // 使用简单的哈希函数
+    let hash = 0;
+    for (let i = 0; i < source.length; i++) {
+      const char = source.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // 转换为 32 位整数
+    }
+    return hash.toString(36);
+  }
+
+  /**
+   * 执行实际解析（无缓存）
+   */
+  private doParse(source: string, filePath: string): AstParseResult {
+    // 处理空源码
+    if (!source || source.trim() === '') {
+      return {
+        success: true,
+        functionCalls: [],
+        imports: [],
+        variables: [],
+      };
+    }
+
     try {
       const ast = parser.parse(source, {
         ecmaVersion: this.parseOptions.ecmaVersion,
@@ -153,6 +255,38 @@ export class AstParser {
   }
 
   /**
+   * 优化的 AST 遍历 - 使用显式栈代替递归，提高性能和避免栈溢出风险
+   */
+  private traverseAst(ast: TSESTree.Program, callback: (node: TSESTree.Node) => void): void {
+    const stack: TSESTree.Node[] = [ast];
+    
+    while (stack.length > 0) {
+      const node = stack.pop()!;
+      callback(node);
+      
+      // 只处理有子节点的对象属性
+      for (const key in node) {
+        if (key === 'parent' || key === 'loc' || key === 'range') continue;
+        
+        const value = (node as any)[key];
+        if (value && typeof value === 'object') {
+          if (Array.isArray(value)) {
+            // 逆序入栈以保持原始顺序
+            for (let i = value.length - 1; i >= 0; i--) {
+              const item = value[i];
+              if (item && typeof item === 'object' && 'type' in item) {
+                stack.push(item as TSESTree.Node);
+              }
+            }
+          } else if ('type' in value) {
+            stack.push(value as TSESTree.Node);
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * 提取所有函数调用
    *
    * @param ast - AST 根节点
@@ -161,7 +295,7 @@ export class AstParser {
   private extractFunctionCalls(ast: TSESTree.Program): FunctionCallInfo[] {
     const calls: FunctionCallInfo[] = [];
 
-    const visit = (node: TSESTree.Node): void => {
+    this.traverseAst(ast, (node) => {
       if (node.type === 'CallExpression') {
         const callExpr = node as TSESTree.CallExpression;
         const name = this.getCallExpressionName(callExpr);
@@ -176,25 +310,8 @@ export class AstParser {
           });
         }
       }
+    });
 
-      // 递归遍历子节点
-      for (const key in node) {
-        const value = (node as any)[key];
-        if (value && typeof value === 'object') {
-          if (Array.isArray(value)) {
-            value.forEach((item) => {
-              if (item && typeof item === 'object' && 'type' in item) {
-                visit(item as TSESTree.Node);
-              }
-            });
-          } else if ('type' in value) {
-            visit(value as TSESTree.Node);
-          }
-        }
-      }
-    };
-
-    visit(ast);
     return calls;
   }
 
@@ -207,7 +324,7 @@ export class AstParser {
   private extractImports(ast: TSESTree.Program): ImportInfo[] {
     const imports: ImportInfo[] = [];
 
-    const visit = (node: TSESTree.Node): void => {
+    this.traverseAst(ast, (node) => {
       // 处理 import ... from 'module'
       if (node.type === 'ImportDeclaration') {
         const importDecl = node as TSESTree.ImportDeclaration;
@@ -271,25 +388,8 @@ export class AstParser {
           }
         }
       }
+    });
 
-      // 递归遍历子节点
-      for (const key in node) {
-        const value = (node as any)[key];
-        if (value && typeof value === 'object') {
-          if (Array.isArray(value)) {
-            value.forEach((item) => {
-              if (item && typeof item === 'object' && 'type' in item) {
-                visit(item as TSESTree.Node);
-              }
-            });
-          } else if ('type' in value) {
-            visit(value as TSESTree.Node);
-          }
-        }
-      }
-    };
-
-    visit(ast);
     return imports;
   }
 
@@ -303,7 +403,7 @@ export class AstParser {
     const variables: VariableRefInfo[] = [];
     const seen = new Set<string>();
 
-    const visit = (node: TSESTree.Node): void => {
+    this.traverseAst(ast, (node) => {
       if (node.type === 'Identifier') {
         const ident = node as TSESTree.Identifier;
         const key = `${ident.name}:${ident.loc?.start.line}:${ident.loc?.start.column}`;
@@ -318,25 +418,8 @@ export class AstParser {
           });
         }
       }
+    });
 
-      // 递归遍历子节点
-      for (const key in node) {
-        const value = (node as any)[key];
-        if (value && typeof value === 'object') {
-          if (Array.isArray(value)) {
-            value.forEach((item) => {
-              if (item && typeof item === 'object' && 'type' in item) {
-                visit(item as TSESTree.Node);
-              }
-            });
-          } else if ('type' in value) {
-            visit(value as TSESTree.Node);
-          }
-        }
-      }
-    };
-
-    visit(ast);
     return variables;
   }
 
@@ -387,30 +470,27 @@ export class AstParser {
   ): TSESTree.Node[] {
     const results: TSESTree.Node[] = [];
 
-    const visit = (node: TSESTree.Node): void => {
+    this.traverseAst(ast, (node) => {
       if (predicate(node)) {
         results.push(node);
       }
+    });
 
-      // 递归遍历子节点
-      for (const key in node) {
-        const value = (node as any)[key];
-        if (value && typeof value === 'object') {
-          if (Array.isArray(value)) {
-            value.forEach((item) => {
-              if (item && typeof item === 'object' && 'type' in item) {
-                visit(item as TSESTree.Node);
-              }
-            });
-          } else if ('type' in value) {
-            visit(value as TSESTree.Node);
-          }
-        }
-      }
-    };
-
-    visit(ast);
     return results;
+  }
+
+  /**
+   * 清除解析缓存（用于内存管理）
+   */
+  clearCache(): void {
+    this.parseCache.clear();
+  }
+
+  /**
+   * 获取当前缓存大小
+   */
+  getCacheSize(): number {
+    return this.parseCache.size();
   }
 }
 

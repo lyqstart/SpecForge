@@ -28,6 +28,8 @@ import { addWebhookCommands } from './commands/webhook';
 import { addUtilityCommands } from './commands/utility';
 import { addSpecCommands } from './commands/spec';
 import { addPluginCommands } from './commands/plugin';
+import { runVersionCommand } from './commands/version-cmd';
+import { initCommandHandler } from './commands/init';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -153,7 +155,7 @@ export function parseArgs(argv: string[] = process.argv): Argv<GlobalOptions> {
         default: false,
       },
     })
-    .version(CLI_VERSION)
+    .version(false) // Disable yargs built-in version to use our custom implementation
     .help(false) // Disable default yargs help to use our custom implementation
     .strict();
 }
@@ -432,6 +434,31 @@ function formatJobStatus(
 }
 
 /**
+ * Init command definitions
+ */
+function addInitCommands(yargsInstance: Argv): Argv {
+  return yargsInstance.command(
+    'init',
+    'Initialize SpecForge installation',
+    (yargsInstance: Argv) => {
+      return yargsInstance
+        .option('force', {
+          type: 'boolean',
+          describe: 'Overwrite existing config files',
+          default: false,
+        })
+        .option('install-root', {
+          type: 'string',
+          describe: 'Custom installation root directory',
+        });
+    },
+    async (argv: Arguments) => {
+      await initCommandHandler(argv);
+    }
+  );
+}
+
+/**
  * Job command definitions
  */
 function addJobCommands(yargsInstance: Argv): Argv {
@@ -565,12 +592,14 @@ export function runCli(argv: string[] = process.argv): void {
   // Add all command groups with help system integrated
   const parserWithCommands = addHelpCommands(
     addDaemonCommands(
-      addSpecCommands(
-        addPluginCommands(
-          addWorkflowCommands(
-            addJobCommands(
-              addWebhookCommands(
-                addUtilityCommands(parser)
+      addInitCommands(
+        addSpecCommands(
+          addPluginCommands(
+            addWorkflowCommands(
+              addJobCommands(
+                addWebhookCommands(
+                  addUtilityCommands(parser)
+                )
               )
             )
           )
@@ -579,7 +608,21 @@ export function runCli(argv: string[] = process.argv): void {
     )
   );
   
-  // Parse and execute
+  // Parse arguments
+  const parsedArgs = parserWithCommands.parseSync();
+  
+  // Handle --version flag
+  if (parsedArgs.version) {
+    runVersionCommand({ json: Boolean(parsedArgs.json) })
+      .then(() => process.exit(0))
+      .catch((error) => {
+        console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+        process.exit(1);
+      });
+    return;
+  }
+  
+  // Continue with normal command execution
   parserWithCommands.parse();
 }
 

@@ -84,6 +84,26 @@ bun scripts/sf-installer.ts uninstall
 - ✅ **安全保留**：保留用户其他配置不变
 - ✅ **残留检测**：报告未在 Manifest 中记录的 sf-* 文件
 
+### 完整卸载（含用户数据）
+
+上面的 `uninstall` 命令只移除 SpecForge 的共享组件（Agent/Tool/Skill/Plugin），**不会删除用户数据**（`~/.specforge/` 目录下的配置、日志、迁移脚本等）。
+
+如需彻底清除所有内容，在执行 `uninstall` 后，额外运行：
+
+**macOS / Linux：**
+```bash
+bun scripts/sf-installer.ts uninstall
+rm -rf ~/.specforge/
+```
+
+**Windows PowerShell：**
+```powershell
+bun scripts/sf-installer.ts uninstall
+Remove-Item -Recurse -Force $env:USERPROFILE\.specforge
+```
+
+> ⚠️ **警告**：此操作不可逆。`~/.specforge/` 目录包含你的配置文件、运行日志、迁移脚本等用户数据，删除后无法恢复。
+
 ### 版本信息
 
 ```bash

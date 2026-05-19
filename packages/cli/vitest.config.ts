@@ -1,3 +1,7 @@
+// 排查卡死指引：如遇测试进程不退出，临时启用 `--reporter=hanging-process` 定位泄漏点
+// 示例：bun test --reporter=hanging-process
+// 注意：hanging-process reporter 资源开销大，不建议常驻，仅排查时使用
+
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -5,10 +9,7 @@ export default defineConfig({
     testTimeout: 10000,
     hookTimeout: 5000,
     teardownTimeout: 3000,
-    // 规则 T2/T4（进程隔离 + 防卡死兜底）：见 docs/engineering-lessons/universal/async-resource-lifecycle.md
     pool: 'forks',
-    // 排查测试卡死：临时加 `bun test --reporter=hanging-process` 定位未关的句柄/timer
-    // 不建议常驻（resource-intensive）；详见 docs/engineering-lessons/universal/javascript-explicit-resource-management.md JS6
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.ts', 'tests/property/**/*.test.ts'],

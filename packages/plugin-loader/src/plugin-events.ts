@@ -13,6 +13,21 @@
 import type { Event, EventCategory } from '@specforge/observability';
 
 // ---------------------------------------------------------------------------
+// Event Bus 接口（最小化依赖，避免循环引用 daemon-core）
+// ---------------------------------------------------------------------------
+
+/**
+ * Event Bus 最小接口
+ * 与 @specforge/daemon-core 的 EventBus 结构兼容，但不直接依赖该包。
+ */
+export interface IEventBus {
+  /** 发布事件 */
+  emit(event: Partial<Event> & { category: string; action: string; payload: unknown }): Promise<void> | void;
+  /** 订阅事件（支持通配符模式） */
+  subscribe(pattern: string): AsyncIterable<Event>;
+}
+
+// ---------------------------------------------------------------------------
 // 事件类型定义
 // ---------------------------------------------------------------------------
 
@@ -405,7 +420,7 @@ export interface PluginEventPublisher {
  * @param eventBus - Event Bus 实例
  * @returns 插件事件发布器
  */
-export function createPluginEventPublisher(eventBus: any): PluginEventPublisher {
+export function createPluginEventPublisher(eventBus: IEventBus): PluginEventPublisher {
   return {
     async publishLoaded(event: PluginLoadedEvent): Promise<void> {
       await eventBus.emit({
@@ -458,7 +473,7 @@ export function createPluginEventPublisher(eventBus: any): PluginEventPublisher 
  * @param eventBus - Event Bus 实例
  * @returns 异步可迭代的事件流
  */
-export function subscribeToPluginEvents(eventBus: any): AsyncIterable<PluginEvent> {
+export function subscribeToPluginEvents(eventBus: IEventBus): AsyncIterable<PluginEvent> {
   return eventBus.subscribe('plugin.*');
 }
 
@@ -468,6 +483,6 @@ export function subscribeToPluginEvents(eventBus: any): AsyncIterable<PluginEven
  * @param action - 事件动作（如 'plugin.loaded'）
  * @returns 异步可迭代的事件流
  */
-export function subscribeToPluginEventAction(eventBus: any, action: string): AsyncIterable<Event> {
+export function subscribeToPluginEventAction(eventBus: IEventBus, action: string): AsyncIterable<Event> {
   return eventBus.subscribe(action);
 }

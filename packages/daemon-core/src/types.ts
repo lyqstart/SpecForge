@@ -17,8 +17,12 @@ export interface AgentIdentity {
 export interface Event {
   eventId: string;
   ts: number;
-  projectId: string;
+  projectId?: string;
+  category?: string;
   action: string;
+  target?: string;
+  success?: boolean;
+  data?: Record<string, unknown>;
   payload: Record<string, unknown>;
   metadata: {
     schemaVersion: string;

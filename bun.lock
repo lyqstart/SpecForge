@@ -29,12 +29,16 @@
         "specforge": "dist/cli.js",
       },
       "dependencies": {
+        "@specforge/configuration": "workspace:*",
+        "@specforge/scope-gate": "workspace:*",
         "axios": "^1.6.0",
         "chalk": "^4.1.2",
+        "proper-lockfile": "^4.1.2",
         "yargs": "^17.7.2",
       },
       "devDependencies": {
         "@types/node": "^20.11.0",
+        "@types/proper-lockfile": "^4.1.4",
         "@types/yargs": "^17.0.32",
         "@typescript-eslint/eslint-plugin": "^6.21.0",
         "@typescript-eslint/parser": "^6.21.0",
@@ -74,6 +78,8 @@
       "name": "@specforge/daemon-core",
       "version": "1.0.0",
       "dependencies": {
+        "@specforge/plugin-loader": "workspace:*",
+        "@specforge/types": "workspace:*",
         "uuid": "^11.1.0",
       },
       "devDependencies": {
