@@ -471,13 +471,15 @@ WHEN 一个 Parallel_Batch 中某个 executor 失败时：
 
 ## 归档创建流程
 
-每次子 Agent 执行完成后（无论成功或失败），按顺序执行：
+**⚠️ BLOCKING：每次子 Agent 执行完成后（无论成功或失败），Orchestrator 必须按下列顺序逐项调用，跳过其中任何一步都视为协议违规。判断"已经归档"的唯一证据是 `specforge/archive/agent_runs/<run_id>/result.json` 已存在（不是 work_log.md，work_log 由子 Agent 自己写）。**
 
 0. 调用 `sf_cost_report`（session_id）获取成本数据，提取 cost_summary（无数据时设为 null）
 0.5 会话记录由 sf_session_recorder Plugin 自动完成
 0.7 检查 `specforge/runtime/events.jsonl` 中 start_time 到 end_time 之间的 `context.compacted` 事件
-1. 调用 `sf_artifact_write`（file_type="agent_run_result"）写入 result.json
-2. 调用 `sf_artifact_write`（file_type="work_log"）写入 work_log.md
+1. 调用 `sf_artifact_write`（file_type="agent_run_result"）写入 result.json — **此步骤是 Archive 完整性的权威证据，漏调即视为本次归档失败**
+2. 调用 `sf_artifact_write`（file_type="work_log"）写入 work_log.md — 子 Agent 也会自己写一份；Orchestrator 这次调用是为了让 trace 统计自动合并到 work_log
+
+**兜底机制（不替代步骤 1）**：自 V3.7+ 起，`sf_artifact_write`（file_type="work_log"）在写入时若发现同目录尚无 result.json，会自动生成一份 `source: "sidecar"` 的兜底 result.json。该兜底版本仅含基础字段（run_id、work_item_id、agent_name、status="completed"），**不含 cost_summary、duration_ms 等关键字段**。Orchestrator 主动调用步骤 1 时会覆盖兜底版本（权威优先）。**这是补救 net，不是允许跳过步骤 1 的许可证**。
 
 **result.json 包含：** run_id、work_item_id、agent_name、start_time、end_time、duration_ms、status、task_description、retry_count、cost_summary、compaction_occurred、conversation_recorded
 

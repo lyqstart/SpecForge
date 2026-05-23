@@ -16,13 +16,16 @@
 
 ## 当前状态
 
-- **当前 Wave**: `W5` — 北极星验证（发版前最后一关）
-- **Wave 开始日期**: 2026-05-19
-- **Checkpoint 状态**: ⏳ 待达成（W5 判据：6 条门槛 + 28 条 Property PBT）
+- **当前 Wave**: `V6.1` — 自愈子系统开发（V6.0 发布后）
+- **Wave 开始日期**: 2026-05-21
+- **Checkpoint 状态**: ⏳ 待达成（V6.1 判据：self-healing 模块完成 + Property 24/25 PBT）
 
 ## 活跃 Spec（并行开发中）
 
-_（当前无活跃 spec）_
+| Spec | tasks.md | 完成进度 | 备注 |
+|---|---|---|---|
+| `self-healing` | 1 / ? | 1.2 完成 | V6.1 首个模块，仅实现 Diagnose 阶段 |
+
 
 ## 已完成 Spec（P0）
 
@@ -44,6 +47,7 @@ _（当前无活跃 spec）_
 | `integration-tests` | 58 / 58 | 全部完成 | — | W3 集成测试完成 |
 | `scope-gate` | 106 / 106 | 2026-05-18 | W2 扩展与接口层完成 |
 | `distribution` | 43 / 43 | 2026-05-19 | W4 分发与远程接入完成（含全部可选测试）|
+| `version-unification` | 84 / 84 | 2026-05-19 | W5 版本统一完成（manifest/migration/CI guard）|
 
 ## 等待中 Spec（按 Wave 顺序排队）
 
@@ -107,6 +111,17 @@ _（当前无活跃 spec）_
 - ⚠️ `invoke_sub_agent` 平台层偶发 "Invalid model ID" / "BAD_DECRYPT" 错误（~30% 失败率），导致并行派单不可靠。已制定 5 条防孤儿规则写入 steering。
 
 ## 上次会话摘要
+
+- **日期**: 2026-05-21（V6.0 发布后，OpenCode 权限修复会话）
+- **触发**：用户报告 OpenCode 权限错误，修复后继续开发
+- **完成内容**：
+  1. **OpenCode 权限修复**：修复 `sf_specforge_plugin_entry.ts` 中的权限检查逻辑，允许 `"unknown"` 身份调用 Orchestrator 专属工具
+  2. **状态同步**：修复 515 个 mismatch 漂移，同步所有 spec 状态
+  3. **V6.1 规划启动**：更新驾驶舱，开始 V6.1 self-healing 模块开发
+- **V6.0 发布状态**：✅ 已打 tag v6.0.0，所有 P0 spec 完成
+- **下次入口**：V6.1 self-healing 模块开发
+
+## 上次会话摘要（前一场）
 
 - **日期**: 2026-05-19（distribution 可选测试全部完成 + V6.0 tag 打出）
 - **触发**：用户指令「继续」→ 完成 distribution 所有可选测试
@@ -325,6 +340,26 @@ _（当前无活跃 spec）_
 ---
 
 ## 变更日志（按日期倒序）
+
+### 2026-05-21（V6.1 规划启动会话）
+
+**本会话推进**：
+- OpenCode 权限修复完成
+- 状态同步：修复 515 个 mismatch 漂移
+- V6.1 规划启动：self-healing 模块开始开发
+
+**完成的主要工作**：
+1. **OpenCode 权限修复**：修复 `sf_specforge_plugin_entry.ts` 权限检查逻辑，允许 `"unknown"` 身份调用 Orchestrator 专属工具
+2. **状态同步**：使用 `sync-task-status.ts sync --all --from=tasksmd --apply` 修复所有状态漂移
+3. **驾驶舱更新**：当前 Wave 更新为 V6.1，活跃 Spec 表添加 self-healing
+
+**V6.1 范围**：
+- self-healing 模块（仅 Diagnose 阶段）
+- Property 24/25 PBT 验证
+
+**下次入口**：self-healing 模块任务推进
+
+**本会话累计 failed**: 0
 
 ### 2026-05-19（distribution W4 任务全部完成会话）
 

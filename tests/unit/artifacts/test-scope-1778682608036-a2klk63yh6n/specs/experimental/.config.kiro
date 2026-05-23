@@ -1,7 +1,0 @@
-{
-  "specId": "experimental",
-  "workflowType": "requirements-first",
-  "specType": "feature",
-  "scopeTag": "p2",
-  "parentSpec": "v6-architecture-overview"
-}

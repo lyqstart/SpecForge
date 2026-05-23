@@ -1,1 +1,0 @@
-This design requires 多模态完整支持.

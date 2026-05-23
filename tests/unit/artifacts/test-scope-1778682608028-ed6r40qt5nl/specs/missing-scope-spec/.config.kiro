@@ -1,6 +1,0 @@
-{
-  "specId": "missing-scope-spec",
-  "workflowType": "requirements-first",
-  "specType": "feature",
-  "parentSpec": "v6-architecture-overview"
-}

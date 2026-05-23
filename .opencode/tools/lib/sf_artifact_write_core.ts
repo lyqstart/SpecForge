@@ -8,7 +8,7 @@
  * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6
  */
 
-import { readFile, writeFile, mkdir } from "node:fs/promises"
+import { readFile, writeFile, mkdir, access } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { logErrorToFile } from "./utils"
 
@@ -179,12 +179,93 @@ export async function writeArtifact(
     // 6. 写入文件
     await writeFile(absolutePath, finalContent, "utf-8")
 
+    // 6.5 Sidecar: 写 work_log 时若同目录尚无 result.json，自动生成兜底版本
+    //     根因：sf-orchestrator.md 协议要求 Orchestrator 在子 Agent 完成后调用
+    //     sf_artifact_write({file_type:"agent_run_result"}) 写 result.json，但实际
+    //     执行中常被跳过，导致 archive 目录只有 work_log.md。这里腰带加吊带。
+    //     - 若 Orchestrator 之后真的调用 agent_run_result，会覆盖本兜底版本（权威优先）
+    //     - 若没调用，至少 sf_state_read.readAgentRuns / sf_continuity 不会扫到空目录
+    if (input.file_type === "work_log" && input.run_id) {
+      try {
+        const resultPath = join(dirname(absolutePath), "result.json")
+        let needSidecar = false
+        try {
+          await access(resultPath)
+          // 已存在 → 不覆盖（保留权威版本）
+        } catch {
+          needSidecar = true
+        }
+        if (needSidecar) {
+          const sidecar = buildSidecarResult(input.work_item_id, input.run_id, absolutePath)
+          await writeFile(resultPath, JSON.stringify(sidecar, null, 2), "utf-8")
+        }
+      } catch (sidecarErr) {
+        // sidecar 失败不影响主写入，记日志即可
+        await logErrorToFile(baseDir, "sf_artifact_write_core", "sidecar_result_failed", sidecarErr)
+      }
+    }
+
     // 7. 返回成功结果
     const size = Buffer.byteLength(finalContent, "utf-8")
     return { success: true, path: relativePath, size }
   } catch (err) {
     await logErrorToFile(baseDir, "sf_artifact_write_core", "writeArtifact", err)
     throw err
+  }
+}
+
+// ============================================================
+// Sidecar result.json builder (fallback 兜底)
+// ============================================================
+
+/**
+ * 构造一个最小可用的 result.json sidecar 内容。
+ *
+ * 来源：从 run_id 解析 agent_name；其他字段填 sentinel，并通过 source 字段
+ * 标记本 result 来自 sidecar 兜底（非 Orchestrator 主动写入）。
+ *
+ * Orchestrator 之后若真按协议调用 sf_artifact_write({file_type:"agent_run_result"})
+ * 会覆盖本文件，权威版本优先。
+ */
+function buildSidecarResult(workItemId: string, runId: string, workLogAbsPath: string): Record<string, unknown> {
+  // 从 run_id 解析 agent 名（格式：<work_item_id>-<agent_name>-<seq>）
+  // seq 已知形态：纯数字、fixN、cont-N。分步从右侧剥离 seq，剩下的就是 agent_name
+  let agentName = "unknown"
+  if (runId.startsWith(workItemId + "-")) {
+    let tail = runId.slice(workItemId.length + 1)
+    // 优先剥离 cont-N（两段后缀）
+    const contMatch = tail.match(/^(.+)-cont-\d+$/)
+    if (contMatch) {
+      agentName = contMatch[1]
+    } else {
+      // 再尝试 fixN 或纯数字
+      const stdMatch = tail.match(/^(.+)-(?:fix\d+|\d+)$/)
+      agentName = stdMatch ? stdMatch[1] : tail
+    }
+  }
+
+  const now = new Date().toISOString()
+  return {
+    schema_version: "1.0",
+    source: "sidecar",                   // 标记兜底来源
+    run_id: runId,
+    work_item_id: workItemId,
+    agent_name: agentName,
+    start_time: null,
+    end_time: now,
+    duration_ms: null,
+    status: "completed",                 // 默认假定 completed（work_log 写入说明跑到了产物阶段）
+    task_description: null,
+    retry_count: 0,
+    cost_summary: null,
+    compaction_occurred: null,
+    conversation_recorded: null,
+    parallel_batch: null,
+    parallel_peers: null,
+    work_log_path: workLogAbsPath.replace(/\\/g, "/").split("/specforge/").pop()
+      ? "specforge/" + workLogAbsPath.replace(/\\/g, "/").split("/specforge/").pop()
+      : null,
+    sidecar_generated_at: now,
   }
 }
 

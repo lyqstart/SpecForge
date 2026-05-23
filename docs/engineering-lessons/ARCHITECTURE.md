@@ -66,11 +66,13 @@ lessons/                   render-kiro-...                .opencode/agents/<role
 | `bun run scripts/lessons/render-kiro-steering.ts` | 改了任何 lesson 后必跑（更新 Kiro 注入文件） |
 | `bun run scripts/lessons/render-kiro-steering.ts --check` | CI 中校验，不写文件，仅返回状态码 |
 | `bun run scripts/lessons/render-kiro-steering.ts --no-project` | 复制到其他项目时用，不含本项目专属经验 |
+| `bun run scripts/lessons/render-opencode-skill.ts` | 改了任何 lesson 后必跑（更新 OpenCode 注入文件） |
+| `bun run scripts/lessons/render-opencode-skill.ts --check` | CI 中校验，不写文件，仅返回状态码 |
+| `bun run scripts/lessons/render-opencode-skill.ts --no-project` | 复制到其他项目时用，不含本项目专属经验 |
 | `bun run scripts/lessons/render-prompt-block.ts --role=<role>` | orchestrator 派 sub-agent 时，输出粘进 prompt 顶部的硬规则段（默认 high severity） |
 | `bun run scripts/lessons/render-prompt-block.ts --tags=<tag1,tag2>` | 按任务类型筛选（如 shell / async / testing） |
 | `grep -ril "<keyword>" docs/engineering-lessons/` | 搜重复 lesson（按关键词） |
 | `grep -rl "tool: <name>" docs/engineering-lessons/ai-tools/` | 列某工具所有专属 lesson |
-| `bun run scripts/lessons/render-opencode-agent.ts --role=<role>` | （未来）渲染到 OpenCode agent |
 | `bun run scripts/lessons/search.ts --tag=<tag>` | （未来）按 tag 搜 lesson |
 
 **输出文件**（AUTO-GENERATED，禁止手改）：
@@ -78,7 +80,7 @@ lessons/                   render-kiro-...                .opencode/agents/<role
 | 文件 | 谁生成 | 何时刷新 |
 |------|--------|---------|
 | `.kiro/steering/lessons-injected.md` | render-kiro-steering.ts | lesson 变化后 |
-| `.opencode/agents/sf-<role>.md` 的 LESSONS 段 | render-opencode-agent.ts（未来） | 同上 |
+| `.opencode/skills/superpowers-engineering-lessons/SKILL.md` | render-opencode-skill.ts | lesson 变化后 |
 
 ---
 
@@ -596,7 +598,9 @@ SpecForge/
 │   ├── lib/
 │   │   ├── parse-lesson.ts                      ← frontmatter 解析（零依赖）
 │   │   └── filter.ts                            ← scope/tool/role/severity 过滤
-│   └── render-kiro-steering.ts                  ← Kiro 适配器（已实现）
+│   ├── render-kiro-steering.ts                  ← Kiro 适配器（已实现）
+│   ├── render-opencode-skill.ts                 ← OpenCode 适配器（已实现）
+│   └── render-prompt-block.ts                   ← 派单 prompt 注入段（已实现）
 │
 └── .kiro/steering/                              [Kiro 注入点]
     └── lessons-injected.md                      ← AUTO-GENERATED
@@ -631,11 +635,11 @@ SpecForge/
 
 ### §11.3 当前快照
 
-- **经验数**：2 篇（universal/async-resource-lifecycle、ai-tools/kiro/execute-pwsh-constraints）
-- **适配器数**：2 个（render-kiro-steering、render-prompt-block）
-- **支持工具**：Kiro
+- **经验数**：6 篇（universal 4 + ai-tools/kiro 1 + ai-tools/opencode 1）
+- **适配器数**：3 个（render-kiro-steering、render-opencode-skill、render-prompt-block）
+- **支持工具**：Kiro、OpenCode
 - **支持角色**：6 个（executor / orchestrator / reviewer / debugger / architect / *）
-- **生成产物**：`.kiro/steering/lessons-injected.md`、stdout（prompt-block）
+- **生成产物**：`.kiro/steering/lessons-injected.md`、`.opencode/skills/superpowers-engineering-lessons/SKILL.md`、stdout（prompt-block）
 - **依赖**：零（手写 YAML 解析）
 
 ### §11.4 Sub-agent 注入机制（实测验证）
@@ -808,10 +812,10 @@ related: [<id>, ...]                # 可选（关联引用）
 **问题**：当前只有 Kiro 适配器。
 
 **做法**：
-- `render-opencode-agent.ts`：按 `--role` 输出，写到 `.opencode/agents/sf-<role>.md` 的 LESSONS 标记之间
-- `render-system-prompt.ts`：输出到 stdout
+- `render-opencode-skill.ts`：✅ **已完成**。输出到 `.opencode/skills/superpowers-engineering-lessons/SKILL.md`，`autoload: true` 让所有 agent 自动获得经验注入
+- `render-system-prompt.ts`：输出到 stdout（Codex 用，待实现）
 
-**何时做**：第一次用 OpenCode 时（约 1 小时）。
+**何时做**：~~第一次用 OpenCode 时（约 1 小时）~~ ✅ 已实现（2026-05-20）。
 
 ### §15.4 [P1] Lesson 模板
 

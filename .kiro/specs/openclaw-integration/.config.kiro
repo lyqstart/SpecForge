@@ -1,0 +1,15 @@
+{
+  "specName": "openclaw-integration",
+  "displayName": "OpenClaw Integration Layer",
+  "description": "OpenClaw skill ↔ Daemon ↔ OpenCode 三层架构的接口契约定义",
+  "version": "1.0.0",
+  "scopeTag": "p0",
+  "owner": "daemon-core",
+  "derivedFrom": "v6-architecture-overview REQ-30 Property 16",
+  "dependencies": [
+    "daemon-core",
+    "opencode-adapter",
+    "v6-architecture-overview"
+  ],
+  "schemaVersion": "1.0"
+}

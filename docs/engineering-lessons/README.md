@@ -78,11 +78,16 @@ AI 会按 [`ARCHITECTURE.md §3`](ARCHITECTURE.md) 流程自动：
 # Kiro：渲染到 .kiro/steering/lessons-injected.md
 bun run scripts/lessons/render-kiro-steering.ts
 
+# OpenCode：渲染到 .opencode/skills/superpowers-engineering-lessons/SKILL.md
+bun run scripts/lessons/render-opencode-skill.ts
+
 # 仅校验，不写文件（CI 用）
 bun run scripts/lessons/render-kiro-steering.ts --check
+bun run scripts/lessons/render-opencode-skill.ts --check
 
 # 复制到其他项目时，不含本项目专属经验
 bun run scripts/lessons/render-kiro-steering.ts --no-project
+bun run scripts/lessons/render-opencode-skill.ts --no-project
 ```
 
 完整命令清单见 [`ARCHITECTURE.md §2`](ARCHITECTURE.md)。
@@ -120,11 +125,11 @@ bun run scripts/lessons/render-kiro-steering.ts --no-project
 
 | 指标 | 值 |
 |------|-----|
-| 经验数 | 5 篇 |
-| 适配器数 | 1 个（render-kiro-steering） |
-| 支持工具 | Kiro |
+| 经验数 | 6 篇 |
+| 适配器数 | 3 个（render-kiro-steering、render-opencode-skill、render-prompt-block） |
+| 支持工具 | Kiro、OpenCode |
 | 角色定义 | 6 个（executor / orchestrator / reviewer / debugger / architect / *） |
-| 生成产物 | `.kiro/steering/lessons-injected.md` |
+| 生成产物 | `.kiro/steering/lessons-injected.md`、`.opencode/skills/superpowers-engineering-lessons/SKILL.md` |
 | 依赖 | 零（手写 YAML 解析） |
 
 完整路线图（P0-P3 共 13 项）见 [`ARCHITECTURE.md §15`](ARCHITECTURE.md)。

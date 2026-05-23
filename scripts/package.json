@@ -1,0 +1,11 @@
+{
+  "name": "specforge-installer-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SpecForge installer scripts (scripts/lib/*.ts). Deployed to ~/.config/scripts/ at user-level install. Provides shared lib used by .opencode/tools/lib/*_core.ts via dynamic import (relative path ../../../scripts/lib/compatibility from .opencode/tools/lib/utils.ts).",
+  "type": "module",
+  "dependencies": {
+    "zod": "4.1.8"
+  },
+  "schema_version": "1.0"
+}

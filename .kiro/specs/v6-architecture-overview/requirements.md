@@ -541,3 +541,15 @@ V5 与 V6 的根本差别：
 13. **Modality Adaptation Determinism Property**：THE V6_Architecture SHALL 保证 `prepareMessageForModel(userMessage, modelCapabilities)` 对相同输入（同 blob 引用 + 同 capabilities）得到相同输出决策。
 14. **Schema Version Monotonicity Property**：THE V6_Architecture SHALL 保证同一文件的 `schema_version` 随版本演进单调不减；任何 migration 脚本执行后写入的 `schema_version` 必须等于或高于迁移前。
 15. **Scope Boundary Property**：THE V6_Architecture SHALL 保证 REQ-25 中标记为 P1 / P2 的能力不在 V6.0 发版分支中启用（可存在死代码或 feature flag，但默认关闭）。
+
+16. **OpenClaw Integration Layer Property**（V6.0 P0）：THE V6_Architecture SHALL 保证 OpenClaw 集成遵循以下三层架构约束：
+    - **Layer 1 - OpenClaw Skill（基础设施层）**：负责进程生命周期管理、端口分配、用户→项目路由。OpenClaw Skill 作为自动化平台的技能接口，不直接执行业务逻辑。
+    - **Layer 2 - Daemon（应用层）**：负责工作流编排、状态管理、权限判定、事件分发。Daemon 是所有业务状态变更的唯一 Source of Truth。
+    - **Layer 3 - OpenCode（执行层）**：负责 LLM 推理、工具执行。OpenCode 在此架构下作为 headless LLM Kernel 被 Daemon 按需召唤。
+
+    **硬约束**：
+    - 业务消息流（用户指令 → Agent 执行 → 结果返回）**必须**经由 Daemon 中转，**不允许** OpenClaw Skill 直接调用 OpenCode session API 绕过 Daemon。
+    - OpenClaw Skill 与 Daemon 之间使用 `projectPath` 作为 join key，各自维护不重叠的状态子集。
+    - Daemon 与 OpenCode 之间通过 OpenCodeAdapter 定义的 LLMKernelAdapter 接口通信。
+
+    **验证方法**：架构审查确认无直接 OpenCode session API 调用从 OpenClaw Skill 发出；所有业务消息路径经过 Daemon HTTP API 或内部 Tool 调用。

@@ -384,8 +384,52 @@ bun scripts/sf-installer.ts upgrade --force
 4. **性能保证**：Plugin 启动时间 < 500ms（硬断言）
 5. **错误处理**：详细的错误代码和退出码
 
+## 工程经验库（Engineering Lessons）
+
+SpecForge 内置了一套结构化的工程经验库，把团队踩过的坑沉淀为可复用的 markdown，通过适配器自动注入到 AI 工具的上下文中，避免重复犯错。
+
+**核心特性：**
+
+- **工具无关存储**：经验以纯 markdown + YAML frontmatter 存储，不绑定任何 AI 工具
+- **多工具适配**：通过适配器渲染到 Kiro steering、OpenCode agent/skill、Codex system prompt 等注入点
+- **三层归类**：universal（通用）/ ai-tools（工具专属）/ projects（项目专属），按需取舍
+- **角色感知**：每条经验标注适用角色（executor / orchestrator / reviewer / debugger / architect），按角色精准注入
+- **派单 prompt 注入**：orchestrator 派 sub-agent 时，自动生成紧凑的硬规则摘要注入 prompt 顶部
+
+**当前经验（6 篇，全部 HIGH severity）：**
+
+| 经验 | 范围 | 一句话 |
+|------|------|--------|
+| async-resource-lifecycle | 通用 | Promise.race / while 轮询 / setTimeout 资源泄漏的预防与修复 |
+| javascript-explicit-resource-management | 通用 | JS 没有析构函数；Disposable 协议 + 默认安全 + 自检 API + 测试断言四层防护 |
+| shell-command-execution | 通用 | 跨平台 shell 选择 + UTF-8 强制 + 危险命令拦截 + 双层超时 |
+| host-environment-detection | 通用 | 宿主机环境探测与 host-profile 规范 |
+| execute-pwsh-constraints | Kiro | Kiro execute_pwsh 受控壳的硬约束（禁 cd、heredoc、单行限制） |
+| custom-tool-self-contained | OpenCode | 自定义工具必须完全自包含（禁止跨目录 import） |
+
+**使用方式：**
+
+```bash
+# 渲染到 Kiro steering（自动注入所有会话）
+bun run scripts/lessons/render-kiro-steering.ts
+
+# 渲染到 OpenCode skill（自动注入所有 agent）
+bun run scripts/lessons/render-opencode-skill.ts
+
+# 生成派单 prompt 注入段（orchestrator 派 sub-agent 时用）
+bun run scripts/lessons/render-prompt-block.ts --role=executor --tags=shell
+
+# 沉淀新经验（对 AI 说）
+沉淀经验：<错误描述>
+```
+
+详细规则见 [`docs/engineering-lessons/ARCHITECTURE.md`](docs/engineering-lessons/ARCHITECTURE.md)。
+
+---
+
 ## 详细文档
 
 - [AGENTS.md](AGENTS.md) — Agent 体系、权限模型、工作流、工具、Skill 完整总览
 - [CHANGELOG.md](CHANGELOG.md) — 版本演进记录
+- [docs/engineering-lessons/](docs/engineering-lessons/) — 工程经验库（源文件 + 架构文档）
 - [docs/archive/](docs/archive/) — 历史设计文档

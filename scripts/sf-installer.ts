@@ -26,6 +26,7 @@ import { mergeOpenCodeJsonUserLevel } from "./lib/opencode_merge"
 import { SHARED_COMPONENT_REGISTRY, SPECFORGE_AGENT_DEFINITIONS, getAgentDefinitions } from "./lib/registry"
 import { posixToNative } from "./lib/paths"
 import type { CLIOptions, UserLevelManifest, FileEntry } from "./lib/types"
+import { runMigrateManifestCommand } from "../packages/version-unification/src/legacy/migrate-manifest-command"
 
 // ============================================================================
 // 参数解析
@@ -101,21 +102,23 @@ SpecForge 安装器 V3.5 — 用户级共享组件管理
   bun scripts/sf-installer.ts <subcommand> [options]
 
 子命令:
-  install     部署共享组件到 ~/.config/opencode/
-  upgrade     原子升级共享组件
-  verify      校验共享组件完整性（SHA-256）
-  uninstall   卸载共享组件
+  install           部署共享组件到 ~/.config/opencode/
+  upgrade           原子升级共享组件
+  verify            校验共享组件完整性（SHA-256）
+  uninstall         卸载共享组件
+  migrate-manifest  把老格式 manifest in-place 升级到当前格式
 
 选项:
   --force     upgrade 时强制覆盖所有文件
   --version   显示已安装的 SpecForge 版本
-  --help, -h  显示此帮助信息
+  --help, -h  显示此帮助信息（migrate-manifest 子命令亦支持）
 
 示例:
   bun scripts/sf-installer.ts install
   bun scripts/sf-installer.ts upgrade --force
   bun scripts/sf-installer.ts verify
   bun scripts/sf-installer.ts uninstall
+  bun scripts/sf-installer.ts migrate-manifest --help
 `)
 }
 
@@ -266,6 +269,12 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       }
       deployedCount += scriptsLibFiles.length
     }
+
+    // 部署 scripts/package.json 并安装其依赖（zod 等）
+    // 必须做：scripts/lib/types.ts 顶部 `import { z } from 'zod'`，
+    //        没有这一步 .opencode/tools/lib/utils.ts 的 dynamic import 链会因
+    //        `Cannot find package 'zod'` 全部失败，所有 sf_*_core 工具集体降级。
+    deployedCount += deployScriptsPackageJson(sourceDir, userLevelDir)
 
     // Merge_Write opencode.json（仅 sf-* agents）
     const sourceAgents = getAgentDefinitions(sourceDir)
@@ -431,6 +440,9 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
       }
       upgradedCount += scriptsLibFiles.length
     }
+
+    // Step 5.5: 部署 scripts/package.json 并安装其依赖（zod 等）
+    upgradedCount += deployScriptsPackageJson(sourceDir, userLevelDir)
 
     // Step 6: 写入新 User_Manifest
     const sourceAgents = getAgentDefinitions(sourceDir)
@@ -760,14 +772,62 @@ async function removeSfAgentsFromOpenCodeJson(userLevelDir: string): Promise<voi
 }
 
 // ============================================================================
-// findOrphanSfFiles — 查找目标目录中不在 registry 里的 sf_*/sf-* 残留文件
+// deployScriptsPackageJson — 部署 scripts/package.json 并 bun install
 // ============================================================================
 
 /**
- * 扫描用户级目录中的 agents/、tools/、tools/lib/、plugins/ 目录，
- * 查找以 sf- 或 sf_ 开头但不在 SHARED_COMPONENT_REGISTRY 中的文件。
- * 返回相对路径列表。
+ * 把仓库 scripts/package.json 复制到 ~/.config/scripts/package.json，
+ * 并在该目录运行 `bun install`，确保 scripts/lib/types.ts 顶部的
+ * `import { z } from 'zod'` 能解析到 ~/.config/scripts/node_modules/zod。
+ *
+ * 没有这一步，.opencode/tools/lib/utils.ts 的 dynamic import
+ *   import("../../../scripts/lib/compatibility")
+ * 会因 zod 找不到全部失败，所有 sf_*_core 工具集体降级。
+ *
+ * 返回部署的文件数（0 = 跳过，1 = 复制了 package.json）。
  */
+function deployScriptsPackageJson(sourceDir: string, userLevelDir: string): number {
+  const sourcePkgPath = path.join(sourceDir, "scripts", "package.json")
+  if (!fs.existsSync(sourcePkgPath)) {
+    // 仓库没有 scripts/package.json，跳过（旧版本兼容）
+    return 0
+  }
+
+  const targetDir = path.resolve(userLevelDir, "..", "scripts")
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true })
+  }
+
+  const targetPkgPath = path.join(targetDir, "package.json")
+  fs.copyFileSync(sourcePkgPath, targetPkgPath)
+
+  // 检查是否需要 bun install（node_modules/zod 不存在或 lockfile 不存在时）
+  const zodMarker = path.join(targetDir, "node_modules", "zod", "package.json")
+  const lockfilePath = path.join(targetDir, "bun.lock")
+  if (!fs.existsSync(zodMarker) || !fs.existsSync(lockfilePath)) {
+    console.log(`📦 安装 ~/.config/scripts/ 依赖（zod 等）...`)
+    try {
+      const { spawnSync } = require("node:child_process") as typeof import("node:child_process")
+      const result = spawnSync("bun", ["install"], {
+        cwd: targetDir,
+        stdio: "inherit",
+        shell: process.platform === "win32",
+      })
+      if (result.status !== 0) {
+        console.warn(`   ⚠ bun install 退出码 ${result.status}，请手动 cd ${targetDir} && bun install`)
+      }
+    } catch (err) {
+      console.warn(`   ⚠ 自动 bun install 失败: ${(err as Error).message}`)
+      console.warn(`   请手动执行: cd ${targetDir} && bun install`)
+    }
+  }
+
+  return 1
+}
+
+// ============================================================================
+// findOrphanSfFiles — 查找目标目录中不在 registry 里的 sf_*/sf-* 残留文件
+// ============================================================================
 function findOrphanSfFiles(userLevelDir: string): string[] {
   const registryPaths = new Set(SHARED_COMPONENT_REGISTRY.map((e) => posixToNative(e.path)))
   const orphans: string[] = []
@@ -801,6 +861,23 @@ function findOrphanSfFiles(userLevelDir: string): string[] {
 
 export async function main(): Promise<void> {
   const args = process.argv.slice(2)
+
+  // Early dispatch: `migrate-manifest` subcommand (Task 13.1 — registered;
+  // Task 13.2 will provide the real implementation). We branch before
+  // `parseArgs` because parseArgs both (a) has its own subcommand whitelist
+  // we don't want to extend and (b) treats `--help` as a global flag that
+  // prints the installer's top-level usage. The migrate-manifest command
+  // owns its own help text.
+  if (args[0] === "migrate-manifest") {
+    const subArgs = args.slice(1)
+    try {
+      const result = await runMigrateManifestCommand(subArgs)
+      process.exit(result.exitCode)
+    } catch (err) {
+      console.error(`❌ migrate-manifest 失败:`, err)
+      process.exit(1)
+    }
+  }
 
   let opts: CLIOptions
   try {

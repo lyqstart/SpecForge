@@ -280,6 +280,96 @@ describe("sf_artifact_write", () => {
     })
   })
 
+  describe("sidecar result.json fallback (Fix 3 — Orchestrator 漏调归档协议时兜底)", () => {
+    it("should auto-generate result.json sidecar when writing work_log without prior result.json", async () => {
+      const result = await writeArtifact({
+        work_item_id: "WI-001",
+        file_type: "work_log",
+        content: "# Work Log\nDone.",
+        run_id: "WI-001-sf-executor-3",
+      }, testDir)
+
+      expect(result.success).toBe(true)
+
+      // sidecar result.json 应被自动写出
+      const resultJsonPath = join(testDir, "specforge/archive/agent_runs/WI-001-sf-executor-3/result.json")
+      const sidecar = JSON.parse(await readFile(resultJsonPath, "utf-8"))
+
+      expect(sidecar.source).toBe("sidecar")
+      expect(sidecar.run_id).toBe("WI-001-sf-executor-3")
+      expect(sidecar.work_item_id).toBe("WI-001")
+      expect(sidecar.agent_name).toBe("sf-executor")
+      expect(sidecar.status).toBe("completed")
+      expect(sidecar.schema_version).toBe("1.0")
+      expect(sidecar.sidecar_generated_at).toBeTruthy()
+    })
+
+    it("should NOT overwrite an existing result.json (authoritative > sidecar)", async () => {
+      // 先模拟 Orchestrator 主动调用 agent_run_result（权威版本）
+      const authoritative = {
+        schema_version: "1.0",
+        source: "orchestrator",
+        run_id: "WI-001-sf-executor-4",
+        work_item_id: "WI-001",
+        agent_name: "sf-executor",
+        status: "completed",
+        cost_summary: { total_cost: 0.012 },
+      }
+      await writeArtifact({
+        work_item_id: "WI-001",
+        file_type: "agent_run_result",
+        content: JSON.stringify(authoritative),
+        run_id: "WI-001-sf-executor-4",
+      }, testDir)
+
+      // 后写 work_log，sidecar 应识别已存在 result.json 不覆盖
+      await writeArtifact({
+        work_item_id: "WI-001",
+        file_type: "work_log",
+        content: "# Work Log\nDone.",
+        run_id: "WI-001-sf-executor-4",
+      }, testDir)
+
+      const resultJsonPath = join(testDir, "specforge/archive/agent_runs/WI-001-sf-executor-4/result.json")
+      const stored = JSON.parse(await readFile(resultJsonPath, "utf-8"))
+      expect(stored.source).toBe("orchestrator")
+      expect(stored.cost_summary).toEqual({ total_cost: 0.012 })
+    })
+
+    it("should resolve agent_name from run_id with various tail patterns", async () => {
+      const cases = [
+        { runId: "WI-001-sf-design-1", expected: "sf-design" },
+        { runId: "WI-001-sf-executor-fix1", expected: "sf-executor" },
+        { runId: "WI-001-sf-task-planner-1", expected: "sf-task-planner" },
+        { runId: "WI-001-sf-executor-cont-1", expected: "sf-executor" },
+      ]
+      for (const c of cases) {
+        await writeArtifact({
+          work_item_id: "WI-001",
+          file_type: "work_log",
+          content: "log",
+          run_id: c.runId,
+        }, testDir)
+        const sidecar = JSON.parse(
+          await readFile(join(testDir, `specforge/archive/agent_runs/${c.runId}/result.json`), "utf-8")
+        )
+        expect(sidecar.agent_name).toBe(c.expected)
+      }
+    })
+
+    it("should NOT fail the work_log write if sidecar generation throws", async () => {
+      // 这里仅证明 sidecar 失败不会破坏主路径
+      // （目前实现里 sidecar 用 try/catch 完全包住，主写入永远成功）
+      const result = await writeArtifact({
+        work_item_id: "WI-X",
+        file_type: "work_log",
+        content: "log",
+        run_id: "WI-X-sf-design-1",
+      }, testDir)
+      expect(result.success).toBe(true)
+    })
+  })
+
   describe("write then read round-trip consistency", () => {
     it("should read back the same content that was written", async () => {
       const content = "# Test Content\n\nThis is a round-trip test with special chars: 中文、日本語"

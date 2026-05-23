@@ -1,7 +1,0 @@
-{
-  "specId": "invalid-value-spec",
-  "workflowType": "requirements-first",
-  "specType": "feature",
-  "scopeTag": "invalid",
-  "parentSpec": "v6-architecture-overview"
-}

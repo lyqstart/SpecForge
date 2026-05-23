@@ -830,6 +830,313 @@ For issues or questions about OpenClaw integration:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: 2026-05-16  
+---
+
+## 11. 运维指南
+
+### 11.1 部署拓扑选择
+
+OpenClaw + SpecForge 支持两种部署模式：
+
+| 模式 | 适用场景 | 进程管理 | 优点 | 缺点 |
+|------|---------|---------|------|------|
+| **systemd** | 生产环境、长时间运行 | systemd | 自动重启、资源限制、日志管理 | 需要 systemd 知识 |
+| **tmux** | 开发/测试、个人使用 | tmux | 简单、无需额外依赖 | 无自动重启、无资源限制 |
+
+#### systemd 部署（推荐生产环境）
+
+```ini
+# /etc/systemd/system/specforge.service
+[Unit]
+Description=SpecForge Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=specforge
+WorkingDirectory=/home/specforge
+ExecStart=/usr/local/bin/specforge daemon start --detach
+Restart=always
+RestartSec=10
+Environment="SPECFORGE_HOME=/home/specforge/.specforge"
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+
+# 资源限制（可选）
+MemoryMax=2G
+CPUQuota=200%
+
+# 日志
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=specforge
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+# 启用服务
+sudo systemctl daemon-reload
+sudo systemctl enable specforge
+sudo systemctl start specforge
+
+# 查看状态
+sudo systemctl status specforge
+
+# 查看日志
+journalctl -u specforge -f
+```
+
+#### tmux 部署（开发/测试）
+
+```bash
+# 启动 Daemon 在 tmux 会话中
+tmux new-session -d -s specforge "specforge daemon start --detach"
+
+# 附加查看输出
+tmux attach -t specforge
+
+# 停止
+tmux kill-session -t specforge
+```
+
+### 11.2 端口池配置
+
+OpenCode 进程池使用的端口范围可通过配置文件调整：
+
+```json
+// ~/.specforge/config/daemon.json
+{
+  "opencode": {
+    "portPool": {
+      "start": 3100,
+      "end": 3200,
+      "minProcesses": 1,
+      "maxProcesses": 5
+    }
+  }
+}
+```
+
+**端口分配策略**：
+- 默认范围：3100-3200（可配置 100 个端口）
+- 每个项目最多 5 个并发 OpenCode 进程
+- 进程退出后端口立即释放
+- 端口冲突自动重试下一个
+
+### 11.3 Skill 工具 Schema
+
+OpenClaw Skill 提供的工具定义：
+
+```json
+{
+  "tools": [
+    {
+      "id": "sf_project_create",
+      "displayName": "SpecForge: Create Project",
+      "description": "Create a new SpecForge project context",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectPath": {
+            "type": "string",
+            "description": "Absolute path to the project directory"
+          },
+          "description": {
+            "type": "string",
+            "description": "Project description"
+          }
+        },
+        "required": ["projectPath"]
+      }
+    },
+    {
+      "id": "sf_workflow_start",
+      "displayName": "SpecForge: Start Workflow",
+      "description": "Start a SpecForge workflow (e.g., feature_spec)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectPath": {
+            "type": "string",
+            "description": "Absolute path to the project"
+          },
+          "workflowId": {
+            "type": "string",
+            "enum": ["feature_spec", "bugfix", "quick_change"],
+            "default": "feature_spec"
+          },
+          "initialMessage": {
+            "type": "string",
+            "description": "Initial user request/message"
+          }
+        },
+        "required": ["projectPath", "initialMessage"]
+      }
+    },
+    {
+      "id": "sf_session_status",
+      "displayName": "SpecForge: Get Session Status",
+      "description": "Get the current status of a session",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectPath": {
+            "type": "string",
+            "description": "Absolute path to the project"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Session ID to query"
+          }
+        },
+        "required": ["projectPath", "sessionId"]
+      }
+    },
+    {
+      "id": "sf_session_cancel",
+      "displayName": "SpecForge: Cancel Session",
+      "description": "Cancel a running session",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectPath": {
+            "type": "string",
+            "description": "Absolute path to the project"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Session ID to cancel"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Cancellation reason"
+          }
+        },
+        "required": ["projectPath", "sessionId"]
+      }
+    }
+  ]
+}
+```
+
+### 11.4 完整数据流示例
+
+用户说"做一个五子棋游戏"的完整数据流：
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 1: 用户通过 OpenClaw 发送消息                                           │
+│         "做一个五子棋游戏"                                                    │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 2: OpenClaw Skill 接收消息                                              │
+│         - 解析 projectPath (默认或用户指定)                                   │
+│         - 生成 spawnIntentId                                                  │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 3: OpenClaw Skill 调用 Daemon API                                       │
+│         POST /v1/workflow/start                                              │
+│         {                                                                    │
+│           "projectPath": "/home/user/games/gobang",                         │
+│           "workflowId": "feature_spec",                                      │
+│           "initialMessage": "做一个五子棋游戏"                                │
+│         }                                                                    │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 4: Daemon 处理请求                                                      │
+│         a) 验证 projectPath 和权限                                           │
+│         b) 创建 Session Registry 记录 (pending)                              │
+│         c) 从进程池获取 OpenCode 进程（或启动新进程）                         │
+│         d) 调用 OpenCodeAdapter.spawnAgent()                                 │
+│         e) 调用 OpenCodeAdapter.deliverPrompt() 发送工作流初始化 prompt      │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 5: Daemon 返回响应                                                     │
+│         {                                                                    │
+│           "jobId": "job_abc123",                                             │
+│           "sessionId": "ses_def456",                                         │
+│           "status": "pending"                                                │
+│         }                                                                    │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 6: OpenCode 执行工作流                                                  │
+│         - sf-orchestrator 接收初始化消息                                     │
+│         - 创建 requirements.md                                               │
+│         - 进入 design 阶段                                                    │
+│         - 创建 tasks.md                                                      │
+│         - 开始执行任务                                                        │
+│                                                                              │
+│         每个步骤产生事件 → Event Bus → SSE 客户端                            │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 7: 事件流返回 (SSE)                                                     │
+│         event: session.started                                               │
+│         event: gate.approved (requirements)                                  │
+│         event: gate.approved (design)                                        │
+│         event: task.completed                                                │
+│         ...                                                                  │
+│         event: session.completed                                             │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 8: Webhook 回调 (如果注册)                                              │
+│         POST https://openclaw.example.com/webhook                           │
+│         {                                                                    │
+│           "event": "session.completed",                                      │
+│           "sessionId": "ses_def456",                                         │
+│           "data": { "specId": "WI-xxx", ... }                                │
+│         }                                                                    │
+└────────────────────────────────┬────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Step 9: OpenClaw Skill 发送消息给用户                                        │
+│         "五子棋游戏项目已创建完成！                                            │
+│          - Spec ID: WI-xxx                                                   │
+│          - 已完成 requirements + design + 5 个任务                           │
+│          - 项目目录: /home/user/games/gobang"                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 11.5 故障排查
+
+| 症状 | 可能原因 | 排查步骤 | 解决方案 |
+|------|---------|---------|---------|
+| `daemon_unreachable` | Daemon 未启动 | `specforge daemon status` | `specforge daemon start` |
+| `PROJECT_NOT_FOUND` | projectPath 不存在 | 检查路径是否正确 | 创建项目目录或指定正确路径 |
+| `SESSION_NOT_FOUND` | session 已过期 | 检查 sessionId | 重新创建 session |
+| 事件流断开 | 网络问题或 OpenCode 崩溃 | 检查 Daemon 日志 | 重连或重启 session |
+| OpenCode 进程不响应 | 进程卡死或内存不足 | 检查进程状态 | 增加内存或调小进程池 |
+
+### 11.6 反模式警示
+
+**禁止**：OpenClaw Skill 直接调用 OpenCode session API
+
+```typescript
+// ❌ 错误：绕过 Daemon
+const opencode = new OpenCodeClient('http://localhost:3100');
+await opencode.createSession();
+await opencode.sendPrompt(sessionId, message);
+
+// ✅ 正确：经过 Daemon
+const daemon = new SpecForgeDaemonClient();
+await daemon.startWorkflow({ projectPath, message });
+```
+
+这是**硬约束**，违反将导致：
+- 状态不一致（Session Registry 无法追踪）
+- 权限判定失效
+- 事件丢失
+- 违反 REQ-30 Property 16
+
+---
+
+**Document Version**: 1.1  
+**Last Updated**: 2026-05-22  
 **Schema Version**: 1.0

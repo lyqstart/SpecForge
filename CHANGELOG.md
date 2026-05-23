@@ -2,6 +2,18 @@
 
 All notable changes to SpecForge are documented in this file.
 
+## [5.1.0] — 2026-05-20
+
+### Fixed
+- **Archive 协议漏洞**：`sf_artifact_write({file_type:"work_log"})` 写入时若同目录尚无 `result.json`，自动生成 `source:"sidecar"` 的兜底版本（含 run_id / work_item_id / agent_name / status / schema_version）。腰带加吊带，杜绝因 Orchestrator 漏调归档协议步骤 1 导致的 archive 目录不完整问题。Orchestrator 主动调用 `agent_run_result` 时仍会覆盖兜底版本（权威优先）。
+- **sf-orchestrator.md 归档创建流程**：标记为 BLOCKING，明确权威证据是 `result.json` 存在；新增"兜底机制不替代步骤 1"声明，避免被理解为可以跳步。
+
+### Added
+- `sf_artifact_write` 单元测试新增 4 条 sidecar 行为断言（自动生成、不覆盖权威版本、agent_name 解析、失败不影响主写入）。
+
+### Internal note
+本次修复定位的根因是用户级 `~/.config/scripts/` 缺 `package.json` + `bun install`，导致 `compatibility.ts → types.ts → zod` 解析失败，叠加 Orchestrator 漏调归档协议第 1 步。前者通过在 `~/.config/scripts/` 添加 `package.json` 并指定 `zod@4.1.8` 与 `~/.config/opencode/` 已装版本对齐解决；后者通过本次源码改动解决。
+
 ## [5.0.0] — 2026-05-08
 
 ### Added

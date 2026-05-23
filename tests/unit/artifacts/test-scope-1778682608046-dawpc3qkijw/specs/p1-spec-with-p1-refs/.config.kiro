@@ -1,7 +1,0 @@
-{
-  "specId": "p1-spec-with-p1-refs",
-  "workflowType": "requirements-first",
-  "specType": "feature",
-  "scopeTag": "p1",
-  "parentSpec": "v6-architecture-overview"
-}
