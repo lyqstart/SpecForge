@@ -144,6 +144,44 @@ function showVersion(userLevelDir: string): void {
 // 辅助函数
 // ============================================================================
 
+
+/** 获取 SpecForge 用户级目录（~/.specforge/） */
+function getSpecForgeUserDir(): string {
+  const home = require("node:os").homedir()
+  return require("node:path").join(home, ".specforge")
+}
+
+/** 部署 templates/ 目录到 ~/.specforge/templates/ */
+async function deployTemplates(sourceDir: string): Promise<number> {
+  const templatesSource = path.join(sourceDir, "templates")
+  const specForgeDir = getSpecForgeUserDir()
+  const templatesTarget = path.join(specForgeDir, "templates")
+
+  if (!fs.existsSync(templatesSource)) {
+    console.log("   ⚠️  templates/ 目录不存在，跳过模板部署")
+    return 0
+  }
+
+  let count = 0
+  function copyDir(src: string, dst: string): void {
+    if (!fs.existsSync(dst)) fs.mkdirSync(dst, { recursive: true })
+    for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+      const srcPath = path.join(src, entry.name)
+      const dstPath = path.join(dst, entry.name)
+      if (entry.isDirectory()) {
+        copyDir(srcPath, dstPath)
+      } else {
+        fs.copyFileSync(srcPath, dstPath)
+        count++
+      }
+    }
+  }
+
+  copyDir(templatesSource, templatesTarget)
+  console.log(`   ✅ 模板库已部署到 ${templatesTarget}（${count} 个文件）`)
+  return count
+}
+
 /** 获取源目录（sf-installer.ts 所在目录的父目录） */
 function getSourceDir(): string {
   const thisFile = fileURLToPath(import.meta.url)
@@ -284,6 +322,12 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
     // 构建并写入 User_Manifest
     const manifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
     await writeUserManifest(userLevelDir, manifest)
+
+    // 部署模板库到 ~/.specforge/templates/
+    const templateCount = await deployTemplates(sourceDir)
+    if (templateCount > 0) {
+      console.log(`   已部署模板: ${templateCount} 个文件`)
+    }
 
     showSuccessSummary(deployedCount, userLevelDir, "安装")
   } finally {
@@ -479,6 +523,12 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
 
     console.log(`   已升级: ${upgradedCount} 个文件`)
     console.log(`   已跳过: ${skippedCount} 个文件（无变化）`)
+    // 部署模板库到 ~/.specforge/templates/
+    const templateCount = await deployTemplates(sourceDir)
+    if (templateCount > 0) {
+      console.log(`   已更新模板: ${templateCount} 个文件`)
+    }
+
     showSuccessSummary(upgradedCount, userLevelDir, "升级")
   } catch (err) {
     // 失败时尝试回滚

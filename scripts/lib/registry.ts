@@ -22,7 +22,7 @@ import type { AgentConfig, ComponentEntry } from "./types"
 // ============================================================
 
 export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
-  // Agent 定义（9 个）
+  // Agent 定义（9 个 + 公共骨架）
   { path: "agents/sf-orchestrator.md", type: "agent" },
   { path: "agents/sf-requirements.md", type: "agent" },
   { path: "agents/sf-design.md", type: "agent" },
@@ -32,6 +32,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "agents/sf-reviewer.md", type: "agent" },
   { path: "agents/sf-verifier.md", type: "agent" },
   { path: "agents/sf-knowledge.md", type: "agent" },
+  { path: "agents/_AGENT_BASE.md", type: "agent" },  // 公共骨架（供参考）
 
   // Custom Tools（16 个）
   { path: "tools/sf_artifact_write.ts", type: "tool" },
@@ -58,7 +59,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_batch_verify_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_context_build_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_continuity_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_conversation_recorder_core.ts", type: "tool_lib" },
+  // REMOVED (V6): { path: "tools/lib/sf_conversation_recorder_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_cost_report_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_design_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_doc_lint_core.ts", type: "tool_lib" },
@@ -71,19 +72,21 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_knowledge_query_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_markdown_verification_parser.ts", type: "tool_lib" },
   { path: "tools/lib/sf_requirements_gate_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_state_read_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_state_transition_core.ts", type: "tool_lib" },
+  // REMOVED (V6): { path: "tools/lib/sf_state_read_core.ts", type: "tool_lib" },
+  // REMOVED (V6): { path: "tools/lib/sf_state_transition_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_tasks_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_trace_matrix_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_verification_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_verification_types.ts", type: "tool_lib" },
   { path: "tools/lib/sf_verifier_execution_core.ts", type: "tool_lib" },
   { path: "tools/lib/utils.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_specforge_plugin_entry.ts", type: "tool_lib" },
+  // REMOVED (V6): { path: "tools/lib/sf_specforge_plugin_entry.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_executor.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_rules.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_types.ts", type: "tool_lib" },
+  { path: "tools/lib/thin-client.ts", type: "tool_lib" },  // V6 Thin Plugin HTTP 客户端
+  { path: "plugins/daemon-spawn.ts", type: "plugin" },     // V6 Daemon 按需启动
 
   // Plugin（1 个 — 统一 Plugin，替代原来的 5 个）
   { path: "plugins/sf_specforge.ts", type: "plugin" },
@@ -105,6 +108,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/superpowers-tdd/SKILL.md", type: "skill" },
   { path: "skills/superpowers-verification-before-completion/SKILL.md", type: "skill" },
   { path: "skills/superpowers-writing-plans/SKILL.md", type: "skill" },
+  { path: "skills/sf-intake/SKILL.md", type: "skill" },  // intake 阶段提问脚本
 ]
 
 // ============================================================
