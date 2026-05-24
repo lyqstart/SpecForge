@@ -4,8 +4,8 @@
   "schema_version": "1.0",
   "description": "Workflow Runtime module for SpecForge V6 - Implements compositeGate semantics (Property 29)",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc --watch",

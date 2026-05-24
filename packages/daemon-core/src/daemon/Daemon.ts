@@ -11,6 +11,7 @@ import { EventBus } from '../event-bus/EventBus';
 import { SessionRegistry } from '../session/SessionRegistry';
 import { ProjectManager } from '../project/ProjectManager';
 import { StateManager } from '../state/StateManager';
+import { WAL } from '../wal/WAL';
 import { RecoverySubsystem } from '../recovery/RecoverySubsystem';
 import { HandshakeManager } from './HandshakeManager';
 import { DaemonConfig } from './DaemonConfig';
@@ -37,29 +38,50 @@ export class Daemon {
   private permissionEngine: PermissionEngine;
   private workflowEngine: WorkflowEngine;
   private eventLogger: EventLogger;
+  private wal: WAL;
 
   constructor() {
     this.config = new DaemonConfig();
     this.eventBus = new EventBus();
-    this.stateManager = new StateManager('default-project');
-    this.recoverySubsystem = new RecoverySubsystem('default-project');
+    // Use the runtime directory as the WAL path for StateManager
+    // This ensures events.jsonl is written to ~/.specforge/runtime/
+    const runtimeDir = this.config.getRuntimeDir();
+    this.stateManager = new StateManager(runtimeDir);
+    this.recoverySubsystem = new RecoverySubsystem(runtimeDir);
     this.handshakeManager = new HandshakeManager(this.config);
     this.sessionRegistry = new SessionRegistry(this.eventBus);
     this.projectManager = new ProjectManager(this.eventBus);
     
     this.extensionLoader = new ExtensionLoader({}, this.eventBus);
-    this.workflowEngine = new WorkflowEngine();
+    this.workflowEngine = new WorkflowEngine({
+      // Bridge: persist every state transition to WAL via StateManager
+      // This is the WAL-first guarantee (Property 7)
+      onTransition: async ({ workItemId, fromState, toState, workflowType, evidence, actor }) => {
+        // StateManager.transition() uses positional params:
+        // (workItemId, fromState, toState, actor, workflowType, extraPayload)
+        await this.stateManager.transition(
+          workItemId,
+          fromState,
+          toState,
+          typeof actor === 'string' ? actor : 'system',
+          workflowType || 'feature_spec',
+          evidence ? { evidence } : {},
+        );
+      },
+    });
     this.extensionLoader.setWorkflowEngine(this.workflowEngine);
 
     this.permissionEngine = new PermissionEngine({ projectId: 'default-project' });
-    this.workflowEngine = new WorkflowEngine();
+    // NOTE: workflowEngine is already created above — do NOT create a second instance
     this.eventLogger = new EventLogger(path.join(this.config.getRuntimeDir(), '..', 'runtime'));
+    // WAL is managed by StateManager internally; create a separate reference for HTTPServer
+    this.wal = new WAL(path.join(runtimeDir, 'events.jsonl'));
 
     this.httpServer = new HTTPServer({
       config: this.config,
       eventBus: this.eventBus,
       stateManager: this.stateManager,
-      wal: undefined as any,
+      wal: this.wal,
       permissionEngine: this.permissionEngine,
       workflowEngine: this.workflowEngine,
       eventLogger: this.eventLogger,
@@ -105,7 +127,9 @@ export class Daemon {
     this.eventBus.start();
 
     // Wire EventBus persistence to EventLogger (WAL-first guarantee)
+    // Skip events without projectId (e.g. internal extension loading events)
     this.eventBus.setPersistenceHook(async (event) => {
+      if (!event.projectId) return;  // Skip internal events without project context
       await this.eventLogger.append(event);
     });
 

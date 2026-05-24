@@ -39,6 +39,19 @@ export interface WorkflowEngineConfig {
   errorHandler?: WorkflowErrorHandler;
   stateManager?: WorkflowStateManager;
   retryConfig?: Partial<RetryConfig>;
+  /**
+   * Optional callback invoked after every successful state transition.
+   * Used by daemon-core to persist state to WAL without creating a
+   * circular dependency (workflow-runtime → daemon-core).
+   */
+  onTransition?: (params: {
+    workItemId: string;
+    fromState: string;
+    toState: string;
+    workflowType: string;
+    evidence?: string;
+    actor?: unknown;
+  }) => Promise<void>;
 }
 
 /**
@@ -52,6 +65,7 @@ export class WorkflowEngine {
   private eventPublisher: EventPublisher | undefined;
   private errorHandler: WorkflowErrorHandler;
   private stateManager: WorkflowStateManager;
+  private onTransition?: WorkflowEngineConfig['onTransition'];
 
   /**
    * Create a new WorkflowEngine
@@ -60,6 +74,7 @@ export class WorkflowEngine {
     this.eventPublisher = config?.eventPublisher ?? undefined;
     this.errorHandler = config?.errorHandler ?? createErrorHandler(config?.retryConfig);
     this.stateManager = config?.stateManager ?? new WorkflowStateManager();
+    this.onTransition = config?.onTransition;
   }
 
   /**
@@ -249,6 +264,18 @@ export class WorkflowEngine {
         data: { workflowType: workflowId, toState, evidence },
       });
 
+      // Persist new work item creation to WAL
+      if (this.onTransition) {
+        await this.onTransition({
+          workItemId,
+          fromState: '',
+          toState,
+          workflowType: workflowId,
+          evidence,
+          actor,
+        });
+      }
+
       return {
         workItemId,
         previousState: '',
@@ -286,6 +313,18 @@ export class WorkflowEngine {
       timestamp: new Date(),
       data: { from: previousState, to: toState, evidence, actor },
     });
+
+    // Persist to WAL via daemon-core callback (WAL-first guarantee)
+    if (this.onTransition) {
+      await this.onTransition({
+        workItemId,
+        fromState: previousState,
+        toState,
+        workflowType: instance.workflowId,
+        evidence,
+        actor,
+      });
+    }
 
     return {
       workItemId,

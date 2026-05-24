@@ -367,10 +367,22 @@ export class ExtensionLoader {
     try {
       const { WorkflowDefinitionLoader } = await import('@specforge/workflow-runtime');
       const loader = new WorkflowDefinitionLoader();
-      const builtinDir = path.resolve(process.cwd(), 'configs/workflows/builtin');
+      // Try multiple locations for workflow JSON files:
+      // 1. Relative to binary location (production: ~/.specforge/workflows/builtin)
+      // 2. Relative to cwd (development: configs/workflows/builtin)
+      // 3. SpecForge project root (development)
+      const candidateDirs: string[] = [
+        path.join(require('os').homedir(), '.specforge', 'workflows', 'builtin'),
+        path.resolve(process.cwd(), 'configs/workflows/builtin'),
+        path.resolve(__dirname, '../../../../configs/workflows/builtin'),
+      ];
+      const found = candidateDirs.find(d => {
+        try { require('fs').readdirSync(d); return true; } catch { return false; }
+      });
+      const builtinDir: string = found ?? candidateDirs[0]!;
 
       const fs = await import('fs');
-      const files = await fs.promises.readdir(builtinDir);
+      const files: string[] = await fs.promises.readdir(builtinDir);
       const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
 
       let loadedCount = 0;

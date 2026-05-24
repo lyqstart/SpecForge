@@ -39,10 +39,10 @@ import {
   ProhibitedApiCategory
 } from './static-api-checker';
 import {
-  EventLogger,
   PluginPermissionDeniedEventPayload,
   createPluginPermissionDeniedEvent
 } from '../types/events';
+import type { EventLogger } from '@specforge/observability';
 
 /**
  * Plugin source file for static analysis

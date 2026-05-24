@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "Scope Gate module for SpecForge V6 - Enforces P0/P1/P2 scope boundaries",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "schema_version": "1.0",
   "scripts": {
     "build": "tsc",
