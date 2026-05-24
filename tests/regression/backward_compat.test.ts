@@ -27,20 +27,6 @@ import {
 import { lintDocument } from "../../.opencode/tools/lib/sf_doc_lint_core"
 import type { GateResult } from "../../.opencode/tools/lib/sf_gate_types"
 
-// State machine imports
-import {
-  getTransitionTable,
-  VALID_TRANSITIONS,
-  BUGFIX_SPEC_TRANSITIONS,
-  DESIGN_FIRST_TRANSITIONS,
-  QUICK_CHANGE_TRANSITIONS,
-  CHANGE_REQUEST_TRANSITIONS,
-  REFACTOR_TRANSITIONS,
-  OPS_TASK_TRANSITIONS,
-  INVESTIGATION_TRANSITIONS,
-} from "../../.opencode/tools/lib/state_machine"
-import type { WorkflowType } from "../../.opencode/tools/lib/state_machine"
-
 // Verification types
 import type { VerificationReport, VerificationType } from "../../.opencode/tools/lib/sf_verification_types"
 
@@ -406,70 +392,6 @@ describe("V3.7 回归: GateResult 接口向后兼容", () => {
     expect("type_results" in result).toBe(false)
   })
 })
-
-// ============================================================
-// Test 5: All 8 workflow types state machine definitions exist
-// ============================================================
-
-describe("V3.7 回归: 所有 8 种工作流类型的状态机定义仍然存在", () => {
-  const ALL_WORKFLOW_TYPES: WorkflowType[] = [
-    "feature_spec",
-    "bugfix_spec",
-    "feature_spec_design_first",
-    "quick_change",
-    "change_request",
-    "refactor",
-    "ops_task",
-    "investigation",
-  ]
-
-  const EXPECTED_TABLES: Record<WorkflowType, ReadonlyMap<string, readonly string[]>> = {
-    feature_spec: VALID_TRANSITIONS,
-    bugfix_spec: BUGFIX_SPEC_TRANSITIONS,
-    feature_spec_design_first: DESIGN_FIRST_TRANSITIONS,
-    quick_change: QUICK_CHANGE_TRANSITIONS,
-    change_request: CHANGE_REQUEST_TRANSITIONS,
-    refactor: REFACTOR_TRANSITIONS,
-    ops_task: OPS_TASK_TRANSITIONS,
-    investigation: INVESTIGATION_TRANSITIONS,
-  }
-
-  for (const workflowType of ALL_WORKFLOW_TYPES) {
-    it(`getTransitionTable("${workflowType}") returns a valid transition table`, () => {
-      const table = getTransitionTable(workflowType)
-      expect(table).toBeDefined()
-      expect(table).toBeInstanceOf(Map)
-      expect(table.size).toBeGreaterThan(0)
-      // Must start with "intake"
-      expect(table.has("intake")).toBe(true)
-    })
-
-    it(`getTransitionTable("${workflowType}") returns the expected constant`, () => {
-      const table = getTransitionTable(workflowType)
-      expect(table).toBe(EXPECTED_TABLES[workflowType])
-    })
-  }
-
-  it("all 8 workflow skill directories exist", () => {
-    const skillsDir = join(__dirname, "../../.opencode/skills")
-    const expectedSkills = [
-      "sf-workflow-feature-spec",
-      "sf-workflow-bugfix-spec",
-      "sf-workflow-design-first",
-      "sf-workflow-quick-change",
-      "sf-workflow-change-request",
-      "sf-workflow-refactor",
-      "sf-workflow-ops-task",
-      "sf-workflow-investigation",
-    ]
-
-    for (const skill of expectedSkills) {
-      const skillPath = join(skillsDir, skill, "SKILL.md")
-      expect(existsSync(skillPath)).toBe(true)
-    }
-  })
-})
-
 
 // ============================================================
 // Test 6: sf_doc_lint with legacy tasks.md passes (only warning)

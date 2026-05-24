@@ -203,6 +203,98 @@ export class WorkflowEngine {
     return true;
   }
 
+  registerDefinition(def: WorkflowDefinition): void {
+    this.workflows.set(def.id, def);
+  }
+
+  async transitionFull(input: {
+    workItemId: string;
+    fromState: string;
+    toState: string;
+    evidence?: string;
+    workflowType?: string;
+    transitionContext?: Record<string, unknown>;
+    actor?: unknown;
+  }): Promise<{
+    workItemId: string;
+    previousState: string;
+    currentState: string;
+    timestamp: string;
+  }> {
+    const { workItemId, fromState, toState, evidence, workflowType, actor } = input;
+
+    if (fromState === '') {
+      const workflowId = workflowType || 'feature_spec';
+      const definition = this.workflows.get(workflowId);
+      if (!definition) {
+        throw new Error(`Unknown workflow type: ${workflowId}`);
+      }
+
+      const instance: WorkflowInstance = {
+        schema_version: '1.0',
+        id: workItemId,
+        workflowId,
+        currentState: toState,
+        status: 'pending',
+        history: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.instances.set(workItemId, instance);
+
+      this.emitEvent({
+        type: 'workflow.created',
+        instanceId: workItemId,
+        timestamp: new Date(),
+        data: { workflowType: workflowId, toState, evidence },
+      });
+
+      return {
+        workItemId,
+        previousState: '',
+        currentState: toState,
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+    const instance = this.instances.get(workItemId);
+    if (!instance) {
+      throw new Error(`Work item not found: ${workItemId}`);
+    }
+
+    if (instance.currentState !== fromState) {
+      throw new Error(`State mismatch: expected ${fromState}, actual ${instance.currentState}`);
+    }
+
+    const definition = this.workflows.get(instance.workflowId);
+    if (!definition) {
+      throw new Error(`Workflow definition not found: ${instance.workflowId}`);
+    }
+
+    const currentStateDef = definition.stateMachine.states[instance.currentState];
+    if (!currentStateDef || !this.isValidTransition(currentStateDef, toState)) {
+      throw new Error(`Invalid transition: ${instance.currentState} → ${toState}`);
+    }
+
+    const previousState = instance.currentState;
+    instance.currentState = toState;
+    instance.updatedAt = new Date();
+
+    this.emitEvent({
+      type: 'workflow.state_changed',
+      instanceId: workItemId,
+      timestamp: new Date(),
+      data: { from: previousState, to: toState, evidence, actor },
+    });
+
+    return {
+      workItemId,
+      previousState,
+      currentState: toState,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
   /**
    * Check if a transition to the target state is valid
    */

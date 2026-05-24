@@ -174,14 +174,13 @@ describe('Performance Validation: Permission Engine', () => {
 
       for (let i = 0; i < 100; i++) {
         const payload = {
-          actor: { id: `actor-${i}`, sessionId: `session-${i}` },
+          actor: `actor-${i}`,
           action: 'spec.read',
-          resource: { type: 'spec', id: `spec-${i}` },
+          resource: 'spec',
           decision: i % 2 === 0 ? 'allow' as const : 'deny' as const,
           matched_rule: 'test-rule',
           rule_layer: 'builtin' as const,
-          reason: 'Test event logging',
-          context: { iteration: i }
+          reason: 'Test event logging'
         };
 
         const start = performance.now();
@@ -213,9 +212,9 @@ describe('Performance Validation: Permission Engine', () => {
       
       // Small payload
       const smallPayload = {
-        actor: { id: 'actor-1' },
+        actor: 'actor-1',
         action: 'spec.read',
-        resource: { type: 'spec' },
+        resource: 'spec',
         decision: 'allow' as const,
         matched_rule: 'rule-1',
         rule_layer: 'builtin' as const,
@@ -224,18 +223,13 @@ describe('Performance Validation: Permission Engine', () => {
 
       // Large payload (with more context)
       const largePayload = {
-        actor: { id: 'actor-1', sessionId: 'session-1', agentRole: 'sf-executor', workflowRole: 'owner' },
+        actor: 'actor-1',
         action: 'spec.read',
-        resource: { type: 'spec', id: 'spec-1', path: '/some/path/to/file' },
+        resource: 'spec',
         decision: 'allow' as const,
         matched_rule: 'rule-1',
         rule_layer: 'builtin' as const,
-        reason: 'Test with more context',
-        context: {
-          metadata: Array(100).fill('x').join(''), // Simulate larger context
-          timestamp: Date.now(),
-          correlationId: 'corr-id-123'
-        }
+        reason: 'Test with more context'
       };
 
       // Measure small payload
@@ -272,9 +266,9 @@ describe('Performance Validation: Permission Engine', () => {
       const individualStart = performance.now();
       for (let i = 0; i < batchSize; i++) {
         await logger.logPermissionDecision({
-          actor: { id: `actor-${i}` },
+          actor: `actor-${i}`,
           action: 'spec.read',
-          resource: { type: 'spec' },
+          resource: 'spec',
           decision: 'allow' as const,
           matched_rule: 'rule-1',
           rule_layer: 'builtin' as const,
@@ -290,9 +284,9 @@ describe('Performance Validation: Permission Engine', () => {
       const promises = [];
       for (let i = 0; i < batchSize; i++) {
         promises.push(logger.logPermissionDecision({
-          actor: { id: `actor-${i}` },
+          actor: `actor-${i}`,
           action: 'spec.read',
-          resource: { type: 'spec' },
+          resource: 'spec',
           decision: 'allow' as const,
           matched_rule: 'rule-1',
           rule_layer: 'builtin' as const,
@@ -327,9 +321,9 @@ describe('Performance Validation: Permission Engine', () => {
      */
     it('rule evaluation cache provides significant speedup for repeated requests', async () => {
       const request = {
-        actor: { id: 'test-actor', agentRole: 'sf-executor' },
+        actor: 'sf-executor',
         action: 'spec.read',
-        resource: { type: 'spec', id: 'test-spec' }
+        resource: 'spec'
       };
 
       // First evaluation (cache miss)
@@ -371,9 +365,9 @@ describe('Performance Validation: Permission Engine', () => {
 
       for (let i = 0; i < uniqueRequests; i++) {
         const request = {
-          actor: { id: `actor-${i}`, agentRole: `role-${i % 5}` },
+          actor: `role-${i % 5}`,
           action: `action.${i % 10}`,
-          resource: { type: `type-${i % 8}`, id: `resource-${i}` }
+          resource: `type-${i % 8}`
         };
 
         // First evaluation for this pattern
@@ -408,9 +402,9 @@ describe('Performance Validation: Permission Engine', () => {
       // Populate cache
       for (let i = 0; i < 50; i++) {
         pdp.evaluate({
-          actor: { id: `actor-${i}` },
+          actor: `actor-${i}`,
           action: `action.${i}`,
-          resource: { type: 'spec' }
+          resource: 'spec'
         });
       }
 
@@ -423,9 +417,9 @@ describe('Performance Validation: Permission Engine', () => {
       const repopStart = performance.now();
       for (let i = 0; i < 50; i++) {
         pdp.evaluate({
-          actor: { id: `actor-${i}` },
+          actor: `actor-${i}`,
           action: `action.${i}`,
-          resource: { type: 'spec' }
+          resource: 'spec'
         });
       }
       const repopTime = performance.now() - repopStart;
@@ -449,9 +443,9 @@ describe('Performance Validation: Permission Engine', () => {
           fc.integer({ min: 1, max: 50 }),
           async (seed) => {
             const request = {
-              actor: { id: `actor-${seed}`, agentRole: `role-${seed % 3}` },
+              actor: `role-${seed % 3}`,
               action: `action.${seed % 10}`,
-              resource: { type: `type-${seed % 5}`, id: `resource-${seed}` }
+              resource: `type-${seed % 5}`
             };
 
             // Evaluate multiple times
@@ -462,9 +456,9 @@ describe('Performance Validation: Permission Engine', () => {
 
             // All results should be identical
             for (const result of results) {
-              expect(result.allowed).toBe(results[0].allowed);
-              expect(result.matchedRule).toBe(results[0].matchedRule);
-              expect(result.ruleLayer).toBe(results[0].ruleLayer);
+              expect(result.decision).toBe(results[0].decision);
+              expect(result.matched_rule).toBe(results[0].matched_rule);
+              expect(result.rule_layer).toBe(results[0].rule_layer);
             }
           }
         ),
@@ -607,9 +601,9 @@ describe('Performance Validation: Permission Engine', () => {
       // Generate many unique requests to stress cache
       for (let i = 0; i < 1000; i++) {
         pdp.evaluate({
-          actor: { id: `actor-${i}`, agentRole: `role-${i % 10}` },
+          actor: `role-${i % 10}`,
           action: `action.${i % 20}`,
-          resource: { type: `type-${i % 15}`, id: `resource-${i}` }
+          resource: `type-${i % 15}`
         });
       }
 
@@ -617,15 +611,15 @@ describe('Performance Validation: Permission Engine', () => {
       // (Our implementation has a limit of 1000 entries)
       // This is a sanity check that the cache is working
       const testRequest = {
-        actor: { id: 'test-actor' },
+        actor: 'test-actor',
         action: 'test.action',
-        resource: { type: 'test' }
+        resource: 'test'
       };
 
       // Should still work after many entries
       const result = pdp.evaluate(testRequest);
       expect(result).toBeDefined();
-      expect(result.allowed).toBe(true);
+      expect(result.decision).toBe('allow');
     });
   });
 });

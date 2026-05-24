@@ -1,17 +1,5 @@
-/**
- * sf_doc_lint - 检查规格文档的结构合规性
- *
- * 根据 doc_type 检查对应文档的结构：
- * - requirements: 检查必需章节（简介、术语表、需求）
- * - design: 检查设计章节存在且不包含任务拆分内容
- * - tasks: 检查每个 task 包含 verification_commands
- * - bugfix: 检查必需章节（当前行为、预期行为、不变行为、根因分析）
- *
- * Requirements: 10.2, 10.3, 10.4, 10.5, 10.6, 20.3, 20.4
- */
-
 import { tool } from "@opencode-ai/plugin"
-import { lintDocument } from "./lib/sf_doc_lint_core"
+import { daemon } from "./lib/thin-client"
 
 export default tool({
   description: "检查规格文档的结构合规性",
@@ -22,8 +10,13 @@ export default tool({
       .describe("文档类型"),
   },
   async execute(args, context) {
-    const baseDir = context.directory || context.worktree || process.cwd()
-    const result = await lintDocument(args.work_item_id, args.doc_type, baseDir)
+    const result = await daemon.invokeTool("sf_doc_lint", args, {
+      sessionID: context.sessionID,
+      agent: context.agent,
+      directory: context.directory,
+      worktree: context.worktree,
+    })
+    if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },
 })

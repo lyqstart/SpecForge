@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "id": "ops_task",
+  "displayName": "Ops Task",
+  "intent": "Operations and infrastructure tasks with safety checks and rollback planning",
+  "intentKeywords": [
+    "ops",
+    "运维",
+    "deployment",
+    "部署",
+    "migration",
+    "迁移",
+    "configuration",
+    "配置",
+    "infrastructure",
+    "基础设施"
+  ],
+  "stateMachine": {
+    "schema_version": "1.0",
+    "initial": "intake",
+    "states": {
+      "intake": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": "intake.md",
+        "gate": null,
+        "next": "ops_plan",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "ops_plan": {
+        "schema_version": "1.0",
+        "agent": "sf-design",
+        "skills": [],
+        "produces": "ops_plan.md",
+        "gate": null,
+        "next": "ops_plan_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "ops_plan_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "ops_plan_gate",
+          "name": "Ops Plan Gate"
+        },
+        "next": { "pass": "tasks", "fail": "ops_plan" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "tasks": {
+        "schema_version": "1.0",
+        "agent": "sf-task-planner",
+        "skills": ["superpowers-writing-plans"],
+        "produces": "tasks.md",
+        "gate": null,
+        "next": "tasks_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "tasks_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "tasks_gate",
+          "name": "Tasks Gate"
+        },
+        "next": { "pass": "execution", "fail": "tasks" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "execution": {
+        "schema_version": "1.0",
+        "agent": "sf-executor",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "verification",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "verification": {
+        "schema_version": "1.0",
+        "agent": "sf-verifier",
+        "skills": ["superpowers-verification-before-completion"],
+        "produces": "verification_report",
+        "gate": null,
+        "next": "verification_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "verification_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "verification_gate",
+          "name": "Verification Gate"
+        },
+        "next": { "pass": "completed", "fail": "verification" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "completed": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      },
+      "blocked": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      }
+    }
+  },
+  "artifacts": [
+    { "name": "intake", "path": "specforge/specs/{workItemId}/intake.md", "required": true },
+    { "name": "ops_plan", "path": "specforge/specs/{workItemId}/ops_plan.md", "required": true },
+    { "name": "tasks", "path": "specforge/specs/{workItemId}/tasks.md", "required": true },
+    { "name": "verification_report", "path": "specforge/specs/{workItemId}/verification_report.md", "required": false }
+  ]
+}

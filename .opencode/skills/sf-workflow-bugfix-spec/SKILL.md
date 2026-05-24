@@ -1,27 +1,36 @@
 ---
 name: sf-workflow-bugfix-spec
 description: Bugfix Spec 工作流的阶段执行协议，包含 intake 到 completed 共 10 个阶段的详细执行步骤和 Skill 绑定矩阵
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - bugfix_spec
 ---
 
 # Bugfix Spec 工作流执行协议
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
 intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → tasks → tasks_gate → development → verification → verification_gate → completed
 ```
 
 ## Skill 绑定矩阵
 
-| 阶段 | 调度的子 Agent | 加载的 Skill |
-|------|---------------|-------------|
-| intake | —（Orchestrator 自行收集） | — |
-| bugfix_analysis | sf-requirements | superpowers-systematic-debugging |
-| fix_design | sf-design | — |
-| tasks | sf-task-planner | superpowers-writing-plans |
-| development | sf-executor | superpowers-tdd |
-| verification | sf-verifier | superpowers-verification-before-completion |
+| 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
+|------|---------------|-------------|------|
+| intake | —（Orchestrator 自行收集） | — | intake.md |
+| bugfix_analysis | sf-requirements | superpowers-systematic-debugging | bugfix.md |
+| bugfix_gate | — | — | Gate 判定（pass→fix_design, fail→bugfix_analysis） |
+| fix_design | sf-design | — | design.md |
+| design_gate | — | — | Gate 判定（pass→tasks, fail→fix_design） |
+| tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
+| tasks_gate | — | — | Gate 判定（pass→development, fail→tasks） |
+| development | sf-executor | superpowers-tdd | 代码文件 |
+| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议
 

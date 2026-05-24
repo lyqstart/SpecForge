@@ -1,36 +1,37 @@
 ---
 name: sf-workflow-refactor
 description: Refactor 工作流的阶段执行协议，包含双路径状态机（低风险直接验证，高风险经过 review）、风险路径判定逻辑和行为不变性验证要求
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - refactor
 ---
 
 # Refactor 工作流执行协议
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
-intake → refactor_analysis → refactor_analysis_gate → refactor_plan → refactor_plan_gate → development → [review（高风险）] → verification → verification_gate → completed
+intake → refactor_analysis → refactor_analysis_gate → refactor_plan → refactor_plan_gate → development → review → verification → verification_gate → completed
 ```
+<!-- AUTO-GENERATED:END:phase-table -->
 
-**双路径说明：**
-- **高风险路径**：development → review → verification → verification_gate
-- **低风险路径**：development → verification → verification_gate（跳过 review）
-
-路径由 `refactor_plan_gate` pass 时读取 `refactor_analysis.md` 中的风险等级决定，并记录到 Work Item 的 `metadata.risk_path` 字段。
-
+<!-- AUTO-GENERATED:START:skill-matrix -->
 ## Skill 绑定矩阵
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
 | intake | —（Orchestrator 自行收集） | — | intake.md |
 | refactor_analysis | sf-design | — | refactor_analysis.md |
-| refactor_analysis_gate | — | — | Gate 判定（pass 后同步 KG scope=requirements） |
+| refactor_analysis_gate | — | — | Gate 判定（pass→refactor_plan, fail→refactor_analysis） |
 | refactor_plan | sf-design | — | refactor_plan.md |
-| refactor_plan_gate | — | — | Gate 判定 + 风险路径决定（pass 后同步 KG scope=tasks） |
-| development | sf-executor | superpowers-subagent-driven-development | 重构后代码 |
-| review（高风险） | sf-reviewer | superpowers-code-review | 审查意见 |
+| refactor_plan_gate | — | — | Gate 判定（pass→development, fail→refactor_plan） |
+| development | sf-executor | superpowers-subagent-driven-development | 代码文件 |
+| review | sf-reviewer | superpowers-code-review | 审查意见 |
 | verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_gate | — | — | Gate 判定（pass 后同步 KG scope=verification） |
+| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议
 

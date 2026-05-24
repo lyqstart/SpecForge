@@ -1,16 +1,20 @@
 ---
 name: sf-workflow-design-first
 description: Feature Spec Design-First 工作流的阶段执行协议，intake 后先 design 再 requirements，包含 11 个阶段的详细执行步骤和差异对照表
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - design_first
 ---
 
 # Feature Spec Design-First 工作流执行协议
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
 intake → design → design_gate → requirements → requirements_gate → tasks → tasks_gate → development → review → verification → verification_gate → completed
 ```
+<!-- AUTO-GENERATED:END:phase-table -->
 
 ## 与标准 Feature Spec 的差异对照表
 
@@ -22,17 +26,24 @@ intake → design → design_gate → requirements → requirements_gate → tas
 | requirements 阶段指令 | 从 intake 分析需求 | 从 design.md 反向推导需求，确保每个设计决策都有对应需求支撑 |
 | design_gate 参数 | 不传 workflow_type | 传递 workflow_type="feature_spec_design_first" |
 
+<!-- AUTO-GENERATED:START:skill-matrix -->
 ## Skill 绑定矩阵
 
-| 阶段 | 调度的子 Agent | 加载的 Skill |
-|------|---------------|-------------|
-| intake | —（Orchestrator 自行收集） | — |
-| design | sf-design | — |
-| requirements | sf-requirements | superpowers-brainstorming |
-| tasks | sf-task-planner | superpowers-writing-plans |
-| development | sf-executor | superpowers-subagent-driven-development |
-| review | sf-reviewer | superpowers-code-review |
-| verification | sf-verifier | superpowers-verification-before-completion |
+| 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
+|------|---------------|-------------|------|
+| intake | —（Orchestrator 自行收集） | — | intake.md |
+| design | sf-design | — | design.md |
+| design_gate | — | — | Gate 判定（pass→requirements, fail→design） |
+| requirements | sf-requirements | superpowers-brainstorming | requirements.md |
+| requirements_gate | — | — | Gate 判定（pass→tasks, fail→requirements） |
+| tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
+| tasks_gate | — | — | Gate 判定（pass→development, fail→tasks） |
+| development | sf-executor | superpowers-subagent-driven-development | 代码文件 |
+| review | sf-reviewer | superpowers-code-review | 审查意见 |
+| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议
 

@@ -1,7 +1,9 @@
 ---
 name: superpowers-verification-before-completion
 description: 要求 Agent 在声明任务完成前必须提供充分的验证证据，禁止无证据完成
-autoload: false
+autoload: phase_match
+phases:
+  - verification
 ---
 
 # Superpowers Verification Before Completion

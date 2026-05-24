@@ -1,14 +1,5 @@
-/**
- * sf_context_build - Context Builder + Capability Broker 工具
- *
- * 为子 Agent 构建精准上下文，并按需推荐 Skill 片段。
- * 核心逻辑委托给 sf_context_build_core.ts。
- *
- * Requirements: 5.1, 6.1
- */
-
 import { tool } from "@opencode-ai/plugin"
-import { buildContext } from "./lib/sf_context_build_core"
+import { daemon } from "./lib/thin-client"
 
 export default tool({
   description:
@@ -43,18 +34,13 @@ export default tool({
       .describe("目标文件路径数组的 JSON 字符串（可选）"),
   },
   async execute(args, context) {
-    const baseDir = context.directory || context.worktree || process.cwd()
-
-    const includeCapabilities = args.include_capabilities ?? false
-
-    const result = await buildContext(
-      args.work_item_id,
-      args.task_id,
-      args.phase,
-      includeCapabilities,
-      baseDir
-    )
-
+    const result = await daemon.invokeTool("sf_context_build", args, {
+      sessionID: context.sessionID,
+      agent: context.agent,
+      directory: context.directory,
+      worktree: context.worktree,
+    })
+    if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },
 })

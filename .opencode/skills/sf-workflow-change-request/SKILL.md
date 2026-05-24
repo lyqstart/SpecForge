@@ -1,32 +1,39 @@
 ---
 name: sf-workflow-change-request
 description: Change Request 工作流的阶段执行协议，包含 intake 到 completed 共 11 个阶段的详细执行步骤、Gate 模式规范和 KG 同步点
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - change_request
 ---
 
 # Change Request 工作流执行协议
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
 intake → impact_analysis → impact_analysis_gate → design_delta → design_gate → tasks → tasks_gate → development → review → verification → verification_gate → completed
 ```
+<!-- AUTO-GENERATED:END:phase-table -->
 
+<!-- AUTO-GENERATED:START:skill-matrix -->
 ## Skill 绑定矩阵
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
 | intake | —（Orchestrator 自行收集） | — | intake.md |
 | impact_analysis | sf-requirements | — | impact_analysis.md |
-| impact_analysis_gate | — | — | Gate 判定（pass 后同步 KG scope=requirements） |
+| impact_analysis_gate | — | — | Gate 判定（pass→design_delta, fail→impact_analysis） |
 | design_delta | sf-design | — | design_delta.md |
-| design_gate | — | — | Gate 判定（pass 后同步 KG scope=design） |
+| design_gate | — | — | Gate 判定（pass→tasks, fail→design_delta） |
 | tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
-| tasks_gate | — | — | Gate 判定（pass 后同步 KG scope=tasks） |
+| tasks_gate | — | — | Gate 判定（pass→development, fail→tasks） |
 | development | sf-executor | superpowers-subagent-driven-development | 代码文件 |
 | review | sf-reviewer | superpowers-code-review | 审查意见 |
 | verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_gate | — | — | Gate 判定（pass 后同步 KG scope=verification） |
+| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议
 

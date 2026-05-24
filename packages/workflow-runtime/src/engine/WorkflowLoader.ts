@@ -253,4 +253,72 @@ export class WorkflowLoader {
   getDefinitionLoader(): WorkflowDefinitionLoader {
     return this.definitionLoader;
   }
+
+  // ── V6 Daemon Integration Methods ──────────────────────────────────
+
+  /** Default builtin workflows directory */
+  static BUILTIN_DIR = 'configs/workflows/builtin';
+
+  /**
+   * Load all 8 builtin workflow definitions from the default directory
+   * Called by Daemon during startup
+   * @param builtinDir Optional override for builtin directory path
+   * @returns Array of loaded workflow definitions
+   */
+  async loadBuiltinWorkflows(builtinDir?: string): Promise<WorkflowDefinition[]> {
+    const dir = builtinDir || WorkflowLoader.BUILTIN_DIR;
+    try {
+      const definitions = await this.loadFromDirectory(dir);
+      return definitions;
+    } catch (error) {
+      // Log but don't throw - daemon should still start
+      console.warn(`Failed to load builtin workflows from ${dir}:`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Hot-reload all workflow definitions from a directory
+   * Clears existing definitions and reloads from disk
+   * @param dirPath Optional directory path (defaults to builtin dir)
+   * @returns Number of workflows loaded
+   */
+  async hotReload(dirPath?: string): Promise<number> {
+    const dir = dirPath || WorkflowLoader.BUILTIN_DIR;
+    this.clearLoadedDefinitions();
+    const definitions = await this.loadFromDirectory(dir);
+    return definitions.length;
+  }
+
+  /**
+   * Get a loaded workflow definition by ID (alias for getLoadedDefinition)
+   * Matches the WorkflowEngine.getWorkflow() interface
+   */
+  getWorkflow(id: string): WorkflowDefinition | undefined {
+    return this.loadedDefinitions.get(id);
+  }
+
+  /**
+   * List all registered workflow IDs
+   */
+  listWorkflowIds(): string[] {
+    return Array.from(this.loadedDefinitions.keys());
+  }
+
+  /**
+   * Register a workflow definition directly (for runtime registration)
+   * @param definition The workflow definition to register
+   */
+  register(definition: WorkflowDefinition): void {
+    this.loadedDefinitions.set(definition.id, definition);
+  }
+
+  /**
+   * Unregister a workflow definition
+   * @param workflowId The workflow ID to unregister
+   * @returns true if the workflow was found and removed
+   */
+  unregister(workflowId: string): boolean {
+    return this.loadedDefinitions.delete(workflowId);
+  }
 }

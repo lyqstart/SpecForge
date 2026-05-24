@@ -466,7 +466,7 @@ bun run scripts/sync-task-status.ts sync <spec|--all> --from=tasksmd --apply
 bun run .kiro/specs/v6-architecture-overview/artifacts/cp_allocation_verifier.ts
 
 # 跑架构总检
-bun run .opencode/tools/sf_v6_arch_check.ts
+bun run scripts/sf_v6_arch_check.ts
 
 # --- 工作空间巡视 ---
 

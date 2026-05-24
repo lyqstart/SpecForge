@@ -182,9 +182,7 @@ export { UserPolicyLoader } from './user-policy-loader';
 
 // Export rule merging engine
 export { 
-  RuleMergingEngine, 
-  SpecificityCalculator,
-  type PermissionRequest,
+  RuleMergingEngine,
   type MergedPermissionDecision,
   type RuleMergingEngineConfig 
 } from './rule-merging-engine';

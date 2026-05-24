@@ -22,6 +22,8 @@ import * as fsSync from 'fs';
 import * as path from 'path';
 import { v7 as uuidv7 } from 'uuid';
 import { Event, ProjectState, ConsistencyCheckResult, ConsistencyIssue, RepairResult } from '../types';
+import { WAL } from '../wal';
+import { StateManager } from '../state/StateManager';
 
 export interface SessionReconnectResult {
   success: boolean;
@@ -36,12 +38,19 @@ export class RecoverySubsystem {
   private statePath: string;
   private schemaVersion: string = '1.0';
   
+  private _isReady: boolean = false;
+
   // Property 21: Track startup phase to limit reconnection attempts
   private isInStartupPhase: boolean = false;
   private hasStartupCompleted: boolean = false;
 
-  constructor(projectPath: string) {
+  private wal: WAL | null = null;
+  private stateManager: StateManager | null = null;
+
+  constructor(projectPath: string, wal?: WAL, stateManager?: StateManager) {
     this.projectPath = projectPath;
+    this.wal = wal ?? null;
+    this.stateManager = stateManager ?? null;
     const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
     const projectHash = this.hashPath(projectPath);
     this.eventsPath = home 
@@ -82,14 +91,69 @@ export class RecoverySubsystem {
   /**
    * Check consistency and repair if needed
    * Property 20: Validates that repair produces consistent state
+   * 
+   * Uses WAL to read events, StateManager.rebuildState() to rebuild,
+   * then verifies consistency between events and the rebuilt state.
    */
   async checkAndRepair(): Promise<ConsistencyCheckResult> {
-    const result = await this.checkConsistency();
-    
+    const events = this.wal
+      ? await this.wal.readAllEvents()
+      : await this.loadEvents();
+
+    let rebuiltState: ProjectState;
+
+    if (this.stateManager) {
+      rebuiltState = await this.stateManager.rebuildState();
+    } else {
+      rebuiltState = await this.rebuildFromEvents(events);
+    }
+
+    const issues: ConsistencyIssue[] = [];
+
+    if (events.length > 0) {
+      const lastEvent = events[events.length - 1]!;
+      if (rebuiltState.lastEventId !== lastEvent.eventId) {
+        issues.push({
+          type: 'state_mismatch',
+          description: `State lastEventId (${rebuiltState.lastEventId}) does not match last event (${lastEvent.eventId})`,
+          affectedEventId: lastEvent.eventId,
+          affectedProjectPath: this.projectPath,
+        });
+      }
+
+      for (let i = 1; i < events.length; i++) {
+        const prevEvent = events[i - 1]!;
+        const currEvent = events[i]!;
+        if (currEvent.ts < prevEvent.ts) {
+          issues.push({
+            type: 'out_of_order',
+            description: `Event at index ${i} has timestamp before previous event`,
+            affectedEventId: currEvent.eventId,
+            affectedProjectPath: this.projectPath,
+          });
+        }
+      }
+
+      const eventIds = new Set(events.map(e => e.eventId));
+      if (rebuiltState.lastEventId && !eventIds.has(rebuiltState.lastEventId)) {
+        issues.push({
+          type: 'missing_event',
+          description: `State references event ${rebuiltState.lastEventId} that doesn't exist in events`,
+          affectedEventId: rebuiltState.lastEventId,
+          affectedProjectPath: this.projectPath,
+        });
+      }
+    }
+
+    const result: ConsistencyCheckResult = {
+      isValid: issues.length === 0,
+      issues,
+    };
+
     if (!result.isValid) {
       await this.repairInconsistency(result);
     }
-    
+
     return result;
   }
 
@@ -179,30 +243,27 @@ export class RecoverySubsystem {
    */
   async repairInconsistency(result: ConsistencyCheckResult): Promise<RepairResult> {
     const repairEvents: Event[] = [];
+    
+    const events = this.wal
+      ? await this.wal.readAllEvents()
+      : await this.loadEvents();
+
     let repairedState: ProjectState;
-    
-    // Load current events (BEFORE any repairs - this is the source of truth)
-    const events = await this.loadEvents();
-    
-    // Apply repair rules and generate repair events for audit
+
     for (const issue of result.issues) {
       const repairEvent = await this.applyRepairRule(issue, events);
       if (repairEvent) {
         repairEvents.push(repairEvent);
       }
     }
-    
-    // Rebuild state from events (authoritative source of truth)
-    // This is the key: we rebuild from events.jsonl, not from repair events
-    repairedState = await this.rebuildFromEvents(events);
-    
-    // Write repaired state to state.json
-    await this.writeState(repairedState);
 
-    // CRITICAL: Do NOT append repair events to events.jsonl here.
-    // If we did, then rebuild(events) would include the repair events
-    // and would not equal the repairedState we just wrote.
-    // Property 20 requires: rebuild(events) == s' after repair
+    if (this.stateManager) {
+      repairedState = await this.stateManager.rebuildState();
+    } else {
+      repairedState = await this.rebuildFromEvents(events);
+    }
+
+    await this.writeState(repairedState);
 
     return {
       success: true,
@@ -352,6 +413,7 @@ export class RecoverySubsystem {
    * Called by Daemon at the beginning of startup
    */
   beginStartupPhase(): void {
+    this._isReady = false;
     this.isInStartupPhase = true;
     this.hasStartupCompleted = false;
   }
@@ -363,6 +425,11 @@ export class RecoverySubsystem {
   completeStartup(): void {
     this.hasStartupCompleted = true;
     this.isInStartupPhase = false;
+    this._isReady = true;
+  }
+
+  isReady(): boolean {
+    return this._isReady;
   }
 
   /**
@@ -425,29 +492,49 @@ export class RecoverySubsystem {
   }
 
   /**
-   * Attempt to reconnect all old sessions found
+   * Attempt to reconnect all old sessions found by replaying WAL events
+   * to recover active session information.
    * Property 21: Only attempts reconnection during startup phase
    * 
    * @returns Array of reconnection results
    */
   async reconnectOldSessions(): Promise<SessionReconnectResult[]> {
-    const oldSessions = await this.detectOldSessions();
+    const events = this.wal
+      ? await this.wal.readAllEvents()
+      : await this.loadEvents();
+
+    const activatedSessions = new Set<string>();
+    const terminatedSessions = new Set<string>();
+
+    for (const event of events) {
+      if (event.action === 'session.activated' && event.payload) {
+        const sessionId = (event.payload as Record<string, unknown>)['sessionId'] as string;
+        if (sessionId) activatedSessions.add(sessionId);
+      } else if (event.action === 'session.terminated' && event.payload) {
+        const sessionId = (event.payload as Record<string, unknown>)['sessionId'] as string;
+        if (sessionId) terminatedSessions.add(sessionId);
+      }
+    }
+
+    const activeSessionIds = [...activatedSessions].filter(
+      sid => !terminatedSessions.has(sid)
+    );
+
     const results: SessionReconnectResult[] = [];
-    
-    for (const sessionId of oldSessions) {
-      // Property 21: This will only succeed if we're in startup phase
+
+    for (const sessionId of activeSessionIds) {
       const reconnected = await this.attemptSessionReconnect(sessionId);
-      
+
       results.push({
         success: reconnected,
         sessionId,
         reconnected,
-        reason: reconnected 
-          ? 'Session reconnected during startup' 
+        reason: reconnected
+          ? 'Session reconnected during startup'
           : 'Reconnection not attempted - not in startup phase',
       });
     }
-    
+
     return results;
   }
 

@@ -95,16 +95,21 @@ export interface HardRuleConflict {
  */
 export type RuleLayer = 'hard' | 'builtin' | 'user';
 
-export interface PermissionDecision {
-  allowed: boolean;
-  actor: any;
+export interface PermissionRequest {
+  actor: string;
   action: string;
-  resource: any;
-  matchedRule?: string;
-  ruleLayer?: RuleLayer;
-  reason?: string;
+  resource: string;
   context?: Record<string, unknown>;
-  timestamp?: number;
+}
+
+export interface PermissionDecision {
+  actor: string;
+  action: string;
+  resource: string;
+  decision: "allow" | "deny";
+  matched_rule: string;
+  rule_layer: "hard" | "builtin" | "user";
+  reason: string;
 }
 
 // Export event types

@@ -550,9 +550,17 @@ export class BuiltinPolicyLoader implements PatternMatcher {
     this.config = { ...this.config, ...newConfig };
   }
 
-  /**
-   * Create a mock policy loader for testing
-   */
+  evaluateSimple(
+    actor: string,
+    action: string,
+    resource: string,
+    context?: Record<string, unknown>
+  ): BuiltinPolicyEvaluationResult {
+    const actorObj: Record<string, unknown> = { id: actor, agentRole: actor };
+    const resourceObj: Record<string, unknown> = { type: resource };
+    return this.evaluate(actorObj, action, resourceObj, context);
+  }
+
   static createMockLoader(): BuiltinPolicyLoader {
     const config: BuiltinPolicyLoaderConfig = {
       policyPaths: [],

@@ -1,28 +1,37 @@
 ---
 name: sf-workflow-feature-spec
 description: Feature Spec（Requirements-First）工作流的阶段执行协议，包含 intake 到 completed 共 11 个阶段的详细执行步骤和 Skill 绑定矩阵
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - feature_spec
 ---
 
 # Feature Spec 工作流执行协议（Requirements-First）
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
 intake → requirements → requirements_gate → design → design_gate → tasks → tasks_gate → development → review → verification → verification_gate → completed
 ```
 
 ## Skill 绑定矩阵
 
-| 阶段 | 调度的子 Agent | 加载的 Skill |
-|------|---------------|-------------|
-| intake | —（Orchestrator 自行收集） | — |
-| requirements | sf-requirements | superpowers-brainstorming |
-| design | sf-design | — |
-| tasks | sf-task-planner | superpowers-writing-plans |
-| development | sf-executor | superpowers-subagent-driven-development |
-| review | sf-reviewer | superpowers-code-review |
-| verification | sf-verifier | superpowers-verification-before-completion |
+| 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
+|------|---------------|-------------|------|
+| intake | —（Orchestrator 自行收集） | — | intake.md |
+| requirements | sf-requirements | superpowers-brainstorming | requirements.md |
+| requirements_gate | — | — | Gate 判定（pass→design, fail→requirements） |
+| design | sf-design | — | design.md |
+| design_gate | — | — | Gate 判定（pass→tasks, fail→design） |
+| tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
+| tasks_gate | — | — | Gate 判定（pass→development, fail→tasks） |
+| development | sf-executor | superpowers-subagent-driven-development | 代码文件 |
+| review | sf-reviewer | superpowers-code-review | 审查意见 |
+| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议
 

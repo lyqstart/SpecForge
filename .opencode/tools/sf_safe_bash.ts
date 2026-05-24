@@ -1,21 +1,5 @@
-/**
- * sf_safe_bash - 安全的 shell 命令执行入口
- *
- * 所有需要执行 shell 命令的场景必须使用本工具。
- *
- * 特性：
- * - 自动应用 Windows/PowerShell 兼容规则、UTF-8 编码注入
- * - 危险命令黑名单（rm -rf /、format、curl|sh 等）
- * - 工具替代建议（cat/find/grep/mkdir 拦截，引导用专用工具）
- * - OS 级 hard timeout 保护（必返回，agent 不死等）
- * - 结构化 JSON 返回（含 hint 字段引导排错）
- * - 审计日志（写到 ~/.specforge/logs/shell-history.jsonl）
- *
- * 详细规范见 docs/engineering-lessons/universal/shell-command-execution.md
- */
-
 import { tool } from "@opencode-ai/plugin"
-import { safeBashExecute } from "./lib/sf_safe_bash_core"
+import { daemon } from "./lib/thin-client"
 
 export default tool({
   description: `执行 shell 命令的安全入口。所有需要运行命令行的场景必须使用本工具，OpenCode 内置的 bash 工具已禁用。
@@ -57,18 +41,13 @@ export default tool({
       .describe("stdout/stderr 截断长度（字符），默认 4096。超出部分丢弃但 truncated 字段为 true。"),
   },
   async execute(args, context) {
-    const baseDir = context.directory || context.worktree || process.cwd()
-    const result = await safeBashExecute(
-      {
-        command: args.command,
-        cwd: args.cwd,
-        timeoutMs: args.timeoutMs,
-        env: args.env as Record<string, string> | undefined,
-        stdin: args.stdin,
-        outputLimit: args.outputLimit,
-      },
-      baseDir
-    )
+    const result = await daemon.invokeTool("sf_safe_bash", args, {
+      sessionID: context.sessionID,
+      agent: context.agent,
+      directory: context.directory,
+      worktree: context.worktree,
+    })
+    if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },
 })

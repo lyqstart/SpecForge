@@ -11,6 +11,7 @@
  * 这是一个统一入口，确保所有扩展在 Daemon 启动时正确初始化。
  */
 
+import path from 'path';
 import { EventBus } from '../event-bus/EventBus';
 import { Event } from '../types';
 
@@ -46,6 +47,7 @@ export interface ExtensionLoadState {
   loaded: boolean;
   error?: Error;
   loadTimeMs?: number;
+  count?: number;
 }
 
 /**
@@ -61,14 +63,7 @@ export interface ExtensionLoadResult {
  * 扩展加载器配置
  */
 export interface ExtensionLoaderConfig {
-  /**
-   * 扩展目录路径
-   */
   extensionsDir?: string;
-  
-  /**
-   * 是否启用指定类型的扩展
-   */
   enabledExtensions?: {
     skill?: boolean;
     tool?: boolean;
@@ -76,22 +71,19 @@ export interface ExtensionLoaderConfig {
     gate?: boolean;
     plugin?: boolean;
   };
-  
-  /**
-   * 插件加载器配置
-   */
   pluginLoader?: {
     pluginDir?: string;
     grants?: string[];
     enableStaticCheck?: boolean;
     enablePermissionCheck?: boolean;
   };
+  workflowEngine?: any;
 }
 
 /**
  * 创建默认扩展加载器配置
  */
-export function createDefaultExtensionLoaderConfig(): Required<ExtensionLoaderConfig> {
+export function createDefaultExtensionLoaderConfig(): Required<Omit<ExtensionLoaderConfig, 'workflowEngine'>> {
   return {
     extensionsDir: './extensions',
     enabledExtensions: {
@@ -110,9 +102,6 @@ export function createDefaultExtensionLoaderConfig(): Required<ExtensionLoaderCo
   };
 }
 
-/**
- * 创建默认扩展加载器配置
- */
 export const DEFAULT_EXTENSION_LOADER_CONFIG = createDefaultExtensionLoaderConfig();
 
 /**
@@ -134,18 +123,13 @@ export const DEFAULT_EXTENSION_LOADER_CONFIG = createDefaultExtensionLoaderConfi
  * ```
  */
 export class ExtensionLoader {
-  private config: Required<ExtensionLoaderConfig>;
+  private config: Required<Omit<ExtensionLoaderConfig, 'workflowEngine'>> & { workflowEngine?: any };
   private eventBus: EventBus;
   private extensionStates: Map<string, ExtensionLoadState> = new Map();
   private pluginLoaderInstance: any = null;
   private isLoaded: boolean = false;
+  private workflowEngine: any;
 
-  /**
-   * 创建扩展加载器实例
-   * 
-   * @param config 扩展加载器配置
-   * @param eventBus EventBus 实例（用于发布扩展加载事件）
-   */
   constructor(config: ExtensionLoaderConfig = {}, eventBus?: EventBus) {
     this.config = {
       extensionsDir: config.extensionsDir ?? DEFAULT_EXTENSION_LOADER_CONFIG.extensionsDir,
@@ -159,9 +143,12 @@ export class ExtensionLoader {
       },
     };
     
-    // 如果没有提供 eventBus，创建一个临时的（仅用于事件发布）
-    // 实际使用时应该传入 Daemon 的 eventBus
     this.eventBus = eventBus ?? new EventBus();
+    this.workflowEngine = config.workflowEngine;
+  }
+
+  setWorkflowEngine(engine: any): void {
+    this.workflowEngine = engine;
   }
 
   /**
@@ -376,12 +363,46 @@ export class ExtensionLoader {
    * 占位实现：Workflow Loader 尚未在本任务中实现
    */
   private async loadWorkflows(): Promise<ExtensionLoadState> {
-    // TODO: 实现 Workflow Loader 集成
-    return {
-      type: 'workflow',
-      name: 'workflow-loader',
-      loaded: true,
-    };
+    const startTs = Date.now();
+    try {
+      const { WorkflowDefinitionLoader } = await import('@specforge/workflow-runtime');
+      const loader = new WorkflowDefinitionLoader();
+      const builtinDir = path.resolve(process.cwd(), 'configs/workflows/builtin');
+
+      const fs = await import('fs');
+      const files = await fs.promises.readdir(builtinDir);
+      const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
+
+      let loadedCount = 0;
+      for (const file of jsonFiles) {
+        try {
+          const filePath = path.join(builtinDir, file);
+          const def = await loader.loadFromFile(filePath);
+          if (this.workflowEngine) {
+            this.workflowEngine.registerDefinition(def);
+          }
+          loadedCount++;
+        } catch (err) {
+          console.warn(`[ExtensionLoader] Failed to load workflow ${file}:`, (err as Error).message);
+        }
+      }
+
+      return {
+        type: 'workflow',
+        name: 'workflow-loader',
+        loaded: true,
+        count: loadedCount,
+        loadTimeMs: Date.now() - startTs,
+      };
+    } catch (err) {
+      return {
+        type: 'workflow',
+        name: 'workflow-loader',
+        loaded: false,
+        error: err instanceof Error ? err : new Error(String(err)),
+        loadTimeMs: Date.now() - startTs,
+      };
+    }
   }
 
   /**

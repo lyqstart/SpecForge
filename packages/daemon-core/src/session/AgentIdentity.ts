@@ -41,6 +41,12 @@ export interface AgentIdentity {
   workItemId: string;
   
   /**
+   * Project ID this session is associated with
+   * null if not yet bound to a project
+   */
+  projectId: string | null;
+  
+  /**
    * Spawn intent ID from client
    * Used for binding pending sessions to real sessions
    */
@@ -73,7 +79,8 @@ export function createPendingIdentity(
   workflowRole: string,
   workItemId: string,
   spawnIntentId: string,
-  parentSessionId: string | null = null
+  parentSessionId: string | null = null,
+  projectId: string | null = null
 ): AgentIdentity {
   const now = Date.now();
   
@@ -83,6 +90,7 @@ export function createPendingIdentity(
     workflowRole,
     parentSessionId,
     workItemId,
+    projectId,
     spawnIntentId,
     createdAt: now,
     lastActiveAt: now,

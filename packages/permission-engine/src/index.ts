@@ -27,14 +27,15 @@ export { HardRuleEvaluator, defaultHardRuleEvaluator, AGENT_CONSTITUTION_RULES }
 
 import { HardRuleEvaluator } from './hard-rules';
 import { EventLogger } from './services/event-logger';
-import { RuleMergingEngine, PermissionRequest } from './services/rule-merging-engine';
+import { RuleMergingEngine } from './services/rule-merging-engine';
 import { BuiltinPolicyLoader } from './services/builtin-policy-loader';
 import { UserPolicyLoader } from './services/user-policy-loader';
 import { 
   PermissionEngineConfig,
-  PermissionDecisionEventPayload,
   PermissionDeniedEventPayload,
-  HardRuleConflictEventPayload
+  HardRuleConflictEventPayload,
+  PermissionRequest,
+  PermissionDecision
 } from './types';
 
 // Main permission engine class
@@ -63,7 +64,7 @@ export class PermissionEngine {
     // Initialize rule merging engine
     this.ruleMergingEngine = new RuleMergingEngine({
       hardRuleEvaluator: this.hardRuleEvaluator,
-      cacheEnabled: this.config.cacheEnabled,
+      cacheEnabled: this.config.cacheEnabled ?? true,
       defaultDecision: 'allow'
     });
     
@@ -121,46 +122,23 @@ export class PermissionEngine {
     userId: string,
     action: string,
     resource: string | any,
-    context?: Record<string, any>
+    _context?: Record<string, any>
   ): Promise<boolean> {
-    const actor = { id: userId, ...context?.actor };
-    const resourceObj = typeof resource === 'string' ? { type: resource } : resource;
+    const resourceStr = typeof resource === 'string' ? resource : (resource?.type || 'unknown');
     
-    // Build permission request
     const request: PermissionRequest = {
-      actor,
+      actor: userId,
       action,
-      resource: resourceObj,
-      context
+      resource: resourceStr
     };
     
-    // Use the rule merging engine to evaluate with three-layer precedence
     const decision = this.ruleMergingEngine.evaluate(request);
     
-    // Log the permission decision event
     if (this.config.eventLoggingEnabled) {
-      const eventPayload = this.ruleMergingEngine.createEventPayload(request, {
-        allowed: decision.allowed,
-        matchedRule: decision.matchedRule,
-        ruleLayer: decision.ruleLayer,
-        reason: decision.reason,
-        specificity: decision.specificity,
-        evaluationDetails: decision.evaluationDetails
-      });
-      
-      await this.logPermissionDecision({
-        actor,
-        action,
-        resource: resourceObj,
-        decision: decision.allowed ? 'allow' as const : 'deny' as const,
-        matched_rule: decision.matchedRule,
-        rule_layer: decision.ruleLayer,
-        reason: decision.reason,
-        context
-      });
+      await this.logPermissionDecision(decision);
     }
     
-    return decision.allowed;
+    return decision.decision === 'allow';
   }
 
   /**
@@ -171,64 +149,39 @@ export class PermissionEngine {
     userId: string,
     action: string,
     resource: string | any,
-    context?: Record<string, any>
+    _context?: Record<string, any>
   ): Promise<{
     allowed: boolean;
     matchedRule: string;
     ruleLayer: 'hard' | 'builtin' | 'user';
     reason: string;
-    specificity: number;
   }> {
-    const actor = { id: userId, ...context?.actor };
-    const resourceObj = typeof resource === 'string' ? { type: resource } : resource;
+    const resourceStr = typeof resource === 'string' ? resource : (resource?.type || 'unknown');
     
     const request: PermissionRequest = {
-      actor,
+      actor: userId,
       action,
-      resource: resourceObj,
-      context
+      resource: resourceStr
     };
     
-    return this.ruleMergingEngine.evaluate(request);
+    const decision = this.ruleMergingEngine.evaluate(request);
+    return {
+      allowed: decision.decision === 'allow',
+      matchedRule: decision.matched_rule,
+      ruleLayer: decision.rule_layer,
+      reason: decision.reason
+    };
   }
 
   /**
    * Log a permission decision event with all required fields
    * Implements Property 10: Permission Decision Traceability
    */
-  private async logPermissionDecision(payload: Omit<PermissionDecisionEventPayload, 'actor'> & { actor: any }): Promise<void> {
+  private async logPermissionDecision(decision: PermissionDecision): Promise<void> {
     try {
-      // Ensure actor has required id field
-      const actorWithId = {
-        id: payload.actor.id || 'unknown',
-        sessionId: payload.actor.sessionId,
-        agentRole: payload.actor.agentRole,
-        workflowRole: payload.actor.workflowRole,
-        remoteIdentity: payload.actor.remoteIdentity
-      };
-
-      // Ensure resource has required type field
-      const resourceWithType = {
-        type: payload.resource.type || 'unknown',
-        id: payload.resource.id,
-        path: payload.resource.path
-      };
-
-      const eventPayload: PermissionDecisionEventPayload = {
-        actor: actorWithId,
-        action: payload.action,
-        resource: resourceWithType,
-        decision: payload.decision,
-        matched_rule: payload.matched_rule,
-        rule_layer: payload.rule_layer,
-        reason: payload.reason,
-        context: payload.context
-      };
-
-      await this.eventLogger.logPermissionDecision(eventPayload);
+      await this.eventLogger.logPermissionDecision(decision);
     } catch (error) {
       console.error('Failed to log permission decision event:', error);
-      // Don't throw - event logging failures shouldn't break permission checks
     }
   }
 

@@ -114,80 +114,85 @@ export class WorkflowDefinitionLoader {
    */
   validate(definition: WorkflowDefinition): ValidationResult {
     const errors: ValidationError[] = [];
+    const def = definition as Record<string, unknown>;
 
     // Check schema_version
-    if (!definition.schema_version) {
+    if (!def.schema_version) {
       errors.push({
         field: 'schema_version',
         message: 'schema_version is required',
       });
-    } else if (String(definition.schema_version) !== '1.0') {
+    } else if (String(def.schema_version) !== '1.0') {
       errors.push({
         field: 'schema_version',
-        message: `Unsupported schema version: ${definition.schema_version}. Expected: 1.0`,
-        value: definition.schema_version,
+        message: `Unsupported schema version: ${def.schema_version}. Expected: 1.0`,
+        value: def.schema_version,
       });
     }
 
     // Check id
-    if (!definition.id) {
+    if (!def.id) {
       errors.push({
         field: 'id',
         message: 'id is required',
       });
-    } else if (typeof definition.id !== 'string' || definition.id.trim() === '') {
+    } else if (typeof def.id !== 'string' || (def.id as string).trim() === '') {
       errors.push({
         field: 'id',
         message: 'id must be a non-empty string',
-        value: definition.id,
+        value: def.id,
       });
     }
 
     // Check displayName
-    if (!definition.displayName) {
+    if (!def.displayName) {
       errors.push({
         field: 'displayName',
         message: 'displayName is required',
       });
-    } else if (typeof definition.displayName !== 'string') {
+    } else if (typeof def.displayName !== 'string') {
       errors.push({
         field: 'displayName',
         message: 'displayName must be a string',
-        value: definition.displayName,
+        value: def.displayName,
       });
     }
 
-    // Check intent
-    if (!definition.intent) {
-      errors.push({
-        field: 'intent',
-        message: 'intent is required',
-      });
-    } else if (typeof definition.intent !== 'string') {
+    // Check intent (optional but recommended)
+    if (def.intent !== undefined && typeof def.intent !== 'string') {
       errors.push({
         field: 'intent',
         message: 'intent must be a string',
-        value: definition.intent,
+        value: def.intent,
+      });
+    }
+
+    // Check intentKeywords (optional)
+    if (def.intentKeywords !== undefined && !Array.isArray(def.intentKeywords)) {
+      errors.push({
+        field: 'intentKeywords',
+        message: 'intentKeywords must be an array',
+        value: def.intentKeywords,
       });
     }
 
     // Check stateMachine
-    if (!definition.stateMachine) {
+    if (!def.stateMachine) {
       errors.push({
         field: 'stateMachine',
         message: 'stateMachine is required',
       });
     } else {
-      const smErrors = this.validateStateMachine(definition.stateMachine);
+      const smErrors = this.validateStateMachine(def.stateMachine as StateMachine);
       errors.push(...smErrors);
     }
 
     // Check artifacts
-    if (!Array.isArray(definition.artifacts)) {
+    if (!Array.isArray(def.artifacts)) {
       errors.push({
         field: 'artifacts',
         message: 'artifacts must be an array',
-        value: definition.artifacts,
+        value: def.artifacts,
       });
     }
 
@@ -298,8 +303,8 @@ export class WorkflowDefinitionLoader {
       });
     }
 
-    // Check agent
-    if (!stateObj.agent) {
+    // Check agent — accept empty string for gate/terminal states
+    if (stateObj.agent === undefined || stateObj.agent === null) {
       errors.push({
         field: `${prefix}.agent`,
         message: 'agent is required',
@@ -312,23 +317,83 @@ export class WorkflowDefinitionLoader {
       });
     }
 
-    // Check gate
-    if (!stateObj.gate) {
-      errors.push({
-        field: `${prefix}.gate`,
-        message: 'gate is required',
-      });
-    } else {
+    // Check gate — accept null for non-gate states
+    if (stateObj.gate !== null && stateObj.gate !== undefined) {
       const gateErrors = this.validateGate(`${prefix}.gate`, stateObj.gate);
       errors.push(...gateErrors);
     }
 
     // Check skills
-    if (!Array.isArray(stateObj.skills)) {
+    if (stateObj.skills !== undefined && !Array.isArray(stateObj.skills)) {
       errors.push({
         field: `${prefix}.skills`,
         message: 'skills must be an array',
         value: stateObj.skills,
+      });
+    }
+
+    // Check next — string or { pass, fail } object; optional for terminal states
+    if (stateObj.next !== undefined && stateObj.next !== null) {
+      if (typeof stateObj.next === 'string') {
+        // Static next state — valid
+      } else if (typeof stateObj.next === 'object') {
+        const nextObj = stateObj.next as Record<string, unknown>;
+        if (typeof nextObj.pass !== 'string' || (nextObj.pass as string).trim() === '') {
+          errors.push({
+            field: `${prefix}.next.pass`,
+            message: 'next.pass must be a non-empty string',
+            value: nextObj.pass,
+          });
+        }
+        if (typeof nextObj.fail !== 'string' || (nextObj.fail as string).trim() === '') {
+          errors.push({
+            field: `${prefix}.next.fail`,
+            message: 'next.fail must be a non-empty string',
+            value: nextObj.fail,
+          });
+        }
+      } else {
+        errors.push({
+          field: `${prefix}.next`,
+          message: 'next must be a string or { pass, fail } object',
+          value: stateObj.next,
+        });
+      }
+    }
+
+    // Check retry (optional)
+    if (stateObj.retry !== undefined && stateObj.retry !== null) {
+      if (typeof stateObj.retry !== 'object') {
+        errors.push({
+          field: `${prefix}.retry`,
+          message: 'retry must be an object',
+          value: stateObj.retry,
+        });
+      } else {
+        const retryObj = stateObj.retry as Record<string, unknown>;
+        if (typeof retryObj.maxAttempts !== 'number' || retryObj.maxAttempts < 1) {
+          errors.push({
+            field: `${prefix}.retry.maxAttempts`,
+            message: 'retry.maxAttempts must be a positive number',
+            value: retryObj.maxAttempts,
+          });
+        }
+        if (typeof retryObj.onExhausted !== 'string') {
+          errors.push({
+            field: `${prefix}.retry.onExhausted`,
+            message: 'retry.onExhausted must be a string',
+            value: retryObj.onExhausted,
+          });
+        }
+      }
+    }
+
+    // Check produces (optional)
+    if (stateObj.produces !== undefined && stateObj.produces !== null && typeof stateObj.produces !== 'string') {
+      errors.push({
+        field: `${prefix}.produces`,
+        message: 'produces must be a string or null',
+        value: stateObj.produces,
       });
     }
 

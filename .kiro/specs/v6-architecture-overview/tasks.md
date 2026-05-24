@@ -161,7 +161,7 @@
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 8. 装配 V6 架构验证管道
-  - [x] 8.1 创建 `.opencode/tools/sf_v6_arch_check.ts` 顶层入口
+  - [x] 8.1 创建 `scripts/sf_v6_arch_check.ts` 顶层入口
     - 依序调用：sf_doc_lint（含任务 2 的新规则）→ CP 覆盖验证器（任务 4）→ Scope 边界验证器（任务 5）
     - 支持 `--json` 输出统一错误结构 `{ errorCode, message, context }`
     - 非零退出码表示至少一项未通过

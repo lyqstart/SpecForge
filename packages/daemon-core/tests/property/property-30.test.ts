@@ -10,6 +10,7 @@ import * as fc from 'fast-check';
 import { WAL } from '../../src/wal/WAL';
 import { Event } from '../../src/types';
 import * as fs from 'fs/promises';
+import * as fsSync from 'fs';
 import * as path from 'path';
 
 describe('Property 30: Event Schema Multi-sync Readiness', () => {
@@ -215,6 +216,24 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
       expect(readEvents[i].eventId).toBe(events[i].eventId);
       expect(readEvents[i].action).toBe(events[i].action);
     }
+
+    // File-level assertion: verify on disk - unique eventIds, monotonic timestamps, non-empty projectId
+    const diskPath = wal.getEventsPath();
+    expect(fsSync.existsSync(diskPath)).toBe(true);
+    const diskContent = await fs.readFile(diskPath, 'utf-8');
+    const diskEventLines = diskContent.trim().split('\n').filter(l => l.length > 0);
+    const diskEventIds = new Set<string>();
+    for (const line of diskEventLines) {
+      const parsed = JSON.parse(line) as Event;
+      expect(diskEventIds.has(parsed.eventId)).toBe(false);
+      diskEventIds.add(parsed.eventId);
+      expect(parsed.projectId).not.toBe('');
+    }
+    for (let i = 1; i < diskEventLines.length; i++) {
+      const prev = JSON.parse(diskEventLines[i - 1]) as Event;
+      const curr = JSON.parse(diskEventLines[i]) as Event;
+      expect(curr.ts).toBeGreaterThanOrEqual(prev.ts);
+    }
   });
 
   /**
@@ -258,5 +277,18 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     expect(eventsFromA.length).toBe(eventsA.length);
     expect(eventsFromB.length).toBe(eventsB.length);
     expect(eventsFromA.length + eventsFromB.length).toBe(allEvents.length);
+
+    // File-level assertion: verify all events on disk have non-empty projectId
+    const diskIsolationPath = wal.getEventsPath();
+    expect(fsSync.existsSync(diskIsolationPath)).toBe(true);
+    const diskIsoContent = await fs.readFile(diskIsolationPath, 'utf-8');
+    const diskIsoLines = diskIsoContent.trim().split('\n').filter(l => l.length > 0);
+    const diskIsoIds = new Set<string>();
+    for (const line of diskIsoLines) {
+      const parsed = JSON.parse(line) as Event;
+      expect(parsed.projectId).not.toBe('');
+      expect(diskIsoIds.has(parsed.eventId)).toBe(false);
+      diskIsoIds.add(parsed.eventId);
+    }
   });
 });

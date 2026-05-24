@@ -24,7 +24,15 @@ import {
   type ConversationMessage,
   type ToolCallRecord,
 } from "../../.opencode/tools/lib/sf_continuity_core"
-import type { WorkflowType } from "../../.opencode/tools/lib/state_machine"
+type WorkflowType =
+  | "feature_spec"
+  | "bugfix_spec"
+  | "feature_spec_design_first"
+  | "quick_change"
+  | "change_request"
+  | "refactor"
+  | "ops_task"
+  | "investigation"
 
 // ============================================================
 // Helpers

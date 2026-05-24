@@ -1,0 +1,107 @@
+{
+  "schema_version": "1.0",
+  "id": "investigation",
+  "displayName": "Investigation",
+  "intent": "Research and investigation workflow producing findings report without code changes",
+  "intentKeywords": [
+    "investigation",
+    "调查",
+    "research",
+    "研究",
+    "explore",
+    "探索",
+    "analyze",
+    "分析",
+    "spike",
+    "技术预研"
+  ],
+  "stateMachine": {
+    "schema_version": "1.0",
+    "initial": "intake",
+    "states": {
+      "intake": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": "intake.md",
+        "gate": null,
+        "next": "investigation_plan",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "investigation_plan": {
+        "schema_version": "1.0",
+        "agent": "sf-design",
+        "skills": [],
+        "produces": "investigation_plan.md",
+        "gate": null,
+        "next": "investigation_plan_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "investigation_plan_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "investigation_plan_gate",
+          "name": "Investigation Plan Gate"
+        },
+        "next": { "pass": "research", "fail": "investigation_plan" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "research": {
+        "schema_version": "1.0",
+        "agent": "sf-executor",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "findings_report",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "findings_report": {
+        "schema_version": "1.0",
+        "agent": "sf-design",
+        "skills": [],
+        "produces": "findings_report.md",
+        "gate": null,
+        "next": "findings_report_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "findings_report_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "findings_report_gate",
+          "name": "Findings Report Gate"
+        },
+        "next": { "pass": "completed", "fail": "research" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "completed": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      },
+      "blocked": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      }
+    }
+  },
+  "artifacts": [
+    { "name": "intake", "path": "specforge/specs/{workItemId}/intake.md", "required": true },
+    { "name": "investigation_plan", "path": "specforge/specs/{workItemId}/investigation_plan.md", "required": true },
+    { "name": "findings_report", "path": "specforge/specs/{workItemId}/findings_report.md", "required": true }
+  ]
+}

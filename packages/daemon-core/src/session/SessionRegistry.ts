@@ -21,6 +21,18 @@ import {
 } from './AgentIdentity';
 
 /**
+ * SessionSnapshot for daemon restart reconnect support.
+ * Contains the full serializable state of the registry at a point in time.
+ */
+export interface SessionSnapshot {
+  pendingSessions: Array<[string, AgentIdentity]>;
+  activeSessions: Array<[string, AgentIdentity]>;
+  historySessions: Array<[string, AgentIdentity]>;
+  projectBindings: Array<[string, string]>;
+  timestamp: number;
+}
+
+/**
  * Session Registry
  * 
  * Central registry for managing agent sessions throughout their lifecycle.
@@ -39,10 +51,14 @@ export class SessionRegistry {
   private pendingSessions: Map<string, AgentIdentity> = new Map();
   private activeSessions: Map<string, AgentIdentity> = new Map();
   private historySessions: Map<string, AgentIdentity> = new Map();
+  private projectBindings: Map<string, string> = new Map();
   private subscription: Subscription | null = null;
+  private sessionTimeoutMs: number;
+  private cleanupTimerId: ReturnType<typeof setInterval> | null = null;
 
-  constructor(eventBus: EventBus) {
+  constructor(eventBus: EventBus, sessionTimeoutMs: number = 30 * 60 * 1000) {
     this.eventBus = eventBus;
+    this.sessionTimeoutMs = sessionTimeoutMs;
   }
 
   /**
@@ -57,13 +73,79 @@ export class SessionRegistry {
 
   /**
    * Stop the registry
-   * Unsubscribes from EventBus
+   * Unsubscribes from EventBus and stops the cleanup timer
    */
   stop(): void {
     if (this.subscription) {
       this.eventBus.unsubscribe(this.subscription);
       this.subscription = null;
     }
+    this.stopCleanup();
+  }
+
+  /**
+   * Start the periodic cleanup timer for expired sessions
+   * 
+   * Runs cleanupExpiredSessions() every 60 seconds.
+   * Automatically called on first registerPending if not already started.
+   */
+  startCleanup(): void {
+    if (this.cleanupTimerId !== null) {
+      return; // Already started
+    }
+    this.cleanupTimerId = setInterval(() => {
+      this.cleanupExpiredSessions();
+    }, 60_000);
+  }
+
+  /**
+   * Stop the periodic cleanup timer
+   */
+  stopCleanup(): void {
+    if (this.cleanupTimerId !== null) {
+      clearInterval(this.cleanupTimerId);
+      this.cleanupTimerId = null;
+    }
+  }
+
+  /**
+   * Run cleanup now: move expired pending/active sessions to history
+   * 
+   * A session is considered expired if it has been inactive for longer
+   * than sessionTimeoutMs (configurable in constructor, default 30 min).
+   * Only pending and active sessions are affected; history sessions are kept.
+   */
+  cleanupExpiredSessions(): number {
+    const now = Date.now();
+    let cleanedCount = 0;
+
+    // Clean expired pending sessions
+    for (const [sessionId, identity] of this.pendingSessions) {
+      if (now - identity.lastActiveAt > this.sessionTimeoutMs) {
+        this.pendingSessions.delete(sessionId);
+        this.historySessions.set(sessionId, {
+          ...identity,
+          status: 'history' as const,
+          lastActiveAt: now,
+        });
+        cleanedCount++;
+      }
+    }
+
+    // Clean expired active sessions
+    for (const [sessionId, identity] of this.activeSessions) {
+      if (now - identity.lastActiveAt > this.sessionTimeoutMs) {
+        this.activeSessions.delete(sessionId);
+        this.historySessions.set(sessionId, {
+          ...identity,
+          status: 'history' as const,
+          lastActiveAt: now,
+        });
+        cleanedCount++;
+      }
+    }
+
+    return cleanedCount;
   }
 
   /**
@@ -293,6 +375,117 @@ export class SessionRegistry {
       active: this.activeSessions.size,
       history: this.historySessions.size,
     };
+  }
+
+  /**
+   * List all sessions across all states (pending, active, history)
+   * 
+   * @returns Array of all AgentIdentity objects
+   */
+  listSessions(): AgentIdentity[] {
+    return [
+      ...Array.from(this.pendingSessions.values()),
+      ...Array.from(this.activeSessions.values()),
+      ...Array.from(this.historySessions.values()),
+    ];
+  }
+
+  /**
+   * Get a session by sessionId across all states
+   * 
+   * Convenience alias for lookupBySessionId.
+   * 
+   * @param sessionId Session ID to look up
+   * @returns The AgentIdentity if found, null otherwise
+   */
+  getSession(sessionId: string): AgentIdentity | null {
+    return this.lookupBySessionId(sessionId);
+  }
+
+  /**
+   * Bind a project to a session
+   * 
+   * Associates a project path with a session and updates the session's
+   * projectId metadata. The projectId is derived from the last segment
+   * of the project path.
+   * 
+   * @param sessionId Session ID to bind
+   * @param projectPath Project filesystem path
+   * @returns true if the session was found and bound, false otherwise
+   */
+  bindProject(sessionId: string, projectPath: string): boolean {
+    // Compute projectId from the last segment of the project path
+    const normalizedPath = projectPath.replace(/\\/g, '/');
+    const segments = normalizedPath.split('/');
+    const lastSegment = segments[segments.length - 1];
+    const projectId = lastSegment ?? projectPath;
+
+    // Update the session in whichever state it's in
+    const pending = this.pendingSessions.get(sessionId);
+    if (pending) {
+      this.pendingSessions.set(sessionId, { ...pending, projectId });
+      this.projectBindings.set(sessionId, projectPath);
+      return true;
+    }
+
+    const active = this.activeSessions.get(sessionId);
+    if (active) {
+      this.activeSessions.set(sessionId, { ...active, projectId });
+      this.projectBindings.set(sessionId, projectPath);
+      return true;
+    }
+
+    const history = this.historySessions.get(sessionId);
+    if (history) {
+      this.historySessions.set(sessionId, { ...history, projectId });
+      this.projectBindings.set(sessionId, projectPath);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Get the project path bound to a session
+   * 
+   * @param sessionId Session ID
+   * @returns The project path if bound, null otherwise
+   */
+  getProjectPath(sessionId: string): string | null {
+    return this.projectBindings.get(sessionId) ?? null;
+  }
+
+  /**
+   * Get a snapshot of all sessions for daemon restart reconnect support
+   * 
+   * Returns the full serializable state of the registry.
+   * Can be restored via restoreFromSnapshot().
+   * 
+   * @returns SessionSnapshot object
+   */
+  getSnapshot(): SessionSnapshot {
+    return {
+      pendingSessions: Array.from(this.pendingSessions.entries()),
+      activeSessions: Array.from(this.activeSessions.entries()),
+      historySessions: Array.from(this.historySessions.entries()),
+      projectBindings: Array.from(this.projectBindings.entries()),
+      timestamp: Date.now(),
+    };
+  }
+
+  /**
+   * Restore session state from a snapshot
+   * 
+   * Used for daemon restart reconnect support.
+   * Replaces all current state with the snapshot data.
+   * 
+   * @param snapshot SessionSnapshot to restore from
+   */
+  restoreFromSnapshot(snapshot: SessionSnapshot): void {
+    this.pendingSessions = new Map(snapshot.pendingSessions);
+    this.activeSessions = new Map(snapshot.activeSessions);
+    this.historySessions = new Map(snapshot.historySessions);
+    this.projectBindings = new Map(snapshot.projectBindings);
   }
 
   /**

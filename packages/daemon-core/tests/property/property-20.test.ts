@@ -17,6 +17,7 @@ import { RecoverySubsystem } from '../../src/recovery/RecoverySubsystem';
 import { StateManager } from '../../src/state/StateManager';
 import { Event, ProjectState } from '../../src/types';
 import * as fs from 'fs/promises';
+import * as fsSync from 'fs';
 import * as path from 'path';
 
 /**
@@ -116,6 +117,18 @@ describe('Property 20: Recovery Consistency Repair', () => {
     
     expect(repairResult.repairedState.lastEventId).toBe('evt-003');
     expect(repairResult.repairedState.lastEventTs).toBe(3000);
+
+    // File-level assertion: verify events.jsonl on disk has all events after repair
+    const home20_1 = process.env['HOME'] || process.env['USERPROFILE'] || '';
+    const diskEventsPath20_1 = home20_1
+      ? path.join(home20_1, '.specforge', 'projects', testProjectHash, 'events.jsonl')
+      : '';
+    if (diskEventsPath20_1) {
+      expect(fsSync.existsSync(diskEventsPath20_1)).toBe(true);
+      const diskContent = await fs.readFile(diskEventsPath20_1, 'utf-8');
+      expect(diskContent).toContain('evt-003');
+      expect(diskContent).toContain('recovery.repaired');
+    }
   });
 
   /**
@@ -210,6 +223,17 @@ describe('Property 20: Recovery Consistency Repair', () => {
     
     for (const event of repairResult.repairEvents) {
       expect(event.action).toBe('recovery.repaired');
+    }
+
+    // File-level assertion: verify events.jsonl contains recovery.repaired on disk
+    const home20_3 = process.env['HOME'] || process.env['USERPROFILE'] || '';
+    const diskEventsPath20_3 = home20_3
+      ? path.join(home20_3, '.specforge', 'projects', testProjectHash, 'events.jsonl')
+      : '';
+    if (diskEventsPath20_3) {
+      expect(fsSync.existsSync(diskEventsPath20_3)).toBe(true);
+      const diskContent = await fs.readFile(diskEventsPath20_3, 'utf-8');
+      expect(diskContent).toContain('recovery.repaired');
     }
   });
 

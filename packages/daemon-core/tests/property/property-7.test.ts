@@ -167,5 +167,23 @@ describe('Property 7: WAL Ordering', () => {
 
     expect(state.lastEventId).toBe('event-2');
     expect(state.lastEventTs).toBe(2000);
+
+    // File-level assertion: events.jsonl eventId count >= state.json lastEventId
+    const diskEventsPath = wal.getEventsPath();
+    expect(fsSync.existsSync(diskEventsPath)).toBe(true);
+    const diskContent = await fs.readFile(diskEventsPath, 'utf-8');
+    const diskEventLines = diskContent.trim().split('\n').filter(l => l.length > 0);
+    expect(diskEventLines.length).toBeGreaterThanOrEqual(2);
+    for (const line of diskEventLines) {
+      const parsed = JSON.parse(line) as Event;
+      expect(parsed.eventId).toBeDefined();
+      expect(parsed.projectId).not.toBe('');
+    }
+
+    // File-level assertion: state.json on disk matches recovered state
+    const stateFilePath = stateManager['statePath'] as string;
+    expect(fsSync.existsSync(stateFilePath)).toBe(true);
+    const stateOnDisk = await fs.readFile(stateFilePath, 'utf-8');
+    expect(stateOnDisk).toContain('event-2');
   });
 });

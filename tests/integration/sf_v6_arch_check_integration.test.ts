@@ -9,7 +9,7 @@ const __dirname = dirname(__filename)
 
 // Paths
 const PROJECT_ROOT = join(__dirname, '..', '..')
-const SF_V6_ARCH_CHECK_PATH = join(PROJECT_ROOT, '.opencode', 'tools', 'sf_v6_arch_check.ts')
+const SF_V6_ARCH_CHECK_PATH = join(PROJECT_ROOT, 'scripts', 'sf_v6_arch_check.ts')
 const SPEC_ROOT = join(PROJECT_ROOT, '.kiro', 'specs', 'v6-architecture-overview')
 const ARTIFACTS_DIR = join(SPEC_ROOT, 'artifacts')
 const ALLOCATION_JSON_PATH = join(ARTIFACTS_DIR, 'correctness-property-allocation.json')

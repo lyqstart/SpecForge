@@ -78,7 +78,6 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_verification_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_verification_types.ts", type: "tool_lib" },
   { path: "tools/lib/sf_verifier_execution_core.ts", type: "tool_lib" },
-  { path: "tools/lib/state_machine.ts", type: "tool_lib" },
   { path: "tools/lib/utils.ts", type: "tool_lib" },
   { path: "tools/lib/sf_specforge_plugin_entry.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_core.ts", type: "tool_lib" },

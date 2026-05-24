@@ -1,25 +1,31 @@
 ---
 name: sf-workflow-quick-change
 description: Quick Change 轻量工作流的阶段执行协议，包含 5 个阶段的详细执行步骤、升级机制和轻量验证模式
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - quick_change
 ---
 
 # Quick Change 工作流执行协议
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
 intake → quick_tasks → development → verification → verification_gate → completed
 ```
 
 ## Skill 绑定矩阵
 
-| 阶段 | 调度的子 Agent | 加载的 Skill |
-|------|---------------|-------------|
-| intake | —（Orchestrator 自行收集） | — |
-| quick_tasks | sf-task-planner | superpowers-writing-plans |
-| development | sf-executor | superpowers-subagent-driven-development |
-| verification | sf-verifier | superpowers-verification-before-completion |
+| 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
+|------|---------------|-------------|------|
+| intake | —（Orchestrator 自行收集） | — | intake.md |
+| quick_tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
+| development | sf-executor | superpowers-subagent-driven-development | 代码文件 |
+| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议
 

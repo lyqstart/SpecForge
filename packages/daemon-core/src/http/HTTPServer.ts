@@ -3,13 +3,66 @@
  * 
  * Handles HTTP/1.1 requests with Bearer Token authentication
  * and Server-Sent Events (SSE) for real-time updates.
+ * 
+ * Features:
+ * - Route registration with exact and prefix matching
+ * - /health endpoint with uptime tracking
+ * - SSE long-connection with heartbeat and EventBus integration
+ * - Global error handling with DaemonError
+ * - Idle timeout for non-detached mode
+ * - CORS support for OPTIONS preflight
+ * - Request body JSON parsing (400 on invalid JSON)
  */
 
 import * as http from 'http';
 import { DaemonConfig } from '../daemon/DaemonConfig';
 import { EventBus } from '../event-bus/EventBus';
-import { Event } from '../types';
+import {
+  Event, DaemonError,
+  StateReadRequest, StateTransitionRequest,
+  EventLogRequest, EventQueryRequest,
+} from '../types';
+import { ToolInvokeRequest as DispatcherRequest } from '../tools';
 import { ContentAddressableStorage } from '../cas';
+import { StateManager } from '../state/StateManager';
+import { WAL } from '../wal/WAL';
+import { ToolDispatcher } from '../tools';
+
+export interface HTTPServerDeps {
+  config: DaemonConfig;
+  eventBus: EventBus;
+  stateManager: StateManager;
+  wal: WAL;
+  permissionEngine?: any;
+  workflowEngine?: any;
+  eventLogger?: any;
+  sessionRegistry?: any;
+  toolDispatcher?: ToolDispatcher;
+}
+
+// ── Route Types ──
+
+export interface RouteMatch {
+  pathname: string;
+  params: Record<string, string>;
+}
+
+export interface RouteHandler {
+  (req: http.IncomingMessage, res: http.ServerResponse, body: string, match: RouteMatch): void | Promise<void>;
+}
+
+interface RouteEntry {
+  method: string;
+  handler: RouteHandler;
+}
+
+interface PrefixRouteEntry {
+  prefix: string;
+  method: string;
+  handler: RouteHandler;
+}
+
+// ── HTTPServer ──
 
 export class HTTPServer {
   private server: http.Server | null = null;
@@ -17,10 +70,43 @@ export class HTTPServer {
   private eventBus: EventBus | null = null;
   private token: string | null = null;
   private cas: ContentAddressableStorage;
+  private config: DaemonConfig;
+  private startTime: number = 0;
+  private deps: Partial<HTTPServerDeps>;
 
-  constructor(_config: DaemonConfig, eventBus?: EventBus) {
-    this.eventBus = eventBus || null;
+  // Route tables
+  private exactRoutes: Map<string, RouteEntry[]> = new Map();
+  private prefixRoutes: PrefixRouteEntry[] = [];
+
+  // SSE
+  private sseClients: Map<string, http.ServerResponse> = new Map();
+  private sseSubscription: { topic: string; handler: (event: Event) => void; unsubscribe: () => void } | null = null;
+  private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  private readonly SSE_HEARTBEAT_INTERVAL = 30_000;
+
+  // Idle timeout
+  private idleTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Global error handler references (for cleanup)
+  private boundUncaughtHandler: ((err: Error) => void) | null = null;
+  private boundUnhandledRejectionHandler: ((reason: unknown) => void) | null = null;
+
+  constructor(configOrDeps: DaemonConfig | HTTPServerDeps, eventBus?: EventBus) {
+    if ('config' in configOrDeps && typeof configOrDeps.config === 'object') {
+      this.deps = configOrDeps;
+      this.config = configOrDeps.config;
+      this.eventBus = configOrDeps.eventBus || null;
+    } else {
+      this.deps = {};
+      this.config = configOrDeps as DaemonConfig;
+      this.eventBus = eventBus || null;
+    }
     this.cas = new ContentAddressableStorage();
+    this.registerDefaultRoutes();
+  }
+
+  getDependencies(): Partial<HTTPServerDeps> {
+    return this.deps;
   }
 
   setEventBus(eventBus: EventBus): void {
@@ -38,6 +124,8 @@ export class HTTPServer {
 
   async start(): Promise<{ port: number }> {
     return new Promise((resolve, reject) => {
+      this.startTime = Date.now();
+
       this.server = http.createServer((req, res) => {
         this.handleRequest(req, res);
       });
@@ -46,6 +134,8 @@ export class HTTPServer {
         const address = this.server?.address();
         if (address && typeof address === 'object') {
           this.port = address.port;
+          this.installGlobalErrorHandlers();
+          this.refreshIdleTimeout();
           resolve({ port: this.port });
         } else {
           reject(new Error('Failed to get server port'));
@@ -57,6 +147,11 @@ export class HTTPServer {
   }
 
   async stop(): Promise<void> {
+    this.clearIdleTimeout();
+    this.stopHeartbeat();
+    this.cleanupSse();
+    this.uninstallGlobalErrorHandlers();
+
     return new Promise((resolve, reject) => {
       if (this.server) {
         this.server.close((err) => {
@@ -80,146 +175,731 @@ export class HTTPServer {
     }
   }
 
+  // ── Route Registration ──
+
+  private registerDefaultRoutes(): void {
+    // Exact match routes
+    this.addExactRoute('GET', '/health', this.handleHealth.bind(this));
+    this.addExactRoute('GET', '/events', this.handleSSE.bind(this));
+    this.addExactRoute('GET', '/', this.handleRoot.bind(this));
+
+    // Exact API v1 routes
+    this.addExactRoute('POST', '/api/v1/state/read', this.handleStateRead.bind(this));
+    this.addExactRoute('POST', '/api/v1/state/transition', this.handleStateTransition.bind(this));
+    this.addExactRoute('POST', '/api/v1/event/log', this.handleEventLog.bind(this));
+    this.addExactRoute('POST', '/api/v1/event/query', this.handleEventQuery.bind(this));
+    this.addExactRoute('POST', '/api/v1/cas/store', this.handleCasStore.bind(this));
+    this.addExactRoute('GET', '/api/v1/cas/retrieve', this.handleCasRetrieve.bind(this));
+    this.addExactRoute('GET', '/api/v1/session/list', this.handleSessionList.bind(this));
+    this.addExactRoute('POST', '/api/v1/tool/invoke', this.handleToolInvoke.bind(this));
+    this.addExactRoute('POST', '/api/v1/admin/stop', this.handleAdminStop.bind(this));
+
+    // Prefix routes for API v1 (fallback)
+    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin'];
+    for (const segment of prefixes) {
+      this.addPrefixRoute('GET', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
+      this.addPrefixRoute('POST', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
+    }
+  }
+
+  private addExactRoute(method: string, pathname: string, handler: RouteHandler): void {
+    const entries = this.exactRoutes.get(pathname) ?? [];
+    entries.push({ method, handler });
+    this.exactRoutes.set(pathname, entries);
+  }
+
+  private addPrefixRoute(method: string, prefix: string, handler: RouteHandler): void {
+    this.prefixRoutes.push({ prefix, method, handler });
+  }
+
+  private matchRoute(method: string, pathname: string): { handler: RouteHandler; match: RouteMatch } | null {
+    // 1. Try exact match
+    const entries = this.exactRoutes.get(pathname);
+    if (entries) {
+      for (const entry of entries) {
+        if (entry.method === method || entry.method === '*') {
+          return { handler: entry.handler, match: { pathname, params: {} } };
+        }
+      }
+    }
+
+    // 2. Try prefix match
+    for (const entry of this.prefixRoutes) {
+      if (pathname.startsWith(entry.prefix)) {
+        if (entry.method === method || entry.method === '*') {
+          const wildcard = pathname.substring(entry.prefix.length);
+          return {
+            handler: entry.handler,
+            match: { pathname, params: { wildcard } },
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
+  // ── Request Handling ──
+
   private handleRequest(req: http.IncomingMessage, res: http.ServerResponse): void {
-    // Read request body
     const chunks: Buffer[] = [];
-    
-    req.on('data', (chunk) => {
+
+    req.on('data', (chunk: Buffer | string) => {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     });
-    
+
     req.on('end', () => {
       const body = Buffer.concat(chunks);
       this.handleRequestWithBody(req, res, body);
     });
-    
-    req.on('error', (error) => {
-      console.error('Request error:', error);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Internal Server Error' }));
+
+    req.on('error', () => {
+      this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', 'Internal Server Error'));
     });
   }
 
-  private handleRequestWithBody(req: http.IncomingMessage, res: http.ServerResponse, body: Buffer): void {
-    const config = new DaemonConfig();
-    const maxSize = config.getMaxPayloadSize();
-    
-    // Check payload size
-    if (body.length > maxSize) {
-      console.warn(`[PAYLOAD] Payload size ${body.length} bytes exceeds limit ${maxSize} bytes`);
-      
-      // Store in CAS and return reference
-      this.cas.store(body).then((casReference) => {
-        console.log(`[PAYLOAD] Stored large payload in CAS: ${casReference.reference}`);
-        
-        res.writeHead(413, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          error: 'Payload Too Large',
-          reason: `Payload size ${body.length} bytes exceeds limit of ${maxSize} bytes`,
-          casReference,
-        }));
-      }).catch((error) => {
-        console.error('[PAYLOAD] Failed to store payload in CAS:', error);
-        res.writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ 
-          error: 'Internal Server Error', 
-          reason: 'Failed to store large payload in CAS' 
-        }));
-      });
-      return;
-    }
+  private handleRequestWithBody(req: http.IncomingMessage, res: http.ServerResponse, rawBody: Buffer): void {
+    try {
+      const method = req.method ?? 'GET';
+      const pathname = this.safeGetPathname(req);
 
-    // Validate Bearer Token
+      // Check payload size
+      const maxSize = this.config.getMaxPayloadSize();
+      if (rawBody.length > maxSize) {
+        this.handleOversizedPayload(req, res, rawBody, maxSize);
+        return;
+      }
+
+      // Handle CORS preflight (no auth needed)
+      if (method === 'OPTIONS') {
+        this.writeCorsPreflight(res);
+        return;
+      }
+
+      // Auth check (skip for public endpoints)
+      if (!this.isPublicEndpoint(pathname)) {
+        const authResult = this.checkAuth(req);
+        if (authResult) {
+          this.sendJsonResponse(res, authResult.statusCode, this.errorBody(authResult.code, authResult.message));
+          return;
+        }
+      }
+
+      // Parse JSON body for methods that may carry a body
+      const bodyString = rawBody.toString('utf-8');
+      if (rawBody.length > 0 && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+        const contentType = req.headers['content-type'] ?? '';
+        if (contentType.includes('application/json')) {
+          try {
+            JSON.parse(bodyString); // validate JSON
+          } catch {
+            this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+            return;
+          }
+        }
+      }
+
+      // Route matching
+      const matched = this.matchRoute(method, pathname);
+      if (!matched) {
+        this.sendJsonResponse(res, 404, this.errorBody('NOT_FOUND', `Route ${method} ${pathname} not found`));
+        return;
+      }
+
+      // Reset idle timeout on each request
+      this.refreshIdleTimeout();
+
+      // Execute handler
+      const result = matched.handler(req, res, bodyString, matched.match);
+      if (result instanceof Promise) {
+        result.catch((err: unknown) => {
+          this.handleHandlerError(res, err);
+        });
+      }
+    } catch (err: unknown) {
+      this.handleHandlerError(res, err);
+    }
+  }
+
+  private safeGetPathname(req: http.IncomingMessage): string {
+    try {
+      return new URL(req.url ?? '/', `http://localhost:${this.port ?? 0}`).pathname;
+    } catch {
+      return '/';
+    }
+  }
+
+  private isPublicEndpoint(pathname: string): boolean {
+    return pathname === '/health';
+  }
+
+  // ── Auth ──
+
+  private checkAuth(req: http.IncomingMessage): { statusCode: number; code: string; message: string } | null {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       this.logPermissionDenied(req, 'Missing or invalid Authorization header');
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Unauthorized', reason: 'Missing or invalid Authorization header' }));
-      return;
+      return { statusCode: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' };
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-    
+    const token = authHeader.substring(7);
+
     if (!this.token) {
-      this.logPermissionDenied(req, 'Server token not initialized');
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Internal Server Error', reason: 'Server token not initialized' }));
-      return;
+      this.logPermissionDenied(req, 'Handshake file not found - server not initialized');
+      return { statusCode: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' };
     }
 
     if (token !== this.token) {
       this.logPermissionDenied(req, 'Invalid token');
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Unauthorized', reason: 'Invalid token' }));
-      return;
+      return { statusCode: 401, code: 'UNAUTHORIZED', message: 'Unauthorized' };
     }
 
-    // Route request to appropriate handler
-    const url = new URL(req.url || '/', `http://localhost:${this.port}`);
-    
-    switch (url.pathname) {
-      case '/events':
-        this.handleSSE(res);
-        break;
-      case '/':
-        this.handleRoot(res);
-        break;
-      default:
-        res.writeHead(404);
-        res.end(JSON.stringify({ error: 'Not Found' }));
-    }
+    return null;
   }
 
-  /**
-   * Log permission denied events for observability
-   */
   private logPermissionDenied(req: http.IncomingMessage, reason: string): void {
     const event: Event = {
       eventId: this.generateEventId(),
       ts: Date.now(),
-      projectId: '', // No project context for auth events
+      projectId: '',
       action: 'permission.denied',
       payload: {
         method: req.method,
         path: req.url,
         reason,
-        clientIp: req.socket.remoteAddress || 'unknown',
+        clientIp: req.socket.remoteAddress ?? 'unknown',
       },
       metadata: {
         schemaVersion: '1.0',
         source: 'daemon',
       },
     };
-    
+
     if (this.eventBus) {
       this.eventBus.publish(event);
     }
-    
+
     console.warn(`[AUTH] Permission denied: ${reason} - ${req.method} ${req.url}`);
   }
+
+  // ── Payload Handling ──
+
+  private handleOversizedPayload(req: http.IncomingMessage, res: http.ServerResponse, body: Buffer, maxSize: number): void {
+    console.warn(`[PAYLOAD] Payload size ${body.length} bytes exceeds limit ${maxSize} bytes`);
+
+    this.cas.store(body).then((casReference) => {
+      console.log(`[PAYLOAD] Stored large payload in CAS: ${casReference.reference}`);
+
+      res.writeHead(413, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        error: 'Payload Too Large',
+        reason: `Payload size ${body.length} bytes exceeds limit of ${maxSize} bytes`,
+        casReference,
+      }));
+    }).catch((error: unknown) => {
+      console.error('[PAYLOAD] Failed to store payload in CAS:', error);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        error: 'Internal Server Error',
+        reason: 'Failed to store large payload in CAS',
+      }));
+    });
+  }
+
+  // ── Response Helpers ──
+
+  private sendJsonResponse(res: http.ServerResponse, statusCode: number, data: unknown): void {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+    };
+    res.writeHead(statusCode, headers);
+    res.end(JSON.stringify(data));
+  }
+
+  private writeCorsPreflight(res: http.ServerResponse): void {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    });
+    res.end();
+  }
+
+  private errorBody(code: string, message: string, details?: unknown): Record<string, unknown> {
+    const error: Record<string, unknown> = { code, message };
+    if (details !== undefined) {
+      error['details'] = details;
+    }
+    return {
+      success: false,
+      error,
+      requestId: this.generateRequestId(),
+      timestamp: Date.now(),
+    };
+  }
+
+  private successBody<T>(data: T): Record<string, unknown> {
+    return {
+      success: true,
+      data,
+      requestId: this.generateRequestId(),
+      timestamp: Date.now(),
+    };
+  }
+
+  // ── Global Error Handling ──
+
+  private installGlobalErrorHandlers(): void {
+    this.boundUncaughtHandler = (err: Error) => {
+      console.error('[FATAL] uncaughtException:', err);
+      this.sendFatalErrorToSse(err);
+    };
+    this.boundUnhandledRejectionHandler = (reason: unknown) => {
+      console.error('[FATAL] unhandledRejection:', reason);
+      this.sendFatalErrorToSse(
+        reason instanceof Error ? reason : new Error(String(reason)),
+      );
+    };
+    process.on('uncaughtException', this.boundUncaughtHandler);
+    process.on('unhandledRejection', this.boundUnhandledRejectionHandler);
+  }
+
+  private uninstallGlobalErrorHandlers(): void {
+    if (this.boundUncaughtHandler) {
+      process.removeListener('uncaughtException', this.boundUncaughtHandler);
+      this.boundUncaughtHandler = null;
+    }
+    if (this.boundUnhandledRejectionHandler) {
+      process.removeListener('unhandledRejection', this.boundUnhandledRejectionHandler);
+      this.boundUnhandledRejectionHandler = null;
+    }
+  }
+
+  private sendFatalErrorToSse(err: Error): void {
+    const event: Event = {
+      eventId: this.generateEventId(),
+      ts: Date.now(),
+      projectId: '',
+      action: 'server.fatal_error',
+      payload: {
+        message: err.message,
+        stack: err.stack,
+      },
+      metadata: {
+        schemaVersion: '1.0',
+        source: 'daemon',
+      },
+    };
+
+    for (const [id, clientRes] of this.sseClients) {
+      try {
+        clientRes.write(`data: ${JSON.stringify(event)}\n\n`);
+      } catch {
+        this.sseClients.delete(id);
+      }
+    }
+  }
+
+  private handleHandlerError(res: http.ServerResponse, err: unknown): void {
+    if (err instanceof DaemonError) {
+      this.sendJsonResponse(res, err.statusCode, this.errorBody(err.code, err.message, err.details));
+    } else if (err instanceof Error) {
+      this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', err.message));
+    } else {
+      this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', 'Internal Server Error'));
+    }
+  }
+
+  // ── Idle Timeout ──
+
+  private refreshIdleTimeout(): void {
+    if (this.config.isDetached()) {
+      return;
+    }
+    this.clearIdleTimeout();
+    this.idleTimer = setTimeout(() => {
+      console.log('[IDLE] No requests for 30s, shutting down');
+      this.stop().then(() => {
+        process.exit(0);
+      }).catch((err: unknown) => {
+        console.error('[IDLE] Error during idle shutdown:', err);
+        process.exit(1);
+      });
+    }, this.config.getIdleTimeoutMs());
+    // Allow Node to exit if only the idle timer is keeping the process alive
+    if (this.idleTimer && typeof this.idleTimer === 'object') {
+      this.idleTimer.unref();
+    }
+  }
+
+  private clearIdleTimeout(): void {
+    if (this.idleTimer !== null) {
+      clearTimeout(this.idleTimer);
+      this.idleTimer = null;
+    }
+  }
+
+  // ── SSE ──
+
+  private handleSSE(req: http.IncomingMessage, res: http.ServerResponse): void {
+    const clientId = this.generateEventId();
+
+    // SSE headers
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+    });
+
+    // Send initial connected event
+    res.write(`data: ${JSON.stringify({ type: 'connected', clientId })}\n\n`);
+
+    // Add to client list
+    this.sseClients.set(clientId, res);
+
+    // Subscribe to EventBus if not already subscribed
+    this.ensureSseSubscription();
+
+    // Start heartbeat if not already running
+    this.ensureHeartbeat();
+
+    // Handle client disconnect
+    req.on('close', () => {
+      this.sseClients.delete(clientId);
+      console.log(`[SSE] Client ${clientId} disconnected (${this.sseClients.size} remaining)`);
+
+      if (this.sseClients.size === 0) {
+        this.removeSseSubscription();
+        this.stopHeartbeat();
+      }
+    });
+
+    console.log(`[SSE] Client ${clientId} connected (${this.sseClients.size} total)`);
+  }
+
+  private ensureSseSubscription(): void {
+    if (this.sseSubscription || !this.eventBus) {
+      return;
+    }
+
+    const handler = (event: Event): void => {
+      for (const [id, clientRes] of this.sseClients) {
+        try {
+          clientRes.write(`data: ${JSON.stringify(event)}\n\n`);
+        } catch {
+          // Client disconnected, remove from list
+          this.sseClients.delete(id);
+        }
+      }
+    };
+
+    const subscription = this.eventBus.subscribe('*', handler);
+    this.sseSubscription = {
+      topic: '*',
+      handler,
+      unsubscribe: () => this.eventBus!.unsubscribe(subscription),
+    };
+
+    console.log('[SSE] Subscribed to EventBus');
+  }
+
+  private removeSseSubscription(): void {
+    if (this.sseSubscription) {
+      this.sseSubscription.unsubscribe();
+      this.sseSubscription = null;
+      console.log('[SSE] Unsubscribed from EventBus');
+    }
+  }
+
+  private ensureHeartbeat(): void {
+    if (this.heartbeatTimer) {
+      return;
+    }
+
+    this.heartbeatTimer = setInterval(() => {
+      for (const [id, clientRes] of this.sseClients) {
+        try {
+          clientRes.write(':heartbeat\n\n');
+        } catch {
+          this.sseClients.delete(id);
+        }
+      }
+    }, this.SSE_HEARTBEAT_INTERVAL);
+
+    // Allow Node to exit even if the heartbeat timer is still active
+    if (this.heartbeatTimer && typeof this.heartbeatTimer === 'object') {
+      this.heartbeatTimer.unref();
+    }
+  }
+
+  private stopHeartbeat(): void {
+    if (this.heartbeatTimer !== null) {
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
+    }
+  }
+
+  private cleanupSse(): void {
+    this.removeSseSubscription();
+    this.stopHeartbeat();
+
+    for (const [, clientRes] of this.sseClients) {
+      try {
+        clientRes.end();
+      } catch {
+        // ignore errors on cleanup
+      }
+    }
+    this.sseClients.clear();
+  }
+
+  // ── Route Handlers ──
+
+  private handleHealth(_req: http.IncomingMessage, res: http.ServerResponse): void {
+    const uptimeSeconds = Math.floor((Date.now() - this.startTime) / 1000);
+    this.sendJsonResponse(res, 200, this.successBody({
+      status: 'ok',
+      service: 'daemon-core',
+      version: '1.0.0',
+      uptime: uptimeSeconds,
+    }));
+  }
+
+  private handleRoot(_req: http.IncomingMessage, res: http.ServerResponse): void {
+    this.sendJsonResponse(res, 200, this.successBody({
+      status: 'ok',
+      service: 'daemon-core',
+    }));
+  }
+
+  private handleApiEndpoint(req: http.IncomingMessage, res: http.ServerResponse, body: string, match: RouteMatch): void {
+    this.sendJsonResponse(res, 200, this.successBody({
+      message: `API endpoint ${req.method} ${match.pathname} is registered`,
+      path: match.pathname,
+      params: match.params,
+    }));
+  }
+
+  private async handleStateRead(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: Partial<StateReadRequest>;
+    try {
+      request = body ? JSON.parse(body) : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+
+    const wid = request.workItemId;
+
+    if (!this.deps.stateManager) {
+      this.sendJsonResponse(res, 200, this.successBody({ message: 'state/read (no stateManager)', workItemId: wid ?? null }));
+      return;
+    }
+
+    try {
+      if (wid === 'all') {
+        const all = await (this.deps.stateManager as any).getAllStates();
+        return this.sendJsonResponse(res, 200, this.successBody({ workItems: all }));
+      }
+      if (!wid) {
+        return this.sendJsonResponse(res, 400, this.errorBody('MISSING_FIELDS', 'workItemId required'));
+      }
+      const state = await (this.deps.stateManager as any).getState(wid);
+      if (!state) {
+        return this.sendJsonResponse(res, 404, this.errorBody('NOT_FOUND', `${wid} not found`));
+      }
+      return this.sendJsonResponse(res, 200, this.successBody({ workItem: state }));
+    } catch (err) {
+      this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', (err as Error).message));
+    }
+  }
+
+  private async handleStateTransition(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: Partial<StateTransitionRequest>;
+    try {
+      request = body ? JSON.parse(body) : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+
+    const workItemId = request.workItemId;
+    const fromState = request.fromState;
+    const toState = request.toState;
+    if (!workItemId || fromState === undefined || !toState) {
+      this.sendJsonResponse(res, 400, this.errorBody('MISSING_FIELDS', 'workItemId / fromState / toState required'));
+      return;
+    }
+
+    if (!this.deps.workflowEngine) {
+      this.sendJsonResponse(res, 200, this.successBody({
+        message: 'state/transition (no workflowEngine)',
+        workItemId, fromState, toState,
+      }));
+      return;
+    }
+
+    try {
+      const result = await (this.deps.workflowEngine as any).transitionFull({
+        workItemId,
+        fromState,
+        toState,
+        evidence: (request as any).evidence ?? '',
+        workflowType: request.workflowType,
+        transitionContext: (request as any).transitionContext,
+        actor: null,
+      });
+      this.sendJsonResponse(res, 200, this.successBody(result));
+    } catch (err) {
+      this.sendJsonResponse(res, 409, this.errorBody('TRANSITION_REJECTED', (err as Error).message));
+    }
+  }
+
+  private async handleEventLog(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: Partial<EventLogRequest>;
+    try {
+      request = body ? JSON.parse(body) : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+
+    if (!request.projectId || !request.action || !request.category) {
+      this.sendJsonResponse(res, 400, this.errorBody('MISSING_FIELDS', 'projectId, action, category required'));
+      return;
+    }
+
+    if (!this.deps.eventLogger) {
+      this.sendJsonResponse(res, 200, this.successBody({ message: 'event/log (no eventLogger)', eventId: this.generateEventId() }));
+      return;
+    }
+
+    try {
+      const event: Event = {
+        schema_version: '1.0',
+        eventId: this.generateEventId(),
+        ts: Date.now() * 1_000_000,
+        monotonicSeq: Date.now(),
+        projectId: request.projectId,
+        workItemId: (request as any).workItemId,
+        actor: request.actor,
+        category: request.category as any,
+        action: request.action,
+        payload: request.payload ?? {},
+        metadata: {
+          schemaVersion: '1.0',
+          source: 'client',
+        },
+      };
+
+      await (this.deps.eventLogger as any).append(event);
+
+      if (this.eventBus) {
+        await this.eventBus.publish(event);
+      }
+
+      this.sendJsonResponse(res, 200, this.successBody({ eventId: event.eventId }));
+    } catch (err) {
+      this.sendJsonResponse(res, 500, this.errorBody('INTERNAL_ERROR', (err as Error).message));
+    }
+  }
+
+  private handleEventQuery(_req: http.IncomingMessage, res: http.ServerResponse, body: string): void {
+    let request: Partial<EventQueryRequest>;
+    try {
+      request = body ? JSON.parse(body) : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+    console.log(`[API] event/query projectId=${request.projectId ?? '(all)'} action=${request.action ?? '(all)'}`);
+    this.sendJsonResponse(res, 200, this.successBody({
+      message: 'event/query placeholder',
+      events: [],
+    }));
+  }
+
+  private handleCasStore(_req: http.IncomingMessage, res: http.ServerResponse, body: string): void {
+    console.log(`[API] cas/store bodyLength=${body.length}`);
+    this.sendJsonResponse(res, 200, this.successBody({
+      message: 'cas/store placeholder',
+      contentSize: body.length,
+    }));
+  }
+
+  private handleCasRetrieve(req: http.IncomingMessage, res: http.ServerResponse): void {
+    const url = new URL(req.url ?? '/', `http://localhost:${this.port ?? 0}`);
+    const hash = url.searchParams.get('hash') ?? '';
+    console.log(`[API] cas/retrieve hash=${hash || '(not provided)'}`);
+    this.sendJsonResponse(res, 200, this.successBody({
+      message: 'cas/retrieve placeholder',
+      hash,
+    }));
+  }
+
+  private handleSessionList(_req: http.IncomingMessage, res: http.ServerResponse): void {
+    console.log('[API] session/list');
+    this.sendJsonResponse(res, 200, this.successBody({
+      message: 'session/list placeholder',
+      sessions: [],
+    }));
+  }
+
+  private async handleToolInvoke(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: Partial<DispatcherRequest>;
+    try {
+      request = body ? JSON.parse(body) : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+
+    if (!request.tool) {
+      this.sendJsonResponse(res, 400, this.errorBody('MISSING_TOOL', 'tool field required'));
+      return;
+    }
+
+    // Try real dispatcher first
+    if (this.deps.toolDispatcher) {
+      try {
+        const result = await this.deps.toolDispatcher.dispatch(request as DispatcherRequest);
+        this.sendJsonResponse(res, 200, this.successBody(result));
+      } catch (err) {
+        const msg = (err as Error).message;
+        if (msg.startsWith('Unknown tool:')) {
+          this.sendJsonResponse(res, 404, this.errorBody('UNKNOWN_TOOL', msg));
+        } else if (msg.startsWith('Permission denied:')) {
+          this.sendJsonResponse(res, 403, this.errorBody('PERMISSION_DENIED', msg));
+        } else {
+          this.sendJsonResponse(res, 500, this.errorBody('TOOL_ERROR', msg));
+        }
+      }
+      return;
+    }
+
+    // Fallback placeholder
+    this.sendJsonResponse(res, 501, this.errorBody('NOT_IMPLEMENTED', `Tool dispatch not available for ${request.tool}`));
+  }
+
+  private handleAdminStop(_req: http.IncomingMessage, res: http.ServerResponse): void {
+    console.log('[API] admin/stop — initiating graceful shutdown');
+    this.sendJsonResponse(res, 200, this.successBody({ message: 'shutdown initiated' }));
+    this.stop().catch((err: unknown) => {
+      console.error('[ADMIN] Error during admin stop:', err);
+    });
+  }
+
+  // ── Utility ──
 
   private generateEventId(): string {
     return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
   }
 
-  private handleSSE(res: http.ServerResponse): void {
-    // Set SSE headers
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-    });
-
-    // Send initial message
-    res.write('data: connected\n\n');
-
-    // Keep connection open
-    // Implementation will be completed in Phase 2
-  }
-
-  private handleRoot(res: http.ServerResponse): void {
-    res.writeHead(200);
-    res.end(JSON.stringify({ status: 'ok', service: 'daemon-core' }));
+  private generateRequestId(): string {
+    return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
   }
 }

@@ -110,7 +110,7 @@
 
 - 集成测试文件: `tests/integration/sf_v6_arch_check_integration.test.ts`
 - 测试报告: `artifacts/sf_v6_arch_check_integration_test_report.md`
-- 验证工具: `.opencode/tools/sf_v6_arch_check.ts`
+- 验证工具: `scripts/sf_v6_arch_check.ts`（2026-05-24 从 `.opencode/tools/` 搬迁至此，按 project-structure.md 规则 1）
 - CP验证器: `artifacts/cp_allocation_verifier.ts`
 - Scope验证器: `artifacts/scope_consistency_checker.ts`
 

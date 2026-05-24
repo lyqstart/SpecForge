@@ -6,12 +6,16 @@
 // import type { AgentIdentity } from '@specforge/types';
 
 /**
- * Agent Identity placeholder type
+ * Agent Identity — core identity structure for agent sessions.
+ * Aligned with daemon-core's session/AgentIdentity.ts.
  */
 export interface AgentIdentity {
-  id: string;
-  name: string;
-  type: string;
+  sessionId: string;
+  agentRole: string;
+  workflowRole: string;
+  parentSessionId: string | null;
+  workItemId: string;
+  spawnIntentId: string;
 }
 
 // Export event utilities
@@ -33,8 +37,8 @@ export type EventCategory =
   | 'tool'
   | 'heal'
   | 'modality'
-  | 'migration'
-  | 'system';
+  | 'system'
+  | 'llm';
 
 /**
  * Event interface (Property 30: Multi-sync Readiness)

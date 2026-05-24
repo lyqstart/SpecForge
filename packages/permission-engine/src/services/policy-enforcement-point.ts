@@ -28,15 +28,15 @@ import {
 } from './remote-access-guard';
 
 import { 
-  RuleMergingEngine, 
-  PermissionRequest,
+  RuleMergingEngine,
   MergedPermissionDecision 
 } from './rule-merging-engine';
+
+import { PermissionRequest, PermissionDecision } from '../types';
 
 import { EventLogger } from './event-logger';
 
 import { 
-  PermissionDecisionEventPayload,
   PermissionDeniedEventPayload 
 } from '../types/events';
 
@@ -355,38 +355,24 @@ export class PolicyEnforcementPoint {
       }
     }
 
-    // Step 4: Route to PDP for authorization decision
     const pdpRequest: PermissionRequest = {
-      actor: context.actor,
+      actor: context.actor.agentRole || context.actor.id || 'unknown',
       action: context.action,
-      resource: context.resource,
-      context: context.context as Record<string, unknown> | undefined
+      resource: context.resource.type || 'unknown'
     };
+    if (context.context) {
+      pdpRequest.context = context.context as Record<string, unknown>;
+    }
 
     const decision = this.pdp.evaluate(pdpRequest);
 
     // Step 5: Log permission decision
     if (this.config.logDecisions) {
-      await this.logPermissionDecision({
-        actor: {
-          id: context.actor.id || 'unknown',
-          sessionId: context.actor.sessionId,
-          agentRole: context.actor.agentRole,
-          workflowRole: context.actor.workflowRole,
-          remoteIdentity: context.actor.remoteIdentity
-        },
-        action: context.action,
-        resource: context.resource,
-        decision: decision.allowed ? 'allow' : 'deny',
-        matched_rule: decision.matchedRule,
-        rule_layer: decision.ruleLayer,
-        reason: decision.reason,
-        context: context.context
-      });
+      await this.logPermissionDecision(decision);
     }
 
     // Step 6: Return appropriate response
-    if (!decision.allowed) {
+    if (decision.decision === 'deny') {
       return {
         allowed: false,
         httpStatus: 403,
@@ -394,14 +380,13 @@ export class PolicyEnforcementPoint {
           error: 'Forbidden',
           reason: decision.reason,
           code: 'permission_denied',
-          matchedRule: decision.matchedRule,
-          ruleLayer: decision.ruleLayer
+          matchedRule: decision.matched_rule,
+          ruleLayer: decision.rule_layer
         }),
         errorCode: 'permission_denied',
         reason: decision.reason,
-        matchedRule: decision.matchedRule,
-        ruleLayer: decision.ruleLayer,
-        decision,
+        matchedRule: decision.matched_rule,
+        ruleLayer: decision.rule_layer,
         context
       };
     }
@@ -410,9 +395,8 @@ export class PolicyEnforcementPoint {
       allowed: true,
       httpStatus: 200,
       reason: decision.reason,
-      matchedRule: decision.matchedRule,
-      ruleLayer: decision.ruleLayer,
-      decision,
+      matchedRule: decision.matched_rule,
+      ruleLayer: decision.rule_layer,
       context
     };
   }
@@ -718,9 +702,9 @@ export class PolicyEnforcementPoint {
   /**
    * Log permission decision event
    */
-  private async logPermissionDecision(payload: PermissionDecisionEventPayload): Promise<void> {
+  private async logPermissionDecision(decision: PermissionDecision): Promise<void> {
     try {
-      await this.eventLogger.logPermissionDecision(payload);
+      await this.eventLogger.logPermissionDecision(decision);
     } catch (error) {
       console.error('Failed to log permission decision event:', error);
     }

@@ -1,7 +1,9 @@
 ---
 name: superpowers-writing-plans
 description: 指导 Agent 为每个 task 生成结构化的执行计划
-autoload: false
+autoload: phase_match
+phases:
+  - tasks
 ---
 
 # Superpowers Writing Plans

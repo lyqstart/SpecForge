@@ -109,8 +109,45 @@
 ## Blocked / 开放问题
 
 - ⚠️ `invoke_sub_agent` 平台层偶发 "Invalid model ID" / "BAD_DECRYPT" 错误（~30% 失败率），导致并行派单不可靠。已制定 5 条防孤儿规则写入 steering。
+- 🔧 **OpenCode plugin entry → version-unification 协议迁移遗留项**（2026-05-24）：
+  - **已完成**：`.opencode/tools/lib/sf_specforge_plugin_entry.ts` 决策层从 `satisfiesRange + compareVersion`（老协议）切到 `vu.StartupCompatibilityChecker.check`（新协议数字 schema 比对）；`RuntimeManifest` 接口从 8 字段瘦身为 R2.1 严格 3 字段（`data_schema_version` / `initialized_at` / `updated_at`）；本仓库 `specforge/manifest.json` 已转换为新格式；OpenCode 启动验证返回 4 hooks（full mode）。
+  - **遗留项 1（测试改造）**：`tests/unit/plugins/sf_specforge.test.ts`（2789 行）和 `tests/unit/plugins/sf_specforge_handlers.test.ts`（1261 行）共有 ~50 处测试用 fixture 依赖老协议字段（`required_shared_version_range` / `shared_version` / `runtime_schema_version`），需要重写为新协议字段。规模估算：plugin 主测约 50%-60% 测试要重写（涉及 satisfiesRange / buildInitialRuntimeManifest / Migration registry / determineStartupMode 等 6 个 describe 块）。**当前老 export 名字全部保留为 deprecated stub**，import 不会断裂，但行为已变（譬如 `MIGRATIONS` 是空数组、`recoverCorruptedManifest` 直接重建为新格式而不是恢复老 schema）。先 skip 老协议测试或重写都行，列入 version-unification spec 的下一批 tasks。
+  - **遗留项 2（分发同步）**：`.opencode/package.json` 加了 `@specforge/version-unification` 依赖，但因 Windows EPERM 走 `Copy-Item` 手动部署到 `.opencode/node_modules/`。`sf-installer`（distribution spec）需要补一步：装机时把 vu 的 dist 与 plugin 一起部署到用户项目的 `.opencode/node_modules/@specforge/version-unification/`，否则 plugin 加载 vu 失败会进 noop 模式（plugin 本身已有 noop 兜底，不会崩，但失去 cost tracking / session recording / checkpoint）。
+  - **遗留项 3（vu API 表面）**：`packages/version-unification/src/index.ts` 当前未导出 `UserManifestWriter` / `ProjectManifestWriter` / `ManifestMigrator` / `DegradedReporter` / `readUser/readProject` / 两个 bootstrap 函数。Plugin 当前用 vu 的方式很轻（只读常量 + 调 `StartupCompatibilityChecker.check`），所以未导出不影响；但 cli 当前用 `vu.DegradedReporter.print` 实际访问的是未导出符号（运行时 ESM 解析能拿到，但不规范）。若要严格按规格走，应在 vu index.ts 加导出。
+  - **遗留项 4（路径迁移）**：spec 规定 manifest 路径是 `<root>/.specforge/manifest.json`（带前导点）和 `~/.specforge/manifest.json`，但本仓库与已装机用户的实际路径是 `<root>/specforge/manifest.json` 和 `~/.config/opencode/specforge-manifest.json`。本次改造**保持老路径不动**避免影响装机用户。CLI 用的是新路径，plugin 用的是老路径，**两者尚未对齐**。这是 distribution / version-unification 跨 spec 协调任务。
+  - **遗留项 5（用户级 manifest 迁移）**：本仓库 `~/.config/opencode/specforge-manifest.json` 仍是老格式（`shared_version: "6.0.0-dev"` 等 8 字段）。Plugin 容错读取没问题，但严格按 R1 应清成 5 字段格式。`sf-installer` 升级时需要 in-place 把它转换（vu 的 `ManifestMigrator.inPlaceConvert` 已实现，等接入）。
 
 ## 上次会话摘要
+
+- **日期**: 2026-05-24（OpenCode 启动卡死 + plugin 协议迁移会话）
+- **触发**：用户报告启动 OpenCode 卡死在"V6架构验证结果"，要求"彻底解决，要干净"
+- **诊断（双 bug）**：
+  1. `.opencode/tools/sf_v6_arch_check.ts`（CLI 校验脚本）放错位置，被 OpenCode 当 tool import → 顶层 `main()` + `process.exit()` 杀掉 OpenCode 进程
+  2. `.opencode/tools/lib/sf_specforge_plugin_entry.ts` 仍用老版本协议（`satisfiesRange("6.0.0-dev", ">=3.5.0 <6.0.0")` 直接失败 → degraded 模式），未跟上 version-unification spec（已完成 84/84，但漏接 plugin entry 这条路径）
+- **彻底修复**：
+  1. 工具搬迁：`.opencode/tools/sf_v6_arch_check.ts` → `scripts/sf_v6_arch_check.ts`（5 处活引用同步更新；历史经验文档错误归因修正）
+  2. **plugin 协议迁移到 version-unification**：
+     - 类型层：`RuntimeManifest` 8 字段 → R2.1 严格 3 字段；`UserManifest` 改为 R1 兼容读取
+     - 决策层：`satisfiesRange + compareVersion` 双轨 → `vu.StartupCompatibilityChecker.check` 单一纯函数（dynamic import 桥接 ESM）
+     - IO 层：`readRuntimeManifest` 改为容错读老格式，输出统一新格式；`writeRuntimeManifest` 严格只写 3 字段；`recoverCorruptedManifest` 直接重建为新格式
+     - 历史 export 全部保留为 `@deprecated` stub（`MIGRATIONS`、`satisfiesRange`、`compareVersion` 等），让旧测试 import 不断裂
+     - `executeStartupFlow` 的 `migrate` 分支改为重建 manifest（V6.0 schema=0，无迁移脚本）
+  3. 部署侧：`.opencode/package.json` 加 vu 依赖；Windows 用 Copy-Item 拷贝 vu 到 `.opencode/node_modules/`
+  4. 数据侧：本仓库 `specforge/manifest.json` 改写为新协议 3 字段格式
+- **验证**：
+  - `bun -e "await import(plugin entry).determineStartupMode(...)"` → 返回 `"skip"`（NORMAL_RW）
+  - 直接调 `sf_specforge` plugin 入口 → 注册 4 个 hook（`event` / `experimental.session.compacting` / `tool.execute.before` / `tool.execute.after`）= V6 完整模式
+  - `getDiagnostics` 0 错误
+- **遗留项（已写入 Blocked 区）**：5 条
+  1. plugin 单测约 4050 行需要从老协议 fixture 重写为新协议
+  2. sf-installer 需要把 vu 装机一起部署
+  3. vu index.ts 需要加几个 export 让 cli 调用合规
+  4. 项目级 / 用户级 manifest 路径仍是老路径，未跟随 spec 改成带点格式
+  5. 用户级 manifest 仍是老格式，待 ManifestMigrator 接入升级
+- **任务推进**：本会话不动 V6.1 任务，纯协议迁移收尾
+- **下次入口**：V6.1 self-healing 模块开发（不变）
+
+## 上次会话摘要（前一场）
 
 - **日期**: 2026-05-21（V6.0 发布后，OpenCode 权限修复会话）
 - **触发**：用户报告 OpenCode 权限错误，修复后继续开发
@@ -340,6 +377,48 @@
 ---
 
 ## 变更日志（按日期倒序）
+
+### 2026-05-24（OpenCode 启动卡死 + plugin 协议迁移会话）
+
+**触发**：用户在仓库根启动 OpenCode 后 UI 永远停在"V6架构验证结果"输出。深挖发现两个独立 bug：
+1. `.opencode/tools/sf_v6_arch_check.ts`（CLI 校验脚本，顶层 `main()` + `process.exit()`）被 OpenCode 当 tool import 后杀掉自身进程
+2. `.opencode/tools/lib/sf_specforge_plugin_entry.ts` 仍用 V5 老版本协议（`required_shared_version_range: ">=3.5.0 <6.0.0"` vs `shared_version: "6.0.0-dev"` 直接 mismatch → degraded 模式）。version-unification spec 已实现 84/84，但漏接了 plugin entry 这条路径。
+
+**彻底修复（路径 B：按规格做完）**：
+
+第一阶段（工具搬迁）：
+- 物理搬迁 `.opencode/tools/sf_v6_arch_check.ts` → `scripts/sf_v6_arch_check.ts`
+- 加 `import.meta.main` 守卫做深度防御
+- 更新 5 处活引用路径（steering 速查表 / 集成测试常量 / verify-scope-gate-integration / 父规范 tasks.md）
+- 修经验文档错误归因（`custom-tool-self-contained.md` 原把"sf_v6_arch_check 被 LLM 自动调用"误归为"description 诱导"，真因是放错目录被注册为 tool；改为正确表述，跑 `render-opencode-skill.ts` + `render-kiro-steering.ts` 同步下游 SKILL.md / lessons-injected.md）
+- 历史 artifact 报告路径同步更新 + 加搬迁备注
+
+第二阶段（plugin 协议迁移）：
+- **类型层**：`RuntimeManifest` 8 字段 → R2.1 严格 3 字段（`data_schema_version` / `initialized_at` / `updated_at`）；`UserManifest` 改为 R1 兼容读取（容老格式 `shared_version` / `managed_agents` 等）
+- **决策层**：`determineStartupMode` 重写——`satisfiesRange + compareVersion` 双轨 → `vu.StartupCompatibilityChecker.check` 单一纯函数（dynamic import 桥接 ESM）；vu 加载失败优雅降级 noop
+- **IO 层**：`readRuntimeManifest` 改为容错读老格式，输出统一新格式；`writeRuntimeManifest` 严格只输出 3 字段（防止调用方传入 legacy 字段）；`recoverCorruptedManifest` 直接重建为新格式（不再尝试推断老 schema）
+- **历史 export 全部保留为 `@deprecated` stub**：`MIGRATIONS`（空数组）、`satisfiesRange` / `compareVersion` / `parseVersion` / `normalizeVersion`（保留实现）、`validateMigrationRegistry` / `findMigrationPath` / `executeMigration`（no-op）、`inferRuntimeSchemaVersion`（简化）。让旧测试 import 不断裂。
+- **executeStartupFlow `migrate` 分支**：V6.0 当前 `HIGHEST_KNOWN_SCHEMA = 0`，无迁移脚本。重建 manifest 为最新 schema，等真正出现 schema 演化时改为调用 `vu.MigrationRunner.run()`
+- **部署侧**：`.opencode/package.json` 加 `@specforge/version-unification` 依赖；Windows 上 `bun install` 走 EPERM 失败，用 `Copy-Item` 拷贝 vu dist 到 `.opencode/node_modules/@specforge/version-unification/`
+- **数据侧**：本仓库 `specforge/manifest.json` 改写为新协议 3 字段格式
+
+**验证**：
+- `determineStartupMode(repoRoot)` 返回 `"skip"`（= NORMAL_RW）
+- 直接调 `sf_specforge({ directory, client })` 入口 → 注册 4 个 hook（`event` / `experimental.session.compacting` / `tool.execute.before` / `tool.execute.after`）= **V6 完整模式**
+- `getDiagnostics` 4 个改动文件 0 错误
+- 物理移除 .opencode/tools/sf_v6_arch_check 完成；全仓 grep 旧路径仅剩历史备注
+
+**遗留项**（已写入 Blocked 区，等下批 tasks）：
+1. plugin 单测 ~4050 行需要从老协议 fixture 重写为新协议（`tests/unit/plugins/sf_specforge.test.ts` + `sf_specforge_handlers.test.ts`）
+2. sf-installer 需要把 vu dist 一起部署到用户项目 `.opencode/node_modules/`，否则装机用户进 noop 模式
+3. vu `index.ts` 需要加导出（`UserManifestWriter` / `ProjectManifestWriter` / `ManifestMigrator` / `DegradedReporter` / `readUser/readProject` / 两个 bootstrap）让 cli 调用合规
+4. 项目级 / 用户级 manifest 路径未跟随 spec 改成 `<root>/.specforge/manifest.json` + `~/.specforge/manifest.json` 带点格式（plugin 仍用 `<root>/specforge/` + `~/.config/opencode/`，cli 用新路径，两者尚未对齐）
+5. 用户级 manifest 仍是老格式 8 字段，待 `ManifestMigrator.inPlaceConvert` 接入升级到 R1 严格 5 字段
+
+**任务推进**：本会话不动 V6.1 任务，纯协议迁移 + 经验沉淀。
+**下次入口**：V6.1 self-healing 模块开发（不变）
+
+**本会话累计 failed**: 0
 
 ### 2026-05-21（V6.1 规划启动会话）
 

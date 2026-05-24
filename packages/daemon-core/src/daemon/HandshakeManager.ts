@@ -76,11 +76,11 @@ export class HandshakeManager {
     }
   }
 
-  async writeHandshakeFile(port: number): Promise<void> {
+  async writeHandshake(pid: number, port: number, token: string): Promise<void> {
     const handshake: HandshakeFile = {
-      pid: process.pid,
+      pid,
       port,
-      token: this.generateToken(),
+      token,
       startedAt: Date.now(),
       schemaVersion: this.config.getSchemaVersion(),
     };
@@ -94,7 +94,7 @@ export class HandshakeManager {
     console.log(`Handshake file written to: ${handshakeFile}`);
   }
 
-  async cleanupHandshakeFile(): Promise<void> {
+  async removeHandshake(): Promise<void> {
     const handshakeFile = this.config.getHandshakeFile();
     try {
       await fs.unlink(handshakeFile);
@@ -114,7 +114,7 @@ export class HandshakeManager {
     console.log('Cleaning up handshake file and releasing lock...');
 
     // Cleanup handshake file
-    await this.cleanupHandshakeFile();
+    await this.removeHandshake();
 
     // Release file lock
     if (this.lockFd !== null) {
@@ -135,8 +135,25 @@ export class HandshakeManager {
     console.log('Cleanup completed');
   }
 
-  private generateToken(): string {
+  /**
+   * Generate a cryptographically secure random token
+   * 
+   * @returns 64-character hex string (32 random bytes)
+   */
+  generateToken(): string {
     return randomBytes(32).toString('hex');
+  }
+
+  /**
+   * Read the handshake file and return its contents
+   * 
+   * @returns The full HandshakeFile object
+   * @throws Error if handshake file doesn't exist or is invalid
+   */
+  async readHandshake(): Promise<HandshakeFile> {
+    const handshakeFile = this.config.getHandshakeFile();
+    const content = await fs.readFile(handshakeFile, 'utf-8');
+    return JSON.parse(content) as HandshakeFile;
   }
 
   /**
@@ -146,13 +163,7 @@ export class HandshakeManager {
    * @throws Error if handshake file doesn't exist or is invalid
    */
   async getToken(): Promise<string> {
-    const handshakeFile = this.config.getHandshakeFile();
-    try {
-      const content = await fs.readFile(handshakeFile, 'utf-8');
-      const handshake = JSON.parse(content) as HandshakeFile;
-      return handshake.token;
-    } catch (error) {
-      throw new Error('Handshake file not found or invalid');
-    }
+    const handshake = await this.readHandshake();
+    return handshake.token;
   }
 }

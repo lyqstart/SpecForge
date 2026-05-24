@@ -110,7 +110,7 @@ verify('scope-validate command availability', () => {
 
 // Test 2: sf_v6_arch_check tool exists and runs
 verify('sf_v6_arch_check tool availability', () => {
-  const toolPath = join(PROJECT_ROOT, '.opencode', 'tools', 'sf_v6_arch_check.ts');
+  const toolPath = join(PROJECT_ROOT, 'scripts', 'sf_v6_arch_check.ts');
   
   if (!existsSync(toolPath)) {
     return {
@@ -119,7 +119,7 @@ verify('sf_v6_arch_check tool availability', () => {
     };
   }
   
-  const result = runCommand('bun run .opencode/tools/sf_v6_arch_check.ts --help');
+  const result = runCommand('bun run scripts/sf_v6_arch_check.ts --help');
   
   if (!result.success) {
     return {
@@ -144,7 +144,7 @@ verify('sf_v6_arch_check tool availability', () => {
 
 // Test 3: sf_v6_arch_check includes scope-validate in pipeline
 verify('sf_v6_arch_check includes scope-validate', () => {
-  const result = runCommand('bun run .opencode/tools/sf_v6_arch_check.ts --help');
+  const result = runCommand('bun run scripts/sf_v6_arch_check.ts --help');
   
   if (!result.success) {
     return {
@@ -170,7 +170,7 @@ verify('sf_v6_arch_check includes scope-validate', () => {
 
 // Test 4: sf_v6_arch_check runs successfully with JSON output
 verify('sf_v6_arch_check JSON output', () => {
-  const result = runCommand('bun run .opencode/tools/sf_v6_arch_check.ts --json');
+  const result = runCommand('bun run scripts/sf_v6_arch_check.ts --json');
   
   if (!result.success && result.error.includes('Module not found')) {
     // This is expected if some dependencies are missing

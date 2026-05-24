@@ -5,14 +5,6 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
-import {
-  isValidTransition,
-  getTransitionTable,
-  VALID_TRANSITIONS,
-  BUGFIX_SPEC_TRANSITIONS,
-  DESIGN_FIRST_TRANSITIONS,
-  QUICK_CHANGE_TRANSITIONS,
-} from "../../.opencode/tools/lib/state_machine"
 import { checkWorkflowGuards } from "../../.opencode/tools/lib/sf_state_transition_core"
 import {
   isValidNodeType,
@@ -24,80 +16,6 @@ import { checkVerificationGate } from "../../.opencode/tools/lib/sf_verification
 import { writeFile, rm, mkdir } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
-
-// ============================================================
-// 8.1: 现有 4 个工作流状态机不变
-// ============================================================
-
-describe("回归 8.1: 现有 4 个工作流状态机不变", () => {
-  describe("feature_spec 流转表不变", () => {
-    it("intake → requirements", () => {
-      expect(isValidTransition("intake", "requirements", "feature_spec")).toBe(true)
-    })
-    it("requirements → requirements_gate", () => {
-      expect(isValidTransition("requirements", "requirements_gate", "feature_spec")).toBe(true)
-    })
-    it("requirements_gate → design / requirements / blocked", () => {
-      expect(isValidTransition("requirements_gate", "design", "feature_spec")).toBe(true)
-      expect(isValidTransition("requirements_gate", "requirements", "feature_spec")).toBe(true)
-      expect(isValidTransition("requirements_gate", "blocked", "feature_spec")).toBe(true)
-    })
-    it("development → review (not verification)", () => {
-      expect(isValidTransition("development", "review", "feature_spec")).toBe(true)
-      expect(isValidTransition("development", "verification", "feature_spec")).toBe(false)
-    })
-    it("verification_gate → completed / development / blocked", () => {
-      expect(isValidTransition("verification_gate", "completed", "feature_spec")).toBe(true)
-      expect(isValidTransition("verification_gate", "development", "feature_spec")).toBe(true)
-      expect(isValidTransition("verification_gate", "blocked", "feature_spec")).toBe(true)
-    })
-    it("getTransitionTable returns VALID_TRANSITIONS", () => {
-      expect(getTransitionTable("feature_spec")).toBe(VALID_TRANSITIONS)
-    })
-  })
-
-  describe("bugfix_spec 流转表不变", () => {
-    it("intake → bugfix_analysis", () => {
-      expect(isValidTransition("intake", "bugfix_analysis", "bugfix_spec")).toBe(true)
-    })
-    it("bugfix_analysis → bugfix_gate", () => {
-      expect(isValidTransition("bugfix_analysis", "bugfix_gate", "bugfix_spec")).toBe(true)
-    })
-    it("development → verification (no review)", () => {
-      expect(isValidTransition("development", "verification", "bugfix_spec")).toBe(true)
-      expect(isValidTransition("development", "review", "bugfix_spec")).toBe(false)
-    })
-    it("getTransitionTable returns BUGFIX_SPEC_TRANSITIONS", () => {
-      expect(getTransitionTable("bugfix_spec")).toBe(BUGFIX_SPEC_TRANSITIONS)
-    })
-  })
-
-  describe("feature_spec_design_first 流转表不变", () => {
-    it("intake → design", () => {
-      expect(isValidTransition("intake", "design", "feature_spec_design_first")).toBe(true)
-    })
-    it("design_gate → requirements / design / blocked", () => {
-      expect(isValidTransition("design_gate", "requirements", "feature_spec_design_first")).toBe(true)
-      expect(isValidTransition("design_gate", "design", "feature_spec_design_first")).toBe(true)
-      expect(isValidTransition("design_gate", "blocked", "feature_spec_design_first")).toBe(true)
-    })
-    it("getTransitionTable returns DESIGN_FIRST_TRANSITIONS", () => {
-      expect(getTransitionTable("feature_spec_design_first")).toBe(DESIGN_FIRST_TRANSITIONS)
-    })
-  })
-
-  describe("quick_change 流转表不变", () => {
-    it("intake → quick_tasks", () => {
-      expect(isValidTransition("intake", "quick_tasks", "quick_change")).toBe(true)
-    })
-    it("quick_tasks → development", () => {
-      expect(isValidTransition("quick_tasks", "development", "quick_change")).toBe(true)
-    })
-    it("getTransitionTable returns QUICK_CHANGE_TRANSITIONS", () => {
-      expect(getTransitionTable("quick_change")).toBe(QUICK_CHANGE_TRANSITIONS)
-    })
-  })
-})
 
 // ============================================================
 // 8.2: checkWorkflowGuards 对现有工作流无干扰
@@ -355,15 +273,4 @@ describe("回归 8.5: investigation findings_report_gate 用户接受流程", ()
   })
 })
 
-// ============================================================
-// 8.6: 现有 isValidTransition 默认工作流类型不变
-// ============================================================
 
-describe("回归 8.6: isValidTransition 默认工作流类型（feature_spec）不变", () => {
-  it("不传 workflowType 时默认使用 feature_spec", () => {
-    // feature_spec: intake → requirements
-    expect(isValidTransition("intake", "requirements")).toBe(true)
-    // feature_spec: intake → bugfix_analysis (invalid for feature_spec)
-    expect(isValidTransition("intake", "bugfix_analysis")).toBe(false)
-  })
-})

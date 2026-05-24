@@ -1,33 +1,34 @@
 ---
 name: sf-workflow-investigation
 description: Investigation 工作流的阶段执行协议，包含调查计划、研究执行、调查报告和用户接受确认流程，无开发/审查/验证阶段，知识提取使用 candidate 状态
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - investigation
 ---
 
 # Investigation 工作流执行协议
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
-intake → investigation_plan → investigation_plan_gate → research → findings_report → findings_report_gate → [completed | research（用户要求补充）]
+intake → investigation_plan → investigation_plan_gate → research → findings_report → findings_report_gate → completed
 ```
+<!-- AUTO-GENERATED:END:phase-table -->
 
-**特殊说明：**
-- **无 development/review/verification 阶段**：investigation 工作流不产生代码变更
-- **不同步 KG**：investigation 工作流不建立结构化可追溯链，不触发 KG 同步
-- **用户接受确认**：findings_report_gate pass 后，必须向用户展示报告摘要并获得明确确认，才能流转到 completed
-- **知识提取使用 candidate 状态**：investigation 产出的知识条目默认 status="candidate"，confidence="medium"
-
+<!-- AUTO-GENERATED:START:skill-matrix -->
 ## Skill 绑定矩阵
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
 | intake | —（Orchestrator 自行收集） | — | intake.md |
 | investigation_plan | sf-design | — | investigation_plan.md |
-| investigation_plan_gate | — | — | Gate 判定（**不同步 KG**） |
+| investigation_plan_gate | — | — | Gate 判定（pass→research, fail→investigation_plan） |
 | research | sf-executor | — | 调查数据/中间产物 |
 | findings_report | sf-design | — | findings_report.md |
-| findings_report_gate | — | — | Gate 判定 + 用户确认（**不同步 KG**） |
+| findings_report_gate | — | — | Gate 判定（pass→completed, fail→research） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议
 

@@ -23,7 +23,7 @@
   "include": [
     ".opencode/**/*.ts",
     "tests/**/*.ts"
-  ],
+, "scripts/sf_v6_arch_check.ts"  ],
   "exclude": [
     "node_modules",
     "dist"

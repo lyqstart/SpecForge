@@ -6,13 +6,50 @@
 import type { GateDefinition } from './gate-definition';
 import type { WorkflowState } from './state-machine';
 
-/**
- * Artifact definition
- */
+export type WorkflowKind =
+  | 'feature_spec'
+  | 'bugfix_spec'
+  | 'feature_spec_design_first'
+  | 'quick_change'
+  | 'change_request'
+  | 'refactor'
+  | 'ops_task'
+  | 'investigation';
+
+export interface GateRef {
+  gateName: string;
+  tool: string;
+}
+
 export interface ArtifactDefinition {
-  id: string;
-  type: string;
-  content: string;
+  name: string;
+  path: string;
+  required: boolean;
+}
+
+export interface WorkflowDefinitionFile {
+  id: WorkflowKind;
+  displayName: string;
+  intentKeywords: string[];
+  stateMachine: {
+    initial: string;
+    states: Record<string, {
+      agent: string | null;
+      skills: string[];
+      produces: string | null;
+      gate: {
+        tool: string;
+        composite?: {
+          mode: 'sequential' | 'parallel';
+          failPolicy: 'fail_fast' | 'collect_all';
+          children: GateRef[];
+        };
+      } | null;
+      next: { onPass: string; onFail: string; onBlocked?: string };
+      retry?: { maxAttempts: number; onExhausted: 'blocked' | 'debugger' };
+    }>;
+  };
+  artifacts: ArtifactDefinition[];
 }
 
 /**

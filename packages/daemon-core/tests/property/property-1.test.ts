@@ -23,6 +23,8 @@ import { EventBus } from '../../src/event-bus/EventBus';
 import { WAL } from '../../src/wal/WAL';
 import { SessionRegistry } from '../../src/session/SessionRegistry';
 import { Event } from '../../src/types';
+import * as fs from 'fs/promises';
+import * as fsSync from 'fs';
 
 /**
  * Generate a valid UUID string for testing
@@ -403,6 +405,12 @@ describe('Property 1: Single Source of Truth', () => {
         const lastPersisted = persistedEvents[persistedEvents.length - 1];
         
         expect(lastPersisted.eventId).toBe(lastPublished.eventId);
+
+        // File-level assertion: verify events.jsonl exists on disk and contains the event
+        const eventsPath = wal.getEventsPath();
+        expect(fsSync.existsSync(eventsPath)).toBe(true);
+        const diskContent = await fs.readFile(eventsPath, 'utf-8');
+        expect(diskContent).toContain(lastPublished.eventId);
       }
     });
 
@@ -422,6 +430,14 @@ describe('Property 1: Single Source of Truth', () => {
       // Verify events are ordered by timestamp
       for (let i = 1; i < persistedEvents.length; i++) {
         expect(persistedEvents[i].ts).toBeGreaterThanOrEqual(persistedEvents[i - 1].ts);
+      }
+
+      // File-level assertion: verify events.jsonl on disk contains all persisted eventIds
+      const eventsPath = wal.getEventsPath();
+      expect(fsSync.existsSync(eventsPath)).toBe(true);
+      const diskContent = await fs.readFile(eventsPath, 'utf-8');
+      for (const evt of persistedEvents) {
+        expect(diskContent).toContain(evt.eventId);
       }
     });
   });

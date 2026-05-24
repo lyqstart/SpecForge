@@ -135,7 +135,7 @@ export function validateEventSchema(event: Event): {
   // Check category is valid
   const validCategories = [
     'workflow', 'gate', 'permission', 'session', 'tool', 
-    'heal', 'modality', 'migration', 'system'
+    'heal', 'modality', 'system', 'llm'
   ];
   if (!validCategories.includes(event.category)) {
     errors.push(`Invalid category: ${event.category}`);

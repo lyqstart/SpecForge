@@ -29,7 +29,13 @@ export type {
 } from './state-machine';
 
 // Workflow Definition
-export type { ArtifactDefinition, WorkflowDefinition } from './workflow-definition';
+export type {
+  WorkflowKind,
+  GateRef,
+  ArtifactDefinition,
+  WorkflowDefinitionFile,
+  WorkflowDefinition
+} from './workflow-definition';
 
 // Workflow Instance
 export type { WorkflowEventData, WorkflowInstanceStatus, WorkflowInstance, WorkflowContext } from './workflow-instance';

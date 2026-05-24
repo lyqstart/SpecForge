@@ -15,10 +15,10 @@ import { EventLogger } from './event-logger';
 import { BearerTokenValidator, createBearerTokenValidator, parseAuthorizationHeader } from './bearer-token-validator';
 import { PermissionEngine } from '../index';
 import {
-  PermissionDecisionEventPayload,
   PermissionDeniedEventPayload,
   HardRuleConflictEventPayload
 } from '../types/events';
+import { PermissionDecision } from '../types';
 
 // Import types from daemon-core as type-only imports to avoid implementation coupling
 import type { Event, Subscription } from '../../../daemon-core/src/types';
@@ -322,19 +322,13 @@ export class DaemonIntegration {
 
         // Log the permission decision
         await this.logPermissionDecision({
-          actor: {
-            id: actorId,
-            sessionId: authResult.actor?.sessionId,
-            agentRole: authResult.actor?.agentRole,
-            workflowRole: authResult.actor?.workflowRole
-          },
+          actor: actorId,
           action,
-          resource,
-          decision: decision.allowed ? 'allow' : 'deny',
+          resource: typeof resource === 'string' ? resource : (resource?.type || 'unknown'),
+          decision: decision.allowed ? 'allow' as const : 'deny' as const,
           matched_rule: decision.matchedRule,
           rule_layer: decision.ruleLayer,
-          reason: decision.reason,
-          context: { clientIp: request.clientIp }
+          reason: decision.reason
         });
 
         return {
@@ -391,35 +385,10 @@ export class DaemonIntegration {
   /**
    * Log permission decision event
    */
-  private async logPermissionDecision(payload: {
-    actor: {
-      id: string;
-      sessionId?: string;
-      agentRole?: string;
-      workflowRole?: string;
-    };
-    action: string;
-    resource: { type: string; id?: string; path?: string };
-    decision: 'allow' | 'deny';
-    matched_rule?: string;
-    rule_layer?: 'hard' | 'builtin' | 'user';
-    reason: string;
-    context?: Record<string, unknown>;
-  }): Promise<void> {
-    const eventPayload: PermissionDecisionEventPayload = {
-      actor: payload.actor,
-      action: payload.action,
-      resource: payload.resource,
-      decision: payload.decision,
-      matched_rule: payload.matched_rule || 'unknown',
-      rule_layer: payload.rule_layer || 'builtin',
-      reason: payload.reason,
-      context: payload.context
-    };
-
+  private async logPermissionDecision(decision: PermissionDecision): Promise<void> {
     // Log to Event Logger
     if (this.eventLogger) {
-      await this.eventLogger.logPermissionDecision(eventPayload);
+      await this.eventLogger.logPermissionDecision(decision);
     }
 
     // Also publish to Event Bus for cross-component communication
@@ -429,7 +398,15 @@ export class DaemonIntegration {
         ts: Date.now(),
         projectId: this.config.projectId,
         action: 'permission.evaluated',
-        payload: eventPayload,
+        payload: {
+          actor: decision.actor,
+          action: decision.action,
+          resource: decision.resource,
+          decision: decision.decision,
+          matched_rule: decision.matched_rule,
+          rule_layer: decision.rule_layer,
+          reason: decision.reason
+        },
         metadata: {
           schemaVersion: '1.0',
           source: 'daemon'

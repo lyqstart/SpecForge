@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0",
+  "id": "refactor",
+  "displayName": "Refactor",
+  "intent": "Code refactoring with risk assessment and review for high-risk changes",
+  "intentKeywords": [
+    "refactor",
+    "重构",
+    "restructure",
+    "代码优化",
+    "代码质量",
+    "技术债务",
+    "tech debt",
+    "clean code"
+  ],
+  "stateMachine": {
+    "schema_version": "1.0",
+    "initial": "intake",
+    "states": {
+      "intake": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": "intake.md",
+        "gate": null,
+        "next": "refactor_analysis",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "refactor_analysis": {
+        "schema_version": "1.0",
+        "agent": "sf-design",
+        "skills": [],
+        "produces": "refactor_analysis.md",
+        "gate": null,
+        "next": "refactor_analysis_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "refactor_analysis_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "refactor_analysis_gate",
+          "name": "Refactor Analysis Gate"
+        },
+        "next": { "pass": "refactor_plan", "fail": "refactor_analysis" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "refactor_plan": {
+        "schema_version": "1.0",
+        "agent": "sf-design",
+        "skills": [],
+        "produces": "refactor_plan.md",
+        "gate": null,
+        "next": "refactor_plan_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "refactor_plan_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "refactor_plan_gate",
+          "name": "Refactor Plan Gate"
+        },
+        "next": { "pass": "development", "fail": "refactor_plan" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "development": {
+        "schema_version": "1.0",
+        "agent": "sf-executor",
+        "skills": ["superpowers-subagent-driven-development"],
+        "produces": null,
+        "gate": null,
+        "next": "review",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "review": {
+        "schema_version": "1.0",
+        "agent": "sf-reviewer",
+        "skills": ["superpowers-code-review"],
+        "produces": null,
+        "gate": null,
+        "next": "verification",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "verification": {
+        "schema_version": "1.0",
+        "agent": "sf-verifier",
+        "skills": ["superpowers-verification-before-completion"],
+        "produces": "verification_report",
+        "gate": null,
+        "next": "verification_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "verification_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "verification_gate",
+          "name": "Verification Gate"
+        },
+        "next": { "pass": "completed", "fail": "verification" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "completed": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      },
+      "blocked": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      }
+    }
+  },
+  "artifacts": [
+    { "name": "intake", "path": "specforge/specs/{workItemId}/intake.md", "required": true },
+    { "name": "refactor_analysis", "path": "specforge/specs/{workItemId}/refactor_analysis.md", "required": true },
+    { "name": "refactor_plan", "path": "specforge/specs/{workItemId}/refactor_plan.md", "required": true },
+    { "name": "verification_report", "path": "specforge/specs/{workItemId}/verification_report.md", "required": false }
+  ]
+}

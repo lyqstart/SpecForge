@@ -1,7 +1,9 @@
 ---
 name: superpowers-brainstorming
 description: 指导 Agent 在需求分析时从多维度进行头脑风暴，确保需求讨论充分覆盖业务、技术、运维等关键维度
-autoload: false
+autoload: phase_match
+phases:
+  - requirements
 ---
 
 # Superpowers Brainstorming

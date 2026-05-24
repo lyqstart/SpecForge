@@ -30,6 +30,27 @@ jobs:
         run: bun run scripts/audit-async-resources.ts
         # 脚本发现 error 级别问题时返回 exit code 1，GitHub Actions 自动标记失败
 
+  # ─── 工作流文档同步检查 ──────────────────────────────────────────────────────
+  workflow-docs-sync:
+    name: 工作流文档同步检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      - name: Verify workflow docs in sync with JSON
+        run: bun run check-workflows
+
   # ─── 单元测试 ────────────────────────────────────────────────────────────────
   test:
     name: 单元测试

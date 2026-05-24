@@ -151,7 +151,7 @@ grep -rn 'from.*\.\./\.\./\.\.' .opencode/tools/ && echo "ERROR: 跨目录 impor
 | 安装 SpecForge 后所有 agent 卡死 | tools/ 下有跨目录 import |
 | 只有特定工具调用时卡死 | 该工具的 import 在运行时才解析失败 |
 | OpenCode 启动慢（>10s） | tools/ 下文件太多或 import 链太深 |
-| `sf_v6_arch_check` 被 LLM 自动调用 | 工具 description 太诱导，LLM 看到就想调 |
+| 把 CLI 校验脚本放进 `.opencode/tools/` 导致 OpenCode 启动卡死 | tools/ 下任何 .ts 都会被 import 注册为 tool；如果文件顶层 `main()` + `process.exit()`，import 时立刻把 OpenCode 进程杀掉。CLI 脚本应放 `scripts/`，或加 `import.meta.main` 守卫（前者优先） |
 
 ## 参考
 

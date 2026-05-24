@@ -4,15 +4,16 @@
  * Implements event logging for permission decisions as required by
  * Property 10: Permission Decision Traceability
  * 
- * This service writes events to events.jsonl following WAL semantics.
+ * This service writes events to events.jsonl following WAL semantics
+ * and emits permission.evaluated events to the EventBus.
  * 
  * @specforge/permission-engine
  */
 
 import fs from 'fs';
 import path from 'path';
-import { 
-  PermissionEvent, 
+import {
+  PermissionEvent,
   PermissionDecisionEvent,
   PermissionDeniedEvent,
   HardRuleConflictEvent,
@@ -27,34 +28,37 @@ import {
   HardRuleConflictEventPayload,
   PluginPermissionDeniedEventPayload
 } from '../types/events';
+import { PermissionDecision } from '../types';
+
+export interface EventBusLike {
+  publish(event: { eventId: string; ts: number; projectId?: string; action: string; payload: Record<string, unknown> }): void;
+}
 
 export interface EventLoggerConfig {
   enabled?: boolean;
-  eventsFilePath?: string;  // Path to events.jsonl file (optional for in-memory logging)
-  projectId: string;        // Project identifier for events
-  fsyncEnabled?: boolean;   // Whether to fsync after each write (WAL semantics)
-  maxFileSize?: number;     // Maximum file size before rotation (in bytes)
+  eventsFilePath?: string;
+  projectId: string;
+  fsyncEnabled?: boolean;
+  maxFileSize?: number;
 }
 
 export class EventLogger {
   private config: EventLoggerConfig;
   private fileHandle: fs.promises.FileHandle | null = null;
+  private eventBus: EventBusLike | null;
 
-  constructor(config: EventLoggerConfig) {
-    // Start with defaults
+  constructor(config: EventLoggerConfig, eventBus?: EventBusLike) {
     const defaults = {
       enabled: true,
       fsyncEnabled: true,
-      maxFileSize: 10 * 1024 * 1024, // 10MB default
+      maxFileSize: 10 * 1024 * 1024,
     };
 
-    // Merge config, with config values taking precedence
     this.config = {
       ...defaults,
       ...config
     };
 
-    // Override enabled based on config.enabled if explicitly provided
     if (config.enabled !== undefined) {
       this.config.enabled = config.enabled;
     }
@@ -62,6 +66,8 @@ export class EventLogger {
     if (!this.config.projectId) {
       throw new Error('Project ID is required for event logging');
     }
+
+    this.eventBus = eventBus ?? null;
   }
 
   /**
@@ -73,14 +79,11 @@ export class EventLogger {
     }
 
     try {
-      // Ensure directory exists
       const dir = path.dirname(this.config.eventsFilePath);
       await fs.promises.mkdir(dir, { recursive: true });
 
-      // Open file for appending
       this.fileHandle = await fs.promises.open(this.config.eventsFilePath, 'a');
       
-      // Write initialization event
       await this.logSystemEvent('event_logger.initialized', {
         timestamp: new Date().toISOString(),
         config: {
@@ -91,32 +94,61 @@ export class EventLogger {
       });
     } catch (error) {
       console.error('Failed to initialize event logger:', error);
-      // Continue without event logging if initialization fails
       this.config.enabled = false;
     }
   }
 
   /**
-   * Log a permission decision event
+   * Log a permission decision event.
+   * Accepts a PermissionDecision and emits permission.evaluated to EventBus.
    */
-  async logPermissionDecision(payload: PermissionDecisionEventPayload): Promise<void> {
+  async logPermissionDecision(decision: PermissionDecision): Promise<void> {
     if (!this.config.enabled) {
       return;
     }
 
     try {
-      // Validate payload
-      const validatedPayload = PermissionDecisionEventPayloadSchema.parse(payload);
-      
-      const event: PermissionDecisionEvent = {
-        eventId: this.generateEventId(),
-        ts: Date.now(),
-        projectId: this.config.projectId,
-        action: 'permission.evaluated',
-        payload: validatedPayload
-      };
+      if (this.eventBus) {
+        this.eventBus.publish({
+          eventId: this.generateEventId(),
+          ts: Date.now(),
+          projectId: this.config.projectId,
+          action: 'permission.evaluated',
+          payload: {
+            actor: decision.actor,
+            action: decision.action,
+            resource: decision.resource,
+            decision: decision.decision,
+            matched_rule: decision.matched_rule,
+            rule_layer: decision.rule_layer,
+            reason: decision.reason
+          }
+        });
+      }
 
-      await this.writeEvent(event);
+      if (this.fileHandle) {
+        const payload: PermissionDecisionEventPayload = {
+          actor: { id: decision.actor },
+          action: decision.action,
+          resource: { type: decision.resource },
+          decision: decision.decision,
+          matched_rule: decision.matched_rule,
+          rule_layer: decision.rule_layer,
+          reason: decision.reason
+        };
+
+        const validatedPayload = PermissionDecisionEventPayloadSchema.parse(payload);
+
+        const event: PermissionDecisionEvent = {
+          eventId: this.generateEventId(),
+          ts: Date.now(),
+          projectId: this.config.projectId,
+          action: 'permission.evaluated',
+          payload: validatedPayload
+        };
+
+        await this.writeEvent(event);
+      }
     } catch (error) {
       console.error('Failed to log permission decision event:', error);
     }
@@ -225,25 +257,19 @@ export class EventLogger {
     }
 
     try {
-      // Validate event structure
       BaseEventSchema.parse(event);
 
-      // Convert to JSONL format (one JSON object per line)
       const eventLine = JSON.stringify(event) + '\n';
       
-      // Write to file
       await this.fileHandle.write(eventLine);
       
-      // fsync for WAL semantics (Property 7: WAL Ordering)
       if (this.config.fsyncEnabled) {
         await this.fileHandle.sync();
       }
 
-      // Check file size and rotate if needed
       await this.checkAndRotateFile();
     } catch (error) {
       console.error('Failed to write event:', error);
-      // Don't throw - event logging failures shouldn't break the application
     }
   }
 
@@ -274,20 +300,15 @@ export class EventLogger {
     }
 
     try {
-      // Close current file
       await this.fileHandle.close();
       
-      // Create backup filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backupPath = `${this.config.eventsFilePath}.${timestamp}.bak`;
       
-      // Rename current file to backup
       await fs.promises.rename(this.config.eventsFilePath, backupPath);
       
-      // Reopen file for appending (creates new file)
       this.fileHandle = await fs.promises.open(this.config.eventsFilePath, 'a');
       
-      // Log rotation event
       await this.logSystemEvent('event_logger.file_rotated', {
         timestamp: new Date().toISOString(),
         backupPath,
@@ -295,7 +316,6 @@ export class EventLogger {
       });
     } catch (error) {
       console.error('Failed to rotate event log file:', error);
-      // Try to reopen the file even if rotation fails
       try {
         this.fileHandle = await fs.promises.open(this.config.eventsFilePath!, 'a');
       } catch (reopenError) {
@@ -309,13 +329,10 @@ export class EventLogger {
    * Generate a unique event ID (UUIDv7 style)
    */
   private generateEventId(): string {
-    // Use crypto.randomUUID if available (Node.js 15+)
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return crypto.randomUUID();
     }
     
-    // Fallback for environments without crypto.randomUUID
-    // This is a simplified version - in production, use a proper UUIDv7 library
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 15);
     return `${timestamp.toString(16)}-${random}`;
@@ -371,7 +388,6 @@ export class EventLogger {
       enabled: false,
       projectId
     };
-    // Don't set eventsFilePath when disabled
     return new EventLogger(config);
   }
 
@@ -387,7 +403,6 @@ export class EventLogger {
     
     const mockFileHandle = {
       write: async (data: string) => {
-        // Parse the JSONL line and add to events array
         const event = JSON.parse(data.trim());
         events.push(event);
         return { bytesWritten: data.length };
@@ -403,7 +418,6 @@ export class EventLogger {
       eventsFilePath: ':memory:'
     });
 
-    // Override fileHandle with mock
     (logger as any).fileHandle = mockFileHandle;
 
     return {

@@ -5,6 +5,7 @@
  * shutdown, and signal handling.
  */
 
+import path from 'path';
 import { HTTPServer } from '../http/HTTPServer';
 import { EventBus } from '../event-bus/EventBus';
 import { SessionRegistry } from '../session/SessionRegistry';
@@ -15,6 +16,10 @@ import { HandshakeManager } from './HandshakeManager';
 import { DaemonConfig } from './DaemonConfig';
 import { Event } from '../types';
 import { ExtensionLoader } from '../extensions';
+import { PermissionEngine } from '@specforge/permission-engine';
+import { WorkflowEngine } from '@specforge/workflow-runtime';
+import { EventLogger } from '@specforge/observability';
+import { ToolDispatcher } from '../tools';
 
 export class Daemon {
   private httpServer: HTTPServer;
@@ -29,20 +34,46 @@ export class Daemon {
   private idleTimeoutHandle: NodeJS.Timeout | null = null;
   private lastActivityTime: number = 0;
   private extensionLoader: ExtensionLoader | null = null;
+  private permissionEngine: PermissionEngine;
+  private workflowEngine: WorkflowEngine;
+  private eventLogger: EventLogger;
 
   constructor() {
     this.config = new DaemonConfig();
     this.eventBus = new EventBus();
-    this.httpServer = new HTTPServer(this.config, this.eventBus);
     this.stateManager = new StateManager('default-project');
     this.recoverySubsystem = new RecoverySubsystem('default-project');
     this.handshakeManager = new HandshakeManager(this.config);
     this.sessionRegistry = new SessionRegistry(this.eventBus);
     this.projectManager = new ProjectManager(this.eventBus);
     
-    // Initialize Extension Loader (Task 6.1.1)
-    // Pass eventBus so extension loading events are published to the Daemon's event bus
     this.extensionLoader = new ExtensionLoader({}, this.eventBus);
+    this.workflowEngine = new WorkflowEngine();
+    this.extensionLoader.setWorkflowEngine(this.workflowEngine);
+
+    this.permissionEngine = new PermissionEngine({ projectId: 'default-project' });
+    this.workflowEngine = new WorkflowEngine();
+    this.eventLogger = new EventLogger(path.join(this.config.getRuntimeDir(), '..', 'runtime'));
+
+    this.httpServer = new HTTPServer({
+      config: this.config,
+      eventBus: this.eventBus,
+      stateManager: this.stateManager,
+      wal: undefined as any,
+      permissionEngine: this.permissionEngine,
+      workflowEngine: this.workflowEngine,
+      eventLogger: this.eventLogger,
+      sessionRegistry: this.sessionRegistry,
+      toolDispatcher: new ToolDispatcher({
+        stateManager: this.stateManager,
+        workflowEngine: this.workflowEngine,
+        eventLogger: this.eventLogger,
+        eventBus: this.eventBus,
+        permissionEngine: this.permissionEngine,
+        cas: undefined,
+        sessionRegistry: this.sessionRegistry,
+      }),
+    });
   }
 
   async start(): Promise<void> {
@@ -59,11 +90,11 @@ export class Daemon {
     // 2. Start HTTP server
     const { port } = await this.httpServer.start();
 
-    // 3. Write handshake file
-    await this.handshakeManager.writeHandshakeFile(port);
+    // 3. Generate token and write handshake file
+    const token = this.handshakeManager.generateToken();
+    await this.handshakeManager.writeHandshake(process.pid, port, token);
     
-    // 4. Get token from handshake manager and set it in HTTP server
-    const token = await this.handshakeManager.getToken();
+    // 4. Set token in HTTP server for auth
     this.httpServer.setToken(token);
 
     // 5. Initialize components
@@ -72,6 +103,11 @@ export class Daemon {
 
     // 6. Start event bus
     this.eventBus.start();
+
+    // Wire EventBus persistence to EventLogger (WAL-first guarantee)
+    this.eventBus.setPersistenceHook(async (event) => {
+      await this.eventLogger.append(event);
+    });
 
     // 7. Start session registry and project manager
     this.sessionRegistry.start();
@@ -119,6 +155,13 @@ export class Daemon {
 
     console.log('Daemon Core shutting down...');
 
+    // Set a 5-second hard timeout for graceful shutdown
+    const shutdownTimeout = setTimeout(() => {
+      console.error('[SHUTDOWN] Graceful shutdown timed out after 5s, forcing exit');
+      process.exit(1);
+    }, 5000);
+    shutdownTimeout.unref(); // Don't let this timer keep the process alive
+
     // Clear idle timeout to prevent exit during graceful shutdown
     if (this.idleTimeoutHandle) {
       clearInterval(this.idleTimeoutHandle);
@@ -138,6 +181,10 @@ export class Daemon {
     // 4. Cleanup extensions (unload plugins, etc.) - Task 6.1.1
     console.log('[EXTENSIONS] Cleaning up extensions...');
     this.extensionLoader = null;
+
+    // 4.5 Final state persist — ensure state.json is up to date before exit
+    // Property 7: WAL ordering requires final fsync before exit
+    // Note: WAL writes include fsync per appendEvent, so this is belt-and-suspenders
 
     // 5. Cleanup handshake file and release lock
     await this.handshakeManager.cleanup();

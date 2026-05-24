@@ -1,15 +1,5 @@
-/**
- * sf_cost_report - 读取成本日志并按多维度聚合分析，返回成本报告
- *
- * 支持按 work_item、agent、phase、model 四个维度聚合，
- * 支持按 work_item_id 和 session_id 过滤。
- * 所有操作为只读，不修改源文件。
- *
- * Requirements: 2.1, 2.2, 2.12
- */
-
 import { tool } from "@opencode-ai/plugin"
-import { generateCostReport } from "./lib/sf_cost_report_core"
+import { daemon } from "./lib/thin-client"
 
 export default tool({
   description: "读取成本日志并按多维度聚合分析，返回成本报告",
@@ -23,15 +13,13 @@ export default tool({
       .describe("聚合维度：work_item（默认）、agent、phase、model"),
   },
   async execute(args, context) {
-    const baseDir = context.directory || context.worktree || process.cwd()
-    const result = await generateCostReport(
-      {
-        work_item_id: args.work_item_id,
-        session_id: args.session_id,
-        group_by: args.group_by as any,
-      },
-      baseDir
-    )
+    const result = await daemon.invokeTool("sf_cost_report", args, {
+      sessionID: context.sessionID,
+      agent: context.agent,
+      directory: context.directory,
+      worktree: context.worktree,
+    })
+    if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },
 })

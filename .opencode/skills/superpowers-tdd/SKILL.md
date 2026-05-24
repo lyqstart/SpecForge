@@ -1,7 +1,10 @@
 ---
 name: superpowers-tdd
 description: 指导 Agent 在 Bugfix 开发中遵循 TDD（测试驱动开发）方法论
-autoload: false
+autoload: phase_match
+phases:
+  - fix_design
+  - development
 ---
 
 # Superpowers TDD

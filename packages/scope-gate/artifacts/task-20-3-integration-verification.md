@@ -50,9 +50,11 @@ Options:
 
 **Status**: ✅ PASSED
 
+> 路径备注（2026-05-24 后）：原工具位于 `.opencode/tools/sf_v6_arch_check.ts`，已搬迁至 `scripts/sf_v6_arch_check.ts`（CLI 校验脚本不应放 OpenCode 工具目录，详见 `project-structure.md` 规则 1）。下列验证步骤的相对路径已同步更新。
+
 **Verification Steps**:
-- ✅ Tool exists: `.opencode/tools/sf_v6_arch_check.ts`
-- ✅ Tool runs: `bun run .opencode/tools/sf_v6_arch_check.ts --help`
+- ✅ Tool exists: `scripts/sf_v6_arch_check.ts`
+- ✅ Tool runs: `bun run scripts/sf_v6_arch_check.ts --help`
 - ✅ Help mentions scope-validate integration
 - ✅ Tool produces valid JSON output with `--json` flag
 - ✅ Tool includes scope-validate in its verification pipeline
@@ -180,7 +182,7 @@ Total: 21 pass, 0 fail
 | scope-validate command exists | ✅ | File: `packages/scope-gate/bin/scope-validate.ts` |
 | scope-validate runs successfully | ✅ | Help output works, supports all required options |
 | scope-validate validates directories | ✅ | Can validate codebase and produce JSON/text output |
-| sf_v6_arch_check tool exists | ✅ | File: `.opencode/tools/sf_v6_arch_check.ts` |
+| sf_v6_arch_check tool exists | ✅ | File: `scripts/sf_v6_arch_check.ts` |
 | sf_v6_arch_check runs successfully | ✅ | Help output works, produces valid JSON |
 | scope-validate integrated in pipeline | ✅ | Listed as step 4 in verification pipeline |
 | scope-validate results aggregated | ✅ | Results included in JSON output |
@@ -255,7 +257,7 @@ The implementation satisfies all requirements and maintains consistency with the
 - Verification script: `scripts/verify-scope-gate-integration.ts`
 - Integration tests: `packages/scope-gate/tests/integration/`
 - CLI tool: `packages/scope-gate/bin/scope-validate.ts`
-- Architecture verification tool: `.opencode/tools/sf_v6_arch_check.ts`
+- Architecture verification tool: `scripts/sf_v6_arch_check.ts`
 
 ## Next Steps
 

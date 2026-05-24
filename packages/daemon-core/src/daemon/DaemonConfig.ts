@@ -19,7 +19,7 @@ export class DaemonConfig {
 
   constructor(args: string[] = process.argv) {
     this.runtimeDir = path.join(os.homedir(), '.specforge', 'runtime');
-    this.handshakeFile = path.join(this.runtimeDir, 'daemon.sock.json');
+    this.handshakeFile = path.join(this.runtimeDir, 'handshake.json');
     this.idleTimeoutMs = 30_000; // 30 seconds
     this.maxPayloadSize = 64 * 1024; // 64 KiB
     this.schemaVersion = '1.0';

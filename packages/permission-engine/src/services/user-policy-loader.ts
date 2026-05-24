@@ -58,10 +58,9 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
     // Add default policy path if not specified
     if (!this.config.defaultPolicyPath) {
       this.config.defaultPolicyPath = path.join(
-        process.env.HOME || process.env.USERPROFILE || '.',
-        '.specforge', 
-        'config', 
-        'user-policies'
+        process.cwd(),
+        '.specforge',
+        'permissions.json'
       );
     }
   }
@@ -754,6 +753,35 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
   /**
    * Create a mock policy loader for testing
    */
+  evaluateSimple(
+    actor: string,
+    action: string,
+    resource: string,
+    context?: Record<string, unknown>
+  ): UserPolicyEvaluationResult {
+    const actorObj: Record<string, unknown> = { id: actor, agentRole: actor };
+    const resourceObj: Record<string, unknown> = { type: resource };
+    return this.evaluate(actorObj, action, resourceObj, context);
+  }
+
+  async loadFromPermissionsJson(filePath?: string): Promise<void> {
+    const targetPath = filePath || this.config.defaultPolicyPath;
+    if (!targetPath) return;
+
+    try {
+      const stats = await fs.promises.stat(targetPath);
+      if (stats.isFile()) {
+        await this.loadPolicyFile(targetPath);
+        this.conflictCache = this.detectHardRuleConflicts();
+      }
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return;
+      }
+      throw error;
+    }
+  }
+
   static createMockLoader(
     policies: UserPolicy[] = [], 
     hardRuleEvaluator?: HardRuleEvaluator

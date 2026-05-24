@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "id": "quick_change",
+  "displayName": "Quick Change",
+  "intent": "Lightweight workflow for small, straightforward changes that skip full review",
+  "intentKeywords": [
+    "quick",
+    "快速",
+    "小改动",
+    "minor",
+    "trivial",
+    "quick change",
+    "快速变更",
+    "hotfix",
+    "简单修改"
+  ],
+  "stateMachine": {
+    "schema_version": "1.0",
+    "initial": "intake",
+    "states": {
+      "intake": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": "intake.md",
+        "gate": null,
+        "next": "quick_tasks",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "quick_tasks": {
+        "schema_version": "1.0",
+        "agent": "sf-task-planner",
+        "skills": ["superpowers-writing-plans"],
+        "produces": "tasks.md",
+        "gate": null,
+        "next": "development",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "development": {
+        "schema_version": "1.0",
+        "agent": "sf-executor",
+        "skills": ["superpowers-subagent-driven-development"],
+        "produces": null,
+        "gate": null,
+        "next": "verification",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "verification": {
+        "schema_version": "1.0",
+        "agent": "sf-verifier",
+        "skills": ["superpowers-verification-before-completion"],
+        "produces": "verification_report",
+        "gate": null,
+        "next": "verification_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "verification_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "verification_gate",
+          "name": "Verification Gate"
+        },
+        "next": { "pass": "completed", "fail": "verification" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "completed": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      },
+      "blocked": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      }
+    }
+  },
+  "artifacts": [
+    { "name": "intake", "path": "specforge/specs/{workItemId}/intake.md", "required": true },
+    { "name": "tasks", "path": "specforge/specs/{workItemId}/tasks.md", "required": true },
+    { "name": "verification_report", "path": "specforge/specs/{workItemId}/verification_report.md", "required": false }
+  ]
+}

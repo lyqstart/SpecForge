@@ -1,14 +1,5 @@
-/**
- * sf_batch_verify - 对目标文件执行批量正则验证，返回结构化结果
- *
- * 接受目标文件和检查模式数组，在内部执行 Node.js RegExp 匹配，
- * 返回结构化结果。所有操作为只读，不修改目标文件。
- *
- * Requirements: 2.1, 2.2
- */
-
 import { tool } from "@opencode-ai/plugin"
-import { batchVerify } from "./lib/sf_batch_verify_core"
+import { daemon } from "./lib/thin-client"
 
 export default tool({
   description: "对目标文件执行批量正则验证，返回结构化结果",
@@ -26,8 +17,13 @@ export default tool({
       .describe("检查模式数组"),
   },
   async execute(args, context) {
-    const baseDir = context.directory || context.worktree || process.cwd()
-    const result = await batchVerify(args.target_file, args.checks, baseDir)
+    const result = await daemon.invokeTool("sf_batch_verify", args, {
+      sessionID: context.sessionID,
+      agent: context.agent,
+      directory: context.directory,
+      worktree: context.worktree,
+    })
+    if (typeof result === 'string') return result
     return JSON.stringify(result, null, 2)
   },
 })

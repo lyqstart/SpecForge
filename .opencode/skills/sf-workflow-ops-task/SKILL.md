@@ -1,29 +1,36 @@
 ---
 name: sf-workflow-ops-task
 description: Ops Task 工作流的阶段执行协议，包含运维操作安全要求（回滚方案、触发条件、破坏性命令识别）、用户确认机制和 fail-stop 执行协议
-autoload: false
+autoload: workflow_match
+workflow_types:
+  - ops_task
 ---
 
 # Ops Task 工作流执行协议
 
 ## 工作流阶段总览
 
+<!-- AUTO-GENERATED:START:phase-table -->
 ```
 intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution → verification → verification_gate → completed
 ```
+<!-- AUTO-GENERATED:END:phase-table -->
 
+<!-- AUTO-GENERATED:START:skill-matrix -->
 ## Skill 绑定矩阵
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
 | intake | —（Orchestrator 自行收集） | — | intake.md |
 | ops_plan | sf-design | — | ops_plan.md |
-| ops_plan_gate | — | — | Gate 判定（含安全检查，pass 后同步 KG scope=design） |
+| ops_plan_gate | — | — | Gate 判定（pass→tasks, fail→ops_plan） |
 | tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
-| tasks_gate | — | — | Gate 判定（pass 后同步 KG scope=tasks） |
+| tasks_gate | — | — | Gate 判定（pass→execution, fail→tasks） |
 | execution | sf-executor | — | 运维操作结果 |
 | verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_gate | — | — | Gate 判定（pass 后同步 KG scope=verification） |
+| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
+| completed | — | — | — |
+<!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议
 

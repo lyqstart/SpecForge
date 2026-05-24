@@ -37,6 +37,11 @@
     "vitest": "^3.0.7"
   },
   "dependencies": {
+    "@specforge/permission-engine": "workspace:*",
+    "@specforge/scope-gate": "workspace:*",
+    "@specforge/opencode-adapter": "workspace:*",
+    "@specforge/workflow-runtime": "workspace:*",
+    "@specforge/observability": "workspace:*",
     "@specforge/plugin-loader": "workspace:*",
     "@specforge/types": "workspace:*",
     "uuid": "^11.1.0"

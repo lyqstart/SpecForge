@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0",
+  "id": "feature_spec_design_first",
+  "displayName": "Feature Spec (Design-First)",
+  "intent": "Feature development following design-first approach, ideal for architectural features",
+  "intentKeywords": [
+    "design first",
+    "设计优先",
+    "先设计",
+    "design-first",
+    "架构先行",
+    "architecture first"
+  ],
+  "stateMachine": {
+    "schema_version": "1.0",
+    "initial": "intake",
+    "states": {
+      "intake": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": "intake.md",
+        "gate": null,
+        "next": "design",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "design": {
+        "schema_version": "1.0",
+        "agent": "sf-design",
+        "skills": [],
+        "produces": "design.md",
+        "gate": null,
+        "next": "design_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "design_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "design_gate",
+          "name": "Design Gate"
+        },
+        "next": { "pass": "requirements", "fail": "design" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "requirements": {
+        "schema_version": "1.0",
+        "agent": "sf-requirements",
+        "skills": ["superpowers-brainstorming"],
+        "produces": "requirements.md",
+        "gate": null,
+        "next": "requirements_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "requirements_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "requirements_gate",
+          "name": "Requirements Gate"
+        },
+        "next": { "pass": "tasks", "fail": "requirements" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "tasks": {
+        "schema_version": "1.0",
+        "agent": "sf-task-planner",
+        "skills": ["superpowers-writing-plans"],
+        "produces": "tasks.md",
+        "gate": null,
+        "next": "tasks_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "tasks_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "tasks_gate",
+          "name": "Tasks Gate"
+        },
+        "next": { "pass": "development", "fail": "tasks" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "development": {
+        "schema_version": "1.0",
+        "agent": "sf-executor",
+        "skills": ["superpowers-subagent-driven-development"],
+        "produces": null,
+        "gate": null,
+        "next": "review",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "review": {
+        "schema_version": "1.0",
+        "agent": "sf-reviewer",
+        "skills": ["superpowers-code-review"],
+        "produces": null,
+        "gate": null,
+        "next": "verification",
+        "retry": { "maxAttempts": 2, "onExhausted": "blocked" }
+      },
+      "verification": {
+        "schema_version": "1.0",
+        "agent": "sf-verifier",
+        "skills": ["superpowers-verification-before-completion"],
+        "produces": "verification_report",
+        "gate": null,
+        "next": "verification_gate",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "verification_gate": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "1.0",
+          "type": "simple",
+          "id": "verification_gate",
+          "name": "Verification Gate"
+        },
+        "next": { "pass": "completed", "fail": "verification" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "completed": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      },
+      "blocked": {
+        "schema_version": "1.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      }
+    }
+  },
+  "artifacts": [
+    { "name": "intake", "path": "specforge/specs/{workItemId}/intake.md", "required": true },
+    { "name": "design", "path": "specforge/specs/{workItemId}/design.md", "required": true },
+    { "name": "requirements", "path": "specforge/specs/{workItemId}/requirements.md", "required": true },
+    { "name": "tasks", "path": "specforge/specs/{workItemId}/tasks.md", "required": true },
+    { "name": "verification_report", "path": "specforge/specs/{workItemId}/verification_report.md", "required": false }
+  ]
+}

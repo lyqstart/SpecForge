@@ -148,8 +148,8 @@ export function parseSections(
     const match = pattern.exec(content)
     if (match) {
       const startIdx = match.index + match[0].length
-      // 找到下一个同级或更高级标题
-      const nextHeadingPattern = /^#{1,3}\s+/m
+      // 找到下一个同级或更高级标题（h1/h2），不截断 h3 子标题
+      const nextHeadingPattern = /^#{1,2}\s+/m
       const remaining = content.slice(startIdx)
       const nextMatch = nextHeadingPattern.exec(remaining)
       const sectionContent = nextMatch
