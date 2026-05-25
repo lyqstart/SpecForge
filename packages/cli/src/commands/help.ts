@@ -112,7 +112,7 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
         process.exit(0);
       }
       
-      return argv;
+      return undefined;
     }, true)
     .fail((msg, err, yargs) => {
       const modeSwitch = new ModeSwitch(process.argv.slice(2));
@@ -121,8 +121,8 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
       if (msg) {
         // Parse the error message to see if it's an unknown command
         const unknownCommandMatch = msg.match(/Not enough arguments|Unknown argument|Command .* not found/i);
-        if (unknownCommandMatch && yargs.parsed?.argv._?.[0]) {
-          const input = yargs.parsed.argv._.join(' ');
+        if (unknownCommandMatch && (yargs.parsed as any)?.argv?._?.[0]) {
+          const input = (yargs.parsed as any).argv._.join(' ');
           const suggestions = helpSystem.generateSuggestions(input, modeSwitch);
           console.error(suggestions);
         } else {

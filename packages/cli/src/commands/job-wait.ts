@@ -49,13 +49,20 @@ export async function handleJobCommand(
       }, null, 2));
     } else {
       // Interactive mode: colorful output
-      const output = formatter.formatJobStatus(status, 'interactive');
+      const output = formatter.formatData({
+        jobId: status.jobId,
+        status: status.status,
+        command: status.command,
+        result: status.result,
+        error: status.error,
+        createdAt: status.createdAt,
+        updatedAt: status.updatedAt,
+      });
       console.log(output);
     }
   } catch (error) {
     const errorOutput = formatter.formatError(
-      error instanceof Error ? error : new Error(String(error)),
-      json ? 'json' : 'interactive'
+      error instanceof Error ? error : new Error(String(error))
     );
     console.error(errorOutput);
     process.exit(1);
@@ -118,15 +125,21 @@ export async function waitForJobCompletion(
       }, null, 2));
     } else {
       // Interactive mode output
-      const output = formatter.formatJobStatus(finalStatus, 'interactive');
+      const output = formatter.formatData({
+        jobId: finalStatus.jobId,
+        status: finalStatus.status,
+        result: finalStatus.result,
+        error: finalStatus.error,
+        createdAt: finalStatus.createdAt,
+        updatedAt: finalStatus.updatedAt,
+      });
       console.log(output);
     }
 
     return finalStatus;
   } catch (error) {
     const errorOutput = formatter.formatError(
-      error instanceof Error ? error : new Error(String(error)),
-      json ? 'json' : 'interactive'
+      error instanceof Error ? error : new Error(String(error))
     );
     console.error(errorOutput);
     throw error;

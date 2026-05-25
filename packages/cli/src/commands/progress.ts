@@ -38,8 +38,8 @@ export async function handleProgressDemo(argv: string[]): Promise<void> {
     })
     .parseSync();
 
-  const modeSwitch = new ModeSwitch(argv);
-  const mode = modeSwitch.mode;
+  const modeSwitch = new ModeSwitch({ forceMode: ModeSwitch.detectMode(argv) });
+  const mode = modeSwitch.getMode();
   const demo = args.demo as 'spinner' | 'bar' | 'job';
 
   if (demo === 'spinner') {
@@ -54,7 +54,7 @@ export async function handleProgressDemo(argv: string[]): Promise<void> {
 /**
  * Run spinner demo.
  */
-async function runSpinnerDemo(mode: 'human' | 'json', duration: number): Promise<void> {
+async function runSpinnerDemo(mode: 'interactive' | 'json', duration: number): Promise<void> {
   if (mode === 'json') {
     console.log(JSON.stringify({
       type: 'spinner_demo',
@@ -82,7 +82,7 @@ async function runSpinnerDemo(mode: 'human' | 'json', duration: number): Promise
  * Run progress bar demo.
  */
 async function runProgressBarDemo(
-  mode: 'human' | 'json',
+  mode: 'interactive' | 'json',
   steps: number,
   duration: number
 ): Promise<void> {
@@ -119,7 +119,7 @@ async function runProgressBarDemo(
 /**
  * Run job progress demo.
  */
-async function runJobProgressDemo(mode: 'human' | 'json', duration: number): Promise<void> {
+async function runJobProgressDemo(mode: 'interactive' | 'json', duration: number): Promise<void> {
   const jobId = `demo-job-${Date.now()}`;
   const progress = createJobProgress(mode, jobId);
 

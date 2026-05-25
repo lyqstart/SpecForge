@@ -235,17 +235,25 @@ async function runStartupCheck(
       };
 
     case 'DEGRADED_HIGHER_THAN_KNOWN':
-      vu.DegradedReporter.print('HIGHER_THAN_KNOWN', {
-        observed: mode.observed,
-        highest: mode.highest,
-      });
+      if ((vu as any).DegradedReporter) {
+        (vu as any).DegradedReporter.print('HIGHER_THAN_KNOWN', {
+          observed: mode.observed,
+          highest: mode.highest,
+        });
+      } else {
+        console.error(`Error: Data schema version ${mode.observed} is higher than known version ${mode.highest}. Please upgrade SpecForge.`);
+      }
       return 'exit';
 
     case 'DEGRADED_MIGRATION_FAILED':
-      vu.DegradedReporter.print('MIGRATION_FAILED', {
-        pair: mode.pair,
-        logPath: mode.logPath,
-      });
+      if ((vu as any).DegradedReporter) {
+        (vu as any).DegradedReporter.print('MIGRATION_FAILED', {
+          pair: mode.pair,
+          logPath: mode.logPath,
+        });
+      } else {
+        console.error(`Error: Migration failed. See log: ${mode.logPath}`);
+      }
       return 'exit';
   }
 }
@@ -271,7 +279,7 @@ function applyVersionLeakFilter(): void {
 /**
  * Parse command line arguments with enhanced help system
  */
-export function parseArgs(argv: string[] = process.argv): Argv<GlobalOptions> {
+export function parseArgs(argv: string[] = hideBin(process.argv)): Argv<GlobalOptions> {
   return yargs(argv)
     .options({
       json: {
@@ -779,7 +787,7 @@ function addJobCommands(yargsInstance: Argv): Argv {
  * 4. Apply version-leak-filter to stdout/stderr
  * 5. Execute command
  */
-export async function runCli(argv: string[] = process.argv): Promise<void> {
+export async function runCli(argv: string[] = hideBin(process.argv)): Promise<void> {
   const parser = parseArgs(argv);
   
   // Add all command groups with help system integrated
@@ -842,7 +850,7 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
     return;
   }
 
-  if ('migrate' in startupResult) {
+  if (startupResult !== 'proceed' && typeof startupResult === 'object' && 'migrate' in startupResult) {
     // Migration required - run migration chain
     let vu: typeof import('@specforge/version-unification');
     try {
@@ -853,7 +861,7 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
       return;
     }
 
-    const { from, to, projectDir: migrateProjectDir } = startupResult.migrate;
+    const { from, to, projectDir: migrateProjectDir } = (startupResult as { migrate: { from: number; to: number; projectDir: string } }).migrate;
     const runner = new vu.MigrationRunner(migrateProjectDir);
 
     try {

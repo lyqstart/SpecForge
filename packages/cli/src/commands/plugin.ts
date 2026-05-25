@@ -475,7 +475,7 @@ export async function runPluginCommand(
       },
       async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        await commandInfo(argv, modeSwitch);
+        await commandInfo(argv as any, modeSwitch);
       }
     )
     .command(
@@ -495,7 +495,7 @@ export async function runPluginCommand(
       },
       async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        await commandInstall(argv, modeSwitch);
+        await commandInstall(argv as any, modeSwitch);
       }
     )
     .demandCommand(1, 'Specify a subcommand: list, info, or install')

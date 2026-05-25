@@ -532,7 +532,7 @@ export async function runSpecCommand(
       },
       async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        await commandStart(argv, modeSwitch);
+        await commandStart(argv as any, modeSwitch);
       }
     )
     .command(
@@ -553,7 +553,7 @@ export async function runSpecCommand(
       },
       async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        await commandList(argv, modeSwitch);
+        await commandList(argv as any, modeSwitch);
       }
     )
     .command(
@@ -575,7 +575,7 @@ export async function runSpecCommand(
       },
       async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        await commandStatus(argv, modeSwitch);
+        await commandStatus(argv as any, modeSwitch);
       }
     )
     .demandCommand(1, 'Specify a subcommand: start, list, or status')

@@ -207,7 +207,7 @@ export function addDaemonCommands(yargsInstance: Argv): Argv {
           },
           (argv: Arguments) => {
             const modeSwitch = new ModeSwitch(argv);
-            commandStart(argv, modeSwitch);
+            commandStart(argv as any, modeSwitch);
           }
         )
         .command(
@@ -294,7 +294,7 @@ export async function runDaemonCommand(
       },
       (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        commandStart(argv, modeSwitch);
+        commandStart(argv as any, modeSwitch);
       }
     )
     .command(

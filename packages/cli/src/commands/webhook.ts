@@ -259,7 +259,7 @@ export function addWebhookCommands(yargsInstance: Argv): Argv {
           },
           async (argv: Arguments) => {
             const modeSwitch = new ModeSwitch(argv);
-            await commandRegister(argv, modeSwitch);
+            await commandRegister(argv as any, modeSwitch);
           }
         )
         .command(
@@ -284,7 +284,7 @@ export function addWebhookCommands(yargsInstance: Argv): Argv {
           },
           async (argv: Arguments) => {
             const modeSwitch = new ModeSwitch(argv);
-            await commandDelete(argv, modeSwitch);
+            await commandDelete(argv as any, modeSwitch);
           }
         )
         .demandCommand(1, 'Specify a webhook subcommand (register, list, delete)');
@@ -325,7 +325,7 @@ export async function runWebhookCommand(
       },
       async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        await commandRegister(argv, modeSwitch);
+        await commandRegister(argv as any, modeSwitch);
       }
     )
     .command(
@@ -350,7 +350,7 @@ export async function runWebhookCommand(
       },
       async (argv: Arguments) => {
         const modeSwitch = new ModeSwitch(argv);
-        await commandDelete(argv, modeSwitch);
+        await commandDelete(argv as any, modeSwitch);
       }
     )
     .demandCommand(1, 'Specify a subcommand: register, list, or delete')
