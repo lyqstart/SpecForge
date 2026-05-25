@@ -4,6 +4,24 @@
   "description": "Service Management subsystem for SpecForge V6 - OS service lifecycle management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./shutdown": {
+      "bun": "./src/shutdown/index.ts",
+      "import": "./dist/shutdown/index.js",
+      "require": "./dist/shutdown/index.js",
+      "types": "./dist/shutdown/index.d.ts"
+    },
+    "./src/shutdown": {
+      "import": "./src/shutdown/index.ts",
+      "types": "./src/shutdown/index.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
