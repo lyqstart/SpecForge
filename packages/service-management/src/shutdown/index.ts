@@ -11,7 +11,11 @@ export {
   type ShutdownTaskResult,
 } from './graceful-shutdown-handler.js';
 
-export type { ShutdownPriority, ShutdownTask, ShutdownTaskEntry } from '../types/shutdown.js';
+export type { ShutdownTask, ShutdownTaskEntry } from '../types/shutdown.js';
+
+// Re-export ShutdownPriority as both type and value (TypeScript merging trick)
+import type { ShutdownPriority as ShutdownPriorityType } from '../types/shutdown.js';
+export type ShutdownPriority = ShutdownPriorityType;
 
 /**
  * ShutdownPriority constants — use these instead of raw strings

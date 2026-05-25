@@ -123,6 +123,15 @@ export class ReconnectingDaemonClient implements Disposable {
   private cumulativeBackoffMs = 0;
   private retryCount = 0;
   private pendingEvent: { type: string; data: unknown } | null = null;
+  /**
+   * Cached handshake (port + token).
+   * Invalidated when:
+   * - postEvent fails (daemon may have restarted with new port/token)
+   * - cache is null (first call or after invalidation)
+   *
+   * Successful POSTs reuse the cached handshake to avoid disk reads.
+   */
+  private cachedHandshake: HandshakeFile | null = null;
 
   constructor(options: ReconnectingDaemonClientOptions = {}) {
     // Constructor has NO side effects (JS1)
@@ -140,6 +149,12 @@ export class ReconnectingDaemonClient implements Disposable {
   /**
    * Posts an event to the daemon.
    * NEVER throws - all errors are returned in PostResult.
+   *
+   * Handshake caching strategy:
+   * - First call reads handshake.json from disk and caches it
+   * - Subsequent successful calls reuse the cache (no disk read)
+   * - On POST failure, cache is invalidated and refreshed on next attempt
+   *   (this catches daemon restart with new port/token)
    */
   async postEvent(type: string, data: unknown): Promise<PostResult> {
     // Check disposed state first
@@ -153,11 +168,17 @@ export class ReconnectingDaemonClient implements Disposable {
       return { ok: false, dropped: true, reason: "degraded" };
     }
 
-    // Try to read handshake and post immediately (first attempt)
-    const handshake = await readHandshake(this.options.handshakePath);
+    // Use cached handshake if available, otherwise read from disk
+    let handshake = this.cachedHandshake;
+    if (!handshake) {
+      handshake = await readHandshake(this.options.handshakePath);
+      if (handshake) {
+        this.cachedHandshake = handshake;
+      }
+    }
 
     if (!handshake) {
-      // No handshake - start backoff
+      // No handshake on disk - start backoff
       return this.startBackoff(type, data);
     }
 
@@ -167,12 +188,14 @@ export class ReconnectingDaemonClient implements Disposable {
     const success = await postEventToDaemon(url, handshake.token, type, data);
 
     if (success) {
-      // Reset backoff state on success
+      // Reset backoff state on success, keep cache valid
       this.resetBackoff();
       return { ok: true, dropped: false, reason: "success" };
     }
 
-    // Failed - start backoff loop
+    // Failed - invalidate cache (daemon may have restarted with new port/token)
+    // and start backoff loop. Next retry will re-read handshake from disk.
+    this.cachedHandshake = null;
     return this.startBackoff(type, data);
   }
 
@@ -254,7 +277,9 @@ export class ReconnectingDaemonClient implements Disposable {
   }
 
   /**
-   * Retries the pending event with fresh handshake data
+   * Retries the pending event with fresh handshake data.
+   * Always re-reads handshake from disk (cache was invalidated on the failure
+   * that triggered backoff), updates cache on success.
    */
   private async retryPendingEvent(): Promise<PostResult> {
     if (!this.pendingEvent || this.disposed || this.degraded) {
@@ -266,7 +291,7 @@ export class ReconnectingDaemonClient implements Disposable {
 
     const { type, data } = this.pendingEvent;
 
-    // Re-read handshake for fresh port/token
+    // Re-read handshake for fresh port/token (cache was invalidated)
     const handshake = await readHandshake(this.options.handshakePath);
 
     if (!handshake) {
@@ -288,6 +313,8 @@ export class ReconnectingDaemonClient implements Disposable {
     const success = await postEventToDaemon(url, handshake.token, type, data);
 
     if (success) {
+      // Update cache with fresh handshake on successful reconnect
+      this.cachedHandshake = handshake;
       this.resetBackoff();
       this.pendingEvent = null;
       return { ok: true, dropped: false, reason: "success" };
@@ -362,6 +389,7 @@ export class ReconnectingDaemonClient implements Disposable {
     this.disposed = true;
     this.clearBackoffTimer();
     this.pendingEvent = null;
+    this.cachedHandshake = null;
   }
 
   /**

@@ -7,8 +7,24 @@
 
 // Re-export all public APIs
 
-// Types
-export * from './types/index.js';
+// Types (excluding ShutdownPriority which is exported as both type+value from shutdown/)
+export type {
+  ServiceState,
+  ServiceInstallSpec,
+  ServiceStatus,
+  ServiceUnitMetadata,
+  EnvironmentPrecheck,
+  PrecheckIssue,
+  OrchestrationResult,
+  NssmCommand,
+  ShutdownTask,
+  ShutdownTaskEntry,
+  HandshakeFile,
+  HealthCheckResponse,
+  ServicesStatusJsonPayload,
+  ServiceStatusJsonEntry,
+  ServiceOperationJsonPayload,
+} from './types/index.js';
 
 // Unit Generator (Phase 2)
 export * from './unit-generator/index.js';
@@ -20,6 +36,7 @@ export * from './service-manager/index.js';
 export * from './orchestrator/index.js';
 
 // Graceful Shutdown (Phase 6 - Task 6.1)
+// ShutdownPriority is exported here as both type and value
 export * from './shutdown/index.js';
 
 // Plugin Reconnecting Daemon Client (Phase 7 - Task 7.1)
