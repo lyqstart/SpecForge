@@ -108,11 +108,13 @@ export interface ProjectState {
 }
 
 export interface HandshakeFile {
+  schema_version: string;
   pid: number;
   port: number;
   token: string;
   startedAt: number;
-  schemaVersion: string;
+  version: string;
+  serviceMode: boolean;
 }
 
 export interface Lock {

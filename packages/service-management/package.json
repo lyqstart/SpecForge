@@ -1,0 +1,50 @@
+{
+  "name": "@specforge/service-management",
+  "version": "0.1.0",
+  "description": "Service Management subsystem for SpecForge V6 - OS service lifecycle management",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write src tests",
+    "format:check": "prettier --check src tests",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": [
+    "specforge",
+    "service-management",
+    "systemd",
+    "nssm",
+    "v6"
+  ],
+  "author": "SpecForge Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
+    "@vitest/coverage-v8": "^3.0.7",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "fast-check": "^4.8.0",
+    "prettier": "^3.5.3",
+    "proper-lockfile": "^4.1.2",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  },
+  "dependencies": {
+    "@specforge/daemon-core": "workspace:*",
+    "@specforge/configuration": "workspace:*",
+    "@specforge/cli": "workspace:*",
+    "@specforge/types": "workspace:*",
+    "zod": "^3.22.4"
+  },
+  "schema_version": "1.0"
+}

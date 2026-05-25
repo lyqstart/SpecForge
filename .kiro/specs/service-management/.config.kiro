@@ -1,0 +1,10 @@
+{
+  "specId": "service-management",
+  "workflowType": "design-first",
+  "specType": "feature",
+  "scopeTag": "p0",
+  "parentSpec": "v6-architecture-overview",
+  "wave": "v6.1",
+  "createdAt": "2026-05-21",
+  "designDetail": "both"
+}

@@ -9,7 +9,6 @@
  * - /health endpoint with uptime tracking
  * - SSE long-connection with heartbeat and EventBus integration
  * - Global error handling with DaemonError
- * - Idle timeout for non-detached mode
  * - CORS support for OPTIONS preflight
  * - Request body JSON parsing (400 on invalid JSON)
  */
@@ -84,10 +83,8 @@ export class HTTPServer {
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private readonly SSE_HEARTBEAT_INTERVAL = 30_000;
 
-  // Idle timeout
-  private idleTimer: ReturnType<typeof setTimeout> | null = null;
-
-  // Global error handler references (for cleanup)
+  // SSE
+  private sseClients: Map<string, http.ServerResponse> = new Map();
   private boundUncaughtHandler: ((err: Error) => void) | null = null;
   private boundUnhandledRejectionHandler: ((reason: unknown) => void) | null = null;
 
@@ -135,7 +132,6 @@ export class HTTPServer {
         if (address && typeof address === 'object') {
           this.port = address.port;
           this.installGlobalErrorHandlers();
-          this.refreshIdleTimeout();
           resolve({ port: this.port });
         } else {
           reject(new Error('Failed to get server port'));
@@ -147,7 +143,6 @@ export class HTTPServer {
   }
 
   async stop(): Promise<void> {
-    this.clearIdleTimeout();
     this.stopHeartbeat();
     this.cleanupSse();
     this.uninstallGlobalErrorHandlers();
@@ -180,6 +175,7 @@ export class HTTPServer {
   private registerDefaultRoutes(): void {
     // Exact match routes
     this.addExactRoute('GET', '/health', this.handleHealth.bind(this));
+    this.addExactRoute('GET', '/api/v1/healthz', this.handleHealthZ.bind(this));
     this.addExactRoute('GET', '/events', this.handleSSE.bind(this));
     this.addExactRoute('GET', '/', this.handleRoot.bind(this));
 
@@ -306,9 +302,6 @@ export class HTTPServer {
         return;
       }
 
-      // Reset idle timeout on each request
-      this.refreshIdleTimeout();
-
       // Execute handler
       const result = matched.handler(req, res, bodyString, matched.match);
       if (result instanceof Promise) {
@@ -330,7 +323,8 @@ export class HTTPServer {
   }
 
   private isPublicEndpoint(pathname: string): boolean {
-    return pathname === '/health';
+    // Public endpoints: /health, /api/v1/healthz
+    return pathname === '/health' || pathname === '/api/v1/healthz';
   }
 
   // ── Auth ──
@@ -513,35 +507,6 @@ export class HTTPServer {
     }
   }
 
-  // ── Idle Timeout ──
-
-  private refreshIdleTimeout(): void {
-    if (this.config.isDetached()) {
-      return;
-    }
-    this.clearIdleTimeout();
-    this.idleTimer = setTimeout(() => {
-      console.log('[IDLE] No requests for 30s, shutting down');
-      this.stop().then(() => {
-        process.exit(0);
-      }).catch((err: unknown) => {
-        console.error('[IDLE] Error during idle shutdown:', err);
-        process.exit(1);
-      });
-    }, this.config.getIdleTimeoutMs());
-    // Allow Node to exit if only the idle timer is keeping the process alive
-    if (this.idleTimer && typeof this.idleTimer === 'object') {
-      this.idleTimer.unref();
-    }
-  }
-
-  private clearIdleTimeout(): void {
-    if (this.idleTimer !== null) {
-      clearTimeout(this.idleTimer);
-      this.idleTimer = null;
-    }
-  }
-
   // ── SSE ──
 
   private handleSSE(req: http.IncomingMessage, res: http.ServerResponse): void {
@@ -667,6 +632,57 @@ export class HTTPServer {
       version: '1.0.0',
       uptime: uptimeSeconds,
     }));
+  }
+
+  /**
+   * Handle /api/v1/healthz endpoint
+   * Returns detailed health check response for service management
+   * Public endpoint (no auth required) - used by service managers for health monitoring
+   */
+  private handleHealthZ(_req: http.IncomingMessage, res: http.ServerResponse): void {
+    const now = Date.now();
+    const uptimeSeconds = Math.floor((now - this.startTime) / 1000);
+    
+    // Get active client count from session registry if available
+    let activeClients = 0;
+    let pendingEvents = 0;
+    let lastEventTs: number | null = null;
+    
+    if (this.deps.sessionRegistry) {
+      try {
+        activeClients = (this.deps.sessionRegistry as any).getActiveSessionCount?.() ?? 0;
+      } catch {
+        // Ignore errors
+      }
+    }
+    
+    if (this.eventBus) {
+      try {
+        const bufferedEvents = this.eventBus.getBufferedEvents();
+        pendingEvents = bufferedEvents.length;
+        if (bufferedEvents.length > 0) {
+          lastEventTs = bufferedEvents[bufferedEvents.length - 1]!.ts;
+        }
+      } catch {
+        // Ignore errors
+      }
+    }
+
+    // Determine status based on current state
+    let status: 'ok' | 'degraded' | 'shutting-down' = 'ok';
+    // Note: isShuttingDown would need to be tracked by the daemon
+    
+    this.sendJsonResponse(res, 200, {
+      schema_version: '1.0',
+      status,
+      pid: process.pid,
+      version: '1.0.0',
+      startedAt: this.startTime,
+      uptimeSec: uptimeSeconds,
+      activeClients,
+      pendingEvents,
+      lastEventTs,
+    });
   }
 
   private handleRoot(_req: http.IncomingMessage, res: http.ServerResponse): void {

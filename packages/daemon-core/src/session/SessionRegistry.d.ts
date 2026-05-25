@@ -12,6 +12,17 @@
 import { EventBus } from '../event-bus/EventBus';
 import { AgentIdentity } from './AgentIdentity';
 /**
+ * SessionSnapshot for daemon restart reconnect support.
+ * Contains the full serializable state of the registry at a point in time.
+ */
+export interface SessionSnapshot {
+    pendingSessions: Array<[string, AgentIdentity]>;
+    activeSessions: Array<[string, AgentIdentity]>;
+    historySessions: Array<[string, AgentIdentity]>;
+    projectBindings: Array<[string, string]>;
+    timestamp: number;
+}
+/**
  * Session Registry
  *
  * Central registry for managing agent sessions throughout their lifecycle.
@@ -30,8 +41,11 @@ export declare class SessionRegistry {
     private pendingSessions;
     private activeSessions;
     private historySessions;
+    private projectBindings;
     private subscription;
-    constructor(eventBus: EventBus);
+    private sessionTimeoutMs;
+    private cleanupTimerId;
+    constructor(eventBus: EventBus, sessionTimeoutMs?: number);
     /**
      * Start the registry
      * Subscribes to session events from EventBus
@@ -39,9 +53,28 @@ export declare class SessionRegistry {
     start(): void;
     /**
      * Stop the registry
-     * Unsubscribes from EventBus
+     * Unsubscribes from EventBus and stops the cleanup timer
      */
     stop(): void;
+    /**
+     * Start the periodic cleanup timer for expired sessions
+     *
+     * Runs cleanupExpiredSessions() every 60 seconds.
+     * Automatically called on first registerPending if not already started.
+     */
+    startCleanup(): void;
+    /**
+     * Stop the periodic cleanup timer
+     */
+    stopCleanup(): void;
+    /**
+     * Run cleanup now: move expired pending/active sessions to history
+     *
+     * A session is considered expired if it has been inactive for longer
+     * than sessionTimeoutMs (configurable in constructor, default 30 min).
+     * Only pending and active sessions are affected; history sessions are kept.
+     */
+    cleanupExpiredSessions(): number;
     /**
      * Register a new pending session
      *
@@ -140,6 +173,58 @@ export declare class SessionRegistry {
         active: number;
         history: number;
     };
+    /**
+     * List all sessions across all states (pending, active, history)
+     *
+     * @returns Array of all AgentIdentity objects
+     */
+    listSessions(): AgentIdentity[];
+    /**
+     * Get a session by sessionId across all states
+     *
+     * Convenience alias for lookupBySessionId.
+     *
+     * @param sessionId Session ID to look up
+     * @returns The AgentIdentity if found, null otherwise
+     */
+    getSession(sessionId: string): AgentIdentity | null;
+    /**
+     * Bind a project to a session
+     *
+     * Associates a project path with a session and updates the session's
+     * projectId metadata. The projectId is derived from the last segment
+     * of the project path.
+     *
+     * @param sessionId Session ID to bind
+     * @param projectPath Project filesystem path
+     * @returns true if the session was found and bound, false otherwise
+     */
+    bindProject(sessionId: string, projectPath: string): boolean;
+    /**
+     * Get the project path bound to a session
+     *
+     * @param sessionId Session ID
+     * @returns The project path if bound, null otherwise
+     */
+    getProjectPath(sessionId: string): string | null;
+    /**
+     * Get a snapshot of all sessions for daemon restart reconnect support
+     *
+     * Returns the full serializable state of the registry.
+     * Can be restored via restoreFromSnapshot().
+     *
+     * @returns SessionSnapshot object
+     */
+    getSnapshot(): SessionSnapshot;
+    /**
+     * Restore session state from a snapshot
+     *
+     * Used for daemon restart reconnect support.
+     * Replaces all current state with the snapshot data.
+     *
+     * @param snapshot SessionSnapshot to restore from
+     */
+    restoreFromSnapshot(snapshot: SessionSnapshot): void;
     /**
      * Handle session events from EventBus
      *

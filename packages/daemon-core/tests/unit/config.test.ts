@@ -30,13 +30,6 @@ describe('DaemonConfig', () => {
       expect(handshakeFile).toContain('daemon.sock.json');
     });
 
-    it('should set idle timeout to 30 seconds', () => {
-      const config = new DaemonConfig();
-      const idleTimeout = config.getIdleTimeoutMs();
-      
-      expect(idleTimeout).toBe(30_000);
-    });
-
     it('should set max payload size to 64 KiB', () => {
       const config = new DaemonConfig();
       const maxPayload = config.getMaxPayloadSize();
@@ -53,28 +46,28 @@ describe('DaemonConfig', () => {
   });
 
   describe('parseStartOptions', () => {
-    it('should detect --detach flag', () => {
-      const config = new DaemonConfig(['node', 'daemon.js', '--detach']);
+    it('should detect --foreground flag', () => {
+      const config = new DaemonConfig(['node', 'daemon.js', '--foreground']);
       
-      expect(config.isDetached()).toBe(true);
+      expect(config.isForeground()).toBe(true);
     });
 
-    it('should detect -d flag', () => {
-      const config = new DaemonConfig(['node', 'daemon.js', '-d']);
+    it('should detect --no-foreground flag', () => {
+      const config = new DaemonConfig(['node', 'daemon.js', '--no-foreground']);
       
-      expect(config.isDetached()).toBe(true);
+      expect(config.isForeground()).toBe(false);
     });
 
-    it('should default to not detached', () => {
+    it('should default to foreground', () => {
       const config = new DaemonConfig(['node', 'daemon.js']);
       
-      expect(config.isDetached()).toBe(false);
+      expect(config.isForeground()).toBe(true);
     });
 
     it('should handle multiple arguments', () => {
-      const config = new DaemonConfig(['node', 'daemon.js', '--verbose', '--detach', '--port', '3000']);
+      const config = new DaemonConfig(['node', 'daemon.js', '--verbose', '--foreground', '--port', '3000']);
       
-      expect(config.isDetached()).toBe(true);
+      expect(config.isForeground()).toBe(true);
     });
   });
 

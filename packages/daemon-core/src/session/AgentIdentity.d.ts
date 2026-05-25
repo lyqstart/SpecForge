@@ -33,6 +33,11 @@ export interface AgentIdentity {
      */
     workItemId: string;
     /**
+     * Project ID this session is associated with
+     * null if not yet bound to a project
+     */
+    projectId: string | null;
+    /**
      * Spawn intent ID from client
      * Used for binding pending sessions to real sessions
      */
@@ -56,7 +61,7 @@ export interface AgentIdentity {
 /**
  * Create a new AgentIdentity in pending state
  */
-export declare function createPendingIdentity(agentRole: string, workflowRole: string, workItemId: string, spawnIntentId: string, parentSessionId?: string | null): AgentIdentity;
+export declare function createPendingIdentity(agentRole: string, workflowRole: string, workItemId: string, spawnIntentId: string, parentSessionId?: string | null, projectId?: string | null): AgentIdentity;
 /**
  * Activate a pending session
  */

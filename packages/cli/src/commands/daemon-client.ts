@@ -2,7 +2,7 @@
  * Daemon Management Commands
  * 
  * Provides commands to manage the SpecForge daemon:
- * - start: Start the daemon (optionally detached)
+ * - start: Start the daemon (foreground mode by default)
  * - status: Check daemon health/status
  * - stop: Stop the daemon
  * 
@@ -67,7 +67,7 @@ function getDaemonClient(): DaemonClient {
  */
 export function commandStart(
   argv: Arguments<{
-    detach: boolean;
+    foreground: boolean;
     bind: string;
   }>,
   modeSwitch: ModeSwitch
@@ -81,7 +81,7 @@ export function commandStart(
       message: string;
       pid?: number;
     }>('/api/daemon/start', {
-      detach: argv.detach,
+      foreground: argv.foreground,
       bind: argv.bind,
     });
 
@@ -90,14 +90,7 @@ export function commandStart(
         if (modeSwitch.isJson()) {
           console.log(modeSwitch.formatData(result));
         } else {
-          if (argv.detach) {
-            console.log(modeSwitch.formatSuccess('Daemon started in background'));
-            if (result.pid) {
-              console.log(`PID: ${result.pid}`);
-            }
-          } else {
-            console.log(modeSwitch.formatSuccess(result.message));
-          }
+          console.log(modeSwitch.formatSuccess(result.message));
         }
       })
       .catch((err) => {
@@ -200,11 +193,11 @@ export function addDaemonCommands(yargsInstance: Argv): Argv {
           'Start the daemon',
           (yargsInstance: Argv) => {
             return yargsInstance
-              .option('detach', {
+              .option('foreground', {
                 type: 'boolean',
-                describe: 'Run in background (detach from terminal)',
-                alias: 'd',
-                default: false,
+                describe: 'Run in foreground (default: true)',
+                alias: 'f',
+                default: true,
               })
               .option('bind', {
                 type: 'string',
@@ -287,11 +280,11 @@ export async function runDaemonCommand(
       'Start the daemon',
       (yargsInstance: Argv) => {
         return yargsInstance
-          .option('detach', {
+          .option('foreground', {
             type: 'boolean',
-            describe: 'Run in background',
-            alias: 'd',
-            default: false,
+            describe: 'Run in foreground (default: true)',
+            alias: 'f',
+            default: true,
           })
           .option('bind', {
             type: 'string',

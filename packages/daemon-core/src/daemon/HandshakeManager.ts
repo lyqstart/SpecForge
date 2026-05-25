@@ -78,11 +78,13 @@ export class HandshakeManager {
 
   async writeHandshake(pid: number, port: number, token: string): Promise<void> {
     const handshake: HandshakeFile = {
+      schema_version: '1.0',
       pid,
       port,
       token,
       startedAt: Date.now(),
-      schemaVersion: this.config.getSchemaVersion(),
+      version: this.config.getDaemonVersion(),
+      serviceMode: this.config.isServiceMode(),
     };
 
     const handshakeFile = this.config.getHandshakeFile();

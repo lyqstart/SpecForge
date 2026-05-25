@@ -8,7 +8,7 @@ import { v7 as uuidv7 } from 'uuid';
 /**
  * Create a new AgentIdentity in pending state
  */
-export function createPendingIdentity(agentRole, workflowRole, workItemId, spawnIntentId, parentSessionId = null) {
+export function createPendingIdentity(agentRole, workflowRole, workItemId, spawnIntentId, parentSessionId = null, projectId = null) {
     const now = Date.now();
     return {
         sessionId: uuidv7(),
@@ -16,6 +16,7 @@ export function createPendingIdentity(agentRole, workflowRole, workItemId, spawn
         workflowRole,
         parentSessionId,
         workItemId,
+        projectId,
         spawnIntentId,
         createdAt: now,
         lastActiveAt: now,

@@ -32,11 +32,13 @@ import { createJobProgress } from './progress/JobProgress';
 import { ModeSwitch } from './mode-switch';
 import { toCliError } from './errors';
 import { addHelpCommands, handleUnknownCommand } from './commands/help';
-import { addDaemonCommands } from './commands/daemon';
+import { addDaemonCommands } from './commands/daemon-client';
+import { addOpenCodeServerCommands } from './commands/opencode-server';
 import { addWebhookCommands } from './commands/webhook';
 import { addUtilityCommands } from './commands/utility';
 import { addSpecCommands } from './commands/spec';
 import { addPluginCommands } from './commands/plugin';
+import { addServicesCommands } from './commands/services';
 import { runVersionCommand } from './commands/version';
 import { runDoctorCommand } from './commands/doctor';
 import { initCommandHandler } from './commands/init';
@@ -782,15 +784,19 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
   
   // Add all command groups with help system integrated
   const parserWithCommands = addHelpCommands(
-    addDaemonCommands(
-      addInitCommands(
-        addDoctorCommands(
-          addSpecCommands(
-            addPluginCommands(
-              addWorkflowCommands(
-                addJobCommands(
-                  addWebhookCommands(
-                    addUtilityCommands(parser)
+    addServicesCommands(
+      addOpenCodeServerCommands(
+        addDaemonCommands(
+          addInitCommands(
+            addDoctorCommands(
+              addSpecCommands(
+                addPluginCommands(
+                  addWorkflowCommands(
+                    addJobCommands(
+                      addWebhookCommands(
+                        addUtilityCommands(parser)
+                      )
+                    )
                   )
                 )
               )

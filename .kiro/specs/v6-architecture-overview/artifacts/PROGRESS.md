@@ -25,6 +25,7 @@
 | Spec | tasks.md | 完成进度 | 备注 |
 |---|---|---|---|
 | `self-healing` | 1 / ? | 1.2 完成 | V6.1 首个模块，仅实现 Diagnose 阶段 |
+| `service-management` | 39 / 54 | 72% 完成 | Phase 1-11 单元测试 + PBT 全部完成 |
 
 
 ## 已完成 Spec（P0）
@@ -377,6 +378,85 @@
 ---
 
 ## 变更日志（按日期倒序）
+
+### 2026-05-25（service-management 测试补全会话）
+
+**本会话推进**：
+- service-management: 27→39 (+12)
+
+**完成的主要任务**：
+1. **Bug 修复**：`wrapServiceError` 函数 `lastError` 字段未正确传递（非超时错误也需要 lastError）
+2. **Phase 2 单元测试（2.2）**：service-unit-generator 16 个测试全部通过
+3. **Phase 3 单元测试（3.5/3.6/3.7）**：systemd/nssm/precheck 共 62 个测试全部通过
+4. **Phase 4 单元测试（4.4）**：service-lifecycle-orchestrator 21 个测试全部通过
+5. **Phase 6 单元测试（6.4）**：graceful-shutdown-handler 21 个测试全部通过
+6. **Phase 7 单元测试（7.3）**：reconnecting-daemon-client 36 个测试全部通过（含 fast-check fuzz 200+ 路径）
+7. **Phase 8 单元测试（8.4）**：services-cli 48 个测试全部通过
+8. **Phase 11 PBT（11.1/11.2/11.3）**：
+   - Property 1: Startup Order Preservation（3 个测试，300 次迭代）
+   - Property 2: Idempotent Operations（7 个测试，750 次迭代）
+   - Property 4: Graceful Shutdown No Event Loss（6 个测试，600 次迭代）
+
+**当前进度**：service-management 39/54（72%）
+
+**剩余任务**：Phase 12 集成测试（12.1-12.8，全部可选，需要真实 OS 环境）
+
+**本会话累计 failed**: 0
+
+### 2026-05-25（service-management 开发会话）
+
+**本会话推进**：
+- service-management: 14→22 (+8)
+
+**完成的主要任务**：
+1. **Phase 6.2 daemon-core 联动 1**：
+   - 删除"30 秒空闲自动退出"实现（REQ-1.4）
+   - 删除 --detach flag 解析（REQ-1.5）
+   - daemon CLI 改为前台模式（--foreground）
+   - GracefulShutdownHandler 已集成
+
+2. **Phase 6.3 daemon-core 联动 2**：
+   - 扩展 handshake.json（新增 4 字段：schema_version/startedAt/version/serviceMode）
+   - GET /api/v1/healthz 端点已存在，返回 9 字段 HealthCheckResponse
+   - 端点仅监听 127.0.0.1，无 Bearer Token
+
+3. **Phase 7.2 插件改造**：
+   - 删除 ensureDaemon() 函数
+   - 删除 daemon-spawn.ts 文件
+   - 删除 initProjectIfNeeded() 函数
+   - 用 ReconnectingDaemonClient 替换原直连客户端
+   - 所有 hook 通过 postEvent() 发送
+
+4. **Phase 1.1 包骨架**：
+   - 验证 packages/service-management/ 包骨架完整
+
+5. **Phase 8.1 CLI services 子命令**：
+   - 实现 6 个子命令（install/uninstall/start/stop/restart/status）
+   - 所有命令支持 --json flag
+   - stop 支持 --timeout 参数
+
+6. **Phase 8.2 daemon/opencode-server 子命令**：
+   - 实现 daemon 6 个子命令
+   - 实现 opencode-server 6 个子命令
+
+7. **Phase 9.1 默认配置项**：
+   - 在 configuration 添加 service_management 段（6 字段）
+
+8. **Phase 9.2 CLI 读取配置**：
+   - stop --timeout 读取配置默认值
+   - ReconnectingDaemonClient 读取重连参数
+   - installAll 读取 enableAtBoot
+
+**当前进度**：service-management 22/54（41%）
+
+**下次入口**：
+- Phase 2/3/4 单元测试（2.2, 3.5, 3.6, 3.7, 4.4）
+- Phase 6.4 graceful-shutdown-handler 测试
+- Phase 7.3 reconnecting-daemon-client 测试
+- Phase 8.3 --json payload 测试
+- Phase 11 PBT 测试
+
+**本会话累计 failed**: 0
 
 ### 2026-05-24（OpenCode 启动卡死 + plugin 协议迁移会话）
 

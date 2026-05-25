@@ -18,6 +18,14 @@ export const DEFAULT_CONFIG: Record<string, unknown> = {
     debounceMs: 100,
     watchPaths: [],
   },
+  service_management: {
+    schema_version: '1.0',
+    auto_enable_at_boot: true,
+    stop_timeout_sec: 10,
+    plugin_reconnect_max_sec: 60,
+    plugin_reconnect_initial_sec: 1,
+    plugin_reconnect_backoff_factor: 2.0,
+  },
   sensitiveFields: [
     'apiKeys',
     'tokens',
