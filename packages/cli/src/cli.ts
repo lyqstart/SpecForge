@@ -186,7 +186,7 @@ async function runStartupCheck(
   // Determine manifest paths
   const defaultUserManifestPath = path.join(os.homedir(), '.specforge', 'manifest.json');
   const actualUserManifestPath = userManifestPath ?? defaultUserManifestPath;
-  const projectManifestPath = path.join(projectDir, '.specforge', 'manifest.json');
+  const projectManifestPath = path.join(projectDir, 'specforge', 'manifest.json');
 
   // Read project manifest to get data_schema_version
   let dataSchemaVersion: number | null = null;
@@ -235,25 +235,17 @@ async function runStartupCheck(
       };
 
     case 'DEGRADED_HIGHER_THAN_KNOWN':
-      if ((vu as any).DegradedReporter) {
-        (vu as any).DegradedReporter.print('HIGHER_THAN_KNOWN', {
-          observed: mode.observed,
-          highest: mode.highest,
-        });
-      } else {
-        console.error(`Error: Data schema version ${mode.observed} is higher than known version ${mode.highest}. Please upgrade SpecForge.`);
-      }
+      vu.DegradedReporter.print('HIGHER_THAN_KNOWN', {
+        observed: mode.observed,
+        highest: mode.highest,
+      });
       return 'exit';
 
     case 'DEGRADED_MIGRATION_FAILED':
-      if ((vu as any).DegradedReporter) {
-        (vu as any).DegradedReporter.print('MIGRATION_FAILED', {
-          pair: mode.pair,
-          logPath: mode.logPath,
-        });
-      } else {
-        console.error(`Error: Migration failed. See log: ${mode.logPath}`);
-      }
+      vu.DegradedReporter.print('MIGRATION_FAILED', {
+        pair: mode.pair,
+        logPath: mode.logPath,
+      });
       return 'exit';
   }
 }

@@ -49,7 +49,7 @@ async function createTempProjectDir(): Promise<string> {
   const tmpRoot = os.tmpdir();
   const dirName = `sf-doctor-test-${crypto.randomUUID()}`;
   const tmp = path.join(tmpRoot, dirName);
-  await fs.mkdir(path.join(tmp, '.specforge'), { recursive: true });
+  await fs.mkdir(path.join(tmp, 'specforge'), { recursive: true });
   return tmp;
 }
 
@@ -63,7 +63,7 @@ async function writeProjectManifest(
     initialized_at: now,
     updated_at: now,
   };
-  const manifestPath = path.join(projectDir, '.specforge', 'manifest.json');
+  const manifestPath = path.join(projectDir, 'specforge', 'manifest.json');
   await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
   return manifestPath;
 }
@@ -117,7 +117,7 @@ describe('runDoctorCommand', () => {
     expect(out).toContain(
       `project_manifest_path     : ${path.join(
         projectDir,
-        '.specforge',
+        'specforge',
         'manifest.json'
       )}`
     );

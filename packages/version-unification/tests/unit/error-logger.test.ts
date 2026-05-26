@@ -29,8 +29,8 @@ describe('MigrationErrorLogger', () => {
   });
 
   describe('append', () => {
-    it('should create .specforge directory if it does not exist', async () => {
-      const specforgeDir = path.join(tempDir, '.specforge');
+    it('should create specforge directory if it does not exist', async () => {
+      const specforgeDir = path.join(tempDir, 'specforge');
       
       // Verify directory doesn't exist
       await expect(fs.access(specforgeDir)).rejects.toThrow();
@@ -160,7 +160,7 @@ describe('MigrationErrorLogger', () => {
 
   describe('logPath', () => {
     it('should return correct log file path', () => {
-      expect(logger.logPath).toBe(path.join(tempDir, '.specforge', 'migration-error.log'));
+      expect(logger.logPath).toBe(path.join(tempDir, 'specforge', 'migration-error.log'));
     });
   });
 

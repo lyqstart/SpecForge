@@ -106,7 +106,7 @@ async function createInitialManifest(
   projectDir: string,
   dataSchemaVersion: number
 ): Promise<string> {
-  const specforgeDir = path.join(projectDir, '.specforge');
+  const specforgeDir = path.join(projectDir, 'specforge');
   await fs.mkdir(specforgeDir, { recursive: true });
 
   const manifestPath = path.join(specforgeDir, 'manifest.json');
@@ -327,9 +327,9 @@ describe('MigrationRunner Integration: Multi-step chain', () => {
 
   it('should handle new project without existing manifest', async () => {
     // Setup: no manifest exists (new project scenario)
-    const specforgeDir = path.join(workspace.path, '.specforge');
+    const specforgeDir = path.join(workspace.path, 'specforge');
 
-    // Ensure .specforge directory doesn't exist
+    // Ensure specforge directory doesn't exist
     try {
       await fs.rm(specforgeDir, { recursive: true, force: true });
     } catch {

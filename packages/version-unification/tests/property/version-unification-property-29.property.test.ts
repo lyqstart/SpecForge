@@ -13,7 +13,7 @@
  *   3. the thrown error carries `errno` information taken from the underlying
  *      filesystem error (either on the error itself, or on a `cause` chain),
  *   4. the underlying writer was actually invoked with the manifest path
- *      `<projectDir>/.specforge/manifest.json` and the requested
+ *      `<projectDir>/specforge/manifest.json` and the requested
  *      `highestKnown` schema version (i.e. the bootstrap actually attempted
  *      to write before failing — the failure is not synthesized from a
  *      pre-flight check).
@@ -220,7 +220,7 @@ describe('Property 29: Unwritable project dir error path', () => {
               // expected manifest path and dsv (proves the failure is real,
               // not synthesised from a pre-flight check).
               expect(capture.calls).toHaveLength(1);
-              expect(capture.calls[0]!.path).toBe(`${projectDir}/.specforge/manifest.json`);
+              expect(capture.calls[0]!.path).toBe(`${projectDir}/specforge/manifest.json`);
               expect(capture.calls[0]!.dsv).toBe(highestKnown);
 
               // Invariant 6: no info-level "manifest created" log lines on

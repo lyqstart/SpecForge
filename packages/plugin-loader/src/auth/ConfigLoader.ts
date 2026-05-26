@@ -232,14 +232,14 @@ async function loadGrantsConfig(filePath: string): Promise<GrantsConfig | null> 
  *
  * 职责：
  *   1. 加载用户级授权配置（~/.specforge/config/plugin-grants.json）
- *   2. 加载项目级授权配置（<project>/.specforge/config/plugin-grants.json）
+ *   2. 加载项目级授权配置（<project>/specforge/config/plugin-grants.json）
  *   3. 支持运行时授权配置
  *   4. 按优先级合并配置
  *
  * 层级顺序（优先级从低到高）：
  *   1. 默认（内置空配置）
  *   2. 全局/用户级（~/.specforge/config/plugin-grants.json）
- *   3. 项目级（<project>/.specforge/config/plugin-grants.json）
+ *   3. 项目级（<project>/specforge/config/plugin-grants.json）
  *   4. 运行时（通过 API/CLI 动态设置）
  *
  * 使用示例：
@@ -376,7 +376,7 @@ export class ConfigLoader {
    * 优先级规则（从低到高）：
    *   1. 默认（空集合）
    *   2. 用户级（~/.specforge/）
-   * 3. 项目级（<project>/.specforge/）
+   * 3. 项目级（<project>/specforge/）
    * 4. 运行时（memory）
    *
    * "覆盖"语义：

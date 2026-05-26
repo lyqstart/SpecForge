@@ -229,3 +229,121 @@ export type { MigrationRunArgs } from './migration/runner.js';
  * @see Requirements 4.2, 4.3, 4.5, 13.1, 13.2
  */
 export { MigrationRunner, createMigrationRunner, runMigration } from './migration/runner.js';
+
+// =============================================================================
+// Degraded Reporter
+// =============================================================================
+
+/**
+ * Reporter for degraded mode error messages.
+ *
+ * Provides formatted output based on the cause of degradation:
+ * - MIGRATION_FAILED: includes failed pair, log path, recommended next step
+ * - HIGHER_THAN_KNOWN: includes observed dsv, highest schema, upgrade suggestion
+ * - OTHER: generic message without migration-specific phrases
+ *
+ * @see Requirements 3.4, 13.4, 13.5
+ */
+export { DegradedReporter } from './degraded-mode/degraded-reporter.js';
+
+/**
+ * Details for degraded mode reporting.
+ */
+export type { DegradedReporterDetails } from './degraded-mode/degraded-reporter.js';
+
+/**
+ * Cause discriminators for degraded mode.
+ */
+export type { DegradedCause } from './degraded-mode/degraded-reporter.js';
+
+// =============================================================================
+// Manifest Writers
+// =============================================================================
+
+/**
+ * User Manifest Writer.
+ *
+ * Handles atomic writing of user manifest files with validation.
+ *
+ * @see Requirements 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 11.2
+ */
+export { UserManifestWriter } from './manifest/user-manifest-writer.js';
+
+/**
+ * Project Manifest Writer.
+ *
+ * Handles atomic writing of project manifest files with validation,
+ * monotonicity enforcement, and call-site restrictions.
+ *
+ * @see Requirements 2.1, 2.4, 7.1, 7.2, 7.3, 7.5, 11.2, 15.1, 15.2
+ */
+export { ProjectManifestWriter } from './manifest/project-manifest-writer.js';
+
+// =============================================================================
+// Manifest Reader
+// =============================================================================
+
+/**
+ * Reads a User Manifest from the specified path.
+ *
+ * @throws ManifestNotFoundError if the file does not exist
+ * @throws InvalidJsonInManifestError if JSON parsing fails
+ *
+ * @see Requirement 14.3
+ */
+export { readUser } from './manifest/manifest-reader.js';
+
+/**
+ * Reads a Project Manifest from the specified path.
+ *
+ * @throws ManifestNotFoundError if the file does not exist
+ * @throws InvalidJsonInManifestError if JSON parsing fails
+ *
+ * @see Requirement 14.3
+ */
+export { readProject } from './manifest/manifest-reader.js';
+
+// =============================================================================
+// Legacy Migrator
+// =============================================================================
+
+/**
+ * ManifestMigrator provides migration functionality for legacy manifest formats.
+ *
+ * Handles reading, writing, and in-place conversion based on the current release cycle.
+ *
+ * @see Requirements 11.1, 11.2, 11.3, 11.4, 11.5
+ */
+export { ManifestMigrator, getCurrentCycleBehavior } from './legacy/migrator.js';
+
+// =============================================================================
+// Bootstrap Handlers
+// =============================================================================
+
+/**
+ * Handles the case when Project_Manifest file does not exist on disk.
+ *
+ * Creates a new Project_Manifest with data_schema_version = highestKnown.
+ *
+ * @see Requirement 15
+ */
+export { handleProjectManifestMissing } from './bootstrap/project-missing.js';
+
+/**
+ * Arguments for handleProjectManifestMissing.
+ */
+export type { HandleProjectManifestMissingArgs, ProjectManifestCreated, ProjectManifestWriteFailed } from './bootstrap/project-missing.js';
+
+/**
+ * Handles the case when User_Manifest file does not exist on disk.
+ *
+ * Prints an instructional message and returns exit code 0.
+ *
+ * @see Requirement 14
+ */
+export { handleUserManifestMissing } from './bootstrap/user-missing.js';
+
+/**
+ * Arguments for handleUserManifestMissing.
+ */
+export type { HandleUserManifestMissingArgs } from './bootstrap/user-missing.js';

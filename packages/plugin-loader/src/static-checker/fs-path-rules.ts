@@ -815,7 +815,7 @@ export const DEFAULT_WHITELISTS: DirectoryWhitelist[] = [
   {
     id: 'config-dir',
     name: '配置目录',
-    allowedDirs: ['~/.specforge/config', '.specforge/config'],
+    allowedDirs: ['~/.specforge/config', 'specforge/config'],
     allowSubdirs: true,
     requiredPermissions: ['filesystem.read'],
     enabled: true,

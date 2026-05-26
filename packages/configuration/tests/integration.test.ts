@@ -57,7 +57,7 @@ describe('Integration: End-to-End Configuration Loading', () => {
     tempDir = path.join(tmpdir(), `specforge-integration-test-${Date.now()}`)
     mockHomeDir = path.join(tempDir, 'mock-home')
     await mkdir(mockHomeDir, { recursive: true })
-    await mkdir(path.join(tempDir, '.specforge', 'config'), { recursive: true })
+    await mkdir(path.join(tempDir, 'specforge', 'config'), { recursive: true })
   })
 
   afterEach(async () => {
@@ -67,7 +67,7 @@ describe('Integration: End-to-End Configuration Loading', () => {
   describe('Four-layer configuration loading', () => {
     it('should load all four layers in correct priority order', async () => {
       // Setup project config
-      const projectConfigPath = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      const projectConfigPath = path.join(tempDir, 'specforge', 'config', '.specforge.json')
       await writeFile(projectConfigPath, JSON.stringify({
         projectKey: 'projectValue',
         sharedKey: 'projectOverride'
@@ -163,7 +163,7 @@ describe('Integration: End-to-End Configuration Loading', () => {
         },
         {
           type: 'project',
-          path: path.join(tempDir, '.specforge', 'config', '.specforge.json'),
+          path: path.join(tempDir, 'specforge', 'config', '.specforge.json'),
           timestamp: Date.now(),
           data: {
             database: {
@@ -216,7 +216,7 @@ describe('Integration: End-to-End Configuration Loading', () => {
         },
         {
           type: 'project',
-          path: path.join(tempDir, '.specforge', 'config', '.specforge.json'),
+          path: path.join(tempDir, 'specforge', 'config', '.specforge.json'),
           timestamp: Date.now(),
           data: {
             plugins: ['plugin-d', 'plugin-e']
@@ -241,14 +241,14 @@ describe('Integration: End-to-End Configuration Loading', () => {
     })
 
     it('should fail with clear error for invalid JSON in project config', async () => {
-      const projectConfigPath = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      const projectConfigPath = path.join(tempDir, 'specforge', 'config', '.specforge.json')
       await writeFile(projectConfigPath, '{ invalid json }')
 
       await expect(loadProjectConfig(tempDir)).rejects.toThrow(/Invalid JSON|Failed to load/)
     })
 
     it('should maintain previous valid config when new config fails to load', async () => {
-      const projectConfigPath = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      const projectConfigPath = path.join(tempDir, 'specforge', 'config', '.specforge.json')
       
       // Create valid initial config
       await writeFile(projectConfigPath, JSON.stringify({ key: 'initialValue' }))
@@ -299,7 +299,7 @@ describe('Integration: End-to-End Configuration Loading', () => {
         },
         {
           type: 'project',
-          path: path.join(tempDir, '.specforge', 'config', '.specforge.json'),
+          path: path.join(tempDir, 'specforge', 'config', '.specforge.json'),
           timestamp: Date.now(),
           data: { 
             // This should be rejected
@@ -679,7 +679,7 @@ describe('Integration: Real-world Scenarios', () => {
 
   beforeEach(async () => {
     tempDir = path.join(tmpdir(), `specforge-integration-test-${Date.now()}`)
-    await mkdir(path.join(tempDir, '.specforge', 'config'), { recursive: true })
+    await mkdir(path.join(tempDir, 'specforge', 'config'), { recursive: true })
   })
 
   afterEach(async () => {
@@ -688,7 +688,7 @@ describe('Integration: Real-world Scenarios', () => {
 
   it('should handle complete application startup flow', async () => {
       // Step 1: Create project config
-      const projectConfigPath = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      const projectConfigPath = path.join(tempDir, 'specforge', 'config', '.specforge.json')
       await writeFile(projectConfigPath, JSON.stringify({
         appName: 'test-app',
         database: {

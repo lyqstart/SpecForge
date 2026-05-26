@@ -50,7 +50,7 @@ export function generateDefaultConfig(): string {
     // 4. 将所有 P1/P2 flags 设置为 false
     // 这是 Property 15（Scope Boundary）的核心实现
     for (const flagKey of p1p2FlagKeys) {
-      configWithSchema[flagKey] = false;
+      (configWithSchema as Record<string, unknown>)[flagKey] = false;
     }
     
     // 5. 序列化为 YAML 字符串

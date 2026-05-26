@@ -71,7 +71,7 @@ SpecForge migrate-manifest — 把任意老格式 manifest in-place 升级到当
 选项:
   --help, -h                 显示此帮助信息
   --manifest-path <path>     指定要迁移的 manifest 路径
-                             (默认: <cwd>/.specforge/manifest.json)
+                             (默认: <cwd>/specforge/manifest.json)
 
 行为:
   - 已是新格式      → byte-identical no-op，exit 0          (R12.2)
@@ -91,7 +91,7 @@ SpecForge migrate-manifest — 把任意老格式 manifest in-place 升级到当
 
 interface ParsedArgs {
   readonly help: boolean;
-  /** Resolved absolute manifest path (defaults to <cwd>/.specforge/manifest.json). */
+  /** Resolved absolute manifest path (defaults to <cwd>/specforge/manifest.json). */
   readonly manifestPath: string;
 }
 
@@ -133,7 +133,7 @@ function parseArgs(args: readonly string[]): ParsedArgs {
 
   const resolved = manifestPath
     ? path.resolve(manifestPath)
-    : path.resolve(process.cwd(), '.specforge', 'manifest.json');
+    : path.resolve(process.cwd(), 'specforge', 'manifest.json');
 
   return { help, manifestPath: resolved };
 }

@@ -173,14 +173,14 @@ describe('config-validator', () => {
         field: 'logLevel',
         message: 'Invalid enum value',
         layer: 'project',
-        path: '/project/.specforge/config.json',
+        path: '/project/specforge/config.json',
         code: 'invalid_enum',
       }
 
       const formatted = formatError(error)
       expect(formatted).toContain('Field: logLevel')
       expect(formatted).toContain('Layer: project')
-      expect(formatted).toContain('Path: /project/.specforge/config.json')
+      expect(formatted).toContain('Path: /project/specforge/config.json')
       expect(formatted).toContain('Message: Invalid enum value')
     })
 

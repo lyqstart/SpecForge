@@ -88,8 +88,8 @@ const schemaPairArb = fc
 // Plausible absolute path arbitrary for diagnostic log
 const logPathArb = fc.oneof(
   fc.constant('/tmp/migration-error.log'),
-  fc.constant('C:\\projects\\my-proj\\.specforge\\migration-error.log'),
-  fc.constant('/home/user/.specforge/migration-error.log'),
+  fc.constant('C:\\projects\\my-proj\\specforge\\migration-error.log'),
+  fc.constant('/home/user/specforge/migration-error.log'),
   fc
     .stringMatching(/^[A-Z]:\\[A-Za-z0-9_\\.-]{1,40}\\migration-error\.log$/)
     // fall back to a fixed path if the matcher fails for any reason

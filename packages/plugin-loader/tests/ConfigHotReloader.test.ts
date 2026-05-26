@@ -114,7 +114,7 @@ describe('ConfigHotReloader', () => {
       });
 
       expect(reloader.getProjectConfigPath()).toBe(
-        path.join(projectDir, '.specforge', 'config', 'plugin-grants.json')
+        path.join(projectDir, 'specforge', 'config', 'plugin-grants.json')
       );
     });
 
@@ -127,7 +127,7 @@ describe('ConfigHotReloader', () => {
 
   describe('start / stop', () => {
     it('应在启动后进入运行状态', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(configDir, { recursive: true });
       await createGrantsConfig(configDir, 'plugin-grants.json', ['filesystem.read']);
 
@@ -143,7 +143,7 @@ describe('ConfigHotReloader', () => {
     });
 
     it('应在启动时创建配置目录', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
 
       const reloader = new ConfigHotReloader({
         userConfigDir: configDir,
@@ -158,7 +158,7 @@ describe('ConfigHotReloader', () => {
     });
 
     it('应幂等停止', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(configDir, { recursive: true });
       await createGrantsConfig(configDir, 'plugin-grants.json', []);
 
@@ -174,7 +174,7 @@ describe('ConfigHotReloader', () => {
     });
 
     it('不应在未启动时重复启动', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(configDir, { recursive: true });
       await createGrantsConfig(configDir, 'plugin-grants.json', []);
 
@@ -192,7 +192,7 @@ describe('ConfigHotReloader', () => {
 
   describe('配置版本管理', () => {
     it('应在启动后加载配置版本', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(configDir, { recursive: true });
       await createGrantsConfig(configDir, 'plugin-grants.json', ['filesystem.read', 'network']);
 
@@ -218,7 +218,7 @@ describe('ConfigHotReloader', () => {
 
       // 创建项目配置
       const projectDir = path.join(tempDir, 'project');
-      const projectConfigDir = path.join(projectDir, '.specforge', 'config');
+      const projectConfigDir = path.join(projectDir, 'specforge', 'config');
       await fs.mkdir(projectConfigDir, { recursive: true });
       await createGrantsConfig(projectConfigDir, 'plugin-grants.json', ['network']);
 
@@ -248,7 +248,7 @@ describe('ConfigHotReloader', () => {
 
       // 创建项目配置
       const projectDir = path.join(tempDir, 'project');
-      const projectConfigDir = path.join(projectDir, '.specforge', 'config');
+      const projectConfigDir = path.join(projectDir, 'specforge', 'config');
       await fs.mkdir(projectConfigDir, { recursive: true });
       await createGrantsConfig(projectConfigDir, 'plugin-grants.json', ['network']);
 
@@ -288,7 +288,7 @@ describe('ConfigHotReloader', () => {
 
   describe('事件回调', () => {
     it('应在启动时触发加载事件', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(configDir, { recursive: true });
       await createGrantsConfig(configDir, 'plugin-grants.json', ['filesystem.read']);
 
@@ -305,7 +305,7 @@ describe('ConfigHotReloader', () => {
     });
 
     it('应支持手动重载', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(configDir, { recursive: true });
       await createGrantsConfig(configDir, 'plugin-grants.json', ['filesystem.read']);
 
@@ -327,7 +327,7 @@ describe('ConfigHotReloader', () => {
 
   describe('运行时稳定性', () => {
     it('应正确清理资源在停止时', async () => {
-      const configDir = path.join(tempDir, '.specforge', 'config');
+      const configDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(configDir, { recursive: true });
       await createGrantsConfig(configDir, 'plugin-grants.json', []);
 

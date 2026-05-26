@@ -225,13 +225,6 @@ export class AuthManager {
   }
 
   /**
-   * Check if authenticated (has handshake with valid token).
-   */
-  get isAuthenticated(): boolean {
-    return this.hasHandshake && this.hasToken && this._tokenValidated;
-  }
-
-  /**
    * Get the current handshake data.
    */
   get handshake(): DaemonHandshake | null {

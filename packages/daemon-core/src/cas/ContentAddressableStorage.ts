@@ -21,7 +21,7 @@ export class ContentAddressableStorage {
 
   constructor(baseDir?: string) {
     const dir = baseDir || process.cwd();
-    this.storageDir = path.join(dir, '.specforge', 'cas');
+    this.storageDir = path.join(dir, 'specforge', 'cas');
   }
 
   /**

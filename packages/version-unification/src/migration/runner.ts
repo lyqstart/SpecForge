@@ -109,8 +109,8 @@ export class MigrationRunner {
     this.projectDir = projectDir;
     this.registry = registry ?? getMigrationRegistry();
 
-    // .specforge directory and manifest path
-    this.manifestDir = path.join(projectDir, '.specforge');
+    // specforge directory and manifest path
+    this.manifestDir = path.join(projectDir, 'specforge');
     this.manifestPath = path.join(this.manifestDir, 'manifest.json');
   }
 
@@ -379,7 +379,7 @@ export class MigrationRunner {
    * to current ISO 8601 timestamp (R4.3).
    */
   private async writeAfterMigration(targetVersion: number, callerToken: symbol): Promise<void> {
-    // Ensure .specforge directory exists
+    // Ensure specforge directory exists
     await fs.mkdir(this.manifestDir, { recursive: true });
 
     // Use ProjectManifestWriter.writeAfterMigration

@@ -130,42 +130,42 @@ export const SPECFORGE_AGENT_DEFINITIONS: Record<string, AgentConfig> = {
   "sf-requirements": {
     mode: "subagent",
     prompt: "{file:./agents/sf-requirements.md}",
-    permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "allow", bash: "deny", skill: "allow" },
   },
   "sf-design": {
     mode: "subagent",
     prompt: "{file:./agents/sf-design.md}",
-    permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "allow", bash: "deny", skill: "allow" },
   },
   "sf-task-planner": {
     mode: "subagent",
     prompt: "{file:./agents/sf-task-planner.md}",
-    permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "allow", bash: "deny", skill: "allow" },
   },
   "sf-executor": {
     mode: "subagent",
     prompt: "{file:./agents/sf-executor.md}",
-    permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "allow", bash: "deny", skill: "allow" },
   },
   "sf-debugger": {
     mode: "subagent",
     prompt: "{file:./agents/sf-debugger.md}",
-    permission: { task: "deny", edit: "allow", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "allow", bash: "deny", skill: "allow" },
   },
   "sf-reviewer": {
     mode: "subagent",
     prompt: "{file:./agents/sf-reviewer.md}",
-    permission: { task: "deny", edit: "deny", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "deny", bash: "deny", skill: "allow" },
   },
   "sf-verifier": {
     mode: "subagent",
     prompt: "{file:./agents/sf-verifier.md}",
-    permission: { task: "deny", edit: "deny", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "deny", bash: "deny", skill: "allow" },
   },
   "sf-knowledge": {
     mode: "subagent",
     prompt: "{file:./agents/sf-knowledge.md}",
-    permission: { task: "deny", edit: "ask", bash: "allow", skill: "allow" },
+    permission: { task: "deny", edit: "ask", bash: "deny", skill: "allow" },
   },
 }
 

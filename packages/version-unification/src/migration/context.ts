@@ -118,7 +118,7 @@ class MigrationContextImpl {
    * @throws Error if Project_Manifest cannot be read
    */
   async checkAtTarget(): Promise<boolean> {
-    const manifestPath = path.join(this.projectDir, '.specforge', 'manifest.json');
+    const manifestPath = path.join(this.projectDir, 'specforge', 'manifest.json');
 
     try {
       const manifest = await readProject(manifestPath);

@@ -67,7 +67,7 @@ export const CONFIG_FILE_NAMES = {
  */
 export const CONFIG_DIRS = {
   user: '~/.specforge/config',
-  project: '.specforge/config',
+  project: 'specforge/config',
 } as const
 
 /**

@@ -253,7 +253,7 @@ Description=Test Service`;
       const metadata2 = generator.parseMetadata(output2);
 
       // Metadata should be same (same fields), only timestamp differs
-      expect(metadata1?.schemaVersion).toBe(metadata2?.schemaVersion);
+      expect(metadata1?.schema_version).toBe(metadata2?.schema_version);
       expect(metadata1?.generatedBy).toBe(metadata2?.generatedBy);
       expect(metadata1?.specforgeVersion).toBe(metadata2?.specforgeVersion);
       expect(metadata1?.serviceName).toBe(metadata2?.serviceName);

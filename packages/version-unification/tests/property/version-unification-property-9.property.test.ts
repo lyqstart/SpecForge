@@ -15,7 +15,7 @@
  *         every file under projectDir is byte-identical to its state captured
  *         immediately before step K-1 completed (i.e., data_schema_version
  *         === K-1); the chain is aborted; an entry has been appended to
- *         <project>/.specforge/migration-error.log containing the offending
+ *         <project>/specforge/migration-error.log containing the offending
  *         pair [K-1, K], the originating error message, and the stack trace.
  *
  *     - if step-K rollback failed:
@@ -136,13 +136,13 @@ function buildRegistry(to: number, failingStep: number): MigrationRegistry {
 }
 
 /**
- * Creates a fresh project with `.specforge/manifest.json` at dsv = `from`.
+ * Creates a fresh project with `specforge/manifest.json` at dsv = `from`.
  */
 async function setupInitialProject(
   projectDir: string,
   from: number,
 ): Promise<{ manifestPath: string; manifestSnapshot: string }> {
-  const specforgeDir = path.join(projectDir, '.specforge');
+  const specforgeDir = path.join(projectDir, 'specforge');
   const manifestPath = path.join(specforgeDir, 'manifest.json');
   await fs.mkdir(specforgeDir, { recursive: true });
 
@@ -222,7 +222,7 @@ describe('Property 9: Atomic chain failure preserves pre-state', () => {
             //     rollback="ok" annotation. R13.2.
             const logPath = path.join(
               projectDir,
-              '.specforge',
+              'specforge',
               'migration-error.log',
             );
             expect(await fileExists(logPath)).toBe(true);
@@ -260,7 +260,7 @@ describe('Property 9: Atomic chain failure preserves pre-state', () => {
       const result = await runner.run({ projectDir, from: 0, to: 2 });
       expect(result.kind).toBe('FAILED_ROLLED_BACK');
 
-      const logPath = path.join(projectDir, '.specforge', 'migration-error.log');
+      const logPath = path.join(projectDir, 'specforge', 'migration-error.log');
       const lines = (await fs.readFile(logPath, 'utf-8'))
         .split('\n')
         .filter((l) => l.length > 0);

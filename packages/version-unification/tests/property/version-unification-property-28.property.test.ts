@@ -10,7 +10,7 @@
  * `handleProjectManifestMissing(args)` MUST:
  *
  *   P28.1  Resolve as `success: true`, returning a manifestPath that points to
- *          `<projectDir>/.specforge/manifest.json` and `dataSchemaVersion`
+ *          `<projectDir>/specforge/manifest.json` and `dataSchemaVersion`
  *          equal to the requested `highestKnown`. (R15.1, R15.2)
  *   P28.2  Cause `ProjectManifestWriter.writeFresh` to materialise the
  *          manifest at the expected path with `data_schema_version === highestKnown`.
@@ -27,7 +27,7 @@
  * Test environment:
  *  - real filesystem temp dirs via fs.mkdtemp (tracked + afterEach cleanup)
  *  - one tracked top-level temp dir per iteration; each iteration creates a
- *    unique nested project subdir + `.specforge/` so atomicWrite can land
+ *    unique nested project subdir + `specforge/` so atomicWrite can land
  *  - real `ProjectManifestWriter` (no mock) — exercises R15 end-to-end
  *  - numRuns: 200 (per task spec)
  *  - per-test timeout: 60_000 ms (4 properties × 200 runs × ~8 fs syscalls)
@@ -59,7 +59,7 @@ import {
 // Dynamic temp-dir tracking (T1: 对称清理原则)
 //
 // Strategy: ONE tracked top-level temp dir per `it`. Each fast-check
-// iteration creates a unique nested `<projectDir>/.specforge/` inside it.
+// iteration creates a unique nested `<projectDir>/specforge/` inside it.
 // afterEach removes the top-level dir tree once, regardless of how many
 // nested subdirs were created — keeps cleanup O(1) wrt numRuns.
 // ---------------------------------------------------------------------------
@@ -92,12 +92,12 @@ function uniqueProjectName(): string {
 
 /**
  * Allocate a fresh project directory under the per-test top-level temp dir.
- * Pre-creates the `.specforge` subdir so atomicWrite (which does not mkdir)
+ * Pre-creates the `specforge` subdir so atomicWrite (which does not mkdir)
  * can land its tmp file.
  */
 async function allocateProjectDir(rootDir: string): Promise<string> {
   const projectDir = join(rootDir, uniqueProjectName());
-  await fs.mkdir(join(projectDir, '.specforge'), { recursive: true });
+  await fs.mkdir(join(projectDir, 'specforge'), { recursive: true });
   return projectDir;
 }
 
@@ -130,7 +130,7 @@ describe('Property 28: Project-manifest-missing bootstrap creates new PM', () =>
         await fc.assert(
           fc.asyncProperty(arbitraryHighestKnown(), async (highestKnown) => {
             const projectDir = await allocateProjectDir(rootDir);
-            const expectedPath = `${projectDir}/.specforge/manifest.json`;
+            const expectedPath = `${projectDir}/specforge/manifest.json`;
 
             const result = await handleProjectManifestMissing({
               projectDir,
@@ -142,7 +142,7 @@ describe('Property 28: Project-manifest-missing bootstrap creates new PM', () =>
             // Invariant: success branch (dir was made writable for the test).
             expect(result.success).toBe(true);
             if (result.success) {
-              // manifestPath must point at <projectDir>/.specforge/manifest.json
+              // manifestPath must point at <projectDir>/specforge/manifest.json
               // exactly — string equality (the bootstrap composes the path).
               expect(result.manifestPath).toBe(expectedPath);
               // dataSchemaVersion echoed back equals the requested highestKnown.
@@ -166,7 +166,7 @@ describe('Property 28: Project-manifest-missing bootstrap creates new PM', () =>
         await fc.assert(
           fc.asyncProperty(arbitraryHighestKnown(), async (highestKnown) => {
             const projectDir = await allocateProjectDir(rootDir);
-            const expectedPath = `${projectDir}/.specforge/manifest.json`;
+            const expectedPath = `${projectDir}/specforge/manifest.json`;
 
             await handleProjectManifestMissing({
               projectDir,
@@ -201,7 +201,7 @@ describe('Property 28: Project-manifest-missing bootstrap creates new PM', () =>
         await fc.assert(
           fc.asyncProperty(arbitraryHighestKnown(), async (highestKnown) => {
             const projectDir = await allocateProjectDir(rootDir);
-            const expectedPath = `${projectDir}/.specforge/manifest.json`;
+            const expectedPath = `${projectDir}/specforge/manifest.json`;
 
             const callStart = Date.now();
             await handleProjectManifestMissing({
@@ -259,7 +259,7 @@ describe('Property 28: Project-manifest-missing bootstrap creates new PM', () =>
         await fc.assert(
           fc.asyncProperty(arbitraryHighestKnown(), async (highestKnown) => {
             const projectDir = await allocateProjectDir(rootDir);
-            const expectedPath = `${projectDir}/.specforge/manifest.json`;
+            const expectedPath = `${projectDir}/specforge/manifest.json`;
 
             const logged: string[] = [];
             await handleProjectManifestMissing({

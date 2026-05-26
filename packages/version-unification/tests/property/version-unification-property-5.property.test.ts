@@ -124,7 +124,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
       
       try {
         const projectDir = tempDir.path;
-        const manifestDir = path.join(projectDir, '.specforge');
+        const manifestDir = path.join(projectDir, 'specforge');
         const manifestPath = path.join(manifestDir, 'manifest.json');
         
         // Setup: Create initial manifest with prevVersion
@@ -183,7 +183,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
           
           try {
             const projectDir = tempDir.path;
-            const manifestDir = path.join(projectDir, '.specforge');
+            const manifestDir = path.join(projectDir, 'specforge');
             const manifestPath = path.join(manifestDir, 'manifest.json');
             
             // Setup: Create initial manifest with prevVersion
@@ -235,7 +235,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
       
       try {
         const projectDir = tempDir.path;
-        const manifestDir = path.join(projectDir, '.specforge');
+        const manifestDir = path.join(projectDir, 'specforge');
         const manifestPath = path.join(manifestDir, 'manifest.json');
         
         // Setup: Create initial manifest with older timestamp
@@ -295,7 +295,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
           
           try {
             const projectDir = tempDir.path;
-            const manifestDir = path.join(projectDir, '.specforge');
+            const manifestDir = path.join(projectDir, 'specforge');
             const manifestPath = path.join(manifestDir, 'manifest.json');
             
             // Setup with old timestamp
@@ -353,7 +353,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
       
       try {
         const projectDir = tempDir.path;
-        const manifestDir = path.join(projectDir, '.specforge');
+        const manifestDir = path.join(projectDir, 'specforge');
         const manifestPath = path.join(manifestDir, 'manifest.json');
         
         // Setup: Start at version 0
@@ -430,7 +430,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
             
             try {
               const projectDir = tempDir.path;
-              const manifestDir = path.join(projectDir, '.specforge');
+              const manifestDir = path.join(projectDir, 'specforge');
               const manifestPath = path.join(manifestDir, 'manifest.json');
               
               // Setup starting at version 0
@@ -493,7 +493,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
       
       try {
         const projectDir = tempDir.path;
-        const manifestDir = path.join(projectDir, '.specforge');
+        const manifestDir = path.join(projectDir, 'specforge');
         const manifestPath = path.join(manifestDir, 'manifest.json');
         
         const beforeTime = new Date().toISOString();
@@ -533,7 +533,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
       
       try {
         const projectDir = tempDir.path;
-        const manifestDir = path.join(projectDir, '.specforge');
+        const manifestDir = path.join(projectDir, 'specforge');
         const manifestPath = path.join(manifestDir, 'manifest.json');
         
         const initTime = new Date(Date.now() - 3600000).toISOString(); // 1 hour ago
@@ -579,7 +579,7 @@ describe('Property 5: Migration step writes target dsv after success', () => {
       
       try {
         const projectDir = tempDir.path;
-        const manifestDir = path.join(projectDir, '.specforge');
+        const manifestDir = path.join(projectDir, 'specforge');
         const manifestPath = path.join(manifestDir, 'manifest.json');
         
         const beforeTime = new Date().toISOString();

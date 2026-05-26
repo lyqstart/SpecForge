@@ -391,7 +391,7 @@ export class StaticApiChecker {
       allowProcessAccess: config.allowProcessAccess ?? false,
       projectId: config.projectId || 'default-project',
       eventLoggingEnabled: config.eventLoggingEnabled ?? true,
-      eventsFilePath: config.eventsFilePath || './.specforge/observability/events.jsonl',
+      eventsFilePath: config.eventsFilePath || './specforge/observability/events.jsonl',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       logEvent: config.logEvent || (async (_event: unknown) => { /* no-op */ })
     };

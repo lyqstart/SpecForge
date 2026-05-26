@@ -65,7 +65,7 @@ export async function handleProjectManifestMissing(
   const { projectDir, highestKnown, writer, log } = args;
 
   // Build the manifest path
-  const manifestPath = `${projectDir}/.specforge/manifest.json`;
+  const manifestPath = `${projectDir}/specforge/manifest.json`;
 
   try {
     // Write the fresh manifest with the highest known schema version (R15.1, R15.2)

@@ -109,7 +109,7 @@ describe('Property: Single Source of Truth', () => {
 
     for (const { permissions } of samples) {
       // 1. 创建项目级配置目录
-      const specforgeDir = path.join(tempDir, '.specforge', 'config');
+      const specforgeDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(specforgeDir, { recursive: true });
 
       // 2. 写入持久化配置
@@ -173,7 +173,7 @@ describe('Property: Single Source of Truth', () => {
 
     for (const { initialPerms, newPerms } of samples) {
       // 1. 创建初始配置
-      const specforgeDir = path.join(tempDir, '.specforge', 'config');
+      const specforgeDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(specforgeDir, { recursive: true });
 
       const initialConfig: GrantsConfig = {
@@ -230,7 +230,7 @@ describe('Property: Single Source of Truth', () => {
 
     for (const { validPerms } of samples) {
       // 1. 创建有效的初始配置
-      const specforgeDir = path.join(tempDir, '.specforge', 'config');
+      const specforgeDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(specforgeDir, { recursive: true });
 
       const validConfig: GrantsConfig = {
@@ -279,7 +279,7 @@ describe('Property: Single Source of Truth', () => {
    * Property 4: 并发更新的原子性
    */
   it('并发更新应该保持原子性', async () => {
-    const specforgeDir = path.join(tempDir, '.specforge', 'config');
+    const specforgeDir = path.join(tempDir, 'specforge', 'config');
     await fs.mkdir(specforgeDir, { recursive: true });
 
     const initialConfig: GrantsConfig = {
@@ -322,7 +322,7 @@ describe('Property: Single Source of Truth', () => {
 
     for (const { permCount } of samples) {
       // 1. 写入初始配置
-      const specforgeDir = path.join(tempDir, '.specforge', 'config');
+      const specforgeDir = path.join(tempDir, 'specforge', 'config');
       await fs.mkdir(specforgeDir, { recursive: true });
 
       const perms = ['filesystem.read', 'network', 'child_process', 'env.read'].slice(0, permCount);

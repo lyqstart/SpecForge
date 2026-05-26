@@ -52,7 +52,7 @@ export class DegradedReporter {
    * // Report migration failure
    * DegradedReporter.print('MIGRATION_FAILED', {
    *   pair: [4, 5],
-   *   logPath: 'D:\\code\\my-proj\\.specforge\\migration-error.log'
+   *   logPath: 'D:\\code\\my-proj\\specforge\\migration-error.log'
    * });
    * 
    * @example

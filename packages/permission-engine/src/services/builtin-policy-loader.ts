@@ -41,7 +41,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
 
     // Add default policy path if not specified
     if (!this.config.defaultPolicyPath) {
-      this.config.defaultPolicyPath = path.join(process.cwd(), '.specforge', 'config', 'builtin-policies');
+      this.config.defaultPolicyPath = path.join(process.cwd(), 'specforge', 'config', 'builtin-policies');
     }
   }
 

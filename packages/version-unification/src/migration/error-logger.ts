@@ -2,13 +2,13 @@
  * Migration Error Logger - Writes migration failure diagnostics to JSONL log.
  * 
  * When a migration fails (either forward step or rollback), this logger
- * appends a JSONL entry to <project>/.specforge/migration-error.log.
+ * appends a JSONL entry to <project>/specforge/migration-error.log.
  * 
  * The first entry in the log includes schema_version: "1.0" as a header record.
  * Subsequent entries are simple JSON objects without the schema_version field.
  * 
  * @see Requirements 13.2
- * @see design.md §<project>/.specforge/migration-error.log
+ * @see design.md §<project>/specforge/migration-error.log
  */
 
 import * as fs from 'node:fs/promises';
@@ -52,7 +52,7 @@ export interface MigrationErrorLogEntryParams {
 /**
  * MigrationErrorLogger - Appends JSONL entries to migration-error.log.
  * 
- * Log file location: <project>/.specforge/migration-error.log
+ * Log file location: <project>/specforge/migration-error.log
  * 
  * Log format (first entry includes schema_version header):
  * {"schema_version":"1.0","ts":"...","pair":[3,4],"err":"...","stack":"...","rollback":"ok"}
@@ -70,8 +70,8 @@ export class MigrationErrorLogger {
    */
   constructor(projectDir: string) {
     this.projectDir = projectDir;
-    // R13.2: Write to <project>/.specforge/migration-error.log
-    this.logFilePath = path.join(projectDir, '.specforge', 'migration-error.log');
+    // R13.2: Write to <project>/specforge/migration-error.log
+    this.logFilePath = path.join(projectDir, 'specforge', 'migration-error.log');
   }
 
   /**
@@ -93,7 +93,7 @@ export class MigrationErrorLogger {
     const entry = this.buildEntry(params);
     const line = JSON.stringify(entry) + '\n';
 
-    // Ensure .specforge directory exists
+    // Ensure specforge directory exists
     const specforgeDir = path.dirname(this.logFilePath);
     await fs.mkdir(specforgeDir, { recursive: true });
 

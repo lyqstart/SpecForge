@@ -134,7 +134,7 @@ function arbManifestPath(): fc.Arbitrary<string> {
       fc.constantFrom('/tmp', '/var', 'C:\\Users\\u', 'D:\\proj'),
       fc.string({ minLength: 1, maxLength: 16 }).filter((s) => !/[\u0000]/.test(s))
     )
-    .map(([root, name]) => `${root}/.specforge/${name}/manifest.json`);
+    .map(([root, name]) => `${root}/specforge/${name}/manifest.json`);
 }
 
 // =============================================================================

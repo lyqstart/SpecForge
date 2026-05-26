@@ -164,7 +164,7 @@ function example6_warningError() {
 // 运行所有示例
 // ============================================================================
 
-if (import.meta.main) {
+if (require.main === module) {
   console.log("error-payload 使用示例\n");
   console.log("=".repeat(60));
   console.log();

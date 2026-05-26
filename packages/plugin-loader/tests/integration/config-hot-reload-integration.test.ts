@@ -238,7 +238,7 @@ describe('Config Hot Reload Integration', () => {
       // Setup: Create both user and project configs
       const userConfigDir = path.join(tempDir, 'user-config');
       const projectDir = path.join(tempDir, 'project');
-      const projectConfigDir = path.join(projectDir, '.specforge', 'config');
+      const projectConfigDir = path.join(projectDir, 'specforge', 'config');
 
       await createGrantsConfig(userConfigDir, ['filesystem.read']);
       await createGrantsConfig(projectConfigDir, ['network']);

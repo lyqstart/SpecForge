@@ -52,7 +52,7 @@ export interface RunDoctorCommandArgs {
  *   min_supported_data_schema : 3
  *   data_schema_version       : 5
  *   user_manifest_path        : C:\Users\...\manifest.json
- *   project_manifest_path     : D:\proj\.specforge\manifest.json
+  *   project_manifest_path     : D:\proj\specforge\manifest.json
  *   mode                      : NORMAL_RW
  * ```
  */
@@ -83,10 +83,10 @@ function defaultUserManifestPath(): string {
 }
 
 /**
- * 默认项目 manifest 路径：<projectDir>/.specforge/manifest.json。
+ * 默认项目 manifest 路径：<projectDir>/specforge/manifest.json。
  */
 function defaultProjectManifestPath(projectDir: string): string {
-  return path.join(projectDir, '.specforge', 'manifest.json');
+  return path.join(projectDir, 'specforge', 'manifest.json');
 }
 
 /**

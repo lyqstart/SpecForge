@@ -101,7 +101,7 @@ async function runExample() {
   console.log('- Property 10: Permission Decision Traceability');
   console.log('- Requirement 1.3: Six-field event logging');
   console.log('- Requirement 7.3: Complete decision traceability');
-  console.log('\nEvents would be written to: ./.specforge/observability/events.jsonl');
+  console.log('\nEvents would be written to: ./specforge/observability/events.jsonl');
 }
 
 // Run the example

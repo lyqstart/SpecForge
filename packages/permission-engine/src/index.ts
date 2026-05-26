@@ -77,7 +77,7 @@ export class PermissionEngine {
     
     // Only add eventsFilePath if event logging is enabled
     if (this.config.eventLoggingEnabled) {
-      eventLoggerConfig.eventsFilePath = `./.specforge/observability/events.jsonl`;
+      eventLoggerConfig.eventsFilePath = `./specforge/observability/events.jsonl`;
     }
     
     this.eventLogger = new EventLogger(eventLoggerConfig);
@@ -303,7 +303,7 @@ export class PermissionEngine {
       
       // Only add eventsFilePath if event logging is enabled
       if (this.config.eventLoggingEnabled) {
-        eventLoggerConfig.eventsFilePath = `./.specforge/observability/events.jsonl`;
+        eventLoggerConfig.eventsFilePath = `./specforge/observability/events.jsonl`;
       }
       
       this.eventLogger = new EventLogger(eventLoggerConfig);

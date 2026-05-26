@@ -92,7 +92,7 @@ export class PluginPermissionValidator {
     this.config = {
       projectId: config.projectId || 'default-project',
       eventLoggingEnabled: config.eventLoggingEnabled ?? true,
-      eventsFilePath: config.eventsFilePath || './.specforge/observability/events.jsonl',
+      eventsFilePath: config.eventsFilePath || './specforge/observability/events.jsonl',
       logEvent: config.logEvent || this.defaultLogEvent.bind(this),
       defaultGrants: config.defaultGrants || { permissions: [] },
       allowedPermissions: config.allowedPermissions 

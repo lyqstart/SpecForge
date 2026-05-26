@@ -68,7 +68,7 @@ class InMemoryFS {
   }
 }
 
-const MANIFEST_PATH = '.specforge/manifest.json';
+const MANIFEST_PATH = 'specforge/manifest.json';
 
 /**
  * Build a MigrationContext backed by an in-memory FS.
@@ -101,7 +101,7 @@ function createMockContext(
       return Array.from(store.files.keys()).filter((p) => {
         if (!p.endsWith('.json')) return false;
         if (p === MANIFEST_PATH) return false; // manifest is owned by runner
-        if (p.startsWith('.specforge/')) return false; // skip internal files
+        if (p.startsWith('specforge/')) return false; // skip internal files
         if (prefix && !p.startsWith(prefix)) return false;
         // Top-level only when no subdir given
         if (!subdir) return !p.includes('/');

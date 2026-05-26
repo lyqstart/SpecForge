@@ -15,7 +15,7 @@ describe('ContentAddressableStorage', () => {
   afterEach(async () => {
     // Clean up test files
     const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const casDir = home ? `${home}/.specforge/cas` : '';
+    const casDir = home ? `${home}/specforge/cas` : '';
     // Note: In real tests, we would clean up the CAS directory
   });
 

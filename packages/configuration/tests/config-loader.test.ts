@@ -106,7 +106,7 @@ describe('config-loader', () => {
     })
 
     it('should throw error for invalid JSON in project config', async () => {
-      const testFile = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
       await mkdir(path.dirname(testFile), { recursive: true })
       await fs.writeFile(testFile, 'invalid json')
 
@@ -116,7 +116,7 @@ describe('config-loader', () => {
     })
 
     it('should throw error for permission denied on project config', async () => {
-      const testFile = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
       await mkdir(path.dirname(testFile), { recursive: true })
       await fs.writeFile(testFile, JSON.stringify({ key: 'value' }))
       // Make file unreadable
@@ -134,7 +134,7 @@ describe('config-loader', () => {
 })
 describe('loadAndMergeConfig', () => {
     it('should load and merge all configuration layers', async () => {
-      const testFile = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
       await mkdir(path.dirname(testFile), { recursive: true })
       await fs.writeFile(testFile, JSON.stringify({ projectKey: 'projectValue' }))
 
@@ -152,7 +152,7 @@ describe('loadAndMergeConfig', () => {
   })
 describe('loadProjectConfig with valid config', () => {
   it('should load valid project config file', async () => {
-    const testFile = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+    const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
     await mkdir(path.dirname(testFile), { recursive: true })
     await fs.writeFile(testFile, JSON.stringify({ key: 'value', nested: { a: 1 } }))
 
@@ -163,7 +163,7 @@ describe('loadProjectConfig with valid config', () => {
   })
 
   it('should throw for non-ENOENT errors on project config', async () => {
-    const testFile = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+    const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
     await mkdir(path.dirname(testFile), { recursive: true })
     await fs.writeFile(testFile, 'invalid json')
 

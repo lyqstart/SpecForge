@@ -161,7 +161,7 @@ export class PluginLoaderIntegration {
     this.config = {
       projectId: parsedConfig.projectId,
       eventLoggingEnabled: parsedConfig.eventLoggingEnabled ?? true,
-      eventsFilePath: parsedConfig.eventsFilePath || './.specforge/observability/events.jsonl',
+      eventsFilePath: parsedConfig.eventsFilePath || './specforge/observability/events.jsonl',
       allowedPermissions: parsedConfig.allowedPermissions || [],
       defaultGrants: parsedConfig.defaultGrants || { permissions: [] },
       allowedPaths: parsedConfig.allowedPaths || [],

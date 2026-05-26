@@ -289,7 +289,7 @@ export class JobWaiter {
       if (timeoutHandle) clearTimeout(timeoutHandle);
       if (unsubscribe) {
         try {
-          unsubscribe();
+          (unsubscribe as () => void)();
         } catch {
           // 不让 unsubscribe 异常掩盖原始错误
         }

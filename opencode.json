@@ -1,12 +1,3 @@
 {
-  "specforge": {
-    "daemon": {
-      "enabled": true,
-      "port": 0,
-      "autoStart": true,
-      "detached": true,
-      "idleTimeoutMs": 30000,
-      "workflowsDir": "configs/workflows/builtin"
-    }
-  }
+  "$schema": "https://opencode.ai/config.json",
 }

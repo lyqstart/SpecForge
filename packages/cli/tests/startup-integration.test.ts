@@ -26,7 +26,7 @@ function createTempProject(): string {
 
 // Helper to create project manifest
 function createProjectManifest(projectDir: string, dataSchemaVersion: number): void {
-  const manifestDir = path.join(projectDir, '.specforge');
+  const manifestDir = path.join(projectDir, 'specforge');
   fs.mkdirSync(manifestDir, { recursive: true });
   const manifest = {
     data_schema_version: dataSchemaVersion,
@@ -83,7 +83,7 @@ describe('CLI Startup Flow (Task 15.1)', () => {
         // We test by checking that the startup doesn't throw
         // Note: Full execution test would require daemon, so we test partial flow
         
-        expect(fs.existsSync(path.join(projectDir, '.specforge', 'manifest.json'))).toBe(true);
+        expect(fs.existsSync(path.join(projectDir, 'specforge', 'manifest.json'))).toBe(true);
       } finally {
         cleanupTempProject(projectDir);
       }
@@ -97,7 +97,7 @@ describe('CLI Startup Flow (Task 15.1)', () => {
         process.chdir(projectDir);
         
         // Verify no manifest exists
-        expect(fs.existsSync(path.join(projectDir, '.specforge', 'manifest.json'))).toBe(false);
+        expect(fs.existsSync(path.join(projectDir, 'specforge', 'manifest.json'))).toBe(false);
       } finally {
         cleanupTempProject(projectDir);
       }
@@ -114,7 +114,7 @@ describe('CLI Startup Flow (Task 15.1)', () => {
 
         // In degraded mode, CLI should exit non-zero
         // This would be tested in e2e with actual CLI invocation
-        expect(fs.existsSync(path.join(projectDir, '.specforge', 'manifest.json'))).toBe(true);
+        expect(fs.existsSync(path.join(projectDir, 'specforge', 'manifest.json'))).toBe(true);
       } finally {
         cleanupTempProject(projectDir);
       }

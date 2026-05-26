@@ -296,7 +296,7 @@ describe('merge-engine', () => {
           {
             type: 'project',
             timestamp: 0,
-            path: '/project/.specforge/config.json',
+            path: '/project/specforge/config.json',
             data: { apiKeys: { key: 'project' } },
           },
         ]
@@ -305,7 +305,7 @@ describe('merge-engine', () => {
         expect(result.metadata.validationErrors).toHaveLength(1)
         const error = result.metadata.validationErrors[0]
         expect(error.layer).toBe('project')
-        expect(error.path).toBe('/project/.specforge/config.json')
+        expect(error.path).toBe('/project/specforge/config.json')
       })
     })
 

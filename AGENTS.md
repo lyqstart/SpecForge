@@ -17,11 +17,10 @@ Each agent has a defined role, permissions, and workflow responsibilities.
 
 ## Core Rules
 
-1. All agents must follow the Agent Constitution defined in `specforge/agents/AGENT_CONSTITUTION.md`
-2. Agent contracts are located in `specforge/agents/contracts/`
-3. State transitions must go through the `sf_state_transition` tool (only Orchestrator may call it)
-4. Gate checks (requirements, design, tasks, verification) must not be bypassed
-5. Sub-agents cannot dispatch other agents — only the Orchestrator can
+1. All agents must follow the Agent Constitution defined in `_AGENT_BASE.md` (user-level)
+2. State transitions must go through the `sf_state_transition` tool (only Orchestrator may call it)
+3. Gate checks (requirements, design, tasks, verification) must not be bypassed
+4. Sub-agents cannot dispatch other agents — only the Orchestrator can
 
 ## Workflow
 
@@ -40,4 +39,3 @@ Project runtime data is stored in `specforge/`:
 - `specforge/logs/` — Execution logs and traces
 - `specforge/sessions/` — Session archives
 - `specforge/knowledge/` — Knowledge graph data
-- `specforge/agents/` — Agent constitution and contracts
