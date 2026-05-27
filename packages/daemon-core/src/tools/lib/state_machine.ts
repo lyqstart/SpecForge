@@ -25,9 +25,10 @@ export type WorkflowType =
 // ============================================================
 
 /**
- * Feature Spec 工作流的所有合法状态
+ * 所有工作流的合法状态（单一权威来源）
  */
 export const ALL_STATES = [
+  // ── Feature Spec 标准状态 ──
   "intake",
   "requirements",
   "requirements_gate",
@@ -41,6 +42,31 @@ export const ALL_STATES = [
   "verification_gate",
   "completed",
   "blocked",
+  // ── Bugfix Spec ──
+  "bugfix_analysis",
+  "bugfix_gate",
+  "fix_design",
+  // ── Quick Change ──
+  "quick_tasks",
+  // ── Change Request ──
+  "impact_analysis",
+  "impact_analysis_gate",
+  "design_delta",
+  // ── Refactor ──
+  "refactor_analysis",
+  "refactor_analysis_gate",
+  "refactor_plan",
+  "refactor_plan_gate",
+  // ── Ops Task ──
+  "ops_plan",
+  "ops_plan_gate",
+  "execution",
+  // ── Investigation ──
+  "investigation_plan",
+  "investigation_plan_gate",
+  "research",
+  "findings_report",
+  "findings_report_gate",
 ] as const
 
 export type WorkflowState = (typeof ALL_STATES)[number]

@@ -15,20 +15,13 @@ import * as path from 'path';
 import { Event, ProjectState, WorkItemState } from '../types';
 import { WAL } from '../wal';
 
+import { ALL_STATES } from '../tools/lib/state_machine';
+
 /**
- * Valid workflow states in transition order.
+ * Valid workflow states — sourced from the single authority in state_machine.ts.
  * All state transitions must move between these states.
  */
-const VALID_STATES: readonly string[] = [
-  'intake',
-  'requirements',
-  'design',
-  'tasks',
-  'development',
-  'review',
-  'verification',
-  'completed',
-] as const;
+const VALID_STATES: readonly string[] = ALL_STATES;
 
 /**
  * Default workflow type for new Work Items when not explicitly provided.
