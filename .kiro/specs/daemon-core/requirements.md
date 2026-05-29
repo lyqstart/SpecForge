@@ -42,8 +42,8 @@ This specification inherits and must implement the following **Correctness Prope
 
 **Validates: Requirements 12.3**
 
-### Property 21: Session Reconnect Scope
-*For all* Daemon runtime event streams, "automatic reconnection attempts to old OpenCode sessions" may only occur within the Daemon startup process; after startup completes, even if old sessions are detected as alive, the Daemon must not automatically initiate reconnection.
+### Property 21: Session WAL Replay Scope
+*For all* Daemon runtime event streams, WAL-replay-based session state reconstruction may only occur within the Daemon startup process; after startup completes, the Daemon must not automatically initiate session state reconstruction via WAL replay.
 
 **Validates: Requirements 12.4, 12.5**
 
@@ -165,7 +165,7 @@ This specification must implement the following property-based tests correspondi
 4. **Property 6 Test**: Verify idempotent recovery from event streams
 5. **Property 7 Test**: Verify WAL ordering (events.jsonl fsync before state.json update)
 6. **Property 20 Test**: Verify recovery consistency repair rules
-7. **Property 21 Test**: Verify session reconnect scope limitation to startup only
+7. **Property 21 Test**: Verify session WAL replay scope limitation to startup only
 8. **Property 22 Test**: Verify project isolation (no cross-project state leakage)
 9. **Property 30 Test**: Verify event schema multi-sync readiness properties
 

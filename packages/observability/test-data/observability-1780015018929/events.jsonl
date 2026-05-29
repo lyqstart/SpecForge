@@ -1,0 +1,1 @@
+{"schema_version":"1.0","eventId":"test-event-1780015018931-0.08594292687097072","ts":1780015018931000000,"monotonicSeq":1,"projectId":"test-project","workItemId":"test-workitem","actor":{"id":"test-agent","name":"TestAgent","type":"agent"},"category":"tool","action":"tool.error","payload":{"toolId":"test-tool","error":"test error"}}

@@ -20,9 +20,9 @@ import type {
   AnalysisResult, 
   PermissionTrace,
   PermissionDecisionEvent
-} from '@/types';
-import { EventLogger } from '@/event-logger/index.js';
-import { CAS, BLOB_REF_PREFIX } from '@/cas/index.js';
+} from '../types';
+import { EventLogger } from '../event-logger/index.js';
+import { CAS, BLOB_REF_PREFIX } from '../cas/index.js';
 
 /**
  * Query API configuration

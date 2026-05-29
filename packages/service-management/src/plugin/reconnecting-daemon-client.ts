@@ -18,6 +18,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
 import type { HandshakeFile } from "../types/handshake.js";
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 
 /**
  * Result of a postEvent call
@@ -26,6 +27,15 @@ export interface PostResult {
   ok: boolean;
   dropped: boolean;
   reason: "success" | "degraded" | "disposed";
+}
+
+/**
+ * Response from the daemon register endpoint
+ */
+export interface RegisterResponse {
+  sessionId: string;
+  projectId: string;
+  mode: 'personal' | 'enterprise';
 }
 
 /**
@@ -51,7 +61,7 @@ const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
   initialDelayMs: 1000,
   backoffFactor: 2.0,
   maxCumulativeBackoffMs: 60000,
-  handshakePath: join(homedir(), ".specforge", "runtime", "handshake.json"),
+  handshakePath: join(homedir(), SPEC_DIR_NAME, "runtime", "handshake.json"),
   healthzUrl: "http://127.0.0.1",
 };
 
@@ -73,8 +83,10 @@ async function readHandshake(path: string): Promise<HandshakeFile | null> {
 async function postEventToDaemon(
   url: string,
   token: string,
+  sessionId: string,
   type: string,
-  data: unknown
+  data: unknown,
+  ts?: number
 ): Promise<boolean> {
   try {
     const response = await fetch(`${url}/api/v1/ingest/event`, {
@@ -83,7 +95,7 @@ async function postEventToDaemon(
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ type, data }),
+      body: JSON.stringify({ sessionId, type, data, ts: ts ?? Date.now() }),
       signal: AbortSignal.timeout(5000), // 5s timeout per request
     });
     return response.ok;
@@ -122,7 +134,7 @@ export class ReconnectingDaemonClient implements Disposable {
   private currentBackoffMs: number;
   private cumulativeBackoffMs = 0;
   private retryCount = 0;
-  private pendingEvent: { type: string; data: unknown } | null = null;
+  private pendingEvent: { sessionId: string; type: string; data: unknown } | null = null;
   /**
    * Cached handshake (port + token).
    * Invalidated when:
@@ -156,7 +168,7 @@ export class ReconnectingDaemonClient implements Disposable {
    * - On POST failure, cache is invalidated and refreshed on next attempt
    *   (this catches daemon restart with new port/token)
    */
-  async postEvent(type: string, data: unknown): Promise<PostResult> {
+  async postEvent(sessionId: string, type: string, data: unknown): Promise<PostResult> {
     // Check disposed state first
     if (this.disposed) {
       return { ok: false, dropped: true, reason: "disposed" };
@@ -179,13 +191,13 @@ export class ReconnectingDaemonClient implements Disposable {
 
     if (!handshake) {
       // No handshake on disk - start backoff
-      return this.startBackoff(type, data);
+      return this.startBackoff(sessionId, type, data);
     }
 
     const url = `${this.options.healthzUrl}:${handshake.port}`;
 
     // Post the event - do NOT log the token (Req 11.4)
-    const success = await postEventToDaemon(url, handshake.token, type, data);
+    const success = await postEventToDaemon(url, handshake.token, sessionId, type, data);
 
     if (success) {
       // Reset backoff state on success, keep cache valid
@@ -196,18 +208,19 @@ export class ReconnectingDaemonClient implements Disposable {
     // Failed - invalidate cache (daemon may have restarted with new port/token)
     // and start backoff loop. Next retry will re-read handshake from disk.
     this.cachedHandshake = null;
-    return this.startBackoff(type, data);
+    return this.startBackoff(sessionId, type, data);
   }
 
   /**
    * Starts the exponential backoff retry loop
    */
   private async startBackoff(
+    sessionId: string,
     type: string,
     data: unknown
   ): Promise<PostResult> {
     // Store the event for retry
-    this.pendingEvent = { type, data };
+    this.pendingEvent = { sessionId, type, data };
 
     // Check if we've exceeded cumulative backoff
     if (this.cumulativeBackoffMs >= this.options.maxCumulativeBackoffMs) {
@@ -289,14 +302,14 @@ export class ReconnectingDaemonClient implements Disposable {
       return { ok: false, dropped: true, reason: "disposed" };
     }
 
-    const { type, data } = this.pendingEvent;
+    const { sessionId, type, data } = this.pendingEvent;
 
     // Re-read handshake for fresh port/token (cache was invalidated)
     const handshake = await readHandshake(this.options.handshakePath);
 
     if (!handshake) {
       // Still no handshake - continue backoff
-      return this.startBackoff(type, data);
+      return this.startBackoff(sessionId, type, data);
     }
 
     const url = `${this.options.healthzUrl}:${handshake.port}`;
@@ -306,11 +319,11 @@ export class ReconnectingDaemonClient implements Disposable {
 
     if (!healthy) {
       // Continue backoff
-      return this.startBackoff(type, data);
+      return this.startBackoff(sessionId, type, data);
     }
 
     // Post the event - token NOT logged (Req 11.4)
-    const success = await postEventToDaemon(url, handshake.token, type, data);
+    const success = await postEventToDaemon(url, handshake.token, sessionId, type, data);
 
     if (success) {
       // Update cache with fresh handshake on successful reconnect
@@ -321,7 +334,7 @@ export class ReconnectingDaemonClient implements Disposable {
     }
 
     // Still failing - continue backoff
-    return this.startBackoff(type, data);
+    return this.startBackoff(sessionId, type, data);
   }
 
   /**
@@ -380,6 +393,86 @@ export class ReconnectingDaemonClient implements Disposable {
    */
   getActiveBackoffTimerCount(): number {
     return this.backoffTimer !== null ? 1 : 0;
+  }
+
+  /**
+   * Register a project with the daemon.
+   *
+   * Reads handshake.json, POSTs to /api/v1/ingest/register,
+   * and returns the session identity assigned by the daemon.
+   *
+   * @param projectPath Path to the project directory
+   * @returns RegisterResponse with sessionId, projectId, and mode
+   * @throws Error if daemon is unreachable or registration fails
+   */
+  async register(projectPath: string): Promise<RegisterResponse> {
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) {
+      throw new Error('Daemon handshake not found');
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    const response = await fetch(`${url}/api/v1/ingest/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${handshake.token}`,
+      },
+      body: JSON.stringify({ projectPath }),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      throw new Error(
+        `Register failed: ${response.status} ${response.statusText}${errorBody ? ' - ' + errorBody : ''}`,
+      );
+    }
+
+    const body = await response.json();
+    if (!body.success || !body.data) {
+      throw new Error(`Register returned unexpected response: ${JSON.stringify(body)}`);
+    }
+
+    return body.data as RegisterResponse;
+  }
+
+  /**
+   * Get shell environment variables from the daemon.
+   *
+   * Sends a shell.env event to the daemon and returns the environment
+   * key-value pairs to be injected into the user's shell.
+   *
+   * @param sessionId Session ID obtained from register()
+   * @returns Environment variables key-value pairs, or {} if daemon unreachable
+   */
+  async getShellEnv(sessionId: string): Promise<Record<string, string>> {
+    try {
+      const handshake = await readHandshake(this.options.handshakePath);
+      if (!handshake) {
+        return {};
+      }
+
+      const url = `${this.options.healthzUrl}:${handshake.port}`;
+      const response = await fetch(`${url}/api/v1/ingest/event`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ sessionId, type: 'shell.env', data: {} }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) {
+        return {};
+      }
+
+      const body = await response.json();
+      return body.data?.env ?? {};
+    } catch {
+      return {};
+    }
   }
 
   /**

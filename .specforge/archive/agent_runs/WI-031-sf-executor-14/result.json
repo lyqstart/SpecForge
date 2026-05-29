@@ -1,0 +1,1 @@
+{"run_id":"WI-031-sf-executor-14","work_item_id":"WI-031","agent_name":"sf-executor","status":"blocked","task_description":"TASK-14: 集成测试","retry_count":0,"notes":"Pre-existing compilation issues: duplicate methods in SessionRegistry.ts, types.test.ts field names, observability build"}

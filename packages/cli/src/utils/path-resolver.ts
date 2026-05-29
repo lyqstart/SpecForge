@@ -14,6 +14,7 @@
 import * as os from "node:os";
 import * as path from "node:path";
 import { ErrorCode } from "../distribution/types.js";
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * PathResolver 接口
@@ -68,7 +69,7 @@ export class DefaultPathResolver implements PathResolver {
     }
 
     const home = this.resolveHomeDirectory();
-    return path.join(home, ".specforge");
+    return path.join(home, SPEC_DIR_NAME);
   }
 
   /**

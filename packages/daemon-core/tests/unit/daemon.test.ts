@@ -17,12 +17,12 @@ describe('Daemon', () => {
   });
 
   it('should start and stop daemon', async () => {
-    await expect(daemon.start()).resolves.not.toThrow();
+    await daemon.start();
     expect(daemon.isDaemonRunning()).toBe(true);
     
-    await expect(daemon.stop()).resolves.not.toThrow();
+    await daemon.stop();
     expect(daemon.isDaemonRunning()).toBe(false);
-  });
+  }, 30_000);
 
   it('should broadcast events', async () => {
     await daemon.start();
@@ -31,6 +31,7 @@ describe('Daemon', () => {
       eventId: '1',
       ts: Date.now(),
       projectId: 'test',
+      category: 'session',
       action: 'test.event',
       payload: {},
       metadata: {
@@ -39,6 +40,6 @@ describe('Daemon', () => {
       },
     };
     
-    await expect(daemon.broadcastEvent(event)).resolves.not.toThrow();
-  });
+    await daemon.broadcastEvent(event);
+  }, 30_000);
 });

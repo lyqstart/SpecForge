@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "source": "sidecar",
+  "run_id": "WI-001-sf-executor-4",
+  "work_item_id": "WI-001",
+  "agent_name": "sf-executor",
+  "start_time": null,
+  "end_time": "2026-05-24T01:42:06.447Z",
+  "duration_ms": null,
+  "status": "completed",
+  "task_description": null,
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": null,
+  "conversation_recorded": null,
+  "parallel_batch": null,
+  "parallel_peers": null,
+  "work_log_path": "specforge/archive/agent_runs/WI-001-sf-executor-4/work_log.md",
+  "sidecar_generated_at": "2026-05-24T01:42:06.447Z"
+}

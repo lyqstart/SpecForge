@@ -14,6 +14,7 @@ import * as fsSync from 'fs';
 import * as path from 'path';
 import { Event, ProjectState, WorkItemState } from '../types';
 import { WAL } from '../wal';
+import { IPathResolver } from '../daemon/path-resolver';
 
 import { ALL_STATES } from '../tools/lib/state_machine';
 
@@ -32,33 +33,27 @@ export class StateManager {
   private wal: WAL;
   private statePath: string;
   private projectPath: string;
+  private pathResolver: IPathResolver;
 
   /** In-memory state map: work_item_id → WorkItemState */
   private workItemStates: Map<string, WorkItemState> = new Map();
 
-  constructor(projectPath: string) {
-    this.projectPath = projectPath;
-    this.wal = new WAL(projectPath);
-    
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const projectHash = this.hashPath(projectPath);
-    this.statePath = home 
-      ? path.join(home, '.specforge', 'projects', projectHash, 'state.json')
-      : '';
-  }
+  /** Last event ID from the WAL (tracked for all events, not just transitions) */
+  private _lastEventId: string = '';
 
-  /**
-   * Generate a safe filename from project path
-   */
-  private hashPath(projectPath: string): string {
-    // Simple hash for filesystem safety
-    let hash = 0;
-    for (let i = 0; i < projectPath.length; i++) {
-      const char = projectPath.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
+  /** Timestamp of the last event from the WAL */
+  private _lastEventTs: number = 0;
+
+  constructor(pathResolver: IPathResolver, projectPath: string, isDaemonGlobal: boolean = false) {
+    this.pathResolver = pathResolver;
+    this.projectPath = projectPath;
+    if (isDaemonGlobal) {
+      this.wal = new WAL(pathResolver.resolveDaemonEventsPath());
+      this.statePath = pathResolver.resolveDaemonStatePath();
+    } else {
+      this.wal = new WAL(pathResolver.resolveEventsPath(projectPath));
+      this.statePath = pathResolver.resolveStatePath(projectPath);
     }
-    return Math.abs(hash).toString(16).padStart(8, '0');
   }
 
   // ═══════════════════════════════════════════════════
@@ -198,6 +193,15 @@ export class StateManager {
     return Array.from(this.workItemStates.values());
   }
 
+  /**
+   * Get the internal WAL instance.
+   * Used by Daemon.ts to eliminate a separate private wal field,
+   * ensuring a single WAL instance via StateManager.
+   */
+  getWal(): WAL {
+    return this.wal;
+  }
+
   // ═══════════════════════════════════════════════════
   //  Rebuild
   // ═══════════════════════════════════════════════════
@@ -212,7 +216,7 @@ export class StateManager {
    * After rebuild, state.json is updated to match.
    */
   async rebuildState(): Promise<ProjectState> {
-    const events = await this.wal.readAllEvents();
+    const { events } = await this.wal.readAllEvents();
     
     // Clear and rebuild
     this.workItemStates.clear();
@@ -230,6 +234,10 @@ export class StateManager {
         this.applyStateTransition(event);
       }
     }
+
+    // Persist last event tracking for getCurrentState()
+    this._lastEventId = lastEventId;
+    this._lastEventTs = lastEventTs;
 
     const state: ProjectState = {
       projectPath: this.projectPath,
@@ -268,12 +276,16 @@ export class StateManager {
     // Step 1: Append event to WAL (events.jsonl) with fsync
     await this.wal.appendEvent(event);
     
-    // Step 2: Apply event to in-memory state
+    // Step 2: Track last event info for all events
+    this._lastEventId = event.eventId;
+    this._lastEventTs = event.ts ?? Date.now();
+
+    // Step 3: Apply event to in-memory state
     if (event.action === 'state.transition') {
       this.applyStateTransition(event);
     }
 
-    // Step 3: Persist state.json AFTER WAL fsync completes
+    // Step 4: Persist state.json AFTER WAL fsync completes
     await this.persistState();
   }
 
@@ -306,6 +318,10 @@ export class StateManager {
         this.applyStateTransition(event);
       }
     }
+
+    // Persist last event tracking
+    this._lastEventId = lastEventId;
+    this._lastEventTs = lastEventTs;
 
     return {
       projectPath: this.projectPath,
@@ -376,22 +392,14 @@ export class StateManager {
    */
   private buildProjectState(): ProjectState {
     const workItems = Array.from(this.workItemStates.values());
-    // Find the latest updated_at to calculate lastEventId/Ts
-    let lastEventId = '';
-    let lastEventTs = 0;
-    for (const wi of workItems) {
-      if (wi.updated_at > lastEventTs) {
-        lastEventTs = wi.updated_at;
-      }
-    }
 
     return {
       projectPath: this.projectPath,
       schemaVersion: '1.0',
       activeSessions: [],
       workItems,
-      lastEventId,
-      lastEventTs,
+      lastEventId: this._lastEventId,
+      lastEventTs: this._lastEventTs,
     };
   }
 

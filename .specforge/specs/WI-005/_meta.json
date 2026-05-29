@@ -1,0 +1,14 @@
+{
+  "id": "WI-005",
+  "workflow_type": "change_request",
+  "title": "WAL/StateManager 单例化（Phase 1）",
+  "summary": "消除 Daemon.ts 多 WAL 实例竞态、修复 path-resolver 嵌套 statePath、RecoverySubsystem 依赖注入、ProjectManager 不再为每个项目创建独立 StateManager。",
+  "key_decisions": [
+    "Daemon.ts 不再单独持 WAL，改为引用 stateManager.getWal()",
+    "修复 path-resolver.ts 嵌套 statePath 问题"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-27T00:00:00Z",
+  "completed_at": "2026-05-27T00:00:00Z",
+  "upstream_wis": ["WI-002", "WI-003", "WI-004"]
+}

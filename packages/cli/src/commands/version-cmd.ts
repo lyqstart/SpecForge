@@ -18,6 +18,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { SchemaVersionManager } from '../distribution/schema-version-manager.js';
 import type { VersionInfoPayload, InstallationRecord } from '../distribution/types.js';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Version 命令选项
@@ -68,7 +69,7 @@ function resolveHomeDirectory(): string {
 async function loadInstallationSchemaVersion(): Promise<string | null> {
   try {
     const home = resolveHomeDirectory();
-    const installationPath = path.join(home, '.specforge', '.installation.json');
+    const installationPath = path.join(home, SPEC_DIR_NAME, '.installation.json');
     
     // 尝试读取文件
     const content = await fs.readFile(installationPath, 'utf-8');
@@ -148,7 +149,7 @@ export async function runVersionCommand(options: VersionCommandOptions): Promise
   let installRoot: string;
   try {
     const home = resolveHomeDirectory();
-    installRoot = path.join(home, '.specforge');
+    installRoot = path.join(home, SPEC_DIR_NAME);
   } catch (error) {
     // 如果 HOME 未设置，使用占位符
     installRoot = '<HOME not set>';

@@ -9,6 +9,7 @@
 
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
+import { SPEC_DIR_NAME, LAYOUT, resolveProjectPath } from "@specforge/types/directory-layout"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 
 // ============================================================
@@ -87,8 +88,8 @@ export interface KGOperationResult {
 const VALID_NODE_TYPES: NodeType[] = ["requirement", "design_decision", "task", "code_file", "refactor_target", "ops_action"]
 const VALID_EDGE_TYPES: EdgeType[] = ["traces_to", "decomposes_to", "modifies", "implements", "affects"]
 const LOCK_TIMEOUT = 5000
-const GRAPH_RELATIVE_PATH = join("specforge", "knowledge", "graph.json")
-const CONFIG_RELATIVE_PATH = join("specforge", "config", "project.json")
+const GRAPH_RELATIVE_PATH = join(SPEC_DIR_NAME, LAYOUT.knowledgeGraph)
+const CONFIG_RELATIVE_PATH = join(SPEC_DIR_NAME, LAYOUT.configFiles.project)
 
 // ============================================================
 // Validation Functions
@@ -974,7 +975,7 @@ export async function syncFromSpec(
   }
 
   const store = loadResult.store
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
+  const specDir = resolveProjectPath(baseDir, "specs", workItemId)
   const warnings: string[] = []
 
   let summary: SyncSummary = {
@@ -1044,7 +1045,7 @@ async function syncRequirements(
   specDir: string
 ): Promise<{ summary: SyncSummary; warnings: string[] }> {
   const filePath = join(specDir, "requirements.md")
-  const sourceFile = `specforge/specs/${workItemId}/requirements.md`
+  const sourceFile = `${SPEC_DIR_NAME}/specs/${workItemId}/requirements.md`
   let content: string
 
   try {
@@ -1066,7 +1067,7 @@ async function syncDesign(
   specDir: string
 ): Promise<{ summary: SyncSummary; warnings: string[] }> {
   const filePath = join(specDir, "design.md")
-  const sourceFile = `specforge/specs/${workItemId}/design.md`
+  const sourceFile = `${SPEC_DIR_NAME}/specs/${workItemId}/design.md`
   let content: string
 
   try {
@@ -1096,7 +1097,7 @@ async function syncTasks(
   specDir: string
 ): Promise<{ summary: SyncSummary; warnings: string[] }> {
   const filePath = join(specDir, "tasks.md")
-  const sourceFile = `specforge/specs/${workItemId}/tasks.md`
+  const sourceFile = `${SPEC_DIR_NAME}/specs/${workItemId}/tasks.md`
   let content: string
 
   try {

@@ -1,0 +1,15 @@
+{
+  "run_id": "WI-031-sf-design-1",
+  "work_item_id": "WI-031",
+  "agent_name": "sf-design",
+  "start_time": "2026-05-27T00:20:00Z",
+  "end_time": "2026-05-27T00:30:00Z",
+  "duration_ms": 600000,
+  "status": "completed",
+  "task_description": "生成 daemon 存储架构重构 + 事件处理实现的增量设计文档",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": true,
+  "output_artifact": "design_delta.md"
+}

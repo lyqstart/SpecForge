@@ -19,6 +19,7 @@ import { StateManager } from '../../src/state/StateManager';
 import { WAL } from '../../src/wal/WAL';
 import { Daemon } from '../../src/daemon/Daemon';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
+import { IPathResolver } from '../../src/daemon/path-resolver';
 
 const VALID_STATES = [
   'intake', 'requirements', 'design', 'tasks',
@@ -35,6 +36,41 @@ function uniqueProject(name: string): string {
 
 const validStateArb = fc.constantFrom(...VALID_STATES);
 
+/**
+ * Test path resolver that isolates all file I/O under a temp directory.
+ */
+class TestPathResolver implements IPathResolver {
+  constructor(private tmpDir: string) {}
+
+  resolveProjectRuntimeDir(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime');
+  }
+  resolveStatePath(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime', 'state.json');
+  }
+  resolveEventsPath(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime', 'events.jsonl');
+  }
+  resolveSessionsDir(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime', 'sessions');
+  }
+  resolveDaemonRuntimeDir(): string {
+    return path.join(this.tmpDir, 'daemon');
+  }
+  resolveHandshakePath(): string {
+    return path.join(this.tmpDir, 'daemon', 'handshake.json');
+  }
+  resolveDaemonJsonPath(): string {
+    return path.join(this.tmpDir, 'daemon', 'daemon.json');
+  }
+  resolveDaemonStatePath(): string {
+    return path.join(this.tmpDir, 'daemon', 'state.json');
+  }
+  resolveDaemonEventsPath(): string {
+    return path.join(this.tmpDir, 'daemon', 'events.jsonl');
+  }
+}
+
 const transitionChainArb = fc.array(
   fc.record({
     workItemId: fc.string({ minLength: 1, maxLength: 20 }).filter((s) => s.trim().length > 0),
@@ -45,9 +81,11 @@ const transitionChainArb = fc.array(
 
 describe('E1 PBT State', () => {
   let tmpDir: string;
+  let pathResolver: TestPathResolver;
 
   beforeEach(() => {
     tmpDir = makeTmpDir();
+    pathResolver = new TestPathResolver(tmpDir);
   });
 
   afterEach(async () => {
@@ -59,7 +97,7 @@ describe('E1 PBT State', () => {
       await fc.assert(
         fc.asyncProperty(transitionChainArb, async (chain) => {
           const projectPath = uniqueProject('st01');
-          const sm = new StateManager(projectPath);
+          const sm = new StateManager(pathResolver, projectPath);
           await sm.initialize();
 
           let transitionsApplied = 0;
@@ -76,9 +114,9 @@ describe('E1 PBT State', () => {
             }
           }
 
-          const wal = new WAL(projectPath);
+          const wal = new WAL(pathResolver.resolveEventsPath(projectPath));
           await wal.initialize();
-          const events = await wal.readAllEvents();
+          const { events } = await wal.readAllEvents();
           const stateEvents = events.filter((e) => e.action === 'state.transition');
 
           expect(stateEvents).toHaveLength(transitionsApplied);
@@ -91,7 +129,7 @@ describe('E1 PBT State', () => {
   describe('PBT-ST-02: Idempotency — replay produces same state', () => {
     it('should produce identical state on repeated getCurrentState calls', async () => {
       const projectPath = uniqueProject('st02');
-      const sm = new StateManager(projectPath);
+      const sm = new StateManager(pathResolver, projectPath);
       await sm.initialize();
 
       await sm.transition('WI-IDEM', '', 'intake', 'system');
@@ -108,14 +146,14 @@ describe('E1 PBT State', () => {
     it('should produce same final state after fresh StateManager rebuild', async () => {
       const projectPath = uniqueProject('st02r');
 
-      const sm1 = new StateManager(projectPath);
+      const sm1 = new StateManager(pathResolver, projectPath);
       await sm1.initialize();
       await sm1.transition('WI-R1', '', 'intake', 'system');
       await sm1.transition('WI-R1', 'intake', 'requirements', 'system');
 
       const state1 = await sm1.getCurrentState();
 
-      const sm2 = new StateManager(projectPath);
+      const sm2 = new StateManager(pathResolver, projectPath);
       await sm2.initialize();
       const state2 = await sm2.getCurrentState();
 
@@ -137,7 +175,7 @@ describe('E1 PBT State', () => {
           ),
           async (transitions) => {
             const projectPath = uniqueProject('st02a');
-            const sm = new StateManager(projectPath);
+            const sm = new StateManager(pathResolver, projectPath);
             await sm.initialize();
 
             const currentState = new Map<string, string>();
@@ -155,7 +193,7 @@ describe('E1 PBT State', () => {
             }
 
             const state1 = await sm.getCurrentState();
-            const sm2 = new StateManager(projectPath);
+            const sm2 = new StateManager(pathResolver, projectPath);
             await sm2.initialize();
             const state2 = await sm2.getCurrentState();
 
@@ -181,7 +219,7 @@ describe('E1 PBT State', () => {
       await fc.assert(
         fc.asyncProperty(invalidStateArb, async (invalidState) => {
           const projectPath = uniqueProject('st03');
-          const sm = new StateManager(projectPath);
+          const sm = new StateManager(pathResolver, projectPath);
           await sm.initialize();
 
           await expect(

@@ -1,0 +1,13 @@
+{
+  "id": "WI-003",
+  "workflow_type": "bugfix_spec",
+  "title": "Phase 0 热修：OpenCode 事件路由断链",
+  "summary": "修复 SpecForge daemon 日志中 'No session binding found' 的问题。根因：HTTPServer 丢弃顶层 sessionId，SessionRegistry 映射逻辑全部 miss。",
+  "key_decisions": [
+    "Phase 0 最小修复：HTTPServer L1137-L1140 把顶层 sessionId 合并进 payload"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-27T00:00:00Z",
+  "completed_at": "2026-05-27T00:00:00Z",
+  "upstream_wis": ["WI-002"]
+}

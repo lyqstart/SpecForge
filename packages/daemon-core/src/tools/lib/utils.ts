@@ -5,6 +5,7 @@
 
 import { mkdir, appendFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
+import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
 
 // ============================================================
 // Types
@@ -146,7 +147,7 @@ export function createLogEntry(
 /**
  * 错误日志写入路径常量（相对于 baseDir）
  */
-export const ERROR_LOG_RELATIVE_PATH = "specforge/logs/error.log"
+export const ERROR_LOG_RELATIVE_PATH = `${SPEC_DIR_NAME}/logs/error.log`
 
 /**
  * 将错误信息写入 Error_Log（specforge/logs/error.log）
@@ -161,7 +162,7 @@ export async function logErrorToFile(
   try {
     const errorLogPath = join(baseDir, ERROR_LOG_RELATIVE_PATH)
     // Ensure directory exists
-    const dir = join(baseDir, "specforge", "logs")
+    const dir = resolveProjectPath(baseDir, 'logs')
     await mkdir(dir, { recursive: true })
     // Write error entry
     await appendJsonl(errorLogPath, {
@@ -200,8 +201,8 @@ export async function recordGateResult(
   result: { status: string; blocking_issues: string[]; warnings: string[] },
   baseDir: string
 ): Promise<void> {
-  const eventsPath = join(baseDir, "specforge", "runtime", "events.jsonl")
-  const errorLogPath = join(baseDir, "specforge", "logs", "error.log")
+  const eventsPath = resolveProjectPath(baseDir, 'runtime', 'events.jsonl')
+  const errorLogPath = join(resolveProjectPath(baseDir, 'logs'), 'error.log')
 
   const entry: GateResultEntry = {
     type: "gate_result",

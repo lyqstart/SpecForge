@@ -8,6 +8,7 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
 
 export interface CASBlobReference {
   type: 'cas-blob';
@@ -21,7 +22,7 @@ export class ContentAddressableStorage {
 
   constructor(baseDir?: string) {
     const dir = baseDir || process.cwd();
-    this.storageDir = path.join(dir, 'specforge', 'cas');
+    this.storageDir = resolveProjectPath(dir, 'cas');
   }
 
   /**

@@ -21,6 +21,7 @@ import type { PluginPermission } from '../manifest';
 import type { GrantsConfig } from '../grants';
 import { isGrantsConfig, mergeGrants } from '../grants';
 import { AuthorizationCollection, type AuthorizationSource } from './AuthorizationCollection';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 // ---------------------------------------------------------------------------
 // 常量
@@ -28,12 +29,6 @@ import { AuthorizationCollection, type AuthorizationSource } from './Authorizati
 
 /** 配置文件名 */
 const GRANTS_FILE_NAME = 'plugin-grants.json';
-
-/** SpecForge 配置目录名 */
-const SPECFORGE_DIR = '.specforge';
-
-/** 用户主目录下的 SpecForge 配置路径 */
-const USER_CONFIG_DIR = '.specforge';
 
 /** 内置默认授权配置（Layer 1） */
 const DEFAULT_GRANTS: GrantsConfig = {
@@ -270,7 +265,7 @@ export class ConfigLoader {
   constructor() {
     // 初始化用户配置目录
     const homeDir = getUserHomeDir();
-    this.userConfigDir = path.join(homeDir, USER_CONFIG_DIR, 'config');
+    this.userConfigDir = path.join(homeDir, SPEC_DIR_NAME, 'config');
   }
 
   /**
@@ -324,7 +319,7 @@ export class ConfigLoader {
         });
         allLoaded = false;
       } else {
-        const projectConfigPath = path.join(projectRoot, SPECFORGE_DIR, 'config', GRANTS_FILE_NAME);
+        const projectConfigPath = path.join(projectRoot, SPEC_DIR_NAME, 'config', GRANTS_FILE_NAME);
 
         // 安全检查：确保路径在项目目录内（防止路径遍历）
         if (!isPathSafe(projectConfigPath, normalizedProjectRoot)) {
@@ -482,7 +477,7 @@ export class ConfigLoader {
    * 检查项目级配置是否存在
    */
   async hasProjectConfig(projectRoot: string): Promise<boolean> {
-    const projectConfigPath = path.join(projectRoot, SPECFORGE_DIR, 'config', GRANTS_FILE_NAME);
+    const projectConfigPath = path.join(projectRoot, SPEC_DIR_NAME, 'config', GRANTS_FILE_NAME);
     return pathExists(projectConfigPath);
   }
 
@@ -526,7 +521,7 @@ export class ConfigLoader {
     projectRoot: string,
     initialPermissions?: PluginPermission[],
   ): Promise<GrantsConfig> {
-    const projectConfigDir = path.join(projectRoot, SPECFORGE_DIR, 'config');
+    const projectConfigDir = path.join(projectRoot, SPEC_DIR_NAME, 'config');
     const projectConfigPath = path.join(projectConfigDir, GRANTS_FILE_NAME);
     const exists = await pathExists(projectConfigPath);
 
@@ -596,7 +591,7 @@ export class ConfigLoader {
       },
     };
 
-    const projectConfigPath = path.join(projectRoot, SPECFORGE_DIR, 'config', GRANTS_FILE_NAME);
+    const projectConfigPath = path.join(projectRoot, SPEC_DIR_NAME, 'config', GRANTS_FILE_NAME);
     await fs.mkdir(path.dirname(projectConfigPath), { recursive: true });
     await fs.writeFile(projectConfigPath, JSON.stringify(config, null, 2), 'utf-8');
     this.clearCache();

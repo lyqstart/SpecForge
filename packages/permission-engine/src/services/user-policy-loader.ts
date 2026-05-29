@@ -12,6 +12,7 @@
 import fs from 'fs';
 import path from 'path';
 import yaml from 'yaml';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { 
   UserPolicy, 
   UserPolicyCollection, 
@@ -59,7 +60,7 @@ export class UserPolicyLoader implements UserPolicyPatternMatcher {
     if (!this.config.defaultPolicyPath) {
       this.config.defaultPolicyPath = path.join(
         process.cwd(),
-        '.specforge',
+        SPEC_DIR_NAME,
         'permissions.json'
       );
     }

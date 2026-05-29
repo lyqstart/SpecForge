@@ -1,0 +1,13 @@
+{
+  "id": "WI-002",
+  "workflow_type": "investigation",
+  "title": "Daemon 架构重设计调查",
+  "summary": "调查 SpecForge daemon 架构的核心问题，包括会话 ID 映射缺陷、WAL 多实例竞态、RecoverySubsystem 依赖注入缺失等，产出 A+D Hybrid 推荐方案。",
+  "key_decisions": [
+    "采用 A+D Hybrid 方案：保留 daemon 会聚点语义 + WAL 事件溯源",
+    "分三阶段迁移：Phase 0 (sessionId 修复) → Phase 1 (WAL 单例化) → Phase 2 (SessionRegistry WAL 化)"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-27T00:00:00Z",
+  "completed_at": "2026-05-27T00:00:00Z"
+}

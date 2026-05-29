@@ -12,6 +12,7 @@
 import fs from 'fs';
 import path from 'path';
 import yaml from 'yaml';
+import { resolveProjectPath } from '@specforge/types/directory-layout';
 import { 
   BuiltinPolicy, 
   BuiltinPolicyCollection, 
@@ -41,7 +42,7 @@ export class BuiltinPolicyLoader implements PatternMatcher {
 
     // Add default policy path if not specified
     if (!this.config.defaultPolicyPath) {
-      this.config.defaultPolicyPath = path.join(process.cwd(), 'specforge', 'config', 'builtin-policies');
+      this.config.defaultPolicyPath = resolveProjectPath(process.cwd(), 'config', 'builtin-policies');
     }
   }
 

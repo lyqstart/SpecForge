@@ -20,6 +20,7 @@ import { detectAndRepair, RepairEngine, type RepairResult } from './repair-engin
 import { MigrationRunner, type TransactionalMigrationOptions } from './runner'
 import { discoverMigrationScripts } from './discovery'
 import type { MigrationScript, MigrationContext } from './types'
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 
 // ============================================================================
 // Types
@@ -125,12 +126,12 @@ export const DEFAULT_SCHEMA_VERSION = '1.0.0'
 /**
  * Migration directory name (relative to home)
  */
-export const MIGRATION_DIR_NAME = '.specforge/migrations'
+export const MIGRATION_DIR_NAME = `${SPEC_DIR_NAME}/migrations`
 
 /**
  * Backup directory name (relative to home)
  */
-export const BACKUP_DIR_NAME = '.specforge/backups'
+export const BACKUP_DIR_NAME = `${SPEC_DIR_NAME}/backups`
 
 // ============================================================================
 // Core Functions

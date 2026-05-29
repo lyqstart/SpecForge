@@ -1,0 +1,14 @@
+{
+  "run_id": "WI-006-sf-task-planner-1",
+  "work_item_id": "WI-006",
+  "agent_name": "sf-task-planner",
+  "start_time": "2026-05-27T23:52:45Z",
+  "end_time": "2026-05-27T23:57:00Z",
+  "duration_ms": 255000,
+  "status": "success",
+  "task_description": "Generate tasks.md for WI-006 — 14 tasks across 5 parallel batches",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": false
+}

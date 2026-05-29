@@ -26,16 +26,23 @@ import { ContentAddressableStorage } from '../cas';
 import { StateManager } from '../state/StateManager';
 import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
+import { WALWriteError } from '../session/SessionRegistry';
+
+function isWALWriteError(err: unknown): err is WALWriteError {
+  return err instanceof WALWriteError || (err instanceof Error && err.name === 'WALWriteError');
+}
 
 export interface HTTPServerDeps {
   config: DaemonConfig;
   eventBus: EventBus;
   stateManager: StateManager;
   wal: WAL;
+  projectManager?: any;
   permissionEngine?: any;
   workflowEngine?: any;
   eventLogger?: any;
   sessionRegistry?: any;
+  recoverySubsystem?: any;
   toolDispatcher?: ToolDispatcher;
 }
 
@@ -82,9 +89,6 @@ export class HTTPServer {
   private sseSubscription: { topic: string; handler: (event: Event) => void; unsubscribe: () => void } | null = null;
   private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
   private readonly SSE_HEARTBEAT_INTERVAL = 30_000;
-
-  // SSE
-  private sseClients: Map<string, http.ServerResponse> = new Map();
   private boundUncaughtHandler: ((err: Error) => void) | null = null;
   private boundUnhandledRejectionHandler: ((reason: unknown) => void) | null = null;
 
@@ -189,6 +193,8 @@ export class HTTPServer {
     this.addExactRoute('GET', '/api/v1/session/list', this.handleSessionList.bind(this));
     this.addExactRoute('POST', '/api/v1/tool/invoke', this.handleToolInvoke.bind(this));
     this.addExactRoute('POST', '/api/v1/admin/stop', this.handleAdminStop.bind(this));
+    this.addExactRoute('POST', '/api/v1/ingest/register', this.handleIngestRegister.bind(this));
+    this.addExactRoute('POST', '/api/v1/ingest/event', this.handleIngestEvent.bind(this));
 
     // Prefix routes for API v1 (fallback)
     const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin'];
@@ -909,7 +915,379 @@ export class HTTPServer {
     });
   }
 
-  // ── Utility ──
+  private async handleIngestRegister(
+    _req: http.IncomingMessage, res: http.ServerResponse, body: string
+  ): Promise<void> {
+    let request: { projectPath?: string };
+    try {
+      request = JSON.parse(body);
+    } catch {
+      return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON'));
+    }
+
+    if (!request.projectPath) {
+      return this.sendJsonResponse(res, 400, this.errorBody('MISSING_PROJECT_PATH', 'projectPath required'));
+    }
+
+    try {
+      const ctx = await (this.deps.projectManager as any).registerProject(request.projectPath);
+      const identity = await (this.deps.sessionRegistry as any).registerPluginSession(ctx.projectId, request.projectPath);
+      this.sendJsonResponse(res, 200, this.successBody({
+        sessionId: identity.sessionId,
+        projectId: ctx.projectId,
+        mode: this.config.getMode(),
+      }));
+    } catch (err) {
+      // B2: Handle PROJECT_NOT_INITIALIZED
+      if ((err as Error).message === 'PROJECT_NOT_INITIALIZED') {
+        this.sendJsonResponse(res, 409, {
+          error: 'PROJECT_NOT_INITIALIZED',
+          message: '项目未初始化。请先完成启动流程（步骤 1-4）再注册。',
+          projectPath: request.projectPath,
+        });
+        return;
+      }
+      if (isWALWriteError(err)) {
+        res.setHeader('Retry-After', '5');
+        this.sendJsonResponse(res, 503, { error: 'WAL_WRITE_FAILED', message: 'WAL write failed — event not accepted. Please retry.' });
+      } else {
+        this.sendJsonResponse(res, 500, this.errorBody('REGISTER_FAILED', (err as Error).message));
+      }
+    }
+  }
+
+  // ── Ingest Event Handling ──
+
+  /**
+   * Handle POST /api/v1/ingest/event
+   * 
+   * Parses the event request, validates JSON, and routes to the appropriate
+   * subsystem handler based on event type.  Satisfies CP-4: must return an
+   * HTTP response within 15 s even when subsystems fail or time out.
+   */
+  private async handleIngestEvent(
+    _req: http.IncomingMessage, res: http.ServerResponse, body: string
+  ): Promise<void> {
+    let request: { sessionId?: string; type?: string; data?: unknown; ts?: number };
+    try {
+      request = JSON.parse(body);
+    } catch {
+      return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON'));
+    }
+
+    // Backward compatibility: accept events without sessionId
+    if (!request.sessionId) {
+      console.warn('[INGEST] Event received without sessionId — plugin may need upgrade');
+    }
+
+    // CP-4: 15 s overall timeout — only send one response
+    let responded = false;
+    const respond = (status: number, data: unknown) => {
+      if (!responded) {
+        responded = true;
+        this.sendJsonResponse(res, status, data);
+      }
+    };
+
+    const overallTimeout = new Promise<void>((resolve) => {
+      setTimeout(() => {
+        respond(200, this.successBody({
+          received: true,
+          type: request.type ?? 'unknown',
+          warning: 'Event processing timed out',
+        }));
+        resolve();
+      }, 15_000);
+    });
+
+    const processing = (async () => {
+      try {
+        const extra = await this.routeIngestEvent(request);
+        respond(200, this.successBody({
+          received: true,
+          type: request.type ?? 'unknown',
+          ...(extra ?? {}),
+        }));
+    } catch (err) {
+        if (isWALWriteError(err)) {
+          res.setHeader('Retry-After', '5');
+          respond(503, { error: 'WAL_WRITE_FAILED', message: 'WAL write failed — event not accepted. Please retry.' });
+        } else {
+          console.error(`[INGEST] Failed to process ${request.type}:`, err);
+          respond(200, this.successBody({
+            received: true,
+            type: request.type ?? 'unknown',
+            warning: `Event logged but processing failed: ${(err as Error).message}`,
+          }));
+        }
+      }
+    })();
+
+    await Promise.race([processing, overallTimeout]);
+  }
+
+  /**
+   * Route an ingest event to the appropriate subsystem handler.
+   * 
+   * Returns optional extra data to merge into the HTTP response.
+   */
+  private async routeIngestEvent(
+    request: { sessionId?: string; type?: string; data?: unknown; ts?: number }
+  ): Promise<Record<string, unknown> | undefined> {
+    const sessionId = request.sessionId ?? '';
+    const type = request.type ?? '';
+    const data = request.data;
+    const ts = request.ts ?? 0;
+
+    switch (type) {
+      case 'tool.invoking':
+        await this.handleToolInvoking(sessionId, data, ts);
+        break;
+      case 'tool.invoked':
+        await this.handleToolInvoked(sessionId, data, ts);
+        break;
+      case 'opencode.event':
+        await this.handleOpenCodeEvent(sessionId, data, ts);
+        break;
+      case 'session.compacting':
+        await this.handleSessionCompacting(sessionId, data, ts);
+        break;
+      case 'chat.params':
+        await this.handleChatParams(sessionId, data, ts);
+        break;
+      case 'chat.headers':
+        await this.handleChatHeaders(sessionId, data, ts);
+        break;
+      case 'shell.env':
+        return { env: await this.handleShellEnv(sessionId, data) };
+      default:
+        console.warn(`[INGEST] Unknown event type: ${type}`);
+    }
+    return undefined;
+  }
+
+  // ── Event Type Handlers ──
+
+  /**
+   * Handle tool.invoking events — PermissionEngine evaluation + SessionRegistry touch.
+   * Timeout: 5 s. On timeout → default allow (phase 1: only log, never intercept).
+   */
+  private async handleToolInvoking(
+    sessionId: string, data: unknown, _ts: number
+  ): Promise<void> {
+    const payload = (data ?? {}) as { tool?: string; callID?: string; args?: Record<string, unknown> };
+
+    // 1. Update session activity (non-critical)
+    try {
+      await this.deps.sessionRegistry?.touch?.(sessionId);
+    } catch (err) {
+      if (isWALWriteError(err)) {
+        console.warn(`[INGEST] WAL write error during touch for session ${sessionId}: ${err.message}`);
+      }
+      // non-blocking
+    }
+
+    // 2. PermissionEngine evaluation (phase 1: log only, don't intercept)
+    if (this.deps.permissionEngine && payload.tool) {
+      try {
+        const allowed = await this.withTimeout(
+          this.deps.permissionEngine.checkPermission(
+            sessionId,
+            'tool.invoking',
+            payload.tool,
+            { args: payload.args ?? {}, callID: payload.callID },
+          ),
+          5_000,
+          true,  // default allow on timeout
+        );
+
+        // Phase 1: log the evaluation result
+        await this.deps.eventLogger?.append?.({
+          eventId: this.generateEventId(),
+          ts: Date.now(),
+          projectId: this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? '',
+          category: 'permission' as any,
+          action: 'permission.evaluated',
+          payload: {
+            tool: payload.tool,
+            decision: allowed ? 'allow' : 'deny',
+            sessionId,
+          },
+          metadata: { schemaVersion: '1.0', source: 'daemon' },
+        });
+      } catch (err) {
+        console.error(`[INGEST] PermissionEngine error for ${payload.tool}:`, err);
+      }
+    }
+  }
+
+  /**
+   * Handle tool.invoked events — log via EventLogger.
+   * Timeout: 3 s. On timeout → lose this log entry (non-critical path).
+   */
+  private async handleToolInvoked(
+    sessionId: string, data: unknown, ts: number
+  ): Promise<void> {
+    const payload = (data ?? {}) as Record<string, unknown>;
+    try {
+      await this.withTimeout(
+        (async () => {
+          await this.deps.eventLogger?.append?.({
+            eventId: this.generateEventId(),
+            ts: ts || Date.now(),
+            projectId: this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? '',
+            category: 'tool' as any,
+            action: 'tool.invoked',
+            payload: { ...payload, sessionId },
+            metadata: { schemaVersion: '1.0', source: 'client' },
+          });
+        })(),
+        3_000,
+        undefined,
+      );
+    } catch {
+      // Non-blocking: lose this log entry
+    }
+  }
+
+  /**
+   * Handle opencode.event — route to SessionRegistry.handleOpenCodeEvent.
+   * Timeout: 2 s. On timeout → record WARNING.
+   */
+  private async handleOpenCodeEvent(
+    sessionId: string, data: unknown, _ts: number
+  ): Promise<void> {
+    const payload = (data ?? {}) as { subType?: string } & Record<string, unknown>;
+    try {
+      await this.deps.sessionRegistry?.handleOpenCodeEvent?.(
+        payload.subType ?? 'unknown',
+        { ...payload, sessionId: payload.sessionId ?? sessionId },
+      );
+    } catch (err) {
+      if (isWALWriteError(err)) {
+        throw err; // propagate to handleIngestEvent for 503 response
+      }
+      console.warn(`[INGEST] SessionRegistry.handleOpenCodeEvent error for session ${sessionId}:`, err);
+    }
+  }
+
+  /**
+   * Handle session.compacting events — save checkpoint via RecoverySubsystem.
+   * Timeout: 10 s. On timeout → record ERROR (do not block session compaction).
+   */
+  private async handleSessionCompacting(
+    sessionId: string, data: unknown, _ts: number
+  ): Promise<void> {
+    try {
+      await this.withTimeout(
+        (async () => {
+          await this.deps.recoverySubsystem?.saveCheckpoint?.(sessionId, data);
+        })(),
+        10_000,
+        undefined,
+      );
+    } catch (err) {
+      console.error(`[INGEST] RecoverySubsystem.saveCheckpoint error for session ${sessionId}:`, err);
+    }
+  }
+
+  /**
+   * Handle chat.params events — log via EventLogger.
+   * Timeout: 3 s. On timeout → lose this log entry.
+   */
+  private async handleChatParams(
+    sessionId: string, data: unknown, ts: number
+  ): Promise<void> {
+    try {
+      await this.withTimeout(
+        (async () => {
+          await this.deps.eventLogger?.append?.({
+            eventId: this.generateEventId(),
+            ts: ts || Date.now(),
+            projectId: this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? '',
+            category: 'chat' as any,
+            action: 'chat.params',
+            payload: { params: data, sessionId },
+            metadata: { schemaVersion: '1.0', source: 'client' },
+          });
+        })(),
+        3_000,
+        undefined,
+      );
+    } catch {
+      // Non-blocking: lose this log entry
+    }
+  }
+
+  /**
+   * Handle chat.headers events — log via EventLogger.
+   * Timeout: 3 s. On timeout → lose this log entry.
+   */
+  private async handleChatHeaders(
+    sessionId: string, data: unknown, ts: number
+  ): Promise<void> {
+    try {
+      await this.withTimeout(
+        (async () => {
+          await this.deps.eventLogger?.append?.({
+            eventId: this.generateEventId(),
+            ts: ts || Date.now(),
+            projectId: this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? '',
+            category: 'chat' as any,
+            action: 'chat.headers',
+            payload: { headers: data, sessionId },
+            metadata: { schemaVersion: '1.0', source: 'client' },
+          });
+        })(),
+        3_000,
+        undefined,
+      );
+    } catch {
+      // Non-blocking: lose this log entry
+    }
+  }
+
+  /**
+   * Handle shell.env events — return environment variable key-value pairs.
+   * Timeout: 2 s. On timeout → return empty object {}.
+   */
+  private async handleShellEnv(
+    sessionId: string, _data: unknown
+  ): Promise<Record<string, string>> {
+    try {
+      return await this.withTimeout(
+        Promise.resolve({
+          SPECFORGE_DAEMON_PORT: String(this.port ?? 0),
+          SPECFORGE_SESSION_ID: sessionId,
+          SPECFORGE_MODE: this.config.getMode(),
+        }),
+        2_000,
+        {} as Record<string, string>,
+      );
+    } catch {
+      return {};
+    }
+  }
+
+  // ── Timeout Utility ──
+
+  /**
+   * Race a promise against a timeout, returning a fallback value
+   * if the promise rejects or the timeout fires first.
+   */
+  private async withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T): Promise<T> {
+    try {
+      const result = await Promise.race([
+        promise,
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs)
+        ),
+      ]);
+      return result;
+    } catch {
+      return fallback;
+    }
+  }
 
   private generateEventId(): string {
     return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);

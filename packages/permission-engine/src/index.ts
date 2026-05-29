@@ -25,6 +25,7 @@ export {
 // to avoid duplicate exports. We export specific items from hard-rules instead.
 export { HardRuleEvaluator, defaultHardRuleEvaluator, AGENT_CONSTITUTION_RULES } from './hard-rules';
 
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { HardRuleEvaluator } from './hard-rules';
 import { EventLogger } from './services/event-logger';
 import { RuleMergingEngine } from './services/rule-merging-engine';
@@ -77,7 +78,7 @@ export class PermissionEngine {
     
     // Only add eventsFilePath if event logging is enabled
     if (this.config.eventLoggingEnabled) {
-      eventLoggerConfig.eventsFilePath = `./specforge/observability/events.jsonl`;
+      eventLoggerConfig.eventsFilePath = `./${SPEC_DIR_NAME}/logs/telemetry.jsonl`;
     }
     
     this.eventLogger = new EventLogger(eventLoggerConfig);
@@ -303,7 +304,7 @@ export class PermissionEngine {
       
       // Only add eventsFilePath if event logging is enabled
       if (this.config.eventLoggingEnabled) {
-        eventLoggerConfig.eventsFilePath = `./specforge/observability/events.jsonl`;
+        eventLoggerConfig.eventsFilePath = `./${SPEC_DIR_NAME}/logs/telemetry.jsonl`;
       }
       
       this.eventLogger = new EventLogger(eventLoggerConfig);

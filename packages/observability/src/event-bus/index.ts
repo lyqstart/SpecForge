@@ -5,8 +5,8 @@
  * All cross-layer communication must pass through Event Bus
  */
 
-import { generateEventId, MonotonicTimestamp } from '@/types/event-utils';
-import type { Event, EventBus as IEventBus, ObservabilityMode } from '@/types';
+import { generateEventId, MonotonicTimestamp } from '../types/event-utils';
+import type { Event, EventBus as IEventBus, ObservabilityMode } from '../types';
 
 interface Subscriber {
   pattern: RegExp;

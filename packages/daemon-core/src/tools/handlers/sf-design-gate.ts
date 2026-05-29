@@ -10,7 +10,7 @@ registerHandler('sf_design_gate', async (args, context, _deps) => {
 
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workflowType = (args['workflow_type'] as string) || 'feature_spec';
-  const gateMode = args['gate_mode'] as string | undefined;
+  const gateMode = (args['mode'] as string | undefined) || (args['gate_mode'] as string | undefined);
 
   try {
     const result = await checkDesignGate(

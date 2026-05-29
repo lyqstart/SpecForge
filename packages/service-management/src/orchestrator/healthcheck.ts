@@ -23,6 +23,7 @@ import * as os from 'node:os';
 import { createServiceError, ErrorCode } from '../errors/service-error.js';
 import type { HandshakeFile } from '../types/handshake.js';
 import type { HealthCheckResponse } from '../types/healthcheck.js';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Health check options
@@ -42,7 +43,7 @@ export interface HealthCheckOptions {
  * Default options
  */
 const DEFAULT_OPTIONS: Required<HealthCheckOptions> = {
-  handshakePath: path.join(os.homedir(), '.specforge', 'runtime', 'handshake.json'),
+  handshakePath: path.join(os.homedir(), SPEC_DIR_NAME, 'runtime', 'handshake.json'),
   requestTimeoutMs: 3000,
   pollIntervalMs: 500,
   healthCheckDeadlineMs: 5000,
@@ -56,7 +57,7 @@ const OPENCODE_SERVER_PORT = 4096;
 /**
  * Default log directory for services
  */
-const DEFAULT_LOG_DIR = path.join(os.homedir(), '.specforge', 'logs');
+const DEFAULT_LOG_DIR = path.join(os.homedir(), SPEC_DIR_NAME, 'logs');
 
 /**
  * ServiceHealthChecker

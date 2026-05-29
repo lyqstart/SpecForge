@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "source": "sidecar",
+  "run_id": "executor-wi013-tasks1-3",
+  "work_item_id": "WI-013",
+  "agent_name": "unknown",
+  "start_time": null,
+  "end_time": "2026-05-29T02:59:18.998Z",
+  "duration_ms": null,
+  "status": "completed",
+  "task_description": null,
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": null,
+  "conversation_recorded": null,
+  "parallel_batch": null,
+  "parallel_peers": null,
+  "work_log_path": "specforge/D:/code/temp/SpecForge/.specforge/archive/agent_runs/executor-wi013-tasks1-3/work_log.md",
+  "sidecar_generated_at": "2026-05-29T02:59:18.998Z"
+}

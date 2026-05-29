@@ -12,6 +12,7 @@
 
 import { resolve } from 'path'
 import { existsSync, mkdirSync } from 'fs'
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 
 // ============================================================================
 // Migration Configuration Types
@@ -63,8 +64,8 @@ export const DEFAULT_MIGRATION_CONFIG: MigrationConfig = {
   enableRepair: true,
   blockOnDowngrade: true,
   blockOnMigrationFailure: false,
-  migrationsDir: '.specforge/migrations',
-  backupDir: '.specforge/backups',
+  migrationsDir: `${SPEC_DIR_NAME}/migrations`,
+  backupDir: `${SPEC_DIR_NAME}/backups`,
   backupRetentionDays: 7,
   scriptTimeoutMs: 30000,
   dryRun: false,
@@ -223,10 +224,10 @@ export function configToLayerData(config: MigrationConfig): Record<string, unkno
 export function ensureMigrationDirectories(config: MigrationConfig): boolean {
   try {
     const homeDir = process.env.HOME || process.env.USERPROFILE || '.'
-    const migrationsDir = config.migrationsDir.startsWith('.specforge')
+    const migrationsDir = config.migrationsDir.startsWith(SPEC_DIR_NAME)
       ? resolve(homeDir, config.migrationsDir)
       : config.migrationsDir
-    const backupDir = config.backupDir.startsWith('.specforge')
+    const backupDir = config.backupDir.startsWith(SPEC_DIR_NAME)
       ? resolve(homeDir, config.backupDir)
       : config.backupDir
 

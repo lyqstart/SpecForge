@@ -25,6 +25,7 @@
 import * as path from 'node:path';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Doctor 命令的参数。
@@ -79,7 +80,7 @@ function renderDoctorReport(state: {
  * 默认用户 manifest 路径：~/.specforge/manifest.json。
  */
 function defaultUserManifestPath(): string {
-  return path.join(os.homedir(), '.specforge', 'manifest.json');
+  return path.join(os.homedir(), SPEC_DIR_NAME, 'manifest.json');
 }
 
 /**

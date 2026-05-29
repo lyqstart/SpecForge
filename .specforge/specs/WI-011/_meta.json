@@ -1,0 +1,18 @@
+{
+  "id": "WI-011",
+  "workflow_type": "change_request",
+  "title": "SpecForge V6 目录结构治理 P1 代码全量切换与数据迁移",
+  "summary": "P1 阶段：40+ 文件 200-500 处路径替换 + 数据迁移执行 + setup/ 搬迁。基于 P0 的 directory-layout.ts Schema 全量切换代码中的硬编码路径。",
+  "key_decisions": [
+    "所有硬编码路径字符串替换为 resolveProjectPath() / specPath() / agentRunArchivePath()",
+    "数据迁移脚本自动将旧目录数据搬到 .specforge/"
+  ],
+  "current_stage": "development",
+  "created_at": "2026-05-29T00:00:00Z",
+  "related_modules": [
+    "packages/daemon-core",
+    "packages/permission-engine",
+    "packages/types"
+  ],
+  "upstream_wis": ["WI-010"]
+}

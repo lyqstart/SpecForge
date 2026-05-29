@@ -33,6 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "@specforge/daemon-core": "workspace:*",
+    "@specforge/types": "workspace:*",
     "yaml": "^2.9.0",
     "zod": "^3.0.0"
   },

@@ -259,3 +259,33 @@ export function isValidTransition(
   }
   return validTargets.includes(to)
 }
+
+// ============================================================
+// Completeness Verification
+// ============================================================
+
+/**
+ * 收集所有 8 种工作流转换表中引用的全部状态名
+ * 用于验证 ALL_STATES 与转换表的交叉一致性
+ * @returns 所有被转换表引用的状态名的 Set
+ */
+export function getAllReferencedStates(): Set<string> {
+  const tables = [
+    VALID_TRANSITIONS,
+    BUGFIX_SPEC_TRANSITIONS,
+    DESIGN_FIRST_TRANSITIONS,
+    QUICK_CHANGE_TRANSITIONS,
+    CHANGE_REQUEST_TRANSITIONS,
+    REFACTOR_TRANSITIONS,
+    OPS_TASK_TRANSITIONS,
+    INVESTIGATION_TRANSITIONS,
+  ]
+  const states = new Set<string>()
+  for (const table of tables) {
+    for (const [from, targets] of table) {
+      states.add(from)
+      for (const t of targets) states.add(t)
+    }
+  }
+  return states
+}

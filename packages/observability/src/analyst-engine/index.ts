@@ -4,7 +4,7 @@
  * Core logic for sf-analyst agent
  */
 
-import type { AnalystEngine as IAnalystEngine, AnalysisResult, TimeRange } from '@/types';
+import type { AnalystEngine as IAnalystEngine, AnalysisResult, TimeRange } from '../types';
 
 export class AnalystEngine implements IAnalystEngine {
   async analyzeGateFailures(workItemId: string, timeRange: TimeRange): Promise<AnalysisResult> {

@@ -5,7 +5,8 @@
  * shutdown, and signal handling.
  */
 
-import path from 'path';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { HTTPServer } from '../http/HTTPServer';
 import { EventBus } from '../event-bus/EventBus';
 import { SessionRegistry } from '../session/SessionRegistry';
@@ -26,6 +27,7 @@ import {
   createGracefulShutdownHandler,
   ShutdownPriority,
 } from '@specforge/service-management/shutdown';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 export class Daemon {
   private httpServer: HTTPServer;
@@ -41,20 +43,33 @@ export class Daemon {
   private permissionEngine: PermissionEngine;
   private workflowEngine: WorkflowEngine;
   private eventLogger: EventLogger;
-  private wal: WAL;
   private gracefulShutdownHandler: GracefulShutdownHandler;
 
   constructor() {
     this.config = new DaemonConfig();
     this.eventBus = new EventBus();
-    // Use the runtime directory as the WAL path for StateManager
-    // This ensures events.jsonl is written to ~/.specforge/runtime/
+    // Shared path resolver for all subsystems (TASK-8)
+    const pathResolver = this.config.getPathResolver();
     const runtimeDir = this.config.getRuntimeDir();
-    this.stateManager = new StateManager(runtimeDir);
-    this.recoverySubsystem = new RecoverySubsystem(runtimeDir);
+    this.stateManager = new StateManager(pathResolver, pathResolver.resolveDaemonRuntimeDir(), true);
+
+    // RecoverySubsystem injection with fallback (R1 risk mitigation)
+    let recoveryWal: WAL | undefined;
+    let recoveryStateManager: StateManager | undefined;
+    try {
+      recoveryWal = this.stateManager.getWal();
+      recoveryStateManager = this.stateManager;
+    } catch (err) {
+      console.warn('[DAEMON] Cannot inject StateManager into RecoverySubsystem — falling back to legacy rebuild path', err);
+    }
+    // Create session registry first so it can be injected into RecoverySubsystem
+    const sessionRegistry = new SessionRegistry(this.eventBus, 30 * 60 * 1000, this.stateManager.getWal());
+    this.recoverySubsystem = new RecoverySubsystem(
+      pathResolver, runtimeDir, recoveryWal, recoveryStateManager, sessionRegistry
+    );
     this.handshakeManager = new HandshakeManager(this.config);
-    this.sessionRegistry = new SessionRegistry(this.eventBus);
-    this.projectManager = new ProjectManager(this.eventBus);
+    this.sessionRegistry = sessionRegistry;
+    this.projectManager = new ProjectManager(this.eventBus, pathResolver, this.stateManager);
     
     this.extensionLoader = new ExtensionLoader({}, this.eventBus);
     this.workflowEngine = new WorkflowEngine({
@@ -77,19 +92,19 @@ export class Daemon {
 
     this.permissionEngine = new PermissionEngine({ projectId: 'default-project' });
     // NOTE: workflowEngine is already created above — do NOT create a second instance
-    this.eventLogger = new EventLogger(path.join(this.config.getRuntimeDir(), '..', 'runtime'));
-    // WAL is managed by StateManager internally; create a separate reference for HTTPServer
-    this.wal = new WAL(path.join(runtimeDir, 'events.jsonl'));
+    this.eventLogger = new EventLogger(runtimeDir);
 
     this.httpServer = new HTTPServer({
       config: this.config,
       eventBus: this.eventBus,
       stateManager: this.stateManager,
-      wal: this.wal,
+      wal: this.stateManager.getWal(),
       permissionEngine: this.permissionEngine,
       workflowEngine: this.workflowEngine,
       eventLogger: this.eventLogger,
       sessionRegistry: this.sessionRegistry,
+      projectManager: this.projectManager,
+      recoverySubsystem: this.recoverySubsystem,
       toolDispatcher: new ToolDispatcher({
         stateManager: this.stateManager,
         workflowEngine: this.workflowEngine,
@@ -130,8 +145,14 @@ export class Daemon {
     this.httpServer.setToken(token);
 
     // 5. Initialize components
+    // Detect and handle legacy nested paths before StateManager initialize
+    await this.detectAndHandleLegacyState(this.config.getRuntimeDir());
     await this.stateManager.initialize();
-    await this.recoverySubsystem.checkAndRepair();
+    try {
+      await this.recoverySubsystem.checkAndRepair();
+    } catch (err) {
+      console.error('[DAEMON] RecoverySubsystem.checkAndRepair failed — state may be incomplete', err);
+    }
 
     // 6. Start event bus
     this.eventBus.start();
@@ -140,7 +161,8 @@ export class Daemon {
     // Skip events without projectId (e.g. internal extension loading events)
     this.eventBus.setPersistenceHook(async (event) => {
       if (!event.projectId) return;  // Skip internal events without project context
-      await this.eventLogger.append(event);
+      // Type cast to match observability Event type (cast through unknown first)
+      await this.eventLogger.append(event as unknown as import('@specforge/observability').Event);
     });
 
     // 7. Start session registry and project manager
@@ -160,11 +182,7 @@ export class Daemon {
       });
     }
 
-    // Property 21: Attempt to reconnect old sessions from previous Daemon run
-    // This only succeeds because we're still in the startup phase
-    await this.recoverySubsystem.reconnectOldSessions();
-
-    // Property 21: Complete startup - no more reconnection attempts allowed
+    // Property 21: Complete startup - no more WAL replay session reconstruction allowed
     this.recoverySubsystem.completeStartup();
 
     this.isRunning = true;
@@ -176,6 +194,72 @@ export class Daemon {
 
     // Attach to process signals
     this.gracefulShutdownHandler.attachToProcess();
+  }
+
+  /**
+   * Detect and handle legacy nested state.json / events.jsonl
+   * from the old path ~/.specforge/runtime/${SPEC_DIR_NAME}/runtime/
+   * TASK-6: Legacy detection — merge events, mark state as orphan
+   */
+  private async detectAndHandleLegacyState(runtimeDir: string): Promise<void> {
+    const legacyStatePath = path.join(runtimeDir, SPEC_DIR_NAME, 'runtime', 'state.json');
+    const legacyEventsPath = path.join(runtimeDir, SPEC_DIR_NAME, 'runtime', 'events.jsonl');
+
+    // Check for legacy nested state.json
+    try {
+      await fs.access(legacyStatePath);
+      console.warn(`[DAEMON] Legacy nested state.json found at ${legacyStatePath}. Marking as orphan.`);
+      console.warn(`[DAEMON] Data will be rebuilt from canonical events.jsonl. Legacy file preserved for manual inspection.`);
+    } catch {
+      // No legacy file, normal case
+    }
+
+    // Check for legacy nested events.jsonl
+    try {
+      await fs.access(legacyEventsPath);
+      const content = await fs.readFile(legacyEventsPath, 'utf-8');
+      if (content.trim().length > 0) {
+        // Read existing canonical events
+        const canonicalEventsPath = path.join(runtimeDir, 'events.jsonl');
+        let existingEvents: string[] = [];
+        try {
+          const existingContent = await fs.readFile(canonicalEventsPath, 'utf-8');
+          existingEvents = existingContent.trim().split('\n').filter(line => line.trim());
+        } catch {
+          // No canonical file yet
+        }
+
+        const existingEventIds = new Set(
+          existingEvents.map(line => { try { return JSON.parse(line).eventId; } catch { return null; } }).filter(Boolean)
+        );
+
+        const legacyEvents = content.trim().split('\n').filter(line => line.trim());
+        const newEvents: string[] = [];
+
+        for (const line of legacyEvents) {
+          try {
+            const event = JSON.parse(line);
+            if (!existingEventIds.has(event.eventId)) {
+              newEvents.push(line);
+            }
+          } catch {
+            // Skip malformed lines
+          }
+        }
+
+        if (newEvents.length > 0) {
+          const appendContent = newEvents.join('\n') + '\n';
+          await fs.appendFile(canonicalEventsPath, appendContent, 'utf-8');
+          console.warn(`[DAEMON] Merged ${newEvents.length} events from legacy events.jsonl to canonical path.`);
+        }
+
+        // Rename legacy file as orphan
+        await fs.rename(legacyEventsPath, legacyEventsPath + '.orphaned');
+        console.warn(`[DAEMON] Legacy events.jsonl renamed to ${legacyEventsPath}.orphaned`);
+      }
+    } catch {
+      // No legacy events file, normal case
+    }
   }
 
   /**

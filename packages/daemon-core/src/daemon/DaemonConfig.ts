@@ -2,12 +2,15 @@
  * Daemon configuration
  */
 
-import * as path from 'path';
-import * as os from 'os';
+import { IPathResolver, PersonalPathResolver, EnterprisePathResolver } from './path-resolver';
+
+/** Daemon operation mode */
+export type DaemonMode = 'personal' | 'enterprise';
 
 export class DaemonConfig {
-  private readonly runtimeDir: string;
-  private readonly handshakeFile: string;
+  private readonly mode: DaemonMode;
+  private readonly pathResolver: IPathResolver;
+  private readonly ingestEnabled: boolean;
   private readonly maxPayloadSize: number;
   private readonly schemaVersion: string;
   private readonly foreground: boolean;
@@ -15,13 +18,47 @@ export class DaemonConfig {
   private readonly daemonVersion: string;
 
   constructor(args: string[] = process.argv) {
-    this.runtimeDir = path.join(os.homedir(), '.specforge', 'runtime');
-    this.handshakeFile = path.join(this.runtimeDir, 'handshake.json');
+    this.mode = this.parseMode(args);
+    this.pathResolver = this.mode === 'personal'
+      ? new PersonalPathResolver()
+      : new EnterprisePathResolver();
+    this.ingestEnabled = process.env.SPECFORGE_INGEST_ENABLED !== 'false';
     this.maxPayloadSize = 64 * 1024; // 64 KiB
     this.schemaVersion = '1.0';
     this.foreground = this.parseForeground(args);
     this.serviceMode = this.parseServiceMode(args);
     this.daemonVersion = '1.0.0'; // TODO: read from package.json version
+  }
+
+  /**
+   * Parse the daemon mode from CLI args / env / default.
+   * Priority: CLI --mode > env SPECFORGE_MODE > default 'personal'
+   * Invalid values fall back to 'personal' with a WARNING (never throw).
+   */
+  private parseMode(args: string[]): DaemonMode {
+    // 1. CLI --mode
+    const cliIndex = args.findIndex((a) => a === '--mode');
+    if (cliIndex !== -1 && args[cliIndex + 1]) {
+      const v = args[cliIndex + 1];
+      if (v === 'personal' || v === 'enterprise') return v;
+      console.warn(
+        `[DaemonConfig] Invalid mode "${v}" from --mode, falling back to default "personal"`,
+      );
+      return 'personal';
+    }
+
+    // 2. Environment variable
+    const env = process.env.SPECFORGE_MODE;
+    if (env) {
+      if (env === 'personal' || env === 'enterprise') return env;
+      console.warn(
+        `[DaemonConfig] Invalid SPECFORGE_MODE="${env}", falling back to default "personal"`,
+      );
+      return 'personal';
+    }
+
+    // 3. Default
+    return 'personal';
   }
 
   /**
@@ -64,12 +101,29 @@ export class DaemonConfig {
     return runMode === 'service';
   }
 
-  getRuntimeDir(): string {
-    return this.runtimeDir;
+  /** Return the current operation mode */
+  getMode(): DaemonMode {
+    return this.mode;
   }
 
+  /** Return the path resolver for the current mode */
+  getPathResolver(): IPathResolver {
+    return this.pathResolver;
+  }
+
+  /** Whether the ingest event pipeline is enabled */
+  isIngestEnabled(): boolean {
+    return this.ingestEnabled;
+  }
+
+  /** @deprecated — delegated to pathResolver, kept for backward compatibility */
+  getRuntimeDir(): string {
+    return this.pathResolver.resolveDaemonRuntimeDir();
+  }
+
+  /** @deprecated — delegated to pathResolver, kept for backward compatibility */
   getHandshakeFile(): string {
-    return this.handshakeFile;
+    return this.pathResolver.resolveHandshakePath();
   }
 
   getMaxPayloadSize(): number {

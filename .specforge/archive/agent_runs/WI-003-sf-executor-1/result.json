@@ -1,0 +1,18 @@
+{
+  "run_id": "WI-003-sf-executor-1",
+  "work_item_id": "WI-003",
+  "agent_name": "sf-executor",
+  "start_time": "2026-05-27T17:37:00Z",
+  "end_time": "2026-05-27T17:42:00Z",
+  "duration_ms": 300000,
+  "status": "success",
+  "task_description": "TASK-1: HTTPServer.handleOpenCodeEvent sessionId 合并进 payload",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": true,
+  "files_changed": ["packages/daemon-core/src/http/HTTPServer.ts", "packages/daemon-core/tests/unit/http-server-handleOpenCodeEvent.test.ts"],
+  "verification_results": [{"command": "npx vitest run tests/unit/http-server-handleOpenCodeEvent.test.ts", "passed": true, "tests_passed": 5, "tests_total": 5}],
+  "parallel_batch": 1,
+  "parallel_peers": ["WI-003-sf-executor-2"]
+}

@@ -8,44 +8,65 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { WAL } from '../../src/wal/WAL';
 import { StateManager } from '../../src/state/StateManager';
+import { IPathResolver } from '../../src/daemon/path-resolver';
 import { Event } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
 import * as path from 'path';
+import * as os from 'os';
+
+/**
+ * Test path resolver that isolates all file I/O under a temp directory.
+ */
+class TestPathResolver implements IPathResolver {
+  constructor(private tmpDir: string) {}
+
+  resolveProjectRuntimeDir(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime');
+  }
+  resolveStatePath(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime', 'state.json');
+  }
+  resolveEventsPath(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime', 'events.jsonl');
+  }
+  resolveSessionsDir(projectPath: string): string {
+    return path.join(this.tmpDir, projectPath, 'runtime', 'sessions');
+  }
+  resolveDaemonRuntimeDir(): string {
+    return path.join(this.tmpDir, 'daemon');
+  }
+  resolveHandshakePath(): string {
+    return path.join(this.tmpDir, 'daemon', 'handshake.json');
+  }
+  resolveDaemonJsonPath(): string {
+    return path.join(this.tmpDir, 'daemon', 'daemon.json');
+  }
+  resolveDaemonStatePath(): string {
+    return path.join(this.tmpDir, 'daemon', 'state.json');
+  }
+  resolveDaemonEventsPath(): string {
+    return path.join(this.tmpDir, 'daemon', 'events.jsonl');
+  }
+}
 
 describe('Property 7: WAL Ordering', () => {
+  let tmpDir: string;
   let testProjectPath: string;
+  let pathResolver: TestPathResolver;
   let wal: WAL;
   let stateManager: StateManager;
-  const testProjectHash = 'testproj';
 
   beforeEach(() => {
+    tmpDir = fsSync.mkdtempSync(path.join(os.tmpdir(), 'specforge-p7-'));
     testProjectPath = 'test-project-path';
-    wal = new WAL(testProjectPath);
-    stateManager = new StateManager(testProjectPath);
+    pathResolver = new TestPathResolver(tmpDir);
+    wal = new WAL(pathResolver.resolveEventsPath(testProjectPath));
+    stateManager = new StateManager(pathResolver, testProjectPath);
   });
 
   afterEach(async () => {
-    // Cleanup test files
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const eventsPath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-      : '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
-
-    try {
-      if (eventsPath) await fs.unlink(eventsPath);
-    } catch (error) {
-      // File might not exist
-    }
-
-    try {
-      if (statePath) await fs.unlink(statePath);
-    } catch (error) {
-      // File might not exist
-    }
+    await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
   });
 
   it('should validate WAL ordering (events.jsonl fsync before state.json)', async () => {
@@ -127,7 +148,7 @@ describe('Property 7: WAL Ordering', () => {
       await stateManager.appendEvent(event);
     }
 
-    const readEvents = await wal.readAllEvents();
+    const { events: readEvents } = await wal.readAllEvents();
     expect(readEvents.length).toBe(3);
     expect(readEvents[0].eventId).toBe('event-1');
     expect(readEvents[1].eventId).toBe('event-2');

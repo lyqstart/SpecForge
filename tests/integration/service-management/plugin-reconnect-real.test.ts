@@ -167,7 +167,7 @@ describe('Plugin reconnect real', () => {
       }),
     );
 
-    const result = await client.postEvent('test.event', { value: 42 });
+    const result = await client.postEvent("test-session", "test.event', { value: 42 });
 
     expect(result.ok).toBe(true);
     expect(result.dropped).toBe(false);
@@ -198,7 +198,7 @@ describe('Plugin reconnect real', () => {
     );
 
     // Step 1: postEvent succeeds on server 1
-    const result1 = await client.postEvent('test.event', { step: 1 });
+    const result1 = await client.postEvent("test-session", "test.event', { step: 1 });
     expect(result1.ok).toBe(true);
     expect(result1.reason).toBe('success');
 
@@ -206,7 +206,7 @@ describe('Plugin reconnect real', () => {
     await closeServer(handle1.server);
 
     // Step 3: Start postEvent — POST will fail and enter backoff
-    const reconnectPromise = client.postEvent('test.event', { step: 2 });
+    const reconnectPromise = client.postEvent("test-session", "test.event', { step: 2 });
 
     // Step 4: Quickly start server 2 and update handshake
     const handle2 = trackServer(await createServer());
@@ -243,7 +243,7 @@ describe('Plugin reconnect real', () => {
       }),
     );
 
-    const result = await client.postEvent('test.event', { value: 1 });
+    const result = await client.postEvent("test-session", "test.event', { value: 1 });
 
     expect(result.ok).toBe(false);
     expect(result.dropped).toBe(true);
@@ -274,14 +274,14 @@ describe('Plugin reconnect real', () => {
     );
 
     // Verify it works before disposal
-    const before = await client.postEvent('test.event', { step: 'before' });
+    const before = await client.postEvent("test-session", "test.event', { step: 'before' });
     expect(before.ok).toBe(true);
 
     // Dispose
     client.dispose();
 
     // postEvent after disposal must return disposed result
-    const after = await client.postEvent('test.event', { step: 'after' });
+    const after = await client.postEvent("test-session", "test.event', { step: 'after' });
     expect(after.ok).toBe(false);
     expect(after.dropped).toBe(true);
     expect(after.reason).toBe('disposed');
@@ -313,11 +313,11 @@ describe('Plugin reconnect real', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     // Trigger degraded mode
-    const result1 = await client.postEvent('test.event', { value: 1 });
+    const result1 = await client.postEvent("test-session", "test.event', { value: 1 });
     expect(result1.reason).toBe('degraded');
 
     // Call postEvent again while degraded
-    const result2 = await client.postEvent('test.event', { value: 2 });
+    const result2 = await client.postEvent("test-session", "test.event', { value: 2 });
     expect(result2.reason).toBe('degraded');
 
     // Warn-once: console.error called exactly once
@@ -353,7 +353,7 @@ describe('Plugin reconnect real', () => {
     );
 
     // Start postEvent — will fail and schedule a 500 ms backoff timer
-    const pendingPromise = client.postEvent('test.event', { value: 1 });
+    const pendingPromise = client.postEvent("test-session", "test.event', { value: 1 });
 
     // Give the async POST enough time to fail and start the timer
     await new Promise((r) => setTimeout(r, 100));

@@ -1,0 +1,21 @@
+{
+  "run_id": "WI-003-sf-executor-3",
+  "work_item_id": "WI-003",
+  "agent_name": "sf-executor",
+  "start_time": "2026-05-27T17:43:00Z",
+  "end_time": "2026-05-27T17:48:00Z",
+  "duration_ms": 300000,
+  "status": "success",
+  "task_description": "TASK-3: 端到端测试 — plugin register → postEvent → 路由命中",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": true,
+  "files_changed": ["packages/daemon-core/tests/integration/opencode-event-routing.test.ts"],
+  "verification_results": [
+    {"command": "npx vitest run tests/integration/opencode-event-routing.test.ts", "passed": true, "tests_passed": 5, "tests_total": 5},
+    {"command": "npx vitest run tests/unit/session-registry-alias.test.ts tests/unit/http-server-handleOpenCodeEvent.test.ts tests/integration/opencode-event-routing.test.ts", "passed": true, "tests_passed": 14, "tests_total": 14}
+  ],
+  "parallel_batch": null,
+  "parallel_peers": []
+}

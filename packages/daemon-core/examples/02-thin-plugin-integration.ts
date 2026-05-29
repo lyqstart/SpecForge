@@ -17,6 +17,7 @@
 import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 类型定义
@@ -279,7 +280,7 @@ class ThinPluginClient {
    */
   async initialize(): Promise<void> {
     const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? '';
-    const handshakePath = path.join(homeDir, '.specforge', 'runtime', 'daemon.sock.json');
+    const handshakePath = path.join(homeDir, SPEC_DIR_NAME, 'runtime', 'daemon.sock.json');
 
     if (!fs.existsSync(handshakePath)) {
       throw new Error(

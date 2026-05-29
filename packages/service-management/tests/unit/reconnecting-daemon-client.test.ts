@@ -118,7 +118,7 @@ describe("ReconnectingDaemonClient", () => {
       client = makeClient();
       client.dispose();
 
-      const result = await client.postEvent("test.event", { foo: "bar" });
+      const result = await client.postEvent("test-session", "test.event", { foo: "bar" });
 
       expect(result).toEqual<PostResult>({
         ok: false,
@@ -132,9 +132,9 @@ describe("ReconnectingDaemonClient", () => {
       client.dispose();
 
       const results = await Promise.all([
-        client.postEvent("event.a", {}),
-        client.postEvent("event.b", {}),
-        client.postEvent("event.c", {}),
+        client.postEvent("test-session", "event.a", {}),
+        client.postEvent("test-session", "event.b", {}),
+        client.postEvent("test-session", "event.c", {}),
       ]);
 
       for (const r of results) {
@@ -148,7 +148,7 @@ describe("ReconnectingDaemonClient", () => {
       client = makeClient();
       client[Symbol.dispose]();
 
-      const result = await client.postEvent("test", {});
+      const result = await client.postEvent("test-session", "test", {});
       expect(result.reason).toBe("disposed");
     });
 
@@ -156,7 +156,7 @@ describe("ReconnectingDaemonClient", () => {
       client = makeClient();
       await client[Symbol.asyncDispose]();
 
-      const result = await client.postEvent("test", {});
+      const result = await client.postEvent("test-session", "test", {});
       expect(result.reason).toBe("disposed");
     });
 
@@ -177,7 +177,7 @@ describe("ReconnectingDaemonClient", () => {
       mockReadFile.mockResolvedValue(makeHandshakeJson(3000, "valid-token") as any);
       mockFetch.mockResolvedValue({ ok: true, status: 200 });
 
-      const result = await client.postEvent("test.event", { data: 1 });
+      const result = await client.postEvent("test-session", "test.event", { data: 1 });
 
       expect(result).toEqual<PostResult>({
         ok: true,
@@ -192,7 +192,7 @@ describe("ReconnectingDaemonClient", () => {
       mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
       mockFetch.mockResolvedValue({ ok: true });
 
-      await client.postEvent("test", {});
+      await client.postEvent("test-session", "test", {});
 
       expect(client.getActiveBackoffTimerCount()).toBe(0);
     });
@@ -209,7 +209,7 @@ describe("ReconnectingDaemonClient", () => {
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
       // 启动 postEvent（进入退避）
-      const resultPromise = client.postEvent("test", {});
+      const resultPromise = client.postEvent("test-session", "test", {});
 
       // 等待 readFile 完成
       await Promise.resolve();
@@ -231,7 +231,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      const p = client.postEvent("test", {});
+      const p = client.postEvent("test-session", "test", {});
 
       await Promise.resolve();
       await Promise.resolve();
@@ -251,7 +251,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      const p = client.postEvent("test", {});
+      const p = client.postEvent("test-session", "test", {});
 
       // 等待 readFile 完成（microtask）
       await Promise.resolve();
@@ -281,7 +281,7 @@ describe("ReconnectingDaemonClient", () => {
       mockReadFile.mockResolvedValueOnce(makeHandshakeJson(3000, "old-token") as any);
       mockFetch.mockResolvedValueOnce({ ok: false, status: 503 });
 
-      const resultPromise = client.postEvent("test.event", { x: 1 });
+      const resultPromise = client.postEvent("test-session", "test.event", { x: 1 });
 
       // 等待 readFile 和 fetch 完成（microtask）
       await Promise.resolve();
@@ -311,7 +311,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      const resultPromise = client.postEvent("test.event", {});
+      const resultPromise = client.postEvent("test-session", "test.event", {});
 
       // 等待 readFile 完成
       await Promise.resolve();
@@ -348,7 +348,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      const result = await client.postEvent("test.event", {});
+      const result = await client.postEvent("test-session", "test.event", {});
 
       expect(result).toEqual<PostResult>({
         ok: false,
@@ -367,7 +367,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      await client.postEvent("test", {});
+      await client.postEvent("test-session", "test", {});
 
       expect(client.getActiveBackoffTimerCount()).toBe(0);
     });
@@ -384,7 +384,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      const result = await client.postEvent("test", {});
+      const result = await client.postEvent("test-session", "test", {});
       expect(result.reason).toBe("degraded");
       expect(client.isDegraded()).toBe(true);
     });
@@ -397,7 +397,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      await client.postEvent("test", {});
+      await client.postEvent("test-session", "test", {});
 
       expect(client.isDegraded()).toBe(true);
     });
@@ -410,7 +410,7 @@ describe("ReconnectingDaemonClient", () => {
     /** 辅助：让 client 进入 degraded 状态（使用 initialDelayMs=0, maxCumulativeBackoffMs=0） */
     async function enterDegraded(c: ReconnectingDaemonClient): Promise<void> {
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
-      await c.postEvent("first", {});
+      await c.postEvent("test-session", "first", {});
     }
 
     it("degraded 后 postEvent 立即返回 dropped", async () => {
@@ -419,7 +419,7 @@ describe("ReconnectingDaemonClient", () => {
 
       expect(client.isDegraded()).toBe(true);
 
-      const result = await client.postEvent("second", {});
+      const result = await client.postEvent("test-session", "second", {});
       expect(result).toEqual<PostResult>({
         ok: false,
         dropped: true,
@@ -432,9 +432,9 @@ describe("ReconnectingDaemonClient", () => {
       await enterDegraded(client);
 
       const results = await Promise.all([
-        client.postEvent("a", {}),
-        client.postEvent("b", {}),
-        client.postEvent("c", {}),
+        client.postEvent("test-session", "a", {}),
+        client.postEvent("test-session", "b", {}),
+        client.postEvent("test-session", "c", {}),
       ]);
 
       for (const r of results) {
@@ -450,7 +450,7 @@ describe("ReconnectingDaemonClient", () => {
   describe("warn-once 语义", () => {
     async function enterDegraded(c: ReconnectingDaemonClient): Promise<void> {
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
-      await c.postEvent("first", {});
+      await c.postEvent("test-session", "first", {});
     }
 
     it("进入 degraded 时 console.error 只调用 1 次", async () => {
@@ -458,9 +458,9 @@ describe("ReconnectingDaemonClient", () => {
       await enterDegraded(client);
 
       // 多次调用 postEvent（degraded 状态）
-      await client.postEvent("second", {});
-      await client.postEvent("third", {});
-      await client.postEvent("fourth", {});
+      await client.postEvent("test-session", "second", {});
+      await client.postEvent("test-session", "third", {});
+      await client.postEvent("test-session", "fourth", {});
 
       // console.error 只应该被调用 1 次（warn-once）
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
@@ -496,7 +496,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      const p1 = client.postEvent("event1", {});
+      const p1 = client.postEvent("test-session", "event1", {});
 
       await Promise.resolve();
       await Promise.resolve();
@@ -515,7 +515,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      const p = client.postEvent("test", {});
+      const p = client.postEvent("test-session", "test", {});
 
       await Promise.resolve();
       await Promise.resolve();
@@ -553,7 +553,7 @@ describe("ReconnectingDaemonClient", () => {
             let threw = false;
 
             try {
-              await c.postEvent(type, data);
+              await c.postEvent("test-session", type, data);
             } catch {
               threw = true;
             }
@@ -595,7 +595,7 @@ describe("ReconnectingDaemonClient", () => {
 
             let threw = false;
             try {
-              await c.postEvent(type, data);
+              await c.postEvent("test-session", type, data);
             } catch {
               threw = true;
             }
@@ -619,7 +619,7 @@ describe("ReconnectingDaemonClient", () => {
 
             let threw = false;
             try {
-              await c.postEvent(type, data);
+              await c.postEvent("test-session", type, data);
             } catch {
               threw = true;
             }
@@ -635,7 +635,7 @@ describe("ReconnectingDaemonClient", () => {
       client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
-      await client.postEvent("first", {});
+      await client.postEvent("test-session", "first", {});
 
       expect(client.isDegraded()).toBe(true);
 
@@ -646,7 +646,7 @@ describe("ReconnectingDaemonClient", () => {
           async (type, data) => {
             let threw = false;
             try {
-              await client.postEvent(type, data);
+              await client.postEvent("test-session", type, data);
             } catch {
               threw = true;
             }
@@ -666,7 +666,7 @@ describe("ReconnectingDaemonClient", () => {
       client = makeClient();
       client.dispose();
 
-      const result = await client.postEvent("", null);
+      const result = await client.postEvent("test-session", "", null);
       expect(result.reason).toBe("disposed");
     });
 
@@ -690,7 +690,7 @@ describe("ReconnectingDaemonClient", () => {
       mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
       mockFetch.mockResolvedValue({ ok: false, status: 503 });
 
-      const result = await client.postEvent("test", {});
+      const result = await client.postEvent("test-session", "test", {});
       expect(["degraded", "disposed"]).toContain(result.reason);
     });
 
@@ -704,7 +704,7 @@ describe("ReconnectingDaemonClient", () => {
       mockReadFile.mockResolvedValue(makeHandshakeJson(3000, secretToken) as any);
       mockFetch.mockResolvedValue({ ok: true });
 
-      await client.postEvent("test", {});
+      await client.postEvent("test-session", "test", {});
 
       for (const call of consoleSpy.mock.calls) {
         expect(JSON.stringify(call)).not.toContain(secretToken);
@@ -731,7 +731,7 @@ describe("ReconnectingDaemonClient", () => {
       mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
       mockFetch.mockResolvedValue({ ok: true });
 
-      await client.postEvent("test", {});
+      await client.postEvent("test-session", "test", {});
 
       expect(client.getActiveBackoffTimerCount()).toBe(0);
     });
@@ -741,7 +741,7 @@ describe("ReconnectingDaemonClient", () => {
 
       mockReadFile.mockRejectedValue(new Error("ENOENT"));
 
-      await client.postEvent("test", {});
+      await client.postEvent("test-session", "test", {});
 
       expect(client.getActiveBackoffTimerCount()).toBe(0);
     });

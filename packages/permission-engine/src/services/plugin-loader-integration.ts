@@ -24,6 +24,7 @@
  */
 
 import { z } from 'zod';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import {
   PluginPermissionValidator,
   PluginManifest,
@@ -161,7 +162,7 @@ export class PluginLoaderIntegration {
     this.config = {
       projectId: parsedConfig.projectId,
       eventLoggingEnabled: parsedConfig.eventLoggingEnabled ?? true,
-      eventsFilePath: parsedConfig.eventsFilePath || './specforge/observability/events.jsonl',
+      eventsFilePath: parsedConfig.eventsFilePath || './' + SPEC_DIR_NAME + '/logs/telemetry.jsonl',
       allowedPermissions: parsedConfig.allowedPermissions || [],
       defaultGrants: parsedConfig.defaultGrants || { permissions: [] },
       allowedPaths: parsedConfig.allowedPaths || [],

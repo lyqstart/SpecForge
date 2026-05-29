@@ -1,0 +1,1 @@
+{"run_id":"WI-031-sf-executor-12","work_item_id":"WI-031","agent_name":"sf-executor","status":"completed","task_description":"TASK-12: 插件增强 projectPath + register + shell.env","retry_count":0,"test_results":"Plugin enhanced with sessionId propagation and shell.env hook"}

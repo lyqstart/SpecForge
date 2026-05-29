@@ -21,6 +21,7 @@ import type { PluginPermission } from '../manifest';
 import type { GrantsConfig } from '../grants';
 import { isGrantsConfig } from '../grants';
 import { AuthorizationCollection, type AuthorizationSource } from './AuthorizationCollection';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 // ---------------------------------------------------------------------------
 // 类型定义
@@ -115,14 +116,13 @@ export interface ConfigVersion {
 
 const DEFAULT_CONFIG_FILE_NAME = 'plugin-grants.json';
 const DEFAULT_POLL_INTERVAL_MS = 1000;
-const DEFAULT_SPECFORGE_DIR = '.specforge';
 
 /**
  * 获取默认的用户配置目录
  */
 function getDefaultUserConfigDir(): string {
   const homeDir = process.env['HOME'] || process.env['USERPROFILE'] || process.cwd();
-  return path.join(homeDir, '.specforge', 'config');
+  return path.join(homeDir, SPEC_DIR_NAME, 'config');
 }
 
 // ---------------------------------------------------------------------------
@@ -193,7 +193,7 @@ export class ConfigHotReloader {
         source: 'project',
         filePath: path.join(
           this.config.projectRoot,
-          DEFAULT_SPECFORGE_DIR,
+          SPEC_DIR_NAME,
           'config',
           this.config.configFileName
         ),
@@ -328,7 +328,7 @@ export class ConfigHotReloader {
       if (this.config.projectRoot) {
         const projectConfigDir = path.join(
           this.config.projectRoot,
-          DEFAULT_SPECFORGE_DIR,
+          SPEC_DIR_NAME,
           'config'
         );
         await fs.mkdir(projectConfigDir, { recursive: true });

@@ -28,6 +28,8 @@ import { posixToNative } from "./lib/paths"
 import type { CLIOptions, UserLevelManifest, FileEntry } from "./lib/types"
 import { runMigrateManifestCommand } from "../packages/version-unification/src/legacy/migrate-manifest-command"
 
+const SPEC_DIR_NAME = '.specforge' as const;
+
 // ============================================================================
 // 参数解析
 // ============================================================================
@@ -148,12 +150,12 @@ function showVersion(userLevelDir: string): void {
 /** 获取 SpecForge 用户级目录（~/.specforge/） */
 function getSpecForgeUserDir(): string {
   const home = require("node:os").homedir()
-  return require("node:path").join(home, ".specforge")
+  return require("node:path").join(home, SPEC_DIR_NAME)
 }
 
 /** 部署 templates/ 目录到 ~/.specforge/templates/ */
 async function deployTemplates(sourceDir: string): Promise<number> {
-  const templatesSource = path.join(sourceDir, "templates")
+  const templatesSource = path.join(sourceDir, "setup", "userlevel-templates")
   const specForgeDir = getSpecForgeUserDir()
   const templatesTarget = path.join(specForgeDir, "templates")
 
@@ -215,7 +217,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
     let deployedCount = 0
     const skippedFiles: string[] = []
     for (const entry of SHARED_COMPONENT_REGISTRY) {
-      const sourcePath = path.join(sourceDir, ".opencode", entry.path)
+      const sourcePath = path.join(sourceDir, "setup", "userlevel-opencode", entry.path)
       const targetPath = path.join(userLevelDir, posixToNative(entry.path))
 
       if (!fs.existsSync(sourcePath)) {
@@ -266,7 +268,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       for (const f of skippedFiles) {
         console.warn(`   - ${f}`)
       }
-      console.warn(`   源目录: ${path.join(sourceDir, ".opencode")}`)
+      console.warn(`   源目录: ${path.join(sourceDir, "setup", "userlevel-opencode")}`)
       if (deployedCount === 0) {
         throw new InstallerError(
           InstallerErrorCode.E_SOURCE_MISSING,
@@ -293,7 +295,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
     // 部署 scripts/lib/ 依赖文件（tools/lib/*.ts 通过相对路径 ../../../scripts/lib/ 引用）
     // 目标位置：userLevelDir 上三级 + scripts/lib/ = path.resolve(userLevelDir, "../scripts/lib/")
     const scriptsLibTarget = path.resolve(userLevelDir, "..", "scripts", "lib")
-    const scriptsLibSource = path.join(sourceDir, "scripts", "lib")
+    const scriptsLibSource = path.join(sourceDir, "setup", "userlevel-scripts-lib")
     if (fs.existsSync(scriptsLibSource)) {
       if (!fs.existsSync(scriptsLibTarget)) {
         fs.mkdirSync(scriptsLibTarget, { recursive: true })
@@ -306,6 +308,24 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
         )
       }
       deployedCount += scriptsLibFiles.length
+    }
+
+    // 部署插件依赖文件（plugins/sf_specforge.ts 通过相对路径 ../scripts/lib/ 引用）
+    // 目标位置：userLevelDir + scripts/lib/ = ~/.config/opencode/scripts/lib/
+    const pluginScriptsLibTarget = path.join(userLevelDir, "scripts", "lib")
+    const pluginScriptsLibSource = path.join(sourceDir, "setup", "userlevel-opencode", "scripts", "lib")
+    if (fs.existsSync(pluginScriptsLibSource)) {
+      if (!fs.existsSync(pluginScriptsLibTarget)) {
+        fs.mkdirSync(pluginScriptsLibTarget, { recursive: true })
+      }
+      const pluginScriptsLibFiles = fs.readdirSync(pluginScriptsLibSource).filter((f) => f.endsWith(".ts"))
+      for (const file of pluginScriptsLibFiles) {
+        fs.copyFileSync(
+          path.join(pluginScriptsLibSource, file),
+          path.join(pluginScriptsLibTarget, file)
+        )
+      }
+      deployedCount += pluginScriptsLibFiles.length
     }
 
     // 部署 scripts/package.json 并安装其依赖（zod 等）
@@ -405,7 +425,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
 
     // Step 4: Per-file atomic replacement
     for (const entry of SHARED_COMPONENT_REGISTRY) {
-      const sourcePath = path.join(sourceDir, ".opencode", entry.path)
+      const sourcePath = path.join(sourceDir, "setup", "userlevel-opencode", entry.path)
       const targetPath = path.join(userLevelDir, posixToNative(entry.path))
 
       if (!fs.existsSync(sourcePath)) {
@@ -470,7 +490,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
 
     // Step 5: 部署 scripts/lib/ 依赖文件
     const scriptsLibTarget = path.resolve(userLevelDir, "..", "scripts", "lib")
-    const scriptsLibSource = path.join(sourceDir, "scripts", "lib")
+    const scriptsLibSource = path.join(sourceDir, "setup", "userlevel-scripts-lib")
     if (fs.existsSync(scriptsLibSource)) {
       if (!fs.existsSync(scriptsLibTarget)) {
         fs.mkdirSync(scriptsLibTarget, { recursive: true })
@@ -485,7 +505,24 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
       upgradedCount += scriptsLibFiles.length
     }
 
-    // Step 5.5: 部署 scripts/package.json 并安装其依赖（zod 等）
+    // Step 5.5: 部署插件依赖文件（plugins/sf_specforge.ts 通过相对路径 ../scripts/lib/ 引用）
+    const pluginScriptsLibTargetUpg = path.join(userLevelDir, "scripts", "lib")
+    const pluginScriptsLibSourceUpg = path.join(sourceDir, "setup", "userlevel-opencode", "scripts", "lib")
+    if (fs.existsSync(pluginScriptsLibSourceUpg)) {
+      if (!fs.existsSync(pluginScriptsLibTargetUpg)) {
+        fs.mkdirSync(pluginScriptsLibTargetUpg, { recursive: true })
+      }
+      const pluginScriptsLibFilesUpg = fs.readdirSync(pluginScriptsLibSourceUpg).filter((f) => f.endsWith(".ts"))
+      for (const file of pluginScriptsLibFilesUpg) {
+        fs.copyFileSync(
+          path.join(pluginScriptsLibSourceUpg, file),
+          path.join(pluginScriptsLibTargetUpg, file)
+        )
+      }
+      upgradedCount += pluginScriptsLibFilesUpg.length
+    }
+
+    // Step 5.6: 部署 scripts/package.json 并安装其依赖（zod 等）
     upgradedCount += deployScriptsPackageJson(sourceDir, userLevelDir)
 
     // Step 6: 写入新 User_Manifest

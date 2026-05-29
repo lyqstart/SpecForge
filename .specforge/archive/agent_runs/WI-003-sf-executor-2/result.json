@@ -1,0 +1,21 @@
+{
+  "run_id": "WI-003-sf-executor-2",
+  "work_item_id": "WI-003",
+  "agent_name": "sf-executor",
+  "start_time": "2026-05-27T17:37:00Z",
+  "end_time": "2026-05-27T17:42:30Z",
+  "duration_ms": 330000,
+  "status": "success",
+  "task_description": "TASK-2: SessionRegistry alias 别名表 + 映射增强",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": true,
+  "files_changed": ["packages/daemon-core/src/session/SessionRegistry.ts", "packages/daemon-core/tests/unit/session-registry-alias.test.ts"],
+  "verification_results": [
+    {"command": "npx vitest run tests/unit/session-registry-alias.test.ts", "passed": true, "tests_passed": 4, "tests_total": 4},
+    {"command": "npx vitest run tests/unit/session.test.ts", "passed": false, "tests_passed": 33, "tests_total": 34, "note": "1 pre-existing failure unrelated to alias changes"}
+  ],
+  "parallel_batch": 1,
+  "parallel_peers": ["WI-003-sf-executor-1"]
+}

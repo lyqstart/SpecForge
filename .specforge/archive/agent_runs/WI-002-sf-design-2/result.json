@@ -1,0 +1,25 @@
+{
+  "run_id": "WI-002-sf-design-2",
+  "work_item_id": "WI-002",
+  "agent_name": "sf-design",
+  "session_id": "orchestrator-substituted",
+  "start_time": "2026-05-27T16:43:30Z",
+  "end_time": "2026-05-27T17:05:00Z",
+  "duration_ms": 1290000,
+  "status": "substituted_by_orchestrator_after_2_failures",
+  "task_description": "Consolidate 7 research files into findings_report.md",
+  "retry_count": 2,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": true,
+  "failure_history": [
+    "Attempt 1: task tool returned mid-process text ('现在我已经理解全部内容，开始写...') without writing any file",
+    "Attempt 2: task tool returned empty string without writing any file"
+  ],
+  "resolution": "User chose path B; orchestrator wrote findings_report.md as navigation+executive summary, with all facts cited back to research/ subdirectory. No new facts invented.",
+  "artifacts": [
+    ".specforge/specs/WI-002/findings_report.md",
+    ".specforge/archive/agent_runs/WI-002-sf-design-2/work_log.md"
+  ],
+  "audit_note": "findings_report.md final section explicitly discloses orchestrator authorship. Limitations section 7.2 #6 registers task tool reliability as a tool-crack evidence item."
+}

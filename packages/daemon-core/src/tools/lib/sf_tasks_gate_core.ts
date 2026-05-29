@@ -9,6 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { resolveProjectPath } from "@specforge/types/directory-layout"
 import type { GateResult } from "./sf_gate_types"
 import { getTaskSections, hasVerificationCommands } from "./sf_doc_lint_core"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
@@ -228,7 +229,7 @@ export async function checkTasksGate(
     // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
     await tryCheckCompatibility(baseDir, "sf_tasks_gate_core")
 
-    const specDir = join(baseDir, "specforge", "specs", workItemId)
+    const specDir = resolveProjectPath(baseDir, "specs", workItemId)
     const docPath = join(specDir, "tasks.md")
 
     // 1. 读取 tasks.md

@@ -1,0 +1,14 @@
+{
+  "id": "WI-004",
+  "workflow_type": "change_request",
+  "title": "SpecForge 工具裂缝修复",
+  "summary": "修复 WI-002 调查发现的 4 条工具实现裂缝：Gate 隐式 intro body 要求、双目录约定不一致、Skill 文档路径引用不统一等。",
+  "key_decisions": [
+    "选定 .specforge/（带点）作为标准目录名",
+    "Gate 约束条件明示到 skill 文档"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-27T00:00:00Z",
+  "completed_at": "2026-05-27T00:00:00Z",
+  "upstream_wis": ["WI-002"]
+}

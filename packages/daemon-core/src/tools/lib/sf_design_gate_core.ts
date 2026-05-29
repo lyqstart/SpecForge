@@ -9,6 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { resolveProjectPath } from "@specforge/types/directory-layout"
 import type { GateResult, GateModeSpec } from "./sf_gate_types"
 import { parseSections } from "./sf_requirements_gate_core"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
@@ -231,7 +232,7 @@ export async function checkDesignGate(
       return executeDesignGateMode(workItemId, baseDir, mode)
     }
 
-    const specDir = join(baseDir, "specforge", "specs", workItemId)
+    const specDir = resolveProjectPath(baseDir, "specs", workItemId)
     const docPath = join(specDir, "design.md")
 
     // 1. 读取 design.md
@@ -397,7 +398,7 @@ async function executeDesignGateMode(
   }
 
   // 读取目标文件
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
+  const specDir = resolveProjectPath(baseDir, "specs", workItemId)
   const filePath = join(specDir, spec.targetFile)
   let content: string
   try {

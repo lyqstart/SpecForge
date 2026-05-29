@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "source": "sidecar",
+  "run_id": "WI-005-sf-task-planner-1",
+  "work_item_id": "WI-005",
+  "agent_name": "sf-task-planner",
+  "start_time": null,
+  "end_time": "2026-05-27T18:48:39.825Z",
+  "duration_ms": null,
+  "status": "completed",
+  "task_description": null,
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": null,
+  "conversation_recorded": null,
+  "parallel_batch": null,
+  "parallel_peers": null,
+  "work_log_path": "specforge/D:/code/temp/SpecForge/.specforge/archive/agent_runs/WI-005-sf-task-planner-1/work_log.md",
+  "sidecar_generated_at": "2026-05-27T18:48:39.825Z"
+}

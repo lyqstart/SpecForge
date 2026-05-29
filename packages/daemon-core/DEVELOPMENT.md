@@ -80,7 +80,7 @@ This module implements the following Correctness Properties from v6-architecture
 - Property 6: Idempotent Recovery
 - Property 7: WAL Ordering
 - Property 20: Recovery Consistency Repair
-- Property 21: Session Reconnect Scope
+- Property 21: Session WAL Replay Scope
 - Property 22: Project Isolation
 - Property 30: Event Schema Multi-sync Readiness
 

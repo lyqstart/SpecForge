@@ -9,7 +9,7 @@ registerHandler('sf_verification_gate', async (args, context, _deps) => {
   }
 
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const gateMode = args['gate_mode'] as string | undefined;
+  const gateMode = (args['mode'] as string | undefined) || (args['gate_mode'] as string | undefined);
   const requiredTypes = args['required_types'] as string[] | undefined;
 
   try {

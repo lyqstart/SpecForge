@@ -79,3 +79,48 @@ jobs:
               cd ../..
             fi
           done
+
+  # ─── 硬编码路径 Lint ────────────────────────────────────────────────────────
+  lint-hardcoded-paths:
+    name: 硬编码路径 Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      - name: 运行硬编码路径 Lint
+        run: bun run scripts/lint/check-hardcoded-paths.ts
+
+  # ─── 目录布局一致性检查 ──────────────────────────────────────────────────────
+  render-layout-consistency:
+    name: 目录布局一致性检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      - name: 生成目录布局
+        run: bun run scripts/render-layout.ts
+
+      - name: 检查生成物与提交一致
+        run: git diff --exit-code -- README.md AGENTS.md docs/conventions/directory-layout.md

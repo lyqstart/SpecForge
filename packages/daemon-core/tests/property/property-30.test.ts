@@ -208,7 +208,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     }
 
     // Read events back
-    const readEvents = await wal.readAllEvents();
+    const { events: readEvents } = await wal.readAllEvents();
 
     // Verify order is preserved
     expect(readEvents.length).toBe(events.length);
@@ -268,7 +268,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     }
 
     // Read all events
-    const allEvents = await wal.readAllEvents();
+    const { events: allEvents } = await wal.readAllEvents();
 
     // Verify project isolation
     const eventsFromA = allEvents.filter(e => e.projectId === projectA);

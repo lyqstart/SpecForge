@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "source": "sidecar",
+  "run_id": "TASK-5",
+  "work_item_id": "WI-014",
+  "agent_name": "unknown",
+  "start_time": null,
+  "end_time": "2026-05-29T04:36:25.360Z",
+  "duration_ms": null,
+  "status": "completed",
+  "task_description": null,
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": null,
+  "conversation_recorded": null,
+  "parallel_batch": null,
+  "parallel_peers": null,
+  "work_log_path": ".specforge/archive/agent_runs/TASK-5/work_log.md",
+  "sidecar_generated_at": "2026-05-29T04:36:25.360Z"
+}

@@ -12,6 +12,7 @@
 import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { homedir } from "node:os"
+import { SPEC_DIR_NAME, LAYOUT, resolveProjectPath } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
 
 // ── 内联 resolveUserLevelDirectory（原 scripts/lib/paths.ts）──
@@ -29,7 +30,7 @@ interface CompatibilityResult {
 }
 
 function assertCompatibility(baseDir: string): CompatibilityResult {
-  const projectManifestPath = join(baseDir, "specforge", "manifest.json")
+  const projectManifestPath = resolveProjectPath(baseDir, 'manifest')
   if (!existsSync(projectManifestPath)) {
     return { compatible: true, installMode: "project_level" }
   }
@@ -89,8 +90,8 @@ const USER_LEVEL_KEY_FILES = [
 
 /** Project runtime key files to verify */
 const PROJECT_RUNTIME_KEY_FILES = [
-  "specforge/runtime/state.json",
-  "specforge/config/project.json",
+  join(SPEC_DIR_NAME, LAYOUT.runtimeState),
+  join(SPEC_DIR_NAME, LAYOUT.configFiles.project),
 ]
 
 // ============================================================
@@ -206,11 +207,70 @@ export async function checkUserLevelInstallation(baseDir: string): Promise<UserL
       })
     }
 
+    // --- 5. 初始化完整性检查 ---
+    const initChecks = checkInitializationCompleteness(baseDir)
+    checks.push(...initChecks)
+
     return { checks, overall: deriveOverall(checks) }
   } catch (err) {
     await logErrorToFile(baseDir, "sf_doctor_core", "checkUserLevelInstallation", err)
     throw err
   }
+}
+
+/**
+ * 检查项目初始化完整性
+ *
+ * 检查 .specforge/ 下 4 个关键文件：
+ * 1. manifest.json — 项目注册标识
+ * 2. dev-environment.md — 开发环境配置
+ * 3. prod-environment.md — 生产环境配置
+ * 4. project-rules.md — 项目规则
+ */
+function checkInitializationCompleteness(
+  baseDir: string
+): Array<{ name: string; status: "ok" | "warning" | "error"; detail: string }> {
+  const specDir = join(baseDir, SPEC_DIR_NAME)
+  const checks: Array<{ name: string; status: "ok" | "warning" | "error"; detail: string }> = []
+
+  // manifest.json
+  const manifestPath = join(specDir, LAYOUT.manifest)
+  if (existsSync(manifestPath)) {
+    checks.push({ name: "初始化: manifest.json", status: "ok", detail: "项目注册标识存在" })
+  } else {
+    checks.push({ name: "初始化: manifest.json", status: "error", detail: "项目未初始化（manifest.json 不存在）" })
+  }
+
+  // dev-environment.md
+  // NOTE: configFiles.devEnv points to config/dev-environment.md (future target per governance proposal),
+  // but current actual location is directly under .specforge/. Check both locations for compatibility.
+  const devEnvPath = join(specDir, "dev-environment.md")
+  const devEnvPathFuture = join(specDir, LAYOUT.configFiles.devEnv)
+  if (existsSync(devEnvPath) || existsSync(devEnvPathFuture)) {
+    checks.push({ name: "初始化: dev-environment.md", status: "ok", detail: "开发环境配置存在" })
+  } else {
+    checks.push({ name: "初始化: dev-environment.md", status: "warning", detail: "开发环境配置缺失" })
+  }
+
+  // prod-environment.md
+  const prodEnvPath = join(specDir, "prod-environment.md")
+  const prodEnvPathFuture = join(specDir, LAYOUT.configFiles.prodEnv)
+  if (existsSync(prodEnvPath) || existsSync(prodEnvPathFuture)) {
+    checks.push({ name: "初始化: prod-environment.md", status: "ok", detail: "生产环境配置存在" })
+  } else {
+    checks.push({ name: "初始化: prod-environment.md", status: "warning", detail: "生产环境配置缺失" })
+  }
+
+  // project-rules.md
+  const rulesPath = join(specDir, "project-rules.md")
+  const rulesPathFuture = join(specDir, LAYOUT.configFiles.projectRules)
+  if (existsSync(rulesPath) || existsSync(rulesPathFuture)) {
+    checks.push({ name: "初始化: project-rules.md", status: "ok", detail: "项目规则存在" })
+  } else {
+    checks.push({ name: "初始化: project-rules.md", status: "warning", detail: "项目规则缺失" })
+  }
+
+  return checks
 }
 
 /**

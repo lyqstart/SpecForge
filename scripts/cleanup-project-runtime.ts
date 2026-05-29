@@ -33,6 +33,8 @@
 import * as fs from "node:fs"
 import * as path from "node:path"
 
+const SPEC_DIR_NAME = '.specforge' as const;
+
 // ── 参数解析 ──────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2)
@@ -179,7 +181,7 @@ if (fs.existsSync(sessionsDir)) {
 // ── 5. 检查 V6 新目录是否存在 ────────────────────────────────────────────────
 log("")
 log("【5】V6 新目录检查")
-const v6Dir = path.join(projectDir, ".specforge")
+const v6Dir = path.join(projectDir, SPEC_DIR_NAME)
 if (fs.existsSync(v6Dir)) {
   log(`  ✓ .specforge/ 目录已存在（V6 运行时目录）`)
 } else {

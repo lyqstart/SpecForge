@@ -1,0 +1,14 @@
+{
+  "id": "WI-009",
+  "workflow_type": "change_request",
+  "title": "SpecForge 项目初始化流程根治",
+  "summary": "修复 sf-intake skill frontmatter、daemon 不再自动建 manifest 改为探针+错误、统一初始化流程。",
+  "key_decisions": [
+    "daemon 不再自动创建 .specforge/ 目录",
+    "未初始化项目返回 PROJECT_NOT_INITIALIZED 错误"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-28T00:00:00Z",
+  "completed_at": "2026-05-28T00:00:00Z",
+  "upstream_wis": ["WI-002"]
+}

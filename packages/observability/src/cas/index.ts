@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import { readFile, writeFile, unlink, mkdir, readdir, stat } from 'fs/promises';
 import { join, dirname } from 'path';
-import type { CAS as ICAS } from '@/types';
+import type { CAS as ICAS } from '../types';
 
 export const BLOB_REF_PREFIX = 'blob://';
 

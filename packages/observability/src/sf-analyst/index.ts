@@ -15,10 +15,10 @@ import type {
   EventFilter,
   NorthStarScenario,
   PermissionTrace
-} from '@/types';
-import { QueryAPI, createQueryAPI } from '@/query-api/index.js';
-import { EventLogger } from '@/event-logger/index.js';
-import { CAS } from '@/cas/index.js';
+} from '../types';
+import { QueryAPI, createQueryAPI } from '../query-api/index.js';
+import { EventLogger } from '../event-logger/index.js';
+import { CAS } from '../cas/index.js';
 
 /**
  * sf-analyst agent responsibilities:
@@ -760,4 +760,4 @@ export type {
   EventFilter,
   NorthStarScenario,
   PermissionTrace 
-} from '@/types';
+} from '../types';

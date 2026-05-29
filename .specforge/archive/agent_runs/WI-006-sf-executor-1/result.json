@@ -1,0 +1,16 @@
+{
+  "run_id": "WI-006-sf-executor-1",
+  "work_item_id": "WI-006",
+  "agent_name": "sf-executor",
+  "start_time": "2026-05-28T01:11:10Z",
+  "end_time": "2026-05-28T01:16:00Z",
+  "duration_ms": 290000,
+  "status": "success",
+  "task_description": "TASK-1: WAL category registration + readEventsByCategory",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": false,
+  "parallel_batch": 1,
+  "parallel_peers": ["WI-006-sf-executor-2"]
+}

@@ -1,0 +1,30 @@
+{
+  "description": "Layout lint white-list: files allowed to contain hardcoded specforge paths",
+  "version": 1,
+  "whitelist": [
+    "packages/types/src/directory-layout.ts",
+    "packages/types/src/meta-schema.ts",
+    "scripts/migrations/**",
+    "tests/**/fixtures/**",
+    "**/*.test.ts",
+    "scripts/lint/**",
+    "scripts/render-layout.ts",
+    "scripts/render-specs-readme.ts",
+    "scripts/render-meta-schema.ts",
+    "docs/adr/**",
+    "docs/audit/**",
+    "docs/proposals/**",
+    ".specforge/specs/**/*.md",
+    "docs/conventions/**",
+    "README.md",
+    "AGENTS.md",
+    "**/CHANGELOG.md",
+    "scripts/lib/**",
+    ".specforge/archive/**",
+    "docs/archive/**",
+    "docs/engineering-lessons/**",
+    "packages/**/docs/**",
+    "setup/**"
+  ],
+  "note": "Any extension to this whitelist requires dual-person approval (per governance proposal §8.1)"
+}

@@ -60,11 +60,13 @@ describe('Types', () => {
       port: 8080,
       token: 'random-token-123',
       startedAt: Date.now(),
-      schemaVersion: '1.0',
+      schema_version: '1.0',
+      version: '1.0.0',
+      serviceMode: false,
     };
     
     expect(handshake.pid).toBe(12345);
-    expect(handshake.schemaVersion).toBe('1.0');
+    expect(handshake.schema_version).toBe('1.0');
   });
 
   it('should create Lock', () => {

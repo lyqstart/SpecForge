@@ -1,0 +1,1 @@
+{"run_id":"WI-031-sf-executor-17","work_item_id":"WI-031","agent_name":"sf-executor","status":"completed","task_description":"修复 sessionId 协议不匹配","retry_count":0,"test_results":"tsc: 0 errors, http: pass, integration: 34/34"}

@@ -13,6 +13,7 @@ export { StateManager } from './state/StateManager';
 export { RecoverySubsystem } from './recovery/RecoverySubsystem';
 export { HandshakeManager } from './daemon/HandshakeManager';
 export { DaemonConfig } from './daemon/DaemonConfig';
+export type { DaemonMode } from './daemon/DaemonConfig';
 export { SessionRegistry } from './session/SessionRegistry';
 export { ProjectManager } from './project/ProjectManager';
 export { ContentAddressableStorage } from './cas/ContentAddressableStorage';

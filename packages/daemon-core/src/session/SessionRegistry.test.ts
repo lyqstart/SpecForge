@@ -13,9 +13,9 @@ describe('SessionRegistry', () => {
     registry = new SessionRegistry(new EventBus());
   });
 
-  it('should register pending sessions', () => {
+  it('should register pending sessions', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
@@ -31,10 +31,10 @@ describe('SessionRegistry', () => {
     expect(identity.parentSessionId).toBeNull();
   });
 
-  it('should register pending sessions with parent', () => {
+  it('should register pending sessions with parent', async () => {
     const parentId = 'parent-123';
     const spawnIntentId = 'spawn-456';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'sub-agent',
       'work-456',
@@ -45,16 +45,16 @@ describe('SessionRegistry', () => {
     expect(identity.parentSessionId).toBe(parentId);
   });
 
-  it('should activate pending sessions', () => {
+  it('should activate pending sessions', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
       spawnIntentId
     );
     
-    const activated = registry.activate(identity.sessionId, spawnIntentId);
+    const activated = await registry.activate(identity.sessionId, spawnIntentId);
     
     expect(activated).toBeDefined();
     expect(activated?.status).toBe('active');
@@ -62,16 +62,16 @@ describe('SessionRegistry', () => {
     expect(registry.lookupBySessionId(identity.sessionId)).toBeDefined();
   });
 
-  it('should not activate with wrong spawnIntentId', () => {
+  it('should not activate with wrong spawnIntentId', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
       spawnIntentId
     );
     
-    const activated = registry.activate(identity.sessionId, 'wrong-id');
+    const activated = await registry.activate(identity.sessionId, 'wrong-id');
     
     expect(activated).toBeNull();
     // Session should still be in pending state
@@ -80,15 +80,15 @@ describe('SessionRegistry', () => {
     expect(lookup?.status).toBe('pending');
   });
 
-  it('should lookup sessions by sessionId', () => {
+  it('should lookup sessions by sessionId', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
       spawnIntentId
     );
-    registry.activate(identity.sessionId, spawnIntentId);
+    await registry.activate(identity.sessionId, spawnIntentId);
     
     const found = registry.lookupBySessionId(identity.sessionId);
     
@@ -102,17 +102,17 @@ describe('SessionRegistry', () => {
     expect(found).toBeNull();
   });
 
-  it('should terminate active sessions', () => {
+  it('should terminate active sessions', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
       spawnIntentId
     );
-    const activated = registry.activate(identity.sessionId, spawnIntentId);
+    const activated = await registry.activate(identity.sessionId, spawnIntentId);
     
-    const terminated = registry.terminate(activated!.sessionId);
+    const terminated = await registry.terminate(activated!.sessionId);
     
     expect(terminated).toBeDefined();
     expect(terminated?.status).toBe('history');
@@ -127,35 +127,35 @@ describe('SessionRegistry', () => {
 
   it('should update last active timestamp', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
       spawnIntentId
     );
-    const activated = registry.activate(identity.sessionId, spawnIntentId);
+    const activated = await registry.activate(identity.sessionId, spawnIntentId);
     const firstActive = activated!.lastActiveAt;
     
     // Wait a bit to ensure timestamp difference
     await new Promise(resolve => setTimeout(resolve, 10));
     
-    const touched = registry.touch(activated!.sessionId);
+    const touched = await registry.touch(activated!.sessionId);
     
     expect(touched).toBeDefined();
     expect(touched!.lastActiveAt).toBeGreaterThan(firstActive);
   });
 
-  it('should get session counts', () => {
+  it('should get session counts', async () => {
     const spawnIntentId1 = 'spawn-123';
     const spawnIntentId2 = 'spawn-456';
     
-    registry.registerPending(
+    await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
       spawnIntentId1
     );
-    registry.registerPending(
+    await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-456',
@@ -169,17 +169,17 @@ describe('SessionRegistry', () => {
     expect(counts.history).toBe(0);
   });
 
-  it('should get session tree for work item', () => {
+  it('should get session tree for work item', async () => {
     const spawnIntentId1 = 'spawn-123';
     const spawnIntentId2 = 'spawn-456';
     
-    const parent = registry.registerPending(
+    const parent = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
       spawnIntentId1
     );
-    const child = registry.registerPending(
+    const child = await registry.registerPending(
       'sf-orchestrator',
       'sub-agent',
       'work-123',
@@ -187,8 +187,8 @@ describe('SessionRegistry', () => {
       parent.sessionId
     );
     
-    registry.activate(parent.sessionId, spawnIntentId1);
-    registry.activate(child.sessionId, spawnIntentId2);
+    await registry.activate(parent.sessionId, spawnIntentId1);
+    await registry.activate(child.sessionId, spawnIntentId2);
     
     // Debug: log all active sessions
     const activeSessions = registry.getActiveSessions();
@@ -207,9 +207,9 @@ describe('SessionRegistry', () => {
     expect(tree[1]?.parentSessionId).toBe(parent.sessionId);
   });
 
-  it('should check if session exists', () => {
+  it('should check if session exists', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
@@ -220,9 +220,9 @@ describe('SessionRegistry', () => {
     expect(registry.hasSession('non-existent')).toBe(false);
   });
 
-  it('should move session from pending to history via termination', () => {
+  it('should move session from pending to history via termination', async () => {
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
@@ -230,15 +230,15 @@ describe('SessionRegistry', () => {
     );
     
     // Try to terminate pending session (should fail)
-    const terminated = registry.terminate(identity.sessionId);
+    const terminated = await registry.terminate(identity.sessionId);
     expect(terminated).toBeNull();
     
     // Activate first
-    const activated = registry.activate(identity.sessionId, spawnIntentId);
+    const activated = await registry.activate(identity.sessionId, spawnIntentId);
     expect(activated).toBeDefined();
     
     // Now terminate
-    const history = registry.terminate(activated!.sessionId);
+    const history = await registry.terminate(activated!.sessionId);
     expect(history).toBeDefined();
     expect(history?.status).toBe('history');
   });

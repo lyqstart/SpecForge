@@ -13,6 +13,7 @@
 
 import { readFile, access, readdir } from "node:fs/promises"
 import { join } from "node:path"
+import { resolveProjectPath, LAYOUT } from "@specforge/types/directory-layout"
 import type { WorkflowType } from "./state_machine"
 import { logErrorToFile } from "./utils"
 
@@ -618,7 +619,7 @@ async function readToolCallsFromArchive(
   runId: string,
   baseDir: string
 ): Promise<ToolCallRecord[]> {
-  const archiveDir = join(baseDir, "specforge", "archive", "agent_runs")
+  const archiveDir = resolveProjectPath(baseDir, 'archiveAgentRuns')
   const toolCallsPath = join(archiveDir, runId, "tool_calls.jsonl")
 
   try {
@@ -647,7 +648,8 @@ async function readTraceEntriesForRun(
   sessionId: string,
   baseDir: string
 ): Promise<TraceEntry[]> {
-  const tracePath = join(baseDir, "specforge", "runtime", "trace.jsonl")
+  // Path semantics fix: specforge/runtime/trace.jsonl → LAYOUT.logsTrace (.specforge/logs/trace.jsonl)
+  const tracePath = resolveProjectPath(baseDir, 'logsTrace')
 
   try {
     const content = await readFile(tracePath, "utf-8")
@@ -679,7 +681,7 @@ async function readWorkLog(
   runId: string,
   baseDir: string
 ): Promise<string | null> {
-  const archiveDir = join(baseDir, "specforge", "archive", "agent_runs")
+  const archiveDir = resolveProjectPath(baseDir, 'archiveAgentRuns')
   const workLogPath = join(archiveDir, runId, "work_log.md")
 
   try {
@@ -698,13 +700,12 @@ async function readConversationMessages(
 ): Promise<ConversationMessage[]> {
   // Try session-specific conversation file first
   const sessionConvPath = join(
-    baseDir,
-    "specforge",
-    "archive",
+    resolveProjectPath(baseDir, 'archive'),
     "conversations",
     `${sessionId}.jsonl`
   )
-  const globalConvPath = join(baseDir, "specforge", "runtime", "conversation.jsonl")
+  // Path semantics fix: specforge/runtime/conversation.jsonl → LAYOUT.logsConversations
+  const globalConvPath = resolveProjectPath(baseDir, 'logsConversations')
 
   for (const convPath of [sessionConvPath, globalConvPath]) {
     try {
@@ -1471,7 +1472,7 @@ export function mergeArchives(
  */
 export async function readContinuityConfig(baseDir: string): Promise<ContinuityConfig> {
   try {
-    const configPath = join(baseDir, "specforge", "config", "project.json")
+    const configPath = resolveProjectPath(baseDir, "config", "project.json")
 
     try {
       const content = await readFile(configPath, "utf-8")
@@ -1531,7 +1532,7 @@ export async function enforceContinuationLimit(
   const maxAllowed = config.max_continuations
 
   // Count existing continuations by scanning archive directory
-  const archiveDir = join(baseDir, "specforge", "archive", "agent_runs")
+  const archiveDir = resolveProjectPath(baseDir, "archiveAgentRuns")
   let continuationCount = 0
 
   try {

@@ -1,4 +1,4 @@
-import type { ObservabilityMode, Event, CAS } from '@/types';
+import type { ObservabilityMode, Event, CAS } from '../types';
 
 const PAYLOAD_SIZE_LIMIT = 64 * 1024;
 

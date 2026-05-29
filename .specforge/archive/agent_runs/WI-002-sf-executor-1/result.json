@@ -1,0 +1,34 @@
+{
+  "run_id": "WI-002-sf-executor-1",
+  "work_item_id": "WI-002",
+  "agent_name": "sf-executor",
+  "session_id": "ses_195c7d6c5ffesXQNF625Eb2KOd",
+  "start_time": "2026-05-27T16:10:00Z",
+  "end_time": "2026-05-27T16:40:00Z",
+  "duration_ms": 1800000,
+  "status": "success_silent_return",
+  "task_description": "Execute 7-step research for WI-002 daemon redesign investigation",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": true,
+  "anomaly": "task tool returned empty task_result despite all 7 research files + work_log successfully written to disk; counts as additional tool crack evidence",
+  "artifacts": [
+    ".specforge/specs/WI-002/research/01-contracts.md",
+    ".specforge/specs/WI-002/research/02-symptom-chains.md",
+    ".specforge/specs/WI-002/research/03-comparison-matrix.md",
+    ".specforge/specs/WI-002/research/04-hybrid-feasibility.md",
+    ".specforge/specs/WI-002/research/05-recommendation.md",
+    ".specforge/specs/WI-002/research/06-non-functional-impact.md",
+    ".specforge/specs/WI-002/research/07-limitations.md",
+    ".specforge/archive/agent_runs/WI-002-sf-executor-1/work_log.md"
+  ],
+  "key_discoveries_beyond_plan": [
+    "WAL multi-instance mess: Daemon.ts L82 builds separate WAL for HTTPServer != StateManager's WAL (same path, different counters)",
+    "StateManager double-instantiation: Daemon.ts L52 global + ProjectManager.ts L63 per-project — 2+ independent instances",
+    "RecoverySubsystem.checkAndRepair root cause precision: Daemon.ts L54 does not inject wal/stateManager → falls back to rebuildFromEvents L305 which always returns workItems:[] → then overwriteState.json — this is the precise root cause of WI-001 ghost-in-memory bug",
+    "Property 21 dangling contract: reconnectOldSessions code path L443-L523 has no real producer of session.activated events"
+  ],
+  "matrix_completion": "30/30 cells filled, 0 cells marked unknown",
+  "recommendation": "A+D Hybrid in 4 phases (Phase 0: A quick fix hours / Phase 1: WAL+StateManager singleton days / Phase 2: SessionRegistry WAL-ification weeks / Phase 3: Property 21 rewrite days)"
+}

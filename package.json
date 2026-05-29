@@ -11,7 +11,8 @@
     "lint": "bun scripts/render-workflow-docs.ts --check && bun run --filter './packages/*' lint",
     "clean": "bun run --filter './packages/*' clean",
     "render-workflows": "bun scripts/render-workflow-docs.ts",
-    "check-workflows": "bun scripts/render-workflow-docs.ts --check"
+    "check-workflows": "bun scripts/render-workflow-docs.ts --check",
+    "lint:layout": "bun scripts/lint/check-hardcoded-paths.ts"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",

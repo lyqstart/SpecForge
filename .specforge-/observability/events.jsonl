@@ -1,3 +1,0 @@
-{"eventId":"4dd7b383-5609-40cd-a115-e4b1e9b2e969","ts":1779648638846,"projectId":"default-project","action":"event_logger.initialized","payload":{"timestamp":"2026-05-24T18:50:38.846Z","config":{"enabled":true,"fsyncEnabled":true,"maxFileSize":10485760}}}
-{"eventId":"4b0699cc-e528-409a-b61b-e92f13e8cc87","ts":1779648682364,"projectId":"default-project","action":"event_logger.initialized","payload":{"timestamp":"2026-05-24T18:51:22.364Z","config":{"enabled":true,"fsyncEnabled":true,"maxFileSize":10485760}}}
-{"eventId":"f3f5d56c-15bc-4c11-b659-6bfec3d80b6f","ts":1779691311875,"projectId":"default-project","action":"event_logger.initialized","payload":{"timestamp":"2026-05-25T06:41:51.875Z","config":{"enabled":true,"fsyncEnabled":true,"maxFileSize":10485760}}}

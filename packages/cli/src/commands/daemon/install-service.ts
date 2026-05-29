@@ -22,19 +22,20 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServiceOperationJsonPayload } from '@specforge/service-management';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Get the binary directory path (~/.specforge/bin)
  */
 function getBinDir(): string {
-  return path.join(os.homedir(), '.specforge', 'bin');
+  return path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
 }
 
 /**
  * Get the logs directory path (~/.specforge/logs)
  */
 function getLogsDir(): string {
-  return path.join(os.homedir(), '.specforge', 'logs');
+  return path.join(os.homedir(), SPEC_DIR_NAME, 'logs');
 }
 
 /**

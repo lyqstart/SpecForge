@@ -2,6 +2,7 @@
  * Configuration constants
  */
 
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 import { ConfigLayerType } from './types'
 
 /**
@@ -67,7 +68,7 @@ export const CONFIG_FILE_NAMES = {
  */
 export const CONFIG_DIRS = {
   user: '~/.specforge/config',
-  project: 'specforge/config',
+  project: `${SPEC_DIR_NAME}/config`,
 } as const
 
 /**

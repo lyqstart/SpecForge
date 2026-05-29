@@ -394,7 +394,7 @@ describe('Property 1: Single Source of Truth', () => {
         await stateManager.executeStateChange(generateRandomOperation());
         
         // Read events from WAL
-        const persistedEvents = await wal.readAllEvents();
+        const { events: persistedEvents } = await wal.readAllEvents();
         
         // Verify at least one event was persisted
         expect(persistedEvents.length).toBeGreaterThan(0);
@@ -425,7 +425,7 @@ describe('Property 1: Single Source of Truth', () => {
       }
       
       // Read from WAL
-      const persistedEvents = await wal.readAllEvents();
+      const { events: persistedEvents } = await wal.readAllEvents();
       
       // Verify events are ordered by timestamp
       for (let i = 1; i < persistedEvents.length; i++) {

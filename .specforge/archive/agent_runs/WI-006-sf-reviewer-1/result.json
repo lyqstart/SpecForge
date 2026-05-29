@@ -1,0 +1,14 @@
+{
+  "run_id": "WI-006-sf-reviewer-1",
+  "work_item_id": "WI-006",
+  "agent_name": "sf-reviewer",
+  "start_time": "2026-05-28T02:13:30Z",
+  "end_time": "2026-05-28T02:22:00Z",
+  "duration_ms": 510000,
+  "status": "success",
+  "task_description": "Code review for WI-006 SessionRegistry WAL-ization — PASS with 5 warnings, 0 blocking",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": false
+}

@@ -21,7 +21,7 @@
 import { createReadStream, promises as fs } from 'fs';
 import { createInterface } from 'readline';
 import { join } from 'path';
-import type { Event, EventLogger as IEventLogger, EventFilter } from '@/types';
+import type { Event, EventLogger as IEventLogger, EventFilter } from '../types';
 
 /**
  * WAL file names

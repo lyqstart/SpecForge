@@ -42,6 +42,13 @@ export declare class SessionRegistry {
     private activeSessions;
     private historySessions;
     private projectBindings;
+    /**
+     * Alias table: OpenCode native sessionID → daemon sessionId.
+     * Built lazily when handleOpenCodeEvent resolves via daemon sessionId
+     * and data carries an OpenCode sessionID.
+     * In-memory only (Phase 0); daemon restart loses this mapping.
+     */
+    private sessionAliases;
     private subscription;
     private sessionTimeoutMs;
     private cleanupTimerId;
@@ -75,6 +82,23 @@ export declare class SessionRegistry {
      * Only pending and active sessions are affected; history sessions are kept.
      */
     cleanupExpiredSessions(): number;
+    /**
+     * Register a plugin session for a project
+     *
+     * Creates a new pending AgentIdentity bound to the given project.
+     * Idempotent: if the projectPath already has a session, returns the existing one.
+     *
+     * @param projectId Project identifier
+     * @param projectPath Project filesystem path
+     * @returns The created or existing AgentIdentity
+     */
+    registerPluginSession(projectId: string, projectPath: string): AgentIdentity;
+    /**
+     * Get the count of active sessions (pending + active)
+     *
+     * @returns Number of pending and active sessions
+     */
+    getActiveSessionCount(): number;
     /**
      * Register a new pending session
      *
@@ -207,6 +231,21 @@ export declare class SessionRegistry {
      * @returns The project path if bound, null otherwise
      */
     getProjectPath(sessionId: string): string | null;
+    /**
+     * Handle OpenCode event from the ingest pipeline
+     *
+     * Routes OpenCode native events to SessionRegistry operations based on subType:
+     * - session.created → register a new session if not already registered
+     * - session.idle → touch the session to update active timestamp
+     * - session.error → terminate the session
+     * - other → log WARNING (no error thrown)
+     *
+     * All operations are safe and idempotent.
+     *
+     * @param subType OpenCode event subtype (e.g., "session.created")
+     * @param data Event payload containing sessionID and optional projectPath
+     */
+    handleOpenCodeEvent(subType: string, data: Record<string, unknown>): void;
     /**
      * Get a snapshot of all sessions for daemon restart reconnect support
      *

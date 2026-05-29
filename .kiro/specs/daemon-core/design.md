@@ -198,7 +198,7 @@ interface StateManager {
 - Detect and repair state inconsistencies (Property 20)
 - Implement predefined repair rules
 - Record recovery events
-- Limit session reconnection to startup only (Property 21)
+- Limit session WAL replay reconstruction to startup only (Property 21)
 
 **Interfaces**:
 ```typescript
@@ -295,7 +295,7 @@ Each inherited Correctness Property must have corresponding PBT:
 4. **Property 6 (Idempotent Recovery)**: Generate event streams, verify rebuild determinism
 5. **Property 7 (WAL Ordering)**: Generate concurrent writes, verify fsync ordering
 6. **Property 20 (Recovery Repair)**: Generate corrupted states, verify repair rules
-7. **Property 21 (Reconnect Scope)**: Generate runtime scenarios, verify reconnect limits
+7. **Property 21 (WAL Replay Scope)**: Generate runtime scenarios, verify replay scope limits
 8. **Property 22 (Project Isolation)**: Generate cross-project operations, verify isolation
 9. **Property 30 (Multi-sync Readiness)**: Generate events, verify schema properties
 

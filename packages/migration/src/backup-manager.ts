@@ -15,13 +15,14 @@ import { resolve, join, basename, dirname } from 'path'
 import { existsSync, createReadStream, createWriteStream } from 'fs'
 import { createHash } from 'crypto'
 import type { MigrationBackupError, ErrnoException } from './types'
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 
 // ============================================================================
 // Configuration
 // ============================================================================
 
 /** Default backup directory name under ~/.specforge/ */
-export const DEFAULT_BACKUP_DIR = '.specforge/backups'
+export const DEFAULT_BACKUP_DIR = `${SPEC_DIR_NAME}/backups`
 
 /** Default retention period in days */
 export const DEFAULT_RETENTION_DAYS = 7

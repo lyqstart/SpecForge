@@ -4,15 +4,17 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { StateManager } from './StateManager';
+import { EnterprisePathResolver } from '../daemon/path-resolver';
 import type { Event } from '../types';
 import * as path from 'path';
 
 describe('StateManager', () => {
   let stateManager: StateManager;
   const testProjectPath = 'test-project';
+  const pathResolver = new EnterprisePathResolver();
 
   beforeEach(() => {
-    stateManager = new StateManager(testProjectPath);
+    stateManager = new StateManager(pathResolver, testProjectPath);
   });
 
   afterEach(async () => {

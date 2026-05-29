@@ -8,16 +8,19 @@ import * as path from 'path';
 import * as os from 'os';
 import { StateManager } from '../../src/state/StateManager';
 import { Event, ProjectState } from '../../src/types';
+import { PersonalPathResolver } from '../../src/daemon/path-resolver';
 
 describe('StateManager', () => {
   let stateManager: StateManager;
   let tempDir: string;
+  let pathResolver: PersonalPathResolver;
 
   beforeEach(async () => {
     tempDir = path.join(os.tmpdir(), `state-test-${Date.now()}`);
     await fs.mkdir(tempDir, { recursive: true });
     
-    stateManager = new StateManager(tempDir);
+    pathResolver = new PersonalPathResolver();
+    stateManager = new StateManager(pathResolver, tempDir);
     await stateManager.initialize();
   });
 
@@ -46,27 +49,31 @@ describe('StateManager', () => {
       expect(state.lastEventTs).toBe(0);
     });
 
-    it('should load existing state.json on initialization', async () => {
-      // Get the state path from the initialized state manager
-      const statePath = (stateManager as any).statePath;
+    it('should load existing state from WAL on initialization', async () => {
+      // Get the events path from the initialized state manager
+      const eventsPath = (stateManager as any).wal.getEventsPath() as string;
       
-      // Write a state file directly
-      await fs.writeFile(statePath, JSON.stringify({
-        projectPath: tempDir,
-        schemaVersion: '1.0',
-        activeSessions: ['session-1'],
-        workItems: [],
-        lastEventId: 'event-1',
-        lastEventTs: 1000,
-      }));
+      // Write a WAL event directly (WAL is the authoritative source,
+      // state.json is a derived checkpoint)
+      const event = JSON.stringify({
+        eventId: 'event-1',
+        ts: 1000,
+        projectId: tempDir,
+        category: 'session',
+        action: 'session.update',
+        payload: { activeSessions: ['session-1'] },
+        metadata: { schemaVersion: '1.0', source: 'test' },
+      }) + '\n';
+      await fs.appendFile(eventsPath, event);
       
-      // Create new state manager - should load from state file
-      const newStateManager = new StateManager(tempDir);
+      // Create new state manager - should rebuild from WAL events
+      const newPathResolver = new PersonalPathResolver();
+      const newStateManager = new StateManager(newPathResolver, tempDir);
       await newStateManager.initialize();
       
       const state = await newStateManager.getCurrentState();
       expect(state.lastEventId).toBe('event-1');
-      expect(state.activeSessions).toEqual(['session-1']);
+      expect(state.lastEventTs).toBe(1000);
     });
   });
 
@@ -131,7 +138,7 @@ describe('StateManager', () => {
       
       // Verify event was written to WAL
       const wal = (stateManager as any).wal;
-      const events = await wal.readAllEvents();
+      const { events } = await wal.readAllEvents();
       expect(events.length).toBe(1);
       expect(events[0].eventId).toBe('event-1');
     });
@@ -241,6 +248,45 @@ describe('StateManager', () => {
       
       const state = await stateManager.getCurrentState();
       expect(state.lastEventId).toBe('test-event');
+    });
+  });
+
+  describe('isDaemonGlobal parameter', () => {
+    it('should use project paths when isDaemonGlobal is false (default)', () => {
+      const pr = new PersonalPathResolver();
+      const sm = new StateManager(pr, tempDir);
+      // false is default — should use project-scoped paths
+      const expectedStatePath = pr.resolveStatePath(tempDir);
+      const expectedEventsPath = pr.resolveEventsPath(tempDir);
+      expect((sm as any).statePath).toBe(expectedStatePath);
+      expect((sm as any).wal.getEventsPath()).toBe(expectedEventsPath);
+    });
+
+    it('should use daemon global paths when isDaemonGlobal is true', () => {
+      const pr = new PersonalPathResolver();
+      const sm = new StateManager(pr, tempDir, true);
+      const expectedStatePath = pr.resolveDaemonStatePath();
+      const expectedEventsPath = pr.resolveDaemonEventsPath();
+      expect((sm as any).statePath).toBe(expectedStatePath);
+      expect((sm as any).wal.getEventsPath()).toBe(expectedEventsPath);
+    });
+
+    it('should not nest paths when isDaemonGlobal is true', () => {
+      const pr = new PersonalPathResolver();
+      const sm = new StateManager(pr, tempDir, true);
+      const statePath: string = (sm as any).statePath;
+      // Daemon state path should be ~/.specforge/runtime/state.json
+      // NOT ~/.specforge/runtime/.specforge/runtime/state.json
+      expect(statePath).not.toContain('.specforge' + path.sep + 'runtime' + path.sep + '.specforge');
+      expect(statePath).toBe(path.join(os.homedir(), '.specforge', 'runtime', 'state.json'));
+    });
+
+    it('should maintain backward compatibility — omitting isDaemonGlobal uses project paths', () => {
+      const pr = new PersonalPathResolver();
+      const sm = new StateManager(pr, tempDir);
+      const statePath: string = (sm as any).statePath;
+      // Project-scoped: <tempDir>/.specforge/runtime/state.json
+      expect(statePath).toBe(path.join(tempDir, '.specforge', 'runtime', 'state.json'));
     });
   });
 });

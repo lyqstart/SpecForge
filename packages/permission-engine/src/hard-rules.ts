@@ -7,6 +7,8 @@
  * @specforge/permission-engine
  */
 
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+
 export interface HardRule {
   id: string;
   description: string;
@@ -114,7 +116,7 @@ export const AGENT_CONSTITUTION_RULES: readonly HardRule[] = [
     description: 'Agent must not modify core system files',
     condition: (_actor, action, resource, _context) => {
       const modifyActions = ['write', 'update', 'delete', 'modify'];
-      const coreSystemFiles = ['/etc/', '/usr/bin/', '/usr/lib/', '/var/lib/', 'node_modules/', '.specforge/', '.kiro/'];
+      const coreSystemFiles = ['/etc/', '/usr/bin/', '/usr/lib/', '/var/lib/', 'node_modules/', SPEC_DIR_NAME + '/', '.kiro/'];
       const actionLower = action.toLowerCase();
       const resourcePath = extractResourcePath(resource).toLowerCase();
       return modifyActions.some(a => actionLower.includes(a)) &&
@@ -275,7 +277,7 @@ export class HardRuleEvaluator {
           { actionPattern: 'write', resourcePattern: 'file:/etc/*' },
           { actionPattern: 'delete', resourcePattern: 'file:/usr/bin/*' },
           { actionPattern: '*write*', resourcePattern: 'file:node_modules/*' },
-          { actionPattern: '*delete*', resourcePattern: 'file:.specforge/*' },
+          { actionPattern: '*delete*', resourcePattern: `file:${SPEC_DIR_NAME}/*` },
         ];
       case 'hard-008':
         return [

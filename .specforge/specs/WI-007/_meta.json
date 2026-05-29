@@ -1,0 +1,14 @@
+{
+  "id": "WI-007",
+  "workflow_type": "change_request",
+  "title": "Property 21 重写与悬空契约清理（Phase 3）",
+  "summary": "收尾清理：重写 Property 21 注释措辞、删除 detectOldSessions/reconnectOldSessions 悬空代码路径、同步文档。",
+  "key_decisions": [
+    "Property 21 从 '启动期重连 OpenCode 进程' 改为 '启动期 WAL 重放重建 session 状态'",
+    "删除不再被调用的老代码路径"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-27T00:00:00Z",
+  "completed_at": "2026-05-27T00:00:00Z",
+  "upstream_wis": ["WI-002", "WI-006"]
+}

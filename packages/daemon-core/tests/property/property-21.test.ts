@@ -1,213 +1,167 @@
 /**
- * Property 21: Session Reconnect Scope Test
+ * Property 21: Session WAL Replay Scope Test
  * 
- * Feature: daemon-core, Property 21: Session Reconnect Scope
+ * Feature: daemon-core, Property 21: Session WAL Replay Scope
  * Derived-From: v6-architecture-overview Property 21
  * 
  * Property Statement:
- * For all Daemon runtime event streams, "automatic reconnection attempts to old
- * OpenCode sessions" may only occur within the Daemon startup process; after
- * startup completes, even if old sessions are detected as alive, the Daemon
- * must not automatically initiate reconnection.
+ * For all Daemon runtime event streams, WAL-replay-based session state reconstruction
+ * may only occur within the Daemon startup process; after startup completes, the
+ * Daemon must not automatically initiate session state reconstruction via WAL replay.
  * 
  * Validates: Requirements 5.4, 5.5
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fc from 'fast-check';
-import { RecoverySubsystem, SessionReconnectResult } from '../../src/recovery/RecoverySubsystem';
-import { StateManager } from '../../src/state/StateManager';
-import { Event, ProjectState } from '../../src/types';
+import { RecoverySubsystem } from '../../src/recovery/RecoverySubsystem';
+import { IPathResolver } from '../../src/daemon/path-resolver';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as os from 'os';
 
 /**
- * Compute the hash used by RecoverySubsystem/StateManager for a project path
+ * In-memory mock IPathResolver that uses a temporary directory so tests
+ * don't pollute ~/.specforge.
  */
-function computeHash(projectPath: string): string {
-  let hash = 0;
-  for (let i = 0; i < projectPath.length; i++) {
-    const char = projectPath.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+class MockPathResolver implements IPathResolver {
+  constructor(private tmpDir: string) {}
+
+  resolveProjectRuntimeDir(_projectPath: string): string {
+    return path.join(this.tmpDir, 'projects', 'mock-project', '.specforge', 'runtime');
   }
-  return Math.abs(hash).toString(16).padStart(8, '0');
+
+  resolveStatePath(projectPath: string): string {
+    return path.join(this.resolveProjectRuntimeDir(projectPath), 'state.json');
+  }
+
+  resolveEventsPath(projectPath: string): string {
+    return path.join(this.resolveProjectRuntimeDir(projectPath), 'events.jsonl');
+  }
+
+  resolveSessionsDir(projectPath: string): string {
+    return path.join(this.resolveProjectRuntimeDir(projectPath), 'sessions');
+  }
+
+  resolveDaemonRuntimeDir(): string {
+    return path.join(os.homedir(), '.specforge', 'runtime');
+  }
+
+  resolveHandshakePath(): string {
+    return path.join(this.resolveDaemonRuntimeDir(), 'handshake.json');
+  }
+
+  resolveDaemonJsonPath(): string {
+    return path.join(os.homedir(), '.config', 'opencode', 'daemon.json');
+  }
+
+  resolveDaemonStatePath(): string {
+    return path.join(this.resolveDaemonRuntimeDir(), 'state.json');
+  }
+
+  resolveDaemonEventsPath(): string {
+    return path.join(this.resolveDaemonRuntimeDir(), 'events.jsonl');
+  }
 }
 
-describe('Property 21: Session Reconnect Scope', () => {
-  // Use unique project paths for each test to avoid interference
-  const testProjectPath1 = 'test-project-path-reconnect-1';  // for test 21.1
-  const testProjectPath2 = 'test-project-path-reconnect-2';  // for test 21.2
-  const testProjectPath3 = 'test-project-path-reconnect-3';  // for test 21.3
-  const testProjectPathPBT = 'test-project-path-reconnect-pbt'; // for test 21.4
-
+describe('Property 21: Session WAL Replay Scope', () => {
   let testProjectPath: string;
-  let testProjectHash: string;
+  let mockResolver: MockPathResolver;
+  let tmpDir: string;
 
   beforeEach(() => {
-    // Default to PBT path
-    testProjectPath = testProjectPathPBT;
-    testProjectHash = computeHash(testProjectPath);
+    testProjectPath = 'test-project-p21';
+    tmpDir = path.join(os.tmpdir(), `specforge-p21-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    mockResolver = new MockPathResolver(tmpDir);
   });
 
   afterEach(async () => {
-    // Cleanup test files
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const eventsPath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-      : '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
-
     try {
-      if (eventsPath) await fs.unlink(eventsPath);
-    } catch (error) { }
-
-    try {
-      if (statePath) await fs.unlink(statePath);
-    } catch (error) { }
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    } catch {
+      // best-effort cleanup
+    }
   });
 
   /**
-   * Property 21.1: Reconnection attempts only during startup
+   * Property 21.1: WAL replay session reconstruction denied after startup completes
    * 
-   * Verifies that when not in startup phase, reconnection is denied
+   * Verifies that attemptSessionReconnect returns false once startup has completed,
+   * enforcing the WAL replay startup-only constraint.
    */
-  it('should deny reconnection after startup completes', async () => {
-    // Use dedicated project path
-    testProjectPath = testProjectPath1;
-    testProjectHash = computeHash(testProjectPath);
-    
-    const recoverySubsystem = new RecoverySubsystem(testProjectPath);
-    const stateManager = new StateManager(testProjectPath);
-    
+  it('should deny WAL replay session reconstruction after startup completes', async () => {
+    const recoverySubsystem = new RecoverySubsystem(mockResolver, testProjectPath);
     await recoverySubsystem.initialize();
-    await stateManager.initialize();
 
-    // Create session activation event
-    const sessionId = 'session-reconnect-test-001';
-    const events: Event[] = [
-      {
-        eventId: 'evt-001',
-        ts: 1000,
-        projectId: testProjectPath,
-        action: 'session.activated',
-        payload: { sessionId, agentRole: 'sf-orchestrator' },
-        metadata: { schemaVersion: '1.0', source: 'daemon' }
-      },
-    ];
+    const sessionId = 'session-wal-replay-001';
 
-    for (const event of events) {
-      await stateManager.appendEvent(event);
-    }
-
-    // Start and complete startup phase
+    // Begin and complete startup phase
     recoverySubsystem.beginStartupPhase();
-    
-    // Verify we're in startup phase
     expect(recoverySubsystem.isStartupPhase()).toBe(true);
-    expect(recoverySubsystem.hasCompletedStartup()).toBe(false);
-    
-    // Complete startup - now reconnection should be denied
+
     recoverySubsystem.completeStartup();
-    
-    // Verify startup completed
     expect(recoverySubsystem.hasCompletedStartup()).toBe(true);
     expect(recoverySubsystem.isStartupPhase()).toBe(false);
 
-    // Attempt reconnection after startup - should be denied
-    const reconnected = await recoverySubsystem.attemptSessionReconnect(sessionId);
-    expect(reconnected).toBe(false);
+    // Attempt WAL replay session reconstruction after startup — must be denied
+    const result = await recoverySubsystem.attemptSessionReconnect(sessionId);
+    expect(result).toBe(false);
   });
 
   /**
-   * Property 21.2: Post-startup session detection doesn't trigger reconnection
+   * Property 21.2: Post-startup session state reconstruction is blocked
    * 
-   * Verifies that even when old sessions are detected after startup,
-   * no automatic reconnection is attempted
+   * Verifies that after startup completes, attemptSessionReconnect returns false
+   * AND getReconnectionScopeStatus reports reconnectionAllowed === false,
+   * confirming the WAL replay scope boundary.
    */
-  it('should not reconnect sessions detected after startup', async () => {
-    // Use dedicated project path
-    testProjectPath = testProjectPath2;
-    testProjectHash = computeHash(testProjectPath);
-    
-    const recoverySubsystem = new RecoverySubsystem(testProjectPath);
-    const stateManager = new StateManager(testProjectPath);
-    
+  it('should not reconstruct session state via replay after startup', async () => {
+    const recoverySubsystem = new RecoverySubsystem(mockResolver, testProjectPath);
     await recoverySubsystem.initialize();
-    await stateManager.initialize();
 
-    const sessionId = 'session-post-startup-001';
-    
-    // Create session in state (simulating previous run)
-    const state: ProjectState = {
-      projectPath: testProjectPath,
-      schemaVersion: '1.0',
-      activeSessions: [sessionId],
-      workItems: [],
-      lastEventId: 'evt-001',
-      lastEventTs: 1000,
-    };
+    const sessionId = 'session-post-startup-wal-001';
 
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
-    await fs.mkdir(path.dirname(statePath), { recursive: true });
-    await fs.writeFile(statePath, JSON.stringify(state));
-
-    // Complete startup
+    // Begin and complete startup phase
     recoverySubsystem.beginStartupPhase();
     recoverySubsystem.completeStartup();
 
-    // Detect old sessions after startup
-    const oldSessions = await recoverySubsystem.detectOldSessions();
-    expect(oldSessions).toContain(sessionId);
+    // Verify WAL replay session reconstruction is blocked
+    const reconnected = await recoverySubsystem.attemptSessionReconnect(sessionId);
+    expect(reconnected).toBe(false);
 
-    // Try to reconnect old sessions - should not reconnect because startup is complete
-    const results = await recoverySubsystem.reconnectOldSessions();
-    
-    // All results should indicate no reconnection
-    for (const result of results) {
-      expect(result.reconnected).toBe(false);
-    }
+    // Verify scope status confirms reconstruction is not allowed
+    const status = recoverySubsystem.getReconnectionScopeStatus();
+    expect(status.reconnectionAllowed).toBe(false);
+    expect(status.hasStartupCompleted).toBe(true);
   });
 
   /**
-   * Property 21.3: Reconnection logic respects scope boundaries
+   * Property 21.3: WAL replay scope boundaries are correctly tracked
    * 
-   * Verifies that the reconnection scope status correctly tracks
-     * the startup phase boundaries
+   * Verifies that getReconnectionScopeStatus correctly tracks all 3 phases:
+   * 1. Initial (no startup begun)
+   * 2. Startup phase (beginStartupPhase called)
+   * 3. Post-startup (completeStartup called)
    */
-  it('should correctly track reconnection scope boundaries', async () => {
-    // Use dedicated project path
-    testProjectPath = testProjectPath3;
-    testProjectHash = computeHash(testProjectPath);
-    
-    const recoverySubsystem = new RecoverySubsystem(testProjectPath);
-    const stateManager = new StateManager(testProjectPath);
-    
+  it('should correctly track WAL replay scope boundaries', async () => {
+    const recoverySubsystem = new RecoverySubsystem(mockResolver, testProjectPath);
     await recoverySubsystem.initialize();
-    await stateManager.initialize();
 
-    // Initial state - no startup
+    // Phase 1: Initial state — no startup begun
     let status = recoverySubsystem.getReconnectionScopeStatus();
     expect(status.isInStartupPhase).toBe(false);
     expect(status.hasStartupCompleted).toBe(false);
     expect(status.reconnectionAllowed).toBe(false);
 
-    // Begin startup
+    // Phase 2: Startup phase — WAL replay allowed
     recoverySubsystem.beginStartupPhase();
-    
     status = recoverySubsystem.getReconnectionScopeStatus();
     expect(status.isInStartupPhase).toBe(true);
     expect(status.hasStartupCompleted).toBe(false);
     expect(status.reconnectionAllowed).toBe(true);
 
-    // Complete startup
+    // Phase 3: Post-startup — WAL replay denied
     recoverySubsystem.completeStartup();
-    
     status = recoverySubsystem.getReconnectionScopeStatus();
     expect(status.isInStartupPhase).toBe(false);
     expect(status.hasStartupCompleted).toBe(true);
@@ -215,19 +169,17 @@ describe('Property 21: Session Reconnect Scope', () => {
   });
 
   /**
-   * Property 21.4: Fast-check based property test (≥100 iterations)
+   * Property 21.4: PBT — WAL replay scope limitation (≥100 iterations)
    * 
-   * Generates random scenarios to verify:
-   * 1. Reconnection only succeeds during startup phase
-   * 2. Post-startup detection doesn't trigger reconnection
-   * 3. Scope boundaries are correctly enforced
+   * Generates random scenarios to verify the startup-only constraint always holds:
+   * 1. During startup phase, attemptSessionReconnect may succeed or fail
+   * 2. After startup completes, attemptSessionReconnect always returns false
+   * 3. getReconnectionScopeStatus is consistent with the current phase
    */
-  it('should pass property-based test: reconnect scope limitation (≥100 iter)', async () => {
-    // Use dedicated project path for PBT
-    testProjectPath = testProjectPathPBT;
-    testProjectHash = computeHash(testProjectPath);
-    
-    let globalCounter = 0;
+  it('should pass property-based test: WAL replay scope limitation (≥100 iter)', async () => {
+    let passed = 0;
+    let failed = 0;
+
     const testCases = fc.sample(
       fc.record({
         sessionCount: fc.integer({ min: 1, max: 10 }),
@@ -236,104 +188,71 @@ describe('Property 21: Session Reconnect Scope', () => {
         reconnectAfterStartup: fc.boolean(),
       }),
       120
-    ).map(tc => {
-      const sessionIds = Array.from({ length: tc.sessionCount }, (_, i) => 
-        `pbt-session-${globalCounter++}-${i.toString().padStart(3, '0')}`
-      );
-      return { ...tc, sessionIds };
-    });
-
-    let passed = 0;
-    let failed = 0;
+    );
 
     for (const tc of testCases) {
       try {
-        const testRecovery = new RecoverySubsystem(testProjectPath);
-        const testStateManager = new StateManager(testProjectPath);
-        
-        const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-        const eventsPath = home 
-          ? path.join(home, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-          : '';
-        const statePath = home 
-          ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-          : '';
+        // Unique temp dir per iteration
+        const iterTmpDir = path.join(os.tmpdir(), `specforge-p21-iter-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        const iterResolver = new MockPathResolver(iterTmpDir);
+        const iterProjectPath = `test-p21-pbt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-        if (eventsPath) await fs.mkdir(path.dirname(eventsPath), { recursive: true });
-        
-        try { if (eventsPath) await fs.unlink(eventsPath); } catch {}
-        try { if (statePath) await fs.unlink(statePath); } catch {}
+        const recovery = new RecoverySubsystem(iterResolver, iterProjectPath);
+        await recovery.initialize();
 
-        await testRecovery.initialize();
-        await testStateManager.initialize();
+        const sessionIds = Array.from({ length: tc.sessionCount }, (_, i) =>
+          `pbt-session-${i.toString().padStart(3, '0')}`
+        );
 
-        // Create session activation events
-        const events: Event[] = tc.sessionIds.map((sessionId, i) => ({
-          eventId: `evt-${tc.baseTs + i}`,
-          ts: tc.baseTs + i * 100,
-          projectId: testProjectPath,
-          action: 'session.activated' as const,
-          payload: { sessionId, agentRole: 'sf-orchestrator' },
-          metadata: { schemaVersion: '1.0', source: 'daemon' as const },
-        }));
-
-        for (const event of events) {
-          await testStateManager.appendEvent(event);
-        }
-
-        // Save state with active sessions
-        const state: ProjectState = {
-          projectPath: testProjectPath,
-          schemaVersion: '1.0',
-          activeSessions: [...tc.sessionIds],
-          workItems: [],
-          lastEventId: events[events.length - 1].eventId,
-          lastEventTs: events[events.length - 1].ts,
-        };
-        
-        await fs.mkdir(path.dirname(statePath), { recursive: true });
-        await fs.writeFile(statePath, JSON.stringify(state));
-
-        // Test reconnection in startup phase
+        // Test reconnection during startup phase
         if (tc.reconnectInStartup) {
-          testRecovery.beginStartupPhase();
-          
-          const statusInStartup = testRecovery.getReconnectionScopeStatus();
+          recovery.beginStartupPhase();
+
+          const statusInStartup = recovery.getReconnectionScopeStatus();
           expect(statusInStartup.reconnectionAllowed).toBe(true);
-          
-          // Reconnection should be allowed during startup
-          for (const sessionId of tc.sessionIds) {
-            const result = await testRecovery.attemptSessionReconnect(sessionId);
-            // During startup, reconnection is allowed
+
+          for (const sessionId of sessionIds) {
+            // During startup, reconnection is allowed (returns true or false)
+            const result = await recovery.attemptSessionReconnect(sessionId);
             expect(result === true || result === false).toBe(true);
           }
-          
-          testRecovery.completeStartup();
+
+          recovery.completeStartup();
         }
 
-        // Test reconnection after startup
+        // Test reconnection after startup phase
         if (tc.reconnectAfterStartup) {
-          // Verify we're NOT in startup phase
-          const statusAfterStartup = testRecovery.getReconnectionScopeStatus();
+          // Ensure startup is completed (may already be done from above)
+          if (!recovery.hasCompletedStartup()) {
+            recovery.completeStartup();
+          }
+
+          const statusAfterStartup = recovery.getReconnectionScopeStatus();
           expect(statusAfterStartup.reconnectionAllowed).toBe(false);
-          
-          // Reconnection should be denied after startup
-          for (const sessionId of tc.sessionIds) {
-            const result = await testRecovery.attemptSessionReconnect(sessionId);
+
+          for (const sessionId of sessionIds) {
+            const result = await recovery.attemptSessionReconnect(sessionId);
             expect(result).toBe(false);
           }
         }
 
-        // Verify scope status is consistent
-        const finalStatus = testRecovery.getReconnectionScopeStatus();
+        // Final consistency check
+        const finalStatus = recovery.getReconnectionScopeStatus();
         if (finalStatus.hasStartupCompleted) {
           expect(finalStatus.reconnectionAllowed).toBe(false);
+        }
+
+        // Cleanup per-iteration temp dir
+        try {
+          await fs.rm(iterTmpDir, { recursive: true, force: true });
+        } catch {
+          // best-effort
         }
 
         passed++;
       } catch (error) {
         failed++;
-        console.error('Iteration failed:', error);
+        console.error('PBT iteration failed:', error);
       }
     }
 

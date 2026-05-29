@@ -12,6 +12,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 // ============================================================================
 // Types
@@ -150,7 +151,7 @@ const DEFAULT_HANDSHAKE_FILENAME = 'daemon.sock.json';
  */
 export function getDefaultHandshakePath(): string {
   const homeDir = os.homedir();
-  return path.join(homeDir, '.specforge', 'runtime', DEFAULT_HANDSHAKE_FILENAME);
+  return path.join(homeDir, SPEC_DIR_NAME, 'runtime', DEFAULT_HANDSHAKE_FILENAME);
 }
 
 /**
@@ -158,7 +159,7 @@ export function getDefaultHandshakePath(): string {
  */
 export function getRuntimeDirPath(): string {
   const homeDir = os.homedir();
-  return path.join(homeDir, '.specforge', 'runtime');
+  return path.join(homeDir, SPEC_DIR_NAME, 'runtime');
 }
 
 // Token expiration time in milliseconds (24 hours by default)

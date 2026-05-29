@@ -10,6 +10,7 @@
 
 import { readFile, readdir } from "node:fs/promises"
 import { join } from "node:path"
+import { resolveProjectPath } from "@specforge/types/directory-layout"
 import type { GateResult, GateModeSpec } from "./sf_gate_types"
 import { parseSections } from "./sf_requirements_gate_core"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
@@ -491,7 +492,7 @@ export async function checkVerificationGate(
       return executeVerificationGateMode(workItemId, baseDir, mode)
     }
 
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
+  const specDir = resolveProjectPath(baseDir, "specs", workItemId)
 
   // 1. 检查 spec 目录是否存在
   let dirEntries: string[]
@@ -691,7 +692,7 @@ async function executeVerificationGateMode(
   }
 
   // 读取目标文件
-  const specDir = join(baseDir, "specforge", "specs", workItemId)
+  const specDir = resolveProjectPath(baseDir, "specs", workItemId)
   const filePath = join(specDir, spec.targetFile)
   let content: string
   try {

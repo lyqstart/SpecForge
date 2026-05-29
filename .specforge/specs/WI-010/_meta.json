@@ -1,0 +1,16 @@
+{
+  "id": "WI-010",
+  "workflow_type": "refactor",
+  "title": "SpecForge V6 目录结构治理 P0",
+  "summary": "建立单一真相源 Schema（directory-layout.ts + meta-schema.ts），引入路径构造函数，创建迁移/备份脚本，记录 ADR-006 决策。风险路径 low，development 直跳 verification。",
+  "key_decisions": [
+    "采用方案 A（Schema 层 + 工具层 + 代码层 三层架构）",
+    "SPEC_DIR_NAME = '.specforge'（带点），与 .git/ 风格一致",
+    "LAYOUT 字典使用 as const 声明，编译期防御路径拼写错误"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-29T00:00:00Z",
+  "completed_at": "2026-05-29T00:00:00Z",
+  "related_modules": ["packages/types"],
+  "downstream_wis": ["WI-011"]
+}

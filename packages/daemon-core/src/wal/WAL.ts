@@ -11,31 +11,28 @@ import * as path from 'path';
 import { v7 as uuidv7 } from 'uuid';
 import { Event } from '../types';
 
+export interface ReadAllEventsResult {
+  events: Event[];
+  corruptedLines: Array<{ lineNumber: number; content: string; error: string }>;
+}
+
 export class WAL {
   private eventsPath: string;
   private schemaVersion: string = '1.0';
   private _lastSeq: number = 0;
+  private supportedCategories: Set<string>;
 
-  constructor(projectPath: string) {
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const projectHash = this.hashPath(projectPath);
-    this.eventsPath = home 
-      ? path.join(home, '.specforge', 'projects', projectHash, 'events.jsonl')
-      : '';
+  constructor(eventsPath: string) {
+    this.eventsPath = eventsPath;
+    this.supportedCategories = new Set(['state', 'session', 'system']);
   }
 
   /**
-   * Generate a safe filename from project path
+   * Register a new event category for the WAL.
+   * Future extensibility point — allows plugins to define custom categories.
    */
-  private hashPath(projectPath: string): string {
-    // Simple hash for filesystem safety
-    let hash = 0;
-    for (let i = 0; i < projectPath.length; i++) {
-      const char = projectPath.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash).toString(16).padStart(8, '0');
+  registerCategory(category: string): void {
+    this.supportedCategories.add(category);
   }
 
   /**
@@ -106,6 +103,11 @@ export class WAL {
     // Auto-increment monotonicSeq (strictly increasing, never rolls back)
     this._lastSeq += 1;
 
+    // Soft validation: warn on unknown categories but do NOT block writing
+    if (!this.supportedCategories.has(category)) {
+      console.warn(`[WAL] Unknown category '${category}' — event will be written but may not be replayed`);
+    }
+
     const event: Event = {
       schema_version: '1.0',
       eventId: uuidv7(),
@@ -128,23 +130,51 @@ export class WAL {
 
   /**
    * Read all events from the WAL in insertion order.
-   * Returns an empty array if the file doesn't exist or is empty.
+   * Returns { events, corruptedLines } — corrupted/invalid lines are skipped
+   * and reported in corruptedLines for diagnostics.
    */
-  async readAllEvents(): Promise<Event[]> {
+  async readAllEvents(): Promise<ReadAllEventsResult> {
+    const events: Event[] = [];
+    const corruptedLines: Array<{ lineNumber: number; content: string; error: string }> = [];
+
     try {
       const content = await fs.readFile(this.eventsPath, 'utf-8');
-      if (!content) return [];
-      return content
-        .split('\n')
-        .filter(line => line.trim().length > 0)
-        .map(line => {
+      if (!content) return { events, corruptedLines };
+
+      const lines = content.split('\n').filter(line => line.trim().length > 0);
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]!;
+        try {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          return JSON.parse(line) as Event;
-        });
+          events.push(JSON.parse(line) as Event);
+        } catch (parseError) {
+          const lineNumber = i + 1;
+          const truncated = line.substring(0, 100);
+          console.warn(`[WAL] Skipping corrupted line ${lineNumber}: ${truncated}`);
+          corruptedLines.push({
+            lineNumber,
+            content: truncated,
+            error: parseError instanceof Error ? parseError.message : String(parseError),
+          });
+        }
+      }
     } catch (error) {
-      // File might not exist or be empty — both are normal
-      return [];
+      // File doesn't exist or is unreadable — both are normal
     }
+
+    return { events, corruptedLines };
+  }
+
+  /**
+   * Read events from the WAL filtered by category.
+   * Events without a `category` field default to `'state'` for backward compat.
+   */
+  async readEventsByCategory(category: string): Promise<Event[]> {
+    const { events } = await this.readAllEvents();
+    return events.filter(event => {
+      const eventCategory = event.category ?? 'state';
+      return eventCategory === category;
+    });
   }
 
   /**
@@ -152,7 +182,7 @@ export class WAL {
    * Returns null if the WAL is empty.
    */
   async getLastEvent(): Promise<Event | null> {
-    const events = await this.readAllEvents();
+    const { events } = await this.readAllEvents();
     return events.length > 0 ? events[events.length - 1]! : null;
   }
 

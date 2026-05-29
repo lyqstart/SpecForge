@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "timestamp": 1780015019772,
+  "totalScenarios": 10,
+  "passedScenarios": 10,
+  "failedScenarios": 0,
+  "averageTimeMs": 3.5,
+  "maxTimeMs": 7,
+  "minTimeMs": 2,
+  "results": [
+    {
+      "scenario": "gate-repeated-failure",
+      "description": "Gate反复失败 (Gate repeatedly fails)",
+      "timeToIdentify": 7,
+      "passed": true,
+      "rootCause": "Gate \"RequirementsGate\" failed 5 times",
+      "confidence": 1,
+      "evidenceCount": 5,
+      "recommendationsCount": 3
+    },
+    {
+      "scenario": "agent-deviation",
+      "description": "Agent偏离prompt (Agent deviates from prompt)",
+      "timeToIdentify": 3,
+      "passed": true,
+      "rootCause": "Most frequent action: session.started (1 occurrences)",
+      "confidence": 0.5,
+      "evidenceCount": 3,
+      "recommendationsCount": 1
+    },
+    {
+      "scenario": "tool-invocation-error",
+      "description": "Tool调用错误 (Tool invocation errors)",
+      "timeToIdentify": 3,
+      "passed": true,
+      "rootCause": "Most frequent action: tool.invoke (1 occurrences)",
+      "confidence": 0.5,
+      "evidenceCount": 2,
+      "recommendationsCount": 1
+    },
+    {
+      "scenario": "permission-denial",
+      "description": "权限拒绝 (Permission denials)",
+      "timeToIdentify": 2,
+      "passed": true,
+      "rootCause": "Permission denied by rule \"deny-protected-files\" (3 times)",
+      "confidence": 1,
+      "evidenceCount": 3,
+      "recommendationsCount": 3
+    },
+    {
+      "scenario": "upgrade-installation-failure",
+      "description": "升级/安装失败 (Upgrade/installation failures)",
+      "timeToIdentify": 5,
+      "passed": true,
+      "rootCause": "Most frequent action: system.upgrade (1 occurrences)",
+      "confidence": 0.5,
+      "evidenceCount": 1,
+      "recommendationsCount": 1
+    },
+    {
+      "scenario": "state-machine-stuck",
+      "description": "状态机卡住 (State machine stuck)",
+      "timeToIdentify": 3,
+      "passed": true,
+      "rootCause": "Workflow stuck at: running",
+      "confidence": 0.8,
+      "evidenceCount": 1,
+      "recommendationsCount": 3
+    },
+    {
+      "scenario": "concurrency-deadlock",
+      "description": "并发死锁 (Concurrency deadlocks)",
+      "timeToIdentify": 2,
+      "passed": true,
+      "rootCause": "Most frequent action: workflow.transition (2 occurrences)",
+      "confidence": 0.5,
+      "evidenceCount": 2,
+      "recommendationsCount": 1
+    },
+    {
+      "scenario": "skill-invocation-check",
+      "description": "Skill是否被调用 (Whether Skill was invoked)",
+      "timeToIdentify": 3,
+      "passed": true,
+      "rootCause": "Most frequent action: skill.invoked (1 occurrences)",
+      "confidence": 0.5,
+      "evidenceCount": 2,
+      "recommendationsCount": 1
+    },
+    {
+      "scenario": "workflow-execution-check",
+      "description": "Workflow是否按预期执行 (Whether Workflow executed as expected)",
+      "timeToIdentify": 4,
+      "passed": true,
+      "rootCause": "Most frequent action: workflow.executing (2 occurrences)",
+      "confidence": 0.5,
+      "evidenceCount": 3,
+      "recommendationsCount": 1
+    },
+    {
+      "scenario": "workflow-result-deviation",
+      "description": "Workflow执行结果偏离预期 (Workflow execution results deviate from expectations)",
+      "timeToIdentify": 3,
+      "passed": true,
+      "rootCause": "1 workflow results deviated from expected",
+      "confidence": 0.9,
+      "evidenceCount": 1,
+      "recommendationsCount": 3
+    }
+  ],
+  "summary": "✅ All 10 scenarios passed the North Star goal (< 5 minutes to root cause)"
+}

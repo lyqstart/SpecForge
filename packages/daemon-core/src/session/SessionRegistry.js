@@ -30,6 +30,13 @@ export class SessionRegistry {
     activeSessions = new Map();
     historySessions = new Map();
     projectBindings = new Map();
+    /**
+     * Alias table: OpenCode native sessionID → daemon sessionId.
+     * Built lazily when handleOpenCodeEvent resolves via daemon sessionId
+     * and data carries an OpenCode sessionID.
+     * In-memory only (Phase 0); daemon restart loses this mapping.
+     */
+    sessionAliases = new Map();
     subscription = null;
     sessionTimeoutMs;
     cleanupTimerId = null;
@@ -115,6 +122,38 @@ export class SessionRegistry {
             }
         }
         return cleanedCount;
+    }
+    /**
+     * Register a plugin session for a project
+     *
+     * Creates a new pending AgentIdentity bound to the given project.
+     * Idempotent: if the projectPath already has a session, returns the existing one.
+     *
+     * @param projectId Project identifier
+     * @param projectPath Project filesystem path
+     * @returns The created or existing AgentIdentity
+     */
+    registerPluginSession(projectId, projectPath) {
+        // Idempotency: check if this projectPath already has a session
+        for (const [sid, pp] of this.projectBindings) {
+            if (pp === projectPath) {
+                const existing = this.lookupBySessionId(sid);
+                if (existing)
+                    return existing;
+            }
+        }
+        const identity = createPendingIdentity('plugin', 'plugin-daemon-bridge', '', '', null, projectId);
+        this.pendingSessions.set(identity.sessionId, identity);
+        this.projectBindings.set(identity.sessionId, projectPath);
+        return identity;
+    }
+    /**
+     * Get the count of active sessions (pending + active)
+     *
+     * @returns Number of pending and active sessions
+     */
+    getActiveSessionCount() {
+        return this.pendingSessions.size + this.activeSessions.size;
     }
     /**
      * Register a new pending session
@@ -370,6 +409,81 @@ export class SessionRegistry {
      */
     getProjectPath(sessionId) {
         return this.projectBindings.get(sessionId) ?? null;
+    }
+    /**
+     * Handle OpenCode event from the ingest pipeline
+     *
+     * Routes OpenCode native events to SessionRegistry operations based on subType:
+     * - session.created → register a new session if not already registered
+     * - session.idle → touch the session to update active timestamp
+     * - session.error → terminate the session
+     * - other → log WARNING (no error thrown)
+     *
+     * All operations are safe and idempotent.
+     *
+     * @param subType OpenCode event subtype (e.g., "session.created")
+     * @param data Event payload containing sessionID and optional projectPath
+     */
+    handleOpenCodeEvent(subType, data) {
+        const projectPath = data.projectPath;
+        // Resolve the daemon's internal sessionId
+        let internalSessionId = null;
+        // 1. Check if daemon sessionId is directly provided (from plugin)
+        const daemonSessionId = data.sessionId;
+        if (daemonSessionId && this.projectBindings.has(daemonSessionId)) {
+            internalSessionId = daemonSessionId;
+        }
+        // 2. If not found, try OpenCode sessionID via alias table
+        const opencodeSessionId = data.sessionID;
+        if (!internalSessionId && opencodeSessionId) {
+            const aliased = this.sessionAliases.get(opencodeSessionId);
+            if (aliased && this.projectBindings.has(aliased)) {
+                internalSessionId = aliased;
+            }
+            else if (this.projectBindings.has(opencodeSessionId)) {
+                // Fallback: direct projectBindings check (backward compat)
+                internalSessionId = opencodeSessionId;
+            }
+        }
+        // 3. If still not found, try to find by projectPath
+        if (!internalSessionId && projectPath) {
+            for (const [sid, pp] of this.projectBindings) {
+                if (pp === projectPath) {
+                    internalSessionId = sid;
+                    break;
+                }
+            }
+        }
+        // 4. Handle cases where no mapping exists
+        if (!internalSessionId) {
+            if (subType === 'session.created' && projectPath) {
+                // Register a new plugin session to create the binding
+                const identity = this.registerPluginSession(projectPath, projectPath);
+                internalSessionId = identity.sessionId;
+            }
+            else {
+                console.warn(`[SessionRegistry] No session binding found for OpenCode event subtype: ${subType}, projectPath: ${projectPath}`);
+                return;
+            }
+        }
+        // Lazy-alias: establish OpenCode sessionID → daemon sessionId mapping
+        if (internalSessionId && opencodeSessionId && !this.sessionAliases.has(opencodeSessionId)) {
+            this.sessionAliases.set(opencodeSessionId, internalSessionId);
+        }
+        switch (subType) {
+            case 'session.created':
+                // Session already created via registerPluginSession above
+                break;
+            case 'session.idle':
+                this.touch(internalSessionId);
+                break;
+            case 'session.error':
+                this.terminate(internalSessionId);
+                break;
+            default:
+                // Unrecognized subtype: log WARNING, do not interrupt
+                console.warn(`[SessionRegistry] Unhandled opencode event subtype: ${subType}`);
+        }
     }
     /**
      * Get a snapshot of all sessions for daemon restart reconnect support

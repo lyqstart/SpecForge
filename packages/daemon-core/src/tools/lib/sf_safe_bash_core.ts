@@ -16,6 +16,7 @@ import * as os from "node:os"
 import * as path from "node:path"
 import * as fs from "node:fs/promises"
 import { existsSync } from "node:fs"
+import { SPEC_USER_DIR_NAME, USER_LAYOUT, resolveUserPath } from "@specforge/types/directory-layout"
 import type { SafeBashArgs, SafeBashResult } from "./sf_safe_bash_types"
 import { applyRules } from "./sf_safe_bash_rules"
 import { executeCommand, resolveCwd } from "./sf_safe_bash_executor"
@@ -40,7 +41,7 @@ export type { HostProfile }
 
 /** 加载 host-profile.json（只读，不触发扫描） */
 async function loadHostProfile(): Promise<HostProfile | null> {
-  const profilePath = path.join(os.homedir(), ".specforge", "host-profile.json")
+  const profilePath = resolveUserPath('hostProfile')
   try {
     const content = await fs.readFile(profilePath, "utf-8")
     const data = JSON.parse(content)
@@ -74,7 +75,7 @@ function buildDefaultProfile(): HostProfile {
       ci_mode: false,
     },
     user: { username: os.userInfo().username, home_dir: os.homedir(), shell_history_file: null },
-    specforge: { install_root: path.join(os.homedir(), ".specforge"), logs_dir: path.join(os.homedir(), ".specforge", "logs") },
+    specforge: { install_root: path.join(os.homedir(), SPEC_USER_DIR_NAME), logs_dir: resolveUserPath('logs') },
   }
 }
 

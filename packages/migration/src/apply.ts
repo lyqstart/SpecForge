@@ -18,10 +18,11 @@ import { resolve, join, basename } from 'path'
 import { existsSync, createReadStream, createWriteStream } from 'fs'
 import { createHash } from 'crypto'
 import type { MigrationContext, MigrationResult, MigrationError } from './types'
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 
 // Default directories (can be overridden via config)
-const DEFAULT_MIGRATIONS_DIR = '.specforge/migrations'
-const DEFAULT_BACKUPS_DIR = '.specforge/backups'
+const DEFAULT_MIGRATIONS_DIR = `${SPEC_DIR_NAME}/migrations`
+const DEFAULT_BACKUPS_DIR = `${SPEC_DIR_NAME}/backups`
 
 // Migration script interface
 export interface MigrationScript {

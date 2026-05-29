@@ -1,0 +1,2461 @@
+{
+  "version": "1.0",
+  "nodes": [
+    {
+      "id": "WI-001:task:1",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Daemon HTTP Server 基础框架",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:2",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "State Manager（WAL + state.json 派生）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:3",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Recovery 子系统",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:4",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Multi-project Manager",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:5",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Session Registry",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 5"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:6",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "CAS（内容寻址存储）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 6"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:7",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Bearer Token 认证",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 7"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:8",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "HTTP API 端点（状态/事件/workflow）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 8"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:9",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Daemon 启动/关闭/握手",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 9"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:10",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "E1 集成测试（含混沌测试）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 10"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:11",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "统一 Event Schema + Event Bus",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 11"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:12",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "三级模式 + CAS 大 payload",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 12"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:13",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Conversation 录制重写",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 13"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:14",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "agent 字段注入 + LLM 上下文拦截",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 14"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:15",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "OpenCode part 类型完整覆盖",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 15"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:16",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "sf-analyst Agent 数据访问接口",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 16"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:17",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "三层规则合并器",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 17"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:18",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Permission.evaluated 事件",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 18"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:19",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Scope Gate（Tool/File/Agent 边界）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 19"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:20",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "agent.md 与 contract 一致性测试",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 20"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:21",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "E3 集成测试",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 21"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:22",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "WorkflowDefinitionFile JSON Schema",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 22"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:23",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "8 个 workflow JSON 文件编写",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 23"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:24",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "WorkflowEngine（从 JSON 加载）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 24"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:25",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "GateRunner 重构",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 25"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:26",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "CompositeGateRunner",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 26"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:27",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "删除 state_machine.ts + 重写 sf_state_transition",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 27"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:28",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "render-workflow-docs.ts",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 28"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:29",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "agent.md + SKILL.md auto-generated 区块",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 29"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:30",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Workflow Loader 注册机制",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 30"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:31",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "E4 集成测试",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 31"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:32",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Skill Registry",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 32"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:33",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Phase-enter 强制加载",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 33"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:34",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Autoload 策略调整",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 34"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:35",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "重试计数硬执行",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 35"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:36",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "completed 后 sf-knowledge 自动触发",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 36"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:37",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "sf-orchestrator.md 瘦身",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 37"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:38",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "OpenCodeAdapter 实现",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 38"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:39",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "Thin Plugin 实现（<5KB）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 39"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:40",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "18 个工具改写为 HTTP 客户端壳",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 40"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:41",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "删除旧代码（plugin entry + _core.ts + utils.ts）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 41"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:42",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "CLI 命令",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 42"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:43",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "opencode.json + 安装器调整",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 43"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-001:task:44",
+      "type": "task",
+      "work_item_id": "WI-001",
+      "label": "E7 集成测试 + e2e 端到端测试",
+      "metadata": {
+        "source_file": "specforge/specs/WI-001/tasks.md",
+        "task_id": "Task 44"
+      },
+      "created_at": "2026-05-23T21:56:41.522Z",
+      "updated_at": "2026-05-23T21:56:41.522Z"
+    },
+    {
+      "id": "WI-033:requirement:1",
+      "type": "requirement",
+      "work_item_id": "WI-033",
+      "label": "ALL_STATES 状态完备性",
+      "metadata": {
+        "source_file": "specforge/specs/WI-033/requirements.md",
+        "req_id": "REQ-1"
+      },
+      "created_at": "2026-05-26T20:38:43.678Z",
+      "updated_at": "2026-05-26T20:38:43.678Z"
+    },
+    {
+      "id": "WI-033:requirement:2",
+      "type": "requirement",
+      "work_item_id": "WI-033",
+      "label": "状态验证覆盖全部工作流",
+      "metadata": {
+        "source_file": "specforge/specs/WI-033/requirements.md",
+        "req_id": "REQ-2"
+      },
+      "created_at": "2026-05-26T20:38:43.678Z",
+      "updated_at": "2026-05-26T20:38:43.678Z"
+    },
+    {
+      "id": "WI-031:task:1",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "创建 IPathResolver 接口和路径解析器实现",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:2",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "增强 DaemonConfig 支持 mode 配置和 feature flag",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:3",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "ALL_STATES 完备性验证",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:4",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "重构 StateManager 使用 IPathResolver",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:5",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "重构 WAL 使用 IPathResolver",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 5"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:6",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "重构 RecoverySubsystem 使用 IPathResolver + 新增 saveCheckpoint",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 6"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:7",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "重构 ProjectManager + .gitignore 自动维护 + daemon.json 迁移",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 7"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:8",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "Daemon.ts 装配 IPathResolver 到所有子系统",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 8"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:9",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "增强 SessionRegistry 支持插件注册和 OpenCode 事件",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 9"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:10",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "实现 HTTPServer Register 端点",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 10"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:11",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "实现 HTTPServer Ingest 事件路由",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 11"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:12",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "增强插件 sf_specforge.ts 支持 projectPath、注册和 shell.env",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 12"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:13",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "属性测试：路径不变式 + 注册幂等 + ingest 非阻塞",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 13"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-031:task:14",
+      "type": "task",
+      "work_item_id": "WI-031",
+      "label": "集成测试：personal 模式端到端 + enterprise 向后兼容",
+      "metadata": {
+        "source_file": "specforge/specs/WI-031/tasks.md",
+        "task_id": "Task 14"
+      },
+      "created_at": "2026-05-27T04:18:30.165Z",
+      "updated_at": "2026-05-27T04:18:30.165Z"
+    },
+    {
+      "id": "WI-035:design_decision:1",
+      "type": "design_decision",
+      "work_item_id": "WI-035",
+      "label": "Prompt 执行顺序守卫（主要修复）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/design.md",
+        "design_id": "1"
+      },
+      "created_at": "2026-05-27T06:22:45.477Z",
+      "updated_at": "2026-05-27T07:07:09.335Z"
+    },
+    {
+      "id": "WI-035:design_decision:2",
+      "type": "design_decision",
+      "work_item_id": "WI-035",
+      "label": "代码级守卫：sf_state_transition 项目初始化检查（防御性修复）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/design.md",
+        "design_id": "2"
+      },
+      "created_at": "2026-05-27T06:22:45.477Z",
+      "updated_at": "2026-05-27T07:07:09.335Z"
+    },
+    {
+      "id": "WI-035:design_decision:3",
+      "type": "design_decision",
+      "work_item_id": "WI-035",
+      "label": "manifest.json 引导创建",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/design.md",
+        "design_id": "3"
+      },
+      "created_at": "2026-05-27T06:22:45.477Z",
+      "updated_at": "2026-05-27T07:07:09.335Z"
+    },
+    {
+      "id": "WI-035:design_decision:4",
+      "type": "design_decision",
+      "work_item_id": "WI-035",
+      "label": "不变行为保护策略",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/design.md",
+        "design_id": "4"
+      },
+      "created_at": "2026-05-27T06:22:45.477Z",
+      "updated_at": "2026-05-27T07:07:09.335Z"
+    },
+    {
+      "id": "WI-035:design_decision:5",
+      "type": "design_decision",
+      "work_item_id": "WI-035",
+      "label": "文件修改清单",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/design.md",
+        "design_id": "5"
+      },
+      "created_at": "2026-05-27T06:22:45.477Z",
+      "updated_at": "2026-05-27T07:07:09.335Z"
+    },
+    {
+      "id": "WI-035:task:1",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "增加 sf_state_transition 项目初始化守卫",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:task:2",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "规范化 manifest.json 字段命名并创建兼容性测试",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:task:3",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "重构用户级 sf-orchestrator.md（DD-1：启动流程硬性前置条件）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:task:4",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "同步项目级 sf-orchestrator.md（DD-1 修复同步）",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:task:5",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "创建 CP-2 属性测试：sf_state_transition 守卫幂等性",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 5"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:task:6",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "创建 CP-1 属性测试：启动流程顺序守卫",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 6"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:task:7",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "创建 CP-3 集成测试：已有项目不受影响",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 7"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:task:8",
+      "type": "task",
+      "work_item_id": "WI-035",
+      "label": "同步用户级插件 sf_specforge.ts",
+      "metadata": {
+        "source_file": "specforge/specs/WI-035/tasks.md",
+        "task_id": "Task 8"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:1",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "sf-state-transition.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/tools/handlers/sf-state-transition.ts"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:2",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "sf-state-transition.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/sf-state-transition.test.ts"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:3",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "manifest.json",
+      "metadata": {
+        "path": "specforge/manifest.json"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:4",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "manifest-compatibility.unit.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/manifest-compatibility.unit.test.ts"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:5",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "C:\\Users\\luo\\.config\\opencode\\agents\\sf-orchestrator.md",
+      "metadata": {
+        "path": "C:\\Users\\luo\\.config\\opencode\\agents\\sf-orchestrator.md"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:6",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "D:\\code\\temp\\SpecForge\\.opencode-\\agents\\sf-orchestrator.md",
+      "metadata": {
+        "path": "D:\\code\\temp\\SpecForge\\.opencode-\\agents\\sf-orchestrator.md"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:7",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "transition-guard-idempotency.property.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/property/transition-guard-idempotency.property.test.ts"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:8",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "startup-flow-ordering.property.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/property/startup-flow-ordering.property.test.ts"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-035:code_file:9",
+      "type": "code_file",
+      "work_item_id": "WI-035",
+      "label": "existing-project-startup.integration.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/integration/existing-project-startup.integration.test.ts"
+      },
+      "created_at": "2026-05-27T07:07:09.337Z",
+      "updated_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "id": "WI-003:design_decision:1",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "HTTPServer.handleOpenCodeEvent — sessionId 合并进 payload",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "1"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:2",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "SessionRegistry — alias 别名表 + 映射增强",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "2"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:3",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "1 新增字段",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "2"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:4",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "2 alias 建立时机：registerPluginSession",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "2"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:5",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "3 alias 按需懒建立 + Step 2 增强",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "2"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:6",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "4 alias 懒建立辅助方法",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "2"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:7",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "alias 表数据结构与生命周期",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "3"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:8",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "兼容性影响评估",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "4"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:9",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "修复前后不变行为",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "5"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:10",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "回滚策略",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "6"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:design_decision:11",
+      "type": "design_decision",
+      "work_item_id": "WI-003",
+      "label": "端到端测试",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/design.md",
+        "design_id": "7"
+      },
+      "created_at": "2026-05-27T17:27:50.400Z",
+      "updated_at": "2026-05-27T17:49:33.258Z"
+    },
+    {
+      "id": "WI-003:task:1",
+      "type": "task",
+      "work_item_id": "WI-003",
+      "label": "HTTPServer.handleOpenCodeEvent — sessionId 合并进 payload",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-003:task:2",
+      "type": "task",
+      "work_item_id": "WI-003",
+      "label": "SessionRegistry — alias 别名表 + 映射增强",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-003:task:3",
+      "type": "task",
+      "work_item_id": "WI-003",
+      "label": "端到端测试 — plugin register → postEvent → 路由命中",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-003/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-003:code_file:1",
+      "type": "code_file",
+      "work_item_id": "WI-003",
+      "label": "HTTPServer.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/http/HTTPServer.ts"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-003:code_file:2",
+      "type": "code_file",
+      "work_item_id": "WI-003",
+      "label": "http-server-handleOpenCodeEvent.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/http-server-handleOpenCodeEvent.test.ts"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-003:code_file:3",
+      "type": "code_file",
+      "work_item_id": "WI-003",
+      "label": "SessionRegistry.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/session/SessionRegistry.ts"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-003:code_file:4",
+      "type": "code_file",
+      "work_item_id": "WI-003",
+      "label": "session-registry-alias.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/session-registry-alias.test.ts"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-003:code_file:5",
+      "type": "code_file",
+      "work_item_id": "WI-003",
+      "label": "opencode-event-routing.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/integration/opencode-event-routing.test.ts"
+      },
+      "created_at": "2026-05-27T17:34:15.625Z",
+      "updated_at": "2026-05-27T17:49:33.260Z"
+    },
+    {
+      "id": "WI-004:task:1",
+      "type": "task",
+      "work_item_id": "WI-004",
+      "label": "修复 sf-design-gate handler 参数名不匹配（DD-1）",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-004/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-27T18:15:10.669Z",
+      "updated_at": "2026-05-27T18:30:55.046Z"
+    },
+    {
+      "id": "WI-004:task:2",
+      "type": "task",
+      "work_item_id": "WI-004",
+      "label": "修复 sf-verification-gate handler 同类参数名 bug（DD-2）",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-004/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-27T18:15:10.669Z",
+      "updated_at": "2026-05-27T18:30:55.046Z"
+    },
+    {
+      "id": "WI-004:task:3",
+      "type": "task",
+      "work_item_id": "WI-004",
+      "label": "Skill 文档添加 H2 intro 约束说明（DD-3）",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-004/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-27T18:15:10.669Z",
+      "updated_at": "2026-05-27T18:30:55.046Z"
+    },
+    {
+      "id": "WI-004:task:4",
+      "type": "task",
+      "work_item_id": "WI-004",
+      "label": "全量回归测试 + investigation 端到端验证",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-004/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-05-27T18:15:10.669Z",
+      "updated_at": "2026-05-27T18:30:55.046Z"
+    },
+    {
+      "id": "WI-004:code_file:1",
+      "type": "code_file",
+      "work_item_id": "WI-004",
+      "label": "sf-design-gate.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/tools/handlers/sf-design-gate.ts"
+      },
+      "created_at": "2026-05-27T18:15:10.669Z",
+      "updated_at": "2026-05-27T18:30:55.046Z"
+    },
+    {
+      "id": "WI-004:code_file:2",
+      "type": "code_file",
+      "work_item_id": "WI-004",
+      "label": "sf-verification-gate.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/tools/handlers/sf-verification-gate.ts"
+      },
+      "created_at": "2026-05-27T18:15:10.669Z",
+      "updated_at": "2026-05-27T18:30:55.046Z"
+    },
+    {
+      "id": "WI-005:task:1",
+      "type": "task",
+      "work_item_id": "WI-005",
+      "label": "StateManager 添加 getWal() 方法",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-005/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:task:2",
+      "type": "task",
+      "work_item_id": "WI-005",
+      "label": "path-resolver 添加 daemon 专用路径方法",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-005/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:task:3",
+      "type": "task",
+      "work_item_id": "WI-005",
+      "label": "StateManager 构造函数添加 isDaemonGlobal 参数",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-005/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:task:4",
+      "type": "task",
+      "work_item_id": "WI-005",
+      "label": "Daemon.ts 改项 1/2/3 组装重构",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-005/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:task:5",
+      "type": "task",
+      "work_item_id": "WI-005",
+      "label": "ProjectManager 消除 per-project StateManager + Daemon.ts L57 联动",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-005/tasks.md",
+        "task_id": "Task 5"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:task:6",
+      "type": "task",
+      "work_item_id": "WI-005",
+      "label": "Legacy 嵌套路径 state.json/events.jsonl 检测与处理",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-005/tasks.md",
+        "task_id": "Task 6"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:task:7",
+      "type": "task",
+      "work_item_id": "WI-005",
+      "label": "WAL/StateManager 单例化 E2E 集成测试",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-005/tasks.md",
+        "task_id": "Task 7"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:1",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "StateManager.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/state/StateManager.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:2",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "state.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/state.test.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:3",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "path-resolver.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/daemon/path-resolver.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:4",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "path-resolver.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/path-resolver.test.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:5",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "Daemon.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/daemon/Daemon.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:6",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "daemon.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/daemon.test.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:7",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "ProjectManager.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/project/ProjectManager.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:8",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "project.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/unit/project.test.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-005:code_file:9",
+      "type": "code_file",
+      "work_item_id": "WI-005",
+      "label": "wal-singleton-e2e.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts"
+      },
+      "created_at": "2026-05-27T19:25:32.609Z",
+      "updated_at": "2026-05-27T19:26:07.753Z"
+    },
+    {
+      "id": "WI-007:task:1",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "源码变更：注释重写 + 死代码删除 + 调用点清理",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:task:2",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "property-21.test.ts 全文重写",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:task:3",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "文档同步：.kiro/specs/ + DEVELOPMENT.md 措辞更新",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:1",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "RecoverySubsystem.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/recovery/RecoverySubsystem.ts"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:2",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "Daemon.ts",
+      "metadata": {
+        "path": "packages/daemon-core/src/daemon/Daemon.ts"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:3",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "property-21.test.ts",
+      "metadata": {
+        "path": "packages/daemon-core/tests/property/property-21.test.ts"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:4",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "design.md",
+      "metadata": {
+        "path": ".kiro/specs/v6-architecture-overview/design.md"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:5",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "requirements.md",
+      "metadata": {
+        "path": ".kiro/specs/daemon-core/requirements.md"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:6",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "design.md",
+      "metadata": {
+        "path": ".kiro/specs/daemon-core/design.md"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:7",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "tasks.md",
+      "metadata": {
+        "path": ".kiro/specs/daemon-core/tasks.md"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-007:code_file:8",
+      "type": "code_file",
+      "work_item_id": "WI-007",
+      "label": "DEVELOPMENT.md",
+      "metadata": {
+        "path": "packages/daemon-core/DEVELOPMENT.md"
+      },
+      "created_at": "2026-05-28T03:44:37.801Z",
+      "updated_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "id": "WI-010:code_file:1",
+      "type": "code_file",
+      "label": "directory-layout.ts",
+      "metadata": {
+        "work_item_id": "WI-010",
+        "task_id": "T1",
+        "action": "create",
+        "phase": "P0",
+        "path": "packages/types/src/directory-layout.ts"
+      }
+    },
+    {
+      "id": "WI-010:code_file:2",
+      "type": "code_file",
+      "label": "meta-schema.ts",
+      "metadata": {
+        "work_item_id": "WI-010",
+        "task_id": "T2",
+        "action": "create",
+        "phase": "P0",
+        "path": "packages/types/src/meta-schema.ts"
+      }
+    },
+    {
+      "id": "WI-010:code_file:3",
+      "type": "code_file",
+      "label": "directory-layout.test.ts",
+      "metadata": {
+        "work_item_id": "WI-010",
+        "task_id": "T3",
+        "action": "create",
+        "phase": "P0",
+        "path": "packages/types/tests/directory-layout.test.ts"
+      }
+    },
+    {
+      "id": "WI-010:code_file:4",
+      "type": "code_file",
+      "label": "meta-schema.test.ts",
+      "metadata": {
+        "work_item_id": "WI-010",
+        "task_id": "T4",
+        "action": "create",
+        "phase": "P0",
+        "path": "packages/types/tests/meta-schema.test.ts"
+      }
+    },
+    {
+      "id": "WI-010:code_file:5",
+      "type": "code_file",
+      "label": "v6-dir-rename.ts",
+      "metadata": {
+        "work_item_id": "WI-010",
+        "task_id": "T5",
+        "action": "create",
+        "phase": "P0",
+        "path": "scripts/migrations/v6-dir-rename.ts"
+      }
+    },
+    {
+      "id": "WI-010:code_file:6",
+      "type": "code_file",
+      "label": "v6-dir-backup.ts",
+      "metadata": {
+        "work_item_id": "WI-010",
+        "task_id": "T5",
+        "action": "create",
+        "phase": "P0",
+        "path": "scripts/migrations/v6-dir-backup.ts"
+      }
+    },
+    {
+      "id": "WI-010:code_file:7",
+      "type": "code_file",
+      "label": "ADR-006",
+      "metadata": {
+        "work_item_id": "WI-010",
+        "task_id": "T6",
+        "action": "create",
+        "phase": "P0",
+        "path": "docs/adr/ADR-006-specforge-dir-naming.md"
+      }
+    },
+    {
+      "id": "WI-011:task:1",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "扩展 directory-layout.ts 用户级路径 Schema",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:2",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "daemon-core tools/lib/ 路径切换（15 个文件）",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:3",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "daemon-core daemon/ + handlers/ 路径切换（4 个文件）",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:4",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "部署态 .opencode/tools/lib/ 路径切换（16 个文件）",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:5",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "permission-engine 路径切换（7 个文件）",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 5"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:6",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "8 个 SKILL.md 路径修正",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 6"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:7",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "4 个 Agent prompt 路径修正",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 7"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:8",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "setup/ 目录搬迁",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 8"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:9",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "sf-installer.ts 改造",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 9"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:10",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "render-layout.ts 文档生成器",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 10"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:11",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "render-specs-readme.ts 自动渲染",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 11"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:12",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "数据迁移实际执行",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 12"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:task:13",
+      "type": "task",
+      "work_item_id": "WI-011",
+      "label": "清理废弃文件",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-011/tasks.md",
+        "task_id": "Task 13"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-011:code_file:1",
+      "type": "code_file",
+      "work_item_id": "WI-011",
+      "label": "directory-layout.ts",
+      "metadata": {
+        "path": "packages/types/src/directory-layout.ts"
+      },
+      "created_at": "2026-05-28T20:18:04.335Z",
+      "updated_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "id": "WI-014:task:1",
+      "type": "task",
+      "work_item_id": "WI-014",
+      "label": "修复 lint 正则泛化 + 新增单元测试",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-014/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:task:2",
+      "type": "task",
+      "work_item_id": "WI-014",
+      "label": "扩展 lint 扫描到 .md 文件 + 更新白名单",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-014/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:task:3",
+      "type": "task",
+      "work_item_id": "WI-014",
+      "label": "marker 注入 + render-layout 时间戳移除",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-014/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:task:4",
+      "type": "task",
+      "work_item_id": "WI-014",
+      "label": "sf-verifier 端到端文件系统冒烟模板",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-014/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:task:5",
+      "type": "task",
+      "work_item_id": "WI-014",
+      "label": "CI 加入 lint + render-layout 一致性检查",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-014/tasks.md",
+        "task_id": "Task 5"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:1",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": "check-hardcoded-paths.ts",
+      "metadata": {
+        "path": "scripts/lint/check-hardcoded-paths.ts"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:2",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": "check-hardcoded-paths.test.ts",
+      "metadata": {
+        "path": "scripts/lint/__tests__/check-hardcoded-paths.test.ts"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:3",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": ".lintrc-layout.json",
+      "metadata": {
+        "path": ".lintrc-layout.json"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:4",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": "README.md",
+      "metadata": {
+        "path": "README.md"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:5",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": "AGENTS.md",
+      "metadata": {
+        "path": "AGENTS.md"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:6",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": "render-layout.ts",
+      "metadata": {
+        "path": "scripts/render-layout.ts"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:7",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": "sf-verifier.md",
+      "metadata": {
+        "path": "setup/userlevel-opencode/agents/sf-verifier.md"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "id": "WI-014:code_file:8",
+      "type": "code_file",
+      "work_item_id": "WI-014",
+      "label": "code-quality.yml",
+      "metadata": {
+        "path": ".github/workflows/code-quality.yml"
+      },
+      "created_at": "2026-05-29T04:21:17.308Z",
+      "updated_at": "2026-05-29T04:21:17.308Z"
+    }
+  ],
+  "edges": [
+    {
+      "source": "WI-035:task:1",
+      "target": "WI-035:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:1",
+      "target": "WI-035:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:2",
+      "target": "WI-035:code_file:3",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:2",
+      "target": "WI-035:code_file:4",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:3",
+      "target": "WI-035:code_file:5",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:4",
+      "target": "WI-035:code_file:6",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:5",
+      "target": "WI-035:code_file:7",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:6",
+      "target": "WI-035:code_file:8",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:task:7",
+      "target": "WI-035:code_file:9",
+      "type": "modifies",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:2",
+      "target": "WI-035:task:1",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:3",
+      "target": "WI-035:task:2",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:1",
+      "target": "WI-035:task:3",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:1",
+      "target": "WI-035:task:4",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:2",
+      "target": "WI-035:task:5",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:1",
+      "target": "WI-035:task:6",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:1",
+      "target": "WI-035:task:7",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-035:design_decision:2",
+      "target": "WI-035:task:7",
+      "type": "decomposes_to",
+      "work_item_id": "WI-035",
+      "inferred": false,
+      "created_at": "2026-05-27T07:07:09.337Z"
+    },
+    {
+      "source": "WI-003:task:1",
+      "target": "WI-003:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-003:task:1",
+      "target": "WI-003:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-003:task:2",
+      "target": "WI-003:code_file:3",
+      "type": "modifies",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-003:task:2",
+      "target": "WI-003:code_file:4",
+      "type": "modifies",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-003:task:3",
+      "target": "WI-003:code_file:5",
+      "type": "modifies",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-003:design_decision:1",
+      "target": "WI-003:task:1",
+      "type": "decomposes_to",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-003:design_decision:2",
+      "target": "WI-003:task:2",
+      "type": "decomposes_to",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-003:design_decision:11",
+      "target": "WI-003:task:3",
+      "type": "decomposes_to",
+      "work_item_id": "WI-003",
+      "inferred": false,
+      "created_at": "2026-05-27T17:34:15.625Z"
+    },
+    {
+      "source": "WI-004:task:1",
+      "target": "WI-004:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-004",
+      "inferred": false,
+      "created_at": "2026-05-27T18:15:10.669Z"
+    },
+    {
+      "source": "WI-004:task:2",
+      "target": "WI-004:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-004",
+      "inferred": false,
+      "created_at": "2026-05-27T18:15:10.669Z"
+    },
+    {
+      "source": "WI-005:task:1",
+      "target": "WI-005:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:1",
+      "target": "WI-005:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:2",
+      "target": "WI-005:code_file:3",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:2",
+      "target": "WI-005:code_file:4",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:3",
+      "target": "WI-005:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:3",
+      "target": "WI-005:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:4",
+      "target": "WI-005:code_file:5",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:4",
+      "target": "WI-005:code_file:6",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:5",
+      "target": "WI-005:code_file:7",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:5",
+      "target": "WI-005:code_file:5",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:5",
+      "target": "WI-005:code_file:8",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:6",
+      "target": "WI-005:code_file:5",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:6",
+      "target": "WI-005:code_file:6",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-005:task:7",
+      "target": "WI-005:code_file:9",
+      "type": "modifies",
+      "work_item_id": "WI-005",
+      "inferred": false,
+      "created_at": "2026-05-27T19:25:32.609Z"
+    },
+    {
+      "source": "WI-007:task:1",
+      "target": "WI-007:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-007:task:1",
+      "target": "WI-007:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-007:task:2",
+      "target": "WI-007:code_file:3",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-007:task:3",
+      "target": "WI-007:code_file:4",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-007:task:3",
+      "target": "WI-007:code_file:5",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-007:task:3",
+      "target": "WI-007:code_file:6",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-007:task:3",
+      "target": "WI-007:code_file:7",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-007:task:3",
+      "target": "WI-007:code_file:8",
+      "type": "modifies",
+      "work_item_id": "WI-007",
+      "inferred": false,
+      "created_at": "2026-05-28T03:44:37.801Z"
+    },
+    {
+      "source": "WI-011:task:1",
+      "target": "WI-011:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-011",
+      "inferred": false,
+      "created_at": "2026-05-28T20:18:04.335Z"
+    },
+    {
+      "source": "WI-014:task:1",
+      "target": "WI-014:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:1",
+      "target": "WI-014:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:2",
+      "target": "WI-014:code_file:1",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:2",
+      "target": "WI-014:code_file:3",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:2",
+      "target": "WI-014:code_file:2",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:3",
+      "target": "WI-014:code_file:4",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:3",
+      "target": "WI-014:code_file:5",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:3",
+      "target": "WI-014:code_file:6",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:4",
+      "target": "WI-014:code_file:7",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    },
+    {
+      "source": "WI-014:task:5",
+      "target": "WI-014:code_file:8",
+      "type": "modifies",
+      "work_item_id": "WI-014",
+      "inferred": false,
+      "created_at": "2026-05-29T04:21:17.308Z"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import { ConfigLayer, ConfigLayerType, MergedConfig } from './types'
 import { CONFIG_SCHEMA_VERSION, DEFAULT_CONFIG, SENSITIVE_FIELDS } from './constants'
 import { logger } from './logger'
 import { mergeConfigLayers } from './config-merge'
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 
 /**
  * Runtime configuration source
@@ -73,7 +74,7 @@ export async function loadBuiltinConfig(): Promise<ConfigLayer> {
  */
 export async function loadUserConfig(): Promise<ConfigLayer> {
   const homeDir = homedir()
-  const configPath = path.join(homeDir, '.specforge', 'config', 'config.json')
+  const configPath = path.join(homeDir, SPEC_DIR_NAME, 'config', 'config.json')
   logger.debug('Loading user-level configuration', { configPath, homeDir })
 
   const data = await loadConfigFile(configPath)

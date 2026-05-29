@@ -10,6 +10,7 @@
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { homedir } from "node:os"
+import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
 import type { WorkflowType } from "./state_machine"
 import { logErrorToFile } from "./utils"
 
@@ -177,7 +178,7 @@ export function getLockPath(): string {
  */
 export async function getProjectName(baseDir: string): Promise<string> {
   try {
-    const configPath = join(baseDir, "specforge", "config", "project.json")
+    const configPath = join(baseDir, SPEC_DIR_NAME, "config", "project.json")
     try {
       const content = await readFile(configPath, "utf-8")
       const config = JSON.parse(content)

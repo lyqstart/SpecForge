@@ -33,9 +33,9 @@ describe('ContentAddressableStorage', () => {
     const reference = await cas.store(content);
     
     expect(reference.type).toBe('cas-blob');
-    expect(reference.hash).toContain('sha256-');
+    expect(reference.hash).toMatch(/^[0-9a-f]{64}$/);
     expect(reference.size).toBe(content.length);
-    expect(reference.reference).toContain('cas://');
+    expect(reference.reference).toContain('blob://');
     
     const retrieved = await cas.retrieve(reference.reference);
     expect(retrieved).toEqual(content);
@@ -53,8 +53,8 @@ describe('ContentAddressableStorage', () => {
     const content = Buffer.from('exists test content');
     const reference = await cas.store(content);
     
-    expect(await cas.exists(reference.reference)).toBe(true);
-    expect(await cas.exists('cas://nonexistent')).toBe(false);
+    expect(await cas.exists(reference.hash)).toBe(true);
+    expect(await cas.exists('nonexistenthash0000000000000000000000000000000000000000000000000000')).toBe(false);
   });
 
   it('should process payload and return inline for small content', async () => {
@@ -74,7 +74,7 @@ describe('ContentAddressableStorage', () => {
     const result = await cas.processPayload(largeContent, maxSize);
     
     expect((result as any).type).toBe('cas-blob');
-    expect((result as any).hash).toContain('sha256-');
+    expect((result as any).hash).toMatch(/^[0-9a-f]{64}$/);
     expect((result as any).size).toBe(largeContent.length);
   });
 

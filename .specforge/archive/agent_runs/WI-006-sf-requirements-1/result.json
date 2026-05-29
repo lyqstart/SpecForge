@@ -1,0 +1,14 @@
+{
+  "run_id": "WI-006-sf-requirements-1",
+  "work_item_id": "WI-006",
+  "agent_name": "sf-requirements",
+  "start_time": "2026-05-27T23:43:00Z",
+  "end_time": "2026-05-27T23:46:38Z",
+  "duration_ms": 198000,
+  "status": "success",
+  "task_description": "Generate impact_analysis.md for WI-006 SessionRegistry WAL-ization Phase 2",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": false
+}

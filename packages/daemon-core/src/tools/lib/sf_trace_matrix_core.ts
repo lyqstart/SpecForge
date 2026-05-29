@@ -9,6 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
+import { resolveProjectPath } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
 
 // ============================================================
@@ -180,7 +181,7 @@ export async function checkTraceMatrix(
   baseDir: string
 ): Promise<TraceMatrixResult> {
   try {
-    const specDir = join(baseDir, "specforge", "specs", workItemId)
+    const specDir = resolveProjectPath(baseDir, "specs", workItemId)
 
     // Read requirements.md
     let requirementsContent: string

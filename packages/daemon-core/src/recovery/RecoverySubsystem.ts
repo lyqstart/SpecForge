@@ -10,11 +10,10 @@
  * predefined repair rules, and write a recovery.repaired event recording the repair
  * path; after repair, rebuild(events) == s' must hold.
  * 
- * Property 21: Session Reconnect Scope
- * For all Daemon runtime event streams, "automatic reconnection attempts to old
- * OpenCode sessions" may only occur within the Daemon startup process; after
- * startup completes, even if old sessions are detected as alive, the Daemon
- * must not automatically initiate reconnection.
+ * Property 21: Session WAL Replay Scope
+ * For all Daemon runtime event streams, WAL-replay-based session state reconstruction
+ * may only occur within the Daemon startup process; after startup completes, the
+ * Daemon must not automatically initiate session state reconstruction via WAL replay.
  */
 
 import * as fs from 'fs/promises';
@@ -24,6 +23,8 @@ import { v7 as uuidv7 } from 'uuid';
 import { Event, ProjectState, ConsistencyCheckResult, ConsistencyIssue, RepairResult } from '../types';
 import { WAL } from '../wal';
 import { StateManager } from '../state/StateManager';
+import { IPathResolver } from '../daemon/path-resolver';
+import { SessionRegistry } from '../session/SessionRegistry';
 
 export interface SessionReconnectResult {
   success: boolean;
@@ -33,6 +34,7 @@ export interface SessionReconnectResult {
 }
 
 export class RecoverySubsystem {
+  private pathResolver: IPathResolver;
   private projectPath: string;
   private eventsPath: string;
   private statePath: string;
@@ -40,38 +42,22 @@ export class RecoverySubsystem {
   
   private _isReady: boolean = false;
 
-  // Property 21: Track startup phase to limit reconnection attempts
+  // Property 21: Track startup phase to limit WAL replay session reconstruction
   private isInStartupPhase: boolean = false;
   private hasStartupCompleted: boolean = false;
 
   private wal: WAL | null = null;
   private stateManager: StateManager | null = null;
+  private sessionRegistry?: SessionRegistry;
 
-  constructor(projectPath: string, wal?: WAL, stateManager?: StateManager) {
+  constructor(pathResolver: IPathResolver, projectPath: string, wal?: WAL, stateManager?: StateManager, sessionRegistry?: SessionRegistry) {
+    this.pathResolver = pathResolver;
     this.projectPath = projectPath;
     this.wal = wal ?? null;
     this.stateManager = stateManager ?? null;
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const projectHash = this.hashPath(projectPath);
-    this.eventsPath = home 
-      ? path.join(home, '.specforge', 'projects', projectHash, 'events.jsonl')
-      : '';
-    this.statePath = home 
-      ? path.join(home, '.specforge', 'projects', projectHash, 'state.json')
-      : '';
-  }
-
-  /**
-   * Generate a safe filename from project path
-   */
-  private hashPath(projectPath: string): string {
-    let hash = 0;
-    for (let i = 0; i < projectPath.length; i++) {
-      const char = projectPath.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    return Math.abs(hash).toString(16).padStart(8, '0');
+    this.sessionRegistry = sessionRegistry;
+    this.eventsPath = this.pathResolver.resolveEventsPath(projectPath);
+    this.statePath = this.pathResolver.resolveStatePath(projectPath);
   }
 
   /**
@@ -96,9 +82,9 @@ export class RecoverySubsystem {
    * then verifies consistency between events and the rebuilt state.
    */
   async checkAndRepair(): Promise<ConsistencyCheckResult> {
-    const events = this.wal
+    const { events } = this.wal
       ? await this.wal.readAllEvents()
-      : await this.loadEvents();
+      : { events: await this.loadEvents() };
 
     let rebuiltState: ProjectState;
 
@@ -106,6 +92,18 @@ export class RecoverySubsystem {
       rebuiltState = await this.stateManager.rebuildState();
     } else {
       rebuiltState = await this.rebuildFromEvents(events);
+    }
+
+    // Session replay from WAL events
+    if (this.sessionRegistry) {
+      const sessionEvents = events.filter(e =>
+        e.category === 'session' ||
+        (!e.category && e.action?.startsWith('session.'))
+      );
+      if (sessionEvents.length > 0) {
+        const summary = await this.sessionRegistry.startupReplay(sessionEvents);
+        console.log(`[RecoverySubsystem] Session replay: ${summary.replayedCount} events replayed, ${summary.restoredBindings} bindings restored, ${summary.restoredAliases} aliases restored`);
+      }
     }
 
     const issues: ConsistencyIssue[] = [];
@@ -244,9 +242,9 @@ export class RecoverySubsystem {
   async repairInconsistency(result: ConsistencyCheckResult): Promise<RepairResult> {
     const repairEvents: Event[] = [];
     
-    const events = this.wal
+    const { events } = this.wal
       ? await this.wal.readAllEvents()
-      : await this.loadEvents();
+      : { events: await this.loadEvents() };
 
     let repairedState: ProjectState;
 
@@ -353,17 +351,16 @@ export class RecoverySubsystem {
   }
 
   /**
-   * Attempt session reconnection (only during startup - Property 21)
+   * Attempt session WAL replay reconstruction (only during startup - Property 21)
    * 
-   * Property 21: Reconnection attempts may only occur within Daemon startup process.
-   * After startup completes, even if old sessions are detected as alive,
-   * the Daemon must not automatically initiate reconnection.
+   * Property 21: WAL replay session reconstruction may only occur within Daemon startup process.
+   * After startup completes, the Daemon must not automatically initiate session state reconstruction via WAL replay.
    * 
    * @param sessionId Session ID to reconnect
    * @returns true if reconnection was attempted and succeeded
    */
   async attemptSessionReconnect(sessionId: string): Promise<boolean> {
-    // Property 21: Only attempt reconnection during startup phase
+    // Property 21: Only attempt WAL replay during startup phase
     if (!this.isInStartupPhase || this.hasStartupCompleted) {
       // Post-startup session detection doesn't trigger reconnection
       return false;
@@ -449,96 +446,6 @@ export class RecoverySubsystem {
   }
 
   /**
-   * Detect old sessions from previous Daemon run
-   * This method can be called at any time but only triggers reconnection during startup
-   * 
-   * Property 21: Post-startup detection doesn't trigger reconnection
-   * 
-   * @returns Array of session IDs that were active in the previous run
-   */
-  async detectOldSessions(): Promise<string[]> {
-    const events = await this.loadEvents();
-    const state = await this.loadState();
-    
-    const oldSessions: string[] = [];
-    
-    // Check state for active sessions from previous run
-    if (state.activeSessions && state.activeSessions.length > 0) {
-      oldSessions.push(...state.activeSessions);
-    }
-    
-    // Also check events for session.activated that don't have corresponding session.terminated
-    const activatedSessions = new Set<string>();
-    const terminatedSessions = new Set<string>();
-    
-    for (const event of events) {
-      if (event.action === 'session.activated' && event.payload) {
-        const sessionId = (event.payload as any).sessionId;
-        if (sessionId) activatedSessions.add(sessionId);
-      } else if (event.action === 'session.terminated' && event.payload) {
-        const sessionId = (event.payload as any).sessionId;
-        if (sessionId) terminatedSessions.add(sessionId);
-      }
-    }
-    
-    // Add sessions that were activated but not terminated
-    for (const sessionId of activatedSessions) {
-      if (!terminatedSessions.has(sessionId) && !oldSessions.includes(sessionId)) {
-        oldSessions.push(sessionId);
-      }
-    }
-    
-    return oldSessions;
-  }
-
-  /**
-   * Attempt to reconnect all old sessions found by replaying WAL events
-   * to recover active session information.
-   * Property 21: Only attempts reconnection during startup phase
-   * 
-   * @returns Array of reconnection results
-   */
-  async reconnectOldSessions(): Promise<SessionReconnectResult[]> {
-    const events = this.wal
-      ? await this.wal.readAllEvents()
-      : await this.loadEvents();
-
-    const activatedSessions = new Set<string>();
-    const terminatedSessions = new Set<string>();
-
-    for (const event of events) {
-      if (event.action === 'session.activated' && event.payload) {
-        const sessionId = (event.payload as Record<string, unknown>)['sessionId'] as string;
-        if (sessionId) activatedSessions.add(sessionId);
-      } else if (event.action === 'session.terminated' && event.payload) {
-        const sessionId = (event.payload as Record<string, unknown>)['sessionId'] as string;
-        if (sessionId) terminatedSessions.add(sessionId);
-      }
-    }
-
-    const activeSessionIds = [...activatedSessions].filter(
-      sid => !terminatedSessions.has(sid)
-    );
-
-    const results: SessionReconnectResult[] = [];
-
-    for (const sessionId of activeSessionIds) {
-      const reconnected = await this.attemptSessionReconnect(sessionId);
-
-      results.push({
-        success: reconnected,
-        sessionId,
-        reconnected,
-        reason: reconnected
-          ? 'Session reconnected during startup'
-          : 'Reconnection not attempted - not in startup phase',
-      });
-    }
-
-    return results;
-  }
-
-  /**
    * Get reconnection scope status
    * Used for testing and verification of Property 21
    */
@@ -594,6 +501,33 @@ export class RecoverySubsystem {
       fsSync.fsyncSync(fd);
     } finally {
       fsSync.closeSync(fd);
+    }
+  }
+
+  /**
+   * Save a session checkpoint snapshot.
+   * 
+   * Writes the snapshot to sessions/<sessionId>.json relative to the state
+   * directory, followed by fsync for durability.  Write failures are logged
+   * at ERROR level but never thrown — they must not block session compaction.
+   */
+  async saveCheckpoint(sessionId: string, snapshotData: unknown): Promise<void> {
+    try {
+      const checkpointDir = path.join(path.dirname(this.statePath), 'checkpoints');
+      const checkpointPath = path.join(checkpointDir, `${sessionId}.json`);
+
+      await fs.mkdir(checkpointDir, { recursive: true });
+      await fs.writeFile(checkpointPath, JSON.stringify(snapshotData, null, 2));
+
+      // fsync to ensure durability
+      const fd = fsSync.openSync(checkpointPath, 'a');
+      try {
+        fsSync.fsyncSync(fd);
+      } finally {
+        fsSync.closeSync(fd);
+      }
+    } catch (error) {
+      console.error(`[RecoverySubsystem] Failed to save checkpoint for session ${sessionId}:`, error);
     }
   }
 

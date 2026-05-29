@@ -35,6 +35,7 @@
     "vitest": "^1.2.0"
   },
   "dependencies": {
+    "@specforge/types": "workspace:*",
     "chokidar": "^3.5.3",
     "fast-check": "^3.13.0",
     "lru-cache": "^10.2.0",

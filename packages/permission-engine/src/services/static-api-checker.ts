@@ -12,6 +12,7 @@
  */
 
 import { z } from 'zod';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Types of prohibited APIs that static checker can detect
@@ -391,7 +392,7 @@ export class StaticApiChecker {
       allowProcessAccess: config.allowProcessAccess ?? false,
       projectId: config.projectId || 'default-project',
       eventLoggingEnabled: config.eventLoggingEnabled ?? true,
-      eventsFilePath: config.eventsFilePath || './specforge/observability/events.jsonl',
+      eventsFilePath: config.eventsFilePath || './' + SPEC_DIR_NAME + '/logs/telemetry.jsonl',
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       logEvent: config.logEvent || (async (_event: unknown) => { /* no-op */ })
     };

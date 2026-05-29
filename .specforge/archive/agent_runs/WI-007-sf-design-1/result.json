@@ -1,0 +1,23 @@
+{
+  "run_id": "WI-007-sf-design-1",
+  "work_item_id": "WI-007",
+  "agent_name": "sf-design",
+  "start_time": "2026-05-28T03:16:30Z",
+  "end_time": "2026-05-28T03:18:00Z",
+  "duration_ms": 90000,
+  "status": "success",
+  "task_description": "Generate design delta for WI-007 Property 21 rewrite and dangling contract cleanup",
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": false,
+  "conversation_recorded": false,
+  "key_findings": {
+    "design_decisions": 6,
+    "files_affected": 7,
+    "lines_deleted": 76,
+    "lines_added": 162,
+    "methods_to_delete": ["detectOldSessions", "reconnectOldSessions"],
+    "methods_to_keep": ["attemptSessionReconnect", "performSessionReconnect", "getReconnectionScopeStatus"],
+    "risk_level": "LOW"
+  }
+}

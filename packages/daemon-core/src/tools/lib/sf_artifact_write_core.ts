@@ -10,6 +10,7 @@
 
 import { readFile, writeFile, mkdir, access } from "node:fs/promises"
 import { join, dirname } from "node:path"
+import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
 
 // ============================================================
@@ -89,17 +90,17 @@ export interface TraceStats {
 
 /** 文件类型到路径模式的映射 */
 const FILE_TYPE_PATH_MAP: Record<ArtifactFileType, (workItemId: string, runId?: string) => string> = {
-  verification_report: (wid) => `specforge/specs/${wid}/verification_report.md`,
-  review_report: (wid) => `specforge/specs/${wid}/review_report.md`,
-  intake: (wid) => `specforge/specs/${wid}/intake.md`,
-  work_log: (_wid, rid) => `specforge/archive/agent_runs/${rid}/work_log.md`,
-  agent_run_result: (_wid, rid) => `specforge/archive/agent_runs/${rid}/result.json`,
+  verification_report: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/verification_report.md`,
+  review_report: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/review_report.md`,
+  intake: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/intake.md`,
+  work_log: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/work_log.md`,
+  agent_run_result: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/result.json`,
 }
 
 /** 白名单路径前缀 */
 const WHITELIST_PREFIXES = [
-  "specforge/specs/",
-  "specforge/archive/agent_runs/",
+  `${SPEC_DIR_NAME}/specs/`,
+  `${SPEC_DIR_NAME}/archive/agent_runs/`,
 ]
 
 /**
@@ -262,8 +263,8 @@ function buildSidecarResult(workItemId: string, runId: string, workLogAbsPath: s
     conversation_recorded: null,
     parallel_batch: null,
     parallel_peers: null,
-    work_log_path: workLogAbsPath.replace(/\\/g, "/").split("/specforge/").pop()
-      ? "specforge/" + workLogAbsPath.replace(/\\/g, "/").split("/specforge/").pop()
+    work_log_path: workLogAbsPath.replace(/\\/g, "/").split("/" + SPEC_DIR_NAME + "/").pop()
+      ? SPEC_DIR_NAME + "/" + workLogAbsPath.replace(/\\/g, "/").split("/" + SPEC_DIR_NAME + "/").pop()
       : null,
     sidecar_generated_at: now,
   }
@@ -433,7 +434,7 @@ export async function extractTraceStats(
   baseDir: string
 ): Promise<TraceStats | null> {
   try {
-    const tracePath = join(baseDir, "specforge", "logs", "trace.jsonl")
+    const tracePath = resolveProjectPath(baseDir, 'logsTrace')
 
     let traceContent: string
     try {

@@ -1,0 +1,24 @@
+{
+  "id": "WI-012",
+  "workflow_type": "refactor",
+  "title": "SpecForge V6 目录结构治理 P2",
+  "summary": "P2 阶段：建立 CI Lint 防线（check-hardcoded-paths.ts）、Architecture Test 防线（directory-layout.test.ts，28 pass / 175 assertions）、填充 docs/conventions/（8 个文档）、全仓库存量违规清扫（0 违规）、更新 README.md 导航入口。基于 P0 Schema + P1 全量切换，实现三道强制门中的防线 B 和 C。",
+  "key_decisions": [
+    "采用白名单驱动的 CI Lint（.lintrc-layout.json），白名单扩展需双人审批",
+    "Architecture Test 验证 LAYOUT 常量 + 路径构造函数 + _meta.json schema，不依赖实际文件系统",
+    "docs/conventions/ 采用自动生成+手写混合模式",
+    "风险等级判定为低风险，走低风险路径（development → verification，跳过 review）"
+  ],
+  "current_stage": "completed",
+  "created_at": "2026-05-29T00:00:00Z",
+  "completed_at": "2026-05-29T00:00:00Z",
+  "related_modules": [
+    "packages/types",
+    "packages/daemon-core",
+    "packages/permission-engine",
+    "scripts/lint",
+    "tests/architecture"
+  ],
+  "upstream_wis": ["WI-010", "WI-011"],
+  "downstream_wis": []
+}

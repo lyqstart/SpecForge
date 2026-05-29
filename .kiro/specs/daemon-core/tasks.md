@@ -15,7 +15,7 @@ This implementation plan covers the development of the **Daemon Core** module fo
 - Property 6: Idempotent Recovery
 - Property 7: WAL Ordering
 - Property 20: Recovery Consistency Repair
-- Property 21: Session Reconnect Scope
+- Property 21: Session WAL Replay Scope
 - Property 22: Project Isolation
 - Property 30: Event Schema Multi-sync Readiness
 
@@ -112,7 +112,7 @@ This implementation plan covers the development of the **Daemon Core** module fo
 - [x] 5.2 Implement session reconnection logic
   - Startup-only reconnection attempts
   - Old session detection
-  - **Property 21 Test**: Verify reconnect scope limitation
+  - **Property 21 Test**: Verify WAL replay scope limitation
   - _Requirements: 5.4, 5.5, Property 21_
 
 - [x] 5.3 Implement idle timeout
@@ -234,15 +234,15 @@ This implementation plan covers the development of the **Daemon Core** module fo
 - Random repair rule applicability
 - Random project state complexity
 
-### Property 21: Session Reconnect Scope Test
-**Strategy**: Generate runtime scenarios with old sessions. Verify:
-1. Reconnection attempts only during startup
-2. Post-startup session detection doesn't trigger reconnection
-3. Reconnection logic respects scope boundaries
+### Property 21: Session WAL Replay Scope Test
+**Strategy**: Generate runtime scenarios with session events. Verify:
+1. WAL replay session reconstruction only during startup
+2. Post-startup attemptSessionReconnect returns false
+3. WAL replay scope boundaries correctly tracked
 
 **Generators**:
 - Random startup/shutdown sequences
-- Random old session detection timing
+- Random session event timing
 - Random reconnection success/failure scenarios
 
 ### Property 22: Project Isolation Test

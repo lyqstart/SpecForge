@@ -43,6 +43,7 @@ import { runVersionCommand } from './commands/version';
 import { runDoctorCommand } from './commands/doctor';
 import { initCommandHandler } from './commands/init';
 import { wrapWriter, VersionLeakFilteringWriter, StartupMode } from './reporter/version-leak-filter';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * CLI version - should match package.json version
@@ -66,7 +67,7 @@ let authManager: AuthManager | null = null;
  */
 function getRuntimeDir(): string {
   const homeDir = os.homedir();
-  return path.join(homeDir, '.specforge', 'runtime');
+  return path.join(homeDir, SPEC_DIR_NAME, 'runtime');
 }
 
 /**
@@ -184,7 +185,7 @@ async function runStartupCheck(
   const highestKnownSchema = vu.HIGHEST_KNOWN_SCHEMA;
 
   // Determine manifest paths
-  const defaultUserManifestPath = path.join(os.homedir(), '.specforge', 'manifest.json');
+  const defaultUserManifestPath = path.join(os.homedir(), SPEC_DIR_NAME, 'manifest.json');
   const actualUserManifestPath = userManifestPath ?? defaultUserManifestPath;
   const projectManifestPath = path.join(projectDir, 'specforge', 'manifest.json');
 

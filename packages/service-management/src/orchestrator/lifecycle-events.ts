@@ -28,6 +28,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { createServiceError } from '../errors/service-error.js';
 import type { HandshakeFile } from '../types/handshake.js';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Supported service lifecycle event actions
@@ -84,7 +85,7 @@ export interface LifecycleEventEmitterOptions {
  * Default options
  */
 const DEFAULT_OPTIONS: Required<LifecycleEventEmitterOptions> = {
-  handshakePath: path.join(os.homedir(), '.specforge', 'runtime', 'handshake.json'),
+  handshakePath: path.join(os.homedir(), SPEC_DIR_NAME, 'runtime', 'handshake.json'),
   requestTimeoutMs: 5000,
 };
 

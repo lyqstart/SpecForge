@@ -17,6 +17,7 @@
 import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 类型定义
@@ -62,7 +63,7 @@ interface DaemonStatus {
  */
 function readHandshakeFile(): HandshakeFile {
   const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? '';
-  const handshakePath = path.join(homeDir, '.specforge', 'runtime', 'daemon.sock.json');
+  const handshakePath = path.join(homeDir, SPEC_DIR_NAME, 'runtime', 'daemon.sock.json');
 
   if (!fs.existsSync(handshakePath)) {
     throw new Error(
@@ -80,7 +81,7 @@ function readHandshakeFile(): HandshakeFile {
  */
 async function waitForDaemon(maxWaitSec = 30): Promise<HandshakeFile> {
   const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? '';
-  const handshakePath = path.join(homeDir, '.specforge', 'runtime', 'daemon.sock.json');
+  const handshakePath = path.join(homeDir, SPEC_DIR_NAME, 'runtime', 'daemon.sock.json');
 
   for (let i = 0; i < maxWaitSec * 2; i++) {
     if (fs.existsSync(handshakePath)) {

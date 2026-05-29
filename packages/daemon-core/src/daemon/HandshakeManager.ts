@@ -25,7 +25,7 @@ export class HandshakeManager {
    * Enforce single instance using file locking
    * 
    * Uses fcntl file locking on Unix-like systems and lockfile on Windows.
-   * Creates a lock file at ~/.specforge/runtime/daemon.lock
+   * Creates a lock file at the daemon runtime directory (see resolveUserPath('runtime')/daemon.lock)
    */
   async enforceSingleInstance(): Promise<void> {
     const runtimeDir = this.config.getRuntimeDir();

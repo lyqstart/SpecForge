@@ -17,13 +17,14 @@ import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Runtime directory path (~/.specforge/runtime)
  */
 function getRuntimeDir(): string {
   const homeDir = os.homedir();
-  return path.join(homeDir, '.specforge', 'runtime');
+  return path.join(homeDir, SPEC_DIR_NAME, 'runtime');
 }
 
 /**

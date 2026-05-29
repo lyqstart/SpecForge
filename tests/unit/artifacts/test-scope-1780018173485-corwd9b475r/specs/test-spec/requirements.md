@@ -1,0 +1,1 @@
+This spec uses knowledge graph 集成.

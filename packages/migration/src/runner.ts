@@ -37,6 +37,7 @@ import type {
   MigrationBackupError,
   MigrationErrorCode
 } from './types'
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 
 // ============================================================================
 // Configuration
@@ -246,7 +247,7 @@ export class MigrationRunner {
 
   constructor(options: TransactionalMigrationOptions = {}) {
     this.options = {
-      migrationsDir: '.specforge/migrations',
+      migrationsDir: `${SPEC_DIR_NAME}/migrations`,
       backupDir: DEFAULT_BACKUP_DIR,
       filesToBackup: [],
       scriptTimeoutMs: 30000,

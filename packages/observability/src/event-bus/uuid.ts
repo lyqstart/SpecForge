@@ -5,4 +5,4 @@
  * Re-exports from event-utils for backward compatibility
  */
 
-export { generateEventId, isValidUuid as isValidEventId } from '@/types/event-utils';
+export { generateEventId, isValidUuid as isValidEventId } from '../types/event-utils';

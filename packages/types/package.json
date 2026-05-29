@@ -2,8 +2,12 @@
   "name": "@specforge/types",
   "version": "0.1.0",
   "description": "Shared TypeScript types for SpecForge V6 modules",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./directory-layout": "./src/directory-layout.ts"
+  },
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist"
@@ -11,6 +15,9 @@
   "keywords": ["specforge", "types"],
   "author": "SpecForge Team",
   "license": "MIT",
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
   "devDependencies": {
     "typescript": "^5.8.2"
   },

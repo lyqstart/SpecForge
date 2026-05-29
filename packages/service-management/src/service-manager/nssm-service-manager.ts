@@ -36,6 +36,7 @@ import type {
   RestartResult,
 } from './service-manager.js';
 import { createServiceError, ErrorCode } from '../errors/service-error.js';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 /**
  * Package version - could be read from package.json at runtime
@@ -74,8 +75,8 @@ export class NssmServiceManager implements ServiceManager {
    * Only assigns fields, no spawn/register/start timers
    */
   constructor(opts: NssmOptions = {}) {
-    this.binDir = opts.binDir ?? path.join(os.homedir(), '.specforge', 'bin');
-    this.serviceDir = opts.serviceDir ?? path.join(os.homedir(), '.specforge');
+    this.binDir = opts.binDir ?? path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
+    this.serviceDir = opts.serviceDir ?? path.join(os.homedir(), SPEC_DIR_NAME);
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     this.unitGenerator = new DefaultServiceUnitGenerator(PACKAGE_VERSION);
   }
