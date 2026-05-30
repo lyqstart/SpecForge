@@ -10,7 +10,6 @@
  */
 
 import * as fs from 'fs/promises';
-import * as fsSync from 'fs';
 import * as path from 'path';
 import { Event, ProjectState, WorkItemState } from '../types';
 import { WAL } from '../wal';
@@ -417,11 +416,11 @@ export class StateManager {
    */
   private async writeStateFile(state: ProjectState): Promise<void> {
     await fs.writeFile(this.statePath, JSON.stringify(state, null, 2), 'utf-8');
-    const fd = fsSync.openSync(this.statePath, 'a');
+    const handle = await fs.open(this.statePath, 'a');
     try {
-      fsSync.fsyncSync(fd);
+      await handle.sync();
     } finally {
-      fsSync.closeSync(fd);
+      await handle.close();
     }
   }
 

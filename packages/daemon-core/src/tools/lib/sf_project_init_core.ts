@@ -17,7 +17,11 @@
 import { mkdir, writeFile, access, readFile } from "node:fs/promises"
 import { join, extname, dirname } from "node:path"
 import * as os from "node:os"
+import { exec } from "node:child_process"
+import { promisify } from "node:util"
 import { LAYOUT, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+
+const execAsync = promisify(exec)
 
 // ============================================================
 // Types
@@ -297,25 +301,22 @@ async function generateDevEnvironment(): Promise<string> {
   // 探测 Node.js
   let nodeVersion = "unknown"
   try {
-    const { execSync } = await import("node:child_process")
-    const nodeOut = execSync("node --version", { encoding: "utf-8", timeout: 5000 }).trim()
-    nodeVersion = nodeOut.startsWith("v") ? nodeOut : `v${nodeOut}`
+    const { stdout: nodeOut } = await execAsync("node --version", { timeout: 5000 })
+    nodeVersion = nodeOut.trim().startsWith("v") ? nodeOut.trim() : `v${nodeOut.trim()}`
   } catch { /* ignore */ }
 
   // 探测 Bun
   let bunVersion = "unknown"
   try {
-    const { execSync } = await import("node:child_process")
-    const bunOut = execSync("bun --version", { encoding: "utf-8", timeout: 5000 }).trim()
-    bunVersion = bunOut
+    const { stdout: bunOut } = await execAsync("bun --version", { timeout: 5000 })
+    bunVersion = bunOut.trim()
   } catch { /* ignore */ }
 
   // 探测 Git
   let gitVersion = "unknown"
   try {
-    const { execSync } = await import("node:child_process")
-    const gitOut = execSync("git --version", { encoding: "utf-8", timeout: 5000 }).trim()
-    gitVersion = gitOut.replace("git version ", "")
+    const { stdout: gitOut } = await execAsync("git --version", { timeout: 5000 })
+    gitVersion = gitOut.trim().replace("git version ", "")
   } catch { /* ignore */ }
 
   const shell = process.env.SHELL || process.env.ComSpec || "unknown"

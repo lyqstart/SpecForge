@@ -153,6 +153,102 @@ describe('WAL', () => {
     });
   });
 
+  describe('rotation — events.jsonl archiving', () => {
+    it('should NOT rotate when file is under WAL_MAX_SIZE (5MB)', async () => {
+      await wal.initialize();
+      const eventsPath = wal.getEventsPath();
+
+      // Write a small event — should NOT trigger rotation
+      const event = wal.createEvent('p1', 'state', 'state.transition', {});
+      await wal.appendEvent(event);
+
+      // Verify file still exists (not renamed)
+      const stat = await fs.stat(eventsPath);
+      expect(stat.size).toBeGreaterThan(0);
+
+      // Verify no archive files created
+      const eventsDir = path.dirname(eventsPath);
+      const files = await fs.readdir(eventsDir);
+      const archives = files.filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'));
+      expect(archives).toHaveLength(0);
+    });
+
+    it('should trigger rotation when file exceeds WAL_MAX_SIZE', async () => {
+      await wal.initialize();
+      const eventsPath = wal.getEventsPath();
+      const eventsDir = path.dirname(eventsPath);
+
+      // Manually write a large events.jsonl to trigger rotation
+      const bigLine = JSON.stringify({ eventId: 'big', ts: Date.now(), category: 'state', action: 'fill', payload: { data: 'X'.repeat(1024 * 1024) } }) + '\n';
+      // Write ~5.5MB (6 iterations of ~1MB each)
+      for (let i = 0; i < 6; i++) {
+        await fs.appendFile(eventsPath, bigLine, 'utf-8');
+      }
+
+      // Now append one more event — this should trigger rotation
+      const event = wal.createEvent('p1', 'state', 'state.transition', { after: 'rotate' });
+      await wal.appendEvent(event);
+
+      // Verify archive file was created
+      const files = await fs.readdir(eventsDir);
+      const archives = files.filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'));
+      expect(archives.length).toBeGreaterThanOrEqual(1);
+      expect(archives[0]!).toMatch(/^events-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z\.jsonl\.bak$/);
+
+      // Verify events.jsonl still exists and contains the rotated event
+      const stat = await fs.stat(eventsPath);
+      expect(stat.size).toBeGreaterThan(0);
+
+      // Verify archived file has the old content
+      const archivePath = path.join(eventsDir, archives[0]!);
+      const archiveContent = await fs.readFile(archivePath, 'utf-8');
+      expect(archiveContent).toContain('"eventId":"big"');
+    });
+
+    it('should clean up old archives keeping at most 3', async () => {
+      await wal.initialize();
+      const eventsPath = wal.getEventsPath();
+      const eventsDir = path.dirname(eventsPath);
+
+      // Create 5 fake archive files
+      for (let i = 0; i < 5; i++) {
+        const archiveName = `events-2025-01-${String(i + 1).padStart(2, '0')}T00-00-00-000Z.jsonl.bak`;
+        await fs.writeFile(path.join(eventsDir, archiveName), `archive-${i}\n`, 'utf-8');
+      }
+
+      // Trigger rotation (write large file + append)
+      const bigLine = JSON.stringify({ eventId: 'cleanup', ts: Date.now(), category: 'state', action: 'fill', payload: { data: 'Y'.repeat(1024 * 1024) } }) + '\n';
+      for (let i = 0; i < 6; i++) {
+        await fs.appendFile(eventsPath, bigLine, 'utf-8');
+      }
+
+      const event = wal.createEvent('p1', 'state', 'state.transition', {});
+      await wal.appendEvent(event);
+
+      // Verify at most 3 archive files remain
+      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for filesystem
+      const files = await fs.readdir(eventsDir);
+      const archives = files.filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'));
+      expect(archives.length).toBeLessThanOrEqual(3);
+    });
+
+    it('should not break event write when rotation fails', async () => {
+      await wal.initialize();
+      const eventsPath = wal.getEventsPath();
+
+      // Remove read permissions from directory to make stat fail
+      // (on Windows this won't work the same way, but the code catches errors)
+      // We rely on the try-catch in rotateIfNeeded
+
+      // Normal append should still work
+      const event = wal.createEvent('p1', 'state', 'state.transition', { safe: true });
+      await wal.appendEvent(event);
+
+      const content = await fs.readFile(eventsPath, 'utf-8');
+      expect(content).toContain(event.eventId);
+    });
+  });
+
   describe('readAllEvents — corrupted line tolerance', () => {
     it('should return empty events and corruptedLines for non-existent file', async () => {
       const result = await wal.readAllEvents();

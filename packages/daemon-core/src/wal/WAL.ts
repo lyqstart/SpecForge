@@ -6,10 +6,12 @@
  */
 
 import * as fs from 'fs/promises';
-import * as fsSync from 'fs';
 import * as path from 'path';
 import { v7 as uuidv7 } from 'uuid';
 import { Event } from '../types';
+
+const WAL_MAX_SIZE = 5 * 1024 * 1024; // 5MB threshold
+const WAL_MAX_ARCHIVE_FILES = 3;       // Keep at most 3 archive files
 
 export interface ReadAllEventsResult {
   events: Event[];
@@ -67,15 +69,18 @@ export class WAL {
     // Serialise to JSONL line
     const line = JSON.stringify(event) + '\n';
     
+    // Rotate if WAL file exceeds threshold (non-blocking — failures are silently logged)
+    await this.rotateIfNeeded();
+    
     // Step 1: Append event to events.jsonl
     await fs.appendFile(this.eventsPath, line, 'utf-8');
     
     // Step 2: fsync to ensure data is flushed to disk
-    const fd = fsSync.openSync(this.eventsPath, 'a');
+    const handle = await fs.open(this.eventsPath, 'a');
     try {
-      fsSync.fsyncSync(fd);
+      await handle.sync();
     } finally {
-      fsSync.closeSync(fd);
+      await handle.close();
     }
   }
 
@@ -206,5 +211,48 @@ export class WAL {
    */
   getSchemaVersion(): string {
     return this.schemaVersion;
+  }
+
+  /**
+   * Rotate events.jsonl to an archive file if it exceeds WAL_MAX_SIZE.
+   * 
+   * Archives are named events-ISO-8601-timestamp.jsonl.bak.
+   * Failed rotation is silently logged — event write proceeds regardless.
+   */
+  private async rotateIfNeeded(): Promise<void> {
+    try {
+      const stat = await fs.stat(this.eventsPath);
+      if (stat.size < WAL_MAX_SIZE) return;
+    } catch {
+      return;
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const archiveName = `events-${timestamp}.jsonl.bak`;
+    const archiveDir = path.dirname(this.eventsPath);
+    const archivePath = path.join(archiveDir, archiveName);
+
+    await fs.rename(this.eventsPath, archivePath);
+    await fs.writeFile(this.eventsPath, '');
+
+    await this.cleanupOldArchives();
+
+    console.log(`[WAL] Rotated events.jsonl → ${archivePath}`);
+  }
+
+  /**
+   * Clean up old archive files, keeping at most WAL_MAX_ARCHIVE_FILES.
+   * Archives are sorted alphabetically; oldest are removed first.
+   */
+  private async cleanupOldArchives(): Promise<void> {
+    const archiveDir = path.dirname(this.eventsPath);
+    const files = await fs.readdir(archiveDir);
+    const archives = files
+      .filter(f => f.startsWith('events-') && f.endsWith('.jsonl.bak'))
+      .sort();
+    while (archives.length > WAL_MAX_ARCHIVE_FILES) {
+      const oldest = archives.shift()!;
+      await fs.unlink(path.join(archiveDir, oldest)).catch(() => {});
+    }
   }
 }

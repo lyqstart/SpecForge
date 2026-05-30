@@ -52,6 +52,25 @@ function readHandshake(): HandshakeFile {
   );
 }
 
+/**
+ * Detect connection-level errors that indicate daemon may have restarted.
+ * These errors suggest handshake.json is stale: daemon restarted with new port/token.
+ */
+function isConnectionError(err: Error): boolean {
+    const msg = err.message.toLowerCase();
+    const code = (err as NodeJS.ErrnoException).code?.toLowerCase() || '';
+
+    if (msg.includes('fetch failed')) return true;
+    if (msg.includes('econnrefused')) return true;
+    if (msg.includes('econnreset')) return true;
+    if (code === 'econnrefused') return true;
+    if (code === 'econnreset') return true;
+    if (code === 'enotfound') return true;
+    if (code === 'econnaborted') return true;
+
+    return false;
+}
+
 // ── DaemonClient ────────────────────────────────────────────────────
 
 export class DaemonClient {
@@ -113,6 +132,20 @@ export class DaemonClient {
       if ((err as Error).name === 'AbortError') {
         throw new Error('Daemon request timed out (30s)');
       }
+
+      // Connection-level errors: reload handshake and retry once
+      if (isConnectionError(err as Error)) {
+        try { this.reload(); } catch {
+          // Reload may fail if daemon is not running at all
+        }
+        try {
+          return await this.call<T>(method, urlPath, body);
+        } catch (retryErr) {
+          // Retry failed — throw the retry error
+          throw retryErr;
+        }
+      }
+
       throw new Error(
         `Daemon connection failed: ${(err as Error).message}`,
       );

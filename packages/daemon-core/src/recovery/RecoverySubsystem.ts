@@ -17,7 +17,6 @@
  */
 
 import * as fs from 'fs/promises';
-import * as fsSync from 'fs';
 import * as path from 'path';
 import { v7 as uuidv7 } from 'uuid';
 import { Event, ProjectState, ConsistencyCheckResult, ConsistencyIssue, RepairResult } from '../types';
@@ -496,11 +495,11 @@ export class RecoverySubsystem {
     await fs.writeFile(this.statePath, JSON.stringify(state, null, 2));
     
     // fsync to ensure durability
-    const fd = fsSync.openSync(this.statePath, 'a');
+    const handle = await fs.open(this.statePath, 'a');
     try {
-      fsSync.fsyncSync(fd);
+      await handle.sync();
     } finally {
-      fsSync.closeSync(fd);
+      await handle.close();
     }
   }
 
@@ -520,11 +519,11 @@ export class RecoverySubsystem {
       await fs.writeFile(checkpointPath, JSON.stringify(snapshotData, null, 2));
 
       // fsync to ensure durability
-      const fd = fsSync.openSync(checkpointPath, 'a');
+      const handle = await fs.open(checkpointPath, 'a');
       try {
-        fsSync.fsyncSync(fd);
+        await handle.sync();
       } finally {
-        fsSync.closeSync(fd);
+        await handle.close();
       }
     } catch (error) {
       console.error(`[RecoverySubsystem] Failed to save checkpoint for session ${sessionId}:`, error);

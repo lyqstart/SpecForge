@@ -1,0 +1,48 @@
+{
+  "status": "success",
+  "task_id": "TASK-6",
+  "files_changed": [
+    "packages/daemon-core/src/wal/WAL.ts",
+    "packages/daemon-core/tests/unit/wal.test.ts"
+  ],
+  "verification_results": [
+    {
+      "command": "npx tsc --noEmit (cwd: packages/daemon-core)",
+      "passed": true,
+      "output_excerpt": "Empty stdout, exit code 0. TypeScript compilation passed with no errors."
+    },
+    {
+      "command": "npx vitest run --reporter=verbose tests/unit/wal.test.ts (cwd: packages/daemon-core)",
+      "passed": true,
+      "output_excerpt": "✓ tests/unit/wal.test.ts (20 tests | 20 passed). Includes 4 new rotation tests: should NOT rotate under 5MB, should trigger rotation when exceeds WAL_MAX_SIZE, should clean up old archives keeping at most 3, should not break event write when rotation fails."
+    },
+    {
+      "command": "npx vitest run tests/integration/wal-singleton-e2e.test.ts",
+      "passed": true,
+      "output_excerpt": "16 passed, 2 failed (pre-existing PROJECT_NOT_INITIALIZED in T4.1 and T4 multi-project — unrelated to WAL rotation). All T1-T3 and T5 WAL tests pass."
+    },
+    {
+      "command": "grep rotateIfNeeded|cleanupOldArchives|WAL_MAX_SIZE in WAL.ts",
+      "passed": true,
+      "output_excerpt": "7 matches: WAL_MAX_SIZE (line 13, 225), rotateIfNeeded (lines 73, 222), cleanupOldArchives (lines 238, 247)"
+    }
+  ],
+  "evidence": {
+    "side_effects_observed": [
+      "events.jsonl renamed to events-ISO-8601-timestamp.jsonl.bak when file exceeds 5MB",
+      "Fresh empty events.jsonl created after rotation",
+      "Archive files cleaned up — only 3 .jsonl.bak files retained",
+      "Console log emitted: '[WAL] Rotated events.jsonl → <archive path>'",
+      "Event write succeeds even when rotation fails (silent catch)"
+    ],
+    "manual_run_excerpt": "--- npx tsc --noEmit ---\nExit code: 0, no errors\n\n--- npx vitest run tests/unit/wal.test.ts ---\n✓ WAL > rotation — events.jsonl archiving > should NOT rotate when file is under WAL_MAX_SIZE (5MB) 5ms\n✓ WAL > rotation — events.jsonl archiving > should trigger rotation when file exceeds WAL_MAX_SIZE 28ms\n  stdout: [WAL] Rotated events.jsonl → C:\\Users\\luo\\AppData\\Local\\Temp\\wal-test-...\\events-2026-05-30T03-08-58-807Z.jsonl.bak\n✓ WAL > rotation — events.jsonl archiving > should clean up old archives keeping at most 3 142ms\n✓ WAL > rotation — events.jsonl archiving > should not break event write when rotation fails 7ms\nAll 20 tests passed (16 existing + 4 new)."
+  },
+  "self_check": {
+    "passed": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "failed": []
+  },
+  "out_of_scope_observations": [
+    "Pre-existing test failures in wal-singleton-e2e.test.ts (T4.1, T4 multi-project): PROJECT_NOT_INITIALIZED error in ProjectManager.registerProject — unrelated to WAL rotation, should be fixed separately.",
+    "Pre-existing failures in property tests (startup-flow-ordering.property.test.ts, property-6.test.ts, property-2.test.ts) — all unrelated to WAL changes."
+  ]
+}

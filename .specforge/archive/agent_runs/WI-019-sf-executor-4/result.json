@@ -1,0 +1,35 @@
+{
+  "status": "success",
+  "task_id": "TASK-4",
+  "files_changed": ["packages/daemon-core/src/tools/lib/sf_project_init_core.ts"],
+  "verification_results": [
+    {
+      "command": "npx tsc --noEmit (cwd: packages/daemon-core)",
+      "passed": true,
+      "output_excerpt": "(无输出, exit code 0 — 类型检查通过)"
+    },
+    {
+      "command": "grep execSync sf_project_init_core.ts",
+      "passed": true,
+      "output_excerpt": "0 匹配 — 确认无 execSync 残留"
+    },
+    {
+      "command": "grep execAsync sf_project_init_core.ts",
+      "passed": true,
+      "output_excerpt": "4 匹配 (1 声明 + 3 调用) — 确认 execAsync 正确使用"
+    }
+  ],
+  "evidence": {
+    "side_effects_observed": [
+      "TypeScript 编译通过 (npx tsc --noEmit exit 0)",
+      "execSync 已完全从文件中移除",
+      "execAsync 在 3 处版本探测中正确使用 (Node.js / Bun / Git)"
+    ],
+    "manual_run_excerpt": "PS> npx tsc --noEmit 2>&1\n(无输出, exit code 0)"
+  },
+  "self_check": {
+    "passed": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "failed": []
+  },
+  "out_of_scope_observations": []
+}
