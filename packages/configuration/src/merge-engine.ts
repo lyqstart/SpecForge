@@ -6,7 +6,7 @@
  * Layer priority (lowest to highest):
  * 1. Builtin defaults (code constants)
  * 2. User-level overrides (~/.specforge/config/)
- * 3. Project-level overrides (<project>/specforge/config/)
+ * 3. Project-level overrides (<project>/.specforge/config/)
  * 4. Runtime overrides (CLI/env)
  * 
  * Merge rules:
@@ -144,7 +144,7 @@ function sortLayersByPriority(layers: ConfigLayer[]): ConfigLayer[] {
  * Implements the four-layer configuration model:
  * 1. Builtin defaults (code constants)
  * 2. User-level overrides (~/.specforge/config/)
- * 3. Project-level overrides (<project>/specforge/config/)
+ * 3. Project-level overrides (<project>/.specforge/config/)
  * 4. Runtime overrides (CLI/env)
  * 
  * Merge rules:

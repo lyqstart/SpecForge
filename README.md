@@ -44,7 +44,7 @@ bun scripts/sf-installer.ts install
 
 这会将共享组件（Agent、Tool、Skill、Plugin）部署到 `~/.config/opencode/`。
 
-安装完成后，打开任何项目的 OpenCode，Plugin 会自动初始化项目运行时（`specforge/` 目录），无需额外操作。
+安装完成后，打开任何项目的 OpenCode，Plugin 会自动初始化项目运行时（`.specforge/` 目录），无需额外操作。
 
 ### 升级
 
@@ -86,14 +86,13 @@ bun scripts/sf-installer.ts uninstall
 
 ### 完整卸载（含用户数据）
 
-上面的 `uninstall` 命令只移除 SpecForge 的共享组件（Agent/Tool/Skill/Plugin），**不会删除用户数据**（`~/.specforge/` 目录下的配置、日志、迁移脚本等）。
+上面的 `uninstall` 命令只移除 SpecForge 的共享组件（Agent/Tool/Skill/Plugin）
 
 如需彻底清除所有内容，在执行 `uninstall` 后，额外运行：
 
 **macOS / Linux：**
 ```bash
 bun scripts/sf-installer.ts uninstall
-rm -rf ~/.specforge/
 ```
 
 **Windows PowerShell：**
@@ -102,7 +101,7 @@ bun scripts/sf-installer.ts uninstall
 Remove-Item -Recurse -Force $env:USERPROFILE\.specforge
 ```
 
-> ⚠️ **警告**：此操作不可逆。`~/.specforge/` 目录包含你的配置文件、运行日志、迁移脚本等用户数据，删除后无法恢复。
+> ⚠️ **警告**：此操作不可逆。`.specforge/` 目录包含你的配置文件、运行日志、迁移脚本等用户数据，删除后无法恢复。
 
 ### 版本信息
 
@@ -175,7 +174,7 @@ SpecForge/                        # 仓库根目录
 
 project-root/                    # 项目级（Plugin 自动初始化）
 ├── AGENTS.md                    # Agent 总览（自动生成）
-└── specforge/
+└── .specforge/
     ├── manifest.json
     ├── agents/                  # AGENT_CONSTITUTION + 9 个契约
     ├── config/                  # project.json, risk_policy.json, skill_fragments.json
@@ -418,7 +417,7 @@ bun scripts/sf-installer.ts upgrade --force
 
 **项目级运行时目录（Plugin 自动初始化）：**
 ```
-项目根目录/specforge/
+项目根目录/.specforge/
 ├── config/          # 项目配置
 ├── runtime/         # 运行时状态
 ├── knowledge/       # 知识库（V5.0）

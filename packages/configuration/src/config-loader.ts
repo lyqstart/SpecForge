@@ -82,13 +82,13 @@ export async function loadUserConfig(): Promise<ConfigLayer> {
 }
 
 /**
- * Load project-level configuration from <project>/specforge/config/
+ * Load project-level configuration from <project>/.specforge/config/
  * 
  * CRITICAL: Project-level configuration is mandatory.
  * If it fails to load, error immediately without falling back to user-level or builtin.
  */
 export async function loadProjectConfig(projectPath: string): Promise<ConfigLayer> {
-  const configPath = path.join(projectPath, 'specforge', 'config', '.specforge.json')
+  const configPath = path.join(projectPath, SPEC_DIR_NAME, 'config', '.specforge.json')
   logger.debug('Loading project-level configuration', { configPath, projectPath })
 
   let data: Record<string, unknown>
@@ -101,12 +101,12 @@ export async function loadProjectConfig(projectPath: string): Promise<ConfigLaye
       logger.error('Project-level configuration file not found', { 
         configPath, 
         projectPath,
-        hint: 'Project-level configuration is mandatory. Create specforge/config/.specforge.json or disable project-level config if not needed.'
+        hint: 'Project-level configuration is mandatory. Create .specforge/config/.specforge.json or disable project-level config if not needed.'
       })
       throw new Error(
         `Project-level configuration file not found: ${configPath}. ` +
         `Project-level configuration is mandatory for this project. ` +
-        `Create specforge/config/.specforge.json or ensure project path is correct.`
+        `Create .specforge/config/.specforge.json or ensure project path is correct.`
       )
     }
     // For other errors (parse errors, permissions, etc.), also throw with context

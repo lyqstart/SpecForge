@@ -34,6 +34,9 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "agents/sf-knowledge.md", type: "agent" },
   { path: "agents/_AGENT_BASE.md", type: "agent" },  // 公共骨架（供参考）
 
+  // 全局规则
+  { path: "AGENTS.md", type: "config" },
+
   // Custom Tools（16 个）
   { path: "tools/sf_artifact_write.ts", type: "tool" },
   { path: "tools/sf_batch_verify.ts", type: "tool" },
@@ -109,6 +112,11 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/superpowers-verification-before-completion/SKILL.md", type: "skill" },
   { path: "skills/superpowers-writing-plans/SKILL.md", type: "skill" },
   { path: "skills/sf-intake/SKILL.md", type: "skill" },  // intake 阶段提问脚本
+
+  // 参考文档
+  { path: "docs/engineering-lessons/universal/shell-command-execution.md", type: "doc" },
+  { path: "docs/engineering-lessons/universal/async-resource-lifecycle.md", type: "doc" },
+  { path: "docs/engineering-lessons/ai-tools/kiro/execute-pwsh-constraints.md", type: "doc" },
 ]
 
 // ============================================================

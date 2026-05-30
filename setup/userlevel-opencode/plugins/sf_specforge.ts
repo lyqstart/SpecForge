@@ -31,7 +31,16 @@ async function postEvent(type: string, data: unknown): Promise<void> {
 
 export async function sf_specforge(input: PluginInput): Promise<Hooks> {
 
-  // 3. 注册 hooks
+  // P0: 启动时立即注册项目，触发 daemon 自动初始化（幂等）
+  const projectDir = (input as any).directory ?? process.cwd()
+  try {
+    await daemonClient.register(projectDir)
+    console.log(`[sf:specforge] 项目已注册: ${projectDir}`)
+  } catch (e) {
+    console.warn(`[sf:specforge] 项目注册/初始化失败（将在 agent 启动时重试）: ${(e as Error).message}`)
+  }
+
+  // 注册 hooks
   return {
     "tool.execute.before": wrap(async (i: any, o: any) => {
       await postEvent("tool.invoking", { tool: i.tool, callID: i.callID, args: o.args })

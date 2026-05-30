@@ -27,6 +27,7 @@ import { StateManager } from '../state/StateManager';
 import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
+import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
 
 function isWALWriteError(err: unknown): err is WALWriteError {
   return err instanceof WALWriteError || (err instanceof Error && err.name === 'WALWriteError');
@@ -196,8 +197,11 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/ingest/register', this.handleIngestRegister.bind(this));
     this.addExactRoute('POST', '/api/v1/ingest/event', this.handleIngestEvent.bind(this));
 
+    // Project lifecycle
+    this.addExactRoute('POST', '/api/v1/project/ensure', this.handleProjectEnsure.bind(this));
+
     // Prefix routes for API v1 (fallback)
-    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin'];
+    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin', 'project'];
     for (const segment of prefixes) {
       this.addPrefixRoute('GET', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
       this.addPrefixRoute('POST', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
@@ -930,6 +934,9 @@ export class HTTPServer {
     }
 
     try {
+      // P0: 确保项目已初始化（幂等）
+      await ensureProjectInit(request.projectPath);
+
       const ctx = await (this.deps.projectManager as any).registerProject(request.projectPath);
       const identity = await (this.deps.sessionRegistry as any).registerPluginSession(ctx.projectId, request.projectPath);
       this.sendJsonResponse(res, 200, this.successBody({
@@ -953,6 +960,32 @@ export class HTTPServer {
       } else {
         this.sendJsonResponse(res, 500, this.errorBody('REGISTER_FAILED', (err as Error).message));
       }
+    }
+  }
+
+  /**
+   * Handle POST /api/v1/project/ensure
+   *
+   * 供 sf-orchestrator 的 sf_project_init 工具调用。
+   * 执行幂等初始化：遍历 LAYOUT，补齐缺失的目录和文件。
+   */
+  private async handleProjectEnsure(
+    _req: http.IncomingMessage, res: http.ServerResponse, body: string
+  ): Promise<void> {
+    let request: { projectPath?: string; projectName?: string };
+    try {
+      request = JSON.parse(body || "{}");
+    } catch {
+      return this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON'));
+    }
+
+    const projectPath = request.projectPath || process.cwd();
+
+    try {
+      const result = await ensureProjectInit(projectPath, request.projectName);
+      this.sendJsonResponse(res, 200, this.successBody(result));
+    } catch (err) {
+      this.sendJsonResponse(res, 500, this.errorBody('INIT_FAILED', (err as Error).message));
     }
   }
 
