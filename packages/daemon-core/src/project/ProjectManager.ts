@@ -7,7 +7,7 @@ import { EventBus } from '../event-bus/EventBus';
 import { WAL } from '../wal/WAL';
 import { StateManager } from '../state/StateManager';
 import { IPathResolver } from '../daemon/path-resolver';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
 
 export interface ProjectContext {
   projectId: string;
@@ -36,6 +36,7 @@ export class ProjectManager {
   private pathResolver: IPathResolver;
   private daemonStateManager: StateManager;
   private projects: Map<string, ProjectContext> = new Map();
+  private projectStateManagers: Map<string, StateManager> = new Map();
   private projectLocks: Map<string, Lock> = new Map();
   private subscription: Subscription | null = null;
 
@@ -47,6 +48,19 @@ export class ProjectManager {
 
   getDaemonStateManager(): StateManager {
     return this.daemonStateManager;
+  }
+
+  /**
+   * 获取项目级 StateManager，不存在则自动创建。
+   * 写入路径为 <projectPath>/.specforge/runtime/events.jsonl
+   */
+  async getProjectStateManager(projectPath: string): Promise<StateManager> {
+    if (!this.projectStateManagers.has(projectPath)) {
+      const sm = new StateManager(this.pathResolver, projectPath, false);
+      await sm.initialize();
+      this.projectStateManagers.set(projectPath, sm);
+    }
+    return this.projectStateManagers.get(projectPath)!;
   }
 
   async getProject(projectPath: string): Promise<ProjectContext> {
@@ -65,7 +79,7 @@ export class ProjectManager {
 
     // B2: Check if project is initialized before proceeding
     const specDir = path.join(projectPath, SPEC_DIR_NAME);
-    const manifestPath = path.join(specDir, 'manifest.json');
+    const manifestPath = path.join(specDir, LAYOUT.manifest);
 
     const manifestExists = await fs.access(manifestPath).then(() => true).catch(() => false);
 

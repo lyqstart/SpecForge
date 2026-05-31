@@ -93,11 +93,13 @@
 |--------|------|
 | `manifest.json` | 项目清单文件 |
 | `project-rules.md` | 项目规则 |
-| `dev-environment.md` | 开发环境配置 |
 | `prod-environment.md` | 生产环境配置 |
 | `project.json` | 项目配置 |
 | `risk_policy.json` | 风险策略 |
 | `skill_fragments.json` | Skill Fragment 配置 |
+
+> **注意**：开发环境配置已从项目级 `dev-environment.md` 迁移至用户级
+> `~/.specforge/host-profile.json`，由 `sf_project_init` 工具在启动时自动扫描生成。
 
 ## 日志文件命名
 

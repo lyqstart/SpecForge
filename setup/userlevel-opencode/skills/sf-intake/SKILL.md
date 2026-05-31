@@ -8,12 +8,12 @@ autoload: false
 
 > 本文件由 sf-orchestrator 在 intake 阶段加载。
 > 它定义了 orchestrator 在 intake 阶段必须完成的两件事：
-> 1. 收集用户需求（所有 WI 都做）
-> 2. 首次 WI 时：收集技术栈决策，生成三份配置文件
+> 1. 验证项目初始化状态（A 阶段）
+> 2. 收集用户需求 + 首次 WI 时收集技术栈决策（B 阶段）
 
 ---
 
-# 阶段 A：开发环境初始化（仅首次，或 dev-environment.md 不存在时）
+# 阶段 A：项目初始化验证（仅首次）
 
 ## A1 检测与版本验证
 
@@ -27,37 +27,9 @@ autoload: false
          ≥ v6.0 → 继续
 ```
 
-## A2 开发环境扫描与确认
-
-```
-检测 .specforge/dev-environment.md：
-
-情况 1：不存在
-  1. 运行 scan-host-profile.ts 扫描本机
-  2. 把扫描结果填入 dev-environment 模板
-  3. 展示给用户：
-     "✅ 已扫描到以下开发环境信息，请确认：
-      - 操作系统：{os.version}
-      - 主要语言：{runtimes 列表}
-      - Shell：{shell.preferred}
-      - 时区：{locale.tz_name}（{locale.system_lang}）
-      - 网络：{network.has_internet ? '有外网' : '无外网'}
-      [y] 确认  [n] 手动编辑  [s] 跳过（稍后手动填）"
-  4. 用户确认后写入 .specforge/dev-environment.md
-
-情况 2：已存在
-  1. 运行 scan-host-profile.ts 重新扫描
-  2. 与现有文件比对
-  3. 如有差异，逐项展示：
-     "⚠️ 检测到开发环境变化：
-      - node 版本：18.0.0 → 20.11.0
-      - 新增工具：bun 1.1.0
-      是否更新配置？[y] 全部更新  [n] 保持原样  [s] 逐项选择"
-  4. 按用户选择更新文件
-
-情况 3：存在且无差异
-  → 跳过，直接进入 B 阶段
-```
+> **注意**：主机环境扫描（原 A2 步骤）已迁移到 `sf_project_init` 工具。
+> 在 OpenCode 启动时自动执行，无需在 intake 阶段处理。
+> 扫描结果存储在 `~/.specforge/host-profile.json`（用户级，非项目级）。
 
 ---
 

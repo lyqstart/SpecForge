@@ -100,8 +100,6 @@ export const LAYOUT = {
   configFiles: {
     /** `<root>/.specforge/config/project-rules.md` */
     projectRules: 'config/project-rules.md',
-    /** `<root>/.specforge/config/dev-environment.md` */
-    devEnv: 'config/dev-environment.md',
     /** `<root>/.specforge/config/prod-environment.md` */
     prodEnv: 'config/prod-environment.md',
     /** `<root>/.specforge/config/project.json` */

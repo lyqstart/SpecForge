@@ -45,7 +45,7 @@ function assertCompatibility(baseDir: string): CompatibilityResult {
   if (installMode === "project_level") {
     return { compatible: true, installMode: "project_level" }
   }
-  const userManifestPath = join(resolveUserLevelDirectory(), "specforge-manifest.json")
+  const userManifestPath = join(homedir(), SPEC_DIR_NAME, "specforge-manifest.json")
   if (!existsSync(userManifestPath)) {
     return { compatible: false, installMode: "user_level", error: "共享组件未安装：用户级 specforge-manifest.json 不存在" }
   }

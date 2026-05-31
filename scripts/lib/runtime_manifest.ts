@@ -11,6 +11,7 @@ import { readFile } from "node:fs/promises"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
 
+import { SPEC_DIR_NAME } from "../../packages/types/src/directory-layout"
 import type { RuntimeManifest } from "./types"
 import { atomicWrite } from "./atomic"
 
@@ -19,7 +20,7 @@ import { atomicWrite } from "./atomic"
 // ============================================================
 
 /** RuntimeManifest 文件相对路径 */
-const RUNTIME_MANIFEST_RELATIVE = "specforge/runtime-manifest.json"
+const RUNTIME_MANIFEST_RELATIVE = `${SPEC_DIR_NAME}/runtime-manifest.json`
 
 // ============================================================
 // 读取

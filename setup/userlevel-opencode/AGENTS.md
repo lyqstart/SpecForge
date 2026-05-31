@@ -1,73 +1,111 @@
-# SpecForge User-Level Agent Rules
+# SpecForge Agent Rules
 
-> 本文件是用户级 OpenCode 配置的全局规则，所有 SpecForge agent（包括 sub-agent）都会读到这些规则。
-> 工作区级 `AGENTS.md` 会叠加在本文件之上。
-> 项目特定细节请改 `AGENTS.md`，全局硬性约束写本文件。
-
----
-
-## Shell 命令执行硬规则（所有 agent 必读）
-
-**所有需要运行 shell 命令的场景，必须使用 `sf_safe_bash` 工具。OpenCode 内置的 `bash` 工具已对所有 sub-agent 禁用（permission.bash = deny）。**
-
-`sf_safe_bash` 由 SpecForge daemon 提供，自动完成：
-
-- **正确选择 shell**：Windows 优先 pwsh > powershell > cmd；macOS/Linux 优先 bash > zsh
-- **强制 UTF-8 编码**：解决 Windows 中文乱码（chcp 65001 + Console.OutputEncoding）
-- **危险命令拦截**：`rm -rf /`、`sudo`、`curl ... | sh`、`format` 等直接拒绝执行
-- **禁用 cd / cat / find / grep / mkdir 等系统命令**：拒绝并给出替代建议（用 cwd 参数 / read_file / file_search / grep_search / fs_write）
-- **OS 级 hard timeout**：默认 60s，超时 SIGKILL 必返回，agent 不死等
-- **stdout/stderr 分离 + 截断到 4 KB**：避免上下文炸
-- **审计日志**：写入 `.specforge/logs/shell-history.jsonl`，便于排查
-
-### 工具替代速查（违反将被 sf_safe_bash 拒绝）
-
-| 错误用法 | 正确用法 |
-|---|---|
-| `cd <dir> && <cmd>` | 调用 sf_safe_bash 时传 `cwd: "<dir>"` 参数 |
-| `cat foo.txt` | 用 `read_file` 工具 |
-| `find . -name "*.ts"` | 用 `file_search` 工具 |
-| `grep "pattern" file.txt` | 用 `grep_search` 工具 |
-| `mkdir -p dir/sub` | 用 `fs_write` 写文件（自动建目录） |
-| `echo "x" > file` | 用 `fs_write` 工具 |
-| `cat << EOF\n...\nEOF`（heredoc） | 写到临时文件再调用 |
-| `python -c "import x\nx()"`（多行 -c） | 写到 `tmp.py` 再 `python tmp.py` |
-| `bash -c "long script"` | 写到 `tmp.sh` 再 `bash tmp.sh` |
-
-### 失败处理
-
-`sf_safe_bash` 返回 JSON 含 `success` / `exitCode` / `stdout` / `stderr` / `rejected` / `hint` / `suggestion` 字段：
-
-- `rejected: true` → **不要重试同样的命令**，按 `suggestion` 字段调整后再调用（直接换写法重试常常踩另一个约束）
-- `timeout: true` → 命令在限定时间内未完成，被 SIGKILL；检查是否资源泄漏 / 网络挂起 / 死锁
-- `exitCode != 0` 且 `success: false` → 业务失败，看 `stderr` 和 `hint` 决定下一步
-
-### 紧急逃生通道
-
-只有 `sf-orchestrator` 保留 `bash: allow`，作为 sf_safe_bash 不可用（daemon 异常）时的应急通道。**普通工作流不应使用 orchestrator 的 bash 权限**。
+> This file defines the SpecForge agent system rules for this project.
+> All SpecForge agents must follow these rules during execution.
 
 ---
 
-## SpecForge 框架核心规则
+## Overview
 
-1. 所有 agent 必须遵守 `~/.config/opencode/agents/_AGENT_BASE.md` 的底线规则
-2. 状态流转必须通过 `sf_state_transition` 工具（仅 Orchestrator 可调用）
-3. Gate 检查（requirements / design / tasks / verification）不得绕过
-4. Sub-agent 不得调度其他 agent，只有 Orchestrator 可以
-5. Sub-agent 不得直接向用户提问，遇到无法决策的情况通过升级条件向 Orchestrator 报告
+This project uses **SpecForge** — a spec-driven development framework with specialized agents.
+Each agent has a defined role, permissions, and workflow responsibilities.
 
-## 标准 Feature Spec 工作流
+## Agent System
 
+- **Orchestrator** (sf-orchestrator): Primary agent that manages workflows, dispatches sub-agents, and communicates with users.
+- **Sub-Agents**: Specialized agents (sf-requirements, sf-design, sf-task-planner, sf-executor, sf-debugger, sf-reviewer, sf-verifier, sf-knowledge) that handle specific phases.
+
+## Core Rules
+
+1. All agents must follow the Agent Constitution defined in `_AGENT_BASE.md` (user-level)
+2. State transitions must go through the `sf_state_transition` tool (only Orchestrator may call it)
+3. Gate checks (requirements, design, tasks, verification) must not be bypassed
+4. Sub-agents cannot dispatch other agents — only the Orchestrator can
+
+## Workflow
+
+The standard feature spec workflow follows:
 ```
 intake → requirements → design → tasks → development → review → verification → completed
 ```
 
-每个阶段切换需要通过对应的 quality gate。
+Each phase transition requires passing a quality gate.
+
+## Runtime Data
+
+Project runtime data is stored in `specforge/`:
+- `specforge/runtime/` — State and checkpoints
+- `specforge/config/` — Project configuration
+- `specforge/logs/` — Execution logs and traces
+- `specforge/sessions/` — Session archives
+- `specforge/knowledge/` — Knowledge graph data
+
+<!-- BEGIN: directory-layout -->
+> ⚠️ 本文档由 `scripts/render-layout.ts` 从 `packages/types/src/directory-layout.ts` 自动生成。
+> 不要手动编辑。
+
+## 项目目录名
+
+```
+SPEC_DIR_NAME = '.specforge'
+```
+
+## 项目级路径 (.specforge/)
+
+### committed 区（提交到 Git）
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| manifest | `manifest.json` | Project manifest（committed）— `<root>/.specforge/manifest.json` |
+| config | `config` | 项目配置目录（committed）— `<root>/.specforge/config/` |
+| specs | `specs` | Work Item 规格目录（committed）— `<root>/.specforge/specs/` |
+| specsReadme | `specs/README.md` | specs 目录的 README（committed）— `<root>/.specforge/specs/README.md` |
+| knowledge | `knowledge` | Knowledge 目录（committed）— `<root>/.specforge/knowledge/` |
+| knowledgeGraph | `knowledge/graph.json` | Knowledge Graph 数据（committed）— `<root>/.specforge/knowledge/graph.json` |
+
+### configFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| configFiles.projectRules | `config/project-rules.md` | — |
+| configFiles.prodEnv | `config/prod-environment.md` | — |
+| configFiles.project | `config/project.json` | — |
+| configFiles.riskPolicy | `config/risk_policy.json` | — |
+| configFiles.skillFragments | `config/skill_fragments.json` | — |
+
+### gitignored 区（运行时数据）
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
+| runtimeWal | `runtime/wal.jsonl` | 写前日志（gitignored）— `<root>/.specforge/runtime/wal.jsonl` |
+| runtimeState | `runtime/state.json` | 持久化状态（gitignored）— `<root>/.specforge/runtime/state.json` |
+| runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录（gitignored）— `<root>/.specforge/runtime/checkpoints/` |
+| logs | `logs` | 日志目录（gitignored）— `<root>/.specforge/logs/` |
+| logsTelemetry | `logs/telemetry.jsonl` | 遥测日志（gitignored）— `<root>/.specforge/logs/telemetry.jsonl` |
+| logsTrace | `logs/trace.jsonl` | 追踪日志（gitignored）— `<root>/.specforge/logs/trace.jsonl` |
+| logsToolCalls | `logs/tool_calls.jsonl` | 工具调用日志（gitignored）— `<root>/.specforge/logs/tool_calls.jsonl` |
+| logsCost | `logs/cost.jsonl` | 成本日志（gitignored）— `<root>/.specforge/logs/cost.jsonl` |
+| logsConversations | `logs/conversations.jsonl` | 会话日志（gitignored）— `<root>/.specforge/logs/conversations.jsonl` |
+| archive | `archive` | Agent Run 归档根目录（gitignored）— `<root>/.specforge/archive/` |
+| archiveAgentRuns | `archive/agent_runs` | Agent Run 归档子目录（gitignored）— `<root>/.specforge/archive/agent_runs/` |
+| sessions | `sessions` | 会话归档目录（gitignored）— `<root>/.specforge/sessions/` |
+| cas | `cas` | 内容寻址存储（gitignored）— `<root>/.specforge/cas/` |
+
+## 用户级路径 (~/.specforge/)
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtime | `runtime` | 运行时状态目录 — `~/.specforge/runtime/` |
+| runtimeHandshake | `runtime/handshake.json` | 握手文件 — `~/.specforge/runtime/handshake.json` |
+| runtimeState | `runtime/state.json` | 持久化状态 — `~/.specforge/runtime/state.json` |
+| runtimeEvents | `runtime/events.jsonl` | 事件日志 — `~/.specforge/runtime/events.jsonl` |
+| runtimeDaemonLock | `runtime/daemon.lock` | Daemon 锁文件 — `~/.specforge/runtime/daemon.lock` |
+| hostProfile | `host-profile.json` | 主机配置文件 — `~/.specforge/host-profile.json` |
+| logs | `logs` | 日志目录 — `~/.specforge/logs/` |
+| projects | `projects` | 项目目录 — `~/.specforge/projects/` |
+| templates | `templates` | 模板目录 — `~/.specforge/templates/` |
+| backups | `backups` | 备份目录 — `~/.specforge/backups/` |
 
 ---
-
-## 参考
-
-- 完整 Shell 命令执行规范：`docs/engineering-lessons/universal/shell-command-execution.md`
-- 异步资源管理规范：`docs/engineering-lessons/universal/async-resource-lifecycle.md`
-- Kiro execute_pwsh 受控壳约束：`docs/engineering-lessons/ai-tools/kiro/execute-pwsh-constraints.md`
+<!-- END: directory-layout -->

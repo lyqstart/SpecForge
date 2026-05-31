@@ -214,7 +214,6 @@ SPEC_DIR_NAME = '.specforge'
 | Key | 路径 | 说明 |
 |-----|------|------|
 | configFiles.projectRules | `config/project-rules.md` | — |
-| configFiles.devEnv | `config/dev-environment.md` | — |
 | configFiles.prodEnv | `config/prod-environment.md` | — |
 | configFiles.project | `config/project.json` | — |
 | configFiles.riskPolicy | `config/risk_policy.json` | — |

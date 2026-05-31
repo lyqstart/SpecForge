@@ -13,10 +13,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
-
-// ── Inlined constants (originally from @specforge/types/directory-layout) ──
-
-const SPEC_DIR_NAME = ".specforge" as const;
+import { SPEC_DIR_NAME } from "./paths";
 
 // ── Inlined type (originally from packages/service-management/src/types/handshake.ts) ──
 

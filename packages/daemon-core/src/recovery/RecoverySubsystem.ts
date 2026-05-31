@@ -55,6 +55,7 @@ export class RecoverySubsystem {
     this.wal = wal ?? null;
     this.stateManager = stateManager ?? null;
     this.sessionRegistry = sessionRegistry;
+    // Always use project-level paths
     this.eventsPath = this.pathResolver.resolveEventsPath(projectPath);
     this.statePath = this.pathResolver.resolveStatePath(projectPath);
   }
@@ -326,6 +327,7 @@ export class RecoverySubsystem {
     const lastEvent = sortedEvents[sortedEvents.length - 1]!;
     
     return {
+      stateVersion: 0,
       projectPath: this.projectPath,
       schemaVersion: this.schemaVersion,
       activeSessions: [],
@@ -340,6 +342,7 @@ export class RecoverySubsystem {
    */
   private createEmptyState(): ProjectState {
     return {
+      stateVersion: 0,
       projectPath: this.projectPath,
       schemaVersion: this.schemaVersion,
       activeSessions: [],
@@ -491,6 +494,10 @@ export class RecoverySubsystem {
    * Write state to state.json
    */
   private async writeState(state: ProjectState): Promise<void> {
+    if (this.stateManager) {
+      await this.stateManager.persistStateFromExternal(state);
+      return;
+    }
     await fs.mkdir(path.dirname(this.statePath), { recursive: true });
     await fs.writeFile(this.statePath, JSON.stringify(state, null, 2));
     

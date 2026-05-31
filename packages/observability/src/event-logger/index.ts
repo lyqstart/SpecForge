@@ -20,7 +20,7 @@
 
 import { createReadStream, promises as fs } from 'fs';
 import { createInterface } from 'readline';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import type { Event, EventLogger as IEventLogger, EventFilter } from '../types';
 
 /**
@@ -61,7 +61,6 @@ const EVENT_SCHEMA_VERSION = '1.0';
  * - Queries can filter by projectId or query across all projects
  */
 export class EventLogger implements IEventLogger {
-  private basePath: string;
   private eventsPath: string;
   private statePath: string;
   private projectIndexDir: string;
@@ -75,7 +74,6 @@ export class EventLogger implements IEventLogger {
    * @param basePath Base directory for event storage (default: ./data/observability)
    */
   constructor(basePath: string = './data/observability') {
-    this.basePath = basePath;
     this.eventsPath = join(basePath, EVENTS_FILE);
     this.statePath = join(basePath, STATE_FILE);
     this.projectIndexDir = join(basePath, PROJECT_INDEX_DIR);
@@ -92,22 +90,8 @@ export class EventLogger implements IEventLogger {
    * Initialize the Event Logger storage directory
    */
   async initialize(): Promise<void> {
-    await fs.mkdir(this.basePath, { recursive: true });
-    await fs.mkdir(this.projectIndexDir, { recursive: true });
-    
-    // Initialize events.jsonl if it doesn't exist
-    try {
-      await fs.access(this.eventsPath);
-    } catch {
-      await fs.writeFile(this.eventsPath, '', 'utf8');
-    }
-    
-    // Initialize state.json if it doesn't exist
-    try {
-      await fs.access(this.statePath);
-    } catch {
-      await fs.writeFile(this.statePath, JSON.stringify({ schema_version: EVENT_SCHEMA_VERSION, events: [], lastEventId: null, eventCount: 0 }), 'utf8');
-    }
+    // WAL is now the sole writer of events.jsonl — EventLogger only seeds
+    // its internal counters from the existing file (no file/directory creation).
     
     // Load last event info and project indices
     await this.loadLastEventInfo();
@@ -180,6 +164,7 @@ export class EventLogger implements IEventLogger {
     this.projectIndices.set(projectId, index);
     
     // Persist to disk
+    await fs.mkdir(dirname(this.getProjectIndexPath(projectId)), { recursive: true });
     await fs.writeFile(
       this.getProjectIndexPath(projectId),
       JSON.stringify(index, null, 2),
@@ -305,43 +290,33 @@ export class EventLogger implements IEventLogger {
   }
 
   /**
-   * Append an event to the WAL (events.jsonl)
+   * Track an event in-memory (no disk write — WAL is the sole writer of events.jsonl).
    * 
-   * WAL semantics:
-   * 1. Serialize event to JSON
-   * 2. Write to events.jsonl with fsync
-   * 3. Update lastEventId only after successful fsync
+   * Updates internal counters and project indices so that read queries
+   * (getEvents, getStats, getKnownProjects, etc.) reflect the new event.
    * 
-   * For multi-project support, also updates the project index
+   * Does NOT write to events.jsonl or state.json.
    * 
-   * @param event Event to append
+   * @param event Event to track
    */
-  async append(event: Event): Promise<void> {
+  async trackEvent(event: Event): Promise<void> {
     // Validate event has required fields
     this.validateEvent(event);
 
-    // Serialize event to JSON (one line per event - JSON Lines format)
-    const line = JSON.stringify(event) + '\n';
-
-    // Open file in append mode
-    const fileHandle = await fs.open(this.eventsPath, 'a');
+    // Update in-memory counters only (no file write)
+    this.lastEventId = event.eventId;
+    this.eventCount++;
     
-    try {
-      // Write the event line
-      await fileHandle.write(line);
-      
-      // Fsync to ensure data is persisted to disk (WAL requirement)
-      await fileHandle.sync();
-      
-      // Update last event ID only after successful fsync
-      this.lastEventId = event.eventId;
-      this.eventCount++;
-      
-      // Update project index after successful fsync
-      await this.updateProjectIndex(event);
-    } finally {
-      await fileHandle.close();
-    }
+    // Update project index
+    await this.updateProjectIndex(event);
+  }
+
+  /**
+   * @deprecated Use trackEvent() instead.
+   * Compatibility wrapper that delegates to trackEvent().
+   */
+  async append(event: Event): Promise<void> {
+    return this.trackEvent(event);
   }
 
   /**
@@ -439,10 +414,11 @@ export class EventLogger implements IEventLogger {
     }
 
     if (filter.actor) {
-      if (filter.actor.id && event.actor?.id !== filter.actor.id) {
+      if (filter.actor.sessionId && event.actor?.sessionId !== filter.actor.sessionId) {
         return false;
       }
-      if (filter.actor.name && event.actor?.name !== filter.actor.name) {
+      // AgentIdentity has no 'name' field — filter by sessionId or agentRole instead
+      if (filter.actor.agentRole && event.actor?.agentRole !== filter.actor.agentRole) {
         return false;
       }
     }
@@ -476,27 +452,8 @@ export class EventLogger implements IEventLogger {
       lastEventId = events[events.length - 1].eventId;
     }
 
-    // Write state.json (only after fsync was done on events.jsonl)
-    const state = {
-      schema_version: EVENT_SCHEMA_VERSION,
-      lastEventId,
-      eventCount: events.length,
-      // Additional derived state can be computed here
-      lastTimestamp: events.length > 0 ? events[events.length - 1].ts : null,
-      categories: this.computeCategoryCounts(events),
-      projects: this.computeProjectCounts(events),
-    };
-
-    // Write state.json (this should only be called after events.jsonl fsync succeeds)
-    await fs.writeFile(this.statePath, JSON.stringify(state, null, 2), 'utf8');
-    
-    // Fsync the state file too for durability
-    const stateHandle = await fs.open(this.statePath, 'r+');
-    try {
-      await stateHandle.sync();
-    } finally {
-      await stateHandle.close();
-    }
+    // State is no longer persisted by EventLogger — StateManager is the sole writer
+    // of state.json via its optimistic concurrency control (DD-2).
 
     return {
       schema_version: EVENT_SCHEMA_VERSION,
@@ -504,28 +461,6 @@ export class EventLogger implements IEventLogger {
       lastEventId,
       eventCount: events.length,
     };
-  }
-
-  /**
-   * Compute category counts from events
-   */
-  private computeCategoryCounts(events: Event[]): Record<string, number> {
-    const counts: Record<string, number> = {};
-    for (const event of events) {
-      counts[event.category] = (counts[event.category] || 0) + 1;
-    }
-    return counts;
-  }
-
-  /**
-   * Compute project counts from events
-   */
-  private computeProjectCounts(events: Event[]): Record<string, number> {
-    const counts: Record<string, number> = {};
-    for (const event of events) {
-      counts[event.projectId] = (counts[event.projectId] || 0) + 1;
-    }
-    return counts;
   }
 
   /**

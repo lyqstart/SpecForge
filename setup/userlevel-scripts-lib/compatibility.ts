@@ -10,7 +10,7 @@
 
 import { readFileSync, existsSync } from "node:fs"
 import { join } from "node:path"
-import { resolveUserLevelDirectory } from "./paths"
+import { resolveUserLevelDirectory, SPEC_DIR_NAME } from "./paths"
 import { satisfiesRange } from "./semver"
 import { SUPPORTED_SCHEMA_VERSIONS } from "./types"
 import type {
@@ -22,8 +22,7 @@ import type {
 // 路径常量
 // ============================================================
 
-/** SpecForge 项目级目录名称（含前导点） */
-const SPEC_DIR_NAME = ".specforge" as const
+// SPEC_DIR_NAME 已从 ./paths 导入（见 L13）
 
 // ============================================================
 // 兼容性检查结果类型
@@ -138,8 +137,9 @@ export function assertCompatibility(baseDir: string): CompatibilityResult {
   }
 
   // Step 4: user_level 模式 → 检查用户级 Manifest
-  const userLevelDir = resolveUserLevelDirectory()
-  const userManifestPath = join(userLevelDir, `${SPEC_DIR_NAME.slice(1)}-manifest.json`)
+  // manifest 现在位于 ~/.specforge/specforge-manifest.json
+  const home = require("node:os").homedir()
+  const userManifestPath = join(home, SPEC_DIR_NAME, `${SPEC_DIR_NAME.slice(1)}-manifest.json`)
 
   if (!existsSync(userManifestPath)) {
     return {

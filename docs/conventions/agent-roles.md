@@ -76,7 +76,7 @@ sf-orchestrator（primary）
 
 **职责：**
 - 基于已确认的 requirements.md 进行架构设计
-- 结合 dev-environment.md、prod-environment.md、project-rules.md 三份配置
+- 结合 host-profile.json、prod-environment.md、project-rules.md 三份配置
 - 进行接口定义、数据模型设计和测试策略制定
 - **不**编写任务拆分、执行步骤或开发排期内容
 

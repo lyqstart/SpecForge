@@ -99,6 +99,7 @@ export interface WorkItemState {
  * WAL events on startup via rebuildState().
  */
 export interface ProjectState {
+  stateVersion: number;
   projectPath: string;
   schemaVersion: string;
   activeSessions: string[];

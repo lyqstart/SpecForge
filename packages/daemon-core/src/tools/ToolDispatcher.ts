@@ -18,6 +18,7 @@ export interface ToolInvokeRequest {
 export interface ToolDeps {
   stateManager: any;
   workflowEngine: any;
+  projectManager: any;
   eventLogger: any;
   eventBus: any;
   permissionEngine: any;

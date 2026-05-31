@@ -44,6 +44,7 @@
     "@specforge/observability": "workspace:*",
     "@specforge/plugin-loader": "workspace:*",
     "@specforge/types": "workspace:*",
+    "@specforge/host-profile": "workspace:*",
     "uuid": "^11.1.0"
   },
   "schema_version": "1.0"

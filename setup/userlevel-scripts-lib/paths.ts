@@ -184,3 +184,31 @@ export function posixToNative(posixPath: string): string {
 export function toPosix(nativePath: string): string {
   return nativePath.replace(/\\/g, '/');
 }
+
+/** SpecForge 用户级安装目录名 */
+export const SPEC_DIR_NAME = ".specforge" as const;
+
+/**
+ * SpecForge 安装根目录路径（~/.specforge/）
+ *
+ * 读取 install.json 中的 base_dir 字段获取安装根路径。
+ * 若 install.json 不存在或无法解析，回退到 ~/.specforge/。
+ */
+export function resolveSpecForgeHome(): string {
+  const home = osModule.homedir();
+  const defaultDir = pathModule.join(home, '.specforge');
+
+  try {
+    const installJsonPath = pathModule.join(defaultDir, 'install.json');
+    const raw = require('node:fs').readFileSync(installJsonPath, 'utf-8');
+    const data = JSON.parse(raw);
+    if (data && typeof data.base_dir === 'string') {
+      // 展开 ~ 为 home 目录
+      return data.base_dir.replace(/^~[/\\]/, home + pathModule.sep);
+    }
+  } catch {
+    // install.json 不存在或解析失败，使用默认路径
+  }
+
+  return defaultDir;
+}

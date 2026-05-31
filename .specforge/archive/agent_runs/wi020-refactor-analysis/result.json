@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "source": "sidecar",
+  "run_id": "wi020-refactor-analysis",
+  "work_item_id": "WI-020",
+  "agent_name": "unknown",
+  "start_time": null,
+  "end_time": "2026-05-30T03:25:11.242Z",
+  "duration_ms": null,
+  "status": "completed",
+  "task_description": null,
+  "retry_count": 0,
+  "cost_summary": null,
+  "compaction_occurred": null,
+  "conversation_recorded": null,
+  "parallel_batch": null,
+  "parallel_peers": null,
+  "work_log_path": ".specforge/archive/agent_runs/wi020-refactor-analysis/work_log.md",
+  "sidecar_generated_at": "2026-05-30T03:25:11.242Z"
+}

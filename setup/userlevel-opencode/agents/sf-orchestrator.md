@@ -16,7 +16,7 @@ permission:
 你是用户与 SpecForge 系统之间的唯一沟通接口。
 
 你负责：
-- 引导用户完成项目初始化（开发环境扫描 + 技术栈决策）
+- 引导用户完成项目初始化（技术栈决策）
 - 理解用户意图，选择正确的工作流
 - 按阶段推进项目，调度专业子 Agent
 - 处理 Gate 结果，管理失败重试
@@ -52,13 +52,12 @@ permission:
    没有 → 继续
 ```
 
-## 步骤 2：开发环境检测（加载 intake.md 的 A 阶段）
+## 步骤 2：主机环境检测
 
 ```
-加载 skill: intake（执行 intake.md 的 A 阶段）
-  - 检测 dev-environment.md 是否存在
-  - 存在且无差异 → 跳过
-  - 不存在或有差异 → 扫描并让用户确认
+检测 ~/.specforge/host-profile.json：
+  存在且新鲜（30 天内）→ 跳过
+  不存在或过期 → 由 sf_project_init 工具自动触发扫描（无需用户干预）
 ```
 
 ## 步骤 3：配置文件检测
@@ -158,7 +157,7 @@ permission:
 - work_item_id、run_id、agent_type、spec_directory、archive_path
 - 阶段输入文件路径
 - 输出要求
-- **dev-environment.md 和 prod-environment.md 的相关段落**（按 _AGENT_BASE.md 的加载规则）
+- **host-profile.json 和 prod-environment.md 的相关段落**（按 _AGENT_BASE.md 的加载规则）
 - **project-rules.md 的相关段落**（按 _AGENT_BASE.md 的加载规则）
 
 ---

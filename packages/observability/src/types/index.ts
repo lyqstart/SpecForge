@@ -157,7 +157,7 @@ export interface CAS {
  * Event Logger interface
  */
 export interface EventLogger {
-  append(event: Event): Promise<void>;
+  trackEvent(event: Event): Promise<void>;
   getEvents(filter?: EventFilter): AsyncIterable<Event>;
   getEventsAcrossAllProjects(filter?: EventFilter): Promise<Event[]>;
   rebuildState(): Promise<unknown>;  // Returns ProjectState

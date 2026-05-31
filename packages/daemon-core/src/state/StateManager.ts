@@ -34,6 +34,9 @@ export class StateManager {
   private projectPath: string;
   private pathResolver: IPathResolver;
 
+  /** Monotonic state version for optimistic concurrency control */
+  private _stateVersion: number = 0;
+
   /** In-memory state map: work_item_id → WorkItemState */
   private workItemStates: Map<string, WorkItemState> = new Map();
 
@@ -43,6 +46,12 @@ export class StateManager {
   /** Timestamp of the last event from the WAL */
   private _lastEventTs: number = 0;
 
+  /**
+   * @param pathResolver Path resolver for calculating file paths
+   * @param projectPath Project root path
+   * @param isDaemonGlobal @deprecated Use project-scoped StateManager instead.
+   *   Daemon-global state is no longer supported.
+   */
   constructor(pathResolver: IPathResolver, projectPath: string, isDaemonGlobal: boolean = false) {
     this.pathResolver = pathResolver;
     this.projectPath = projectPath;
@@ -238,7 +247,11 @@ export class StateManager {
     this._lastEventId = lastEventId;
     this._lastEventTs = lastEventTs;
 
+    // Seed _stateVersion from disk (backward compat: missing → 0)
+    this._stateVersion = await this.readDiskStateVersion();
+
     const state: ProjectState = {
+      stateVersion: this._stateVersion,
       projectPath: this.projectPath,
       schemaVersion: '1.0',
       activeSessions: [],
@@ -323,6 +336,7 @@ export class StateManager {
     this._lastEventTs = lastEventTs;
 
     return {
+      stateVersion: this._stateVersion,
       projectPath: this.projectPath,
       schemaVersion: '1.0',
       activeSessions: [],
@@ -393,6 +407,7 @@ export class StateManager {
     const workItems = Array.from(this.workItemStates.values());
 
     return {
+      stateVersion: this._stateVersion,
       projectPath: this.projectPath,
       schemaVersion: '1.0',
       activeSessions: [],
@@ -412,15 +427,78 @@ export class StateManager {
   }
 
   /**
-   * Write state.json with fsync for crash safety.
+   * Write state.json with optimistic concurrency control.
+   * 
+   * Protocol:
+   * 1. Read disk stateVersion from state.json (or 0 if missing / no file)
+   * 2. Compare with this._stateVersion (in-memory expected version)
+   * 3. If match → increment _stateVersion, write, fsync
+   * 4. If mismatch → rebuild from WAL and retry (max 3 attempts)
+   * 
+   * @throws Error with "VersionConflict" prefix when retries exhausted
    */
-  private async writeStateFile(state: ProjectState): Promise<void> {
-    await fs.writeFile(this.statePath, JSON.stringify(state, null, 2), 'utf-8');
-    const handle = await fs.open(this.statePath, 'a');
+  private async writeStateFile(state: ProjectState, attempt: number = 0): Promise<void> {
+    const MAX_RETRIES = 3;
+    const diskVersion = await this.readDiskStateVersion();
+
+    if (diskVersion === this._stateVersion) {
+      // Version matches — increment and write
+      this._stateVersion++;
+      state.stateVersion = this._stateVersion;
+      await fs.writeFile(this.statePath, JSON.stringify(state, null, 2), 'utf-8');
+      const handle = await fs.open(this.statePath, 'a');
+      try {
+        await handle.sync();
+      } finally {
+        await handle.close();
+      }
+    } else if (attempt < MAX_RETRIES) {
+      // Version conflict — rebuild from WAL and retry
+      await this.rebuildState();
+      const freshState = this.buildProjectState();
+      return this.writeStateFile(freshState, attempt + 1);
+    } else {
+      throw new Error(
+        `VersionConflict: disk version=${diskVersion}, expected=${this._stateVersion}, retries exhausted`,
+      );
+    }
+  }
+
+  /**
+   * Persist an externally-built state snapshot through StateManager's
+   * optimistic concurrency control.
+   * 
+   * Used by RecoverySubsystem after repair to persist the repaired state.
+   * Synchronizes the in-memory workItemStates map and tracking fields,
+   * then writes through the version-locked writeStateFile.
+   * 
+   * @param state - External state snapshot to persist
+   */
+  async persistStateFromExternal(state: ProjectState): Promise<void> {
+    // Sync in-memory state
+    this.workItemStates.clear();
+    for (const wi of state.workItems) {
+      this.workItemStates.set(wi.work_item_id, wi);
+    }
+    this._lastEventId = state.lastEventId;
+    this._lastEventTs = state.lastEventTs;
+
+    // Write through optimistic concurrency control
+    await this.writeStateFile(state);
+  }
+
+  /**
+   * Read the stateVersion from disk state.json.
+   * Backward compatible: missing file or missing field → 0.
+   */
+  private async readDiskStateVersion(): Promise<number> {
     try {
-      await handle.sync();
-    } finally {
-      await handle.close();
+      const content = await fs.readFile(this.statePath, 'utf-8');
+      const parsed = JSON.parse(content) as Partial<ProjectState>;
+      return parsed.stateVersion ?? 0;
+    } catch {
+      // File doesn't exist or is corrupted → treat as version 0
+      return 0;
     }
   }
 
@@ -433,6 +511,7 @@ export class StateManager {
       return JSON.parse(content) as ProjectState;
     } catch (error) {
       return {
+        stateVersion: 0,
         projectPath: this.projectPath,
         schemaVersion: '1.0',
         activeSessions: [],

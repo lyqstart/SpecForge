@@ -16,12 +16,9 @@
 
 import { mkdir, writeFile, access, readFile } from "node:fs/promises"
 import { join, extname, dirname } from "node:path"
-import * as os from "node:os"
-import { exec } from "node:child_process"
-import { promisify } from "node:util"
+import { existsSync, statSync } from "node:fs"
 import { LAYOUT, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
-
-const execAsync = promisify(exec)
+import { scanHostProfile, PROFILE_TTL_MS, getHostProfilePath } from "@specforge/host-profile"
 
 // ============================================================
 // Types
@@ -70,8 +67,6 @@ const SYSTEM_FILE_CONTENT: Record<string, (projectName: string, now: string) => 
   // .gitignore 内容是固定的
   ".gitignore": () =>
     "runtime/\nlogs/\nsessions/\narchive/\ncas/\n",
-
-  // dev-environment.md 由扫描生成，不作为 system 文件
 }
 
 /** 占位模板 */
@@ -82,7 +77,6 @@ const PLACEHOLDER_CONTENT = "> TODO: 由首次 intake 阶段填充\n"
  * 需要判断是否为占位的配置文件（相对 .specforge/ 的路径）
  */
 const PLACEHOLDER_CHECK_FILES = [
-  "config/dev-environment.md",
   "config/prod-environment.md",
   "config/project-rules.md",
 ]
@@ -130,13 +124,8 @@ function buildManifest(): InitEntry[] {
 function makeFileEntry(relativePath: string): InitEntry | null {
   const fullPath = join(SPEC_DIR_NAME, relativePath)
 
-  // dev-environment.md 是特殊 system 文件（扫描生成）
-  if (relativePath === "config/dev-environment.md") {
-    return { path: fullPath, type: "system_file" }
-  }
-
-  // 占位检查文件（除 dev-environment）→ user 文件
-  if (PLACEHOLDER_CHECK_FILES.includes(relativePath) && relativePath !== "config/dev-environment.md") {
+  // 占位检查文件 → user 文件
+  if (PLACEHOLDER_CHECK_FILES.includes(relativePath)) {
     return { path: fullPath, type: "user_file" }
   }
 
@@ -250,6 +239,9 @@ export async function ensureProjectInit(
     }
   }
 
+  // 3. 确保 host-profile.json 存在且新鲜
+  await ensureHostProfile()
+
   return result
 }
 
@@ -268,10 +260,7 @@ async function getSystemFileContent(
       ? entry.path.slice(SPEC_DIR_NAME.length + 1).replace(/\\/g, "/")
       : entry.path
 
-  // 特殊处理：dev-environment.md → 扫描环境
-  if (relativePath === "config/dev-environment.md") {
-    return generateDevEnvironment()
-  }
+  // user 文件：不检查占位（用户可以自由编辑）
 
   // 有模板 → 使用模板
   const template = SYSTEM_FILE_CONTENT[relativePath]
@@ -284,77 +273,25 @@ async function getSystemFileContent(
 }
 
 // ============================================================
-// Dev Environment
+// Host Profile
 // ============================================================
 
 /**
- * 生成 dev-environment.md 内容
- * 基于当前运行时环境自动检测
+ * 确保 ~/.specforge/host-profile.json 存在且新鲜。
+ * 不存在或超过 30 天 → 触发扫描。
  */
-async function generateDevEnvironment(): Promise<string> {
-  const platform = os.platform()
-  const arch = os.arch()
-  const hostname = os.hostname()
-  const cpus = os.cpus().length
-  const totalMem = Math.round(os.totalmem() / (1024 * 1024 * 1024))
-
-  // 探测 Node.js
-  let nodeVersion = "unknown"
-  try {
-    const { stdout: nodeOut } = await execAsync("node --version", { timeout: 5000 })
-    nodeVersion = nodeOut.trim().startsWith("v") ? nodeOut.trim() : `v${nodeOut.trim()}`
-  } catch { /* ignore */ }
-
-  // 探测 Bun
-  let bunVersion = "unknown"
-  try {
-    const { stdout: bunOut } = await execAsync("bun --version", { timeout: 5000 })
-    bunVersion = bunOut.trim()
-  } catch { /* ignore */ }
-
-  // 探测 Git
-  let gitVersion = "unknown"
-  try {
-    const { stdout: gitOut } = await execAsync("git --version", { timeout: 5000 })
-    gitVersion = gitOut.trim().replace("git version ", "")
-  } catch { /* ignore */ }
-
-  const shell = process.env.SHELL || process.env.ComSpec || "unknown"
-
-  return `# 开发环境配置
-
-> 此文件由 SpecForge 自动生成（sf_project_init）。
-> 记录了本机开发环境的基本信息。
-
----
-
-## 操作系统
-
-- **平台**：${platform}
-- **架构**：${arch}
-- **主机名**：${hostname}
-- **CPU 核心**：${cpus}
-- **内存**：${totalMem} GB
-
-## 运行时
-
-- **Node.js**：${nodeVersion}
-- **Bun**：${bunVersion}
-
-## 工具链
-
-- **Git**：${gitVersion}
-- **Shell**：${shell}
-
-## 时区
-
-- **系统时区**：${Intl.DateTimeFormat().resolvedOptions().timeZone}
-- **系统语言**：${Intl.DateTimeFormat().resolvedOptions().locale}
-
----
-
-> 如需更新此文件，请重新运行 \`sf_project_init\`。
-`
+async function ensureHostProfile(): Promise<void> {
+  const profilePath = getHostProfilePath()
+  if (existsSync(profilePath)) {
+    try {
+      const stat = statSync(profilePath)
+      const ageMs = Date.now() - stat.mtimeMs
+      if (ageMs < PROFILE_TTL_MS) return // 新鲜，跳过
+    } catch {
+      // stat 失败，继续扫描
+    }
+  }
+  await scanHostProfile({ force: false, verbose: false })
 }
 
 // ============================================================

@@ -2,9 +2,11 @@
  * Recovery Subsystem unit tests
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { RecoverySubsystem } from './RecoverySubsystem';
 import { IPathResolver } from '../daemon/path-resolver';
+import { WAL } from '../wal';
+import { StateManager } from '../state/StateManager';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
@@ -180,5 +182,103 @@ describe('RecoverySubsystem', () => {
 
     // Cleanup the blocking file
     await fs.unlink(checkpointDir);
+  });
+
+  // ── daemon-global path mode ──────────────────────────────────────
+
+  it('should use daemon-global paths when wal and stateManager are injected', () => {
+    const fakeWal = {} as WAL;
+    const fakeStateManager = {} as StateManager;
+    const daemonSubsystem = new RecoverySubsystem(
+      mockResolver,
+      testProjectPath,
+      fakeWal,
+      fakeStateManager
+    );
+
+    const expectedDaemonRt = mockResolver.resolveDaemonRuntimeDir();
+    expect(daemonSubsystem.getEventsPath()).toBe(
+      path.join(expectedDaemonRt, 'events.jsonl')
+    );
+    expect(daemonSubsystem.getStatePath()).toBe(
+      path.join(expectedDaemonRt, 'state.json')
+    );
+  });
+
+  it('should use project-level paths when wal/stateManager are not injected (legacy)', () => {
+    // subsystem from beforeEach has no injected wal/stateManager
+    const expectedProjectRt = mockResolver.resolveProjectRuntimeDir(testProjectPath);
+    expect(subsystem.getEventsPath()).toBe(
+      path.join(expectedProjectRt, 'events.jsonl')
+    );
+    expect(subsystem.getStatePath()).toBe(
+      path.join(expectedProjectRt, 'state.json')
+    );
+  });
+
+  // ── writeState delegation ────────────────────────────────────────
+
+  it('should delegate writeState to StateManager.persistStateFromExternal when stateManager exists', async () => {
+    const mockPersist = vi.fn().mockResolvedValue(undefined);
+    const mockRebuildState = vi.fn().mockResolvedValue({
+      stateVersion: 0,
+      projectPath: testProjectPath,
+      schemaVersion: '1.0',
+      activeSessions: [],
+      workItems: [],
+      lastEventId: '',
+      lastEventTs: 0,
+    });
+    const mockStateManager = {
+      rebuildState: mockRebuildState,
+      persistStateFromExternal: mockPersist,
+    } as unknown as StateManager;
+    const fakeWal = {
+      readAllEvents: vi.fn().mockResolvedValue({ events: [] }),
+    } as unknown as WAL;
+
+    const daemonSubsystem = new RecoverySubsystem(
+      mockResolver,
+      testProjectPath,
+      fakeWal,
+      mockStateManager,
+    );
+
+    const state = {
+      stateVersion: 0,
+      projectPath: testProjectPath,
+      schemaVersion: '1.0',
+      activeSessions: [],
+      workItems: [],
+      lastEventId: '',
+      lastEventTs: 0,
+    };
+
+    // Call repairInconsistency — this internally calls writeState with the repaired state
+    // We need a result with issues to trigger repair
+    await daemonSubsystem.repairInconsistency({
+      isValid: false,
+      issues: [{ type: 'state_mismatch', description: 'test', affectedEventId: 'ev-1', affectedProjectPath: testProjectPath }],
+    });
+
+    // persistStateFromExternal should have been called exactly once with a state containing our projectPath
+    expect(mockPersist).toHaveBeenCalledTimes(1);
+    const calledState = mockPersist.mock.calls[0][0];
+    expect(calledState.projectPath).toBe(testProjectPath);
+  });
+
+  it('should use direct fs.writeFile when stateManager is absent (legacy fallback)', async () => {
+    // subsystem from beforeEach (no stateManager) — call repairInconsistency
+    // which internally calls writeState -> the legacy fs.writeFile path
+    await subsystem.repairInconsistency({
+      isValid: false,
+      issues: [{ type: 'state_mismatch', description: 'test', affectedEventId: 'ev-1', affectedProjectPath: testProjectPath }],
+    });
+
+    // Verify the state.json file was actually written (legacy path)
+    const statePath = subsystem.getStatePath();
+    const raw = await fs.readFile(statePath, 'utf-8');
+    const parsed = JSON.parse(raw);
+    expect(parsed.projectPath).toBe(testProjectPath);
   });
 });

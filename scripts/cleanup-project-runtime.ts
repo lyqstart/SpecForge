@@ -32,8 +32,7 @@
 
 import * as fs from "node:fs"
 import * as path from "node:path"
-
-const SPEC_DIR_NAME = '.specforge' as const;
+import { SPEC_DIR_NAME } from "../../packages/types/src/directory-layout";
 
 // ── 参数解析 ──────────────────────────────────────────────────────────────────
 

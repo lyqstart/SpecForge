@@ -138,10 +138,6 @@ describe('LAYOUT.configFiles — nested object keys', () => {
     expect(LAYOUT.configFiles.projectRules).toBe('config/project-rules.md');
   });
 
-  it('configFiles.devEnv === "config/dev-environment.md"', () => {
-    expect(LAYOUT.configFiles.devEnv).toBe('config/dev-environment.md');
-  });
-
   it('configFiles.prodEnv === "config/prod-environment.md"', () => {
     expect(LAYOUT.configFiles.prodEnv).toBe('config/prod-environment.md');
   });

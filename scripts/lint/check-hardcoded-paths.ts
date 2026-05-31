@@ -117,6 +117,11 @@ export const VIOLATION_PATTERNS: {
     regex: /['"]specforge\/[^'"]*['"]/g,
     description: '"specforge/" 路径前缀',
   },
+  {
+    // 匹配 'specforge' 或 "specforge" 单独出现（不带点、不带斜杠，如在 path.join 参数中）
+    regex: /['"]specforge['"]/g,
+    description: '"specforge" 单独出现（不带点前缀）',
+  },
 ];
 
 /** 判断一行是否应被跳过（import、注释、常量定义等） */

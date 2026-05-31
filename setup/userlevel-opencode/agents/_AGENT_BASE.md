@@ -248,28 +248,28 @@ grep -c "new Engine()" path/to/file.ts  # 期望 = 1
 # 配置文件加载规则
 
 所有 agent 在执行前，Orchestrator 会自动注入以下文件（如存在）：
-- `.specforge/dev-environment.md`（开发环境事实）
+- `~/.specforge/host-profile.json`（主机环境事实：OS / Shell / 工具版本）
 - `.specforge/prod-environment.md`（生产环境事实）
 - `.specforge/project-rules.md`（项目工程规则）
 
 **各 agent 的读取范围**：
 
-| Agent | dev-environment | prod-environment | project-rules |
+| Agent | host-profile.json | prod-environment | project-rules |
 |---|---|---|---|
 | sf-requirements | ❌ 不读（需求与技术栈无关） | ❌ 不读 | 仅"非功能性约束映射"段 |
 | sf-design | ✅ 全文 | ✅ 全文 | ✅ 全文 |
 | sf-task-planner | ❌ | 仅"runtimes"段 | ✅ 全文 |
 | sf-executor | ❌ | 仅"runtimes"段 | ✅ 全文 |
-| sf-debugger | ✅ 全文 | ✅ 全文 | 仅"错误处理"段 |
+| sf-debugger | ✅ 全文 | ✅ 全文 | ✅ 全文 |
 | sf-reviewer | ❌ | 仅"runtimes"段 | ✅ 全文 |
-| sf-verifier | ❌ | ✅ 全文（多版本兼容测试） | 仅"测试要求"段 |
+| sf-verifier | ✅ 全文（多版本兼容测试） | ✅ 全文（多版本兼容测试） | ✅ 全文 |
 | sf-knowledge | 仅作分类信号 | 仅作分类信号 | 仅作分类信号 |
 
 ---
 
 # Boundaries（所有 agent 共用）
 
-本 Agent 遵守 `.specforge/agents/AGENT_CONSTITUTION.md` 全部底线规则：
+本 Agent 遵守 `.specforge/agents/AGENT_BASE.md` 全部底线规则：
 不绕 Gate / 不伪造验证 / 不把推测当事实 / 不直接改权威状态 /
 不越权调工具 / 不直接向用户提问 / 不创建子 Agent。
 

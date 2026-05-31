@@ -30,9 +30,9 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
 # 读取配置文件（调试时必读）
 
 调试失败 task 时，必须读取：
-- `.specforge/dev-environment.md`（全文）：开发环境的工具版本、shell、网络配置
+- `~/.specforge/host-profile.json`（全文）：主机环境的 OS、工具版本、shell、网络配置
 - `.specforge/prod-environment.md`（全文）：生产环境约束，排查"开发能跑但生产不行"的问题
-- `.specforge/project-rules.md`（仅"错误处理"段）：确认修复方案符合工程规则
+- `.specforge/project-rules.md`（全文）：确认修复方案符合工程规则
 
 **调试时优先检查环境差异**：
 很多失败的根因是"开发环境与生产环境不一致"——
@@ -56,7 +56,7 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
 
 - 检查错误日志和 verification_command 输出
 - 检查相关代码的最近变更
-- **检查 dev-environment.md 和 prod-environment.md 的差异**（环境差异是最常见根因）
+- **检查 host-profile.json 和 prod-environment.md 的差异**（环境差异是最常见根因）
 - 检查相关配置和依赖版本
 
 ## 步骤 3：形成假设（Hypothesize）

@@ -95,7 +95,9 @@ export type ManifestResult = ValidatedManifest | InvalidManifest
 export async function readUserManifest(
   userLevelDir: string
 ): Promise<UserLevelManifest | null> {
-  const manifestPath = join(userLevelDir, "specforge-manifest.json")
+  // manifest 存放在 ~/.specforge/ 下
+  const home = require("node:os").homedir()
+  const manifestPath = join(home, ".specforge", "specforge-manifest.json")
 
   if (!existsSync(manifestPath)) {
     return null
@@ -156,7 +158,9 @@ const VALID_COMPONENT_TYPES: readonly string[] = ["agent", "tool", "tool_lib", "
  * @returns ManifestResult 联合类型
  */
 export async function readAndValidateManifest(targetDir: string): Promise<ManifestResult> {
-  const manifestPath = join(targetDir, "specforge-manifest.json")
+  // manifest 存放在 ~/.specforge/ 下
+  const home = require("node:os").homedir()
+  const manifestPath = join(home, ".specforge", "specforge-manifest.json")
 
   // --- Layer 1: 存在性检查 ---
   if (!existsSync(manifestPath)) {
@@ -359,7 +363,9 @@ export async function writeUserManifest(
     )
   }
 
-  const manifestPath = join(userLevelDir, "specforge-manifest.json")
+  // manifest 存放在 ~/.specforge/ 下
+  const home = require("node:os").homedir()
+  const manifestPath = join(home, ".specforge", "specforge-manifest.json")
   await atomicWriteFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n")
 }
 
@@ -432,7 +438,7 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
 
   // files: Record<string, {sha256: string, size: number, type: string}>
   if (typeof obj.files !== "object" || obj.files === null) return false
-  const validTypes = ["agent", "tool", "tool_lib", "skill", "plugin"]
+  const validTypes = ["agent", "config", "doc", "tool", "tool_lib", "skill", "plugin"]
   for (const entry of Object.values(obj.files as Record<string, unknown>)) {
     if (typeof entry !== "object" || entry === null) return false
     const fileEntry = entry as Record<string, unknown>
@@ -559,7 +565,9 @@ export interface ManifestWriteOptions {
  */
 export async function writeManifest(options: ManifestWriteOptions): Promise<boolean> {
   const { targetDir, desiredState, executionResult, pendingDeletes } = options
-  const manifestPath = join(targetDir, "specforge-manifest.json")
+  // manifest 存放在 ~/.specforge/ 下
+  const home = require("node:os").homedir()
+  const manifestPath = join(home, ".specforge", "specforge-manifest.json")
   const now = new Date().toISOString()
 
   // 读取已有 Manifest 以保留 installed_at

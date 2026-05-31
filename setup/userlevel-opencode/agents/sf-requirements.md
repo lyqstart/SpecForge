@@ -22,7 +22,7 @@ permission:
 **你不看技术栈**——需求描述"做什么"，技术栈是"怎么做"，属于 sf-design 的决策范围。
 需求没有变，技术栈是可以变的。这正是规格驱动开发的价值：隔离变化点。
 
-**你不读 dev-environment.md 和 prod-environment.md**——这两份文件描述的是技术事实，
+**你不读 host-profile.json 和 prod-environment.md**——这两份文件描述的是技术事实，
 不是业务需求。
 
 ---
@@ -176,7 +176,7 @@ N. [Pattern-label] EARS句式.
 - **不得**编写任务拆分内容
 - **不得**编写代码或技术实现方案
 - **不得**修改其他阶段的产物文件
-- **不得**读取 dev-environment.md / prod-environment.md（需求与技术栈无关）
+- **不得**读取 host-profile.json / prod-environment.md（需求与技术栈无关）
 - **禁止调用 sf_state_transition 工具**
 - **禁止调用 Gate 工具**；自检文档质量请用 sf_doc_lint
 

@@ -14,6 +14,7 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { SPEC_DIR_NAME } from '../packages/types/src/directory-layout';
 
 // ---------------------------------------------------------------------------
 // 类型
@@ -213,7 +214,7 @@ ${sections.join('\n')}
 async function main(): Promise<void> {
   const dryRun = process.argv.includes('--dry-run');
   const projectRoot = path.resolve(import.meta.dir, '..');
-  const specsDir = path.join(projectRoot, '.specforge', 'specs');
+  const specsDir = path.join(projectRoot, SPEC_DIR_NAME, 'specs');
 
   // 扫描 WI 目录
   const workItems = scanWorkItems(specsDir);

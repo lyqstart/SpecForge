@@ -27,8 +27,7 @@ import { SHARED_COMPONENT_REGISTRY, SPECFORGE_AGENT_DEFINITIONS, getAgentDefinit
 import { posixToNative } from "./lib/paths"
 import type { CLIOptions, UserLevelManifest, FileEntry } from "./lib/types"
 import { runMigrateManifestCommand } from "../packages/version-unification/src/legacy/migrate-manifest-command"
-
-const SPEC_DIR_NAME = '.specforge' as const;
+import { SPEC_DIR_NAME } from "../packages/types/src/directory-layout";
 
 // ============================================================================
 // 参数解析
@@ -125,7 +124,7 @@ SpecForge 安装器 V3.5 — 用户级共享组件管理
 }
 
 function showVersion(userLevelDir: string): void {
-  const manifestPath = path.join(userLevelDir, "specforge-manifest.json")
+  const manifestPath = path.join(getSpecForgeUserDir(), "specforge-manifest.json")
   if (fs.existsSync(manifestPath)) {
     try {
       const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"))
@@ -133,7 +132,7 @@ function showVersion(userLevelDir: string): void {
       console.log(`安装时间: ${manifest.installed_at}`)
       console.log(`更新时间: ${manifest.updated_at}`)
       console.log(`已部署文件: ${Object.keys(manifest.files).length} 个`)
-      console.log(`目录: ${userLevelDir}`)
+      console.log(`目录: ${getSpecForgeUserDir()}`)
     } catch {
       console.log("SpecForge Manifest 解析失败")
     }
@@ -292,37 +291,35 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       }
     }
 
-    // 部署 scripts/lib/ 依赖文件（tools/lib/*.ts 通过相对路径 ../../../scripts/lib/ 引用）
-    // 目标位置：userLevelDir 上三级 + scripts/lib/ = path.resolve(userLevelDir, "../scripts/lib/")
-    const scriptsLibTarget = path.resolve(userLevelDir, "..", "scripts", "lib")
+    // 部署 lib/ 依赖文件到 ~/.specforge/lib/
+    // 合并两个源：userlevel-scripts-lib/（26 个 .ts）+ userlevel-opencode/scripts/lib/（sf_plugin_client.ts）
+    const specForgeDir = getSpecForgeUserDir()
+    const libTarget = path.join(specForgeDir, "lib")
+    if (!fs.existsSync(libTarget)) {
+      fs.mkdirSync(libTarget, { recursive: true })
+    }
+
+    // 源 1: setup/userlevel-scripts-lib/ → ~/.specforge/lib/
     const scriptsLibSource = path.join(sourceDir, "setup", "userlevel-scripts-lib")
     if (fs.existsSync(scriptsLibSource)) {
-      if (!fs.existsSync(scriptsLibTarget)) {
-        fs.mkdirSync(scriptsLibTarget, { recursive: true })
-      }
       const scriptsLibFiles = fs.readdirSync(scriptsLibSource).filter((f) => f.endsWith(".ts"))
       for (const file of scriptsLibFiles) {
         fs.copyFileSync(
           path.join(scriptsLibSource, file),
-          path.join(scriptsLibTarget, file)
+          path.join(libTarget, file)
         )
       }
       deployedCount += scriptsLibFiles.length
     }
 
-    // 部署插件依赖文件（plugins/sf_specforge.ts 通过相对路径 ../scripts/lib/ 引用）
-    // 目标位置：userLevelDir + scripts/lib/ = ~/.config/opencode/scripts/lib/
-    const pluginScriptsLibTarget = path.join(userLevelDir, "scripts", "lib")
+    // 源 2: setup/userlevel-opencode/scripts/lib/ → ~/.specforge/lib/
     const pluginScriptsLibSource = path.join(sourceDir, "setup", "userlevel-opencode", "scripts", "lib")
     if (fs.existsSync(pluginScriptsLibSource)) {
-      if (!fs.existsSync(pluginScriptsLibTarget)) {
-        fs.mkdirSync(pluginScriptsLibTarget, { recursive: true })
-      }
       const pluginScriptsLibFiles = fs.readdirSync(pluginScriptsLibSource).filter((f) => f.endsWith(".ts"))
       for (const file of pluginScriptsLibFiles) {
         fs.copyFileSync(
           path.join(pluginScriptsLibSource, file),
-          path.join(pluginScriptsLibTarget, file)
+          path.join(libTarget, file)
         )
       }
       deployedCount += pluginScriptsLibFiles.length
@@ -342,6 +339,17 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
     // 构建并写入 User_Manifest
     const manifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
     await writeUserManifest(userLevelDir, manifest)
+
+    // 写入 install.json（安装元数据）
+    const installJson = {
+      schema_version: "1.0",
+      base_dir: getSpecForgeUserDir(),
+      shared_version: manifest.shared_version,
+      installed_at: manifest.installed_at,
+    }
+    const installJsonPath = path.join(getSpecForgeUserDir(), "install.json")
+    fs.writeFileSync(installJsonPath, JSON.stringify(installJson, null, 2) + "\n")
+    console.log(`   install.json 已写入: ${installJsonPath}`)
 
     // 部署模板库到 ~/.specforge/templates/
     const templateCount = await deployTemplates(sourceDir)
@@ -488,35 +496,33 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
       upgradedCount++
     }
 
-    // Step 5: 部署 scripts/lib/ 依赖文件
-    const scriptsLibTarget = path.resolve(userLevelDir, "..", "scripts", "lib")
-    const scriptsLibSource = path.join(sourceDir, "setup", "userlevel-scripts-lib")
-    if (fs.existsSync(scriptsLibSource)) {
-      if (!fs.existsSync(scriptsLibTarget)) {
-        fs.mkdirSync(scriptsLibTarget, { recursive: true })
-      }
-      const scriptsLibFiles = fs.readdirSync(scriptsLibSource).filter((f) => f.endsWith(".ts"))
-      for (const file of scriptsLibFiles) {
-        fs.copyFileSync(
-          path.join(scriptsLibSource, file),
-          path.join(scriptsLibTarget, file)
-        )
-      }
-      upgradedCount += scriptsLibFiles.length
+    // Step 5: 部署 lib/ 依赖文件到 ~/.specforge/lib/
+    // 合并两个源：userlevel-scripts-lib/ + userlevel-opencode/scripts/lib/
+    const specForgeDirUpg = getSpecForgeUserDir()
+    const libTargetUpg = path.join(specForgeDirUpg, "lib")
+    if (!fs.existsSync(libTargetUpg)) {
+      fs.mkdirSync(libTargetUpg, { recursive: true })
     }
 
-    // Step 5.5: 部署插件依赖文件（plugins/sf_specforge.ts 通过相对路径 ../scripts/lib/ 引用）
-    const pluginScriptsLibTargetUpg = path.join(userLevelDir, "scripts", "lib")
+    const scriptsLibSourceUpg = path.join(sourceDir, "setup", "userlevel-scripts-lib")
+    if (fs.existsSync(scriptsLibSourceUpg)) {
+      const scriptsLibFilesUpg = fs.readdirSync(scriptsLibSourceUpg).filter((f) => f.endsWith(".ts"))
+      for (const file of scriptsLibFilesUpg) {
+        fs.copyFileSync(
+          path.join(scriptsLibSourceUpg, file),
+          path.join(libTargetUpg, file)
+        )
+      }
+      upgradedCount += scriptsLibFilesUpg.length
+    }
+
     const pluginScriptsLibSourceUpg = path.join(sourceDir, "setup", "userlevel-opencode", "scripts", "lib")
     if (fs.existsSync(pluginScriptsLibSourceUpg)) {
-      if (!fs.existsSync(pluginScriptsLibTargetUpg)) {
-        fs.mkdirSync(pluginScriptsLibTargetUpg, { recursive: true })
-      }
       const pluginScriptsLibFilesUpg = fs.readdirSync(pluginScriptsLibSourceUpg).filter((f) => f.endsWith(".ts"))
       for (const file of pluginScriptsLibFilesUpg) {
         fs.copyFileSync(
           path.join(pluginScriptsLibSourceUpg, file),
-          path.join(pluginScriptsLibTargetUpg, file)
+          path.join(libTargetUpg, file)
         )
       }
       upgradedCount += pluginScriptsLibFilesUpg.length
@@ -529,6 +535,17 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
     const sourceAgents = getAgentDefinitions(sourceDir)
     const newManifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
     await writeUserManifest(userLevelDir, newManifest)
+
+    // 写入 install.json（安装元数据）
+    const installJsonUpg = {
+      schema_version: "1.0",
+      base_dir: getSpecForgeUserDir(),
+      shared_version: newManifest.shared_version,
+      installed_at: newManifest.installed_at,
+    }
+    const installJsonPathUpg = path.join(getSpecForgeUserDir(), "install.json")
+    fs.writeFileSync(installJsonPathUpg, JSON.stringify(installJsonUpg, null, 2) + "\n")
+    console.log(`   install.json 已写入: ${installJsonPathUpg}`)
 
     // Step 7: Merge_Write opencode.json
     await mergeOpenCodeJsonUserLevel(userLevelDir, sourceAgents, newManifest, opts.force)
@@ -558,6 +575,24 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
       fs.unlinkSync(journalPath)
     }
 
+    // 清理旧版本遗留目录
+    const oldPathsUpg = [
+      path.resolve(userLevelDir, "..", "scripts"),          // ~/.config/scripts/
+      path.join(userLevelDir, "scripts"),                   // ~/.config/opencode/scripts/
+      path.join(userLevelDir, "specforge-manifest.json"),   // 旧版 manifest
+    ]
+
+    for (const oldPath of oldPathsUpg) {
+      if (fs.existsSync(oldPath)) {
+        try {
+          fs.rmSync(oldPath, { recursive: true, force: true })
+          console.log(`   ✓ 已清理旧路径: ${oldPath}`)
+        } catch {
+          console.warn(`   ⚠ 无法清理旧路径: ${oldPath}`)
+        }
+      }
+    }
+
     console.log(`   已升级: ${upgradedCount} 个文件`)
     console.log(`   已跳过: ${skippedCount} 个文件（无变化）`)
     // 部署模板库到 ~/.specforge/templates/
@@ -585,7 +620,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
           }
         }
 
-        // 回滚 User_Manifest（从备份恢复）
+        // 回滚 User_Manifest（从备份恢复到 ~/.specforge/）
         const manifestBackup = path.join(userLevelDir, ".backup")
         if (fs.existsSync(manifestBackup)) {
           // Find the manifest backup (most recent specforge-manifest.json.bak.*)
@@ -594,7 +629,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
             .sort()
           if (backupFiles.length > 0) {
             const latestBackup = path.join(manifestBackup, backupFiles[backupFiles.length - 1])
-            const manifestTarget = path.join(userLevelDir, "specforge-manifest.json")
+            const manifestTarget = path.join(getSpecForgeUserDir(), "specforge-manifest.json")
             fs.copyFileSync(latestBackup, manifestTarget)
           }
         }
@@ -723,10 +758,35 @@ export async function cmdUninstall(): Promise<void> {
     // Step 5: 从 opencode.json 移除 sf-* agents（Merge_Write 反向操作）
     await removeSfAgentsFromOpenCodeJson(userLevelDir)
 
-    // Step 6: 删除 User_Manifest
-    const manifestPath = path.join(userLevelDir, "specforge-manifest.json")
+    // Step 6: 删除 User_Manifest（位于 ~/.specforge/）
+    const manifestPath = path.join(getSpecForgeUserDir(), "specforge-manifest.json")
     if (fs.existsSync(manifestPath)) {
       fs.unlinkSync(manifestPath)
+    }
+
+    // 删除 install.json
+    const installJsonPath = path.join(getSpecForgeUserDir(), "install.json")
+    if (fs.existsSync(installJsonPath)) {
+      fs.unlinkSync(installJsonPath)
+    }
+
+    // Step 6.5: 清理旧版本遗留目录
+    // 旧版安装器将 scripts/lib 部署到以下位置，升级后需清理
+    const oldPaths = [
+      path.resolve(userLevelDir, "..", "scripts"),          // ~/.config/scripts/ (package.json + node_modules + 26 .ts)
+      path.join(userLevelDir, "scripts"),                   // ~/.config/opencode/scripts/ (sf_plugin_client.ts)
+      path.join(userLevelDir, "specforge-manifest.json"),   // 旧版 manifest 位置（若仍存在）
+    ]
+
+    for (const oldPath of oldPaths) {
+      if (fs.existsSync(oldPath)) {
+        try {
+          fs.rmSync(oldPath, { recursive: true, force: true })
+          console.log(`   ✓ 已清理旧路径: ${oldPath}`)
+        } catch {
+          console.warn(`   ⚠ 无法清理旧路径: ${oldPath}`)
+        }
+      }
     }
 
     // Step 7: 显示卸载摘要
@@ -863,24 +923,24 @@ async function removeSfAgentsFromOpenCodeJson(userLevelDir: string): Promise<voi
 // ============================================================================
 
 /**
- * 把仓库 scripts/package.json 复制到 ~/.config/scripts/package.json，
+ * 把仓库 scripts/package.json 复制到 ~/.specforge/package.json，
  * 并在该目录运行 `bun install`，确保 scripts/lib/types.ts 顶部的
- * `import { z } from 'zod'` 能解析到 ~/.config/scripts/node_modules/zod。
+ * `import { z } from 'zod'` 能解析到 ~/.specforge/node_modules/zod。
  *
- * 没有这一步，.opencode/tools/lib/utils.ts 的 dynamic import
- *   import("../../../scripts/lib/compatibility")
+ * 没有这一步，tools/lib/utils.ts 的 dynamic import
+ *   import("~/.specforge/lib/compatibility")
  * 会因 zod 找不到全部失败，所有 sf_*_core 工具集体降级。
  *
  * 返回部署的文件数（0 = 跳过，1 = 复制了 package.json）。
  */
-function deployScriptsPackageJson(sourceDir: string, userLevelDir: string): number {
+function deployScriptsPackageJson(sourceDir: string, _userLevelDir: string): number {
   const sourcePkgPath = path.join(sourceDir, "scripts", "package.json")
   if (!fs.existsSync(sourcePkgPath)) {
     // 仓库没有 scripts/package.json，跳过（旧版本兼容）
     return 0
   }
 
-  const targetDir = path.resolve(userLevelDir, "..", "scripts")
+  const targetDir = getSpecForgeUserDir()
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true })
   }
@@ -892,7 +952,7 @@ function deployScriptsPackageJson(sourceDir: string, userLevelDir: string): numb
   const zodMarker = path.join(targetDir, "node_modules", "zod", "package.json")
   const lockfilePath = path.join(targetDir, "bun.lock")
   if (!fs.existsSync(zodMarker) || !fs.existsSync(lockfilePath)) {
-    console.log(`📦 安装 ~/.config/scripts/ 依赖（zod 等）...`)
+    console.log(`📦 安装 ${targetDir} 依赖（zod 等）...`)
     try {
       const { spawnSync } = require("node:child_process") as typeof import("node:child_process")
       const result = spawnSync("bun", ["install"], {

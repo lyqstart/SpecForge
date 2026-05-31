@@ -13,6 +13,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 // =============================================================================
 // Types
@@ -70,8 +71,8 @@ export class MigrationErrorLogger {
    */
   constructor(projectDir: string) {
     this.projectDir = projectDir;
-    // R13.2: Write to <project>/specforge/migration-error.log
-    this.logFilePath = path.join(projectDir, 'specforge', 'migration-error.log');
+    // R13.2: Write to <project>/.specforge/migration-error.log
+    this.logFilePath = path.join(projectDir, SPEC_DIR_NAME, 'migration-error.log');
   }
 
   /**

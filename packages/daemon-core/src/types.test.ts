@@ -42,6 +42,7 @@ describe('Types', () => {
 
   it('should create ProjectState', () => {
     const state: ProjectState = {
+      stateVersion: 0,
       projectPath: '/path/to/project',
       schemaVersion: '1.0',
       activeSessions: ['session-1', 'session-2'],

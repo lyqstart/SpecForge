@@ -62,7 +62,11 @@ function buildDefaultProfile(): HostProfile {
     os: { platform, release: os.release(), version: `${platform} ${os.release()}`, arch: os.arch(), totalmem_gb: Math.round(os.totalmem() / 1024 / 1024 / 1024), cpu_count: os.cpus().length },
     locale: { system_lang: "en-US", console_codepage: null, encoding: "UTF-8", timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC", tz_offset_minutes: -new Date().getTimezoneOffset(), datetime_now: new Date().toISOString() },
     shells: isWin
-      ? [{ name: "pwsh", path: null, version: null, default_encoding: "UTF-8", needs_encoding_fix: false, available: false, preferred: true }]
+      ? [
+          { name: "pwsh", path: "pwsh.exe", version: null, default_encoding: "UTF-8", needs_encoding_fix: true, available: true, preferred: true },
+          { name: "powershell", path: "powershell.exe", version: null, default_encoding: "UTF-8", needs_encoding_fix: true, available: true, preferred: false },
+          { name: "cmd", path: "cmd.exe", version: null, default_encoding: "UTF-8", needs_encoding_fix: true, available: true, preferred: false },
+        ]
       : [{ name: "bash", path: "/bin/bash", version: null, default_encoding: "UTF-8", needs_encoding_fix: false, available: true, preferred: true }],
     tools: {},
     shell_rules: {

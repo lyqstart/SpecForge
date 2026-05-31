@@ -9,10 +9,10 @@
  * 4. 版本兼容性检查
  */
 
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { homedir } from "node:os"
-import { SPEC_DIR_NAME, LAYOUT, resolveProjectPath } from "@specforge/types/directory-layout"
+import { SPEC_DIR_NAME, LAYOUT, resolveProjectPath, USER_LAYOUT, SPEC_USER_DIR_NAME } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
 
 // ── 内联 resolveUserLevelDirectory（原 scripts/lib/paths.ts）──
@@ -44,7 +44,7 @@ function assertCompatibility(baseDir: string): CompatibilityResult {
   if (installMode === "project_level") {
     return { compatible: true, installMode: "project_level" }
   }
-  const userManifestPath = join(resolveUserLevelDirectory(), "specforge-manifest.json")
+  const userManifestPath = join(homedir(), SPEC_DIR_NAME, "specforge-manifest.json")
   if (!existsSync(userManifestPath)) {
     return { compatible: false, installMode: "user_level", error: "共享组件未安装：用户级 specforge-manifest.json 不存在" }
   }
@@ -221,9 +221,9 @@ export async function checkUserLevelInstallation(baseDir: string): Promise<UserL
 /**
  * 检查项目初始化完整性
  *
- * 检查 .specforge/ 下 4 个关键文件：
+ * 检查：
  * 1. manifest.json — 项目注册标识
- * 2. dev-environment.md — 开发环境配置
+ * 2. host-profile.json — 主机环境配置（~/.specforge/host-profile.json）
  * 3. prod-environment.md — 生产环境配置
  * 4. project-rules.md — 项目规则
  */
@@ -241,30 +241,36 @@ function checkInitializationCompleteness(
     checks.push({ name: "初始化: manifest.json", status: "error", detail: "项目未初始化（manifest.json 不存在）" })
   }
 
-  // dev-environment.md
-  // NOTE: configFiles.devEnv points to config/dev-environment.md (future target per governance proposal),
-  // but current actual location is directly under .specforge/. Check both locations for compatibility.
-  const devEnvPath = join(specDir, "dev-environment.md")
-  const devEnvPathFuture = join(specDir, LAYOUT.configFiles.devEnv)
-  if (existsSync(devEnvPath) || existsSync(devEnvPathFuture)) {
-    checks.push({ name: "初始化: dev-environment.md", status: "ok", detail: "开发环境配置存在" })
+  // host-profile.json（用户级：~/.specforge/host-profile.json）
+  const hostProfilePath = join(homedir(), SPEC_USER_DIR_NAME, USER_LAYOUT.hostProfile)
+  if (existsSync(hostProfilePath)) {
+    // 检查新鲜度（30 天）
+    try {
+      const stat = statSync(hostProfilePath)
+      const ageDays = (Date.now() - stat.mtimeMs) / (1000 * 60 * 60 * 24)
+      if (ageDays > 30) {
+        checks.push({ name: "初始化: host-profile.json", status: "warning", detail: `主机环境配置已过期（${Math.floor(ageDays)} 天前生成）` })
+      } else {
+        checks.push({ name: "初始化: host-profile.json", status: "ok", detail: "主机环境配置存在且新鲜" })
+      }
+    } catch {
+      checks.push({ name: "初始化: host-profile.json", status: "warning", detail: "主机环境配置读取失败" })
+    }
   } else {
-    checks.push({ name: "初始化: dev-environment.md", status: "warning", detail: "开发环境配置缺失" })
+    checks.push({ name: "初始化: host-profile.json", status: "warning", detail: "主机环境配置缺失（将在下次初始化时自动生成）" })
   }
 
   // prod-environment.md
-  const prodEnvPath = join(specDir, "prod-environment.md")
-  const prodEnvPathFuture = join(specDir, LAYOUT.configFiles.prodEnv)
-  if (existsSync(prodEnvPath) || existsSync(prodEnvPathFuture)) {
+  const prodEnvPath = join(specDir, LAYOUT.configFiles.prodEnv)
+  if (existsSync(prodEnvPath)) {
     checks.push({ name: "初始化: prod-environment.md", status: "ok", detail: "生产环境配置存在" })
   } else {
     checks.push({ name: "初始化: prod-environment.md", status: "warning", detail: "生产环境配置缺失" })
   }
 
   // project-rules.md
-  const rulesPath = join(specDir, "project-rules.md")
-  const rulesPathFuture = join(specDir, LAYOUT.configFiles.projectRules)
-  if (existsSync(rulesPath) || existsSync(rulesPathFuture)) {
+  const rulesPath = join(specDir, LAYOUT.configFiles.projectRules)
+  if (existsSync(rulesPath)) {
     checks.push({ name: "初始化: project-rules.md", status: "ok", detail: "项目规则存在" })
   } else {
     checks.push({ name: "初始化: project-rules.md", status: "warning", detail: "项目规则缺失" })

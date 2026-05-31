@@ -1,0 +1,185 @@
+{
+  "schema_version": "1.0",
+  "properties": [
+    {
+      "id": "1",
+      "title": "Single Source of Truth",
+      "validates": ["30.1", "1.1", "4.1"],
+      "owners": ["daemon-core"]
+    },
+    {
+      "id": "2",
+      "title": "Event Bus Traversal",
+      "validates": ["30.2"],
+      "owners": ["daemon-core", "observability"]
+    },
+    {
+      "id": "3",
+      "title": "Hard Rule Immutability",
+      "validates": ["30.3", "7.5", "7.6", "7.7", "7.8"],
+      "owners": ["permission-engine"]
+    },
+    {
+      "id": "4",
+      "title": "Adapter Encapsulation",
+      "validates": ["30.4", "8.5", "8.6", "8.7", "22.3"],
+      "owners": ["opencode-adapter"]
+    },
+    {
+      "id": "5",
+      "title": "Session Identity Stability",
+      "validates": ["30.5", "6.1", "6.5"],
+      "owners": ["daemon-core"]
+    },
+    {
+      "id": "6",
+      "title": "Idempotent Recovery",
+      "validates": ["30.6", "6.6", "12.2"],
+      "owners": ["daemon-core"]
+    },
+    {
+      "id": "7",
+      "title": "WAL Ordering",
+      "validates": ["30.7", "12.1"],
+      "owners": ["daemon-core"]
+    },
+    {
+      "id": "8",
+      "title": "Serialization Round-trip",
+      "validates": ["30.8", "6.3"],
+      "owners": ["observability"]
+    },
+    {
+      "id": "9",
+      "title": "CAS Content Addressing",
+      "validates": ["30.9", "5.6", "14.2"],
+      "owners": ["observability", "multimodal"]
+    },
+    {
+      "id": "10",
+      "title": "Permission Decision Traceability",
+      "validates": ["30.10", "7.3"],
+      "owners": ["permission-engine", "observability"]
+    },
+    {
+      "id": "11",
+      "title": "Configuration Merge Determinism",
+      "validates": ["30.11", "9.1", "9.2"],
+      "owners": ["configuration"]
+    },
+    {
+      "id": "12",
+      "title": "Adapter Version Alignment",
+      "validates": ["30.12", "8.4"],
+      "owners": ["opencode-adapter"]
+    },
+    {
+      "id": "13",
+      "title": "Modality Adaptation Determinism",
+      "validates": ["30.13", "14.5"],
+      "owners": ["multimodal"]
+    },
+    {
+      "id": "14",
+      "title": "Schema Version Monotonicity",
+      "validates": ["30.14", "18.2", "18.6"],
+      "owners": ["migration"]
+    },
+    {
+      "id": "15",
+      "title": "Scope Boundary",
+      "validates": ["30.15", "25.4"],
+      "owners": ["scope-gate"]
+    },
+    {
+      "id": "16",
+      "title": "Bearer Token Enforcement",
+      "validates": ["5.4", "5.5"],
+      "owners": ["permission-engine"]
+    },
+    {
+      "id": "17",
+      "title": "Payload Size Thresholding",
+      "validates": ["5.6"],
+      "owners": ["cli"]
+    },
+    {
+      "id": "18",
+      "title": "Async Command Contract",
+      "validates": ["11.1", "11.3", "11.4"],
+      "owners": ["cli"]
+    },
+    {
+      "id": "19",
+      "title": "Hot-reload Activation Boundary",
+      "validates": ["9.5", "21.6"],
+      "owners": ["configuration"]
+    },
+    {
+      "id": "20",
+      "title": "Recovery Consistency Repair",
+      "validates": ["12.3"],
+      "owners": ["daemon-core", "migration"]
+    },
+    {
+      "id": "21",
+      "title": "Session Reconnect Scope",
+      "validates": ["12.4", "12.5"],
+      "owners": ["daemon-core"]
+    },
+    {
+      "id": "22",
+      "title": "Project Isolation",
+      "validates": ["13.1", "13.2", "13.3", "13.4"],
+      "owners": ["daemon-core"]
+    },
+    {
+      "id": "23",
+      "title": "V6.0 Multimodal Rejection",
+      "validates": ["14.7", "14.8"],
+      "owners": ["multimodal"]
+    },
+    {
+      "id": "24",
+      "title": "Healing Rollback Precondition",
+      "validates": ["15.5"],
+      "owners": ["self-healing"]
+    },
+    {
+      "id": "25",
+      "title": "Healing Iteration Bound",
+      "validates": ["15.4"],
+      "owners": ["self-healing"]
+    },
+    {
+      "id": "26",
+      "title": "Remote Access Guard",
+      "validates": ["16.3", "16.4", "16.5", "16.6"],
+      "owners": ["permission-engine"]
+    },
+    {
+      "id": "27",
+      "title": "Loader Precedence",
+      "validates": ["10.5", "10.6", "21.4"],
+      "owners": ["configuration"]
+    },
+    {
+      "id": "28",
+      "title": "Plugin Permission Gate",
+      "validates": ["17.2", "17.3"],
+      "owners": ["permission-engine", "plugin-loader"]
+    },
+    {
+      "id": "29",
+      "title": "Composite Gate Semantics",
+      "validates": ["24.4", "24.5"],
+      "owners": ["workflow-runtime"]
+    },
+    {
+      "id": "30",
+      "title": "Event Schema Multi-sync Readiness",
+      "validates": ["19.2"],
+      "owners": ["daemon-core", "observability"]
+    }
+  ]
+}

@@ -158,11 +158,21 @@ export class PersonalPathResolver implements IPathResolver {
     return path.join(os.homedir(), '.config', 'opencode', 'daemon.json');
   }
 
+  /**
+   * @deprecated Daemon-global state is no longer supported.
+   *   Use project-scoped resolveStatePath() instead.
+   */
   resolveDaemonStatePath(): string {
+    console.warn('[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.');
     return path.join(this.resolveDaemonRuntimeDir(), 'state.json');
   }
 
+  /**
+   * @deprecated Daemon-global events are no longer supported.
+   *   Use project-scoped resolveEventsPath() instead.
+   */
   resolveDaemonEventsPath(): string {
+    console.warn('[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.');
     return path.join(this.resolveDaemonRuntimeDir(), 'events.jsonl');
   }
 }
@@ -207,11 +217,21 @@ export class EnterprisePathResolver implements IPathResolver {
     return path.join(os.homedir(), '.config', 'opencode', 'daemon.json');
   }
 
+  /**
+   * @deprecated Daemon-global state is no longer supported.
+   *   Use project-scoped resolveStatePath() instead.
+   */
   resolveDaemonStatePath(): string {
+    console.warn('[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.');
     return path.join(this.resolveDaemonRuntimeDir(), 'state.json');
   }
 
+  /**
+   * @deprecated Daemon-global events are no longer supported.
+   *   Use project-scoped resolveEventsPath() instead.
+   */
   resolveDaemonEventsPath(): string {
+    console.warn('[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.');
     return path.join(this.resolveDaemonRuntimeDir(), 'events.jsonl');
   }
 }

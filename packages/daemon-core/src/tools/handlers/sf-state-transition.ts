@@ -32,18 +32,35 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
     return { success: false, error: 'WorkflowEngine not available' };
   }
 
-  try {
-    const result = await deps.workflowEngine.transitionFull({
-      workItemId,
-      fromState,
-      toState,
-      evidence: (args['evidence'] as string) ?? '',
-      workflowType: args['workflow_type'] as string,
-      transitionContext: args['transition_context'] as Record<string, unknown>,
-      actor: context?.agent ? { agentRole: context.agent, sessionId: context?.sessionID } : null,
-    });
-    return { success: true, ...result };
-  } catch (err) {
-    return { success: false, error: (err as Error).message };
+  // 1. Validate via WorkflowEngine (manages WorkflowInstance + validates transition rules)
+  //    NOTE: onTransition is no longer set in Daemon.ts, so this only validates
+  const result = await deps.workflowEngine.transitionFull({
+    workItemId,
+    fromState,
+    toState,
+    evidence: (args['evidence'] as string) ?? '',
+    workflowType: args['workflow_type'] as string,
+    transitionContext: args['transition_context'] as Record<string, unknown>,
+    actor: context?.agent ? { agentRole: context.agent, sessionId: context?.sessionID } : null,
+  });
+
+  // 2. Persist to project-level StateManager (sole persistence path)
+  const projectPath = (context?.directory as string) || (context?.worktree as string) || '';
+  if (!projectPath) {
+    return { success: false, error: 'projectPath required — provide context.directory or context.worktree' };
   }
+  if (!deps.projectManager) {
+    return { success: false, error: 'ProjectManager not available' };
+  }
+  const projectSm = await deps.projectManager.getProjectStateManager(projectPath);
+  await projectSm.transition(
+    workItemId,
+    fromState,
+    toState,
+    typeof context?.agent === 'string' ? context.agent : 'system',
+    (args['workflow_type'] as string) || 'feature_spec',
+    { evidence: (args['evidence'] as string) ?? '' },
+  );
+
+  return { success: true, ...result };
 });

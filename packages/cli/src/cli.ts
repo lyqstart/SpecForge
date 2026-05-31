@@ -43,7 +43,7 @@ import { runVersionCommand } from './commands/version';
 import { runDoctorCommand } from './commands/doctor';
 import { initCommandHandler } from './commands/init';
 import { wrapWriter, VersionLeakFilteringWriter, StartupMode } from './reporter/version-leak-filter';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
 
 /**
  * CLI version - should match package.json version
@@ -185,9 +185,9 @@ async function runStartupCheck(
   const highestKnownSchema = vu.HIGHEST_KNOWN_SCHEMA;
 
   // Determine manifest paths
-  const defaultUserManifestPath = path.join(os.homedir(), SPEC_DIR_NAME, 'manifest.json');
+  const defaultUserManifestPath = path.join(os.homedir(), SPEC_DIR_NAME, LAYOUT.manifest);
   const actualUserManifestPath = userManifestPath ?? defaultUserManifestPath;
-  const projectManifestPath = path.join(projectDir, 'specforge', 'manifest.json');
+  const projectManifestPath = path.join(projectDir, SPEC_DIR_NAME, LAYOUT.manifest);
 
   // Read project manifest to get data_schema_version
   let dataSchemaVersion: number | null = null;

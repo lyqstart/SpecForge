@@ -6,6 +6,7 @@
 import { mkdir, appendFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 
+/** SpecForge 项目级目录名 — 与 setup/userlevel-scripts-lib/paths.ts 的 SPEC_DIR_NAME 保持同步 */
 const SPEC_DIR_NAME = '.specforge' as const;
 
 // ============================================================
@@ -134,7 +135,25 @@ export async function tryCheckCompatibility(
   component: string
 ): Promise<void> {
   try {
-    const mod = await import("../../../scripts/lib/compatibility")
+    // 从 ~/.specforge/install.json 获取安装根路径，拼接绝对路径
+    const home = require("node:os").homedir()
+    const pathMod = require("node:path")
+    const { pathToFileURL } = require("node:url")
+
+    // 尝试读取 install.json 获取 base_dir
+    let specForgeHome = pathMod.join(home, ".specforge")
+    try {
+      const installJson = require("node:fs").readFileSync(
+        pathMod.join(specForgeHome, "install.json"), "utf-8"
+      )
+      const data = JSON.parse(installJson)
+      if (data && typeof data.base_dir === "string") {
+        specForgeHome = data.base_dir.replace(/^~[/\\]/, home + pathMod.sep)
+      }
+    } catch { /* 使用默认路径 */ }
+
+    const compatibilityPath = pathMod.join(specForgeHome, "lib", "compatibility.ts")
+    const mod = await import(pathToFileURL(compatibilityPath).href)
     if (mod && typeof mod.checkCompatibilityAtEntry === "function") {
       mod.checkCompatibilityAtEntry(baseDir)
     }

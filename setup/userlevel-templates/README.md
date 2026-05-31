@@ -11,7 +11,6 @@
 ```
 templates/
 ├── README.md                    ← 你正在看的这个文件
-├── dev-environment.md           ← 开发环境模板（一份，支持多个开发环境配置）
 ├── prod-environment.md          ← 生产环境模板
 └── project-rules/               ← 项目工程规则（按技术栈拼装）
     ├── _BASE.md                 ← 通用基线（所有项目都用）
@@ -36,22 +35,20 @@ templates/
         └── docker.md
 ```
 
-## 三份配置文件的关系
+## 配置文件的关系
 
 ```
-host-profile.json（自动扫描）
-    ↓ 描述"我这台机器有什么"
-    ↓ 由 scan-host-profile.ts 自动生成，用户确认
+host-profile.json（自动扫描，用户级）
+    ↓ 描述"这台机器有什么"
+    ↓ 存储在 ~/.specforge/host-profile.json
+    ↓ 由 @specforge/host-profile 包在 sf_project_init 时自动扫描
+    ↓ sf_project_init 每次启动时检查新鲜度（30 天）
 
-dev-environment.md（开发环境）
-    ↓ 描述"开发时的环境事实"
-    ↓ 基于 host-profile 扫描结果 + 用户补充
-
-prod-environment.md（生产环境）
+prod-environment.md（生产环境，项目级）
     ↓ 描述"生产部署的事实和要求"
     ↓ 用户在 intake 阶段填写
 
-project-rules.md（项目规则）
+project-rules.md（项目规则，项目级）
     ↓ 描述"这个项目的工程纪律"
     ↓ 由 orchestrator 从本模板库拼装后，用户确认
 ```
@@ -61,7 +58,7 @@ project-rules.md（项目规则）
 ### 自动方式（推荐）
 
 首次使用 SpecForge 时，orchestrator 会自动引导你完成初始化：
-1. 扫描开发环境 → 生成 `dev-environment.md`
+1. `sf_project_init` 工具自动扫描主机环境 → 生成 `~/.specforge/host-profile.json`
 2. 在 intake 阶段询问技术栈 → 拼装 `project-rules.md`
 3. 在 intake 阶段询问生产环境信息 → 生成 `prod-environment.md`
 
@@ -84,3 +81,4 @@ project-rules.md（项目规则）
 - **不要把密码写在这些文件里**——密码通过环境变量或密钥管理服务注入
 - **这些文件应该提交到 git**——它们描述的是配置结构，不是敏感值
 - **修改后通知 SpecForge**——下次启动时 orchestrator 会检测变化并提示相关 Agent 重新评估
+- **host-profile.json 是用户级的**——存储在 `~/.specforge/`，不属于任何项目，不应提交到 git

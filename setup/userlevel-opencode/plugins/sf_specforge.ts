@@ -1,5 +1,23 @@
 import type { Hooks, PluginInput } from "@opencode-ai/plugin"
-import { createReconnectingDaemonClient } from "../scripts/lib/sf_plugin_client.ts"
+
+// 动态加载 sf_plugin_client — 从 ~/.specforge/lib/ 读取
+const { join } = require("node:path")
+const { homedir } = require("node:os")
+const { pathToFileURL } = require("node:url")
+const { readFileSync } = require("node:fs")
+
+let specForgeHome = join(homedir(), ".specforge")
+try {
+  const raw = readFileSync(join(specForgeHome, "install.json"), "utf-8")
+  const data = JSON.parse(raw)
+  if (data && typeof data.base_dir === "string") {
+    specForgeHome = data.base_dir.replace(/^~[/\\]/, homedir() + require("node:path").sep)
+  }
+} catch { /* 使用默认路径 */ }
+
+const { createReconnectingDaemonClient } = await import(
+  pathToFileURL(join(specForgeHome, "lib", "sf_plugin_client.ts")).href
+)
 
 // ── Daemon 客户端 ───────────────────────────────────────────────────────────────
 // 使用 ReconnectingDaemonClient 实现自动重连、降级模式 warn-once

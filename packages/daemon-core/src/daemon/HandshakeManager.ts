@@ -47,18 +47,27 @@ export class HandshakeManager {
           // @ts-ignore - LOCK_EX may not be available on all platforms
           fsSync.flockSync(this.lockFd, fsSync.constants.LOCK_EX | fsSync.constants.LOCK_NB);
         } else {
-          // Fallback for Windows: write PID and try to open exclusively
-          fsSync.writeFileSync(this.lockFd, String(process.pid));
-          fsSync.fsyncSync(this.lockFd);
+          // Fallback for Windows: PID existence verification
+          const existingPid = this.readExistingPid(lockFile);
+          if (existingPid !== null && this.isProcessAlive(existingPid)) {
+            fsSync.closeSync(this.lockFd);
+            this.lockFd = null;
+            throw new Error('Another Daemon instance is already running');
+          }
         }
       } catch (error) {
         // Lock acquisition failed - another instance is running
-        fsSync.closeSync(this.lockFd);
+        if (this.lockFd !== null) {
+          fsSync.closeSync(this.lockFd);
+        }
         this.lockFd = null;
         throw new Error('Another Daemon instance is already running');
       }
 
       // Write our PID to the lock file
+      // Note: writeFileSync with an fd does NOT truncate, so truncate first to avoid
+      // stale trailing bytes when the new PID is shorter than the old one
+      fsSync.ftruncateSync(this.lockFd, 0);
       fsSync.writeFileSync(this.lockFd, String(process.pid));
       fsSync.fsyncSync(this.lockFd);
 
@@ -73,6 +82,48 @@ export class HandshakeManager {
         this.lockFd = null;
       }
       throw error;
+    }
+  }
+
+  /**
+   * Read existing PID from lock file, returns null if can't read or invalid
+   */
+  private readExistingPid(lockFile: string): number | null {
+    try {
+      const content = fsSync.readFileSync(lockFile, 'utf-8').trim();
+      if (!content) return null;
+      const pid = parseInt(content, 10);
+      if (isNaN(pid)) return null;
+      return pid;
+    } catch {
+      // File doesn't exist or can't be read
+      return null;
+    }
+  }
+
+  /**
+   * Check if a process with the given PID is alive
+   * Handles platform-specific error codes:
+   * - ESRCH: process doesn't exist
+   * - ERR_INVALID_ARG_TYPE: PID out of valid range (e.g., > 2^31-1 on Windows)
+   * - EPERM/EACCES: process exists but can't be signaled (conservative: assume alive)
+   */
+  private isProcessAlive(pid: number): boolean {
+    try {
+      process.kill(pid, 0);
+      return true;
+    } catch (err) {
+      const nodeErr = err as NodeJS.ErrnoException;
+      switch (nodeErr.code) {
+        case 'ESRCH':
+        case 'ERR_INVALID_ARG_TYPE':
+          return false;
+        case 'EPERM':
+        case 'EACCES':
+          return true;
+        default:
+          return true;
+      }
     }
   }
 
