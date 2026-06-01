@@ -22,15 +22,74 @@ import {
   EventLogRequest, EventQueryRequest,
 } from '../types';
 import { ToolInvokeRequest as DispatcherRequest } from '../tools';
-import { ContentAddressableStorage } from '../cas';
+import { ContentAddressableStorage, CASBlobReference } from '../cas';
 import { StateManager } from '../state/StateManager';
 import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
+import { JsonlAppender } from '../logs/JsonlAppender';
+import { resolveProjectPath } from '@specforge/types/directory-layout';
 
 function isWALWriteError(err: unknown): err is WALWriteError {
   return err instanceof WALWriteError || (err instanceof Error && err.name === 'WALWriteError');
+}
+
+/**
+ * Build a tool call record for JSONL logging.
+ *
+ * Fields align with ToolCallRecord from sf_continuity_core for consumer compatibility.
+ */
+function buildToolCallRecord(
+  sessionId: string,
+  data: unknown,
+  ts: number,
+): Record<string, unknown> {
+  const payload = (data ?? {}) as Record<string, unknown>;
+  return {
+    timestamp: ts ? new Date(ts).toISOString() : new Date().toISOString(),
+    tool: payload.tool ?? '',
+    arguments: (payload.arguments ?? payload.args ?? {}) as Record<string, unknown>,
+    exit_code: payload.exit_code as number | undefined,
+    status: payload.status as string | undefined,
+    result: payload.result,
+    session_id: sessionId,
+    call_id: payload.call_id as string | undefined,
+  };
+}
+
+/**
+ * Build a conversation record for JSONL logging.
+ *
+ * Fields align with ConversationMessage from sf_continuity_core for consumer compatibility.
+ */
+function buildConversationRecord(
+  eventType: string,
+  sessionId: string,
+  data: unknown,
+  ts: number,
+): Record<string, unknown> {
+  const payload = (data ?? {}) as Record<string, unknown>;
+  return {
+    type: eventType,
+    timestamp: ts ? new Date(ts).toISOString() : new Date().toISOString(),
+    session_id: sessionId,
+    role: payload.role as string | undefined,
+    content: (payload.content ?? (typeof payload === 'object' ? JSON.stringify(payload) : undefined)) as string | undefined,
+    tool_name: payload.tool_name as string | undefined,
+    status: payload.status as string | undefined,
+  };
+}
+
+/**
+ * 将超大请求体中的 data 字段替换为 CAS blob 引用。
+ * 纯函数，无副作用，便于单元测试。
+ */
+export function replaceDataWithCasRef(
+  bodyJson: Record<string, unknown>,
+  casRef: CASBlobReference,
+): string {
+  return JSON.stringify({ ...bodyJson, data: casRef });
 }
 
 export interface HTTPServerDeps {
@@ -45,6 +104,8 @@ export interface HTTPServerDeps {
   sessionRegistry?: any;
   recoverySubsystem?: any;
   toolDispatcher?: ToolDispatcher;
+  toolCallsLogger?: JsonlAppender;
+  conversationsLogger?: JsonlAppender;
 }
 
 // ── Route Types ──
@@ -80,6 +141,10 @@ export class HTTPServer {
   private config: DaemonConfig;
   private startTime: number = 0;
   private deps: Partial<HTTPServerDeps>;
+
+  // Per-project JsonlAppender maps (lazy-created)
+  private toolCallsAppenders: Map<string, JsonlAppender> = new Map();
+  private conversationsAppenders: Map<string, JsonlAppender> = new Map();
 
   // Route tables
   private exactRoutes: Map<string, RouteEntry[]> = new Map();
@@ -122,6 +187,34 @@ export class HTTPServer {
    */
   setToken(token: string): void {
     this.token = token;
+  }
+
+  /**
+   * Get or create a JsonlAppender for the given project path.
+   * If an external logger was injected via deps (backward compat), use it;
+   * otherwise lazily create one per projectPath.
+   */
+  private getOrCreateAppender(
+    map: Map<string, JsonlAppender>,
+    projectPath: string,
+    layoutKey: 'logsToolCalls' | 'logsConversations',
+  ): JsonlAppender {
+    // Backward compat: if external logger was injected via deps (e.g. tests), use it
+    if (layoutKey === 'logsToolCalls' && this.deps.toolCallsLogger) {
+      return this.deps.toolCallsLogger;
+    }
+    if (layoutKey === 'logsConversations' && this.deps.conversationsLogger) {
+      return this.deps.conversationsLogger;
+    }
+
+    let appender = map.get(projectPath);
+    if (!appender) {
+      const filePath = resolveProjectPath(projectPath, layoutKey);
+      appender = new JsonlAppender(filePath, { maxFileSize: 10 * 1024 * 1024, maxArchiveFiles: 3, fsync: false });
+      appender.initialize().catch(e => console.warn(`[HTTPServer] Appender init failed for ${filePath}:`, e.message));
+      map.set(projectPath, appender);
+    }
+    return appender;
   }
 
   async start(): Promise<{ port: number }> {
@@ -254,9 +347,13 @@ export class HTTPServer {
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     });
 
-    req.on('end', () => {
+    req.on('end', async () => {
       const body = Buffer.concat(chunks);
-      this.handleRequestWithBody(req, res, body);
+      try {
+        await this.handleRequestWithBody(req, res, body);
+      } catch (err) {
+        this.handleHandlerError(res, err);
+      }
     });
 
     req.on('error', () => {
@@ -264,7 +361,7 @@ export class HTTPServer {
     });
   }
 
-  private handleRequestWithBody(req: http.IncomingMessage, res: http.ServerResponse, rawBody: Buffer): void {
+  private async handleRequestWithBody(req: http.IncomingMessage, res: http.ServerResponse, rawBody: Buffer): Promise<void> {
     try {
       const method = req.method ?? 'GET';
       const pathname = this.safeGetPathname(req);
@@ -272,8 +369,18 @@ export class HTTPServer {
       // Check payload size
       const maxSize = this.config.getMaxPayloadSize();
       if (rawBody.length > maxSize) {
-        this.handleOversizedPayload(req, res, rawBody, maxSize);
-        return;
+        try {
+          rawBody = await this.storeAndReplaceDataField(rawBody, maxSize);
+          console.log(`[PAYLOAD] CAS compression successful, body reduced to ${rawBody.length} bytes`);
+          // 不 return — 继续正常流程（CORS / Auth / JSON parse / Route match / Handler）
+        } catch (err) {
+          console.warn(`[PAYLOAD] CAS compression failed: ${(err as Error).message}`);
+          this.sendJsonResponse(res, 413, {
+            error: 'Payload Too Large',
+            reason: `Payload size exceeds limit and CAS compression failed: ${(err as Error).message}`,
+          });
+          return;
+        }
       }
 
       // Handle CORS preflight (no auth needed)
@@ -389,26 +496,32 @@ export class HTTPServer {
 
   // ── Payload Handling ──
 
-  private handleOversizedPayload(req: http.IncomingMessage, res: http.ServerResponse, body: Buffer, maxSize: number): void {
-    console.warn(`[PAYLOAD] Payload size ${body.length} bytes exceeds limit ${maxSize} bytes`);
+  private async storeAndReplaceDataField(rawBody: Buffer, maxSize: number): Promise<Buffer> {
+    const bodyString = rawBody.toString('utf-8');
+    let parsed: Record<string, unknown>;
+    try {
+      parsed = JSON.parse(bodyString);
+    } catch {
+      throw new Error('Oversized payload is not valid JSON — cannot apply CAS compression');
+    }
 
-    this.cas.store(body).then((casReference) => {
-      console.log(`[PAYLOAD] Stored large payload in CAS: ${casReference.reference}`);
+    if (!parsed || typeof parsed !== 'object' || !('data' in parsed)) {
+      throw new Error('Oversized payload has no "data" field — cannot apply CAS compression');
+    }
 
-      res.writeHead(413, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        error: 'Payload Too Large',
-        reason: `Payload size ${body.length} bytes exceeds limit of ${maxSize} bytes`,
-        casReference,
-      }));
-    }).catch((error: unknown) => {
-      console.error('[PAYLOAD] Failed to store payload in CAS:', error);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        error: 'Internal Server Error',
-        reason: 'Failed to store large payload in CAS',
-      }));
-    });
+    const casRef = await this.cas.store(rawBody);
+    console.log(`[PAYLOAD] Stored oversized payload in CAS: ${casRef.reference} (${rawBody.length} bytes)`);
+
+    const compressedBodyString = replaceDataWithCasRef(parsed, casRef);
+    const compressedBuffer = Buffer.from(compressedBodyString, 'utf-8');
+
+    if (compressedBuffer.length > maxSize) {
+      throw new Error(
+        `Compressed body (${compressedBuffer.length} bytes) still exceeds limit (${maxSize} bytes)`
+      );
+    }
+
+    return compressedBuffer;
   }
 
   // ── Response Helpers ──
@@ -1072,6 +1185,12 @@ export class HTTPServer {
     const data = request.data;
     const ts = request.ts ?? 0;
 
+    // Defensive: guard against non-string type (e.g. object passed by buggy plugin)
+    if (typeof type !== 'string') {
+      console.warn(`[INGEST] Non-string event type received (typeof ${typeof type}), ignoring: ${JSON.stringify(type)}`);
+      return undefined;
+    }
+
     switch (type) {
       case 'tool.invoking':
         await this.handleToolInvoking(sessionId, data, ts);
@@ -1090,6 +1209,10 @@ export class HTTPServer {
         break;
       case 'chat.headers':
         await this.handleChatHeaders(sessionId, data, ts);
+        break;
+      case 'llm.context.prepared':
+      case 'llm.messages':
+        await this.handleLlmEvent(sessionId, type, data, ts);
         break;
       case 'shell.env':
         return { env: await this.handleShellEnv(sessionId, data) };
@@ -1174,6 +1297,9 @@ export class HTTPServer {
             payload: { ...payload, sessionId },
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
+          const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
+          const appender = this.getOrCreateAppender(this.toolCallsAppenders, projectPath, 'logsToolCalls');
+          await appender.append(buildToolCallRecord(sessionId, payload, ts));
         })(),
         3_000,
         undefined,
@@ -1190,10 +1316,12 @@ export class HTTPServer {
   private async handleOpenCodeEvent(
     sessionId: string, data: unknown, _ts: number
   ): Promise<void> {
-    const payload = (data ?? {}) as { subType?: string } & Record<string, unknown>;
+    const payload = (data ?? {}) as { subType?: string; type?: string } & Record<string, unknown>;
+    // OpenCode events use `type` field (e.g. "session.created"); support `subType` as fallback
+    const subType = (payload as any).type ?? payload.subType ?? 'unknown';
     try {
       await this.deps.sessionRegistry?.handleOpenCodeEvent?.(
-        payload.subType ?? 'unknown',
+        subType,
         { ...payload, sessionId: payload.sessionId ?? sessionId },
       );
     } catch (err) {
@@ -1243,6 +1371,51 @@ export class HTTPServer {
             payload: { params: data, sessionId },
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
+          const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          await appender.append(buildConversationRecord('chat.params', sessionId, data, ts));
+        })(),
+        3_000,
+        undefined,
+      );
+    } catch {
+      // Non-blocking: lose this log entry
+    }
+  }
+
+  /**
+   * Handle llm.* events (e.g. llm.context.prepared, llm.messages).
+   *
+   * Logs to EventLogger and optionally to conversationsLogger.
+   * Timeout: 3 s. On timeout → lose this log entry.
+   *
+   * DD-3: llm.* events are no longer fallback to handleChatParams.
+   * DD-4: record format is consumer-compatible with ToolCallRecord / ConversationMessage.
+   */
+  private async handleLlmEvent(
+    sessionId: string, eventType: string, data: unknown, ts: number
+  ): Promise<void> {
+    try {
+      await this.withTimeout(
+        (async () => {
+          const projectId = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? '';
+
+          // 1. Append to eventLogger
+          await this.deps.eventLogger?.append?.({
+            eventId: this.generateEventId(),
+            ts: ts || Date.now(),
+            projectId,
+            category: 'llm' as any,
+            action: eventType,
+            payload: { ...((data ?? {}) as Record<string, unknown>), sessionId },
+            metadata: { schemaVersion: '1.0', source: 'client' },
+          });
+
+          // 2. Append to conversationsLogger (per-project)
+          const record = buildConversationRecord(eventType, sessionId, data, ts);
+          const projectPath = projectId || process.cwd();
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          await appender.append(record);
         })(),
         3_000,
         undefined,
@@ -1271,6 +1444,9 @@ export class HTTPServer {
             payload: { headers: data, sessionId },
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
+          const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          await appender.append(buildConversationRecord('chat.headers', sessionId, data, ts));
         })(),
         3_000,
         undefined,

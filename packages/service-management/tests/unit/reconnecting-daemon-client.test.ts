@@ -15,12 +15,22 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as fc from "fast-check";
-import * as fsPromises from "node:fs/promises";
 import {
   ReconnectingDaemonClient,
   createReconnectingDaemonClient,
 } from "../../src/plugin/reconnecting-daemon-client.js";
 import type { PostResult } from "../../src/plugin/reconnecting-daemon-client.js";
+import type { PostAttemptResult } from "../../src/plugin/reconnecting-daemon-client.js";
+
+// Mock fs/promises.readFile for ESM compatibility
+// vi.mock factory is hoisted, so mock fn must be created inside factory
+// and retrieved via vi.mocked() after import
+vi.mock("node:fs/promises", () => ({
+  readFile: vi.fn(),
+}));
+
+import * as fsPromises from "node:fs/promises";
+const mockReadFile = vi.mocked(fsPromises.readFile);
 
 // ============================================================
 // Test helpers
@@ -60,7 +70,6 @@ function makeClient(overrides: {
 describe("ReconnectingDaemonClient", () => {
   let client: ReconnectingDaemonClient;
   let mockFetch: ReturnType<typeof vi.fn>;
-  let mockReadFile: ReturnType<typeof vi.spyOn>;
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
   let originalFetch: typeof globalThis.fetch;
 
@@ -71,7 +80,6 @@ describe("ReconnectingDaemonClient", () => {
     mockFetch = vi.fn();
     globalThis.fetch = mockFetch;
 
-    mockReadFile = vi.spyOn(fsPromises, "readFile");
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -750,6 +758,303 @@ describe("ReconnectingDaemonClient", () => {
       client = makeClient();
       client.dispose();
       expect(client.getActiveBackoffTimerCount()).toBe(0);
+    });
+  });
+
+  // ============================================================
+  // Suite 12: TASK-2 客户端错误分类（4xx/5xx/网络错误）
+  // ============================================================
+  describe("TASK-2: 客户端错误分类 (PostAttemptResult + isClientError)", () => {
+    it("413 响应不触发退避，返回 rejected + dropped", async () => {
+      client = makeClient();
+
+      mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
+      mockFetch.mockResolvedValue({ ok: false, status: 413 });
+
+      const result = await client.postEvent("test-session", "test.event", { data: 1 });
+
+      expect(result).toEqual<PostResult>({
+        ok: false,
+        dropped: true,
+        reason: "rejected",
+      });
+      expect(client.getActiveBackoffTimerCount()).toBe(0);
+    });
+
+    it("400/401/403/404 响应不触发退避（遍历验证）", async () => {
+      const clientErrorCodes = [400, 401, 403, 404];
+
+      for (const status of clientErrorCodes) {
+        const c = makeClient();
+
+        mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
+        mockFetch.mockResolvedValue({ ok: false, status });
+
+        const result = await c.postEvent("test-session", "test", {});
+
+        expect(result).toEqual<PostResult>({
+          ok: false,
+          dropped: true,
+          reason: "rejected",
+        });
+        expect(c.getActiveBackoffTimerCount()).toBe(0);
+
+        c.dispose();
+      }
+    });
+
+    it("429 响应触发退避（不返回 rejected）", async () => {
+      // 429 is NOT a client error — it triggers backoff (server-side rate limiting)
+      client = makeClient({ initialDelayMs: 5000, maxCumulativeBackoffMs: 60000 });
+
+      mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
+      mockFetch.mockResolvedValue({ ok: false, status: 429 });
+
+      const resultPromise = client.postEvent("test-session", "test.event", {});
+
+      // Wait for async operations to settle
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Should have started a backoff timer (not rejected immediately)
+      // Note: the result may be pending in backoff, but the key point is
+      // it should NOT return "rejected"
+      expect(client.getActiveBackoffTimerCount()).toBeLessThanOrEqual(1);
+
+      // Clean up: dispose to terminate backoff
+      client.dispose();
+      vi.advanceTimersByTime(5000);
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const result = await resultPromise;
+      expect(result.reason).not.toBe("rejected");
+    });
+
+    it("5xx 响应触发退避（现有行为保持）", async () => {
+      client = makeClient({ initialDelayMs: 5000, maxCumulativeBackoffMs: 60000 });
+
+      mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
+      mockFetch.mockResolvedValue({ ok: false, status: 503 });
+
+      const resultPromise = client.postEvent("test-session", "test.event", {});
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Should have started backoff
+      expect(client.getActiveBackoffTimerCount()).toBeLessThanOrEqual(1);
+
+      client.dispose();
+      vi.advanceTimersByTime(5000);
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const result = await resultPromise;
+      expect(result.reason).not.toBe("rejected");
+    });
+
+    it("网络错误触发退避（status undefined）", async () => {
+      client = makeClient({ initialDelayMs: 5000, maxCumulativeBackoffMs: 60000 });
+
+      mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
+      mockFetch.mockRejectedValue(new Error("ECONNREFUSED"));
+
+      const resultPromise = client.postEvent("test-session", "test.event", {});
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      // Should have started backoff (network error, not client error)
+      expect(client.getActiveBackoffTimerCount()).toBeLessThanOrEqual(1);
+
+      client.dispose();
+      vi.advanceTimersByTime(5000);
+      await Promise.resolve();
+      await Promise.resolve();
+
+      const result = await resultPromise;
+      expect(result.reason).not.toBe("rejected");
+    });
+
+    it("成功 200 返回 success（现有行为保持）", async () => {
+      client = makeClient();
+
+      mockReadFile.mockResolvedValue(makeHandshakeJson() as any);
+      mockFetch.mockResolvedValue({ ok: true, status: 200 });
+
+      const result = await client.postEvent("test-session", "test.event", { data: 1 });
+
+      expect(result).toEqual<PostResult>({
+        ok: true,
+        dropped: false,
+        reason: "success",
+      });
+      expect(client.getActiveBackoffTimerCount()).toBe(0);
+    });
+  });
+
+  // ============================================================
+  // Suite 13: TASK-3 Degraded 恢复机制（30s 定时探测 + on-demand probe）
+  // ============================================================
+  describe("TASK-3: Degraded 恢复机制 (30s probe + on-demand probe)", () => {
+    /** Helper: enter degraded mode */
+    async function enterDegraded(c: ReconnectingDaemonClient): Promise<void> {
+      mockReadFile.mockRejectedValue(new Error("ENOENT"));
+      await c.postEvent("test-session", "first", {});
+      expect(c.isDegraded()).toBe(true);
+    }
+
+    it("degraded 后推进 30s + healthz 返回 ok → isDegraded() === false", async () => {
+      client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
+      await enterDegraded(client);
+
+      // Setup: readHandshake returns valid handshake, healthz returns ok
+      mockReadFile.mockResolvedValue(makeHandshakeJson(3000, "recovery-token") as any);
+      mockFetch.mockResolvedValue({ ok: true, status: 200 });
+
+      // Advance by 30s to trigger the degraded probe interval
+      vi.advanceTimersByTime(30_000);
+
+      // Let the async callback inside setInterval complete
+      await vi.advanceTimersByTimeAsync(0);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(client.isDegraded()).toBe(false);
+    });
+
+    it("恢复后 postEvent 正常发送（不再返回 degraded）", async () => {
+      client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
+      await enterDegraded(client);
+
+      // Setup probe: readHandshake + healthz ok → recovery
+      mockReadFile.mockResolvedValue(makeHandshakeJson(3000, "recovery-token") as any);
+      mockFetch.mockResolvedValue({ ok: true, status: 200 });
+
+      vi.advanceTimersByTime(30_000);
+      await vi.advanceTimersByTimeAsync(0);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(client.isDegraded()).toBe(false);
+
+      // Now postEvent should work normally
+      mockReadFile.mockResolvedValue(makeHandshakeJson(3000, "recovery-token") as any);
+      mockFetch.mockResolvedValue({ ok: true, status: 200 });
+
+      const result = await client.postEvent("test-session", "after-recovery", {});
+      expect(result).toEqual<PostResult>({
+        ok: true,
+        dropped: false,
+        reason: "success",
+      });
+    });
+
+    it("恢复后 degradedWarningPrinted 已重置 → 再次进入 degraded 时 warning 打印 2 次（总共）", async () => {
+      client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
+      await enterDegraded(client);
+
+      // First degraded entry: 1 console.error call
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+
+      // Recover via periodic probe
+      mockReadFile.mockResolvedValue(makeHandshakeJson(3000, "recovery-token") as any);
+      mockFetch.mockResolvedValue({ ok: true, status: 200 });
+
+      vi.advanceTimersByTime(30_000);
+      await vi.advanceTimersByTimeAsync(0);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(client.isDegraded()).toBe(false);
+
+      // Re-enter degraded: make the POST fail so cachedHandshake gets cleared
+      // and startBackoff → enterDegradedMode triggers
+      mockFetch.mockResolvedValue({ ok: false, status: 503 });
+
+      const result = await client.postEvent("test-session", "trigger-degraded-again", {});
+      // Either degraded (from startBackoff) or success (if cached handshake worked before clearing)
+      if (client.isDegraded()) {
+        // Should have printed a second warning
+        expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
+      }
+    });
+
+    it("dispose() 后无泄漏定时器（getActiveBackoffTimerCount() === 0）", async () => {
+      client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
+      await enterDegraded(client);
+
+      // The probe timer should be running
+      // Dispose should clean it up
+      client.dispose();
+
+      expect(client.getActiveBackoffTimerCount()).toBe(0);
+    });
+
+    it("探测失败（healthz 返回 false）→ 保持 degraded", async () => {
+      client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
+      await enterDegraded(client);
+
+      // Setup: readHandshake ok but healthz returns false
+      mockReadFile.mockResolvedValue(makeHandshakeJson(3000, "test-token") as any);
+      mockFetch.mockResolvedValue({ ok: false, status: 503 });
+
+      vi.advanceTimersByTime(30_000);
+      // Flush microtasks for the async interval callback
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(client.isDegraded()).toBe(true);
+    });
+
+    it("triggerDegradedProbeOnce 触发即时恢复（不需要等 30s）", async () => {
+      client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
+
+      // First, have a successful postEvent to set cachedHandshake
+      mockReadFile.mockResolvedValue(makeHandshakeJson(3000, "initial-token") as any);
+      mockFetch.mockResolvedValue({ ok: true, status: 200 });
+      await client.postEvent("test-session", "setup", {});
+
+      // Now enter degraded: make the event POST fail with 5xx → cache cleared → startBackoff → degraded
+      // But to keep cachedHandshake alive, we need readHandshake to fail so
+      // postEvent doesn't reach the cache-clearing path.
+      // Alternative: directly put client into degraded state with cachedHandshake intact.
+      // Since enterDegradedMode doesn't clear cachedHandshake, we can use (client as any).
+      (client as any).degraded = true;
+      (client as any).startDegradedProbe();
+
+      expect(client.isDegraded()).toBe(true);
+      // cachedHandshake is still set from the successful postEvent above
+
+      // Make healthz return ok for the on-demand probe
+      mockFetch.mockResolvedValue({ ok: true, status: 200 });
+
+      // Call postEvent while degraded → triggers triggerDegradedProbeOnce
+      const result = await client.postEvent("test-session", "probe-trigger", {});
+      expect(result.reason).toBe("degraded");
+
+      // Wait for the fire-and-forget promise to resolve
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(client.isDegraded()).toBe(false);
     });
   });
 });

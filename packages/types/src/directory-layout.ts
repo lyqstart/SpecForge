@@ -153,11 +153,20 @@ export const LAYOUT = {
   /** 会话日志（gitignored）— `<root>/.specforge/logs/conversations.jsonl` */
   logsConversations: 'logs/conversations.jsonl',
 
+  /** Gate 检查日志（gitignored）— `<root>/.specforge/logs/gate.log` */
+  logsGate: 'logs/gate.log',
+
+  /** Shell 审计日志（gitignored）— `<root>/.specforge/logs/shell-history.jsonl` */
+  logsShellHistory: 'logs/shell-history.jsonl',
+
   /** Agent Run 归档根目录（gitignored）— `<root>/.specforge/archive/` */
   archive: 'archive',
 
   /** Agent Run 归档子目录（gitignored）— `<root>/.specforge/archive/agent_runs/` */
   archiveAgentRuns: 'archive/agent_runs',
+
+  /** 复盘报告归档子目录（gitignored）— `<root>/.specforge/archive/retro/` */
+  archiveRetro: 'archive/retro',
 
   /** 会话归档目录（gitignored）— `<root>/.specforge/sessions/` */
   sessions: 'sessions',

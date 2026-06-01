@@ -16,7 +16,7 @@ import * as os from "node:os"
 import * as path from "node:path"
 import * as fs from "node:fs/promises"
 import { existsSync } from "node:fs"
-import { SPEC_USER_DIR_NAME, USER_LAYOUT, resolveUserPath } from "@specforge/types/directory-layout"
+import { SPEC_USER_DIR_NAME, USER_LAYOUT, resolveUserPath, resolveProjectPath } from "@specforge/types/directory-layout"
 import type { SafeBashArgs, SafeBashResult } from "./sf_safe_bash_types"
 import { applyRules } from "./sf_safe_bash_rules"
 import { executeCommand, resolveCwd } from "./sf_safe_bash_executor"
@@ -194,7 +194,7 @@ export async function safeBashExecute(
   }
 
   // ── Step 6: 异步写审计日志（不阻塞主流程） ──
-  writeAuditLog(args, result, profile).catch(err => {
+  writeAuditLog(args, result, profile, baseDir).catch(err => {
     // 日志失败仅打 warning，不影响主流程
     console.warn(`[sf_safe_bash] 审计日志写入失败：${err.message}`)
   })
@@ -205,16 +205,18 @@ export async function safeBashExecute(
 /**
  * 异步写审计日志
  *
- * 路径：~/.specforge/logs/shell-history.jsonl
+ * 路径：<project>/.specforge/logs/shell-history.jsonl
  * 每行一个 JSON 对象，append-only。
+ * baseDir 为项目根目录，审计日志按项目隔离存储。
  */
 async function writeAuditLog(
   args: SafeBashArgs,
   result: SafeBashResult,
-  profile: HostProfile
+  profile: HostProfile,
+  baseDir: string
 ): Promise<void> {
-  const logDir = profile.specforge.logs_dir
-  const logFile = path.join(logDir, "shell-history.jsonl")
+  const logFile = resolveProjectPath(baseDir, 'logsShellHistory')
+  const logDir = path.dirname(logFile)
 
   // 确保目录存在
   await fs.mkdir(logDir, { recursive: true })

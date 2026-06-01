@@ -2,7 +2,7 @@
  * HTTP Server authentication and register endpoint tests
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { HTTPServer, HTTPServerDeps } from '../../src/http/HTTPServer';
 import { EventBus } from '../../src/event-bus/EventBus';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
@@ -134,7 +134,7 @@ describe('HTTPServer Authentication', () => {
     expect(events[0].payload.reason).toBe('Missing or invalid Authorization header');
   });
 
-  it('should return 413 for payload exceeding 64 KiB', async () => {
+  it('should return 413 for payload exceeding 64 KiB (non-JSON)', async () => {
     // Create a new handshake manager for this test
     const testHandshakeManager = new HandshakeManager(config);
     const testToken = testHandshakeManager.generateToken();
@@ -145,7 +145,7 @@ describe('HTTPServer Authentication', () => {
     
     await server.start();
     
-    // Create payload larger than 64 KiB
+    // Create non-JSON payload larger than 64 KiB
     const largePayload = 'x'.repeat(65 * 1024);
     
     const result = await makeRequest(server, {
@@ -159,16 +159,14 @@ describe('HTTPServer Authentication', () => {
       body: largePayload,
     });
     
+    // Non-JSON oversized body → CAS compression fails → 413
     expect(result.statusCode).toBe(413);
     expect(result.body).toContain('Payload Too Large');
     
-    // Parse response to verify CAS reference is included
+    // Response now has error/reason (not casReference since CAS compression failed for non-JSON)
     const response = JSON.parse(result.body);
-    expect(response.casReference).toBeDefined();
-    expect(response.casReference.type).toBe('cas-blob');
-    expect(typeof response.casReference.hash).toBe('string');
-    expect(response.casReference.hash.length).toBeGreaterThan(0);
-    expect(response.casReference.reference).toContain('blob://');
+    expect(response.error).toBe('Payload Too Large');
+    expect(response.reason).toContain('CAS compression failed');
     
     // Cleanup
     await testHandshakeManager.cleanup();
@@ -397,6 +395,8 @@ describe('HTTPServer Ingest Event Endpoint', () => {
   let checkpoints: Map<string, unknown>;
   let projectPathMap: Map<string, string>;
   let touchedSessions: string[];
+  let toolCallsLogger: any;
+  let conversationsLogger: any;
 
   beforeEach(async () => {
     config = new DaemonConfig();
@@ -413,6 +413,18 @@ describe('HTTPServer Ingest Event Endpoint', () => {
     checkpoints = new Map();
     projectPathMap = new Map();
     touchedSessions = [];
+
+    // Mock JsonlAppender instances
+    toolCallsLogger = {
+      append: vi.fn().mockResolvedValue(undefined),
+      initialize: vi.fn().mockResolvedValue(undefined),
+      readAll: vi.fn().mockResolvedValue([]),
+    };
+    conversationsLogger = {
+      append: vi.fn().mockResolvedValue(undefined),
+      initialize: vi.fn().mockResolvedValue(undefined),
+      readAll: vi.fn().mockResolvedValue([]),
+    };
 
     // Mock EventLogger
     mockEventLogger = {
@@ -493,6 +505,8 @@ describe('HTTPServer Ingest Event Endpoint', () => {
       permissionEngine: mockPermissionEngine,
       eventLogger: mockEventLogger,
       recoverySubsystem: mockRecoverySubsystem,
+      toolCallsLogger,
+      conversationsLogger,
     };
 
     server = new HTTPServer(deps);
@@ -753,6 +767,168 @@ describe('HTTPServer Ingest Event Endpoint', () => {
     });
 
     expect(result.statusCode).toBe(401);
+  });
+
+  // ── JsonlAppender integration tests ──
+
+  it('handleToolInvoked should write to tool_calls.jsonl via toolCallsLogger', async () => {
+    await sendEvent('session-tc-1', 'tool.invoked', {
+      tool: 'bash',
+      callID: 'call-tc-1',
+      output: 'file.txt',
+    });
+
+    expect(toolCallsLogger.append).toHaveBeenCalledOnce();
+    const callArg = toolCallsLogger.append.mock.calls[0][0];
+    expect(callArg.tool).toBe('bash');
+    expect(callArg.session_id).toBe('session-tc-1');
+  });
+
+  it('handleChatParams should write to conversations.jsonl with type chat.params', async () => {
+    await sendEvent('session-cp-1', 'chat.params', {
+      model: 'gpt-4',
+      temperature: 0.7,
+    });
+
+    expect(conversationsLogger.append).toHaveBeenCalledOnce();
+    const callArg = conversationsLogger.append.mock.calls[0][0];
+    expect(callArg.type).toBe('chat.params');
+    expect(callArg.session_id).toBe('session-cp-1');
+  });
+
+  it('handleChatHeaders should write to conversations.jsonl with type chat.headers', async () => {
+    await sendEvent('session-ch-1', 'chat.headers', {
+      'User-Agent': 'SpecForge/1.0',
+    });
+
+    expect(conversationsLogger.append).toHaveBeenCalledOnce();
+    const callArg = conversationsLogger.append.mock.calls[0][0];
+    expect(callArg.type).toBe('chat.headers');
+    expect(callArg.session_id).toBe('session-ch-1');
+  });
+
+  it('llm.context.prepared should route to conversationsLogger with correct type', async () => {
+    await sendEvent('session-llm-1', 'llm.context.prepared', {
+      context: 'system prompt...',
+    });
+
+    expect(conversationsLogger.append).toHaveBeenCalledOnce();
+    const callArg = conversationsLogger.append.mock.calls[0][0];
+    expect(callArg.type).toBe('llm.context.prepared');
+    expect(callArg.type).not.toBe('chat.params');
+    expect(callArg.session_id).toBe('session-llm-1');
+  });
+
+  it('llm.messages should route to conversationsLogger with correct type', async () => {
+    await sendEvent('session-llm-2', 'llm.messages', {
+      role: 'assistant',
+      content: 'Hello!',
+    });
+
+    expect(conversationsLogger.append).toHaveBeenCalledOnce();
+    const callArg = conversationsLogger.append.mock.calls[0][0];
+    expect(callArg.type).toBe('llm.messages');
+    expect(callArg.session_id).toBe('session-llm-2');
+  });
+
+  it('should not crash when toolCallsLogger and conversationsLogger are undefined', async () => {
+    // Create server without JsonlAppender loggers
+    const noLoggerDeps: HTTPServerDeps = {
+      config,
+      eventBus,
+      stateManager: undefined as any,
+      wal: undefined as any,
+      projectManager: mockProjectManager,
+      sessionRegistry: mockSessionRegistry,
+      permissionEngine: mockPermissionEngine,
+      eventLogger: mockEventLogger,
+      recoverySubsystem: mockRecoverySubsystem,
+      // toolCallsLogger and conversationsLogger intentionally omitted
+    };
+    const noLoggerServer = new HTTPServer(noLoggerDeps);
+    noLoggerServer.setToken(token);
+    await noLoggerServer.start();
+
+    try {
+      // tool.invoked — would normally call toolCallsLogger.append
+      const r1 = await makeRequest(noLoggerServer, {
+        method: 'POST',
+        path: '/api/v1/ingest/event',
+        headers: { authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: 's1', type: 'tool.invoked', data: { tool: 'bash' }, ts: Date.now() }),
+      });
+      expect(r1.statusCode).toBe(200);
+
+      // chat.params — would normally call conversationsLogger.append
+      const r2 = await makeRequest(noLoggerServer, {
+        method: 'POST',
+        path: '/api/v1/ingest/event',
+        headers: { authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: 's2', type: 'chat.params', data: { model: 'gpt-4' }, ts: Date.now() }),
+      });
+      expect(r2.statusCode).toBe(200);
+
+      // chat.headers
+      const r3 = await makeRequest(noLoggerServer, {
+        method: 'POST',
+        path: '/api/v1/ingest/event',
+        headers: { authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: 's3', type: 'chat.headers', data: { 'X-Test': '1' }, ts: Date.now() }),
+      });
+      expect(r3.statusCode).toBe(200);
+
+      // llm.context.prepared
+      const r4 = await makeRequest(noLoggerServer, {
+        method: 'POST',
+        path: '/api/v1/ingest/event',
+        headers: { authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: 's4', type: 'llm.context.prepared', data: {}, ts: Date.now() }),
+      });
+      expect(r4.statusCode).toBe(200);
+
+      // llm.messages
+      const r5 = await makeRequest(noLoggerServer, {
+        method: 'POST',
+        path: '/api/v1/ingest/event',
+        headers: { authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: 's5', type: 'llm.messages', data: {}, ts: Date.now() }),
+      });
+      expect(r5.statusCode).toBe(200);
+    } finally {
+      await noLoggerServer.stop();
+    }
+  });
+
+  it('should return 200 when logger append throws an error', async () => {
+    // Replace append with a throwing function
+    toolCallsLogger.append.mockRejectedValue(new Error('disk full'));
+    conversationsLogger.append.mockRejectedValue(new Error('disk full'));
+
+    // tool.invoked — toolCallsLogger.append throws
+    const r1 = await sendEvent('session-err-1', 'tool.invoked', {
+      tool: 'bash',
+      callID: 'call-err',
+      output: 'fail',
+    });
+    expect(r1.statusCode).toBe(200);
+    const resp1 = JSON.parse(r1.body);
+    expect(resp1.success).toBe(true);
+
+    // chat.params — conversationsLogger.append throws
+    const r2 = await sendEvent('session-err-2', 'chat.params', {
+      model: 'gpt-4',
+    });
+    expect(r2.statusCode).toBe(200);
+    const resp2 = JSON.parse(r2.body);
+    expect(resp2.success).toBe(true);
+
+    // chat.headers — conversationsLogger.append throws
+    const r3 = await sendEvent('session-err-3', 'chat.headers', {
+      'User-Agent': 'Test',
+    });
+    expect(r3.statusCode).toBe(200);
+    const resp3 = JSON.parse(r3.body);
+    expect(resp3.success).toBe(true);
   });
 });
 

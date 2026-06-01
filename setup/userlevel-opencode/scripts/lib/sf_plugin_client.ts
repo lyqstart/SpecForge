@@ -32,7 +32,17 @@ interface HandshakeFile {
 export interface PostResult {
   ok: boolean;
   dropped: boolean;
-  reason: "success" | "degraded" | "disposed";
+  reason: "success" | "degraded" | "disposed" | "rejected";
+}
+
+/**
+ * postEventToDaemon 的结构化返回值。
+ * 区分网络错误（status undefined）和 HTTP 错误（status 有值）。
+ */
+interface PostAttemptResult {
+  ok: boolean;
+  /** HTTP status code。网络错误/超时时为 undefined */
+  status?: number;
 }
 
 export interface RegisterResponse {
@@ -70,6 +80,19 @@ async function readHandshake(path: string): Promise<HandshakeFile | null> {
   }
 }
 
+/**
+ * 判断 HTTP 状态码是否为客户端错误（4xx，不含 429）。
+ * 429 表示服务端限流，应触发退避而非丢弃。
+ */
+function isClientError(status: number | undefined): boolean {
+  return (
+    status !== undefined &&
+    status >= 400 &&
+    status < 500 &&
+    status !== 429
+  );
+}
+
 async function postEventToDaemon(
   url: string,
   token: string,
@@ -77,7 +100,7 @@ async function postEventToDaemon(
   type: string,
   data: unknown,
   ts?: number
-): Promise<boolean> {
+): Promise<PostAttemptResult> {
   try {
     const response = await fetch(`${url}/api/v1/ingest/event`, {
       method: "POST",
@@ -88,9 +111,9 @@ async function postEventToDaemon(
       body: JSON.stringify({ sessionId, type, data, ts: ts ?? Date.now() }),
       signal: AbortSignal.timeout(5000),
     });
-    return response.ok;
+    return { ok: response.ok, status: response.status };
   } catch {
-    return false;
+    return { ok: false };  // status undefined = 网络错误
   }
 }
 
@@ -119,6 +142,8 @@ export class ReconnectingDaemonClient implements Disposable {
   private retryCount = 0;
   private pendingEvent: { sessionId: string; type: string; data: unknown } | null = null;
   private cachedHandshake: HandshakeFile | null = null;
+  private degradedProbeTimer: ReturnType<typeof setInterval> | null = null;
+  private static readonly DEGRADED_PROBE_INTERVAL_MS = 30_000; // 30s
 
   constructor(options: ReconnectingDaemonClientOptions = {}) {
     this.options = {
@@ -137,6 +162,7 @@ export class ReconnectingDaemonClient implements Disposable {
       return { ok: false, dropped: true, reason: "disposed" };
     }
     if (this.degraded) {
+      this.triggerDegradedProbeOnce();
       this.printDegradedWarningOnce();
       return { ok: false, dropped: true, reason: "degraded" };
     }
@@ -154,11 +180,22 @@ export class ReconnectingDaemonClient implements Disposable {
     }
 
     const url = `${this.options.healthzUrl}:${handshake.port}`;
-    const success = await postEventToDaemon(url, handshake.token, sessionId, type, data);
 
-    if (success) {
+    // Post the event - do NOT log the token (Req 11.4)
+    const result = await postEventToDaemon(url, handshake.token, sessionId, type, data);
+
+    if (result.ok) {
       this.resetBackoff();
       return { ok: true, dropped: false, reason: "success" };
+    }
+
+    // 4xx client errors (except 429) are permanent — drop without retry
+    if (isClientError(result.status)) {
+      console.warn(
+        `[specforge] Event rejected by daemon (HTTP ${result.status}): ` +
+        `sessionId=${sessionId}, type=${type}. Dropping event without retry.`
+      );
+      return { ok: false, dropped: true, reason: "rejected" };
     }
 
     this.cachedHandshake = null;
@@ -208,6 +245,7 @@ export class ReconnectingDaemonClient implements Disposable {
   dispose(): void {
     this.disposed = true;
     this.clearBackoffTimer();
+    this.stopDegradedProbe();
     this.pendingEvent = null;
     this.cachedHandshake = null;
   }
@@ -297,13 +335,23 @@ export class ReconnectingDaemonClient implements Disposable {
       return this.startBackoff(sessionId, type, data);
     }
 
-    const success = await postEventToDaemon(url, handshake.token, sessionId, type, data);
+    const result = await postEventToDaemon(url, handshake.token, sessionId, type, data);
 
-    if (success) {
+    if (result.ok) {
       this.cachedHandshake = handshake;
       this.resetBackoff();
       this.pendingEvent = null;
       return { ok: true, dropped: false, reason: "success" };
+    }
+
+    // 4xx client errors (except 429) are permanent — drop without retry
+    if (isClientError(result.status)) {
+      console.warn(
+        `[specforge] Pending event rejected by daemon on retry (HTTP ${result.status}): ` +
+        `sessionId=${sessionId}, type=${type}. Dropping.`
+      );
+      this.pendingEvent = null;  // ← 关键：清理待重试事件
+      return { ok: false, dropped: true, reason: "rejected" };
     }
 
     return this.startBackoff(sessionId, type, data);
@@ -314,6 +362,68 @@ export class ReconnectingDaemonClient implements Disposable {
     this.pendingEvent = null;
     this.clearBackoffTimer();
     this.printDegradedWarningOnce();
+    // DD-3: 启动 degraded 恢复探测
+    this.startDegradedProbe();
+  }
+
+  /**
+   * Starts periodic health probe while in degraded mode (DD-3).
+   * Timer is unref'd to allow Node process exit.
+   */
+  private startDegradedProbe(): void {
+    if (this.degradedProbeTimer) return;
+    this.degradedProbeTimer = setInterval(async () => {
+      if (!this.degraded || this.disposed) {
+        this.stopDegradedProbe();
+        return;
+      }
+      try {
+        const handshake = await readHandshake(this.options.handshakePath);
+        if (!handshake) return;
+        const url = `${this.options.healthzUrl}:${handshake.port}`;
+        const healthy = await checkDaemonHealth(url);
+        if (healthy) {
+          console.log('[specforge] Daemon recovered, exiting degraded mode');
+          this.degraded = false;
+          this.degradedWarningPrinted = false;
+          this.cachedHandshake = handshake;
+          this.stopDegradedProbe();
+        }
+      } catch {
+        // 探测失败 — 静默，下个周期再试
+      }
+    }, ReconnectingDaemonClient.DEGRADED_PROBE_INTERVAL_MS);
+    if (this.degradedProbeTimer && typeof this.degradedProbeTimer === 'object') {
+      this.degradedProbeTimer.unref();
+    }
+  }
+
+  /**
+   * Stops the degraded health probe timer (DD-3).
+   */
+  private stopDegradedProbe(): void {
+    if (this.degradedProbeTimer) {
+      clearInterval(this.degradedProbeTimer);
+      this.degradedProbeTimer = null;
+    }
+  }
+
+  /**
+   * Fire-and-forget health probe triggered on each postEvent() while degraded (DD-3).
+   * Uses cachedHandshake to avoid unnecessary disk reads.
+   */
+  private triggerDegradedProbeOnce(): void {
+    const handshake = this.cachedHandshake;
+    if (!handshake) return;
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    checkDaemonHealth(url).then((healthy) => {
+      if (healthy && this.degraded && !this.disposed) {
+        console.log('[specforge] Daemon recovered (on-demand probe), exiting degraded mode');
+        this.degraded = false;
+        this.degradedWarningPrinted = false;
+        this.stopDegradedProbe();
+      }
+    }).catch(() => { /* ignore */ });
   }
 
   private printDegradedWarningOnce(): void {
