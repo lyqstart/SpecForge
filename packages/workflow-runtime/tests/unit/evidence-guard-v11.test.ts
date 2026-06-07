@@ -1636,4 +1636,351 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       ).rejects.toThrow();
     });
   });
+
+  // =========================================================================
+  // PRECISE-MISSING: Only one file missing, all others present
+  // =========================================================================
+  // Each test prepares ALL evidence for a target CRITICAL state, then removes
+  // exactly ONE file/assertion. This proves the failure is caused by that
+  // specific missing item, not by an empty directory or blanket failure.
+
+  describe('Precise-missing evidence tests (quick_change path)', () => {
+    let pmEngine: WorkflowEngine;
+    let pmTmpDir: string;
+
+    function makeQuickChangeWorkflow(): WorkflowDefinition {
+      return {
+        id: 'quick_change',
+        displayName: 'Quick Change PM',
+        intent: 'test',
+        stateMachine: {
+          initial: 'created',
+          states: {
+            created: { agent: '', gate: null, skills: [], next: 'gates_running' },
+            gates_running: {
+              agent: '', gate: { type: 'simple', id: 'gate_summary_gate', name: 'Gate Summary Gate', checkFn: passGate }, skills: [],
+              next: { pass: 'approval_required', fail: 'blocked' },
+            },
+            approval_required: { agent: '', gate: null, skills: [], next: 'decision_recorded' },
+            decision_recorded: { agent: 'user_decision_recorder', gate: null, skills: [], next: 'merge_not_applicable' },
+            merge_not_applicable: { agent: 'merge_runner', gate: null, skills: [], next: 'implementation_ready' },
+            implementation_ready: {
+              agent: '',
+              gate: { type: 'simple', id: 'code_permission_release_gate', name: 'Code Permission Release Gate', checkFn: passGate },
+              skills: [],
+              next: { pass: 'implementation_running', fail: 'blocked' },
+            },
+            implementation_running: { agent: 'sf-executor', gate: null, skills: [], next: 'implementation_done' },
+            implementation_done: { agent: '', gate: null, skills: [], next: 'verification_running' },
+            verification_running: { agent: 'sf-verifier', gate: null, skills: [], next: 'verification_done' },
+            verification_done: {
+              agent: '',
+              gate: { type: 'simple', id: 'close_gate', name: 'Close Gate', checkFn: passGate },
+              skills: [],
+              next: { pass: 'closed', fail: 'implementation_running' },
+            },
+            closed: { agent: '', gate: null, skills: [] },
+            blocked: { agent: '', gate: null, skills: [] },
+          },
+        },
+        artifacts: [],
+      };
+    }
+
+    function pmForceState(instanceId: string, state: string): void {
+      const inst = pmEngine.getInstance(instanceId);
+      if (inst) { (inst as Record<string, unknown>).currentState = state; }
+    }
+
+    /** Prepare ALL evidence for implementation_ready EXCEPT the specified item */
+    async function prepareImplementationReadyEvidence(dir: string, omit: 'tasks.md' | 'work_item.json' | 'code_permission_release_gate' | 'none'): Promise<void> {
+      if (omit !== 'tasks.md') {
+        await fs.writeFile(path.join(dir, 'tasks.md'), '# Tasks\n- TASK-1: Implement feature');
+      }
+      if (omit !== 'work_item.json') {
+        await fs.writeFile(path.join(dir, 'work_item.json'), JSON.stringify({ allowed_write_files: ['src/a.ts', 'src/b.ts'] }));
+      }
+      if (omit !== 'code_permission_release_gate') {
+        await fs.mkdir(path.join(dir, 'gates'), { recursive: true });
+        await fs.writeFile(path.join(dir, 'gates', 'code_permission_release_gate.json'), JSON.stringify({ status: 'passed' }));
+      }
+    }
+
+    /** Prepare ALL evidence for verification_done EXCEPT the specified item */
+    async function prepareVerificationDoneEvidence(dir: string, omit: 'verification_report.md' | 'evidence_manifest' | 'none'): Promise<void> {
+      if (omit !== 'verification_report.md') {
+        await fs.writeFile(path.join(dir, 'verification_report.md'), '# Verification Report\nAll ACs verified.');
+      }
+      if (omit !== 'evidence_manifest') {
+        await fs.mkdir(path.join(dir, 'evidence'), { recursive: true });
+        await fs.writeFile(path.join(dir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ artifacts: ['EA-001'] }));
+      }
+    }
+
+    /** Prepare ALL evidence for closed EXCEPT the specified item */
+    async function prepareClosedEvidence(dir: string, omit: 'changed_files_audit.md' | 'close_gate' | 'merge_report.md' | 'none'): Promise<void> {
+      if (omit !== 'changed_files_audit.md') {
+        await fs.writeFile(path.join(dir, 'changed_files_audit.md'), '# Changed Files Audit\n- src/a.ts: modified\n- src/b.ts: created');
+      }
+      if (omit !== 'close_gate') {
+        await fs.mkdir(path.join(dir, 'gates'), { recursive: true });
+        await fs.writeFile(path.join(dir, 'gates', 'close_gate.json'), JSON.stringify({ status: 'passed' }));
+      }
+      if (omit !== 'merge_report.md') {
+        await fs.writeFile(path.join(dir, 'merge_report.md'), JSON.stringify({ status: 'not_applicable' }));
+      }
+    }
+
+    /** Prepare ALL evidence for merge_ready (user_decision.json based) — used by standard v11 path tests */
+
+    beforeEach(async () => {
+      pmEngine = new WorkflowEngine();
+      pmEngine.loadWorkflow(makeQuickChangeWorkflow());
+      pmTmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-pm-test-'));
+    });
+
+    afterEach(async () => {
+      await fs.rm(pmTmpDir, { recursive: true, force: true });
+    });
+
+    // --- PM-1: missing user_decision.json → cannot enter merge_ready (standard path) ---
+    // In quick_change, approval_required → decision_recorded, not merge_ready.
+    // To test user_decision.json precisely, we use the v11 standard workflow where
+    // approval_required → merge_ready requires user_decision.json.
+    // We prepare gate_summary.md + gates/gate_summary_gate.json(passed) but omit user_decision.json.
+    it('PM-1: missing user_decision.json blocks merge_ready (all other evidence present)', async () => {
+      // Use a standard v11 workflow that has approval_required → merge_ready
+      const stdEngine = new WorkflowEngine();
+      stdEngine.loadWorkflow(makeV11Workflow());
+      const stdTmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-pm-std-'));
+      try {
+        // Prepare evidence that would allow approval_required (gate_summary.md + gate_summary_gate passed)
+        await fs.writeFile(path.join(stdTmpDir, 'gate_summary.md'), '# Gate Summary\nAll gates passed.');
+        await fs.mkdir(path.join(stdTmpDir, 'gates'), { recursive: true });
+        await fs.writeFile(path.join(stdTmpDir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
+        // Do NOT create user_decision.json — this is the only missing item
+
+        const inst = stdEngine.createInstance('v11-test-workflow');
+        stdEngine.transition(inst.id, 'created', 'gates_running');
+        // Force to approval_required (bypassing enforceTransitionEvidence for approval_required itself)
+        const instObj = stdEngine.getInstance(inst.id);
+        if (instObj) { (instObj as Record<string, unknown>).currentState = 'approval_required'; }
+
+        await expect(
+          stdEngine.transitionFull({ workItemId: inst.id, fromState: 'approval_required', toState: 'merge_ready', workItemDir: stdTmpDir })
+        ).rejects.toThrow(/user_decision/);
+      } finally {
+        await fs.rm(stdTmpDir, { recursive: true, force: true });
+      }
+    });
+
+    // --- PM-2: quick_change missing merge_report.md(status=not_applicable) cannot close ---
+    it('PM-2: missing merge_report.md does NOT block closed (not in enforceTransitionEvidence), but close_gate does', async () => {
+      // closed requires changed_files_audit.md + gates/close_gate.json(passed)
+      // merge_report.md is NOT checked by enforceTransitionEvidence for 'closed'
+      // So: prepare changed_files_audit + close_gate(passed), omit merge_report.md → should SUCCEED
+      await prepareClosedEvidence(pmTmpDir, 'merge_report.md');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'verification_done');
+
+      const result = await pmEngine.transitionFull({
+        workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmTmpDir,
+      });
+      expect(result.currentState).toBe('closed');
+    });
+
+    // --- PM-2b: close_gate status != passed → cannot close ---
+    it('PM-2b: merge_report.md present but close_gate status=failed → closed blocked', async () => {
+      // Prepare everything including merge_report.md, but close_gate is failed
+      await fs.writeFile(path.join(pmTmpDir, 'changed_files_audit.md'), '# Audit');
+      await fs.writeFile(path.join(pmTmpDir, 'merge_report.md'), JSON.stringify({ status: 'not_applicable' }));
+      await fs.mkdir(path.join(pmTmpDir, 'gates'), { recursive: true });
+      await fs.writeFile(path.join(pmTmpDir, 'gates', 'close_gate.json'), JSON.stringify({ status: 'failed' }));
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'verification_done');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/close_gate/);
+    });
+
+    // --- PM-3: quick_change missing changed_files_audit.md → cannot closed ---
+    it('PM-3: missing changed_files_audit.md blocks closed (close_gate passed present)', async () => {
+      // Prepare close_gate.json passed but NOT changed_files_audit.md
+      await prepareClosedEvidence(pmTmpDir, 'changed_files_audit.md');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'verification_done');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/changed_files_audit/);
+    });
+
+    // --- PM-4: quick_change missing evidence_manifest → cannot verification_done ---
+    it('PM-4: missing evidence_manifest blocks verification_done (verification_report present)', async () => {
+      // Prepare verification_report.md but NOT evidence/evidence_manifest.json
+      await prepareVerificationDoneEvidence(pmTmpDir, 'evidence_manifest');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'verification_running');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_running', toState: 'verification_done', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/evidence_manifest/);
+    });
+
+    // --- PM-4b: missing verification_report.md → cannot verification_done ---
+    it('PM-4b: missing verification_report.md blocks verification_done (evidence_manifest present)', async () => {
+      // Prepare evidence/evidence_manifest.json but NOT verification_report.md
+      await prepareVerificationDoneEvidence(pmTmpDir, 'verification_report.md');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'verification_running');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_running', toState: 'verification_done', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/verification_report/);
+    });
+
+    // --- PM-5: code_permission_release_gate status=not_enabled → cannot implementation_running ---
+    it('PM-5: code_permission_release_gate status=not_enabled blocks implementation_ready (tasks.md + work_item.json present)', async () => {
+      // Prepare tasks.md + work_item.json but gate file has status=not_enabled
+      await fs.writeFile(path.join(pmTmpDir, 'tasks.md'), '# Tasks\n- TASK-1');
+      await fs.writeFile(path.join(pmTmpDir, 'work_item.json'), JSON.stringify({ allowed_write_files: ['src/a.ts'] }));
+      await fs.mkdir(path.join(pmTmpDir, 'gates'), { recursive: true });
+      await fs.writeFile(path.join(pmTmpDir, 'gates', 'code_permission_release_gate.json'), JSON.stringify({ status: 'not_enabled' }));
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'merge_not_applicable');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/code_permission_release_gate/);
+    });
+
+    // --- PM-5b: code_permission_release_gate missing → cannot implementation_ready ---
+    it('PM-5b: missing code_permission_release_gate blocks implementation_ready (tasks.md + work_item.json present)', async () => {
+      await prepareImplementationReadyEvidence(pmTmpDir, 'code_permission_release_gate');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'merge_not_applicable');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/code_permission_release_gate/);
+    });
+
+    // --- PM-5c: missing tasks.md → cannot implementation_ready ---
+    it('PM-5c: missing tasks.md blocks implementation_ready (work_item.json + gate present)', async () => {
+      await prepareImplementationReadyEvidence(pmTmpDir, 'tasks.md');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'merge_not_applicable');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/tasks\.md/);
+    });
+
+    // --- PM-5d: missing work_item.json → cannot implementation_ready ---
+    it('PM-5d: missing work_item.json blocks implementation_ready (tasks.md + gate present)', async () => {
+      await prepareImplementationReadyEvidence(pmTmpDir, 'work_item.json');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'merge_not_applicable');
+
+      await expect(
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: pmTmpDir })
+      ).rejects.toThrow(/work_item\.json|allowed_write_files/);
+    });
+
+    // --- PM-positive: all evidence present → each transition succeeds ---
+    it('PM-pos-1: all evidence present → implementation_ready succeeds', async () => {
+      await prepareImplementationReadyEvidence(pmTmpDir, 'none');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'merge_not_applicable');
+
+      const result = await pmEngine.transitionFull({
+        workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: pmTmpDir,
+      });
+      expect(result.currentState).toBe('implementation_ready');
+    });
+
+    it('PM-pos-2: all evidence present → verification_done succeeds', async () => {
+      await prepareVerificationDoneEvidence(pmTmpDir, 'none');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'verification_running');
+
+      const result = await pmEngine.transitionFull({
+        workItemId: inst.id, fromState: 'verification_running', toState: 'verification_done', workItemDir: pmTmpDir,
+      });
+      expect(result.currentState).toBe('verification_done');
+    });
+
+    it('PM-pos-3: all evidence present → closed succeeds', async () => {
+      await prepareClosedEvidence(pmTmpDir, 'none');
+
+      const inst = pmEngine.createInstance('quick_change');
+      pmForceState(inst.id, 'verification_done');
+
+      const result = await pmEngine.transitionFull({
+        workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmTmpDir,
+      });
+      expect(result.currentState).toBe('closed');
+    });
+
+    it('PM-pos-4: user_decision.json approved → merge_ready succeeds (standard v11 workflow)', async () => {
+      // Use standard v11 workflow where approval_required → merge_ready
+      const stdEngine = new WorkflowEngine();
+      stdEngine.loadWorkflow(makeV11Workflow());
+      const stdTmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-pm-pos4-'));
+      try {
+        await fs.writeFile(path.join(stdTmpDir, 'gate_summary.md'), '# Gate Summary');
+        await fs.mkdir(path.join(stdTmpDir, 'gates'), { recursive: true });
+        await fs.writeFile(path.join(stdTmpDir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
+        await fs.writeFile(path.join(stdTmpDir, 'user_decision.json'), JSON.stringify({ decision_status: 'approved', content_hash: 'abc123' }));
+
+        const inst = stdEngine.createInstance('v11-test-workflow');
+        stdEngine.transition(inst.id, 'created', 'gates_running');
+        const instObj = stdEngine.getInstance(inst.id);
+        if (instObj) { (instObj as Record<string, unknown>).currentState = 'approval_required'; }
+
+        const result = await stdEngine.transitionFull({
+          workItemId: inst.id, fromState: 'approval_required', toState: 'merge_ready', workItemDir: stdTmpDir,
+        });
+        expect(result.currentState).toBe('merge_ready');
+      } finally {
+        await fs.rm(stdTmpDir, { recursive: true, force: true });
+      }
+    });
+
+    it('PM-pos-5: user_decision.json rejected → merge_ready blocked (standard v11 workflow)', async () => {
+      const stdEngine = new WorkflowEngine();
+      stdEngine.loadWorkflow(makeV11Workflow());
+      const stdTmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-pm-pos5-'));
+      try {
+        await fs.writeFile(path.join(stdTmpDir, 'gate_summary.md'), '# Gate Summary');
+        await fs.mkdir(path.join(stdTmpDir, 'gates'), { recursive: true });
+        await fs.writeFile(path.join(stdTmpDir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
+        // Write user_decision.json with rejected status
+        await fs.writeFile(path.join(stdTmpDir, 'user_decision.json'), JSON.stringify({ decision_status: 'rejected' }));
+
+        const inst = stdEngine.createInstance('v11-test-workflow');
+        stdEngine.transition(inst.id, 'created', 'gates_running');
+        const instObj = stdEngine.getInstance(inst.id);
+        if (instObj) { (instObj as Record<string, unknown>).currentState = 'approval_required'; }
+
+        await expect(
+          stdEngine.transitionFull({ workItemId: inst.id, fromState: 'approval_required', toState: 'merge_ready', workItemDir: stdTmpDir })
+        ).rejects.toThrow(/user_decision/);
+      } finally {
+        await fs.rm(stdTmpDir, { recursive: true, force: true });
+      }
+    });
+  });
 });
