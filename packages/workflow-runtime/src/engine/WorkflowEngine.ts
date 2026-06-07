@@ -34,6 +34,13 @@ const CRITICAL_STATES = new Set([
 ]);
 
 /**
+ * v1.1: Check whether a target state requires transition evidence enforcement.
+ */
+export function requiresTransitionEvidence(targetState: string): boolean {
+  return CRITICAL_STATES.has(targetState);
+}
+
+/**
  * Workflow Engine
  * Loads workflow definitions and manages workflow instance lifecycle
  */
@@ -427,7 +434,7 @@ export class WorkflowEngine {
   /**
    * Resume a paused workflow instance
    */
-  resume(instanceId: string): Promise<WorkflowInstance> {
+  resume(instanceId: string, options?: { workItemDir?: string }): Promise<WorkflowInstance> {
     const instance = this.instances.get(instanceId);
     if (!instance) {
       throw new Error(`Workflow instance not found: ${instanceId}`);
@@ -437,8 +444,8 @@ export class WorkflowEngine {
       throw new Error(`Cannot resume workflow instance in status: ${instance.status}`);
     }
 
-    // Resume execution from current state
-    return this.execute(instanceId);
+    // Resume execution from current state — pass workItemDir through
+    return this.execute(instanceId, options);
   }
 
   /**

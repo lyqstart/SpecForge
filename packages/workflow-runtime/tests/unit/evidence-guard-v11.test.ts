@@ -14,7 +14,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
-import { WorkflowEngine } from '../../src/WorkflowEngine.js';
+import { WorkflowEngine, requiresTransitionEvidence } from '../../src/WorkflowEngine.js';
 import { WorkflowDefinition } from '../../src/types.js';
 
 /**
@@ -556,5 +556,70 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       expect(result.currentState).toBe('closed');
     });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Test 7: resume() without workItemDir entering critical states MUST fail
+  // ---------------------------------------------------------------------------
+
+  describe('resume() without workItemDir', () => {
+    it('must throw when resuming into approval_required without workItemDir', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      engine.transition(instance.id, 'created', 'gates_running');
+
+      // Set status to running first (required by WorkflowStateManager.pause)
+      const inst = engine.getInstance(instance.id);
+      if (inst) {
+        (inst as Record<string, unknown>).status = 'running';
+      }
+
+      // Now pause — this should work since status is running
+      engine.pause(instance.id);
+
+      // Resume without workItemDir — will execute() which advances to approval_required
+      await expect(engine.resume(instance.id)).rejects.toThrow(/workItemDir is required/);
+    });
+
+    it('must throw when resuming into merge_ready without workItemDir', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      engine.transition(instance.id, 'created', 'gates_running');
+      engine.transition(instance.id, 'gates_running', 'approval_required');
+
+      // Set to paused directly
+      const inst = engine.getInstance(instance.id);
+      if (inst) {
+        (inst as Record<string, unknown>).status = 'paused';
+      }
+
+      await expect(engine.resume(instance.id)).rejects.toThrow(/workItemDir is required/);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Test 8: requiresTransitionEvidence() public function
+  // ---------------------------------------------------------------------------
+
+  describe('requiresTransitionEvidence()', () => {
+    const criticalStates = [
+      'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
+      'implementation_ready', 'verification_done', 'closed',
+    ];
+    const nonCriticalStates = [
+      'created', 'intake_ready', 'impact_analyzing', 'gates_running',
+      'gates_failed', 'merged', 'implementation_running', 'verification_running',
+      'blocked', 'rejected',
+    ];
+
+    for (const state of criticalStates) {
+      it(`must return true for critical state '${state}'`, () => {
+        expect(requiresTransitionEvidence(state)).toBe(true);
+      });
+    }
+
+    for (const state of nonCriticalStates) {
+      it(`must return false for non-critical state '${state}'`, () => {
+        expect(requiresTransitionEvidence(state)).toBe(false);
+      });
+    }
   });
 });
