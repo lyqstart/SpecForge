@@ -159,6 +159,12 @@ export class WorkflowEngine {
       return false;
     }
 
+    // v1.1: Block critical state transitions through unsynchronized path
+    // Critical states MUST go through transitionFull() which enforces evidence
+    if (CRITICAL_STATES.has(to)) {
+      throw new Error(`Cannot transition to critical state '${to}' via transition() — use transitionFull() with workItemDir`);
+    }
+
     // Perform the transition
     instance.currentState = to;
     instance.updatedAt = new Date();

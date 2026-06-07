@@ -148,7 +148,7 @@
         "schema_version": "2.0",
         "agent": "",
         "skills": [],
-        "produces": null,
+        "produces": "user_decision.json",
         "gate": null,
         "next": { "approved": "approved", "rejected": "rejected" },
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
@@ -157,7 +157,7 @@
         "schema_version": "2.0",
         "agent": "",
         "skills": [],
-        "produces": null,
+        "produces": "merge_report.md",
         "gate": null,
         "next": "implementation_ready",
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
@@ -193,7 +193,7 @@
         "schema_version": "2.0",
         "agent": "sf-verifier",
         "skills": ["superpowers-verification-before-completion"],
-        "produces": "verification_report.md",
+        "produces": ["verification_report.md", "changed_files_audit.md"],
         "gate": null,
         "next": "verification_done",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }

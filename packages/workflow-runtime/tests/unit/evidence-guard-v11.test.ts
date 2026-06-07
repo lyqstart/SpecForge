@@ -130,6 +130,19 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
     await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
   });
 
+  /**
+   * Helper: directly set instance state for test setup.
+   * We cannot use transition() for critical states anymore (it throws),
+   * and we cannot use transitionFull() without setting up evidence files.
+   * For test setup only, we directly manipulate the instance.
+   */
+  function forceState(instanceId: string, state: string): void {
+    const inst = engine.getInstance(instanceId);
+    if (inst) {
+      (inst as Record<string, unknown>).currentState = state;
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Test 1: execute() without workItemDir entering critical states MUST fail
   // ---------------------------------------------------------------------------
@@ -150,7 +163,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       const instance = engine.createInstance('v11-test-workflow');
       // Transition to approval_required
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
+      forceState(instance.id, 'approval_required');
 
       // execute without workItemDir — should fail when trying merge_ready
       await expect(engine.execute(instance.id)).rejects.toThrow(/workItemDir is required/);
@@ -160,16 +173,16 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       const instance = engine.createInstance('v11-test-workflow');
       // Jump to verification_done via direct transitions
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
-      engine.transition(instance.id, 'merged', 'post_merge_verified');
-      engine.transition(instance.id, 'post_merge_verified', 'implementation_ready');
+      forceState(instance.id, 'post_merge_verified');
+      forceState(instance.id, 'implementation_ready');
       engine.transition(instance.id, 'implementation_ready', 'implementation_running');
       engine.transition(instance.id, 'implementation_running', 'implementation_done');
       engine.transition(instance.id, 'implementation_done', 'verification_running');
-      engine.transition(instance.id, 'verification_running', 'verification_done');
+      forceState(instance.id, 'verification_done');
 
       // execute without workItemDir — should fail for closed
       await expect(engine.execute(instance.id)).rejects.toThrow(/workItemDir is required/);
@@ -197,7 +210,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
     it('must throw for → merge_ready without workItemDir', async () => {
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
+      forceState(instance.id, 'approval_required');
 
       await expect(
         engine.transitionFull({
@@ -211,8 +224,8 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
     it('must throw for → merging without workItemDir', async () => {
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
 
       await expect(
         engine.transitionFull({
@@ -227,16 +240,16 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       const instance = engine.createInstance('v11-test-workflow');
       // Jump to verification_done
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
-      engine.transition(instance.id, 'merged', 'post_merge_verified');
-      engine.transition(instance.id, 'post_merge_verified', 'implementation_ready');
+      forceState(instance.id, 'post_merge_verified');
+      forceState(instance.id, 'implementation_ready');
       engine.transition(instance.id, 'implementation_ready', 'implementation_running');
       engine.transition(instance.id, 'implementation_running', 'implementation_done');
       engine.transition(instance.id, 'implementation_done', 'verification_running');
-      engine.transition(instance.id, 'verification_running', 'verification_done');
+      forceState(instance.id, 'verification_done');
 
       await expect(
         engine.transitionFull({
@@ -256,7 +269,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
     it('must fail without user_decision.json', async () => {
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
+      forceState(instance.id, 'approval_required');
 
       await expect(
         engine.transitionFull({
@@ -276,7 +289,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
+      forceState(instance.id, 'approval_required');
 
       await expect(
         engine.transitionFull({
@@ -296,7 +309,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
+      forceState(instance.id, 'approval_required');
 
       const result = await engine.transitionFull({
         workItemId: instance.id,
@@ -317,8 +330,8 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
     it('must fail without gates/merge_ready_gate.json', async () => {
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
 
       await expect(
         engine.transitionFull({
@@ -339,8 +352,8 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
 
       await expect(
         engine.transitionFull({
@@ -361,8 +374,8 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
 
       const result = await engine.transitionFull({
         workItemId: instance.id,
@@ -383,9 +396,9 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
     it('must fail without gates/post_merge_gate.json', async () => {
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
 
       await expect(
@@ -407,9 +420,9 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
 
       const result = await engine.transitionFull({
@@ -438,16 +451,16 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
-      engine.transition(instance.id, 'merged', 'post_merge_verified');
-      engine.transition(instance.id, 'post_merge_verified', 'implementation_ready');
+      forceState(instance.id, 'post_merge_verified');
+      forceState(instance.id, 'implementation_ready');
       engine.transition(instance.id, 'implementation_ready', 'implementation_running');
       engine.transition(instance.id, 'implementation_running', 'implementation_done');
       engine.transition(instance.id, 'implementation_done', 'verification_running');
-      engine.transition(instance.id, 'verification_running', 'verification_done');
+      forceState(instance.id, 'verification_done');
 
       await expect(
         engine.transitionFull({
@@ -468,16 +481,16 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
-      engine.transition(instance.id, 'merged', 'post_merge_verified');
-      engine.transition(instance.id, 'post_merge_verified', 'implementation_ready');
+      forceState(instance.id, 'post_merge_verified');
+      forceState(instance.id, 'implementation_ready');
       engine.transition(instance.id, 'implementation_ready', 'implementation_running');
       engine.transition(instance.id, 'implementation_running', 'implementation_done');
       engine.transition(instance.id, 'implementation_done', 'verification_running');
-      engine.transition(instance.id, 'verification_running', 'verification_done');
+      forceState(instance.id, 'verification_done');
 
       await expect(
         engine.transitionFull({
@@ -502,16 +515,16 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
-      engine.transition(instance.id, 'merged', 'post_merge_verified');
-      engine.transition(instance.id, 'post_merge_verified', 'implementation_ready');
+      forceState(instance.id, 'post_merge_verified');
+      forceState(instance.id, 'implementation_ready');
       engine.transition(instance.id, 'implementation_ready', 'implementation_running');
       engine.transition(instance.id, 'implementation_running', 'implementation_done');
       engine.transition(instance.id, 'implementation_done', 'verification_running');
-      engine.transition(instance.id, 'verification_running', 'verification_done');
+      forceState(instance.id, 'verification_done');
 
       await expect(
         engine.transitionFull({
@@ -536,16 +549,16 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
-      engine.transition(instance.id, 'approval_required', 'merge_ready');
-      engine.transition(instance.id, 'merge_ready', 'merging');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
       engine.transition(instance.id, 'merging', 'merged');
-      engine.transition(instance.id, 'merged', 'post_merge_verified');
-      engine.transition(instance.id, 'post_merge_verified', 'implementation_ready');
+      forceState(instance.id, 'post_merge_verified');
+      forceState(instance.id, 'implementation_ready');
       engine.transition(instance.id, 'implementation_ready', 'implementation_running');
       engine.transition(instance.id, 'implementation_running', 'implementation_done');
       engine.transition(instance.id, 'implementation_done', 'verification_running');
-      engine.transition(instance.id, 'verification_running', 'verification_done');
+      forceState(instance.id, 'verification_done');
 
       const result = await engine.transitionFull({
         workItemId: instance.id,
@@ -583,7 +596,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
     it('must throw when resuming into merge_ready without workItemDir', async () => {
       const instance = engine.createInstance('v11-test-workflow');
       engine.transition(instance.id, 'created', 'gates_running');
-      engine.transition(instance.id, 'gates_running', 'approval_required');
+      forceState(instance.id, 'approval_required');
 
       // Set to paused directly
       const inst = engine.getInstance(instance.id);
@@ -621,5 +634,100 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
         expect(requiresTransitionEvidence(state)).toBe(false);
       });
     }
+  });
+
+  // ---------------------------------------------------------------------------
+  // Test 9: transition() bypass — must block critical states
+  // ---------------------------------------------------------------------------
+
+  describe('transition() bypass protection', () => {
+    it('must throw when transition() targets closed (critical state)', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      engine.transition(instance.id, 'created', 'gates_running');
+      forceState(instance.id, 'approval_required');
+      forceState(instance.id, 'merge_ready');
+      forceState(instance.id, 'merging');
+      engine.transition(instance.id, 'merging', 'merged');
+      forceState(instance.id, 'post_merge_verified');
+      forceState(instance.id, 'implementation_ready');
+      engine.transition(instance.id, 'implementation_ready', 'implementation_running');
+      engine.transition(instance.id, 'implementation_running', 'implementation_done');
+      engine.transition(instance.id, 'implementation_done', 'verification_running');
+      forceState(instance.id, 'verification_done');
+
+      expect(() => engine.transition(instance.id, 'verification_done', 'closed')).toThrow(/transitionFull/);
+    });
+
+    it('must throw when transition() targets approval_required', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      engine.transition(instance.id, 'created', 'gates_running');
+
+      expect(() => engine.transition(instance.id, 'gates_running', 'approval_required')).toThrow(/transitionFull/);
+    });
+
+    it('must throw when transition() targets merge_ready', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      engine.transition(instance.id, 'created', 'gates_running');
+      forceState(instance.id, 'approval_required');
+
+      expect(() => engine.transition(instance.id, 'approval_required', 'merge_ready')).toThrow(/transitionFull/);
+    });
+
+    it('must allow transition() for non-critical states', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+
+      // created → gates_running is non-critical, should work
+      expect(engine.transition(instance.id, 'created', 'gates_running')).toBe(true);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Test 10: transitionFull creation branch — only 'created' allowed
+  // ---------------------------------------------------------------------------
+
+  describe('transitionFull creation branch', () => {
+    it('must reject creating WI directly to closed', async () => {
+      await expect(
+        engine.transitionFull({
+          workItemId: 'test-wi-001',
+          fromState: '',
+          toState: 'closed',
+          workItemDir: tmpDir,
+        }),
+      ).rejects.toThrow(/created/);
+    });
+
+    it('must reject creating WI directly to approval_required', async () => {
+      await expect(
+        engine.transitionFull({
+          workItemId: 'test-wi-002',
+          fromState: '',
+          toState: 'approval_required',
+          workItemDir: tmpDir,
+        }),
+      ).rejects.toThrow(/created/);
+    });
+
+    it('must reject creating WI directly to merge_ready', async () => {
+      await expect(
+        engine.transitionFull({
+          workItemId: 'test-wi-003',
+          fromState: '',
+          toState: 'merge_ready',
+          workItemDir: tmpDir,
+        }),
+      ).rejects.toThrow(/created/);
+    });
+
+    it('must allow creating WI to created state', async () => {
+      const result = await engine.transitionFull({
+        workItemId: 'test-wi-004',
+        fromState: '',
+        toState: 'created',
+        workflowType: 'v11-test-workflow',
+      });
+
+      expect(result.currentState).toBe('created');
+    });
   });
 });
