@@ -248,8 +248,10 @@ export class WorkflowEngine {
         throw new Error(`State not found: ${instance.currentState}`);
       }
 
-      // Execute the gate
-      const gateResult = await this.executeGate(currentStateDef.gate);
+      // Execute the gate (null gate → auto-pass, no gate to run)
+      const gateResult = currentStateDef.gate
+        ? await this.executeGate(currentStateDef.gate)
+        : { schema_version: '1.0' as const, passed: true, reason: 'No gate defined' };
 
       // Emit gate execution event
       this.emitEvent({
@@ -329,11 +331,15 @@ export class WorkflowEngine {
    */
   private async executeSimpleGate(gate: SimpleGateDefinition): Promise<GateResult> {
     if (gate.checkFn) {
-      return await gate.checkFn();
+      const result = await gate.checkFn();
+      // v1.1: Set status if not already set by checkFn
+      if (!result.status) {
+        result.status = result.passed ? 'passed' : 'failed';
+      }
+      return result;
     }
     // No checkFn — gate cannot verify
     // v1.1: required=false + no checkFn → not_enabled (NOT passed)
-    // State progression handles this via status check in determineNextState()
     if (gate.required === false) {
       return {
         schema_version: '1.0',
@@ -343,7 +349,7 @@ export class WorkflowEngine {
       };
     }
     // All other gates without checkFn (including severity='soft') must fail
-    return { schema_version: '1.0', passed: false, reason: 'Required gate has no check function defined — cannot verify, blocked' };
+    return { schema_version: '1.0', passed: false, status: 'blocked', reason: 'Required gate has no check function defined — cannot verify, blocked' };
   }
 
   /**
@@ -358,12 +364,12 @@ export class WorkflowEngine {
         const result = await this.executeGate(childGate);
         results.push(result);
 
-        // v1.1: status='not_enabled' is waivable, not a real failure
-        if (gate.failPolicy === 'fail_fast' && !result.passed && result.status !== 'not_enabled') {
-          // Fail fast - return immediately on first failure
+        // v1.1: Only passed=true counts — not_enabled does NOT waive in composite
+        if (gate.failPolicy === 'fail_fast' && !result.passed) {
           return {
             schema_version: '1.0',
             passed: false,
+            status: 'failed',
             reason: `Sequential composite gate failed at child gate: ${childGate.id}`,
             details: { results },
           };
@@ -375,13 +381,13 @@ export class WorkflowEngine {
       const parallelResults = await Promise.all(promises);
       results.push(...parallelResults);
 
-      // v1.1: status='not_enabled' is waivable, not a real failure
       if (gate.failPolicy === 'fail_fast') {
-        const failed = results.find(r => !r.passed && r.status !== 'not_enabled');
+        const failed = results.find(r => !r.passed);
         if (failed) {
           return {
             schema_version: '1.0',
             passed: false,
+            status: 'failed',
             reason: `Parallel composite gate failed (fail_fast)`,
             details: { results },
           };
@@ -389,27 +395,38 @@ export class WorkflowEngine {
       }
     }
 
-    // v1.1: Collect all results — status='not_enabled' counts as effectively passed
-    const allPassed = results.every(r => r.passed || r.status === 'not_enabled');
+    // v1.1: All child gates must have passed=true — not_enabled does NOT count as passed
+    const allPassed = results.every(r => r.passed);
     if (allPassed) {
-      return { schema_version: '1.0', passed: true, reason: 'All child gates passed', details: { results } };
+      return { schema_version: '1.0', passed: true, status: 'passed', reason: 'All child gates passed', details: { results } };
     }
 
-    // v1.1: Only count real failures (not not_enabled)
-    const failedGates = results.filter(r => !r.passed && r.status !== 'not_enabled');
+    // Some gates failed or not_enabled
+    const failedGates = results.filter(r => !r.passed);
+    const notEnabledGates = results.filter(r => r.status === 'not_enabled');
+    const summaryParts: string[] = [];
+    if (failedGates.length > 0) summaryParts.push(`${failedGates.length} failed`);
+    if (notEnabledGates.length > 0) summaryParts.push(`${notEnabledGates.length} not_enabled`);
     return {
       schema_version: '1.0',
       passed: false,
-      reason: `${failedGates.length} of ${gate.children.length} child gates failed`,
+      status: failedGates.some(r => r.status !== 'not_enabled') ? 'failed' : 'not_enabled',
+      reason: `${summaryParts.join(', ')} of ${gate.children.length} child gates`,
       details: { results },
     };
   }
 
   /**
    * Determine the next state based on gate result
+   *
+   * v1.1 rules:
+   *   - No gate + string next → proceed (agent-only states)
+   *   - Has gate + { pass, fail } → branch on gateResult
+   *   - Has gate + string next + gate passed/waivable → proceed
+   *   - Has gate + string next + gate failed → THROW (gate result must be consumed)
    */
   private determineNextState(
-    stateDef: { next?: string | Record<string, string> },
+    stateDef: { next?: string | Record<string, string>; gate?: unknown },
     gateResult: GateResult
   ): string | null {
     if (!stateDef.next) {
@@ -417,15 +434,22 @@ export class WorkflowEngine {
       return null;
     }
 
+    const hasGate = stateDef.gate != null;
+    const isWaivable = gateResult.status === 'not_enabled';
+    const gateOk = gateResult.passed || isWaivable;
+
     if (typeof stateDef.next === 'string') {
-      // Static next state
+      // String next — no branch
+      if (hasGate && !gateOk) {
+        // v1.1: Gate exists but failed — cannot blindly proceed via string next
+        throw new Error(`Gate '${(stateDef.gate as { id?: string }).id ?? 'unknown'}' failed (passed=${gateResult.passed}, status=${gateResult.status ?? 'undefined'}) but state only defines string next — gate result is unconsumed. Use { pass, fail } branching or remove the gate.`);
+      }
+      // No gate or gate passed → proceed
       return stateDef.next;
     }
 
-    // Dynamic next state based on gate result
-    // v1.1: status='not_enabled' gates (required=false, no checkFn) are waivable → pass branch
-    const isWaivable = gateResult.status === 'not_enabled';
-    if ((gateResult.passed || isWaivable) && stateDef.next['pass']) {
+    // Dynamic next state based on gate result (object with pass/fail branches)
+    if (gateOk && stateDef.next['pass']) {
       return stateDef.next['pass'];
     }
     if (!gateResult.passed && stateDef.next['fail']) {

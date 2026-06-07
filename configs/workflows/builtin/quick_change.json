@@ -182,7 +182,7 @@
           "id": "code_permission_release_gate",
           "name": "Code Permission Release Gate"
         },
-        "next": "implementation_running",
+        "next": { "pass": "implementation_running", "fail": "blocked" },
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
       },
       "implementation_running": {

@@ -1028,5 +1028,34 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
 
       expect(result.currentState).toBe('closed');
     });
+
+    // 7. code_permission_release_gate failed → cannot enter implementation_ready via transitionFull
+    it('must block implementation_ready when code_permission_release_gate.json status=failed', async () => {
+      // Setup evidence files for implementation_ready
+      await fs.writeFile(path.join(qcTmpDir, 'tasks.md'), '# Tasks\n- Task 1');
+      await fs.writeFile(
+        path.join(qcTmpDir, 'work_item.json'),
+        JSON.stringify({ allowed_write_files: ['src/a.ts'] }),
+      );
+      await fs.mkdir(path.join(qcTmpDir, 'gates'), { recursive: true });
+      // gate file with status=failed → enforceTransitionEvidence will reject
+      await fs.writeFile(
+        path.join(qcTmpDir, 'gates', 'code_permission_release_gate.json'),
+        JSON.stringify({ status: 'failed' }),
+      );
+
+      const instance = qcEngine.createInstance('quick_change');
+      forceState(instance.id, 'merge_not_applicable');
+
+      // transitionFull to implementation_ready → evidence guard checks gate JSON
+      await expect(
+        qcEngine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'merge_not_applicable',
+          toState: 'implementation_ready',
+          workItemDir: qcTmpDir,
+        }),
+      ).rejects.toThrow(/code_permission_release_gate/);
+    });
   });
 });

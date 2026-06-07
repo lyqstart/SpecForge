@@ -344,14 +344,14 @@ describe('WorkflowEngine', () => {
             state1: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { schema_version: '1.0', type: 'simple', id: 'gate1', name: 'Gate 1' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
               next: 'state2',
             },
             state2: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { schema_version: '1.0', type: 'simple', id: 'gate2', name: 'Gate 2' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
             },
           },
@@ -490,14 +490,14 @@ describe('WorkflowEngine', () => {
             state1: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { schema_version: '1.0', type: 'simple', id: 'gate1', name: 'Gate 1' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
               next: 'state2',
             },
             state2: {
               schema_version: '1.0',
               agent: 'test-agent',
-              gate: { schema_version: '1.0', type: 'simple', id: 'gate2', name: 'Gate 2' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
             },
           },

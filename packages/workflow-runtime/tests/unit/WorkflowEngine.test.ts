@@ -141,13 +141,13 @@ describe('WorkflowEngine', () => {
           states: {
             state1: {
               agent: 'test-agent',
-              gate: { type: 'simple', id: 'gate1', name: 'Gate 1' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
               next: 'state2',
             },
             state2: {
               agent: 'test-agent',
-              gate: { type: 'simple', id: 'gate2', name: 'Gate 2' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
             },
           },
@@ -164,7 +164,7 @@ describe('WorkflowEngine', () => {
     });
 
     it('should execute workflow with custom gate function', async () => {
-      const gateFn = vi.fn().mockResolvedValue({ passed: true, reason: 'Custom check passed' });
+      const gateFn = vi.fn().mockResolvedValue({ schema_version: '1.0' as const, passed: true, reason: 'Custom check passed' });
       
       const definition: WorkflowDefinition = {
         id: 'test-workflow',
@@ -272,13 +272,13 @@ describe('WorkflowEngine', () => {
           states: {
             state1: {
               agent: 'test-agent',
-              gate: { type: 'simple', id: 'gate1', name: 'Gate 1' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
               next: 'state2',
             },
             state2: {
               agent: 'test-agent',
-              gate: { type: 'simple', id: 'gate2', name: 'Gate 2' } as SimpleGateDefinition,
+              gate: null,
               skills: [],
             },
           },
