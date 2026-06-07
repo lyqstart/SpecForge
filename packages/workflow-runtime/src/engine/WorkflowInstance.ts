@@ -17,6 +17,15 @@ export interface CreateInstanceOptions {
 }
 
 /**
+ * v1.1: States that MUST NOT be set via direct mutation.
+ * These states require evidence enforcement through transitionFull().
+ */
+const CRITICAL_INSTANCE_STATES = new Set([
+  'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
+  'implementation_ready', 'verification_done', 'closed',
+]);
+
+/**
  * Workflow Instance Factory
  * Responsible for creating and managing workflow instances
  */
@@ -231,13 +240,25 @@ export class WorkflowInstanceStateManager {
   }
 
   /**
-   * Transition instance to a new state
+   * Transition instance to a new state.
+   *
+   * @deprecated v1.1: TEST SCAFFOLDING ONLY for non-critical states.
+   * Critical states (CRITICAL_INSTANCE_STATES) are hard-blocked — use
+   * WorkflowEngine.transitionFull() instead.
    */
   static transitionState(
     instance: WorkflowInstance,
     newState: string,
     event?: WorkflowEventData
   ): void {
+    // v1.1: Block direct mutation of critical states
+    if (CRITICAL_INSTANCE_STATES.has(newState)) {
+      throw new Error(
+        `Cannot directly set state to '${newState}' via transitionState() — ` +
+        `use WorkflowEngine.transitionFull() with evidence enforcement`
+      );
+    }
+
     void instance.currentState;
     instance.currentState = newState;
     instance.updatedAt = new Date();

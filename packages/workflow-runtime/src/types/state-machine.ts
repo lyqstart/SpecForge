@@ -32,6 +32,8 @@ export const WI_STATUSES_V11 = [
   'gates_failed',
   'approval_required',
   'approved',
+  'decision_recorded',
+  'merge_not_applicable',
   'merge_ready',
   'merging',
   'merged',

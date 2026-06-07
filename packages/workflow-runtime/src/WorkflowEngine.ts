@@ -198,6 +198,21 @@ export class WorkflowEngine {
    * @param to The target state
    * @returns true if transition was successful, false otherwise
    */
+  /**
+   * @deprecated v1.1: TEST SCAFFOLDING ONLY.
+   * Production code MUST use `transitionFull()` which enforces evidence
+   * prerequisites, forbidden-transition checks, WAL persistence, and
+   * actor/evidence recording.
+   *
+   * This method:
+   *   - Does NOT enforce evidence prerequisites
+   *   - Does NOT write to WAL
+   *   - Does NOT record actor/evidence
+   *   - Throws for all critical states (CRITICAL_STATES)
+   *
+   * Retained solely for backward-compatible test setup. Any new production
+   * call site MUST use transitionFull() or the StateManager transition path.
+   */
   transition(instanceId: string, from: string, to: string): boolean {
     const instance = this.instances.get(instanceId);
     if (!instance) {

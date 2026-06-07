@@ -1058,4 +1058,294 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       ).rejects.toThrow(/code_permission_release_gate/);
     });
   });
+
+  // =========================================================================
+  // §25-SCENARIO REVERSE BYPASS TEST MATRIX
+  // =========================================================================
+  // Validates that every known bypass path into a CRITICAL_STATE is blocked.
+  // Each test documents: bypass_method → target_critical_state → expected_guard
+
+  describe('25-scenario reverse bypass matrix', () => {
+    const CRITICAL_TARGETS = [
+      'approval_required',
+      'merge_ready',
+      'merging',
+      'post_merge_verified',
+      'implementation_ready',
+      'verification_done',
+      'closed',
+    ] as const;
+
+    let engine: WorkflowEngine;
+    let tmpDir: string;
+
+    /** Local forceState — references the inner engine, not the outer one */
+    function localForceState(instanceId: string, state: string): void {
+      const inst = engine.getInstance(instanceId);
+      if (inst) {
+        (inst as Record<string, unknown>).currentState = state;
+      }
+    }
+
+    beforeEach(async () => {
+      engine = new WorkflowEngine();
+      engine.registerDefinition(makeV11Workflow());
+      tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'v11-bypass-'));
+    });
+
+    afterEach(async () => {
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    });
+
+    // --- Scenario 1: transition() blocks approval_required (reachable via gates_running) ---
+    it('S1: transition() blocks approval_required from gates_running', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'gates_running');
+
+      // approval_required is CRITICAL → transition() must throw
+      expect(() =>
+        engine.transition(instance.id, 'gates_running', 'approval_required')
+      ).toThrow(/transitionFull|Cannot transition to critical state/);
+    });
+
+    // --- Scenario 2: transition() returns false for unreachable critical states ---
+    it('S2: transition() returns false for non-adjacent critical states', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'gates_running');
+
+      // These are valid next states from gates_running: approval_required (blocked by CRITICAL),
+      // blocked (non-critical). All other critical states are not in the 'next' set → returns false.
+      const unreachableCriticalStates = [
+        'merge_ready', 'merging', 'post_merge_verified',
+        'implementation_ready', 'verification_done', 'closed',
+      ];
+
+      for (const state of unreachableCriticalStates) {
+        expect(
+          engine.transition(instance.id, 'gates_running', state)
+        ).toBe(false);
+      }
+    });
+
+    // --- Scenario 3-9: transitionFull() without workItemDir blocks each critical state ---
+    // We use appropriate from-states for each target.
+    it('S3: transitionFull() without workItemDir blocks approval_required', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'gates_running');
+
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'gates_running',
+          toState: 'approval_required',
+        })
+      ).rejects.toThrow(/workItemDir|required/);
+    });
+
+    it('S4: transitionFull() without workItemDir blocks merge_ready', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'approval_required');
+
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'approval_required',
+          toState: 'merge_ready',
+        })
+      ).rejects.toThrow(/workItemDir|required/);
+    });
+
+    it('S5: transitionFull() without workItemDir blocks merging', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'merge_ready');
+
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'merge_ready',
+          toState: 'merging',
+        })
+      ).rejects.toThrow(/workItemDir|required/);
+    });
+
+    it('S6: transitionFull() without workItemDir blocks post_merge_verified', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'merged');
+
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'merged',
+          toState: 'post_merge_verified',
+        })
+      ).rejects.toThrow(/workItemDir|required/);
+    });
+
+    it('S7: transitionFull() without workItemDir blocks implementation_ready', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'post_merge_verified');
+
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'post_merge_verified',
+          toState: 'implementation_ready',
+        })
+      ).rejects.toThrow(/workItemDir|required/);
+    });
+
+    it('S8: transitionFull() without workItemDir blocks verification_done', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'verification_running');
+
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'verification_running',
+          toState: 'verification_done',
+        })
+      ).rejects.toThrow(/workItemDir|required/);
+    });
+
+    it('S9: transitionFull() without workItemDir blocks closed', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'verification_done');
+
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'verification_done',
+          toState: 'closed',
+        })
+      ).rejects.toThrow(/workItemDir|required/);
+    });
+
+    // --- Scenario 10-16: transitionFull() with empty workItemDir (missing evidence files) ---
+    for (const target of CRITICAL_TARGETS) {
+      it(`S10-16: transitionFull() empty dir blocks → ${target}`, async () => {
+        const instance = engine.createInstance('v11-test-workflow');
+
+        // Force to the state that has `target` as a valid next
+        const predecessorMap: Record<string, string> = {
+          approval_required: 'gates_running',
+          merge_ready: 'approval_required',
+          merging: 'merge_ready',
+          post_merge_verified: 'merged',
+          implementation_ready: 'post_merge_verified',
+          verification_done: 'verification_running',
+          closed: 'verification_done',
+        };
+        localForceState(instance.id, predecessorMap[target]);
+
+        await expect(
+          engine.transitionFull({
+            workItemId: instance.id,
+            fromState: predecessorMap[target],
+            toState: target,
+            workItemDir: tmpDir,
+          })
+        ).rejects.toThrow();
+      });
+    }
+
+    // --- Scenario 17: execute() without workItemDir blocks critical states ---
+    it('S17: execute() without workItemDir blocks at first critical state', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      await expect(
+        engine.execute(instance.id)
+      ).rejects.toThrow();
+    });
+
+    // --- Scenario 18: resume() without workItemDir blocks at critical states ---
+    it('S18: resume() without workItemDir blocks at critical state', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'gates_running');
+      // resume() throws synchronously (status check before async part)
+      expect(() =>
+        engine.resume(instance.id)
+      ).toThrow();
+    });
+
+    // --- Scenario 19: forbidden transition blocked by transitionFull() ---
+    it('S19: transitionFull() blocks forbidden transition (created → closed)', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'created',
+          toState: 'closed',
+          workItemDir: tmpDir,
+        })
+      ).rejects.toThrow(/Forbidden|Invalid transition/);
+    });
+
+    // --- Scenario 20: transitionFull() creation branch only allows 'created' ---
+    it('S20: transitionFull() creation branch rejects non-created target', async () => {
+      await expect(
+        engine.transitionFull({
+          workItemId: 'WI-NEW',
+          fromState: '',
+          toState: 'implementation_ready',
+          workItemDir: tmpDir,
+        })
+      ).rejects.toThrow(/creation only allowed/);
+    });
+
+    // --- Scenario 21: transitionFull() blocks all critical states when forced to wrong predecessor ---
+    it('S21: transitionFull() blocks non-adjacent critical states (wrong predecessor)', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      // created → merge_ready is not a valid transition in the state machine
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'created',
+          toState: 'merge_ready',
+          workItemDir: tmpDir,
+        })
+      ).rejects.toThrow();
+    });
+
+    // --- Scenario 22: execute() with workItemDir but missing evidence still blocks ---
+    it('S22: execute() with empty workItemDir blocks at evidence check', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      await expect(
+        engine.execute(instance.id, { workItemDir: tmpDir })
+      ).rejects.toThrow();
+    });
+
+    // --- Scenario 23: resume() with workItemDir but missing evidence blocks ---
+    it('S23: resume() with empty workItemDir blocks at evidence check', () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      localForceState(instance.id, 'gates_running');
+      // resume() throws synchronously (status check before async part)
+      expect(() =>
+        engine.resume(instance.id, { workItemDir: tmpDir })
+      ).toThrow();
+    });
+
+    // --- Scenario 24: requiresTransitionEvidence() returns true for all critical states ---
+    it('S24: requiresTransitionEvidence() returns true for all critical states', () => {
+      for (const state of CRITICAL_TARGETS) {
+        expect(requiresTransitionEvidence(state)).toBe(true);
+      }
+      // Non-critical states should return false
+      expect(requiresTransitionEvidence('created')).toBe(false);
+      expect(requiresTransitionEvidence('gates_running')).toBe(false);
+      expect(requiresTransitionEvidence('implementation_running')).toBe(false);
+    });
+
+    // --- Scenario 25: transitionFull() state mismatch blocks ---
+    it('S25: transitionFull() blocks when fromState != actual state', async () => {
+      const instance = engine.createInstance('v11-test-workflow');
+      // Instance is in 'created', but we claim it's in 'gates_running'
+      await expect(
+        engine.transitionFull({
+          workItemId: instance.id,
+          fromState: 'gates_running',
+          toState: 'approval_required',
+          workItemDir: tmpDir,
+        })
+      ).rejects.toThrow(/State mismatch/);
+    });
+  });
 });

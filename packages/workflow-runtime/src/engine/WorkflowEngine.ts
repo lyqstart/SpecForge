@@ -126,22 +126,18 @@ export class WorkflowEngine {
   }
 
   /**
-   * Transition a workflow instance from one state to another.
+   * @deprecated v1.1: TEST SCAFFOLDING ONLY.
+   * Production code MUST use the full v1.1 state machine transition path
+   * (WorkflowEngine.transitionFull() + StateManager.transition()).
    *
-   * @deprecated v1.1: This method is retained for backward compatibility with
-   * existing tests only. Production code MUST use `transitionFull()` or the
-   * simplified state-machine wrapper which enforces evidence prerequisites,
-   * forbidden-transition checks, WAL persistence, and actor/evidence recording
-   * through a single unified entry point. This method:
+   * This method:
    *   - Does NOT enforce evidence prerequisites
    *   - Does NOT write to WAL
    *   - Does NOT record actor/evidence
    *   - Throws for all critical states (CRITICAL_STATES)
    *
-   * @param instanceId The workflow instance ID
-   * @param from The current state
-   * @param to The target state
-   * @returns true if transition was successful, false otherwise
+   * Retained solely for backward-compatible test setup. Any new production
+   * call site MUST use transitionFull() or the StateManager transition path.
    */
   transition(instanceId: string, from: string, to: string): boolean {
     const instance = this.instances.get(instanceId);

@@ -649,6 +649,19 @@ describe('WorkflowInstance Creation and Management', () => {
 
         expect(instance.updatedAt.getTime()).toBeGreaterThanOrEqual(beforeTransition.getTime());
       });
+
+      it('should block critical states via transitionState (v1.1 guard)', () => {
+        const criticalStates = [
+          'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
+          'implementation_ready', 'verification_done', 'closed',
+        ];
+
+        for (const state of criticalStates) {
+          expect(() =>
+            WorkflowInstanceStateManager.transitionState(instance, state)
+          ).toThrow(/transitionState|transitionFull/);
+        }
+      });
     });
 
     describe('updateStatus', () => {

@@ -175,13 +175,33 @@ export async function initializeClosureFiles(
 }
 
 /**
+ * v1.1: States that MUST NOT be set via updateWorkItemStatus().
+ * These require the full state machine path: WorkflowEngine.transitionFull() + StateManager.transition().
+ */
+const BLOCKED_STATUS_UPDATES = new Set([
+  'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
+  'implementation_ready', 'verification_done', 'closed',
+]);
+
+/**
  * 更新 work_item.json 中的状态。
+ *
+ * v1.1: Only allowed for initial/non-critical states (e.g. 'intake_ready', 'created').
+ * Critical states MUST go through the full state machine path.
  */
 export async function updateWorkItemStatus(
   workItemDir: string,
   newStatus: string,
   extra?: Record<string, unknown>,
 ): Promise<void> {
+  // v1.1: Block critical states from being set via filesystem bypass
+  if (BLOCKED_STATUS_UPDATES.has(newStatus)) {
+    throw new Error(
+      `Cannot set status '${newStatus}' via updateWorkItemStatus() — ` +
+      `critical states must go through WorkflowEngine.transitionFull() + StateManager.transition()`
+    );
+  }
+
   const wiPath = path.join(workItemDir, 'work_item.json');
   const content = await fs.readFile(wiPath, 'utf-8');
   const wi = JSON.parse(content);

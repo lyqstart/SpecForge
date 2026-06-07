@@ -160,9 +160,9 @@
       },
       "approved": {
         "schema_version": "2.0",
-        "agent": "",
+        "agent": "user_decision_recorder",
         "skills": [],
-        "produces": null,
+        "produces": "user_decision.json",
         "gate": null,
         "next": "merge_ready",
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
@@ -195,8 +195,13 @@
         "agent": "",
         "skills": [],
         "produces": null,
-        "gate": null,
-        "next": "post_merge_verified",
+        "gate": {
+          "schema_version": "2.0",
+          "type": "simple",
+          "id": "post_merge_gate",
+          "name": "Post Merge Gate"
+        },
+        "next": { "pass": "post_merge_verified", "fail": "blocked" },
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
       },
       "post_merge_verified": {
@@ -204,13 +209,8 @@
         "agent": "",
         "skills": [],
         "produces": null,
-        "gate": {
-          "schema_version": "2.0",
-          "type": "simple",
-          "id": "post_merge_gate",
-          "name": "Post Merge Gate"
-        },
-        "next": { "pass": "implementation_ready", "fail": "blocked" },
+        "gate": null,
+        "next": "implementation_ready",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
       "implementation_ready": {
@@ -218,8 +218,13 @@
         "agent": "",
         "skills": [],
         "produces": null,
-        "gate": null,
-        "next": "implementation_running",
+        "gate": {
+          "schema_version": "2.0",
+          "type": "simple",
+          "id": "code_permission_release_gate",
+          "name": "Code Permission Release Gate"
+        },
+        "next": { "pass": "implementation_running", "fail": "blocked" },
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
       },
       "implementation_running": {
