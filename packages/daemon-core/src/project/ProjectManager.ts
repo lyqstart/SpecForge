@@ -7,7 +7,7 @@ import { EventBus } from '../event-bus/EventBus';
 import { WAL } from '../wal/WAL';
 import { StateManager } from '../state/StateManager';
 import { IPathResolver } from '../daemon/path-resolver';
-import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 export interface ProjectContext {
   projectId: string;
@@ -79,7 +79,7 @@ export class ProjectManager {
 
     // B2: Check if project is initialized before proceeding
     const specDir = path.join(projectPath, SPEC_DIR_NAME);
-    const manifestPath = path.join(specDir, LAYOUT.manifest);
+    const manifestPath = path.join(specDir, 'manifest.json');
 
     const manifestExists = await fs.access(manifestPath).then(() => true).catch(() => false);
 

@@ -17,7 +17,7 @@
 import { mkdir, writeFile, access, readFile } from "node:fs/promises"
 import { join, extname, dirname } from "node:path"
 import { existsSync, statSync } from "node:fs"
-import { LAYOUT, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import { LAYOUT, SPEC_DIR_NAME, legacyPaths } from "@specforge/types/directory-layout"
 import { scanHostProfile, PROFILE_TTL_MS, getHostProfilePath } from "@specforge/host-profile"
 
 // ============================================================
@@ -153,7 +153,7 @@ function buildManifest(): InitEntry[] {
   }
 
   // configFiles 子条目
-  for (const subValue of Object.values(LAYOUT.configFiles)) {
+  for (const subValue of Object.values(legacyPaths.configFiles)) {
     if (typeof subValue === "string") {
       const entry = makeFileEntry(subValue)
       if (entry) entries.push(entry)

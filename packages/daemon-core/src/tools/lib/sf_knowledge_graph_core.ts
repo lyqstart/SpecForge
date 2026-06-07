@@ -9,7 +9,7 @@
 
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
-import { SPEC_DIR_NAME, LAYOUT, resolveProjectPath } from "@specforge/types/directory-layout"
+import { SPEC_DIR_NAME, legacyPaths } from "@specforge/types/directory-layout"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 
 // ============================================================
@@ -89,7 +89,7 @@ const VALID_NODE_TYPES: NodeType[] = ["requirement", "design_decision", "task", 
 const VALID_EDGE_TYPES: EdgeType[] = ["traces_to", "decomposes_to", "modifies", "implements", "affects"]
 const LOCK_TIMEOUT = 5000
 const GRAPH_RELATIVE_PATH = join(SPEC_DIR_NAME, 'knowledge', 'graph.json')
-const CONFIG_RELATIVE_PATH = join(SPEC_DIR_NAME, LAYOUT.configFiles.project)
+const CONFIG_RELATIVE_PATH = join(SPEC_DIR_NAME, legacyPaths.configFiles.project)
 
 // ============================================================
 // Validation Functions
@@ -975,7 +975,7 @@ export async function syncFromSpec(
   }
 
   const store = loadResult.store
-  const specDir = resolveProjectPath(baseDir, "specs", workItemId)
+  const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
   const warnings: string[] = []
 
   let summary: SyncSummary = {

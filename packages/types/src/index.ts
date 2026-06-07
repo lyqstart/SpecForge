@@ -15,14 +15,11 @@ export {
   SPEC_DIR_NAME,
   SPEC_USER_DIR_NAME,
   LAYOUT,
-  USER_LAYOUT,
+  legacyPaths,
+  legacyUserLayoutReadOnly,
   type LayoutKey,
-  type UserLayoutKey,
   // 路径构造函数
   resolveProjectPath,
-  resolveUserPath,
-  specPath,
-  agentRunArchivePath,
   // 项目级正式规格路径服务（§1.5）
   projectRoot,
   projectSpecManifest,
@@ -60,6 +57,12 @@ export {
   isWorkItemPath,
   isLegacySpecPath,
 } from './directory-layout.js';
+
+// ---- Actor Roles — 统一角色枚举 ----
+export {
+  ACTOR_ROLES,
+  type ActorRole,
+} from './actor-roles.js';
 
 // ---- ID 规则（§3）----
 export {

@@ -12,7 +12,7 @@
  * - `LAYOUT` 字典中的值是相对于 `<projectRoot>/.specforge/` 的子路径。
  * - 项目级正式规格真相源位于 `.specforge/project/`（§2.1）。
  * - Work Item 事务目录位于 `.specforge/work-items/`（§4.2）。
- * - 旧路径 `.specforge/specs/` 仅允许 legacy read-only（§1.7）。
+ * - 旧路径通过 `legacyPaths` 对象保留，仅供 legacy read-only（§1.7）。
  * - 通过 Path Service 系列函数对外提供路径生成能力。
  * - 通过 Path Policy 函数提供路径合法性校验（§1.6）。
  */
@@ -20,7 +20,6 @@
 /// <reference types="node" />
 
 import * as path from 'node:path';
-import * as os from 'node:os';
 
 // ---------------------------------------------------------------------------
 // SPEC_DIR_NAME — 项目根下 SpecForge 目录的权威名称（带点）
@@ -37,24 +36,18 @@ export const SPEC_DIR_NAME = '.specforge' as const;
 // ---------------------------------------------------------------------------
 
 /**
- * `.specforge/` 目录下所有子路径的权威字典（v1.1 标准）。
+ * `.specforge/` 目录下各子路径的权威字典（v1.1 标准）。
  *
- * v1.1 MVP 顶层分区：
- * - **manifest**：根级 manifest（committed）
+ * 顶层分区：
  * - **project**：项目级正式规格真相源（§2.1）（committed）
  * - **workItems**：Work Item 事务目录（§4.2）（committed）
- * - **config**：项目配置目录（committed）
- * - **specs**：旧路径，legacy read-only（§1.7）（committed）
- * - **runtime**：运行时数据（gitignored），下设 logs / archive / sessions / cas
+ * - **runtime**：运行时数据（gitignored），下设 wal / state / checkpoints / logs
  *
- * 注意：v1.1 将 logs / archive / sessions / cas 全部归入 runtime 子树，
- * 不再作为 .specforge/ 顶层目录。knowledge 不属于 MVP 主路径，已移除。
+ * 已移除的顶层分区迁移到 `legacyPaths`：
+ * - manifest、config、specs、knowledge 等
+ * - runtime 下的 archive / sessions / cas 等归档子目录
  */
 export const LAYOUT = {
-  // ---- committed 区：根级 manifest ----
-  /** Project manifest — `<root>/.specforge/manifest.json` */
-  manifest: 'manifest.json',
-
   // ---- committed 区：项目级正式规格真相源（§2.1）----
   /** 项目级正式规格目录 — `<root>/.specforge/project/` */
   project: 'project',
@@ -129,18 +122,44 @@ export const LAYOUT = {
     extensionDelta: 'extension_delta.md',
   },
 
-  // ---- committed 区：旧路径（legacy read-only §1.7）----
+  // ---- gitignored 区：运行时数据（runtime 子树）----
+  /** 运行时状态目录 — `<root>/.specforge/runtime/` */
+  runtime: 'runtime',
+
+  /** 运行时文件的"分组键空间" */
+  runtimeFiles: {
+    /** 写前日志 — `<root>/.specforge/runtime/wal.jsonl` */
+    wal: 'runtime/wal.jsonl',
+    /** 持久化状态 — `<root>/.specforge/runtime/state.json` */
+    state: 'runtime/state.json',
+    /** 状态快照目录 — `<root>/.specforge/runtime/checkpoints/` */
+    checkpoints: 'runtime/checkpoints',
+    /** 日志目录 — `<root>/.specforge/runtime/logs/` */
+    logs: 'runtime/logs',
+  },
+} as const;
+
+/**
+ * `LAYOUT` 字典的"扁平 key"联合类型。
+ */
+export type LayoutKey = keyof typeof LAYOUT;
+
+// ---------------------------------------------------------------------------
+// legacyPaths — 旧路径常量（仅供 legacy read-only）
+// ---------------------------------------------------------------------------
+
+/**
+ * 已从 `LAYOUT` 移除的旧路径常量。
+ * 仅供 legacy readers 读取，新代码不得使用这些路径进行写入。
+ */
+export const legacyPaths = {
   /** 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` */
-  specs: 'specs',
-
-  /** specs 目录的 README — `<root>/.specforge/specs/README.md` */
-  specsReadme: 'specs/README.md',
-
-  // ---- committed 区：项目配置 ----
-  /** 项目配置目录 — `<root>/.specforge/config/` */
+  specsReadOnly: 'specs',
+  /** 旧根级 manifest — `<root>/.specforge/manifest.json` */
+  manifest: 'manifest.json',
+  /** 旧配置目录 — `<root>/.specforge/config/` */
   config: 'config',
-
-  /** 项目配置文件的"分组键空间" */
+  /** 旧配置文件的"分组键空间"（kept for legacy readers） */
   configFiles: {
     /** `<root>/.specforge/config/project-rules.md` */
     projectRules: 'config/project-rules.md',
@@ -153,64 +172,11 @@ export const LAYOUT = {
     /** `<root>/.specforge/config/skill_fragments.json` */
     skillFragments: 'config/skill_fragments.json',
   },
-
-  // ---- gitignored 区：运行时数据（runtime 子树）----
-  /** 运行时状态目录 — `<root>/.specforge/runtime/` */
-  runtime: 'runtime',
-
-  /** 写前日志 — `<root>/.specforge/runtime/wal.jsonl` */
-  runtimeWal: 'runtime/wal.jsonl',
-
-  /** 持久化状态 — `<root>/.specforge/runtime/state.json` */
-  runtimeState: 'runtime/state.json',
-
-  /** 状态快照目录 — `<root>/.specforge/runtime/checkpoints/` */
-  runtimeCheckpoints: 'runtime/checkpoints',
-
-  /** 日志目录 — `<root>/.specforge/runtime/logs/` */
-  runtimeLogs: 'runtime/logs',
-
-  /** 遥测日志 — `<root>/.specforge/runtime/logs/telemetry.jsonl` */
-  runtimeLogsTelemetry: 'runtime/logs/telemetry.jsonl',
-
-  /** 追踪日志 — `<root>/.specforge/runtime/logs/trace.jsonl` */
-  runtimeLogsTrace: 'runtime/logs/trace.jsonl',
-
-  /** 工具调用日志 — `<root>/.specforge/runtime/logs/tool_calls.jsonl` */
-  runtimeLogsToolCalls: 'runtime/logs/tool_calls.jsonl',
-
-  /** 成本日志 — `<root>/.specforge/runtime/logs/cost.jsonl` */
-  runtimeLogsCost: 'runtime/logs/cost.jsonl',
-
-  /** 会话日志 — `<root>/.specforge/runtime/logs/conversations.jsonl` */
-  runtimeLogsConversations: 'runtime/logs/conversations.jsonl',
-
-  /** Gate 检查日志 — `<root>/.specforge/runtime/logs/gate.log` */
-  runtimeLogsGate: 'runtime/logs/gate.log',
-
-  /** Shell 审计日志 — `<root>/.specforge/runtime/logs/shell-history.jsonl` */
-  runtimeLogsShellHistory: 'runtime/logs/shell-history.jsonl',
-
-  /** Agent Run 归档根目录 — `<root>/.specforge/runtime/archive/` */
-  runtimeArchive: 'runtime/archive',
-
-  /** Agent Run 归档子目录 — `<root>/.specforge/runtime/archive/agent_runs/` */
-  runtimeArchiveAgentRuns: 'runtime/archive/agent_runs',
-
-  /** 复盘报告归档子目录 — `<root>/.specforge/runtime/archive/retro/` */
-  runtimeArchiveRetro: 'runtime/archive/retro',
-
-  /** 会话归档目录 — `<root>/.specforge/runtime/sessions/` */
-  runtimeSessions: 'runtime/sessions',
-
-  /** 内容寻址存储 — `<root>/.specforge/runtime/cas/` */
-  runtimeCas: 'runtime/cas',
+  /** 旧知识目录 — `<root>/.specforge/knowledge/` */
+  knowledge: 'knowledge',
+  /** 旧知识图谱 — `<root>/.specforge/knowledge/graph.json` */
+  knowledgeGraph: 'knowledge/graph.json',
 } as const;
-
-/**
- * `LAYOUT` 字典的"扁平 key"联合类型。
- */
-export type LayoutKey = keyof typeof LAYOUT;
 
 // ---------------------------------------------------------------------------
 // Path Service — 路径服务（§1.5）
@@ -448,39 +414,6 @@ export function workItemEvidenceManifest(projectRoot: string, workItemId: string
   return path.join(workItemRoot(projectRoot, workItemId), 'evidence', 'evidence_manifest.json');
 }
 
-// ---- Legacy 路径服务（§1.7）----
-
-/**
- * 构造旧规格文件的绝对路径（legacy read-only）。
- * `<projectRoot>/.specforge/specs/<workItemId>/<file>`
- */
-export function specPath(
-  projectRoot: string,
-  workItemId: string,
-  file: string,
-): string {
-  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.specs, workItemId, file);
-}
-
-/**
- * 构造 Agent Run 归档目录的绝对路径。
- * `<projectRoot>/.specforge/runtime/archive/agent_runs/<workItemId>-<agentType>-<runIndex>`
- */
-export function agentRunArchivePath(
-  projectRoot: string,
-  workItemId: string,
-  agentType: string,
-  runIndex: number,
-): string {
-  const dirName = `${workItemId}-${agentType}-${runIndex}`;
-  return path.join(
-    projectRoot,
-    SPEC_DIR_NAME,
-    LAYOUT.runtimeArchiveAgentRuns,
-    dirName,
-  );
-}
-
 // ---------------------------------------------------------------------------
 // Path Policy — 路径策略（§1.6）
 // ---------------------------------------------------------------------------
@@ -565,13 +498,17 @@ export function isLegacySpecPath(inputPath: string): boolean {
 export const SPEC_USER_DIR_NAME = '.specforge' as const;
 
 // ---------------------------------------------------------------------------
-// USER_LAYOUT — `~/.specforge/` 下各子路径的权威字典（用户级）
+// legacyUserLayoutReadOnly — 用户级路径（deprecated）
 // ---------------------------------------------------------------------------
 
 /**
- * `~/.specforge/` 目录下各子路径的权威字典（用户级）。
+ * @deprecated User-level layout is legacy. New code must not write to ~/.specforge/ by default.
+ * Only legacy readers may access these paths.
+ *
+ * `~/.specforge/` 目录下各子路径的只读字典（用户级）。
+ * 新代码不得使用此对象。使用 `legacyUserLayoutReadOnly` 仅用于向后兼容读取。
  */
-export const USER_LAYOUT = {
+export const legacyUserLayoutReadOnly = {
   /** 运行时状态目录 — `~/.specforge/runtime/` */
   runtime: 'runtime',
   /** 握手文件 — `~/.specforge/runtime/handshake.json` */
@@ -593,25 +530,3 @@ export const USER_LAYOUT = {
   /** 备份目录 — `~/.specforge/backups/` */
   backups: 'backups',
 } as const;
-
-/**
- * `USER_LAYOUT` 字典的 key 联合类型。
- */
-export type UserLayoutKey = keyof typeof USER_LAYOUT;
-
-// ---------------------------------------------------------------------------
-// resolveUserPath — 用户级路径构造函数
-// ---------------------------------------------------------------------------
-
-/**
- * 拼合 `~/.specforge/<USER_LAYOUT[key]>/<...subpath>` 的路径。
- * 用户级路径总是基于 `os.homedir()`。
- */
-export function resolveUserPath(
-  key: UserLayoutKey,
-  ...subpath: string[]
-): string {
-  const value = USER_LAYOUT[key];
-  const segment = typeof value === 'string' ? value : key;
-  return path.join(os.homedir(), SPEC_USER_DIR_NAME, segment, ...subpath);
-}

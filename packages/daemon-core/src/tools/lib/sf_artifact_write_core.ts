@@ -10,7 +10,7 @@
 
 import { readFile, writeFile, mkdir, access } from "node:fs/promises"
 import { join, dirname } from "node:path"
-import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
 
 // ============================================================
@@ -434,7 +434,7 @@ export async function extractTraceStats(
   baseDir: string
 ): Promise<TraceStats | null> {
   try {
-    const tracePath = resolveProjectPath(baseDir, 'runtimeLogsTrace')
+    const tracePath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs', 'trace.jsonl')
 
     let traceContent: string
     try {

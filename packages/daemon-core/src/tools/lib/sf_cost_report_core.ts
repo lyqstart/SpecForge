@@ -9,7 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { resolveProjectPath } from "@specforge/types/directory-layout"
+import { resolveProjectPath, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
 
 // ============================================================
@@ -277,7 +277,7 @@ export async function generateCostReport(
   baseDir: string
 ): Promise<CostReportResult> {
   try {
-    const costFilePath = resolveProjectPath(baseDir, 'runtimeLogsCost')
+    const costFilePath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs', 'cost.jsonl')
     const eventsFilePath = resolveProjectPath(baseDir, 'runtime', 'events.jsonl')
 
     // 1. 读取 Cost_Entry 记录

@@ -38,7 +38,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     'work_item.json', 'intake.md', 'change_classification.md',
     'impact_analysis.md', 'trigger_result.json', 'tasks.md',
     'trace_delta.md', 'candidate_manifest.json', 'gate_summary.md',
-    'verification_report.md', 'merge_report.md',
+    'verification_report.md', 'merge_report.md', 'changed_files_audit.md',
     'evidence/evidence_manifest.json',
   ];
 
@@ -176,6 +176,107 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       passed: validStatus,
       severity: undefined,
     });
+  } catch {
+    // covered by required_files
+  }
+
+  // §15.2 Check 10: changed_files_audit passed
+  try {
+    const cfa = await fs.readFile(path.join(ctx.workItemDir, 'changed_files_audit.md'), 'utf-8');
+    const cfaLower = cfa.toLowerCase();
+    checks.push({
+      check_id: 'close_changed_files_audit_passed',
+      description: 'changed_files_audit passed (§15.2)',
+      passed: cfaLower.includes('pass') || cfaLower.includes('success'),
+      severity: undefined,
+    });
+  } catch {
+    // covered by required_files
+  }
+
+  // §15.2 Check 11: post_merge_gate passed or not_applicable
+  try {
+    const gs = await fs.readFile(path.join(ctx.workItemDir, 'gate_summary.md'), 'utf-8');
+    const pmgSection = gs.match(/### post_merge_gate[\s\S]*?- Status: (\S+)/);
+    if (pmgSection) {
+      const status = pmgSection[1];
+      checks.push({
+        check_id: 'close_post_merge_gate',
+        description: 'post_merge_gate passed or not_applicable (§15.2)',
+        passed: status === 'passed' || status === 'not_applicable',
+        severity: undefined,
+      });
+    } else {
+      checks.push({
+        check_id: 'close_post_merge_gate',
+        description: 'post_merge_gate not present (assumed not_applicable)',
+        passed: true,
+      });
+    }
+  } catch {
+    // covered by required_files
+  }
+
+  // §15.2 Check 12: no unresolved blocking issues
+  try {
+    const gsBlocking = await fs.readFile(path.join(ctx.workItemDir, 'gate_summary.md'), 'utf-8');
+    const blockingMatch = gsBlocking.match(/- Blocking Issues:\s*\n((?:  - .+\n?)*)/);
+    const hasBlocking = blockingMatch !== null && blockingMatch[1].trim().length > 0;
+    checks.push({
+      check_id: 'close_no_blocking_issues',
+      description: 'No unresolved blocking issues (§15.2)',
+      passed: !hasBlocking,
+      severity: hasBlocking ? 'error' : undefined,
+    });
+  } catch {
+    // covered by required_files
+  }
+
+  // §15.2 Check 13: waiver follow-up registered
+  try {
+    const gsWaiver = await fs.readFile(path.join(ctx.workItemDir, 'gate_summary.md'), 'utf-8');
+    const hasWaiver = gsWaiver.includes('passed_with_waiver_required') || gsWaiver.includes('waiver');
+    if (hasWaiver) {
+      const wiContent = await fs.readFile(path.join(ctx.workItemDir, 'work_item.json'), 'utf-8');
+      const wi = JSON.parse(wiContent);
+      const hasFollowUp = wi.waiver_follow_up_wi ?? wi.follow_up_wi ?? wi.waiver_followups;
+      checks.push({
+        check_id: 'close_waiver_follow_up',
+        description: 'Waiver follow-up WI registered (§15.2)',
+        passed: !!hasFollowUp,
+        severity: hasFollowUp ? undefined : 'error',
+      });
+    } else {
+      checks.push({
+        check_id: 'close_waiver_follow_up',
+        description: 'No waivers requiring follow-up',
+        passed: true,
+      });
+    }
+  } catch {
+    // covered by required_files
+  }
+
+  // §15.2 Check 14: resume_plan has no pending items
+  try {
+    const wiContent = await fs.readFile(path.join(ctx.workItemDir, 'work_item.json'), 'utf-8');
+    const wi = JSON.parse(wiContent);
+    if (wi.resume_plan) {
+      const hasPending = Array.isArray(wi.resume_plan.actions) &&
+        wi.resume_plan.actions.some((a: { type: string }) => a.type !== 'continue');
+      checks.push({
+        check_id: 'close_resume_plan_no_pending',
+        description: 'resume_plan has no pending items (§15.2)',
+        passed: !hasPending,
+        severity: hasPending ? 'error' : undefined,
+      });
+    } else {
+      checks.push({
+        check_id: 'close_resume_plan_no_pending',
+        description: 'No resume_plan present (not applicable)',
+        passed: true,
+      });
+    }
   } catch {
     // covered by required_files
   }

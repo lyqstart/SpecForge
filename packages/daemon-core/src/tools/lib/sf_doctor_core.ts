@@ -12,7 +12,7 @@
 import { existsSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { homedir } from "node:os"
-import { SPEC_DIR_NAME, LAYOUT, resolveProjectPath, USER_LAYOUT, SPEC_USER_DIR_NAME } from "@specforge/types/directory-layout"
+import { LAYOUT, SPEC_DIR_NAME, SPEC_USER_DIR_NAME, legacyPaths, legacyUserLayoutReadOnly } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
 
 // ── 内联 resolveUserLevelDirectory（原 scripts/lib/paths.ts）──
@@ -30,7 +30,7 @@ interface CompatibilityResult {
 }
 
 function assertCompatibility(baseDir: string): CompatibilityResult {
-  const projectManifestPath = resolveProjectPath(baseDir, 'manifest')
+  const projectManifestPath = join(baseDir, SPEC_DIR_NAME, legacyPaths.manifest)
   if (!existsSync(projectManifestPath)) {
     return { compatible: true, installMode: "project_level" }
   }
@@ -90,8 +90,8 @@ const USER_LEVEL_KEY_FILES = [
 
 /** Project runtime key files to verify */
 const PROJECT_RUNTIME_KEY_FILES = [
-  join(SPEC_DIR_NAME, LAYOUT.runtimeState),
-  join(SPEC_DIR_NAME, LAYOUT.configFiles.project),
+  join(SPEC_DIR_NAME, LAYOUT.runtimeFiles.state),
+  join(SPEC_DIR_NAME, legacyPaths.configFiles.project),
 ]
 
 // ============================================================
@@ -234,7 +234,7 @@ function checkInitializationCompleteness(
   const checks: Array<{ name: string; status: "ok" | "warning" | "error"; detail: string }> = []
 
   // manifest.json
-  const manifestPath = join(specDir, LAYOUT.manifest)
+  const manifestPath = join(specDir, legacyPaths.manifest)
   if (existsSync(manifestPath)) {
     checks.push({ name: "初始化: manifest.json", status: "ok", detail: "项目注册标识存在" })
   } else {
@@ -242,7 +242,7 @@ function checkInitializationCompleteness(
   }
 
   // host-profile.json（用户级：~/.specforge/host-profile.json）
-  const hostProfilePath = join(homedir(), SPEC_USER_DIR_NAME, USER_LAYOUT.hostProfile)
+  const hostProfilePath = join(homedir(), SPEC_USER_DIR_NAME, legacyUserLayoutReadOnly.hostProfile)
   if (existsSync(hostProfilePath)) {
     // 检查新鲜度（30 天）
     try {
@@ -261,7 +261,7 @@ function checkInitializationCompleteness(
   }
 
   // prod-environment.md
-  const prodEnvPath = join(specDir, LAYOUT.configFiles.prodEnv)
+  const prodEnvPath = join(specDir, legacyPaths.configFiles.prodEnv)
   if (existsSync(prodEnvPath)) {
     checks.push({ name: "初始化: prod-environment.md", status: "ok", detail: "生产环境配置存在" })
   } else {
@@ -269,7 +269,7 @@ function checkInitializationCompleteness(
   }
 
   // project-rules.md
-  const rulesPath = join(specDir, LAYOUT.configFiles.projectRules)
+  const rulesPath = join(specDir, legacyPaths.configFiles.projectRules)
   if (existsSync(rulesPath)) {
     checks.push({ name: "初始化: project-rules.md", status: "ok", detail: "项目规则存在" })
   } else {

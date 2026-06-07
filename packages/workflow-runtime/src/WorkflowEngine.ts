@@ -4,6 +4,8 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import {
   WorkflowDefinition,
   WorkflowInstance,
@@ -226,13 +228,15 @@ export class WorkflowEngine {
     workflowType?: string;
     transitionContext?: Record<string, unknown>;
     actor?: unknown;
+    /** CR-6 Fix 2: work item directory for evidence prerequisite checks */
+    workItemDir?: string;
   }): Promise<{
     workItemId: string;
     previousState: string;
     currentState: string;
     timestamp: string;
   }> {
-    const { workItemId, fromState, toState, evidence, workflowType, actor } = input;
+    const { workItemId, fromState, toState, evidence, workflowType, actor, workItemDir } = input;
 
     if (fromState === '') {
       const workflowId = workflowType || 'feature_spec';
@@ -304,6 +308,11 @@ export class WorkflowEngine {
       throw new Error(`Invalid transition: ${instance.currentState} → ${toState}`);
     }
 
+    // CR-6 Fix 2: Evidence prerequisite checks for target state
+    if (workItemDir) {
+      await this.checkTransitionEvidence(toState, workItemDir);
+    }
+
     const previousState = instance.currentState;
     instance.currentState = toState;
     instance.updatedAt = new Date();
@@ -349,6 +358,45 @@ export class WorkflowEngine {
 
     // Dynamic next states (pass/fail branches)
     return Object.values(stateDef.next).includes(to);
+  }
+
+  /**
+   * CR-6 Fix 2: Check transition evidence prerequisites.
+   * Reads required files from the work item directory before allowing
+   * transitions to specific target states.
+   */
+  private async checkTransitionEvidence(targetState: string, workItemDir: string): Promise<void> {
+    const requiredFiles: string[] = [];
+
+    switch (targetState) {
+      case 'gates_running':
+      case 'approval_required':
+        requiredFiles.push('gate_summary.md');
+        break;
+      case 'merge_ready':
+        requiredFiles.push('user_decision.json');
+        break;
+      case 'merging':
+        requiredFiles.push('gate_summary.md');
+        break;
+      case 'closed':
+        requiredFiles.push(
+          'verification_report.md',
+          'evidence/evidence_manifest.json',
+          'changed_files_audit.md',
+          'merge_report.md',
+        );
+        break;
+    }
+
+    for (const file of requiredFiles) {
+      const fullPath = path.join(workItemDir, file);
+      try {
+        await fs.access(fullPath);
+      } catch {
+        throw new Error(`Transition evidence prerequisite missing: ${file} (required for → ${targetState})`);
+      }
+    }
   }
 
   /**
@@ -486,9 +534,9 @@ export class WorkflowEngine {
     if (gate.checkFn) {
       return await gate.checkFn();
     }
-    // CR-4: No checkFn — gate cannot verify
-    // Only non-critical gates (required=false or severity='soft') auto-waive
-    if (gate.required === false || gate.severity === 'soft') {
+    // CR-4/CR-6: No checkFn — gate cannot verify
+    // CR-6 Fix 1: Only required=false auto-waives (severity='soft' no longer auto-waives)
+    if (gate.required === false) {
       return { schema_version: '1.0', passed: true, reason: 'Non-critical gate without checkFn, auto-waived' };
     }
     return { schema_version: '1.0', passed: false, reason: 'Required gate has no check function defined — cannot verify, blocked' };

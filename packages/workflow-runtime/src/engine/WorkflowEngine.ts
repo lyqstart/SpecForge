@@ -268,9 +268,9 @@ export class WorkflowEngine {
     if (gate.checkFn) {
       return await gate.checkFn();
     }
-    // CR-4: No checkFn — gate cannot verify
-    // Only non-critical gates (required=false or severity='soft') auto-waive
-    if (gate.required === false || gate.severity === 'soft') {
+    // CR-4/CR-6: No checkFn — gate cannot verify
+    // CR-6 Fix 1: Only required=false auto-waives (severity='soft' no longer auto-waives)
+    if (gate.required === false) {
       return { schema_version: '1.0', passed: true, reason: 'Non-critical gate without checkFn, auto-waived' };
     }
     return { schema_version: '1.0', passed: false, reason: 'Required gate has no check function defined — cannot verify, blocked' };

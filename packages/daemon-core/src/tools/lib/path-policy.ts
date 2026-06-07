@@ -76,26 +76,53 @@ export interface WritePolicyResult {
 /**
  * Enforce write policy based on actor + path + operation + WI status (§12, §1.6).
  *
- * Rules:
- * - .specforge/project/ subtree → only 'merge_runner' can write
- * - .specforge/work-items/.../gates/ subtree → only 'gate_runner' can write
- * - .specforge/work-items/.../user_decision.json → only 'user_decision_recorder' can write
- * - .specforge/work-items/.../merge_report.md → only 'merge_runner' can write
- * - .specforge/specs/ subtree → read-only in new flow (wiStatus !== 'legacy')
+ * Rules (CR-5 strengthened):
+ * - .specforge/project/ subtree → only 'merge_runner' can write (not sf-orchestrator)
+ * - .specforge/.../gates/ subtree + gate_summary.md → only 'gate_runner' can write (not sf-orchestrator)
+ * - .specforge/.../user_decision.json → only 'user_decision_recorder' can write (not sf-orchestrator)
+ * - .specforge/.../merge_report.md → only 'merge_runner' can write (not sf-orchestrator)
+ * - .specforge/specs/ subtree → completely forbidden to write
+ * - wiStatus === 'closed' → all write operations fail
+ * - allowedWriteFiles restricts which files can be written
+ * - codePermission must be true for writes
  * - .specforge/standards|archive|snapshots|state|reports → forbidden in user projects
  */
-export function enforceWritePolicy(
-  actor: string,
-  filePath: string,
-  operation: 'read' | 'write' | 'delete',
-  wiStatus?: string,
-): WritePolicyResult {
+export function enforceWritePolicy(params: {
+  actor: string;
+  filePath: string;
+  operation: 'read' | 'write' | 'delete';
+  wiStatus?: string;
+  codePermission?: boolean;
+  allowedWriteFiles?: string[];
+}): WritePolicyResult {
+  const { actor, filePath, operation, wiStatus, codePermission, allowedWriteFiles } = params;
   const violations: string[] = [];
   const normalized = filePath.replace(/\\/g, '/');
 
   // Reads are always allowed
   if (operation === 'read') {
     return { allowed: true, violations: [] };
+  }
+
+  // Closed guard — no writes when WI is closed
+  if (wiStatus === 'closed') {
+    violations.push('work item is closed — all write operations are forbidden');
+  }
+
+  // code_permission check — if revoked, reject writes
+  if (codePermission === false) {
+    violations.push('code_permission is revoked — write operations forbidden');
+  }
+
+  // allowed_write_files check — reject writes not in this list
+  if (allowedWriteFiles !== undefined && allowedWriteFiles.length > 0) {
+    const normalizedAllowed = allowedWriteFiles.map(f => f.replace(/\\/g, '/'));
+    const isAllowed = normalizedAllowed.some(allowed =>
+      normalized === allowed || normalized.endsWith('/' + allowed) || normalized.endsWith(allowed),
+    );
+    if (!isAllowed) {
+      violations.push(`file not in allowed_write_files: ${normalized}`);
+    }
   }
 
   // Forbidden MVP dirs in user projects
@@ -106,39 +133,37 @@ export function enforceWritePolicy(
     }
   }
 
-  // .specforge/project/** — only Merge Runner
+  // .specforge/project/** — only Merge Runner (not sf-orchestrator)
   if (normalized.includes('.specforge/project/') || normalized.includes('project/')) {
-    if (actor !== 'merge_runner' && actor !== 'sf-orchestrator') {
+    if (actor !== 'merge_runner') {
       violations.push(`project specs only writable by merge_runner, got: ${actor}`);
     }
   }
 
-  // gates/** — only Gate Runner
+  // gates/ and gate_summary.md — only Gate Runner (not sf-orchestrator)
   if (normalized.includes('/gates/') || normalized.includes('gate_summary.md')) {
-    if (actor !== 'gate_runner' && actor !== 'sf-orchestrator') {
+    if (actor !== 'gate_runner') {
       violations.push(`gates only writable by gate_runner, got: ${actor}`);
     }
   }
 
-  // user_decision.json — only User Decision Recorder
+  // user_decision.json — only User Decision Recorder (not sf-orchestrator)
   if (normalized.includes('user_decision.json')) {
-    if (actor !== 'user_decision_recorder' && actor !== 'sf-orchestrator') {
+    if (actor !== 'user_decision_recorder') {
       violations.push(`user_decision.json only writable by user_decision_recorder, got: ${actor}`);
     }
   }
 
-  // merge_report.md — only Merge Runner
+  // merge_report.md — only Merge Runner (not sf-orchestrator)
   if (normalized.includes('merge_report.md')) {
-    if (actor !== 'merge_runner' && actor !== 'sf-orchestrator') {
+    if (actor !== 'merge_runner') {
       violations.push(`merge_report.md only writable by merge_runner, got: ${actor}`);
     }
   }
 
-  // Legacy specs read-only in new flow
-  if (normalized.includes('.specforge/specs/') || normalized.includes('specs/')) {
-    if (wiStatus !== 'legacy' && wiStatus !== undefined) {
-      violations.push('legacy specs are read-only in new flow');
-    }
+  // specs/ — completely forbidden to write
+  if (normalized.includes('.specforge/specs/')) {
+    violations.push('specs/ is completely forbidden to write');
   }
 
   return { allowed: violations.length === 0, violations };

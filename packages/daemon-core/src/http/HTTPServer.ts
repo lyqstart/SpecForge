@@ -29,7 +29,8 @@ import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
 import { JsonlAppender } from '../logs/JsonlAppender';
-import { resolveProjectPath } from '@specforge/types/directory-layout';
+import * as path from 'path';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 function isWALWriteError(err: unknown): err is WALWriteError {
   return err instanceof WALWriteError || (err instanceof Error && err.name === 'WALWriteError');
@@ -209,7 +210,8 @@ export class HTTPServer {
 
     let appender = map.get(projectPath);
     if (!appender) {
-      const filePath = resolveProjectPath(projectPath, layoutKey);
+      const fileName = layoutKey === 'runtimeLogsToolCalls' ? 'tool_calls.jsonl' : 'conversations.jsonl';
+      const filePath = path.join(projectPath, SPEC_DIR_NAME, 'runtime', 'logs', fileName);
       appender = new JsonlAppender(filePath, { maxFileSize: 10 * 1024 * 1024, maxArchiveFiles: 3, fsync: false });
       appender.initialize().catch(e => console.warn(`[HTTPServer] Appender init failed for ${filePath}:`, e.message));
       map.set(projectPath, appender);

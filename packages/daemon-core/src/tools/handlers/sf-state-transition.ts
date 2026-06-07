@@ -1,7 +1,7 @@
 import { access } from "node:fs/promises";
-import { join } from "node:path";
 import { registerHandler } from '../ToolDispatcher';
-import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { join } from 'node:path';
 import { isValidV11Transition, isForbiddenTransition, WI_STATUSES_V11 } from '../lib/state-machine-v11';
 
 registerHandler('sf_state_transition', async (args, context, deps) => {
@@ -46,7 +46,7 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
   // Guard: when creating a new work item (fromState=''), ensure the project is initialized
   if (fromState === '') {
     const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-    const manifestPath = resolveProjectPath(baseDir, 'manifest');
+    const manifestPath = join(baseDir, SPEC_DIR_NAME, 'manifest.json');
     try {
       await access(manifestPath);
     } catch {
