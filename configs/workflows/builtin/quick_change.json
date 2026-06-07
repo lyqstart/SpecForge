@@ -148,14 +148,23 @@
         "schema_version": "2.0",
         "agent": "",
         "skills": [],
-        "produces": "user_decision.json",
+        "produces": null,
         "gate": null,
-        "next": { "approved": "approved", "rejected": "rejected" },
+        "next": { "approved": "decision_recorded", "rejected": "rejected" },
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
       },
-      "approved": {
+      "decision_recorded": {
         "schema_version": "2.0",
-        "agent": "",
+        "agent": "user_decision_recorder",
+        "skills": [],
+        "produces": "user_decision.json",
+        "gate": null,
+        "next": "merge_not_applicable",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "merge_not_applicable": {
+        "schema_version": "2.0",
+        "agent": "merge_runner",
         "skills": [],
         "produces": "merge_report.md",
         "gate": null,
@@ -167,7 +176,12 @@
         "agent": "",
         "skills": [],
         "produces": null,
-        "gate": null,
+        "gate": {
+          "schema_version": "2.0",
+          "type": "simple",
+          "id": "code_permission_release_gate",
+          "name": "Code Permission Release Gate"
+        },
         "next": "implementation_running",
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
       },
@@ -193,7 +207,7 @@
         "schema_version": "2.0",
         "agent": "sf-verifier",
         "skills": ["superpowers-verification-before-completion"],
-        "produces": ["verification_report.md", "changed_files_audit.md"],
+        "produces": ["verification_report.md", "changed_files_audit.md", "evidence/evidence_manifest.json"],
         "gate": null,
         "next": "verification_done",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
@@ -267,8 +281,8 @@
     { "name": "trace_delta", "path": ".specforge/work-items/{workItemId}/trace_delta.md", "required": true },
     { "name": "candidate_manifest", "path": ".specforge/work-items/{workItemId}/candidate_manifest.json", "required": true },
     { "name": "gate_summary", "path": ".specforge/work-items/{workItemId}/gate_summary.md", "required": true },
-    { "name": "merge_report", "path": ".specforge/work-items/{workItemId}/merge_report.md", "required": true },
     { "name": "user_decision", "path": ".specforge/work-items/{workItemId}/user_decision.json", "required": true },
+    { "name": "merge_report", "path": ".specforge/work-items/{workItemId}/merge_report.md", "required": true },
     { "name": "changed_files_audit", "path": ".specforge/work-items/{workItemId}/changed_files_audit.md", "required": true },
     { "name": "evidence_manifest", "path": ".specforge/work-items/{workItemId}/evidence/evidence_manifest.json", "required": true },
     { "name": "verification_report", "path": ".specforge/work-items/{workItemId}/verification_report.md", "required": false }

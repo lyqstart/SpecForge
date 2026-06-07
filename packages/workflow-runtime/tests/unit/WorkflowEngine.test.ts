@@ -862,7 +862,7 @@ describe('WorkflowEngine', () => {
       expect(result.reason).toContain('no check function defined');
     });
 
-    it('should auto-waive non-required gate without checkFn', async () => {
+    it('should return passed=false with status=not_enabled for non-required gate without checkFn', async () => {
       const gate: SimpleGateDefinition = {
         schema_version: '1.0',
         type: 'simple',
@@ -872,8 +872,10 @@ describe('WorkflowEngine', () => {
       };
 
       const result = await engine.executeGate(gate);
-      expect(result.passed).toBe(true);
-      expect(result.reason).toContain('auto-waived');
+      // v1.1: required=false + no checkFn → passed=false, status=not_enabled
+      expect(result.passed).toBe(false);
+      expect(result.status).toBe('not_enabled');
+      expect(result.reason).toContain('not enabled');
     });
 
     it('should NOT auto-waive soft gate without checkFn (v1.1 evidence guard)', async () => {

@@ -181,7 +181,18 @@ export class WorkflowEngine {
   }
 
   /**
-   * Transition a workflow instance from one state to another
+   * Transition a workflow instance from one state to another.
+   *
+   * @deprecated v1.1: This method is retained for backward compatibility with
+   * existing tests only. Production code MUST use `transitionFull()` which
+   * enforces evidence prerequisites, forbidden-transition checks, WAL
+   * persistence, and actor/evidence recording through a single unified entry
+   * point. This method:
+   *   - Does NOT enforce evidence prerequisites
+   *   - Does NOT write to WAL
+   *   - Does NOT record actor/evidence
+   *   - Throws for all critical states (CRITICAL_STATES)
+   *
    * @param instanceId The workflow instance ID
    * @param from The current state
    * @param to The target state
@@ -642,24 +653,27 @@ export class WorkflowEngine {
   /**
    * Execute a simple gate
    *
-   * CR-4/CR-6: No checkFn — gate cannot verify
-   * CR-6 Fix 1: Only required=false auto-waives (severity='soft' no longer auto-waives)
-   * v1.1 evidence guard: A gate with severity='soft' but no checkFn must NOT
-   * auto-waive — only an explicit required=false allows auto-waiver.
+   * v1.1 GateResult semantics:
+   *   passed=true  → only when a real check function verified and approved
+   *   passed=false + status='not_enabled' → gate not configured (required=false, no checkFn)
+   *   passed=false + (no status) → gate failed or missing checkFn for required gate
+   *
+   * For state progression, determineNextState() treats status='not_enabled' as
+   * a waivable result that follows the 'pass' branch.
    */
   private async executeSimpleGate(gate: SimpleGateDefinition): Promise<GateResult> {
     if (gate.checkFn) {
       return await gate.checkFn();
     }
     // No checkFn — gate cannot verify
-    // v1.1: severity='soft' alone must NOT result in passed=true
-    // Only explicitly required=false gates are auto-waived (passed=true, status=not_enabled)
+    // v1.1: required=false + no checkFn → not_enabled (NOT passed)
+    // State progression handles this via status check in determineNextState()
     if (gate.required === false) {
       return {
         schema_version: '1.0',
-        passed: true,
+        passed: false,
         status: 'not_enabled',
-        reason: 'auto-waived: non-required gate without checkFn — not enabled, no verification performed',
+        reason: 'Non-required gate without checkFn — not enabled, no verification performed',
       };
     }
     // All other gates without checkFn (including severity='soft') must fail
@@ -678,7 +692,8 @@ export class WorkflowEngine {
         const result = await this.executeGate(childGate);
         results.push(result);
 
-        if (gate.failPolicy === 'fail_fast' && !result.passed) {
+        // v1.1: status='not_enabled' is waivable, not a real failure
+        if (gate.failPolicy === 'fail_fast' && !result.passed && result.status !== 'not_enabled') {
           // Fail fast - return immediately on first failure
           return {
             schema_version: '1.0',
@@ -694,8 +709,9 @@ export class WorkflowEngine {
       const parallelResults = await Promise.all(promises);
       results.push(...parallelResults);
 
+      // v1.1: status='not_enabled' is waivable, not a real failure
       if (gate.failPolicy === 'fail_fast') {
-        const failed = results.find(r => !r.passed);
+        const failed = results.find(r => !r.passed && r.status !== 'not_enabled');
         if (failed) {
           return {
             schema_version: '1.0',
@@ -707,14 +723,14 @@ export class WorkflowEngine {
       }
     }
 
-    // Collect all results
-    const allPassed = results.every(r => r.passed);
+    // v1.1: Collect all results — status='not_enabled' counts as effectively passed
+    const allPassed = results.every(r => r.passed || r.status === 'not_enabled');
     if (allPassed) {
       return { schema_version: '1.0', passed: true, reason: 'All child gates passed', details: { results } };
     }
 
-    // Some gates failed
-    const failedGates = results.filter(r => !r.passed);
+    // v1.1: Only count real failures (not not_enabled)
+    const failedGates = results.filter(r => !r.passed && r.status !== 'not_enabled');
     return {
       schema_version: '1.0',
       passed: false,
@@ -741,7 +757,9 @@ export class WorkflowEngine {
     }
 
     // Dynamic next state based on gate result
-    if (gateResult.passed && stateDef.next['pass']) {
+    // v1.1: status='not_enabled' gates (required=false, no checkFn) are waivable → pass branch
+    const isWaivable = gateResult.status === 'not_enabled';
+    if ((gateResult.passed || isWaivable) && stateDef.next['pass']) {
       return stateDef.next['pass'];
     }
     if (!gateResult.passed && stateDef.next['fail']) {
