@@ -272,3 +272,264 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 
 **⚠️ 重要**：你不直接写入 verification_report.md 和 work_log.md。
 你只需返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 完成文件写入。
+
+---
+
+# v1.1 Verification Pipeline Concepts
+
+> 本节定义 v1.1 标准中与验证流程直接相关的概念。Verifier 必须理解从
+> Trace entry 到 Verification Report、Evidence Manifest、再到 Close Gate
+> 的完整链路。
+
+---
+
+## Trace Entry for Verification Actions (§13.1)
+
+**标准章节**：§13.1 — Trace
+
+每条验证动作都必须生成 **Trace entry**，确保验证行为可追溯。Trace entry 记录了
+verifier 执行的每个关键验证动作，形成 REQ → AC → DD → TASK → FILE → TEST → EVIDENCE
+的完整追踪链。
+
+### 验证场景的 Trace entry 字段
+
+| 字段 | 说明 | 验证场景示例 |
+|------|------|-------------|
+| `agent_id` | 执行 agent 标识 | `"sf-verifier"` |
+| `work_item_id` | 所属 Work Item | `"WI-001"` |
+| `task_id` | 所属 Task | `"TASK-5"` |
+| `action` | 动作类型 | `"verify"` / `"report"` |
+| `target` | 动作对象 | `"pytest tests/test_foo.py"` / 文件路径 |
+| `timestamp` | ISO 8601 时间戳 | `"2026-06-07T10:30:00Z"` |
+| `result` | 动作结果摘要 | `"pass: 42 tests, 0 failures"` |
+
+### 生成规则
+
+1. **每条 verification_command 生成一条 Trace entry**：`action = "verify"`，`target` 为命令本身
+2. **最终验证报告生成一条 Trace entry**：`action = "report"`，`target` 为 verification_report 路径
+3. **Trace entry 中的 result 必须包含真实退出码和输出摘要**，不得写 `"verified"` 等模糊描述
+4. **Trace 日志存储在** `.specforge/logs/trace.jsonl`，verifier 不得修改或删除已有记录
+
+---
+
+## Verification Report Requirements (§13.3)
+
+**标准章节**：§13.3 — Verification Report
+
+### 核心要求
+
+Verification report **不得只写"已验证"或"通过"**。每条验证结果必须引用具体的 Evidence，
+使审查者能够追溯到真实的命令输出、文件内容或测试结果。
+
+### 报告格式
+
+Verification report 必须包含以下字段：
+
+```json
+{
+  "work_item_id": "<WI-xxx>",
+  "task_id": "<TASK-xx>",
+  "conclusion": "pass | fail | blocked",
+  "schema_version": "1.1",
+  "evidence_refs": [
+    {
+      "evidence_id": "<EA-xxx>",
+      "description": "<该条证据说明了什么>",
+      "location": "<文件路径或 artifact id>"
+    }
+  ],
+  "verification_commands": [
+    {
+      "command": "<执行的命令>",
+      "exit_code": 0,
+      "status": "pass | fail",
+      "output_summary": "<真实输出摘要>",
+      "evidence_ref": "<关联的 Evidence artifact id>"
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "req_id": "<REQ-xx>",
+      "ac_id": "<AC-xx>",
+      "status": "pass | fail",
+      "evidence": "<确认证据的具体描述，引用 evidence_refs 中的 id>"
+    }
+  ],
+  "test_matrix": { "..." : "pass | fail | skip | not_applicable" },
+  "summary": "<验证总结>"
+}
+```
+
+### 禁止行为
+
+| 禁止 | 原因 |
+|------|------|
+| 写 `"evidence": "已通过"` | 没有引用具体 Evidence，不可追溯 |
+| 写 `"output_summary": "OK"` | 没有真实命令输出摘要 |
+| 跳过 `evidence_refs` 字段 | §13.3 要求每条结论必须有证据支撑 |
+| 凭记忆补写未实际执行的检查 | 规则 5 已要求基于实际执行结果 |
+
+### 与 Evidence Manifest 的关系
+
+Verification report 中的 `evidence_refs` 必须与 `evidence_manifest.json` 中的条目一一对应。
+即：报告中引用的每条 evidence_id，都必须在 evidence_manifest 中注册。
+
+---
+
+## Evidence Manifest Requirements (§13.4)
+
+**标准章节**：§13.4 — Evidence
+
+### 核心要求
+
+所有验证过程中产生的证据**必须登记到 `evidence_manifest.json`**。未登记的证据视为不存在，
+不能用于支撑 verification report 的结论。
+
+### Manifest 格式
+
+```json
+{
+  "schema_version": "1.1",
+  "work_item_id": "<WI-xxx>",
+  "entries": [
+    {
+      "evidence_id": "<EA-xxx>",
+      "type": "test_output | command_output | file_snapshot | screenshot | log | other",
+      "description": "<证据描述>",
+      "collected_by": "sf-verifier",
+      "timestamp": "<ISO 8601>",
+      "location": "<文件路径>",
+      "related_refs": {
+        "req_ids": ["<REQ-xx>"],
+        "task_ids": ["<TASK-xx>"]
+      }
+    }
+  ]
+}
+```
+
+### 生成与验证流程
+
+1. **收集**：验证过程中每产生一条可审查证据（命令输出、测试结果、文件内容），调用
+   `sf_evidence_write`（write_type=`"artifact"`）写入
+2. **索引**：`sf_evidence_write` 自动维护 `evidence/index.json`
+3. **验证一致性**：生成最终报告前，必须检查 verification_report 中的所有 `evidence_refs`
+   都在 `evidence_manifest.json` 中有对应条目
+4. **缺失处理**：如果发现 verification_report 引用了不存在于 manifest 中的 evidence_id，
+   必须 `fail` 该验证
+
+### Evidence 层级
+
+| 层级 | ID 格式 | 说明 |
+|------|---------|------|
+| Evidence Request | ER-xxx | 声明需要收集什么证据 |
+| Evidence Packet | EP-xxx | 一组相关证据的集合 |
+| Evidence Bundle | EB-xxx | 完整验证周期的所有证据包 |
+| Evidence Artifact | EA-xxx | 单条证据的原始内容 |
+
+---
+
+## Verification Gate Checklist (§13.5)
+
+**标准章节**：§13.5 — Verification Gate
+
+Verification gate 是 WI 从 verification 阶段推进到 completed 之前必须通过的质量关卡。
+Verifier 必须确认以下 **6 项检查**：
+
+| # | 检查项 | 通过条件 |
+|---|--------|----------|
+| 1 | **Test matrix 完整性** | 所有必跑层级（按工作流类型）均已执行，无遗漏 |
+| 2 | **Acceptance criteria 全部确认** | 每个 AC 的 status 不为 `fail`，且有 evidence 支撑 |
+| 3 | **Verification report 引用 Evidence** | 报告中每条结论都有对应的 `evidence_refs`，不存在无证据的"通过" |
+| 4 | **Evidence manifest 完整** | `evidence_manifest.json` 存在且非空，所有证据已注册 |
+| 5 | **无越界文件修改** | `changed_files_audit` 未发现修改 `allowed_write_files` 以外的文件 |
+| 6 | **Side effects 符合预期** | 验证过程本身未产生非预期的副作用（如修改源码、改配置） |
+
+任何一项未通过，verification gate 整体为 fail。
+
+---
+
+## Close Gate Checklist (§15)
+
+**标准章节**：§15.2 — Close Gate
+
+`close_gate` 是 WI 关闭前**最后一道锁**，由 Orchestrator 调用 `runCloseGate` 执行。
+Verifier 必须理解 close gate 的检查项，确保验证产出满足 close gate 的前置条件。
+
+### Close Gate 必查 17 项
+
+| # | 检查项 | 说明 |
+|---|--------|------|
+| 1 | **verification_report.md 存在** | 报告文件必须存在于 WI archive 中 |
+| 2 | **verification_report conclusion = pass** | 报告结论必须为 pass，不得为 fail/blocked |
+| 3 | **evidence_manifest.json 存在** | 证据清单文件必须存在 |
+| 4 | **evidence_manifest 非空** | 必须至少有一条注册的证据 |
+| 5 | **所有 evidence_refs 可解析** | 报告中引用的每个 evidence_id 对应的文件实际存在 |
+| 6 | **Trace 链完整** | REQ → AC → DD → TASK → FILE → TEST → EVIDENCE 链无断裂 |
+| 7 | **无 outstanding violations** | Gate Runner 中无未解决的违规记录 |
+| 8 | **所有 TASK 状态为 done** | tasks.md 中所有 TASK 均已完成 |
+| 9 | **无 blocked/failed TASK** | 不存在被阻塞或失败的 TASK |
+| 10 | **requirements.md 未被绕过** | 所有 REQ 都有对应的 AC 和验证证据 |
+| 11 | **design.md 与实现一致** | DD 描述的接口/数据流与实际代码匹配 |
+| 12 | **changed_files_audit 通过** | 所有文件修改均在 allowed_write_files 范围内 |
+| 13 | **无 pending extension_request** | 不存在未处理的 extension_request.json |
+| 14 | **spec 文件 hash 一致** | Candidate hash 与最终文件 hash 匹配 |
+| 15 | **knowledge_graph 已同步** | KG 节点与 WI 产物保持同步 |
+| 16 | **archive 完整** | Agent run archive 包含所有必要的执行记录 |
+| 17 | **无安全/合规警告** | 安全扫描和合规检查无未解决的告警 |
+
+### Close Gate 流程
+
+1. Orchestrator 调用 `runCloseGate(ctx)` 传入 GateContext
+2. `runCloseGate` 逐项执行上述 17 项检查
+3. 返回 `CloseGateResult { passed: boolean, checks: [...] }`
+4. 全部通过 → `passed: true`，WI 可推进到 completed
+5. 任一失败 → `passed: false`，返回具体的失败项，Orchestrator 必须处理
+
+### Verifier 的责任
+
+虽然 close gate 由 Orchestrator 执行，但 verifier 必须确保：
+- verification_report 和 evidence_manifest 满足 close gate 第 1-5 项的前置条件
+- 在报告中明确标注哪些 close gate 检查项已由 verifier 确认
+- 如果发现可能阻碍 close gate 通过的问题，在 `summary` 中明确指出
+
+---
+
+## Changed Files Audit Integration (§12.7)
+
+**标准章节**：§12.7 — Changed Files Audit
+
+### 核心要求
+
+验证阶段必须执行 **changed_files_audit**，确认所有文件修改均在 task 合同声明的
+`allowed_write_files` 范围内。**越界写入必须导致 blocked 状态**，不得继续推进到 close gate。
+
+### 审计流程
+
+1. **读取 task 合同**：获取每个 TASK 的 `allowed_write_files` 列表
+2. **对比实际修改**：通过 `sf_git_diff` 或直接比较获取实际修改的文件列表
+3. **逐文件校验**：检查每个被修改的文件是否出现在对应 TASK 的 `allowed_write_files` 中
+4. **生成审计结果**：
+
+```json
+{
+  "audit_type": "changed_files_audit",
+  "work_item_id": "<WI-xxx>",
+  "tasks": [
+    {
+      "task_id": "<TASK-xx>",
+      "allowed_write_files": ["<path1>", "<path2>"],
+      "actual_changed_files": ["<path1>", "<path3>"],
+      "out_of_bounds": ["<path3>"],
+      "status": "blocked"
+    }
+  ],
+  "overall_status": "pass | blocked"
+}
+```
+
+### 越界处理
+
+- 发现越界写入 → 整体验证结果为 **blocked**（不是 fail，因为问题不在验证本身）
+- 在 `summary` 中明确说明哪个 TASK 修改了哪些越界文件
+- 推荐 Orchestrator 执行 `root_cause_investigation` 或退回 `tasks` 修正合同

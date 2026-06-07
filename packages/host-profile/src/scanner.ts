@@ -13,12 +13,12 @@
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import type { HostProfile, UserInfo, SpecForgePaths } from './types';
-import { probeOs, probeLocale, detectCI } from './probe-os';
-import { probeAllShells } from './probe-shells';
-import { probeAllTools } from './probe-tools';
-import { buildShellRules } from './build-rules';
-import { atomicWriteJson, safeReadJson } from './probe-utils';
+import type { HostProfile, UserInfo, SpecForgePaths } from './types.js';
+import { probeOs, probeLocale, detectCI } from './probe-os.js';
+import { probeAllShells } from './probe-shells.js';
+import { probeAllTools } from './probe-tools.js';
+import { buildShellRules } from './build-rules.js';
+import { atomicWriteJson, safeReadJson } from './probe-utils.js';
 
 /** 当前扫描器版本 */
 export const SCANNER_VERSION = '6.0.0';

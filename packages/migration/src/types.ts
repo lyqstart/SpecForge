@@ -22,6 +22,8 @@ export interface MigrationScript {
   fromVersion: string
   /** Target schema version (to) */
   toVersion: string
+  /** Optional description of the migration */
+  description?: string
 
   /**
    * Executes forward migration.
@@ -77,14 +79,19 @@ export interface MigrationResult {
   success: boolean
   migrated: number
   failed: number
-  errors: MigrationError[]
+  errors: MigrationErrorData[]
+  details?: Array<{ from: string; to: string; filename: string }>
 }
 
-export interface MigrationError {
+export interface MigrationErrorData {
   entity: string
   message: string
   code?: string
+  recoverable?: boolean
+  name?: string
 }
+
+export type MigrationErrorLike = MigrationError | MigrationErrorData
 
 export type MigrationStatus = 'pending' | 'running' | 'completed' | 'failed'
 

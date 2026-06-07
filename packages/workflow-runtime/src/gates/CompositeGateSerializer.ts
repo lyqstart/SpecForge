@@ -106,7 +106,7 @@ export class CompositeGateSerializer {
       id: gate.id,
       name: gate.name,
       // Note: checkFn cannot be serialized directly, serialize as reference name if available
-      checkFn: gate.checkFn ? 'checkFn' : undefined,
+      ...(gate.checkFn && { checkFn: 'checkFn' }),
     };
   }
 

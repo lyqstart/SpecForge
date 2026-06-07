@@ -6,7 +6,6 @@
 import { WorkflowPersistence } from './WorkflowPersistence.js';
 import { EventLogReader } from './events/EventLogReader.js';
 import type { WorkflowInstance, WorkflowDefinition } from './types.js';
-import { WorkflowEngine } from './WorkflowEngine.js';
 
 // Schema version for recovery (REQ-18)
 const SCHEMA_VERSION = '1.0';

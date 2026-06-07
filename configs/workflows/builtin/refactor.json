@@ -1,8 +1,9 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "refactor",
   "displayName": "Refactor",
   "intent": "Code refactoring with risk assessment and review for high-risk changes",
+  "workflow_path": "task_change_path",
   "intentKeywords": [
     "refactor",
     "重构",
@@ -14,114 +15,287 @@
     "clean code"
   ],
   "stateMachine": {
-    "schema_version": "1.0",
-    "initial": "intake",
+    "schema_version": "2.0",
+    "initial": "created",
     "states": {
-      "intake": {
-        "schema_version": "1.0",
+      "created": {
+        "schema_version": "2.0",
+        "agent": "sf-orchestrator",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "intake_ready",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "intake_ready": {
+        "schema_version": "2.0",
         "agent": "",
         "skills": [],
         "produces": "intake.md",
         "gate": null,
-        "next": "refactor_analysis",
+        "next": "impact_analyzing",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "refactor_analysis": {
-        "schema_version": "1.0",
+      "impact_analyzing": {
+        "schema_version": "2.0",
         "agent": "sf-design",
         "skills": [],
-        "produces": "refactor_analysis.md",
+        "produces": ["change_classification.md", "impact_analysis.md"],
         "gate": null,
-        "next": "refactor_analysis_gate",
+        "next": "impact_analyzed",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "refactor_analysis_gate": {
-        "schema_version": "1.0",
+      "impact_analyzed": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": "trigger_result.json",
+        "gate": null,
+        "next": "workflow_selected",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "workflow_selected": {
+        "schema_version": "2.0",
         "agent": "",
         "skills": [],
         "produces": null,
         "gate": {
-          "schema_version": "1.0",
+          "schema_version": "2.0",
           "type": "simple",
-          "id": "refactor_analysis_gate",
-          "name": "Refactor Analysis Gate"
+          "id": "workflow_selection_gate",
+          "name": "Workflow Selection Gate"
         },
-        "next": { "pass": "refactor_plan", "fail": "refactor_analysis" },
+        "next": { "pass": "candidate_preparing", "fail": "blocked" },
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "refactor_plan": {
-        "schema_version": "1.0",
+      "candidate_preparing": {
+        "schema_version": "2.0",
         "agent": "sf-design",
         "skills": [],
-        "produces": "refactor_plan.md",
+        "produces": ["tasks.md", "trace_delta.md", "candidate_manifest.json"],
         "gate": null,
-        "next": "refactor_plan_gate",
+        "next": "candidate_prepared",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "refactor_plan_gate": {
-        "schema_version": "1.0",
+      "candidate_prepared": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "gates_running",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "gates_running": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": "gate_summary.md",
+        "gate": {
+          "schema_version": "2.0",
+          "type": "composite",
+          "id": "pre_implementation_gates",
+          "name": "Pre-Implementation Gates",
+          "mode": "sequential",
+          "failPolicy": "fail_fast",
+          "children": [
+            {
+              "schema_version": "2.0",
+              "type": "simple",
+              "id": "entry_gate",
+              "name": "Entry Gate"
+            },
+            {
+              "schema_version": "2.0",
+              "type": "simple",
+              "id": "required_files_gate",
+              "name": "Required Files Gate"
+            },
+            {
+              "schema_version": "2.0",
+              "type": "simple",
+              "id": "trace_gate",
+              "name": "Trace Gate"
+            },
+            {
+              "schema_version": "2.0",
+              "type": "simple",
+              "id": "schema_gate",
+              "name": "Schema Gate"
+            },
+            {
+              "schema_version": "2.0",
+              "type": "simple",
+              "id": "gate_summary_gate",
+              "name": "Gate Summary Gate"
+            }
+          ]
+        },
+        "next": { "pass": "approval_required", "fail": "gates_failed" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "gates_failed": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "candidate_preparing",
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "approval_required": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": { "approved": "merge_ready", "rejected": "rejected" },
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "approved": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "merge_ready",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "merge_ready": {
+        "schema_version": "2.0",
         "agent": "",
         "skills": [],
         "produces": null,
         "gate": {
-          "schema_version": "1.0",
+          "schema_version": "2.0",
           "type": "simple",
-          "id": "refactor_plan_gate",
-          "name": "Refactor Plan Gate"
+          "id": "merge_ready_gate",
+          "name": "Merge Ready Gate"
         },
-        "next": { "pass": "development", "fail": "refactor_plan" },
+        "next": { "pass": "merging", "fail": "blocked" },
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "development": {
-        "schema_version": "1.0",
+      "merging": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": ["merge_report.md", "changed_files_audit.md"],
+        "gate": null,
+        "next": "merged",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "merged": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "post_merge_verified",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "post_merge_verified": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": {
+          "schema_version": "2.0",
+          "type": "simple",
+          "id": "post_merge_gate",
+          "name": "Post Merge Gate"
+        },
+        "next": { "pass": "implementation_ready", "fail": "blocked" },
+        "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
+      },
+      "implementation_ready": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null,
+        "next": "implementation_running",
+        "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
+      },
+      "implementation_running": {
+        "schema_version": "2.0",
         "agent": "sf-executor",
         "skills": ["superpowers-subagent-driven-development"],
-        "produces": null,
+        "produces": "evidence/evidence_manifest.json",
         "gate": null,
-        "next": "review",
+        "next": "implementation_done",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "review": {
-        "schema_version": "1.0",
+      "implementation_done": {
+        "schema_version": "2.0",
         "agent": "sf-reviewer",
         "skills": ["superpowers-code-review"],
         "produces": null,
         "gate": null,
-        "next": "verification",
+        "next": "verification_running",
         "retry": { "maxAttempts": 1, "onExhausted": "blocked" }
       },
-      "verification": {
-        "schema_version": "1.0",
+      "verification_running": {
+        "schema_version": "2.0",
         "agent": "sf-verifier",
         "skills": ["superpowers-verification-before-completion"],
-        "produces": "verification_report",
+        "produces": "verification_report.md",
         "gate": null,
-        "next": "verification_gate",
+        "next": "verification_done",
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "verification_gate": {
-        "schema_version": "1.0",
+      "verification_done": {
+        "schema_version": "2.0",
         "agent": "",
         "skills": [],
         "produces": null,
         "gate": {
-          "schema_version": "1.0",
-          "type": "simple",
-          "id": "verification_gate",
-          "name": "Verification Gate"
+          "schema_version": "2.0",
+          "type": "composite",
+          "id": "close_gate",
+          "name": "Close Gate",
+          "mode": "sequential",
+          "failPolicy": "collect_all",
+          "children": [
+            {
+              "schema_version": "2.0",
+              "type": "simple",
+              "id": "verification_gate",
+              "name": "Verification Gate"
+            },
+            {
+              "schema_version": "2.0",
+              "type": "simple",
+              "id": "close_gate",
+              "name": "Close Gate"
+            }
+          ]
         },
-        "next": { "pass": "completed", "fail": "verification" },
+        "next": { "pass": "closed", "fail": "implementation_running" },
         "retry": { "maxAttempts": 3, "onExhausted": "blocked" }
       },
-      "completed": {
-        "schema_version": "1.0",
+      "closed": {
+        "schema_version": "2.0",
         "agent": "",
         "skills": [],
         "produces": null,
         "gate": null
       },
       "blocked": {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      },
+      "rejected": {
+        "schema_version": "2.0",
+        "agent": "",
+        "skills": [],
+        "produces": null,
+        "gate": null
+      },
+      "superseded": {
+        "schema_version": "2.0",
         "agent": "",
         "skills": [],
         "produces": null,
@@ -129,10 +303,18 @@
       }
     }
   },
-  "artifacts": [
-    { "name": "intake", "path": "specforge/specs/{workItemId}/intake.md", "required": true },
-    { "name": "refactor_analysis", "path": "specforge/specs/{workItemId}/refactor_analysis.md", "required": true },
-    { "name": "refactor_plan", "path": "specforge/specs/{workItemId}/refactor_plan.md", "required": true },
-    { "name": "verification_report", "path": "specforge/specs/{workItemId}/verification_report.md", "required": false }
+  "produces": [
+    { "name": "intake", "path": ".specforge/work-items/{workItemId}/intake.md", "required": true },
+    { "name": "change_classification", "path": ".specforge/work-items/{workItemId}/change_classification.md", "required": true },
+    { "name": "impact_analysis", "path": ".specforge/work-items/{workItemId}/impact_analysis.md", "required": true },
+    { "name": "trigger_result", "path": ".specforge/work-items/{workItemId}/trigger_result.json", "required": true },
+    { "name": "tasks", "path": ".specforge/work-items/{workItemId}/tasks.md", "required": true },
+    { "name": "trace_delta", "path": ".specforge/work-items/{workItemId}/trace_delta.md", "required": true },
+    { "name": "candidate_manifest", "path": ".specforge/work-items/{workItemId}/candidate_manifest.json", "required": true },
+    { "name": "gate_summary", "path": ".specforge/work-items/{workItemId}/gate_summary.md", "required": true },
+    { "name": "merge_report", "path": ".specforge/work-items/{workItemId}/merge_report.md", "required": true },
+    { "name": "changed_files_audit", "path": ".specforge/work-items/{workItemId}/changed_files_audit.md", "required": true },
+    { "name": "evidence_manifest", "path": ".specforge/work-items/{workItemId}/evidence/evidence_manifest.json", "required": true },
+    { "name": "verification_report", "path": ".specforge/work-items/{workItemId}/verification_report.md", "required": false }
   ]
 }

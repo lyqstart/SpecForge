@@ -17,7 +17,7 @@ import { readdir, readFile, writeFile, mkdir, copyFile, rm } from 'fs/promises'
 import { resolve, join, basename } from 'path'
 import { existsSync, createReadStream, createWriteStream } from 'fs'
 import { createHash } from 'crypto'
-import type { MigrationContext, MigrationResult, MigrationError } from './types'
+import type { MigrationContext, MigrationResult, MigrationErrorData } from './types'
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 
 // Default directories (can be overridden via config)
@@ -62,7 +62,7 @@ export interface MigrationStepResult {
   scriptInfo: MigrationScriptInfo
   success: boolean
   backupPath?: string
-  error?: MigrationError
+  error?: MigrationErrorData
   durationMs: number
 }
 
@@ -373,7 +373,7 @@ export async function buildExecutionPlan(
 async function applyMigration(
   scriptInfo: MigrationScriptInfo,
   data: unknown
-): Promise<{ result: unknown; success: boolean; error?: MigrationError }> {
+): Promise<{ result: unknown; success: boolean; error?: MigrationErrorData }> {
   try {
     // Dynamic import of the migration script
     const module = await import(scriptInfo.path)
@@ -393,7 +393,7 @@ async function applyMigration(
     const result = await migrationFn(data)
     return { result, success: true }
   } catch (err) {
-    const error: MigrationError = {
+    const error: MigrationErrorData = {
       entity: 'migration',
       message: err instanceof Error ? err.message : 'Unknown migration error',
       code: 'MIGRATION_FAILED'
@@ -428,7 +428,7 @@ export async function applyMigrations(
     dryRun = false
   } = options
   
-  const errors: MigrationError[] = []
+  const errors: MigrationErrorData[] = []
   let migrated = 0
   let failed = 0
   
@@ -590,4 +590,4 @@ export async function cleanupOldBackups(
 }
 
 // Re-export types
-export type { MigrationContext, MigrationResult, MigrationError }
+export type { MigrationContext, MigrationResult, MigrationErrorData }

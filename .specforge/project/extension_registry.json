@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "project_spec_version": "PSV-0001",
+  "namespaces": {
+    "requirement_types": [],
+    "design_types": [],
+    "task_types": [],
+    "verification_types": [],
+    "gate_types": []
+  },
+  "updated_by_work_item": null,
+  "updated_at": null
+}

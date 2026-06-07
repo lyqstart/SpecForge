@@ -9,7 +9,7 @@
 
 import { readFile, readdir } from "node:fs/promises"
 import { join } from "node:path"
-import { resolveProjectPath } from "@specforge/types/directory-layout"
+import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
 import { loadGraphStore, isKGEnabled } from "./sf_knowledge_graph_core"
 import { impactAnalysis, getSubgraph } from "./sf_knowledge_query_core"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
@@ -187,7 +187,7 @@ export class ArchiveSource implements ContextDataSource {
     if (targetFiles.length === 0) return fragments
 
     // Step 2: Scan archive/agent_runs/
-    const archiveDir = resolveProjectPath(this.baseDir, "archiveAgentRuns")
+    const archiveDir = join(this.baseDir, SPEC_DIR_NAME, 'runtime', 'archive', 'agent_runs')
     let entries: string[]
     try {
       entries = await readdir(archiveDir)
@@ -310,7 +310,7 @@ export class ArchiveSource implements ContextDataSource {
     const files: string[] = []
 
     // Try to read tasks.md from spec directory
-    const tasksPath = resolveProjectPath(this.baseDir, "specs", params.work_item_id, "tasks.md")
+    const tasksPath = join(this.baseDir, SPEC_DIR_NAME, 'specs', params.work_item_id, "tasks.md")
     let content: string
     try {
       content = await readFile(tasksPath, "utf-8")
@@ -709,7 +709,7 @@ export async function recommendCapabilities(
   }
 
   // Read skill_fragments.json
-  const configPath = resolveProjectPath(baseDir, "config", "skill_fragments.json")
+  const configPath = join(baseDir, SPEC_DIR_NAME, 'config', 'skill_fragments.json')
   let configContent: string
   try {
     configContent = await readFile(configPath, "utf-8")
@@ -883,7 +883,7 @@ export async function buildContext(
 
 async function isKnowledgeBaseEnabled(baseDir: string): Promise<boolean> {
   try {
-    const configPath = resolveProjectPath(baseDir, "config", "project.json")
+    const configPath = join(baseDir, SPEC_DIR_NAME, 'config', 'project.json')
     const content = await readFile(configPath, "utf-8")
     const config = JSON.parse(content)
     return config.knowledge_base_enabled === true
@@ -894,7 +894,7 @@ async function isKnowledgeBaseEnabled(baseDir: string): Promise<boolean> {
 
 async function getProjectNameForContext(baseDir: string): Promise<string> {
   try {
-    const configPath = resolveProjectPath(baseDir, "config", "project.json")
+    const configPath = join(baseDir, SPEC_DIR_NAME, 'config', 'project.json')
     const content = await readFile(configPath, "utf-8")
     const config = JSON.parse(content)
     return config.name || "unknown"

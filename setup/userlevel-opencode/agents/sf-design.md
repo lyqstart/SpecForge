@@ -238,5 +238,174 @@ graph TD
   },
   "self_check": { "passed": [1,2,3,4,5,6,7,8,9,10], "failed": [] },
   "out_of_scope_observations": []
+```
+
+---
+
+# v1.1 Standard Concepts
+
+以下概念来自 SpecForge v1.1 标准（`specforge_final_fused_standard_v1_1_patch1_zh.md`）。设计 Agent 必须理解这些概念以支持 change_request / refactor 等增量工作流。
+
+---
+
+## Design Delta（§8.1）
+
+**标准章节**：§8.1 Delta
+
+**定义**：Design Delta（`design_delta.md`）解释设计变化，是增量变更的说明文档，不是最终写入对象。
+
+**何时产出**：在 change_request / refactor 等 incremental workflow 中，当设计需要对已有架构做局部调整时，必须产出 `design_delta.md`，而非直接生成完整 `design.md`。
+
+**Delta 必须说明的 5 项内容**（§8.1）：
+
+1. **为什么变** — 变更的业务或技术动机。
+2. **改了什么** — 新增 / 修改 / 删除了哪些设计决策（DD-N）。
+3. **影响哪些正式规格** — 涉及 `.specforge/project/**` 下的哪些文件。
+4. **旧内容如何处理** — 旧 DD 是标记 deprecated 还是直接删除。
+5. **是否需要 User Decision** — 变更是否需要用户确认。
+
+**格式要求**：
+
+```markdown
+# Design Delta — <WI-ID>: <简要标题>
+
+> Work Item: <WI-ID>
+> Workflow Path: <workflow_path>
+> Base Spec Version: <PSV-ID 或 "current">
+> 标准依据: specforge_final_fused_standard_v1_1_patch1_zh.md
+
+## 1. 增量设计描述
+### Group <X>: <组名>
+
+#### DD-<N> <模块/决策标题>
+refs: [REQ-N, ...]
+constrained_by: <约束来源>
+<设计内容>
+```
+
+**与 design.md 的关系**：`design_delta.md` 是增量补充。对于全新 Work Item，仍产出完整 `design.md`。对于变更型 Work Item，`design_delta.md` 与已有 `design.md` 并存。
+
+---
+
+## Design Candidate（§8.2）
+
+**标准章节**：§8.2 Candidate
+
+**定义**：Design Candidate 是拟写入正式规格真相源（`.specforge/project/**`）的完整设计候选文件，不是 patch。
+
+**何时产出**：当设计产物需要合并到正式规格目录时，必须在当前 WI 的 `candidates/` 下生成完整候选文件。
+
+**Candidate 规则**（§8.2）：
+
+1. **必须是完整目标文件** — 不能是 diff / patch 格式。
+2. **路径位于 `candidates/` 下** — 如 `.specforge/work-items/<WI>/candidates/project/modules/AUTH/design.md`。
+3. **不能直接覆盖 `.specforge/project/**`** — 必须通过 Gate → User Decision → Merge Runner 流程。
+4. **必须绑定 `base_spec_version`** — 记录基于哪个版本生成。
+5. **必须计算 hash** — 用于后续一致性校验。
+6. **只有经过 Gate、User Decision、Merge Runner 才能进入正式规格**。
+
+**Candidate Manifest**（§8.3）：每个 Candidate 必须在 `candidate_manifest.json` 中登记，包含 `candidate_path`、`target_path`、`operation`、`candidate_hash` 等字段。
+
+**设计 Agent 的职责**：
+
+- 生成完整候选文件到 `candidates/` 目录。
+- 确保 Candidate 内容与 design_delta.md 中的设计决策一致。
+- 在 `candidate_manifest.json` 中正确登记 Candidate 条目。
+
+---
+
+## Design Gate（§9.4）
+
+**标准章节**：§9.4 Gate Report
+
+**定义**：Design Gate 是设计阶段必须通过的流程准入检查点。Gate 由 Gate Runner 执行，不等于 Agent 自评或用户确认（§9.1）。
+
+**Design 相关的 Gate 类型**（§9.2）：
+
+| Gate ID | 说明 | Gate 类型 |
+|---------|------|-----------|
+| `required_files_gate` | 检查 design.md / design_delta.md 是否存在 | hard_gate |
+| `candidate_manifest_gate` | 检查 Candidate Manifest 结构正确性 | hard_gate |
+| `path_policy_gate` | 检查路径符合规范 | hard_gate |
+| `schema_gate` | 检查文件内容符合 schema | hard_gate |
+| `spec_consistency_gate` | 检查设计与其他规格一致性 | hard_gate |
+| `trace_gate` | 检查 REQ→DD 追溯完整性 | hard_gate |
+| `workflow_specific_gate` | 工作流特定检查（如 change_request 需要 design_delta.md） | hard_gate |
+
+**Gate Report 结构**（§9.4）：
+
+```json
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "gate_id": "<gate_id>",
+  "gate_type": "hard_gate | soft_gate",
+  "required": true,
+  "status": "passed | failed | skipped",
+  "input_files": [],
+  "checks": [],
+  "blocking_issues": [],
+  "warnings": [],
+  "waiver_allowed": false
 }
 ```
+
+**hard_gate vs soft_gate**（§9.3）：
+
+- `hard_gate`：失败不得进入下一步，不允许 waiver。
+- `soft_gate`：可以通过 waiver 继续，但 waiver 必须进入 `user_decision.json`，包含原因、风险、有效期和 follow-up WI。
+
+**Gate Summary**（§9.5）：所有 Gate 通过后生成 `gate_summary.md`，汇总所有 Gate 结果供 User Decision 使用。
+
+**设计 Agent 注意事项**：
+
+- **禁止调用 Gate 工具**（已有 Boundary 规则）。自检文档质量请用 `sf_doc_lint`。
+- 设计时应确保产出物能通过上述 Gate 检查。
+- 每个 DD 必须有 REQ 引用（对应 `trace_gate`）。
+- 必须包含架构图、Out of Scope、Assumptions（对应 `required_files_gate` / `spec_consistency_gate`）。
+
+---
+
+## Extension Handling（Patch1 §5-§18）
+
+**标准章节**：v1.1 Patch1 §5-§18 Extension Subflow
+
+**定义**：Extension Subflow 是当设计 Agent 发现需要使用尚未在 `extension_registry.json` 中登记的类型或结构时，触发的扩展流程。
+
+**触发条件**（Patch1 §6）：
+
+Agent 在生成设计产物时，需要使用未在 `extension_registry.json` 中登记的类型 → 必须触发 Extension Subflow。
+
+**设计 Agent 的处理流程**：
+
+1. **发现缺口**：在设计过程中发现需要使用未登记的类型或结构。
+2. **写 extension_request.json**：写入当前 WI 目录（`.specforge/work-items/<WI>/extension_request.json`）。
+3. **Handoff 报告**：在 handoff 中报告 `extension_required`。
+4. **停止并等待**：sf-orchestrator 接手，调度 sf-extension Agent 处理。
+
+**extension_request.json 结构**（Patch1 §7）：
+
+```json
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-0001",
+  "requesting_agent": "sf-design",
+  "reason": "<为什么需要扩展>",
+  "missing_types": ["<需要的类型列表>"],
+  "proposed_extension": { },
+  "created_at": "2026-06-07T00:00:00Z"
+}
+```
+
+**Extension Subflow 完成后**（Patch1 §15）：
+
+- sf-orchestrator 恢复原 WI 主流程。
+- 设计 Agent 重新读取更新后的 `extension_registry.json`。
+- 如果 extension_registry 变更影响已有 Candidate，原 Candidate 必须 invalidated。
+
+**设计 Agent 的禁止行为**（Patch1 §17）：
+
+- **不得**自行修改 `.specforge/project/extension_registry.json`。
+- **不得**自行启动子 Agent 或 Extension Subflow。
+- **不得**把未知类型直接写入正式规格 Candidate。
+- **不得**绕过 extension_request.json 直接使用未登记的扩展类型。

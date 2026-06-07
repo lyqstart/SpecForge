@@ -1,4 +1,4 @@
-# SpecForge 目录布局
+# SpecForge 目录布局（v1.1）
 
 > ⚠️ 本文档由 `scripts/render-layout.ts` 从 `packages/types/src/directory-layout.ts` 自动生成。
 > 不要手动编辑。
@@ -9,20 +9,84 @@
 SPEC_DIR_NAME = '.specforge'
 ```
 
-## 项目级路径 (.specforge/)
+## v1.1 Active Paths (.specforge/)
 
 ### committed 区（提交到 Git）
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| manifest | `manifest.json` | Project manifest（committed）— `<root>/.specforge/manifest.json` |
-| config | `config` | 项目配置目录（committed）— `<root>/.specforge/config/` |
-| specs | `specs` | Work Item 规格目录（committed）— `<root>/.specforge/specs/` |
-| specsReadme | `specs/README.md` | specs 目录的 README（committed）— `<root>/.specforge/specs/README.md` |
-| knowledge | `knowledge` | Knowledge 目录（committed）— `<root>/.specforge/knowledge/` |
-| knowledgeGraph | `knowledge/graph.json` | Knowledge Graph 数据（committed）— `<root>/.specforge/knowledge/graph.json` |
+| project | `project` | 项目级正式规格目录 — `<root>/.specforge/project/` |
+| workItems | `work-items` | Work Item 事务根目录 — `<root>/.specforge/work-items/` |
 
-### configFiles 分组
+### projectFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| projectFiles.specManifest | `project/spec_manifest.json` | — |
+| projectFiles.extensionRegistry | `project/extension_registry.json` | — |
+| projectFiles.requirementsIndex | `project/requirements_index.md` | — |
+| projectFiles.designIndex | `project/design_index.md` | — |
+| projectFiles.architecture | `project/architecture.md` | — |
+| projectFiles.glossary | `project/glossary.md` | — |
+| projectFiles.decisions | `project/decisions.md` | — |
+| projectFiles.traceMatrix | `project/trace_matrix.md` | — |
+| projectFiles.modulesRoot | `project/modules` | — |
+
+### workItemFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| workItemFiles.workItemJson | `work_item.json` | — |
+| workItemFiles.intake | `intake.md` | — |
+| workItemFiles.changeClassification | `change_classification.md` | — |
+| workItemFiles.impactAnalysis | `impact_analysis.md` | — |
+| workItemFiles.triggerResult | `trigger_result.json` | — |
+| workItemFiles.requirementsDelta | `requirements_delta.md` | — |
+| workItemFiles.designDelta | `design_delta.md` | — |
+| workItemFiles.tasks | `tasks.md` | — |
+| workItemFiles.traceDelta | `trace_delta.md` | — |
+| workItemFiles.candidateManifest | `candidate_manifest.json` | — |
+| workItemFiles.candidates | `candidates` | — |
+| workItemFiles.gates | `gates` | — |
+| workItemFiles.gateSummary | `gate_summary.md` | — |
+| workItemFiles.userDecision | `user_decision.json` | — |
+| workItemFiles.verificationReport | `verification_report.md` | — |
+| workItemFiles.mergeReport | `merge_report.md` | — |
+| workItemFiles.evidence | `evidence` | — |
+| workItemFiles.evidenceManifest | `evidence/evidence_manifest.json` | — |
+| workItemFiles.extensionRequest | `extension_request.json` | — |
+| workItemFiles.extensionDelta | `extension_delta.md` | — |
+
+### gitignored 区（运行时数据）
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
+
+### runtimeFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtimeFiles.wal | `runtime/wal.jsonl` | — |
+| runtimeFiles.state | `runtime/state.json` | — |
+| runtimeFiles.checkpoints | `runtime/checkpoints` | — |
+| runtimeFiles.logs | `runtime/logs` | — |
+
+## Legacy Paths (read-only / deprecated)
+
+> ⚠️ 以下路径已从 LAYOUT 移除，仅供 legacy readers 读取，新代码不得使用这些路径进行写入。
+
+### 项目级 Legacy Paths
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| specsReadOnly | `specs` | 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` |
+| manifest | `manifest.json` | 旧根级 manifest — `<root>/.specforge/manifest.json` |
+| config | `config` | 旧配置目录 — `<root>/.specforge/config/` |
+| knowledge | `knowledge` | 旧知识目录 — `<root>/.specforge/knowledge/` |
+| knowledgeGraph | `knowledge/graph.json` | 旧知识图谱 — `<root>/.specforge/knowledge/graph.json` |
+
+#### legacyPaths.configFiles 分组
 
 | Key | 路径 | 说明 |
 |-----|------|------|
@@ -32,26 +96,7 @@ SPEC_DIR_NAME = '.specforge'
 | configFiles.riskPolicy | `config/risk_policy.json` | — |
 | configFiles.skillFragments | `config/skill_fragments.json` | — |
 
-### gitignored 区（运行时数据）
-
-| Key | 路径 | 说明 |
-|-----|------|------|
-| runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
-| runtimeWal | `runtime/wal.jsonl` | 写前日志（gitignored）— `<root>/.specforge/runtime/wal.jsonl` |
-| runtimeState | `runtime/state.json` | 持久化状态（gitignored）— `<root>/.specforge/runtime/state.json` |
-| runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录（gitignored）— `<root>/.specforge/runtime/checkpoints/` |
-| logs | `logs` | 日志目录（gitignored）— `<root>/.specforge/logs/` |
-| logsTelemetry | `logs/telemetry.jsonl` | 遥测日志（gitignored）— `<root>/.specforge/logs/telemetry.jsonl` |
-| logsTrace | `logs/trace.jsonl` | 追踪日志（gitignored）— `<root>/.specforge/logs/trace.jsonl` |
-| logsToolCalls | `logs/tool_calls.jsonl` | 工具调用日志（gitignored）— `<root>/.specforge/logs/tool_calls.jsonl` |
-| logsCost | `logs/cost.jsonl` | 成本日志（gitignored）— `<root>/.specforge/logs/cost.jsonl` |
-| logsConversations | `logs/conversations.jsonl` | 会话日志（gitignored）— `<root>/.specforge/logs/conversations.jsonl` |
-| archive | `archive` | Agent Run 归档根目录（gitignored）— `<root>/.specforge/archive/` |
-| archiveAgentRuns | `archive/agent_runs` | Agent Run 归档子目录（gitignored）— `<root>/.specforge/archive/agent_runs/` |
-| sessions | `sessions` | 会话归档目录（gitignored）— `<root>/.specforge/sessions/` |
-| cas | `cas` | 内容寻址存储（gitignored）— `<root>/.specforge/cas/` |
-
-## 用户级路径 (~/.specforge/)
+### 用户级 Legacy Paths (~/.specforge/)
 
 | Key | 路径 | 说明 |
 |-----|------|------|

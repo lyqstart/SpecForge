@@ -279,7 +279,7 @@ export class AtomicWorkflowInstanceStorage implements WorkflowInstanceStorage {
    */
   private async atomicWrite(filePath: string, data: StoredWorkflowInstance): Promise<void> {
     const tempPath = filePath + '.tmp';
-    const backupPath = this.getBackupFilePath(data.instance.id);
+    void this.getBackupFilePath(data.instance.id);
     
     let lastError: Error | null = null;
     

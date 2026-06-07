@@ -17,12 +17,24 @@ export interface WorkflowEventData {
 
 /**
  * Gate execution result
+ *
+ * v1.1 status semantics (five-state):
+ *   passed      — check function ran and approved (passed=true)
+ *   failed      — check function ran and rejected (passed=false)
+ *   blocked     — check function could not run due to missing prerequisites
+ *   waived      — explicitly waived by policy or user (passed=true, but not verified)
+ *   not_enabled — gate not configured (required=false, no checkFn) (passed=false)
+ *
+ * passed=true ONLY when a real check function verified and approved.
+ * status supplements passed for Gate Summary visibility.
  */
 export interface GateResult {
   schema_version: "1.0";
   passed: boolean;
   reason?: string;
   details?: Record<string, unknown>;
+  /** v1.1: Five-state gate status for Gate Summary */
+  status?: 'passed' | 'failed' | 'blocked' | 'waived' | 'not_enabled';
 }
 
 /**
@@ -39,6 +51,10 @@ export interface SimpleGateDefinition {
   id: string;
   name: string;
   checkFn?: () => Promise<GateResult> | GateResult;
+  /** Whether this gate is required (default: true). Non-required gates auto-waive when no checkFn */
+  required?: boolean;
+  /** Gate severity — 'soft' gates auto-waive when no checkFn */
+  severity?: 'hard' | 'soft';
 }
 
 /**

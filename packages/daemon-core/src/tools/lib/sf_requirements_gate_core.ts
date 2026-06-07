@@ -9,7 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { resolveProjectPath } from "@specforge/types/directory-layout"
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import { parseAllVerificationStrategies } from "./sf_verification_types"
@@ -219,7 +219,7 @@ export async function checkRequirementsGate(
     }
 
     // 读取目标文件
-    const specDir = resolveProjectPath(baseDir, "specs", workItemId)
+    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
     const filePath = join(specDir, spec.targetFile)
     let content: string
     try {
@@ -270,7 +270,7 @@ async function existingRequirementsGateCheck(
   workItemId: string,
   baseDir: string
 ): Promise<GateResult> {
-  const specDir = resolveProjectPath(baseDir, "specs", workItemId)
+  const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
   const docPath = join(specDir, "requirements.md")
 
   // 1. 读取 requirements.md
@@ -436,7 +436,7 @@ export async function checkBugfixGate(
     // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
     await tryCheckCompatibility(baseDir, "sf_requirements_gate_core")
 
-    const specDir = resolveProjectPath(baseDir, "specs", workItemId)
+    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
     const docPath = join(specDir, "bugfix.md")
 
     // 1. 读取 bugfix.md

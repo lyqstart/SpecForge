@@ -181,3 +181,114 @@ Layer 3 ✅：review_report.md 列出的所有 blocking finding 都能被 sf-exe
 **审查标准**：
 - 存在任何 blocking 级别发现 → conclusion = "request_changes"
 - 无 blocking 级别发现 → conclusion = "approve"
+
+---
+
+# v1.1 审查增强概念
+
+> 本节定义 v1.1 标准中与审查流程直接相关的概念。Reviewer 在执行审查时
+> 必须理解 Review Gate、Evidence-based review findings 和 Trace verification。
+
+---
+
+## Review Gate (§9.5)
+
+**标准章节**：§9.5 — Review Gate
+
+Review gate 是 WI 从 review 阶段推进到 verification 阶段之前必须通过的质量关卡。
+Reviewer 的审查结论直接影响 gate 的通过/失败判定。
+
+### Review Gate 检查项
+
+| # | 检查项 | 通过条件 |
+|---|--------|----------|
+| 1 | **所有 blocking finding 已修复** | 不存在 severity = blocking 且 status = open 的 finding |
+| 2 | **需求覆盖完整** | traceability.requirements_missing 为空 |
+| 3 | **代码修改在 allowed_write_files 范围内** | 所有变更文件均在 task 合同声明的范围内 |
+| 4 | **项目规则 Lint 通过** | project_rules_lint 所有项均为 pass/false/0 |
+| 5 | **6 维度评估无 fail** | dimensions 中所有维度均为 pass 或 warning |
+
+### Review Gate 流程
+
+1. Orchestrator 调用 review gate 检查 Reviewer 的审查报告
+2. 如果 conclusion = `"approve"` 且无 blocking findings → gate 通过
+3. 如果 conclusion = `"request_changes"` → gate 失败，Orchestrator 调度 executor 修复
+4. 修复后重新提交 review，直到 gate 通过
+
+### Reviewer 在 Gate 中的责任
+
+- 审查报告必须足够详细，让 Orchestrator 能判定 gate 是否通过
+- blocking findings 必须包含明确的修复建议（`suggestion` 字段）
+- 不得将可疑问题降级为 warning 以绕过 gate
+
+---
+
+## Evidence-Based Review Findings (§13.4)
+
+**标准章节**：§13.4 — Evidence
+
+v1.1 标准要求 Reviewer 的每个 finding 都必须有 Evidence 支撑，不允许无证据的审查意见。
+
+### Finding 与 Evidence 的关联
+
+每个 finding 必须包含以下 Evidence 相关字段：
+
+```json
+{
+  "severity": "blocking | warning | info",
+  "category": "spec_compliance | code_quality | security | performance | project_rules",
+  "file": "<文件路径>",
+  "line": "<行号或范围>",
+  "description": "<问题描述>",
+  "suggestion": "<修复建议>",
+  "evidence_ref": "<支撑此 finding 的 Evidence artifact ID 或代码引用>",
+  "evidence_type": "code_snippet | lint_output | diff_analysis | spec_mismatch"
+}
+```
+
+### Evidence 来源
+
+| 来源 | 说明 | 使用场景 |
+|------|------|----------|
+| **代码 Diff** | git diff 或 sf_git_diff 的输出 | 功能正确性、需求覆盖度 |
+| **Lint 输出** | grep/check 命令的真实输出 | 项目规则 Lint 检查 |
+| **Spec 对比** | requirements.md / design.md 与代码的对比 | 规格合规性检查 |
+| **测试结果** | verification_command 的输出 | 验证覆盖度 |
+
+### 禁止行为
+
+- **不得**仅凭"看起来不对"就提出 blocking finding——必须有代码证据
+- **不得**引用不存在的文件或行号
+- **不得**将推测性判断标为事实——必须标注为 `assumption`
+
+---
+
+## Trace Verification in Review (§13.1)
+
+**标准章节**：§13.1 — Trace
+
+Reviewer 在审查时应利用 Trace 日志验证 executor 的操作是否合规。
+
+### 审查中的 Trace 使用
+
+1. **读取 Trace 日志**：从 `.specforge/logs/trace.jsonl` 筛选当前 task 的 entries
+2. **验证操作合规性**：确认 executor 只修改了 allowed_write_files 内的文件
+3. **验证命令执行**：确认每条 verification_command 都被真实执行（存在 `action = "verify"` 的 Trace entry）
+4. **检查操作序列**：确认 executor 的操作序列合理，没有遗漏或重复
+
+### Trace-based 审查发现
+
+如果 Trace 日志显示异常（如跳过验证命令、修改范围外文件），Reviewer 必须将其记录为 finding：
+
+```json
+{
+  "severity": "blocking",
+  "category": "spec_compliance",
+  "file": "<trace evidence path>",
+  "line": "N/A",
+  "description": "Trace 日志显示 executor 修改了未在 allowed_write_files 中声明的文件",
+  "suggestion": "退回 executor 重试，或修正 task 合同的 allowed_write_files",
+  "evidence_ref": "trace:TASK-5:2026-06-07T10:30:00Z",
+  "evidence_type": "trace_analysis"
+}
+```

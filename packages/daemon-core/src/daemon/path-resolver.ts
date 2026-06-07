@@ -9,8 +9,7 @@
 
 import * as path from 'path';
 import * as os from 'os';
-import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
-import { USER_LAYOUT, resolveUserPath } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, SPEC_USER_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
 
 /**
  * Critical system paths that must never be used as a projectPath.
@@ -147,7 +146,7 @@ export class PersonalPathResolver implements IPathResolver {
   }
 
   resolveDaemonRuntimeDir(): string {
-    return resolveUserPath('runtime');
+    return path.join(os.homedir(), SPEC_USER_DIR_NAME, 'runtime');
   }
 
   resolveHandshakePath(): string {
@@ -190,7 +189,7 @@ export class EnterprisePathResolver implements IPathResolver {
   resolveProjectRuntimeDir(projectPath: string): string {
     validateProjectPath(projectPath);
     const hash = hashPath(projectPath);
-    return resolveUserPath('projects', hash);
+    return path.join(os.homedir(), SPEC_USER_DIR_NAME, 'projects', hash);
   }
 
   resolveStatePath(projectPath: string): string {
@@ -206,7 +205,7 @@ export class EnterprisePathResolver implements IPathResolver {
   }
 
   resolveDaemonRuntimeDir(): string {
-    return resolveUserPath('runtime');
+    return path.join(os.homedir(), SPEC_USER_DIR_NAME, 'runtime');
   }
 
   resolveHandshakePath(): string {

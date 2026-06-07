@@ -628,16 +628,3 @@ export function mergeSchemas(...schemas: SchemaDefinition[]): SchemaDefinition {
   }
 }
 
-// ============================================================================
-// Export all types and functions
-// ============================================================================
-
-export type {
-  SchemaField,
-  SchemaDefinition,
-  CustomValidator,
-  ValidationError,
-  ValidationWarning,
-  ValidationResult,
-  ValidationErrorCode
-}

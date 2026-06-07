@@ -103,6 +103,8 @@ export interface ConfigSnapshot {
   metadata: {
     mergedAt: number
     schemaVersion: string
+    sensitiveFields?: string[]
+    validationErrors?: ValidationError[]
   }
 }
 

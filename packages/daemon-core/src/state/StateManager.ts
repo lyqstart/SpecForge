@@ -16,12 +16,17 @@ import { WAL } from '../wal';
 import { IPathResolver } from '../daemon/path-resolver';
 
 import { ALL_STATES } from '../tools/lib/state_machine';
+import { WI_STATUSES_V11 } from '../tools/lib/state-machine-v11';
 
 /**
  * Valid workflow states — sourced from the single authority in state_machine.ts.
  * All state transitions must move between these states.
+ * 
+ * v1.1: Also includes v1.1 WI statuses for forward compatibility.
  */
-const VALID_STATES: readonly string[] = ALL_STATES;
+const VALID_STATES: readonly string[] = [
+  ...new Set([...ALL_STATES, ...WI_STATUSES_V11]),
+];
 
 /**
  * Default workflow type for new Work Items when not explicitly provided.

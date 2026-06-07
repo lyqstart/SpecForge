@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "project_spec_version": "PSV-0001",
+  "project_name": "SpecForge",
+  "project": {
+    "extension_registry": ".specforge/project/extension_registry.json",
+    "requirements_index": ".specforge/project/requirements_index.md",
+    "design_index": ".specforge/project/design_index.md",
+    "architecture": ".specforge/project/architecture.md",
+    "glossary": ".specforge/project/glossary.md",
+    "decisions": ".specforge/project/decisions.md",
+    "trace_matrix": ".specforge/project/trace_matrix.md"
+  },
+  "modules": []
+}

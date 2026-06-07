@@ -119,7 +119,7 @@ export class EventBus {
   private _isRunning: boolean = false;
   private topicMatcher: TopicMatcher = new TopicMatcher();
   private observabilityHooks: ObservabilityHook[] = [new LoggingObservabilityHook()];
-  private persistenceHook?: (event: Event) => Promise<void>;
+  private persistenceHook: ((event: Event) => Promise<void>) | undefined;
 
   constructor(maxBufferSize: number = DEFAULT_BUFFER_SIZE) {
     this.maxBufferSize = maxBufferSize;

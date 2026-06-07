@@ -17,7 +17,7 @@
 import { mkdir, writeFile, access, readFile } from "node:fs/promises"
 import { join, extname, dirname } from "node:path"
 import { existsSync, statSync } from "node:fs"
-import { LAYOUT, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import { LAYOUT, SPEC_DIR_NAME, legacyPaths } from "@specforge/types/directory-layout"
 import { scanHostProfile, PROFILE_TTL_MS, getHostProfilePath } from "@specforge/host-profile"
 
 // ============================================================
@@ -64,6 +64,39 @@ const SYSTEM_FILE_CONTENT: Record<string, (projectName: string, now: string) => 
 
   "specs/README.md": () => "# Specs\n\nWork Item 规格文档目录。\n",
 
+  // v1.1 标准：项目级正式规格真相源（§2.1）
+  "project/spec_manifest.json": (name, now) =>
+    JSON.stringify({
+      schema_version: "1.0",
+      project_spec_version: "PSV-0001",
+      project_name: name,
+      project: {
+        extension_registry: ".specforge/project/extension_registry.json",
+        requirements_index: ".specforge/project/requirements_index.md",
+        design_index: ".specforge/project/design_index.md",
+        architecture: ".specforge/project/architecture.md",
+        glossary: ".specforge/project/glossary.md",
+        decisions: ".specforge/project/decisions.md",
+        trace_matrix: ".specforge/project/trace_matrix.md",
+      },
+      modules: [],
+    }, null, 2) + "\n",
+
+  "project/extension_registry.json": () =>
+    JSON.stringify({
+      schema_version: "1.0",
+      project_spec_version: "PSV-0001",
+      namespaces: {
+        requirement_types: [],
+        design_types: [],
+        task_types: [],
+        verification_types: [],
+        gate_types: [],
+      },
+      updated_by_work_item: null,
+      updated_at: null,
+    }, null, 2) + "\n",
+
   // .gitignore 内容是固定的
   ".gitignore": () =>
     "runtime/\nlogs/\nsessions/\narchive/\ncas/\n",
@@ -81,6 +114,19 @@ const PLACEHOLDER_CHECK_FILES = [
   "config/project-rules.md",
 ]
 
+/**
+ * v1.1 项目级规格文件（相对 .specforge/ 的路径）
+ * 这些文件在初始化时作为 user_file 创建占位内容
+ */
+const V1_1_PROJECT_USER_FILES = [
+  "project/requirements_index.md",
+  "project/design_index.md",
+  "project/architecture.md",
+  "project/glossary.md",
+  "project/decisions.md",
+  "project/trace_matrix.md",
+]
+
 // ============================================================
 // Manifest Construction
 // ============================================================
@@ -93,7 +139,7 @@ function buildManifest(): InitEntry[] {
 
   // 遍历 LAYOUT 顶层条目
   for (const [key, value] of Object.entries(LAYOUT)) {
-    if (key === "configFiles") continue // 嵌套对象，子条目单独处理
+    if (key === "configFiles" || key === "projectFiles" || key === "workItemFiles") continue // 嵌套对象，子条目单独处理
 
     if (typeof value === "string") {
       const hasExt = extname(value) !== ""
@@ -107,12 +153,27 @@ function buildManifest(): InitEntry[] {
   }
 
   // configFiles 子条目
-  for (const subValue of Object.values(LAYOUT.configFiles)) {
+  for (const subValue of Object.values(legacyPaths.configFiles)) {
     if (typeof subValue === "string") {
       const entry = makeFileEntry(subValue)
       if (entry) entries.push(entry)
     }
   }
+
+  // v1.1 projectFiles 子条目
+  for (const [key, subValue] of Object.entries(LAYOUT.projectFiles)) {
+    if (typeof subValue === "string") {
+      if (key === "modulesRoot") {
+        entries.push({ path: join(SPEC_DIR_NAME, subValue), type: "dir" })
+      } else {
+        const entry = makeFileEntry(subValue)
+        if (entry) entries.push(entry)
+      }
+    }
+  }
+
+  // .specforge/.gitignore — 不在 LAYOUT 字典中但有 SYSTEM_FILE_CONTENT 模板
+  entries.push({ path: join(SPEC_DIR_NAME, ".gitignore"), type: "system_file" })
 
   return entries
 }
@@ -126,6 +187,11 @@ function makeFileEntry(relativePath: string): InitEntry | null {
 
   // 占位检查文件 → user 文件
   if (PLACEHOLDER_CHECK_FILES.includes(relativePath)) {
+    return { path: fullPath, type: "user_file" }
+  }
+
+  // v1.1 项目级规格文件 → user 文件（占位内容）
+  if (V1_1_PROJECT_USER_FILES.includes(relativePath)) {
     return { path: fullPath, type: "user_file" }
   }
 

@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./directory-layout": "./src/directory-layout.ts"
+    "./directory-layout": "./src/directory-layout.ts",
+    "./actor-roles": "./src/actor-roles.ts"
   },
   "scripts": {
     "build": "tsc",

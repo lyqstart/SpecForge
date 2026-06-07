@@ -9,8 +9,8 @@
  * 结果带 preferred 标记（每个平台只标记一个）。
  */
 
-import type { ShellInfo, ShellName } from './types';
-import { safeSpawn, whichCommand, extractVersion, parallelProbe } from './probe-utils';
+import type { ShellInfo, ShellName } from './types.js';
+import { safeSpawn, whichCommand, extractVersion, parallelProbe } from './probe-utils.js';
 
 /**
  * 各平台的 shell 候选列表（按优先级排序）

@@ -48,12 +48,12 @@ export class AgentGateRunner extends GateRunner {
         );
       }
       // Create agent execution context
+      const prev = this.getPreviousState(context);
       const agentContext: AgentExecutionContext = {
         instance: context.instance,
         definition: context.definition,
         currentState: context.instance.currentState,
-        previousState: this.getPreviousState(context),
-        gateResult: undefined,
+        ...(prev !== undefined && { previousState: prev }),
         metadata: this.context,
       };
 

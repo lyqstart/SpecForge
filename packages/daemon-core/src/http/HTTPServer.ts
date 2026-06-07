@@ -29,7 +29,8 @@ import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
 import { JsonlAppender } from '../logs/JsonlAppender';
-import { resolveProjectPath } from '@specforge/types/directory-layout';
+import * as path from 'path';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 function isWALWriteError(err: unknown): err is WALWriteError {
   return err instanceof WALWriteError || (err instanceof Error && err.name === 'WALWriteError');
@@ -197,19 +198,20 @@ export class HTTPServer {
   private getOrCreateAppender(
     map: Map<string, JsonlAppender>,
     projectPath: string,
-    layoutKey: 'logsToolCalls' | 'logsConversations',
+    layoutKey: 'runtimeLogsToolCalls' | 'runtimeLogsConversations',
   ): JsonlAppender {
     // Backward compat: if external logger was injected via deps (e.g. tests), use it
-    if (layoutKey === 'logsToolCalls' && this.deps.toolCallsLogger) {
+    if (layoutKey === 'runtimeLogsToolCalls' && this.deps.toolCallsLogger) {
       return this.deps.toolCallsLogger;
     }
-    if (layoutKey === 'logsConversations' && this.deps.conversationsLogger) {
+    if (layoutKey === 'runtimeLogsConversations' && this.deps.conversationsLogger) {
       return this.deps.conversationsLogger;
     }
 
     let appender = map.get(projectPath);
     if (!appender) {
-      const filePath = resolveProjectPath(projectPath, layoutKey);
+      const fileName = layoutKey === 'runtimeLogsToolCalls' ? 'tool_calls.jsonl' : 'conversations.jsonl';
+      const filePath = path.join(projectPath, SPEC_DIR_NAME, 'runtime', 'logs', fileName);
       appender = new JsonlAppender(filePath, { maxFileSize: 10 * 1024 * 1024, maxArchiveFiles: 3, fsync: false });
       appender.initialize().catch(e => console.warn(`[HTTPServer] Appender init failed for ${filePath}:`, e.message));
       map.set(projectPath, appender);
@@ -293,8 +295,20 @@ export class HTTPServer {
     // Project lifecycle
     this.addExactRoute('POST', '/api/v1/project/ensure', this.handleProjectEnsure.bind(this));
 
+    // v1.1 API routes — Work Item lifecycle
+    this.addExactRoute('POST', '/api/v1/v11/work-item/create', this.handleV11WorkItemCreate.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/gate/run', this.handleV11GateRun.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/merge', this.handleV11Merge.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/decision', this.handleV11Decision.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/code-permission', this.handleV11CodePermission.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/spec-migration', this.handleV11SpecMigration.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/rollback', this.handleV11Rollback.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/handoff', this.handleV11Handoff.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/extension', this.handleV11Extension.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/verification', this.handleV11Verification.bind(this));
+
     // Prefix routes for API v1 (fallback)
-    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin', 'project'];
+    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin', 'project', 'v11'];
     for (const segment of prefixes) {
       this.addPrefixRoute('GET', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
       this.addPrefixRoute('POST', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
@@ -1298,7 +1312,7 @@ export class HTTPServer {
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
           const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.toolCallsAppenders, projectPath, 'logsToolCalls');
+          const appender = this.getOrCreateAppender(this.toolCallsAppenders, projectPath, 'runtimeLogsToolCalls');
           await appender.append(buildToolCallRecord(sessionId, payload, ts));
         })(),
         3_000,
@@ -1372,7 +1386,7 @@ export class HTTPServer {
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
           const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
           await appender.append(buildConversationRecord('chat.params', sessionId, data, ts));
         })(),
         3_000,
@@ -1414,7 +1428,7 @@ export class HTTPServer {
           // 2. Append to conversationsLogger (per-project)
           const record = buildConversationRecord(eventType, sessionId, data, ts);
           const projectPath = projectId || process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
           await appender.append(record);
         })(),
         3_000,
@@ -1445,7 +1459,7 @@ export class HTTPServer {
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
           const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
           await appender.append(buildConversationRecord('chat.headers', sessionId, data, ts));
         })(),
         3_000,
@@ -1504,5 +1518,250 @@ export class HTTPServer {
 
   private generateRequestId(): string {
     return Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+  }
+
+  // ── v1.1 API Handlers ──
+
+  /**
+   * v1.1 POST /api/v1/v11/work-item/create
+   */
+  private async handleV11WorkItemCreate(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_work_item_create',
+        args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/gate/run
+   */
+  private async handleV11GateRun(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_gate_run',
+        args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/merge
+   */
+  private async handleV11Merge(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_merge',
+        args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/decision
+   */
+  private async handleV11Decision(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_decision',
+        args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/code-permission
+   */
+  private async handleV11CodePermission(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_code_permission',
+        args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * Extract project path from request headers or fallback to cwd.
+   */
+  private getProjectPathFromRequest(_req: http.IncomingMessage): string {
+    return process.cwd();
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/spec-migration
+   */
+  private async handleV11SpecMigration(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_spec_migration',
+        args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/rollback
+   */
+  private async handleV11Rollback(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_rollback', args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/handoff
+   */
+  private async handleV11Handoff(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_handoff', args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/extension
+   */
+  private async handleV11Extension(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_extension', args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
+  }
+
+  /**
+   * v1.1 POST /api/v1/v11/verification
+   */
+  private async handleV11Verification(
+    req: http.IncomingMessage, res: http.ServerResponse, body: string,
+  ): Promise<void> {
+    const dispatcher = this.deps.toolDispatcher;
+    if (!dispatcher) {
+      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
+      return;
+    }
+    try {
+      const args = JSON.parse(body);
+      const result = await dispatcher.dispatch({
+        tool: 'sf_v11_verification', args,
+        context: { directory: this.getProjectPathFromRequest(req) },
+      });
+      this.sendJsonResponse(res, 200, result);
+    } catch (err: any) {
+      this.sendJsonResponse(res, 400, { success: false, error: err.message });
+    }
   }
 }

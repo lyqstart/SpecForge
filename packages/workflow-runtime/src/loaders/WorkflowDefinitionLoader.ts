@@ -5,7 +5,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { WorkflowDefinition, StateMachine, GateDefinition } from '../types.js';
+import { WorkflowDefinition, StateMachine } from '../types.js';
 
 /**
  * Validation error details
@@ -114,7 +114,7 @@ export class WorkflowDefinitionLoader {
    */
   validate(definition: WorkflowDefinition): ValidationResult {
     const errors: ValidationError[] = [];
-    const def = definition as Record<string, unknown>;
+    const def = definition as unknown as Record<string, unknown>;
 
     // Check schema_version
     if (!def.schema_version) {
@@ -541,13 +541,13 @@ export class WorkflowDefinitionLoader {
     }
 
     // Validate
-    const result = this.validate(definition as WorkflowDefinition);
+    const result = this.validate(definition as unknown as WorkflowDefinition);
     if (!result.valid) {
       const errorMessages = result.errors.map(e => `${e.field}: ${e.message}`).join('\n');
       throw new Error(`Workflow definition validation failed:\n${errorMessages}`);
     }
 
-    return definition as WorkflowDefinition;
+    return definition as unknown as WorkflowDefinition;
   }
 
   /**

@@ -4,6 +4,8 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import {
   WorkflowDefinition,
   WorkflowInstance,
@@ -12,13 +14,11 @@ import {
   SimpleGateDefinition,
   CompositeGateDefinition,
 } from './types.js';
+import { isForbiddenTransitionV11 } from './types/state-machine.js';
 import { EventPublisher } from './events/EventPublisher.js';
 import {
   WorkflowErrorHandler,
   WorkflowStateManager,
-  GateExecutionError,
-  GateErrorType,
-  createErrorHandler,
   type RetryConfig,
 } from './WorkflowErrorHandling.js';
 
@@ -55,6 +55,23 @@ export interface WorkflowEngineConfig {
 }
 
 /**
+ * v1.1: States that REQUIRE workItemDir for evidence enforcement.
+ * Transitioning to any of these states without workItemDir will throw.
+ */
+const CRITICAL_STATES = new Set([
+  'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
+  'implementation_ready', 'verification_done', 'closed',
+]);
+
+/**
+ * v1.1: Check whether a target state requires transition evidence enforcement.
+ * Public so consumers can query before attempting a transition.
+ */
+export function requiresTransitionEvidence(targetState: string): boolean {
+  return CRITICAL_STATES.has(targetState);
+}
+
+/**
  * Workflow Engine
  * Loads workflow definitions and manages workflow instance lifecycle
  */
@@ -63,16 +80,15 @@ export class WorkflowEngine {
   private instances: Map<string, WorkflowInstance> = new Map();
   private eventHandlers: EventHandler[] = [];
   private eventPublisher: EventPublisher | undefined;
-  private errorHandler: WorkflowErrorHandler;
   private stateManager: WorkflowStateManager;
   private onTransition?: WorkflowEngineConfig['onTransition'];
+  private workItemDir?: string;
 
   /**
    * Create a new WorkflowEngine
    */
   constructor(config?: WorkflowEngineConfig) {
     this.eventPublisher = config?.eventPublisher ?? undefined;
-    this.errorHandler = config?.errorHandler ?? createErrorHandler(config?.retryConfig);
     this.stateManager = config?.stateManager ?? new WorkflowStateManager();
     this.onTransition = config?.onTransition;
   }
@@ -165,11 +181,37 @@ export class WorkflowEngine {
   }
 
   /**
-   * Transition a workflow instance from one state to another
+   * Transition a workflow instance from one state to another.
+   *
+   * @deprecated v1.1: This method is retained for backward compatibility with
+   * existing tests only. Production code MUST use `transitionFull()` which
+   * enforces evidence prerequisites, forbidden-transition checks, WAL
+   * persistence, and actor/evidence recording through a single unified entry
+   * point. This method:
+   *   - Does NOT enforce evidence prerequisites
+   *   - Does NOT write to WAL
+   *   - Does NOT record actor/evidence
+   *   - Throws for all critical states (CRITICAL_STATES)
+   *
    * @param instanceId The workflow instance ID
    * @param from The current state
    * @param to The target state
    * @returns true if transition was successful, false otherwise
+   */
+  /**
+   * @deprecated v1.1: TEST SCAFFOLDING ONLY.
+   * Production code MUST use `transitionFull()` which enforces evidence
+   * prerequisites, forbidden-transition checks, WAL persistence, and
+   * actor/evidence recording.
+   *
+   * This method:
+   *   - Does NOT enforce evidence prerequisites
+   *   - Does NOT write to WAL
+   *   - Does NOT record actor/evidence
+   *   - Throws for all critical states (CRITICAL_STATES)
+   *
+   * Retained solely for backward-compatible test setup. Any new production
+   * call site MUST use transitionFull() or the StateManager transition path.
    */
   transition(instanceId: string, from: string, to: string): boolean {
     const instance = this.instances.get(instanceId);
@@ -196,6 +238,12 @@ export class WorkflowEngine {
     // Check if the transition is valid
     if (!this.isValidTransition(currentStateDef, to)) {
       return false;
+    }
+
+    // v1.1: Block critical state transitions through unsynchronized path
+    // Critical states MUST go through transitionFull() which enforces evidence
+    if (CRITICAL_STATES.has(to)) {
+      throw new Error(`Cannot transition to critical state '${to}' via transition() — use transitionFull() with workItemDir`);
     }
 
     // Perform the transition
@@ -230,15 +278,22 @@ export class WorkflowEngine {
     workflowType?: string;
     transitionContext?: Record<string, unknown>;
     actor?: unknown;
+    /** CR-6 Fix 2: work item directory for evidence prerequisite checks */
+    workItemDir?: string;
   }): Promise<{
     workItemId: string;
     previousState: string;
     currentState: string;
     timestamp: string;
   }> {
-    const { workItemId, fromState, toState, evidence, workflowType, actor } = input;
+    const { workItemId, fromState, toState, evidence, workflowType, actor, workItemDir } = input;
 
     if (fromState === '') {
+      // v1.1: WI creation — only allowed to initial state 'created'
+      if (toState !== 'created') {
+        throw new Error(`Cannot create WI directly to '${toState}' — creation only allowed to 'created' state`);
+      }
+
       const workflowId = workflowType || 'feature_spec';
       const definition = this.workflows.get(workflowId);
       if (!definition) {
@@ -271,8 +326,8 @@ export class WorkflowEngine {
           fromState: '',
           toState,
           workflowType: workflowId,
-          evidence,
-          actor,
+          ...(evidence !== undefined && { evidence }),
+          ...(actor !== undefined && { actor }),
         });
       }
 
@@ -282,6 +337,11 @@ export class WorkflowEngine {
         currentState: toState,
         timestamp: new Date().toISOString(),
       };
+    }
+
+    // v1.1 forbidden transition check — enforced before workflow definition validation
+    if (isForbiddenTransitionV11(fromState as import('./types/state-machine.js').WIStatusV11, toState)) {
+      throw new Error(`Forbidden transition (v1.1): ${fromState} → ${toState}`);
     }
 
     const instance = this.instances.get(workItemId);
@@ -303,6 +363,16 @@ export class WorkflowEngine {
       throw new Error(`Invalid transition: ${instance.currentState} → ${toState}`);
     }
 
+    // v1.1: Enforce evidence prerequisites — MANDATORY for critical states
+    if (CRITICAL_STATES.has(toState)) {
+      if (!workItemDir) {
+        throw new Error(`Cannot transition to '${toState}': workItemDir is required for critical state transitions`);
+      }
+      await this.enforceTransitionEvidence(toState, workItemDir);
+    } else if (workItemDir) {
+      await this.enforceTransitionEvidence(toState, workItemDir);
+    }
+
     const previousState = instance.currentState;
     instance.currentState = toState;
     instance.updatedAt = new Date();
@@ -321,8 +391,8 @@ export class WorkflowEngine {
         fromState: previousState,
         toState,
         workflowType: instance.workflowId,
-        evidence,
-        actor,
+        ...(evidence !== undefined && { evidence }),
+        ...(actor !== undefined && { actor }),
       });
     }
 
@@ -351,6 +421,111 @@ export class WorkflowEngine {
   }
 
   /**
+   * v1.1: Enforce transition evidence prerequisites.
+   * Reads required files from the work item directory and verifies
+   * gate/decision STATUS before allowing transitions to specific target states.
+   *
+   * Upgraded from file-existence-only to actual gate/decision status checks.
+   * Public so external consumers (e.g. tests, daemon-core) can call directly.
+   */
+  async enforceTransitionEvidence(targetState: string, workItemDir: string): Promise<void> {
+    switch (targetState) {
+      case 'approval_required':
+        await this.requireFileWithStatus(workItemDir, 'gate_summary.md', undefined);
+        await this.requireGateJsonStatus(workItemDir, 'gates/gate_summary_gate.json', 'passed');
+        break;
+      case 'merge_ready':
+        await this.requireUserDecisionApproved(workItemDir);
+        break;
+      case 'merging':
+        await this.requireGateJsonStatus(workItemDir, 'gates/merge_ready_gate.json', 'passed');
+        break;
+      case 'post_merge_verified':
+        await this.requireGateJsonStatus(workItemDir, 'gates/post_merge_gate.json', 'passed');
+        break;
+      case 'implementation_ready':
+        await this.requireFile(workItemDir, 'tasks.md');
+        await this.requireAllowedWriteFiles(workItemDir);
+        await this.requireGateJsonStatus(workItemDir, 'gates/code_permission_release_gate.json', 'passed');
+        break;
+      case 'verification_done':
+        await this.requireFile(workItemDir, 'verification_report.md');
+        await this.requireFile(workItemDir, 'evidence/evidence_manifest.json');
+        break;
+      case 'closed':
+        await this.requireFile(workItemDir, 'changed_files_audit.md');
+        await this.requireGateJsonStatus(workItemDir, 'gates/close_gate.json', 'passed');
+        break;
+    }
+  }
+
+  /**
+   * v1.1: Public access to the unified evidence enforcement.
+   * Consumers (e.g. tests) can call this directly.
+   */
+  async enforceTransitionEvidencePublic(targetState: string, workItemDir: string): Promise<void> {
+    return this.enforceTransitionEvidence(targetState, workItemDir);
+  }
+
+  private async requireFile(workItemDir: string, file: string): Promise<void> {
+    const fullPath = path.join(workItemDir, file);
+    try { await fs.access(fullPath); } catch {
+      throw new Error(`Transition evidence prerequisite missing: ${file} (required for target state)`);
+    }
+  }
+
+  private async requireFileWithStatus(workItemDir: string, file: string, _status: string | undefined): Promise<void> {
+    // File existence check — status is checked by gate json
+    await this.requireFile(workItemDir, file);
+  }
+
+  private async requireGateJsonStatus(workItemDir: string, gateFile: string, expectedStatus: string): Promise<void> {
+    const fullPath = path.join(workItemDir, gateFile);
+    try {
+      const content = await fs.readFile(fullPath, 'utf-8');
+      const report = JSON.parse(content);
+      if (report.status !== expectedStatus) {
+        throw new Error(`Gate ${gateFile} status='${report.status ?? 'undefined'}', expected '${expectedStatus}'`);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('status=')) throw err;
+      throw new Error(`Transition evidence prerequisite missing: ${gateFile} (required status: ${expectedStatus})`);
+    }
+  }
+
+  private async requireUserDecisionApproved(workItemDir: string): Promise<void> {
+    const fullPath = path.join(workItemDir, 'user_decision.json');
+    try {
+      const content = await fs.readFile(fullPath, 'utf-8');
+      const ud = JSON.parse(content);
+      if (ud.decision_status !== 'approved' && ud.decision_status !== 'waived') {
+        throw new Error(`user_decision status='${ud.decision_status ?? 'undefined'}', expected 'approved' or 'waived'`);
+      }
+      // Check hash not invalidated (if hash field exists)
+      if (ud.content_hash && ud.hash_invalidated === true) {
+        throw new Error('user_decision content_hash has been invalidated');
+      }
+    } catch (err) {
+      if (err instanceof Error && (err.message.includes('status=') || err.message.includes('hash'))) throw err;
+      throw new Error('Transition evidence prerequisite missing: user_decision.json (required for → merge_ready)');
+    }
+  }
+
+  private async requireAllowedWriteFiles(workItemDir: string): Promise<void> {
+    const fullPath = path.join(workItemDir, 'work_item.json');
+    try {
+      const content = await fs.readFile(fullPath, 'utf-8');
+      const wi = JSON.parse(content);
+      if (!Array.isArray(wi.allowed_write_files) || wi.allowed_write_files.length === 0) {
+        throw new Error('work_item.json allowed_write_files is empty or missing');
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('allowed_write_files')) throw err;
+      throw new Error('Transition evidence prerequisite missing: work_item.json allowed_write_files');
+    }
+  }
+
+  /**
    * Get all workflow instances
    */
   getAllInstances(): WorkflowInstance[] {
@@ -361,7 +536,7 @@ export class WorkflowEngine {
    * Execute a workflow instance
    * Runs from current state until no more transitions
    */
-  async execute(instanceId: string): Promise<WorkflowInstance> {
+  async execute(instanceId: string, options?: { workItemDir?: string }): Promise<WorkflowInstance> {
     const instance = this.instances.get(instanceId);
     if (!instance) {
       throw new Error(`Workflow instance not found: ${instanceId}`);
@@ -391,28 +566,35 @@ export class WorkflowEngine {
         throw new Error(`State not found: ${instance.currentState}`);
       }
 
-      // Publish gate started event
-      if (this.eventPublisher) {
-        this.eventPublisher.publishGateStarted(
-          instance,
-          instance.currentState,
-          currentStateDef.gate.id,
-          currentStateDef.gate.type
-        );
-      }
+      // Handle gate: null gate → auto-pass (no gate to run)
+      const hasGate = currentStateDef.gate != null;
+      let gateResult: GateResult;
 
-      // Execute the gate
-      const gateResult = await this.executeGate(currentStateDef.gate);
+      if (hasGate) {
+        // Publish gate started event
+        if (this.eventPublisher) {
+          this.eventPublisher.publishGateStarted(
+            instance,
+            instance.currentState,
+            currentStateDef.gate!.id,
+            currentStateDef.gate!.type
+          );
+        }
 
-      // Publish gate completed event
-      if (this.eventPublisher) {
-        this.eventPublisher.publishGateCompleted(
-          instance,
-          instance.currentState,
-          currentStateDef.gate.id,
-          currentStateDef.gate.type,
-          gateResult
-        );
+        gateResult = await this.executeGate(currentStateDef.gate!);
+
+        // Publish gate completed event
+        if (this.eventPublisher) {
+          this.eventPublisher.publishGateCompleted(
+            instance,
+            instance.currentState,
+            currentStateDef.gate!.id,
+            currentStateDef.gate!.type,
+            gateResult
+          );
+        }
+      } else {
+        gateResult = { schema_version: '1.0', passed: true, reason: 'No gate defined' };
       }
 
       // Emit gate execution event
@@ -447,6 +629,18 @@ export class WorkflowEngine {
 
       // Transition to next state
       const oldState = instance.currentState;
+
+      // v1.1: Enforce evidence prerequisites — MANDATORY for critical states
+      const wdir = options?.workItemDir ?? this.workItemDir;
+      if (CRITICAL_STATES.has(nextState)) {
+        if (!wdir) {
+          throw new Error(`Cannot transition to '${nextState}': workItemDir is required for critical state transitions`);
+        }
+        await this.enforceTransitionEvidence(nextState, wdir);
+      } else if (wdir) {
+        await this.enforceTransitionEvidence(nextState, wdir);
+      }
+
       instance.currentState = nextState;
       instance.updatedAt = new Date();
 
@@ -480,13 +674,36 @@ export class WorkflowEngine {
 
   /**
    * Execute a simple gate
+   *
+   * v1.1 GateResult semantics (strict):
+   *   passed=true  → only when a real check function verified and approved
+   *   passed=false + status='not_enabled' → gate not configured (required=false, no checkFn)
+   *   passed=false + (no status) → gate failed or missing checkFn for required gate
+   *
+   * determineNextState() only accepts passed=true for pass branch.
+   * not_enabled is treated as failed — must enter fail branch.
    */
   private async executeSimpleGate(gate: SimpleGateDefinition): Promise<GateResult> {
     if (gate.checkFn) {
-      return await gate.checkFn();
+      const result = await gate.checkFn();
+      // v1.1: Set status if not already set by checkFn
+      if (!result.status) {
+        result.status = result.passed ? 'passed' : 'failed';
+      }
+      return result;
     }
-    // Default pass for gates without check function
-    return { schema_version: '1.0', passed: true, reason: 'No check function defined, default pass' };
+    // No checkFn — gate cannot verify
+    // v1.1: required=false + no checkFn → not_enabled (NOT passed)
+    if (gate.required === false) {
+      return {
+        schema_version: '1.0',
+        passed: false,
+        status: 'not_enabled',
+        reason: 'Non-required gate without checkFn — not enabled, no verification performed',
+      };
+    }
+    // All other gates without checkFn (including severity='soft') must fail
+    return { schema_version: '1.0', passed: false, status: 'blocked', reason: 'Required gate has no check function defined — cannot verify, blocked' };
   }
 
   /**
@@ -501,11 +718,12 @@ export class WorkflowEngine {
         const result = await this.executeGate(childGate);
         results.push(result);
 
+        // v1.1: Only passed=true counts — not_enabled does NOT waive in composite
         if (gate.failPolicy === 'fail_fast' && !result.passed) {
-          // Fail fast - return immediately on first failure
           return {
             schema_version: '1.0',
             passed: false,
+            status: 'failed',
             reason: `Sequential composite gate failed at child gate: ${childGate.id}`,
             details: { results },
           };
@@ -523,6 +741,7 @@ export class WorkflowEngine {
           return {
             schema_version: '1.0',
             passed: false,
+            status: 'failed',
             reason: `Parallel composite gate failed (fail_fast)`,
             details: { results },
           };
@@ -530,48 +749,66 @@ export class WorkflowEngine {
       }
     }
 
-    // Collect all results
+    // v1.1: All child gates must have passed=true — not_enabled does NOT count as passed
     const allPassed = results.every(r => r.passed);
     if (allPassed) {
-      return { schema_version: '1.0', passed: true, reason: 'All child gates passed', details: { results } };
+      return { schema_version: '1.0', passed: true, status: 'passed', reason: 'All child gates passed', details: { results } };
     }
 
-    // Some gates failed
+    // Some gates failed or not_enabled
     const failedGates = results.filter(r => !r.passed);
+    const notEnabledGates = results.filter(r => r.status === 'not_enabled');
+    const summaryParts: string[] = [];
+    if (failedGates.length > 0) summaryParts.push(`${failedGates.length} failed`);
+    if (notEnabledGates.length > 0) summaryParts.push(`${notEnabledGates.length} not_enabled`);
     return {
       schema_version: '1.0',
       passed: false,
-      reason: `${failedGates.length} of ${gate.children.length} child gates failed`,
+      status: failedGates.some(r => r.status !== 'not_enabled') ? 'failed' : 'not_enabled',
+      reason: `${summaryParts.join(', ')} of ${gate.children.length} child gates`,
       details: { results },
     };
   }
 
   /**
    * Determine the next state based on gate result
+   *
+   * v1.1 rules (strict — not_enabled is NOT a pass):
+   *   - No gate + string next → proceed (agent-only states)
+   *   - Has gate + { pass, fail } → branch on gateResult.passed ONLY
+   *   - Has gate + string next + passed=true → proceed
+   *   - Has gate + string next + passed=false (any status) → THROW (gate result unconsumed)
+   *   - not_enabled → treated as failed: must enter fail branch or throw
+   *   - blocked → same as failed
+   *   - waived → requires explicit waiver policy in config; default = blocked
    */
-  private determineNextState(
-    stateDef: { next?: string | Record<string, string> },
+  protected determineNextState(
+    stateDef: { next?: string | Record<string, string>; gate?: unknown },
     gateResult: GateResult
   ): string | null {
     if (!stateDef.next) {
-      // No next state defined - workflow ends here
       return null;
     }
 
+    const hasGate = stateDef.gate != null;
+    // v1.1 strict: only passed=true counts. not_enabled / blocked / waived are NOT pass.
+    const gateOk = gateResult.passed === true;
+
     if (typeof stateDef.next === 'string') {
-      // Static next state
+      if (hasGate && !gateOk) {
+        throw new Error(`Gate '${(stateDef.gate as { id?: string }).id ?? 'unknown'}' result: passed=${gateResult.passed}, status=${gateResult.status ?? 'undefined'} — gate result is unconsumed (string next). Use { pass, fail } branching or ensure gate passes.`);
+      }
       return stateDef.next;
     }
 
-    // Dynamic next state based on gate result
-    if (gateResult.passed && stateDef.next['pass']) {
+    // Dynamic next state — { pass, fail } branches
+    if (gateOk && stateDef.next['pass']) {
       return stateDef.next['pass'];
     }
     if (!gateResult.passed && stateDef.next['fail']) {
       return stateDef.next['fail'];
     }
 
-    // Default to no transition if no matching condition
     return null;
   }
 
@@ -601,7 +838,7 @@ export class WorkflowEngine {
   /**
    * Resume a paused workflow instance
    */
-  resume(instanceId: string): Promise<WorkflowInstance> {
+  resume(instanceId: string, options?: { workItemDir?: string }): Promise<WorkflowInstance> {
     const instance = this.instances.get(instanceId);
     if (!instance) {
       throw new Error(`Workflow instance not found: ${instanceId}`);
@@ -616,8 +853,8 @@ export class WorkflowEngine {
       this.eventPublisher.publishWorkflowResumed(instance);
     }
 
-    // Resume execution from current state
-    return this.execute(instanceId);
+    // Resume execution from current state — pass workItemDir through
+    return this.execute(instanceId, options);
   }
 
   /**
@@ -640,7 +877,7 @@ export class WorkflowEngine {
   /**
    * Emit an event to all handlers
    */
-  private emitEvent(event: WorkflowEvent): void {
+  protected emitEvent(event: WorkflowEvent): void {
     for (const handler of this.eventHandlers) {
       try {
         const result = handler(event);

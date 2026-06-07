@@ -32,7 +32,7 @@ export async function migrate(data: unknown): Promise<unknown> {
   const input = data as Record<string, unknown>
   
   // Create migrated structure
-  const migrated = {
+  const migrated: Record<string, unknown> = {
     // Copy all existing fields
     ...input,
     

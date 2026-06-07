@@ -9,7 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { resolveProjectPath } from "@specforge/types/directory-layout"
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
 import { parseTaskVerification } from "./sf_markdown_verification_parser"
 import { isValidVerificationType } from "./sf_verification_types"
 import { logErrorToFile } from "./utils"
@@ -50,7 +50,7 @@ export async function lintDocument(
   baseDir: string
 ): Promise<DocLintResult> {
   try {
-    const specDir = resolveProjectPath(baseDir, "specs", workItemId)
+    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
     const docFileName = getDocFileName(docType)
     const docPath = join(specDir, docFileName)
 

@@ -227,3 +227,243 @@ requirements_format: ears
   "out_of_scope_observations": []
 }
 ```
+
+---
+
+# v1.1 扩展能力
+
+> 以下章节对应 SpecForge v1.1 标准，描述 sf-requirements 在迭代工作流中的额外职责。
+
+---
+
+## Requirements Delta（§8.1, §7.1 requirement_change_path）
+
+> 参考：v1.1 标准 §8.1 Delta、§7.1 requirement_change_path
+
+### 概念
+
+Requirements Delta（`requirements_delta.md`）描述本次 Work Item 对现有需求规格的**变化说明**，而非最终写入对象。它用于迭代工作流（如 `requirement_change_path`），解释"为什么变、改了什么、影响哪些正式规格"。
+
+### 何时生成
+
+当 Work Item 进入 `requirement_change_path` 时，sf-requirements 必须生成 `requirements_delta.md`。触发条件包括：
+
+1. 用户可见行为变化
+2. 业务规则变化
+3. 验收标准变化
+4. 数据语义变化
+5. 权限规则变化
+6. 流程状态变化
+7. 需求缺失或冲突
+
+### Delta 必须包含的内容
+
+1. **为什么变**：变更的业务动机或触发原因
+2. **改了什么**：新增、修改、删除了哪些 REQ / AC
+3. **影响哪些正式规格**：列出受影响的模块级 `requirements.md` 或项目级 `requirements_index.md`
+4. **旧内容如何处理**：标记为替换、废弃还是保留兼容
+5. **是否需要 User Decision**：标记是否需要用户确认合并
+
+### Delta 文件路径
+
+```text
+.specforge/work-items/<WI-ID>/requirements_delta.md
+```
+
+### 输出格式
+
+```markdown
+# Requirements Delta
+
+Work Item: WI-XXXX
+
+## 1. 变更原因
+<!-- 描述为什么需要变更 -->
+
+## 2. 变更内容
+
+### 2.1 新增需求
+<!-- 列出新增的 REQ 及其 AC -->
+
+### 2.2 修改需求
+<!-- 列出修改的 REQ，对比新旧内容 -->
+
+### 2.3 删除需求
+<!-- 列出删除的 REQ 及原因 -->
+
+## 3. 影响范围
+<!-- 受影响的正式规格文件 -->
+
+## 4. 旧内容处理
+<!-- 替换 / 废弃 / 保留兼容 -->
+
+## 5. User Decision
+<!-- 是否需要用户确认合并 -->
+```
+
+### 与 Candidate 的关系
+
+Delta 只说明变化，不直接写入正式规格。Delta 之后必须生成完整的 **Requirements Candidate**（见下一节），由 Candidate 进入合并流程。
+
+---
+
+## Requirements Candidate（§8.2）
+
+> 参考：v1.1 标准 §8.2 Candidate
+
+### 概念
+
+Requirements Candidate（`requirements_candidate.md`）是拟写入正式规格真相源的**完整候选文件**。它不是 patch 或 diff，而是完整的 `requirements.md` 格式文件。
+
+### 生成规则
+
+1. **必须是完整目标文件**：Candidate 必须包含完整的 requirements.md 结构（简介、术语表、需求章节、front-matter），不能只包含变化部分
+2. **路径位于当前 WI 的 `candidates/` 下**：
+   ```text
+   .specforge/work-items/<WI-ID>/candidates/project/modules/<MODULE>/requirements.md
+   ```
+3. **不能直接覆盖 `.specforge/project/**`：Candidate 不能直接写入正式规格目录，必须经过合并流程
+4. **必须绑定 `base_spec_version`**：在 `candidate_manifest.json` 中记录基于哪个版本生成
+5. **必须计算 hash**：用于合并时的版本冲突检测
+6. **必须经过 Gate → User Decision → Merge Runner 才能进入正式规格**
+
+### 与 requirements_delta 的协作流程
+
+```text
+sf-requirements 分析变更
+→ 生成 requirements_delta.md（说明变化）
+→ 生成完整 requirements candidate（包含变化后的完整文件）
+→ Gate 检查
+→ User Decision
+→ Merge Runner
+→ 正式规格更新
+```
+
+### candidate_manifest.json 中的条目
+
+每个 Candidate 必须在 `candidate_manifest.json` 中登记：
+
+```json
+{
+  "candidate_path": ".specforge/work-items/WI-XXXX/candidates/project/modules/AUTH/requirements.md",
+  "target_path": ".specforge/project/modules/AUTH/requirements.md",
+  "operation": "replace",
+  "hash": "<content-hash>",
+  "base_spec_version": "PSV-XXXX"
+}
+```
+
+### sf-requirements 的职责边界
+
+sf-requirements 负责：
+- 生成 `requirements_delta.md`
+- 生成 `requirements_candidate.md`（完整文件）
+
+sf-requirements **不得**：
+- 直接写入 `.specforge/project/**`
+- 推进 WI 状态
+- 执行 Merge 操作
+- 写入 `user_decision.json`
+
+---
+
+## Trace Matrix（§2.2 trace_matrix.md, §13.2 trace_delta.md）
+
+> 参考：v1.1 标准 §2.2 文件职责 — trace_matrix.md、§13.2 trace_delta.md
+
+### 概念
+
+Trace Matrix（`trace_matrix.md`）是项目级 REQ / AC / DD / TASK / FILE / TEST / EVIDENCE 的追溯矩阵，是项目规格的真相源之一。它确保每条需求都能向下追溯到验收标准、设计决策、任务、代码文件、测试和验证证据。
+
+### sf-requirements 在 Trace 中的角色
+
+sf-requirements 负责确保需求侧的追溯链起点：
+
+1. **每个 REQ 编号**必须是 Trace 中的起始节点
+2. **每条 AC** 必须关联到对应的 REQ
+3. **跨模块需求**必须在 Trace 中标注模块归属
+
+### Trace 条目格式
+
+每条 Trace 至少包含：
+
+```text
+| REQ | AC | DD | TASK | FILE | TEST | EVIDENCE | 状态 |
+```
+
+sf-requirements 生成的 requirements.md 为 Trace 提供 REQ 和 AC 列的数据。
+
+### trace_delta.md
+
+当需求变更时，sf-requirements 必须配合生成 `trace_delta.md`（§13.2），说明本 WI 对 Trace 的影响：
+
+1. 新增 Trace（新增 REQ 时）
+2. 修改 Trace（修改 REQ/AC 时）
+3. 删除 Trace（删除 REQ 时）
+4. Trace 不变（确认无影响时）
+5. 需要更新 module trace
+6. 需要更新 project trace_matrix
+
+### sf-requirements 的 Trace 职责
+
+- 在生成 `requirements.md` 时，确保每个 REQ 和 AC 的编号结构化、可追溯
+- 在迭代工作流中，配合生成 `trace_delta.md`，说明需求变化对追溯矩阵的影响
+- 不得直接修改 `.specforge/project/trace_matrix.md`（由 Merge Runner 负责）
+
+---
+
+## Extension Request 处理（Extension §7-§8）
+
+> 参考：v1.1 标准 Extension 补丁 §7 extension_request.json、§8 Extension Subflow 发起主体
+
+### 概念
+
+在需求分析过程中，sf-requirements 可能发现扩展缺口——例如缺少必要的需求类型、枚举值、pattern 或可解析结构。此时 sf-requirements 应发起 Extension Request。
+
+### 何时发起
+
+sf-requirements 在以下情况应发起 Extension Request：
+
+1. 需求分析发现当前标准缺少必要的 `requirement_types`
+2. 需要新的 EARS pattern 变体
+3. 需要新的验收标准类型
+4. 需求结构中需要新的可解析结构
+
+### 发起流程
+
+1. 写入 `extension_request.json` 到当前 WI 目录：
+   ```text
+   .specforge/work-items/<WI-ID>/extension_request.json
+   ```
+2. 在 handoff 中报告 `extension_required`
+3. **停止**继续生成依赖该扩展类型的正式产物
+
+### extension_request.json 最小结构
+
+```json
+{
+  "schema_version": "1.0",
+  "work_item_id": "WI-XXXX",
+  "requested_by_agent": "sf-requirements",
+  "requested_namespace": "requirement_types",
+  "requested_key": "<具体扩展项>",
+  "reason": "<为什么需要此扩展>",
+  "blocking_current_flow": true,
+  "created_at": "<ISO 8601>"
+}
+```
+
+### sf-requirements 的 Extension 职责边界
+
+sf-requirements **可以**：
+- 发现扩展缺口
+- 写入 `extension_request.json`
+- 在 handoff 中报告 `extension_required`
+
+sf-requirements **不得**：
+- 自行修改 `extension_registry.json`
+- 自行启动 Extension Subflow 或调度 sf-extension
+- 绕过 Extension Request 直接使用未注册的扩展类型
+- 推进 WI 状态
+
+只有 **sf-orchestrator** 可以发起 Extension Subflow。sf-requirements 写入 `extension_request.json` 后，等待 Orchestrator 调度处理。

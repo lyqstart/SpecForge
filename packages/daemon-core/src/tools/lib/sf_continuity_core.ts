@@ -13,7 +13,7 @@
 
 import { readFile, access, readdir } from "node:fs/promises"
 import { join } from "node:path"
-import { resolveProjectPath, LAYOUT } from "@specforge/types/directory-layout"
+import { resolveProjectPath, LAYOUT, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
 import type { WorkflowType } from "./state_machine"
 import { logErrorToFile } from "./utils"
 
@@ -619,7 +619,7 @@ async function readToolCallsFromArchive(
   runId: string,
   baseDir: string
 ): Promise<ToolCallRecord[]> {
-  const archiveDir = resolveProjectPath(baseDir, 'archiveAgentRuns')
+  const archiveDir = join(baseDir, SPEC_DIR_NAME, 'runtime', 'archive', 'agent_runs')
   const toolCallsPath = join(archiveDir, runId, "tool_calls.jsonl")
 
   try {
@@ -648,8 +648,8 @@ async function readTraceEntriesForRun(
   sessionId: string,
   baseDir: string
 ): Promise<TraceEntry[]> {
-  // Path semantics fix: specforge/runtime/trace.jsonl → LAYOUT.logsTrace (.specforge/logs/trace.jsonl)
-  const tracePath = resolveProjectPath(baseDir, 'logsTrace')
+  // Path semantics fix: specforge/runtime/trace.jsonl → LAYOUT.runtimeLogsTrace (.specforge/runtime/logs/trace.jsonl)
+  const tracePath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs', 'trace.jsonl')
 
   try {
     const content = await readFile(tracePath, "utf-8")
@@ -681,7 +681,7 @@ async function readWorkLog(
   runId: string,
   baseDir: string
 ): Promise<string | null> {
-  const archiveDir = resolveProjectPath(baseDir, 'archiveAgentRuns')
+  const archiveDir = join(baseDir, SPEC_DIR_NAME, 'runtime', 'archive', 'agent_runs')
   const workLogPath = join(archiveDir, runId, "work_log.md")
 
   try {
@@ -700,12 +700,12 @@ async function readConversationMessages(
 ): Promise<ConversationMessage[]> {
   // Try session-specific conversation file first
   const sessionConvPath = join(
-    resolveProjectPath(baseDir, 'archive'),
+    baseDir, SPEC_DIR_NAME, 'runtime', 'archive',
     "conversations",
     `${sessionId}.jsonl`
   )
-  // Path semantics fix: specforge/runtime/conversation.jsonl → LAYOUT.logsConversations
-  const globalConvPath = resolveProjectPath(baseDir, 'logsConversations')
+  // Path semantics fix: specforge/runtime/conversation.jsonl → runtime/logs/conversations.jsonl
+  const globalConvPath = join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs', 'conversations.jsonl')
 
   for (const convPath of [sessionConvPath, globalConvPath]) {
     try {
@@ -1472,7 +1472,7 @@ export function mergeArchives(
  */
 export async function readContinuityConfig(baseDir: string): Promise<ContinuityConfig> {
   try {
-    const configPath = resolveProjectPath(baseDir, "config", "project.json")
+    const configPath = join(baseDir, SPEC_DIR_NAME, 'config', 'project.json')
 
     try {
       const content = await readFile(configPath, "utf-8")
@@ -1532,7 +1532,7 @@ export async function enforceContinuationLimit(
   const maxAllowed = config.max_continuations
 
   // Count existing continuations by scanning archive directory
-  const archiveDir = resolveProjectPath(baseDir, "archiveAgentRuns")
+  const archiveDir = join(baseDir, SPEC_DIR_NAME, 'runtime', 'archive', 'agent_runs')
   let continuationCount = 0
 
   try {

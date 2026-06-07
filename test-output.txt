@@ -1,0 +1,1709 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90mD:/code/temp/SpecForge[39m
+
+ [31m❯[39m tests/unit/sf-installer-subcommand.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 379[2mms[22m[39m
+[31m     [31m×[31m `bun scripts/sf-installer.ts migrate-manifest --help` exits 0 with help banner[39m[33m 377[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/manifest_validate.test.ts [2m([22m[2m23 tests[22m[2m | [22m[31m23 failed[39m[2m)[22m[32m 235[2mms[22m[39m
+[31m       [31m×[31m should return missing error when manifest file does not exist (R5.4)[39m[32m 26[2mms[22m[39m
+[31m       [31m×[31m should return parse_error when JSON is invalid (R5.2)[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when manifest is not an object[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when manifest is null JSON[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when shared_version is missing (R5.1)[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when shared_version is not a string (R5.1)[39m[32m 10[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when installed_at is missing (R5.1)[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when updated_at is missing (R5.1)[39m[32m 11[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when files is missing (R5.1)[39m[32m 11[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when files is an array instead of object (R5.1)[39m[32m 15[2mms[22m[39m
+[31m       [31m×[31m should return schema_invalid when files is null (R5.1)[39m[32m 23[2mms[22m[39m
+[31m       [31m×[31m should return valid with no warnings for fully valid manifest (R5.1)[39m[32m 19[2mms[22m[39m
+[31m       [31m×[31m should report warning for entry with missing sha256[39m[32m 10[2mms[22m[39m
+[31m       [31m×[31m should report warning for entry with invalid sha256 (not 64 hex chars)[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m should report warning for entry with invalid type[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should report warning for entry with missing size[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should report warning for entry with negative size[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should report warning for entry that is not an object[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m should report multiple warnings for multiple invalid entries[39m[32m 8[2mms[22m[39m
+[31m       [31m×[31m should handle empty files object with no warnings[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m should accept sha256 with uppercase hex characters[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m should handle manifest with only required header fields and valid entries[39m[32m 10[2mms[22m[39m
+[31m       [31m×[31m should report warning for entry with NaN size[39m[32m 7[2mms[22m[39m
+ [31m❯[39m tests/property/discovery.property.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 483[2mms[22m[39m
+[31m     [31m×[31m Property 1: Discovery produces correct desired state[39m[33m 364[2mms[22m[39m
+[31m     [31m×[31m Property 2: Discovery hash integrity[39m[32m 115[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/commit.test.ts [2m([22m[2m18 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[32m 209[2mms[22m[39m
+[31m     [31m×[31m should complete all phases for project_runtime scope (skips opencode merge)[39m[32m 36[2mms[22m[39m
+     [32m✓[39m should complete all phases for user_shared scope with merge options[32m 19[2mms[22m[39m
+     [32m✓[39m should return failure when opencode merge fails (user_shared scope)[32m 9[2mms[22m[39m
+[31m     [31m×[31m should write journal before manifest (Phase 2 before Phase 3)[39m[32m 10[2mms[22m[39m
+[31m     [31m×[31m should include pending_deletes in manifest payload[39m[32m 15[2mms[22m[39m
+[31m     [31m×[31m should extract managed_agents from agent entries in desiredState[39m[32m 10[2mms[22m[39m
+[31m     [31m×[31m should write partial manifest when ExecutionResult.failed is non-null[39m[32m 12[2mms[22m[39m
+[31m     [31m×[31m should record only executed actions (not the failed one) in manifest files[39m[32m 9[2mms[22m[39m
+[31m     [31m×[31m should allow next reconcile to recover from partial state (failed file detected as needing action)[39m[32m 9[2mms[22m[39m
+[31m     [31m×[31m should include pending_deletes alongside partial execution in manifest[39m[32m 10[2mms[22m[39m
+[31m     [31m×[31m should write empty files record when all actions failed (first action fails)[39m[32m 10[2mms[22m[39m
+     [32m✓[39m should return null when no journal exists[32m 3[2mms[22m[39m
+     [32m✓[39m should recover from a valid journal and write manifest[32m 11[2mms[22m[39m
+     [32m✓[39m should preserve installed_at from existing manifest during recovery[32m 13[2mms[22m[39m
+     [32m✓[39m should handle corrupted journal (invalid JSON) by deleting it and returning null[32m 6[2mms[22m[39m
+     [32m✓[39m should handle journal with missing manifest_payload by deleting it and returning null[32m 4[2mms[22m[39m
+     [32m✓[39m should include pending_deletes in recovered manifest[32m 10[2mms[22m[39m
+     [32m✓[39m should not include pending_deletes in manifest when array is empty[32m 10[2mms[22m[39m
+ [31m❯[39m tests/integration/wal-consistency.test.ts [2m([22m[2m23 tests[22m[2m | [22m[31m23 failed[39m[2m)[22m[32m 120[2mms[22m[39m
+[31m       [31m×[31m 应该成功写入单个事件并可读回[39m[32m 14[2mms[22m[39m
+[31m       [31m×[31m 应该成功写入多个事件并保持顺序[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m 每行应该是合法的 JSON（JSONL 格式）[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m 写入后文件应该存在且非空[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m 事件应包含 schemaVersion 字段（REQ-18）[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m getLastEvent 应返回最后写入的事件[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m 空 WAL 的 getLastEvent 应返回 null[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m appendEvent 后 events.jsonl 应有数据，state.json 也应更新[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m 多次 appendEvent 后 state.json 应反映最后一个事件[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m events.jsonl 中的事件数量应与写入次数一致[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m rebuildFromEventsFile 应从 events.jsonl 重建 state.json[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m WAL 文件路径应在 events.jsonl 目录下[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m state.json 应与 events.jsonl 在同一目录[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m 多个并发 appendEvent 不应丢失事件[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m 并发写入后每行应该是合法 JSON（无行损坏）[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m 并发写入后 eventId 不应重复[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m StateManager 并发 appendEvent 不应丢失事件[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m 顺序写入与并发写入的事件总数应一致[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m initialize 应该是幂等的（多次调用不报错）[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m 空 WAL 的 readAllEvents 应返回空数组[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m payload 中包含特殊字符的事件应正确序列化[39m[32m 10[2mms[22m[39m
+[31m       [31m×[31m createEvent 应生成唯一的 eventId[39m[32m 18[2mms[22m[39m
+[31m       [31m×[31m StateManager 初始化后 getCurrentState 应返回有效状态[39m[32m 6[2mms[22m[39m
+ [31m❯[39m tests/property/executor.property.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 690[2mms[22m[39m
+[31m     [31m×[31m Property 6: Conflict resolution follows force flag[39m[32m 216[2mms[22m[39m
+[31m     [31m×[31m Property 7: Non-managed file safety invariant[39m[33m 471[2mms[22m[39m
+[90mstdout[2m | tests/e2e/openclaw-mock-e2e.test.ts[2m > [22m[2m端到端流程在 60 秒内完成[2m > [22m[2m完整 OpenClaw 模拟 e2e 流程应在 60 秒内完成
+[22m[39m
+✅ OpenClaw 模拟 e2e 流程完成：
+   jobId: job-oc-1780826438111
+   最终状态: completed
+   耗时: 32ms（限制: 60000ms）
+
+[90mstdout[2m | tests/e2e/openclaw-mock-e2e.test.ts[2m > [22m[2m端到端流程在 60 秒内完成[2m > [22m[2mJobTracker 创建 job 并通过 mock client 获取状态应在 60 秒内完成
+[22m[39m
+✅ JobTracker e2e 流程完成：
+   jobId: job-mq3m2xv3-28d8ffa8
+   最终状态: completed
+   耗时: 2ms（限制: 60000ms）
+
+ [31m❯[39m tests/integration/cli_flow.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 998[2mms[22m[39m
+[31m     [31m×[31m should complete install → verify → upgrade → verify cycle[39m[33m 938[2mms[22m[39m
+     [32m✓[39m should detect missing files during verify[32m 58[2mms[22m[39m
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould perform complete fresh installation from empty directory
+[22m[39mTest 1 result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould upgrade from old version to new version
+[22m[39mTest 2 - Install result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+ [31m❯[39m tests/integration/workflow-permission-integration.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[32m 60[2mms[22m[39m
+[31m       [31m×[31m 当权限通过时，workflow 应该成功执行并完成[39m[32m 20[2mms[22m[39m
+[31m       [31m×[31m 有权限时 workflow 的 gate 应该被执行[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m 普通 workflow.execute 操作应该被允许（默认 allow）[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m spec.read 操作应该被允许[39m[32m 1[2mms[22m[39m
+       [32m✓[39m 当 action 触发 hard rule 时，workflow 不应执行[32m 1[2mms[22m[39m
+       [32m✓[39m 权限拒绝时应返回包含 agentId 和 action 的错误信息[32m 1[2mms[22m[39m
+       [32m✓[39m 权限拒绝时 workflow 实例状态应保持 pending（未执行）[32m 1[2mms[22m[39m
+[31m       [31m×[31m gate.bypass 操作应该被拒绝（hard rule hard-001）[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m verification.forge 操作应该被拒绝（hard rule hard-002）[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m code.execute 操作应该被拒绝（hard rule hard-005）[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m 多次权限拒绝不影响其他 workflow 实例[39m[32m 5[2mms[22m[39m
+       [32m✓[39m 权限检查应产生 permission.evaluated 事件[32m 2[2mms[22m[39m
+       [32m✓[39m permission.evaluated 事件应包含 sessionId 字段[32m 1[2mms[22m[39m
+       [32m✓[39m permission.evaluated 事件应包含 agentId 字段[32m 0[2mms[22m[39m
+       [32m✓[39m permission.evaluated 事件应包含 resource 字段[32m 0[2mms[22m[39m
+       [32m✓[39m permission.evaluated 事件应包含 action 字段[32m 1[2mms[22m[39m
+[31m       [31m×[31m permission.evaluated 事件应包含 decision 字段（allow/deny）[39m[32m 7[2mms[22m[39m
+       [32m✓[39m permission.evaluated 事件应包含 reason 字段（非空字符串）[32m 1[2mms[22m[39m
+       [32m✓[39m permission.evaluated 事件应同时包含全部六个字段[32m 1[2mms[22m[39m
+       [32m✓[39m 每次权限检查都应产生独立的事件记录[32m 1[2mms[22m[39m
+       [32m✓[39m 权限拒绝时也应产生 permission.evaluated 事件（decision=deny）[32m 1[2mms[22m[39m
+ [31m❯[39m tests/integration/workflow-observability-integration.test.ts [2m([22m[2m25 tests[22m[2m | [22m[31m17 failed[39m[2m)[22m[33m 566[2mms[22m[39m
+       [32m✓[39m 执行单状态 workflow 后，EventLogger 中应有事件记录[32m 27[2mms[22m[39m
+[31m       [31m×[31m 执行 workflow 后，EventLogger 中应包含 workflow.started 事件[39m[32m 23[2mms[22m[39m
+[31m       [31m×[31m 执行 workflow 后，EventLogger 中应包含 workflow.completed 事件[39m[32m 10[2mms[22m[39m
+[31m       [31m×[31m 执行两状态 workflow 后，应有 gate 相关事件[39m[32m 23[2mms[22m[39m
+[31m       [31m×[31m 执行两状态 workflow 后，应有 state_changed 事件[39m[32m 28[2mms[22m[39m
+       [32m✓[39m 多次执行 workflow 后，事件数量应累积增加[32m 29[2mms[22m[39m
+[31m       [31m×[31m 所有写入的事件都应包含必要字段：eventId, ts, projectId, category, action[39m[32m 28[2mms[22m[39m
+[31m       [31m×[31m 事件的 schema_version 应为 "1.0"[39m[32m 18[2mms[22m[39m
+[31m       [31m×[31m workflow 事件的 category 应为 "workflow"[39m[32m 34[2mms[22m[39m
+[31m       [31m×[31m 事件的 payload 应包含 instanceId 和 workflowId[39m[32m 33[2mms[22m[39m
+[31m       [31m×[31m 事件的 ts 字段应为单调递增（同一 workflow 执行内）[39m[32m 34[2mms[22m[39m
+       [32m✓[39m 每个事件的 eventId 应唯一[32m 33[2mms[22m[39m
+[31m       [31m×[31m queryEventsSync 应能检索到 workflow 事件[39m[32m 16[2mms[22m[39m
+[31m       [31m×[31m queryEvents 应支持分页，返回正确的 total 和 items[39m[32m 12[2mms[22m[39m
+[31m       [31m×[31m 按 action 过滤：只返回 workflow.started 事件[39m[32m 13[2mms[22m[39m
+[31m       [31m×[31m 按 projectId 过滤：不同 projectId 的事件应隔离[39m[32m 13[2mms[22m[39m
+[31m       [31m×[31m queryEvents 按时间范围过滤应正确工作[39m[32m 20[2mms[22m[39m
+[31m       [31m×[31m queryEvents 降序排列应返回最新事件在前[39m[32m 12[2mms[22m[39m
+[31m       [31m×[31m getKnownProjects 应返回已写入事件的 projectId[39m[32m 20[2mms[22m[39m
+[31m       [31m×[31m getProjectStats 应返回正确的事件统计[39m[32m 21[2mms[22m[39m
+       [32m✓[39m CAS 应能存储和检索 workflow 事件的 payload 内容[32m 42[2mms[22m[39m
+       [32m✓[39m 相同内容存入 CAS 应返回相同的 blob 引用（内容寻址）[32m 24[2mms[22m[39m
+       [32m✓[39m 不同内容存入 CAS 应返回不同的 blob 引用[32m 29[2mms[22m[39m
+       [32m✓[39m QueryAPI.getBlobContent 应能通过 blob 引用检索内容[32m 12[2mms[22m[39m
+       [32m✓[39m QueryAPI.getBlobContent 对无效引用应返回 null[32m 7[2mms[22m[39m
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould upgrade with force to override user customizations
+[22m[39mTest 3 - Install result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould verify installation integrity
+[22m[39mTest 4 - Install result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+ [31m❯[39m tests/property/reconcile.property.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 510[2mms[22m[39m
+[31m     [31m×[31m Property 5: Reconcile idempotency[39m[32m 256[2mms[22m[39m
+[31m     [31m×[31m Property 10: Manifest reflects deployed state after reconcile[39m[32m 249[2mms[22m[39m
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould detect and reject downgrade without force
+[22m[39mTest 5 - Install v3.6.0 result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould allow downgrade with force flag
+[22m[39mTest 6 - Install v3.6.0 result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould clean up orphan files from previous versions
+[22m[39mTest 7 - Install with extra file result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould be idempotent - second reconcile produces only skip actions
+[22m[39mTest 8 - First reconcile result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould complete full install → verify → upgrade → verify cycle
+[22m[39mTest 9 - Install result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould handle missing source directory gracefully
+[22m[39mTest 10 - Missing source dir result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": true,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Discovery failed: SOURCE_DIR_NOT_FOUND — C:\\Users\\luo\\AppData\\Local\\Temp\\sf-e2e-EzwuwX\\non-existent"
+}
+
+[90mstdout[2m | tests/e2e/installer_reconcile_e2e.test.ts[2m > [22m[2mE2E: Installer Reconcile Redesign — Complete Flow[2m > [22m[2mshould migrate from old registry-based installation
+[22m[39mTest 11 - Migration result: {
+  "success": false,
+  "plan": {
+    "entries": [],
+    "summary": {
+      "create": 0,
+      "update": 0,
+      "delete": 0,
+      "skip": 0,
+      "conflict": 0
+    },
+    "diagnostics": {
+      "allDecisions": [],
+      "ignored": [],
+      "noAction": []
+    }
+  },
+  "execution": {
+    "success": false,
+    "executed": [],
+    "failed": null,
+    "warnings": [],
+    "pendingDeletes": []
+  },
+  "commitResult": {
+    "opencodeMerged": false,
+    "manifestWritten": false,
+    "journalCleaned": false
+  },
+  "downgradeDetected": false,
+  "targetPreflightPassed": false,
+  "planPreflightPassed": false,
+  "partialCommitRecovered": false,
+  "error": "Reconcile failed unexpectedly: Bun is not defined"
+}
+
+ [31m❯[39m tests/e2e/installer_reconcile_e2e.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m10 failed[39m[2m)[22m[33m 715[2mms[22m[39m
+[31m     [31m×[31m should perform complete fresh installation from empty directory[39m[32m 68[2mms[22m[39m
+[31m     [31m×[31m should upgrade from old version to new version[39m[32m 131[2mms[22m[39m
+[31m     [31m×[31m should upgrade with force to override user customizations[39m[32m 178[2mms[22m[39m
+[31m     [31m×[31m should verify installation integrity[39m[32m 83[2mms[22m[39m
+[31m     [31m×[31m should detect and reject downgrade without force[39m[32m 46[2mms[22m[39m
+[31m     [31m×[31m should allow downgrade with force flag[39m[32m 43[2mms[22m[39m
+[31m     [31m×[31m should clean up orphan files from previous versions[39m[32m 44[2mms[22m[39m
+[31m     [31m×[31m should be idempotent - second reconcile produces only skip actions[39m[32m 28[2mms[22m[39m
+[31m     [31m×[31m should complete full install → verify → upgrade → verify cycle[39m[32m 29[2mms[22m[39m
+     [32m✓[39m should handle missing source directory gracefully[32m 28[2mms[22m[39m
+[31m     [31m×[31m should migrate from old registry-based installation[39m[32m 34[2mms[22m[39m
+ [31m❯[39m tests/integration/distribution/init-concurrent-lock.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 885[2mms[22m[39m
+[31m     [31m×[31m should allow one init to succeed and reject the concurrent one with exit 2[39m[32m 185[2mms[22m[39m
+     [32m✓[39m should include lock file path and PID in stderr when concurrent init is rejected[32m 9[2mms[22m[39m
+     [32m✓[39m should include holder PID in lock file metadata[32m 24[2mms[22m[39m
+     [32m✓[39m should have getActiveLockCount() === 0 after all locks are released[32m 124[2mms[22m[39m
+     [33m[2m✓[22m[39m should reject second init with exit code 2 when first holds the lock [33m 540[2mms[22m[39m
+ [31m❯[39m tests/property/manifest.property.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 1568[2mms[22m[39m
+[31m     [31m×[31m Property 9a: valid manifest returns valid: true with correct data[39m[32m 209[2mms[22m[39m
+[31m     [31m×[31m Property 9b: invalid header fields return valid: false with schema_invalid reason[39m[33m 760[2mms[22m[39m
+[31m     [31m×[31m Property 9c: unparseable JSON returns valid: false with parse_error reason[39m[32m 40[2mms[22m[39m
+[31m     [31m×[31m Property 9d: missing manifest file returns valid: false with missing reason[39m[32m 17[2mms[22m[39m
+[31m     [31m×[31m Property 9e: entry-level errors reported as warnings without invalidating manifest[39m[32m 180[2mms[22m[39m
+[31m     [31m×[31m Property 9f: valid: true iff all required header fields present with correct types[39m[33m 361[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/reconcile_modes.test.ts [2m([22m[2m16 tests[22m[2m | [22m[31m12 failed[39m[2m)[22m[33m 945[2mms[22m[39m
+       [33m[2m✓[22m[39m reads Manifest and filesystem to build CurrentState [33m 382[2mms[22m[39m
+[31m       [31m×[31m creates missing files when Manifest is absent[39m[32m 59[2mms[22m[39m
+[31m       [31m×[31m detects downgrade and stops without --force[39m[32m 30[2mms[22m[39m
+[31m       [31m×[31m allows downgrade with --force[39m[32m 31[2mms[22m[39m
+[31m       [31m×[31m treats CurrentState as empty — all files get create action[39m[32m 31[2mms[22m[39m
+[31m       [31m×[31m ignores existing Manifest (does not read it)[39m[32m 27[2mms[22m[39m
+[31m       [31m×[31m only executes create actions (filters out update/delete)[39m[32m 28[2mms[22m[39m
+[31m       [31m×[31m skips downgrade detection[39m[32m 34[2mms[22m[39m
+[31m       [31m×[31m skips opencode.json merge (scope is project_runtime)[39m[32m 41[2mms[22m[39m
+[31m       [31m×[31m executes create/update/delete actions[39m[32m 63[2mms[22m[39m
+[31m       [31m×[31m skips downgrade detection[39m[32m 47[2mms[22m[39m
+[31m       [31m×[31m skips opencode.json merge[39m[32m 65[2mms[22m[39m
+       [32m✓[39m returns failure result when provider throws — does not crash[32m 14[2mms[22m[39m
+       [32m✓[39m returns failure result when discovery fails[32m 31[2mms[22m[39m
+       [32m✓[39m returns failure result when target directory is not writable[32m 12[2mms[22m[39m
+[31m       [31m×[31m project_runtime scope does not acquire lock[39m[32m 46[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/reconcile_recovery.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 286[2mms[22m[39m
+     [32m✓[39m should recover partial commit when journal exists before continuing reconcile[32m 61[2mms[22m[39m
+     [32m✓[39m should set partialCommitRecovered=false when no journal exists[32m 29[2mms[22m[39m
+     [32m✓[39m should write Manifest from journal payload during recovery[32m 42[2mms[22m[39m
+[31m     [31m×[31m should handle corrupted journal gracefully and continue reconcile[39m[32m 67[2mms[22m[39m
+[31m     [31m×[31m should recover journal then continue with normal reconcile creating new files[39m[32m 34[2mms[22m[39m
+     [32m✓[39m should recover partial commit in project_runtime scope[32m 49[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/discovery.test.ts [2m([22m[2m13 tests[22m[2m | [22m[31m7 failed[39m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 184[2mms[22m[39m
+       [32m✓[39m should return SOURCE_DIR_EMPTY when source directory is completely empty[32m 19[2mms[22m[39m
+       [32m✓[39m should return SOURCE_DIR_EMPTY when source directory only contains .gitkeep files[32m 19[2mms[22m[39m
+       [32m✓[39m should return SOURCE_DIR_EMPTY when source directory only contains excluded files[32m 8[2mms[22m[39m
+       [32m✓[39m should return SOURCE_DIR_NOT_FOUND when source directory does not exist[32m 3[2mms[22m[39m
+       [32m✓[39m should return SOURCE_DIR_NOT_FOUND when path points to a file instead of directory[32m 6[2mms[22m[39m
+       [2m[90m↓[39m[22m should return SOURCE_DIR_NOT_READABLE when source directory has no read permission
+[31m       [31m×[31m should only deploy SKILL.md from skill directories, ignoring other files[39m[32m 23[2mms[22m[39m
+[31m       [31m×[31m should discover SKILL.md from multiple skill directories[39m[32m 18[2mms[22m[39m
+[31m       [31m×[31m should skip skill directories that do not contain SKILL.md[39m[32m 14[2mms[22m[39m
+[31m       [31m×[31m should ignore .gitkeep in skills directory[39m[32m 16[2mms[22m[39m
+[31m       [31m×[31m should output paths with forward slashes regardless of OS[39m[32m 25[2mms[22m[39m
+[31m       [31m×[31m should handle source directory path with mixed separators on Windows[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should produce consistent POSIX paths for tools/lib nested structure[39m[32m 20[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/executor.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m16 failed[39m[2m)[22m[32m 233[2mms[22m[39m
+[31m       [31m×[31m should read source file and write to target atomically[39m[32m 57[2mms[22m[39m
+[31m       [31m×[31m should create nested target directories recursively (R4.4)[39m[32m 11[2mms[22m[39m
+[31m       [31m×[31m should handle binary file content[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should overwrite existing target file with source content[39m[32m 14[2mms[22m[39m
+[31m       [31m×[31m should throw when source file does not exist[39m[32m 20[2mms[22m[39m
+[31m       [31m×[31m should throw when source hash does not match file content (R4.2)[39m[32m 11[2mms[22m[39m
+       [32m✓[39m should not leave partial file on hash mismatch failure[32m 9[2mms[22m[39m
+[31m       [31m×[31m should include file path in error message[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should handle POSIX relative paths correctly on any OS[39m[32m 18[2mms[22m[39m
+[31m     [31m×[31m should delete an existing file and return success[39m[32m 7[2mms[22m[39m
+[31m     [31m×[31m should return PendingDeleteEntry when file does not exist (non-fatal)[39m[32m 2[2mms[22m[39m
+[31m     [31m×[31m should handle nested path deletion[39m[32m 8[2mms[22m[39m
+[31m     [31m×[31m should include ISO8601 timestamp in PendingDeleteEntry on failure[39m[32m 4[2mms[22m[39m
+       [32m✓[39m should skip the file and return a warning[32m 5[2mms[22m[39m
+       [32m✓[39m should not modify the target file when skipping[32m 9[2mms[22m[39m
+[31m       [31m×[31m should overwrite target file with source content[39m[32m 14[2mms[22m[39m
+[31m       [31m×[31m should throw when source file does not exist[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m should throw when source hash does not match[39m[32m 10[2mms[22m[39m
+[31m       [31m×[31m should create target directory if it does not exist[39m[32m 9[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/runtime_manifest.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[32m 177[2mms[22m[39m
+     [32m✓[39m should return null when manifest file does not exist[32m 21[2mms[22m[39m
+     [32m✓[39m should return null when specforge directory does not exist[32m 3[2mms[22m[39m
+     [32m✓[39m should return null when manifest contains invalid JSON[32m 8[2mms[22m[39m
+     [32m✓[39m should return null when manifest is missing schema_version[32m 6[2mms[22m[39m
+     [32m✓[39m should return null when schema_version is not '1.0'[32m 7[2mms[22m[39m
+     [32m✓[39m should return null when created_at is missing[32m 6[2mms[22m[39m
+     [32m✓[39m should return null when updated_at is missing[32m 7[2mms[22m[39m
+     [32m✓[39m should return null when files is missing[32m 6[2mms[22m[39m
+     [32m✓[39m should return null when files is an array instead of object[32m 6[2mms[22m[39m
+     [32m✓[39m should return null when a file entry has non-number mtime[32m 6[2mms[22m[39m
+     [32m✓[39m should return null when a file entry has non-number size[32m 5[2mms[22m[39m
+     [32m✓[39m should return null when a file entry has Infinity mtime[32m 7[2mms[22m[39m
+[31m     [31m×[31m should successfully read a valid RuntimeManifest with empty files[39m[32m 15[2mms[22m[39m
+[31m     [31m×[31m should successfully read a valid RuntimeManifest with file entries[39m[32m 8[2mms[22m[39m
+[31m     [31m×[31m should handle mtime value of 0 as valid[39m[32m 6[2mms[22m[39m
+[31m     [31m×[31m should create specforge directory and write manifest[39m[32m 11[2mms[22m[39m
+[31m     [31m×[31m should overwrite existing manifest[39m[32m 14[2mms[22m[39m
+[31m     [31m×[31m should produce valid JSON with 2-space indentation and trailing newline[39m[32m 7[2mms[22m[39m
+     [32m✓[39m should write manifest that can be read back correctly (roundtrip)[32m 7[2mms[22m[39m
+     [32m✓[39m should handle manifest with many file entries[32m 10[2mms[22m[39m
+[31m     [31m×[31m should write to specforge/runtime-manifest.json path[39m[32m 9[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/verify_new.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[32m 205[2mms[22m[39m
+[31m     [31m×[31m should return allMatch true when all files exist with correct hashes[39m[32m 38[2mms[22m[39m
+[31m     [31m×[31m should return mismatches when file hash does not match[39m[32m 12[2mms[22m[39m
+[31m     [31m×[31m should return missing when file does not exist[39m[32m 7[2mms[22m[39m
+     [32m✓[39m should return extra files when sf-* files exist but not in manifest[32m 10[2mms[22m[39m
+[31m     [31m×[31m should handle multiple files with mixed results[39m[32m 16[2mms[22m[39m
+[31m     [31m×[31m should throw error when manifest does not exist[39m[32m 9[2mms[22m[39m
+[31m     [31m×[31m should throw error when manifest is invalid JSON[39m[32m 12[2mms[22m[39m
+     [32m✓[39m should return exit code 0 when allMatch is true[32m 3[2mms[22m[39m
+     [32m✓[39m should return exit code 6 when there are mismatches[32m 1[2mms[22m[39m
+     [32m✓[39m should return exit code 6 when there are missing files[32m 1[2mms[22m[39m
+     [32m✓[39m should return exit code 6 when there are extra files[32m 1[2mms[22m[39m
+     [32m✓[39m should show summary with counts[32m 1[2mms[22m[39m
+     [32m✓[39m should find extra sf-* agent files[32m 14[2mms[22m[39m
+     [32m✓[39m should find extra sf_* tool files[32m 10[2mms[22m[39m
+     [32m✓[39m should find extra sf_* tool lib files[32m 11[2mms[22m[39m
+     [32m✓[39m should find extra sf_* plugin files[32m 12[2mms[22m[39m
+     [32m✓[39m should find extra sf-* skill directories[32m 22[2mms[22m[39m
+     [32m✓[39m should ignore non-sf-* files[32m 10[2mms[22m[39m
+[31m     [31m×[31m should ignore sf-* files that are in manifest[39m[32m 12[2mms[22m[39m
+ [31m❯[39m tests/property/paths.property.test.ts [2m([22m[2m8 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 190[2mms[22m[39m
+     [32m✓[39m Property 3a: toPosix result contains no backslashes[32m 35[2mms[22m[39m
+[31m     [31m×[31m Property 3b: normalizeSeparators is equivalent to toPosix[39m[32m 11[2mms[22m[39m
+[31m     [31m×[31m Property 3c: toNative(toPosix(path)) equals toPosix(path) on Unix[39m[32m 3[2mms[22m[39m
+     [32m✓[39m Property 3d: toPosix is idempotent[32m 17[2mms[22m[39m
+[31m     [31m×[31m Property 3e: toNative is idempotent on POSIX-normalized paths[39m[32m 3[2mms[22m[39m
+     [32m✓[39m Property 3f: toPosix preserves path segments[32m 21[2mms[22m[39m
+     [32m✓[39m Property 3g: DesiredState entries use only forward slashes in relativePath[32m 45[2mms[22m[39m
+     [32m✓[39m Property 3h: CurrentState entries use only forward slashes in relativePath[32m 52[2mms[22m[39m
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for b5f4068e-3d22-4cc0-a39d-8daaa6ee912e in 1ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for 2013ae9b-1478-434a-ad5d-91df7b98309f in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for 86b87dcf-0299-4eda-ad2f-89071c6fa879 in 0ms
+
+ [31m❯[39m tests/unit/installer/manifest.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 154[2mms[22m[39m
+[31m       [31m×[31m should return null when file does not exist[39m[32m 27[2mms[22m[39m
+[31m       [31m×[31m should read and return valid manifest[39m[32m 14[2mms[22m[39m
+[31m       [31m×[31m should throw E_INVALID_JSON when JSON is corrupted[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should throw E_MANIFEST_SCHEMA_UNSUPPORTED for unsupported schema_version[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should throw E_INVALID_JSON for missing required fields[39m[32m 7[2mms[22m[39m
+[31m       [31m×[31m should write valid manifest to file[39m[32m 8[2mms[22m[39m
+       [32m✓[39m should throw when manifest is invalid[32m 3[2mms[22m[39m
+       [32m✓[39m should return true for valid manifest[32m 2[2mms[22m[39m
+       [32m✓[39m should throw E_MANIFEST_SCHEMA_UNSUPPORTED for unsupported schema_version[32m 4[2mms[22m[39m
+       [32m✓[39m should return false for null[32m 3[2mms[22m[39m
+       [32m✓[39m should return false for non-object[32m 2[2mms[22m[39m
+       [32m✓[39m should return false when managed_agents is not an array[32m 2[2mms[22m[39m
+       [32m✓[39m should return false when managed_agent_hashes has non-string values[32m 3[2mms[22m[39m
+       [32m✓[39m should return false when files entry is missing type field[32m 3[2mms[22m[39m
+       [32m✓[39m should return false when files entry has invalid type[32m 10[2mms[22m[39m
+       [32m✓[39m should return false when install_mode is not user_level[32m 4[2mms[22m[39m
+       [32m✓[39m should accept all valid type values[32m 7[2mms[22m[39m
+       [32m✓[39m should generate correct manifest structure with type field[32m 26[2mms[22m[39m
+       [32m✓[39m should return version 0.0.0 when package.json is missing[32m 9[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/executor-plan.test.ts [2m([22m[2m13 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[32m 160[2mms[22m[39m
+       [32m✓[39m should return success with empty arrays for an empty plan[32m 16[2mms[22m[39m
+[31m       [31m×[31m should execute create actions successfully[39m[32m 23[2mms[22m[39m
+[31m       [31m×[31m should execute update actions successfully[39m[32m 11[2mms[22m[39m
+[31m       [31m×[31m should STOP on create/update failure and record FailedAction (R4.3)[39m[32m 11[2mms[22m[39m
+[31m       [31m×[31m should execute delete actions successfully[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should continue on delete failure and add to pendingDeletes (R6.5)[39m[32m 8[2mms[22m[39m
+       [32m✓[39m should skip conflict when force=false and emit warning[32m 9[2mms[22m[39m
+[31m       [31m×[31m should overwrite conflict when force=true[39m[32m 14[2mms[22m[39m
+       [32m✓[39m should STOP on conflict force=true write failure[32m 12[2mms[22m[39m
+       [32m✓[39m should record skip actions as executed with no file changes[32m 8[2mms[22m[39m
+[31m       [31m×[31m should emit tamper warning for entries with tamperWarning flag[39m[32m 9[2mms[22m[39m
+[31m       [31m×[31m should execute entries in order and handle mixed actions[39m[32m 15[2mms[22m[39m
+[31m       [31m×[31m should preserve already-executed actions when stopping on failure[39m[32m 12[2mms[22m[39m
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for 4c4ad411-bc9a-4a3e-85a8-966446aed9af in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for a0128fb7-e3c4-4b90-a469-ad24a994a594 in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for 8aa33d17-d648-4116-8f12-8c4ce636a66c in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for b2f53692-74be-4ad5-9030-0e9250cb6b45 in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for 224b56b9-40d4-49a7-bde0-aa50904b2151 in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for 3b1c8261-9c67-488c-9603-a92137b0b31c in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39mState recovery completed for 51ea9ffb-5ca8-4bf1-8a6c-1050524c7818 in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）
+[22m[39m
+=== 崩溃恢复测试统计 ===
+总轮次: 10
+数据丢失次数: 0
+WAL 完整性失败次数: 0
+成功恢复次数: 10
+
+各轮次详情:
+  Round 0: ✅ 完整 | crash@phase5 | WAL事件数=undefined | 恢复=成功
+  Round 1: ✅ 完整 | crash@phase1 | WAL事件数=undefined | 恢复=成功
+  Round 2: ✅ 完整 | crash@phase3 | WAL事件数=undefined | 恢复=成功
+  Round 3: ✅ 完整 | crash@phase4 | WAL事件数=undefined | 恢复=成功
+  Round 4: ✅ 完整 | crash@phase2 | WAL事件数=undefined | 恢复=成功
+  Round 5: ✅ 完整 | crash@phase1 | WAL事件数=undefined | 恢复=成功
+  Round 6: ✅ 完整 | crash@phase3 | WAL事件数=undefined | 恢复=成功
+  Round 7: ✅ 完整 | crash@phase4 | WAL事件数=undefined | 恢复=成功
+  Round 8: ✅ 完整 | crash@phase5 | WAL事件数=undefined | 恢复=成功
+  Round 9: ✅ 完整 | crash@phase1 | WAL事件数=undefined | 恢复=成功
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2mStateRecoveryManager 能从持久化存储恢复到最后一致状态
+[22m[39mState recovery completed for 1f882d70-9935-4078-b78b-7e4a8c3f0621 in 0ms
+
+[90mstdout[2m | tests/e2e/crash-recovery-e2e.test.ts[2m > [22m[2m崩溃恢复 e2e 测试[2m > [22m[2m恢复后 workflow 可继续执行
+[22m[39mState recovery completed for 73259ee5-827a-407e-bc6f-5dc4021bd195 in 0ms
+
+ [31m❯[39m tests/e2e/workflow-json-definitions.test.ts [2m([22m[2m48 tests[22m[2m | [22m[31m24 failed[39m[2m)[22m[32m 57[2mms[22m[39m
+       [32m✓[39m should exist[32m 2[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 2[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 10[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 3[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 2[2mms[22m[39m
+       [32m✓[39m should exist[32m 0[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should exist[32m 0[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should exist[32m 0[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should exist[32m 0[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should exist[32m 1[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 0[2mms[22m[39m
+       [32m✓[39m should exist[32m 0[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 2[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m should exist[32m 0[2mms[22m[39m
+       [32m✓[39m should be valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have schema_version 1.0[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have stateMachine with initial state[39m[32m 0[2mms[22m[39m
+       [32m✓[39m should have at least 5 states[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a completed state[39m[32m 0[2mms[22m[39m
+ [31m❯[39m tests/e2e/crash-recovery-e2e.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 306[2mms[22m[39m
+[31m     [31m×[31m 10 次随机 crash 后 WAL 数据完整性验证（0 数据丢失）[39m[32m 220[2mms[22m[39m
+[31m     [31m×[31m WAL 写入原子性：crash 不会产生半写入的损坏事件[39m[32m 67[2mms[22m[39m
+     [32m✓[39m StateRecoveryManager 能从持久化存储恢复到最后一致状态[32m 8[2mms[22m[39m
+     [32m✓[39m 恢复后 workflow 可继续执行[32m 8[2mms[22m[39m
+ [31m❯[39m tests/unit/workflow-schema-consistency.test.ts [2m([22m[2m81 tests[22m[2m | [22m[31m32 failed[39m[2m)[22m[32m 85[2mms[22m[39m
+     [32m✓[39m should have exactly 8 workflow JSON files[32m 4[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 2[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 10[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 1[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 4[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 1[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 2[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 1[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 1[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 1[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 1[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 1[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 0[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 0[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 3[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 1[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 1[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 1[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 1[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 1[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 0[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 0[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 1[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 1[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 5[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 1[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 1[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 0[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 0[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 0[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 0[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 0[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 0[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 1[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 1[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 0[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 0[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 1[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 0[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 0[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 0[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 1[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 0[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 0[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 0[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 1[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 0[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 0[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 0[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 1[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 0[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 0[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 1[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 1[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 0[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 0[2mms[22m[39m
+       [32m✓[39m is valid JSON[32m 1[2mms[22m[39m
+[31m       [31m×[31m has schema_version 1.0[39m[32m 2[2mms[22m[39m
+       [32m✓[39m has matching id field with filename[32m 0[2mms[22m[39m
+[31m       [31m×[31m has stateMachine with initial state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m initial state exists in states map[32m 0[2mms[22m[39m
+[31m       [31m×[31m has completed state[39m[32m 1[2mms[22m[39m
+       [32m✓[39m all next references are valid state names[32m 1[2mms[22m[39m
+       [32m✓[39m all agent references are valid roles[32m 1[2mms[22m[39m
+       [32m✓[39m gate states use pass/fail in next[32m 0[2mms[22m[39m
+[31m       [31m×[31m completed state has no next[39m[32m 1[2mms[22m[39m
+ [31m❯[39m tests/e2e/tool-http-shells.test.ts [2m([22m[2m72 tests[22m[2m | [22m[31m72 failed[39m[2m)[22m[32m 65[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 13[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 5[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 3[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should exist[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should import from thin-client[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should be under 5KB[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should have a description[39m[32m 0[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/manifest_write.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 93[2mms[22m[39m
+[31m     [31m×[31m should write a valid manifest file with all successfully executed files[39m[32m 25[2mms[22m[39m
+[31m     [31m×[31m should include pending_deletes in the manifest[39m[32m 8[2mms[22m[39m
+[31m     [31m×[31m should not include pending_deletes when array is empty[39m[32m 6[2mms[22m[39m
+     [32m✓[39m should build partial manifest on partial failure (only successful files)[32m 6[2mms[22m[39m
+     [32m✓[39m should preserve installed_at from existing manifest (not fresh install)[32m 8[2mms[22m[39m
+[31m     [31m×[31m should set installed_at to current time for fresh install (no existing manifest)[39m[32m 7[2mms[22m[39m
+     [32m✓[39m should extract managed_agents from agent entries in desiredState[32m 6[2mms[22m[39m
+     [32m✓[39m should use desiredState.version as shared_version[32m 7[2mms[22m[39m
+     [32m✓[39m should not record deleted files in the manifest[32m 6[2mms[22m[39m
+[31m     [31m×[31m should use atomic write (manifest file is complete or absent)[39m[32m 6[2mms[22m[39m
+[31m     [31m×[31m should return false when atomic write fails (e.g., invalid directory)[39m[32m 7[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/paths.test.ts [2m([22m[2m40 tests[22m[2m | [22m[31m28 failed[39m[2m)[22m[32m 49[2mms[22m[39m
+[31m       [31m×[31m should use OPENCODE_CONFIG_DIR when set[39m[32m 17[2mms[22m[39m
+[31m       [31m×[31m should use OPENCODE_CONFIG_DIR with relative path[39m[32m 4[2mms[22m[39m
+       [32m✓[39m should use ~/.config/opencode/ on all platforms when OPENCODE_CONFIG_DIR is not set[32m 2[2mms[22m[39m
+       [32m✓[39m should return an absolute path[32m 1[2mms[22m[39m
+       [32m✓[39m should convert forward slashes to backslashes on Windows[32m 0[2mms[22m[39m
+       [32m✓[39m should handle nested paths[32m 0[2mms[22m[39m
+       [32m✓[39m should handle paths without separators[32m 0[2mms[22m[39m
+[31m       [31m×[31m should convert backslashes to forward slashes[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should handle nested paths with backslashes[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should leave forward slashes unchanged[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should handle paths without separators[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should return path unchanged on non-Windows platforms[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should return path unchanged on Windows when <= 260 chars[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should add \\?\ prefix on Windows when > 260 chars[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should not add prefix if already present[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should handle UNC paths on Windows when > 260 chars[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should not modify UNC paths that are <= 260 chars[39m[32m 0[2mms[22m[39m
+       [32m✓[39m should replace all backslashes with forward slashes[32m 0[2mms[22m[39m
+       [32m✓[39m should handle nested paths with backslashes[32m 0[2mms[22m[39m
+       [32m✓[39m should leave forward slashes unchanged[32m 0[2mms[22m[39m
+       [32m✓[39m should handle mixed separators[32m 0[2mms[22m[39m
+       [32m✓[39m should handle paths without separators[32m 0[2mms[22m[39m
+       [32m✓[39m should handle empty string[32m 0[2mms[22m[39m
+       [32m✓[39m should handle Windows absolute paths[32m 0[2mms[22m[39m
+[31m       [31m×[31m should convert forward slashes to native separator[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should handle nested paths[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should handle paths without separators[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should handle empty string[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should replace all backslashes with forward slashes[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should handle mixed separators[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should leave forward slashes unchanged[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should handle multiple consecutive backslashes[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m should handle empty string[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should use OPENCODE_CONFIG_DIR when set[39m[32m 2[2mms[22m[39m
+[31m       [31m×[31m should use OPENCODE_CONFIG_DIR with relative path[39m[32m 4[2mms[22m[39m
+[31m       [31m×[31m should return an absolute path[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should use platform default when OPENCODE_CONFIG_DIR is not set[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m should fall back to ~/.config/opencode/ on Windows when APPDATA is not set[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m posixToNative should delegate to toNative[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m nativeToPosix should delegate to toPosix[39m[32m 0[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould only delete files recorded in the Manifest
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-ZjaYpF
+
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould only delete files recorded in the Manifest
+[22m[39m
+  ⚠️ 发现未在 Manifest 中记录的 sf-* 文件（未删除）:
+     agents/sf-custom-agent.md
+     agents/sf-orchestrator.md
+     plugins/sf_specforge.ts
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould only delete files recorded in the Manifest
+[22m[39m   ✓ 已清理旧路径: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-ZjaYpF\specforge-manifest.json
+
+✅ 卸载完成
+   已删除: 0 个文件
+   未管理: 3 个 sf-* 文件（未删除，需手动处理）
+
+ [31m❯[39m tests/e2e/full-feature-spec-flow.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 18[2mms[22m[39m
+[31m     [31m×[31m feature_spec.json has complete happy path from intake to completed[39m[32m 13[2mms[22m[39m
+[31m     [31m×[31m all workflows can reach completed from initial[39m[32m 3[2mms[22m[39m
+ [31m❯[39m tests/e2e/skill-autoload-strategies.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m15 failed[39m[2m)[22m[32m 17[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-feature-spec should have autoload: workflow_match[39m[32m 6[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-bugfix-spec should have autoload: workflow_match[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-design-first should have autoload: workflow_match[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-quick-change should have autoload: workflow_match[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-change-request should have autoload: workflow_match[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-refactor should have autoload: workflow_match[39m[32m 0[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-ops-task should have autoload: workflow_match[39m[32m 1[2mms[22m[39m
+[31m       [31m×[31m sf-workflow-investigation should have autoload: workflow_match[39m[32m 0[2mms[22m[39m
+[31m     [31m×[31m superpowers-engineering-lessons should have autoload: always[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m superpowers-systematic-debugging should have autoload: manual[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m superpowers-brainstorming should have autoload: phase_match with requirements[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m superpowers-code-review should have autoload: phase_match with review[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m superpowers-subagent-driven-development should have autoload: phase_match with development[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m superpowers-verification-before-completion should have autoload: phase_match with verification[39m[32m 0[2mms[22m[39m
+[31m     [31m×[31m superpowers-writing-plans should have autoload: phase_match with tasks[39m[32m 0[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould warn about unknown sf-* files without deleting them
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-GThDxS
+
+
+ [31m❯[39m tests/e2e/daemon-wiring.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 29[2mms[22m[39m
+[31m     [31m×[31m DaemonConfig uses handshake.json (not daemon.sock.json)[39m[32m 15[2mms[22m[39m
+[31m     [31m×[31m thin-client reads from runtime/handshake.json[39m[32m 2[2mms[22m[39m
+[31m     [31m×[31m Daemon instantiates cross-package modules[39m[32m 7[2mms[22m[39m
+     [32m✓[39m HTTPServer accepts deps-based constructor[32m 2[2mms[22m[39m
+     [32m✓[39m EventBus has persistence hook[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould warn about unknown sf-* files without deleting them
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+ [31m❯[39m tests/integration/workflow_routing.test.ts [2m([22m[2m32 tests[22m[2m | [22m[31m19 failed[39m[2m | [22m[33m13 skipped[39m[2m)[22m[32m 36[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-change-request 文件存在[39m[32m 18[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-refactor 文件存在[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-ops-task 文件存在[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-investigation 文件存在[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-change-request 有正确的 YAML frontmatter[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-refactor 有正确的 YAML frontmatter[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-ops-task 有正确的 YAML frontmatter[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m sf-workflow-investigation 有正确的 YAML frontmatter[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m change_request Skill 包含 impact_analysis_gate 协议[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m refactor Skill 包含双路径状态机说明[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m ops_task Skill 包含安全执行协议[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m investigation Skill 包含用户接受确认流程[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m investigation Skill 明确说明无 development/review/verification 阶段[39m[32m 1[2mms[22m[39m
+     [2m[90m↓[39m[22m 路由表包含 change_request → sf-workflow-change-request
+     [2m[90m↓[39m[22m 路由表包含 refactor → sf-workflow-refactor
+     [2m[90m↓[39m[22m 路由表包含 ops_task → sf-workflow-ops-task
+     [2m[90m↓[39m[22m 路由表包含 investigation → sf-workflow-investigation
+     [2m[90m↓[39m[22m 包含 change_request 关键词（变更、CR、change request）
+     [2m[90m↓[39m[22m 包含 refactor 关键词（重构、技术债务）
+     [2m[90m↓[39m[22m 包含 ops_task 关键词（部署、运维、deploy）
+     [2m[90m↓[39m[22m 包含 investigation 关键词（调查、研究、技术选型）
+     [2m[90m↓[39m[22m 包含 6 级优先级排序
+[31m     [31m×[31m .opencode/skills/sf-workflow-feature-spec/SKILL.md 仍然存在[39m[32m 0[2mms[22m[39m
+[31m     [31m×[31m .opencode/skills/sf-workflow-bugfix-spec/SKILL.md 仍然存在[39m[32m 0[2mms[22m[39m
+[31m     [31m×[31m .opencode/skills/sf-workflow-design-first/SKILL.md 仍然存在[39m[32m 0[2mms[22m[39m
+[31m     [31m×[31m .opencode/skills/sf-workflow-quick-change/SKILL.md 仍然存在[39m[32m 0[2mms[22m[39m
+[31m     [31m×[31m Orchestrator 路由表仍包含 feature_spec → sf-workflow-feature-spec[39m[32m 0[2mms[22m[39m
+[31m     [31m×[31m Orchestrator 路由表仍包含 bugfix_spec → sf-workflow-bugfix-spec[39m[32m 0[2mms[22m[39m
+     [2m[90m↓[39m[22m 包含跨会话续接协议
+     [2m[90m↓[39m[22m 包含 extraction_failed 处理
+     [2m[90m↓[39m[22m 包含 max_continuations 限制检查
+     [2m[90m↓[39m[22m 包含 Archive 合并协议
+ [31m❯[39m tests/architecture/directory-layout.test.ts [2m([22m[2m28 tests[22m[2m | [22m[31m15 failed[39m[2m)[22m[32m 92[2mms[22m[39m
+     [32m✓[39m SPEC_DIR_NAME should equal ".specforge"[32m 3[2mms[22m[39m
+     [32m✓[39m SPEC_USER_DIR_NAME should equal ".specforge"[32m 0[2mms[22m[39m
+[31m     [31m×[31m all LAYOUT top-level values (except configFiles) should be strings[39m[32m 26[2mms[22m[39m
+[31m     [31m×[31m all LAYOUT.configFiles nested values should be strings[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m all USER_LAYOUT values should be strings[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m LAYOUT path values should not start with "/" (relative paths)[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m LAYOUT.configFiles path values should not start with "/" (relative paths)[39m[32m 2[2mms[22m[39m
+[31m     [31m×[31m USER_LAYOUT path values should not start with "/" (relative paths)[39m[32m 1[2mms[22m[39m
+     [32m✓[39m resolveProjectPath("/proj", "runtime") returns correct path[32m 2[2mms[22m[39m
+     [32m✓[39m resolveProjectPath("/proj", "specs", "WI-001", "design.md") returns correct path[32m 1[2mms[22m[39m
+[31m     [31m×[31m specPath("/proj", "WI-001", "design.md") returns correct path[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m agentRunArchivePath("/proj", "WI-001", "sf-design", 1) returns correct path[39m[32m 2[2mms[22m[39m
+[31m     [31m×[31m resolveUserPath("hostProfile") returns path containing .specforge and host-profile.json[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m resolveUserPath("projects", "hash123") returns correct path[39m[32m 3[2mms[22m[39m
+[31m     [31m×[31m LAYOUT contains all committed-zone keys[39m[32m 4[2mms[22m[39m
+[31m     [31m×[31m LAYOUT contains all gitignored-zone keys[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m LAYOUT committed + gitignored keys cover all string-valued entries[39m[32m 6[2mms[22m[39m
+[31m     [31m×[31m USER_LAYOUT contains all expected keys[39m[32m 2[2mms[22m[39m
+[31m     [31m×[31m USER_LAYOUT keys exactly match expected set[39m[32m 2[2mms[22m[39m
+     [32m✓[39m should discover _meta.json files in specs directory[32m 4[2mms[22m[39m
+     [32m✓[39m each _meta.json should parse with WorkItemMetaSchema.safeParse[32m 14[2mms[22m[39m
+     [32m✓[39m each _meta.json workflow_type should be in WORKFLOW_TYPES[32m 4[2mms[22m[39m
+     [32m✓[39m each _meta.json current_stage should be in STAGE_TYPES[32m 2[2mms[22m[39m
+     [32m✓[39m .specforge/ directory should exist[32m 0[2mms[22m[39m
+     [32m✓[39m .specforge/manifest.json should exist[32m 1[2mms[22m[39m
+     [32m✓[39m .specforge/specs/ directory should exist[32m 1[2mms[22m[39m
+     [32m✓[39m .specforge/config/ directory should exist (declared in LAYOUT)[32m 0[2mms[22m[39m
+     [32m✓[39m LAYOUT declared committed-zone entries should exist as files or directories[32m 0[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould remove sf-* agent entries from opencode.json while preserving others
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-TPgqmR
+
+
+ [31m❯[39m tests/integration/sf_v6_arch_check_integration.test.ts [2m([22m[2m12 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 6631[2mms[22m[39m
+[31m       [31m×[31m should run sf_v6_arch_check on current spec and report violations[39m[33m 682[2mms[22m[39m
+       [33m[2m✓[22m[39m should return non-zero exit code when validation fails [33m 891[2mms[22m[39m
+[31m       [31m×[31m should detect corrupted allocation JSON and return appropriate errorCode[39m[33m 818[2mms[22m[39m
+[31m       [31m×[31m should detect orphan properties (properties with no owners)[39m[32m 8[2mms[22m[39m
+[31m       [31m×[31m should detect dangling owners (owners pointing to non-existent specs)[39m[32m 1[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle corrupted design.md file [33m 770[2mms[22m[39m
+       [33m[2m✓[22m[39m should detect missing property sections in design.md [33m 742[2mms[22m[39m
+       [33m[2m✓[22m[39m should support --json flag for structured output [33m 673[2mms[22m[39m
+       [33m[2m✓[22m[39m should have human-readable output without --json flag [33m 536[2mms[22m[39m
+[31m       [31m×[31m should validate all three components: doc lint, CP coverage, and scope boundary[39m[33m 428[2mms[22m[39m
+[31m       [31m×[31m should implement quality gate 6 for documentation completeness[39m[33m 510[2mms[22m[39m
+       [33m[2m✓[22m[39m should return non-zero exit code when documentation is incomplete [33m 548[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould remove sf-* agent entries from opencode.json while preserving others
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+ [31m❯[39m tests/property/scope.property.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[33m 5834[2mms[22m[39m
+[31m     [31m×[31m Property 14a: project_runtime scope — no lock, no opencode.json merge, no downgrade detection[39m[33m 516[2mms[22m[39m
+[31m     [31m×[31m Property 14a2: project_runtime scope with repair_full — same isolation guarantees[39m[33m 351[2mms[22m[39m
+[31m     [31m×[31m Property 14b: user_shared scope — lock acquired/released, opencode.json managed[39m[33m 2897[2mms[22m[39m
+[31m     [31m×[31m Property 14c: user_shared scope — downgrade detection blocks without --force[39m[33m 400[2mms[22m[39m
+[31m     [31m×[31m Property 14d: user_shared scope does not create project-level runtime structures[39m[33m 1667[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould backup opencode.json before modification
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-YdWDdd
+
+
+ [31m❯[39m tests/e2e/tool-dispatcher-e2e.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 15[2mms[22m[39m
+[31m     [31m×[31m all 18 tool files import from thin-client[39m[32m 6[2mms[22m[39m
+[31m     [31m×[31m all tool files pass context to daemon[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m all tool files return stringified results[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m 18 handler stubs exist in daemon-core[39m[32m 4[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/compatibility.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 444[2mms[22m[39m
+       [32m✓[39m should return compatible with project_level when no manifest exists[32m 37[2mms[22m[39m
+       [32m✓[39m should return compatible and skip user-level check for project_level mode[32m 59[2mms[22m[39m
+[31m       [31m×[31m should return compatible when user manifest version satisfies range[39m[32m 75[2mms[22m[39m
+[31m       [31m×[31m should return compatible for higher patch version within range[39m[32m 55[2mms[22m[39m
+[31m       [31m×[31m should return incompatible when version is below required range[39m[32m 45[2mms[22m[39m
+[31m       [31m×[31m should return incompatible when version is above required range[39m[32m 47[2mms[22m[39m
+       [32m✓[39m should return error when project manifest JSON is corrupted[32m 32[2mms[22m[39m
+       [32m✓[39m should return error when schema_version is not supported[32m 11[2mms[22m[39m
+       [32m✓[39m should treat manifest without install_mode as project_level[32m 34[2mms[22m[39m
+[31m       [31m×[31m should return error when user-level manifest does not exist[39m[32m 29[2mms[22m[39m
+[31m       [31m×[31m should return error when user-level manifest JSON is corrupted[39m[32m 15[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/cmdVerify.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[33m 412[2mms[22m[39m
+     [32m✓[39m should exit with code 1 when manifest does not exist[32m 117[2mms[22m[39m
+[31m     [31m×[31m should pass verification when all files match their checksums[39m[32m 84[2mms[22m[39m
+[31m     [31m×[31m should report missing files and exit with exit code 6[39m[32m 22[2mms[22m[39m
+[31m     [31m×[31m should report checksum mismatches and exit with exit code 6[39m[32m 99[2mms[22m[39m
+[31m     [31m×[31m should warn when .specforge.lock exists but NOT acquire the lock[39m[32m 40[2mms[22m[39m
+[31m     [31m×[31m should display summary with total, passed, failed, and missing counts[39m[32m 27[2mms[22m[39m
+[31m     [31m×[31m should not acquire install lock during verify[39m[32m 18[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould backup opencode.json before modification
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould delete the User_Manifest after removing managed files
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-s6hPHW
+
+
+ [31m❯[39m tests/e2e/plugin-integrity.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 18[2mms[22m[39m
+[31m     [31m×[31m sf_specforge.ts plugin exists and is under 5KB[39m[32m 12[2mms[22m[39m
+[31m     [31m×[31m plugin does not reference deleted files[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m plugin registers 8 hooks[39m[32m 1[2mms[22m[39m
+[31m     [31m×[31m plugin reads handshake from runtime directory[39m[32m 1[2mms[22m[39m
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould delete the User_Manifest after removing managed files
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould handle missing manifest gracefully (not installed)
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-MByGYJ
+
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould handle missing manifest gracefully (not installed)
+[22m[39m
+✅ 卸载完成
+   已删除: 0 个文件
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould handle files in manifest that no longer exist on disk
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-66D82H
+
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould handle files in manifest that no longer exist on disk
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould preserve opencode.json with $schema even when all agents are removed
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-QA3dyt
+
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould preserve opencode.json with $schema even when all agents are removed
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+[90mstdout[2m | tests/e2e/openclaw-mock-e2e.test.ts[2m > [22m[2mHTTPServer 接口结构验证[2m > [22m[2mHTTPServer /events 端点应支持 SSE（带 Bearer Token）
+[22m[39m[SSE] Client 59ijmmaaznwmq3m32pu connected (1 total)
+[SSE] Client 59ijmmaaznwmq3m32pu disconnected (0 remaining)
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould detect unknown sf-* skill directories
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-F1CjaH
+
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould detect unknown sf-* skill directories
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould handle missing opencode.json gracefully
+[22m[39m🗑️ 正在卸载 SpecForge 共享组件...
+   目录: C:\Users\luo\AppData\Local\Temp\sf-uninstall-test-1o9TH8
+
+
+[90mstdout[2m | tests/unit/installer/cmdUninstall.test.ts[2m > [22m[2mcmdUninstall[2m > [22m[2mshould handle missing opencode.json gracefully
+[22m[39m  ℹ️ 未找到 Manifest，SpecForge 可能未安装
+
+ [31m❯[39m tests/e2e/openclaw-mock-e2e.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 7339[2mms[22m[39m
+     [32m✓[39m ModeSwitch json 模式应将数据序列化为 JSON 字符串[32m 170[2mms[22m[39m
+     [32m✓[39m ModeSwitch json 模式下 jobId 字段应存在[32m 1[2mms[22m[39m
+     [32m✓[39m ModeSwitch isJson() 应正确识别 json 模式[32m 1[2mms[22m[39m
+     [32m✓[39m ModeSwitch json 模式下 jobId 响应应可被 JSON.parse 解析[32m 0[2mms[22m[39m
+     [32m✓[39m CLI --json 选项应在 yargs 定义中存在[32m 0[2mms[22m[39m
+     [33m[2m✓[22m[39m createJob 应返回包含 jobId 的对象 [33m 567[2mms[22m[39m
+     [32m✓[39m createJob 返回的 jobId 应是唯一的[32m 2[2mms[22m[39m
+     [32m✓[39m createJob 返回的 jobId 格式应符合 job-<timestamp>-<hash> 模式[32m 1[2mms[22m[39m
+     [32m✓[39m JSON 模式下 jobId 响应应可被 JSON.parse 解析[32m 1[2mms[22m[39m
+     [32m✓[39m mock server 应能启动并响应 POST /jobs 请求[32m 105[2mms[22m[39m
+     [32m✓[39m mock server 应能模拟 OpenClaw 的 job 状态查询[32m 20[2mms[22m[39m
+     [32m✓[39m mock server 应能模拟 Bearer Token 认证[32m 25[2mms[22m[39m
+     [32m✓[39m 任务完成时 webhook 回调应被触发[32m 34[2mms[22m[39m
+     [32m✓[39m webhook 服务器应能接收多个事件回调[32m 37[2mms[22m[39m
+     [32m✓[39m 完整 OpenClaw 模拟 e2e 流程应在 60 秒内完成[32m 37[2mms[22m[39m
+     [32m✓[39m JobTracker 创建 job 并通过 mock client 获取状态应在 60 秒内完成[32m 5[2mms[22m[39m
+     [33m[2m✓[22m[39m HTTPServer 应有 start/stop/setToken/broadcastEvent 方法 [33m 6067[2mms[22m[39m
+     [32m✓[39m HTTPServer 应能启动并监听端口[32m 8[2mms[22m[39m
+[31m     [31m×[31m HTTPServer 启动后应响应 / 端点（带 Bearer Token）[39m[32m 115[2mms[22m[39m
+     [32m✓[39m HTTPServer 无 token 请求应返回 401[32m 52[2mms[22m[39m
+     [32m✓[39m HTTPServer /events 端点应支持 SSE（带 Bearer Token）[32m 83[2mms[22m[39m
+ [31m❯[39m tests/unit/installer/cmdUninstall.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m9 failed[39m[2m)[22m[33m 379[2mms[22m[39m
+[31m     [31m×[31m should only delete files recorded in the Manifest[39m[32m 130[2mms[22m[39m
+[31m     [31m×[31m should warn about unknown sf-* files without deleting them[39m[32m 34[2mms[22m[39m
+[31m     [31m×[31m should remove sf-* agent entries from opencode.json while preserving others[39m[32m 21[2mms[22m[39m
+[31m     [31m×[31m should backup opencode.json before modification[39m[32m 24[2mms[22m[39m
+[31m     [31m×[31m should delete the User_Manifest after removing managed files[39m[32m 41[2mms[22m[39m
+     [32m✓[39m should handle missing manifest gracefully (not installed)[32m 21[2mms[22m[39m
+[31m     [31m×[31m should handle files in manifest that no longer exist on disk[39m[32m 16[2mms[22m[39m
+[31m     [31m×[31m should preserve opencode.json with $schema even when all agents are removed[39m[32m 36[2mms[22m[39m
+[31m     [31m×[31m should detect unknown sf-* skill directories[39m[32m 28[2mms[22m[39m
+[31m     [31m×[31m should handle missing opencode.json gracefully[39m[32m 22[2mms[22m[39m
+ [31m❯[39m tests/integration/kg_knowledge_integration.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/e2e/e2e_sync_from_spec.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/integration/plugin_startup.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/integration/output_format_regression.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/integration/plugin_degraded.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/integration/sf_verifier_v37.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/design_gate.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/continuity.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-complex-order.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-ac-extraction-codeblock.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-invalid-format-value.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-error-no-absolute-path.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-empty-document.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-empty-subject-response.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-legacy-nonblocking.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-path-safety.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-label-mismatch.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-pattern-classification.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-robustness.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-strict-blocking.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-strict-incomplete-ac.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-validation-mode.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/ears-structural-errors.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/gate_mode.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/kg_types.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/typed_commands.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/regression/backward_compat.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/verification_gate.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/property/verification_strategy.property.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/integration/service-management/plugin-reconnect-real.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/regression/v36_backward_compat.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/installer/generated_files.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/installer/downgrade.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/release-precheck.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/installer/planner.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-detect-pattern.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-extract-acceptance-criteria.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-gate-integration.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-parse-validation-mode.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-resolve-requirements-path.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-performance.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-strip-prefixes.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-validate-ac.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_artifact_write.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/ears-validate-all-acs.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_design_gate.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_batch_verify.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_doc_lint_debug.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_doc_lint_additional.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_doc_lint_v6_architecture.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_doc_lint.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_doc_lint_v6_scope_lists.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_requirements_gate.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_doc_lint_v6_direct.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_state_read.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/integration/service-management/windows-nssm-full-lifecycle.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m8 failed[39m[2m)[22m[33m 10562[2mms[22m[39m
+[31m     [31m×[31m should pass environment precheck with NSSM available and elevated[39m[32m 134[2mms[22m[39m
+[31m     [31m×[31m should install service via NSSM[39m[32m 3[2mms[22m[39m
+[31m     [31m×[31m should start service and enter running state[39m[32m 6[2mms[22m[39m
+[31m     [31m×[31m should report running status with PID when available[39m[33m 10323[2mms[22m[39m
+[31m     [31m×[31m should return already-running when starting a running service[39m[32m 26[2mms[22m[39m
+[31m     [31m×[31m should restart service and keep it running[39m[32m 32[2mms[22m[39m
+[31m     [31m×[31m should stop service and enter stopped state[39m[32m 5[2mms[22m[39m
+     [32m✓[39m should return already-stopped when stopping a stopped service[32m 3[2mms[22m[39m
+[31m     [31m×[31m should uninstall service completely[39m[32m 5[2mms[22m[39m
+ [31m❯[39m tests/unit/tools/sf_tasks_gate.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_trace_matrix.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_state_transition.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/knowledge_base/core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/sf_verification_gate.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/gate_mode.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/gate_result_recording.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_context_build_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_conversation_recorder_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_continuity_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_cost_report_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_design_gate_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_design_gate_v37.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_doc_lint_v37.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_knowledge_graph_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_knowledge_query_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_requirements_gate_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_requirements_gate_v37.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_markdown_verification_parser.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_state_transition_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_tasks_gate_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_tasks_gate_v37.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_verification_gate_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_verification_gate_fastcheck.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_verification_gate_v37.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_verification_types.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/utils.test.ts [2m([22m[2m0 test[22m[2m)[22m
+ [31m❯[39m tests/unit/tools/lib/sf_verifier_execution_core.test.ts [2m([22m[2m0 test[22m[2m)[22m
+[90mstdout[2m | tests/integration/distribution/downgrade-rejection.test.ts[2m > [22m[2mIntegration: downgrade-rejection[2m > [22m[2mshould reject downgrade with exit code 4 and proper error message
+[22m[39mWritten installation record with schema_version: 2.0
+
+[90mstdout[2m | tests/integration/distribution/downgrade-rejection.test.ts[2m > [22m[2mIntegration: downgrade-rejection[2m > [22m[2mshould reject downgrade with exit code 4 and proper error message
+[22m[39mHealth check exit code: [33m4[39m
+Health check stderr: Error [DAEMON_DOWNGRADE_REJECTED]: Downgrade not supported (observed="2.0", expected="1.0", relation="code_lower") | Remedy: Reinstall the previously installed version or remove ~/.specforge/ manually (run: npm install -g @specforge/cli@0.1.0)
+
+Downgrade rejection test passed!
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Starting shutdown: test-priority-order
+[GracefulShutdown] Executing priority: stop-accepting (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: drain (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: flush (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: close (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Executing priority: release (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute tasks in priority order: stop-accepting → drain → flush → close → release
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould persist all events acknowledged before t_stop to events.jsonl
+[22m[39m[GracefulShutdown] Starting shutdown: SIGTERM
+[GracefulShutdown] Executing priority: flush (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould persist all events acknowledged before t_stop to events.jsonl
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould persist all events acknowledged before t_stop to events.jsonl
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Starting shutdown: task-timeout-test
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+[90mstdout[2m | tests/integration/distribution/pack-and-install.test.ts[2m > [22m[2mIntegration: pack-and-install[2m > [22m[2mshould run specforge --version and exit with code 0
+[22m[39m[test] specforge --version output: SpecForge CLI v0.1.0
+
+ [32m✓[39m tests/unit/installer/atomic.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 170[2mms[22m[39m
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Executing priority: flush (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould warn when a task exceeds taskTimeoutMs but continue executing other tasks
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Starting shutdown: total-timeout-test
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+ [32m✓[39m tests/property/version-unification-property-18.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 380[2mms[22m[39m
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+ [32m✓[39m tests/property/version-unification-property-14.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 378[2mms[22m[39m
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould call process.exit(1) when totalShutdownTimeoutMs is exceeded
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute shutdown tasks only once when trigger is called multiple times
+[22m[39m[GracefulShutdown] Starting shutdown: first
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute shutdown tasks only once when trigger is called multiple times
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute shutdown tasks only once when trigger is called multiple times
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute all tasks registered at the same priority level in parallel
+[22m[39m[GracefulShutdown] Starting shutdown: parallel-test
+[GracefulShutdown] Executing priority: drain (3 tasks)
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute all tasks registered at the same priority level in parallel
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould execute all tasks registered at the same priority level in parallel
+[22m[39m[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould trigger shutdown when receiving SIGTERM via attachToProcess
+[22m[39m[GracefulShutdown] Starting shutdown: Received SIGTERM signal
+[GracefulShutdown] Executing priority: drain (1 tasks)
+
+ [32m✓[39m tests/property/version-unification-property-15.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 496[2mms[22m[39m
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould trigger shutdown when receiving SIGTERM via attachToProcess
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/graceful-shutdown-real.test.ts[2m > [22m[2mGraceful shutdown real[2m > [22m[2mshould trigger shutdown when receiving SIGTERM via attachToProcess
+[22m[39m[GracefulShutdown] Resources disposed
+
+ [32m✓[39m tests/integration/service-management/graceful-shutdown-real.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 383[2mms[22m[39m
+ [32m✓[39m tests/helpers/generators.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 584[2mms[22m[39m
+[90mstdout[2m | tests/integration/distribution/pack-and-install.test.ts[2m > [22m[2mIntegration: pack-and-install[2m > [22m[2mshould generate tarball via bun pm pack
+[22m[39m[test] Generated tarball: specforge-cli-0.1.0.tgz (493247 bytes)
+
+ [32m✓[39m tests/unit/installer/install_lock.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 1120[2mms[22m[39m
+       [33m[2m✓[22m[39m should take over stale lock after double-check [33m 1023[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/opencode_merge.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 1289[2mms[22m[39m
+       [33m[2m✓[22m[39m multiple backups should not overwrite each other (different timestamps) [33m 1132[2mms[22m[39m
+ [32m✓[39m tests/property/lock.property.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1309[2mms[22m[39m
+     [33m[2m✓[22m[39m Property 16a: Concurrent lock acquisition — only one succeeds, second times out [33m 615[2mms[22m[39m
+     [33m[2m✓[22m[39m Property 16e: Lock with alive PID and matching hostname is not reclaimable [33m 594[2mms[22m[39m
+ [32m✓[39m tests/property/version-unification-property-16.property.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 1705[2mms[22m[39m
+         [33m[2m✓[22m[39m should never report violation for exempt paths (500 runs) [33m 1518[2mms[22m[39m
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mStep 1: Initializing ~/.specforge/ via InstallationWizard...
+
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mInstallationWizard.initialize() succeeded, specforgeDir: C:\Users\luo\AppData\Local\Temp\sf-uninstall-tvG19P\.specforge
+Step 2: Creating user data...
+
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mUser data created successfully
+Step 3: Creating mock CLI binary...
+
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mStep 4: Recording file hashes before simulated uninstall...
+
+[90mstdout[2m | tests/integration/cli-daemon-integration.test.ts[2m > [22m[2mCLI ↔ Daemon Integration[2m > [22m[2mAsync Command Contract - Property 18[2m > [22m[2mshould support --wait flag by polling job status
+[22m[39m✓ Job job-123 completed
+
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mTree hash before uninstall: b35bc8ed112720c80590a809e285503f668a7a4d1a780d5907280fac9e5eab47
+File count before uninstall: [33m10[39m
+Step 5: Simulating npm uninstall (removing CLI binary only)...
+
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mStep 6: Verifying CLI binary is no longer available...
+Step 7: Verifying ~/.specforge/ data is preserved...
+
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mTree hash after uninstall: b35bc8ed112720c80590a809e285503f668a7a4d1a780d5907280fac9e5eab47
+File count after uninstall: [33m10[39m
+Step 8: Verifying user file contents...
+
+ [32m✓[39m tests/unit/installer/opencode_merge_v2.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 436[2mms[22m[39m
+[90mstdout[2m | tests/integration/distribution/uninstall-preserves-data.test.ts[2m > [22m[2mIntegration: uninstall-preserves-data[2m > [22m[2mshould preserve ~/.specforge/ data after simulated uninstall
+[22m[39mAll user data preserved after simulated uninstall!
+
+ [32m✓[39m tests/unit/installer/deploy-version-unification.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 322[2mms[22m[39m
+[90mstdout[2m | tests/integration/cli-daemon-integration.test.ts[2m > [22m[2mCLI ↔ Daemon Integration[2m > [22m[2mEnd-to-End Integration Scenarios[2m > [22m[2mshould handle async command with --wait flag
+[22m[39m✓ Job job-123 completed
+
+ [32m✓[39m tests/integration/distribution/uninstall-preserves-data.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 267[2mms[22m[39m
+ [32m✓[39m tests/integration/cli-daemon-integration.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 327[2mms[22m[39m
+ [32m✓[39m tests/unit/artifacts/scope_consistency_checker.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 392[2mms[22m[39m
+[90mstdout[2m | tests/integration/distribution/pack-and-install.test.ts[2m > [22m[2mIntegration: pack-and-install[2m > [22m[2mshould verify tarball contains required files (package.json, dist/)
+[22m[39m[test] Tarball content verified: package.json ✓, dist/ ✓, main file ✓
+
+ [32m✓[39m tests/integration/distribution/upgrade-in-place.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 241[2mms[22m[39m
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2mworkflow 中断后恢复[2m > [22m[2mStateRecoveryManager 应能从持久化存储恢复 workflow 实例
+[22m[39mState recovery completed for wf-recovery-test-001 in 6ms
+
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2mworkflow 中断后恢复[2m > [22m[2m中断后恢复的状态应与中断前完全一致
+[22m[39mState recovery completed for wf-recovery-test-002 in 1ms
+
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2mworkflow 中断后恢复[2m > [22m[2m当 state.json 不存在时，应从 events.jsonl 恢复
+[22m[39mState recovery completed for wf-wal-recovery-001 in 6ms
+
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2m恢复后状态一致性验证[2m > [22m[2m恢复后的实例应包含 schema_version 字段（REQ-18）
+[22m[39mState recovery completed for wf-schema-recovery-001 in 1ms
+
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2m崩溃恢复场景[2m > [22m[2mperformCrashRecovery 应恢复所有持久化的实例
+[22m[39mState recovery completed for crash-wf-001 in 0ms
+
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2m崩溃恢复场景[2m > [22m[2mperformCrashRecovery 应恢复所有持久化的实例
+[22m[39mState recovery completed for crash-wf-002 in 1ms
+
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2m崩溃恢复场景[2m > [22m[2mperformCrashRecovery 应恢复所有持久化的实例
+[22m[39mState recovery completed for crash-wf-003 in 1ms
+
+[90mstdout[2m | tests/integration/workflow-state-recovery.test.ts[2m > [22m[2mIntegration: workflow 状态恢复[2m > [22m[2m崩溃恢复场景[2m > [22m[2m模拟 workflow 执行中途中断后恢复，状态应与中断前一致
+[22m[39mState recovery completed for crash-simulation-001 in 1ms
+
+ [32m✓[39m tests/integration/workflow-state-recovery.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 214[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/state.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 330[2mms[22m[39m
+ [32m✓[39m tests/integration/distribution/init-end-to-end.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 402[2mms[22m[39m
+ [32m✓[39m tests/property/intent_routing.property.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 187[2mms[22m[39m
+[90mstdout[2m | tests/integration/distribution/pack-and-install.test.ts[2m > [22m[2mIntegration: pack-and-install[2m > [22m[2mshould verify package.json has required fields for publishing
+[22m[39m[test] package.json validation passed for @specforge/cli@0.1.0
+
+[90mstdout[2m | tests/integration/distribution/pack-and-install.test.ts[2m > [22m[2mIntegration: pack-and-install[2m > [22m[2mshould verify dist/ contains main and types files after build
+[22m[39m[test] dist/ verification passed: main=dist/cli.js, types=dist/cli.d.ts
+
+ [32m✓[39m tests/integration/distribution/pack-and-install.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 3290[2mms[22m[39m
+     [33m[2m✓[22m[39m should run specforge --version and exit with code 0 [33m 703[2mms[22m[39m
+     [33m[2m✓[22m[39m should generate tarball via bun pm pack [33m 627[2mms[22m[39m
+     [33m[2m✓[22m[39m should verify tarball contains required files (package.json, dist/) [33m 1880[2mms[22m[39m
+[90mstdout[2m | tests/e2e/feature-spec-e2e.test.ts[2m > [22m[2mfeature_spec 端到端测试[2m > [22m[2m完整端到端流程[2m > [22m[2m应完成 feature_spec workflow 的完整生命周期
+[22m[39m
+✅ feature_spec E2E 完整流程通过：
+   实例 ID: bc9d0108-2315-4ec1-b485-7bdf128c7aa4
+   最终状态: verification (completed)
+   Gate 执行次数: 5
+   状态转换次数: 4
+
+ [32m✓[39m tests/property/planner.property.test.ts [2m([22m[2m44 tests[22m[2m)[22m[32m 156[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/upgrade.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 142[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/preflight.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 264[2mms[22m[39m
+ [32m✓[39m tests/e2e/feature-spec-e2e.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 167[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/cmdInstall.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 196[2mms[22m[39m
+ [32m✓[39m tests/property/semver.property.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 88[2mms[22m[39m
+ [32m✓[39m tests/unit/artifacts/scope_boundary_verifier.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/state_pending_deletes.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+[90mstdout[2m | tests/integration/service-management/upgrade-restart-cycle.test.ts[2m > [22m[2mUpgrade restart cycle[2m > [22m[2mshould integrate GracefulShutdownHandler with upgrade cycle
+[22m[39m[GracefulShutdown] Starting shutdown: upgrade-restart-test
+[GracefulShutdown] Executing priority: stop-accepting (2 tasks)
+
+[90mstdout[2m | tests/integration/service-management/upgrade-restart-cycle.test.ts[2m > [22m[2mUpgrade restart cycle[2m > [22m[2mshould integrate GracefulShutdownHandler with upgrade cycle
+[22m[39m[GracefulShutdown] Shutdown sequence completed successfully
+[GracefulShutdown] Resources disposed
+
+[90mstdout[2m | tests/integration/service-management/upgrade-restart-cycle.test.ts[2m > [22m[2mUpgrade restart cycle[2m > [22m[2mshould integrate GracefulShutdownHandler with upgrade cycle
+[22m[39m[GracefulShutdown] Resources disposed
+
+ [32m✓[39m tests/integration/service-management/upgrade-restart-cycle.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/opencode_verify.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 106[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/verify.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 178[2mms[22m[39m
+[90mstdout[2m | tests/integration/version-guard-1000-files.test.ts[2m > [22m[2mCI Version Guard performance[2m > [22m[2mshould complete CI guard within 30 seconds for 1000 files
+[22m[39m[version-guard-1000-files] Scanned 100 files in 729ms
+[version-guard-1000-files] Violations: 0
+[version-guard-1000-files] Infra error: rule 'code-version-literal' threw: TypeError: hunks.added is not iterable
+    at Object.check (D:/code/temp/SpecForge/scripts/ci/version-guard/code-version-rule.ts:78:37)
+    at D:/code/temp/SpecForge/scripts/ci/version-guard.ts:159:23
+    at async Promise.all (index 0)
+    at runVersionGuard (D:/code/temp/SpecForge/scripts/ci/version-guard.ts:182:7)
+    at D:/code/temp/SpecForge/tests/integration/version-guard-1000-files.test.ts:147:43
+    at file:///D:/code/temp/SpecForge/node_modules/.pnpm/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20; rule 'data-schema-write-location' threw: TypeError: hunks.added is not iterable
+    at Object.check (D:/code/temp/SpecForge/scripts/ci/version-guard/data-schema-write-rule.ts:114:37)
+    at D:/code/temp/SpecForge/scripts/ci/version-guard.ts:159:23
+    at async Promise.all (index 2)
+    at runVersionGuard (D:/code/temp/SpecForge/scripts/ci/version-guard.ts:182:7)
+    at D:/code/temp/SpecForge/tests/integration/version-guard-1000-files.test.ts:147:43
+    at file:///D:/code/temp/SpecForge/node_modules/.pnpm/@vitest+runner@4.1.5/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20
+
+ [32m✓[39m tests/unit/installer/legacy_manifest_adapter.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/integration/service-management/precheck-blocking.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m tests/unit/artifacts/cp_allocation_verifier_comprehensive.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/semver.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/canonicalize.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/cli_args.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m tests/unit/artifacts/cp_allocation_verifier.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m tests/integration/service-management/dependency-order-real.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m tests/integration/service-management/cross-platform-equivalence.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/parseArgs.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m tests/unit/ci-workflow-trigger.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m tests/e2e/v5-cleanup-verification.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [2m[90m↓[39m[22m tests/integration/service-management/linux-systemd-full-lifecycle.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m8 skipped[39m[2m)[22m
+ [32m✓[39m tests/integration/scope-gate-integration.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+[90mstdout[2m | tests/integration/version-guard-1000-files.test.ts[2m > [22m[2mCI Version Guard performance[2m > [22m[2mshould handle edge case of all files changed
+[22m[39m[version-guard-edge] Scanned 500 files in 47ms
+
+ [32m✓[39m tests/integration/distribution/downgrade-rejection.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 6002[2mms[22m[39m
+     [33m[2m✓[22m[39m should reject downgrade with exit code 4 and proper error message [33m 2095[2mms[22m[39m
+     [33m[2m✓[22m[39m should pass when schema_version matches baseline (no downgrade) [33m 2576[2mms[22m[39m
+     [33m[2m✓[22m[39m should fail with exit code 5 when installation.json is missing [33m 1328[2mms[22m[39m
+ [32m✓[39m tests/integration/version-guard-1000-files.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 5492[2mms[22m[39m
+     [33m[2m✓[22m[39m should complete CI guard within 30 seconds for 1000 files [33m 3870[2mms[22m[39m
+     [33m[2m✓[22m[39m should handle edge case of all files changed [33m 1427[2mms[22m[39m
+ [32m✓[39m tests/property/atomic.property.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 6328[2mms[22m[39m
+     [33m[2m✓[22m[39m Property 8a: Successful writes produce correct SHA-256 [33m 492[2mms[22m[39m
+     [33m[2m✓[22m[39m Property 8b: afterTempWrite fault leaves target unchanged, no temp files [33m 981[2mms[22m[39m
+     [33m[2m✓[22m[39m Property 8c: beforeRename fault leaves target unchanged, no temp files [33m 2864[2mms[22m[39m
+     [33m[2m✓[22m[39m Property 8d: Hash mismatch leaves target unchanged, no temp files [33m 1447[2mms[22m[39m
+     [33m[2m✓[22m[39m Property 8e: Binary content writes produce correct SHA-256 [33m 541[2mms[22m[39m
+ [32m✓[39m tests/unit/installer/lock.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 6838[2mms[22m[39m
+       [33m[2m✓[22m[39m should timeout when lock is held by active process [33m 1086[2mms[22m[39m
+       [33m[2m✓[22m[39m should return holder info on timeout [33m 557[2mms[22m[39m
+       [33m[2m✓[22m[39m should take over corrupted lock file (invalid JSON) [33m 565[2mms[22m[39m
+       [33m[2m✓[22m[39m should take over lock with invalid fields [33m 698[2mms[22m[39m
+       [33m[2m✓[22m[39m should NOT reclaim lock when PID is alive and hostname matches [33m 1097[2mms[22m[39m
+       [33m[2m✓[22m[39m should not reclaim lock when heartbeat is fresh [33m 1120[2mms[22m[39m
+       [33m[2m✓[22m[39m should respect custom timeout [33m 651[2mms[22m[39m
+ [32m✓[39m tests/property/opencode_merge.property.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 10888[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 11a: non-sf-* agent entries remain unchanged after merge [33m 3502[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 11b: top-level non-agent config fields remain unchanged after merge [33m 3291[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 11c: sf-* entries reflect current DesiredState after merge [33m 897[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 12a: each discovered agent has exactly one registration entry [33m 749[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 12b: removed agents have their entries deleted [33m 846[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 12c: MergeFieldPolicy correctly preserves user-overridable fields [33m 832[2mms[22m[39m
+       [33m[2m✓[22m[39m Property 12d: MergeFieldPolicy overwrites all fields when preserveUserOverrides=false [33m 758[2mms[22m[39m
+ [32m✓[39m tests/integration/concurrent_lock.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 18200[2mms[22m[39m
+     [33m[2m✓[22m[39m should recover from stale lock after double-check [33m 1024[2mms[22m[39m
+     [33m[2m✓[22m[39m should refresh last_heartbeat via heartbeat mechanism [33m 6520[2mms[22m[39m
+     [33m[2m✓[22m[39m should stop heartbeat when lock_id changes (lock taken over) [33m 6510[2mms[22m[39m
+     [33m[2m✓[22m[39m should NOT take over a lock that becomes fresh between double-check [33m 3038[2mms[22m[39m
+     [33m[2m✓[22m[39m should take over stale lock only after double-check confirms staleness [33m 1013[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m125 failed[39m[22m[2m | [22m[1m[32m51 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (177)[39m
+[2m      Tests [22m [1m[31m442 failed[39m[22m[2m | [22m[1m[32m899 passed[39m[22m[2m | [22m[33m22 skipped[39m[90m (1363)[39m
+[2m   Start at [22m 18:00:36
+[2m   Duration [22m 31.92s[2m (transform 68.55s, setup 0ms, import 68.05s, tests 112.10s, environment 47ms)[22m
+
