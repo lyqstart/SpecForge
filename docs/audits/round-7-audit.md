@@ -1,4 +1,4 @@
-# Round 7 Audit Report: P0-1 not_enabled + P0-2 quick_change closure + precise-missing verification
+# Round 7 Audit Report: P0-1 not_enabled + P0-2 quick_change closure + precise-missing verification + production entry point fix
 
 ## Changes
 
@@ -7,10 +7,13 @@
 | `packages/workflow-runtime/src/WorkflowEngine.ts` | `determineNextState`: removed `isWaivable`, changed `gateOk = gateResult.passed === true` |
 | `packages/workflow-runtime/src/engine/WorkflowEngine.ts` | Same fix in engine/ copy |
 | `packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts` | +29 tests: NE-1~NE-7 (not_enabled), QC-1~QC-7 (quick_change closure), PM-1~PM-5d + PM-pos-1~5 (precise-missing) |
+| `packages/daemon-core/src/tools/handlers/sf-state-transition.ts` | **Production entry point fix**: compute `workItemDir` from projectPath, pass to `transitionFull`, wrap in try-catch to prevent StateManager on failure |
+| `packages/daemon-core/tests/unit/sf-state-transition.test.ts` | +9 tests: ST-EV-1~9 (workItemDir propagation, evidence guard integration, StateManager isolation) |
 
 ## Test Results
 
 - `evidence-guard-v11.test.ts`: **107/107 passed**
+- `sf-state-transition.test.ts`: **12/12 passed** (3 original + 9 new)
 - `WorkflowEngine.test.ts + engine.test.ts`: **65/66 passed** (1 pre-existing timeout: `should handle async event handlers`)
 - TypeScript compilation: **0 errors**
 
@@ -203,6 +206,58 @@ Each test prepares ALL evidence for a target CRITICAL state except ONE specific 
 
 ---
 
+## Section: Production entry point — sf_state_transition workItemDir fix (R1 resolution)
+
+### Problem
+
+`sf_state_transition` (the production state transition tool handler in daemon-core) was calling `transitionFull()` without `workItemDir`. This meant CRITICAL_STATES transitions through the production API would throw "workItemDir is required" instead of performing actual evidence checks.
+
+This was the **R1 risk item** identified in the pre-merge audit: `sf-state-transition.ts` could bypass evidence guards by calling `StateManager.transition()` directly.
+
+### Fix
+
+1. **Compute `workItemDir`** from `projectPath` + `SPEC_DIR_NAME` + `'work-items'` + `workItemId`:
+   ```
+   {projectRoot}/.specforge/work-items/{workItemId}
+   ```
+2. **Pass `workItemDir` to `transitionFull()`** — this activates `enforceTransitionEvidence` for CRITICAL_STATES.
+3. **Wrap `transitionFull()` in try-catch** — if it throws, return `{ success: false, error }` without calling `StateManager.transition()`.
+4. **`StateManager.transition()` only executes after `transitionFull()` succeeds** — it is a pure persistence layer, not an independent state transition entry point.
+
+### Architecture
+
+```
+sf_state_transition handler
+  ├─ transitionFull(workItemDir)  ← evidence guard checked HERE
+  │   └─ enforceTransitionEvidence() → throws if evidence missing
+  └─ StateManager.transition()   ← only reached if transitionFull succeeds
+```
+
+### Tests (ST-EV-1~9)
+
+| ID | Scenario | Engine | Evidence prepared | Expected | Result |
+|---|---|---|---|---|---|
+| ST-EV-1 | workItemDir passed for approval_required | Mock | N/A | workItemDir contains `.specforge/work-items/WI-001` | PASS |
+| ST-EV-2 | workItemDir passed for implementation_ready | Mock | N/A | workItemDir contains `.specforge/work-items/WI-002` | PASS |
+| ST-EV-3 | transitionFull throws → StateManager NOT called | Mock (throws) | N/A | success=false, StateManager uncalled | PASS |
+| ST-EV-4 | success path calls both | Mock | N/A | success=true, both called | PASS |
+| ST-EV-5 | no projectPath → workItemDir=undefined | Mock | N/A | success=false (projectPath required) | PASS |
+| ST-EV-6 | Real engine: missing gate blocks approval_required | Real | WI dir (no gate files) | success=false, StateManager uncalled | PASS |
+| ST-EV-7 | Real engine: gate evidence present → approval_required | Real | gate_summary.md + gate_summary_gate.json(passed) | success=true, StateManager called | PASS |
+| ST-EV-8 | Real engine: missing code_permission_release_gate → implementation_ready blocked | Real | tasks.md + work_item.json (no gate) | success=false, StateManager uncalled | PASS |
+| ST-EV-9 | Real engine: all evidence → implementation_ready | Real | tasks.md + work_item.json + gate(passed) | success=true, StateManager called | PASS |
+
+**12/12 sf-state-transition tests pass (3 original + 9 new).**
+
+### R1 Status Update
+
+| Item | Before | After |
+|---|---|---|
+| R1: sf-state-transition bypasses evidence guard | **Medium risk** — no workItemDir | **Fixed** — workItemDir computed and passed; StateManager isolated |
+| StateManager.transition role | Potential independent entry point | **Confirmed as persistence-only** — only called after transitionFull succeeds |
+
+---
+
 ## Updated test count
 
 | Section | Tests | Status |
@@ -222,4 +277,6 @@ Each test prepares ALL evidence for a target CRITICAL state except ONE specific 
 | P0-1 not_enabled (NE-1~NE-7) | 7 | PASS |
 | P0-2 quick_change closure (QC-1~QC-7) | 7 | PASS |
 | Precise-missing evidence tests (PM) | 15 | PASS |
-| **Total** | **107** | **ALL PASS** |
+| sf_state_transition evidence guard (ST-EV-1~9) | 9 | PASS |
+| sf_state_transition project guard (original) | 3 | PASS |
+| **Total evidence-guard + daemon-core** | **119** | **ALL PASS** |

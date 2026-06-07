@@ -63,20 +63,37 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
     return { success: false, error: 'WorkflowEngine not available' };
   }
 
-  // 1. Validate via WorkflowEngine (manages WorkflowInstance + validates transition rules)
-  //    NOTE: onTransition is no longer set in Daemon.ts, so this only validates
-  const result = await deps.workflowEngine.transitionFull({
-    workItemId,
-    fromState,
-    toState,
-    evidence: (args['evidence'] as string) ?? '',
-    workflowType: args['workflow_type'] as string,
-    transitionContext: args['transition_context'] as Record<string, unknown>,
-    actor: context?.agent ? { agentRole: context.agent, sessionId: context?.sessionID } : null,
-  });
-
-  // 2. Persist to project-level StateManager (sole persistence path)
+  // v1.1: Compute workItemDir for evidence prerequisite checks.
+  // CRITICAL_STATES (approval_required, merge_ready, merging, post_merge_verified,
+  // implementation_ready, verification_done, closed) require workItemDir —
+  // transitionFull will throw if missing and the target is critical.
   const projectPath = (context?.directory as string) || (context?.worktree as string) || '';
+  const workItemDir = projectPath
+    ? join(projectPath, SPEC_DIR_NAME, 'work-items', workItemId)
+    : undefined;
+
+  // 1. Validate via WorkflowEngine (manages WorkflowInstance + validates transition rules
+  //    + enforces v1.1 evidence prerequisites for CRITICAL_STATES).
+  //    If this throws, StateManager.transition is NOT called — no partial state change.
+  let result;
+  try {
+    result = await deps.workflowEngine.transitionFull({
+      workItemId,
+      fromState,
+      toState,
+      evidence: (args['evidence'] as string) ?? '',
+      workflowType: args['workflow_type'] as string,
+      transitionContext: args['transition_context'] as Record<string, unknown>,
+      actor: context?.agent ? { agentRole: context.agent, sessionId: context?.sessionID } : null,
+      workItemDir,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+
+  // 2. Persist to project-level StateManager (sole persistence path).
+  //    This only executes if transitionFull succeeded — guaranteeing evidence was checked.
   if (!projectPath) {
     return { success: false, error: 'projectPath required — provide context.directory or context.worktree' };
   }
