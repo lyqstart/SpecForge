@@ -277,7 +277,7 @@ export async function generateCostReport(
   baseDir: string
 ): Promise<CostReportResult> {
   try {
-    const costFilePath = resolveProjectPath(baseDir, 'logsCost')
+    const costFilePath = resolveProjectPath(baseDir, 'runtimeLogsCost')
     const eventsFilePath = resolveProjectPath(baseDir, 'runtime', 'events.jsonl')
 
     // 1. 读取 Cost_Entry 记录

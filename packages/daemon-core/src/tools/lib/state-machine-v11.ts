@@ -237,3 +237,40 @@ export async function performResumeCheck(
     canResume,
   };
 }
+
+// ---------------------------------------------------------------------------
+// §5.3 Evidence Prerequisites for Key States
+// ---------------------------------------------------------------------------
+
+/**
+ * Key states that require specific evidence files before transition.
+ */
+export const STATE_EVIDENCE_REQUIREMENTS: Record<string, { requiredFile: string; description: string }> = {
+  'approval_required': { requiredFile: 'gate_summary.md', description: 'Gate Summary must exist before approval' },
+  'merge_ready': { requiredFile: 'user_decision.json', description: 'User Decision must exist before merge' },
+  'merging': { requiredFile: 'gate_summary.md', description: 'merge_ready_gate must have passed' },
+  'closed': { requiredFile: 'verification_report.md', description: 'close_gate verification report must exist' },
+};
+
+/**
+ * Check if a state transition's target has evidence prerequisites, and verify them.
+ * Returns { met: true } if no prerequisites or all files exist.
+ * Returns { met: false, missing } if prerequisites are not satisfied.
+ */
+export async function checkStateEvidenceRequirement(
+  targetStatus: string,
+  workItemDir: string,
+): Promise<{ met: boolean; missing?: string; description?: string }> {
+  const req = STATE_EVIDENCE_REQUIREMENTS[targetStatus];
+  if (!req) {
+    return { met: true };
+  }
+
+  const fullPath = path.join(workItemDir, req.requiredFile);
+  try {
+    await fs.access(fullPath);
+    return { met: true };
+  } catch {
+    return { met: false, missing: req.requiredFile, description: req.description };
+  }
+}

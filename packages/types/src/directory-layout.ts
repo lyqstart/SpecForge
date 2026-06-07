@@ -39,13 +39,16 @@ export const SPEC_DIR_NAME = '.specforge' as const;
 /**
  * `.specforge/` 目录下所有子路径的权威字典（v1.1 标准）。
  *
- * 顶层分区：
- * - **project**：项目级正式规格真相源（§2.1），是 committed 区
- * - **workItems**：Work Item 事务目录（§4.2），是 committed 区
- * - **config**：项目配置目录，是 committed 区
- * - **specs**：旧路径，legacy read-only（§1.7）
- * - **knowledge**：Knowledge 目录，是 committed 区
- * - **runtime / logs / archive / sessions / cas**：gitignored 区
+ * v1.1 MVP 顶层分区：
+ * - **manifest**：根级 manifest（committed）
+ * - **project**：项目级正式规格真相源（§2.1）（committed）
+ * - **workItems**：Work Item 事务目录（§4.2）（committed）
+ * - **config**：项目配置目录（committed）
+ * - **specs**：旧路径，legacy read-only（§1.7）（committed）
+ * - **runtime**：运行时数据（gitignored），下设 logs / archive / sessions / cas
+ *
+ * 注意：v1.1 将 logs / archive / sessions / cas 全部归入 runtime 子树，
+ * 不再作为 .specforge/ 顶层目录。knowledge 不属于 MVP 主路径，已移除。
  */
 export const LAYOUT = {
   // ---- committed 区：根级 manifest ----
@@ -151,14 +154,7 @@ export const LAYOUT = {
     skillFragments: 'config/skill_fragments.json',
   },
 
-  // ---- committed 区：Knowledge ----
-  /** Knowledge 目录 — `<root>/.specforge/knowledge/` */
-  knowledge: 'knowledge',
-
-  /** Knowledge Graph 数据 — `<root>/.specforge/knowledge/graph.json` */
-  knowledgeGraph: 'knowledge/graph.json',
-
-  // ---- gitignored 区（运行时数据，不提交 Git）----
+  // ---- gitignored 区：运行时数据（runtime 子树）----
   /** 运行时状态目录 — `<root>/.specforge/runtime/` */
   runtime: 'runtime',
 
@@ -171,44 +167,44 @@ export const LAYOUT = {
   /** 状态快照目录 — `<root>/.specforge/runtime/checkpoints/` */
   runtimeCheckpoints: 'runtime/checkpoints',
 
-  /** 日志目录 — `<root>/.specforge/logs/` */
-  logs: 'logs',
+  /** 日志目录 — `<root>/.specforge/runtime/logs/` */
+  runtimeLogs: 'runtime/logs',
 
-  /** 遥测日志 — `<root>/.specforge/logs/telemetry.jsonl` */
-  logsTelemetry: 'logs/telemetry.jsonl',
+  /** 遥测日志 — `<root>/.specforge/runtime/logs/telemetry.jsonl` */
+  runtimeLogsTelemetry: 'runtime/logs/telemetry.jsonl',
 
-  /** 追踪日志 — `<root>/.specforge/logs/trace.jsonl` */
-  logsTrace: 'logs/trace.jsonl',
+  /** 追踪日志 — `<root>/.specforge/runtime/logs/trace.jsonl` */
+  runtimeLogsTrace: 'runtime/logs/trace.jsonl',
 
-  /** 工具调用日志 — `<root>/.specforge/logs/tool_calls.jsonl` */
-  logsToolCalls: 'logs/tool_calls.jsonl',
+  /** 工具调用日志 — `<root>/.specforge/runtime/logs/tool_calls.jsonl` */
+  runtimeLogsToolCalls: 'runtime/logs/tool_calls.jsonl',
 
-  /** 成本日志 — `<root>/.specforge/logs/cost.jsonl` */
-  logsCost: 'logs/cost.jsonl',
+  /** 成本日志 — `<root>/.specforge/runtime/logs/cost.jsonl` */
+  runtimeLogsCost: 'runtime/logs/cost.jsonl',
 
-  /** 会话日志 — `<root>/.specforge/logs/conversations.jsonl` */
-  logsConversations: 'logs/conversations.jsonl',
+  /** 会话日志 — `<root>/.specforge/runtime/logs/conversations.jsonl` */
+  runtimeLogsConversations: 'runtime/logs/conversations.jsonl',
 
-  /** Gate 检查日志 — `<root>/.specforge/logs/gate.log` */
-  logsGate: 'logs/gate.log',
+  /** Gate 检查日志 — `<root>/.specforge/runtime/logs/gate.log` */
+  runtimeLogsGate: 'runtime/logs/gate.log',
 
-  /** Shell 审计日志 — `<root>/.specforge/logs/shell-history.jsonl` */
-  logsShellHistory: 'logs/shell-history.jsonl',
+  /** Shell 审计日志 — `<root>/.specforge/runtime/logs/shell-history.jsonl` */
+  runtimeLogsShellHistory: 'runtime/logs/shell-history.jsonl',
 
-  /** Agent Run 归档根目录 — `<root>/.specforge/archive/` */
-  archive: 'archive',
+  /** Agent Run 归档根目录 — `<root>/.specforge/runtime/archive/` */
+  runtimeArchive: 'runtime/archive',
 
-  /** Agent Run 归档子目录 — `<root>/.specforge/archive/agent_runs/` */
-  archiveAgentRuns: 'archive/agent_runs',
+  /** Agent Run 归档子目录 — `<root>/.specforge/runtime/archive/agent_runs/` */
+  runtimeArchiveAgentRuns: 'runtime/archive/agent_runs',
 
-  /** 复盘报告归档子目录 — `<root>/.specforge/archive/retro/` */
-  archiveRetro: 'archive/retro',
+  /** 复盘报告归档子目录 — `<root>/.specforge/runtime/archive/retro/` */
+  runtimeArchiveRetro: 'runtime/archive/retro',
 
-  /** 会话归档目录 — `<root>/.specforge/sessions/` */
-  sessions: 'sessions',
+  /** 会话归档目录 — `<root>/.specforge/runtime/sessions/` */
+  runtimeSessions: 'runtime/sessions',
 
-  /** 内容寻址存储 — `<root>/.specforge/cas/` */
-  cas: 'cas',
+  /** 内容寻址存储 — `<root>/.specforge/runtime/cas/` */
+  runtimeCas: 'runtime/cas',
 } as const;
 
 /**
@@ -468,7 +464,7 @@ export function specPath(
 
 /**
  * 构造 Agent Run 归档目录的绝对路径。
- * `<projectRoot>/.specforge/archive/agent_runs/<workItemId>-<agentType>-<runIndex>`
+ * `<projectRoot>/.specforge/runtime/archive/agent_runs/<workItemId>-<agentType>-<runIndex>`
  */
 export function agentRunArchivePath(
   projectRoot: string,
@@ -480,7 +476,7 @@ export function agentRunArchivePath(
   return path.join(
     projectRoot,
     SPEC_DIR_NAME,
-    LAYOUT.archiveAgentRuns,
+    LAYOUT.runtimeArchiveAgentRuns,
     dirName,
   );
 }

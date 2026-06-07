@@ -88,7 +88,7 @@ export interface KGOperationResult {
 const VALID_NODE_TYPES: NodeType[] = ["requirement", "design_decision", "task", "code_file", "refactor_target", "ops_action"]
 const VALID_EDGE_TYPES: EdgeType[] = ["traces_to", "decomposes_to", "modifies", "implements", "affects"]
 const LOCK_TIMEOUT = 5000
-const GRAPH_RELATIVE_PATH = join(SPEC_DIR_NAME, LAYOUT.knowledgeGraph)
+const GRAPH_RELATIVE_PATH = join(SPEC_DIR_NAME, 'knowledge', 'graph.json')
 const CONFIG_RELATIVE_PATH = join(SPEC_DIR_NAME, LAYOUT.configFiles.project)
 
 // ============================================================

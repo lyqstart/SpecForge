@@ -22,7 +22,7 @@ export class ContentAddressableStorage {
 
   constructor(baseDir?: string) {
     const dir = baseDir || process.cwd();
-    this.storageDir = resolveProjectPath(dir, 'cas');
+    this.storageDir = resolveProjectPath(dir, 'runtimeCas');
   }
 
   /**

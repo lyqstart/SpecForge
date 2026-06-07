@@ -434,7 +434,7 @@ export async function extractTraceStats(
   baseDir: string
 ): Promise<TraceStats | null> {
   try {
-    const tracePath = resolveProjectPath(baseDir, 'logsTrace')
+    const tracePath = resolveProjectPath(baseDir, 'runtimeLogsTrace')
 
     let traceContent: string
     try {

@@ -177,8 +177,9 @@ function generateMarkdown(
   // 分类 LAYOUT 条目
   const committedKeys = [
     'manifest',
+    'project',
+    'workItems',
     'config',
-    'configFiles',
     'specs',
     'specsReadme',
     'knowledge',
@@ -195,8 +196,11 @@ function generateMarkdown(
     'logsToolCalls',
     'logsCost',
     'logsConversations',
+    'logsGate',
+    'logsShellHistory',
     'archive',
     'archiveAgentRuns',
+    'archiveRetro',
     'sessions',
     'cas',
   ];
@@ -221,6 +225,18 @@ function generateMarkdown(
   const configFiles = LAYOUT.configFiles as LayoutEntry | undefined;
   const configFilesSection = configFiles
     ? `\n### configFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('configFiles', configFiles)}\n`
+    : '';
+
+  // projectFiles 嵌套条目（v1.1 §2.1）
+  const projectFiles = LAYOUT.projectFiles as LayoutEntry | undefined;
+  const projectFilesSection = projectFiles
+    ? `\n### projectFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('projectFiles', projectFiles)}\n`
+    : '';
+
+  // workItemFiles 嵌套条目（v1.1 §4.2）
+  const workItemFiles = LAYOUT.workItemFiles as LayoutEntry | undefined;
+  const workItemFilesSection = workItemFiles
+    ? `\n### workItemFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('workItemFiles', workItemFiles)}\n`
     : '';
 
   // USER_LAYOUT 条目
@@ -250,7 +266,7 @@ SPEC_DIR_NAME = '${SPEC_DIR_NAME}'
 | Key | 路径 | 说明 |
 |-----|------|------|
 ${makeTableRows(committedEntries)}
-${configFilesSection}
+${projectFilesSection}${workItemFilesSection}${configFilesSection}
 ### gitignored 区（运行时数据）
 
 | Key | 路径 | 说明 |

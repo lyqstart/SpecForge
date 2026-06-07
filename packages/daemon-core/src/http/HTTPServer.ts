@@ -197,13 +197,13 @@ export class HTTPServer {
   private getOrCreateAppender(
     map: Map<string, JsonlAppender>,
     projectPath: string,
-    layoutKey: 'logsToolCalls' | 'logsConversations',
+    layoutKey: 'runtimeLogsToolCalls' | 'runtimeLogsConversations',
   ): JsonlAppender {
     // Backward compat: if external logger was injected via deps (e.g. tests), use it
-    if (layoutKey === 'logsToolCalls' && this.deps.toolCallsLogger) {
+    if (layoutKey === 'runtimeLogsToolCalls' && this.deps.toolCallsLogger) {
       return this.deps.toolCallsLogger;
     }
-    if (layoutKey === 'logsConversations' && this.deps.conversationsLogger) {
+    if (layoutKey === 'runtimeLogsConversations' && this.deps.conversationsLogger) {
       return this.deps.conversationsLogger;
     }
 
@@ -1310,7 +1310,7 @@ export class HTTPServer {
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
           const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.toolCallsAppenders, projectPath, 'logsToolCalls');
+          const appender = this.getOrCreateAppender(this.toolCallsAppenders, projectPath, 'runtimeLogsToolCalls');
           await appender.append(buildToolCallRecord(sessionId, payload, ts));
         })(),
         3_000,
@@ -1384,7 +1384,7 @@ export class HTTPServer {
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
           const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
           await appender.append(buildConversationRecord('chat.params', sessionId, data, ts));
         })(),
         3_000,
@@ -1426,7 +1426,7 @@ export class HTTPServer {
           // 2. Append to conversationsLogger (per-project)
           const record = buildConversationRecord(eventType, sessionId, data, ts);
           const projectPath = projectId || process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
           await appender.append(record);
         })(),
         3_000,
@@ -1457,7 +1457,7 @@ export class HTTPServer {
             metadata: { schemaVersion: '1.0', source: 'client' },
           });
           const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? process.cwd();
-          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'logsConversations');
+          const appender = this.getOrCreateAppender(this.conversationsAppenders, projectPath, 'runtimeLogsConversations');
           await appender.append(buildConversationRecord('chat.headers', sessionId, data, ts));
         })(),
         3_000,

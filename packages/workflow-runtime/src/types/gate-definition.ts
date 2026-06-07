@@ -167,6 +167,10 @@ export interface BaseGateDefinition {
 export interface SimpleGateDefinition extends BaseGateDefinition {
   type: 'simple';
   checkFn?: () => Promise<GateResult> | GateResult;
+  /** Whether this gate is required (default: true). Non-required gates auto-waive when no checkFn */
+  required?: boolean;
+  /** Gate severity — 'soft' gates auto-waive when no checkFn */
+  severity?: 'hard' | 'soft';
 }
 
 /**

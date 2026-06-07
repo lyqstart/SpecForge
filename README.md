@@ -175,15 +175,30 @@ SpecForge/                        # 仓库根目录
 project-root/                    # 项目级（Plugin 自动初始化）
 ├── AGENTS.md                    # Agent 总览（自动生成）
 └── .specforge/
-    ├── manifest.json
-    ├── agents/                  # AGENT_CONSTITUTION + 9 个契约
-    ├── config/                  # project.json, risk_policy.json, skill_fragments.json
-    ├── runtime/                 # state.json, events.jsonl, checkpoints/
-    ├── logs/                    # trace.jsonl, tool_calls.jsonl, cost.jsonl, etc.
-    ├── specs/                   # 规格文档（按 Work Item 组织）
-    ├── archive/                 # Agent Run Archive
+    ├── manifest.json            # Project manifest
+    ├── project/                 # 项目级 spec 真相源（§2.1）
+    │   ├── spec_manifest.json
+    │   ├── extension_registry.json
+    │   ├── requirements_index.md
+    │   ├── design_index.md
+    │   ├── architecture.md
+    │   ├── glossary.md
+    │   ├── decisions.md
+    │   ├── trace_matrix.md
+    │   └── modules/
+    ├── work-items/              # Work Item 事务目录（§4.2）
+    │   └── <WI-ID>/
+    │       ├── work_item.json
+    │       ├── intake.md
+    │       └── ...
+    ├── config/                  # 项目配置
+    ├── specs/                   # [LEGACY READ-ONLY §1.7]
     ├── knowledge/               # Knowledge Graph
-    └── sessions/                # 会话记录
+    └── runtime/                 # 运行时状态（gitignored）
+        ├── state.json
+        ├── logs/
+        ├── archive/
+        └── sessions/
 ```
 
 <!-- BEGIN: directory-layout -->
@@ -202,12 +217,53 @@ SPEC_DIR_NAME = '.specforge'
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| manifest | `manifest.json` | Project manifest（committed）— `<root>/.specforge/manifest.json` |
-| config | `config` | 项目配置目录（committed）— `<root>/.specforge/config/` |
-| specs | `specs` | Work Item 规格目录（committed）— `<root>/.specforge/specs/` |
-| specsReadme | `specs/README.md` | specs 目录的 README（committed）— `<root>/.specforge/specs/README.md` |
-| knowledge | `knowledge` | Knowledge 目录（committed）— `<root>/.specforge/knowledge/` |
-| knowledgeGraph | `knowledge/graph.json` | Knowledge Graph 数据（committed）— `<root>/.specforge/knowledge/graph.json` |
+| manifest | `manifest.json` | Project manifest — `<root>/.specforge/manifest.json` |
+| project | `project` | 项目级正式规格目录 — `<root>/.specforge/project/` |
+| workItems | `work-items` | Work Item 事务根目录 — `<root>/.specforge/work-items/` |
+| config | `config` | 项目配置目录 — `<root>/.specforge/config/` |
+| specs | `specs` | 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` |
+| specsReadme | `specs/README.md` | specs 目录的 README — `<root>/.specforge/specs/README.md` |
+| knowledge | `knowledge` | Knowledge 目录 — `<root>/.specforge/knowledge/` |
+| knowledgeGraph | `knowledge/graph.json` | Knowledge Graph 数据 — `<root>/.specforge/knowledge/graph.json` |
+
+### projectFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| projectFiles.specManifest | `project/spec_manifest.json` | — |
+| projectFiles.extensionRegistry | `project/extension_registry.json` | — |
+| projectFiles.requirementsIndex | `project/requirements_index.md` | — |
+| projectFiles.designIndex | `project/design_index.md` | — |
+| projectFiles.architecture | `project/architecture.md` | — |
+| projectFiles.glossary | `project/glossary.md` | — |
+| projectFiles.decisions | `project/decisions.md` | — |
+| projectFiles.traceMatrix | `project/trace_matrix.md` | — |
+| projectFiles.modulesRoot | `project/modules` | — |
+
+### workItemFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| workItemFiles.workItemJson | `work_item.json` | — |
+| workItemFiles.intake | `intake.md` | — |
+| workItemFiles.changeClassification | `change_classification.md` | — |
+| workItemFiles.impactAnalysis | `impact_analysis.md` | — |
+| workItemFiles.triggerResult | `trigger_result.json` | — |
+| workItemFiles.requirementsDelta | `requirements_delta.md` | — |
+| workItemFiles.designDelta | `design_delta.md` | — |
+| workItemFiles.tasks | `tasks.md` | — |
+| workItemFiles.traceDelta | `trace_delta.md` | — |
+| workItemFiles.candidateManifest | `candidate_manifest.json` | — |
+| workItemFiles.candidates | `candidates` | — |
+| workItemFiles.gates | `gates` | — |
+| workItemFiles.gateSummary | `gate_summary.md` | — |
+| workItemFiles.userDecision | `user_decision.json` | — |
+| workItemFiles.verificationReport | `verification_report.md` | — |
+| workItemFiles.mergeReport | `merge_report.md` | — |
+| workItemFiles.evidence | `evidence` | — |
+| workItemFiles.evidenceManifest | `evidence/evidence_manifest.json` | — |
+| workItemFiles.extensionRequest | `extension_request.json` | — |
+| workItemFiles.extensionDelta | `extension_delta.md` | — |
 
 ### configFiles 分组
 
@@ -223,20 +279,23 @@ SPEC_DIR_NAME = '.specforge'
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
-| runtimeWal | `runtime/wal.jsonl` | 写前日志（gitignored）— `<root>/.specforge/runtime/wal.jsonl` |
-| runtimeState | `runtime/state.json` | 持久化状态（gitignored）— `<root>/.specforge/runtime/state.json` |
-| runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录（gitignored）— `<root>/.specforge/runtime/checkpoints/` |
-| logs | `logs` | 日志目录（gitignored）— `<root>/.specforge/logs/` |
-| logsTelemetry | `logs/telemetry.jsonl` | 遥测日志（gitignored）— `<root>/.specforge/logs/telemetry.jsonl` |
-| logsTrace | `logs/trace.jsonl` | 追踪日志（gitignored）— `<root>/.specforge/logs/trace.jsonl` |
-| logsToolCalls | `logs/tool_calls.jsonl` | 工具调用日志（gitignored）— `<root>/.specforge/logs/tool_calls.jsonl` |
-| logsCost | `logs/cost.jsonl` | 成本日志（gitignored）— `<root>/.specforge/logs/cost.jsonl` |
-| logsConversations | `logs/conversations.jsonl` | 会话日志（gitignored）— `<root>/.specforge/logs/conversations.jsonl` |
-| archive | `archive` | Agent Run 归档根目录（gitignored）— `<root>/.specforge/archive/` |
-| archiveAgentRuns | `archive/agent_runs` | Agent Run 归档子目录（gitignored）— `<root>/.specforge/archive/agent_runs/` |
-| sessions | `sessions` | 会话归档目录（gitignored）— `<root>/.specforge/sessions/` |
-| cas | `cas` | 内容寻址存储（gitignored）— `<root>/.specforge/cas/` |
+| runtime | `runtime` | 运行时状态目录 — `<root>/.specforge/runtime/` |
+| runtimeWal | `runtime/wal.jsonl` | 写前日志 — `<root>/.specforge/runtime/wal.jsonl` |
+| runtimeState | `runtime/state.json` | 持久化状态 — `<root>/.specforge/runtime/state.json` |
+| runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录 — `<root>/.specforge/runtime/checkpoints/` |
+| logs | `logs` | 日志目录 — `<root>/.specforge/logs/` |
+| logsTelemetry | `logs/telemetry.jsonl` | 遥测日志 — `<root>/.specforge/logs/telemetry.jsonl` |
+| logsTrace | `logs/trace.jsonl` | 追踪日志 — `<root>/.specforge/logs/trace.jsonl` |
+| logsToolCalls | `logs/tool_calls.jsonl` | 工具调用日志 — `<root>/.specforge/logs/tool_calls.jsonl` |
+| logsCost | `logs/cost.jsonl` | 成本日志 — `<root>/.specforge/logs/cost.jsonl` |
+| logsConversations | `logs/conversations.jsonl` | 会话日志 — `<root>/.specforge/logs/conversations.jsonl` |
+| logsGate | `logs/gate.log` | Gate 检查日志 — `<root>/.specforge/logs/gate.log` |
+| logsShellHistory | `logs/shell-history.jsonl` | Shell 审计日志 — `<root>/.specforge/logs/shell-history.jsonl` |
+| archive | `archive` | Agent Run 归档根目录 — `<root>/.specforge/archive/` |
+| archiveAgentRuns | `archive/agent_runs` | Agent Run 归档子目录 — `<root>/.specforge/archive/agent_runs/` |
+| archiveRetro | `archive/retro` | 复盘报告归档子目录 — `<root>/.specforge/archive/retro/` |
+| sessions | `sessions` | 会话归档目录 — `<root>/.specforge/sessions/` |
+| cas | `cas` | 内容寻址存储 — `<root>/.specforge/cas/` |
 
 ## 用户级路径 (~/.specforge/)
 

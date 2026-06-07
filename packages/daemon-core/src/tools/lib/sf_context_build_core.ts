@@ -187,7 +187,7 @@ export class ArchiveSource implements ContextDataSource {
     if (targetFiles.length === 0) return fragments
 
     // Step 2: Scan archive/agent_runs/
-    const archiveDir = resolveProjectPath(this.baseDir, "archiveAgentRuns")
+    const archiveDir = resolveProjectPath(this.baseDir, "runtimeArchiveAgentRuns")
     let entries: string[]
     try {
       entries = await readdir(archiveDir)

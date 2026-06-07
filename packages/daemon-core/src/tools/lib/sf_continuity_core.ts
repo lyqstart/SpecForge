@@ -619,7 +619,7 @@ async function readToolCallsFromArchive(
   runId: string,
   baseDir: string
 ): Promise<ToolCallRecord[]> {
-  const archiveDir = resolveProjectPath(baseDir, 'archiveAgentRuns')
+  const archiveDir = resolveProjectPath(baseDir, 'runtimeArchiveAgentRuns')
   const toolCallsPath = join(archiveDir, runId, "tool_calls.jsonl")
 
   try {
@@ -648,8 +648,8 @@ async function readTraceEntriesForRun(
   sessionId: string,
   baseDir: string
 ): Promise<TraceEntry[]> {
-  // Path semantics fix: specforge/runtime/trace.jsonl → LAYOUT.logsTrace (.specforge/logs/trace.jsonl)
-  const tracePath = resolveProjectPath(baseDir, 'logsTrace')
+  // Path semantics fix: specforge/runtime/trace.jsonl → LAYOUT.runtimeLogsTrace (.specforge/runtime/logs/trace.jsonl)
+  const tracePath = resolveProjectPath(baseDir, 'runtimeLogsTrace')
 
   try {
     const content = await readFile(tracePath, "utf-8")
@@ -681,7 +681,7 @@ async function readWorkLog(
   runId: string,
   baseDir: string
 ): Promise<string | null> {
-  const archiveDir = resolveProjectPath(baseDir, 'archiveAgentRuns')
+  const archiveDir = resolveProjectPath(baseDir, 'runtimeArchiveAgentRuns')
   const workLogPath = join(archiveDir, runId, "work_log.md")
 
   try {
@@ -700,12 +700,12 @@ async function readConversationMessages(
 ): Promise<ConversationMessage[]> {
   // Try session-specific conversation file first
   const sessionConvPath = join(
-    resolveProjectPath(baseDir, 'archive'),
+    resolveProjectPath(baseDir, 'runtimeArchive'),
     "conversations",
     `${sessionId}.jsonl`
   )
-  // Path semantics fix: specforge/runtime/conversation.jsonl → LAYOUT.logsConversations
-  const globalConvPath = resolveProjectPath(baseDir, 'logsConversations')
+  // Path semantics fix: specforge/runtime/conversation.jsonl → LAYOUT.runtimeLogsConversations
+  const globalConvPath = resolveProjectPath(baseDir, 'runtimeLogsConversations')
 
   for (const convPath of [sessionConvPath, globalConvPath]) {
     try {
@@ -1532,7 +1532,7 @@ export async function enforceContinuationLimit(
   const maxAllowed = config.max_continuations
 
   // Count existing continuations by scanning archive directory
-  const archiveDir = resolveProjectPath(baseDir, "archiveAgentRuns")
+  const archiveDir = resolveProjectPath(baseDir, "runtimeArchiveAgentRuns")
   let continuationCount = 0
 
   try {

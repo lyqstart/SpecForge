@@ -215,7 +215,7 @@ async function writeAuditLog(
   profile: HostProfile,
   baseDir: string
 ): Promise<void> {
-  const logFile = resolveProjectPath(baseDir, 'logsShellHistory')
+  const logFile = resolveProjectPath(baseDir, 'runtimeLogsShellHistory')
   const logDir = path.dirname(logFile)
 
   // 确保目录存在

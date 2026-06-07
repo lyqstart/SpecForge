@@ -268,8 +268,12 @@ export class WorkflowEngine {
     if (gate.checkFn) {
       return await gate.checkFn();
     }
-    // Default pass for gates without check function
-    return { schema_version: '1.0', passed: true, reason: 'No check function defined, default pass' };
+    // CR-4: No checkFn — gate cannot verify
+    // Only non-critical gates (required=false or severity='soft') auto-waive
+    if (gate.required === false || gate.severity === 'soft') {
+      return { schema_version: '1.0', passed: true, reason: 'Non-critical gate without checkFn, auto-waived' };
+    }
+    return { schema_version: '1.0', passed: false, reason: 'Required gate has no check function defined — cannot verify, blocked' };
   }
 
   /**
