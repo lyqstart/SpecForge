@@ -11,6 +11,7 @@
  */
 
 import type { GateDefinition } from './gate-definition';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 // ---------------------------------------------------------------------------
 // §5.1 主状态枚举
@@ -90,13 +91,13 @@ export function isForbiddenTransitionV11(from: WIStatusV11, to: string): boolean
  * 允许推进 WI 状态的主体枚举。
  */
 export const STATE_ADVANCEMENT_SUBJECTS = [
-  'sf-orchestrator',
+  ACTOR_ROLES.orchestrator,
   'Runtime State Machine',
-  'Gate Runner',
-  'User Decision Recorder',
-  'Merge Runner',
-  'code_permission_service',
-  'close_gate',
+  ACTOR_ROLES.gateRunner,
+  ACTOR_ROLES.userDecisionRecorder,
+  ACTOR_ROLES.mergeRunner,
+  ACTOR_ROLES.codePermissionService,
+  ACTOR_ROLES.closeGate,
 ] as const;
 
 export type StateAdvancementSubject = (typeof STATE_ADVANCEMENT_SUBJECTS)[number];

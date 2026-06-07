@@ -13,6 +13,7 @@ import type {
   WorkflowDefinition,
   ArtifactDefinition,
 } from '../types.js';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 // ---------------------------------------------------------------------------
 // Helper: build a pass-through gate
@@ -55,61 +56,61 @@ function state(
 function candidatePathStates(): Record<string, WorkflowState> {
   return {
     candidate_preparing: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'candidate_preparing_gate',
       ['sf-workflow-feature-spec'],
       'candidate_prepared',
     ),
     candidate_prepared: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'candidate_prepared_gate',
       ['sf-workflow-feature-spec'],
       'gates_running',
     ),
     gates_running: state(
-      'Gate Runner',
+      ACTOR_ROLES.gateRunner,
       'gates_running_gate',
       ['sf-skill-git-master'],
       { pass: 'approval_required', fail: 'gates_failed' },
     ),
     gates_failed: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'gates_failed_gate',
       ['sf-workflow-feature-spec'],
       { pass: 'candidate_preparing', fail: 'gates_running' },
     ),
     approval_required: state(
-      'User Decision Recorder',
+      ACTOR_ROLES.userDecisionRecorder,
       'approval_gate',
       [],
       { pass: 'approved', fail: 'rejected' },
     ),
     approved: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'approved_gate',
       ['sf-skill-git-master'],
       'merge_ready',
     ),
     merge_ready: state(
-      'Merge Runner',
+      ACTOR_ROLES.mergeRunner,
       'merge_ready_gate',
       ['sf-skill-git-master'],
       'merging',
     ),
     merging: state(
-      'Merge Runner',
+      ACTOR_ROLES.mergeRunner,
       'merging_gate',
       ['sf-skill-git-master'],
       { pass: 'merged', fail: 'gates_failed' },
     ),
     merged: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'merged_gate',
       ['sf-skill-git-master'],
       'post_merge_verified',
     ),
     post_merge_verified: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'post_merge_gate',
       ['sf-skill-git-master'],
       'implementation_ready',
@@ -121,7 +122,7 @@ function candidatePathStates(): Record<string, WorkflowState> {
 function implementationStates(): Record<string, WorkflowState> {
   return {
     implementation_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_ready_gate',
       ['sf-workflow-feature-spec'],
       'implementation_running',
@@ -133,7 +134,7 @@ function implementationStates(): Record<string, WorkflowState> {
       'implementation_done',
     ),
     implementation_done: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_done_gate',
       ['sf-workflow-feature-spec'],
       'verification_running',
@@ -145,7 +146,7 @@ function implementationStates(): Record<string, WorkflowState> {
       { pass: 'verification_done', fail: 'implementation_running' },
     ),
     verification_done: state(
-      'close_gate',
+      ACTOR_ROLES.closeGate,
       'close_gate',
       [],
       'closed',
@@ -157,23 +158,23 @@ function implementationStates(): Record<string, WorkflowState> {
 function terminalStates(): Record<string, WorkflowState> {
   return {
     blocked: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'blocked_gate',
       ['sf-workflow-feature-spec'],
       { pass: 'candidate_preparing', fail: 'gates_running' },
     ),
     rejected: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'rejected_gate',
       [],
     ),
     superseded: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'superseded_gate',
       [],
     ),
     closed: state(
-      'close_gate',
+      ACTOR_ROLES.closeGate,
       'closed_gate',
       [],
     ),
@@ -187,31 +188,31 @@ function terminalStates(): Record<string, WorkflowState> {
 function intakeStates(): Record<string, WorkflowState> {
   return {
     created: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'entry_gate',
       [],
       'intake_ready',
     ),
     intake_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'intake_gate',
       ['superpowers-brainstorming'],
       'impact_analyzing',
     ),
     impact_analyzing: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'impact_analysis_gate',
       [],
       'impact_analyzed',
     ),
     impact_analyzed: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'impact_analyzed_gate',
       [],
       'workflow_selected',
     ),
     workflow_selected: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'workflow_selection_gate',
       [],
       { pass: 'candidate_preparing', fail: 'implementation_ready' },
@@ -294,27 +295,27 @@ export const bugfixSpecDefinition: WorkflowDefinition = buildDefinition(
   'Bugfix workflow: intake → implementation → verification → closed (no candidate path)',
   'created',
   {
-    created: state('sf-orchestrator', 'entry_gate', [], 'intake_ready'),
+    created: state(ACTOR_ROLES.orchestrator, 'entry_gate', [], 'intake_ready'),
     intake_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'intake_gate',
       ['sf-workflow-bugfix-spec'],
       'impact_analyzing',
     ),
     impact_analyzing: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'impact_analysis_gate',
       [],
       'impact_analyzed',
     ),
     impact_analyzed: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'impact_analyzed_gate',
       [],
       'workflow_selected',
     ),
     workflow_selected: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'workflow_selection_gate',
       [],
       'implementation_ready',
@@ -334,15 +335,15 @@ export const opsTaskDefinition: WorkflowDefinition = buildDefinition(
   'Operational task workflow: intake → implementation → verification → closed',
   'created',
   {
-    created: state('sf-orchestrator', 'entry_gate', [], 'intake_ready'),
+    created: state(ACTOR_ROLES.orchestrator, 'entry_gate', [], 'intake_ready'),
     intake_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'intake_gate',
       ['sf-workflow-ops-task'],
       'implementation_ready',
     ),
     implementation_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_ready_gate',
       ['sf-workflow-ops-task'],
       'implementation_running',
@@ -354,7 +355,7 @@ export const opsTaskDefinition: WorkflowDefinition = buildDefinition(
       'implementation_done',
     ),
     implementation_done: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_done_gate',
       ['sf-workflow-ops-task'],
       'verification_running',
@@ -366,20 +367,20 @@ export const opsTaskDefinition: WorkflowDefinition = buildDefinition(
       { pass: 'verification_done', fail: 'implementation_running' },
     ),
     verification_done: state(
-      'close_gate',
+      ACTOR_ROLES.closeGate,
       'close_gate',
       [],
       'closed',
     ),
     blocked: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'blocked_gate',
       ['sf-workflow-ops-task'],
       'implementation_ready',
     ),
-    rejected: state('sf-orchestrator', 'rejected_gate', []),
-    superseded: state('sf-orchestrator', 'superseded_gate', []),
-    closed: state('close_gate', 'closed_gate', []),
+    rejected: state(ACTOR_ROLES.orchestrator, 'rejected_gate', []),
+    superseded: state(ACTOR_ROLES.orchestrator, 'superseded_gate', []),
+    closed: state(ACTOR_ROLES.closeGate, 'closed_gate', []),
   },
 );
 
@@ -393,15 +394,15 @@ export const investigationDefinition: WorkflowDefinition = buildDefinition(
   'Investigation workflow: intake → implementation (research/root-cause) → closed',
   'created',
   {
-    created: state('sf-orchestrator', 'entry_gate', [], 'intake_ready'),
+    created: state(ACTOR_ROLES.orchestrator, 'entry_gate', [], 'intake_ready'),
     intake_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'intake_gate',
       ['sf-workflow-investigation'],
       'implementation_ready',
     ),
     implementation_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_ready_gate',
       ['sf-workflow-investigation'],
       'implementation_running',
@@ -413,7 +414,7 @@ export const investigationDefinition: WorkflowDefinition = buildDefinition(
       'implementation_done',
     ),
     implementation_done: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_done_gate',
       ['sf-workflow-investigation'],
       'verification_running',
@@ -425,20 +426,20 @@ export const investigationDefinition: WorkflowDefinition = buildDefinition(
       { pass: 'verification_done', fail: 'implementation_running' },
     ),
     verification_done: state(
-      'close_gate',
+      ACTOR_ROLES.closeGate,
       'close_gate',
       [],
       'closed',
     ),
     blocked: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'blocked_gate',
       ['sf-workflow-investigation'],
       'implementation_ready',
     ),
-    rejected: state('sf-orchestrator', 'rejected_gate', []),
-    superseded: state('sf-orchestrator', 'superseded_gate', []),
-    closed: state('close_gate', 'closed_gate', []),
+    rejected: state(ACTOR_ROLES.orchestrator, 'rejected_gate', []),
+    superseded: state(ACTOR_ROLES.orchestrator, 'superseded_gate', []),
+    closed: state(ACTOR_ROLES.closeGate, 'closed_gate', []),
   },
 );
 
@@ -452,15 +453,15 @@ export const quickChangeDefinition: WorkflowDefinition = buildDefinition(
   'Quick change workflow: intake → implementation → verification → closed',
   'created',
   {
-    created: state('sf-orchestrator', 'entry_gate', [], 'intake_ready'),
+    created: state(ACTOR_ROLES.orchestrator, 'entry_gate', [], 'intake_ready'),
     intake_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'intake_gate',
       ['sf-workflow-quick-change'],
       'implementation_ready',
     ),
     implementation_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_ready_gate',
       ['sf-workflow-quick-change'],
       'implementation_running',
@@ -472,7 +473,7 @@ export const quickChangeDefinition: WorkflowDefinition = buildDefinition(
       'implementation_done',
     ),
     implementation_done: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_done_gate',
       ['sf-workflow-quick-change'],
       'verification_running',
@@ -484,20 +485,20 @@ export const quickChangeDefinition: WorkflowDefinition = buildDefinition(
       { pass: 'verification_done', fail: 'implementation_running' },
     ),
     verification_done: state(
-      'close_gate',
+      ACTOR_ROLES.closeGate,
       'close_gate',
       [],
       'closed',
     ),
     blocked: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'blocked_gate',
       ['sf-workflow-quick-change'],
       'implementation_ready',
     ),
-    rejected: state('sf-orchestrator', 'rejected_gate', []),
-    superseded: state('sf-orchestrator', 'superseded_gate', []),
-    closed: state('close_gate', 'closed_gate', []),
+    rejected: state(ACTOR_ROLES.orchestrator, 'rejected_gate', []),
+    superseded: state(ACTOR_ROLES.orchestrator, 'superseded_gate', []),
+    closed: state(ACTOR_ROLES.closeGate, 'closed_gate', []),
   },
 );
 
@@ -511,15 +512,15 @@ export const refactorDefinition: WorkflowDefinition = buildDefinition(
   'Refactor workflow: intake → implementation → verification → closed (behavior-preserving)',
   'created',
   {
-    created: state('sf-orchestrator', 'entry_gate', [], 'intake_ready'),
+    created: state(ACTOR_ROLES.orchestrator, 'entry_gate', [], 'intake_ready'),
     intake_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'intake_gate',
       ['sf-workflow-refactor'],
       'implementation_ready',
     ),
     implementation_ready: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_ready_gate',
       ['sf-workflow-refactor'],
       'implementation_running',
@@ -531,7 +532,7 @@ export const refactorDefinition: WorkflowDefinition = buildDefinition(
       'implementation_done',
     ),
     implementation_done: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'implementation_done_gate',
       ['sf-workflow-refactor'],
       'verification_running',
@@ -543,20 +544,20 @@ export const refactorDefinition: WorkflowDefinition = buildDefinition(
       { pass: 'verification_done', fail: 'implementation_running' },
     ),
     verification_done: state(
-      'close_gate',
+      ACTOR_ROLES.closeGate,
       'close_gate',
       [],
       'closed',
     ),
     blocked: state(
-      'sf-orchestrator',
+      ACTOR_ROLES.orchestrator,
       'blocked_gate',
       ['sf-workflow-refactor'],
       'implementation_ready',
     ),
-    rejected: state('sf-orchestrator', 'rejected_gate', []),
-    superseded: state('sf-orchestrator', 'superseded_gate', []),
-    closed: state('close_gate', 'closed_gate', []),
+    rejected: state(ACTOR_ROLES.orchestrator, 'rejected_gate', []),
+    superseded: state(ACTOR_ROLES.orchestrator, 'superseded_gate', []),
+    closed: state(ACTOR_ROLES.closeGate, 'closed_gate', []),
   },
 );
 

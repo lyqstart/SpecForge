@@ -12,6 +12,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 // ---------------------------------------------------------------------------
 // §5.1 主状态枚举
@@ -78,13 +79,13 @@ export function isForbiddenTransition(from: string, to: string): boolean {
 // ---------------------------------------------------------------------------
 
 export const STATE_ADVANCEMENT_SUBJECTS = new Set([
-  'sf-orchestrator',
+  ACTOR_ROLES.orchestrator,
   'Runtime State Machine',
-  'Gate Runner',
-  'User Decision Recorder',
-  'Merge Runner',
-  'code_permission_service',
-  'close_gate',
+  ACTOR_ROLES.gateRunner,
+  ACTOR_ROLES.userDecisionRecorder,
+  ACTOR_ROLES.mergeRunner,
+  ACTOR_ROLES.codePermissionService,
+  ACTOR_ROLES.closeGate,
 ]);
 
 /**

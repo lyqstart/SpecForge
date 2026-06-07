@@ -3,6 +3,8 @@
  *
  * 依据：SpecForge 最终融合标准 v1.1
  *
+ * **CANONICAL WRITE GUARD — all write decisions MUST go through this module.**
+ *
  * Write Guard 是程序级写入拦截器，必须覆盖所有写入入口。
  * 所有写入必须声明 expected_write_files，无声明则默认只读或阻断。
  *
@@ -17,16 +19,26 @@
  * 8. 普通 Agent 写 merge_report.md
  * 9. 冻结后修改 Candidate / Manifest / Gate Summary
  * 10. closed WI 继续写入
+ *
+ * Default is DENY; allow only for controlled subjects with specific path patterns.
+ * ACTOR_ROLES: 'merge_runner', 'gate_runner', 'user_decision_recorder',
+ *              'sf-orchestrator', 'code_permission_service', 'close_gate', 'agent'
  */
 
+import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles'
+
 // ---------------------------------------------------------------------------
-// 类型
+// Core types — canonical definitions
 // ---------------------------------------------------------------------------
 
+/**
+ * Context for the canonical write guard check.
+ * All write-policy consumers MUST use this type (or the WritePolicyContext alias).
+ */
 export interface WriteGuardContext {
-  /** 当前是否有 active WI */
+  /** Whether there is an active Work Item */
   hasActiveWI: boolean;
-  /** 当前 WI 的 work_item.json 内容 */
+  /** Current WI's work_item.json content */
   workItem?: {
     work_item_id: string;
     status: string;
@@ -34,27 +46,213 @@ export interface WriteGuardContext {
     allowed_write_files: Array<{ path: string; operation: string }>;
     workflow_path: string | null;
   };
-  /** 调用方角色 */
-  callerRole: 'sf-orchestrator' | 'Gate Runner' | 'User Decision Recorder' | 'Merge Runner' | 'code_permission_service' | 'close_gate' | 'agent';
-  /** 是否在冻结状态（gate_summary_gate 通过后） */
+  /** Caller role — determines which paths the subject may write */
+  callerRole: ActorRole;
+  /** Whether the WI is in frozen state (after gate_summary_gate passes) */
   isFrozen: boolean;
 }
 
+/**
+ * Result of a write-permission check.
+ */
 export interface WriteCheckResult {
   allowed: boolean;
   violations: string[];
 }
 
+/**
+ * Alias for backward compatibility — consumers that imported WritePolicyResult
+ * from write-policy.ts or path-policy.ts get the same shape.
+ */
+export type WritePolicyResult = WriteCheckResult;
+
+/**
+ * Alias for backward compatibility — WritePolicyContext is structurally
+ * identical to WriteGuardContext.
+ */
+export type WritePolicyContext = WriteGuardContext;
+
 // ---------------------------------------------------------------------------
-// Write Guard 检查
+// Rule-engine types (for extensibility / audit)
 // ---------------------------------------------------------------------------
 
 /**
- * 检查写入是否被允许。
+ * A single write-policy rule that can be evaluated independently.
+ */
+export interface WritePolicyRule {
+  id: string;
+  description: string;
+  check: (ctx: WritePolicyContext, targetPath: string) => string | null;
+}
+
+// ---------------------------------------------------------------------------
+// Built-in rules (§12.6)
+// ---------------------------------------------------------------------------
+
+/** Rule 10: closed WI cannot be written */
+const ruleClosedWI: WritePolicyRule = {
+  id: 'closed-wi',
+  description: 'closed WI cannot be written',
+  check(ctx, _targetPath) {
+    if (ctx.workItem && ctx.workItem.status === 'closed') {
+      return `closed WI cannot be written: ${ctx.workItem.work_item_id}`;
+    }
+    return null;
+  },
+};
+
+/** Rule 1: no active WI → no code writes */
+const ruleNoActiveWI: WritePolicyRule = {
+  id: 'no-active-wi',
+  description: 'no active WI, cannot write code',
+  check(ctx, targetPath) {
+    const normalized = targetPath.replace(/\\/g, '/');
+    if (!ctx.hasActiveWI && !normalized.startsWith('.specforge/')) {
+      return `no active WI, cannot write code: ${targetPath}`;
+    }
+    return null;
+  },
+};
+
+/** Rule 4: agent cannot write .specforge/project/ */
+const ruleAgentSpecForgeProject: WritePolicyRule = {
+  id: 'agent-specforge-project',
+  description: 'agent cannot write .specforge/project/',
+  check(ctx, targetPath) {
+    const normalized = targetPath.replace(/\\/g, '/');
+    if (ctx.callerRole === 'agent' && normalized.startsWith('.specforge/project/')) {
+      return `agent cannot write .specforge/project/: ${targetPath}`;
+    }
+    return null;
+  },
+};
+
+/** Rule 5: agent cannot write user_decision.json */
+const ruleAgentUserDecision: WritePolicyRule = {
+  id: 'agent-user-decision',
+  description: 'agent cannot write user_decision.json',
+  check(ctx, targetPath) {
+    const normalized = targetPath.replace(/\\/g, '/');
+    if (ctx.callerRole === 'agent' && normalized.includes('user_decision.json')) {
+      return `agent cannot write user_decision.json`;
+    }
+    return null;
+  },
+};
+
+/** Rule 6-8: agent cannot write gates/, gate_summary.md, merge_report.md */
+const ruleAgentRestrictedFiles: WritePolicyRule = {
+  id: 'agent-restricted-files',
+  description: 'agent cannot write gates/, gate_summary.md, merge_report.md',
+  check(ctx, targetPath) {
+    if (ctx.callerRole !== 'agent') return null;
+    const normalized = targetPath.replace(/\\/g, '/');
+    if (normalized.includes('/gates/')) return `agent cannot write gates/`;
+    if (normalized.endsWith('gate_summary.md')) return `agent cannot write gate_summary.md`;
+    if (normalized.endsWith('merge_report.md')) return `agent cannot write merge_report.md`;
+    return null;
+  },
+};
+
+/** Rule 9: frozen state restrictions */
+const ruleFrozen: WritePolicyRule = {
+  id: 'frozen',
+  description: 'frozen: cannot modify candidates/manifest/gate_summary',
+  check(ctx, targetPath) {
+    if (!ctx.isFrozen) return null;
+    const normalized = targetPath.replace(/\\/g, '/');
+    if (normalized.includes('/candidates/')) return `frozen: cannot modify candidates/: ${targetPath}`;
+    if (normalized.endsWith('candidate_manifest.json')) return `frozen: cannot modify candidate_manifest.json`;
+    if (normalized.endsWith('gate_summary.md')) return `frozen: cannot modify gate_summary.md`;
+    return null;
+  },
+};
+
+/** Rules 2-3: code write permission & allowed_write_files check */
+const ruleCodeWritePermission: WritePolicyRule = {
+  id: 'code-write-permission',
+  description: 'code_change_allowed and allowed_write_files check',
+  check(ctx, targetPath) {
+    if (!ctx.workItem) return null;
+    const normalized = targetPath.replace(/\\/g, '/');
+    if (normalized.startsWith('.specforge/')) return null;
+
+    if (!ctx.workItem.code_change_allowed) {
+      return `code_change_allowed=false, cannot write: ${targetPath}`;
+    }
+
+    const allowed = ctx.workItem.allowed_write_files ?? [];
+    const isInAllowed = allowed.some(
+      (f) =>
+        normalized === f.path.replace(/\\/g, '/') ||
+        normalized.startsWith(f.path.replace(/\\/g, '/') + '/'),
+    );
+    if (!isInAllowed && allowed.length > 0) {
+      return `file not in allowed_write_files: ${targetPath}`;
+    }
+    return null;
+  },
+};
+
+/**
+ * Default rule set (ordered by priority).
+ * Exported so that consumers (e.g. bash-guard) can reference individual rules.
+ */
+export const DEFAULT_WRITE_POLICY_RULES: WritePolicyRule[] = [
+  ruleClosedWI,
+  ruleNoActiveWI,
+  ruleAgentSpecForgeProject,
+  ruleAgentUserDecision,
+  ruleAgentRestrictedFiles,
+  ruleFrozen,
+  ruleCodeWritePermission,
+];
+
+// ---------------------------------------------------------------------------
+// evaluatePolicy — rule-engine evaluation
+// ---------------------------------------------------------------------------
+
+/**
+ * Evaluate a set of write-policy rules against the given context and target.
  *
- * @param ctx Write Guard 上下文
- * @param targetPath 要写入的目标路径（相对于项目根）
- * @param operation 写入操作类型
+ * Returns the first violation from each rule (short-circuit per rule),
+ * but continues checking all rules to collect the full set of violations.
+ */
+export function evaluatePolicy(
+  ctx: WritePolicyContext,
+  targetPath: string,
+  operation: 'create' | 'modify' | 'delete',
+  rules: WritePolicyRule[] = DEFAULT_WRITE_POLICY_RULES,
+): WritePolicyResult {
+  const violations: string[] = [];
+
+  for (const rule of rules) {
+    const violation = rule.check(ctx, targetPath);
+    if (violation !== null) {
+      violations.push(violation);
+    }
+  }
+
+  return {
+    allowed: violations.length === 0,
+    violations,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// checkWrite — CANONICAL single judgment entry point (§12.5-§12.6)
+// ---------------------------------------------------------------------------
+
+/**
+ * Check whether a write operation is allowed.
+ *
+ * This is the **single canonical entry point** for ALL write-permission
+ * decisions in the system. Every module that needs to gate writes MUST
+ * call this function (or a thin wrapper that delegates here).
+ *
+ * @param ctx Write Guard context
+ * @param targetPath Target path to write (relative to project root)
+ * @param operation Write operation type
  */
 export function checkWrite(
   ctx: WriteGuardContext,
@@ -64,49 +262,49 @@ export function checkWrite(
   const violations: string[] = [];
   const normalized = targetPath.replace(/\\/g, '/');
 
-  // 规则 10: closed WI 继续写入
+  // Rule 10: closed WI
   if (ctx.workItem && ctx.workItem.status === 'closed') {
     violations.push(`closed WI cannot be written: ${ctx.workItem.work_item_id}`);
     return { allowed: false, violations };
   }
 
-  // 规则 1: 无 active WI 写代码（非 .specforge/ 内的文件视为代码）
+  // Rule 1: no active WI → no code writes (non-.specforge/ = code)
   if (!ctx.hasActiveWI && !normalized.startsWith('.specforge/')) {
     violations.push(`no active WI, cannot write code: ${targetPath}`);
     return { allowed: false, violations };
   }
 
-  // 规则 4: 普通 Agent 写 .specforge/project/**
+  // Rule 4: agent cannot write .specforge/project/**
   if (ctx.callerRole === 'agent' && normalized.startsWith('.specforge/project/')) {
     violations.push(`agent cannot write .specforge/project/: ${targetPath}`);
     return { allowed: false, violations };
   }
 
-  // 规则 5: 普通 Agent 写 user_decision.json
+  // Rule 5: agent cannot write user_decision.json
   if (ctx.callerRole === 'agent' && normalized.includes('user_decision.json')) {
     violations.push(`agent cannot write user_decision.json`);
     return { allowed: false, violations };
   }
 
-  // 规则 6: 普通 Agent 写 gates/**
+  // Rule 6: agent cannot write gates/**
   if (ctx.callerRole === 'agent' && normalized.includes('/gates/')) {
     violations.push(`agent cannot write gates/`);
     return { allowed: false, violations };
   }
 
-  // 规则 7: 普通 Agent 写 gate_summary.md
+  // Rule 7: agent cannot write gate_summary.md
   if (ctx.callerRole === 'agent' && normalized.endsWith('gate_summary.md')) {
     violations.push(`agent cannot write gate_summary.md`);
     return { allowed: false, violations };
   }
 
-  // 规则 8: 普通 Agent 写 merge_report.md
+  // Rule 8: agent cannot write merge_report.md
   if (ctx.callerRole === 'agent' && normalized.endsWith('merge_report.md')) {
     violations.push(`agent cannot write merge_report.md`);
     return { allowed: false, violations };
   }
 
-  // 规则 9: 冻结后修改 Candidate / Manifest / Gate Summary
+  // Rule 9: frozen state — cannot modify candidates/manifest/gate_summary
   if (ctx.isFrozen) {
     if (normalized.includes('/candidates/')) {
       violations.push(`frozen: cannot modify candidates/: ${targetPath}`);
@@ -122,15 +320,13 @@ export function checkWrite(
     }
   }
 
-  // 规则 2-3: 代码写入权限检查
+  // Rules 2-3: code write permission + allowed_write_files
   if (ctx.workItem && !normalized.startsWith('.specforge/')) {
-    // 这是代码文件
     if (!ctx.workItem.code_change_allowed) {
       violations.push(`code_change_allowed=false, cannot write: ${targetPath}`);
       return { allowed: false, violations };
     }
 
-    // 检查是否在 allowed_write_files 内
     const allowed = ctx.workItem.allowed_write_files ?? [];
     const isInAllowed = allowed.some(
       (f) => normalized === f.path.replace(/\\/g, '/') || normalized.startsWith(f.path.replace(/\\/g, '/') + '/'),
@@ -141,24 +337,69 @@ export function checkWrite(
     }
   }
 
-  // 特殊角色豁免
-  const privilegedRoles = new Set(['Merge Runner', 'Gate Runner', 'User Decision Recorder', 'sf-orchestrator', 'code_permission_service', 'close_gate']);
+  // Privileged role exemptions
+  const privilegedRoles = new Set<ActorRole>([ACTOR_ROLES.mergeRunner, ACTOR_ROLES.gateRunner, ACTOR_ROLES.userDecisionRecorder, ACTOR_ROLES.orchestrator, ACTOR_ROLES.codePermissionService, ACTOR_ROLES.closeGate]);
   if (privilegedRoles.has(ctx.callerRole)) {
-    // Merge Runner 可以写 .specforge/project/
-    if (ctx.callerRole === 'Merge Runner' && normalized.startsWith('.specforge/project/')) {
+    if (ctx.callerRole === ACTOR_ROLES.mergeRunner && normalized.startsWith('.specforge/project/')) {
       return { allowed: true, violations: [] };
     }
-    // User Decision Recorder 可以写 user_decision.json
-    if (ctx.callerRole === 'User Decision Recorder' && normalized.includes('user_decision.json')) {
+    if (ctx.callerRole === ACTOR_ROLES.userDecisionRecorder && normalized.includes('user_decision.json')) {
       return { allowed: true, violations: [] };
     }
-    // Gate Runner 可以写 gates/ 和 gate_summary.md
-    if (ctx.callerRole === 'Gate Runner' && (normalized.includes('/gates/') || normalized.endsWith('gate_summary.md'))) {
+    if (ctx.callerRole === ACTOR_ROLES.gateRunner && (normalized.includes('/gates/') || normalized.endsWith('gate_summary.md'))) {
       return { allowed: true, violations: [] };
     }
   }
 
   return { allowed: violations.length === 0, violations };
+}
+
+// ---------------------------------------------------------------------------
+// enforceWritePolicy — adapter for path-policy.ts consumers
+// ---------------------------------------------------------------------------
+
+/**
+ * Enforce write policy based on actor + path + operation + WI status.
+ *
+ * This is a convenience adapter that translates the flat-parameter calling
+ * convention (used by path-policy.ts) into the canonical `checkWrite()` call.
+ * ALL logic lives in `checkWrite()`; this function only maps parameters.
+ */
+export function enforceWritePolicy(params: {
+  actor: string;
+  filePath: string;
+  operation: 'read' | 'write' | 'delete';
+  wiStatus?: string;
+  codePermission?: boolean;
+  allowedWriteFiles?: string[];
+}): WritePolicyResult {
+  const { actor, filePath, operation, wiStatus, codePermission, allowedWriteFiles } = params;
+
+  // Reads are always allowed
+  if (operation === 'read') {
+    return { allowed: true, violations: [] };
+  }
+
+  // Map flat params to WriteGuardContext
+  const ctx: WriteGuardContext = {
+    hasActiveWI: wiStatus !== undefined && wiStatus !== 'closed',
+    workItem: wiStatus !== undefined
+      ? {
+          work_item_id: '',
+          status: wiStatus,
+          code_change_allowed: codePermission !== false,
+          allowed_write_files: (allowedWriteFiles ?? []).map(f => ({ path: f, operation: 'modify' })),
+          workflow_path: null,
+        }
+      : undefined,
+    callerRole: actor as WriteGuardContext['callerRole'],
+    isFrozen: false,
+  };
+
+  const mappedOp: 'create' | 'modify' | 'delete' =
+    operation === 'delete' ? 'delete' : 'modify';
+
+  return checkWrite(ctx, filePath, mappedOp);
 }
 
 // ---------------------------------------------------------------------------
@@ -185,7 +426,7 @@ export interface AuditResult {
 }
 
 /**
- * 执行 changed_files_audit（§12.7）。
+ * Execute a changed-files audit (§12.7).
  */
 export function performChangedFilesAudit(
   changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,

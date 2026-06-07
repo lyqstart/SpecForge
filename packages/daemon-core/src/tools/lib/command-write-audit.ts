@@ -5,8 +5,8 @@
  * Imports from write-policy.
  */
 
-import type { WritePolicyContext } from './write-policy.js';
-import { evaluatePolicy } from './write-policy.js';
+import type { WritePolicyContext } from './write-guard-v11.js';
+import { evaluatePolicy } from './write-guard-v11.js';
 
 // ---------------------------------------------------------------------------
 // Types

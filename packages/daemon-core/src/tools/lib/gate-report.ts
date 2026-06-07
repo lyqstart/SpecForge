@@ -8,6 +8,7 @@
  */
 
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 // ---------------------------------------------------------------------------
 // §9.4 Gate Report
@@ -110,7 +111,7 @@ export async function runGate(
       waiver_ids: [],
       started_at: startedAt,
       finished_at: new Date().toISOString(),
-      runner: 'Gate Runner',
+      runner: ACTOR_ROLES.gateRunner,
     };
   }
 }
@@ -136,7 +137,7 @@ export function makeSkippedReport(workItemId: string, gateId: GateIdV11, reason:
     waiver_ids: [],
     started_at: new Date().toISOString(),
     finished_at: new Date().toISOString(),
-    runner: 'Gate Runner',
+    runner: ACTOR_ROLES.gateRunner,
   };
 }
 
@@ -168,6 +169,6 @@ export function makeReport(
     waiver_ids: [],
     started_at: new Date().toISOString(),
     finished_at: new Date().toISOString(),
-    runner: 'Gate Runner',
+    runner: ACTOR_ROLES.gateRunner,
   };
 }

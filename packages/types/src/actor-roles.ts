@@ -17,6 +17,7 @@
  * - `mergeRunner`：合并执行器
  * - `codePermissionService`：代码权限服务
  * - `closeGate`：关闭 Gate 操作执行器
+ * - `writeGuard`：写入拦截器
  * - `agent`：通用 Agent 标识（用于非特定角色的 Agent Run）
  */
 export const ACTOR_ROLES = {
@@ -26,6 +27,7 @@ export const ACTOR_ROLES = {
   mergeRunner: 'merge_runner',
   codePermissionService: 'code_permission_service',
   closeGate: 'close_gate',
+  writeGuard: 'write_guard',
   agent: 'agent',
 } as const;
 
@@ -34,3 +36,4 @@ export const ACTOR_ROLES = {
  * 等价于 `'sf-orchestrator' | 'gate_runner' | 'user_decision_recorder' | 'merge_runner' | 'code_permission_service' | 'close_gate' | 'agent'`
  */
 export type ActorRole = typeof ACTOR_ROLES[keyof typeof ACTOR_ROLES];
+// Equivalent to: 'sf-orchestrator' | 'gate_runner' | 'user_decision_recorder' | 'merge_runner' | 'code_permission_service' | 'close_gate' | 'write_guard' | 'agent'

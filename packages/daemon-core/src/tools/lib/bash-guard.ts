@@ -5,7 +5,7 @@
  * against the write policy before execution.
  */
 
-import type { WritePolicyRule } from './write-policy.js'
+import type { WritePolicyRule } from './write-guard-v11.js'
 
 // ---------------------------------------------------------------------------
 // Types
