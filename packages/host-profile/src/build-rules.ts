@@ -5,7 +5,7 @@
  * 这里把分散的探测结果归纳成可执行的规则。
  */
 
-import type { ShellInfo, ShellName, ShellRules } from './types';
+import type { ShellInfo, ShellName, ShellRules } from './types.js';
 
 /**
  * 基于探测到的 shells 生成 shell_rules

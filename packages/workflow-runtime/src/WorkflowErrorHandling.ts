@@ -8,10 +8,8 @@ import {
   GateError, 
   GateErrorType, 
   isGateError, 
-  isRetryableError,
-  getErrorType 
 } from './error-handler.js';
-import type { WorkflowInstance, WorkflowDefinition } from './types.js';
+import type { WorkflowInstance } from './types.js';
 import { 
   ErrorPropagationManager, 
   ErrorPropagationContext,
@@ -220,7 +218,7 @@ export class WorkflowErrorHandler {
     }
   ): Promise<T> {
     // Get config to validate retry is possible
-    const config = this.getRetryConfig(workflowId);
+    this.getRetryConfig(workflowId);
     
     const maxTotalTimeoutMs = options?.maxTotalTimeoutMs ?? 30000; // 30秒默认总超时
     const abortSignal = options?.abortSignal;

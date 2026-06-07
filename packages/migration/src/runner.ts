@@ -25,16 +25,19 @@ import {
   DEFAULT_RETENTION_DAYS
 } from './backup-manager'
 import { compareVersions } from './schema-detector'
-import type {
-  MigrationContext,
-  MigrationResult,
-  MigrationError,
-  MigrationStatus,
-  MigrationScript,
+import {
   MigrationExecutionError,
   MigrationVerificationError,
   MigrationRollbackError,
   MigrationBackupError,
+  MigrationError as MigrationErrorClass,
+} from './types'
+import type {
+  MigrationContext,
+  MigrationResult,
+  MigrationErrorData,
+  MigrationStatus,
+  MigrationScript,
   MigrationErrorCode
 } from './types'
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
@@ -80,7 +83,7 @@ export interface TransactionalMigrationResult {
   success: boolean
   executed: MigrationExecutionDetails[]
   backupSession?: BackupSession
-  errors: MigrationError[]
+  errors: MigrationErrorData[]
   totalDurationMs: number
   rolledBack: boolean
 }
@@ -276,13 +279,13 @@ export class MigrationRunner {
     this.status = 'running'
 
     const executed: MigrationExecutionDetails[] = []
-    const errors: MigrationError[] = []
+    const errors: MigrationErrorData[] = []
     let backupSession: BackupSession | undefined
     let rolledBack = false
 
     try {
       // 1. Create pre-migration backup (unless skipped)
-      if (!this.options.skipBackup && this.options.filesToBackup?.length > 0) {
+      if (!this.options.skipBackup && this.options.filesToBackup && this.options.filesToBackup.length > 0) {
         try {
           const sessionName = `migration-${generateTimestamp()}`
           const session = await createBackupSession(this.options.backupDir!, sessionName)
@@ -309,7 +312,7 @@ export class MigrationRunner {
             toVersion: context.targetVersion
           }
         } catch (err) {
-          const error: MigrationError = {
+          const error: MigrationErrorData = {
             entity: 'backup',
             message: `Pre-migration backup failed: ${err instanceof Error ? err.message : String(err)}`,
             code: 'MIGRATION_BACKUP_FAILED'
@@ -356,7 +359,7 @@ export class MigrationRunner {
             const verification = await verifyMigration(script, this.options.validate)
 
             if (!verification.valid) {
-              const error: MigrationError = {
+              const error: MigrationErrorData = {
                 entity: 'verification',
                 message: `Migration verification failed: ${verification.errors.join(', ')}`,
                 code: 'MIGRATION_VERIFICATION_FAILED'
@@ -381,7 +384,7 @@ export class MigrationRunner {
           executionDetail.durationMs = Date.now() - scriptStartTime
           executionDetail.error = err instanceof Error ? err.message : String(err)
 
-          const error: MigrationError = {
+          const error: MigrationErrorData = {
             entity: 'migration',
             message: `Migration ${executionDetail.scriptName} failed: ${err instanceof Error ? err.message : String(err)}`,
             code: 'MIGRATION_FAILED'
@@ -394,7 +397,7 @@ export class MigrationRunner {
               await performRollback(backupSession, this.options.filesToBackup || [])
               rolledBack = true
             } catch (rollbackErr) {
-              const rollbackError: MigrationError = {
+              const rollbackError: MigrationErrorData = {
                 entity: 'rollback',
                 message: `Rollback failed: ${rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr)}`,
                 code: 'MIGRATION_ROLLBACK_FAILED'
@@ -437,7 +440,7 @@ export class MigrationRunner {
     } catch (err) {
       this.status = 'failed'
 
-      const error: MigrationError = {
+      const error: MigrationErrorData = {
         entity: 'runner',
         message: err instanceof Error ? err.message : 'Unknown error',
         code: 'MIGRATION_FAILED'
@@ -661,10 +664,11 @@ export function createMigrationVerificationError(
  */
 export function createMigrationRollbackError(
   message: string,
-  originalError: MigrationError,
+  originalError: MigrationErrorData,
   backupPath?: string
 ): MigrationRollbackError {
-  return new MigrationRollbackError(message, originalError, backupPath)
+  const wrapped = new MigrationErrorClass(originalError.message, (originalError.code as MigrationErrorCode) ?? 'MIGRATION_FAILED', originalError.recoverable ?? false)
+  return new MigrationRollbackError(message, wrapped, backupPath)
 }
 
 /**

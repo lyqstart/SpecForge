@@ -18,7 +18,6 @@ import {
   type AgentRole 
 } from '../AgentRunner.js';
 import { AgentGateRunner, createAgentGateRunner } from '../gates/AgentGateRunner.js';
-import { createGateRunner } from '../GateRunner.js';
 
 /**
  * AgentWorkflowEngine configuration
@@ -77,7 +76,7 @@ export class AgentWorkflowEngine extends WorkflowEngine {
    * Execute a single gate with Agent system integration
    * Overrides parent method to support agent-based gates
    */
-  async executeGate(gate: GateDefinition, state?: WorkflowState): Promise<GateResult> {
+  override async executeGate(gate: GateDefinition, state?: WorkflowState): Promise<GateResult> {
     // Check if this state requires agent execution
     if (state && this.shouldUseAgentForState(state)) {
       return this.executeAgentGate(gate as SimpleGateDefinition, state);
@@ -216,7 +215,7 @@ export class AgentWorkflowEngine extends WorkflowEngine {
    * Execute workflow with enhanced agent integration
    * Overrides parent method to use agent-based gate execution
    */
-  async execute(instanceId: string): Promise<WorkflowInstance> {
+  override async execute(instanceId: string): Promise<WorkflowInstance> {
     const instance = this.getInstance(instanceId);
     if (!instance) {
       throw new Error(`Workflow instance not found: ${instanceId}`);
@@ -328,7 +327,7 @@ export class AgentWorkflowEngine extends WorkflowEngine {
    * Determine the next state based on gate result
    * Re-implemented from parent for compatibility
    */
-  private determineNextState(
+  protected override determineNextState(
     stateDef: { next?: string | Record<string, string> },
     gateResult: GateResult
   ): string | null {

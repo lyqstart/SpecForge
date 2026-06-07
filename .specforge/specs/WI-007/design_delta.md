@@ -1,462 +1,1728 @@
-# WI-007 Design Delta: Property 21 重写与悬空契约清理（Phase 3 — 收尾）
+# Design Delta — WI-007: SpecForge v1.1 Standard Alignment
 
-> **增量设计文档** — 基于 impact_analysis.md 和 WI-002 调查产出，定义 Phase 3 清理变更的精确设计方案。
+> Work Item: WI-007
+> Workflow Path: `requirement_change_path`（涉及目录结构、模块拆分、Agent 职责体系等多层面标准对齐）
+> Base Spec Version: current
+> 标准依据: `specforge_final_fused_standard_v1_1_patch1_zh.md`
 
 ---
 
 ## 1. 增量设计描述
 
-### DD-1 Property 21 注释重写
-
-refs: [impact_analysis §1.1 L13-L17]
-constrained_by: 无运行时约束（纯注释变更）
-
-**目标文件**: `packages/daemon-core/src/recovery/RecoverySubsystem.ts` L13-L17
-
-**旧文本**（当前）:
-```
- * Property 21: Session Reconnect Scope
- * For all Daemon runtime event streams, "automatic reconnection attempts to old
- * OpenCode sessions" may only occur within the Daemon startup process; after
- * startup completes, even if old sessions are detected as alive, the Daemon
- * must not automatically initiate reconnection.
-```
-
-**新文本**（目标）:
-```
- * Property 21: Session WAL Replay Scope
- * For all Daemon runtime event streams, WAL-replay-based session state reconstruction
- * may only occur within the Daemon startup process; after startup completes, the
- * Daemon must not automatically initiate session state reconstruction via WAL replay.
-```
-
-**变更理由**: Phase 2（WI-006）已将 session 恢复机制从"网络探测 OpenCode 进程是否存活"改为"纯本地 WAL 重放"（`SessionRegistry.startupReplay`）。Property 21 的语义约束——"仅限启动期"——不变，但描述的机制已从"重连"变为"重放重建"。
-
-**影响范围**: 仅影响注释文本，不影响任何运行时行为。
+本 Design Delta 按变更类型分为四个 Group，每个 Group 内的设计决策引用 v1.1 标准的具体章节。
 
 ---
 
-### DD-2 死代码删除：detectOldSessions + reconnectOldSessions
+### Group A: Code Module Splitting（24+ new .ts files）
 
-refs: [impact_analysis §1.1 L458-L491, L500-L538, WI-002 research/01-contracts C6 隐式契约 (4)]
-constrained_by: 无运行时约束（删除已废弃路径）
+**设计方法**：从现有 `-v11.ts` 单体文件中按标准章节边界提取函数/类型到独立模块。每个新模块通过原文件的 `export * from` 保持向后兼容。拆分策略遵循以下原则：
 
-#### 删除清单
-
-| 方法 | 行号 | 删除理由 |
-|------|------|----------|
-| `detectOldSessions()` | L458-L491 | 功能已被 `SessionRegistry.startupReplay` 替代。该方法从 events.jsonl 读 `session.activated/terminated` 做差集，但 Phase 2 已为这些事件创建了 producer（SessionRegistry WAL-first writes），`startupReplay` 完整重放所有 session 事件并恢复 pending/active/history/bindings/aliases |
-| `reconnectOldSessions()` | L500-L538 | 功能已被 `SessionRegistry.startupReplay` 替代。该方法遍历旧活跃 session 调用 `attemptSessionReconnect`，而 `checkAndRepair` L99-L107 已调用 `startupReplay` 完成等价且更完整的恢复 |
-
-#### 保留清单（经 grep 验证）
-
-| 方法 | 行号 | 保留理由 |
-|------|------|----------|
-| `attemptSessionReconnect()` | L354-L375 | **保留但重写注释**。被外部调用者使用：`RecoverySubsystem.test.ts` L102、`property-21.test.ts` L120/L306/L322。该方法实现 Property 21 的核心守卫逻辑（startup phase 检查），删除会破坏现有测试契约。注释中"reconnect"措辞需更新 |
-| `performSessionReconnect()` | L381-L408 | **保留**。是 `attemptSessionReconnect` 的私有辅助方法，提供 `SessionReconnectResult` 返回值。虽然当前是模拟实现（总是返回 reconnected=true），但作为 `attemptSessionReconnect` 的内部实现，应随其保留 |
-| `getReconnectionScopeStatus()` | L544-L554 | **保留**。被 `property-21.test.ts` L195/L203/L211/L301/L317/L328 广泛使用于验证 startup phase 状态。方法名虽含"reconnection"，但其语义——报告 startup phase 状态——在 WAL 重放时代仍然正确 |
-
-#### 功能替代关系确认
-
-```
-旧路径（删除）:
-  Daemon.start() → recoverySubsystem.reconnectOldSessions()
-    → detectOldSessions() [读 events.jsonl 做 activated/terminated 差集]
-    → 对每个活跃 session 调用 attemptSessionReconnect()
-      → performSessionReconnect() [模拟返回 reconnected=true]
-
-新路径（Phase 2 已实现）:
-  Daemon.start() → recoverySubsystem.checkAndRepair()
-    → wal.readAllEvents()
-    → stateManager.rebuildState()
-    → sessionRegistry.startupReplay(sessionEvents)  [L99-L107]
-      → 处理 6 种 session 事件类型
-      → 恢复 pendingSessions/activeSessions/historySessions
-      → 恢复 projectBindings + aliasMap
-```
-
-**结论**: `startupReplay` 是 `reconnectOldSessions` 的严格上位替代——不仅恢复活跃 session，还恢复 pending/history/bindings/aliases，覆盖范围更广。
+1. **按标准章节边界拆分**：每个新模块对应 v1.1 标准的一个明确子章节。
+2. **单向依赖**：新模块不回引原文件；原文件 re-export 新模块的公开 API。
+3. **接口不变**：现有 94 个测试和 10 个 handler 的 import 路径不改变。
+4. **hash 稳定**：re-export 不改变任何类型的运行时行为。
 
 ---
 
-### DD-3 Daemon.ts 调用点清理
+#### DD-A1 change-classification.ts — Change Classification 独立模块
 
-refs: [impact_analysis §1.1 Daemon.ts L183-L188]
-constrained_by: 无运行时约束
+refs: [§6.2, AC-1, AC-2]
+constrained_by: standard §6.2
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/change-classification.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/workflow-selector-v11.ts` (UPDATE — add re-export)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `ChangeClassification` (type)
+    input: "interface with 10 boolean fields + unknowns"
+    output: "ChangeClassification"
+    errors: []
+  - name: `classifyChange` (function, if extracted)
+    input: "ChangeClassification"
+    output: "WorkflowPath"
+    errors: []
+data_flow:
+  - "workflow-path-selector-v11.ts → (extract) → change-classification.ts"
+  - "workflow-path-selector-v11.ts → re-export → change-classification.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+    - "cd packages/daemon-core && npx vitest run tests/v11-*.test.ts"
+  evidence_expected:
+    - "AC-2: backward compatible — existing imports still resolve"
+    - "AC-6: 94 tests still pass"
+parallelization_notes:
+  parallel_safe_with: [DD-A2, DD-A3, DD-A4, DD-A5]
+  conflicts_with: []
+out_of_scope:
+  - "Classification logic change (only extraction, no behavior modification)"
+assumptions:
+  - "ChangeClassification interface is stable and matches §6.2 definition"
 
-**目标文件**: `packages/daemon-core/src/daemon/Daemon.ts` L183-L188
+**提取内容**：
+| 导出项 | 类型 | 标准章节 |
+|--------|------|----------|
+| `ChangeClassification` | interface | §6.2 Classification 结果 |
+| `canUseCodeOnlyFastPath` | function | §6.7 code-only 条件 |
 
-**当前代码**:
-```typescript
-// Property 21: Attempt to reconnect old sessions from previous Daemon run
-// This only succeeds because we're still in the startup phase
-await this.recoverySubsystem.reconnectOldSessions();
-
-// Property 21: Complete startup - no more reconnection attempts allowed
-this.recoverySubsystem.completeStartup();
-```
-
-**目标代码**:
-```typescript
-// Property 21: Complete startup - no more WAL replay session reconstruction allowed
-this.recoverySubsystem.completeStartup();
-```
-
-**变更要点**:
-1. 删除 L185 `await this.recoverySubsystem.reconnectOldSessions()` 调用——冗余，因为 `checkAndRepair()`（L151 调用位置）已内部调用 `startupReplay`
-2. 更新 L187 注释措辞，从"reconnection"改为"WAL replay session reconstruction"
-3. 合并 L183-L184 和 L187-L188 为紧凑的两行注释+调用
-
-**安全性**: `checkAndRepair()` 在 `Daemon.start()` 中更早执行（L151 位置），其内部 L99-L107 已调用 `sessionRegistry.startupReplay(sessionEvents)`。L185 的 `reconnectOldSessions()` 是在 `startupReplay` 之后执行的冗余路径，删除不影响功能。
-
----
-
-### DD-4 property-21.test.ts 重写策略
-
-refs: [impact_analysis §1.1 property-21.test.ts, §3.1]
-constrained_by: 测试框架 vitest + fast-check
-
-**目标文件**: `packages/daemon-core/tests/property/property-21.test.ts`（全文重写 ~100-150 行）
-
-**重写策略**: 测试从验证"重连机制"改为验证"WAL 重放的启动期约束"，但核心不变式——startup phase 检查——不变。
-
-#### 测试用例映射
-
-| 旧用例 | 新用例 | 变更要点 |
-|--------|--------|----------|
-| 21.1: "should deny reconnection after startup completes" | 21.1: "should deny WAL replay session reconstruction after startup completes" | 调用 `attemptSessionReconnect` 的逻辑不变（该方法保留），但测试描述和注释更新措辞 |
-| 21.2: "should not reconnect sessions detected after startup" | 21.2: "should not reconstruct session state via replay after startup" | **核心重写**：不再调用 `detectOldSessions()`/`reconnectOldSessions()`（已删除）。改为验证 `checkAndRepair` 在 post-startup 阶段不触发 `startupReplay` 的副作用 |
-| 21.3: "should correctly track reconnection scope boundaries" | 21.3: "should correctly track WAL replay scope boundaries" | `getReconnectionScopeStatus()` 保留，断言逻辑不变，仅更新描述措辞 |
-| 21.4: PBT "reconnect scope limitation" | 21.4: PBT "WAL replay scope limitation" | 使用 `attemptSessionReconnect` + `getReconnectionScopeStatus` 验证 scope 约束，不再调用已删除 API |
-
-**关键约束**:
-- 新测试**必须保留** Property 21 的核心语义验证："startup phase 外不允许 session 状态重建"
-- 测试可直接使用 `attemptSessionReconnect`（保留）和 `getReconnectionScopeStatus`（保留），无需依赖已删除方法
-- 21.2 用例需要构造 mock `SessionRegistry` 注入 `RecoverySubsystem`，验证 `startupReplay` 仅在 startup phase 被调用
+**Re-export 策略**：`workflow-path-selector-v11.ts` 添加 `export * from './change-classification.js';`
 
 ---
 
-### DD-5 文档同步策略
+#### DD-A2 impact-analysis.ts — Impact Analysis 独立模块
 
-refs: [impact_analysis §1.2, §1.3]
-constrained_by: 无运行时约束
+refs: [§6.2, AC-1, AC-2]
+constrained_by: standard §6.2
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/impact-analysis.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `selectWorkflowPath`
+    input: "classification: ChangeClassification"
+    output: "WorkflowPath"
+    errors: []
+  - name: `generateTriggerResult`
+    input: "workItemId, classification, matchResults"
+    output: "TriggerResult"
+    errors: []
+data_flow:
+  - "workflow-path-selector-v11.ts → (extract) → impact-analysis.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+  evidence_expected:
+    - "AC-2: re-export covers all moved exports"
+out_of_scope:
+  - "New impact analysis logic"
+assumptions:
+  - "selectWorkflowPath and generateTriggerResult stay in this module"
 
-#### 5.1 .kiro/specs/ 文档更新
+**提取内容**：
+| 导出项 | 类型 | 标准章节 |
+|--------|------|----------|
+| `selectWorkflowPath` | function | §6.5 路径优先级 |
+| `generateTriggerResult` | function | §6.1 trigger_result.json |
 
-| 文件 | 行号 | 当前文本 | 目标文本 |
-|------|------|----------|----------|
-| `.kiro/specs/v6-architecture-overview/design.md` | L1049-L1053 | "对旧 OpenCode session 的自动重连尝试" 只能出现在 Daemon 启动流程内 | "WAL 重放重建 session 状态" 仅限启动流程 |
-| `.kiro/specs/daemon-core/requirements.md` | L45-L48 | "automatic reconnection attempts to old OpenCode sessions" | "WAL replay-based session state reconstruction" |
-| `.kiro/specs/daemon-core/design.md` | L201 | "Limit session reconnection to startup only (Property 21)" | "Limit session WAL replay reconstruction to startup only (Property 21)" |
-| `.kiro/specs/daemon-core/design.md` | L298 | "Property 21 (Reconnect Scope): Generate runtime scenarios, verify reconnect limits" | "Property 21 (WAL Replay Scope): Generate runtime scenarios, verify replay scope limits" |
-| `.kiro/specs/daemon-core/tasks.md` | L18 | "Property 21: Session Reconnect Scope" | "Property 21: Session WAL Replay Scope" |
-| `.kiro/specs/daemon-core/tasks.md` | L115 | "Property 21 Test: Verify reconnect scope limitation" | "Property 21 Test: Verify WAL replay scope limitation" |
-| `.kiro/specs/daemon-core/tasks.md` | L116 | "Requirements: 5.4, 5.5, Property 21" | 保持不变（需求编号不变） |
-| `.kiro/specs/daemon-core/tasks.md` | L237-L241 | Property 21 测试策略描述 | 更新措辞为 WAL replay 语义 |
-
-#### 5.2 DEVELOPMENT.md 更新
-
-| 文件 | 行号 | 当前文本 | 目标文本 |
-|------|------|----------|----------|
-| `packages/daemon-core/DEVELOPMENT.md` | L83 | "Property 21: Session Reconnect Scope" | "Property 21: Session WAL Replay Scope" |
-
-#### 5.3 排除列表（不修改）
-
-| 文件 | 原因 |
-|------|------|
-| `.kiro/specs/version-unification/tasks.md` L226 | 不同的 Property 21（Manifest_Migrator legacy detection），与本 WI 无关 |
-| `.kiro/specs/version-unification/design.md` L865 | 同上 |
-| `docs/archive/OPENCODE_INTEGRATION_BRIEF.md` | grep 确认无 Property 21 / detectOldSessions / reconnectOldSessions 引用 |
-| `tests/integration/fixtures/sf_v6_arch_check/backup/*.md` | 历史备份文件 |
-
-#### 5.4 同步验证方法
-
-1. 开发阶段完成后，执行 `grep -rn "reconnectOldSessions\|detectOldSessions" packages/ --include="*.ts"` — 预期零结果
-2. 执行 `grep -rn "Property 21.*[Rr]econnect" .kiro/specs/` — 预期零结果（所有旧措辞已更新）
-3. 执行 `grep -rn "Property 21.*[Rr]eplay\|WAL.*replay" .kiro/specs/` — 预期命中所有更新点
+**Re-export 策略**：`workflow-path-selector-v11.ts` 添加 `export * from './impact-analysis.js';`
 
 ---
 
-### DD-6 RecoverySubsystem 内部注释同步
+#### DD-A3 trigger-result.ts — Trigger Result 独立模块
 
-refs: [DD-1, DD-2]
-constrained_by: 无运行时约束
+refs: [§6.3, AC-1, AC-2]
+constrained_by: standard §6.3
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/trigger-result.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `MatchResultType`
+    input: "type union of 6 string literals"
+    output: "MatchResultType"
+    errors: []
+  - name: `TriggerResult`
+    input: "interface with schema_version, work_item_id, workflow_path, etc."
+    output: "TriggerResult"
+    errors: []
+data_flow:
+  - "workflow-path-selector-v11.ts → (extract) → trigger-result.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+out_of_scope:
+  - "Changes to MatchResultType values"
+assumptions:
+  - "6 match result types are fixed per §6.3"
 
-除了 L13-L17 的 Property 21 顶部注释重写外，RecoverySubsystem 内部还有多处 Property 21 相关注释需要更新措辞：
+**提取内容**：
+| 导出项 | 类型 | 标准章节 |
+|--------|------|----------|
+| `MatchResultType` | type | §6.3 匹配结果类型 |
+| `TriggerResult` | interface | §6.1 trigger_result.json |
 
-| 行号 | 当前措辞 | 目标措辞 |
-|------|----------|----------|
-| L46 | `// Property 21: Track startup phase to limit reconnection attempts` | `// Property 21: Track startup phase to limit WAL replay session reconstruction` |
-| L355 | `Attempt session reconnection (only during startup - Property 21)` | `Attempt session WAL replay reconstruction (only during startup - Property 21)` |
-| L357 | `Property 21: Reconnection attempts may only occur within Daemon startup process.` | `Property 21: WAL replay session reconstruction may only occur within Daemon startup process.` |
-| L365 | `// Property 21: Only attempt reconnection during startup phase` | `// Property 21: Only attempt WAL replay during startup phase` |
+**Re-export 策略**：`workflow-path-selector-v11.ts` 添加 `export * from './trigger-result.js';`
 
-**注意**: `attemptSessionReconnect` 和 `performSessionReconnect` 方法名暂不修改——方法名修改属于更大范围的重命名重构，可由后续 WI 处理。本次仅修改注释措辞。
+---
+
+#### DD-A4 gate-report.ts — Gate Report 独立模块
+
+refs: [§9.4, AC-1, AC-2]
+constrained_by: standard §9.4
+risk_level: medium
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/gate-runner-v11.ts` (910 lines)
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/gate-report.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/gate-runner-v11.ts` (UPDATE)
+    - `packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts` (UPDATE — optional import path update)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `GateReportCheck`
+    input: "interface with check_id, description, passed, severity, details"
+    output: "GateReportCheck"
+    errors: []
+  - name: `GateReportV11`
+    input: "interface with schema_version, work_item_id, gate_id, gate_type, etc."
+    output: "GateReportV11"
+    errors: []
+  - name: `runGate`
+    input: "gateId: GateIdV11, ctx: GateContext"
+    output: "Promise<GateReportV11>"
+    errors: ["GateNotRegistered"]
+  - name: `makeReport` (internal helper)
+    input: "workItemId, gateId, gateType, required, checks, inputFiles"
+    output: "GateReportV11"
+    errors: []
+data_flow:
+  - "gate-runner-v11.ts → (extract) → gate-report.ts"
+  - "handler sf-v11-gate-run.ts → gate-runner-v11.ts (unchanged import path)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+    - "cd packages/daemon-core && npx vitest run tests/v11-*.test.ts"
+  evidence_expected:
+    - "AC-2: re-export complete"
+    - "AC-6: 94 tests pass after split"
+parallelization_notes:
+  parallel_safe_with: [DD-A1, DD-A2, DD-A3]
+  conflicts_with: [DD-A5, DD-A6] (same source file gate-runner-v11.ts)
+
+**提取内容**：
+| 导出项 | 类型 | 标准章节 |
+|--------|------|----------|
+| `GateReportCheck` | interface | §9.4 Gate Report check |
+| `GateReportV11` | interface | §9.4 Gate Report 结构 |
+| `GateContext` | interface | §9 Gate 上下文 |
+| `GateCheckFn` | type | §9 Gate 检查函数签名 |
+| `runGate` | function | §9.4 运行单个 Gate |
+| `makeSkippedReport` | function | 辅助：跳过报告 |
+| `makeReport` | function | 辅助：构造 GateReportV11 |
+
+**Re-export 策略**：`gate-runner-v11.ts` 添加 `export * from './gate-report.js';`
+
+---
+
+#### DD-A5 gate-summary.ts — Gate Summary 独立模块
+
+refs: [§9.5, AC-1, AC-2]
+constrained_by: standard §9.5
+risk_level: medium
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/gate-runner-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/gate-summary.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/gate-runner-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `GateSummaryStatus`
+    input: "type union of 6 status strings"
+    output: "GateSummaryStatus"
+    errors: []
+  - name: `generateGateSummaryMd`
+    input: "workItemId, reports, overallStatus"
+    output: "string (Markdown)"
+    errors: []
+data_flow:
+  - "gate-runner-v11.ts → (extract) → gate-summary.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+parallelization_notes:
+  conflicts_with: [DD-A4, DD-A6] (same source file)
+
+**提取内容**：
+| 导出项 | 类型 | 标准章节 |
+|--------|------|----------|
+| `GateSummaryStatus` | type | §9.5 overall_status 枚举 |
+| `generateGateSummaryMd` | function | §9.5 Gate Summary Markdown 生成 |
+
+---
+
+#### DD-A6 gate-chain.ts — Gate Chain / Freeze Rules 独立模块
+
+refs: [§9.6, AC-1, AC-2]
+constrained_by: standard §9.6
+risk_level: medium
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/gate-runner-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/gate-chain.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/gate-runner-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `GateMeta`
+    input: "interface with gateId, gateType, required, checkFn"
+    output: "GateMeta"
+    errors: []
+  - name: `registerGate`
+    input: "gateId, gateType, required, checkFn"
+    output: "void"
+    errors: []
+  - name: `runRequiredGates`
+    input: "gateIds, ctx"
+    output: "Promise<{ reports, summaryStatus, summaryPath }>"
+    errors: ["GateExecutionError"]
+data_flow:
+  - "gate-runner-v11.ts → (extract) → gate-chain.ts"
+  - "gate-chain.ts → gate-report.ts (imports GateReportV11, GateContext)"
+  - "gate-chain.ts → gate-summary.ts (imports GateSummaryStatus, generateGateSummaryMd)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+    - "cd packages/daemon-core && npx vitest run tests/v11-*.test.ts"
+parallelization_notes:
+  conflicts_with: [DD-A4, DD-A5] (same source file)
+
+**提取内容**：
+| 导出项 | 类型 | 标准章节 |
+|--------|------|----------|
+| `GateMeta` | interface | §9.6 Gate 元数据 |
+| `gateRegistry` | Map (internal) | §9.6 Gate 注册表 |
+| `registerGate` | function | §9.6 注册 Gate |
+| `runRequiredGates` | function | §9.6 链式执行 + 冻结 |
+
+**依赖方向**：`gate-chain.ts` → `gate-report.ts` + `gate-summary.ts`（单向）
+
+---
+
+#### DD-A7 user-decision.ts — User Decision Core Types 独立模块
+
+refs: [§10.3, §10.5, AC-1, AC-2]
+constrained_by: standard §10.3, §10.4
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts` (191 lines)
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/user-decision.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `UserDecisionStatus`
+    input: "type union of 7 status strings"
+    output: "UserDecisionStatus"
+    errors: []
+  - name: `UserDecisionV11`
+    input: "interface with 15+ fields per §10.2"
+    output: "UserDecisionV11"
+    errors: []
+data_flow:
+  - "user-decision-recorder-v11.ts → (extract) → user-decision.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**提取内容**：
+| 导出项 | 类型 | 标准章节 |
+|--------|------|----------|
+| `UserDecisionStatus` | type | §10.3 状态枚举 |
+| `UserDecisionV11` | interface | §10.2 结构定义 |
+| Waiver sub-interfaces | interfaces | §10.6 Waiver 结构 |
+
+---
+
+#### DD-A8 waiver.ts — Waiver 记录逻辑独立模块
+
+refs: [§10.6, AC-1, AC-2]
+constrained_by: standard §10.6
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/waiver.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/user-decision-recorder-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `WaiverRecord`
+    input: "waiver_id, gate_id, reason, risk, expires_at, follow_up_wi"
+    output: "WaiverRecord"
+    errors: []
+  - name: `validateWaiver`
+    input: "waiver: WaiverRecord"
+    output: "boolean"
+    errors: ["HardGateWaiverAttempt"]
+data_flow:
+  - "user-decision-recorder-v11.ts → (extract) → waiver.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**提取内容**：Waiver 相关类型和校验逻辑。§10.6 明确 soft_gate waiver 必须有原因、风险、有效期和 follow-up WI；hard_gate 不允许 waiver。
+
+---
+
+#### DD-A9 allowed-write-files.ts — Allowed Write Files 独立模块
+
+refs: [§12.3, §12.4, AC-1, AC-2]
+constrained_by: standard §12.4
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/code-permission-service-v11.ts` (103 lines)
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/allowed-write-files.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/code-permission-service-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `AllowedWriteFile`
+    input: "path: string, operation: 'create' | 'modify' | 'delete'"
+    output: "AllowedWriteFile"
+    errors: []
+  - name: `validateAllowedWriteFiles`
+    input: "files: AllowedWriteFile[], tasksMd: string"
+    output: "{ valid: boolean, violations: string[] }"
+    errors: []
+data_flow:
+  - "code-permission-service-v11.ts → (extract) → allowed-write-files.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**提取内容**：§12.4 `allowed_write_files` 白名单校验逻辑。来自 `code-permission-service-v11.ts` 中 `ReleasePermissionInput` 和 `PermissionState` 中的 `allowed_write_files` 字段处理逻辑。
+
+---
+
+#### DD-A10 write-policy.ts — Write Policy 独立模块
+
+refs: [§12.5, §12.6, AC-1, AC-2]
+constrained_by: standard §12.5, §12.6
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/write-guard-v11.ts` (231 lines)
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/write-policy.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/write-guard-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `WritePolicyRule`
+    input: "rule definition"
+    output: "WritePolicyRule"
+    errors: []
+  - name: `evaluatePolicy`
+    input: "context, filePath, operation"
+    output: "WriteCheckResult"
+    errors: []
+data_flow:
+  - "write-guard-v11.ts → (extract) → write-policy.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**提取内容**：Write Guard 策略规则定义（§12.5 拦截规则、§12.6 阻断条件 10 条）。
+
+---
+
+#### DD-A11 command-write-audit.ts — Command Write Audit 独立模块
+
+refs: [§12.7, AC-1, AC-2]
+constrained_by: standard §12.7
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/write-guard-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/command-write-audit.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/write-guard-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `auditCommandWrite`
+    input: "command: string, expectedFiles: string[], actualFiles: string[]"
+    output: "AuditResult"
+    errors: []
+data_flow:
+  - "write-guard-v11.ts → (extract) → command-write-audit.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**提取内容**：§12.7 命令写入审计。审计 bash、formatter、generator 等写入入口的实际写入文件。
+
+---
+
+#### DD-A12 changed-files-audit.ts — Changed Files Audit 独立模块
+
+refs: [§12.7, §13, AC-1, AC-2]
+constrained_by: standard §12.7 (changed_files_audit)
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/write-guard-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/changed-files-audit.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/write-guard-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `ChangedFilesAuditResult`
+    input: "actual_changed, allowed_write_files, violations, escaped_write_incidents"
+    output: "ChangedFilesAuditResult"
+    errors: []
+  - name: `runChangedFilesAudit`
+    input: "workItemDir, allowedWriteFiles"
+    output: "ChangedFilesAuditResult"
+    errors: ["AuditFailed"]
+data_flow:
+  - "write-guard-v11.ts → (extract) → changed-files-audit.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**提取内容**：§12.7 `changed_files_audit` 完整逻辑。检查 6 项（实际修改文件列表、白名单合规、间接副作用、formatter/generator 写入、正式规格区写入、escaped_write_incident）。
+
+---
+
+#### DD-A13 tool-wrapper.ts — Tool Invocation Wrapper
+
+refs: [§12.4, AC-1]
+constrained_by: standard §12.4
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/tool-wrapper.ts` (CREATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `ToolInvocation`
+    input: "toolName, args, expectedWriteFiles, callerRole"
+    output: "ToolInvocationResult"
+    errors: ["WriteNotAllowed", "ToolNotPermitted"]
+  - name: `wrapToolCall`
+    input: "invocation: ToolInvocation, execute: () => Promise<T>"
+    output: "Promise<T>"
+    errors: ["WriteNotAllowed", "PermissionDenied", "FrozenStateViolation"]
+data_flow:
+  - "agent-handoff-v11.ts → tool-wrapper.ts (reference)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§12.5 要求所有写入入口必须声明 `expected_write_files`。`tool-wrapper.ts` 提供统一的工具调用入口，在执行前校验 Write Guard、在执行后审计实际写入。
+
+---
+
+#### DD-A14 bash-guard.ts — Bash Command Security Guard
+
+refs: [§12.9, AC-1]
+constrained_by: standard §12.5 (bash 写入拦截)
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/bash-guard.ts` (CREATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `BashGuardCheck`
+    input: "command: string, callerRole, activeWI"
+    output: "BashGuardResult { allowed, violations, sanitizedCommand }"
+    errors: ["DangerousCommand", "WriteWithoutPermission"]
+  - name: `guardBashCommand`
+    input: "command: string, context: WriteGuardContext"
+    output: "BashGuardResult"
+    errors: ["DangerousCommand", "WriteWithoutPermission"]
+data_flow:
+  - "bash-guard.ts → write-policy.ts (imports policy rules)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§12.5 明确 bash 是必须覆盖的写入入口。Bash Guard 分析命令字符串，识别文件写入操作（`>`, `>>`, `tee`, `cp`, `mv`, `sed -i`, `dd` 等），校验目标路径是否在 `allowed_write_files` 内。
+
+---
+
+#### DD-A15 verification-report.ts — Verification Report 独立模块
+
+refs: [§13.3, AC-1, AC-2]
+constrained_by: standard §13.3
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts` (310 lines)
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/verification-report.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `VerificationReport`
+    input: "interface with work_item_id, conclusion, evidence_refs"
+    output: "VerificationReport"
+    errors: []
+  - name: `validateVerificationReport`
+    input: "report: VerificationReport"
+    output: "{ valid: boolean, issues: string[] }"
+    errors: []
+data_flow:
+  - "verification-evidence-v11.ts → (extract) → verification-report.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+---
+
+#### DD-A16 evidence-manifest.ts — Evidence Manifest 独立模块
+
+refs: [§13.4, AC-1, AC-2]
+constrained_by: standard §13.4
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/evidence-manifest.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `EvidenceManifest`
+    input: "interface with schema_version, work_item_id, entries[]"
+    output: "EvidenceManifest"
+    errors: []
+  - name: `validateEvidenceManifest`
+    input: "manifest: EvidenceManifest"
+    output: "{ valid: boolean, issues: string[] }"
+    errors: []
+data_flow:
+  - "verification-evidence-v11.ts → (extract) → evidence-manifest.ts"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+---
+
+#### DD-A17 evidence.ts — Evidence Core Types & Collection
+
+refs: [§13.5, §13.1, AC-1, AC-2]
+constrained_by: standard §13.5
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/evidence.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `TraceEntry`
+    input: "interface with req_id, ac_ids, dd_ids, task_ids, file_paths, test_ids, evidence_ids"
+    output: "TraceEntry"
+    errors: []
+  - name: `TraceDelta`
+    input: "interface with work_item_id, impact, reason, entries[]"
+    output: "TraceDelta"
+    errors: []
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+---
+
+#### DD-A18 close-gate.ts — WI Close Gate 独立模块
+
+refs: [§15, §13.6, AC-1, AC-2]
+constrained_by: standard §15.2
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/close-gate.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/verification-evidence-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `CloseGateResult`
+    input: "work_item_id, passed, checks[]"
+    output: "CloseGateResult"
+    errors: []
+  - name: `runCloseGate`
+    input: "ctx: GateContext"
+    output: "Promise<CloseGateResult>"
+    errors: ["RequiredFilesMissing", "OutstandingViolations"]
+data_flow:
+  - "close-gate.ts → gate-report.ts (imports GateReportV11)"
+  - "close-gate.ts → evidence-manifest.ts (imports EvidenceManifest)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§15.2 列出 close_gate 必查 17 项。该模块从 `verification-evidence-v11.ts` 提取 close gate 相关逻辑。当前 `gate-runner-v11.ts` 中的 `close_gate` 注册函数（lines 660-788）是主要实现来源。
+
+---
+
+#### DD-A19 extension-registry.ts — Extension Registry 独立模块
+
+refs: [Patch1 §1-§5, AC-1, AC-3]
+constrained_by: Patch1 §1-§4
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/extension-subflow-v11.ts` (377 lines)
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/extension-registry.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/extension-subflow-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `ExtensionRegistry`
+    input: "interface with schema_version, namespaces, updated_by_work_item"
+    output: "ExtensionRegistry"
+    errors: []
+  - name: `validateExtensionRegistry`
+    input: "registry: ExtensionRegistry"
+    output: "{ valid: boolean, issues: string[] }"
+    errors: []
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+---
+
+#### DD-A20 extension-request.ts — Extension Request 独立模块
+
+refs: [Patch1 §6-§7, AC-1, AC-3]
+constrained_by: Patch1 §7
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/extension-subflow-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/extension-request.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/extension-subflow-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `ExtensionRequest`
+    input: "interface with schema_version, work_item_id, requested_by_agent, etc."
+    output: "ExtensionRequest"
+    errors: []
+  - name: `writeExtensionRequest`
+    input: "request: ExtensionRequest, workItemDir: string"
+    output: "Promise<void>"
+    errors: ["InvalidExtensionRequest", "WriteGuardViolation"]
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+---
+
+#### DD-A21 extension-gate.ts — Extension Gate 独立模块
+
+refs: [Patch1 §12, AC-1, AC-3]
+constrained_by: Patch1 §12
+risk_level: low
+implementation_boundary:
+  source_file: `packages/daemon-core/src/tools/lib/extension-subflow-v11.ts`
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/extension-gate.ts` (CREATE)
+    - `packages/daemon-core/src/tools/lib/extension-subflow-v11.ts` (UPDATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `runExtensionGate`
+    input: "ctx: GateContext"
+    output: "Promise<GateReportV11>"
+    errors: ["ExtensionRequestInvalid", "CandidateMissing"]
+data_flow:
+  - "extension-gate.ts → gate-report.ts (imports types)"
+  - "extension-gate.ts → extension-request.ts (imports types)"
+  - "extension-gate.ts → extension-registry.ts (imports types)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+---
+
+#### DD-A22 required-files.ts — Required Files Generator
+
+refs: [§4.3, §8.2, AC-1]
+constrained_by: standard §4.3 (闭环文件), §8.2 (Candidate)
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/required-files.ts` (CREATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `getRequiredFiles`
+    input: "workflowPath: WorkflowPath"
+    output: "string[] (list of required file paths)"
+    errors: []
+  - name: `validateRequiredFiles`
+    input: "workItemDir: string, workflowPath: WorkflowPath"
+    output: "{ allPresent: boolean, missing: string[], notApplicableValid: boolean }"
+    errors: []
+data_flow:
+  - "work-item-lifecycle-v11.ts → required-files.ts (called during WI creation)"
+  - "gate-runner-v11.ts → required-files.ts (called during required_files_gate)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§4.3 列出所有 WI 闭环文件。此模块根据 `workflow_path` 生成必需文件清单并校验存在性。不同 workflow_path 可让部分文件 `not_applicable`。
+
+---
+
+#### DD-A23 required-gates.ts — Required Gates Definition
+
+refs: [§9.1, §9.2, AC-1]
+constrained_by: standard §9.1, §9.2
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/required-gates.ts` (CREATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `getRequiredGates`
+    input: "workflowPath: WorkflowPath"
+    output: "GateIdV11[] (ordered list of required gates)"
+    errors: []
+  - name: `getGateStrictness`
+    input: "gateId: GateIdV11"
+    output: "GateStrictness ('hard_gate' | 'soft_gate')"
+    errors: []
+data_flow:
+  - "gate-runner-v11.ts → required-gates.ts (called to determine which gates to run)"
+  - "gate-chain.ts → required-gates.ts (used in runRequiredGates)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§9.2 列出 MVP 至少 14 个 Gate。此模块定义每个 workflow_path 需要的 Gate 列表及其 hard/soft 分类。当前 `gate-runner-v11.ts` 中 14 个 `registerGate` 调用（lines 280-910）是此数据的来源。
+
+---
+
+#### DD-A24 path-service.ts — Path Service 集中
+
+refs: [§1.5, §3, AC-1]
+constrained_by: standard §1.5
+risk_level: low
+implementation_boundary:
+  source_file: 各模块中分散的路径计算逻辑
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/path-service.ts` (CREATE)
+  forbidden_files: [`.specforge/**`, `packages/types/**`]
+interfaces:
+  - name: `PathService`
+    input: "projectRoot: string"
+    output: "object with path construction methods"
+    errors: []
+  - name: `resolveWIPath`
+    input: "projectRoot, wiId, relativePath"
+    output: "string (absolute path)"
+    errors: ["InvalidPath"]
+data_flow:
+  - "path-service.ts → @specforge/types (imports directory-layout)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§1.5 要求 Path Service 负责生成所有关键路径。当前 `@specforge/types/directory-layout.ts` 已导出 `projectRoot()`, `workItemRoot()` 等函数。`path-service.ts` 作为 daemon-core 侧的消费者和补充，提供文件系统操作相关的路径解析。
+
+---
+
+#### DD-A25 path-policy.ts — Path Policy Rules
+
+refs: [§1.6, AC-1]
+constrained_by: standard §1.6
+risk_level: low
+implementation_boundary:
+  source_file: `packages/types/src/directory-layout.ts` (已有 `validatePathPolicy`)
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/path-policy.ts` (CREATE)
+  forbidden_files: [`.specforge/**`]
+interfaces:
+  - name: `enforcePathPolicy`
+    input: "filePath: string"
+    output: "{ valid: boolean, violations: string[] }"
+    errors: []
+data_flow:
+  - "path-policy.ts → @specforge/types (imports validatePathPolicy)"
+  - "write-guard-v11.ts → path-policy.ts (validates write target paths)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§1.6 列出 7 条路径规则（POSIX 风格、禁止绝对路径、禁止 `..`、禁止 `~`、禁止 `\`、必须带 `.specforge/` 前缀）。`@specforge/types` 已有 `validatePathPolicy`，本模块提供 daemon-core 侧的运行时强制执行层。
+
+---
+
+#### DD-A26 project-layout.ts — Project Layout Constants
+
+refs: [§1-§2, AC-1]
+constrained_by: standard §1.3, §2.1
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `packages/daemon-core/src/tools/lib/project-layout.ts` (CREATE)
+  forbidden_files: [`.specforge/**`]
+interfaces:
+  - name: `PROJECT_SPEC_FILES`
+    input: "constant: string[]"
+    output: "list of mandatory project spec file names"
+    errors: []
+  - name: `WI_REQUIRED_FILES`
+    input: "constant: string[]"
+    output: "list of mandatory WI closure file names"
+    errors: []
+  - name: `MVP_FORBIDDEN_DIRS`
+    input: "constant: string[]"
+    output: "list of MVP forbidden directories"
+    errors: []
+data_flow:
+  - "project-layout.ts → required-files.ts (used by)"
+  - "project-layout.ts → sf_project_init_core.ts (used by)"
+verification_strategy:
+  commands:
+    - "cd packages/daemon-core && npx tsc --noEmit"
+
+**设计说明**：§1.3 列出 MVP 禁止目录（`standards/`, `archive/`, `state/`, `gates/`, `reports/`, `snapshots/`）。§2.1 列出正式规格目录结构。本模块将散布在各模块中的目录结构常量集中管理。
+
+---
+
+#### DD-A27 schema.ts / constants.ts — packages/types 新增
+
+refs: [§3-§15, AC-1, AC-7]
+constrained_by: standard 全文
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `packages/types/src/schema.ts` (CREATE)
+    - `packages/types/src/constants.ts` (CREATE)
+    - `packages/types/src/index.ts` (UPDATE — add re-exports)
+  forbidden_files: [`.specforge/**`, `packages/daemon-core/**`]
+interfaces:
+  - name: schema.ts — JSON Schema definitions for Candidate, Delta, Gate, etc.
+    input: "zod/json-schema definitions"
+    output: "schema exports"
+    errors: []
+  - name: constants.ts — Version constants, status enums, path templates
+    input: "const definitions"
+    output: "constant exports"
+    errors: []
+data_flow:
+  - "schema.ts → work-item-types.ts (re-exported from index.ts)"
+  - "constants.ts → index.ts (re-exported)"
+verification_strategy:
+  commands:
+    - "cd packages/types && npx tsc --noEmit"
+    - "cd packages/daemon-core && npx tsc --noEmit"
+  evidence_expected:
+    - "AC-7: 15 packages build with zero TypeScript errors"
+
+**设计说明**：
+- `schema.ts`：v1.1 标准中所有 JSON Schema 定义集中。当前 `work-item-types.ts` 中已有 `WorkItemJsonSchema`, `CandidateManifestSchema` 等 Zod schema。新文件将 schema 定义从 `work-item-types.ts` 分离。
+- `constants.ts`：版本号（`SCHEMA_VERSION = '1.0'`）、状态枚举值、路径模板等。当前散布在 `work-item-types.ts` 的 `WI_STATUSES`, `WORKFLOW_PATHS` 等数组。
+
+---
+
+### Group B: Agent Definition Updates（10 UPDATE + 1 CREATE）
+
+**设计方法**：更新每个 Agent MD 文件，添加 v1.1 概念引用。更新遵循以下原则：
+1. **追加不覆盖**：在现有内容基础上追加 v1.1 概念段落，不删除现有内容。
+2. **概念精确映射**：每个新增概念必须引用标准具体章节。
+3. **职责边界不变**：不改变 Agent 的核心职责定义，只补充 v1.1 约束。
+
+---
+
+#### DD-B1 _AGENT_BASE.md — v1.1 基础概念
+
+refs: [§0.2, §14.2, AC-4]
+constrained_by: standard §0.2 (最高约束)
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/_AGENT_BASE.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+interfaces: N/A (Markdown document)
+verification_strategy:
+  commands: ["manual: verify opencode loads updated Agent MD"]
+out_of_scope:
+  - "Agent-specific behavior changes"
+assumptions:
+  - "opencode reads Agent MD files at startup"
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| v1.1 Candidate 概念 | §8.2 | 所有规格变更通过 Candidate 进入 |
+| v1.1 Delta 概念 | §8.1 | Delta 解释变化，不是最终写入对象 |
+| v1.1 Gate 概念 | §9.1 | Gate 是流程准入检查点，不是建议 |
+| v1.1 Trace 概念 | §13.1 | Trace 必须贯穿 REQ→AC→DD→TASK→FILE→TEST→EVIDENCE |
+| v1.1 Evidence 概念 | §13.4 | 所有证据必须登记到 evidence_manifest.json |
+| v1.1 Extension 概念 | Patch1 §5 | Agent 发现扩展缺口必须停止并报告 |
+| 普通 Agent 禁止事项 | §14.2 | 不得推进状态、释放权限、写正式规格等 |
+| Agent handoff 格式 | §14.3 | 最小内容：Inputs/Outputs/Findings/Unknowns/Escalation |
+
+---
+
+#### DD-B2 sf-orchestrator.md — WI 生命周期 + Extension Subflow
+
+refs: [§5, §6.1, Patch1 §8, AC-4]
+constrained_by: standard §5.3, Patch1 §8
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-orchestrator.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| WI 状态机推进权限 | §5.3 | 只有 orchestrator/Runtime/Gate Runner/Merge Runner 等可推进状态 |
+| 状态跳转禁止表 | §5.2 | 12 条禁止跳转规则 |
+| Extension Subflow 调度 | Patch1 §8 | Agent 写 extension_request.json 后 orchestrator 必须阻断并调度 sf-extension |
+| 恢复机制 | §5.4 | resume_check 与 resume_plan 7 项检查 |
+| close_gate 职责 | §15.1 | close_gate 是 WI 关闭前最后一道锁 |
+| 主链路 | §22 | User Request → WI → ... → closed 完整链路 |
+
+---
+
+#### DD-B3 sf-design.md — Design Delta / Candidate / Gate
+
+refs: [§7.2, §8.1, §8.2, AC-4]
+constrained_by: standard §7.2, §8.1, §8.2
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-design.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| design_delta.md 生成要求 | §8.1 | Delta 解释变化，不是最终写入对象 |
+| Design Candidate 生成 | §8.2 | Candidate 必须是完整目标文件 |
+| Candidate 路径约束 | §8.2 | 位于 WI candidates/ 下，不能直接覆盖 .specforge/project/ |
+| Candidate hash 计算 | §8.2 | 必须绑定 base_spec_version 并计算 hash |
+| Extension Subflow 触发 | Patch1 §6 | 发现缺少 design type 时必须停止并写 extension_request.json |
+| Gate 自检要求 | §9.1 | 设计完成后必须让 design quality gate 可校验 |
+
+---
+
+#### DD-B4 sf-requirements.md — Requirements Delta / Candidate / Trace
+
+refs: [§7.1, §8.1, §13.1, AC-4]
+constrained_by: standard §7.1, §8.1
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-requirements.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| requirements_delta.md 生成 | §8.1 | Delta 说明为什么变、改了什么、影响哪些正式规格 |
+| Requirements Candidate 生成 | §8.2 | 完整 candidate 文件 |
+| Trace 链起始 | §13.1 | REQ→AC→DD→TASK→FILE→TEST→EVIDENCE |
+| trace_delta.md 生成 | §13.2 | 每个 WI 必须生成，即使 Trace 不变 |
+| Extension Subflow 触发 | Patch1 §6 | 发现缺少 requirement type 时触发 |
+
+---
+
+#### DD-B5 sf-verifier.md — Verification Report / Evidence / Close Gate
+
+refs: [§13.3, §13.4, §15, AC-4]
+constrained_by: standard §13.3, §13.4, §15
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-verifier.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| verification_report.md 要求 | §13.3 | 不得只写"已验证"，必须引用 Evidence |
+| evidence_manifest.json 要求 | §13.4 | 所有证据必须登记 |
+| verification_gate 必查项 | §13.5 | 6 项检查 |
+| close_gate 必查项 | §15.2 | 17 项检查 |
+| changed_files_audit 集成 | §12.7 | 越界写入必须 blocked |
+
+---
+
+#### DD-B6 sf-executor.md — code_permission / allowed_write_files / 变更审计
+
+refs: [§12.1, §12.4, §12.5, §12.7, AC-4]
+constrained_by: standard §12.1, §12.4, §12.5
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-executor.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| code_permission 默认值 | §12.1 | code_change_allowed=false, allowed_write_files=[] |
+| allowed_write_files 声明 | §12.4 | 来源于 tasks.md 和 impact_analysis |
+| Write Guard 遵守 | §12.5 | 必须声明 expected_write_files |
+| 变更审计 | §12.7 | 实现后必须执行 changed_files_audit |
+| 越界写入后果 | §12.6 | 越界写入必须 blocked，不得继续 close |
+
+---
+
+#### DD-B7 sf-debugger.md — Write Guard 豁免规则
+
+refs: [§12, §14.2, AC-4]
+constrained_by: standard §12
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-debugger.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| 调试场景 Write Guard 豁免 | §12.5 | 调试期间仍需 WI + code_permission，但可申请临时扩大 allowed_write_files |
+| 调试不等于绕过 | §14.2 | 普通 Agent 禁止事项同样适用于调试 |
+| 调试变更必须审计 | §12.7 | 调试写入也必须经过 changed_files_audit |
+
+---
+
+#### DD-B8 sf-reviewer.md — Gate 集成 / Candidate 校验
+
+refs: [§9.4, §8.2, §14.2, AC-4]
+constrained_by: standard §9.4, §8.2
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-reviewer.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| Review 的 Gate 集成 | §9.4 | Review 结果应作为 Gate Report 的输入 |
+| Candidate 校验 | §8.2 | Review 应验证 Candidate 是完整文件、hash 正确 |
+| Review 不替代 Gate | §9.1 | Review 是专业内容审查，不替代 Gate 的流程准入检查 |
+
+---
+
+#### DD-B9 sf-task-planner.md — Trace 链维护
+
+refs: [§13.1, §13.2, §14.3, AC-4]
+constrained_by: standard §13.1, §13.2
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-task-planner.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| Task 的 Trace 链维护 | §13.1 | TASK 必须链接到 DD / FILE / TEST / EVIDENCE |
+| trace_delta.md 贡献 | §13.2 | Task 拆分可能影响 Trace |
+| Agent handoff 格式 | §14.3 | Task planner 输出的 handoff 必须符合 §14.3 格式 |
+
+---
+
+#### DD-B10 sf-knowledge.md — KG 与 v1.1 概念同步
+
+refs: [§13, §14, AC-4]
+constrained_by: standard §13, §14
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-knowledge.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| KG 与 Trace 同步 | §13.1 | KG 节点应可追溯到 REQ/AC/DD/TASK |
+| KG 与 Candidate 关联 | §8.2 | KG 应记录 Candidate 变更的模块影响 |
+| KG 与 Gate 关联 | §9.4 | KG 应记录 Gate 检查的结果节点 |
+
+---
+
+#### DD-B11 sf-extension.md — New Agent: Extension Subflow Executor
+
+refs: [Patch1 §9, AC-3, AC-4]
+constrained_by: Patch1 §9
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `setup/userlevel-opencode/agents/sf-extension.md` (CREATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+interfaces: N/A (Markdown Agent definition)
+verification_strategy:
+  commands: ["manual: verify opencode recognizes sf-extension agent"]
+out_of_scope:
+  - "sf-extension runtime implementation (already in extension-subflow-v11.ts)"
+assumptions:
+  - "sf-orchestrator will dispatch sf-extension when extension_request.json is detected"
+
+**新建内容**：
+
+| 段落 | 标准章节 | 说明 |
+|------|----------|------|
+| Agent 身份 | Patch1 §9 | 扩展设计专用 Agent |
+| 职责列表 | Patch1 §9 | 读取 extension_request → 判断必要 → 生成 extension_delta → 生成 candidate → 更新 manifest → 输出 handoff |
+| 禁止事项 | Patch1 §9 | 不得直接写正式 extension_registry、不得推进 WI 状态、不得释放 code_permission、不得关闭 WI |
+| Extension Delta 格式 | Patch1 §10 | 8 个必须章节 |
+| Extension Candidate 要求 | Patch1 §11 | 必须是完整 extension_registry.json，不是 patch |
+| Extension Gate 检查项 | Patch1 §12 | 10 项检查 |
+| Extension Merge 流程 | Patch1 §14 | 使用 Merge Runner，project_spec_version 必须递增 |
+| 主流程恢复 | Patch1 §15 | Extension Subflow 完成后原 Agent 必须基于最新 registry 重新执行 |
+
+---
+
+### Group C: Skill File Updates（~12 UPDATE）
+
+**设计方法**：更新每个 Skill 的 SKILL.md，在现有执行步骤中注入 v1.1 概念检查点。更新原则：
+1. **最小侵入**：在现有步骤序列中插入检查点，不重写整体流程。
+2. **概念一致**：所有 Skill 使用统一的 v1.1 术语（Candidate、Delta、Gate、Trace、Evidence）。
+
+---
+
+#### DD-C1 sf-workflow-feature-spec/SKILL.md
+
+refs: [§7.1, §8, §9, §13, AC-5]
+
+**更新内容**：在 feature spec 工作流各阶段插入 Candidate/Delta/Gate 检查点：
+- requirements 阶段后：生成 `requirements_delta.md` + requirements Candidate
+- design 阶段后：生成 `design_delta.md` + design Candidate
+- tasks 阶段后：生成 `trace_delta.md`
+- verification 阶段：生成 `verification_report.md` + `evidence_manifest.json`
+- 完成前：`changed_files_audit` + `close_gate`
+
+---
+
+#### DD-C2 sf-workflow-design-first/SKILL.md
+
+refs: [§7.2, §8.1, AC-5]
+
+**更新内容**：在 design-first 工作流中添加 Design Delta 生成步骤（design 阶段先于 requirements）。
+
+---
+
+#### DD-C3 sf-workflow-bugfix-spec/SKILL.md
+
+refs: [§7.1, §8.1, AC-5]
+
+**更新内容**：添加 Bugfix Delta/Candidate 流程。Bugfix 也需要 WI、requirements_delta、design_delta（如果设计受影响）、tasks、trace_delta、verification、evidence。
+
+---
+
+#### DD-C4 sf-workflow-change-request/SKILL.md
+
+refs: [§6.2, §9, AC-5]
+
+**更新内容**：添加 Change Request 影响分析 Gate 检查点。Change Request 必须经过完整的 classification → impact_analysis → trigger_result → workflow_path 选择流程。
+
+---
+
+#### DD-C5 sf-workflow-investigation/SKILL.md
+
+refs: [§15, AC-5]
+
+**更新内容**：添加 Investigation Close Gate。Investigation WI 也必须有 `verification_report.md`、`evidence_manifest.json`、`trace_delta.md`、`close_gate`。
+
+---
+
+#### DD-C6 sf-workflow-ops-task/SKILL.md
+
+refs: [§12.7, AC-5]
+
+**更新内容**：添加 Ops Task 审计要求。运维操作必须在 `allowed_write_files` 声明范围内执行，操作后必须 `changed_files_audit`。
+
+---
+
+#### DD-C7 sf-workflow-refactor/SKILL.md
+
+refs: [§13, AC-5]
+
+**更新内容**：添加 Refactor 行为不变性 Evidence。Refactor 必须证明行为不变（测试通过 + Trace 不变 + Evidence 支撑）。
+
+---
+
+#### DD-C8 sf-workflow-quick-change/SKILL.md
+
+refs: [§7.5, AC-5]
+
+**更新内容**：添加 Quick Change 轻量验证模式。即使是 Quick Change，也必须有 WI、tasks、trace_delta、verification_report、evidence_manifest、changed_files_audit、close_gate。
+
+---
+
+#### DD-C9 sf-intake/SKILL.md
+
+refs: [§4.5, §8.2, AC-5]
+
+**更新内容**：添加 intake 阶段 required_files 生成。intake.md 必须原样保存用户请求，同时生成 `required_files` 清单用于后续 Gate 校验。
+
+---
+
+#### DD-C10 superpowers-subagent-driven-development/SKILL.md
+
+refs: [§12.5, §12.4, AC-5]
+
+**更新内容**：添加 Write Guard / code_permission 遵守指令。子 Agent 必须在 `allowed_write_files` 范围内操作，必须声明 `expected_write_files`。
+
+---
+
+#### DD-C11 superpowers-verification-before-completion/SKILL.md
+
+refs: [§13.3, §13.4, AC-5]
+
+**更新内容**：添加 Evidence Manifest 校验。完成前必须验证 `evidence_manifest.json` 存在且 entries 非空，`verification_report.md` 引用了具体 Evidence。
+
+---
+
+#### DD-C12 superpowers-writing-plans/SKILL.md
+
+refs: [§13.1, §13.2, AC-5]
+
+**更新内容**：添加 Trace 链维护指令。执行计划必须说明 Trace 影响并生成 `trace_delta.md`。
+
+---
+
+### Group D: User-Level Config Updates（1 UPDATE）
+
+#### DD-D1 AGENT_CONSTITUTION.md — v1.1 概念定义和底线规则
+
+refs: [§0.2, §14, AC-4]
+constrained_by: standard §0.2 (最高约束)
+risk_level: low
+implementation_boundary:
+  likely_write_files:
+    - `~/.config/opencode/agents/AGENT_CONSTITUTION.md` (UPDATE)
+  forbidden_files: [`packages/**`, `.specforge/**`]
+interfaces: N/A (Markdown configuration)
+verification_strategy:
+  commands: ["manual: verify opencode loads updated constitution"]
+out_of_scope:
+  - "Runtime code changes"
+assumptions:
+  - "AGENT_CONSTITUTION.md is read by all agents at startup"
+
+**更新内容**：
+
+| 新增段落 | 标准章节 | 说明 |
+|----------|----------|------|
+| v1.1 Candidate/Delta/Gate/Trace/Evidence/Extension 概念定义 | §8, §9, §13, Patch1 | 统一术语定义 |
+| Agent 底线规则 | §14.2 | 普通 Agent 禁止事项（9 条） |
+| 状态推进权限 | §5.3 | 普通 Agent 不得直接推进 WI 状态 |
+| 写入权限规则 | §12.1, §12.6 | code_permission 和 Write Guard 规则 |
+| Extension Subflow 触发 | Patch1 §6 | Agent 发现扩展缺口时的行为要求 |
+| close_gate 硬性约束 | §15.2 | WI 关闭前 17 项必查 |
 
 ---
 
 ## 2. 受影响模块
 
-### 2.1 RecoverySubsystem（`packages/daemon-core/src/recovery/RecoverySubsystem.ts`）
+### 2.1 packages/daemon-core — 主要变更目标
 
-**变更类型**: 注释重写 + 方法删除 + 内部注释同步
+| 文件 | 变更类型 | 标准章节 | Group |
+|------|----------|----------|-------|
+| `src/tools/lib/change-classification.ts` | CREATE | §6.2 | A |
+| `src/tools/lib/impact-analysis.ts` | CREATE | §6.2 | A |
+| `src/tools/lib/trigger-result.ts` | CREATE | §6.3 | A |
+| `src/tools/lib/gate-report.ts` | CREATE | §9.4 | A |
+| `src/tools/lib/gate-summary.ts` | CREATE | §9.5 | A |
+| `src/tools/lib/gate-chain.ts` | CREATE | §9.6 | A |
+| `src/tools/lib/user-decision.ts` | CREATE | §10 | A |
+| `src/tools/lib/waiver.ts` | CREATE | §10.6 | A |
+| `src/tools/lib/allowed-write-files.ts` | CREATE | §12.3-12.4 | A |
+| `src/tools/lib/write-policy.ts` | CREATE | §12.5-12.6 | A |
+| `src/tools/lib/command-write-audit.ts` | CREATE | §12.7 | A |
+| `src/tools/lib/changed-files-audit.ts` | CREATE | §12.7 | A |
+| `src/tools/lib/tool-wrapper.ts` | CREATE | §12.4 | A |
+| `src/tools/lib/bash-guard.ts` | CREATE | §12.9 | A |
+| `src/tools/lib/verification-report.ts` | CREATE | §13.3 | A |
+| `src/tools/lib/evidence-manifest.ts` | CREATE | §13.4 | A |
+| `src/tools/lib/evidence.ts` | CREATE | §13.5 | A |
+| `src/tools/lib/close-gate.ts` | CREATE | §13.6, §15 | A |
+| `src/tools/lib/extension-registry.ts` | CREATE | Patch1 §1-5 | A |
+| `src/tools/lib/extension-request.ts` | CREATE | Patch1 §6-7 | A |
+| `src/tools/lib/extension-gate.ts` | CREATE | Patch1 §12 | A |
+| `src/tools/lib/required-files.ts` | CREATE | §4.3, §8.2 | A |
+| `src/tools/lib/required-gates.ts` | CREATE | §9.1-9.2 | A |
+| `src/tools/lib/path-service.ts` | CREATE | §1.5 | A |
+| `src/tools/lib/path-policy.ts` | CREATE | §1.6 | A |
+| `src/tools/lib/project-layout.ts` | CREATE | §1-2 | A |
+| `src/tools/lib/workflow-path-selector-v11.ts` | UPDATE (re-export) | §6 | A |
+| `src/tools/lib/gate-runner-v11.ts` | UPDATE (re-export) | §9 | A |
+| `src/tools/lib/user-decision-recorder-v11.ts` | UPDATE (re-export) | §10 | A |
+| `src/tools/lib/code-permission-service-v11.ts` | UPDATE (re-export) | §12 | A |
+| `src/tools/lib/write-guard-v11.ts` | UPDATE (re-export) | §12 | A |
+| `src/tools/lib/verification-evidence-v11.ts` | UPDATE (re-export) | §13 | A |
+| `src/tools/lib/extension-subflow-v11.ts` | UPDATE (re-export) | Patch1 | A |
+| `src/tools/lib/state-machine-v11.ts` | UPDATE (import adapt) | §5 | A |
+| `src/tools/lib/merge-runner-v11.ts` | UPDATE (import adapt) | §11 | A |
+| `src/tools/lib/rollback-runner-v11.ts` | UPDATE (import adapt) | §16 | A |
+| `src/tools/lib/agent-handoff-v11.ts` | UPDATE (add refs) | §14.3 | A |
+| `src/tools/lib/spec-migration-v11.ts` | UPDATE (import adapt) | §7.6 | A |
+| `src/tools/lib/work-item-lifecycle-v11.ts` | UPDATE (add call) | §4 | A |
+| `src/tools/lib/sf_project_init_core.ts` | UPDATE (add dirs) | §1-2 | A |
+| `src/tools/handlers/sf-v11-gate-run.ts` | UPDATE (import) | §9 | A |
+| `src/tools/handlers/sf-v11-merge.ts` | UPDATE (import) | §11 | A |
+| `src/tools/handlers/sf-v11-verification.ts` | UPDATE (import) | §13 | A |
+| `src/tools/handlers/sf-v11-extension.ts` | UPDATE (import) | Patch1 | A |
+| `src/tools/handlers/sf-v11-decision.ts` | UPDATE (import) | §10 | A |
 
-| 变更 | 行号 | 详细 |
-|------|------|------|
-| Property 21 注释重写 | L13-L17 | 机制描述从"reconnection"改为"WAL replay" |
-| 内部注释同步 | L46, L355, L357, L365 | 措辞同步更新 |
-| 删除 detectOldSessions | L458-L491 | 完整方法体 + JSDoc 删除（~34 行） |
-| 删除 reconnectOldSessions | L500-L538 | 完整方法体 + JSDoc 删除（~39 行） |
-| 保留 attemptSessionReconnect | L354-L375 | 保留方法体，仅更新注释 |
-| 保留 performSessionReconnect | L381-L408 | 保留不动 |
-| 保留 getReconnectionScopeStatus | L544-L554 | 保留不动 |
+### 2.2 packages/types — 类型扩展
 
-**Interface 变更**:
-```typescript
-// 删除的公开方法
-- detectOldSessions(): Promise<string[]>           // DELETED
-- reconnectOldSessions(): Promise<SessionReconnectResult[]>  // DELETED
+| 文件 | 变更类型 | 标准章节 | Group |
+|------|----------|----------|-------|
+| `src/schema.ts` | CREATE | §8, §9, §10, §13 | A |
+| `src/constants.ts` | CREATE | §3-§15 | A |
+| `src/index.ts` | UPDATE (re-export) | — | A |
 
-// 保留的公开方法（接口不变）
-+ attemptSessionReconnect(sessionId: string): Promise<boolean>  // KEPT
-+ getReconnectionScopeStatus(): { isInStartupPhase: boolean; hasStartupCompleted: boolean; reconnectionAllowed: boolean }  // KEPT
-```
+### 2.3 Agent 定义文件
 
----
+| 文件 | 变更类型 | Group |
+|------|----------|-------|
+| `setup/userlevel-opencode/agents/_AGENT_BASE.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-orchestrator.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-design.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-requirements.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-verifier.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-executor.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-debugger.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-reviewer.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-task-planner.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-knowledge.md` | UPDATE | B |
+| `setup/userlevel-opencode/agents/sf-extension.md` | CREATE | B |
 
-### 2.2 Daemon（`packages/daemon-core/src/daemon/Daemon.ts`）
+### 2.4 Skill 文件
 
-**变更类型**: 调用点删除 + 注释更新
+| 文件 | 变更类型 | Group |
+|------|----------|-------|
+| `setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-workflow-bugfix-spec/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-workflow-change-request/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-workflow-investigation/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-workflow-ops-task/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-workflow-refactor/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/sf-intake/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/superpowers-subagent-driven-development/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/superpowers-verification-before-completion/SKILL.md` | UPDATE | C |
+| `setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md` | UPDATE | C |
 
-| 变更 | 行号 | 详细 |
-|------|------|------|
-| 删除 reconnectOldSessions 调用 | L183-L185 | 删除 3 行（注释 + 调用） |
-| 更新 completeStartup 注释 | L187 | 从"reconnection"改为"WAL replay" |
+### 2.5 用户级配置
 
----
-
-### 2.3 property-21.test.ts（`packages/daemon-core/tests/property/property-21.test.ts`）
-
-**变更类型**: 全文重写
-
-| 旧依赖 | 新依赖 | 说明 |
-|--------|--------|------|
-| `detectOldSessions()` L165 | **删除** | 改为验证 startupReplay scope |
-| `reconnectOldSessions()` L169 | **删除** | 改为验证 startupReplay scope |
-| `attemptSessionReconnect()` L120, L306, L322 | **保留** | 方法保留，测试调用不变 |
-| `getReconnectionScopeStatus()` L195, L203, L211, L301, L317, L328 | **保留** | 方法保留，断言逻辑不变 |
-
----
-
-### 2.4 .kiro/specs/ 文档（4 个文件）
-
-| 文件 | 变更量 | 说明 |
-|------|--------|------|
-| `.kiro/specs/v6-architecture-overview/design.md` | ~3 行 | Property 21 措辞重写 |
-| `.kiro/specs/daemon-core/requirements.md` | ~3 行 | Property 21 措辞重写 |
-| `.kiro/specs/daemon-core/design.md` | ~2 行 | Property 21 相关描述更新 |
-| `.kiro/specs/daemon-core/tasks.md` | ~5 行 | Property 21 测试任务描述更新 |
-
----
-
-### 2.5 DEVELOPMENT.md
-
-| 文件 | 变更量 | 说明 |
-|------|--------|------|
-| `packages/daemon-core/DEVELOPMENT.md` | ~1 行 | Property 21 标题措辞更新 |
-
----
-
-### 2.6 RecoverySubsystem.test.ts
-
-**变更类型**: 可能需要更新
-
-| 位置 | 说明 |
-|------|------|
-| L101-L106 | `attemptSessionReconnect` 单元测试 — 方法保留，测试应继续通过。注释措辞可选择性更新 |
+| 文件 | 变更类型 | Group |
+|------|----------|-------|
+| `~/.config/opencode/agents/AGENT_CONSTITUTION.md` | UPDATE | D |
 
 ---
 
 ## 3. 兼容性影响
 
-### 3.1 API Surface 变更
+### 3.1 Import 路径变更
 
-**删除的公开 API**:
-- `RecoverySubsystem.detectOldSessions(): Promise<string[]>`
-- `RecoverySubsystem.reconnectOldSessions(): Promise<SessionReconnectResult[]>`
+| 场景 | 变更前 | 变更后 | 影响 |
+|------|--------|--------|------|
+| 消费者从原文件 import | `import { X } from './workflow-path-selector-v11.js'` | **不变** — 原文件 re-export 新模块 | 无影响 |
+| 新消费者直接从新模块 import | N/A | `import { X } from './change-classification.js'` | 新增 import 路径 |
+| Handler import | `import { runGate } from '../lib/gate-runner-v11.js'` | **不变** — 原文件 re-export | 无影响 |
+| packages/types consumer | `import { X } from '@specforge/types'` | **不变** — index.ts re-export | 无影响 |
 
-**影响分析**（基于 grep 结果）:
+### 3.2 API Surface 变更
 
-| 调用者 | 文件 | 行号 | 影响 |
-|--------|------|------|------|
-| Daemon.ts | `Daemon.ts` | L185 | **已处理**：DD-3 删除此调用 |
-| property-21.test.ts | `property-21.test.ts` | L165, L169 | **已处理**：DD-4 重写测试 |
-| 无其他调用者 | — | — | grep 确认 `detectOldSessions`/`reconnectOldSessions` 仅在上述 2 处被调用 |
+| 变更类型 | 描述 | 向后兼容 |
+|----------|------|----------|
+| **新增类型** | 24 个新模块各自导出的类型和函数 | 是 — 新增不影响现有 |
+| **Re-export** | 原文件通过 `export * from` 保持所有现有导出 | 是 — 现有消费者无需修改 |
+| **新增 schema/constants** | packages/types 新增 2 个文件 | 是 — 需显式 import |
+| **Agent MD 变更** | Markdown 内容变更，非代码 API | 是 — opencode 重启时生效 |
+| **Skill MD 变更** | Markdown 内容变更 | 是 — opencode 重启时生效 |
 
-**结论**: 无外部消费者。两个被删除方法的所有调用者都在本 WI 变更范围内，安全删除。
+### 3.3 向后兼容保证
 
-### 3.2 Fallback 策略
-
-虽然 grep 确认无外部消费者，但制定防御性 fallback 以防万一：
-
-> **Fallback**: 若发现 `detectOldSessions` 或 `reconnectOldSessions` 有未预期的外部消费者，保留 API 签名但内部转调 `sessionRegistry.startupReplay()`，并标记 `@deprecated`。此 fallback 的触发条件是 TypeScript 编译失败（引用已删除方法）。
-
-### 3.3 Test 兼容性
-
-| 测试文件 | 兼容性 | 说明 |
-|----------|--------|------|
-| `property-21.test.ts` | **需重写** | 4 个用例中 2 个直接调用已删除 API |
-| `RecoverySubsystem.test.ts` | **兼容** | 仅调用 `attemptSessionReconnect`（保留） |
-| `recovery-session-replay.test.ts` | **兼容** | 不依赖已删除 API |
-| `daemon-lifecycle.test.ts` | **需回归验证** | 若有 `reconnectOldSessions` 调用断言需更新 |
-| 其他 property 测试 | **兼容** | 不涉及 |
-
-### 3.4 数据兼容性
-
-| 数据文件 | 影响 |
-|----------|------|
-| `events.jsonl` | **无变更** — 事件 schema 不变 |
-| `state.json` | **无变更** — 状态结构不变 |
-| `sessions.json` | **无变更** — checkpoint 结构不变 |
+1. **所有现有 export 保留**：原 `-v11.ts` 文件通过 `export * from` 保持完整的公开 API。
+2. **handler 不需要修改 import**：5 个 handler 的 import 路径不需要改变（可选优化为从新模块 import）。
+3. **94 个测试不需要修改**：测试 import 路径不变。
+4. **@specforge/types 的新增 export 不破坏下游**：新 export 需要显式 import，不会影响现有 bundle。
 
 ---
 
 ## 4. 回归风险
 
-### 4.1 风险矩阵
+### 4.1 风险：94 个 v1.1 测试失败
 
-| # | 风险 | 概率 | 影响 | 缓解措施 | 验证方法 |
-|---|------|------|------|----------|----------|
-| R1 | detectOldSessions/reconnectOldSessions 有未发现的调用者 | 极低 | 中 | TypeScript 编译器会立即报错；grep 已枚举所有调用点 | `tsc --noEmit` |
-| R2 | property-21 测试重写后不覆盖原始语义 | 低 | 中 | 新测试验证 `attemptSessionReconnect` 的 startup-only 约束 + `getReconnectionScopeStatus` 的 scope 追踪 | CI 测试通过 |
-| R3 | 删除后遗留引用导致编译失败 | 极低 | 低 | TypeScript 编译器即时报错 | `tsc --noEmit` |
-| R4 | .kiro/specs 中遗漏 Property 21 旧措辞 | 低 | 低 | grep 已枚举所有引用（11 处，排除 version-unification 后 4 处需改） | `grep -rn "reconnect.*Property 21\|Property 21.*reconnect" .kiro/` |
-| R5 | daemon-lifecycle 集成测试依赖 reconnectOldSessions | 低 | 中 | 回归运行集成测试；若失败则更新测试断言 | CI 测试通过 |
+| 维度 | 评估 |
+|------|------|
+| 概率 | 低 |
+| 影响 | 高 |
+| 风险等级 | **中** |
 
-### 4.2 编译时安全保障
+**原因**：如果 re-export 遗漏了某些 export，或者循环依赖导致运行时错误。
 
-TypeScript 编译器提供以下编译期安全网：
-1. **删除方法引用检测**: 任何调用 `detectOldSessions()`/`reconnectOldSessions()` 的代码将产生编译错误
-2. **类型兼容性检查**: `SessionReconnectResult` 类型仍被 `attemptSessionReconnect` 使用，不删除
-3. **导出接口检查**: 删除公开方法后，外部导入将编译失败
+**缓解措施**：
+1. 每拆分一个文件后立即运行 `npx vitest run tests/v11-*.test.ts`。
+2. 使用 `export * from './new-module.js'` 模式确保完整覆盖。
+3. 对比原文件 export 列表与 re-export 列表，确保无遗漏。
+4. 按影响分析 §5.1 建议的 Phase B 顺序执行（先拆最大文件 gate-runner-v11.ts）。
 
-### 4.3 测试安全网
+**回滚策略**：删除新文件，恢复原文件的完整实现。
 
-| 测试层级 | 覆盖范围 | 说明 |
-|----------|----------|------|
-| 单元测试 | `attemptSessionReconnect` | 保留方法的行为不变（startup phase 检查） |
-| 属性测试 | Property 21 核心语义 | 重写后仍验证 startup-only 约束 |
-| 集成测试 | Daemon 启动流程 | 回归确认 `checkAndRepair` + `startupReplay` 正常工作 |
+### 4.2 风险：15 个包构建链断裂
 
-### 4.4 回滚条件
+| 维度 | 评估 |
+|------|------|
+| 概率 | 低 |
+| 影响 | 高 |
+| 风险等级 | **中** |
 
-若删除后出现以下情况，执行回滚：
-- property-21 测试无法通过重写满足原始语义约束 → 保留方法体但标记 `@deprecated`，内部转调 `startupReplay`
-- daemon-lifecycle 集成测试依赖 `reconnectOldSessions` 调用 → 更新测试而非回滚代码
+**原因**：packages/types 新增 export 可能导致下游包的类型冲突。
+
+**缓解措施**：
+1. Phase A 先添加 packages/types 变更，立即验证全量构建。
+2. 新增的 schema.ts / constants.ts 的 export 不与现有 export 冲突。
+3. index.ts 使用 `export { ... } from` 显式列出，不使用 `export * from` 避免意外冲突。
+
+### 4.3 风险：循环依赖引入
+
+| 维度 | 评估 |
+|------|------|
+| 概率 | 中 |
+| 影响 | 中 |
+| 风险等级 | **中** |
+
+**原因**：拆分后的子模块可能互相引用。
+
+**缓解措施**：
+1. 严格单向依赖：新模块 → 原文件（不反向）；子模块之间不互相引用。
+2. gate-chain.ts → gate-report.ts + gate-summary.ts（单向，不反向）。
+3. TypeScript 编译器在 `--noEmit` 时会检测循环依赖。
+
+**依赖方向图**：
+
+```mermaid
+graph TD
+  subgraph "workflow-path-selector group"
+    WPS[workflow-path-selector-v11] --> CC[change-classification]
+    WPS --> IA[impact-analysis]
+    WPS --> TR[trigger-result]
+    IA --> CC
+    IA --> TR
+  end
+
+  subgraph "gate-runner group"
+    GR[gate-runner-v11] --> GRP[gate-report]
+    GR --> GS[gate-summary]
+    GR --> GC[gate-chain]
+    GC --> GRP
+    GC --> GS
+  end
+
+  subgraph "user-decision group"
+    UDR[user-decision-recorder-v11] --> UD[user-decision]
+    UDR --> WV[waiver]
+    WV --> UD
+  end
+
+  subgraph "verification-evidence group"
+    VE[verification-evidence-v11] --> VR[verification-report]
+    VE --> EM[evidence-manifest]
+    VE --> EV[evidence]
+    VE --> CG[close-gate]
+    CG --> GRP
+    CG --> EM
+  end
+
+  subgraph "extension-subflow group"
+    ES[extension-subflow-v11] --> ER[extension-registry]
+    ES --> EREQ[extension-request]
+    ES --> EG[extension-gate]
+    EG --> GRP
+    EG --> EREQ
+    EG --> ER
+  end
+
+  subgraph "write-guard group"
+    WG[write-guard-v11] --> WP[write-policy]
+    WG --> CWA[command-write-audit]
+    WG --> CFA[changed-files-audit]
+    CWA --> WP
+    CFA --> WP
+  end
+
+  subgraph "code-permission group"
+    CPS[code-permission-service-v11] --> AWF[allowed-write-files]
+  end
+
+  subgraph "standalone new modules"
+    RF[required-files] --> PL[project-layout]
+    RG[required-gates] --> GRP
+    PS[path-service]
+    PP[path-policy]
+    TW[tool-wrapper] --> WG
+    BG[bash-guard] --> WP
+  end
+```
+
+### 4.4 风险：re-export 遗漏导致运行时 TypeError
+
+| 维度 | 评估 |
+|------|------|
+| 概率 | 低 |
+| 影响 | 高 |
+| 风险等级 | **低** |
+
+**缓解措施**：使用 `export * from './new-module.js'` 确保所有 export 被覆盖。TypeScript 编译器会在编译时检测缺失的 export。
+
+### 4.5 风险：Agent/Skill 文档变更影响用户习惯
+
+| 维度 | 评估 |
+|------|------|
+| 概率 | 中 |
+| 影响 | 中 |
+| 风险等级 | **中** |
+
+**缓解措施**：文档变更仅追加内容，不删除现有指令。Agent 行为变更（如新增 Gate 检查点）是 v1.1 标准的硬性要求，不可规避。
 
 ---
 
 ## 5. KG 追溯关系
 
-### 5.1 Design Decision → Impact Analysis 映射
+### 5.1 Design Decision → Impact Analysis 变更范围映射
 
-| DD | impact_analysis 关联 | WI-002 关联 |
-|----|----------------------|-------------|
-| DD-1 (注释重写) | §1.1 RecoverySubsystem L13-L17 | 01-contracts C6 显式不变式；03-comparison-matrix D9-D |
-| DD-2 (死代码删除) | §1.1 L458-L491, L500-L538；§2.2 低风险论证；§2.3 功能替代关系 | 01-contracts C6 隐式契约 (4) 悬空契约证据 |
-| DD-3 (Daemon 调用点) | §1.1 Daemon.ts L183-L188 | 01-contracts C1 隐式契约 (3) |
-| DD-4 (测试重写) | §3.1 需修改的测试；§3.3 建议新增测试 | — |
-| DD-5 (文档同步) | §1.2 规格文档变更；§1.3 开发文档变更 | 05-recommendation §5.5 Phase 3 (i) |
-| DD-6 (内部注释) | §1.1 RecoverySubsystem 全文 Property 21 引用 | — |
+| Design Decision | Impact Analysis §1.X | 变更范围项 |
+|-----------------|----------------------|------------|
+| DD-A1 (change-classification.ts) | §1.1.1 #1 | 从 workflow-path-selector-v11 拆分 |
+| DD-A2 (impact-analysis.ts) | §1.1.1 #2 | 从 workflow-path-selector-v11 拆分 |
+| DD-A3 (trigger-result.ts) | §1.1.1 #3 | 从 workflow-path-selector-v11 拆分 |
+| DD-A4 (gate-report.ts) | §1.1.3 #6 | 从 gate-runner-v11 拆分 |
+| DD-A5 (gate-summary.ts) | §1.1.3 #7 | 从 gate-runner-v11 拆分 |
+| DD-A6 (gate-chain.ts) | §1.1.3 #8 | 从 gate-runner-v11 拆分 |
+| DD-A7 (user-decision.ts) | §1.1.4 #9 | 从 user-decision-recorder-v11 拆分 |
+| DD-A8 (waiver.ts) | §1.1.4 #10 | 从 user-decision-recorder-v11 拆分/新建 |
+| DD-A9 (allowed-write-files.ts) | §1.1.5 #11 | 从 code-permission-service-v11 拆分 |
+| DD-A10 (write-policy.ts) | §1.1.5 #12 | 从 write-guard-v11 拆分 |
+| DD-A11 (command-write-audit.ts) | §1.1.5 #13 | 新建 |
+| DD-A12 (changed-files-audit.ts) | §1.1.5 #14 | 新建 |
+| DD-A13 (tool-wrapper.ts) | §1.1.6 #15 | 新建 |
+| DD-A14 (bash-guard.ts) | §1.1.6 #16 | 新建 |
+| DD-A15 (verification-report.ts) | §1.1.7 #17 | 从 verification-evidence-v11 拆分 |
+| DD-A16 (evidence-manifest.ts) | §1.1.7 #18 | 从 verification-evidence-v11 拆分 |
+| DD-A17 (evidence.ts) | §1.1.7 #19 | 从 verification-evidence-v11 拆分 |
+| DD-A18 (close-gate.ts) | §1.1.7 #20 | 从 verification-evidence-v11 拆分 |
+| DD-A19 (extension-registry.ts) | §1.1.8 #21 | 从 extension-subflow-v11 拆分 |
+| DD-A20 (extension-request.ts) | §1.1.8 #22 | 从 extension-subflow-v11 拆分 |
+| DD-A21 (extension-gate.ts) | §1.1.8 #23 | 从 extension-subflow-v11 拆分 |
+| DD-A22 (required-files.ts) | §1.1.2 #4 | 新建 |
+| DD-A23 (required-gates.ts) | §1.1.2 #5 | 新建 |
+| DD-A24 (path-service.ts) | §1.1.9 #24 | 集中路径计算 |
+| DD-A25 (path-policy.ts) | §1.1.9 #25 | §1.5 路径策略 |
+| DD-A26 (project-layout.ts) | §1.1.9 #26 | §1-2 项目布局 |
+| DD-A27 (schema.ts/constants.ts) | §1.2 | packages/types 新增 |
+| DD-B1~DD-B10 | §1.3 | Agent 定义 10 UPDATE |
+| DD-B11 | §1.3 #11 | Agent 定义 1 CREATE (sf-extension) |
+| DD-C1~DD-C12 | §1.4 | Skill 文件 12 UPDATE |
+| DD-D1 | §1.5 | AGENT_CONSTITUTION.md UPDATE |
 
-### 5.2 跨 WI 影响链
+### 5.2 风险评估追溯
 
-```
-WI-002 (investigation: A+D Hybrid 推荐)
-  ├─ 05-recommendation.md §5.5 定义 Phase 3 范围
-  ├─ 01-contracts.md C6 隐式契约 (4) 指出悬空契约
-  └─ 03-comparison-matrix.md D9-D Property 21 兼容性扩展
-      ↓
-  WI-003 (Phase 0: HTTPServer sessionId merge) ✅
-  WI-004 (Phase 1a: WAL singleton) ✅
-  WI-005 (Phase 1b: RecoverySubsystem DI) ✅
-  WI-006 (Phase 2: SessionRegistry WAL-ification + startupReplay) ✅
-  WI-007 (Phase 3: Property 21 rewrite + dead code cleanup) ← 本 WI
-```
+| Design Decision | Impact Analysis Risk | 对应风险 |
+|-----------------|---------------------|----------|
+| DD-A4, A5, A6 | R1 | gate-runner-v11 拆分 — 94 测试风险 |
+| DD-A4~A27 | R2 | import 路径断裂 |
+| DD-A27 | R3 | packages/types 构建 |
+| DD-B1~B11 | R4 | Agent 定义影响 opencode 行为 |
+| DD-A4~A6 | R5 | 循环依赖（gate-chain → gate-report → gate-summary） |
+| DD-A1~A27 | R6 | re-export 遗漏 |
+| DD-A26 | R7 | sf_project_init_core 新目录遗漏 |
 
-### 5.3 KG 节点更新建议
+### 5.3 执行阶段追溯
 
-| 节点 | 更新操作 | 说明 |
-|------|----------|------|
-| `code_file: RecoverySubsystem` | 更新 metadata | 删除 detectOldSessions/reconnectOldSessions 方法节点；更新 Property 21 注释描述 |
-| `code_file: Daemon.ts` | 更新 metadata | 删除 reconnectOldSessions 调用引用 |
-| `design_decision: Property 20/21 不变量` | 更新 metadata | Property 21 措辞从"reconnection"改为"WAL replay" |
-| `design_decision: WI-002 调查发现` | 无需更新 | 历史节点，保持原始发现记录 |
-
----
-
-## 6. 建议执行顺序
-
-基于依赖关系，建议按以下顺序执行：
-
-```
-Step 1 — 删除死代码（DD-2 + DD-3）
-  ├─ RecoverySubsystem.ts: 删除 detectOldSessions + reconnectOldSessions
-  ├─ Daemon.ts: 删除 L185 调用 + 更新 L187 注释
-  └─ 验证: tsc --noEmit 确认编译通过
-
-Step 2 — 重写 Property 21 注释（DD-1 + DD-6）
-  ├─ RecoverySubsystem.ts: L13-L17 顶部注释重写
-  └─ RecoverySubsystem.ts: L46/L355/L357/L365 内部注释同步
-
-Step 3 — 重写测试（DD-4）
-  ├─ property-21.test.ts: 全文重写
-  └─ RecoverySubsystem.test.ts: 可选注释更新
-  └─ 验证: vitest run 确认所有 property-21 测试通过
-
-Step 4 — 同步文档（DD-5）
-  ├─ .kiro/specs/ 4 个文件措辞更新
-  ├─ DEVELOPMENT.md 1 行更新
-  └─ 验证: grep 确认无遗漏旧措辞
-
-Step 5 — 编译 + 回归验证
-  ├─ tsc --noEmit
-  ├─ vitest run（全量测试）
-  └─ grep 验证完整性
-```
+| Design Decision | Impact Analysis Phase | 对应阶段 |
+|-----------------|-----------------------|----------|
+| DD-A27 | Phase A | 类型基础（无风险） |
+| DD-A4~A6 | Phase B | 模块拆分（中风险） |
+| DD-A15~A21 | Phase B | 模块拆分（中风险） |
+| DD-A1~A3 | Phase B | 模块拆分（中风险） |
+| DD-A7~A14, A22~A26 | Phase C | 新建模块（低风险） |
+| Handlers + sf_project_init | Phase D | Handler 更新（低风险） |
+| DD-B1~B11, DD-C1~C12, DD-D1 | Phase E | Agent/Skill 文档（低风险） |
 
 ---
 
-## Out of Scope
+## 6. 验证检查点
 
-- **方法重命名**: `attemptSessionReconnect`/`performSessionReconnect`/`getReconnectionScopeStatus` 的方法名暂不修改——这属于更大范围的重命名重构，可由后续 WI 处理
-- **新增功能**: 无任何新增功能，纯清理
-- **events.jsonl snapshot/compaction 机制**: 不在本 WI 范围
-- **ProjectManager 多项目 StateManager 拆分**: 不在本 WI 范围
-- **性能优化**: 不在本 WI 范围
-- **version-unification 包的 Property 21**: 不同的 Property 21（Manifest_Migrator），与本 WI 无关
-- **OPENCODE_INTEGRATION_BRIEF.md**: grep 确认无相关引用，不需要修改
-- **RecoverySubsystem 构造函数签名变更**: 不涉及
-
----
-
-## Assumptions（设计假设）
-
-- **Phase 0-2 已完成并验证**: 假设 WI-003/WI-004/WI-005/WI-006 的所有变更已合并且通过验证（Phase 2 verification_report.md 确认 startupReplay 已就位）
-- **startupReplay 是严格上位替代**: 假设 `SessionRegistry.startupReplay()` 完全覆盖 `detectOldSessions`/`reconnectOldSessions` 的功能（恢复所有 session 状态：pending/active/history/bindings/aliases）
-- **无外部消费者**: 假设 `detectOldSessions`/`reconnectOldSessions` 仅被 Daemon.ts 和 property-21.test.ts 调用（grep 已确认）
-- **TypeScript 编译器足够**: 假设编译时类型检查能捕获所有遗留引用
-- **测试重写可保留核心语义**: 假设 Property 21 的"startup-only"约束可通过 `attemptSessionReconnect` + `getReconnectionScopeStatus` 充分验证
+| 检查点 | 验证内容 | 通过标准 | 对应 AC |
+|--------|----------|----------|---------|
+| CP-1 | packages/types 编译 | `npx tsc --noEmit` 零错误 | AC-7 |
+| CP-2 | 每次拆分后 daemon-core 编译 | `npx tsc --noEmit` 零错误 | AC-7 |
+| CP-3 | 每次拆分后 v1.1 测试 | 94/94 tests passed | AC-6 |
+| CP-4 | 全量构建 | 15 包 `tsc --noEmit` 全零错误 | AC-7 |
+| CP-5 | re-export 完整性 | 原文件 export 数量 = re-export 数量 | AC-2 |
+| CP-6 | 新模块独立存在 | 24 个新 .ts 文件存在且有实际内容 | AC-1 |
+| CP-7 | sf-extension.md 存在 | 文件存在且包含 Patch1 §9 要求内容 | AC-3 |
+| CP-8 | Agent 定义更新 | 10 个 Agent MD 包含 v1.1 概念 | AC-4 |
+| CP-9 | Skill 更新 | 12 个 Skill 文件反映 v1.1 工作流 | AC-5 |
 
 ---
 
-## 变更量级总结
+## 7. Assumptions
 
-| 类别 | 文件数 | 估计行数变更 |
-|------|--------|-------------|
-| 源码（RecoverySubsystem.ts） | 1 | ~73 行删除 + ~10 行注释重写 |
-| 源码（Daemon.ts） | 1 | ~3 行删除 + ~1 行注释更新 |
-| 测试（property-21.test.ts） | 1 | 全文重写 ~100-150 行 |
-| .kiro/specs/ | 4 | ~10 行措辞更新 |
-| 开发文档 | 1 | ~1 行更新 |
-| **合计** | **7** | **~76 行删除 + ~162 行新增/重写** |
+- 假设现有 `-v11.ts` 大文件中的类型和函数签名稳定，拆分只移动不修改。
+- 假设 TypeScript `export * from` 能完整覆盖所有导出项（不含 namespace 重新导出冲突）。
+- 假设 94 个现有测试的 import 路径均指向原 `-v11.ts` 文件（不直接 import 内部路径）。
+- 假设 opencode 在启动时重新加载 Agent MD 和 Skill MD（无热加载问题）。
+- 假设 packages/types 的下游包不依赖 `export *` 覆盖模式（使用显式 export）。
+- 假设 `@specforge/types/directory-layout.ts` 中的 path service 函数已满足 §1.5 大部分要求。
+
+---
+
+## 8. Out of Scope
+
+- **不修改业务逻辑**：拆分只改变文件结构，不改变任何函数的运行时行为。
+- **不修改现有测试**：94 个测试的 import 路径保持不变。
+- **不删除原文件**：所有原 `-v11.ts` 文件保留，只添加 re-export。
+- **不实现 v1.1 标准的新功能**：本 WI 只做结构对齐和文档更新，不添加标准中尚未实现的新功能。
+- **不修改 packages/types/src/work-item-types.ts**：schema.ts 和 constants.ts 从中提取，但 work-item-types.ts 保留原有内容。
+- **不创建 v1.1 标准禁止的目录**：如 `.specforge/standards/`, `.specforge/archive/` 等。
+- **不涉及 CI/CD 变更**：构建和测试命令不变。
+- **不涉及部署变更**：Agent/Skill MD 变更在 opencode 重启时自动生效。
+
+---
+
+## Task Planner Handoff
+
+```json
+{
+  "dd_count": 41,
+  "covered_requirements": ["AC-1", "AC-2", "AC-3", "AC-4", "AC-5", "AC-6", "AC-7"],
+  "file_boundaries_known": true,
+  "interfaces_complete": true,
+  "verification_strategy_complete": true,
+  "parallelization_notes_complete": true,
+  "blocked_items": [],
+  "execution_phases": {
+    "Phase A": "DD-A27 (types基础)",
+    "Phase B": "DD-A1~A6, DD-A15~A21 (模块拆分)",
+    "Phase C": "DD-A7~A14, DD-A22~A26 (新建模块)",
+    "Phase D": "Handler + sf_project_init 更新",
+    "Phase E": "DD-B1~B11, DD-C1~C12, DD-D1 (文档更新)"
+  },
+  "parallel_groups": {
+    "independent": [
+      "DD-A1, DD-A2, DD-A3 (workflow-path-selector split)",
+      "DD-A7, DD-A8 (user-decision split)",
+      "DD-A9 (allowed-write-files)",
+      "DD-A10, DD-A11, DD-A12 (write-guard split)",
+      "DD-A13, DD-A14 (new modules)",
+      "DD-A15~A18 (verification-evidence split)",
+      "DD-A19~A21 (extension-subflow split)",
+      "DD-A22~A26 (standalone new modules)",
+      "DD-B1~B11, DD-C1~C12, DD-D1 (all doc updates)"
+    ],
+    "sequential_within": [
+      "DD-A4 → DD-A5 → DD-A6 (gate-runner split, same source file)",
+      "DD-A27 before all other DD-A (types dependency)"
+    ]
+  },
+  "risk_notes": [
+    "gate-runner-v11.ts (910 lines) is the highest-risk split — 3 sub-modules",
+    "All Phase B splits should be done one-at-a-time with immediate test verification",
+    "Phase E doc updates are fully independent of code changes and can run in parallel"
+  ]
+}
+```

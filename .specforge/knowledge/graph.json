@@ -1,4 +1,257 @@
 {
-  "nodes": [],
+  "nodes": [
+    {
+      "id": "WI-007:task:1",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Create schema.ts and constants.ts in packages/types",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 1"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:2",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Extract change-classification.ts, impact-analysis.ts, trigger-result.ts from workflow-path-selector-v11.ts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 2"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:3",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Extract gate-report.ts, gate-summary.ts, gate-chain.ts, required-gates.ts, close-gate.ts from gate-runner-v11.ts and verification-evidence-v11.ts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 3"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:4",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Extract allowed-write-files.ts, write-policy.ts, command-write-audit.ts, changed-files-audit.ts, tool-wrapper.ts, bash-guard.ts from write-guard-v11.ts and code-permission-service-v11.ts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 4"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:5",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Extract user-decision.ts and waiver.ts from user-decision-recorder-v11.ts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 5"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:6",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Extract verification-report.ts, evidence-manifest.ts, evidence.ts from verification-evidence-v11.ts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 6"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:7",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Extract extension-registry.ts, extension-request.ts, extension-gate.ts from extension-subflow-v11.ts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 7"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:8",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Create required-files.ts standalone module",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 8"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:9",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Create path-service.ts, path-policy.ts, project-layout.ts standalone modules",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 9"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:10",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Create sf-extension.md Agent definition",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 10"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:11",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update _AGENT_BASE.md with v1.1 concepts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 11"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:12",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf-orchestrator.md with WI lifecycle and Extension Subflow",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 12"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:13",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf-design.md with Design Delta / Candidate / Gate",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 13"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:14",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf-requirements.md with Requirements Delta / Candidate / Trace",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 14"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:15",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf-verifier.md with Verification Report / Evidence / Close Gate",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 15"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:16",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf-executor.md with code_permission / allowed_write_files / audit",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 16"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:17",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf-debugger.md, sf-reviewer.md, sf-task-planner.md, sf-knowledge.md with v1.1 concepts",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 17"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:18",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update 8 workflow skill SKILL.md files with v1.1 checkpoints",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 18"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:19",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf-intake and 3 superpowers skill SKILL.md files",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 19"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:20",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update AGENT_CONSTITUTION.md with v1.1 concepts and baseline rules",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 20"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    },
+    {
+      "id": "WI-007:task:21",
+      "type": "task",
+      "work_item_id": "WI-007",
+      "label": "Update sf_project_init_core.ts with v1.1 directory templates",
+      "metadata": {
+        "source_file": ".specforge/specs/WI-007/tasks.md",
+        "task_id": "Task 21"
+      },
+      "created_at": "2026-06-07T06:16:13.864Z",
+      "updated_at": "2026-06-07T07:14:12.393Z"
+    }
+  ],
   "edges": []
 }

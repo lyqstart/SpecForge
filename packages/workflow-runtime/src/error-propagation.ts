@@ -3,7 +3,7 @@
  * Handles error propagation through workflow hierarchy and error transformation
  */
 
-import { GateError, GateErrorType, isGateError, isRetryableError, getErrorType } from './error-handler.js';
+import { GateError, GateErrorType, isGateError, isRetryableError } from './error-handler.js';
 import type { GateResult, WorkflowInstance, WorkflowDefinition } from './types.js';
 
 /**
@@ -152,7 +152,7 @@ export class ErrorPropagationManager {
 
     // Rule 2: Transform validation errors with context
     this.registerTransformationRule({
-      match: (error, context) => error.errorType === GateErrorType.VALIDATION_ERROR,
+      match: (error, _context) => error.errorType === GateErrorType.VALIDATION_ERROR,
       transform: (error, context) => {
         const ContextualValidationError = class extends GateError {
           constructor() {
@@ -226,7 +226,7 @@ export class ErrorPropagationManager {
     });
 
     // Aggressive retry strategy
-    this.registerPropagationStrategy('aggressive-retry', (error, context) => {
+    this.registerPropagationStrategy('aggressive-retry', (error, _context) => {
       return {
         shouldContinue: true,
         action: 'retry',
@@ -236,7 +236,7 @@ export class ErrorPropagationManager {
     });
 
     // Fail-fast strategy
-    this.registerPropagationStrategy('fail-fast', (error, context) => {
+    this.registerPropagationStrategy('fail-fast', (error, _context) => {
       return {
         shouldContinue: false,
         action: 'fail',
@@ -245,7 +245,7 @@ export class ErrorPropagationManager {
     });
 
     // Escalate strategy
-    this.registerPropagationStrategy('escalate', (error, context) => {
+    this.registerPropagationStrategy('escalate', (error, _context) => {
       return {
         shouldContinue: false,
         action: 'escalate',
@@ -278,7 +278,7 @@ export class ErrorPropagationManager {
       workflowInstance,
       workflowDefinition,
       currentGateId,
-      parentGateId,
+      ...(parentGateId !== undefined && { parentGateId }),
       depth,
       timestamp: new Date(),
     };
@@ -315,7 +315,7 @@ export class ErrorPropagationUtils {
    * Create propagation path for error
    */
   static createPropagationPath(
-    error: GateError,
+    _error: GateError,
     context: ErrorPropagationContext
   ): string[] {
     const path: string[] = [context.currentGateId];
@@ -374,16 +374,18 @@ export class ErrorPropagationUtils {
       return { hasError: false };
     }
 
+    const errorDetailsRecord = errorDetails as Record<string, unknown>;
+
     // Create a synthetic error from result
     const SyntheticGateError = class extends GateError {
       constructor() {
         super({
-          code: errorDetails.code as string || 'UNKNOWN_ERROR',
+          code: (errorDetailsRecord['code'] as string) || 'UNKNOWN_ERROR',
           gateId,
           message: result.reason || 'Unknown error',
-          suggestion: errorDetails.suggestion as string || 'Check error details',
-          errorType: (errorDetails.errorType as GateErrorType) || GateErrorType.EXECUTION_ERROR,
-          retryable: errorDetails.retryable as boolean || false,
+          suggestion: (errorDetailsRecord['suggestion'] as string) || 'Check error details',
+          errorType: (errorDetailsRecord['errorType'] as GateErrorType) || GateErrorType.EXECUTION_ERROR,
+          retryable: (errorDetailsRecord['retryable'] as boolean) || false,
         });
       }
     };

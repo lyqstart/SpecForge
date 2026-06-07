@@ -1,35 +1,25 @@
 /**
  * directory-layout.ts — SpecForge V6 项目目录布局的单一真相源（Single Source of Truth）
  *
+ * 依据：SpecForge 最终融合标准 v1.1（specforge_final_fused_standard_v1_1_patch1_zh.md）
+ *
  * 本模块定义 SpecForge 项目根目录下 `.specforge/` 目录的全部子路径常量，
- * 是方案 A（docs/proposals/2026-05-29-directory-structure-governance.md §6.2）
- * 三层架构中"Schema 层"的核心交付物，亦是 P0 阶段的核心产物之一。
+ * 并提供 Path Service（路径服务）和 Path Policy（路径策略）。
  *
  * 设计要点：
  * - 使用 TypeScript `as const` 声明 `SPEC_DIR_NAME` 和 `LAYOUT` 字典，
- *   使 `keyof typeof LAYOUT` 成为字面量联合类型——这是方案 A §8
- *   "三道强制门"中防线 A（编译期防御）的基础设施。
+ *   使 `keyof typeof LAYOUT` 成为字面量联合类型——编译期防御的基础设施。
  * - `LAYOUT` 字典中的值是相对于 `<projectRoot>/.specforge/` 的子路径。
- * - 通过 `resolveProjectPath()` / `specPath()` / `agentRunArchivePath()`
- *   三个路径构造函数对外提供路径生成能力——后续 P1 阶段的硬编码字符串
- *   替换工作必须经由这三个函数收口。
- *
- * P0 阶段的隔离承诺：本文件在 P0 完成后不会被任何现有 daemon-core 或
- * tools 代码 import，是孤立模块。首次集成发生在 P1 的代码切换任务中。
- *
- * 关联文档：
- * - 方案 A（docs/proposals/2026-05-29-directory-structure-governance.md）
- * - ADR-006（docs/adr/ADR-006-specforge-dir-naming.md）
- * - WI-010 refactor_plan.md（任务 T1）
+ * - 项目级正式规格真相源位于 `.specforge/project/`（§2.1）。
+ * - Work Item 事务目录位于 `.specforge/work-items/`（§4.2）。
+ * - 旧路径 `.specforge/specs/` 仅允许 legacy read-only（§1.7）。
+ * - 通过 Path Service 系列函数对外提供路径生成能力。
+ * - 通过 Path Policy 函数提供路径合法性校验（§1.6）。
  */
 
 /// <reference types="node" />
 
-// 使用 Node.js 内置 path 模块（通过 node: 前缀显式标识）。
-// 仅依赖 path.join，不引入任何外部依赖。
 import * as path from 'node:path';
-
-// 使用 Node.js 内置 os 模块（用于用户级路径的 os.homedir()）。
 import * as os from 'node:os';
 
 // ---------------------------------------------------------------------------
@@ -38,65 +28,116 @@ import * as os from 'node:os';
 
 /**
  * SpecForge 在用户项目根目录下创建的工具目录名。
- *
- * **必须使用带点形式 `.specforge`**（与 `.git/` / `.kiro/` / `.opencode/`
- * 风格一致；带点目录在 Unix/Windows 文件管理器默认隐藏，符合
- * "用户不应直接编辑工具内部状态"的语义）。
- *
- * 此处使用 `as const` 声明：任何拼写错误如 `'.SpecForge'` / `'specforge'`
- * 在编译期就被拒绝，这是方案 A §8 防线 A 的核心机制。
- *
- * @example
- * ```ts
- * import { SPEC_DIR_NAME } from '@specforge/types';
- * // SPEC_DIR_NAME === '.specforge'
- * ```
+ * 必须使用带点形式 `.specforge`。
  */
 export const SPEC_DIR_NAME = '.specforge' as const;
 
 // ---------------------------------------------------------------------------
-// LAYOUT — `.specforge/` 下各子路径的权威字典
+// LAYOUT — `.specforge/` 下各子路径的权威字典（v1.1 标准）
 // ---------------------------------------------------------------------------
 
 /**
- * `.specforge/` 目录下所有子路径的权威字典。
+ * `.specforge/` 目录下所有子路径的权威字典（v1.1 标准）。
  *
- * 路径值是相对于 `<projectRoot>/.specforge/` 的子路径片段，不含前导
- * `.specforge/`，由 {@link resolveProjectPath} 等函数负责前缀拼接。
- *
- * 顶层分区（committed 区 vs gitignored 区）依据方案 A §6.2：
- * - **committed 区**（提交到 Git）：manifest / config / specs / knowledge
- * - **gitignored 区**（运行时数据）：runtime / logs / archive / sessions / cas
- *
- * 嵌套对象 `configFiles` 是为提升可发现性而设计的"分组键空间"，
- * 嵌套键不参与 {@link resolveProjectPath} 的 key 选择，但可通过
- * 直接路径拼接使用（见 JSDoc 示例）。
- *
- * @example
- * ```ts
- * import { LAYOUT, SPEC_DIR_NAME } from '@specforge/types';
- * import * as path from 'path';
- *
- * // 顶层 key 用法
- * LAYOUT.runtime;            // 'runtime'
- * LAYOUT.runtimeWal;         // 'runtime/wal.jsonl'
- *
- * // 嵌套 configFiles 用法
- * LAYOUT.configFiles.projectRules;  // 'config/project-rules.md'
- * path.join('/proj', SPEC_DIR_NAME, LAYOUT.configFiles.projectRules);
- * // → '/proj/.specforge/config/project-rules.md'
- * ```
+ * 顶层分区：
+ * - **project**：项目级正式规格真相源（§2.1），是 committed 区
+ * - **workItems**：Work Item 事务目录（§4.2），是 committed 区
+ * - **config**：项目配置目录，是 committed 区
+ * - **specs**：旧路径，legacy read-only（§1.7）
+ * - **knowledge**：Knowledge 目录，是 committed 区
+ * - **runtime / logs / archive / sessions / cas**：gitignored 区
  */
 export const LAYOUT = {
-  // ---- committed 区（提交到 Git）----
-  /** Project manifest（committed）— `<root>/.specforge/manifest.json` */
+  // ---- committed 区：根级 manifest ----
+  /** Project manifest — `<root>/.specforge/manifest.json` */
   manifest: 'manifest.json',
 
-  /** 项目配置目录（committed）— `<root>/.specforge/config/` */
+  // ---- committed 区：项目级正式规格真相源（§2.1）----
+  /** 项目级正式规格目录 — `<root>/.specforge/project/` */
+  project: 'project',
+
+  /** 项目级正式规格文件的"分组键空间" */
+  projectFiles: {
+    /** `<root>/.specforge/project/spec_manifest.json` */
+    specManifest: 'project/spec_manifest.json',
+    /** `<root>/.specforge/project/extension_registry.json` */
+    extensionRegistry: 'project/extension_registry.json',
+    /** `<root>/.specforge/project/requirements_index.md` */
+    requirementsIndex: 'project/requirements_index.md',
+    /** `<root>/.specforge/project/design_index.md` */
+    designIndex: 'project/design_index.md',
+    /** `<root>/.specforge/project/architecture.md` */
+    architecture: 'project/architecture.md',
+    /** `<root>/.specforge/project/glossary.md` */
+    glossary: 'project/glossary.md',
+    /** `<root>/.specforge/project/decisions.md` */
+    decisions: 'project/decisions.md',
+    /** `<root>/.specforge/project/trace_matrix.md` */
+    traceMatrix: 'project/trace_matrix.md',
+    /** `<root>/.specforge/project/modules/` */
+    modulesRoot: 'project/modules',
+  },
+
+  // ---- committed 区：Work Item 事务目录（§4.2）----
+  /** Work Item 事务根目录 — `<root>/.specforge/work-items/` */
+  workItems: 'work-items',
+
+  /** Work Item 文件的"分组键空间" */
+  workItemFiles: {
+    /** `<root>/.specforge/work-items/<WI-ID>/work_item.json` */
+    workItemJson: 'work_item.json',
+    /** `<root>/.specforge/work-items/<WI-ID>/intake.md` */
+    intake: 'intake.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/change_classification.md` */
+    changeClassification: 'change_classification.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/impact_analysis.md` */
+    impactAnalysis: 'impact_analysis.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/trigger_result.json` */
+    triggerResult: 'trigger_result.json',
+    /** `<root>/.specforge/work-items/<WI-ID>/requirements_delta.md` */
+    requirementsDelta: 'requirements_delta.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/design_delta.md` */
+    designDelta: 'design_delta.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/tasks.md` */
+    tasks: 'tasks.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/trace_delta.md` */
+    traceDelta: 'trace_delta.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/candidate_manifest.json` */
+    candidateManifest: 'candidate_manifest.json',
+    /** `<root>/.specforge/work-items/<WI-ID>/candidates/` */
+    candidates: 'candidates',
+    /** `<root>/.specforge/work-items/<WI-ID>/gates/` */
+    gates: 'gates',
+    /** `<root>/.specforge/work-items/<WI-ID>/gate_summary.md` */
+    gateSummary: 'gate_summary.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/user_decision.json` */
+    userDecision: 'user_decision.json',
+    /** `<root>/.specforge/work-items/<WI-ID>/verification_report.md` */
+    verificationReport: 'verification_report.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/merge_report.md` */
+    mergeReport: 'merge_report.md',
+    /** `<root>/.specforge/work-items/<WI-ID>/evidence/` */
+    evidence: 'evidence',
+    /** `<root>/.specforge/work-items/<WI-ID>/evidence/evidence_manifest.json` */
+    evidenceManifest: 'evidence/evidence_manifest.json',
+    /** `<root>/.specforge/work-items/<WI-ID>/extension_request.json` */
+    extensionRequest: 'extension_request.json',
+    /** `<root>/.specforge/work-items/<WI-ID>/extension_delta.md` */
+    extensionDelta: 'extension_delta.md',
+  },
+
+  // ---- committed 区：旧路径（legacy read-only §1.7）----
+  /** 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` */
+  specs: 'specs',
+
+  /** specs 目录的 README — `<root>/.specforge/specs/README.md` */
+  specsReadme: 'specs/README.md',
+
+  // ---- committed 区：项目配置 ----
+  /** 项目配置目录 — `<root>/.specforge/config/` */
   config: 'config',
 
-  /** 项目配置文件的"分组键空间"。嵌套键不进入 {@link resolveProjectPath}，
-   *  应通过直接路径拼接或专用辅助函数使用。 */
+  /** 项目配置文件的"分组键空间" */
   configFiles: {
     /** `<root>/.specforge/config/project-rules.md` */
     projectRules: 'config/project-rules.md',
@@ -110,107 +151,82 @@ export const LAYOUT = {
     skillFragments: 'config/skill_fragments.json',
   },
 
-  /** Work Item 规格目录（committed）— `<root>/.specforge/specs/` */
-  specs: 'specs',
-
-  /** specs 目录的 README（committed）— `<root>/.specforge/specs/README.md` */
-  specsReadme: 'specs/README.md',
-
-  /** Knowledge 目录（committed）— `<root>/.specforge/knowledge/` */
+  // ---- committed 区：Knowledge ----
+  /** Knowledge 目录 — `<root>/.specforge/knowledge/` */
   knowledge: 'knowledge',
 
-  /** Knowledge Graph 数据（committed）— `<root>/.specforge/knowledge/graph.json` */
+  /** Knowledge Graph 数据 — `<root>/.specforge/knowledge/graph.json` */
   knowledgeGraph: 'knowledge/graph.json',
 
   // ---- gitignored 区（运行时数据，不提交 Git）----
-  /** 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` */
+  /** 运行时状态目录 — `<root>/.specforge/runtime/` */
   runtime: 'runtime',
 
-  /** 写前日志（gitignored）— `<root>/.specforge/runtime/wal.jsonl` */
+  /** 写前日志 — `<root>/.specforge/runtime/wal.jsonl` */
   runtimeWal: 'runtime/wal.jsonl',
 
-  /** 持久化状态（gitignored）— `<root>/.specforge/runtime/state.json` */
+  /** 持久化状态 — `<root>/.specforge/runtime/state.json` */
   runtimeState: 'runtime/state.json',
 
-  /** 状态快照目录（gitignored）— `<root>/.specforge/runtime/checkpoints/` */
+  /** 状态快照目录 — `<root>/.specforge/runtime/checkpoints/` */
   runtimeCheckpoints: 'runtime/checkpoints',
 
-  /** 日志目录（gitignored）— `<root>/.specforge/logs/` */
+  /** 日志目录 — `<root>/.specforge/logs/` */
   logs: 'logs',
 
-  /** 遥测日志（gitignored）— `<root>/.specforge/logs/telemetry.jsonl` */
+  /** 遥测日志 — `<root>/.specforge/logs/telemetry.jsonl` */
   logsTelemetry: 'logs/telemetry.jsonl',
 
-  /** 追踪日志（gitignored）— `<root>/.specforge/logs/trace.jsonl` */
+  /** 追踪日志 — `<root>/.specforge/logs/trace.jsonl` */
   logsTrace: 'logs/trace.jsonl',
 
-  /** 工具调用日志（gitignored）— `<root>/.specforge/logs/tool_calls.jsonl` */
+  /** 工具调用日志 — `<root>/.specforge/logs/tool_calls.jsonl` */
   logsToolCalls: 'logs/tool_calls.jsonl',
 
-  /** 成本日志（gitignored）— `<root>/.specforge/logs/cost.jsonl` */
+  /** 成本日志 — `<root>/.specforge/logs/cost.jsonl` */
   logsCost: 'logs/cost.jsonl',
 
-  /** 会话日志（gitignored）— `<root>/.specforge/logs/conversations.jsonl` */
+  /** 会话日志 — `<root>/.specforge/logs/conversations.jsonl` */
   logsConversations: 'logs/conversations.jsonl',
 
-  /** Gate 检查日志（gitignored）— `<root>/.specforge/logs/gate.log` */
+  /** Gate 检查日志 — `<root>/.specforge/logs/gate.log` */
   logsGate: 'logs/gate.log',
 
-  /** Shell 审计日志（gitignored）— `<root>/.specforge/logs/shell-history.jsonl` */
+  /** Shell 审计日志 — `<root>/.specforge/logs/shell-history.jsonl` */
   logsShellHistory: 'logs/shell-history.jsonl',
 
-  /** Agent Run 归档根目录（gitignored）— `<root>/.specforge/archive/` */
+  /** Agent Run 归档根目录 — `<root>/.specforge/archive/` */
   archive: 'archive',
 
-  /** Agent Run 归档子目录（gitignored）— `<root>/.specforge/archive/agent_runs/` */
+  /** Agent Run 归档子目录 — `<root>/.specforge/archive/agent_runs/` */
   archiveAgentRuns: 'archive/agent_runs',
 
-  /** 复盘报告归档子目录（gitignored）— `<root>/.specforge/archive/retro/` */
+  /** 复盘报告归档子目录 — `<root>/.specforge/archive/retro/` */
   archiveRetro: 'archive/retro',
 
-  /** 会话归档目录（gitignored）— `<root>/.specforge/sessions/` */
+  /** 会话归档目录 — `<root>/.specforge/sessions/` */
   sessions: 'sessions',
 
-  /** 内容寻址存储（gitignored）— `<root>/.specforge/cas/` */
+  /** 内容寻址存储 — `<root>/.specforge/cas/` */
   cas: 'cas',
 } as const;
 
 /**
  * `LAYOUT` 字典的"扁平 key"联合类型。
- *
- * 注：嵌套对象 `configFiles` 本身计入键集（因为它是 LAYOUT 的直接 key），
- * 但 `configFiles.*` 的嵌套键不参与该联合类型。
  */
 export type LayoutKey = keyof typeof LAYOUT;
 
 // ---------------------------------------------------------------------------
-// 路径构造函数（方案 A §6.2 必需的三个入口）
+// Path Service — 路径服务（§1.5）
 // ---------------------------------------------------------------------------
 
 /**
- * 拼合 `<projectRoot>/.specforge/<LAYOUT[key]>/<...subpath>`，
- * 是后续 P1 阶段全量替换硬编码路径字符串的唯一通用入口。
+ * 拼合 `<projectRoot>/.specforge/<LAYOUT[key]>/<...subpath>`。
  *
- * **限制**：`key` 必须是 `LAYOUT` 的顶层 key（含 `'configFiles'`），
- * 嵌套对象 `configFiles` 的子键如 `projectRules` 不能作为 `key` 传入。
- * 若需访问嵌套键，请直接使用 `path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.configFiles.projectRules)`。
- *
- * @param projectRoot 项目根目录绝对路径（如 `/home/user/my-project`）
+ * @param projectRoot 项目根目录绝对路径
  * @param key `LAYOUT` 的顶层 key
- * @param subpath 可变长度子路径段，会被 `path.join` 依序拼接到结果末尾
- * @returns 平台原生路径字符串（Windows 用 `\`，Unix 用 `/`）
- *
- * @example
- * ```ts
- * resolveProjectPath('/proj', 'runtime');
- * // → '/proj/.specforge/runtime'
- *
- * resolveProjectPath('/proj', 'specs', 'WI-001', 'design.md');
- * // → '/proj/.specforge/specs/WI-001/design.md'
- *
- * resolveProjectPath('/proj', 'archiveAgentRuns');
- * // → '/proj/.specforge/archive/agent_runs'
- * ```
+ * @param subpath 可变长度子路径段
+ * @returns 平台原生路径字符串
  */
 export function resolveProjectPath(
   projectRoot: string,
@@ -218,31 +234,229 @@ export function resolveProjectPath(
   ...subpath: string[]
 ): string {
   const value = LAYOUT[key];
-  // 嵌套对象（如 LAYOUT.configFiles）通过 key 传入时，仅拼到 .specforge/<key 名>
-  // 不展开内部子项；调用方应改用 LAYOUT.configFiles.<sub> 直接拼接。
   const segment = typeof value === 'string' ? value : key;
   return path.join(projectRoot, SPEC_DIR_NAME, segment, ...subpath);
 }
 
+// ---- 项目级正式规格路径服务（§1.5 / §2.1）----
+
 /**
- * 构造单个 Work Item 规格文件的绝对路径，等价于
- * `<projectRoot>/.specforge/specs/<workItemId>/<file>`。
- *
- * 该函数避免上层调用每次手拼 `'specs/' + wi`，是 specs 子路径的专用入口。
- *
- * @param projectRoot 项目根目录绝对路径
- * @param workItemId Work Item ID，如 `'WI-001'`、`'WI-010'`（允许含连字符）
- * @param file 文件名，如 `'requirements.md'`、`'design.md'`、`'refactor_plan.md'`
- * @returns 平台原生路径字符串
- *
- * @example
- * ```ts
- * specPath('/proj', 'WI-001', 'design.md');
- * // → '/proj/.specforge/specs/WI-001/design.md'
- *
- * specPath('/proj', 'WI-010', 'refactor_plan.md');
- * // → '/proj/.specforge/specs/WI-010/refactor_plan.md'
- * ```
+ * 项目级正式规格根目录路径。
+ * `<projectRoot>/.specforge/project/`
+ */
+export function projectRoot(projectRoot: string): string {
+  return resolveProjectPath(projectRoot, 'project');
+}
+
+/**
+ * spec_manifest.json 路径。
+ * `<projectRoot>/.specforge/project/spec_manifest.json`
+ */
+export function projectSpecManifest(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.specManifest);
+}
+
+/**
+ * extension_registry.json 路径。
+ * `<projectRoot>/.specforge/project/extension_registry.json`
+ */
+export function projectExtensionRegistry(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.extensionRegistry);
+}
+
+/**
+ * requirements_index.md 路径。
+ */
+export function projectRequirementsIndex(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.requirementsIndex);
+}
+
+/**
+ * design_index.md 路径。
+ */
+export function projectDesignIndex(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.designIndex);
+}
+
+/**
+ * architecture.md 路径。
+ */
+export function projectArchitecture(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.architecture);
+}
+
+/**
+ * glossary.md 路径。
+ */
+export function projectGlossary(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.glossary);
+}
+
+/**
+ * decisions.md 路径。
+ */
+export function projectDecisions(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.decisions);
+}
+
+/**
+ * trace_matrix.md 路径。
+ */
+export function projectTraceMatrix(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.traceMatrix);
+}
+
+/**
+ * modules 根目录路径。
+ * `<projectRoot>/.specforge/project/modules/`
+ */
+export function projectModulesRoot(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.modulesRoot);
+}
+
+/**
+ * 单个模块根目录路径。
+ * `<projectRoot>/.specforge/project/modules/<moduleName>/`
+ */
+export function moduleRoot(projectRoot: string, moduleName: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, 'project', 'modules', moduleName);
+}
+
+/**
+ * 单个模块 module.json 路径。
+ */
+export function moduleJson(projectRoot: string, moduleName: string): string {
+  return path.join(moduleRoot(projectRoot, moduleName), 'module.json');
+}
+
+/**
+ * 单个模块 requirements.md 路径。
+ */
+export function moduleRequirements(projectRoot: string, moduleName: string): string {
+  return path.join(moduleRoot(projectRoot, moduleName), 'requirements.md');
+}
+
+/**
+ * 单个模块 design.md 路径。
+ */
+export function moduleDesign(projectRoot: string, moduleName: string): string {
+  return path.join(moduleRoot(projectRoot, moduleName), 'design.md');
+}
+
+/**
+ * 单个模块 trace.md 路径。
+ */
+export function moduleTrace(projectRoot: string, moduleName: string): string {
+  return path.join(moduleRoot(projectRoot, moduleName), 'trace.md');
+}
+
+// ---- Work Item 路径服务（§1.5 / §4.2）----
+
+/**
+ * Work Items 根目录路径。
+ * `<projectRoot>/.specforge/work-items/`
+ */
+export function workItemsRoot(projectRoot: string): string {
+  return resolveProjectPath(projectRoot, 'workItems');
+}
+
+/**
+ * 单个 Work Item 根目录路径。
+ * `<projectRoot>/.specforge/work-items/<workItemId>/`
+ */
+export function workItemRoot(projectRoot: string, workItemId: string): string {
+  return path.join(resolveProjectPath(projectRoot, 'workItems'), workItemId);
+}
+
+/**
+ * work_item.json 路径。
+ */
+export function workItemJson(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'work_item.json');
+}
+
+/**
+ * intake.md 路径。
+ */
+export function workItemIntake(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'intake.md');
+}
+
+/**
+ * Work Item runtime log 路径。
+ */
+export function workItemRuntimeLog(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'runtime.log');
+}
+
+/**
+ * candidate_manifest.json 路径。
+ */
+export function workItemCandidateManifest(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'candidate_manifest.json');
+}
+
+/**
+ * candidates 目录路径。
+ */
+export function workItemCandidatesRoot(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'candidates');
+}
+
+/**
+ * gates 目录路径。
+ */
+export function workItemGatesRoot(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'gates');
+}
+
+/**
+ * gate_summary.md 路径。
+ */
+export function workItemGateSummary(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'gate_summary.md');
+}
+
+/**
+ * user_decision.json 路径。
+ */
+export function workItemUserDecision(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'user_decision.json');
+}
+
+/**
+ * verification_report.md 路径。
+ */
+export function workItemVerificationReport(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'verification_report.md');
+}
+
+/**
+ * merge_report.md 路径。
+ */
+export function workItemMergeReport(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'merge_report.md');
+}
+
+/**
+ * evidence 目录路径。
+ */
+export function workItemEvidenceRoot(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'evidence');
+}
+
+/**
+ * evidence_manifest.json 路径。
+ */
+export function workItemEvidenceManifest(projectRoot: string, workItemId: string): string {
+  return path.join(workItemRoot(projectRoot, workItemId), 'evidence', 'evidence_manifest.json');
+}
+
+// ---- Legacy 路径服务（§1.7）----
+
+/**
+ * 构造旧规格文件的绝对路径（legacy read-only）。
+ * `<projectRoot>/.specforge/specs/<workItemId>/<file>`
  */
 export function specPath(
   projectRoot: string,
@@ -253,27 +467,8 @@ export function specPath(
 }
 
 /**
- * 构造 Agent Run 归档目录的绝对路径，等价于
- * `<projectRoot>/.specforge/archive/agent_runs/<workItemId>-<agentType>-<runIndex>`。
- *
- * 该函数避免上层手拼 `${wi}-${agent}-${idx}` 字符串格式，
- * 是 Agent Run 归档路径的专用入口。`runIndex` 直接转字符串拼接，
- * 不做零填充（与现有 daemon-core 行为保持一致）。
- *
- * @param projectRoot 项目根目录绝对路径
- * @param workItemId Work Item ID
- * @param agentType Agent 类型字符串，如 `'sf-design'` / `'sf-executor'`
- * @param runIndex Run 序号（自然数，从 1 起）
- * @returns 平台原生路径字符串
- *
- * @example
- * ```ts
- * agentRunArchivePath('/proj', 'WI-001', 'sf-design', 1);
- * // → '/proj/.specforge/archive/agent_runs/WI-001-sf-design-1'
- *
- * agentRunArchivePath('/proj', 'WI-010', 'sf-executor', 99);
- * // → '/proj/.specforge/archive/agent_runs/WI-010-sf-executor-99'
- * ```
+ * 构造 Agent Run 归档目录的绝对路径。
+ * `<projectRoot>/.specforge/archive/agent_runs/<workItemId>-<agentType>-<runIndex>`
  */
 export function agentRunArchivePath(
   projectRoot: string,
@@ -291,20 +486,85 @@ export function agentRunArchivePath(
 }
 
 // ---------------------------------------------------------------------------
+// Path Policy — 路径策略（§1.6）
+// ---------------------------------------------------------------------------
+
+/**
+ * 校验路径是否符合 Path Policy 规则（§1.6）。
+ *
+ * 所有路径必须满足：
+ * 1. 使用项目根目录相对路径（不得以 / 开头）
+ * 2. 使用 POSIX 风格 /
+ * 3. 不允许绝对路径
+ * 4. 不允许 ..
+ * 5. 不允许 ~
+ * 6. 不允许 Windows 反斜杠 \
+ * 7. 引用项目规格文件必须带 .specforge/ 前缀
+ *
+ * @returns 校验结果对象
+ */
+export function validatePathPolicy(inputPath: string): {
+  valid: boolean;
+  violations: string[];
+} {
+  const violations: string[] = [];
+
+  // 3. 不允许绝对路径
+  if (inputPath.startsWith('/') || /^[A-Za-z]:/.test(inputPath)) {
+    violations.push('absolute_path_not_allowed');
+  }
+
+  // 4. 不允许 ..
+  if (inputPath.includes('..')) {
+    violations.push('parent_traversal_not_allowed');
+  }
+
+  // 5. 不允许 ~
+  if (inputPath.includes('~')) {
+    violations.push('home_shorthand_not_allowed');
+  }
+
+  // 6. 不允许 Windows 反斜杠
+  if (inputPath.includes('\\')) {
+    violations.push('backslash_not_allowed');
+  }
+
+  return {
+    valid: violations.length === 0,
+    violations,
+  };
+}
+
+/**
+ * 判断路径是否属于项目级正式规格区域（.specforge/project/）。
+ */
+export function isProjectSpecPath(inputPath: string): boolean {
+  const normalized = inputPath.replace(/\\/g, '/');
+  return normalized.startsWith('.specforge/project/') || normalized.startsWith('project/');
+}
+
+/**
+ * 判断路径是否属于 Work Item 区域（.specforge/work-items/）。
+ */
+export function isWorkItemPath(inputPath: string): boolean {
+  const normalized = inputPath.replace(/\\/g, '/');
+  return normalized.startsWith('.specforge/work-items/') || normalized.startsWith('work-items/');
+}
+
+/**
+ * 判断路径是否属于旧 specs 区域（.specforge/specs/）。
+ */
+export function isLegacySpecPath(inputPath: string): boolean {
+  const normalized = inputPath.replace(/\\/g, '/');
+  return normalized.startsWith('.specforge/specs/') || normalized.startsWith('specs/');
+}
+
+// ---------------------------------------------------------------------------
 // SPEC_USER_DIR_NAME — 用户主目录下 SpecForge 目录的权威名称
 // ---------------------------------------------------------------------------
 
 /**
- * SpecForge 用户级数据目录名（与 SPEC_DIR_NAME 相同，用于用户主目录下）。
- *
- * 与 {@link SPEC_DIR_NAME} 不同的是，该常量用于 `~/.specforge/` 下的
- * 用户级全局数据（非项目级），如全局运行时状态、日志、模板等。
- *
- * @example
- * ```ts
- * import { SPEC_USER_DIR_NAME } from '@specforge/types';
- * // SPEC_USER_DIR_NAME === '.specforge'
- * ```
+ * SpecForge 用户级数据目录名。
  */
 export const SPEC_USER_DIR_NAME = '.specforge' as const;
 
@@ -314,21 +574,6 @@ export const SPEC_USER_DIR_NAME = '.specforge' as const;
 
 /**
  * `~/.specforge/` 目录下各子路径的权威字典（用户级）。
- *
- * 路径值是相对于 `~/.specforge/` 的子路径片段，不含前导
- * `.specforge/`，由 {@link resolveUserPath} 函数负责前缀拼接。
- *
- * @example
- * ```ts
- * import { USER_LAYOUT, SPEC_USER_DIR_NAME } from '@specforge/types';
- * import * as path from 'path';
- * import * as os from 'os';
- *
- * USER_LAYOUT.runtime;            // 'runtime'
- * USER_LAYOUT.runtimeState;       // 'runtime/state.json'
- * path.join(os.homedir(), SPEC_USER_DIR_NAME, USER_LAYOUT.hostProfile);
- * // → '~/.specforge/host-profile.json'
- * ```
  */
 export const USER_LAYOUT = {
   /** 运行时状态目录 — `~/.specforge/runtime/` */
@@ -365,22 +610,6 @@ export type UserLayoutKey = keyof typeof USER_LAYOUT;
 /**
  * 拼合 `~/.specforge/<USER_LAYOUT[key]>/<...subpath>` 的路径。
  * 用户级路径总是基于 `os.homedir()`。
- *
- * @param key `USER_LAYOUT` 的顶层 key
- * @param subpath 可变长度子路径段，会被 `path.join` 依序拼接到结果末尾
- * @returns 平台原生路径字符串（基于 `os.homedir()`）
- *
- * @example
- * ```ts
- * resolveUserPath('hostProfile');
- * // → '~/.specforge/host-profile.json'
- *
- * resolveUserPath('projects', 'hash123');
- * // → '~/.specforge/projects/hash123'
- *
- * resolveUserPath('runtime');
- * // → '~/.specforge/runtime'
- * ```
  */
 export function resolveUserPath(
   key: UserLayoutKey,

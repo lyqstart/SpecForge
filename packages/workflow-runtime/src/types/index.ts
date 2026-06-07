@@ -6,8 +6,22 @@
 // Gate Result
 export type { GateResult } from './gate-result';
 
-// Gate Definition
+// Gate Definition (v1.1 + backward compatible)
+export {
+  // v1.1 additions
+  GATE_IDS_V11,
+  GATE_STRICTNESS,
+  GATE_SUMMARY_STATUSES,
+} from './gate-definition';
+
 export type {
+  // v1.1 types
+  GateIdV11,
+  GateStrictness,
+  GateReportCheck,
+  GateReportV11,
+  GateSummaryStatus,
+  // Original types (backward compatible)
   GateType,
   GateKind,
   CompositeGateMode,
@@ -20,8 +34,22 @@ export type {
   GateDefinition
 } from './gate-definition';
 
-// State Machine
-export type { 
+// State Machine (v1.1 + backward compatible)
+export {
+  // v1.1 additions
+  WI_STATUSES_V11,
+  FORBIDDEN_TRANSITIONS as V11_FORBIDDEN_TRANSITIONS,
+  isForbiddenTransitionV11,
+  STATE_ADVANCEMENT_SUBJECTS,
+} from './state-machine';
+
+export type {
+  // v1.1 types
+  WIStatusV11,
+  StateAdvancementSubject,
+  ResumeCheck,
+  ResumePlan,
+  // Original types (backward compatible)
   StateTransition, 
   StateEvent,
   WorkflowState, 

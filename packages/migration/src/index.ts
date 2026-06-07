@@ -10,7 +10,7 @@ export * from './types'
 export * from './runner'
 export * from './schema-detector'
 
-// Export schema validator
+// Export schema validator (exclude types already exported from ./types)
 export * from './schema-validator'
 
 // Export apply module but exclude duplicates that are in discovery
@@ -27,11 +27,20 @@ export {
 // Export backup-manager (has its own cleanupOldBackups)
 export * from './backup-manager'
 
-// Export discovery (has its own MigrationScript and discoverMigrationScripts)
-export * from './discovery'
+// Export discovery (exclude MigrationScript to avoid conflict with types.ts)
+export {
+  type DiscoveryErrorCode,
+  type DiscoveryError,
+  type DiscoveryResult,
+  discoverMigrationScripts,
+  parseScriptFilename,
+  isSkippedFile,
+  compareScriptVersions,
+  validateMigrationGraph,
+} from './discovery'
 
-// Export migrations
-export * from './migrations'
+// Export migrations (re-exports discoverMigrationScripts from ./apply - already exported)
+export { filterMigrationsForUpgrade } from './migrations'
 
 // Export inconsistency detector (Task 4.1)
 export * from './inconsistency-detector'
@@ -42,8 +51,25 @@ export * from './repair-engine'
 // Export recovery event logger (Task 4.3)
 export * from './recovery-event-logger'
 
-// Export daemon startup integration (Task 5.1)
-export * from './daemon-startup-integration'
+// Export daemon startup integration (exclude ensureMigrationDirectories - already in migration-config)
+export {
+  type TargetFileType,
+  type StartupMigrationCheckResult,
+  type DaemonStartupOptions,
+  type RepairEventPayload,
+  DEFAULT_SCHEMA_VERSION,
+  MIGRATION_DIR_NAME,
+  BACKUP_DIR_NAME,
+  getMigrationDir,
+  getBackupDir,
+  ensureMigrationDirectories,
+  checkVersionDowngrade,
+  checkAndMigrateOnStartup,
+  DaemonStartupIntegration,
+  createDaemonStartupIntegration,
+  isMigrationNeeded,
+  isDowngradeDetected,
+} from './daemon-startup-integration'
 
 // Export error handler (Task 5.2)
 export * from './error-handler'

@@ -8,6 +8,13 @@ dist/
 # SpecForge project runtime (Plugin auto-generated)
 specforge/
 
+# SpecForge v1.1 runtime data (gitignored per directory-layout)
+.specforge/logs/
+.specforge/cas/
+.specforge/runtime/
+.specforge/archive/
+.specforge/sessions/
+
 # Temporary / debug artifacts
 test_log/
 .backup/

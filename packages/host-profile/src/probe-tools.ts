@@ -7,8 +7,8 @@
  * 每个工具探测有 3 秒超时（通过 safeSpawn）。
  */
 
-import type { ToolInfo } from './types';
-import { safeSpawn, whichCommand, extractVersion, parallelProbe } from './probe-utils';
+import type { ToolInfo } from './types.js';
+import { safeSpawn, whichCommand, extractVersion, parallelProbe } from './probe-utils.js';
 
 /**
  * 标准工具列表

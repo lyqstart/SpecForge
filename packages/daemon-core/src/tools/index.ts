@@ -20,3 +20,15 @@ import './handlers/sf-knowledge-base';
 import './handlers/sf-knowledge-graph';
 import './handlers/sf-knowledge-query';
 import './handlers/sf-trace-matrix';
+
+// v1.1 Handlers
+import './handlers/sf-v11-work-item-create';
+import './handlers/sf-v11-gate-run';
+import './handlers/sf-v11-merge';
+import './handlers/sf-v11-decision';
+import './handlers/sf-v11-code-permission';
+import './handlers/sf-v11-spec-migration';
+import './handlers/sf-v11-rollback';
+import './handlers/sf-v11-handoff';
+import './handlers/sf-v11-extension';
+import './handlers/sf-v11-verification';

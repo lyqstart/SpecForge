@@ -58,11 +58,14 @@ describe("sf_state_transition - project initialization guard", () => {
       workItemId: "WI-001",
       currentState: "requirements",
     });
+    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
+      transition: vi.fn().mockResolvedValue(undefined),
+    });
 
     const result = await handler(
       { work_item_id: "WI-001", from_state: "intake", to_state: "requirements" },
       { directory: tempDir },
-      { workflowEngine: { transitionFull: mockTransitionFull } },
+      { workflowEngine: { transitionFull: mockTransitionFull }, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
     );
 
     expect(result.success).toBe(true);
@@ -80,11 +83,14 @@ describe("sf_state_transition - project initialization guard", () => {
       workItemId: "WI-001",
       currentState: "intake",
     });
+    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
+      transition: vi.fn().mockResolvedValue(undefined),
+    });
 
     const result = await handler(
       { work_item_id: "WI-001", from_state: "", to_state: "intake" },
       { directory: tempDir },
-      { workflowEngine: { transitionFull: mockTransitionFull } },
+      { workflowEngine: { transitionFull: mockTransitionFull }, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
     );
 
     expect(result.success).toBe(true);

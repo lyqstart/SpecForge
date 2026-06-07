@@ -276,3 +276,157 @@ grep -c "new Engine()" path/to/file.ts  # 期望 = 1
 - 不得调用 `sf_state_transition`（被 sf_permission_guard 拦截）
 - 不得调用 `sf_*_gate` 工具（只能 Orchestrator 调）；自检文档质量请用 `sf_doc_lint`
 - 遇到无法解决的问题 → 不要绕过、不要降级，按失败报告格式上报
+
+---
+
+# v1.1 Standard Concepts
+
+> 本节定义 SpecForge v1.1 标准中引入的核心概念。所有 agent 在阅读各自专属规范前，须先理解以下公共定义。
+> 每个概念标注了对应的标准章节编号，方便交叉引用。
+
+---
+
+## Candidate (§8.2)
+
+**Candidate** 是阶段转换的检查点文件。当一个 agent 完成当前阶段的工作后，产出一份 Candidate 文件，表明"本阶段产物已就绪，请求进入下一阶段"。
+
+Candidate 文件包含：
+- 当前阶段名称与产出文件路径
+- 自检清单（如 doc_lint / 单测结果）
+- 请求的下一阶段名称
+- 时间戳与 agent 签名
+
+Candidate 必须通过 Gate（§9.1）检查后，才能被批准为正式阶段转换。未通过 Gate 的 Candidate 应被拒绝并退回修正。
+
+---
+
+## Delta (§8.1)
+
+**Delta** 是阶段间的增量变更记录。Delta 记录了从上一个阶段到当前阶段的所有实质性变更，包括：
+
+- 新增 / 修改 / 删除的文件列表及路径
+- 每个变更的简要描述（一句话说明改了什么、为什么改）
+- 变更的类型标签（`feat` / `fix` / `refactor` / `docs` / `chore`）
+
+Delta 使得 Orchestrator 和下游 agent 能够快速了解阶段间的差异，无需逐文件对比。每个 Candidate（§8.2）必须附带对应的 Delta。
+
+---
+
+## Gate (§9.1)
+
+**Gate** 是阶段转换前必须通过的质量关卡。每个阶段有对应的 Gate 函数（如 `sf_requirements_gate`、`sf_design_gate`、`sf_tasks_gate`、`sf_verification_gate`），定义了该阶段产物必须满足的最低质量标准。
+
+Gate 的核心属性：
+- **机器可判**：Gate 检查结果必须是 pass / fail，不允许"部分通过"
+- **非绕过性**：只有 Orchestrator 可调用 Gate 工具；sub-agent 不得绕过或跳过
+- **前置性**：Gate 必须在状态转换之前执行；未通过 Gate 的 Candidate 不得推进状态
+- **幂等性**：对同一产物多次执行 Gate，结果必须一致
+
+Gate 失败时，agent 必须修正产物后重新提交 Candidate，不得降级或跳过。
+
+---
+
+## Trace (§13.1)
+
+**Trace** 是每条 agent 操作的审计追踪记录。Trace entry 记录了 agent 执行过程中的关键动作，确保所有行为可追溯、可审计。
+
+每条 Trace entry 包含：
+- `agent_id`：执行 agent 的标识
+- `work_item_id`：所属 Work Item
+- `task_id`：所属 Task（如适用）
+- `action`：动作类型（`read` / `write` / `tool_call` / `verify` / `report`）
+- `target`：动作对象（文件路径 / 工具名称 / 命令）
+- `timestamp`：ISO 8601 时间戳
+- `result`：动作结果摘要
+
+Trace 日志存储在 `.specforge/logs/trace.jsonl`，仅供 Orchestrator 和审计用途，sub-agent 不得修改或删除 Trace 记录。
+
+---
+
+## Evidence (§13.4)
+
+**Evidence** 是验证阶段的结构化证明材料。Evidence manifest 记录了验证过程中产生的所有可审查证据，确保验证结果是真实、可复现的。
+
+Evidence 体系的层级结构：
+- **Evidence Request（ER）**：声明需要收集什么证据
+- **Evidence Packet（EP）**：一组相关证据的集合
+- **Evidence Bundle（EB）**：完整验证周期的所有证据包
+- **Evidence Artifact（EA）**：单条证据的原始内容（文件、日志、截图、命令输出等）
+
+Evidence 存储在 `.specforge/specs/<work_item_id>/evidence/` 目录下，通过 `index.json` 索引。sub-agent 通过 `sf_evidence_write` 和 `sf_evidence_query` 工具操作 Evidence。
+
+---
+
+## Extension — Patch1 §5
+
+**Extension** 是处理超出当前 task 范围事项的标准子流程。当 agent 在执行过程中发现需要额外工作（但不在当前 task 合同范围内），必须通过 Extension 子流程处理，而非擅自扩大范围。
+
+Extension 的处理步骤：
+1. **发现**：agent 识别出 out-of-scope 项
+2. **记录**：将发现写入 `out_of_scope_observations` 字段，包含：问题描述、影响范围、建议处理方式
+3. **上报**：在执行报告中明确标记，由 Orchestrator 决定是否创建新的 Work Item 或扩展当前 task
+4. **禁止**：agent 不得自行修改范围外文件、安装依赖、或执行未授权操作
+
+Extension 确保每个 task 的边界清晰，避免范围蔓延和隐式依赖。
+
+---
+
+## Agent Prohibitions — §14.2
+
+以下 9 条禁令适用于所有普通 sub-agent（非 Orchestrator）：
+
+| # | 禁令 | 说明 |
+|---|------|------|
+| 1 | 禁止调用 `sf_state_transition` | 状态转换仅限 Orchestrator，sub-agent 不得直接修改工作流状态 |
+| 2 | 禁止调用 Gate 工具 | `sf_*_gate` 系列工具仅限 Orchestrator 调用；sub-agent 自检用 `sf_doc_lint` |
+| 3 | 禁止伪造验证结果 | verification_command 必须真实运行，不得用 echo / echo true / stub 冒充通过 |
+| 4 | 禁止越权修改 spec 文件 | requirements.md / design.md / tasks.md 仅限对应专属 agent 修改 |
+| 5 | 禁止跳过验证步骤 | verification_commands 中每条命令都必须执行，不得省略或跳过 |
+| 6 | 禁止向用户直接提问 | sub-agent 不得绕过 Orchestrator 直接与用户交互 |
+| 7 | 禁止创建子 Agent | sub-agent 不得 dispatch 或 fork 其他 agent |
+| 8 | 禁止把推测当事实 | 未经 Evidence 支撑的判断必须标注为 `assumption`，不得声明为 `verified` |
+| 9 | 禁止伪装 failed/blocked 为 success | 验证未通过或任务无法执行时，必须如实报告，不得篡改状态 |
+
+违反任一禁律的 agent 执行结果应被标记为 invalid，需要重新执行。
+
+---
+
+## Agent Handoff Format — §14.3
+
+当 agent 完成任务并向 Orchestrator 报告时，必须遵循以下最小交接格式。该格式确保 Orchestrator 和下游 agent 能获取足够的上下文继续工作。
+
+### 交接模板
+
+```
+## Handoff: <agent_id> → Orchestrator
+
+### Inputs
+- 接收到的输入文件和参数清单
+- 上游 agent 的产出摘要（如适用）
+
+### Outputs
+- 本 task 产出的文件清单（含路径）
+- 每个产出文件的简要说明（一句话）
+
+### Findings
+- 执行过程中的关键发现
+- 影响 downstream 工作的重要信息
+- 自审清单（§6）的勾选状态
+
+### Unknowns
+- 未能确认的假设（标注 `assumption`）
+- 需要后续 agent 验证或补充的信息
+- 遗留问题及建议处理方式
+
+### Escalation
+- 需要 Orchestrator 决策的事项
+- 建议的下一步（如创建新 Work Item / 扩展 task / 调试）
+- out_of_scope_observations（如适用）
+```
+
+### 交接纪律
+
+1. **Inputs / Outputs 必须列出具体文件路径**，不允许只写"已处理"
+2. **Findings 必须基于事实**，推测性内容归入 Unknowns
+3. **Unknowns 不得隐含假设完成**——未确认的事项必须显式标注
+4. **Escalation 必须给出建议**——不只报告问题，还须推荐处理路线

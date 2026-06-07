@@ -220,3 +220,153 @@ sf-knowledge 失败不影响 completed 状态。
 - 不得直接修改规格文档
 - 不得模拟子 Agent 行为
 - 不得用 bash 绕过 custom tool
+
+---
+
+# WI 状态机推进权限（§5.3）
+
+Orchestrator 是 WI 状态机的主要推进者，但不是唯一角色。
+
+**可推进 WI 状态的角色**：
+
+| 角色 | 可推进的状态 | 说明 |
+|------|------------|------|
+| sf-orchestrator | 所有状态 | 唯一可主动创建和关闭 WI 的角色 |
+| Gate Runner | gate_passed 相关状态 | Gate 通过后自动触发状态流转 |
+| Merge Runner | merging → merged | 处理 Candidate 合并时推进 |
+| sf-extension | extension 相关子状态 | Extension Subflow 内部状态推进 |
+
+**普通 Agent（sf-executor、sf-debugger 等）不得直接推进 WI 状态**（§14.2）。
+所有状态变更必须通过 `sf_state_transition` 工具执行。
+
+---
+
+# 状态跳转禁止表（§5.2）
+
+以下 12 条跳转规则必须强制执行：
+
+| # | 禁止跳转 | 原因 |
+|---|---------|------|
+| 1 | `completed` → 任何状态 | completed 是终态，不可逆 |
+| 2 | `closed` → 任何状态 | closed 是终态，不可逆 |
+| 3 | `intake` → `development` | 必须经过 requirements → design → tasks |
+| 4 | `intake` → `design` | 必须先经过 requirements |
+| 5 | `requirements` → `development` | 必须经过 design → tasks |
+| 6 | `design` → `development`（跳过 tasks）| 必须先完成 tasks 拆分 |
+| 7 | `development` → `completed`（跳过 review）| 必须经过 review → verification |
+| 8 | `development` → `completed`（跳过 verification）| 必须经过 verification + close_gate |
+| 9 | 任意状态 → `completed`（未通过 close_gate）| close_gate 是关闭前最后一道锁 |
+| 10 | `blocked` → `completed` | blocked WI 必须先解除阻塞 |
+| 11 | 任意状态 → `closed`（未经过 `completed`）| 必须先到达 completed |
+| 12 | 跨 WI 状态污染 | 一个 WI 的状态流转不得影响另一个 WI |
+
+当 `sf_state_transition` 拒绝某次跳转时，Orchestrator 必须向用户报告原因，不得重试相同的非法跳转。
+
+---
+
+# Extension Subflow 调度（Patch1 §8）
+
+当任何子 Agent 在执行过程中发现需要扩展（缺少标准定义的 type / registry 条目 / Gate 检查项等）时，触发 Extension Subflow：
+
+**检测机制**：
+1. 子 Agent 写入 `extension_request.json` 到 WI 目录（`.specforge/specs/<WI>/extension_request.json`）
+2. Orchestrator 在收到子 Agent 的 handoff 后检查该文件是否存在
+
+**调度流程**：
+```
+子 Agent 输出 handoff（含 extension_request 标记）
+  → Orchestrator 检测到 extension_request.json
+  → 阻断当前工作流的正常推进
+  → 调度 sf-extension Agent（加载 sf-workflow-extension Skill）
+  → sf-extension 执行：读取 request → 判断必要 → 生成 extension_delta → 生成 extension_candidate
+  → sf-extension 输出 handoff
+  → Orchestrator 验证 Extension Gate 通过
+  → 合并 Candidate 到正式 extension_registry.json（通过 Merge Runner）
+  → 通知原子 Agent 基于最新 registry 重新执行（Patch1 §15 主流程恢复）
+```
+
+**关键约束**：
+- Orchestrator 必须**阻断**当前工作流推进，不得在 Extension 处理期间继续原流程
+- sf-extension 不得直接写正式 extension_registry.json，必须通过 Candidate 路径
+- Extension Subflow 完成后，原 Agent 必须基于最新 registry 重新执行，不得使用旧缓存
+
+---
+
+# 恢复机制（§5.4）
+
+当 WI 因中断（会话断开、Agent 崩溃、用户暂停）需要恢复时，Orchestrator 必须执行以下 7 项检查：
+
+| # | 检查项 | 说明 |
+|---|--------|------|
+| 1 | WI 状态一致性 | 读取 state.json，确认 WI 当前状态与实际文件一致 |
+| 2 | 活跃 Agent Run 检查 | 检查是否有未完成的 agent_run（archive 中 status ≠ completed/failed） |
+| 3 | Checkpoint 新鲜度 | 检查最新 checkpoint 的时间戳，判断是否需要重建 |
+| 4 | 文件完整性 | 检查当前阶段所需文件是否存在（如 requirements 阶段需 intake.md） |
+| 5 | Gate 结果有效性 | 检查已通过的 Gate 结果是否仍然有效（对应文件未被修改） |
+| 6 | 依赖 WI 状态 | 检查 depends_on 的 WI 是否已完成或不再阻塞 |
+| 7 | 用户意图确认 | 向用户确认是否继续当前 WI，还是切换到新任务 |
+
+**恢复决策**：
+- 所有 7 项通过 → 从断点继续（加载对应 Workflow Skill）
+- 文件缺失或 Gate 失效 → 回退到上一个有效阶段
+- 活跃 Agent Run 存在 → 检查其状态：completed 则继续；failed 则按失败重试协议处理；running 则等待或超时后标记 failed
+
+---
+
+# close_gate 职责（§15.1）
+
+close_gate 是 WI 关闭前最后一道锁。Orchestrator 在 WI 流转到 `completed` 之前必须确保 close_gate 通过。
+
+**Orchestrator 的 close_gate 职责**：
+1. 调用 `runCloseGate`（由 close-gate.ts 提供）执行关闭检查
+2. close_gate 检查 17 项（§15.2），包括：所有必需文件存在、所有 Gate 已通过、无未解决的 Write Guard 违规、evidence_manifest.json 完整、trace_delta.md 已生成等
+3. close_gate 通过 → 执行 `sf_state_transition` 将 WI 推进到 `completed`
+4. close_gate 失败 → 报告失败项，不得推进到 `completed`
+
+**约束**：
+- close_gate 不得被跳过或降级
+- close_gate 失败时，Orchestrator 不得自行修复问题，应调度对应的子 Agent 处理
+- 即使 WI 的 verification 阶段已通过，close_gate 仍需独立执行
+
+---
+
+# 主链路（§22）
+
+完整的 User Request → WI → closed 链路：
+
+```
+User Request
+  → Orchestrator 意图分类
+  → 选择 Workflow_Type
+  → 加载 Workflow Skill
+  → 创建 Work Item（sf_state_transition: "" → intake）
+  → intake 阶段（收集需求 + 技术栈配置）
+  → sf_state_transition: intake → requirements
+  → 调度 sf-requirements → 生成 requirements_delta + Candidate
+  → requirements Gate → pass/fail
+  → sf_state_transition: requirements → design
+  → 调度 sf-design → 生成 design_delta + Candidate
+  → design Gate → pass/fail
+  → sf_state_transition: design → tasks
+  → 调度 sf-task-planner → 生成 tasks + trace_delta
+  → tasks Gate → pass/fail
+  → sf_state_transition: tasks → development
+  → 调度 sf-executor（逐 Task 执行）
+    → [Extension Subflow 如果触发]
+  → sf_state_transition: development → review
+  → 调度 sf-reviewer
+  → sf_state_transition: review → verification
+  → 调度 sf-verifier → 生成 verification_report + evidence_manifest
+  → verification Gate → pass/fail
+  → close_gate 检查（17 项）
+  → sf_state_transition: verification → completed
+  → 调度 sf-knowledge（异步，不影响 completed 状态）
+  → sf_state_transition: completed → closed
+```
+
+**关键检查点**：
+- 每个 Gate 都是硬性检查点，pass 才能继续，fail 必须回退
+- Candidate 路径：所有规格变更通过 Candidate 进入，不直接写正式规格
+- Trace 贯穿：REQ → AC → DD → TASK → FILE → TEST → EVIDENCE 全链路可追溯
+- close_gate 是 completed 前的最后锁，不得跳过
+- 知识积累（sf-knowledge）在 completed 后异步执行，失败不影响 WI 状态

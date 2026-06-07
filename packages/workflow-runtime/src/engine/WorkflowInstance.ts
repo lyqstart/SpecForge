@@ -238,7 +238,7 @@ export class WorkflowInstanceStateManager {
     newState: string,
     event?: WorkflowEventData
   ): void {
-    const oldState = instance.currentState;
+    void instance.currentState;
     instance.currentState = newState;
     instance.updatedAt = new Date();
 

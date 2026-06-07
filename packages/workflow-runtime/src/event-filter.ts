@@ -207,7 +207,10 @@ export class EventFilter {
     end?: number
   ): Event[] {
     return this.filter(events, {
-      timestampRange: { start, end },
+      timestampRange: {
+        ...(start !== undefined && { start }),
+        ...(end !== undefined && { end }),
+      },
     });
   }
 

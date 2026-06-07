@@ -224,9 +224,9 @@ async function runStartupMigrations(
   try {
     // Discover available migration scripts
     const migrationDir = migrationOptions.migrationsDir || getMigrationDir()
-    const scripts = await discoverMigrationScripts(migrationDir)
+    const discoveryResult = await discoverMigrationScripts(migrationDir)
 
-    if (scripts.length === 0) {
+    if (discoveryResult.scripts.length === 0) {
       return {
         success: true,
         scriptsExecuted: 0,
@@ -255,7 +255,7 @@ async function runStartupMigrations(
 
     // Filter and sort scripts to apply
     const applicableScripts: MigrationScript[] = []
-    for (const script of scripts) {
+    for (const script of discoveryResult.scripts) {
       // Check if this script is needed (from source to target)
       const fromCmp = compareVersions(script.fromVersion, sourceVersion)
       const toCmp = compareVersions(script.toVersion, codeSchemaVersion)

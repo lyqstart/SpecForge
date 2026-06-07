@@ -403,6 +403,8 @@ export class HotReloadManager {
       metadata: {
         ...snapshot.metadata,
         mergedAt: snapshot.metadata.mergedAt,
+        sensitiveFields: snapshot.metadata.sensitiveFields ?? [],
+        validationErrors: snapshot.metadata.validationErrors ?? [],
       },
     }
   }

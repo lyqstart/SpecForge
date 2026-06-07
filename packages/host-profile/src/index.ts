@@ -21,7 +21,7 @@ export type {
   SpecForgePaths,
   HostProfile,
   ProbeError,
-} from './types';
+} from './types.js';
 
 // Scanner
 export {
@@ -32,9 +32,9 @@ export {
   loadHostProfile,
   isCacheFresh,
   loadCachedProfile,
-} from './scanner';
+} from './scanner.js';
 
-export type { ScanOptions, ScanResult } from './scanner';
+export type { ScanOptions, ScanResult } from './scanner.js';
 
 // Utils（供外部复用）
 export {
@@ -44,4 +44,4 @@ export {
   detectCI,
   atomicWriteJson,
   safeReadJson,
-} from './probe-utils';
+} from './probe-utils.js';

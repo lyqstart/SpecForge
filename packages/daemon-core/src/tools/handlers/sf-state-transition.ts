@@ -2,14 +2,45 @@ import { access } from "node:fs/promises";
 import { join } from "node:path";
 import { registerHandler } from '../ToolDispatcher';
 import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
+import { isValidV11Transition, isForbiddenTransition, WI_STATUSES_V11 } from '../lib/state-machine-v11';
 
 registerHandler('sf_state_transition', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
   const fromState = (args['from_state'] as string) ?? '';
   const toState = args['to_state'] as string;
+  const useV11 = args['use_v11_state_machine'] as boolean;
 
   if (!workItemId || toState === undefined) {
     return { success: false, error: 'work_item_id and to_state required' };
+  }
+
+  // v1.1 state machine validation (opt-in via use_v11_state_machine flag)
+  if (useV11) {
+    // Check if target state is a valid v1.1 state
+    if (!(WI_STATUSES_V11 as readonly string[]).includes(toState)) {
+      return {
+        success: false,
+        error: `Invalid v1.1 target state "${toState}". Valid states: ${(WI_STATUSES_V11 as readonly string[]).join(', ')}`,
+      };
+    }
+
+    // Check forbidden transitions
+    if (fromState !== '' && isForbiddenTransition(fromState, toState)) {
+      return {
+        success: false,
+        error: `Forbidden v1.1 transition: ${fromState} → ${toState} (§5.2)`,
+        forbidden: true,
+      };
+    }
+
+    // Check valid transition
+    if (fromState !== '' && !isValidV11Transition(fromState, toState)) {
+      return {
+        success: false,
+        error: `Invalid v1.1 transition: ${fromState} → ${toState}`,
+        valid_from_states: `Use getTransitionTable() to see valid targets from ${fromState}`,
+      };
+    }
   }
 
   // Guard: when creating a new work item (fromState=''), ensure the project is initialized

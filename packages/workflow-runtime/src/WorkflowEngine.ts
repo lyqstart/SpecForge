@@ -12,13 +12,11 @@ import {
   SimpleGateDefinition,
   CompositeGateDefinition,
 } from './types.js';
+import { isForbiddenTransitionV11 } from './types/state-machine.js';
 import { EventPublisher } from './events/EventPublisher.js';
 import {
   WorkflowErrorHandler,
   WorkflowStateManager,
-  GateExecutionError,
-  GateErrorType,
-  createErrorHandler,
   type RetryConfig,
 } from './WorkflowErrorHandling.js';
 
@@ -63,7 +61,6 @@ export class WorkflowEngine {
   private instances: Map<string, WorkflowInstance> = new Map();
   private eventHandlers: EventHandler[] = [];
   private eventPublisher: EventPublisher | undefined;
-  private errorHandler: WorkflowErrorHandler;
   private stateManager: WorkflowStateManager;
   private onTransition?: WorkflowEngineConfig['onTransition'];
 
@@ -72,7 +69,6 @@ export class WorkflowEngine {
    */
   constructor(config?: WorkflowEngineConfig) {
     this.eventPublisher = config?.eventPublisher ?? undefined;
-    this.errorHandler = config?.errorHandler ?? createErrorHandler(config?.retryConfig);
     this.stateManager = config?.stateManager ?? new WorkflowStateManager();
     this.onTransition = config?.onTransition;
   }
@@ -271,8 +267,8 @@ export class WorkflowEngine {
           fromState: '',
           toState,
           workflowType: workflowId,
-          evidence,
-          actor,
+          ...(evidence !== undefined && { evidence }),
+          ...(actor !== undefined && { actor }),
         });
       }
 
@@ -282,6 +278,11 @@ export class WorkflowEngine {
         currentState: toState,
         timestamp: new Date().toISOString(),
       };
+    }
+
+    // v1.1 forbidden transition check — enforced before workflow definition validation
+    if (isForbiddenTransitionV11(fromState as import('./types/state-machine.js').WIStatusV11, toState)) {
+      throw new Error(`Forbidden transition (v1.1): ${fromState} → ${toState}`);
     }
 
     const instance = this.instances.get(workItemId);
@@ -321,8 +322,8 @@ export class WorkflowEngine {
         fromState: previousState,
         toState,
         workflowType: instance.workflowId,
-        evidence,
-        actor,
+        ...(evidence !== undefined && { evidence }),
+        ...(actor !== undefined && { actor }),
       });
     }
 
@@ -549,7 +550,7 @@ export class WorkflowEngine {
   /**
    * Determine the next state based on gate result
    */
-  private determineNextState(
+  protected determineNextState(
     stateDef: { next?: string | Record<string, string> },
     gateResult: GateResult
   ): string | null {
@@ -640,7 +641,7 @@ export class WorkflowEngine {
   /**
    * Emit an event to all handlers
    */
-  private emitEvent(event: WorkflowEvent): void {
+  protected emitEvent(event: WorkflowEvent): void {
     for (const handler of this.eventHandlers) {
       try {
         const result = handler(event);

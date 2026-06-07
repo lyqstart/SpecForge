@@ -10,7 +10,7 @@
 export * from './types'
 export * from './constants'
 export * from './config-loader'
-export * from './config-merge'
+export { mergeConfigLayers } from './config-merge'
 export * from './merge-engine'
 export * from './config-validator'
 export * from './config-access'

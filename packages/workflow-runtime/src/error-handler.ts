@@ -149,7 +149,7 @@ export class GateExecutionError extends GateError {
       message,
       suggestion,
       errorType: params.errorType ?? GateErrorType.EXECUTION_ERROR,
-      retryable: params.retryable,
+      ...(params.retryable !== undefined && { retryable: params.retryable }),
     });
 
     this.name = 'GateExecutionError';
