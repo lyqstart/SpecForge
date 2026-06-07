@@ -285,7 +285,7 @@
 
 | Sub-section | Implementation File | Type | Notes |
 |-------------|-------------------|------|-------|
-| §20 Playbook Constraints | `docs/standards/implementation_plan.md` | Doc | Round structure and gates |
+| §20 Playbook Constraints | `docs/standards/implementation_playbook.md` | Doc | Round structure and gates |
 | §21 E2E Scenarios | `tests/e2e/` | Tests | 5 required scenarios |
 | §22 Main Chain | `packages/daemon-core/src/gate-runner-v11.ts` (gate chains) | Code | Full pipeline implementation |
 | §23 Standard Usage | `AGENT_CONSTITUTION.md`, agent docs | Doc | Usage instructions per audience |
