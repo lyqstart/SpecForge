@@ -1,8 +1,8 @@
 # SpecForge
 
-运行在 OpenCode 上的规格驱动 AI 开发控制系统。
+运行在 OpenCode 上的规格驱动 AI 开发控制系统（v1.1）。
 
-SpecForge 将用户的功能描述，通过结构化的工作流转化为：已确认的需求 → 受约束的设计 → 可执行的任务 → 有测试证据的代码。整个过程由 9 个专业 Agent 协作完成，主 Agent（Orchestrator）负责项目管理，子 Agent 负责专业执行，Gate 工具负责阶段质量检查。
+每个 Work Item（WI）经过：Intake → Classification → Impact Analysis → Candidate 准备 → Gate 检查 → User Decision → Merge → Post-Merge Verify → Close。整个过程由 Write Guard 默认拒绝、Gate 五层检查、Changed Files Audit 审计三重控制保障。
 
 ---
 
@@ -312,34 +312,58 @@ SPEC_DIR_NAME = '.specforge'
 
 ---
 
-## 工作流
+## 工作流路径（v1.1）
 
-| 工作流 | 类型 | 适用场景 |
-|--------|------|----------|
-| Feature Spec (Requirements-First) | feature_spec | 新功能开发 |
-| Feature Spec (Design-First) | feature_spec_design_first | 先有技术方案再补需求 |
-| Bugfix Spec | bugfix_spec | 修复已确认代码缺陷 |
-| Change Request | change_request | 修改已有业务功能 |
-| Refactor | refactor | 纯结构改善，不改行为 |
-| Ops Task | ops_task | 部署/运维操作 |
-| Investigation | investigation | 调查研究，无代码变更 |
+所有 WI 必须在 classification 阶段确定 workflow_path，后续状态机由路径决定。
 
-> **注意**：Quick Change 工作流已移除（v1.1）。旧工作流入口（specs/、config/、knowledge/、manifest.json）已切换为只读。
+| workflow_path | 触发条件 | 说明 |
+|---|---|---|
+| `requirement_change_path` | 需求变更 — 需求→候选→Gate→User Decision→Merge→Verify→Close | 标准需求变更路径 |
+| `design_change_path` | 设计变更 — 设计→候选→Gate→User Decision→Merge→Verify→Close | 架构/设计变更路径 |
+| `architecture_change_path` | 架构变更 — 架构评估→候选→Gate→User Decision→Merge→Verify→Close | 大范围架构调整路径 |
+| `task_change_path` | 任务变更 — 任务调整→候选→Gate→User Decision→Merge→Verify→Close | 任务级别变更路径 |
+| `code_only_fast_path` | 纯代码修改 — 跳过部分 Gate，直接 Code Permission→Implement→Verify→Close | 小范围代码修复（14 文件校验） |
+| `spec_migration_path` | 规格迁移 — 旧 specs/ 结构迁移到 project/ + work-items/ | v1.0→v1.1 迁移路径 |
+| `rollback_path` | 回滚 — 逆向 Merge 恢复到变更前状态 | 紧急回滚路径 |
+
+> **deprecated**: `quick_change` 类型已废弃，等效于 `code_only_fast_path`。系统不再独立处理 quick_change 工作流。
 
 ---
 
 ## Agent 体系
 
-| Agent | 类型 | 职责 |
-|-------|------|------|
-| sf-orchestrator | primary | 项目管理、意图判断、工作流选择、阶段推进 |
-| sf-requirements | subagent | 需求分析、EARS 格式 AC 编写 |
-| sf-design | subagent | 架构设计 |
-| sf-task-planner | subagent | 任务拆分、验证要求定义 |
-| sf-executor | subagent | 代码编写、任务执行 |
-| sf-debugger | subagent | 调试、问题修复 |
-| sf-reviewer | subagent | 代码与文档审查（只读） |
-| sf-verifier | subagent | 测试执行、验收确认（只读） |
+| Agent | v1.1 角色 | 职责 |
+|-------|-----------|------|
+| sf-orchestrator | 主控 | WI 管理、意图判断、workflow_path 选择、阶段推进 |
+| sf-requirements | 子 Agent | 需求分析、EARS 格式 AC 编写、Classification |
+| sf-design | 子 Agent | 架构设计、Candidate 准备 |
+| sf-task-planner | 子 Agent | 任务拆分、验证要求定义 |
+| sf-executor | 子 Agent | 代码编写（受 Write Guard + code_permission 控制） |
+| sf-debugger | 子 Agent | 调试、问题修复 |
+| sf-reviewer | 子 Agent | 代码与文档审查（只读） |
+| sf-verifier | 子 Agent | 测试执行、验收确认、changed_files_audit 生成 |
+
+---
+
+## v1.1 控制链路
+
+```
+Intake → Classification → Impact Analysis → Candidate 准备
+  → Gate Summary Gate (gates/gate_summary_gate.json)
+  → User Decision (user_decision.json approved/waived)
+  → Merge Ready Gate (gates/merge_ready_gate.json)
+  → Merge Runner → merge_report.md
+  → Post-Merge Gate (gates/post_merge_gate.json)
+  → Code Permission Release (code_permission_release_gate)
+  → Implementation (Write Guard: path + operation 匹配)
+  → Verification → verification_report.md + changed_files_audit.md
+  → Close Gate (gates/close_gate.json)
+  → Closed
+```
+
+- **Write Guard**: 默认拒绝，未知 actor 一律 block。每个资源只有声明角色可写。
+- **Gate 检查**: 不只检查文件存在，检查 gate JSON status=passed / decision status=approved/waived。
+- **Changed Files Audit**: 路径+操作双重匹配。越界写入 → close_gate 不通过。
 
 ---
 

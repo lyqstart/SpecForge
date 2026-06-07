@@ -25,6 +25,15 @@ export interface WorkflowEvent {
 }
 
 /**
+ * v1.1: States that REQUIRE workItemDir for evidence enforcement.
+ * Transitioning to any of these states without workItemDir will throw.
+ */
+const CRITICAL_STATES = new Set([
+  'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
+  'implementation_ready', 'verification_done', 'closed',
+]);
+
+/**
  * Workflow Engine
  * Loads workflow definitions and manages workflow instance lifecycle
  */
@@ -185,7 +194,7 @@ export class WorkflowEngine {
    * Execute a workflow instance
    * Runs from current state until no more transitions
    */
-  async execute(instanceId: string): Promise<WorkflowInstance> {
+  async execute(instanceId: string, options?: { workItemDir?: string }): Promise<WorkflowInstance> {
     const instance = this.instances.get(instanceId);
     if (!instance) {
       throw new Error(`Workflow instance not found: ${instanceId}`);
@@ -246,9 +255,15 @@ export class WorkflowEngine {
       // Transition to next state
       const oldState = instance.currentState;
 
-      // v1.1: Check evidence prerequisites before transition
-      if (this.workItemDir) {
-        await this.checkTransitionEvidence(nextState, this.workItemDir);
+      // v1.1: Enforce evidence prerequisites — MANDATORY for critical states
+      const wdir = options?.workItemDir ?? this.workItemDir;
+      if (CRITICAL_STATES.has(nextState)) {
+        if (!wdir) {
+          throw new Error(`Cannot transition to '${nextState}': workItemDir is required for critical state transitions`);
+        }
+        await this.enforceTransitionEvidence(nextState, wdir);
+      } else if (wdir) {
+        await this.enforceTransitionEvidence(nextState, wdir);
       }
 
       instance.currentState = nextState;
@@ -460,11 +475,11 @@ export class WorkflowEngine {
   }
 
   /**
-   * v1.1: Check transition evidence prerequisites.
+   * v1.1: Enforce transition evidence prerequisites.
    * Reads required files from the work item directory and verifies
    * gate/decision STATUS before allowing transitions to specific target states.
    */
-  private async checkTransitionEvidence(targetState: string, workItemDir: string): Promise<void> {
+  private async enforceTransitionEvidence(targetState: string, workItemDir: string): Promise<void> {
     switch (targetState) {
       case 'approval_required':
         await this.requireFileWithStatus(workItemDir, 'gate_summary.md', undefined);
