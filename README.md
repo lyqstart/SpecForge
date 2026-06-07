@@ -175,7 +175,6 @@ SpecForge/                        # 仓库根目录
 project-root/                    # 项目级（Plugin 自动初始化）
 ├── AGENTS.md                    # Agent 总览（自动生成）
 └── .specforge/
-    ├── manifest.json            # Project manifest
     ├── project/                 # 项目级 spec 真相源（§2.1）
     │   ├── spec_manifest.json
     │   ├── extension_registry.json
@@ -191,14 +190,15 @@ project-root/                    # 项目级（Plugin 自动初始化）
     │       ├── work_item.json
     │       ├── intake.md
     │       └── ...
-    ├── config/                  # 项目配置
+    ├── runtime/                 # 运行时状态（gitignored）
+    │   ├── state.json
+    │   ├── wal.jsonl
+    │   ├── checkpoints/
+    │   └── logs/
+    ├── config/                  # [LEGACY READ-ONLY §1.7]
     ├── specs/                   # [LEGACY READ-ONLY §1.7]
-    ├── knowledge/               # Knowledge Graph
-    └── runtime/                 # 运行时状态（gitignored）
-        ├── state.json
-        ├── logs/
-        ├── archive/
-        └── sessions/
+    ├── knowledge/               # [LEGACY READ-ONLY §1.7]
+    └── manifest.json            # [LEGACY READ-ONLY §1.7]
 ```
 
 <!-- BEGIN: directory-layout -->
@@ -211,20 +211,14 @@ project-root/                    # 项目级（Plugin 自动初始化）
 SPEC_DIR_NAME = '.specforge'
 ```
 
-## 项目级路径 (.specforge/)
+## v1.1 Active Paths (.specforge/)
 
 ### committed 区（提交到 Git）
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| manifest | `manifest.json` | Project manifest — `<root>/.specforge/manifest.json` |
 | project | `project` | 项目级正式规格目录 — `<root>/.specforge/project/` |
 | workItems | `work-items` | Work Item 事务根目录 — `<root>/.specforge/work-items/` |
-| config | `config` | 项目配置目录 — `<root>/.specforge/config/` |
-| specs | `specs` | 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` |
-| specsReadme | `specs/README.md` | specs 目录的 README — `<root>/.specforge/specs/README.md` |
-| knowledge | `knowledge` | Knowledge 目录 — `<root>/.specforge/knowledge/` |
-| knowledgeGraph | `knowledge/graph.json` | Knowledge Graph 数据 — `<root>/.specforge/knowledge/graph.json` |
 
 ### projectFiles 分组
 
@@ -265,7 +259,36 @@ SPEC_DIR_NAME = '.specforge'
 | workItemFiles.extensionRequest | `extension_request.json` | — |
 | workItemFiles.extensionDelta | `extension_delta.md` | — |
 
-### configFiles 分组
+### gitignored 区（运行时数据）
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
+
+### runtimeFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| runtimeFiles.wal | `runtime/wal.jsonl` | — |
+| runtimeFiles.state | `runtime/state.json` | — |
+| runtimeFiles.checkpoints | `runtime/checkpoints` | — |
+| runtimeFiles.logs | `runtime/logs` | — |
+
+## Legacy Paths (read-only / deprecated)
+
+> ⚠️ 以下路径已从 LAYOUT 移除，仅供 legacy readers 读取，新代码不得使用这些路径进行写入。
+
+### 项目级 Legacy Paths
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| specsReadOnly | `specs` | 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` |
+| manifest | `manifest.json` | 旧根级 manifest — `<root>/.specforge/manifest.json` |
+| config | `config` | 旧配置目录 — `<root>/.specforge/config/` |
+| knowledge | `knowledge` | 旧知识目录 — `<root>/.specforge/knowledge/` |
+| knowledgeGraph | `knowledge/graph.json` | 旧知识图谱 — `<root>/.specforge/knowledge/graph.json` |
+
+#### legacyPaths.configFiles 分组
 
 | Key | 路径 | 说明 |
 |-----|------|------|
@@ -275,29 +298,7 @@ SPEC_DIR_NAME = '.specforge'
 | configFiles.riskPolicy | `config/risk_policy.json` | — |
 | configFiles.skillFragments | `config/skill_fragments.json` | — |
 
-### gitignored 区（运行时数据）
-
-| Key | 路径 | 说明 |
-|-----|------|------|
-| runtime | `runtime` | 运行时状态目录 — `<root>/.specforge/runtime/` |
-| runtimeWal | `runtime/wal.jsonl` | 写前日志 — `<root>/.specforge/runtime/wal.jsonl` |
-| runtimeState | `runtime/state.json` | 持久化状态 — `<root>/.specforge/runtime/state.json` |
-| runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录 — `<root>/.specforge/runtime/checkpoints/` |
-| logs | `logs` | 日志目录 — `<root>/.specforge/logs/` |
-| logsTelemetry | `logs/telemetry.jsonl` | 遥测日志 — `<root>/.specforge/logs/telemetry.jsonl` |
-| logsTrace | `logs/trace.jsonl` | 追踪日志 — `<root>/.specforge/logs/trace.jsonl` |
-| logsToolCalls | `logs/tool_calls.jsonl` | 工具调用日志 — `<root>/.specforge/logs/tool_calls.jsonl` |
-| logsCost | `logs/cost.jsonl` | 成本日志 — `<root>/.specforge/logs/cost.jsonl` |
-| logsConversations | `logs/conversations.jsonl` | 会话日志 — `<root>/.specforge/logs/conversations.jsonl` |
-| logsGate | `logs/gate.log` | Gate 检查日志 — `<root>/.specforge/logs/gate.log` |
-| logsShellHistory | `logs/shell-history.jsonl` | Shell 审计日志 — `<root>/.specforge/logs/shell-history.jsonl` |
-| archive | `archive` | Agent Run 归档根目录 — `<root>/.specforge/archive/` |
-| archiveAgentRuns | `archive/agent_runs` | Agent Run 归档子目录 — `<root>/.specforge/archive/agent_runs/` |
-| archiveRetro | `archive/retro` | 复盘报告归档子目录 — `<root>/.specforge/archive/retro/` |
-| sessions | `sessions` | 会话归档目录 — `<root>/.specforge/sessions/` |
-| cas | `cas` | 内容寻址存储 — `<root>/.specforge/cas/` |
-
-## 用户级路径 (~/.specforge/)
+### 用户级 Legacy Paths (~/.specforge/)
 
 | Key | 路径 | 说明 |
 |-----|------|------|
@@ -476,10 +477,10 @@ bun scripts/sf-installer.ts upgrade --force
 **项目级运行时目录（Plugin 自动初始化）：**
 ```
 项目根目录/.specforge/
-├── config/          # 项目配置
-├── runtime/         # 运行时状态
-├── knowledge/       # 知识库（V5.0）
-└── archive/         # 工作项归档
+├── project/          # 项目级 spec 真相源（§2.1）
+├── work-items/       # Work Item 事务目录（§4.2）
+└── runtime/          # 运行时状态
+    # Legacy: config/, specs/, knowledge/ 为 read-only
 ```
 
 ### 退出码

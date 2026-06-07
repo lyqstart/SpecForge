@@ -40,14 +40,12 @@ export const ALL_STATES = [
   "review",
   "verification",
   "verification_gate",
-  "completed",
+  "closed",
   "blocked",
   // ── Bugfix Spec ──
   "bugfix_analysis",
   "bugfix_gate",
   "fix_design",
-  // ── Quick Change ──
-  "quick_tasks",
   // ── Change Request ──
   "impact_analysis",
   "impact_analysis_gate",
@@ -92,7 +90,7 @@ export const VALID_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
     ["development", ["review"]],
     ["review", ["verification"]],
     ["verification", ["verification_gate"]],
-    ["verification_gate", ["completed", "development", "blocked"]],
+    ["verification_gate", ["closed", "development", "blocked"]],
   ])
 
 /**
@@ -109,7 +107,7 @@ export const BUGFIX_SPEC_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
     ["tasks_gate", ["development", "tasks", "blocked"]],
     ["development", ["verification"]],
     ["verification", ["verification_gate"]],
-    ["verification_gate", ["completed", "development", "blocked"]],
+    ["verification_gate", ["closed", "development", "blocked"]],
   ])
 
 /**
@@ -127,7 +125,7 @@ export const DESIGN_FIRST_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
     ["development", ["review"]],
     ["review", ["verification"]],
     ["verification", ["verification_gate"]],
-    ["verification_gate", ["completed", "development", "blocked"]],
+    ["verification_gate", ["closed", "development", "blocked"]],
   ])
 
 /**
@@ -135,11 +133,10 @@ export const DESIGN_FIRST_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
  */
 export const QUICK_CHANGE_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
   new Map<string, readonly string[]>([
-    ["intake", ["quick_tasks"]],
-    ["quick_tasks", ["development"]],
+    ["intake", ["development"]],
     ["development", ["verification"]],
     ["verification", ["verification_gate"]],
-    ["verification_gate", ["completed", "development", "blocked"]],
+    ["verification_gate", ["closed", "development", "blocked"]],
   ])
 
 /**
@@ -157,7 +154,7 @@ export const CHANGE_REQUEST_TRANSITIONS: ReadonlyMap<string, readonly string[]> 
     ["development", ["review"]],
     ["review", ["verification"]],
     ["verification", ["verification_gate"]],
-    ["verification_gate", ["completed", "development", "blocked"]],
+    ["verification_gate", ["closed", "development", "blocked"]],
   ])
 
 /**
@@ -173,7 +170,7 @@ export const REFACTOR_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
     ["development", ["review", "verification"]],
     ["review", ["verification"]],
     ["verification", ["verification_gate"]],
-    ["verification_gate", ["completed", "development", "blocked"]],
+    ["verification_gate", ["closed", "development", "blocked"]],
   ])
 
 /**
@@ -188,7 +185,7 @@ export const OPS_TASK_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
     ["tasks_gate", ["execution", "tasks", "blocked"]],
     ["execution", ["verification"]],
     ["verification", ["verification_gate"]],
-    ["verification_gate", ["completed", "execution", "blocked"]],
+    ["verification_gate", ["closed", "execution", "blocked"]],
   ])
 
 /**
@@ -201,7 +198,7 @@ export const INVESTIGATION_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
     ["investigation_plan_gate", ["research", "investigation_plan", "blocked"]],
     ["research", ["findings_report"]],
     ["findings_report", ["findings_report_gate"]],
-    ["findings_report_gate", ["completed", "research", "findings_report", "blocked"]],
+    ["findings_report_gate", ["closed", "research", "findings_report", "blocked"]],
   ])
 
 // ============================================================

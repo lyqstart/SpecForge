@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * render-layout.ts — 从 directory-layout.ts 自动生成目录布局文档
+ * render-layout.ts — 从 directory-layout.ts 自动生成目录布局文档（v1.1）
  *
  * 用法：
  *   bun run scripts/render-layout.ts                  # 生成 docs/conventions/directory-layout.md + 更新 marker
  *   bun run scripts/render-layout.ts --dry-run         # 只输出到 stdout，不写文件
  *
  * 功能：
- *   1. 读取 packages/types/src/directory-layout.ts 的 LAYOUT / USER_LAYOUT / SPEC_DIR_NAME 常量
- *   2. 生成 docs/conventions/directory-layout.md
+ *   1. 读取 packages/types/src/directory-layout.ts 的 LAYOUT / legacyPaths / legacyUserLayoutReadOnly / SPEC_DIR_NAME
+ *   2. 生成 docs/conventions/directory-layout.md（v1.1 标准）
  *   3. 更新目标文件中 <!-- BEGIN: directory-layout --> ... <!-- END: directory-layout --> 之间的内容
  */
 
@@ -30,13 +30,14 @@ interface LayoutConst {
 // ---------------------------------------------------------------------------
 
 /**
- * 通过动态 import 加载 directory-layout.ts 的导出常量。
+ * 通过动态 import 加载 directory-layout.ts 的导出常量（v1.1）。
  * bun 支持直接 import TypeScript 文件。
  */
 async function loadLayoutConstants(projectRoot: string): Promise<{
   SPEC_DIR_NAME: string;
   LAYOUT: LayoutConst;
-  USER_LAYOUT: LayoutConst;
+  legacyPaths: LayoutConst;
+  legacyUserLayoutReadOnly: LayoutConst;
 }> {
   const layoutPath = path.join(
     projectRoot,
@@ -53,7 +54,8 @@ async function loadLayoutConstants(projectRoot: string): Promise<{
   return {
     SPEC_DIR_NAME: mod.SPEC_DIR_NAME as string,
     LAYOUT: mod.LAYOUT as LayoutConst,
-    USER_LAYOUT: mod.USER_LAYOUT as LayoutConst,
+    legacyPaths: mod.legacyPaths as LayoutConst,
+    legacyUserLayoutReadOnly: mod.legacyUserLayoutReadOnly as LayoutConst,
   };
 }
 
@@ -61,7 +63,7 @@ async function loadLayoutConstants(projectRoot: string): Promise<{
 // Markdown 生成
 // ---------------------------------------------------------------------------
 
-/** 从 LAYOUT 常量中提取带注释说明的条目 */
+/** 从常量中提取带注释说明的字符串条目 */
 function extractEntries(
   layout: LayoutConst,
   sourceContent: string,
@@ -71,6 +73,7 @@ function extractEntries(
 
   // 找到该常量在源码中的起始位置，限定搜索范围
   const scopeStart = sourceContent.indexOf(`${scopeLabel} = {`);
+  if (scopeStart === -1) return entries;
   // 找到该常量块的结束位置（下一个 export const 或文件末尾）
   const nextExport = sourceContent.indexOf('export const', scopeStart + 1);
   const scopeEnd =
@@ -78,7 +81,6 @@ function extractEntries(
 
   for (const [key, value] of Object.entries(layout)) {
     if (typeof value === 'string') {
-      // 从源码中提取该 key 的 JSDoc 注释（限定在 scope 范围内）
       const comment = extractCommentForKey(
         sourceContent,
         key,
@@ -87,7 +89,6 @@ function extractEntries(
       );
       entries.push({ key, value, comment });
     }
-    // 嵌套对象（如 configFiles）单独处理
   }
   return entries;
 }
@@ -148,7 +149,7 @@ function makeTableRows(
     .join('\n');
 }
 
-/** 生成嵌套对象（如 configFiles）的 markdown 表格行 */
+/** 生成嵌套对象（如 projectFiles）的 markdown 表格行 */
 function makeNestedTableRows(
   parentKey: string,
   nested: LayoutEntry,
@@ -161,94 +162,82 @@ function makeNestedTableRows(
     .join('\n');
 }
 
-/** 生成完整的 directory-layout.md 内容 */
+/** 生成完整的 directory-layout.md 内容（v1.1 标准） */
 function generateMarkdown(
   SPEC_DIR_NAME: string,
   LAYOUT: LayoutConst,
-  USER_LAYOUT: LayoutConst,
+  legacyPaths: LayoutConst,
+  legacyUserLayoutReadOnly: LayoutConst,
   sourceContent: string,
 ): string {
-  // 确定 LAYOUT 和 USER_LAYOUT 在源码中的范围
-  const layoutStart = sourceContent.indexOf('export const LAYOUT = {');
-  const userLayoutStart = sourceContent.indexOf('export const USER_LAYOUT = {');
-  const layoutEnd = userLayoutStart !== -1 ? userLayoutStart : sourceContent.length;
-  const userLayoutEnd = sourceContent.length;
+  // ---- v1.1 Active Paths ----
 
-  // 分类 LAYOUT 条目
-  const committedKeys = [
-    'manifest',
-    'project',
-    'workItems',
-    'config',
-    'specs',
-    'specsReadme',
-    'knowledge',
-    'knowledgeGraph',
-  ];
-  const gitignoredKeys = [
-    'runtime',
-    'runtimeWal',
-    'runtimeState',
-    'runtimeCheckpoints',
-    'logs',
-    'logsTelemetry',
-    'logsTrace',
-    'logsToolCalls',
-    'logsCost',
-    'logsConversations',
-    'logsGate',
-    'logsShellHistory',
-    'archive',
-    'archiveAgentRuns',
-    'archiveRetro',
-    'sessions',
-    'cas',
-  ];
+  // LAYOUT top-level string entries (project, workItems, runtime)
+  const activeEntries = Object.entries(LAYOUT)
+    .filter(([, v]) => typeof v === 'string')
+    .map(([k, v]) => {
+      const layoutStart = sourceContent.indexOf('export const LAYOUT = {');
+      const nextExport = sourceContent.indexOf('export const', layoutStart + 1);
+      const layoutEnd = nextExport === -1 ? sourceContent.length : nextExport;
+      return {
+        key: k,
+        value: v as string,
+        comment: extractCommentForKey(sourceContent, k, layoutStart, layoutEnd),
+      };
+    });
 
-  const committedEntries = committedKeys
-    .filter((k) => typeof LAYOUT[k] === 'string')
-    .map((k) => ({
-      key: k,
-      value: LAYOUT[k] as string,
-      comment: extractCommentForKey(sourceContent, k, layoutStart, layoutEnd),
-    }));
-
-  const gitignoredEntries = gitignoredKeys
-    .filter((k) => typeof LAYOUT[k] === 'string')
-    .map((k) => ({
-      key: k,
-      value: LAYOUT[k] as string,
-      comment: extractCommentForKey(sourceContent, k, layoutStart, layoutEnd),
-    }));
-
-  // configFiles 嵌套条目
-  const configFiles = LAYOUT.configFiles as LayoutEntry | undefined;
-  const configFilesSection = configFiles
-    ? `\n### configFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('configFiles', configFiles)}\n`
-    : '';
-
-  // projectFiles 嵌套条目（v1.1 §2.1）
+  // Nested file groups
   const projectFiles = LAYOUT.projectFiles as LayoutEntry | undefined;
   const projectFilesSection = projectFiles
     ? `\n### projectFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('projectFiles', projectFiles)}\n`
     : '';
 
-  // workItemFiles 嵌套条目（v1.1 §4.2）
   const workItemFiles = LAYOUT.workItemFiles as LayoutEntry | undefined;
   const workItemFilesSection = workItemFiles
     ? `\n### workItemFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('workItemFiles', workItemFiles)}\n`
     : '';
 
-  // USER_LAYOUT 条目
-  const userEntries = Object.entries(USER_LAYOUT)
-    .filter(([, v]) => typeof v === 'string')
-    .map(([k]) => ({
-      key: k,
-      value: USER_LAYOUT[k] as string,
-      comment: extractCommentForKey(sourceContent, k, userLayoutStart, userLayoutEnd),
-    }));
+  const runtimeFiles = LAYOUT.runtimeFiles as LayoutEntry | undefined;
+  const runtimeFilesSection = runtimeFiles
+    ? `\n### runtimeFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('runtimeFiles', runtimeFiles)}\n`
+    : '';
 
-  return `# SpecForge 目录布局
+  // ---- Legacy Paths (read-only / deprecated) ----
+
+  const legacyStringEntries = Object.entries(legacyPaths)
+    .filter(([, v]) => typeof v === 'string')
+    .map(([k, v]) => {
+      const lpStart = sourceContent.indexOf('export const legacyPaths = {');
+      const lpNext = sourceContent.indexOf('export const', lpStart + 1);
+      const lpEnd = lpNext === -1 ? sourceContent.length : lpNext;
+      return {
+        key: k,
+        value: v as string,
+        comment: extractCommentForKey(sourceContent, k, lpStart, lpEnd),
+      };
+    });
+
+  const legacyConfigFiles = legacyPaths.configFiles as LayoutEntry | undefined;
+  const legacyConfigFilesSection = legacyConfigFiles
+    ? `\n#### legacyPaths.configFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('configFiles', legacyConfigFiles)}\n`
+    : '';
+
+  // ---- Legacy User Paths (read-only / deprecated) ----
+
+  const legacyUserEntries = Object.entries(legacyUserLayoutReadOnly)
+    .filter(([, v]) => typeof v === 'string')
+    .map(([k, v]) => {
+      const luStart = sourceContent.indexOf('export const legacyUserLayoutReadOnly = {');
+      const luNext = sourceContent.indexOf('export const', luStart + 1);
+      const luEnd = luNext === -1 ? sourceContent.length : luNext;
+      return {
+        key: k,
+        value: v as string,
+        comment: extractCommentForKey(sourceContent, k, luStart, luEnd),
+      };
+    });
+
+  return `# SpecForge 目录布局（v1.1）
 
 > ⚠️ 本文档由 \`scripts/render-layout.ts\` 从 \`packages/types/src/directory-layout.ts\` 自动生成。
 > 不要手动编辑。
@@ -259,25 +248,35 @@ function generateMarkdown(
 SPEC_DIR_NAME = '${SPEC_DIR_NAME}'
 \`\`\`
 
-## 项目级路径 (${SPEC_DIR_NAME}/)
+## v1.1 Active Paths (${SPEC_DIR_NAME}/)
 
 ### committed 区（提交到 Git）
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-${makeTableRows(committedEntries)}
-${projectFilesSection}${workItemFilesSection}${configFilesSection}
+${makeTableRows(activeEntries.filter(e => e.key !== 'runtime'))}
+${projectFilesSection}${workItemFilesSection}
 ### gitignored 区（运行时数据）
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-${makeTableRows(gitignoredEntries)}
+| runtime | \`runtime\` | 运行时状态目录（gitignored）— \`<root>/.specforge/runtime/\` |
+${runtimeFilesSection}
+## Legacy Paths (read-only / deprecated)
 
-## 用户级路径 (~/${SPEC_DIR_NAME}/)
+> ⚠️ 以下路径已从 LAYOUT 移除，仅供 legacy readers 读取，新代码不得使用这些路径进行写入。
+
+### 项目级 Legacy Paths
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-${makeTableRows(userEntries)}
+${makeTableRows(legacyStringEntries)}
+${legacyConfigFilesSection}
+### 用户级 Legacy Paths (~/${SPEC_DIR_NAME}/)
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+${makeTableRows(legacyUserEntries)}
 
 ---
 `;
@@ -336,15 +335,16 @@ async function main(): Promise<void> {
   );
   const sourceContent = fs.readFileSync(sourcePath, 'utf-8');
 
-  // 加载常量
-  const { SPEC_DIR_NAME, LAYOUT, USER_LAYOUT } =
+  // 加载常量（v1.1）
+  const { SPEC_DIR_NAME, LAYOUT, legacyPaths, legacyUserLayoutReadOnly } =
     await loadLayoutConstants(projectRoot);
 
   // 生成 markdown
   const markdown = generateMarkdown(
     SPEC_DIR_NAME,
     LAYOUT,
-    USER_LAYOUT,
+    legacyPaths,
+    legacyUserLayoutReadOnly,
     sourceContent,
   );
 

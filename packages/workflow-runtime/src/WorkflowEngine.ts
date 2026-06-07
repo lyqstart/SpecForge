@@ -364,6 +364,12 @@ export class WorkflowEngine {
    * CR-6 Fix 2: Check transition evidence prerequisites.
    * Reads required files from the work item directory before allowing
    * transitions to specific target states.
+   *
+   * v1.1 evidence guards:
+   * - closed: close_gate passed + verification_report + evidence_manifest + merge_report + changed_files_audit
+   * - verification_done: verification_report + evidence_manifest
+   * - merge_ready: user_decision
+   * - implementation_ready: tasks + code_permission_release
    */
   private async checkTransitionEvidence(targetState: string, workItemDir: string): Promise<void> {
     const requiredFiles: string[] = [];
@@ -385,6 +391,19 @@ export class WorkflowEngine {
           'evidence/evidence_manifest.json',
           'changed_files_audit.md',
           'merge_report.md',
+          'gates/close_gate.json',
+        );
+        break;
+      case 'verification_done':
+        requiredFiles.push(
+          'verification_report.md',
+          'evidence/evidence_manifest.json',
+        );
+        break;
+      case 'implementation_ready':
+        requiredFiles.push(
+          'tasks.md',
+          'code_permission_release.json',
         );
         break;
     }
@@ -396,6 +415,31 @@ export class WorkflowEngine {
       } catch {
         throw new Error(`Transition evidence prerequisite missing: ${file} (required for → ${targetState})`);
       }
+    }
+
+    // v1.1: For closed state, verify close_gate actually passed
+    if (targetState === 'closed') {
+      await this.verifyCloseGatePassed(workItemDir);
+    }
+  }
+
+  /**
+   * v1.1: Verify that close_gate report shows passed status.
+   * Reads gates/close_gate.json and checks status === 'passed'.
+   */
+  private async verifyCloseGatePassed(workItemDir: string): Promise<void> {
+    const gateReportPath = path.join(workItemDir, 'gates', 'close_gate.json');
+    try {
+      const content = await fs.readFile(gateReportPath, 'utf-8');
+      const report = JSON.parse(content) as { status?: string };
+      if (report.status !== 'passed') {
+        throw new Error(`close_gate has not passed (status: ${report.status ?? 'undefined'})`);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith('close_gate has not passed')) {
+        throw err;
+      }
+      throw new Error(`Transition evidence prerequisite missing: gates/close_gate.json (required for → closed)`);
     }
   }
 
@@ -529,16 +573,23 @@ export class WorkflowEngine {
 
   /**
    * Execute a simple gate
+   *
+   * CR-4/CR-6: No checkFn — gate cannot verify
+   * CR-6 Fix 1: Only required=false auto-waives (severity='soft' no longer auto-waives)
+   * v1.1 evidence guard: A gate with severity='soft' but no checkFn must NOT
+   * auto-waive — only an explicit required=false allows auto-waiver.
    */
   private async executeSimpleGate(gate: SimpleGateDefinition): Promise<GateResult> {
     if (gate.checkFn) {
       return await gate.checkFn();
     }
-    // CR-4/CR-6: No checkFn — gate cannot verify
-    // CR-6 Fix 1: Only required=false auto-waives (severity='soft' no longer auto-waives)
+    // No checkFn — gate cannot verify
+    // v1.1: severity='soft' alone must NOT result in passed=true
+    // Only explicitly required=false gates are auto-waived
     if (gate.required === false) {
       return { schema_version: '1.0', passed: true, reason: 'Non-critical gate without checkFn, auto-waived' };
     }
+    // All other gates without checkFn (including severity='soft') must fail
     return { schema_version: '1.0', passed: false, reason: 'Required gate has no check function defined — cannot verify, blocked' };
   }
 

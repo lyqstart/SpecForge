@@ -263,16 +263,23 @@ export class WorkflowEngine {
 
   /**
    * Execute a simple gate
+   *
+   * CR-4/CR-6: No checkFn — gate cannot verify
+   * CR-6 Fix 1: Only required=false auto-waives (severity='soft' no longer auto-waives)
+   * v1.1 evidence guard: A gate with severity='soft' but no checkFn must NOT
+   * auto-waive — only an explicit required=false allows auto-waiver.
    */
   private async executeSimpleGate(gate: SimpleGateDefinition): Promise<GateResult> {
     if (gate.checkFn) {
       return await gate.checkFn();
     }
-    // CR-4/CR-6: No checkFn — gate cannot verify
-    // CR-6 Fix 1: Only required=false auto-waives (severity='soft' no longer auto-waives)
+    // No checkFn — gate cannot verify
+    // v1.1: severity='soft' alone must NOT result in passed=true
+    // Only explicitly required=false gates are auto-waived
     if (gate.required === false) {
       return { schema_version: '1.0', passed: true, reason: 'Non-critical gate without checkFn, auto-waived' };
     }
+    // All other gates without checkFn (including severity='soft') must fail
     return { schema_version: '1.0', passed: false, reason: 'Required gate has no check function defined — cannot verify, blocked' };
   }
 
