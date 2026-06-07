@@ -82,7 +82,7 @@ export type WritePolicyContext = WriteGuardContext;
 export interface WritePolicyRule {
   id: string;
   description: string;
-  check: (ctx: WritePolicyContext, targetPath: string) => string | null;
+  check: (ctx: WritePolicyContext, targetPath: string, operation?: 'create' | 'modify' | 'delete') => string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -114,42 +114,45 @@ const ruleNoActiveWI: WritePolicyRule = {
   },
 };
 
-/** Rule 4: agent cannot write .specforge/project/ */
-const ruleAgentSpecForgeProject: WritePolicyRule = {
-  id: 'agent-specforge-project',
-  description: 'agent cannot write .specforge/project/',
+/** Rule 4: .specforge/project/ only writable by merge_runner */
+const ruleSpecForgeProject: WritePolicyRule = {
+  id: 'specforge-project-access',
+  description: '.specforge/project/ only writable by merge_runner',
   check(ctx, targetPath) {
     const normalized = targetPath.replace(/\\/g, '/');
-    if (ctx.callerRole === 'agent' && normalized.startsWith('.specforge/project/')) {
-      return `agent cannot write .specforge/project/: ${targetPath}`;
-    }
-    return null;
+    if (!normalized.startsWith('.specforge/project/')) return null;
+    if (ctx.callerRole === ACTOR_ROLES.mergeRunner) return null;
+    return `only merge_runner may write .specforge/project/: ${targetPath}`;
   },
 };
 
-/** Rule 5: agent cannot write user_decision.json */
-const ruleAgentUserDecision: WritePolicyRule = {
-  id: 'agent-user-decision',
-  description: 'agent cannot write user_decision.json',
+/** Rule 5: user_decision.json only writable by user_decision_recorder */
+const ruleUserDecision: WritePolicyRule = {
+  id: 'user-decision-access',
+  description: 'user_decision.json only writable by user_decision_recorder',
   check(ctx, targetPath) {
     const normalized = targetPath.replace(/\\/g, '/');
-    if (ctx.callerRole === 'agent' && normalized.includes('user_decision.json')) {
-      return `agent cannot write user_decision.json`;
-    }
-    return null;
+    if (!normalized.includes('user_decision.json')) return null;
+    if (ctx.callerRole === ACTOR_ROLES.userDecisionRecorder) return null;
+    return `only user_decision_recorder may write user_decision.json`;
   },
 };
 
-/** Rule 6-8: agent cannot write gates/, gate_summary.md, merge_report.md */
-const ruleAgentRestrictedFiles: WritePolicyRule = {
-  id: 'agent-restricted-files',
-  description: 'agent cannot write gates/, gate_summary.md, merge_report.md',
+/** Rules 6-8: gates/ only gate_runner, gate_summary.md only gate_runner, merge_report.md only merge_runner */
+const ruleRestrictedFiles: WritePolicyRule = {
+  id: 'restricted-files-access',
+  description: 'gates/ only gate_runner, gate_summary.md only gate_runner, merge_report.md only merge_runner',
   check(ctx, targetPath) {
-    if (ctx.callerRole !== 'agent') return null;
     const normalized = targetPath.replace(/\\/g, '/');
-    if (normalized.includes('/gates/')) return `agent cannot write gates/`;
-    if (normalized.endsWith('gate_summary.md')) return `agent cannot write gate_summary.md`;
-    if (normalized.endsWith('merge_report.md')) return `agent cannot write merge_report.md`;
+    if (normalized.includes('/gates/') && ctx.callerRole !== ACTOR_ROLES.gateRunner) {
+      return `only gate_runner may write gates/: ${targetPath}`;
+    }
+    if (normalized.endsWith('gate_summary.md') && ctx.callerRole !== ACTOR_ROLES.gateRunner) {
+      return `only gate_runner may write gate_summary.md`;
+    }
+    if (normalized.endsWith('merge_report.md') && ctx.callerRole !== ACTOR_ROLES.mergeRunner) {
+      return `only merge_runner may write merge_report.md`;
+    }
     return null;
   },
 };
@@ -168,11 +171,11 @@ const ruleFrozen: WritePolicyRule = {
   },
 };
 
-/** Rules 2-3: code write permission & allowed_write_files check */
+/** Rules 2-3: code write permission + allowed_write_files (path + operation match) */
 const ruleCodeWritePermission: WritePolicyRule = {
   id: 'code-write-permission',
-  description: 'code_change_allowed and allowed_write_files check',
-  check(ctx, targetPath) {
+  description: 'code_change_allowed and allowed_write_files (path + operation) check',
+  check(ctx, targetPath, operation) {
     if (!ctx.workItem) return null;
     const normalized = targetPath.replace(/\\/g, '/');
     if (normalized.startsWith('.specforge/')) return null;
@@ -182,13 +185,18 @@ const ruleCodeWritePermission: WritePolicyRule = {
     }
 
     const allowed = ctx.workItem.allowed_write_files ?? [];
-    const isInAllowed = allowed.some(
-      (f) =>
-        normalized === f.path.replace(/\\/g, '/') ||
-        normalized.startsWith(f.path.replace(/\\/g, '/') + '/'),
-    );
-    if (!isInAllowed && allowed.length > 0) {
-      return `file not in allowed_write_files: ${targetPath}`;
+    if (allowed.length > 0) {
+      const matchByPathAndOp = allowed.some(
+        (f) => {
+          const normalizedAllowed = f.path.replace(/\\/g, '/');
+          const pathMatch = normalized === normalizedAllowed || normalized.startsWith(normalizedAllowed + '/');
+          const opMatch = f.operation === operation || f.operation === 'any';
+          return pathMatch && opMatch;
+        },
+      );
+      if (!matchByPathAndOp) {
+        return `file+operation not in allowed_write_files: ${targetPath} (${operation})`;
+      }
     }
     return null;
   },
@@ -201,9 +209,9 @@ const ruleCodeWritePermission: WritePolicyRule = {
 export const DEFAULT_WRITE_POLICY_RULES: WritePolicyRule[] = [
   ruleClosedWI,
   ruleNoActiveWI,
-  ruleAgentSpecForgeProject,
-  ruleAgentUserDecision,
-  ruleAgentRestrictedFiles,
+  ruleSpecForgeProject,
+  ruleUserDecision,
+  ruleRestrictedFiles,
   ruleFrozen,
   ruleCodeWritePermission,
 ];
@@ -227,7 +235,7 @@ export function evaluatePolicy(
   const violations: string[] = [];
 
   for (const rule of rules) {
-    const violation = rule.check(ctx, targetPath);
+    const violation = rule.check(ctx, targetPath, operation);
     if (violation !== null) {
       violations.push(violation);
     }
@@ -262,6 +270,13 @@ export function checkWrite(
   const violations: string[] = [];
   const normalized = targetPath.replace(/\\/g, '/');
 
+  // v1.1: Default DENY — unknown actor
+  const VALID_ROLES = new Set<string>(Object.values(ACTOR_ROLES));
+  if (!VALID_ROLES.has(ctx.callerRole)) {
+    violations.push(`unknown actor role: ${ctx.callerRole}, write denied`);
+    return { allowed: false, violations };
+  }
+
   // Rule 10: closed WI
   if (ctx.workItem && ctx.workItem.status === 'closed') {
     violations.push(`closed WI cannot be written: ${ctx.workItem.work_item_id}`);
@@ -274,34 +289,51 @@ export function checkWrite(
     return { allowed: false, violations };
   }
 
-  // Rule 4: agent cannot write .specforge/project/**
-  if (ctx.callerRole === 'agent' && normalized.startsWith('.specforge/project/')) {
-    violations.push(`agent cannot write .specforge/project/: ${targetPath}`);
-    return { allowed: false, violations };
+  // v1.1: Per-resource positive allowlist — only declared actor may write
+
+  // .specforge/project/** → only merge_runner
+  if (normalized.startsWith('.specforge/project/')) {
+    if (ctx.callerRole !== ACTOR_ROLES.mergeRunner) {
+      violations.push(`only merge_runner may write .specforge/project/: ${targetPath} (actor: ${ctx.callerRole})`);
+      return { allowed: false, violations };
+    }
+    return { allowed: true, violations: [] };
   }
 
-  // Rule 5: agent cannot write user_decision.json
-  if (ctx.callerRole === 'agent' && normalized.includes('user_decision.json')) {
-    violations.push(`agent cannot write user_decision.json`);
-    return { allowed: false, violations };
+  // gates/** → only gate_runner
+  if (normalized.includes('/gates/')) {
+    if (ctx.callerRole !== ACTOR_ROLES.gateRunner) {
+      violations.push(`only gate_runner may write gates/: ${targetPath} (actor: ${ctx.callerRole})`);
+      return { allowed: false, violations };
+    }
+    return { allowed: true, violations: [] };
   }
 
-  // Rule 6: agent cannot write gates/**
-  if (ctx.callerRole === 'agent' && normalized.includes('/gates/')) {
-    violations.push(`agent cannot write gates/`);
-    return { allowed: false, violations };
+  // gate_summary.md → only gate_runner
+  if (normalized.endsWith('gate_summary.md')) {
+    if (ctx.callerRole !== ACTOR_ROLES.gateRunner) {
+      violations.push(`only gate_runner may write gate_summary.md (actor: ${ctx.callerRole})`);
+      return { allowed: false, violations };
+    }
+    return { allowed: true, violations: [] };
   }
 
-  // Rule 7: agent cannot write gate_summary.md
-  if (ctx.callerRole === 'agent' && normalized.endsWith('gate_summary.md')) {
-    violations.push(`agent cannot write gate_summary.md`);
-    return { allowed: false, violations };
+  // user_decision.json → only user_decision_recorder
+  if (normalized.includes('user_decision.json')) {
+    if (ctx.callerRole !== ACTOR_ROLES.userDecisionRecorder) {
+      violations.push(`only user_decision_recorder may write user_decision.json (actor: ${ctx.callerRole})`);
+      return { allowed: false, violations };
+    }
+    return { allowed: true, violations: [] };
   }
 
-  // Rule 8: agent cannot write merge_report.md
-  if (ctx.callerRole === 'agent' && normalized.endsWith('merge_report.md')) {
-    violations.push(`agent cannot write merge_report.md`);
-    return { allowed: false, violations };
+  // merge_report.md → only merge_runner
+  if (normalized.endsWith('merge_report.md')) {
+    if (ctx.callerRole !== ACTOR_ROLES.mergeRunner) {
+      violations.push(`only merge_runner may write merge_report.md (actor: ${ctx.callerRole})`);
+      return { allowed: false, violations };
+    }
+    return { allowed: true, violations: [] };
   }
 
   // Rule 9: frozen state — cannot modify candidates/manifest/gate_summary
@@ -320,7 +352,7 @@ export function checkWrite(
     }
   }
 
-  // Rules 2-3: code write permission + allowed_write_files
+  // Rules 2-3: code write permission + allowed_write_files (path + operation match)
   if (ctx.workItem && !normalized.startsWith('.specforge/')) {
     if (!ctx.workItem.code_change_allowed) {
       violations.push(`code_change_allowed=false, cannot write: ${targetPath}`);
@@ -328,26 +360,19 @@ export function checkWrite(
     }
 
     const allowed = ctx.workItem.allowed_write_files ?? [];
-    const isInAllowed = allowed.some(
-      (f) => normalized === f.path.replace(/\\/g, '/') || normalized.startsWith(f.path.replace(/\\/g, '/') + '/'),
-    );
-    if (!isInAllowed && allowed.length > 0) {
-      violations.push(`file not in allowed_write_files: ${targetPath}`);
-      return { allowed: false, violations };
-    }
-  }
-
-  // Privileged role exemptions
-  const privilegedRoles = new Set<ActorRole>([ACTOR_ROLES.mergeRunner, ACTOR_ROLES.gateRunner, ACTOR_ROLES.userDecisionRecorder, ACTOR_ROLES.orchestrator, ACTOR_ROLES.codePermissionService, ACTOR_ROLES.closeGate]);
-  if (privilegedRoles.has(ctx.callerRole)) {
-    if (ctx.callerRole === ACTOR_ROLES.mergeRunner && normalized.startsWith('.specforge/project/')) {
-      return { allowed: true, violations: [] };
-    }
-    if (ctx.callerRole === ACTOR_ROLES.userDecisionRecorder && normalized.includes('user_decision.json')) {
-      return { allowed: true, violations: [] };
-    }
-    if (ctx.callerRole === ACTOR_ROLES.gateRunner && (normalized.includes('/gates/') || normalized.endsWith('gate_summary.md'))) {
-      return { allowed: true, violations: [] };
+    if (allowed.length > 0) {
+      const matchByPathAndOp = allowed.some(
+        (f) => {
+          const normalizedAllowed = f.path.replace(/\\/g, '/');
+          const pathMatch = normalized === normalizedAllowed || normalized.startsWith(normalizedAllowed + '/');
+          const opMatch = f.operation === operation || f.operation === 'any';
+          return pathMatch && opMatch;
+        },
+      );
+      if (!matchByPathAndOp) {
+        violations.push(`file+operation not in allowed_write_files: ${targetPath} (${operation})`);
+        return { allowed: false, violations };
+      }
     }
   }
 
@@ -431,16 +456,32 @@ export interface AuditResult {
 export function performChangedFilesAudit(
   changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
   allowedWriteFiles: Array<{ path: string; operation: string }>,
+  actor?: string,
 ): AuditResult {
   const entries: AuditEntry[] = [];
   const violations: string[] = [];
-  const normalizedAllowed = new Set(allowedWriteFiles.map(f => f.path.replace(/\\/g, '/')));
+  const normalizedAllowed = new Map(
+    allowedWriteFiles.map(f => [f.path.replace(/\\/g, '/'), f.operation] as const),
+  );
 
   for (const file of changedFiles) {
     const normalized = file.path.replace(/\\/g, '/');
-    const inScope = normalizedAllowed.has(normalized);
-    const isSpecWrite = normalized.startsWith('.specforge/project/');
+    const inScope = Array.from(normalizedAllowed.entries()).some(([allowedPath, allowedOp]) => {
+      const pathMatch = normalized === allowedPath || normalized.startsWith(allowedPath + '/');
+      const opMatch = allowedOp === file.operation || allowedOp === 'any';
+      return pathMatch && opMatch;
+    });
+    let isSpecWrite = normalized.startsWith('.specforge/project/');
     const isSideEffect = !inScope && !isSpecWrite;
+
+    if (isSpecWrite) {
+      if (actor === ACTOR_ROLES.mergeRunner) {
+        // Legitimate merge_runner write — not a violation
+        isSpecWrite = false;
+      } else {
+        violations.push(`spec_write_by_non_merge_runner: ${normalized} (actor: ${actor ?? 'unknown'})`);
+      }
+    }
 
     entries.push({
       path: normalized,
@@ -452,10 +493,6 @@ export function performChangedFilesAudit(
 
     if (!inScope && !isSpecWrite) {
       violations.push(`out_of_scope: ${normalized}`);
-    }
-
-    if (isSpecWrite) {
-      violations.push(`spec_write_by_agent: ${normalized}`);
     }
   }
 

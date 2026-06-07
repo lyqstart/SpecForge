@@ -23,6 +23,8 @@ export interface GateResult {
   passed: boolean;
   reason?: string;
   details?: Record<string, unknown>;
+  /** v1.1: Distinguishes passed/waived/not_enabled/blocked for gate summary */
+  status?: 'passed' | 'waived' | 'not_enabled' | 'blocked';
 }
 
 /**

@@ -4,6 +4,8 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import {
   WorkflowDefinition,
   WorkflowInstance,
@@ -30,6 +32,14 @@ export class WorkflowEngine {
   private workflows: Map<string, WorkflowDefinition> = new Map();
   private instances: Map<string, WorkflowInstance> = new Map();
   private eventHandlers: EventHandler[] = [];
+  private workItemDir?: string;
+
+  /**
+   * Configure the engine with a work item directory for evidence prerequisite checks
+   */
+  configure(workItemDir: string): void {
+    this.workItemDir = workItemDir;
+  }
 
   /**
    * Load a workflow definition into the engine
@@ -235,6 +245,12 @@ export class WorkflowEngine {
 
       // Transition to next state
       const oldState = instance.currentState;
+
+      // v1.1: Check evidence prerequisites before transition
+      if (this.workItemDir) {
+        await this.checkTransitionEvidence(nextState, this.workItemDir);
+      }
+
       instance.currentState = nextState;
       instance.updatedAt = new Date();
 
@@ -277,7 +293,12 @@ export class WorkflowEngine {
     // v1.1: severity='soft' alone must NOT result in passed=true
     // Only explicitly required=false gates are auto-waived
     if (gate.required === false) {
-      return { schema_version: '1.0', passed: true, reason: 'Non-critical gate without checkFn, auto-waived' };
+      return {
+        schema_version: '1.0',
+        passed: false,
+        status: 'not_enabled',
+        reason: 'Non-required gate without checkFn — not enabled, no verification performed',
+      };
     }
     // All other gates without checkFn (including severity='soft') must fail
     return { schema_version: '1.0', passed: false, reason: 'Required gate has no check function defined — cannot verify, blocked' };
@@ -435,6 +456,100 @@ export class WorkflowEngine {
       } catch (err) {
         console.error('Event handler error:', err);
       }
+    }
+  }
+
+  /**
+   * v1.1: Check transition evidence prerequisites.
+   * Reads required files from the work item directory and verifies
+   * gate/decision STATUS before allowing transitions to specific target states.
+   */
+  private async checkTransitionEvidence(targetState: string, workItemDir: string): Promise<void> {
+    switch (targetState) {
+      case 'approval_required':
+        await this.requireFileWithStatus(workItemDir, 'gate_summary.md', undefined);
+        await this.requireGateJsonStatus(workItemDir, 'gates/gate_summary_gate.json', 'passed');
+        break;
+      case 'merge_ready':
+        await this.requireUserDecisionApproved(workItemDir);
+        break;
+      case 'merging':
+        await this.requireGateJsonStatus(workItemDir, 'gates/merge_ready_gate.json', 'passed');
+        break;
+      case 'post_merge_verified':
+        await this.requireGateJsonStatus(workItemDir, 'gates/post_merge_gate.json', 'passed');
+        break;
+      case 'implementation_ready':
+        await this.requireFile(workItemDir, 'tasks.md');
+        await this.requireAllowedWriteFiles(workItemDir);
+        await this.requireGateJsonStatus(workItemDir, 'gates/code_permission_release_gate.json', 'passed');
+        break;
+      case 'verification_done':
+        await this.requireFile(workItemDir, 'verification_report.md');
+        await this.requireFile(workItemDir, 'evidence/evidence_manifest.json');
+        break;
+      case 'closed':
+        await this.requireFile(workItemDir, 'changed_files_audit.md');
+        await this.requireGateJsonStatus(workItemDir, 'gates/close_gate.json', 'passed');
+        break;
+    }
+  }
+
+  private async requireFile(workItemDir: string, file: string): Promise<void> {
+    const fullPath = path.join(workItemDir, file);
+    try { await fs.access(fullPath); } catch {
+      throw new Error(`Transition evidence prerequisite missing: ${file} (required for target state)`);
+    }
+  }
+
+  private async requireFileWithStatus(workItemDir: string, file: string, _status: string | undefined): Promise<void> {
+    // File existence check — status is checked by gate json
+    await this.requireFile(workItemDir, file);
+  }
+
+  private async requireGateJsonStatus(workItemDir: string, gateFile: string, expectedStatus: string): Promise<void> {
+    const fullPath = path.join(workItemDir, gateFile);
+    try {
+      const content = await fs.readFile(fullPath, 'utf-8');
+      const report = JSON.parse(content);
+      if (report.status !== expectedStatus) {
+        throw new Error(`Gate ${gateFile} status='${report.status ?? 'undefined'}', expected '${expectedStatus}'`);
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('status=')) throw err;
+      throw new Error(`Transition evidence prerequisite missing: ${gateFile} (required status: ${expectedStatus})`);
+    }
+  }
+
+  private async requireUserDecisionApproved(workItemDir: string): Promise<void> {
+    const fullPath = path.join(workItemDir, 'user_decision.json');
+    try {
+      const content = await fs.readFile(fullPath, 'utf-8');
+      const ud = JSON.parse(content);
+      if (ud.decision_status !== 'approved' && ud.decision_status !== 'waived') {
+        throw new Error(`user_decision status='${ud.decision_status ?? 'undefined'}', expected 'approved' or 'waived'`);
+      }
+      // Check hash not invalidated (if hash field exists)
+      if (ud.content_hash && ud.hash_invalidated === true) {
+        throw new Error('user_decision content_hash has been invalidated');
+      }
+    } catch (err) {
+      if (err instanceof Error && (err.message.includes('status=') || err.message.includes('hash'))) throw err;
+      throw new Error('Transition evidence prerequisite missing: user_decision.json (required for → merge_ready)');
+    }
+  }
+
+  private async requireAllowedWriteFiles(workItemDir: string): Promise<void> {
+    const fullPath = path.join(workItemDir, 'work_item.json');
+    try {
+      const content = await fs.readFile(fullPath, 'utf-8');
+      const wi = JSON.parse(content);
+      if (!Array.isArray(wi.allowed_write_files) || wi.allowed_write_files.length === 0) {
+        throw new Error('work_item.json allowed_write_files is empty or missing');
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('allowed_write_files')) throw err;
+      throw new Error('Transition evidence prerequisite missing: work_item.json allowed_write_files');
     }
   }
 }

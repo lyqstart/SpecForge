@@ -5,6 +5,8 @@
  * Imports from write-policy for shared types.
  */
 
+import { ACTOR_ROLES } from '@specforge/types/actor-roles'
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -15,6 +17,7 @@ export interface ChangedFilesAuditEntry {
   in_allowed_write_files: boolean;
   is_spec_write: boolean;
   is_side_effect: boolean;
+  actor?: string;
 }
 
 export interface ChangedFilesAuditResult {
@@ -38,22 +41,39 @@ export interface ChangedFilesAuditResult {
  * Compares the list of files changed during a task execution against the
  * declared allowed_write_files, identifying out-of-scope writes, spec writes,
  * and side effects.
+ *
+ * @param actor Optional actor role — merge_runner writes to .specforge/project/
+ *   are legitimate and not flagged as violations.
  */
 export function runChangedFilesAudit(
   changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
   allowedWriteFiles: Array<{ path: string; operation: string }>,
+  actor?: string,
 ): ChangedFilesAuditResult {
   const entries: ChangedFilesAuditEntry[] = [];
   const violations: string[] = [];
-  const normalizedAllowed = new Set(
-    allowedWriteFiles.map((f) => f.path.replace(/\\/g, '/')),
+  const normalizedAllowed = new Map(
+    allowedWriteFiles.map((f) => [f.path.replace(/\\/g, '/'), f.operation] as const),
   );
 
   for (const file of changedFiles) {
     const normalized = file.path.replace(/\\/g, '/');
-    const inScope = normalizedAllowed.has(normalized);
-    const isSpecWrite = normalized.startsWith('.specforge/project/');
+    const inScope = Array.from(normalizedAllowed.entries()).some(([allowedPath, allowedOp]) => {
+      const pathMatch = normalized === allowedPath || normalized.startsWith(allowedPath + '/');
+      const opMatch = allowedOp === file.operation || allowedOp === 'any';
+      return pathMatch && opMatch;
+    });
+    let isSpecWrite = normalized.startsWith('.specforge/project/');
     const isSideEffect = !inScope && !isSpecWrite;
+
+    if (isSpecWrite) {
+      if (actor === ACTOR_ROLES.mergeRunner) {
+        // Legitimate merge_runner write — not a violation
+        isSpecWrite = false;
+      } else {
+        violations.push(`spec_write_by_non_merge_runner: ${normalized} (actor: ${actor ?? 'unknown'})`);
+      }
+    }
 
     entries.push({
       path: normalized,
@@ -61,14 +81,11 @@ export function runChangedFilesAudit(
       in_allowed_write_files: inScope,
       is_spec_write: isSpecWrite,
       is_side_effect: isSideEffect,
+      actor,
     });
 
     if (!inScope && !isSpecWrite) {
       violations.push(`out_of_scope: ${normalized}`);
-    }
-
-    if (isSpecWrite) {
-      violations.push(`spec_write_by_agent: ${normalized}`);
     }
   }
 
