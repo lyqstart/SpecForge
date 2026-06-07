@@ -1348,4 +1348,292 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       ).rejects.toThrow(/State mismatch/);
     });
   });
+
+  // =========================================================================
+  // P0-1: not_enabled gate must NOT enter pass branch
+  // =========================================================================
+
+  describe('P0-1: not_enabled gate must NOT pass', () => {
+    it('NE-1: required=false gate without checkFn returns not_enabled → enters fail branch (blocked)', async () => {
+      const engine = new WorkflowEngine();
+      engine.loadWorkflow({
+        id: 'ne-test',
+        displayName: 'NE Test',
+        intent: 'test',
+        stateMachine: {
+          initial: 'start',
+          states: {
+            start: {
+              agent: '',
+              gate: { type: 'simple', id: 'ne_gate', name: 'NE Gate', required: false },
+              skills: [],
+              next: { pass: 'done', fail: 'blocked' },
+            },
+            done: { agent: '', gate: null, skills: [] },
+            blocked: { agent: '', gate: null, skills: [] },
+          },
+        },
+        artifacts: [],
+      });
+
+      const inst = engine.createInstance('ne-test');
+      const result = await engine.execute(inst.id);
+      // not_enabled → gateOk=false → enters fail branch → blocked
+      expect(result.currentState).toBe('blocked');
+      // Must NOT reach 'done'
+      expect(result.currentState).not.toBe('done');
+    });
+
+    it('NE-2: gate without checkFn + string next → throws unconsumed', async () => {
+      const engine = new WorkflowEngine();
+      engine.loadWorkflow({
+        id: 'ne-str-test',
+        displayName: 'NE Str Test',
+        intent: 'test',
+        stateMachine: {
+          initial: 'start',
+          states: {
+            start: {
+              agent: '',
+              gate: { type: 'simple', id: 'bad_gate', name: 'Bad Gate', required: false },
+              skills: [],
+              next: 'done',
+            },
+            done: { agent: '', gate: null, skills: [] },
+          },
+        },
+        artifacts: [],
+      });
+      const inst = engine.createInstance('ne-str-test');
+      // not_enabled + string next → throws "gate result is unconsumed"
+      await expect(engine.execute(inst.id)).rejects.toThrow(/unconsumed|gate result/);
+    });
+
+    it('NE-3: composite gate with not_enabled children → composite fails → enters fail branch', async () => {
+      const engine = new WorkflowEngine();
+      engine.loadWorkflow({
+        id: 'ne-comp-test',
+        displayName: 'NE Comp Test',
+        intent: 'test',
+        stateMachine: {
+          initial: 'start',
+          states: {
+            start: {
+              agent: '',
+              gate: {
+                type: 'composite',
+                id: 'comp_gate',
+                name: 'Comp Gate',
+                mode: 'sequential',
+                failPolicy: 'fail_fast',
+                children: [
+                  { type: 'simple', id: 'child1', name: 'Child 1', required: false },
+                ],
+              },
+              skills: [],
+              next: { pass: 'done', fail: 'blocked' },
+            },
+            done: { agent: '', gate: null, skills: [] },
+            blocked: { agent: '', gate: null, skills: [] },
+          },
+        },
+        artifacts: [],
+      });
+      const inst = engine.createInstance('ne-comp-test');
+      const result = await engine.execute(inst.id);
+      // Composite with not_enabled child → passed=false → fail branch
+      expect(result.currentState).toBe('blocked');
+      expect(result.currentState).not.toBe('done');
+    });
+
+    it('NE-4: gate_summary_gate not_enabled → cannot approval_required, enters fail branch', async () => {
+      const engine = new WorkflowEngine();
+      // Use makeV11Workflow but override gates_running's gate to have no checkFn
+      const def = makeV11Workflow();
+      const gatesRunningState = def.stateMachine.states['gates_running'];
+      if (gatesRunningState) {
+        (gatesRunningState as Record<string, unknown>).gate = {
+          type: 'simple', id: 'gate_summary_gate', name: 'Gate Summary Gate', required: false,
+        };
+      }
+      engine.loadWorkflow(def);
+      const inst = engine.createInstance('v11-test-workflow');
+      const result = await engine.execute(inst.id);
+      // not_enabled → fail branch → 'blocked'
+      expect(result.currentState).toBe('blocked');
+      expect(result.currentState).not.toBe('approval_required');
+    });
+
+    it('NE-5: merge_ready_gate not_enabled → cannot merging via execute', async () => {
+      const engine = new WorkflowEngine();
+      const def = makeV11Workflow();
+      const state = def.stateMachine.states['merge_ready'];
+      if (state) {
+        (state as Record<string, unknown>).gate = {
+          type: 'simple', id: 'merge_ready_gate', name: 'Merge Ready Gate', required: false,
+        };
+      }
+      engine.loadWorkflow(def);
+      const inst = engine.createInstance('v11-test-workflow');
+      forceState(inst.id, 'merge_ready');
+      await expect(engine.execute(inst.id)).rejects.toThrow();
+    });
+
+    it('NE-6: code_permission_release_gate not_enabled → cannot implementation_running', async () => {
+      const engine = new WorkflowEngine();
+      const def = makeV11Workflow();
+      const state = def.stateMachine.states['implementation_ready'];
+      if (state) {
+        (state as Record<string, unknown>).gate = {
+          type: 'simple', id: 'code_permission_release_gate', name: 'Code Permission Release Gate', required: false,
+        };
+      }
+      engine.loadWorkflow(def);
+      const inst = engine.createInstance('v11-test-workflow');
+      forceState(inst.id, 'implementation_ready');
+      await expect(engine.execute(inst.id)).rejects.toThrow();
+    });
+
+    it('NE-7: close_gate not_enabled → cannot closed', async () => {
+      const engine = new WorkflowEngine();
+      const def = makeV11Workflow();
+      const state = def.stateMachine.states['verification_done'];
+      if (state) {
+        (state as Record<string, unknown>).gate = {
+          type: 'simple', id: 'close_gate', name: 'Close Gate', required: false,
+        };
+      }
+      engine.loadWorkflow(def);
+      const inst = engine.createInstance('v11-test-workflow');
+      forceState(inst.id, 'verification_done');
+      await expect(engine.execute(inst.id)).rejects.toThrow();
+    });
+  });
+
+  // =========================================================================
+  // P0-2: quick_change code_only_fast_path closure tests
+  // =========================================================================
+
+  describe('P0-2: quick_change / code_only_fast_path closure', () => {
+    let qcEngine: WorkflowEngine;
+    let qcTmpDir: string;
+
+    function makeQuickChangeWorkflow(): WorkflowDefinition {
+      return {
+        id: 'quick_change',
+        displayName: 'Quick Change',
+        intent: 'test',
+        stateMachine: {
+          initial: 'created',
+          states: {
+            created: { agent: '', gate: null, skills: [], next: 'gates_running' },
+            gates_running: {
+              agent: '', gate: { type: 'simple', id: 'gate_summary_gate', name: 'Gate Summary Gate', checkFn: passGate }, skills: [],
+              next: { pass: 'approval_required', fail: 'blocked' },
+            },
+            approval_required: { agent: '', gate: null, skills: [], next: 'decision_recorded' },
+            decision_recorded: { agent: 'user_decision_recorder', gate: null, skills: [], next: 'merge_not_applicable' },
+            merge_not_applicable: { agent: 'merge_runner', gate: null, skills: [], next: 'implementation_ready' },
+            implementation_ready: {
+              agent: '',
+              gate: { type: 'simple', id: 'code_permission_release_gate', name: 'Code Permission Release Gate', checkFn: passGate },
+              skills: [],
+              next: { pass: 'implementation_running', fail: 'blocked' },
+            },
+            implementation_running: { agent: 'sf-executor', gate: null, skills: [], next: 'implementation_done' },
+            implementation_done: { agent: '', gate: null, skills: [], next: 'verification_running' },
+            verification_running: { agent: 'sf-verifier', gate: null, skills: [], next: 'verification_done' },
+            verification_done: {
+              agent: '',
+              gate: { type: 'simple', id: 'close_gate', name: 'Close Gate', checkFn: passGate },
+              skills: [],
+              next: { pass: 'closed', fail: 'implementation_running' },
+            },
+            closed: { agent: '', gate: null, skills: [] },
+            blocked: { agent: '', gate: null, skills: [] },
+          },
+        },
+        artifacts: [],
+      };
+    }
+
+    function qcForceState(instanceId: string, state: string): void {
+      const inst = qcEngine.getInstance(instanceId);
+      if (inst) { (inst as Record<string, unknown>).currentState = state; }
+    }
+
+    beforeEach(async () => {
+      qcEngine = new WorkflowEngine();
+      qcEngine.loadWorkflow(makeQuickChangeWorkflow());
+      qcTmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'qc-closure-'));
+    });
+
+    afterEach(async () => {
+      await fs.rm(qcTmpDir, { recursive: true, force: true });
+    });
+
+    it('QC-1: missing user_decision.json → cannot enter implementation_ready', async () => {
+      const inst = qcEngine.createInstance('quick_change');
+      qcForceState(inst.id, 'merge_not_applicable');
+      await expect(
+        qcEngine.transitionFull({ workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: qcTmpDir })
+      ).rejects.toThrow();
+    });
+
+    it('QC-2: missing merge_report.md(status=not_applicable) → cannot close', async () => {
+      const inst = qcEngine.createInstance('quick_change');
+      qcForceState(inst.id, 'verification_done');
+      await expect(
+        qcEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: qcTmpDir })
+      ).rejects.toThrow(/changed_files_audit|close_gate/);
+    });
+
+    it('QC-3: code_permission_release_gate not passed → cannot enter implementation_ready', async () => {
+      const inst = qcEngine.createInstance('quick_change');
+      qcForceState(inst.id, 'merge_not_applicable');
+      // Empty dir → no gate file → enforceTransitionEvidence rejects implementation_ready
+      await expect(
+        qcEngine.transitionFull({ workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: qcTmpDir })
+      ).rejects.toThrow();
+    });
+
+    it('QC-4: missing changed_files_audit.md → cannot closed', async () => {
+      const inst = qcEngine.createInstance('quick_change');
+      qcForceState(inst.id, 'verification_done');
+      await expect(
+        qcEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: qcTmpDir })
+      ).rejects.toThrow(/changed_files_audit|close_gate/);
+    });
+
+    it('QC-5: missing evidence_manifest → cannot verification_done', async () => {
+      const inst = qcEngine.createInstance('quick_change');
+      qcForceState(inst.id, 'verification_running');
+      await expect(
+        qcEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_running', toState: 'verification_done', workItemDir: qcTmpDir })
+      ).rejects.toThrow();
+    });
+
+    it('QC-6: missing close_gate passed → cannot closed', async () => {
+      const inst = qcEngine.createInstance('quick_change');
+      qcForceState(inst.id, 'verification_done');
+      await expect(
+        qcEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: qcTmpDir })
+      ).rejects.toThrow();
+    });
+
+    it('QC-7: candidate_manifest entries non-empty → code_only_fast_path gate must fail', async () => {
+      const inst = qcEngine.createInstance('quick_change');
+      qcForceState(inst.id, 'merge_not_applicable');
+      // Write gate file with status=failed (simulating gate rejection due to non-empty manifest)
+      await fs.mkdir(path.join(qcTmpDir, 'gates'), { recursive: true });
+      await fs.writeFile(
+        path.join(qcTmpDir, 'gates', 'code_permission_release_gate.json'),
+        JSON.stringify({ status: 'failed' }),
+      );
+      // implementation_ready is CRITICAL → enforceTransitionEvidence checks gate status
+      await expect(
+        qcEngine.transitionFull({ workItemId: inst.id, fromState: 'merge_not_applicable', toState: 'implementation_ready', workItemDir: qcTmpDir })
+      ).rejects.toThrow();
+    });
+  });
 });
