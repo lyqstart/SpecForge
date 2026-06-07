@@ -653,13 +653,13 @@ export class WorkflowEngine {
     }
     // No checkFn — gate cannot verify
     // v1.1: severity='soft' alone must NOT result in passed=true
-    // Only explicitly required=false gates are auto-waived
+    // Only explicitly required=false gates are auto-waived (passed=true, status=not_enabled)
     if (gate.required === false) {
       return {
         schema_version: '1.0',
-        passed: false,
+        passed: true,
         status: 'not_enabled',
-        reason: 'Non-required gate without checkFn — not enabled, no verification performed',
+        reason: 'auto-waived: non-required gate without checkFn — not enabled, no verification performed',
       };
     }
     // All other gates without checkFn (including severity='soft') must fail
