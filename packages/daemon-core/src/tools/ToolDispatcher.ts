@@ -2,7 +2,18 @@
  * Tool Dispatcher
  * Routes tool invoke requests to appropriate handler functions.
  * Each handler implements server-side logic for one sf_* tool.
+ *
+ * v1.2 M3: Added RBAC gate at dispatch() level.
+ * - enableRBAC=false / undefined: no check, zero behavior change
+ * - enableRBAC=true: protected tools require valid actor
+ * - Non-protected tools: allow-by-default
  */
+
+import {
+  resolveToolPermission,
+  extractActor,
+  extractEnableRBAC,
+} from './lib/tool-permissions';
 
 export interface ToolInvokeRequest {
   tool: string;
@@ -51,8 +62,21 @@ export class ToolDispatcher {
       throw new Error(`Unknown tool: ${req.tool}`);
     }
 
-    // TODO: Permission check (once permission engine is integrated)
-    // const decision = await this.deps.permissionEngine.evaluate({...});
+    // v1.2 M3: RBAC gate — resolved before handler invocation.
+    // Extracts actor and enableRBAC from context, applies permission policy.
+    const ctx = req.context as Record<string, unknown> | undefined;
+    const actor = extractActor(ctx);
+    const enableRBAC = extractEnableRBAC(ctx);
+
+    const decision = resolveToolPermission({
+      tool: req.tool,
+      actor,
+      enableRBAC,
+    });
+
+    if (!decision.allowed) {
+      return { success: false, error: decision.reason, denied: true };
+    }
 
     return await handler(req.args, req.context, this.deps);
   }
