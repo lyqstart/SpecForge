@@ -283,8 +283,11 @@ export class WorkflowEngine {
         if (!wdir) {
           throw new Error(`Cannot transition to '${nextState}': workItemDir is required for critical state transitions`);
         }
+        // v1.1: Verify workItemDir belongs to this instance (prevent cross-WI evidence pollution)
+        this.verifyWorkItemDirOwnership(instance.id, wdir);
         await this.enforceTransitionEvidence(nextState, wdir);
       } else if (wdir) {
+        this.verifyWorkItemDirOwnership(instance.id, wdir);
         await this.enforceTransitionEvidence(nextState, wdir);
       }
 
@@ -517,6 +520,19 @@ export class WorkflowEngine {
       } catch (err) {
         console.error('Event handler error:', err);
       }
+    }
+  }
+
+  /**
+   * v1.1: Verify that the workItemDir directory belongs to the given instanceId.
+   * Prevents cross-WI evidence pollution.
+   */
+  protected verifyWorkItemDirOwnership(instanceId: string, workItemDir: string): void {
+    const dirBasename = path.basename(path.resolve(workItemDir));
+    if (dirBasename !== instanceId) {
+      throw new Error(
+        `workItemDir basename '${dirBasename}' does not match instanceId '${instanceId}' — cross-WI evidence pollution blocked`
+      );
     }
   }
 

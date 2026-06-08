@@ -3,7 +3,7 @@
  * Extends WorkflowEngine with Agent system integration
  */
 
-import { WorkflowEngine, type WorkflowEngineConfig } from '../WorkflowEngine.js';
+import { WorkflowEngine, type WorkflowEngineConfig, requiresTransitionEvidence } from '../WorkflowEngine.js';
 import { 
   WorkflowDefinition, 
   WorkflowInstance, 
@@ -214,8 +214,9 @@ export class AgentWorkflowEngine extends WorkflowEngine {
   /**
    * Execute workflow with enhanced agent integration
    * Overrides parent method to use agent-based gate execution
+   * v1.1: Evidence prerequisites enforced for CRITICAL_STATES, matching parent WorkflowEngine.execute()
    */
-  override async execute(instanceId: string): Promise<WorkflowInstance> {
+  override async execute(instanceId: string, options?: { workItemDir?: string }): Promise<WorkflowInstance> {
     const instance = this.getInstance(instanceId);
     if (!instance) {
       throw new Error(`Workflow instance not found: ${instanceId}`);
@@ -304,6 +305,21 @@ export class AgentWorkflowEngine extends WorkflowEngine {
 
       // Transition to next state
       const oldState = currentStateName;
+
+      // v1.1: Enforce evidence prerequisites — MANDATORY for critical states
+      const wdir = options?.workItemDir;
+      if (requiresTransitionEvidence(nextState)) {
+        if (!wdir) {
+          throw new Error(`Cannot transition to '${nextState}': workItemDir is required for critical state transitions`);
+        }
+        // v1.1: Verify workItemDir belongs to this instance (prevent cross-WI evidence pollution)
+        this.verifyWorkItemDirOwnership(instance.id, wdir);
+        await this.enforceTransitionEvidence(nextState, wdir);
+      } else if (wdir) {
+        this.verifyWorkItemDirOwnership(instance.id, wdir);
+        await this.enforceTransitionEvidence(nextState, wdir);
+      }
+
       instance.currentState = nextState;
       instance.updatedAt = new Date();
 
@@ -325,31 +341,36 @@ export class AgentWorkflowEngine extends WorkflowEngine {
 
   /**
    * Determine the next state based on gate result
-   * Re-implemented from parent for compatibility
+   * v1.1 strict: matches parent WorkflowEngine semantics
+   * - only passed=true counts (not_enabled / blocked / waived are NOT pass)
+   * - string next + gate failed → throws (unconsumed gate result)
    */
   protected override determineNextState(
-    stateDef: { next?: string | Record<string, string> },
+    stateDef: { next?: string | Record<string, string>; gate?: unknown },
     gateResult: GateResult
   ): string | null {
     if (!stateDef.next) {
-      // No next state defined - workflow ends here
       return null;
     }
 
+    const hasGate = stateDef.gate != null;
+    // v1.1 strict: only passed=true counts. not_enabled / blocked / waived are NOT pass.
+    const gateOk = gateResult.passed === true;
+
     if (typeof stateDef.next === 'string') {
-      // Static next state
+      if (hasGate && !gateOk) {
+        throw new Error(`Gate '${(stateDef.gate as { id?: string }).id ?? 'unknown'}' result: passed=${gateResult.passed}, status=${gateResult.status ?? 'undefined'} — gate result is unconsumed (string next). Use { pass, fail } branching or ensure gate passes.`);
+      }
       return stateDef.next;
     }
 
-    // Dynamic next state based on gate result
-    if (gateResult.passed && stateDef.next['pass']) {
+    if (gateOk && stateDef.next['pass']) {
       return stateDef.next['pass'];
     }
     if (!gateResult.passed && stateDef.next['fail']) {
       return stateDef.next['fail'];
     }
 
-    // Default to no transition if no matching condition
     return null;
   }
 }

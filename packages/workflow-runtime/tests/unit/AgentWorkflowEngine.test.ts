@@ -262,11 +262,9 @@ describe('AgentWorkflowEngine', () => {
           duration: 100,
         });
 
-      // Execute the workflow
-      const result = await agentEngine.execute(instance.id);
-      
-      // Verify workflow completed (might have failure path)
-      expect(result).toBeDefined();
+      // v1.1 strict: gate failed + string next → throws (unconsumed gate result)
+      // This is correct behavior — gate failure must not silently proceed
+      await expect(agentEngine.execute(instance.id)).rejects.toThrow('unconsumed');
       
       mockRunAgentForState.mockRestore();
     });

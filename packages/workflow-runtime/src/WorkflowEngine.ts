@@ -368,8 +368,12 @@ export class WorkflowEngine {
       if (!workItemDir) {
         throw new Error(`Cannot transition to '${toState}': workItemDir is required for critical state transitions`);
       }
+      // v1.1: Verify workItemDir belongs to this work item (prevent cross-WI evidence pollution)
+      this.verifyWorkItemDirOwnership(workItemId, workItemDir);
       await this.enforceTransitionEvidence(toState, workItemDir);
     } else if (workItemDir) {
+      // v1.1: Also verify ownership when workItemDir is provided for non-critical states
+      this.verifyWorkItemDirOwnership(workItemId, workItemDir);
       await this.enforceTransitionEvidence(toState, workItemDir);
     }
 
@@ -418,6 +422,22 @@ export class WorkflowEngine {
 
     // Dynamic next states (pass/fail branches)
     return Object.values(stateDef.next).includes(to);
+  }
+
+  /**
+   * v1.1: Verify that the workItemDir directory belongs to the given instanceId.
+   * Prevents cross-WI evidence pollution — a caller must not use another WI's
+   * evidence directory to advance a different instance.
+   *
+   * Rule: path.basename(workItemDir) must equal instanceId.
+   */
+  protected verifyWorkItemDirOwnership(instanceId: string, workItemDir: string): void {
+    const dirBasename = path.basename(path.resolve(workItemDir));
+    if (dirBasename !== instanceId) {
+      throw new Error(
+        `workItemDir basename '${dirBasename}' does not match instanceId '${instanceId}' — cross-WI evidence pollution blocked`
+      );
+    }
   }
 
   /**
@@ -636,8 +656,11 @@ export class WorkflowEngine {
         if (!wdir) {
           throw new Error(`Cannot transition to '${nextState}': workItemDir is required for critical state transitions`);
         }
+        // v1.1: Verify workItemDir belongs to this instance (prevent cross-WI evidence pollution)
+        this.verifyWorkItemDirOwnership(instance.id, wdir);
         await this.enforceTransitionEvidence(nextState, wdir);
       } else if (wdir) {
+        this.verifyWorkItemDirOwnership(instance.id, wdir);
         await this.enforceTransitionEvidence(nextState, wdir);
       }
 
