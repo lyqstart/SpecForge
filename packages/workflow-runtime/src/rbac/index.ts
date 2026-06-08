@@ -1,7 +1,7 @@
 /**
  * rbac/index.ts — RBAC 模块公共导出
  *
- * Phase 1 + Phase 2 RBAC 公共 API。
+ * Phase 1 + Phase 2 + Round B 公共 API。
  */
 
 // Engine
@@ -24,6 +24,28 @@ export {
   type TransitionAuthorizationInput,
   type TransitionAuthorizerConfig,
 } from './TransitionAuthorizer.js';
+
+// Protected File Matcher (Round B)
+export {
+  ProtectedFileMatcher,
+  matchProtectedFile,
+} from './ProtectedFileMatcher.js';
+
+// File Authorization Policy (Round B)
+export {
+  FileAuthorizationPolicy,
+  createFileAuthorizationPolicy,
+  type FileAuthorizationInput,
+} from './FileAuthorizationPolicy.js';
+
+// Authorization Audit Logger (Round B)
+export {
+  AuthorizationAuditLogger,
+  createAuthorizationAuditLogger,
+  InMemoryAuditSink,
+  type AuthorizationAuditRecord,
+  type AuditSink,
+} from './AuthorizationAuditLogger.js';
 
 // Re-export types from @specforge/types for consumer convenience
 export type {

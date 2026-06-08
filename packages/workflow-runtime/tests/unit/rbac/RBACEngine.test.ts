@@ -76,10 +76,10 @@ describe('RBACEngine', () => {
       expect(result.allowed).toBe(false);
     });
 
-    it('should return matchedRule=default_deny when enabled', () => {
+    it('should return matchedRule indicating state_transition should use TransitionAuthorizer', () => {
       const engine = new RBACEngine({ enableRBAC: true });
       const result = engine.check(MOCK_PRINCIPAL, MOCK_PERMISSION);
-      expect(result.matchedRule).toBe('default_deny');
+      expect(result.matchedRule).toBe('use_transition_authorizer');
     });
 
     it('should return reason when denied', () => {
