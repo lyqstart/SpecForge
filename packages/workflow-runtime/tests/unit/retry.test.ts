@@ -255,6 +255,11 @@ describe('Retry Module', () => {
   });
 
   describe('withRetry', () => {
+    // withRetry uses real setTimeout via sleep(); global setup enables fake timers
+    // which prevents sleep() from resolving. Use real timers for this block.
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
     it('should return result on first success', async () => {
       const operation = vi.fn().mockResolvedValue('success');
 
@@ -494,6 +499,10 @@ describe('Retry Module', () => {
   });
 
   describe('createRetryDecorator', () => {
+    // createRetryDecorator wraps withRetry which uses real setTimeout
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
     it('should create a decorated function with retry logic', async () => {
       const error = new GateTimeoutError({
         gateId: 'test-gate',
@@ -529,6 +538,10 @@ describe('Retry Module', () => {
 });
 
 describe('GateRunner Retry Integration', () => {
+  // GateRunner retry integration uses withRetry internally (real setTimeout)
+  beforeEach(() => { vi.useRealTimers(); });
+  afterEach(() => { vi.useFakeTimers(); });
+
   describe('SimpleGateRunner with Retry', () => {
     it('should retry on retryable error when retry is enabled', async () => {
       let callCount = 0;
@@ -710,6 +723,10 @@ describe('GateRunner Retry Integration', () => {
 });
 
 describe('Retry Strategy Behavior', () => {
+  // Uses withRetry with real delays (100ms+)
+  beforeEach(() => { vi.useRealTimers(); });
+  afterEach(() => { vi.useFakeTimers(); });
+
   it('exponential strategy should increase delay each retry', async () => {
     const delays: number[] = [];
     const error = new GateTimeoutError({
