@@ -10,6 +10,7 @@ import { WorkflowInstance } from './types.js';
 import { EventLogReader, createEventLogReader } from './events/EventLogReader.js';
 import type { WorkflowInstanceStorage, StorageConfig } from './storage/WorkflowInstanceStorage.js';
 import { createStateRecoveryManager, type StateRecoveryManager } from './StateRecoveryManager.js';
+import { DELETABLE_STATES } from '@specforge/types/constants';
 
 // Schema version for persistence (REQ-18)
 const SCHEMA_VERSION = '1.0';
@@ -135,9 +136,24 @@ export class WorkflowPersistence implements WorkflowInstanceStorage {
   }
 
   /**
-   * Delete a workflow instance from storage
+   * Delete a workflow instance from storage.
+   *
+   * v1.1 (P3): Guarded by DELETABLE_STATES. Only terminal/initial states
+   * are deletable. Use `{ force: true }` to bypass (tests/admin only).
    */
-  async deleteInstance(id: string): Promise<boolean> {
+  async deleteInstance(id: string, options?: { force?: boolean }): Promise<boolean> {
+    // ── State guard: check if instance is in a deletable state ──
+    if (!options?.force) {
+      const instance = await this.loadInstance(id);
+      if (instance && !DELETABLE_STATES.has(instance.currentState)) {
+        throw new Error(
+          `Cannot delete instance '${id}' in state '${instance.currentState}' — ` +
+          `only deletable states are allowed: ${Array.from(DELETABLE_STATES).join(', ')}. ` +
+          `Use { force: true } to override.`,
+        );
+      }
+    }
+
     const filePath = this.getInstanceFilePath(id);
     
     if (!existsSync(filePath)) {

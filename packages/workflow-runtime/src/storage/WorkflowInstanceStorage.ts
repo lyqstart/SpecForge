@@ -24,11 +24,21 @@ export interface WorkflowInstanceStorage {
   loadInstance(id: string): Promise<WorkflowInstance | null>;
 
   /**
-   * Delete a workflow instance from storage
+   * Delete a workflow instance from storage.
+   *
+   * v1.1 (P3): Deletion is guarded by DELETABLE_STATES. Only instances in
+   * terminal or initial states (created, intake_ready, closed, rejected,
+   * superseded, blocked, gates_failed) may be deleted. Attempting to delete
+   * an instance in a running or intermediate state will throw.
+   *
+   * Use `{ force: true }` to bypass the state guard (for tests or admin tools).
+   *
    * @param id The instance ID to delete
+   * @param options Optional: `{ force: true }` to bypass state check
    * @returns True if deleted, false if not found
+   * @throws Error if instance is in a non-deletable state and force is not set
    */
-  deleteInstance(id: string): Promise<boolean>;
+  deleteInstance(id: string, options?: { force?: boolean }): Promise<boolean>;
 
   /**
    * List all workflow instances in storage

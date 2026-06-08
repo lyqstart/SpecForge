@@ -117,7 +117,7 @@ describe('WorkflowInstanceStorage Interface', () => {
       const instance = createTestInstance();
       await storage.saveInstance(instance);
       
-      const deleted = await storage.deleteInstance(instance.id);
+      const deleted = await storage.deleteInstance(instance.id, { force: true });
       expect(deleted).toBe(true);
       
       const loaded = await storage.loadInstance(instance.id);

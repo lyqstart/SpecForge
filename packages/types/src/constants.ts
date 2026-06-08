@@ -219,3 +219,35 @@ export const CRITICAL_STATES: ReadonlySet<string> = new Set([
 export function isCriticalState(targetState: string): boolean {
   return CRITICAL_STATES.has(targetState);
 }
+
+// ---------------------------------------------------------------------------
+// §5 Deletable States (P3 destructive operation guard)
+// ---------------------------------------------------------------------------
+
+/**
+ * v1.1 States where `deleteInstance()` is ALLOWED without force override.
+ *
+ * Only terminal or initial states are safe to delete:
+ * - Initial states have no significant state or evidence.
+ * - Terminal states have completed their lifecycle; history is final.
+ * - Failed/stuck states may be cleaned up.
+ *
+ * All other states (intermediate, running, critical) are non-deletable —
+ * `deleteInstance()` must throw unless `force: true` is passed.
+ */
+export const DELETABLE_STATES: ReadonlySet<string> = new Set([
+  'created',
+  'intake_ready',
+  'closed',
+  'rejected',
+  'superseded',
+  'blocked',
+  'gates_failed',
+] as const);
+
+/**
+ * Check whether an instance in the given state may be deleted.
+ */
+export function isDeletableState(state: string): boolean {
+  return DELETABLE_STATES.has(state);
+}

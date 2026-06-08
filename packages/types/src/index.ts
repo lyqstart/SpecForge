@@ -175,6 +175,9 @@ export {
   GATE_SUMMARY_STATUSES as ConstGateSummaryStatuses,
   // §10 User Decision
   USER_DECISION_STATUSES as ConstUserDecisionStatuses,
+  // §5 Deletable States (P3)
+  DELETABLE_STATES,
+  isDeletableState,
   // Types
   type WIStatus as ConstWIStatus,
   type WorkflowPath as ConstWorkflowPath,

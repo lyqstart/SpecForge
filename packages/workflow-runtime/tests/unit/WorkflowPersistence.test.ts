@@ -111,7 +111,7 @@ describe('WorkflowPersistence', () => {
       const instance = createTestInstance();
       await persistence.saveInstance(instance);
       
-      const deleted = await persistence.deleteInstance(instance.id);
+      const deleted = await persistence.deleteInstance(instance.id, { force: true });
       expect(deleted).toBe(true);
       
       const loaded = await persistence.loadInstance(instance.id);
@@ -120,6 +120,62 @@ describe('WorkflowPersistence', () => {
 
     it('should return false for non-existent instance', async () => {
       const deleted = await persistence.deleteInstance('non-existent-id');
+      expect(deleted).toBe(false);
+    });
+  });
+
+  describe('deleteInstance state guard (P3)', () => {
+    it('should allow deletion when instance is in created state', async () => {
+      const instance = createTestInstance({ id: 'del-created', currentState: 'created' });
+      await persistence.saveInstance(instance);
+      const deleted = await persistence.deleteInstance(instance.id);
+      expect(deleted).toBe(true);
+    });
+
+    it('should allow deletion when instance is in intake_ready state', async () => {
+      const instance = createTestInstance({ id: 'del-intake', currentState: 'intake_ready' });
+      await persistence.saveInstance(instance);
+      const deleted = await persistence.deleteInstance(instance.id);
+      expect(deleted).toBe(true);
+    });
+
+    it('should allow deletion when instance is in closed state', async () => {
+      const instance = createTestInstance({ id: 'del-closed', currentState: 'closed' });
+      await persistence.saveInstance(instance);
+      const deleted = await persistence.deleteInstance(instance.id);
+      expect(deleted).toBe(true);
+    });
+
+    it('should reject deletion when instance is in implementation_running state', async () => {
+      const instance = createTestInstance({ id: 'del-running', currentState: 'implementation_running' });
+      await persistence.saveInstance(instance);
+      await expect(persistence.deleteInstance(instance.id)).rejects.toThrow(
+        /Cannot delete instance.*implementation_running/,
+      );
+      // Verify instance still exists
+      const loaded = await persistence.loadInstance(instance.id);
+      expect(loaded).not.toBeNull();
+    });
+
+    it('should reject deletion when instance is in verification_running state', async () => {
+      const instance = createTestInstance({ id: 'del-vrunning', currentState: 'verification_running' });
+      await persistence.saveInstance(instance);
+      await expect(persistence.deleteInstance(instance.id)).rejects.toThrow(
+        /Cannot delete instance.*verification_running/,
+      );
+    });
+
+    it('should allow force deletion bypassing state guard', async () => {
+      const instance = createTestInstance({ id: 'del-force', currentState: 'implementation_running' });
+      await persistence.saveInstance(instance);
+      const deleted = await persistence.deleteInstance(instance.id, { force: true });
+      expect(deleted).toBe(true);
+      const loaded = await persistence.loadInstance(instance.id);
+      expect(loaded).toBeNull();
+    });
+
+    it('should return false for non-existent instance without error', async () => {
+      const deleted = await persistence.deleteInstance('non-existent-guard-test');
       expect(deleted).toBe(false);
     });
   });

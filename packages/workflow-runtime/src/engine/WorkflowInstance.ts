@@ -310,7 +310,13 @@ export class WorkflowInstanceStateManager {
   }
 
   /**
-   * Clear instance history
+   * Clear instance history.
+   *
+   * @unsafe This method destroys the audit trail for a workflow instance.
+   *   Production code MUST NOT call this method — it is only for test
+   *   scaffolding or explicit admin maintenance scenarios where history
+   *   reset is intentional. History is the authoritative record of all
+   *   state transitions, gate results, and evidence checks.
    */
   static clearHistory(instance: WorkflowInstance): void {
     instance.history = [];
