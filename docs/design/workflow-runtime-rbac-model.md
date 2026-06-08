@@ -1,10 +1,11 @@
 # P4 Design: Workflow-Runtime Unified RBAC/Permission Model
 
-> **Status**: Draft  
+> **Status**: Open Questions Decided — Phase 1 Ready  
 > **Branch**: `design/workflow-runtime-rbac-model`  
 > **Base**: `main` @ `f1c3922` (P3 merge)  
 > **Scope**: Design document only — no production code changes  
-> **Author**: sf-orchestrator (P4 analysis)
+> **Author**: sf-orchestrator (P4 analysis)  
+> **Updated**: P4.1 — Open Questions 决策收口 + Phase 1 最小实现边界
 
 ---
 
@@ -19,8 +20,10 @@
 7. [Candidate Solutions](#7-candidate-solutions)
 8. [Recommendation](#8-recommendation)
 9. [Migration Path](#9-migration-path)
-10. [Open Questions](#10-open-questions)
-11. [Appendix A — Audit Raw Data](#appendix-a--audit-raw-data)
+10. [Open Questions (Original)](#10-open-questions)
+11. [Open Questions 决策收口](#11-open-questions-决策收口)
+12. [Phase 1 最小实现边界](#12-phase-1-最小实现边界)
+13. [Appendix A — Audit Raw Data](#appendix-a--audit-raw-data)
 
 ---
 
@@ -653,6 +656,294 @@ src/tools/handlers/*.ts              — MODIFY: add principal extraction + auth
    - Many tests construct `WriteGuardContext` with `callerRole: 'agent'`
    - Adding stricter checks may break existing tests
    - Strategy: feature-flag the new checks initially?
+
+---
+
+## 11. Open Questions 决策收口
+
+> 本节对 §10 提出的 6 个 Open Questions 做最终决策。  
+> 每项决策包含：结论、规则、理由、对实现 phase 的影响、是否阻塞 Phase 1。
+
+### Q1. sf-orchestrator 是否允许执行 seal transitions？
+
+**Decision: 不允许。**
+
+**Seal transitions 定义** — 以下状态跳转属于 seal transition，必须由独立守卫主体执行，orchestrator 不得直接触发：
+
+| Seal Transition | 唯一授权执行者 | 守卫依据 |
+|-----------------|--------------|---------|
+| `gates_running → approval_required` | `gate_runner` + `system` | Gate Summary evidence 已通过 |
+| `gates_running → gates_failed` | `gate_runner` + `system` | Gate Summary evidence 未通过 |
+| `approval_required → approved` | `user_decision_recorder` + `system` | user_decision.json 存在且 status=approved |
+| `approval_required → rejected` | `user_decision_recorder` + `system` | user_decision.json 存在且 status=rejected |
+| `merge_ready → merging` | `merge_runner` + `system` | merge 前置条件满足 |
+| `merging → merged` | `merge_runner` + `system` | merge_report.md 存在 |
+| `verification_done → closed` | `close_gate` + `system` | verification_report + code_permission revoked |
+
+**Rules:**
+
+1. `sf-orchestrator` may **request** any transition — it tells the system "I want to move from X to Y".
+2. `sf-orchestrator` may **perform** non-seal transitions directly (e.g., `created → intake_ready`, `implementation_done → verification_running`).
+3. Seal transitions require two conditions: (a) the request comes from the **designated execution subject** (gate_runner / user_decision_recorder / merge_runner / close_gate), AND (b) required evidence artifacts exist and pass validation.
+4. `sf-orchestrator` cannot be the designated execution subject for any seal transition.
+5. `system` may perform seal transitions only when triggered by the designated subject's evidence-verified path — `system` is not a bypass.
+
+**Rationale:**
+
+Separation of duties. The orchestrator organizes workflow, dispatches agents, and coordinates phases. If the orchestrator can also seal gates, approve its own work, and close work items, the entire evidence chain collapses to a single trust root — the orchestrator itself. This defeats the purpose of having independent gate_runner, user_decision_recorder, merge_runner, and close_gate services.
+
+**Impact on Implementation Phases:**
+
+- **Phase 1 (blocking)**: Must define `SEAL_TRANSITIONS` constant map and `isSealTransition(from, to)` predicate. Must distinguish `request_transition` from `perform_transition` in `WorkflowEngine.transitionFull()`.
+- **Phase 2**: TransitionAuthorizer enforces seal rules.
+- `transition_state` permission cannot be granted as a blanket right to `sf-orchestrator`.
+- `close_work_item` cannot be granted to `sf-orchestrator`.
+
+---
+
+### Q2. How should `user` identity be represented?
+
+**Decision: 引入 `user` 作为特殊 Principal，不加入 ActorRole 常量。**
+
+**Rules:**
+
+1. `user` is a Principal role, not an ActorRole constant value.
+2. User actions always go through `user_decision_recorder` as the recording mechanism.
+3. `sf-v11-decision.ts` continues to use `context?.agent || 'user'` — this `user` string is a Principal source tag, not an ActorRole.
+4. In the RBAC engine, a Principal with `source: 'user'` has no direct permissions — it can only influence the system through `user_decision_recorder`.
+5. `user_decision_recorder` is the ActorRole that checks whether the user has actually made a decision (via the OpenCode UI prompt), then records it.
+
+**Rationale:**
+
+Users don't call daemon-core tools directly. The OpenCode conversation layer translates user intent into tool calls, with `context.agent` set to whichever agent is handling the conversation (typically `sf-orchestrator`). The `user` identity only matters as a provenance tag on decisions. Making it a full ActorRole would imply the user can invoke tools directly, which contradicts the architecture.
+
+**Impact on Implementation Phases:**
+
+- **Phase 1**: `Principal` type includes `source: 'user' | 'tool_call' | 'state_machine' | 'http_api' | 'internal'`. No ActorRole change.
+- Phase 2+: Decision recording in RBAC logs includes `source: 'user'` when applicable.
+- Not blocking Phase 1.
+
+---
+
+### Q3. Should `sf-debugger` and `sf-investigator` have elevated permissions?
+
+**Decision: Phase 1 不新增 ActorRole。Debugger 和 Investigator 继承 `agent` 的权限，通过 Principal.agentRole 区分。**
+
+**Rules:**
+
+1. `sf-debugger` and `sf-investigator` do NOT get their own ActorRole constant in Phase 1.
+2. Their `Principal.actorRole` is `'agent'` — same as all sub-agents.
+3. Their `Principal.agentRole` is `'dev'` (debugger) or `'general'` (investigator) — used for agent dispatch, not for permission enforcement.
+4. Elevated permissions for debugger (modify code) come from the same `code_change_allowed` + `allowed_write_files` mechanism that governs all agents.
+5. Elevated permissions for investigator (read all files) come from the default "all authenticated principals may read" policy.
+6. Phase 2+ may introduce specialized ActorRole values if the permission model needs finer control.
+
+**Rationale:**
+
+Debugger and investigator are dispatched by the orchestrator within the same `implementation_running` or investigation scope. Their write permissions are already constrained by `allowed_write_files` and `code_change_allowed`. Adding new ActorRole values now would require updating `ACTOR_ROLES`, `STATE_ADVANCEMENT_SUBJECTS`, and the write guard — all for no new enforcement capability in Phase 1.
+
+**Impact on Implementation Phases:**
+
+- **Phase 1**: No ActorRole changes. Principal carries `agentRole` for future use.
+- Phase 2+: `TransitionAuthorizer` may use `agentRole` to restrict which agent may modify which state's output.
+- Not blocking Phase 1.
+
+---
+
+### Q4. How to handle `Runtime State Machine` as a principal?
+
+**Decision: 保留为字符串字面量，加入 PrincipalRole 联合类型。**
+
+**Rules:**
+
+1. `Runtime State Machine` remains a string literal — not added to `ACTOR_ROLES`.
+2. It is added to the `PrincipalRole` union type in `@specforge/types/src/principal.ts`.
+3. `STATE_ADVANCEMENT_SUBJECTS` in both packages continues to include it.
+4. In the RBAC engine, `Runtime State Machine` has the same permissions as `system` — it can perform any valid transition.
+5. Audit trail records `principal.source: 'state_machine'` when triggered by internal state machine events.
+
+**Rationale:**
+
+`Runtime State Machine` is not an actor that authenticates or makes decisions. It represents transitions triggered by system-internal events (e.g., automatic rollback, recovery). Treating it as a first-class ActorRole would imply it can be denied or have restricted permissions — but system-internal transitions must always succeed if the transition is valid. The Principal model correctly captures this as `source: 'internal'` with elevated system trust.
+
+**Impact on Implementation Phases:**
+
+- **Phase 1**: `PrincipalRole` union includes `'Runtime State Machine'` literal. No ACTOR_ROLES change.
+- Phase 2+: Deduplicate `STATE_ADVANCEMENT_SUBJECTS` into a single source in `@specforge/types`.
+- Not blocking Phase 1.
+
+---
+
+### Q5. Should file permissions be configurable per workflow type?
+
+**Decision: Phase 1 统一权限。Phase 2+ 考虑 per-workflow-type 差异。**
+
+**Rules:**
+
+1. Phase 1: All workflow types share the same permission matrix (§6.2, §6.3).
+2. The permission registry is structured as data (not hardcoded conditionals), making per-workflow customization a configuration change rather than a code change.
+3. Phase 2+: If specific workflow types need different file write rules (e.g., `ops_task` allows broader write scope), this is achieved by:
+   - Different `allowed_write_files` in the task contract (already per-TASK, not per-workflow-type)
+   - Optional `workflow_permissions` overrides in the workflow definition
+4. State transition permissions are already per-transition (§6.1), which effectively differentiates by workflow type since different workflow types have different state graphs.
+
+**Rationale:**
+
+The current `allowed_write_files` mechanism is already per-TASK, not per-workflow-type. The orchestrator controls scope via the task contract. Adding per-workflow-type file permissions would create a second layer of scope control that must be kept consistent with task contracts. Defer until a concrete use case requires it.
+
+**Impact on Implementation Phases:**
+
+- **Phase 1**: Single permission registry, shared across all workflow types.
+- Phase 2+: Add optional `workflow_permissions` to `WorkflowDefinition`.
+- Not blocking Phase 1.
+
+---
+
+### Q6. Backward compatibility for tests?
+
+**Decision: Phase 1 RBAC check 默认关闭，通过 opt-in flag 启用。测试不改。**
+
+**Rules:**
+
+1. Phase 1 introduces `RBACEngine` with an **opt-in** `enableRBAC: boolean` configuration flag.
+2. When `enableRBAC === false` (default): `RBACEngine.check()` returns `{ allowed: true }` for all checks — no enforcement, no test breakage.
+3. When `enableRBAC === true`: Full enforcement active.
+4. Production daemon-core will set `enableRBAC: true` via environment variable or config.
+5. Existing tests do NOT change. New RBAC-specific tests are added in a separate test file.
+6. Phase 2+: After all phases are stable and new tests cover the RBAC paths, the flag defaults to `true` and the opt-out is removed.
+
+**Rationale:**
+
+The test suite has 723 tests across 26 files. Many construct `WriteGuardContext` with `callerRole: 'agent'` or call `transitionFull()` without principal context. Enabling RBAC by default would cause widespread test failures for rules that haven't been incrementally implemented yet. The opt-in flag allows each phase to be validated independently without destabilizing the existing test base.
+
+**Impact on Implementation Phases:**
+
+- **Phase 1**: `RBACEngine` accepts `enableRBAC` flag. Default `false`.
+- Phase 2+: Integration tests set `enableRBAC: true` in their test setup.
+- Phase final: Flag defaults to `true`, opt-out removed.
+- Not blocking Phase 1.
+
+---
+
+### 决策总结
+
+| Question | Decision | Blocks Phase 1? |
+|----------|----------|:---:|
+| Q1. Orchestrator seal transitions | **Denied** — seal transitions require designated subject + evidence | **Yes** — must define SEAL_TRANSITIONS and request/perform split |
+| Q2. User identity | Special Principal, not ActorRole | No |
+| Q3. Debugger/Investigator roles | Inherit `agent`, no new ActorRole in Phase 1 | No |
+| Q4. Runtime State Machine | String literal in PrincipalRole union, not in ACTOR_ROLES | No |
+| Q5. Per-workflow-type permissions | Unified in Phase 1, data-driven for future customization | No |
+| Q6. Test backward compatibility | Opt-in `enableRBAC` flag, default off | No |
+
+---
+
+## 12. Phase 1 最小实现边界
+
+> Phase 1 的目标是：**建立 RBAC 基础类型和核心检查函数，但不启用任何运行时强制**。  
+> 所有强制执行都被 `enableRBAC: false` 默认值挡住。  
+> Phase 1 完成后，系统行为与当前完全一致，但类型和检查函数已就绪。
+
+### 12.1 Phase 1 包含
+
+| # | 产物 | 包 | 说明 |
+|---|------|-----|------|
+| 1 | `Principal` interface + `PrincipalRole` union | `@specforge/types` | 统一 ActorRole ↔ AgentRole 的身份模型 |
+| 2 | `ResourceType`, `Operation`, `Permission` types | `@specforge/types` | 权限词汇表 |
+| 3 | `PermissionContext` interface | `@specforge/types` | 评估权限所需的上下文（workItemId, currentState, filePath 等） |
+| 4 | `PermissionDecision` interface | `@specforge/types` | 检查结果（allowed, reason, matchedRule） |
+| 5 | `SEAL_TRANSITIONS` constant map | `@specforge/types` | Q1 seal transition 定义表 |
+| 6 | `isSealTransition(from, to)` predicate | `@specforge/types` | 判断给定跳转是否为 seal transition |
+| 7 | `REQUESTABLE_TRANSITIONS` — orchestrator 可直接执行的非 seal 跳转 | `@specforge/types` | 区分 request vs perform |
+| 8 | `RBACEngine` class (skeleton) | `@specforge/workflow-runtime` | 核心检查函数，含 `enableRBAC` opt-in flag |
+| 9 | `PrincipalResolver` (skeleton) | `@specforge/workflow-runtime` | `context.agent` → `Principal` 映射 |
+| 10 | `DEFAULT_DENY_RULE` constant | `@specforge/workflow-runtime` | 默认拒绝规则 — 未知角色拒绝所有操作 |
+| 11 | Subpath exports: `./permissions`, `./principal` | `@specforge/types` | 新类型对外暴露 |
+| 12 | Subpath export: `./rbac` | `@specforge/workflow-runtime` | RBAC engine 对外暴露 |
+| 13 | Unit tests for `isSealTransition`, `SEAL_TRANSITIONS`, `RBACEngine` (skeleton), `PrincipalResolver` | tests | 新文件，不改现有测试 |
+
+### 12.2 Phase 1 明确不包含
+
+| # | 排除项 | 理由 |
+|---|--------|------|
+| 1 | 运行时 RBAC 强制执行 | `enableRBAC` 默认 `false`，生产行为不变 |
+| 2 | Tool handler authorization（GAP-3） | Phase 2 |
+| 3 | Spec file write protection（GAP-4） | Phase 3 |
+| 4 | Evidence access control（GAP-5） | Phase 4 |
+| 5 | Audit trail 持久化（GAP-8） | Phase 5+ |
+| 6 | bash-guard callerRole 修复（GAP-6） | Phase 2 |
+| 7 | STATE_ADVANCEMENT_SUBJECTS 去重（GAP-7） | Phase 2 |
+| 8 | UI / Auth / SSO 集成 | Phase 6+ |
+| 9 | 所有 tool handler 的 principal 传播 | Phase 2 |
+| 10 | Per-workflow-type 权限差异 | Phase 3+ |
+| 11 | `StateManager.transition()` 修改 | 明确禁止 |
+| 12 | Evidence guard 修改 | 明确禁止 |
+| 13 | Destructive operation guard 修改 | 明确禁止 |
+
+### 12.3 Phase 1 文件变更范围
+
+#### 新增文件
+
+```
+packages/types/src/principal.ts          — Principal, PrincipalRole, PrincipalSource
+packages/types/src/permissions.ts        — ResourceType, Operation, Permission, PermissionContext, PermissionDecision
+packages/types/src/seal-transitions.ts   — SEAL_TRANSITIONS, isSealTransition(), REQUESTABLE_TRANSITIONS
+packages/workflow-runtime/src/rbac/RBACEngine.ts        — RBACEngine class (skeleton)
+packages/workflow-runtime/src/rbac/PrincipalResolver.ts  — PrincipalResolver class (skeleton)
+packages/workflow-runtime/src/rbac/index.ts              — public exports
+packages/workflow-runtime/tests/unit/rbac/RBACEngine.test.ts
+packages/workflow-runtime/tests/unit/rbac/PrincipalResolver.test.ts
+packages/workflow-runtime/tests/unit/rbac/seal-transitions.test.ts
+```
+
+#### 修改文件（仅添加 export + subpath）
+
+```
+packages/types/src/index.ts              — add: export * from './principal.js', './permissions.js', './seal-transitions.js'
+packages/types/package.json              — add: "./permissions", "./principal", "./seal-transitions" subpath exports
+packages/workflow-runtime/src/index.ts   — add: export * from './rbac/index.js'
+```
+
+#### 不修改的文件
+
+- 所有 daemon-core 文件
+- 所有现有测试文件
+- `StateManager.ts`
+- `WorkflowEngine.ts`
+- `AgentWorkflowEngine.ts`
+- `write-guard-v11.ts`
+- `state-machine-v11.ts`
+- `constants.ts`（CRITICAL_STATES / DELETABLE_STATES 不变）
+- `actor-roles.ts`（ACTOR_ROLES 不变）
+
+### 12.4 Phase 1 验收标准
+
+| # | 验收条件 |
+|---|---------|
+| 1 | `@specforge/types` 新增 3 个 subpath export，TypeScript strict mode 编译通过 |
+| 2 | `@specforge/workflow-runtime` 新增 `./rbac` subpath export，TypeScript strict mode 编译通过 |
+| 3 | `SEAL_TRANSITIONS` 包含 Q1 定义的 7 个 seal transition |
+| 4 | `isSealTransition()` 正确识别所有 seal transition |
+| 5 | `Principal` 类型正确桥接 ActorRole 和 AgentRole |
+| 6 | `RBACEngine` 在 `enableRBAC=false` 时返回 `{ allowed: true }` |
+| 7 | 新增测试全部通过，现有 723 个测试不受影响 |
+| 8 | 生产运行时行为与当前完全一致（RBAC 未启用） |
+| 9 | `docs/design/workflow-runtime-rbac-model.md` 反映最终决策 |
+
+### 12.5 Phase 1 后续路线图
+
+```
+Phase 1 (本 phase)     类型 + skeleton + seal 定义     enableRBAC=false
+Phase 2                 TransitionAuthorizer 强制       enableRBAC=true (opt-in)
+                        bash-guard callerRole 修复
+                        STATE_ADVANCEMENT_SUBJECTS 去重
+Phase 3                 Spec file write protection
+                        Tool handler authorization (GAP-3)
+Phase 4                 Evidence access control (GAP-5)
+Phase 5                 Audit trail 持久化 (GAP-8)
+Phase 6                 Per-workflow-type 权限、UI/SSO
+Phase final             enableRBAC 默认 true，移除 opt-out
+```
 
 ---
 
