@@ -73,17 +73,25 @@ const FILE_MODIFYING_PATTERNS: ReadonlyArray<{
 // guardBashCommand
 // ---------------------------------------------------------------------------
 
+export interface BashGuardOptions {
+  /** Optional caller role — defaults to 'agent' for backward compatibility */
+  callerRole?: string
+}
+
 /**
  * Check a bash command against safety rules and write policy.
  *
  * @param command The raw bash command string to check
  * @param policy The write policy rule to evaluate file-modifying commands against
+ * @param options Optional configuration including callerRole
  * @returns BashGuardCheck with allowed=true if the command passes all checks
  */
 export function guardBashCommand(
   command: string,
   policy: WritePolicyRule,
+  options?: BashGuardOptions,
 ): BashGuardCheck {
+  const callerRole = options?.callerRole ?? 'agent'
   // 1. Check always-dangerous patterns
   for (const { pattern, reason } of DANGEROUS_PATTERNS) {
     if (pattern.test(command)) {
@@ -103,7 +111,7 @@ export function guardBashCommand(
         const violation = policy.check(
           {
             hasActiveWI: true,
-            callerRole: 'agent',
+            callerRole: callerRole as import('./write-guard-v11.js').WriteGuardContext['callerRole'],
             isFrozen: false,
           },
           targetPath,
