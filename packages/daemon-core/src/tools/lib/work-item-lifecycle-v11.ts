@@ -12,6 +12,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { CRITICAL_STATES } from '@specforge/types/constants';
 
 // ---------------------------------------------------------------------------
 // Work Item 创建
@@ -177,11 +178,10 @@ export async function initializeClosureFiles(
 /**
  * v1.1: States that MUST NOT be set via updateWorkItemStatus().
  * These require the full state machine path: WorkflowEngine.transitionFull() + StateManager.transition().
+ *
+ * Alias for the canonical CRITICAL_STATES set from @specforge/types.
  */
-const BLOCKED_STATUS_UPDATES = new Set([
-  'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
-  'implementation_ready', 'verification_done', 'closed',
-]);
+const BLOCKED_STATUS_UPDATES: ReadonlySet<string> = CRITICAL_STATES;
 
 /**
  * 更新 work_item.json 中的状态。

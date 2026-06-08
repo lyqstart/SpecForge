@@ -14,6 +14,7 @@ import {
   SimpleGateDefinition,
   CompositeGateDefinition,
 } from '../types.js';
+import { CRITICAL_STATES } from '@specforge/types/constants';
 
 export type EventHandler = (event: WorkflowEvent) => void | Promise<void>;
 
@@ -25,16 +26,9 @@ export interface WorkflowEvent {
 }
 
 /**
- * v1.1: States that REQUIRE workItemDir for evidence enforcement.
- * Transitioning to any of these states without workItemDir will throw.
- */
-const CRITICAL_STATES = new Set([
-  'approval_required', 'merge_ready', 'merging', 'post_merge_verified',
-  'implementation_ready', 'verification_done', 'closed',
-]);
-
-/**
  * v1.1: Check whether a target state requires transition evidence enforcement.
+ *
+ * Delegates to the canonical CRITICAL_STATES set in @specforge/types.
  */
 export function requiresTransitionEvidence(targetState: string): boolean {
   return CRITICAL_STATES.has(targetState);

@@ -7,7 +7,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./directory-layout": "./src/directory-layout.ts",
-    "./actor-roles": "./src/actor-roles.ts"
+    "./actor-roles": "./src/actor-roles.ts",
+    "./constants": "./src/constants.ts"
   },
   "scripts": {
     "build": "tsc",
