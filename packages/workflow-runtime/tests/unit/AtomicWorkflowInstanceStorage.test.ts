@@ -324,11 +324,12 @@ describe('AtomicWorkflowInstanceStorage', () => {
   });
 
   describe('error handling', () => {
-    // TODO: A2 — retry/write-error tests timeout under bun/vitest.
-    // Mock works (no more "Cannot redefine property") but AtomicWorkflowInstanceStorage
-    // retry logic appears to loop indefinitely when writeFile is mocked to fail.
-    // Root cause: needs minimal reproduction to determine if retry exits correctly.
-    it.skip('should retry failed writes', async () => {
+    // AtomicWorkflowInstanceStorage retry uses real setTimeout (L316);
+    // global setup enables fake timers which blocks retry delay.
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
+    it('should retry failed writes', async () => {
       const instance = createTestInstance({ id: 'retry-instance' });
       
       // Mock writeFile to fail first two attempts via hoisted vi.mock
@@ -353,8 +354,8 @@ describe('AtomicWorkflowInstanceStorage', () => {
       expect(loaded?.id).toBe(instance.id);
     });
 
-    // TODO: A2 — same retry loop timeout as "should retry failed writes"
-    it.skip('should restore from backup after all retries fail', async () => {
+    // Same fake timer fix as above — retry delay uses real setTimeout
+    it('should restore from backup after all retries fail', async () => {
       const instance = createTestInstance({ id: 'backup-restore-instance' });
       
       // Save instance first to create backup (using real writeFile)
