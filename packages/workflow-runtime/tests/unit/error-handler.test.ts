@@ -544,6 +544,10 @@ describe('createErrorResult', () => {
 });
 
 describe('GateRunner Error Integration', () => {
+  // Timeout test uses real setTimeout; global setup enables fake timers
+  beforeEach(() => { vi.useRealTimers(); });
+  afterEach(() => { vi.useFakeTimers(); });
+
   it('should handle errors in SimpleGateRunner.check()', async () => {
     const gateDefinition: SimpleGateDefinition = {
       schema_version: '1.0',

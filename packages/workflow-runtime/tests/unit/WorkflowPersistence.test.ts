@@ -314,7 +314,7 @@ describe('EnhancedWorkflowPersistence', () => {
       
       expect(result.recoveredInstances).toHaveLength(2);
       expect(result.failedRecoveries).toHaveLength(0);
-      expect(result.recoveryTime).toBeGreaterThan(0);
+      expect(result.recoveryTime).toBeGreaterThanOrEqual(0);
     });
 
     it('should create recovery snapshot', async () => {

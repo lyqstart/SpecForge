@@ -4,6 +4,7 @@
  */
 
 import { WorkflowInstance } from '../types.js';
+import { createWorkflowPersistence } from '../WorkflowPersistence.js';
 
 /**
  * Workflow instance storage interface
@@ -68,8 +69,6 @@ export interface StorageConfig {
  * @returns Workflow instance storage implementation
  */
 export function createWorkflowInstanceStorage(config: StorageConfig): WorkflowInstanceStorage {
-  // Import dynamically to avoid circular dependencies
-  const { createWorkflowPersistence } = require('../WorkflowPersistence.js');
   return createWorkflowPersistence(
     config.storageDir,
     config.enableEventReplay ?? true,

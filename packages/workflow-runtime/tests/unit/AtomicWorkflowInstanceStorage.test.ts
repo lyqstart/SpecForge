@@ -10,6 +10,19 @@ import { mkdtemp, rm, readFile, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
+// Hoisted mock for fs/promises.writeFile — needed because bun makes
+// fs/promises.writeFile non-configurable, so vi.spyOn cannot redefine it.
+let mockWriteFileImpl: typeof writeFile | null = null;
+vi.mock('fs/promises', async (importOriginal) => {
+  const original = await importOriginal<typeof import('fs/promises')>();
+  return {
+    ...original,
+    get writeFile() {
+      return mockWriteFileImpl ?? original.writeFile;
+    },
+  };
+});
+
 describe('AtomicWorkflowInstanceStorage', () => {
   let storage: AtomicWorkflowInstanceStorage;
   let storageDir: string;
@@ -311,21 +324,28 @@ describe('AtomicWorkflowInstanceStorage', () => {
   });
 
   describe('error handling', () => {
+    // AtomicWorkflowInstanceStorage retry uses real setTimeout (L316);
+    // global setup enables fake timers which blocks retry delay.
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
     it('should retry failed writes', async () => {
       const instance = createTestInstance({ id: 'retry-instance' });
       
-      // Mock writeFile to fail first two attempts
-      const originalWriteFile = writeFile;
+      // Mock writeFile to fail first two attempts via hoisted vi.mock
       let callCount = 0;
-      vi.spyOn(await import('fs/promises'), 'writeFile').mockImplementation(async (...args) => {
+      const originalWriteFile = writeFile;
+      mockWriteFileImpl = (async (...args: Parameters<typeof writeFile>) => {
         callCount++;
         if (callCount <= 2) {
           throw new Error('Simulated write failure');
         }
         return originalWriteFile(...args);
-      });
+      }) as typeof writeFile;
       
       await storage.saveInstance(instance);
+      
+      mockWriteFileImpl = null; // Restore
       
       expect(callCount).toBe(3); // Should have retried
       
@@ -334,23 +354,24 @@ describe('AtomicWorkflowInstanceStorage', () => {
       expect(loaded?.id).toBe(instance.id);
     });
 
+    // Same fake timer fix as above — retry delay uses real setTimeout
     it('should restore from backup after all retries fail', async () => {
       const instance = createTestInstance({ id: 'backup-restore-instance' });
       
-      // Save instance first to create backup
+      // Save instance first to create backup (using real writeFile)
       await storage.saveInstance(instance);
       
-      // Mock writeFile to always fail, but only for the specific call
+      // Mock writeFile to always fail for updates via hoisted vi.mock
       const originalWriteFile = writeFile;
       let callCount = 0;
-      vi.spyOn(await import('fs/promises'), 'writeFile').mockImplementation(async (...args) => {
+      mockWriteFileImpl = (async (...args: Parameters<typeof writeFile>) => {
         callCount++;
         // Only fail writes for the update, not for the initial save
         if (callCount > 1) { // First call was for initial save
           throw new Error('Simulated write failure for update');
         }
         return originalWriteFile(...args);
-      });
+      }) as typeof writeFile;
       
       // Try to save again (should fail and restore from backup)
       instance.status = 'updated';
@@ -360,6 +381,8 @@ describe('AtomicWorkflowInstanceStorage', () => {
         // Expected to fail
         expect(error).toBeDefined();
       }
+      
+      mockWriteFileImpl = null; // Restore
       
       // Clear cache and load
       storage.clearCache();

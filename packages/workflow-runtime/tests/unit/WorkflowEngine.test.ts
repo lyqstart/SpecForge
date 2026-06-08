@@ -2,7 +2,7 @@
  * Unit tests for WorkflowEngine
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { WorkflowEngine, WorkflowEvent } from '../../src/WorkflowEngine.js';
 import { WorkflowDefinition, SimpleGateDefinition, CompositeGateDefinition } from '../../src/types.js';
 
@@ -235,6 +235,10 @@ describe('WorkflowEngine', () => {
   });
 
   describe('events', () => {
+    // Async event handler test uses real setTimeout; global setup enables fake timers
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
     it('should emit workflow.created event', () => {
       const events: WorkflowEvent[] = [];
       engine.onEvent((event) => { events.push(event); });

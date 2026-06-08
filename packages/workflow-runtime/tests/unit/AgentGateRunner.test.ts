@@ -97,6 +97,11 @@ describe('AgentGateRunner', () => {
   });
 
   describe('Gate execution', () => {
+    // AgentRunner uses real setTimeout for timeout handling and processing simulation
+    // Global setup enables fake timers which blocks these
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
     it('should execute agent gate successfully', async () => {
       const runner = createAgentGateRunner(mockGate, agentRunner, 'requirements');
       

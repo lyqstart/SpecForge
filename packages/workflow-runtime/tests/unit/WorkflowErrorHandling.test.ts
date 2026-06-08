@@ -2,7 +2,7 @@
  * WorkflowErrorHandling Unit Tests
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   GateError,
   GateErrorType,
@@ -204,6 +204,10 @@ describe('WorkflowErrorHandler', () => {
   });
 
   describe('executeWithRetry', () => {
+    // executeWithRetry uses real setTimeout for retry delay; global setup enables fake timers
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
     it('should succeed without retry on first attempt', async () => {
       let callCount = 0;
       const result = await handler.executeWithRetry('workflow-1', async () => {
@@ -332,6 +336,10 @@ describe('WorkflowErrorHandler', () => {
   });
 
   describe('executeWithRetry timeout', () => {
+    // Uses real setTimeout for retry delays and timeout enforcement
+    beforeEach(() => { vi.useRealTimers(); });
+    afterEach(() => { vi.useFakeTimers(); });
+
     it('should timeout after max total timeout', async () => {
       handler.setRetryConfig('workflow-1', {
         maxAttempts: 10,

@@ -159,12 +159,20 @@ export class WorkflowDefinitionLoader {
     }
 
     // Check intent (optional but recommended)
-    if (def.intent !== undefined && typeof def.intent !== 'string') {
-      errors.push({
-        field: 'intent',
-        message: 'intent must be a string',
-        value: def.intent,
-      });
+    if (def.intent !== undefined) {
+      if (typeof def.intent !== 'string') {
+        errors.push({
+          field: 'intent',
+          message: 'intent must be a string',
+          value: def.intent,
+        });
+      } else if (def.intent.trim() === '') {
+        errors.push({
+          field: 'intent',
+          message: 'intent must be a non-empty string when provided',
+          value: def.intent,
+        });
+      }
     }
 
     // Check intentKeywords (optional)
