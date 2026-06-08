@@ -71,11 +71,6 @@ describe('CompositeGateRunner Cancellation', () => {
   });
 
   describe('fail_fast cancellation in parallel mode', () => {
-    // Child gate checkFn uses real setTimeout for simulated work delay
-    // Global setup enables fake timers which blocks setTimeout from resolving
-    beforeEach(() => { vi.useRealTimers(); });
-    afterEach(() => { vi.useFakeTimers(); });
-
     it('should cancel remaining gates when fail_fast is triggered in parallel mode', async () => {
       let gate1Executed = false;
       let gate2Executed = false;

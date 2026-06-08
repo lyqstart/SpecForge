@@ -1,15 +1,15 @@
 /**
  * Test setup file
  */
-import { beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, vi } from 'vitest';
 import { IEventBus, Event, Subscription } from '../src/types.js';
 
-// Setup fake timers for tests that need them
-beforeEach(() => {
-  vi.useFakeTimers();
-});
-
+// Global cleanup: ensure real timers and restored mocks after each test.
+// Fake timers are opt-in — tests that need them must call vi.useFakeTimers()
+// in their own beforeEach and vi.useRealTimers() in afterEach.
 afterEach(() => {
+  vi.restoreAllMocks();
+  vi.clearAllMocks();
   vi.useRealTimers();
 });
 

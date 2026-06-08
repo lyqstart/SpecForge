@@ -324,11 +324,6 @@ describe('AtomicWorkflowInstanceStorage', () => {
   });
 
   describe('error handling', () => {
-    // AtomicWorkflowInstanceStorage retry uses real setTimeout (L316);
-    // global setup enables fake timers which blocks retry delay.
-    beforeEach(() => { vi.useRealTimers(); });
-    afterEach(() => { vi.useFakeTimers(); });
-
     it('should retry failed writes', async () => {
       const instance = createTestInstance({ id: 'retry-instance' });
       
@@ -354,7 +349,6 @@ describe('AtomicWorkflowInstanceStorage', () => {
       expect(loaded?.id).toBe(instance.id);
     });
 
-    // Same fake timer fix as above — retry delay uses real setTimeout
     it('should restore from backup after all retries fail', async () => {
       const instance = createTestInstance({ id: 'backup-restore-instance' });
       
