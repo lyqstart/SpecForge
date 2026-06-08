@@ -221,3 +221,29 @@ export {
   type EvidenceManifestEntry as SchemaEvidenceManifestEntry,
   type EvidenceManifest as SchemaEvidenceManifest,
 } from './schema.js';
+
+// ---- Principal — 统一身份模型（Phase 1 RBAC）----
+export {
+  type AgentRole,
+  type PrincipalSource,
+  type PrincipalRole,
+  type Principal,
+} from './principal.js';
+
+// ---- Permissions — 权限类型（Phase 1 RBAC）----
+export {
+  type ResourceType,
+  type Operation,
+  type Permission,
+  type PermissionContext,
+  type PermissionDecision,
+} from './permissions.js';
+
+// ---- Seal Transitions — Seal transition 定义（Phase 1 RBAC）----
+export {
+  SEAL_TRANSITIONS,
+  isSealTransition,
+  getSealTransition,
+  REQUESTABLE_TRANSITIONS,
+  type SealTransitionEntry,
+} from './seal-transitions.js';

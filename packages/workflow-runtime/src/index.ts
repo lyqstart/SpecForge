@@ -172,3 +172,6 @@ export {
 export {
   createV11WorkflowEngine,
 } from './workflows/v11-engine-factory.js';
+
+// RBAC module exports (Phase 1)
+export * from './rbac/index.js';

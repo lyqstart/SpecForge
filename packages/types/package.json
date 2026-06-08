@@ -8,7 +8,10 @@
     ".": "./src/index.ts",
     "./directory-layout": "./src/directory-layout.ts",
     "./actor-roles": "./src/actor-roles.ts",
-    "./constants": "./src/constants.ts"
+    "./constants": "./src/constants.ts",
+    "./principal": "./src/principal.ts",
+    "./permissions": "./src/permissions.ts",
+    "./seal-transitions": "./src/seal-transitions.ts"
   },
   "scripts": {
     "build": "tsc",
