@@ -245,6 +245,15 @@ export async function performResumeCheck(
 
 /**
  * Key states that require specific evidence files before transition.
+ *
+ * Round C enhancement: `closed` now requires THREE evidence files:
+ * - verification_report.md
+ * - changed_files_audit.md
+ * - close_gate.md (or close_gate.json)
+ *
+ * The single-file check (verification_report.md) is preserved for backward
+ * compatibility in STATE_EVIDENCE_REQUIREMENTS. The comprehensive three-file
+ * check is available via checkCloseGateEvidenceRequirements().
  */
 export const STATE_EVIDENCE_REQUIREMENTS: Record<string, { requiredFile: string; description: string }> = {
   'approval_required': { requiredFile: 'gate_summary.md', description: 'Gate Summary must exist before approval' },
@@ -252,6 +261,53 @@ export const STATE_EVIDENCE_REQUIREMENTS: Record<string, { requiredFile: string;
   'merging': { requiredFile: 'gate_summary.md', description: 'merge_ready_gate must have passed' },
   'closed': { requiredFile: 'verification_report.md', description: 'close_gate verification report must exist' },
 };
+
+/**
+ * All evidence files required before transitioning to `closed`.
+ *
+ * verification_done → closed is a seal transition that must be performed
+ * by `close_gate`. Before closing, ALL three evidence files must exist.
+ */
+export const CLOSE_GATE_REQUIRED_EVIDENCE: ReadonlyArray<{ file: string; description: string }> = [
+  { file: 'verification_report.md', description: 'Verification report must exist before close' },
+  { file: 'changed_files_audit.md', description: 'Changed files audit must exist before close' },
+  { file: 'close_gate.md', description: 'Close gate evidence must exist before close' },
+];
+
+/**
+ * Check all evidence requirements for transitioning to `closed`.
+ *
+ * Returns { met: true } if all three evidence files exist.
+ * Returns { met: false, missing: string[] } with the list of missing files.
+ */
+export async function checkCloseGateEvidenceRequirements(
+  workItemDir: string,
+): Promise<{ met: boolean; missing: string[]; descriptions: string[] }> {
+  const missing: string[] = [];
+  const descriptions: string[] = [];
+
+  for (const req of CLOSE_GATE_REQUIRED_EVIDENCE) {
+    const fullPath = path.join(workItemDir, req.file);
+    try {
+      await fs.access(fullPath);
+    } catch {
+      // Also check .json variant for close_gate
+      if (req.file === 'close_gate.md') {
+        const jsonPath = path.join(workItemDir, 'close_gate.json');
+        try {
+          await fs.access(jsonPath);
+          continue; // .json variant exists
+        } catch {
+          // Neither variant exists
+        }
+      }
+      missing.push(req.file);
+      descriptions.push(req.description);
+    }
+  }
+
+  return { met: missing.length === 0, missing, descriptions };
+}
 
 /**
  * Check if a state transition's target has evidence prerequisites, and verify them.

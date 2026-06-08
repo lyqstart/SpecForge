@@ -27,6 +27,8 @@ export {
   performResumeCheck,
   WI_STATUSES_V11,
   V11_REQUIRED_FILES,
+  checkCloseGateEvidenceRequirements,
+  CLOSE_GATE_REQUIRED_EVIDENCE,
 } from './tools/lib/state-machine-v11';
 export type { WIStatusV11 } from './tools/lib/state-machine-v11';
 
