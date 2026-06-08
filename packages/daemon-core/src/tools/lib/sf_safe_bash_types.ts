@@ -21,6 +21,12 @@ export interface SafeBashArgs {
   stdin?: string
   /** 限制 stdout/stderr 截断长度（字符），默认 4096 */
   outputLimit?: number
+  /**
+   * 调用者角色标识（v1.2 M2）。
+   * 从 context.agent 提取，必须是有效的 ActorRole。
+   * 缺失时默认 'agent'。
+   */
+  callerRole?: string
 }
 
 /** 工具返回结果 */

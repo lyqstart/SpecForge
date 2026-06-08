@@ -2,7 +2,7 @@ import { access } from "node:fs/promises";
 import { registerHandler } from '../ToolDispatcher';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { join } from 'node:path';
-import { isValidV11Transition, isForbiddenTransition, WI_STATUSES_V11 } from '../lib/state-machine-v11';
+import { isValidV11Transition, isForbiddenTransition, WI_STATUSES_V11, checkCloseGateEvidenceRequirements } from '../lib/state-machine-v11';
 
 registerHandler('sf_state_transition', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
@@ -40,6 +40,28 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
         error: `Invalid v1.1 transition: ${fromState} → ${toState}`,
         valid_from_states: `Use getTransitionTable() to see valid targets from ${fromState}`,
       };
+    }
+
+    // v1.2 M1: Close gate evidence requirements — before transitionFull
+    // Only checked when transitioning TO closed under v1.1 state machine
+    if (toState === 'closed') {
+      // Need project path to compute workItemDir for evidence file checks
+      const v11ProjectPath = (context?.directory as string) || (context?.worktree as string) || '';
+      if (!v11ProjectPath) {
+        return {
+          success: false,
+          error: 'projectPath required for close gate evidence check — provide context.directory or context.worktree',
+        };
+      }
+      const v11WorkItemDir = join(v11ProjectPath, SPEC_DIR_NAME, 'work-items', workItemId);
+      const evidenceResult = await checkCloseGateEvidenceRequirements(v11WorkItemDir);
+      if (!evidenceResult.met) {
+        return {
+          success: false,
+          error: `Close gate evidence requirements not met. Missing: ${evidenceResult.missing.join(', ')}. ${evidenceResult.descriptions.join('; ')}`,
+          missing_evidence: evidenceResult.missing,
+        };
+      }
     }
   }
 

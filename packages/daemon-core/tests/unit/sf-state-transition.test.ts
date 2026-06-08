@@ -461,3 +461,286 @@ describe("sf_state_transition - v1.1 evidence guard workItemDir", () => {
     expect(mockSmTransition).toHaveBeenCalledTimes(1);
   });
 });
+
+// =========================================================================
+// v1.2 M1: Close Gate Evidence Integration in sf_state_transition handler
+// =========================================================================
+
+describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => {
+  let tempDir: string;
+  let handler: (...args: any[]) => Promise<any>;
+
+  beforeAll(() => {
+    handler = getHandler("sf_state_transition")!;
+    expect(handler).toBeDefined();
+  });
+
+  beforeEach(async () => {
+    tempDir = path.join(
+      os.tmpdir(),
+      `sf-v12-close-gate-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    await fs.mkdir(tempDir, { recursive: true });
+  });
+
+  afterEach(async () => {
+    try {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    } catch {
+      // Ignore cleanup errors
+    }
+  });
+
+  /**
+   * Helper: create a WI directory under tempDir/.specforge/work-items/{wiId}
+   */
+  async function createWorkItemDir(wiId: string): Promise<string> {
+    const wiDir = path.join(tempDir, ".specforge", "work-items", wiId);
+    await fs.mkdir(wiDir, { recursive: true });
+    return wiDir;
+  }
+
+  /**
+   * Helper: write all 3 close gate evidence files
+   */
+  async function writeAllCloseGateEvidence(wiDir: string): Promise<void> {
+    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
+    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
+    await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
+  }
+
+  /**
+   * Helper: create mock deps (transitionFull succeeds by default)
+   */
+  function makeMockDeps() {
+    const mockTransitionFull = vi.fn().mockResolvedValue({
+      workItemId: "WI-CG-001",
+      previousState: "verification_done",
+      currentState: "closed",
+      timestamp: new Date().toISOString(),
+    });
+    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
+    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
+      transition: mockSmTransition,
+    });
+    return {
+      deps: {
+        workflowEngine: { transitionFull: mockTransitionFull },
+        projectManager: { getProjectStateManager: mockGetProjectStateManager },
+      },
+      mockTransitionFull,
+      mockSmTransition,
+    };
+  }
+
+  // --- CG-1: verification_done → closed missing verification_report.md → rejected ---
+  it("CG-1: must reject closed when verification_report.md is missing", async () => {
+    const { deps, mockTransitionFull } = makeMockDeps();
+    const wiDir = await createWorkItemDir("WI-CG-001");
+    // Only 2 of 3 evidence files
+    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
+    await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("Close gate evidence requirements not met");
+    expect(result.error).toContain("verification_report.md");
+    expect(result.missing_evidence).toContain("verification_report.md");
+    // transitionFull must NOT be called — evidence check gates it
+    expect(mockTransitionFull).not.toHaveBeenCalled();
+  });
+
+  // --- CG-2: verification_done → closed missing changed_files_audit.md → rejected ---
+  it("CG-2: must reject closed when changed_files_audit.md is missing", async () => {
+    const { deps, mockTransitionFull } = makeMockDeps();
+    const wiDir = await createWorkItemDir("WI-CG-001");
+    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
+    await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
+    // Missing: changed_files_audit.md
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("changed_files_audit.md");
+    expect(result.missing_evidence).toContain("changed_files_audit.md");
+    expect(mockTransitionFull).not.toHaveBeenCalled();
+  });
+
+  // --- CG-3: verification_done → closed missing close_gate.md / close_gate.json → rejected ---
+  it("CG-3: must reject closed when close_gate.md and close_gate.json are both missing", async () => {
+    const { deps, mockTransitionFull } = makeMockDeps();
+    const wiDir = await createWorkItemDir("WI-CG-001");
+    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
+    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
+    // Missing: close_gate.md (no .json either)
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("close_gate.md");
+    expect(result.missing_evidence).toContain("close_gate.md");
+    expect(mockTransitionFull).not.toHaveBeenCalled();
+  });
+
+  // --- CG-4: all 3 evidence files present → allowed (passes to transitionFull) ---
+  it("CG-4: must allow closed when all 3 evidence files are present", async () => {
+    const { deps, mockTransitionFull, mockSmTransition } = makeMockDeps();
+    const wiDir = await createWorkItemDir("WI-CG-001");
+    await writeAllCloseGateEvidence(wiDir);
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(true);
+    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
+    expect(mockSmTransition).toHaveBeenCalledTimes(1);
+  });
+
+  // --- CG-5: close_gate.json accepted as alternative to close_gate.md ---
+  it("CG-5: must accept close_gate.json as alternative to close_gate.md", async () => {
+    const { deps, mockTransitionFull } = makeMockDeps();
+    const wiDir = await createWorkItemDir("WI-CG-001");
+    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
+    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
+    await fs.writeFile(path.join(wiDir, "close_gate.json"), '{"status":"passed"}');
+    // No close_gate.md — only .json variant
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(true);
+    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
+  });
+
+  // --- CG-6: non-closed transition does NOT trigger close gate evidence check ---
+  it("CG-6: non-closed transition must not trigger close gate evidence check", async () => {
+    const { deps, mockTransitionFull } = makeMockDeps();
+    await createWorkItemDir("WI-CG-001");
+    // No evidence files at all, but target is 'implementation_ready' not 'closed'
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "post_merge_verified",
+        to_state: "implementation_ready",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    // Should pass — no close gate check for non-closed targets
+    expect(result.success).toBe(true);
+    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
+  });
+
+  // --- CG-7: non-v11 path is NOT affected by close gate evidence check ---
+  it("CG-7: non-v11 path must not trigger close gate evidence check", async () => {
+    const { deps, mockTransitionFull } = makeMockDeps();
+    await createWorkItemDir("WI-CG-001");
+    // No evidence files, no use_v11_state_machine flag
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        // No use_v11_state_machine → v1.1 checks skipped entirely
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    // Should pass — v1.1 close gate check is opt-in
+    expect(result.success).toBe(true);
+    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
+  });
+
+  // --- CG-8: no projectPath → clear error for close gate check ---
+  it("CG-8: must return error when projectPath missing for closed target", async () => {
+    const { deps } = makeMockDeps();
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        use_v11_state_machine: true,
+      },
+      {}, // No directory or worktree
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("projectPath");
+  });
+
+  // --- CG-9: all evidence missing → reports all 3 missing ---
+  it("CG-9: must report all 3 missing when no evidence files exist", async () => {
+    const { deps, mockTransitionFull } = makeMockDeps();
+    await createWorkItemDir("WI-CG-001");
+    // Empty WI directory — no evidence files
+
+    const result = await handler(
+      {
+        work_item_id: "WI-CG-001",
+        from_state: "verification_done",
+        to_state: "closed",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.missing_evidence).toHaveLength(3);
+    expect(result.missing_evidence).toContain("verification_report.md");
+    expect(result.missing_evidence).toContain("changed_files_audit.md");
+    expect(result.missing_evidence).toContain("close_gate.md");
+    expect(mockTransitionFull).not.toHaveBeenCalled();
+  });
+});

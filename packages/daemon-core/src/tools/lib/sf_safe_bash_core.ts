@@ -20,6 +20,27 @@ import { SPEC_USER_DIR_NAME, SPEC_DIR_NAME, legacyUserLayoutReadOnly } from "@sp
 import type { SafeBashArgs, SafeBashResult } from "./sf_safe_bash_types"
 import { applyRules } from "./sf_safe_bash_rules"
 import { executeCommand, resolveCwd } from "./sf_safe_bash_executor"
+import { guardBashCommand } from "./bash-guard"
+import type { WritePolicyRule } from "./write-guard-v11"
+
+// ---------------------------------------------------------------------------
+// Default write policy for bash-guard integration (v1.2 M2)
+// ---------------------------------------------------------------------------
+
+/**
+ * Default write policy used when no WI-specific policy is available.
+ *
+ * v1.2 M2: guardBashCommand is called to propagate callerRole through
+ * the chain. This default policy allows all writes — the actual enforcement
+ * happens at the write guard level (write-guard-v11) when a WI context
+ * is available. The bash guard's dangerous pattern checks still apply
+ * independently of this policy.
+ */
+const DEFAULT_BASH_WRITE_POLICY: WritePolicyRule = {
+  id: 'sf-safe-bash-default',
+  description: 'Default bash write policy — allows all (enforcement is at write-guard level)',
+  check: () => null,
+}
 
 // ── Host Profile 内联类型和加载逻辑 ──
 // 不再 import 仓库外文件，改为运行时读取 JSON 文件
@@ -146,6 +167,35 @@ export async function safeBashExecute(
     }
   }
 
+  // ── Step 2b: Bash guard (v1.2 M2) ──
+  // Propagate callerRole through to guardBashCommand.
+  // Uses DEFAULT_BASH_WRITE_POLICY (allow-all) — actual enforcement
+  // is at the write-guard level. This ensures callerRole flows through
+  // the chain for future dispatcher-level RBAC integration.
+  const bashGuardResult = guardBashCommand(
+    effectiveCommand,
+    DEFAULT_BASH_WRITE_POLICY,
+    { callerRole: args.callerRole },
+  )
+  if (!bashGuardResult.allowed) {
+    return {
+      success: false,
+      exitCode: null,
+      stdout: "",
+      stderr: "",
+      durationMs: 0,
+      command: args.command,
+      originalCommand: args.command,
+      cwd: null,
+      shell: null,
+      rejected: true,
+      timeout: false,
+      rule: "bash-guard",
+      suggestion: bashGuardResult.reason,
+      hint: `callerRole: ${args.callerRole ?? 'agent'}`,
+    }
+  }
+
   // ── Step 3: 解析 cwd ──
   const homeDir = profile.user.home_dir
   const { cwd: resolvedCwd, reason: cwdReason } = resolveCwd(args.cwd, baseDir, homeDir)
@@ -237,6 +287,7 @@ async function writeAuditLog(
     stderr_size: result.stderr.length,
     truncated_stdout: result.truncated?.stdout ?? false,
     truncated_stderr: result.truncated?.stderr ?? false,
+    callerRole: args.callerRole || null,
   }
 
   await fs.appendFile(logFile, JSON.stringify(entry) + "\n", "utf-8")
