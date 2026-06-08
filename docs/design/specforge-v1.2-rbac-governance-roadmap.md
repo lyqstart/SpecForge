@@ -452,3 +452,50 @@ v1.2 connects this infrastructure to the real execution paths:
 - M3: Creates a unified RBAC gate at the tool dispatch entry point
 
 No new security primitives are introduced in v1.2. All capabilities already exist; v1.2 closes the integration gaps.
+
+---
+
+## 12. Implementation Completion Record
+
+**Date**: 2026-06-09
+**Final commit**: `16d59e9` on `main`
+**Tag**: `v1.2-rbac-governance-complete`
+
+### Commits
+
+| Commit | Branch | Content |
+|---|---|---|
+| `6da42a0` | `main` | `docs(design): add SpecForge v1.2 RBAC governance roadmap` |
+| `51dabe8` | `feat/v1.2-rbac-phase1-close-bash` → `main` | M1 + M2: Close gate evidence + bash callerRole propagation |
+| `16d59e9` | `feat/v1.2-rbac-phase2-dispatcher-gate` → `main` | M3: Tool Dispatcher RBAC gate |
+
+All feature branches deleted after merge.
+
+### Success Criteria Status
+
+| Criterion | Status |
+|---|---|
+| `checkCloseGateEvidenceRequirements` wired into transition handler | ✅ |
+| `sf_safe_bash` propagates callerRole through to `guardBashCommand` | ✅ |
+| `ToolDispatcher.dispatch()` runs RBAC gate before handler invocation | ✅ |
+| PROTECTED_TOOLS = exactly 3 (`sf_state_transition`, `sf_artifact_write`, `sf_safe_bash`) | ✅ |
+| Non-protected tools allow-by-default | ✅ |
+| `enableRBAC=false/undefined` = zero behavior change | ✅ |
+| `enableRBAC` type remains `boolean?` | ✅ |
+| No handler-level RBAC code | ✅ |
+| Build: 0 errors (types + workflow-runtime + daemon-core) | ✅ |
+| Related tests: 128/128 passed (6 files) | ✅ |
+
+### Files changed
+
+| File | Type | Phase |
+|---|---|---|
+| `src/tools/handlers/sf-state-transition.ts` | Modified | M1 |
+| `src/tools/handlers/sf-safe-bash.ts` | Modified | M2 |
+| `src/tools/lib/sf_safe_bash_core.ts` | Modified | M2 |
+| `src/tools/lib/sf_safe_bash_types.ts` | Modified | M2 |
+| `src/tools/ToolDispatcher.ts` | Modified | M3 |
+| `src/tools/lib/tool-permissions.ts` | New | M3 |
+| `tests/unit/sf-state-transition.test.ts` | Modified (9 tests added) | M1 |
+| `tests/unit/safe-bash-caller-role.test.ts` | New (16 tests) | M2 |
+| `tests/unit/tool-dispatcher-rbac.test.ts` | New (37 tests) | M3 |
