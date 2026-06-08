@@ -130,7 +130,7 @@ describe('Comprehensive Persistence Integration Tests', () => {
       expect(instances[0].id).toBe('crud-instance');
 
       // Delete
-      const deleted = await persistence.deleteInstance('crud-instance');
+      const deleted = await persistence.deleteInstance('crud-instance', { force: true });
       expect(deleted).toBe(true);
       
       const afterDelete = await persistence.loadInstance('crud-instance');
@@ -158,7 +158,7 @@ describe('Comprehensive Persistence Integration Tests', () => {
 
       // Delete all instances
       await Promise.all(
-        instances.map(instance => persistence.deleteInstance(instance.id))
+        instances.map(instance => persistence.deleteInstance(instance.id, { force: true }))
       );
 
       const afterDelete = await persistence.listInstances();
@@ -661,7 +661,7 @@ describe('Comprehensive Persistence Integration Tests', () => {
       expect(persistence.getCacheSize()).toBe(1);
 
       // Delete should clear cache
-      await persistence.deleteInstance('cache-instance');
+      await persistence.deleteInstance('cache-instance', { force: true });
       expect(persistence.getCacheSize()).toBe(0);
 
       // Clear cache explicitly

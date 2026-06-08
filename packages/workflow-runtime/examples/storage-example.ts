@@ -115,7 +115,7 @@ async function main() {
 
   // Delete an instance
   console.log('\n8. Deleting an instance...');
-  const deleted = await storage.deleteInstance(instance2.id);
+  const deleted = await storage.deleteInstance(instance2.id, { force: true });
   console.log(`   Deleted instance ${instance2.id}: ${deleted}`);
 
   // Final list
