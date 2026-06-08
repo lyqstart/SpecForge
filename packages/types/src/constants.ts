@@ -184,3 +184,38 @@ export const USER_DECISION_STATUSES = [
 ] as const;
 
 export type UserDecisionStatus = (typeof USER_DECISION_STATUSES)[number];
+
+// ---------------------------------------------------------------------------
+// §5 Evidence-guarded Critical States
+// ---------------------------------------------------------------------------
+
+/**
+ * v1.1 States that REQUIRE evidence prerequisites before transition.
+ *
+ * These states control high-consequence actions (approval gates, merge
+ * operations, code permission release, verification sign-off, closure).
+ * Any production code transitioning INTO one of these states MUST go through
+ * `WorkflowEngine.transitionFull()` which enforces evidence checks.
+ *
+ * Direct `StateManager.transition()` calls targeting these states will emit
+ * a development-mode warning.
+ *
+ * Single source of truth — workflow-runtime, daemon-core, and all other
+ * packages MUST import from here to avoid drift.
+ */
+export const CRITICAL_STATES: ReadonlySet<string> = new Set([
+  'approval_required',
+  'merge_ready',
+  'merging',
+  'post_merge_verified',
+  'implementation_ready',
+  'verification_done',
+  'closed',
+] as const);
+
+/**
+ * Check whether a target state requires transition evidence enforcement.
+ */
+export function isCriticalState(targetState: string): boolean {
+  return CRITICAL_STATES.has(targetState);
+}

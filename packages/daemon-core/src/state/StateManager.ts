@@ -14,6 +14,7 @@ import * as path from 'path';
 import { Event, ProjectState, WorkItemState } from '../types';
 import { WAL } from '../wal';
 import { IPathResolver } from '../daemon/path-resolver';
+import { CRITICAL_STATES } from '@specforge/types/constants';
 
 import { ALL_STATES } from '../tools/lib/state_machine';
 import { WI_STATUSES_V11 } from '../tools/lib/state-machine-v11';
@@ -100,7 +101,7 @@ export class StateManager {
 
   /**
    * Perform a state transition for a Work Item.
-   * 
+   *
    * Steps:
    *   1. Validate transition is legal (from_state matches current state)
    *   2. Validate state names are in the valid workflow states list
@@ -108,10 +109,24 @@ export class StateManager {
    *   4. Append event to WAL (with fsync)
    *   5. Update in-memory state
    *   6. Persist checkpoint to state.json
-   * 
+   *
    * Optimistic locking: if `fromState` does not match the current state
    * of the Work Item, the transition is rejected with an error.
-   * 
+   *
+   * @guarded This is a low-level state persistence method. Production code
+   *   transitioning into CRITICAL_STATES (approval_required, merge_ready,
+   *   merging, post_merge_verified, implementation_ready, verification_done,
+   *   closed) MUST first call `WorkflowEngine.transitionFull()` which enforces
+   *   evidence prerequisites. Direct calls to this method for critical states
+   *   will emit a development-mode warning.
+   *
+   *   Only non-critical initial states (created, intake_ready) may be set
+   *   through direct calls in production paths.
+   *
+   * @internal-warning Dev-only: `console.warn` emitted when target is a
+   *   CRITICAL_STATE. This does NOT throw and does NOT change runtime behavior.
+   *   Production (`NODE_ENV=production`) suppresses the warning entirely.
+   *
    * @param workItemId  - The Work Item to transition (e.g. 'WI-001')
    * @param fromState   - Expected current state ('' for new Work Items)
    * @param toState     - Target state
@@ -128,6 +143,16 @@ export class StateManager {
     workflowType: string = DEFAULT_WORKFLOW_TYPE,
     extraPayload: Record<string, unknown> = {},
   ): Promise<void> {
+    // ── Dev-only warning: direct transition to CRITICAL_STATE ──
+    if (process.env.NODE_ENV !== 'production' && CRITICAL_STATES.has(toState)) {
+      console.warn(
+        `[StateManager] WARNING: direct StateManager.transition() to critical ` +
+        `state '${toState}' for '${workItemId}'. Production code must use ` +
+        `WorkflowEngine.transitionFull() / evidence guard before calling this. ` +
+        `Caller: ${new Error().stack?.split('\n')[2]?.trim() ?? 'unknown'}`,
+      );
+    }
+
     // ── Step 1: Validate state names ──
     if (!this.isValidStateName(toState)) {
       throw new Error(

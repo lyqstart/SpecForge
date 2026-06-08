@@ -163,6 +163,9 @@ export {
   WI_STATUSES as ConstWIStatuses,
   FORBIDDEN_TRANSITIONS as ConstForbiddenTransitions,
   isForbiddenTransition as isConstForbiddenTransition,
+  // §5 Evidence-guarded Critical States
+  CRITICAL_STATES,
+  isCriticalState,
   // §6 workflow_path
   WORKFLOW_PATHS as ConstWorkflowPaths,
   MATCH_RESULT_TYPES as ConstMatchResultTypes,
