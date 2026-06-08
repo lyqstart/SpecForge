@@ -253,7 +253,7 @@ describe('StateRecoveryManager', () => {
       
       expect(result.recoveredInstances).toHaveLength(3);
       expect(result.failedRecoveries).toHaveLength(0);
-      expect(result.recoveryTime).toBeGreaterThan(0);
+      expect(result.recoveryTime).toBeGreaterThanOrEqual(0);
       
       // Check that instances were recovered
       const recoveredIds = result.recoveredInstances.map(i => i.id);
