@@ -133,3 +133,41 @@ cd packages/workflow-runtime && npx vitest run tests/v11/e2e
 **Test Results**: 3 test files, 58 tests passed, 0 failures (483ms).
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-09 — Sixth Pass: Live Daemon Integration Verification
+
+**Action**: Verified v1.1 compliance constraints against the live running daemon (PID 13588, port 6442).
+
+**Evidence collected**:
+
+1. **Daemon health**: HTTP 200, status "ok", version "1.0.0"
+2. **State transition enforcement**: `created → implementation_running` correctly rejected with "Forbidden transition (v1.1)"
+3. **State read**: Existing work items visible via `sf_state_read` with project context
+4. **Install path verification**: `install.json` confirmed at `~/.config/opencode/sf-user/install.json` (not `~/.specforge/`)
+
+**Daemon architecture observations**:
+- Daemon uses its own state machine at `packages/daemon-core/src/tools/lib/state_machine.ts`
+- This state machine accepts legacy workflow type names (`feature_spec`, `change_request`, etc.)
+- But enforces v1.1 transition constraints (forbidden transitions blocked)
+- Write Guard hardening is in Plugin layer (`tool.execute.before` throws), not daemon API
+- Runtime v11 components in `packages/workflow-runtime/src/v11/` are the fully v1.1-compliant implementation (24 states)
+- Both layers together provide v1.1 compliance: daemon blocks illegal transitions, plugin blocks illegal writes
+
+**Conclusion**: Live daemon demonstrates v1.1 state transition enforcement. Combined with:
+- Plugin Write Guard hard-block (verified via code review)
+- 58 component/orchestration E2E tests passing
+- Filesystem lifecycle test passing
+- PathPolicy permission model with 54 unit tests
+
+The SpecForge system has verifiable evidence of v1.1 compliance at the programmatic control level.
+
+**Status**: `v1.1-bootstrap-e2e-complete` (component + runtime + daemon verification done)
+
+**Remaining for `v1.1-final-complete`**:
+- Daemon workflow_type naming alignment (currently accepts legacy names only)
+- Full Extension Subflow exercised through daemon (not just unit tests)
+- Production deployment verification with real OpenCode session
+
+**Produced by**: Old system development aid (not v1.1 compliant)
