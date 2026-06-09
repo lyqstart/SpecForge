@@ -29,6 +29,7 @@ export {
 // Gate Runner (Round 3)
 export {
   GateRunner,
+  type V11GateReport,
   type GateCheckResult,
   type GateSummaryResult,
   type GateDefinition,
@@ -44,6 +45,8 @@ export {
 // Merge Runner (Round 3)
 export {
   MergeRunner,
+  type V11ManifestEntry,
+  type V11CandidateManifest,
   type CandidateEntry,
   type CandidateManifest,
   type MergedFile,
