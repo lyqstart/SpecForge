@@ -9,12 +9,14 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
   const fromState = (args['from_state'] as string) ?? '';
   const toState = args['to_state'] as string;
-  const useV11 = (args['use_v11_state_machine'] as boolean) || !!rawWorkflowPath;
 
   // v1.1: Accept workflow_path and resolve to internal workflow_type
   const rawWorkflowPath = args['workflow_path'] as string | undefined;
   const rawWorkflowType = args['workflow_type'] as string | undefined;
   let resolvedWorkflowType: string | undefined = rawWorkflowType;
+
+  // Auto-enable v1.1 state machine when workflow_path is provided
+  const useV11 = (args['use_v11_state_machine'] as boolean) || !!rawWorkflowPath;
 
   if (rawWorkflowPath && !rawWorkflowType) {
     // Map v1.1 workflow_path to legacy workflow_type for internal use
