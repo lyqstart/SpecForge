@@ -1,7 +1,6 @@
 ---
 name: superpowers-engineering-lessons
 description: 工程经验库自动注入 — 把团队踩过的坑结构化注入所有 Agent，避免重复犯错
-autoload: always
 ---
 
 <!-- AUTO-GENERATED — 不要手动编辑，运行 `bun run scripts/lessons/render-opencode-skill.ts` 重新生成 -->

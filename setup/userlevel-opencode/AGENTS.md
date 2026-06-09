@@ -58,8 +58,8 @@ SPEC_DIR_NAME = '.specforge'
 |-----|------|------|
 | manifest | `manifest.json` | Project manifest（committed）— `<root>/.specforge/manifest.json` |
 | config | `config` | 项目配置目录（committed）— `<root>/.specforge/config/` |
-| specs | `specs` | Work Item 规格目录（committed）— `<root>/.specforge/specs/` |
-| specsReadme | `specs/README.md` | specs 目录的 README（committed）— `<root>/.specforge/specs/README.md` |
+| specs | `work-items` | Work Item 规格目录（committed）— `<root>/.specforge/work-items/` |
+| specsReadme | `work-items/README.md` | work-items 目录的 README（committed）— `<root>/.specforge/work-items/README.md` |
 | knowledge | `knowledge` | Knowledge 目录（committed）— `<root>/.specforge/knowledge/` |
 | knowledgeGraph | `knowledge/graph.json` | Knowledge Graph 数据（committed）— `<root>/.specforge/knowledge/graph.json` |
 

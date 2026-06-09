@@ -202,7 +202,8 @@ export async function safeBashExecute(
 /**
  * 异步写审计日志
  *
- * 路径：~/.specforge/logs/shell-history.jsonl
+ * v1.1: Uses project-level .specforge/runtime/logs/shell-history.jsonl (preferred)
+ * Falls back to profile.specforge.logs_dir for user-level daemon.
  * 每行一个 JSON 对象，append-only。
  */
 async function writeAuditLog(
@@ -210,11 +211,21 @@ async function writeAuditLog(
   result: SafeBashResult,
   profile: HostProfile
 ): Promise<void> {
-  const logDir = profile.specforge.logs_dir
+  // v1.1: Prefer project-level runtime logs path
+  const projectLogDir = path.join(process.cwd(), SPEC_DIR_NAME, 'runtime', 'logs')
+  const userLogDir = profile.specforge.logs_dir
+  
+  // Use project-level if it exists or can be created; otherwise fall back to user-level
+  let logDir: string
+  try {
+    await fs.mkdir(projectLogDir, { recursive: true })
+    logDir = projectLogDir
+  } catch {
+    logDir = userLogDir
+    await fs.mkdir(logDir, { recursive: true })
+  }
+  
   const logFile = path.join(logDir, "shell-history.jsonl")
-
-  // 确保目录存在
-  await fs.mkdir(logDir, { recursive: true })
 
   const entry = {
     schema_version: "1.0",

@@ -1,9 +1,6 @@
 ---
 name: sf-workflow-ops-task
-description: Ops Task 工作流的阶段执行协议，包含运维操作安全要求（回滚方案、触发条件、破坏性命令识别）、用户确认机制和 fail-stop 执行协议
-autoload: workflow_match
-workflow_types:
-  - ops_task
+description: Ops Task 工作流的阶段执行协议，包含运维操作安全要求（回滚方案、触发条件、破坏性命令识别）、用户确认机制和 fail-stop 执行协议（v1.1 状态机）
 ---
 
 # Ops Task 工作流执行协议
@@ -12,7 +9,7 @@ workflow_types:
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution → verification → verification_gate → completed
+created → intake_ready → candidate_preparing (ops_plan) → gates_running → candidate_preparing (tasks) → gates_running → implementation_running → verification_running → verification_done → closed
 ```
 <!-- AUTO-GENERATED:END:phase-table -->
 
@@ -21,15 +18,15 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
-| intake | —（Orchestrator 自行收集） | — | intake.md |
-| ops_plan | sf-design | — | ops_plan.md |
-| ops_plan_gate | — | — | Gate 判定（pass→tasks, fail→ops_plan） |
-| tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
-| tasks_gate | — | — | Gate 判定（pass→execution, fail→tasks） |
-| execution | sf-executor | — | 运维操作结果 |
-| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
-| completed | — | — | — |
+| created→intake_ready | —（Orchestrator 自行收集） | — | intake.md |
+| candidate_preparing (ops_plan) | sf-design | — | ops_plan.md |
+| gates_running (ops_plan_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
+| candidate_preparing (tasks) | sf-task-planner | superpowers-writing-plans | tasks.md |
+| gates_running (tasks_gate) | — | — | Gate 判定（pass→implementation_running, fail→candidate_preparing） |
+| implementation_running (execution) | sf-executor | — | 运维操作结果 |
+| verification_running | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_done | — | — | Gate 判定（pass→closed, fail→verification_running） |
+| closed | — | — | — |
 <!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议
@@ -39,14 +36,14 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
 **目标：** 收集运维任务描述，生成 intake.md
 
 **执行步骤：**
-1. 调用 `sf_state_transition`（from_state=""，to_state="intake"，workflow_type="ops_task"）创建新 Work Item
+1. 调用 `sf_state_transition`（from_state=""，to_state="created"，workflow_type="ops_task"）创建新 Work Item
 2. 与用户对话，收集运维任务信息：
    - 操作目标和业务背景
    - 目标环境（生产/预发/测试）
    - 操作时间窗口和约束
    - 已知风险和注意事项
 3. 调用 `sf_artifact_write`（file_type="intake"）写入 intake.md
-4. 调用 `sf_state_transition`（to_state="ops_plan"）
+4. 调用 `sf_state_transition`（from_state="created"，to_state="intake_ready"，evidence="intake.md generated"）
 
 **产物：** `intake.md`
 
@@ -101,9 +98,10 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
 ```
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `ops_plan`
-2. 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文
-3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
+2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting ops_plan phase"）
+3. 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文
+4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容
    - 指令：制定详细的运维操作计划，必须包含所有必需 sections，特别注意：
@@ -111,8 +109,8 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
      - 回滚触发条件必须明确定义
      - 破坏性命令（删除、覆盖、迁移等）必须标记 `是否破坏性：是`
      - 高风险步骤必须标记 `requires_user_confirmation: true`
-4. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/ops_plan.md` 已生成
-5. 调用 `sf_state_transition`（to_state="ops_plan_gate"）
+5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/ops_plan.md` 已生成
+6. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="ops_plan.md generated"）
 
 **产物：** `ops_plan.md`
 
@@ -130,9 +128,9 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
      - 回滚触发条件已明确定义
      - 破坏性命令已识别并标记
 2. 根据 Gate 结果：
-   - **pass** → KG 同步（scope=design，创建 ops_action 节点）→ `sf_state_transition`（to_state="tasks"）
-   - **fail** → `sf_state_transition`（to_state="ops_plan"），重新调度 sf-design 修订（附带 blocking_issues）
-   - **blocked** → `sf_state_transition`（to_state="blocked"），向用户报告
+   - **pass** → KG 同步（scope=design，创建 ops_action 节点）→ 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="ops_plan_gate passed, entering tasks"）
+   - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="ops_plan_gate failed, re-entering ops_plan"），重新调度 sf-design 修订（附带 blocking_issues）
+   - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"），向用户报告
 
 **工具：** `sf_design_gate`（mode="ops_task"）
 
@@ -141,7 +139,7 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
 **目标：** 将 ops_plan.md 的操作步骤拆分为可执行任务
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `tasks`
+1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（tasks phase）
 2. 调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文
 3. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
@@ -151,9 +149,9 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
      - verification_commands（验证操作结果的命令）
      - requires_user_confirmation 标记（从 ops_plan.md 继承）
      - parallel 标记（从 ops_plan.md 继承，默认 false）
-4. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/tasks.md` 已生成
+4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/tasks.md` 已生成
 5. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
-6. 如果 lint 通过，调用 `sf_state_transition`（to_state="tasks_gate"）
+6. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="tasks.md generated, doc_lint passed"）
 
 **产物：** `tasks.md`
 
@@ -162,9 +160,9 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
 **执行步骤：**
 1. 调用 `sf_tasks_gate`（work_item_id）
 2. 根据 Gate 结果：
-   - **pass** → KG 同步（scope=tasks，创建 task 节点）→ `sf_state_transition`（to_state="execution"）
-   - **fail** → `sf_state_transition`（to_state="tasks"），重新调度 sf-task-planner
-   - **blocked** → `sf_state_transition`（to_state="blocked"）
+   - **pass** → KG 同步（scope=tasks，创建 task 节点）→ 调用 `sf_state_transition`（from_state="gates_running"，to_state="implementation_running"，evidence="tasks_gate passed"）
+   - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="tasks_gate failed, re-entering tasks"），重新调度 sf-task-planner
+   - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
 **工具：** `sf_tasks_gate`
 
@@ -180,7 +178,7 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
 4. **回滚触发检查**：每个步骤完成后，检查是否触发 ops_plan.md 中定义的回滚触发条件，如触发则立即执行对应回滚操作
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `execution`
+1. 调用 `sf_state_read` 确认当前状态为 `implementation_running`
 2. 读取 tasks.md，按步骤顺序执行（默认串行）
 3. 对每个 Task：
    a. 检查是否标记 `requires_user_confirmation: true`
@@ -193,7 +191,7 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
    c. 收到 sf-executor 结果后：
       - 实际结果与预期一致 → 继续下一步
       - 实际结果与预期不一致 → **Fail-Stop**：停止执行，向用户报告异常，检查是否需要执行回滚
-4. 所有步骤成功完成后，调用 `sf_state_transition`（to_state="verification"）
+4. 所有步骤成功完成后，调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all ops steps completed successfully"）
 
 **产物：** 运维操作结果
 
@@ -209,10 +207,14 @@ intake → ops_plan → ops_plan_gate → tasks → tasks_gate → execution →
 2. 调用 `sf_artifact_write` 写入验证报告和工作日志
 3. 调用 `sf_verification_gate`（work_item_id, mode="ops_task"）
    - ops_task 模式额外检查：操作结果与 ops_plan.md 预期结果一致
-4. Gate pass → KG 同步（scope=verification）→ `sf_state_transition`（to_state="verification_gate"）→ `sf_state_transition`（to_state="completed"）
+4. Gate pass：
+   - KG 同步（scope=verification）
+   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification_gate passed"）
+   - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
+   - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
 5. Gate fail → 重新调度 sf-verifier（新 run_id），附带 blocking_issues
 
-### 阶段 8：completed（完成）
+### 阶段 8：closed（完成）
 
 **执行步骤：**
 1. 向用户报告运维任务完成摘要（执行的步骤、验证结果）

@@ -4,7 +4,7 @@ mode: subagent
 temperature: 0.2
 steps: 30
 permission:
-  edit: allow
+  edit: deny
   bash: deny
   task: deny
   skill: allow
@@ -137,6 +137,18 @@ graph TD
 
 # Responsibilities
 
+## 0. Extension Registry 前置检查（v1.1 强制）
+
+在开始生成 design.md 之前，必须：
+
+1. 读取 `.specforge/project/extension_registry.json`
+2. 确认本次使用的所有 design_types 在 `namespaces.design_types` 中已注册
+3. 如果发现未注册的类型：
+   - **停止**继续生成依赖该类型的 Candidate
+   - 写入 `extension_request.json` 到当前 WI 目录
+   - 在 handoff 中报告 `extension_required`
+   - 等待 Orchestrator 处理 Extension Subflow
+
 ## 1. 架构设计
 
 - 分析 requirements.md 中的所有需求
@@ -205,7 +217,7 @@ graph TD
 
 # Required Output
 
-在 `.specforge/specs/<work_item_id>/` 目录中生成：
+在 `.specforge/work-items/<work_item_id>/candidates/` 目录中生成：
 
 | 文件 | 内容要求 |
 |------|----------|
@@ -226,7 +238,7 @@ graph TD
 ```json
 {
   "status": "success",
-  "files_changed": [".specforge/specs/<WI>/design.md"],
+  "files_changed": [".specforge/work-items/<WI>/candidates/design.md"],
   "structure": {
     "design_decisions_count": 8,
     "req_references": ["REQ-1", "REQ-2", "REQ-3"],

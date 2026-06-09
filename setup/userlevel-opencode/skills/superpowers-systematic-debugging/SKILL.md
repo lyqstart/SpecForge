@@ -1,7 +1,6 @@
 ---
 name: superpowers-systematic-debugging
 description: 指导 Agent 进行系统化的缺陷分析和根因定位
-autoload: manual
 ---
 
 # Superpowers Systematic Debugging

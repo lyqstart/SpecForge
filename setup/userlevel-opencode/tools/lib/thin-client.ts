@@ -37,6 +37,11 @@ interface DaemonResponse<T = unknown> {
 function readHandshake(): HandshakeFile {
   const home = os.homedir();
   const paths = [
+    // Project-level runtime (preferred for project daemon)
+    path.join(process.cwd(), SPEC_DIR_NAME, 'runtime', 'handshake.json'),
+    // User-level runtime (fallback for global daemon)
+    path.join(home, '.config', 'opencode', 'sf-runtime', 'handshake.json'),
+    // Legacy path (read-only fallback)
     path.join(home, SPEC_DIR_NAME, 'runtime', 'handshake.json'),
   ];
 

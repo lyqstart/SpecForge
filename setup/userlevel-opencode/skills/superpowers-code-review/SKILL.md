@@ -1,9 +1,6 @@
 ---
 name: superpowers-code-review
 description: 指导 Agent 进行结构化的代码审查
-autoload: phase_match
-phases:
-  - review
 ---
 
 # Superpowers Code Review

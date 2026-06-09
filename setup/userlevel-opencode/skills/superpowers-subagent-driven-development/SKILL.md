@@ -1,9 +1,6 @@
 ---
 name: superpowers-subagent-driven-development
 description: 指导 Agent 在执行开发任务时遵循最佳实践纪律
-autoload: phase_match
-phases:
-  - development
 ---
 
 # Superpowers Subagent-Driven Development

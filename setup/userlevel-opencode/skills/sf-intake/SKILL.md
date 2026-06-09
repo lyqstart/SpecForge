@@ -1,7 +1,6 @@
 ---
+name: sf-intake
 description: SpecForge intake 阶段提问脚本，由 sf-orchestrator 在 intake 阶段引用执行
-mode: skill
-autoload: false
 ---
 
 # Intake 阶段提问脚本
@@ -233,7 +232,7 @@ orchestrator 必须覆盖以下 10 个维度，**一次问完，不分批**：
 intake 完成后：
   - 三份配置文件已生成（或已确认沿用）
   - 需求信息已收集（B1 的 10 个维度）
-  - 写入 .specforge/specs/{WI-ID}/intake.md
+  - 写入 .specforge/work-items/{WI-ID}/intake.md
 
 调度 sf-requirements：
   - 传入 intake.md（需求信息）

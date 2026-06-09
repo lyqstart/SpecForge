@@ -13,12 +13,12 @@
 | 主 Agent 会话 | `.specforge/sessions/{session_id}/conversation.jsonl` | 完整会话（含 tool 调用、AI 推理、用户输入） |
 | 子 Agent 会话 | `.specforge/sessions/{sub_session_id}/conversation.jsonl` | 通过 metadata.json 的 parent_session_id 关联 |
 | 状态流转事件 | `.specforge/runtime/events.jsonl` | 状态流转 + Gate 结果 |
-| 子 Agent 执行结果 | `.specforge/archive/agent_runs/{run_id}/result.json` | 成功/失败/错误类型 |
-| 文件变更 | `.specforge/archive/agent_runs/{run_id}/files_changed.json` | 变更列表 |
-| 工作日志 | `.specforge/archive/agent_runs/{run_id}/work_log.md` | 执行过程记录 |
-| 需求文档 | `.specforge/specs/{work_item_id}/requirements.md` | 需求 |
-| 设计文档 | `.specforge/specs/{work_item_id}/design.md` | 设计 |
-| 任务文档 | `.specforge/specs/{work_item_id}/tasks.md` | 任务 |
+| 子 Agent 执行结果 | `.specforge/work-items/{work_item_id}/evidence/result.json` | 成功/失败/错误类型 |
+| 文件变更 | `.specforge/work-items/{work_item_id}/evidence/files_changed.json` | 变更列表 |
+| 工作日志 | `.specforge/work-items/{work_item_id}/evidence/work_log.md` | 执行过程记录 |
+| 需求文档 | `.specforge/work-items/{work_item_id}/candidates/requirements.md` | 需求 |
+| 设计文档 | `.specforge/work-items/{work_item_id}/candidates/design.md` | 设计 |
+| 任务文档 | `.specforge/work-items/{work_item_id}/candidates/tasks.md` | 任务 |
 | Knowledge Graph | `.specforge/knowledge/graph.json` | 关系追溯 |
 | 运行痕迹 | `.specforge/logs/trace.jsonl` | 完整 trace |
 | Gate 日志 | `.specforge/logs/gate.log` | Gate 调用记录 |

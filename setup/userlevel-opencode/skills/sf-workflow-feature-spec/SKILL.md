@@ -1,152 +1,227 @@
 ---
 name: sf-workflow-feature-spec
-description: Feature Spec（Requirements-First）工作流的阶段执行协议，包含 intake 到 completed 共 11 个阶段的详细执行步骤和 Skill 绑定矩阵
-autoload: workflow_match
-workflow_types:
-  - feature_spec
+description: Feature Spec（Requirements-First）工作流的 v1.1 24-State 阶段执行协议，包含 created 到 closed 共 20 个状态的详细执行步骤和 Skill 绑定矩阵
 ---
 
-# Feature Spec 工作流执行协议（Requirements-First）
+# Feature Spec 工作流执行协议（Requirements-First · v1.1）
 
-## 工作流阶段总览
+## 工作流状态总览
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-intake → requirements → requirements_gate → design → design_gate → tasks → tasks_gate → development → review → verification → verification_gate → completed
+created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected →
+candidate_preparing → candidate_prepared → gates_running → [approval_required | gates_failed] →
+approved → merge_ready → merging → merged → post_merge_verified →
+implementation_ready → implementation_running → implementation_done →
+verification_running → verification_done → closed
 ```
 
 ## Skill 绑定矩阵
 
-| 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
-|------|---------------|-------------|------|
-| intake | —（Orchestrator 自行收集） | — | intake.md |
-| requirements | sf-requirements | superpowers-brainstorming | requirements.md |
-| requirements_gate | — | — | Gate 判定（pass→design, fail→requirements） |
-| design | sf-design | — | design.md |
-| design_gate | — | — | Gate 判定（pass→tasks, fail→design） |
-| tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
-| tasks_gate | — | — | Gate 判定（pass→development, fail→tasks） |
-| development | sf-executor | superpowers-subagent-driven-development | 代码文件 |
-| review | sf-reviewer | superpowers-code-review | 审查意见 |
-| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
-| completed | — | — | — |
+| 状态区间 | 调度的子 Agent | 加载的 Skill | 产物 |
+|----------|---------------|-------------|------|
+| created → intake_ready | —（Orchestrator 自行收集） | — | intake.md |
+| intake_ready → candidate_preparing | sf-requirements, sf-design, sf-task-planner | superpowers-brainstorming, superpowers-writing-plans | candidates/ 目录（requirements.md, design.md, tasks.md） |
+| candidate_prepared → gates_running | — | — | candidate_manifest.json, Gate 判定结果 |
+| gates_running → approval_required | — | — | sf_user_decision_record 结果 |
+| approved → merge_ready → merged | — | — | sf_merge_run 结果 |
+| merged → post_merge_verified | — | — | 合并后验证结果 |
+| implementation_ready → implementation_done | sf-executor | superpowers-subagent-driven-development | 代码文件 |
+| verification_running → verification_done | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_done → closed | — | — | sf_close_gate 判定 |
 <!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议
 
-### 阶段 1：intake（需求收集）
+### 阶段 1：created → intake_ready（需求收集）
 
 **目标：** 收集用户的功能描述，生成 intake.md
 
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前无进行中的同名 Work Item
-2. 调用 `sf_state_transition`（from_state=""，to_state="intake"）创建新 Work Item
+2. 调用 `sf_state_transition`（from_state=""，to_state="created"）创建新 Work Item
    - sf_state_transition 会自动创建 Spec 目录、spec.json 和 archive 目录（无需手动 mkdir）
 3. 与用户对话，收集功能描述的关键信息
 4. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="intake", content=<整理后的信息>）写入 intake.md
-5. 调用 `sf_state_transition`（from_state="intake"，to_state="requirements"，evidence="intake.md generated"）
+5. 调用 `sf_state_transition`（from_state="created"，to_state="intake_ready"，evidence="intake.md generated"）
 
 **产物：** `intake.md`、`spec.json`（自动创建）
 
-### 阶段 2：requirements（需求分析）
+### 阶段 2：intake_ready → impact_analyzed（影响分析）
 
-**目标：** 生成结构化的 requirements.md
+**目标：** 分析功能变更的影响范围
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `requirements`
-2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
-3. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
+1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
+2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="impact_analyzing"，evidence="starting impact analysis"）
+3. 读取 intake.md，分析变更对现有代码和模块的影响
+4. 生成影响分析摘要（受影响模块、风险等级、依赖关系）
+5. 调用 `sf_state_transition`（from_state="impact_analyzing"，to_state="impact_analyzed"，evidence="impact analysis completed"）
+
+**产物：** 影响分析结果（嵌入 spec.json 或单独文件）
+
+### 阶段 3：impact_analyzed → workflow_selected（工作流选择）
+
+**目标：** 根据影响分析结果确认工作流类型
+
+**执行步骤：**
+1. 调用 `sf_state_read` 确认当前状态为 `impact_analyzed`
+2. 确认 workflow_type 为 `requirements-first`（本 Skill 专用）
+3. 调用 `sf_state_transition`（from_state="impact_analyzed"，to_state="workflow_selected"，evidence="workflow_type confirmed: requirements-first"）
+
+**产物：** workflow_type 写入 spec.json
+
+### 阶段 4：workflow_selected → candidate_prepared（Candidate 生成）
+
+**目标：** 生成 requirements.md、design.md、tasks.md，输出到 candidates/ 目录，并生成 candidate_manifest.json
+
+**执行步骤：**
+
+#### Step 4.1：进入 candidate_preparing 状态
+
+1. 调用 `sf_state_read` 确认当前状态为 `workflow_selected`
+2. 调用 `sf_state_transition`（from_state="workflow_selected"，to_state="candidate_preparing"，evidence="starting candidate preparation"）
+
+#### Step 4.2：生成 Requirements
+
+1. **V4.0 新增：** 调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时继续执行。
+2. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容
+   - 输出路径：`candidates/requirements.md`
    - 指令：加载 `superpowers-brainstorming` skill，从 7 个维度进行头脑风暴，生成 requirements.md
-3. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/requirements.md` 已生成
+3. 等待子 Agent 完成，确认 `candidates/requirements.md` 已生成
 4. 调用 `sf_doc_lint`（work_item_id, doc_type="requirements"）检查文档结构
-5. 如果 lint 通过，调用 `sf_state_transition`（from_state="requirements"，to_state="requirements_gate"，evidence="requirements.md generated, doc_lint passed"）
 
-**产物：** `requirements.md`
+#### Step 4.3：生成 Design
 
-### 阶段 3：requirements_gate（需求质量门禁）
-
-**目标：** 验证 requirements.md 满足最低质量标准
-
-**执行步骤：**
-1. 调用 `sf_requirements_gate`（work_item_id）
-2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
-
-**工具：** `sf_requirements_gate`
-
-### 阶段 4：design（设计）
-
-**目标：** 生成 design.md
-
-**执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `design`
-2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
-3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+1. **V4.0 新增：** 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。调用失败时继续执行。
+2. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
-   - requirements.md 的内容或路径
+   - candidates/requirements.md 的内容或路径
+   - 输出路径：`candidates/design.md`
    - 指令：基于需求生成 design.md，必须引用需求编号
-3. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/design.md` 已生成
+3. 等待子 Agent 完成，确认 `candidates/design.md` 已生成
 4. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）检查文档结构
-5. 如果 lint 通过，调用 `sf_state_transition`（from_state="design"，to_state="design_gate"，evidence="design.md generated, doc_lint passed"）
 
-**产物：** `design.md`
+#### Step 4.4：生成 Tasks
 
-### 阶段 5：design_gate（设计质量门禁）
-
-**目标：** 验证 design.md 满足最低质量标准
-
-**执行步骤：**
-1. 调用 `sf_design_gate`（work_item_id）
-   - 对于 feature_spec 和 bugfix_spec 工作流：不传递 workflow_type（使用默认值 "feature_spec"）
-   - 对于 feature_spec_design_first 工作流：传递 `workflow_type: "feature_spec_design_first"`
-2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
-
-**工具：** `sf_design_gate`
-
-### 阶段 6：tasks（任务拆分）
-
-**目标：** 生成 tasks.md
-
-**执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `tasks`
-2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
-3. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
+1. **V4.0 新增：** 调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文。调用失败时继续执行。
+2. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
-   - requirements.md 和 design.md 的内容或路径
-   - 指令：将设计拆分为可执行任务，每个 task 必须包含 verification_commands
-4. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/tasks.md` 已生成
-5. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
-6. 如果 lint 通过，调用 `sf_state_transition`（from_state="tasks"，to_state="tasks_gate"，evidence="tasks.md generated, doc_lint passed"）
+   - candidates/requirements.md 和 candidates/design.md 的内容或路径
+   - 输出路径：`candidates/tasks.md`
+   - 指令：加载 `superpowers-writing-plans` skill，将设计拆分为可执行任务，每个 task 必须包含 verification_commands
+3. 等待子 Agent 完成，确认 `candidates/tasks.md` 已生成
+4. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
 
-**产物：** `tasks.md`
+#### Step 4.5：生成 candidate_manifest.json
 
-### 阶段 7：tasks_gate（任务质量门禁）
+Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manifest.json`：
 
-**目标：** 验证 tasks.md 满足最低质量标准
+```json
+{
+  "work_item_id": "<id>",
+  "candidates": [
+    { "type": "requirements", "path": "candidates/requirements.md", "lint_passed": true },
+    { "type": "design", "path": "candidates/design.md", "lint_passed": true },
+    { "type": "tasks", "path": "candidates/tasks.md", "lint_passed": true }
+  ],
+  "prepared_at": "<ISO timestamp>"
+}
+```
+
+#### Step 4.6：流转到 candidate_prepared
+
+调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="candidate_prepared"，evidence="all candidates generated, candidate_manifest.json created"）
+
+**产物：** `candidates/requirements.md`、`candidates/design.md`、`candidates/tasks.md`、`candidate_manifest.json`
+
+### 阶段 5：candidate_prepared → gates_running（统一门禁执行）
+
+**目标：** 对所有 Candidate 文件执行统一质量门禁
 
 **执行步骤：**
-1. 调用 `sf_tasks_gate`（work_item_id）
-2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
+1. 调用 `sf_state_read` 确认当前状态为 `candidate_prepared`
+2. 调用 `sf_state_transition`（from_state="candidate_prepared"，to_state="gates_running"，evidence="starting gate execution"）
+3. 调用 `sf_gate_run`（work_item_id=<id>）
+   - Gate Runner 统一读取 candidate_manifest.json，对 requirements、design、tasks 逐一执行质量检查
+   - 返回统一的 Gate 结果（pass / fail + blocking_issues）
+4. 根据 Gate 结果路由：
+   - **全部通过** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="approval_required"，evidence="all gates passed"）
+   - **任一失败** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="gates_failed"，evidence="gate failures: <具体失败项>"）→ 进入修复循环
 
-**工具：** `sf_tasks_gate`
+**工具：** `sf_gate_run`
 
-### 阶段 8：development（开发执行）
+### 阶段 5b：gates_failed（门禁失败修复）
+
+**目标：** 修复 Gate 失败的 Candidate，重新进入 candidate_preparing
+
+**执行步骤：**
+1. 读取 `sf_gate_run` 返回的 blocking_issues
+2. 针对失败的 Candidate 重新调度对应子 Agent 修复
+3. 调用 `sf_state_transition`（from_state="gates_failed"，to_state="candidate_preparing"，evidence="re-entering candidate preparation to fix: <issues>"）
+4. 重复阶段 4 中对应的 Step（仅修复失败项），重新生成 candidate_manifest.json
+5. 回到阶段 5 重新执行 Gate
+
+### 阶段 6：approval_required（用户审批）
+
+**目标：** 请求用户审批 Candidate
+
+**执行步骤：**
+1. 调用 `sf_state_read` 确认当前状态为 `approval_required`
+2. 向用户展示 Candidate 摘要（requirements、design、tasks 的关键内容）
+3. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="candidate_approval"）
+   - 记录用户的决定：approve / reject / request_changes
+4. 根据用户决定路由：
+   - **approve** → 调用 `sf_state_transition`（from_state="approval_required"，to_state="approved"，evidence="user approved candidates"）
+   - **reject** → 调用 `sf_state_transition`（from_state="approval_required"，to_state="rejected"，evidence="user rejected candidates"）— 工作流终止
+   - **request_changes** → 回退到 `candidate_preparing`，重新修改后再过 Gate
+
+**工具：** `sf_user_decision_record`
+
+### 阶段 7：approved → merged（合并执行）
+
+**目标：** 将 Candidate 合并为正式 Spec 文件
+
+**执行步骤：**
+1. 调用 `sf_state_read` 确认当前状态为 `approved`
+2. 调用 `sf_state_transition`（from_state="approved"，to_state="merge_ready"，evidence="preparing merge"）
+3. **调用 `sf_merge_run`**（work_item_id=<id>）
+   - Merge Runner 将 candidates/ 目录下的文件合并为正式 Spec 文件（requirements.md、design.md、tasks.md 移动到 Work Item 根目录）
+4. 调用 `sf_state_transition`（from_state="merge_ready"，to_state="merging"，evidence="merge in progress"）
+5. 等待 Merge Runner 完成
+6. 调用 `sf_state_transition`（from_state="merging"，to_state="merged"，evidence="candidates merged to spec"）
+
+**工具：** `sf_merge_run`
+
+### 阶段 8：merged → post_merge_verified（合并后验证）
+
+**目标：** 验证合并后的 Spec 文件完整性
+
+**执行步骤：**
+1. 调用 `sf_state_read` 确认当前状态为 `merged`
+2. 验证正式 Spec 文件存在且内容与 Candidate 一致（requirements.md、design.md、tasks.md）
+3. 调用 `sf_state_transition`（from_state="merged"，to_state="post_merge_verified"，evidence="merged spec files verified"）
+
+**产物：** 合并验证通过
+
+### 阶段 9：post_merge_verified → implementation_done（开发执行）
 
 **目标：** 执行 tasks.md 中的每个 task，支持独立 Task 并行执行
 
 **执行步骤：**
 
-#### Step 1：读取 tasks.md 和配置
+#### Step 1：进入 implementation_ready 并读取 tasks.md
 
-1. 调用 `sf_state_read` 确认当前状态为 `development`
-2. 读取 `.specforge/specs/<work_item_id>/tasks.md`，解析每个 Task 的：
+1. 调用 `sf_state_read` 确认当前状态为 `post_merge_verified`
+2. 调用 `sf_state_transition`（from_state="post_merge_verified"，to_state="implementation_ready"，evidence="ready for implementation"）
+3. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
    - `依赖` 声明
    - `verification_commands`
-3. 读取 `.specforge/config/project.json`，获取 `max_parallel_executors` 值（字段不存在时默认为 3）
+4. 读取 `.specforge/config/project.json`，获取 `max_parallel_executors` 值（字段不存在时默认为 3）
 
 #### Step 2：Independence_Analysis（独立性分析）
 
@@ -189,7 +264,7 @@ intake → requirements → requirements_gate → design → design_gate → tas
 2. 如果返回非空 task_context.context → 注入到 sf-executor 的调度 prompt 中（位于任务描述之后）
 3. 如果返回非空 capabilities.recommended_fragments → 将推荐的 Skill Fragment 完整内容注入到调度 prompt 中，替代全量 Skill 加载
 4. 向用户报告 Context Builder 摘要（引用的 Graph 节点数、历史经验数、推荐 Fragment 数、预估 Token 量）
-5. 如果 sf_context_build 调用失败 → 回退到 V3.3 协议（不注入额外上下文），记录警告
+5. 如果 sf_context_build 调用失败 → 回退到不注入额外上下文，记录警告
 
 #### Step 5：按 Execution_Plan 执行
 
@@ -212,7 +287,7 @@ intake → requirements → requirements_gate → design → design_gate → tas
 
 **5b. 串行 Task 执行：**
 
-对每个串行 Task，按 V3.2 的串行协议执行：
+对每个串行 Task，按串行协议执行：
 1. 生成 run_id，记录 start_time
 2. 使用 `task` 工具调度 sf-executor
 3. 等待完成，记录 end_time
@@ -221,43 +296,29 @@ intake → requirements → requirements_gate → design → design_gate → tas
 
 **5c. Serial_Fallback 模式：**
 
-当 Execution_Plan 为全串行时，按 V3.2 的串行协议逐个执行所有 Task，行为完全不变。
+当 Execution_Plan 为全串行时，逐个执行所有 Task，行为与 5b 相同。
 
-#### Step 6：development 阶段完成
+#### Step 6：implementation 阶段完成
 
 所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
-1. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
-2. 调用 `sf_state_transition`（from_state="development"，to_state="review"，evidence="all tasks completed"）
+1. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="implementation_done"，evidence="all tasks completed"）
+2. 向用户报告 implementation 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
+
+**注意：** 在开始执行第一个 Task 前，须先调用 `sf_state_transition`（from_state="implementation_ready"，to_state="implementation_running"，evidence="starting task execution"）
 
 **产物：** 代码文件（由 executor 生成）
 
-### 阶段 9：review（代码审查）
-
-**目标：** 对代码和规格进行审查
-
-**执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `review`
-2. **使用 `task` 工具调度子 Agent `sf-reviewer`**，在 prompt 中包含：
-   - work_item_id 和 spec_directory 路径
-   - requirements.md、design.md 的路径
-   - 代码变更文件列表
-   - 指令：审查代码是否符合需求和设计，检查代码质量
-3. 等待子 Agent 完成，获取审查结果
-4. 如果审查结果为 `approved`：调用 `sf_state_transition`（from_state="review"，to_state="verification"，evidence="review approved"）
-5. 如果审查结果为 `request_changes`：进入 review repair loop（见失败重试协议）
-
-**产物：** 审查意见
-
-### 阶段 10：verification（验证）
+### 阶段 10：implementation_done → verification_done（验证）
 
 **目标：** 执行验证，确认所有验收标准满足
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `verification`
-2. **使用 `task` 工具调度子 Agent `sf-verifier`**，在 prompt 中包含：
+1. 调用 `sf_state_read` 确认当前状态为 `implementation_done`
+2. 调用 `sf_state_transition`（from_state="implementation_done"，to_state="verification_running"，evidence="starting verification"）
+3. **使用 `task` 工具调度子 Agent `sf-verifier`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - tasks.md 的路径（含 verification_commands）
-   - requirements.md 或 bugfix.md 的路径（含验收标准）
+   - requirements.md 的路径（含验收标准）
    - 指令：加载 `superpowers-verification-before-completion` skill，执行所有验证命令，逐项确认验收标准
    - **必须明确告知返回验证 JSON 的完整要求**：
      ```
@@ -269,29 +330,34 @@ intake → requirements → requirements_gate → design → design_gate → tas
      5. side_effects: 无副作用检查
      6. summary: 验证总结
      ```
-3. 等待子 Agent 完成，获取验证 JSON
-4. **调用 `sf_artifact_write`** 渲染并写入验证报告：
+4. 等待子 Agent 完成，获取验证 JSON
+5. **调用 `sf_artifact_write`** 渲染并写入验证报告：
    - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
-5. **调用 `sf_artifact_write`** 写入工作日志：
+6. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-6. **调用 `sf_verification_gate`** 检查验证结果
-7. 如果 Gate pass：调用 `sf_state_transition`（from_state="verification"，to_state="verification_gate"，evidence="verification_gate passed"），然后调用 `sf_state_transition`（from_state="verification_gate"，to_state="completed"，evidence="verification_gate passed, project completed"）
-8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
+7. 如果验证通过：调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification passed"）
+8. 如果验证失败：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
-- 必须先调用 sf_verification_gate 工具，确认 pass 后再流转状态
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
 - sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
 
 **产物：** 验证报告（由 sf_artifact_write 渲染写入）
 
-### 阶段 11：verification_gate（验证质量门禁）
+### 阶段 11：verification_done → closed（关闭门禁）
 
-**目标：** 验证所有测试通过
+**目标：** 执行最终关闭门禁，确认工作流完整
 
 **执行步骤：**
-1. 调用 `sf_verification_gate`（work_item_id）
-2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
-3. 如果 pass：调用 `sf_state_transition`（from_state="verification_gate"，to_state="completed"，evidence="verification gate passed"）
+1. 调用 `sf_state_read` 确认当前状态为 `verification_done`
+2. **调用 `sf_close_gate`**（work_item_id=<id>）
+   - Close Gate 验证：所有 Spec 文件存在、验证报告通过、无未解决的 blocking_issues
+3. 根据 Close Gate 结果路由：
+   - **通过** → 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed, workflow complete"）
+   - **失败** → 回退到对应阶段修复问题（具体回退目标由 Close Gate 返回的 blocking_issues 决定）
 
-**工具：** `sf_verification_gate`
+**工具：** `sf_close_gate`
+
+**⚠️ 重要规则：**
+- 必须先调用 `sf_close_gate` 确认通过后，才能流转到 `closed` 状态
+- `closed` 是终态，一旦进入不可回退

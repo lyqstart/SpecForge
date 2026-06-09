@@ -13,8 +13,26 @@
 
 import { readFile, access, readdir } from "node:fs/promises"
 import { join } from "node:path"
-import type { WorkflowType } from "./state_machine"
 import { logErrorToFile } from "./utils"
+
+/** v1.1 Workflow path types (replaces legacy WorkflowType from state_machine) */
+type WorkflowType = 
+  | 'requirement_change_path'
+  | 'design_change_path' 
+  | 'architecture_change_path'
+  | 'task_change_path'
+  | 'code_only_fast_path'
+  | 'spec_migration_path'
+  | 'rollback_path'
+  // Legacy compatibility
+  | 'feature_spec'
+  | 'bugfix_spec'
+  | 'feature_spec_design_first'
+  | 'quick_change'
+  | 'change_request'
+  | 'refactor'
+  | 'ops_task'
+  | 'investigation';
 
 const SPEC_DIR_NAME = '.specforge' as const;
 

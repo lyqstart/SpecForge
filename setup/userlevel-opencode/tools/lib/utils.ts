@@ -135,20 +135,33 @@ export async function tryCheckCompatibility(
   component: string
 ): Promise<void> {
   try {
-    // 从 ~/.specforge/install.json 获取安装根路径，拼接绝对路径
+    // v1.1: Try new config path first, fall back to legacy ~/.specforge/install.json (read-only)
     const home = require("node:os").homedir()
     const pathMod = require("node:path")
     const { pathToFileURL } = require("node:url")
 
     // 尝试读取 install.json 获取 base_dir
+    // Primary: ~/.config/opencode/sf-runtime/install.json
+    // Fallback: ~/.specforge/install.json (legacy read-only)
     let specForgeHome = pathMod.join(home, ".specforge")
     try {
-      const installJson = require("node:fs").readFileSync(
-        pathMod.join(specForgeHome, "install.json"), "utf-8"
-      )
-      const data = JSON.parse(installJson)
-      if (data && typeof data.base_dir === "string") {
-        specForgeHome = data.base_dir.replace(/^~[/\\]/, home + pathMod.sep)
+      const primaryPath = pathMod.join(home, ".config", "opencode", "sf-runtime", "install.json")
+      const legacyPath = pathMod.join(specForgeHome, "install.json")
+      const fsMod = require("node:fs")
+      let installJsonContent: string | null = null
+
+      if (fsMod.existsSync(primaryPath)) {
+        installJsonContent = fsMod.readFileSync(primaryPath, "utf-8")
+      } else if (fsMod.existsSync(legacyPath)) {
+        // Legacy path (read-only fallback)
+        installJsonContent = fsMod.readFileSync(legacyPath, "utf-8")
+      }
+
+      if (installJsonContent) {
+        const data = JSON.parse(installJsonContent)
+        if (data && typeof data.base_dir === "string") {
+          specForgeHome = data.base_dir.replace(/^~[/\\]/, home + pathMod.sep)
+        }
       }
     } catch { /* 使用默认路径 */ }
 

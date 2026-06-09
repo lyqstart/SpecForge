@@ -38,6 +38,18 @@ Layer 3 ✅：verification_report.md 含真实命令输出，sf-orchestrator 能
 
 ---
 
+## Extension Registry 前置检查（v1.1 强制）
+
+在开始验证之前，必须：
+
+1. 读取 `.specforge/project/extension_registry.json`
+2. 确认本次使用的所有 verification_types 在 `namespaces.verification_types` 中已注册
+3. 如果发现未注册的类型：
+   - 写入 `extension_request.json` 到当前 WI 目录
+   - 在 handoff 中报告 `extension_required`
+
+---
+
 # 测试矩阵（按工作流类型）
 
 | 测试层 | quick_change | bugfix_spec | feature_spec | refactor | ops_task |

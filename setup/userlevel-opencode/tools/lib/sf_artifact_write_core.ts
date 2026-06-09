@@ -89,19 +89,18 @@ export interface TraceStats {
 // Path Resolution & Whitelist
 // ============================================================
 
-/** 文件类型到路径模式的映射 */
+/** 文件类型到路径模式的映射 (v1.1: work-items based paths) */
 const FILE_TYPE_PATH_MAP: Record<ArtifactFileType, (workItemId: string, runId?: string) => string> = {
-  verification_report: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/verification_report.md`,
-  review_report: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/review_report.md`,
-  intake: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/intake.md`,
-  work_log: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/work_log.md`,
-  agent_run_result: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/result.json`,
+  verification_report: (wid) => `${SPEC_DIR_NAME}/work-items/${wid}/verification_report.md`,
+  review_report: (wid) => `${SPEC_DIR_NAME}/work-items/${wid}/review_report.md`,
+  intake: (wid) => `${SPEC_DIR_NAME}/work-items/${wid}/intake.md`,
+  work_log: (wid, rid) => `${SPEC_DIR_NAME}/work-items/${wid}/evidence/${rid}_work_log.md`,
+  agent_run_result: (wid, rid) => `${SPEC_DIR_NAME}/work-items/${wid}/evidence/${rid}_result.json`,
 }
 
-/** 白名单路径前缀 */
+/** 白名单路径前缀 (v1.1: only work-items) */
 const WHITELIST_PREFIXES = [
-  `${SPEC_DIR_NAME}/specs/`,
-  `${SPEC_DIR_NAME}/archive/agent_runs/`,
+  `${SPEC_DIR_NAME}/work-items/`,
 ]
 
 /**

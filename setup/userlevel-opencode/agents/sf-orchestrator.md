@@ -4,7 +4,7 @@ mode: primary
 temperature: 0.3
 steps: 200
 permission:
-  edit: allow
+  edit: deny
   bash: deny
   task: allow
   skill: allow
@@ -269,7 +269,7 @@ Orchestrator 是 WI 状态机的主要推进者，但不是唯一角色。
 当任何子 Agent 在执行过程中发现需要扩展（缺少标准定义的 type / registry 条目 / Gate 检查项等）时，触发 Extension Subflow：
 
 **检测机制**：
-1. 子 Agent 写入 `extension_request.json` 到 WI 目录（`.specforge/specs/<WI>/extension_request.json`）
+1. 子 Agent 写入 `extension_request.json` 到 WI 目录（`.specforge/work-items/<WI>/extension_request.json`）
 2. Orchestrator 在收到子 Agent 的 handoff 后检查该文件是否存在
 
 **调度流程**：

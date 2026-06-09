@@ -1,9 +1,6 @@
 ---
 name: sf-workflow-refactor
-description: Refactor 工作流的阶段执行协议，包含双路径状态机（低风险直接验证，高风险经过 review）、风险路径判定逻辑和行为不变性验证要求
-autoload: workflow_match
-workflow_types:
-  - refactor
+description: Refactor 工作流的阶段执行协议，包含双路径状态机（低风险直接验证，高风险经过 review）、风险路径判定逻辑和行为不变性验证要求（v1.1 状态机）
 ---
 
 # Refactor 工作流执行协议
@@ -12,7 +9,7 @@ workflow_types:
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-intake → refactor_analysis → refactor_analysis_gate → refactor_plan → refactor_plan_gate → development → review → verification → verification_gate → completed
+created → intake_ready → candidate_preparing (refactor_analysis) → gates_running → candidate_preparing (refactor_plan) → gates_running → implementation_running → [review (high risk)] → verification_running → verification_done → closed
 ```
 <!-- AUTO-GENERATED:END:phase-table -->
 
@@ -21,16 +18,16 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
-| intake | —（Orchestrator 自行收集） | — | intake.md |
-| refactor_analysis | sf-design | — | refactor_analysis.md |
-| refactor_analysis_gate | — | — | Gate 判定（pass→refactor_plan, fail→refactor_analysis） |
-| refactor_plan | sf-design | — | refactor_plan.md |
-| refactor_plan_gate | — | — | Gate 判定（pass→development, fail→refactor_plan） |
-| development | sf-executor | superpowers-subagent-driven-development | 代码文件 |
-| review | sf-reviewer | superpowers-code-review | 审查意见 |
-| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
-| completed | — | — | — |
+| created→intake_ready | —（Orchestrator 自行收集） | — | intake.md |
+| candidate_preparing (refactor_analysis) | sf-design | — | refactor_analysis.md |
+| gates_running (refactor_analysis_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
+| candidate_preparing (refactor_plan) | sf-design | — | refactor_plan.md |
+| gates_running (refactor_plan_gate) | — | — | Gate 判定（pass→implementation_running, fail→candidate_preparing） |
+| implementation_running | sf-executor | superpowers-subagent-driven-development | 代码文件 |
+| verification_running (review, high risk only) | sf-reviewer | superpowers-code-review | 审查意见 |
+| verification_running (verification) | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_done | — | — | Gate 判定（pass→closed, fail→verification_running） |
+| closed | — | — | — |
 <!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议
@@ -40,13 +37,13 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
 **目标：** 收集重构需求描述，生成 intake.md
 
 **执行步骤：**
-1. 调用 `sf_state_transition`（from_state=""，to_state="intake"，workflow_type="refactor"）创建新 Work Item
+1. 调用 `sf_state_transition`（from_state=""，to_state="created"，workflow_type="refactor"）创建新 Work Item
 2. 与用户对话，收集重构需求：
    - 重构的目标和动机（代码坏味道、技术债务等）
    - 涉及的代码范围
    - 不变行为的边界（哪些功能必须保持不变）
 3. 调用 `sf_artifact_write`（file_type="intake"）写入 intake.md
-4. 调用 `sf_state_transition`（to_state="refactor_analysis"）
+4. 调用 `sf_state_transition`（from_state="created"，to_state="intake_ready"，evidence="intake.md generated"）
 
 **产物：** `intake.md`
 
@@ -77,14 +74,15 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
 ```
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `refactor_analysis`
-2. 调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文
-3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
+2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting refactor_analysis phase"）
+3. 调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文
+4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容
    - 指令：分析代码重构需求，生成 refactor_analysis.md，必须包含：代码问题识别、重构目标、不变行为声明（必须明确）、风险评估（高/低）
-4. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/refactor_analysis.md` 已生成
-5. 调用 `sf_state_transition`（to_state="refactor_analysis_gate"）
+5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/refactor_analysis.md` 已生成
+6. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="refactor_analysis.md generated"）
 
 **产物：** `refactor_analysis.md`
 
@@ -96,9 +94,9 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
    - 必需 sections：代码问题识别、重构目标、不变行为声明、风险评估
    - pass 条件：所有 section 非空，不变行为声明明确
 2. 根据 Gate 结果：
-   - **pass** → KG 同步（scope=requirements，创建 refactor_target 节点）→ `sf_state_transition`（to_state="refactor_plan"）
-   - **fail** → `sf_state_transition`（to_state="refactor_analysis"），重新调度 sf-design 修订
-   - **blocked** → `sf_state_transition`（to_state="blocked"）
+   - **pass** → KG 同步（scope=requirements，创建 refactor_target 节点）→ 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="refactor_analysis_gate passed, entering refactor_plan"）
+   - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="refactor_analysis_gate failed, re-entering refactor_analysis"），重新调度 sf-design 修订
+   - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
 **工具：** `sf_requirements_gate`（mode="refactor"）
 
@@ -126,14 +124,14 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
 ```
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `refactor_plan`
+1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（refactor_plan phase）
 2. 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文
 3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - refactor_analysis.md 的内容
    - 指令：制定详细的重构执行计划，必须包含：重构策略、步骤顺序（确保每步后代码可运行）、风险等级判定（高/低）
-4. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/refactor_plan.md` 已生成
-5. 调用 `sf_state_transition`（to_state="refactor_plan_gate"）
+4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/refactor_plan.md` 已生成
+5. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="refactor_plan.md generated"）
 
 **产物：** `refactor_plan.md`
 
@@ -148,9 +146,9 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
      1. 读取 `refactor_plan.md` 中的"风险等级判定" section，确定 risk_path（"high" 或 "low"）
      2. 将 risk_path 写入 Work Item metadata：调用 `sf_state_transition` 时在 evidence 中记录，或通过其他方式更新 metadata.risk_path
      3. KG 同步（scope=tasks，创建 code_file 节点 + modifies 边，**注意：refactor 工作流无 tasks_gate，此处替代 tasks_gate 的 KG 同步**）
-     4. `sf_state_transition`（to_state="development"）
-   - **fail** → `sf_state_transition`（to_state="refactor_plan"），重新调度 sf-design
-   - **blocked** → `sf_state_transition`（to_state="blocked"）
+     4. 调用 `sf_state_transition`（from_state="gates_running"，to_state="implementation_running"，evidence="refactor_plan_gate passed, risk_path=<high|low>"）
+   - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="refactor_plan_gate failed, re-entering refactor_plan"），重新调度 sf-design
+   - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
 **⚠️ 重要：** risk_path 必须在此阶段确定并记录，development 阶段完成后的流转方向由 sf_state_transition 守卫强制执行。
 
@@ -161,7 +159,7 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
 **目标：** 按 refactor_plan.md 执行重构，确保每步后代码可运行
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `development`，读取 `metadata.risk_path`
+1. 调用 `sf_state_read` 确认当前状态为 `implementation_running`，读取 `metadata.risk_path`
 2. 读取 refactor_plan.md，按步骤顺序执行重构
 3. 对每个即将调度的 Task，调用 `sf_context_build` 构建 Task Context
 4. **使用 `task` 工具调度子 Agent `sf-executor`**（加载 `superpowers-subagent-driven-development`），传入：
@@ -169,8 +167,8 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
    - refactor_analysis.md 的不变行为声明
    - 指令：严格按步骤顺序执行重构，每步完成后确认现有测试仍通过，不得改变不变行为声明中的接口和行为
 5. 重构完成后，根据 `metadata.risk_path` 决定下一步：
-   - `risk_path="high"` → `sf_state_transition`（to_state="review"）
-   - `risk_path="low"` → `sf_state_transition`（to_state="verification"）
+   - `risk_path="high"` → 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="development completed, entering review (high risk)"）
+   - `risk_path="low"` → 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="development completed, entering verification (low risk)"）
    - **注意：** sf_state_transition 守卫会强制执行此约束，risk_path 缺失时流转会被拒绝
 
 **产物：** 重构后代码
@@ -183,7 +181,7 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
    - refactor_plan.md（重构策略）
    - 代码变更文件列表
    - 指令：审查重构是否符合计划，确认不变行为声明中的所有接口和行为未被改变
-2. 审查通过 → `sf_state_transition`（to_state="verification"）
+2. 审查通过 → 继续 verification 阶段
 3. 审查有问题 → 进入 review repair loop（最多 1 次修复循环）
 
 ### 阶段 8：verification（验证）
@@ -200,10 +198,14 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
 2. 调用 `sf_artifact_write` 写入验证报告和工作日志
 3. 调用 `sf_verification_gate`（work_item_id, mode="refactor"）
    - refactor 模式额外检查：所有现有测试通过 + 代码质量指标改善
-4. Gate pass → KG 同步（scope=verification）→ `sf_state_transition`（to_state="verification_gate"）→ `sf_state_transition`（to_state="completed"）
+4. Gate pass：
+   - KG 同步（scope=verification）
+   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification_gate passed"）
+   - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
+   - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
 5. Gate fail → 重新调度 sf-verifier（新 run_id），附带 blocking_issues
 
-### 阶段 9：completed（完成）
+### 阶段 9：closed（完成）
 
 **执行步骤：**
 1. 向用户报告重构完成摘要（风险路径、改善的代码质量指标）
@@ -221,6 +223,6 @@ intake → refactor_analysis → refactor_analysis_gate → refactor_plan → re
 
 | risk_path 值 | development 后流转 | sf_state_transition 守卫行为 |
 |-------------|-------------------|---------------------------|
-| "high" | → review | 仅允许 development → review |
-| "low" | → verification | 仅允许 development → verification |
+| "high" | → verification_running (review first) | 允许 implementation_running → verification_running |
+| "low" | → verification_running (skip review) | 允许 implementation_running → verification_running |
 | 缺失 | 被拒绝 | 返回错误，要求先设置 risk_path |

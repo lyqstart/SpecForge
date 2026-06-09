@@ -1,9 +1,6 @@
 ---
 name: sf-workflow-bugfix-spec
-description: Bugfix Spec 工作流的阶段执行协议，包含 intake 到 completed 共 10 个阶段的详细执行步骤和 Skill 绑定矩阵
-autoload: workflow_match
-workflow_types:
-  - bugfix_spec
+description: Bugfix Spec 工作流的阶段执行协议，包含 intake 到 closed 的详细执行步骤和 Skill 绑定矩阵（v1.1 状态机）
 ---
 
 # Bugfix Spec 工作流执行协议
@@ -12,24 +9,24 @@ workflow_types:
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → tasks → tasks_gate → development → verification → verification_gate → completed
+created → intake_ready → candidate_preparing → gates_running → candidate_preparing → gates_running → candidate_preparing → gates_running → implementation_running → verification_running → verification_done → closed
 ```
 
 ## Skill 绑定矩阵
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
-| intake | —（Orchestrator 自行收集） | — | intake.md |
-| bugfix_analysis | sf-requirements | superpowers-systematic-debugging | bugfix.md |
-| bugfix_gate | — | — | Gate 判定（pass→fix_design, fail→bugfix_analysis） |
-| fix_design | sf-design | — | design.md |
-| design_gate | — | — | Gate 判定（pass→tasks, fail→fix_design） |
-| tasks | sf-task-planner | superpowers-writing-plans | tasks.md |
-| tasks_gate | — | — | Gate 判定（pass→development, fail→tasks） |
-| development | sf-executor | superpowers-tdd | 代码文件 |
-| verification | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_gate | — | — | Gate 判定（pass→completed, fail→verification） |
-| completed | — | — | — |
+| created→intake_ready | —（Orchestrator 自行收集） | — | intake.md |
+| candidate_preparing (bugfix_analysis) | sf-requirements | superpowers-systematic-debugging | bugfix.md |
+| gates_running (bugfix_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
+| candidate_preparing (fix_design) | sf-design | — | design.md |
+| gates_running (design_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
+| candidate_preparing (tasks) | sf-task-planner | superpowers-writing-plans | tasks.md |
+| gates_running (tasks_gate) | — | — | Gate 判定（pass→implementation_running, fail→candidate_preparing） |
+| implementation_running | sf-executor | superpowers-tdd | 代码文件 |
+| verification_running | sf-verifier | superpowers-verification-before-completion | 验证报告 |
+| verification_done | — | — | Gate 判定（pass→closed, fail→verification_running） |
+| closed | — | — | — |
 <!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议
@@ -39,11 +36,11 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 **目标：** 收集用户的 Bug 描述，生成 intake.md
 
 **执行步骤：**
-1. 调用 `sf_state_transition`（from_state=""，to_state="intake"）创建新 Work Item，workflow_type 设为 `bugfix_spec`
+1. 调用 `sf_state_transition`（from_state=""，to_state="created"）创建新 Work Item，workflow_type 设为 `bugfix_spec`
    - sf_state_transition 会自动创建 Spec 目录、spec.json 和 archive 目录（无需手动 mkdir）
 2. 与用户对话，收集 Bug 描述：当前行为、预期行为、复现步骤、环境信息
 3. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="intake", content=<整理后的信息>）写入 intake.md
-4. 调用 `sf_state_transition`（from_state="intake"，to_state="bugfix_analysis"，evidence="intake.md generated"）
+4. 调用 `sf_state_transition`（from_state="created"，to_state="intake_ready"，evidence="intake.md generated"）
 
 **产物：** `intake.md`、`spec.json`（自动创建）
 
@@ -52,16 +49,17 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 **目标：** 生成结构化的 bugfix.md
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `bugfix_analysis`
-2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
-3. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
+1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
+2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting bugfix_analysis phase"）
+3. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
+4. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容
    - 指令：加载 `superpowers-systematic-debugging` skill，按系统化调试方法论分析缺陷，生成 bugfix.md
    - 明确要求 bugfix.md 包含四个必需章节：当前行为、预期行为、不变行为、根因分析
-3. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/bugfix.md` 已生成
-4. 调用 `sf_doc_lint`（work_item_id, doc_type="bugfix"）检查文档结构
-5. 如果 lint 通过，调用 `sf_state_transition`（from_state="bugfix_analysis"，to_state="bugfix_gate"，evidence="bugfix.md generated, doc_lint passed"）
+5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/bugfix.md` 已生成
+6. 调用 `sf_doc_lint`（work_item_id, doc_type="bugfix"）检查文档结构
+7. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="bugfix.md generated, doc_lint passed"）
 
 **产物：** `bugfix.md`
 
@@ -72,9 +70,9 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 **执行步骤：**
 1. 调用 `sf_requirements_gate`（work_item_id, mode="bugfix"）
 2. 根据 Gate 结果执行对应动作：
-   - pass → 调用 `sf_state_transition`（to_state="fix_design"）
-   - fail → 调用 `sf_state_transition`（to_state="bugfix_analysis"），重新调度 sf-requirements
-   - blocked → 调用 `sf_state_transition`（to_state="blocked"），向用户报告
+   - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="bugfix_gate passed, entering fix_design"）
+   - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="bugfix_gate failed, re-entering bugfix_analysis"），重新调度 sf-requirements
+   - blocked → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"），向用户报告
 
 **工具：** `sf_requirements_gate`（mode="bugfix"）
 
@@ -83,15 +81,15 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 **目标：** 生成修复设计方案 design.md
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `fix_design`
+1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（fix_design phase）
 2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
 3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - bugfix.md 的内容
    - 指令：基于缺陷分析生成修复设计方案，必须引用 bugfix.md 中的根因分析
-3. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/design.md` 已生成
-4. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）检查文档结构
-5. 如果 lint 通过，调用 `sf_state_transition`（from_state="fix_design"，to_state="design_gate"，evidence="design.md generated, doc_lint passed"）
+4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/design.md` 已生成
+5. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）检查文档结构
+6. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="design.md generated, doc_lint passed"）
 
 **产物：** `design.md`
 
@@ -102,7 +100,10 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 **执行步骤：**
 1. 调用 `sf_design_gate`（work_item_id）
    - 对于 bugfix_spec 工作流：不传递 workflow_type（使用默认值 "feature_spec"）
-2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
+2. 根据 Gate 结果执行对应动作：
+   - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate passed, entering tasks"）
+   - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate failed, re-entering fix_design"），重新调度 sf-design
+   - blocked → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
 **工具：** `sf_design_gate`
 
@@ -111,15 +112,15 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 **目标：** 生成 tasks.md
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `tasks`
+1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（tasks phase）
 2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
 3. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - requirements.md 和 design.md 的内容或路径
    - 指令：将设计拆分为可执行任务，每个 task 必须包含 verification_commands
-4. 等待子 Agent 完成，确认 `.specforge/specs/<work_item_id>/tasks.md` 已生成
+4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/tasks.md` 已生成
 5. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
-6. 如果 lint 通过，调用 `sf_state_transition`（from_state="tasks"，to_state="tasks_gate"，evidence="tasks.md generated, doc_lint passed"）
+6. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="tasks.md generated, doc_lint passed"）
 
 **产物：** `tasks.md`
 
@@ -129,7 +130,10 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 
 **执行步骤：**
 1. 调用 `sf_tasks_gate`（work_item_id）
-2. 根据 Gate 结果执行对应动作（见 Gate 处理协议）
+2. 根据 Gate 结果执行对应动作：
+   - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="implementation_running"，evidence="tasks_gate passed"）
+   - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="tasks_gate failed, re-entering tasks"），重新调度 sf-task-planner
+   - blocked → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
 **工具：** `sf_tasks_gate`
 
@@ -141,8 +145,8 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 
 #### Step 1：读取 tasks.md 和配置
 
-1. 调用 `sf_state_read` 确认当前状态为 `development`
-2. 读取 `.specforge/specs/<work_item_id>/tasks.md`，解析每个 Task 的：
+1. 调用 `sf_state_read` 确认当前状态为 `implementation_running`
+2. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
    - `依赖` 声明
@@ -229,18 +233,18 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 
 所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
 1. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
-2. 调用 `sf_state_transition`（from_state="development"，to_state="verification"，evidence="all tasks completed with regression tests"）
+2. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed with regression tests"）
 
 **注意：** Bugfix 工作流**没有 review 阶段**，development 直接进入 verification。
 
 **产物：** 代码文件和回归测试（由 executor 生成）
 
-### 阶段 9：verification → verification_gate
+### 阶段 9：verification → verification_done
 
 **目标：** 执行验证，确认所有验收标准满足，回归测试通过
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `verification`
+1. 调用 `sf_state_read` 确认当前状态为 `verification_running`
 2. **使用 `task` 工具调度子 Agent `sf-verifier`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - tasks.md 的路径（含 verification_commands）
@@ -265,13 +269,17 @@ intake → bugfix_analysis → bugfix_gate → fix_design → design_gate → ta
 5. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
 6. **调用 `sf_verification_gate`** 检查验证结果
-7. 如果 Gate pass：调用 `sf_state_transition`（from_state="verification"，to_state="verification_gate"，evidence="verification_gate passed"），然后调用 `sf_state_transition`（from_state="verification_gate"，to_state="completed"，evidence="verification_gate passed, project completed"）
+7. 如果 Gate pass：
+   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification_gate passed"）
+   - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
+   - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
 8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
 - 必须先调用 sf_verification_gate 工具，确认 pass 后再流转状态
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
 - sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
+- 必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`
 
 **工具：** `sf_verification_gate`
 

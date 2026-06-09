@@ -4,7 +4,7 @@ mode: subagent
 temperature: 0.2
 steps: 40
 permission:
-  edit: allow
+  edit: deny
   bash: deny
   task: deny
   skill: allow
