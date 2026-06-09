@@ -89,14 +89,73 @@ const WRITE_TOOLS = new Set([
   "git_rebase",
   "git_reset",
   "git_stash",
-  // Package managers
+  // Package managers (direct)
   "npm",
   "yarn",
   "pnpm",
-  // Code formatters/generators
+  // Package manager install tools
+  "bun_install",
+  "npm_install",
+  "yarn_install",
+  "pnpm_install",
+  "pip_install",
+  "cargo_build",
+  // Code formatters
   "format",
   "prettier",
   "eslint_fix",
+  "eslint",
+  "biome",
+  "deno_fmt",
+  "gofmt",
+  "rustfmt",
+  "black",
+  "autopep8",
+  "isort",
+  // Code generators
+  "codegen",
+  "prisma_generate",
+  "protoc",
+  "openapi_generate",
+  // Snapshot tools
+  "vitest_update",
+  "jest_update",
+  "snapshot_update",
+])
+
+/**
+ * Tools that produce file side effects (formatters, generators, package managers, snapshot updaters).
+ * These must go through changedFilesAudit in tool.execute.after even if they pass the before-check.
+ */
+const SIDE_EFFECT_TOOLS = new Set([
+  // Formatters
+  "format",
+  "prettier",
+  "eslint_fix",
+  "eslint",
+  "biome",
+  "deno_fmt",
+  "gofmt",
+  "rustfmt",
+  "black",
+  "autopep8",
+  "isort",
+  // Code generators
+  "codegen",
+  "prisma_generate",
+  "protoc",
+  "openapi_generate",
+  // Package managers
+  "bun_install",
+  "npm_install",
+  "yarn_install",
+  "pnpm_install",
+  "pip_install",
+  "cargo_build",
+  // Snapshot updaters
+  "vitest_update",
+  "jest_update",
+  "snapshot_update",
 ])
 
 /** Tools that execute arbitrary commands (may write files). */
@@ -119,6 +178,16 @@ function isWriteTool(toolName: string): boolean {
   if (normalized.includes("write") || normalized.includes("edit")) return true
   if (normalized.includes("patch") || normalized.includes("create")) return true
   if (normalized.includes("delete") || normalized.includes("remove")) return true
+  return false
+}
+
+function isSideEffectTool(toolName: string): boolean {
+  if (SIDE_EFFECT_TOOLS.has(toolName)) return true
+  const normalized = toolName.toLowerCase().replace(/[_-]/g, "")
+  if (SIDE_EFFECT_TOOLS.has(normalized)) return true
+  // Heuristic: tools with format/generate/install/snapshot in name
+  if (normalized.includes("format") || normalized.includes("generate")) return true
+  if (normalized.includes("install") || normalized.includes("snapshot")) return true
   return false
 }
 
@@ -357,6 +426,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
     // ══════════════════════════════════════════════════════════════════════════════
     // ESCAPED WRITE AUDIT — tool.execute.after
     // Detects writes that bypassed the pre-check (e.g., bash side-effects).
+    // Also audits ALL write tools and side-effect tools for compliance.
     // ══════════════════════════════════════════════════════════════════════════════
     "tool.execute.after": async (i: any, o: any) => {
       const toolName: string = i.tool ?? ""
@@ -366,7 +436,45 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
       // Telemetry (non-blocking)
       postEvent("tool.invoked", { tool: toolName, callID: i.callID })
 
-      // Only audit shell tools for escaped writes
+      // ── Audit ALL write tools and side-effect tools ────────────────────────────
+      // Any tool in WRITE_TOOLS or SIDE_EFFECT_TOOLS should be audited post-execution
+      if (isWriteTool(toolName) || isSideEffectTool(toolName)) {
+        const expectedFiles = extractWriteTargets(toolName, args)
+
+        try {
+          const auditResult = await daemonClient.changedFilesAudit({
+            command: `tool:${toolName}`,
+            expectedFiles,
+            callID: i.callID,
+            tool: toolName,
+            toolCategory: isSideEffectTool(toolName) ? 'side_effect' : 'write',
+          })
+
+          if (auditResult && auditResult.escapedWrites && auditResult.escapedWrites.length > 0) {
+            console.error(
+              `[SF WriteGuard] ESCAPED WRITES DETECTED after ${toolName}:\n` +
+              `  Expected: [${expectedFiles.join(", ")}]\n` +
+              `  Escaped:  [${auditResult.escapedWrites.join(", ")}]`
+            )
+
+            await daemonClient.recordEscapedWrite({
+              command: `tool:${toolName}`,
+              expectedFiles,
+              escapedWrites: auditResult.escapedWrites,
+              callID: i.callID,
+              timestamp: new Date().toISOString(),
+            })
+          }
+        } catch (e) {
+          console.warn(
+            `[sf:audit] Post-execution audit failed for ${toolName}: ${(e as Error).message}`
+          )
+        }
+
+        return // Audit complete for write/side-effect tools
+      }
+
+      // ── Shell tool escaped write audit ─────────────────────────────────────────
       if (!isShellTool(toolName)) return
 
       const command: string = args.command ?? args.cmd ?? args.input ?? ""

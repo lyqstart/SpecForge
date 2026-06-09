@@ -124,15 +124,23 @@ SpecForge 安装器 V3.5 — 用户级共享组件管理
 }
 
 function showVersion(userLevelDir: string): void {
-  const manifestPath = path.join(getSpecForgeUserDir(), "specforge-manifest.json")
-  if (fs.existsSync(manifestPath)) {
+  const sfUserDir = getSpecForgeUserDir()
+  const manifestPath = path.join(sfUserDir, "specforge-manifest.json")
+  // Legacy fallback: try reading from old location for display only
+  const legacyManifestPath = path.join(getLegacySpecForgeDir(), "specforge-manifest.json")
+  const effectivePath = fs.existsSync(manifestPath) ? manifestPath : (fs.existsSync(legacyManifestPath) ? legacyManifestPath : null)
+
+  if (effectivePath) {
     try {
-      const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"))
+      const manifest = JSON.parse(fs.readFileSync(effectivePath, "utf-8"))
       console.log(`SpecForge v${manifest.shared_version}`)
       console.log(`安装时间: ${manifest.installed_at}`)
       console.log(`更新时间: ${manifest.updated_at}`)
       console.log(`已部署文件: ${Object.keys(manifest.files).length} 个`)
-      console.log(`目录: ${getSpecForgeUserDir()}`)
+      console.log(`目录: ${sfUserDir}`)
+      if (effectivePath === legacyManifestPath) {
+        console.log(`⚠️  Manifest found at legacy location. Run 'install' to migrate to ${sfUserDir}`)
+      }
     } catch {
       console.log("SpecForge Manifest 解析失败")
     }
@@ -146,17 +154,30 @@ function showVersion(userLevelDir: string): void {
 // ============================================================================
 
 
-/** 获取 SpecForge 用户级目录（~/.specforge/） */
+/**
+ * 获取 SpecForge 用户级目录。
+ * v1.1 标准: 默认为 ~/.config/opencode/sf-user/
+ * Legacy ~/.specforge/ 仅保留只读迁移支持。
+ */
 function getSpecForgeUserDir(): string {
+  const home = require("node:os").homedir()
+  return require("node:path").join(home, ".config", "opencode", "sf-user")
+}
+
+/**
+ * Legacy reader: read from ~/.specforge/ for migration purposes only.
+ * NEVER write to this directory.
+ */
+function getLegacySpecForgeDir(): string {
   const home = require("node:os").homedir()
   return require("node:path").join(home, SPEC_DIR_NAME)
 }
 
-/** 部署 templates/ 目录到 ~/.specforge/templates/ */
+/** 部署 templates/ 目录到 sf-user/templates/ */
 async function deployTemplates(sourceDir: string): Promise<number> {
   const templatesSource = path.join(sourceDir, "setup", "userlevel-templates")
-  const specForgeDir = getSpecForgeUserDir()
-  const templatesTarget = path.join(specForgeDir, "templates")
+  const sfUserDir = getSpecForgeUserDir()
+  const templatesTarget = path.join(sfUserDir, "templates")
 
   if (!fs.existsSync(templatesSource)) {
     console.log("   ⚠️  templates/ 目录不存在，跳过模板部署")
@@ -291,10 +312,10 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       }
     }
 
-    // 部署 lib/ 依赖文件到 ~/.specforge/lib/
+    // 部署 lib/ 依赖文件到 sf-user/lib/
     // 合并两个源：userlevel-scripts-lib/（26 个 .ts）+ userlevel-opencode/scripts/lib/（sf_plugin_client.ts）
-    const specForgeDir = getSpecForgeUserDir()
-    const libTarget = path.join(specForgeDir, "lib")
+    const sfUserDir = getSpecForgeUserDir()
+    const libTarget = path.join(sfUserDir, "lib")
     if (!fs.existsSync(libTarget)) {
       fs.mkdirSync(libTarget, { recursive: true })
     }
@@ -496,10 +517,10 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
       upgradedCount++
     }
 
-    // Step 5: 部署 lib/ 依赖文件到 ~/.specforge/lib/
+    // Step 5: 部署 lib/ 依赖文件到 sf-user/lib/
     // 合并两个源：userlevel-scripts-lib/ + userlevel-opencode/scripts/lib/
-    const specForgeDirUpg = getSpecForgeUserDir()
-    const libTargetUpg = path.join(specForgeDirUpg, "lib")
+    const sfUserDirUpg = getSpecForgeUserDir()
+    const libTargetUpg = path.join(sfUserDirUpg, "lib")
     if (!fs.existsSync(libTargetUpg)) {
       fs.mkdirSync(libTargetUpg, { recursive: true })
     }
@@ -620,7 +641,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
           }
         }
 
-        // 回滚 User_Manifest（从备份恢复到 ~/.specforge/）
+        // 回滚 User_Manifest（从备份恢复到 sf-user/）
         const manifestBackup = path.join(userLevelDir, ".backup")
         if (fs.existsSync(manifestBackup)) {
           // Find the manifest backup (most recent specforge-manifest.json.bak.*)
@@ -758,7 +779,7 @@ export async function cmdUninstall(): Promise<void> {
     // Step 5: 从 opencode.json 移除 sf-* agents（Merge_Write 反向操作）
     await removeSfAgentsFromOpenCodeJson(userLevelDir)
 
-    // Step 6: 删除 User_Manifest（位于 ~/.specforge/）
+    // Step 6: 删除 User_Manifest（位于 sf-user/）
     const manifestPath = path.join(getSpecForgeUserDir(), "specforge-manifest.json")
     if (fs.existsSync(manifestPath)) {
       fs.unlinkSync(manifestPath)
@@ -768,6 +789,17 @@ export async function cmdUninstall(): Promise<void> {
     const installJsonPath = path.join(getSpecForgeUserDir(), "install.json")
     if (fs.existsSync(installJsonPath)) {
       fs.unlinkSync(installJsonPath)
+    }
+
+    // Also clean up legacy location if it exists (migration cleanup)
+    const legacyDir = getLegacySpecForgeDir()
+    const legacyManifest = path.join(legacyDir, "specforge-manifest.json")
+    if (fs.existsSync(legacyManifest)) {
+      fs.unlinkSync(legacyManifest)
+    }
+    const legacyInstallJson = path.join(legacyDir, "install.json")
+    if (fs.existsSync(legacyInstallJson)) {
+      fs.unlinkSync(legacyInstallJson)
     }
 
     // Step 6.5: 清理旧版本遗留目录

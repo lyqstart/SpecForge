@@ -230,4 +230,173 @@ export class PathPolicy {
 
     return { valid: true };
   }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // v1.1 Actor/Action/State Permission Model (added in second remediation)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /** Forbidden MVP directories that must never be created under .specforge/ */
+  private static readonly FORBIDDEN_MVP_DIRS = [
+    '.specforge/archive',
+    '.specforge/standards',
+    '.specforge/state',
+    '.specforge/reports',
+    '.specforge/snapshots',
+  ];
+
+  /** Check if an actor can read the given path */
+  canReadPath(actor: PathCaller, path: string, context?: { workItemId?: string; state?: string }): ValidationResult {
+    // First validate basic path syntax
+    const syntaxResult = this.validatePath(path);
+    if (!syntaxResult.valid) {
+      return syntaxResult;
+    }
+
+    // All actors can read all valid paths (read is not restricted by actor)
+    // Legacy specs are readable by all actors
+    return { valid: true };
+  }
+
+  /** Check if an actor can create (mkdir) the given path */
+  canCreatePath(actor: PathCaller, path: string, context?: { workItemId?: string; state?: string }): ValidationResult {
+    // First validate basic path syntax
+    const syntaxResult = this.validatePath(path);
+    if (!syntaxResult.valid) {
+      return syntaxResult;
+    }
+
+    // Check forbidden MVP directories
+    if (this.isForbiddenMvpPath(path)) {
+      return { valid: false, reason: 'forbidden_mvp_directory' };
+    }
+
+    // Delegate to canWritePath for actor-based permission checks
+    return this.canWritePath(actor, path, context);
+  }
+
+  /** Check if an actor can write to the given path */
+  canWritePath(actor: PathCaller, path: string, context?: { workItemId?: string; state?: string }): ValidationResult {
+    // First validate basic path syntax
+    const syntaxResult = this.validatePath(path);
+    if (!syntaxResult.valid) {
+      return syntaxResult;
+    }
+
+    const normalized = path.replace(/\\/g, '/');
+
+    // Legacy specs are always read-only for ALL actors (Requirement 1.11)
+    if (this.isLegacySpecPath(normalized)) {
+      return { valid: false, reason: 'legacy_specs_read_only' };
+    }
+
+    // Forbidden MVP directories — no actor can create/write
+    if (this.isForbiddenMvpPath(normalized)) {
+      return { valid: false, reason: 'forbidden_mvp_directory' };
+    }
+
+    // Agent restrictions
+    if (actor === 'agent') {
+      // .specforge/project/** — only Merge Runner can write (Requirement 3.29)
+      if (normalized.startsWith('.specforge/project/') || normalized === '.specforge/project') {
+        return { valid: false, reason: 'agent_cannot_write_project_specs' };
+      }
+
+      // user_decision.json (Requirement 3.30)
+      if (normalized.endsWith('user_decision.json')) {
+        return { valid: false, reason: 'agent_cannot_write_user_decision' };
+      }
+
+      // gates/** (Requirement 3.31)
+      if (normalized.includes('/gates/') || normalized.endsWith('/gates')) {
+        return { valid: false, reason: 'agent_cannot_write_gates' };
+      }
+
+      // gate_summary.md (Requirement 3.32)
+      if (normalized.endsWith('gate_summary.md')) {
+        return { valid: false, reason: 'agent_cannot_write_gate_summary' };
+      }
+
+      // merge_report.md (Requirement 3.33)
+      if (normalized.endsWith('merge_report.md')) {
+        return { valid: false, reason: 'agent_cannot_write_merge_report' };
+      }
+
+      // extension_registry.json (Requirement 5.28)
+      if (normalized.endsWith('extension_registry.json')) {
+        return { valid: false, reason: 'agent_cannot_write_extension_registry' };
+      }
+    }
+
+    // Merge Runner permissions
+    if (actor === 'merge_runner') {
+      if (normalized.startsWith('.specforge/project/') || normalized === '.specforge/project') {
+        return { valid: true };
+      }
+    }
+
+    // User Decision Recorder permissions
+    if (actor === 'user_decision_recorder') {
+      if (normalized.endsWith('user_decision.json')) {
+        return { valid: true };
+      }
+    }
+
+    // Gate Runner permissions
+    if (actor === 'gate_runner') {
+      if (normalized.includes('/gates/') || normalized.endsWith('/gates') || normalized.endsWith('gate_summary.md')) {
+        return { valid: true };
+      }
+    }
+
+    return { valid: true };
+  }
+
+  /** Check if a path is a forbidden MVP directory that must never be created */
+  isForbiddenMvpPath(path: string): boolean {
+    const normalized = path.replace(/\\/g, '/');
+    for (const forbidden of PathPolicy.FORBIDDEN_MVP_DIRS) {
+      if (normalized === forbidden || normalized.startsWith(forbidden + '/')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** Validate that a spec reference path has the required .specforge/ prefix */
+  validateSpecReferencePath(path: string): ValidationResult {
+    // First validate basic path syntax
+    const syntaxResult = this.validatePath(path);
+    if (!syntaxResult.valid) {
+      return syntaxResult;
+    }
+
+    const normalized = path.replace(/\\/g, '/');
+    if (!normalized.startsWith('.specforge/')) {
+      return { valid: false, reason: 'missing_specforge_prefix' };
+    }
+
+    return { valid: true };
+  }
+
+  /** Assert a path operation is allowed, throw if not */
+  assertPathAllowed(action: 'read' | 'write' | 'create', actor: PathCaller, path: string, context?: { workItemId?: string; state?: string }): void {
+    let result: ValidationResult;
+    switch (action) {
+      case 'read':
+        result = this.canReadPath(actor, path, context);
+        break;
+      case 'write':
+        result = this.canWritePath(actor, path, context);
+        break;
+      case 'create':
+        result = this.canCreatePath(actor, path, context);
+        break;
+    }
+
+    if (!result.valid) {
+      throw new Error(
+        `PathPolicy violation: ${action} by "${actor}" on "${path}" denied. Reason: ${result.reason}`
+      );
+    }
+  }
 }
