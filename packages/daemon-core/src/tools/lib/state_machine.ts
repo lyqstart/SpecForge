@@ -20,6 +20,49 @@ export type WorkflowType =
   | "ops_task"
   | "investigation"
 
+/**
+ * v1.1 Standard Workflow Paths (§7)
+ * These are the canonical workflow path names per v1.1 standard.
+ * Legacy WorkflowType values are mapped to these paths.
+ */
+export type WorkflowPath =
+  | 'requirement_change_path'
+  | 'design_change_path'
+  | 'architecture_change_path'
+  | 'task_change_path'
+  | 'code_only_fast_path'
+  | 'spec_migration_path'
+  | 'rollback_path';
+
+/**
+ * Maps legacy WorkflowType to v1.1 WorkflowPath.
+ * Used during bootstrap period for backward compatibility.
+ */
+export const WORKFLOW_TYPE_TO_PATH: Readonly<Record<WorkflowType, WorkflowPath>> = {
+  feature_spec: 'requirement_change_path',
+  bugfix_spec: 'requirement_change_path',
+  feature_spec_design_first: 'design_change_path',
+  quick_change: 'code_only_fast_path',
+  change_request: 'requirement_change_path',
+  refactor: 'task_change_path',
+  ops_task: 'task_change_path',
+  investigation: 'requirement_change_path',
+};
+
+/**
+ * Maps v1.1 WorkflowPath to a default legacy WorkflowType.
+ * Used when external code provides a v1.1 path and daemon needs legacy type.
+ */
+export const WORKFLOW_PATH_TO_TYPE: Readonly<Record<WorkflowPath, WorkflowType>> = {
+  requirement_change_path: 'feature_spec',
+  design_change_path: 'feature_spec_design_first',
+  architecture_change_path: 'feature_spec',
+  task_change_path: 'refactor',
+  code_only_fast_path: 'quick_change',
+  spec_migration_path: 'feature_spec',
+  rollback_path: 'feature_spec',
+};
+
 // ============================================================
 // States
 // ============================================================
