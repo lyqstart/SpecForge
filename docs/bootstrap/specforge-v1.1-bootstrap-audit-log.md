@@ -84,3 +84,22 @@
 **Test Results**: 22 test files, 401 tests passed, 0 failures.
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-09 — Fourth Pass: Filesystem E2E + code_only_fast_path Fix
+
+**Action**: Added filesystem-level E2E test and fixed code_only_fast_path test.
+
+**Changes**:
+1. Created `packages/workflow-runtime/tests/v11/e2e/v11-filesystem-lifecycle-e2e.test.ts` — full WI lifecycle on real temp directory
+2. Fixed Scenario 2 in `v11-compliance-e2e.test.ts` — removed incorrect notApplicableFlags for code_only_fast_path
+
+**Test Command**:
+```
+cd packages/workflow-runtime && npx vitest run tests/v11/e2e
+```
+
+**Status**: component E2E added, NOT final complete
+
+**Produced by**: Old system development aid (not v1.1 compliant)

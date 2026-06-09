@@ -212,7 +212,9 @@ describe('Scenario 2: code_only_fast_path — skip spec changes', () => {
   it('CloseGate validates even in code-only path', () => {
     const closeGate = new CloseGate();
 
-    // Code-only path: merge_report can be marked not_applicable
+    // Code-only path: merge_report exists with status not_applicable (counts as success).
+    // Evidence, verification report, and trace delta MUST exist even in fast path —
+    // no notApplicableFlags allowed for these checks.
     const result = closeGate.validateClose({
       currentState: 'verification_done',
       gatesAllPassed: true,
@@ -222,7 +224,10 @@ describe('Scenario 2: code_only_fast_path — skip spec changes', () => {
       specVersionIncremented: true,
       hasUnprocessedExtensionRequest: false,
       hasUnresolvedEscapedWriteIncident: false,
-      notApplicableFlags: new Set(['evidence_check', 'verification_check', 'trace_matrix_check']),
+      notApplicableFlags: new Set<string>(),
+      evidenceManifestExists: true,
+      verificationReportExists: true,
+      traceMatrixUpdated: true,
     });
 
     expect(result.canClose).toBe(true);
