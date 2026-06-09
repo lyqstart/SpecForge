@@ -475,7 +475,8 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
       }
 
       // ── Shell tool escaped write audit ─────────────────────────────────────────
-      if (!isShellTool(toolName)) return
+      // Audit shell tools AND side-effect tools for escaped writes
+      if (!isShellTool(toolName) && !isSideEffectTool(toolName) && !isWriteTool(toolName)) return
 
       const command: string = args.command ?? args.cmd ?? args.input ?? ""
       const expectedFiles = extractBashExpectedFiles(args)

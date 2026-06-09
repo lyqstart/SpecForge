@@ -466,26 +466,35 @@ export function validatePathPolicy(inputPath: string): {
 
 /**
  * 判断路径是否属于项目级正式规格区域（.specforge/project/）。
+ *
+ * @deprecated Use packages/workflow-runtime/src/v11/runtime/PathPolicy.ts for permission checks.
+ * This function only checks path classification, not permissions.
  */
 export function isProjectSpecPath(inputPath: string): boolean {
   const normalized = inputPath.replace(/\\/g, '/');
-  return normalized.startsWith('.specforge/project/') || normalized.startsWith('project/');
+  return normalized.startsWith('.specforge/project/');
 }
 
 /**
  * 判断路径是否属于 Work Item 区域（.specforge/work-items/）。
+ *
+ * @deprecated Use packages/workflow-runtime/src/v11/runtime/PathPolicy.ts for permission checks.
+ * This function only checks path classification, not permissions.
  */
 export function isWorkItemPath(inputPath: string): boolean {
   const normalized = inputPath.replace(/\\/g, '/');
-  return normalized.startsWith('.specforge/work-items/') || normalized.startsWith('work-items/');
+  return normalized.startsWith('.specforge/work-items/');
 }
 
 /**
  * 判断路径是否属于旧 specs 区域（.specforge/specs/）。
+ *
+ * @deprecated Use packages/workflow-runtime/src/v11/runtime/PathPolicy.ts for permission checks.
+ * This function only checks path classification, not permissions.
  */
 export function isLegacySpecPath(inputPath: string): boolean {
   const normalized = inputPath.replace(/\\/g, '/');
-  return normalized.startsWith('.specforge/specs/') || normalized.startsWith('specs/');
+  return normalized.startsWith('.specforge/specs/');
 }
 
 // ---------------------------------------------------------------------------

@@ -67,3 +67,20 @@
 - `packages/workflow-runtime/tests/v11/unit/path-policy-permissions.test.ts`
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-09 — Third Remediation Pass (Round 2 Re-audit Findings)
+
+**Action**: Addressed round 2 re-audit findings (4 items).
+
+**Changes**:
+1. `packages/types/src/directory-layout.ts` — Removed permissive `project/`, `work-items/`, `specs/` alternatives from path classification functions. Only `.specforge/`-prefixed paths now match. Added `@deprecated` markers directing to Runtime PathPolicy.
+2. `packages/workflow-runtime/src/v11/runtime/PathService.ts` — Same fix: removed prefix-less path matching alternatives.
+3. `setup/userlevel-opencode/plugins/sf_specforge.ts` — Expanded `tool.execute.after` guard to audit ALL write tools and side-effect tools (not just shell).
+4. `packages/workflow-runtime/tests/v11/unit/path-service.test.ts` — Updated assertions: prefix-less paths now expect `false`.
+5. Confirmed installer already correctly writes to `~/.config/opencode/sf-user/` (verified, no code change needed).
+
+**Test Results**: 22 test files, 401 tests passed, 0 failures.
+
+**Produced by**: Old system development aid (not v1.1 compliant)

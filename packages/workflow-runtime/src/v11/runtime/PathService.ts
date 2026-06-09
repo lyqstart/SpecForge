@@ -240,18 +240,18 @@ export class PathService {
   /** Check if a path is a legacy spec path */
   isLegacySpecPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.includes('.specforge/specs/') || normalized.startsWith('specs/');
+    return normalized.includes('.specforge/specs/');
   }
 
   /** Check if a path is a project spec path */
   isProjectSpecPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.includes('.specforge/project/') || normalized.startsWith('project/');
+    return normalized.includes('.specforge/project/');
   }
 
   /** Check if a path is a work item path */
   isWorkItemPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
-    return normalized.includes('.specforge/work-items/') || normalized.startsWith('work-items/');
+    return normalized.includes('.specforge/work-items/');
   }
 }

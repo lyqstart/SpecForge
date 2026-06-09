@@ -164,19 +164,19 @@ describe('PathService', () => {
   describe('Path helpers', () => {
     it('should detect legacy spec paths', () => {
       expect(ps.isLegacySpecPath('.specforge/specs/some/file.md')).toBe(true);
-      expect(ps.isLegacySpecPath('specs/some/file.md')).toBe(true);
+      expect(ps.isLegacySpecPath('specs/some/file.md')).toBe(false);
       expect(ps.isLegacySpecPath('.specforge/project/specs.md')).toBe(false);
     });
 
     it('should detect project spec paths', () => {
       expect(ps.isProjectSpecPath('.specforge/project/requirements.md')).toBe(true);
-      expect(ps.isProjectSpecPath('project/requirements.md')).toBe(true);
+      expect(ps.isProjectSpecPath('project/requirements.md')).toBe(false);
       expect(ps.isProjectSpecPath('.specforge/work-items/WI-0001')).toBe(false);
     });
 
     it('should detect work item paths', () => {
       expect(ps.isWorkItemPath('.specforge/work-items/WI-0001')).toBe(true);
-      expect(ps.isWorkItemPath('work-items/WI-0001')).toBe(true);
+      expect(ps.isWorkItemPath('work-items/WI-0001')).toBe(false);
       expect(ps.isWorkItemPath('.specforge/project/req.md')).toBe(false);
     });
   });
