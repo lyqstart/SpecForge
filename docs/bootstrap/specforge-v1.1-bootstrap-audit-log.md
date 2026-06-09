@@ -171,3 +171,25 @@ The SpecForge system has verifiable evidence of v1.1 compliance at the programma
 - Production deployment verification with real OpenCode session
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-09 — Seventh Pass: Filesystem E2E Standard Alignment
+
+**Action**: Fixed 5 issues in filesystem lifecycle E2E to align with v1.1 standard structure.
+
+**Changes**:
+1. workflow field: `workflow_type: requirements-first` → `workflow_path: requirement_change_path`
+2. candidate_manifest: uses `entries` with `candidate_hash`, `target_base_hash`, `manifest_hash`, `merge_required`, `operation: replace`
+3. Gate Report: full v1.1 structure with `gate_id`, `gate_type`, `required`, `input_files`, `checks`, `blocking_issues`, `warnings`, `waiver_allowed`, `runner`, `started_at`, `finished_at`
+4. code_only_fast_path: added test for `entries=[]`, `merge_required=false`, `workflow_path=code_only_fast_path`
+5. Bootstrap docs updated
+
+**Test Command**:
+```
+cd packages/workflow-runtime && npx vitest run tests/v11/e2e
+```
+
+**Status**: filesystem E2E draft added, NOT final complete
+
+**Produced by**: Old system development aid (not v1.1 compliant)

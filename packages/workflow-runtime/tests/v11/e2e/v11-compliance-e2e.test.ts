@@ -233,6 +233,23 @@ describe('Scenario 2: code_only_fast_path — skip spec changes', () => {
     expect(result.canClose).toBe(true);
     expect(result.failedChecks).toHaveLength(0);
   });
+
+  it('code_only_fast_path manifest uses entries=[] and merge_required=false', () => {
+    const manifest = {
+      schema_version: '1.0',
+      work_item_id: 'WI-FAST-001',
+      workflow_path: 'code_only_fast_path',
+      base_spec_version: 'PSV-0001',
+      target_spec_version: 'PSV-0001',
+      merge_required: false,
+      manifest_hash: 'sha256:empty',
+      entries: [],
+      generated_at: new Date().toISOString(),
+    };
+    expect(manifest.entries).toHaveLength(0);
+    expect(manifest.merge_required).toBe(false);
+    expect(manifest.workflow_path).toBe('code_only_fast_path');
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════

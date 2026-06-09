@@ -14,7 +14,7 @@
 | Extension Registry | Entry Point Exists | sf-extension.md, extension_registry.json | End-to-end subflow not verified |
 | Installer Legacy Write | NOT Fixed | scripts/sf-installer.ts still defaults to ~/.specforge | Must migrate to ~/.config/opencode/sf-user/ |
 | Bootstrap Documentation | NOW Created | This file | - |
-| E2E Compliance Evidence | Runtime Orchestration E2E Added | 58 tests pass (6 scenarios + filesystem lifecycle + 12 Runtime orchestration tests) | Real daemon integration with persistent state needed for final |
+| E2E Compliance Evidence | Filesystem E2E Draft | v1.1 standard fields (workflow_path, entries, Gate Report) aligned | Daemon integration with real WI lifecycle needed for final |
 
 ## Details
 

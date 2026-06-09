@@ -113,7 +113,7 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
       title: 'E2E Test Work Item',
       description: 'Full lifecycle test for filesystem operations',
       current_state: 'created',
-      workflow_type: 'requirements-first',
+      workflow_path: 'requirement_change_path',
       created_at: new Date().toISOString(),
     };
     writeFileSync(join(wiDir, 'work_item.json'), JSON.stringify(workItemMeta, null, 2));
@@ -135,7 +135,7 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
       schema_version: '1.0',
       work_item_id: WI_ID,
       trigger_type: 'user_request',
-      workflow_selected: 'requirements-first',
+      workflow_path: 'requirement_change_path',
       triggered_at: new Date().toISOString(),
     };
     writeFileSync(join(wiDir, 'trigger_result.json'), JSON.stringify(triggerResult, null, 2));
@@ -149,7 +149,7 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
 
     const readBack = JSON.parse(readFileSync(join(wiDir, 'work_item.json'), 'utf-8'));
     expect(readBack.current_state).toBe('created');
-    expect(readBack.workflow_type).toBe('requirements-first');
+    expect(readBack.workflow_path).toBe('requirement_change_path');
   });
 
   it('Step 3: Generate candidates and manifest', () => {
@@ -173,36 +173,55 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
     const traceDeltaContent = `# Trace Delta: ${WI_ID}\n\n## New Traces\n- REQ-1 → DES-1 (Authentication Module implements Login)\n- REQ-2 → DES-1 (Authentication Module implements Password Reset)\n\n## Removed Traces\n(none)\n`;
     writeFileSync(join(wiDir, 'trace_delta.md'), traceDeltaContent);
 
-    // Write candidate_manifest.json
+    // Write candidate_manifest.json (v1.1 standard structure)
+    const reqContent = readFileSync(join(candidatesDir, 'requirements.md'), 'utf-8');
+    const designContentRead = readFileSync(join(candidatesDir, 'design.md'), 'utf-8');
+    const reqHash = `sha256:${Buffer.from(reqContent).toString('hex').slice(0, 16)}`;
+    const designHash = `sha256:${Buffer.from(designContentRead).toString('hex').slice(0, 16)}`;
+
     const candidateManifest = {
       schema_version: '1.0',
       work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
       base_spec_version: 'PSV-0001',
       target_spec_version: 'PSV-0002',
-      candidates: [
+      merge_required: true,
+      manifest_hash: '', // will be computed after stringifying entries
+      entries: [
         {
           candidate_path: `.specforge/work-items/${WI_ID}/candidates/requirements.md`,
           target_path: '.specforge/project/requirements_index.md',
-          operation: 'update',
+          operation: 'replace',
+          candidate_hash: reqHash,
+          target_base_hash: 'sha256:0000000000000000', // initial (no existing file)
         },
         {
           candidate_path: `.specforge/work-items/${WI_ID}/candidates/design.md`,
           target_path: '.specforge/project/design_index.md',
-          operation: 'update',
+          operation: 'replace',
+          candidate_hash: designHash,
+          target_base_hash: 'sha256:0000000000000000',
         },
       ],
       generated_at: new Date().toISOString(),
     };
+    // Compute manifest_hash from entries
+    const entriesJson = JSON.stringify(candidateManifest.entries);
+    candidateManifest.manifest_hash = `sha256:${Buffer.from(entriesJson).toString('hex').slice(0, 32)}`;
+
     writeFileSync(join(wiDir, 'candidate_manifest.json'), JSON.stringify(candidateManifest, null, 2));
 
-    // Verify candidate_manifest.json parseable and valid
-    const manifestRaw = readFileSync(join(wiDir, 'candidate_manifest.json'), 'utf-8');
-    const mergeRunner = new MergeRunner();
-    const parsed = mergeRunner.parseCandidateManifest(manifestRaw);
-    expect(parsed.success).toBe(true);
-    expect(parsed.data!.candidates).toHaveLength(2);
-    expect(parsed.data!.base_spec_version).toBe('PSV-0001');
-    expect(parsed.data!.target_spec_version).toBe('PSV-0002');
+    // Verify candidate_manifest.json on disk uses v1.1 entries structure
+    const manifestOnDisk = JSON.parse(readFileSync(join(wiDir, 'candidate_manifest.json'), 'utf-8'));
+    expect(manifestOnDisk.entries).toHaveLength(2);
+    expect(manifestOnDisk.merge_required).toBe(true);
+    expect(manifestOnDisk.manifest_hash).toBeTruthy();
+    expect(manifestOnDisk.workflow_path).toBe('requirement_change_path');
+    expect(manifestOnDisk.entries[0].operation).toBe('replace');
+    expect(manifestOnDisk.entries[0].candidate_hash).toBeTruthy();
+    expect(manifestOnDisk.entries[0].target_base_hash).toBeTruthy();
+    expect(manifestOnDisk.entries[0].target_path).toMatch(/^\.specforge\/project\//);
+    expect(manifestOnDisk.entries[1].target_path).toMatch(/^\.specforge\/project\//);
   });
 
   it('Step 4: Execute gates and generate gate results', () => {
@@ -210,33 +229,55 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
     const gatesDir = join(wiDir, 'gates');
     mkdirSync(gatesDir, { recursive: true });
 
-    // Write gates/spec_completeness_gate.json
+    const now = new Date().toISOString();
+
+    // Write gates/spec_completeness_gate.json (v1.1 Gate Report format)
     const specCompletenessGate = {
       schema_version: '1.0',
-      gate_name: 'spec_completeness_gate',
+      gate_id: 'spec_completeness_gate',
+      gate_type: 'hard_gate',
+      required: true,
       status: 'passed',
-      work_item_id: WI_ID,
-      checked_at: new Date().toISOString(),
-      details: {
-        requirements_present: true,
-        design_present: true,
-        trace_delta_present: true,
-      },
+      input_files: [
+        `.specforge/work-items/${WI_ID}/candidates/requirements.md`,
+        `.specforge/work-items/${WI_ID}/candidates/design.md`,
+        `.specforge/work-items/${WI_ID}/trace_delta.md`,
+      ],
+      checks: [
+        { name: 'requirements_present', passed: true },
+        { name: 'design_present', passed: true },
+        { name: 'trace_delta_present', passed: true },
+      ],
+      blocking_issues: [],
+      warnings: [],
+      waiver_allowed: false,
+      runner: 'gate_runner',
+      started_at: now,
+      finished_at: now,
     };
     writeFileSync(join(gatesDir, 'spec_completeness_gate.json'), JSON.stringify(specCompletenessGate, null, 2));
 
-    // Write gates/path_policy_gate.json
+    // Write gates/path_policy_gate.json (v1.1 Gate Report format)
     const pathPolicyGate = {
       schema_version: '1.0',
-      gate_name: 'path_policy_gate',
+      gate_id: 'path_policy_gate',
+      gate_type: 'hard_gate',
+      required: true,
       status: 'passed',
-      work_item_id: WI_ID,
-      checked_at: new Date().toISOString(),
-      details: {
-        all_candidate_paths_valid: true,
-        all_target_paths_valid: true,
-        no_forbidden_paths: true,
-      },
+      input_files: [
+        `.specforge/work-items/${WI_ID}/candidate_manifest.json`,
+      ],
+      checks: [
+        { name: 'all_candidate_paths_valid', passed: true },
+        { name: 'all_target_paths_in_project', passed: true },
+        { name: 'no_forbidden_paths', passed: true },
+      ],
+      blocking_issues: [],
+      warnings: [],
+      waiver_allowed: false,
+      runner: 'gate_runner',
+      started_at: now,
+      finished_at: now,
     };
     writeFileSync(join(gatesDir, 'path_policy_gate.json'), JSON.stringify(pathPolicyGate, null, 2));
 
@@ -249,10 +290,21 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
     expect(existsSync(join(gatesDir, 'path_policy_gate.json'))).toBe(true);
     expect(existsSync(join(wiDir, 'gate_summary.md'))).toBe(true);
 
-    // Verify gate JSON is valid
+    // Verify Gate Report structure (v1.1 standard)
     const gateRaw = readFileSync(join(gatesDir, 'spec_completeness_gate.json'), 'utf-8');
     const gateParsed = JSON.parse(gateRaw);
+    expect(gateParsed.gate_id).toBe('spec_completeness_gate');
+    expect(gateParsed.gate_type).toBe('hard_gate');
+    expect(gateParsed.required).toBe(true);
     expect(gateParsed.status).toBe('passed');
+    expect(gateParsed.input_files).toBeDefined();
+    expect(gateParsed.checks).toBeDefined();
+    expect(gateParsed.blocking_issues).toEqual([]);
+    expect(gateParsed.warnings).toEqual([]);
+    expect(gateParsed.waiver_allowed).toBe(false);
+    expect(gateParsed.runner).toBe('gate_runner');
+    expect(gateParsed.started_at).toBeTruthy();
+    expect(gateParsed.finished_at).toBeTruthy();
   });
 
   it('Step 5: Record user decision with hash binding', () => {
@@ -297,13 +349,24 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
     const wiDir = join(tempDir, '.specforge', 'work-items', WI_ID);
     const projectDir = join(tempDir, '.specforge', 'project');
 
-    // Read candidate_manifest.json
+    // Read candidate_manifest.json (v1.1 uses 'entries' on disk)
     const manifestRaw = readFileSync(join(wiDir, 'candidate_manifest.json'), 'utf-8');
-    const mergeRunner = new MergeRunner();
-    const parsed = mergeRunner.parseCandidateManifest(manifestRaw);
-    expect(parsed.success).toBe(true);
+    const manifestOnDisk = JSON.parse(manifestRaw);
 
-    const manifest = parsed.data!;
+    // Adapt v1.1 entries to MergeRunner's internal CandidateManifest (uses 'candidates' field)
+    const mergeRunner = new MergeRunner();
+    const manifest = {
+      schema_version: manifestOnDisk.schema_version as '1.0',
+      work_item_id: manifestOnDisk.work_item_id,
+      base_spec_version: manifestOnDisk.base_spec_version,
+      target_spec_version: manifestOnDisk.target_spec_version,
+      candidates: manifestOnDisk.entries.map((e: any) => ({
+        candidate_path: e.candidate_path,
+        target_path: e.target_path,
+        operation: e.operation === 'replace' ? 'update' : e.operation,
+      })),
+      generated_at: manifestOnDisk.generated_at,
+    };
 
     // MergeRunner must NOT scan candidates/ directory — only use manifest entries
     // For each entry: read candidate file, write to target_path under .specforge/project/
