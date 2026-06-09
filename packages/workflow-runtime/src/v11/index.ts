@@ -47,6 +47,10 @@ export {
   MergeRunner,
   type V11ManifestEntry,
   type V11CandidateManifest,
+  type V11MergeParams,
+  type V11MergeResult,
+  type V11MergedFile,
+  type V11MergeReportParams,
   type CandidateEntry,
   type CandidateManifest,
   type MergedFile,
@@ -80,6 +84,7 @@ export {
   CloseGate,
   type CloseCheck,
   type CloseValidationResult,
+  type FileSystemValidationParams,
 } from './runtime/CloseGate.js';
 
 // Extension Subflow (Round 5)

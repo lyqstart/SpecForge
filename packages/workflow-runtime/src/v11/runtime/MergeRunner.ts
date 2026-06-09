@@ -74,6 +74,43 @@ export interface MergePreconditionResult {
   errors: string[];
 }
 
+// ---- v1.1 Merge Execution Types ----
+
+export interface V11MergeParams {
+  manifest: V11CandidateManifest;
+  readCandidate: (path: string) => string | null;
+  readTarget: (path: string) => string | null;
+  writeTarget: (path: string, content: string) => boolean;
+  calculateHash: (content: string) => string;
+}
+
+export interface V11MergeResult {
+  success: boolean;
+  mergedFiles: V11MergedFile[];
+  errors: string[];
+  newSpecVersion: string;
+}
+
+export interface V11MergedFile {
+  candidatePath: string;
+  targetPath: string;
+  operation: 'replace';
+  candidateHash: string;
+  targetBaseHash: string;
+  postMergeHash: string;
+  success: boolean;
+  error?: string;
+}
+
+export interface V11MergeReportParams {
+  workItemId: string;
+  baseSpecVersion: string;
+  newSpecVersion: string;
+  manifestHash: string;
+  mergedFiles: V11MergedFile[];
+  executedAt: string;
+}
+
 /**
  * MergeRunner — executes candidate merges with precondition validation.
  *
@@ -343,6 +380,257 @@ export class MergeRunner {
       lines.push(`- **Operation**: ${file.operation}`);
       lines.push(`- **Pre-merge Hash**: ${file.preHash || 'N/A'}`);
       lines.push(`- **Post-merge Hash**: ${file.postHash || 'N/A'}`);
+      lines.push(`- **Status**: ${statusIcon} ${file.success ? 'Success' : 'Failed'}`);
+      if (file.error) {
+        lines.push(`- **Error**: ${file.error}`);
+      }
+      lines.push('');
+
+      if (file.success) successCount++;
+      else failCount++;
+    }
+
+    lines.push('## Summary');
+    lines.push(`- Total operations: ${params.mergedFiles.length}`);
+    lines.push(`- Successful: ${successCount}`);
+    lines.push(`- Failed: ${failCount}`);
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Execute a v1.1 merge directly from a V11CandidateManifest.
+   * Accepts ONLY v1.1 structures (entries[], not candidates[]).
+   * Validates manifest, verifies hashes, writes targets.
+   */
+  executeV11Merge(params: V11MergeParams): V11MergeResult {
+    const { manifest, readCandidate, readTarget, writeTarget, calculateHash } = params;
+
+    // First: validate v1.1 manifest structure
+    const validation = this.validateV11Manifest(manifest);
+    if (!validation.valid) {
+      return {
+        success: false,
+        mergedFiles: [],
+        errors: validation.errors,
+        newSpecVersion: manifest.base_spec_version,
+      };
+    }
+
+    // Reject manifests that only have candidates[] (legacy)
+    if ((manifest as any).candidates && !manifest.entries) {
+      return {
+        success: false,
+        mergedFiles: [],
+        errors: ['Legacy manifest with candidates[] is not accepted by executeV11Merge. Use entries[].'],
+        newSpecVersion: manifest.base_spec_version,
+      };
+    }
+
+    const mergedFiles: V11MergedFile[] = [];
+    const errors: string[] = [];
+
+    // Compute new spec version (increment last digit)
+    const baseVersion = manifest.base_spec_version;
+    const versionNum = parseInt(baseVersion.replace('PSV-', ''), 10);
+    const newSpecVersion = `PSV-${String(versionNum + 1).padStart(4, '0')}`;
+
+    for (const entry of manifest.entries) {
+      // Validate candidate_path contains candidates/ for the work item
+      if (!entry.candidate_path.includes('candidates/')) {
+        const err = `candidate_path "${entry.candidate_path}" must contain "candidates/"`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      // Validate target_path starts with .specforge/project/
+      if (!entry.target_path.startsWith('.specforge/project/')) {
+        const err = `target_path "${entry.target_path}" must start with ".specforge/project/"`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      // Validate operation is 'replace'
+      if (entry.operation !== 'replace') {
+        const err = `operation must be "replace", got "${entry.operation}"`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      // Read candidate content
+      const candidateContent = readCandidate(entry.candidate_path);
+      if (candidateContent === null) {
+        const err = `Failed to read candidate: ${entry.candidate_path}`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      // Verify candidate_hash matches actual file hash
+      const actualCandidateHash = calculateHash(candidateContent);
+      if (actualCandidateHash !== entry.candidate_hash) {
+        const err = `candidate_hash mismatch for ${entry.candidate_path}: manifest="${entry.candidate_hash}", actual="${actualCandidateHash}"`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      // Verify target_base_hash matches target file's hash before write
+      const targetContent = readTarget(entry.target_path);
+      const actualTargetHash = targetContent !== null ? calculateHash(targetContent) : calculateHash('');
+      if (actualTargetHash !== entry.target_base_hash) {
+        const err = `target_base_hash mismatch for ${entry.target_path}: manifest="${entry.target_base_hash}", actual="${actualTargetHash}"`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      // Validate candidate format (complete files only, no patches/diffs)
+      const formatCheck = this.validateCandidateFormat(candidateContent);
+      if (!formatCheck.valid) {
+        const err = `Invalid candidate format for ${entry.candidate_path}: ${formatCheck.reason}`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      // Write to target
+      const writeSuccess = writeTarget(entry.target_path, candidateContent);
+      if (!writeSuccess) {
+        const err = `Failed to write target: ${entry.target_path}`;
+        errors.push(err);
+        mergedFiles.push({
+          candidatePath: entry.candidate_path,
+          targetPath: entry.target_path,
+          operation: 'replace',
+          candidateHash: entry.candidate_hash,
+          targetBaseHash: entry.target_base_hash,
+          postMergeHash: '',
+          success: false,
+          error: err,
+        });
+        continue;
+      }
+
+      const postMergeHash = calculateHash(candidateContent);
+      mergedFiles.push({
+        candidatePath: entry.candidate_path,
+        targetPath: entry.target_path,
+        operation: 'replace',
+        candidateHash: entry.candidate_hash,
+        targetBaseHash: entry.target_base_hash,
+        postMergeHash,
+        success: true,
+      });
+    }
+
+    return {
+      success: errors.length === 0,
+      mergedFiles,
+      errors,
+      newSpecVersion,
+    };
+  }
+
+  /**
+   * Generate v1.1 merge_report.md content with standard fields.
+   */
+  generateV11MergeReport(params: V11MergeReportParams): string {
+    const lines: string[] = [
+      '# Merge Report',
+      '',
+      `**Merge Status**: merged`,
+      `**Work Item**: ${params.workItemId}`,
+      `**Base Spec Version**: ${params.baseSpecVersion}`,
+      `**New Spec Version**: ${params.newSpecVersion}`,
+      `**Manifest Hash**: ${params.manifestHash}`,
+      `**Executed At**: ${params.executedAt}`,
+      `**Executor**: merge_runner`,
+      '',
+      '## Merged Files',
+      '',
+    ];
+
+    let opIndex = 0;
+    let successCount = 0;
+    let failCount = 0;
+
+    for (const file of params.mergedFiles) {
+      opIndex++;
+      const statusIcon = file.success ? '✅' : '❌';
+      lines.push(`### ${opIndex}. ${file.targetPath}`);
+      lines.push(`- **Source**: ${file.candidatePath}`);
+      lines.push(`- **Target**: ${file.targetPath}`);
+      lines.push(`- **Operation**: ${file.operation}`);
+      lines.push(`- **Candidate Hash**: ${file.candidateHash}`);
+      lines.push(`- **Target Base Hash**: ${file.targetBaseHash}`);
+      lines.push(`- **Post-Merge Hash**: ${file.postMergeHash || 'N/A'}`);
       lines.push(`- **Status**: ${statusIcon} ${file.success ? 'Success' : 'Failed'}`);
       if (file.error) {
         lines.push(`- **Error**: ${file.error}`);

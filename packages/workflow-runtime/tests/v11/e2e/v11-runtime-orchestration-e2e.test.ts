@@ -18,6 +18,7 @@ import {
   type GateDefinition,
   type GateCheckResult,
   type CandidateManifest,
+  type V11CandidateManifest,
   type UserDecisionRecord,
 } from '@/v11/index';
 
@@ -279,16 +280,31 @@ describe('v1.1 Runtime Orchestration E2E', () => {
     const mergeRunner = runtime.getMergeRunner();
     const recorder = runtime.getUserDecisionRecorder();
 
+    const calcHash = (content: string) => recorder.calculateHash(content);
+    const candidateContent = '# Requirements Index\n\n## Updated Requirements';
+    const candidateHash = calcHash(candidateContent);
+    const targetBaseHash = calcHash(''); // target doesn't exist yet
+
     const candidateManifestContent = JSON.stringify({
       schema_version: '1.0',
       work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
       base_spec_version: 'PSV-0001',
-      target_spec_version: 'PSV-0002',
-      candidates: [
+      merge_required: true,
+      manifest_hash: calcHash(JSON.stringify([{
+        candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
+        target_path: '.specforge/project/requirements_index.md',
+        operation: 'replace',
+        candidate_hash: candidateHash,
+        target_base_hash: targetBaseHash,
+      }])),
+      entries: [
         {
-          candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/requirements_index.md',
+          candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
           target_path: '.specforge/project/requirements_index.md',
-          operation: 'update',
+          operation: 'replace',
+          candidate_hash: candidateHash,
+          target_base_hash: targetBaseHash,
         },
       ],
       generated_at: new Date().toISOString(),
@@ -311,7 +327,7 @@ describe('v1.1 Runtime Orchestration E2E', () => {
       currentManifestContent: candidateManifestContent,
       currentGateSummaryContent: gateSummaryContent,
       currentSpecVersion: 'PSV-0001',
-      calculateHash: (content: string) => recorder.calculateHash(content),
+      calculateHash: calcHash,
     });
     expect(preconditions.valid).toBe(true);
     expect(preconditions.errors).toHaveLength(0);
@@ -320,28 +336,46 @@ describe('v1.1 Runtime Orchestration E2E', () => {
     sm.transition('merging', 'state_machine');
     expect(sm.getCurrentState()).toBe('merging');
 
-    // Execute merge with in-memory candidates
-    const manifest: CandidateManifest = JSON.parse(candidateManifestContent);
+    // Execute v1.1 merge with proper manifest
+    const v11Manifest: V11CandidateManifest = {
+      schema_version: '1.0',
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: calcHash(JSON.stringify([{
+        candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
+        target_path: '.specforge/project/requirements_index.md',
+        operation: 'replace',
+        candidate_hash: candidateHash,
+        target_base_hash: targetBaseHash,
+      }])),
+      entries: [{
+        candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
+        target_path: '.specforge/project/requirements_index.md',
+        operation: 'replace',
+        candidate_hash: candidateHash,
+        target_base_hash: targetBaseHash,
+      }],
+    };
+
     const mergedTargets = new Map<string, string>();
 
-    const mergeResult = mergeRunner.executeMerge({
-      manifest,
-      readCandidate: (path: string) => {
-        if (path.includes('requirements_index.md')) {
-          return '# Requirements Index\n\n## Updated Requirements';
-        }
-        return null;
-      },
+    const mergeResult = mergeRunner.executeV11Merge({
+      manifest: v11Manifest,
+      readCandidate: () => candidateContent,
+      readTarget: () => null, // target doesn't exist
       writeTarget: (path: string, content: string) => {
         mergedTargets.set(path, content);
         return true;
       },
-      calculateHash: (content: string) => recorder.calculateHash(content),
+      calculateHash: calcHash,
     });
 
     expect(mergeResult.success).toBe(true);
     expect(mergeResult.mergedFiles).toHaveLength(1);
     expect(mergeResult.mergedFiles[0]!.success).toBe(true);
+    expect(mergeResult.newSpecVersion).toBe('PSV-0002');
     expect(mergedTargets.has('.specforge/project/requirements_index.md')).toBe(true);
 
     // Merge runner transitions to merged
@@ -388,7 +422,7 @@ describe('v1.1 Runtime Orchestration E2E', () => {
     expect(incompleteResult.failedChecks).toContain('gates_check');
     expect(incompleteResult.failedChecks).toContain('user_decision_check');
 
-    // Valid close with all conditions met + not_applicable for optional checks
+    // Valid close with all conditions met
     const validResult = closeGate.validateClose({
       currentState: 'verification_done',
       gatesAllPassed: true,
@@ -398,7 +432,10 @@ describe('v1.1 Runtime Orchestration E2E', () => {
       specVersionIncremented: true,
       hasUnprocessedExtensionRequest: false,
       hasUnresolvedEscapedWriteIncident: false,
-      notApplicableFlags: new Set(['evidence_check', 'verification_check', 'trace_matrix_check']),
+      notApplicableFlags: new Set<string>(),
+      evidenceManifestExists: true,
+      verificationReportExists: true,
+      traceMatrixUpdated: true,
     });
     expect(validResult.canClose).toBe(true);
     expect(validResult.failedChecks).toHaveLength(0);
@@ -446,7 +483,10 @@ describe('v1.1 Runtime Orchestration E2E', () => {
       specVersionIncremented: true,
       hasUnprocessedExtensionRequest: true,  // Blocking!
       hasUnresolvedEscapedWriteIncident: false,
-      notApplicableFlags: new Set(['evidence_check', 'verification_check', 'trace_matrix_check']),
+      notApplicableFlags: new Set<string>(),
+      evidenceManifestExists: true,
+      verificationReportExists: true,
+      traceMatrixUpdated: true,
     });
     expect(closeResult.canClose).toBe(false);
     expect(closeResult.failedChecks).toContain('extension_check');
@@ -618,23 +658,39 @@ describe('v1.1 Runtime Orchestration E2E', () => {
     expect(sm.getCurrentState()).toBe('approval_required');
 
     // ── Phase 4: User approval ──
+    const recorder = runtime.getUserDecisionRecorder();
+    const calcHash = (content: string) => recorder.calculateHash(content);
+
+    const candidateContent = '# Requirements Index\n\n## New Content';
+    const candidateHash = calcHash(candidateContent);
+    const targetBaseHash = calcHash(''); // target doesn't exist yet
+
     const candidateManifestContent = JSON.stringify({
       schema_version: '1.0',
       work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
       base_spec_version: 'PSV-0001',
-      target_spec_version: 'PSV-0002',
-      candidates: [
+      merge_required: true,
+      manifest_hash: calcHash(JSON.stringify([{
+        candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
+        target_path: '.specforge/project/requirements_index.md',
+        operation: 'replace',
+        candidate_hash: candidateHash,
+        target_base_hash: targetBaseHash,
+      }])),
+      entries: [
         {
-          candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/requirements_index.md',
+          candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
           target_path: '.specforge/project/requirements_index.md',
-          operation: 'update',
+          operation: 'replace',
+          candidate_hash: candidateHash,
+          target_base_hash: targetBaseHash,
         },
       ],
       generated_at: new Date().toISOString(),
     });
     const gateSummaryContent = gateRunner.generateGateSummaryMarkdown(gateResult);
 
-    const recorder = runtime.getUserDecisionRecorder();
     const decision = recorder.recordApproval({
       workItemId: WI_ID,
       approved: true,
@@ -660,22 +716,44 @@ describe('v1.1 Runtime Orchestration E2E', () => {
       currentManifestContent: candidateManifestContent,
       currentGateSummaryContent: gateSummaryContent,
       currentSpecVersion: 'PSV-0001',
-      calculateHash: (c: string) => recorder.calculateHash(c),
+      calculateHash: calcHash,
     });
     expect(preconditions.valid).toBe(true);
 
-    // Execute merge
-    const manifest: CandidateManifest = JSON.parse(candidateManifestContent);
+    // Execute v1.1 merge
+    const v11Manifest: V11CandidateManifest = {
+      schema_version: '1.0',
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: calcHash(JSON.stringify([{
+        candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
+        target_path: '.specforge/project/requirements_index.md',
+        operation: 'replace',
+        candidate_hash: candidateHash,
+        target_base_hash: targetBaseHash,
+      }])),
+      entries: [{
+        candidate_path: '.specforge/work-items/WI-ORCH-001/candidates/project/requirements_index.md',
+        target_path: '.specforge/project/requirements_index.md',
+        operation: 'replace',
+        candidate_hash: candidateHash,
+        target_base_hash: targetBaseHash,
+      }],
+    };
+
     const targetStore = new Map<string, string>();
 
-    const mergeResult = mergeRunner.executeMerge({
-      manifest,
-      readCandidate: () => '# Requirements Index\n\n## New Content',
+    const mergeResult = mergeRunner.executeV11Merge({
+      manifest: v11Manifest,
+      readCandidate: () => candidateContent,
+      readTarget: () => null, // target doesn't exist
       writeTarget: (path: string, content: string) => {
         targetStore.set(path, content);
         return true;
       },
-      calculateHash: (c: string) => recorder.calculateHash(c),
+      calculateHash: calcHash,
     });
     expect(mergeResult.success).toBe(true);
 
@@ -702,7 +780,10 @@ describe('v1.1 Runtime Orchestration E2E', () => {
       specVersionIncremented: true,
       hasUnprocessedExtensionRequest: false,
       hasUnresolvedEscapedWriteIncident: false,
-      notApplicableFlags: new Set(['evidence_check', 'verification_check', 'trace_matrix_check']),
+      notApplicableFlags: new Set<string>(),
+      evidenceManifestExists: true,
+      verificationReportExists: true,
+      traceMatrixUpdated: true,
     });
     expect(closeResult.canClose).toBe(true);
 

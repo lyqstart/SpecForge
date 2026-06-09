@@ -22,6 +22,20 @@ export interface CloseValidationResult {
   checks: CloseCheck[];
 }
 
+export interface FileSystemValidationParams {
+  projectRoot: string;
+  workItemId: string;
+  currentState: string;
+  gatesAllPassed: boolean;
+  userDecisionExists: boolean;
+  mergeReportContent: string | null;
+  specVersionIncremented: boolean;
+  hasUnprocessedExtensionRequest: boolean;
+  hasUnresolvedEscapedWriteIncident: boolean;
+  readFile: (path: string) => string | null;
+  fileExists: (path: string) => boolean;
+}
+
 /**
  * CloseGate — validates all close conditions.
  *
@@ -155,6 +169,159 @@ export class CloseGate {
     // Collect failures
     for (const check of checks) {
       if (!check.passed && !check.notApplicable) {
+        failedChecks.push(check.name);
+      }
+    }
+
+    return {
+      canClose: failedChecks.length === 0,
+      failedChecks,
+      checks,
+    };
+  }
+
+  /**
+   * Validate close conditions from the filesystem.
+   * Reads evidence files from disk instead of accepting booleans.
+   * Never uses notApplicableFlags to bypass evidence/verification/trace checks.
+   */
+  validateFromFileSystem(params: FileSystemValidationParams): CloseValidationResult {
+    const workItemDir = `.specforge/work-items/${params.workItemId}`;
+
+    // Derive booleans from filesystem
+    const evidenceManifestPath = `${workItemDir}/evidence/evidence_manifest.json`;
+    const verificationReportPath = `${workItemDir}/verification_report.md`;
+    const traceDeltaPath = `${workItemDir}/trace_delta.md`;
+    const changedFilesAuditPath = `${workItemDir}/changed_files_audit.json`;
+
+    const evidenceManifestExists = params.fileExists(evidenceManifestPath);
+    const verificationReportExists = params.fileExists(verificationReportPath);
+    const traceDeltaExists = params.fileExists(traceDeltaPath);
+    const changedFilesAuditExists = params.fileExists(changedFilesAuditPath);
+
+    // For code_only_fast_path: validate merge_report contains "not_applicable"
+    let mergeReportAllSuccess = false;
+    let mergeReportExists = false;
+    if (params.mergeReportContent !== null) {
+      mergeReportExists = true;
+      // Merge is successful if it contains "merged" status OR "not_applicable"
+      mergeReportAllSuccess = params.mergeReportContent.includes('not_applicable') ||
+        params.mergeReportContent.includes('Merge Status: merged');
+    }
+
+    const checks: CloseCheck[] = [];
+    const failedChecks: string[] = [];
+
+    // Check 1: State is verification_done (Requirement 7.1)
+    const check1: CloseCheck = {
+      name: 'state_check',
+      passed: params.currentState === 'verification_done',
+      reason: params.currentState !== 'verification_done'
+        ? `Expected state 'verification_done', got '${params.currentState}'`
+        : undefined,
+    };
+    checks.push(check1);
+
+    // Check 2: All gates passed (Requirement 7.2)
+    const check2: CloseCheck = {
+      name: 'gates_check',
+      passed: params.gatesAllPassed,
+      reason: !params.gatesAllPassed ? 'Not all gates passed' : undefined,
+    };
+    checks.push(check2);
+
+    // Check 3: user_decision.json exists and valid (Requirement 7.3)
+    const check3: CloseCheck = {
+      name: 'user_decision_check',
+      passed: params.userDecisionExists,
+      reason: !params.userDecisionExists ? 'user_decision.json not found or invalid' : undefined,
+    };
+    checks.push(check3);
+
+    // Check 4: merge_report.md exists and all operations successful (Requirement 7.4)
+    const check4: CloseCheck = {
+      name: 'merge_report_check',
+      passed: mergeReportExists && mergeReportAllSuccess,
+      reason: !mergeReportExists
+        ? 'merge_report.md not found'
+        : !mergeReportAllSuccess
+          ? 'Merge report does not indicate success or not_applicable'
+          : undefined,
+    };
+    checks.push(check4);
+
+    // Check 5: Project spec version incremented (Requirement 7.5)
+    const check5: CloseCheck = {
+      name: 'spec_version_check',
+      passed: params.specVersionIncremented,
+      reason: !params.specVersionIncremented ? 'Project spec version not incremented' : undefined,
+    };
+    checks.push(check5);
+
+    // Check 6: evidence_manifest.json exists (Requirement 7.6) — NO notApplicable bypass
+    const check6: CloseCheck = {
+      name: 'evidence_check',
+      passed: evidenceManifestExists,
+      reason: !evidenceManifestExists
+        ? `evidence_manifest.json not found at ${evidenceManifestPath}`
+        : undefined,
+    };
+    checks.push(check6);
+
+    // Check 7: verification_report.md exists (Requirement 7.7) — NO notApplicable bypass
+    const check7: CloseCheck = {
+      name: 'verification_check',
+      passed: verificationReportExists,
+      reason: !verificationReportExists
+        ? `verification_report.md not found at ${verificationReportPath}`
+        : undefined,
+    };
+    checks.push(check7);
+
+    // Check 8: trace_delta.md exists (Requirement 7.8) — NO notApplicable bypass
+    const check8: CloseCheck = {
+      name: 'trace_matrix_check',
+      passed: traceDeltaExists,
+      reason: !traceDeltaExists
+        ? `trace_delta.md not found at ${traceDeltaPath}`
+        : undefined,
+    };
+    checks.push(check8);
+
+    // Check 9: No unprocessed extension_request.json (Requirement 7.9)
+    const check9: CloseCheck = {
+      name: 'extension_check',
+      passed: !params.hasUnprocessedExtensionRequest,
+      reason: params.hasUnprocessedExtensionRequest
+        ? 'Unprocessed extension_request.json exists'
+        : undefined,
+    };
+    checks.push(check9);
+
+    // Check 10: No unresolved escaped_write_incident (Requirement 7.10)
+    const check10: CloseCheck = {
+      name: 'write_audit_check',
+      passed: !params.hasUnresolvedEscapedWriteIncident,
+      reason: params.hasUnresolvedEscapedWriteIncident
+        ? 'Unresolved escaped_write_incident exists'
+        : undefined,
+    };
+    checks.push(check10);
+
+    // Additional filesystem check: changed_files_audit.json must exist
+    if (!changedFilesAuditExists) {
+      const auditCheck: CloseCheck = {
+        name: 'changed_files_audit_check',
+        passed: false,
+        reason: `changed_files_audit.json not found at ${changedFilesAuditPath}`,
+      };
+      checks.push(auditCheck);
+      failedChecks.push('changed_files_audit_check');
+    }
+
+    // Collect failures from main 10 checks
+    for (const check of checks) {
+      if (!check.passed && !failedChecks.includes(check.name)) {
         failedChecks.push(check.name);
       }
     }

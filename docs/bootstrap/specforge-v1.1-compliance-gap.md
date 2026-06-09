@@ -1,6 +1,6 @@
 # SpecForge v1.1 Compliance Gap Analysis
 
-> Last updated: 2026-06-10 (Ninth pass — v1.1 Standard Structure Enforcement)
+> Last updated: 2026-06-10 (Tenth pass — Runtime Execution Chain v1.1 Alignment)
 
 ## Capability Status Table
 
@@ -8,13 +8,14 @@
 |---|---|---|---|
 | v1.1 Directory Model | Implemented | packages/types/src/directory-layout.ts | e2e validation needed |
 | 24-State Machine | Implemented | packages/workflow-runtime/src/v11/runtime/StateMachine.ts, 347 tests pass | e2e validation needed |
-| Candidate Merge Pipeline | Implemented | GateRunner, UserDecisionRecorder, MergeRunner in v11/ | e2e validation needed |
+| Candidate Merge Pipeline | v1.1 merge runtime alignment improved | executeV11Merge with hash validation, 9 negative tests | Daemon integration needed |
 | Write Guard Hard Block | Partially Implemented | Plugin throws on violation | Needs formatter/generator/pkg-mgr coverage |
 | Path Policy Permission | Partially Implemented | Syntax validation only | Needs actor/action/state permission model |
 | Extension Registry | Entry Point Exists | sf-extension.md, extension_registry.json | End-to-end subflow not verified |
 | Installer Legacy Write | NOT Fixed | scripts/sf-installer.ts still defaults to ~/.specforge | Must migrate to ~/.config/opencode/sf-user/ |
 | Bootstrap Documentation | NOW Created | This file | - |
-| E2E Compliance Evidence | v1.1 Standard Structures Enforced | Positive flow validated via validateV11Manifest/validateV11GateReport + 480 tests pass | Daemon integration with real WI lifecycle needed for final |
+| E2E Compliance Evidence | v1.1 Standard Structures Enforced | 98 e2e tests pass; executeV11Merge + validateFromFileSystem added | v1.1-bootstrap-e2e still pending final validation |
+| Code-Only Fast Path | v1.1 code-only filesystem evidence added | v11-code-only-filesystem-e2e.test.ts with 8 tests | Daemon integration needed |
 
 ## Details
 
@@ -30,8 +31,9 @@
 
 ### Candidate Merge Pipeline
 - **Files**: `GateRunner.ts`, `UserDecisionRecorder.ts`, `MergeRunner.ts` in `packages/workflow-runtime/src/v11/runtime/`
-- **What works**: Individual component logic, unit tests
-- **What's missing**: E2E test of full pipeline: candidates → gates → user decision → merge
+- **What works**: Individual component logic, unit tests, `executeV11Merge()` with hash validation, `generateV11MergeReport()` with v1.1 fields
+- **What's improved**: v1.1 merge runtime alignment — executeV11Merge accepts V11CandidateManifest directly, validates candidate_hash + target_base_hash against real file content, rejects legacy formats
+- **What's missing**: Daemon integration with executeV11Merge
 
 ### Write Guard Hard Block
 - **File**: `setup/userlevel-opencode/plugins/sf_specforge.ts`
@@ -58,7 +60,7 @@
 - **Status**: Created during second remediation pass
 
 ### E2E Compliance Evidence
-- **Status**: v1.1 Standard Structure Enforcement — 480 tests across 25 files; E2E positive flow validated via `validateV11Manifest()` and `validateV11GateReport()`
-- **Files**: `packages/workflow-runtime/tests/v11/e2e/v11-filesystem-lifecycle-e2e.test.ts`, `v11-compliance-e2e.test.ts`, `v11-runtime-orchestration-e2e.test.ts`
-- **Coverage**: Full WI lifecycle on real temp directory using v1.1 standard structures (`workflow_path`, `entries[]`, `candidate_hash`, `target_base_hash`, `manifest_hash`, `operation:'replace'`, full V11GateReport). Negative tests call real validation functions proving old structures fail.
-- **Remaining**: Integration with real daemon process and persistent filesystem state for final compliance evidence
+- **Status**: v1.1 Standard Structure Enforcement — 98 e2e tests across 4 files; positive flow uses executeV11Merge + validateFromFileSystem
+- **Files**: `packages/workflow-runtime/tests/v11/e2e/v11-filesystem-lifecycle-e2e.test.ts`, `v11-compliance-e2e.test.ts`, `v11-runtime-orchestration-e2e.test.ts`, `v11-code-only-filesystem-e2e.test.ts`
+- **Coverage**: Full WI lifecycle on real temp directory using v1.1 standard structures. executeV11Merge validates hashes. validateFromFileSystem reads evidence from disk. 9 negative tests prove bad manifests fail. 7 negative tests prove missing evidence fails close.
+- **Remaining**: v1.1-bootstrap-e2e still pending final validation with daemon integration

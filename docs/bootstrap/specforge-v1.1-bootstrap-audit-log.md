@@ -285,3 +285,92 @@ cd packages/workflow-runtime && npx vitest run tests/v11
 **Status**: v1.1 standard structure enforcement complete. All E2E tests use validated v1.1 structures.
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-10 — Runtime Execution Chain v1.1 Alignment
+
+**Action**: Fixed MergeRunner and CloseGate to directly execute v1.1 structures.
+
+**Changes**:
+- Added `MergeRunner.executeV11Merge()` — accepts V11CandidateManifest with entries[], validates manifest, checks candidate_hash/target_base_hash, writes targets
+- Added `MergeRunner.generateV11MergeReport()` — generates merge_report.md with Merge Status, Base Spec Version, New Spec Version, Manifest Hash, Candidate Hash
+- Added `CloseGate.validateFromFileSystem()` — reads evidence files from disk instead of accepting booleans
+- Fixed v11-filesystem-lifecycle-e2e Step 6: now calls executeV11Merge() directly, no entries→candidates conversion
+- Created v11-code-only-filesystem-e2e.test.ts: full filesystem evidence chain for code_only_fast_path
+- Added 9 negative tests for executeV11Merge (bad manifests must fail)
+- Added 7 negative tests for code_only_fast_path filesystem validation
+- Added 2 negative tests for code_only_fast_path in compliance e2e
+
+**Deleted behaviors**:
+- v1.1 positive merge no longer converts entries→candidates
+- v1.1 positive merge no longer converts replace→update
+- executeV11Merge rejects manifests with only candidates[] (no entries)
+- CloseGate.validateFromFileSystem does not accept notApplicableFlags
+
+**grep evidence** (confirmed):
+- `executeV11Merge` in src/v11/runtime/MergeRunner.ts: defined ✅
+- `executeV11Merge` in v11-filesystem-lifecycle-e2e: 11 matches (positive flow + 9 negatives) ✅
+- `generateV11MergeReport` in v11-filesystem-lifecycle-e2e: 1 match (positive flow) ✅
+- `target_spec_version` in v11-filesystem-lifecycle-e2e: 0 matches ✅
+- `operation: 'update'` in v11-filesystem-lifecycle-e2e: only in NEGATIVE tests ✅
+- `validateFromFileSystem` in v11-code-only-filesystem-e2e: 8 matches ✅
+- `changed_files_audit` in v11-code-only-filesystem-e2e: 3 matches ✅
+- `Trace Impact: none` in v11-code-only-filesystem-e2e: 1 match ✅
+
+**Test commands and results** (confirmed):
+```
+npx vitest run tests/v11/e2e/v11-filesystem-lifecycle-e2e.test.ts
+→ 36 tests passed ✅
+
+npx vitest run tests/v11/e2e/v11-compliance-e2e.test.ts
+→ 42 tests passed ✅
+
+npx vitest run tests/v11/e2e/v11-code-only-filesystem-e2e.test.ts
+→ 8 tests passed ✅
+```
+
+Total: 3 test files, 86 E2E tests passed, 0 failures.
+
+**Produced by**: Development aid (bootstrap phase)
+
+---
+
+## 2026-06-10 — Eleventh Pass: Runtime Orchestration v1.1 Full Alignment
+
+**Action**: Eliminated all legacy structures from v11-runtime-orchestration-e2e.test.ts and fixed remaining notApplicableFlags bypass in v11-compliance-e2e.test.ts.
+
+**Changes**:
+1. `packages/workflow-runtime/tests/v11/e2e/v11-runtime-orchestration-e2e.test.ts`:
+   - Test 6: Replaced legacy `target_spec_version` / `candidates[]` / `operation: 'update'` with v1.1 `entries[]` / `workflow_path` / `operation: 'replace'` / hash-verified merge via `executeV11Merge()`
+   - Test 7: Replaced `notApplicableFlags` bypass with actual evidence booleans
+   - Test 8: Same fix — replaced `notApplicableFlags` bypass with evidence booleans
+   - Test 12: Full lifecycle now uses `executeV11Merge()` with proper v1.1 manifest and evidence booleans for close gate
+
+2. `packages/workflow-runtime/tests/v11/e2e/v11-compliance-e2e.test.ts`:
+   - Scenario 2: Renamed legacy tests to explicitly say "backward compat" with `badLegacyManifest` variable names
+   - Scenario 3: Replaced `notApplicableFlags` evidence bypass with actual evidence booleans
+   - Scenario 5: Same fix
+
+**Deleted behaviors**:
+- `target_spec_version` eliminated from v11-runtime-orchestration-e2e (0 matches)
+- `operation: 'update'` eliminated from v11-runtime-orchestration-e2e (0 matches)
+- `notApplicableFlags.*evidence_check` eliminated from ALL e2e tests (0 matches across 4 files)
+
+**Remaining legacy usage** (intentional, labeled "backward compat"):
+- `v11-compliance-e2e.test.ts` Scenario 2: 2 tests labeled "legacy API (backward compat)" that test `parseCandidateManifest()` and `executeMerge()` still work
+- `v11-compliance-e2e.test.ts` Scenario 4: Hash integrity tests use arbitrary content strings (format irrelevant to hash check)
+
+**grep evidence** (confirmed):
+- `target_spec_version` in v11-runtime-orchestration-e2e: 0 matches ✅
+- `operation: 'update'` in v11-runtime-orchestration-e2e: 0 matches ✅
+- `notApplicableFlags.*evidence_check` across ALL e2e tests: 0 matches ✅
+- `target_spec_version` across ALL e2e: only in explicitly-labeled backward compat tests ✅
+
+**Test results**:
+```
+npx vitest run tests/v11/e2e
+→ 4 test files, 98 tests passed, 0 failures ✅
+```
+
+**Produced by**: Development aid (bootstrap phase)

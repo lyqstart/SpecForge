@@ -26,6 +26,7 @@ import {
   ChangedFilesAudit,
   RuntimeInit,
   JsonParser,
+  type V11CandidateManifest,
 } from '@/v11/index';
 
 describe('v1.1 Filesystem Lifecycle E2E', () => {
@@ -181,11 +182,14 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
     const traceDeltaContent = `# Trace Delta: ${WI_ID}\n\n## New Traces\n- REQ-1 → DES-1 (Authentication Module implements Login)\n- REQ-2 → DES-1 (Authentication Module implements Password Reset)\n\n## Removed Traces\n(none)\n`;
     writeFileSync(join(wiDir, 'trace_delta.md'), traceDeltaContent);
 
-    // Compute hashes for entries
+    // Compute hashes for entries — using the same hash function that executeV11Merge will use
     const reqContentRead = readFileSync(join(candidatesDir, 'requirements_index.md'), 'utf-8');
     const designContentRead = readFileSync(join(candidatesDir, 'design_index.md'), 'utf-8');
-    const reqHash = `sha256:${Buffer.from(reqContentRead).toString('hex').slice(0, 16)}`;
-    const designHash = `sha256:${Buffer.from(designContentRead).toString('hex').slice(0, 16)}`;
+    const calcHash = (content: string) => `sha256:${Buffer.from(content).toString('hex').slice(0, 16)}`;
+    const reqHash = calcHash(reqContentRead);
+    const designHash = calcHash(designContentRead);
+    // Target files don't exist yet — hash of empty string represents non-existent target
+    const emptyHash = calcHash('');
 
     // v1.1 candidate_manifest.json with entries[], candidate_hash, target_base_hash, manifest_hash, operation:'replace'
     const candidateManifest = {
@@ -201,14 +205,14 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
           target_path: '.specforge/project/requirements_index.md',
           operation: 'replace',
           candidate_hash: reqHash,
-          target_base_hash: 'sha256:0000000000000000',
+          target_base_hash: emptyHash,
         },
         {
           candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/design_index.md`,
           target_path: '.specforge/project/design_index.md',
           operation: 'replace',
           candidate_hash: designHash,
-          target_base_hash: 'sha256:0000000000000000',
+          target_base_hash: emptyHash,
         },
       ],
       generated_at: new Date().toISOString(),
@@ -366,25 +370,17 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
     const manifestRaw = readFileSync(join(wiDir, 'candidate_manifest.json'), 'utf-8');
     const manifestOnDisk = JSON.parse(manifestRaw);
 
-    // Adapt v1.1 entries to MergeRunner's internal CandidateManifest for executeMerge
+    // NEW: use executeV11Merge directly with v1.1 manifest — no entries→candidates conversion
     const mergeRunner = new MergeRunner();
-    const manifest = {
-      schema_version: manifestOnDisk.schema_version as '1.0',
-      work_item_id: manifestOnDisk.work_item_id,
-      base_spec_version: manifestOnDisk.base_spec_version,
-      target_spec_version: 'PSV-0002',
-      candidates: manifestOnDisk.entries.map((e: any) => ({
-        candidate_path: e.candidate_path,
-        target_path: e.target_path,
-        operation: 'update' as const, // internal API mapping from 'replace'
-      })),
-      generated_at: manifestOnDisk.generated_at,
-    };
-
-    const result = mergeRunner.executeMerge({
-      manifest,
+    const result = mergeRunner.executeV11Merge({
+      manifest: manifestOnDisk as V11CandidateManifest,
       readCandidate: (candidatePath: string) => {
         const fullPath = join(tempDir, candidatePath);
+        if (!existsSync(fullPath)) return null;
+        return readFileSync(fullPath, 'utf-8');
+      },
+      readTarget: (targetPath: string) => {
+        const fullPath = join(tempDir, targetPath);
         if (!existsSync(fullPath)) return null;
         return readFileSync(fullPath, 'utf-8');
       },
@@ -394,12 +390,13 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
         writeFileSync(fullPath, content);
         return true;
       },
-      calculateHash: (content: string) => `sha256:${Buffer.from(content).length.toString(16).padStart(8, '0')}`,
+      calculateHash: (content: string) => `sha256:${Buffer.from(content).toString('hex').slice(0, 16)}`,
     });
 
     expect(result.success).toBe(true);
     expect(result.mergedFiles).toHaveLength(2);
     expect(result.errors).toHaveLength(0);
+    expect(result.newSpecVersion).toBe('PSV-0002');
 
     // Verify merged files
     const reqTarget = join(projectDir, 'requirements_index.md');
@@ -414,9 +411,12 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
     expect(designContent).toContain('## DES-1 Authentication Module');
     expect(designContent).toContain('interface AuthService');
 
-    // Write merge report
-    const mergeReport = mergeRunner.generateMergeReport({
+    // Write v1.1 merge report using generateV11MergeReport
+    const mergeReport = mergeRunner.generateV11MergeReport({
       workItemId: WI_ID,
+      baseSpecVersion: 'PSV-0001',
+      newSpecVersion: result.newSpecVersion,
+      manifestHash: manifestOnDisk.manifest_hash,
       mergedFiles: result.mergedFiles,
       executedAt: new Date().toISOString(),
     });
@@ -424,8 +424,27 @@ describe('v1.1 Filesystem Lifecycle E2E', () => {
 
     expect(existsSync(join(wiDir, 'merge_report.md'))).toBe(true);
     const reportContent = readFileSync(join(wiDir, 'merge_report.md'), 'utf-8');
-    expect(reportContent).toContain('# Merge Report');
+    expect(reportContent).toContain('**Merge Status**: merged');
+    expect(reportContent).toContain('**Base Spec Version**: PSV-0001');
+    expect(reportContent).toContain('**New Spec Version**: PSV-0002');
+    expect(reportContent).toContain('**Manifest Hash**:');
+    expect(reportContent).toContain('**Candidate Hash**:');
     expect(reportContent).toContain(WI_ID);
+
+    // Update spec_manifest.json after merge
+    const specManifestPath = join(projectDir, 'spec_manifest.json');
+    const specManifest = JSON.parse(readFileSync(specManifestPath, 'utf-8'));
+    specManifest.project_spec_version = 'PSV-0002';
+    specManifest.last_merged_work_item = WI_ID;
+    specManifest.last_merged_at = new Date().toISOString();
+    writeFileSync(specManifestPath, JSON.stringify(specManifest, null, 2));
+
+    // Assert spec_manifest.json fields
+    const updatedManifest = JSON.parse(readFileSync(specManifestPath, 'utf-8'));
+    expect(updatedManifest.project_spec_version).toBe('PSV-0002');
+    expect(updatedManifest.last_merged_work_item).toBe(WI_ID);
+    expect(updatedManifest.last_merged_at).toBeTruthy();
+    expect(new Date(updatedManifest.last_merged_at).toISOString()).toBe(updatedManifest.last_merged_at);
   });
 
   it('Step 7: Generate verification report and evidence', () => {
@@ -895,5 +914,261 @@ describe('v1.1 Negative Tests — old structures must FAIL validation', () => {
     });
     expect(result.canClose).toBe(false);
     expect(result.failedChecks).toContain('trace_matrix_check');
+  });
+});
+
+describe('v1.1 Negative Tests — executeV11Merge must FAIL on invalid inputs', () => {
+  const mergeRunner = new MergeRunner();
+  const WI_ID = 'WI-NEG-MERGE';
+
+  const makeCallbacks = (candidateContent: string = 'file content', targetContent: string | null = null) => ({
+    readCandidate: (path: string) => candidateContent,
+    readTarget: (path: string) => targetContent,
+    writeTarget: (path: string, content: string) => true,
+    calculateHash: (content: string) => `sha256:${Buffer.from(content).toString('hex').slice(0, 16)}`,
+  });
+
+  it('NEGATIVE: Legacy manifest with only candidates[] (no entries[]) must fail', () => {
+    const badManifest = {
+      schema_version: '1.0' as const,
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      candidates: [{ candidate_path: 'x', target_path: '.specforge/project/y', operation: 'update' }],
+    } as any;
+
+    const result = mergeRunner.executeV11Merge({
+      manifest: badManifest,
+      ...makeCallbacks(),
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('"entries"'))).toBe(true);
+  });
+
+  it('NEGATIVE: Manifest with operation "update" must fail', () => {
+    const badManifest = {
+      schema_version: '1.0' as const,
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      entries: [{
+        candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/req.md`,
+        target_path: '.specforge/project/req.md',
+        operation: 'update',
+        candidate_hash: 'sha256:abc',
+        target_base_hash: 'sha256:000',
+      }],
+    } as any;
+
+    const result = mergeRunner.executeV11Merge({
+      manifest: badManifest,
+      ...makeCallbacks(),
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('"replace"'))).toBe(true);
+  });
+
+  it('NEGATIVE: Manifest missing manifest_hash must fail', () => {
+    const badManifest = {
+      schema_version: '1.0' as const,
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      entries: [{
+        candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/req.md`,
+        target_path: '.specforge/project/req.md',
+        operation: 'replace',
+        candidate_hash: 'sha256:abc',
+        target_base_hash: 'sha256:000',
+      }],
+    } as any;
+
+    const result = mergeRunner.executeV11Merge({
+      manifest: badManifest,
+      ...makeCallbacks(),
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('manifest_hash'))).toBe(true);
+  });
+
+  it('NEGATIVE: Manifest entry missing candidate_hash must fail', () => {
+    const badManifest = {
+      schema_version: '1.0' as const,
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      entries: [{
+        candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/req.md`,
+        target_path: '.specforge/project/req.md',
+        operation: 'replace',
+        target_base_hash: 'sha256:000',
+      }],
+    } as any;
+
+    const result = mergeRunner.executeV11Merge({
+      manifest: badManifest,
+      ...makeCallbacks(),
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('candidate_hash'))).toBe(true);
+  });
+
+  it('NEGATIVE: Manifest entry missing target_base_hash must fail', () => {
+    const badManifest = {
+      schema_version: '1.0' as const,
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      entries: [{
+        candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/req.md`,
+        target_path: '.specforge/project/req.md',
+        operation: 'replace',
+        candidate_hash: 'sha256:abc',
+      }],
+    } as any;
+
+    const result = mergeRunner.executeV11Merge({
+      manifest: badManifest,
+      ...makeCallbacks(),
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('target_base_hash'))).toBe(true);
+  });
+
+  it('NEGATIVE: candidate_hash does not match actual file hash must fail', () => {
+    const content = 'real file content';
+    const correctHash = `sha256:${Buffer.from(content).toString('hex').slice(0, 16)}`;
+    const wrongHash = 'sha256:wrong_hash_value';
+
+    const manifest: any = {
+      schema_version: '1.0',
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      entries: [{
+        candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/req.md`,
+        target_path: '.specforge/project/req.md',
+        operation: 'replace',
+        candidate_hash: wrongHash, // does NOT match actual
+        target_base_hash: `sha256:${Buffer.from('').toString('hex').slice(0, 16)}`,
+      }],
+    };
+
+    const result = mergeRunner.executeV11Merge({
+      manifest,
+      readCandidate: () => content,
+      readTarget: () => null,
+      writeTarget: () => true,
+      calculateHash: (c: string) => `sha256:${Buffer.from(c).toString('hex').slice(0, 16)}`,
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('candidate_hash mismatch'))).toBe(true);
+  });
+
+  it('NEGATIVE: target_base_hash does not match target file hash must fail', () => {
+    const candidateContent = 'new content';
+    const targetContent = 'existing target content';
+    const calcHash = (c: string) => `sha256:${Buffer.from(c).toString('hex').slice(0, 16)}`;
+    const correctCandidateHash = calcHash(candidateContent);
+    const wrongTargetHash = 'sha256:wrong_target_hash';
+
+    const manifest: any = {
+      schema_version: '1.0',
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      entries: [{
+        candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/req.md`,
+        target_path: '.specforge/project/req.md',
+        operation: 'replace',
+        candidate_hash: correctCandidateHash,
+        target_base_hash: wrongTargetHash, // does NOT match actual target
+      }],
+    };
+
+    const result = mergeRunner.executeV11Merge({
+      manifest,
+      readCandidate: () => candidateContent,
+      readTarget: () => targetContent,
+      writeTarget: () => true,
+      calculateHash: calcHash,
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('target_base_hash mismatch'))).toBe(true);
+  });
+
+  it('NEGATIVE: target_path not in .specforge/project/ must fail', () => {
+    const content = 'some content';
+    const calcHash = (c: string) => `sha256:${Buffer.from(c).toString('hex').slice(0, 16)}`;
+
+    const manifest: any = {
+      schema_version: '1.0',
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      entries: [{
+        candidate_path: `.specforge/work-items/${WI_ID}/candidates/project/req.md`,
+        target_path: 'src/index.ts', // NOT in .specforge/project/
+        operation: 'replace',
+        candidate_hash: calcHash(content),
+        target_base_hash: calcHash(''),
+      }],
+    };
+
+    const result = mergeRunner.executeV11Merge({
+      manifest,
+      readCandidate: () => content,
+      readTarget: () => null,
+      writeTarget: () => true,
+      calculateHash: calcHash,
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('.specforge/project/'))).toBe(true);
+  });
+
+  it('NEGATIVE: candidate_path not in current WI candidates/ must fail', () => {
+    const content = 'some content';
+    const calcHash = (c: string) => `sha256:${Buffer.from(c).toString('hex').slice(0, 16)}`;
+
+    const manifest: any = {
+      schema_version: '1.0',
+      work_item_id: WI_ID,
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      manifest_hash: 'sha256:abc123',
+      entries: [{
+        candidate_path: '.specforge/work-items/WI-OTHER/candidates/project/evil.md', // wrong WI
+        target_path: '.specforge/project/req.md',
+        operation: 'replace',
+        candidate_hash: calcHash(content),
+        target_base_hash: calcHash(''),
+      }],
+    };
+
+    const result = mergeRunner.executeV11Merge({
+      manifest,
+      readCandidate: () => content,
+      readTarget: () => null,
+      writeTarget: () => true,
+      calculateHash: calcHash,
+    });
+    expect(result.success).toBe(false);
+    expect(result.errors.some(e => e.includes('candidates/ directory'))).toBe(true);
   });
 });
