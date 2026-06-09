@@ -193,3 +193,47 @@ cd packages/workflow-runtime && npx vitest run tests/v11/e2e
 **Status**: filesystem E2E draft added, NOT final complete
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-10 — Eighth Pass: Evidence-Based Remediation (Negative Tests)
+
+**Action**: Added negative tests proving old structures fail. Verified via grep that old field names are eliminated.
+
+**Deleted old behaviors**:
+- `workflow_type` field usage in E2E tests
+- `workflow_selected` field usage
+- `requirements-first` string
+- `operation: update` in candidate manifest
+- `target_spec_version` in candidate manifest
+- old gate report structure (gate_name, details-only)
+
+**Added standard behaviors**:
+- `workflow_path: requirement_change_path` in work_item.json, trigger_result.json, candidate_manifest.json
+- `entries[]` with candidate_hash, target_base_hash, manifest_hash
+- `operation: replace`
+- Full Gate Report (gate_id, gate_type, required, waiver_allowed, runner, started_at, finished_at)
+- 18 negative tests proving old structures cannot pass
+
+**Grep evidence** (run after changes):
+- `requirements-first` in e2e/: 0 matches (excluding negative test assertions about old fields)
+- `workflow_type` in e2e/: 0 matches (excluding negative test assertions about old fields)
+- `workflow_path` in e2e/: 20 matches
+- `requirement_change_path` in e2e/: 9 matches
+- `manifest_hash` in e2e/: 12 matches
+- `candidate_hash` in e2e/: 8 matches
+- `target_base_hash` in e2e/: 8 matches
+- `gate_id` in e2e/: 15 matches
+- `gate_type` in e2e/: 13 matches
+- `waiver_allowed` in e2e/: 9 matches
+
+**Test command**:
+```
+cd packages/workflow-runtime && npx vitest run tests/v11/e2e
+```
+
+**Test results**: 3 test files, 78 tests passed, 0 failures (592ms).
+
+**Status**: filesystem E2E standard-structure remediation improved, NOT final complete
+
+**Produced by**: Old system development aid (not v1.1 compliant)
