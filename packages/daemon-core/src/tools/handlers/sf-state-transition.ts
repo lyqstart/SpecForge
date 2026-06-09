@@ -3,12 +3,31 @@ import { registerHandler } from '../ToolDispatcher';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { join } from 'node:path';
 import { isValidV11Transition, isForbiddenTransition, WI_STATUSES_V11, checkCloseGateEvidenceRequirements } from '../lib/state-machine-v11';
+import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from '../lib/state_machine';
 
 registerHandler('sf_state_transition', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
   const fromState = (args['from_state'] as string) ?? '';
   const toState = args['to_state'] as string;
-  const useV11 = args['use_v11_state_machine'] as boolean;
+  const useV11 = (args['use_v11_state_machine'] as boolean) || !!rawWorkflowPath;
+
+  // v1.1: Accept workflow_path and resolve to internal workflow_type
+  const rawWorkflowPath = args['workflow_path'] as string | undefined;
+  const rawWorkflowType = args['workflow_type'] as string | undefined;
+  let resolvedWorkflowType: string | undefined = rawWorkflowType;
+
+  if (rawWorkflowPath && !rawWorkflowType) {
+    // Map v1.1 workflow_path to legacy workflow_type for internal use
+    const mapped = WORKFLOW_PATH_TO_TYPE[rawWorkflowPath as WorkflowPath];
+    if (mapped) {
+      resolvedWorkflowType = mapped;
+    } else {
+      return {
+        success: false,
+        error: `Unknown workflow_path: ${rawWorkflowPath}. Valid paths: ${Object.keys(WORKFLOW_PATH_TO_TYPE).join(', ')}`,
+      };
+    }
+  }
 
   if (!workItemId || toState === undefined) {
     return { success: false, error: 'work_item_id and to_state required' };
@@ -104,7 +123,7 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
       fromState,
       toState,
       evidence: (args['evidence'] as string) ?? '',
-      workflowType: args['workflow_type'] as string,
+      workflowType: resolvedWorkflowType,
       transitionContext: args['transition_context'] as Record<string, unknown>,
       actor: context?.agent ? { agentRole: context.agent, sessionId: context?.sessionID } : null,
       workItemDir,
@@ -128,7 +147,7 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
     fromState,
     toState,
     typeof context?.agent === 'string' ? context.agent : 'system',
-    (args['workflow_type'] as string) || 'feature_spec',
+    (resolvedWorkflowType) || 'feature_spec',
     { evidence: (args['evidence'] as string) ?? '' },
   );
 
