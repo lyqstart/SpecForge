@@ -122,10 +122,10 @@ export class WorkflowDefinitionLoader {
         field: 'schema_version',
         message: 'schema_version is required',
       });
-    } else if (String(def.schema_version) !== '1.0') {
+    } else if (String(def.schema_version) !== '1.0' && String(def.schema_version) !== '2.0') {
       errors.push({
         field: 'schema_version',
-        message: `Unsupported schema version: ${def.schema_version}. Expected: 1.0`,
+        message: `Unsupported schema version: ${def.schema_version}. Expected: 1.0 or 2.0`,
         value: def.schema_version,
       });
     }
@@ -222,10 +222,10 @@ export class WorkflowDefinitionLoader {
         field: 'stateMachine.schema_version',
         message: 'schema_version is required',
       });
-    } else if (String(stateMachine.schema_version) !== '1.0') {
+    } else if (String(stateMachine.schema_version) !== '1.0' && String(stateMachine.schema_version) !== '2.0') {
       errors.push({
         field: 'stateMachine.schema_version',
-        message: `Unsupported schema version: ${stateMachine.schema_version}. Expected: 1.0`,
+        message: `Unsupported schema version: ${stateMachine.schema_version}. Expected: 1.0 or 2.0`,
         value: stateMachine.schema_version,
       });
     }
@@ -303,10 +303,10 @@ export class WorkflowDefinitionLoader {
         field: `${prefix}.schema_version`,
         message: 'schema_version is required',
       });
-    } else if (String(stateObj.schema_version) !== '1.0') {
+    } else if (String(stateObj.schema_version) !== '1.0' && String(stateObj.schema_version) !== '2.0') {
       errors.push({
         field: `${prefix}.schema_version`,
-        message: `Unsupported schema version: ${stateObj.schema_version}. Expected: 1.0`,
+        message: `Unsupported schema version: ${stateObj.schema_version}. Expected: 1.0 or 2.0`,
         value: stateObj.schema_version,
       });
     }
@@ -431,10 +431,10 @@ export class WorkflowDefinitionLoader {
         field: `${prefix}.schema_version`,
         message: 'schema_version is required',
       });
-    } else if (String(gateObj.schema_version) !== '1.0') {
+    } else if (String(gateObj.schema_version) !== '1.0' && String(gateObj.schema_version) !== '2.0') {
       errors.push({
         field: `${prefix}.schema_version`,
-        message: `Unsupported schema version: ${gateObj.schema_version}. Expected: 1.0`,
+        message: `Unsupported schema version: ${gateObj.schema_version}. Expected: 1.0 or 2.0`,
         value: gateObj.schema_version,
       });
     }
