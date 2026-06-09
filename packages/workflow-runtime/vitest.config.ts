@@ -32,7 +32,10 @@ export default defineConfig({
     pool: 'forks',
     // 排查测试卡死：临时加 `bun test --reporter=hanging-process` 定位未关的句柄/timer
     // 不建议常驻（resource-intensive）；详见 docs/engineering-lessons/universal/javascript-explicit-resource-management.md JS6
-    setupFiles: ['./tests/setup.ts']
+    setupFiles: ['./tests/setup.ts'],
+    // Vitest 4: poolOptions moved to top-level
+    singleFork: true,
+    isolate: true,
   },
   resolve: {
     alias: {
