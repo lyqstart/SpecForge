@@ -8,6 +8,26 @@
  */
 
 
+// ---- v1.1 Standard Types ----
+
+/** v1.1 Standard Gate Report structure */
+export interface V11GateReport {
+  schema_version: '1.0';
+  work_item_id: string;
+  gate_id: string;
+  gate_type: 'hard_gate' | 'soft_gate';
+  required: boolean;
+  status: 'passed' | 'failed' | 'skipped';
+  input_files: string[];
+  checks: Array<{ name: string; passed: boolean; description?: string }>;
+  blocking_issues: string[];
+  warnings: string[];
+  waiver_allowed: boolean;
+  runner: string;
+  started_at: string;
+  finished_at: string;
+}
+
 // ---- Types ----
 
 export interface GateCheckResult {
@@ -140,6 +160,42 @@ export class GateRunner {
     }
 
     return lines.join('\n');
+  }
+
+  /**
+   * Validate a v1.1 Gate Report.
+   * Rejects old structures (gate_name, details-only).
+   */
+  validateV11GateReport(report: unknown): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
+    const r = report as Record<string, unknown>;
+
+    if (!r || typeof r !== 'object') {
+      return { valid: false, errors: ['Gate report must be an object'] };
+    }
+
+    // Old field rejection
+    if ('gate_name' in r && !('gate_id' in r)) {
+      errors.push('Old "gate_name" field detected. v1.1 requires "gate_id"');
+    }
+    if ('details' in r && !('checks' in r)) {
+      errors.push('Old "details" field detected. v1.1 requires "checks" array');
+    }
+
+    // Required fields
+    const requiredFields = ['gate_id', 'gate_type', 'required', 'status', 'input_files', 'checks', 'blocking_issues', 'warnings', 'waiver_allowed', 'runner', 'started_at', 'finished_at'];
+    for (const field of requiredFields) {
+      if (!(field in r)) {
+        errors.push(`Missing required field: "${field}"`);
+      }
+    }
+
+    // gate_type must be hard_gate or soft_gate
+    if (r.gate_type && r.gate_type !== 'hard_gate' && r.gate_type !== 'soft_gate') {
+      errors.push(`gate_type must be "hard_gate" or "soft_gate", got "${r.gate_type}"`);
+    }
+
+    return { valid: errors.length === 0, errors };
   }
 
   /**

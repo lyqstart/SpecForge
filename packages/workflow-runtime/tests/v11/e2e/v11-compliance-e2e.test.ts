@@ -235,12 +235,12 @@ describe('Scenario 2: code_only_fast_path — skip spec changes', () => {
   });
 
   it('code_only_fast_path manifest uses entries=[] and merge_required=false', () => {
+    const mergeRunner = new MergeRunner();
     const manifest = {
       schema_version: '1.0',
       work_item_id: 'WI-FAST-001',
       workflow_path: 'code_only_fast_path',
       base_spec_version: 'PSV-0001',
-      target_spec_version: 'PSV-0001',
       merge_required: false,
       manifest_hash: 'sha256:empty',
       entries: [],
@@ -249,6 +249,71 @@ describe('Scenario 2: code_only_fast_path — skip spec changes', () => {
     expect(manifest.entries).toHaveLength(0);
     expect(manifest.merge_required).toBe(false);
     expect(manifest.workflow_path).toBe('code_only_fast_path');
+
+    // Validate with v1.1 validator — should pass with empty entries
+    const validation = mergeRunner.validateV11Manifest(manifest);
+    expect(validation.valid).toBe(true);
+    expect(validation.errors).toHaveLength(0);
+  });
+
+  it('NEGATIVE: code_only_fast_path close_gate FAILS when evidence missing', () => {
+    const closeGate = new CloseGate();
+    const result = closeGate.validateClose({
+      currentState: 'verification_done',
+      gatesAllPassed: true,
+      userDecisionExists: true,
+      mergeReportExists: true,
+      mergeReportAllSuccess: true,
+      specVersionIncremented: true,
+      hasUnprocessedExtensionRequest: false,
+      hasUnresolvedEscapedWriteIncident: false,
+      notApplicableFlags: new Set<string>(),
+      evidenceManifestExists: false,
+      verificationReportExists: true,
+      traceMatrixUpdated: true,
+    });
+    expect(result.canClose).toBe(false);
+    expect(result.failedChecks).toContain('evidence_check');
+  });
+
+  it('NEGATIVE: code_only_fast_path close_gate FAILS when verification missing', () => {
+    const closeGate = new CloseGate();
+    const result = closeGate.validateClose({
+      currentState: 'verification_done',
+      gatesAllPassed: true,
+      userDecisionExists: true,
+      mergeReportExists: true,
+      mergeReportAllSuccess: true,
+      specVersionIncremented: true,
+      hasUnprocessedExtensionRequest: false,
+      hasUnresolvedEscapedWriteIncident: false,
+      notApplicableFlags: new Set<string>(),
+      evidenceManifestExists: true,
+      verificationReportExists: false,
+      traceMatrixUpdated: true,
+    });
+    expect(result.canClose).toBe(false);
+    expect(result.failedChecks).toContain('verification_check');
+  });
+
+  it('NEGATIVE: code_only_fast_path close_gate FAILS when trace missing', () => {
+    const closeGate = new CloseGate();
+    const result = closeGate.validateClose({
+      currentState: 'verification_done',
+      gatesAllPassed: true,
+      userDecisionExists: true,
+      mergeReportExists: true,
+      mergeReportAllSuccess: true,
+      specVersionIncremented: true,
+      hasUnprocessedExtensionRequest: false,
+      hasUnresolvedEscapedWriteIncident: false,
+      notApplicableFlags: new Set<string>(),
+      evidenceManifestExists: true,
+      verificationReportExists: true,
+      traceMatrixUpdated: false,
+    });
+    expect(result.canClose).toBe(false);
+    expect(result.failedChecks).toContain('trace_matrix_check');
   });
 });
 

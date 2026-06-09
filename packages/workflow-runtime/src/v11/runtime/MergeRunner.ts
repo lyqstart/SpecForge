@@ -12,7 +12,30 @@
 import { JsonParser } from './JsonParser.js';
 import type { UserDecisionRecord } from './UserDecisionRecorder.js';
 
-// ---- Types ----
+// ---- v1.1 Standard Types ----
+
+/** v1.1 Candidate Manifest entry (standard structure) */
+export interface V11ManifestEntry {
+  candidate_path: string;
+  target_path: string;
+  operation: 'replace';
+  candidate_hash: string;
+  target_base_hash: string;
+}
+
+/** v1.1 Candidate Manifest (standard structure) */
+export interface V11CandidateManifest {
+  schema_version: '1.0';
+  work_item_id: string;
+  workflow_path: string;
+  base_spec_version: string;
+  merge_required: boolean;
+  entries: V11ManifestEntry[];
+  manifest_hash: string;
+  generated_at?: string;
+}
+
+// ---- Legacy Types (backward compat) ----
 
 export interface CandidateEntry {
   candidate_path: string;
@@ -122,6 +145,68 @@ export class MergeRunner {
     }
 
     return { success: true, data: result.data };
+  }
+
+  /**
+   * Validate a v1.1 candidate manifest.
+   * Rejects old structures (candidates array, operation:'update', missing hashes).
+   */
+  validateV11Manifest(manifest: unknown): { valid: boolean; errors: string[] } {
+    const errors: string[] = [];
+    const m = manifest as Record<string, unknown>;
+
+    if (!m || typeof m !== 'object') {
+      return { valid: false, errors: ['Manifest must be an object'] };
+    }
+
+    // Must have entries, not candidates
+    if ('candidates' in m && !('entries' in m)) {
+      errors.push('v1.1 manifest must use "entries", not "candidates"');
+    }
+    if (!Array.isArray(m.entries)) {
+      errors.push('Missing or invalid "entries" array');
+    }
+
+    // Must have manifest_hash
+    if (!m.manifest_hash || typeof m.manifest_hash !== 'string') {
+      errors.push('Missing "manifest_hash"');
+    }
+
+    // Must have merge_required
+    if (typeof m.merge_required !== 'boolean') {
+      errors.push('Missing "merge_required" boolean');
+    }
+
+    // Must have workflow_path
+    if (!m.workflow_path || typeof m.workflow_path !== 'string') {
+      errors.push('Missing "workflow_path"');
+    }
+
+    // Validate each entry
+    if (Array.isArray(m.entries)) {
+      const workItemId = m.work_item_id as string;
+      for (let i = 0; i < m.entries.length; i++) {
+        const entry = m.entries[i] as Record<string, unknown>;
+
+        if (entry.operation !== 'replace') {
+          errors.push(`entries[${i}].operation must be "replace", got "${entry.operation}"`);
+        }
+        if (!entry.candidate_hash || typeof entry.candidate_hash !== 'string') {
+          errors.push(`entries[${i}] missing "candidate_hash"`);
+        }
+        if (!entry.target_base_hash || typeof entry.target_base_hash !== 'string') {
+          errors.push(`entries[${i}] missing "target_base_hash"`);
+        }
+        if (!entry.target_path || !(entry.target_path as string).startsWith('.specforge/project/')) {
+          errors.push(`entries[${i}].target_path must start with ".specforge/project/", got "${entry.target_path}"`);
+        }
+        if (workItemId && entry.candidate_path && !(entry.candidate_path as string).includes(`work-items/${workItemId}/candidates/`)) {
+          errors.push(`entries[${i}].candidate_path must be in current WI candidates/ directory`);
+        }
+      }
+    }
+
+    return { valid: errors.length === 0, errors };
   }
 
   /**

@@ -1,6 +1,6 @@
 # SpecForge v1.1 Compliance Gap Analysis
 
-> Last updated: 2026-06-10 (Eighth pass — Negative Tests + Evidence-Based Remediation)
+> Last updated: 2026-06-10 (Ninth pass — v1.1 Standard Structure Enforcement)
 
 ## Capability Status Table
 
@@ -14,7 +14,7 @@
 | Extension Registry | Entry Point Exists | sf-extension.md, extension_registry.json | End-to-end subflow not verified |
 | Installer Legacy Write | NOT Fixed | scripts/sf-installer.ts still defaults to ~/.specforge | Must migrate to ~/.config/opencode/sf-user/ |
 | Bootstrap Documentation | NOW Created | This file | - |
-| E2E Compliance Evidence | Filesystem E2E + Negative Tests | Positive + negative tests verify old structures fail, new structures pass | Daemon integration with real WI lifecycle needed for final |
+| E2E Compliance Evidence | v1.1 Standard Structures Enforced | Positive flow validated via validateV11Manifest/validateV11GateReport + 480 tests pass | Daemon integration with real WI lifecycle needed for final |
 
 ## Details
 
@@ -58,7 +58,7 @@
 - **Status**: Created during second remediation pass
 
 ### E2E Compliance Evidence
-- **Status**: Filesystem E2E + Negative Tests — 78 tests across 3 files verify positive lifecycle and prove old structures fail
+- **Status**: v1.1 Standard Structure Enforcement — 480 tests across 25 files; E2E positive flow validated via `validateV11Manifest()` and `validateV11GateReport()`
 - **Files**: `packages/workflow-runtime/tests/v11/e2e/v11-filesystem-lifecycle-e2e.test.ts`, `v11-compliance-e2e.test.ts`, `v11-runtime-orchestration-e2e.test.ts`
-- **Coverage**: Full WI lifecycle on real temp directory, 18 negative tests proving old fields/structures rejected, runtime orchestration via Runtime class
+- **Coverage**: Full WI lifecycle on real temp directory using v1.1 standard structures (`workflow_path`, `entries[]`, `candidate_hash`, `target_base_hash`, `manifest_hash`, `operation:'replace'`, full V11GateReport). Negative tests call real validation functions proving old structures fail.
 - **Remaining**: Integration with real daemon process and persistent filesystem state for final compliance evidence

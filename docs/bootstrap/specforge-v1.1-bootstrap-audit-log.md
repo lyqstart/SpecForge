@@ -237,3 +237,51 @@ cd packages/workflow-runtime && npx vitest run tests/v11/e2e
 **Status**: filesystem E2E standard-structure remediation improved, NOT final complete
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-10 — Ninth Pass: v1.1 Standard Structure Enforcement
+
+**Action**: Replaced positive main flow with v1.1 standard structures. Added validation methods to runtime components.
+
+**Changes**:
+1. `packages/workflow-runtime/src/v11/runtime/MergeRunner.ts` — Added `validateV11Manifest()` method + exported `V11ManifestEntry`, `V11CandidateManifest` types
+2. `packages/workflow-runtime/src/v11/runtime/GateRunner.ts` — Added `validateV11GateReport()` method + exported `V11GateReport` type
+3. `packages/workflow-runtime/src/v11/index.ts` — Updated barrel exports for new types
+4. `packages/workflow-runtime/tests/v11/e2e/v11-filesystem-lifecycle-e2e.test.ts` — Complete rewrite:
+   - `work_item.json` uses `status`, `workflow_path`, `code_change_allowed`, `allowed_write_files`, `created_by`
+   - `trigger_result.json` uses `workflow_path` and `match_result`
+   - `candidate_manifest.json` uses `entries[]` with `candidate_hash`, `target_base_hash`, `manifest_hash`, `merge_required`, `operation: 'replace'`
+   - Candidate paths: `.specforge/work-items/WI-E2E-001/candidates/project/requirements_index.md`
+   - Gates use full V11GateReport structure
+   - Positive flow calls `mergeRunner.validateV11Manifest()` and `gateRunner.validateV11GateReport()`
+   - Negative tests call REAL validation functions (not just `expect(obj).not.toHaveProperty`)
+5. `packages/workflow-runtime/tests/v11/e2e/v11-compliance-e2e.test.ts` — Scenario 2 additions:
+   - Added v1.1 manifest validation for code_only_fast_path (`entries=[]`, `merge_required=false`)
+   - Added 3 negative tests calling `closeGate.validateClose()` with missing evidence/verification/trace
+
+**Test Command**:
+```
+cd packages/workflow-runtime && npx vitest run tests/v11
+```
+
+**Test Results**: 25 test files, 480 tests passed, 0 failures (1.67s).
+
+**Grep Evidence** (old fields — must be 0 in positive flow):
+- `requirements-first` in e2e/: 0 matches ✅
+- `workflow_type` in e2e/: 1 match (comment explaining "never workflow_type") ✅
+- `workflow_selected` in e2e/: matches are StateMachine STATE name transitions (valid v1.1 state), not field usage ✅
+- `operation.*update` in e2e/: only in NEGATIVE tests, backward-compat API calls, and internal mapping comment ✅
+- `gate_name` in e2e/: only in NEGATIVE test ✅
+
+**Grep Evidence** (v1.1 fields — must have multiple):
+- `workflow_path` in e2e/: 20 matches ✅
+- `entries` in e2e/: 29 matches ✅
+- `candidate_hash` in e2e/: 12 matches ✅
+- `manifest_hash` in e2e/: 20 matches ✅
+- `gate_id` in e2e/: 16 matches ✅
+- `waiver_allowed` in e2e/: 13 matches ✅
+
+**Status**: v1.1 standard structure enforcement complete. All E2E tests use validated v1.1 structures.
+
+**Produced by**: Old system development aid (not v1.1 compliant)
