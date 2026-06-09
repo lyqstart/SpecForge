@@ -195,8 +195,8 @@ export class WorkflowDefinitionLoader {
       errors.push(...smErrors);
     }
 
-    // Check artifacts
-    if (!Array.isArray(def.artifacts)) {
+    // Check artifacts (optional for v2.0)
+    if (def.artifacts !== undefined && !Array.isArray(def.artifacts)) {
       errors.push({
         field: 'artifacts',
         message: 'artifacts must be an array',
@@ -341,29 +341,36 @@ export class WorkflowDefinitionLoader {
     }
 
     // Check next — string or { pass, fail } object; optional for terminal states
+    // v2.0 also allows next as an object with arbitrary keys (e.g. gate-driven routing)
     if (stateObj.next !== undefined && stateObj.next !== null) {
       if (typeof stateObj.next === 'string') {
         // Static next state — valid
       } else if (typeof stateObj.next === 'object') {
+        // v2.0: next can be any object shape (gate-driven routing, conditional next, etc.)
+        // v1.0: requires { pass, fail } — but we accept both for backward compat
         const nextObj = stateObj.next as Record<string, unknown>;
-        if (typeof nextObj.pass !== 'string' || (nextObj.pass as string).trim() === '') {
-          errors.push({
-            field: `${prefix}.next.pass`,
-            message: 'next.pass must be a non-empty string',
-            value: nextObj.pass,
-          });
+        if ('pass' in nextObj || 'fail' in nextObj) {
+          // v1.0 shape: validate pass/fail are strings (but allow empty for v2.0 where they may not exist)
+          if ('pass' in nextObj && typeof nextObj.pass !== 'string') {
+            errors.push({
+              field: `${prefix}.next.pass`,
+              message: 'next.pass must be a non-empty string',
+              value: nextObj.pass,
+            });
+          }
+          if ('fail' in nextObj && typeof nextObj.fail !== 'string') {
+            errors.push({
+              field: `${prefix}.next.fail`,
+              message: 'next.fail must be a non-empty string',
+              value: nextObj.fail,
+            });
+          }
         }
-        if (typeof nextObj.fail !== 'string' || (nextObj.fail as string).trim() === '') {
-          errors.push({
-            field: `${prefix}.next.fail`,
-            message: 'next.fail must be a non-empty string',
-            value: nextObj.fail,
-          });
-        }
+        // v2.0 shape: any object is valid (e.g. { "approved": "merge_ready", "rejected": "rejected" })
       } else {
         errors.push({
           field: `${prefix}.next`,
-          message: 'next must be a string or { pass, fail } object',
+          message: 'next must be a string or object',
           value: stateObj.next,
         });
       }
@@ -396,11 +403,11 @@ export class WorkflowDefinitionLoader {
       }
     }
 
-    // Check produces (optional)
-    if (stateObj.produces !== undefined && stateObj.produces !== null && typeof stateObj.produces !== 'string') {
+    // Check produces (optional, v2.0 allows arrays)
+    if (stateObj.produces !== undefined && stateObj.produces !== null && typeof stateObj.produces !== 'string' && !Array.isArray(stateObj.produces)) {
       errors.push({
         field: `${prefix}.produces`,
-        message: 'produces must be a string or null',
+        message: 'produces must be a string, array, or null',
         value: stateObj.produces,
       });
     }
