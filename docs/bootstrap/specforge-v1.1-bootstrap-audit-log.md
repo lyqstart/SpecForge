@@ -103,3 +103,33 @@ cd packages/workflow-runtime && npx vitest run tests/v11/e2e
 **Status**: component E2E added, NOT final complete
 
 **Produced by**: Old system development aid (not v1.1 compliant)
+
+---
+
+## 2026-06-09 — Fifth Pass: Runtime Orchestration E2E Test
+
+**Action**: Added comprehensive E2E test exercising the Runtime class as central orchestrator — simulating what a real daemon does by driving a complete WI lifecycle through all coordinated components.
+
+**Changes**:
+1. Created `packages/workflow-runtime/tests/v11/e2e/v11-runtime-orchestration-e2e.test.ts` — 12 tests covering:
+   - Runtime initialization and component wiring
+   - StateMachine transition enforcement via Runtime
+   - WriteGuard + PathPolicy write permission enforcement
+   - GateRunner execution and state progression coordination
+   - UserDecisionRecorder approval recording with hash binding
+   - MergeRunner precondition validation and merge execution
+   - CloseGate premature closure prevention
+   - ExtensionRegistry unknown type detection and flow blocking
+   - Agent forbidden from direct state transitions (Req 8.23)
+   - Writes blocked when no active work item
+   - Writes blocked after work item closure
+   - **Full lifecycle: created → closed** through all 20+ states with all component coordination
+
+**Test Command**:
+```
+cd packages/workflow-runtime && npx vitest run tests/v11/e2e
+```
+
+**Test Results**: 3 test files, 58 tests passed, 0 failures (483ms).
+
+**Produced by**: Old system development aid (not v1.1 compliant)

@@ -1,6 +1,6 @@
 # SpecForge v1.1 Compliance Gap Analysis
 
-> Last updated: 2026-06-09 (Second remediation pass)
+> Last updated: 2026-06-09 (Fifth pass — Runtime Orchestration E2E)
 
 ## Capability Status Table
 
@@ -14,7 +14,7 @@
 | Extension Registry | Entry Point Exists | sf-extension.md, extension_registry.json | End-to-end subflow not verified |
 | Installer Legacy Write | NOT Fixed | scripts/sf-installer.ts still defaults to ~/.specforge | Must migrate to ~/.config/opencode/sf-user/ |
 | Bootstrap Documentation | NOW Created | This file | - |
-| E2E Compliance Evidence | Component E2E Added | 36 scenario tests + filesystem lifecycle test pass | Full WI lifecycle with real daemon needed for final |
+| E2E Compliance Evidence | Runtime Orchestration E2E Added | 58 tests pass (6 scenarios + filesystem lifecycle + 12 Runtime orchestration tests) | Real daemon integration with persistent state needed for final |
 
 ## Details
 
@@ -58,5 +58,7 @@
 - **Status**: Created during second remediation pass
 
 ### E2E Compliance Evidence
-- **Status**: No end-to-end test suite exists yet
-- **Required**: Tests that exercise the full WI lifecycle with hard-block enforcement, producing verifiable evidence logs
+- **Status**: Runtime Orchestration E2E test added — exercises full WI lifecycle through the Runtime class
+- **File**: `packages/workflow-runtime/tests/v11/e2e/v11-runtime-orchestration-e2e.test.ts`
+- **Coverage**: 12 tests coordinating StateMachine, PathPolicy, WriteGuard, GateRunner, UserDecisionRecorder, MergeRunner, CloseGate, ChangedFilesAudit, and ExtensionRegistry through the Runtime orchestrator
+- **Remaining**: Integration with real daemon process and persistent filesystem state for final compliance evidence
