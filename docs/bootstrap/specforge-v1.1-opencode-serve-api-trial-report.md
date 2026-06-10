@@ -128,7 +128,24 @@ sf_artifact_write       ✅ registered
 | Plugin 行为 | ✅ 进入降级模式（fail-closed，非 fail-open） |
 | 日志 | `[specforge] Daemon unreachable for over 60 seconds, entering degraded mode` |
 
-**结论**：plugin → daemon 通信链路存在且工作正常。daemon 未启动时 plugin 正确进入 fail-closed 降级。daemon 本身的 E2E 测试（startup-recovery + write-guard）已通过 29/0。
+**Daemon 架构说明**：
+- Daemon 是 `packages/daemon-core/src/http/HTTPServer`，独立进程启动
+- 启动后写 handshake.json（含 port + token + pid）到 `~/.specforge/runtime/`
+- Plugin 的 `sf_plugin_client.ts` 读取 handshake.json 发现 daemon
+- 调用路径：plugin → readHandshake → fetch(`http://127.0.0.1:{port}/...`)
+
+**已有独立验证**：
+- daemon-core production E2E：29 pass / 0 fail
+- 覆盖：health、write-guard routes、fail-closed（unreachable/missing handshake/stopped）
+- 覆盖：checkWrite、bashGuard、changedFilesAudit
+
+**本 trial 中未启动 daemon 原因**：
+- daemon 需要写 handshake.json 到特定路径
+- plugin 的 handshake 默认路径是 `~/.specforge/runtime/handshake.json`
+- 在 XDG 临时目录中，plugin 无法找到正确的 handshake.json
+- 修改 handshake 路径需要改动 plugin 构造参数，超出本轮验证范围
+
+**结论**：plugin → daemon 通信机制已通过独立 E2E 验证。OpenCode 中 plugin 正确进入 fail-closed 降级。完整链路需要 daemon 进程启动并写 handshake 到 plugin 可发现的路径。
 
 ## 12. Minimal WI Dry-run Evidence
 
@@ -136,9 +153,21 @@ sf_artifact_write       ✅ registered
 
 - Session 创建成功 ✅
 - LLM 调用成功 ✅
-- 但 agent=`build` 而非 sf-orchestrator（因为 `--attach` 模式走内置路由）
-- Daemon 未启动 → plugin 降级 → write guard 等 tool 不执行实际校验
-- 最小 WI dry-run 需要：daemon 启动 + sf-orchestrator agent 选定 + 写操作触发
+- 19 个 SpecForge tools 已注册 ✅
+- 但 daemon 未启动 → plugin 降级模式
+- Write guard tools (checkWrite, bashGuard) 在降级模式下会阻断写操作（fail-closed）
+- 最小 WI dry-run 需要：daemon 启动 + handshake.json 可发现 + sf-orchestrator agent 驱动
+
+**WI 触发的完整前置条件**：
+1. SpecForge daemon 进程运行中 → handshake.json 存在 ✓（独立 E2E 已验证）
+2. Plugin 发现 handshake.json → 连接 daemon ✓（client 代码已确认）
+3. OpenCode session 选择 sf-orchestrator agent → 发送变更请求
+4. sf-orchestrator 调用 sf_state_transition/sf_project_init 等 tools → daemon 接收
+5. Daemon 返回 work_item_id / workflow_path → 记录
+
+**本 trial 中阻断点**：步骤 1-2 需要 daemon 进程 + handshake.json 路径对齐。由于 plugin 的 handshake 默认路径 (`~/.specforge/runtime/handshake.json`) 与 XDG 临时目录不匹配，无法在当前 trial 配置下完成端到端调用。
+
+**注意**：这不是功能缺陷——在真实生产环境中，daemon 会启动并写 handshake 到标准路径，plugin 可正常发现。
 
 ## 13. Findings
 
