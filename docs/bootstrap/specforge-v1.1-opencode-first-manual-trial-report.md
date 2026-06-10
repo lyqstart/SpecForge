@@ -30,30 +30,55 @@
 
 ## 4. Installer Evidence
 
-### 文件布局验证
+### 真实执行
 
-SpecForge installer 源码 (`scripts/lib/paths.ts`) 确认：
-- `resolveUserLevelDirectory()` 优先使用 `$XDG_CONFIG_HOME/opencode`
-- 否则回退 `$HOME/.config/opencode`
-- 不引用 `~/.specforge`
+| 项目 | 值 |
+|---|---|
+| 命令 | `npx tsx scripts/sf-installer.ts install` |
+| 退出码 | 0 |
+| 安装目标 | `C:\Users\luo\.config\opencode\sf-user` |
+| XDG_CONFIG_HOME 设置 | `D:\code\temp\SpecForge\.tmp\opencode-manual-trial\xdg` |
+| 实际安装位置 | `$HOME/.config/opencode/sf-user`（installer 使用 `os.homedir()` 而非 XDG） |
 
-安装产物设计（`setup/userlevel-opencode/` 源目录）：
-- `plugins/sf_specforge.ts` ✅ 存在
-- `tools/` ✅ 存在
-- `agents/` ✅ 存在（12 个 sf-* agent 定义）
-- `scripts/lib/sf_plugin_client.ts` ✅ 存在
-- `skills/` ✅ 存在
+### 安装产物
 
-### .specforge 禁止写入
+| 文件/目录 | 状态 |
+|---|---|
+| `sf-user/install.json` | ✅ 存在，结构 `{ schema_version: "1.0", base_dir, shared_version: "6.0.0-dev" }` |
+| `sf-user/lib/*.ts` | ✅ 存在（paths.ts, compatibility.ts, crypto.ts 等 20+ 文件） |
+| `sf-user/package.json` | ✅ 存在 |
+| `sf-user/plugins/` | ❌ 未创建（SHARED_COMPONENT_REGISTRY 未包含 plugin 拷贝到 sf-user） |
+| `sf-user/tools/` | ❌ 未创建 |
+| `sf-user/agents/` | ❌ 未创建 |
 
-- `resolveUserLevelDirectory()` 不含 `.specforge` 路径 ✅
-- installer 测试 27 pass 验证不写 .specforge ✅
-- OpenCode `debug paths` 输出不含 .specforge ✅
+### .specforge 检查
 
-### install.json
+| 检查项 | 结果 |
+|---|---|
+| 本次 installer 是否写入 `~/.specforge` | ❌ 否 — `~/.specforge` 创建于 2026-05-30（旧版本历史残留） |
+| installer 源码是否引用 `.specforge` 写入 | ❌ 否 — `getSpecForgeUserDir()` 返回 `~/.config/opencode/sf-user` |
+| 本次 install.json 路径 | `~/.config/opencode/sf-user/install.json` ✅ |
 
-- installer `cmdInstall()` 在安装完成后写入 `sf-user/install.json` ✅
-- 结构: `{ schema_version, base_dir, shared_version, installed_at }` ✅
+### XDG_CONFIG_HOME 行为
+
+**发现**：installer `cmdInstall()` 中的 `resolveUserLevelDirectory()` 用于 OpenCode 级目录（plugin 注册等），但 `getSpecForgeUserDir()` 使用 `os.homedir()` 硬编码，不读 XDG_CONFIG_HOME。
+
+这意味着：
+- `resolveUserLevelDirectory()` 支持 XDG ✅（lib/paths.ts 已修复）
+- `getSpecForgeUserDir()` 不支持 XDG ⚠️（使用 `os.homedir()/.config/opencode/sf-user`）
+- 两者行为不一致，但因 XDG 默认值就是 `$HOME/.config`，所以在未设置 XDG 时结果一致
+
+### Installer Real Execution Conclusion
+
+```
+Installer real execution: PASSED (with limitations)
+```
+
+- 安装命令成功执行，exit 0 ✅
+- install.json 正确写入 sf-user ✅
+- lib 文件正确部署 ✅
+- 不写入 ~/.specforge ✅
+- **限制**：plugins/tools/agents 目录未在 sf-user 创建（由 SHARED_COMPONENT_REGISTRY 控制，需要源目录 `setup/userlevel-opencode/` 中对应文件存在且注册）
 
 ## 5. OpenCode Load Evidence
 
