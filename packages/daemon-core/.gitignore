@@ -27,6 +27,9 @@ yarn-error.log*
 
 # Runtime files
 .runtime/
+.specforge/runtime/cas/
+.specforge/runtime/logs/conversations.jsonl
+.specforge/runtime/logs/tool_calls.jsonl
 *.lock
 
 # Temporary files
