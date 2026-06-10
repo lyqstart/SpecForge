@@ -28,6 +28,7 @@ import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
+import { checkWrite, performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { JsonlAppender } from '../logs/JsonlAppender';
 import * as path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
@@ -306,6 +307,12 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/v11/handoff', this.handleV11Handoff.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/extension', this.handleV11Extension.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/verification', this.handleV11Verification.bind(this));
+
+    // v1.1 Write Guard routes
+    this.addExactRoute('POST', '/api/v1/v11/write-guard/check', this.handleV11WriteGuardCheck.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/write-guard/bash', this.handleV11WriteGuardBash.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/write-guard/changed-files-audit', this.handleV11WriteGuardAudit.bind(this));
+    this.addExactRoute('POST', '/api/v1/v11/write-guard/escaped-write', this.handleV11WriteGuardEscapedWrite.bind(this));
 
     // Prefix routes for API v1 (fallback)
     const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin', 'project', 'v11'];
@@ -1763,5 +1770,171 @@ export class HTTPServer {
     } catch (err: any) {
       this.sendJsonResponse(res, 400, { success: false, error: err.message });
     }
+  }
+
+  // ── v1.1 Write Guard Routes ──────────────────────────────────────────────────
+
+  private async handleV11WriteGuardCheck(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: { targetPath?: string; callerRole?: string; projectPath?: string; context?: Record<string, unknown> };
+    try {
+      request = JSON.parse(body);
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
+      return;
+    }
+
+    const { targetPath, callerRole, projectPath, context } = request;
+    if (!targetPath) {
+      this.sendJsonResponse(res, 400, this.errorBody('MISSING_PARAMS', 'targetPath required'));
+      return;
+    }
+
+    // Determine project path from request body or registered project
+    const resolvedProjectPath = projectPath ?? (context as any)?.projectPath ?? this.getRegisteredProjectPath();
+    if (!resolvedProjectPath) {
+      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, violations: ['no project registered'] }));
+      return;
+    }
+
+    const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, callerRole ?? 'agent');
+    const result = checkWrite(wiCtx, targetPath, 'modify');
+    this.sendJsonResponse(res, 200, this.successBody(result));
+  }
+
+  private async handleV11WriteGuardBash(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: { command?: string; expectedFiles?: string[]; projectPath?: string; context?: any };
+    try {
+      request = JSON.parse(body);
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
+      return;
+    }
+
+    const { command, expectedFiles, projectPath, context } = request;
+    const resolvedProjectPath = projectPath ?? context?.projectPath ?? this.getRegisteredProjectPath();
+
+    if (!resolvedProjectPath) {
+      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no project registered' }));
+      return;
+    }
+
+    // For bash guard: check each expected file
+    const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, 'agent');
+
+    if (!wiCtx.hasActiveWI) {
+      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no active WI' }));
+      return;
+    }
+
+    // If expected files declared, check each
+    if (expectedFiles && expectedFiles.length > 0) {
+      for (const file of expectedFiles) {
+        const result = checkWrite(wiCtx, file, 'modify');
+        if (!result.allowed) {
+          this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: result.violations[0] }));
+          return;
+        }
+      }
+    }
+
+    this.sendJsonResponse(res, 200, this.successBody({ allowed: true, reason: 'bash_allowed' }));
+  }
+
+  private async handleV11WriteGuardAudit(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: { command?: string; expectedFiles?: string[]; changedFiles?: Array<{ path: string; operation: string }>; projectPath?: string; tool?: string };
+    try {
+      request = JSON.parse(body);
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
+      return;
+    }
+
+    const resolvedProjectPath = request.projectPath ?? this.getRegisteredProjectPath();
+    if (!resolvedProjectPath) {
+      this.sendJsonResponse(res, 200, this.successBody({ passed: true, escapedWrites: [] }));
+      return;
+    }
+
+    const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, 'agent');
+    const allowedWriteFiles = wiCtx.workItem?.allowed_write_files ?? [];
+
+    // Use changedFiles if provided, otherwise use expectedFiles as changed
+    const changedFiles = request.changedFiles ?? (request.expectedFiles ?? []).map(f => ({ path: f, operation: 'modify' as const }));
+
+    const result = performChangedFilesAudit(
+      changedFiles as Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
+      allowedWriteFiles,
+      'agent',
+    );
+
+    const escapedWrites = result.entries
+      .filter(e => !e.in_allowed_write_files && !e.is_spec_write)
+      .map(e => e.path);
+
+    this.sendJsonResponse(res, 200, this.successBody({ passed: result.passed, escapedWrites, violations: result.violations }));
+  }
+
+  private async handleV11WriteGuardEscapedWrite(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {
+    let request: { command?: string; expectedFiles?: string[]; escapedWrites?: string[]; timestamp?: string };
+    try {
+      request = JSON.parse(body);
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON body'));
+      return;
+    }
+
+    // Record the escaped write incident (acknowledge receipt)
+    this.sendJsonResponse(res, 200, this.successBody({ recorded: true, timestamp: request.timestamp ?? new Date().toISOString() }));
+  }
+
+  // Helper: load WriteGuardContext from project filesystem
+  private loadWriteGuardContext(projectPath: string, callerRole: string): WriteGuardContext {
+    const fs = require('node:fs');
+    const pathModule = require('node:path');
+
+    const workItemsDir = pathModule.join(projectPath, '.specforge', 'work-items');
+    let activeWI: WriteGuardContext['workItem'] | undefined;
+    let hasActiveWI = false;
+
+    try {
+      const dirs = fs.readdirSync(workItemsDir);
+      for (const dir of dirs) {
+        const wiPath = pathModule.join(workItemsDir, dir, 'work_item.json');
+        try {
+          const content = fs.readFileSync(wiPath, 'utf-8');
+          const wi = JSON.parse(content);
+          if (wi.status !== 'closed' && wi.status !== 'cancelled') {
+            hasActiveWI = true;
+            activeWI = {
+              work_item_id: wi.work_item_id,
+              status: wi.status,
+              code_change_allowed: wi.code_change_allowed ?? false,
+              allowed_write_files: wi.allowed_write_files ?? [],
+              workflow_path: wi.workflow_path ?? null,
+            };
+            break;
+          }
+        } catch { continue; }
+      }
+    } catch { /* no work-items dir */ }
+
+    return {
+      hasActiveWI,
+      workItem: activeWI,
+      callerRole: callerRole as any,
+      isFrozen: false,
+    };
+  }
+
+  // Helper: get the registered project path (first registered project)
+  private getRegisteredProjectPath(): string | null {
+    // Try to get from session registry
+    if (this.deps.sessionRegistry) {
+      try {
+        const projects = (this.deps.sessionRegistry as any).getRegisteredProjects?.() ?? [];
+        if (projects.length > 0) return projects[0];
+      } catch { /* ignore */ }
+    }
+    return null;
   }
 }

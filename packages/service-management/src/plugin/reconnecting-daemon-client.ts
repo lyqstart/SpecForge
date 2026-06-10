@@ -541,6 +541,9 @@ export class ReconnectingDaemonClient implements Disposable {
       throw new Error(`Register returned unexpected response: ${JSON.stringify(body)}`);
     }
 
+    // Store project path for write guard requests
+    this.registeredProjectPath = projectPath;
+
     return body.data as RegisterResponse;
   }
 
@@ -579,6 +582,143 @@ export class ReconnectingDaemonClient implements Disposable {
       return body.data?.env ?? {};
     } catch {
       return {};
+    }
+  }
+
+  // ── Write Guard API (v1.1) ──────────────────────────────────────────────────
+
+  /** Project path stored after successful register() */
+  private registeredProjectPath: string | null = null;
+
+  /**
+   * Check if a write operation is allowed.
+   * Fails closed: if daemon is unreachable, throws (write is blocked).
+   */
+  async checkWrite(targetPath: string, callerRole: string, context?: Record<string, unknown>): Promise<{ allowed: boolean; reason?: string; violations?: string[] }> {
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) {
+      throw new Error('[SF WriteGuard] Daemon handshake not found — fail closed, write blocked');
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    let response: Response;
+    try {
+      response = await fetch(`${url}/api/v1/v11/write-guard/check`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ targetPath, callerRole, projectPath: this.registeredProjectPath, context }),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch (e) {
+      throw new Error(`[SF WriteGuard] Daemon unreachable — fail closed. Error: ${(e as Error).message}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(`[SF WriteGuard] Daemon returned HTTP ${response.status} — fail closed`);
+    }
+
+    const body = await response.json() as { success: boolean; data?: { allowed: boolean; violations: string[] }; error?: { message: string } };
+    if (!body.success || !body.data) {
+      throw new Error(`[SF WriteGuard] Daemon error: ${body.error?.message ?? 'unknown'}`);
+    }
+
+    return {
+      allowed: body.data.allowed,
+      reason: body.data.violations?.[0],
+      violations: body.data.violations,
+    };
+  }
+
+  /**
+   * Check if a bash/shell command is allowed.
+   * Fails closed: if daemon is unreachable, throws (command is blocked).
+   */
+  async bashGuard(command: string, expectedFiles: string[], context?: Record<string, unknown>): Promise<{ allowed: boolean; reason?: string }> {
+    const handshake = await readHandshake(this.options.handshakePath);
+    if (!handshake) {
+      throw new Error('[SF WriteGuard] Daemon handshake not found — fail closed, bash blocked');
+    }
+
+    const url = `${this.options.healthzUrl}:${handshake.port}`;
+    let response: Response;
+    try {
+      response = await fetch(`${url}/api/v1/v11/write-guard/bash`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ command, expectedFiles, projectPath: this.registeredProjectPath, context }),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch (e) {
+      throw new Error(`[SF WriteGuard] Daemon unreachable for bash guard — fail closed. Error: ${(e as Error).message}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(`[SF WriteGuard] Daemon returned HTTP ${response.status} for bash guard — fail closed`);
+    }
+
+    const body = await response.json() as { success: boolean; data?: { allowed: boolean; reason?: string } };
+    if (!body.success || !body.data) {
+      return { allowed: false, reason: 'daemon_error' };
+    }
+
+    return body.data;
+  }
+
+  /**
+   * Perform changed files audit after tool execution.
+   * Non-critical: errors are logged but don't block.
+   */
+  async changedFilesAudit(params: { command: string; expectedFiles: string[]; callID?: string; tool?: string; toolCategory?: string }): Promise<{ passed?: boolean; escapedWrites?: string[]; violations?: string[] } | null> {
+    try {
+      const handshake = await readHandshake(this.options.handshakePath);
+      if (!handshake) return null;
+
+      const url = `${this.options.healthzUrl}:${handshake.port}`;
+      const response = await fetch(`${url}/api/v1/v11/write-guard/changed-files-audit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ ...params, projectPath: this.registeredProjectPath }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) return null;
+      const body = await response.json() as { success: boolean; data?: any };
+      return body.data ?? null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Record an escaped write incident.
+   * Non-critical: errors are logged but don't block.
+   */
+  async recordEscapedWrite(params: { command: string; expectedFiles: string[]; escapedWrites: string[]; callID?: string; timestamp?: string }): Promise<void> {
+    try {
+      const handshake = await readHandshake(this.options.handshakePath);
+      if (!handshake) return;
+
+      const url = `${this.options.healthzUrl}:${handshake.port}`;
+      await fetch(`${url}/api/v1/v11/write-guard/escaped-write`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${handshake.token}`,
+        },
+        body: JSON.stringify({ ...params, projectPath: this.registeredProjectPath }),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {
+      // Best-effort — never block on failure
     }
   }
 

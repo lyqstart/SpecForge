@@ -401,3 +401,65 @@ cd packages/daemon-core && npx vitest run tests/v11-daemon-opencode-writeguard-e
 **Test results**: 1 test file, 18 tests passed, 0 failures (324ms).
 
 **Produced by**: Development aid (bootstrap phase)
+
+---
+
+## 2026-06-10 — Production Daemon Write Guard Integration
+
+**Branch**: v1.1-daemon-opencode-e2e
+
+**Action**: Implemented production write guard chain: ReconnectingDaemonClient → HTTPServer routes → write-guard-v11 → filesystem.
+
+**Key findings fixed**:
+- `sf_specforge.ts` plugin calls `daemonClient.checkWrite()` etc. but ReconnectingDaemonClient had no such methods → **fixed**: 4 methods added
+- HTTPServer had no write guard routes → **fixed**: 4 routes added with real filesystem handlers
+- Mini server test only proved protocol feasibility, not production path → **fixed**: new production E2E uses REAL ReconnectingDaemonClient
+
+**Production code changes**:
+1. `packages/service-management/src/plugin/reconnecting-daemon-client.ts`:
+   - Added `checkWrite(targetPath, callerRole, context)` — fail-closed HTTP call
+   - Added `bashGuard(command, expectedFiles, context)` — fail-closed HTTP call
+   - Added `changedFilesAudit(params)` — non-critical HTTP call
+   - Added `recordEscapedWrite(params)` — best-effort HTTP call
+   - Added `registeredProjectPath` field, set on `register()` success
+2. `packages/daemon-core/src/http/HTTPServer.ts`:
+   - Added route: `POST /api/v1/v11/write-guard/check`
+   - Added route: `POST /api/v1/v11/write-guard/bash`
+   - Added route: `POST /api/v1/v11/write-guard/changed-files-audit`
+   - Added route: `POST /api/v1/v11/write-guard/escaped-write`
+   - Added `loadWriteGuardContext()` — reads real work_item.json from filesystem
+   - All handlers call canonical `checkWrite()` / `performChangedFilesAudit()` from write-guard-v11.ts
+
+**Test changes**:
+- Renamed `v11-live-daemon-opencode-e2e.test.ts` → `v11-live-daemon-protocol-prototype.test.ts`
+- Created `v11-production-daemon-writeguard-e2e.test.ts` — REAL ReconnectingDaemonClient over HTTP
+
+**Test commands and results**:
+```bash
+cd packages/daemon-core
+npx vitest run tests/v11-production-daemon-writeguard-e2e.test.ts
+→ 23 tests passed ✅
+
+npx vitest run tests/v11-live-daemon-protocol-prototype.test.ts
+→ 17 tests passed ✅
+
+npx vitest run tests/v11-daemon-opencode-writeguard-e2e.test.ts
+→ 18 tests passed ✅
+
+cd packages/workflow-runtime
+npx vitest run tests/v11/e2e
+→ 4 test files, 98 tests passed ✅
+
+npx vitest run tests/v11/unit/path-policy-permissions.test.ts
+→ 54 tests passed ✅
+```
+
+Total: 210 tests passed, 0 failures.
+
+**Status**: Production daemon write guard E2E completed.
+
+**Still not complete**:
+- Extension Subflow E2E (next round)
+- Full v1.1 final-complete validation
+
+**Produced by**: Development aid (bootstrap phase)

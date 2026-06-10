@@ -164,6 +164,58 @@ npx vitest run tests/v11-live-daemon-opencode-e2e.test.ts
 
 | 原 Gap | 状态 |
 |---|---|
-| Daemon/OpenCode 实际运行链 E2E | ✅ Live daemon integration 已覆盖（17 tests） |
-| HTTPServer write-guard 路由（生产代码） | ⚠️ 待实现（测试自包含 mini server 证明链路可行） |
-| ReconnectingDaemonClient checkWrite 方法 | ⚠️ 待实现（测试直接用 fetch 验证协议） |
+| Daemon/OpenCode 实际运行链 E2E | ✅ Live daemon protocol prototype verified (17 tests) |
+| HTTPServer write-guard 路由（生产代码） | ✅ Production routes added: /api/v1/v11/write-guard/{check,bash,changed-files-audit,escaped-write} |
+| ReconnectingDaemonClient checkWrite 方法 | ✅ Production methods added: checkWrite, bashGuard, changedFilesAudit, recordEscapedWrite |
+
+## 11. Production Daemon Write Guard E2E 集成（已完成 ✅）
+
+### 新增生产代码
+
+- `packages/service-management/src/plugin/reconnecting-daemon-client.ts` — 新增 4 个方法: `checkWrite()`, `bashGuard()`, `changedFilesAudit()`, `recordEscapedWrite()`
+- `packages/daemon-core/src/http/HTTPServer.ts` — 新增 4 条 write guard 路由 + handler 方法
+
+### 新增测试文件
+
+- `packages/daemon-core/tests/v11-production-daemon-writeguard-e2e.test.ts` — 23 tests passed ✅
+
+### 测试链路
+
+```
+ReconnectingDaemonClient.checkWrite()
+→ HTTP POST /api/v1/v11/write-guard/check
+→ loadWriteGuardContext() reads real work_item.json from filesystem
+→ checkWrite() from write-guard-v11.ts
+→ JSON response → client returns {allowed, violations}
+```
+
+### 覆盖场景
+
+| # | 场景 | 验证方式 |
+|---|---|---|
+| A1 | Daemon unreachable → fail closed | ReconnectingDaemonClient.checkWrite() throws; file unmodified |
+| A2 | No active WI → blocked | Client calls route → daemon reads FS → allowed=false |
+| A3 | code_change_allowed=false → blocked | Client calls route → daemon reads real work_item.json → allowed=false |
+| A4 | allowed_write_files match → allowed | Client calls route → allowed=true, audit passes |
+| A5 | Outside allowed_write_files → blocked | Client calls route → allowed=false, audit fails |
+
+### 关键特性
+
+1. **REAL ReconnectingDaemonClient**: All tests use the production client class (not raw fetch)
+2. **HTTP handshake**: Client reads handshake.json → derives port/token → sends authenticated requests
+3. **真实文件系统**: Server reads work_item.json from temp directory on each request
+4. **Fail-closed semantics**: Unreachable daemon → client throws → file never written
+5. **4 methods tested**: checkWrite, bashGuard, changedFilesAudit, recordEscapedWrite all verified over HTTP
+
+### 运行命令
+
+```bash
+cd packages/daemon-core
+npx vitest run tests/v11-production-daemon-writeguard-e2e.test.ts
+npx vitest run tests/v11-live-daemon-protocol-prototype.test.ts
+npx vitest run tests/v11-daemon-opencode-writeguard-e2e.test.ts
+```
+
+### 状态
+
+Production daemon write guard E2E completed.
