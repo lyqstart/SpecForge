@@ -245,10 +245,52 @@ OpenCode serve API trial: PARTIAL
 - This trial does not declare Production readiness: READY.
 - This trial does not declare Trial readiness: READY.
 
-## 17. Test Evidence
+## 18. Post-Fix Revalidation Evidence (本轮实证复验)
+
+### 环境
+
+| 项目 | 值 |
+|---|---|
+| HOME | 干净临时目录 `$PWD/.tmp/path-gov-revalidation/home` |
+| XDG_CONFIG_HOME | 干净临时目录 `$PWD/.tmp/path-gov-revalidation/xdg` |
+| OPENCODE_CONFIG_DIR | 未设置 |
+| HOME/.specforge 安装前 | 不存在 |
+
+### Daemon 启动
+
+| 项目 | 结果 |
+|---|---|
+| 启动方式 | 编程式 HTTPServer + PersonalPathResolver（与 production E2E 一致） |
+| 端口 | 9974（随机） |
+| runtimeDir | `$XDG_CONFIG_HOME/opencode/sf-user/runtime` ✅ |
+| handshakePath | `$XDG_CONFIG_HOME/opencode/sf-user/runtime/handshake.json` ✅ |
+| Health | `GET /health` → `{"status":"ok","service":"daemon-core"}` ✅ |
+| HOME/.specforge 启动后 | **不存在** ✅ |
+
+### OpenCode serve + Plugin + Tools
+
+| 项目 | 结果 |
+|---|---|
+| serve 端口 | 4098 |
+| Config 路径 | `$XDG_CONFIG_HOME/opencode/opencode.json` ✅ |
+| Plugin 加载 | ✅ 无错误（sf_specforge.ts 正常初始化） |
+| 19 个 sf_* Tools 注册 | ✅ tool.registry 日志逐一确认 |
+| Session 创建 | ✅ `ses_14dbb9e27ffe...` |
+| LLM 响应 | ✅ "OK" |
+
+### Plugin → Daemon 通信
+
+| 项目 | 结果 |
+|---|---|
+| Plugin 发现 handshake | ✅ 从新路径 `$XDG/opencode/sf-user/runtime/handshake.json` |
+| Plugin 连接 daemon | ✅ HTTP 请求到达 daemon port 9974 |
+| Daemon 收到事件 | ✅ `[INGEST]` 日志确认收到 session.updated, message.updated, session.status, session.idle |
+| 通信路径 | OpenCode → plugin → fetch(`http://127.0.0.1:9974/...`) → daemon |
+
+### 测试
 
 | 测试组 | 结果 |
 |---|---|
-| scripts/tests/ | 42 pass, 0 fail |
-| workflow-runtime v11/e2e | 123 pass, 0 fail |
+| scripts/tests/ | 51 pass, 0 fail |
 | daemon-core production | 29 pass, 0 fail |
+| workflow-runtime v11/e2e | 123 pass, 0 fail |
