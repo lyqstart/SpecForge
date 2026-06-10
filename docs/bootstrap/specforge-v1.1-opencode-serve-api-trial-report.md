@@ -152,11 +152,19 @@ sf_artifact_write       ✅ registered
 
 ### 关于 ~/.specforge 路径
 
-Daemon handshake 仍写到 `~/.specforge/runtime/`（来自 `SPEC_USER_DIR_NAME = '.specforge'`）。这是 daemon-core 的运行时路径，与 installer 部署路径（`~/.config/opencode/`）是分开的两个关注点：
-- `~/.config/opencode/` — OpenCode 配置和 SpecForge 组件部署
-- `~/.specforge/runtime/` — daemon 进程间通信（handshake）
+**已修复**（本轮）：Daemon handshake 路径已迁移到统一 OpenCode config root。
 
-本 trial 不修改 daemon runtime path 架构（禁止事项第 1 条），仅验证通信链路。
+新默认路径：`resolveOpenCodeConfigRoot()/sf-user/runtime/handshake.json`
+- `$OPENCODE_CONFIG_DIR/sf-user/runtime/handshake.json`（CI/测试）
+- `$XDG_CONFIG_HOME/opencode/sf-user/runtime/handshake.json`（XDG 覆盖）
+- `~/.config/opencode/sf-user/runtime/handshake.json`（默认 fallback）
+
+不再默认写 `~/.specforge/runtime/`。
+
+修改文件：
+- `packages/daemon-core/src/daemon/path-resolver.ts` — `resolveDaemonRuntimeDir()` 和 `resolveDaemonJsonPath()`
+- `setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts` — DEFAULT handshakePath
+- `scripts/tests/daemon-handshake-path.test.ts` — 新增 9 个测试
 
 ## 12. Minimal WI Dry-run Evidence
 

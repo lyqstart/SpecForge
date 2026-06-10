@@ -12,6 +12,28 @@ import * as os from 'os';
 import { SPEC_DIR_NAME, SPEC_USER_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
 
 /**
+ * Resolve the OpenCode user-level config root.
+ *
+ * Resolution order (same as scripts/lib/paths.ts resolveUserLevelDirectory):
+ *   1. OPENCODE_CONFIG_DIR (explicit override for testing/CI)
+ *   2. XDG_CONFIG_HOME/opencode
+ *   3. ~/.config/opencode
+ *
+ * This is used to derive the daemon runtime directory under sf-user/runtime/.
+ */
+export function resolveOpenCodeConfigRoot(): string {
+  const configDir = process.env.OPENCODE_CONFIG_DIR;
+  if (configDir && configDir.trim() !== '') {
+    return path.resolve(path.normalize(configDir));
+  }
+  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
+  if (xdgConfigHome && xdgConfigHome.trim() !== '') {
+    return path.join(xdgConfigHome, 'opencode');
+  }
+  return path.join(os.homedir(), '.config', 'opencode');
+}
+
+/**
  * Critical system paths that must never be used as a projectPath.
  * Use a function (not a module-level Set) so tests can mutate if needed.
  */
@@ -146,7 +168,7 @@ export class PersonalPathResolver implements IPathResolver {
   }
 
   resolveDaemonRuntimeDir(): string {
-    return path.join(os.homedir(), SPEC_USER_DIR_NAME, 'runtime');
+    return path.join(resolveOpenCodeConfigRoot(), 'sf-user', 'runtime');
   }
 
   resolveHandshakePath(): string {
@@ -154,7 +176,7 @@ export class PersonalPathResolver implements IPathResolver {
   }
 
   resolveDaemonJsonPath(): string {
-    return path.join(os.homedir(), '.config', 'opencode', 'daemon.json');
+    return path.join(resolveOpenCodeConfigRoot(), 'daemon.json');
   }
 
   /**
@@ -205,7 +227,7 @@ export class EnterprisePathResolver implements IPathResolver {
   }
 
   resolveDaemonRuntimeDir(): string {
-    return path.join(os.homedir(), SPEC_USER_DIR_NAME, 'runtime');
+    return path.join(resolveOpenCodeConfigRoot(), 'sf-user', 'runtime');
   }
 
   resolveHandshakePath(): string {
@@ -213,7 +235,7 @@ export class EnterprisePathResolver implements IPathResolver {
   }
 
   resolveDaemonJsonPath(): string {
-    return path.join(os.homedir(), '.config', 'opencode', 'daemon.json');
+    return path.join(resolveOpenCodeConfigRoot(), 'daemon.json');
   }
 
   /**

@@ -61,11 +61,31 @@ export interface ReconnectingDaemonClientOptions {
 
 // ── Defaults ──
 
+/**
+ * Resolve the OpenCode user-level config root.
+ * Same resolution order as scripts/lib/paths.ts resolveUserLevelDirectory():
+ *   1. OPENCODE_CONFIG_DIR (explicit override for testing/CI)
+ *   2. XDG_CONFIG_HOME/opencode
+ *   3. ~/.config/opencode
+ */
+function resolveOpenCodeConfigRoot(): string {
+  const { resolve, normalize } = require("node:path") as typeof import("node:path");
+  const configDir = process.env.OPENCODE_CONFIG_DIR;
+  if (configDir && configDir.trim() !== '') {
+    return resolve(normalize(configDir));
+  }
+  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
+  if (xdgConfigHome && xdgConfigHome.trim() !== '') {
+    return join(xdgConfigHome, 'opencode');
+  }
+  return join(homedir(), '.config', 'opencode');
+}
+
 const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
   initialDelayMs: 1000,
   backoffFactor: 2.0,
   maxCumulativeBackoffMs: 60000,
-  handshakePath: join(homedir(), SPEC_DIR_NAME, "runtime", "handshake.json"),
+  handshakePath: join(resolveOpenCodeConfigRoot(), "sf-user", "runtime", "handshake.json"),
   healthzUrl: "http://127.0.0.1",
 };
 
