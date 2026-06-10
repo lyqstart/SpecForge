@@ -116,20 +116,35 @@ describe('Production installer deployment validation', () => {
   // ═══════════════════════════════════════════════════════════════════════════
 
   describe('7.2: XDG_CONFIG_HOME install path', () => {
-    it('when XDG_CONFIG_HOME is set, install target should use it', () => {
-      const tmpConfig = path.join(tmpHome, 'custom-config');
-      fs.mkdirSync(tmpConfig, { recursive: true });
+    it('when XDG_CONFIG_HOME is set, resolveUserLevelDirectory uses it', () => {
+      const tmpConfig = path.join(tmpHome, 'custom-xdg-config');
+      process.env.XDG_CONFIG_HOME = tmpConfig;
 
-      // The resolveUserLevelDirectory function currently uses os.homedir()/.config/opencode
-      // XDG_CONFIG_HOME support would need to be in resolveUserLevelDirectory
-      // Test documents current behavior: uses ~/.config/opencode regardless of XDG
       const resolved = resolveUserLevelDirectory();
       const posix = resolved.replace(/\\/g, '/');
-      // Current implementation: always uses homedir()/.config/opencode
-      expect(posix).toContain('/.config/opencode');
+      const expectedPosix = tmpConfig.replace(/\\/g, '/') + '/opencode';
+      expect(posix).toBe(expectedPosix);
+      expect(posix).not.toContain('/.specforge');
     });
 
-    it('real filesystem: sf-user under custom config path does not create .specforge', () => {
+    it('XDG_CONFIG_HOME install does NOT write to HOME/.config/opencode', () => {
+      const tmpConfig = path.join(tmpHome, 'xdg-alt');
+      process.env.XDG_CONFIG_HOME = tmpConfig;
+
+      const resolved = resolveUserLevelDirectory();
+      const sfUserDir = path.join(resolved, 'sf-user');
+      fs.mkdirSync(sfUserDir, { recursive: true });
+      fs.writeFileSync(path.join(sfUserDir, 'install.json'), JSON.stringify({ schema_version: '1.0' }));
+
+      // Verify: written to XDG path
+      expect(fs.existsSync(path.join(sfUserDir, 'install.json'))).toBe(true);
+      // Verify: NOT written to default HOME/.config/opencode
+      expect(fs.existsSync(path.join(tmpHome, '.config', 'opencode', 'sf-user'))).toBe(false);
+      // Verify: .specforge NOT created
+      expect(fs.existsSync(path.join(tmpHome, '.specforge'))).toBe(false);
+    });
+
+    it('real filesystem: sf-user under XDG custom config path does not create .specforge', () => {
       const customConfig = path.join(tmpHome, 'custom-xdg');
       const sfUserDir = path.join(customConfig, 'opencode', 'sf-user');
       fs.mkdirSync(sfUserDir, { recursive: true });
@@ -140,6 +155,14 @@ describe('Production installer deployment validation', () => {
       expect(fs.existsSync(path.join(sfUserDir, 'install.json'))).toBe(true);
       expect(fs.existsSync(path.join(tmpHome, '.specforge'))).toBe(false);
       expect(fs.existsSync(path.join(customConfig, '.specforge'))).toBe(false);
+    });
+
+    it('empty XDG_CONFIG_HOME falls back to HOME/.config/opencode', () => {
+      process.env.XDG_CONFIG_HOME = '';
+
+      const resolved = resolveUserLevelDirectory();
+      const posix = resolved.replace(/\\/g, '/');
+      expect(posix).toContain('/.config/opencode');
     });
   });
 
