@@ -4,6 +4,8 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { join } from 'node:path';
 import { isValidV11Transition, isForbiddenTransition, WI_STATUSES_V11, checkCloseGateEvidenceRequirements } from '../lib/state-machine-v11';
 import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from '../lib/state_machine';
+import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 registerHandler('sf_state_transition', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
@@ -61,6 +63,21 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
         error: `Invalid v1.1 transition: ${fromState} → ${toState}`,
         valid_from_states: `Use getTransitionTable() to see valid targets from ${fromState}`,
       };
+    }
+
+    // v1.1 §5.3: Seal transition enforcement — only authorized subjects can perform seal transitions
+    if (fromState !== '' && isSealTransition(fromState, toState)) {
+      const sealEntry = getSealTransition(fromState, toState);
+      const callerAgent = (context?.agent as string) ?? '';
+      if (sealEntry && callerAgent !== sealEntry.authorizedSubject) {
+        return {
+          success: false,
+          error: `Seal transition ${fromState} → ${toState} requires actor '${sealEntry.authorizedSubject}', got '${callerAgent || 'none'}'. Only ${sealEntry.authorizedSubject} may perform this transition.`,
+          seal_transition: true,
+          required_actor: sealEntry.authorizedSubject,
+          actual_actor: callerAgent || null,
+        };
+      }
     }
 
     // v1.2 M1: Close gate evidence requirements — before transitionFull

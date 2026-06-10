@@ -81,9 +81,12 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
 
     // -----------------------------------------------------------------------
     // Step 1: Revoke code_permission FIRST (§12.4 — must revoke before close)
+    // Save snapshot of allowed_write_files BEFORE revoking for audit comparison
+    // Also ensure allowed_write_files is cleared regardless of code_change_allowed state
     // -----------------------------------------------------------------------
     const permState = await checkCodePermission(workItemDir);
-    if (permState.code_change_allowed) {
+    const allowedWriteFilesSnapshot = permState.allowed_write_files;
+    if (permState.code_change_allowed || permState.allowed_write_files.length > 0) {
       await revokeCodePermission(workItemDir);
     }
     result.code_permission_revoked = true;
@@ -101,23 +104,31 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
     }
 
     if (!auditAlreadyExists) {
-      // Read allowed_write_files from (now-revoked) work_item.json
+      // Read work_item.json for actual_changed_files
       const updatedRaw = await fs.readFile(workItemJsonPath, 'utf-8');
       const updatedWi = JSON.parse(updatedRaw);
 
-      // Try to read changed_files list from work_item.json or git diff
+      // Try to read changed_files list from work_item.json
       const changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }> =
         (updatedWi['actual_changed_files'] as typeof changedFiles) ?? [];
-      const allowedWriteFiles: Array<{ path: string; operation: string }> =
-        (updatedWi['allowed_write_files_snapshot'] as typeof allowedWriteFiles) ??
-        (updatedWi['allowed_write_files'] as typeof allowedWriteFiles) ??
-        [];
 
-      const auditResult = runChangedFilesAudit(changedFiles, allowedWriteFiles, 'agent');
+      // Use the pre-revoke snapshot for comparison (what WAS allowed during implementation)
+      // Priority: allowed_write_files_snapshot (explicitly saved) > pre-revoke snapshot
+      const allowedWriteFilesForAudit: Array<{ path: string; operation: string }> =
+        (updatedWi['allowed_write_files_snapshot'] as Array<{ path: string; operation: string }>) ??
+        allowedWriteFilesSnapshot.map(f => ({ path: f.path, operation: f.operation }));
+
+      // Validate audit data source — empty actual_changed_files = weak audit
+      const auditDataSource = changedFiles.length > 0
+        ? 'work_item.actual_changed_files'
+        : 'none (empty — weak audit)';
+
+      const auditResult = runChangedFilesAudit(changedFiles, allowedWriteFilesForAudit, 'agent');
       result.changed_files_audit = auditResult;
 
-      // Write changed_files_audit.md
-      const auditMd = generateChangedFilesAuditMd(workItemId, auditResult);
+      // If actual_changed_files is empty, this is a weak audit — still passes
+      // but marks the evidence source clearly
+      const auditMd = generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource);
       await fs.writeFile(changedFilesPath, auditMd, 'utf-8');
     } else {
       // Audit file already exists — read and validate
@@ -201,6 +212,7 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
 function generateChangedFilesAuditMd(
   workItemId: string,
   audit: ChangedFilesAuditResult,
+  dataSource?: string,
 ): string {
   const lines: string[] = [
     `# Changed Files Audit`,
@@ -208,6 +220,7 @@ function generateChangedFilesAuditMd(
     `- Work Item: ${workItemId}`,
     `- Timestamp: ${new Date().toISOString()}`,
     `- Status: ${audit.passed ? 'PASSED' : 'FAILED'}`,
+    `- Data Source: ${dataSource ?? 'pre-existing audit file'}`,
     ``,
     `## Summary`,
     ``,

@@ -548,7 +548,7 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      { directory: tempDir },
+      { directory: tempDir, agent: 'close_gate' },
       deps,
     );
 
@@ -575,7 +575,7 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      { directory: tempDir },
+      { directory: tempDir, agent: 'close_gate' },
       deps,
     );
 
@@ -600,7 +600,7 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      { directory: tempDir },
+      { directory: tempDir, agent: 'close_gate' },
       deps,
     );
 
@@ -623,7 +623,7 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      { directory: tempDir },
+      { directory: tempDir, agent: 'close_gate' },
       deps,
     );
 
@@ -648,7 +648,7 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      { directory: tempDir },
+      { directory: tempDir, agent: 'close_gate' },
       deps,
     );
 
@@ -711,7 +711,7 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      {}, // No directory or worktree
+      { agent: 'close_gate' }, // No directory or worktree
       deps,
     );
 
@@ -732,7 +732,7 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      { directory: tempDir },
+      { directory: tempDir, agent: 'close_gate' },
       deps,
     );
 
