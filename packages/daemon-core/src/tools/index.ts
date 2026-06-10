@@ -32,3 +32,4 @@ import './handlers/sf-v11-rollback';
 import './handlers/sf-v11-handoff';
 import './handlers/sf-v11-extension';
 import './handlers/sf-v11-verification';
+import './handlers/sf-v11-close-gate';
