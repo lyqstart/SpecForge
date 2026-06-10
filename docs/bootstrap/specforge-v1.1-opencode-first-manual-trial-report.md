@@ -74,15 +74,21 @@
 Installer real execution: PASSED
 ```
 
-- 安装命令：`bun scripts/sf-installer.ts install`（Bun 运行时，installer 设计运行时）
-- 退出码：0
-- 部署 104 个文件到 `$XDG_CONFIG_HOME/opencode/`
-- agents: 10 个 sf-* agents ✅
-- tools: 19 个 sf_* tools ✅
-- plugins: `sf_specforge.ts` ✅
-- sf-user/install.json ✅
-- .specforge 未创建 ✅
-- XDG_CONFIG_HOME 正确使用 ✅
+### 干净临时目录验证（安装前目标不存在）
+
+| 步骤 | 结果 |
+|---|---|
+| 临时 XDG 安装前是否为空 | ✅ 是 — `$XDG_CONFIG_HOME/opencode` 不存在 |
+| 临时 HOME/.specforge 安装前 | ✅ 不存在 |
+| installer 命令 | `bun scripts/sf-installer.ts install` |
+| installer 退出码 | 0 |
+| 安装目标 | `$XDG_CONFIG_HOME/opencode` (临时干净目录) |
+| plugins/sf_specforge.ts | ✅ 由本次安装创建 |
+| agents/ | ✅ 10 个 sf-* agents 由本次安装创建 |
+| tools/ | ✅ 19 个 sf_* tools 由本次安装创建 |
+| 共享组件总数 | 104 |
+| XDG/.specforge | ✅ 不存在 |
+| 临时 HOME/.specforge | ✅ 不存在（仅空目录） |
 
 **修复**: installer 中 `getSpecForgeUserDir()` 和 `getLegacySpecForgeDir()` 使用 `require()` — 在 Node ESM 模式下失败。修复为使用顶层 `import * as os`。同时修复 `isMainModule` 检测在 tsx 下不工作的问题。
 
