@@ -36,10 +36,27 @@ interface DaemonResponse<T = unknown> {
 
 function readHandshake(): HandshakeFile {
   const home = os.homedir();
+
+  // Resolve OpenCode config root (same logic as path-resolver.ts)
+  let configRoot: string;
+  const configDir = process.env.OPENCODE_CONFIG_DIR;
+  if (configDir && configDir.trim() !== '') {
+    configRoot = path.resolve(path.normalize(configDir));
+  } else {
+    const xdg = process.env.XDG_CONFIG_HOME;
+    if (xdg && xdg.trim() !== '') {
+      configRoot = path.join(xdg, 'opencode');
+    } else {
+      configRoot = path.join(home, '.config', 'opencode');
+    }
+  }
+
   const paths = [
     // Project-level runtime (preferred for project daemon)
     path.join(process.cwd(), SPEC_DIR_NAME, 'runtime', 'handshake.json'),
-    // User-level runtime (fallback for global daemon)
+    // User-level runtime under resolved OpenCode config root (v1.1 standard)
+    path.join(configRoot, 'sf-user', 'runtime', 'handshake.json'),
+    // Legacy sf-runtime path (read-only fallback)
     path.join(home, '.config', 'opencode', 'sf-runtime', 'handshake.json'),
     // Legacy path (read-only fallback)
     path.join(home, SPEC_DIR_NAME, 'runtime', 'handshake.json'),
