@@ -25,7 +25,7 @@ The following capabilities are NOT yet validated at the Daemon/OpenCode integrat
 
 1. ~~**Daemon/OpenCode actual runtime E2E**~~ — ✅ Fixed in branch `v1.1-daemon-opencode-e2e`: Production ReconnectingDaemonClient.checkWrite() → HTTP POST → daemon reads real work_item.json → write-guard-v11 evaluation → response. All 4 client methods (checkWrite, bashGuard, changedFilesAudit, recordEscapedWrite) implemented and tested over HTTP. HTTPServer has production routes. (23 + 17 + 18 = 58 tests)
 2. ~~**Extension Subflow E2E**~~ — ✅ Completed in branch `v1.1-daemon-opencode-e2e`: Extension Request → sf-extension → extension_registry candidate → extension_gate → User Decision → executeV11Merge → main flow resumption. 20 tests (6 positive + 8 negative + bonus assertions). Real filesystem, real components.
-3. **Full v1.1 final-complete validation** — All components exercised through live OpenCode session with real daemon
+3. **Full v1.1 final-complete validation** — ✅ Completed: 241 tests across 10 files pass; grep/static checks clean; all 7 validation areas PASS. See `specforge-v1.1-final-validation-report.md`.
 
 ## Details
 
