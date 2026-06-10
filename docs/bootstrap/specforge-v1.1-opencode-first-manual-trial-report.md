@@ -278,3 +278,69 @@ OpenCode first manual trial: PARTIAL
 - This trial does not declare production ready.
 - This trial does not declare Production readiness: READY.
 - This trial does not declare Trial readiness: READY.
+
+## 11. Merge Readiness Test Evidence
+
+### 测试口径与对比方法
+
+- 对比基线: main@`04b168c` (tag: `v1.1-trial-readiness-partial`)
+- 对比分支: `v1.1-opencode-first-manual-trial`@`3ff1aa5`
+- 对比日期: 2026-06-10
+
+### scripts/tests/ (installer 相关)
+
+| 指标 | 结果 |
+|---|---|
+| 命令 | `bun test scripts/tests/` |
+| pass | 31 |
+| fail | 0 |
+| files | 3 |
+
+### packages/workflow-runtime/tests/v11/e2e
+
+| 指标 | 结果 |
+|---|---|
+| 命令 | `bun test packages/workflow-runtime/tests/v11/e2e` |
+| pass | 123 |
+| fail | 0 |
+| files | 6 |
+
+### daemon-core production E2E (核心测试)
+
+| 指标 | 结果 |
+|---|---|
+| 命令 | `bun test packages/daemon-core/tests/production-daemon-startup-recovery-e2e.test.ts packages/daemon-core/tests/v11-production-daemon-writeguard-e2e.test.ts` |
+| pass | 29 |
+| fail | 0 |
+| files | 2 |
+
+### daemon-core 全量测试对比
+
+| 指标 | main@04b168c | branch@3ff1aa5 |
+|---|---|---|
+| pass | 694 | 694 |
+| fail | 84 | 84 |
+| errors | 11 | 11 |
+| files | 62 | 62 |
+| tests | 778 | 778 |
+| expect() calls | 17309 | 16262 |
+
+### 失败测试名称对比
+
+| 指标 | 结果 |
+|---|---|
+| main 失败测试名数量 | 150 行 |
+| branch 失败测试名数量 | 150 行 |
+| 仅在 main 中失败 | 0 |
+| 仅在 branch 中失败 | 0 |
+| 本分支新增失败 | 无 |
+
+### 结论
+
+84 个 daemon-core 全量测试失败为 pre-existing（main@04b168c 已存在相同失败）。本分支未新增任何失败，未扩大失败范围。
+
+```
+Merge readiness test evidence: PASSED_WITH_PRE_EXISTING_DAEMON_CORE_FAILURES
+```
+
+不阻断本分支合并。
