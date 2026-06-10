@@ -16,6 +16,7 @@ import { registerHandler } from '../ToolDispatcher.js';
 import { runCloseGate, type CloseGateResult } from '../lib/close-gate.js';
 import { runChangedFilesAudit, type ChangedFilesAuditResult } from '../lib/changed-files-audit.js';
 import { revokeCodePermission, checkCodePermission } from '../lib/code-permission-service-v11.js';
+import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log.js';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 
@@ -108,9 +109,26 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
       const updatedRaw = await fs.readFile(workItemJsonPath, 'utf-8');
       const updatedWi = JSON.parse(updatedRaw);
 
-      // Try to read changed_files list from work_item.json
-      const changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }> =
-        (updatedWi['actual_changed_files'] as typeof changedFiles) ?? [];
+      // FACTUAL SOURCE PRIORITY:
+      // 1. Write Guard log (append-only, written by HTTPServer on every check)
+      // 2. work_item.actual_changed_files (caller-provided fallback)
+      const factualFiles = getFactualChangedFiles(workItemDir);
+      const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
+
+      let changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>;
+      let auditDataSource: string;
+
+      if (factualFiles.length > 0) {
+        // Use Write Guard log as factual source
+        changedFiles = factualFiles;
+        auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes)`;
+      } else {
+        // Fallback to caller-provided data
+        changedFiles = (updatedWi['actual_changed_files'] as typeof changedFiles) ?? [];
+        auditDataSource = changedFiles.length > 0
+          ? 'work_item.actual_changed_files (caller-provided fallback — no write_guard_log)'
+          : 'none (empty — weak audit, no write_guard_log)';
+      }
 
       // Use the pre-revoke snapshot for comparison (what WAS allowed during implementation)
       // Priority: allowed_write_files_snapshot (explicitly saved) > pre-revoke snapshot
@@ -118,17 +136,18 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
         (updatedWi['allowed_write_files_snapshot'] as Array<{ path: string; operation: string }>) ??
         allowedWriteFilesSnapshot.map(f => ({ path: f.path, operation: f.operation }));
 
-      // Validate audit data source — empty actual_changed_files = weak audit
-      const auditDataSource = changedFiles.length > 0
-        ? 'work_item.actual_changed_files'
-        : 'none (empty — weak audit)';
-
       const auditResult = runChangedFilesAudit(changedFiles, allowedWriteFilesForAudit, 'agent');
       result.changed_files_audit = auditResult;
 
-      // If actual_changed_files is empty, this is a weak audit — still passes
-      // but marks the evidence source clearly
-      const auditMd = generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource);
+      // Include Write Guard violations in audit metadata
+      const auditMd = generateChangedFilesAuditMd(
+        workItemId,
+        auditResult,
+        auditDataSource,
+        writeGuardSummary.blockedWrites.length > 0
+          ? writeGuardSummary.blockedWrites.map(b => `${b.path} (${b.violations.join('; ')})`)
+          : undefined,
+      );
       await fs.writeFile(changedFilesPath, auditMd, 'utf-8');
     } else {
       // Audit file already exists — read and validate
@@ -213,6 +232,7 @@ function generateChangedFilesAuditMd(
   workItemId: string,
   audit: ChangedFilesAuditResult,
   dataSource?: string,
+  writeGuardViolations?: string[],
 ): string {
   const lines: string[] = [
     `# Changed Files Audit`,
@@ -233,6 +253,14 @@ function generateChangedFilesAuditMd(
     `| Side effects | ${audit.side_effects} |`,
     ``,
   ];
+
+  if (writeGuardViolations && writeGuardViolations.length > 0) {
+    lines.push(`## Write Guard Violations (from write_guard_log.jsonl)`, ``);
+    for (const v of writeGuardViolations) {
+      lines.push(`- ${v}`);
+    }
+    lines.push(``);
+  }
 
   if (audit.violations.length > 0) {
     lines.push(`## Violations`, ``);

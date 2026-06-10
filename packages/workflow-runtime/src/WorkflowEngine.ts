@@ -15,6 +15,7 @@ import {
   CompositeGateDefinition,
 } from './types.js';
 import { isForbiddenTransitionV11 } from './types/state-machine.js';
+import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 import { EventPublisher } from './events/EventPublisher.js';
 import {
   WorkflowErrorHandler,
@@ -336,6 +337,27 @@ export class WorkflowEngine {
     // v1.1 forbidden transition check — enforced before workflow definition validation
     if (isForbiddenTransitionV11(fromState as import('./types/state-machine.js').WIStatusV11, toState)) {
       throw new Error(`Forbidden transition (v1.1): ${fromState} → ${toState}`);
+    }
+
+    // v1.1 §5.3: Seal transition enforcement at core engine level
+    // Seal transitions can ONLY be performed by their authorized subject.
+    // This check is NOT bypassable — it's in the canonical transition path.
+    if (isSealTransition(fromState, toState)) {
+      const sealEntry = getSealTransition(fromState, toState);
+      if (sealEntry) {
+        // Extract actor string from the actor parameter
+        const actorStr = typeof actor === 'string'
+          ? actor
+          : (actor && typeof actor === 'object' && 'agentRole' in (actor as Record<string, unknown>))
+            ? String((actor as Record<string, unknown>).agentRole)
+            : null;
+        if (actorStr !== sealEntry.authorizedSubject) {
+          throw new Error(
+            `Seal transition ${fromState} → ${toState} requires actor '${sealEntry.authorizedSubject}', ` +
+            `got '${actorStr ?? 'none'}'. Only ${sealEntry.authorizedSubject} may perform this transition.`
+          );
+        }
+      }
     }
 
     const instance = this.instances.get(workItemId);

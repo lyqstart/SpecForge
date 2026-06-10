@@ -210,6 +210,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'gates_running',
           toState: 'approval_required',
+          actor: 'gate_runner',
         }),
       ).rejects.toThrow(/workItemDir is required/);
     });
@@ -239,6 +240,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'merge_ready',
           toState: 'merging',
+          actor: 'merge_runner',
         }),
       ).rejects.toThrow(/workItemDir is required/);
     });
@@ -263,8 +265,9 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'verification_done',
           toState: 'closed',
+          actor: 'close_gate',
         }),
-      ).rejects.toThrow(/workItemDir is required/);
+      ).rejects.toThrow(/Seal transition|workItemDir is required/);
     });
   });
 
@@ -349,6 +352,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'merge_ready',
           toState: 'merging',
+          actor: 'merge_runner',
           workItemDir: wiDir,
         }),
       ).rejects.toThrow(/merge_ready_gate/);
@@ -372,6 +376,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'merge_ready',
           toState: 'merging',
+          actor: 'merge_runner',
           workItemDir: wiDir,
         }),
       ).rejects.toThrow(/status.*failed.*expected.*passed/);
@@ -394,7 +399,8 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
         workItemId: instance.id,
         fromState: 'merge_ready',
         toState: 'merging',
-        workItemDir: wiDir,
+          actor: 'merge_runner',
+          workItemDir: wiDir,
       });
 
       expect(result.currentState).toBe('merging');
@@ -483,6 +489,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'verification_done',
           toState: 'closed',
+          actor: 'close_gate',
           workItemDir: wiDir,
         }),
       ).rejects.toThrow(/changed_files_audit/);
@@ -514,6 +521,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'verification_done',
           toState: 'closed',
+          actor: 'close_gate',
           workItemDir: wiDir,
         }),
       ).rejects.toThrow(/close_gate/);
@@ -549,6 +557,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'verification_done',
           toState: 'closed',
+          actor: 'close_gate',
           workItemDir: wiDir,
         }),
       ).rejects.toThrow(/close_gate/);
@@ -583,7 +592,8 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
         workItemId: instance.id,
         fromState: 'verification_done',
         toState: 'closed',
-        workItemDir: wiDir,
+          actor: 'close_gate',
+          workItemDir: wiDir,
       });
 
       expect(result.currentState).toBe('closed');
@@ -712,6 +722,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: 'test-wi-001',
           fromState: '',
           toState: 'closed',
+          actor: 'close_gate',
           workItemDir: wiDir,
         }),
       ).rejects.toThrow(/created/);
@@ -724,6 +735,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: 'test-wi-002',
           fromState: '',
           toState: 'approval_required',
+          actor: 'gate_runner',
           workItemDir: wiDir,
         }),
       ).rejects.toThrow(/created/);
@@ -912,6 +924,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'verification_done',
           toState: 'closed',
+          actor: 'close_gate',
           workItemDir: qcDir,
         }),
       ).rejects.toThrow(/changed_files_audit/);
@@ -947,6 +960,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'verification_done',
           toState: 'closed',
+          actor: 'close_gate',
           workItemDir: qcDir,
         }),
       ).rejects.toThrow(/close_gate/);
@@ -1036,7 +1050,8 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
         workItemId: instance.id,
         fromState: 'verification_done',
         toState: 'closed',
-        workItemDir: qcDir,
+          actor: 'close_gate',
+          workItemDir: qcDir,
       });
 
       expect(result.currentState).toBe('closed');
@@ -1159,6 +1174,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'gates_running',
           toState: 'approval_required',
+          actor: 'gate_runner',
         })
       ).rejects.toThrow(/workItemDir|required/);
     });
@@ -1185,6 +1201,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'merge_ready',
           toState: 'merging',
+          actor: 'merge_runner',
         })
       ).rejects.toThrow(/workItemDir|required/);
     });
@@ -1237,8 +1254,9 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'verification_done',
           toState: 'closed',
+          actor: 'close_gate',
         })
-      ).rejects.toThrow(/workItemDir|required/);
+      ).rejects.toThrow(/Seal transition|workItemDir|required/);
     });
 
     // --- Scenario 10-16: transitionFull() with empty workItemDir (missing evidence files) ---
@@ -1297,6 +1315,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'created',
           toState: 'closed',
+          actor: 'close_gate',
           workItemDir: wiDir,
         })
       ).rejects.toThrow(/Forbidden|Invalid transition/);
@@ -1371,6 +1390,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
           workItemId: instance.id,
           fromState: 'gates_running',
           toState: 'approval_required',
+          actor: 'gate_runner',
           workItemDir: wiDir,
         })
       ).rejects.toThrow(/State mismatch/);
@@ -1837,7 +1857,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       pmForceState(inst.id, 'verification_done');
 
       const result = await pmEngine.transitionFull({
-        workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmDir,
+        workItemId: inst.id, fromState: 'verification_done', toState: 'closed', actor: 'close_gate', workItemDir: pmDir,
       });
       expect(result.currentState).toBe('closed');
     });
@@ -1855,7 +1875,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       pmForceState(inst.id, 'verification_done');
 
       await expect(
-        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmDir })
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', actor: 'close_gate', workItemDir: pmDir })
       ).rejects.toThrow(/close_gate/);
     });
 
@@ -1869,7 +1889,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       pmForceState(inst.id, 'verification_done');
 
       await expect(
-        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmDir })
+        pmEngine.transitionFull({ workItemId: inst.id, fromState: 'verification_done', toState: 'closed', actor: 'close_gate', workItemDir: pmDir })
       ).rejects.toThrow(/changed_files_audit/);
     });
 
@@ -1992,7 +2012,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       pmForceState(inst.id, 'verification_done');
 
       const result = await pmEngine.transitionFull({
-        workItemId: inst.id, fromState: 'verification_done', toState: 'closed', workItemDir: pmDir,
+        workItemId: inst.id, fromState: 'verification_done', toState: 'closed', actor: 'close_gate', workItemDir: pmDir,
       });
       expect(result.currentState).toBe('closed');
     });

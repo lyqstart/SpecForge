@@ -29,6 +29,7 @@ import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
 import { checkWrite, performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
+import { appendWriteGuardLog } from '../tools/lib/write-guard-log';
 import { JsonlAppender } from '../logs/JsonlAppender';
 import * as path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
@@ -1798,6 +1799,20 @@ export class HTTPServer {
 
     const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, callerRole ?? 'agent');
     const result = checkWrite(wiCtx, targetPath, 'modify');
+
+    // Append to Write Guard log for factual audit trail
+    if (wiCtx.workItem) {
+      const wiDir = path.join(resolvedProjectPath, SPEC_DIR_NAME, 'work-items', wiCtx.workItem.work_item_id);
+      appendWriteGuardLog(wiDir, {
+        timestamp: new Date().toISOString(),
+        path: targetPath,
+        operation: 'modify',
+        actor: callerRole ?? 'agent',
+        allowed: result.allowed,
+        violations: result.violations,
+      });
+    }
+
     this.sendJsonResponse(res, 200, this.successBody(result));
   }
 
@@ -1830,6 +1845,21 @@ export class HTTPServer {
     if (expectedFiles && expectedFiles.length > 0) {
       for (const file of expectedFiles) {
         const result = checkWrite(wiCtx, file, 'modify');
+
+        // Log to Write Guard log
+        if (wiCtx.workItem) {
+          const wiDir = path.join(resolvedProjectPath, SPEC_DIR_NAME, 'work-items', wiCtx.workItem.work_item_id);
+          appendWriteGuardLog(wiDir, {
+            timestamp: new Date().toISOString(),
+            path: file,
+            operation: 'modify',
+            actor: 'agent',
+            allowed: result.allowed,
+            violations: result.violations,
+            command,
+          });
+        }
+
         if (!result.allowed) {
           this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: result.violations[0] }));
           return;

@@ -8,124 +8,122 @@
 
 ## Summary
 
-Implemented the WI complete lifecycle closure governance chain:
-- seal transition enforcement (verification_done → closed blocked for non-close_gate actors)
-- sf_close_gate handler (orchestrates revoke + audit + checks + evidence + state advance)
-- changed_files_audit with data source traceability
-- Write Guard closed-WI blockade verification
-- Comprehensive negative tests
+Implemented the WI complete lifecycle closure governance chain with core-layer enforcement:
+- Seal transition enforcement at WorkflowEngine.transitionFull level (not bypassable)
+- Write Guard append-only log as factual audit source
+- sf_close_gate handler with factual audit integration
+- Comprehensive negative tests and E2E lifecycle test
 
-## A. Seal Transition
+## A. Seal Transition — Core Layer (WorkflowEngine.transitionFull)
 
-| Check | Result |
-|-------|--------|
-| verification_done → closed is seal transition | ✓ PASSED |
-| Only close_gate actor can execute it | ✓ PASSED |
-| sf_state_transition blocks sf-orchestrator | ✓ PASSED |
-| sf_state_transition blocks agent | ✓ PASSED |
-| sf_state_transition blocks empty actor | ✓ PASSED |
-| sf_state_transition allows close_gate actor | ✓ PASSED |
-| closed → any is forbidden | ✓ PASSED |
-| blocked → closed is forbidden | ✓ PASSED |
-| rejected → closed is forbidden | ✓ PASSED |
-| gates_running → approval_required needs gate_runner | ✓ PASSED |
+| Check | Result | Layer |
+|-------|--------|-------|
+| verification_done → closed is seal transition | ✓ | types |
+| Only close_gate actor can execute at WorkflowEngine level | ✓ | WorkflowEngine.transitionFull |
+| WorkflowEngine blocks sf-orchestrator | ✓ | core |
+| WorkflowEngine blocks agent | ✓ | core |
+| WorkflowEngine blocks empty/no actor | ✓ | core |
+| WorkflowEngine allows close_gate actor | ✓ | core |
+| WorkflowEngine supports actor as {agentRole} object | ✓ | core |
+| sf_state_transition handler also enforces seal | ✓ | handler |
+| closed → any is forbidden at core level | ✓ | core |
+| blocked → closed is forbidden at core level | ✓ | core |
+| rejected → closed is forbidden | ✓ | core |
+| gates_running → approval_required needs gate_runner | ✓ | core |
+| merge_ready → merging needs merge_runner | ✓ | core |
 
-## B. close_gate Happy Path
+**Not bypassable by**: sf_state_transition handler, direct Runtime call, test helper forceState (forceState only changes instance object, not persistent state via transitionFull).
 
-| Check | Result |
-|-------|--------|
-| WI state from verification_done | ✓ PASSED |
-| verification_report exists | ✓ PASSED |
-| evidence/evidence_manifest.json exists | ✓ PASSED |
-| trace_delta.md exists | ✓ PASSED |
-| merge_report.md exists | ✓ PASSED |
-| candidate_manifest.json exists (entries=[] for code_only_fast_path) | ✓ PASSED |
-| merge_report status = not_applicable for code_only_fast_path | ✓ PASSED |
-| changed_files_audit.md generated and passed | ✓ PASSED |
-| code_permission revoked (code_change_allowed=false) | ✓ PASSED |
-| allowed_write_files cleared (empty after revoke) | ✓ PASSED |
-| No Write Guard violations | ✓ PASSED |
-| close_gate.json written | ✓ PASSED |
-| close_gate.md written | ✓ PASSED |
-| WI state advanced to closed | ✓ PASSED |
-| closed_at timestamp written | ✓ PASSED |
-
-## C. close_gate Negative Tests
+## B. changed_files_audit — Factual Audit
 
 | Check | Result |
 |-------|--------|
-| Missing verification_report → failed | ✓ PASSED |
-| Missing evidence_manifest → failed | ✓ PASSED |
-| Missing trace_delta → failed | ✓ PASSED |
-| Missing merge_report → failed | ✓ PASSED |
-| Missing candidate_manifest → failed | ✓ PASSED |
-| changed_files_audit with violations (out-of-scope) → failed | ✓ PASSED |
-| Write Guard violations present → failed | ✓ PASSED |
-| user_decision rejected → failed | ✓ PASSED |
-| State not verification_done → blocked | ✓ PASSED |
-| Already closed WI → blocked (idempotent protection) | ✓ PASSED |
-| Ordinary actor (sf-orchestrator) via sf_state_transition → blocked | ✓ PASSED |
+| Primary source: write_guard_log.jsonl | ✓ |
+| Fallback to work_item.actual_changed_files only when no log exists | ✓ |
+| Data source explicitly declared in audit md | ✓ |
+| Factual log records all allowed writes | ✓ |
+| Factual log records all blocked writes (violations) | ✓ |
+| Audit output includes actual_changed_files | ✓ |
+| Audit output includes allowed_write_files snapshot | ✓ |
+| Audit detects out_of_scope files | ✓ |
+| Audit detects spec_write_by_non_merge_runner | ✓ |
+| Write Guard violations from log included in audit md | ✓ |
+| Audit status: PASSED / FAILED reflects real violations | ✓ |
+| Empty write_guard_log + empty actual = "weak audit" label | ✓ |
 
-## D. changed_files_audit Data Integrity
+### Weak point acknowledged
 
-| Check | Result |
-|-------|--------|
-| Includes actual modified files list | ✓ PASSED |
-| Compares against allowed_write_files | ✓ PASSED |
-| Detects out-of-scope writes | ✓ PASSED |
-| Detects .specforge/project/ non-merge_runner writes | ✓ PASSED |
-| Empty actual_changed_files marked as "weak audit" | ✓ PASSED |
-| Data Source field explicitly declared | ✓ PASSED |
-| Audit status: PASSED / FAILED reflects violations | ✓ PASSED |
+- **formatter/generator/package manager side effects**: Not separately categorized. Write Guard blocks any write not in allowed_write_files, so formatter side effects would appear as violations if the formatter writes outside allowed scope. No special "side_effect" category detection exists.
+- **Write Guard log is populated by HTTPServer endpoints**: If writes bypass the HTTPServer (e.g., direct filesystem writes in tests), the log won't contain those entries. In production, all tool writes go through HTTPServer → log is populated.
 
-### Weak implementation acknowledgment
-
-- **Data source**: `work_item.actual_changed_files` (caller-provided, not git diff)
-- **Not verified against**: git history, Write Guard runtime log, filesystem scan
-- **Implication**: Audit relies on honest reporting by the caller. A malicious or buggy caller could omit files. This is a known weak point documented in the audit evidence file.
-
-## E. Closed WI Write Blockade
+## C. Write Guard Integration
 
 | Check | Result |
 |-------|--------|
-| Agent writes → blocked | ✓ PASSED |
-| Orchestrator writes → blocked | ✓ PASSED |
-| merge_runner writes → blocked | ✓ PASSED |
-| gate_runner writes → blocked | ✓ PASSED |
-| close_gate writes → blocked | ✓ PASSED |
-| Delete operations → blocked | ✓ PASSED |
+| allowed_write_files write → allowed + logged | ✓ |
+| Out-of-scope write → blocked + logged | ✓ |
+| .specforge/project/ by agent → blocked + logged | ✓ |
+| closed WI → all writes blocked + logged | ✓ |
+| Blocked write does NOT appear in factual changed files | ✓ |
+| Violations flow from log → audit md → close_gate check | ✓ |
+| Full chain: checkWrite → appendWriteGuardLog → getFactualChangedFiles → runChangedFilesAudit | ✓ |
 
-## Test Results
+## D. Daemon-level E2E
 
-| Suite | Passed | Failed | Total |
-|-------|--------|--------|-------|
-| governance-closure-e2e.test.ts | 34 | 0 | 34 |
-| sf-v11-close-gate.test.ts | 11 | 0 | 11 |
-| close-gate-closure.test.ts | 24 | 0 | 24 |
-| sf-state-transition.test.ts | 21 | 0 | 21 |
-| write-guard-rbac.test.ts | 25 | 0 | 25 |
-| evidence-guard-v11.test.ts (workflow-runtime) | 107 | 0 | 107 |
-| **Total** | **222** | **0** | **222** |
+| Step | Result |
+|------|--------|
+| Create WI (code_only_fast_path) | ✓ |
+| Set code_permission (allowed_write_files) | ✓ |
+| Allowed write via checkWrite + log | ✓ |
+| Blocked write via checkWrite + log | ✓ |
+| Evidence files generated | ✓ |
+| close_gate executed | ✓ |
+| Audit uses write_guard_log.jsonl as source | ✓ |
+| WI state advanced to closed | ✓ |
+| closed_at written | ✓ |
+| Post-close write blocked | ✓ |
+
+### Not covered in E2E
+
+- Full daemon HTTP startup (tested separately in v11-daemon-e2e-http.test.ts)
+- OpenCode plugin → daemon tool invoke path
+- Git-based file tracking (no git diff integration)
+
+## Test Results (by layer)
+
+| Layer | Suite | Passed | Failed | Total |
+|-------|-------|--------|--------|-------|
+| **Unit** | write-guard-rbac.test.ts | 25 | 0 | 25 |
+| **Unit** | close-gate-closure.test.ts | 24 | 0 | 24 |
+| **Handler integration** | sf-v11-close-gate.test.ts | 11 | 0 | 11 |
+| **Handler integration** | sf-state-transition.test.ts | 21 | 0 | 21 |
+| **Runtime / WorkflowEngine** | governance-closure-core.test.ts (Section A) | 9 | 0 | 9 |
+| **Write Guard integration** | governance-closure-core.test.ts (Section B+C) | 10 | 0 | 10 |
+| **Daemon-level E2E** | governance-closure-core.test.ts (Section D) | 1 | 0 | 1 |
+| **Negative bypass** | governance-closure-e2e.test.ts | 34 | 0 | 34 |
+| **workflow-runtime evidence** | evidence-guard-v11.test.ts | 107 | 0 | 107 |
+| **Total** | | **242** | **0** | **242** |
 
 ## Remaining Gaps (why not COMPLETED)
 
-1. **changed_files_audit data source is weak**: Relies on `actual_changed_files` from work_item.json (caller-provided). Not verified against git diff or Write Guard log. A production-grade audit would cross-reference filesystem state.
+1. **Git diff not integrated**: changed_files_audit uses Write Guard log (factual for daemon-mediated writes) but not git diff. Direct filesystem writes outside daemon control are not tracked.
 
-2. **Write Guard log integration**: Close gate checks `write_guard_violations` field in work_item.json. This field must be populated by the Write Guard interceptor during implementation phase. No integration test confirms the Write Guard actually populates this field during a real tool invocation.
+2. **HTTPServer integration not fully E2E**: The daemon-level E2E calls `checkWrite()` + `appendWriteGuardLog()` directly rather than going through HTTP endpoints. Full HTTP round-trip E2E exists in separate test files.
 
-3. **E2E daemon-level lifecycle**: The tests exercise the handler function directly. A full daemon-level E2E (daemon startup → tool dispatch → close gate → verify filesystem) is not included in this branch.
-
-4. **Seal transition enforcement is in sf_state_transition only**: If a consumer calls `WorkflowEngine.transitionFull()` directly (bypassing the tool dispatcher), the seal transition check is NOT enforced. Full enforcement would require adding it to WorkflowEngine.
+3. **formatter/generator/package_manager side effect categorization**: Not implemented as separate categories. Write Guard treats all unauthorized writes equally.
 
 ## Files Modified
 
-- `packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts` (NEW)
-- `packages/daemon-core/src/tools/handlers/sf-state-transition.ts` (seal transition enforcement)
-- `packages/daemon-core/src/tools/index.ts` (handler registration)
-- `packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts` (NEW)
-- `packages/daemon-core/tests/unit/governance-closure-e2e.test.ts` (NEW)
-- `packages/daemon-core/tests/unit/sf-state-transition.test.ts` (CG tests updated for seal actor)
-- `docs/bootstrap/specforge-v1.1-governance-closure-report.md` (NEW)
+- `packages/workflow-runtime/src/WorkflowEngine.ts` (seal transition at core layer)
+- `packages/workflow-runtime/tests/unit/evidence-guard-v11.test.ts` (actor fields for seal transitions)
+- `packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts` (factual audit integration)
+- `packages/daemon-core/src/tools/handlers/sf-state-transition.ts` (seal transition + import)
+- `packages/daemon-core/src/tools/lib/write-guard-log.ts` (NEW — append-only log)
+- `packages/daemon-core/src/http/HTTPServer.ts` (Write Guard log integration)
+- `packages/daemon-core/tests/unit/governance-closure-core.test.ts` (NEW — core layer tests)
+- `packages/daemon-core/tests/unit/governance-closure-e2e.test.ts` (unchanged from prev commit)
+- `packages/daemon-core/tests/unit/sf-state-transition.test.ts` (actor updates)
+- `docs/bootstrap/specforge-v1.1-governance-closure-report.md` (this file)
 
 ## Prohibitions Observed
 

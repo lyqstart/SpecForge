@@ -345,7 +345,7 @@ describe("sf_state_transition - v1.1 evidence guard workItemDir", () => {
 
     const result = await handler(
       { work_item_id: inst.id, from_state: "gates_running", to_state: "approval_required" },
-      { directory: tempDir },
+      { directory: tempDir, agent: 'gate_runner' },
       { workflowEngine: engine, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
     );
 
