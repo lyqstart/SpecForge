@@ -463,3 +463,36 @@ Total: 210 tests passed, 0 failures.
 - Full v1.1 final-complete validation
 
 **Produced by**: Development aid (bootstrap phase)
+
+---
+
+## 2026-06-10 — Full Daemon Startup Write Guard Integration Verified
+
+**Branch**: v1.1-daemon-opencode-e2e
+
+**Action**: Created E2E test that starts the PRODUCTION HTTPServer (same as Daemon.start()) and verifies write guard routes are accessible via ReconnectingDaemonClient.
+
+**Key finding**: Write guard routes are registered in HTTPServer.registerDefaultRoutes() which is called in the constructor. Therefore, any startup path that creates HTTPServer will have these routes available. No manual route registration needed.
+
+**New file**: `packages/daemon-core/tests/v11-full-daemon-startup-writeguard-e2e.test.ts`
+
+**Scenarios verified**:
+- S1: Routes accessible (not 404, not connection refused) — all 4 methods work
+- S2: allowed_write_files match → allowed via production daemon
+- S3: Outside allowed_write_files → blocked via production daemon
+- S4: changedFilesAudit route works — out-of-scope detected
+
+**Test command**:
+```bash
+cd packages/daemon-core && npx vitest run tests/v11-full-daemon-startup-writeguard-e2e.test.ts
+```
+
+**Test results**: 1 test file, 11 tests passed, 0 failures (593ms).
+
+**Regression**:
+```bash
+npx vitest run tests/v11-production-daemon-writeguard-e2e.test.ts tests/v11-live-daemon-protocol-prototype.test.ts tests/v11-daemon-opencode-writeguard-e2e.test.ts
+→ 3 test files, 58 tests passed, 0 failures ✅
+```
+
+**Produced by**: Development aid (bootstrap phase)
