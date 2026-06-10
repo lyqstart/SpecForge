@@ -24,7 +24,8 @@
 export * from './verification-report.js'
 export * from './evidence-manifest.js'
 export * from './evidence.js'
-export { CloseGateResult, runCloseGate } from './close-gate.js'
+export type { CloseGateResult } from './close-gate.js'
+export { runCloseGate } from './close-gate.js'
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
