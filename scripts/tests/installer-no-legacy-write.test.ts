@@ -36,8 +36,9 @@ describe('Installer path resolution — no legacy ~/.specforge write', () => {
 
   describe('getSpecForgeUserDir equivalent path', () => {
     // Replicate the logic from sf-installer.ts getSpecForgeUserDir()
+    // Now uses resolveUserLevelDirectory() to respect XDG_CONFIG_HOME
     function getSpecForgeUserDir(): string {
-      return path.join(home, '.config', 'opencode', 'sf-user');
+      return path.join(resolveUserLevelDirectory(), 'sf-user');
     }
 
     it('should NOT point to ~/.specforge', () => {

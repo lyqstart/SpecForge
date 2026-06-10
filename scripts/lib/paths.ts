@@ -164,14 +164,22 @@ import * as pathModule from 'node:path';
  * Resolve the user-level directory where SpecForge shared components are installed.
  *
  * Resolution order:
- *   1. If XDG_CONFIG_HOME is set: $XDG_CONFIG_HOME/opencode
- *   2. Otherwise: $HOME/.config/opencode
+ *   1. If OPENCODE_CONFIG_DIR is set: use it directly (absolute or resolved relative)
+ *   2. If XDG_CONFIG_HOME is set: $XDG_CONFIG_HOME/opencode
+ *   3. Otherwise: $HOME/.config/opencode
  *
- * This follows the XDG Base Directory Specification:
+ * OPENCODE_CONFIG_DIR is an explicit override used primarily in testing
+ * and CI environments where the full path is specified directly.
+ *
+ * XDG follows the XDG Base Directory Specification:
  *   $XDG_CONFIG_HOME defines the base directory for user-specific configuration files.
  *   If not set, defaults to $HOME/.config.
  */
 export function resolveUserLevelDirectory(): string {
+  const configDir = process.env.OPENCODE_CONFIG_DIR;
+  if (configDir && configDir.trim() !== '') {
+    return pathModule.resolve(pathModule.normalize(configDir));
+  }
   const xdgConfigHome = process.env.XDG_CONFIG_HOME;
   if (xdgConfigHome && xdgConfigHome.trim() !== '') {
     return pathModule.join(xdgConfigHome, 'opencode');

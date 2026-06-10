@@ -157,11 +157,14 @@ function showVersion(userLevelDir: string): void {
 
 /**
  * 获取 SpecForge 用户级目录。
- * v1.1 标准: 默认为 ~/.config/opencode/sf-user/
+ * v1.1 标准: 基于 resolveUserLevelDirectory() + /sf-user
+ * 遵循 XDG_CONFIG_HOME 规范：
+ *   - 若 XDG_CONFIG_HOME 已设置: $XDG_CONFIG_HOME/opencode/sf-user
+ *   - 否则: ~/.config/opencode/sf-user
  * Legacy ~/.specforge/ 仅保留只读迁移支持。
  */
 function getSpecForgeUserDir(): string {
-  return path.join(os.homedir(), ".config", "opencode", "sf-user")
+  return path.join(resolveUserLevelDirectory(), "sf-user")
 }
 
 /**
