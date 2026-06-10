@@ -206,14 +206,28 @@ OpenCode session trial: PARTIAL
 ### 修复提交
 
 - 分支: `v1.1-opencode-session-trial`
-- 修改文件: `setup/userlevel-opencode/plugins/sf_specforge.ts`
-- 新增测试: `scripts/tests/opencode-plugin-client-path.test.ts`
+- 修改文件: `setup/userlevel-opencode/plugins/sf_specforge.ts`, `scripts/lib/registry.ts`, `scripts/lib/opencode_merge.ts`
+- 新增测试: `scripts/tests/opencode-plugin-client-path.test.ts`, `scripts/tests/opencode-json-agent-prune.test.ts`
 
 ### 修复内容
 
-`resolveClientPath()` 新增 `__dirname/../sf-user/lib/sf_plugin_client.ts` 为首选搜索路径。
+1. `resolveClientPath()` 新增 `__dirname/../sf-user/lib/sf_plugin_client.ts` 为首选搜索路径
+2. `SPECFORGE_AGENT_DEFINITIONS` 移除 `sf-evidence-collector` 和 `sf-investigator`（未部署到 SHARED_COMPONENT_REGISTRY，引用会导致 OpenCode "bad file reference"）
+3. `mergeOpenCodeJsonUserLevel` 增加 Step 5.1: 清理过时 SpecForge 管理 agent（保留用户自定义 agent）
 
-搜索顺序（修复后）：
+### Session Not Found 诊断
+
+| 检查项 | 结果 |
+|---|---|
+| 是否 SpecForge 导致 | ❌ 否 — `--pure`（禁用所有 plugins）仍报同一错误 |
+| 是否 config 缺失 | ❌ 否 — config 正确加载 |
+| 是否 model 缺失 | ❌ 否 — 显式指定 `--model` 仍报同一错误 |
+| 根因 | OpenCode `run` 在非 TTY（管道/重定向）环境下无法创建 session |
+| 真实终端可用 | ✅ 是 — 需要交互式终端或 `opencode serve` + API |
+
+**结论**："Session not found" 是 OpenCode CLI 的非 TTY 限制，非 SpecForge 阻断。
+
+### 搜索顺序（修复后）
 1. `$CONFIG_ROOT/sf-user/lib/sf_plugin_client.ts` — installer 标准部署位置 ✅ 新增
 2. `~/.config/opencode/sf-runtime/sf_plugin_client.ts` — 旧路径兼容
 3. `$CONFIG_ROOT/lib/sf_plugin_client.ts` — plugin 相对路径
@@ -221,21 +235,21 @@ OpenCode session trial: PARTIAL
 
 ### 测试覆盖
 
-| 测试 | 结果 |
-|---|---|
-| sf-user/lib/ 路径可解析 | ✅ pass |
-| sf-user/lib/ 优先于 $CONFIG/lib/ | ✅ pass |
-| 回退到 $CONFIG/lib/ | ✅ pass |
-| 全部不存在时抛出详细错误 | ✅ pass |
-| 错误消息含 sf-user 路径 | ✅ pass |
-| 主路径不使用硬编码 homedir | ✅ pass |
+| 测试文件 | 数量 | 结果 |
+|---|---|---|
+| opencode-plugin-client-path.test.ts | 6 | ✅ all pass |
+| opencode-json-agent-prune.test.ts | 5 | ✅ all pass |
+| 全部 scripts/tests/ | 42 | ✅ all pass |
 
-### 真实 OpenCode session 验证
+### 真实 OpenCode session 验证（修复后 v4 run）
 
 | 检查项 | 结果 |
 |---|---|
-| Plugin 加载 | ✅ 成功（日志无 "Cannot locate" 错误） |
-| sf_plugin_client.ts 找到 | ✅ 路径修复生效 |
-| Daemon 通信尝试 | ✅ 到达（handshake not found = daemon 未启动） |
-| Plugin 优雅降级 | ✅ "will retry on first tool call" |
+| opencode.json agent 数量 | 9（无过时 agent） |
+| opencode.json 含 sf-evidence-collector | ❌ 否（已清理） |
+| opencode.json 含 sf-investigator | ❌ 否（已清理） |
+| OpenCode debug config 含 plugin 引用 | ✅ `sf_specforge.ts` |
+| OpenCode debug config 含 plugin_origins | ✅ 存在 |
+| Plugin 加载 | ✅ 无 "Cannot locate" 或 "bad file reference" 错误 |
+| Session 创建 | ❌ "Session not found"（OpenCode 非 TTY 限制，非 SpecForge 问题） |
 

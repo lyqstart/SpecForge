@@ -176,16 +176,6 @@ export const SPECFORGE_AGENT_DEFINITIONS: Record<string, AgentConfig> = {
     prompt: "{file:./agents/sf-knowledge.md}",
     permission: { task: "deny", edit: "ask", bash: "deny", skill: "allow" },
   },
-  "sf-evidence-collector": {
-    mode: "subagent",
-    prompt: "{file:./agents/sf-evidence-collector.md}",
-    permission: { task: "deny", edit: "deny", bash: "allow", skill: "allow" },
-  },
-  "sf-investigator": {
-    mode: "subagent",
-    prompt: "{file:./agents/sf-investigator.md}",
-    permission: { task: "deny", edit: "deny", bash: "allow", skill: "allow" },
-  },
 }
 
 /**

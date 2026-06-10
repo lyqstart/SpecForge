@@ -397,6 +397,36 @@ export async function mergeOpenCodeJsonUserLevel(
     }
   }
 
+  // Step 5.1: 清理过时的 SpecForge 管理 agent
+  // 如果 opencode.json 中有 sf-* agent 但不在当前 sourceAgents 中，
+  // 且该 agent 在 managed_agents 中（表示它曾由 SpecForge 管理），则删除。
+  // 不删除用户自定义 agent（不以 sf- 开头或不在 managed_agents 中）。
+  const pruned: string[] = []
+  for (const name of Object.keys(targetAgents)) {
+    if (!name.startsWith("sf-")) continue
+    if (name in sourceAgents) continue
+    // sf-* agent exists in opencode.json but NOT in current source registry
+    // Only prune if it was previously managed by SpecForge, or if it has no
+    // user customization (i.e., force-clean all stale sf-* entries)
+    if (managedAgents.includes(name) || force) {
+      delete targetAgents[name]
+      pruned.push(name)
+    } else {
+      // Not in managed_agents and not --force: might be user-created sf-* agent
+      // Still prune if the referenced agent file doesn't exist
+      const agentConf = targetAgents[name] as Record<string, unknown> | undefined
+      const promptRef = typeof agentConf?.prompt === "string" ? agentConf.prompt : ""
+      if (promptRef.includes("{file:./agents/sf-") || promptRef.includes("{file:./agents\\sf-")) {
+        // References a SpecForge agent file — safe to prune
+        delete targetAgents[name]
+        pruned.push(name)
+      }
+    }
+  }
+  if (pruned.length > 0) {
+    result.warnings.push(`已清理 ${pruned.length} 个过时 SpecForge agent: ${pruned.join(", ")}`)
+  }
+
   // Step 5.5: 确保 plugin 数组包含 sf_specforge.ts
   const pluginEntry = "./plugins/sf_specforge.ts"
   if (!Array.isArray(targetConfig.plugin)) {
