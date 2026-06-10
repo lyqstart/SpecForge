@@ -133,14 +133,32 @@
 
 | 项目 | 结果 |
 |---|---|
-| OpenCode serve | 启动成功 (port 4099) |
+| OpenCode serve | 启动成功 (port 4100) |
+| Daemon | 独立启动成功 (port 54212) |
 | Agent | sf-orchestrator |
-| Prompt | "请调用 sf_state_read 工具查看当前项目状态" |
+| Prompt | "请调用 sf_state_read 工具，参数 work_item_id=all" |
 | LLM 是否触发 tool | ✅ 是 — `sf_state_read {"work_item_id":"all"}` |
-| Tool 执行结果 | 失败：daemon 连接错误 |
-| 失败原因 | OpenCode serve 进程的 plugin 未正确发现 daemon handshake（env 传递问题） |
+| Tool 执行结果 | ✅ 成功 — 返回 6 个 Work Items 状态 |
+| OpenCode → plugin → daemon 跨进程通信 | ✅ 完成 |
 
-**结论**：LLM（通过 sf-orchestrator agent）**成功触发了 SpecForge tool 调用**。tool 执行层面的 daemon 连接问题是进程间 env 传递问题，不是 LLM/agent/tool 注册问题。
+### LLM 返回内容摘要
+
+```
+| WI ID | 工作流类型 | 当前状态 |
+|-------|-----------|---------|
+| INV-005 | investigation | completed |
+| INV-006 | investigation | completed |
+| WI-007 | change_request | completed |
+| WI-008 | change_request | development |
+| WI-009 | change_request | intake |
+| WI-LIVE-V11-PATH-001 | feature_spec | created |
+```
+
+### Failure Analysis（修复前）
+
+- 失败边界：thin-client.ts handshake discovery
+- 根因：`thin-client.ts` 的 `readHandshake()` 搜索路径不包含 v1.1 标准位置 `$CONFIG_ROOT/sf-user/runtime/handshake.json`
+- 修复：在搜索列表中加入 `resolveOpenCodeConfigRoot()/sf-user/runtime/handshake.json`，支持 OPENCODE_CONFIG_DIR / XDG_CONFIG_HOME / 默认 fallback
 
 ## Test Evidence
 
@@ -154,8 +172,8 @@
 
 ```
 Deterministic WI dry-run: COMPLETED
-OpenCode LLM smoke trial: PARTIAL (LLM triggered tool, but daemon connection failed in serve process)
-OpenCode serve API trial: PARTIAL
+OpenCode LLM smoke trial: COMPLETED (tool successfully invoked daemon and received response)
+OpenCode serve API trial: PARTIAL → upgraded to COMPLETED for tool→daemon chain
 v1.1 complete: NO
 Production readiness: NOT READY
 Trial readiness: NOT READY
