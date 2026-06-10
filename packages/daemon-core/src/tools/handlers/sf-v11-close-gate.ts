@@ -17,6 +17,7 @@ import { runCloseGate, type CloseGateResult } from '../lib/close-gate.js';
 import { runChangedFilesAudit, type ChangedFilesAuditResult } from '../lib/changed-files-audit.js';
 import { revokeCodePermission, checkCodePermission } from '../lib/code-permission-service-v11.js';
 import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log.js';
+import { loadBaseline, computeFilesystemDiff, type FilesystemDiffResult } from '../lib/filesystem-diff.js';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 
@@ -29,6 +30,7 @@ interface CloseGateHandlerResult {
   work_item_id: string;
   close_gate: CloseGateResult | null;
   changed_files_audit: ChangedFilesAuditResult | null;
+  filesystem_diff: FilesystemDiffResult | null;
   code_permission_revoked: boolean;
   state_advanced: boolean;
   error?: string;
@@ -55,6 +57,7 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
     work_item_id: workItemId,
     close_gate: null,
     changed_files_audit: null,
+    filesystem_diff: null,
     code_permission_revoked: false,
     state_advanced: false,
   };
@@ -152,6 +155,30 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
     } else {
       // Audit file already exists — read and validate
       result.changed_files_audit = { passed: true } as ChangedFilesAuditResult;
+    }
+
+    // -----------------------------------------------------------------------
+    // Step 2b: Filesystem diff (secondary factual source)
+    // Compares baseline snapshot (taken at code_permission release) with current state.
+    // Detects changes not tracked by Write Guard (direct filesystem writes).
+    // -----------------------------------------------------------------------
+    const baseline = loadBaseline(workItemDir);
+    if (baseline) {
+      const writeGuardAllowed = getFactualChangedFiles(workItemDir).map(f => f.path);
+      const fsDiff = computeFilesystemDiff(baseline, projectRoot, writeGuardAllowed);
+      result.filesystem_diff = fsDiff;
+
+      // If there are untracked changes, append to audit
+      if (fsDiff.untracked_changes.length > 0) {
+        const untrackedNote = `\n## Filesystem Diff — Untracked Changes\n\n` +
+          `Detected ${fsDiff.untracked_changes.length} file(s) changed outside Write Guard:\n\n` +
+          fsDiff.untracked_changes.map(f => `- ${f}`).join('\n') + '\n';
+        await fs.appendFile(
+          path.join(workItemDir, 'changed_files_audit.md'),
+          untrackedNote,
+          'utf-8',
+        );
+      }
     }
 
     // -----------------------------------------------------------------------

@@ -5,6 +5,7 @@
  */
 import { registerHandler } from '../ToolDispatcher';
 import { releaseCodePermission, revokeCodePermission, checkCodePermission } from '../lib/code-permission-service-v11';
+import { takeSnapshot, saveBaseline } from '../lib/filesystem-diff';
 import * as path from 'node:path';
 
 registerHandler('sf_v11_code_permission', async (args, context, deps) => {
@@ -30,6 +31,12 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         workItemId,
         allowedWriteFiles,
       });
+
+      // Take filesystem baseline snapshot for close_gate audit
+      try {
+        const baseline = takeSnapshot(projectRoot);
+        saveBaseline(workItemDir, baseline);
+      } catch { /* non-critical — audit will fall back to write_guard_log only */ }
 
       return {
         success: true,
