@@ -316,3 +316,56 @@
 ```
 
 **结论**: SpecForge v1.1 核心代码治理链路已有较充分的单元 / E2E 验证（241 tests, fail-closed 语义, 无 fail-open），但仍缺少真实 OpenCode 加载、完整 daemon 生产启动、crash/reconnect、真实项目 Work Item 演练等生产环境证据，且用户文档尚未编写。因此当前只能判定为 **Production readiness: PARTIAL**。建议优先完成 WI-1（OpenCode 真实加载）、WI-2（Daemon 完整启动与恢复）、WI-3（用户文档）后再进行最终 production sign-off。
+
+---
+
+## 9. Production Readiness Sprint Update
+
+**Sprint branch**: `v1.1-production-readiness-sprint`
+**Sprint commit**: `362acd3`
+**Sprint audit result**: PASS_WITH_DEFERRED_RISKS
+
+### Test Baseline After Sprint
+
+```
+scripts: 3 files, 31 passed
+daemon-core: 6 files, 102 passed
+workflow-runtime: 6 files, 123 passed
+Total: 15 files, 256 tests, 0 failures
+```
+
+### F-001~F-010 Status Update
+
+| ID | Title | Status | Evidence |
+|---|---|---|---|
+| F-001 | OpenCode CLI 真实加载 | **partially_resolved** | Installer 文件布局、XDG_CONFIG_HOME、不写 .specforge 已验证。真实 OpenCode CLI 启动未完成 — deferred to first manual trial。HIGH 风险保留。 |
+| F-002 | Daemon startup / recovery | **resolved** | `production-daemon-startup-recovery-e2e.test.ts`: HTTPServer 启动、write-guard routes 注册、fail-closed 行为、daemon stop 后 throw。6 tests pass。 |
+| F-003 | User operation documentation | **resolved** | 6 个 `docs/user/*.md` 文档新增：install、quick-start、work-item-flow、evidence-and-audit、recovery-and-rollback、uninstall。 |
+| F-004 | 真实 CLI sf-installer install | **partially_resolved** | 路径解析逻辑验证 + 文件布局验证通过。未调用完整 CLI binary。保留 Medium。 |
+| F-005 | Daemon crash/restart/reconnect | **resolved** | `production-daemon-startup-recovery-e2e.test.ts`: daemon stop → subsequent requests throw (fail-closed)。 |
+| F-006 | Cross-platform CI | **deferred** | 仅 Windows 验证。Linux/macOS deferred。风险 CP-001~CP-006 已登记。Medium/P1。 |
+| F-007 | Extension Subflow failure/timeout | **resolved** | `extension-subflow-failure-handling-e2e.test.ts`: gate failed、no approval、unresolved request、stale candidate、subflow incomplete。5 tests pass。 |
+| F-008 | 集中 audit 可观测面板 | **deferred** | 原始文件可手动检查。CLI 聚合工具 deferred。P2。 |
+| F-009 | 真实项目 Work Item 演练 | **deferred** | 程序化 E2E 覆盖核心逻辑。真实项目演练 deferred to first trial。P1。 |
+| F-010 | Mini HTTP server 测试 | **resolved** | `v11-full-daemon-startup-writeguard-e2e.test.ts` 使用生产 HTTPServer 启动路径。路由层正确性已验证。 |
+
+### Deferred Risks
+
+| Risk | Severity | Disposition |
+|---|---|---|
+| OpenCode CLI 真实加载 | HIGH | Deferred to first manual trial |
+| Linux/macOS CI 验证 | Medium/P1 | Deferred to CI pipeline setup |
+| 并发 WI stress test | P2 | Future sprint |
+| 真实项目 Work Item 演练 | P1 | Deferred to first trial |
+| Audit CLI 工具 | P2 | Future sprint |
+
+### Trial Readiness Conclusion
+
+**Trial readiness: PARTIAL**
+
+### Non-Goals
+
+- This sprint does not declare v1.1-complete.
+- This sprint does not declare production-compliant.
+- This sprint does not declare Production readiness: READY.
+- This sprint does not declare Trial readiness: READY.
