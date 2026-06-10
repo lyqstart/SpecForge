@@ -496,3 +496,61 @@ npx vitest run tests/v11-production-daemon-writeguard-e2e.test.ts tests/v11-live
 ```
 
 **Produced by**: Development aid (bootstrap phase)
+
+---
+
+## 2026-06-10 — Extension Subflow E2E
+
+**Branch**: v1.1-daemon-opencode-e2e
+
+**Action**: Created comprehensive Extension Subflow E2E test exercising the full lifecycle on real filesystem with real components.
+
+**New file**: `packages/workflow-runtime/tests/v11/e2e/v11-extension-subflow-e2e.test.ts`
+
+**6 Positive Scenarios (B1-B6)**:
+- B1: Unknown type detection → extension_request.json written to disk with blocking_current_flow=true
+- B2: sf-extension agent generates extension_delta.md + candidates/project/extension_registry.json + candidate_manifest.json (v1.1 entries/replace/hash structure)
+- B3: extension_gate generates gates/extension_gate.json with all v1.1 fields (gate_id, gate_type, required, status, input_files, checks, blocking_issues, warnings, waiver_allowed, runner, started_at, finished_at)
+- B4: UserDecisionRecorder.recordApproval() → user_decision.json with hash binding to manifest and gate
+- B5: MergeRunner.executeV11Merge() merges candidate into .specforge/project/extension_registry.json — spec version PSV-0001→PSV-0002, types registered, merge_report.md generated
+- B6: FlowResumption.canResumeMainFlow() confirms new types registered, main flow can continue
+
+**8 Negative Scenarios (N1-N9, 9 actual tests)**:
+- N1: Agent cannot directly write .specforge/project/extension_registry.json (PathPolicy blocks)
+- N2: Extension subflow without User Decision cannot merge (scheduler throws)
+- N3: Extension subflow without extension_gate cannot proceed to approved (scheduler throws)
+- N4: candidate_manifest with operation=update rejected by executeV11Merge
+- N5: candidate_manifest with candidates[] old structure rejected by executeV11Merge
+- N6: Missing candidate_hash rejected by validateV11Manifest
+- N7: Missing target_base_hash rejected by validateV11Manifest
+- N8: extension_registry merge without version increment fails post-merge check
+- N9: Main flow resumption fails when types not registered in registry
+
+**Test commands and results**:
+```bash
+cd packages/workflow-runtime
+npx vitest run tests/v11/e2e/v11-extension-subflow-e2e.test.ts
+→ 1 test file, 20 tests passed, 0 failures (401ms) ✅
+
+npx vitest run tests/v11/e2e
+→ 5 test files, 118 tests passed, 0 failures (626ms) ✅
+
+npx vitest run tests/v11/unit/path-policy-permissions.test.ts
+→ 1 test file, 54 tests passed, 0 failures (276ms) ✅
+
+cd packages/daemon-core
+npx vitest run tests/v11-full-daemon-startup-writeguard-e2e.test.ts
+→ 1 test file, 11 tests passed, 0 failures (577ms) ✅
+
+npx vitest run tests/v11-production-daemon-writeguard-e2e.test.ts
+→ 1 test file, 23 tests passed, 0 failures (455ms) ✅
+```
+
+Total: 226 tests passed, 0 failures.
+
+**Status**: Extension Subflow E2E completed.
+
+**Still not complete**:
+- Full v1.1 final-complete validation
+
+**Produced by**: Development aid (bootstrap phase)
