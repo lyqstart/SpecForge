@@ -374,3 +374,30 @@ npx vitest run tests/v11/e2e
 ```
 
 **Produced by**: Development aid (bootstrap phase)
+
+---
+
+## 2026-06-10 — Daemon/OpenCode Write Guard E2E
+
+**Branch**: v1.1-daemon-opencode-e2e
+
+**Action**: Created E2E tests for the complete write guard chain: checkWrite + performChangedFilesAudit + filesystem evidence + close_gate validation.
+
+**New files**:
+- `packages/daemon-core/tests/v11-daemon-opencode-writeguard-e2e.test.ts`
+
+**5 Scenarios**:
+- A1: No active WI → write blocked, file unmodified, violation recorded
+- A2: code_change_allowed=false → write blocked, file unmodified, close_gate fails
+- A3: allowed_write_files match → write allowed, file modified, audit passes, close_gate passes
+- A4: Outside allowed_write_files → write blocked, audit fails, close_gate fails
+- A5: Side-effect tool audit → extra files detected, audit fails, close_gate fails
+
+**Test command**:
+```
+cd packages/daemon-core && npx vitest run tests/v11-daemon-opencode-writeguard-e2e.test.ts
+```
+
+**Test results**: 1 test file, 18 tests passed, 0 failures (324ms).
+
+**Produced by**: Development aid (bootstrap phase)

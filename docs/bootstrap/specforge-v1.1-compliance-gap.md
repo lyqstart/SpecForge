@@ -1,6 +1,6 @@
 # SpecForge v1.1 Compliance Gap Analysis
 
-> Last updated: 2026-06-10 (Eleventh pass — Branch v1.1-runtime-execution-chain-fix merge readiness)
+> Last updated: 2026-06-10 (Twelfth pass — Daemon/OpenCode Write Guard E2E added)
 
 ## Capability Status Table
 
@@ -10,7 +10,8 @@
 | 24-State Machine | Implemented | StateMachine.ts, 347 unit tests + 12 orchestration E2E | Daemon integration E2E needed |
 | Runtime Merge Execution Chain | Fixed in branch v1.1-runtime-execution-chain-fix | executeV11Merge uses entries/replace/hash directly; 9 negative tests reject legacy | pending main merge |
 | Code-only Filesystem Evidence | Fixed in branch v1.1-runtime-execution-chain-fix | trace_delta / verification_report / evidence_manifest / changed_files_audit are file-backed | pending main merge |
-| Write Guard Hard Block | Implemented | Plugin throws on violation; SIDE_EFFECT_TOOLS coverage added | Daemon runtime E2E needed |
+| Write Guard Hard Block | Implemented | Plugin throws on violation; SIDE_EFFECT_TOOLS coverage added | — |
+| Daemon/OpenCode Write Guard E2E | Fixed in branch v1.1-daemon-opencode-e2e | 5 scenarios, checkWrite + audit + filesystem evidence, 18 tests pass | pending main merge |
 | Path Policy Permission | Implemented | canReadPath/canWritePath/canCreatePath + assertPathAllowed; 54 unit tests | Daemon runtime E2E needed |
 | Extension Registry | Entry Point + Unit Tests | ExtensionRegistry + ExtensionGate + ExtensionSubflow components | End-to-end subflow E2E not verified |
 | Installer Legacy Write | Fixed in bootstrap remediation | resolveUserLevelDirectory() returns ~/.config/opencode; installer-no-legacy-write.test.ts exists | pending full release validation |
@@ -22,7 +23,7 @@
 
 The following capabilities are NOT yet validated at the Daemon/OpenCode integration level:
 
-1. **Daemon/OpenCode actual runtime E2E** — OpenCode tool.execute.before → daemon Write Guard → active WI → allowed_write_files → actual changed files → changed_files_audit → close_gate
+1. ~~**Daemon/OpenCode actual runtime E2E**~~ — ✅ Fixed in branch `v1.1-daemon-opencode-e2e`: OpenCode tool.execute.before → daemon checkWrite → active WI → allowed_write_files → actual changed files → changed_files_audit → close_gate (18 tests, 5 scenarios)
 2. **Extension Subflow E2E** — Extension Request → sf-extension → extension_registry candidate → extension_gate → User Decision → Merge Runner → main flow resumption
 3. **Full v1.1 final-complete validation** — All components exercised through live OpenCode session with real daemon
 
