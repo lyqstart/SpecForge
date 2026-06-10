@@ -281,6 +281,44 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     // covered by required_files
   }
 
+  // §15.2 Check 15: No unprocessed extension_request.json (Patch 1 §7.9)
+  // Fail-closed strategy: file exists + unresolved/unknown status → blocked.
+  try {
+    const extReqPath = path.join(ctx.workItemDir, 'extension_request.json');
+    await fs.access(extReqPath);
+    // File exists — check if resolved
+    const extRaw = await fs.readFile(extReqPath, 'utf-8');
+    const extReq = JSON.parse(extRaw);
+    const status = (extReq.status as string) ?? '';
+    const resolvedStatuses = new Set(['resolved', 'merged', 'closed']);
+    const isResolved = resolvedStatuses.has(status);
+    const isNonBlocking = extReq.blocking_current_flow === false && status === '';
+    const passed = isResolved || isNonBlocking;
+    checks.push({
+      check_id: 'close_extension_request_resolved',
+      description: 'extension_request.json resolved or non-blocking (Patch 1 §7.9)',
+      passed,
+      severity: passed ? undefined : 'error',
+    });
+  } catch (err: any) {
+    if (err.code === 'ENOENT') {
+      // File does not exist — no extension request, pass
+      checks.push({
+        check_id: 'close_extension_request_resolved',
+        description: 'No extension_request.json present (not applicable)',
+        passed: true,
+      });
+    } else {
+      // File exists but cannot be parsed — fail-closed
+      checks.push({
+        check_id: 'close_extension_request_resolved',
+        description: 'extension_request.json exists but cannot be parsed (fail-closed)',
+        passed: false,
+        severity: 'error',
+      });
+    }
+  }
+
   const report = makeReport(ctx.workItemId, 'close_gate', 'hard_gate', true, checks);
   const allChecksPassed = report.status === 'passed';
 
