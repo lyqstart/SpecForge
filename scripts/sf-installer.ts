@@ -13,6 +13,7 @@
 
 import * as fs from "node:fs"
 import * as path from "node:path"
+import * as os from "node:os"
 import * as crypto from "node:crypto"
 import { fileURLToPath } from "node:url"
 
@@ -160,8 +161,7 @@ function showVersion(userLevelDir: string): void {
  * Legacy ~/.specforge/ 仅保留只读迁移支持。
  */
 function getSpecForgeUserDir(): string {
-  const home = require("node:os").homedir()
-  return require("node:path").join(home, ".config", "opencode", "sf-user")
+  return path.join(os.homedir(), ".config", "opencode", "sf-user")
 }
 
 /**
@@ -169,8 +169,7 @@ function getSpecForgeUserDir(): string {
  * NEVER write to this directory.
  */
 function getLegacySpecForgeDir(): string {
-  const home = require("node:os").homedir()
-  return require("node:path").join(home, SPEC_DIR_NAME)
+  return path.join(os.homedir(), SPEC_DIR_NAME)
 }
 
 /** 部署 templates/ 目录到 sf-user/templates/ */
@@ -1109,7 +1108,7 @@ export async function main(): Promise<void> {
 // 直接执行时运行 main（被 import 时不执行）
 const isMainModule = typeof Bun !== "undefined"
   ? Bun.main === import.meta.path
-  : import.meta.url === `file://${process.argv[1]}`
+  : import.meta.url.endsWith('sf-installer.ts') && process.argv.some(a => a.includes('sf-installer'))
 
 if (isMainModule) {
   main()

@@ -71,14 +71,20 @@
 ### Installer Real Execution Conclusion
 
 ```
-Installer real execution: PASSED (with limitations)
+Installer real execution: PASSED
 ```
 
-- 安装命令成功执行，exit 0 ✅
-- install.json 正确写入 sf-user ✅
-- lib 文件正确部署 ✅
-- 不写入 ~/.specforge ✅
-- **限制**：plugins/tools/agents 目录未在 sf-user 创建（由 SHARED_COMPONENT_REGISTRY 控制，需要源目录 `setup/userlevel-opencode/` 中对应文件存在且注册）
+- 安装命令：`bun scripts/sf-installer.ts install`（Bun 运行时，installer 设计运行时）
+- 退出码：0
+- 部署 104 个文件到 `$XDG_CONFIG_HOME/opencode/`
+- agents: 10 个 sf-* agents ✅
+- tools: 19 个 sf_* tools ✅
+- plugins: `sf_specforge.ts` ✅
+- sf-user/install.json ✅
+- .specforge 未创建 ✅
+- XDG_CONFIG_HOME 正确使用 ✅
+
+**修复**: installer 中 `getSpecForgeUserDir()` 和 `getLegacySpecForgeDir()` 使用 `require()` — 在 Node ESM 模式下失败。修复为使用顶层 `import * as os`。同时修复 `isMainModule` 检测在 tsx 下不工作的问题。
 
 ## 5. OpenCode Load Evidence
 
