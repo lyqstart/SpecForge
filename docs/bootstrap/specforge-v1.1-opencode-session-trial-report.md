@@ -62,18 +62,14 @@
 | opencode.json 中 plugin 注册 | ✅ `["./plugins/sf_specforge.ts"]` |
 | `opencode debug config` 中 plugin 字段 | ✅ `file:///...opencode/plugins/sf_specforge.ts` |
 | `opencode debug config` 中 plugin_origins | ✅ 存在 spec 引用 |
-| OpenCode 尝试加载 plugin | ✅ 日志确认 `service=plugin path=file:///...sf_specforge.ts` |
-| Plugin 加载结果 | ⚠️ 加载但执行失败：`Cannot locate sf_plugin_client` |
+| OpenCode 加载 plugin | ✅ 日志：`service=plugin path=...sf_specforge.ts loading plugin` |
+| Plugin 找到 sf_plugin_client.ts | ✅ 不再报 "Cannot locate" |
+| Plugin 初始化 | ✅ 尝试 daemon 通信（handshake not found = daemon 未启动） |
+| Plugin 加载结果 | ✅ 成功加载，优雅降级（will retry on first tool call） |
 
-**Plugin 加载失败原因分析**：
+**Plugin 路径修复** (本轮):
 
-plugin (`sf_specforge.ts`) 在运行时搜索 `sf_plugin_client.ts`，搜索路径为：
-1. `~/.config/opencode/sf-runtime/sf_plugin_client.ts`（旧路径，不存在）
-2. `$XDG/opencode/lib/sf_plugin_client.ts`（新路径，但文件实际在 `sf-user/lib/`）
-
-文件实际位置：`$XDG/opencode/sf-user/lib/sf_plugin_client.ts`
-
-这是 plugin 内部路径查找逻辑与 installer 部署布局之间的不一致，需要后续修复。
+`resolveClientPath()` 新增 `__dirname/../sf-user/lib/sf_plugin_client.ts` 作为首选路径，匹配 installer 标准部署布局。修复后 plugin 可正确找到 client 文件。
 
 ### Agents 识别
 
@@ -132,31 +128,43 @@ daemon 本身的 fail-closed E2E 已在 `production-daemon-startup-recovery-e2e.
 | 2 | LLM Provider 已配置 | OpenRouter credentials 存在 |
 | 3 | OpenCode 读取 XDG_CONFIG_HOME | `debug paths` → config 指向 XDG 路径 |
 | 4 | Installer 部署到 XDG config root | 104 组件，退出码 0 |
-| 5 | Plugin 文件被 OpenCode 发现并尝试加载 | 日志确认 `service=plugin path=...sf_specforge.ts` |
-| 6 | 所有 9 个 sf-* Agents 被识别并解析 | `debug config` 输出含完整 prompt |
-| 7 | opencode.json 配置验证通过 | `debug skill` 无错误 |
-| 8 | 不写 .specforge | 临时 HOME 无 .specforge |
+| 5 | Plugin 文件被 OpenCode 发现并成功加载 | 日志：`service=plugin path=...sf_specforge.ts loading plugin`（无错误） |
+| 6 | sf_plugin_client.ts 被 plugin 找到 | 不再报 "Cannot locate sf_plugin_client" |
+| 7 | Plugin 初始化并尝试 daemon 通信 | 日志：`[sf:specforge] Project registration failed (will retry on first tool call): Daemon handshake not found` |
+| 8 | 所有 9 个 sf-* Agents 被识别并解析 | `debug config` 输出含完整 prompt |
+| 9 | opencode.json 配置验证通过 | `debug skill` 无错误 |
+| 10 | 不写 .specforge | 临时 HOME 无 .specforge |
 
 ### BLOCKED 项
 | # | 项目 | 阻断原因 |
 |---|---|---|
-| 1 | Plugin 执行 | sf_plugin_client.ts 路径查找不匹配 installer 部署布局 |
-| 2 | Tools 注册 | 依赖 plugin 成功执行 |
-| 3 | Daemon 通信 | 依赖 plugin → tools 链路 |
-| 4 | 最小 WI 触发 | 依赖完整 plugin → daemon 链路 |
+| 1 | Tools 注册 | OpenCode `run` 因 "Session not found" 无法创建完整 LLM session |
+| 2 | Daemon 通信 | daemon 进程未启动（plugin 设计为 retry on first tool call） |
+| 3 | 最小 WI 触发 | 依赖完整 session + daemon |
 
 ### 根因分析
 
-plugin 内部的 `sf_plugin_client.ts` 查找逻辑搜索：
-- `$CONFIG/sf-runtime/sf_plugin_client.ts`（旧路径）
-- `$CONFIG/lib/sf_plugin_client.ts`（部分匹配）
+#### 已修复：plugin 路径查找 (commit in this branch)
 
-但 installer 将 `sf_plugin_client.ts` 部署到：
-- `$CONFIG/sf-user/lib/sf_plugin_client.ts`
+plugin 内部的 `resolveClientPath()` 原搜索顺序：
+1. `~/.config/opencode/sf-runtime/sf_plugin_client.ts`（硬编码 homedir）
+2. `__dirname/../lib/sf_plugin_client.ts`（plugin 相对）
+3. workspace packages（dev mode）
 
-这是 plugin 源码中的路径常量与 installer 部署布局之间的对齐问题。修复方向：
-1. 将 plugin 的搜索路径增加 `$CONFIG/sf-user/lib/` 选项；或
-2. 将 installer 额外复制 `sf_plugin_client.ts` 到 `$CONFIG/lib/`。
+installer 实际部署到：`$CONFIG_ROOT/sf-user/lib/sf_plugin_client.ts`
+
+修复后搜索顺序：
+1. `__dirname/../sf-user/lib/sf_plugin_client.ts`（匹配 installer 部署布局）✅ 新增
+2. `~/.config/opencode/sf-runtime/sf_plugin_client.ts`（旧路径兼容）
+3. `__dirname/../lib/sf_plugin_client.ts`（plugin 相对）
+4. workspace packages（dev mode）
+
+#### 未修复：OpenCode session 创建
+
+OpenCode `run` 命令在非交互模式下报 "Session not found"。原因可能是：
+- XDG config 目录中缺少 model 配置（opencode.json 中无 model 定义）
+- OpenCode run 命令需要额外的 session 创建参数
+- 这是 OpenCode 自身的行为限制，不是 SpecForge 问题
 
 ## 9. Final Result
 
@@ -167,10 +175,16 @@ OpenCode session trial: PARTIAL
 **判定依据**：
 - OpenCode CLI 可用且 LLM provider 已配置 ✅
 - OpenCode 正确读取 XDG 配置 ✅
-- Plugin 文件被发现并尝试加载 ✅
+- Plugin 文件被发现并**成功加载**（路径修复生效）✅
+- sf_plugin_client.ts 被正确找到 ✅
+- Plugin 初始化并尝试 daemon 通信 ✅
 - 所有 9 个 Agents 被识别并解析 ✅
-- 但 Plugin 执行因内部路径不一致失败 ⚠️
-- 导致 tools 注册、daemon 通信、WI 触发均未能完成
+- 但 OpenCode `run` 因 "Session not found" 无法创建完整 LLM session
+- 导致 tools 注册和 WI 触发无法完成验证
+
+**与上轮 PARTIAL 对比改善**：
+- 上轮：plugin 加载失败（Cannot locate sf_plugin_client）
+- 本轮：plugin 加载成功，daemon 通信尝试已到达，仅被 session 创建问题阻断
 
 ## 10. Non-Goals
 
@@ -182,8 +196,46 @@ OpenCode session trial: PARTIAL
 
 ## 11. Next Steps
 
-1. 修复 plugin 中 `sf_plugin_client.ts` 的路径查找逻辑，增加 `$CONFIG/sf-user/lib/` 搜索路径
-2. 修复后重新执行 `opencode run` 验证 plugin 是否成功初始化
-3. 验证 tools 注册
-4. 验证 daemon 通信
-5. 验证最小 WI 触发
+1. 解决 OpenCode `run` 的 "Session not found" 问题（可能需要在 XDG config 中添加 model 配置）
+2. 启动 daemon 进程，验证 plugin → daemon 通信链路
+3. 在完整 session 中验证 tools 注册
+4. 验证最小 WI dry-run 触发
+
+## 12. Plugin Client Path Fix
+
+### 修复提交
+
+- 分支: `v1.1-opencode-session-trial`
+- 修改文件: `setup/userlevel-opencode/plugins/sf_specforge.ts`
+- 新增测试: `scripts/tests/opencode-plugin-client-path.test.ts`
+
+### 修复内容
+
+`resolveClientPath()` 新增 `__dirname/../sf-user/lib/sf_plugin_client.ts` 为首选搜索路径。
+
+搜索顺序（修复后）：
+1. `$CONFIG_ROOT/sf-user/lib/sf_plugin_client.ts` — installer 标准部署位置 ✅ 新增
+2. `~/.config/opencode/sf-runtime/sf_plugin_client.ts` — 旧路径兼容
+3. `$CONFIG_ROOT/lib/sf_plugin_client.ts` — plugin 相对路径
+4. workspace packages — dev mode
+
+### 测试覆盖
+
+| 测试 | 结果 |
+|---|---|
+| sf-user/lib/ 路径可解析 | ✅ pass |
+| sf-user/lib/ 优先于 $CONFIG/lib/ | ✅ pass |
+| 回退到 $CONFIG/lib/ | ✅ pass |
+| 全部不存在时抛出详细错误 | ✅ pass |
+| 错误消息含 sf-user 路径 | ✅ pass |
+| 主路径不使用硬编码 homedir | ✅ pass |
+
+### 真实 OpenCode session 验证
+
+| 检查项 | 结果 |
+|---|---|
+| Plugin 加载 | ✅ 成功（日志无 "Cannot locate" 错误） |
+| sf_plugin_client.ts 找到 | ✅ 路径修复生效 |
+| Daemon 通信尝试 | ✅ 到达（handshake not found = daemon 未启动） |
+| Plugin 优雅降级 | ✅ "will retry on first tool call" |
+

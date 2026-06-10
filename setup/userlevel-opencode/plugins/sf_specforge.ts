@@ -29,11 +29,16 @@ const { pathToFileURL } = require("node:url")
 const { existsSync } = require("node:fs")
 
 function resolveClientPath(): string {
-  // Primary: v1.1 standard location
+  // Primary: sf-user/lib location (v1.1 installer standard deployment)
+  // __dirname is $CONFIG_ROOT/plugins/ when deployed, so ../sf-user/lib/ is the installer target
+  const sfUserPath = resolve(__dirname, "..", "sf-user", "lib", "sf_plugin_client.ts")
+  if (existsSync(sfUserPath)) return sfUserPath
+
+  // Secondary: v1.1 legacy location (sf-runtime)
   const v11Path = join(homedir(), ".config", "opencode", "sf-runtime", "sf_plugin_client.ts")
   if (existsSync(v11Path)) return v11Path
 
-  // Fallback: plugin-relative bundled client
+  // Tertiary: plugin-relative bundled client ($CONFIG_ROOT/lib/)
   const localPath = resolve(__dirname, "..", "lib", "sf_plugin_client.ts")
   if (existsSync(localPath)) return localPath
 
@@ -43,7 +48,7 @@ function resolveClientPath(): string {
 
   throw new Error(
     `[sf:specforge] Cannot locate sf_plugin_client. ` +
-    `Checked: ${v11Path}, ${localPath}, ${devPath}`
+    `Checked: ${sfUserPath}, ${v11Path}, ${localPath}, ${devPath}`
   )
 }
 
