@@ -61,12 +61,75 @@
 
 ### XDG_CONFIG_HOME 行为
 
-**发现**：installer `cmdInstall()` 中的 `resolveUserLevelDirectory()` 用于 OpenCode 级目录（plugin 注册等），但 `getSpecForgeUserDir()` 使用 `os.homedir()` 硬编码，不读 XDG_CONFIG_HOME。
+**修复完成**（commit `4f8eea8`）：
 
-这意味着：
-- `resolveUserLevelDirectory()` 支持 XDG ✅（lib/paths.ts 已修复）
-- `getSpecForgeUserDir()` 不支持 XDG ⚠️（使用 `os.homedir()/.config/opencode/sf-user`）
-- 两者行为不一致，但因 XDG 默认值就是 `$HOME/.config`，所以在未设置 XDG 时结果一致
+**根因**：`getSpecForgeUserDir()` 使用 `path.join(os.homedir(), ".config", "opencode", "sf-user")` 硬编码，不读取 `XDG_CONFIG_HOME` 或 `OPENCODE_CONFIG_DIR`。
+
+**修复摘要**：
+- `getSpecForgeUserDir()` 改为 `path.join(resolveUserLevelDirectory(), "sf-user")`
+- `resolveUserLevelDirectory()` 优先级：`OPENCODE_CONFIG_DIR` → `XDG_CONFIG_HOME/opencode` → `~/.config/opencode`
+- 测试内联副本同步更新
+
+**修复后状态**：
+- `resolveUserLevelDirectory()` 支持 XDG ✅
+- `getSpecForgeUserDir()` 支持 XDG ✅（委托给 `resolveUserLevelDirectory()`）
+- `OPENCODE_CONFIG_DIR` 优先级最高 ✅（CI/测试覆盖）
+- 两者行为完全一致 ✅
+
+## Installer Path Consistency Final Verification
+
+### 修复提交
+
+- commit: `4f8eea8`
+- 修改文件: `scripts/sf-installer.ts`, `scripts/lib/paths.ts`, `scripts/tests/installer-no-legacy-write.test.ts`
+- 影响范围: 仅 installer 路径逻辑和测试，未修改 Runtime / MergeRunner / CloseGate / Extension Subflow
+
+### XDG_CONFIG_HOME Clean Install Evidence
+
+| 项目 | 结果 |
+|---|---|
+| 命令 | `bun scripts/sf-installer.ts install` |
+| 环境 | `HOME=临时空目录`, `XDG_CONFIG_HOME=临时空目录`, `OPENCODE_CONFIG_DIR` 未设置 |
+| 退出码 | 0 |
+| 安装目标 | `$XDG_CONFIG_HOME/opencode` |
+| plugins/sf_specforge.ts | ✅ 存在 |
+| tools/ | ✅ 19 个文件 |
+| agents/ | ✅ 10 个文件（9 个 sf-*.md） |
+| sf-user/ | ✅ 存在 |
+| sf-user/install.json | ✅ 存在 |
+| install.json 是否含真实用户目录 `C:\Users\luo` | ❌ 不含 |
+| HOME/.config/opencode 是否存在 | ❌ 不存在 |
+| HOME/.specforge 是否存在 | ❌ 不存在 |
+| 共享组件总数 | 104 |
+
+### OPENCODE_CONFIG_DIR Clean Install Evidence
+
+| 项目 | 结果 |
+|---|---|
+| 命令 | `bun scripts/sf-installer.ts install` |
+| 环境 | `HOME=临时空目录`, `XDG_CONFIG_HOME` 未设置, `OPENCODE_CONFIG_DIR=临时空目录` |
+| 退出码 | 0 |
+| 安装目标 | `$OPENCODE_CONFIG_DIR` |
+| plugins/sf_specforge.ts | ✅ 存在 |
+| tools/ | ✅ 19 个文件 |
+| agents/ | ✅ 10 个文件（9 个 sf-*.md） |
+| sf-user/ | ✅ 存在 |
+| sf-user/install.json | ✅ 存在 |
+| install.json 是否含真实用户目录 `C:\Users\luo` | ❌ 不含 |
+| HOME/.config/opencode 是否存在 | ❌ 不存在 |
+| HOME/.specforge 是否存在 | ❌ 不存在 |
+| 共享组件总数 | 104 |
+
+### Installer Path Consistency 结论
+
+```
+Installer deployment completeness: PASSED
+Installer path consistency: PASSED
+```
+
+- install.json 路径一致性：PASSED
+- 真实用户目录未写入：PASSED
+- `.specforge` 未写入：PASSED
 
 ### Installer Real Execution Conclusion
 
@@ -84,13 +147,21 @@ Installer real execution: PASSED
 | installer 退出码 | 0 |
 | 安装目标 | `$XDG_CONFIG_HOME/opencode` (临时干净目录) |
 | plugins/sf_specforge.ts | ✅ 由本次安装创建 |
-| agents/ | ✅ 10 个 sf-* agents 由本次安装创建 |
+| agents/ | ✅ 10 个文件（9 个 sf-* agents）由本次安装创建 |
 | tools/ | ✅ 19 个 sf_* tools 由本次安装创建 |
 | 共享组件总数 | 104 |
 | XDG/.specforge | ✅ 不存在 |
-| 临时 HOME/.specforge | ✅ 不存在（仅空目录） |
+| 临时 HOME/.specforge | ✅ 不存在 |
+| install.json 路径 | `$XDG_CONFIG_HOME/opencode/sf-user/install.json` ✅ |
+| install.json 含真实用户目录 | ❌ 不含 |
 
-**修复**: installer 中 `getSpecForgeUserDir()` 和 `getLegacySpecForgeDir()` 使用 `require()` — 在 Node ESM 模式下失败。修复为使用顶层 `import * as os`。同时修复 `isMainModule` 检测在 tsx 下不工作的问题。
+### 测试覆盖
+
+| 测试组 | 结果 |
+|---|---|
+| scripts/tests/ (installer) | 31 pass, 0 fail |
+| packages/daemon-core/tests/ | 702 pass, 84 fail (pre-existing, 与本次修复无关) |
+| packages/workflow-runtime/tests/v11/e2e | 123 pass, 0 fail |
 
 ## 5. OpenCode Load Evidence
 
