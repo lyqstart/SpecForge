@@ -113,6 +113,8 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/superpowers-verification-before-completion/SKILL.md", type: "skill" },
   { path: "skills/superpowers-writing-plans/SKILL.md", type: "skill" },
   { path: "skills/sf-intake/SKILL.md", type: "skill" },  // intake 阶段提问脚本
+  { path: "skills/sf-skill-git-master/SKILL.md", type: "skill" },  // git evidence skill
+  { path: "skills/sf-skill-playwright/SKILL.md", type: "skill" },  // browser verification skill
 
   // 参考文档
   { path: "docs/engineering-lessons/universal/shell-command-execution.md", type: "doc" },

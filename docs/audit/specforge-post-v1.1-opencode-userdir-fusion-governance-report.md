@@ -141,6 +141,67 @@ No md files required fusion — all agent .md files in user and repo are IDENTIC
 |------|--------|
 | `setup/userlevel-opencode/skills/sf-skill-git-master/SKILL.md` | ADDED (promoted from user) |
 | `setup/userlevel-opencode/skills/sf-skill-playwright/SKILL.md` | ADDED (promoted from user) |
+| `scripts/lib/registry.ts` | MODIFIED (added 2 skills to SHARED_COMPONENT_REGISTRY) |
+
+---
+
+## SKILL.md Specialist Review
+
+### sf-skill-git-master/SKILL.md
+
+| Aspect | Assessment |
+|--------|-----------|
+| **Responsibility** | Git evidence collection: status, diff, log, blame, commit candidate prep |
+| **Executes commands** | YES — git read-only commands (status, diff, log, blame) |
+| **Writes files** | NO directly — only prepares commit candidates (metadata) |
+| **Git write risk** | LOW — no git commit/push/rebase. Only read ops + candidate prep. Actual commits require separate approval. |
+| **Playwright/browser** | N/A |
+| **Write Guard needed** | NO — read-only git ops don't modify tracked files |
+| **changed_files_audit impact** | NONE — doesn't write to project files |
+| **Command approval needed** | YES for `git commit` candidates; NO for read-only ops |
+| **v1.1 compliance** | COMPLIANT — respects Gate constraints, TASK contracts, allowed_write_files |
+| **Classification** | Post-v1.1 enhancement capability |
+| **Recommendation** | INCLUDE — low risk, high value for evidence chain |
+
+### sf-skill-playwright/SKILL.md
+
+| Aspect | Assessment |
+|--------|-----------|
+| **Responsibility** | Browser verification: run Playwright tests, capture screenshots, DOM assertions |
+| **Executes commands** | YES — `npx playwright test` or equivalent |
+| **Writes files** | YES — screenshots, test reports, trace files (to test-results/ or playwright-report/) |
+| **Git write risk** | NONE — doesn't interact with git |
+| **Playwright file output** | Generates evidence artifacts (screenshots, HTML reports, traces) |
+| **Write Guard needed** | DEPENDS — if output goes to project dir, needs allowed_write_files entry. If output goes to tmp/evidence/ dirs, no conflict. |
+| **changed_files_audit impact** | LOW — output typically goes to .specforge/work-items/{id}/evidence/ which is WI-scoped |
+| **Command approval needed** | YES for `npx playwright test` (shell execution) |
+| **v1.1 compliance** | COMPLIANT — tied to REQ/AC/TASK traceability, consumed by verifier/reviewer |
+| **Classification** | Post-v1.1 enhancement / production readiness capability |
+| **Recommendation** | INCLUDE — produces verification evidence, integrates with SpecForge evidence chain |
+
+---
+
+## Test Results
+
+| Layer | Tests | Status |
+|-------|-------|--------|
+| scripts (includes installer-deploy-integration) | 67 | PASS |
+| daemon-core governance (9 files) | 156 | PASS |
+| workflow-runtime evidence guard | 107 | PASS |
+| **Total** | **330** | **ALL PASS** |
+
+### Installer Verification
+
+- `installer-deploy-integration.test.ts`: 18/18 PASS
+- `installer-no-legacy-write.test.ts`: 9/9 PASS
+- New skills registered in `scripts/lib/registry.ts` SHARED_COMPONENT_REGISTRY
+- Installer will deploy sf-skill-git-master/SKILL.md and sf-skill-playwright/SKILL.md to user directory
+- No dry-run CLI flag available; verified via integration test pass (tests simulate full deploy)
+
+### Test Baseline Explanation
+
+Previous report showed 97 daemon-core tests because only 7 of 9 governance test files were included in the run. Full baseline is 9 test files = 156 tests. Total: 67 + 156 + 107 = 330.
+
 
 ---
 
@@ -149,10 +210,24 @@ No md files required fusion — all agent .md files in user and repo are IDENTIC
 After this branch merges, running the installer will:
 1. Deploy 6 v1.1 tools to user directory (currently missing)
 2. Deploy 3 v1.1 agents to user directory (currently missing)
-3. Deploy 2 promoted skills (already present in user, now also in repo source)
+3. Deploy 2 promoted skills (now registered in SHARED_COMPONENT_REGISTRY)
 4. Preserve all existing user-local state (runtime/, node_modules/, .bak/)
 5. Not write to ~/.specforge/
 6. Use sf-user/runtime/handshake.json path
+
+---
+
+## REPO_ONLY_REQUIRED Correction
+
+Count: 9 (6 tools + 3 agents). Previous report incorrectly stated 10 (7+3). The actual 6 v1.1 tools missing from user directory:
+1. sf_changed_files_audit.ts
+2. sf_close_gate.ts
+3. sf_code_permission.ts
+4. sf_gate_run.ts
+5. sf_merge_run.ts
+6. sf_user_decision_record.ts
+
+Plus 3 agents: sf-evidence-collector.md, sf-extension.md, sf-investigator.md.
 
 ---
 
