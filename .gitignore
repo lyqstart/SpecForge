@@ -19,6 +19,10 @@ specforge/
 test_log/
 .backup/
 test_output.txt
+test-output.txt
+test-results.txt
+.tmp/
+.kiro.zip
 *.log
 
 # Kiro PBT runtime state (written to spec dirs by update_pbt_status /
@@ -37,3 +41,4 @@ Thumbs.db
 # npm lock file (project uses bun exclusively)
 package-lock.json
 packages/*/package-lock.json
+pnpm-lock.yaml
