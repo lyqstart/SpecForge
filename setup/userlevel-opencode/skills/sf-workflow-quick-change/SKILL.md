@@ -32,35 +32,39 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 
 **执行步骤：**
 
-与标准 Feature Spec 相同，但 `spec.json` 中 `workflow_type` 设为 `quick_change`。
+**前置条件（code_only_fast_path 守卫）**：
+- 无需求变更、无设计变更、无架构变更
+- 无验收标准变更、无数据语义变更、无接口契约变化
+- unknowns=[]
+- 如不满足，必须升级到对应 workflow_path
 
-1. 调用 `sf_state_read` 确认当前无进行中的同名 Work Item
-2. 调用 `sf_state_transition`（from_state=""，to_state="created"）创建新 Work Item
-   - sf_state_transition 会自动创建 Spec 目录、spec.json 和 archive 目录（无需手动 mkdir）
-   - spec.json 中 workflow_type 设为 `quick_change`
+**执行步骤：**
+1. sf-orchestrator 创建 Work Item（workflow_path=code_only_fast_path）
+2. sf-orchestrator 生成：intake.md, change_classification.md, impact_analysis.md, trigger_result.json
 3. 与用户对话，收集变更描述的关键信息
 4. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="intake", content=<整理后的信息>）写入 intake.md
-5. 调用 `sf_state_transition`（from_state="created"，to_state="intake_ready"，evidence="intake.md generated"）
 
-**产物：** `intake.md`、`spec.json`（自动创建）
+**产物：** `intake.md`、`change_classification.md`、`impact_analysis.md`、`trigger_result.json`（由 Orchestrator 生成）
+
+> **Legacy note**: `sf_state_read` / `sf_state_transition` 在 daemon 中仍存在，但 v1.1 主链路不以它们作为执行步骤。状态由 daemon 在 Gate/close_gate 通过时内部推进。
 
 ### 阶段 2：quick_tasks（简化任务生成）
 
 **目标：** 生成简化的 tasks.md
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
-2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting quick_tasks phase"）
-3. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
-4. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
-   - work_item_id 和 spec_directory 路径
+1. sf-orchestrator 确认当前 WI 处于 intake 后阶段
+2. 调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文（可选，调用失败时继续）
+3. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
+   - work_item_id 和 .specforge/work-items/<WI> 路径
    - intake.md 的内容
    - 指令：加载 `superpowers-writing-plans` skill，生成简化的 tasks.md，每个 task 必须包含 verification_commands
-5. 等待子 Agent 完成
-6. **检查升级条件**（见 Quick Change 升级机制）：如果生成的任务数量 > 3，触发升级建议
-7. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="implementation_running"，evidence="quick_tasks completed"）
+4. 等待子 Agent 完成
+5. **检查升级条件**（见 Quick Change 升级机制）：如果生成的任务数量 > 3，触发升级建议
+6. 生成 candidate_manifest.json（entries=[]，code_only_fast_path 无 Candidate 产物）
+7. 生成 trace_delta.md（标注 no spec impact）
 
-**产物：** `tasks.md`
+**产物：** `tasks.md`、`candidate_manifest.json`（entries=[]）、`trace_delta.md`
 
 ### 阶段 3：development
 
@@ -74,7 +78,7 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 
 #### Step 1：读取 tasks.md 和配置
 
-1. 调用 `sf_state_read`（legacy compatibility）确认当前状态为 `implementation_running`
+1. sf-orchestrator 确认 WI 处于 implementation 阶段
 2. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
@@ -123,7 +127,7 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 2. 如果返回非空 task_context.context → 注入到 sf-executor 的调度 prompt 中（位于任务描述之后）
 3. 如果返回非空 capabilities.recommended_fragments → 将推荐的 Skill Fragment 完整内容注入到调度 prompt 中，替代全量 Skill 加载
 4. 向用户报告 Context Builder 摘要（引用的 Graph 节点数、历史经验数、推荐 Fragment 数、预估 Token 量）
-5. 如果 sf_context_build 调用失败 → 回退到 V3.3 协议（不注入额外上下文），记录警告
+5. 如果 sf_context_build 调用失败 → 回退到不注入额外上下文，记录警告
 
 #### Step 5：按 Execution_Plan 执行
 
@@ -137,7 +141,7 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 4. **在同一条 assistant 消息中**，为该批次的所有 Task 各发起一个 `task` 工具调用，调度独立的 sf-executor 子 Agent，每个调用包含：
    - task 描述、verification_commands、修改文件列表、相关上下文
    - 指令：加载 `superpowers-subagent-driven-development` skill
-   - 独立的 run_id 和 archive_path（`.specforge/archive/agent_runs/<run_id>/`）
+   - 独立的 run_id 和 archive_path（`.specforge/work-items/<work_item_id>/evidence/<run_id>/`）
 5. 等待该批次所有 executor 返回结果
 6. 记录每个 Task 的 end_time
 7. 为该批次中的每个 executor 创建 Agent_Run_Archive（见并行 Archive 协议）
@@ -147,7 +151,7 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 
 **5b. 串行 Task 执行：**
 
-对每个串行 Task，按 V3.2 的串行协议执行：
+对每个串行 Task，按串行协议执行：
 1. 生成 run_id，记录 start_time
 2. 使用 `task` 工具调度 sf-executor，指令中包含：加载 `superpowers-subagent-driven-development` skill
 3. 等待完成，记录 end_time
@@ -156,7 +160,7 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 
 **5c. Serial_Fallback 模式：**
 
-当 Execution_Plan 为全串行时，按 V3.2 的串行协议逐个执行所有 Task，行为完全不变。
+当 Execution_Plan 为全串行时，逐个执行所有 Task。
 
 #### Step 6：development 阶段完成
 
@@ -165,7 +169,8 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
 1. 调用 `sf_changed_files_audit`（work_item_id=<id>）对比实际修改文件与 allowed_write_files
 2. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
-3. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed"）
+
+> **Note**: 状态推进由 daemon 在后续 Gate / close_gate 通过时自动执行。
 
 **产物：** 代码文件（由 executor 生成）
 
@@ -174,7 +179,7 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 **目标：** 执行轻量验证，确认变更正确
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `verification_running`
+1. sf-orchestrator 确认 WI 处于 verification 阶段
 2. **使用 `task` 工具调度子 Agent `sf-verifier`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - tasks.md 的路径（含 verification_commands）
@@ -203,9 +208,8 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_type="verification"）检查验证结果（统一 Gate Runner，替代旧 sf_verification_gate）
 7. 如果 Gate pass：
    - 调用 `sf_changed_files_audit`（work_item_id=<id>）执行变更文件审计
-   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification gate passed"）
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
-   - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
+   - WI 状态由 daemon close_gate actor 推进到 closed
 8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
@@ -214,8 +218,8 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 - sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
 - Quick Change 的 sf-verifier 启用轻量验证模式，只做核心断言，不做全量 CSS/JS 回归检查
 - 必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`
-- `sf_state_read` 保留用于状态查询（legacy compatibility），但主流程不以它为门控
-- `sf_state_transition` 由 sf-orchestrator 通过 daemon 调用，Agent 不直接推进关键状态
+- 必须调用 `sf_close_gate` 确认关闭条件满足后，WI 才能进入 `closed`
+- 状态推进由 daemon 内部管理，sf-orchestrator 不直接调用状态推进 API
 
 **工具：** `sf_gate_run`（统一 Gate Runner）
 
@@ -250,11 +254,12 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
    - 将当前 Work Item 的 `workflow_type` 变更为 `feature_spec`
    - 从 `candidate_preparing` 阶段重新开始（requirements phase）
    - 保留已有的 intake.md 信息
-   - 调用 `sf_state_transition` 将状态设为 `candidate_preparing`
+   - 升级 WI 的 workflow_path 为对应路径
+   - 从 candidate 阶段重新开始
 
 3. **用户拒绝升级**：
    - 继续执行 quick_change 工作流
-   - 在 `.specforge/work-items/<work_item_id>/spec.json` 中记录用户决定：`"upgrade_declined": true, "upgrade_reason": "<原因>"`
+   - 在 `.specforge/work-items/<work_item_id>/work_item.json` 中记录用户决定：`"upgrade_declined": true, "upgrade_reason": "<原因>"`
 
 ---
 

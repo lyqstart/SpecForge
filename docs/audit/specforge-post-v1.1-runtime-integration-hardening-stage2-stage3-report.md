@@ -79,6 +79,48 @@
 
 ---
 
+## Reviewer Rejection Fixes (Round 2)
+
+### sf-orchestrator.md 修正
+
+| 问题 | 修正 |
+|------|------|
+| sf_state_transition 作为主状态推进工具 | 改为 "状态流转由 daemon 内部的 WorkflowEngine 管理" |
+| workflow_path 使用非 v1.1 枚举 | 改为 architecture_change_path / requirement_change_path / design_change_path / task_change_path / code_only_fast_path / spec_migration_path / rollback_path |
+| "先加载 Skill 再创建 WI" | 改为 "先创建 Work Item，再加载 Workflow Skill" |
+| Gate 协议中 sf_state_transition 流转 | 改为 "daemon 内部推进状态" |
+| 实现前协议中 sf_state_transition | 改为 "WI 状态进入 implementation_ready（由 daemon 管理）" |
+| close_gate 只有 11 项 | 扩展为 17 项完整检查清单 |
+| 主链路中 sf_state_transition: "" → created | 改为 "创建 Work Item"（不暴露内部状态 API） |
+| 状态跳转禁止表引用 sf_state_transition | 改为 "daemon WorkflowEngine 强制执行（seal transition 机制）" |
+
+### sf-workflow-quick-change 修正
+
+| 问题 | 修正 |
+|------|------|
+| spec.json 引用 | 全部删除 |
+| .specforge/archive/agent_runs/ | 改为 .specforge/work-items/{id}/evidence/{run_id}/ |
+| sf_state_transition 作为执行步骤 | 全部删除或改为 "状态由 daemon 自动推进" |
+| sf_state_read 作为执行步骤 | 改为 "sf-orchestrator 确认 WI 处于 X 阶段" |
+| V3.2 / V3.3 / V4.0 引用 | 删除版本号标注 |
+| 缺少 code_only_fast_path 守卫 | 新增前置条件检查 |
+| 缺少 candidate_manifest / trace_delta | 新增产物 |
+
+### 静态检查残留命中解释
+
+| 文件:行 | 内容 | 分类 |
+|---------|------|------|
+| sf-orchestrator.md:46 | spec_manifest.json 检测 | v1.1 正式主链路 |
+| sf-orchestrator.md:50 | sf_state_read 查询进行中 WI | 只读查询，非状态推进 |
+| sf-orchestrator.md:259 | /sf-status 调试命令 | 调试功能，非主链路 |
+| sf-orchestrator.md:276 | sf_state_transition legacy note | 明确标注 legacy |
+| SKILL.md:49 | sf_state_read/sf_state_transition legacy note | 明确标注 legacy |
+| SKILL.md:208 | "替代旧 sf_verification_gate" | Compatibility note |
+
+**所有残留命中均为 legacy note 或合法 v1.1 用途，无 blocking legacy main flow。**
+
+---
+
 ## 未修改
 
 - 未删除文件
