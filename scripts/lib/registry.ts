@@ -33,6 +33,10 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "agents/sf-verifier.md", type: "agent" },
   { path: "agents/sf-knowledge.md", type: "agent" },
   { path: "agents/_AGENT_BASE.md", type: "agent" },  // 公共骨架（供参考）
+  // v1.1 Agents（3 个）
+  { path: "agents/sf-extension.md", type: "agent" },
+  { path: "agents/sf-evidence-collector.md", type: "agent" },
+  { path: "agents/sf-investigator.md", type: "agent" },
 
   // 全局规则
   { path: "AGENTS.md", type: "config" },
@@ -57,6 +61,13 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_continuity.ts", type: "tool" },
   { path: "tools/sf_safe_bash.ts", type: "tool" },
   { path: "tools/sf_project_init.ts", type: "tool" },
+  // v1.1 Tools（6 个 — governance lifecycle 闭环必需）
+  { path: "tools/sf_gate_run.ts", type: "tool" },
+  { path: "tools/sf_user_decision_record.ts", type: "tool" },
+  { path: "tools/sf_merge_run.ts", type: "tool" },
+  { path: "tools/sf_code_permission.ts", type: "tool" },
+  { path: "tools/sf_changed_files_audit.ts", type: "tool" },
+  { path: "tools/sf_close_gate.ts", type: "tool" },
 
   // Tool 核心库（24 个）
   { path: "tools/lib/sf_artifact_write_core.ts", type: "tool_lib" },
