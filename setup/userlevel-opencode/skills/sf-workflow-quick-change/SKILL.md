@@ -68,9 +68,13 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 
 **执行步骤：**
 
+#### Step 0：设置代码写入权限
+
+1. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）设置 Write Guard 白名单
+
 #### Step 1：读取 tasks.md 和配置
 
-1. 调用 `sf_state_read` 确认当前状态为 `implementation_running`
+1. 调用 `sf_state_read`（legacy compatibility）确认当前状态为 `implementation_running`
 2. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
@@ -159,8 +163,9 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 **检查升级条件**：如果 executor 需要修改超过 5 个文件，触发升级建议（见 Quick Change 升级机制）。
 
 所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
-1. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
-2. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed"）
+1. 调用 `sf_changed_files_audit`（work_item_id=<id>）对比实际修改文件与 allowed_write_files
+2. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
+3. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed"）
 
 **产物：** 代码文件（由 executor 生成）
 
@@ -195,21 +200,24 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
    - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
 5. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-6. **调用 `sf_verification_gate`** 检查验证结果
+6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_type="verification"）检查验证结果（统一 Gate Runner，替代旧 sf_verification_gate）
 7. 如果 Gate pass：
-   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification_gate passed"）
+   - 调用 `sf_changed_files_audit`（work_item_id=<id>）执行变更文件审计
+   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification gate passed"）
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
    - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
 8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
-- 必须先调用 sf_verification_gate 工具，确认 pass 后再流转状态
+- 必须先调用 `sf_gate_run`（统一 Gate Runner）确认 pass 后再流转状态
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
 - sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
 - Quick Change 的 sf-verifier 启用轻量验证模式，只做核心断言，不做全量 CSS/JS 回归检查
 - 必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`
+- `sf_state_read` 保留用于状态查询（legacy compatibility），但主流程不以它为门控
+- `sf_state_transition` 由 sf-orchestrator 通过 daemon 调用，Agent 不直接推进关键状态
 
-**工具：** `sf_verification_gate`
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 **产物：** 验证报告（由 sf_artifact_write 渲染写入）
 
@@ -247,3 +255,12 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 3. **用户拒绝升级**：
    - 继续执行 quick_change 工作流
    - 在 `.specforge/work-items/<work_item_id>/spec.json` 中记录用户决定：`"upgrade_declined": true, "upgrade_reason": "<原因>"`
+
+---
+
+## code_only_fast_path 兼容说明
+
+当 Quick Change 走 code_only_fast_path（无 Candidate 产物）时：
+- `candidate_manifest` 的 `entries` 设为 `[]`
+- `merge_report` 标记为 `not_applicable`
+- 仍需执行 `sf_code_permission` + `sf_changed_files_audit` + `sf_close_gate`

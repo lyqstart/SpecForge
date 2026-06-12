@@ -87,7 +87,7 @@ created → intake_ready → candidate_preparing (impact_analysis) → gates_run
 **目标：** 验证 impact_analysis.md 满足质量标准
 
 **执行步骤：**
-1. 调用 `sf_requirements_gate`（work_item_id, mode="change_request"）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="requirements", mode="change_request"）
    - Gate 检查文件：`impact_analysis.md`
    - 必需 sections：变更范围、风险评估、回归测试范围、KG 关联
    - pass 条件：所有 section 非空，风险评估为合法值（高/中/低）
@@ -96,7 +96,7 @@ created → intake_ready → candidate_preparing (impact_analysis) → gates_run
    - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="impact_analysis_gate failed, re-entering impact_analysis"），重新调度 sf-requirements 修订
    - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"），向用户报告阻塞原因
 
-**工具：** `sf_requirements_gate`（mode="change_request"）
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 ### 阶段 4：design_delta（增量设计）
 
@@ -137,7 +137,7 @@ created → intake_ready → candidate_preparing (impact_analysis) → gates_run
 **目标：** 验证 design_delta.md 满足质量标准
 
 **执行步骤：**
-1. 调用 `sf_design_gate`（work_item_id, mode="change_request"）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="design", mode="change_request"）
    - Gate 检查文件：`design_delta.md`
    - 必需 sections：增量设计描述、受影响模块、兼容性影响、回归风险、KG 追溯关系
    - pass 条件：所有 section 非空，增量设计与 impact_analysis 变更范围一致
@@ -146,7 +146,7 @@ created → intake_ready → candidate_preparing (impact_analysis) → gates_run
    - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate failed, re-entering design_delta"），重新调度 sf-design 修订
    - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"），向用户报告
 
-**工具：** `sf_design_gate`（mode="change_request"）
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 ### 阶段 6：tasks（任务拆分）
 
@@ -168,27 +168,45 @@ created → intake_ready → candidate_preparing (impact_analysis) → gates_run
 ### 阶段 7：tasks_gate（任务质量门禁）
 
 **执行步骤：**
-1. 调用 `sf_tasks_gate`（work_item_id）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="tasks"）
 2. 根据 Gate 结果：
    - **pass** → KG 同步（scope=tasks）→ 调用 `sf_state_transition`（from_state="gates_running"，to_state="implementation_running"，evidence="tasks_gate passed"）
    - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="tasks_gate failed, re-entering tasks"），重新调度 sf-task-planner
    - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
-**工具：** `sf_tasks_gate`
+**工具：** `sf_gate_run`（统一 Gate Runner）
+
+### 阶段 7b：用户审批与合并（规格变更确认）
+
+**目标：** 请求用户审批 Candidate（涉及规格变更的工作流）
+
+**执行步骤：**
+1. 向用户展示 Candidate 摘要（impact_analysis.md、design_delta.md、tasks.md 的关键内容）
+2. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="candidate_approval"）
+   - 记录用户决定：approve / reject / request_changes
+3. 根据用户决定路由：
+   - **approve** → 调用 `sf_merge_run`（work_item_id=<id>）合并 Candidate → 继续 development
+   - **reject** → 工作流终止
+   - **request_changes** → 回退到对应阶段修改
+
+**工具：** `sf_user_decision_record`、`sf_merge_run`
 
 ### 阶段 8：development（开发执行）
 
 **目标：** 执行变更任务，支持独立 Task 并行执行（V3.3 协议）
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `implementation_running`
-2. 读取 tasks.md，执行 Independence_Analysis（文件冲突检测 + 依赖关系检测）
-3. 生成 Execution_Plan，向用户展示执行计划摘要
-4. 对每个即将调度的 Task，调用 `sf_context_build` 构建 Task Context（V4.0）
-5. 按 Execution_Plan 执行：
+1. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取>]）设置 Write Guard 白名单
+2. 调用 `sf_state_read`（legacy compatibility）确认当前状态为 `implementation_running`
+3. 读取 tasks.md，执行 Independence_Analysis（文件冲突检测 + 依赖关系检测）
+4. 生成 Execution_Plan，向用户展示执行计划摘要
+5. 对每个即将调度的 Task，调用 `sf_context_build` 构建 Task Context（V4.0）
+6. 按 Execution_Plan 执行：
    - **并行批次**：在同一条消息中为批次内所有 Task 各发起一个 `task` 工具调用，调度 sf-executor（加载 `superpowers-subagent-driven-development`）
    - **串行 Task**：逐个调度 sf-executor
-6. 所有 Task 完成后，调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed, entering review"）
+7. 所有 Task 完成后：
+   - 调用 `sf_changed_files_audit`（work_item_id=<id>）对比实际修改文件与 allowed_write_files
+   - 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed, entering review"）
 
 **产物：** 代码文件
 
@@ -209,11 +227,11 @@ created → intake_ready → candidate_preparing (impact_analysis) → gates_run
    - impact_analysis.md（含回归测试范围）
    - 指令：执行所有验证命令，确认回归测试覆盖 impact_analysis.md 声明的受影响区域
 2. 调用 `sf_artifact_write` 写入验证报告和工作日志
-3. 调用 `sf_verification_gate`（work_item_id, mode="change_request"）
+3. 调用 `sf_gate_run`（work_item_id, gate_type="verification", mode="change_request"）
    - change_request 模式额外检查：回归测试覆盖 impact_analysis.md 声明的受影响区域
 4. Gate pass：
    - KG 同步（scope=verification）
-   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification_gate passed"）
+   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification gate passed"）
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
    - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
 5. Gate fail → 重新调度 sf-verifier（新 run_id）

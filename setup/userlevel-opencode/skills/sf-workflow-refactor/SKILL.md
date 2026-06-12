@@ -89,7 +89,7 @@ created → intake_ready → candidate_preparing (refactor_analysis) → gates_r
 ### 阶段 3：refactor_analysis_gate（重构分析质量门禁）
 
 **执行步骤：**
-1. 调用 `sf_requirements_gate`（work_item_id, mode="refactor"）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="requirements", mode="refactor"）
    - Gate 检查文件：`refactor_analysis.md`
    - 必需 sections：代码问题识别、重构目标、不变行为声明、风险评估
    - pass 条件：所有 section 非空，不变行为声明明确
@@ -98,7 +98,7 @@ created → intake_ready → candidate_preparing (refactor_analysis) → gates_r
    - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="refactor_analysis_gate failed, re-entering refactor_analysis"），重新调度 sf-design 修订
    - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
-**工具：** `sf_requirements_gate`（mode="refactor"）
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 ### 阶段 4：refactor_plan（重构计划）
 
@@ -138,7 +138,7 @@ created → intake_ready → candidate_preparing (refactor_analysis) → gates_r
 ### 阶段 5：refactor_plan_gate（重构计划质量门禁 + 风险路径决定）
 
 **执行步骤：**
-1. 调用 `sf_design_gate`（work_item_id, mode="refactor"）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="design", mode="refactor"）
    - Gate 检查文件：`refactor_plan.md`
    - 必需 sections：重构策略、步骤顺序、风险等级判定
 2. 根据 Gate 结果：
@@ -152,21 +152,39 @@ created → intake_ready → candidate_preparing (refactor_analysis) → gates_r
 
 **⚠️ 重要：** risk_path 必须在此阶段确定并记录，development 阶段完成后的流转方向由 sf_state_transition 守卫强制执行。
 
-**工具：** `sf_design_gate`（mode="refactor"）
+**工具：** `sf_gate_run`（统一 Gate Runner）
+
+### 阶段 5b：用户审批与合并（规格变更确认）
+
+**目标：** 请求用户审批 Candidate（refactor_analysis.md + refactor_plan.md）
+
+**执行步骤：**
+1. 向用户展示 Candidate 摘要（重构分析、重构计划、风险等级的关键内容）
+2. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="candidate_approval"）
+   - 记录用户决定：approve / reject / request_changes
+3. 根据用户决定路由：
+   - **approve** → 调用 `sf_merge_run`（work_item_id=<id>）合并 Candidate → 继续 development
+   - **reject** → 工作流终止
+   - **request_changes** → 回退到对应阶段修改
+
+**工具：** `sf_user_decision_record`、`sf_merge_run`
 
 ### 阶段 6：development（重构执行）
 
 **目标：** 按 refactor_plan.md 执行重构，确保每步后代码可运行
 
 **执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `implementation_running`，读取 `metadata.risk_path`
-2. 读取 refactor_plan.md，按步骤顺序执行重构
-3. 对每个即将调度的 Task，调用 `sf_context_build` 构建 Task Context
-4. **使用 `task` 工具调度子 Agent `sf-executor`**（加载 `superpowers-subagent-driven-development`），传入：
+1. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 refactor_plan.md 提取的修改文件列表>]）设置 Write Guard 白名单
+2. 调用 `sf_state_read`（legacy compatibility）确认当前状态为 `implementation_running`，读取 `metadata.risk_path`
+3. 读取 refactor_plan.md，按步骤顺序执行重构
+4. 对每个即将调度的 Task，调用 `sf_context_build` 构建 Task Context
+5. **使用 `task` 工具调度子 Agent `sf-executor`**（加载 `superpowers-subagent-driven-development`），传入：
    - refactor_plan.md 的步骤顺序
    - refactor_analysis.md 的不变行为声明
    - 指令：严格按步骤顺序执行重构，每步完成后确认现有测试仍通过，不得改变不变行为声明中的接口和行为
-5. 重构完成后，根据 `metadata.risk_path` 决定下一步：
+6. 重构完成后：
+   - 调用 `sf_changed_files_audit`（work_item_id=<id>）对比实际修改文件与 allowed_write_files
+   - 根据 `metadata.risk_path` 决定下一步：
    - `risk_path="high"` → 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="development completed, entering review (high risk)"）
    - `risk_path="low"` → 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="development completed, entering verification (low risk)"）
    - **注意：** sf_state_transition 守卫会强制执行此约束，risk_path 缺失时流转会被拒绝
@@ -196,11 +214,11 @@ created → intake_ready → candidate_preparing (refactor_analysis) → gates_r
      2. 检查代码质量指标是否改善（可读性、复杂度等）
      3. 确认不变行为声明中的每条约束均已满足
 2. 调用 `sf_artifact_write` 写入验证报告和工作日志
-3. 调用 `sf_verification_gate`（work_item_id, mode="refactor"）
+3. 调用 `sf_gate_run`（work_item_id, gate_type="verification", mode="refactor"）
    - refactor 模式额外检查：所有现有测试通过 + 代码质量指标改善
 4. Gate pass：
    - KG 同步（scope=verification）
-   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification_gate passed"）
+   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification gate passed"）
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
    - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
 5. Gate fail → 重新调度 sf-verifier（新 run_id），附带 blocking_issues

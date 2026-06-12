@@ -68,13 +68,13 @@ created → intake_ready → candidate_preparing → gates_running → candidate
 **目标：** 验证 bugfix.md 满足最低质量标准
 
 **执行步骤：**
-1. 调用 `sf_requirements_gate`（work_item_id, mode="bugfix"）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="requirements", mode="bugfix"）
 2. 根据 Gate 结果执行对应动作：
    - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="bugfix_gate passed, entering fix_design"）
    - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="bugfix_gate failed, re-entering bugfix_analysis"），重新调度 sf-requirements
    - blocked → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"），向用户报告
 
-**工具：** `sf_requirements_gate`（mode="bugfix"）
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 ### 阶段 4：fix_design（修复设计）
 
@@ -98,14 +98,14 @@ created → intake_ready → candidate_preparing → gates_running → candidate
 **目标：** 验证 design.md 满足最低质量标准
 
 **执行步骤：**
-1. 调用 `sf_design_gate`（work_item_id）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="design"）
    - 对于 bugfix_spec 工作流：不传递 workflow_type（使用默认值 "feature_spec"）
 2. 根据 Gate 结果执行对应动作：
    - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate passed, entering tasks"）
    - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate failed, re-entering fix_design"），重新调度 sf-design
    - blocked → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
-**工具：** `sf_design_gate`
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 ### 阶段 6：tasks（任务拆分）
 
@@ -129,13 +129,28 @@ created → intake_ready → candidate_preparing → gates_running → candidate
 **目标：** 验证 tasks.md 满足最低质量标准
 
 **执行步骤：**
-1. 调用 `sf_tasks_gate`（work_item_id）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="tasks"）
 2. 根据 Gate 结果执行对应动作：
    - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="implementation_running"，evidence="tasks_gate passed"）
    - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="tasks_gate failed, re-entering tasks"），重新调度 sf-task-planner
    - blocked → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
-**工具：** `sf_tasks_gate`
+**工具：** `sf_gate_run`（统一 Gate Runner）
+
+### 阶段 7b：用户审批与合并（规格变更确认）
+
+**目标：** 请求用户审批 Candidate（bugfix.md、design.md、tasks.md）
+
+**执行步骤：**
+1. 向用户展示 Candidate 摘要（bugfix 分析、修复设计、任务列表的关键内容）
+2. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="candidate_approval"）
+   - 记录用户决定：approve / reject / request_changes
+3. 根据用户决定路由：
+   - **approve** → 调用 `sf_merge_run`（work_item_id=<id>）合并 Candidate 为正式 Spec → 继续 development
+   - **reject** → 工作流终止
+   - **request_changes** → 回退到对应阶段修改
+
+**工具：** `sf_user_decision_record`、`sf_merge_run`
 
 ### 阶段 8：development（开发执行）
 
@@ -143,9 +158,13 @@ created → intake_ready → candidate_preparing → gates_running → candidate
 
 **执行步骤：**
 
+#### Step 0：设置代码写入权限
+
+1. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）设置 Write Guard 白名单
+
 #### Step 1：读取 tasks.md 和配置
 
-1. 调用 `sf_state_read` 确认当前状态为 `implementation_running`
+1. 调用 `sf_state_read`（legacy compatibility）确认当前状态为 `implementation_running`
 2. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
@@ -232,8 +251,9 @@ created → intake_ready → candidate_preparing → gates_running → candidate
 #### Step 6：development 阶段完成
 
 所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
-1. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
-2. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed with regression tests"）
+1. 调用 `sf_changed_files_audit`（work_item_id=<id>）对比实际修改文件与 allowed_write_files
+2. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
+3. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed with regression tests"）
 
 **注意：** Bugfix 工作流**没有 review 阶段**，development 直接进入 verification。
 
@@ -268,19 +288,21 @@ created → intake_ready → candidate_preparing → gates_running → candidate
    - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
 5. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-6. **调用 `sf_verification_gate`** 检查验证结果
+6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_type="verification"）检查验证结果（统一 Gate Runner）
 7. 如果 Gate pass：
-   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification_gate passed"）
+   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification gate passed"）
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
    - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
 8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
-- 必须先调用 sf_verification_gate 工具，确认 pass 后再流转状态
+- 必须先调用 `sf_gate_run`（统一 Gate Runner）确认 pass 后再流转状态
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
 - sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
 - 必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`
+- `sf_state_read` 保留用于状态查询（legacy compatibility），但主流程不以它为门控
+- `sf_state_transition` 由 sf-orchestrator 通过 daemon 调用，Agent 不直接推进关键状态
 
-**工具：** `sf_verification_gate`
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 **产物：** 验证报告（由 sf_artifact_write 渲染写入）

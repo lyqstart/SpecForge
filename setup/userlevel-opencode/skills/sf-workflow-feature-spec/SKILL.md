@@ -216,7 +216,8 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
 
 1. 调用 `sf_state_read` 确认当前状态为 `post_merge_verified`
 2. 调用 `sf_state_transition`（from_state="post_merge_verified"，to_state="implementation_ready"，evidence="ready for implementation"）
-3. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
+3. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）设置 Write Guard 白名单
+4. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
    - `依赖` 声明
@@ -301,8 +302,9 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
 #### Step 6：implementation 阶段完成
 
 所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
-1. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="implementation_done"，evidence="all tasks completed"）
-2. 向用户报告 implementation 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
+1. 调用 `sf_changed_files_audit`（work_item_id=<id>）对比实际修改文件与 allowed_write_files
+2. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="implementation_done"，evidence="all tasks completed"）
+3. 向用户报告 implementation 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
 
 **注意：** 在开始执行第一个 Task 前，须先调用 `sf_state_transition`（from_state="implementation_ready"，to_state="implementation_running"，evidence="starting task execution"）
 

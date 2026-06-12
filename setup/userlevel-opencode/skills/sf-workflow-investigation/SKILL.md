@@ -101,7 +101,7 @@ created → intake_ready → candidate_preparing (investigation_plan) → gates_
 ### 阶段 3：investigation_plan_gate（调查计划质量门禁）
 
 **执行步骤：**
-1. 调用 `sf_requirements_gate`（work_item_id, mode="investigation"）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="requirements", mode="investigation"）
    - Gate 检查文件：`investigation_plan.md`
    - 必需 sections：调查目标、调查范围、调查方法、预期产出格式
    - pass 条件：所有 section 非空（轻量级检查）
@@ -110,7 +110,7 @@ created → intake_ready → candidate_preparing (investigation_plan) → gates_
    - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="investigation_plan_gate failed, re-entering investigation_plan"），重新调度 sf-design 修订
    - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
 
-**工具：** `sf_requirements_gate`（mode="investigation"）
+**工具：** `sf_gate_run`（统一 Gate Runner）
 
 ### 阶段 4：research（调查研究执行）
 
@@ -173,7 +173,7 @@ created → intake_ready → candidate_preparing (investigation_plan) → gates_
 **目标：** 验证报告质量，并获得用户明确接受
 
 **执行步骤：**
-1. 调用 `sf_design_gate`（work_item_id, mode="investigation"）
+1. 调用 `sf_gate_run`（work_item_id, gate_type="design", mode="investigation"）
    - Gate 检查文件：`findings_report.md`
    - 必需 sections：调查结论、数据和证据、建议、限制
    - pass 条件：结论有证据支撑，建议可操作
@@ -194,7 +194,8 @@ created → intake_ready → candidate_preparing (investigation_plan) → gates_
    ━━━━━━━━━━━━━━━━━━━━
    请确认是否接受此调查报告？
    ```
-2. 等待用户响应：
+2. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="investigation_acceptance"）记录用户决定
+3. 等待用户响应：
    - **用户接受** →
      - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
      - 调用 `sf_state_transition`（from_state="gates_running"，to_state="closed"，transition_context={"user_accepted": true}，evidence="close gate passed, user accepted"）
@@ -204,7 +205,7 @@ created → intake_ready → candidate_preparing (investigation_plan) → gates_
 
 **⚠️ 重要：** 不得在未获得用户明确接受的情况下流转到 closed。`transition_context.user_accepted` 必须为 `true`（布尔值），字符串 "true" 不被接受。必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`。
 
-**工具：** `sf_design_gate`（mode="investigation"）
+**工具：** `sf_gate_run`（统一 Gate Runner）、`sf_user_decision_record`
 
 ### 阶段 7：closed（完成）
 
