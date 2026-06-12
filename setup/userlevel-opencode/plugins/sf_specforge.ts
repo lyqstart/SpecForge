@@ -172,22 +172,43 @@ const SHELL_TOOLS = new Set([
   "terminal",
   "cmd",
   "powershell",
+  "sf_safe_bash",
 ])
 
 function isWriteTool(toolName: string): boolean {
   const normalized = toolName.toLowerCase().replace(/[_-]/g, "")
 
-  // Non-filesystem tools that contain "write" in name but don't write files
-  const NON_FILESYSTEM_TOOLS = new Set([
+  // Non-filesystem planning tools that must NOT be treated as file write tools
+  const NON_FILESYSTEM_PLANNING_TOOLS = new Set([
     "todowrite", "todoread", "todoupdate", "tododelete",
     "todolist", "todoadd", "todocreate",
-    "overwrite", // common arg name collision
-    "rewrite",   // refactoring concept
   ])
-  if (NON_FILESYSTEM_TOOLS.has(normalized)) return false
+  if (NON_FILESYSTEM_PLANNING_TOOLS.has(normalized)) return false
 
-  // SpecForge controlled tools — handled by daemon, not filesystem writes
-  if (normalized.startsWith("sf")) return false
+  // SpecForge controlled tools that operate via daemon API, NOT filesystem writes
+  // NOTE: sf_safe_bash and sf_artifact_write ARE filesystem-affecting and must NOT be here
+  const SPECFORGE_CONTROL_TOOLS = new Set([
+    "sf_gate_run", "sfgaterun",
+    "sf_user_decision_record", "sfuserdecisionrecord",
+    "sf_merge_run", "sfmergerun",
+    "sf_code_permission", "sfcodepermission",
+    "sf_changed_files_audit", "sfchangedfilesaudit",
+    "sf_close_gate", "sfclosegate",
+    "sf_state_read", "sfstateread",
+    "sf_state_transition", "sfstatetransition",
+    "sf_doc_lint", "sfdoclint",
+    "sf_trace_matrix", "sftracematrix",
+    "sf_context_build", "sfcontextbuild",
+    "sf_cost_report", "sfcostreport",
+    "sf_doctor", "sfdoctor",
+    "sf_continuity", "sfcontinuity",
+    "sf_knowledge_base", "sfknowledgebase",
+    "sf_knowledge_graph", "sfknowledgegraph",
+    "sf_knowledge_query", "sfknowledgequery",
+    "sf_batch_verify", "sfbatchverify",
+    "sf_v11_work_item_create", "sfv11workitemcreate",
+  ])
+  if (SPECFORGE_CONTROL_TOOLS.has(toolName) || SPECFORGE_CONTROL_TOOLS.has(normalized)) return false
 
   // Direct match
   if (WRITE_TOOLS.has(toolName)) return true
@@ -298,7 +319,7 @@ function isBashWriteCommand(command: string): boolean {
     />/, />>/, /\btee\b/,
     // python/node inline file writes
     /python[3]?\s+-c\s+.*\b(open|write|makedirs|Path)\b/i,
-    /node\s+-e\s+.*\b(writeFile|appendFile|mkdirSync|createWriteStream)\b/i,
+    /node\s+-e\s+.*(writeFile|appendFile|mkdirSync|createWriteStream)/i,
     // base64 decode to file
     /base64.*decode/i,
     /\bpowershell\b.*\b(Set-Content|Out-File|New-Item|Add-Content)\b/i,
