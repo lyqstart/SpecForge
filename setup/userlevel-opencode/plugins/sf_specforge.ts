@@ -281,10 +281,67 @@ function isBashWriteCommand(command: string): boolean {
 
 // ── Telemetry (non-blocking) ─────────────────────────────────────────────────────
 
-/** Post telemetry event — never throws, never blocks. */
+/** Maximum payload size for telemetry events (48KB — under daemon's 64KB limit). */
+const MAX_EVENT_PAYLOAD_BYTES = 48 * 1024
+
+/** Events that are critical for v1.1 WI main chain and must always be forwarded. */
+const CRITICAL_EVENT_TYPES = new Set([
+  "tool.invoking",
+  "tool.invoked",
+  "session.compacting",
+  "opencode.event",
+])
+
+/** Events whose payload should be dropped entirely (metadata-only forwarding). */
+const METADATA_ONLY_EVENT_TYPES = new Set([
+  "llm.messages",
+  "llm.context.prepared",
+  "chat.params",
+  "chat.headers",
+])
+
+/** Current session ID — set when we receive session events. */
+let currentSessionId = "unknown"
+
+/**
+ * Truncate data payload if it exceeds the size limit.
+ * Returns metadata-only placeholder for oversized payloads.
+ */
+function truncatePayload(type: string, data: unknown): unknown {
+  // Metadata-only events: only forward type + timestamp, not full content
+  if (METADATA_ONLY_EVENT_TYPES.has(type)) {
+    const meta: Record<string, unknown> = { _truncated: true, _originalType: type }
+    if (data && typeof data === "object") {
+      const d = data as Record<string, unknown>
+      // Keep sessionID if present
+      if (d.sessionID) meta.sessionID = d.sessionID
+      // Keep messages count if present
+      if (Array.isArray(d.messages)) meta.messageCount = d.messages.length
+    }
+    return meta
+  }
+
+  // Check size for other events
+  try {
+    const serialized = JSON.stringify(data)
+    if (serialized.length > MAX_EVENT_PAYLOAD_BYTES) {
+      return { _truncated: true, _originalType: type, _originalSize: serialized.length }
+    }
+  } catch {
+    return { _truncated: true, _originalType: type, _error: "unserializable" }
+  }
+
+  return data
+}
+
+/**
+ * Post telemetry event — never throws, never blocks.
+ * Correctly passes (sessionId, type, data) to the daemon client.
+ */
 async function postEvent(type: string, data: unknown): Promise<void> {
   try {
-    await daemonClient.postEvent(type, { data, ts: Date.now() })
+    const safeData = truncatePayload(type, data)
+    await daemonClient.postEvent(currentSessionId, type, safeData)
   } catch {
     // Telemetry is best-effort; never block on failure
   }
@@ -530,14 +587,33 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
     // ══════════════════════════════════════════════════════════════════════════════
 
     "event": async (i: any) => {
-      await postEvent("opencode.event", i.event)
+      // OpenCode event envelope: { id, type, properties: { sessionID, ... } }
+      const evt = i.event
+      if (evt && typeof evt === "object") {
+        // Extract type from the event envelope
+        const eventType: string = typeof evt.type === "string" ? evt.type : "unknown"
+        // Track session ID from session events
+        if (evt.properties?.sessionID) {
+          currentSessionId = evt.properties.sessionID
+        }
+        await postEvent(`opencode.${eventType}`, {
+          id: evt.id,
+          type: eventType,
+          sessionID: evt.properties?.sessionID,
+          properties: evt.properties,
+        })
+      } else {
+        await postEvent("opencode.event", { raw: typeof evt })
+      }
     },
 
     "experimental.session.compacting": async (i: any) => {
+      if (i.sessionID) currentSessionId = i.sessionID
       await postEvent("session.compacting", { sessionID: i.sessionID })
     },
 
     "experimental.chat.system.transform": async (i: any, o: any) => {
+      if (i.sessionID) currentSessionId = i.sessionID
       await postEvent("llm.context.prepared", { system: o.system, sessionID: i.sessionID })
     },
 
@@ -546,6 +622,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
     },
 
     "chat.params": async (i: any, o: any) => {
+      if (i.sessionID) currentSessionId = i.sessionID
       await postEvent("chat.params", { params: o, sessionID: i.sessionID })
     },
 

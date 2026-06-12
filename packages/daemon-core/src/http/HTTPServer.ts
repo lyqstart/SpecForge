@@ -1198,19 +1198,48 @@ export class HTTPServer {
    * Route an ingest event to the appropriate subsystem handler.
    * 
    * Returns optional extra data to merge into the HTTP response.
+   * Performs event normalization to handle both flat events and OpenCode envelope format.
    */
   private async routeIngestEvent(
     request: { sessionId?: string; type?: string; data?: unknown; ts?: number }
   ): Promise<Record<string, unknown> | undefined> {
-    const sessionId = request.sessionId ?? '';
-    const type = request.type ?? '';
-    const data = request.data;
+    let sessionId = request.sessionId ?? '';
+    let type = request.type ?? '';
+    let data = request.data;
     const ts = request.ts ?? 0;
 
-    // Defensive: guard against non-string type (e.g. object passed by buggy plugin)
+    // ── Event Normalization ──
+    // Handle OpenCode envelope format: { data: { id, type, properties }, ts }
+    // This can arrive when a buggy plugin version passes the whole envelope as `type`.
     if (typeof type !== 'string') {
-      console.warn(`[INGEST] Non-string event type received (typeof ${typeof type}), ignoring: ${JSON.stringify(type)}`);
-      return undefined;
+      // Attempt to unwrap if type is an object with a nested data.type string
+      if (type && typeof type === 'object') {
+        const envelope = type as Record<string, unknown>;
+        // Pattern: { data: { type: "session.created", ... }, ts: 123 }
+        if (envelope.data && typeof envelope.data === 'object') {
+          const inner = envelope.data as Record<string, unknown>;
+          if (typeof inner.type === 'string') {
+            console.warn(`[INGEST] Normalized envelope event: ${inner.type} (plugin needs upgrade)`);
+            type = inner.type;
+            data = inner;
+            if (inner.properties && typeof inner.properties === 'object') {
+              const props = inner.properties as Record<string, unknown>;
+              if (props.sessionID && typeof props.sessionID === 'string') {
+                sessionId = props.sessionID;
+              }
+            }
+          } else {
+            console.warn(`[INGEST] Non-string event type received (typeof ${typeof request.type}), cannot normalize — ignoring`);
+            return undefined;
+          }
+        } else {
+          console.warn(`[INGEST] Non-string event type received (typeof ${typeof request.type}), ignoring: ${JSON.stringify(type).slice(0, 200)}`);
+          return undefined;
+        }
+      } else {
+        console.warn(`[INGEST] Non-string event type received (typeof ${typeof type}), ignoring`);
+        return undefined;
+      }
     }
 
     switch (type) {
@@ -1239,6 +1268,16 @@ export class HTTPServer {
       case 'shell.env':
         return { env: await this.handleShellEnv(sessionId, data) };
       default:
+        // Handle opencode.* prefixed events (from v1.1 plugin normalization)
+        if (type.startsWith('opencode.')) {
+          await this.handleOpenCodeEvent(sessionId, data, ts);
+          break;
+        }
+        // Handle session.* events that come directly from OpenCode envelope normalization
+        if (type === 'session.created' || type === 'session.updated') {
+          await this.handleOpenCodeEvent(sessionId, data, ts);
+          break;
+        }
         console.warn(`[INGEST] Unknown event type: ${type}`);
     }
     return undefined;
