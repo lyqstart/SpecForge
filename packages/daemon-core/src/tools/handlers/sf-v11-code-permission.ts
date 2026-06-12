@@ -7,14 +7,16 @@ import { registerHandler } from '../ToolDispatcher';
 import { releaseCodePermission, revokeCodePermission, checkCodePermission } from '../lib/code-permission-service-v11';
 import { takeSnapshot, saveBaseline } from '../lib/filesystem-diff';
 import * as path from 'node:path';
+import { validateWorkItemId } from '../lib/work-item-id-validator';
 
 registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const action = (args['action'] as string) || 'check';
 
-  if (!workItemId) {
-    return { success: false, error: 'work_item_id is required' };
+  const idError = validateWorkItemId(workItemId);
+  if (idError) {
+    return { success: false, error: idError };
   }
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);

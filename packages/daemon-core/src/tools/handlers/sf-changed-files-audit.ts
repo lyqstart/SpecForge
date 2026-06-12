@@ -11,6 +11,7 @@ import { registerHandler } from '../ToolDispatcher';
 import { runChangedFilesAudit } from '../lib/changed-files-audit';
 import { getFactualChangedFiles } from '../lib/write-guard-log';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { validateWorkItemId } from '../lib/work-item-id-validator';
 
 registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   const workItemId = args['work_item_id'] as string;
@@ -18,8 +19,9 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   const expectedWriteFiles = args['expected_write_files'] as string[] | undefined;
   const actualChangedFiles = args['actual_changed_files'] as string[] | undefined;
 
-  if (!workItemId) {
-    return { success: false, error: 'work_item_id required' };
+  const idError = validateWorkItemId(workItemId);
+  if (idError) {
+    return { success: false, error: idError };
   }
 
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();

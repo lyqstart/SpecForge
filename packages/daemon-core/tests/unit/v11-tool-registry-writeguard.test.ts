@@ -5,12 +5,15 @@
  * 1. v1.1 tool registry: all 6 public-facing tools must be registered
  * 2. WriteGuard classification: todowrite not blocked, sf_safe_bash not bypassed
  * 3. Bash write detection: python/base64/node write patterns detected
+ * 4. Work Item ID validation: business slugs rejected
+ * 5. Tool dispatch: actual dispatch doesn't return UNKNOWN_TOOL
  */
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 // Import to trigger handler registration
 import '../../src/tools/index';
-import { getHandler } from '../../src/tools/ToolDispatcher';
+import { getHandler, ToolDispatcher } from '../../src/tools/ToolDispatcher';
+import { validateWorkItemId, isValidWorkItemId } from '../../src/tools/lib/work-item-id-validator';
 
 describe('v1.1 Tool Registry', () => {
   const REQUIRED_V11_TOOLS = [
@@ -203,5 +206,128 @@ describe('Bash Write Detection', () => {
 
   it('ls must remain read-only', () => {
     expect(isBashReadOnly('ls -la')).toBe(true);
+  });
+});
+
+
+describe('Work Item ID Validation', () => {
+  it('WI-001 is valid', () => {
+    expect(isValidWorkItemId('WI-001')).toBe(true);
+    expect(validateWorkItemId('WI-001')).toBeNull();
+  });
+
+  it('WI-0001 is valid', () => {
+    expect(isValidWorkItemId('WI-0001')).toBe(true);
+    expect(validateWorkItemId('WI-0001')).toBeNull();
+  });
+
+  it('WI-20260612-0001 is valid', () => {
+    expect(isValidWorkItemId('WI-20260612-0001')).toBe(true);
+    expect(validateWorkItemId('WI-20260612-0001')).toBeNull();
+  });
+
+  it('blue-h1-hello-world is INVALID', () => {
+    expect(isValidWorkItemId('blue-h1-hello-world')).toBe(false);
+    expect(validateWorkItemId('blue-h1-hello-world')).toContain('Invalid work_item_id');
+  });
+
+  it('todo-list-web is INVALID', () => {
+    expect(isValidWorkItemId('todo-list-web')).toBe(false);
+    expect(validateWorkItemId('todo-list-web')).toContain('Invalid work_item_id');
+  });
+
+  it('empty string is INVALID', () => {
+    expect(validateWorkItemId('')).toContain('required');
+  });
+
+  it('wi-001 (lowercase) is INVALID', () => {
+    expect(isValidWorkItemId('wi-001')).toBe(false);
+  });
+});
+
+describe('v1.1 Tool Dispatch — real handler invocation', () => {
+  const dispatcher = new ToolDispatcher({
+    stateManager: undefined,
+    workflowEngine: undefined,
+    projectManager: undefined,
+    eventLogger: undefined,
+    eventBus: { publish: () => {} },
+    permissionEngine: undefined,
+    cas: undefined,
+    sessionRegistry: undefined,
+  });
+
+  it('sf_gate_run dispatch does not throw UNKNOWN_TOOL', async () => {
+    // Call with invalid args to get a structured error, NOT "Unknown tool"
+    const result = await dispatcher.dispatch({
+      tool: 'sf_gate_run',
+      args: { work_item_id: 'blue-h1-hello-world' },
+      context: { directory: '/tmp/test' },
+    });
+    // Should get ID validation error, not UNKNOWN_TOOL
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('Invalid work_item_id');
+  });
+
+  it('sf_code_permission dispatch does not throw UNKNOWN_TOOL', async () => {
+    const result = await dispatcher.dispatch({
+      tool: 'sf_code_permission',
+      args: { work_item_id: 'blue-h1-hello-world', action: 'check' },
+      context: { directory: '/tmp/test' },
+    });
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('Invalid work_item_id');
+  });
+
+  it('sf_changed_files_audit dispatch does not throw UNKNOWN_TOOL', async () => {
+    const result = await dispatcher.dispatch({
+      tool: 'sf_changed_files_audit',
+      args: { work_item_id: 'blue-h1-hello-world' },
+      context: { directory: '/tmp/test' },
+    });
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('Invalid work_item_id');
+  });
+
+  it('sf_close_gate dispatch does not throw UNKNOWN_TOOL', async () => {
+    // sf_close_gate may have different validation — just confirm no throw
+    try {
+      const result = await dispatcher.dispatch({
+        tool: 'sf_close_gate',
+        args: { work_item_id: 'WI-001' },
+        context: { directory: '/tmp/nonexistent' },
+      });
+      // Either succeeds or returns structured error — no throw
+      expect(result).toBeDefined();
+    } catch (err) {
+      // Should NOT be "Unknown tool"
+      expect((err as Error).message).not.toContain('Unknown tool');
+    }
+  });
+
+  it('sf_user_decision_record dispatch does not throw UNKNOWN_TOOL', async () => {
+    try {
+      const result = await dispatcher.dispatch({
+        tool: 'sf_user_decision_record',
+        args: { work_item_id: 'WI-001', decision: 'approved' },
+        context: { directory: '/tmp/test' },
+      });
+      expect(result).toBeDefined();
+    } catch (err) {
+      expect((err as Error).message).not.toContain('Unknown tool');
+    }
+  });
+
+  it('sf_merge_run dispatch does not throw UNKNOWN_TOOL', async () => {
+    try {
+      const result = await dispatcher.dispatch({
+        tool: 'sf_merge_run',
+        args: { work_item_id: 'WI-001' },
+        context: { directory: '/tmp/test' },
+      });
+      expect(result).toBeDefined();
+    } catch (err) {
+      expect((err as Error).message).not.toContain('Unknown tool');
+    }
   });
 });

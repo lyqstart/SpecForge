@@ -7,14 +7,20 @@ import { registerHandler } from '../ToolDispatcher';
 import { runRequiredGates } from '../lib/gate-runner-v11';
 import type { GateIdV11 } from '../lib/gate-runner-v11';
 import * as path from 'node:path';
+import { validateWorkItemId } from '../lib/work-item-id-validator';
 
 registerHandler('sf_v11_gate_run', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const gateIds = args['gate_ids'] as string[];
 
-  if (!workItemId || !gateIds || !Array.isArray(gateIds)) {
-    return { success: false, error: 'work_item_id and gate_ids[] are required' };
+  const idError = validateWorkItemId(workItemId);
+  if (idError) {
+    return { success: false, error: idError };
+  }
+
+  if (!gateIds || !Array.isArray(gateIds)) {
+    return { success: false, error: 'gate_ids[] are required' };
   }
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
