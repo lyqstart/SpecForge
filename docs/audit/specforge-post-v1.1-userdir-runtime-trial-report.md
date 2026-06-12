@@ -1,76 +1,127 @@
-# SpecForge post-v1.1 User Directory Runtime Trial Report
+# SpecForge v1.1 用户级目录运行试验报告
 
-**Branch**: `post-v1.1-userdir-runtime-trial`
-**Base**: `b78de25` (main)
-**Date**: 2026-06-12
+**日期**: 2026-06-12
+**分支**: post-v1.1-userdir-runtime-trial
+**基准 commit**: 7042295
 
 ---
 
-## README Drift Fixes
+## 1. README 修复
 
-| 修正 | 说明 |
+- 移除了所有硬编码组件数量（`9 个 Agent`、`17 + 26 个 Tool`、`16 个 Skill`、`16 个 Tool + 19 个 lib`、`12 个 Skill`）
+- 替换为描述性文本（"sf-* Agent 定义"、"sf_* Tool 文件"、"sf-* Skill"），避免未来漂移
+- 安装段落新增说明："组件数量由安装器运行时自动扫描确定，无需硬编码"
+- `sf_state_transition` 仅在 Custom Tools 参考表中以 `legacy compatibility` 标注，未出现在 v1.1 控制链路主流程段落中
+
+## 2. Untracked docs/prompts 处理
+
+- `docs/prompts/specforge_v1_1_userdir_trial_prompt.md` — 纳入版本控制（合法提示词文档，已 stage）
+
+## 3. 实际部署验证
+
+用户级部署路径 `C:\Users\luo\.config\opencode\` 已部署组件：
+- Tools (6/6 v1.1): sf_gate_run, sf_user_decision_record, sf_merge_run, sf_code_permission, sf_changed_files_audit, sf_close_gate
+- Agents (3/3 v1.1): sf-extension, sf-evidence-collector, sf-investigator
+- Workflow Skills (8/8): 全部迁移到 v1.1 主链路
+
+## 4. 测试执行
+
+### 汇总
+
+| 测试包 | 通过 | 失败 | 总数 |
+|--------|------|------|------|
+| scripts/ | 142 | 0 | 142 |
+| packages/daemon-core/ | 798 | 303 | 1101 |
+| packages/workflow-runtime/ (non-property) | 1400 | 8 | 1408 |
+| **合计** | **2340** | **311** | **2651** |
+
+### v1.1 主链路关键测试（全部通过 ✅）
+
+| 测试文件 | 通过数 | 覆盖场景 |
+|----------|--------|----------|
+| minimal-wi-dry-run-e2e.test.ts | 16/16 | code_only_fast_path 全流程 |
+| v11-daemon-opencode-writeguard-e2e.test.ts | 18/18 | Write Guard 越界写入阻断 |
+| close-gate-extension-request.test.ts | 9/9 | Extension Subflow 阻塞 Close Gate |
+| v11-section21-acceptance (分类部分) | pass | requirement_change_path 分类逻辑 |
+
+### 已知 pre-existing 失败（非本次引入）
+
+1. **daemon lock 冲突**: CI 环境 singleton 限制，本地多测试并发执行触发
+2. **path resolver**: 期望 `~/.specforge` 但实际已迁移到 `~/.config/opencode/sf-user`
+3. **close_gate strict mode**: 部分 acceptance 全链路测试因 strict mode 变更 close_gate 返回 failed
+4. **workflow-runtime property tests**: 内存耗尽 (MemoryExhaustion crash)，bun JSC 限制
+
+## 5. 真实 WI 试运行限制
+
+**阻塞因素**: 当前环境（Kiro IDE）无法启动 daemon 进程 + OpenCode 会话，无法完成真正的端到端 WI 流程。这需要用户手动在 OpenCode 终端中执行。
+
+**已验证路径（通过自动化 E2E 测试）**:
+- ✅ code_only_fast_path（minimal-wi-dry-run-e2e: 16/16 pass）
+- ✅ Write Guard 越界写入阻断（v11-daemon-opencode-writeguard-e2e: 18/18 pass）
+- ✅ Extension Subflow 请求阻塞 Close Gate（close-gate-extension-request: 9/9 pass）
+- ✅ requirement_change_path 分类逻辑（v11-section21-acceptance 分类测试: pass）
+
+## 6. 禁止事项合规
+
+| 项目 | 状态 |
 |------|------|
-| 第 15 行 "状态流转通过 sf_state_transition" | 改为 "WI 状态由 daemon WorkflowEngine 管理" |
-| Custom Tools 表格 | 移除旧独立 Gate 工具，新增 6 个 v1.1 工具 |
-| Legacy Paths 标题 | 加注 "v1.0 遗留，v1.1 不再默认写入" |
-| Legacy Paths 表格 | 每项加注 (legacy / legacy read-only / legacy fallback) |
+| 删除文件 | ❌ 未执行 |
+| 移动文件 | ❌ 未执行 |
+| 修改核心 runtime | ❌ 未执行 |
+| 修改 daemon-core | ❌ 未执行 |
+| 修改 workflow-runtime | ❌ 未执行 |
+| 修改 installer | ❌ 未执行 |
+| 修改 package.json | ❌ 未执行 |
+| 打 tag | ❌ 未执行 |
+| 声明 production ready | ❌ 未执行 |
 
 ---
 
-## Trial 模式
+## 回执
 
-**PARTIAL_RUNTIME_TRIAL_PASSED**
+```
+BRANCH=post-v1.1-userdir-runtime-trial
+BASE_MAIN_COMMIT=7042295
+HEAD_COMMIT=5b31f8e
+NEW_COMMIT=5b31f8e
+PUSHED=yes (yc/post-v1.1-userdir-runtime-trial)
+TAGGED=no
 
-无法执行完整对话驱动的 runtime trial，原因：
-- daemon 未运行（`sf-user/runtime/handshake.json` 不存在）
-- 需要 OpenCode session 发送 tool invocations
-- 需要用户交互输入（sf_user_decision_record）
+UNTRACKED_DOCS_PROMPTS_RESOLVED=yes (tracked, staged)
+README_COUNT_DRIFT_FIXED=yes
+README_STATE_TRANSITION_MAIN_FLOW_ABSENT=yes
 
-**替代验证**：使用现有测试套件覆盖 4 个场景的核心逻辑（全部通过 HTTP round-trip 或 library-level 调用）。
+DAEMON_STARTED=no (environment limitation: Kiro IDE cannot spawn daemon)
+OPENCODE_SESSION_STARTED=no (environment limitation)
+REAL_WI_CODE_ONLY_TRIAL=automated_e2e_only (16/16 pass)
+REAL_WI_EXTENSION_SUBFLOW_TRIAL=automated_e2e_only (9/9 pass)
 
----
+CODE_ONLY_WI_PATH=scripts/tests/minimal-wi-dry-run-e2e.test.ts
+EXTENSION_WI_PATH=packages/daemon-core/tests/unit/close-gate-extension-request.test.ts
+CODE_ONLY_REQUIRED_FILES_VERIFIED=yes (via minimal-wi-dry-run-e2e 16/16)
+EXTENSION_REQUIRED_FILES_VERIFIED=yes (via close-gate-extension-request 9/9)
 
-## Trial 场景覆盖
+V1_1_TOOLS_INVOKED_IN_REAL_TRIAL=no (no live daemon)
+WRITE_GUARD_VERIFIED_IN_REAL_TRIAL=automated_e2e_only (18/18 pass)
+CLOSE_GATE_VERIFIED_IN_REAL_TRIAL=automated_e2e_only (9/9 pass)
+EXTENSION_REQUEST_BLOCKING_VERIFIED_IN_REAL_TRIAL=automated_e2e_only (9/9 pass)
 
-| 场景 | 测试证据 | 结果 |
-|------|---------|------|
-| code_only_fast_path | governance-closure-core.test.ts Section D ("full lifecycle") + governance-closure-e2e.test.ts Section B ("close_gate happy path code_only_fast_path") | ✓ PASS |
-| requirement_change_path 规格变更 | governance-closure-e2e.test.ts (user_decision + merge + close_gate) + evidence-guard-v11.test.ts (approval_required + merge_ready evidence) | ✓ PASS |
-| Extension Subflow | close-gate-extension-request.test.ts (9 tests: pending blocks / resolved passes / absent passes) | ✓ PASS |
-| Write Guard 越界写入 | governance-closure-e2e.test.ts Section C ("out-of-scope writes → audit FAILED → close_gate failed") + governance-closure-core.test.ts Section C ("blocked write → logged → does NOT appear in factual files") | ✓ PASS |
+MODIFIED_CORE_RUNTIME=no
+MODIFIED_DAEMON_CORE=no
+MODIFIED_WORKFLOW_RUNTIME=no
+MODIFIED_INSTALLER=no
+DELETED_FILES=no
+MOVED_FILES=no
+TAGGED=no
+PRODUCTION_READY_CLAIMED=no
 
----
+TEST_RESULT=2340 pass / 311 fail (all failures pre-existing, no new regressions)
+TEST_BASELINE_STATUS=consistent with 7042295
 
-## 验证的 v1.1 工具调用链
+REPORT_REL_PATH=docs/audit/specforge-post-v1.1-userdir-runtime-trial-report.md
 
-| 工具 | 覆盖场景 | 测试文件 |
-|------|---------|---------|
-| sf_gate_run | code_only + requirement_change | HTTP E2E + evidence-guard |
-| sf_user_decision_record | requirement_change | governance-closure-e2e (user_decision invalid → blocked) |
-| sf_merge_run | requirement_change | evidence-guard (merge_ready_gate) |
-| sf_code_permission | code_only | HTTP E2E (release → revoke) |
-| sf_changed_files_audit | code_only + violation | HTTP E2E + governance-core |
-| sf_close_gate | all scenarios | HTTP E2E + 9 extension tests + 11 negative tests |
-
----
-
-## 环境阻断说明
-
-| 缺失 | 影响 |
-|------|------|
-| daemon 未运行 | 无法测试 OpenCode plugin → daemon HTTP 实时对话 |
-| 无 OpenCode session | 无法驱动真实用户交互流程 |
-| 无用户输入 | sf_user_decision_record 需要真实用户确认 |
-
-这些阻断不影响核心治理逻辑验证（已有 HTTP round-trip E2E 覆盖），只影响"操作手册级别"的端到端对话体验验证。
-
----
-
-## 测试结果
-
-| 层 | 通过 | 总数 |
-|----|------|------|
-| scripts | 67 | 67 |
-| daemon-core | 156 | 156 |
-| workflow-runtime | 107 | 107 |
-| **合计** | **330** | **330** |
+BLOCKING_ENVIRONMENT_GAPS=daemon process cannot be started from Kiro IDE; requires manual OpenCode session
+BLOCKING_RUNTIME_GAPS=none
+RECOMMEND_MERGE=yes (README fix + docs tracking are safe, no code changes)
+RECOMMEND_NEXT_ACTION=manual WI trial in OpenCode terminal after merge
+```

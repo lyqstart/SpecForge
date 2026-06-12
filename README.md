@@ -36,7 +36,7 @@ cd /path/to/specforge-repo
 bun scripts/sf-installer.ts install
 ```
 
-这会将共享组件（Agent、Tool、Skill、Plugin）部署到 `~/.config/opencode/`。
+这会将共享组件（Agent、Tool、Skill、Plugin）部署到 `~/.config/opencode/`。组件数量由安装器运行时自动扫描确定，无需硬编码。
 
 安装完成后，打开任何项目的 OpenCode，Plugin 会自动初始化项目运行时（`.specforge/` 目录），无需额外操作。
 
@@ -161,10 +161,10 @@ SpecForge/                        # 仓库根目录
 ~/.config/opencode/              # 用户级共享组件（一次安装，所有项目共享）
 ├── opencode.json                # sf-* Agent 注册
 ├── specforge-manifest.json      # 安装清单
-├── agents/                      # 9 个 Agent 定义
-├── tools/ + tools/lib/          # 17 + 26 个 Tool 文件
-├── skills/                      # 16 个 Skill
-└── plugins/                     # 1 个统一 Plugin
+├── agents/                      # sf-* Agent 定义
+├── tools/ + tools/lib/          # sf_* Tool 文件
+├── skills/                      # sf-* Skill
+└── plugins/                     # 统一 Plugin
 
 project-root/                    # 项目级（Plugin 自动初始化）
 ├── AGENTS.md                    # Agent 总览（自动生成）
@@ -485,10 +485,10 @@ bun scripts/sf-installer.ts upgrade --force
 **用户级共享组件目录：**
 ```
 ~/.config/opencode/
-├── agents/           # 9 个 sf-* Agent 定义文件
-├── tools/           # 16 个 Tool + 19 个 lib 文件
-├── skills/          # 12 个 Skill 目录
-├── plugins/         # 1 个统一 Plugin (sf_specforge.ts)
+├── agents/           # sf-* Agent 定义文件
+├── tools/           # sf_* Tool + lib 文件
+├── skills/          # sf-* Skill 目录
+├── plugins/         # 统一 Plugin (sf_specforge.ts)
 ├── opencode.json    # Agent 注册配置
 └── specforge-manifest.json  # 用户级 Manifest
 ```
