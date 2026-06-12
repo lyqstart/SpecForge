@@ -12,7 +12,7 @@
 - **Write Guard**：程序级写入拦截，默认拒绝，只有声明角色可写对应路径（§12.5-§12.6）
 - **Gate 检查**：Gate Summary Gate / Merge Ready Gate / Post-Merge Gate / Code Permission Release Gate / Close Gate — 五层 Gate（§15）
 - **Changed Files Audit**：审计所有变更文件，路径+操作双重匹配，越界写入阻断 Close Gate（§12.7）
-- **状态机驱动**：所有状态流转通过 sf_state_transition 工具执行，证据前置检查（非仅文件存在）
+- **状态机驱动**：WI 状态由 daemon WorkflowEngine 管理，通过 seal transition 机制强制执行；关键状态推进由 sf_gate_run / sf_close_gate / sf_merge_run 间接触发
 - **Legacy 只读**：旧 specs/、config/、knowledge/、manifest.json 路径仅供读取，新流程走 project/ + work-items/
 - **完整留痕**：trace.jsonl / events.jsonl / tool_calls.jsonl / cost.jsonl 自动记录
 - **失败重试闭环**：executor 重试 → debugger 介入 → blocked 报告用户
@@ -292,20 +292,22 @@ SPEC_DIR_NAME = '.specforge'
 | configFiles.riskPolicy | `config/risk_policy.json` | — |
 | configFiles.skillFragments | `config/skill_fragments.json` | — |
 
-### 用户级 Legacy Paths (~/.specforge/)
+### 用户级 Legacy Paths (~/.specforge/) — v1.0 遗留，v1.1 不再默认写入
+
+> **v1.1 变更**：daemon handshake 已迁移到 `$OPENCODE_CONFIG_DIR/sf-user/runtime/handshake.json`。以下路径仅作为 read-only fallback 保留，不得作为新写入目标。
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| runtime | `runtime` | 运行时状态目录 — `~/.specforge/runtime/` |
-| runtimeHandshake | `runtime/handshake.json` | 握手文件 — `~/.specforge/runtime/handshake.json` |
-| runtimeState | `runtime/state.json` | 持久化状态 — `~/.specforge/runtime/state.json` |
-| runtimeEvents | `runtime/events.jsonl` | 事件日志 — `~/.specforge/runtime/events.jsonl` |
-| runtimeDaemonLock | `runtime/daemon.lock` | Daemon 锁文件 — `~/.specforge/runtime/daemon.lock` |
-| hostProfile | `host-profile.json` | 主机配置文件 — `~/.specforge/host-profile.json` |
-| logs | `logs` | 日志目录 — `~/.specforge/logs/` |
-| projects | `projects` | 项目目录 — `~/.specforge/projects/` |
-| templates | `templates` | 模板目录 — `~/.specforge/templates/` |
-| backups | `backups` | 备份目录 — `~/.specforge/backups/` |
+| runtime | `runtime` | 运行时状态目录 — `~/.specforge/runtime/`（legacy read-only） |
+| runtimeHandshake | `runtime/handshake.json` | 握手文件 — `~/.specforge/runtime/handshake.json`（legacy fallback） |
+| runtimeState | `runtime/state.json` | 持久化状态 — `~/.specforge/runtime/state.json`（legacy） |
+| runtimeEvents | `runtime/events.jsonl` | 事件日志 — `~/.specforge/runtime/events.jsonl`（legacy） |
+| runtimeDaemonLock | `runtime/daemon.lock` | Daemon 锁文件 — `~/.specforge/runtime/daemon.lock`（legacy） |
+| hostProfile | `host-profile.json` | 主机配置文件 — `~/.specforge/host-profile.json`（legacy） |
+| logs | `logs` | 日志目录 — `~/.specforge/logs/`（legacy） |
+| projects | `projects` | 项目目录 — `~/.specforge/projects/`（legacy） |
+| templates | `templates` | 模板目录 — `~/.specforge/templates/`（legacy） |
+| backups | `backups` | 备份目录 — `~/.specforge/backups/`（legacy） |
 
 ---
 <!-- END: directory-layout -->
@@ -371,13 +373,15 @@ Intake → Classification → Impact Analysis → Candidate 准备
 
 | 工具 | 用途 |
 |------|------|
-| sf_state_read | 读取 Work Item 状态 |
-| sf_state_transition | 执行状态流转（含合法性验证） |
+| sf_gate_run | v1.1 统一 Gate Runner（替代旧独立 Gate 工具） |
+| sf_user_decision_record | 记录结构化用户决策到 user_decision.json |
+| sf_merge_run | 合并 Candidate 到正式规格 |
+| sf_code_permission | 释放/撤销代码写入权限 + allowed_write_files |
+| sf_changed_files_audit | 审计实际文件变更 vs allowed_write_files |
+| sf_close_gate | WI 关闭前 17 项完整性检查 |
+| sf_state_read | 读取 Work Item 状态（legacy compatibility / 调试） |
+| sf_state_transition | daemon 内部状态流转（legacy compatibility） |
 | sf_doc_lint | 文档结构检查 |
-| sf_requirements_gate | 需求质量 Gate（含 EARS 验证） |
-| sf_design_gate | 设计质量 Gate |
-| sf_tasks_gate | 任务质量 Gate |
-| sf_verification_gate | 验证质量 Gate |
 | sf_trace_matrix | 需求→设计→任务追溯检查 |
 | sf_doctor | 系统健康检查 |
 | sf_artifact_write | 代写产物（供只读 Agent 使用） |
