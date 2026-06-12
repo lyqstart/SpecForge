@@ -33,3 +33,23 @@ import './handlers/sf-v11-handoff';
 import './handlers/sf-v11-extension';
 import './handlers/sf-v11-verification';
 import './handlers/sf-v11-close-gate';
+import './handlers/sf-changed-files-audit';
+
+// ── v1.1 Public Name Aliases ─────────────────────────────────────────────────────
+// OpenCode tool files call daemon via public names (sf_gate_run, sf_code_permission, etc.)
+// but the v1.1 handlers registered with sf_v11_* prefix. Add aliases so both names work.
+import { registerHandler, getHandler } from './ToolDispatcher';
+
+const V11_TOOL_ALIASES: Record<string, string> = {
+  'sf_gate_run': 'sf_v11_gate_run',
+  'sf_code_permission': 'sf_v11_code_permission',
+  'sf_user_decision_record': 'sf_v11_decision',
+  'sf_merge_run': 'sf_v11_merge',
+};
+
+for (const [publicName, internalName] of Object.entries(V11_TOOL_ALIASES)) {
+  const handler = getHandler(internalName);
+  if (handler && !getHandler(publicName)) {
+    registerHandler(publicName, handler);
+  }
+}

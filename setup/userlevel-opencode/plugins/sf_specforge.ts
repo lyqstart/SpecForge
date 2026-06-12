@@ -176,6 +176,19 @@ const SHELL_TOOLS = new Set([
 
 function isWriteTool(toolName: string): boolean {
   const normalized = toolName.toLowerCase().replace(/[_-]/g, "")
+
+  // Non-filesystem tools that contain "write" in name but don't write files
+  const NON_FILESYSTEM_TOOLS = new Set([
+    "todowrite", "todoread", "todoupdate", "tododelete",
+    "todolist", "todoadd", "todocreate",
+    "overwrite", // common arg name collision
+    "rewrite",   // refactoring concept
+  ])
+  if (NON_FILESYSTEM_TOOLS.has(normalized)) return false
+
+  // SpecForge controlled tools — handled by daemon, not filesystem writes
+  if (normalized.startsWith("sf")) return false
+
   // Direct match
   if (WRITE_TOOLS.has(toolName)) return true
   if (WRITE_TOOLS.has(normalized)) return true
@@ -256,13 +269,21 @@ function isBashReadOnly(command: string): boolean {
     "cat ", "ls ", "dir ", "echo ", "printf ", "head ", "tail ",
     "grep ", "rg ", "find ", "which ", "where ", "type ",
     "pwd", "whoami", "date", "uname", "env ", "printenv",
-    "node -e", "node --eval", "python -c", "python3 -c",
     "git status", "git log", "git diff", "git show", "git branch",
     "git remote", "git tag", "npm list", "npm ls", "npm info",
     "yarn list", "yarn info", "pnpm list",
     "test ", "[ ", "[[ ",
   ]
   const trimmed = command.trim()
+  // python/node -c can execute arbitrary code including writes — NOT read-only
+  // Only classify as read-only if the inline code is provably safe
+  if (trimmed.startsWith("python -c") || trimmed.startsWith("python3 -c") || trimmed.startsWith("node -e") || trimmed.startsWith("node --eval")) {
+    // Check if the inline code contains write indicators
+    const hasWriteIndicators = /open\s*\(|write|makedirs|mkdir|Path\(|base64|decode|Set-Content|Out-File|New-Item|>|>>|tee\s/i.test(trimmed)
+    if (hasWriteIndicators) return false // NOT read-only
+    // Simple reads like `python -c "print(1+1)"` are ok
+    return true
+  }
   return readOnlyPrefixes.some(p => trimmed.startsWith(p))
 }
 
@@ -275,6 +296,12 @@ function isBashWriteCommand(command: string): boolean {
     /\bgit (add|commit|push|merge|rebase|reset|checkout|stash|apply)\b/,
     /\bsed\b.*-i/, /\bawk\b.*-i/,
     />/, />>/, /\btee\b/,
+    // python/node inline file writes
+    /python[3]?\s+-c\s+.*\b(open|write|makedirs|Path)\b/i,
+    /node\s+-e\s+.*\b(writeFile|appendFile|mkdirSync|createWriteStream)\b/i,
+    // base64 decode to file
+    /base64.*decode/i,
+    /\bpowershell\b.*\b(Set-Content|Out-File|New-Item|Add-Content)\b/i,
   ]
   return writePatterns.some(p => p.test(command))
 }
