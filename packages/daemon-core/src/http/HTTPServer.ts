@@ -1837,6 +1837,18 @@ export class HTTPServer {
     }
 
     const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, callerRole ?? 'agent');
+
+    // Block writes to .specforge/work-items/ — WI artifacts must use controlled tools
+    const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
+    if (targetPath && wiArtifactPattern.test(targetPath)) {
+      this.sendJsonResponse(res, 200, this.successBody({
+        allowed: false,
+        reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+        hard_stop: true,
+      }));
+      return;
+    }
+
     const result = checkWrite(wiCtx, targetPath, 'modify');
 
     // Append to Write Guard log for factual audit trail
@@ -1876,7 +1888,26 @@ export class HTTPServer {
     const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, 'agent');
 
     if (!wiCtx.hasActiveWI) {
-      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no active WI' }));
+      this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no active WI — call sf_code_permission enable first' }));
+      return;
+    }
+
+    // Block writes to .specforge/work-items/ via bash — WI artifacts must use controlled tools
+    const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
+    if (command && wiArtifactPattern.test(command)) {
+      this.sendJsonResponse(res, 200, this.successBody({
+        allowed: false,
+        reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL — cannot write .specforge/work-items/ via bash/shell; use sf_artifact_write or other SpecForge controlled tools',
+        hard_stop: true,
+      }));
+      return;
+    }
+    if (expectedFiles && expectedFiles.some(f => wiArtifactPattern.test(f))) {
+      this.sendJsonResponse(res, 200, this.successBody({
+        allowed: false,
+        reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL — expected files include .specforge/work-items/ path; use sf_artifact_write',
+        hard_stop: true,
+      }));
       return;
     }
 

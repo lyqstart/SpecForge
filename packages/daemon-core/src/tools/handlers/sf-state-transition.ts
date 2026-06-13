@@ -6,11 +6,18 @@ import { isValidV11Transition, isForbiddenTransition, WI_STATUSES_V11, checkClos
 import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from '../lib/state_machine';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { validateWorkItemId } from '../lib/work-item-id-validator';
 
 registerHandler('sf_state_transition', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
   const fromState = (args['from_state'] as string) ?? '';
   const toState = args['to_state'] as string;
+
+  // v1.1 WI ID validation — reject business slugs
+  const idError = validateWorkItemId(workItemId);
+  if (idError) {
+    return { success: false, error: idError, hard_stop: true };
+  }
 
   // v1.1: Accept workflow_path and resolve to internal workflow_type
   const rawWorkflowPath = args['workflow_path'] as string | undefined;

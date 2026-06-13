@@ -24,8 +24,13 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   try {
     if (action === 'release' || action === 'enable') {
       let allowedWriteFiles = args['allowed_write_files'] as Array<string | { path: string; operation: 'create' | 'modify' | 'delete' }>;
-      if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles)) {
-        return { success: false, error: 'allowed_write_files[] is required for enable/release' };
+      if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles) || allowedWriteFiles.length === 0) {
+        return {
+          success: false,
+          error: 'ALLOWED_WRITE_FILES_REQUIRED',
+          hard_stop: true,
+          message: 'sf_code_permission enable requires allowed_write_files[] with at least one file path. The orchestrator must extract target files from tasks.md before calling enable.',
+        };
       }
 
       // Normalize: accept both string[] and {path,operation}[]
