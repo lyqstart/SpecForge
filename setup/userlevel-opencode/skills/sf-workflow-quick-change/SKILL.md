@@ -77,7 +77,11 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 #### Step 0：设置代码写入权限
 
-1. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）设置 Write Guard 白名单
+1. 从 tasks.md 中提取所有待修改/创建的文件路径列表
+2. 调用 `sf_code_permission`（work_item_id=<id>, action="enable", allowed_write_files=[<从 tasks.md 提取的文件列表>]）
+3. 确认返回 `code_change_allowed=true`
+4. **如果 tasks.md 中未明确列出文件路径**，必须根据任务描述推断需要创建/修改的文件，作为 allowed_write_files 传入
+5. **禁止**调用 `sf_code_permission` 时不传 `allowed_write_files`——会被 daemon 拒绝
 
 #### Step 1：读取 tasks.md 和配置
 

@@ -561,6 +561,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
             callID: i.callID,
             tool: toolName,
             toolCategory: isSideEffectTool(toolName) ? 'side_effect' : 'write',
+            directory: projectDir,
           })
 
           if (auditResult && auditResult.escapedWrites && auditResult.escapedWrites.length > 0) {
@@ -604,6 +605,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
           expectedFiles,
           callID: i.callID,
           tool: toolName,
+          directory: projectDir,
         })
 
         if (auditResult && auditResult.escapedWrites && auditResult.escapedWrites.length > 0) {
