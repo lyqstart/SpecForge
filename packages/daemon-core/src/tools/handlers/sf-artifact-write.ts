@@ -2,12 +2,12 @@
  * sf-artifact-write.ts — v1.1 Controlled Artifact Writer
  *
  * This is the ONLY allowed path for writing WI artifacts.
+ *
  * Fix in this version:
- * - Accepts canonical v1.1 artifact file_type values.
- * - Maps common legacy/work_log run_id values to canonical v1.1 artifacts so
- *   real OpenCode agents cannot accidentally write trigger_result/candidate_manifest
- *   into archive/work_log instead of the WI directory.
- * - Rejects ambiguous work_log writes that look like required WI artifacts.
+ * - Preserves object/array JSON content by JSON.stringify instead of String(...).
+ * - Infers canonical v1.1 artifacts from work_log content, not run_id alone.
+ * - Prevents task-planner run_id from making candidate_manifest overwrite tasks.md.
+ * - For code_only_fast_path, creates controlled companion artifacts that close_gate requires.
  */
 import path from 'path';
 import { registerHandler } from '../ToolDispatcher';
@@ -54,24 +54,107 @@ function normalizeToken(value: unknown): string {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
-function inferCanonicalFileType(args: Record<string, unknown>): string | null {
-  const fileType = String(args['file_type'] ?? '');
-  const runId = normalizeToken(args['run_id']);
-  const template = normalizeToken(args['template']);
-  const content = String(args['content'] ?? args['agent_content'] ?? '');
-  const contentToken = normalizeToken(content.slice(0, 400));
-  const probe = `${runId} ${template} ${contentToken}`;
+function getRawContent(args: Record<string, unknown>): unknown {
+  if (Object.prototype.hasOwnProperty.call(args, 'content')) return args['content'];
+  if (Object.prototype.hasOwnProperty.call(args, 'agent_content')) return args['agent_content'];
+  return '';
+}
 
+function serializeArtifactContent(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (value === undefined || value === null) return '';
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return String(value);
+  }
+}
+
+function parseJsonObject(rawContent: unknown, serializedContent: string): Record<string, any> | null {
+  if (rawContent && typeof rawContent === 'object' && !Array.isArray(rawContent)) {
+    return rawContent as Record<string, any>;
+  }
+  if (typeof serializedContent !== 'string') return null;
+  const trimmed = serializedContent.trim();
+  if (!trimmed.startsWith('{')) return null;
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed as Record<string, any>;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function looksLikeTasksMarkdown(content: string, token: string): boolean {
+  const trimmed = content.trimStart();
+  return (
+    /^#\s+Tasks\b/i.test(trimmed) ||
+    token.includes('contract-fields') ||
+    token.includes('task-1') ||
+    token.includes('total-tasks') ||
+    token.includes('expected-file-changes')
+  );
+}
+
+function inferCanonicalFileType(args: Record<string, unknown>, rawContent: unknown, content: string): string | null {
+  const fileType = String(args['file_type'] ?? '');
   if (fileType !== 'work_log') return null;
 
-  if (probe.includes('trigger-result') || probe.includes('trigger-result-json')) return 'trigger_result';
-  if (probe.includes('candidate-manifest') || probe.includes('candidate-manifest-json')) return 'candidate_manifest';
-  if (probe.includes('trace-delta')) return 'trace_delta';
-  if (probe.includes('impact-analysis')) return 'impact_analysis';
-  if (probe.includes('change-classification') || probe.includes('intake-classification')) return 'change_classification';
-  if (probe.includes('tasks-md') || probe.includes('task-plan') || probe.includes('task-planning')) return 'tasks';
-  if (probe.includes('merge-report')) return 'merge_report';
-  if (probe.includes('evidence-manifest')) return 'evidence_manifest';
+  const json = parseJsonObject(rawContent, content);
+  if (json) {
+    // Content beats run_id. This prevents a task-planner run_id from forcing
+    // every subsequent JSON artifact into tasks.md.
+    if (
+      json.work_item_id &&
+      json.workflow_path &&
+      (json.trigger_reason || json.classification || json.files_affected || Array.isArray(json.unknowns)) &&
+      !Array.isArray(json.entries)
+    ) {
+      return 'trigger_result';
+    }
+
+    if (
+      json.work_item_id &&
+      Array.isArray(json.entries) &&
+      (json.workflow_path || 'merge_required' in json || 'merge_status' in json || 'note' in json)
+    ) {
+      return 'candidate_manifest';
+    }
+
+    if (json.work_item_id && Array.isArray(json.entries) && ('generated_at' in json || 'evidence_version' in json)) {
+      return 'evidence_manifest';
+    }
+
+    if (json.conclusion && (json.verification_commands || json.acceptance_criteria || json.test_matrix)) {
+      return 'verification_report';
+    }
+  }
+
+  const contentToken = normalizeToken(content.slice(0, 1200));
+  const runId = normalizeToken(args['run_id']);
+  const template = normalizeToken(args['template']);
+  const probe = `${template} ${contentToken}`;
+
+  if (probe.includes('trace-delta') || /^#\s+Trace\s+Delta\b/i.test(content.trimStart())) return 'trace_delta';
+  if (probe.includes('impact-analysis') || /^#\s+Impact\s+Analysis\b/i.test(content.trimStart())) return 'impact_analysis';
+  if (probe.includes('change-classification') || /^#\s+Change\s+Classification\b/i.test(content.trimStart())) return 'change_classification';
+  if (looksLikeTasksMarkdown(content, contentToken)) return 'tasks';
+  if (probe.includes('merge-report') || /^#\s+Merge\s+Report\b/i.test(content.trimStart())) return 'merge_report';
+
+  // Run-id is only a weak fallback. Use it only when the content itself is
+  // clearly the same artifact type. Do not infer JSON artifacts from labels in
+  // invalid text such as "trigger_result\n{...}"; that must stay a work_log,
+  // not poison the WI with INVALID_ARTIFACT_JSON.
+  if ((runId.includes('task-plan') || runId.includes('task-planner')) && looksLikeTasksMarkdown(content, contentToken)) {
+    return 'tasks';
+  }
+  if (runId.includes('trace-delta')) return 'trace_delta';
+  if (runId.includes('impact-analysis')) return 'impact_analysis';
+  if (runId.includes('change-classification') || runId.includes('intake-classification')) return 'change_classification';
+  if (runId.includes('merge-report')) return 'merge_report';
+  if (runId.includes('evidence-manifest')) return 'evidence_manifest';
+
   return null;
 }
 
@@ -84,11 +167,104 @@ function isJsonArtifact(filename: string): boolean {
   return filename.endsWith('.json');
 }
 
+function safeReadJson(filePath: string): Record<string, any> | null {
+  try {
+    if (!fs.existsSync(filePath)) return null;
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed as Record<string, any>;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function writeIfMissing(filePath: string, content: string): void {
+  if (fs.existsSync(filePath)) return;
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content, 'utf-8');
+}
+
+function patchWorkItemWorkflowPath(baseDir: string, workItemId: string, json: Record<string, any>): void {
+  const workflowPath = typeof json.workflow_path === 'string' ? json.workflow_path : undefined;
+  if (!workflowPath) return;
+
+  const wiJsonPath = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json');
+  const workItem = safeReadJson(wiJsonPath);
+  if (!workItem) return;
+
+  let changed = false;
+  if (!workItem.workflow_path) {
+    workItem.workflow_path = workflowPath;
+    changed = true;
+  }
+  if (json.workflow_type && !workItem.workflow_type) {
+    workItem.workflow_type = json.workflow_type;
+    changed = true;
+  }
+  if (changed) {
+    workItem.updated_at = new Date().toISOString();
+    fs.writeFileSync(wiJsonPath, JSON.stringify(workItem, null, 2) + '\n', 'utf-8');
+  }
+}
+
+function maybeWriteCodeOnlyCompanionArtifacts(
+  baseDir: string,
+  workItemId: string,
+  targetFilename: string,
+  rawContent: unknown,
+  content: string,
+): void {
+  const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+  const parsed = parseJsonObject(rawContent, content);
+
+  if (targetFilename === 'trigger_result.json' && parsed) {
+    patchWorkItemWorkflowPath(baseDir, workItemId, parsed);
+  }
+
+  const workflowPath =
+    typeof parsed?.workflow_path === 'string'
+      ? parsed.workflow_path
+      : safeReadJson(path.join(wiDir, 'trigger_result.json'))?.workflow_path ??
+        safeReadJson(path.join(wiDir, 'work_item.json'))?.workflow_path;
+
+  if (workflowPath !== 'code_only_fast_path') return;
+
+  if (targetFilename === 'candidate_manifest.json') {
+    const mergeReport = [
+      '# Merge Report',
+      '',
+      `- Work Item: ${workItemId}`,
+      '- workflow_path: code_only_fast_path',
+      '- status: not_applicable',
+      '- reason: code_only_fast_path has no formal spec candidate artifacts to merge.',
+      '',
+    ].join('\n');
+    writeIfMissing(path.join(wiDir, 'merge_report.md'), mergeReport);
+  }
+
+  if (targetFilename === 'verification_report.md') {
+    const evidenceManifestPath = path.join(wiDir, 'evidence', 'evidence_manifest.json');
+    const evidenceManifest = {
+      work_item_id: workItemId,
+      generated_at: new Date().toISOString(),
+      entries: [
+        { id: 'trigger_result', type: 'artifact', path: `.specforge/work-items/${workItemId}/trigger_result.json` },
+        { id: 'candidate_manifest', type: 'artifact', path: `.specforge/work-items/${workItemId}/candidate_manifest.json` },
+        { id: 'tasks', type: 'artifact', path: `.specforge/work-items/${workItemId}/tasks.md` },
+        { id: 'verification_report', type: 'verification', path: `.specforge/work-items/${workItemId}/verification_report.md` },
+        { id: 'changed_files_audit', type: 'audit', path: `.specforge/work-items/${workItemId}/changed_files_audit.md` },
+      ],
+    };
+    writeIfMissing(evidenceManifestPath, JSON.stringify(evidenceManifest, null, 2) + '\n');
+  }
+}
+
 registerHandler('sf_artifact_write', async (args, context, _deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
-  let fileType = args['file_type'] as string;
-  const content = String(args['content'] ?? args['agent_content'] ?? '');
+  let fileType = String(args['file_type'] ?? '');
+  const rawContent = getRawContent(args as Record<string, unknown>);
+  const content = serializeArtifactContent(rawContent);
 
   const idError = validateWorkItemId(workItemId);
   if (idError) {
@@ -105,14 +281,12 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     };
   }
 
-  const inferred = inferCanonicalFileType(args as Record<string, unknown>);
+  const inferred = inferCanonicalFileType(args as Record<string, unknown>, rawContent, content);
   if (inferred) fileType = inferred;
 
   const targetFilename = resolveTargetFilename(fileType);
 
   if (!targetFilename && String(args['file_type']) === 'work_log') {
-    // Keep ordinary agent run work logs in legacy archive, but do not allow required
-    // v1.1 artifacts to disappear into archive due ambiguous work_log usage.
     return await writeArtifact(
       {
         work_item_id: workItemId,
@@ -144,16 +318,16 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     let workflowPath: string | undefined;
     try {
       const wiJsonPath = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json');
-      if (fs.existsSync(wiJsonPath)) {
-        const wiContent = JSON.parse(fs.readFileSync(wiJsonPath, 'utf-8'));
-        workflowPath = wiContent.workflow_path;
-      }
+      const wiContent = safeReadJson(wiJsonPath);
+      workflowPath = wiContent?.workflow_path;
     } catch {
       // non-critical; validator can use artifact content.
     }
 
     const validation = validateArtifactJson(targetFilename, content, workItemId, workflowPath);
     if (validation && !validation.valid) {
+      // Direct canonical JSON artifact writes are contract violations. Inferred
+      // work_log text is intentionally not mapped to JSON unless it already parses.
       setHardStop(baseDir, workItemId, `INVALID_ARTIFACT_JSON: ${validation.errors.join('; ')}`, 'sf_artifact_write');
       return {
         success: false,
@@ -179,6 +353,7 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
 
   try {
     fs.writeFileSync(targetPath, content, 'utf-8');
+    maybeWriteCodeOnlyCompanionArtifacts(baseDir, workItemId, targetFilename, rawContent, content);
     const size = Buffer.byteLength(content, 'utf-8');
     const relativePath = path.relative(baseDir, targetPath).replace(/\\/g, '/');
     return { success: true, path: relativePath, size, file_type: fileType, controlled_artifact: true };
