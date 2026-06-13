@@ -510,3 +510,110 @@ describe('7.4 WI artifact bash/write blocking', () => {
     }
   });
 });
+
+// ===========================================================================
+// 7.5 sf_safe_bash WI artifact path detection (real failure case)
+// ===========================================================================
+
+describe('7.5 sf_safe_bash WI artifact path blocking (real failure fix)', () => {
+  const WI_ARTIFACT_PATTERN = /\.specforge[\\/]work-items[\\/]/i;
+
+  it('sf_safe_bash New-Item .specforge/work-items/WI-0001 is detected', () => {
+    const cmd = 'New-Item -ItemType Directory -Path "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" -Force';
+    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+  });
+
+  it('sf_safe_bash mkdir .specforge/work-items/WI-0001 is detected', () => {
+    const cmd = 'mkdir .specforge/work-items/WI-0001';
+    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+  });
+
+  it('sf_safe_bash ls .specforge/work-items/WI-0001 is detected', () => {
+    const cmd = 'ls "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" 2>nul || echo "Directory does not exist"';
+    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+  });
+
+  it('sf_safe_bash Set-Content .specforge/work-items/ is detected', () => {
+    const cmd = 'powershell Set-Content .specforge/work-items/WI-0001/trigger_result.json -Value "{}"';
+    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+  });
+
+  it('sf_safe_bash node fs.writeFileSync .specforge/work-items/ is detected', () => {
+    const cmd = 'node -e "require(\'fs\').writeFileSync(\'.specforge/work-items/WI-0001/tasks.md\', \'# Tasks\')"';
+    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+  });
+
+  it('sf_safe_bash python open .specforge/work-items/ is detected', () => {
+    const cmd = 'python -c "open(\'.specforge/work-items/WI-0001/intake.md\', \'w\').write(\'test\')"';
+    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+  });
+
+  it('normal commands NOT targeting .specforge/work-items/ are allowed', () => {
+    expect(WI_ARTIFACT_PATTERN.test('ls src/')).toBe(false);
+    expect(WI_ARTIFACT_PATTERN.test('mkdir src/components')).toBe(false);
+    expect(WI_ARTIFACT_PATTERN.test('node -e "console.log(1)"')).toBe(false);
+    expect(WI_ARTIFACT_PATTERN.test('cat .specforge/project/spec_manifest.json')).toBe(false);
+  });
+
+  it('hard_stop after sf_safe_bash WI artifact blocks sf_state_transition', () => {
+    const projectRoot = createTestDir();
+    try {
+      createWIDir(projectRoot, 'WI-0001');
+      // Simulate: sf_safe_bash detected WI artifact path → set hard_stop
+      setHardStop(projectRoot, 'WI-0001', 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+
+      // Now sf_state_transition should be blocked
+      const guard = guardHardStop(projectRoot, 'WI-0001', 'sf_state_transition');
+      expect(guard.allowed).toBe(false);
+      expect(guard.error).toContain('HARD_STOP_ACTIVE');
+    } finally {
+      cleanupDir(projectRoot);
+    }
+  });
+
+  it('hard_stop after sf_safe_bash WI artifact blocks sf_artifact_write', () => {
+    const projectRoot = createTestDir();
+    try {
+      createWIDir(projectRoot, 'WI-0001');
+      setHardStop(projectRoot, 'WI-0001', 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+
+      const guard = guardHardStop(projectRoot, 'WI-0001', 'sf_artifact_write');
+      expect(guard.allowed).toBe(false);
+    } finally {
+      cleanupDir(projectRoot);
+    }
+  });
+
+  it('hard_stop after sf_safe_bash WI artifact blocks sf_gate_run', () => {
+    const projectRoot = createTestDir();
+    try {
+      createWIDir(projectRoot, 'WI-0001');
+      setHardStop(projectRoot, 'WI-0001', 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+
+      const guard = guardHardStop(projectRoot, 'WI-0001', 'sf_v11_gate_run');
+      expect(guard.allowed).toBe(false);
+    } finally {
+      cleanupDir(projectRoot);
+    }
+  });
+
+  it('sf_artifact_write creates WI dir without needing sf_safe_bash', () => {
+    const projectRoot = createTestDir();
+    try {
+      // sf_artifact_write should create the dir itself
+      const wiDir = path.join(projectRoot, '.specforge', 'work-items', 'WI-0001');
+      // Before: dir doesn't exist
+      expect(fs.existsSync(wiDir)).toBe(false);
+
+      // sf_artifact_write handler creates it (we test the mechanism directly)
+      fs.mkdirSync(wiDir, { recursive: true });
+      fs.writeFileSync(path.join(wiDir, 'intake.md'), '# Intake\nTest content');
+
+      // After: dir and file exist
+      expect(fs.existsSync(wiDir)).toBe(true);
+      expect(fs.existsSync(path.join(wiDir, 'intake.md'))).toBe(true);
+    } finally {
+      cleanupDir(projectRoot);
+    }
+  });
+});

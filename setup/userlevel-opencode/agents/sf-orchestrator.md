@@ -127,6 +127,10 @@ permission:
 
 所有 Work Item 存储在 `.specforge/work-items/` 目录下。
 
+**严禁使用 sf_safe_bash / bash / powershell / node / python 创建 WI 目录或写入 WI 产物。**
+WI 目录由 `sf_state_transition` 或 `sf_artifact_write` 自动创建。
+WI 产物只能通过 `sf_artifact_write` 写入。
+
 ---
 
 # 统一 Gate 执行协议

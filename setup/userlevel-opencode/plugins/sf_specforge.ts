@@ -426,7 +426,18 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
       // ── v1.1 Hard Stop Plugin Latch Check ─────────────────────────────────────
       // If any active WI has hard_stop.json, block write/shell tools at plugin level.
       // This prevents Agent from ignoring hard_stop and continuing execution.
-      if (isWriteTool(toolName) || isShellTool(toolName)) {
+      // CRITICAL: Also block ALL sf_ tools (state transition, artifact write, etc.)
+      // except explicitly safe read-only tools.
+      const SF_SAFE_READ_TOOLS = new Set([
+        "sf_state_read", "sf_context_build", "sf_continuity",
+        "sf_cost_report", "sf_doctor", "sf_knowledge_base",
+        "sf_knowledge_graph", "sf_knowledge_query", "sf_batch_verify",
+        "sf_doc_lint", "sf_trace_matrix",
+      ])
+      const isSfTool = toolName.startsWith("sf_") || toolName.startsWith("sf-")
+      const shouldCheckHardStop = isWriteTool(toolName) || isShellTool(toolName) || (isSfTool && !SF_SAFE_READ_TOOLS.has(toolName))
+
+      if (shouldCheckHardStop) {
         try {
           const { readdirSync, readFileSync, existsSync } = require("node:fs")
           const { join: joinPath } = require("node:path")

@@ -137,6 +137,13 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
         recovery_action: 'execute_startup_flow',
       };
     }
+
+    // v1.1: Auto-create WI directory so Agent doesn't need sf_safe_bash
+    if (toState === 'created' && workItemId) {
+      const { mkdir } = await import('node:fs/promises');
+      const wiDir = join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+      await mkdir(wiDir, { recursive: true });
+    }
   }
 
   if (!deps.workflowEngine) {

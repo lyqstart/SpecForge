@@ -61,9 +61,27 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     }
   }
 
+  // v1.1 WI Artifact Path Protection — commands targeting .specforge/work-items/ MUST be blocked
+  const command = args['command'] as string ?? '';
+  const WI_ARTIFACT_PATTERN = /\.specforge[\\/]work-items[\\/]/i;
+  if (WI_ARTIFACT_PATTERN.test(command)) {
+    // Persist hard_stop latch if we have an active WI
+    const wiIdForLatch = activeWiId ?? 'UNKNOWN';
+    if (activeWiId) {
+      const { setHardStop } = await import('../lib/hard-stop-latch');
+      setHardStop(baseDir, activeWiId, 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+    }
+    return {
+      success: false,
+      error: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL: Cannot use sf_safe_bash to create/write .specforge/work-items/ paths. Use sf_artifact_write or sf_state_transition instead.',
+      hard_stop: true,
+      blocked_command: command.slice(0, 200),
+    };
+  }
+
   const result = await safeBashExecute(
     {
-      command: args['command'] as string,
+      command,
       cwd: args['cwd'] as string | undefined,
       timeoutMs: args['timeoutMs'] as number | undefined,
       env: args['env'] as Record<string, string> | undefined,

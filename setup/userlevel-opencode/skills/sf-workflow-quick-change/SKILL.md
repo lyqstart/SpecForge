@@ -5,6 +5,19 @@ description: Quick Change 轻量工作流的阶段执行协议，包含详细执
 
 # Quick Change 工作流执行协议
 
+## 关键禁止规则
+
+**严禁使用 sf_safe_bash / bash / powershell / node / python 执行以下操作：**
+- 创建 `.specforge/work-items/` 目录（如 New-Item、mkdir）
+- 检查 `.specforge/work-items/` 目录是否存在（如 ls、dir、Test-Path）
+- 写入 `.specforge/work-items/` 下的任何文件（如 Set-Content、>、tee）
+
+**WI 目录和 WI 产物只能由受控工具创建和写入：**
+- `sf_state_transition` — 状态推进（daemon 自动创建 WI 目录）
+- `sf_artifact_write` — 写入 WI 产物（自动创建目录）
+
+如果 Agent 违反此规则，sf_safe_bash 将返回 hard_stop=true，整个 WI 流程将被永久阻断。
+
 ## 工作流阶段总览
 
 <!-- AUTO-GENERATED:START:phase-table -->
