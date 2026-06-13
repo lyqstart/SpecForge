@@ -414,6 +414,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
     // ══════════════════════════════════════════════════════════════════════════════
     // HARD WRITE GUARD — tool.execute.before
     // This hook THROWS to block unauthorized writes.
+    // v1.1 HARD STOP: If any WI is blocked, reject ALL write/shell tools at plugin level.
     // ══════════════════════════════════════════════════════════════════════════════
     "tool.execute.before": async (i: any, o: any) => {
       const toolName: string = i.tool ?? ""
@@ -421,6 +422,41 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
 
       // Telemetry (non-blocking, fire-and-forget)
       postEvent("tool.invoking", { tool: toolName, callID: i.callID, args })
+
+      // ── v1.1 Hard Stop Plugin Latch Check ─────────────────────────────────────
+      // If any active WI has hard_stop.json, block write/shell tools at plugin level.
+      // This prevents Agent from ignoring hard_stop and continuing execution.
+      if (isWriteTool(toolName) || isShellTool(toolName)) {
+        try {
+          const { readdirSync, readFileSync, existsSync } = require("node:fs")
+          const { join: joinPath } = require("node:path")
+          const wiRoot = joinPath(projectDir, ".specforge", "work-items")
+          if (existsSync(wiRoot)) {
+            const wiDirs = readdirSync(wiRoot)
+            for (const dir of wiDirs) {
+              const hardStopPath = joinPath(wiRoot, dir, "hard_stop.json")
+              if (existsSync(hardStopPath)) {
+                try {
+                  const record = JSON.parse(readFileSync(hardStopPath, "utf-8"))
+                  if (record.blocked === true) {
+                    throw new Error(
+                      `[SF HardStop] BLOCKED: Work item ${record.work_item_id} has hard_stop active. ` +
+                      `Reason: ${record.reason}. Source: ${record.source_tool}. ` +
+                      `Tool "${toolName}" is not allowed. Only read/debug tools are permitted.`
+                    )
+                  }
+                } catch (e) {
+                  if ((e as Error).message.startsWith("[SF HardStop]")) throw e
+                  // Parse error — ignore corrupt file
+                }
+              }
+            }
+          }
+        } catch (e) {
+          if ((e as Error).message.startsWith("[SF HardStop]")) throw e
+          // Filesystem error — fail open for non-hard-stop errors (plugin resilience)
+        }
+      }
 
       // ── Write Tool Guard ──────────────────────────────────────────────────────
       if (isWriteTool(toolName)) {
@@ -540,6 +576,8 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
     // ESCAPED WRITE AUDIT — tool.execute.after
     // Detects writes that bypassed the pre-check (e.g., bash side-effects).
     // Also audits ALL write tools and side-effect tools for compliance.
+    // v1.1 HARD STOP LATCH: detects hard_stop=true in SpecForge tool output and
+    // blocks subsequent tool calls by persisting the latch state.
     // ══════════════════════════════════════════════════════════════════════════════
     "tool.execute.after": async (i: any, o: any) => {
       const toolName: string = i.tool ?? ""
@@ -548,6 +586,48 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
 
       // Telemetry (non-blocking)
       postEvent("tool.invoked", { tool: toolName, callID: i.callID })
+
+      // ── v1.1 HARD STOP LATCH DETECTION ─────────────────────────────────────────
+      // If a SpecForge tool returned hard_stop=true, persist the latch.
+      // This ensures Agent cannot continue with subsequent tools.
+      if (toolName.startsWith("sf_") || toolName.startsWith("sf-")) {
+        let toolOutput: any = null
+        try {
+          if (typeof output === "string") {
+            toolOutput = JSON.parse(output)
+          } else if (typeof output === "object") {
+            toolOutput = output
+          }
+        } catch { /* non-JSON output — ignore */ }
+
+        if (toolOutput && toolOutput.hard_stop === true) {
+          // Extract work_item_id from tool output or args
+          const workItemId = toolOutput.work_item_id ?? args.work_item_id ?? ""
+          if (workItemId) {
+            try {
+              // Persist hard_stop to disk so tool.execute.before can enforce it
+              const { join: joinPath } = require("node:path")
+              const { writeFileSync, mkdirSync } = require("node:fs")
+              const wiDir = joinPath(projectDir, ".specforge", "work-items", workItemId)
+              mkdirSync(wiDir, { recursive: true })
+              const hardStopPath = joinPath(wiDir, "hard_stop.json")
+              const record = {
+                work_item_id: workItemId,
+                blocked: true,
+                reason: toolOutput.error ?? toolOutput.reason ?? "HARD_STOP_FROM_TOOL",
+                source_tool: toolName,
+                created_at: new Date().toISOString(),
+              }
+              writeFileSync(hardStopPath, JSON.stringify(record, null, 2) + "\n", "utf-8")
+              console.error(
+                `[SF HardStop] LATCH SET for ${workItemId} — reason: ${record.reason}, source: ${toolName}`
+              )
+            } catch (e) {
+              console.error(`[SF HardStop] Failed to persist latch: ${(e as Error).message}`)
+            }
+          }
+        }
+      }
 
       // ── Audit ALL write tools and side-effect tools ────────────────────────────
       // Any tool in WRITE_TOOLS or SIDE_EFFECT_TOOLS should be audited post-execution

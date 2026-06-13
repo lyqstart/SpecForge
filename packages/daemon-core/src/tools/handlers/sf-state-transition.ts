@@ -7,6 +7,7 @@ import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from '../lib/state_machine';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
+import { guardHardStop } from '../lib/hard-stop-latch';
 
 registerHandler('sf_state_transition', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
@@ -17,6 +18,18 @@ registerHandler('sf_state_transition', async (args, context, deps) => {
   const idError = validateWorkItemId(workItemId);
   if (idError) {
     return { success: false, error: idError, hard_stop: true };
+  }
+
+  // v1.1 Hard Stop Guard — blocked WI cannot progress state
+  const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const hardStopGuard = guardHardStop(baseDir, workItemId, 'sf_state_transition');
+  if (!hardStopGuard.allowed) {
+    return {
+      success: false,
+      error: hardStopGuard.error,
+      hard_stop: true,
+      hard_stop_record: hardStopGuard.hard_stop_record,
+    };
   }
 
   // v1.1: Accept workflow_path and resolve to internal workflow_type

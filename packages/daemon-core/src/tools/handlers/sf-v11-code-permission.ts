@@ -8,6 +8,7 @@ import { releaseCodePermission, revokeCodePermission, checkCodePermission } from
 import { takeSnapshot, saveBaseline } from '../lib/filesystem-diff';
 import * as path from 'node:path';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
+import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 
 registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
@@ -21,10 +22,26 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
+  // v1.1 Hard Stop Guard — blocked WI cannot modify code_permission
+  // Allow 'check'/'query' actions through (read-only)
+  if (action !== 'check' && action !== 'query') {
+    const hardStopGuard = guardHardStop(projectRoot, workItemId, 'sf_v11_code_permission');
+    if (!hardStopGuard.allowed) {
+      return {
+        success: false,
+        error: hardStopGuard.error,
+        hard_stop: true,
+        hard_stop_record: hardStopGuard.hard_stop_record,
+      };
+    }
+  }
+
   try {
     if (action === 'release' || action === 'enable') {
       let allowedWriteFiles = args['allowed_write_files'] as Array<string | { path: string; operation: 'create' | 'modify' | 'delete' }>;
       if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles) || allowedWriteFiles.length === 0) {
+        // Persist the hard_stop latch — WI is now blocked
+        setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_REQUIRED', 'sf_code_permission');
         return {
           success: false,
           error: 'ALLOWED_WRITE_FILES_REQUIRED',

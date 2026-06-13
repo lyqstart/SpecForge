@@ -73,7 +73,7 @@ async function createFullWorkItem(
   if (!skip.has('impact_analysis.md'))
     await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA\nLow impact');
   if (!skip.has('trigger_result.json'))
-    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ triggered: true }));
+    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ work_item_id: workItemId, workflow_path: opts?.workflowPath ?? 'code_only_fast_path', triggered: true }));
   if (!skip.has('tasks.md'))
     await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
   if (!skip.has('trace_delta.md'))
@@ -81,7 +81,7 @@ async function createFullWorkItem(
   if (!skip.has('candidate_manifest.json'))
     await fs.writeFile(
       path.join(wiDir, 'candidate_manifest.json'),
-      JSON.stringify({ entries: [], schema_version: '1.0' }),
+      JSON.stringify({ work_item_id: workItemId, entries: [], schema_version: '1.0', workflow_path: opts?.workflowPath ?? 'code_only_fast_path' }),
     );
   if (!skip.has('gate_summary.md'))
     await fs.writeFile(
@@ -106,7 +106,7 @@ async function createFullWorkItem(
   if (!skip.has('evidence/evidence_manifest.json'))
     await fs.writeFile(
       path.join(wiDir, 'evidence', 'evidence_manifest.json'),
-      JSON.stringify({ entries: [{ type: 'test_log', path: 'evidence/test.log', timestamp: new Date().toISOString() }] }),
+      JSON.stringify({ work_item_id: workItemId, entries: [{ type: 'test_log', path: 'evidence/test.log', timestamp: new Date().toISOString() }] }),
     );
   if (!skip.has('user_decision.json'))
     await fs.writeFile(

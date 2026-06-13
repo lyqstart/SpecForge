@@ -18,6 +18,8 @@ import { runChangedFilesAudit, type ChangedFilesAuditResult } from '../lib/chang
 import { revokeCodePermission, checkCodePermission } from '../lib/code-permission-service-v11.js';
 import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log.js';
 import { loadBaseline, computeFilesystemDiff, type FilesystemDiffResult } from '../lib/filesystem-diff.js';
+import { guardHardStop } from '../lib/hard-stop-latch.js';
+import { validateTriggerResultJson, validateCandidateManifestJson, validateEvidenceManifestJson } from '../lib/artifact-schema-validation.js';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 
@@ -62,6 +64,17 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
     state_advanced: false,
   };
 
+  // ── v1.1 Hard Stop Guard ──────────────────────────────────────────────────
+  const hardStopGuard = guardHardStop(projectRoot, workItemId, 'sf_close_gate');
+  if (!hardStopGuard.allowed) {
+    return {
+      ...result,
+      error: hardStopGuard.error,
+      hard_stop: true,
+      hard_stop_record: hardStopGuard.hard_stop_record,
+    } as any;
+  }
+
   try {
     // -----------------------------------------------------------------------
     // Step 0: Read work_item.json for current state
@@ -82,6 +95,96 @@ registerHandler('sf_close_gate', async (args, context, deps) => {
         error: `Close gate requires state 'verification_done', current: '${currentState}'`,
       };
     }
+
+    // -----------------------------------------------------------------------
+    // Step 0b: v1.1 Validate JSON artifacts (trigger_result, candidate_manifest, evidence_manifest)
+    // These must exist AND be valid JSON with correct schema.
+    // -----------------------------------------------------------------------
+    const triggerResultPath = path.join(workItemDir, 'trigger_result.json');
+    try {
+      const trContent = await fs.readFile(triggerResultPath, 'utf-8');
+      const trValidation = validateTriggerResultJson(trContent, workItemId);
+      if (!trValidation.valid) {
+        return {
+          ...result,
+          error: `trigger_result.json schema validation failed: ${trValidation.errors.join('; ')}`,
+        };
+      }
+    } catch {
+      return { ...result, error: 'trigger_result.json not found — required for close_gate' };
+    }
+
+    const candidateManifestPath = path.join(workItemDir, 'candidate_manifest.json');
+    let candidateManifest: any;
+    try {
+      const cmContent = await fs.readFile(candidateManifestPath, 'utf-8');
+      const cmValidation = validateCandidateManifestJson(cmContent, workItemId, workItem['workflow_path'] as string);
+      if (!cmValidation.valid) {
+        return {
+          ...result,
+          error: `candidate_manifest.json schema validation failed: ${cmValidation.errors.join('; ')}`,
+        };
+      }
+      candidateManifest = JSON.parse(cmContent);
+    } catch (err: any) {
+      if (err.message?.includes('schema validation')) throw err;
+      return { ...result, error: 'candidate_manifest.json not found — required for close_gate' };
+    }
+
+    // code_only_fast_path: entries must be []
+    if (workItem['workflow_path'] === 'code_only_fast_path') {
+      if (!Array.isArray(candidateManifest.entries) || candidateManifest.entries.length !== 0) {
+        return {
+          ...result,
+          error: 'code_only_fast_path requires candidate_manifest.entries = []',
+        };
+      }
+    }
+
+    const evidenceManifestPath = path.join(workItemDir, 'evidence', 'evidence_manifest.json');
+    let evidenceManifestValid = false;
+    try {
+      const emContent = await fs.readFile(evidenceManifestPath, 'utf-8');
+      const emValidation = validateEvidenceManifestJson(emContent, workItemId);
+      if (!emValidation.valid) {
+        // Evidence manifest exists but is invalid — fail at close_gate checks (Step 3)
+        // We don't return early here so the gate report can be written for diagnostics
+      } else {
+        evidenceManifestValid = true;
+      }
+    } catch (err: any) {
+      // Evidence manifest missing — runCloseGate will catch this
+    }
+
+    // Verify changed_files_audit evidence exists or will be generated in Step 2
+    // Note: The handler generates audit in Step 2 if missing, so we do not reject here.
+
+    // Verify merge_report exists and is appropriate
+    const mergePath = path.join(workItemDir, 'merge_report.md');
+    try {
+      const mr = await fs.readFile(mergePath, 'utf-8');
+      if (workItem['workflow_path'] === 'code_only_fast_path') {
+        if (!mr.toLowerCase().includes('not_applicable')) {
+          return {
+            ...result,
+            error: 'code_only_fast_path requires merge_report.status = not_applicable',
+          };
+        }
+      }
+    } catch {
+      return { ...result, error: 'merge_report.md not found — required for close_gate' };
+    }
+
+    // Verify code_permission was properly handled
+    // For code_only_fast_path: code_change_allowed should have been enabled then revoked
+    // Check that allowed_write_files was set at some point
+    const wiPermState = workItem['code_change_allowed'];
+    const allowedFiles = workItem['allowed_write_files'] as any[];
+    const permSnapshot = workItem['allowed_write_files_snapshot'] as any[] | undefined;
+    const hadPermission = wiPermState === true || (permSnapshot && permSnapshot.length > 0) ||
+      (allowedFiles && allowedFiles.length > 0) ||
+      workItem['permission_enabled_at'] !== undefined ||
+      workItem['code_permission_released'] === true;
 
     // -----------------------------------------------------------------------
     // Step 1: Revoke code_permission FIRST (§12.4 — must revoke before close)
