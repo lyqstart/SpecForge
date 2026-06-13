@@ -305,6 +305,14 @@ function extractBashExpectedFiles(args: Record<string, any>): string[] {
   return [];
 }
 
+function getToolArgs(primary: any, secondary: any): Record<string, any> {
+  const merged: Record<string, any> = {};
+  if (secondary?.args && typeof secondary.args === "object") Object.assign(merged, secondary.args);
+  if (primary?.args && typeof primary.args === "object") Object.assign(merged, primary.args);
+  if (primary?.input && typeof primary.input === "object") Object.assign(merged, primary.input);
+  return merged;
+}
+
 function isBashReadOnly(command: string): boolean {
   const readOnlyPrefixes = [
     "cat ",
@@ -569,7 +577,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
   return {
     "tool.execute.before": async (i: any, o: any) => {
       const toolName: string = i.tool ?? "";
-      const args: Record<string, any> = o.args ?? {};
+      const args: Record<string, any> = getToolArgs(i, o);
       postEvent("tool.invoking", { tool: toolName, callID: i.callID, args });
 
       const safeRead = SF_SAFE_READ_TOOLS.has(toolName);
@@ -673,7 +681,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
 
     "tool.execute.after": async (i: any, o: any) => {
       const toolName: string = i.tool ?? "";
-      const args: Record<string, any> = i.args ?? o.args ?? {};
+      const args: Record<string, any> = getToolArgs(i, o);
       const output = o.output ?? o.result ?? "";
       postEvent("tool.invoked", { tool: toolName, callID: i.callID });
 

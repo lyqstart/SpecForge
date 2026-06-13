@@ -2,11 +2,12 @@
  * sf-artifact-write.ts — v1.1 Controlled Artifact Writer
  *
  * This is the ONLY allowed path for writing WI artifacts.
- * Integrates:
- * 1. hard_stop latch guard — blocked WI cannot write artifacts
- * 2. JSON schema validation — invalid JSON artifacts are rejected (never touch disk)
- * 3. WI directory scoping — only writes to the correct WI directory
- * 4. On validation failure: returns hard_stop=true and persists latch
+ * Fix in this version:
+ * - Accepts canonical v1.1 artifact file_type values.
+ * - Maps common legacy/work_log run_id values to canonical v1.1 artifacts so
+ *   real OpenCode agents cannot accidentally write trigger_result/candidate_manifest
+ *   into archive/work_log instead of the WI directory.
+ * - Rejects ambiguous work_log writes that look like required WI artifacts.
  */
 import path from 'path';
 import { registerHandler } from '../ToolDispatcher';
@@ -17,10 +18,6 @@ import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import * as fs from 'node:fs';
 
-/**
- * v1.1 WI artifact files that MUST go through this controlled writer.
- * bash/write/edit/shell tools are blocked from writing these files.
- */
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
   'intake.md',
@@ -35,10 +32,6 @@ const V11_WI_ARTIFACT_FILES = new Set([
   'evidence_manifest.json',
 ]);
 
-/**
- * Map from v1.1 artifact filenames to the sf_artifact_write file_type parameter.
- * Used for direct WI artifact writing mode (v1.1 controlled writer).
- */
 const V11_FILENAME_MAP: Record<string, string> = {
   'work_item.json': 'work_item',
   'intake.md': 'intake',
@@ -53,19 +46,55 @@ const V11_FILENAME_MAP: Record<string, string> = {
   'evidence_manifest.json': 'evidence_manifest',
 };
 
+const V11_FILETYPE_TO_FILENAME = new Map<string, string>(
+  Object.entries(V11_FILENAME_MAP).map(([filename, fileType]) => [fileType, filename]),
+);
+
+function normalizeToken(value: unknown): string {
+  return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
+function inferCanonicalFileType(args: Record<string, unknown>): string | null {
+  const fileType = String(args['file_type'] ?? '');
+  const runId = normalizeToken(args['run_id']);
+  const template = normalizeToken(args['template']);
+  const content = String(args['content'] ?? args['agent_content'] ?? '');
+  const contentToken = normalizeToken(content.slice(0, 400));
+  const probe = `${runId} ${template} ${contentToken}`;
+
+  if (fileType !== 'work_log') return null;
+
+  if (probe.includes('trigger-result') || probe.includes('trigger-result-json')) return 'trigger_result';
+  if (probe.includes('candidate-manifest') || probe.includes('candidate-manifest-json')) return 'candidate_manifest';
+  if (probe.includes('trace-delta')) return 'trace_delta';
+  if (probe.includes('impact-analysis')) return 'impact_analysis';
+  if (probe.includes('change-classification') || probe.includes('intake-classification')) return 'change_classification';
+  if (probe.includes('tasks-md') || probe.includes('task-plan') || probe.includes('task-planning')) return 'tasks';
+  if (probe.includes('merge-report')) return 'merge_report';
+  if (probe.includes('evidence-manifest')) return 'evidence_manifest';
+  return null;
+}
+
+function resolveTargetFilename(fileType: string): string | null {
+  if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType;
+  return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null;
+}
+
+function isJsonArtifact(filename: string): boolean {
+  return filename.endsWith('.json');
+}
+
 registerHandler('sf_artifact_write', async (args, context, _deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
-  const fileType = args['file_type'] as string;
-  const content = args['content'] as string;
+  let fileType = args['file_type'] as string;
+  const content = String(args['content'] ?? args['agent_content'] ?? '');
 
-  // ── WI ID Validation ──────────────────────────────────────────────────────
   const idError = validateWorkItemId(workItemId);
   if (idError) {
-    return { success: false, error: idError, hard_stop: true };
+    return { success: false, error: idError, hard_stop: false, retry_allowed: true };
   }
 
-  // ── Hard Stop Guard ───────────────────────────────────────────────────────
   const guardResult = guardHardStop(baseDir, workItemId, 'sf_artifact_write');
   if (!guardResult.allowed) {
     return {
@@ -76,26 +105,42 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     };
   }
 
-  // ── v1.1 Controlled Writer Mode ──────────────────────────────────────────
-  // Determine the target filename from file_type
-  let targetFilename: string | null = null;
+  const inferred = inferCanonicalFileType(args as Record<string, unknown>);
+  if (inferred) fileType = inferred;
 
-  // Check if file_type is a v1.1 artifact filename directly
-  if (V11_WI_ARTIFACT_FILES.has(fileType)) {
-    targetFilename = fileType;
-  } else {
-    // Check if file_type maps to a v1.1 artifact
-    for (const [filename, ft] of Object.entries(V11_FILENAME_MAP)) {
-      if (ft === fileType) {
-        targetFilename = filename;
-        break;
-      }
-    }
+  const targetFilename = resolveTargetFilename(fileType);
+
+  if (!targetFilename && String(args['file_type']) === 'work_log') {
+    // Keep ordinary agent run work logs in legacy archive, but do not allow required
+    // v1.1 artifacts to disappear into archive due ambiguous work_log usage.
+    return await writeArtifact(
+      {
+        work_item_id: workItemId,
+        file_type: 'work_log' as any,
+        content,
+        run_id: args['run_id'] as string | undefined,
+        template: args['template'] as any,
+        agent_content: args['agent_content'] as string | undefined,
+      },
+      baseDir,
+    );
   }
 
-  // ── JSON Schema Validation (for JSON artifacts) ───────────────────────────
-  if (targetFilename && targetFilename.endsWith('.json')) {
-    // Determine workflow_path from work_item.json if available
+  if (!targetFilename) {
+    return await writeArtifact(
+      {
+        work_item_id: workItemId,
+        file_type: fileType as any,
+        content,
+        run_id: args['run_id'] as string | undefined,
+        template: args['template'] as any,
+        agent_content: args['agent_content'] as string | undefined,
+      },
+      baseDir,
+    );
+  }
+
+  if (isJsonArtifact(targetFilename)) {
     let workflowPath: string | undefined;
     try {
       const wiJsonPath = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json');
@@ -103,12 +148,12 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
         const wiContent = JSON.parse(fs.readFileSync(wiJsonPath, 'utf-8'));
         workflowPath = wiContent.workflow_path;
       }
-    } catch { /* non-critical — validator will use workflow_path from content if available */ }
+    } catch {
+      // non-critical; validator can use artifact content.
+    }
 
     const validation = validateArtifactJson(targetFilename, content, workItemId, workflowPath);
     if (validation && !validation.valid) {
-      // Schema validation failed — DO NOT write to disk
-      // Set hard_stop latch
       setHardStop(baseDir, workItemId, `INVALID_ARTIFACT_JSON: ${validation.errors.join('; ')}`, 'sf_artifact_write');
       return {
         success: false,
@@ -120,53 +165,25 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     }
   }
 
-  // ── v1.1 Direct WI Artifact Write (bypass legacy path logic) ──────────────
-  if (targetFilename && V11_WI_ARTIFACT_FILES.has(targetFilename)) {
-    const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+  const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+  fs.mkdirSync(wiDir, { recursive: true });
 
-    // Ensure WI directory exists
-    try {
-      fs.mkdirSync(wiDir, { recursive: true });
-    } catch { /* already exists */ }
-
-    // Handle evidence subdirectory
-    let targetPath: string;
-    if (targetFilename === 'evidence_manifest.json') {
-      const evidenceDir = path.join(wiDir, 'evidence');
-      try { fs.mkdirSync(evidenceDir, { recursive: true }); } catch { /* exists */ }
-      targetPath = path.join(evidenceDir, 'evidence_manifest.json');
-    } else {
-      targetPath = path.join(wiDir, targetFilename);
-    }
-
-    try {
-      fs.writeFileSync(targetPath, content, 'utf-8');
-      const size = Buffer.byteLength(content, 'utf-8');
-      const relativePath = path.relative(baseDir, targetPath).replace(/\\/g, '/');
-      return { success: true, path: relativePath, size };
-    } catch (err: any) {
-      // Write failure — set hard_stop
-      setHardStop(baseDir, workItemId, `ARTIFACT_WRITE_FAILED: ${err.message}`, 'sf_artifact_write');
-      return {
-        success: false,
-        error: `ARTIFACT_WRITE_FAILED: ${err.message}`,
-        hard_stop: true,
-      };
-    }
+  let targetPath: string;
+  if (targetFilename === 'evidence_manifest.json') {
+    const evidenceDir = path.join(wiDir, 'evidence');
+    fs.mkdirSync(evidenceDir, { recursive: true });
+    targetPath = path.join(evidenceDir, 'evidence_manifest.json');
+  } else {
+    targetPath = path.join(wiDir, targetFilename);
   }
 
-  // ── Legacy Mode (verification_report, work_log, etc.) ─────────────────────
-  const result = await writeArtifact(
-    {
-      work_item_id: workItemId,
-      file_type: fileType as any,
-      content,
-      run_id: args['run_id'] as string | undefined,
-      template: args['template'] as any,
-      agent_content: args['agent_content'] as string | undefined,
-    },
-    baseDir
-  );
-
-  return result;
+  try {
+    fs.writeFileSync(targetPath, content, 'utf-8');
+    const size = Buffer.byteLength(content, 'utf-8');
+    const relativePath = path.relative(baseDir, targetPath).replace(/\\/g, '/');
+    return { success: true, path: relativePath, size, file_type: fileType, controlled_artifact: true };
+  } catch (err: any) {
+    setHardStop(baseDir, workItemId, `ARTIFACT_WRITE_FAILED: ${err.message}`, 'sf_artifact_write');
+    return { success: false, error: `ARTIFACT_WRITE_FAILED: ${err.message}`, hard_stop: true };
+  }
 });
