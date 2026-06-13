@@ -22,16 +22,43 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
   try {
-    if (action === 'release') {
-      const allowedWriteFiles = args['allowed_write_files'] as Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>;
+    if (action === 'release' || action === 'enable') {
+      let allowedWriteFiles = args['allowed_write_files'] as Array<string | { path: string; operation: 'create' | 'modify' | 'delete' }>;
       if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles)) {
-        return { success: false, error: 'allowed_write_files[] is required for release' };
+        return { success: false, error: 'allowed_write_files[] is required for enable/release' };
+      }
+
+      // Normalize: accept both string[] and {path,operation}[]
+      const normalized = allowedWriteFiles.map(f =>
+        typeof f === 'string' ? { path: f, operation: 'modify' as const } : f
+      );
+
+      // Ensure WI directory and work_item.json exist
+      const fsModule = await import('node:fs/promises');
+      await fsModule.mkdir(workItemDir, { recursive: true });
+      const wiJsonPath = path.join(workItemDir, 'work_item.json');
+      try {
+        await fsModule.access(wiJsonPath);
+      } catch {
+        // work_item.json doesn't exist — create it (orchestrator may have only used sf_state_transition)
+        const wiJson = {
+          schema_version: '1.0',
+          work_item_id: workItemId,
+          status: 'implementation_running',
+          workflow_path: 'code_only_fast_path',
+          code_change_allowed: false,
+          allowed_write_files: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          created_by: 'sf-orchestrator',
+        };
+        await fsModule.writeFile(wiJsonPath, JSON.stringify(wiJson, null, 2) + '\n', 'utf-8');
       }
 
       const state = await releaseCodePermission({
         workItemDir,
         workItemId,
-        allowedWriteFiles,
+        allowedWriteFiles: normalized,
       });
 
       // Take filesystem baseline snapshot for close_gate audit
@@ -59,11 +86,11 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
       };
     }
 
-    // action === 'check'
+    // action === 'check' or 'query'
     const state = await checkCodePermission(workItemDir);
     return {
       success: true,
-      action: 'check',
+      action: action,
       work_item_id: workItemId,
       code_change_allowed: state.code_change_allowed,
       allowed_write_files: state.allowed_write_files,

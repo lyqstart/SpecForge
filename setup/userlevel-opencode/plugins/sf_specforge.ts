@@ -441,6 +441,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
             result = await daemonClient.checkWrite(targetPath, "agent", {
               tool: toolName,
               callID: i.callID,
+              directory: projectDir,
             })
           } catch (e) {
             // Daemon unreachable — fail closed (block the write)
@@ -481,6 +482,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
             result = await daemonClient.bashGuard(command, expectedFiles, {
               tool: toolName,
               callID: i.callID,
+              directory: projectDir,
             })
           } catch (e) {
             // Daemon unreachable — fail closed
@@ -509,6 +511,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
             result = await daemonClient.bashGuard(command, [], {
               tool: toolName,
               callID: i.callID,
+              directory: projectDir,
               ambiguous: true,
             })
           } catch (e) {
