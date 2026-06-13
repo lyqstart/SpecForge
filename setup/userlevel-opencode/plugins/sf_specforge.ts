@@ -179,6 +179,11 @@ const SPECFORGE_CONTROL_TOOLS = new Set([
   "sfcodepermission",
   "sf_changed_files_audit",
   "sfchangedfilesaudit",
+  // v1.1 controlled WI artifact writer. It writes through daemon-side
+  // work_item_id/file_type/path/schema/hard_stop validation and must not be
+  // treated as a generic filesystem write tool by the plugin.
+  "sf_artifact_write",
+  "sfartifactwrite",
   "sf_close_gate",
   "sfclosegate",
   "sf_state_read",
@@ -227,6 +232,10 @@ function isWriteTool(toolName: string): boolean {
   const normalized = normalizeToolName(toolName);
   if (NON_FILESYSTEM_PLANNING_TOOLS.has(normalized)) return false;
   if (SPECFORGE_CONTROL_TOOLS.has(toolName) || SPECFORGE_CONTROL_TOOLS.has(normalized)) {
+    // Controlled SpecForge tools are still protected by the hard_stop latch,
+    // but they are validated by their daemon handlers rather than the generic
+    // file-path WriteGuard. This is especially important for sf_artifact_write,
+    // whose target path is derived from work_item_id + file_type.
     return false;
   }
   if (WRITE_TOOLS.has(toolName) || WRITE_TOOLS.has(normalized)) return true;
@@ -519,6 +528,32 @@ function maybePersistHardStopFromGuardResult(
   persistHardStop(projectDir, workItemId, result.error ?? result.reason ?? "HARD_STOP_FROM_GUARD", toolName);
 }
 
+function assertCodePermissionEnableHasAllowedFiles(projectDir: string, toolName: string, args: Record<string, any>): void {
+  const normalized = normalizeToolName(toolName);
+  if (normalized !== "sfcodepermission") return;
+
+  const action = String(args.action ?? args.operation ?? "").toLowerCase();
+  if (action !== "enable" && action !== "release") return;
+
+  const allowedWriteFiles = args.allowed_write_files ?? args.allowedWriteFiles;
+  const hasAllowedFiles =
+    Array.isArray(allowedWriteFiles) &&
+    allowedWriteFiles.some((entry: any) => {
+      if (typeof entry === "string") return entry.trim().length > 0;
+      if (entry && typeof entry.path === "string") return entry.path.trim().length > 0;
+      return false;
+    });
+
+  if (hasAllowedFiles) return;
+
+  const workItemId = getWorkItemIdFromArgs(args);
+  persistHardStop(projectDir, workItemId, "ALLOWED_WRITE_FILES_REQUIRED", toolName);
+  throw new Error(
+    `[SF HardStop] BLOCKED: sf_code_permission action="${action}" requires allowed_write_files[]. ` +
+      `This is a hard stop because code permission cannot be enabled without an explicit file allowlist.`,
+  );
+}
+
 export async function sf_specforge(input: PluginInput): Promise<Hooks> {
   const projectDir = (input as any).directory ?? process.cwd();
 
@@ -543,6 +578,11 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
       if (shouldCheckHardStop) {
         assertNoRelevantHardStop(projectDir, toolName, args);
       }
+
+      // Program-level guard: do not rely on the agent prompt to pass the
+      // file allowlist. If code permission is enabled without allowed files,
+      // latch hard_stop immediately before any executor/subagent can proceed.
+      assertCodePermissionEnableHasAllowedFiles(projectDir, toolName, args);
 
       if (isWriteTool(toolName)) {
         const targets = extractWriteTargets(toolName, args);
