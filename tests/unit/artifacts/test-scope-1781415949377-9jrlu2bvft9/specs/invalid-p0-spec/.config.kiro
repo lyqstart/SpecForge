@@ -1,0 +1,7 @@
+{
+  "specId": "invalid-p0-spec",
+  "workflowType": "requirements-first",
+  "specType": "feature",
+  "scopeTag": "p0",
+  "parentSpec": "v6-architecture-overview"
+}

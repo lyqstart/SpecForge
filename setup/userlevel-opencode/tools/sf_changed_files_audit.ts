@@ -3,19 +3,22 @@ import { daemon } from "./lib/thin-client"
 
 export default tool({
   description:
-    "对账实际文件变更与预期声明（changed_files_audit）。" +
-    "用于 bash 命令执行后检测是否有超出 expected_write_files 的越权写入。" +
-    "如检测到 escaped_write_incident，将阻止 Work Item 推进到下一状态。",
+    "基于 Runtime 事实源对账实际文件变更与 allowed_write_files_snapshot。Agent 传入的 expected_write_files / actual_changed_files 仅作为调试提示，" +
+    "不得作为最终审计事实源。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
-    command: tool.schema.string().describe("已执行的 bash 命令"),
+    command: tool.schema
+      .string()
+      .optional()
+      .describe("已执行的命令描述（可选，仅用于审计报告展示）"),
     expected_write_files: tool.schema
       .array(tool.schema.string())
-      .describe("命令执行前声明的预期写入文件列表"),
+      .optional()
+      .describe("Deprecated：预期写入文件列表。最终审计以 Runtime allowed_write_files_snapshot 为准。"),
     actual_changed_files: tool.schema
       .array(tool.schema.string())
       .optional()
-      .describe("命令执行后实际变更的文件列表（如未提供，由 daemon 自动检测）"),
+      .describe("Deprecated/debug hint：实际变更文件提示。最终审计优先使用 Write Guard log / filesystem diff。"),
   },
   async execute(args, context) {
     const result = await daemon.invokeTool("sf_changed_files_audit", args, {
@@ -24,6 +27,7 @@ export default tool({
       directory: context.directory,
       worktree: context.worktree,
     })
+
     if (typeof result === "string") return result
     return JSON.stringify(result, null, 2)
   },
