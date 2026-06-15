@@ -1,7 +1,10 @@
 /**
  * SpecForge OBS-FULL Layer 1 — daemon observability recorder.
  *
- * Best-effort only. Observability must never break the workflow.
+ * R2 changes:
+ * - payload/error files are content-addressed by sha256 to avoid duplicate storage.
+ * - legacy trace-id payload filenames are not written.
+ * - best-effort only. Observability must never break workflow.
  */
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -73,11 +76,26 @@ function categoryFileName(category: DaemonObservationInput["category"]): string 
   }
 }
 
-function shouldRecord(config: ReturnType<typeof loadSfObservabilityConfig>, category: DaemonObservationInput["category"], force?: boolean): boolean {
+function shouldRecord(
+  config: ReturnType<typeof loadSfObservabilityConfig>,
+  category: DaemonObservationInput["category"],
+  force?: boolean,
+): boolean {
   if (force) return true;
   if (!config.enabled || config.level === "off") return false;
   if (config.level === "error") return category === "error" || category === "hardstop";
   return true;
+}
+
+function writeBySha256(root: string, subdir: "payloads" | "errors", value: unknown): string {
+  const hash = sha256(value);
+  const dir = path.join(root, subdir, "by-sha256", hash.slice(0, 2));
+  const file = path.join(dir, `${hash}.json`);
+  ensureDir(dir);
+  if (!fs.existsSync(file)) {
+    fs.writeFileSync(file, stableJson(value), "utf-8");
+  }
+  return file;
 }
 
 export function recordDaemonObservation(input: DaemonObservationInput): string | undefined {
@@ -99,15 +117,11 @@ export function recordDaemonObservation(input: DaemonObservationInput): string |
     let errorFile: string | undefined;
 
     if (config.capture_payload && config.payload_storage === "file" && payload !== undefined) {
-      payloadFile = path.join(root, "payloads", `${trace_id}-${input.category}-${input.phase}.json`);
-      ensureDir(path.dirname(payloadFile));
-      fs.writeFileSync(payloadFile, stableJson(payload), "utf-8");
+      payloadFile = writeBySha256(root, "payloads", payload);
     }
 
     if (config.capture_payload && config.payload_storage === "file" && error !== undefined) {
-      errorFile = path.join(root, "errors", `${trace_id}-${input.category}-${input.phase}-error.json`);
-      ensureDir(path.dirname(errorFile));
-      fs.writeFileSync(errorFile, stableJson(error), "utf-8");
+      errorFile = writeBySha256(root, "errors", error);
     }
 
     const inlinePayload =
@@ -116,7 +130,7 @@ export function recordDaemonObservation(input: DaemonObservationInput): string |
       error !== undefined && errorBytes <= config.max_inline_payload_bytes ? error : undefined;
 
     const record = {
-      schema_version: "1.0",
+      schema_version: "1.2",
       source: "daemon",
       timestamp: new Date().toISOString(),
       trace_id,

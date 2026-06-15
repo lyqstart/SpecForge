@@ -1,23 +1,12 @@
 /**
  * filesystem-diff.ts — Filesystem Baseline Snapshot & Diff
  *
- * Provides a secondary factual audit source by comparing directory state
- * at two points in time (baseline vs current).
- *
- * Used by close_gate to detect:
- * - Files modified outside Write Guard (not in write_guard_log.jsonl)
- * - Caller-undeclared changes
- * - .specforge/project/ writes by non-merge_runner
- *
- * Path: packages/daemon-core/src/tools/lib/filesystem-diff.ts
+ * R2 changes:
+ * - Runtime/observability files are excluded from snapshots and diffs.
+ * - This prevents OBS logs from being treated as business file changes.
  */
-
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 export interface FileSnapshot {
   /** Relative path from scan root */
@@ -48,18 +37,63 @@ export interface FilesystemDiffResult {
   all_changes: FileDiffEntry[];
   /** Files in diff but NOT in write_guard_log (untracked changes) */
   untracked_changes: string[];
+  /** Number of ignored runtime/observability files removed from the diff scope. */
+  ignored_runtime_files?: number;
 }
 
-// ---------------------------------------------------------------------------
-// Snapshot
-// ---------------------------------------------------------------------------
+const DEFAULT_EXCLUDE_DIR_NAMES = new Set(['node_modules', '.git', 'dist']);
+const DEFAULT_IGNORED_PREFIXES = [
+  '.specforge/logs/',
+  '.specforge/runtime/',
+  '.specforge/archive/',
+  '.specforge/cas/',
+  '.specforge/tmp/',
+  '.specforge/temp/',
+  '.specforge/work-items/',
+];
+
+const DEFAULT_IGNORED_EXACT = new Set([
+  '.specforge/logs',
+  '.specforge/runtime',
+  '.specforge/archive',
+  '.specforge/cas',
+  '.specforge/tmp',
+  '.specforge/temp',
+  '.specforge/work-items',
+]);
+
+export function normalizeFsPath(filePath: string): string {
+  return filePath.replace(/\\/g, '/').replace(/^\.\//, '');
+}
+
+export function isSpecForgeRuntimePath(filePath: string): boolean {
+  const normalized = normalizeFsPath(filePath);
+  if (DEFAULT_IGNORED_EXACT.has(normalized)) return true;
+  return DEFAULT_IGNORED_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+}
+
+function shouldSkipDirectory(relPath: string, entryName: string, extraExcludeDirs: Set<string>): boolean {
+  const normalized = normalizeFsPath(relPath);
+  if (DEFAULT_EXCLUDE_DIR_NAMES.has(entryName)) return true;
+  if (extraExcludeDirs.has(entryName) || extraExcludeDirs.has(normalized)) return true;
+  if (isSpecForgeRuntimePath(normalized)) return true;
+  return false;
+}
+
+function filterSnapshot(snapshot: BaselineSnapshot): { snapshot: BaselineSnapshot; ignored: number } {
+  const files = snapshot.files.filter((f) => !isSpecForgeRuntimePath(f.path));
+  return {
+    snapshot: { ...snapshot, files },
+    ignored: snapshot.files.length - files.length,
+  };
+}
 
 /**
  * Take a snapshot of all files in a directory (recursive).
- * Excludes: node_modules, .git, dist directories.
+ * Excludes source/runtime noise: node_modules, .git, dist, and SpecForge runtime/log directories.
  */
 export function takeSnapshot(rootDir: string, excludeDirs?: string[]): BaselineSnapshot {
-  const exclude = new Set(excludeDirs ?? ['node_modules', '.git', 'dist']);
+  const extraExclude = new Set(excludeDirs ?? []);
   const files: FileSnapshot[] = [];
 
   function walk(dir: string, relPrefix: string): void {
@@ -73,67 +107,51 @@ export function takeSnapshot(rootDir: string, excludeDirs?: string[]): BaselineS
     for (const entry of entries) {
       const relPath = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
       const fullPath = path.join(dir, entry.name);
+      const normalized = normalizeFsPath(relPath);
 
       if (entry.isDirectory()) {
-        if (!exclude.has(entry.name)) {
-          walk(fullPath, relPath);
+        if (!shouldSkipDirectory(normalized, entry.name, extraExclude)) {
+          walk(fullPath, normalized);
         }
       } else if (entry.isFile()) {
+        if (isSpecForgeRuntimePath(normalized)) continue;
         try {
           const stat = fs.statSync(fullPath);
-          files.push({
-            path: relPath,
-            size: stat.size,
-            mtimeMs: stat.mtimeMs,
-          });
+          files.push({ path: normalized, size: stat.size, mtimeMs: stat.mtimeMs });
         } catch {
-          // Skip unreadable files
+          // Skip unreadable files.
         }
       }
     }
   }
 
   walk(rootDir, '');
-
-  return {
-    timestamp: new Date().toISOString(),
-    root: rootDir,
-    files,
-  };
+  return { timestamp: new Date().toISOString(), root: rootDir, files };
 }
 
-/**
- * Compare two snapshots and return the diff.
- */
+/** Compare two snapshots and return the diff. */
 export function diffSnapshots(
   baseline: BaselineSnapshot,
   current: BaselineSnapshot,
 ): { created: string[]; modified: string[]; deleted: string[] } {
-  const baselineMap = new Map(baseline.files.map(f => [f.path, f]));
-  const currentMap = new Map(current.files.map(f => [f.path, f]));
+  const baselineMap = new Map(baseline.files.map((f) => [normalizeFsPath(f.path), f]));
+  const currentMap = new Map(current.files.map((f) => [normalizeFsPath(f.path), f]));
 
   const created: string[] = [];
   const modified: string[] = [];
   const deleted: string[] = [];
 
-  // Find created and modified
   for (const [filePath, currentFile] of currentMap) {
     const baselineFile = baselineMap.get(filePath);
     if (!baselineFile) {
       created.push(filePath);
-    } else if (
-      currentFile.size !== baselineFile.size ||
-      currentFile.mtimeMs !== baselineFile.mtimeMs
-    ) {
+    } else if (currentFile.size !== baselineFile.size || currentFile.mtimeMs !== baselineFile.mtimeMs) {
       modified.push(filePath);
     }
   }
 
-  // Find deleted
   for (const filePath of baselineMap.keys()) {
-    if (!currentMap.has(filePath)) {
-      deleted.push(filePath);
-    }
+    if (!currentMap.has(filePath)) deleted.push(filePath);
   }
 
   return { created, modified, deleted };
@@ -148,49 +166,48 @@ export function computeFilesystemDiff(
   currentRoot: string,
   writeGuardAllowedPaths: string[],
 ): FilesystemDiffResult {
-  const current = takeSnapshot(currentRoot);
-  const { created, modified, deleted } = diffSnapshots(baseline, current);
+  const baselineFiltered = filterSnapshot(baseline);
+  const currentRaw = takeSnapshot(currentRoot);
+  const currentFiltered = filterSnapshot(currentRaw);
+  const { created, modified, deleted } = diffSnapshots(baselineFiltered.snapshot, currentFiltered.snapshot);
 
   const allChanges: FileDiffEntry[] = [
-    ...created.map(p => ({ path: p, change: 'created' as const })),
-    ...modified.map(p => ({ path: p, change: 'modified' as const })),
-    ...deleted.map(p => ({ path: p, change: 'deleted' as const })),
+    ...created.map((p) => ({ path: p, change: 'created' as const })),
+    ...modified.map((p) => ({ path: p, change: 'modified' as const })),
+    ...deleted.map((p) => ({ path: p, change: 'deleted' as const })),
   ];
 
-  // Cross-reference: find changes not tracked by Write Guard log
-  const guardedSet = new Set(writeGuardAllowedPaths.map(p => p.replace(/\\/g, '/')));
+  const guardedSet = new Set(writeGuardAllowedPaths.map((p) => normalizeFsPath(p)));
   const untracked = allChanges
-    .filter(c => !guardedSet.has(c.path.replace(/\\/g, '/')))
-    .map(c => c.path);
+    .filter((c) => !guardedSet.has(normalizeFsPath(c.path)))
+    .map((c) => c.path);
 
   return {
     baseline_timestamp: baseline.timestamp,
-    diff_timestamp: current.timestamp,
+    diff_timestamp: currentRaw.timestamp,
     created,
     modified,
     deleted,
     all_changes: allChanges,
     untracked_changes: untracked,
+    ignored_runtime_files: baselineFiltered.ignored + currentFiltered.ignored,
   };
 }
 
-/**
- * Save a baseline snapshot to a JSON file in the work item directory.
- * Path: .specforge/work-items/{id}/filesystem_baseline.json
- */
+/** Save a baseline snapshot to a JSON file in the work item directory. */
 export function saveBaseline(workItemDir: string, baseline: BaselineSnapshot): void {
   const filePath = path.join(workItemDir, 'filesystem_baseline.json');
-  fs.writeFileSync(filePath, JSON.stringify(baseline, null, 2) + '\n', 'utf-8');
+  const filtered = filterSnapshot(baseline).snapshot;
+  fs.writeFileSync(filePath, JSON.stringify(filtered, null, 2) + '\n', 'utf-8');
 }
 
-/**
- * Load a previously saved baseline snapshot.
- */
+/** Load a previously saved baseline snapshot. */
 export function loadBaseline(workItemDir: string): BaselineSnapshot | null {
   const filePath = path.join(workItemDir, 'filesystem_baseline.json');
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
-    return JSON.parse(content) as BaselineSnapshot;
+    const parsed = JSON.parse(content) as BaselineSnapshot;
+    return filterSnapshot(parsed).snapshot;
   } catch {
     return null;
   }

@@ -1,4 +1,4 @@
-import { access } from "node:fs/promises";
+import { access, mkdir, readdir } from "node:fs/promises";
 import { registerHandler } from "../ToolDispatcher";
 import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { join } from "node:path";
@@ -10,26 +10,74 @@ import {
 } from "../lib/state-machine-v11";
 import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from "../lib/state_machine";
 import { isSealTransition, getSealTransition } from "@specforge/types/seal-transitions";
-import { validateWorkItemId } from "../lib/work-item-id-validator";
+import {
+  validateWorkItemId,
+  parseWorkItemSequence,
+  formatWorkItemId,
+} from "../lib/work-item-id-validator";
 import { guardHardStop } from "../lib/hard-stop-latch";
+
+/**
+ * Allocate next WI-NNNN from existing .specforge/work-items directories.
+ *
+ * This is intentionally daemon-side so the Agent does not invent WI IDs.
+ */
+async function allocateNextWorkItemId(projectRoot: string): Promise<string> {
+  const wiRoot = join(projectRoot, SPEC_DIR_NAME, "work-items");
+  await mkdir(wiRoot, { recursive: true });
+
+  let max = 0;
+  try {
+    const entries = await readdir(wiRoot, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const seq = parseWorkItemSequence(entry.name);
+      if (seq !== null && seq > max) max = seq;
+    }
+  } catch {
+    max = 0;
+  }
+
+  return formatWorkItemId(max + 1);
+}
 
 /**
  * v1.1 state transition handler.
  *
- * Important hard-stop scope rule:
- * Invalid WI IDs are validation errors, not WI-level hard_stop incidents.
- * A business slug such as "wi-blue-hello-page" has no valid WI directory and must
- * not poison the whole OpenCode session by creating a latch that blocks later
- * valid IDs such as WI-001 or WI-20260613-0001.
+ * R1 change:
+ * - v1.1 WI ID format is unified to WI-NNNN.
+ * - Date-based IDs such as WI-YYYYMMDD-NNNN are rejected.
+ * - For create transition, work_item_id may be omitted and daemon allocates WI-NNNN.
  */
 registerHandler("sf_state_transition", async (args, context, deps) => {
-  const workItemId = args["work_item_id"] as string;
-  const fromState = (args["from_state"] as string) ?? "";
+  let workItemId = args["work_item_id"] as string | undefined;
+  const fromState = ((args["from_state"] as string) ?? "");
   const toState = args["to_state"] as string;
 
-  // v1.1 WI ID validation — reject business slugs, but do NOT hard_stop.
-  // This is a retryable input validation error; the agent must be able to retry
-  // with a valid WI-NNN / WI-NNNN / WI-YYYYMMDD-NNNN identifier.
+  const baseDir =
+    (context?.directory as string) ||
+    (context?.worktree as string) ||
+    process.cwd();
+
+  if (!toState) {
+    return { success: false, error: "to_state required" };
+  }
+
+  const isCreateTransition = fromState === "" && toState === "created";
+
+  if ((!workItemId || workItemId.trim() === "") && isCreateTransition) {
+    workItemId = await allocateNextWorkItemId(baseDir);
+  }
+
+  if (!workItemId) {
+    return {
+      success: false,
+      error: "work_item_id required. For create transition, omit work_item_id to let daemon allocate WI-NNNN.",
+      code: "WORK_ITEM_ID_REQUIRED",
+      retry_allowed: true,
+    };
+  }
+
   const idError = validateWorkItemId(workItemId);
   if (idError) {
     return {
@@ -39,13 +87,10 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       hard_stop: false,
       retry_allowed: true,
       remediation:
-        "Retry sf_state_transition with a valid work_item_id such as WI-001, WI-0001, or WI-YYYYMMDD-NNNN. Business slugs are not allowed.",
+        "Use WI-NNNN, for example WI-0001. For a new Work Item, omit work_item_id and call sf_state_transition with from_state='' and to_state='created' so daemon allocates it.",
     };
   }
 
-  // v1.1 Hard Stop Guard — only a valid, matching WI hard_stop can block this WI.
-  const baseDir =
-    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const hardStopGuard = guardHardStop(baseDir, workItemId, "sf_state_transition");
   if (!hardStopGuard.allowed) {
     return {
@@ -56,12 +101,11 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     };
   }
 
-  // v1.1: Accept workflow_path and resolve to internal workflow_type.
   const rawWorkflowPath = args["workflow_path"] as string | undefined;
   const rawWorkflowType = args["workflow_type"] as string | undefined;
   let resolvedWorkflowType: string | undefined = rawWorkflowType;
-
   const useV11 = (args["use_v11_state_machine"] as boolean) || !!rawWorkflowPath;
+
   if (rawWorkflowPath && !rawWorkflowType) {
     const mapped = WORKFLOW_PATH_TO_TYPE[rawWorkflowPath as WorkflowPath];
     if (mapped) {
@@ -74,10 +118,6 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         ).join(", ")}`,
       };
     }
-  }
-
-  if (!workItemId || toState === undefined) {
-    return { success: false, error: "work_item_id and to_state required" };
   }
 
   if (useV11) {
@@ -130,12 +170,15 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
             "projectPath required for close gate evidence check — provide context.directory or context.worktree",
         };
       }
+
       const v11WorkItemDir = join(v11ProjectPath, SPEC_DIR_NAME, "work-items", workItemId);
       const evidenceResult = await checkCloseGateEvidenceRequirements(v11WorkItemDir);
       if (!evidenceResult.met) {
         return {
           success: false,
-          error: `Close gate evidence requirements not met. Missing: ${evidenceResult.missing.join(", ")}. ${evidenceResult.descriptions.join("; ")}`,
+          error: `Close gate evidence requirements not met. Missing: ${evidenceResult.missing.join(
+            ", ",
+          )}. ${evidenceResult.descriptions.join("; ")}`,
           missing_evidence: evidenceResult.missing,
         };
       }
@@ -155,9 +198,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       };
     }
 
-    // v1.1: Auto-create WI directory so Agent never needs sf_safe_bash/mkdir.
-    if (toState === "created" && workItemId) {
-      const { mkdir } = await import("node:fs/promises");
+    if (toState === "created") {
       const wiDir = join(baseDir, SPEC_DIR_NAME, "work-items", workItemId);
       await mkdir(wiDir, { recursive: true });
     }
@@ -167,7 +208,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     return { success: false, error: "WorkflowEngine not available" };
   }
 
-  const projectPath = (context?.directory as string) || (context?.worktree as string) || "";
+  const projectPath =
+    (context?.directory as string) || (context?.worktree as string) || "";
   const workItemDir = projectPath
     ? join(projectPath, SPEC_DIR_NAME, "work-items", workItemId)
     : undefined;
@@ -192,8 +234,12 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   }
 
   if (!projectPath) {
-    return { success: false, error: "projectPath required — provide context.directory or context.worktree" };
+    return {
+      success: false,
+      error: "projectPath required — provide context.directory or context.worktree",
+    };
   }
+
   if (!deps.projectManager) {
     return { success: false, error: "ProjectManager not available" };
   }
@@ -208,5 +254,11 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     { evidence: (args["evidence"] as string) ?? "" },
   );
 
-  return { success: true, ...result };
+  return {
+    success: true,
+    work_item_id: workItemId,
+    allocated_work_item_id:
+      isCreateTransition && !args["work_item_id"] ? workItemId : undefined,
+    ...result,
+  };
 });

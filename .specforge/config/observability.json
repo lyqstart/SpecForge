@@ -1,5 +1,5 @@
 {
-  "enabled": true,
+  "enabled": false,
   "level": "replay",
   "capture_plugin_events": true,
   "capture_tool_calls": true,

@@ -1,15 +1,12 @@
 /**
  * changed-files-audit.ts — ChangedFilesAuditResult & runChangedFilesAudit
  *
- * Extracted from write-guard-v11.ts for write-guard domain.
- * Imports from write-policy for shared types.
+ * R2 changes:
+ * - SpecForge runtime/log/archive files are ignored by business changed-files audit.
+ * - .specforge/project/** is still protected and only merge_runner may write it.
  */
-
-import { ACTOR_ROLES } from '@specforge/types/actor-roles'
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { isSpecForgeRuntimePath, normalizeFsPath } from './filesystem-diff';
 
 export interface ChangedFilesAuditEntry {
   path: string;
@@ -18,6 +15,7 @@ export interface ChangedFilesAuditEntry {
   is_spec_write: boolean;
   is_side_effect: boolean;
   actor?: string;
+  ignored_runtime_path?: boolean;
 }
 
 export interface ChangedFilesAuditResult {
@@ -29,22 +27,13 @@ export interface ChangedFilesAuditResult {
   side_effects: number;
   violations: string[];
   entries: ChangedFilesAuditEntry[];
+  ignored_runtime_files?: number;
 }
 
-// ---------------------------------------------------------------------------
-// runChangedFilesAudit
-// ---------------------------------------------------------------------------
+function isProtectedSpecWrite(normalizedPath: string): boolean {
+  return normalizedPath.startsWith('.specforge/project/');
+}
 
-/**
- * Execute a changed-files audit (§12.7).
- *
- * Compares the list of files changed during a task execution against the
- * declared allowed_write_files, identifying out-of-scope writes, spec writes,
- * and side effects.
- *
- * @param actor Optional actor role — merge_runner writes to .specforge/project/
- *   are legitimate and not flagged as violations.
- */
 export function runChangedFilesAudit(
   changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
   allowedWriteFiles: Array<{ path: string; operation: string }>,
@@ -52,23 +41,40 @@ export function runChangedFilesAudit(
 ): ChangedFilesAuditResult {
   const entries: ChangedFilesAuditEntry[] = [];
   const violations: string[] = [];
+  let ignoredRuntimeFiles = 0;
+
   const normalizedAllowed = new Map(
-    allowedWriteFiles.map((f) => [f.path.replace(/\\/g, '/'), f.operation] as const),
+    allowedWriteFiles.map((f) => [normalizeFsPath(f.path), f.operation] as const),
   );
 
   for (const file of changedFiles) {
-    const normalized = file.path.replace(/\\/g, '/');
+    const normalized = normalizeFsPath(file.path);
+
+    if (isSpecForgeRuntimePath(normalized)) {
+      ignoredRuntimeFiles += 1;
+      entries.push({
+        path: normalized,
+        operation: file.operation,
+        in_allowed_write_files: true,
+        is_spec_write: false,
+        is_side_effect: false,
+        actor,
+        ignored_runtime_path: true,
+      });
+      continue;
+    }
+
     const inScope = Array.from(normalizedAllowed.entries()).some(([allowedPath, allowedOp]) => {
-      const pathMatch = normalized === allowedPath || normalized.startsWith(allowedPath + '/');
+      const pathMatch = normalized === allowedPath || normalized.startsWith(`${allowedPath}/`);
       const opMatch = allowedOp === file.operation || allowedOp === 'any';
       return pathMatch && opMatch;
     });
-    let isSpecWrite = normalized.startsWith('.specforge/project/');
+
+    let isSpecWrite = isProtectedSpecWrite(normalized);
     const isSideEffect = !inScope && !isSpecWrite;
 
     if (isSpecWrite) {
       if (actor === ACTOR_ROLES.mergeRunner) {
-        // Legitimate merge_runner write — not a violation
         isSpecWrite = false;
       } else {
         violations.push(`spec_write_by_non_merge_runner: ${normalized} (actor: ${actor ?? 'unknown'})`);
@@ -92,11 +98,12 @@ export function runChangedFilesAudit(
   return {
     passed: violations.length === 0,
     total_files: changedFiles.length,
-    in_scope: entries.filter((e) => e.in_allowed_write_files).length,
+    in_scope: entries.filter((e) => e.in_allowed_write_files && !e.ignored_runtime_path).length,
     out_of_scope: entries.filter((e) => !e.in_allowed_write_files && !e.is_spec_write).length,
     spec_writes: entries.filter((e) => e.is_spec_write).length,
     side_effects: entries.filter((e) => e.is_side_effect).length,
     violations,
     entries,
+    ignored_runtime_files: ignoredRuntimeFiles,
   };
 }
