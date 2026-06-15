@@ -274,49 +274,7 @@ async function normalizeWriteGuardOperationsFromDiff(
   }
 }
 
-function expandAllowedWriteFilesForAudit(
-  projectRoot: string,
-  allowedWriteFiles: Array<{ path: string; operation: string }>,
-): Array<{ path: string; operation: string }> {
-  const out = new Map<string, { path: string; operation: string }>();
-  for (const item of allowedWriteFiles ?? []) {
-    const rawPath = String(item?.path ?? "");
-    const operation = String(item?.operation ?? "any");
-    if (!rawPath) continue;
-
-    const candidates = new Set<string>();
-    candidates.add(rawPath);
-    candidates.add(rawPath.replace(/\\/g, "/"));
-
-    try {
-      const absolute = path.resolve(projectRoot, rawPath);
-      candidates.add(absolute);
-      candidates.add(absolute.replace(/\\/g, "/"));
-    } catch {
-      // ignore
-    }
-
-    try {
-      const relative = path.relative(projectRoot, rawPath);
-      if (relative && !relative.startsWith("..") && !path.isAbsolute(relative)) {
-        candidates.add(relative);
-        candidates.add(relative.replace(/\\/g, "/"));
-      }
-    } catch {
-      // ignore
-    }
-
-    for (const candidate of candidates) {
-      const normalizedCandidate = candidate.replace(/\\/g, "/").replace(/\/+$/g, "");
-      const key = `${normalizedCandidate.toLowerCase()}::${operation.toLowerCase()}`;
-      if (!out.has(key)) out.set(key, { path: normalizedCandidate, operation });
-    }
-  }
-  return Array.from(out.values());
-}
-
 async function refreshChangedFilesAuditAfterOperationNormalization(
-  projectRoot: string,
   workItemDir: string,
   workItemId: string,
   workItemJsonPath: string,
@@ -332,38 +290,31 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
     updatedWi = {};
   }
 
-  const snapshot =
+  const allowedWriteFilesForAudit: Array<{ path: string; operation: string }> =
     Array.isArray(updatedWi.allowed_write_files_snapshot) &&
     updatedWi.allowed_write_files_snapshot.length > 0
-      ? (updatedWi.allowed_write_files_snapshot as Array<{
-          path: string;
-          operation: string;
-        }>)
+      ? updatedWi.allowed_write_files_snapshot
       : fallbackAllowedWriteFilesSnapshot.map((f) => ({
           path: f.path,
           operation: f.operation,
         }));
 
-  const allowedWriteFilesForAudit = expandAllowedWriteFilesForAudit(
-    projectRoot,
-    snapshot,
-  );
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
   const auditResult = runChangedFilesAudit(
     factualFiles,
     allowedWriteFilesForAudit,
     "agent",
   );
-  const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
-  const auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot)`;
+  const auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization)`;
+
   await fs.writeFile(
-    changedFilesPath,
+    path.join(workItemDir, "changed_files_audit.md"),
     generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource),
     "utf-8",
   );
+
   return auditResult;
 }
-
 async function writeGateSummaryGatePassed(
   projectRoot: string,
   workItemDir: string,
@@ -704,16 +655,15 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
         fullDiff,
       );
       await normalizeWriteGuardOperationsFromDiff(projectRoot, workItemDir, fullDiff);
-      const refreshedAudit = await refreshChangedFilesAuditAfterOperationNormalization(
-        projectRoot,
-        workItemDir,
-        workItemId,
-        workItemJsonPath,
-        allowedWriteFilesSnapshot,
-      );
-      if (refreshedAudit) {
-        result.changed_files_audit = refreshedAudit;
-      }
+        const refreshedAudit = await refreshChangedFilesAuditAfterOperationNormalization(
+          workItemDir,
+          workItemId,
+          workItemJsonPath,
+          allowedWriteFilesSnapshot,
+        );
+        if (refreshedAudit) {
+          result.changed_files_audit = refreshedAudit;
+        }
       result.filesystem_diff = summarizeFilesystemDiff(
         projectRoot,
         diffEvidencePath,
@@ -784,9 +734,7 @@ function generateChangedFilesAuditMd(
   audit: ChangedFilesAuditResult,
   dataSource?: string,
 ): string {
-  const violations = Array.isArray(audit.violations) ? audit.violations : [];
-  const entries = Array.isArray(audit.entries) ? audit.entries : [];
-  const lines: string[] = [
+  const lines = [
     "# Changed Files Audit",
     "",
     `- Work Item: ${workItemId}`,
@@ -797,41 +745,33 @@ function generateChangedFilesAuditMd(
     "",
     "## Summary",
     "",
-    `- Total files: ${audit.total_files ?? entries.length}`,
-    `- In scope: ${audit.in_scope ?? 0}`,
-    `- Out of scope: ${audit.out_of_scope ?? 0}`,
-    `- Spec writes: ${audit.spec_writes ?? 0}`,
-    `- Side effects: ${audit.side_effects ?? 0}`,
+    `- Total files: ${audit.total_files}`,
+    `- In scope: ${audit.in_scope}`,
+    `- Out of scope: ${audit.out_of_scope}`,
     "",
   ];
 
-  if (entries.length > 0) {
+  if (Array.isArray(audit.entries) && audit.entries.length > 0) {
     lines.push("## Entries", "");
-    for (const entry of entries) {
-      const scope = entry.ignored_runtime_path
-        ? "ignored_runtime"
-        : entry.in_allowed_write_files
-          ? "in_scope"
-          : entry.is_spec_write
-            ? "spec_write"
-            : "OUT_OF_SCOPE";
-      lines.push(`- [${entry.operation}] ${entry.path} -> ${scope}`);
+    for (const entry of audit.entries) {
+      const scope = entry.in_allowed_write_files ? "in_scope" : "out_of_scope";
+      const suffix = entry.ignored_runtime_path ? " (ignored_runtime)" : "";
+      lines.push(`- [${entry.operation}] ${entry.path} -> ${scope}${suffix}`);
     }
     lines.push("");
   }
 
-  if (violations.length > 0) {
+  if (audit.violations.length > 0) {
     lines.push(
       "## Violations",
       "",
-      ...violations.map((v) => `- ${v}`),
+      ...audit.violations.map((v) => `- ${v}`),
       "",
     );
   }
 
   return lines.join("\n");
 }
-
 function generateCloseGateEvidenceMd(
   workItemId: string,
   closeGateResult: CloseGateResult,

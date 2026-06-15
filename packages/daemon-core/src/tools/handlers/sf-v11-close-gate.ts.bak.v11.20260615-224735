@@ -1,5 +1,5 @@
-/**
- * sf-v11-close-gate — v1.1 Close Gate lifecycle handler
+﻿/**
+ * sf-v11-close-gate 鈥?v1.1 Close Gate lifecycle handler
  *
  * R2 changes:
  * - Reads runtime/state.json as the state-machine truth source when available.
@@ -139,7 +139,7 @@ async function writeRuntimeClosed(
   state.closed_at = workItem.closed_at ?? now;
   state.updated_at = now;
 
-  // R4：同步旧结构 workItems[]，避免顶层 closed、workItems[] 仍 gates_running/created。
+  // R4锛氬悓姝ユ棫缁撴瀯 workItems[]锛岄伩鍏嶉《灞?closed銆亀orkItems[] 浠?gates_running/created銆?
   if (!Array.isArray(state.workItems)) {
     state.workItems = [];
   }
@@ -274,45 +274,61 @@ async function normalizeWriteGuardOperationsFromDiff(
   }
 }
 
-function expandAllowedWriteFilesForAudit(
+type AllowedAuditFile = { path: string; operation: string };
+
+function addAllowedAuditPathVariant(
+  out: AllowedAuditFile[],
+  seen: Set<string>,
+  filePath: string,
+  operation: string,
+): void {
+  const value = String(filePath ?? "").trim();
+  if (!value) return;
+  const key = `${normalizePathForCompare(value)}::${operation}`;
+  if (seen.has(key)) return;
+  seen.add(key);
+  out.push({ path: value, operation });
+}
+
+function expandAllowedWriteFilesForCloseAudit(
   projectRoot: string,
-  allowedWriteFiles: Array<{ path: string; operation: string }>,
-): Array<{ path: string; operation: string }> {
-  const out = new Map<string, { path: string; operation: string }>();
-  for (const item of allowedWriteFiles ?? []) {
-    const rawPath = String(item?.path ?? "");
-    const operation = String(item?.operation ?? "any");
-    if (!rawPath) continue;
+  allowedWriteFiles: AllowedAuditFile[],
+): AllowedAuditFile[] {
+  const out: AllowedAuditFile[] = [];
+  const seen = new Set<string>();
 
-    const candidates = new Set<string>();
-    candidates.add(rawPath);
-    candidates.add(rawPath.replace(/\\/g, "/"));
+  for (const file of allowedWriteFiles ?? []) {
+    const raw = String(file?.path ?? "");
+    const operation = String(file?.operation ?? "any");
+    if (!raw) continue;
 
-    try {
-      const absolute = path.resolve(projectRoot, rawPath);
-      candidates.add(absolute);
-      candidates.add(absolute.replace(/\\/g, "/"));
-    } catch {
-      // ignore
+    addAllowedAuditPathVariant(out, seen, raw, operation);
+
+    for (const variant of pathVariantsForCompare(projectRoot, raw)) {
+      addAllowedAuditPathVariant(out, seen, variant, operation);
     }
 
     try {
-      const relative = path.relative(projectRoot, rawPath);
-      if (relative && !relative.startsWith("..") && !path.isAbsolute(relative)) {
-        candidates.add(relative);
-        candidates.add(relative.replace(/\\/g, "/"));
+      addAllowedAuditPathVariant(out, seen, path.resolve(projectRoot, raw), operation);
+    } catch {
+      // ignore invalid path variants
+    }
+
+    try {
+      if (path.isAbsolute(raw)) {
+        const relative = path.relative(projectRoot, raw);
+        if (relative && !relative.startsWith("..")) {
+          addAllowedAuditPathVariant(out, seen, relative, operation);
+        }
+      } else {
+        addAllowedAuditPathVariant(out, seen, path.join(projectRoot, raw), operation);
       }
     } catch {
-      // ignore
-    }
-
-    for (const candidate of candidates) {
-      const normalizedCandidate = candidate.replace(/\\/g, "/").replace(/\/+$/g, "");
-      const key = `${normalizedCandidate.toLowerCase()}::${operation.toLowerCase()}`;
-      if (!out.has(key)) out.set(key, { path: normalizedCandidate, operation });
+      // ignore invalid path variants
     }
   }
-  return Array.from(out.values());
+
+  return out;
 }
 
 async function refreshChangedFilesAuditAfterOperationNormalization(
@@ -320,7 +336,7 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   workItemDir: string,
   workItemId: string,
   workItemJsonPath: string,
-  fallbackAllowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
+  fallbackAllowedWriteFilesSnapshot: AllowedAuditFile[],
 ): Promise<ChangedFilesAuditResult | null> {
   const factualFiles = getFactualChangedFiles(workItemDir);
   if (factualFiles.length === 0) return null;
@@ -332,38 +348,35 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
     updatedWi = {};
   }
 
-  const snapshot =
-    Array.isArray(updatedWi.allowed_write_files_snapshot) &&
-    updatedWi.allowed_write_files_snapshot.length > 0
-      ? (updatedWi.allowed_write_files_snapshot as Array<{
-          path: string;
-          operation: string;
-        }>)
-      : fallbackAllowedWriteFilesSnapshot.map((f) => ({
-          path: f.path,
-          operation: f.operation,
-        }));
+  const snapshotFromWorkItem = Array.isArray(updatedWi.allowed_write_files_snapshot)
+    ? (updatedWi.allowed_write_files_snapshot as AllowedAuditFile[])
+    : [];
+  const rawAllowedWriteFiles =
+    snapshotFromWorkItem.length > 0
+      ? snapshotFromWorkItem
+      : fallbackAllowedWriteFilesSnapshot;
 
-  const allowedWriteFilesForAudit = expandAllowedWriteFilesForAudit(
+  const allowedWriteFilesForAudit = expandAllowedWriteFilesForCloseAudit(
     projectRoot,
-    snapshot,
+    rawAllowedWriteFiles,
   );
-  const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
+
   const auditResult = runChangedFilesAudit(
     factualFiles,
     allowedWriteFilesForAudit,
     "agent",
   );
-  const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
-  const auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot)`;
+  const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
+  const dataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes); allowed_write_files_snapshot refreshed after close_gate operation normalization`;
+
   await fs.writeFile(
-    changedFilesPath,
-    generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource),
+    path.join(workItemDir, "changed_files_audit.md"),
+    generateChangedFilesAuditMd(workItemId, auditResult, dataSource),
     "utf-8",
   );
+
   return auditResult;
 }
-
 async function writeGateSummaryGatePassed(
   projectRoot: string,
   workItemDir: string,
@@ -528,7 +541,7 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
     } catch {
       return {
         ...result,
-        error: "trigger_result.json not found — required for close_gate",
+        error: "trigger_result.json not found 鈥?required for close_gate",
       };
     }
 
@@ -554,7 +567,7 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
       if (String(err?.message ?? "").includes("schema validation")) throw err;
       return {
         ...result,
-        error: "candidate_manifest.json not found — required for close_gate",
+        error: "candidate_manifest.json not found 鈥?required for close_gate",
       };
     }
 
@@ -586,7 +599,7 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
     } catch {
       return {
         ...result,
-        error: "merge_report.md not found — required for close_gate",
+        error: "merge_report.md not found 鈥?required for close_gate",
       };
     }
 
@@ -595,7 +608,7 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
     } catch {
       return {
         ...result,
-        error: "verification_report.md not found — required for close_gate",
+        error: "verification_report.md not found 鈥?required for close_gate",
       };
     }
 
@@ -614,7 +627,7 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
       return {
         ...result,
         error:
-          "evidence/evidence_manifest.json not found — required for close_gate",
+          "evidence/evidence_manifest.json not found 鈥?required for close_gate",
       };
     }
 
@@ -786,7 +799,7 @@ function generateChangedFilesAuditMd(
 ): string {
   const violations = Array.isArray(audit.violations) ? audit.violations : [];
   const entries = Array.isArray(audit.entries) ? audit.entries : [];
-  const lines: string[] = [
+  const lines = [
     "# Changed Files Audit",
     "",
     `- Work Item: ${workItemId}`,
@@ -798,40 +811,30 @@ function generateChangedFilesAuditMd(
     "## Summary",
     "",
     `- Total files: ${audit.total_files ?? entries.length}`,
-    `- In scope: ${audit.in_scope ?? 0}`,
-    `- Out of scope: ${audit.out_of_scope ?? 0}`,
-    `- Spec writes: ${audit.spec_writes ?? 0}`,
-    `- Side effects: ${audit.side_effects ?? 0}`,
+    `- In scope: ${audit.in_scope ?? entries.filter((e) => e.in_allowed_write_files).length}`,
+    `- Out of scope: ${audit.out_of_scope ?? entries.filter((e) => !e.in_allowed_write_files).length}`,
+    `- Violations: ${violations.length}`,
     "",
   ];
 
-  if (entries.length > 0) {
-    lines.push("## Entries", "");
-    for (const entry of entries) {
-      const scope = entry.ignored_runtime_path
-        ? "ignored_runtime"
-        : entry.in_allowed_write_files
-          ? "in_scope"
-          : entry.is_spec_write
-            ? "spec_write"
-            : "OUT_OF_SCOPE";
-      lines.push(`- [${entry.operation}] ${entry.path} -> ${scope}`);
-    }
-    lines.push("");
+  if (violations.length > 0) {
+    lines.push("## Violations", "", ...violations.map((v) => `- ${v}`), "");
   }
 
-  if (violations.length > 0) {
-    lines.push(
-      "## Violations",
-      "",
-      ...violations.map((v) => `- ${v}`),
-      "",
-    );
+  lines.push("## Entries", "");
+  if (entries.length > 0) {
+    for (const entry of entries) {
+      lines.push(
+        `- [${entry.operation}] ${entry.path} -> ${entry.in_allowed_write_files ? "in_scope" : "OUT_OF_SCOPE"}`,
+      );
+    }
+  } else {
+    lines.push("No file changes detected.");
   }
+  lines.push("");
 
   return lines.join("\n");
 }
-
 function generateCloseGateEvidenceMd(
   workItemId: string,
   closeGateResult: CloseGateResult,
@@ -870,7 +873,7 @@ function generateCloseGateEvidenceMd(
   );
   for (const check of report.checks) {
     lines.push(
-      `| ${check.check_id} | ${check.description} | ${check.passed ? "✓" : "✗"} |`,
+      `| ${check.check_id} | ${check.description} | ${check.passed ? "鉁? : "鉁?} |`,
     );
   }
   if (report.blocking_issues.length > 0) {
@@ -886,3 +889,4 @@ function generateCloseGateEvidenceMd(
   }
   return lines.join("\n");
 }
+
