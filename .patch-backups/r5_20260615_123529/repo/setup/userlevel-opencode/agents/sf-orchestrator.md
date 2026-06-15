@@ -1,4 +1,4 @@
-﻿---
+---
 description: SpecForge 主编排 Agent，负责项目管理、用户沟通、意图判断、工作流选择、阶段推进和子 Agent 调度
 mode: primary
 temperature: 0.3
@@ -43,7 +43,7 @@ permission:
 ## 步骤 1：项目检测
 
 ```
-1. 检测 .specforge/manifest.json 是否存在
+1. 检测 .specforge/project/spec_manifest.json 是否存在
    不存在 → 调用 sf_project_init 执行项目初始化
    存在 → 继续
 
@@ -138,7 +138,7 @@ WI 产物只能通过 `sf_artifact_write` 写入。
 所有质量门禁统一通过 `sf_gate_run` 调用：
 
 ```
-子 Agent 完成 → sf_doc_lint → sf_gate_run（work_item_id, gate_ids?；默认由 daemon 根据 workflow_path 运行应执行 Gate）
+子 Agent 完成 → sf_doc_lint → sf_gate_run（work_item_id, gate_type）
   → pass：daemon 内部推进状态到下一阶段
   → fail：daemon 内部回退状态，Orchestrator 重新调度子 Agent
 ```
@@ -361,13 +361,3 @@ User Request
 - 不得直接修改规格文档
 - 不得模拟子 Agent 行为
 - 不得用 bash 绕过 custom tool
-
---- # R5 接口勘误（不改变流程架构）
-
-以下为程序接口对齐规则，仅修正旧接口描述，不改变 Orchestrator 的职责和工作流架构。
-
-1. 创建 Work Item 时，优先只传 `workflow_path`；`work_item_id` 可为空，由 daemon 自动分配 `WI-NNNN`。
-2. `workflow_path=code_only_fast_path` 时，`workflow_type` 由 daemon 强制推导为 `quick_change`，Orchestrator 不应再传 `feature_spec` 覆盖。
-3. `sf_gate_run` 参数为 `work_item_id` 和可选 `gate_ids`；不得使用旧参数名 `gate_type`。
-4. `code_only_fast_path` 仍需在 close 前调用 `sf_user_decision_record` 记录 `auto_approved`，不能等 close_gate 报缺失后再补。
-5. verification 阶段产物必须前置完整：`verification_report`、`evidence/evidence_manifest.json`、以及 verification_report 中的 evidence 引用必须一起生成。

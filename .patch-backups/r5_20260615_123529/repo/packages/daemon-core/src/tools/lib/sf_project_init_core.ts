@@ -1,4 +1,4 @@
-﻿/**
+/**
  * sf_project_init_core.ts — project bootstrap repair (Patch A.1)
  *
  * Fixes the bootstrap deadlock observed after Patch A:
@@ -71,24 +71,8 @@ const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
         capture_hardstop: true,
         capture_payload: true,
         redact_secrets: true,
-        max_inline_payload_bytes: 0,
-        payload_storage: "file", capture_raw_context_full: false,
- capture_raw_context_summary: true,
- record_event_payload: false,
- ignored_events: [
- "message.part.updated",
- "message.updated",
- "session.updated",
- "session.status",
- "session.diff",
- ],
- summary_events: [
- "message.part.delta",
- "experimental.chat.messages.transform",
- "experimental.chat.system.transform",
- "chat.params",
- "chat.headers",
- ],
+        max_inline_payload_bytes: 8192,
+        payload_storage: "file",
       },
       null,
       2,

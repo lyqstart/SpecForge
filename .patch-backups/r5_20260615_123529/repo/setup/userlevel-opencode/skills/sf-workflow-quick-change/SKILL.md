@@ -1,4 +1,4 @@
-﻿---
+---
 name: sf-workflow-quick-change
 description: Quick Change 轻量工作流的阶段执行协议，包含详细执行步骤、升级机制和轻量验证模式（v1.1 状态机）
 ---
@@ -225,7 +225,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
    - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
 5. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_ids=["verification_gate"]）检查验证结果（统一 Gate Runner，替代旧 sf_verification_gate）
+6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_type="verification"）检查验证结果（统一 Gate Runner，替代旧 sf_verification_gate）
 7. 如果 Gate pass：
    - 调用 `sf_changed_files_audit`（work_item_id=<id>）执行变更文件审计
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
@@ -289,17 +289,3 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 - `candidate_manifest` 的 `entries` 设为 `[]`
 - `merge_report` 标记为 `not_applicable`
 - 仍需执行 `sf_code_permission` + `sf_changed_files_audit` + `sf_close_gate`
-
---- # R5 接口勘误（不改变 Quick Change 架构）
-
-1. `sf_gate_run` 使用 `gate_ids` 或默认自动 Gate，不再使用旧参数名 `gate_type`。
-2. `code_only_fast_path` 的 `candidate_manifest.entries=[]`，`sf_merge_run` 应生成 `merge_report.status=not_applicable`。
-3. verification 阶段必须同时生成：
-   - `verification_report`
-   - `evidence/evidence_manifest.json`
-   - verification_report 内的 `evidence_refs` / `evidence_ref`
-4. close_gate 前必须完成：
-   - `sf_code_permission(action="revoke")`
-   - `sf_merge_run(work_item_id)`
-   - `sf_user_decision_record(decision_type="auto_approved", workflow_path="code_only_fast_path")`
-5. 不允许等 verification_gate / close_gate 报缺失后再补 evidence、user_decision 或 evidence_refs。
