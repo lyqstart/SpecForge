@@ -1,4 +1,4 @@
-import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir } from "node:fs/promises";
 import { registerHandler } from "../ToolDispatcher";
 import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { join } from "node:path";
@@ -39,86 +39,6 @@ async function allocateNextWorkItemId(projectRoot: string): Promise<string> {
   }
 
   return formatWorkItemId(max + 1);
-}
-
-
-async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
-  try {
-    return JSON.parse(await readFile(filePath, "utf-8"));
-  } catch {
-    return null;
-  }
-}
-
-async function readExistingWorkflowFacts(
-  projectRoot: string,
-  workItemId: string,
-): Promise<{ workflowType?: string; workflowPath?: string }> {
-  const wiDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
-  const candidates = [
-    join(wiDir, "work_item.json"),
-    join(wiDir, "trigger_result.json"),
-    join(wiDir, "candidate_manifest.json"),
-    join(projectRoot, SPEC_DIR_NAME, "runtime", "state.json"),
-  ];
-
-  for (const filePath of candidates) {
-    const json = await readJsonIfExists(filePath);
-    if (!json) continue;
-
-    if (filePath.endsWith("state.json") && Array.isArray(json.workItems)) {
-      const item = json.workItems.find((wi: any) => wi?.work_item_id === workItemId);
-      if (item) {
-        return {
-          workflowType: item.workflow_type,
-          workflowPath: item.workflow_path,
-        };
-      }
-    }
-
-    if (json.work_item_id === workItemId || !json.work_item_id) {
-      if (json.workflow_type || json.workflow_path) {
-        return {
-          workflowType: json.workflow_type,
-          workflowPath: json.workflow_path,
-        };
-      }
-    }
-  }
-
-  return {};
-}
-
-async function ensureWorkItemJsonOnCreate(
-  projectRoot: string,
-  workItemId: string,
-  workflowType: string | undefined,
-  workflowPath: string | undefined,
-): Promise<{ path: string; created: boolean }> {
-  const wiDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
-  await mkdir(wiDir, { recursive: true });
-  const workItemJsonPath = join(wiDir, "work_item.json");
-
-  const existing = await readJsonIfExists(workItemJsonPath);
-  if (existing) return { path: workItemJsonPath, created: false };
-
-  const now = new Date().toISOString();
-  const workItem = {
-    schema_version: "1.1",
-    work_item_id: workItemId,
-    status: "created",
-    workflow_type: workflowType ?? "quick_change",
-    workflow_path: workflowPath,
-    title: `Work Item ${workItemId}`,
-    description: "Auto-created by sf_state_transition during Work Item creation.",
-    created_at: now,
-    updated_at: now,
-    code_change_allowed: false,
-    code_permission_revoked: false,
-  };
-
-  await writeFile(workItemJsonPath, JSON.stringify(workItem, null, 2) + "\n", "utf-8");
-  return { path: workItemJsonPath, created: true };
 }
 
 /**
@@ -183,24 +103,15 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
 
   const rawWorkflowPath = args["workflow_path"] as string | undefined;
   const rawWorkflowType = args["workflow_type"] as string | undefined;
-  const existingWorkflowFacts = !isCreateTransition
-    ? await readExistingWorkflowFacts(baseDir, workItemId)
-    : {};
-  const inheritedWorkflowPath = rawWorkflowPath ?? existingWorkflowFacts.workflowPath;
-  let resolvedWorkflowType: string | undefined =
-    rawWorkflowType ?? existingWorkflowFacts.workflowType;
-  const useV11 =
-    (args["use_v11_state_machine"] as boolean) ||
-    !!inheritedWorkflowPath ||
-    !!existingWorkflowFacts.workflowType ||
-    isCreateTransition;
+  let resolvedWorkflowType: string | undefined = rawWorkflowType;
+  const useV11 = (args["use_v11_state_machine"] as boolean) || !!rawWorkflowPath;
 
-  if (inheritedWorkflowPath) {
-    const mapped = WORKFLOW_PATH_TO_TYPE[inheritedWorkflowPath as WorkflowPath];
+  if (rawWorkflowPath) {
+    const mapped = WORKFLOW_PATH_TO_TYPE[rawWorkflowPath as WorkflowPath];
     if (!mapped) {
       return {
         success: false,
-        error: `Unknown workflow_path: ${inheritedWorkflowPath}. Valid paths: ${Object.keys(
+        error: `Unknown workflow_path: ${rawWorkflowPath}. Valid paths: ${Object.keys(
           WORKFLOW_PATH_TO_TYPE,
         ).join(", ")}`,
       };
@@ -290,12 +201,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     }
 
     if (toState === "created") {
-      await ensureWorkItemJsonOnCreate(
-        baseDir,
-        workItemId,
-        resolvedWorkflowType,
-        inheritedWorkflowPath,
-      );
+      const wiDir = join(baseDir, SPEC_DIR_NAME, "work-items", workItemId);
+      await mkdir(wiDir, { recursive: true });
     }
   }
 
@@ -345,7 +252,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     fromState,
     toState,
     typeof context?.agent === "string" ? context.agent : "system",
-    resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change",
+    resolvedWorkflowType || "feature_spec",
     { evidence: (args["evidence"] as string) ?? "" },
   );
 
@@ -354,9 +261,6 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     work_item_id: workItemId,
     allocated_work_item_id:
       isCreateTransition && !args["work_item_id"] ? workItemId : undefined,
-    workflow_type: resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change",
-    workflow_path: inheritedWorkflowPath,
-    auto_work_item_json: isCreateTransition ? true : undefined,
     ...result,
   };
 });

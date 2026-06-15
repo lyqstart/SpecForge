@@ -63,17 +63,6 @@ interface CloseGateHandlerResult {
 }
 
 const CLOSE_ALLOWED_STATES = new Set([
-  // R7: close_gate is evidence-driven. If all Close Gate checks pass, the
-  // daemon may close from earlier workflow states instead of forcing the
-  // Agent to manually replay the entire state chain.
-  "created",
-  "intake_ready",
-  "impact_analyzing",
-  "impact_analyzed",
-  "workflow_selected",
-  "candidate_preparing",
-  "candidate_prepared",
-  "implementation_ready",
   "implementation_running",
   "implementation_done",
   "verification_running",
