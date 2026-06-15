@@ -344,9 +344,26 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
           operation: f.operation,
         }));
 
+  // Close Gate runs after code permission has normally been revoked, so
+  // work_item.allowed_write_files may be empty.  The stable facts for this
+  // phase are:
+  //   1. allowed_write_files_snapshot captured before revoke;
+  //   2. write_guard_log.jsonl entries with allowed=true and no violations.
+  // The second source is added back into the audit allowlist because it is the
+  // actual trusted WriteGuard decision, and it also preserves the exact Windows
+  // path spelling observed at write time.
+  const trustedAllowedWrites = [
+    ...snapshot.map((f) => ({ path: f.path, operation: f.operation })),
+    ...fallbackAllowedWriteFilesSnapshot.map((f) => ({
+      path: f.path,
+      operation: f.operation,
+    })),
+    ...factualFiles.map((f) => ({ path: f.path, operation: f.operation })),
+  ];
+
   const allowedWriteFilesForAudit = expandAllowedWriteFilesForAudit(
     projectRoot,
-    snapshot,
+    trustedAllowedWrites,
   );
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
   const auditResult = runChangedFilesAudit(
@@ -355,7 +372,7 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
     "agent",
   );
   const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
-  const auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot)`;
+  const auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot + factual allowed writes)`;
   await fs.writeFile(
     changedFilesPath,
     generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource),
@@ -363,7 +380,6 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   );
   return auditResult;
 }
-
 async function writeGateSummaryGatePassed(
   projectRoot: string,
   workItemDir: string,
@@ -721,6 +737,17 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
       );
     }
 
+    const finalAuditRefresh = await refreshChangedFilesAuditAfterOperationNormalization(
+      projectRoot,
+      workItemDir,
+      workItemId,
+      workItemJsonPath,
+      allowedWriteFilesSnapshot,
+    );
+    if (finalAuditRefresh) {
+      result.changed_files_audit = finalAuditRefresh;
+    }
+
     const closeGateResult = await runCloseGate({
       workItemId,
       workItemDir,
@@ -787,49 +814,48 @@ function generateChangedFilesAuditMd(
   const violations = Array.isArray(audit.violations) ? audit.violations : [];
   const entries = Array.isArray(audit.entries) ? audit.entries : [];
   const lines: string[] = [
-    "# Changed Files Audit",
-    "",
+    '# Changed Files Audit',
+    '',
     `- Work Item: ${workItemId}`,
     `- Timestamp: ${new Date().toISOString()}`,
-    `- Status: ${audit.passed ? "PASSED" : "FAILED"}`,
-    `- Data Source: ${dataSource ?? "pre-existing audit file"}`,
+    `- Status: ${audit.passed ? 'PASSED' : 'FAILED'}`,
+    `- Data Source: ${dataSource ?? 'pre-existing audit file'}`,
     `- Ignored Runtime Files: ${audit.ignored_runtime_files ?? 0}`,
-    "",
-    "## Summary",
-    "",
+    '',
+    '## Summary',
+    '',
     `- Total files: ${audit.total_files ?? entries.length}`,
     `- In scope: ${audit.in_scope ?? 0}`,
     `- Out of scope: ${audit.out_of_scope ?? 0}`,
     `- Spec writes: ${audit.spec_writes ?? 0}`,
     `- Side effects: ${audit.side_effects ?? 0}`,
-    "",
+    '',
   ];
 
   if (entries.length > 0) {
-    lines.push("## Entries", "");
+    lines.push('## Entries', '');
     for (const entry of entries) {
       const scope = entry.ignored_runtime_path
-        ? "ignored_runtime"
+        ? 'ignored_runtime'
         : entry.in_allowed_write_files
-          ? "in_scope"
+          ? 'in_scope'
           : entry.is_spec_write
-            ? "spec_write"
-            : "OUT_OF_SCOPE";
+            ? 'spec_write'
+            : 'OUT_OF_SCOPE';
       lines.push(`- [${entry.operation}] ${entry.path} -> ${scope}`);
     }
-    lines.push("");
+    lines.push('');
   }
 
   if (violations.length > 0) {
     lines.push(
-      "## Violations",
-      "",
+      '## Violations',
+      '',
       ...violations.map((v) => `- ${v}`),
-      "",
+      '',
     );
   }
-
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 function generateCloseGateEvidenceMd(

@@ -1,9 +1,11 @@
 /**
- * changed-files-audit.ts — ChangedFilesAuditResult & runChangedFilesAudit
+ * changed-files-audit.ts - ChangedFilesAuditResult & runChangedFilesAudit
  *
- * R2 changes:
- * - SpecForge runtime/log/archive files are ignored by business changed-files audit.
- * - .specforge/project/** is still protected and only merge_runner may write it.
+ * v18: robust Windows path matching for close_gate and changed_files_audit.
+ * The audit must treat these as the same file when they refer to the same target:
+ * - D:\code\temp\testX\index.html
+ * - D:/code/temp/testX/index.html
+ * - index.html
  */
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { isSpecForgeRuntimePath, normalizeFsPath } from './filesystem-diff';
@@ -34,6 +36,40 @@ function isProtectedSpecWrite(normalizedPath: string): boolean {
   return normalizedPath.startsWith('.specforge/project/');
 }
 
+function normalizeAuditPath(value: string): string {
+  return normalizeFsPath(String(value ?? ''))
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/')
+    .replace(/^\.\//, '')
+    .replace(/\/+$/g, '')
+    .toLowerCase();
+}
+
+function pathMatchesForAudit(changedPath: string, allowedPath: string): boolean {
+  const changed = normalizeAuditPath(changedPath);
+  const allowed = normalizeAuditPath(allowedPath);
+  if (!changed || !allowed) return false;
+
+  if (changed === allowed) return true;
+
+  // Preserve existing directory allow-list behavior.
+  if (changed.startsWith(`${allowed}/`)) return true;
+
+  // Windows close_gate may compare an absolute WriteGuard path with a relative
+  // allowed_write_files_snapshot path, or the inverse. Treat suffix-equivalent
+  // file paths as the same file.
+  if (changed.endsWith(`/${allowed}`)) return true;
+  if (allowed.endsWith(`/${changed}`)) return true;
+
+  return false;
+}
+
+function operationMatchesForAudit(changedOp: string, allowedOp: string): boolean {
+  const c = String(changedOp ?? '').toLowerCase();
+  const a = String(allowedOp ?? '').toLowerCase();
+  return a === 'any' || a === c;
+}
+
 export function runChangedFilesAudit(
   changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
   allowedWriteFiles: Array<{ path: string; operation: string }>,
@@ -43,12 +79,12 @@ export function runChangedFilesAudit(
   const violations: string[] = [];
   let ignoredRuntimeFiles = 0;
 
-  const normalizedAllowed = new Map(
-    allowedWriteFiles.map((f) => [normalizeFsPath(f.path), f.operation] as const),
-  );
+  const normalizedAllowed = (allowedWriteFiles ?? [])
+    .filter((f) => typeof f?.path === 'string' && f.path.length > 0)
+    .map((f) => ({ path: f.path, operation: String(f.operation ?? 'any') }));
 
-  for (const file of changedFiles) {
-    const normalized = normalizeFsPath(file.path);
+  for (const file of changedFiles ?? []) {
+    const normalized = normalizeFsPath(file.path).replace(/\\/g, '/');
 
     if (isSpecForgeRuntimePath(normalized)) {
       ignoredRuntimeFiles += 1;
@@ -64,13 +100,14 @@ export function runChangedFilesAudit(
       continue;
     }
 
-    const inScope = Array.from(normalizedAllowed.entries()).some(([allowedPath, allowedOp]) => {
-      const pathMatch = normalized === allowedPath || normalized.startsWith(`${allowedPath}/`);
-      const opMatch = allowedOp === file.operation || allowedOp === 'any';
-      return pathMatch && opMatch;
+    const inScope = normalizedAllowed.some((allowed) => {
+      return (
+        pathMatchesForAudit(normalized, allowed.path) &&
+        operationMatchesForAudit(file.operation, allowed.operation)
+      );
     });
 
-    let isSpecWrite = isProtectedSpecWrite(normalized);
+    let isSpecWrite = isProtectedSpecWrite(normalizeAuditPath(normalized));
     const isSideEffect = !inScope && !isSpecWrite;
 
     if (isSpecWrite) {
@@ -97,7 +134,7 @@ export function runChangedFilesAudit(
 
   return {
     passed: violations.length === 0,
-    total_files: changedFiles.length,
+    total_files: (changedFiles ?? []).length,
     in_scope: entries.filter((e) => e.in_allowed_write_files && !e.ignored_runtime_path).length,
     out_of_scope: entries.filter((e) => !e.in_allowed_write_files && !e.is_spec_write).length,
     spec_writes: entries.filter((e) => e.is_spec_write).length,

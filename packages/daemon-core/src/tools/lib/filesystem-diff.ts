@@ -65,6 +65,34 @@ const DEFAULT_IGNORED_EXACT = new Set([
 export function normalizeFsPath(filePath: string): string {
   return filePath.replace(/\\/g, '/').replace(/^\.\//, '');
 }
+function trimTrailingSlashForGuardAudit(value: string): string {
+  return value.replace(/\/+$/g, '');
+}
+
+function stripWindowsDriveForGuardAudit(value: string): string {
+  return value.replace(/^[A-Za-z]:\//, '');
+}
+
+function normalizeForGuardAuditMatch(value: string): string {
+  return trimTrailingSlashForGuardAudit(normalizeFsPath(value).toLowerCase());
+}
+
+function guardAuditPathVariants(value: string): string[] {
+  const normalized = normalizeForGuardAuditMatch(value);
+  const withoutDrive = trimTrailingSlashForGuardAudit(stripWindowsDriveForGuardAudit(normalized));
+  const basename = normalized.split('/').filter(Boolean).pop() ?? normalized;
+  return Array.from(new Set([normalized, withoutDrive, basename].filter(Boolean)));
+}
+
+function isSameFileForGuardAudit(actualPath: string, allowedPath: string): boolean {
+  const actualVariants = guardAuditPathVariants(actualPath);
+  const allowedVariants = guardAuditPathVariants(allowedPath);
+  return actualVariants.some((actual) =>
+    allowedVariants.some((allowed) =>
+      actual === allowed || actual.endsWith(`/${allowed}`) || allowed.endsWith(`/${actual}`),
+    ),
+  );
+}
 
 export function isSpecForgeRuntimePath(filePath: string): boolean {
   const normalized = normalizeFsPath(filePath);
@@ -177,9 +205,9 @@ export function computeFilesystemDiff(
     ...deleted.map((p) => ({ path: p, change: 'deleted' as const })),
   ];
 
-  const guardedSet = new Set(writeGuardAllowedPaths.map((p) => normalizeFsPath(p)));
+  const guardedPaths = writeGuardAllowedPaths.map((p) => normalizeFsPath(p));
   const untracked = allChanges
-    .filter((c) => !guardedSet.has(normalizeFsPath(c.path)))
+    .filter((c) => !guardedPaths.some((p) => isSameFileForGuardAudit(c.path, p)))
     .map((c) => c.path);
 
   return {
