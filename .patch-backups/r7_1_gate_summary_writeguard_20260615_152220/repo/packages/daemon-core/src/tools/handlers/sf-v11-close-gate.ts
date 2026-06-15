@@ -7,7 +7,6 @@
  * - Advances work_item.json and runtime/state.json to closed after Close Gate passes.
  * - R3: synchronizes both runtime top-level state and runtime.workItems[] state.
  * - Stores full filesystem_diff evidence separately but returns only a summary to OpenCode.
- * - R7.1: refreshes stale gate_summary_gate.json after close and normalizes write_guard_log create/modify semantics from filesystem diff.
  */
 import { registerHandler } from "../ToolDispatcher.js";
 import { runCloseGate, type CloseGateResult } from "../lib/close-gate.js";
@@ -195,132 +194,6 @@ function summarizeFilesystemDiff(
       : undefined,
   };
 }
-
-function normalizePathForCompare(value: string): string {
-  return String(value ?? "").replace(/\\/g, "/").replace(/\/+/g, "/").toLowerCase();
-}
-
-function pathVariantsForCompare(projectRoot: string, value: string): string[] {
-  const raw = String(value ?? "");
-  const slash = raw.replace(/\\/g, "/").replace(/\/+/g, "/");
-  const variants = new Set<string>();
-  variants.add(normalizePathForCompare(slash));
-  try {
-    const relative = path.relative(projectRoot, raw).replace(/\\/g, "/");
-    if (relative && !relative.startsWith("..")) variants.add(normalizePathForCompare(relative));
-  } catch {
-    // ignore
-  }
-  try {
-    const absolute = path.resolve(projectRoot, raw).replace(/\\/g, "/");
-    variants.add(normalizePathForCompare(absolute));
-  } catch {
-    // ignore
-  }
-  return Array.from(variants);
-}
-
-async function normalizeWriteGuardOperationsFromDiff(
-  projectRoot: string,
-  workItemDir: string,
-  diff: FilesystemDiffResult,
-): Promise<void> {
-  const logPath = path.join(workItemDir, "write_guard_log.jsonl");
-  let content = "";
-  try {
-    content = await fs.readFile(logPath, "utf-8");
-  } catch {
-    return;
-  }
-
-  const created = new Set<string>();
-  const modified = new Set<string>();
-  const deleted = new Set<string>();
-
-  for (const p of diff.created ?? []) {
-    for (const v of pathVariantsForCompare(projectRoot, p)) created.add(v);
-  }
-  for (const p of diff.modified ?? []) {
-    for (const v of pathVariantsForCompare(projectRoot, p)) modified.add(v);
-  }
-  for (const p of diff.deleted ?? []) {
-    for (const v of pathVariantsForCompare(projectRoot, p)) deleted.add(v);
-  }
-
-  let changed = false;
-  const out: string[] = [];
-  for (const line of content.split(/\r?\n/)) {
-    if (!line.trim()) continue;
-    try {
-      const entry = JSON.parse(line);
-      const variants = pathVariantsForCompare(projectRoot, String(entry.path ?? ""));
-      const oldOperation = entry.operation;
-      if (variants.some((v) => created.has(v))) {
-        entry.operation = "create";
-      } else if (variants.some((v) => deleted.has(v))) {
-        entry.operation = "delete";
-      } else if (variants.some((v) => modified.has(v))) {
-        entry.operation = "modify";
-      }
-      if (entry.operation !== oldOperation) changed = true;
-      out.push(JSON.stringify(entry));
-    } catch {
-      out.push(line);
-    }
-  }
-
-  if (changed) {
-    await fs.writeFile(logPath, out.join("\n") + "\n", "utf-8");
-  }
-}
-
-async function writeGateSummaryGatePassed(
-  projectRoot: string,
-  workItemDir: string,
-  workItemId: string,
-): Promise<void> {
-  const summaryPath = path.join(workItemDir, "gate_summary.md");
-  try {
-    await fs.access(summaryPath);
-  } catch {
-    return;
-  }
-
-  const gatesDir = path.join(workItemDir, "gates");
-  await fs.mkdir(gatesDir, { recursive: true });
-  const now = new Date().toISOString();
-  const report = {
-    schema_version: "1.0",
-    work_item_id: workItemId,
-    gate_id: "gate_summary_gate",
-    gate_type: "hard_gate",
-    required: true,
-    status: "passed",
-    input_files: [summaryPath],
-    checks: [
-      {
-        check_id: "gate_summary_exists",
-        description: "gate_summary.md exists",
-        passed: true,
-      },
-    ],
-    blocking_issues: [],
-    warnings: [],
-    waiver_allowed: false,
-    waiver_required: false,
-    waiver_ids: [],
-    started_at: now,
-    finished_at: now,
-    runner: "gate_runner",
-  };
-
-  await fs.writeFile(
-    path.join(gatesDir, "gate_summary_gate.json"),
-    JSON.stringify(report, null, 2) + "\n",
-    "utf-8",
-  );
-}
-
 
 async function syncPermissionFacts(
   workItemJsonPath: string,
@@ -613,7 +486,6 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
         workItemDir,
         fullDiff,
       );
-      await normalizeWriteGuardOperationsFromDiff(projectRoot, workItemDir, fullDiff);
       result.filesystem_diff = summarizeFilesystemDiff(
         projectRoot,
         diffEvidencePath,
@@ -669,7 +541,6 @@ registerHandler("sf_close_gate", async (args, context, _deps) => {
       "utf-8",
     );
     await writeRuntimeClosed(projectRoot, workItemId, finalWi);
-    await writeGateSummaryGatePassed(projectRoot, workItemDir, workItemId);
 
     result.state_advanced = true;
     result.success = true;
