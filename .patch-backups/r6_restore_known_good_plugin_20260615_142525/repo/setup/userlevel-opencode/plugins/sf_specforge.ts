@@ -1,12 +1,6 @@
-﻿/**
- * sf_specforge.ts 鈥?SpecForge OpenCode Plugin with HARD Write Guard
- *
- * Fix in this version:
- * - Hard-stop latch is scoped to a valid WI ID.
- * - Invalid business slugs such as "wi-blue-hello-page" are retryable validation
- *   errors and must NOT poison the whole OpenCode session.
- * - Existing hard_stop.json records with invalid WI IDs are ignored by the plugin.
- * - A hard_stop is persisted only for valid WI identifiers.
+/**
+ * sf_specforge.ts — SpecForge OpenCode Plugin with HARD Write Guard
+ * plus OBS-FULL Layer 1 event/tool observability.
  */
 import type { Hooks, PluginInput } from "@opencode-ai/plugin";
 
@@ -22,13 +16,7 @@ function isValidWorkItemId(value: unknown): value is string {
 }
 
 function getWorkItemIdFromArgs(args: Record<string, any>): string | undefined {
-  const candidates = [
-    args.work_item_id,
-    args.workItemId,
-    args.work_item,
-    args.wi,
-    args.id,
-  ];
+  const candidates = [args.work_item_id, args.workItemId, args.work_item, args.wi, args.id];
   for (const candidate of candidates) {
     if (typeof candidate === "string" && candidate.length > 0) return candidate;
   }
@@ -57,8 +45,26 @@ function resolveClientPath(): string {
   );
 }
 
+function resolveObservabilityPath(): string {
+  const localPath = resolve(__dirname, "..", "tools", "lib", "sf-observability.ts");
+  if (existsSync(localPath)) return localPath;
+
+  const altPath = resolve(__dirname, "..", "lib", "sf-observability.ts");
+  if (existsSync(altPath)) return altPath;
+
+  throw new Error(`[sf:specforge] Cannot locate sf-observability.ts. Checked: ${localPath}, ${altPath}`);
+}
+
 const clientPath = resolveClientPath();
+const observabilityPath = resolveObservabilityPath();
+
 const { createReconnectingDaemonClient } = await import(pathToFileURL(clientPath).href);
+const {
+  createSfTraceId,
+  recordSfObservation,
+  byteLength,
+  sha256,
+} = await import(pathToFileURL(observabilityPath).href);
 
 const daemonClient = createReconnectingDaemonClient({
   initialDelayMs: 1000,
@@ -147,16 +153,7 @@ const SIDE_EFFECT_TOOLS = new Set([
   "snapshot_update",
 ]);
 
-const SHELL_TOOLS = new Set([
-  "bash",
-  "shell",
-  "execute",
-  "run",
-  "terminal",
-  "cmd",
-  "powershell",
-  "sf_safe_bash",
-]);
+const SHELL_TOOLS = new Set(["bash", "shell", "execute", "run", "terminal", "cmd", "powershell", "sf_safe_bash"]);
 
 const NON_FILESYSTEM_PLANNING_TOOLS = new Set([
   "todowrite",
@@ -179,9 +176,6 @@ const SPECFORGE_CONTROL_TOOLS = new Set([
   "sfcodepermission",
   "sf_changed_files_audit",
   "sfchangedfilesaudit",
-  // v1.1 controlled WI artifact writer. It writes through daemon-side
-  // work_item_id/file_type/path/schema/hard_stop validation and must not be
-  // treated as a generic filesystem write tool by the plugin.
   "sf_artifact_write",
   "sfartifactwrite",
   "sf_close_gate",
@@ -231,13 +225,7 @@ const SF_SAFE_READ_TOOLS = new Set([
 function isWriteTool(toolName: string): boolean {
   const normalized = normalizeToolName(toolName);
   if (NON_FILESYSTEM_PLANNING_TOOLS.has(normalized)) return false;
-  if (SPECFORGE_CONTROL_TOOLS.has(toolName) || SPECFORGE_CONTROL_TOOLS.has(normalized)) {
-    // Controlled SpecForge tools are still protected by the hard_stop latch,
-    // but they are validated by their daemon handlers rather than the generic
-    // file-path WriteGuard. This is especially important for sf_artifact_write,
-    // whose target path is derived from work_item_id + file_type.
-    return false;
-  }
+  if (SPECFORGE_CONTROL_TOOLS.has(toolName) || SPECFORGE_CONTROL_TOOLS.has(normalized)) return false;
   if (WRITE_TOOLS.has(toolName) || WRITE_TOOLS.has(normalized)) return true;
   if (normalized.includes("write") || normalized.includes("edit")) return true;
   if (normalized.includes("patch") || normalized.includes("create")) return true;
@@ -278,31 +266,39 @@ function extractWriteTargets(_toolName: string, args: Record<string, any>): stri
     "name",
     "to",
   ];
+
   for (const key of pathKeys) {
     if (args[key] && typeof args[key] === "string") paths.push(args[key]);
   }
+
   if (Array.isArray(args.files)) {
     for (const f of args.files) {
       if (typeof f === "string") paths.push(f);
       else if (f && typeof f.path === "string") paths.push(f.path);
     }
   }
+
   if (Array.isArray(args.patches)) {
     for (const p of args.patches) {
       if (p && typeof p.path === "string") paths.push(p.path);
     }
   }
+
   return paths;
 }
 
 function extractBashExpectedFiles(args: Record<string, any>): string[] {
-  if (Array.isArray(args.expected_write_files)) {
-    return args.expected_write_files.filter((f: any) => typeof f === "string");
-  }
-  if (Array.isArray(args.expectedWriteFiles)) {
-    return args.expectedWriteFiles.filter((f: any) => typeof f === "string");
-  }
+  if (Array.isArray(args.expected_write_files)) return args.expected_write_files.filter((f: any) => typeof f === "string");
+  if (Array.isArray(args.expectedWriteFiles)) return args.expectedWriteFiles.filter((f: any) => typeof f === "string");
   return [];
+}
+
+function getToolArgs(primary: any, secondary: any): Record<string, any> {
+  const merged: Record<string, any> = {};
+  if (secondary?.args && typeof secondary.args === "object") Object.assign(merged, secondary.args);
+  if (primary?.args && typeof primary.args === "object") Object.assign(merged, primary.args);
+  if (primary?.input && typeof primary.input === "object") Object.assign(merged, primary.input);
+  return merged;
 }
 
 function isBashReadOnly(command: string): boolean {
@@ -387,40 +383,28 @@ function isBashWriteCommand(command: string): boolean {
   return writePatterns.some((p) => p.test(command));
 }
 
-const MAX_EVENT_PAYLOAD_BYTES = 48 * 1024;
-const METADATA_ONLY_EVENT_TYPES = new Set([
-  "llm.messages",
-  "llm.context.prepared",
-  "chat.params",
-  "chat.headers",
-]);
 let currentSessionId = "unknown";
 
-function truncatePayload(type: string, data: unknown): unknown {
-  if (METADATA_ONLY_EVENT_TYPES.has(type)) {
-    const meta: Record<string, any> = { _truncated: true, _originalType: type };
-    if (data && typeof data === "object") {
-      const d = data as Record<string, any>;
-      if (d.sessionID) meta.sessionID = d.sessionID;
-      if (Array.isArray(d.messages)) meta.messageCount = d.messages.length;
-    }
-    return meta;
-  }
-  try {
-    const serialized = JSON.stringify(data);
-    if (serialized.length > MAX_EVENT_PAYLOAD_BYTES) {
-      return { _truncated: true, _originalType: type, _originalSize: serialized.length };
-    }
-  } catch {
-    return { _truncated: true, _originalType: type, _error: "unserializable" };
-  }
-  return data;
+function recordPluginObservation(projectDir: string, input: {
+  category: "event" | "tool-call" | "plugin" | "error";
+  phase: string;
+  trace_id?: string;
+  tool_name?: string;
+  event_type?: string;
+  status?: string;
+  payload?: unknown;
+  error?: unknown;
+  metadata?: Record<string, unknown>;
+}) {
+  recordSfObservation({
+    projectRoot: projectDir,
+    ...input,
+  });
 }
 
 async function postEvent(type: string, data: unknown): Promise<void> {
   try {
-    const safeData = truncatePayload(type, data);
-    await daemonClient.postEvent(currentSessionId, type, safeData);
+    await daemonClient.postEvent(currentSessionId, type, data);
   } catch {
     // Telemetry is best-effort; never block on failure.
   }
@@ -468,16 +452,13 @@ function findAnyValidHardStopRecord(projectDir: string): any | null {
   return null;
 }
 
-function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Record<string, any>) {
+function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Record<string, any>): void {
   const argWorkItemId = getWorkItemIdFromArgs(args);
   let record: any | null = null;
 
-  // If this tool targets a valid WI, only that WI's hard_stop may block it.
   if (isValidWorkItemId(argWorkItemId)) {
     record = readHardStopRecord(projectDir, argWorkItemId);
   } else if (!argWorkItemId && (isWriteTool(toolName) || isShellTool(toolName))) {
-    // Raw write/shell tools do not carry a WI. Block them only if a valid WI is
-    // currently blocked. Invalid slug latches are ignored and never global.
     record = findAnyValidHardStopRecord(projectDir);
   }
 
@@ -492,13 +473,10 @@ function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Re
 
 function persistHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
   if (!isValidWorkItemId(workItemId)) {
-    console.warn(
-      `[SF HardStop] NOT persisted for invalid/retryable work_item_id "${String(
-        workItemId ?? "",
-      )}" from ${sourceTool}.`,
-    );
+    console.warn(`[SF HardStop] NOT persisted for invalid/retryable work_item_id "${String(workItemId ?? "")}" from ${sourceTool}.`);
     return;
   }
+
   try {
     const { writeFileSync, mkdirSync } = require("node:fs");
     const wiDir = join(projectDir, ".specforge", "work-items", workItemId);
@@ -511,7 +489,15 @@ function persistHardStop(projectDir: string, workItemId: unknown, reason: string
       created_at: new Date().toISOString(),
     };
     writeFileSync(join(wiDir, "hard_stop.json"), JSON.stringify(record, null, 2) + "\n", "utf-8");
-    console.error(`[SF HardStop] LATCH SET for ${workItemId} 鈥?reason: ${reason}, source: ${sourceTool}`);
+    recordPluginObservation(projectDir, {
+      category: "event",
+      phase: "hard_stop.persisted",
+      status: "blocked",
+      tool_name: sourceTool,
+      payload: record,
+      force: true,
+    } as any);
+    console.error(`[SF HardStop] LATCH SET for ${workItemId} — reason: ${reason}, source: ${sourceTool}`);
   } catch (e) {
     console.error(`[SF HardStop] Failed to persist latch: ${(e as Error).message}`);
   }
@@ -557,41 +543,74 @@ function assertCodePermissionEnableHasAllowedFiles(projectDir: string, toolName:
 export async function sf_specforge(input: PluginInput): Promise<Hooks> {
   const projectDir = (input as any).directory ?? process.cwd();
 
+  recordPluginObservation(projectDir, {
+    category: "plugin",
+    phase: "plugin.init",
+    status: "started",
+    payload: {
+      directory: (input as any).directory,
+      worktree: (input as any).worktree,
+      project: (input as any).project,
+    },
+  });
+
   try {
     await daemonClient.register(projectDir);
     console.log(`[sf:specforge] Project registered: ${projectDir}`);
+    recordPluginObservation(projectDir, {
+      category: "plugin",
+      phase: "plugin.register",
+      status: "success",
+      payload: { projectDir },
+    });
   } catch (e) {
-    console.warn(
-      `[sf:specforge] Project registration failed (will retry on first tool call): ${(e as Error).message}`,
-    );
+    console.warn(`[sf:specforge] Project registration failed (will retry on first tool call): ${(e as Error).message}`);
+    recordPluginObservation(projectDir, {
+      category: "error",
+      phase: "plugin.register",
+      status: "error",
+      error: { message: (e as Error).message, stack: (e as Error).stack },
+      force: true,
+    });
   }
 
   return {
     "tool.execute.before": async (i: any, o: any) => {
+      const trace_id = createSfTraceId();
       const toolName: string = i.tool ?? "";
-      const args: Record<string, any> = o.args ?? {};
-      postEvent("tool.invoking", { tool: toolName, callID: i.callID, args });
+      const args: Record<string, any> = getToolArgs(i, o);
+
+      recordPluginObservation(projectDir, {
+        category: "tool-call",
+        phase: "tool.execute.before",
+        trace_id,
+        tool_name: toolName,
+        status: "started",
+        payload: { input: i, output: o, args },
+        metadata: {
+          args_bytes: byteLength(args),
+          input_bytes: byteLength(i),
+          output_bytes: byteLength(o),
+          args_sha256: sha256(args),
+        },
+      });
+
+      postEvent("tool.invoking", { tool: toolName, callID: i.callID, args, trace_id });
 
       const safeRead = SF_SAFE_READ_TOOLS.has(toolName);
-      const shouldCheckHardStop =
-        isWriteTool(toolName) || isShellTool(toolName) || (isSfTool(toolName) && !safeRead);
+      const shouldCheckHardStop = isWriteTool(toolName) || isShellTool(toolName) || (isSfTool(toolName) && !safeRead);
       if (shouldCheckHardStop) {
         assertNoRelevantHardStop(projectDir, toolName, args);
       }
 
-      // Program-level guard: do not rely on the agent prompt to pass the
-      // file allowlist. If code permission is enabled without allowed files,
-      // latch hard_stop immediately before any executor/subagent can proceed.
       assertCodePermissionEnableHasAllowedFiles(projectDir, toolName, args);
 
       if (isWriteTool(toolName)) {
         const targets = extractWriteTargets(toolName, args);
         if (targets.length === 0) {
-          throw new Error(
-            `[SF WriteGuard] Write tool "${toolName}" invoked without detectable file path. ` +
-              `Cannot validate write permission. Blocked.`,
-          );
+          throw new Error(`[SF WriteGuard] Write tool "${toolName}" invoked without detectable file path. Cannot validate write permission. Blocked.`);
         }
+
         for (const targetPath of targets) {
           let result: any;
           try {
@@ -599,19 +618,15 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
               tool: toolName,
               callID: i.callID,
               directory: projectDir,
+              trace_id,
             });
           } catch (e) {
-            throw new Error(
-              `[SF WriteGuard] Cannot reach daemon to validate write to "${targetPath}". ` +
-                `Failing closed. Error: ${(e as Error).message}`,
-            );
+            throw new Error(`[SF WriteGuard] Cannot reach daemon to validate write to "${targetPath}". Failing closed. Error: ${(e as Error).message}`);
           }
+
           if (!result.allowed) {
             maybePersistHardStopFromGuardResult(projectDir, toolName, args, result);
-            throw new Error(
-              `[SF WriteGuard] BLOCKED write to "${targetPath}" by tool "${toolName}". ` +
-                `Reason: ${result.reason ?? result.error ?? "policy_violation"}`,
-            );
+            throw new Error(`[SF WriteGuard] BLOCKED write to "${targetPath}" by tool "${toolName}". Reason: ${result.reason ?? result.error ?? "policy_violation"}`);
           }
         }
         return;
@@ -620,8 +635,10 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
       if (isShellTool(toolName)) {
         const command: string = args.command ?? args.cmd ?? args.input ?? "";
         if (isBashReadOnly(command)) return;
+
         const isWrite = isBashWriteCommand(command);
         const expectedFiles = extractBashExpectedFiles(args);
+
         if (isWrite || expectedFiles.length > 0) {
           let result: any;
           try {
@@ -629,19 +646,15 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
               tool: toolName,
               callID: i.callID,
               directory: projectDir,
+              trace_id,
             });
           } catch (e) {
-            throw new Error(
-              `[SF WriteGuard] Cannot reach daemon to validate bash command. Failing closed. ` +
-                `Command: "${command.slice(0, 100)}". Error: ${(e as Error).message}`,
-            );
+            throw new Error(`[SF WriteGuard] Cannot reach daemon to validate bash command. Failing closed. Command: "${command.slice(0, 100)}". Error: ${(e as Error).message}`);
           }
+
           if (!result.allowed) {
             maybePersistHardStopFromGuardResult(projectDir, toolName, args, result);
-            throw new Error(
-              `[SF WriteGuard] BLOCKED bash command: "${command.slice(0, 120)}". ` +
-                `Reason: ${result.reason ?? result.error ?? "policy_violation"}`,
-            );
+            throw new Error(`[SF WriteGuard] BLOCKED bash command: "${command.slice(0, 120)}". Reason: ${result.reason ?? result.error ?? "policy_violation"}`);
           }
           return;
         }
@@ -653,40 +666,50 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
             callID: i.callID,
             directory: projectDir,
             ambiguous: true,
+            trace_id,
           });
         } catch (e) {
-          throw new Error(
-            `[SF WriteGuard] Ambiguous bash command and daemon unreachable. Blocked for safety. ` +
-              `Command: "${command.slice(0, 100)}". Error: ${(e as Error).message}`,
-          );
+          throw new Error(`[SF WriteGuard] Ambiguous bash command and daemon unreachable. Blocked for safety. Command: "${command.slice(0, 100)}". Error: ${(e as Error).message}`);
         }
+
         if (!result.allowed) {
           maybePersistHardStopFromGuardResult(projectDir, toolName, args, result);
           throw new Error(
             `[SF WriteGuard] BLOCKED ambiguous bash command: "${command.slice(0, 120)}". ` +
-              `No expected_write_files declared and command intent unclear. ` +
-              `Reason: ${result.reason ?? result.error ?? "undeclared_write_intent"}`,
+              `No expected_write_files declared and command intent unclear. Reason: ${result.reason ?? result.error ?? "undeclared_write_intent"}`,
           );
         }
       }
     },
 
     "tool.execute.after": async (i: any, o: any) => {
+      const trace_id = createSfTraceId();
       const toolName: string = i.tool ?? "";
-      const args: Record<string, any> = i.args ?? o.args ?? {};
+      const args: Record<string, any> = getToolArgs(i, o);
       const output = o.output ?? o.result ?? "";
-      postEvent("tool.invoked", { tool: toolName, callID: i.callID });
+
+      recordPluginObservation(projectDir, {
+        category: "tool-call",
+        phase: "tool.execute.after",
+        trace_id,
+        tool_name: toolName,
+        status: "completed",
+        payload: { input: i, output: o, args },
+        metadata: {
+          args_bytes: byteLength(args),
+          output_bytes: byteLength(output),
+          args_sha256: sha256(args),
+          output_sha256: sha256(output),
+        },
+      });
+
+      postEvent("tool.invoked", { tool: toolName, callID: i.callID, trace_id });
 
       if (isSfTool(toolName)) {
         const toolOutput = parseToolOutput(output);
         if (toolOutput && toolOutput.hard_stop === true) {
           const workItemId = toolOutput.work_item_id ?? getWorkItemIdFromArgs(args);
-          persistHardStop(
-            projectDir,
-            workItemId,
-            toolOutput.error ?? toolOutput.reason ?? "HARD_STOP_FROM_TOOL",
-            toolName,
-          );
+          persistHardStop(projectDir, workItemId, toolOutput.error ?? toolOutput.reason ?? "HARD_STOP_FROM_TOOL", toolName);
         }
       }
 
@@ -700,13 +723,16 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
             tool: toolName,
             toolCategory: isSideEffectTool(toolName) ? "side_effect" : "write",
             directory: projectDir,
+            trace_id,
           });
+
           if (auditResult?.escapedWrites?.length > 0) {
             console.error(
               `[SF WriteGuard] ESCAPED WRITES DETECTED after ${toolName}:\n` +
                 ` Expected: [${expectedFiles.join(", ")}]\n` +
                 ` Escaped: [${auditResult.escapedWrites.join(", ")}]`,
             );
+
             await daemonClient.recordEscapedWrite({
               command: `tool:${toolName}`,
               expectedFiles,
@@ -714,6 +740,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
               callID: i.callID,
               timestamp: new Date().toISOString(),
               directory: projectDir,
+              trace_id,
             });
           }
         } catch (e) {
@@ -727,6 +754,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
       const command: string = args.command ?? args.cmd ?? args.input ?? "";
       const expectedFiles = extractBashExpectedFiles(args);
       if (isBashReadOnly(command) && expectedFiles.length === 0) return;
+
       try {
         const auditResult = await daemonClient.changedFilesAudit({
           command,
@@ -734,7 +762,9 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
           callID: i.callID,
           tool: toolName,
           directory: projectDir,
+          trace_id,
         });
+
         if (auditResult?.escapedWrites?.length > 0) {
           console.error(
             `[SF WriteGuard] ESCAPED WRITES DETECTED after bash command:\n` +
@@ -742,6 +772,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
               ` Expected: [${expectedFiles.join(", ")}]\n` +
               ` Escaped: [${auditResult.escapedWrites.join(", ")}]`,
           );
+
           await daemonClient.recordEscapedWrite({
             command,
             expectedFiles,
@@ -749,6 +780,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
             callID: i.callID,
             timestamp: new Date().toISOString(),
             directory: projectDir,
+            trace_id,
           });
         }
       } catch (e) {
@@ -757,44 +789,111 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
     },
 
     event: async (i: any) => {
+      const trace_id = createSfTraceId();
       const evt = i.event;
+
       if (evt && typeof evt === "object") {
         const eventType: string = typeof evt.type === "string" ? evt.type : "unknown";
         if (evt.properties?.sessionID) currentSessionId = evt.properties.sessionID;
+
+        recordPluginObservation(projectDir, {
+          category: "event",
+          phase: "opencode.event",
+          trace_id,
+          event_type: eventType,
+          session_id: evt.properties?.sessionID,
+          status: "received",
+          payload: { id: evt.id, type: eventType, properties: evt.properties, raw: evt },
+        });
+
         await postEvent(`opencode.${eventType}`, {
           id: evt.id,
           type: eventType,
           sessionID: evt.properties?.sessionID,
           properties: evt.properties,
+          trace_id,
         });
       } else {
-        await postEvent("opencode.event", { raw: typeof evt });
+        recordPluginObservation(projectDir, {
+          category: "event",
+          phase: "opencode.event",
+          trace_id,
+          event_type: "unknown",
+          status: "received",
+          payload: { raw: typeof evt },
+        });
+        await postEvent("opencode.event", { raw: typeof evt, trace_id });
       }
     },
 
     "experimental.session.compacting": async (i: any) => {
+      const trace_id = createSfTraceId();
       if (i.sessionID) currentSessionId = i.sessionID;
-      await postEvent("session.compacting", { sessionID: i.sessionID });
+      recordPluginObservation(projectDir, {
+        category: "event",
+        phase: "experimental.session.compacting",
+        trace_id,
+        session_id: i.sessionID,
+        status: "received",
+        payload: i,
+      });
+      await postEvent("session.compacting", { sessionID: i.sessionID, trace_id });
     },
 
     "experimental.chat.system.transform": async (i: any, o: any) => {
+      const trace_id = createSfTraceId();
       if (i.sessionID) currentSessionId = i.sessionID;
-      await postEvent("llm.context.prepared", { system: o.system, sessionID: i.sessionID });
+      recordPluginObservation(projectDir, {
+        category: "event",
+        phase: "experimental.chat.system.transform",
+        trace_id,
+        session_id: i.sessionID,
+        status: "received",
+        payload: { input: i, output: o },
+      });
+      await postEvent("llm.context.prepared", { system: o.system, sessionID: i.sessionID, trace_id });
     },
 
-    "experimental.chat.messages.transform": async (_i: any, o: any) => {
-      await postEvent("llm.messages", { messages: o.messages });
+    "experimental.chat.messages.transform": async (i: any, o: any) => {
+      const trace_id = createSfTraceId();
+      recordPluginObservation(projectDir, {
+        category: "event",
+        phase: "experimental.chat.messages.transform",
+        trace_id,
+        session_id: i?.sessionID,
+        status: "received",
+        payload: { input: i, output: o },
+      });
+      await postEvent("llm.messages", { messages: o.messages, trace_id });
     },
 
     "chat.params": async (i: any, o: any) => {
+      const trace_id = createSfTraceId();
       if (i.sessionID) currentSessionId = i.sessionID;
-      await postEvent("chat.params", { params: o, sessionID: i.sessionID });
+      recordPluginObservation(projectDir, {
+        category: "event",
+        phase: "chat.params",
+        trace_id,
+        session_id: i.sessionID,
+        status: "received",
+        payload: { input: i, output: o },
+      });
+      await postEvent("chat.params", { params: o, sessionID: i.sessionID, trace_id });
     },
 
     "chat.headers": async (i: any, o: any) => {
-      const safe = { ...o.headers };
+      const trace_id = createSfTraceId();
+      const safe = { ...(o?.headers ?? {}) };
       if (safe.Authorization) safe.Authorization = "Bearer ****";
-      await postEvent("chat.headers", { headers: safe, sessionID: i.sessionID });
+      recordPluginObservation(projectDir, {
+        category: "event",
+        phase: "chat.headers",
+        trace_id,
+        session_id: i.sessionID,
+        status: "received",
+        payload: { input: i, output: { ...o, headers: safe } },
+      });
+      await postEvent("chat.headers", { headers: safe, sessionID: i.sessionID, trace_id });
     },
   };
 }
