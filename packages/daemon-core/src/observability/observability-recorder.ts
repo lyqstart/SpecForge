@@ -1,7 +1,7 @@
 /**
  * SpecForge OBS-FULL Layer 1 — daemon observability recorder.
  *
- * R3 changes:
+ * R4 simple mode:
  * - payload/error files remain content-addressed by sha256.
  * - daemon observations obey category/phase filters in observability.json.
  * - blocked OpenCode event phases such as opencode.message.part.updated are not recorded.
@@ -165,7 +165,7 @@ export function recordDaemonObservation(
         : undefined;
 
     const record = {
-      schema_version: "1.2",
+      schema_version: "1.4",
       source: "daemon",
       timestamp: new Date().toISOString(),
       trace_id,

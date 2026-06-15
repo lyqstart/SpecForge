@@ -1,7 +1,7 @@
 /**
  * SpecForge OBS-FULL Layer 1 — userlevel observability recorder.
  *
- * R3 changes:
+ * R4 simple mode:
  * - userlevel observations obey configurable event filters from observability.json.
  * - blocked events such as message.part.updated are not recorded at all.
  * - raw_context is summary-only by default; full raw context requires capture_raw_context_full=true.
@@ -473,7 +473,7 @@ function summarizeEventPayload(
         messages_sha256: sha256(messageList),
         original_payload_sha256: originalHash,
         original_payload_bytes: originalBytes,
-        note: "R3: full chat messages transform payload is filtered; only summary/hash is recorded.",
+        note: "R4: full chat messages transform payload is filtered; only summary/hash is recorded.",
       },
       event_type: eventType,
       session_id: sessionId,
@@ -507,7 +507,7 @@ function summarizeEventPayload(
         previous_hash: prevHash ?? null,
         current_hash: originalHash,
         original_payload_bytes: originalBytes,
-        note: "R3: high-frequency message/session event stored as per-turn incremental summary, not full snapshot.",
+        note: "R4: high-frequency message/session event stored as per-turn incremental summary, not full snapshot.",
       },
       event_type: eventType,
       session_id: sessionId,
@@ -531,7 +531,7 @@ function summarizeEventPayload(
         message_id: messageId,
         original_payload_sha256: originalHash,
         original_payload_bytes: originalBytes,
-        note: "R3: event payload filtered/summarized by observability.json; full payload not stored.",
+        note: "R4: event payload filtered/summarized by observability.json; full payload not stored.",
       },
       event_type: eventType,
       session_id: sessionId,
@@ -648,7 +648,7 @@ export function recordSfObservation(
         : undefined;
 
     const record = {
-      schema_version: "1.2",
+      schema_version: "1.4",
       source: "userlevel",
       timestamp: new Date().toISOString(),
       trace_id,
@@ -728,4 +728,40 @@ export function extractMinimalToolContext(
     if (c[key] !== undefined) out[key] = c[key];
   }
   return out;
+}
+
+
+/**
+ * R4：供 OpenCode plugin 在事件入口处使用。
+ * 返回 true 表示这个事件完全忽略：不写 userlevel OBS，也不发送到 daemon。
+ */
+export function shouldIgnoreSfObservationEvent(projectRoot: string, eventType?: string, phase?: string): boolean {
+  const config = loadSfObservabilityConfig(resolveProjectRoot({ directory: projectRoot }));
+  return !shouldCaptureEvent(config, eventType, phase);
+}
+
+/**
+ * R4：发送给 daemon 的事件 payload 摘要。
+ * 目标是不把完整 messages / session / part payload 传给 daemon。
+ */
+export function summarizeOpenCodeEventForDaemon(eventType: string, payload: unknown): unknown {
+  const eventName = eventType || "unknown";
+  const p = payload as any;
+  const messages = Array.isArray(p?.messages)
+    ? p.messages
+    : Array.isArray(p?.output?.messages)
+      ? p.output.messages
+      : undefined;
+  const properties = p?.properties && typeof p.properties === "object" ? p.properties : undefined;
+  return {
+    event_type: eventName,
+    sessionID: p?.sessionID ?? p?.sessionId ?? properties?.sessionID ?? properties?.session_id,
+    messageID: p?.messageID ?? p?.messageId ?? properties?.messageID ?? properties?.message_id ?? properties?.part?.messageID,
+    partID: p?.partID ?? p?.partId ?? properties?.partID ?? properties?.part?.id,
+    message_count: messages ? messages.length : undefined,
+    payload_sha256: sha256(payload),
+    payload_bytes: byteLength(payload),
+    properties_keys: properties ? Object.keys(properties).sort() : undefined,
+    note: "R4: daemon event payload is summarized; full OpenCode message/session payload is not forwarded.",
+  };
 }

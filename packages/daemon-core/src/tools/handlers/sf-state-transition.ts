@@ -106,11 +106,9 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   let resolvedWorkflowType: string | undefined = rawWorkflowType;
   const useV11 = (args["use_v11_state_machine"] as boolean) || !!rawWorkflowPath;
 
-  if (rawWorkflowPath && !rawWorkflowType) {
+  if (rawWorkflowPath) {
     const mapped = WORKFLOW_PATH_TO_TYPE[rawWorkflowPath as WorkflowPath];
-    if (mapped) {
-      resolvedWorkflowType = mapped;
-    } else {
+    if (!mapped) {
       return {
         success: false,
         error: `Unknown workflow_path: ${rawWorkflowPath}. Valid paths: ${Object.keys(
@@ -118,6 +116,10 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         ).join(", ")}`,
       };
     }
+
+    // R4：workflow_path 是主判定。Agent 传错 workflow_type 时，daemon 必须纠偏。
+    // 典型错误：workflow_path=code_only_fast_path，但 workflow_type=feature_spec。
+    resolvedWorkflowType = mapped;
   }
 
   if (useV11) {

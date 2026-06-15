@@ -116,13 +116,37 @@ async function writeRuntimeClosed(
   } catch {
     state = {};
   }
+  const now = new Date().toISOString();
+  const workflowType = workItem.workflow_type ?? state.workflow_type ?? "quick_change";
+  const workflowPath = workItem.workflow_path ?? state.workflow_path;
+
   state.work_item_id = workItemId;
-  state.workflow_type =
-    workItem.workflow_type ?? state.workflow_type ?? "quick_change";
-  state.workflow_path = workItem.workflow_path ?? state.workflow_path;
+  state.workflow_type = workflowType;
+  state.workflow_path = workflowPath;
   state.current_state = "closed";
-  state.closed_at = workItem.closed_at ?? new Date().toISOString();
-  state.updated_at = new Date().toISOString();
+  state.closed_at = workItem.closed_at ?? now;
+  state.updated_at = now;
+
+  // R4：同步旧结构 workItems[]，避免顶层 closed、workItems[] 仍 gates_running/created。
+  if (!Array.isArray(state.workItems)) {
+    state.workItems = [];
+  }
+  const existingIndex = state.workItems.findIndex((item: any) => item?.work_item_id === workItemId);
+  const closedItem = {
+    ...(existingIndex >= 0 ? state.workItems[existingIndex] : {}),
+    work_item_id: workItemId,
+    workflow_type: workflowType,
+    workflow_path: workflowPath,
+    current_state: "closed",
+    status: "closed",
+    closed_at: workItem.closed_at ?? now,
+    updated_at: now,
+  };
+  if (existingIndex >= 0) {
+    state.workItems[existingIndex] = closedItem;
+  } else {
+    state.workItems.push(closedItem);
+  }
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(state, null, 2) + "\n", "utf-8");
 }

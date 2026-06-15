@@ -1,10 +1,9 @@
 /**
  * SpecForge OBS-FULL Layer 1 — daemon observability config.
  *
- * R3:
- * - Adds configurable category/phase filters for daemon-side observations.
- * - OpenCode event phases can be ignored before being written by daemon recorder.
- * - Full payload capture defaults to file-only, with zero inline bytes unless configured.
+ * R4 simple mode:
+ * - 不做复杂 category/phase allowlist/blocklist。
+ * - 只保留 ignored_events，用于过滤从 OpenCode 转发来的高频事件。
  */
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -24,13 +23,16 @@ export interface SfObservabilityConfig {
   redact_secrets: boolean;
   max_inline_payload_bytes: number;
   payload_storage: PayloadStorageMode;
-
-  observation_category_allowlist: string[];
-  observation_category_blocklist: string[];
-  observation_phase_allowlist: string[];
-  observation_phase_blocklist: string[];
-  event_blocklist: string[];
+  ignored_events: string[];
 }
+
+export const DEFAULT_IGNORED_EVENTS = [
+  "message.part.updated",
+  "message.updated",
+  "session.updated",
+  "session.status",
+  "session.diff",
+];
 
 export const DISABLED_OBSERVABILITY_CONFIG: SfObservabilityConfig = {
   enabled: false,
@@ -44,11 +46,7 @@ export const DISABLED_OBSERVABILITY_CONFIG: SfObservabilityConfig = {
   redact_secrets: true,
   max_inline_payload_bytes: 0,
   payload_storage: "none",
-  observation_category_allowlist: [],
-  observation_category_blocklist: [],
-  observation_phase_allowlist: [],
-  observation_phase_blocklist: [],
-  event_blocklist: [],
+  ignored_events: [],
 };
 
 export const VISIBLE_DEFAULT_OBSERVABILITY_CONFIG: SfObservabilityConfig = {
@@ -63,17 +61,7 @@ export const VISIBLE_DEFAULT_OBSERVABILITY_CONFIG: SfObservabilityConfig = {
   redact_secrets: true,
   max_inline_payload_bytes: 0,
   payload_storage: "file",
-  observation_category_allowlist: [],
-  observation_category_blocklist: [],
-  observation_phase_allowlist: [],
-  observation_phase_blocklist: [],
-  event_blocklist: [
-    "message.part.updated",
-    "message.updated",
-    "session.updated",
-    "session.status",
-    "session.diff",
-  ],
+  ignored_events: [...DEFAULT_IGNORED_EVENTS],
 };
 
 function normalizeLevel(value: unknown, fallback: SfObservabilityLevel): SfObservabilityLevel {
@@ -100,30 +88,24 @@ function asStringArray(value: unknown, fallback: string[]): string[] {
   return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0).map((item) => item.trim());
 }
 
-export function matchesPattern(value: string, pattern: string): boolean {
-  if (!pattern) return false;
+export function matchesEvent(value: string, pattern: string): boolean {
+  if (!value || !pattern) return false;
   if (pattern === "*") return true;
-  if (pattern.endsWith("*")) return value.startsWith(pattern.slice(0, -1));
+  if (pattern.endsWith(".*")) return value === pattern.slice(0, -2) || value.startsWith(pattern.slice(0, -1));
   return value === pattern;
 }
 
-export function matchesAnyPattern(value: string, patterns: string[]): boolean {
-  return patterns.some((pattern) => matchesPattern(value, pattern));
+export function shouldIgnoreDaemonEvent(config: SfObservabilityConfig, phase: string): boolean {
+  const eventName = phase.startsWith("opencode.") ? phase.slice("opencode.".length) : phase;
+  return config.ignored_events.some((pattern) => matchesEvent(eventName, pattern));
 }
 
 export function shouldRecordObservationByConfig(
   config: SfObservabilityConfig,
-  category: string,
+  _category: string,
   phase: string,
 ): boolean {
-  if (config.observation_category_allowlist.length > 0 && !matchesAnyPattern(category, config.observation_category_allowlist)) return false;
-  if (matchesAnyPattern(category, config.observation_category_blocklist)) return false;
-  if (config.observation_phase_allowlist.length > 0 && !matchesAnyPattern(phase, config.observation_phase_allowlist)) return false;
-  if (matchesAnyPattern(phase, config.observation_phase_blocklist)) return false;
-
-  // daemon 侧如果接收到 opencode.message.part.updated 这种 phase，也按事件名过滤。
-  const eventLikePhase = phase.startsWith("opencode.") ? phase.slice("opencode.".length) : phase;
-  if (matchesAnyPattern(eventLikePhase, config.event_blocklist)) return false;
+  if (shouldIgnoreDaemonEvent(config, phase)) return false;
   return true;
 }
 
@@ -143,16 +125,17 @@ export function loadSfObservabilityConfig(projectRoot: string): SfObservabilityC
   if (!fs.existsSync(configPath)) return { ...DISABLED_OBSERVABILITY_CONFIG };
 
   try {
-    const parsed = JSON.parse(fs.readFileSync(configPath, "utf-8")) as Partial<SfObservabilityConfig>;
+    const parsed = JSON.parse(fs.readFileSync(configPath, "utf-8")) as Partial<SfObservabilityConfig> & Record<string, unknown>;
     const merged: SfObservabilityConfig = {
       ...VISIBLE_DEFAULT_OBSERVABILITY_CONFIG,
       ...parsed,
-      observation_category_allowlist: asStringArray(parsed.observation_category_allowlist, VISIBLE_DEFAULT_OBSERVABILITY_CONFIG.observation_category_allowlist),
-      observation_category_blocklist: asStringArray(parsed.observation_category_blocklist, VISIBLE_DEFAULT_OBSERVABILITY_CONFIG.observation_category_blocklist),
-      observation_phase_allowlist: asStringArray(parsed.observation_phase_allowlist, VISIBLE_DEFAULT_OBSERVABILITY_CONFIG.observation_phase_allowlist),
-      observation_phase_blocklist: asStringArray(parsed.observation_phase_blocklist, VISIBLE_DEFAULT_OBSERVABILITY_CONFIG.observation_phase_blocklist),
-      event_blocklist: asStringArray(parsed.event_blocklist, VISIBLE_DEFAULT_OBSERVABILITY_CONFIG.event_blocklist),
+      ignored_events: asStringArray(parsed.ignored_events, VISIBLE_DEFAULT_OBSERVABILITY_CONFIG.ignored_events),
     };
+
+    // 兼容 R3 旧字段，但不再推荐。
+    if (Array.isArray(parsed.event_blocklist) && !Array.isArray(parsed.ignored_events)) {
+      merged.ignored_events = asStringArray(parsed.event_blocklist, VISIBLE_DEFAULT_OBSERVABILITY_CONFIG.ignored_events);
+    }
 
     merged.enabled = asBool(parsed.enabled, merged.enabled);
     merged.level = normalizeLevel(parsed.level, merged.level);
