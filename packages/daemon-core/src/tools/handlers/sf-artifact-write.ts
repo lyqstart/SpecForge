@@ -53,6 +53,36 @@ const V11_FILETYPE_TO_FILENAME = new Map(
   Object.entries(V11_FILENAME_MAP).map(([filename, fileType]) => [fileType, filename]),
 )
 
+function mirrorSpecCandidateArtifacts(
+  baseDir: string,
+  workItemId: string,
+  targetFilename: string,
+  content: string,
+  primaryTargetPath: string,
+): void {
+  const mirrorable = new Set(['requirements.md', 'design.md', 'tasks.md', 'trace_delta.md'])
+  if (!mirrorable.has(targetFilename)) return
+
+  const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId)
+  const specsDir = path.join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
+  const candidatesDir = path.join(wiDir, 'candidates')
+  const mirrors: string[] = []
+
+  if (targetFilename === 'requirements.md' || targetFilename === 'design.md' || targetFilename === 'tasks.md') {
+    mirrors.push(path.join(candidatesDir, targetFilename))
+    mirrors.push(path.join(specsDir, targetFilename))
+  }
+
+  if (targetFilename === 'trace_delta.md') {
+    mirrors.push(path.join(specsDir, targetFilename))
+  }
+
+  for (const mirrorPath of mirrors) {
+    if (path.resolve(mirrorPath) === path.resolve(primaryTargetPath)) continue
+    fs.mkdirSync(path.dirname(mirrorPath), { recursive: true })
+    fs.writeFileSync(mirrorPath, content, 'utf-8')
+  }
+}
 function normalizeToken(value: unknown): string {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-')
 }
@@ -86,6 +116,11 @@ function inferCanonicalFileType(args: Record<string, unknown>): string | null {
 }
 
 function resolveTargetFilename(fileType: string): string | null {
+  if (fileType === 'requirements') return 'requirements.md'
+  if (fileType === 'design') return 'design.md'
+  if (fileType === 'candidate_requirements') return 'requirements.md'
+  if (fileType === 'candidate_design') return 'design.md'
+  if (fileType === 'candidate_tasks') return 'tasks.md'
   if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType
   return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null
 }
@@ -309,6 +344,7 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
 
   try {
     fs.writeFileSync(targetPath, content, 'utf-8')
+    mirrorSpecCandidateArtifacts(baseDir, workItemId, targetFilename, content, targetPath)
     const size = Buffer.byteLength(content, 'utf-8')
     const relativePath = path.relative(baseDir, targetPath).replace(/\\/g, '/')
     return {

@@ -395,31 +395,28 @@ function compactForGovernanceScan(command: string): string {
     .replace(/\\+/g, "/");
 }
 
-function findGovernanceBypassReason(command: string): string | null {
-  const compact = compactForGovernanceScan(command);
-  const callsDaemonToolInvoke =
-    /(127\.0\.0\.1|localhost):3129/.test(compact) && compact.includes("/api/v1/tool/invoke");
-  if (callsDaemonToolInvoke) return "SPEC_FORGE_DAEMON_TOOL_INVOKE_FORBIDDEN";
+function findGovernanceBypassReason(command: string, extra?: unknown): string | null {`r`n  const compact = compactForGovernanceScan(String(command ?? "") + "\\n" + String(extra ?? ""));
+  const callsDaemonToolInvoke =`r`n    /(127\\.0\\.0\\.1|localhost)(:\\d+)?/.test(compact) && compact.includes("/api/v1/tool/invoke");`r`n  if (callsDaemonToolInvoke) return "SPEC_FORGE_DAEMON_TOOL_INVOKE_FORBIDDEN";
 
   const referencesToken =
     compact.includes("authorization:bearer") ||
     compact.includes("authorization=bearer") ||
     compact.includes("bearer") ||
     compact.includes("handshake.json");
-  if (referencesToken && (compact.includes("3129") || compact.includes("handshake.json"))) {
+  if (referencesToken && (/(127\\.0\\.0\\.1|localhost)(:\\d+)?/.test(compact) || compact.includes("handshake.json"))) {
     return "SPEC_FORGE_DAEMON_TOKEN_ACCESS_FORBIDDEN";
   }
 
   const touchesProtectedSpecforgePath =
     compact.includes(".specforge/runtime") ||
     compact.includes(".specforge/work-items") ||
-    compact.includes(".specforge/logs") ||
+    compact.includes(".specforge/logs") || compact.includes(".specforge/specs") || compact.includes(".specforge/project") ||
     compact.includes(".specforge/cas") ||
     (compact.includes(".spec") &&
       compact.includes("forge") &&
-      (compact.includes("runtime") || compact.includes("work-items") || compact.includes("logs")));
+      (compact.includes("runtime") || compact.includes("work-items") || compact.includes("specs") || compact.includes("project") || compact.includes("logs")));
   const writesOrDeletes =
-    /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|convertto-json.*set-content|>|>>|tee)/.test(compact);
+    /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|writealltext|writefile|writefilesync|appendfile|appendfilesync|opensync|fs\.write|convertto-json.*set-content|>|>>|tee)/.test(compact);
   if (touchesProtectedSpecforgePath && writesOrDeletes) return "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN";
   return null;
 }
@@ -572,10 +569,94 @@ function assertCodePermissionEnableHasAllowedFiles(
   );
 }
 
+function extractReadTargetsForSensitiveBoundary(args: Record<string, any>): string[] {
+  const targets: string[] = []
+  const keys = [
+    "path",
+    "file",
+    "filePath",
+    "file_path",
+    "target",
+    "targetPath",
+    "target_path",
+    "filename",
+    "name",
+    "uri",
+    "url",
+  ]
+
+  for (const key of keys) {
+    const value = args?.[key]
+    if (typeof value === "string" && value.trim().length > 0) targets.push(value)
+  }
+
+  for (const value of Object.values(args ?? {})) {
+    if (typeof value === "string") {
+      const v = value.trim()
+      if (v.length > 0 && /(handshake\.json|sf-user|\.specforge|specforge|token)/i.test(v)) {
+        targets.push(v)
+      }
+    }
+  }
+
+  return Array.from(new Set(targets))
+}
+
+function isSensitiveSpecForgeReadTarget(targetPath: string): boolean {
+  const compact = String(targetPath ?? "")
+    .toLowerCase()
+    .replace(/\\+/g, "/")
+    .replace(/\s+/g, "")
+
+  // Only daemon credential material is forbidden.
+  // Runtime diagnostics such as .specforge/runtime/state.json, events.jsonl,
+  // and hard_stops.jsonl must remain readable for close_gate debugging.
+  const isHandshake =
+    compact.includes("handshake.json") ||
+    compact.includes("/sf-user/runtime/handshake") ||
+    compact.includes("/.specforge/runtime/handshake")
+
+  const isSpecForgeRuntime =
+    compact.includes("/.specforge/runtime/") ||
+    compact.includes("/sf-user/runtime/")
+
+  const referencesCredential =
+    compact.includes("token") ||
+    compact.includes("authorization") ||
+    compact.includes("bearer")
+
+  return isHandshake || (isSpecForgeRuntime && referencesCredential)
+}
+
+function isReadTool(toolName: string): boolean {
+  const normalized = normalizeToolName(toolName)
+  return (
+    normalized === "read" ||
+    normalized === "readfile" ||
+    normalized === "open" ||
+    normalized === "view" ||
+    normalized === "cat"
+  )
+}
+
+function assertSensitiveReadBoundary(projectDir: string, toolName: string, args: Record<string, any>): void {
+  if (!isReadTool(toolName)) return
+  const targets = extractReadTargetsForSensitiveBoundary(args)
+  for (const target of targets) {
+    if (!isSensitiveSpecForgeReadTarget(target)) continue
+    persistHardStop(
+      projectDir,
+      getWorkItemIdFromArgs(args),
+      "SPEC_FORGE_DAEMON_TOKEN_ACCESS_FORBIDDEN",
+      toolName,
+    )
+    throw new Error(`[SF HardStop] BLOCKED sensitive SpecForge runtime read: ${target}`)
+  }
+}
 function assertShellGovernanceBoundary(projectDir: string, toolName: string, args: Record<string, any>): void {
   if (!isShellTool(toolName)) return;
   const command: string = args.command ?? args.cmd ?? args.input ?? "";
-  const reason = findGovernanceBypassReason(command);
+  const reason = findGovernanceBypassReason(command, args.stdin);
   if (!reason) return;
   const workItemId = getWorkItemIdFromArgs(args);
   persistHardStop(projectDir, workItemId, reason, toolName);
@@ -608,7 +689,7 @@ export async function sf_specforge(input: PluginInput): Promise<Hooks> {
         assertNoRelevantHardStop(projectDir, toolName, args);
       }
       assertCodePermissionEnableHasAllowedFiles(projectDir, toolName, args);
-      assertShellGovernanceBoundary(projectDir, toolName, args);
+      assertShellGovernanceBoundary(projectDir, toolName, args); assertSensitiveReadBoundary(projectDir, toolName, args);
 
       if (isWriteTool(toolName)) {
         const targets = extractWriteTargets(toolName, args);

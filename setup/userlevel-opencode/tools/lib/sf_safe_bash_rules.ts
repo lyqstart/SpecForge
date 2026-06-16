@@ -60,7 +60,7 @@ function compactForGovernanceScan(command: string): string {
 const ruleSpecForgeGovernanceBypass: Rule = command => {
   const compact = compactForGovernanceScan(command);
   const callsDaemonToolInvoke =
-    /(127\.0\.0\.1|localhost):3129/.test(compact) &&
+    /(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) &&
     compact.includes('/api/v1/tool/invoke');
   if (callsDaemonToolInvoke) {
     return reject({
@@ -92,7 +92,7 @@ const ruleSpecForgeGovernanceBypass: Rule = command => {
     compact.includes('.specforge/cas') ||
     (compact.includes('.spec') && compact.includes('forge') &&
       (compact.includes('runtime') || compact.includes('work-items') || compact.includes('logs')));
-  const writesOrDeletes = /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|convertto-json.*set-content|>|>>|tee)/.test(compact);
+  const writesOrDeletes = /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|writefilesync|appendfilesync|opensync|fs\.write|convertto-json.*set-content|>|>>|tee)/.test(compact);
   if (touchesProtectedSpecforgePath && writesOrDeletes) {
     return reject({
       rule: 'specforge-runtime-write-forbidden',

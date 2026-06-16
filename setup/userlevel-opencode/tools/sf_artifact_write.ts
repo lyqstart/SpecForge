@@ -21,7 +21,7 @@ export default tool({
         "change_classification",
         "impact_analysis",
         "trigger_result",
-        "tasks",
+        "tasks", "requirements", "design", "candidate_requirements", "candidate_design", "candidate_tasks",
         "trace_delta",
         "candidate_manifest",
         "merge_report",

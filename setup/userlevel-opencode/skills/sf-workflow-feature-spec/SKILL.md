@@ -3,6 +3,18 @@ name: sf-workflow-feature-spec
 description: Feature Spec（Requirements-First）工作流的 v1.1 24-State 阶段执行协议，包含 created 到 closed 共 20 个状态的详细执行步骤和 Skill 绑定矩阵
 ---
 
+# SpecForge v28 feature_spec 执行裁决（最小规则）
+
+本节优先于下文旧状态描述，用于处理 v1.1 daemon 自动推进与旧 `sf_state_transition` 步骤的冲突：
+
+1. 非 seal 状态可按产物完成事实最多补一次 `sf_state_transition`；失败不得循环。
+2. `gates_running -> approval_required` 不手动推进。Gate 全部通过后，直接展示 Candidate 摘要并请求用户审批。
+3. 用户同意后，只执行 `sf_user_decision_record` 和 `sf_merge_run`；不得因 state.json 显示滞后而循环推进状态。
+4. Candidate 文件必须通过 `sf_artifact_write` 写入 `requirements`、`design`、`tasks` / `candidate_tasks`、`trace_delta`、`candidate_manifest`；不得使用 shell/helper 写 `.specforge`。
+5. Gate 阶段不得创建 placeholder 的 `verification_report`、`merge_report`、`evidence_manifest` 来通过当前阶段。
+6. 每个阶段最多一次自检、一次修正、一次继续；仍失败则报告阻塞事实。
+
+
 # Feature Spec 工作流执行协议（Requirements-First · v1.1）
 
 ## 工作流状态总览
