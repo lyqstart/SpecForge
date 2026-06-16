@@ -18,7 +18,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { SchemaVersionManager } from '../distribution/schema-version-manager.js';
 import type { VersionInfoPayload, InstallationRecord } from '../distribution/types.js';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME } from '../utils/directory-layout';
 
 /**
  * Version 命令选项

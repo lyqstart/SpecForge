@@ -298,11 +298,4 @@ export {
 } from './plugin-loader-integration';
 
 // Export Daemon Core Integration (Task 6.1)
-export {
-  DaemonIntegration,
-  createDaemonIntegration,
-  type DaemonIntegrationConfig,
-  type ActorContext,
-  type HttpRequestContext,
-  type IntegrationResult
-} from './daemon-integration';
+export { DaemonIntegration, createDaemonIntegration, type DaemonIntegrationConfig, type ActorContext as DaemonActorContext, type HttpRequestContext as DaemonHttpRequestContext, type IntegrationResult } from './daemon-integration';

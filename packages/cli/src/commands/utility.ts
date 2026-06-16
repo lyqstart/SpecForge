@@ -16,7 +16,7 @@ import * as os from 'os';
 import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
 import { toCliError } from '../errors';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME } from '../utils/directory-layout';
 
 /**
  * Runtime directory path (~/.specforge/runtime)

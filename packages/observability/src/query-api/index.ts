@@ -774,13 +774,13 @@ export class QueryAPI implements IQueryAPI {
     const relatedEvents: Event[] = [];
     
     // Find events from the same actor around the same time
-    const actorId = payload.actor?.id;
-    if (actorId) {
+    const actorSessionId = payload.actor?.sessionId;
+    if (actorSessionId) {
       const timeWindow = 60000; // 1 minute window
       const filter: EventFilter = {
         startTs: decision.ts - timeWindow,
         endTs: decision.ts + timeWindow,
-        actor: { id: actorId },
+        actor: { sessionId: actorSessionId },
         limit: 100
       };
 

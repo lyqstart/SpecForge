@@ -38,7 +38,7 @@ export type EventCategory =
   | 'heal'
   | 'modality'
   | 'system'
-  | 'llm';
+  | 'llm' | 'migration';
 
 /**
  * Event interface (Property 30: Multi-sync Readiness)

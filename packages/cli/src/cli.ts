@@ -43,7 +43,7 @@ import { runVersionCommand } from './commands/version';
 import { runDoctorCommand } from './commands/doctor';
 import { initCommandHandler } from './commands/init';
 import { wrapWriter, VersionLeakFilteringWriter, StartupMode } from './reporter/version-leak-filter';
-import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, LAYOUT } from './utils/directory-layout';
 
 /**
  * CLI version - should match package.json version

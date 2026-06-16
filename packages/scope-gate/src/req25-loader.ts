@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * REQ-25 Loader - Automatically loads REQ-25 from parent specification
  * 

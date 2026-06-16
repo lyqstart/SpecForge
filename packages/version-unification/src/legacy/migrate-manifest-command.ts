@@ -28,7 +28,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, legacyPaths } from '@specforge/types/directory-layout';
 import { atomicWrite } from '../manifest/atomic-write.js';
 import {
   LEGACY_FIELDS_USER,
@@ -134,7 +134,7 @@ function parseArgs(args: readonly string[]): ParsedArgs {
 
   const resolved = manifestPath
     ? path.resolve(manifestPath)
-    : path.resolve(process.cwd(), SPEC_DIR_NAME, LAYOUT.manifest);
+    : path.resolve(process.cwd(), SPEC_DIR_NAME, legacyPaths.manifest);
 
   return { help, manifestPath: resolved };
 }

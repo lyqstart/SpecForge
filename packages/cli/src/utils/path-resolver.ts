@@ -14,7 +14,7 @@
 import * as os from "node:os";
 import * as path from "node:path";
 import { ErrorCode } from "../distribution/types.js";
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME } from './directory-layout';
 
 /**
  * PathResolver 接口

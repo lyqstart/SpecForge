@@ -1,3 +1,6 @@
+import type { HealingState } from './healing-state'
+import type { DiagnosisReport, RecommendedAction } from './diagnosis-report'
+
 /**
  * SpecForge Self-Healing Subsystem
  *
