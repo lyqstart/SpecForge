@@ -64,24 +64,10 @@ interface CloseGateHandlerResult {
 }
 
 const CLOSE_ALLOWED_STATES = new Set([
-  // R7: close_gate is evidence-driven. If all Close Gate checks pass, the
-  // daemon may close from earlier workflow states instead of forcing the
-  // Agent to manually replay the entire state chain.
-  "created",
-  "intake_ready",
-  "impact_analyzing",
-  "impact_analyzed",
-  "workflow_selected",
-  "candidate_preparing",
-  "candidate_prepared",
-  "implementation_ready",
-  "implementation_running",
-  "implementation_done",
-  "verification_running",
-  "verification",
-  "verification_done",
-  "gates_running",
-  "approval_required",
+  // P0 governance: close is not a rescue tool. Candidate/Gate/Approval states
+  // must not be closed just because later files exist. The workflow must reach
+  // verification_done through the controlled path first.
+  'verification_done',
 ]);
 
 function runtimeStatePath(projectRoot: string): string {

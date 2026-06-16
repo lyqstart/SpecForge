@@ -11,6 +11,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
+import { validateApprovedUserDecisionForMerge, entriesSemanticallyEqual } from './governance-invariants-v11.js';
 
 export interface MergeInput {
   projectRoot: string;
@@ -214,10 +215,20 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     return { ...result, success: false, status: 'failed', errors: [`Cannot read candidate_manifest.json: ${err.message}`] };
   }
 
-  const entries = normalizeManifestEntries(manifest, input.workItemDir);
+  const normalizedEntries = normalizeManifestEntries(manifest, input.workItemDir);
+  const manifestEntries = Array.isArray(manifest.entries) ? manifest.entries : [];
+  const entries = manifestEntries;
   result.project_spec_version = await readCurrentProjectSpecVersion(input.projectRoot);
-
-  await persistNormalizedManifest(input, manifest, entries);
+  if (manifest.workflow_path !== 'code_only_fast_path' && !entriesSemanticallyEqual(manifestEntries, normalizedEntries)) {
+    const failed: MergeResult = {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: ['candidate_manifest.entries must be normalized before user approval; merge_runner is not allowed to infer or mutate entries after approval.'],
+    };
+    await generateMergeReport(input, failed);
+    return failed;
+  }
 
   if (isCodeOnlyFastPathNoMerge(manifest, entries)) {
     const notApplicable: MergeResult = {
@@ -243,30 +254,23 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     return failed;
   }
 
-  try {
-    const decision = await readJsonFile(input.userDecisionPath);
-    if (!['approved', 'waived'].includes(decision.decision_status)) {
-      const failed: MergeResult = {
-        ...result,
-        success: false,
-        status: 'failed',
-        errors: [`User Decision status is "${decision.decision_status}", not approved/waived`],
-      };
-      await generateMergeReport(input, failed);
-      return failed;
-    }
-  } catch (err: any) {
+  const approvalValidation = await validateApprovedUserDecisionForMerge({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+    candidateManifestPath: input.candidateManifestPath,
+    userDecisionPath: input.userDecisionPath,
+  });
+  if (!approvalValidation.valid) {
     const failed: MergeResult = {
       ...result,
       success: false,
       status: 'failed',
-      errors: [`Cannot read user_decision.json: ${err.message}`],
+      errors: approvalValidation.errors,
     };
     await generateMergeReport(input, failed);
     return failed;
-  }
-
-  const workItemRoot = path.resolve(input.workItemDir);
+  }const workItemRoot = path.resolve(input.workItemDir);
   const projectSpecRoot = path.resolve(input.projectRoot, '.specforge', 'project');
 
   for (const entry of entries) {

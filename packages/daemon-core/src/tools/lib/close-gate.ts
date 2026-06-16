@@ -13,6 +13,7 @@ import {
   type GateReportV11,
   makeReport,
 } from './gate-report.js';
+import { validateApprovedUserDecisionForClose } from './governance-invariants-v11.js';
 
 export interface CloseGateResult {
   report: GateReportV11;
@@ -87,8 +88,26 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       severity: validDecision ? undefined : 'error',
     });
   } else {
-    checks.push({ check_id: 'close_user_decision_exists', description: 'user_decision.json exists and is valid', passed: false, severity: 'error' });
+    checks.push({
+      check_id: 'close_user_decision_exists',
+      description: 'user_decision.json exists and is valid',
+      passed: false,
+      severity: 'error'
+    });
   }
+  const governance = await validateApprovedUserDecisionForClose({
+    projectRoot: ctx.projectRoot,
+    workItemDir: ctx.workItemDir,
+    workItemId: ctx.workItemId,
+    candidateManifestPath: path.join(ctx.workItemDir, 'candidate_manifest.json'),
+    userDecisionPath: path.join(ctx.workItemDir, 'user_decision.json'),
+  });
+  checks.push({
+    check_id: 'close_user_decision_semantic_valid',
+    description: governance.valid ? 'User Decision is semantically valid: actor, workflow_path, Gate hash, manifest hash, candidate hash' : `User Decision semantic validation failed: ${governance.errors.join('; ')}`,
+    passed: governance.valid,
+    severity: governance.valid ? undefined : 'error',
+  });
 
   const wi = await readJson(path.join(ctx.workItemDir, 'work_item.json'));
   if (wi) {

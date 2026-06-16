@@ -168,11 +168,14 @@ registerGate('workflow_selection_gate', 'hard_gate', true, async (ctx) => {
 registerGate('required_files_gate', 'hard_gate', true, async (ctx) => {
   const checks: GateReportCheck[] = [];
   const requiredFiles = [
-    'work_item.json', 'intake.md', 'change_classification.md',
-    'impact_analysis.md', 'trigger_result.json', 'tasks.md',
-    'trace_delta.md', 'candidate_manifest.json', 'gate_summary.md',
-    'verification_report.md', 'merge_report.md',
-    'evidence/evidence_manifest.json',
+    'work_item.json',
+    'intake.md',
+    'change_classification.md',
+    'impact_analysis.md',
+    'trigger_result.json',
+    'tasks.md',
+    'trace_delta.md',
+    'candidate_manifest.json',
   ];
   const inputFiles: string[] = [];
 
@@ -207,11 +210,19 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async (ctx) => {
 
     // 检查 entries
     const entries = manifest.entries ?? [];
-    checks.push({
-      check_id: 'manifest_entries_array',
-      description: 'entries is an array',
-      passed: Array.isArray(entries),
-    });
+      checks.push({
+        check_id: 'manifest_entries_array',
+        description: 'entries is an array',
+        passed: Array.isArray(entries),
+      });
+      const workflowPath = String(manifest.workflow_path ?? '');
+      const mergeRequired = workflowPath !== 'code_only_fast_path';
+      checks.push({
+        check_id: 'manifest_entries_nonempty_for_spec_merge',
+        description: 'entries is non-empty for spec-changing workflow',
+        passed: !mergeRequired || (Array.isArray(entries) && entries.length > 0),
+        severity: !mergeRequired || (Array.isArray(entries) && entries.length > 0) ? undefined : 'error',
+      });
 
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i];

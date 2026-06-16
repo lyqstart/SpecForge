@@ -20,6 +20,7 @@ import { validateArtifactJson } from '../lib/artifact-schema-validation'
 import { validateWorkItemId } from '../lib/work-item-id-validator'
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from '../lib/state_machine'
+import { inferManifestEntries } from '../lib/governance-invariants-v11'
 
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
@@ -213,7 +214,9 @@ function normalizeCoreJsonArtifact(
   }
 
   if (filename === 'candidate_manifest.json') {
-    const entries = Array.isArray(parsed.entries) ? parsed.entries : []
+    const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId)
+    const preliminary = { ...parsed, workflow_path: parsed.workflow_path ?? workflowPath }
+    const entries = Array.isArray(parsed.entries) && parsed.entries.length > 0 ? parsed.entries : inferManifestEntries(preliminary, wiDir)
     const normalized = {
       ...parsed,
       schema_version: parsed.schema_version ?? '1.1',
