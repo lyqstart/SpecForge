@@ -76,7 +76,11 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   const codePermWasEnabled =
     wiJson.code_change_allowed === true ||
     wiJson.permission_enabled_at !== undefined ||
-    wiJson.code_permission_released === true;
+    wiJson.code_permission_released === true ||
+    wiJson.code_permission_revoked === true ||
+    wiJson.code_permission_revoked_at !== undefined ||
+    normalizeAllowedFiles(wiJson.allowed_write_files).length > 0 ||
+    normalizeAllowedFiles(wiJson.allowed_write_files_snapshot).length > 0;
 
   if (!codePermWasEnabled) {
     setHardStop(projectRoot, workItemId, 'CODE_PERMISSION_NOT_ENABLED', 'sf_changed_files_audit');
@@ -87,9 +91,11 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     };
   }
 
-  let allowedWriteFiles = normalizeAllowedFiles(wiJson.allowed_write_files);
+  const allowedWriteFilesCurrent = normalizeAllowedFiles(wiJson.allowed_write_files);
+  const allowedWriteFilesSnapshot = normalizeAllowedFiles(wiJson.allowed_write_files_snapshot);
+  let allowedWriteFiles = allowedWriteFilesCurrent;
   if (allowedWriteFiles.length === 0) {
-    allowedWriteFiles = normalizeAllowedFiles(wiJson.allowed_write_files_snapshot);
+    allowedWriteFiles = allowedWriteFilesSnapshot;
   }
 
   if (allowedWriteFiles.length === 0) {
