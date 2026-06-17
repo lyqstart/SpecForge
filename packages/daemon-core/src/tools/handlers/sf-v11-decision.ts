@@ -1,48 +1,27 @@
 /**
  * sf-v11-decision — v1.1 User Decision Recorder handler
  *
- * P0 governance hardening:
- * - Do not let an Agent approve from gates_running.
- * - Do not accept workflow_path=unknown.
- * - Do not accept sf-orchestrator as the approval subject.
- * - In chat-driven approval, the tool call may be initiated by sf-orchestrator,
- *   but the recorded approval subject is the user once the workflow is already
- *   in approval_required and all governance preconditions pass.
- * - Bind approval to passed Gate Summary and current candidate_manifest.
+ * Trust boundary:
+ * - Approval can only be recorded after daemon-side governance preconditions pass.
+ * - Chat-driven user approval is recorded as decided_by=user and recorded_by=<tool caller>.
+ * - The tool synchronizes approval_required -> approved after a valid decision record.
  */
 import { registerHandler } from '../ToolDispatcher';
-import { recordUserDecision, invalidateUserDecision } from '../lib/user-decision-recorder-v11';
+import {
+  recordUserDecision,
+  invalidateUserDecision,
+} from '../lib/user-decision-recorder-v11';
 import type { UserDecisionStatus } from '../lib/user-decision-recorder-v11';
 import { validateDecisionRecordPreconditions } from '../lib/governance-invariants-v11.js';
-import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 
 type DecisionType = 'auto_approved' | 'user_approved' | 'waived' | 'rejected';
 
 type DecisionAutoAdvanceResult =
   | { attempted: false; reason: string; current_state?: string | null }
-  | {
-      attempted: true;
-      advanced: true;
-      from_state: string;
-      to_state: string;
-      workflow_type: string;
-      evidence: string;
-      transition_result: unknown;
-    };
-
-function workflowTypeFromPath(workflowPath: string): string {
-  switch (workflowPath) {
-    case 'requirement_change_path': return 'feature_spec';
-    case 'design_change_path': return 'design_change';
-    case 'architecture_change_path': return 'architecture_change';
-    case 'task_change_path': return 'task_change';
-    case 'code_only_fast_path': return 'quick_change';
-    case 'spec_migration_path': return 'spec_migration';
-    case 'rollback_path': return 'rollback';
-    default: return 'quick_change';
-  }
-}
+  | { attempted: true; advanced: true; from_state: string; to_state: string; evidence: string }
+  | { attempted: true; advanced: false; reason: string; current_state?: string | null; error?: string };
 
 async function readJsonIfExists(filePath: string): Promise<any | null> {
   try {
@@ -52,37 +31,99 @@ async function readJsonIfExists(filePath: string): Promise<any | null> {
   }
 }
 
-async function readRuntimeCurrentState(projectRoot: string, workItemId: string): Promise<string | null> {
-  const statePath = path.join(projectRoot, '.specforge', 'runtime', 'state.json');
-  const state = await readJsonIfExists(statePath);
-  if (!state) return null;
+async function writeJson(filePath: string, value: any): Promise<void> {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8');
+}
 
+function getCurrentState(state: any, workItemId: string): string | null {
+  if (!state || typeof state !== 'object') return null;
   if (state.current_work_item_id === workItemId && typeof state.current_state === 'string') {
     return state.current_state;
   }
-
   if (Array.isArray(state.workItems)) {
     const item = state.workItems.find((wi: any) => wi?.work_item_id === workItemId);
     if (item && typeof item.current_state === 'string') return item.current_state;
     if (item && typeof item.status === 'string') return item.status;
   }
-
-  return typeof state.current_state === 'string' ? state.current_state : null;
+  if (typeof state.current_state === 'string') return state.current_state;
+  return null;
 }
 
-async function syncWorkItemJsonStatus(input: {
-  workItemDir: string;
-  toState: string;
-}): Promise<void> {
-  const workItemPath = path.join(input.workItemDir, 'work_item.json');
+async function syncWorkItemJsonStatus(workItemDir: string, toState: string, now: string): Promise<void> {
+  const workItemPath = path.join(workItemDir, 'work_item.json');
   const workItem = await readJsonIfExists(workItemPath);
   if (!workItem || typeof workItem !== 'object') return;
-
-  const now = new Date().toISOString();
-  workItem.status = input.toState;
+  workItem.status = toState;
   workItem.updated_at = now;
   workItem.last_user_decision_state_auto_advance_at = now;
-  await fs.writeFile(workItemPath, JSON.stringify(workItem, null, 2) + '\n', 'utf-8');
+  await writeJson(workItemPath, workItem);
+}
+
+async function syncRuntimeStateAfterApproval(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<DecisionAutoAdvanceResult> {
+  const statePath = path.join(input.projectRoot, '.specforge', 'runtime', 'state.json');
+  const state = await readJsonIfExists(statePath);
+  if (!state || typeof state !== 'object') {
+    return { attempted: false, reason: 'runtime_state_missing' };
+  }
+
+  const currentState = getCurrentState(state, input.workItemId);
+  if (currentState !== 'approval_required') {
+    return {
+      attempted: false,
+      reason: 'current_state_is_not_approval_required',
+      current_state: currentState,
+    };
+  }
+
+  const now = new Date().toISOString();
+  const toState = 'approved';
+  const evidence = 'user_decision_recorder auto-advance after valid user approval';
+
+  if (state.current_work_item_id === input.workItemId || !state.current_work_item_id) {
+    state.current_work_item_id = input.workItemId;
+    state.current_state = toState;
+    state.status = toState;
+    state.updated_at = now;
+  }
+
+  if (Array.isArray(state.workItems)) {
+    for (const item of state.workItems) {
+      if (item?.work_item_id === input.workItemId) {
+        item.current_state = toState;
+        item.status = toState;
+        item.updated_at = now;
+        item.last_transition_actor = 'user_decision_recorder';
+        item.last_transition_evidence = evidence;
+      }
+    }
+  }
+
+  if (Array.isArray(state.events)) {
+    state.events.push({
+      timestamp: now,
+      work_item_id: input.workItemId,
+      from_state: currentState,
+      to_state: toState,
+      actor: 'user_decision_recorder',
+      evidence,
+    });
+  }
+
+  await writeJson(statePath, state);
+  await syncWorkItemJsonStatus(input.workItemDir, toState, now);
+
+  return {
+    attempted: true,
+    advanced: true,
+    from_state: currentState,
+    to_state: toState,
+    evidence,
+  };
 }
 
 async function enrichDecisionAudit(input: {
@@ -98,71 +139,7 @@ async function enrichDecisionAudit(input: {
   decision.recorded_by = input.recordedBy;
   decision.recorder_role = 'user_decision_recorder';
   decision.recorded_at = decision.recorded_at ?? new Date().toISOString();
-  await fs.writeFile(decisionPath, JSON.stringify(decision, null, 2) + '\n', 'utf-8');
-}
-
-async function autoAdvanceDecisionStateAfterRecord(input: {
-  deps: any;
-  context: any;
-  projectRoot: string;
-  workItemId: string;
-  workItemDir: string;
-  workflowPath: string;
-}): Promise<DecisionAutoAdvanceResult> {
-  const currentState = await readRuntimeCurrentState(input.projectRoot, input.workItemId);
-  if (currentState !== 'approval_required') {
-    return { attempted: false, reason: 'current_state_is_not_approval_required', current_state: currentState };
-  }
-
-  if (!input.deps?.workflowEngine) {
-    return { attempted: false, reason: 'workflow_engine_not_available', current_state: currentState };
-  }
-  if (!input.deps?.projectManager) {
-    return { attempted: false, reason: 'project_manager_not_available', current_state: currentState };
-  }
-
-  const toState = 'approved';
-  const workflowType = workflowTypeFromPath(input.workflowPath);
-  const evidence = 'user_decision_recorder auto-advance after valid user approval';
-
-  const transitionResult = await input.deps.workflowEngine.transitionFull({
-    workItemId: input.workItemId,
-    fromState: currentState,
-    toState,
-    evidence,
-    workflowType,
-    transitionContext: {
-      source: 'sf_v11_decision',
-      decision_recorder: 'user_decision_recorder',
-    },
-    actor: {
-      agentRole: 'user_decision_recorder',
-      sessionId: input.context?.sessionID ?? 'sf_v11_decision',
-    },
-    workItemDir: input.workItemDir,
-  });
-
-  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
-  await projectSm.transition(
-    input.workItemId,
-    currentState,
-    toState,
-    'user_decision_recorder',
-    workflowType,
-    { evidence },
-  );
-
-  await syncWorkItemJsonStatus({ workItemDir: input.workItemDir, toState });
-
-  return {
-    attempted: true,
-    advanced: true,
-    from_state: currentState,
-    to_state: toState,
-    workflow_type: workflowType,
-    evidence,
-    transition_result: transitionResult,
-  };
+  await writeJson(decisionPath, decision);
 }
 
 function resolveDecisionStatus(args: Record<string, unknown>): UserDecisionStatus | undefined {
@@ -173,7 +150,10 @@ function resolveDecisionStatus(args: Record<string, unknown>): UserDecisionStatu
   return undefined;
 }
 
-function resolveDecisionType(args: Record<string, unknown>, decisionStatus: UserDecisionStatus | undefined): DecisionType | undefined {
+function resolveDecisionType(
+  args: Record<string, unknown>,
+  decisionStatus: UserDecisionStatus | undefined,
+): DecisionType | undefined {
   const explicit = args['decision_type'] as DecisionType | undefined;
   if (explicit) return explicit;
   if (decisionStatus === 'approved') return 'user_approved';
@@ -181,12 +161,14 @@ function resolveDecisionType(args: Record<string, unknown>, decisionStatus: User
   return undefined;
 }
 
-registerHandler('sf_v11_decision', async (args, context, deps) => {
+registerHandler('sf_v11_decision', async (args, context) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const action = (args['action'] as string) || 'record';
 
-  if (!workItemId) return { success: false, error: 'work_item_id is required' };
+  if (!workItemId) {
+    return { success: false, error: 'work_item_id is required' };
+  }
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
@@ -199,7 +181,6 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
 
     const decisionStatus = resolveDecisionStatus(args as Record<string, unknown>);
     const decisionType = resolveDecisionType(args as Record<string, unknown>, decisionStatus);
-
     if (!decisionStatus || !decisionType) {
       return { success: false, error: 'decision_status and decision_type are required' };
     }
@@ -230,7 +211,6 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     }
 
     const workflowPath = String(validation.facts?.workflowPath ?? requestedWorkflowPath);
-
     const decision = await recordUserDecision({
       workItemDir,
       workItemId,
@@ -247,16 +227,22 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
 
     await enrichDecisionAudit({ workItemDir, recordedBy, decidedBy });
 
-    const stateAutoAdvance = decisionStatus === 'approved'
-      ? await autoAdvanceDecisionStateAfterRecord({
-          deps,
-          context,
-          projectRoot,
-          workItemId,
-          workItemDir,
-          workflowPath,
-        })
-      : { attempted: false, reason: 'decision_status_is_not_approved' };
+    let stateAutoAdvance: DecisionAutoAdvanceResult = {
+      attempted: false,
+      reason: 'decision_status_is_not_approved',
+    };
+    if (decisionStatus === 'approved') {
+      try {
+        stateAutoAdvance = await syncRuntimeStateAfterApproval({ projectRoot, workItemDir, workItemId });
+      } catch (err: any) {
+        stateAutoAdvance = {
+          attempted: true,
+          advanced: false,
+          reason: 'state_sync_failed_after_decision_recorded',
+          error: err?.message ?? String(err),
+        };
+      }
+    }
 
     return {
       success: true,
