@@ -1,77 +1,80 @@
-import { describe, it, expect } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
+import { describe, expect, it } from 'vitest';
+import { V11_WORKFLOW_DEFINITIONS } from '../../packages/workflow-runtime/src/workflows/v11-definitions';
 
-const WORKFLOWS_DIR = path.resolve(__dirname, '../../configs/workflows/builtin');
+type Next = string | Record<string, string> | undefined;
 
-describe('Full Feature Spec Flow', () => {
-  it('feature_spec.json has complete happy path from intake to completed', () => {
-    const content = fs.readFileSync(path.join(WORKFLOWS_DIR, 'feature_spec.json'), 'utf-8');
-    const wf = JSON.parse(content);
-    
-    // Trace happy path
-    const visited = new Set<string>();
-    let current = wf.stateMachine.initial;
-    
-    while (current && !visited.has(current)) {
-      visited.add(current);
-      const state = wf.stateMachine.states[current];
-      if (!state || !state.next) break;
-      
-      if (typeof state.next === 'object' && state.next.pass) {
-        current = state.next.pass;
-      } else if (typeof state.next === 'string') {
-        current = state.next;
-      } else {
-        break;
-      }
+function nextTargets(next: Next): string[] {
+  if (!next) return [];
+  if (typeof next === 'string') return [next];
+  return Object.values(next);
+}
+
+function reachableStates(definition: any): Set<string> {
+  const visited = new Set<string>();
+  const queue = [definition.stateMachine.initial];
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (visited.has(current)) continue;
+    visited.add(current);
+
+    const state = definition.stateMachine.states[current];
+    for (const target of nextTargets(state?.next)) {
+      if (!visited.has(target)) queue.push(target);
     }
-    
-    expect(visited.has('intake')).toBe(true);
-    expect(visited.has('requirements')).toBe(true);
-    expect(visited.has('design')).toBe(true);
-    expect(visited.has('tasks')).toBe(true);
-    expect(visited.has('development')).toBe(true);
-    expect(visited.has('review')).toBe(true);
-    expect(visited.has('verification')).toBe(true);
-    expect(visited.has('completed')).toBe(true);
+  }
+
+  return visited;
+}
+
+describe('v1.1 workflow path reachability', () => {
+  it('loads every built-in v1.1 workflow definition from the current runtime source', () => {
+    const ids = V11_WORKFLOW_DEFINITIONS.map((definition) => definition.id).sort();
+
+    expect(ids).toEqual([
+      'bugfix_spec',
+      'change_request',
+      'feature_spec',
+      'investigation',
+      'ops_task',
+      'quick_change',
+      'refactor',
+    ]);
   });
 
-  it('all workflows can reach completed from initial', () => {
-    const files = fs.readdirSync(WORKFLOWS_DIR).filter(f => f.endsWith('.json'));
-    
-    for (const file of files) {
-      const content = fs.readFileSync(path.join(WORKFLOWS_DIR, file), 'utf-8');
-      const wf = JSON.parse(content);
-      
-      // BFS from initial
-      const queue = [wf.stateMachine.initial];
-      const visited = new Set<string>();
-      let reachedCompleted = false;
-      
-      while (queue.length > 0) {
-        const current = queue.shift()!;
-        if (visited.has(current)) continue;
-        visited.add(current);
-        
-        if (current === 'completed') {
-          reachedCompleted = true;
-          break;
-        }
-        
-        const state = wf.stateMachine.states[current];
-        if (!state?.next) continue;
-        
-        const targets = typeof state.next === 'string'
-          ? [state.next]
-          : Object.values(state.next) as string[];
-        
-        for (const t of targets) {
-          if (!visited.has(t)) queue.push(t);
-        }
-      }
-      
-      expect(reachedCompleted, `${file}: cannot reach completed from ${wf.stateMachine.initial}`).toBe(true);
+  it('all v1.1 workflows start at created and can reach closed', () => {
+    for (const definition of V11_WORKFLOW_DEFINITIONS) {
+      const visited = reachableStates(definition);
+
+      expect(definition.stateMachine.initial, definition.id).toBe('created');
+      expect(visited.has('closed'), `${definition.id} should reach closed`).toBe(true);
+    }
+  });
+
+  it('spec-changing workflows include the candidate approval and merge chain', () => {
+    const specChangingIds = new Set(['feature_spec', 'change_request']);
+
+    for (const definition of V11_WORKFLOW_DEFINITIONS.filter((item) => specChangingIds.has(item.id))) {
+      const visited = reachableStates(definition);
+
+      expect(visited.has('candidate_preparing'), `${definition.id} should prepare candidates`).toBe(true);
+      expect(visited.has('gates_running'), `${definition.id} should run gates`).toBe(true);
+      expect(visited.has('approval_required'), `${definition.id} should require user approval`).toBe(true);
+      expect(visited.has('approved'), `${definition.id} should record approval`).toBe(true);
+      expect(visited.has('merge_ready'), `${definition.id} should enter merge_ready`).toBe(true);
+      expect(visited.has('merged'), `${definition.id} should enter merged`).toBe(true);
+    }
+  });
+
+  it('implementation workflows include implementation, verification, and close states', () => {
+    for (const definition of V11_WORKFLOW_DEFINITIONS) {
+      const visited = reachableStates(definition);
+
+      expect(visited.has('implementation_ready'), `${definition.id} should enter implementation_ready`).toBe(true);
+      expect(visited.has('implementation_running'), `${definition.id} should enter implementation_running`).toBe(true);
+      expect(visited.has('verification_running'), `${definition.id} should enter verification_running`).toBe(true);
+      expect(visited.has('verification_done'), `${definition.id} should enter verification_done`).toBe(true);
+      expect(visited.has('closed'), `${definition.id} should enter closed`).toBe(true);
     }
   });
 });

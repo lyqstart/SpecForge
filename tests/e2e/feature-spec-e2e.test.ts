@@ -490,7 +490,7 @@ describe("feature_spec 端到端测试", () => {
       const instance = engine.createInstance("feature_spec")
       await persistence.saveInstance(instance)
 
-      const deleted = await persistence.deleteInstance(instance.id)
+      const deleted = await persistence.deleteInstance(instance.id, { force: true })
       expect(deleted).toBe(true)
 
       const loaded = await persistence.loadInstance(instance.id)

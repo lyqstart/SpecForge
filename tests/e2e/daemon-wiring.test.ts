@@ -1,49 +1,47 @@
-import { describe, it, expect } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
+import { describe, expect, it } from 'vitest';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
+const repoRoot = path.resolve(__dirname, '../..');
+function readRepoFile(relativePath: string): string {
+  return fs.readFileSync(path.join(repoRoot, relativePath), 'utf-8');
+}
 
 describe('Daemon Wiring Integrity', () => {
-  it('DaemonConfig uses handshake.json (not daemon.sock.json)', () => {
-    const configPath = path.resolve(__dirname, '../../packages/daemon-core/src/daemon/DaemonConfig.ts');
-    const content = fs.readFileSync(configPath, 'utf-8');
-    
-    expect(content).toContain('handshake.json');
+  it('DaemonConfig delegates runtime and handshake paths to the path resolver', () => {
+    const content = readRepoFile('packages/daemon-core/src/daemon/DaemonConfig.ts');
+
+    expect(content).toContain('path-resolver');
+    expect(content).toContain('getPathResolver()');
+    expect(content).toContain('resolveDaemonRuntimeDir()');
+    expect(content).toContain('resolveHandshakePath()');
     expect(content).not.toContain('daemon.sock.json');
   });
 
-  it('thin-client reads from runtime/handshake.json', () => {
-    const clientPath = path.resolve(__dirname, '../../.opencode/tools/lib/thin-client.ts');
-    const content = fs.readFileSync(clientPath, 'utf-8');
-    
+  it('path-resolver owns the userlevel runtime handshake location', () => {
+    const content = readRepoFile('packages/daemon-core/src/daemon/path-resolver.ts');
+
+    expect(content).toContain('resolveUserLevelDirectory');
+    expect(content).toContain('sf-user');
     expect(content).toContain('runtime');
     expect(content).toContain('handshake.json');
   });
 
-  it('Daemon instantiates cross-package modules', () => {
-    const daemonPath = path.resolve(__dirname, '../../packages/daemon-core/src/daemon/Daemon.ts');
-    const content = fs.readFileSync(daemonPath, 'utf-8');
-    
+  it('Daemon composes the current cross-package runtime subsystems', () => {
+    const content = readRepoFile('packages/daemon-core/src/daemon/Daemon.ts');
+
     expect(content).toContain('PermissionEngine');
     expect(content).toContain('WorkflowEngine');
-    expect(content).toContain('EventLogger');
     expect(content).toContain('ToolDispatcher');
+    expect(content).toContain('EventBus');
+    expect(content).toContain('HandshakeManager');
   });
 
-  it('HTTPServer accepts deps-based constructor', () => {
-    const httpPath = path.resolve(__dirname, '../../packages/daemon-core/src/http/HTTPServer.ts');
-    const content = fs.readFileSync(httpPath, 'utf-8');
-    
-    expect(content).toContain('HTTPServerDeps');
-    expect(content).toContain('stateManager');
-    expect(content).toContain('workflowEngine');
-    expect(content).toContain('toolDispatcher');
-  });
+  it('HTTPServer still receives the daemon tool dispatcher dependency', () => {
+    const content = readRepoFile('packages/daemon-core/src/daemon/Daemon.ts');
 
-  it('EventBus has persistence hook', () => {
-    const busPath = path.resolve(__dirname, '../../packages/daemon-core/src/event-bus/EventBus.ts');
-    const content = fs.readFileSync(busPath, 'utf-8');
-    
-    expect(content).toContain('setPersistenceHook');
-    expect(content).toContain('persistenceHook');
+    expect(content).toContain('toolDispatcher: new ToolDispatcher');
+    expect(content).toContain('permissionEngine: this.permissionEngine');
+    expect(content).toContain('workflowEngine: this.workflowEngine');
   });
 });
