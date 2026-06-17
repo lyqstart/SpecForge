@@ -15,7 +15,7 @@
 import * as os from "node:os"
 import * as path from "node:path"
 import * as fs from "node:fs/promises"
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync, statSync } from "node:fs"
 import type { SafeBashArgs, SafeBashResult } from "./sf_safe_bash_types"
 import { applyRules } from "./sf_safe_bash_rules"
 import { executeCommand, resolveCwd } from "./sf_safe_bash_executor"
@@ -95,6 +95,93 @@ const MAX_TIMEOUT_MS = 10 * 60 * 1000
  * @param args 用户输入参数
  * @param baseDir 调用方所在目录（context.directory），用作 cwd 默认和 fallback
  */
+function compactForGovernanceScanV21(value: unknown): string {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/\s+/g, "")
+    .replace(/\[char\]\s*46/g, ".")
+    .replace(/\[char\]\s*102/g, "f")
+    .replace(/["'`+]/g, "")
+    .replace(/\\+/g, "/")
+}
+
+function findSpecForgeGovernanceViolationV21(command: unknown, extra?: unknown): string | null {
+  const compact = compactForGovernanceScanV21(String(command ?? "") + "\n" + String(extra ?? ""))
+
+  if (/(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) && compact.includes("/api/v1/tool/invoke")) {
+    return "SPEC_FORGE_DAEMON_TOOL_INVOKE_FORBIDDEN"
+  }
+
+  const referencesToken =
+    compact.includes("authorization:bearer") ||
+    compact.includes("authorization=bearer") ||
+    compact.includes("bearer") ||
+    compact.includes("handshake.json")
+
+  if (referencesToken && (/(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) || compact.includes("handshake.json"))) {
+    return "SPEC_FORGE_DAEMON_TOKEN_ACCESS_FORBIDDEN"
+  }
+
+  const touchesProtectedSpecforgePath =
+    compact.includes(".specforge/runtime") ||
+    compact.includes(".specforge/work-items") ||
+    compact.includes(".specforge/specs") ||
+    compact.includes(".specforge/project") ||
+    compact.includes(".specforge/logs") ||
+    compact.includes(".specforge/cas") ||
+    (compact.includes(".spec") &&
+      compact.includes("forge") &&
+      (compact.includes("runtime") ||
+        compact.includes("work-items") ||
+        compact.includes("specs") ||
+        compact.includes("project") ||
+        compact.includes("logs")))
+
+  const writesOrDeletes =
+    /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writealltext|writefile|writefilesync|appendfile|appendfilesync|createwritestream|opensync|fs\.write|>|>>|tee)/.test(compact)
+
+  if (touchesProtectedSpecforgePath && writesOrDeletes) {
+    return "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN"
+  }
+
+  return null
+}
+
+function buildGovernanceRejectedResultV21(args: SafeBashArgs, reason: string): SafeBashResult {
+  return {
+    success: false,
+    exitCode: null,
+    stdout: "",
+    stderr: "",
+    durationMs: 0,
+    command: args.command,
+    originalCommand: args.command,
+    cwd: null,
+    shell: null,
+    rejected: true,
+    timeout: false,
+    rule: reason,
+    suggestion:
+      "不要通过 sf_safe_bash 读写 .specforge 治理产物、handshake/token，或直接调用 daemon HTTP API。请使用 sf_artifact_write / sf_merge_run / sf_gate_run 等受控工具。",
+    hint:
+      "v21: governance guard scans both command and stdin, and blocks local script helpers that attempt to mutate .specforge.",
+  }
+}
+
+function readReferencedScriptForGovernanceV21(command: string, cwd: string): string {
+  const match = command.match(/(?:^|\s)(?:node|bun|python|python3|pwsh|powershell)(?:\.exe)?\s+(?:-File\s+)?(?:"([^"]+\.(?:js|cjs|mjs|ts|ps1|py))"|'([^']+\.(?:js|cjs|mjs|ts|ps1|py))'|([^\s]+\.(?:js|cjs|mjs|ts|ps1|py)))/i)
+  const scriptPath = match?.[1] ?? match?.[2] ?? match?.[3]
+  if (!scriptPath) return ""
+  try {
+    const path = require("node:path")
+    const resolved = path.isAbsolute(scriptPath) ? scriptPath : path.resolve(cwd, scriptPath)
+    const stat = statSync(resolved)
+    if (!stat.isFile() || stat.size > 256 * 1024) return ""
+    return readFileSync(resolved, "utf-8")
+  } catch {
+    return ""
+  }
+}
 export async function safeBashExecute(
   args: SafeBashArgs,
   baseDir: string
@@ -107,6 +194,11 @@ export async function safeBashExecute(
   }
 
   // ── Step 2: 规则引擎 ──
+  const preRuleGovernanceViolationV21 = findSpecForgeGovernanceViolationV21(args.command, args.stdin)
+  if (preRuleGovernanceViolationV21) {
+    return buildGovernanceRejectedResultV21(args, preRuleGovernanceViolationV21)
+  }
+
   const ruleResult = applyRules(args.command, profile)
 
   if (ruleResult.kind === "reject") {
@@ -169,6 +261,13 @@ export async function safeBashExecute(
   if (timeoutMs > MAX_TIMEOUT_MS) timeoutMs = MAX_TIMEOUT_MS
 
   const outputLimit = args.outputLimit ?? DEFAULT_OUTPUT_LIMIT
+
+  // ── Step 4.5: governance guard after cwd resolution ──
+  const scriptProbeV21 = readReferencedScriptForGovernanceV21(effectiveCommand, resolvedCwd)
+  const postCwdGovernanceViolationV21 = findSpecForgeGovernanceViolationV21(effectiveCommand, [args.stdin ?? "", scriptProbeV21].join("\n"))
+  if (postCwdGovernanceViolationV21) {
+    return buildGovernanceRejectedResultV21(args, postCwdGovernanceViolationV21)
+  }
 
   // ── Step 5: 执行 ──
   const result = await executeCommand({

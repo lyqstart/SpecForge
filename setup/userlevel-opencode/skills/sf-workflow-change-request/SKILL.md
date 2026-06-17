@@ -9,7 +9,7 @@ description: Change Request 工作流的阶段执行协议，包含 intake 到 c
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-created → intake_ready → candidate_preparing (impact_analysis) → gates_running → candidate_preparing (design_delta) → gates_running → candidate_preparing (tasks) → gates_running → implementation_running → verification_running → verification_done → closed
+created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected → candidate_preparing → candidate_prepared → gates_running → approval_required
 ```
 <!-- AUTO-GENERATED:END:phase-table -->
 
@@ -18,18 +18,15 @@ created → intake_ready → candidate_preparing (impact_analysis) → gates_run
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
-| created→intake_ready | —（Orchestrator 自行收集） | — | intake.md |
-| candidate_preparing (impact_analysis) | sf-requirements | — | impact_analysis.md |
-| gates_running (impact_analysis_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
-| candidate_preparing (design_delta) | sf-design | — | design_delta.md |
-| gates_running (design_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
-| candidate_preparing (tasks) | sf-task-planner | superpowers-writing-plans | tasks.md |
-| gates_running (tasks_gate) | — | — | Gate 判定（pass→implementation_running, fail→candidate_preparing） |
-| implementation_running | sf-executor | superpowers-subagent-driven-development | 代码文件 |
-| verification_running (review) | sf-reviewer | superpowers-code-review | 审查意见 |
-| verification_running (verification) | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_done | — | — | Gate 判定（pass→closed, fail→verification_running） |
-| closed | — | — | — |
+| created | sf-orchestrator | — | — |
+| intake_ready | — | — | intake.md |
+| impact_analyzing | sf-requirements | — | change_classification.md,impact_analysis.md |
+| impact_analyzed | — | — | trigger_result.json |
+| workflow_selected | — | — | Gate 判定（pass→candidate_preparing, fail→blocked） |
+| candidate_preparing | sf-design | — | architecture_delta.md,tasks.md,trace_delta.md,candidate_manifest.json,candidates/project/architecture.md |
+| candidate_prepared | — | — | — |
+| gates_running | — | — | Gate 判定（pass→approval_required, fail→gates_failed） |
+| approval_required | — | — | — |
 <!-- AUTO-GENERATED:END:skill-matrix -->
 
 ## 各阶段执行协议

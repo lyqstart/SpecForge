@@ -47,6 +47,97 @@ const pass: RuleResult = { kind: "pass" }
 // 规则 1：危险命令黑名单（最优先）
 // ============================================================
 
+function compactForGovernanceScan(command: string): string {
+  return String(command ?? '')
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/\[char\]\s*46/g, '.')
+    .replace(/\[char\]\s*102/g, 'f')
+    .replace(/["'`+]/g, '')
+    .replace(/\\+/g, '/');
+}
+
+const ruleSpecForgeGovernanceBypass: Rule = command => {
+  const compact = compactForGovernanceScan(command);
+  const callsDaemonToolInvoke =
+    /(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) &&
+    compact.includes('/api/v1/tool/invoke');
+  if (callsDaemonToolInvoke) {
+    return reject({
+      rule: 'specforge-daemon-tool-invoke-forbidden',
+      reason: 'sf_safe_bash must not call the SpecForge daemon tool invoke API.',
+      suggestion: 'Use the official SpecForge tool instead of shelling into the daemon API.',
+      hint: 'Direct daemon API calls bypass actor, gate, state-machine, and audit boundaries.',
+    });
+  }
+
+  const referencesToken =
+    compact.includes('authorization:bearer') ||
+    compact.includes('authorization=bearer') ||
+    compact.includes('bearer') ||
+    compact.includes('handshake.json');
+  if (referencesToken && (compact.includes('3129') || compact.includes('handshake.json'))) {
+    return reject({
+      rule: 'specforge-daemon-token-access-forbidden',
+      reason: 'sf_safe_bash must not read or use SpecForge daemon bearer tokens.',
+      suggestion: 'Use controlled SpecForge tools; never read handshake.json or construct Authorization headers.',
+      hint: 'Bearer token exposure breaks daemon trust boundaries.',
+    });
+  }
+
+  const touchesProtectedSpecforgePath =
+    compact.includes('.specforge/runtime') ||
+    compact.includes('.specforge/work-items') ||
+    compact.includes('.specforge/logs') ||
+    compact.includes('.specforge/cas') ||
+    (compact.includes('.spec') && compact.includes('forge') &&
+      (compact.includes('runtime') || compact.includes('work-items') || compact.includes('logs')));
+  const writesOrDeletes = /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|writefilesync|appendfilesync|opensync|fs\.write|convertto-json.*set-content|>|>>|tee)/.test(compact);
+  if (touchesProtectedSpecforgePath && writesOrDeletes) {
+    return reject({
+      rule: 'specforge-runtime-write-forbidden',
+      reason: 'sf_safe_bash must not write protected .specforge runtime/work-item/log files.',
+      suggestion: 'Use sf_artifact_write or the appropriate controlled SpecForge tool.',
+      hint: 'Shell writes to .specforge can forge evidence, state, gate, or hard-stop records.',
+    });
+  }
+
+  return pass;
+}
+
+// ============================================================
+// v18: SpecForge governance bypass protection
+// ============================================================
+const ruleSpecForgeGovernanceWriteBypassV18: Rule = command => {
+  const raw = String(command ?? '')
+  const lowered = raw.toLowerCase()
+
+  const hasWriteVerb = /\b(set-content|out-file|add-content|new-item|remove-item|writealltext|appendalltext|writefile|appendfile|createwritestream|rm\b|del\b|erase\b)/i.test(raw)
+  const mentionsSpecForge = lowered.includes('.specforge') || lowered.includes('work-items') || lowered.includes('write_guard_log.jsonl') || lowered.includes('changed_files_audit.md') || lowered.includes('runtime\\state.json') || lowered.includes('runtime/state.json')
+  const mentionsGovernanceFile = lowered.includes('work_item.json') || lowered.includes('write_guard_log.jsonl') || lowered.includes('changed_files_audit.md') || lowered.includes('close_gate.json') || lowered.includes('hard_stop.json') || lowered.includes('hard_stops.jsonl') || lowered.includes('events.jsonl') || lowered.includes('dispatcher.jsonl')
+
+  if (hasWriteVerb && (mentionsSpecForge || mentionsGovernanceFile)) {
+    return reject({
+      rule: 'specforge-governance-write-forbidden',
+      reason: 'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN: shell commands must not write SpecForge runtime, work-item, log, gate, audit, or WriteGuard files.',
+      suggestion: 'Use SpecForge controlled tools. Do not mutate .specforge via shell.',
+      hint: 'This blocks direct or composed writes such as WriteAllText(...write_guard_log.jsonl...), Set-Content .specforge/runtime/state.json, and Remove-Item .specforge/work-items/...',
+    })
+  }
+
+  const daemonInvoke = /127\.0\.0\.1\s*:\s*3129|localhost\s*:\s*3129|api\/v1\/tool\/invoke/i.test(raw)
+  const tokenAccess = /handshake\.json|authorization\s*[:=]|bearer\s+[a-z0-9._-]{12,}/i.test(raw)
+  if (daemonInvoke || tokenAccess) {
+    return reject({
+      rule: 'specforge-daemon-api-or-token-forbidden',
+      reason: 'SPEC_FORGE_DAEMON_API_OR_TOKEN_FORBIDDEN: shell commands must not call the local SpecForge daemon API or read/use daemon tokens.',
+      suggestion: 'Use the exposed SpecForge tool interface. Do not call /api/v1/tool/invoke from sf_safe_bash.',
+      hint: 'This prevents actor spoofing, token leakage, and bypassing gate/state-machine controls.',
+    })
+  }
+
+  return pass
+}
 const ruleDangerousCommands: Rule = command => {
   const trimmed = command.trim()
 
@@ -437,6 +528,8 @@ function getInstallSuggestion(tool: string, platform: NodeJS.Platform): string {
 // ============================================================
 
 const RULES: Rule[] = [
+  ruleSpecForgeGovernanceWriteBypassV18,
+  ruleSpecForgeGovernanceBypass,
   // 1. 危险命令最优先（即使工具不可用也要先检测危险性）
   ruleDangerousCommands,
   // 2. cd 拦截

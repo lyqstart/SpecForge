@@ -1,0 +1,7 @@
+{
+  "specId": "future-feature",
+  "workflowType": "requirements-first",
+  "specType": "feature",
+  "scopeTag": "p1",
+  "parentSpec": "v6-architecture-overview"
+}

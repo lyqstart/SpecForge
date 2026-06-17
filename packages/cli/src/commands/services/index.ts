@@ -44,7 +44,7 @@ import {
   createConfigAccess,
   ConfigAccess,
 } from '@specforge/configuration';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME } from '../../utils/directory-layout';
 
 /**
  * Get the binary directory path (~/.specforge/bin)

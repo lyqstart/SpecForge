@@ -1,10 +1,8 @@
 /**
- * gate-chain.ts — Gate registry and chain execution
+ * gate-chain.ts — Gate registry and chain execution.
  *
- * Extracted from gate-runner-v11.ts (TASK-3).
- *
- * Imports: gate-report, gate-summary.
- * Consumers: gate-runner-v11.ts (re-export).
+ * Patch A:
+ * - Unknown gate IDs fail-closed before any report is written.
  */
 
 import * as fs from 'node:fs/promises';
@@ -19,13 +17,6 @@ import {
 } from './gate-report.js';
 import { generateGateSummaryMd, type GateSummaryStatus } from './gate-summary.js';
 
-// ---------------------------------------------------------------------------
-// Gate Registry
-// ---------------------------------------------------------------------------
-
-/**
- * 每个 Gate 的元数据。
- */
 interface GateMeta {
   gateId: GateIdV11;
   gateType: GateStrictness;
@@ -36,11 +27,8 @@ interface GateMeta {
 const gateRegistry = new Map<GateIdV11, GateMeta>();
 
 // Inject registry accessor into gate-report.ts (late-binding to avoid circular dep)
-__injectRegistry((id) => gateRegistry.get(id));
+__injectRegistry((id) => gateRegistry.get(id as GateIdV11));
 
-/**
- * 注册一个 Gate 检查函数。
- */
 export function registerGate(
   gateId: GateIdV11,
   gateType: GateStrictness,
@@ -50,6 +38,14 @@ export function registerGate(
   gateRegistry.set(gateId, { gateId, gateType, required, checkFn });
 }
 
+export function getRegisteredGateIds(): GateIdV11[] {
+  return Array.from(gateRegistry.keys());
+}
+
+export function isRegisteredGate(gateId: string): gateId is GateIdV11 {
+  return gateRegistry.has(gateId as GateIdV11);
+}
+
 /**
  * 运行指定 workflow_path 的所有必需 Gate，生成 Gate Reports 和 Gate Summary（§9.4-§9.5）。
  */
@@ -57,13 +53,21 @@ export async function runRequiredGates(
   gateIds: GateIdV11[],
   ctx: GateContext,
 ): Promise<{ reports: GateReportV11[]; summaryStatus: GateSummaryStatus; summaryPath: string }> {
+  const unknownGateIds = gateIds.filter((gateId) => !gateRegistry.has(gateId));
+  if (unknownGateIds.length > 0) {
+    throw new Error(
+      `UNKNOWN_GATE_ID: ${unknownGateIds.join(', ')}. Registered Gate IDs: ${getRegisteredGateIds()
+        .sort()
+        .join(', ')}`,
+    );
+  }
+
   const reports: GateReportV11[] = [];
 
   for (const gateId of gateIds) {
     const report = await runGate(gateId, ctx);
     reports.push(report);
 
-    // 写 Gate Report 文件
     const gatesDir = path.join(ctx.workItemDir, 'gates');
     await fs.mkdir(gatesDir, { recursive: true });
     await fs.writeFile(
@@ -73,10 +77,9 @@ export async function runRequiredGates(
     );
   }
 
-  // 计算 Gate Summary
-  const hasFailed = reports.some(r => r.status === 'failed' && r.required);
-  const hasWarnings = reports.some(r => r.status === 'failed' && !r.required || r.warnings.length > 0);
-  const allPassed = reports.every(r => r.status === 'passed' || r.status === 'skipped');
+  const hasFailed = reports.some((r) => r.status === 'failed' && r.required);
+  const hasWarnings = reports.some((r) => (r.status === 'failed' && !r.required) || r.warnings.length > 0);
+  const allPassed = reports.every((r) => r.status === 'passed' || r.status === 'skipped');
 
   let summaryStatus: GateSummaryStatus;
   if (hasFailed) {
@@ -89,7 +92,6 @@ export async function runRequiredGates(
     summaryStatus = 'blocked';
   }
 
-  // 生成 Gate Summary（§9.5）
   const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
   const summaryContent = generateGateSummaryMd(ctx.workItemId, reports, summaryStatus);
   await fs.writeFile(summaryPath, summaryContent, 'utf-8');

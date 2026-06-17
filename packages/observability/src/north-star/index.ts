@@ -8,7 +8,7 @@
  * across 10 troubleshooting scenarios.
  */
 
-import type { NorthStarScenario, AnalysisResult, TimeRange } from '../types';
+import type { NorthStarScenario, AnalysisResult } from '../types';
 
 /**
  * Validation result for a single scenario

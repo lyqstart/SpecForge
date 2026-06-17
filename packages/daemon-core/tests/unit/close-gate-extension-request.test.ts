@@ -37,15 +37,15 @@ async function createFullWIDir(tmpDir: string, workItemId: string): Promise<stri
   await fs.writeFile(path.join(wiDir, 'intake.md'), '# Intake');
   await fs.writeFile(path.join(wiDir, 'change_classification.md'), '# CC');
   await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA');
-  await fs.writeFile(path.join(wiDir, 'trigger_result.json'), '{"triggered":true}');
+  await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ work_item_id: workItemId, workflow_path: 'code_only_fast_path', triggered: true }));
   await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
   await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nNo spec impact');
-  await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ entries: [] }));
+  await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }));
   await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n- Overall Status: passed');
   await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
   await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nMerge Status: not_applicable');
   await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Audit\n- Status: PASSED');
-  await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ entries: [{ type: 'log' }] }));
+  await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [{ type: 'log' }] }));
   await fs.writeFile(path.join(wiDir, 'user_decision.json'), JSON.stringify({ decision_status: 'approved' }));
 
   return wiDir;

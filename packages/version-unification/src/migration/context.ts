@@ -15,7 +15,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, legacyPaths } from '@specforge/types/directory-layout';
 import { atomicWrite } from '../manifest/atomic-write.js';
 import { readProject } from '../manifest/manifest-reader.js';
 import {
@@ -119,7 +119,7 @@ class MigrationContextImpl {
    * @throws Error if Project_Manifest cannot be read
    */
   async checkAtTarget(): Promise<boolean> {
-    const manifestPath = path.join(this.projectDir, SPEC_DIR_NAME, LAYOUT.manifest);
+    const manifestPath = path.join(this.projectDir, SPEC_DIR_NAME, legacyPaths.manifest);
 
     try {
       const manifest = await readProject(manifestPath);

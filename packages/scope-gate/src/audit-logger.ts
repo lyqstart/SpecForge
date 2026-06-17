@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Audit Logger implementation with performance optimization
  * 

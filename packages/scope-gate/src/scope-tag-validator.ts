@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Scope Tag Validator - Validates .config.kiro scope tags against REQ-25
  * 

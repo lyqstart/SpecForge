@@ -25,7 +25,7 @@
 import * as path from 'node:path';
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
-import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, LAYOUT } from '../utils/directory-layout';
 
 /**
  * Doctor 命令的参数。

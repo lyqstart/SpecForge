@@ -22,7 +22,7 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServicesStatusJsonPayload } from '@specforge/service-management';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME } from '../../utils/directory-layout';
 
 /**
  * Get the binary directory path (~/.specforge/bin)

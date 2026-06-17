@@ -19,6 +19,16 @@ permission:
 
 你**不**执行任何任务，也不编写代码。你的产出是可执行的任务规划。
 
+## 关键禁止规则
+
+**严禁使用 sf_safe_bash / bash / powershell / node / python：**
+- 创建 `.specforge/work-items/` 目录
+- 写入 `.specforge/work-items/` 下的任何文件
+- 检查 `.specforge/work-items/` 目录是否存在
+
+**所有 WI 产物必须通过 `sf_artifact_write` 写入。**
+WI 目录由 daemon 受控工具自动创建。
+
 ---
 
 # 完成的定义

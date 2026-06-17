@@ -3,9 +3,8 @@ import { daemon } from "./lib/thin-client"
 
 export default tool({
   description:
-    "管理 Work Item 的代码修改权限：释放（enable）或撤销（revoke）code_change_allowed，" +
-    "并设置 allowed_write_files 列表。" +
-    "仅由 Runtime 的 CodePermissionService 调用，Agent 不得直接操作代码权限。",
+    "管理 Work Item 的代码修改权限：enable 释放写权限并设置 allowed_write_files，revoke 撤销写权限，query 查询权限。" +
+    "action=enable 时 allowed_write_files 必须显式传入；daemon 必须保存 allowed_write_files_snapshot 供 audit/close_gate 使用。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     action: tool.schema
@@ -23,6 +22,7 @@ export default tool({
       directory: context.directory,
       worktree: context.worktree,
     })
+
     if (typeof result === "string") return result
     return JSON.stringify(result, null, 2)
   },

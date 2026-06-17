@@ -54,7 +54,17 @@ export class Daemon {
     this.sessionRegistry = sessionRegistry;
     this.projectManager = new ProjectManager(this.eventBus, pathResolver, undefined as any);
     
-    this.extensionLoader = new ExtensionLoader({}, this.eventBus);
+    this.extensionLoader = new ExtensionLoader({
+      enabledExtensions: {
+        // Disable plugin loading — daemon does not have third-party daemon plugins.
+        // OpenCode plugins (sf_specforge.ts) are loaded by OpenCode runtime, not daemon.
+        plugin: false,
+        skill: true,
+        tool: true,
+        workflow: true,
+        gate: true,
+      },
+    }, this.eventBus);
     this.workflowEngine = new WorkflowEngine({
       // onTransition no longer set — persistence handled by sf_state_transition handler
     });

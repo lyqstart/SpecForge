@@ -468,6 +468,107 @@ export class ReconnectingDaemonClient implements Disposable {
       this.backoffTimer = null;
     }
   }
+
+  // ── Write Guard API ─────────────────────────────────────────────────────────
+
+  private async getDaemonUrl(): Promise<{ url: string; token: string } | null> {
+    let handshake = this.cachedHandshake;
+    if (!handshake) {
+      handshake = await readHandshake(this.options.handshakePath);
+      if (handshake) this.cachedHandshake = handshake;
+    }
+    if (!handshake) return null;
+    return { url: `${this.options.healthzUrl}:${handshake.port}`, token: handshake.token };
+  }
+
+  private async daemonPost(path: string, body: unknown): Promise<any> {
+    const conn = await this.getDaemonUrl();
+    if (!conn) throw new Error("Daemon handshake not found — fail closed");
+    const response = await fetch(`${conn.url}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${conn.token}`,
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!response.ok) {
+      const text = await response.text().catch(() => "");
+      throw new Error(`Daemon responded ${response.status}: ${text}`);
+    }
+    const json = await response.json();
+    return json.data ?? json;
+  }
+
+  async checkWrite(
+    targetPath: string,
+    callerRole: string,
+    context?: Record<string, unknown>
+  ): Promise<{ allowed: boolean; reason?: string }> {
+    try {
+      return await this.daemonPost("/api/v1/v11/write-guard/check", {
+        targetPath,
+        callerRole,
+        projectPath: context?.directory ?? context?.worktree ?? process.cwd(),
+        context,
+      });
+    } catch (err) {
+      // Fail closed: daemon unreachable → block
+      return { allowed: false, reason: `daemon_unreachable_fail_closed: ${(err as Error).message}` };
+    }
+  }
+
+  async bashGuard(
+    command: string,
+    expectedFiles: string[],
+    context?: Record<string, unknown>
+  ): Promise<{ allowed: boolean; reason?: string }> {
+    try {
+      return await this.daemonPost("/api/v1/v11/write-guard/bash", {
+        command,
+        expectedFiles,
+        projectPath: context?.directory ?? context?.worktree ?? process.cwd(),
+        context,
+      });
+    } catch (err) {
+      // Fail closed: daemon unreachable → block
+      return { allowed: false, reason: `daemon_unreachable_fail_closed: ${(err as Error).message}` };
+    }
+  }
+
+  async changedFilesAudit(params: {
+    command?: string;
+    expectedFiles?: string[];
+    changedFiles?: Array<{ path: string; operation: string }>;
+    tool?: string;
+  }): Promise<{ ok: boolean; reason?: string }> {
+    try {
+      const result = await this.daemonPost("/api/v1/v11/write-guard/changed-files-audit", {
+        ...params,
+        projectPath: process.cwd(),
+      });
+      return { ok: result.passed ?? true, reason: result.reason };
+    } catch (err) {
+      return { ok: false, reason: `daemon_unreachable: ${(err as Error).message}` };
+    }
+  }
+
+  async recordEscapedWrite(params: {
+    command?: string;
+    expectedFiles?: string[];
+    escapedWrites?: string[];
+  }): Promise<{ ok: boolean; reason?: string }> {
+    try {
+      const result = await this.daemonPost("/api/v1/v11/write-guard/escaped-write", {
+        ...params,
+        timestamp: new Date().toISOString(),
+      });
+      return { ok: true, reason: result.reason };
+    } catch (err) {
+      return { ok: false, reason: `daemon_unreachable: ${(err as Error).message}` };
+    }
+  }
 }
 
 export function createReconnectingDaemonClient(

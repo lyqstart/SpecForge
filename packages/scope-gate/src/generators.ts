@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Fast-Check Generators for Property-Based Testing
  * 

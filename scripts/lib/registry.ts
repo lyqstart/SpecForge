@@ -125,10 +125,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/superpowers-writing-plans/SKILL.md", type: "skill" },
   { path: "skills/sf-intake/SKILL.md", type: "skill" },  // intake 阶段提问脚本
 
-  // 参考文档
-  { path: "docs/engineering-lessons/universal/shell-command-execution.md", type: "doc" },
-  { path: "docs/engineering-lessons/universal/async-resource-lifecycle.md", type: "doc" },
-  { path: "docs/engineering-lessons/ai-tools/kiro/execute-pwsh-constraints.md", type: "doc" },
+  // 参考文档（已迁移或废弃的文件从 registry 移除，不再部署）
 ]
 
 // ============================================================

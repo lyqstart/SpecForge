@@ -9,24 +9,22 @@ description: Bugfix Spec 工作流的阶段执行协议，包含 intake 到 clos
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-created → intake_ready → candidate_preparing → gates_running → candidate_preparing → gates_running → candidate_preparing → gates_running → implementation_running → verification_running → verification_done → closed
+created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected → candidate_preparing → candidate_prepared → gates_running → approval_required
 ```
 
 ## Skill 绑定矩阵
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
-| created→intake_ready | —（Orchestrator 自行收集） | — | intake.md |
-| candidate_preparing (bugfix_analysis) | sf-requirements | superpowers-systematic-debugging | bugfix.md |
-| gates_running (bugfix_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
-| candidate_preparing (fix_design) | sf-design | — | design.md |
-| gates_running (design_gate) | — | — | Gate 判定（pass→candidate_preparing, fail→candidate_preparing） |
-| candidate_preparing (tasks) | sf-task-planner | superpowers-writing-plans | tasks.md |
-| gates_running (tasks_gate) | — | — | Gate 判定（pass→implementation_running, fail→candidate_preparing） |
-| implementation_running | sf-executor | superpowers-tdd | 代码文件 |
-| verification_running | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_done | — | — | Gate 判定（pass→closed, fail→verification_running） |
-| closed | — | — | — |
+| created | sf-orchestrator | — | — |
+| intake_ready | — | — | intake.md |
+| impact_analyzing | sf-requirements | superpowers-systematic-debugging | change_classification.md,impact_analysis.md |
+| impact_analyzed | — | — | trigger_result.json |
+| workflow_selected | — | — | Gate 判定（pass→candidate_preparing, fail→blocked） |
+| candidate_preparing | sf-design | — | tasks.md,trace_delta.md,candidate_manifest.json |
+| candidate_prepared | — | — | — |
+| gates_running | — | — | Gate 判定（pass→approval_required, fail→gates_failed） |
+| approval_required | — | — | — |
 <!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议

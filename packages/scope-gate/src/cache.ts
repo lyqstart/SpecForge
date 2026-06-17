@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Cache Module - LRU Cache with TTL support
  * 

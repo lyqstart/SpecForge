@@ -58,13 +58,13 @@ async function createMinimalWorkItem(
   await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA\nLow impact');
   await fs.writeFile(
     path.join(wiDir, 'trigger_result.json'),
-    JSON.stringify({ triggered: true }),
+    JSON.stringify({ work_item_id: workItemId, workflow_path: 'code_only_fast_path', triggered: true }),
   );
   await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
   await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nNo spec impact');
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
-    JSON.stringify({ candidates: [] }),
+    JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }),
   );
   await fs.writeFile(
     path.join(wiDir, 'gate_summary.md'),
@@ -84,7 +84,7 @@ async function createMinimalWorkItem(
   );
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
-    JSON.stringify({ entries: [{ type: 'test', path: 'test.log' }] }),
+    JSON.stringify({ work_item_id: workItemId, entries: [{ type: 'test', path: 'test.log' }] }),
   );
   await fs.writeFile(
     path.join(wiDir, 'user_decision.json'),

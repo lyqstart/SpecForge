@@ -3,32 +3,41 @@ name: sf-workflow-feature-spec
 description: Feature Spec（Requirements-First）工作流的 v1.1 24-State 阶段执行协议，包含 created 到 closed 共 20 个状态的详细执行步骤和 Skill 绑定矩阵
 ---
 
+# SpecForge v29 feature_spec 执行裁决（最小规则）
+
+本节优先于下文旧状态描述，用于处理 v1.1 daemon 自动推进、seal transition 与旧 `sf_state_transition` 步骤的冲突：
+
+1. 非 seal 状态可按产物完成事实最多补一次 `sf_state_transition`；失败不得循环。
+2. `gates_running -> approval_required` 不手动推进。Gate 全部通过后，直接展示 Candidate 摘要并请求用户审批。
+3. 用户同意后，只执行 `sf_user_decision_record` 和 `sf_merge_run`；不得因 state.json 显示滞后而循环推进状态。
+4. Candidate 文件必须通过 `sf_artifact_write` 写入 `requirements`、`design`、`tasks` / `candidate_tasks`、`trace_delta`、`candidate_manifest`；不得使用 shell/helper 写 `.specforge`。
+5. Gate 阶段不得创建 placeholder 的 `verification_report`、`merge_report`、`evidence_manifest` 来通过当前阶段。
+6. 每个阶段最多一次自检、一次修正、一次继续；仍失败则报告阻塞事实。
+7. 写权限撤销顺序固定为：实现完成后先运行一次 `sf_changed_files_audit`，再调度 `sf-verifier`，再写入 `verification_report` 与 `evidence_manifest`，最后在 close_gate 前调用 `sf_code_permission revoke`。不得在验证前 revoke。
+8. `sf-verifier` 是只读验证角色，不得调用 `sf_changed_files_audit`。如果需要审计证据，应读取或引用已有 `changed_files_audit.md`，不得重跑审计。
+9. 如果 `sf_changed_files_audit` 在 revoke 后被误调用，daemon 应使用 `allowed_write_files_snapshot` 做只读审计，不得触发 `CODE_PERMISSION_NOT_ENABLED`。
 # Feature Spec 工作流执行协议（Requirements-First · v1.1）
 
 ## 工作流状态总览
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected →
-candidate_preparing → candidate_prepared → gates_running → [approval_required | gates_failed] →
-approved → merge_ready → merging → merged → post_merge_verified →
-implementation_ready → implementation_running → implementation_done →
-verification_running → verification_done → closed
+created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected → candidate_preparing → candidate_prepared → gates_running → approval_required
 ```
 
 ## Skill 绑定矩阵
 
-| 状态区间 | 调度的子 Agent | 加载的 Skill | 产物 |
-|----------|---------------|-------------|------|
-| created → intake_ready | —（Orchestrator 自行收集） | — | intake.md |
-| intake_ready → candidate_preparing | sf-requirements, sf-design, sf-task-planner | superpowers-brainstorming, superpowers-writing-plans | candidates/ 目录（requirements.md, design.md, tasks.md） |
-| candidate_prepared → gates_running | — | — | candidate_manifest.json, Gate 判定结果 |
-| gates_running → approval_required | — | — | sf_user_decision_record 结果 |
-| approved → merge_ready → merged | — | — | sf_merge_run 结果 |
-| merged → post_merge_verified | — | — | 合并后验证结果 |
-| implementation_ready → implementation_done | sf-executor | superpowers-subagent-driven-development | 代码文件 |
-| verification_running → verification_done | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_done → closed | — | — | sf_close_gate 判定 |
+| 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
+|------|---------------|-------------|------|
+| created | sf-orchestrator | — | — |
+| intake_ready | — | — | intake.md |
+| impact_analyzing | sf-requirements | superpowers-brainstorming | change_classification.md,impact_analysis.md |
+| impact_analyzed | — | — | trigger_result.json |
+| workflow_selected | — | — | Gate 判定（pass→candidate_preparing, fail→blocked） |
+| candidate_preparing | sf-requirements | — | requirements_delta.md,tasks.md,trace_delta.md,candidate_manifest.json,candidates/project/requirements_index.md,candidates/project/design_index.md |
+| candidate_prepared | — | — | — |
+| gates_running | — | — | Gate 判定（pass→approval_required, fail→gates_failed） |
+| approval_required | — | — | — |
 <!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议

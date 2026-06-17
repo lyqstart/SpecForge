@@ -1,18 +1,23 @@
 /**
- * thin-client.ts — Shared HTTP client for V6 Thin Plugin
- * Size target: < 5KB
+ * thin-client.ts — Shared HTTP client for SpecForge userlevel tools.
  *
- * Each sf_*.ts tool file imports this and calls daemon.call().
- * The daemon address and auth token come from handshake.json.
+ * OBS-FULL Layer 1:
+ * - records raw OpenCode tool context locally;
+ * - sends only a minimal execution envelope to daemon;
+ * - records request/response size/hash/trace_id.
  */
+import * as fs from "fs";
+import * as path from "path";
+import * as os from "os";
+import {
+  byteLength,
+  createSfTraceId,
+  extractMinimalToolContext,
+  recordSfObservation,
+  sha256,
+} from "./sf-observability";
 
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
-
-const SPEC_DIR_NAME = '.specforge' as const;
-
-// ── Types ───────────────────────────────────────────────────────────
+const SPEC_DIR_NAME = ".specforge" as const;
 
 interface HandshakeFile {
   pid: number;
@@ -25,79 +30,65 @@ interface HandshakeFile {
 interface DaemonResponse<T = unknown> {
   success: boolean;
   data?: T;
-  error?: {
-    code: string;
-    message: string;
-    details?: Record<string, unknown>;
-  };
+  error?: { code: string; message: string; details?: Record<string, unknown> };
 }
-
-// ── Handshake Reader ────────────────────────────────────────────────
 
 function readHandshake(): HandshakeFile {
   const home = os.homedir();
 
-  // Resolve OpenCode config root (same logic as path-resolver.ts)
   let configRoot: string;
   const configDir = process.env.OPENCODE_CONFIG_DIR;
-  if (configDir && configDir.trim() !== '') {
+  if (configDir && configDir.trim() !== "") {
     configRoot = path.resolve(path.normalize(configDir));
   } else {
     const xdg = process.env.XDG_CONFIG_HOME;
-    if (xdg && xdg.trim() !== '') {
-      configRoot = path.join(xdg, 'opencode');
+    if (xdg && xdg.trim() !== "") {
+      configRoot = path.join(xdg, "opencode");
     } else {
-      configRoot = path.join(home, '.config', 'opencode');
+      configRoot = path.join(home, ".config", "opencode");
     }
   }
 
   const paths = [
-    // Project-level runtime (preferred for project daemon)
-    path.join(process.cwd(), SPEC_DIR_NAME, 'runtime', 'handshake.json'),
-    // User-level runtime under resolved OpenCode config root (v1.1 standard)
-    path.join(configRoot, 'sf-user', 'runtime', 'handshake.json'),
-    // Legacy sf-runtime path (read-only fallback)
-    path.join(home, '.config', 'opencode', 'sf-runtime', 'handshake.json'),
-    // Legacy path (read-only fallback)
-    path.join(home, SPEC_DIR_NAME, 'runtime', 'handshake.json'),
+    path.join(process.cwd(), SPEC_DIR_NAME, "runtime", "handshake.json"),
+    path.join(configRoot, "sf-user", "runtime", "handshake.json"),
+    path.join(home, ".config", "opencode", "sf-runtime", "handshake.json"),
+    path.join(home, SPEC_DIR_NAME, "runtime", "handshake.json"),
   ];
 
   for (const p of paths) {
     if (fs.existsSync(p)) {
-      const content = fs.readFileSync(p, 'utf-8');
+      const content = fs.readFileSync(p, "utf-8");
       return JSON.parse(content) as HandshakeFile;
     }
   }
 
-  throw new Error(
-    'Daemon handshake file not found. Is the SpecForge daemon running?',
-  );
+  throw new Error("Daemon handshake file not found. Is the SpecForge daemon running?");
 }
 
-/**
- * Detect connection-level errors that indicate daemon may have restarted.
- * These errors suggest handshake.json is stale: daemon restarted with new port/token.
- */
 function isConnectionError(err: Error): boolean {
-    const msg = err.message.toLowerCase();
-    const code = (err as NodeJS.ErrnoException).code?.toLowerCase() || '';
-
-    if (msg.includes('fetch failed')) return true;
-    if (msg.includes('econnrefused')) return true;
-    if (msg.includes('econnreset')) return true;
-    if (code === 'econnrefused') return true;
-    if (code === 'econnreset') return true;
-    if (code === 'enotfound') return true;
-    if (code === 'econnaborted') return true;
-
-    return false;
+  const msg = err.message.toLowerCase();
+  const code = ((err as NodeJS.ErrnoException).code ?? "").toLowerCase();
+  if (msg.includes("fetch failed")) return true;
+  if (msg.includes("econnrefused")) return true;
+  if (msg.includes("econnreset")) return true;
+  if (code === "econnrefused") return true;
+  if (code === "econnreset") return true;
+  if (code === "enotfound") return true;
+  if (code === "econnaborted") return true;
+  return false;
 }
 
-// ── DaemonClient ────────────────────────────────────────────────────
+function resolveProjectRootFromContext(context?: Record<string, unknown>): string {
+  const directory = typeof context?.directory === "string" ? context.directory : undefined;
+  const worktree = typeof context?.worktree === "string" ? context.worktree : undefined;
+  const projectPath = typeof context?.projectPath === "string" ? context.projectPath : undefined;
+  return path.resolve(directory ?? worktree ?? projectPath ?? process.cwd());
+}
 
 export class DaemonClient {
-  private baseUrl: string;
-  private token: string;
+  private baseUrl = "";
+  private token = "";
   private timeoutMs: number;
 
   constructor(timeoutMs = 30000) {
@@ -105,105 +96,213 @@ export class DaemonClient {
     this.reload();
   }
 
-  /** Reload handshake (e.g. after daemon restart) */
   reload(): void {
     const hs = readHandshake();
     this.baseUrl = `http://127.0.0.1:${hs.port}`;
     this.token = hs.token;
   }
 
-  /** Generic HTTP call to the Daemon */
   async call<T = unknown>(
     method: string,
     urlPath: string,
     body?: unknown,
+    observation?: {
+      trace_id?: string;
+      projectRoot?: string;
+      toolName?: string;
+      rawContext?: Record<string, unknown>;
+      sentContext?: Record<string, unknown>;
+    },
   ): Promise<T> {
     const url = `${this.baseUrl}${urlPath}`;
-
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    const trace_id = observation?.trace_id ?? createSfTraceId();
 
+    const requestBody = body === undefined ? undefined : JSON.stringify(body);
+    const projectRoot = observation?.projectRoot ?? resolveProjectRootFromContext(observation?.rawContext);
+
+    recordSfObservation({
+      projectRoot,
+      category: "rpc",
+      phase: "request",
+      trace_id,
+      tool_name: observation?.toolName,
+      status: "started",
+      payload: {
+        method,
+        urlPath,
+        body,
+        sizes: {
+          raw_context_bytes: byteLength(observation?.rawContext ?? {}),
+          sent_context_bytes: byteLength(observation?.sentContext ?? {}),
+          body_bytes: requestBody ? Buffer.byteLength(requestBody, "utf-8") : 0,
+          body_sha256: requestBody ? sha256(requestBody) : undefined,
+        },
+      },
+    });
+
+    const started = Date.now();
     try {
       const init: RequestInit = {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${this.token}`,
+          "X-SpecForge-Trace-Id": trace_id,
         },
         signal: controller.signal,
       };
 
-      if (body !== undefined) {
-        init.body = JSON.stringify(body);
+      if (requestBody !== undefined) {
+        init.body = requestBody;
       }
 
       const resp = await fetch(url, init);
 
       if (resp.status === 401) {
-        // Token may be stale after daemon restart
         this.reload();
-        // Retry once with fresh token
-        (init.headers as Record<string, string>)['Authorization'] =
-          `Bearer ${this.token}`;
+        (init.headers as Record<string, string>)["Authorization"] = `Bearer ${this.token}`;
         const resp2 = await fetch(url, init);
-        return this.parseResponse<T>(resp2);
+        const parsed2 = await this.parseResponse<T>(resp2);
+        recordSfObservation({
+          projectRoot,
+          category: "rpc",
+          phase: "response",
+          trace_id,
+          tool_name: observation?.toolName,
+          status: "success_after_token_reload",
+          duration_ms: Date.now() - started,
+          payload: parsed2,
+        });
+        return parsed2;
       }
 
-      return this.parseResponse<T>(resp);
+      const parsed = await this.parseResponse<T>(resp);
+      recordSfObservation({
+        projectRoot,
+        category: "rpc",
+        phase: "response",
+        trace_id,
+        tool_name: observation?.toolName,
+        status: "success",
+        duration_ms: Date.now() - started,
+        payload: parsed,
+      });
+      return parsed;
     } catch (err) {
-      if ((err as Error).name === 'AbortError') {
-        throw new Error('Daemon request timed out (30s)');
+      recordSfObservation({
+        projectRoot,
+        category: "rpc",
+        phase: "error",
+        trace_id,
+        tool_name: observation?.toolName,
+        status: "error",
+        duration_ms: Date.now() - started,
+        error: {
+          name: (err as Error).name,
+          message: (err as Error).message,
+          stack: (err as Error).stack,
+        },
+        force: true,
+      });
+
+      if ((err as Error).name === "AbortError") {
+        throw new Error("Daemon request timed out (30s)");
       }
 
-      // Connection-level errors: reload handshake and retry once
       if (isConnectionError(err as Error)) {
-        try { this.reload(); } catch {
-          // Reload may fail if daemon is not running at all
+        try {
+          this.reload();
+        } catch {
+          // daemon may not be running
         }
         try {
-          return await this.call<T>(method, urlPath, body);
+          return await this.call<T>(method, urlPath, body, { ...observation, trace_id });
         } catch (retryErr) {
-          // Retry failed — throw the retry error
           throw retryErr;
         }
       }
 
-      throw new Error(
-        `Daemon connection failed: ${(err as Error).message}`,
-      );
+      throw new Error(`Daemon connection failed: ${(err as Error).message}`);
     } finally {
       clearTimeout(timer);
     }
   }
 
-  /** Convenience: POST /api/v1/tool/invoke */
-  async invokeTool(
+  async invokeTool<T = unknown>(
     toolName: string,
     args: Record<string, unknown>,
     context?: Record<string, unknown>,
-  ): Promise<unknown> {
-    return this.call('POST', '/api/v1/tool/invoke', {
-      tool: toolName,
-      args,
-      context: context ?? {},
+  ): Promise<T> {
+    const trace_id =
+      (typeof context?.trace_id === "string" && context.trace_id) ||
+      (typeof context?.traceId === "string" && context.traceId) ||
+      createSfTraceId();
+
+    const minimalContext = {
+      ...extractMinimalToolContext(context),
+      trace_id,
+      requested_tool: toolName,
+      projectPath: (context?.projectPath as string | undefined) ?? (context?.directory as string | undefined),
+    };
+
+    const projectRoot = resolveProjectRootFromContext(context);
+
+    recordSfObservation({
+      projectRoot,
+      category: "tool-call",
+      phase: "userlevel.invoke",
+      trace_id,
+      tool_name: toolName,
+      session_id: String(context?.sessionID ?? context?.sessionId ?? ""),
+      message_id: String(context?.messageID ?? context?.messageId ?? ""),
+      agent: String(context?.agent ?? ""),
+      status: "started",
+      payload: {
+        tool: toolName,
+        args,
+        raw_context: context ?? {},
+        sent_context: minimalContext,
+        sizes: {
+          args_bytes: byteLength(args),
+          raw_context_bytes: byteLength(context ?? {}),
+          sent_context_bytes: byteLength(minimalContext),
+        },
+      },
     });
+
+    return this.call<T>(
+      "POST",
+      "/api/v1/tool/invoke",
+      { tool: toolName, args, context: minimalContext },
+      {
+        trace_id,
+        projectRoot,
+        toolName,
+        rawContext: context,
+        sentContext: minimalContext,
+      },
+    );
   }
 
-  private async parseResponse<T>(resp: Response): Promise<T> {
-    const json = (await resp.json()) as DaemonResponse<T>;
+  private async parseResponse<T = unknown>(resp: Response): Promise<T> {
+    let json: DaemonResponse<T>;
+    try {
+      json = (await resp.json()) as DaemonResponse<T>;
+    } catch (e) {
+      throw new Error(`Daemon error [HTTP_${resp.status}]: ${resp.statusText || "Invalid JSON response"}`);
+    }
 
     if (!resp.ok || !json.success) {
       const errCode = json.error?.code ?? `HTTP_${resp.status}`;
-      const errMsg =
-        json.error?.message ?? resp.statusText;
+      const errMsg = json.error?.message ?? resp.statusText;
       throw new Error(`Daemon error [${errCode}]: ${errMsg}`);
     }
 
     return json.data as T;
   }
 }
-
-// ── Singleton ───────────────────────────────────────────────────────
 
 let _instance: DaemonClient | null = null;
 
@@ -214,16 +313,20 @@ export function getDaemonClient(): DaemonClient {
   return _instance;
 }
 
-/** Convenience alias */
 export const daemon = {
-  call<T = unknown>(method: string, urlPath: string, body?: unknown) {
+  call<T = unknown>(
+    method: string,
+    urlPath: string,
+    body?: unknown,
+  ): Promise<T> {
     return getDaemonClient().call<T>(method, urlPath, body);
   },
-  invokeTool(
+
+  invokeTool<T = unknown>(
     toolName: string,
     args: Record<string, unknown>,
     context?: Record<string, unknown>,
-  ) {
-    return getDaemonClient().invokeTool(toolName, args, context);
+  ): Promise<T> {
+    return getDaemonClient().invokeTool<T>(toolName, args, context);
   },
 };

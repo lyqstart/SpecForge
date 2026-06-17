@@ -1,25 +1,20 @@
 /**
- * merge-runner-v11.ts — v1.1 标准 Merge Runner（§11）
+ * merge-runner-v11.ts - v1.1 Spec Merge Runner
  *
- * 依据：SpecForge 最终融合标准 v1.1
- *
- * Merge Runner 是唯一允许写入正式规格真相源的受控执行器。
- * 普通 Agent 不得写入 .specforge/project/**。
- *
- * 规则（§11.3）：
- * - 只能按 candidate_manifest.json 合并
- * - 禁止扫描 candidates/** 自行决定写入范围
- * - 禁止自动忽略 hash 不匹配
- * - 禁止在 base_spec_version 冲突时尝试合并
+ * P0 governance:
+ * - Merge must use the same manifest normalization rules as approval.
+ * - Merge must not infer or mutate candidate_manifest.json after approval.
+ * - Non-code-only workflows must merge at least one project-level spec artifact.
  */
-
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
-
-// ---------------------------------------------------------------------------
-// 类型
-// ---------------------------------------------------------------------------
+import {
+  validateApprovedUserDecisionForMerge,
+  entriesSemanticallyEqual,
+  inferManifestEntries,
+  normalizeSlash,
+} from './governance-invariants-v11.js';
 
 export interface MergeInput {
   projectRoot: string;
@@ -33,7 +28,7 @@ export interface MergeEntryResult {
   candidate_path: string;
   target_path: string;
   operation: string;
-  status: 'success' | 'skipped' | 'failed';
+  status: 'success' | 'skipped' | 'failed' | 'not_applicable';
   hash_match: boolean;
   error?: string;
 }
@@ -44,11 +39,27 @@ export interface MergeResult {
   spec_manifest_updated: boolean;
   project_spec_version: string;
   errors: string[];
+  status?: 'success' | 'failed' | 'not_applicable';
+  reason?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Hash 工具
-// ---------------------------------------------------------------------------
+type ManifestEntry = {
+  candidate_path: string;
+  target_path: string;
+  operation: string;
+  type?: string;
+  inferred?: boolean;
+  normalized?: boolean;
+};
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 async function computeFileHash(filePath: string): Promise<string> {
   try {
@@ -59,14 +70,42 @@ async function computeFileHash(filePath: string): Promise<string> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Merge Runner 执行
-// ---------------------------------------------------------------------------
+async function readJsonFile(filePath: string): Promise<any> {
+  const content = await fs.readFile(filePath, 'utf-8');
+  return JSON.parse(content);
+}
 
-/**
- * 执行 Merge（§11.3）。
- * 按 candidate_manifest.json 将 candidates/ 下的文件合并到 .specforge/project/。
- */
+async function readCurrentProjectSpecVersion(projectRoot: string): Promise<string> {
+  const projectSpecManifestPath = path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
+  try {
+    const specManifest = await readJsonFile(projectSpecManifestPath);
+    return specManifest.project_spec_version ?? 'PSV-0000';
+  } catch {
+    return 'PSV-0000';
+  }
+}
+
+function isCodeOnlyFastPathNoMerge(manifest: any, entries: ManifestEntry[]): boolean {
+  return manifest.workflow_path === 'code_only_fast_path' && Array.isArray(entries) && entries.length === 0;
+}
+
+function isSubPath(child: string, parent: string): boolean {
+  const c = path.resolve(child).toLowerCase();
+  const p = path.resolve(parent).toLowerCase();
+  return c === p || c.startsWith(p + path.sep.toLowerCase()) || c.startsWith(p + '/');
+}
+
+function normalizeEntryForMerge(entry: ManifestEntry): ManifestEntry {
+  return {
+    candidate_path: normalizeSlash(entry.candidate_path),
+    target_path: normalizeSlash(entry.target_path),
+    operation: entry.operation ?? 'replace',
+    type: entry.type,
+    inferred: Boolean(entry.inferred),
+    normalized: Boolean(entry.normalized),
+  };
+}
+
 export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   const result: MergeResult = {
     success: true,
@@ -74,50 +113,96 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     spec_manifest_updated: false,
     project_spec_version: '',
     errors: [],
+    status: 'success',
   };
 
-  // 1. 读取 candidate_manifest.json
   let manifest: any;
   try {
-    const content = await fs.readFile(input.candidateManifestPath, 'utf-8');
-    manifest = JSON.parse(content);
+    manifest = await readJsonFile(input.candidateManifestPath);
   } catch (err: any) {
-    return { ...result, success: false, errors: [`Cannot read candidate_manifest.json: ${err.message}`] };
+    return {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: ['Cannot read candidate_manifest.json: ' + err.message],
+    };
   }
 
-  const entries = manifest.entries ?? [];
+  const manifestEntries = Array.isArray(manifest.entries)
+    ? manifest.entries.map((entry: ManifestEntry) => normalizeEntryForMerge(entry))
+    : [];
+  const normalizedEntries = inferManifestEntries(manifest, input.workItemDir).map(normalizeEntryForMerge);
+  const entries = normalizedEntries;
 
-  // 2. 检查 base_spec_version
-  const projectSpecManifestPath = path.join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json');
-  let currentVersion = 'PSV-0000';
-  try {
-    const content = await fs.readFile(projectSpecManifestPath, 'utf-8');
-    const specManifest = JSON.parse(content);
-    currentVersion = specManifest.project_spec_version ?? 'PSV-0000';
-  } catch {
-    // spec_manifest 不存在，首次初始化
+  result.project_spec_version = await readCurrentProjectSpecVersion(input.projectRoot);
+
+  if (manifest.workflow_path !== 'code_only_fast_path' && !entriesSemanticallyEqual(manifestEntries, normalizedEntries)) {
+    const failed: MergeResult = {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: [
+        'candidate_manifest.entries must be normalized before user approval; merge_runner uses the same inferManifestEntries() rules as approval and will not infer or mutate entries after approval.',
+      ],
+    };
+    await generateMergeReport(input, failed);
+    return failed;
   }
 
-  // 3. 读取 user_decision.json 校验
-  try {
-    const content = await fs.readFile(input.userDecisionPath, 'utf-8');
-    const decision = JSON.parse(content);
-    if (!['approved', 'waived'].includes(decision.decision_status)) {
-      return { ...result, success: false, errors: [`User Decision status is "${decision.decision_status}", not approved/waived`] };
-    }
-  } catch (err: any) {
-    return { ...result, success: false, errors: [`Cannot read user_decision.json: ${err.message}`] };
+  if (isCodeOnlyFastPathNoMerge(manifest, entries)) {
+    const notApplicable: MergeResult = {
+      ...result,
+      success: true,
+      status: 'not_applicable',
+      reason: 'code_only_fast_path has no candidate spec artifacts to merge; candidate_manifest.entries is empty.',
+      merged_files: [],
+      spec_manifest_updated: false,
+    };
+    await generateMergeReport(input, notApplicable);
+    return notApplicable;
   }
 
-  // 4. 按 manifest entries 逐个合并
+  if (entries.length === 0) {
+    const failed: MergeResult = {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: [
+        'Non-code-only workflow requires at least one merge entry. candidate_manifest.entries is empty.',
+      ],
+    };
+    await generateMergeReport(input, failed);
+    return failed;
+  }
+
+  const approvalValidation = await validateApprovedUserDecisionForMerge({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workItemId: input.workItemId,
+    candidateManifestPath: input.candidateManifestPath,
+    userDecisionPath: input.userDecisionPath,
+  });
+
+  if (!approvalValidation.valid) {
+    const failed: MergeResult = {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: approvalValidation.errors,
+    };
+    await generateMergeReport(input, failed);
+    return failed;
+  }
+
+  const workItemRoot = path.resolve(input.workItemDir);
+  const projectSpecRoot = path.resolve(input.projectRoot, '.specforge', 'project');
+
   for (const entry of entries) {
     const candidateFullPath = path.resolve(input.workItemDir, entry.candidate_path);
-    // target_path 相对于项目根
     const targetFullPath = path.resolve(input.projectRoot, entry.target_path);
 
-    // 安全检查：candidate 必须在 workItemDir 下
-    if (!candidateFullPath.startsWith(path.resolve(input.workItemDir))) {
-      result.errors.push(`Security: candidate_path outside WI: ${entry.candidate_path}`);
+    if (!isSubPath(candidateFullPath, workItemRoot)) {
+      result.errors.push('Security: candidate_path outside WI: ' + entry.candidate_path);
       result.merged_files.push({
         candidate_path: entry.candidate_path,
         target_path: entry.target_path,
@@ -130,10 +215,8 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       continue;
     }
 
-    // 安全检查：target 必须在 .specforge/project/ 下
-    const projectDir = path.resolve(input.projectRoot, '.specforge', 'project');
-    if (!targetFullPath.startsWith(projectDir)) {
-      result.errors.push(`Security: target_path outside .specforge/project/: ${entry.target_path}`);
+    if (!isSubPath(targetFullPath, projectSpecRoot)) {
+      result.errors.push('Security: target_path outside .specforge/project/: ' + entry.target_path);
       result.merged_files.push({
         candidate_path: entry.candidate_path,
         target_path: entry.target_path,
@@ -146,38 +229,40 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       continue;
     }
 
+    if (!(await fileExists(candidateFullPath))) {
+      result.errors.push('Candidate file does not exist: ' + entry.candidate_path);
+      result.merged_files.push({
+        candidate_path: entry.candidate_path,
+        target_path: entry.target_path,
+        operation: entry.operation,
+        status: 'failed',
+        hash_match: false,
+        error: 'candidate file does not exist',
+      });
+      result.success = false;
+      continue;
+    }
+
     try {
       if (entry.operation === 'delete') {
-        // 删除操作
         try {
           await fs.unlink(targetFullPath);
-          result.merged_files.push({
-            candidate_path: entry.candidate_path,
-            target_path: entry.target_path,
-            operation: 'delete',
-            status: 'success',
-            hash_match: true,
-          });
         } catch {
-          // 文件不存在也算成功
-          result.merged_files.push({
-            candidate_path: entry.candidate_path,
-            target_path: entry.target_path,
-            operation: 'delete',
-            status: 'success',
-            hash_match: true,
-          });
+          // Missing file is idempotent for delete.
         }
+        result.merged_files.push({
+          candidate_path: entry.candidate_path,
+          target_path: entry.target_path,
+          operation: 'delete',
+          status: 'success',
+          hash_match: true,
+        });
       } else {
-        // replace / create：复制 candidate 到 target
         await fs.mkdir(path.dirname(targetFullPath), { recursive: true });
         await fs.copyFile(candidateFullPath, targetFullPath);
-
-        // 验证 hash
         const candidateHash = await computeFileHash(candidateFullPath);
         const targetHash = await computeFileHash(targetFullPath);
         const hashMatch = candidateHash === targetHash;
-
         result.merged_files.push({
           candidate_path: entry.candidate_path,
           target_path: entry.target_path,
@@ -186,10 +271,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
           hash_match: hashMatch,
           error: hashMatch ? undefined : 'Hash mismatch after copy',
         });
-
-        if (!hashMatch) {
-          result.success = false;
-        }
+        if (!hashMatch) result.success = false;
       }
     } catch (err: any) {
       result.merged_files.push({
@@ -204,84 +286,81 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     }
   }
 
-  // 5. 更新 spec_manifest.json（§11.5）
+  const projectSpecManifestPath = path.join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json');
   if (result.success && entries.length > 0) {
     try {
-      // 递增 project_spec_version
-      const versionNum = parseInt(currentVersion.replace('PSV-', ''), 10) || 0;
-      const newVersion = `PSV-${String(versionNum + 1).padStart(4, '0')}`;
+      const versionNum = parseInt(result.project_spec_version.replace('PSV-', ''), 10) || 0;
+      const newVersion = 'PSV-' + String(versionNum + 1).padStart(4, '0');
       result.project_spec_version = newVersion;
 
       let specManifest: any = {};
       try {
-        const content = await fs.readFile(projectSpecManifestPath, 'utf-8');
-        specManifest = JSON.parse(content);
-      } catch { /* 首次 */ }
+        specManifest = await readJsonFile(projectSpecManifestPath);
+      } catch {
+        // First spec merge.
+      }
 
+      specManifest.schema_version = specManifest.schema_version ?? '1.0';
       specManifest.project_spec_version = newVersion;
       specManifest.last_merged_work_item = input.workItemId;
       specManifest.last_merged_at = new Date().toISOString();
+      specManifest.last_merged_targets = result.merged_files
+        .filter((entry) => entry.status === 'success')
+        .map((entry) => entry.target_path);
 
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
       await fs.writeFile(projectSpecManifestPath, JSON.stringify(specManifest, null, 2) + '\n', 'utf-8');
       result.spec_manifest_updated = true;
     } catch (err: any) {
-      result.errors.push(`Failed to update spec_manifest.json: ${err.message}`);
+      result.errors.push('Failed to update spec_manifest.json: ' + err.message);
       result.success = false;
     }
   }
 
-  // 6. 生成 merge_report.md（§11.4）
+  result.status = result.success ? 'success' : 'failed';
   await generateMergeReport(input, result);
-
   return result;
 }
 
-// ---------------------------------------------------------------------------
-// Merge Report 生成（§11.4）
-// ---------------------------------------------------------------------------
-
 async function generateMergeReport(input: MergeInput, result: MergeResult): Promise<void> {
+  const status = result.status ?? (result.success ? 'success' : 'failed');
   const lines: string[] = [
     '# Merge Report',
     '',
-    `Work Item: ${input.workItemId}`,
-    `Status: ${result.success ? 'success' : 'failed'}`,
-    `Timestamp: ${new Date().toISOString()}`,
+    'Work Item: ' + input.workItemId,
+    'Status: ' + status,
+    'Timestamp: ' + new Date().toISOString(),
     '',
     '## Summary',
     '',
-    `- Total entries: ${result.merged_files.length}`,
-    `- Successful: ${result.merged_files.filter(e => e.status === 'success').length}`,
-    `- Failed: ${result.merged_files.filter(e => e.status === 'failed').length}`,
-    `- Spec Manifest Updated: ${result.spec_manifest_updated}`,
-    `- Project Spec Version: ${result.project_spec_version || 'N/A'}`,
-    '',
-    '## Inputs',
-    '',
-    `- candidate_manifest: ${input.candidateManifestPath}`,
-    `- user_decision: ${input.userDecisionPath}`,
-    '',
-    '## Merged Files',
-    '',
+    '- Total entries: ' + result.merged_files.length,
+    '- Successful: ' + result.merged_files.filter((e) => e.status === 'success').length,
+    '- Failed: ' + result.merged_files.filter((e) => e.status === 'failed').length,
+    '- Spec Manifest Updated: ' + result.spec_manifest_updated,
+    '- Project Spec Version: ' + (result.project_spec_version || 'N/A'),
   ];
 
-  for (const entry of result.merged_files) {
-    lines.push(`| ${entry.status} | ${entry.operation} | ${entry.target_path} | hash_match: ${entry.hash_match} |`);
-    if (entry.error) {
-      lines.push(`  Error: ${entry.error}`);
+  if (status === 'not_applicable') {
+    lines.push('', '## Not Applicable', '', result.reason ?? 'No Candidate artifacts need to be merged.');
+  }
+
+  lines.push('', '## Inputs', '', '- candidate_manifest: ' + input.candidateManifestPath, '- user_decision: ' + input.userDecisionPath, '', '## Merged Files', '');
+
+  if (result.merged_files.length === 0) {
+    lines.push('No files merged.');
+  } else {
+    lines.push('| Status | Operation | Candidate | Target | Hash Match |');
+    lines.push('|--------|-----------|-----------|--------|------------|');
+    for (const entry of result.merged_files) {
+      lines.push('| ' + entry.status + ' | ' + entry.operation + ' | ' + entry.candidate_path + ' | ' + entry.target_path + ' | ' + entry.hash_match + ' |');
+      if (entry.error) lines.push('- Error: ' + entry.error);
     }
   }
 
   if (result.errors.length > 0) {
-    lines.push('', '## Errors', '');
-    for (const err of result.errors) {
-      lines.push(`- ${err}`);
-    }
+    lines.push('', '## Errors', '', ...result.errors.map((err) => '- ' + err));
   }
 
   lines.push('', '## Evidence', '', '- merge_runner_execution_log');
-
-  const reportPath = path.join(input.workItemDir, 'merge_report.md');
-  await fs.writeFile(reportPath, lines.join('\n'), 'utf-8');
+  await fs.writeFile(path.join(input.workItemDir, 'merge_report.md'), lines.join('\n'), 'utf-8');
 }

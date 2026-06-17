@@ -37,17 +37,17 @@ const DISPLAY_NAMES: Record<string, string> = {
 };
 
 const SKILL_FILES: { relPath: string; workflowId: string }[] = [
-  { relPath: '.opencode/skills/sf-workflow-feature-spec/SKILL.md', workflowId: 'feature_spec' },
-  { relPath: '.opencode/skills/sf-workflow-design-first/SKILL.md', workflowId: 'feature_spec_design_first' },
-  { relPath: '.opencode/skills/sf-workflow-bugfix-spec/SKILL.md', workflowId: 'bugfix_spec' },
-  { relPath: '.opencode/skills/sf-workflow-quick-change/SKILL.md', workflowId: 'quick_change' },
-  { relPath: '.opencode/skills/sf-workflow-change-request/SKILL.md', workflowId: 'change_request' },
-  { relPath: '.opencode/skills/sf-workflow-refactor/SKILL.md', workflowId: 'refactor' },
-  { relPath: '.opencode/skills/sf-workflow-ops-task/SKILL.md', workflowId: 'ops_task' },
-  { relPath: '.opencode/skills/sf-workflow-investigation/SKILL.md', workflowId: 'investigation' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md', workflowId: 'feature_spec' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md', workflowId: 'feature_spec_design_first' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-bugfix-spec/SKILL.md', workflowId: 'bugfix_spec' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md', workflowId: 'quick_change' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-change-request/SKILL.md', workflowId: 'change_request' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-refactor/SKILL.md', workflowId: 'refactor' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-ops-task/SKILL.md', workflowId: 'ops_task' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-investigation/SKILL.md', workflowId: 'investigation' },
 ];
 
-const ORCHESTRATOR_PATH = '.opencode/agents/sf-orchestrator.md';
+const ORCHESTRATOR_PATH = 'setup/userlevel-opencode/agents/sf-orchestrator.md';
 
 const NULL_PRODUCES_DISPLAY: Record<string, string> = {
   development: '代码文件',

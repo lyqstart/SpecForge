@@ -1,0 +1,266 @@
+import { access, mkdir, readdir } from "node:fs/promises";
+import { registerHandler } from "../ToolDispatcher";
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { join } from "node:path";
+import {
+  isValidV11Transition,
+  isForbiddenTransition,
+  WI_STATUSES_V11,
+  checkCloseGateEvidenceRequirements,
+} from "../lib/state-machine-v11";
+import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from "../lib/state_machine";
+import { isSealTransition, getSealTransition } from "@specforge/types/seal-transitions";
+import {
+  validateWorkItemId,
+  parseWorkItemSequence,
+  formatWorkItemId,
+} from "../lib/work-item-id-validator";
+import { guardHardStop } from "../lib/hard-stop-latch";
+
+/**
+ * Allocate next WI-NNNN from existing .specforge/work-items directories.
+ *
+ * This is intentionally daemon-side so the Agent does not invent WI IDs.
+ */
+async function allocateNextWorkItemId(projectRoot: string): Promise<string> {
+  const wiRoot = join(projectRoot, SPEC_DIR_NAME, "work-items");
+  await mkdir(wiRoot, { recursive: true });
+
+  let max = 0;
+  try {
+    const entries = await readdir(wiRoot, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const seq = parseWorkItemSequence(entry.name);
+      if (seq !== null && seq > max) max = seq;
+    }
+  } catch {
+    max = 0;
+  }
+
+  return formatWorkItemId(max + 1);
+}
+
+/**
+ * v1.1 state transition handler.
+ *
+ * R1 change:
+ * - v1.1 WI ID format is unified to WI-NNNN.
+ * - Date-based IDs such as WI-YYYYMMDD-NNNN are rejected.
+ * - For create transition, work_item_id may be omitted and daemon allocates WI-NNNN.
+ */
+registerHandler("sf_state_transition", async (args, context, deps) => {
+  let workItemId = args["work_item_id"] as string | undefined;
+  const fromState = ((args["from_state"] as string) ?? "");
+  const toState = args["to_state"] as string;
+
+  const baseDir =
+    (context?.directory as string) ||
+    (context?.worktree as string) ||
+    process.cwd();
+
+  if (!toState) {
+    return { success: false, error: "to_state required" };
+  }
+
+  const isCreateTransition = fromState === "" && toState === "created";
+
+  if ((!workItemId || workItemId.trim() === "") && isCreateTransition) {
+    workItemId = await allocateNextWorkItemId(baseDir);
+  }
+
+  if (!workItemId) {
+    return {
+      success: false,
+      error: "work_item_id required. For create transition, omit work_item_id to let daemon allocate WI-NNNN.",
+      code: "WORK_ITEM_ID_REQUIRED",
+      retry_allowed: true,
+    };
+  }
+
+  const idError = validateWorkItemId(workItemId);
+  if (idError) {
+    return {
+      success: false,
+      error: idError,
+      code: "INVALID_WORK_ITEM_ID",
+      hard_stop: false,
+      retry_allowed: true,
+      remediation:
+        "Use WI-NNNN, for example WI-0001. For a new Work Item, omit work_item_id and call sf_state_transition with from_state='' and to_state='created' so daemon allocates it.",
+    };
+  }
+
+  const hardStopGuard = guardHardStop(baseDir, workItemId, "sf_state_transition");
+  if (!hardStopGuard.allowed) {
+    return {
+      success: false,
+      error: hardStopGuard.error,
+      hard_stop: true,
+      hard_stop_record: hardStopGuard.hard_stop_record,
+    };
+  }
+
+  const rawWorkflowPath = args["workflow_path"] as string | undefined;
+  const rawWorkflowType = args["workflow_type"] as string | undefined;
+  let resolvedWorkflowType: string | undefined = rawWorkflowType;
+  const useV11 = (args["use_v11_state_machine"] as boolean) || !!rawWorkflowPath;
+
+  if (rawWorkflowPath) {
+    const mapped = WORKFLOW_PATH_TO_TYPE[rawWorkflowPath as WorkflowPath];
+    if (!mapped) {
+      return {
+        success: false,
+        error: `Unknown workflow_path: ${rawWorkflowPath}. Valid paths: ${Object.keys(
+          WORKFLOW_PATH_TO_TYPE,
+        ).join(", ")}`,
+      };
+    }
+
+    // R4：workflow_path 是主判定。Agent 传错 workflow_type 时，daemon 必须纠偏。
+    // 典型错误：workflow_path=code_only_fast_path，但 workflow_type=feature_spec。
+    resolvedWorkflowType = mapped;
+  }
+
+  if (useV11) {
+    if (!(WI_STATUSES_V11 as readonly string[]).includes(toState)) {
+      return {
+        success: false,
+        error: `Invalid v1.1 target state "${toState}". Valid states: ${(
+          WI_STATUSES_V11 as readonly string[]
+        ).join(", ")}`,
+      };
+    }
+
+    if (fromState !== "" && isForbiddenTransition(fromState, toState)) {
+      return {
+        success: false,
+        error: `Forbidden v1.1 transition: ${fromState} → ${toState} (§5.2)`,
+        forbidden: true,
+      };
+    }
+
+    if (fromState !== "" && !isValidV11Transition(fromState, toState)) {
+      return {
+        success: false,
+        error: `Invalid v1.1 transition: ${fromState} → ${toState}`,
+        valid_from_states: `Use getTransitionTable() to see valid targets from ${fromState}`,
+      };
+    }
+
+    if (fromState !== "" && isSealTransition(fromState, toState)) {
+      const sealEntry = getSealTransition(fromState, toState);
+      const callerAgent = (context?.agent as string) ?? "";
+      if (sealEntry && callerAgent !== sealEntry.authorizedSubject) {
+        return {
+          success: false,
+          error: `Seal transition ${fromState} → ${toState} requires actor '${sealEntry.authorizedSubject}', got '${callerAgent || "none"}'. Only ${sealEntry.authorizedSubject} may perform this transition.`,
+          seal_transition: true,
+          required_actor: sealEntry.authorizedSubject,
+          actual_actor: callerAgent || null,
+        };
+      }
+    }
+
+    if (toState === "closed") {
+      const v11ProjectPath =
+        (context?.directory as string) || (context?.worktree as string) || "";
+      if (!v11ProjectPath) {
+        return {
+          success: false,
+          error:
+            "projectPath required for close gate evidence check — provide context.directory or context.worktree",
+        };
+      }
+
+      const v11WorkItemDir = join(v11ProjectPath, SPEC_DIR_NAME, "work-items", workItemId);
+      const evidenceResult = await checkCloseGateEvidenceRequirements(v11WorkItemDir);
+      if (!evidenceResult.met) {
+        return {
+          success: false,
+          error: `Close gate evidence requirements not met. Missing: ${evidenceResult.missing.join(
+            ", ",
+          )}. ${evidenceResult.descriptions.join("; ")}`,
+          missing_evidence: evidenceResult.missing,
+        };
+      }
+    }
+  }
+
+  if (fromState === "") {
+    const manifestPath = join(baseDir, SPEC_DIR_NAME, "manifest.json");
+    try {
+      await access(manifestPath);
+    } catch {
+      return {
+        success: false,
+        error: "PROJECT_NOT_INITIALIZED",
+        hint: `项目尚未初始化，请在项目根目录运行 SpecForge 初始化流程以创建 ${SPEC_DIR_NAME}/manifest.json`,
+        recovery_action: "execute_startup_flow",
+      };
+    }
+
+    if (toState === "created") {
+      const wiDir = join(baseDir, SPEC_DIR_NAME, "work-items", workItemId);
+      await mkdir(wiDir, { recursive: true });
+    }
+  }
+
+  if (!deps.workflowEngine) {
+    return { success: false, error: "WorkflowEngine not available" };
+  }
+
+  const projectPath =
+    (context?.directory as string) || (context?.worktree as string) || "";
+  const workItemDir = projectPath
+    ? join(projectPath, SPEC_DIR_NAME, "work-items", workItemId)
+    : undefined;
+
+  let result;
+  try {
+    result = await deps.workflowEngine.transitionFull({
+      workItemId,
+      fromState,
+      toState,
+      evidence: (args["evidence"] as string) ?? "",
+      workflowType: resolvedWorkflowType,
+      transitionContext: args["transition_context"] as Record<string, unknown>,
+      actor: context?.agent
+        ? { agentRole: context.agent, sessionId: context?.sessionID }
+        : null,
+      workItemDir,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+
+  if (!projectPath) {
+    return {
+      success: false,
+      error: "projectPath required — provide context.directory or context.worktree",
+    };
+  }
+
+  if (!deps.projectManager) {
+    return { success: false, error: "ProjectManager not available" };
+  }
+
+  const projectSm = await deps.projectManager.getProjectStateManager(projectPath);
+  await projectSm.transition(
+    workItemId,
+    fromState,
+    toState,
+    typeof context?.agent === "string" ? context.agent : "system",
+    resolvedWorkflowType || "feature_spec",
+    { evidence: (args["evidence"] as string) ?? "" },
+  );
+
+  return {
+    success: true,
+    work_item_id: workItemId,
+    allocated_work_item_id:
+      isCreateTransition && !args["work_item_id"] ? workItemId : undefined,
+    ...result,
+  };
+});

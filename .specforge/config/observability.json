@@ -1,0 +1,18 @@
+{
+  "enabled": false,
+  "level": "replay",
+  "capture_plugin_events": true,
+  "capture_tool_calls": true,
+  "capture_tool_context": true,
+  "capture_raw_context": true,
+  "capture_daemon_rpc": true,
+  "capture_handler_io": true,
+  "capture_state_snapshots": true,
+  "capture_artifact_io": true,
+  "capture_gate_inputs": true,
+  "capture_hardstop": true,
+  "capture_payload": true,
+  "redact_secrets": true,
+  "max_inline_payload_bytes": 8192,
+  "payload_storage": "file"
+}

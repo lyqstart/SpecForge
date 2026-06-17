@@ -14,7 +14,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { SPEC_DIR_NAME, LAYOUT } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, legacyPaths } from '@specforge/types/directory-layout';
 import {
   Migration,
   MigrationContext,
@@ -112,7 +112,7 @@ export class MigrationRunner {
 
     // specforge directory and manifest path
     this.manifestDir = path.join(projectDir, SPEC_DIR_NAME);
-    this.manifestPath = path.join(this.manifestDir, LAYOUT.manifest);
+    this.manifestPath = path.join(this.manifestDir, legacyPaths.manifest);
   }
 
   /**

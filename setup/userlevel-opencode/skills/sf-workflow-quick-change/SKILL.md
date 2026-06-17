@@ -1,27 +1,43 @@
----
+﻿---
 name: sf-workflow-quick-change
 description: Quick Change 轻量工作流的阶段执行协议，包含详细执行步骤、升级机制和轻量验证模式（v1.1 状态机）
 ---
 
 # Quick Change 工作流执行协议
 
+## 关键禁止规则
+
+**严禁使用 sf_safe_bash / bash / powershell / node / python 执行以下操作：**
+- 创建 `.specforge/work-items/` 目录（如 New-Item、mkdir）
+- 检查 `.specforge/work-items/` 目录是否存在（如 ls、dir、Test-Path）
+- 写入 `.specforge/work-items/` 下的任何文件（如 Set-Content、>、tee）
+
+**WI 目录和 WI 产物只能由受控工具创建和写入：**
+- `sf_state_transition` — 状态推进（daemon 自动创建 WI 目录）
+- `sf_artifact_write` — 写入 WI 产物（自动创建目录）
+
+如果 Agent 违反此规则，sf_safe_bash 将返回 hard_stop=true，整个 WI 流程将被永久阻断。
+
 ## 工作流阶段总览
 
 <!-- AUTO-GENERATED:START:phase-table -->
 ```
-created → intake_ready → candidate_preparing (quick_tasks) → implementation_running → verification_running → verification_done → closed
+created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected → candidate_preparing → candidate_prepared → gates_running → approval_required
 ```
 
 ## Skill 绑定矩阵
 
 | 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
 |------|---------------|-------------|------|
-| created→intake_ready | —（Orchestrator 自行收集） | — | intake.md |
-| candidate_preparing (quick_tasks) | sf-task-planner | superpowers-writing-plans | tasks.md |
-| implementation_running | sf-executor | superpowers-subagent-driven-development | 代码文件 |
-| verification_running | sf-verifier | superpowers-verification-before-completion | 验证报告 |
-| verification_done | — | — | Gate 判定（pass→closed, fail→verification_running） |
-| closed | — | — | — |
+| created | sf-orchestrator | — | — |
+| intake_ready | — | — | intake.md |
+| impact_analyzing | — | — | change_classification.md,impact_analysis.md |
+| impact_analyzed | — | — | trigger_result.json |
+| workflow_selected | — | — | Gate 判定（pass→candidate_preparing, fail→blocked） |
+| candidate_preparing | sf-task-planner | superpowers-writing-plans | tasks.md,trace_delta.md,candidate_manifest.json |
+| candidate_prepared | — | — | — |
+| gates_running | — | — | Gate 判定（pass→approval_required, fail→gates_failed） |
+| approval_required | — | — | — |
 <!-- AUTO-GENERATED:END:phase-table -->
 
 ## 各阶段执行协议
@@ -74,7 +90,11 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 
 #### Step 0：设置代码写入权限
 
-1. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）设置 Write Guard 白名单
+1. 从 tasks.md 中提取所有待修改/创建的文件路径列表
+2. 调用 `sf_code_permission`（work_item_id=<id>, action="enable", allowed_write_files=[<从 tasks.md 提取的文件列表>]）
+3. 确认返回 `code_change_allowed=true`
+4. **如果 tasks.md 中未明确列出文件路径**，必须根据任务描述推断需要创建/修改的文件，作为 allowed_write_files 传入
+5. **禁止**调用 `sf_code_permission` 时不传 `allowed_write_files`——会被 daemon 拒绝
 
 #### Step 1：读取 tasks.md 和配置
 
@@ -205,7 +225,7 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
    - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
 5. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_type="verification"）检查验证结果（统一 Gate Runner，替代旧 sf_verification_gate）
+6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_ids=["verification_gate"]）检查验证结果（统一 Gate Runner，替代旧 sf_verification_gate）
 7. 如果 Gate pass：
    - 调用 `sf_changed_files_audit`（work_item_id=<id>）执行变更文件审计
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
@@ -269,3 +289,17 @@ created → intake_ready → candidate_preparing (quick_tasks) → implementatio
 - `candidate_manifest` 的 `entries` 设为 `[]`
 - `merge_report` 标记为 `not_applicable`
 - 仍需执行 `sf_code_permission` + `sf_changed_files_audit` + `sf_close_gate`
+
+--- # R5 接口勘误（不改变 Quick Change 架构）
+
+1. `sf_gate_run` 使用 `gate_ids` 或默认自动 Gate，不再使用旧参数名 `gate_type`。
+2. `code_only_fast_path` 的 `candidate_manifest.entries=[]`，`sf_merge_run` 应生成 `merge_report.status=not_applicable`。
+3. verification 阶段必须同时生成：
+   - `verification_report`
+   - `evidence/evidence_manifest.json`
+   - verification_report 内的 `evidence_refs` / `evidence_ref`
+4. close_gate 前必须完成：
+   - `sf_code_permission(action="revoke")`
+   - `sf_merge_run(work_item_id)`
+   - `sf_user_decision_record(decision_type="auto_approved", workflow_path="code_only_fast_path")`
+5. 不允许等 verification_gate / close_gate 报缺失后再补 evidence、user_decision 或 evidence_refs。
