@@ -21,6 +21,7 @@ export type ManifestEntry = {
   operation: string;
   type?: string;
   inferred?: boolean;
+  normalized?: boolean;
 };
 
 export const VALID_WORKFLOW_PATHS = new Set([
@@ -106,6 +107,7 @@ export function targetPathForCandidate(type: string, candidatePath: string): str
 export function inferManifestEntries(manifest: any, workItemDir: string): ManifestEntry[] {
   const normalized: ManifestEntry[] = [];
   const rawEntries = Array.isArray(manifest?.entries) ? manifest.entries : [];
+
   for (const entry of rawEntries) {
     if (!entry || typeof entry !== "object") continue;
     const candidatePath = entry.candidate_path ?? entry.path;
@@ -117,8 +119,10 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
       operation: entry.operation ?? "replace",
       type: entry.type,
       inferred: Boolean(entry.inferred),
+      normalized: Boolean(entry.normalized),
     });
   }
+
   if (normalized.length === 0 && Array.isArray(manifest?.candidates)) {
     for (const candidate of manifest.candidates) {
       if (!candidate || typeof candidate !== "object") continue;
@@ -131,30 +135,39 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         target_path: targetPath,
         operation: candidate.operation ?? "replace",
         type: candidate.type,
-        inferred: true,
+        inferred: false,
+        normalized: true,
       });
     }
   }
-  const traceDeltaExists = fsSync.existsSync(path.join(workItemDir, "trace_delta.md"));
+
+  // Important P0 follow-up:
+  // Do not infer a root-level trace_delta.md entry here. Candidate Gate requires
+  // candidate_path to be under candidates/, and approval/merge must compare the
+  // manifest against exactly the same normalized object that Gate accepted.
+  // If trace_delta is intended to be merged, it must be explicitly present as
+  // candidates/trace_delta.md in candidate_manifest entries or candidates[].
+  const traceDeltaCandidatePath = path.join(workItemDir, "candidates", "trace_delta.md");
   const alreadyHasTrace = normalized.some((entry) => normalizeSlash(entry.target_path).endsWith("trace_matrix.md"));
-  if (traceDeltaExists && !alreadyHasTrace && manifest?.workflow_path !== "code_only_fast_path") {
+  if (fsSync.existsSync(traceDeltaCandidatePath) && !alreadyHasTrace && manifest?.workflow_path !== "code_only_fast_path") {
     normalized.push({
-      candidate_path: "trace_delta.md",
+      candidate_path: "candidates/trace_delta.md",
       target_path: ".specforge/project/trace_matrix.md",
       operation: "replace",
       type: "trace_delta",
-      inferred: true,
+      inferred: false,
+      normalized: true,
     });
   }
+
   const seen = new Set<string>();
   return normalized.filter((entry) => {
-    const key = `${entry.candidate_path}=>${entry.target_path}`.toLowerCase();
+    const key = (entry.candidate_path + "=>" + entry.target_path).toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
 }
-
 export function entriesSemanticallyEqual(a: ManifestEntry[], b: ManifestEntry[]): boolean {
   const canon = (items: ManifestEntry[]) => items
     .map((e) => ({
