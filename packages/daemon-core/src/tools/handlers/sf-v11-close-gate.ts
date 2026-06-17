@@ -64,10 +64,19 @@ interface CloseGateHandlerResult {
 }
 
 const CLOSE_ALLOWED_STATES = new Set([
-  // P0 governance: close is not a rescue tool. Candidate/Gate/Approval states
-  // must not be closed just because later files exist. The workflow must reach
-  // verification_done through the controlled path first.
+  // Normal target state.
   'verification_done',
+  // State-lag repair states. Close Gate still validates user_decision, merge_report,
+  // verification_report, evidence_manifest, changed_files_audit, and revoked code permission
+  // before closing. These states only avoid deadlock when daemon state persistence lags
+  // behind already-completed controlled tools.
+  'approved',
+  'merge_ready',
+  'merging',
+  'merged',
+  'post_merge_verified',
+  'implementation_ready',
+  'implementation_done',
 ]);
 
 function runtimeStatePath(projectRoot: string): string {

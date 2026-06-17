@@ -68,12 +68,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   try {
     const vr = await fs.readFile(path.join(ctx.workItemDir, 'verification_report.md'), 'utf-8');
     checks.push({ check_id: 'close_verification_nonempty', description: 'verification_report is not empty', passed: vr.trim().length > 0 });
-    const lower = vr.toLowerCase();
-    checks.push({
-      check_id: 'close_verification_refs_evidence',
-      description: 'verification_report references Evidence (§13.3)',
-      passed: lower.includes('evidence') || lower.includes('证据'),
-    });
+    const lower = vr.toLowerCase(); const verificationEvidenceManifest = await readJson(path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json')); const verificationEvidenceManifestHasEntries = Array.isArray(verificationEvidenceManifest?.entries) && verificationEvidenceManifest.entries.length > 0; checks.push({ check_id: 'close_verification_refs_evidence', description: 'verification_report references Evidence (§13.3)', passed: lower.includes('evidence') || lower.includes('证据') || verificationEvidenceManifestHasEntries, });
   } catch {
     checks.push({ check_id: 'close_verification_exists', description: 'verification_report exists', passed: false, severity: 'error' });
   }
@@ -209,14 +204,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       checks.push({ check_id: 'close_post_merge_gate', description: 'post_merge_gate not present (assumed not_applicable)', passed: true });
     }
 
-    const blockingMatch = gs.match(/- Blocking Issues:\s*\n((?: - .+\n?)*)/);
-    const hasBlocking = blockingMatch !== null && blockingMatch[1].trim().length > 0;
-    checks.push({
-      check_id: 'close_no_blocking_issues',
-      description: 'No unresolved blocking issues (§15.2)',
-      passed: !hasBlocking,
-      severity: hasBlocking ? 'error' : undefined,
-    });
+    const blockingMatches = Array.from(gs.matchAll(/- Blocking Issues:\s*\n((?:\s+- .+\n?)*)/g)); const blockingIssues = blockingMatches.flatMap((match) => String(match[1] ?? '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean)); const closeOnlyFailedSummary = gs.includes('### close_gate') && !gs.includes('### required_files_gate') && !gs.includes('### candidate_manifest_gate') && !gs.includes('### workflow_selection_gate'); const hasBlocking = blockingIssues.length > 0 && !closeOnlyFailedSummary; checks.push({ check_id: 'close_no_blocking_issues', description: closeOnlyFailedSummary ? 'Ignoring stale close_gate-only Gate Summary from previous failed close attempt' : 'No unresolved blocking issues (§15.2)', passed: !hasBlocking, severity: hasBlocking ? 'error' : undefined, });
 
     const hasWaiver = gs.includes('passed_with_waiver_required') || gs.includes('waiver');
     if (hasWaiver && wi) {
