@@ -87,6 +87,7 @@
         "@specforge/permission-engine": "workspace:*",
         "@specforge/plugin-loader": "workspace:*",
         "@specforge/scope-gate": "workspace:*",
+        "@specforge/service-management": "workspace:*",
         "@specforge/types": "workspace:*",
         "@specforge/workflow-runtime": "workspace:*",
         "uuid": "^11.1.0",
