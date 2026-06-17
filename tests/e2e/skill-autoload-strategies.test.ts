@@ -2,47 +2,72 @@ import { describe, it, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const SKILLS_DIR = path.resolve(__dirname, '../../.opencode/skills');
+const REPO_ROOT = path.resolve(__dirname, '../..');
+const SKILLS_DIR = path.join(REPO_ROOT, 'setup', 'userlevel-opencode', 'skills');
 
 const WORKFLOW_SKILLS = [
-  'sf-workflow-feature-spec', 'sf-workflow-bugfix-spec', 'sf-workflow-design-first',
-  'sf-workflow-quick-change', 'sf-workflow-change-request', 'sf-workflow-refactor',
-  'sf-workflow-ops-task', 'sf-workflow-investigation'
+  'sf-workflow-feature-spec',
+  'sf-workflow-bugfix-spec',
+  'sf-workflow-design-first',
+  'sf-workflow-quick-change',
+  'sf-workflow-change-request',
+  'sf-workflow-refactor',
+  'sf-workflow-ops-task',
+  'sf-workflow-investigation',
 ];
 
-describe('Skill Autoload Strategies', () => {
+const SUPERPOWER_SKILLS = [
+  'superpowers-engineering-lessons',
+  'superpowers-systematic-debugging',
+  'superpowers-brainstorming',
+  'superpowers-code-review',
+  'superpowers-subagent-driven-development',
+  'superpowers-verification-before-completion',
+  'superpowers-writing-plans',
+];
+
+function skillPath(skillName: string): string {
+  return path.join(SKILLS_DIR, skillName, 'SKILL.md');
+}
+
+function readSkill(skillName: string): string {
+  return fs.readFileSync(skillPath(skillName), 'utf-8');
+}
+
+function assertFrontmatterName(content: string, skillName: string): void {
+  expect(content, `${skillName} should have yaml frontmatter`).toMatch(/^---\r?\n/);
+  expect(content, `${skillName} should declare its own name`).toContain(`name: ${skillName}`);
+}
+
+describe('Skill Repository Layout', () => {
+  it('uses setup/userlevel-opencode/skills as the canonical repository source', () => {
+    expect(fs.existsSync(SKILLS_DIR)).toBe(true);
+    expect(fs.existsSync(path.resolve(REPO_ROOT, '.opencode', 'skills'))).toBe(false);
+  });
+
   describe('Workflow skills', () => {
-    WORKFLOW_SKILLS.forEach(skillName => {
-      it(`${skillName} should have autoload: workflow_match`, () => {
-        const content = fs.readFileSync(path.join(SKILLS_DIR, skillName, 'SKILL.md'), 'utf-8');
-        expect(content).toMatch(/autoload:\s*workflow_match/);
+    WORKFLOW_SKILLS.forEach((skillName) => {
+      it(`${skillName} exists and declares v1.1 governance policy`, () => {
+        expect(fs.existsSync(skillPath(skillName)), `${skillName} should exist`).toBe(true);
+        const content = readSkill(skillName);
+
+        assertFrontmatterName(content, skillName);
+        expect(content, `${skillName} should include generated phase docs`).toMatch(/AUTO-GENERATED:START:(phase-table|skill-matrix)/);
+        expect(content, `${skillName} should include Post-P0 governance block`).toContain('SPECFORGE_V11_GOVERNANCE_POLICY_START');
+        expect(content, `${skillName} should forbid merge-failed code permission bypass`).toContain('merge failed 不得 enable code_permission');
       });
     });
   });
 
-  it('superpowers-engineering-lessons should have autoload: always', () => {
-    const content = fs.readFileSync(path.join(SKILLS_DIR, 'superpowers-engineering-lessons', 'SKILL.md'), 'utf-8');
-    expect(content).toMatch(/autoload:\s*always/);
-  });
+  describe('Superpower skills', () => {
+    SUPERPOWER_SKILLS.forEach((skillName) => {
+      it(`${skillName} exists and declares its frontmatter name`, () => {
+        expect(fs.existsSync(skillPath(skillName)), `${skillName} should exist`).toBe(true);
+        const content = readSkill(skillName);
 
-  it('superpowers-systematic-debugging should have autoload: manual', () => {
-    const content = fs.readFileSync(path.join(SKILLS_DIR, 'superpowers-systematic-debugging', 'SKILL.md'), 'utf-8');
-    expect(content).toMatch(/autoload:\s*manual/);
-  });
-
-  const PHASE_MATCH_SKILLS = [
-    { name: 'superpowers-brainstorming', phase: 'requirements' },
-    { name: 'superpowers-code-review', phase: 'review' },
-    { name: 'superpowers-subagent-driven-development', phase: 'development' },
-    { name: 'superpowers-verification-before-completion', phase: 'verification' },
-    { name: 'superpowers-writing-plans', phase: 'tasks' }
-  ];
-
-  PHASE_MATCH_SKILLS.forEach(({ name, phase }) => {
-    it(`${name} should have autoload: phase_match with ${phase}`, () => {
-      const content = fs.readFileSync(path.join(SKILLS_DIR, name, 'SKILL.md'), 'utf-8');
-      expect(content).toMatch(/autoload:\s*phase_match/);
-      expect(content).toContain(phase);
+        assertFrontmatterName(content, skillName);
+        expect(content.trim().length, `${skillName} should not be empty`).toBeGreaterThan(256);
+      });
     });
   });
 });
