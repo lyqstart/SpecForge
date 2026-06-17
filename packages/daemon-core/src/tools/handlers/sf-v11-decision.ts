@@ -142,6 +142,19 @@ async function enrichDecisionAudit(input: {
   await writeJson(decisionPath, decision);
 }
 
+async function readMergeReportSuccess(workItemDir: string): Promise<{ success: boolean; successful: number; status: string }> {
+  const mergeReportPath = path.join(workItemDir, 'merge_report.md');
+  try {
+    const text = await fs.readFile(mergeReportPath, 'utf-8');
+    const statusMatch = text.match(/Status:\s*([^\r\n]+)/i);
+    const successfulMatch = text.match(/Successful:\s*(\d+)/i);
+    const status = String(statusMatch?.[1] ?? '').trim().toLowerCase();
+    const successful = successfulMatch ? Number(successfulMatch[1]) : 0;
+    return { success: status === 'success' && successful > 0, successful, status };
+  } catch {
+    return { success: false, successful: 0, status: 'missing' };
+  }
+}
 function resolveDecisionStatus(args: Record<string, unknown>): UserDecisionStatus | undefined {
   const explicit = args['decision_status'] as UserDecisionStatus | undefined;
   if (explicit) return explicit;
@@ -173,7 +186,7 @@ registerHandler('sf_v11_decision', async (args, context) => {
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
   try {
-    if (action === 'invalidate') {
+    if (action === 'invalidate') { const mergeGuard = await readMergeReportSuccess(workItemDir); if (mergeGuard.success) { return { success: false, error: 'USER_DECISION_INVALIDATE_FORBIDDEN_AFTER_MERGE_SUCCESS', message: 'merge_report.md is already success; user_decision cannot be invalidated after successful merge. Start a new Work Item for further changes.', merge_report: mergeGuard }; }
       const reason = (args['reason'] as string) || 'base_spec_version changed';
       await invalidateUserDecision(workItemDir, reason);
       return { success: true, work_item_id: workItemId, decision_status: 'invalidated' };

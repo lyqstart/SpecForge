@@ -316,12 +316,44 @@ export async function validateApprovedUserDecisionForMerge(input: {
   return { valid: errors.length === 0, errors, facts: { workflowPath, decidedBy: decision?.decided_by } };
 }
 
-export async function validateApprovedUserDecisionForClose(input: {
-  projectRoot: string;
-  workItemDir: string;
-  workItemId: string;
-  candidateManifestPath: string;
-  userDecisionPath: string;
-}): Promise<GovernanceValidationResult> {
-  return validateApprovedUserDecisionForMerge(input);
+export async function validateApprovedUserDecisionForClose(input: { projectRoot: string; workItemDir: string; workItemId: string; candidateManifestPath: string; userDecisionPath: string; }): Promise<GovernanceValidationResult> {
+  const errors: string[] = [];
+  const facts = await readWorkItemFacts(input.projectRoot, input.workItemDir, input.workItemId);
+  const decision = await readJsonOrNull<Record<string, any>>(input.userDecisionPath);
+  if (!decision) errors.push("user_decision.json is missing or invalid JSON");
+
+  const workflowPath = String(decision?.workflow_path ?? facts.workflowPath ?? "");
+  if (!workflowPath || workflowPath === "unknown" || !VALID_WORKFLOW_PATHS.has(workflowPath)) {
+    errors.push(`user_decision.workflow_path invalid for close: ${workflowPath || "missing"}`);
+  }
+  if (facts.workItem?.workflow_path && workflowPath !== facts.workItem.workflow_path) {
+    errors.push(`user_decision.workflow_path != work_item.workflow_path: ${workflowPath} != ${facts.workItem.workflow_path}`);
+  }
+  if (facts.trigger?.workflow_path && workflowPath !== facts.trigger.workflow_path) {
+    errors.push(`user_decision.workflow_path != trigger_result.workflow_path: ${workflowPath} != ${facts.trigger.workflow_path}`);
+  }
+  if (facts.manifest?.workflow_path && workflowPath !== facts.manifest.workflow_path) {
+    errors.push(`user_decision.workflow_path != candidate_manifest.workflow_path: ${workflowPath} != ${facts.manifest.workflow_path}`);
+  }
+
+  if (USER_APPROVAL_REQUIRED_PATHS.has(workflowPath)) {
+    if (decision?.decision_status !== "approved") errors.push(`spec-changing workflow requires decision_status=approved for close, got ${decision?.decision_status}`);
+    if (decision?.decision_type !== "user_approved") errors.push(`spec-changing workflow requires decision_type=user_approved for close, got ${decision?.decision_type}`);
+    if (isKnownAgentActor(decision?.decided_by)) errors.push(`user approval cannot be by Agent actor for close: ${decision?.decided_by}`);
+  } else if (decision && !["approved", "waived"].includes(String(decision.decision_status))) {
+    errors.push(`User Decision status is not approved/waived for close: ${decision.decision_status}`);
+  }
+
+  // Close is post-merge. Pre-merge hashes (candidate_hash, manifest_hash,
+  // gate_summary_hash) are enforced by validateApprovedUserDecisionForMerge().
+  // Rechecking them here incorrectly blocks a completed, verified workflow after
+  // merge has normalized candidate_manifest or gate_summary has been overwritten
+  // by close-gate output. Close must validate the approval subject and rely on
+  // merge_report, verification_report, evidence_manifest and write-permission
+  // revocation checks for post-merge integrity.
+  return {
+    valid: errors.length === 0,
+    errors,
+    facts: { workflowPath, decidedBy: decision?.decided_by, close_validation: "post_merge_no_pre_merge_hash_recheck" },
+  };
 }
