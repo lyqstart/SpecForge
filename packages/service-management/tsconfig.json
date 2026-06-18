@@ -31,7 +31,7 @@
     "baseUrl": ".",
     "paths": {
       "@specforge/types/directory-layout": [
-        "src/types/specforge-types-directory-layout.d.ts"
+        "src/types/specforge-types-directory-layout.ts"
       ],
       "@specforge/types/*": [
         "../types/src/*"
