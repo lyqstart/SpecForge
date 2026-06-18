@@ -83,7 +83,7 @@ function normalizeGateIds(
     switch (raw) {
       case 'all':
         aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath));
+        gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
         break;
 
       case 'tasks':
@@ -95,12 +95,33 @@ function normalizeGateIds(
         }
         break;
 
-      case 'verification':
-        aliasesUsed.push(raw);
-        gateIds.push('verification_gate');
-        break;
+      case 'candidate':
+      aliasesUsed.push(raw);
+      gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
+      break;
 
-      case 'close':
+    case 'merge':
+      aliasesUsed.push(raw);
+      gateIds.push(...getRequiredGates(workflowPath, 'merge'));
+      break;
+
+    case 'post_implementation':
+    case 'post-implementation':
+      aliasesUsed.push(raw);
+      gateIds.push(...getRequiredGates(workflowPath, 'post_implementation'));
+      break;
+
+    case 'full':
+      aliasesUsed.push(raw);
+      gateIds.push(...getRequiredGates(workflowPath, 'all'));
+      break;
+
+    case 'verification':
+      aliasesUsed.push(raw);
+      gateIds.push('verification_gate');
+      break;
+
+    case 'close':
         aliasesUsed.push(raw);
         gateIds.push('close_gate');
         break;

@@ -28,6 +28,8 @@ const V11_WI_ARTIFACT_FILES = new Set([
   'change_classification.md',
   'impact_analysis.md',
   'trigger_result.json',
+  'requirements_delta.md',
+  'design_delta.md',
   'tasks.md',
   'trace_delta.md',
   'candidate_manifest.json',
@@ -42,6 +44,8 @@ const V11_FILENAME_MAP: Record<string, string> = {
   'change_classification.md': 'change_classification',
   'impact_analysis.md': 'impact_analysis',
   'trigger_result.json': 'trigger_result',
+  'requirements_delta.md': 'requirements_delta',
+  'design_delta.md': 'design_delta',
   'tasks.md': 'tasks',
   'trace_delta.md': 'trace_delta',
   'candidate_manifest.json': 'candidate_manifest',
@@ -65,14 +69,12 @@ function mirrorSpecCandidateArtifacts(
   if (!mirrorable.has(targetFilename)) return
 
   const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId)
-  const specsDir = path.join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
-  const candidatesDir = path.join(wiDir, 'candidates')
+    const candidatesDir = path.join(wiDir, 'candidates')
   const mirrors: string[] = []
 
   if (targetFilename === 'requirements.md' || targetFilename === 'design.md' || targetFilename === 'tasks.md') {
     mirrors.push(path.join(candidatesDir, targetFilename))
-    mirrors.push(path.join(specsDir, targetFilename))
-  }
+    }
 
   if (targetFilename === 'trace_delta.md') {
     // v1.1.2_real_world_batch1_trace_delta_candidate_mirror:
@@ -81,8 +83,7 @@ function mirrorSpecCandidateArtifacts(
     // way to write WI artifacts; mirror trace_delta into candidates/ so
     // agents never need sf_safe_bash/Copy-Item inside .specforge/work-items.
     mirrors.push(path.join(candidatesDir, targetFilename))
-    mirrors.push(path.join(specsDir, targetFilename))
-  }
+    }
 
   for (const mirrorPath of mirrors) {
     if (path.resolve(mirrorPath) === path.resolve(primaryTargetPath)) continue
@@ -125,6 +126,8 @@ function inferCanonicalFileType(args: Record<string, unknown>): string | null {
 function resolveTargetFilename(fileType: string): string | null {
   if (fileType === 'requirements') return 'requirements.md'
   if (fileType === 'design') return 'design.md'
+  if (fileType === 'requirements_delta') return 'requirements_delta.md'
+  if (fileType === 'design_delta') return 'design_delta.md'
   if (fileType === 'candidate_requirements') return 'requirements.md'
   if (fileType === 'candidate_design') return 'design.md'
   if (fileType === 'candidate_tasks') return 'tasks.md'

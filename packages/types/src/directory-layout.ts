@@ -70,6 +70,16 @@ export const LAYOUT = {
     decisions: 'project/decisions.md',
     /** `<root>/.specforge/project/trace_matrix.md` */
     traceMatrix: 'project/trace_matrix.md',
+    /** `/.specforge/project/domain_model.md` */
+    domainModel: 'project/domain_model.md',
+    /** `/.specforge/project/context_map.md` */
+    contextMap: 'project/context_map.md',
+    /** `/.specforge/project/crosscutting_concepts.md` */
+    crosscuttingConcepts: 'project/crosscutting_concepts.md',
+    /** `/.specforge/project/architecture_risks.md` */
+    architectureRisks: 'project/architecture_risks.md',
+    /** `/.specforge/project/decisions/` */
+    decisionsRoot: 'project/decisions',
     /** `<root>/.specforge/project/modules/` */
     modulesRoot: 'project/modules',
   },
@@ -94,6 +104,16 @@ export const LAYOUT = {
     requirementsDelta: 'requirements_delta.md',
     /** `<root>/.specforge/work-items/<WI-ID>/design_delta.md` */
     designDelta: 'design_delta.md',
+    /** `/.specforge/work-items/<WI>/domain_analysis.md` */
+    domainAnalysis: 'domain_analysis.md',
+    /** `/.specforge/work-items/<WI>/module_boundary_analysis.md` */
+    moduleBoundaryAnalysis: 'module_boundary_analysis.md',
+    /** `/.specforge/work-items/<WI>/architecture_migration_map.md` */
+    architectureMigrationMap: 'architecture_migration_map.md',
+    /** `/.specforge/work-items/<WI>/project_spec_version_before.json` */
+    projectSpecVersionBefore: 'project_spec_version_before.json',
+    /** `/.specforge/work-items/<WI>/project_spec_version_after.json` */
+    projectSpecVersionAfter: 'project_spec_version_after.json',
     /** `<root>/.specforge/work-items/<WI-ID>/tasks.md` */
     tasks: 'tasks.md',
     /** `<root>/.specforge/work-items/<WI-ID>/trace_delta.md` */
@@ -266,6 +286,31 @@ export function projectDecisions(projectRoot: string): string {
  */
 export function projectTraceMatrix(projectRoot: string): string {
   return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.traceMatrix);
+}
+
+/** domain_model.md 路径。 */
+export function projectDomainModel(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.domainModel);
+}
+
+/** context_map.md 路径。 */
+export function projectContextMap(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.contextMap);
+}
+
+/** crosscutting_concepts.md 路径。 */
+export function projectCrosscuttingConcepts(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.crosscuttingConcepts);
+}
+
+/** architecture_risks.md 路径。 */
+export function projectArchitectureRisks(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.architectureRisks);
+}
+
+/** decisions 目录路径。 */
+export function projectDecisionsRoot(projectRoot: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, LAYOUT.projectFiles.decisionsRoot);
 }
 
 /**
