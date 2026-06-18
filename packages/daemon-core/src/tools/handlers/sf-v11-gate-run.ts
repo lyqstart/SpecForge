@@ -241,7 +241,7 @@ async function autoAdvanceGateStateAfterGateRun(input: {
   normalizedGateIds: GateIdV11[];
   summaryStatus: string;
 }): Promise<GateAutoAdvanceResult> {
-  const requiredGateIds = getRequiredGates(input.workflowPath);
+  const requiredGateIds = getRequiredGates(input.workflowPath, 'candidate');
   if (!sameGateSet(input.normalizedGateIds, requiredGateIds)) {
     return { attempted: false, reason: 'not_full_required_gate_run' };
   }
