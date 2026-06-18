@@ -1,0 +1,91 @@
+# SpecForge v1.1 final release main integration report
+
+- Result: passed
+- Repo: D:\code\temp\SpecForge
+- Main branch: main
+- Source branch: hardening/v1.1-production-trial
+- GeneratedAt: 2026-06-18T11:06:22.5678000+08:00
+
+## Completed
+- 已清理上一轮失败遗留文件：docs/reports/specforge-v1.1-final-release-main-integration-report.md（AJ v1 遗留 main 集成报告）
+- 开始前工作区干净
+- tag 存在：v1.1-post-p0-stable.5
+- tag 存在：v1.1-post-p0-stable.6
+- tag 存在：v1.1-post-p0-final-health
+- tag 存在：v1.1-rc1
+- tag 存在：v1.1-production-trial-complete
+- 已 fetch main 和 production trial 分支
+- 已切换到 main
+- checkout main 后工作区干净
+- main 已与远程 main 对齐或已经领先
+- merge 前工作区干净
+- 已将 production trial 合并到 main：refs/remotes/yc/hardening/v1.1-production-trial
+- 合并后关键前置验收报告存在
+- bun run build 通过
+- P0 governance regression test 通过
+- Skill governance policy test 通过
+- Batch 1 E2E tests 通过
+- Batch 2 legacy alignment tests 通过
+- Batch 3 targeted tests 通过
+- installer and asset tests 通过
+- full bun test 通过
+- git diff --check 通过
+
+## Failures
+- None
+
+## Command log
+- COMMAND: check tag v1.1-post-p0-stable.5
+- > git -C D:\code\temp\SpecForge rev-parse --verify refs/tags/v1.1-post-p0-stable.5
+- EXIT_CODE=0
+- COMMAND: check tag v1.1-post-p0-stable.6
+- > git -C D:\code\temp\SpecForge rev-parse --verify refs/tags/v1.1-post-p0-stable.6
+- EXIT_CODE=0
+- COMMAND: check tag v1.1-post-p0-final-health
+- > git -C D:\code\temp\SpecForge rev-parse --verify refs/tags/v1.1-post-p0-final-health
+- EXIT_CODE=0
+- COMMAND: check tag v1.1-rc1
+- > git -C D:\code\temp\SpecForge rev-parse --verify refs/tags/v1.1-rc1
+- EXIT_CODE=0
+- COMMAND: check tag v1.1-production-trial-complete
+- > git -C D:\code\temp\SpecForge rev-parse --verify refs/tags/v1.1-production-trial-complete
+- EXIT_CODE=0
+- COMMAND: fetch main/source branches
+- > git -C D:\code\temp\SpecForge fetch yc main hardening/v1.1-production-trial
+- EXIT_CODE=0
+- COMMAND: checkout main branch
+- > git -C D:\code\temp\SpecForge checkout main
+- EXIT_CODE=0
+- COMMAND: fast-forward main to remote main
+- > git -C D:\code\temp\SpecForge merge --ff-only refs/remotes/yc/main
+- EXIT_CODE=0
+- COMMAND: merge production trial into main
+- > git -C D:\code\temp\SpecForge merge --no-ff refs/remotes/yc/hardening/v1.1-production-trial -m merge: integrate v1.1 production trial
+- EXIT_CODE=0
+- COMMAND: bun run build
+- > bun run build
+- EXIT_CODE=0
+- COMMAND: P0 governance regression test
+- > bun test packages/daemon-core/tests/integration/p0-governance-regression-flow.test.ts
+- EXIT_CODE=0
+- COMMAND: Skill governance policy test
+- > bun test tests/skills/workflow-skills-governance-policy.test.ts
+- EXIT_CODE=0
+- COMMAND: Batch 1 E2E tests
+- > bun test tests/e2e/plugin-integrity.test.ts tests/e2e/skill-autoload-strategies.test.ts tests/e2e/tool-dispatcher-e2e.test.ts tests/e2e/tool-http-shells.test.ts
+- EXIT_CODE=0
+- COMMAND: Batch 2 legacy alignment tests
+- > bun test tests/architecture/directory-layout.test.ts tests/e2e/installer_reconcile_e2e.test.ts tests/e2e/daemon-wiring.test.ts tests/e2e/e2e_sync_from_spec.test.ts tests/e2e/full-feature-spec-flow.test.ts tests/e2e/feature-spec-e2e.test.ts
+- EXIT_CODE=0
+- COMMAND: Batch 3 targeted tests
+- > bun test tests/e2e/crash-recovery-e2e.test.ts tests/e2e/openclaw-mock-e2e.test.ts
+- EXIT_CODE=0
+- COMMAND: installer and asset tests
+- > bun test tests/e2e/installer_reconcile_e2e.test.ts tests/e2e/plugin-integrity.test.ts tests/e2e/skill-autoload-strategies.test.ts tests/e2e/tool-http-shells.test.ts
+- EXIT_CODE=0
+- COMMAND: full bun test
+- > bun test
+- EXIT_CODE=0
+- COMMAND: git diff --check
+- > git -C D:\code\temp\SpecForge diff --check
+- EXIT_CODE=0
