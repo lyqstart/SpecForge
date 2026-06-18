@@ -372,3 +372,25 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
 **⚠️ 重要规则：**
 - 必须先调用 `sf_close_gate` 确认通过后，才能流转到 `closed` 状态
 - `closed` 是终态，一旦进入不可回退
+
+<!-- SPECFORGE_V11_GOVERNANCE_POLICY_START -->
+
+## v1.1 Post-P0 治理硬约束
+
+以下规则是 daemon-core P0 治理修复后的工作流约束。Skill 只能引导 Agent 遵守流程，不能替代 daemon 的硬约束；当 Skill 规则与 daemon 返回冲突时，以 daemon 返回为准，不得自行猜测或绕行。
+
+1. Gate failed 或 gates_running 状态下不得记录 user_approved。
+2. 用户审批只能通过 `sf_user_decision_record` 记录；`decided_by` 必须是 `user`，Agent 只能作为 `recorded_by`。
+3. merge failed 不得 enable code_permission。
+4. merge success 后才允许 enable code_permission。
+5. merge success 后不得 invalidate user_decision。
+6. close_gate failed 后不得 invalidate 已 merge 的 user_decision。
+7. 不得因当前 Work Item 卡住就新建 WI 绕过阻塞。
+8. 状态滞后时必须调用受控 tool 读取或推进状态，不得手工猜状态、手写状态文件或伪造报告。
+9. 每阶段最多一次修复；失败后报告阻塞事实、失败证据和下一步需要的用户决策。
+10. code_permission 必须在实现和验证后 revoke。
+11. close_gate 是正式关闭入口，不能用“实际已完成”替代 closed。
+12. investigation workflow 必须禁止进入 code_permission。
+13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
+
+<!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->

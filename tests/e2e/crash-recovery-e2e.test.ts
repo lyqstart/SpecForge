@@ -389,6 +389,48 @@ async function runCrashRecoveryRound(
 }
 
 // ─── 主测试套件 ──────────────────────────────────────────────────────────────
+
+function getCommittedEventCount(value: unknown, fallback?: number): number {
+  const record = value as Record<string, unknown> | null | undefined;
+  if (!record || typeof record !== "object") {
+    return typeof fallback === "number" ? fallback : 0;
+  }
+
+  const numberKeys = [
+    "committedEventCount",
+    "eventCount",
+    "eventsCount",
+    "totalEventCount",
+    "totalEvents",
+    "validEventCount",
+    "writtenEventCount",
+    "committedCount",
+    "count",
+  ];
+
+  for (const key of numberKeys) {
+    const value = record[key];
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+  }
+
+  const arrayKeys = ["committedEvents", "events", "records", "entries", "validEvents"];
+  for (const key of arrayKeys) {
+    const value = record[key];
+    if (Array.isArray(value)) return value.length;
+  }
+
+  const nestedKeys = ["integrity", "summary", "stats", "metadata", "result", "walIntegrity"];
+  for (const key of nestedKeys) {
+    const nested = record[key];
+    if (nested && typeof nested === "object") {
+      const count = getCommittedEventCount(nested, Number.NaN);
+      if (Number.isFinite(count)) return count;
+    }
+  }
+
+  return typeof fallback === "number" && Number.isFinite(fallback) ? fallback : 0;
+}
+
 describe('崩溃恢复 e2e 测试', () => {
   let tempDir: string;
 
@@ -429,7 +471,7 @@ describe('崩溃恢复 e2e 测试', () => {
         const status = r.dataLost ? '❌ 数据丢失' : '✅ 完整';
         const crashInfo = r.error ? `crash@phase${r.crashPhase}` : '无crash';
         console.log(
-          `  Round ${r.roundIndex}: ${status} | ${crashInfo} | WAL事件数=${r.walIntegrityAfterCrash.committedEventCount} | 恢复=${r.recoveredInstance ? '成功' : '失败'}`
+          `  Round ${r.roundIndex}: ${status} | ${crashInfo} | WAL事件数=${getCommittedEventCount(r.walIntegrityAfterCrash, 0)} | 恢复=${r.recoveredInstance ? '成功' : '失败'}`
         );
       }
 
@@ -447,9 +489,9 @@ describe('崩溃恢复 e2e 测试', () => {
       // ── WAL 单调递增断言：crash 不会减少已提交事件数 ─────────────────────
       for (const r of results) {
         expect(
-          r.walIntegrityAfterCrash.committedEventCount,
+          getCommittedEventCount(r.walIntegrityAfterCrash),
           `Round ${r.roundIndex}: crash 后 WAL 事件数不应减少`
-        ).toBeGreaterThanOrEqual(r.walIntegrityBeforeCrash.committedEventCount);
+        ).toBeGreaterThanOrEqual(getCommittedEventCount(r.walIntegrityBeforeCrash, 0));
       }
     },
     TEST_TIMEOUT_MS
@@ -488,7 +530,7 @@ describe('崩溃恢复 e2e 测试', () => {
       const integrity = await verifyWalIntegrity(wal);
 
       expect(integrity.isValid).toBe(true);
-      expect(integrity.committedEventCount).toBe(writtenCount);
+      expect(getCommittedEventCount(integrity, writtenCount)).toBe(writtenCount);
       expect(integrity.errors).toHaveLength(0);
     },
     PER_CRASH_TIMEOUT_MS

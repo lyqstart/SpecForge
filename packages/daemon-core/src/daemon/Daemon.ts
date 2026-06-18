@@ -21,7 +21,7 @@ import {
   GracefulShutdownHandler,
   createGracefulShutdownHandler,
   ShutdownPriority,
-} from '@specforge/service-management/shutdown';
+} from '@specforge/service-management';
 
 export class Daemon {
   private httpServer: HTTPServer;

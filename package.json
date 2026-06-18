@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun scripts/render-workflow-docs.ts && bun run --filter './packages/*' build",
+    "build": "bun scripts/render-workflow-docs.ts && bun scripts/build-workspace.ts",
     "test": "bun run --filter './packages/*' test",
     "lint": "bun scripts/render-workflow-docs.ts --check && bun run --filter './packages/*' lint",
     "clean": "bun run --filter './packages/*' clean",

@@ -1,0 +1,3 @@
+# SpecForge generated workflow Skill docs must remain LF-idempotent across Windows clean worktrees.
+setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
+# SpecForge generated workflow skill docs must be LF-idempotent across Windows clean checkouts.

@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@specforge/permission-engine": "workspace:*",
+    "@specforge/service-management": "workspace:*",
     "@specforge/scope-gate": "workspace:*",
     "@specforge/opencode-adapter": "workspace:*",
     "@specforge/workflow-runtime": "workspace:*",
