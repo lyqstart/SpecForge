@@ -75,6 +75,12 @@ function mirrorSpecCandidateArtifacts(
   }
 
   if (targetFilename === 'trace_delta.md') {
+    // v1.1.2_real_world_batch1_trace_delta_candidate_mirror:
+    // Spec-changing workflows may include candidates/trace_delta.md in
+    // candidate_manifest. Controlled sf_artifact_write is the only allowed
+    // way to write WI artifacts; mirror trace_delta into candidates/ so
+    // agents never need sf_safe_bash/Copy-Item inside .specforge/work-items.
+    mirrors.push(path.join(candidatesDir, targetFilename))
     mirrors.push(path.join(specsDir, targetFilename))
   }
 

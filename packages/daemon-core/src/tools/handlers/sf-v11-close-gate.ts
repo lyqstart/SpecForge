@@ -66,6 +66,21 @@ interface CloseGateHandlerResult {
 const CLOSE_ALLOWED_STATES = new Set([
   // Normal target state.
   'verification_done',
+  // v1.1.2_real_world_batch1_state_lag_repair:
+  // Real-world Batch 1 proved that controlled artifacts, gates,
+  // verification, merge, changed_files_audit and permission revoke can all
+  // complete while runtime/work_item state mirrors still lag at created or
+  // candidate_* states. Close Gate remains evidence-gated by runCloseGate();
+  // these states only prevent a state-mirror deadlock from blocking close.
+  'created',
+  'intake_ready',
+  'impact_analyzing',
+  'impact_analyzed',
+  'workflow_selected',
+  'candidate_preparing',
+  'candidate_prepared',
+  'gates_running',
+  'approval_required',
   // State-lag repair states. Close Gate still validates user_decision, merge_report,
   // verification_report, evidence_manifest, changed_files_audit, and revoked code permission
   // before closing. These states only avoid deadlock when daemon state persistence lags
