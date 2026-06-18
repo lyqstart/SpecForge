@@ -128,8 +128,8 @@ function resolveTargetFilename(fileType: string): string | null {
   if (fileType === 'design') return 'design.md'
   if (fileType === 'requirements_delta') return 'requirements_delta.md'
   if (fileType === 'design_delta') return 'design_delta.md'
-  if (fileType === 'candidate_requirements') return 'requirements.md'
-  if (fileType === 'candidate_design') return 'design.md'
+  if (fileType === 'candidate_requirements') return 'candidates/project/modules/core/requirements.candidate.md'
+  if (fileType === 'candidate_design') return 'candidates/project/modules/core/design.candidate.md'
   if (fileType === 'candidate_tasks') return 'tasks.md'
   if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType
   return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null
@@ -352,7 +352,7 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     targetPath = path.join(evidenceDir, 'evidence_manifest.json')
   } else {
     targetPath = path.join(wiDir, targetFilename)
-  }
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true }) }
 
   try {
     fs.writeFileSync(targetPath, content, 'utf-8')
