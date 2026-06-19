@@ -157,8 +157,10 @@ type GateAutoAdvanceResult =
       to_state: string;
       workflow_type: string;
       evidence: string;
-      transition_result: unknown;
+      transition_result?: unknown;
+      transition_steps?: unknown[];
     };
+
 
 function sameGateSet(a: readonly GateIdV11[], b: readonly GateIdV11[]): boolean {
   if (a.length !== b.length) return false;
@@ -213,22 +215,91 @@ async function readRuntimeCurrentState(projectRoot: string, workItemId: string):
   return typeof state.current_state === 'string' ? state.current_state : null;
 }
 
-async function syncWorkItemJsonStatus(input: {
-  workItemDir: string;
-  toState: string;
-  summaryStatus: string;
-}): Promise<void> {
+async function syncWorkItemJsonStatus(input: { workItemDir: string; toState: string; summaryStatus: string; }): Promise<void> {
   const workItemPath = path.join(input.workItemDir, 'work_item.json');
   const workItem = await readJsonIfExists(workItemPath);
   if (!workItem || typeof workItem !== 'object') return;
-
+  const mutableWorkItem = workItem as Record<string, unknown>;
   const now = new Date().toISOString();
-  workItem.status = input.toState;
-  workItem.updated_at = now;
-  workItem.last_gate_summary_status = input.summaryStatus;
-  workItem.last_gate_state_auto_advance_at = now;
+  mutableWorkItem.status = input.toState;
+  mutableWorkItem.updated_at = now;
+  mutableWorkItem.last_gate_summary_status = input.summaryStatus;
+  mutableWorkItem.last_gate_state_auto_advance_at = now;
+  await fs.writeFile(workItemPath, JSON.stringify(mutableWorkItem, null, 2) + '\n', 'utf-8');
+}
 
-  await fs.writeFile(workItemPath, JSON.stringify(workItem, null, 2) + '\n', 'utf-8');
+async function rebuildProjectStateBeforeGateRead(input: { deps: any; projectRoot: string }): Promise<void> {
+  if (!input.deps?.projectManager) return;
+  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
+  if (typeof projectSm?.rebuildFromEventsFile === 'function') {
+    await projectSm.rebuildFromEventsFile();
+  }
+}
+
+async function transitionGateState(
+  input: {
+    deps: any;
+    context: any;
+    projectRoot: string;
+    workItemId: string;
+    workItemDir: string;
+    workflowPath: string;
+    normalizedGateIds: GateIdV11[];
+    summaryStatus: string;
+  },
+  fromState: string,
+  toState: string,
+  workflowType: string,
+  evidence: string,
+): Promise<unknown> {
+  if (!input.deps?.workflowEngine) {
+    throw new Error('GATE_RUNNER_AUTO_ADVANCE_FAILED: WorkflowEngine not available');
+  }
+  if (!input.deps?.projectManager) {
+    throw new Error('GATE_RUNNER_AUTO_ADVANCE_FAILED: ProjectManager not available');
+  }
+
+  const transitionResult = await input.deps.workflowEngine.transitionFull({
+    workItemId: input.workItemId,
+    fromState,
+    toState,
+    evidence,
+    workflowType,
+    transitionContext: {
+      source: 'sf_v11_gate_run',
+      summary_status: input.summaryStatus,
+      normalized_gate_ids: input.normalizedGateIds,
+      bf3_recovered_from_state: fromState,
+      bf3_to_state: toState,
+    },
+    actor: {
+      agentRole: 'gate_runner',
+      sessionId: input.context?.sessionID ?? 'sf_v11_gate_run',
+    },
+    workItemDir: input.workItemDir,
+  });
+
+  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
+  await projectSm.transition(
+    input.workItemId,
+    fromState,
+    toState,
+    'gate_runner',
+    workflowType,
+    { evidence },
+  );
+
+  await syncWorkItemJsonStatus({
+    workItemDir: input.workItemDir,
+    toState,
+    summaryStatus: input.summaryStatus,
+  });
+
+  return {
+    from_state: fromState,
+    to_state: toState,
+    transition_result: transitionResult,
+  };
 }
 
 async function autoAdvanceGateStateAfterGateRun(input: {
@@ -246,65 +317,73 @@ async function autoAdvanceGateStateAfterGateRun(input: {
     return { attempted: false, reason: 'not_full_required_gate_run' };
   }
 
-  const currentState = await readRuntimeCurrentState(input.projectRoot, input.workItemId);
-  if (currentState !== 'gates_running') {
-    return { attempted: false, reason: 'current_state_is_not_gates_running', current_state: currentState };
-  }
+  await rebuildProjectStateBeforeGateRead({
+    deps: input.deps,
+    projectRoot: input.projectRoot,
+  });
 
-  if (!input.deps?.workflowEngine) {
-    throw new Error('GATE_RUNNER_AUTO_ADVANCE_FAILED: WorkflowEngine not available');
-  }
-  if (!input.deps?.projectManager) {
-    throw new Error('GATE_RUNNER_AUTO_ADVANCE_FAILED: ProjectManager not available');
+  const currentState = await readRuntimeCurrentState(input.projectRoot, input.workItemId);
+  const recoverableGateStates = ['candidate_preparing', 'candidate_prepared', 'gates_running'];
+  if (!currentState || !recoverableGateStates.includes(currentState)) {
+    return {
+      attempted: false,
+      reason: 'current_state_is_not_gate_auto_advance_recoverable',
+      current_state: currentState,
+    };
   }
 
   const passed = String(input.summaryStatus).startsWith('passed');
-  const toState = passed ? 'approval_required' : 'gates_failed';
+  const finalState = passed ? 'approval_required' : 'gates_failed';
   const workflowType = workflowTypeFromPath(input.workflowPath);
-  const evidence = 'gate_runner auto-advance after full required gate run: summary_status=' + input.summaryStatus;
+  const evidence =
+    'gate_runner auto-advance after full candidate gate run: summary_status=' + input.summaryStatus;
+  const transitionSteps: unknown[] = [];
 
-  const transitionResult = await input.deps.workflowEngine.transitionFull({
-    workItemId: input.workItemId,
-    fromState: currentState,
-    toState,
-    evidence,
-    workflowType,
-    transitionContext: {
-      source: 'sf_v11_gate_run',
-      summary_status: input.summaryStatus,
-      normalized_gate_ids: input.normalizedGateIds,
-    },
-    actor: {
-      agentRole: 'gate_runner',
-      sessionId: input.context?.sessionID ?? 'sf_v11_gate_run',
-    },
-    workItemDir: input.workItemDir,
-  });
+  let state = currentState;
+  if (state === 'candidate_preparing') {
+    transitionSteps.push(
+      await transitionGateState(
+        input,
+        'candidate_preparing',
+        'candidate_prepared',
+        workflowType,
+        evidence + ' | bf3 step candidate_preparing->candidate_prepared',
+      ),
+    );
+    state = 'candidate_prepared';
+  }
 
-  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
-  await projectSm.transition(
-    input.workItemId,
-    currentState,
-    toState,
-    'gate_runner',
-    workflowType,
-    { evidence },
+  if (state === 'candidate_prepared') {
+    transitionSteps.push(
+      await transitionGateState(
+        input,
+        'candidate_prepared',
+        'gates_running',
+        workflowType,
+        evidence + ' | bf3 step candidate_prepared->gates_running',
+      ),
+    );
+    state = 'gates_running';
+  }
+
+  transitionSteps.push(
+    await transitionGateState(
+      input,
+      'gates_running',
+      finalState,
+      workflowType,
+      evidence + ' | bf3 step gates_running->' + finalState,
+    ),
   );
-
-  await syncWorkItemJsonStatus({
-    workItemDir: input.workItemDir,
-    toState,
-    summaryStatus: input.summaryStatus,
-  });
 
   return {
     attempted: true,
     advanced: true,
     from_state: currentState,
-    to_state: toState,
+    to_state: finalState,
     workflow_type: workflowType,
     evidence,
-    transition_result: transitionResult,
+    transition_steps: transitionSteps,
   };
 }
 
