@@ -394,3 +394,90 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
 13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
 
 <!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->
+
+
+<!-- SpecForge V7 Candidate Completeness Governance BEGIN -->
+
+# V7 Candidate Completeness Preflight
+
+本节优先于旧版 Step 4.5 / Step 5。
+
+## 一、Gate 前硬条件
+
+在调用 `sf_state_transition(candidate_preparing → candidate_prepared)` 或 `sf_gate_run` 前，必须完成 Candidate Completeness Preflight。
+
+Preflight 必须确认：
+
+```text
+1. requirements candidate 已存在
+2. design candidate 已存在
+3. tasks candidate 已存在
+4. trace_delta.md 已存在
+5. candidate_manifest.json 已生成
+6. candidate_manifest.json 中包含 requirements / design / tasks / trace_delta 四类条目
+7. manifest 中每个 path 都是实际存在文件
+```
+
+## 二、禁止旧行为
+
+禁止以下旧行为：
+
+```text
+1. candidate_manifest.json 只包含 requirements / design / tasks；
+2. trace_delta.md 缺失时仍进入 Gate；
+3. Gate 失败后由 Orchestrator 临时手写 trace_delta.md；
+4. 不读取实际路径，按旧固定路径 candidates/requirements.md、candidates/design.md 猜测；
+5. 反复 sf_gate_run 试错。
+```
+
+## 三、责任 Agent
+
+Candidate 产物责任分配：
+
+```text
+requirements candidate：sf-requirements
+design candidate：sf-design
+tasks candidate：sf-task-planner
+trace_delta.md：sf-task-planner
+candidate_manifest.json：sf-orchestrator
+```
+
+如果 `trace_delta.md` 缺失，Orchestrator 必须重新调度 `sf-task-planner`，不能自行补写。
+
+## 四、manifest 最小结构
+
+manifest 必须包含 4 类 Candidate：
+
+```json
+{
+  "work_item_id": "WI-XXXX",
+  "workflow_path": "requirement_change_path",
+  "candidates": [
+    { "type": "requirements", "path": "<actual requirements path>", "lint_passed": true },
+    { "type": "design", "path": "<actual design path>", "lint_passed": true },
+    { "type": "tasks", "path": "<actual tasks path>", "lint_passed": true },
+    { "type": "trace_delta", "path": "<actual trace_delta path>", "lint_passed": true }
+  ],
+  "candidate_completeness": {
+    "requirements": true,
+    "design": true,
+    "tasks": true,
+    "trace_delta": true
+  }
+}
+```
+
+## 五、失败处理
+
+如果 Preflight 失败：
+
+```text
+- 不进入 candidate_prepared；
+- 不调用 sf_gate_run；
+- 报告缺失项；
+- 只重新调度责任 Agent 一次；
+- 仍失败则报告 blocked。
+```
+
+<!-- SpecForge V7 Candidate Completeness Governance END -->
+

@@ -396,3 +396,114 @@ User Request
 3. `sf_gate_run` 参数为 `work_item_id` 和可选 `gate_ids`；不得使用旧参数名 `gate_type`。
 4. `code_only_fast_path` 仍需在 close 前调用 `sf_user_decision_record` 记录 `auto_approved`，不能等 close_gate 报缺失后再补。
 5. verification 阶段产物必须前置完整：`verification_report`、`evidence/evidence_manifest.json`、以及 verification_report 中的 evidence 引用必须一起生成。
+
+
+<!-- SpecForge V7 Candidate Completeness Governance BEGIN -->
+
+# V7 Candidate 产物完整性治理规则
+
+本节用于治理 feature_spec / requirement_change_path 中 Candidate 产物不完整导致 Gate 失败后再补洞的问题。
+
+## 一、候选阶段完成定义
+
+在进入 `candidate_prepared` 或调用 `sf_gate_run` 之前，Orchestrator 必须确认当前 WI 至少具备以下 4 类 Candidate 产物：
+
+```text
+1. requirements candidate
+2. design candidate
+3. tasks candidate
+4. trace_delta.md
+```
+
+其中 `trace_delta.md` 是 Candidate 阶段必需产物，不是 Gate 失败后的补救产物。
+
+## 二、职责归属
+
+`trace_delta.md` 的默认责任 Agent 是 `sf-task-planner`，因为它同时掌握 REQ / AC / DD / TASK / FILE / TEST 的完整映射。
+
+Orchestrator 不得直接手写缺失的 `trace_delta.md` 来绕过 Gate。  
+如果发现 `trace_delta.md` 缺失，必须重新调度 `sf-task-planner`，要求其基于已生成的 requirements / design / tasks 生成追溯矩阵。
+
+## 三、Candidate Completeness Preflight
+
+在生成 `candidate_manifest.json` 前，必须执行人工/工具级预检：
+
+```text
+- requirements candidate 是否存在
+- design candidate 是否存在
+- tasks candidate 是否存在
+- trace_delta.md 是否存在
+- candidate_manifest.json 是否列出以上 4 类产物
+- manifest 中路径是否为实际存在路径，不能按固定旧路径猜测
+```
+
+如果任一项缺失：
+
+```text
+不得调用 sf_gate_run
+不得进入 candidate_prepared
+不得创建 placeholder
+不得由 Orchestrator 临时编写缺失 Candidate
+```
+
+必须按责任 Agent 重新调度修复。
+
+## 四、candidate_manifest.json 生成规则
+
+Orchestrator 生成 manifest 前必须先读取实际文件路径，不能假设固定路径。
+
+必须支持以下实际路径：
+
+```text
+requirements:
+  candidates/requirements.md
+  candidates/project/modules/<MODULE>/requirements.md
+  candidates/project/modules/<MODULE>/requirements.candidate.md
+
+design:
+  candidates/design.md
+  candidates/project/modules/<MODULE>/design.md
+  candidates/project/modules/<MODULE>/design.candidate.md
+
+tasks:
+  candidates/tasks.md
+  tasks.md
+
+trace_delta:
+  trace_delta.md
+  candidates/trace_delta.md
+```
+
+manifest 至少包含：
+
+```json
+{
+  "work_item_id": "WI-XXXX",
+  "workflow_path": "requirement_change_path",
+  "candidates": [
+    { "type": "requirements", "path": "<actual requirements candidate path>", "lint_passed": true },
+    { "type": "design", "path": "<actual design candidate path>", "lint_passed": true },
+    { "type": "tasks", "path": "<actual tasks candidate path>", "lint_passed": true },
+    { "type": "trace_delta", "path": "<actual trace_delta path>", "lint_passed": true }
+  ]
+}
+```
+
+## 五、Gate 失败处理限制
+
+如果 Gate 失败原因为 `trace_delta.md missing` 或 `candidate_manifest_gate` 路径不一致：
+
+```text
+正确处理：
+  重新调度责任 Agent 修复产物，然后重新生成 candidate_manifest.json。
+
+错误处理：
+  Orchestrator 直接手写 trace_delta.md；
+  Orchestrator 直接猜测 manifest 路径；
+  反复 sf_gate_run 试错。
+```
+
+每个候选完整性问题最多修复一次；仍失败则报告阻塞事实和缺失文件清单。
+
+<!-- SpecForge V7 Candidate Completeness Governance END -->
+
