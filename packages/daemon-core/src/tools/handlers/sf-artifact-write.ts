@@ -223,24 +223,72 @@ function normalizeCoreJsonArtifact(
   }
 
   if (filename === 'candidate_manifest.json') {
-    const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId)
-    const preliminary = { ...parsed, workflow_path: parsed.workflow_path ?? workflowPath }
-    const entries = Array.isArray(parsed.entries) && parsed.entries.length > 0 ? parsed.entries : inferManifestEntries(preliminary, wiDir)
+    const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+    const normalizeCandidatePath = (value: unknown): string => {
+      const backslash = String.fromCharCode(92);
+      const normalized = String(value ?? '').split(backslash).join('/');
+      return normalized.startsWith('./') ? normalized.slice(2) : normalized;
+    };
+    const isTraceDeltaMergeCandidate = (entry: any, candidatePath: string): boolean => {
+      const candidateType = String(entry?.type ?? '').toLowerCase();
+      const targetPath = normalizeCandidatePath(entry?.target_path);
+      return (
+        (candidateType === 'trace' ||
+          candidateType === 'trace_delta' ||
+          targetPath === '.specforge/project/trace_matrix.md') &&
+        (candidatePath === 'trace_delta.md' || candidatePath.endsWith('/trace_delta.md')) &&
+        !candidatePath.startsWith('candidates/')
+      );
+    };
+    const canonicalizeTraceDeltaEntry = (entry: any): any => {
+      if (!entry || typeof entry !== 'object') return entry;
+      const candidatePath = normalizeCandidatePath(entry.candidate_path ?? entry.path);
+      if (!isTraceDeltaMergeCandidate(entry, candidatePath)) return entry;
+      const normalizedEntry = { ...entry };
+      if (Object.prototype.hasOwnProperty.call(normalizedEntry, 'candidate_path')) {
+        normalizedEntry.candidate_path = 'candidates/trace_delta.md';
+      }
+      if (Object.prototype.hasOwnProperty.call(normalizedEntry, 'path')) {
+        normalizedEntry.path = 'candidates/trace_delta.md';
+      }
+      if (
+        !Object.prototype.hasOwnProperty.call(normalizedEntry, 'candidate_path') &&
+        !Object.prototype.hasOwnProperty.call(normalizedEntry, 'path')
+      ) {
+        normalizedEntry.path = 'candidates/trace_delta.md';
+      }
+      return normalizedEntry;
+    };
+    const canonicalParsed = { ...parsed };
+    if (Array.isArray(parsed.candidates)) {
+      canonicalParsed.candidates = parsed.candidates.map(canonicalizeTraceDeltaEntry);
+    }
+    if (Array.isArray(parsed.entries)) {
+      canonicalParsed.entries = parsed.entries.map(canonicalizeTraceDeltaEntry);
+    }
+    const preliminary = {
+      ...canonicalParsed,
+      workflow_path: canonicalParsed.workflow_path ?? workflowPath,
+    };
+    const entries =
+      Array.isArray(canonicalParsed.entries) && canonicalParsed.entries.length > 0
+        ? canonicalParsed.entries
+        : inferManifestEntries(preliminary, wiDir);
     const normalized = {
-      ...parsed,
-      schema_version: parsed.schema_version ?? '1.1',
-      work_item_id: parsed.work_item_id ?? workItemId,
-      workflow_path: parsed.workflow_path ?? workflowPath,
+      ...canonicalParsed,
+      schema_version: canonicalParsed.schema_version ?? '1.1',
+      work_item_id: canonicalParsed.work_item_id ?? workItemId,
+      workflow_path: canonicalParsed.workflow_path ?? workflowPath,
       entries,
-    }
+    };
     if (normalized.workflow_path === 'code_only_fast_path') {
-      normalized.merge_applicable = false
-      normalized.merge_required = false
-      normalized.reason = normalized.reason ?? 'code_only_fast_path: no spec-level candidate products'
+      normalized.merge_applicable = false;
+      normalized.merge_required = false;
+      normalized.reason =
+        normalized.reason ?? 'code_only_fast_path: no spec-level candidate products';
     }
-    return JSON.stringify(normalized, null, 2)
+    return JSON.stringify(normalized, null, 2);
   }
-
   if (filename === 'evidence_manifest.json') {
     const entries = Array.isArray(parsed.entries)
       ? parsed.entries
