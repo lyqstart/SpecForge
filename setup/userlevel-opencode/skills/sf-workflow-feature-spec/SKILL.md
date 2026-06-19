@@ -648,3 +648,29 @@ bugfix / quick_change 中，如果子 Agent 需要写工作流产物：
 
 <!-- SpecForge V11 Implementation Artifact Write Guard END -->
 
+
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary BEGIN -->
+
+# V12 Feature Workflow Authority
+
+feature_spec 的权威身份为：
+
+```text
+workflow_type=feature_spec
+workflow_path=requirement_change_path
+workflow_skill=sf-workflow-feature-spec
+```
+
+创建 WI 只能从 `created` 开始，不得使用 legacy `intake` 状态。
+
+用户审批必须来自用户明确回复。记录审批时必须带：
+
+```text
+user_response_quote="用户原话"
+```
+
+没有用户原话，不得记录 `user_approved`。
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+

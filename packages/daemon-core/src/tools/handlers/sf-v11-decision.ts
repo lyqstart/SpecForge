@@ -3,10 +3,10 @@
  *
  * Trust boundary:
  * - Approval can only be recorded after daemon-side governance preconditions pass.
- * - Chat-driven user approval is recorded as decided_by=user and recorded_by=<agent>.
+ * - user_approved requires explicit user-response evidence.
+ * - Orchestrator cannot convert "delegated implementation request" into user approval.
  * - State transitions are requested through state-coordinator-v11.
  */
-
 import { registerHandler } from '../ToolDispatcher';
 import {
   recordUserDecision,
@@ -15,6 +15,13 @@ import {
 import type { UserDecisionStatus } from '../lib/user-decision-recorder-v11';
 import { validateDecisionRecordPreconditions } from '../lib/governance-invariants-v11.js';
 import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11.js';
+import {
+  WORKFLOW_PATH_TO_TYPE,
+  WORKFLOW_TYPE_TO_PATH,
+  isWorkflowTypeCompatibleWithPath,
+  type WorkflowPath,
+  type WorkflowType,
+} from '../lib/state_machine';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
@@ -38,7 +45,7 @@ type DecisionAutoAdvanceResult =
       error?: string;
     };
 
-async function readJsonIfExists(filePath: string): Promise<any | null> {
+async function readJsonIfExists(filePath: string): Promise<any> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf-8'));
   } catch {
@@ -55,15 +62,22 @@ async function enrichDecisionAudit(input: {
   workItemDir: string;
   recordedBy: string;
   decidedBy: string;
+  userResponseQuote?: string;
+  autoApprovalPolicyId?: string;
 }): Promise<void> {
   const decisionPath = path.join(input.workItemDir, 'user_decision.json');
   const decision = await readJsonIfExists(decisionPath);
   if (!decision || typeof decision !== 'object') return;
-
   decision.decided_by = input.decidedBy;
   decision.recorded_by = input.recordedBy;
   decision.recorder_role = 'user_decision_recorder';
   decision.recorded_at = decision.recorded_at ?? new Date().toISOString();
+  if (input.userResponseQuote) {
+    decision.user_response_quote = input.userResponseQuote;
+  }
+  if (input.autoApprovalPolicyId) {
+    decision.auto_approval_policy_id = input.autoApprovalPolicyId;
+  }
   await writeJson(decisionPath, decision);
 }
 
@@ -85,25 +99,44 @@ async function readMergeReportSuccess(workItemDir: string): Promise<{
   }
 }
 
-function workflowTypeFromPath(workflowPath: string): string {
-  switch (workflowPath) {
-    case 'requirement_change_path':
-      return 'feature_spec';
-    case 'design_change_path':
-      return 'design_change';
-    case 'architecture_change_path':
-      return 'architecture_change';
-    case 'task_change_path':
-      return 'task_change';
-    case 'code_only_fast_path':
-      return 'quick_change';
-    case 'spec_migration_path':
-      return 'spec_migration';
-    case 'rollback_path':
-      return 'rollback';
-    default:
-      return 'quick_change';
+async function readWorkflowFacts(workItemDir: string): Promise<{
+  workflowPath?: string;
+  workflowType?: string;
+}> {
+  const candidateManifest = await readJsonIfExists(path.join(workItemDir, 'candidate_manifest.json'));
+  if (candidateManifest?.workflow_path || candidateManifest?.workflow_type) {
+    return {
+      workflowPath: candidateManifest.workflow_path,
+      workflowType: candidateManifest.workflow_type,
+    };
   }
+  const triggerResult = await readJsonIfExists(path.join(workItemDir, 'trigger_result.json'));
+  if (triggerResult?.workflow_path || triggerResult?.workflow_type) {
+    return {
+      workflowPath: triggerResult.workflow_path,
+      workflowType: triggerResult.workflow_type,
+    };
+  }
+  const workItem = await readJsonIfExists(path.join(workItemDir, 'work_item.json'));
+  return {
+    workflowPath: workItem?.workflow_path,
+    workflowType: workItem?.workflow_type,
+  };
+}
+
+function isKnownWorkflowType(value: string | undefined): value is WorkflowType {
+  return !!value && Object.prototype.hasOwnProperty.call(WORKFLOW_TYPE_TO_PATH, value);
+}
+
+function workflowTypeForDecision(workflowPath: string | undefined, workflowType: string | undefined): string {
+  if (isWorkflowTypeCompatibleWithPath(workflowType, workflowPath)) {
+    return workflowType;
+  }
+  if (workflowPath && Object.prototype.hasOwnProperty.call(WORKFLOW_PATH_TO_TYPE, workflowPath)) {
+    return WORKFLOW_PATH_TO_TYPE[workflowPath as WorkflowPath];
+  }
+  if (isKnownWorkflowType(workflowType)) return workflowType;
+  return 'quick_change';
 }
 
 function resolveDecisionStatus(args: Record<string, unknown>): UserDecisionStatus | undefined {
@@ -125,9 +158,57 @@ function resolveDecisionType(
   return undefined;
 }
 
+function validateUserApprovalBoundary(args: Record<string, unknown>, input: {
+  decisionStatus: UserDecisionStatus;
+  decisionType: DecisionType;
+}): { ok: true } | { ok: false; error: string; code: string; remediation: string } {
+  if (input.decisionStatus !== 'approved') return { ok: true };
+
+  const comments = String(args['comments'] ?? '');
+  const userResponseQuote = String(args['user_response_quote'] ?? '').trim();
+  const autoApprovalPolicyId = String(args['auto_approval_policy_id'] ?? '').trim();
+
+  if (input.decisionType === 'user_approved') {
+    if (!userResponseQuote) {
+      return {
+        ok: false,
+        error: 'USER_APPROVED_REQUIRES_EXPLICIT_USER_RESPONSE_QUOTE',
+        code: 'USER_APPROVAL_EVIDENCE_REQUIRED',
+        remediation:
+          'Ask the user to approve/reject. When recording approval, pass user_response_quote with the exact user reply, e.g. "批准" or "同意".',
+      };
+    }
+
+    const forbiddenDelegationPattern =
+      /(on behalf|authorized representative|delegated|explicitly delegated|代替用户|代表用户|授权代表|用户已委派|默认为批准|自动批准)/i;
+    if (forbiddenDelegationPattern.test(comments) || forbiddenDelegationPattern.test(userResponseQuote)) {
+      return {
+        ok: false,
+        error: 'ORCHESTRATOR_CANNOT_CONVERT_DELEGATION_TO_USER_APPROVAL',
+        code: 'USER_APPROVAL_TRUST_BOUNDARY',
+        remediation:
+          'A task request is not an approval of the generated Candidate. Present the Candidate summary and wait for an explicit approval reply.',
+      };
+    }
+  }
+
+  if (input.decisionType === 'auto_approved') {
+    if (!autoApprovalPolicyId) {
+      return {
+        ok: false,
+        error: 'AUTO_APPROVED_REQUIRES_POLICY_ID',
+        code: 'AUTO_APPROVAL_POLICY_REQUIRED',
+        remediation:
+          'Use user_approved with explicit user_response_quote, or provide an approved auto_approval_policy_id when a configured policy exists.',
+      };
+    }
+  }
+
+  return { ok: true };
+}
+
 registerHandler('sf_v11_decision', async (args, context, deps) => {
-  const projectRoot =
-    (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const action = (args['action'] as string) || 'record';
 
@@ -144,8 +225,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
         return {
           success: false,
           error: 'USER_DECISION_INVALIDATE_FORBIDDEN_AFTER_MERGE_SUCCESS',
-          message:
-            'merge_report.md is already success; user_decision cannot be invalidated after successful merge. Start a new Work Item for further changes.',
+          message: 'merge_report.md is already success; user_decision cannot be invalidated after successful merge. Start a new Work Item for further changes.',
           merge_report: mergeGuard,
         };
       }
@@ -160,6 +240,20 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
 
     if (!decisionStatus || !decisionType) {
       return { success: false, error: 'decision_status and decision_type are required' };
+    }
+
+    const boundary = validateUserApprovalBoundary(args as Record<string, unknown>, {
+      decisionStatus,
+      decisionType,
+    });
+    if (!boundary.ok) {
+      return {
+        success: false,
+        error: boundary.error,
+        code: boundary.code,
+        retry_allowed: true,
+        remediation: boundary.remediation,
+      };
     }
 
     const recordedBy = ((context?.agent as string | undefined) || 'unknown') as string;
@@ -195,7 +289,10 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       };
     }
 
-    const workflowPath = String(validation.facts?.workflowPath ?? requestedWorkflowPath);
+    const workflowFacts = await readWorkflowFacts(workItemDir);
+    const workflowPath = String(validation.facts?.workflowPath ?? requestedWorkflowPath ?? workflowFacts.workflowPath ?? '');
+    const workflowType = workflowTypeForDecision(workflowPath, workflowFacts.workflowType);
+
     const decision = await recordUserDecision({
       workItemDir,
       workItemId,
@@ -210,7 +307,15 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       waivers: args['waivers'] as any[],
     });
 
-    await enrichDecisionAudit({ workItemDir, recordedBy, decidedBy });
+    const userResponseQuote = String(args['user_response_quote'] ?? '').trim() || undefined;
+    const autoApprovalPolicyId = String(args['auto_approval_policy_id'] ?? '').trim() || undefined;
+    await enrichDecisionAudit({
+      workItemDir,
+      recordedBy,
+      decidedBy,
+      userResponseQuote,
+      autoApprovalPolicyId,
+    });
 
     let stateAutoAdvance: DecisionAutoAdvanceResult = {
       attempted: false,
@@ -224,6 +329,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
           projectRoot,
           workItemId,
         });
+
         stateAutoAdvance = await transitionWithEvidence({
           deps,
           context,
@@ -232,12 +338,13 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
           workItemDir,
           fromState: stateBeforeApproval.current_state ?? 'approval_required',
           toState: 'approved',
-          workflowType: workflowTypeFromPath(workflowPath),
+          workflowType,
           actorRole: 'user_decision_recorder',
           evidence: 'user_decision_recorder auto-advance after valid user approval',
           transitionContext: {
             decision_status: decisionStatus,
             decision_type: decisionType,
+            workflow_type: workflowType,
           },
         });
       } catch (err: any) {
@@ -258,7 +365,11 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       decision_type: decision.decision_type,
       decided_by: decidedBy,
       recorded_by: recordedBy,
+      user_response_quote: userResponseQuote,
+      auto_approval_policy_id: autoApprovalPolicyId,
       decided_at: decision.decided_at,
+      workflow_type: workflowType,
+      workflow_path: workflowPath,
       state_auto_advance: stateAutoAdvance,
     };
   } catch (err: any) {

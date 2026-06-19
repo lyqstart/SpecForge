@@ -661,3 +661,83 @@ Orchestrator 在调度 executor 前必须明确传达：
 
 <!-- SpecForge V11 Implementation Artifact Write Guard END -->
 
+
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary BEGIN -->
+
+# V12 Workflow Authority + Approval Boundary
+
+本节用于合并治理三类残留问题：启动状态协议、workflow_type 权威、用户审批边界。
+
+## 一、WI 创建协议
+
+创建新 Work Item 只能使用：
+
+```text
+sf_state_transition(from_state="", to_state="created", workflow_type=..., workflow_path=...)
+```
+
+要求：
+
+```text
+1. 创建 WI 时不要传 work_item_id=""；
+2. 如果希望 daemon 自动分配 WI-NNNN，必须省略 work_item_id 字段，而不是传空字符串；
+3. 不得再调用 to_state=intake；
+4. intake.md 写入完成后，才允许 created → intake_ready；
+5. 如果工具返回 allocated_work_item_id，后续必须使用该 ID。
+```
+
+禁止：
+
+```text
+sf_state_transition(from_state="", to_state="intake")
+sf_state_transition(from_state="", to_state="created", work_item_id="")
+sf_state_transition(... to_state="intake" ...)
+```
+
+## 二、workflow_type 权威规则
+
+`workflow_path` 是粗粒度路径；`workflow_type` 是具体工作流身份和 Skill 身份。
+
+```text
+bug_report      → workflow_type=bugfix_spec, workflow_path=requirement_change_path, Skill=sf-workflow-bugfix-spec
+new_feature     → workflow_type=feature_spec, workflow_path=requirement_change_path, Skill=sf-workflow-feature-spec
+small_change    → workflow_type=quick_change, workflow_path=code_only_fast_path, Skill=sf-workflow-quick-change
+```
+
+如果 daemon 返回的 workflow_type 与意图不一致：
+
+```text
+1. 不得直接“按 feature_spec 继续”；
+2. 必须报告 workflow authority mismatch；
+3. 重新读取 work_item.json / trigger_result.json / runtime state；
+4. 如果仍不一致，停止并要求修复工具或显式重建 WI。
+```
+
+bugfix 场景不得被解释成 feature_spec。
+
+## 三、用户审批边界
+
+Orchestrator 不得代替用户记录 Candidate approval。
+
+在 `sf_user_decision_record` / `sf_v11_decision` 记录 `decision_type=user_approved` 前，必须满足：
+
+```text
+1. 已展示 Candidate 摘要；
+2. 用户在当前对话中明确回复：批准 / 同意 / approve / y；
+3. 调用工具时必须传 user_response_quote，内容为用户原话；
+4. comments 中不得写“代表用户”“授权代表”“用户已委派所以批准”等。
+```
+
+禁止：
+
+```text
+- 因用户最初要求“修复 bug”就推定其批准 Candidate；
+- 因变更很小就自动 user_approved；
+- 用 decision_type=user_approved 包装 Orchestrator 自主决策。
+```
+
+需要自动审批时，只能使用 `decision_type=auto_approved`，并且必须有明确 `auto_approval_policy_id`。没有策略时不得自动审批。
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+

@@ -338,3 +338,23 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
 
 <!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->
+
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary BEGIN -->
+
+# V12 Quick Change Workflow Authority
+
+quick_change 的权威身份为：
+
+```text
+workflow_type=quick_change
+workflow_path=code_only_fast_path
+workflow_skill=sf-workflow-quick-change
+```
+
+quick_change 也不得使用 legacy `intake` 作为创建状态。
+
+若 quick_change 需要自动批准，必须使用显式 `decision_type=auto_approved` 和已配置的 `auto_approval_policy_id`。不得把 Orchestrator 自主判断伪装成 `user_approved`。
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+
