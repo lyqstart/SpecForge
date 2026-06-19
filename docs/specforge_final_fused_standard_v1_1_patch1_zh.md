@@ -126,6 +126,27 @@ MVP 阶段禁止创建：
 .specforge/snapshots/
 ```
 
+### 1.3.1 状态权威模型
+
+SpecForge 的运行状态只能有一个权威来源：
+
+```text
+events.jsonl / StateManager = 唯一权威状态事件源
+runtime/state.json = 从权威状态投影生成的运行缓存
+work_item.json = Work Item 元数据档案，不是状态源
+```
+
+规则：
+
+1. 状态迁移必须由 Runtime State Machine / State Coordinator 统一完成。
+2. Gate Runner、User Decision Recorder、Merge Runner、close_gate 只能产出证据并请求状态迁移，不得直接把 `runtime/state.json` 或 `work_item.json.status` 当作权威状态改写。
+3. `runtime/state.json` 是 projection cache，可由 `events.jsonl / StateManager` 重建；当它与权威状态不一致时，以权威状态为准。
+4. `work_item.json` 只保存 WI 元数据、流程路径、权限范围、创建信息等档案字段；不得作为 Gate / Decision / Merge / Close 的状态判断依据。
+5. 历史 `work_item.json.status` 字段如存在，只能作为 legacy display field 兼容读取；任何治理判断不得读取它作为当前状态。
+6. 后续状态治理完成后，应删除 `work_item.json.status` 的生成、写入和读取代码，避免旧状态源长期遗留。
+7. 工具运行时查询当前状态，应通过 StateManager / State Coordinator 获取内存态；不得每次全量 replay `events.jsonl`，也不得由各工具自行解析多个状态文件。
+
+
 ### 1.4 治理标准文件位置
 
 SpecForge 治理标准文件不属于用户项目 `.specforge/`。
@@ -431,7 +452,6 @@ merge_report.status = not_applicable
 {
   "schema_version": "1.0",
   "work_item_id": "WI-0001",
-  "status": "created",
   "workflow_path": null,
   "code_change_allowed": false,
   "allowed_write_files": [],
@@ -440,6 +460,15 @@ merge_report.status = not_applicable
   "created_by": "sf-orchestrator"
 }
 ```
+
+`work_item.json` 是 WI 元数据档案，不是状态源。它不得保存或驱动当前治理状态。
+
+兼容规则：
+
+1. 历史 `status` 字段如已存在，只能作为 legacy display field。
+2. Gate / Decision / Merge / Close 不得读取 `work_item.json.status` 作为治理判断依据。
+3. 新代码不得新增依赖 `work_item.json.status` 的状态判断。
+4. 状态治理完成后，必须删除 `work_item.json.status` 的生成、写入和兼容读取代码，保持代码干净。
 
 后续可扩展：
 
@@ -2363,3 +2392,133 @@ specforge_final_fused_standard_v1_1_zh.md
 specforge_complete_implementation_plan_v1_1_zh.md
 specforge_fusion_source_mapping_v1_1_zh.md
 ```
+
+---
+
+# v1.1 Patch 2：状态权威模型补丁
+
+> 本补丁是 v1.1 的正式标准补丁。
+> 目的：修正 post-P0 hardening 中暴露的状态源一致性问题。
+> 适用范围：Runtime State Machine、StateManager、Gate Runner、User Decision Recorder、Merge Runner、close_gate、sf_state_read、sf_state_transition。
+> 优先级：若正文中关于 `work_item.json.status`、`runtime/state.json` 或状态读取/写入的旧表述与本补丁冲突，以本补丁为准。
+
+## 1. 状态权威模型
+
+SpecForge 的运行状态只能有一个权威来源：
+
+```text
+events.jsonl / StateManager = 唯一权威状态事件源
+runtime/state.json = 从权威状态投影生成的运行缓存
+work_item.json = Work Item 元数据档案，不是状态源
+```
+
+## 2. 责任划分
+
+1. `events.jsonl / StateManager` 保存并维护权威状态事件。
+2. `runtime/state.json` 是 projection cache，只用于快速查询和恢复，可由权威事件重建。
+3. `work_item.json` 只保存 WI 元数据、流程路径、权限范围、创建信息等档案字段。
+4. `gate_summary.md`、`user_decision.json`、`merge_report.md`、`close_gate.json` 等文件是状态迁移证据，不是状态源。
+
+## 3. 工具边界
+
+Gate Runner、User Decision Recorder、Merge Runner、close_gate 不得直接把 `runtime/state.json` 或 `work_item.json.status` 当作权威状态改写。
+
+它们只能：
+
+```text
+产出证据
+请求状态迁移
+等待 StateManager / State Coordinator 完成迁移
+```
+
+状态迁移必须通过 Runtime State Machine / State Coordinator / StateManager 完成。
+
+## 4. `work_item.json.status` 兼容规则
+
+历史 `work_item.json.status` 字段如存在，只能作为 legacy display field。
+
+禁止：
+
+```text
+Gate 读取 work_item.json.status 判断是否可推进
+Decision 读取 work_item.json.status 判断是否可审批
+Merge 读取 work_item.json.status 判断是否可合并
+close_gate 读取 work_item.json.status 判断是否可关闭
+```
+
+新代码不得新增依赖 `work_item.json.status` 的状态判断。
+
+状态治理完成后，必须删除 `work_item.json.status` 的生成、写入和兼容读取代码，避免旧状态源长期遗留。
+
+## 5. `runtime/state.json` 规则
+
+`runtime/state.json` 是 projection cache。它可以存在，但不能作为最终治理判断依据。
+
+当 `runtime/state.json` 与 `events.jsonl / StateManager` 不一致时：
+
+```text
+以 events.jsonl / StateManager 为准
+重建或更新 runtime/state.json
+记录 projection 修复证据
+```
+
+## 6. 运行效率规则
+
+工具运行时查询当前状态，应通过 StateManager / State Coordinator 获取内存态。
+
+禁止每个工具自行：
+
+```text
+全量 replay events.jsonl
+同时读取多个状态文件并自行裁决
+从 work_item.json.status fallback 当前状态
+```
+
+## 7. Gate passed 后的状态推进
+
+当 candidate Gate 全部通过，且 workflow_path 需要审批时：
+
+```text
+Gate Runner 只能请求状态迁移到 approval_required
+State Coordinator / StateManager 校验证据后追加状态事件
+runtime/state.json 由 projection 更新
+work_item.json 不作为状态判断来源
+```
+
+这用于修复：
+
+```text
+Gate passed
+但 runtime/state.json / work_item.json.status 滞后
+导致 User Decision 无法落盘
+Merge 因缺 user_decision.json 失败
+```
+
+## 8. User Decision 后的状态推进
+
+User Decision Recorder 只能在治理前置条件通过后写入 `user_decision.json`。
+
+当 `decision_status=approved` 且 `decision_type=user_approved` 时：
+
+```text
+User Decision Recorder 请求 approval_required → approved
+State Coordinator / StateManager 校验证据后推进
+```
+
+User Decision Recorder 不得直接手写 `runtime/state.json` 或 `work_item.json.status`。
+
+## 9. 后续清理要求
+
+本补丁允许短期兼容历史 `work_item.json.status` 字段，但它必须退出治理判断。
+
+治理完成后必须删除：
+
+```text
+work_item.json.status 生成逻辑
+work_item.json.status 写入逻辑
+work_item.json.status 治理读取逻辑
+直接写 runtime/state.json 的状态推进逻辑
+```
+
+不得以 deprecated 名义长期遗留旧状态源代码。
+

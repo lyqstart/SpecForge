@@ -195,7 +195,7 @@ async function readWorkItemFacts(projectRoot: string, workItemDir: string, workI
   if (runtime?.work_item_id === workItemId) runtimeItem = runtime;
   if (!runtimeItem && Array.isArray(runtime?.workItems)) runtimeItem = runtime.workItems.find((x: any) => x?.work_item_id === workItemId) ?? null;
   const workflowPath = workItem?.workflow_path ?? trigger?.workflow_path ?? manifest?.workflow_path ?? runtimeItem?.workflow_path;
-  const currentState = runtimeItem?.current_state ?? runtimeItem?.status ?? workItem?.status;
+  const currentState = runtimeItem?.current_state ?? runtimeItem?.status ?? null;
   return { workItem, trigger, manifest, runtimeItem, workflowPath, currentState };
 }
 
@@ -254,10 +254,7 @@ export async function validateDecisionRecordPreconditions(input: {
   requestedWorkflowPath?: string;
   decisionStatus: string;
   decisionType: string;
-  decidedBy: string;
-}): Promise<GovernanceValidationResult> {
-  const errors: string[] = [];
-  const facts = await readWorkItemFacts(input.projectRoot, input.workItemDir, input.workItemId);
+  decidedBy: string; currentState?: string; }): Promise<GovernanceValidationResult> { const errors: string[] = []; const facts = await readWorkItemFacts(input.projectRoot, input.workItemDir, input.workItemId); if (typeof input.currentState === "string" && input.currentState.length > 0) facts.currentState = input.currentState;
   const workflowPath = input.requestedWorkflowPath || facts.workflowPath;
   if (!workflowPath || workflowPath === "unknown" || !VALID_WORKFLOW_PATHS.has(String(workflowPath))) errors.push(`workflow_path invalid for user_decision: ${workflowPath ?? "missing"}`);
   if (input.requestedWorkflowPath && facts.workflowPath && input.requestedWorkflowPath !== facts.workflowPath) errors.push(`workflow_path mismatch: requested=${input.requestedWorkflowPath}, work_item=${facts.workflowPath}`);
@@ -357,3 +354,4 @@ export async function validateApprovedUserDecisionForClose(input: { projectRoot:
     facts: { workflowPath, decidedBy: decision?.decided_by, close_validation: "post_merge_no_pre_merge_hash_recheck" },
   };
 }
+

@@ -1,15 +1,17 @@
 /**
  * sf-v11-gate-run — v1.1 Gate Runner handler
  *
- * R1 changes:
- * - No silent fallback to requirement_change_path when workflow_path is missing.
- * - code_only_fast_path must not expand to required_files_gate.
- * - Legacy alias "tasks" is workflow_path-aware.
+ * State authority alignment:
+ * - Gate Runner produces gate evidence and requests state transition.
+ * - It does not maintain work_item.json.status.
+ * - Current state comes from StateManager through state-coordinator-v11.
  */
+
 import { registerHandler } from '../ToolDispatcher';
 import { runRequiredGates } from '../lib/gate-runner-v11';
 import type { GateIdV11 } from '../lib/gate-runner-v11';
 import { getRequiredGates } from '../lib/required-gates';
+import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
@@ -48,7 +50,6 @@ async function readWorkflowPath(workItemDir: string): Promise<WorkflowPathReadRe
     path.join(workItemDir, 'work_item.json'),
     path.join(workItemDir, 'candidate_manifest.json'),
   ];
-
   const checkedFiles: string[] = [];
 
   for (const file of candidates) {
@@ -76,7 +77,8 @@ function normalizeGateIds(
   workflowPath: string,
 ): { gateIds: GateIdV11[]; aliasesUsed: string[] } {
   const aliasesUsed: string[] = [];
-  const rawIds = Array.isArray(input) && input.length > 0 ? input.map(String) : ['all'];
+  const rawIds =
+    Array.isArray(input) && input.length > 0 ? input.map(String) : ['all'];
   const gateIds: GateIdV11[] = [];
 
   for (const raw of rawIds) {
@@ -85,7 +87,6 @@ function normalizeGateIds(
         aliasesUsed.push(raw);
         gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
         break;
-
       case 'tasks':
         aliasesUsed.push(raw);
         if (workflowPath === 'code_only_fast_path') {
@@ -94,38 +95,31 @@ function normalizeGateIds(
           gateIds.push('required_files_gate', 'candidate_manifest_gate', 'trace_gate');
         }
         break;
-
       case 'candidate':
-      aliasesUsed.push(raw);
-      gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
-      break;
-
-    case 'merge':
-      aliasesUsed.push(raw);
-      gateIds.push(...getRequiredGates(workflowPath, 'merge'));
-      break;
-
-    case 'post_implementation':
-    case 'post-implementation':
-      aliasesUsed.push(raw);
-      gateIds.push(...getRequiredGates(workflowPath, 'post_implementation'));
-      break;
-
-    case 'full':
-      aliasesUsed.push(raw);
-      gateIds.push(...getRequiredGates(workflowPath, 'all'));
-      break;
-
-    case 'verification':
-      aliasesUsed.push(raw);
-      gateIds.push('verification_gate');
-      break;
-
-    case 'close':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
+        break;
+      case 'merge':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'merge'));
+        break;
+      case 'post_implementation':
+      case 'post-implementation':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'post_implementation'));
+        break;
+      case 'full':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'all'));
+        break;
+      case 'verification':
+        aliasesUsed.push(raw);
+        gateIds.push('verification_gate');
+        break;
+      case 'close':
         aliasesUsed.push(raw);
         gateIds.push('close_gate');
         break;
-
       default:
         if (!isGateIdV11(raw)) {
           throw new Error(
@@ -161,7 +155,6 @@ type GateAutoAdvanceResult =
       transition_steps?: unknown[];
     };
 
-
 function sameGateSet(a: readonly GateIdV11[], b: readonly GateIdV11[]): boolean {
   if (a.length !== b.length) return false;
   const left = new Set(a);
@@ -189,53 +182,6 @@ function workflowTypeFromPath(workflowPath: string): string {
   }
 }
 
-async function readJsonIfExists(filePath: string): Promise<any | null> {
-  try {
-    return JSON.parse(await fs.readFile(filePath, 'utf-8'));
-  } catch {
-    return null;
-  }
-}
-
-async function readRuntimeCurrentState(projectRoot: string, workItemId: string): Promise<string | null> {
-  const statePath = path.join(projectRoot, '.specforge', 'runtime', 'state.json');
-  const state = await readJsonIfExists(statePath);
-  if (!state) return null;
-
-  if (state.current_work_item_id === workItemId && typeof state.current_state === 'string') {
-    return state.current_state;
-  }
-
-  if (Array.isArray(state.workItems)) {
-    const item = state.workItems.find((wi: any) => wi?.work_item_id === workItemId);
-    if (item && typeof item.current_state === 'string') return item.current_state;
-    if (item && typeof item.status === 'string') return item.status;
-  }
-
-  return typeof state.current_state === 'string' ? state.current_state : null;
-}
-
-async function syncWorkItemJsonStatus(input: { workItemDir: string; toState: string; summaryStatus: string; }): Promise<void> {
-  const workItemPath = path.join(input.workItemDir, 'work_item.json');
-  const workItem = await readJsonIfExists(workItemPath);
-  if (!workItem || typeof workItem !== 'object') return;
-  const mutableWorkItem = workItem as Record<string, unknown>;
-  const now = new Date().toISOString();
-  mutableWorkItem.status = input.toState;
-  mutableWorkItem.updated_at = now;
-  mutableWorkItem.last_gate_summary_status = input.summaryStatus;
-  mutableWorkItem.last_gate_state_auto_advance_at = now;
-  await fs.writeFile(workItemPath, JSON.stringify(mutableWorkItem, null, 2) + '\n', 'utf-8');
-}
-
-async function rebuildProjectStateBeforeGateRead(input: { deps: any; projectRoot: string }): Promise<void> {
-  if (!input.deps?.projectManager) return;
-  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
-  if (typeof projectSm?.rebuildFromEventsFile === 'function') {
-    await projectSm.rebuildFromEventsFile();
-  }
-}
-
 async function transitionGateState(
   input: {
     deps: any;
@@ -252,54 +198,23 @@ async function transitionGateState(
   workflowType: string,
   evidence: string,
 ): Promise<unknown> {
-  if (!input.deps?.workflowEngine) {
-    throw new Error('GATE_RUNNER_AUTO_ADVANCE_FAILED: WorkflowEngine not available');
-  }
-  if (!input.deps?.projectManager) {
-    throw new Error('GATE_RUNNER_AUTO_ADVANCE_FAILED: ProjectManager not available');
-  }
-
-  const transitionResult = await input.deps.workflowEngine.transitionFull({
+  return transitionWithEvidence({
+    deps: input.deps,
+    context: input.context,
+    projectRoot: input.projectRoot,
     workItemId: input.workItemId,
+    workItemDir: input.workItemDir,
     fromState,
     toState,
-    evidence,
     workflowType,
+    actorRole: 'gate_runner',
+    evidence,
     transitionContext: {
       source: 'sf_v11_gate_run',
       summary_status: input.summaryStatus,
       normalized_gate_ids: input.normalizedGateIds,
-      bf3_recovered_from_state: fromState,
-      bf3_to_state: toState,
     },
-    actor: {
-      agentRole: 'gate_runner',
-      sessionId: input.context?.sessionID ?? 'sf_v11_gate_run',
-    },
-    workItemDir: input.workItemDir,
   });
-
-  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
-  await projectSm.transition(
-    input.workItemId,
-    fromState,
-    toState,
-    'gate_runner',
-    workflowType,
-    { evidence },
-  );
-
-  await syncWorkItemJsonStatus({
-    workItemDir: input.workItemDir,
-    toState,
-    summaryStatus: input.summaryStatus,
-  });
-
-  return {
-    from_state: fromState,
-    to_state: toState,
-    transition_result: transitionResult,
-  };
 }
 
 async function autoAdvanceGateStateAfterGateRun(input: {
@@ -317,13 +232,24 @@ async function autoAdvanceGateStateAfterGateRun(input: {
     return { attempted: false, reason: 'not_full_required_gate_run' };
   }
 
-  await rebuildProjectStateBeforeGateRead({
+  const authoritativeState = await readAuthoritativeState({
     deps: input.deps,
     projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
   });
+  const currentState = authoritativeState.current_state;
 
-  const currentState = await readRuntimeCurrentState(input.projectRoot, input.workItemId);
-  const recoverableGateStates = ['candidate_preparing', 'candidate_prepared', 'gates_running'];
+  const recoverableGateStates = [
+    'created',
+    'intake_ready',
+    'impact_analyzing',
+    'impact_analyzed',
+    'workflow_selected',
+    'candidate_preparing',
+    'candidate_prepared',
+    'gates_running',
+  ];
+
   if (!currentState || !recoverableGateStates.includes(currentState)) {
     return {
       attempted: false,
@@ -336,34 +262,35 @@ async function autoAdvanceGateStateAfterGateRun(input: {
   const finalState = passed ? 'approval_required' : 'gates_failed';
   const workflowType = workflowTypeFromPath(input.workflowPath);
   const evidence =
-    'gate_runner auto-advance after full candidate gate run: summary_status=' + input.summaryStatus;
+    'gate_runner auto-advance after full candidate gate run: summary_status=' +
+    input.summaryStatus;
   const transitionSteps: unknown[] = [];
 
-  let state = currentState;
-  if (state === 'candidate_preparing') {
-    transitionSteps.push(
-      await transitionGateState(
-        input,
-        'candidate_preparing',
-        'candidate_prepared',
-        workflowType,
-        evidence + ' | bf3 step candidate_preparing->candidate_prepared',
-      ),
-    );
-    state = 'candidate_prepared';
-  }
+  const sequence = [
+    'created',
+    'intake_ready',
+    'impact_analyzing',
+    'impact_analyzed',
+    'workflow_selected',
+    'candidate_preparing',
+    'candidate_prepared',
+    'gates_running',
+  ];
 
-  if (state === 'candidate_prepared') {
+  let index = sequence.indexOf(currentState);
+  while (index >= 0 && sequence[index] !== 'gates_running') {
+    const from = sequence[index];
+    const to = sequence[index + 1];
     transitionSteps.push(
       await transitionGateState(
         input,
-        'candidate_prepared',
-        'gates_running',
+        from,
+        to,
         workflowType,
-        evidence + ' | bf3 step candidate_prepared->gates_running',
+        evidence + ' | state authority recovery step ' + from + '->' + to,
       ),
     );
-    state = 'gates_running';
+    index += 1;
   }
 
   transitionSteps.push(
@@ -372,7 +299,7 @@ async function autoAdvanceGateStateAfterGateRun(input: {
       'gates_running',
       finalState,
       workflowType,
-      evidence + ' | bf3 step gates_running->' + finalState,
+      evidence + ' | state authority step gates_running->' + finalState,
     ),
   );
 
@@ -391,13 +318,13 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
+
   const idError = validateWorkItemId(workItemId);
   if (idError) {
     return { success: false, error: idError };
   }
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
-
   try {
     await fs.access(workItemDir);
   } catch {
@@ -406,7 +333,6 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
 
   try {
     const workflowPathResult = await readWorkflowPath(workItemDir);
-
     if (!workflowPathResult.workflowPath) {
       return {
         success: false,
@@ -421,7 +347,6 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
 
     const workflowPath = workflowPathResult.workflowPath;
     const normalized = normalizeGateIds(args['gate_ids'], workflowPath);
-
     const ctx = {
       workItemId,
       workItemDir,
@@ -433,16 +358,16 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       ctx,
     );
 
-  const stateAutoAdvance = await autoAdvanceGateStateAfterGateRun({
-    deps,
-    context,
-    projectRoot,
-    workItemId,
-    workItemDir,
-    workflowPath,
-    normalizedGateIds: normalized.gateIds,
-    summaryStatus,
-  });
+    const stateAutoAdvance = await autoAdvanceGateStateAfterGateRun({
+      deps,
+      context,
+      projectRoot,
+      workItemId,
+      workItemDir,
+      workflowPath,
+      normalizedGateIds: normalized.gateIds,
+      summaryStatus,
+    });
 
     return {
       success: true,
@@ -460,8 +385,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       passed: reports.filter((r) => r.status === 'passed').length,
       failed: reports.filter((r) => r.status === 'failed').length,
       state_auto_advance: stateAutoAdvance,
-
-  reports: reports.map((r) => ({
+      reports: reports.map((r) => ({
         gate_id: r.gate_id,
         status: r.status,
         blocking_issues: r.blocking_issues.length,
