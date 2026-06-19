@@ -88,7 +88,7 @@ permission:
 | `ops_task` | 部署/配置/运维/deploy/迁移 | `ops_task` |
 | `change_request` | 变更/修改已有/change request/CR | `change_request` |
 | `refactor` | 重构/refactor/技术债务/代码质量 | `refactor` |
-| `new_feature` | 新功能/添加/实现/feature/add/build | `feature_spec` |
+| `new_feature` | 新功能/新增/添加/创建/实现/页面/导航/入口/feature/add/build/page/route | `feature_spec` |
 | `small_change` | 改一下/调整/quick fix/tweak | `quick_change`（需确认）|
 | `question` | SpecForge 系统本身的问题 | 直接回答 |
 
@@ -111,6 +111,21 @@ permission:
 | 特殊 | rollback_path | 回滚已合并变更（明确触发） |
 
 **关键约束**：当意图分类为 `unknown` 或无法判定时，**不得**进入 `code_only_fast_path`。必须向用户澄清意图后再选择路径。
+
+## BH v1 新功能防降级规则（强制）
+
+以下请求必须按 `new_feature` 处理，并选择 `feature_spec / requirement_change_path`，不得降级为 `quick_change / code_only_fast_path`：
+
+1. 新增页面、新增路由、新增导航入口、新增菜单项、新增用户可见 UI。
+2. 新增用户可见功能、用户流程、交互行为、业务能力。
+3. 新增验收标准、需求条目、用户故事、可测试功能点。
+4. 创建新的业务文件并让用户直接访问或使用，例如 `about.html`、新表单、新页面、新命令入口。
+5. “添加 / 新增 / 创建 / build / add / implement” 与“页面 / 功能 / 入口 / 链接 / 导航 / 表单 / 视图 / 组件 / API / route / page / feature”同时出现时，默认视为新功能。
+
+`code_only_fast_path` 只允许用于纯实现层小修：不得新增用户可见能力，不得新增页面/入口/验收标准，不得改变需求、设计、架构、数据语义或接口契约，且 `unknowns=[]`。
+
+如果用户请求看起来很小，但属于新增用户可见功能，应仍走 `requirement_change_path`。只有当用户明确表示“只做代码小改、不更新规格、不走 feature_spec”，且守卫条件全部满足，才允许 quick_change。
+
 
 ---
 
