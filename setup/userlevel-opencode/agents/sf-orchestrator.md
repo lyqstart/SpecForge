@@ -507,3 +507,122 @@ manifest 至少包含：
 
 <!-- SpecForge V7 Candidate Completeness Governance END -->
 
+
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment BEGIN -->
+
+# V9 Post-Merge / Implementation / Verification 调用规范
+
+本节用于治理 V8.1 回归后暴露的后半段流程问题：Orchestrator 虽然没有绕过 events.jsonl，但仍在 post-merge、implementation、verification 阶段临时手动补状态。
+
+## 一、总体原则
+
+Orchestrator 只负责编排，不应把 `sf_state_transition` 当作后半段主流程驱动器。
+
+后半段优先使用受控工具：
+
+```text
+Merge 完成后：sf_gate_run(gate_ids=["post_merge_gate"])
+实现授权：sf_code_permission(action="enable")
+实现完成：sf_changed_files_audit 后最多一次 implementation_running → implementation_done
+验证收口：sf_gate_run(gate_ids=["verification_gate"])
+关闭：sf_code_permission(action="revoke") 后 sf_close_gate
+```
+
+## 二、Merge 后禁止直接手动补 post_merge_verified
+
+`sf_merge_run` 成功并返回 `merged` 后，Orchestrator 不得直接调用：
+
+```text
+sf_state_transition merged → post_merge_verified
+```
+
+正确流程是：
+
+```text
+1. 读取或确认 merge_report.md
+2. 调用 sf_gate_run(work_item_id=WI-XXXX, gate_ids=["post_merge_gate"])
+3. 由 gate_runner 在 post_merge_gate 通过后推进 merged → post_merge_verified
+4. 如果 post_merge_gate 失败，报告失败项并修复 merge/spec 产物，不得手动补状态
+```
+
+## 三、实现授权禁止手动补 implementation_ready
+
+当状态为 `post_merge_verified` 时，Orchestrator 不得先手动调用：
+
+```text
+sf_state_transition post_merge_verified → implementation_ready
+```
+
+正确流程是：
+
+```text
+1. 从正式 tasks.md 提取 allowed_write_files
+2. 调用 sf_code_permission(action="enable", allowed_write_files=[...])
+3. 由 sf_code_permission 负责推进 post_merge_verified → implementation_ready → implementation_running
+4. 如果工具拒绝，按工具返回的原因处理；不得循环手动推进
+```
+
+## 四、Verification 禁止手动收口 verification_done
+
+验证阶段不得先手动推进到 `verification_running`，再手动推进到 `verification_done`。
+
+正确流程是：
+
+```text
+1. executor 全部完成
+2. sf_changed_files_audit 通过
+3. 最多一次 sf_state_transition implementation_running → implementation_done
+4. 调度 sf-verifier 执行只读验证
+5. 通过 sf_artifact_write 写入 verification_report 和 evidence_manifest
+6. 调用 sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
+7. 由 gate_runner 推进 implementation_done → verification_running → verification_done
+```
+
+如果 `verification_gate` 失败：
+
+```text
+- 不得手动推进 verification_done
+- 根据 gate report 修复 verification_report / evidence_manifest / AC 覆盖问题
+- 每轮最多一次修复和一次重跑
+```
+
+## 五、Close 前顺序
+
+关闭前顺序固定：
+
+```text
+verification_gate passed
+→ verification_done
+→ sf_code_permission(action="revoke")
+→ sf_close_gate(work_item_id=WI-XXXX)
+→ close_gate 推进 verification_done → closed
+```
+
+Orchestrator 不得直接调用：
+
+```text
+sf_state_transition verification_done → closed
+```
+
+## 六、允许保留的一次非 seal 状态推进
+
+当前 daemon 尚未提供 executor_done 专用工具，因此实现完成后允许一次：
+
+```text
+sf_state_transition implementation_running → implementation_done
+```
+
+前提：
+
+```text
+1. 所有 executor task 均已完成；
+2. sf_changed_files_audit 已通过；
+3. evidence 明确写明任务完成和审计通过；
+4. 不得跳过 changed_files_audit。
+```
+
+除此之外，后半段不得把 `sf_state_transition` 作为常规推进工具。
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment END -->
+

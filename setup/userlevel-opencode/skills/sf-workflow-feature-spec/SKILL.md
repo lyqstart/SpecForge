@@ -481,3 +481,132 @@ manifest 必须包含 4 类 Candidate：
 
 <!-- SpecForge V7 Candidate Completeness Governance END -->
 
+
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment BEGIN -->
+
+# V9 后半段受控工具调用协议
+
+本节优先于旧版阶段 8、阶段 9、阶段 10、阶段 11 中关于手动 `sf_state_transition` 的描述。
+
+## 阶段 8：merged → post_merge_verified
+
+旧行为：
+
+```text
+sf_state_transition merged → post_merge_verified
+```
+
+废止。
+
+新行为：
+
+```text
+sf_gate_run(work_item_id=WI-XXXX, gate_ids=["post_merge_gate"])
+```
+
+要求：
+
+```text
+1. sf_merge_run 成功后，只能通过 post_merge_gate 验证合并后的正式规格；
+2. post_merge_gate 通过后，由 gate_runner 自动推进 merged → post_merge_verified；
+3. 不得因为 state.json 滞后而手动补 post_merge_verified；
+4. 如果 post_merge_gate 失败，修复 merge/spec 产物后最多重跑一次。
+```
+
+## 阶段 9：post_merge_verified → implementation_running
+
+旧行为：
+
+```text
+sf_state_transition post_merge_verified → implementation_ready
+sf_code_permission(action="enable")
+```
+
+废止。
+
+新行为：
+
+```text
+sf_code_permission(
+  work_item_id=WI-XXXX,
+  action="enable",
+  allowed_write_files=[从正式 tasks.md 提取的文件列表]
+)
+```
+
+要求：
+
+```text
+1. sf_code_permission 在 post_merge_verified 状态下调用；
+2. allowed_write_files 必须显式传入；
+3. 由 sf_code_permission 负责推进 post_merge_verified → implementation_ready → implementation_running；
+4. 如果 sf_code_permission 拒绝，按工具返回原因处理，不得先手动补 implementation_ready。
+```
+
+## 阶段 10：verification 由 verification_gate 收口
+
+旧行为：
+
+```text
+sf_state_transition implementation_done → verification_running
+调度 sf-verifier
+sf_state_transition verification_running → verification_done
+```
+
+废止。
+
+新行为：
+
+```text
+implementation_running → implementation_done
+调度 sf-verifier
+sf_artifact_write verification_report
+sf_artifact_write evidence_manifest
+sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
+```
+
+要求：
+
+```text
+1. implementation_running → implementation_done 只允许在 executor 全部完成且 changed_files_audit passed 后执行一次；
+2. sf-verifier 是只读验证角色，不得调用 changed_files_audit；
+3. verification_report 和 evidence_manifest 写入完成后，必须调用 verification_gate；
+4. verification_gate 通过后，由 gate_runner 自动推进 implementation_done → verification_running → verification_done；
+5. 不得手动推进 verification_done。
+```
+
+## 阶段 11：verification_done → closed
+
+关闭仍由 `sf_close_gate` 执行。
+
+正确顺序：
+
+```text
+sf_code_permission(action="revoke")
+sf_close_gate(work_item_id=WI-XXXX)
+```
+
+禁止：
+
+```text
+sf_state_transition verification_done → closed
+```
+
+## 执行检查
+
+Orchestrator 在后半段每次继续前必须自检：
+
+```text
+1. merged 后是否先调用 post_merge_gate？
+2. 是否没有手动补 post_merge_verified？
+3. 是否没有手动补 implementation_ready？
+4. verification_report / evidence_manifest 是否已写入？
+5. verification_done 是否由 verification_gate 推进？
+6. closed 是否由 close_gate 推进？
+```
+
+任一为否，必须停止并按本节修正流程。
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment END -->
+
