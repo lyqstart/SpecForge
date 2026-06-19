@@ -65,32 +65,30 @@ function mirrorSpecCandidateArtifacts(
   content: string,
   primaryTargetPath: string,
 ): void {
-  const mirrorable = new Set(['requirements.md', 'design.md', 'tasks.md', 'trace_delta.md'])
-  if (!mirrorable.has(targetFilename)) return
+  const normalizedTargetFilename = targetFilename.replace(/\\/g, '/')
+  const canonicalMirrors: Record<string, string[]> = {
+    'requirements.md': ['candidates/project/modules/core/requirements.candidate.md'],
+    'design.md': ['candidates/project/modules/core/design.candidate.md'],
+    'tasks.md': ['candidates/tasks.md'],
+    'trace_delta.md': ['candidates/trace_delta.md'],
+    'candidates/project/modules/core/requirements.candidate.md': ['requirements.md'],
+    'candidates/project/modules/core/design.candidate.md': ['design.md'],
+    'candidates/tasks.md': ['tasks.md'],
+    'candidates/trace_delta.md': ['trace_delta.md'],
+  }
+
+  const mirrors = canonicalMirrors[normalizedTargetFilename] ?? []
+  if (mirrors.length === 0) return
 
   const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId)
-    const candidatesDir = path.join(wiDir, 'candidates')
-  const mirrors: string[] = []
-
-  if (targetFilename === 'requirements.md' || targetFilename === 'design.md' || targetFilename === 'tasks.md') {
-    mirrors.push(path.join(candidatesDir, targetFilename))
-    }
-
-  if (targetFilename === 'trace_delta.md') {
-    // v1.1.2_real_world_batch1_trace_delta_candidate_mirror:
-    // Spec-changing workflows may include candidates/trace_delta.md in
-    // candidate_manifest. Controlled sf_artifact_write is the only allowed
-    // way to write WI artifacts; mirror trace_delta into candidates/ so
-    // agents never need sf_safe_bash/Copy-Item inside .specforge/work-items.
-    mirrors.push(path.join(candidatesDir, targetFilename))
-    }
-
-  for (const mirrorPath of mirrors) {
+  for (const relativeMirror of mirrors) {
+    const mirrorPath = path.join(wiDir, relativeMirror)
     if (path.resolve(mirrorPath) === path.resolve(primaryTargetPath)) continue
     fs.mkdirSync(path.dirname(mirrorPath), { recursive: true })
     fs.writeFileSync(mirrorPath, content, 'utf-8')
   }
 }
+
 function normalizeToken(value: unknown): string {
   return String(value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-')
 }
@@ -130,7 +128,8 @@ function resolveTargetFilename(fileType: string): string | null {
   if (fileType === 'design_delta') return 'design_delta.md'
   if (fileType === 'candidate_requirements') return 'candidates/project/modules/core/requirements.candidate.md'
   if (fileType === 'candidate_design') return 'candidates/project/modules/core/design.candidate.md'
-  if (fileType === 'candidate_tasks') return 'tasks.md'
+  if (fileType === 'candidate_tasks') return 'candidates/tasks.md'
+  if (fileType === 'candidate_trace_delta') return 'candidates/trace_delta.md'
   if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType
   return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null
 }
@@ -420,3 +419,5 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     return { success: false, error: `ARTIFACT_WRITE_FAILED: ${err.message}`, hard_stop: true }
   }
 })
+
+
