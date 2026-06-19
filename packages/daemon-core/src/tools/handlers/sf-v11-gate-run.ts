@@ -1,17 +1,21 @@
 /**
  * sf-v11-gate-run — v1.1 Gate Runner handler
  *
- * State authority alignment:
- * - Gate Runner produces gate evidence and requests state transition.
- * - It does not maintain work_item.json.status.
- * - Current state comes from StateManager through state-coordinator-v11.
+ * V6 state authority alignment:
+ * - candidate gates still advance gates_running → approval_required / gates_failed;
+ * - post_merge_gate advances merged → post_merge_verified;
+ * - verification_gate advances implementation_done → verification_running → verification_done;
+ * - all durable transitions go through state-coordinator-v11 / StateManager.
  */
 
 import { registerHandler } from '../ToolDispatcher';
 import { runRequiredGates } from '../lib/gate-runner-v11';
 import type { GateIdV11, GateReportV11 } from '../lib/gate-runner-v11';
 import { getRequiredGates } from '../lib/required-gates';
-import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
+import {
+  readAuthoritativeState,
+  transitionWithEvidence,
+} from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
@@ -45,13 +49,11 @@ function isGateIdV11(value: string): value is GateIdV11 {
   return (VALID_GATE_IDS as readonly string[]).includes(value);
 }
 
-interface WorkflowPathReadResult {
+async function readWorkflowPath(workItemDir: string): Promise<{
   workflowPath: string | null;
   source: string | null;
   checkedFiles: string[];
-}
-
-async function readWorkflowPath(workItemDir: string): Promise<WorkflowPathReadResult> {
+}> {
   const candidates = [
     path.join(workItemDir, 'trigger_result.json'),
     path.join(workItemDir, 'work_item.json'),
@@ -79,89 +81,6 @@ function dedupe<T>(items: T[]): T[] {
   return Array.from(new Set(items));
 }
 
-function normalizeGateIds(
-  input: unknown,
-  workflowPath: string,
-): { gateIds: GateIdV11[]; aliasesUsed: string[] } {
-  const aliasesUsed: string[] = [];
-  const rawIds =
-    Array.isArray(input) && input.length > 0 ? input.map(String) : ['all'];
-  const gateIds: GateIdV11[] = [];
-
-  for (const raw of rawIds) {
-    switch (raw) {
-      case 'all':
-        aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
-        break;
-      case 'tasks':
-        aliasesUsed.push(raw);
-        if (workflowPath === 'code_only_fast_path') {
-          gateIds.push('candidate_manifest_gate', 'path_policy_gate');
-        } else {
-          gateIds.push('required_files_gate', 'candidate_manifest_gate', 'trace_gate');
-        }
-        break;
-      case 'candidate':
-        aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
-        break;
-      case 'merge':
-        aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'merge'));
-        break;
-      case 'post_implementation':
-      case 'post-implementation':
-        aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'post_implementation'));
-        break;
-      case 'full':
-        aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'all'));
-        break;
-      case 'verification':
-        aliasesUsed.push(raw);
-        gateIds.push('verification_gate');
-        break;
-      case 'close':
-        aliasesUsed.push(raw);
-        gateIds.push('close_gate');
-        break;
-      default:
-        if (!isGateIdV11(raw)) {
-          throw new Error(
-            `UNKNOWN_GATE_ID: ${raw}. Allowed canonical Gate IDs: ${VALID_GATE_IDS.join(
-              ', ',
-            )}. Legacy aliases accepted only for normalization: all, tasks, verification, close.`,
-          );
-        }
-        gateIds.push(raw);
-    }
-  }
-
-  if (workflowPath === 'code_only_fast_path') {
-    return {
-      gateIds: dedupe(gateIds.filter((id) => id !== 'required_files_gate')),
-      aliasesUsed,
-    };
-  }
-
-  return { gateIds: dedupe(gateIds), aliasesUsed };
-}
-
-type GateAutoAdvanceResult =
-  | { attempted: false; reason: string; current_state?: string | null; details?: unknown }
-  | {
-      attempted: true;
-      advanced: true;
-      from_state: string;
-      to_state: string;
-      workflow_type: string;
-      evidence: string;
-      transition_result?: unknown;
-      transition_steps?: unknown[];
-    };
-
 function workflowTypeFromPath(workflowPath: string): string {
   switch (workflowPath) {
     case 'requirement_change_path':
@@ -188,12 +107,96 @@ function gateStatusCountsAsPassed(report: GateReportV11 | undefined): boolean {
   return ['passed', 'skipped', 'not_applicable'].includes(String(report.status));
 }
 
+function defaultGateAliasForState(currentState: string | null): string {
+  if (currentState === 'merged') return 'post_merge';
+  if (currentState === 'implementation_done' || currentState === 'verification_running') {
+    return 'verification';
+  }
+  return 'candidate';
+}
+
+function normalizeGateIds(
+  input: unknown,
+  workflowPath: string,
+  currentState: string | null,
+): { gateIds: GateIdV11[]; aliasesUsed: string[] } {
+  const aliasesUsed: string[] = [];
+  const rawIds =
+    Array.isArray(input) && input.length > 0
+      ? input.map(String)
+      : [defaultGateAliasForState(currentState)];
+  const gateIds: GateIdV11[] = [];
+
+  for (const raw of rawIds) {
+    switch (raw) {
+      case 'all':
+      case 'candidate':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'candidate'));
+        break;
+      case 'tasks':
+        aliasesUsed.push(raw);
+        if (workflowPath === 'code_only_fast_path') {
+          gateIds.push('candidate_manifest_gate', 'path_policy_gate');
+        } else {
+          gateIds.push('required_files_gate', 'candidate_manifest_gate', 'trace_gate');
+        }
+        break;
+      case 'merge':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'merge'));
+        break;
+      case 'post_merge':
+      case 'post-merge':
+        aliasesUsed.push(raw);
+        gateIds.push('post_merge_gate');
+        break;
+      case 'post_implementation':
+      case 'post-implementation':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'post_implementation'));
+        break;
+      case 'full':
+        aliasesUsed.push(raw);
+        gateIds.push(...getRequiredGates(workflowPath, 'all'));
+        break;
+      case 'verification':
+        aliasesUsed.push(raw);
+        gateIds.push('verification_gate');
+        break;
+      case 'close':
+        aliasesUsed.push(raw);
+        gateIds.push('close_gate');
+        break;
+      default:
+        if (!isGateIdV11(raw)) {
+          throw new Error(
+            `UNKNOWN_GATE_ID: ${raw}. Allowed canonical Gate IDs: ${VALID_GATE_IDS.join(
+              ', ',
+            )}. Legacy aliases accepted only for normalization: all, candidate, tasks, merge, post_merge, verification, close.`,
+          );
+        }
+        gateIds.push(raw);
+    }
+  }
+
+  if (workflowPath === 'code_only_fast_path') {
+    return {
+      gateIds: dedupe(gateIds.filter((id) => id !== 'required_files_gate')),
+      aliasesUsed,
+    };
+  }
+
+  return { gateIds: dedupe(gateIds), aliasesUsed };
+}
+
 function candidateGateSetCoversRequiredGates(input: {
   workflowPath: string;
   reports: GateReportV11[];
 }): { ok: true; requiredGateIds: GateIdV11[] } | { ok: false; reason: string; details: unknown } {
   const requiredGateIds = getRequiredGates(input.workflowPath, 'candidate');
   const reportById = new Map<GateIdV11, GateReportV11>();
+
   for (const report of input.reports) {
     reportById.set(report.gate_id, report);
   }
@@ -273,7 +276,7 @@ async function transitionGateState(
   });
 }
 
-async function autoAdvanceGateStateAfterGateRun(input: {
+async function autoAdvanceCandidateState(input: {
   deps: any;
   context: any;
   projectRoot: string;
@@ -282,27 +285,18 @@ async function autoAdvanceGateStateAfterGateRun(input: {
   workflowPath: string;
   reports: GateReportV11[];
   summaryStatus: string;
-}): Promise<GateAutoAdvanceResult> {
+  currentState: string | null;
+}): Promise<any> {
   const coverage = candidateGateSetCoversRequiredGates({
     workflowPath: input.workflowPath,
     reports: input.reports,
   });
 
   if (!coverage.ok) {
-    return {
-      attempted: false,
-      reason: coverage.reason,
-      details: coverage.details,
-    };
+    return { attempted: false, reason: coverage.reason, details: coverage.details };
   }
 
-  const authoritativeState = await readAuthoritativeState({
-    deps: input.deps,
-    projectRoot: input.projectRoot,
-    workItemId: input.workItemId,
-  });
-  const currentState = authoritativeState.current_state;
-
+  const currentState = input.currentState;
   const recoverableGateStates = [
     'created',
     'intake_ready',
@@ -317,7 +311,7 @@ async function autoAdvanceGateStateAfterGateRun(input: {
   if (!currentState || !recoverableGateStates.includes(currentState)) {
     return {
       attempted: false,
-      reason: 'current_state_is_not_gate_auto_advance_recoverable',
+      reason: 'current_state_is_not_candidate_gate_recoverable',
       current_state: currentState,
     };
   }
@@ -380,6 +374,142 @@ async function autoAdvanceGateStateAfterGateRun(input: {
   };
 }
 
+async function autoAdvancePostMergeState(input: {
+  deps: any;
+  context: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowPath: string;
+  reports: GateReportV11[];
+  summaryStatus: string;
+  currentState: string | null;
+}): Promise<any> {
+  const report = input.reports.find((r) => r.gate_id === 'post_merge_gate');
+  if (!report) {
+    return { attempted: false, reason: 'post_merge_gate_not_run' };
+  }
+  if (!gateStatusCountsAsPassed(report)) {
+    return {
+      attempted: false,
+      reason: 'post_merge_gate_not_passed',
+      status: report.status,
+    };
+  }
+  if (input.currentState !== 'merged') {
+    return {
+      attempted: false,
+      reason: 'current_state_not_merged',
+      current_state: input.currentState,
+    };
+  }
+
+  const workflowType = workflowTypeFromPath(input.workflowPath);
+  const step = await transitionGateState(
+    input,
+    'merged',
+    'post_merge_verified',
+    workflowType,
+    'post_merge_gate passed; authoritative transition merged->post_merge_verified',
+  );
+
+  return {
+    attempted: true,
+    advanced: true,
+    from_state: 'merged',
+    to_state: 'post_merge_verified',
+    workflow_type: workflowType,
+    transition_steps: [step],
+  };
+}
+
+async function autoAdvanceVerificationState(input: {
+  deps: any;
+  context: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowPath: string;
+  reports: GateReportV11[];
+  summaryStatus: string;
+  currentState: string | null;
+}): Promise<any> {
+  const report = input.reports.find((r) => r.gate_id === 'verification_gate');
+  if (!report) {
+    return { attempted: false, reason: 'verification_gate_not_run' };
+  }
+  if (!gateStatusCountsAsPassed(report)) {
+    return {
+      attempted: false,
+      reason: 'verification_gate_not_passed',
+      status: report.status,
+    };
+  }
+  if (input.currentState !== 'implementation_done' && input.currentState !== 'verification_running') {
+    return {
+      attempted: false,
+      reason: 'current_state_not_verification_recoverable',
+      current_state: input.currentState,
+    };
+  }
+
+  const workflowType = workflowTypeFromPath(input.workflowPath);
+  const steps: unknown[] = [];
+
+  if (input.currentState === 'implementation_done') {
+    steps.push(
+      await transitionGateState(
+        input,
+        'implementation_done',
+        'verification_running',
+        workflowType,
+        'verification_gate passed; recovery step implementation_done->verification_running',
+      ),
+    );
+  }
+
+  steps.push(
+    await transitionGateState(
+      input,
+      'verification_running',
+      'verification_done',
+      workflowType,
+      'verification_gate passed; authoritative transition verification_running->verification_done',
+    ),
+  );
+
+  return {
+    attempted: true,
+    advanced: true,
+    from_state: input.currentState,
+    to_state: 'verification_done',
+    workflow_type: workflowType,
+    transition_steps: steps,
+  };
+}
+
+async function autoAdvanceStateAfterGateRun(input: {
+  deps: any;
+  context: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowPath: string;
+  reports: GateReportV11[];
+  summaryStatus: string;
+  currentState: string | null;
+}): Promise<any> {
+  if (input.reports.some((r) => r.gate_id === 'post_merge_gate')) {
+    return autoAdvancePostMergeState(input);
+  }
+
+  if (input.reports.some((r) => r.gate_id === 'verification_gate')) {
+    return autoAdvanceVerificationState(input);
+  }
+
+  return autoAdvanceCandidateState(input);
+}
+
 registerHandler('sf_v11_gate_run', async (args, context, deps) => {
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
@@ -411,20 +541,23 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       };
     }
 
-    const workflowPath = workflowPathResult.workflowPath;
-    const normalized = normalizeGateIds(args['gate_ids'], workflowPath);
-    const ctx = {
-      workItemId,
-      workItemDir,
+    const authoritativeState = await readAuthoritativeState({
+      deps,
       projectRoot,
-    };
+      workItemId,
+    });
+    const currentState = authoritativeState.current_state;
+
+    const workflowPath = workflowPathResult.workflowPath;
+    const normalized = normalizeGateIds(args['gate_ids'], workflowPath, currentState);
+    const ctx = { workItemId, workItemDir, projectRoot };
 
     const { reports, summaryStatus, summaryPath } = await runRequiredGates(
       normalized.gateIds,
       ctx,
     );
 
-    const stateAutoAdvance = await autoAdvanceGateStateAfterGateRun({
+    const stateAutoAdvance = await autoAdvanceStateAfterGateRun({
       deps,
       context,
       projectRoot,
@@ -433,6 +566,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       workflowPath,
       reports,
       summaryStatus,
+      currentState,
     });
 
     return {
@@ -442,6 +576,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       workflow_path_source: workflowPathResult.source
         ? path.relative(projectRoot, workflowPathResult.source).replace(/\\/g, '/')
         : null,
+      authoritative_state_before_gate: currentState,
       requested_gate_ids: args['gate_ids'] ?? [],
       normalized_gate_ids: normalized.gateIds,
       aliases_used: normalized.aliasesUsed,
