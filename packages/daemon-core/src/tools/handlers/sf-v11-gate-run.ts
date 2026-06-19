@@ -9,7 +9,7 @@
 
 import { registerHandler } from '../ToolDispatcher';
 import { runRequiredGates } from '../lib/gate-runner-v11';
-import type { GateIdV11 } from '../lib/gate-runner-v11';
+import type { GateIdV11, GateReportV11 } from '../lib/gate-runner-v11';
 import { getRequiredGates } from '../lib/required-gates';
 import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
@@ -33,6 +33,13 @@ const VALID_GATE_IDS: readonly GateIdV11[] = [
   'close_gate',
   'extension_gate',
 ] as const;
+
+const POST_CANDIDATE_GATES = new Set<GateIdV11>([
+  'merge_ready_gate',
+  'post_merge_gate',
+  'verification_gate',
+  'close_gate',
+]);
 
 function isGateIdV11(value: string): value is GateIdV11 {
   return (VALID_GATE_IDS as readonly string[]).includes(value);
@@ -143,7 +150,7 @@ function normalizeGateIds(
 }
 
 type GateAutoAdvanceResult =
-  | { attempted: false; reason: string; current_state?: string | null }
+  | { attempted: false; reason: string; current_state?: string | null; details?: unknown }
   | {
       attempted: true;
       advanced: true;
@@ -154,12 +161,6 @@ type GateAutoAdvanceResult =
       transition_result?: unknown;
       transition_steps?: unknown[];
     };
-
-function sameGateSet(a: readonly GateIdV11[], b: readonly GateIdV11[]): boolean {
-  if (a.length !== b.length) return false;
-  const left = new Set(a);
-  return b.every((item) => left.has(item));
-}
 
 function workflowTypeFromPath(workflowPath: string): string {
   switch (workflowPath) {
@@ -182,6 +183,61 @@ function workflowTypeFromPath(workflowPath: string): string {
   }
 }
 
+function gateStatusCountsAsPassed(report: GateReportV11 | undefined): boolean {
+  if (!report) return false;
+  return ['passed', 'skipped', 'not_applicable'].includes(String(report.status));
+}
+
+function candidateGateSetCoversRequiredGates(input: {
+  workflowPath: string;
+  reports: GateReportV11[];
+}): { ok: true; requiredGateIds: GateIdV11[] } | { ok: false; reason: string; details: unknown } {
+  const requiredGateIds = getRequiredGates(input.workflowPath, 'candidate');
+  const reportById = new Map<GateIdV11, GateReportV11>();
+  for (const report of input.reports) {
+    reportById.set(report.gate_id, report);
+  }
+
+  const postCandidateSeen = input.reports
+    .map((r) => r.gate_id)
+    .filter((gateId) => POST_CANDIDATE_GATES.has(gateId));
+
+  if (postCandidateSeen.length > 0) {
+    return {
+      ok: false,
+      reason: 'post_candidate_gates_present',
+      details: { post_candidate_gates: postCandidateSeen },
+    };
+  }
+
+  const missingRequired = requiredGateIds.filter((gateId) => !reportById.has(gateId));
+  if (missingRequired.length > 0) {
+    return {
+      ok: false,
+      reason: 'required_candidate_gates_missing',
+      details: { missing_required_candidate_gates: missingRequired },
+    };
+  }
+
+  const notPassedRequired = requiredGateIds.filter(
+    (gateId) => !gateStatusCountsAsPassed(reportById.get(gateId)),
+  );
+  if (notPassedRequired.length > 0) {
+    return {
+      ok: false,
+      reason: 'required_candidate_gates_not_passed',
+      details: {
+        not_passed_required_candidate_gates: notPassedRequired.map((gateId) => ({
+          gate_id: gateId,
+          status: reportById.get(gateId)?.status ?? 'missing',
+        })),
+      },
+    };
+  }
+
+  return { ok: true, requiredGateIds };
+}
+
 async function transitionGateState(
   input: {
     deps: any;
@@ -190,7 +246,7 @@ async function transitionGateState(
     workItemId: string;
     workItemDir: string;
     workflowPath: string;
-    normalizedGateIds: GateIdV11[];
+    reports: GateReportV11[];
     summaryStatus: string;
   },
   fromState: string,
@@ -212,7 +268,7 @@ async function transitionGateState(
     transitionContext: {
       source: 'sf_v11_gate_run',
       summary_status: input.summaryStatus,
-      normalized_gate_ids: input.normalizedGateIds,
+      report_gate_ids: input.reports.map((report) => report.gate_id),
     },
   });
 }
@@ -224,12 +280,20 @@ async function autoAdvanceGateStateAfterGateRun(input: {
   workItemId: string;
   workItemDir: string;
   workflowPath: string;
-  normalizedGateIds: GateIdV11[];
+  reports: GateReportV11[];
   summaryStatus: string;
 }): Promise<GateAutoAdvanceResult> {
-  const requiredGateIds = getRequiredGates(input.workflowPath, 'candidate');
-  if (!sameGateSet(input.normalizedGateIds, requiredGateIds)) {
-    return { attempted: false, reason: 'not_full_required_gate_run' };
+  const coverage = candidateGateSetCoversRequiredGates({
+    workflowPath: input.workflowPath,
+    reports: input.reports,
+  });
+
+  if (!coverage.ok) {
+    return {
+      attempted: false,
+      reason: coverage.reason,
+      details: coverage.details,
+    };
   }
 
   const authoritativeState = await readAuthoritativeState({
@@ -258,11 +322,13 @@ async function autoAdvanceGateStateAfterGateRun(input: {
     };
   }
 
-  const passed = String(input.summaryStatus).startsWith('passed');
+  const passed = ['passed', 'passed_with_waiver_required'].includes(
+    String(input.summaryStatus),
+  );
   const finalState = passed ? 'approval_required' : 'gates_failed';
   const workflowType = workflowTypeFromPath(input.workflowPath);
   const evidence =
-    'gate_runner auto-advance after full candidate gate run: summary_status=' +
+    'gate_runner auto-advance after required candidate gates coverage: summary_status=' +
     input.summaryStatus;
   const transitionSteps: unknown[] = [];
 
@@ -365,7 +431,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       workItemId,
       workItemDir,
       workflowPath,
-      normalizedGateIds: normalized.gateIds,
+      reports,
       summaryStatus,
     });
 

@@ -16,6 +16,7 @@ import {
   formatWorkItemId,
 } from "../lib/work-item-id-validator";
 import { guardHardStop } from "../lib/hard-stop-latch";
+import { transitionWithEvidence } from "../lib/state-coordinator-v11";
 
 /**
  * Allocate next WI-NNNN from existing .specforge/work-items directories.
@@ -41,10 +42,9 @@ async function allocateNextWorkItemId(projectRoot: string): Promise<string> {
   return formatWorkItemId(max + 1);
 }
 
-
-async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
+async function readJsonIfExists<T = any>(filePath: string): Promise<T | null> {
   try {
-    return JSON.parse(await readFile(filePath, "utf-8"));
+    return JSON.parse(await readFile(filePath, "utf-8")) as T;
   } catch {
     return null;
   }
@@ -63,7 +63,7 @@ async function readExistingWorkflowFacts(
   ];
 
   for (const filePath of candidates) {
-    const json = await readJsonIfExists(filePath);
+    const json = await readJsonIfExists<any>(filePath);
     if (!json) continue;
 
     if (filePath.endsWith("state.json") && Array.isArray(json.workItems)) {
@@ -97,8 +97,8 @@ async function ensureWorkItemJsonOnCreate(
 ): Promise<{ path: string; created: boolean }> {
   const wiDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
   await mkdir(wiDir, { recursive: true });
-  const workItemJsonPath = join(wiDir, "work_item.json");
 
+  const workItemJsonPath = join(wiDir, "work_item.json");
   const existing = await readJsonIfExists(workItemJsonPath);
   if (existing) return { path: workItemJsonPath, created: false };
 
@@ -106,7 +106,11 @@ async function ensureWorkItemJsonOnCreate(
   const workItem = {
     schema_version: "1.1",
     work_item_id: workItemId,
+
+    // Legacy display field only. Governance MUST NOT read this as authority.
+    // It is kept short-term because schema_gate in v1.1 still checks the field.
     status: "created",
+
     workflow_type: workflowType ?? "quick_change",
     workflow_path: workflowPath,
     title: `Work Item ${workItemId}`,
@@ -124,20 +128,16 @@ async function ensureWorkItemJsonOnCreate(
 /**
  * v1.1 state transition handler.
  *
- * R1 change:
- * - v1.1 WI ID format is unified to WI-NNNN.
- * - Date-based IDs such as WI-YYYYMMDD-NNNN are rejected.
- * - For create transition, work_item_id may be omitted and daemon allocates WI-NNNN.
+ * V5 state authority alignment:
+ * - This handler no longer calls workflowEngine.transitionFull().
+ * - All durable state changes go through state-coordinator-v11 → StateManager.transition().
+ * - WorkflowEngine's private in-memory instance map must not be a second state writer.
  */
 registerHandler("sf_state_transition", async (args, context, deps) => {
   let workItemId = args["work_item_id"] as string | undefined;
   const fromState = ((args["from_state"] as string) ?? "");
   const toState = args["to_state"] as string;
-
-  const baseDir =
-    (context?.directory as string) ||
-    (context?.worktree as string) ||
-    process.cwd();
+  const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
 
   if (!toState) {
     return { success: false, error: "to_state required" };
@@ -152,7 +152,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   if (!workItemId) {
     return {
       success: false,
-      error: "work_item_id required. For create transition, omit work_item_id to let daemon allocate WI-NNNN.",
+      error:
+        "work_item_id required. For create transition, omit work_item_id to let daemon allocate WI-NNNN.",
       code: "WORK_ITEM_ID_REQUIRED",
       retry_allowed: true,
     };
@@ -186,9 +187,11 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   const existingWorkflowFacts = !isCreateTransition
     ? await readExistingWorkflowFacts(baseDir, workItemId)
     : {};
+
   const inheritedWorkflowPath = rawWorkflowPath ?? existingWorkflowFacts.workflowPath;
   let resolvedWorkflowType: string | undefined =
     rawWorkflowType ?? existingWorkflowFacts.workflowType;
+
   const useV11 =
     (args["use_v11_state_machine"] as boolean) ||
     !!inheritedWorkflowPath ||
@@ -206,8 +209,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       };
     }
 
-    // R4：workflow_path 是主判定。Agent 传错 workflow_type 时，daemon 必须纠偏。
-    // 典型错误：workflow_path=code_only_fast_path，但 workflow_type=feature_spec。
+    // workflow_path is the source of truth for workflow type.
     resolvedWorkflowType = mapped;
   }
 
@@ -252,8 +254,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     }
 
     if (toState === "closed") {
-      const v11ProjectPath =
-        (context?.directory as string) || (context?.worktree as string) || "";
+      const v11ProjectPath = (context?.directory as string) || (context?.worktree as string) || "";
       if (!v11ProjectPath) {
         return {
           success: false,
@@ -299,35 +300,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     }
   }
 
-  if (!deps.workflowEngine) {
-    return { success: false, error: "WorkflowEngine not available" };
-  }
-
-  const projectPath =
-    (context?.directory as string) || (context?.worktree as string) || "";
-  const workItemDir = projectPath
-    ? join(projectPath, SPEC_DIR_NAME, "work-items", workItemId)
-    : undefined;
-
-  let result;
-  try {
-    result = await deps.workflowEngine.transitionFull({
-      workItemId,
-      fromState,
-      toState,
-      evidence: (args["evidence"] as string) ?? "",
-      workflowType: resolvedWorkflowType,
-      transitionContext: args["transition_context"] as Record<string, unknown>,
-      actor: context?.agent
-        ? { agentRole: context.agent, sessionId: context?.sessionID }
-        : null,
-      workItemDir,
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return { success: false, error: message };
-  }
-
+  const projectPath = (context?.directory as string) || (context?.worktree as string) || "";
   if (!projectPath) {
     return {
       success: false,
@@ -335,28 +308,32 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     };
   }
 
-  if (!deps.projectManager) {
-    return { success: false, error: "ProjectManager not available" };
+  try {
+    const transitionResult = await transitionWithEvidence({
+      deps,
+      context,
+      projectRoot: projectPath,
+      workItemId,
+      workItemDir: join(projectPath, SPEC_DIR_NAME, "work-items", workItemId),
+      fromState,
+      toState,
+      workflowType: resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change",
+      actorRole: typeof context?.agent === "string" ? context.agent : "system",
+      evidence: (args["evidence"] as string) ?? "",
+      transitionContext: args["transition_context"] as Record<string, unknown> | undefined,
+    });
+
+    return {
+      success: true,
+      work_item_id: workItemId,
+      allocated_work_item_id: isCreateTransition && !args["work_item_id"] ? workItemId : undefined,
+      workflow_type: resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change",
+      workflow_path: inheritedWorkflowPath,
+      auto_work_item_json: isCreateTransition ? true : undefined,
+      ...transitionResult,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
   }
-
-  const projectSm = await deps.projectManager.getProjectStateManager(projectPath);
-  await projectSm.transition(
-    workItemId,
-    fromState,
-    toState,
-    typeof context?.agent === "string" ? context.agent : "system",
-    resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change",
-    { evidence: (args["evidence"] as string) ?? "" },
-  );
-
-  return {
-    success: true,
-    work_item_id: workItemId,
-    allocated_work_item_id:
-      isCreateTransition && !args["work_item_id"] ? workItemId : undefined,
-    workflow_type: resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change",
-    workflow_path: inheritedWorkflowPath,
-    auto_work_item_json: isCreateTransition ? true : undefined,
-    ...result,
-  };
 });
