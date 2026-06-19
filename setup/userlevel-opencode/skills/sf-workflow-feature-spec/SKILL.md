@@ -610,3 +610,41 @@ Orchestrator 在后半段每次继续前必须自检：
 
 <!-- SpecForge V9 Post-Merge Invocation Alignment END -->
 
+
+
+<!-- SpecForge V11 Implementation Artifact Write Guard BEGIN -->
+
+# V11 Implementation Artifact Write Guard 工作流要求
+
+implementation 阶段中，executor 只允许写 `sf_code_permission` 白名单中的业务代码文件。
+
+禁止 executor 修改：
+
+```text
+.specforge/work-items/WI-XXXX/*.md
+.specforge/work-items/WI-XXXX/*.json
+.specforge/work-items/WI-XXXX/candidates/**
+.specforge/project/**
+```
+
+`sf_changed_files_audit` 不只检查 allowed writes，也必须检查 Write Guard blocked writes。
+
+如果存在任何 blocked write attempt：
+
+```text
+changed_files_audit = failed
+blocked_write_attempts > 0
+implementation_done = forbidden
+close_gate = forbidden
+```
+
+bugfix / quick_change 中，如果子 Agent 需要写工作流产物：
+
+```text
+- 不得使用 sf_safe_bash 写 .specforge/work-items/；
+- 必须由 Orchestrator 调用 sf_artifact_write；
+- sf_safe_bash 对 .specforge/work-items/ 的写入拒绝应是 retryable policy violation，不应直接造成不可恢复 HardStop。
+```
+
+<!-- SpecForge V11 Implementation Artifact Write Guard END -->
+

@@ -1,13 +1,11 @@
 /**
  * sf_changed_files_audit — v1.1 Changed Files Audit Tool Handler.
  *
- * Patch A:
- * - expected_write_files / actual_changed_files are compatibility inputs only.
+ * V11.2:
  * - Prefer Runtime factual source: write_guard_log.jsonl.
- * - Fall back to work_item.actual_changed_files, then debug args.
- * - Persist Data Source in changed_files_audit.md.
+ * - Count Write Guard blocked writes as audit violations.
+ * - If blocked_write_attempts > 0, audit fails even if final files were restored.
  */
-
 import { join } from 'node:path';
 import * as fs from 'node:fs/promises';
 import { registerHandler } from '../ToolDispatcher';
@@ -23,9 +21,7 @@ type AllowedFile = { path: string; operation: string };
 function normalizeAllowedFiles(input: unknown): AllowedFile[] {
   if (!Array.isArray(input)) return [];
   return input.map((f: string | { path: string; operation?: string }) =>
-    typeof f === 'string'
-      ? { path: f, operation: 'modify' }
-      : { path: f.path, operation: f.operation ?? 'modify' },
+    typeof f === 'string' ? { path: f, operation: 'modify' } : { path: f.path, operation: f.operation ?? 'modify' },
   );
 }
 
@@ -44,9 +40,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   const actualChangedFiles = args['actual_changed_files'];
 
   const idError = validateWorkItemId(workItemId);
-  if (idError) {
-    return { success: false, error: idError };
-  }
+  if (idError) return { success: false, error: idError };
 
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemDir = join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
@@ -86,29 +80,28 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     setHardStop(projectRoot, workItemId, 'CODE_PERMISSION_NOT_ENABLED', 'sf_changed_files_audit');
     return {
       success: false,
-      error: 'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI. Cannot audit without prior permission grant.',
+      error: 'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.\nCannot audit without prior permission grant.',
       hard_stop: true,
     };
   }
 
   const allowedWriteFilesCurrent = normalizeAllowedFiles(wiJson.allowed_write_files);
   const allowedWriteFilesSnapshot = normalizeAllowedFiles(wiJson.allowed_write_files_snapshot);
-  let allowedWriteFiles = allowedWriteFilesCurrent;
-  if (allowedWriteFiles.length === 0) {
-    allowedWriteFiles = allowedWriteFilesSnapshot;
-  }
+  let allowedWriteFiles = allowedWriteFilesCurrent.length > 0 ? allowedWriteFilesCurrent : allowedWriteFilesSnapshot;
 
   if (allowedWriteFiles.length === 0) {
     setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_EMPTY', 'sf_changed_files_audit');
     return {
       success: false,
-      error: 'ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty. Audit cannot proceed.',
+      error: 'ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\nAudit cannot proceed.',
       hard_stop: true,
     };
   }
 
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
+  const blockedWrites = writeGuardSummary.blockedWrites ?? [];
   const factualFiles = getFactualChangedFiles(workItemDir);
+
   let changedFiles: ChangedFile[];
   let dataSource: string;
 
@@ -117,7 +110,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
       path: f.path,
       operation: (f.operation ?? 'modify') as ChangedFile['operation'],
     }));
-    dataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes)`;
+    dataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, ${blockedWrites.length} blocked writes)`;
   } else if (Array.isArray(wiJson.actual_changed_files) && wiJson.actual_changed_files.length > 0) {
     changedFiles = normalizeChangedFileArgs(wiJson.actual_changed_files);
     dataSource = 'work_item.actual_changed_files';
@@ -130,6 +123,17 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   }
 
   const auditResult = runChangedFilesAudit(changedFiles, allowedWriteFiles, 'agent');
+  const blockedWriteViolations = blockedWrites.map((e) => {
+    const operation = String((e as any).operation ?? 'write');
+    const filePath = String((e as any).path ?? 'unknown');
+    const tool = String((e as any).tool ?? 'unknown');
+    const violations = Array.isArray((e as any).violations) ? (e as any).violations.join('; ') : 'blocked_by_write_guard';
+    return `BLOCKED_WRITE_ATTEMPT: [${operation}] ${filePath} via ${tool} violations=${violations}`;
+  });
+
+  const finalPassed = auditResult.passed && blockedWriteViolations.length === 0;
+  const finalViolations = [...auditResult.violations, ...blockedWriteViolations];
+  const finalOutOfScope = auditResult.out_of_scope + blockedWriteViolations.length;
 
   const auditMd = [
     '# Changed Files Audit',
@@ -139,16 +143,22 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     `Timestamp: ${new Date().toISOString()}`,
     `Data Source: ${dataSource}`,
     '',
-    `## Result: ${auditResult.passed ? 'PASS' : 'FAIL'}`,
+    `## Result: ${finalPassed ? 'PASS' : 'FAIL'}`,
     '',
     `- Total files: ${auditResult.total_files}`,
     `- In scope: ${auditResult.in_scope}`,
-    `- Out of scope: ${auditResult.out_of_scope}`,
-    `- Violations: ${auditResult.violations.length}`,
+    `- Out of scope: ${finalOutOfScope}`,
+    `- Violations: ${finalViolations.length}`,
+    `- Blocked write attempts: ${blockedWrites.length}`,
     '',
-    ...(auditResult.violations.length > 0 ? ['## Violations', '', ...auditResult.violations.map((v) => `- ${v}`), ''] : []),
+    ...(finalViolations.length > 0 ? ['## Violations', '', ...finalViolations.map((v) => `- ${v}`), ''] : []),
     ...(auditResult.entries.length > 0
-      ? ['## Entries', '', ...auditResult.entries.map((e) => `- [${e.operation}] ${e.path} → ${e.in_allowed_write_files ? 'in_scope' : 'OUT_OF_SCOPE'}`), '']
+      ? [
+          '## Entries',
+          '',
+          ...auditResult.entries.map((e) => `- [${e.operation}] ${e.path} → ${e.in_allowed_write_files ? 'in_scope' : 'OUT_OF_SCOPE'}`),
+          '',
+        ]
       : ['## Entries', '', 'No file changes detected.', '']),
   ].join('\n');
 
@@ -160,13 +170,14 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
 
   return {
     success: true,
-    passed: auditResult.passed,
+    passed: finalPassed,
     total_files: auditResult.total_files,
     in_scope: auditResult.in_scope,
-    out_of_scope: auditResult.out_of_scope,
-    violations: auditResult.violations,
+    out_of_scope: finalOutOfScope,
+    violations: finalViolations,
     side_effects: auditResult.side_effects,
     work_item_id: workItemId,
     data_source: dataSource,
+    blocked_write_attempts: blockedWrites.length,
   };
 });

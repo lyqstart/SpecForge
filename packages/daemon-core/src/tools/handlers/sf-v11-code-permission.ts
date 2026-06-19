@@ -1,14 +1,9 @@
 /**
  * sf-v11-code-permission — v1.1 code_permission_service handler
  *
- * V6 state authority alignment:
- * - Non-code-only workflows still require merge_report success.
- * - Code permission enable also requires authoritative state to be
- *   post_merge_verified / implementation_ready / implementation_running.
- * - When called at post_merge_verified, this service advances:
- *   post_merge_verified → implementation_ready → implementation_running.
+ * V11.3:
+ * - allowed_write_files must never include .specforge governance paths.
  */
-
 import { registerHandler } from '../ToolDispatcher';
 import {
   releaseCodePermission,
@@ -25,7 +20,7 @@ import * as fs from 'node:fs/promises';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 
-async function readJsonIfExists(filePath: string): Promise<any | null> {
+async function readJsonIfExists(filePath: string): Promise<any> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf-8'));
   } catch {
@@ -42,9 +37,7 @@ async function readTextIfExists(filePath: string): Promise<string | null> {
 }
 
 function parseSuccessfulCount(report: string): number {
-  const match =
-    report.match(/^-\s*Successful:\s*(\d+)\s*$/m) ||
-    report.match(/^Successful:\s*(\d+)\s*$/m);
+  const match = report.match(/^-\s*Successful:\s*(\d+)\s*$/m) || report.match(/^Successful:\s*(\d+)\s*$/m);
   return match ? Number(match[1]) : 0;
 }
 
@@ -84,21 +77,13 @@ async function assertMergeSucceededBeforeCode(workItemDir: string): Promise<{
 
   const mergeReport = await readTextIfExists(path.join(workItemDir, 'merge_report.md'));
   if (!mergeReport) {
-    throw new Error(
-      'MERGE_REPORT_REQUIRED_BEFORE_CODE_PERMISSION: non-code-only workflow must merge specs before enabling code writes',
-    );
+    throw new Error('MERGE_REPORT_REQUIRED_BEFORE_CODE_PERMISSION: non-code-only workflow must merge specs before enabling code writes');
   }
-
   if (!/^Status:\s*success\s*$/m.test(mergeReport)) {
-    throw new Error(
-      'MERGE_SUCCESS_REQUIRED_BEFORE_CODE_PERMISSION: merge_report.md status is not success',
-    );
+    throw new Error('MERGE_SUCCESS_REQUIRED_BEFORE_CODE_PERMISSION: merge_report.md status is not success');
   }
-
   if (parseSuccessfulCount(mergeReport) <= 0) {
-    throw new Error(
-      'MERGE_SUCCESSFUL_ENTRIES_REQUIRED_BEFORE_CODE_PERMISSION: merge_report.md has no successful merged entries',
-    );
+    throw new Error('MERGE_SUCCESSFUL_ENTRIES_REQUIRED_BEFORE_CODE_PERMISSION: merge_report.md has no successful merged entries');
   }
 
   return { workflowPath, workflowType, mergeReportStatus: 'success' };
@@ -160,8 +145,7 @@ async function advanceImplementationStateBeforeCode(input: {
         toState: 'implementation_ready',
         workflowType: input.workflowType,
         actorRole: 'code_permission_service',
-        evidence:
-          'code_permission_service prepares implementation after post_merge_gate passed',
+        evidence: 'code_permission_service prepares implementation after post_merge_gate passed',
         transitionContext: { source: 'sf_v11_code_permission' },
       }),
     );
@@ -192,16 +176,39 @@ async function advanceImplementationStateBeforeCode(input: {
   };
 }
 
+type NormalizedWriteOperation = 'create' | 'modify' | 'delete';
+
+function normalizeWriteOperation(value: unknown): NormalizedWriteOperation {
+  return value === 'create' || value === 'modify' || value === 'delete' ? value : 'modify';
+}
+
+function normalizeAllowedForPolicy(
+  allowedWriteFiles: any[],
+): Array<{ path: string; operation: NormalizedWriteOperation }> {
+  return allowedWriteFiles.map((file) => {
+    if (typeof file === 'string') {
+      return { path: file, operation: 'modify' };
+    }
+    return {
+      path: String(file?.path ?? ''),
+      operation: normalizeWriteOperation(file?.operation),
+    };
+  });
+}
+
+function findForbiddenGovernanceTargets(allowedWriteFiles: any[]): string[] {
+  return normalizeAllowedForPolicy(allowedWriteFiles)
+    .map((file) => file.path.replace(/\\/g, '/'))
+    .filter((p) => p === '.specforge' || p.startsWith('.specforge/') || p.includes('/.specforge/'));
+}
+
 registerHandler('sf_v11_code_permission', async (args, context, deps) => {
-  const projectRoot =
-    (context?.directory as string) || (context?.worktree as string) || process.cwd();
+  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const action = (args['action'] as string) || 'check';
 
   const idError = validateWorkItemId(workItemId);
-  if (idError) {
-    return { success: false, error: idError };
-  }
+  if (idError) return { success: false, error: idError };
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
@@ -219,15 +226,29 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
 
   try {
     if (action === 'release' || action === 'enable') {
-      let allowedWriteFiles = args['allowed_write_files'] as Array<any>;
+      const allowedWriteFiles = args['allowed_write_files'] as any[];
+
       if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles) || allowedWriteFiles.length === 0) {
         setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_REQUIRED', 'sf_code_permission');
         return {
           success: false,
           error: 'ALLOWED_WRITE_FILES_REQUIRED',
           hard_stop: true,
+          message: 'sf_code_permission enable requires allowed_write_files[] with at least one file path.\nThe orchestrator must extract target files from tasks.md before calling enable.',
+        };
+      }
+
+      const forbiddenGovernanceTargets = findForbiddenGovernanceTargets(allowedWriteFiles);
+      if (forbiddenGovernanceTargets.length > 0) {
+        return {
+          success: false,
+          error: 'ALLOWED_WRITE_FILES_MUST_NOT_INCLUDE_SPECFORGE_GOVERNANCE_PATHS',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: true,
+          forbidden_paths: forbiddenGovernanceTargets,
           message:
-            'sf_code_permission enable requires allowed_write_files[] with at least one file path. The orchestrator must extract target files from tasks.md before calling enable.',
+            'Implementation write permission can only include business/code files. .specforge governance artifacts must be written by controlled workflow tools, not executors.',
         };
       }
 
@@ -261,15 +282,8 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         workflowType: workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
       });
 
-      const normalized = allowedWriteFiles.map((file) =>
-        typeof file === 'string' ? { path: file, operation: 'modify' as const } : file,
-      );
-
-      const state = await releaseCodePermission({
-        workItemDir,
-        workItemId,
-        allowedWriteFiles: normalized,
-      });
+      const normalized = normalizeAllowedForPolicy(allowedWriteFiles);
+      const state = await releaseCodePermission({ workItemDir, workItemId, allowedWriteFiles: normalized });
 
       try {
         const baseline = takeSnapshot(projectRoot);
@@ -290,12 +304,7 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
 
     if (action === 'revoke') {
       await revokeCodePermission(workItemDir);
-      return {
-        success: true,
-        action: 'revoke',
-        work_item_id: workItemId,
-        code_change_allowed: false,
-      };
+      return { success: true, action: 'revoke', work_item_id: workItemId, code_change_allowed: false };
     }
 
     const state = await checkCodePermission(workItemDir);

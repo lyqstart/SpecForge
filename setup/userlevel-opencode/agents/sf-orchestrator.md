@@ -626,3 +626,38 @@ sf_state_transition implementation_running → implementation_done
 
 <!-- SpecForge V9 Post-Merge Invocation Alignment END -->
 
+
+
+<!-- SpecForge V11 Implementation Artifact Write Guard BEGIN -->
+
+# V11 Implementation 写入边界编排规则
+
+Orchestrator 在调度 executor 前必须明确传达：
+
+```text
+1. allowed_write_files 是 implementation 唯一可写范围；
+2. executor 不得写 .specforge/work-items/；
+3. executor 不得调用 sf_artifact_write 写治理产物；
+4. executor 不得用 sf_safe_bash / shell 写治理产物；
+5. 如果发现治理产物需要变更，必须失败上报，由 Orchestrator 重新调度责任 Agent。
+```
+
+`sf_code_permission(action="enable")` 的 `allowed_write_files` 不得包含：
+
+```text
+.specforge/**
+.specforge/work-items/**
+```
+
+推进 `implementation_running → implementation_done` 前必须确认：
+
+```text
+1. 所有 executor 报告的 files_changed 均在 allowed_write_files 内；
+2. 没有 executor 报告曾误触 .specforge；
+3. changed_files_audit 通过；
+4. changed_files_audit 中 blocked_write_attempts = 0；
+5. 如果 blocked_write_attempts > 0，不得推进 implementation_done。
+```
+
+<!-- SpecForge V11 Implementation Artifact Write Guard END -->
+
