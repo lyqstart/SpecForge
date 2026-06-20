@@ -109,3 +109,21 @@ if (typeof require !== 'undefined' && require.main === module) {
 
   main();
 }
+
+export {
+  ProjectSpecStore,
+  ProjectSpecStoreError,
+  PROJECT_SPEC_STORE_SCHEMA_VERSION,
+  INITIAL_PROJECT_SPEC_VERSION,
+} from './project/ProjectSpecStore';
+export type {
+  CandidateManifestV12,
+  CandidateMergeEntry,
+  CandidateMergeMode,
+  CandidateValidationResult,
+  NoSpecImpactEvidence,
+  ProjectSpecManifestV12,
+  ProjectSpecMergeResult,
+  ProjectSpecStoreOptions,
+  ProjectSpecVersionEventV12,
+} from './project/ProjectSpecStore';
