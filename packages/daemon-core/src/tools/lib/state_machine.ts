@@ -1,331 +1,201 @@
 /**
- * SpecForge 状态机定义
- * 定义多种工作流的合法状态流转表
+ * SpecForge Final Governance Alignment 状态机定义
+ *
+ * 本文件是运行主链路状态的唯一导出点。
+ * 旧状态（intake / requirements_gate / development / review / bugfix_gate / fix_design 等）
+ * 不再作为运行主链路状态出现；历史产物只允许通过 legacy reader 做只读迁移。
  */
 
 // ============================================================
-// Workflow Types
+// Workflow Types / Paths
 // ============================================================
 
 /**
- * 支持的工作流类型
+ * workflow_type 是具体工作流身份。
+ * 保留若干历史 type 仅用于调用方类型兼容；运行治理路径由 workflow_path 决定。
  */
 export type WorkflowType =
   | "feature_spec"
   | "bugfix_spec"
-  | "feature_spec_design_first"
   | "quick_change"
   | "change_request"
+  | "feature_spec_design_first"
   | "refactor"
   | "ops_task"
   | "investigation"
 
-/**
- * v1.1 Standard Workflow Paths (§7)
- * These are the canonical workflow path names per v1.1 standard.
- * Legacy WorkflowType values are mapped to these paths.
- */
+/** workflow_path 是治理路径，不得反向覆盖已兼容的 workflow_type。 */
 export type WorkflowPath =
-  | 'requirement_change_path'
-  | 'design_change_path'
-  | 'architecture_change_path'
-  | 'task_change_path'
-  | 'code_only_fast_path'
-  | 'spec_migration_path'
-  | 'rollback_path';
+  | "requirement_change_path"
+  | "design_change_path"
+  | "architecture_change_path"
+  | "task_change_path"
+  | "code_only_fast_path"
+  | "spec_migration_path"
+  | "rollback_path"
 
-/**
- * Maps legacy WorkflowType to v1.1 WorkflowPath.
- * Used during bootstrap period for backward compatibility.
- */
+/** workflow_type 到 workflow_path 的兼容矩阵。 */
 export const WORKFLOW_TYPE_TO_PATH: Readonly<Record<WorkflowType, WorkflowPath>> = {
-  feature_spec: 'requirement_change_path',
-  bugfix_spec: 'requirement_change_path',
-  feature_spec_design_first: 'design_change_path',
-  quick_change: 'code_only_fast_path',
-  change_request: 'requirement_change_path',
-  refactor: 'task_change_path',
-  ops_task: 'task_change_path',
-  investigation: 'requirement_change_path',
-};
+  feature_spec: "requirement_change_path",
+  bugfix_spec: "requirement_change_path",
+  change_request: "requirement_change_path",
+  investigation: "requirement_change_path",
+  feature_spec_design_first: "design_change_path",
+  refactor: "task_change_path",
+  ops_task: "task_change_path",
+  quick_change: "code_only_fast_path",
+}
 
 /**
- * Maps v1.1 WorkflowPath to a default legacy WorkflowType.
- * Used when external code provides a v1.1 path and daemon needs legacy type.
+ * 仅当调用方未提供 workflow_type 时才允许使用默认 workflow_type。
+ * 禁止把 bugfix_spec + requirement_change_path 静默改成 feature_spec。
  */
-export const WORKFLOW_PATH_TO_TYPE: Readonly<Record<WorkflowPath, WorkflowType>> = {
-  requirement_change_path: 'feature_spec',
-  design_change_path: 'feature_spec_design_first',
-  architecture_change_path: 'feature_spec',
-  task_change_path: 'refactor',
-  code_only_fast_path: 'quick_change',
-  spec_migration_path: 'feature_spec',
-  rollback_path: 'feature_spec',
-};
-
-// ============================================================
-// States
-// ============================================================
+export const WORKFLOW_PATH_DEFAULT_TYPE: Readonly<Partial<Record<WorkflowPath, WorkflowType>>> = {
+  requirement_change_path: "feature_spec",
+  design_change_path: "feature_spec_design_first",
+  task_change_path: "refactor",
+  code_only_fast_path: "quick_change",
+}
 
 /**
- * 所有工作流的合法状态（单一权威来源）
+ * 兼容旧导出名，但语义已经收紧：只能作为“缺省值”，不能作为覆盖规则。
  */
-export const ALL_STATES = [
-  // ── Feature Spec 标准状态 ──
-  "intake",
-  "requirements",
-  "requirements_gate",
-  "design",
-  "design_gate",
-  "tasks",
-  "tasks_gate",
-  "development",
-  "review",
-  "verification",
-  "verification_gate",
-  "closed",
-  "blocked",
-  // ── Bugfix Spec ──
-  "bugfix_analysis",
-  "bugfix_gate",
-  "fix_design",
-  // ── Change Request ──
-  "impact_analysis",
-  "impact_analysis_gate",
-  "design_delta",
-  // ── Refactor ──
-  "refactor_analysis",
-  "refactor_analysis_gate",
-  "refactor_plan",
-  "refactor_plan_gate",
-  // ── Ops Task ──
-  "ops_plan",
-  "ops_plan_gate",
-  "execution",
-  // ── Investigation ──
-  "investigation_plan",
-  "investigation_plan_gate",
-  "research",
-  "findings_report",
-  "findings_report_gate",
-] as const
+export const WORKFLOW_PATH_TO_TYPE = WORKFLOW_PATH_DEFAULT_TYPE
 
-export type WorkflowState = (typeof ALL_STATES)[number]
-
-// ============================================================
-// Transition Tables
-// ============================================================
+export function isWorkflowTypeCompatibleWithPath(
+  workflowType: string | undefined,
+  workflowPath: string | undefined,
+): workflowType is WorkflowType {
+  if (!workflowType || !workflowPath) return false
+  if (!(workflowType in WORKFLOW_TYPE_TO_PATH)) return false
+  return WORKFLOW_TYPE_TO_PATH[workflowType as WorkflowType] === workflowPath
+}
 
 /**
- * Feature Spec（Requirements-First）合法状态流转表
- * key: 当前状态（from_state）
- * value: 该状态可以流转到的合法目标状态列表
+ * 解析 workflow_type：
+ * 1. requestedWorkflowType 优先；
+ * 2. existingWorkflowType 次之；
+ * 3. 两者与 workflow_path 兼容时必须原样保留；
+ * 4. 两者与 workflow_path 不兼容时返回 undefined，由调用方 fail-closed；
+ * 5. 未提供 workflow_type 时才使用 path 默认值。
  */
-export const VALID_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["requirements"]],
-    ["requirements", ["requirements_gate"]],
-    ["requirements_gate", ["design", "requirements", "blocked"]],
-    ["design", ["design_gate"]],
-    ["design_gate", ["tasks", "design", "blocked"]],
-    ["tasks", ["tasks_gate"]],
-    ["tasks_gate", ["development", "tasks", "blocked"]],
-    ["development", ["review"]],
-    ["review", ["verification"]],
-    ["verification", ["verification_gate"]],
-    ["verification_gate", ["closed", "development", "blocked"]],
-  ])
-
-/**
- * Bugfix Spec 工作流合法状态流转表
- */
-export const BUGFIX_SPEC_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["bugfix_analysis"]],
-    ["bugfix_analysis", ["bugfix_gate"]],
-    ["bugfix_gate", ["fix_design", "bugfix_analysis", "blocked"]],
-    ["fix_design", ["design_gate"]],
-    ["design_gate", ["tasks", "fix_design", "blocked"]],
-    ["tasks", ["tasks_gate"]],
-    ["tasks_gate", ["development", "tasks", "blocked"]],
-    ["development", ["verification"]],
-    ["verification", ["verification_gate"]],
-    ["verification_gate", ["closed", "development", "blocked"]],
-  ])
-
-/**
- * Feature Spec Design-First 工作流合法状态流转表
- */
-export const DESIGN_FIRST_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["design"]],
-    ["design", ["design_gate"]],
-    ["design_gate", ["requirements", "design", "blocked"]],
-    ["requirements", ["requirements_gate"]],
-    ["requirements_gate", ["tasks", "requirements", "blocked"]],
-    ["tasks", ["tasks_gate"]],
-    ["tasks_gate", ["development", "tasks", "blocked"]],
-    ["development", ["review"]],
-    ["review", ["verification"]],
-    ["verification", ["verification_gate"]],
-    ["verification_gate", ["closed", "development", "blocked"]],
-  ])
-
-/**
- * Quick Change 工作流合法状态流转表
- */
-export const QUICK_CHANGE_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["development"]],
-    ["development", ["verification"]],
-    ["verification", ["verification_gate"]],
-    ["verification_gate", ["closed", "development", "blocked"]],
-  ])
-
-/**
- * Change Request 工作流合法状态流转表
- */
-export const CHANGE_REQUEST_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["impact_analysis"]],
-    ["impact_analysis", ["impact_analysis_gate"]],
-    ["impact_analysis_gate", ["design_delta", "impact_analysis", "blocked"]],
-    ["design_delta", ["design_gate"]],
-    ["design_gate", ["tasks", "design_delta", "blocked"]],
-    ["tasks", ["tasks_gate"]],
-    ["tasks_gate", ["development", "tasks", "blocked"]],
-    ["development", ["review"]],
-    ["review", ["verification"]],
-    ["verification", ["verification_gate"]],
-    ["verification_gate", ["closed", "development", "blocked"]],
-  ])
-
-/**
- * Refactor 工作流合法状态流转表
- */
-export const REFACTOR_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["refactor_analysis"]],
-    ["refactor_analysis", ["refactor_analysis_gate"]],
-    ["refactor_analysis_gate", ["refactor_plan", "refactor_analysis", "blocked"]],
-    ["refactor_plan", ["refactor_plan_gate"]],
-    ["refactor_plan_gate", ["development", "refactor_plan", "blocked"]],
-    ["development", ["review", "verification"]],
-    ["review", ["verification"]],
-    ["verification", ["verification_gate"]],
-    ["verification_gate", ["closed", "development", "blocked"]],
-  ])
-
-/**
- * Ops Task 工作流合法状态流转表
- */
-export const OPS_TASK_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["ops_plan"]],
-    ["ops_plan", ["ops_plan_gate"]],
-    ["ops_plan_gate", ["tasks", "ops_plan", "blocked"]],
-    ["tasks", ["tasks_gate"]],
-    ["tasks_gate", ["execution", "tasks", "blocked"]],
-    ["execution", ["verification"]],
-    ["verification", ["verification_gate"]],
-    ["verification_gate", ["closed", "execution", "blocked"]],
-  ])
-
-/**
- * Investigation 工作流合法状态流转表
- */
-export const INVESTIGATION_TRANSITIONS: ReadonlyMap<string, readonly string[]> =
-  new Map<string, readonly string[]>([
-    ["intake", ["investigation_plan"]],
-    ["investigation_plan", ["investigation_plan_gate"]],
-    ["investigation_plan_gate", ["research", "investigation_plan", "blocked"]],
-    ["research", ["findings_report"]],
-    ["findings_report", ["findings_report_gate"]],
-    ["findings_report_gate", ["closed", "research", "findings_report", "blocked"]],
-  ])
-
-// ============================================================
-// Transition Table Lookup
-// ============================================================
-
-/**
- * 根据工作流类型获取对应的状态流转表
- * @param workflowType 工作流类型
- * @returns 对应的状态流转表
- */
-export function getTransitionTable(
-  workflowType: WorkflowType
-): ReadonlyMap<string, readonly string[]> {
-  switch (workflowType) {
-    case "feature_spec":
-      return VALID_TRANSITIONS
-    case "bugfix_spec":
-      return BUGFIX_SPEC_TRANSITIONS
-    case "feature_spec_design_first":
-      return DESIGN_FIRST_TRANSITIONS
-    case "quick_change":
-      return QUICK_CHANGE_TRANSITIONS
-    case "change_request":
-      return CHANGE_REQUEST_TRANSITIONS
-    case "refactor":
-      return REFACTOR_TRANSITIONS
-    case "ops_task":
-      return OPS_TASK_TRANSITIONS
-    case "investigation":
-      return INVESTIGATION_TRANSITIONS
+export function resolveWorkflowTypeForPath(
+  workflowPath: WorkflowPath | undefined,
+  requestedWorkflowType?: string,
+  existingWorkflowType?: string,
+): WorkflowType | undefined {
+  const candidate = requestedWorkflowType ?? existingWorkflowType
+  if (candidate) {
+    if (!workflowPath && candidate in WORKFLOW_TYPE_TO_PATH) return candidate as WorkflowType
+    if (isWorkflowTypeCompatibleWithPath(candidate, workflowPath)) return candidate
+    return undefined
   }
+  if (!workflowPath) return undefined
+  return WORKFLOW_PATH_DEFAULT_TYPE[workflowPath]
 }
 
 // ============================================================
-// Validation
+// Final Governance States
 // ============================================================
 
-/**
- * 验证状态流转是否合法
- * @param from 当前状态
- * @param to 目标状态
- * @param workflowType 工作流类型（默认 "feature_spec"，保持向后兼容）
- * @returns 如果流转合法返回 true，否则返回 false
- */
+export const FINAL_STATES = [
+  "created",
+  "intake_ready",
+  "impact_analyzing",
+  "impact_analyzed",
+  "workflow_selected",
+  "candidate_preparing",
+  "candidate_prepared",
+  "gates_running",
+  "gates_failed",
+  "approval_required",
+  "approved",
+  "merge_ready",
+  "merging",
+  "merged",
+  "post_merge_verified",
+  "implementation_ready",
+  "implementation_running",
+  "implementation_done",
+  "verification_running",
+  "verification_done",
+  "closed",
+  "blocked",
+  "rejected",
+  "superseded",
+] as const
+
+/** 所有运行状态的单一权威来源。 */
+export const ALL_STATES = FINAL_STATES
+export type WorkflowState = (typeof FINAL_STATES)[number]
+
+export const FINAL_TRANSITIONS: ReadonlyMap<WorkflowState, readonly WorkflowState[]> = new Map([
+  ["created", ["intake_ready", "blocked", "rejected", "superseded"]],
+  ["intake_ready", ["impact_analyzing", "blocked", "rejected", "superseded"]],
+  ["impact_analyzing", ["impact_analyzed", "blocked", "rejected", "superseded"]],
+  ["impact_analyzed", ["workflow_selected", "blocked", "rejected", "superseded"]],
+  ["workflow_selected", ["candidate_preparing", "implementation_ready", "blocked", "rejected", "superseded"]],
+  ["candidate_preparing", ["candidate_prepared", "blocked", "rejected", "superseded"]],
+  ["candidate_prepared", ["gates_running", "blocked", "rejected", "superseded"]],
+  ["gates_running", ["approval_required", "gates_failed", "blocked", "rejected", "superseded"]],
+  ["gates_failed", ["candidate_preparing", "blocked", "rejected", "superseded"]],
+  ["approval_required", ["approved", "rejected", "blocked", "superseded"]],
+  ["approved", ["merge_ready", "implementation_ready", "blocked", "rejected", "superseded"]],
+  ["merge_ready", ["merging", "blocked", "rejected", "superseded"]],
+  ["merging", ["merged", "blocked", "rejected", "superseded"]],
+  ["merged", ["post_merge_verified", "blocked", "rejected", "superseded"]],
+  ["post_merge_verified", ["implementation_ready", "blocked", "rejected", "superseded"]],
+  ["implementation_ready", ["implementation_running", "blocked", "rejected", "superseded"]],
+  ["implementation_running", ["implementation_done", "blocked", "rejected", "superseded"]],
+  ["implementation_done", ["verification_running", "blocked", "rejected", "superseded"]],
+  ["verification_running", ["verification_done", "blocked", "rejected", "superseded"]],
+  ["verification_done", ["closed", "implementation_ready", "blocked", "rejected", "superseded"]],
+  ["closed", []],
+  ["blocked", ["intake_ready", "candidate_preparing", "implementation_ready", "rejected", "superseded"]],
+  ["rejected", []],
+  ["superseded", []],
+])
+
+// 兼容旧导出名。所有 workflow_type 共享最终治理状态机。
+export const VALID_TRANSITIONS = FINAL_TRANSITIONS
+export const BUGFIX_SPEC_TRANSITIONS = FINAL_TRANSITIONS
+export const DESIGN_FIRST_TRANSITIONS = FINAL_TRANSITIONS
+export const QUICK_CHANGE_TRANSITIONS = FINAL_TRANSITIONS
+export const CHANGE_REQUEST_TRANSITIONS = FINAL_TRANSITIONS
+export const REFACTOR_TRANSITIONS = FINAL_TRANSITIONS
+export const OPS_TASK_TRANSITIONS = FINAL_TRANSITIONS
+export const INVESTIGATION_TRANSITIONS = FINAL_TRANSITIONS
+
+export function getTransitionTable(_workflowType: WorkflowType): ReadonlyMap<WorkflowState, readonly WorkflowState[]> {
+  return FINAL_TRANSITIONS
+}
+
+export function isFinalWorkflowState(state: string): state is WorkflowState {
+  return (FINAL_STATES as readonly string[]).includes(state)
+}
+
+export function assertFinalWorkflowState(state: string): asserts state is WorkflowState {
+  if (!isFinalWorkflowState(state)) {
+    throw new Error(`LEGACY_OR_UNKNOWN_STATE_NOT_ALLOWED: ${state}`)
+  }
+}
+
 export function isValidTransition(
   from: string,
   to: string,
-  workflowType: WorkflowType = "feature_spec"
+  workflowType: WorkflowType = "feature_spec",
 ): boolean {
+  if (!isFinalWorkflowState(from) || !isFinalWorkflowState(to)) return false
   const table = getTransitionTable(workflowType)
   const validTargets = table.get(from)
-  if (!validTargets) {
-    return false
-  }
-  return validTargets.includes(to)
+  return !!validTargets && validTargets.includes(to)
 }
 
-// ============================================================
-// Completeness Verification
-// ============================================================
-
-/**
- * 收集所有 8 种工作流转换表中引用的全部状态名
- * 用于验证 ALL_STATES 与转换表的交叉一致性
- * @returns 所有被转换表引用的状态名的 Set
- */
 export function getAllReferencedStates(): Set<string> {
-  const tables = [
-    VALID_TRANSITIONS,
-    BUGFIX_SPEC_TRANSITIONS,
-    DESIGN_FIRST_TRANSITIONS,
-    QUICK_CHANGE_TRANSITIONS,
-    CHANGE_REQUEST_TRANSITIONS,
-    REFACTOR_TRANSITIONS,
-    OPS_TASK_TRANSITIONS,
-    INVESTIGATION_TRANSITIONS,
-  ]
   const states = new Set<string>()
-  for (const table of tables) {
-    for (const [from, targets] of table) {
-      states.add(from)
-      for (const t of targets) states.add(t)
-    }
+  for (const [from, targets] of FINAL_TRANSITIONS) {
+    states.add(from)
+    for (const target of targets) states.add(target)
   }
   return states
 }

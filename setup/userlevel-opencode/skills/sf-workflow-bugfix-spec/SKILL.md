@@ -326,3 +326,58 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
 
 <!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->
+
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary BEGIN -->
+
+# V12 Bugfix Workflow Authority
+
+bugfix_spec 的权威身份必须保持为：
+
+```text
+workflow_type=bugfix_spec
+workflow_path=requirement_change_path
+workflow_skill=sf-workflow-bugfix-spec
+```
+
+不得因为 `requirement_change_path` 默认映射为 feature_spec，就把 bugfix_spec 改成 feature_spec。
+
+## 创建 WI
+
+正确：
+
+```text
+sf_state_transition(
+  from_state="",
+  to_state="created",
+  workflow_type="bugfix_spec",
+  workflow_path="requirement_change_path"
+)
+```
+
+禁止：
+
+```text
+to_state="intake"
+work_item_id=""
+```
+
+## Candidate 审批
+
+bugfix 即使很小，也必须展示 Candidate 摘要并等待用户明确审批。
+
+允许：
+
+```text
+用户回复：批准
+sf_user_decision_record(... decision_type="user_approved", user_response_quote="批准")
+```
+
+禁止：
+
+```text
+“用户已经委派修 bug，所以我代表用户批准”
+```
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+

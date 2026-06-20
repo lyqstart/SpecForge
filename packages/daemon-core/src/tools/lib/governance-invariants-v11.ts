@@ -95,7 +95,7 @@ export async function computeCandidateHash(workItemDir: string): Promise<string>
 export function targetPathForCandidate(type: string, candidatePath: string): string | null {
   const t = String(type ?? "").toLowerCase();
   const p = normalizeSlash(candidatePath).toLowerCase();
-  if (t === "requirements" || p.endsWith("/requirements.md") || p === "requirements.md") return ".specforge/project/requirements_index.md";
+   const moduleRequirementsCandidate = p.match(/(?:^|\/)candidates\/project\/modules\/([^\/]+)\/requirements\.candidate\.md$/); if (moduleRequirementsCandidate) return `.specforge/project/modules/${moduleRequirementsCandidate[1]}/requirements.md`; const moduleDesignCandidate = p.match(/(?:^|\/)candidates\/project\/modules\/([^\/]+)\/design\.candidate\.md$/); if (moduleDesignCandidate) return `.specforge/project/modules/${moduleDesignCandidate[1]}/design.md`;if (t === "requirements" || p.endsWith("/requirements.md") || p === "requirements.md") return ".specforge/project/requirements_index.md";
   if (t === "design" || p.endsWith("/design.md") || p === "design.md") return ".specforge/project/design_index.md";
   if (t === "trace" || t === "trace_delta" || p.endsWith("/trace_delta.md") || p === "trace_delta.md") return ".specforge/project/trace_matrix.md";
   if (t === "architecture" || p.endsWith("/architecture.md") || p === "architecture.md") return ".specforge/project/architecture.md";
@@ -141,7 +141,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
     }
   }
 
-  // Important P0 follow-up:
+  if (normalized.length === 0) { const moduleCandidatesRoot = path.join(workItemDir, "candidates", "project", "modules"); try { for (const moduleName of fsSync.readdirSync(moduleCandidatesRoot)) { const moduleDir = path.join(moduleCandidatesRoot, moduleName); if (!fsSync.statSync(moduleDir).isDirectory()) continue; const reqCandidate = path.join(moduleDir, "requirements.candidate.md"); const designCandidate = path.join(moduleDir, "design.candidate.md"); if (fsSync.existsSync(reqCandidate)) normalized.push({ candidate_path: normalizeSlash(path.relative(workItemDir, reqCandidate)), target_path: `.specforge/project/modules/${moduleName}/requirements.md`, operation: "replace", type: "requirements", inferred: true, normalized: true }); if (fsSync.existsSync(designCandidate)) normalized.push({ candidate_path: normalizeSlash(path.relative(workItemDir, designCandidate)), target_path: `.specforge/project/modules/${moduleName}/design.md`, operation: "replace", type: "design", inferred: true, normalized: true }); } } catch { /* absent v1.14 module candidates */ } } // Important P0 follow-up:
   // Do not infer a root-level trace_delta.md entry here. Candidate Gate requires
   // candidate_path to be under candidates/, and approval/merge must compare the
   // manifest against exactly the same normalized object that Gate accepted.
@@ -195,7 +195,7 @@ async function readWorkItemFacts(projectRoot: string, workItemDir: string, workI
   if (runtime?.work_item_id === workItemId) runtimeItem = runtime;
   if (!runtimeItem && Array.isArray(runtime?.workItems)) runtimeItem = runtime.workItems.find((x: any) => x?.work_item_id === workItemId) ?? null;
   const workflowPath = workItem?.workflow_path ?? trigger?.workflow_path ?? manifest?.workflow_path ?? runtimeItem?.workflow_path;
-  const currentState = runtimeItem?.current_state ?? runtimeItem?.status ?? workItem?.status;
+  const currentState = runtimeItem?.current_state ?? runtimeItem?.status ?? null;
   return { workItem, trigger, manifest, runtimeItem, workflowPath, currentState };
 }
 
@@ -254,10 +254,7 @@ export async function validateDecisionRecordPreconditions(input: {
   requestedWorkflowPath?: string;
   decisionStatus: string;
   decisionType: string;
-  decidedBy: string;
-}): Promise<GovernanceValidationResult> {
-  const errors: string[] = [];
-  const facts = await readWorkItemFacts(input.projectRoot, input.workItemDir, input.workItemId);
+  decidedBy: string; currentState?: string; }): Promise<GovernanceValidationResult> { const errors: string[] = []; const facts = await readWorkItemFacts(input.projectRoot, input.workItemDir, input.workItemId); if (typeof input.currentState === "string" && input.currentState.length > 0) facts.currentState = input.currentState;
   const workflowPath = input.requestedWorkflowPath || facts.workflowPath;
   if (!workflowPath || workflowPath === "unknown" || !VALID_WORKFLOW_PATHS.has(String(workflowPath))) errors.push(`workflow_path invalid for user_decision: ${workflowPath ?? "missing"}`);
   if (input.requestedWorkflowPath && facts.workflowPath && input.requestedWorkflowPath !== facts.workflowPath) errors.push(`workflow_path mismatch: requested=${input.requestedWorkflowPath}, work_item=${facts.workflowPath}`);
@@ -357,3 +354,4 @@ export async function validateApprovedUserDecisionForClose(input: { projectRoot:
     facts: { workflowPath, decidedBy: decision?.decided_by, close_validation: "post_merge_no_pre_merge_hash_recheck" },
   };
 }
+

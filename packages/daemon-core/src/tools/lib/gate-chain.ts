@@ -1,8 +1,14 @@
 /**
  * gate-chain.ts — Gate registry and chain execution.
  *
- * Patch A:
- * - Unknown gate IDs fail-closed before any report is written.
+ * V8.1 gate_summary_gate scheduling fix:
+ * - gate_summary_gate checks gate_summary.md.
+ * - gate_summary.md is produced by runRequiredGates().
+ * - Therefore gate_summary_gate cannot be executed before the summary exists.
+ *
+ * The chain now runs all non-summary gates first, writes an initial summary,
+ * runs gate_summary_gate against that initial summary, writes its report,
+ * then writes the final summary including gate_summary_gate.
  */
 
 import * as fs from 'node:fs/promises';
@@ -46,8 +52,46 @@ export function isRegisteredGate(gateId: string): gateId is GateIdV11 {
   return gateRegistry.has(gateId as GateIdV11);
 }
 
+function computeSummaryStatus(reports: GateReportV11[]): GateSummaryStatus {
+  const hasFailed = reports.some((r) => r.status === 'failed' && r.required);
+  const hasWarnings = reports.some(
+    (r) => (r.status === 'failed' && !r.required) || r.warnings.length > 0,
+  );
+  const allPassed = reports.every((r) => r.status === 'passed' || r.status === 'skipped');
+
+  if (hasFailed) return 'failed';
+  if (hasWarnings) return 'passed_with_waiver_required';
+  if (allPassed) return 'passed';
+  return 'blocked';
+}
+
+async function writeGateReport(ctx: GateContext, report: GateReportV11): Promise<void> {
+  const gatesDir = path.join(ctx.workItemDir, 'gates');
+  await fs.mkdir(gatesDir, { recursive: true });
+  await fs.writeFile(
+    path.join(gatesDir, `${report.gate_id}.json`),
+    JSON.stringify(report, null, 2),
+    'utf-8',
+  );
+}
+
+async function writeGateSummary(
+  ctx: GateContext,
+  reports: GateReportV11[],
+): Promise<{ summaryStatus: GateSummaryStatus; summaryPath: string }> {
+  const summaryStatus = computeSummaryStatus(reports);
+  const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
+  const summaryContent = generateGateSummaryMd(ctx.workItemId, reports, summaryStatus);
+  await fs.writeFile(summaryPath, summaryContent, 'utf-8');
+  return { summaryStatus, summaryPath };
+}
+
 /**
- * 运行指定 workflow_path 的所有必需 Gate，生成 Gate Reports 和 Gate Summary（§9.4-§9.5）。
+ * 运行指定 Gate 链，生成 Gate Reports 和 Gate Summary（§9.4-§9.5）。
+ *
+ * V8.1 rule:
+ * gate_summary_gate is a meta gate over the generated summary.
+ * If requested, it is intentionally run after the first summary has been written.
  */
 export async function runRequiredGates(
   gateIds: GateIdV11[],
@@ -62,39 +106,31 @@ export async function runRequiredGates(
     );
   }
 
+  const wantsSummaryGate = gateIds.includes('gate_summary_gate');
+  const primaryGateIds = gateIds.filter((gateId) => gateId !== 'gate_summary_gate');
+
   const reports: GateReportV11[] = [];
 
-  for (const gateId of gateIds) {
+  for (const gateId of primaryGateIds) {
     const report = await runGate(gateId, ctx);
     reports.push(report);
-
-    const gatesDir = path.join(ctx.workItemDir, 'gates');
-    await fs.mkdir(gatesDir, { recursive: true });
-    await fs.writeFile(
-      path.join(gatesDir, `${gateId}.json`),
-      JSON.stringify(report, null, 2),
-      'utf-8',
-    );
+    await writeGateReport(ctx, report);
   }
 
-  const hasFailed = reports.some((r) => r.status === 'failed' && r.required);
-  const hasWarnings = reports.some((r) => (r.status === 'failed' && !r.required) || r.warnings.length > 0);
-  const allPassed = reports.every((r) => r.status === 'passed' || r.status === 'skipped');
+  // Write a summary before gate_summary_gate runs, because that gate validates
+  // gate_summary.md itself. This prevents first-run self-reference failure.
+  await writeGateSummary(ctx, reports);
 
-  let summaryStatus: GateSummaryStatus;
-  if (hasFailed) {
-    summaryStatus = 'failed';
-  } else if (hasWarnings) {
-    summaryStatus = 'passed_with_waiver_required';
-  } else if (allPassed) {
-    summaryStatus = 'passed';
-  } else {
-    summaryStatus = 'blocked';
+  if (wantsSummaryGate) {
+    const summaryReport = await runGate('gate_summary_gate', ctx);
+    reports.push(summaryReport);
+    await writeGateReport(ctx, summaryReport);
   }
 
-  const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
-  const summaryContent = generateGateSummaryMd(ctx.workItemId, reports, summaryStatus);
-  await fs.writeFile(summaryPath, summaryContent, 'utf-8');
-
-  return { reports, summaryStatus, summaryPath };
+  const finalSummary = await writeGateSummary(ctx, reports);
+  return {
+    reports,
+    summaryStatus: finalSummary.summaryStatus,
+    summaryPath: finalSummary.summaryPath,
+  };
 }

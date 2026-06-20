@@ -394,3 +394,283 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
 13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
 
 <!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->
+
+
+<!-- SpecForge V7 Candidate Completeness Governance BEGIN -->
+
+# V7 Candidate Completeness Preflight
+
+本节优先于旧版 Step 4.5 / Step 5。
+
+## 一、Gate 前硬条件
+
+在调用 `sf_state_transition(candidate_preparing → candidate_prepared)` 或 `sf_gate_run` 前，必须完成 Candidate Completeness Preflight。
+
+Preflight 必须确认：
+
+```text
+1. requirements candidate 已存在
+2. design candidate 已存在
+3. tasks candidate 已存在
+4. trace_delta.md 已存在
+5. candidate_manifest.json 已生成
+6. candidate_manifest.json 中包含 requirements / design / tasks / trace_delta 四类条目
+7. manifest 中每个 path 都是实际存在文件
+```
+
+## 二、禁止旧行为
+
+禁止以下旧行为：
+
+```text
+1. candidate_manifest.json 只包含 requirements / design / tasks；
+2. trace_delta.md 缺失时仍进入 Gate；
+3. Gate 失败后由 Orchestrator 临时手写 trace_delta.md；
+4. 不读取实际路径，按旧固定路径 candidates/requirements.md、candidates/design.md 猜测；
+5. 反复 sf_gate_run 试错。
+```
+
+## 三、责任 Agent
+
+Candidate 产物责任分配：
+
+```text
+requirements candidate：sf-requirements
+design candidate：sf-design
+tasks candidate：sf-task-planner
+trace_delta.md：sf-task-planner
+candidate_manifest.json：sf-orchestrator
+```
+
+如果 `trace_delta.md` 缺失，Orchestrator 必须重新调度 `sf-task-planner`，不能自行补写。
+
+## 四、manifest 最小结构
+
+manifest 必须包含 4 类 Candidate：
+
+```json
+{
+  "work_item_id": "WI-XXXX",
+  "workflow_path": "requirement_change_path",
+  "candidates": [
+    { "type": "requirements", "path": "<actual requirements path>", "lint_passed": true },
+    { "type": "design", "path": "<actual design path>", "lint_passed": true },
+    { "type": "tasks", "path": "<actual tasks path>", "lint_passed": true },
+    { "type": "trace_delta", "path": "<actual trace_delta path>", "lint_passed": true }
+  ],
+  "candidate_completeness": {
+    "requirements": true,
+    "design": true,
+    "tasks": true,
+    "trace_delta": true
+  }
+}
+```
+
+## 五、失败处理
+
+如果 Preflight 失败：
+
+```text
+- 不进入 candidate_prepared；
+- 不调用 sf_gate_run；
+- 报告缺失项；
+- 只重新调度责任 Agent 一次；
+- 仍失败则报告 blocked。
+```
+
+<!-- SpecForge V7 Candidate Completeness Governance END -->
+
+
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment BEGIN -->
+
+# V9 后半段受控工具调用协议
+
+本节优先于旧版阶段 8、阶段 9、阶段 10、阶段 11 中关于手动 `sf_state_transition` 的描述。
+
+## 阶段 8：merged → post_merge_verified
+
+旧行为：
+
+```text
+sf_state_transition merged → post_merge_verified
+```
+
+废止。
+
+新行为：
+
+```text
+sf_gate_run(work_item_id=WI-XXXX, gate_ids=["post_merge_gate"])
+```
+
+要求：
+
+```text
+1. sf_merge_run 成功后，只能通过 post_merge_gate 验证合并后的正式规格；
+2. post_merge_gate 通过后，由 gate_runner 自动推进 merged → post_merge_verified；
+3. 不得因为 state.json 滞后而手动补 post_merge_verified；
+4. 如果 post_merge_gate 失败，修复 merge/spec 产物后最多重跑一次。
+```
+
+## 阶段 9：post_merge_verified → implementation_running
+
+旧行为：
+
+```text
+sf_state_transition post_merge_verified → implementation_ready
+sf_code_permission(action="enable")
+```
+
+废止。
+
+新行为：
+
+```text
+sf_code_permission(
+  work_item_id=WI-XXXX,
+  action="enable",
+  allowed_write_files=[从正式 tasks.md 提取的文件列表]
+)
+```
+
+要求：
+
+```text
+1. sf_code_permission 在 post_merge_verified 状态下调用；
+2. allowed_write_files 必须显式传入；
+3. 由 sf_code_permission 负责推进 post_merge_verified → implementation_ready → implementation_running；
+4. 如果 sf_code_permission 拒绝，按工具返回原因处理，不得先手动补 implementation_ready。
+```
+
+## 阶段 10：verification 由 verification_gate 收口
+
+旧行为：
+
+```text
+sf_state_transition implementation_done → verification_running
+调度 sf-verifier
+sf_state_transition verification_running → verification_done
+```
+
+废止。
+
+新行为：
+
+```text
+implementation_running → implementation_done
+调度 sf-verifier
+sf_artifact_write verification_report
+sf_artifact_write evidence_manifest
+sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
+```
+
+要求：
+
+```text
+1. implementation_running → implementation_done 只允许在 executor 全部完成且 changed_files_audit passed 后执行一次；
+2. sf-verifier 是只读验证角色，不得调用 changed_files_audit；
+3. verification_report 和 evidence_manifest 写入完成后，必须调用 verification_gate；
+4. verification_gate 通过后，由 gate_runner 自动推进 implementation_done → verification_running → verification_done；
+5. 不得手动推进 verification_done。
+```
+
+## 阶段 11：verification_done → closed
+
+关闭仍由 `sf_close_gate` 执行。
+
+正确顺序：
+
+```text
+sf_code_permission(action="revoke")
+sf_close_gate(work_item_id=WI-XXXX)
+```
+
+禁止：
+
+```text
+sf_state_transition verification_done → closed
+```
+
+## 执行检查
+
+Orchestrator 在后半段每次继续前必须自检：
+
+```text
+1. merged 后是否先调用 post_merge_gate？
+2. 是否没有手动补 post_merge_verified？
+3. 是否没有手动补 implementation_ready？
+4. verification_report / evidence_manifest 是否已写入？
+5. verification_done 是否由 verification_gate 推进？
+6. closed 是否由 close_gate 推进？
+```
+
+任一为否，必须停止并按本节修正流程。
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment END -->
+
+
+
+<!-- SpecForge V11 Implementation Artifact Write Guard BEGIN -->
+
+# V11 Implementation Artifact Write Guard 工作流要求
+
+implementation 阶段中，executor 只允许写 `sf_code_permission` 白名单中的业务代码文件。
+
+禁止 executor 修改：
+
+```text
+.specforge/work-items/WI-XXXX/*.md
+.specforge/work-items/WI-XXXX/*.json
+.specforge/work-items/WI-XXXX/candidates/**
+.specforge/project/**
+```
+
+`sf_changed_files_audit` 不只检查 allowed writes，也必须检查 Write Guard blocked writes。
+
+如果存在任何 blocked write attempt：
+
+```text
+changed_files_audit = failed
+blocked_write_attempts > 0
+implementation_done = forbidden
+close_gate = forbidden
+```
+
+bugfix / quick_change 中，如果子 Agent 需要写工作流产物：
+
+```text
+- 不得使用 sf_safe_bash 写 .specforge/work-items/；
+- 必须由 Orchestrator 调用 sf_artifact_write；
+- sf_safe_bash 对 .specforge/work-items/ 的写入拒绝应是 retryable policy violation，不应直接造成不可恢复 HardStop。
+```
+
+<!-- SpecForge V11 Implementation Artifact Write Guard END -->
+
+
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary BEGIN -->
+
+# V12 Feature Workflow Authority
+
+feature_spec 的权威身份为：
+
+```text
+workflow_type=feature_spec
+workflow_path=requirement_change_path
+workflow_skill=sf-workflow-feature-spec
+```
+
+创建 WI 只能从 `created` 开始，不得使用 legacy `intake` 状态。
+
+用户审批必须来自用户明确回复。记录审批时必须带：
+
+```text
+user_response_quote="用户原话"
+```
+
+没有用户原话，不得记录 `user_approved`。
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+

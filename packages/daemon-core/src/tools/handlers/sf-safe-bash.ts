@@ -6,23 +6,14 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-/** Valid ActorRole values for quick lookup */
-const VALID_ACTOR_ROLES: ReadonlySet<string> = new Set<string>(Object.values(ACTOR_ROLES));
+const VALID_ACTOR_ROLES: ReadonlySet<ActorRole> = new Set(Object.values(ACTOR_ROLES));
 
-/**
- * Validate and extract callerRole from context.agent.
- * Returns a valid ActorRole or undefined (falls back to 'agent' in core).
- */
 function extractCallerRole(agent: unknown): string | undefined {
   if (typeof agent !== 'string' || !agent) return undefined;
-  if (VALID_ACTOR_ROLES.has(agent)) return agent;
-  // Unknown agent string → do not propagate (core defaults to 'agent')
+  if (VALID_ACTOR_ROLES.has(agent as ActorRole)) return agent;
   return undefined;
 }
 
-/**
- * Find the active (non-closed) work item ID from the project.
- */
 function findActiveWorkItemId(projectRoot: string): string | null {
   const workItemsDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items');
   try {
@@ -35,24 +26,50 @@ function findActiveWorkItemId(projectRoot: string): string | null {
         if (wi.status !== 'closed' && wi.status !== 'cancelled') {
           return wi.work_item_id ?? dir;
         }
-      } catch { continue; }
+      } catch {
+        continue;
+      }
     }
-  } catch { /* no work-items dir */ }
+  } catch {
+    // no work-items dir
+  }
   return null;
+}
+
+function classifyWorkItemPathBashAccess(command: string): 'read' | 'write' | 'unknown' {
+  const normalized = command.trim().toLowerCase();
+  const writeLike =
+    /(?:^|[;&|]\s*)(set-content|add-content|out-file|new-item|copy-item|move-item|remove-item|del|erase|rm|rmdir|mkdir|ni|cp|mv|touch)\b/.test(
+      normalized,
+    ) ||
+    />\s*[^\s]*\.specforge[\\/]work-items[\\/]/i.test(command) ||
+    /\.specforge[\\/]work-items[\\/].*(?:>|\|\s*tee(?:-object)?\b)/i.test(command);
+
+  if (writeLike) return 'write';
+
+  const readLike =
+    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|select-string|findstr)\b/.test(
+      normalized,
+    ) ||
+    /(?:^|[;&|]\s*)certutil\s+-hashfile\b/.test(normalized) ||
+    /(?:^|[;&|]\s*)(sha256sum|shasum|fciv)\b/.test(normalized);
+
+  if (readLike) return 'read';
+  return 'unknown';
 }
 
 registerHandler('sf_safe_bash', async (args, context, _deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const callerRole = extractCallerRole((context as Record<string, unknown> | undefined)?.agent);
 
-  // v1.1 Hard Stop Guard — if active WI is blocked, reject bash execution
   const activeWiId = findActiveWorkItemId(baseDir);
   if (activeWiId) {
     const { blocked, record } = checkHardStop(baseDir, activeWiId);
     if (blocked) {
       return {
         success: false,
-        error: `HARD_STOP_ACTIVE: Work item ${activeWiId} is blocked. ` +
+        error:
+          `HARD_STOP_ACTIVE: Work item ${activeWiId} is blocked.\n` +
           `Reason: ${record!.reason}. Source: ${record!.source_tool}. ` +
           `sf_safe_bash is blocked during hard_stop.`,
         hard_stop: true,
@@ -61,25 +78,40 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     }
   }
 
-  // v1.1 WI Artifact Path Protection — commands targeting .specforge/work-items/ MUST be blocked
-  const command = args['command'] as string ?? '';
+  const command = (args['command'] as string) ?? '';
   const WI_ARTIFACT_PATTERN = /\.specforge[\\/]work-items[\\/]/i;
+
   if (WI_ARTIFACT_PATTERN.test(command)) {
-    // Persist hard_stop latch if we have an active WI
-    const wiIdForLatch = activeWiId ?? 'UNKNOWN';
-    if (activeWiId) {
-      const { setHardStop } = await import('../lib/hard-stop-latch');
-      setHardStop(baseDir, activeWiId, 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+    const access = classifyWorkItemPathBashAccess(command);
+
+    if (access === 'write') {
+      return {
+        success: false,
+        error:
+          'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL: Cannot use sf_safe_bash to create/write .specforge/work-items/ paths.\n' +
+          'Use sf_artifact_write for governed artifacts, or return a failure report so the orchestrator can call the controlled tool.',
+        hard_stop: false,
+        policy_violation: true,
+        retry_allowed: true,
+        blocked_command: command.slice(0, 200),
+      };
     }
-    return {
-      success: false,
-      error: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL: Cannot use sf_safe_bash to create/write .specforge/work-items/ paths. Use sf_artifact_write or sf_state_transition instead.',
-      hard_stop: true,
-      blocked_command: command.slice(0, 200),
-    };
+
+    if (access === 'unknown') {
+      return {
+        success: false,
+        error:
+          'WI_ARTIFACT_PATH_POLICY_REQUIRES_CONTROLLED_TOOL: sf_safe_bash command references .specforge/work-items/ but is not recognized as read-only.\n' +
+          'Use a controlled SpecForge tool, or use a simple read-only command such as Get-Content, type, dir, ls, findstr, Select-String, or certutil -hashfile.',
+        hard_stop: false,
+        policy_violation: true,
+        retry_allowed: true,
+        blocked_command: command.slice(0, 200),
+      };
+    }
   }
 
-  const result = await safeBashExecute(
+  return safeBashExecute(
     {
       command,
       cwd: args['cwd'] as string | undefined,
@@ -89,8 +121,6 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
       outputLimit: args['outputLimit'] as number | undefined,
       callerRole,
     },
-    baseDir
+    baseDir,
   );
-
-  return result;
 });

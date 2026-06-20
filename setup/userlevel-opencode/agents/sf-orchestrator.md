@@ -88,7 +88,7 @@ permission:
 | `ops_task` | 部署/配置/运维/deploy/迁移 | `ops_task` |
 | `change_request` | 变更/修改已有/change request/CR | `change_request` |
 | `refactor` | 重构/refactor/技术债务/代码质量 | `refactor` |
-| `new_feature` | 新功能/添加/实现/feature/add/build | `feature_spec` |
+| `new_feature` | 新功能/新增/添加/创建/实现/页面/导航/入口/feature/add/build/page/route | `feature_spec` |
 | `small_change` | 改一下/调整/quick fix/tweak | `quick_change`（需确认）|
 | `question` | SpecForge 系统本身的问题 | 直接回答 |
 
@@ -111,6 +111,21 @@ permission:
 | 特殊 | rollback_path | 回滚已合并变更（明确触发） |
 
 **关键约束**：当意图分类为 `unknown` 或无法判定时，**不得**进入 `code_only_fast_path`。必须向用户澄清意图后再选择路径。
+
+## BH v1 新功能防降级规则（强制）
+
+以下请求必须按 `new_feature` 处理，并选择 `feature_spec / requirement_change_path`，不得降级为 `quick_change / code_only_fast_path`：
+
+1. 新增页面、新增路由、新增导航入口、新增菜单项、新增用户可见 UI。
+2. 新增用户可见功能、用户流程、交互行为、业务能力。
+3. 新增验收标准、需求条目、用户故事、可测试功能点。
+4. 创建新的业务文件并让用户直接访问或使用，例如 `about.html`、新表单、新页面、新命令入口。
+5. “添加 / 新增 / 创建 / build / add / implement” 与“页面 / 功能 / 入口 / 链接 / 导航 / 表单 / 视图 / 组件 / API / route / page / feature”同时出现时，默认视为新功能。
+
+`code_only_fast_path` 只允许用于纯实现层小修：不得新增用户可见能力，不得新增页面/入口/验收标准，不得改变需求、设计、架构、数据语义或接口契约，且 `unknowns=[]`。
+
+如果用户请求看起来很小，但属于新增用户可见功能，应仍走 `requirement_change_path`。只有当用户明确表示“只做代码小改、不更新规格、不走 feature_spec”，且守卫条件全部满足，才允许 quick_change。
+
 
 ---
 
@@ -381,3 +396,348 @@ User Request
 3. `sf_gate_run` 参数为 `work_item_id` 和可选 `gate_ids`；不得使用旧参数名 `gate_type`。
 4. `code_only_fast_path` 仍需在 close 前调用 `sf_user_decision_record` 记录 `auto_approved`，不能等 close_gate 报缺失后再补。
 5. verification 阶段产物必须前置完整：`verification_report`、`evidence/evidence_manifest.json`、以及 verification_report 中的 evidence 引用必须一起生成。
+
+
+<!-- SpecForge V7 Candidate Completeness Governance BEGIN -->
+
+# V7 Candidate 产物完整性治理规则
+
+本节用于治理 feature_spec / requirement_change_path 中 Candidate 产物不完整导致 Gate 失败后再补洞的问题。
+
+## 一、候选阶段完成定义
+
+在进入 `candidate_prepared` 或调用 `sf_gate_run` 之前，Orchestrator 必须确认当前 WI 至少具备以下 4 类 Candidate 产物：
+
+```text
+1. requirements candidate
+2. design candidate
+3. tasks candidate
+4. trace_delta.md
+```
+
+其中 `trace_delta.md` 是 Candidate 阶段必需产物，不是 Gate 失败后的补救产物。
+
+## 二、职责归属
+
+`trace_delta.md` 的默认责任 Agent 是 `sf-task-planner`，因为它同时掌握 REQ / AC / DD / TASK / FILE / TEST 的完整映射。
+
+Orchestrator 不得直接手写缺失的 `trace_delta.md` 来绕过 Gate。  
+如果发现 `trace_delta.md` 缺失，必须重新调度 `sf-task-planner`，要求其基于已生成的 requirements / design / tasks 生成追溯矩阵。
+
+## 三、Candidate Completeness Preflight
+
+在生成 `candidate_manifest.json` 前，必须执行人工/工具级预检：
+
+```text
+- requirements candidate 是否存在
+- design candidate 是否存在
+- tasks candidate 是否存在
+- trace_delta.md 是否存在
+- candidate_manifest.json 是否列出以上 4 类产物
+- manifest 中路径是否为实际存在路径，不能按固定旧路径猜测
+```
+
+如果任一项缺失：
+
+```text
+不得调用 sf_gate_run
+不得进入 candidate_prepared
+不得创建 placeholder
+不得由 Orchestrator 临时编写缺失 Candidate
+```
+
+必须按责任 Agent 重新调度修复。
+
+## 四、candidate_manifest.json 生成规则
+
+Orchestrator 生成 manifest 前必须先读取实际文件路径，不能假设固定路径。
+
+必须支持以下实际路径：
+
+```text
+requirements:
+  candidates/requirements.md
+  candidates/project/modules/<MODULE>/requirements.md
+  candidates/project/modules/<MODULE>/requirements.candidate.md
+
+design:
+  candidates/design.md
+  candidates/project/modules/<MODULE>/design.md
+  candidates/project/modules/<MODULE>/design.candidate.md
+
+tasks:
+  candidates/tasks.md
+  tasks.md
+
+trace_delta:
+  trace_delta.md
+  candidates/trace_delta.md
+```
+
+manifest 至少包含：
+
+```json
+{
+  "work_item_id": "WI-XXXX",
+  "workflow_path": "requirement_change_path",
+  "candidates": [
+    { "type": "requirements", "path": "<actual requirements candidate path>", "lint_passed": true },
+    { "type": "design", "path": "<actual design candidate path>", "lint_passed": true },
+    { "type": "tasks", "path": "<actual tasks candidate path>", "lint_passed": true },
+    { "type": "trace_delta", "path": "<actual trace_delta path>", "lint_passed": true }
+  ]
+}
+```
+
+## 五、Gate 失败处理限制
+
+如果 Gate 失败原因为 `trace_delta.md missing` 或 `candidate_manifest_gate` 路径不一致：
+
+```text
+正确处理：
+  重新调度责任 Agent 修复产物，然后重新生成 candidate_manifest.json。
+
+错误处理：
+  Orchestrator 直接手写 trace_delta.md；
+  Orchestrator 直接猜测 manifest 路径；
+  反复 sf_gate_run 试错。
+```
+
+每个候选完整性问题最多修复一次；仍失败则报告阻塞事实和缺失文件清单。
+
+<!-- SpecForge V7 Candidate Completeness Governance END -->
+
+
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment BEGIN -->
+
+# V9 Post-Merge / Implementation / Verification 调用规范
+
+本节用于治理 V8.1 回归后暴露的后半段流程问题：Orchestrator 虽然没有绕过 events.jsonl，但仍在 post-merge、implementation、verification 阶段临时手动补状态。
+
+## 一、总体原则
+
+Orchestrator 只负责编排，不应把 `sf_state_transition` 当作后半段主流程驱动器。
+
+后半段优先使用受控工具：
+
+```text
+Merge 完成后：sf_gate_run(gate_ids=["post_merge_gate"])
+实现授权：sf_code_permission(action="enable")
+实现完成：sf_changed_files_audit 后最多一次 implementation_running → implementation_done
+验证收口：sf_gate_run(gate_ids=["verification_gate"])
+关闭：sf_code_permission(action="revoke") 后 sf_close_gate
+```
+
+## 二、Merge 后禁止直接手动补 post_merge_verified
+
+`sf_merge_run` 成功并返回 `merged` 后，Orchestrator 不得直接调用：
+
+```text
+sf_state_transition merged → post_merge_verified
+```
+
+正确流程是：
+
+```text
+1. 读取或确认 merge_report.md
+2. 调用 sf_gate_run(work_item_id=WI-XXXX, gate_ids=["post_merge_gate"])
+3. 由 gate_runner 在 post_merge_gate 通过后推进 merged → post_merge_verified
+4. 如果 post_merge_gate 失败，报告失败项并修复 merge/spec 产物，不得手动补状态
+```
+
+## 三、实现授权禁止手动补 implementation_ready
+
+当状态为 `post_merge_verified` 时，Orchestrator 不得先手动调用：
+
+```text
+sf_state_transition post_merge_verified → implementation_ready
+```
+
+正确流程是：
+
+```text
+1. 从正式 tasks.md 提取 allowed_write_files
+2. 调用 sf_code_permission(action="enable", allowed_write_files=[...])
+3. 由 sf_code_permission 负责推进 post_merge_verified → implementation_ready → implementation_running
+4. 如果工具拒绝，按工具返回的原因处理；不得循环手动推进
+```
+
+## 四、Verification 禁止手动收口 verification_done
+
+验证阶段不得先手动推进到 `verification_running`，再手动推进到 `verification_done`。
+
+正确流程是：
+
+```text
+1. executor 全部完成
+2. sf_changed_files_audit 通过
+3. 最多一次 sf_state_transition implementation_running → implementation_done
+4. 调度 sf-verifier 执行只读验证
+5. 通过 sf_artifact_write 写入 verification_report 和 evidence_manifest
+6. 调用 sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
+7. 由 gate_runner 推进 implementation_done → verification_running → verification_done
+```
+
+如果 `verification_gate` 失败：
+
+```text
+- 不得手动推进 verification_done
+- 根据 gate report 修复 verification_report / evidence_manifest / AC 覆盖问题
+- 每轮最多一次修复和一次重跑
+```
+
+## 五、Close 前顺序
+
+关闭前顺序固定：
+
+```text
+verification_gate passed
+→ verification_done
+→ sf_code_permission(action="revoke")
+→ sf_close_gate(work_item_id=WI-XXXX)
+→ close_gate 推进 verification_done → closed
+```
+
+Orchestrator 不得直接调用：
+
+```text
+sf_state_transition verification_done → closed
+```
+
+## 六、允许保留的一次非 seal 状态推进
+
+当前 daemon 尚未提供 executor_done 专用工具，因此实现完成后允许一次：
+
+```text
+sf_state_transition implementation_running → implementation_done
+```
+
+前提：
+
+```text
+1. 所有 executor task 均已完成；
+2. sf_changed_files_audit 已通过；
+3. evidence 明确写明任务完成和审计通过；
+4. 不得跳过 changed_files_audit。
+```
+
+除此之外，后半段不得把 `sf_state_transition` 作为常规推进工具。
+
+<!-- SpecForge V9 Post-Merge Invocation Alignment END -->
+
+
+
+<!-- SpecForge V11 Implementation Artifact Write Guard BEGIN -->
+
+# V11 Implementation 写入边界编排规则
+
+Orchestrator 在调度 executor 前必须明确传达：
+
+```text
+1. allowed_write_files 是 implementation 唯一可写范围；
+2. executor 不得写 .specforge/work-items/；
+3. executor 不得调用 sf_artifact_write 写治理产物；
+4. executor 不得用 sf_safe_bash / shell 写治理产物；
+5. 如果发现治理产物需要变更，必须失败上报，由 Orchestrator 重新调度责任 Agent。
+```
+
+`sf_code_permission(action="enable")` 的 `allowed_write_files` 不得包含：
+
+```text
+.specforge/**
+.specforge/work-items/**
+```
+
+推进 `implementation_running → implementation_done` 前必须确认：
+
+```text
+1. 所有 executor 报告的 files_changed 均在 allowed_write_files 内；
+2. 没有 executor 报告曾误触 .specforge；
+3. changed_files_audit 通过；
+4. changed_files_audit 中 blocked_write_attempts = 0；
+5. 如果 blocked_write_attempts > 0，不得推进 implementation_done。
+```
+
+<!-- SpecForge V11 Implementation Artifact Write Guard END -->
+
+
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary BEGIN -->
+
+# V12 Workflow Authority + Approval Boundary
+
+本节用于合并治理三类残留问题：启动状态协议、workflow_type 权威、用户审批边界。
+
+## 一、WI 创建协议
+
+创建新 Work Item 只能使用：
+
+```text
+sf_state_transition(from_state="", to_state="created", workflow_type=..., workflow_path=...)
+```
+
+要求：
+
+```text
+1. 创建 WI 时不要传 work_item_id=""；
+2. 如果希望 daemon 自动分配 WI-NNNN，必须省略 work_item_id 字段，而不是传空字符串；
+3. 不得再调用 to_state=intake；
+4. intake.md 写入完成后，才允许 created → intake_ready；
+5. 如果工具返回 allocated_work_item_id，后续必须使用该 ID。
+```
+
+禁止：
+
+```text
+sf_state_transition(from_state="", to_state="intake")
+sf_state_transition(from_state="", to_state="created", work_item_id="")
+sf_state_transition(... to_state="intake" ...)
+```
+
+## 二、workflow_type 权威规则
+
+`workflow_path` 是粗粒度路径；`workflow_type` 是具体工作流身份和 Skill 身份。
+
+```text
+bug_report      → workflow_type=bugfix_spec, workflow_path=requirement_change_path, Skill=sf-workflow-bugfix-spec
+new_feature     → workflow_type=feature_spec, workflow_path=requirement_change_path, Skill=sf-workflow-feature-spec
+small_change    → workflow_type=quick_change, workflow_path=code_only_fast_path, Skill=sf-workflow-quick-change
+```
+
+如果 daemon 返回的 workflow_type 与意图不一致：
+
+```text
+1. 不得直接“按 feature_spec 继续”；
+2. 必须报告 workflow authority mismatch；
+3. 重新读取 work_item.json / trigger_result.json / runtime state；
+4. 如果仍不一致，停止并要求修复工具或显式重建 WI。
+```
+
+bugfix 场景不得被解释成 feature_spec。
+
+## 三、用户审批边界
+
+Orchestrator 不得代替用户记录 Candidate approval。
+
+在 `sf_user_decision_record` / `sf_v11_decision` 记录 `decision_type=user_approved` 前，必须满足：
+
+```text
+1. 已展示 Candidate 摘要；
+2. 用户在当前对话中明确回复：批准 / 同意 / approve / y；
+3. 调用工具时必须传 user_response_quote，内容为用户原话；
+4. comments 中不得写“代表用户”“授权代表”“用户已委派所以批准”等。
+```
+
+禁止：
+
+```text
+- 因用户最初要求“修复 bug”就推定其批准 Candidate；
+- 因变更很小就自动 user_approved；
+- 用 decision_type=user_approved 包装 Orchestrator 自主决策。
+```
+
+需要自动审批时，只能使用 `decision_type=auto_approved`，并且必须有明确 `auto_approval_policy_id`。没有策略时不得自动审批。
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+

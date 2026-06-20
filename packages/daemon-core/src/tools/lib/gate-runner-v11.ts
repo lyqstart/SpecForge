@@ -20,7 +20,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-// ---------------------------------------------------------------------------
+import { inferManifestEntries, entriesSemanticallyEqual, normalizeSlash } from './governance-invariants-v11.js'; // ---------------------------------------------------------------------------
 // §9.2 Gate ID 枚举
 // ---------------------------------------------------------------------------
 
@@ -195,64 +195,94 @@ registerGate('required_files_gate', 'hard_gate', true, async (ctx) => {
   return makeReport(ctx.workItemId, 'required_files_gate', 'hard_gate', true, checks, inputFiles);
 });
 
-/**
- * §9.2 candidate_manifest_gate — Candidate Manifest 合法性
- */
+/** * §9.2 candidate_manifest_gate — Candidate Manifest 合法性 */ // BD v1: candidate_manifest_gate uses the same normalization rules as approval and merge.
 registerGate('candidate_manifest_gate', 'hard_gate', true, async (ctx) => {
-  const checks: GateReportCheck[] = [];
-  const manifestPath = path.join(ctx.workItemDir, 'candidate_manifest.json');
-
-  let manifest: any = null;
+  const checks: GateReportCheck[] = []
+  const manifestPath = path.join(ctx.workItemDir, 'candidate_manifest.json')
+  let manifest: any = null
   try {
-    const content = await fs.readFile(manifestPath, 'utf-8');
-    manifest = JSON.parse(content);
-    checks.push({ check_id: 'manifest_parse', description: 'candidate_manifest.json is valid JSON', passed: true });
+    const content = await fs.readFile(manifestPath, 'utf-8')
+    manifest = JSON.parse(content)
+    checks.push({ check_id: 'manifest_parse', description: 'candidate_manifest.json is valid JSON', passed: true })
 
-    // 检查 entries
-    const entries = manifest.entries ?? [];
-      checks.push({
-        check_id: 'manifest_entries_array',
-        description: 'entries is an array',
-        passed: Array.isArray(entries),
-      });
-      const workflowPath = String(manifest.workflow_path ?? '');
-      const mergeRequired = workflowPath !== 'code_only_fast_path';
-      checks.push({
-        check_id: 'manifest_entries_nonempty_for_spec_merge',
-        description: 'entries is non-empty for spec-changing workflow',
-        passed: !mergeRequired || (Array.isArray(entries) && entries.length > 0),
-        severity: !mergeRequired || (Array.isArray(entries) && entries.length > 0) ? undefined : 'error',
-      });
+    const entries = manifest.entries ?? []
+    const entriesIsArray = Array.isArray(entries)
+    checks.push({
+      check_id: 'manifest_entries_array',
+      description: 'entries is an array',
+      passed: entriesIsArray,
+      severity: entriesIsArray ? undefined : 'error',
+    })
 
-    for (let i = 0; i < entries.length; i++) {
-      const entry = entries[i];
-      // candidate_path 必须在当前 WI 的 candidates/ 下
-      const candidateInWi = entry.candidate_path?.includes('candidates/');
-      checks.push({
-        check_id: `entry_${i}_candidate_path`,
-        description: `Entry ${i}: candidate_path in candidates/`,
-        passed: !!candidateInWi,
-        severity: candidateInWi ? undefined : 'error',
-      });
+    const workflowPath = String(manifest.workflow_path ?? '')
+    const mergeRequired = workflowPath !== 'code_only_fast_path'
+    const inferredEntries = inferManifestEntries(manifest, ctx.workItemDir)
+    const entriesNormalized = entriesIsArray && entriesSemanticallyEqual(entries, inferredEntries)
 
-      // target_path 必须指向 .specforge/project/
-      const targetValid = entry.target_path?.includes('.specforge/project/') || entry.target_path?.startsWith('project/');
-      checks.push({
-        check_id: `entry_${i}_target_path`,
-        description: `Entry ${i}: target_path in .specforge/project/`,
-        passed: !!targetValid,
-        severity: targetValid ? undefined : 'error',
-      });
+    checks.push({
+      check_id: 'manifest_entries_nonempty_for_spec_merge',
+      description: 'entries is non-empty for spec-changing workflow',
+      passed: !mergeRequired || entries.length > 0,
+      severity: !mergeRequired || entries.length > 0 ? undefined : 'error',
+    })
+
+    checks.push({
+      check_id: 'manifest_entries_match_governance_inference',
+      description: 'entries match inferManifestEntries(); approval and merge will evaluate the same normalized manifest',
+      passed: !mergeRequired || entriesNormalized,
+      severity: !mergeRequired || entriesNormalized ? undefined : 'error',
+    })
+
+    checks.push({
+      check_id: 'manifest_inferred_entries_count',
+      description: `inferManifestEntries count: ${inferredEntries.length}`,
+      passed: !mergeRequired || inferredEntries.length > 0,
+      severity: !mergeRequired || inferredEntries.length > 0 ? undefined : 'error',
+    })
+
+    if (entriesIsArray) {
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i] ?? {}
+        const candidatePath = normalizeSlash(entry.candidate_path ?? entry.path ?? '')
+        const targetPath = normalizeSlash(entry.target_path ?? '')
+        const candidateInWi = candidatePath.startsWith('candidates/')
+        checks.push({
+          check_id: `entry_${i}_candidate_path`,
+          description: `Entry ${i}: candidate_path starts with candidates/`,
+          passed: !!candidateInWi,
+          severity: candidateInWi ? undefined : 'error',
+        })
+
+        const targetValid = targetPath.startsWith('.specforge/project/') || targetPath.startsWith('project/')
+        checks.push({
+          check_id: `entry_${i}_target_path`,
+          description: `Entry ${i}: target_path in .specforge/project/`,
+          passed: !!targetValid,
+          severity: targetValid ? undefined : 'error',
+        })
+
+        let candidateExists = false
+        if (candidatePath && !candidatePath.includes('..')) {
+          try {
+            await fs.access(path.join(ctx.workItemDir, candidatePath))
+            candidateExists = true
+          } catch {
+            candidateExists = false
+          }
+        }
+        checks.push({
+          check_id: `entry_${i}_candidate_exists`,
+          description: `Entry ${i}: candidate file exists`,
+          passed: candidateExists,
+          severity: candidateExists ? undefined : 'error',
+        })
+      }
     }
   } catch {
-    checks.push({ check_id: 'manifest_parse', description: 'candidate_manifest.json is valid JSON', passed: false, severity: 'error' });
+    checks.push({ check_id: 'manifest_parse', description: 'candidate_manifest.json is valid JSON', passed: false, severity: 'error' })
   }
-
-  return makeReport(ctx.workItemId, 'candidate_manifest_gate', 'hard_gate', true, checks, [manifestPath]);
-});
-
-/**
- * §9.2 path_policy_gate — 路径策略检查
+  return makeReport(ctx.workItemId, 'candidate_manifest_gate', 'hard_gate', true, checks, [manifestPath])
+}); /** * §9.2 path_policy_gate — 路径策略检查
  */
 registerGate('path_policy_gate', 'hard_gate', true, async (ctx) => {
   const checks: GateReportCheck[] = [];

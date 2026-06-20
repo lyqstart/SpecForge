@@ -54,6 +54,19 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 - unknowns=[]
 - 如不满足，必须升级到对应 workflow_path
 
+**BH v1 code_only_fast_path 禁止降级规则：**
+
+即使改动很小，只要满足以下任一条件，Quick Change 必须停止并升级到 `feature_spec / requirement_change_path`：
+
+- 新增页面、新增路由、新增导航入口、新增菜单项、新增用户可见 UI。
+- 新增用户可见功能、交互行为、业务能力或可测试验收点。
+- 新建会被用户直接访问或使用的业务文件，例如 `about.html`、新表单、新页面、新命令入口。
+- “添加 / 新增 / 创建 / build / add / implement” 与“页面 / 功能 / 入口 / 链接 / 导航 / 表单 / 视图 / 组件 / API / route / page / feature”同时出现。
+- 需要生成新的 REQ / AC / DD / trace_delta / candidate_manifest merge entry。
+
+这类请求不得因为“需求清晰、文件少、风险低”而降级为 `code_only_fast_path`。
+
+
 **执行步骤：**
 1. sf-orchestrator 创建 Work Item（workflow_path=code_only_fast_path）
 2. sf-orchestrator 生成：intake.md, change_classification.md, impact_analysis.md, trigger_result.json
@@ -325,3 +338,23 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
 
 <!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->
+
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary BEGIN -->
+
+# V12 Quick Change Workflow Authority
+
+quick_change 的权威身份为：
+
+```text
+workflow_type=quick_change
+workflow_path=code_only_fast_path
+workflow_skill=sf-workflow-quick-change
+```
+
+quick_change 也不得使用 legacy `intake` 作为创建状态。
+
+若 quick_change 需要自动批准，必须使用显式 `decision_type=auto_approved` 和已配置的 `auto_approval_policy_id`。不得把 Orchestrator 自主判断伪装成 `user_approved`。
+
+<!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+
