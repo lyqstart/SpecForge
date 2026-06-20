@@ -1,23 +1,27 @@
 # SpecForge v1.2 Write Guard Control Plane
 
-## 1. 目标
+<!-- SF_V12_WRITE_GUARD_CONTROL_PLANE -->
 
-v1.2 的 Write Guard 目标不是文档提醒，而是程序控制：
+## 1. 核心目标
+
+v1.2 的 Write Guard 必须从事后审计升级为写入前控制。
 
 ```text
-AI 不能绕过 SpecForge 工作流直接写文件。
+任何写入文件的动作，都必须先经过 SpecForge 写入控制面。
 ```
 
-## 2. 写入能力边界
+## 2. 控制对象
 
-需要纳入控制的写入路径：
+必须纳入控制：
 
-- OpenCode edit/write 类工具；
-- bash / powershell / shell 写文件；
-- SpecForge artifact write；
-- installer / generator；
-- agent 自己生成文件；
-- 子 agent 写文件。
+- OpenCode edit/write；
+- bash / powershell / shell；
+- artifact write；
+- generator；
+- installer；
+- project spec 写入；
+- extension registry 写入；
+- 子 agent 间接写入。
 
 ## 3. 权限来源
 
@@ -27,68 +31,125 @@ AI 不能绕过 SpecForge 工作流直接写文件。
 sf_code_permission
 ```
 
-权限必须包含：
+权限对象应包含：
 
-- work_item_id；
-- allowed_write_files；
-- allowed_write_dirs；
-- denied_paths；
-- expires_at 或 revoke 条件；
-- grant evidence；
-- requesting agent；
-- approving tool。
-
-## 4. 强制检查点
-
-每次写入前必须检查：
-
-1. 当前 WI 是否处于 `implementation_running`；
-2. code permission 是否 enable；
-3. 写入路径是否在 allowed list；
-4. 写入路径是否不在 denied list；
-5. 写入工具是否受控；
-6. 写入事件是否记录。
-
-## 5. 越权行为
-
-越权行为包括：
-
-- 写入 allowed list 之外文件；
-- 在未 enable code permission 时写文件；
-- 在 revoke 后写文件；
-- 直接修改 `.specforge/work-items/**` 治理产物；
-- 修改 project spec 但没有 candidate merge；
-- 使用 shell 绕过 edit/write guard。
-
-处理方式：
-
-```text
-fail-fast
-record blocked_write_attempt
-state -> blocked 或 gates_failed
-close_gate 必须拒绝
+```json
+{
+  "schema_version": "1.2",
+  "work_item_id": "WI-0001",
+  "grant_id": "CP-WI-0001-001",
+  "state_required": "implementation_running",
+  "allowed_write_files": ["src/a.ts"],
+  "allowed_write_dirs": [],
+  "denied_paths": [".specforge/work-items/**"],
+  "project_spec_write": false,
+  "expires_on_state_exit": true
+}
 ```
 
-## 6. 审计产物
+## 4. 写入前检查
 
-changed files audit 至少包含：
+新增控制点：
 
-- in_scope；
-- out_of_scope；
-- blocked_write_attempts；
-- allowed_write_files；
-- actual_changed_files；
+```text
+sf_write_guard_preflight
+```
+
+输入：
+
+- work_item_id；
+- tool_name；
+- operation；
+- target_paths；
+- command；
+- current_state；
+- reason。
+
+输出：
+
+- allowed；
+- denied；
 - violations；
-- audit result；
-- evidence refs。
+- normalized_paths；
+- audit_event_id。
 
-## 7. 验收项
+## 5. shell 写入控制
 
-v1.2 Write Guard 通过条件：
+以下命令属于明确写入风险：
 
-1. 未授权写文件被阻止；
-2. shell 绕过写文件被阻止或记录为 blocked_write_attempt；
-3. 授权路径写入通过；
-4. 非授权路径写入失败；
-5. revoke 后写入失败；
-6. close_gate 对 blocked_write_attempts > 0 fail-fast。
+```text
+>
+>>
+Set-Content
+Out-File
+New-Item -ItemType File
+Copy-Item
+Move-Item
+Remove-Item
+python -c open(..., "w")
+node -e fs.writeFileSync(...)
+```
+
+不能静态判断时，默认拒绝，除非它是 allowlisted read-only verification command。
+
+## 6. project spec 写入规则
+
+`sf_artifact_write` 只能写 WI 过程产物，不能直接写 `.specforge/project/**`。
+
+写 project spec 主线必须通过：
+
+```text
+sf_project_spec_merge
+```
+
+直接写入 project spec 必须拒绝。
+
+## 7. 事件记录
+
+每次 preflight 必须写事件：
+
+```json
+{
+  "type": "write_guard.preflight",
+  "work_item_id": "WI-0001",
+  "allowed": true,
+  "target_paths": ["src/a.ts"],
+  "tool_name": "edit",
+  "state": "implementation_running"
+}
+```
+
+拒绝时必须写：
+
+```json
+{
+  "type": "write_guard.violation",
+  "work_item_id": "WI-0001",
+  "violation_type": "OUT_OF_SCOPE_WRITE",
+  "target_paths": ["src/b.ts"]
+}
+```
+
+## 8. 状态联动
+
+- 非 `implementation_running` 禁止代码写入；
+- revoke 后禁止写入；
+- violation 出现后进入 blocked 或 gates_failed；
+- close_gate 必须检查 blocked_write_attempts；
+- verification read-only 命令可放行。
+
+## 9. 验收项
+
+正向：
+
+- allowed file 写入通过；
+- read-only verification command 通过；
+- project spec merge 专用工具写入通过。
+
+负向：
+
+- 未 enable code permission 写入失败；
+- 非 implementation_running 写入失败；
+- shell 写 out_of_scope 文件失败；
+- revoke 后写入失败；
+- blocked_write_attempts > 0 时 close_gate fail-fast。

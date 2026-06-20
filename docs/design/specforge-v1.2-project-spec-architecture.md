@@ -1,40 +1,57 @@
 # SpecForge v1.2 Project Spec Architecture
 
-## 1. 问题定义
+<!-- SF_V12_PROJECT_SPEC_ARCHITECTURE -->
 
-v1.1 解决了 WI 执行链路，但仍存在一个架构问题：
+## 1. 核心规则
 
 ```text
-规格不能长期散落在 .specforge/work-items/WI-XXXX/** 中。
+.specforge/project/** 是项目级规格主线。
+.specforge/work-items/WI-XXXX/** 是变更过程证据。
 ```
 
-WI 是过程，不是项目长期规格主线。
+WI 不能替代长期项目规格。项目规格不能由 AI 直接绕过流程写入。
 
-## 2. 目标目录
-
-v1.2 建议引入项目级规格目录：
+## 2. 建议目录
 
 ```text
 .specforge/project/
+  manifest.json
   requirements/
+    requirements.md
+    acceptance_criteria.md
   design/
+    design.md
+    decisions.md
   architecture/
+    architecture.md
+    boundaries.md
   modules/
+    <module_id>/
+      requirements.md
+      design.md
+      trace.md
   trace/
-  decisions/
+    trace_matrix.md
   extensions/
+    extension_registry.json
+  versions/
+    spec_versions.jsonl
 ```
 
-其中：
+## 3. 职责边界
 
-```text
-.specforge/project/** 是长期规格主线。
-.specforge/work-items/WI-XXXX/** 是一次变更过程证据。
-```
+`.specforge/project/**` 保存当前有效规格：
 
-## 3. WI 与项目级规格的关系
+- requirements；
+- acceptance criteria；
+- design；
+- architecture；
+- module specs；
+- trace matrix；
+- extension registry；
+- project spec versions。
 
-WI 的职责：
+`.specforge/work-items/WI-XXXX/**` 保存过程证据：
 
 - intake；
 - change classification；
@@ -46,44 +63,68 @@ WI 的职责：
 - verification evidence；
 - close evidence。
 
-项目级规格的职责：
+## 4. Candidate Merge Contract
 
-- 当前有效 requirements；
-- 当前有效 design；
-- 当前有效 architecture；
-- 当前有效 module specs；
-- 当前有效 trace matrix；
-- 当前有效 extension registry。
+候选规格不是最终规格。只有满足以下条件，才允许写入项目级规格主线：
 
-## 4. Candidate 合并规则
+1. `candidate_manifest.json` 明确列出目标 project spec 路径；
+2. `base_project_spec_version` 明确；
+3. candidate gate 通过；
+4. user decision 通过；
+5. `sf_merge_run` 或 project spec merge tool 执行；
+6. project spec version 增加；
+7. trace 更新；
+8. events 记录合并事件。
 
-v1.2 应明确：
+## 5. quick_change no-spec-impact
 
-```text
-candidate artifacts 不能直接等于最终规格。
-只有通过 gate、user decision、merge 后，才能写入 .specforge/project/**。
+`quick_change / code_only_fast_path` 通常不修改 project spec，但必须留下 no-spec-impact 证据：
+
+```json
+{
+  "spec_impact": "none",
+  "workflow_path": "code_only_fast_path",
+  "candidate_entries": []
+}
 ```
 
-code_only_fast_path 可无 spec candidate，但必须留下 no-spec-impact 证据。
+如果实际出现需求、设计、架构、验收标准变化，必须升级路径，不得继续 code_only_fast_path。
 
-## 5. 冲突检测
+## 6. 冲突检测
 
-如果多个 WI 修改同一项目级规格区域，应检测：
+必须检测：
 
-- base spec version；
-- target spec path；
-- overlapping section；
-- stale candidate；
-- unresolved conflict。
+- stale base project spec version；
+- 同一路径并发候选；
+- 同一 section 重叠修改；
+- trace 断裂；
+- extension registry 冲突；
+- candidate manifest 与实际文件不一致。
 
-冲突时不得自动合并，应进入 approval_required 或 blocked。
+冲突时必须 fail-fast，不得静默覆盖。
 
-## 6. 验收项
+## 7. 建议新增能力
 
-v1.2 项目级规格体系通过条件：
+```text
+ProjectSpecStore
+sf_project_spec_read
+sf_project_spec_candidate_write
+sf_project_spec_merge
+sf_project_spec_version
+```
 
-1. 新建 feature_spec 能写入 project requirements/design；
-2. quick_change 不产生 project spec 改动，但留下 no-spec-impact 证据；
-3. change_request 能修改 project spec；
-4. stale base version 必须 fail-fast；
-5. work_item.json 仍不得承载状态或审批权威。
+## 8. 验收项
+
+正向：
+
+- feature_spec 创建 project requirements；
+- architecture_change 更新 architecture；
+- quick_change 不改 project spec 但有 no-spec-impact；
+- merge 后 project spec version 增加。
+
+负向：
+
+- stale base version 拒绝；
+- 未审批 candidate 写 project spec 拒绝；
+- 直接写 `.specforge/project/**` 拒绝；
+- candidate manifest 无目标路径 gate failed。
