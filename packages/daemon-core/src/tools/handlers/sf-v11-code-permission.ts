@@ -98,11 +98,7 @@ async function advanceImplementationStateBeforeCode(input: {
   workflowPath: string;
   workflowType: string;
 }): Promise<any> {
-  if (input.workflowPath === 'code_only_fast_path') {
-    return { attempted: false, reason: 'code_only_fast_path' };
-  }
-
-  const state = await readAuthoritativeState({
+const state = await readAuthoritativeState({
     deps: input.deps,
     projectRoot: input.projectRoot,
     workItemId: input.workItemId,
@@ -125,15 +121,32 @@ async function advanceImplementationStateBeforeCode(input: {
     };
   }
 
-  if (current !== 'post_merge_verified' && current !== 'implementation_ready') {
+  if (current !== 'merged' && current !== 'post_merge_verified' && current !== 'implementation_ready') {
     throw new Error(
-      `POST_MERGE_VERIFIED_REQUIRED_BEFORE_CODE_PERMISSION: authoritative state is ${current ?? 'null'}, expected post_merge_verified or implementation_ready`,
+      `POST_MERGE_VERIFIED_REQUIRED_BEFORE_CODE_PERMISSION: authoritative state is ${current ?? 'null'}, expected merged, post_merge_verified, or implementation_ready`,
     );
   }
 
   const steps: any[] = [];
+  if (current === 'merged') {
+    steps.push(
+      await transitionWithEvidence({
+        deps: input.deps,
+        context: input.context,
+        projectRoot: input.projectRoot,
+        workItemId: input.workItemId,
+        workItemDir: input.workItemDir,
+        fromState: 'merged',
+        toState: 'post_merge_verified',
+        workflowType: input.workflowType,
+        actorRole: 'code_permission_service',
+        evidence: 'code_permission_service recovered code_only_fast_path after merge not_applicable before implementation',
+        transitionContext: { source: 'sf_v11_code_permission', merge_not_applicable_recovery: true },
+      }),
+    );
+  }
 
-  if (current === 'post_merge_verified') {
+  if (current === 'post_merge_verified' || current === 'merged') {
     steps.push(
       await transitionWithEvidence({
         deps: input.deps,

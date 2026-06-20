@@ -77,9 +77,73 @@ async function advanceMergeState(input: {
   mergedCount: number;
 }): Promise<any> {
   if (input.status === 'not_applicable') {
+    if (input.workflowPath !== 'code_only_fast_path') {
+      return {
+        attempted: false,
+        reason: 'merge_not_applicable',
+      };
+    }
+
+    const state = await readAuthoritativeState({
+      deps: input.deps,
+      projectRoot: input.projectRoot,
+      workItemId: input.workItemId,
+    });
+    const current = state.current_state;
+    const workflowTypeForNotApplicable = input.workflowType || workflowTypeFromPath(input.workflowPath);
+    const sequence = ['approved', 'merge_ready', 'merging', 'merged'];
+    const currentIndex = current ? sequence.indexOf(current) : -1;
+
+    if (current === 'merged') {
+      return {
+        attempted: true,
+        advanced: false,
+        reason: 'already_merged',
+        current_state: current,
+      };
+    }
+
+    if (currentIndex < 0) {
+      return {
+        attempted: false,
+        reason: 'current_state_not_code_only_merge_recoverable',
+        current_state: current,
+      };
+    }
+
+    const transitionSteps: any[] = [];
+    for (let i = currentIndex; i < sequence.length - 1; i += 1) {
+      const fromState = sequence[i];
+      const toState = sequence[i + 1];
+      transitionSteps.push(
+        await transitionWithEvidence({
+          deps: input.deps,
+          context: input.context,
+          projectRoot: input.projectRoot,
+          workItemId: input.workItemId,
+          workItemDir: input.workItemDir,
+          fromState,
+          toState,
+          workflowType: workflowTypeForNotApplicable,
+          actorRole: 'merge_runner',
+          evidence: 'merge_runner authoritative transition for code_only_fast_path merge_report not_applicable',
+          transitionContext: {
+            source: 'sf_v11_merge',
+            merge_status: input.status,
+            merged_count: input.mergedCount,
+            merge_not_applicable: true,
+          },
+        }),
+      );
+    }
+
     return {
-      attempted: false,
-      reason: 'merge_not_applicable',
+      attempted: true,
+      advanced: true,
+      from_state: current,
+      to_state: 'merged',
+      workflow_type: workflowTypeForNotApplicable,
+      transition_steps: transitionSteps,
     };
   }
 

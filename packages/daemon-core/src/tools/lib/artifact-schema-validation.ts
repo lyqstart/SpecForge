@@ -129,6 +129,12 @@ export function validateWorkItemJson(
       errors.push('MISSING_FIELD: status is required');
     }
 
+    if (parsed.work_item_status_mutation_forbidden) {
+      errors.push(
+        `WORK_ITEM_STATUS_MUTATION_FORBIDDEN: work_item.json status must not be used as a state synchronization channel: ${parsed.work_item_status_mutation_forbidden}`
+      );
+    }
+
     const forbiddenDecisionFields = findForbiddenWorkItemDecisionFields(parsed);
     if (forbiddenDecisionFields.length > 0) {
       errors.push(

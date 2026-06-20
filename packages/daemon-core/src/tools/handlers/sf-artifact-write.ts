@@ -152,6 +152,15 @@ function normalizeWorkItemJsonArtifact(input: {
   const wiDir = path.join(input.baseDir, SPEC_DIR_NAME, 'work-items', input.workItemId);
   const existing = readJsonIfExists(path.join(wiDir, 'work_item.json')) ?? {};
 
+  const existingStatus = typeof existing.status === 'string' ? existing.status : undefined;
+  const requestedStatus = typeof input.parsed.status === 'string' ? input.parsed.status : undefined;
+  const statusMutation =
+    existingStatus &&
+    requestedStatus &&
+    requestedStatus !== existingStatus
+      ? `${existingStatus}->${requestedStatus}`
+      : undefined;
+
   const normalized = {
     ...existing,
     ...input.parsed,
@@ -170,6 +179,13 @@ function normalizeWorkItemJsonArtifact(input: {
       input.parsed.workflow_path ?? existing.workflow_path ?? input.workflowPath,
     updated_at: new Date().toISOString(),
   };
+
+  if (statusMutation) {
+    return {
+      ...normalized,
+      work_item_status_mutation_forbidden: statusMutation,
+    };
+  }
 
   const forbiddenDecisionFields = findForbiddenWorkItemDecisionFields(normalized);
   if (forbiddenDecisionFields.length > 0) {

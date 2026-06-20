@@ -22,6 +22,7 @@ import {
   formatWorkItemId,
 } from "../lib/work-item-id-validator";
 import { guardHardStop } from "../lib/hard-stop-latch";
+import { transitionWithEvidence } from "../lib/state-coordinator-v11";
 
 /**
  * Allocate next WI-NNNN from existing .specforge/work-items directories.
@@ -61,10 +62,10 @@ async function readExistingWorkflowFacts(
 ): Promise<{ workflowType?: string; workflowPath?: string }> {
   const wiDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
   const candidates = [
-    join(wiDir, "work_item.json"),
     join(wiDir, "trigger_result.json"),
     join(wiDir, "candidate_manifest.json"),
     join(projectRoot, SPEC_DIR_NAME, "runtime", "state.json"),
+    join(wiDir, "work_item.json"),
   ];
 
   for (const filePath of candidates) {
@@ -376,34 +377,11 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     }
   }
 
-  if (!deps.workflowEngine) {
-    return { success: false, error: "WorkflowEngine not available" };
-  }
-
   const projectPath = (context?.directory as string) || (context?.worktree as string) || "";
-  const workItemDir = projectPath ? join(projectPath, SPEC_DIR_NAME, "work-items", workItemId) : undefined;
-
-  let result;
-  try {
-    result = await deps.workflowEngine.transitionFull({
-      workItemId,
-      fromState,
-      toState,
-      evidence: (args["evidence"] as string) ?? "",
-      workflowType: resolvedWorkflowType,
-      transitionContext: args["transition_context"] as Record<string, unknown>,
-      actor: context?.agent ? { agentRole: context.agent, sessionId: context?.sessionID } : null,
-      workItemDir,
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return { success: false, error: message };
-  }
-
   if (!projectPath) {
     return {
       success: false,
-      error: "projectPath required — provide context.directory or context.worktree",
+      error: "projectPath required - provide context.directory or context.worktree",
     };
   }
 
@@ -411,16 +389,31 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     return { success: false, error: "ProjectManager not available" };
   }
 
-  const projectSm = await deps.projectManager.getProjectStateManager(projectPath);
+  const workItemDir = join(projectPath, SPEC_DIR_NAME, "work-items", workItemId);
   const finalWorkflowType = resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change";
-  await projectSm.transition(
-    workItemId,
-    fromState,
-    toState,
-    typeof context?.agent === "string" ? context.agent : "system",
-    finalWorkflowType,
-    { evidence: (args["evidence"] as string) ?? "" },
-  );
+
+  let transitionResult;
+  try {
+    transitionResult = await transitionWithEvidence({
+      deps,
+      context,
+      projectRoot: projectPath,
+      workItemId,
+      workItemDir,
+      fromState,
+      toState,
+      workflowType: finalWorkflowType,
+      actorRole: typeof context?.agent === "string" ? context.agent : "system",
+      evidence: (args["evidence"] as string) ?? "",
+      transitionContext: {
+        source: "sf_state_transition",
+        ...(args["transition_context"] as Record<string, unknown> | undefined ?? {}),
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
 
   return {
     success: true,
@@ -429,6 +422,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     workflow_type: finalWorkflowType,
     workflow_path: inheritedWorkflowPath,
     auto_work_item_json: isCreateTransition ? true : undefined,
-    ...result,
+    state_authority: "StateManager",
+    workflow_engine_transition_full_used: false,
+    transition_result: transitionResult.transition_result,
   };
 });
