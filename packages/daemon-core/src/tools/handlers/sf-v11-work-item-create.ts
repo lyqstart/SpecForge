@@ -11,9 +11,8 @@ import { registerHandler } from '../ToolDispatcher';
 import { createWorkItem, initializeClosureFiles, updateWorkItemStatus } from '../lib/work-item-lifecycle-v11';
 import { selectWorkflowPath, generateTriggerResult } from '../lib/workflow-path-selector-v11';
 import {
-  WORKFLOW_PATH_TO_TYPE,
   WORKFLOW_TYPE_TO_PATH,
-  isWorkflowTypeCompatibleWithPath,
+  resolveWorkflowTypeForPath,
   type WorkflowPath,
   type WorkflowType,
 } from '../lib/state_machine';
@@ -23,10 +22,41 @@ function isKnownWorkflowType(value: string | undefined): value is WorkflowType {
   return !!value && Object.prototype.hasOwnProperty.call(WORKFLOW_TYPE_TO_PATH, value);
 }
 
+function normalizeWorkflowPath(value: string | null | undefined): WorkflowPath | undefined {
+  return value ? (value as WorkflowPath) : undefined;
+}
+
+function workflowCompatibilityError(workflowType: string, workflowPath: string | null | undefined): Error {
+  return new Error(
+    `INCOMPATIBLE_WORKFLOW_TYPE_AND_PATH: workflow_type=${workflowType}; workflow_path=${workflowPath ?? '(none)'}`,
+  );
+}
+
+function resolveExplicitWorkflowType(workflowType: string, workflowPath: string | null | undefined): WorkflowType {
+  if (!isKnownWorkflowType(workflowType)) {
+    throw new Error(`UNKNOWN_WORKFLOW_TYPE: ${workflowType}`);
+  }
+
+  const resolved = resolveWorkflowTypeForPath(normalizeWorkflowPath(workflowPath), workflowType);
+  if (!resolved) {
+    throw workflowCompatibilityError(workflowType, workflowPath);
+  }
+  return resolved;
+}
+
+function resolveDefaultWorkflowType(workflowPath: string | null | undefined): WorkflowType {
+  const resolved = resolveWorkflowTypeForPath(normalizeWorkflowPath(workflowPath));
+  if (resolved) return resolved;
+  if (workflowPath) {
+    throw new Error(`UNSUPPORTED_WORKFLOW_PATH_WITHOUT_WORKFLOW_TYPE: ${workflowPath}`);
+  }
+  return 'feature_spec';
+}
+
 function inferWorkflowTypeFromClassification(classification: any, workflowPath: string | null): WorkflowType {
   const explicit = classification?.workflow_type ?? classification?.workflowType;
-  if (isWorkflowTypeCompatibleWithPath(explicit, workflowPath ?? undefined)) {
-    return explicit;
+  if (explicit) {
+    return resolveExplicitWorkflowType(String(explicit), workflowPath);
   }
 
   const intent = String(
@@ -38,16 +68,13 @@ function inferWorkflowTypeFromClassification(classification: any, workflowPath: 
   ).toLowerCase();
 
   if (intent.includes('bug') || intent.includes('fix') || intent.includes('defect')) {
-    return 'bugfix_spec';
+    return resolveExplicitWorkflowType('bugfix_spec', workflowPath);
   }
-  if (intent.includes('quick') || workflowPath === 'code_only_fast_path') {
-    return 'quick_change';
+  if (intent.includes('quick')) {
+    return resolveExplicitWorkflowType('quick_change', workflowPath);
   }
-  if (workflowPath && Object.prototype.hasOwnProperty.call(WORKFLOW_PATH_TO_TYPE, workflowPath)) {
-    return WORKFLOW_PATH_TO_TYPE[workflowPath as WorkflowPath];
-  }
-  if (isKnownWorkflowType(explicit)) return explicit;
-  return 'feature_spec';
+
+  return resolveDefaultWorkflowType(workflowPath);
 }
 
 registerHandler('sf_v11_work_item_create', async (args, context, deps) => {

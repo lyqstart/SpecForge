@@ -11,10 +11,9 @@ import * as fs from 'node:fs';
 import { registerHandler } from '../ToolDispatcher';
 import { writeArtifact } from '../lib/sf_artifact_write_core';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
-import { validateArtifactJson } from '../lib/artifact-schema-validation';
+import { validateArtifactJson, findForbiddenWorkItemDecisionFields } from '../lib/artifact-schema-validation';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import { WORKFLOW_PATH_TO_TYPE, type WorkflowPath } from '../lib/state_machine';
 import { inferManifestEntries } from '../lib/governance-invariants-v11';
 
 const V11_WI_ARTIFACT_FILES = new Set([
@@ -143,6 +142,45 @@ function readJsonIfExists(filePath: string): Record<string, unknown> | null {
   }
 }
 
+function normalizeWorkItemJsonArtifact(input: {
+  parsed: Record<string, unknown>;
+  workItemId: string;
+  baseDir: string;
+  workflowPath?: string;
+  workflowType?: string;
+}): Record<string, unknown> {
+  const wiDir = path.join(input.baseDir, SPEC_DIR_NAME, 'work-items', input.workItemId);
+  const existing = readJsonIfExists(path.join(wiDir, 'work_item.json')) ?? {};
+
+  const normalized = {
+    ...existing,
+    ...input.parsed,
+    schema_version:
+      input.parsed.schema_version ?? existing.schema_version ?? '1.1',
+    work_item_id:
+      input.parsed.work_item_id ?? existing.work_item_id ?? input.workItemId,
+    status:
+      input.parsed.status ?? existing.status ?? 'created',
+    workflow_type:
+      input.parsed.workflow_type ??
+      existing.workflow_type ??
+      input.workflowType ??
+      'quick_change',
+    workflow_path:
+      input.parsed.workflow_path ?? existing.workflow_path ?? input.workflowPath,
+    updated_at: new Date().toISOString(),
+  };
+
+  const forbiddenDecisionFields = findForbiddenWorkItemDecisionFields(normalized);
+  if (forbiddenDecisionFields.length > 0) {
+    // Keep the forbidden fields in the returned JSON so schema validation rejects
+    // the write. Do not silently strip governance pollution.
+    return normalized;
+  }
+
+  return normalized;
+}
+
 function inferWorkflowFacts(
   baseDir: string,
   workItemId: string,
@@ -161,8 +199,7 @@ function inferWorkflowFacts(
     const workflowPath = typeof json.workflow_path === 'string' ? json.workflow_path : undefined;
     const workflowType = typeof json.workflow_type === 'string' ? json.workflow_type : undefined;
     if (workflowPath || workflowType) {
-      const mapped = workflowPath ? WORKFLOW_PATH_TO_TYPE[workflowPath as WorkflowPath] : undefined;
-      return { workflowPath, workflowType: mapped ?? workflowType };
+      return { workflowPath, workflowType };
     }
   }
   return {};
@@ -263,23 +300,17 @@ function normalizeCoreJsonArtifact(
 
   const facts = inferWorkflowFacts(baseDir, workItemId, parsed);
   const workflowPath = parsed.workflow_path ?? facts.workflowPath;
-  const mappedWorkflowType = workflowPath ? WORKFLOW_PATH_TO_TYPE[workflowPath as WorkflowPath] : undefined;
-  const workflowType = mappedWorkflowType ?? parsed.workflow_type ?? facts.workflowType;
+  const workflowType = parsed.workflow_type ?? facts.workflowType;
 
   if (filename === 'work_item.json') {
-    return JSON.stringify(
-      {
-        schema_version: '1.1',
-        status: 'created',
-        ...parsed,
-        work_item_id: parsed.work_item_id ?? workItemId,
-        workflow_type: parsed.workflow_type ?? workflowType ?? 'quick_change',
-        workflow_path: parsed.workflow_path ?? workflowPath,
-        updated_at: parsed.updated_at ?? new Date().toISOString(),
-      },
-      null,
-      2,
-    );
+    const normalized = normalizeWorkItemJsonArtifact({
+      parsed,
+      workItemId,
+      baseDir,
+      workflowPath,
+      workflowType,
+    });
+    return JSON.stringify(normalized, null, 2);
   }
 
   if (filename === 'trigger_result.json') {

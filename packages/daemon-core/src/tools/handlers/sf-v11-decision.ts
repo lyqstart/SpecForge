@@ -16,9 +16,8 @@ import type { UserDecisionStatus } from '../lib/user-decision-recorder-v11';
 import { validateDecisionRecordPreconditions } from '../lib/governance-invariants-v11.js';
 import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11.js';
 import {
-  WORKFLOW_PATH_TO_TYPE,
   WORKFLOW_TYPE_TO_PATH,
-  isWorkflowTypeCompatibleWithPath,
+  resolveWorkflowTypeForPath,
   type WorkflowPath,
   type WorkflowType,
 } from '../lib/state_machine';
@@ -128,14 +127,36 @@ function isKnownWorkflowType(value: string | undefined): value is WorkflowType {
   return !!value && Object.prototype.hasOwnProperty.call(WORKFLOW_TYPE_TO_PATH, value);
 }
 
+function normalizeWorkflowPath(value: string | undefined): WorkflowPath | undefined {
+  return value && value.trim() ? (value as WorkflowPath) : undefined;
+}
+
 function workflowTypeForDecision(workflowPath: string | undefined, workflowType: string | undefined): string {
-  if (isWorkflowTypeCompatibleWithPath(workflowType, workflowPath)) {
-    return workflowType;
+  const requestedWorkflowPath = workflowPath && workflowPath.trim() ? workflowPath : undefined;
+  const requestedWorkflowType = workflowType && workflowType.trim() ? workflowType : undefined;
+
+  if (requestedWorkflowType) {
+    if (!isKnownWorkflowType(requestedWorkflowType)) {
+      throw new Error(`UNKNOWN_WORKFLOW_TYPE: ${requestedWorkflowType}`);
+    }
+
+    const resolved = resolveWorkflowTypeForPath(
+      normalizeWorkflowPath(requestedWorkflowPath),
+      requestedWorkflowType,
+    );
+    if (!resolved) {
+      throw new Error(
+        `INCOMPATIBLE_WORKFLOW_TYPE_AND_PATH: workflow_type=${requestedWorkflowType}; workflow_path=${requestedWorkflowPath ?? '(none)'}`,
+      );
+    }
+    return resolved;
   }
-  if (workflowPath && Object.prototype.hasOwnProperty.call(WORKFLOW_PATH_TO_TYPE, workflowPath)) {
-    return WORKFLOW_PATH_TO_TYPE[workflowPath as WorkflowPath];
+
+  const resolved = resolveWorkflowTypeForPath(normalizeWorkflowPath(requestedWorkflowPath));
+  if (resolved) return resolved;
+  if (requestedWorkflowPath) {
+    throw new Error(`UNSUPPORTED_WORKFLOW_PATH_WITHOUT_WORKFLOW_TYPE: ${requestedWorkflowPath}`);
   }
-  if (isKnownWorkflowType(workflowType)) return workflowType;
   return 'quick_change';
 }
 
