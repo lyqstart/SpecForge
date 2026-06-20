@@ -471,17 +471,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       workItemId,
     });
     const effectiveState = authoritativeState.current_state ?? "";
-    result.authoritative_state_used = true;
-
-    if (effectiveState !== "closed" && !CLOSE_RECOVERABLE_STATES.has(effectiveState)) {
-      return {
-        ...result,
-        error: `Close gate requires authoritative state to be one of ${Array.from(
-          CLOSE_RECOVERABLE_STATES,
-        ).join(", ")} or closed, current='${effectiveState || "N/A"}'`,
-      };
-    }
-    result.closed_from_state = effectiveState;
+    result.authoritative_state_used = true; result.closed_from_state = effectiveState; if (effectiveState === "closed") { return { ...result, success: true, state_advanced: false, state_auto_advance: { attempted: true, advanced: false, reason: "already_closed", current_state: "closed" }, }; } if (effectiveState !== "verification_done") { return { ...result, error: `AUTHORITATIVE_STATE_MISMATCH: close_gate requires authoritative current_state=verification_done, current='${effectiveState || "N/A"}'`, state_auto_advance: { attempted: false, reason: "current_state_not_verification_done", current_state: effectiveState || "N/A", expected_state: "verification_done" }, }; }
 
     const triggerResultPath = path.join(workItemDir, "trigger_result.json");
     try {
