@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.1",
+  "enabled": true,
+  "recording": {
+    "default": "all",
+    "include": [
+      "*"
+    ],
+    "exclude": []
+  },
+  "payload_policy": {
+    "max_message_bytes": 65536,
+    "overflow": "metadata_only"
+  },
+  "notes": [
+    "Default SpecForge observability template.",
+    "If this file is absent in a project, observability should not silently diverge from the userlevel template."
+  ]
+}
