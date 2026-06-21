@@ -1,6 +1,6 @@
 # SpecForge 批处理 / PowerShell 修复包错误复盘与后续强制规则
 
-版本：v1.0  
+版本：v1.1  
 日期：2026-06-21  
 适用范围：以后所有涉及批处理、PowerShell、修复包、热修包、自动补丁脚本、部署脚本的对话与交付。
 
@@ -627,3 +627,277 @@ D:\code\temp\SpecForge\packages\daemon-core\src\tools\lib\merge-runner-v11.ts
 ```
 
 本文件作为后续 SpecForge 脚本任务的强制前置规则。
+
+---
+
+## 8. 成功案例复盘：merge_runner module registry hotfix fix02
+
+### 8.1 背景
+
+在处理 `V12-LIVE-MERGE-MODULE-REGISTRY-001` 时，前一版修复包失败：
+
+```text
+RESULT: FAILED
+CAUSE: Exact write-site anchor not found after helper insertion.
+NEXT ACTION: Do not guess. Upload current merge-runner-v11.ts.
+```
+
+失败原因不是产品修复方向错误，而是脚本仍然使用了过长、过脆的源码锚点。
+
+当时产品缺陷已经明确：
+
+```text
+sf_merge_run 已经把 .specforge/project/modules/todos/** 合并成功；
+project_spec_version 已从 PSV-0001 升到 PSV-0002；
+但 spec_manifest.json 的 modules[] 仍为空；
+说明 merge_runner 写入了模块文件，却没有同步模块注册表。
+```
+
+该缺陷固定为：
+
+```text
+V12-LIVE-MERGE-MODULE-REGISTRY-001
+```
+
+---
+
+### 8.2 fix02 为什么成功
+
+fix02 成功的根本原因是：不再用猜测结构和长字符串锚点，而是基于真实源码结构做“短锚点 + 有界定位 + 真实运行测试”。
+
+成功做法包括：
+
+1. 先确认真实源码位置：
+
+```text
+packages/daemon-core/src/tools/lib/merge-runner-v11.ts
+```
+
+2. 先确认真实函数：
+
+```text
+export async function executeMerge
+```
+
+3. 先确认真实职责：
+
+```text
+executeMerge() 负责读取 candidate_manifest；
+复制 candidate 到 .specforge/project/**；
+更新 spec_manifest.project_spec_version；
+更新 specManifest.last_merged_targets；
+写回 spec_manifest.json；
+生成 merge_report.md。
+```
+
+4. 不再使用整段精确字符串：
+
+```text
+specManifest.last_merged_targets = result.merged_files .filter(...).map(...); await fs.mkdir(...)
+```
+
+这种锚点对空格、换行、压缩格式极敏感，实际源码稍有变化就失败。
+
+5. 改用短锚点、有界定位：
+
+```text
+export async function executeMerge
+specManifest.last_merged_targets
+await fs.writeFile(projectSpecManifestPath
+```
+
+6. 插入位置清晰：
+
+```text
+在 executeMerge 前插入 helper；
+在 specManifest.last_merged_targets 之后、fs.writeFile(projectSpecManifestPath...) 之前插入：
+registerMergedProjectModulesV12(specManifest);
+```
+
+7. 不再用“文本包含测试”作为主验收，而是增加真实 `executeMerge()` 测试：
+
+```text
+创建临时项目；
+写 spec_manifest.json；
+写 candidate_manifest.json；
+写 user_decision.json；
+写 gate_summary 和 gate json；
+调用 executeMerge()；
+断言 project_spec_version = PSV-0002；
+断言 spec_manifest.modules[] 包含 MOD-TODOS。
+```
+
+8. 成功后再执行：
+
+```text
+相关回归测试；
+workspace build；
+install/deployment consistency；
+commit；
+push；
+merge main；
+tag。
+```
+
+---
+
+### 8.3 fix02 与前几版失败的关键区别
+
+| 对比项 | 失败版本 | fix02 成功版本 |
+|---|---|---|
+| 源码依据 | 推测源码结构 | 基于 GitHub / 本地同步后的真实源码结构 |
+| 锚点策略 | 长字符串精确锚点 | 短锚点 + 有界定位 |
+| 失败策略 | 找不到锚点后继续改脚本猜 | 找不到锚点就停止，并要求确认真实源码 |
+| 修改范围 | 容易跨大段替换 | 只在明确位置插入 helper 和调用 |
+| 验收方式 | 文本断言偏多 | 真实调用 `executeMerge()` |
+| 发布前验证 | 局部验证不够 | 测试 + build + 部署一致性 |
+| 脚本副作用 | 曾污染 working tree | 备份在仓库外，避免污染 Git |
+| 可重复运行 | 对失败残留考虑不足 | 支持已有分支 reset、外部备份、重新执行 |
+
+---
+
+### 8.4 这次成功说明了什么
+
+这次成功证明：
+
+1. 复杂 TypeScript 补丁不能靠猜；
+2. 长字符串锚点不可靠；
+3. 源码压缩成一行时，整段匹配非常脆弱；
+4. 短锚点必须来自真实源码；
+5. 短锚点之间要有顺序约束，不能全文件乱找；
+6. 插入点必须与业务职责一致；
+7. 真实函数调用测试比文本断言更可信；
+8. 自动 commit / push / merge / tag 必须放在强验收之后。
+
+---
+
+### 8.5 后续脚本必须吸收的成功经验
+
+以后类似脚本必须遵守以下新增规则。
+
+#### 8.5.1 优先使用“短锚点 + 有界定位”
+
+禁止优先使用长段源码作为锚点。
+
+推荐形式：
+
+```text
+先找函数起点；
+再找目标赋值点；
+再找目标写入点；
+确认顺序为：函数起点 < 赋值点 < 写入点；
+只在这个有界区间内插入代码。
+```
+
+例如：
+
+```text
+executeMerge 起点
+→ specManifest.last_merged_targets
+→ await fs.writeFile(projectSpecManifestPath
+```
+
+#### 8.5.2 锚点必须来自真实源码
+
+锚点不能来自“我以为源码应该这样写”。
+
+锚点来源必须是：
+
+1. 用户上传源码；
+2. 本地源码检查报告；
+3. GitHub 当前分支源码；
+4. 已确认与本地同步的远程源码。
+
+#### 8.5.3 找不到锚点必须停止
+
+找不到锚点时，不能继续扩大正则或猜测。
+
+必须输出：
+
+```text
+RESULT: FAILED
+CAUSE: Source shape mismatch: <具体锚点> not found.
+NEXT ACTION: Upload current source or run source inspection.
+```
+
+#### 8.5.4 真实运行测试优先于文本测试
+
+只要目标函数可被调用，就必须写真实运行测试。
+
+例如本次 `executeMerge()` 修复，正确测试不是检查源码里有没有 `registerMergedProjectModulesV12`，而是：
+
+```text
+真的创建临时 WI；
+真的调用 executeMerge()；
+真的读取 spec_manifest.json；
+真的断言 modules[] 出现 todos。
+```
+
+#### 8.5.5 自动发布前必须验证业务效果
+
+不能只验证“脚本插入成功”。
+
+必须验证“业务结果出现”。
+
+本次业务结果是：
+
+```text
+spec_manifest.modules[] 包含：
+module_id = MOD-TODOS
+name = todos
+requirements_file = project/modules/todos/requirements.md
+design_file = project/modules/todos/design.md
+```
+
+---
+
+### 8.6 新增强制规则：成功经验版脚本设计流程
+
+以后写修复脚本，应按下面流程：
+
+```text
+1. 缺陷分类：
+   产品缺陷 / 脚本缺陷 / 环境缺陷 / 验收缺陷。
+
+2. 源码确认：
+   确认目标文件、目标函数、目标职责。
+
+3. 锚点设计：
+   使用真实源码中的短锚点；
+   确认锚点顺序；
+   避免长字符串整段匹配。
+
+4. 插入策略：
+   helper 插入到函数前；
+   调用插入到明确业务动作之前或之后；
+   插入点必须与职责一致。
+
+5. 验证策略：
+   优先真实函数调用测试；
+   文本断言只做辅助；
+   必须跑 build 和部署一致性。
+
+6. Git 策略：
+   备份在仓库外；
+   处理已有分支；
+   检查 working tree；
+   只有强验收通过才 commit / push / merge / tag。
+
+7. 失败策略：
+   找不到锚点立即停止；
+   输出 RESULT / CAUSE / NEXT ACTION；
+   不扩大正则继续猜。
+```
+
+---
+
+### 8.7 本次成功经验的固定结论
+
+本次成功经验可以压缩成一句话：
+
+```text
+复杂补丁必须基于真实源码，用短锚点有界定位，用真实运行测试证明业务效果，强验收通过后再自动发布。
+```
+
+以后每一轮写批处理 / PowerShell / 修复包，都必须把这句话作为前置原则。
+
