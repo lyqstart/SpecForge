@@ -8,6 +8,7 @@
  * - Same-name plugin tools take precedence over built-in tools in OpenCode.
  * - fix10: native shadow write/edit uses local state allowlist fallback when daemon checkWrite over-blocks authorized writes.
  * - fix11: define plugin-local path normalization, avoid global hard_stop contagion, and prefer local authoritative WI allowlist before daemon fallback.
+ * - fix12: invalid/retryable work_item_id, including empty string, is non-persistent and must never create project-level hard_stop.
  */
 import { tool, type PluginInput } from "@opencode-ai/plugin";
 
@@ -508,32 +509,12 @@ function findAnyValidHardStopRecord(projectDir: string): any | null {
   return null;
 }
 
-function persistProjectLevelHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
-  try {
-    const { appendFileSync } = require("node:fs");
-    const runtimeDir = join(projectDir, ".specforge", "runtime");
-    mkdirSync(runtimeDir, { recursive: true });
-    const record = {
-      work_item_id: String(workItemId ?? ""),
-      invalid_work_item_id: !isValidWorkItemId(workItemId),
-      blocked: true,
-      reason,
-      source_tool: sourceTool,
-      created_at: new Date().toISOString(),
-    };
-    appendFileSync(join(runtimeDir, "hard_stops.jsonl"), JSON.stringify(record) + "\n", "utf-8");
-  } catch {
-    // best effort
-  }
-}
-
 function persistHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
   if (!isValidWorkItemId(workItemId)) {
-    persistProjectLevelHardStop(projectDir, workItemId, reason, sourceTool);
     console.warn(
-      `[SF HardStop] Persisted project-level hard_stop for invalid/retryable work_item_id "${String(
+      `[SF HardStop] NON_PERSISTENT_INVALID_WORK_ITEM_ID: Invalid/retryable work_item_id must not persist project-level hard_stop. work_item_id="${String(
         workItemId ?? "",
-      )}" from ${sourceTool}.`,
+      )}" source=${sourceTool}. Reason: ${String(reason ?? "").slice(0, 240)}`,
     );
     return;
   }
