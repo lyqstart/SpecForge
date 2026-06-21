@@ -1,15 +1,16 @@
 /**
  * sf_specforge.ts - SpecForge OpenCode Plugin with HARD Write Guard.
  *
- * v1.2 post-merge live hotfix:
+ * v1.2 post-merge live hotfix fix10:
  * - Keep existing tool.execute.before / after guard path.
  * - Add same-name plugin tools for write/edit/apply_patch so OpenCode native
  *   filesystem tools cannot bypass SpecForge Write Guard in subagents.
  * - Same-name plugin tools take precedence over built-in tools in OpenCode.
+ * - fix10: native shadow write/edit uses local state allowlist fallback when daemon checkWrite over-blocks authorized writes.
  */
 import { tool, type PluginInput } from "@opencode-ai/plugin";
 
-const { join, resolve, dirname } = require("node:path");
+const { join, resolve, dirname, isAbsolute, relative } = require("node:path");
 const { homedir } = require("node:os");
 const { pathToFileURL } = require("node:url");
 const { existsSync, mkdirSync, readFileSync, writeFileSync } = require("node:fs");
@@ -694,10 +695,16 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
     }
 
     if (!result.allowed) {
+      const localOperation = inferNativeWriteOperation(projectDir, toolName, targetPath);
+      const localDecision = localNativeWriteAllowDecision(projectDir, targetPath, localOperation, args);
+      if (localDecision.allowed) {
+        continue;
+      }
       maybePersistHardStopFromGuardResult(projectDir, toolName, args, result);
       throw new Error(
-        `[SF WriteGuard] BLOCKED write to "${targetPath}" by tool "${toolName}".\nReason: ${
-          result.reason ?? result.error ?? "policy_violation"
+        `[SF WriteGuard] BLOCKED write to "${targetPath}" by tool "${toolName}".
+Reason: ${
+          localDecision.reason ?? result.reason ?? result.error ?? "policy_violation"
         }`,
       );
     }
@@ -874,6 +881,109 @@ function resolveToolTargetPath(args: Record<string, any>): string {
   const target = args.path ?? args.filePath ?? args.file_path ?? args.file ?? args.filename;
   if (typeof target === "string" && target.trim().length > 0) return target;
   throw new Error("[SF WriteGuard] write/edit tool requires path or filePath.");
+}
+
+function normalizePluginPath(value: string): string {
+  return normalizeSlashes(String(value ?? "")).replace(/^\.\//, "").toLowerCase();
+}
+
+function pluginTargetToProjectRelative(projectDir: string, targetPath: string): string | null {
+  const cleaned = String(targetPath ?? "").trim().replace(/^['"]|['"]$/g, "");
+  if (!cleaned) return null;
+  const absolute = isAbsolute(cleaned) ? resolve(cleaned) : resolve(projectDir, cleaned);
+  const projectAbs = resolve(projectDir);
+  const rel = relative(projectAbs, absolute);
+  if (rel.startsWith("..") || isAbsolute(rel)) return null;
+  return normalizeSlashes(rel);
+}
+
+function readJsonFile(filePath: string): any | null {
+  try {
+    if (!existsSync(filePath)) return null;
+    return JSON.parse(readFileSync(filePath, "utf-8"));
+  } catch {
+    return null;
+  }
+}
+
+function readRuntimeState(projectDir: string): any | null {
+  return readJsonFile(join(projectDir, ".specforge", "runtime", "state.json"));
+}
+
+function readWorkItemMetadata(projectDir: string, workItemId: string): any | null {
+  if (!isValidWorkItemId(workItemId)) return null;
+  return readJsonFile(join(projectDir, ".specforge", "work-items", workItemId, "work_item.json"));
+}
+
+function getAuthoritativeState(runtimeState: any, workItemId: string): string | null {
+  const items = Array.isArray(runtimeState?.workItems) ? runtimeState.workItems : [];
+  const match = items.find((item: any) => item?.work_item_id === workItemId);
+  return typeof match?.current_state === "string" ? match.current_state : null;
+}
+
+function candidateNativeWriteWorkItems(projectDir: string, args: Record<string, any>): string[] {
+  const explicit = getWorkItemIdFromArgs(args);
+  if (isValidWorkItemId(explicit)) return [explicit];
+  const runtimeState = readRuntimeState(projectDir);
+  const items = Array.isArray(runtimeState?.workItems) ? runtimeState.workItems : [];
+  return items
+    .filter((item: any) => item?.current_state === "implementation_running" && isValidWorkItemId(item?.work_item_id))
+    .sort((a: any, b: any) => Number(b?.updated_at ?? 0) - Number(a?.updated_at ?? 0))
+    .map((item: any) => String(item.work_item_id));
+}
+
+function normalizeAllowedPathForCompare(projectDir: string, allowedPath: string): string | null {
+  const cleaned = String(allowedPath ?? "").trim().replace(/^['"]|['"]$/g, "");
+  if (!cleaned) return null;
+  if (isAbsolute(cleaned)) return pluginTargetToProjectRelative(projectDir, cleaned);
+  return normalizeSlashes(cleaned);
+}
+
+function allowedWriteEntryMatches(projectDir: string, entry: any, targetRelative: string, operation: string): boolean {
+  const entryPath = typeof entry === "string" ? entry : entry?.path;
+  if (typeof entryPath !== "string") return false;
+  const allowedRelative = normalizeAllowedPathForCompare(projectDir, entryPath);
+  if (!allowedRelative) return false;
+  if (normalizePluginPath(allowedRelative) !== normalizePluginPath(targetRelative)) return false;
+  const allowedOperation = typeof entry === "object" && entry ? String(entry.operation ?? "").toLowerCase() : "";
+  return !allowedOperation || allowedOperation === operation || allowedOperation === "write" || (allowedOperation === "modify" && operation === "create");
+}
+
+function inferNativeWriteOperation(projectDir: string, toolName: string, targetPath: string): "create" | "modify" {
+  if (normalizeToolName(toolName) === "edit") return "modify";
+  const targetRelative = pluginTargetToProjectRelative(projectDir, targetPath);
+  const absolutePath = targetRelative ? resolve(projectDir, targetRelative) : resolve(projectDir, targetPath);
+  return existsSync(absolutePath) ? "modify" : "create";
+}
+
+function localNativeWriteAllowDecision(
+  projectDir: string,
+  targetPath: string,
+  operation: "create" | "modify",
+  args: Record<string, any>,
+): { allowed: boolean; workItemId?: string; reason?: string } {
+  const targetRelative = pluginTargetToProjectRelative(projectDir, targetPath);
+  if (!targetRelative) return { allowed: false, reason: "target_outside_project" };
+  const normalizedTarget = normalizePluginPath(targetRelative);
+  if (normalizedTarget.startsWith(".specforge/project/")) {
+    return { allowed: false, reason: "project_spec_writes_require_merge_runner" };
+  }
+  const runtimeState = readRuntimeState(projectDir);
+  const candidates = candidateNativeWriteWorkItems(projectDir, args);
+  if (candidates.length === 0) return { allowed: false, reason: "no_implementation_running_work_item" };
+  for (const workItemId of candidates) {
+    const authoritativeState = getAuthoritativeState(runtimeState, workItemId);
+    if (authoritativeState !== "implementation_running") continue;
+    const wi = readWorkItemMetadata(projectDir, workItemId);
+    if (!wi) continue;
+    if (wi.code_change_allowed !== true) continue;
+    if (wi.code_permission_revoked === true) continue;
+    const allowedFiles = Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [];
+    if (allowedFiles.some((entry: any) => allowedWriteEntryMatches(projectDir, entry, targetRelative, operation))) {
+      return { allowed: true, workItemId };
+    }
+  }
+  return { allowed: false, reason: "target_not_in_allowed_write_files" };
 }
 
 function createNativeWriteTool(projectDir: string) {
