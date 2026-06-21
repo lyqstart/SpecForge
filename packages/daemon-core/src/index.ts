@@ -139,3 +139,21 @@ export type {
   V12ShellWriteRisk,
   V12WriteGuardAuditEvent,
 } from './tools/lib/write-guard-preflight-v12';
+export {
+  createExtensionRequest,
+  createExtensionProposal,
+  validateExtensionProposal,
+  createEmptyExtensionRegistry,
+  mergeExtensionRegistry,
+  createParentResumeToken,
+  shouldTriggerExtensionSubflow,
+  SF_EXTENSION_SUBFLOW_V12_CONTRACT,
+} from './tools/lib/extension-subflow-v12';
+export type {
+  V12ExtensionKind,
+  V12ExtensionRequestArtifact,
+  V12ExtensionProposalArtifact,
+  V12ExtensionRegistry,
+  V12ExtensionMergeResult,
+  V12ParentResumeToken,
+} from './tools/lib/extension-subflow-v12';
