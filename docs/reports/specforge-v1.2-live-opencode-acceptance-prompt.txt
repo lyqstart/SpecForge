@@ -1,0 +1,24 @@
+# SpecForge v1.2 Live OpenCode Acceptance Prompt
+
+Please run this in a temporary real OpenCode project to validate v1.2 integrated behavior:
+
+1. Initialize or use SpecForge in the project.
+2. Create a feature_spec that generates a project spec candidate.
+3. After user approval, merge the candidate into .specforge/project/** and verify project spec version increments.
+4. Run a quick_change and verify it does not modify project spec but produces no-spec-impact evidence.
+5. Attempt a code write before implementation_running; Write Guard must deny it.
+6. Enable code permission and write an allowed file; it must pass.
+7. Attempt out-of-scope write; it must produce blocked_write_attempts or violation and close_gate must not pass.
+8. Trigger a missing artifact type extension request and generate proposal.
+9. Approve the extension, merge extension_registry.json, and return to parent workflow.
+10. Legal path must close; illegal write path must become blocked or gates_failed.
+
+Required evidence:
+
+- WI ID
+- events.jsonl state chain
+- project spec version change
+- no-spec-impact evidence
+- write_guard.preflight / write_guard.violation evidence
+- extension request/proposal/registry merge evidence
+- close_gate result
