@@ -52,6 +52,78 @@ const V11_FILETYPE_TO_FILENAME = new Map(
   Object.entries(V11_FILENAME_MAP).map(([filename, fileType]) => [fileType, filename]),
 );
 
+function normalizeModuleId(value: unknown): string {
+  const normalized = String(value ?? '')
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/^modules\//i, '')
+    .replace(/\/.*$/, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return normalized || 'core';
+}
+
+function readFrontMatterField(content: string, names: string[]): string | undefined {
+  const text = String(content ?? '');
+  const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(text);
+  if (!match) return undefined;
+  const frontMatter = match[1];
+  const lines = frontMatter.split(/\r?\n/);
+  for (const line of lines) {
+    const colon = line.indexOf(':');
+    if (colon < 0) continue;
+    const key = line.slice(0, colon).trim();
+    if (!names.includes(key)) continue;
+    const raw = line.slice(colon + 1).split('#')[0]?.trim() ?? '';
+    const value = raw.replace(/^['"]|['"]$/g, '').trim();
+    if (value) return value;
+  }
+  return undefined;
+}
+
+function inferCandidateModuleIdFromContent(content: string): string {
+  const targetModulePath = readFrontMatterField(content, ['target_module_path']);
+  if (targetModulePath) return normalizeModuleId(targetModulePath);
+  const moduleId = readFrontMatterField(content, ['module_id', 'module']);
+  if (moduleId) return normalizeModuleId(moduleId);
+  return 'core';
+}
+
+function inferCandidateModuleIdFromEntry(entry: any, candidatePath?: string): string {
+  const explicit =
+    entry?.module_id ??
+    entry?.module ??
+    entry?.target_module_path ??
+    entry?.modulePath ??
+    entry?.module_path;
+  if (explicit) return normalizeModuleId(explicit);
+
+  const candidates = [
+    normalizeCandidatePath(entry?.target_path),
+    normalizeCandidatePath(entry?.candidate_path),
+    normalizeCandidatePath(entry?.path),
+    normalizeCandidatePath(candidatePath),
+  ];
+
+  for (const candidate of candidates) {
+    const projectMatch = /(?:^|\/)(?:\.specforge\/project\/)?modules\/([^/]+)\//.exec(candidate);
+    if (projectMatch?.[1]) return normalizeModuleId(projectMatch[1]);
+    const stagingMatch = /(?:^|\/)candidates\/project\/modules\/([^/]+)\//.exec(candidate);
+    if (stagingMatch?.[1]) return normalizeModuleId(stagingMatch[1]);
+  }
+
+  return 'core';
+}
+
+function candidateModulePath(moduleId: string, kind: 'requirements' | 'design'): string {
+  return 'candidates/project/modules/' + normalizeModuleId(moduleId) + '/' + kind + '.candidate.md';
+}
+
+function projectModuleTargetPath(moduleId: string, kind: 'requirements' | 'design'): string {
+  return '.specforge/project/modules/' + normalizeModuleId(moduleId) + '/' + kind + '.md';
+}
+
 function mirrorSpecCandidateArtifacts(
   baseDir: string,
   workItemId: string,
@@ -60,13 +132,17 @@ function mirrorSpecCandidateArtifacts(
   primaryTargetPath: string,
 ): void {
   const normalizedTargetFilename = targetFilename.replace(/\\/g, '/');
+  const moduleId = inferCandidateModuleIdFromContent(content);
+  const requirementsCandidate = candidateModulePath(moduleId, 'requirements');
+  const designCandidate = candidateModulePath(moduleId, 'design');
+
   const canonicalMirrors: Record<string, string[]> = {
-    'requirements.md': ['candidates/project/modules/core/requirements.candidate.md'],
-    'design.md': ['candidates/project/modules/core/design.candidate.md'],
+    'requirements.md': [requirementsCandidate],
+    'design.md': [designCandidate],
     'tasks.md': ['candidates/tasks.md'],
     'trace_delta.md': ['candidates/trace_delta.md'],
-    'candidates/project/modules/core/requirements.candidate.md': ['requirements.md'],
-    'candidates/project/modules/core/design.candidate.md': ['design.md'],
+    [requirementsCandidate]: ['requirements.md'],
+    [designCandidate]: ['design.md'],
     'candidates/tasks.md': ['tasks.md'],
     'candidates/trace_delta.md': ['trace_delta.md'],
   };
@@ -82,7 +158,6 @@ function mirrorSpecCandidateArtifacts(
     fs.writeFileSync(mirrorPath, content, 'utf-8');
   }
 }
-
 function normalizeToken(value: unknown): string {
   return String(value ?? '')
     .toLowerCase()
@@ -117,19 +192,18 @@ function inferCanonicalFileType(args: Record<string, unknown>): string | null {
   return null;
 }
 
-function resolveTargetFilename(fileType: string): string | null {
+function resolveTargetFilename(fileType: string, content = ''): string | null {
   if (fileType === 'requirements') return 'requirements.md';
   if (fileType === 'design') return 'design.md';
   if (fileType === 'requirements_delta') return 'requirements_delta.md';
   if (fileType === 'design_delta') return 'design_delta.md';
-  if (fileType === 'candidate_requirements') return 'candidates/project/modules/core/requirements.candidate.md';
-  if (fileType === 'candidate_design') return 'candidates/project/modules/core/design.candidate.md';
+  if (fileType === 'candidate_requirements') return candidateModulePath(inferCandidateModuleIdFromContent(content), 'requirements');
+  if (fileType === 'candidate_design') return candidateModulePath(inferCandidateModuleIdFromContent(content), 'design');
   if (fileType === 'candidate_tasks') return 'candidates/tasks.md';
   if (fileType === 'candidate_trace_delta') return 'candidates/trace_delta.md';
   if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType;
   return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null;
 }
-
 function isJsonArtifact(filename: string): boolean {
   return filename.endsWith('.json');
 }
@@ -230,17 +304,18 @@ function canonicalCandidatePathByType(entry: any, candidatePath: string): string
   const candidateType = String(entry?.type ?? '').toLowerCase();
   const targetPath = normalizeCandidatePath(entry?.target_path);
   const normalizedPath = normalizeCandidatePath(candidatePath);
+  const moduleId = inferCandidateModuleIdFromEntry(entry, normalizedPath);
 
   if (
     candidateType === 'requirements' ||
     candidateType === 'requirement' ||
     normalizedPath === 'requirements.md' ||
-    normalizedPath === '.specforge/work-items/wi-0001/requirements.md' ||
     normalizedPath === 'candidates/requirements.md' ||
     normalizedPath.endsWith('/requirements.md') ||
+    normalizedPath.endsWith('/requirements.candidate.md') ||
     targetPath.endsWith('/requirements.md')
   ) {
-    return 'candidates/project/modules/core/requirements.candidate.md';
+    return candidateModulePath(moduleId, 'requirements');
   }
 
   if (
@@ -248,9 +323,10 @@ function canonicalCandidatePathByType(entry: any, candidatePath: string): string
     normalizedPath === 'design.md' ||
     normalizedPath === 'candidates/design.md' ||
     normalizedPath.endsWith('/design.md') ||
+    normalizedPath.endsWith('/design.candidate.md') ||
     targetPath.endsWith('/design.md')
   ) {
-    return 'candidates/project/modules/core/design.candidate.md';
+    return candidateModulePath(moduleId, 'design');
   }
 
   if (
@@ -283,7 +359,9 @@ function canonicalizeCandidateEntry(entry: any): any {
   const canonicalPath = canonicalCandidatePathByType(entry, candidatePath);
   if (!canonicalPath) return entry;
 
+  const moduleId = inferCandidateModuleIdFromEntry(entry, candidatePath);
   const normalizedEntry = { ...entry };
+
   if (Object.prototype.hasOwnProperty.call(normalizedEntry, 'candidate_path')) {
     normalizedEntry.candidate_path = canonicalPath;
   }
@@ -296,9 +374,20 @@ function canonicalizeCandidateEntry(entry: any): any {
   ) {
     normalizedEntry.path = canonicalPath;
   }
+
+  const candidateType = String(normalizedEntry.type ?? '').toLowerCase();
+  if (candidateType === 'requirements' || candidateType === 'requirement') {
+    normalizedEntry.target_path = projectModuleTargetPath(moduleId, 'requirements');
+  }
+  if (candidateType === 'design') {
+    normalizedEntry.target_path = projectModuleTargetPath(moduleId, 'design');
+  }
+  if (!normalizedEntry.module_id && (candidateType === 'requirements' || candidateType === 'requirement' || candidateType === 'design')) {
+    normalizedEntry.module_id = moduleId;
+  }
+
   return normalizedEntry;
 }
-
 function normalizeCoreJsonArtifact(
   filename: string,
   content: string,
@@ -357,10 +446,11 @@ function normalizeCoreJsonArtifact(
     }
 
     const preliminary = { ...canonicalParsed, workflow_path: canonicalParsed.workflow_path ?? workflowPath };
-    const entries =
+    const rawEntries =
       Array.isArray(canonicalParsed.entries) && canonicalParsed.entries.length > 0
         ? canonicalParsed.entries
         : inferManifestEntries(preliminary, wiDir);
+    const entries = Array.isArray(rawEntries) ? rawEntries.map(canonicalizeCandidateEntry) : rawEntries;
 
     const normalized = {
       ...canonicalParsed,
@@ -472,7 +562,7 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
   const inferredExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (inferredExecutorRejection) return inferredExecutorRejection;
 
-  const targetFilename = resolveTargetFilename(fileType);
+  const targetFilename = resolveTargetFilename(fileType, content);
 
   if (!targetFilename && String(args['file_type']) === 'work_log') {
     return writeArtifact(
