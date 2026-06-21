@@ -160,7 +160,7 @@ export async function writeArtifact(
     // 4. 确定写入内容
     let finalContent: string
 
-    if (input.template === "verification_report") {
+    if (input.template === "verification_report" && input.file_type !== "work_log") {
       // 模板渲染模式：将 JSON content 渲染为 Markdown
       const rendered = renderVerificationReport(input.content)
       if (rendered === null) {

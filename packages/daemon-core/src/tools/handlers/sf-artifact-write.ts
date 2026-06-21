@@ -200,7 +200,7 @@ function resolveTargetFilename(fileType: string, content = ''): string | null {
   if (fileType === 'candidate_requirements') return candidateModulePath(inferCandidateModuleIdFromContent(content), 'requirements');
   if (fileType === 'candidate_design') return candidateModulePath(inferCandidateModuleIdFromContent(content), 'design');
   if (fileType === 'candidate_tasks') return 'candidates/tasks.md';
-  if (fileType === 'candidate_trace_delta') return 'candidates/trace_delta.md';
+  if (fileType === 'candidate_trace_delta') return 'candidates/trace_delta.md'; if (fileType === 'extension_request') return 'extension_request.json'; if (fileType === 'extension_candidate') return 'candidates/extension_candidate.json'; if (fileType === 'extension_delta') return 'candidates/extension_delta.json';
   if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType;
   return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null;
 }
