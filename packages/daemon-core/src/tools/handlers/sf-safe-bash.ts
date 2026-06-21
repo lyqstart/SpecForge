@@ -3,10 +3,11 @@ import { safeBashExecute } from '../lib/sf_safe_bash_core';
 import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
 import { checkHardStop } from '../lib/hard-stop-latch';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { enforceRuntimeWriteGuardForShell } from '../lib/write-guard-runtime-v12';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-const VALID_ACTOR_ROLES: ReadonlySet<ActorRole> = new Set(Object.values(ACTOR_ROLES));
+const VALID_ACTOR_ROLES: ReadonlySet<string> = new Set(Object.values(ACTOR_ROLES));
 
 function extractCallerRole(agent: unknown): string | undefined {
   if (typeof agent !== 'string' || !agent) return undefined;
@@ -39,21 +40,14 @@ function findActiveWorkItemId(projectRoot: string): string | null {
 function classifyWorkItemPathBashAccess(command: string): 'read' | 'write' | 'unknown' {
   const normalized = command.trim().toLowerCase();
   const writeLike =
-    /(?:^|[;&|]\s*)(set-content|add-content|out-file|new-item|copy-item|move-item|remove-item|del|erase|rm|rmdir|mkdir|ni|cp|mv|touch)\b/.test(
-      normalized,
-    ) ||
+    /(?:^|[;&|]\s*)(set-content|add-content|out-file|new-item|copy-item|move-item|remove-item|del|erase|rm|rmdir|mkdir|ni|cp|mv|touch)\b/.test(normalized) ||
     />\s*[^\s]*\.specforge[\\/]work-items[\\/]/i.test(command) ||
     /\.specforge[\\/]work-items[\\/].*(?:>|\|\s*tee(?:-object)?\b)/i.test(command);
-
   if (writeLike) return 'write';
-
   const readLike =
-    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|select-string|findstr)\b/.test(
-      normalized,
-    ) ||
+    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|select-string|findstr)\b/.test(normalized) ||
     /(?:^|[;&|]\s*)certutil\s+-hashfile\b/.test(normalized) ||
     /(?:^|[;&|]\s*)(sha256sum|shasum|fciv)\b/.test(normalized);
-
   if (readLike) return 'read';
   return 'unknown';
 }
@@ -61,7 +55,6 @@ function classifyWorkItemPathBashAccess(command: string): 'read' | 'write' | 'un
 registerHandler('sf_safe_bash', async (args, context, _deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const callerRole = extractCallerRole((context as Record<string, unknown> | undefined)?.agent);
-
   const activeWiId = findActiveWorkItemId(baseDir);
   if (activeWiId) {
     const { blocked, record } = checkHardStop(baseDir, activeWiId);
@@ -70,7 +63,7 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
         success: false,
         error:
           `HARD_STOP_ACTIVE: Work item ${activeWiId} is blocked.\n` +
-          `Reason: ${record!.reason}. Source: ${record!.source_tool}. ` +
+          `Reason: ${record!.reason}.\nSource: ${record!.source_tool}.\n` +
           `sf_safe_bash is blocked during hard_stop.`,
         hard_stop: true,
         hard_stop_record: record,
@@ -80,10 +73,8 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
 
   const command = (args['command'] as string) ?? '';
   const WI_ARTIFACT_PATTERN = /\.specforge[\\/]work-items[\\/]/i;
-
   if (WI_ARTIFACT_PATTERN.test(command)) {
     const access = classifyWorkItemPathBashAccess(command);
-
     if (access === 'write') {
       return {
         success: false,
@@ -96,7 +87,6 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
         blocked_command: command.slice(0, 200),
       };
     }
-
     if (access === 'unknown') {
       return {
         success: false,
@@ -109,6 +99,29 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
         blocked_command: command.slice(0, 200),
       };
     }
+  }
+
+  const runtimeGuard = enforceRuntimeWriteGuardForShell({
+    projectRoot: baseDir,
+    workItemId: activeWiId,
+    command,
+    cwd: args['cwd'] as string | undefined,
+    callerRole,
+    tool: 'sf_safe_bash',
+  });
+
+  if (runtimeGuard.checked && !runtimeGuard.allowed) {
+    return {
+      success: false,
+      error:
+        'WRITE_GUARD_RUNTIME_BLOCKED: sf_safe_bash refused to execute a write command before it could modify files.\n' +
+        'Violations: ' + runtimeGuard.violations.join('; '),
+      hard_stop: runtimeGuard.hard_stop === true,
+      policy_violation: true,
+      retry_allowed: false,
+      blocked_command: command.slice(0, 240),
+      write_guard_targets: runtimeGuard.targets,
+    };
   }
 
   return safeBashExecute(

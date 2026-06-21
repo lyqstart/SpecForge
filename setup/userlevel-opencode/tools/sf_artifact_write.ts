@@ -29,7 +29,7 @@ export default tool({
         "evidence_manifest",
         "work_log",
         "review_report",
-        "agent_run_result",
+        "agent_run_result", "extension_request", "extension_candidate", "extension_delta",
       ],
     },
     content: {

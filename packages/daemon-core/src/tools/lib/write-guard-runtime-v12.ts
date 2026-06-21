@@ -1,0 +1,216 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { checkWrite } from './write-guard-v11';
+import { appendWriteGuardLog } from './write-guard-log';
+import { setHardStop } from './hard-stop-latch';
+
+export type RuntimeWriteOperation = 'create' | 'modify' | 'delete';
+
+export interface RuntimeWriteTarget {
+  path: string;
+  operation: RuntimeWriteOperation;
+}
+
+export interface RuntimeWriteGuardResult {
+  checked: boolean;
+  allowed: boolean;
+  targets: RuntimeWriteTarget[];
+  violations: string[];
+  hard_stop?: boolean;
+}
+
+function normalizeSlashes(value: string): string {
+  return String(value ?? '').replace(/\\/g, '/').replace(/\/+/g, '/');
+}
+
+function stripQuotes(value: string): string {
+  return String(value ?? '').trim().replace(/^['"]|['"]$/g, '');
+}
+
+function uniqueTargets(targets: RuntimeWriteTarget[]): RuntimeWriteTarget[] {
+  const seen = new Set<string>();
+  const result: RuntimeWriteTarget[] = [];
+  for (const target of targets) {
+    const key = target.operation + ':' + normalizeSlashes(target.path).toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(target);
+  }
+  return result;
+}
+
+function extractPowerShellArgument(command: string, verb: string, namedArgs: string[]): string[] {
+  const results: string[] = [];
+  const namePattern = namedArgs.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  const quoted = new RegExp('\\b' + verb + '\\b[\\s\\S]{0,600}?-(?:' + namePattern + ')\\s+["\\']([^"\\']+)["\\']', 'ig');
+  const unquoted = new RegExp('\\b' + verb + '\\b[\\s\\S]{0,600}?-(?:' + namePattern + ')\\s+([^\\s;|]+)', 'ig');
+  let match: RegExpExecArray | null;
+  while ((match = quoted.exec(command)) !== null) results.push(stripQuotes(match[1]));
+  while ((match = unquoted.exec(command)) !== null) results.push(stripQuotes(match[1]));
+  return results;
+}
+
+export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] {
+  const text = String(command ?? '');
+  const targets: RuntimeWriteTarget[] = [];
+
+  for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath'])) targets.push({ path: p, operation: 'create' });
+  for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath'])) targets.push({ path: p, operation: 'modify' });
+  for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath'])) targets.push({ path: p, operation: 'create' });
+  for (const p of extractPowerShellArgument(text, 'New-Item', ['Path', 'LiteralPath', 'Name'])) targets.push({ path: p, operation: 'create' });
+  for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath'])) targets.push({ path: p, operation: 'delete' });
+  for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination'])) targets.push({ path: p, operation: 'create' });
+  for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination'])) targets.push({ path: p, operation: 'create' });
+
+  const redirection = /(?:^|[\s;|])(?:1>|2>|>>|>)\s*["']?([^"'\s;|]+)["']?/g;
+  let match: RegExpExecArray | null;
+  while ((match = redirection.exec(text)) !== null) targets.push({ path: stripQuotes(match[1]), operation: 'modify' });
+
+  const tee = /\btee(?:-object)?\s+(?:-FilePath\s+)?["']?([^"'\s;|]+)["']?/ig;
+  while ((match = tee.exec(text)) !== null) targets.push({ path: stripQuotes(match[1]), operation: 'modify' });
+
+  const shellCommands: Array<[RegExp, RuntimeWriteOperation]> = [
+    [/\btouch\s+["']?([^"'\s;|]+)["']?/ig, 'create'],
+    [/\brm\s+(?:-[a-zA-Z]+\s+)*["']?([^"'\s;|]+)["']?/ig, 'delete'],
+    [/\bcp\s+["']?[^"'\s;|]+["']?\s+["']?([^"'\s;|]+)["']?/ig, 'create'],
+    [/\bmv\s+["']?[^"'\s;|]+["']?\s+["']?([^"'\s;|]+)["']?/ig, 'create'],
+  ];
+  for (const [pattern, operation] of shellCommands) {
+    while ((match = pattern.exec(text)) !== null) targets.push({ path: stripQuotes(match[1]), operation });
+  }
+
+  return uniqueTargets(targets.filter((target) => target.path.length > 0));
+}
+
+function toProjectRelative(projectRoot: string, cwd: string | undefined, targetPath: string): { relative?: string; violation?: string } {
+  const cleaned = stripQuotes(targetPath);
+  if (!cleaned) return { violation: 'empty target path' };
+  const base = cwd && path.isAbsolute(cwd) ? cwd : projectRoot;
+  const absolute = path.isAbsolute(cleaned) ? path.resolve(cleaned) : path.resolve(base, cleaned);
+  const projectAbs = path.resolve(projectRoot);
+  const rel = path.relative(projectAbs, absolute);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    return { violation: 'write target is outside project root: ' + cleaned };
+  }
+  return { relative: normalizeSlashes(rel) };
+}
+
+function readWorkItem(projectRoot: string, workItemId: string): any | null {
+  try {
+    const wiPath = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json');
+    return JSON.parse(fs.readFileSync(wiPath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+function workItemDir(projectRoot: string, workItemId: string): string {
+  return path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
+}
+
+export function enforceRuntimeWriteGuardForShell(input: {
+  projectRoot: string;
+  workItemId: string | null;
+  command: string;
+  cwd?: string;
+  callerRole?: string;
+  tool?: string;
+}): RuntimeWriteGuardResult {
+  const targets = extractShellWriteTargets(input.command);
+  if (targets.length === 0) return { checked: false, allowed: true, targets: [], violations: [] };
+
+  if (!input.workItemId) {
+    return { checked: true, allowed: false, targets, violations: ['no active work_item_id for shell write command'], hard_stop: false };
+  }
+
+  const wi = readWorkItem(input.projectRoot, input.workItemId);
+  if (!wi) {
+    return { checked: true, allowed: false, targets, violations: ['work_item.json not found for shell write guard'], hard_stop: true };
+  }
+
+  const actor = (input.callerRole && Object.values(ACTOR_ROLES).includes(input.callerRole as ActorRole))
+    ? (input.callerRole as ActorRole)
+    : ACTOR_ROLES.agent;
+
+  const allViolations: string[] = [];
+  const normalizedTargets: RuntimeWriteTarget[] = [];
+
+  for (const target of targets) {
+    const resolved = toProjectRelative(input.projectRoot, input.cwd, target.path);
+    const relative = resolved.relative ?? target.path;
+    normalizedTargets.push({ path: relative, operation: target.operation });
+
+    if (resolved.violation) {
+      allViolations.push(resolved.violation);
+      appendWriteGuardLog(workItemDir(input.projectRoot, input.workItemId), {
+        timestamp: new Date().toISOString(),
+        path: relative,
+        operation: target.operation,
+        actor,
+        allowed: false,
+        violations: [resolved.violation],
+        tool: input.tool ?? 'sf_safe_bash',
+        command: input.command,
+      });
+      continue;
+    }
+
+    if (actor !== ACTOR_ROLES.mergeRunner && wi.status !== 'implementation_running') {
+      allViolations.push('write requires implementation_running state: current=' + wi.status);
+    }
+
+    const check = checkWrite({
+      hasActiveWI: true,
+      workItem: {
+        work_item_id: String(wi.work_item_id ?? input.workItemId),
+        status: String(wi.status ?? ''),
+        code_change_allowed: wi.code_change_allowed === true,
+        allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [],
+        workflow_path: wi.workflow_path ?? null,
+      },
+      callerRole: actor,
+      isFrozen: false,
+    }, relative, target.operation);
+
+    if (!check.allowed) allViolations.push(...check.violations);
+
+    appendWriteGuardLog(workItemDir(input.projectRoot, input.workItemId), {
+      timestamp: new Date().toISOString(),
+      path: relative,
+      operation: target.operation,
+      actor,
+      allowed: check.allowed && allViolations.length === 0,
+      violations: check.allowed ? [] : check.violations,
+      tool: input.tool ?? 'sf_safe_bash',
+      command: input.command,
+    });
+  }
+
+  if (allViolations.length > 0) {
+    setHardStop(input.projectRoot, input.workItemId, 'WRITE_GUARD_RUNTIME_BLOCKED: ' + allViolations.join('; '), input.tool ?? 'sf_safe_bash');
+    return { checked: true, allowed: false, targets: normalizedTargets, violations: allViolations, hard_stop: true };
+  }
+
+  return { checked: true, allowed: true, targets: normalizedTargets, violations: [] };
+}
+
+export function parseChangedFilesAuditPass(auditText: string): { passed: boolean; reason?: string } {
+  const text = String(auditText ?? '');
+  if (!text.trim()) return { passed: false, reason: 'changed_files_audit.md is empty' };
+  if (/##\s*Result:\s*FAIL/i.test(text)) return { passed: false, reason: 'changed_files_audit result is FAIL' };
+  if (!/##\s*Result:\s*PASS/i.test(text)) return { passed: false, reason: 'changed_files_audit result is not PASS' };
+  const numericChecks = [
+    { label: 'Out of scope', pattern: /-\s*Out of scope:\s*([0-9]+)/i },
+    { label: 'Violations', pattern: /-\s*Violations:\s*([0-9]+)/i },
+    { label: 'Blocked write attempts', pattern: /-\s*Blocked write attempts:\s*([0-9]+)/i },
+  ];
+  for (const check of numericChecks) {
+    const match = check.pattern.exec(text);
+    if (match && Number(match[1]) > 0) {
+      return { passed: false, reason: check.label + ' is ' + match[1] };
+    }
+  }
+  return { passed: true };
+}

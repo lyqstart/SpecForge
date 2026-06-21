@@ -22,7 +22,7 @@ import {
   formatWorkItemId,
 } from "../lib/work-item-id-validator";
 import { guardHardStop } from "../lib/hard-stop-latch";
-import { transitionWithEvidence } from "../lib/state-coordinator-v11";
+import { transitionWithEvidence } from "../lib/state-coordinator-v11"; import { parseChangedFilesAuditPass } from "../lib/write-guard-runtime-v12";
 
 /**
  * Allocate next WI-NNNN from existing .specforge/work-items directories.
@@ -390,6 +390,29 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   }
 
   const workItemDir = join(projectPath, SPEC_DIR_NAME, "work-items", workItemId);
+  if (fromState === "implementation_running" && toState === "implementation_done") {
+    const auditPath = join(workItemDir, "changed_files_audit.md");
+    let auditText = "";
+    try {
+      auditText = await readFile(auditPath, "utf-8");
+    } catch {
+      return {
+        success: false,
+        error: "IMPLEMENTATION_AUDIT_NOT_PASSED: changed_files_audit.md is required before implementation_done",
+        code: "IMPLEMENTATION_AUDIT_NOT_PASSED",
+        retry_allowed: true,
+      };
+    }
+    const auditCheck = parseChangedFilesAuditPass(auditText);
+    if (!auditCheck.passed) {
+      return {
+        success: false,
+        error: "IMPLEMENTATION_AUDIT_NOT_PASSED: " + (auditCheck.reason ?? "changed_files_audit is not clean"),
+        code: "IMPLEMENTATION_AUDIT_NOT_PASSED",
+        retry_allowed: true,
+      };
+    }
+  }
   const finalWorkflowType = resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change";
 
   let transitionResult;

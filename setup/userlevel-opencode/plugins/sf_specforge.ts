@@ -358,7 +358,7 @@ function isBashReadOnly(command: string): boolean {
 }
 
 function isBashWriteCommand(command: string): boolean {
-  const writePatterns = [
+  const V12_POWERSHELL_WRITE_PATTERN = /\b(Set-Content|Add-Content|Out-File|New-Item|Remove-Item|Copy-Item|Move-Item)\b/i; const writePatterns = [ V12_POWERSHELL_WRITE_PATTERN,
     /\bcp\b/,
     /\bmv\b/,
     /\brm\b/,
