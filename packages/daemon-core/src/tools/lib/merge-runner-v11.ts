@@ -106,6 +106,64 @@ function normalizeEntryForMerge(entry: ManifestEntry): ManifestEntry {
   };
 }
 
+function normalizeProjectTargetPathV12(value: unknown): string {
+  return String(value ?? '').replace(/\\/g, '/').replace(/^\.\//, '');
+}
+function inferModuleNameFromProjectTargetV12(value: unknown): string | null {
+  const normalized = normalizeProjectTargetPathV12(value);
+  const match = /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\//.exec(normalized) ??
+    /(?:^|\/)project\/modules\/([^/]+)\//.exec(normalized);
+  const moduleName = match?.[1]?.trim();
+  if (!moduleName || moduleName === 'core') return null;
+  return moduleName;
+}
+function modulePrefixFromNameV12(moduleName: string): string {
+  const prefix = String(moduleName ?? '')
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .map((part) => part.slice(0, 1).toUpperCase())
+    .join('');
+  return prefix || 'MOD';
+}
+function moduleIdFromNameV12(moduleName: string): string {
+  const normalized = String(moduleName ?? '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return 'MOD-' + (normalized || 'MODULE');
+}
+function hasRegisteredModuleV12(modules: any[], moduleName: string): boolean {
+  const expectedId = moduleIdFromNameV12(moduleName);
+  return modules.some((entry) => {
+    if (typeof entry === 'string') return entry === moduleName;
+    return entry?.name === moduleName || entry?.module === moduleName || entry?.module_id === expectedId;
+  });
+}
+function registerMergedProjectModulesV12(specManifest: any): void {
+  if (!specManifest || typeof specManifest !== 'object') return;
+  const targets = Array.isArray(specManifest.last_merged_targets) ? specManifest.last_merged_targets : [];
+  const moduleNames = Array.from(new Set(targets.map(inferModuleNameFromProjectTargetV12).filter(Boolean))) as string[];
+  if (moduleNames.length === 0) {
+    specManifest.modules = Array.isArray(specManifest.modules) ? specManifest.modules : [];
+    return;
+  }
+  const modules = Array.isArray(specManifest.modules) ? [...specManifest.modules] : [];
+  for (const moduleName of moduleNames) {
+    if (hasRegisteredModuleV12(modules, moduleName)) continue;
+    modules.push({
+      module_id: moduleIdFromNameV12(moduleName),
+      name: moduleName,
+      prefix: modulePrefixFromNameV12(moduleName),
+      requirements_file: 'project/modules/' + moduleName + '/requirements.md',
+      design_file: 'project/modules/' + moduleName + '/design.md',
+      trace_file: 'project/trace_matrix.md',
+      tasks_file: 'project/modules/' + moduleName + '/tasks.md',
+      status: 'active',
+    });
+  }
+  specManifest.modules = modules;
+}
 export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   const result: MergeResult = {
     success: true,
@@ -309,7 +367,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         .map((entry) => entry.target_path);
 
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
-      await fs.writeFile(projectSpecManifestPath, JSON.stringify(specManifest, null, 2) + '\n', 'utf-8');
+      registerMergedProjectModulesV12(specManifest); await fs.writeFile(projectSpecManifestPath, JSON.stringify(specManifest, null, 2) + '\n', 'utf-8');
       result.spec_manifest_updated = true;
     } catch (err: any) {
       result.errors.push('Failed to update spec_manifest.json: ' + err.message);
