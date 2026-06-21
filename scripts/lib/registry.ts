@@ -68,6 +68,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_code_permission.ts", type: "tool" },
   { path: "tools/sf_changed_files_audit.ts", type: "tool" },
   { path: "tools/sf_close_gate.ts", type: "tool" },
+  { path: "tools/sf_write_guard_preflight.ts", type: "tool" },
 
   // Tool 核心库（24 个）
   { path: "tools/lib/sf_artifact_write_core.ts", type: "tool_lib" },

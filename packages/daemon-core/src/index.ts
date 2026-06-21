@@ -127,3 +127,15 @@ export type {
   ProjectSpecStoreOptions,
   ProjectSpecVersionEventV12,
 } from './project/ProjectSpecStore';
+export {
+  sfWriteGuardPreflight,
+  classifyShellWriteRisk,
+  checkCloseGateWriteGuard,
+  SF_WRITE_GUARD_PREFLIGHT_V12_CONTRACT,
+} from './tools/lib/write-guard-preflight-v12';
+export type {
+  V12WriteGuardPreflightInput,
+  V12WriteGuardPreflightResult,
+  V12ShellWriteRisk,
+  V12WriteGuardAuditEvent,
+} from './tools/lib/write-guard-preflight-v12';
