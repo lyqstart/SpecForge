@@ -1,4 +1,13 @@
+
 /**
+ * V12-LIVE-CANDIDATE-MANIFEST-GATE-001:
+ * candidate_manifest_gate must not fail as a black box after entry-level
+ * candidate_path / target_path / candidate_exists checks have already passed.
+ *
+ * inferManifestEntries() now prefers explicit, valid manifest.entries. If this
+ * gate still fails, its report must include expected/actual normalized entries
+ * and mismatch reasons in follow-up work.
+ *//**
  * gate-runner-v11.ts — v1.1 标准 Gate Runner（§9）
  *
  * 依据：SpecForge 最终融合标准 v1.1
