@@ -1,12 +1,13 @@
 /**
  * sf_specforge.ts - SpecForge OpenCode Plugin with HARD Write Guard.
  *
- * v1.2 post-merge live hotfix fix10:
+ * v1.2 post-merge live hotfix fix11:
  * - Keep existing tool.execute.before / after guard path.
  * - Add same-name plugin tools for write/edit/apply_patch so OpenCode native
  *   filesystem tools cannot bypass SpecForge Write Guard in subagents.
  * - Same-name plugin tools take precedence over built-in tools in OpenCode.
  * - fix10: native shadow write/edit uses local state allowlist fallback when daemon checkWrite over-blocks authorized writes.
+ * - fix11: define plugin-local path normalization, avoid global hard_stop contagion, and prefer local authoritative WI allowlist before daemon fallback.
  */
 import { tool, type PluginInput } from "@opencode-ai/plugin";
 
@@ -39,6 +40,10 @@ function getWorkItemIdFromArgs(args: Record<string, any>): string | undefined {
 
 function normalizeToolName(toolName: string): string {
   return String(toolName ?? "").toLowerCase().replace(/[_-]/g, "");
+}
+
+function normalizeSlashes(value: string): string {
+  return String(value ?? "").replace(/\\/g, "/").replace(/\/+/g, "/");
 }
 
 function resolveClientPath(): string {
@@ -568,7 +573,14 @@ function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Re
   if (isValidWorkItemId(argWorkItemId)) {
     record = readHardStopRecord(projectDir, argWorkItemId);
   } else if (!argWorkItemId && (isWriteTool(toolName) || isShellTool(toolName))) {
-    record = findAnyValidHardStopRecord(projectDir);
+    // fix11: hard_stop is WI-scoped, not project-global.
+    // Do not let stale hard_stop.json from an unrelated historical WI block
+    // the current native write/edit path. Resolve only implementation_running
+    // candidates from the authoritative runtime projection and inspect those WIs.
+    for (const candidate of candidateNativeWriteWorkItems(projectDir, args)) {
+      record = readHardStopRecord(projectDir, candidate);
+      if (record) break;
+    }
   }
 
   if (record) {
@@ -681,12 +693,26 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
   }
 
   for (const targetPath of targets) {
+    // fix11: prefer local authoritative-state allowlist for native shadow tools.
+    // The daemon checkWrite endpoint may resolve a stale WI when OpenCode's native
+    // write tool does not carry work_item_id. If local runtime state proves that
+    // an implementation_running WI has code_change_allowed=true and explicitly
+    // allows this path, the write is allowed without consulting the stale daemon
+    // fallback. Unauthorized/out-of-scope writes still fall through to daemon and
+    // fail closed.
+    const localOperation = inferNativeWriteOperation(projectDir, toolName, targetPath);
+    const localDecision = localNativeWriteAllowDecision(projectDir, targetPath, localOperation, args);
+    if (localDecision.allowed) {
+      continue;
+    }
+
     let result: any;
     try {
       result = await daemonClient.checkWrite(targetPath, "agent", {
         tool: toolName,
         callID,
         directory: projectDir,
+        work_item_id: localDecision.workItemId ?? getWorkItemIdFromArgs(args),
       });
     } catch (e) {
       throw new Error(
@@ -695,11 +721,6 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
     }
 
     if (!result.allowed) {
-      const localOperation = inferNativeWriteOperation(projectDir, toolName, targetPath);
-      const localDecision = localNativeWriteAllowDecision(projectDir, targetPath, localOperation, args);
-      if (localDecision.allowed) {
-        continue;
-      }
       maybePersistHardStopFromGuardResult(projectDir, toolName, args, result);
       throw new Error(
         `[SF WriteGuard] BLOCKED write to "${targetPath}" by tool "${toolName}".
