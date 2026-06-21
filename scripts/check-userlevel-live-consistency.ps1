@@ -12,17 +12,27 @@ function Fail($Cause, $Next) {
 }
 
 function Get-Sha256($Path) {
-  return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+  $FullPath = [System.IO.Path]::GetFullPath($Path)
+  $Stream = [System.IO.File]::OpenRead($FullPath)
+  try {
+    $Sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+      $Bytes = $Sha.ComputeHash($Stream)
+      return (($Bytes | ForEach-Object { $_.ToString("x2") }) -join "")
+    } finally {
+      $Sha.Dispose()
+    }
+  } finally {
+    $Stream.Dispose()
+  }
 }
 
 function Get-RelativePathCompat($Base, $Path) {
   $BaseFull = [System.IO.Path]::GetFullPath($Base)
   $PathFull = [System.IO.Path]::GetFullPath($Path)
-
   if (-not $BaseFull.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
     $BaseFull = $BaseFull + [System.IO.Path]::DirectorySeparatorChar
   }
-
   $BaseUri = New-Object System.Uri($BaseFull)
   $PathUri = New-Object System.Uri($PathFull)
   $RelativeUri = $BaseUri.MakeRelativeUri($PathUri)
@@ -45,12 +55,8 @@ function IsDeployableSharedSourceFile($FilePath) {
   return $true
 }
 
-if (!(Test-Path $Repo)) {
-  Fail "Repo path not found: D:\code\temp\SpecForge" "Check repo path."
-}
-if (!(Test-Path $SetupRoot)) {
-  Fail "setup/userlevel-opencode not found." "Check repo checkout."
-}
+if (!(Test-Path $Repo)) { Fail "Repo path not found: D:\code\temp\SpecForge" "Check repo path." }
+if (!(Test-Path $SetupRoot)) { Fail "setup/userlevel-opencode not found." "Check repo checkout." }
 
 $LiveRoot = Resolve-LiveRoot
 if (!(Test-Path $LiveRoot)) {
@@ -59,29 +65,19 @@ if (!(Test-Path $LiveRoot)) {
 
 # Shared userlevel components are deployed directly below the OpenCode userlevel root.
 # Exclude local backup artifacts such as *.bak; these are not manifest/deployment sources.
-$ComponentRoots = @(
-  "plugins",
-  "agents",
-  "tools",
-  "skills"
-)
-
+$ComponentRoots = @( "plugins", "agents", "tools", "skills" )
 $SourceFiles = New-Object System.Collections.Generic.List[string]
 foreach ($Root in $ComponentRoots) {
   $Dir = Join-Path $SetupRoot $Root
   if (Test-Path $Dir) {
     Get-ChildItem $Dir -Recurse -File -Force | ForEach-Object {
-      if (IsDeployableSharedSourceFile $_.FullName) {
-        $SourceFiles.Add($_.FullName)
-      }
+      if (IsDeployableSharedSourceFile $_.FullName) { $SourceFiles.Add($_.FullName) }
     }
   }
 }
 
 $RootAgent = Join-Path $SetupRoot "AGENTS.md"
-if (Test-Path $RootAgent) {
-  $SourceFiles.Add($RootAgent)
-}
+if (Test-Path $RootAgent) { $SourceFiles.Add($RootAgent) }
 
 if ($SourceFiles.Count -eq 0) {
   Fail "No shared component source files found under setup/userlevel-opencode." "Check setup source layout."
@@ -90,7 +86,6 @@ if ($SourceFiles.Count -eq 0) {
 $Missing = New-Object System.Collections.Generic.List[string]
 $Mismatch = New-Object System.Collections.Generic.List[string]
 $Checked = 0
-
 foreach ($Source in $SourceFiles) {
   $Rel = Get-RelativePathCompat $SetupRoot $Source
   $Dest = Join-Path $LiveRoot ($Rel -replace "/", "\")
@@ -98,7 +93,6 @@ foreach ($Source in $SourceFiles) {
     $Missing.Add($Rel)
     continue
   }
-
   $SrcHash = Get-Sha256 $Source
   $DestHash = Get-Sha256 $Dest
   if ($SrcHash -ne $DestHash) {
@@ -108,13 +102,12 @@ foreach ($Source in $SourceFiles) {
   $Checked += 1
 }
 
-# Verify repository template library deployment separately. Use -Force so hidden
-# folders such as .specforge are included.
+# Verify repository template library deployment separately.
+# Use -Force so hidden folders such as .specforge are included.
 $TemplateMissing = New-Object System.Collections.Generic.List[string]
 $TemplateMismatch = New-Object System.Collections.Generic.List[string]
 $TemplateChecked = 0
 $LiveTemplatesRoot = Join-Path $LiveRoot "sf-user\templates"
-
 if (Test-Path $RepoTemplatesRoot) {
   Get-ChildItem $RepoTemplatesRoot -Recurse -File -Force | ForEach-Object {
     $Rel = Get-RelativePathCompat $RepoTemplatesRoot $_.FullName
@@ -145,22 +138,19 @@ Write-Host ("template_mismatch_files: " + $TemplateMismatch.Count)
 
 if ($Missing.Count -gt 0) {
   Write-Host "shared missing:"
-  $Missing | Select-Object -First 50 | ForEach-Object { Write-Host ("  " + $_) }
+  $Missing | Select-Object -First 50 | ForEach-Object { Write-Host (" " + $_) }
 }
-
 if ($Mismatch.Count -gt 0) {
   Write-Host "shared mismatch:"
-  $Mismatch | Select-Object -First 50 | ForEach-Object { Write-Host ("  " + $_) }
+  $Mismatch | Select-Object -First 50 | ForEach-Object { Write-Host (" " + $_) }
 }
-
 if ($TemplateMissing.Count -gt 0) {
   Write-Host "template missing:"
-  $TemplateMissing | Select-Object -First 50 | ForEach-Object { Write-Host ("  " + $_) }
+  $TemplateMissing | Select-Object -First 50 | ForEach-Object { Write-Host (" " + $_) }
 }
-
 if ($TemplateMismatch.Count -gt 0) {
   Write-Host "template mismatch:"
-  $TemplateMismatch | Select-Object -First 50 | ForEach-Object { Write-Host ("  " + $_) }
+  $TemplateMismatch | Select-Object -First 50 | ForEach-Object { Write-Host (" " + $_) }
 }
 
 if (
