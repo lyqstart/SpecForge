@@ -104,7 +104,47 @@ export function targetPathForCandidate(type: string, candidatePath: string): str
   return null;
 }
 
+function normalizeManifestPathForInferenceV12(value: unknown): string {
+  return String(value ?? '')
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '');
+}
+
+function normalizeManifestEntryForInferenceV12(entry: any): any {
+  const candidatePath = normalizeManifestPathForInferenceV12(entry?.candidate_path ?? entry?.path);
+  const targetPath = normalizeManifestPathForInferenceV12(entry?.target_path);
+  const normalized: any = {
+    candidate_path: candidatePath,
+    target_path: targetPath,
+  };
+  const type = String(entry?.type ?? '').trim();
+  if (type) normalized.type = type;
+  const moduleId = String(entry?.module_id ?? entry?.target_module ?? entry?.module ?? '').trim();
+  if (moduleId) normalized.module_id = moduleId;
+  return normalized;
+}
+
+function isUsableExplicitManifestEntryForInferenceV12(entry: any): boolean {
+  const normalized = normalizeManifestEntryForInferenceV12(entry);
+  return Boolean(
+    normalized.candidate_path &&
+    normalized.target_path &&
+    normalized.target_path.startsWith('.specforge/project/')
+  );
+}
+
+function preferExplicitManifestEntriesForInferenceV12(manifest: any): any[] | null {
+  const entries = Array.isArray(manifest?.entries) ? manifest.entries : [];
+  if (entries.length === 0) return null;
+  if (!entries.every(isUsableExplicitManifestEntryForInferenceV12)) return null;
+  return entries.map(normalizeManifestEntryForInferenceV12);
+}
 export function inferManifestEntries(manifest: any, workItemDir: string): ManifestEntry[] {
+  const explicitEntriesV12 = preferExplicitManifestEntriesForInferenceV12(manifest as any);
+  if (explicitEntriesV12) {
+    return explicitEntriesV12;
+  }
   const normalized: ManifestEntry[] = [];
   const rawEntries = Array.isArray(manifest?.entries) ? manifest.entries : [];
 
