@@ -9,6 +9,7 @@
  * - fix10: native shadow write/edit uses local state allowlist fallback when daemon checkWrite over-blocks authorized writes.
  * - fix11: define plugin-local path normalization, avoid global hard_stop contagion, and prefer local authoritative WI allowlist before daemon fallback.
  * - fix12: invalid/retryable work_item_id, including empty string, is non-persistent and must never create project-level hard_stop.
+ * - fix13: allow SpecForge runtime reports under .specforge/reports/** while keeping project/runtime/business writes guarded.
  */
 import { tool, type PluginInput } from "@opencode-ai/plugin";
 
@@ -464,6 +465,83 @@ function findGovernanceBypassReason(command: string, extra?: unknown): string | 
   return null;
 }
 
+function isSpecForgeReportsPathText(value: string): boolean {
+  const normalized = normalizeSlashes(String(value ?? "").trim().replace(/^file:\/+/i, "")).toLowerCase();
+  return /(^|\/)\.specforge\/reports(\/|$)/.test(normalized);
+}
+
+function isProtectedSpecForgeNonReportPathText(value: string): boolean {
+  const normalized = normalizeSlashes(String(value ?? "")).toLowerCase();
+  return (
+    /(^|\/)\.specforge\/project(\/|$)/.test(normalized) ||
+    /(^|\/)\.specforge\/runtime(\/|$)/.test(normalized) ||
+    /(^|\/)\.specforge\/work-items(\/|$)/.test(normalized) ||
+    /(^|\/)\.specforge\/logs(\/|$)/.test(normalized) ||
+    /(^|\/)\.specforge\/specs(\/|$)/.test(normalized) ||
+    /(^|\/)\.specforge\/cas(\/|$)/.test(normalized)
+  );
+}
+
+function stripShellPathToken(value: string): string {
+  return String(value ?? "")
+    .trim()
+    .replace(/^["']/, "")
+    .replace(/["']$/, "")
+    .replace(/[;,|&]+$/, "")
+    .trim();
+}
+
+function extractShellRedirectTargets(command: string): string[] {
+  const targets: string[] = [];
+  const text = String(command ?? "");
+  for (const match of text.matchAll(/(?:^|[^>])>>?\s*("[^"]+"|'[^']+'|[^\s;&|]+)/g)) {
+    const raw = match[1];
+    if (raw) targets.push(stripShellPathToken(raw));
+  }
+  return targets;
+}
+
+function extractPowerShellFileCmdletTargets(command: string): string[] {
+  const targets: string[] = [];
+  const text = String(command ?? "");
+  const cmdlet = String.raw`(?:Set-Content|Add-Content|Out-File|New-Item)`;
+  for (const match of text.matchAll(new RegExp(String.raw`\b${cmdlet}\b[^\r\n;&|]{0,400}?(?:-LiteralPath|-Path)\s+("[^"]+"|'[^']+'|[^\s;&|]+)`, "gi"))) {
+    const raw = match[1];
+    if (raw) targets.push(stripShellPathToken(raw));
+  }
+  for (const match of text.matchAll(new RegExp(String.raw`\b${cmdlet}\b[^\r\n;&|]{0,400}?(\.specforge[\\/][^\s;&|]+)`, "gi"))) {
+    const raw = match[1];
+    if (raw) targets.push(stripShellPathToken(raw));
+  }
+  return targets;
+}
+
+function isSpecForgeReportsShellWriteAllowed(projectDir: string, command: string, expectedFiles: string[]): boolean {
+  const text = String(command ?? "");
+  const compact = compactForGovernanceScan(text);
+  if (!compact.includes(".specforge/reports")) return false;
+  if (isProtectedSpecForgeNonReportPathText(text)) return false;
+
+  const declaredTargets = Array.isArray(expectedFiles) ? expectedFiles : [];
+  if (declaredTargets.length > 0) {
+    return declaredTargets.every((target) => isSpecForgeReportsOutputTarget(projectDir, target));
+  }
+
+  const explicitTargets = [
+    ...extractShellRedirectTargets(text),
+    ...extractPowerShellFileCmdletTargets(text),
+  ];
+
+  if (explicitTargets.length > 0) {
+    return explicitTargets.every((target) => isSpecForgeReportsPathText(target) || isSpecForgeReportsOutputTarget(projectDir, target));
+  }
+
+  const directoryOnlyReportCommand = /\b(mkdir|New-Item)\b/i.test(text) && isSpecForgeReportsPathText(text);
+  if (directoryOnlyReportCommand) return true;
+
+  return false;
+}
+
 function parseToolOutput(output: unknown): any | null {
   if (!output) return null;
   if (typeof output === "object") return output;
@@ -674,6 +752,10 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
   }
 
   for (const targetPath of targets) {
+    if (isSpecForgeReportsOutputTarget(projectDir, targetPath)) {
+      continue;
+    }
+
     // fix11: prefer local authoritative-state allowlist for native shadow tools.
     // The daemon checkWrite endpoint may resolve a stale WI when OpenCode's native
     // write tool does not carry work_item_id. If local runtime state proves that
@@ -741,6 +823,10 @@ async function beforeToolExecute(projectDir: string, input: any, output: any) {
     const expectedFiles = extractBashExpectedFiles(args);
 
     if (isWrite || expectedFiles.length > 0) {
+      if (isSpecForgeReportsShellWriteAllowed(projectDir, command, expectedFiles)) {
+        return;
+      }
+
       let result: any;
       try {
         result = await daemonClient.bashGuard(command, expectedFiles, {
@@ -887,6 +973,14 @@ function resolveToolTargetPath(args: Record<string, any>): string {
 
 function normalizePluginPath(value: string): string {
   return normalizeSlashes(String(value ?? "")).replace(/^\.\//, "").toLowerCase();
+}
+
+
+function isSpecForgeReportsOutputTarget(projectDir: string, targetPath: string): boolean {
+  const relativeTarget = pluginTargetToProjectRelative(projectDir, targetPath);
+  if (!relativeTarget) return false;
+  const normalized = normalizePluginPath(relativeTarget);
+  return normalized === ".specforge/reports" || normalized.startsWith(".specforge/reports/");
 }
 
 function pluginTargetToProjectRelative(projectDir: string, targetPath: string): string | null {
