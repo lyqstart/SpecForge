@@ -64,10 +64,31 @@ function allowedWriteEntryMatches(projectRoot: string, cwd: string | undefined, 
   return normalizePathForCompare(rel) === normalizePathForCompare(targetRelative);
 }
 
+function timestampValue(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  const text = String(value ?? '');
+  const numeric = Number(text);
+  if (Number.isFinite(numeric) && numeric > 0) return numeric;
+  return Date.parse(text) || 0;
+}
+
 function sortByFreshest(a: any, b: any): number {
-  const au = Date.parse(String(a?.updated_at ?? a?.last_updated_at ?? a?.created_at ?? '')) || 0;
-  const bu = Date.parse(String(b?.updated_at ?? b?.last_updated_at ?? b?.created_at ?? '')) || 0;
+  const au = timestampValue(a?.updated_at ?? a?.last_updated_at ?? a?.created_at);
+  const bu = timestampValue(b?.updated_at ?? b?.last_updated_at ?? b?.created_at);
   return bu - au;
+}
+
+function isParentDirectoryOfAnyTarget(directoryTarget: string, targets: string[]): boolean {
+  const directory = normalizePathForCompare(directoryTarget).replace(/\/+$/, '');
+  if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
+  return targets.some((target) => {
+    const normalized = normalizePathForCompare(target).replace(/\/+$/, '');
+    return normalized !== directory && normalized.startsWith(directory + '/');
+  });
+}
+
+function filterDirectoryPreparationTargets(targets: string[]): string[] {
+  return targets.filter((target) => !isParentDirectoryOfAnyTarget(target, targets));
 }
 
 export function findActiveWorkItemIdForWrite(
@@ -79,9 +100,11 @@ export function findActiveWorkItemIdForWrite(
   if (isValidWorkItemId(explicit)) return explicit;
 
   const cwd = args['cwd'] as string | undefined;
-  const targets = extractShellWriteTargets(command)
-    .map((target) => toProjectRelative(projectRoot, cwd, target.path))
-    .filter((value): value is string => typeof value === 'string');
+  const targets = filterDirectoryPreparationTargets(
+    extractShellWriteTargets(command)
+      .map((target) => toProjectRelative(projectRoot, cwd, target.path))
+      .filter((value): value is string => typeof value === 'string'),
+  );
 
   const running = readRuntimeWorkItems(projectRoot)
     .filter((item) => item?.current_state === 'implementation_running' || item?.status === 'implementation_running')

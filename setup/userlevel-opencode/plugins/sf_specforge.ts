@@ -8,8 +8,9 @@
  * - Same-name plugin tools take precedence over built-in tools in OpenCode.
  * - fix10: native shadow write/edit uses local state allowlist fallback when daemon checkWrite over-blocks authorized writes.
  * - fix11: define plugin-local path normalization, avoid global hard_stop contagion, and prefer local authoritative WI allowlist before daemon fallback.
- * - fix12: invalid/retryable work_item_id, including empty string, is non-persistent and must never create project-level hard_stop.
- * - fix13: allow SpecForge runtime reports under .specforge/reports/** while keeping project/runtime/business writes guarded.
+ * - stable-final: invalid/retryable work_item_id hard_stop remains non-persistent;
+ *   report writes bypass stale WI hard_stop; no-explicit-WI writes are delegated
+ *   to daemon scoped selection instead of scanning unrelated hard-stopped WIs.
  */
 import { tool, type PluginInput } from "@opencode-ai/plugin";
 
@@ -465,6 +466,7 @@ function findGovernanceBypassReason(command: string, extra?: unknown): string | 
   return null;
 }
 
+
 function isSpecForgeReportsPathText(value: string): boolean {
   const normalized = normalizeSlashes(String(value ?? "").trim().replace(/^file:\/+/i, "")).toLowerCase();
   return /(^|\/)\.specforge\/reports(\/|$)/.test(normalized);
@@ -516,6 +518,13 @@ function extractPowerShellFileCmdletTargets(command: string): string[] {
   return targets;
 }
 
+function isSpecForgeReportsOutputTarget(projectDir: string, targetPath: string): boolean {
+  const relativeTarget = pluginTargetToProjectRelative(projectDir, targetPath);
+  if (!relativeTarget) return false;
+  const normalized = normalizePluginPath(relativeTarget);
+  return normalized === ".specforge/reports" || normalized.startsWith(".specforge/reports/");
+}
+
 function isSpecForgeReportsShellWriteAllowed(projectDir: string, command: string, expectedFiles: string[]): boolean {
   const text = String(command ?? "");
   const compact = compactForGovernanceScan(text);
@@ -531,15 +540,12 @@ function isSpecForgeReportsShellWriteAllowed(projectDir: string, command: string
     ...extractShellRedirectTargets(text),
     ...extractPowerShellFileCmdletTargets(text),
   ];
-
   if (explicitTargets.length > 0) {
     return explicitTargets.every((target) => isSpecForgeReportsPathText(target) || isSpecForgeReportsOutputTarget(projectDir, target));
   }
 
   const directoryOnlyReportCommand = /\b(mkdir|New-Item)\b/i.test(text) && isSpecForgeReportsPathText(text);
-  if (directoryOnlyReportCommand) return true;
-
-  return false;
+  return directoryOnlyReportCommand;
 }
 
 function parseToolOutput(output: unknown): any | null {
@@ -587,12 +593,33 @@ function findAnyValidHardStopRecord(projectDir: string): any | null {
   return null;
 }
 
+function persistProjectLevelHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
+  try {
+    const { appendFileSync } = require("node:fs");
+    const runtimeDir = join(projectDir, ".specforge", "runtime");
+    mkdirSync(runtimeDir, { recursive: true });
+    const record = {
+      work_item_id: String(workItemId ?? ""),
+      invalid_work_item_id: !isValidWorkItemId(workItemId),
+      blocked: true,
+      reason,
+      source_tool: sourceTool,
+      created_at: new Date().toISOString(),
+    };
+    appendFileSync(join(runtimeDir, "hard_stops.jsonl"), JSON.stringify(record) + "\n", "utf-8");
+  } catch {
+    // best effort
+  }
+}
+
 function persistHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
   if (!isValidWorkItemId(workItemId)) {
     console.warn(
-      `[SF HardStop] NON_PERSISTENT_INVALID_WORK_ITEM_ID: Invalid/retryable work_item_id must not persist project-level hard_stop. work_item_id="${String(
-        workItemId ?? "",
-      )}" source=${sourceTool}. Reason: ${String(reason ?? "").slice(0, 240)}`,
+      `[SF HardStop] NON_PERSISTENT_INVALID_WORK_ITEM_ID: Invalid/retryable work_item_id must not persist project-level hard_stop.
+` +
+        `work_item_id="${String(workItemId ?? "")}" source=${sourceTool}.
+` +
+        `Reason: ${String(reason ?? "").slice(0, 240)}`,
     );
     return;
   }
@@ -627,26 +654,22 @@ function maybePersistHardStopFromGuardResult(
 
 function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Record<string, any>) {
   const argWorkItemId = getWorkItemIdFromArgs(args);
-  let record: any | null = null;
-
-  if (isValidWorkItemId(argWorkItemId)) {
-    record = readHardStopRecord(projectDir, argWorkItemId);
-  } else if (!argWorkItemId && (isWriteTool(toolName) || isShellTool(toolName))) {
-    // fix11: hard_stop is WI-scoped, not project-global.
-    // Do not let stale hard_stop.json from an unrelated historical WI block
-    // the current native write/edit path. Resolve only implementation_running
-    // candidates from the authoritative runtime projection and inspect those WIs.
-    for (const candidate of candidateNativeWriteWorkItems(projectDir, args)) {
-      record = readHardStopRecord(projectDir, candidate);
-      if (record) break;
-    }
+  if (!isValidWorkItemId(argWorkItemId)) {
+    // No explicit WI means the daemon-side scoped write guard must select the
+    // relevant implementation_running WI from the actual write target. Scanning
+    // every implementation_running WI here reintroduces global hard_stop
+    // contagion and blocks unrelated report/native writes.
+    return;
   }
 
+  const record = readHardStopRecord(projectDir, argWorkItemId);
   if (record) {
     throw new Error(
-      `[SF HardStop] BLOCKED: Work item ${record.work_item_id} has hard_stop active.\n` +
-        `Reason: ${record.reason}. Source: ${record.source_tool}. Tool "${toolName}" is not allowed.\n` +
-        `Only read/debug tools are permitted.`,
+      `[SF HardStop] BLOCKED: Work item ${record.work_item_id} has hard_stop active.
+` +
+        `Reason: ${record.reason}. Source: ${record.source_tool}. Tool "${toolName}" is not allowed.
+` +
+        `Only read/debug tools are permitted for that work item.`,
     );
   }
 }
@@ -752,10 +775,6 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
   }
 
   for (const targetPath of targets) {
-    if (isSpecForgeReportsOutputTarget(projectDir, targetPath)) {
-      continue;
-    }
-
     // fix11: prefer local authoritative-state allowlist for native shadow tools.
     // The daemon checkWrite endpoint may resolve a stale WI when OpenCode's native
     // write tool does not carry work_item_id. If local runtime state proves that
@@ -799,6 +818,15 @@ async function beforeToolExecute(projectDir: string, input: any, output: any) {
   const toolName = getToolName(input);
   const args = getHookArgs(input, output);
   const safeRead = SF_SAFE_READ_TOOLS.has(toolName);
+
+  if (isShellTool(toolName)) {
+    const command: string = args.command ?? args.cmd ?? args.input ?? "";
+    const expectedFiles = extractBashExpectedFiles(args);
+    if (isSpecForgeReportsShellWriteAllowed(projectDir, command, expectedFiles)) {
+      return;
+    }
+  }
+
   const shouldCheckHardStop = isWriteTool(toolName) || isShellTool(toolName) || (isSfTool(toolName) && !safeRead);
 
   if (shouldCheckHardStop) {
@@ -973,14 +1001,6 @@ function resolveToolTargetPath(args: Record<string, any>): string {
 
 function normalizePluginPath(value: string): string {
   return normalizeSlashes(String(value ?? "")).replace(/^\.\//, "").toLowerCase();
-}
-
-
-function isSpecForgeReportsOutputTarget(projectDir: string, targetPath: string): boolean {
-  const relativeTarget = pluginTargetToProjectRelative(projectDir, targetPath);
-  if (!relativeTarget) return false;
-  const normalized = normalizePluginPath(relativeTarget);
-  return normalized === ".specforge/reports" || normalized.startsWith(".specforge/reports/");
 }
 
 function pluginTargetToProjectRelative(projectDir: string, targetPath: string): string | null {
