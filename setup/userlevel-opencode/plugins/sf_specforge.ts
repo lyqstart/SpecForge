@@ -593,25 +593,6 @@ function findAnyValidHardStopRecord(projectDir: string): any | null {
   return null;
 }
 
-function persistProjectLevelHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
-  try {
-    const { appendFileSync } = require("node:fs");
-    const runtimeDir = join(projectDir, ".specforge", "runtime");
-    mkdirSync(runtimeDir, { recursive: true });
-    const record = {
-      work_item_id: String(workItemId ?? ""),
-      invalid_work_item_id: !isValidWorkItemId(workItemId),
-      blocked: true,
-      reason,
-      source_tool: sourceTool,
-      created_at: new Date().toISOString(),
-    };
-    appendFileSync(join(runtimeDir, "hard_stops.jsonl"), JSON.stringify(record) + "\n", "utf-8");
-  } catch {
-    // best effort
-  }
-}
-
 function persistHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
   if (!isValidWorkItemId(workItemId)) {
     console.warn(
