@@ -56,4 +56,25 @@ describe('v1.2 stable final live acceptance regressions', () => {
     const selected = findActiveWorkItemIdForWrite(root, {}, command);
     expect(selected).toBe('WI-0002');
   });
+  it('records blocked native writes against the owning WI before throwing', () => {
+    const pluginPath = path.resolve(__dirname, '../../../setup/userlevel-opencode/plugins/sf_specforge.ts');
+    const source = fs.readFileSync(pluginPath, 'utf-8');
+
+    expect(source).toContain('appendNativeBlockedWriteGuardLog');
+    expect(source).toContain('write_guard_log.jsonl');
+    expect(source).toContain('allowed: false');
+    expect(source).toContain('workItemId: activePermissionWorkItemId');
+    expect(source).toContain('target_not_in_allowed_write_files');
+    expect(source).toMatch(/appendNativeBlockedWriteGuardLog\([\s\S]*?maybePersistHardStopFromGuardResult/);
+  });
+
+  it('allows report output content to mention protected paths while checking only real report targets', () => {
+    const pluginPath = path.resolve(__dirname, '../../../setup/userlevel-opencode/plugins/sf_specforge.ts');
+    const source = fs.readFileSync(pluginPath, 'utf-8');
+
+    expect(source).toContain('Report content is allowed to mention protected paths');
+    expect(source).toContain('.specforge/project/** because it is evidence text, not a write target');
+    expect(source).not.toContain('if (isProtectedSpecForgeNonReportPathText(text)) return false;');
+  });
+
 });

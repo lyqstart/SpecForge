@@ -11,13 +11,16 @@
  * - stable-final: invalid/retryable work_item_id hard_stop remains non-persistent;
  *   report writes bypass stale WI hard_stop; no-explicit-WI writes are delegated
  *   to daemon scoped selection instead of scanning unrelated hard-stopped WIs.
+ * - stable-final-fix05: blocked native writes are written to the owning WI
+ *   write_guard_log.jsonl before throwing, so changed_files_audit and close_gate
+ *   cannot close a WI after an out-of-scope attempt.
  */
 import { tool, type PluginInput } from "@opencode-ai/plugin";
 
 const { join, resolve, dirname, isAbsolute, relative } = require("node:path");
 const { homedir } = require("node:os");
 const { pathToFileURL } = require("node:url");
-const { existsSync, mkdirSync, readFileSync, writeFileSync } = require("node:fs");
+const { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } = require("node:fs");
 
 const VALID_WI_ID = /^WI-(\d{3,4}|\d{8}-\d{4})$/;
 
@@ -529,7 +532,6 @@ function isSpecForgeReportsShellWriteAllowed(projectDir: string, command: string
   const text = String(command ?? "");
   const compact = compactForGovernanceScan(text);
   if (!compact.includes(".specforge/reports")) return false;
-  if (isProtectedSpecForgeNonReportPathText(text)) return false;
 
   const declaredTargets = Array.isArray(expectedFiles) ? expectedFiles : [];
   if (declaredTargets.length > 0) {
@@ -541,11 +543,14 @@ function isSpecForgeReportsShellWriteAllowed(projectDir: string, command: string
     ...extractPowerShellFileCmdletTargets(text),
   ];
   if (explicitTargets.length > 0) {
+    // Only the actual write targets decide whether this is report output.
+    // Report content is allowed to mention protected paths such as
+    // .specforge/project/** because it is evidence text, not a write target.
     return explicitTargets.every((target) => isSpecForgeReportsPathText(target) || isSpecForgeReportsOutputTarget(projectDir, target));
   }
 
   const directoryOnlyReportCommand = /\b(mkdir|New-Item)\b/i.test(text) && isSpecForgeReportsPathText(text);
-  return directoryOnlyReportCommand;
+  return directoryOnlyReportCommand && !isProtectedSpecForgeNonReportPathText(text);
 }
 
 function parseToolOutput(output: unknown): any | null {
@@ -784,12 +789,21 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
     }
 
     if (!result.allowed) {
+      const reason = localDecision.reason ?? result.reason ?? result.error ?? "policy_violation";
+      const blockedWorkItemId = result.work_item_id ?? localDecision.workItemId ?? getWorkItemIdFromArgs(args);
+      appendNativeBlockedWriteGuardLog(
+        projectDir,
+        blockedWorkItemId,
+        targetPath,
+        localOperation,
+        toolName,
+        reason,
+        callID,
+      );
       maybePersistHardStopFromGuardResult(projectDir, toolName, args, result);
       throw new Error(
         `[SF WriteGuard] BLOCKED write to "${targetPath}" by tool "${toolName}".
-Reason: ${
-          localDecision.reason ?? result.reason ?? result.error ?? "policy_violation"
-        }`,
+Reason: ${reason}`,
       );
     }
   }
@@ -1012,6 +1026,38 @@ function readWorkItemMetadata(projectDir: string, workItemId: string): any | nul
   return readJsonFile(join(projectDir, ".specforge", "work-items", workItemId, "work_item.json"));
 }
 
+function appendNativeBlockedWriteGuardLog(
+  projectDir: string,
+  workItemId: unknown,
+  targetPath: string,
+  operation: "create" | "modify",
+  toolName: string,
+  reason: string,
+  callID?: string,
+): void {
+  if (!isValidWorkItemId(workItemId)) return;
+
+  try {
+    const wiDir = join(projectDir, ".specforge", "work-items", workItemId);
+    mkdirSync(wiDir, { recursive: true });
+    const relativeTarget = pluginTargetToProjectRelative(projectDir, targetPath) ?? normalizeSlashes(targetPath);
+    const record = {
+      timestamp: new Date().toISOString(),
+      path: relativeTarget,
+      operation,
+      actor: "agent",
+      allowed: false,
+      violations: [reason || "target_not_in_allowed_write_files"],
+      tool: toolName,
+      command: `tool:${toolName}`,
+      callID,
+    };
+    appendFileSync(join(wiDir, "write_guard_log.jsonl"), JSON.stringify(record) + "\n", "utf-8");
+  } catch (e) {
+    console.warn(`[sf:audit] Failed to append blocked native write guard log: ${(e as Error).message}`);
+  }
+}
+
 function getAuthoritativeState(runtimeState: any, workItemId: string): string | null {
   const items = Array.isArray(runtimeState?.workItems) ? runtimeState.workItems : [];
   const match = items.find((item: any) => item?.work_item_id === workItemId);
@@ -1068,6 +1114,8 @@ function localNativeWriteAllowDecision(
   const runtimeState = readRuntimeState(projectDir);
   const candidates = candidateNativeWriteWorkItems(projectDir, args);
   if (candidates.length === 0) return { allowed: false, reason: "no_implementation_running_work_item" };
+
+  let activePermissionWorkItemId: string | undefined;
   for (const workItemId of candidates) {
     const authoritativeState = getAuthoritativeState(runtimeState, workItemId);
     if (authoritativeState !== "implementation_running") continue;
@@ -1075,12 +1123,19 @@ function localNativeWriteAllowDecision(
     if (!wi) continue;
     if (wi.code_change_allowed !== true) continue;
     if (wi.code_permission_revoked === true) continue;
+
+    activePermissionWorkItemId ??= workItemId;
     const allowedFiles = Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [];
     if (allowedFiles.some((entry: any) => allowedWriteEntryMatches(projectDir, entry, targetRelative, operation))) {
       return { allowed: true, workItemId };
     }
   }
-  return { allowed: false, reason: "target_not_in_allowed_write_files" };
+
+  return {
+    allowed: false,
+    workItemId: activePermissionWorkItemId,
+    reason: activePermissionWorkItemId ? "target_not_in_allowed_write_files" : "no_write_enabled_work_item",
+  };
 }
 
 function createNativeWriteTool(projectDir: string) {
