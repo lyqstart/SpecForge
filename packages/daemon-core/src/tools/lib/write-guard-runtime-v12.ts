@@ -161,6 +161,54 @@ function readWorkItem(projectRoot: string, workItemId: string): any | null {
   }
 }
 
+function readRuntimeState(projectRoot: string): any | null {
+  try {
+    const statePath = path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json');
+    return JSON.parse(fs.readFileSync(statePath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+function authoritativeWorkItemState(projectRoot: string, workItemId: string, fallback: string): string {
+  const state = readRuntimeState(projectRoot);
+  const items = Array.isArray(state?.workItems) ? state.workItems : [];
+  const match = items.find((item: any) => item?.work_item_id === workItemId);
+  return typeof match?.current_state === 'string' && match.current_state.length > 0 ? match.current_state : fallback;
+}
+
+function normalizeForCompare(value: string): string {
+  return normalizeSlashes(String(value ?? '')).replace(/^\.\//, '').replace(/\/+$/, '').toLowerCase();
+}
+
+function allowedPathToProjectRelative(projectRoot: string, cwd: string | undefined, value: string): string | null {
+  const resolved = toProjectRelative(projectRoot, cwd, value);
+  if (resolved.relative) return resolved.relative;
+  const cleaned = stripQuotes(value);
+  return cleaned ? normalizeSlashes(cleaned) : null;
+}
+
+function isAllowedDirectoryPreparation(
+  projectRoot: string,
+  cwd: string | undefined,
+  wi: any,
+  targetRelative: string,
+): boolean {
+  if (wi?.code_change_allowed !== true || wi?.code_permission_revoked === true) return false;
+  const allowed = Array.isArray(wi?.allowed_write_files) ? wi.allowed_write_files : [];
+  const directory = normalizeForCompare(targetRelative);
+  if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
+
+  return allowed.some((entry: any) => {
+    const raw = typeof entry === 'string' ? entry : entry?.path;
+    if (typeof raw !== 'string' || raw.trim() === '') return false;
+    const allowedRelative = allowedPathToProjectRelative(projectRoot, cwd, raw);
+    if (!allowedRelative) return false;
+    const allowedPath = normalizeForCompare(allowedRelative);
+    return allowedPath !== directory && allowedPath.startsWith(directory + '/');
+  });
+}
+
 function workItemDir(projectRoot: string, workItemId: string): string {
   return path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
 }
@@ -217,17 +265,29 @@ export function enforceRuntimeWriteGuardForShell(input: {
       targetViolations.push(resolved.violation);
     }
 
-    if (actor !== ACTOR_ROLES.mergeRunner && wi.status !== 'implementation_running') {
-      targetViolations.push('write requires implementation_running state: current=' + wi.status);
+    const currentState = authoritativeWorkItemState(
+      input.projectRoot,
+      input.workItemId,
+      String(wi.status ?? ''),
+    );
+
+    if (actor !== ACTOR_ROLES.mergeRunner && currentState !== 'implementation_running') {
+      targetViolations.push('write requires implementation_running state: current=' + currentState);
     }
 
-    if (!resolved.violation) {
+    const directoryPreparationAllowed =
+      target.operation === 'create' &&
+      !resolved.violation &&
+      currentState === 'implementation_running' &&
+      isAllowedDirectoryPreparation(input.projectRoot, input.cwd, wi, relative);
+
+    if (!resolved.violation && !directoryPreparationAllowed) {
       const check = checkWrite(
         {
           hasActiveWI: true,
           workItem: {
             work_item_id: String(wi.work_item_id ?? input.workItemId),
-            status: String(wi.status ?? ''),
+            status: currentState,
             code_change_allowed: wi.code_change_allowed === true,
             allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [],
             workflow_path: wi.workflow_path ?? null,
