@@ -102,6 +102,8 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_safe_bash_executor.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_rules.ts", type: "tool_lib" },
   { path: "tools/lib/sf_safe_bash_types.ts", type: "tool_lib" },
+  { path: "tools/lib/sf-observability-config.ts", type: "tool_lib" },
+  { path: "tools/lib/sf-observability.ts", type: "tool_lib" },
   { path: "tools/lib/thin-client.ts", type: "tool_lib" },  // V6 Thin Plugin HTTP 客户端
 
   // Plugin（1 个 — 统一 Plugin，替代原来的 5 个 + daemon-spawn 已删除）
