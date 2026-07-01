@@ -1,26 +1,22 @@
 /**
- * sf-v11-code-permission — v1.1 code_permission_service handler
+ * sf-v11-code-permission — v1.2.2 hotfix
  *
- * V11.3:
- * - allowed_write_files must never include .specforge governance paths.
+ * Fix scope:
+ * - Keep v1.2.1 governance checks.
+ * - Add controlled scope extension actions: extend / append.
+ * - release / enable also merge with an existing active permission set instead of
+ *   silently replacing earlier phase authorizations.
  */
 import { registerHandler } from '../ToolDispatcher';
-import {
-  releaseCodePermission,
-  revokeCodePermission,
-  checkCodePermission,
-} from '../lib/code-permission-service-v11';
+import { releaseCodePermission, revokeCodePermission, checkCodePermission } from '../lib/code-permission-service-v11';
 import { takeSnapshot, saveBaseline } from '../lib/filesystem-diff';
-import {
-  readAuthoritativeState,
-  transitionWithEvidence,
-} from '../lib/state-coordinator-v11';
+import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 
-async function readJsonIfExists(filePath: string): Promise<any> {
+async function readJsonIfExists(filePath: string): Promise<any | null> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf-8'));
   } catch {
@@ -98,12 +94,11 @@ async function advanceImplementationStateBeforeCode(input: {
   workflowPath: string;
   workflowType: string;
 }): Promise<any> {
-const state = await readAuthoritativeState({
+  const state = await readAuthoritativeState({
     deps: input.deps,
     projectRoot: input.projectRoot,
     workItemId: input.workItemId,
   });
-
   const current = state.current_state;
 
   if (
@@ -128,6 +123,7 @@ const state = await readAuthoritativeState({
   }
 
   const steps: any[] = [];
+
   if (current === 'merged') {
     steps.push(
       await transitionWithEvidence({
@@ -199,13 +195,8 @@ function normalizeAllowedForPolicy(
   allowedWriteFiles: any[],
 ): Array<{ path: string; operation: NormalizedWriteOperation }> {
   return allowedWriteFiles.map((file) => {
-    if (typeof file === 'string') {
-      return { path: file, operation: 'modify' };
-    }
-    return {
-      path: String(file?.path ?? ''),
-      operation: normalizeWriteOperation(file?.operation),
-    };
+    if (typeof file === 'string') return { path: file, operation: 'modify' };
+    return { path: String(file?.path ?? ''), operation: normalizeWriteOperation(file?.operation) };
   });
 }
 
@@ -215,10 +206,20 @@ function findForbiddenGovernanceTargets(allowedWriteFiles: any[]): string[] {
     .filter((p) => p === '.specforge' || p.startsWith('.specforge/') || p.includes('/.specforge/'));
 }
 
+function isReleaseLikeAction(action: string): boolean {
+  return action === 'release' || action === 'enable' || action === 'extend' || action === 'append';
+}
+
+function normalizedReturnAction(action: string): string {
+  if (action === 'append') return 'extend';
+  if (action === 'enable') return 'release';
+  return action;
+}
+
 registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
-  const action = (args['action'] as string) || 'check';
+  const action = String((args['action'] as string) || 'check');
 
   const idError = validateWorkItemId(workItemId);
   if (idError) return { success: false, error: idError };
@@ -238,16 +239,17 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   }
 
   try {
-    if (action === 'release' || action === 'enable') {
+    if (isReleaseLikeAction(action)) {
       const allowedWriteFiles = args['allowed_write_files'] as any[];
-
       if (!allowedWriteFiles || !Array.isArray(allowedWriteFiles) || allowedWriteFiles.length === 0) {
         setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_REQUIRED', 'sf_code_permission');
         return {
           success: false,
           error: 'ALLOWED_WRITE_FILES_REQUIRED',
           hard_stop: true,
-          message: 'sf_code_permission enable requires allowed_write_files[] with at least one file path.\nThe orchestrator must extract target files from tasks.md before calling enable.',
+          message:
+            'sf_code_permission enable/extend requires allowed_write_files[] with at least one file path.\n' +
+            'The orchestrator must extract target files from tasks.md before calling enable/extend.',
         };
       }
 
@@ -261,7 +263,8 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
           retry_allowed: true,
           forbidden_paths: forbiddenGovernanceTargets,
           message:
-            'Implementation write permission can only include business/code files. .specforge governance artifacts must be written by controlled workflow tools, not executors.',
+            'Implementation write permission can only include business/code files.\n' +
+            '.specforge governance artifacts must be written by controlled workflow tools, not executors.',
         };
       }
 
@@ -295,6 +298,17 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         workflowType: workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
       });
 
+      if ((action === 'extend' || action === 'append') && stateAutoAdvance.current_state !== 'implementation_running') {
+        return {
+          success: false,
+          error: 'CODE_PERMISSION_EXTEND_REQUIRES_IMPLEMENTATION_RUNNING',
+          hard_stop: false,
+          policy_violation: true,
+          retry_allowed: false,
+          current_state: stateAutoAdvance.current_state,
+        };
+      }
+
       const normalized = normalizeAllowedForPolicy(allowedWriteFiles);
       const state = await releaseCodePermission({ workItemDir, workItemId, allowedWriteFiles: normalized });
 
@@ -302,12 +316,12 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         const baseline = takeSnapshot(projectRoot);
         saveBaseline(workItemDir, baseline);
       } catch {
-        // non-critical — audit will fall back to write_guard_log only
+        // Non-critical: changed_files_audit can still fall back to write_guard_log.
       }
 
       return {
         success: true,
-        action: 'release',
+        action: normalizedReturnAction(action),
         work_item_id: workItemId,
         code_change_allowed: state.code_change_allowed,
         allowed_count: state.allowed_write_files.length,

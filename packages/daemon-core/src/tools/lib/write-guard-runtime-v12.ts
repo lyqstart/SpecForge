@@ -26,7 +26,7 @@ function normalizeSlashes(value: string): string {
 }
 
 function stripQuotes(value: string): string {
-  return String(value ?? '').trim().replace(/^['"]|['"]$/g, '');
+  return String(value ?? '').trim().replace(/^["']|["']$/g, '');
 }
 
 function uniqueTargets(targets: RuntimeWriteTarget[]): RuntimeWriteTarget[] {
@@ -50,7 +50,7 @@ function escapeRegExp(value: string): string {
 function normalizeEscapedShellQuotes(command: string): string {
   /*
    * Tests and OpenCode logs may contain escaped quotes, for example:
-   *   Out-File -FilePath \"src/todos/b.md\"
+   * Out-File -FilePath \"src/todos/b.md\"
    * Normalize only shell quote escapes so path extraction can treat them like
    * normal quoted arguments. This does not modify Windows path separators.
    */
@@ -67,8 +67,9 @@ function extractPowerShellArgument(command: string, verb: string, namedArgs: str
     "\\b" + escapedVerb + "\\b[\\s\\S]{0,600}?-(?:" + namePattern + ")\\s+[\"']([^\"']+)[\"']",
     'ig',
   );
+
   const unquoted = new RegExp(
-    "\\b" + escapedVerb + "\\b[\\s\\S]{0,600}?-(?:" + namePattern + ")\\s+([^\\s;|]+)",
+    '\\b' + escapedVerb + '\\b[\\s\\S]{0,600}?-(?:' + namePattern + ')\\s+([^\\s;|]+)',
     'ig',
   );
 
@@ -79,41 +80,74 @@ function extractPowerShellArgument(command: string, verb: string, namedArgs: str
   return results.filter((value) => value.length > 0);
 }
 
+function isShellRedirectionSink(rawTarget: string): boolean {
+  const cleaned = stripQuotes(rawTarget).trim();
+  const normalized = cleaned.replace(/\\/g, '/').toLowerCase();
+
+  // File descriptor duplication / closing, e.g. 2>&1, 1>&2, >&2, 2>&-
+  if (/^&\d+$/.test(cleaned) || cleaned === '&-') return true;
+
+  // Null sinks are not business writes. Treat Unix and Windows spellings alike.
+  if (normalized === '/dev/null' || normalized === 'dev/null') return true;
+  if (normalized === 'nul' || normalized === 'nul:' || normalized === 'null') return true;
+
+  return false;
+}
+
+function pushShellTarget(targets: RuntimeWriteTarget[], rawPath: string, operation: RuntimeWriteOperation): void {
+  const cleaned = stripQuotes(rawPath);
+  if (!cleaned || isShellRedirectionSink(cleaned)) return;
+  targets.push({ path: cleaned, operation });
+}
+
 export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] {
   const text = normalizeEscapedShellQuotes(String(command ?? ''));
   const targets: RuntimeWriteTarget[] = [];
 
   for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath'])) {
-    targets.push({ path: p, operation: 'create' });
-  }
-  for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath'])) {
-    targets.push({ path: p, operation: 'modify' });
-  }
-  for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath'])) {
-    targets.push({ path: p, operation: 'create' });
-  }
-  for (const p of extractPowerShellArgument(text, 'New-Item', ['Path', 'LiteralPath', 'Name'])) {
-    targets.push({ path: p, operation: 'create' });
-  }
-  for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath'])) {
-    targets.push({ path: p, operation: 'delete' });
-  }
-  for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination'])) {
-    targets.push({ path: p, operation: 'create' });
-  }
-  for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination'])) {
-    targets.push({ path: p, operation: 'create' });
+    pushShellTarget(targets, p, 'create');
   }
 
-  const redirection = /(?:^|[\s;|])(?:1>|2>|>>|>)\s*["']?([^"'\s;|]+)["']?/g;
+  for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath'])) {
+    pushShellTarget(targets, p, 'modify');
+  }
+
+  for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath'])) {
+    pushShellTarget(targets, p, 'create');
+  }
+
+  for (const p of extractPowerShellArgument(text, 'New-Item', ['Path', 'LiteralPath', 'Name'])) {
+    pushShellTarget(targets, p, 'create');
+  }
+
+  for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath'])) {
+    pushShellTarget(targets, p, 'delete');
+  }
+
+  for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination'])) {
+    pushShellTarget(targets, p, 'create');
+  }
+
+  for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination'])) {
+    pushShellTarget(targets, p, 'create');
+  }
+
+  /*
+   * Shell redirection is a real write only when the target is a file path.
+   * v1.2 incorrectly treated FD duplication and null sinks as project writes:
+   *   2>&1       -> target "&1"
+   *   >/dev/null -> target "/dev/null"
+   * That false positive triggered HardStop in normal read/debug commands.
+   */
+  const redirection = /(?:^|[\s;|])(?:\d*>>?|\d*>&)\s*["']?([^"'\s;|]+)["']?/g;
   let match: RegExpExecArray | null;
   while ((match = redirection.exec(text)) !== null) {
-    targets.push({ path: stripQuotes(match[1] ?? ''), operation: 'modify' });
+    pushShellTarget(targets, match[1] ?? '', 'modify');
   }
 
   const tee = /\btee(?:-object)?\s+(?:-FilePath\s+)?["']?([^"'\s;|]+)["']?/gi;
   while ((match = tee.exec(text)) !== null) {
-    targets.push({ path: stripQuotes(match[1] ?? ''), operation: 'modify' });
+    pushShellTarget(targets, match[1] ?? '', 'modify');
   }
 
   const shellCommands: Array<[RegExp, RuntimeWriteOperation]> = [
@@ -125,7 +159,7 @@ export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] 
 
   for (const [pattern, operation] of shellCommands) {
     while ((match = pattern.exec(text)) !== null) {
-      targets.push({ path: stripQuotes(match[1] ?? ''), operation });
+      pushShellTarget(targets, match[1] ?? '', operation);
     }
   }
 
@@ -184,6 +218,7 @@ function normalizeForCompare(value: string): string {
 function allowedPathToProjectRelative(projectRoot: string, cwd: string | undefined, value: string): string | null {
   const resolved = toProjectRelative(projectRoot, cwd, value);
   if (resolved.relative) return resolved.relative;
+
   const cleaned = stripQuotes(value);
   return cleaned ? normalizeSlashes(cleaned) : null;
 }
@@ -195,6 +230,7 @@ function isAllowedDirectoryPreparation(
   targetRelative: string,
 ): boolean {
   if (wi?.code_change_allowed !== true || wi?.code_permission_revoked === true) return false;
+
   const allowed = Array.isArray(wi?.allowed_write_files) ? wi.allowed_write_files : [];
   const directory = normalizeForCompare(targetRelative);
   if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
@@ -202,8 +238,10 @@ function isAllowedDirectoryPreparation(
   return allowed.some((entry: any) => {
     const raw = typeof entry === 'string' ? entry : entry?.path;
     if (typeof raw !== 'string' || raw.trim() === '') return false;
+
     const allowedRelative = allowedPathToProjectRelative(projectRoot, cwd, raw);
     if (!allowedRelative) return false;
+
     const allowedPath = normalizeForCompare(allowedRelative);
     return allowedPath !== directory && allowedPath.startsWith(directory + '/');
   });
@@ -226,6 +264,7 @@ export function enforceRuntimeWriteGuardForShell(input: {
   tool?: string;
 }): RuntimeWriteGuardResult {
   const targets = extractShellWriteTargets(input.command);
+
   if (targets.length === 0) return { checked: false, allowed: true, targets: [], violations: [] };
 
   if (!input.workItemId) {
@@ -318,12 +357,14 @@ export function enforceRuntimeWriteGuardForShell(input: {
 
   if (allViolations.length > 0) {
     const uniqueViolations = Array.from(new Set(allViolations));
+
     setHardStop(
       input.projectRoot,
       input.workItemId,
       'WRITE_GUARD_RUNTIME_BLOCKED: ' + uniqueViolations.join('; '),
       input.tool ?? 'sf_safe_bash',
     );
+
     return {
       checked: true,
       allowed: false,
@@ -338,7 +379,6 @@ export function enforceRuntimeWriteGuardForShell(input: {
 
 export function parseChangedFilesAuditPass(auditText: string): { passed: boolean; reason?: string } {
   const text = String(auditText ?? '');
-
   if (!text.trim()) return { passed: false, reason: 'changed_files_audit.md is empty' };
   if (/##\s*Result:\s*FAIL/i.test(text)) return { passed: false, reason: 'changed_files_audit result is FAIL' };
   if (!/##\s*Result:\s*PASS/i.test(text)) return { passed: false, reason: 'changed_files_audit result is not PASS' };
