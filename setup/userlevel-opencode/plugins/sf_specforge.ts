@@ -648,6 +648,13 @@ function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Re
     return;
   }
 
+  const normalizedToolName = normalizeToolName(toolName);
+  if (normalizedToolName === "sfhardstopresolve" || toolName === "sf_hard_stop_resolve") {
+    // sf_hard_stop_resolve is the structured recovery path for active hard_stop.
+    // It must reach the daemon-side resolver; it is not a Write Guard bypass.
+    return;
+  }
+
   const record = readHardStopRecord(projectDir, argWorkItemId);
   if (record) {
     throw new Error(
