@@ -34,6 +34,7 @@ import './handlers/sf-v11-extension';
 import './handlers/sf-v11-verification';
 import './handlers/sf-v11-close-gate';
 import './handlers/sf-changed-files-audit';
+import './handlers/sf-hard-stop-resolve';
 
 // ── v1.1 Public Name Aliases ─────────────────────────────────────────────────────
 // OpenCode tool files call daemon via public names (sf_gate_run, sf_code_permission, etc.)
@@ -53,3 +54,4 @@ for (const [publicName, internalName] of Object.entries(V11_TOOL_ALIASES)) {
     registerHandler(publicName, handler);
   }
 }
+
