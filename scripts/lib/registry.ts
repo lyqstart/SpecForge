@@ -68,6 +68,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_code_permission.ts", type: "tool" },
   { path: "tools/sf_changed_files_audit.ts", type: "tool" },
   { path: "tools/sf_close_gate.ts", type: "tool" },
+  { path: "tools/sf_hard_stop_resolve.ts", type: "tool" },
   { path: "tools/sf_write_guard_preflight.ts", type: "tool" },
   { path: "tools/sf_extension_subflow.ts", type: "tool" },
 
@@ -225,3 +226,5 @@ export function getAgentDefinitions(
 
   return agents
 }
+
+

@@ -6,6 +6,7 @@ import { checkWrite } from './write-guard-v11';
 import { appendWriteGuardLog } from './write-guard-log';
 import { setHardStop } from './hard-stop-latch';
 import { parseChangedFilesAuditVerdictPass } from './changed-files-audit-verdict';
+import { stripRemoteExecutionSegmentsForLocalWriteGuard } from './shell-command-write-intent';
 
 export type RuntimeWriteOperation = 'create' | 'modify' | 'delete';
 
@@ -91,7 +92,8 @@ function pushShellTarget(targets: RuntimeWriteTarget[], rawPath: string, operati
 }
 
 export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] {
-  const text = normalizeEscapedShellQuotes(String(command ?? ''));
+  const remoteAware = stripRemoteExecutionSegmentsForLocalWriteGuard(String(command ?? ''));
+  const text = normalizeEscapedShellQuotes(remoteAware.command_for_local_write_scan);
   const targets: RuntimeWriteTarget[] = [];
 
   for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'create');
@@ -288,3 +290,4 @@ export function enforceRuntimeWriteGuardForShell(input: {
 export function parseChangedFilesAuditPass(auditText: string): { passed: boolean; reason?: string } {
   return parseChangedFilesAuditVerdictPass(auditText);
 }
+
