@@ -5,6 +5,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { checkWrite } from './write-guard-v11';
 import { appendWriteGuardLog } from './write-guard-log';
 import { setHardStop } from './hard-stop-latch';
+import { parseChangedFilesAuditVerdictPass } from './changed-files-audit-verdict';
 
 export type RuntimeWriteOperation = 'create' | 'modify' | 'delete';
 
@@ -32,14 +33,12 @@ function stripQuotes(value: string): string {
 function uniqueTargets(targets: RuntimeWriteTarget[]): RuntimeWriteTarget[] {
   const seen = new Set<string>();
   const result: RuntimeWriteTarget[] = [];
-
   for (const target of targets) {
     const key = target.operation + ':' + normalizeSlashes(target.path).toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
     result.push({ path: normalizeSlashes(target.path), operation: target.operation });
   }
-
   return result;
 }
 
@@ -62,35 +61,26 @@ function extractPowerShellArgument(command: string, verb: string, namedArgs: str
   const results: string[] = [];
   const namePattern = namedArgs.map(escapeRegExp).join('|');
   const escapedVerb = escapeRegExp(verb);
-
   const quoted = new RegExp(
     "\\b" + escapedVerb + "\\b[\\s\\S]{0,600}?-(?:" + namePattern + ")\\s+[\"']([^\"']+)[\"']",
     'ig',
   );
-
   const unquoted = new RegExp(
     '\\b' + escapedVerb + '\\b[\\s\\S]{0,600}?-(?:' + namePattern + ')\\s+([^\\s;|]+)',
     'ig',
   );
-
   let match: RegExpExecArray | null;
   while ((match = quoted.exec(text)) !== null) results.push(stripQuotes(match[1] ?? ''));
   while ((match = unquoted.exec(text)) !== null) results.push(stripQuotes(match[1] ?? ''));
-
   return results.filter((value) => value.length > 0);
 }
 
 function isShellRedirectionSink(rawTarget: string): boolean {
   const cleaned = stripQuotes(rawTarget).trim();
   const normalized = cleaned.replace(/\\/g, '/').toLowerCase();
-
-  // File descriptor duplication / closing, e.g. 2>&1, 1>&2, >&2, 2>&-
   if (/^&\d+$/.test(cleaned) || cleaned === '&-') return true;
-
-  // Null sinks are not business writes. Treat Unix and Windows spellings alike.
   if (normalized === '/dev/null' || normalized === 'dev/null') return true;
   if (normalized === 'nul' || normalized === 'nul:' || normalized === 'null') return true;
-
   return false;
 }
 
@@ -104,51 +94,20 @@ export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] 
   const text = normalizeEscapedShellQuotes(String(command ?? ''));
   const targets: RuntimeWriteTarget[] = [];
 
-  for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath'])) {
-    pushShellTarget(targets, p, 'create');
-  }
+  for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'modify');
+  for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath'])) pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'New-Item', ['Path', 'LiteralPath', 'Name'])) pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'delete');
+  for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination'])) pushShellTarget(targets, p, 'create');
+  for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination'])) pushShellTarget(targets, p, 'create');
 
-  for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath'])) {
-    pushShellTarget(targets, p, 'modify');
-  }
-
-  for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath'])) {
-    pushShellTarget(targets, p, 'create');
-  }
-
-  for (const p of extractPowerShellArgument(text, 'New-Item', ['Path', 'LiteralPath', 'Name'])) {
-    pushShellTarget(targets, p, 'create');
-  }
-
-  for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath'])) {
-    pushShellTarget(targets, p, 'delete');
-  }
-
-  for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination'])) {
-    pushShellTarget(targets, p, 'create');
-  }
-
-  for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination'])) {
-    pushShellTarget(targets, p, 'create');
-  }
-
-  /*
-   * Shell redirection is a real write only when the target is a file path.
-   * v1.2 incorrectly treated FD duplication and null sinks as project writes:
-   *   2>&1       -> target "&1"
-   *   >/dev/null -> target "/dev/null"
-   * That false positive triggered HardStop in normal read/debug commands.
-   */
   const redirection = /(?:^|[\s;|])(?:\d*>>?|\d*>&)\s*["']?([^"'\s;|]+)["']?/g;
   let match: RegExpExecArray | null;
-  while ((match = redirection.exec(text)) !== null) {
-    pushShellTarget(targets, match[1] ?? '', 'modify');
-  }
+  while ((match = redirection.exec(text)) !== null) pushShellTarget(targets, match[1] ?? '', 'modify');
 
   const tee = /\btee(?:-object)?\s+(?:-FilePath\s+)?["']?([^"'\s;|]+)["']?/gi;
-  while ((match = tee.exec(text)) !== null) {
-    pushShellTarget(targets, match[1] ?? '', 'modify');
-  }
+  while ((match = tee.exec(text)) !== null) pushShellTarget(targets, match[1] ?? '', 'modify');
 
   const shellCommands: Array<[RegExp, RuntimeWriteOperation]> = [
     [/\btouch\s+["']?([^"'\s;|]+)["']?/gi, 'create'],
@@ -158,31 +117,20 @@ export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] 
   ];
 
   for (const [pattern, operation] of shellCommands) {
-    while ((match = pattern.exec(text)) !== null) {
-      pushShellTarget(targets, match[1] ?? '', operation);
-    }
+    while ((match = pattern.exec(text)) !== null) pushShellTarget(targets, match[1] ?? '', operation);
   }
 
   return uniqueTargets(targets.filter((target) => target.path.length > 0));
 }
 
-function toProjectRelative(
-  projectRoot: string,
-  cwd: string | undefined,
-  targetPath: string,
-): { relative?: string; violation?: string } {
+function toProjectRelative(projectRoot: string, cwd: string | undefined, targetPath: string): { relative?: string; violation?: string } {
   const cleaned = stripQuotes(targetPath);
   if (!cleaned) return { violation: 'empty target path' };
-
   const base = cwd && path.isAbsolute(cwd) ? cwd : projectRoot;
   const absolute = path.isAbsolute(cleaned) ? path.resolve(cleaned) : path.resolve(base, cleaned);
   const projectAbs = path.resolve(projectRoot);
   const rel = path.relative(projectAbs, absolute);
-
-  if (rel.startsWith('..') || path.isAbsolute(rel)) {
-    return { violation: 'write target is outside project root: ' + cleaned };
-  }
-
+  if (rel.startsWith('..') || path.isAbsolute(rel)) return { violation: 'write target is outside project root: ' + cleaned };
   return { relative: normalizeSlashes(rel) };
 }
 
@@ -218,30 +166,20 @@ function normalizeForCompare(value: string): string {
 function allowedPathToProjectRelative(projectRoot: string, cwd: string | undefined, value: string): string | null {
   const resolved = toProjectRelative(projectRoot, cwd, value);
   if (resolved.relative) return resolved.relative;
-
   const cleaned = stripQuotes(value);
   return cleaned ? normalizeSlashes(cleaned) : null;
 }
 
-function isAllowedDirectoryPreparation(
-  projectRoot: string,
-  cwd: string | undefined,
-  wi: any,
-  targetRelative: string,
-): boolean {
+function isAllowedDirectoryPreparation(projectRoot: string, cwd: string | undefined, wi: any, targetRelative: string): boolean {
   if (wi?.code_change_allowed !== true || wi?.code_permission_revoked === true) return false;
-
   const allowed = Array.isArray(wi?.allowed_write_files) ? wi.allowed_write_files : [];
   const directory = normalizeForCompare(targetRelative);
   if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
-
   return allowed.some((entry: any) => {
     const raw = typeof entry === 'string' ? entry : entry?.path;
     if (typeof raw !== 'string' || raw.trim() === '') return false;
-
     const allowedRelative = allowedPathToProjectRelative(projectRoot, cwd, raw);
     if (!allowedRelative) return false;
-
     const allowedPath = normalizeForCompare(allowedRelative);
     return allowedPath !== directory && allowedPath.startsWith(directory + '/');
   });
@@ -264,28 +202,15 @@ export function enforceRuntimeWriteGuardForShell(input: {
   tool?: string;
 }): RuntimeWriteGuardResult {
   const targets = extractShellWriteTargets(input.command);
-
   if (targets.length === 0) return { checked: false, allowed: true, targets: [], violations: [] };
 
   if (!input.workItemId) {
-    return {
-      checked: true,
-      allowed: false,
-      targets,
-      violations: ['no active work_item_id for shell write command'],
-      hard_stop: false,
-    };
+    return { checked: true, allowed: false, targets, violations: ['no active work_item_id for shell write command'], hard_stop: false };
   }
 
   const wi = readWorkItem(input.projectRoot, input.workItemId);
   if (!wi) {
-    return {
-      checked: true,
-      allowed: false,
-      targets,
-      violations: ['work_item.json not found for shell write guard'],
-      hard_stop: true,
-    };
+    return { checked: true, allowed: false, targets, violations: ['work_item.json not found for shell write guard'], hard_stop: true };
   }
 
   const actor = isKnownActorRole(input.callerRole) ? input.callerRole : ACTOR_ROLES.agent;
@@ -297,19 +222,11 @@ export function enforceRuntimeWriteGuardForShell(input: {
     const resolved = toProjectRelative(input.projectRoot, input.cwd, target.path);
     const relative = resolved.relative ?? target.path;
     const normalizedTarget = { path: relative, operation: target.operation };
-
     normalizedTargets.push(normalizedTarget);
 
-    if (resolved.violation) {
-      targetViolations.push(resolved.violation);
-    }
+    if (resolved.violation) targetViolations.push(resolved.violation);
 
-    const currentState = authoritativeWorkItemState(
-      input.projectRoot,
-      input.workItemId,
-      String(wi.status ?? ''),
-    );
-
+    const currentState = authoritativeWorkItemState(input.projectRoot, input.workItemId, String(wi.status ?? ''));
     if (actor !== ACTOR_ROLES.mergeRunner && currentState !== 'implementation_running') {
       targetViolations.push('write requires implementation_running state: current=' + currentState);
     }
@@ -337,7 +254,6 @@ export function enforceRuntimeWriteGuardForShell(input: {
         relative,
         target.operation,
       );
-
       if (!check.allowed) targetViolations.push(...check.violations);
     }
 
@@ -357,44 +273,18 @@ export function enforceRuntimeWriteGuardForShell(input: {
 
   if (allViolations.length > 0) {
     const uniqueViolations = Array.from(new Set(allViolations));
-
     setHardStop(
       input.projectRoot,
       input.workItemId,
       'WRITE_GUARD_RUNTIME_BLOCKED: ' + uniqueViolations.join('; '),
       input.tool ?? 'sf_safe_bash',
     );
-
-    return {
-      checked: true,
-      allowed: false,
-      targets: normalizedTargets,
-      violations: uniqueViolations,
-      hard_stop: true,
-    };
+    return { checked: true, allowed: false, targets: normalizedTargets, violations: uniqueViolations, hard_stop: true };
   }
 
   return { checked: true, allowed: true, targets: normalizedTargets, violations: [] };
 }
 
 export function parseChangedFilesAuditPass(auditText: string): { passed: boolean; reason?: string } {
-  const text = String(auditText ?? '');
-  if (!text.trim()) return { passed: false, reason: 'changed_files_audit.md is empty' };
-  if (/##\s*Result:\s*FAIL/i.test(text)) return { passed: false, reason: 'changed_files_audit result is FAIL' };
-  if (!/##\s*Result:\s*PASS/i.test(text)) return { passed: false, reason: 'changed_files_audit result is not PASS' };
-
-  const numericChecks = [
-    { label: 'Out of scope', pattern: /-\s*Out of scope:\s*([0-9]+)/i },
-    { label: 'Violations', pattern: /-\s*Violations:\s*([0-9]+)/i },
-    { label: 'Blocked write attempts', pattern: /-\s*Blocked write attempts:\s*([0-9]+)/i },
-  ];
-
-  for (const check of numericChecks) {
-    const match = check.pattern.exec(text);
-    if (match && Number(match[1]) > 0) {
-      return { passed: false, reason: check.label + ' is ' + match[1] };
-    }
-  }
-
-  return { passed: true };
+  return parseChangedFilesAuditVerdictPass(auditText);
 }
