@@ -2,11 +2,15 @@
  * changed-files-audit.ts - ChangedFilesAuditResult & runChangedFilesAudit
  *
  * v18: robust Windows path matching for close_gate and changed_files_audit.
+ * v19: export audit path/operation helpers so blocked-write classification uses
+ *      the same matching semantics as changed files audit.
+ *
  * The audit must treat these as the same file when they refer to the same target:
  * - D:\code\temp\testX\index.html
  * - D:/code/temp/testX/index.html
  * - index.html
  */
+
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { isSpecForgeRuntimePath, normalizeFsPath } from './filesystem-diff';
 
@@ -36,7 +40,7 @@ function isProtectedSpecWrite(normalizedPath: string): boolean {
   return normalizedPath.startsWith('.specforge/project/');
 }
 
-function normalizeAuditPath(value: string): string {
+export function normalizeAuditPath(value: string): string {
   return normalizeFsPath(String(value ?? ''))
     .replace(/\\/g, '/')
     .replace(/\/+/g, '/')
@@ -45,11 +49,11 @@ function normalizeAuditPath(value: string): string {
     .toLowerCase();
 }
 
-function pathMatchesForAudit(changedPath: string, allowedPath: string): boolean {
+export function pathMatchesForAudit(changedPath: string, allowedPath: string): boolean {
   const changed = normalizeAuditPath(changedPath);
   const allowed = normalizeAuditPath(allowedPath);
-  if (!changed || !allowed) return false;
 
+  if (!changed || !allowed) return false;
   if (changed === allowed) return true;
 
   // Preserve existing directory allow-list behavior.
@@ -64,9 +68,10 @@ function pathMatchesForAudit(changedPath: string, allowedPath: string): boolean 
   return false;
 }
 
-function operationMatchesForAudit(changedOp: string, allowedOp: string): boolean {
+export function operationMatchesForAudit(changedOp: string, allowedOp: string): boolean {
   const c = String(changedOp ?? '').toLowerCase();
   const a = String(allowedOp ?? '').toLowerCase();
+
   return a === 'any' || a === c;
 }
 

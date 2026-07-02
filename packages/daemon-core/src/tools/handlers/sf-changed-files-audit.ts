@@ -5,11 +5,22 @@
  * - Prefer Runtime factual source: write_guard_log.jsonl.
  * - Count Write Guard blocked writes as audit violations.
  * - If blocked_write_attempts > 0, audit fails even if final files were restored.
+ *
+ * V12.3 hotfix:
+ * - Preserve Write Guard blocked write history as append-only audit evidence.
+ * - Classify blocked writes instead of treating every historical block as a
+ *   permanent violation.
+ * - Only unresolved blocked attempts and actual out-of-scope factual writes fail.
  */
+
 import { join } from 'node:path';
 import * as fs from 'node:fs/promises';
 import { registerHandler } from '../ToolDispatcher';
 import { runChangedFilesAudit } from '../lib/changed-files-audit';
+import {
+  blockedWriteClassificationToViolation,
+  classifyBlockedWriteAttempts,
+} from '../lib/blocked-write-classification';
 import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
@@ -20,13 +31,17 @@ type AllowedFile = { path: string; operation: string };
 
 function normalizeAllowedFiles(input: unknown): AllowedFile[] {
   if (!Array.isArray(input)) return [];
+
   return input.map((f: string | { path: string; operation?: string }) =>
-    typeof f === 'string' ? { path: f, operation: 'modify' } : { path: f.path, operation: f.operation ?? 'modify' },
+    typeof f === 'string'
+      ? { path: f, operation: 'modify' }
+      : { path: f.path, operation: f.operation ?? 'modify' },
   );
 }
 
 function normalizeChangedFileArgs(input: unknown): ChangedFile[] {
   if (!Array.isArray(input)) return [];
+
   return input.map((f: string | { path: string; operation?: string }) =>
     typeof f === 'string'
       ? { path: f, operation: 'modify' }
@@ -80,20 +95,23 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     setHardStop(projectRoot, workItemId, 'CODE_PERMISSION_NOT_ENABLED', 'sf_changed_files_audit');
     return {
       success: false,
-      error: 'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.\nCannot audit without prior permission grant.',
+      error:
+        'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.\nCannot audit without prior permission grant.',
       hard_stop: true,
     };
   }
 
   const allowedWriteFilesCurrent = normalizeAllowedFiles(wiJson.allowed_write_files);
   const allowedWriteFilesSnapshot = normalizeAllowedFiles(wiJson.allowed_write_files_snapshot);
-  let allowedWriteFiles = allowedWriteFilesCurrent.length > 0 ? allowedWriteFilesCurrent : allowedWriteFilesSnapshot;
+  const allowedWriteFiles =
+    allowedWriteFilesCurrent.length > 0 ? allowedWriteFilesCurrent : allowedWriteFilesSnapshot;
 
   if (allowedWriteFiles.length === 0) {
     setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_EMPTY', 'sf_changed_files_audit');
     return {
       success: false,
-      error: 'ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\nAudit cannot proceed.',
+      error:
+        'ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\nAudit cannot proceed.',
       hard_stop: true,
     };
   }
@@ -123,17 +141,31 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   }
 
   const auditResult = runChangedFilesAudit(changedFiles, allowedWriteFiles, 'agent');
-  const blockedWriteViolations = blockedWrites.map((e) => {
-    const operation = String((e as any).operation ?? 'write');
-    const filePath = String((e as any).path ?? 'unknown');
-    const tool = String((e as any).tool ?? 'unknown');
-    const violations = Array.isArray((e as any).violations) ? (e as any).violations.join('; ') : 'blocked_by_write_guard';
-    return `BLOCKED_WRITE_ATTEMPT: [${operation}] ${filePath} via ${tool} violations=${violations}`;
-  });
+  const blockedWriteClassifications = classifyBlockedWriteAttempts(
+    blockedWrites,
+    changedFiles,
+    allowedWriteFiles,
+  );
+  const unresolvedBlockedWriteClassifications = blockedWriteClassifications.filter(
+    (c) => c.status === 'unresolved_blocked_attempt',
+  );
+  const resolvedBlockedWriteClassifications = blockedWriteClassifications.filter(
+    (c) => c.status !== 'unresolved_blocked_attempt',
+  );
+  const unresolvedBlockedWriteViolations = unresolvedBlockedWriteClassifications.map(
+    blockedWriteClassificationToViolation,
+  );
 
-  const finalPassed = auditResult.passed && blockedWriteViolations.length === 0;
-  const finalViolations = [...auditResult.violations, ...blockedWriteViolations];
-  const finalOutOfScope = auditResult.out_of_scope + blockedWriteViolations.length;
+  const finalPassed = auditResult.passed && unresolvedBlockedWriteViolations.length === 0;
+  const finalViolations = [...auditResult.violations, ...unresolvedBlockedWriteViolations];
+  const finalOutOfScope = auditResult.out_of_scope + unresolvedBlockedWriteViolations.length;
+
+  const historicalBlockedLines = resolvedBlockedWriteClassifications.map((c) => {
+    return `- [${c.operation}] ${c.path} → ${c.status} (${c.reason})`;
+  });
+  const unresolvedBlockedLines = unresolvedBlockedWriteClassifications.map((c) => {
+    return `- [${c.operation}] ${c.path} → ${c.status} (${c.reason})`;
+  });
 
   const auditMd = [
     '# Changed Files Audit',
@@ -150,13 +182,31 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     `- Out of scope: ${finalOutOfScope}`,
     `- Violations: ${finalViolations.length}`,
     `- Blocked write attempts: ${blockedWrites.length}`,
+    `- Historical/resolved blocked write attempts: ${resolvedBlockedWriteClassifications.length}`,
+    `- Unresolved blocked write attempts: ${unresolvedBlockedWriteClassifications.length}`,
     '',
-    ...(finalViolations.length > 0 ? ['## Violations', '', ...finalViolations.map((v) => `- ${v}`), ''] : []),
+    '## Blocked Write Attempts',
+    '',
+    `- Total blocked write attempts: ${blockedWrites.length}`,
+    `- Historical/resolved: ${resolvedBlockedWriteClassifications.length}`,
+    `- Unresolved: ${unresolvedBlockedWriteClassifications.length}`,
+    '',
+    ...(historicalBlockedLines.length > 0
+      ? ['### Historical / Resolved Blocked Writes', '', ...historicalBlockedLines, '']
+      : ['### Historical / Resolved Blocked Writes', '', 'None.', '']),
+    ...(unresolvedBlockedLines.length > 0
+      ? ['### Unresolved Blocked Writes', '', ...unresolvedBlockedLines, '']
+      : ['### Unresolved Blocked Writes', '', 'None.', '']),
+    ...(finalViolations.length > 0
+      ? ['## Violations', '', ...finalViolations.map((v) => `- ${v}`), '']
+      : []),
     ...(auditResult.entries.length > 0
       ? [
           '## Entries',
           '',
-          ...auditResult.entries.map((e) => `- [${e.operation}] ${e.path} → ${e.in_allowed_write_files ? 'in_scope' : 'OUT_OF_SCOPE'}`),
+          ...auditResult.entries.map(
+            (e) => `- [${e.operation}] ${e.path} → ${e.in_allowed_write_files ? 'in_scope' : 'OUT_OF_SCOPE'}`,
+          ),
           '',
         ]
       : ['## Entries', '', 'No file changes detected.', '']),
@@ -179,5 +229,8 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     work_item_id: workItemId,
     data_source: dataSource,
     blocked_write_attempts: blockedWrites.length,
+    resolved_blocked_write_attempts: resolvedBlockedWriteClassifications.length,
+    unresolved_blocked_write_attempts: unresolvedBlockedWriteClassifications.length,
+    blocked_write_classifications: blockedWriteClassifications,
   };
 });
