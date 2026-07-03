@@ -1,27 +1,22 @@
 /**
- * sf_changed_files_audit — v1.1 Changed Files Audit Tool Handler.
+ * sf_changed_files_audit — Changed Files Audit Tool Handler.
  *
- * V11.2:
- * - Prefer Runtime factual source: write_guard_log.jsonl.
- * - Count Write Guard blocked writes as audit violations.
- * - If blocked_write_attempts > 0, audit fails even if final files were restored.
- *
- * V12.3 hotfix:
- * - Preserve Write Guard blocked write history as append-only audit evidence.
- * - Classify blocked writes instead of treating every historical block as a
- *   permanent violation.
- * - Only unresolved blocked attempts and actual out-of-scope factual writes fail.
+ * v1.2.7 hotfix:
+ * - Reads hard_stop_resolution.jsonl and lets structured resolutions classify
+ *   historical blocked writes instead of leaving them permanently unresolved.
+ * - Splits deployment / remote-ops entries from project file writes so server
+ *   lifecycle operations are not judged by the code allowed_write_files list.
  */
-
 import { join } from 'node:path';
 import * as fs from 'node:fs/promises';
 import { registerHandler } from '../ToolDispatcher';
-import { runChangedFilesAudit } from '../lib/changed-files-audit';
+import { runChangedFilesAudit, normalizeAuditPath } from '../lib/changed-files-audit';
 import {
   blockedWriteClassificationToViolation,
   classifyBlockedWriteAttempts,
 } from '../lib/blocked-write-classification';
 import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log';
+import { readHardStopResolutionLog } from '../lib/hard-stop-resolution-log';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
@@ -31,17 +26,13 @@ type AllowedFile = { path: string; operation: string };
 
 function normalizeAllowedFiles(input: unknown): AllowedFile[] {
   if (!Array.isArray(input)) return [];
-
   return input.map((f: string | { path: string; operation?: string }) =>
-    typeof f === 'string'
-      ? { path: f, operation: 'modify' }
-      : { path: f.path, operation: f.operation ?? 'modify' },
+    typeof f === 'string' ? { path: f, operation: 'modify' } : { path: f.path, operation: f.operation ?? 'modify' },
   );
 }
 
 function normalizeChangedFileArgs(input: unknown): ChangedFile[] {
   if (!Array.isArray(input)) return [];
-
   return input.map((f: string | { path: string; operation?: string }) =>
     typeof f === 'string'
       ? { path: f, operation: 'modify' }
@@ -49,11 +40,27 @@ function normalizeChangedFileArgs(input: unknown): ChangedFile[] {
   );
 }
 
+function isRemoteOpsAuditPath(filePath: string): boolean {
+  const p = String(filePath ?? '').replace(/\\/g, '/').toLowerCase();
+  const n = normalizeAuditPath(p);
+  if (!p.startsWith('/') && !/^[a-z]:\//i.test(p)) return false;
+
+  return (
+    n.startsWith('/var/lib/pgsql') ||
+    n.startsWith('/opt/fj') ||
+    n.startsWith('/etc/nginx') ||
+    n.startsWith('/etc/systemd') ||
+    n.includes('/fj.conf') ||
+    n.includes('postgresql') ||
+    n.includes('pm2') ||
+    n.includes('fj-server')
+  );
+}
+
 registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   const workItemId = args['work_item_id'] as string;
   const command = args['command'] as string | undefined;
   const actualChangedFiles = args['actual_changed_files'];
-
   const idError = validateWorkItemId(workItemId);
   if (idError) return { success: false, error: idError };
 
@@ -95,34 +102,31 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     setHardStop(projectRoot, workItemId, 'CODE_PERMISSION_NOT_ENABLED', 'sf_changed_files_audit');
     return {
       success: false,
-      error:
-        'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.\nCannot audit without prior permission grant.',
+      error: 'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.\nCannot audit without prior permission grant.',
       hard_stop: true,
     };
   }
 
   const allowedWriteFilesCurrent = normalizeAllowedFiles(wiJson.allowed_write_files);
   const allowedWriteFilesSnapshot = normalizeAllowedFiles(wiJson.allowed_write_files_snapshot);
-  const allowedWriteFiles =
-    allowedWriteFilesCurrent.length > 0 ? allowedWriteFilesCurrent : allowedWriteFilesSnapshot;
+  const allowedWriteFiles = allowedWriteFilesCurrent.length > 0 ? allowedWriteFilesCurrent : allowedWriteFilesSnapshot;
 
   if (allowedWriteFiles.length === 0) {
     setHardStop(projectRoot, workItemId, 'ALLOWED_WRITE_FILES_EMPTY', 'sf_changed_files_audit');
     return {
       success: false,
-      error:
-        'ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\nAudit cannot proceed.',
+      error: 'ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\nAudit cannot proceed.',
       hard_stop: true,
     };
   }
 
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
   const blockedWrites = writeGuardSummary.blockedWrites ?? [];
+  const hardStopResolutions = readHardStopResolutionLog(workItemDir);
   const factualFiles = getFactualChangedFiles(workItemDir);
 
   let changedFiles: ChangedFile[];
   let dataSource: string;
-
   if (factualFiles.length > 0) {
     changedFiles = factualFiles.map((f) => ({
       path: f.path,
@@ -140,11 +144,15 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     dataSource = 'none';
   }
 
-  const auditResult = runChangedFilesAudit(changedFiles, allowedWriteFiles, 'agent');
+  const remoteOpsFiles = changedFiles.filter((file) => isRemoteOpsAuditPath(file.path));
+  const projectChangedFiles = changedFiles.filter((file) => !isRemoteOpsAuditPath(file.path));
+
+  const auditResult = runChangedFilesAudit(projectChangedFiles, allowedWriteFiles, 'agent');
   const blockedWriteClassifications = classifyBlockedWriteAttempts(
     blockedWrites,
     changedFiles,
     allowedWriteFiles,
+    hardStopResolutions,
   );
   const unresolvedBlockedWriteClassifications = blockedWriteClassifications.filter(
     (c) => c.status === 'unresolved_blocked_attempt',
@@ -166,6 +174,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   const unresolvedBlockedLines = unresolvedBlockedWriteClassifications.map((c) => {
     return `- [${c.operation}] ${c.path} → ${c.status} (${c.reason})`;
   });
+  const remoteOpsLines = remoteOpsFiles.map((f) => `- [${f.operation}] ${f.path} → remote_ops_not_project_file_write`);
 
   const auditMd = [
     '# Changed Files Audit',
@@ -181,15 +190,21 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     `- In scope: ${auditResult.in_scope}`,
     `- Out of scope: ${finalOutOfScope}`,
     `- Violations: ${finalViolations.length}`,
+    `- Remote ops entries: ${remoteOpsFiles.length}`,
     `- Blocked write attempts: ${blockedWrites.length}`,
     `- Historical/resolved blocked write attempts: ${resolvedBlockedWriteClassifications.length}`,
     `- Unresolved blocked write attempts: ${unresolvedBlockedWriteClassifications.length}`,
+    '',
+    '## Remote Ops Entries',
+    '',
+    ...(remoteOpsLines.length > 0 ? remoteOpsLines : ['None.']),
     '',
     '## Blocked Write Attempts',
     '',
     `- Total blocked write attempts: ${blockedWrites.length}`,
     `- Historical/resolved: ${resolvedBlockedWriteClassifications.length}`,
     `- Unresolved: ${unresolvedBlockedWriteClassifications.length}`,
+    `- Hard stop resolutions: ${hardStopResolutions.length}`,
     '',
     ...(historicalBlockedLines.length > 0
       ? ['### Historical / Resolved Blocked Writes', '', ...historicalBlockedLines, '']
@@ -197,9 +212,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     ...(unresolvedBlockedLines.length > 0
       ? ['### Unresolved Blocked Writes', '', ...unresolvedBlockedLines, '']
       : ['### Unresolved Blocked Writes', '', 'None.', '']),
-    ...(finalViolations.length > 0
-      ? ['## Violations', '', ...finalViolations.map((v) => `- ${v}`), '']
-      : []),
+    ...(finalViolations.length > 0 ? ['## Violations', '', ...finalViolations.map((v) => `- ${v}`), ''] : []),
     ...(auditResult.entries.length > 0
       ? [
           '## Entries',
@@ -209,7 +222,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
           ),
           '',
         ]
-      : ['## Entries', '', 'No file changes detected.', '']),
+      : ['## Entries', '', 'No project file changes detected.', '']),
   ].join('\n');
 
   try {
@@ -226,11 +239,14 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     out_of_scope: finalOutOfScope,
     violations: finalViolations,
     side_effects: auditResult.side_effects,
+    remote_ops_entries: remoteOpsFiles.length,
+    remote_ops_files: remoteOpsFiles,
     work_item_id: workItemId,
     data_source: dataSource,
     blocked_write_attempts: blockedWrites.length,
     resolved_blocked_write_attempts: resolvedBlockedWriteClassifications.length,
     unresolved_blocked_write_attempts: unresolvedBlockedWriteClassifications.length,
+    hard_stop_resolutions: hardStopResolutions.length,
     blocked_write_classifications: blockedWriteClassifications,
   };
 });
