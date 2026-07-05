@@ -8,6 +8,7 @@
  * - Historical blocked attempts remain visible in audit output.
  * - Only unresolved blocked attempts become final audit violations.
  * - hard_stop_resolution.jsonl is accepted as the structured recovery source.
+ * - project-level write_guard_authorizations.jsonl is accepted as scoped future-policy evidence.
  */
 import {
   operationMatchesForAudit,
@@ -19,11 +20,17 @@ import {
   isAuditResolvingResolutionType,
   resolutionText,
 } from './hard-stop-resolution-log';
+import {
+  authorizationText,
+  commandMatchesWriteGuardAuthorization,
+  type WriteGuardAuthorizationEntry,
+} from './write-guard-authorization-log';
 
 export type BlockedWriteClassificationStatus =
   | 'historical_blocked_discovery_resolved'
   | 'historical_blocked_no_effect'
   | 'hard_stop_resolution_resolved'
+  | 'write_guard_authorization_resolved'
   | 'unresolved_blocked_attempt';
 
 export interface BlockedWriteAttemptLike {
@@ -55,6 +62,8 @@ export interface BlockedWriteClassification {
   original_violations: string[];
   hard_stop_resolution_type?: string;
   hard_stop_resolution_id?: string | null;
+  write_guard_authorization_id?: string | null;
+  write_guard_authorization_type?: string;
 }
 
 function normalizeBlockedOperation(value: unknown): string {
@@ -101,11 +110,45 @@ function findResolutionForBlockedPath(
   return null;
 }
 
+function authorizationMatchesBlockedPath(
+  blockedPath: string,
+  blocked: BlockedWriteAttemptLike,
+  authorization: WriteGuardAuthorizationEntry,
+): boolean {
+  const command = String(blocked.command ?? '');
+  if (command && commandMatchesWriteGuardAuthorization(command, authorization, blockedPath ? authorization.work_item_id : undefined)) {
+    return true;
+  }
+
+  const target = normalizeAuditPath(blockedPath);
+  const text = normalizeAuditPath(authorizationText(authorization));
+  if (target && text.includes(target)) return true;
+
+  const violations = Array.isArray(blocked.violations) ? blocked.violations : [];
+  return violations.some((violation) => {
+    const v = normalizeAuditPath(String(violation ?? ''));
+    return target.length > 0 && v.includes(target) && text.includes(target);
+  });
+}
+
+function findAuthorizationForBlockedPath(
+  blockedPath: string,
+  blocked: BlockedWriteAttemptLike,
+  authorizations: WriteGuardAuthorizationEntry[],
+): WriteGuardAuthorizationEntry | null {
+  for (let index = authorizations.length - 1; index >= 0; index -= 1) {
+    const authorization = authorizations[index];
+    if (authorizationMatchesBlockedPath(blockedPath, blocked, authorization)) return authorization;
+  }
+  return null;
+}
+
 export function classifyBlockedWriteAttempts(
   blockedWrites: BlockedWriteAttemptLike[],
   factualChangedFiles: FactualChangedFileLike[],
   allowedWriteFiles: AllowedWriteFileLike[],
   hardStopResolutions: HardStopResolutionLogEntry[] = [],
+  writeGuardAuthorizations: WriteGuardAuthorizationEntry[] = [],
 ): BlockedWriteClassification[] {
   return (blockedWrites ?? []).map((blocked) => {
     const filePath = String(blocked?.path ?? 'unknown');
@@ -139,6 +182,25 @@ export function classifyBlockedWriteAttempts(
         original_violations: originalViolations,
         hard_stop_resolution_type: String(resolution.resolution_type ?? ''),
         hard_stop_resolution_id: resolution.hard_stop_id ?? null,
+      };
+    }
+
+    const authorization = findAuthorizationForBlockedPath(filePath, blocked, writeGuardAuthorizations);
+    if (authorization) {
+      return {
+        path: filePath,
+        operation,
+        tool: blocked?.tool,
+        status: 'write_guard_authorization_resolved',
+        reason:
+          'Blocked attempt is covered by project-level write_guard_authorizations.jsonl entry authorization_id=' +
+          String(authorization.authorization_id ?? 'unknown') +
+          '. The attempt remains visible, but this scoped authorization prevents it from being treated as unresolved.',
+        covered_by_final_allowed_scope: coveredByFinalAllowedScope,
+        later_allowed_write: laterAllowedWrite,
+        original_violations: originalViolations,
+        write_guard_authorization_id: authorization.authorization_id ?? null,
+        write_guard_authorization_type: String(authorization.authorization_type ?? ''),
       };
     }
 
@@ -176,7 +238,7 @@ export function classifyBlockedWriteAttempts(
       tool: blocked?.tool,
       status: 'unresolved_blocked_attempt',
       reason:
-        'Blocked attempt is not covered by final allowed_write_files scope and no structured hard_stop resolution can be proven.',
+        'Blocked attempt is not covered by final allowed_write_files scope and no structured hard_stop resolution or project-level write_guard authorization can be proven.',
       covered_by_final_allowed_scope: false,
       later_allowed_write: laterAllowedWrite,
       original_violations: originalViolations,

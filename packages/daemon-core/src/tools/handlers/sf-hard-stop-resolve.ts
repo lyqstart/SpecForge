@@ -2,17 +2,19 @@
  * sf-hard-stop-resolve.ts
  *
  * Structured user-visible hard_stop resolution tool.
- * It does not delete evidence silently: it records a resolution entry under
- * .specforge/work-items/<WI>/hard_stop_resolution.jsonl before clearing the
- * active hard_stop latch.
+ * It records a resolution entry under .specforge/work-items/<WI>/hard_stop_resolution.jsonl
+ * before clearing the active hard_stop latch.
+ *
+ * v1.2.8: optionally installs a project-level write_guard_authorization when the
+ * user chooses "authorize similar operations" instead of "resolve this attempt only".
  */
-
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { registerHandler } from '../ToolDispatcher';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { resetHardStop } from '../lib/hard-stop-latch';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
+import { appendWriteGuardAuthorization } from '../lib/write-guard-authorization-log';
 
 const VALID_RESOLUTION_TYPES = new Set([
   'false_positive',
@@ -30,6 +32,23 @@ function readJsonIfExists(filePath: string): any | null {
   } catch {
     return null;
   }
+}
+
+function optionalString(args: Record<string, unknown>, key: string): string | undefined {
+  const value = args[key];
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function optionalStringArray(args: Record<string, unknown>, key: string): string[] | undefined {
+  const value = args[key];
+  if (!Array.isArray(value)) return undefined;
+  return value.map((item) => String(item ?? '').trim()).filter((item) => item.length > 0);
+}
+
+function shouldInstallAuthorization(args: Record<string, unknown>): boolean {
+  return args['install_authorization'] === true || String(args['authorization_type'] ?? '').trim().length > 0;
 }
 
 registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
@@ -61,6 +80,7 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
   const activePath = path.join(wiDir, 'hard_stop.json');
   const active = readJsonIfExists(activePath);
+
   if (!active || active.blocked !== true || active.resolved === true) {
     return { success: false, error: 'NO_ACTIVE_HARD_STOP', work_item_id: workItemId, retry_allowed: true };
   }
@@ -77,7 +97,7 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   }
 
   const entry = {
-    schema_version: '1.2.5',
+    schema_version: '1.2.8',
     resolved_at: new Date().toISOString(),
     work_item_id: workItemId,
     hard_stop_id: active.hard_stop_id ?? null,
@@ -94,7 +114,34 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   fs.mkdirSync(wiDir, { recursive: true });
   fs.appendFileSync(path.join(wiDir, 'hard_stop_resolution.jsonl'), JSON.stringify(entry) + '\n', 'utf-8');
 
+  let authorization: any = null;
+  if (shouldInstallAuthorization(args as Record<string, unknown>)) {
+    authorization = appendWriteGuardAuthorization(baseDir, {
+      source_hard_stop_id: active.hard_stop_id ?? null,
+      work_item_id: workItemId,
+      authorization_type: optionalString(args as Record<string, unknown>, 'authorization_type') ?? 'user_accepted_external_ops',
+      scope: optionalString(args as Record<string, unknown>, 'authorization_scope') ?? 'work_item',
+      tool: optionalString(args as Record<string, unknown>, 'authorization_tool') ?? 'sf_safe_bash',
+      intent: optionalString(args as Record<string, unknown>, 'authorization_intent') ?? optionalString(args as Record<string, unknown>, 'intent'),
+      command_family:
+        optionalString(args as Record<string, unknown>, 'authorization_command_family') ??
+        optionalString(args as Record<string, unknown>, 'command_family'),
+      host_path_prefix:
+        optionalString(args as Record<string, unknown>, 'authorization_host_path_prefix') ??
+        optionalString(args as Record<string, unknown>, 'host_path_prefix'),
+      container_targets:
+        optionalStringArray(args as Record<string, unknown>, 'authorization_container_targets') ??
+        optionalStringArray(args as Record<string, unknown>, 'container_targets'),
+      image: optionalString(args as Record<string, unknown>, 'authorization_image') ?? optionalString(args as Record<string, unknown>, 'image'),
+      expires_when: optionalString(args as Record<string, unknown>, 'authorization_expires_when') ?? 'work_item_closed',
+      user_response_quote: userQuote,
+      reason: String(args['authorization_reason'] ?? args['reason'] ?? ''),
+      created_by: String((context as any)?.agent ?? 'unknown'),
+    });
+  }
+
   const cleared = resetHardStop(baseDir, workItemId);
+
   return {
     success: cleared,
     work_item_id: workItemId,
@@ -102,8 +149,17 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
     resolution_type: resolutionType,
     cleared,
     resolution_log: path.relative(baseDir, path.join(wiDir, 'hard_stop_resolution.jsonl')).replace(/\\/g, '/'),
+    authorization_installed: authorization !== null,
+    authorization,
+    authorization_log: authorization
+      ? path
+          .relative(baseDir, path.join(baseDir, SPEC_DIR_NAME, 'project', 'policies', 'write_guard_authorizations.jsonl'))
+          .replace(/\\/g, '/')
+      : undefined,
     message: cleared
-      ? 'hard_stop resolved with structured user decision; original record preserved in hard_stop_resolution.jsonl'
+      ? authorization
+        ? 'hard_stop resolved and project-level write_guard authorization installed; original record preserved in hard_stop_resolution.jsonl'
+        : 'hard_stop resolved with structured user decision; original record preserved in hard_stop_resolution.jsonl'
       : 'resolution record written, but active hard_stop latch could not be cleared',
   };
 });
