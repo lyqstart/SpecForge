@@ -4,6 +4,7 @@ import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
 import { checkHardStop } from '../lib/hard-stop-latch';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { enforceRuntimeWriteGuardForShell, extractShellWriteTargets } from '../lib/write-guard-runtime-v12';
+import { findMatchingWriteGuardAuthorization } from '../lib/write-guard-authorization-log';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -40,6 +41,7 @@ function readJsonIfExists(filePath: string): any | null {
 function toProjectRelative(projectRoot: string, cwd: string | undefined, targetPath: string): string | null {
   const cleaned = String(targetPath ?? '').trim().replace(/^['"]|['"]$/g, '');
   if (!cleaned) return null;
+
   const base = cwd && path.isAbsolute(cwd) ? cwd : projectRoot;
   const absolute = path.isAbsolute(cleaned) ? path.resolve(cleaned) : path.resolve(base, cleaned);
   const projectAbs = path.resolve(projectRoot);
@@ -164,6 +166,33 @@ function commandWritesOnlyReportPaths(projectRoot: string, command: string, cwd?
   });
 }
 
+function isDangerousEvenWithAuthorization(command: string): boolean {
+  const c = normalizePathForCompare(command);
+  return (
+    c.includes('--privileged') ||
+    /(^|\s)-v\s+\/:/.test(c) ||
+    /source=\/(,|\s)/.test(c) ||
+    /(?:^|[;&|]\s*)rm\s+-rf\s+\/(\s|$)/.test(c) ||
+    c.includes('/etc/passwd') ||
+    c.includes('/etc/shadow')
+  );
+}
+
+async function executeSafe(args: Record<string, unknown>, baseDir: string, command: string, cwd: string | undefined, callerRole: string | undefined) {
+  return safeBashExecute(
+    {
+      command,
+      cwd,
+      timeoutMs: args['timeoutMs'] as number | undefined,
+      env: args['env'] as Record<string, string> | undefined,
+      stdin: args['stdin'] as string | undefined,
+      outputLimit: args['outputLimit'] as number | undefined,
+      callerRole,
+    },
+    baseDir,
+  );
+}
+
 registerHandler('sf_safe_bash', async (args, context, _deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const callerRole = extractCallerRole((context as Record<string, unknown> | undefined)?.agent);
@@ -174,10 +203,9 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     const WI_ARTIFACT_PATTERN = /\.specforge[\\/]work-items[\\/]/i;
     if (WI_ARTIFACT_PATTERN.test(command)) {
       const access = classifyWorkItemPathBashAccess(command);
-      if (access === 'read') {
-        return safeBashExecute({ command, cwd, timeoutMs: args['timeoutMs'] as number | undefined, env: args['env'] as Record<string, string> | undefined, stdin: args['stdin'] as string | undefined, outputLimit: args['outputLimit'] as number | undefined, callerRole }, baseDir);
-      }
+      if (access === 'read') return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
     }
+
     return {
       success: false,
       error:
@@ -191,10 +219,11 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
   }
 
   if (commandWritesOnlyReportPaths(baseDir, command, cwd)) {
-    return safeBashExecute({ command, cwd, timeoutMs: args['timeoutMs'] as number | undefined, env: args['env'] as Record<string, string> | undefined, stdin: args['stdin'] as string | undefined, outputLimit: args['outputLimit'] as number | undefined, callerRole }, baseDir);
+    return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
   }
 
   const activeWiId = findActiveWorkItemIdForWrite(baseDir, args as Record<string, unknown>, command);
+
   if (activeWiId) {
     const { blocked, record } = checkHardStop(baseDir, activeWiId);
     if (blocked) {
@@ -208,6 +237,22 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
         hard_stop_record: record,
       };
     }
+  }
+
+  const matchingAuthorization =
+    activeWiId && !isDangerousEvenWithAuthorization(command)
+      ? findMatchingWriteGuardAuthorization(baseDir, command, activeWiId)
+      : null;
+
+  if (matchingAuthorization) {
+    const result = await executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
+    return {
+      ...(typeof result === 'object' && result !== null ? result : { output: result }),
+      write_guard_authorized: true,
+      write_guard_authorization_id: matchingAuthorization.authorization_id ?? null,
+      write_guard_authorization_type: matchingAuthorization.authorization_type ?? null,
+      write_guard_authorization_scope: matchingAuthorization.scope ?? null,
+    };
   }
 
   const runtimeGuard = enforceRuntimeWriteGuardForShell({
@@ -230,19 +275,9 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
       retry_allowed: false,
       blocked_command: command.slice(0, 240),
       write_guard_targets: runtimeGuard.targets,
+      user_action_required: runtimeGuard.hard_stop === true ? 'resolve_hard_stop_or_authorize_scoped_operation' : undefined,
     };
   }
 
-  return safeBashExecute(
-    {
-      command,
-      cwd,
-      timeoutMs: args['timeoutMs'] as number | undefined,
-      env: args['env'] as Record<string, string> | undefined,
-      stdin: args['stdin'] as string | undefined,
-      outputLimit: args['outputLimit'] as number | undefined,
-      callerRole,
-    },
-    baseDir,
-  );
+  return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
 });

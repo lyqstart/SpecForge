@@ -1,11 +1,10 @@
 /**
  * sf_changed_files_audit — Changed Files Audit Tool Handler.
  *
- * v1.2.7 hotfix:
- * - Reads hard_stop_resolution.jsonl and lets structured resolutions classify
- *   historical blocked writes instead of leaving them permanently unresolved.
- * - Splits deployment / remote-ops entries from project file writes so server
- *   lifecycle operations are not judged by the code allowed_write_files list.
+ * v1.2.8 hotfix:
+ * - Reads project-level write_guard_authorizations.jsonl as scoped policy facts.
+ * - Keeps v1.2.7 hard_stop_resolution.jsonl classification behavior.
+ * - Continues to split deployment / remote-ops entries from project file writes.
  */
 import { join } from 'node:path';
 import * as fs from 'node:fs/promises';
@@ -17,6 +16,7 @@ import {
 } from '../lib/blocked-write-classification';
 import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log';
 import { readHardStopResolutionLog } from '../lib/hard-stop-resolution-log';
+import { readWriteGuardAuthorizations } from '../lib/write-guard-authorization-log';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
@@ -123,6 +123,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
   const blockedWrites = writeGuardSummary.blockedWrites ?? [];
   const hardStopResolutions = readHardStopResolutionLog(workItemDir);
+  const writeGuardAuthorizations = readWriteGuardAuthorizations(projectRoot);
   const factualFiles = getFactualChangedFiles(workItemDir);
 
   let changedFiles: ChangedFile[];
@@ -153,12 +154,16 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     changedFiles,
     allowedWriteFiles,
     hardStopResolutions,
+    writeGuardAuthorizations,
   );
   const unresolvedBlockedWriteClassifications = blockedWriteClassifications.filter(
     (c) => c.status === 'unresolved_blocked_attempt',
   );
   const resolvedBlockedWriteClassifications = blockedWriteClassifications.filter(
     (c) => c.status !== 'unresolved_blocked_attempt',
+  );
+  const authorizationResolvedClassifications = blockedWriteClassifications.filter(
+    (c) => c.status === 'write_guard_authorization_resolved',
   );
   const unresolvedBlockedWriteViolations = unresolvedBlockedWriteClassifications.map(
     blockedWriteClassificationToViolation,
@@ -183,6 +188,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     `Command: ${command ?? 'N/A'}`,
     `Timestamp: ${new Date().toISOString()}`,
     `Data Source: ${dataSource}`,
+    `Policy Source: hard_stop_resolution.jsonl (${hardStopResolutions.length}) + write_guard_authorizations.jsonl (${writeGuardAuthorizations.length})`,
     '',
     `## Result: ${finalPassed ? 'PASS' : 'FAIL'}`,
     '',
@@ -193,6 +199,7 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     `- Remote ops entries: ${remoteOpsFiles.length}`,
     `- Blocked write attempts: ${blockedWrites.length}`,
     `- Historical/resolved blocked write attempts: ${resolvedBlockedWriteClassifications.length}`,
+    `- Authorization-resolved blocked write attempts: ${authorizationResolvedClassifications.length}`,
     `- Unresolved blocked write attempts: ${unresolvedBlockedWriteClassifications.length}`,
     '',
     '## Remote Ops Entries',
@@ -203,8 +210,10 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     '',
     `- Total blocked write attempts: ${blockedWrites.length}`,
     `- Historical/resolved: ${resolvedBlockedWriteClassifications.length}`,
+    `- Authorization-resolved: ${authorizationResolvedClassifications.length}`,
     `- Unresolved: ${unresolvedBlockedWriteClassifications.length}`,
     `- Hard stop resolutions: ${hardStopResolutions.length}`,
+    `- Project-level write_guard authorizations: ${writeGuardAuthorizations.length}`,
     '',
     ...(historicalBlockedLines.length > 0
       ? ['### Historical / Resolved Blocked Writes', '', ...historicalBlockedLines, '']
@@ -245,8 +254,10 @@ registerHandler('sf_changed_files_audit', async (args, context, _deps) => {
     data_source: dataSource,
     blocked_write_attempts: blockedWrites.length,
     resolved_blocked_write_attempts: resolvedBlockedWriteClassifications.length,
+    authorization_resolved_blocked_write_attempts: authorizationResolvedClassifications.length,
     unresolved_blocked_write_attempts: unresolvedBlockedWriteClassifications.length,
     hard_stop_resolutions: hardStopResolutions.length,
+    write_guard_authorizations: writeGuardAuthorizations.length,
     blocked_write_classifications: blockedWriteClassifications,
   };
 });
