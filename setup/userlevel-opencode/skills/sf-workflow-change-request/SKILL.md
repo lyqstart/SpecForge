@@ -73,6 +73,39 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 # Change Request 工作流执行协议
 
+## Governance Model Workflow Contract（依据 / 承接 / 验证 / 融合）
+
+本 workflow skill 只定义流程控制和阶段责任，不替代 Agent 角色职责，也不替代 daemon gate。所有阶段继续遵守上方 v1.1 Final Governance Contract；当本节与 daemon 返回冲突时，以 daemon 返回为准。
+
+每个 workflow 阶段推进前，orchestrator 必须用四问模型做轻量自检：
+
+1. **依据**：当前阶段输入是否有明确来源（用户原话、项目规格、代码观测、运行观测、环境观测或已批准决策）？不得把 unknown / assumption 当作事实继续推进。
+2. **承接**：当前阶段是否承接了上游的责任项和约束项？不要求覆盖上游所有说明文字，但必须处理 Must 需求、设计决策、系统边界、验证义务、关闭阻断项。
+3. **验证**：当前阶段是否产生或要求了能证明用户目标的证据？文件存在、文档非空、构建成功只能证明工程动作，不自动证明用户结果。
+4. **融合**：本 WI 对项目级真相源的影响是否清楚？必须明确属于规格变更、设计变更、证据追加、知识沉淀或无项目规格变更，并在 Candidate / merge / close 产物中保持一致。
+
+调度子 Agent 时，prompt 必须明确传入本阶段的四问重点：
+
+```text
+basis_inputs: 本阶段依据来源
+upstream_to_cover: 必须承接的上游责任项/约束项
+required_evidence: 本阶段或后续阶段必须产生的证据
+project_integration_effect: 本 WI 对项目级真相源的预期影响
+```
+
+如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
+
+
+## Change Request 的四问控制点
+
+Change Request 重点是影响边界、兼容性和回归范围，不能只实现新增/修改点。
+
+- **依据**：impact_analysis 必须说明变更动机、受影响模块、当前实现依据、风险来源和回归范围依据。
+- **承接**：design_delta 必须覆盖 impact_analysis 中的变更范围、兼容性影响、回归风险；tasks 必须覆盖每个受影响模块和回归验证点。
+- **验证**：verification 必须证明变更目标实现，同时证明 impact_analysis 声明的回归范围已验证。
+- **融合**：涉及长期行为、接口、架构或验收标准变化时，必须更新项目级规格/设计/trace；否则说明 no_project_spec_change_reason。
+
+
 ## 工作流阶段总览
 
 <!-- AUTO-GENERATED:START:phase-table -->
