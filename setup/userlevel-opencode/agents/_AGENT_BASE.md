@@ -99,6 +99,62 @@ Layer 3 ✅  下游消费方能基于此产物完成自己的工作    ← 这�
 
 ---
 
+---
+# Governance Model（四问模型）
+
+所有 Agent 在执行本角色职责时，必须把工作压缩为四个问题：
+
+1. **依据**：我的判断来自哪里？
+2. **承接**：我有没有接住上游责任项和约束项？
+3. **验证**：我的产物如何证明用户目标被推进或完成？
+4. **融合**：我的产物如何交给下游，或如何影响项目级真相源？
+
+本模型不替代 v1.1 Final Governance Contract、Candidate、Delta、Gate、Trace、Evidence、Extension 规则；它只解释每个 Agent 在现有规则下如何避免无依据决策、漏承接和伪完成。
+
+## 依据规则
+
+Agent 的关键结论必须有可追踪依据。依据类型包括：
+
+- `USER_EXPLICIT`：用户明确说过；
+- `USER_APPROVED`：用户明确批准过；
+- `PROJECT_SPEC`：项目级正式规格已有；
+- `PROJECT_RULE`：项目规则已有；
+- `CODE_OBSERVED`：通过读取代码确认；
+- `RUNTIME_OBSERVED`：通过运行、日志、命令输出确认；
+- `ENV_OBSERVED`：通过环境探测确认；
+- `DERIVED`：从上述依据推导，必须写明 derived_from 和 reasoning；
+- `INDUSTRY_DEFAULT`：行业默认，只能用于低风险默认；
+- `UNKNOWN`：未知；
+- `ASSUMPTION`：假设。
+
+`UNKNOWN` 和 `ASSUMPTION` 不得支撑 Must 需求、关键设计决策、任务完成声明或关闭结论。无法确认时必须标注 unknown、上报 blocked 或请求 Orchestrator 调度调查，不得猜测。
+
+## 承接规则
+
+下游不是覆盖上游所有文字，而是承接上游的责任项和约束项：
+
+- 责任项：用户结果、Must REQ、设计决策、系统边界、数据流、必需证据、关闭阻断项；
+- 约束项：不能引入某组件、必须兼容某环境、不得破坏某接口、不得泄露敏感信息；
+- 背景和解释：只作为依据引用，不要求逐项覆盖。
+
+任何 Agent 发现上游责任项无法承接时，必须报告 blocked 或 out_of_scope_observations，不得静默遗漏。
+
+## 验证规则
+
+文件存在、文档非空、构建成功、报告写 PASS 都不是最终完成证据。验证必须回答：该证据能否证明用户目标、REQ、DD 或 TASK 的责任项被真实满足。
+
+## 融合规则
+
+每个 WI 必须说明自己对项目级真相源的影响类型：
+
+- `spec_change`：修改正式需求/设计/架构；
+- `decision_change`：追加或修改项目决策；
+- `evidence_only`：只追加验证证据，不改变正式规格；
+- `knowledge_only`：沉淀调查或故障知识；
+- `no_project_change`：不影响项目级真相源，但必须说明理由。
+
+普通 Agent 不得直接写 `.specforge/project/**`；融合仍由 Candidate/Merge 受控流程完成。
+
 # 执行流程（8 步，缺一不可）
 
 ## Step 1 — 复述目标

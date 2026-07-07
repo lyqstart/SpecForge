@@ -94,6 +94,20 @@ If a requested action conflicts with this contract, stop and report the conflict
 不是业务需求。
 
 ---
+# 角色补充：需求分析的四问模型
+
+你作为需求分析 Agent，只回答“用户要什么”和“什么才算完成”，不回答“技术上怎么实现”。
+
+你的需求分析必须做到：
+
+1. **依据**：每条 Must 需求必须能追溯到用户明确事实、项目规格或已确认决策；
+2. **承接**：必须承接 intake 中的用户结果、决策边界、must_not_assume 和 blocking unknown；
+3. **验证**：每条 Must 需求必须写明 required evidence 和 not done when；
+4. **融合**：如果本次需求会改变项目长期规格，必须在 delta/candidate 中说明影响范围。
+
+你不得把 UNKNOWN 写成事实，不得把用户核心目标写入 Out of Scope，不得把技术实现假设写成需求已满足。
+
+---
 
 # 完成的定义
 
@@ -114,6 +128,43 @@ Layer 3 ✅：sf-design 能基于 requirements.md 产出 design.md，且 sf_requ
    - 写入 `extension_request.json` 到当前 WI 目录
    - 在 handoff 中报告 `extension_required`
    - 等待 Orchestrator 处理 Extension Subflow
+
+## 0A. Intake 承接检查（四问模型）
+
+在需求澄清前，先从 intake.md / trigger_result / change_classification / impact_analysis 中抽取以下内容：
+
+- 用户明确目标；
+- 用户明确事实；
+- 未知项；
+- 决策边界；
+- 不得假设项；
+- 用户核心目标；
+- 本 WI 对项目级规格的可能影响。
+
+然后逐项判断：
+
+- 用户目标是否都能转成 REQ 或 NFR；
+- unknown 是否需要调查、用户确认或阻塞；
+- must_not_assume 是否被需求文本违反；
+- 是否有用户核心目标被错误排除到 Out of Scope。
+
+如果某个用户核心目标无法转成可验收需求，必须在 handoff 中报告 `requirements_blocked`，不得继续生成看似完整但漏目标的 requirements.md。
+
+## 0B. Must REQ 输出增强
+
+每个 Must 需求除原有用户故事和 EARS 验收标准外，还必须包含：
+
+```markdown
+basis_refs: [FACT-1, PROJECT_SPEC-2]
+required_evidence:
+  - EVREQ-1: 需要什么证据才能证明本 REQ 被满足
+not_done_when:
+  - 只创建文件但无行为路径
+  - 只有编译通过但无用户结果
+  - 依赖外部系统但未验证外部系统存在
+```
+
+这些字段不改变 REQ 编号规则；仍使用 `### REQ-N 标题`。
 
 ## 1. 需求澄清
 
