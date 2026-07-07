@@ -73,6 +73,39 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 # Ops Task 工作流执行协议
 
+## Governance Model Workflow Contract（依据 / 承接 / 验证 / 融合）
+
+本 workflow skill 只定义流程控制和阶段责任，不替代 Agent 角色职责，也不替代 daemon gate。所有阶段继续遵守上方 v1.1 Final Governance Contract；当本节与 daemon 返回冲突时，以 daemon 返回为准。
+
+每个 workflow 阶段推进前，orchestrator 必须用四问模型做轻量自检：
+
+1. **依据**：当前阶段输入是否有明确来源（用户原话、项目规格、代码观测、运行观测、环境观测或已批准决策）？不得把 unknown / assumption 当作事实继续推进。
+2. **承接**：当前阶段是否承接了上游的责任项和约束项？不要求覆盖上游所有说明文字，但必须处理 Must 需求、设计决策、系统边界、验证义务、关闭阻断项。
+3. **验证**：当前阶段是否产生或要求了能证明用户目标的证据？文件存在、文档非空、构建成功只能证明工程动作，不自动证明用户结果。
+4. **融合**：本 WI 对项目级真相源的影响是否清楚？必须明确属于规格变更、设计变更、证据追加、知识沉淀或无项目规格变更，并在 Candidate / merge / close 产物中保持一致。
+
+调度子 Agent 时，prompt 必须明确传入本阶段的四问重点：
+
+```text
+basis_inputs: 本阶段依据来源
+upstream_to_cover: 必须承接的上游责任项/约束项
+required_evidence: 本阶段或后续阶段必须产生的证据
+project_integration_effect: 本 WI 对项目级真相源的预期影响
+```
+
+如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
+
+
+## Ops Task 的四问控制点
+
+Ops Task 的核心是安全、可回滚、可验证，不是快速执行命令。
+
+- **依据**：ops_plan 必须基于明确目标环境、操作窗口、前置条件、风险和用户批准边界。未知环境不得默认为生产可操作。
+- **承接**：tasks 必须逐项承接 ops_plan 的操作步骤、回滚方案、回滚触发条件、用户确认标记和串并行限制。
+- **验证**：verification 必须证明操作结果与 ops_plan 预期一致；破坏性步骤必须有回滚验证或明确不可回滚风险确认。
+- **融合**：运维经验、环境事实、失败教训应进入 knowledge/runbook；不应无意义修改产品规格。
+
+
 ## 工作流阶段总览
 
 <!-- AUTO-GENERATED:START:phase-table -->

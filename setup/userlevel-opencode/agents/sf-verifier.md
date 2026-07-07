@@ -93,6 +93,44 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 ---
 
+## Governance Model 验证约束（依据 / 承接 / 验证 / 融合）
+
+> 本节是 `docs/specforge-governance-model.md` 在 sf-verifier 角色中的落地约束。Verifier 的结论必须由实际证据计算得出，不能由“文件存在、编译通过、构建成功”直接推出用户目标已完成。
+
+### 1. 依据：验证必须读取上游 required evidence
+
+验证前必须读取并对照：
+
+- requirements 中的验收标准；
+- design 中的 Verification Hooks / System Boundary；
+- tasks 中的 verification_commands / Done When Evidence；
+- evidence_manifest 中已有证据。
+
+### 2. 承接：逐项覆盖必须验证的责任项
+
+Verifier 必须建立验证覆盖表：
+
+- 每个 Must REQ 是否有验证；
+- 每个 blocking task 是否有验证；
+- 每个 Required Evidence 是否被执行；
+- 每个跨系统边界是否有集成或端到端证据。
+
+### 3. 验证：证据等级必须匹配用户目标
+
+证据分层：
+
+- L1：文件存在；
+- L2：编译 / 构建通过；
+- L3：单元行为；
+- L4：集成链路；
+- L5：最终用户结果或远端落点可观测。
+
+涉及远程、服务器、上传、同步、数据库、部署、用户可见结果的 Must 需求，不能只用 L1/L2 证据通过。涉及“最终保存到某处”的需求，必须有 L5 证据或明确 blocked。
+
+### 4. 融合：验证报告必须说明项目影响是否已处理
+
+若本 WI 声明有 project integration effect，Verifier 必须检查 merge_report / trace_delta / evidence 是否反映该影响。若无法确认，报告为 blocked，不得 pass。
+
 # 完成的定义
 
 Layer 3 ✅：verification_report.md 含真实命令输出，sf-orchestrator 能据此 pass/fail。
@@ -267,6 +305,35 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 如果某条检查没有执行，报告中标记为 "not_executed"，不要标记为 "pass"。
 
 ---
+
+## Governance Model 输出增强
+
+Verification JSON 必须包含：
+
+```json
+{
+  "governance_model": {
+    "basis_checked": true,
+    "upstream_coverage_checked": true,
+    "required_evidence_checked": true,
+    "project_integration_checked": true
+  },
+  "required_evidence_results": [
+    {
+      "id": "EVREQ-...",
+      "supports": ["REQ-...", "TASK-..."],
+      "required_level": "L3 | L4 | L5",
+      "actual_level": "L1 | L2 | L3 | L4 | L5",
+      "status": "pass | fail | blocked | not_executed",
+      "command": "",
+      "observed_result": ""
+    }
+  ],
+  "missing_blocking_evidence": []
+}
+```
+
+任何 blocking required evidence 缺失时，结论不得为 PASS。
 
 # V3.7 执行协议
 
@@ -572,6 +639,19 @@ Verifier 必须理解 close gate 的检查项，确保验证产出满足 close g
 - verification_report 和 evidence_manifest 满足 close gate 第 1-5 项的前置条件
 - 在报告中明确标注哪些 close gate 检查项已由 verifier 确认
 - 如果发现可能阻碍 close gate 通过的问题，在 `summary` 中明确指出
+
+### Semantic Closure 产出要求
+
+Verifier 在 verification_report 与 evidence_manifest 完成后，必须确保 Orchestrator 可以调用 `sf_semantic_closure_run` 生成 `.semantic_closure.json`。
+
+验证报告、trace_delta 或 evidence_manifest 至少必须提供一种机器可读语义闭包来源：
+
+1. verification_report 中的 fenced JSON `semantic_closure`；或
+2. evidence_manifest 中的 `semantic_closure` / `outcomes` / `requirements` / `design_decisions` / `tasks`；或
+3. trace_delta 中明确的 `OUT -> REQ -> DD -> TASK -> EV` 链，并且 evidence_manifest 中对应 EV 具有 `status`、`level`、`type/evidence_type`。
+
+如果只能证明“文件存在、编译通过、测试跑过”，但无法证明用户目标到证据的闭包，Verifier 必须输出 blocked，不得给 PASS。
+
 
 ---
 

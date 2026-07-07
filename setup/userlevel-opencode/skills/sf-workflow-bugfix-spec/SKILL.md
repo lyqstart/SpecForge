@@ -73,6 +73,39 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 # Bugfix Spec 工作流执行协议
 
+## Governance Model Workflow Contract（依据 / 承接 / 验证 / 融合）
+
+本 workflow skill 只定义流程控制和阶段责任，不替代 Agent 角色职责，也不替代 daemon gate。所有阶段继续遵守上方 v1.1 Final Governance Contract；当本节与 daemon 返回冲突时，以 daemon 返回为准。
+
+每个 workflow 阶段推进前，orchestrator 必须用四问模型做轻量自检：
+
+1. **依据**：当前阶段输入是否有明确来源（用户原话、项目规格、代码观测、运行观测、环境观测或已批准决策）？不得把 unknown / assumption 当作事实继续推进。
+2. **承接**：当前阶段是否承接了上游的责任项和约束项？不要求覆盖上游所有说明文字，但必须处理 Must 需求、设计决策、系统边界、验证义务、关闭阻断项。
+3. **验证**：当前阶段是否产生或要求了能证明用户目标的证据？文件存在、文档非空、构建成功只能证明工程动作，不自动证明用户结果。
+4. **融合**：本 WI 对项目级真相源的影响是否清楚？必须明确属于规格变更、设计变更、证据追加、知识沉淀或无项目规格变更，并在 Candidate / merge / close 产物中保持一致。
+
+调度子 Agent 时，prompt 必须明确传入本阶段的四问重点：
+
+```text
+basis_inputs: 本阶段依据来源
+upstream_to_cover: 必须承接的上游责任项/约束项
+required_evidence: 本阶段或后续阶段必须产生的证据
+project_integration_effect: 本 WI 对项目级真相源的预期影响
+```
+
+如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
+
+
+## Bugfix Spec 的四问控制点
+
+Bugfix 不是只“修到不报错”，而是基于当前行为、预期行为和根因证据完成闭环。
+
+- **依据**：bugfix.md 必须包含当前行为、预期行为、复现步骤/观测证据、根因分析依据。没有复现或代码观测时，不得把猜测写成根因。
+- **承接**：fix_design 必须覆盖根因；tasks 必须覆盖修复点、回归测试、不变行为；不得把未证明根因的改动拆成实现任务。
+- **验证**：至少包含复现用例通过、相关回归通过、原缺陷不再出现；构建成功不能替代缺陷修复证据。
+- **融合**：如果 bug 暴露了需求/设计错误，应追加对应规格或决策；如果只是代码实现偏差，应声明 evidence_only / no_project_spec_change_reason。
+
+
 ## 工作流阶段总览
 
 <!-- AUTO-GENERATED:START:phase-table -->

@@ -147,6 +147,24 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
 
 ---
 
+## Governance Model 调试约束（依据 / 承接 / 验证 / 融合）
+
+Debugger 在修复失败 task 时，不只判断代码错误，还必须判断失败属于哪一类：
+
+```text
+implementation_defect
+requirements_defect
+design_defect
+task_planning_defect
+basis_defect
+verification_defect
+environment_defect
+```
+
+如果失败原因是上游规格、设计、任务或依据不足，Debugger 不得强行修代码绕过问题。必须在报告中标记 `needs_requirements_change`、`needs_design_change`、`needs_task_change` 或 `needs_basis_resolution`。
+
+修复后仍必须重新运行原 verification_command，并补充能解释根因的证据。
+
 # 修复规则
 
 1. **只修复与问题直接相关的文件**——不得顺手改其他文件

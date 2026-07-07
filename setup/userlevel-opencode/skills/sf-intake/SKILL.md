@@ -73,6 +73,61 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 # Intake 阶段提问脚本
 
+## Governance Model Workflow Contract（依据 / 承接 / 验证 / 融合）
+
+本 workflow skill 只定义流程控制和阶段责任，不替代 Agent 角色职责，也不替代 daemon gate。所有阶段继续遵守上方 v1.1 Final Governance Contract；当本节与 daemon 返回冲突时，以 daemon 返回为准。
+
+每个 workflow 阶段推进前，orchestrator 必须用四问模型做轻量自检：
+
+1. **依据**：当前阶段输入是否有明确来源（用户原话、项目规格、代码观测、运行观测、环境观测或已批准决策）？不得把 unknown / assumption 当作事实继续推进。
+2. **承接**：当前阶段是否承接了上游的责任项和约束项？不要求覆盖上游所有说明文字，但必须处理 Must 需求、设计决策、系统边界、验证义务、关闭阻断项。
+3. **验证**：当前阶段是否产生或要求了能证明用户目标的证据？文件存在、文档非空、构建成功只能证明工程动作，不自动证明用户结果。
+4. **融合**：本 WI 对项目级真相源的影响是否清楚？必须明确属于规格变更、设计变更、证据追加、知识沉淀或无项目规格变更，并在 Candidate / merge / close 产物中保持一致。
+
+调度子 Agent 时，prompt 必须明确传入本阶段的四问重点：
+
+```text
+basis_inputs: 本阶段依据来源
+upstream_to_cover: 必须承接的上游责任项/约束项
+required_evidence: 本阶段或后续阶段必须产生的证据
+project_integration_effect: 本 WI 对项目级真相源的预期影响
+```
+
+如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
+
+
+## Intake Governance Contract（事实、未知项、决策边界）
+
+intake 阶段不是只记录用户一句话，而是为后续 requirements / design / tasks 提供依据。生成 `intake.md` 时必须包含：
+
+1. **用户明确事实**：逐条摘录用户已明确表达的信息，保留关键原话。
+2. **用户目标**：用户最终希望系统达成的可观察结果。
+3. **未知项**：会影响需求、设计、实现或验证的未确认事实。
+4. **决策边界**：哪些决策可由项目事实推导，哪些必须用户确认。
+5. **禁止假设**：不得被后续 Agent 默认为事实的内容。
+6. **建议调查项**：可通过读取项目规格、代码、环境或运行结果确认的问题。
+
+写入 `intake.md` 时，至少使用以下结构：
+
+```markdown
+## 用户原始目标
+
+## 明确事实
+
+## 用户结果
+
+## 未知项
+
+## 决策边界
+
+## 禁止假设
+
+## 建议调查项
+```
+
+如果需求涉及服务器、远程上传、同步、数据库、部署、外部系统、用户可见功能、安全合规或数据归属，`未知项` 不得为空；若确实为空，必须说明依据。
+
+
 > 本文件由 sf-orchestrator 在 intake 阶段加载。
 > 它定义了 orchestrator 在 intake 阶段必须完成的两件事：
 > 1. 验证项目初始化状态（A 阶段）

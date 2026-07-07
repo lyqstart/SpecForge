@@ -73,6 +73,39 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 # SpecForge v29 feature_spec 执行裁决（最小规则）
 
+## Governance Model Workflow Contract（依据 / 承接 / 验证 / 融合）
+
+本 workflow skill 只定义流程控制和阶段责任，不替代 Agent 角色职责，也不替代 daemon gate。所有阶段继续遵守上方 v1.1 Final Governance Contract；当本节与 daemon 返回冲突时，以 daemon 返回为准。
+
+每个 workflow 阶段推进前，orchestrator 必须用四问模型做轻量自检：
+
+1. **依据**：当前阶段输入是否有明确来源（用户原话、项目规格、代码观测、运行观测、环境观测或已批准决策）？不得把 unknown / assumption 当作事实继续推进。
+2. **承接**：当前阶段是否承接了上游的责任项和约束项？不要求覆盖上游所有说明文字，但必须处理 Must 需求、设计决策、系统边界、验证义务、关闭阻断项。
+3. **验证**：当前阶段是否产生或要求了能证明用户目标的证据？文件存在、文档非空、构建成功只能证明工程动作，不自动证明用户结果。
+4. **融合**：本 WI 对项目级真相源的影响是否清楚？必须明确属于规格变更、设计变更、证据追加、知识沉淀或无项目规格变更，并在 Candidate / merge / close 产物中保持一致。
+
+调度子 Agent 时，prompt 必须明确传入本阶段的四问重点：
+
+```text
+basis_inputs: 本阶段依据来源
+upstream_to_cover: 必须承接的上游责任项/约束项
+required_evidence: 本阶段或后续阶段必须产生的证据
+project_integration_effect: 本 WI 对项目级真相源的预期影响
+```
+
+如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
+
+
+## Feature Spec 的四问控制点
+
+Feature Spec 是规格优先工作流，验证强度最高。必须保证用户结果从 intake 进入 requirements，再进入 design、tasks、trace、implementation 和 verification。
+
+- **依据**：requirements 必须承接 intake 中的用户目标和明确事实；design 必须引用 Must REQ 和当前项目/代码/环境事实；tasks 必须引用 DD 和当前实现上下文。
+- **承接**：requirements 覆盖 intake 的用户结果；design 覆盖 Must REQ；tasks 覆盖 DD、系统边界和 required evidence；trace_delta 追踪 REQ → DD → TASK → evidence 预期。
+- **验证**：verification 不得只证明构建成功；必须逐项证明 Must REQ 的 Required Evidence，跨系统/服务器/持久化类结果需要端到端可观察证据。
+- **融合**：Candidate / merge 必须说明项目级 requirements、design、trace、decision 是否被更新；不更新时必须说明 `no_project_spec_change_reason`。
+
+
 本节优先于下文旧状态描述，用于处理 v1.1 daemon 自动推进、seal transition 与旧 `sf_state_transition` 步骤的冲突：
 
 1. 非 seal 状态可按产物完成事实最多补一次 `sf_state_transition`；失败不得循环。

@@ -72,6 +72,23 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 ### 8. Required behavior on uncertainty
 
+## Governance Model 知识沉淀约束
+
+sf-knowledge 负责把事故和经验转化为可复用规则，而不是记录一次性流水账。
+
+知识沉淀必须包含：
+
+- Trigger：什么场景触发该经验；
+- Failure Pattern：失败模式；
+- Root Cause：根因类型；
+- General Rule：可复用规则；
+- Applies To：适用 workflow / agent / gate；
+- Not Applies To：不适用边界；
+- Evidence：来自哪个 WI、哪个报告、哪个命令输出。
+
+例如：如果需求包含“保存到服务器”，则接收端、鉴权、存储落点、端到端证据是核心链路，不能默认 out_of_scope。
+
+
 If a requested action conflicts with this contract, stop and report the conflict instead of using an old workflow, direct file edits, shell bypass, or hand-written governance JSON.
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 

@@ -92,6 +92,30 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 ---
 
+## Governance Model 调查约束（依据生产者）
+
+sf-investigator 是事实调查角色。它的输出应优先生产可供 requirements/design/task 使用的依据，而不是直接做实现决策。
+
+调查报告必须区分：
+
+- CODE_OBSERVED：代码实际存在的事实；
+- RUNTIME_OBSERVED：运行时实际观察；
+- ENV_OBSERVED：环境实际情况；
+- ASSUMPTION：尚未验证的假设；
+- UNKNOWN：仍未知的问题。
+
+当调查对象涉及现有模块、接口、架构、数据流或部署环境时，必须给出 current state 摘要：
+
+```text
+当前相关文件在哪里；
+当前调用链如何走；
+当前接口/配置是否存在；
+当前验证命令是什么；
+哪些事实已确认，哪些仍未知。
+```
+
+不得把调查建议写成已确认设计。
+
 # Responsibilities
 
 ## 1. 问题复现

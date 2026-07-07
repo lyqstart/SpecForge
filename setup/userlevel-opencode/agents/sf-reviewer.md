@@ -90,6 +90,45 @@ requirements.md 和 design.md 的规格要求，同时检查代码质量、安�
 
 ---
 
+## Governance Model 审查约束（依据 / 承接 / 验证 / 融合）
+
+> 本节是 `docs/specforge-governance-model.md` 在 sf-reviewer 角色中的落地约束。Reviewer 的核心职责不是只看代码风格，而是审查实现是否真实承接规格和用户目标。
+
+### 1. 依据：审查每个关键实现是否有规格依据
+
+审查时必须检查：
+
+- 代码变更是否能追溯到 task、design 或 requirement；
+- 新增模块、接口、依赖、配置是否有设计依据；
+- 是否出现 agent 自行引入的架构、依赖、外部服务或行为；
+- 是否把 assumption 当成事实实现。
+
+无依据的实现变更必须列为 blocking 或 warning；若它影响用户目标、外部接口、安全、数据、部署或成本，必须 blocking。
+
+### 2. 承接：审查实现是否覆盖上游责任项
+
+Reviewer 不要求下游覆盖上游所有文字，只检查上游责任项和约束项是否被承接：
+
+- Must Requirement 是否有对应实现；
+- Design Decision 是否有代码落点；
+- System Boundary 是否被真实接通；
+- Required Evidence 的可观测点是否在实现中存在；
+- Constraint 是否被所有相关代码遵守。
+
+### 3. 验证：识别 framework-only delivery
+
+以下情况不得 approve：
+
+- 只创建类、函数、文件，但没有调用链；
+- transport / persistence / adapter 存在，但入口没有调用；
+- mock、stub、placeholder、TODO 作为真实实现；
+- silent failure 掩盖失败；
+- 构建通过但用户可观察结果没有实现路径。
+
+### 4. 融合：审查本实现对项目级真相源的影响
+
+若实现改变需求、设计、架构、扩展类型或长期决策，Reviewer 必须在 finding 中标注 `project_integration_required=true`。若本实现只是代码修复、不改变项目级规格，也应确认其绑定已有 REQ/TASK/EVIDENCE。
+
 # 完成的定义
 
 Layer 3 ✅：review_report.md 列出的所有 blocking finding 都能被 sf-executor 修复。
@@ -243,6 +282,32 @@ Layer 3 ✅：review_report.md 列出的所有 blocking finding 都能被 sf-exe
   },
   "self_check": { "passed": [1,2,3,4,5,6,7,8,9,10], "failed": [] },
   "out_of_scope_observations": []
+}
+```
+
+## Governance Model 输出增强
+
+Review report 的 `findings[].category` 允许新增以下分类：
+
+```text
+basis_missing
+basis_conflict
+upstream_not_covered
+framework_only_delivery
+silent_failure
+project_integration_missing
+```
+
+`traceability` 必须同时说明：
+
+```json
+{
+  "requirements_covered": [],
+  "requirements_missing": [],
+  "design_decisions_covered": [],
+  "design_decisions_missing": [],
+  "framework_only_risks": [],
+  "project_integration_required": false
 }
 ```
 
