@@ -2,8 +2,8 @@
  * semantic-closure-core.ts — minimal semantic closure validator.
  *
  * This module is intentionally pure: it does not read files, write state,
- * advance workflow, or depend on daemon runtime objects. Package 5B adds the
- * closure rule engine only; close-gate wiring is deferred to the next package.
+ * advance workflow, or depend on daemon runtime objects. The core remains pure: it validates a machine-readable semantic closure manifest
+ * produced by sf_semantic_closure_run and consumed by close_gate.
  */
 
 export type SemanticClosureSeverity = 'error' | 'warning';
@@ -146,11 +146,19 @@ function isTerminalBadEvidence(evidence: SemanticEvidence): boolean {
 
 function isWeakEvidence(evidence: SemanticEvidence): boolean {
   const level = normalizeLevel(evidence.level);
+  const evidenceType = normalize(evidence.evidence_type);
+
+  // Evidence that has neither a meaningful level nor a meaningful type is not
+  // allowed to prove completion. This prevents sparse evidence_manifest entries
+  // such as { id, status } from becoming accidental close evidence.
+  if (!level && !evidenceType) {
+    return true;
+  }
+
   if (WEAK_EVIDENCE_LEVELS.has(level)) {
     return true;
   }
 
-  const evidenceType = normalize(evidence.evidence_type);
   return WEAK_EVIDENCE_TYPE_TOKENS.some((token) => evidenceType.includes(token));
 }
 

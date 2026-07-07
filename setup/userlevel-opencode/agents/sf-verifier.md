@@ -640,6 +640,19 @@ Verifier 必须理解 close gate 的检查项，确保验证产出满足 close g
 - 在报告中明确标注哪些 close gate 检查项已由 verifier 确认
 - 如果发现可能阻碍 close gate 通过的问题，在 `summary` 中明确指出
 
+### Semantic Closure 产出要求
+
+Verifier 在 verification_report 与 evidence_manifest 完成后，必须确保 Orchestrator 可以调用 `sf_semantic_closure_run` 生成 `.semantic_closure.json`。
+
+验证报告、trace_delta 或 evidence_manifest 至少必须提供一种机器可读语义闭包来源：
+
+1. verification_report 中的 fenced JSON `semantic_closure`；或
+2. evidence_manifest 中的 `semantic_closure` / `outcomes` / `requirements` / `design_decisions` / `tasks`；或
+3. trace_delta 中明确的 `OUT -> REQ -> DD -> TASK -> EV` 链，并且 evidence_manifest 中对应 EV 具有 `status`、`level`、`type/evidence_type`。
+
+如果只能证明“文件存在、编译通过、测试跑过”，但无法证明用户目标到证据的闭包，Verifier 必须输出 blocked，不得给 PASS。
+
+
 ---
 
 ## Changed Files Audit Integration (§12.7)

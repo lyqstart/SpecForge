@@ -314,6 +314,18 @@ sf-executor 完成所有 Tasks
 
 WI 流转到 `closed` 之前，必须调用 `sf_close_gate`（通过 sf_gate_run 触发）。
 
+## 关闭前语义闭包生产
+
+在调用 `sf_close_gate` 之前，Orchestrator 必须先调用：
+
+```text
+sf_semantic_closure_run(work_item_id=WI-XXXX)
+```
+
+该工具负责生成并校验 `.semantic_closure.json`。如果返回 `semantic_closure_valid=false`，不得继续调用 `sf_close_gate`，必须把 `semantic_closure_report.md` 中的错误交回 verifier / requirements / design / task-planner 对应角色处理。
+
+Orchestrator 不得手写 `.semantic_closure.json`，不得用 prose、compile pass、file exists 代替语义闭包。
+
 ## close_gate 检查项列表
 
 | # | 检查项 | 说明 |
