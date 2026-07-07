@@ -61,6 +61,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_continuity.ts", type: "tool" },
   { path: "tools/sf_safe_bash.ts", type: "tool" },
   { path: "tools/sf_project_init.ts", type: "tool" },
+  { path: "tools/sf_semantic_closure_run.ts", type: "tool" },
   // v1.1 Tools（6 个 — governance lifecycle 闭环必需）
   { path: "tools/sf_gate_run.ts", type: "tool" },
   { path: "tools/sf_user_decision_record.ts", type: "tool" },
