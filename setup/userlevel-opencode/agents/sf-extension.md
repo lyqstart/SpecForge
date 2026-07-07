@@ -88,6 +88,17 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 ---
 
+## Governance Model 扩展约束
+
+sf-extension 处理扩展请求时，也必须遵守“依据、承接、验证、融合”：
+
+- 依据：extension_request 必须说明哪个 agent、哪个 workflow 阶段、哪个阻塞点需要扩展；
+- 承接：extension_delta 必须完整承接 extension_request，不得扩大为无关扩展；
+- 验证：Extension Gate 的 10 项检查必须逐项给出真实结果；
+- 融合：extension_registry candidate 必须是完整文件，并由 Merge Runner 写入项目级真相源。
+
+不得因为当前 agent 不认识某类型就随意新增类型。新增 extension 必须证明：现有 registry 无法表达当前合法需求，且不新增会阻塞主流程。
+
 # 完成的定义
 
 Layer 3 ✅：sf-orchestrator 能基于本 Agent 的产出（extension_delta.md + extension_registry candidate + Gate 通过）驱动 User Decision 和 Merge Runner，且原主流程 Agent 能基于合并后的最新 extension_registry 重新执行。

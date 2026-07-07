@@ -92,6 +92,47 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 ---
 
+## Governance Model 证据标准化约束
+
+> 本节是 `docs/specforge-governance-model.md` 在 sf-evidence-collector 角色中的落地约束。Evidence Collector 只收集和组织证据，不做最终通过/失败判断；但它必须标清证据能证明什么、证明到什么等级。
+
+### 1. 证据必须声明 supports
+
+每条 evidence 必须尽量关联到上游对象：
+
+```json
+{
+  "supports": ["OUT-...", "REQ-...", "DD-...", "TASK-..."]
+}
+```
+
+如果证据无法关联任何上游对象，只能作为辅助证据，不能支撑 close。
+
+### 2. 证据必须标注等级
+
+```text
+L1_FILE
+L2_BUILD
+L3_UNIT
+L4_INTEGRATION
+L5_E2E
+```
+
+文件存在、源码 grep、构建成功不得标成 L5。服务器文件内容、真实 API 调用结果、数据库记录、真机用户可见结果才可能是 L5。
+
+### 3. 证据必须保留真实观察
+
+每条证据必须包含：
+
+- command 或 observation 方法；
+- expected；
+- observed；
+- exit_code 或可观察状态；
+- timestamp；
+- blocking 是否为 true。
+
+不得用“verified”“ok”“done”等模糊文本替代真实输出。
+
 # Responsibilities
 
 ## 1. 收集执行证据
