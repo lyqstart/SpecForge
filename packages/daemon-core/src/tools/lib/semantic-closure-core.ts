@@ -172,10 +172,6 @@ function evidenceRefs(evidence: SemanticEvidence, targetId: string): boolean {
   );
 }
 
-function entityRefsTask(evidence: SemanticEvidence, taskId: string): boolean {
-  return refs(evidence.supports).includes(taskId) || refs(evidence.task_refs).includes(taskId);
-}
-
 function isClosureEvidenceFor(evidence: SemanticEvidence, targetId: string): boolean {
   return isPassedEvidence(evidence) && !isWeakEvidence(evidence) && evidenceRefs(evidence, targetId);
 }
@@ -196,20 +192,17 @@ function linkedTaskIdsForRequirement(requirement: SemanticRequirement, tasks: Se
   return Array.from(new Set([...explicit, ...reverse]));
 }
 
-function taskHasClosureEvidence(taskId: string, evidence: SemanticEvidence[]): boolean {
-  return evidence.some((item) => isPassedEvidence(item) && !isWeakEvidence(item) && entityRefsTask(item, taskId));
-}
-
 function requirementHasClosureEvidence(
   requirement: SemanticRequirement,
-  tasks: SemanticTask[],
+  _tasks: SemanticTask[],
   evidence: SemanticEvidence[],
 ): boolean {
-  if (evidence.some((item) => isClosureEvidenceFor(item, requirement.id))) {
-    return true;
-  }
-
-  return linkedTaskIdsForRequirement(requirement, tasks).some((taskId) => taskHasClosureEvidence(taskId, evidence));
+  // A MUST requirement must be proven by evidence that directly supports the
+  // requirement id. Do not let evidence for another requirement pass merely
+  // because both requirements are implemented by the same task. This closes the
+  // fj1-style gap where local logging evidence could otherwise make server
+  // upload or flush wiring look complete through a shared task reference.
+  return evidence.some((item) => isClosureEvidenceFor(item, requirement.id));
 }
 
 function outcomeHasClosureEvidence(
