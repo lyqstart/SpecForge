@@ -461,6 +461,18 @@ function compactForGovernanceScan(command: string): string {
     .replace(/\\+/g, "/");
 }
 
+function hasNonNullShellRedirect(command: string): boolean {
+  const text = String(command ?? "");
+  for (const match of text.matchAll(/(?:^|[^>])\d*>>?\s*("[^"]+"|'[^']+'|[^\s;&|]+)/g)) {
+    const raw = match[1];
+    if (!raw) continue;
+    const target = normalizeSlashes(stripShellPathToken(raw)).toLowerCase();
+    if (target === "/dev/null" || target === "nul" || target === "nul:") continue;
+    return true;
+  }
+  return false;
+}
+
 function findGovernanceBypassReason(command: string, extra?: unknown): string | null {
   const compact = compactForGovernanceScan(String(command ?? "") + "\n" + String(extra ?? ""));
   const callsDaemonToolInvoke = /(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) && compact.includes("/api/v1/tool/invoke");
@@ -486,7 +498,9 @@ function findGovernanceBypassReason(command: string, extra?: unknown): string | 
       compact.includes("forge") &&
       (compact.includes("runtime") || compact.includes("work-items") || compact.includes("specs") || compact.includes("project") || compact.includes("logs")));
 
-  const writesOrDeletes = /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|writealltext|writefilesync|appendfilesync|opensync|fs\.write|convertto-json.*set-content|>|>>|tee)/.test(compact);
+  const writesOrDeletes =
+    /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|writealltext|writefilesync|appendfilesync|opensync|fs\.write|convertto-json.*set-content|tee)/.test(compact) ||
+    hasNonNullShellRedirect(String(command ?? ""));
   if (touchesProtectedSpecforgePath && writesOrDeletes) return "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN";
 
   return null;
