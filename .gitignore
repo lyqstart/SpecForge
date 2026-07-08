@@ -15,6 +15,11 @@ specforge/
 .specforge/archive/
 .specforge/sessions/
 
+# SpecForge runtime logs in nested packages
+**/.specforge/logs/
+**/.specforge/logs/*.jsonl
+packages/daemon-core/.specforge/logs/telemetry.jsonl
+
 # Temporary / debug artifacts
 test_log/
 .backup/
@@ -45,6 +50,7 @@ pnpm-lock.yaml
 
 # 忽略所有 .bak 备份文件
 *.bak
+
 # SpecForge generated test artifacts
 tests/unit/artifacts/
 tests/integration/fixtures/sf_v6_arch_check/backup/
