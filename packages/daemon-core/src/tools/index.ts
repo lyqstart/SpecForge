@@ -54,6 +54,14 @@ import './handlers/sf-git-remote-config';
 import './handlers/sf-git-auth-profile-config';
 import './handlers/sf-git-ignore-decision-record';
 import './handlers/sf-git-remote-probe';
+import './handlers/sf-git-pr-plan';
+import './handlers/sf-git-worktree-plan';
+import './handlers/sf-git-worktree-create';
+import './handlers/sf-git-stacked-branch-plan';
+import './handlers/sf-git-release-tag-plan';
+import './handlers/sf-git-release-tag-create';
+import './handlers/sf-git-agent-lock-acquire';
+import './handlers/sf-git-agent-lock-release';
 
 // Main write guard for public sf_code_permission.
 // This must be imported after sf-v11-code-permission and before alias registration.
