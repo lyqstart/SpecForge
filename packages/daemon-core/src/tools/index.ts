@@ -37,12 +37,22 @@ import './handlers/sf-v11-close-gate';
 import './handlers/sf-changed-files-audit';
 import './handlers/sf-hard-stop-resolve';
 
+// Git Governance v1 — stage 1 handlers
+import './handlers/sf-git-preflight';
+import './handlers/sf-git-branch-plan';
+import './handlers/sf-git-branch-create';
+import './handlers/sf-git-ignore-analyze';
+import './handlers/sf-git-checkpoint-commit';
+
+// Main write guard for public sf_code_permission.
+// This must be imported after sf-v11-code-permission and before alias registration.
+import './handlers/sf-git-code-permission-guard';
+
 // ── v1.1 Public Name Aliases ─────────────────────────────────────────────────────
 // OpenCode tool files call daemon via public names (sf_gate_run, sf_code_permission, etc.)
 // but the v1.1 handlers registered with sf_v11_* prefix.
 // Add aliases so both names work.
 import { registerHandler, getHandler } from './ToolDispatcher';
-
 const V11_TOOL_ALIASES: Record<string, string> = {
   'sf_gate_run': 'sf_v11_gate_run',
   'sf_code_permission': 'sf_v11_code_permission',
@@ -50,7 +60,6 @@ const V11_TOOL_ALIASES: Record<string, string> = {
   'sf_merge_run': 'sf_v11_merge',
   'sf_semantic_closure_run': 'sf_v11_semantic_closure_run',
 };
-
 for (const [publicName, internalName] of Object.entries(V11_TOOL_ALIASES)) {
   const handler = getHandler(internalName);
   if (handler && !getHandler(publicName)) {
