@@ -78,6 +78,16 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_git_ignore_decision_record.ts", type: "tool" },
   { path: "tools/sf_git_remote_probe.ts", type: "tool" },
 
+  // Git Governance tools — stage 4
+  { path: "tools/sf_git_pr_plan.ts", type: "tool" },
+  { path: "tools/sf_git_worktree_plan.ts", type: "tool" },
+  { path: "tools/sf_git_worktree_create.ts", type: "tool" },
+  { path: "tools/sf_git_stacked_branch_plan.ts", type: "tool" },
+  { path: "tools/sf_git_release_tag_plan.ts", type: "tool" },
+  { path: "tools/sf_git_release_tag_create.ts", type: "tool" },
+  { path: "tools/sf_git_agent_lock_acquire.ts", type: "tool" },
+  { path: "tools/sf_git_agent_lock_release.ts", type: "tool" },
+
   // Tool 核心库
   { path: "tools/lib/sf_artifact_write_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_batch_verify_core.ts", type: "tool_lib" },
