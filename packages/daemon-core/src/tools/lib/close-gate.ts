@@ -290,7 +290,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
 
     const allowedWriteFiles = normalizeAllowedFiles((wi as any).allowed_write_files);
-    const normalPermissionRevoked = wi.code_permission_revoked === true || wi.code_change_allowed === false;
+    const normalPermissionRevoked = wi.code_permission_revoked === true || (wi as any).code_permission_released === true;
     const noCodePermissionOk = noCodeAuditAccepted && codePermissionNeverEnabled(wi);
     const permissionCheckPassed =
       allowedWriteFiles.length === 0 && (noCodePermissionOk || normalPermissionRevoked);

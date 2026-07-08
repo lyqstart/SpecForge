@@ -46,6 +46,7 @@ function investigationSemanticClosure(workItemId: string): SemanticClosureManife
 async function createCloseReadyNoCodeWorkItem(projectRoot: string, workItemId = 'WI-0001'): Promise<string> {
   const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'candidates', 'project', 'modules', 'core'), { recursive: true });
   await fs.writeFile(
     path.join(wiDir, 'work_item.json'),
     JSON.stringify(
@@ -71,9 +72,39 @@ async function createCloseReadyNoCodeWorkItem(projectRoot: string, workItemId = 
   );
   await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Review requirements and source.');
   await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1');
+  await fs.writeFile(path.join(wiDir, 'candidates', 'project', 'modules', 'core', 'requirements.candidate.md'), '# Requirements Candidate\nREQ-1');
+  await fs.writeFile(path.join(wiDir, 'candidates', 'project', 'modules', 'core', 'design.candidate.md'), '# Design Candidate\nDD-1');
+  await fs.writeFile(path.join(wiDir, 'candidates', 'trace_delta.md'), '# Trace Candidate\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1');
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
-    JSON.stringify({ work_item_id: workItemId, workflow_path: 'requirement_change_path', entries: [] }) + '\n',
+    JSON.stringify(
+      {
+        work_item_id: workItemId,
+        workflow_path: 'requirement_change_path',
+        entries: [
+          {
+            candidate_path: 'candidates/project/modules/core/requirements.candidate.md',
+            target_path: '.specforge/project/modules/core/requirements.md',
+            operation: 'replace',
+            type: 'requirements',
+          },
+          {
+            candidate_path: 'candidates/project/modules/core/design.candidate.md',
+            target_path: '.specforge/project/modules/core/design.md',
+            operation: 'replace',
+            type: 'design',
+          },
+          {
+            candidate_path: 'candidates/trace_delta.md',
+            target_path: '.specforge/project/trace_matrix.md',
+            operation: 'replace',
+            type: 'trace_delta',
+          },
+        ],
+      },
+      null,
+      2,
+    ) + '\n',
   );
   await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n\n- Overall Status: passed\n');
   await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification Report\n\nEvidence EV-1 passed.');
@@ -103,7 +134,18 @@ async function createCloseReadyNoCodeWorkItem(projectRoot: string, workItemId = 
   );
   await fs.writeFile(
     path.join(wiDir, 'user_decision.json'),
-    JSON.stringify({ decision_status: 'approved', workflow_path: 'requirement_change_path', timestamp: new Date().toISOString() }) + '\n',
+    JSON.stringify(
+      {
+        decision_status: 'approved',
+        decision_type: 'user_approved',
+        decided_by: 'user',
+        workflow_path: 'requirement_change_path',
+        user_response_quote: 'approved no-code investigation closeout',
+        timestamp: new Date().toISOString(),
+      },
+      null,
+      2,
+    ) + '\n',
   );
   await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(investigationSemanticClosure(workItemId), null, 2) + '\n');
   return wiDir;
