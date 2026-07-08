@@ -190,6 +190,11 @@ const NON_FILESYSTEM_PLANNING_TOOLS = new Set([
 ]);
 
 const SPECFORGE_CONTROL_TOOLS = new Set([
+  "sf_git_preflight",
+  "sf_git_branch_plan",
+  "sf_git_branch_create",
+  "sf_git_ignore_analyze",
+  "sf_git_checkpoint_commit",
   "sf_gate_run",
   "sfgaterun",
   "sf_user_decision_record",
