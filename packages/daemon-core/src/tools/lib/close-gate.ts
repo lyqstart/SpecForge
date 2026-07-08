@@ -1,6 +1,14 @@
 /**
  * close-gate.ts — §15.2 Close Gate implementation
  *
+ * v1.3.2 no-code workflow hotfix:
+ * - close_gate accepts a PASS `changed_files_audit.md` with
+ *   `Mode: no_code_change / not_applicable` for strictly no-code workflows
+ *   such as investigation/review/audit.
+ * - For this no-code path, code_permission is allowed to have never been
+ *   enabled. Normal implementation Work Items still require revoked
+ *   code_permission and empty allowed_write_files.
+ *
  * R2 changes:
  * - code_permission check accepts daemon-synchronized code_permission_revoked=true.
  * - allowed_write_files must be empty; allowed_write_files_snapshot is preserved for audit.
@@ -23,6 +31,7 @@ import {
   validateSemanticClosure,
   type SemanticClosureManifest,
 } from './semantic-closure-core.js';
+import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
 
 export interface CloseGateResult {
   report: GateReportV11;
@@ -38,9 +47,17 @@ async function exists(filePath: string): Promise<boolean> {
   }
 }
 
-async function readJson<T = any>(filePath: string): Promise<T | null> {
+async function readJson<T = unknown>(filePath: string): Promise<T | null> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf-8')) as T;
+  } catch {
+    return null;
+  }
+}
+
+async function readText(filePath: string): Promise<string | null> {
+  try {
+    return await fs.readFile(filePath, 'utf-8');
   } catch {
     return null;
   }
@@ -54,6 +71,72 @@ function details(value: unknown): string | undefined {
 
 function sanitizeCheckId(value: string): string {
   return value.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '').toLowerCase();
+}
+
+function normalizeWorkflowValue(value: unknown): string {
+  return String(value ?? '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+}
+
+function isNoCodeWorkflow(wi: Record<string, unknown> | null): boolean {
+  if (!wi) return false;
+  const workflowType = normalizeWorkflowValue(wi.workflow_type);
+  const workflowPath = normalizeWorkflowValue(wi.workflow_path);
+  const intent = normalizeWorkflowValue((wi as any).intent ?? (wi as any).change_type);
+
+  const allowed = new Set([
+    'investigation',
+    'review',
+    'audit',
+    'analysis',
+    'no_code_review',
+    'no_code_change',
+    'read_only_review',
+  ]);
+
+  return allowed.has(workflowType) || allowed.has(intent) || workflowPath === 'investigation_path' || workflowPath === 'review_path';
+}
+
+function normalizeAllowedFiles(input: unknown): Array<{ path: string; operation?: string }> {
+  if (!Array.isArray(input)) return [];
+  return input
+    .map((entry) => {
+      if (typeof entry === 'string') return { path: entry, operation: 'modify' };
+      if (entry && typeof entry === 'object') {
+        return { path: String((entry as any).path ?? ''), operation: String((entry as any).operation ?? 'modify') };
+      }
+      return { path: '', operation: 'modify' };
+    })
+    .filter((entry) => entry.path.length > 0);
+}
+
+function codePermissionNeverEnabled(wi: Record<string, unknown> | null): boolean {
+  if (!wi) return false;
+  return (
+    wi.code_change_allowed !== true &&
+    (wi as any).permission_enabled_at === undefined &&
+    (wi as any).code_permission_released !== true &&
+    (wi as any).code_permission_revoked !== true &&
+    (wi as any).code_permission_revoked_at === undefined &&
+    normalizeAllowedFiles((wi as any).allowed_write_files).length === 0 &&
+    normalizeAllowedFiles((wi as any).allowed_write_files_snapshot).length === 0
+  );
+}
+
+function isNoCodeAuditText(auditText: string | null): boolean {
+  if (!auditText) return false;
+  const lower = auditText.toLowerCase();
+  return (
+    lower.includes('mode: no_code_change') ||
+    lower.includes('mode: not_applicable') ||
+    lower.includes('not_applicable / no_code_change') ||
+    lower.includes('no_code_change / not_applicable')
+  );
+}
+
+function isNoCodeAuditAccepted(auditText: string | null, wi: Record<string, unknown> | null): boolean {
+  if (!auditText || !isNoCodeAuditText(auditText) || !isNoCodeWorkflow(wi)) return false;
+  const verdict = evaluateChangedFilesAuditVerdict(auditText);
+  return verdict.passed;
 }
 
 function semanticClosureChecks(manifest: SemanticClosureManifest | null): GateReportCheck[] {
@@ -123,6 +206,10 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
+  const wi = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'work_item.json'));
+  const changedFilesAuditText = await readText(path.join(ctx.workItemDir, 'changed_files_audit.md'));
+  const noCodeAuditAccepted = isNoCodeAuditAccepted(changedFilesAuditText, wi);
+
   try {
     const vr = await fs.readFile(path.join(ctx.workItemDir, 'verification_report.md'), 'utf-8');
     checks.push({
@@ -131,11 +218,11 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       passed: vr.trim().length > 0,
       severity: vr.trim().length > 0 ? undefined : 'error',
     });
+
     const lower = vr.toLowerCase();
-    const verificationEvidenceManifest = await readJson(path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json'));
+    const verificationEvidenceManifest = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json'));
     const verificationEvidenceManifestHasEntries =
-      Array.isArray((verificationEvidenceManifest as any)?.entries) &&
-      (verificationEvidenceManifest as any).entries.length > 0;
+      Array.isArray((verificationEvidenceManifest as any)?.entries) && (verificationEvidenceManifest as any).entries.length > 0;
     checks.push({
       check_id: 'close_verification_refs_evidence',
       description: 'verification_report references Evidence (§13.3)',
@@ -151,7 +238,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
-  const ud = await readJson<Record<string, any>>(path.join(ctx.workItemDir, 'user_decision.json'));
+  const ud = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'user_decision.json'));
   if (ud) {
     const validDecision = ud.decision_status === 'approved' || ud.decision_status === 'waived';
     checks.push({
@@ -185,7 +272,6 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     severity: governance.valid ? undefined : 'error',
   });
 
-  const wi = await readJson<Record<string, any>>(path.join(ctx.workItemDir, 'work_item.json'));
   if (wi) {
     const validPaths = [
       'requirement_change_path',
@@ -199,17 +285,26 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     checks.push({
       check_id: 'close_workflow_path_valid',
       description: 'workflow_path is valid (§6.4)',
-      passed: validPaths.includes(wi.workflow_path),
-      severity: validPaths.includes(wi.workflow_path) ? undefined : 'error',
+      passed: validPaths.includes(wi.workflow_path as string),
+      severity: validPaths.includes(wi.workflow_path as string) ? undefined : 'error',
     });
 
-    const allowedWriteFiles = Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [];
-    const permissionRevoked = wi.code_permission_revoked === true || wi.code_change_allowed === false;
+    const allowedWriteFiles = normalizeAllowedFiles((wi as any).allowed_write_files);
+    const normalPermissionRevoked = wi.code_permission_revoked === true || wi.code_change_allowed === false;
+    const noCodePermissionOk = noCodeAuditAccepted && codePermissionNeverEnabled(wi);
+    const permissionCheckPassed =
+      allowedWriteFiles.length === 0 && (noCodePermissionOk || normalPermissionRevoked);
+
     checks.push({
       check_id: 'close_code_permission_revoked',
-      description: 'code_permission is revoked by daemon fact source (§12)',
-      passed: permissionRevoked && allowedWriteFiles.length === 0,
-      severity: permissionRevoked && allowedWriteFiles.length === 0 ? undefined : 'error',
+      description: noCodeAuditAccepted
+        ? 'code_permission was never enabled for no-code investigation/review WI (§12 no-code exception)'
+        : 'code_permission is revoked by daemon fact source (§12)',
+      passed: permissionCheckPassed,
+      severity: permissionCheckPassed ? undefined : 'error',
+      details: noCodeAuditAccepted
+        ? `no_code_audit_accepted=${noCodeAuditAccepted}; code_permission_never_enabled=${codePermissionNeverEnabled(wi)}; allowed_write_files=${allowedWriteFiles.length}`
+        : undefined,
     });
     checks.push({
       check_id: 'close_allowed_write_empty',
@@ -220,14 +315,14 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     checks.push({
       check_id: 'close_no_write_guard_violations',
       description: 'No unresolved Write Guard violations (§15.2.12)',
-      passed: !wi.write_guard_violations || wi.write_guard_violations.length === 0,
-      severity: !wi.write_guard_violations || wi.write_guard_violations.length === 0 ? undefined : 'error',
+      passed: !wi.write_guard_violations || (wi.write_guard_violations as unknown[]).length === 0,
+      severity: !wi.write_guard_violations || (wi.write_guard_violations as unknown[]).length === 0 ? undefined : 'error',
     });
 
     if (wi.resume_plan) {
       const hasPending =
-        Array.isArray(wi.resume_plan.actions) &&
-        wi.resume_plan.actions.some((a: { type: string }) => a.type !== 'continue');
+        Array.isArray((wi.resume_plan as any).actions) &&
+        (wi.resume_plan as any).actions.some((a: { type: string }) => a.type !== 'continue');
       checks.push({
         check_id: 'close_resume_plan_no_pending',
         description: 'resume_plan has no pending items (§15.2)',
@@ -255,9 +350,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     // Covered by required files.
   }
 
-  const em = await readJson<Record<string, any>>(path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json'));
+  const em = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json'));
   if (em) {
-    const hasEntries = Array.isArray(em.entries) && em.entries.length > 0;
+    const hasEntries = Array.isArray((em as any).entries) && (em as any).entries.length > 0;
     checks.push({
       check_id: 'close_evidence_manifest_has_entries',
       description: 'evidence_manifest has entries (§13.4)',
@@ -283,18 +378,17 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     // Covered by required files.
   }
 
-  try {
-    const cfa = await fs.readFile(path.join(ctx.workItemDir, 'changed_files_audit.md'), 'utf-8');
-    const cfaLower = cfa.toLowerCase();
-    const passed = cfaLower.includes('pass') || cfaLower.includes('success');
+  if (changedFilesAuditText !== null) {
+    const verdict = evaluateChangedFilesAuditVerdict(changedFilesAuditText);
     checks.push({
       check_id: 'close_changed_files_audit_passed',
-      description: 'changed_files_audit passed (§15.2)',
-      passed,
-      severity: passed ? undefined : 'error',
+      description: noCodeAuditAccepted
+        ? 'changed_files_audit passed as not_applicable/no_code_change (§15.2 no-code exception)'
+        : 'changed_files_audit passed (§15.2)',
+      passed: verdict.passed,
+      severity: verdict.passed ? undefined : 'error',
+      details: verdict.reason,
     });
-  } catch {
-    // Covered by required files.
   }
 
   try {
@@ -340,7 +434,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
 
     const hasWaiver = gs.includes('passed_with_waiver_required') || gs.includes('waiver');
     if (hasWaiver && wi) {
-      const hasFollowUp = wi.waiver_follow_up_wi ?? wi.follow_up_wi ?? wi.waiver_followups;
+      const hasFollowUp = (wi as any).waiver_follow_up_wi ?? (wi as any).follow_up_wi ?? (wi as any).waiver_followups;
       checks.push({
         check_id: 'close_waiver_follow_up',
         description: 'Waiver follow-up WI registered (§15.2)',
@@ -361,7 +455,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   try {
     const extReqPath = path.join(ctx.workItemDir, 'extension_request.json');
     await fs.access(extReqPath);
-    const extReq = JSON.parse(await fs.readFile(extReqPath, 'utf-8')) as Record<string, any>;
+    const extReq = JSON.parse(await fs.readFile(extReqPath, 'utf-8')) as Record<string, unknown>;
     const status = (extReq.status as string) ?? '';
     const resolvedStatuses = new Set(['resolved', 'merged', 'closed']);
     const isResolved = resolvedStatuses.has(status);

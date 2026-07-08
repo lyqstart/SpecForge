@@ -3,14 +3,25 @@ import { daemon } from "./lib/thin-client"
 
 export default tool({
   description:
-    "基于 Runtime 事实源对账实际文件变更与 allowed_write_files_snapshot。Agent 传入的 expected_write_files / actual_changed_files 仅作为调试提示，" +
-    "不得作为最终审计事实源。",
+    "基于 Runtime 事实源对账实际文件变更与 allowed_write_files_snapshot。" +
+    "支持 investigation/no-code review 的 mode=no_code_change/not_applicable 审计模式；" +
+    "该模式只允许无业务代码变更场景，不启用 code_permission，不伪造 allowed_write_files。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     command: tool.schema
       .string()
       .optional()
       .describe("已执行的命令描述（可选，仅用于审计报告展示）"),
+    mode: tool.schema
+      .string()
+      .optional()
+      .describe(
+        "可选审计模式。普通实现型 WI 省略；investigation/no-code review 可传 no_code_change 或 not_applicable。",
+      ),
+    audit_mode: tool.schema
+      .string()
+      .optional()
+      .describe("mode 的兼容别名；推荐使用 mode。"),
     expected_write_files: tool.schema
       .array(tool.schema.string())
       .optional()
@@ -27,7 +38,6 @@ export default tool({
       directory: context.directory,
       worktree: context.worktree,
     })
-
     if (typeof result === "string") return result
     return JSON.stringify(result, null, 2)
   },
