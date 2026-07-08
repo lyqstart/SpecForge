@@ -43,11 +43,17 @@ import './handlers/sf-git-branch-plan';
 import './handlers/sf-git-branch-create';
 import './handlers/sf-git-ignore-analyze';
 import './handlers/sf-git-checkpoint-commit';
+
 import './handlers/sf-git-changed-files-audit';
 import './handlers/sf-git-push-branch';
 import './handlers/sf-git-merge-plan';
 import './handlers/sf-git-merge-run';
 import './handlers/sf-git-post-merge-verify';
+import './handlers/sf-git-project-adopt';
+import './handlers/sf-git-remote-config';
+import './handlers/sf-git-auth-profile-config';
+import './handlers/sf-git-ignore-decision-record';
+import './handlers/sf-git-remote-probe';
 
 // Main write guard for public sf_code_permission.
 // This must be imported after sf-v11-code-permission and before alias registration.
