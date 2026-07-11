@@ -177,12 +177,17 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
 2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting refactor_analysis phase"）
 3. 调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文
-4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+4. 根据 intake.md、真实代码和依赖关系确定分析范围：
+   - 涉及架构、模块职责、依赖方向、数据所有权、状态权威、Runtime 行为、治理责任迁移或跨模块协议时，设置 `analysis_scope: system_governance`；
+   - 仅为不改变职责边界和外部行为的局部内部重构时，设置 `analysis_scope: solution_design`；
+   - 当前实现或依赖关系未知时先调查，不得直接设计。
+5. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
-   - intake.md 的内容
-   - 指令：分析代码重构需求，生成 refactor_analysis.md，必须包含：代码问题识别、重构目标、不变行为声明（必须明确）、风险评估（高/低）
-5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/refactor_analysis.md` 已生成
-6. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="refactor_analysis.md generated"）
+   - intake.md、真实代码、依赖关系和项目级设计证据
+   - 已确定的 `analysis_scope` 和触发依据
+   - 指令：分析代码重构需求，生成 refactor_analysis.md，必须包含：代码问题识别、重构目标、不变行为声明（必须明确）、风险评估（高/低）；当范围为 `system_governance` 时，同时按 `sf-design` 契约写入 `capability_verdict` 和七个固定章节
+6. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/refactor_analysis.md` 已生成
+7. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="refactor_analysis.md generated"）
 
 **产物：** `refactor_analysis.md`
 
@@ -228,8 +233,8 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 2. 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文
 3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
-   - refactor_analysis.md 的内容
-   - 指令：制定详细的重构执行计划，必须包含：重构策略、步骤顺序（确保每步后代码可运行）、风险等级判定（高/低）
+   - refactor_analysis.md 的内容和其中已经确定的 `analysis_scope`
+   - 指令：沿用 refactor_analysis.md 的分析范围制定详细重构计划，必须包含：重构策略、步骤顺序（确保每步后代码可运行）、风险等级判定（高/低）；当范围为 `system_governance` 时，refactor_plan.md 必须保留该声明并按 `sf-design` 契约给出 `capability_verdict` 和七个固定章节
 4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/refactor_plan.md` 已生成
 5. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="refactor_plan.md generated"）
 
@@ -241,6 +246,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 1. 调用 `sf_gate_run`（work_item_id, gate_type="design", mode="refactor"）
    - Gate 检查文件：`refactor_plan.md`
    - 必需 sections：重构策略、步骤顺序、风险等级判定
+   - 声明 `analysis_scope: system_governance` 时，现有 Design Gate 同时校验七个固定章节、`capability_verdict` 和新增能力证明
 2. 根据 Gate 结果：
    - **pass** →
      1. 读取 `refactor_plan.md` 中的"风险等级判定" section，确定 risk_path（"high" 或 "low"）
