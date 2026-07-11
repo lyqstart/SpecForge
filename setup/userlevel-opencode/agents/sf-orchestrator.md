@@ -503,110 +503,130 @@ User Request
 
 <!-- SpecForge V7 Candidate Completeness Governance BEGIN -->
 
-# V7 Candidate 产物完整性治理规则
+# V7 Candidate 阶段感知完整性治理规则
 
-本节用于治理 feature_spec / requirement_change_path 中 Candidate 产物不完整导致 Gate 失败后再补洞的问题。
+本节治理 Candidate 产物完整性，但完整性必须按当前 `candidate_phase` 判断，不能把完整实施包的要求强加给 Design-Only 中间停止点。
 
-## 一、候选阶段完成定义
+## 一、Candidate Phase 权威
 
-在进入 `candidate_prepared` 或调用 `sf_gate_run` 之前，Orchestrator 必须确认当前 WI 至少具备以下 4 类 Candidate 产物：
-
-```text
-1. requirements candidate
-2. design candidate
-3. tasks candidate
-4. trace_delta.md
-```
-
-其中 `trace_delta.md` 是 Candidate 阶段必需产物，不是 Gate 失败后的补救产物。
-
-## 二、职责归属
-
-`trace_delta.md` 的默认责任 Agent 是 `sf-task-planner`，因为它同时掌握 REQ / AC / DD / TASK / FILE / TEST 的完整映射。
-
-Orchestrator 不得直接手写缺失的 `trace_delta.md` 来绕过 Gate。  
-如果发现 `trace_delta.md` 缺失，必须重新调度 `sf-task-planner`，要求其基于已生成的 requirements / design / tasks 生成追溯矩阵。
-
-## 三、Candidate Completeness Preflight
-
-在生成 `candidate_manifest.json` 前，必须执行人工/工具级预检：
-
-```text
-- requirements candidate 是否存在
-- design candidate 是否存在
-- tasks candidate 是否存在
-- trace_delta.md 是否存在
-- candidate_manifest.json 是否列出以上 4 类产物
-- manifest 中路径是否为实际存在路径，不能按固定旧路径猜测
-```
-
-如果任一项缺失：
-
-```text
-不得调用 sf_gate_run
-不得进入 candidate_prepared
-不得创建 placeholder
-不得由 Orchestrator 临时编写缺失 Candidate
-```
-
-必须按责任 Agent 重新调度修复。
-
-## 四、candidate_manifest.json 生成规则
-
-Orchestrator 生成 manifest 前必须先读取实际文件路径，不能假设固定路径。
-
-必须支持以下实际路径：
-
-```text
-requirements:
-  candidates/requirements.md
-  candidates/project/modules/<MODULE>/requirements.md
-  candidates/project/modules/<MODULE>/requirements.candidate.md
-
-design:
-  candidates/design.md
-  candidates/project/modules/<MODULE>/design.md
-  candidates/project/modules/<MODULE>/design.candidate.md
-
-tasks:
-  candidates/tasks.md
-  tasks.md
-
-trace_delta:
-  trace_delta.md
-  candidates/trace_delta.md
-```
-
-manifest 至少包含：
+`candidate_manifest.json` 必须显式包含：
 
 ```json
 {
   "work_item_id": "WI-XXXX",
-  "workflow_path": "requirement_change_path",
-  "candidates": [
-    { "type": "requirements", "path": "<actual requirements candidate path>", "lint_passed": true },
-    { "type": "design", "path": "<actual design candidate path>", "lint_passed": true },
-    { "type": "tasks", "path": "<actual tasks candidate path>", "lint_passed": true },
-    { "type": "trace_delta", "path": "<actual trace_delta path>", "lint_passed": true }
-  ]
+  "workflow_path": "design_change_path",
+  "workflow_type": "feature_spec_design_first",
+  "candidate_phase": "design | requirements | tasks | full",
+  "entries": []
 }
 ```
 
-## 五、Gate 失败处理限制
-
-如果 Gate 失败原因为 `trace_delta.md missing` 或 `candidate_manifest_gate` 路径不一致：
+`candidate_phase` 的含义：
 
 ```text
-正确处理：
-  重新调度责任 Agent 修复产物，然后重新生成 candidate_manifest.json。
-
-错误处理：
-  Orchestrator 直接手写 trace_delta.md；
-  Orchestrator 直接猜测 manifest 路径；
-  反复 sf_gate_run 试错。
+design       仅设计 Candidate 已完成
+requirements 设计 + requirements Candidate 已完成
+tasks        设计 + requirements + tasks Candidate 已完成
+full         完整 Candidate 包已完成
 ```
 
-每个候选完整性问题最多修复一次；仍失败则报告阻塞事实和缺失文件清单。
+不得仅根据 `workflow_path` 推定当前阶段，也不得为了满足完整包 Gate 创建空的 requirements、tasks 或 trace 占位文件。
+
+## 二、权威 Candidate 路径
+
+路径结构由 `packages/types/src/directory-layout.ts` 的现有 Path Service 统一管理。新写入只能使用：
+
+```text
+requirements: candidates/project/modules/<MODULE>/requirements.candidate.md
+design:       candidates/project/modules/<MODULE>/design.candidate.md
+tasks:        candidates/tasks.md
+trace_delta:  candidates/trace_delta.md
+```
+
+Work Item 顶层 `requirements.md`、`design.md`、`tasks.md`、`trace_delta.md` 和旧 `.specforge/specs/<WI>/**` 仅供 legacy 只读兼容。不得同步写入第二份，也不得由 Orchestrator 猜测或拼接另一套路径。
+
+## 三、分阶段完整性预检
+
+调用 Candidate Gate 前只检查当前阶段所需产物：
+
+```text
+design:
+  - intake.md
+  - change_classification.md
+  - impact_analysis.md
+  - trigger_result.json
+  - design candidate
+  - candidate_manifest.json(candidate_phase=design)
+
+requirements:
+  - design 阶段全部产物
+  - requirements candidate
+  - candidate_manifest.json(candidate_phase=requirements)
+
+tasks/full:
+  - design + requirements candidate
+  - tasks candidate
+  - trace_delta candidate（进入完整 Candidate 合并前）
+  - candidate_manifest.json(candidate_phase=tasks|full)
+```
+
+Design-Only 验收明确停止在 `approval_required` 时，不要求 requirements、tasks、trace_delta，不得创建 `NOT PRODUCED` 占位产物。
+
+## 四、trigger_result.json 结构
+
+`classification` 必须是完整对象，不能写成 `"architecture_change"` 等字符串：
+
+```json
+{
+  "classification": {
+    "requirement_changed": false,
+    "acceptance_criteria_changed": false,
+    "business_rule_changed": false,
+    "user_visible_behavior_changed": true,
+    "data_semantics_changed": false,
+    "design_changed": true,
+    "module_boundary_changed": false,
+    "api_contract_changed": false,
+    "architecture_changed": true,
+    "unknowns": []
+  }
+}
+```
+
+## 五、Gate 执行与失败处理
+
+统一调用：
+
+```text
+sf_gate_run(work_item_id=<WI>, gate_type="candidate")
+```
+
+Gate Runner 根据 `candidate_phase` 选择现有 Gate Profile，并由权威 Gate Runner 推进：
+
+```text
+全部 required Gate 通过 → gates_running → approval_required
+任一 hard Gate 失败     → gates_running → gates_failed
+```
+
+禁止：
+
+```text
+- sf_design_gate 失败后换 sf_gate_run 试图绕过；
+- workflow_specific_gate 失败后调用另一入口取得 pass；
+- Orchestrator 直接手写缺失 Candidate；
+- Gate 失败后创建 placeholder；
+- Orchestrator 手动把 gates_running 推进到 approval_required。
+```
+
+## 六、Design-Only 无代码审计
+
+Design-Only Candidate Gate 通过并停在 `approval_required` 后，可调用：
+
+```text
+sf_changed_files_audit(work_item_id=<WI>, mode="no_code_change")
+```
+
+只有当前仍处于实现前阶段、代码权限从未启用、业务代码实际变化为 0、且无未解决 blocked write 时才允许 PASS。该审计不得因为 `workflow_path=design_change_path` 或代码权限未启用而生成 `CODE_PERMISSION_NOT_ENABLED` HardStop。
 
 <!-- SpecForge V7 Candidate Completeness Governance END -->
 

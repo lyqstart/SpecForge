@@ -38,7 +38,22 @@ export const VALID_WORKFLOW_PATHS = [
   'rollback_path',
 ] as const;
 
-export type ValidWorkflowPath = typeof VALID_WORKFLOW_PATHS[number];
+export type ValidWorkflowPath = (typeof VALID_WORKFLOW_PATHS)[number];
+
+export const VALID_CANDIDATE_PHASES = ['design', 'requirements', 'tasks', 'full'] as const;
+export type ValidCandidatePhase = (typeof VALID_CANDIDATE_PHASES)[number];
+
+const CLASSIFICATION_BOOLEAN_FIELDS = [
+  'requirement_changed',
+  'acceptance_criteria_changed',
+  'business_rule_changed',
+  'user_visible_behavior_changed',
+  'data_semantics_changed',
+  'design_changed',
+  'module_boundary_changed',
+  'api_contract_changed',
+  'architecture_changed',
+] as const;
 
 /**
  * work_item.json is WI metadata only.
@@ -64,13 +79,10 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export function findForbiddenWorkItemDecisionFields(
-  value: unknown,
-  prefix = '',
-): string[] {
+export function findForbiddenWorkItemDecisionFields(value: unknown, prefix = ''): string[] {
   if (Array.isArray(value)) {
     return value.flatMap((item, index) =>
-      findForbiddenWorkItemDecisionFields(item, `${prefix}[${index}]`),
+      findForbiddenWorkItemDecisionFields(item, `${prefix}[${index}]`)
     );
   }
 
@@ -101,7 +113,7 @@ export function findForbiddenWorkItemDecisionFields(
  */
 export function validateWorkItemJson(
   content: string,
-  expectedWorkItemId: string,
+  expectedWorkItemId: string
 ): SchemaValidationResult {
   const errors: string[] = [];
 
@@ -118,7 +130,9 @@ export function validateWorkItemJson(
     if (!parsed.work_item_id) {
       errors.push('MISSING_FIELD: work_item_id is required');
     } else if (parsed.work_item_id !== expectedWorkItemId) {
-      errors.push(`WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`);
+      errors.push(
+        `WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`
+      );
     }
 
     if (!parsed.schema_version) {
@@ -152,7 +166,7 @@ export function validateWorkItemJson(
  */
 export function validateTriggerResultJson(
   content: string,
-  expectedWorkItemId: string,
+  expectedWorkItemId: string
 ): SchemaValidationResult {
   const errors: string[] = [];
 
@@ -169,7 +183,9 @@ export function validateTriggerResultJson(
     if (!parsed.work_item_id) {
       errors.push('MISSING_FIELD: work_item_id is required');
     } else if (parsed.work_item_id !== expectedWorkItemId) {
-      errors.push(`WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`);
+      errors.push(
+        `WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`
+      );
     }
 
     if (!parsed.workflow_path) {
@@ -177,8 +193,21 @@ export function validateTriggerResultJson(
     } else if (!VALID_WORKFLOW_PATHS.includes(parsed.workflow_path as ValidWorkflowPath)) {
       errors.push(
         `INVALID_WORKFLOW_PATH: "${parsed.workflow_path}" is not a valid v1.1 workflow_path. ` +
-        `Valid values: ${VALID_WORKFLOW_PATHS.join(', ')}`
+          `Valid values: ${VALID_WORKFLOW_PATHS.join(', ')}`
       );
+    }
+
+    if (!isPlainObject(parsed.classification)) {
+      errors.push('INVALID_CLASSIFICATION: classification must be a JSON object');
+    } else {
+      for (const field of CLASSIFICATION_BOOLEAN_FIELDS) {
+        if (typeof parsed.classification[field] !== 'boolean') {
+          errors.push(`INVALID_CLASSIFICATION_FIELD: classification.${field} must be boolean`);
+        }
+      }
+      if (!Array.isArray(parsed.classification.unknowns)) {
+        errors.push('INVALID_CLASSIFICATION_FIELD: classification.unknowns must be an array');
+      }
     }
   }
 
@@ -193,7 +222,7 @@ export function validateTriggerResultJson(
 export function validateCandidateManifestJson(
   content: string,
   expectedWorkItemId: string,
-  workflowPath?: string,
+  workflowPath?: string
 ): SchemaValidationResult {
   const errors: string[] = [];
 
@@ -210,7 +239,19 @@ export function validateCandidateManifestJson(
     if (!parsed.work_item_id) {
       errors.push('MISSING_FIELD: work_item_id is required');
     } else if (parsed.work_item_id !== expectedWorkItemId) {
-      errors.push(`WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`);
+      errors.push(
+        `WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`
+      );
+    }
+
+    if (
+      parsed.candidate_phase !== undefined &&
+      !VALID_CANDIDATE_PHASES.includes(parsed.candidate_phase as ValidCandidatePhase)
+    ) {
+      errors.push(
+        `INVALID_CANDIDATE_PHASE: "${parsed.candidate_phase}" is invalid. ` +
+          `Valid values: ${VALID_CANDIDATE_PHASES.join(', ')}`
+      );
     }
 
     if (!Array.isArray(parsed.entries)) {
@@ -235,7 +276,7 @@ export function validateCandidateManifestJson(
  */
 export function validateEvidenceManifestJson(
   content: string,
-  expectedWorkItemId: string,
+  expectedWorkItemId: string
 ): SchemaValidationResult {
   const errors: string[] = [];
 
@@ -252,7 +293,9 @@ export function validateEvidenceManifestJson(
     if (!parsed.work_item_id) {
       errors.push('MISSING_FIELD: work_item_id is required');
     } else if (parsed.work_item_id !== expectedWorkItemId) {
-      errors.push(`WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`);
+      errors.push(
+        `WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`
+      );
     }
 
     if (!Array.isArray(parsed.entries)) {
@@ -271,7 +314,7 @@ export function validateArtifactJson(
   filename: string,
   content: string,
   workItemId: string,
-  workflowPath?: string,
+  workflowPath?: string
 ): SchemaValidationResult | null {
   switch (filename) {
     case 'work_item.json':

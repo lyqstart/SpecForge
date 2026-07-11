@@ -7,40 +7,22 @@
  * Requirements: 8.3, 8.6, REQ-3 AC-6, REQ-3 AC-7, REQ-3 AC-8, REQ-3 AC-9, REQ-3 AC-10
  */
 
-import { readFile } from "node:fs/promises"
-import { join } from "node:path"
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
-import type { GateResult } from "./sf_gate_types"
-import { getTaskSections, hasVerificationCommands } from "./sf_doc_lint_core"
-import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
-import { tryCheckCompatibility, logErrorToFile } from "./utils"
-import type { SyncSummary } from "./sf_knowledge_graph_core"
-import { parseTaskVerification } from "./sf_markdown_verification_parser"
+import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
+import type { GateResult } from './sf_gate_types';
+import { getTaskSections, hasVerificationCommands } from './sf_doc_lint_core';
+import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
+import { tryCheckCompatibility, logErrorToFile } from './utils';
+import type { SyncSummary } from './sf_knowledge_graph_core';
+import { parseTaskVerification } from './sf_markdown_verification_parser';
 import {
   parseAllVerificationStrategies,
   isValidVerificationType,
   normalizeVerificationType,
-} from "./sf_verification_types"
-import type { VerificationType, ParsedTaskVerification } from "./sf_verification_types"
+} from './sf_verification_types';
+import type { VerificationType, ParsedTaskVerification } from './sf_verification_types';
 
 // Re-export GateResult for convenience
-export type { GateResult }
-
-// ============================================================
-// Helper: Read file optionally (returns null if missing)
-// ============================================================
-
-async function readFileOptional(filePath: string): Promise<string | null> {
-  try {
-    return await readFile(filePath, "utf-8")
-  } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
-      return null
-    }
-    return null
-  }
-}
+export type { GateResult };
 
 // ============================================================
 // Helper: Extract task ID from section title
@@ -55,19 +37,19 @@ async function readFileOptional(filePath: string): Promise<string | null> {
  */
 function extractTaskId(title: string): string {
   // Try TASK-N format first
-  const taskIdMatch = title.match(/TASK-(\d+)/i)
+  const taskIdMatch = title.match(/TASK-(\d+)/i);
   if (taskIdMatch) {
-    return `TASK-${taskIdMatch[1]}`
+    return `TASK-${taskIdMatch[1]}`;
   }
 
   // Try "Task N" or "任务 N" format
-  const legacyMatch = title.match(/(?:Task|任务)\s*(\d+)/i)
+  const legacyMatch = title.match(/(?:Task|任务)\s*(\d+)/i);
   if (legacyMatch) {
-    return `TASK-${legacyMatch[1]}`
+    return `TASK-${legacyMatch[1]}`;
   }
 
   // Fallback: use the title itself
-  return title
+  return title;
 }
 
 // ============================================================
@@ -75,9 +57,9 @@ function extractTaskId(title: string): string {
 // ============================================================
 
 function normalizeToArray(entry: string | string[] | undefined): string[] {
-  if (!entry) return []
-  if (Array.isArray(entry)) return entry
-  return [entry]
+  if (!entry) return [];
+  if (Array.isArray(entry)) return entry;
+  return [entry];
 }
 
 // ============================================================
@@ -101,55 +83,55 @@ export function crossValidateTask(
   requirementsContent: string,
   designContent: string | null
 ): { blockingIssues: string[]; warnings: string[] } {
-  const blockingIssues: string[] = []
-  const warnings: string[] = []
+  const blockingIssues: string[] = [];
+  const warnings: string[] = [];
 
   // 场景 A: typed task 无 refs
   if (!taskVerification.refs || taskVerification.refs.length === 0) {
     blockingIssues.push(
       `Task ${taskId} uses typed verification_commands but lacks REQ refs; cannot verify strategy coverage.`
-    )
-    return { blockingIssues, warnings }
+    );
+    return { blockingIssues, warnings };
   }
 
   // 提取 REQ-N refs 和 CP-N refs
-  const reqRefs = taskVerification.refs.filter((r) => /^REQ-\d+$/i.test(r))
-  const cpRefs = taskVerification.refs.filter((r) => /^CP-\d+$/i.test(r))
+  const reqRefs = taskVerification.refs.filter(r => /^REQ-\d+$/i.test(r));
+  const cpRefs = taskVerification.refs.filter(r => /^CP-\d+$/i.test(r));
 
   // 场景 A 增强：refs 存在但无 REQ-N（如只有 [CP-1]）
   if (reqRefs.length === 0) {
     blockingIssues.push(
       `Task ${taskId} uses typed verification_commands but lacks REQ refs; cannot verify strategy coverage.`
-    )
-    return { blockingIssues, warnings }
+    );
+    return { blockingIssues, warnings };
   }
 
   // 场景 B/C: 从 refs 指向的 REQ 收集 Declared_Required_Types
-  const allStrategies = parseAllVerificationStrategies(requirementsContent)
-  const declaredTypes = new Set<VerificationType>()
+  const allStrategies = parseAllVerificationStrategies(requirementsContent);
+  const declaredTypes = new Set<VerificationType>();
 
   for (const reqRef of reqRefs) {
-    const strategyResult = allStrategies.get(reqRef.toUpperCase())
+    const strategyResult = allStrategies.get(reqRef.toUpperCase());
     if (strategyResult && strategyResult.errors.length === 0 && strategyResult.types.length > 0) {
       // 场景 B: 无 verification_strategy 的 REQ 被忽略（不贡献 declaredTypes）
       // 场景 C: 有 verification_strategy 的 REQ 贡献其类型到并集
       for (const t of strategyResult.types) {
-        declaredTypes.add(t)
+        declaredTypes.add(t);
       }
     }
   }
 
   // 场景 D: 检查 Planned_Verification_Types 是否覆盖 Declared_Required_Types
   if (declaredTypes.size > 0 && taskVerification.typedCommands) {
-    const plannedTypes = new Set(Object.keys(taskVerification.typedCommands) as VerificationType[])
-    const missingTypes = [...declaredTypes].filter((t) => !plannedTypes.has(t))
+    const plannedTypes = new Set(Object.keys(taskVerification.typedCommands) as VerificationType[]);
+    const missingTypes = [...declaredTypes].filter(t => !plannedTypes.has(t));
 
     if (missingTypes.length > 0) {
-      const missingStr = missingTypes.join(", ")
-      const reqRefsStr = reqRefs.join(", ")
+      const missingStr = missingTypes.join(', ');
+      const reqRefsStr = reqRefs.join(', ');
       blockingIssues.push(
         `Task ${taskId} missing verification type(s) [${missingStr}] required by refs [${reqRefsStr}]`
-      )
+      );
     }
   }
 
@@ -157,27 +139,31 @@ export function crossValidateTask(
   if (taskVerification.typedCommands?.property !== undefined && cpRefs.length === 0) {
     blockingIssues.push(
       `Task ${taskId} has property verification_commands but no CP-N ref; property test without Correctness_Property traceability is not allowed.`
-    )
+    );
   }
 
   // REQ-3 AC-10: property 命令路径与 CP test_file 一致性检查（warning 级别）
-  if (taskVerification.typedCommands?.property !== undefined && cpRefs.length > 0 && designContent) {
-    const propertyCommands = normalizeToArray(taskVerification.typedCommands.property)
+  if (
+    taskVerification.typedCommands?.property !== undefined &&
+    cpRefs.length > 0 &&
+    designContent
+  ) {
+    const propertyCommands = normalizeToArray(taskVerification.typedCommands.property);
     for (const cpRef of cpRefs) {
-      const testFile = extractCPTestFile(designContent, cpRef)
+      const testFile = extractCPTestFile(designContent, cpRef);
       if (testFile) {
-        const pathMatches = propertyCommands.some((cmd) => cmd.includes(testFile))
+        const pathMatches = propertyCommands.some(cmd => cmd.includes(testFile));
         if (!pathMatches) {
           warnings.push(
             `Task ${taskId}: property command path does not match CP ${cpRef} test_file "${testFile}" (warning only)`
-          )
+          );
         }
       }
       // 若 CP 未声明 test_file，接受约定路径 tests/property/{cp_id}.property.test.ts（pass，无 warning）
     }
   }
 
-  return { blockingIssues, warnings }
+  return { blockingIssues, warnings };
 }
 
 // ============================================================
@@ -190,19 +176,19 @@ export function crossValidateTask(
  */
 export function extractCPTestFile(designContent: string, cpRef: string): string | null {
   // 匹配 CP 标题（如 #### CP-1 配置解析的往返一致性）
-  const escapedRef = cpRef.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  const cpPattern = new RegExp(`^#{1,6}\\s+${escapedRef}[^\\n]*`, "im")
-  const cpMatch = cpPattern.exec(designContent)
-  if (!cpMatch) return null
+  const escapedRef = cpRef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const cpPattern = new RegExp(`^#{1,6}\\s+${escapedRef}[^\\n]*`, 'im');
+  const cpMatch = cpPattern.exec(designContent);
+  if (!cpMatch) return null;
 
   // 提取 CP 段落内容（到下一个同级或更高级标题为止）
-  const afterCP = designContent.slice(cpMatch.index + cpMatch[0].length)
-  const nextHeading = /^#{1,6}\s/m.exec(afterCP)
-  const cpSection = nextHeading ? afterCP.slice(0, nextHeading.index) : afterCP
+  const afterCP = designContent.slice(cpMatch.index + cpMatch[0].length);
+  const nextHeading = /^#{1,6}\s/m.exec(afterCP);
+  const cpSection = nextHeading ? afterCP.slice(0, nextHeading.index) : afterCP;
 
   // 查找 test_file 字段
-  const testFileMatch = /\*\*test_file\*\*\s*:\s*(.+)/i.exec(cpSection)
-  return testFileMatch ? testFileMatch[1].trim() : null
+  const testFileMatch = /\*\*test_file\*\*\s*:\s*(.+)/i.exec(cpSection);
+  return testFileMatch ? testFileMatch[1].trim() : null;
 }
 
 // ============================================================
@@ -221,152 +207,141 @@ export function extractCPTestFile(designContent: string, cpRef: string): string 
  * @param baseDir - 项目根目录路径
  * @returns Gate 检查结果
  */
-export async function checkTasksGate(
-  workItemId: string,
-  baseDir: string
-): Promise<GateResult> {
+export async function checkTasksGate(workItemId: string, baseDir: string): Promise<GateResult> {
   try {
-    // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
-    await tryCheckCompatibility(baseDir, "sf_tasks_gate_core")
+    await tryCheckCompatibility(baseDir, 'sf_tasks_gate_core');
 
-    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
-    const docPath = join(specDir, "tasks.md")
-
-    // 1. 读取 tasks.md
-    let content: string
+    let taskArtifacts: Array<{ content: string; path: string }>;
+    let requirementArtifacts: Array<{ content: string; path: string }>;
+    let designArtifacts: Array<{ content: string; path: string }>;
     try {
-      content = await readFile(docPath, "utf-8")
+      [taskArtifacts, requirementArtifacts, designArtifacts] = await Promise.all([
+        resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'tasks' }),
+        resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'requirements' }),
+        resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'design' }),
+      ]);
     } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException
-      if (error.code === "ENOENT") {
-        return {
-          status: "fail",
-          blocking_issues: ["tasks.md not found"],
-          warnings: [],
-          next_action: "revise",
-        }
-      }
       return {
-        status: "blocked",
-        blocking_issues: [`Failed to read tasks.md: ${error.message}`],
+        status: 'blocked',
+        blocking_issues: [`Failed to read task planning candidates: ${(err as Error).message}`],
         warnings: [],
-        next_action: "ask_user",
-      }
+        next_action: 'ask_user',
+      };
     }
 
-    const blockingIssues: string[] = []
-    const warnings: string[] = []
-
-    // 2. 提取任务章节并检查 verification_commands
-    const taskSections = getTaskSections(content)
-
-    if (taskSections.length === 0) {
-      blockingIssues.push("tasks.md 中未找到任何任务章节")
+    if (taskArtifacts.length === 0) {
       return {
-        status: "fail",
-        blocking_issues: blockingIssues,
-        warnings,
-        next_action: "revise",
-      }
+        status: 'fail',
+        blocking_issues: ['tasks candidate not found'],
+        warnings: [],
+        next_action: 'revise',
+      };
     }
 
-    // V3.7: 读取 requirements.md 和 design.md 用于交叉验证上下文
-    const requirementsContent = await readFileOptional(join(specDir, "requirements.md"))
-    const designContent = await readFileOptional(join(specDir, "design.md"))
+    const requirementsContent =
+      requirementArtifacts.map(artifact => artifact.content).join('\n\n') || null;
+    const designContent = designArtifacts.map(artifact => artifact.content).join('\n\n') || null;
+    const blockingIssues: string[] = [];
+    const warnings: string[] = [];
 
-    for (const section of taskSections) {
-      // V3.7: 使用 parseTaskVerification 进行格式感知检查
-      const taskVerification = parseTaskVerification(section.content)
+    for (const artifact of taskArtifacts) {
+      const content = artifact.content;
+      const label = artifact.path.replace(/\\/g, '/');
+      const taskSections = getTaskSections(content);
 
-      if (taskVerification.format === "empty") {
-        // 无 verification_commands 字段 — 与 V3.6 行为一致
-        if (!hasVerificationCommands(section.content)) {
-          blockingIssues.push(
-            `任务"${section.title}"缺少 verification_commands 字段`
-          )
+      if (taskSections.length === 0) {
+        blockingIssues.push(`${label}: tasks candidate 中未找到任何任务章节`);
+        continue;
+      }
+
+      for (const section of taskSections) {
+        const taskVerification = parseTaskVerification(section.content);
+
+        if (taskVerification.format === 'empty') {
+          if (!hasVerificationCommands(section.content)) {
+            blockingIssues.push(`${label}: 任务"${section.title}"缺少 verification_commands 字段`);
+          }
+          continue;
         }
-        continue
-      }
 
-      if (taskVerification.format === "legacy") {
-        // 旧格式：pass/fail 语义与 V3.6 一致，新增 non-blocking warning（REQ-3 AC-6）
-        warnings.push(
-          `任务"${section.title}"使用旧格式 verification_commands，建议迁移到类型化格式`
-        )
-        continue
-      }
-
-      // typed 格式处理
-      const taskId = extractTaskId(section.title)
-
-      // 验证类型键合法性 — 检查 typedCommands 中的键（REQ-3 AC-7）
-      for (const key of Object.keys(taskVerification.typedCommands ?? {})) {
-        if (!isValidVerificationType(key)) {
-          blockingIssues.push(
-            `任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`
-          )
+        if (taskVerification.format === 'legacy') {
+          warnings.push(
+            `${label}: 任务"${section.title}"使用旧格式 verification_commands，建议迁移到类型化格式`
+          );
+          continue;
         }
-      }
 
-      // 检查 invalidTypedKeys（由解析器检测到的非法键，如 smoke:）
-      for (const key of taskVerification.invalidTypedKeys ?? []) {
-        blockingIssues.push(
-          `任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`
-        )
-      }
+        const taskId = extractTaskId(section.title);
+        for (const key of Object.keys(taskVerification.typedCommands ?? {})) {
+          if (!isValidVerificationType(key)) {
+            blockingIssues.push(
+              `${label}: 任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`
+            );
+          }
+        }
+        for (const key of taskVerification.invalidTypedKeys ?? []) {
+          blockingIssues.push(
+            `${label}: 任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`
+          );
+        }
 
-      // V3.7 交叉验证（REQ-3 AC-9）
-      if (!requirementsContent) {
-        // requirements.md 缺失时无法执行交叉验证
-        blockingIssues.push(
-          `Task ${taskId} uses typed verification_commands but requirements.md is missing or unreadable; cannot verify strategy coverage.`
-        )
-        continue
-      }
+        if (!requirementsContent) {
+          blockingIssues.push(
+            `${label}: Task ${taskId} uses typed verification_commands but requirements candidate is missing or unreadable; cannot verify strategy coverage.`
+          );
+          continue;
+        }
 
-      const crossResult = crossValidateTask(
-        taskId,
-        taskVerification,
-        requirementsContent,
-        designContent
-      )
-      blockingIssues.push(...crossResult.blockingIssues)
-      warnings.push(...crossResult.warnings)
+        const crossResult = crossValidateTask(
+          taskId,
+          taskVerification,
+          requirementsContent,
+          designContent
+        );
+        blockingIssues.push(...crossResult.blockingIssues.map(issue => `${label}: ${issue}`));
+        warnings.push(...crossResult.warnings.map(warning => `${label}: ${warning}`));
+      }
     }
 
     if (blockingIssues.length > 0) {
       return {
-        status: "fail",
+        status: 'fail',
         blocking_issues: blockingIssues,
         warnings,
-        next_action: "revise",
-      }
+        next_action: 'revise',
+        details: {
+          task_candidate_paths: taskArtifacts.map(artifact => artifact.path),
+          requirements_candidate_paths: requirementArtifacts.map(artifact => artifact.path),
+          design_candidate_paths: designArtifacts.map(artifact => artifact.path),
+        },
+      };
     }
 
-    // ★ V4.0: KG sync on pass
-    let kgSync: SyncSummary | null = null
+    let kgSync: SyncSummary | null = null;
     try {
       if (await isKGEnabled(baseDir)) {
-        const kgResult = await syncFromSpec(workItemId, baseDir, "tasks")
-        if (kgResult.success && kgResult.summary) {
-          kgSync = kgResult.summary
-        } else if (kgResult.error) {
-          warnings.push(`KG sync warning: ${kgResult.error}`)
-        }
+        const kgResult = await syncFromSpec(workItemId, baseDir, 'tasks');
+        if (kgResult.success && kgResult.summary) kgSync = kgResult.summary;
+        else if (kgResult.error) warnings.push(`KG sync warning: ${kgResult.error}`);
       }
     } catch (err) {
-      warnings.push(`KG sync failed: ${(err as Error).message}`)
+      warnings.push(`KG sync failed: ${(err as Error).message}`);
     }
 
     return {
-      status: "pass",
+      status: 'pass',
       blocking_issues: [],
       warnings,
-      next_action: "continue",
+      next_action: 'continue',
       kg_sync: kgSync,
-    }
+      details: {
+        task_candidate_paths: taskArtifacts.map(artifact => artifact.path),
+        requirements_candidate_paths: requirementArtifacts.map(artifact => artifact.path),
+        design_candidate_paths: designArtifacts.map(artifact => artifact.path),
+      },
+    };
   } catch (err) {
-    await logErrorToFile(baseDir, "sf_tasks_gate_core", "checkTasksGate", err)
-    throw err
+    await logErrorToFile(baseDir, 'sf_tasks_gate_core', 'checkTasksGate', err);
+    throw err;
   }
 }

@@ -18,8 +18,10 @@ describe('v1.2 project spec module routing hotfix', () => {
     expect(text).toContain('inferCandidateModuleIdFromContent');
     expect(text).toContain("readFrontMatterField(content, ['target_module_path'])");
     expect(text).toContain("readFrontMatterField(content, ['module_id', 'module'])");
-    expect(text).toContain("candidateModulePath(inferCandidateModuleIdFromContent(content), 'requirements')");
-    expect(text).toContain("candidateModulePath(inferCandidateModuleIdFromContent(content), 'design')");
+    expect(text).toContain(
+      "candidateModuleRelativePath(baseDir, workItemId, moduleId, 'requirements')"
+    );
+    expect(text).toContain("candidateModuleRelativePath(baseDir, workItemId, moduleId, 'design')");
     expect(text).not.toContain('candidates/project/modules/core/requirements.candidate.md');
     expect(text).not.toContain('candidates/project/modules/core/design.candidate.md');
   });
@@ -27,9 +29,11 @@ describe('v1.2 project spec module routing hotfix', () => {
   it('normalizes candidate manifest target paths by module_id/module/target path', () => {
     const text = source();
     expect(text).toContain('inferCandidateModuleIdFromEntry');
-    expect(text).toContain("projectModuleTargetPath(moduleId, 'requirements')");
-    expect(text).toContain("projectModuleTargetPath(moduleId, 'design')");
+    expect(text).toContain("projectModuleTargetPath(baseDir, moduleId, 'requirements')");
+    expect(text).toContain("projectModuleTargetPath(baseDir, moduleId, 'design')");
     expect(text).toContain('rawEntries');
-    expect(text).toContain('rawEntries.map(canonicalizeCandidateEntry)');
+    expect(text).toContain(
+      'rawEntries.map((entry: any) => canonicalizeCandidateEntry(entry, baseDir, workItemId))'
+    );
   });
 });

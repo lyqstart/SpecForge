@@ -418,7 +418,7 @@ graph TD
 
 | Workflow / 阶段 | 允许的既有设计类产物 | 主要责任 |
 |---|---|---|
-| feature-spec / design-first / bugfix-spec | `candidates/design.md` 或当前 WI 约定的 `design.md` | 完整设计或修复设计 |
+| feature-spec / design-first / bugfix-spec | `candidates/project/modules/<MODULE>/design.candidate.md` | 完整设计或修复设计 |
 | change-request | `design_delta.md` | 增量设计与兼容性影响 |
 | refactor | `refactor_analysis.md`、`refactor_plan.md` | 重构问题、边界、不变行为与方案 |
 | investigation | `investigation_plan.md`、`findings_report.md` | 调查计划或基于证据的结论与建议 |
@@ -433,6 +433,8 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 ```
 
 以及七个固定章节，不得另建 `design_governance_analysis.md`、`architecture_analysis.md` 或其他旁路产物。
+
+固定章节标题必须逐字使用上述七个名称；`Actual Architecture`、`Governance Capability Assessment`、`Recommended Approach` 等近义标题不能替代。设计 Agent 只能通过 `sf_artifact_write(file_type=design)` 写入一次，由现有 Path Service 路由到权威 Candidate 路径，不得为了适配不同 Gate 再复制顶层 `design.md`。
 
 **完整设计输出格式要求**：
 - 每个设计决策使用标准化标记格式：`### DD-N 标题`
@@ -524,7 +526,7 @@ constrained_by: <约束来源>
 **Candidate 规则**（§8.2）：
 
 1. **必须是完整目标文件** — 不能是 diff / patch 格式。
-2. **路径位于 `candidates/` 下** — 如 `.specforge/work-items/<WI>/candidates/project/modules/AUTH/design.md`。
+2. **路径位于权威 Candidate 子树** — `.specforge/work-items/<WI>/candidates/project/modules/<MODULE>/design.candidate.md`。Work Item 顶层 `design.md` 和旧 `.specforge/specs/<WI>/design.md` 只能作为 legacy 只读兼容路径，不得同步写入第二份。
 3. **不能直接覆盖 `.specforge/project/**`** — 必须通过 Gate → User Decision → Merge Runner 流程。
 4. **必须绑定 `base_spec_version`** — 记录基于哪个版本生成。
 5. **必须计算 hash** — 用于后续一致性校验。

@@ -8,8 +8,9 @@
  */
 
 import { readFile } from "node:fs/promises"
-import { join } from "node:path"
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import { join, relative } from "node:path"
+import { legacyWorkItemSpecArtifact, workItemRoot } from "@specforge/types/directory-layout"
+import { resolveWorkItemSpecArtifacts } from "./governance-invariants-v11"
 import { parseTaskVerification } from "./sf_markdown_verification_parser"
 import { isValidVerificationType } from "./sf_verification_types"
 import { logErrorToFile } from "./utils"
@@ -33,6 +34,39 @@ export interface DocLintResult {
 }
 
 // ============================================================
+// Candidate path resolution
+// ============================================================
+
+async function readBugfixDocument(
+  workItemId: string,
+  baseDir: string
+): Promise<Array<{ path: string; content: string }>> {
+  const paths = [
+    join(workItemRoot(baseDir, workItemId), "bugfix.md"),
+    legacyWorkItemSpecArtifact(baseDir, workItemId, "bugfix.md"),
+  ]
+  for (const candidatePath of paths) {
+    try {
+      return [{ path: candidatePath, content: await readFile(candidatePath, "utf-8") }]
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException
+      if (error.code === "ENOENT") continue
+      throw error
+    }
+  }
+  return []
+}
+
+async function getDocuments(
+  workItemId: string,
+  docType: DocType,
+  baseDir: string
+): Promise<Array<{ path: string; content: string }>> {
+  if (docType === "bugfix") return readBugfixDocument(workItemId, baseDir)
+  return resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: docType })
+}
+
+// ============================================================
 // Core Logic
 // ============================================================
 
@@ -50,50 +84,39 @@ export async function lintDocument(
   baseDir: string
 ): Promise<DocLintResult> {
   try {
-    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
     const docFileName = getDocFileName(docType)
-    const docPath = join(specDir, docFileName)
+    const documents = await getDocuments(workItemId, docType, baseDir)
 
-    // 1. 读取文档
-    let content: string
-    try {
-      content = await readFile(docPath, "utf-8")
-    } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException
-      if (error.code === "ENOENT") {
-        return {
-          status: "fail",
-          issues: [
-            {
-              severity: "error",
-              message: `File not found: ${docFileName}`,
-              location: docFileName,
-            },
-          ],
-        }
-      }
+    if (documents.length === 0) {
       return {
         status: "fail",
         issues: [
           {
             severity: "error",
-            message: `Failed to read ${docFileName}: ${error.message}`,
+            message: `File not found: ${docFileName}`,
             location: docFileName,
           },
         ],
       }
     }
 
-    // 2. 根据 doc_type 执行对应检查
-    switch (docType) {
-      case "requirements":
-        return lintRequirements(content, docFileName)
-      case "design":
-        return lintDesign(content, docFileName)
-      case "tasks":
-        return lintTasks(content, docFileName)
-      case "bugfix":
-        return lintBugfix(content, docFileName)
+    const results = documents.map(document => {
+      const location = relative(baseDir, document.path).replace(/\\/g, "/") || docFileName
+      switch (docType) {
+        case "requirements":
+          return lintRequirements(document.content, location)
+        case "design":
+          return lintDesign(document.content, location)
+        case "tasks":
+          return lintTasks(document.content, location)
+        case "bugfix":
+          return lintBugfix(document.content, location)
+      }
+    })
+    const issues = results.flatMap(result => result.issues)
+    return {
+      status: issues.some(issue => issue.severity === "error") ? "fail" : "pass",
+      issues,
     }
   } catch (err) {
     await logErrorToFile(baseDir, "sf_doc_lint_core", "lintDocument", err)

@@ -41,9 +41,26 @@ export {
   workItemRoot,
   workItemJson,
   workItemIntake,
+  workItemChangeClassification,
+  workItemImpactAnalysis,
+  workItemTriggerResult,
+  workItemRequirements,
+  workItemDesign,
+  workItemTasks,
+  workItemTraceDelta,
   workItemRuntimeLog,
   workItemCandidateManifest,
   workItemCandidatesRoot,
+  workItemCandidateProjectRoot,
+  workItemCandidateModulesRoot,
+  workItemCandidateModuleRoot,
+  workItemCandidateRequirements,
+  workItemCandidateDesign,
+  workItemCandidateTasks,
+  workItemCandidateTraceDelta,
+  legacyWorkItemSpecArtifact,
+  workItemSpecArtifactReadCandidates,
+  type WorkItemSpecArtifactKind,
   workItemGatesRoot,
   workItemGateSummary,
   workItemUserDecision,
@@ -56,13 +73,10 @@ export {
   isProjectSpecPath,
   isWorkItemPath,
   isLegacySpecPath,
-} from './directory-layout.js';
+} from "./directory-layout.js";
 
 // ---- Actor Roles — 统一角色枚举 ----
-export {
-  ACTOR_ROLES,
-  type ActorRole,
-} from './actor-roles.js';
+export { ACTOR_ROLES, type ActorRole } from "./actor-roles.js";
 
 // ---- ID 规则（§3）----
 export {
@@ -82,7 +96,7 @@ export {
   extractModuleFromAcId,
   extractModuleFromDdId,
   extractWiFromTaskId,
-} from './id-rules.js';
+} from "./id-rules.js";
 
 // ---- Work Item 核心类型（§4-§13）----
 export {
@@ -130,7 +144,7 @@ export {
   type ExtensionRequest,
   type EvidenceManifestEntry,
   type EvidenceManifest,
-} from './work-item-types.js';
+} from "./work-item-types.js";
 
 // ---- Meta Schema（向后兼容）----
 export {
@@ -153,7 +167,7 @@ export {
   type WorkflowType,
   type StageType,
   type WorkItemMeta,
-} from './meta-schema.js';
+} from "./meta-schema.js";
 
 // ---- Constants — 常量与枚举（§5-§10）----
 export {
@@ -186,7 +200,7 @@ export {
   type GateType as ConstGateType,
   type GateSummaryStatus as ConstGateSummaryStatus,
   type UserDecisionStatus as ConstUserDecisionStatus,
-} from './constants.js';
+} from "./constants.js";
 
 // ---- Schema — Zod Schema 定义（§2-§13）----
 export {
@@ -220,7 +234,7 @@ export {
   type ExtensionRequest as SchemaExtensionRequest,
   type EvidenceManifestEntry as SchemaEvidenceManifestEntry,
   type EvidenceManifest as SchemaEvidenceManifest,
-} from './schema.js';
+} from "./schema.js";
 
 // ---- Principal — 统一身份模型（Phase 1 RBAC）----
 export {
@@ -228,7 +242,7 @@ export {
   type PrincipalSource,
   type PrincipalRole,
   type Principal,
-} from './principal.js';
+} from "./principal.js";
 
 // ---- Permissions — 权限类型（Phase 1 RBAC）----
 export {
@@ -237,7 +251,7 @@ export {
   type Permission,
   type PermissionContext,
   type PermissionDecision,
-} from './permissions.js';
+} from "./permissions.js";
 
 // ---- Seal Transitions — Seal transition 定义（Phase 1 RBAC）----
 export {
@@ -246,4 +260,4 @@ export {
   getSealTransition,
   REQUESTABLE_TRANSITIONS,
   type SealTransitionEntry,
-} from './seal-transitions.js';
+} from "./seal-transitions.js";

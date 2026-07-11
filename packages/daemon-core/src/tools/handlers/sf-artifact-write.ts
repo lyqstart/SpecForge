@@ -11,9 +11,21 @@ import * as fs from 'node:fs';
 import { registerHandler } from '../ToolDispatcher';
 import { writeArtifact } from '../lib/sf_artifact_write_core';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
-import { validateArtifactJson, findForbiddenWorkItemDecisionFields } from '../lib/artifact-schema-validation';
+import {
+  validateArtifactJson,
+  findForbiddenWorkItemDecisionFields,
+} from '../lib/artifact-schema-validation';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import {
+  SPEC_DIR_NAME,
+  moduleDesign,
+  moduleRequirements,
+  workItemCandidateDesign,
+  workItemCandidateRequirements,
+  workItemCandidateTasks,
+  workItemCandidateTraceDelta,
+  workItemRoot,
+} from '@specforge/types/directory-layout';
 import { inferManifestEntries } from '../lib/governance-invariants-v11';
 
 const V11_WI_ARTIFACT_FILES = new Set([
@@ -49,7 +61,7 @@ const V11_FILENAME_MAP: Record<string, string> = {
 };
 
 const V11_FILETYPE_TO_FILENAME = new Map(
-  Object.entries(V11_FILENAME_MAP).map(([filename, fileType]) => [fileType, filename]),
+  Object.entries(V11_FILENAME_MAP).map(([filename, fileType]) => [fileType, filename])
 );
 
 function normalizeModuleId(value: unknown): string {
@@ -75,7 +87,11 @@ function readFrontMatterField(content: string, names: string[]): string | undefi
     if (colon < 0) continue;
     const key = line.slice(0, colon).trim();
     if (!names.includes(key)) continue;
-    const raw = line.slice(colon + 1).split('#')[0]?.trim() ?? '';
+    const raw =
+      line
+        .slice(colon + 1)
+        .split('#')[0]
+        ?.trim() ?? '';
     const value = raw.replace(/^['"]|['"]$/g, '').trim();
     if (value) return value;
   }
@@ -116,48 +132,35 @@ function inferCandidateModuleIdFromEntry(entry: any, candidatePath?: string): st
   return 'core';
 }
 
-function candidateModulePath(moduleId: string, kind: 'requirements' | 'design'): string {
-  return 'candidates/project/modules/' + normalizeModuleId(moduleId) + '/' + kind + '.candidate.md';
+function toWorkItemRelativePath(baseDir: string, workItemId: string, absolutePath: string): string {
+  return path.relative(workItemRoot(baseDir, workItemId), absolutePath).replace(/\\/g, '/');
 }
 
-function projectModuleTargetPath(moduleId: string, kind: 'requirements' | 'design'): string {
-  return '.specforge/project/modules/' + normalizeModuleId(moduleId) + '/' + kind + '.md';
-}
-
-function mirrorSpecCandidateArtifacts(
+function candidateModuleRelativePath(
   baseDir: string,
   workItemId: string,
-  targetFilename: string,
-  content: string,
-  primaryTargetPath: string,
-): void {
-  const normalizedTargetFilename = targetFilename.replace(/\\/g, '/');
-  const moduleId = inferCandidateModuleIdFromContent(content);
-  const requirementsCandidate = candidateModulePath(moduleId, 'requirements');
-  const designCandidate = candidateModulePath(moduleId, 'design');
-
-  const canonicalMirrors: Record<string, string[]> = {
-    'requirements.md': [requirementsCandidate],
-    'design.md': [designCandidate],
-    'tasks.md': ['candidates/tasks.md'],
-    'trace_delta.md': ['candidates/trace_delta.md'],
-    [requirementsCandidate]: ['requirements.md'],
-    [designCandidate]: ['design.md'],
-    'candidates/tasks.md': ['tasks.md'],
-    'candidates/trace_delta.md': ['trace_delta.md'],
-  };
-
-  const mirrors = canonicalMirrors[normalizedTargetFilename] ?? [];
-  if (mirrors.length === 0) return;
-
-  const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
-  for (const relativeMirror of mirrors) {
-    const mirrorPath = path.join(wiDir, relativeMirror);
-    if (path.resolve(mirrorPath) === path.resolve(primaryTargetPath)) continue;
-    fs.mkdirSync(path.dirname(mirrorPath), { recursive: true });
-    fs.writeFileSync(mirrorPath, content, 'utf-8');
-  }
+  moduleId: string,
+  kind: 'requirements' | 'design'
+): string {
+  const absolutePath =
+    kind === 'requirements'
+      ? workItemCandidateRequirements(baseDir, workItemId, normalizeModuleId(moduleId))
+      : workItemCandidateDesign(baseDir, workItemId, normalizeModuleId(moduleId));
+  return toWorkItemRelativePath(baseDir, workItemId, absolutePath);
 }
+
+function projectModuleTargetPath(
+  baseDir: string,
+  moduleId: string,
+  kind: 'requirements' | 'design'
+): string {
+  const absolutePath =
+    kind === 'requirements'
+      ? moduleRequirements(baseDir, normalizeModuleId(moduleId))
+      : moduleDesign(baseDir, normalizeModuleId(moduleId));
+  return path.relative(baseDir, absolutePath).replace(/\\/g, '/');
+}
+
 function normalizeToken(value: unknown): string {
   return String(value ?? '')
     .toLowerCase()
@@ -181,26 +184,49 @@ function inferCanonicalFileType(args: Record<string, unknown>): string | null {
   const probe = `${runId} ${template} ${contentToken}`;
 
   if (fileType !== 'work_log') return null;
-  if (probe.includes('trigger-result') || probe.includes('trigger-result-json')) return 'trigger_result';
-  if (probe.includes('candidate-manifest') || probe.includes('candidate-manifest-json')) return 'candidate_manifest';
+  if (probe.includes('trigger-result') || probe.includes('trigger-result-json'))
+    return 'trigger_result';
+  if (probe.includes('candidate-manifest') || probe.includes('candidate-manifest-json'))
+    return 'candidate_manifest';
   if (probe.includes('trace-delta')) return 'trace_delta';
   if (probe.includes('impact-analysis')) return 'impact_analysis';
-  if (probe.includes('change-classification') || probe.includes('intake-classification')) return 'change_classification';
-  if (probe.includes('tasks-md') || probe.includes('task-plan') || probe.includes('task-planning')) return 'tasks';
+  if (probe.includes('change-classification') || probe.includes('intake-classification'))
+    return 'change_classification';
+  if (probe.includes('tasks-md') || probe.includes('task-plan') || probe.includes('task-planning'))
+    return 'tasks';
   if (probe.includes('merge-report')) return 'merge_report';
   if (probe.includes('evidence-manifest')) return 'evidence_manifest';
   return null;
 }
 
-function resolveTargetFilename(fileType: string, content = ''): string | null {
-  if (fileType === 'requirements') return 'requirements.md';
-  if (fileType === 'design') return 'design.md';
+function resolveTargetFilename(
+  fileType: string,
+  content: string,
+  baseDir: string,
+  workItemId: string
+): string | null {
+  const moduleId = inferCandidateModuleIdFromContent(content);
+  if (fileType === 'requirements' || fileType === 'candidate_requirements') {
+    return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'requirements');
+  }
+  if (fileType === 'design' || fileType === 'candidate_design') {
+    return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'design');
+  }
+  if (fileType === 'tasks' || fileType === 'candidate_tasks') {
+    return toWorkItemRelativePath(baseDir, workItemId, workItemCandidateTasks(baseDir, workItemId));
+  }
+  if (fileType === 'trace_delta' || fileType === 'candidate_trace_delta') {
+    return toWorkItemRelativePath(
+      baseDir,
+      workItemId,
+      workItemCandidateTraceDelta(baseDir, workItemId)
+    );
+  }
   if (fileType === 'requirements_delta') return 'requirements_delta.md';
   if (fileType === 'design_delta') return 'design_delta.md';
-  if (fileType === 'candidate_requirements') return candidateModulePath(inferCandidateModuleIdFromContent(content), 'requirements');
-  if (fileType === 'candidate_design') return candidateModulePath(inferCandidateModuleIdFromContent(content), 'design');
-  if (fileType === 'candidate_tasks') return 'candidates/tasks.md';
-  if (fileType === 'candidate_trace_delta') return 'candidates/trace_delta.md'; if (fileType === 'extension_request') return 'extension_request.json'; if (fileType === 'extension_candidate') return 'candidates/extension_candidate.json'; if (fileType === 'extension_delta') return 'candidates/extension_delta.json';
+  if (fileType === 'extension_request') return 'extension_request.json';
+  if (fileType === 'extension_candidate') return 'candidates/extension_candidate.json';
+  if (fileType === 'extension_delta') return 'candidates/extension_delta.json';
   if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType;
   return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null;
 }
@@ -229,28 +255,19 @@ function normalizeWorkItemJsonArtifact(input: {
   const existingStatus = typeof existing.status === 'string' ? existing.status : undefined;
   const requestedStatus = typeof input.parsed.status === 'string' ? input.parsed.status : undefined;
   const statusMutation =
-    existingStatus &&
-    requestedStatus &&
-    requestedStatus !== existingStatus
+    existingStatus && requestedStatus && requestedStatus !== existingStatus
       ? `${existingStatus}->${requestedStatus}`
       : undefined;
 
   const normalized = {
     ...existing,
     ...input.parsed,
-    schema_version:
-      input.parsed.schema_version ?? existing.schema_version ?? '1.1',
-    work_item_id:
-      input.parsed.work_item_id ?? existing.work_item_id ?? input.workItemId,
-    status:
-      input.parsed.status ?? existing.status ?? 'created',
+    schema_version: input.parsed.schema_version ?? existing.schema_version ?? '1.1',
+    work_item_id: input.parsed.work_item_id ?? existing.work_item_id ?? input.workItemId,
+    status: input.parsed.status ?? existing.status ?? 'created',
     workflow_type:
-      input.parsed.workflow_type ??
-      existing.workflow_type ??
-      input.workflowType ??
-      'quick_change',
-    workflow_path:
-      input.parsed.workflow_path ?? existing.workflow_path ?? input.workflowPath,
+      input.parsed.workflow_type ?? existing.workflow_type ?? input.workflowType ?? 'quick_change',
+    workflow_path: input.parsed.workflow_path ?? existing.workflow_path ?? input.workflowPath,
     updated_at: new Date().toISOString(),
   };
 
@@ -274,9 +291,9 @@ function normalizeWorkItemJsonArtifact(input: {
 function inferWorkflowFacts(
   baseDir: string,
   workItemId: string,
-  contentJson?: Record<string, unknown>,
+  contentJson?: Record<string, unknown>
 ): { workflowPath?: string; workflowType?: string } {
-  const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+  const wiDir = workItemRoot(baseDir, workItemId);
   const candidates: Array<Record<string, unknown> | null> = [
     contentJson ?? null,
     readJsonIfExists(path.join(wiDir, 'work_item.json')),
@@ -300,8 +317,13 @@ function normalizeCandidatePath(value: unknown): string {
   return normalized.startsWith('./') ? normalized.slice(2) : normalized;
 }
 
-function canonicalCandidatePathByType(entry: any, candidatePath: string): string | null {
-  const candidateType = String(entry?.type ?? '').toLowerCase();
+function canonicalCandidatePathByType(
+  entry: any,
+  candidatePath: string,
+  baseDir: string,
+  workItemId: string
+): string | null {
+  const candidateType = String(entry?.type ?? entry?.spec_type ?? '').toLowerCase();
   const targetPath = normalizeCandidatePath(entry?.target_path);
   const normalizedPath = normalizeCandidatePath(candidatePath);
   const moduleId = inferCandidateModuleIdFromEntry(entry, normalizedPath);
@@ -315,7 +337,7 @@ function canonicalCandidatePathByType(entry: any, candidatePath: string): string
     normalizedPath.endsWith('/requirements.candidate.md') ||
     targetPath.endsWith('/requirements.md')
   ) {
-    return candidateModulePath(moduleId, 'requirements');
+    return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'requirements');
   }
 
   if (
@@ -326,7 +348,7 @@ function canonicalCandidatePathByType(entry: any, candidatePath: string): string
     normalizedPath.endsWith('/design.candidate.md') ||
     targetPath.endsWith('/design.md')
   ) {
-    return candidateModulePath(moduleId, 'design');
+    return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'design');
   }
 
   if (
@@ -336,7 +358,7 @@ function canonicalCandidatePathByType(entry: any, candidatePath: string): string
     normalizedPath.endsWith('/tasks.md') ||
     targetPath.endsWith('/tasks.md')
   ) {
-    return 'candidates/tasks.md';
+    return toWorkItemRelativePath(baseDir, workItemId, workItemCandidateTasks(baseDir, workItemId));
   }
 
   if (
@@ -347,16 +369,20 @@ function canonicalCandidatePathByType(entry: any, candidatePath: string): string
     targetPath === '.specforge/project/trace_matrix.md' ||
     targetPath.endsWith('/trace_matrix.md')
   ) {
-    return 'candidates/trace_delta.md';
+    return toWorkItemRelativePath(
+      baseDir,
+      workItemId,
+      workItemCandidateTraceDelta(baseDir, workItemId)
+    );
   }
 
   return null;
 }
 
-function canonicalizeCandidateEntry(entry: any): any {
+function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: string): any {
   if (!entry || typeof entry !== 'object') return entry;
   const candidatePath = normalizeCandidatePath(entry.candidate_path ?? entry.path);
-  const canonicalPath = canonicalCandidatePathByType(entry, candidatePath);
+  const canonicalPath = canonicalCandidatePathByType(entry, candidatePath, baseDir, workItemId);
   if (!canonicalPath) return entry;
 
   const moduleId = inferCandidateModuleIdFromEntry(entry, candidatePath);
@@ -375,14 +401,21 @@ function canonicalizeCandidateEntry(entry: any): any {
     normalizedEntry.path = canonicalPath;
   }
 
-  const candidateType = String(normalizedEntry.type ?? '').toLowerCase();
+  const candidateType = String(
+    normalizedEntry.type ?? normalizedEntry.spec_type ?? ''
+  ).toLowerCase();
   if (candidateType === 'requirements' || candidateType === 'requirement') {
-    normalizedEntry.target_path = projectModuleTargetPath(moduleId, 'requirements');
+    normalizedEntry.target_path = projectModuleTargetPath(baseDir, moduleId, 'requirements');
   }
   if (candidateType === 'design') {
-    normalizedEntry.target_path = projectModuleTargetPath(moduleId, 'design');
+    normalizedEntry.target_path = projectModuleTargetPath(baseDir, moduleId, 'design');
   }
-  if (!normalizedEntry.module_id && (candidateType === 'requirements' || candidateType === 'requirement' || candidateType === 'design')) {
+  if (
+    !normalizedEntry.module_id &&
+    (candidateType === 'requirements' ||
+      candidateType === 'requirement' ||
+      candidateType === 'design')
+  ) {
     normalizedEntry.module_id = moduleId;
   }
 
@@ -392,7 +425,7 @@ function normalizeCoreJsonArtifact(
   filename: string,
   content: string,
   workItemId: string,
-  baseDir: string,
+  baseDir: string
 ): string {
   let parsed: any;
   try {
@@ -430,27 +463,36 @@ function normalizeCoreJsonArtifact(
         unknowns: Array.isArray(parsed.unknowns) ? parsed.unknowns : [],
       },
       null,
-      2,
+      2
     );
   }
 
   if (filename === 'candidate_manifest.json') {
-    const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+    const wiDir = workItemRoot(baseDir, workItemId);
     const canonicalParsed = { ...parsed };
 
     if (Array.isArray(parsed.candidates)) {
-      canonicalParsed.candidates = parsed.candidates.map(canonicalizeCandidateEntry);
+      canonicalParsed.candidates = parsed.candidates.map((entry: any) =>
+        canonicalizeCandidateEntry(entry, baseDir, workItemId)
+      );
     }
     if (Array.isArray(parsed.entries)) {
-      canonicalParsed.entries = parsed.entries.map(canonicalizeCandidateEntry);
+      canonicalParsed.entries = parsed.entries.map((entry: any) =>
+        canonicalizeCandidateEntry(entry, baseDir, workItemId)
+      );
     }
 
-    const preliminary = { ...canonicalParsed, workflow_path: canonicalParsed.workflow_path ?? workflowPath };
+    const preliminary = {
+      ...canonicalParsed,
+      workflow_path: canonicalParsed.workflow_path ?? workflowPath,
+    };
     const rawEntries =
       Array.isArray(canonicalParsed.entries) && canonicalParsed.entries.length > 0
         ? canonicalParsed.entries
         : inferManifestEntries(preliminary, wiDir);
-    const entries = Array.isArray(rawEntries) ? rawEntries.map(canonicalizeCandidateEntry) : rawEntries;
+    const entries = Array.isArray(rawEntries)
+      ? rawEntries.map((entry: any) => canonicalizeCandidateEntry(entry, baseDir, workItemId))
+      : rawEntries;
 
     const normalized = {
       ...canonicalParsed,
@@ -463,7 +505,8 @@ function normalizeCoreJsonArtifact(
     if (normalized.workflow_path === 'code_only_fast_path') {
       normalized.merge_applicable = false;
       normalized.merge_required = false;
-      normalized.reason = normalized.reason ?? 'code_only_fast_path: no spec-level candidate products';
+      normalized.reason =
+        normalized.reason ?? 'code_only_fast_path: no spec-level candidate products';
     }
 
     return JSON.stringify(normalized, null, 2);
@@ -556,13 +599,13 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     };
   }
 
-  const inferred = inferCanonicalFileType(args as Record<string, unknown>);
+  const inferred = inferCanonicalFileType(args);
   if (inferred) fileType = inferred;
 
   const inferredExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (inferredExecutorRejection) return inferredExecutorRejection;
 
-  const targetFilename = resolveTargetFilename(fileType, content);
+  const targetFilename = resolveTargetFilename(fileType, content, baseDir, workItemId);
 
   if (!targetFilename && String(args['file_type']) === 'work_log') {
     return writeArtifact(
@@ -574,7 +617,7 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
         template: args['template'] as any,
         agent_content: args['agent_content'] as string | undefined,
       },
-      baseDir,
+      baseDir
     );
   }
 
@@ -588,7 +631,7 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
         template: args['template'] as any,
         agent_content: args['agent_content'] as string | undefined,
       },
-      baseDir,
+      baseDir
     );
   }
 
@@ -616,7 +659,7 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     }
   }
 
-  const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+  const wiDir = workItemRoot(baseDir, workItemId);
   fs.mkdirSync(wiDir, { recursive: true });
 
   let targetPath: string;
@@ -631,7 +674,6 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
 
   try {
     fs.writeFileSync(targetPath, content, 'utf-8');
-    mirrorSpecCandidateArtifacts(baseDir, workItemId, targetFilename, content, targetPath);
     const size = Buffer.byteLength(content, 'utf-8');
     const relativePath = path.relative(baseDir, targetPath).replace(/\\/g, '/');
     return {

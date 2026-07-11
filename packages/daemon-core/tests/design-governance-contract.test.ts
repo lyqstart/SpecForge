@@ -22,17 +22,6 @@ function read(relativePath: string): string {
   return readFileSync(absolutePath, 'utf8').replace(/\r\n/g, '\n');
 }
 
-function normalizeGateDeploymentVariant(content: string): string {
-  return content
-    .replace(
-      /^import \{ SPEC_DIR_NAME \} from ["']@specforge\/types\/directory-layout["'];?\n/m,
-      ''
-    )
-    .replace(/^const SPEC_DIR_NAME = ["']\.specforge["'](?: as const)?;?\n/m, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
 const governanceHeadings = [
   'Problem Understanding',
   'Existing Architecture Analysis',
@@ -114,22 +103,43 @@ describe('Design Governance contract alignment', () => {
     expect(read(skillPaths.investigation)).toContain('不得在 investigation 中直接实施');
   });
 
-  it('extends both existing Design Gate copies instead of introducing another tool or mode', () => {
+  it('extends the existing Path Service and routes every runtime Gate through one authority', () => {
+    const directoryLayout = read('packages/types/src/directory-layout.ts');
     const runtimeGate = read('packages/daemon-core/src/tools/lib/sf_design_gate_core.ts');
-    const deployedGate = read('setup/userlevel-opencode/tools/lib/sf_design_gate_core.ts');
-
-    for (const gate of [runtimeGate, deployedGate]) {
-      expect(gate).toContain('checkSystemGovernanceContent');
-      expect(gate).toContain('checkSystemGovernanceContent(content, true)');
-      expect(gate).toContain('resolveSystemGovernanceRequirement');
-      expect(gate).toContain('trigger_result.json');
-      expect(gate).toContain('governanceRequirement.required');
-      expect(gate).not.toMatch(/DesignGateMode\s*=\s*['"]system_governance['"]/);
-    }
-
-    expect(normalizeGateDeploymentVariant(deployedGate)).toBe(
-      normalizeGateDeploymentVariant(runtimeGate)
+    const gateRunner = read('packages/daemon-core/src/tools/lib/gate-runner-v11.ts');
+    const governanceInvariants = read(
+      'packages/daemon-core/src/tools/lib/governance-invariants-v11.ts'
     );
+    const deployedGateWrapper = read('setup/userlevel-opencode/tools/sf_design_gate.ts');
+
+    expect(directoryLayout).toContain('单一真相源（Single Source of Truth）');
+    expect(directoryLayout).toContain('workItemCandidateDesign');
+    expect(directoryLayout).toContain('workItemCandidateRequirements');
+    expect(directoryLayout).toContain('workItemCandidateTasks');
+    expect(directoryLayout).toContain('workItemCandidateTraceDelta');
+    expect(directoryLayout).toContain('workItemSpecArtifactReadCandidates');
+
+    expect(governanceInvariants).toContain('resolveWorkItemSpecArtifacts');
+    expect(runtimeGate).toContain('resolveWorkItemSpecArtifacts');
+    expect(runtimeGate).toContain('workItemTriggerResult');
+    expect(runtimeGate).toContain('checkSystemGovernanceContent');
+    expect(runtimeGate).toContain('checkSystemGovernanceContent(content, true)');
+    expect(runtimeGate).toContain('resolveSystemGovernanceRequirement');
+    expect(runtimeGate).not.toMatch(/DesignGateMode\s*=\s*['"]system_governance['"]/);
+
+    expect(gateRunner).toContain("import { checkDesignGate } from './sf_design_gate_core.js'");
+    expect(gateRunner).toContain(
+      'return checkDesignGate(ctx.workItemId, ctx.projectRoot, workflowType)'
+    );
+    expect(gateRunner).not.toContain('Workflow-specific gate (skipped in MVP)');
+
+    expect(deployedGateWrapper).toContain('daemon.invokeTool("sf_design_gate", args');
+    expect(
+      existsSync(path.join(repoRoot, 'packages/daemon-core/src/tools/lib/sf_artifact_path_core.ts'))
+    ).toBe(false);
+    expect(
+      existsSync(path.join(repoRoot, 'setup/userlevel-opencode/tools/lib/sf_artifact_path_core.ts'))
+    ).toBe(false);
 
     const allChangedContracts = [
       read('docs/standards/fused_standard.md'),

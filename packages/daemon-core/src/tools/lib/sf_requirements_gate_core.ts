@@ -7,25 +7,41 @@
  * Requirements: 1.5, 8.3, 8.4, 20.1, 20.2, 20.4, 11.1, 11.5, 11.6, 2.6, 3.6, 5.6
  */
 
-import { readFile } from "node:fs/promises"
-import { join } from "node:path"
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
-import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
-import { tryCheckCompatibility, logErrorToFile } from "./utils"
-import { parseAllVerificationStrategies } from "./sf_verification_types"
-import { resolveRequirementsPath, checkEarsCompliance } from "./sf_ears_parser"
-import { FILE_SIZE_LIMIT } from "./sf_ears_types"
-import type { SyncSummary } from "./sf_knowledge_graph_core"
-import type { GateResult, GateModeSpec } from "./sf_gate_types"
+import { readFile } from 'node:fs/promises';
+import { basename, dirname, join } from 'node:path';
+import { legacyWorkItemSpecArtifact, workItemRoot } from '@specforge/types/directory-layout';
+import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
+import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
+import { tryCheckCompatibility, logErrorToFile } from './utils';
+import { parseAllVerificationStrategies } from './sf_verification_types';
+import { resolveRequirementsPath, checkEarsCompliance } from './sf_ears_parser';
+import { FILE_SIZE_LIMIT } from './sf_ears_types';
+import type { SyncSummary } from './sf_knowledge_graph_core';
+import type { GateResult, GateModeSpec } from './sf_gate_types';
 
 // 向后兼容 re-export：现有消费方可继续从此文件导入
-export type { GateResult, SyncSummary } from "./sf_gate_types"
-export type { GateModeSpec } from "./sf_gate_types"
+export type { GateResult, SyncSummary } from './sf_gate_types';
+export type { GateModeSpec } from './sf_gate_types';
 
 /**
  * Requirements Gate 支持的 mode 类型
  */
-export type RequirementsGateMode = "change_request" | "refactor" | "investigation"
+export type RequirementsGateMode = 'change_request' | 'refactor' | 'investigation';
+
+async function readFirstAvailable(
+  paths: string[]
+): Promise<{ content: string; path: string } | null> {
+  for (const candidatePath of paths) {
+    try {
+      return { content: await readFile(candidatePath, 'utf-8'), path: candidatePath };
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException;
+      if (error.code === 'ENOENT') continue;
+      throw error;
+    }
+  }
+  return null;
+}
 
 // ============================================================
 // Gate Mode Strategy Table
@@ -39,22 +55,22 @@ export function checkImpactAnalysisContent(
   _content: string,
   sections: Record<string, string>
 ): GateResult {
-  const validRiskLevels = ["高", "中", "低"]
-  const riskValue = sections["风险评估"]?.trim()
+  const validRiskLevels = ['高', '中', '低'];
+  const riskValue = sections['风险评估']?.trim();
   if (!validRiskLevels.includes(riskValue)) {
     return {
-      status: "fail",
+      status: 'fail',
       blocking_issues: [`风险评估值不合法（当前值: "${riskValue}"），合法值: 高/中/低`],
       warnings: [],
-      next_action: "revise",
-    }
+      next_action: 'revise',
+    };
   }
   return {
-    status: "pass",
+    status: 'pass',
     blocking_issues: [],
     warnings: [],
-    next_action: "continue",
-  }
+    next_action: 'continue',
+  };
 }
 
 /**
@@ -65,23 +81,23 @@ export function checkRefactorAnalysisContent(
   _content: string,
   sections: Record<string, string>
 ): GateResult {
-  const invariantDeclaration = sections["不变行为声明"]?.trim()
+  const invariantDeclaration = sections['不变行为声明']?.trim();
   // 不变行为声明必须明确：不能只是"无"、"N/A"、"待定"等模糊表述
-  const vaguePatterns = [/^无$/i, /^n\/?a$/i, /^待定$/i, /^tbd$/i, /^none$/i, /^未定$/i]
-  if (vaguePatterns.some((p) => p.test(invariantDeclaration))) {
+  const vaguePatterns = [/^无$/i, /^n\/?a$/i, /^待定$/i, /^tbd$/i, /^none$/i, /^未定$/i];
+  if (vaguePatterns.some(p => p.test(invariantDeclaration))) {
     return {
-      status: "fail",
-      blocking_issues: ["不变行为声明不明确（不能为\"无\"、\"N/A\"、\"待定\"等模糊表述）"],
+      status: 'fail',
+      blocking_issues: ['不变行为声明不明确（不能为"无"、"N/A"、"待定"等模糊表述）'],
       warnings: [],
-      next_action: "revise",
-    }
+      next_action: 'revise',
+    };
   }
   return {
-    status: "pass",
+    status: 'pass',
     blocking_issues: [],
     warnings: [],
-    next_action: "continue",
-  }
+    next_action: 'continue',
+  };
 }
 
 /**
@@ -94,11 +110,11 @@ export function checkInvestigationPlanContent(
 ): GateResult {
   // 轻量级检查：只要所有 section 非空即可（已在外层检查）
   return {
-    status: "pass",
+    status: 'pass',
     blocking_issues: [],
     warnings: [],
-    next_action: "continue",
-  }
+    next_action: 'continue',
+  };
 }
 
 /**
@@ -107,24 +123,24 @@ export function checkInvestigationPlanContent(
  */
 export const REQUIREMENTS_GATE_SPECS: GateModeSpec[] = [
   {
-    mode: "change_request",
-    targetFile: "impact_analysis.md",
-    requiredSections: ["变更范围", "风险评估", "回归测试范围", "KG 关联"],
+    mode: 'change_request',
+    targetFile: 'impact_analysis.md',
+    requiredSections: ['变更范围', '风险评估', '回归测试范围', 'KG 关联'],
     checkFn: checkImpactAnalysisContent,
   },
   {
-    mode: "refactor",
-    targetFile: "refactor_analysis.md",
-    requiredSections: ["代码问题识别", "重构目标", "不变行为声明", "风险评估"],
+    mode: 'refactor',
+    targetFile: 'refactor_analysis.md',
+    requiredSections: ['代码问题识别', '重构目标', '不变行为声明', '风险评估'],
     checkFn: checkRefactorAnalysisContent,
   },
   {
-    mode: "investigation",
-    targetFile: "investigation_plan.md",
-    requiredSections: ["调查目标", "调查范围", "调查方法", "预期产出格式"],
+    mode: 'investigation',
+    targetFile: 'investigation_plan.md',
+    requiredSections: ['调查目标', '调查范围', '调查方法', '预期产出格式'],
     checkFn: checkInvestigationPlanContent,
   },
-]
+];
 
 // ============================================================
 // Section Parsing
@@ -134,41 +150,35 @@ export const REQUIREMENTS_GATE_SPECS: GateModeSpec[] = [
  * 从 Markdown 内容中解析指定 sections
  * 匹配 ## 或 ### 标题，提取标题下的内容直到下一个同级或更高级标题
  */
-export function parseSections(
-  content: string,
-  requiredSections: string[]
-): Record<string, string> {
-  const sections: Record<string, string> = Object.create(null)
+export function parseSections(content: string, requiredSections: string[]): Record<string, string> {
+  const sections: Record<string, string> = Object.create(null);
   for (const sectionName of requiredSections) {
     // 转义正则特殊字符
-    const escapedName = escapeRegExp(sectionName)
-    const pattern = new RegExp(
-      `^#{2,3}\\s*${escapedName}\\s*$`,
-      "im"
-    )
-    const match = pattern.exec(content)
+    const escapedName = escapeRegExp(sectionName);
+    const pattern = new RegExp(`^#{2,3}\\s*${escapedName}\\s*$`, 'im');
+    const match = pattern.exec(content);
     if (match) {
-      const startIdx = match.index + match[0].length
+      const startIdx = match.index + match[0].length;
       // 找到下一个同级或更高级标题
-      const nextHeadingPattern = /^#{1,3}\s+/m
-      const remaining = content.slice(startIdx)
-      const nextMatch = nextHeadingPattern.exec(remaining)
+      const nextHeadingPattern = /^#{1,3}\s+/m;
+      const remaining = content.slice(startIdx);
+      const nextMatch = nextHeadingPattern.exec(remaining);
       const sectionContent = nextMatch
         ? remaining.slice(0, nextMatch.index).trim()
-        : remaining.trim()
-      sections[sectionName] = sectionContent
+        : remaining.trim();
+      sections[sectionName] = sectionContent;
     } else {
-      sections[sectionName] = ""
+      sections[sectionName] = '';
     }
   }
-  return sections
+  return sections;
 }
 
 /**
  * 转义正则表达式特殊字符
  */
 function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // ============================================================
@@ -198,67 +208,68 @@ export async function checkRequirementsGate(
 ): Promise<GateResult> {
   try {
     // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
-    await tryCheckCompatibility(baseDir, "sf_requirements_gate_core")
+    await tryCheckCompatibility(baseDir, 'sf_requirements_gate_core');
 
-    const mode = options?.mode
+    const mode = options?.mode;
 
     // 无 mode：现有行为（向后兼容）
     if (mode === undefined) {
-      return await existingRequirementsGateCheck(workItemId, baseDir)
+      return await existingRequirementsGateCheck(workItemId, baseDir);
     }
 
     // 查找策略表
-    const spec = REQUIREMENTS_GATE_SPECS.find((s) => s.mode === mode)
+    const spec = REQUIREMENTS_GATE_SPECS.find(s => s.mode === mode);
     if (spec === undefined) {
       return {
-        status: "fail",
+        status: 'fail',
         blocking_issues: [],
         warnings: [`Unsupported mode: "${mode}"`],
-        next_action: "ask_user",
-      }
+        next_action: 'ask_user',
+      };
     }
 
-    // 读取目标文件
-    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
-    const filePath = join(specDir, spec.targetFile)
-    let content: string
+    // mode 产物仍使用既有 Work Item 路径；旧 specs 路径仅作只读兼容回退。
+    let resolvedDocument: { content: string; path: string } | null;
     try {
-      content = await readFile(filePath, "utf-8")
+      resolvedDocument = await readFirstAvailable([
+        join(workItemRoot(baseDir, workItemId), spec.targetFile),
+        legacyWorkItemSpecArtifact(baseDir, workItemId, spec.targetFile),
+      ]);
     } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException
-      if (error.code === "ENOENT") {
-        return {
-          status: "fail",
-          blocking_issues: [`File not found: ${spec.targetFile}`],
-          warnings: [],
-          next_action: "revise",
-        }
-      }
       return {
-        status: "blocked",
-        blocking_issues: [`Failed to read ${spec.targetFile}: ${error.message}`],
+        status: 'blocked',
+        blocking_issues: [`Failed to read ${spec.targetFile}: ${(err as Error).message}`],
         warnings: [],
-        next_action: "ask_user",
-      }
+        next_action: 'ask_user',
+      };
     }
+    if (!resolvedDocument) {
+      return {
+        status: 'fail',
+        blocking_issues: [`File not found: ${spec.targetFile}`],
+        warnings: [],
+        next_action: 'revise',
+      };
+    }
+    const content = resolvedDocument.content;
 
     // 解析 sections 并检查完整性
-    const sections = parseSections(content, spec.requiredSections)
-    const missing = spec.requiredSections.filter((s) => !sections[s]?.trim())
+    const sections = parseSections(content, spec.requiredSections);
+    const missing = spec.requiredSections.filter(s => !sections[s]?.trim());
     if (missing.length > 0) {
       return {
-        status: "fail",
-        blocking_issues: missing.map((s) => `Missing section: ${s}`),
+        status: 'fail',
+        blocking_issues: missing.map(s => `Missing section: ${s}`),
         warnings: [],
-        next_action: "revise",
-      }
+        next_action: 'revise',
+      };
     }
 
     // 调用 mode 特定的检查函数
-    return spec.checkFn(content, sections)
+    return spec.checkFn(content, sections);
   } catch (err) {
-    await logErrorToFile(baseDir, "sf_requirements_gate_core", "checkRequirementsGate", err)
-    throw err
+    await logErrorToFile(baseDir, 'sf_requirements_gate_core', 'checkRequirementsGate', err);
+    throw err;
   }
 }
 
@@ -270,112 +281,97 @@ async function existingRequirementsGateCheck(
   workItemId: string,
   baseDir: string
 ): Promise<GateResult> {
-  const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
-  const docPath = join(specDir, "requirements.md")
-
-  // 1. 读取 requirements.md
-  let content: string
+  let artifacts: Array<{ content: string; path: string }>;
   try {
-    content = await readFile(docPath, "utf-8")
+    artifacts = await resolveWorkItemSpecArtifacts({
+      projectRoot: baseDir,
+      workItemId,
+      kind: 'requirements',
+    });
   } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException
-    if (error.code === "ENOENT") {
-      return {
-        status: "fail",
-        blocking_issues: ["requirements.md not found"],
-        warnings: [],
-        next_action: "revise",
-      }
-    }
     return {
-      status: "blocked",
-      blocking_issues: [`Failed to read requirements.md: ${error.message}`],
+      status: 'blocked',
+      blocking_issues: [`Failed to read requirements candidate: ${(err as Error).message}`],
       warnings: [],
-      next_action: "ask_user",
+      next_action: 'ask_user',
+    };
+  }
+
+  if (artifacts.length === 0) {
+    return {
+      status: 'fail',
+      blocking_issues: ['requirements candidate not found'],
+      warnings: [],
+      next_action: 'revise',
+    };
+  }
+
+  const blockingIssues: string[] = [];
+  const warnings: string[] = [];
+
+  for (const artifact of artifacts) {
+    const content = artifact.content;
+    const label = artifact.path.replace(/\\/g, '/');
+
+    if (!hasUserStories(content)) {
+      blockingIssues.push(`${label}: 缺少用户故事（"用户故事" / "User Story" / "作为"）`);
     }
-  }
-
-  const blockingIssues: string[] = []
-  const warnings: string[] = []
-
-  // 2. 检查用户故事
-  if (!hasUserStories(content)) {
-    blockingIssues.push(
-      '缺少用户故事（"用户故事" / "User Story" / "作为"）'
-    )
-  }
-
-  // 3. 检查验收标准
-  if (!hasAcceptanceCriteria(content)) {
-    blockingIssues.push(
-      '缺少验收标准（"验收标准" / "Acceptance Criteria"）'
-    )
-  }
-
-  // 4. 检查术语表
-  if (!hasGlossary(content)) {
-    blockingIssues.push('缺少术语表（"术语表" / "Glossary"）')
-  }
-
-  // 5. V3.7: 检查 verification_strategy 字段合法性
-  const strategyResults = parseAllVerificationStrategies(content)
-  for (const [reqId, result] of strategyResults) {
-    for (const error of result.errors) {
-      blockingIssues.push(`${reqId}: ${error}`)
+    if (!hasAcceptanceCriteria(content)) {
+      blockingIssues.push(`${label}: 缺少验收标准（"验收标准" / "Acceptance Criteria"）`);
     }
-    for (const warning of result.warnings) {
-      warnings.push(`${reqId}: ${warning}`)
+    if (!hasGlossary(content)) {
+      blockingIssues.push(`${label}: 缺少术语表（"术语表" / "Glossary"）`);
     }
-  }
 
-  // 6. V3.7+: EARS Format Validation
-  // Step 6a: Resolve requirements path safely
-  const pathResult = resolveRequirementsPath("requirements.md", specDir)
-  if (!pathResult.ok) {
-    blockingIssues.push(pathResult.error)
-  } else {
-    // Step 6b: Check file size
-    if (content.length > FILE_SIZE_LIMIT) {
-      blockingIssues.push(`Requirements file exceeds size limit (${FILE_SIZE_LIMIT} bytes)`)
+    const strategyResults = parseAllVerificationStrategies(content);
+    for (const [reqId, result] of strategyResults) {
+      for (const error of result.errors) blockingIssues.push(`${label}: ${reqId}: ${error}`);
+      for (const warning of result.warnings) warnings.push(`${label}: ${reqId}: ${warning}`);
+    }
+
+    const pathResult = resolveRequirementsPath(basename(artifact.path), dirname(artifact.path));
+    if (!pathResult.ok) {
+      blockingIssues.push(`${label}: ${pathResult.error}`);
+    } else if (content.length > FILE_SIZE_LIMIT) {
+      blockingIssues.push(
+        `${label}: Requirements file exceeds size limit (${FILE_SIZE_LIMIT} bytes)`
+      );
     } else {
-      // Step 6c: Execute EARS compliance check
-      const earsResult = checkEarsCompliance(content)
-      blockingIssues.push(...earsResult.blocking_issues)
-      warnings.push(...earsResult.warnings)
+      const earsResult = checkEarsCompliance(content);
+      blockingIssues.push(...earsResult.blocking_issues.map(issue => `${label}: ${issue}`));
+      warnings.push(...earsResult.warnings.map(warning => `${label}: ${warning}`));
     }
   }
 
   if (blockingIssues.length > 0) {
     return {
-      status: "fail",
+      status: 'fail',
       blocking_issues: blockingIssues,
       warnings,
-      next_action: "revise",
-    }
+      next_action: 'revise',
+      details: { requirements_candidate_paths: artifacts.map(artifact => artifact.path) },
+    };
   }
 
-  // ★ V4.0: KG sync on pass
-  let kgSync: SyncSummary | null = null
+  let kgSync: SyncSummary | null = null;
   try {
     if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, "requirements")
-      if (kgResult.success && kgResult.summary) {
-        kgSync = kgResult.summary
-      } else if (kgResult.error) {
-        warnings.push(`KG sync warning: ${kgResult.error}`)
-      }
+      const kgResult = await syncFromSpec(workItemId, baseDir, 'requirements');
+      if (kgResult.success && kgResult.summary) kgSync = kgResult.summary;
+      else if (kgResult.error) warnings.push(`KG sync warning: ${kgResult.error}`);
     }
   } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`)
+    warnings.push(`KG sync failed: ${(err as Error).message}`);
   }
 
   return {
-    status: "pass",
+    status: 'pass',
     blocking_issues: [],
     warnings,
-    next_action: "continue",
+    next_action: 'continue',
     kg_sync: kgSync,
-  }
+    details: { requirements_candidate_paths: artifacts.map(artifact => artifact.path) },
+  };
 }
 
 // ============================================================
@@ -387,8 +383,8 @@ async function existingRequirementsGateCheck(
  * 匹配: "用户故事", "User Story", "作为"（作为...我希望...以便...）
  */
 export function hasUserStories(content: string): boolean {
-  const patterns = [/用户故事/i, /user\s+stor/i, /作为/i]
-  return patterns.some((pattern) => pattern.test(content))
+  const patterns = [/用户故事/i, /user\s+stor/i, /作为/i];
+  return patterns.some(pattern => pattern.test(content));
 }
 
 /**
@@ -396,8 +392,8 @@ export function hasUserStories(content: string): boolean {
  * 匹配: "验收标准", "Acceptance Criteria"
  */
 export function hasAcceptanceCriteria(content: string): boolean {
-  const patterns = [/验收标准/i, /acceptance\s+criteria/i]
-  return patterns.some((pattern) => pattern.test(content))
+  const patterns = [/验收标准/i, /acceptance\s+criteria/i];
+  return patterns.some(pattern => pattern.test(content));
 }
 
 /**
@@ -405,10 +401,9 @@ export function hasAcceptanceCriteria(content: string): boolean {
  * 匹配: "术语表", "Glossary"
  */
 export function hasGlossary(content: string): boolean {
-  const patterns = [/术语表/i, /glossary/i]
-  return patterns.some((pattern) => pattern.test(content))
+  const patterns = [/术语表/i, /glossary/i];
+  return patterns.some(pattern => pattern.test(content));
 }
-
 
 // ============================================================
 // Bugfix Gate Logic
@@ -428,104 +423,92 @@ export function hasGlossary(content: string): boolean {
  * @param baseDir - 项目根目录路径
  * @returns Gate 检查结果
  */
-export async function checkBugfixGate(
-  workItemId: string,
-  baseDir: string
-): Promise<GateResult> {
+export async function checkBugfixGate(workItemId: string, baseDir: string): Promise<GateResult> {
   try {
     // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
-    await tryCheckCompatibility(baseDir, "sf_requirements_gate_core")
+    await tryCheckCompatibility(baseDir, 'sf_requirements_gate_core');
 
-    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
-    const docPath = join(specDir, "bugfix.md")
+    const docPath = legacyWorkItemSpecArtifact(baseDir, workItemId, 'bugfix.md');
 
     // 1. 读取 bugfix.md
-    let content: string
+    let content: string;
     try {
-      content = await readFile(docPath, "utf-8")
+      content = await readFile(docPath, 'utf-8');
     } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException
-      if (error.code === "ENOENT") {
+      const error = err as NodeJS.ErrnoException;
+      if (error.code === 'ENOENT') {
         return {
-          status: "fail",
-          blocking_issues: ["bugfix.md not found"],
+          status: 'fail',
+          blocking_issues: ['bugfix.md not found'],
           warnings: [],
-          next_action: "revise",
-        }
+          next_action: 'revise',
+        };
       }
       return {
-        status: "blocked",
+        status: 'blocked',
         blocking_issues: [`Failed to read bugfix.md: ${error.message}`],
         warnings: [],
-        next_action: "ask_user",
-      }
+        next_action: 'ask_user',
+      };
     }
 
-    const blockingIssues: string[] = []
-    const warnings: string[] = []
+    const blockingIssues: string[] = [];
+    const warnings: string[] = [];
 
     // 2. 检查当前行为
     if (!hasCurrentBehavior(content)) {
-      blockingIssues.push(
-        '缺少当前行为（"当前行为" / "Current Behavior"）'
-      )
+      blockingIssues.push('缺少当前行为（"当前行为" / "Current Behavior"）');
     }
 
     // 3. 检查预期行为
     if (!hasExpectedBehavior(content)) {
-      blockingIssues.push(
-        '缺少预期行为（"预期行为" / "Expected Behavior"）'
-      )
+      blockingIssues.push('缺少预期行为（"预期行为" / "Expected Behavior"）');
     }
 
     // 4. 检查不变行为
     if (!hasUnchangedBehavior(content)) {
-      blockingIssues.push(
-        '缺少不变行为（"不变行为" / "Unchanged Behavior"）'
-      )
+      blockingIssues.push('缺少不变行为（"不变行为" / "Unchanged Behavior"）');
     }
 
     // 5. 检查根因分析
     if (!hasRootCauseAnalysis(content)) {
-      blockingIssues.push(
-        '缺少根因分析（"根因分析" / "Root Cause Analysis"）'
-      )
+      blockingIssues.push('缺少根因分析（"根因分析" / "Root Cause Analysis"）');
     }
 
     if (blockingIssues.length > 0) {
       return {
-        status: "fail",
+        status: 'fail',
         blocking_issues: blockingIssues,
         warnings,
-        next_action: "revise",
-      }
+        next_action: 'revise',
+      };
     }
 
     // ★ V4.0: KG sync on pass
-    let kgSync: SyncSummary | null = null
+    let kgSync: SyncSummary | null = null;
     try {
       if (await isKGEnabled(baseDir)) {
-        const kgResult = await syncFromSpec(workItemId, baseDir, "requirements")
+        const kgResult = await syncFromSpec(workItemId, baseDir, 'requirements');
         if (kgResult.success && kgResult.summary) {
-          kgSync = kgResult.summary
+          kgSync = kgResult.summary;
         } else if (kgResult.error) {
-          warnings.push(`KG sync warning: ${kgResult.error}`)
+          warnings.push(`KG sync warning: ${kgResult.error}`);
         }
       }
     } catch (err) {
-      warnings.push(`KG sync failed: ${(err as Error).message}`)
+      warnings.push(`KG sync failed: ${(err as Error).message}`);
     }
 
     return {
-      status: "pass",
+      status: 'pass',
       blocking_issues: [],
       warnings,
-      next_action: "continue",
+      next_action: 'continue',
       kg_sync: kgSync,
-    }
+    };
   } catch (err) {
-    await logErrorToFile(baseDir, "sf_requirements_gate_core", "checkBugfixGate", err)
-    throw err
+    await logErrorToFile(baseDir, 'sf_requirements_gate_core', 'checkBugfixGate', err);
+    throw err;
   }
 }
 
@@ -538,8 +521,8 @@ export async function checkBugfixGate(
  * 匹配: "当前行为", "Current Behavior"
  */
 export function hasCurrentBehavior(content: string): boolean {
-  const patterns = [/当前行为/i, /current\s+behavior/i]
-  return patterns.some((pattern) => pattern.test(content))
+  const patterns = [/当前行为/i, /current\s+behavior/i];
+  return patterns.some(pattern => pattern.test(content));
 }
 
 /**
@@ -547,8 +530,8 @@ export function hasCurrentBehavior(content: string): boolean {
  * 匹配: "预期行为", "Expected Behavior"
  */
 export function hasExpectedBehavior(content: string): boolean {
-  const patterns = [/预期行为/i, /expected\s+behavior/i]
-  return patterns.some((pattern) => pattern.test(content))
+  const patterns = [/预期行为/i, /expected\s+behavior/i];
+  return patterns.some(pattern => pattern.test(content));
 }
 
 /**
@@ -556,8 +539,8 @@ export function hasExpectedBehavior(content: string): boolean {
  * 匹配: "不变行为", "Unchanged Behavior"
  */
 export function hasUnchangedBehavior(content: string): boolean {
-  const patterns = [/不变行为/i, /unchanged\s+behavior/i]
-  return patterns.some((pattern) => pattern.test(content))
+  const patterns = [/不变行为/i, /unchanged\s+behavior/i];
+  return patterns.some(pattern => pattern.test(content));
 }
 
 /**
@@ -565,6 +548,6 @@ export function hasUnchangedBehavior(content: string): boolean {
  * 匹配: "根因分析", "Root Cause Analysis"
  */
 export function hasRootCauseAnalysis(content: string): boolean {
-  const patterns = [/根因分析/i, /root\s+cause\s+analysis/i]
-  return patterns.some((pattern) => pattern.test(content))
+  const patterns = [/根因分析/i, /root\s+cause\s+analysis/i];
+  return patterns.some(pattern => pattern.test(content));
 }

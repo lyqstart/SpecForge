@@ -114,6 +114,34 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 ```
 <!-- AUTO-GENERATED:END:phase-table -->
 
+## Design-Only 中间停止契约（高优先级）
+
+当用户明确要求“只完成 Design Governance / Design Gate，并停在 `approval_required`，不进入 requirements 或 implementation”时，使用现有 Design-First 工作流的 `candidate_phase=design` Profile：
+
+```text
+intake / impact / trigger_result
+→ sf-design 写入唯一权威 design Candidate
+→ candidate_manifest.json(candidate_phase=design)
+→ candidate_prepared
+→ gates_running
+→ sf_gate_run(gate_type="candidate", workflow_type="feature_spec_design_first")
+→ Gate Runner 自动推进 approval_required 或 gates_failed
+→ approval_required 后执行 no_code_change 阶段审计
+→ 停止
+```
+
+权威 design 路径：
+
+```text
+.specforge/work-items/<WI>/candidates/project/modules/<MODULE>/design.candidate.md
+```
+
+不得同时写 Work Item 顶层 `design.md`；该路径和旧 `.specforge/specs/<WI>/design.md` 仅供 legacy 只读兼容。Design-Only 不要求 requirements、tasks、trace_delta，也不得创建 `NOT PRODUCED` 占位文件。
+
+`trigger_result.json.classification` 必须是包含九个布尔字段和 `unknowns` 数组的完整对象，不能使用 `"architecture_change"` 等字符串。
+
+如果任何 Gate 失败，必须按报告修复同一权威 Candidate 后重新运行同一 Gate Profile；不得改用独立 `sf_design_gate` 或其他入口绕过。`gates_running → approval_required/gates_failed` 由 Gate Runner 推进，Orchestrator 不得手动补状态。
+
 ## 与标准 Feature Spec 的差异对照表
 
 | 差异点 | 标准 Feature Spec | Design-First |
@@ -162,7 +190,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 ### 阶段 2：design（先于 requirements）
 
-**目标：** 基于 intake 信息直接生成 design.md
+**目标：** 基于 intake 信息生成唯一权威 design Candidate
 
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
@@ -173,17 +201,17 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
    - intake.md 的内容（注意：此时没有 requirements.md）
    - 当前代码、目录、项目级规格、配置和运行证据的只读上下文；证据不足时不得猜测
    - `analysis_scope: system_governance`
-   - 指令：按 `sf-design` 契约还原实际架构、定位治理体系、评估现有能力并生成 design.md；文档必须包含 `capability_verdict` 和七个固定 Design Governance 章节
+   - 指令：按 `sf-design` 契约还原实际架构、定位治理体系、评估现有能力并生成 `candidates/project/modules/<MODULE>/design.candidate.md`；文档必须包含 `capability_verdict` 和七个固定 Design Governance 章节
    - 指令：优先 `reuse_existing` 或 `extend_existing`；只有逐层证明现有体系无法承载时才能使用 `new_capability_required`
 5. 等待子 Agent 完成
 6. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）
 7. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="design.md generated, doc_lint passed"）
 
-**产物：** `design.md`
+**产物：** `candidates/project/modules/<MODULE>/design.candidate.md`（唯一权威写入）
 
 ### 阶段 3：design_gate
 
-**目标：** 验证 design.md 满足最低质量标准
+**目标：** 验证权威 design Candidate 满足最低质量标准
 
 **执行步骤：**
 1. 调用 `sf_gate_run`（work_item_id, gate_type="design", workflow_type="feature_spec_design_first"）
