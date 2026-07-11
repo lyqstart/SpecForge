@@ -1,3 +1,13 @@
-# SpecForge generated workflow Skill docs must remain LF-idempotent across Windows clean worktrees.
+# Source code executed or linted by Bun, TypeScript, ESLint, or Prettier must
+# remain LF-idempotent across Windows, Linux, and macOS clean worktrees.
+*.ts text eol=lf
+*.tsx text eol=lf
+*.mts text eol=lf
+*.cts text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+
+# SpecForge generated workflow Skill docs are rendered and compared byte-for-byte.
 setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
-# SpecForge generated workflow skill docs must be LF-idempotent across Windows clean checkouts.

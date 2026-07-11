@@ -8,24 +8,58 @@ on:
     branches: [main]
 
 jobs:
+  # ─── Windows 源码行尾治理 ────────────────────────────────────────────────────
+  windows-line-ending-governance:
+    name: Windows 源码 LF 检出治理
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 验证源码在索引和 Windows 工作树中均为 LF
+        shell: pwsh
+        run: |
+          $patterns = @(
+            '*.ts',
+            '*.tsx',
+            '*.mts',
+            '*.cts',
+            '*.js',
+            '*.jsx',
+            '*.mjs',
+            '*.cjs'
+          )
+
+          $eolState = git ls-files --eol -- $patterns
+          $violations = @(
+            $eolState | Where-Object {
+              $_ -notmatch '^i/lf\s+w/lf\s+attr/text eol=lf\s+'
+            }
+          )
+
+          if ($violations.Count -gt 0) {
+            Write-Error '以下源码文件未同时满足 index=LF、Windows worktree=LF、attribute=eol=lf：'
+            $violations | ForEach-Object { Write-Error $_ }
+            exit 1
+          }
+
+          Write-Host "Validated $($eolState.Count) source files: index=LF, worktree=LF, attribute=eol=lf."
+
   # ─── 异步资源规范审查 ────────────────────────────────────────────────────────
   async-resource-audit:
     name: 异步资源规范审查
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-
       - name: 安装 Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
       - name: 安装依赖
         run: bun install --frozen-lockfile
-
       - name: 运行异步资源规范审查
         run: bun run scripts/audit-async-resources.ts
         # 脚本发现 error 级别问题时返回 exit code 1，GitHub Actions 自动标记失败
@@ -35,19 +69,15 @@ jobs:
     name: 工作流文档同步检查
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-
       - name: 安装 Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
       - name: 安装依赖
         run: bun install --frozen-lockfile
-
       - name: Verify workflow docs in sync with JSON
         run: bun run check-workflows
 
@@ -56,19 +86,15 @@ jobs:
     name: 单元测试
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-
       - name: 安装 Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
       - name: 安装依赖
         run: bun install --frozen-lockfile
-
       - name: 运行测试（各模块）
         run: |
           for pkg in packages/*/; do
@@ -85,19 +111,15 @@ jobs:
     name: 硬编码路径 Lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-
       - name: 安装 Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
       - name: 安装依赖
         run: bun install --frozen-lockfile
-
       - name: 运行硬编码路径 Lint
         run: bun run scripts/lint/check-hardcoded-paths.ts
 
@@ -106,21 +128,16 @@ jobs:
     name: 目录布局一致性检查
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-
       - name: 安装 Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-
       - name: 安装依赖
         run: bun install --frozen-lockfile
-
       - name: 生成目录布局
         run: bun run scripts/render-layout.ts
-
       - name: 检查生成物与提交一致
         run: git diff --exit-code -- README.md AGENTS.md docs/conventions/directory-layout.md
