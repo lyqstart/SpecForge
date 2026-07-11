@@ -168,10 +168,13 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
 2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting design phase"）
 3. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
-4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+4. **使用 `task` 工具调度子 Agent `sf-design`**。本 Workflow 固定进入系统治理分析，prompt 必须包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容（注意：此时没有 requirements.md）
-   - 指令：基于 intake 信息直接生成 design.md
+   - 当前代码、目录、项目级规格、配置和运行证据的只读上下文；证据不足时不得猜测
+   - `analysis_scope: system_governance`
+   - 指令：按 `sf-design` 契约还原实际架构、定位治理体系、评估现有能力并生成 design.md；文档必须包含 `capability_verdict` 和七个固定 Design Governance 章节
+   - 指令：优先 `reuse_existing` 或 `extend_existing`；只有逐层证明现有体系无法承载时才能使用 `new_capability_required`
 5. 等待子 Agent 完成
 6. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）
 7. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="design.md generated, doc_lint passed"）
@@ -185,6 +188,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 **执行步骤：**
 1. 调用 `sf_gate_run`（work_item_id, gate_type="design", workflow_type="feature_spec_design_first"）
    - Design-First 工作流传递 workflow_type，以启用架构完整性检查（而非需求引用检查）
+   - Gate 同时强制检查 `analysis_scope: system_governance`、七个固定章节、`capability_verdict`，以及新增能力证明责任
 2. 根据 Gate 结果执行对应动作：
    - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate passed, entering requirements"）
    - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate failed, re-entering design"），重新调度 sf-design

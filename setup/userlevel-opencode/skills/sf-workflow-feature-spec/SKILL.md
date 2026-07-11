@@ -206,13 +206,18 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 #### Step 4.3：生成 Design
 
 1. **V4.0 新增：** 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。调用失败时继续执行。
-2. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+2. 读取 `trigger_result.json`、change classification、影响分析和 candidates/requirements.md，确定本次 Design Agent 分析范围：
+   - 涉及新模块、模块边界、数据模型或数据语义、权限、状态机或状态权威、核心流程、跨模块协议、公共接口或架构变化时，设置 `analysis_scope: system_governance`；
+   - 其余边界明确、现有架构可直接承载的功能，设置 `analysis_scope: solution_design`；
+   - 无法判断时不得默认为普通设计，必须 `mark_unknown`、`investigate` 或 `block`。
+3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
-   - candidates/requirements.md 的内容或路径
+   - candidates/requirements.md、trigger_result.json、change classification、影响分析及真实架构证据的内容或路径
    - 输出路径：`candidates/design.md`
-   - 指令：基于需求生成 design.md，必须引用需求编号
-3. 等待子 Agent 完成，确认 `candidates/design.md` 已生成
-4. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）检查文档结构
+   - 已确定的 `analysis_scope` 和触发依据
+   - 指令：基于需求生成 design.md，必须引用需求编号；当范围为 `system_governance` 时，严格按 `sf-design` 契约写入 `capability_verdict` 和七个固定章节
+4. 等待子 Agent 完成，确认 `candidates/design.md` 已生成
+5. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）检查文档结构
 
 #### Step 4.4：生成 Tasks
 
@@ -256,6 +261,7 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
 2. 调用 `sf_state_transition`（from_state="candidate_prepared"，to_state="gates_running"，evidence="starting gate execution"）
 3. 调用 `sf_gate_run`（work_item_id=<id>）
    - Gate Runner 统一读取 candidate_manifest.json，对 requirements、design、tasks 逐一执行质量检查
+   - design 声明 `analysis_scope: system_governance` 时，现有 Design Gate 额外校验七个固定章节、`capability_verdict` 和新增能力证明
    - 返回统一的 Gate 结果（pass / fail + blocking_issues）
 4. 根据 Gate 结果路由：
    - **全部通过** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="approval_required"，evidence="all gates passed"）

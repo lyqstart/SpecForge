@@ -195,6 +195,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容
+   - `analysis_scope: solution_design`；调查计划阶段只定义如何取得事实，不提前把未证实问题判定为架构缺陷或治理缺陷
    - 指令：制定调查计划，必须包含：调查目标（明确的核心问题）、调查范围（包含/不包含）、调查方法（数据来源和方法论）、预期产出格式
 5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/investigation_plan.md` 已生成
 6. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="investigation_plan.md generated"）
@@ -261,13 +262,18 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（findings_report phase）
-2. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+2. 基于 investigation_plan.md 和调查证据确定报告分析范围：
+   - 已由证据确认架构缺陷、治理缺陷、状态权威、权限、Runtime 或跨模块系统问题时，设置 `analysis_scope: system_governance`；
+   - 其余事实调查、方案比较或局部问题结论使用 `analysis_scope: solution_design`；
+   - 证据不足以确认治理缺陷时必须在“限制”中保留 unknown，不得升级为确定结论。
+3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - investigation_plan.md 的内容（调查目标、预期产出格式）
-   - 调查数据摘要（来自 research 阶段）
-   - 指令：基于调查数据生成结构化报告，必须包含：调查结论（直接回答核心问题）、数据和证据（每条结论有证据支撑）、建议（具体可操作）、限制（诚实说明边界）
-3. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/findings_report.md` 已生成
-4. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="findings_report.md generated"）
+   - 调查数据、证据来源和限制（来自 research 阶段）
+   - 已确定的 `analysis_scope` 和触发依据
+   - 指令：基于调查数据生成结构化报告，必须包含：调查结论（直接回答核心问题）、数据和证据（每条结论有证据支撑）、建议（具体可操作）、限制（诚实说明边界）；当范围为 `system_governance` 时，同时按 `sf-design` 契约写入 `capability_verdict` 和七个固定章节，并建议进入现有 change-request、refactor 或 bugfix-spec，不得在 investigation 中直接实施
+4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/findings_report.md` 已生成
+5. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="findings_report.md generated"）
 
 **产物：** `findings_report.md`
 
@@ -279,7 +285,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 1. 调用 `sf_gate_run`（work_item_id, gate_type="design", mode="investigation"）
    - Gate 检查文件：`findings_report.md`
    - 必需 sections：调查结论、数据和证据、建议、限制
-   - pass 条件：结论有证据支撑，建议可操作
+   - pass 条件：结论有证据支撑，建议可操作；声明 `system_governance` 时额外通过 Design Governance 校验
 2. 根据 Gate 结果：
    - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="findings_report_gate failed, re-entering findings_report"），重新调度 sf-design 修订
    - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）

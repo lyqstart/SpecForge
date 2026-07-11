@@ -1478,6 +1478,112 @@ Boundary Statement
 
 Agent 发现不确定、冲突、缺少规格、可能升级路径、可能越界、权限不足时，必须输出 escalation signal，不得自行降级处理。
 
+### 14.5 Design Governance（设计治理）
+
+Design Governance 不是新增工作流、Router、Skill、Agent 或 Tool，而是现有设计责任在 Standard、Contract、Workflow Skill、Agent 与 Gate 之间的闭环规则。
+
+其权威治理链为：`Standard → Contract → Workflow Skill → Agent → Tool → Runtime → Audit`。
+
+#### 14.5.1 适用范围
+
+普通、边界明确的方案设计使用：
+
+```text
+analysis_scope: solution_design
+```
+
+出现以下任一情况时，现有 Workflow Skill 必须调用 `sf-design` 并指定：
+
+```text
+analysis_scope: system_governance
+```
+
+触发条件至少包括：
+
+1. 新模块、模块边界或职责迁移；
+2. 数据模型、数据语义或数据所有权变化；
+3. 权限、状态机、状态权威或核心流程变化；
+4. 跨模块协议、公共接口、Runtime 行为或治理规则变化；
+5. 根因未知、跨模块缺陷或已确认的架构缺陷、治理缺陷；
+6. 现有体系能否承载新问题尚不明确。
+
+`design-first` 固定使用 `system_governance`。`quick-change` 不承载设计变化；一旦触发上述条件，必须升级到能够承载设计分析的既有 Workflow。
+
+#### 14.5.2 固定分析顺序
+
+`system_governance` 必须按以下顺序执行，不得直接跳到新增 Tool、Skill、模块或代码修改：
+
+```text
+理解实际架构
+        ↓
+定位治理体系
+        ↓
+检查治理闭环
+        ↓
+判断现有体系能力
+        ↓
+最小化架构调整
+        ↓
+实现修改
+        ↓
+验证闭环
+```
+
+设计阶段只负责前五项并定义后两项的实施边界与验证计划，不得越权执行代码修改或状态推进。
+
+#### 14.5.3 最低输出契约
+
+进入 `system_governance` 的既有设计类产物，必须显式包含：
+
+```text
+analysis_scope: system_governance
+capability_verdict: reuse_existing | extend_existing | new_capability_required | blocked
+```
+
+并必须包含以下七个章节，章节名固定用于 Gate 校验：
+
+```text
+1. Problem Understanding
+2. Existing Architecture Analysis
+3. Governance Classification
+4. Existing Capability Assessment
+5. Solution Strategy
+6. Impact Analysis
+7. Verification Plan
+```
+
+`capability_verdict` 含义：
+
+- `reuse_existing`：现有治理链可以直接解决，不需要架构扩展；
+- `extend_existing`：优先对现有 Standard、Contract、Skill、Agent、Tool、Runtime 或 Audit 做最小扩展；
+- `new_capability_required`：现有体系确实无法承载，允许提出新增能力；
+- `blocked`：真实架构、治理证据或用户决策不足，禁止继续流转。
+
+选择 `new_capability_required` 时，还必须提供：
+
+```text
+new_capability_justification: <充分理由>
+```
+
+并在 `Existing Capability Assessment` 中逐层检查 `Standard`、`Contract`、`Skill`、`Agent`、`Tool`、`Runtime`，证明现有体系均无法承载。未完成该证明时，Gate 必须失败。
+
+#### 14.5.4 分层职责
+
+- Standard 定义适用范围、分析顺序和最低证据；
+- Agent Contract 定义 `sf-design` 如何执行两种分析范围；
+- Workflow Skill 只决定何时调用 `sf-design`、使用哪种 `analysis_scope`、输入哪些证据、写入哪个既有产物；
+- `sf-design` 负责架构复原、治理分类、能力裁决、最小方案、影响与验证设计；
+- Design Gate 校验声明、七个章节、能力裁决及新增能力证明；
+- Runtime 继续负责状态、权限、HardStop 与审计，不因本规则新增状态或旁路。
+
+不得仅为了系统分析新增设计分析 Skill、架构分析 Skill、Workflow Router、设计升级 Tool 或新的治理层。只有 `new_capability_required` 通过现有 Design Gate 后，才允许在后续经用户批准的变更中新增能力。
+
+#### 14.5.5 产物与阻断
+
+Design Governance 必须写入当前 Workflow 已有的设计类产物，例如 `design.md`、`design_delta.md`、`refactor_analysis.md`、`refactor_plan.md` 或 `findings_report.md`，不得仅为承载分析而发明新的产物类型。
+
+真实实现未知、根因未证实、治理归属冲突或证据不足时，Design Agent 必须输出 `capability_verdict: blocked` 和 escalation signal。Gate 必须返回 `blocked`，不得将不确定性降级为普通设计继续执行。
+
 ---
 
 ## 15. close_gate 与 WI 关闭

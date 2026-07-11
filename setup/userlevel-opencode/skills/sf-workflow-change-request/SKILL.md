@@ -221,12 +221,17 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（design_delta phase）
 2. 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文
-3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+3. 根据 impact_analysis.md 和 change classification 确定分析范围：
+   - 涉及系统边界、模块职责、公共接口、权限、状态机或状态权威、数据语义、核心流程、Runtime 行为或治理规则变化时，设置 `analysis_scope: system_governance`；
+   - 仅为边界明确的局部行为、文案或配置增量且现有架构可直接承载时，设置 `analysis_scope: solution_design`；
+   - 影响不明时必须调查或阻断，不得用普通设计掩盖未知影响。
+4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
-   - intake.md 和 impact_analysis.md 的内容
-   - 指令：基于影响分析生成增量设计方案，必须包含以下 sections：增量设计描述、受影响模块、兼容性影响、回归风险、KG 追溯关系
-4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/design_delta.md` 已生成
-5. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="design_delta.md generated"）
+   - intake.md、impact_analysis.md、change classification 和真实架构证据的内容
+   - 已确定的 `analysis_scope` 和触发依据
+   - 指令：基于影响分析生成增量设计方案，必须包含以下 sections：增量设计描述、受影响模块、兼容性影响、回归风险、KG 追溯关系；当范围为 `system_governance` 时，同时按 `sf-design` 契约写入 `capability_verdict` 和七个固定章节
+5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/design_delta.md` 已生成
+6. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="design_delta.md generated"）
 
 **产物：** `design_delta.md`
 
@@ -238,7 +243,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 1. 调用 `sf_gate_run`（work_item_id, gate_type="design", mode="change_request"）
    - Gate 检查文件：`design_delta.md`
    - 必需 sections：增量设计描述、受影响模块、兼容性影响、回归风险、KG 追溯关系
-   - pass 条件：所有 section 非空，增量设计与 impact_analysis 变更范围一致
+   - pass 条件：所有 section 非空，增量设计与 impact_analysis 变更范围一致；声明 `system_governance` 时额外通过 Design Governance 校验
 2. 根据 Gate 结果：
    - **pass** → KG 同步（scope=design）→ 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate passed, entering tasks"）
    - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate failed, re-entering design_delta"），重新调度 sf-design 修订

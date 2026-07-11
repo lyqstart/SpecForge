@@ -182,13 +182,18 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（fix_design phase）
 2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
-3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
+3. 读取 bugfix.md 的根因分析并确定分析范围：
+   - 根因仍为未知、推测或未被证据验证时，不得让 Design Agent 猜测修复方案；必须进入既有 investigation 路径或将 WI 阻断，补齐证据后再返回；
+   - 根因已确认且仅影响单模块、现有边界和普通实现时，设置 `analysis_scope: solution_design`；
+   - 根因涉及多模块、状态权威、权限、核心流程、Runtime、治理闭环或系统性设计缺陷时，设置 `analysis_scope: system_governance`。
+4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
-   - bugfix.md 的内容
-   - 指令：基于缺陷分析生成修复设计方案，必须引用 bugfix.md 中的根因分析
-4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/design.md` 已生成
-5. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）检查文档结构
-6. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="design.md generated, doc_lint passed"）
+   - bugfix.md、根因证据、相关真实代码和项目级设计的内容
+   - 已确定的 `analysis_scope` 和触发依据
+   - 指令：基于已证实的根因生成修复设计方案，必须引用 bugfix.md 中的根因分析；当范围为 `system_governance` 时，同时按 `sf-design` 契约写入 `capability_verdict` 和七个固定章节
+5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/design.md` 已生成
+6. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）检查文档结构
+7. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="design.md generated, doc_lint passed"）
 
 **产物：** `design.md`
 
@@ -199,6 +204,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 **执行步骤：**
 1. 调用 `sf_gate_run`（work_item_id, gate_type="design"）
    - 对于 bugfix_spec 工作流：不传递 workflow_type（使用默认值 "feature_spec"）
+   - design.md 声明 `analysis_scope: system_governance` 时，现有 Design Gate 额外校验七个固定章节、`capability_verdict` 和新增能力证明
 2. 根据 Gate 结果执行对应动作：
    - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate passed, entering tasks"）
    - fail → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="design_gate failed, re-entering fix_design"），重新调度 sf-design
