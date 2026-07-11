@@ -317,8 +317,8 @@ function isUsableExplicitManifestEntryForInferenceV12(entry: any): boolean {
   const normalized = normalizeManifestEntryForInferenceV12(entry);
   return Boolean(
     normalized.candidate_path &&
-      normalized.target_path &&
-      normalized.target_path.startsWith('.specforge/project/')
+    normalized.target_path &&
+    normalized.target_path.startsWith('.specforge/project/')
   );
 }
 
