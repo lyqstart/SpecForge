@@ -1,9 +1,30 @@
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   checkDesignGateDesignFirst,
   checkSystemGovernanceContent,
+  evaluateSystemGovernanceRequirement,
+  resolveSystemGovernanceRequirement,
   SYSTEM_GOVERNANCE_SECTIONS,
 } from '../src/tools/lib/sf_design_gate_core';
+
+function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    requirement_changed: false,
+    acceptance_criteria_changed: false,
+    business_rule_changed: false,
+    user_visible_behavior_changed: false,
+    data_semantics_changed: false,
+    design_changed: false,
+    module_boundary_changed: false,
+    api_contract_changed: false,
+    architecture_changed: false,
+    unknowns: [],
+    ...overrides,
+  };
+}
 
 function systemGovernanceDocument(
   verdict:
@@ -39,6 +60,75 @@ function systemGovernanceDocument(
 }
 
 describe('Design Governance gate', () => {
+  it('derives system governance from authoritative workflow path and classification', () => {
+    const result = evaluateSystemGovernanceRequirement({
+      workflow_path: 'architecture_change_path',
+      classification: completeClassification({ architecture_changed: true }),
+    });
+
+    expect(result.required).toBe(true);
+    expect(result.reasons).toContain('workflow_path=architecture_change_path');
+    expect(result.reasons).toContain('classification.architecture_changed=true');
+  });
+
+  it('keeps ordinary task changes in solution design when no governance trigger exists', () => {
+    const result = evaluateSystemGovernanceRequirement({
+      workflow_path: 'task_change_path',
+      classification: completeClassification(),
+    });
+
+    expect(result.required).toBe(false);
+    expect(result.reasons).toEqual([]);
+  });
+
+  it('reads trigger_result from the existing work-item path and forces governance', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'specforge-design-governance-'));
+    const workItemDir = path.join(root, '.specforge', 'work-items', 'WI-TEST');
+    await mkdir(workItemDir, { recursive: true });
+    await writeFile(
+      path.join(workItemDir, 'trigger_result.json'),
+      JSON.stringify({
+        workflow_path: 'requirement_change_path',
+        classification: completeClassification({ business_rule_changed: true }),
+      }),
+      'utf8'
+    );
+
+    const result = await resolveSystemGovernanceRequirement('WI-TEST', root);
+    expect(result.required).toBe(true);
+    expect(result.reasons).toContain('classification.business_rule_changed=true');
+    expect(result.source_path).toContain('trigger_result.json');
+  });
+
+  it('blocks invalid trigger_result instead of silently falling back to ordinary design', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'specforge-design-governance-'));
+    const workItemDir = path.join(root, '.specforge', 'work-items', 'WI-BAD');
+    await mkdir(workItemDir, { recursive: true });
+    await writeFile(path.join(workItemDir, 'trigger_result.json'), '{invalid', 'utf8');
+
+    const result = await resolveSystemGovernanceRequirement('WI-BAD', root);
+    expect(result.required).toBe(false);
+    expect(result.blocking_issue).toContain('不是合法 JSON');
+  });
+
+  it('blocks incomplete classification instead of trusting a partial trigger result', () => {
+    const result = evaluateSystemGovernanceRequirement({
+      workflow_path: 'design_change_path',
+      classification: { design_changed: true, unknowns: [] },
+    });
+
+    expect(result.required).toBe(false);
+    expect(result.blocking_issue).toContain('classification 不完整');
+  });
+
+  it('blocks when trigger_result is absent because analysis scope cannot be determined', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'specforge-design-governance-'));
+    const result = await resolveSystemGovernanceRequirement('WI-MISSING', root);
+
+    expect(result.required).toBe(false);
+    expect(result.blocking_issue).toContain('trigger_result.json not found');
+  });
+
   it('does not change ordinary solution_design behavior when governance is optional', () => {
     const result = checkSystemGovernanceContent(
       'analysis_scope: solution_design\n\n## 普通设计\n局部方案。'

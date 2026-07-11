@@ -121,8 +121,10 @@ describe('Design Governance contract alignment', () => {
     for (const gate of [runtimeGate, deployedGate]) {
       expect(gate).toContain('checkSystemGovernanceContent');
       expect(gate).toContain('checkSystemGovernanceContent(content, true)');
-      expect(gate).toContain('const governanceResult = checkSystemGovernanceContent(content)');
-      expect(gate).not.toContain('DesignGateMode = "system_governance"');
+      expect(gate).toContain('resolveSystemGovernanceRequirement');
+      expect(gate).toContain('trigger_result.json');
+      expect(gate).toContain('governanceRequirement.required');
+      expect(gate).not.toMatch(/DesignGateMode\s*=\s*['"]system_governance['"]/);
     }
 
     expect(normalizeGateDeploymentVariant(deployedGate)).toBe(
