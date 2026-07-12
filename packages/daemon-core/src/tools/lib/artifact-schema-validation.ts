@@ -5,7 +5,7 @@
  * Invalid artifacts are REJECTED — they MUST NOT fall to disk.
  *
  * Validates:
- * - work_item.json: legal JSON + work_item_id match + required fields
+ * - work_item.json: legal JSON + work_item_id match + metadata-only boundary
  * - trigger_result.json: legal JSON + workflow_path enum + work_item_id
  * - candidate_manifest.json: legal JSON + work_item_id + entries structure
  *   + code_only_fast_path → entries must be []
@@ -139,8 +139,10 @@ export function validateWorkItemJson(
       errors.push('MISSING_FIELD: schema_version is required');
     }
 
-    if (parsed.status === undefined) {
-      errors.push('MISSING_FIELD: status is required');
+    if (Object.prototype.hasOwnProperty.call(parsed, 'status')) {
+      errors.push(
+        'WORK_ITEM_STATUS_FORBIDDEN: work_item.json is metadata only; authoritative state belongs to StateManager/events.jsonl'
+      );
     }
 
     if (parsed.work_item_status_mutation_forbidden) {
@@ -197,6 +199,12 @@ export function validateTriggerResultJson(
       );
     }
 
+    if (Object.prototype.hasOwnProperty.call(parsed, 'unknowns')) {
+      errors.push(
+        'TOP_LEVEL_UNKNOWNS_FORBIDDEN: trigger_result.json must keep unknowns only at classification.unknowns'
+      );
+    }
+
     if (!isPlainObject(parsed.classification)) {
       errors.push('INVALID_CLASSIFICATION: classification must be a JSON object');
     } else {
@@ -212,6 +220,15 @@ export function validateTriggerResultJson(
   }
 
   return { valid: errors.length === 0, errors };
+}
+
+function isEvidenceOnlyCandidateManifest(parsed: Record<string, unknown>): boolean {
+  return (
+    parsed.no_project_spec_change === true ||
+    String(parsed.project_integration_effect ?? '')
+      .trim()
+      .toLowerCase() === 'evidence_only'
+  );
 }
 
 /**
@@ -257,12 +274,50 @@ export function validateCandidateManifestJson(
     if (!Array.isArray(parsed.entries)) {
       errors.push('MISSING_FIELD: entries must be an array');
     } else {
-      // Check code_only_fast_path constraint
       const effectiveWorkflowPath = workflowPath ?? parsed.workflow_path;
+      const evidenceOnly = isEvidenceOnlyCandidateManifest(parsed);
+
       if (effectiveWorkflowPath === 'code_only_fast_path' && parsed.entries.length > 0) {
         errors.push(
           'CODE_ONLY_ENTRIES_MUST_BE_EMPTY: code_only_fast_path requires candidate_manifest.entries = []'
         );
+      }
+
+      if (evidenceOnly) {
+        if (parsed.no_project_spec_change !== true) {
+          errors.push(
+            'EVIDENCE_ONLY_PROJECT_CHANGE_FLAG_REQUIRED: evidence_only requires no_project_spec_change = true'
+          );
+        }
+        if (
+          String(parsed.project_integration_effect ?? '')
+            .trim()
+            .toLowerCase() !== 'evidence_only'
+        ) {
+          errors.push(
+            'EVIDENCE_ONLY_INTEGRATION_EFFECT_REQUIRED: no_project_spec_change requires project_integration_effect = evidence_only'
+          );
+        }
+        if (parsed.entries.length > 0) {
+          errors.push(
+            'EVIDENCE_ONLY_ENTRIES_MUST_BE_EMPTY: evidence_only requires candidate_manifest.entries = []'
+          );
+        }
+        if (Object.prototype.hasOwnProperty.call(parsed, 'candidate_artifacts')) {
+          errors.push(
+            'EVIDENCE_ONLY_CANDIDATE_ARTIFACTS_FORBIDDEN: evidence_only keeps Work Item evidence outside candidate_manifest merge authority'
+          );
+        }
+        if (parsed.merge_required !== false) {
+          errors.push(
+            'EVIDENCE_ONLY_MERGE_REQUIRED_FALSE: evidence_only requires merge_required = false'
+          );
+        }
+        if (parsed.merge_applicable !== false) {
+          errors.push(
+            'EVIDENCE_ONLY_MERGE_APPLICABLE_FALSE: evidence_only requires merge_applicable = false'
+          );
+        }
       }
     }
   }

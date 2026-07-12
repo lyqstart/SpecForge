@@ -24,7 +24,10 @@ import {
   classifyBlockedWriteAttempts,
 } from '../lib/blocked-write-classification';
 import { getFactualChangedFiles, summarizeWriteGuardLog } from '../lib/write-guard-log';
-import { readHardStopResolutionLog } from '../lib/hard-stop-resolution-log';
+import {
+  readHardStopResolutionLog,
+  type HardStopResolutionLogEntry,
+} from '../lib/hard-stop-resolution-log';
 import { readWriteGuardAuthorizations } from '../lib/write-guard-authorization-log';
 import {
   SPEC_DIR_NAME,
@@ -225,6 +228,64 @@ function hardStopIsCodePermissionNotEnabled(record: any): boolean {
   return text.includes('CODE_PERMISSION_NOT_ENABLED');
 }
 
+type BlockedWriteEvidence = {
+  path?: string;
+  operation?: string;
+  tool?: string;
+  command?: string;
+  violations?: string[];
+  hard_stop_id?: string;
+};
+
+function resolutionHardStopId(entry: HardStopResolutionLogEntry): string {
+  return String(entry.hard_stop_id ?? entry.original_hard_stop?.hard_stop_id ?? '').trim();
+}
+
+function hardStopResolutionRepresentsBlockedWrite(entry: HardStopResolutionLogEntry): boolean {
+  const original = entry.original_hard_stop;
+  if (!original || original.blocked !== true) return false;
+
+  const sourceTool = readString(original.source_tool).toLowerCase();
+  const reason = readString(original.reason).toLowerCase();
+  return (
+    sourceTool === 'sf_safe_bash' ||
+    readString(original.path).length > 0 ||
+    reason.includes('write') ||
+    reason.includes('artifact')
+  );
+}
+
+function mergeBlockedWriteEvidence(
+  blockedWrites: BlockedWriteEvidence[],
+  resolutions: HardStopResolutionLogEntry[],
+  workItemId: string
+): BlockedWriteEvidence[] {
+  const merged = [...(blockedWrites ?? [])];
+  const seenHardStopIds = new Set(
+    merged.map(entry => readString(entry.hard_stop_id)).filter(hardStopId => hardStopId.length > 0)
+  );
+
+  for (const resolution of resolutions ?? []) {
+    if (!hardStopResolutionRepresentsBlockedWrite(resolution)) continue;
+
+    const hardStopId = resolutionHardStopId(resolution);
+    if (hardStopId && seenHardStopIds.has(hardStopId)) continue;
+
+    const original = resolution.original_hard_stop;
+    merged.push({
+      path: readString(original?.path) || `${SPEC_DIR_NAME}/work-items/${workItemId}/`,
+      operation: 'modify',
+      tool: readString(original?.source_tool) || 'unknown',
+      violations: [readString(original?.reason) || 'historical HardStop blocked write'],
+      hard_stop_id: hardStopId || undefined,
+    });
+
+    if (hardStopId) seenHardStopIds.add(hardStopId);
+  }
+
+  return merged;
+}
+
 function changedFilesFromFacts(input: {
   workItemDir: string;
   wiJson: any;
@@ -289,8 +350,12 @@ async function writeNoCodeAudit(input: {
     actualChangedFiles: input.actualChangedFiles,
   });
 
-  const blockedWrites = writeGuardSummary.blockedWrites ?? [];
   const hardStopResolutions = readHardStopResolutionLog(input.workItemDir);
+  const blockedWrites = mergeBlockedWriteEvidence(
+    writeGuardSummary.blockedWrites ?? [],
+    hardStopResolutions,
+    input.workItemId
+  );
   const writeGuardAuthorizations = readWriteGuardAuthorizations(input.projectRoot);
   const allowedWriteFiles: AllowedFile[] = [];
 
@@ -303,6 +368,9 @@ async function writeNoCodeAudit(input: {
   );
   const unresolvedBlockedWriteClassifications = blockedWriteClassifications.filter(
     c => c.status === 'unresolved_blocked_attempt'
+  );
+  const resolvedBlockedWriteClassifications = blockedWriteClassifications.filter(
+    c => c.status !== 'unresolved_blocked_attempt'
   );
   const unresolvedBlockedWriteViolations = unresolvedBlockedWriteClassifications.map(
     blockedWriteClassificationToViolation
@@ -331,6 +399,13 @@ async function writeNoCodeAudit(input: {
     !codePermissionEnabled &&
     projectChangedFiles.length === 0 &&
     unresolvedBlockedWriteViolations.length === 0;
+
+  const historicalBlockedLines = resolvedBlockedWriteClassifications.map(
+    c => `- [${c.operation}] ${c.path} → ${c.status} (${c.reason})`
+  );
+  const unresolvedBlockedLines = unresolvedBlockedWriteClassifications.map(
+    c => `- [${c.operation}] ${c.path} → ${c.status} (${c.reason})`
+  );
 
   const failureReasons: string[] = [];
   if (!workflowAllowed)
@@ -373,7 +448,7 @@ async function writeNoCodeAudit(input: {
     `- Violations: ${projectChangedFiles.length + unresolvedBlockedWriteViolations.length}`,
     `- Remote ops entries: ${remoteOpsFiles.length}`,
     `- Blocked write attempts: ${blockedWrites.length}`,
-    `- Historical/resolved blocked write attempts: ${blockedWriteClassifications.length - unresolvedBlockedWriteClassifications.length}`,
+    `- Historical/resolved blocked write attempts: ${resolvedBlockedWriteClassifications.length}`,
     `- Unresolved blocked write attempts: ${unresolvedBlockedWriteClassifications.length}`,
     '',
     '## Code permission facts',
@@ -405,15 +480,15 @@ async function writeNoCodeAudit(input: {
     '## Blocked Write Attempts',
     '',
     `- Total blocked write attempts: ${blockedWrites.length}`,
+    `- Historical/resolved: ${resolvedBlockedWriteClassifications.length}`,
     `- Unresolved: ${unresolvedBlockedWriteClassifications.length}`,
+    `- Hard stop resolutions: ${hardStopResolutions.length}`,
     '',
-    ...(unresolvedBlockedWriteViolations.length > 0
-      ? [
-          '### Unresolved Blocked Writes',
-          '',
-          ...unresolvedBlockedWriteViolations.map(v => `- ${v}`),
-          '',
-        ]
+    ...(historicalBlockedLines.length > 0
+      ? ['### Historical / Resolved Blocked Writes', '', ...historicalBlockedLines, '']
+      : ['### Historical / Resolved Blocked Writes', '', 'None.', '']),
+    ...(unresolvedBlockedLines.length > 0
+      ? ['### Unresolved Blocked Writes', '', ...unresolvedBlockedLines, '']
       : ['### Unresolved Blocked Writes', '', 'None.', '']),
     ...(failureReasons.length > 0
       ? ['## Blocking Reasons', '', ...failureReasons.map(r => `- ${r}`), '']
@@ -452,6 +527,7 @@ async function writeNoCodeAudit(input: {
     violations: failureReasons,
     remote_ops_entries: remoteOpsFiles.length,
     blocked_write_attempts: blockedWrites.length,
+    resolved_blocked_write_attempts: resolvedBlockedWriteClassifications.length,
     unresolved_blocked_write_attempts: unresolvedBlockedWriteClassifications.length,
     cleared_code_permission_hard_stop: clearedCodePermissionHardStop,
     audit_path: join(input.workItemDir, 'changed_files_audit.md'),
@@ -562,8 +638,12 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     wiJson,
     actualChangedFiles,
   });
-  const blockedWrites = writeGuardSummary.blockedWrites ?? [];
   const hardStopResolutions = readHardStopResolutionLog(workItemDir);
+  const blockedWrites = mergeBlockedWriteEvidence(
+    writeGuardSummary.blockedWrites ?? [],
+    hardStopResolutions,
+    workItemId
+  );
   const writeGuardAuthorizations = readWriteGuardAuthorizations(projectRoot);
 
   const remoteOpsFiles = changedFiles.filter(file => isRemoteOpsAuditPath(file.path));

@@ -44,6 +44,10 @@ import { checkDesignGate } from './sf_design_gate_core.js';
 import { checkRequirementsGate } from './sf_requirements_gate_core.js';
 import { checkTasksGate } from './sf_tasks_gate_core.js';
 import type { GateResult } from './sf_gate_types.js';
+import {
+  normalizeProjectSpecTargetPath,
+  readDeclaredProjectSpecTargetPaths,
+} from './path-policy.js';
 // ---------------------------------------------------------------------------
 // §9.2 Gate ID 枚举
 // ---------------------------------------------------------------------------
@@ -333,6 +337,15 @@ function moduleIdFromManifestEntry(entry: any): string | null {
   return match?.[1] ? normalizeSpecModuleId(match[1]) : null;
 }
 
+function isEvidenceOnlyCandidateManifest(manifest: Record<string, unknown>): boolean {
+  return (
+    manifest.no_project_spec_change === true ||
+    String(manifest.project_integration_effect ?? '')
+      .trim()
+      .toLowerCase() === 'evidence_only'
+  );
+}
+
 /** * §9.2 candidate_manifest_gate — Candidate Manifest 合法性 */ // BD v1: candidate_manifest_gate uses the same normalization rules as approval and merge.
 registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
@@ -357,34 +370,61 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
     });
 
     const workflowPath = String(manifest.workflow_path ?? '');
-    const mergeRequired = workflowPath !== 'code_only_fast_path';
-    const inferredEntries = inferManifestEntries(manifest, ctx.workItemDir);
+    const evidenceOnly = isEvidenceOnlyCandidateManifest(manifest as Record<string, unknown>);
+    const mergeRequired = workflowPath !== 'code_only_fast_path' && !evidenceOnly;
+    const inferredEntries = mergeRequired ? inferManifestEntries(manifest, ctx.workItemDir) : [];
     const entriesNormalized = entriesIsArray && entriesSemanticallyEqual(entries, inferredEntries);
+    const evidenceOnlyCanonical =
+      !evidenceOnly ||
+      (manifest.no_project_spec_change === true &&
+        String(manifest.project_integration_effect ?? '')
+          .trim()
+          .toLowerCase() === 'evidence_only' &&
+        manifest.merge_required === false &&
+        manifest.merge_applicable === false &&
+        entriesIsArray &&
+        entries.length === 0);
+    const entryCountValid = mergeRequired ? entries.length > 0 : entries.length === 0;
+
+    checks.push({
+      check_id: 'manifest_evidence_only_canonical',
+      description:
+        'evidence_only manifests declare no project spec change, disable merge, and keep entries empty',
+      passed: evidenceOnlyCanonical,
+      severity: evidenceOnlyCanonical ? undefined : 'error',
+    });
 
     checks.push({
       check_id: 'manifest_entries_nonempty_for_spec_merge',
-      description: 'entries is non-empty for spec-changing workflow',
-      passed: !mergeRequired || entries.length > 0,
-      severity: !mergeRequired || entries.length > 0 ? undefined : 'error',
+      description: 'entries is non-empty only when Project Spec merge is required',
+      passed: entryCountValid,
+      severity: entryCountValid ? undefined : 'error',
     });
 
     checks.push({
       check_id: 'manifest_entries_match_governance_inference',
       description:
-        'entries match inferManifestEntries(); approval and merge will evaluate the same normalized manifest',
-      passed: !mergeRequired || entriesNormalized,
-      severity: !mergeRequired || entriesNormalized ? undefined : 'error',
+        'entries match the merge applicability decision and inferManifestEntries() for spec-changing workflows',
+      passed: entriesNormalized,
+      severity: entriesNormalized ? undefined : 'error',
     });
 
     checks.push({
       check_id: 'manifest_inferred_entries_count',
-      description: `inferManifestEntries count: ${inferredEntries.length}`,
-      passed: !mergeRequired || inferredEntries.length > 0,
-      severity: !mergeRequired || inferredEntries.length > 0 ? undefined : 'error',
+      description: `effective inferred entries count: ${inferredEntries.length}`,
+      passed: mergeRequired ? inferredEntries.length > 0 : inferredEntries.length === 0,
+      severity: mergeRequired
+        ? inferredEntries.length > 0
+          ? undefined
+          : 'error'
+        : inferredEntries.length === 0
+          ? undefined
+          : 'error',
     });
 
     if (entriesIsArray) {
       const declaredModules = await readDeclaredSpecModules(ctx.projectRoot);
+      const declaredTargetPaths = await readDeclaredProjectSpecTargetPaths(ctx.projectRoot);
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i] ?? {};
         const candidatePath = normalizeSlash(entry.candidate_path ?? entry.path ?? '');
@@ -404,6 +444,19 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
           description: `Entry ${i}: target_path in .specforge/project/`,
           passed: !!targetValid,
           severity: targetValid ? undefined : 'error',
+        });
+
+        const normalizedTargetPath = normalizeProjectSpecTargetPath(targetPath);
+        const targetDeclared = declaredTargetPaths.has(normalizedTargetPath);
+        checks.push({
+          check_id: `entry_${i}_target_declared`,
+          description: `Entry ${i}: target_path is declared by spec_manifest.json`,
+          passed: targetDeclared,
+          severity: targetDeclared ? undefined : 'error',
+          details:
+            declaredTargetPaths.size > 0
+              ? `Declared targets: ${Array.from(declaredTargetPaths).sort().join(', ')}`
+              : 'spec_manifest.json declares no Project Spec target files',
         });
 
         let candidateExists = false;

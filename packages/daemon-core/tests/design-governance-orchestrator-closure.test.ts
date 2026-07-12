@@ -6,9 +6,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import '../src/tools/handlers/sf-safe-bash.js';
 import '../src/tools/handlers/sf-hard-stop-resolve.js';
 import '../src/tools/handlers/sf-changed-files-audit.js';
+import '../src/tools/handlers/sf-state-transition.js';
+import '../src/tools/handlers/sf-artifact-write.js';
 import { getHandler, registerHandler, ToolDispatcher } from '../src/tools/ToolDispatcher.js';
 import { setHardStop } from '../src/tools/lib/hard-stop-latch.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
+import { computeGateSummaryStatus } from '../src/tools/lib/gate-chain.js';
+import { generateGateSummaryMd, runGate } from '../src/tools/lib/gate-runner-v11.js';
+import { validateCandidateManifestJson } from '../src/tools/lib/artifact-schema-validation.js';
+import { executeMerge } from '../src/tools/lib/merge-runner-v11.js';
 
 function repoRoot(): string {
   const cwd = process.cwd();
@@ -29,6 +35,28 @@ function auditDeps(state = 'approval_required'): any {
           async rebuildFromEventsFile() {},
           async getState() {
             return { current_state: state };
+          },
+        };
+      },
+    },
+  };
+}
+
+function transitionDeps(): any {
+  const states = new Map<string, string>();
+  return {
+    projectManager: {
+      async getProjectStateManager() {
+        return {
+          async transition(workItemId: string, fromState: string, toState: string): Promise<void> {
+            const current = states.get(workItemId) ?? '';
+            expect(current).toBe(fromState);
+            states.set(workItemId, toState);
+          },
+          async rebuildFromEventsFile() {},
+          async getState(workItemId: string) {
+            const currentState = states.get(workItemId);
+            return currentState ? { current_state: currentState } : null;
           },
         };
       },
@@ -84,11 +112,18 @@ describe('Orchestrator governance execution closure', () => {
     expect(contract).toContain('分类对象描述的是**用户目标实现后的预期最终语义影响**');
     expect(contract).toContain('运行证据推翻原判断时，必须重新调度 `sf-design`');
     expect(contract).toContain('专业代理不得彼此直接启动下一代理');
+    expect(contract).toContain('专业候选产物具有固定所有权');
+    expect(contract).toContain('主编排代理不得通过 `sf_artifact_write` 代写、补写或覆盖');
+    expect(contract).toContain('按产物所有权重新调度责任代理');
+    expect(contract).toContain('不得先推进状态再补产物');
     expect(contract).toContain('需要跨来源、可复核、可持久化证据时');
     expect(contract).toContain('运行时权威产物，只能由各自工具生成');
     expect(contract).toContain('门禁失败后必须先判定根因');
     expect(contract).toContain('执行失败先基于同一证据进行一次有边界的修复');
     expect(contract).toContain('硬停止是绝对停止点');
+    expect(contract).toContain('`sf_hard_stop_resolve` 是主编排代理独占工具');
+    expect(contract).toContain('只能逐字引用当前真实用户消息');
+    expect(contract).toContain('改用合法受控工具不等于原阻断是 `false_positive`');
 
     expect(contract).toContain('`user_approved` 必须来自用户对当前候选的明确决定');
     expect(contract).toContain('`auto_approved` 只允许在当前有效策略明确授权时使用');
@@ -112,12 +147,34 @@ describe('Orchestrator governance execution closure', () => {
     expect(standard).toContain('所有需要读取项目真实状态并形成受治理分析产物');
     expect(standard).toContain('`StateManager/events.jsonl` 是工作流状态的唯一权威来源');
     expect(standard).toContain('其中 `StateManager/events.jsonl` 为状态权威');
+    expect(standard).toContain('### 14.6 HardStop 角色所有权与恢复闭包');
+    expect(standard).toContain('#### 8.2.1 专业候选产物所有权');
+    expect(standard).toContain('`ARTIFACT_OWNER_MISMATCH`');
+    expect(standard).toContain('`created → intake_ready` 必须校验 `intake.md` 非空');
+    expect(standard).toContain('只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`');
+    expect(standard).toContain('若两处存在同一 `hard_stop_id`，必须去重后计数');
     expect(standard).toContain('`.specforge/runtime/state.json` 只是可重建投影缓存');
     expect(standard).toContain('`work_item.json` 只保存工作项身份、分类、范围和权限等元数据');
     expect(standard).not.toContain('"status": "created"');
     expect(standard).toContain('中断恢复必须通过 `sf_continuity`');
     expect(standard).toContain('`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容');
     expect(standard).toContain('当前 Runtime 为兼容初始化和可观测性');
+  });
+
+  it('requires professional agents to hand HardStop evidence back to the Orchestrator', () => {
+    const agentNames = ['sf-design', 'sf-requirements', 'sf-task-planner', 'sf-executor'];
+
+    for (const agentName of agentNames) {
+      const contract = readFileSync(
+        path.join(repoRoot(), 'setup', 'userlevel-opencode', 'agents', `${agentName}.md`),
+        'utf8'
+      ).replace(/\r\n/g, '\n');
+
+      expect(contract).toContain('## HardStop 交接边界');
+      expect(contract).toContain('不得调用 `sf_hard_stop_resolve`');
+      expect(contract).toContain('"action_type": "resolve_hard_stop"');
+      expect(contract).toContain('只有 `sf-orchestrator` 可以');
+    }
   });
 
   it('aligns the Orchestrator route table with current Runtime pairs and registered Workflow Skills', () => {
@@ -273,6 +330,636 @@ describe('Orchestrator governance execution closure', () => {
     expect(result.error).toContain('HARD_STOP_ACTIVE');
     expect(result.hard_stop_record.scope).toBe('project');
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  it('keeps work_item.json metadata-only from creation through controlled rewrites', async () => {
+    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    expect(initialized.success).toBe(true);
+
+    const created = (await getHandler('sf_state_transition')!(
+      {
+        from_state: '',
+        to_state: 'created',
+        workflow_type: 'feature_spec_design_first',
+        workflow_path: 'design_change_path',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      transitionDeps()
+    )) as any;
+
+    expect(created.success).toBe(true);
+    expect(created.work_item_id).toBe('WI-0001');
+
+    const workItemPath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      created.work_item_id,
+      'work_item.json'
+    );
+    const createdWorkItem = JSON.parse(await readFile(workItemPath, 'utf8'));
+    expect(createdWorkItem.status).toBeUndefined();
+    expect(createdWorkItem.workflow_type).toBe('feature_spec_design_first');
+    expect(createdWorkItem.workflow_path).toBe('design_change_path');
+
+    const rejected = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: created.work_item_id,
+        file_type: 'work_item',
+        content: JSON.stringify({
+          schema_version: '1.1',
+          work_item_id: created.work_item_id,
+          status: 'intake_ready',
+          title: 'Forbidden status update',
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(rejected.success).toBe(false);
+    expect(rejected.error).toBe('INVALID_ARTIFACT_JSON');
+    expect(rejected.validation_errors).toContainEqual(
+      expect.stringContaining('WORK_ITEM_STATUS_FORBIDDEN')
+    );
+    expect(JSON.parse(await readFile(workItemPath, 'utf8')).status).toBeUndefined();
+
+    await writeJson(workItemPath, {
+      ...createdWorkItem,
+      status: 'created',
+    });
+    const cleaned = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: created.work_item_id,
+        file_type: 'work_item',
+        content: JSON.stringify({
+          schema_version: '1.1',
+          work_item_id: created.work_item_id,
+          title: 'Metadata rewrite',
+          description: 'Remove legacy status while preserving metadata authority.',
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(cleaned.success).toBe(true);
+    const cleanedWorkItem = JSON.parse(await readFile(workItemPath, 'utf8'));
+    expect(cleanedWorkItem.status).toBeUndefined();
+    expect(cleanedWorkItem.title).toBe('Metadata rewrite');
+  });
+
+  it('stores trigger_result unknowns only at classification.unknowns and rejects conflicts', async () => {
+    const workItemId = 'WI-0001';
+    const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+    await writeJson(path.join(wiDir, 'work_item.json'), {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec_design_first',
+      workflow_path: 'design_change_path',
+    });
+
+    const classification = {
+      requirement_changed: true,
+      acceptance_criteria_changed: true,
+      business_rule_changed: true,
+      user_visible_behavior_changed: true,
+      data_semantics_changed: true,
+      design_changed: true,
+      module_boundary_changed: false,
+      api_contract_changed: true,
+      architecture_changed: true,
+      unknowns: ['Runtime choice is not confirmed', 'Compatibility policy is not confirmed'],
+    };
+
+    const written = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'trigger_result',
+        content: JSON.stringify({
+          schema_version: '1.1',
+          work_item_id: workItemId,
+          workflow_type: 'feature_spec_design_first',
+          workflow_path: 'design_change_path',
+          classification,
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(written.success).toBe(true);
+    const triggerPath = path.join(wiDir, 'trigger_result.json');
+    const trigger = JSON.parse(await readFile(triggerPath, 'utf8'));
+    expect(Object.prototype.hasOwnProperty.call(trigger, 'unknowns')).toBe(false);
+    expect(trigger.classification.unknowns).toEqual(classification.unknowns);
+
+    const legacyClassification = { ...classification };
+    delete (legacyClassification as Partial<typeof classification>).unknowns;
+    const migrated = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'trigger_result',
+        content: JSON.stringify({
+          schema_version: '1.1',
+          work_item_id: workItemId,
+          workflow_type: 'feature_spec_design_first',
+          workflow_path: 'design_change_path',
+          unknowns: ['Legacy top-level unknown'],
+          classification: legacyClassification,
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(migrated.success).toBe(true);
+    const migratedTrigger = JSON.parse(await readFile(triggerPath, 'utf8'));
+    expect(Object.prototype.hasOwnProperty.call(migratedTrigger, 'unknowns')).toBe(false);
+    expect(migratedTrigger.classification.unknowns).toEqual(['Legacy top-level unknown']);
+
+    const conflict = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'trigger_result',
+        content: JSON.stringify({
+          schema_version: '1.1',
+          work_item_id: workItemId,
+          workflow_type: 'feature_spec_design_first',
+          workflow_path: 'design_change_path',
+          unknowns: ['Top-level value'],
+          classification: {
+            ...classification,
+            unknowns: ['Classification value'],
+          },
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(conflict.success).toBe(false);
+    expect(conflict.error).toContain('ARTIFACT_NORMALIZATION_FAILED');
+    expect(conflict.error).toContain('TRIGGER_RESULT_UNKNOWNS_CONFLICT');
+    expect(JSON.parse(await readFile(triggerPath, 'utf8')).classification.unknowns).toEqual([
+      'Legacy top-level unknown',
+    ]);
+  });
+
+  it('does not convert non-blocking warnings into a waiver requirement', () => {
+    const warningOnlyReport = {
+      gate_id: 'workflow_specific_gate',
+      gate_type: 'hard_gate',
+      required: true,
+      status: 'passed',
+      blocking_issues: [],
+      warnings: ['Formatting suggestion only'],
+      waiver_required: false,
+    } as any;
+
+    expect(computeGateSummaryStatus([warningOnlyReport])).toBe('passed');
+    expect(generateGateSummaryMd('WI-0001', [warningOnlyReport], 'passed')).toContain(
+      'Non-blocking warnings do not require a waiver'
+    );
+
+    const explicitWaiverReport = {
+      ...warningOnlyReport,
+      gate_type: 'soft_gate',
+      required: false,
+      waiver_required: true,
+    } as any;
+    expect(computeGateSummaryStatus([explicitWaiverReport])).toBe('passed_with_waiver_required');
+  });
+
+  it('keeps evidence-only artifacts out of Project Spec merge and rejects undeclared targets', async () => {
+    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    expect(initialized.success).toBe(true);
+
+    const workItemId = 'WI-0001';
+    const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+    await writeJson(path.join(wiDir, 'work_item.json'), {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'bugfix_spec',
+      workflow_path: 'requirement_change_path',
+    });
+    await mkdir(path.join(wiDir, 'candidates', 'project', 'modules', 'core'), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(wiDir, 'candidates', 'project', 'modules', 'core', 'requirements.candidate.md'),
+      '# Requirements evidence'
+    );
+    await writeFile(path.join(wiDir, 'candidates', 'tasks.md'), '# Task evidence');
+
+    const normalizedWrite = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'candidate_manifest',
+        content: JSON.stringify({
+          schema_version: '1.1',
+          work_item_id: workItemId,
+          workflow_type: 'bugfix_spec',
+          workflow_path: 'requirement_change_path',
+          no_project_spec_change: true,
+          project_integration_effect: 'evidence_only',
+          merge_required: true,
+          merge_applicable: true,
+          candidate_artifacts: [
+            'candidates/project/modules/core/requirements.candidate.md',
+            'candidates/project/modules/core/tasks.candidate.md',
+          ],
+          entries: [
+            {
+              type: 'requirements',
+              module_id: 'core',
+              candidate_path: 'candidates/project/modules/core/requirements.candidate.md',
+              target_path: 'project/modules/core/requirements.md',
+              operation: 'replace',
+            },
+            {
+              type: 'tasks',
+              candidate_path: 'candidates/tasks.md',
+              target_path: 'project/modules/core/tasks.md',
+              operation: 'replace',
+            },
+          ],
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(normalizedWrite.success).toBe(true);
+    const manifestPath = path.join(wiDir, 'candidate_manifest.json');
+    const normalizedManifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+    expect(normalizedManifest.no_project_spec_change).toBe(true);
+    expect(normalizedManifest.project_integration_effect).toBe('evidence_only');
+    expect(normalizedManifest.merge_required).toBe(false);
+    expect(normalizedManifest.merge_applicable).toBe(false);
+    expect(normalizedManifest.entries).toEqual([]);
+    expect(normalizedManifest.candidates).toBeUndefined();
+    expect(normalizedManifest.candidate_artifacts).toBeUndefined();
+    expect(
+      validateCandidateManifestJson(JSON.stringify(normalizedManifest), workItemId).valid
+    ).toBe(true);
+
+    const inconsistentValidation = validateCandidateManifestJson(
+      JSON.stringify({
+        ...normalizedManifest,
+        merge_required: true,
+        entries: [
+          {
+            candidate_path: 'candidates/tasks.md',
+            target_path: 'project/modules/core/tasks.md',
+          },
+        ],
+      }),
+      workItemId
+    );
+    expect(inconsistentValidation.valid).toBe(false);
+    expect(inconsistentValidation.errors).toContainEqual(
+      expect.stringContaining('EVIDENCE_ONLY_ENTRIES_MUST_BE_EMPTY')
+    );
+
+    const duplicateEvidenceAuthorityValidation = validateCandidateManifestJson(
+      JSON.stringify({
+        ...normalizedManifest,
+        candidate_artifacts: ['candidates/project/modules/core/tasks.candidate.md'],
+      }),
+      workItemId
+    );
+    expect(duplicateEvidenceAuthorityValidation.valid).toBe(false);
+    expect(duplicateEvidenceAuthorityValidation.errors).toContainEqual(
+      expect.stringContaining('EVIDENCE_ONLY_CANDIDATE_ARTIFACTS_FORBIDDEN')
+    );
+
+    const mergeResult = await executeMerge({
+      projectRoot,
+      workItemId,
+      workItemDir: wiDir,
+      candidateManifestPath: manifestPath,
+      userDecisionPath: path.join(wiDir, 'user_decision.json'),
+    });
+    expect(mergeResult.success).toBe(true);
+    expect(mergeResult.status).toBe('not_applicable');
+    expect(mergeResult.merged_files).toEqual([]);
+
+    await writeJson(manifestPath, {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'bugfix_spec',
+      workflow_path: 'requirement_change_path',
+      merge_required: true,
+      entries: [
+        {
+          type: 'tasks',
+          candidate_path: 'candidates/tasks.md',
+          target_path: 'project/modules/core/tasks.md',
+          operation: 'replace',
+        },
+      ],
+    });
+
+    const gateReport = await runGate('candidate_manifest_gate', {
+      projectRoot,
+      workItemId,
+      workItemDir: wiDir,
+      workflowPath: 'requirement_change_path',
+      workflowType: 'bugfix_spec',
+    } as any);
+    expect(gateReport.status).toBe('failed');
+    expect(gateReport.checks).toContainEqual(
+      expect.objectContaining({
+        check_id: 'entry_0_target_declared',
+        passed: false,
+      })
+    );
+  });
+
+  it('enforces professional ownership for candidate requirements, design, tasks, and trace artifacts', async () => {
+    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    expect(initialized.success).toBe(true);
+
+    const workItemId = 'WI-0001';
+    const ownershipCases = [
+      ['candidate_requirements', 'sf-requirements'],
+      ['candidate_design', 'sf-design'],
+      ['candidate_tasks', 'sf-task-planner'],
+      ['trace_delta', 'sf-task-planner'],
+    ] as const;
+
+    for (const [fileType, requiredAgent] of ownershipCases) {
+      const denied = (await getHandler('sf_artifact_write')!(
+        {
+          work_item_id: workItemId,
+          file_type: fileType,
+          content: `# ${fileType}\n\nOwned artifact.`,
+        },
+        { directory: projectRoot, agent: 'sf-orchestrator' },
+        {} as any
+      )) as any;
+
+      expect(denied.success).toBe(false);
+      expect(denied.error).toBe('ARTIFACT_OWNER_MISMATCH');
+      expect(denied.caller_agent).toBe('sf-orchestrator');
+      expect(denied.required_agent).toBe(requiredAgent);
+
+      const written = (await getHandler('sf_artifact_write')!(
+        {
+          work_item_id: workItemId,
+          file_type: fileType,
+          content: `# ${fileType}\n\nOwned artifact.`,
+        },
+        { directory: projectRoot, agent: requiredAgent },
+        {} as any
+      )) as any;
+
+      expect(written.success).toBe(true);
+      expect(existsSync(path.join(projectRoot, written.path))).toBe(true);
+    }
+
+    const missingCaller = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'candidate_design',
+        content: '# Design\n\nMissing caller context.',
+      },
+      { directory: projectRoot },
+      {} as any
+    )) as any;
+    expect(missingCaller.success).toBe(false);
+    expect(missingCaller.error).toBe('ARTIFACT_OWNER_MISMATCH');
+    expect(missingCaller.caller_agent).toBe('unknown');
+    expect(missingCaller.required_agent).toBe('sf-design');
+
+    const inferredBypass = (await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'work_log',
+        run_id: 'task-planning',
+        agent_content: '# Tasks\n\nInferred task candidate.',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+    expect(inferredBypass.success).toBe(false);
+    expect(inferredBypass.error).toBe('ARTIFACT_OWNER_MISMATCH');
+    expect(inferredBypass.required_agent).toBe('sf-task-planner');
+  });
+
+  it('requires a non-empty intake artifact before created can advance to intake_ready', async () => {
+    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    expect(initialized.success).toBe(true);
+
+    const deps = transitionDeps();
+    const created = (await getHandler('sf_state_transition')!(
+      {
+        from_state: '',
+        to_state: 'created',
+        workflow_type: 'bugfix_spec',
+        workflow_path: 'requirement_change_path',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps
+    )) as any;
+    expect(created.success).toBe(true);
+
+    const rejected = (await getHandler('sf_state_transition')!(
+      {
+        work_item_id: created.work_item_id,
+        from_state: 'created',
+        to_state: 'intake_ready',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps
+    )) as any;
+    expect(rejected.success).toBe(false);
+    expect(rejected.error).toBe('STATE_PREREQUISITE_MISSING');
+    expect(rejected.code).toBe('INTAKE_ARTIFACT_REQUIRED');
+    expect(rejected.required_artifact).toBe('intake.md');
+
+    const intakePath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      created.work_item_id,
+      'intake.md'
+    );
+    await writeFile(intakePath, '   ');
+    const emptyRejected = (await getHandler('sf_state_transition')!(
+      {
+        work_item_id: created.work_item_id,
+        from_state: 'created',
+        to_state: 'intake_ready',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps
+    )) as any;
+    expect(emptyRejected.success).toBe(false);
+    expect(emptyRejected.error).toBe('STATE_PREREQUISITE_MISSING');
+
+    await writeFile(intakePath, '# Intake\n\nOriginal User Request: fix formatLabel.');
+    const advanced = (await getHandler('sf_state_transition')!(
+      {
+        work_item_id: created.work_item_id,
+        from_state: 'created',
+        to_state: 'intake_ready',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps
+    )) as any;
+    expect(advanced.success).toBe(true);
+    expect(advanced.transition_result.currentState).toBe('intake_ready');
+  });
+
+  it('reserves HardStop resolution for sf-orchestrator at Dispatcher and Handler boundaries', async () => {
+    const workItemId = 'WI-0001';
+    const hardStop = setHardStop(
+      projectRoot,
+      workItemId,
+      'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+      'sf_safe_bash'
+    );
+
+    const handlerDenied = (await getHandler('sf_hard_stop_resolve')!(
+      {
+        work_item_id: workItemId,
+        hard_stop_id: hardStop.hard_stop_id,
+        resolution_type: 'false_positive',
+        user_response_quote: '任务提示要求继续写入设计产物',
+      },
+      { directory: projectRoot, agent: 'sf-design' },
+      {} as any
+    )) as any;
+    expect(handlerDenied.success).toBe(false);
+    expect(handlerDenied.error).toBe('HARD_STOP_RESOLVE_ORCHESTRATOR_ONLY');
+
+    const dispatcher = new ToolDispatcher({} as any);
+    const dispatcherDenied = (await dispatcher.dispatch({
+      tool: 'sf_hard_stop_resolve',
+      args: {
+        work_item_id: workItemId,
+        hard_stop_id: hardStop.hard_stop_id,
+        resolution_type: 'false_positive',
+        user_response_quote: '任务提示要求继续写入设计产物',
+      },
+      context: { directory: projectRoot, agent: 'sf-design' },
+    })) as any;
+    expect(dispatcherDenied.success).toBe(false);
+    expect(dispatcherDenied.error).toBe('HARD_STOP_RESOLVE_ORCHESTRATOR_ONLY');
+    expect(dispatcherDenied.required_agent).toBe('sf-orchestrator');
+
+    const resolved = (await getHandler('sf_hard_stop_resolve')!(
+      {
+        work_item_id: workItemId,
+        hard_stop_id: hardStop.hard_stop_id,
+        resolution_type: 'repaired',
+        user_response_quote: '同意保留本次阻断记录并改用受控工具继续',
+        reason: 'The invalid shell write path was abandoned.',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+    expect(resolved.success).toBe(true);
+
+    const resolutionLog = await readFile(
+      path.join(projectRoot, '.specforge', 'work-items', workItemId, 'hard_stop_resolution.jsonl'),
+      'utf8'
+    );
+    const resolution = JSON.parse(resolutionLog.trim());
+    expect(resolution.resolved_by).toBe('sf-orchestrator');
+    expect(resolution.decision_source).toBe('sf-orchestrator_user_context');
+  });
+
+  it('audits resolution-only historical blocked writes and deduplicates by hard_stop_id', async () => {
+    const workItemId = 'WI-0001';
+    const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+
+    await writeJson(path.join(wiDir, 'work_item.json'), {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'bugfix_spec',
+      workflow_path: 'requirement_change_path',
+      code_change_allowed: false,
+      allowed_write_files: [],
+    });
+    await writeJson(path.join(wiDir, 'trigger_result.json'), {
+      work_item_id: workItemId,
+      workflow_type: 'bugfix_spec',
+      workflow_path: 'requirement_change_path',
+    });
+    await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
+      work_item_id: workItemId,
+      workflow_type: 'bugfix_spec',
+      workflow_path: 'requirement_change_path',
+      candidate_phase: 'tasks',
+      no_project_spec_change: true,
+      project_integration_effect: 'evidence_only',
+      merge_required: false,
+      merge_applicable: false,
+      entries: [],
+    });
+
+    const hardStopId = 'HS-RESOLUTION-ONLY';
+    await writeFile(
+      path.join(wiDir, 'hard_stop_resolution.jsonl'),
+      `${JSON.stringify({
+        schema_version: '1.2.8',
+        resolved_at: new Date().toISOString(),
+        work_item_id: workItemId,
+        hard_stop_id: hardStopId,
+        resolution_type: 'repaired',
+        user_response_quote: '同意保留历史阻断并改用受控写入工具继续',
+        resolved_by: 'sf-orchestrator',
+        decision_source: 'sf-orchestrator_user_context',
+        original_hard_stop: {
+          hard_stop_id: hardStopId,
+          work_item_id: workItemId,
+          blocked: true,
+          reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+          source_tool: 'sf_safe_bash',
+        },
+      })}\n`
+    );
+
+    const audit = (await getHandler('sf_changed_files_audit')!(
+      { work_item_id: workItemId, mode: 'no_code_change' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      auditDeps()
+    )) as any;
+
+    expect(audit.passed).toBe(true);
+    expect(audit.blocked_write_attempts).toBe(1);
+    expect(audit.resolved_blocked_write_attempts).toBe(1);
+    expect(audit.unresolved_blocked_write_attempts).toBe(0);
+
+    const report = await readFile(path.join(wiDir, 'changed_files_audit.md'), 'utf8');
+    expect(report).toContain('Blocked write attempts: 1');
+    expect(report).toContain('Historical/resolved blocked write attempts: 1');
+    expect(report).toContain('Hard stop resolutions: 1');
+
+    await writeFile(
+      path.join(wiDir, 'write_guard_log.jsonl'),
+      `${JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: `.specforge/work-items/${workItemId}/`,
+        operation: 'modify',
+        actor: 'sf-design',
+        allowed: false,
+        violations: ['WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL'],
+        tool: 'sf_safe_bash',
+        hard_stop_id: hardStopId,
+      })}\n`
+    );
+
+    const deduplicatedAudit = (await getHandler('sf_changed_files_audit')!(
+      { work_item_id: workItemId, mode: 'no_code_change' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      auditDeps()
+    )) as any;
+    expect(deduplicatedAudit.blocked_write_attempts).toBe(1);
+    expect(deduplicatedAudit.resolved_blocked_write_attempts).toBe(1);
   });
 
   it('persists shell governance HardStop, preserves blocked-write history, and audits it after resolution', async () => {

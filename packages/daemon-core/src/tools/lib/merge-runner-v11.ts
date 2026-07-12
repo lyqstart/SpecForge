@@ -4,7 +4,8 @@
  * P0 governance:
  * - Merge must use the same manifest normalization rules as approval.
  * - Merge must not infer or mutate candidate_manifest.json after approval.
- * - Non-code-only workflows must merge at least one project-level spec artifact.
+ * - Spec-changing workflows must merge at least one Project Spec artifact.
+ * - evidence_only / no_project_spec_change workflows never merge Work Item evidence.
  */
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
@@ -15,6 +16,10 @@ import {
   inferManifestEntries,
   normalizeSlash,
 } from './governance-invariants-v11.js';
+import {
+  normalizeProjectSpecTargetPath,
+  readDeclaredProjectSpecTargetPaths,
+} from './path-policy.js';
 
 export interface MergeInput {
   projectRoot: string;
@@ -76,7 +81,12 @@ async function readJsonFile(filePath: string): Promise<any> {
 }
 
 async function readCurrentProjectSpecVersion(projectRoot: string): Promise<string> {
-  const projectSpecManifestPath = path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
+  const projectSpecManifestPath = path.join(
+    projectRoot,
+    '.specforge',
+    'project',
+    'spec_manifest.json'
+  );
   try {
     const specManifest = await readJsonFile(projectSpecManifestPath);
     return specManifest.project_spec_version ?? 'PSV-0000';
@@ -85,8 +95,19 @@ async function readCurrentProjectSpecVersion(projectRoot: string): Promise<strin
   }
 }
 
-function isCodeOnlyFastPathNoMerge(manifest: any, entries: ManifestEntry[]): boolean {
-  return manifest.workflow_path === 'code_only_fast_path' && Array.isArray(entries) && entries.length === 0;
+function isEvidenceOnlyNoProjectSpecChange(manifest: any): boolean {
+  return (
+    manifest?.no_project_spec_change === true ||
+    String(manifest?.project_integration_effect ?? '')
+      .trim()
+      .toLowerCase() === 'evidence_only'
+  );
+}
+
+function isNoProjectSpecMerge(manifest: any): boolean {
+  return (
+    manifest?.workflow_path === 'code_only_fast_path' || isEvidenceOnlyNoProjectSpecChange(manifest)
+  );
 }
 
 function isSubPath(child: string, parent: string): boolean {
@@ -107,11 +128,14 @@ function normalizeEntryForMerge(entry: ManifestEntry): ManifestEntry {
 }
 
 function normalizeProjectTargetPathV12(value: unknown): string {
-  return String(value ?? '').replace(/\\/g, '/').replace(/^\.\//, '');
+  return String(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '');
 }
 function inferModuleNameFromProjectTargetV12(value: unknown): string | null {
   const normalized = normalizeProjectTargetPathV12(value);
-  const match = /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\//.exec(normalized) ??
+  const match =
+    /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\//.exec(normalized) ??
     /(?:^|\/)project\/modules\/([^/]+)\//.exec(normalized);
   const moduleName = match?.[1]?.trim();
   if (!moduleName || moduleName === 'core') return null;
@@ -122,7 +146,7 @@ function modulePrefixFromNameV12(moduleName: string): string {
     .replace(/[^a-zA-Z0-9]+/g, ' ')
     .trim()
     .split(/\s+/)
-    .map((part) => part.slice(0, 1).toUpperCase())
+    .map(part => part.slice(0, 1).toUpperCase())
     .join('');
   return prefix || 'MOD';
 }
@@ -135,15 +159,21 @@ function moduleIdFromNameV12(moduleName: string): string {
 }
 function hasRegisteredModuleV12(modules: any[], moduleName: string): boolean {
   const expectedId = moduleIdFromNameV12(moduleName);
-  return modules.some((entry) => {
+  return modules.some(entry => {
     if (typeof entry === 'string') return entry === moduleName;
-    return entry?.name === moduleName || entry?.module === moduleName || entry?.module_id === expectedId;
+    return (
+      entry?.name === moduleName || entry?.module === moduleName || entry?.module_id === expectedId
+    );
   });
 }
 function registerMergedProjectModulesV12(specManifest: any): void {
   if (!specManifest || typeof specManifest !== 'object') return;
-  const targets = Array.isArray(specManifest.last_merged_targets) ? specManifest.last_merged_targets : [];
-  const moduleNames = Array.from(new Set(targets.map(inferModuleNameFromProjectTargetV12).filter(Boolean))) as string[];
+  const targets = Array.isArray(specManifest.last_merged_targets)
+    ? specManifest.last_merged_targets
+    : [];
+  const moduleNames = Array.from(
+    new Set(targets.map(inferModuleNameFromProjectTargetV12).filter(Boolean))
+  ) as string[];
   if (moduleNames.length === 0) {
     specManifest.modules = Array.isArray(specManifest.modules) ? specManifest.modules : [];
     return;
@@ -189,12 +219,38 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   const manifestEntries = Array.isArray(manifest.entries)
     ? manifest.entries.map((entry: ManifestEntry) => normalizeEntryForMerge(entry))
     : [];
-  const normalizedEntries = inferManifestEntries(manifest, input.workItemDir).map(normalizeEntryForMerge);
+  const noProjectSpecMerge = isNoProjectSpecMerge(manifest);
+  const normalizedEntries = noProjectSpecMerge
+    ? []
+    : inferManifestEntries(manifest, input.workItemDir).map(normalizeEntryForMerge);
   const entries = normalizedEntries;
 
   result.project_spec_version = await readCurrentProjectSpecVersion(input.projectRoot);
 
-  if (manifest.workflow_path !== 'code_only_fast_path' && !entriesSemanticallyEqual(manifestEntries, normalizedEntries)) {
+  if (isEvidenceOnlyNoProjectSpecChange(manifest)) {
+    const evidenceOnlyCanonical =
+      manifest.no_project_spec_change === true &&
+      String(manifest.project_integration_effect ?? '')
+        .trim()
+        .toLowerCase() === 'evidence_only' &&
+      manifest.merge_required === false &&
+      manifest.merge_applicable === false &&
+      manifestEntries.length === 0;
+    if (!evidenceOnlyCanonical) {
+      const failed: MergeResult = {
+        ...result,
+        success: false,
+        status: 'failed',
+        errors: [
+          'evidence_only candidate_manifest must set no_project_spec_change=true, project_integration_effect=evidence_only, merge_required=false, merge_applicable=false, and entries=[].',
+        ],
+      };
+      await generateMergeReport(input, failed);
+      return failed;
+    }
+  }
+
+  if (!noProjectSpecMerge && !entriesSemanticallyEqual(manifestEntries, normalizedEntries)) {
     const failed: MergeResult = {
       ...result,
       success: false,
@@ -207,12 +263,15 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     return failed;
   }
 
-  if (isCodeOnlyFastPathNoMerge(manifest, entries)) {
+  if (noProjectSpecMerge) {
+    const evidenceOnly = isEvidenceOnlyNoProjectSpecChange(manifest);
     const notApplicable: MergeResult = {
       ...result,
       success: true,
       status: 'not_applicable',
-      reason: 'code_only_fast_path has no candidate spec artifacts to merge; candidate_manifest.entries is empty.',
+      reason: evidenceOnly
+        ? 'evidence_only Work Item artifacts are retained as evidence and are not merged into Project Spec.'
+        : 'code_only_fast_path has no candidate spec artifacts to merge; candidate_manifest.entries is empty.',
       merged_files: [],
       spec_manifest_updated: false,
     };
@@ -227,6 +286,25 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       status: 'failed',
       errors: [
         'Non-code-only workflow requires at least one merge entry. candidate_manifest.entries is empty.',
+      ],
+    };
+    await generateMergeReport(input, failed);
+    return failed;
+  }
+
+  const declaredTargetPaths = await readDeclaredProjectSpecTargetPaths(input.projectRoot);
+  const undeclaredTargets = entries
+    .map(entry => normalizeProjectSpecTargetPath(entry.target_path))
+    .filter(targetPath => !declaredTargetPaths.has(targetPath));
+  if (undeclaredTargets.length > 0) {
+    const failed: MergeResult = {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: [
+        `candidate_manifest contains target_path values not declared by spec_manifest.json: ${Array.from(
+          new Set(undeclaredTargets)
+        ).join(', ')}`,
       ],
     };
     await generateMergeReport(input, failed);
@@ -344,7 +422,12 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     }
   }
 
-  const projectSpecManifestPath = path.join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json');
+  const projectSpecManifestPath = path.join(
+    input.projectRoot,
+    '.specforge',
+    'project',
+    'spec_manifest.json'
+  );
   if (result.success && entries.length > 0) {
     try {
       const versionNum = parseInt(result.project_spec_version.replace('PSV-', ''), 10) || 0;
@@ -363,11 +446,16 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       specManifest.last_merged_work_item = input.workItemId;
       specManifest.last_merged_at = new Date().toISOString();
       specManifest.last_merged_targets = result.merged_files
-        .filter((entry) => entry.status === 'success')
-        .map((entry) => entry.target_path);
+        .filter(entry => entry.status === 'success')
+        .map(entry => entry.target_path);
 
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
-      registerMergedProjectModulesV12(specManifest); await fs.writeFile(projectSpecManifestPath, JSON.stringify(specManifest, null, 2) + '\n', 'utf-8');
+      registerMergedProjectModulesV12(specManifest);
+      await fs.writeFile(
+        projectSpecManifestPath,
+        JSON.stringify(specManifest, null, 2) + '\n',
+        'utf-8'
+      );
       result.spec_manifest_updated = true;
     } catch (err: any) {
       result.errors.push('Failed to update spec_manifest.json: ' + err.message);
@@ -392,17 +480,31 @@ async function generateMergeReport(input: MergeInput, result: MergeResult): Prom
     '## Summary',
     '',
     '- Total entries: ' + result.merged_files.length,
-    '- Successful: ' + result.merged_files.filter((e) => e.status === 'success').length,
-    '- Failed: ' + result.merged_files.filter((e) => e.status === 'failed').length,
+    '- Successful: ' + result.merged_files.filter(e => e.status === 'success').length,
+    '- Failed: ' + result.merged_files.filter(e => e.status === 'failed').length,
     '- Spec Manifest Updated: ' + result.spec_manifest_updated,
     '- Project Spec Version: ' + (result.project_spec_version || 'N/A'),
   ];
 
   if (status === 'not_applicable') {
-    lines.push('', '## Not Applicable', '', result.reason ?? 'No Candidate artifacts need to be merged.');
+    lines.push(
+      '',
+      '## Not Applicable',
+      '',
+      result.reason ?? 'No Candidate artifacts need to be merged.'
+    );
   }
 
-  lines.push('', '## Inputs', '', '- candidate_manifest: ' + input.candidateManifestPath, '- user_decision: ' + input.userDecisionPath, '', '## Merged Files', '');
+  lines.push(
+    '',
+    '## Inputs',
+    '',
+    '- candidate_manifest: ' + input.candidateManifestPath,
+    '- user_decision: ' + input.userDecisionPath,
+    '',
+    '## Merged Files',
+    ''
+  );
 
   if (result.merged_files.length === 0) {
     lines.push('No files merged.');
@@ -410,13 +512,25 @@ async function generateMergeReport(input: MergeInput, result: MergeResult): Prom
     lines.push('| Status | Operation | Candidate | Target | Hash Match |');
     lines.push('|--------|-----------|-----------|--------|------------|');
     for (const entry of result.merged_files) {
-      lines.push('| ' + entry.status + ' | ' + entry.operation + ' | ' + entry.candidate_path + ' | ' + entry.target_path + ' | ' + entry.hash_match + ' |');
+      lines.push(
+        '| ' +
+          entry.status +
+          ' | ' +
+          entry.operation +
+          ' | ' +
+          entry.candidate_path +
+          ' | ' +
+          entry.target_path +
+          ' | ' +
+          entry.hash_match +
+          ' |'
+      );
       if (entry.error) lines.push('- Error: ' + entry.error);
     }
   }
 
   if (result.errors.length > 0) {
-    lines.push('', '## Errors', '', ...result.errors.map((err) => '- ' + err));
+    lines.push('', '## Errors', '', ...result.errors.map(err => '- ' + err));
   }
 
   lines.push('', '## Evidence', '', '- merge_runner_execution_log');

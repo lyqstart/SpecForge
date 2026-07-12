@@ -471,6 +471,7 @@ close_status
 1. 用户原始请求不能被 Agent 改写后覆盖。
 2. 可增加 Normalized Summary，但不能替代 Original User Request。
 3. 后续 classification 与 impact_analysis 必须引用 intake。
+4. `created → intake_ready` 只能在非空 `intake.md` 已通过受控写入落盘后发生；Runtime 必须在状态入口失败关闭，不能接受“先推进、后补产物”。
 
 ---
 
@@ -543,6 +544,8 @@ close_gate
 ```
 
 在各自权限范围内完成。
+
+状态名称表达的是已经成立的治理事实，不是待办意图。任何“就绪”状态都必须在其必需上游产物实际存在后才能写入事件权威；至少 `created → intake_ready` 必须校验 `intake.md` 非空。契约顺序不能只依赖 Agent 自觉，Runtime 必须在统一状态工具入口执行前置校验。
 
 ### 5.4 恢复机制
 
@@ -870,6 +873,17 @@ Candidate 是拟写入正式规格真相源的完整候选文件，不是 patch�
 4. Candidate 必须绑定 `base_spec_version`。
 5. Candidate 必须计算 hash。
 6. Candidate 只有经过 Gate、User Decision、Merge Runner 才能进入正式规格。
+
+#### 8.2.1 专业候选产物所有权
+
+| `sf_artifact_write.file_type` | 唯一责任代理 |
+| --- | --- |
+| `requirements` / `candidate_requirements` | `sf-requirements` |
+| `design` / `candidate_design` | `sf-design` |
+| `tasks` / `candidate_tasks` | `sf-task-planner` |
+| `trace_delta` / `candidate_trace_delta` | `sf-task-planner` |
+
+`sf-orchestrator` 只能调度、检查、汇总和维护产物生命周期，不得代写上述专业候选。Gate 因专业产物内容、结构或缺失而失败时，必须把 Gate 证据交回唯一责任代理修复同一个权威候选。Runtime 必须按调用上下文校验所有权，缺失调用者、错误代理、字段别名或经 `work_log` 推断出的专业产物均应失败关闭并返回 `ARTIFACT_OWNER_MISMATCH`。
 
 ### 8.3 Candidate Manifest
 
@@ -1595,6 +1609,16 @@ Design Governance 必须写入当前 Workflow 已有的设计类产物，例如 
 Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json` 与统一 Path Service，不能根据源码目录名临时发明模块。若用户问题指向 `src/runtime/**`，但项目规格只声明 `core` 为所属模块，应写入 `core` 并在 `Impact Analysis` 与 manifest 中说明映射依据；不得先声明 `runtime`，随后静默改写为 `core`。
 
 真实实现未知、根因未证实、治理归属冲突或证据不足时，Design Agent 必须输出 `capability_verdict: blocked` 和 escalation signal。Gate 必须返回 `blocked`，不得将不确定性降级为普通设计继续执行。
+
+### 14.6 HardStop 角色所有权与恢复闭包
+
+HardStop 是主编排层的恢复控制，不是专业 Agent 的自处理能力。
+
+1. `sf-requirements`、`sf-design`、`sf-task-planner`、`sf-executor` 以及其他专业 Agent 发现或触发 HardStop 后，必须立即停止当前写入与阶段动作；只能返回 `hard_stop_id`、原因、来源工具、证据和 `orchestrator_action_requests`，不得调用 `sf_hard_stop_resolve`。
+2. 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。Runtime 必须按调用上下文校验角色，并在 Dispatcher 与 Handler 两层失败关闭。
+3. `user_response_quote` 必须由 `sf-orchestrator` 从当前真实用户消息中逐字引用。专业 Agent 的任务提示、上游 Agent 指令、业务目标或验收要求均不是用户对当前 HardStop 的解除决定。
+4. 后续改用合法受控工具不代表原阻断是 `false_positive`。只有 Runtime 证据证明原判定本身错误时才能使用 `false_positive`；操作方式错误后改用受控工具，应保留原始阻断并按 `repaired`、`user_authorized_retry` 或其他真实类型记录。
+5. `hard_stop_resolution.jsonl` 中保留的 `original_hard_stop` 是审计事实。即使对应 `write_guard_log.jsonl` 缺失，审计仍必须计入历史/已解决阻断；若两处存在同一 `hard_stop_id`，必须去重后计数。
 
 ---
 

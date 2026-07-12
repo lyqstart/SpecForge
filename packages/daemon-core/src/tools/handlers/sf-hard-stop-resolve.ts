@@ -44,14 +44,38 @@ function optionalString(args: Record<string, unknown>, key: string): string | un
 function optionalStringArray(args: Record<string, unknown>, key: string): string[] | undefined {
   const value = args[key];
   if (!Array.isArray(value)) return undefined;
-  return value.map((item) => String(item ?? '').trim()).filter((item) => item.length > 0);
+  return value.map(item => String(item ?? '').trim()).filter(item => item.length > 0);
 }
 
 function shouldInstallAuthorization(args: Record<string, unknown>): boolean {
-  return args['install_authorization'] === true || String(args['authorization_type'] ?? '').trim().length > 0;
+  return (
+    args['install_authorization'] === true ||
+    String(args['authorization_type'] ?? '').trim().length > 0
+  );
+}
+
+function normalizeAgentName(value: unknown): string {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, '-');
 }
 
 registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
+  const callerAgent = normalizeAgentName(context?.agent);
+  if (callerAgent !== 'sf-orchestrator') {
+    return {
+      success: false,
+      error: 'HARD_STOP_RESOLVE_ORCHESTRATOR_ONLY',
+      message:
+        'Only sf-orchestrator may resolve a HardStop. Professional agents must return the HardStop evidence and an orchestrator_action_request instead.',
+      denied: true,
+      caller_agent: callerAgent || 'unknown',
+      required_agent: 'sf-orchestrator',
+      retry_allowed: false,
+    };
+  }
+
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = String(args['work_item_id'] ?? '');
   const idError = validateWorkItemId(workItemId);
@@ -82,7 +106,12 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   const active = readJsonIfExists(activePath);
 
   if (!active || active.blocked !== true || active.resolved === true) {
-    return { success: false, error: 'NO_ACTIVE_HARD_STOP', work_item_id: workItemId, retry_allowed: true };
+    return {
+      success: false,
+      error: 'NO_ACTIVE_HARD_STOP',
+      work_item_id: workItemId,
+      retry_allowed: true,
+    };
   }
 
   const requestedHardStopId = String(args['hard_stop_id'] ?? '').trim();
@@ -108,21 +137,30 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
     allowed_next_action: String(args['allowed_next_action'] ?? ''),
     evidence: Array.isArray(args['evidence']) ? args['evidence'] : [],
     original_hard_stop: active,
-    resolved_by: String((context as any)?.agent ?? 'unknown'),
+    resolved_by: callerAgent,
+    decision_source: 'sf-orchestrator_user_context',
   };
 
   fs.mkdirSync(wiDir, { recursive: true });
-  fs.appendFileSync(path.join(wiDir, 'hard_stop_resolution.jsonl'), JSON.stringify(entry) + '\n', 'utf-8');
+  fs.appendFileSync(
+    path.join(wiDir, 'hard_stop_resolution.jsonl'),
+    JSON.stringify(entry) + '\n',
+    'utf-8'
+  );
 
   let authorization: any = null;
   if (shouldInstallAuthorization(args as Record<string, unknown>)) {
     authorization = appendWriteGuardAuthorization(baseDir, {
       source_hard_stop_id: active.hard_stop_id ?? null,
       work_item_id: workItemId,
-      authorization_type: optionalString(args as Record<string, unknown>, 'authorization_type') ?? 'user_accepted_external_ops',
+      authorization_type:
+        optionalString(args as Record<string, unknown>, 'authorization_type') ??
+        'user_accepted_external_ops',
       scope: optionalString(args as Record<string, unknown>, 'authorization_scope') ?? 'work_item',
       tool: optionalString(args as Record<string, unknown>, 'authorization_tool') ?? 'sf_safe_bash',
-      intent: optionalString(args as Record<string, unknown>, 'authorization_intent') ?? optionalString(args as Record<string, unknown>, 'intent'),
+      intent:
+        optionalString(args as Record<string, unknown>, 'authorization_intent') ??
+        optionalString(args as Record<string, unknown>, 'intent'),
       command_family:
         optionalString(args as Record<string, unknown>, 'authorization_command_family') ??
         optionalString(args as Record<string, unknown>, 'command_family'),
@@ -132,11 +170,15 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
       container_targets:
         optionalStringArray(args as Record<string, unknown>, 'authorization_container_targets') ??
         optionalStringArray(args as Record<string, unknown>, 'container_targets'),
-      image: optionalString(args as Record<string, unknown>, 'authorization_image') ?? optionalString(args as Record<string, unknown>, 'image'),
-      expires_when: optionalString(args as Record<string, unknown>, 'authorization_expires_when') ?? 'work_item_closed',
+      image:
+        optionalString(args as Record<string, unknown>, 'authorization_image') ??
+        optionalString(args as Record<string, unknown>, 'image'),
+      expires_when:
+        optionalString(args as Record<string, unknown>, 'authorization_expires_when') ??
+        'work_item_closed',
       user_response_quote: userQuote,
       reason: String(args['authorization_reason'] ?? args['reason'] ?? ''),
-      created_by: String((context as any)?.agent ?? 'unknown'),
+      created_by: callerAgent,
     });
   }
 
@@ -148,18 +190,29 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
     hard_stop_id: active.hard_stop_id ?? null,
     resolution_type: resolutionType,
     cleared,
-    resolution_log: path.relative(baseDir, path.join(wiDir, 'hard_stop_resolution.jsonl')).replace(/\\/g, '/'),
+    resolution_log: path
+      .relative(baseDir, path.join(wiDir, 'hard_stop_resolution.jsonl'))
+      .replace(/\\/g, '/'),
     authorization_installed: authorization !== null,
     authorization,
     authorization_log: authorization
       ? path
-          .relative(baseDir, path.join(baseDir, SPEC_DIR_NAME, 'project', 'policies', 'write_guard_authorizations.jsonl'))
+          .relative(
+            baseDir,
+            path.join(
+              baseDir,
+              SPEC_DIR_NAME,
+              'project',
+              'policies',
+              'write_guard_authorizations.jsonl'
+            )
+          )
           .replace(/\\/g, '/')
       : undefined,
     message: cleared
       ? authorization
         ? 'hard_stop resolved and project-level write_guard authorization installed; original record preserved in hard_stop_resolution.jsonl'
-        : 'hard_stop resolved with structured user decision; original record preserved in hard_stop_resolution.jsonl'
+        : 'hard_stop resolved by sf-orchestrator with structured decision evidence; original record preserved in hard_stop_resolution.jsonl'
       : 'resolution record written, but active hard_stop latch could not be cleared',
   };
 });

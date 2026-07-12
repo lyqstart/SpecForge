@@ -5,6 +5,7 @@
  * - Normalize core JSON artifact schemas before validation.
  * - Candidate paths are canonicalized for candidate_manifest.json.
  * - executor-like agents cannot write governed artifacts.
+ * - Professional Candidate artifacts are writable only by their owning agent.
  */
 import path from 'path';
 import * as fs from 'node:fs';
@@ -302,32 +303,20 @@ function normalizeWorkItemJsonArtifact(input: {
 }): Record<string, unknown> {
   const wiDir = path.join(input.baseDir, SPEC_DIR_NAME, 'work-items', input.workItemId);
   const existing = readJsonIfExists(path.join(wiDir, 'work_item.json')) ?? {};
-
-  const existingStatus = typeof existing.status === 'string' ? existing.status : undefined;
-  const requestedStatus = typeof input.parsed.status === 'string' ? input.parsed.status : undefined;
-  const statusMutation =
-    existingStatus && requestedStatus && requestedStatus !== existingStatus
-      ? `${existingStatus}->${requestedStatus}`
-      : undefined;
+  const existingMetadata = { ...existing };
+  delete existingMetadata.status;
+  delete existingMetadata.work_item_status_mutation_forbidden;
 
   const normalized = {
-    ...existing,
+    ...existingMetadata,
     ...input.parsed,
     schema_version: input.parsed.schema_version ?? existing.schema_version ?? '1.1',
     work_item_id: input.parsed.work_item_id ?? existing.work_item_id ?? input.workItemId,
-    status: input.parsed.status ?? existing.status ?? 'created',
     workflow_type:
       input.parsed.workflow_type ?? existing.workflow_type ?? input.workflowType ?? 'quick_change',
     workflow_path: input.parsed.workflow_path ?? existing.workflow_path ?? input.workflowPath,
     updated_at: new Date().toISOString(),
   };
-
-  if (statusMutation) {
-    return {
-      ...normalized,
-      work_item_status_mutation_forbidden: statusMutation,
-    };
-  }
 
   const forbiddenDecisionFields = findForbiddenWorkItemDecisionFields(normalized);
   if (forbiddenDecisionFields.length > 0) {
@@ -337,6 +326,54 @@ function normalizeWorkItemJsonArtifact(input: {
   }
 
   return normalized;
+}
+
+function normalizeTriggerResultUnknowns(parsed: Record<string, unknown>): Record<string, unknown> {
+  const classification =
+    typeof parsed.classification === 'object' &&
+    parsed.classification !== null &&
+    !Array.isArray(parsed.classification)
+      ? { ...(parsed.classification as Record<string, unknown>) }
+      : parsed.classification;
+
+  const topLevelUnknowns = parsed.unknowns;
+  const classificationUnknowns =
+    classification && typeof classification === 'object' && !Array.isArray(classification)
+      ? (classification as Record<string, unknown>).unknowns
+      : undefined;
+
+  if (topLevelUnknowns !== undefined && !Array.isArray(topLevelUnknowns)) {
+    throw new Error('TRIGGER_RESULT_TOP_LEVEL_UNKNOWNS_MUST_BE_ARRAY');
+  }
+  if (classificationUnknowns !== undefined && !Array.isArray(classificationUnknowns)) {
+    throw new Error('TRIGGER_RESULT_CLASSIFICATION_UNKNOWNS_MUST_BE_ARRAY');
+  }
+  if (
+    Array.isArray(topLevelUnknowns) &&
+    Array.isArray(classificationUnknowns) &&
+    JSON.stringify(topLevelUnknowns) !== JSON.stringify(classificationUnknowns)
+  ) {
+    throw new Error('TRIGGER_RESULT_UNKNOWNS_CONFLICT');
+  }
+
+  const canonicalUnknowns = Array.isArray(classificationUnknowns)
+    ? classificationUnknowns
+    : Array.isArray(topLevelUnknowns)
+      ? topLevelUnknowns
+      : [];
+
+  const withoutTopLevelUnknowns = { ...parsed };
+  delete withoutTopLevelUnknowns.unknowns;
+  return {
+    ...withoutTopLevelUnknowns,
+    classification:
+      classification && typeof classification === 'object' && !Array.isArray(classification)
+        ? {
+            ...(classification as Record<string, unknown>),
+            unknowns: canonicalUnknowns,
+          }
+        : classification,
+  };
 }
 
 function inferWorkflowFacts(
@@ -502,6 +539,15 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
 
   return normalizedEntry;
 }
+function isEvidenceOnlyNoProjectSpecChange(value: Record<string, unknown>): boolean {
+  return (
+    value.no_project_spec_change === true ||
+    String(value.project_integration_effect ?? '')
+      .trim()
+      .toLowerCase() === 'evidence_only'
+  );
+}
+
 function normalizeCoreJsonArtifact(
   filename: string,
   content: string,
@@ -533,15 +579,15 @@ function normalizeCoreJsonArtifact(
   }
 
   if (filename === 'trigger_result.json') {
+    const canonical = normalizeTriggerResultUnknowns(parsed as Record<string, unknown>);
     return JSON.stringify(
       {
-        ...parsed,
-        schema_version: parsed.schema_version ?? '1.1',
-        work_item_id: parsed.work_item_id ?? workItemId,
-        workflow_path: parsed.workflow_path ?? workflowPath,
-        workflow_type: parsed.workflow_type ?? workflowType,
-        status: parsed.status ?? 'triggered',
-        unknowns: Array.isArray(parsed.unknowns) ? parsed.unknowns : [],
+        ...canonical,
+        schema_version: canonical.schema_version ?? '1.1',
+        work_item_id: canonical.work_item_id ?? workItemId,
+        workflow_path: canonical.workflow_path ?? workflowPath,
+        workflow_type: canonical.workflow_type ?? workflowType,
+        status: canonical.status ?? 'triggered',
       },
       null,
       2
@@ -567,9 +613,38 @@ function normalizeCoreJsonArtifact(
     }
     validateCandidateManifestModuleOwnership(canonicalParsed, baseDir);
 
+    const normalizedWorkflowPath = canonicalParsed.workflow_path ?? workflowPath;
+    const evidenceOnly = isEvidenceOnlyNoProjectSpecChange(canonicalParsed);
+    if (evidenceOnly || normalizedWorkflowPath === 'code_only_fast_path') {
+      const normalized: Record<string, unknown> = {
+        ...canonicalParsed,
+        schema_version: canonicalParsed.schema_version ?? '1.1',
+        work_item_id: canonicalParsed.work_item_id ?? workItemId,
+        workflow_path: normalizedWorkflowPath,
+        merge_applicable: false,
+        merge_required: false,
+        entries: [],
+      };
+      delete normalized.candidates;
+      delete normalized.candidate_artifacts;
+
+      if (evidenceOnly) {
+        normalized.no_project_spec_change = true;
+        normalized.project_integration_effect = 'evidence_only';
+        normalized.reason =
+          normalized.reason ??
+          'evidence_only: Work Item artifacts remain evidence and are not merged into Project Spec';
+      } else {
+        normalized.reason =
+          normalized.reason ?? 'code_only_fast_path: no spec-level candidate products';
+      }
+
+      return JSON.stringify(normalized, null, 2);
+    }
+
     const preliminary = {
       ...canonicalParsed,
-      workflow_path: canonicalParsed.workflow_path ?? workflowPath,
+      workflow_path: normalizedWorkflowPath,
     };
     const rawEntries =
       Array.isArray(canonicalParsed.entries) && canonicalParsed.entries.length > 0
@@ -583,16 +658,9 @@ function normalizeCoreJsonArtifact(
       ...canonicalParsed,
       schema_version: canonicalParsed.schema_version ?? '1.1',
       work_item_id: canonicalParsed.work_item_id ?? workItemId,
-      workflow_path: canonicalParsed.workflow_path ?? workflowPath,
+      workflow_path: normalizedWorkflowPath,
       entries,
     };
-
-    if (normalized.workflow_path === 'code_only_fast_path') {
-      normalized.merge_applicable = false;
-      normalized.merge_required = false;
-      normalized.reason =
-        normalized.reason ?? 'code_only_fast_path: no spec-level candidate products';
-    }
 
     return JSON.stringify(normalized, null, 2);
   }
@@ -619,9 +687,48 @@ function normalizeCoreJsonArtifact(
   return content;
 }
 
+function normalizeAgentName(value: unknown): string {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, '-');
+}
+
 function isExecutorLike(context: any): boolean {
-  const agent = String(context?.agent ?? '').toLowerCase();
-  return agent.includes('executor');
+  return normalizeAgentName(context?.agent).includes('executor');
+}
+
+const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
+  ['requirements', 'sf-requirements'],
+  ['candidate_requirements', 'sf-requirements'],
+  ['design', 'sf-design'],
+  ['candidate_design', 'sf-design'],
+  ['tasks', 'sf-task-planner'],
+  ['candidate_tasks', 'sf-task-planner'],
+  ['trace_delta', 'sf-task-planner'],
+  ['candidate_trace_delta', 'sf-task-planner'],
+]);
+
+function rejectProfessionalArtifactOwnership(fileType: string, context: any): any | null {
+  const requiredAgent = PROFESSIONAL_ARTIFACT_OWNERS.get(String(fileType ?? ''));
+  if (!requiredAgent) return null;
+
+  const callerAgent = normalizeAgentName(context?.agent) || 'unknown';
+  if (callerAgent === requiredAgent) return null;
+
+  return {
+    success: false,
+    error: 'ARTIFACT_OWNER_MISMATCH',
+    hard_stop: false,
+    policy_violation: true,
+    retry_allowed: true,
+    file_type: fileType,
+    caller_agent: callerAgent,
+    required_agent: requiredAgent,
+    message:
+      `Artifact type "${fileType}" is owned by ${requiredAgent}. ` +
+      'sf-orchestrator must re-dispatch the owning professional agent instead of writing the artifact itself.',
+  };
 }
 
 const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
@@ -671,6 +778,9 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
   const initialExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (initialExecutorRejection) return initialExecutorRejection;
 
+  const initialOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
+  if (initialOwnershipRejection) return initialOwnershipRejection;
+
   const idError = validateWorkItemId(workItemId);
   if (idError) return { success: false, error: idError, hard_stop: false, retry_allowed: true };
 
@@ -689,6 +799,9 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
 
   const inferredExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (inferredExecutorRejection) return inferredExecutorRejection;
+
+  const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
+  if (inferredOwnershipRejection) return inferredOwnershipRejection;
 
   let candidateModuleId: string | undefined;
   if (

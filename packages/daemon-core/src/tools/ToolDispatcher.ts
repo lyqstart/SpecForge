@@ -4,7 +4,8 @@
  *
  * OBS-FULL Layer 1:
  * - records daemon dispatcher ingress/routing/success/error;
- * - preserves existing RBAC behavior.
+ * - preserves existing RBAC behavior;
+ * - enforces state-entry artifact prerequisites for registered handlers.
  */
 import { resolveToolPermission, extractActor, extractEnableRBAC } from './lib/tool-permissions';
 import { recordDaemonObservation } from '../observability/observability-recorder';
@@ -49,7 +50,14 @@ type ToolHandler = (
 const HANDLER_TABLE: Record<string, ToolHandler> = {};
 
 export function registerHandler(toolName: string, handler: ToolHandler): void {
-  HANDLER_TABLE[toolName] = handler;
+  HANDLER_TABLE[toolName] =
+    toolName === 'sf_state_transition'
+      ? async (args, context, deps) => {
+          const prerequisiteRejection = validateStateTransitionPrerequisites(args, context);
+          if (prerequisiteRejection) return prerequisiteRejection;
+          return handler(args, context, deps);
+        }
+      : handler;
 }
 
 export function getHandler(toolName: string): ToolHandler | undefined {
@@ -63,6 +71,67 @@ function extractWorkItemId(args: Record<string, unknown>): string | undefined {
   }
   return undefined;
 }
+
+function normalizeAgentName(value: unknown): string {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, '-');
+}
+
+function isSfOrchestratorContext(context: ToolInvokeRequest['context']): boolean {
+  return normalizeAgentName(context?.agent) === 'sf-orchestrator';
+}
+
+function resolveProjectRoot(context: ToolInvokeRequest['context']): string {
+  return (
+    (typeof context?.directory === 'string' && context.directory) ||
+    (typeof context?.worktree === 'string' && context.worktree) ||
+    (typeof context?.projectPath === 'string' && context.projectPath) ||
+    process.cwd()
+  );
+}
+
+function validateStateTransitionPrerequisites(
+  args: Record<string, unknown>,
+  context: ToolInvokeRequest['context']
+): Record<string, unknown> | null {
+  const fromState = String(args.from_state ?? '');
+  const toState = String(args.to_state ?? '');
+  if (fromState !== 'created' || toState !== 'intake_ready') return null;
+
+  const workItemId = extractWorkItemId(args);
+  if (!workItemId || !/^WI-\d{4,}$/.test(workItemId)) return null;
+
+  const intakePath = path.join(
+    resolveProjectRoot(context),
+    SPEC_DIR_NAME,
+    'work-items',
+    workItemId,
+    'intake.md'
+  );
+
+  try {
+    if (fs.readFileSync(intakePath, 'utf8').trim().length > 0) return null;
+  } catch {
+    // Return the same fail-closed result for a missing or unreadable intake artifact.
+  }
+
+  return {
+    success: false,
+    error: 'STATE_PREREQUISITE_MISSING',
+    code: 'INTAKE_ARTIFACT_REQUIRED',
+    retry_allowed: true,
+    work_item_id: workItemId,
+    from_state: fromState,
+    to_state: toState,
+    required_artifact: 'intake.md',
+    message:
+      'created -> intake_ready requires a non-empty intake.md written through the controlled artifact path before the state can advance.',
+  };
+}
+
+const ORCHESTRATOR_ONLY_TOOLS = new Set(['sf_hard_stop_resolve']);
 
 const TERMINAL_WORK_ITEM_STATES = new Set(['closed', 'rejected', 'superseded']);
 
@@ -151,6 +220,32 @@ export class ToolDispatcher {
       throw error;
     }
 
+    if (ORCHESTRATOR_ONLY_TOOLS.has(req.tool) && !isSfOrchestratorContext(ctx)) {
+      const callerAgent = normalizeAgentName(ctx?.agent) || 'unknown';
+      const result = {
+        success: false,
+        error: 'HARD_STOP_RESOLVE_ORCHESTRATOR_ONLY',
+        message:
+          'sf_hard_stop_resolve is reserved for sf-orchestrator. Professional agents must stop and return the HardStop evidence to the Orchestrator.',
+        denied: true,
+        caller_agent: callerAgent,
+        required_agent: 'sf-orchestrator',
+      };
+
+      recordDaemonObservation({
+        context: ctx,
+        category: 'dispatcher',
+        phase: 'dispatch.role_boundary',
+        trace_id,
+        tool_name: req.tool,
+        work_item_id,
+        status: 'denied',
+        payload: result,
+        force: true,
+      });
+      return result;
+    }
+
     const actor = extractActor(ctx);
     const enableRBAC = extractEnableRBAC(ctx);
     const decision = resolveToolPermission({
@@ -182,11 +277,7 @@ export class ToolDispatcher {
       };
     }
 
-    const projectRoot =
-      (typeof ctx?.directory === 'string' && ctx.directory) ||
-      (typeof ctx?.worktree === 'string' && ctx.worktree) ||
-      (typeof ctx?.projectPath === 'string' && ctx.projectPath) ||
-      process.cwd();
+    const projectRoot = resolveProjectRoot(ctx);
 
     const hardStopContext = resolveHardStopContext(projectRoot, work_item_id);
 

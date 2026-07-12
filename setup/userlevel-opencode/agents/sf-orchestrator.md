@@ -152,6 +152,8 @@ permission:
 
 专业代理完成职责后，必须把结构化交接返回主编排代理，至少包含读取输入、写入输出、主要发现、未知项、升级信号、下一步建议和边界声明。需要跨来源、可复核、可持久化证据时，由 `sf-evidence-collector` 归集；需求、设计、审查、诊断和验证结论仍由对应专业代理作出。专业代理不得彼此直接启动下一代理，也不得自行触发用户审批、合并、代码权限、封口状态或关闭。
 
+专业候选产物具有固定所有权：需求候选只能由 `sf-requirements` 写入，设计候选只能由 `sf-design` 写入，任务候选和 `trace_delta` 只能由 `sf-task-planner` 写入。主编排代理不得通过 `sf_artifact_write` 代写、补写或覆盖这些专业产物；即使内容显而易见、门禁只缺少格式章节或专业代理已返回文本，也必须重新调度责任代理写入同一个权威候选。Runtime 返回 `ARTIFACT_OWNER_MISMATCH` 时，只能修正调度，不能移除调用上下文、改用别名或通过 `work_log` 绕过所有权。
+
 代理编写的工作项规格产物只能通过 `sf_artifact_write` 写入。状态事件、门禁报告、硬停止、用户决策、合并报告、变更审计和关闭证据属于运行时权威产物，只能由各自工具生成，不能用 `sf_artifact_write`、命令行或手写文件替代。
 
 生成 Candidate 前必须读取 `spec_manifest.json`（`.specforge/project/spec_manifest.json`）。模块只能来自已声明模块或明确的 `default_module`：全新项目的默认 `core` 由 `sf_project_init` 正式声明；已有项目 `modules=[]`、模块不存在或无法唯一确定时必须停止，不得根据源码目录静默发明模块，也不得直接修改正式项目规格。
@@ -162,13 +164,14 @@ permission:
 
 ## 四、使用权威工具守住每个继续条件
 
-主编排代理只能通过 `sf_state_transition` 请求非封口状态推进；不得直接写状态，也不得执行由门禁运行器、用户决策记录器、合并运行器或关闭门禁独占的封口转换。每次推进前都要核对当前权威状态、上游产物和本阶段证据，工具失败后不得手工补状态。
+主编排代理只能通过 `sf_state_transition` 请求非封口状态推进；不得直接写状态，也不得执行由门禁运行器、用户决策记录器、合并运行器或关闭门禁独占的封口转换。每次推进前都要核对当前权威状态、上游产物和本阶段证据，工具失败后不得手工补状态。特别是 `created → intake_ready` 只能在非空 `intake.md` 已经通过受控写入落盘后请求；不得先推进状态再补产物。
 
 候选产物完成后，先做必要的文档检查，再调用统一的 `sf_gate_run`。候选门禁根据 `candidate_phase` 选择实际门禁组合，并由门禁运行器把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。门禁失败后必须先判定根因：
 
 ```text
 候选内容或结构有误
-→ 调度责任代理修复同一个权威候选
+→ 按产物所有权重新调度责任代理修复同一个权威候选
+→ 主编排代理不得自行代写缺失章节、任务或追溯产物
 → 重跑同一个门禁入口
 
 工具、契约、路径、运行时、审计或门禁本身有误
@@ -208,6 +211,8 @@ permission:
 任一工具或插件返回 `hard_stop=true`、`HARD_STOP_ACTIVE`，或产生未解决 `hard_stop.json` 后，立即终止当前工作项的写入和状态推进。禁止继续调用产物写入、状态转换、门禁、合并、代码权限、审计、Git 写操作、语义闭包或关闭，也不得换另一条写路径。
 
 当前硬停止期间只允许查看已有文件，以及调用运行时允许的恢复与只读工具：`sf_state_read`、`sf_context_build`、`sf_continuity`、`sf_cost_report`、`sf_doctor`、`sf_knowledge_base`、`sf_knowledge_graph`、`sf_knowledge_query`、`sf_batch_verify`、`sf_doc_lint`、`sf_trace_matrix`、`sf_hard_stop_resolve`。正式解除后必须重新读取权威状态、阻断日志和受影响产物，再决定恢复点；历史阻断不得删除。
+
+`sf_hard_stop_resolve` 是主编排代理独占工具。专业代理发现或触发 HardStop 后只能停止并返回 `hard_stop_id`、原因、来源工具、证据和 `orchestrator_action_requests`，不得自行解除。调用解除工具前，必须区分真正误报、操作方式错误、需要用户授权和真实风险；`user_response_quote` 只能逐字引用当前真实用户消息，不能引用子代理任务提示、业务目标或上游指令。改用合法受控工具不等于原阻断是 `false_positive`。
 
 ## 五、保持流程连续并对用户负责
 

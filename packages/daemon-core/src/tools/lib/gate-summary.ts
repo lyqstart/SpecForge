@@ -28,7 +28,7 @@ export type GateSummaryStatus =
 export function generateGateSummaryMd(
   workItemId: string,
   reports: GateReportV11[],
-  overallStatus: GateSummaryStatus,
+  overallStatus: GateSummaryStatus
 ): string {
   const lines: string[] = [
     `# Gate Summary`,
@@ -64,9 +64,9 @@ export function generateGateSummaryMd(
   lines.push('## User Decision Required');
   lines.push('');
   if (overallStatus === 'passed') {
-    lines.push('All gates passed. User may approve to proceed to merge.');
+    lines.push('All required gates passed. Non-blocking warnings do not require a waiver.');
   } else if (overallStatus === 'passed_with_waiver_required') {
-    lines.push('Some soft gates failed with warnings. User may approve with waiver.');
+    lines.push('One or more Gate Reports explicitly require a waiver before approval.');
   } else {
     lines.push('Some hard gates failed. User cannot approve until issues are resolved.');
   }
