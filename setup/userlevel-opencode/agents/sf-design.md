@@ -176,10 +176,14 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 `capability_verdict` 的含义：
 
-- `reuse_existing`：现有体系可以直接解决；
-- `extend_existing`：最小扩展现有体系即可解决；
-- `new_capability_required`：现有体系无法承载，确需新增能力；
-- `blocked`：真实架构、证据或用户决策不足，禁止继续。
+- `reuse_existing`：SpecForge 现有治理链可以直接完成分析、Gate、状态推进与审计；
+- `extend_existing`：只需最小扩展 SpecForge 现有 Standard、Contract、Skill、Agent、Tool、Runtime 或 Audit；
+- `new_capability_required`：SpecForge 现有治理体系即使最小扩展也无法承载，确需新增治理能力；
+- `blocked`：真实架构、治理证据或用户决策不足，禁止继续。
+
+`capability_verdict` 的裁决对象只能是 **SpecForge 治理链**，不能是目标项目的 `StateStore`、数据库、服务、接口、运行时 API 或其他技术方案。比如“目标项目需要扩展 StateStore 以使用 AsyncLocalStorage”属于 `Solution Strategy`，不等于 `capability_verdict: extend_existing`；如果现有 Workflow、Agent、Gate、Runtime 和 Audit 已能直接治理该设计，则必须裁决为 `reuse_existing`。
+
+Design-Only 只是当前执行边界，不是变更性质。填写 `trigger_result.json.classification` 时，必须按用户目标实现后的预期最终语义判断；不得因为本轮不写代码就把 `architecture_changed`、`acceptance_criteria_changed`、`data_semantics_changed` 等字段全部写成 `false`。运行时支持、API 兼容性、调用范围等未证实事实必须进入 `classification.unknowns`。
 
 选择 `new_capability_required` 时，必须额外写：
 
@@ -434,7 +438,9 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 以及七个固定章节，不得另建 `design_governance_analysis.md`、`architecture_analysis.md` 或其他旁路产物。
 
-固定章节标题必须逐字使用上述七个名称；`Actual Architecture`、`Governance Capability Assessment`、`Recommended Approach` 等近义标题不能替代。设计 Agent 只能通过 `sf_artifact_write(file_type=design)` 写入一次，由现有 Path Service 路由到权威 Candidate 路径，不得为了适配不同 Gate 再复制顶层 `design.md`。
+固定章节标题必须逐字使用上述七个名称；`Actual Architecture`、`Governance Capability Assessment`、`Recommended Approach` 等近义标题不能替代。七个固定章节使用 `##`，章节内部可以直接使用 `###`、`####` 子标题，不需要为绕过 Gate 在标题后添加填充段落。设计 Agent 只能通过 `sf_artifact_write(file_type=design)` 写入一次，由现有 Path Service 路由到权威 Candidate 路径，不得为了适配不同 Gate 再复制顶层 `design.md`。
+
+写入前必须读取 `spec_manifest.json`，确定现有模块所有权。Candidate 的 `module_id` 只能使用已声明模块；源码目录名与规格模块名不一致时，必须在 `Impact Analysis` 中写明映射依据，不得静默从 `runtime` 改为 `core`，也不得为适配目录临时新增模块。
 
 **完整设计输出格式要求**：
 - 每个设计决策使用标准化标记格式：`### DD-N 标题`

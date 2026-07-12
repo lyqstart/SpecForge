@@ -572,9 +572,17 @@ tasks/full:
 
 Design-Only 验收明确停止在 `approval_required` 时，不要求 requirements、tasks、trace_delta，不得创建 `NOT PRODUCED` 占位产物。
 
+生成 Candidate 前必须读取 `spec_manifest.json` 并通过现有 Path Service 确认 `module_id`。源码目录名不能直接当作规格模块名；若问题位于 `src/runtime/**` 而 manifest 仅声明 `core`，应路由到 `core` 并在 impact/manifest 中说明所有权映射，禁止静默改名或临时创建模块。
+
 ## 四、trigger_result.json 结构
 
-`classification` 必须是完整对象，不能写成 `"architecture_change"` 等字符串：
+`classification` 必须是完整对象，不能写成 `"architecture_change"` 等字符串。
+
+分类对象描述的是**用户目标实现后的预期最终语义影响**，不是本轮允许执行的动作清单。`candidate_phase=design`、`code_change_required=false` 或“本轮不实施”都不能作为把 `architecture_changed`、`acceptance_criteria_changed` 等字段写成 `false` 的理由。所有未确认的运行时支持、API 兼容性、调用范围和模块归属必须写入 `classification.unknowns`。
+
+调度 `sf-design` 时，必须把用户原始问题和真实证据放在 prompt 主体中；验收清单只能作为附加约束，不能用一组“必须 PASS 的断言”替代原始问题，否则 Agent 会围绕清单造产物而不是判断真实变更性质。
+
+`capability_verdict` 必须评价 SpecForge 的 `Standard → Contract → Workflow Skill → Agent → Tool → Runtime → Audit` 是否能治理本次问题，不得用目标项目业务模块是否需要扩展来裁决。目标项目的 StateStore、数据库、服务或接口改造属于设计方案，不属于治理能力裁决。
 
 ```json
 {

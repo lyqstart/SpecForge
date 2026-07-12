@@ -756,16 +756,24 @@ export function extractCPTestTypes(content: string): Array<{
 
 function extractMarkdownSection(content: string, sectionName: string): string {
   const headingPattern = new RegExp(
-    `^#{1,6}\\s+(?:\\d+[.、)]\\s*)?${escapeRegExp(sectionName)}\\s*$`,
+    `^(#{1,6})\\s+(?:\\d+[.、)]\\s*)?${escapeRegExp(sectionName)}\\s*$`,
     'im'
   );
   const headingMatch = headingPattern.exec(content);
   if (!headingMatch) return '';
 
+  const currentLevel = headingMatch[1].length;
   const bodyStart = headingMatch.index + headingMatch[0].length;
   const rest = content.slice(bodyStart);
-  const nextHeading = /^#{1,6}\s+/m.exec(rest);
-  return (nextHeading ? rest.slice(0, nextHeading.index) : rest).trim();
+  const headingIterator = rest.matchAll(/^(#{1,6})\s+/gm);
+
+  for (const nextHeading of headingIterator) {
+    if (nextHeading[1].length <= currentLevel) {
+      return rest.slice(0, nextHeading.index).trim();
+    }
+  }
+
+  return rest.trim();
 }
 
 function escapeRegExp(value: string): string {

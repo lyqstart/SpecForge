@@ -1554,10 +1554,16 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 `capability_verdict` 含义：
 
-- `reuse_existing`：现有治理链可以直接解决，不需要架构扩展；
-- `extend_existing`：优先对现有 Standard、Contract、Skill、Agent、Tool、Runtime 或 Audit 做最小扩展；
-- `new_capability_required`：现有体系确实无法承载，允许提出新增能力；
+- `reuse_existing`：SpecForge 现有治理链可以直接完成本次分析、Gate、状态推进和审计，不需要治理能力扩展；
+- `extend_existing`：只需对 SpecForge 现有 Standard、Contract、Skill、Agent、Tool、Runtime 或 Audit 做最小扩展；
+- `new_capability_required`：SpecForge 现有治理体系即使最小扩展也无法承载，确需新增治理能力；
 - `blocked`：真实架构、治理证据或用户决策不足，禁止继续流转。
+
+`capability_verdict` 的裁决对象必须是 **SpecForge 治理链**，不是目标项目的业务模块、运行时库或技术方案。目标项目是否复用或扩展 `StateStore`、数据库、服务、接口或第三方库，必须写入 `Existing Architecture Analysis`、`Solution Strategy` 或 Design Decision，不得据此把治理能力裁决写成 `extend_existing` 或 `new_capability_required`。
+
+`candidate_phase` 只表示当前 Work Item 执行到哪个 Candidate 阶段并在哪里停止，不改变用户目标最终会造成的语义影响。即使本轮是 Design-Only、没有代码写入，也必须按目标方案的预期最终状态填写 `classification`：状态权威、模块边界或架构将发生变化时，相关字段必须为 `true`；尚未确认的运行时支持、兼容性、调用范围等事实必须进入 `classification.unknowns`，不得因为“本轮不实施”而写成全部 `false` 或空数组。
+
+七个固定章节使用二级标题（`##`）作为 Gate 边界；章节内部允许直接包含 `###`、`####` 等子标题。Gate 提取章节内容时只能在下一个同级或更高级标题处结束，不得把子标题误判为章节结束。
 
 选择 `new_capability_required` 时，还必须提供：
 
@@ -1581,6 +1587,8 @@ new_capability_justification: <充分理由>
 #### 14.5.5 产物与阻断
 
 Design Governance 必须写入当前 Workflow 已有的设计类产物，例如 `design.md`、`design_delta.md`、`refactor_analysis.md`、`refactor_plan.md` 或 `findings_report.md`，不得仅为承载分析而发明新的产物类型。
+
+Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json` 与统一 Path Service，不能根据源码目录名临时发明模块。若用户问题指向 `src/runtime/**`，但项目规格只声明 `core` 为所属模块，应写入 `core` 并在 `Impact Analysis` 与 manifest 中说明映射依据；不得先声明 `runtime`，随后静默改写为 `core`。
 
 真实实现未知、根因未证实、治理归属冲突或证据不足时，Design Agent 必须输出 `capability_verdict: blocked` 和 escalation signal。Gate 必须返回 `blocked`，不得将不确定性降级为普通设计继续执行。
 

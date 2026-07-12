@@ -149,6 +149,29 @@ describe('Design Governance gate', () => {
     expect(result.details?.capability_verdict).toBe('extend_existing');
   });
 
+  it('treats nested markdown headings as content of the current governance section', () => {
+    const withNestedHeadings = systemGovernanceDocument('reuse_existing', {
+      'Problem Understanding': `### Symptom
+
+并发请求可能读取到其他请求的 tenant 状态。
+
+### Root Cause
+
+进程级可变状态跨异步调用链共享，破坏请求隔离。`,
+      'Existing Architecture Analysis': `### State Authority
+
+当前唯一状态权威是模块级 currentTenant。
+
+### Write Boundary
+
+RequestHandler 在异步让出点前写入、恢复后读取。`,
+    });
+
+    const result = checkSystemGovernanceContent(withNestedHeadings, true);
+    expect(result.status).toBe('pass');
+    expect(result.details?.capability_verdict).toBe('reuse_existing');
+  });
+
   it('fails when any required governance section is missing or empty', () => {
     const result = checkSystemGovernanceContent(
       systemGovernanceDocument('extend_existing', { 'Impact Analysis': '' })

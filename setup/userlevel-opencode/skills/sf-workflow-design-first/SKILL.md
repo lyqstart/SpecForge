@@ -138,7 +138,9 @@ intake / impact / trigger_result
 
 不得同时写 Work Item 顶层 `design.md`；该路径和旧 `.specforge/specs/<WI>/design.md` 仅供 legacy 只读兼容。Design-Only 不要求 requirements、tasks、trace_delta，也不得创建 `NOT PRODUCED` 占位文件。
 
-`trigger_result.json.classification` 必须是包含九个布尔字段和 `unknowns` 数组的完整对象，不能使用 `"architecture_change"` 等字符串。
+`trigger_result.json.classification` 必须是包含九个布尔字段和 `unknowns` 数组的完整对象，不能使用 `"architecture_change"` 等字符串。分类必须按用户目标实现后的最终语义影响填写；Design-Only 只限制当前阶段，不会把架构变化、状态权威变化、验收标准变化或数据语义变化自动改成 `false`。未证实的运行时支持、API 兼容性、调用范围和模块归属必须进入 `unknowns`。
+
+`capability_verdict` 只评价 SpecForge 现有治理链是否能承载本次分析、Gate、状态推进和审计，不能评价目标项目的 StateStore、数据库、接口或第三方库是否需要扩展。目标项目技术能力的复用或扩展写入 `Solution Strategy`，不占用治理能力裁决。
 
 如果任何 Gate 失败，必须按报告修复同一权威 Candidate 后重新运行同一 Gate Profile；不得改用独立 `sf_design_gate` 或其他入口绕过。`gates_running → approval_required/gates_failed` 由 Gate Runner 推进，Orchestrator 不得手动补状态。
 
@@ -198,10 +200,10 @@ intake / impact / trigger_result
 3. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
 4. **使用 `task` 工具调度子 Agent `sf-design`**。本 Workflow 固定进入系统治理分析，prompt 必须包含：
    - work_item_id 和 spec_directory 路径
-   - intake.md 的内容（注意：此时没有 requirements.md）
+   - 用户原始问题与 intake.md 的完整内容（注意：此时没有 requirements.md）；原始问题必须位于 prompt 主体，验收清单只能作为附加约束
    - 当前代码、目录、项目级规格、配置和运行证据的只读上下文；证据不足时不得猜测
    - `analysis_scope: system_governance`
-   - 指令：按 `sf-design` 契约还原实际架构、定位治理体系、评估现有能力并生成 `candidates/project/modules/<MODULE>/design.candidate.md`；文档必须包含 `capability_verdict` 和七个固定 Design Governance 章节
+   - 指令：按 `sf-design` 契约还原实际架构、定位治理体系、评估 SpecForge 现有治理能力并生成 `candidates/project/modules/<MODULE>/design.candidate.md`；`<MODULE>` 必须来自 `spec_manifest.json`，源码目录与规格模块不一致时说明映射依据；文档必须包含 `capability_verdict` 和七个固定 Design Governance 章节
    - 指令：优先 `reuse_existing` 或 `extend_existing`；只有逐层证明现有体系无法承载时才能使用 `new_capability_required`
 5. 等待子 Agent 完成
 6. 调用 `sf_doc_lint`（work_item_id, doc_type="design"）

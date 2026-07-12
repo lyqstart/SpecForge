@@ -18,15 +18,18 @@ import { getRequiredGates } from '../src/tools/lib/required-gates.js';
 function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
     requirement_changed: false,
-    acceptance_criteria_changed: false,
+    acceptance_criteria_changed: true,
     business_rule_changed: false,
-    user_visible_behavior_changed: false,
-    data_semantics_changed: false,
+    user_visible_behavior_changed: true,
+    data_semantics_changed: true,
     design_changed: true,
-    module_boundary_changed: true,
+    module_boundary_changed: false,
     api_contract_changed: false,
     architecture_changed: true,
-    unknowns: [],
+    unknowns: [
+      'Bun runtime support for request-scoped async context is not yet verified',
+      'Compatibility requirements for setCurrentTenant/getCurrentTenant are unresolved',
+    ],
     ...overrides,
   };
 }
@@ -35,36 +38,48 @@ function designCandidate(): string {
   return `---
 module_id: core
 analysis_scope: system_governance
-capability_verdict: extend_existing
+capability_verdict: reuse_existing
 ---
 
 ## 1. Problem Understanding
 
-当前进程级 tenant 状态在异步让出点后可能被其他请求覆盖，必须建立请求级隔离。
+### Symptom
+
+当前进程级 tenant 状态在异步让出点后可能被其他请求覆盖，导致跨请求串读。
+
+### Target Outcome
+
+每个请求必须在自己的异步调用链中读取自身 tenant，并以并发隔离测试作为验收条件。
 
 ## 2. Existing Architecture Analysis
 
-现有 Architecture 由 RequestHandler、StateStore 组件和进程级状态权威组成；模块边界与 Interface 已依据真实代码核对。
+### State Authority
+
+现有唯一状态权威是 StateStore 中的进程级 currentTenant；RequestHandler 在让出点前写入、恢复后读取。
+
+### Write Boundary
+
+当前写入和读取都经过既有 StateStore 接口，但存储槽位由所有请求共享。
 
 ## 3. Governance Classification
 
-问题属于现有 Runtime 与 Audit 闭环的架构治理扩展，不是缺少新的 Tool、Skill、Agent 或 Router。
+目标项目问题属于状态权威与架构设计变化。SpecForge 治理层继续使用现有 Design-First Skill、sf-design、Gate Runner、Design Gate Core 和 Audit，不需要新增治理组件。
 
 ## 4. Existing Capability Assessment
 
-Standard、Contract、Workflow Skill、Agent、Tool、Runtime 与 Audit 均已存在；现有体系可以通过最小扩展承载，无需新增治理层。
+Standard、Contract、Workflow Skill、Agent、Tool、Runtime 与 Audit 已能直接承载本次系统治理分析、Candidate Gate、approval_required 状态推进和 no-code 审计。
 
 ## 5. Solution Strategy
 
-保留现有治理链，只扩展既有路径消费者、Gate Runner 和阶段审计，使所有组件复用统一路径服务与设计门禁。
+目标项目优先在现有 runtime 模块边界内引入请求级 tenant context；先验证 Bun 异步上下文能力，若不满足则采用显式请求上下文传递。SpecForge 治理链保持不变。
 
 ## 6. Impact Analysis
 
-影响 Design Gate、统一 Gate Runner、Candidate 阶段配置和 changed-files Audit，不改变状态机、Agent 数量或 Tool 注册。
+目标项目将影响 StateStore 状态语义、RequestHandler 调用链和并发验收测试；本次 Design-Only 阶段只生成 Candidate，不修改业务源码。
 
 ## 7. Verification Plan
 
-验证 canonical design candidate、固定七章节、完整 classification、Design-Only Gate Profile、approval_required 状态和无代码审计。
+验证完整 classification、唯一 design Candidate、真实 Design Gate、approval_required 自动推进、no_code_change 审计，以及后续并发请求隔离和单请求回归测试。
 `;
 }
 
@@ -240,6 +255,17 @@ describe('Design Governance live closure', () => {
         2
       )
     );
+
+    const triggerResult = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'trigger_result.json'),
+        'utf8'
+      )
+    );
+    expect(triggerResult.classification.architecture_changed).toBe(true);
+    expect(triggerResult.classification.acceptance_criteria_changed).toBe(true);
+    expect(triggerResult.classification.unknowns).toHaveLength(2);
+    expect(designCandidate()).toContain('capability_verdict: reuse_existing');
 
     const required = getRequiredGates('design_change_path', 'candidate', 'design');
     expect(required).toContain('workflow_specific_gate');
