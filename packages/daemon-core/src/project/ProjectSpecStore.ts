@@ -28,6 +28,15 @@ export interface ProjectSpecManifestV12 {
   project_spec_version: string;
   updated_by_work_item_id: string;
   updated_at: string;
+  default_module: string;
+  modules: Array<{
+    module_id: string;
+    name: string;
+    requirements_file: string;
+    design_file: string;
+    trace_file: string;
+    status: 'active' | 'inactive';
+  }>;
   files: {
     requirements_index: string;
     design_index: string;
@@ -80,7 +89,7 @@ export class ProjectSpecStoreError extends Error {
   constructor(
     message: string,
     public readonly code: string,
-    public readonly details: string[] = [],
+    public readonly details: string[] = []
   ) {
     super(message);
     this.name = 'ProjectSpecStoreError';
@@ -107,7 +116,7 @@ function nextVersion(current: string): string {
     throw new ProjectSpecStoreError(
       `Invalid project spec version: ${current}`,
       'INVALID_PROJECT_SPEC_VERSION',
-      [current],
+      [current]
     );
   }
   const value = Number.parseInt(match[1] ?? '0', 10) + 1;
@@ -121,7 +130,7 @@ function stripProjectPrefix(targetProjectPath: string): string {
     throw new ProjectSpecStoreError(
       'target_project_path must be under .specforge/project/**',
       'TARGET_OUTSIDE_PROJECT_SPEC',
-      [targetProjectPath],
+      [targetProjectPath]
     );
   }
   return normalized.slice(prefix.length);
@@ -162,22 +171,34 @@ export class ProjectSpecStore {
 
   async initializeProjectSpec(workItemId = 'SYSTEM'): Promise<ProjectSpecManifestV12> {
     await fs.mkdir(path.join(this.projectRoot(), 'versions'), { recursive: true });
-    await fs.mkdir(path.join(this.projectRoot(), 'modules'), { recursive: true });
+    await fs.mkdir(path.join(this.projectRoot(), 'modules', 'core'), { recursive: true });
 
     await this.writeFileIfMissing('requirements_index.md', '# Requirements Index\n');
     await this.writeFileIfMissing('design_index.md', '# Design Index\n');
     await this.writeFileIfMissing('architecture.md', '# Architecture\n');
     await this.writeFileIfMissing('trace_matrix.md', '# Trace Matrix\n');
-    await this.writeFileIfMissing('extension_registry.json', JSON.stringify({
-      schema_version: PROJECT_SPEC_STORE_SCHEMA_VERSION,
-      registry_version: 'EXT-0001',
-      extensions: [],
-    }, null, 2) + '\n');
+    await this.writeFileIfMissing('modules/core/requirements.md', '# Core Requirements\n');
+    await this.writeFileIfMissing('modules/core/design.md', '# Core Design\n');
+    await this.writeFileIfMissing(
+      'extension_registry.json',
+      JSON.stringify(
+        {
+          schema_version: PROJECT_SPEC_STORE_SCHEMA_VERSION,
+          registry_version: 'EXT-0001',
+          extensions: [],
+        },
+        null,
+        2
+      ) + '\n'
+    );
 
     try {
       return await this.readManifest();
     } catch (error) {
-      if (!(error instanceof ProjectSpecStoreError) || error.code !== 'PROJECT_SPEC_MANIFEST_MISSING') {
+      if (
+        !(error instanceof ProjectSpecStoreError) ||
+        error.code !== 'PROJECT_SPEC_MANIFEST_MISSING'
+      ) {
         throw error;
       }
     }
@@ -187,6 +208,17 @@ export class ProjectSpecStore {
       project_spec_version: INITIAL_PROJECT_SPEC_VERSION,
       updated_by_work_item_id: workItemId,
       updated_at: this.now().toISOString(),
+      default_module: 'core',
+      modules: [
+        {
+          module_id: 'MOD-CORE',
+          name: 'core',
+          requirements_file: '.specforge/project/modules/core/requirements.md',
+          design_file: '.specforge/project/modules/core/design.md',
+          trace_file: '.specforge/project/trace_matrix.md',
+          status: 'active',
+        },
+      ],
       files: {
         requirements_index: '.specforge/project/requirements_index.md',
         design_index: '.specforge/project/design_index.md',
@@ -219,7 +251,7 @@ export class ProjectSpecStore {
         throw new ProjectSpecStoreError(
           'Unsupported project spec manifest schema_version',
           'UNSUPPORTED_PROJECT_SPEC_MANIFEST_SCHEMA',
-          [String(parsed.schema_version)],
+          [String(parsed.schema_version)]
         );
       }
       return parsed;
@@ -228,7 +260,7 @@ export class ProjectSpecStore {
         throw new ProjectSpecStoreError(
           'Project spec manifest is missing',
           'PROJECT_SPEC_MANIFEST_MISSING',
-          [this.manifestPath()],
+          [this.manifestPath()]
         );
       }
       throw error;
@@ -239,7 +271,10 @@ export class ProjectSpecStore {
     return (await this.readManifest()).project_spec_version;
   }
 
-  validateCandidateManifest(manifest: CandidateManifestV12, currentVersion: string): CandidateValidationResult {
+  validateCandidateManifest(
+    manifest: CandidateManifestV12,
+    currentVersion: string
+  ): CandidateValidationResult {
     const violations: string[] = [];
 
     if (manifest.schema_version !== PROJECT_SPEC_STORE_SCHEMA_VERSION) {
@@ -308,7 +343,7 @@ export class ProjectSpecStore {
       throw new ProjectSpecStoreError(
         'Candidate manifest is not mergeable',
         'CANDIDATE_MANIFEST_INVALID',
-        validation.violations,
+        validation.violations
       );
     }
 
@@ -335,7 +370,11 @@ export class ProjectSpecStore {
       if (entry.merge_mode === 'replace_file') {
         await fs.writeFile(targetPath, candidateContent, 'utf8');
       } else if (entry.merge_mode === 'append_file') {
-        await fs.appendFile(targetPath, candidateContent.endsWith('\n') ? candidateContent : `${candidateContent}\n`, 'utf8');
+        await fs.appendFile(
+          targetPath,
+          candidateContent.endsWith('\n') ? candidateContent : `${candidateContent}\n`,
+          'utf8'
+        );
       } else {
         await this.replaceSection(targetPath, entry.section_marker ?? '', candidateContent);
       }
@@ -401,12 +440,16 @@ export class ProjectSpecStore {
       throw new ProjectSpecStoreError(
         'Direct project spec write is forbidden; use sf_project_spec_merge',
         'DIRECT_PROJECT_SPEC_WRITE_FORBIDDEN',
-        [input.targetPath],
+        [input.targetPath]
       );
     }
   }
 
-  private async replaceSection(targetPath: string, sectionMarker: string, content: string): Promise<void> {
+  private async replaceSection(
+    targetPath: string,
+    sectionMarker: string,
+    content: string
+  ): Promise<void> {
     const start = `<!-- SF_SECTION:${sectionMarker}:START -->`;
     const end = `<!-- SF_SECTION:${sectionMarker}:END -->`;
     let existing = '';

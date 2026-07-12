@@ -228,6 +228,7 @@ export const SpecManifestSchema = z.object({
     decisions: z.string(),
     trace_matrix: z.string(),
   }),
+  default_module: z.string().optional(),
   modules: z.array(SpecModuleEntrySchema),
   last_merged_work_item: z.string().optional(),
   last_merged_at: z.string().datetime().optional(),

@@ -27,6 +27,7 @@ import {
   resolveWorkItemSpecArtifacts,
 } from './governance-invariants-v11.js';
 import {
+  projectSpecManifest,
   workItemCandidateManifest,
   workItemChangeClassification,
   workItemImpactAnalysis,
@@ -285,6 +286,53 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
   return makeReport(ctx.workItemId, 'required_files_gate', 'hard_gate', true, checks, inputFiles);
 });
 
+function normalizeSpecModuleId(value: unknown): string {
+  if (typeof value !== 'string' && typeof value !== 'number') return '';
+  return String(value)
+    .trim()
+    .replace(/^MOD-/i, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-');
+}
+
+function declaredModuleIdFromManifestEntry(entry: unknown): string {
+  if (typeof entry === 'string' || typeof entry === 'number') {
+    return normalizeSpecModuleId(entry);
+  }
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return '';
+  const record = entry as Record<string, unknown>;
+  return normalizeSpecModuleId(
+    record['module_id'] ?? record['module'] ?? record['name'] ?? record['id']
+  );
+}
+
+async function readDeclaredSpecModules(projectRoot: string): Promise<string[]> {
+  try {
+    const parsed: unknown = JSON.parse(
+      await fs.readFile(projectSpecManifest(projectRoot), 'utf-8')
+    );
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return [];
+    const modulesValue = (parsed as Record<string, unknown>)['modules'];
+    const modules: unknown[] = Array.isArray(modulesValue) ? modulesValue : [];
+    return Array.from(new Set(modules.map(declaredModuleIdFromManifestEntry).filter(Boolean)));
+  } catch {
+    return [];
+  }
+}
+
+function moduleIdFromManifestEntry(entry: any): string | null {
+  const candidatePath = normalizeSlash(String(entry?.candidate_path ?? entry?.path ?? ''));
+  const targetPath = normalizeSlash(String(entry?.target_path ?? ''));
+  const match =
+    /(?:^|\/)candidates\/project\/modules\/([^/]+)\/(?:requirements|design)\.candidate\.md$/i.exec(
+      candidatePath
+    ) ??
+    /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\/(?:requirements|design)\.md$/i.exec(
+      targetPath
+    );
+  return match?.[1] ? normalizeSpecModuleId(match[1]) : null;
+}
+
 /** * §9.2 candidate_manifest_gate — Candidate Manifest 合法性 */ // BD v1: candidate_manifest_gate uses the same normalization rules as approval and merge.
 registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
@@ -336,6 +384,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
     });
 
     if (entriesIsArray) {
+      const declaredModules = await readDeclaredSpecModules(ctx.projectRoot);
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i] ?? {};
         const candidatePath = normalizeSlash(entry.candidate_path ?? entry.path ?? '');
@@ -372,6 +421,21 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
           passed: candidateExists,
           severity: candidateExists ? undefined : 'error',
         });
+
+        const moduleId = moduleIdFromManifestEntry(entry);
+        if (moduleId) {
+          const moduleDeclared = declaredModules.includes(moduleId);
+          checks.push({
+            check_id: `entry_${i}_module_declared`,
+            description: `Entry ${i}: module ${moduleId} is declared in spec_manifest.json`,
+            passed: moduleDeclared,
+            severity: moduleDeclared ? undefined : 'error',
+            details:
+              declaredModules.length > 0
+                ? `Declared modules: ${declaredModules.join(', ')}`
+                : 'spec_manifest.json declares no modules',
+          });
+        }
       }
     }
   } catch {

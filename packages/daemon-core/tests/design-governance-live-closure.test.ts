@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+  projectSpecManifest,
   workItemCandidateDesign,
   workItemCandidateManifest,
   workItemDesign,
@@ -83,7 +84,45 @@ Standard、Contract、Workflow Skill、Agent、Tool、Runtime 与 Audit 已能�
 `;
 }
 
+async function writeDeclaredCoreManifest(projectRoot: string): Promise<void> {
+  const manifestPath = projectSpecManifest(projectRoot);
+  await mkdir(path.dirname(manifestPath), { recursive: true });
+  await writeFile(
+    manifestPath,
+    JSON.stringify(
+      {
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0001',
+        project_name: 'live-closure-fixture',
+        project: {
+          extension_registry: '.specforge/project/extension_registry.json',
+          requirements_index: '.specforge/project/requirements_index.md',
+          design_index: '.specforge/project/design_index.md',
+          architecture: '.specforge/project/architecture.md',
+          glossary: '.specforge/project/glossary.md',
+          decisions: '.specforge/project/decisions.md',
+          trace_matrix: '.specforge/project/trace_matrix.md',
+        },
+        default_module: 'core',
+        modules: [
+          {
+            name: 'CORE',
+            path: 'project/modules/core',
+            module_file: 'project/modules/core/module.md',
+            requirements: 'project/modules/core/requirements.md',
+            design: 'project/modules/core/design.md',
+            trace: 'project/trace_matrix.md',
+          },
+        ],
+      },
+      null,
+      2
+    )
+  );
+}
+
 async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promise<void> {
+  await writeDeclaredCoreManifest(projectRoot);
   const wiDir = workItemRoot(projectRoot, workItemId);
   await mkdir(wiDir, { recursive: true });
   await writeFile(
@@ -203,7 +242,7 @@ describe('Design Governance live closure', () => {
           candidate_phase: 'design',
           entries: [
             {
-              candidate_path: 'design.md',
+              path: 'design.md',
               target_path: '.specforge/project/modules/core/design.md',
               operation: 'replace',
               type: 'design',
@@ -224,6 +263,38 @@ describe('Design Governance live closure', () => {
     expect(manifest.entries[0].candidate_path).toBe(
       'candidates/project/modules/core/design.candidate.md'
     );
+    expect(manifest.entries[0].path).toBeUndefined();
+    expect(manifest.entries[0].operation).toBe('replace');
+  });
+
+  it('blocks module-scoped Candidates when an existing manifest declares no modules', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    await writeFile(
+      projectSpecManifest(projectRoot),
+      JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0001',
+        project_name: 'legacy-empty-modules',
+        project: {},
+        modules: [],
+      })
+    );
+
+    const handler = getHandler('sf_artifact_write');
+    const result = await handler!(
+      {
+        work_item_id: workItemId,
+        file_type: 'design',
+        content: designCandidate(),
+      },
+      { directory: projectRoot, agent: 'sf-design' },
+      {} as any
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('MODULE_OWNERSHIP_UNRESOLVED');
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(false);
   });
 
   it('runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required', async () => {
@@ -306,6 +377,67 @@ describe('Design Governance live closure', () => {
     expect(existsSync(path.join(workItemRoot(projectRoot, workItemId), 'trace_delta.md'))).toBe(
       false
     );
+  });
+
+  it('fails candidate_manifest_gate when a module-scoped Candidate is not declared', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+    await writeFile(
+      projectSpecManifest(projectRoot),
+      JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0001',
+        project_name: 'legacy-empty-modules',
+        project: {},
+        modules: [],
+      })
+    );
+
+    const designPath = workItemCandidateDesign(projectRoot, workItemId, 'core');
+    await mkdir(path.dirname(designPath), { recursive: true });
+    await writeFile(designPath, designCandidate());
+    await writeFile(
+      workItemCandidateManifest(projectRoot, workItemId),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_path: 'design_change_path',
+        workflow_type: 'feature_spec_design_first',
+        candidate_phase: 'design',
+        entries: [
+          {
+            candidate_path: 'candidates/project/modules/core/design.candidate.md',
+            target_path: '.specforge/project/modules/core/design.md',
+            operation: 'replace',
+            type: 'design',
+          },
+        ],
+      })
+    );
+
+    const state = mockDeps();
+    const result = await getHandler('sf_v11_gate_run')!(
+      { work_item_id: workItemId, gate_type: 'candidate' },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      state.deps
+    );
+
+    expect((result as any).summary_status).toBe('failed');
+    const manifestReportSummary = (result as any).reports.find(
+      (report: any) => report.gate_id === 'candidate_manifest_gate'
+    );
+    expect(manifestReportSummary.status).toBe('failed');
+
+    const manifestReport = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'gates', 'candidate_manifest_gate.json'),
+        'utf-8'
+      )
+    );
+    expect(manifestReport.checks).toContainEqual(
+      expect.objectContaining({ check_id: 'entry_0_module_declared', passed: false })
+    );
+    expect(state.getState()).toBe('gates_failed');
   });
 
   it('rejects an incomplete trigger classification through the same sf_gate_run path', async () => {

@@ -4,6 +4,7 @@ description: Feature Spec Design-First 工作流的阶段执行协议，intake �
 ---
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
+
 ## SpecForge v1.1 Final Governance Contract
 
 This Agent/Skill must follow the v1.1 final governance contract below. These rules are runtime authority rules, not optional guidance.
@@ -69,6 +70,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 ### 8. Required behavior on uncertainty
 
 If a requested action conflicts with this contract, stop and report the conflict instead of using an old workflow, direct file edits, shell bypass, or hand-written governance JSON.
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 # Feature Spec Design-First 工作流执行协议
@@ -95,7 +97,6 @@ project_integration_effect: 本 WI 对项目级真相源的预期影响
 
 如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
 
-
 ## Design-First 的四问控制点
 
 Design-First 允许先设计，但不允许设计脱离用户目标。所有设计决策后续必须被 requirements 反向承接。
@@ -104,7 +105,6 @@ Design-First 允许先设计，但不允许设计脱离用户目标。所有设�
 - **承接**：requirements 阶段必须反向检查每个 DD 是否有用户目标或项目约束支撑；没有支撑的 DD 必须删除、降级为备选或请求用户确认。
 - **验证**：tasks 和 verifier 必须同时覆盖反推 requirements 与原 design decision，防止“先设计后补需求”制造伪需求。
 - **融合**：merge 前必须确认最终 requirements 与 design 相互一致；不能只合并 design 而缺少对应需求支撑。
-
 
 ## 工作流阶段总览
 
@@ -138,21 +138,23 @@ intake / impact / trigger_result
 
 不得同时写 Work Item 顶层 `design.md`；该路径和旧 `.specforge/specs/<WI>/design.md` 仅供 legacy 只读兼容。Design-Only 不要求 requirements、tasks、trace_delta，也不得创建 `NOT PRODUCED` 占位文件。
 
-`trigger_result.json.classification` 必须是包含九个布尔字段和 `unknowns` 数组的完整对象，不能使用 `"architecture_change"` 等字符串。分类必须按用户目标实现后的最终语义影响填写；Design-Only 只限制当前阶段，不会把架构变化、状态权威变化、验收标准变化或数据语义变化自动改成 `false`。未证实的运行时支持、API 兼容性、调用范围和模块归属必须进入 `unknowns`。
+`trigger_result.json.classification` 必须是包含九个布尔字段和 `unknowns` 数组的完整对象，不能使用 `"architecture_change"` 等字符串。分类必须按用户目标实现后的最终语义影响填写；Design-Only 只限制当前阶段，不会把架构变化、状态权威变化、验收标准变化或数据语义变化自动改成 `false`。未证实的运行时支持、API 兼容性、调用范围和模块归属必须进入 `unknowns`。 每个字段必须独立给出依据，不得整表全 `true`/全 `false`；`module_boundary_changed` 只在模块职责、所有权或跨模块接口边界实际迁移时成立。
 
 `capability_verdict` 只评价 SpecForge 现有治理链是否能承载本次分析、Gate、状态推进和审计，不能评价目标项目的 StateStore、数据库、接口或第三方库是否需要扩展。目标项目技术能力的复用或扩展写入 `Solution Strategy`，不占用治理能力裁决。
+
+若后续 Gate、Path、Runtime、Audit 或 HardStop 产生新的治理证据，Orchestrator 必须重新调度 `sf-design` 更新 `capability_verdict`、`trigger_result.json` 和同一权威 Design Candidate，再重跑原 Gate；不得把运行缺口只写进最终说明。
 
 如果任何 Gate 失败，必须按报告修复同一权威 Candidate 后重新运行同一 Gate Profile；不得改用独立 `sf_design_gate` 或其他入口绕过。`gates_running → approval_required/gates_failed` 由 Gate Runner 推进，Orchestrator 不得手动补状态。
 
 ## 与标准 Feature Spec 的差异对照表
 
-| 差异点 | 标准 Feature Spec | Design-First |
-|--------|-------------------|--------------|
-| intake 后的第一阶段 | requirements | design |
-| design 阶段输入 | requirements.md | intake.md |
-| requirements 阶段输入 | intake.md | design.md（反向推导） |
+| 差异点                | 标准 Feature Spec  | Design-First                                                |
+| --------------------- | ------------------ | ----------------------------------------------------------- |
+| intake 后的第一阶段   | requirements       | design                                                      |
+| design 阶段输入       | requirements.md    | intake.md                                                   |
+| requirements 阶段输入 | intake.md          | design.md（反向推导）                                       |
 | requirements 阶段指令 | 从 intake 分析需求 | 从 design.md 反向推导需求，确保每个设计决策都有对应需求支撑 |
-| design_gate 参数 | 不传 workflow_type | 传递 workflow_type="feature_spec_design_first" |
+| design_gate 参数      | 不传 workflow_type | 传递 workflow_type="feature_spec_design_first"              |
 
 <!-- AUTO-GENERATED:START:skill-matrix -->
 ## Skill 绑定矩阵
@@ -195,6 +197,7 @@ intake / impact / trigger_result
 **目标：** 基于 intake 信息生成唯一权威 design Candidate
 
 **执行步骤：**
+
 1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
 2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting design phase"）
 3. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
@@ -216,6 +219,7 @@ intake / impact / trigger_result
 **目标：** 验证权威 design Candidate 满足最低质量标准
 
 **执行步骤：**
+
 1. 调用 `sf_gate_run`（work_item_id, gate_type="design", workflow_type="feature_spec_design_first"）
    - Design-First 工作流传递 workflow_type，以启用架构完整性检查（而非需求引用检查）
    - Gate 同时强制检查 `analysis_scope: system_governance`、七个固定章节、`capability_verdict`，以及新增能力证明责任
@@ -232,6 +236,7 @@ intake / impact / trigger_result
 **目标：** 基于 design.md 反向推导 requirements.md
 
 **执行步骤：**
+
 1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（requirements phase）
 2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
 3. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
@@ -249,6 +254,7 @@ intake / impact / trigger_result
 **目标：** 验证 requirements.md 满足最低质量标准
 
 **执行步骤：**
+
 1. 调用 `sf_gate_run`（work_item_id, gate_type="requirements"）
 2. 根据 Gate 结果执行对应动作：
    - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="requirements_gate passed, entering tasks"）
@@ -262,6 +268,7 @@ intake / impact / trigger_result
 **目标：** 生成 tasks.md
 
 **执行步骤：**
+
 1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（tasks phase）
 2. **V4.0 新增：** 调度子 Agent 前，调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时按 V3.3 协议继续。
 3. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
@@ -279,6 +286,7 @@ intake / impact / trigger_result
 **目标：** 验证 tasks.md 满足最低质量标准
 
 **执行步骤：**
+
 1. 调用 `sf_gate_run`（work_item_id, gate_type="tasks"）
 2. 根据 Gate 结果执行对应动作：
    - pass → 调用 `sf_state_transition`（from_state="gates_running"，to_state="implementation_running"，evidence="tasks_gate passed"）
@@ -292,6 +300,7 @@ intake / impact / trigger_result
 **目标：** 请求用户审批所有 Candidate，并合并为正式 Spec
 
 **执行步骤：**
+
 1. 向用户展示 Candidate 摘要（design.md、requirements.md、tasks.md 的关键内容）
 2. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="candidate_approval"）
    - 记录用户决定：approve / reject / request_changes
@@ -359,6 +368,7 @@ intake / impact / trigger_result
 #### Step 4.5：构建 Task Context（V4.0 新增）
 
 对每个即将调度的 Task：
+
 1. 调用 `sf_context_build`（task_id=<task_id>, work_item_id=<id>, include_capabilities=true, task_description=<task 描述>）
 2. 如果返回非空 task_context.context → 注入到 sf-executor 的调度 prompt 中（位于任务描述之后）
 3. 如果返回非空 capabilities.recommended_fragments → 将推荐的 Skill Fragment 完整内容注入到调度 prompt 中，替代全量 Skill 加载
@@ -387,6 +397,7 @@ intake / impact / trigger_result
 **5b. 串行 Task 执行：**
 
 对每个串行 Task，按 V3.2 的串行协议执行：
+
 1. 生成 run_id，记录 start_time
 2. 使用 `task` 工具调度 sf-executor
 3. 等待完成，记录 end_time
@@ -400,6 +411,7 @@ intake / impact / trigger_result
 #### Step 6：development 阶段完成
 
 所有 Parallel_Batch 和串行 Task 执行完成且全部成功后：
+
 1. 调用 `sf_changed_files_audit`（work_item_id=<id>）对比实际修改文件与 allowed_write_files
 2. 向用户报告 development 阶段总结（总耗时、并行节省的估算时间、各 Task 最终状态）
 3. 调用 `sf_state_transition`（from_state="implementation_running"，to_state="verification_running"，evidence="all tasks completed, entering review"）
@@ -411,6 +423,7 @@ intake / impact / trigger_result
 **目标：** 对代码和规格进行审查
 
 **执行步骤：**
+
 1. 调用 `sf_state_read` 确认当前状态为 `verification_running`
 2. **使用 `task` 工具调度子 Agent `sf-reviewer`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
@@ -428,6 +441,7 @@ intake / impact / trigger_result
 **目标：** 执行验证，确认所有验收标准满足
 
 **执行步骤：**
+
 1. 调用 `sf_state_read` 确认当前状态为 `verification_running`
 2. **使用 `task` 工具调度子 Agent `sf-verifier`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
@@ -457,6 +471,7 @@ intake / impact / trigger_result
 8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
+
 - 必须先调用 `sf_gate_run`（统一 Gate Runner）确认 pass 后再流转状态
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
 - sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志

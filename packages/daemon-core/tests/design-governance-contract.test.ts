@@ -89,6 +89,8 @@ describe('Design Governance contract alignment', () => {
     expect(agent).toContain('`capability_verdict` 的裁决对象只能是 **SpecForge 治理链**');
     expect(orchestrator).toContain('分类对象描述的是**用户目标实现后的预期最终语义影响**');
     expect(skill).toContain('分类必须按用户目标实现后的最终语义影响填写');
+    expect(skill).toContain('不得整表全 `true`/全 `false`');
+    expect(agent).toContain('每个字段必须独立给出 `basis_refs`');
     expect(agent).toContain('不等于 `capability_verdict: extend_existing`');
   });
 

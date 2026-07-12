@@ -30,6 +30,8 @@ export interface WriteGuardLogEntry {
   violations: string[];
   tool?: string;
   command?: string;
+  hard_stop_id?: string;
+  callID?: string;
 }
 
 export interface WriteGuardLogSummary {
@@ -50,10 +52,7 @@ const LOG_FILENAME = 'write_guard_log.jsonl';
  * Append a write guard decision to the log.
  * Creates the log file if it doesn't exist.
  */
-export function appendWriteGuardLog(
-  workItemDir: string,
-  entry: WriteGuardLogEntry,
-): void {
+export function appendWriteGuardLog(workItemDir: string, entry: WriteGuardLogEntry): void {
   const logPath = path.join(workItemDir, LOG_FILENAME);
   const line = JSON.stringify(entry) + '\n';
   try {
@@ -79,7 +78,10 @@ export function readWriteGuardLog(workItemDir: string): WriteGuardLogEntry[] {
   const logPath = path.join(workItemDir, LOG_FILENAME);
   try {
     const content = fs.readFileSync(logPath, 'utf-8');
-    const lines = content.trim().split('\n').filter(l => l.length > 0);
+    const lines = content
+      .trim()
+      .split('\n')
+      .filter(l => l.length > 0);
     return lines.map(line => JSON.parse(line) as WriteGuardLogEntry);
   } catch {
     return [];
@@ -108,7 +110,7 @@ export function summarizeWriteGuardLog(workItemDir: string): WriteGuardLogSummar
  * This is the TRUTH SOURCE for changed_files_audit — not caller-provided data.
  */
 export function getFactualChangedFiles(
-  workItemDir: string,
+  workItemDir: string
 ): Array<{ path: string; operation: 'create' | 'modify' | 'delete' }> {
   const entries = readWriteGuardLog(workItemDir);
   const allowed = entries.filter(e => e.allowed);
