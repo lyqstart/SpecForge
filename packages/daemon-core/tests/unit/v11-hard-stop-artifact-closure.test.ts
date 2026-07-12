@@ -30,8 +30,26 @@ import {
 // Test Helpers
 // ---------------------------------------------------------------------------
 
+function validClassification(): Record<string, unknown> {
+  return {
+    requirement_changed: false,
+    acceptance_criteria_changed: false,
+    business_rule_changed: false,
+    user_visible_behavior_changed: false,
+    data_semantics_changed: false,
+    design_changed: false,
+    module_boundary_changed: false,
+    api_contract_changed: false,
+    architecture_changed: false,
+    unknowns: [],
+  };
+}
+
 function createTestDir(): string {
-  const dir = path.join(tmpdir(), `sf-test-hardstop-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const dir = path.join(
+    tmpdir(),
+    `sf-test-hardstop-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  );
   fs.mkdirSync(dir, { recursive: true });
   return dir;
 }
@@ -61,7 +79,9 @@ function writeWorkItemJson(wiDir: string, overrides: Record<string, any> = {}): 
 function cleanupDir(dir: string): void {
   try {
     fs.rmSync(dir, { recursive: true, force: true });
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // ===========================================================================
@@ -81,7 +101,12 @@ describe('7.1 hard_stop latch', () => {
 
   it('sf_code_permission enable without allowed_write_files → hard_stop persists', () => {
     // Simulate: setHardStop is called when enable lacks allowed_write_files
-    const record = setHardStop(projectRoot, 'WI-0001', 'ALLOWED_WRITE_FILES_REQUIRED', 'sf_code_permission');
+    const record = setHardStop(
+      projectRoot,
+      'WI-0001',
+      'ALLOWED_WRITE_FILES_REQUIRED',
+      'sf_code_permission'
+    );
     expect(record.blocked).toBe(true);
     expect(record.reason).toBe('ALLOWED_WRITE_FILES_REQUIRED');
     expect(record.source_tool).toBe('sf_code_permission');
@@ -173,7 +198,6 @@ describe('7.1 hard_stop latch', () => {
 // ===========================================================================
 
 describe('7.2 artifact writer schema validation', () => {
-
   describe('trigger_result.json', () => {
     it('rejects invalid JSON', () => {
       const result = validateTriggerResultJson('not json at all {{{', 'WI-0001');
@@ -189,7 +213,10 @@ describe('7.2 artifact writer schema validation', () => {
     });
 
     it('rejects work_item_id mismatch', () => {
-      const content = JSON.stringify({ work_item_id: 'WI-0002', workflow_path: 'code_only_fast_path' });
+      const content = JSON.stringify({
+        work_item_id: 'WI-0002',
+        workflow_path: 'code_only_fast_path',
+      });
       const result = validateTriggerResultJson(content, 'WI-0001');
       expect(result.valid).toBe(false);
       expect(result.errors[0]).toContain('WORK_ITEM_ID_MISMATCH');
@@ -204,10 +231,27 @@ describe('7.2 artifact writer schema validation', () => {
 
     it('accepts valid trigger_result.json', () => {
       for (const wp of VALID_WORKFLOW_PATHS) {
-        const content = JSON.stringify({ work_item_id: 'WI-0001', workflow_path: wp });
+        const content = JSON.stringify({
+          work_item_id: 'WI-0001',
+          workflow_path: wp,
+          classification: validClassification(),
+        });
         const result = validateTriggerResultJson(content, 'WI-0001');
         expect(result.valid).toBe(true);
       }
+    });
+
+    it('rejects string classification aliases', () => {
+      const content = JSON.stringify({
+        work_item_id: 'WI-0001',
+        workflow_path: 'design_change_path',
+        classification: 'architecture_change',
+      });
+      const result = validateTriggerResultJson(content, 'WI-0001');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain(
+        'INVALID_CLASSIFICATION: classification must be a JSON object'
+      );
     });
 
     it('invalid trigger_result.json must NOT be written to disk', () => {
@@ -359,7 +403,8 @@ describe('7.3 changed_files_audit prerequisites', () => {
     // With both false/absent → should fail
     // We test the logic condition directly:
     const wiJson = JSON.parse(fs.readFileSync(path.join(wiDir, 'work_item.json'), 'utf-8'));
-    const codePermWasEnabled = wiJson.code_change_allowed === true ||
+    const codePermWasEnabled =
+      wiJson.code_change_allowed === true ||
       wiJson.permission_enabled_at !== undefined ||
       wiJson.code_permission_released === true;
     expect(codePermWasEnabled).toBe(false);
@@ -452,16 +497,28 @@ describe('7.4 WI artifact bash/write blocking', () => {
     const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
 
     // PowerShell Set-Content
-    expect(wiArtifactPattern.test('powershell Set-Content .specforge/work-items/WI-0001/trigger_result.json')).toBe(true);
+    expect(
+      wiArtifactPattern.test(
+        'powershell Set-Content .specforge/work-items/WI-0001/trigger_result.json'
+      )
+    ).toBe(true);
 
     // bash echo redirect
     expect(wiArtifactPattern.test('echo "{}" > .specforge/work-items/WI-0001/tasks.md')).toBe(true);
 
     // node fs.writeFileSync
-    expect(wiArtifactPattern.test('node -e "require(\'fs\').writeFileSync(\'.specforge/work-items/WI-0001/intake.md\', \'test\')"')).toBe(true);
+    expect(
+      wiArtifactPattern.test(
+        "node -e \"require('fs').writeFileSync('.specforge/work-items/WI-0001/intake.md', 'test')\""
+      )
+    ).toBe(true);
 
     // python open().write
-    expect(wiArtifactPattern.test('python -c "open(\'.specforge/work-items/WI-0001/intake.md\', \'w\').write(\'x\')"')).toBe(true);
+    expect(
+      wiArtifactPattern.test(
+        "python -c \"open('.specforge/work-items/WI-0001/intake.md', 'w').write('x')\""
+      )
+    ).toBe(true);
   });
 
   it('write/edit tool targeting .specforge/work-items/ should be detected', () => {
@@ -499,8 +556,14 @@ describe('7.4 WI artifact bash/write blocking', () => {
       setHardStop(projectRoot, 'WI-0001', 'TEST', 'sf_code_permission');
 
       // All write/progression tools blocked
-      const tools = ['sf_safe_bash', 'sf_artifact_write', 'sf_state_transition',
-        'sf_changed_files_audit', 'sf_close_gate', 'sf_v11_code_permission'];
+      const tools = [
+        'sf_safe_bash',
+        'sf_artifact_write',
+        'sf_state_transition',
+        'sf_changed_files_audit',
+        'sf_close_gate',
+        'sf_v11_code_permission',
+      ];
       for (const tool of tools) {
         const guard = guardHardStop(projectRoot, 'WI-0001', tool);
         expect(guard.allowed).toBe(false);
@@ -519,7 +582,8 @@ describe('7.5 sf_safe_bash WI artifact path blocking (real failure fix)', () => 
   const WI_ARTIFACT_PATTERN = /\.specforge[\\/]work-items[\\/]/i;
 
   it('sf_safe_bash New-Item .specforge/work-items/WI-0001 is detected', () => {
-    const cmd = 'New-Item -ItemType Directory -Path "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" -Force';
+    const cmd =
+      'New-Item -ItemType Directory -Path "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" -Force';
     expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
   });
 
@@ -529,22 +593,25 @@ describe('7.5 sf_safe_bash WI artifact path blocking (real failure fix)', () => 
   });
 
   it('sf_safe_bash ls .specforge/work-items/WI-0001 is detected', () => {
-    const cmd = 'ls "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" 2>nul || echo "Directory does not exist"';
+    const cmd =
+      'ls "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" 2>nul || echo "Directory does not exist"';
     expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
   });
 
   it('sf_safe_bash Set-Content .specforge/work-items/ is detected', () => {
-    const cmd = 'powershell Set-Content .specforge/work-items/WI-0001/trigger_result.json -Value "{}"';
+    const cmd =
+      'powershell Set-Content .specforge/work-items/WI-0001/trigger_result.json -Value "{}"';
     expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
   });
 
   it('sf_safe_bash node fs.writeFileSync .specforge/work-items/ is detected', () => {
-    const cmd = 'node -e "require(\'fs\').writeFileSync(\'.specforge/work-items/WI-0001/tasks.md\', \'# Tasks\')"';
+    const cmd =
+      "node -e \"require('fs').writeFileSync('.specforge/work-items/WI-0001/tasks.md', '# Tasks')\"";
     expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
   });
 
   it('sf_safe_bash python open .specforge/work-items/ is detected', () => {
-    const cmd = 'python -c "open(\'.specforge/work-items/WI-0001/intake.md\', \'w\').write(\'test\')"';
+    const cmd = "python -c \"open('.specforge/work-items/WI-0001/intake.md', 'w').write('test')\"";
     expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
   });
 
@@ -560,7 +627,12 @@ describe('7.5 sf_safe_bash WI artifact path blocking (real failure fix)', () => 
     try {
       createWIDir(projectRoot, 'WI-0001');
       // Simulate: sf_safe_bash detected WI artifact path → set hard_stop
-      setHardStop(projectRoot, 'WI-0001', 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+      setHardStop(
+        projectRoot,
+        'WI-0001',
+        'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+        'sf_safe_bash'
+      );
 
       // Now sf_state_transition should be blocked
       const guard = guardHardStop(projectRoot, 'WI-0001', 'sf_state_transition');
@@ -575,7 +647,12 @@ describe('7.5 sf_safe_bash WI artifact path blocking (real failure fix)', () => 
     const projectRoot = createTestDir();
     try {
       createWIDir(projectRoot, 'WI-0001');
-      setHardStop(projectRoot, 'WI-0001', 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+      setHardStop(
+        projectRoot,
+        'WI-0001',
+        'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+        'sf_safe_bash'
+      );
 
       const guard = guardHardStop(projectRoot, 'WI-0001', 'sf_artifact_write');
       expect(guard.allowed).toBe(false);
@@ -588,7 +665,12 @@ describe('7.5 sf_safe_bash WI artifact path blocking (real failure fix)', () => 
     const projectRoot = createTestDir();
     try {
       createWIDir(projectRoot, 'WI-0001');
-      setHardStop(projectRoot, 'WI-0001', 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL', 'sf_safe_bash');
+      setHardStop(
+        projectRoot,
+        'WI-0001',
+        'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+        'sf_safe_bash'
+      );
 
       const guard = guardHardStop(projectRoot, 'WI-0001', 'sf_v11_gate_run');
       expect(guard.allowed).toBe(false);

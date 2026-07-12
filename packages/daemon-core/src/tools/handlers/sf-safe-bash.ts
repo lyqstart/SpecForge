@@ -1,13 +1,14 @@
 import { registerHandler } from '../ToolDispatcher';
 import { safeBashExecute } from '../lib/sf_safe_bash_core';
-import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles';
-import { checkHardStop } from '../lib/hard-stop-latch';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { checkHardStop, setHardStop } from '../lib/hard-stop-latch';
+import { SPEC_DIR_NAME, workItemRoot } from '@specforge/types/directory-layout';
 import {
   enforceRuntimeWriteGuardForShell,
   extractShellWriteTargets,
 } from '../lib/write-guard-runtime-v12';
 import { findMatchingWriteGuardAuthorization } from '../lib/write-guard-authorization-log';
+import { appendWriteGuardLog } from '../lib/write-guard-log';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -21,7 +22,9 @@ function isValidWorkItemId(value: unknown): value is string {
 }
 
 function normalizeSlashes(value: string): string {
-  return String(value ?? '').replace(/\\/g, '/').replace(/\/+/g, '/');
+  return String(value ?? '')
+    .replace(/\\/g, '/')
+    .replace(/\/+/g, '/');
 }
 
 function normalizePathForCompare(value: string): string {
@@ -43,8 +46,14 @@ function readJsonIfExists(filePath: string): any | null {
   }
 }
 
-function toProjectRelative(projectRoot: string, cwd: string | undefined, targetPath: string): string | null {
-  const cleaned = String(targetPath ?? '').trim().replace(/^["']|["']$/g, '');
+function toProjectRelative(
+  projectRoot: string,
+  cwd: string | undefined,
+  targetPath: string
+): string | null {
+  const cleaned = String(targetPath ?? '')
+    .trim()
+    .replace(/^["']|["']$/g, '');
   if (!cleaned) return null;
 
   const base = cwd && path.isAbsolute(cwd) ? cwd : projectRoot;
@@ -60,15 +69,52 @@ function readRuntimeWorkItems(projectRoot: string): any[] {
   return Array.isArray(state?.workItems) ? state.workItems : [];
 }
 
+const TERMINAL_WI_STATES = new Set(['closed', 'rejected', 'superseded']);
+
+function findSingleActiveWorkItemIdForGovernance(
+  projectRoot: string,
+  args: Record<string, unknown>
+): string | null {
+  const explicit = args['work_item_id'] ?? args['workItemId'] ?? args['wi'];
+  if (isValidWorkItemId(explicit)) return explicit;
+  const active = readRuntimeWorkItems(projectRoot)
+    .filter(item => isValidWorkItemId(item?.work_item_id))
+    .filter(item => !TERMINAL_WI_STATES.has(String(item?.current_state ?? item?.status ?? '')))
+    .sort(sortByFreshest);
+  return active.length === 1 ? String(active[0].work_item_id) : null;
+}
+
+function appendGovernanceBlockedWrite(
+  projectRoot: string,
+  workItemId: string,
+  command: string,
+  reason: string,
+  hardStopId?: string
+): void {
+  appendWriteGuardLog(workItemRoot(projectRoot, workItemId), {
+    timestamp: new Date().toISOString(),
+    path: '.specforge/**',
+    operation: 'modify',
+    actor: 'agent',
+    allowed: false,
+    violations: [reason],
+    tool: 'sf_safe_bash',
+    command,
+    hard_stop_id: hardStopId,
+  });
+}
+
 function readWorkItem(projectRoot: string, workItemId: string): any | null {
-  return readJsonIfExists(path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json'));
+  return readJsonIfExists(
+    path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json')
+  );
 }
 
 function allowedWriteEntryMatches(
   projectRoot: string,
   cwd: string | undefined,
   entry: any,
-  targetRelative: string,
+  targetRelative: string
 ): boolean {
   const raw = typeof entry === 'string' ? entry : entry?.path;
   if (typeof raw !== 'string') return false;
@@ -94,20 +140,20 @@ function isParentDirectoryOfAnyTarget(directoryTarget: string, targets: string[]
   const directory = normalizePathForCompare(directoryTarget).replace(/\/+$/, '');
   if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
 
-  return targets.some((target) => {
+  return targets.some(target => {
     const normalized = normalizePathForCompare(target).replace(/\/+$/, '');
     return normalized !== directory && normalized.startsWith(directory + '/');
   });
 }
 
 function filterDirectoryPreparationTargets(targets: string[]): string[] {
-  return targets.filter((target) => !isParentDirectoryOfAnyTarget(target, targets));
+  return targets.filter(target => !isParentDirectoryOfAnyTarget(target, targets));
 }
 
 export function findActiveWorkItemIdForWrite(
   projectRoot: string,
   args: Record<string, unknown>,
-  command: string,
+  command: string
 ): string | null {
   const explicit = args['work_item_id'] ?? args['workItemId'] ?? args['wi'];
   if (isValidWorkItemId(explicit)) return explicit;
@@ -115,13 +161,17 @@ export function findActiveWorkItemIdForWrite(
   const cwd = args['cwd'] as string | undefined;
   const targets = filterDirectoryPreparationTargets(
     extractShellWriteTargets(command)
-      .map((target) => toProjectRelative(projectRoot, cwd, target.path))
-      .filter((value): value is string => typeof value === 'string'),
+      .map(target => toProjectRelative(projectRoot, cwd, target.path))
+      .filter((value): value is string => typeof value === 'string')
   );
 
   const running = readRuntimeWorkItems(projectRoot)
-    .filter((item) => item?.current_state === 'implementation_running' || item?.status === 'implementation_running')
-    .filter((item) => isValidWorkItemId(item?.work_item_id))
+    .filter(
+      item =>
+        item?.current_state === 'implementation_running' ||
+        item?.status === 'implementation_running'
+    )
+    .filter(item => isValidWorkItemId(item?.work_item_id))
     .sort(sortByFreshest);
 
   if (running.length === 0) return null;
@@ -133,7 +183,9 @@ export function findActiveWorkItemIdForWrite(
     const allowed = Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [];
     if (
       targets.length > 0 &&
-      targets.every((target) => allowed.some((entry: any) => allowedWriteEntryMatches(projectRoot, cwd, entry, target)))
+      targets.every(target =>
+        allowed.some((entry: any) => allowedWriteEntryMatches(projectRoot, cwd, entry, target))
+      )
     ) {
       return String(item.work_item_id);
     }
@@ -156,7 +208,8 @@ function commandMentionsProtectedSpecForgePath(command: string): boolean {
 
 function commandMentionsSensitiveSpecForgeRuntimeSecret(command: string): boolean {
   const text = normalizePathForCompare(command).replace(/\s+/g, '');
-  const mentionsRuntime = text.includes('.specforge/runtime/') || text.includes('/sf-user/runtime/');
+  const mentionsRuntime =
+    text.includes('.specforge/runtime/') || text.includes('/sf-user/runtime/');
   if (!mentionsRuntime) return false;
   return (
     text.includes('handshake.json') ||
@@ -169,7 +222,9 @@ function commandMentionsSensitiveSpecForgeRuntimeSecret(command: string): boolea
 function commandHasReadOnlyShellProbe(command: string): boolean {
   const normalized = command.trim().toLowerCase();
   return (
-    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|select-string|findstr)\b/.test(normalized) ||
+    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|select-string|findstr)\b/.test(
+      normalized
+    ) ||
     /(?:^|[;&|]\s*)certutil\s+-hashfile\b/.test(normalized) ||
     /(?:^|[;&|]\s*)(sha256sum|shasum|fciv)\b/.test(normalized) ||
     /(?:^|[;&|]\s*)git\s+(status|diff|log|show|branch|remote|tag)\b/.test(normalized) ||
@@ -184,7 +239,10 @@ function classifyProtectedSpecForgePathBashAccess(command: string): ShellAccessK
   if (writeTargets.length > 0) return 'write';
 
   const normalized = command.trim().toLowerCase();
-  const writeLikeCommand = /(?:^|[;&|]\s*)(set-content|add-content|out-file|new-item|copy-item|move-item|remove-item|del|erase|rm|rmdir|mkdir|ni|cp|mv|touch|tee|tee-object)\b/.test(normalized);
+  const writeLikeCommand =
+    /(?:^|[;&|]\s*)(set-content|add-content|out-file|new-item|copy-item|move-item|remove-item|del|erase|rm|rmdir|mkdir|ni|cp|mv|touch|tee|tee-object)\b/.test(
+      normalized
+    );
   if (writeLikeCommand) return 'write';
 
   if (commandHasReadOnlyShellProbe(command)) return 'read';
@@ -195,7 +253,7 @@ function commandWritesOnlyReportPaths(projectRoot: string, command: string, cwd?
   const targets = extractShellWriteTargets(command);
   if (targets.length === 0) return false;
 
-  return targets.every((target) => {
+  return targets.every(target => {
     const rel = toProjectRelative(projectRoot, cwd, target.path);
     if (!rel) return false;
     const normalized = normalizePathForCompare(rel);
@@ -220,7 +278,7 @@ async function executeSafe(
   baseDir: string,
   command: string,
   cwd: string | undefined,
-  callerRole: string | undefined,
+  callerRole: string | undefined
 ) {
   return safeBashExecute(
     {
@@ -232,7 +290,7 @@ async function executeSafe(
       outputLimit: args['outputLimit'] as number | undefined,
       callerRole,
     },
-    baseDir,
+    baseDir
   );
 }
 
@@ -244,16 +302,33 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
 
   if (commandMentionsProtectedSpecForgePath(command)) {
     const access = classifyProtectedSpecForgePathBashAccess(command);
-    if (access === 'read') return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
+    if (access === 'read')
+      return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
+
+    const activeWiId = findSingleActiveWorkItemIdForGovernance(baseDir, args);
+    const reason = 'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN';
+    const hardStopRecord = activeWiId
+      ? setHardStop(baseDir, activeWiId, reason, 'sf_safe_bash')
+      : null;
+    if (activeWiId)
+      appendGovernanceBlockedWrite(
+        baseDir,
+        activeWiId,
+        command,
+        reason,
+        hardStopRecord?.hard_stop_id
+      );
 
     return {
       success: false,
       error:
         'SPEC_FORGE_PROTECTED_PATH_WRITE_REQUIRES_CONTROLLED_TOOL: sf_safe_bash cannot write protected .specforge paths.\n' +
-        'Use sf_artifact_write for work-item artifacts or merge_runner for .specforge/project/**.',
-      hard_stop: false,
+        'Use sf_artifact_write for work-item artifacts or sf_merge_run for .specforge/project/**.',
+      hard_stop: hardStopRecord !== null,
+      hard_stop_record: hardStopRecord ?? undefined,
+      work_item_id: activeWiId ?? undefined,
       policy_violation: true,
-      retry_allowed: true,
+      retry_allowed: false,
       blocked_command: command.slice(0, 240),
     };
   }
@@ -262,7 +337,11 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
   }
 
-  const activeWiId = findActiveWorkItemIdForWrite(baseDir, args as Record<string, unknown>, command);
+  const activeWiId = findActiveWorkItemIdForWrite(
+    baseDir,
+    args as Record<string, unknown>,
+    command
+  );
   if (activeWiId) {
     const { blocked, record } = checkHardStop(baseDir, activeWiId);
     if (blocked) {
@@ -284,7 +363,13 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
       : null;
 
   if (matchingAuthorization) {
-    const result = await executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
+    const result = await executeSafe(
+      args as Record<string, unknown>,
+      baseDir,
+      command,
+      cwd,
+      callerRole
+    );
     return {
       ...(typeof result === 'object' && result !== null ? result : { output: result }),
       write_guard_authorized: true,
@@ -315,7 +400,10 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
       retry_allowed: false,
       blocked_command: command.slice(0, 240),
       write_guard_targets: runtimeGuard.targets,
-      user_action_required: runtimeGuard.hard_stop === true ? 'resolve_hard_stop_or_authorize_scoped_operation' : undefined,
+      user_action_required:
+        runtimeGuard.hard_stop === true
+          ? 'resolve_hard_stop_or_authorize_scoped_operation'
+          : undefined,
     };
   }
 

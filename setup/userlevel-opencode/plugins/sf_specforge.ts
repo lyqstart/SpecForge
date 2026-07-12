@@ -20,7 +20,13 @@ import { tool, type PluginInput } from "@opencode-ai/plugin";
 const { join, resolve, dirname, isAbsolute, relative } = require("node:path");
 const { homedir } = require("node:os");
 const { pathToFileURL } = require("node:url");
-const { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } = require("node:fs");
+const {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  appendFileSync,
+} = require("node:fs");
 
 const VALID_WI_ID = /^WI-(\d{3,4}|\d{8}-\d{4})$/;
 
@@ -44,19 +50,66 @@ function getWorkItemIdFromArgs(args: Record<string, any>): string | undefined {
   return undefined;
 }
 
+const TERMINAL_WI_STATES = new Set(["closed", "rejected", "superseded"]);
+
+function resolveGovernanceWorkItemId(
+  projectDir: string,
+  args: Record<string, any>,
+): string | undefined {
+  const explicit = getWorkItemIdFromArgs(args);
+  if (isValidWorkItemId(explicit)) return explicit;
+
+  const runtimeState = readRuntimeState(projectDir);
+  const items = Array.isArray(runtimeState?.workItems)
+    ? runtimeState.workItems
+    : [];
+  const active = items
+    .filter((item: any) => isValidWorkItemId(item?.work_item_id))
+    .filter(
+      (item: any) =>
+        !TERMINAL_WI_STATES.has(
+          String(item?.current_state ?? item?.status ?? ""),
+        ),
+    )
+    .sort(
+      (a: any, b: any) =>
+        Number(b?.updated_at ?? 0) - Number(a?.updated_at ?? 0),
+    );
+
+  // A shell call without work_item_id may be attributed only when ownership is
+  // unambiguous. Never create a project-wide latch for several concurrent WIs.
+  return active.length === 1 ? String(active[0].work_item_id) : undefined;
+}
+
 function normalizeToolName(toolName: string): string {
-  return String(toolName ?? "").toLowerCase().replace(/[_-]/g, "");
+  return String(toolName ?? "")
+    .toLowerCase()
+    .replace(/[_-]/g, "");
 }
 
 function normalizeSlashes(value: string): string {
-  return String(value ?? "").replace(/\\/g, "/").replace(/\/+/g, "/");
+  return String(value ?? "")
+    .replace(/\\/g, "/")
+    .replace(/\/+/g, "/");
 }
 
 function resolveClientPath(): string {
-  const sfUserPath = resolve(__dirname, "..", "sf-user", "lib", "sf_plugin_client.ts");
+  const sfUserPath = resolve(
+    __dirname,
+    "..",
+    "sf-user",
+    "lib",
+    "sf_plugin_client.ts",
+  );
   if (existsSync(sfUserPath)) return sfUserPath;
 
-  const v11Path = join(homedir(), ".config", "opencode", "sf-runtime", "sf_plugin_client.ts");
+  const v11Path = join(
+    homedir(),
+    ".config",
+    "opencode",
+    "sf-runtime",
+    "sf_plugin_client.ts",
+  );
   if (existsSync(v11Path)) return v11Path;
 
   const localPath = resolve(__dirname, "..", "lib", "sf_plugin_client.ts");
@@ -80,7 +133,9 @@ function resolveClientPath(): string {
 }
 
 const clientPath = resolveClientPath();
-const { createReconnectingDaemonClient } = await import(pathToFileURL(clientPath).href);
+const { createReconnectingDaemonClient } = await import(
+  pathToFileURL(clientPath).href
+);
 const daemonClient = createReconnectingDaemonClient({
   initialDelayMs: 1000,
   maxCumulativeBackoffMs: 60000,
@@ -273,20 +328,29 @@ function isWriteTool(toolName: string): boolean {
   const normalized = normalizeToolName(toolName);
 
   if (NON_FILESYSTEM_PLANNING_TOOLS.has(normalized)) return false;
-  if (SPECFORGE_CONTROL_TOOLS.has(toolName) || SPECFORGE_CONTROL_TOOLS.has(normalized)) return false;
+  if (
+    SPECFORGE_CONTROL_TOOLS.has(toolName) ||
+    SPECFORGE_CONTROL_TOOLS.has(normalized)
+  )
+    return false;
   if (WRITE_TOOLS.has(toolName) || WRITE_TOOLS.has(normalized)) return true;
   if (normalized.includes("write") || normalized.includes("edit")) return true;
-  if (normalized.includes("patch") || normalized.includes("create")) return true;
-  if (normalized.includes("delete") || normalized.includes("remove")) return true;
+  if (normalized.includes("patch") || normalized.includes("create"))
+    return true;
+  if (normalized.includes("delete") || normalized.includes("remove"))
+    return true;
   return false;
 }
 
 function isSideEffectTool(toolName: string): boolean {
   const normalized = normalizeToolName(toolName);
 
-  if (SIDE_EFFECT_TOOLS.has(toolName) || SIDE_EFFECT_TOOLS.has(normalized)) return true;
-  if (normalized.includes("format") || normalized.includes("generate")) return true;
-  if (normalized.includes("install") || normalized.includes("snapshot")) return true;
+  if (SIDE_EFFECT_TOOLS.has(toolName) || SIDE_EFFECT_TOOLS.has(normalized))
+    return true;
+  if (normalized.includes("format") || normalized.includes("generate"))
+    return true;
+  if (normalized.includes("install") || normalized.includes("snapshot"))
+    return true;
   return false;
 }
 
@@ -296,14 +360,20 @@ function isShellTool(toolName: string): boolean {
 }
 
 function isSfTool(toolName: string): boolean {
-  return String(toolName ?? "").startsWith("sf_") || String(toolName ?? "").startsWith("sf-");
+  return (
+    String(toolName ?? "").startsWith("sf_") ||
+    String(toolName ?? "").startsWith("sf-")
+  );
 }
 
 function pushString(values: string[], value: unknown): void {
   if (typeof value === "string" && value.trim().length > 0) values.push(value);
 }
 
-function extractWriteTargets(_toolName: string, args: Record<string, any>): string[] {
+function extractWriteTargets(
+  _toolName: string,
+  args: Record<string, any>,
+): string[] {
   const paths: string[] = [];
   const pathKeys = [
     "path",
@@ -339,7 +409,9 @@ function extractWriteTargets(_toolName: string, args: Record<string, any>): stri
 
   const patch = String(args.patch ?? args.input ?? "");
   if (patch.includes("+++ ") || patch.includes("--- ")) {
-    for (const match of patch.matchAll(/^(?:\+\+\+|---)\s+(?:a\/|b\/)?([^\r\n\t]+)/gm)) {
+    for (const match of patch.matchAll(
+      /^(?:\+\+\+|---)\s+(?:a\/|b\/)?([^\r\n\t]+)/gm,
+    )) {
       const candidate = match[1]?.trim();
       if (candidate && candidate !== "/dev/null") paths.push(candidate);
     }
@@ -363,7 +435,7 @@ function extractBashExpectedFiles(args: Record<string, any>): string[] {
 function redactSensitiveString(value: string): string {
   return String(value ?? "")
     .replace(/Bearer\s+[A-Za-z0-9._~+\/=:-]+/gi, "Bearer ***REDACTED***")
-    .replace(/("token"\s*:\s*")[^"]+"/gi, "$1***REDACTED***\"")
+    .replace(/("token"\s*:\s*")[^"]+"/gi, '$1***REDACTED***"')
     .replace(/('token'\s*:\s*')[^']+'/gi, "$1***REDACTED***'");
 }
 
@@ -413,7 +485,10 @@ function isBashReadOnly(command: string): boolean {
     trimmed.startsWith("node -e") ||
     trimmed.startsWith("node --eval")
   ) {
-    const hasWriteIndicators = /open\s*\(|write|makedirs|mkdir|Path\(|base64|decode|Set-Content|Out-File|New-Item|>|>>|tee\s/i.test(trimmed);
+    const hasWriteIndicators =
+      /open\s*\(|write|makedirs|mkdir|Path\(|base64|decode|Set-Content|Out-File|New-Item|>|>>|tee\s/i.test(
+        trimmed,
+      );
     return !hasWriteIndicators;
   }
 
@@ -421,7 +496,8 @@ function isBashReadOnly(command: string): boolean {
 }
 
 function isBashWriteCommand(command: string): boolean {
-  const V12_POWERSHELL_WRITE_PATTERN = /\b(Set-Content|Add-Content|Out-File|New-Item|Remove-Item|Copy-Item|Move-Item)\b/i;
+  const V12_POWERSHELL_WRITE_PATTERN =
+    /\b(Set-Content|Add-Content|Out-File|New-Item|Remove-Item|Copy-Item|Move-Item)\b/i;
   const writePatterns = [
     V12_POWERSHELL_WRITE_PATTERN,
     /\bcp\b/,
@@ -463,19 +539,29 @@ function compactForGovernanceScan(command: string): string {
 
 function hasNonNullShellRedirect(command: string): boolean {
   const text = String(command ?? "");
-  for (const match of text.matchAll(/(?:^|[^>])\d*>>?\s*("[^"]+"|'[^']+'|[^\s;&|]+)/g)) {
+  for (const match of text.matchAll(
+    /(?:^|[^>])\d*>>?\s*("[^"]+"|'[^']+'|[^\s;&|]+)/g,
+  )) {
     const raw = match[1];
     if (!raw) continue;
     const target = normalizeSlashes(stripShellPathToken(raw)).toLowerCase();
-    if (target === "/dev/null" || target === "nul" || target === "nul:") continue;
+    if (target === "/dev/null" || target === "nul" || target === "nul:")
+      continue;
     return true;
   }
   return false;
 }
 
-function findGovernanceBypassReason(command: string, extra?: unknown): string | null {
-  const compact = compactForGovernanceScan(String(command ?? "") + "\n" + String(extra ?? ""));
-  const callsDaemonToolInvoke = /(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) && compact.includes("/api/v1/tool/invoke");
+function findGovernanceBypassReason(
+  command: string,
+  extra?: unknown,
+): string | null {
+  const compact = compactForGovernanceScan(
+    String(command ?? "") + "\n" + String(extra ?? ""),
+  );
+  const callsDaemonToolInvoke =
+    /(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) &&
+    compact.includes("/api/v1/tool/invoke");
   if (callsDaemonToolInvoke) return "SPEC_FORGE_DAEMON_TOOL_INVOKE_FORBIDDEN";
 
   const referencesToken =
@@ -483,7 +569,11 @@ function findGovernanceBypassReason(command: string, extra?: unknown): string | 
     compact.includes("authorization=bearer") ||
     compact.includes("bearer") ||
     compact.includes("handshake.json");
-  if (referencesToken && (/(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) || compact.includes("handshake.json"))) {
+  if (
+    referencesToken &&
+    (/(127\.0\.0\.1|localhost)(:\d+)?/.test(compact) ||
+      compact.includes("handshake.json"))
+  ) {
     return "SPEC_FORGE_DAEMON_TOKEN_ACCESS_FORBIDDEN";
   }
 
@@ -496,19 +586,28 @@ function findGovernanceBypassReason(command: string, extra?: unknown): string | 
     compact.includes(".specforge/cas") ||
     (compact.includes(".spec") &&
       compact.includes("forge") &&
-      (compact.includes("runtime") || compact.includes("work-items") || compact.includes("specs") || compact.includes("project") || compact.includes("logs")));
+      (compact.includes("runtime") ||
+        compact.includes("work-items") ||
+        compact.includes("specs") ||
+        compact.includes("project") ||
+        compact.includes("logs")));
 
   const writesOrDeletes =
-    /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|writealltext|writefilesync|appendfilesync|opensync|fs\.write|convertto-json.*set-content|tee)/.test(compact) ||
-    hasNonNullShellRedirect(String(command ?? ""));
-  if (touchesProtectedSpecforgePath && writesOrDeletes) return "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN";
+    /(set-content|out-file|add-content|new-item|remove-item|del|erase|rm|writefile|appendfile|createwritestream|writealltext|writefilesync|appendfilesync|opensync|fs\.write|convertto-json.*set-content|tee)/.test(
+      compact,
+    ) || hasNonNullShellRedirect(String(command ?? ""));
+  if (touchesProtectedSpecforgePath && writesOrDeletes)
+    return "SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN";
 
   return null;
 }
 
-
 function isSpecForgeReportsPathText(value: string): boolean {
-  const normalized = normalizeSlashes(String(value ?? "").trim().replace(/^file:\/+/i, "")).toLowerCase();
+  const normalized = normalizeSlashes(
+    String(value ?? "")
+      .trim()
+      .replace(/^file:\/+/i, ""),
+  ).toLowerCase();
   return /(^|\/)\.specforge\/reports(\/|$)/.test(normalized);
 }
 
@@ -536,7 +635,9 @@ function stripShellPathToken(value: string): string {
 function extractShellRedirectTargets(command: string): string[] {
   const targets: string[] = [];
   const text = String(command ?? "");
-  for (const match of text.matchAll(/(?:^|[^>])>>?\s*("[^"]+"|'[^']+'|[^\s;&|]+)/g)) {
+  for (const match of text.matchAll(
+    /(?:^|[^>])>>?\s*("[^"]+"|'[^']+'|[^\s;&|]+)/g,
+  )) {
     const raw = match[1];
     if (raw) targets.push(stripShellPathToken(raw));
   }
@@ -547,32 +648,54 @@ function extractPowerShellFileCmdletTargets(command: string): string[] {
   const targets: string[] = [];
   const text = String(command ?? "");
   const cmdlet = String.raw`(?:Set-Content|Add-Content|Out-File|New-Item)`;
-  for (const match of text.matchAll(new RegExp(String.raw`\b${cmdlet}\b[^\r\n;&|]{0,400}?(?:-LiteralPath|-Path)\s+("[^"]+"|'[^']+'|[^\s;&|]+)`, "gi"))) {
+  for (const match of text.matchAll(
+    new RegExp(
+      String.raw`\b${cmdlet}\b[^\r\n;&|]{0,400}?(?:-LiteralPath|-Path)\s+("[^"]+"|'[^']+'|[^\s;&|]+)`,
+      "gi",
+    ),
+  )) {
     const raw = match[1];
     if (raw) targets.push(stripShellPathToken(raw));
   }
-  for (const match of text.matchAll(new RegExp(String.raw`\b${cmdlet}\b[^\r\n;&|]{0,400}?(\.specforge[\\/][^\s;&|]+)`, "gi"))) {
+  for (const match of text.matchAll(
+    new RegExp(
+      String.raw`\b${cmdlet}\b[^\r\n;&|]{0,400}?(\.specforge[\\/][^\s;&|]+)`,
+      "gi",
+    ),
+  )) {
     const raw = match[1];
     if (raw) targets.push(stripShellPathToken(raw));
   }
   return targets;
 }
 
-function isSpecForgeReportsOutputTarget(projectDir: string, targetPath: string): boolean {
+function isSpecForgeReportsOutputTarget(
+  projectDir: string,
+  targetPath: string,
+): boolean {
   const relativeTarget = pluginTargetToProjectRelative(projectDir, targetPath);
   if (!relativeTarget) return false;
   const normalized = normalizePluginPath(relativeTarget);
-  return normalized === ".specforge/reports" || normalized.startsWith(".specforge/reports/");
+  return (
+    normalized === ".specforge/reports" ||
+    normalized.startsWith(".specforge/reports/")
+  );
 }
 
-function isSpecForgeReportsShellWriteAllowed(projectDir: string, command: string, expectedFiles: string[]): boolean {
+function isSpecForgeReportsShellWriteAllowed(
+  projectDir: string,
+  command: string,
+  expectedFiles: string[],
+): boolean {
   const text = String(command ?? "");
   const compact = compactForGovernanceScan(text);
   if (!compact.includes(".specforge/reports")) return false;
 
   const declaredTargets = Array.isArray(expectedFiles) ? expectedFiles : [];
   if (declaredTargets.length > 0) {
-    return declaredTargets.every((target) => isSpecForgeReportsOutputTarget(projectDir, target));
+    return declaredTargets.every((target) =>
+      isSpecForgeReportsOutputTarget(projectDir, target),
+    );
   }
 
   const explicitTargets = [
@@ -583,11 +706,18 @@ function isSpecForgeReportsShellWriteAllowed(projectDir: string, command: string
     // Only the actual write targets decide whether this is report output.
     // Report content is allowed to mention protected paths such as
     // .specforge/project/** because it is evidence text, not a write target.
-    return explicitTargets.every((target) => isSpecForgeReportsPathText(target) || isSpecForgeReportsOutputTarget(projectDir, target));
+    return explicitTargets.every(
+      (target) =>
+        isSpecForgeReportsPathText(target) ||
+        isSpecForgeReportsOutputTarget(projectDir, target),
+    );
   }
 
-  const directoryOnlyReportCommand = /\b(mkdir|New-Item)\b/i.test(text) && isSpecForgeReportsPathText(text);
-  return directoryOnlyReportCommand && !isProtectedSpecForgeNonReportPathText(text);
+  const directoryOnlyReportCommand =
+    /\b(mkdir|New-Item)\b/i.test(text) && isSpecForgeReportsPathText(text);
+  return (
+    directoryOnlyReportCommand && !isProtectedSpecForgeNonReportPathText(text)
+  );
 }
 
 function parseToolOutput(output: unknown): any | null {
@@ -602,11 +732,20 @@ function parseToolOutput(output: unknown): any | null {
   }
 }
 
-function readHardStopRecord(projectDir: string, workItemId: string): any | null {
+function readHardStopRecord(
+  projectDir: string,
+  workItemId: string,
+): any | null {
   if (!isValidWorkItemId(workItemId)) return null;
 
   try {
-    const hardStopPath = join(projectDir, ".specforge", "work-items", workItemId, "hard_stop.json");
+    const hardStopPath = join(
+      projectDir,
+      ".specforge",
+      "work-items",
+      workItemId,
+      "hard_stop.json",
+    );
     if (!existsSync(hardStopPath)) return null;
     const record = JSON.parse(readFileSync(hardStopPath, "utf-8"));
     if (record?.blocked !== true) return null;
@@ -635,8 +774,17 @@ function findAnyValidHardStopRecord(projectDir: string): any | null {
   return null;
 }
 
-function persistHardStop(projectDir: string, workItemId: unknown, reason: string, sourceTool: string): void {
-  if (!isValidWorkItemId(workItemId)) {
+function persistHardStop(
+  projectDir: string,
+  workItemId: unknown,
+  reason: string,
+  sourceTool: string,
+  args: Record<string, any> = {},
+): any | null {
+  const resolvedWorkItemId = isValidWorkItemId(workItemId)
+    ? workItemId
+    : resolveGovernanceWorkItemId(projectDir, args);
+  if (!isValidWorkItemId(resolvedWorkItemId)) {
     console.warn(
       `[SF HardStop] NON_PERSISTENT_INVALID_WORK_ITEM_ID: Invalid/retryable work_item_id must not persist project-level hard_stop.
 ` +
@@ -644,23 +792,42 @@ function persistHardStop(projectDir: string, workItemId: unknown, reason: string
 ` +
         `Reason: ${String(reason ?? "").slice(0, 240)}`,
     );
-    return;
+    return null;
   }
 
   try {
-    const wiDir = join(projectDir, ".specforge", "work-items", workItemId);
+    const wiDir = join(
+      projectDir,
+      ".specforge",
+      "work-items",
+      resolvedWorkItemId,
+    );
     mkdirSync(wiDir, { recursive: true });
     const record = {
-      work_item_id: workItemId,
+      schema_version: "1.2",
+      hard_stop_id: `HS-${Date.now()}`,
+      scope: "work_item",
+      work_item_id: resolvedWorkItemId,
       blocked: true,
       reason,
       source_tool: sourceTool,
       created_at: new Date().toISOString(),
+      resolved: false,
     };
-    writeFileSync(join(wiDir, "hard_stop.json"), JSON.stringify(record, null, 2) + "\n", "utf-8");
-    console.error(`[SF HardStop] LATCH SET for ${workItemId} - reason: ${reason}, source: ${sourceTool}`);
+    writeFileSync(
+      join(wiDir, "hard_stop.json"),
+      JSON.stringify(record, null, 2) + "\n",
+      "utf-8",
+    );
+    console.error(
+      `[SF HardStop] LATCH SET for ${resolvedWorkItemId} - reason: ${reason}, source: ${sourceTool}`,
+    );
+    return record;
   } catch (e) {
-    console.error(`[SF HardStop] Failed to persist latch: ${(e as Error).message}`);
+    console.error(
+      `[SF HardStop] Failed to persist latch: ${(e as Error).message}`,
+    );
+    return null;
   }
 }
 
@@ -672,27 +839,37 @@ function maybePersistHardStopFromGuardResult(
 ): void {
   if (!result || result.hard_stop !== true) return;
   const workItemId = result.work_item_id ?? getWorkItemIdFromArgs(args);
-  persistHardStop(projectDir, workItemId, result.error ?? result.reason ?? "HARD_STOP_FROM_GUARD", toolName);
+  persistHardStop(
+    projectDir,
+    workItemId,
+    result.error ?? result.reason ?? "HARD_STOP_FROM_GUARD",
+    toolName,
+    args,
+  );
 }
 
-function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Record<string, any>) {
-  const argWorkItemId = getWorkItemIdFromArgs(args);
-  if (!isValidWorkItemId(argWorkItemId)) {
-    // No explicit WI means the daemon-side scoped write guard must select the
-    // relevant implementation_running WI from the actual write target. Scanning
-    // every implementation_running WI here reintroduces global hard_stop
-    // contagion and blocks unrelated report/native writes.
-    return;
-  }
+function assertNoRelevantHardStop(
+  projectDir: string,
+  toolName: string,
+  args: Record<string, any>,
+) {
+  const explicitWorkItemId = getWorkItemIdFromArgs(args);
+  const relevantWorkItemId = isValidWorkItemId(explicitWorkItemId)
+    ? explicitWorkItemId
+    : resolveGovernanceWorkItemId(projectDir, args);
+  if (!isValidWorkItemId(relevantWorkItemId)) return;
 
   const normalizedToolName = normalizeToolName(toolName);
-  if (normalizedToolName === "sfhardstopresolve" || toolName === "sf_hard_stop_resolve") {
+  if (
+    normalizedToolName === "sfhardstopresolve" ||
+    toolName === "sf_hard_stop_resolve"
+  ) {
     // sf_hard_stop_resolve is the structured recovery path for active hard_stop.
     // It must reach the daemon-side resolver; it is not a Write Guard bypass.
     return;
   }
 
-  const record = readHardStopRecord(projectDir, argWorkItemId);
+  const record = readHardStopRecord(projectDir, relevantWorkItemId);
   if (record) {
     throw new Error(
       `[SF HardStop] BLOCKED: Work item ${record.work_item_id} has hard_stop active.
@@ -704,7 +881,11 @@ function assertNoRelevantHardStop(projectDir: string, toolName: string, args: Re
   }
 }
 
-function assertCodePermissionEnableHasAllowedFiles(projectDir: string, toolName: string, args: Record<string, any>): void {
+function assertCodePermissionEnableHasAllowedFiles(
+  projectDir: string,
+  toolName: string,
+  args: Record<string, any>,
+): void {
   const normalized = normalizeToolName(toolName);
   if (normalized !== "sfcodepermission") return;
 
@@ -716,30 +897,54 @@ function assertCodePermissionEnableHasAllowedFiles(projectDir: string, toolName:
     Array.isArray(allowedWriteFiles) &&
     allowedWriteFiles.some((entry: any) => {
       if (typeof entry === "string") return entry.trim().length > 0;
-      if (entry && typeof entry.path === "string") return entry.path.trim().length > 0;
+      if (entry && typeof entry.path === "string")
+        return entry.path.trim().length > 0;
       return false;
     });
 
   if (hasAllowedFiles) return;
 
   const workItemId = getWorkItemIdFromArgs(args);
-  persistHardStop(projectDir, workItemId, "ALLOWED_WRITE_FILES_REQUIRED", toolName);
+  persistHardStop(
+    projectDir,
+    workItemId,
+    "ALLOWED_WRITE_FILES_REQUIRED",
+    toolName,
+    args,
+  );
   throw new Error(
     `[SF HardStop] BLOCKED: sf_code_permission action="${action}" requires allowed_write_files[].\n` +
       `This is a hard stop because code permission cannot be enabled without an explicit file allowlist.`,
   );
 }
 
-function extractReadTargetsForSensitiveBoundary(args: Record<string, any>): string[] {
+function extractReadTargetsForSensitiveBoundary(
+  args: Record<string, any>,
+): string[] {
   const targets: string[] = [];
-  const keys = ["path", "file", "filePath", "file_path", "target", "targetPath", "target_path", "filename", "name", "uri", "url"];
+  const keys = [
+    "path",
+    "file",
+    "filePath",
+    "file_path",
+    "target",
+    "targetPath",
+    "target_path",
+    "filename",
+    "name",
+    "uri",
+    "url",
+  ];
 
   for (const key of keys) pushString(targets, args?.[key]);
 
   for (const value of Object.values(args ?? {})) {
     if (typeof value === "string") {
       const v = value.trim();
-      if (v.length > 0 && /(handshake\.json|sf-user|\.specforge|specforge|token)/i.test(v)) {
+      if (
+        v.length > 0 &&
+        /(handshake\.json|sf-user|\.specforge|specforge|token)/i.test(v)
+      ) {
         targets.push(v);
       }
     }
@@ -749,41 +954,89 @@ function extractReadTargetsForSensitiveBoundary(args: Record<string, any>): stri
 }
 
 function isSensitiveSpecForgeReadTarget(targetPath: string): boolean {
-  const compact = String(targetPath ?? "").toLowerCase().replace(/\\+/g, "/").replace(/\s+/g, "");
+  const compact = String(targetPath ?? "")
+    .toLowerCase()
+    .replace(/\\+/g, "/")
+    .replace(/\s+/g, "");
   const isHandshake =
     compact.includes("handshake.json") ||
     compact.includes("/sf-user/runtime/handshake") ||
     compact.includes("/.specforge/runtime/handshake");
-  const isSpecForgeRuntime = compact.includes("/.specforge/runtime/") || compact.includes("/sf-user/runtime/");
-  const referencesCredential = compact.includes("token") || compact.includes("authorization") || compact.includes("bearer");
+  const isSpecForgeRuntime =
+    compact.includes("/.specforge/runtime/") ||
+    compact.includes("/sf-user/runtime/");
+  const referencesCredential =
+    compact.includes("token") ||
+    compact.includes("authorization") ||
+    compact.includes("bearer");
   return isHandshake || (isSpecForgeRuntime && referencesCredential);
 }
 
 function isReadTool(toolName: string): boolean {
   const normalized = normalizeToolName(toolName);
-  return normalized === "read" || normalized === "readfile" || normalized === "open" || normalized === "view" || normalized === "cat";
+  return (
+    normalized === "read" ||
+    normalized === "readfile" ||
+    normalized === "open" ||
+    normalized === "view" ||
+    normalized === "cat"
+  );
 }
 
-function assertSensitiveReadBoundary(projectDir: string, toolName: string, args: Record<string, any>): void {
+function assertSensitiveReadBoundary(
+  projectDir: string,
+  toolName: string,
+  args: Record<string, any>,
+): void {
   if (!isReadTool(toolName)) return;
 
   const targets = extractReadTargetsForSensitiveBoundary(args);
   for (const target of targets) {
     if (!isSensitiveSpecForgeReadTarget(target)) continue;
-    persistHardStop(projectDir, getWorkItemIdFromArgs(args), "SPEC_FORGE_DAEMON_TOKEN_ACCESS_FORBIDDEN", toolName);
-    throw new Error(`[SF HardStop] BLOCKED sensitive SpecForge runtime read: ${target}`);
+    persistHardStop(
+      projectDir,
+      getWorkItemIdFromArgs(args),
+      "SPEC_FORGE_DAEMON_TOKEN_ACCESS_FORBIDDEN",
+      toolName,
+      args,
+    );
+    throw new Error(
+      `[SF HardStop] BLOCKED sensitive SpecForge runtime read: ${target}`,
+    );
   }
 }
 
-function assertShellGovernanceBoundary(projectDir: string, toolName: string, args: Record<string, any>): void {
+function assertShellGovernanceBoundary(
+  projectDir: string,
+  toolName: string,
+  args: Record<string, any>,
+): void {
   if (!isShellTool(toolName)) return;
 
   const command: string = args.command ?? args.cmd ?? args.input ?? "";
   const reason = findGovernanceBypassReason(command, args.stdin);
   if (!reason) return;
 
-  const workItemId = getWorkItemIdFromArgs(args);
-  persistHardStop(projectDir, workItemId, reason, toolName);
+  const workItemId = resolveGovernanceWorkItemId(projectDir, args);
+  const hardStopRecord = persistHardStop(
+    projectDir,
+    workItemId,
+    reason,
+    toolName,
+    args,
+  );
+  if (isValidWorkItemId(workItemId)) {
+    appendNativeBlockedWriteGuardLog(
+      projectDir,
+      workItemId,
+      ".specforge/**",
+      "modify",
+      toolName,
+      reason,
+      undefined,
+      hardStopRecord?.hard_stop_id,
+    );
+  }
   throw new Error(
     `[SF HardStop] BLOCKED shell governance bypass: ${reason}.\nCommand: "${redactSensitiveString(command).slice(0, 160)}"`,
   );
@@ -797,7 +1050,13 @@ function getToolName(input: any): string {
   return String(input?.tool ?? input?.name ?? input?.toolName ?? "");
 }
 
-async function guardWriteTargets(projectDir: string, toolName: string, args: Record<string, any>, targets: string[], callID?: string) {
+async function guardWriteTargets(
+  projectDir: string,
+  toolName: string,
+  args: Record<string, any>,
+  targets: string[],
+  callID?: string,
+) {
   if (targets.length === 0) {
     throw new Error(
       `[SF WriteGuard] Write tool "${toolName}" invoked without detectable file path.\nCannot validate write permission. Blocked.`,
@@ -812,8 +1071,17 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
     // allows this path, the write is allowed without consulting the stale daemon
     // fallback. Unauthorized/out-of-scope writes still fall through to daemon and
     // fail closed.
-    const localOperation = inferNativeWriteOperation(projectDir, toolName, targetPath);
-    const localDecision = localNativeWriteAllowDecision(projectDir, targetPath, localOperation, args);
+    const localOperation = inferNativeWriteOperation(
+      projectDir,
+      toolName,
+      targetPath,
+    );
+    const localDecision = localNativeWriteAllowDecision(
+      projectDir,
+      targetPath,
+      localOperation,
+      args,
+    );
     if (localDecision.allowed) {
       continue;
     }
@@ -833,8 +1101,15 @@ async function guardWriteTargets(projectDir: string, toolName: string, args: Rec
     }
 
     if (!result.allowed) {
-      const reason = localDecision.reason ?? result.reason ?? result.error ?? "policy_violation";
-      const blockedWorkItemId = result.work_item_id ?? localDecision.workItemId ?? getWorkItemIdFromArgs(args);
+      const reason =
+        localDecision.reason ??
+        result.reason ??
+        result.error ??
+        "policy_violation";
+      const blockedWorkItemId =
+        result.work_item_id ??
+        localDecision.workItemId ??
+        getWorkItemIdFromArgs(args);
       appendNativeBlockedWriteGuardLog(
         projectDir,
         blockedWorkItemId,
@@ -861,12 +1136,20 @@ async function beforeToolExecute(projectDir: string, input: any, output: any) {
   if (isShellTool(toolName)) {
     const command: string = args.command ?? args.cmd ?? args.input ?? "";
     const expectedFiles = extractBashExpectedFiles(args);
-    if (isSpecForgeReportsShellWriteAllowed(projectDir, command, expectedFiles)) {
+    if (
+      isSpecForgeReportsShellWriteAllowed(projectDir, command, expectedFiles)
+    ) {
       return;
     }
   }
 
-  const shouldCheckHardStop = isWriteTool(toolName) || isShellTool(toolName) || (isSfTool(toolName) && !safeRead);
+  const shellCommand: string = args.command ?? args.cmd ?? args.input ?? "";
+  const shellReadOnly = isShellTool(toolName) && isBashReadOnly(shellCommand);
+  const shouldCheckHardStop =
+    !shellReadOnly &&
+    (isWriteTool(toolName) ||
+      isShellTool(toolName) ||
+      (isSfTool(toolName) && !safeRead));
 
   if (shouldCheckHardStop) {
     assertNoRelevantHardStop(projectDir, toolName, args);
@@ -890,7 +1173,9 @@ async function beforeToolExecute(projectDir: string, input: any, output: any) {
     const expectedFiles = extractBashExpectedFiles(args);
 
     if (isWrite || expectedFiles.length > 0) {
-      if (isSpecForgeReportsShellWriteAllowed(projectDir, command, expectedFiles)) {
+      if (
+        isSpecForgeReportsShellWriteAllowed(projectDir, command, expectedFiles)
+      ) {
         return;
       }
 
@@ -903,10 +1188,9 @@ async function beforeToolExecute(projectDir: string, input: any, output: any) {
         });
       } catch (e) {
         throw new Error(
-          `[SF WriteGuard] Cannot reach daemon to validate bash command.\nFailing closed. Command: "${redactSensitiveString(command).slice(
-            0,
-            100,
-          )}". Error: ${(e as Error).message}`,
+          `[SF WriteGuard] Cannot reach daemon to validate bash command.\nFailing closed. Command: "${redactSensitiveString(
+            command,
+          ).slice(0, 100)}". Error: ${(e as Error).message}`,
         );
       }
 
@@ -940,7 +1224,9 @@ async function beforeToolExecute(projectDir: string, input: any, output: any) {
     if (!result.allowed) {
       maybePersistHardStopFromGuardResult(projectDir, toolName, args, result);
       throw new Error(
-        `[SF WriteGuard] BLOCKED ambiguous bash command: "${redactSensitiveString(command).slice(
+        `[SF WriteGuard] BLOCKED ambiguous bash command: "${redactSensitiveString(
+          command,
+        ).slice(
           0,
           120,
         )}". No expected_write_files declared and command intent unclear.\nReason: ${
@@ -960,7 +1246,13 @@ async function afterToolExecute(projectDir: string, input: any, output: any) {
     const toolOutput = parseToolOutput(out);
     if (toolOutput && toolOutput.hard_stop === true) {
       const workItemId = toolOutput.work_item_id ?? getWorkItemIdFromArgs(args);
-      persistHardStop(projectDir, workItemId, toolOutput.error ?? toolOutput.reason ?? "HARD_STOP_FROM_TOOL", toolName);
+      persistHardStop(
+        projectDir,
+        workItemId,
+        toolOutput.error ?? toolOutput.reason ?? "HARD_STOP_FROM_TOOL",
+        toolName,
+        args,
+      );
     }
   }
 
@@ -991,12 +1283,19 @@ async function afterToolExecute(projectDir: string, input: any, output: any) {
         });
       }
     } catch (e) {
-      console.warn(`[sf:audit] Post-execution audit failed for ${toolName}: ${(e as Error).message}`);
+      console.warn(
+        `[sf:audit] Post-execution audit failed for ${toolName}: ${(e as Error).message}`,
+      );
     }
     return;
   }
 
-  if (!isShellTool(toolName) && !isSideEffectTool(toolName) && !isWriteTool(toolName)) return;
+  if (
+    !isShellTool(toolName) &&
+    !isSideEffectTool(toolName) &&
+    !isWriteTool(toolName)
+  )
+    return;
 
   const command: string = args.command ?? args.cmd ?? args.input ?? "";
   const expectedFiles = extractBashExpectedFiles(args);
@@ -1028,24 +1327,36 @@ async function afterToolExecute(projectDir: string, input: any, output: any) {
       });
     }
   } catch (e) {
-    console.warn(`[sf:audit] changed_files_audit failed: ${(e as Error).message}`);
+    console.warn(
+      `[sf:audit] changed_files_audit failed: ${(e as Error).message}`,
+    );
   }
 }
 
 function resolveToolTargetPath(args: Record<string, any>): string {
-  const target = args.path ?? args.filePath ?? args.file_path ?? args.file ?? args.filename;
+  const target =
+    args.path ?? args.filePath ?? args.file_path ?? args.file ?? args.filename;
   if (typeof target === "string" && target.trim().length > 0) return target;
   throw new Error("[SF WriteGuard] write/edit tool requires path or filePath.");
 }
 
 function normalizePluginPath(value: string): string {
-  return normalizeSlashes(String(value ?? "")).replace(/^\.\//, "").toLowerCase();
+  return normalizeSlashes(String(value ?? ""))
+    .replace(/^\.\//, "")
+    .toLowerCase();
 }
 
-function pluginTargetToProjectRelative(projectDir: string, targetPath: string): string | null {
-  const cleaned = String(targetPath ?? "").trim().replace(/^['"]|['"]$/g, "");
+function pluginTargetToProjectRelative(
+  projectDir: string,
+  targetPath: string,
+): string | null {
+  const cleaned = String(targetPath ?? "")
+    .trim()
+    .replace(/^['"]|['"]$/g, "");
   if (!cleaned) return null;
-  const absolute = isAbsolute(cleaned) ? resolve(cleaned) : resolve(projectDir, cleaned);
+  const absolute = isAbsolute(cleaned)
+    ? resolve(cleaned)
+    : resolve(projectDir, cleaned);
   const projectAbs = resolve(projectDir);
   const rel = relative(projectAbs, absolute);
   if (rel.startsWith("..") || isAbsolute(rel)) return null;
@@ -1065,9 +1376,14 @@ function readRuntimeState(projectDir: string): any | null {
   return readJsonFile(join(projectDir, ".specforge", "runtime", "state.json"));
 }
 
-function readWorkItemMetadata(projectDir: string, workItemId: string): any | null {
+function readWorkItemMetadata(
+  projectDir: string,
+  workItemId: string,
+): any | null {
   if (!isValidWorkItemId(workItemId)) return null;
-  return readJsonFile(join(projectDir, ".specforge", "work-items", workItemId, "work_item.json"));
+  return readJsonFile(
+    join(projectDir, ".specforge", "work-items", workItemId, "work_item.json"),
+  );
 }
 
 function appendNativeBlockedWriteGuardLog(
@@ -1078,13 +1394,16 @@ function appendNativeBlockedWriteGuardLog(
   toolName: string,
   reason: string,
   callID?: string,
+  hardStopId?: string,
 ): void {
   if (!isValidWorkItemId(workItemId)) return;
 
   try {
     const wiDir = join(projectDir, ".specforge", "work-items", workItemId);
     mkdirSync(wiDir, { recursive: true });
-    const relativeTarget = pluginTargetToProjectRelative(projectDir, targetPath) ?? normalizeSlashes(targetPath);
+    const relativeTarget =
+      pluginTargetToProjectRelative(projectDir, targetPath) ??
+      normalizeSlashes(targetPath);
     const record = {
       timestamp: new Date().toISOString(),
       path: relativeTarget,
@@ -1095,51 +1414,103 @@ function appendNativeBlockedWriteGuardLog(
       tool: toolName,
       command: `tool:${toolName}`,
       callID,
+      hard_stop_id: hardStopId,
     };
-    appendFileSync(join(wiDir, "write_guard_log.jsonl"), JSON.stringify(record) + "\n", "utf-8");
+    appendFileSync(
+      join(wiDir, "write_guard_log.jsonl"),
+      JSON.stringify(record) + "\n",
+      "utf-8",
+    );
   } catch (e) {
-    console.warn(`[sf:audit] Failed to append blocked native write guard log: ${(e as Error).message}`);
+    console.warn(
+      `[sf:audit] Failed to append blocked native write guard log: ${(e as Error).message}`,
+    );
   }
 }
 
-function getAuthoritativeState(runtimeState: any, workItemId: string): string | null {
-  const items = Array.isArray(runtimeState?.workItems) ? runtimeState.workItems : [];
+function getAuthoritativeState(
+  runtimeState: any,
+  workItemId: string,
+): string | null {
+  const items = Array.isArray(runtimeState?.workItems)
+    ? runtimeState.workItems
+    : [];
   const match = items.find((item: any) => item?.work_item_id === workItemId);
   return typeof match?.current_state === "string" ? match.current_state : null;
 }
 
-function candidateNativeWriteWorkItems(projectDir: string, args: Record<string, any>): string[] {
+function candidateNativeWriteWorkItems(
+  projectDir: string,
+  args: Record<string, any>,
+): string[] {
   const explicit = getWorkItemIdFromArgs(args);
   if (isValidWorkItemId(explicit)) return [explicit];
   const runtimeState = readRuntimeState(projectDir);
-  const items = Array.isArray(runtimeState?.workItems) ? runtimeState.workItems : [];
+  const items = Array.isArray(runtimeState?.workItems)
+    ? runtimeState.workItems
+    : [];
   return items
-    .filter((item: any) => item?.current_state === "implementation_running" && isValidWorkItemId(item?.work_item_id))
-    .sort((a: any, b: any) => Number(b?.updated_at ?? 0) - Number(a?.updated_at ?? 0))
+    .filter(
+      (item: any) =>
+        item?.current_state === "implementation_running" &&
+        isValidWorkItemId(item?.work_item_id),
+    )
+    .sort(
+      (a: any, b: any) =>
+        Number(b?.updated_at ?? 0) - Number(a?.updated_at ?? 0),
+    )
     .map((item: any) => String(item.work_item_id));
 }
 
-function normalizeAllowedPathForCompare(projectDir: string, allowedPath: string): string | null {
-  const cleaned = String(allowedPath ?? "").trim().replace(/^['"]|['"]$/g, "");
+function normalizeAllowedPathForCompare(
+  projectDir: string,
+  allowedPath: string,
+): string | null {
+  const cleaned = String(allowedPath ?? "")
+    .trim()
+    .replace(/^['"]|['"]$/g, "");
   if (!cleaned) return null;
-  if (isAbsolute(cleaned)) return pluginTargetToProjectRelative(projectDir, cleaned);
+  if (isAbsolute(cleaned))
+    return pluginTargetToProjectRelative(projectDir, cleaned);
   return normalizeSlashes(cleaned);
 }
 
-function allowedWriteEntryMatches(projectDir: string, entry: any, targetRelative: string, operation: string): boolean {
+function allowedWriteEntryMatches(
+  projectDir: string,
+  entry: any,
+  targetRelative: string,
+  operation: string,
+): boolean {
   const entryPath = typeof entry === "string" ? entry : entry?.path;
   if (typeof entryPath !== "string") return false;
   const allowedRelative = normalizeAllowedPathForCompare(projectDir, entryPath);
   if (!allowedRelative) return false;
-  if (normalizePluginPath(allowedRelative) !== normalizePluginPath(targetRelative)) return false;
-  const allowedOperation = typeof entry === "object" && entry ? String(entry.operation ?? "").toLowerCase() : "";
-  return !allowedOperation || allowedOperation === operation || allowedOperation === "write" || (allowedOperation === "modify" && operation === "create");
+  if (
+    normalizePluginPath(allowedRelative) !== normalizePluginPath(targetRelative)
+  )
+    return false;
+  const allowedOperation =
+    typeof entry === "object" && entry
+      ? String(entry.operation ?? "").toLowerCase()
+      : "";
+  return (
+    !allowedOperation ||
+    allowedOperation === operation ||
+    allowedOperation === "write" ||
+    (allowedOperation === "modify" && operation === "create")
+  );
 }
 
-function inferNativeWriteOperation(projectDir: string, toolName: string, targetPath: string): "create" | "modify" {
+function inferNativeWriteOperation(
+  projectDir: string,
+  toolName: string,
+  targetPath: string,
+): "create" | "modify" {
   if (normalizeToolName(toolName) === "edit") return "modify";
   const targetRelative = pluginTargetToProjectRelative(projectDir, targetPath);
-  const absolutePath = targetRelative ? resolve(projectDir, targetRelative) : resolve(projectDir, targetPath);
+  const absolutePath = targetRelative
+    ? resolve(projectDir, targetRelative)
+    : resolve(projectDir, targetPath);
   return existsSync(absolutePath) ? "modify" : "create";
 }
 
@@ -1150,14 +1521,19 @@ function localNativeWriteAllowDecision(
   args: Record<string, any>,
 ): { allowed: boolean; workItemId?: string; reason?: string } {
   const targetRelative = pluginTargetToProjectRelative(projectDir, targetPath);
-  if (!targetRelative) return { allowed: false, reason: "target_outside_project" };
+  if (!targetRelative)
+    return { allowed: false, reason: "target_outside_project" };
   const normalizedTarget = normalizePluginPath(targetRelative);
   if (normalizedTarget.startsWith(".specforge/project/")) {
-    return { allowed: false, reason: "project_spec_writes_require_merge_runner" };
+    return {
+      allowed: false,
+      reason: "project_spec_writes_require_merge_runner",
+    };
   }
   const runtimeState = readRuntimeState(projectDir);
   const candidates = candidateNativeWriteWorkItems(projectDir, args);
-  if (candidates.length === 0) return { allowed: false, reason: "no_implementation_running_work_item" };
+  if (candidates.length === 0)
+    return { allowed: false, reason: "no_implementation_running_work_item" };
 
   let activePermissionWorkItemId: string | undefined;
   for (const workItemId of candidates) {
@@ -1169,8 +1545,14 @@ function localNativeWriteAllowDecision(
     if (wi.code_permission_revoked === true) continue;
 
     activePermissionWorkItemId ??= workItemId;
-    const allowedFiles = Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [];
-    if (allowedFiles.some((entry: any) => allowedWriteEntryMatches(projectDir, entry, targetRelative, operation))) {
+    const allowedFiles = Array.isArray(wi.allowed_write_files)
+      ? wi.allowed_write_files
+      : [];
+    if (
+      allowedFiles.some((entry: any) =>
+        allowedWriteEntryMatches(projectDir, entry, targetRelative, operation),
+      )
+    ) {
       return { allowed: true, workItemId };
     }
   }
@@ -1178,7 +1560,9 @@ function localNativeWriteAllowDecision(
   return {
     allowed: false,
     workItemId: activePermissionWorkItemId,
-    reason: activePermissionWorkItemId ? "target_not_in_allowed_write_files" : "no_write_enabled_work_item",
+    reason: activePermissionWorkItemId
+      ? "target_not_in_allowed_write_files"
+      : "no_write_enabled_work_item",
   };
 }
 
@@ -1198,7 +1582,13 @@ function createNativeWriteTool(projectDir: string) {
     async execute(args: any, context: any) {
       const directory = context?.directory ?? projectDir;
       const targetPath = resolveToolTargetPath(args);
-      await guardWriteTargets(directory, "write", args, [targetPath], context?.callID);
+      await guardWriteTargets(
+        directory,
+        "write",
+        args,
+        [targetPath],
+        context?.callID,
+      );
       const absolutePath = resolve(directory, targetPath);
       mkdirSync(dirname(absolutePath), { recursive: true });
       writeFileSync(absolutePath, String(args.content ?? ""), "utf-8");
@@ -1230,18 +1620,31 @@ function createNativeEditTool(projectDir: string) {
       const oldString = args.oldString ?? args.old_string;
       const newString = args.newString ?? args.new_string;
       if (typeof oldString !== "string" || typeof newString !== "string") {
-        throw new Error("[SF WriteGuard] edit tool requires oldString/newString or old_string/new_string.");
+        throw new Error(
+          "[SF WriteGuard] edit tool requires oldString/newString or old_string/new_string.",
+        );
       }
 
-      await guardWriteTargets(directory, "edit", args, [targetPath], context?.callID);
+      await guardWriteTargets(
+        directory,
+        "edit",
+        args,
+        [targetPath],
+        context?.callID,
+      );
 
       const absolutePath = resolve(directory, targetPath);
       const current = readFileSync(absolutePath, "utf-8");
       if (!current.includes(oldString)) {
-        throw new Error(`[SF WriteGuard] edit target string not found in ${targetPath}.`);
+        throw new Error(
+          `[SF WriteGuard] edit target string not found in ${targetPath}.`,
+        );
       }
 
-      const updated = args.replaceAll === true ? current.split(oldString).join(newString) : current.replace(oldString, newString);
+      const updated =
+        args.replaceAll === true
+          ? current.split(oldString).join(newString)
+          : current.replace(oldString, newString);
       writeFileSync(absolutePath, updated, "utf-8");
       return `SpecForge WriteGuard allowed edit: ${targetPath}`;
     },
@@ -1272,7 +1675,9 @@ export async function sf_specforge(input: PluginInput): Promise<any> {
     await daemonClient.register(projectDir);
     console.log(`[sf:specforge] Project registered: ${projectDir}`);
   } catch (e) {
-    console.warn(`[sf:specforge] Project registration failed (will retry on first tool call): ${(e as Error).message}`);
+    console.warn(
+      `[sf:specforge] Project registration failed (will retry on first tool call): ${(e as Error).message}`,
+    );
   }
 
   return {

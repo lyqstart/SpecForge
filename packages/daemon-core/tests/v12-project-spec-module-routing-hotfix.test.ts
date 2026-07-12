@@ -12,24 +12,33 @@ function source(): string {
   return readFileSync(sourcePath, 'utf8');
 }
 
-describe('v1.2 project spec module routing hotfix', () => {
-  it('routes candidate requirements/design from module front-matter instead of hard-coded core', () => {
+describe('当前项目规格模块路由契约', () => {
+  it('只把 Candidate 路由到 spec_manifest 已声明模块，不静默回退 core', () => {
     const text = source();
-    expect(text).toContain('inferCandidateModuleIdFromContent');
+    expect(text).toContain('resolveDeclaredCandidateModuleId');
+    expect(text).toContain('readModuleOwnership');
     expect(text).toContain("readFrontMatterField(content, ['target_module_path'])");
     expect(text).toContain("readFrontMatterField(content, ['module_id', 'module'])");
-    expect(text).toContain("candidateModulePath(inferCandidateModuleIdFromContent(content), 'requirements')");
-    expect(text).toContain("candidateModulePath(inferCandidateModuleIdFromContent(content), 'design')");
+    expect(text).toContain('MODULE_OWNERSHIP_UNRESOLVED');
+    expect(text).toContain('MODULE_OWNERSHIP_AMBIGUOUS');
+    expect(text).toContain('MODULE_NOT_DECLARED');
+    expect(text).toContain(
+      "candidateModuleRelativePath(baseDir, workItemId, moduleId, 'requirements')"
+    );
+    expect(text).toContain("candidateModuleRelativePath(baseDir, workItemId, moduleId, 'design')");
     expect(text).not.toContain('candidates/project/modules/core/requirements.candidate.md');
     expect(text).not.toContain('candidates/project/modules/core/design.candidate.md');
   });
 
-  it('normalizes candidate manifest target paths by module_id/module/target path', () => {
+  it('规范化 Candidate Manifest 路径并校验模块所有权', () => {
     const text = source();
     expect(text).toContain('inferCandidateModuleIdFromEntry');
-    expect(text).toContain("projectModuleTargetPath(moduleId, 'requirements')");
-    expect(text).toContain("projectModuleTargetPath(moduleId, 'design')");
+    expect(text).toContain('validateCandidateManifestModuleOwnership');
+    expect(text).toContain("projectModuleTargetPath(baseDir, moduleId, 'requirements')");
+    expect(text).toContain("projectModuleTargetPath(baseDir, moduleId, 'design')");
     expect(text).toContain('rawEntries');
-    expect(text).toContain('rawEntries.map(canonicalizeCandidateEntry)');
+    expect(text).toContain(
+      'rawEntries.map((entry: any) => canonicalizeCandidateEntry(entry, baseDir, workItemId))'
+    );
   });
 });

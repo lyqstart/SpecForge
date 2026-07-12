@@ -21,6 +21,8 @@ export interface HardStopResolutionLogEntry {
   scope?: string;
   allowed_next_action?: string;
   evidence?: unknown[];
+  resolved_by?: string;
+  decision_source?: string;
   original_hard_stop?: {
     hard_stop_id?: string | null;
     work_item_id?: string;
@@ -38,9 +40,9 @@ export function readHardStopResolutionLog(workItemDir: string): HardStopResoluti
     return fs
       .readFileSync(logPath, 'utf-8')
       .split(/\r?\n/g)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .map((line) => JSON.parse(line) as HardStopResolutionLogEntry);
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .map(line => JSON.parse(line) as HardStopResolutionLogEntry);
   } catch {
     return [];
   }
@@ -58,7 +60,7 @@ export function resolutionText(entry: HardStopResolutionLogEntry): string {
     entry.original_hard_stop?.source_tool,
     entry.original_hard_stop?.path,
   ]
-    .filter((value) => typeof value === 'string' && value.length > 0)
+    .filter(value => typeof value === 'string' && value.length > 0)
     .join('\n');
 }
 

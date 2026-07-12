@@ -22,17 +22,6 @@ function read(relativePath: string): string {
   return readFileSync(absolutePath, 'utf8').replace(/\r\n/g, '\n');
 }
 
-function normalizeGateDeploymentVariant(content: string): string {
-  return content
-    .replace(
-      /^import \{ SPEC_DIR_NAME \} from ["']@specforge\/types\/directory-layout["'];?\n/m,
-      ''
-    )
-    .replace(/^const SPEC_DIR_NAME = ["']\.specforge["'](?: as const)?;?\n/m, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
 const governanceHeadings = [
   'Problem Understanding',
   'Existing Architecture Analysis',
@@ -82,6 +71,43 @@ describe('Design Governance contract alignment', () => {
     for (const heading of governanceHeadings) expect(agent).toContain(heading);
   });
 
+  it('keeps phase boundaries, target-change classification, and governance capability verdict separate', () => {
+    const standard = read('docs/standards/fused_standard.md');
+    const agent = read('setup/userlevel-opencode/agents/sf-design.md');
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+    const skill = read(skillPaths.designFirst);
+
+    for (const contract of [standard, agent, orchestrator, skill]) {
+      expect(contract).toContain('SpecForge');
+      expect(contract).toContain('capability_verdict');
+      expect(contract).toContain('Design-Only');
+      expect(contract).toContain('classification');
+      expect(contract).toContain('unknowns');
+    }
+
+    expect(standard).toContain('`capability_verdict` 的裁决对象必须是 **SpecForge 治理链**');
+    expect(agent).toContain('`capability_verdict` 的裁决对象只能是 **SpecForge 治理链**');
+    expect(orchestrator).toContain('分类对象描述的是**用户目标实现后的预期最终语义影响**');
+    expect(skill).toContain('分类必须按用户目标实现后的最终语义影响填写');
+    expect(skill).toContain('不得整表全 `true`/全 `false`');
+    expect(agent).toContain('每个字段必须独立给出 `basis_refs`');
+    expect(agent).toContain('不等于 `capability_verdict: extend_existing`');
+  });
+
+  it('requires module routing to follow spec_manifest instead of source directory names', () => {
+    const standard = read('docs/standards/fused_standard.md');
+    const agent = read('setup/userlevel-opencode/agents/sf-design.md');
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+    const skill = read(skillPaths.designFirst);
+
+    expect(standard).toContain(
+      'Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json`'
+    );
+    expect(agent).toContain('写入前必须读取 `spec_manifest.json`');
+    expect(orchestrator).toContain('生成 Candidate 前必须读取 `spec_manifest.json`');
+    expect(skill).toContain('`<MODULE>` 必须来自 `spec_manifest.json`');
+  });
+
   it('forces design-first to use system_governance', () => {
     const skill = read(skillPaths.designFirst);
     expect(skill).toContain('本 Workflow 固定进入系统治理分析');
@@ -114,22 +140,46 @@ describe('Design Governance contract alignment', () => {
     expect(read(skillPaths.investigation)).toContain('不得在 investigation 中直接实施');
   });
 
-  it('extends both existing Design Gate copies instead of introducing another tool or mode', () => {
+  it('extends the existing Path Service and routes every runtime Gate through one authority', () => {
+    const directoryLayout = read('packages/types/src/directory-layout.ts');
     const runtimeGate = read('packages/daemon-core/src/tools/lib/sf_design_gate_core.ts');
-    const deployedGate = read('setup/userlevel-opencode/tools/lib/sf_design_gate_core.ts');
-
-    for (const gate of [runtimeGate, deployedGate]) {
-      expect(gate).toContain('checkSystemGovernanceContent');
-      expect(gate).toContain('checkSystemGovernanceContent(content, true)');
-      expect(gate).toContain('resolveSystemGovernanceRequirement');
-      expect(gate).toContain('trigger_result.json');
-      expect(gate).toContain('governanceRequirement.required');
-      expect(gate).not.toMatch(/DesignGateMode\s*=\s*['"]system_governance['"]/);
-    }
-
-    expect(normalizeGateDeploymentVariant(deployedGate)).toBe(
-      normalizeGateDeploymentVariant(runtimeGate)
+    const gateRunner = read('packages/daemon-core/src/tools/lib/gate-runner-v11.ts');
+    const governanceInvariants = read(
+      'packages/daemon-core/src/tools/lib/governance-invariants-v11.ts'
     );
+    const deployedGateWrapper = read('setup/userlevel-opencode/tools/sf_design_gate.ts');
+    const deployedGateCore = read('setup/userlevel-opencode/tools/lib/sf_design_gate_core.ts');
+
+    expect(directoryLayout).toContain('单一真相源（Single Source of Truth）');
+    expect(directoryLayout).toContain('workItemCandidateDesign');
+    expect(directoryLayout).toContain('workItemCandidateRequirements');
+    expect(directoryLayout).toContain('workItemCandidateTasks');
+    expect(directoryLayout).toContain('workItemCandidateTraceDelta');
+    expect(directoryLayout).toContain('workItemSpecArtifactReadCandidates');
+
+    expect(governanceInvariants).toContain('resolveWorkItemSpecArtifacts');
+    expect(runtimeGate).toContain('resolveWorkItemSpecArtifacts');
+    expect(runtimeGate).toContain('workItemTriggerResult');
+    expect(runtimeGate).toContain('checkSystemGovernanceContent');
+    expect(runtimeGate).toContain('checkSystemGovernanceContent(content, true)');
+    expect(runtimeGate).toContain('resolveSystemGovernanceRequirement');
+    expect(runtimeGate).not.toMatch(/DesignGateMode\s*=\s*['"]system_governance['"]/);
+    expect(runtimeGate).toContain('nextHeading[1].length <= currentLevel');
+    expect(deployedGateCore).toContain('nextHeading[1].length <= currentLevel');
+
+    expect(gateRunner).toContain("import { checkDesignGate } from './sf_design_gate_core.js'");
+    expect(gateRunner).toContain(
+      'return checkDesignGate(ctx.workItemId, ctx.projectRoot, workflowType)'
+    );
+    expect(gateRunner).not.toContain('Workflow-specific gate (skipped in MVP)');
+
+    expect(deployedGateWrapper).toContain('daemon.invokeTool("sf_design_gate", args');
+    expect(
+      existsSync(path.join(repoRoot, 'packages/daemon-core/src/tools/lib/sf_artifact_path_core.ts'))
+    ).toBe(false);
+    expect(
+      existsSync(path.join(repoRoot, 'setup/userlevel-opencode/tools/lib/sf_artifact_path_core.ts'))
+    ).toBe(false);
 
     const allChangedContracts = [
       read('docs/standards/fused_standard.md'),

@@ -8,13 +8,40 @@
  */
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import {
+  legacyWorkItemSpecArtifact,
+  workItemRoot,
+  workItemTriggerResult,
+} from '@specforge/types/directory-layout';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
+import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
 import { parseSections } from './sf_requirements_gate_core';
 import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { isValidVerificationType } from './sf_verification_types';
 import type { SyncSummary } from './sf_knowledge_graph_core';
+
+async function readFirstAvailable(
+  paths: string[]
+): Promise<{ content: string; path: string } | null> {
+  for (const candidatePath of paths) {
+    try {
+      return { content: await readFile(candidatePath, 'utf-8'), path: candidatePath };
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException;
+      if (error.code === 'ENOENT') continue;
+      throw error;
+    }
+  }
+  return null;
+}
+
+function modeDocumentReadPaths(baseDir: string, workItemId: string, fileName: string): string[] {
+  return [
+    join(workItemRoot(baseDir, workItemId), fileName),
+    legacyWorkItemSpecArtifact(baseDir, workItemId, fileName),
+  ];
+}
 
 // Re-export GateResult for convenience
 export type { GateResult };
@@ -161,8 +188,8 @@ export async function resolveSystemGovernanceRequirement(
   baseDir: string
 ): Promise<SystemGovernanceRequirement> {
   const candidatePaths = [
-    join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId, 'trigger_result.json'),
-    join(baseDir, SPEC_DIR_NAME, 'specs', workItemId, 'trigger_result.json'),
+    workItemTriggerResult(baseDir, workItemId),
+    legacyWorkItemSpecArtifact(baseDir, workItemId, 'trigger_result.json'),
   ];
 
   for (const candidatePath of candidatePaths) {
@@ -449,40 +476,6 @@ export async function checkDesignGate(
       return executeDesignGateMode(workItemId, baseDir, mode);
     }
 
-    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId);
-    const docPath = join(specDir, 'design.md');
-    let content: string;
-
-    try {
-      content = await readFile(docPath, 'utf-8');
-    } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException;
-      if (error.code === 'ENOENT') {
-        return failResult(['design.md not found']);
-      }
-      return {
-        status: 'blocked',
-        blocking_issues: [`Failed to read design.md: ${error.message}`],
-        warnings: [],
-        next_action: 'ask_user',
-      };
-    }
-
-    if (workflowType === 'feature_spec_design_first') {
-      const designFirstResult = checkDesignGateDesignFirst(content);
-      if (designFirstResult.status === 'pass') {
-        designFirstResult.kg_sync = await syncDesignToKG(
-          workItemId,
-          baseDir,
-          designFirstResult.warnings
-        );
-      }
-      return designFirstResult;
-    }
-
-    const blockingIssues: string[] = [];
-    const warnings: string[] = [];
-
     const governanceRequirement = await resolveSystemGovernanceRequirement(workItemId, baseDir);
     if (governanceRequirement.blocking_issue) {
       return {
@@ -496,28 +489,74 @@ export async function checkDesignGate(
       };
     }
 
-    const governanceResult = checkSystemGovernanceContent(content, governanceRequirement.required);
-    if (governanceResult.status !== 'pass') {
-      governanceResult.details = {
-        ...governanceResult.details,
-        governance_requirement_reasons: governanceRequirement.reasons,
-        trigger_result_path: governanceRequirement.source_path,
+    let designArtifacts: Array<{ content: string; path: string }>;
+    try {
+      designArtifacts = await resolveWorkItemSpecArtifacts({
+        projectRoot: baseDir,
+        workItemId,
+        kind: 'design',
+      });
+    } catch (err: unknown) {
+      return {
+        status: 'blocked',
+        blocking_issues: [`Failed to read design candidate: ${(err as Error).message}`],
+        warnings: [],
+        next_action: 'ask_user',
       };
-      return governanceResult;
+    }
+    if (designArtifacts.length === 0) {
+      return failResult(['design candidate not found']);
     }
 
-    if (!hasRequirementReferences(content)) {
-      blockingIssues.push(
-        '设计文档未引用需求编号（需要包含"需求 X"、"REQ-XXX"或"Requirement X"格式的引用）'
+    const blockingIssues: string[] = [];
+    const warnings: string[] = [];
+    let governanceDetails: Record<string, unknown> | undefined;
+
+    for (const artifact of designArtifacts) {
+      const content = artifact.content;
+      const artifactLabel = artifact.path.replace(/\\/g, '/');
+
+      if (workflowType === 'feature_spec_design_first') {
+        const designFirstResult = checkDesignGateDesignFirst(content);
+        if (designFirstResult.status !== 'pass') {
+          blockingIssues.push(
+            ...designFirstResult.blocking_issues.map(issue => `${artifactLabel}: ${issue}`)
+          );
+          warnings.push(
+            ...designFirstResult.warnings.map(warning => `${artifactLabel}: ${warning}`)
+          );
+          continue;
+        }
+        governanceDetails = designFirstResult.details;
+        continue;
+      }
+
+      const governanceResult = checkSystemGovernanceContent(
+        content,
+        governanceRequirement.required
       );
-    }
-
-    const cpTestTypes = extractCPTestTypes(content);
-    for (const { cpId, testType } of cpTestTypes) {
-      if (!isValidVerificationType(testType)) {
+      if (governanceResult.status !== 'pass') {
         blockingIssues.push(
-          `${cpId}: test_type 值非法 "${testType}"，合法值为: unit, property, integration, e2e, regression`
+          ...governanceResult.blocking_issues.map(issue => `${artifactLabel}: ${issue}`)
         );
+        warnings.push(...governanceResult.warnings.map(warning => `${artifactLabel}: ${warning}`));
+        continue;
+      }
+      governanceDetails = governanceResult.details;
+
+      if (!hasRequirementReferences(content)) {
+        blockingIssues.push(
+          `${artifactLabel}: 设计文档未引用需求编号（需要包含"需求 X"、"REQ-XXX"或"Requirement X"格式的引用）`
+        );
+      }
+
+      const cpTestTypes = extractCPTestTypes(content);
+      for (const { cpId, testType } of cpTestTypes) {
+        if (!isValidVerificationType(testType)) {
+          blockingIssues.push(
+            `${artifactLabel}: ${cpId}: test_type 值非法 "${testType}"，合法值为: unit, property, integration, e2e, regression`
+          );
+        }
       }
     }
 
@@ -527,21 +566,29 @@ export async function checkDesignGate(
         blocking_issues: blockingIssues,
         warnings,
         next_action: 'revise',
+        details: {
+          governance_requirement_reasons: governanceRequirement.reasons,
+          trigger_result_path: governanceRequirement.source_path,
+          design_candidate_paths: designArtifacts.map(artifact => artifact.path),
+        },
       };
     }
 
-    return {
+    const result: GateResult = {
       status: 'pass',
       blocking_issues: [],
       warnings,
       next_action: 'continue',
-      kg_sync: await syncDesignToKG(workItemId, baseDir, warnings),
       details: {
-        ...governanceResult.details,
+        ...governanceDetails,
         governance_requirement_reasons: governanceRequirement.reasons,
         trigger_result_path: governanceRequirement.source_path,
+        design_candidate_paths: designArtifacts.map(artifact => artifact.path),
       },
     };
+
+    result.kg_sync = await syncDesignToKG(workItemId, baseDir, warnings);
+    return result;
   } catch (err) {
     await logErrorToFile(baseDir, 'sf_design_gate_core', 'checkDesignGate', err);
     throw err;
@@ -609,24 +656,23 @@ async function executeDesignGateMode(
     };
   }
 
-  const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId);
-  const filePath = join(specDir, spec.targetFile);
-  let content: string;
-
+  let resolvedDocument: { content: string; path: string } | null;
   try {
-    content = await readFile(filePath, 'utf-8');
+    resolvedDocument = await readFirstAvailable(
+      modeDocumentReadPaths(baseDir, workItemId, spec.targetFile)
+    );
   } catch (err: unknown) {
-    const error = err as NodeJS.ErrnoException;
-    if (error.code === 'ENOENT') {
-      return failResult([`File not found: ${spec.targetFile}`]);
-    }
     return {
       status: 'blocked',
-      blocking_issues: [`Failed to read ${spec.targetFile}: ${error.message}`],
+      blocking_issues: [`Failed to read ${spec.targetFile}: ${(err as Error).message}`],
       warnings: [],
       next_action: 'ask_user',
     };
   }
+  if (!resolvedDocument) {
+    return failResult([`File not found: ${spec.targetFile}`]);
+  }
+  const content = resolvedDocument.content;
 
   const sections = parseSections(content, spec.requiredSections);
   const missing = spec.requiredSections.filter(section => !sections[section]?.trim());
@@ -755,16 +801,24 @@ export function extractCPTestTypes(content: string): Array<{
 
 function extractMarkdownSection(content: string, sectionName: string): string {
   const headingPattern = new RegExp(
-    `^#{1,6}\\s+(?:\\d+[.、)]\\s*)?${escapeRegExp(sectionName)}\\s*$`,
+    `^(#{1,6})\\s+(?:\\d+[.、)]\\s*)?${escapeRegExp(sectionName)}\\s*$`,
     'im'
   );
   const headingMatch = headingPattern.exec(content);
   if (!headingMatch) return '';
 
+  const currentLevel = headingMatch[1].length;
   const bodyStart = headingMatch.index + headingMatch[0].length;
   const rest = content.slice(bodyStart);
-  const nextHeading = /^#{1,6}\s+/m.exec(rest);
-  return (nextHeading ? rest.slice(0, nextHeading.index) : rest).trim();
+  const headingIterator = rest.matchAll(/^(#{1,6})\s+/gm);
+
+  for (const nextHeading of headingIterator) {
+    if (nextHeading[1].length <= currentLevel) {
+      return rest.slice(0, nextHeading.index).trim();
+    }
+  }
+
+  return rest.trim();
 }
 
 function escapeRegExp(value: string): string {

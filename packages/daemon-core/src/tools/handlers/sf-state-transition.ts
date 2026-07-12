@@ -171,7 +171,6 @@ async function ensureWorkItemJsonOnCreate(
   const workItem = {
     schema_version: "1.1",
     work_item_id: workItemId,
-    status: "created",
     workflow_type: workflowType ?? "quick_change",
     workflow_path: workflowPath,
     title: `Work Item ${workItemId}`,

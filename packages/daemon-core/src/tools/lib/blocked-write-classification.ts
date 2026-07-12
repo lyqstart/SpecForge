@@ -39,6 +39,7 @@ export interface BlockedWriteAttemptLike {
   tool?: string;
   command?: string;
   violations?: string[];
+  hard_stop_id?: string;
 }
 
 export interface FactualChangedFileLike {
@@ -75,9 +76,15 @@ function normalizeBlockedOperation(value: unknown): string {
 function resolutionMatchesBlockedPath(
   blockedPath: string,
   blocked: BlockedWriteAttemptLike,
-  resolution: HardStopResolutionLogEntry,
+  resolution: HardStopResolutionLogEntry
 ): boolean {
   if (!isAuditResolvingResolutionType(resolution.resolution_type)) return false;
+
+  const blockedHardStopId = String(blocked.hard_stop_id ?? '').trim();
+  const resolutionHardStopId = String(
+    resolution.hard_stop_id ?? resolution.original_hard_stop?.hard_stop_id ?? ''
+  ).trim();
+  if (blockedHardStopId && resolutionHardStopId === blockedHardStopId) return true;
 
   const target = normalizeAuditPath(blockedPath);
   const text = resolutionText(resolution);
@@ -89,10 +96,11 @@ function resolutionMatchesBlockedPath(
   if (target && normalizeAuditPath(originalReason).includes(target)) return true;
 
   const command = String(blocked.command ?? '');
-  if (command && normalizeAuditPath(text).includes(normalizeAuditPath(command).slice(0, 160))) return true;
+  if (command && normalizeAuditPath(text).includes(normalizeAuditPath(command).slice(0, 160)))
+    return true;
 
   const violations = Array.isArray(blocked.violations) ? blocked.violations : [];
-  return violations.some((violation) => {
+  return violations.some(violation => {
     const v = normalizeAuditPath(String(violation ?? ''));
     return target.length > 0 && v.includes(target) && normalizedText.includes(target);
   });
@@ -101,7 +109,7 @@ function resolutionMatchesBlockedPath(
 function findResolutionForBlockedPath(
   blockedPath: string,
   blocked: BlockedWriteAttemptLike,
-  resolutions: HardStopResolutionLogEntry[],
+  resolutions: HardStopResolutionLogEntry[]
 ): HardStopResolutionLogEntry | null {
   for (let index = resolutions.length - 1; index >= 0; index -= 1) {
     const resolution = resolutions[index];
@@ -113,10 +121,17 @@ function findResolutionForBlockedPath(
 function authorizationMatchesBlockedPath(
   blockedPath: string,
   blocked: BlockedWriteAttemptLike,
-  authorization: WriteGuardAuthorizationEntry,
+  authorization: WriteGuardAuthorizationEntry
 ): boolean {
   const command = String(blocked.command ?? '');
-  if (command && commandMatchesWriteGuardAuthorization(command, authorization, blockedPath ? authorization.work_item_id : undefined)) {
+  if (
+    command &&
+    commandMatchesWriteGuardAuthorization(
+      command,
+      authorization,
+      blockedPath ? authorization.work_item_id : undefined
+    )
+  ) {
     return true;
   }
 
@@ -125,7 +140,7 @@ function authorizationMatchesBlockedPath(
   if (target && text.includes(target)) return true;
 
   const violations = Array.isArray(blocked.violations) ? blocked.violations : [];
-  return violations.some((violation) => {
+  return violations.some(violation => {
     const v = normalizeAuditPath(String(violation ?? ''));
     return target.length > 0 && v.includes(target) && text.includes(target);
   });
@@ -134,7 +149,7 @@ function authorizationMatchesBlockedPath(
 function findAuthorizationForBlockedPath(
   blockedPath: string,
   blocked: BlockedWriteAttemptLike,
-  authorizations: WriteGuardAuthorizationEntry[],
+  authorizations: WriteGuardAuthorizationEntry[]
 ): WriteGuardAuthorizationEntry | null {
   for (let index = authorizations.length - 1; index >= 0; index -= 1) {
     const authorization = authorizations[index];
@@ -148,21 +163,21 @@ export function classifyBlockedWriteAttempts(
   factualChangedFiles: FactualChangedFileLike[],
   allowedWriteFiles: AllowedWriteFileLike[],
   hardStopResolutions: HardStopResolutionLogEntry[] = [],
-  writeGuardAuthorizations: WriteGuardAuthorizationEntry[] = [],
+  writeGuardAuthorizations: WriteGuardAuthorizationEntry[] = []
 ): BlockedWriteClassification[] {
-  return (blockedWrites ?? []).map((blocked) => {
+  return (blockedWrites ?? []).map(blocked => {
     const filePath = String(blocked?.path ?? 'unknown');
     const operation = normalizeBlockedOperation(blocked?.operation);
     const originalViolations = Array.isArray(blocked?.violations) ? blocked.violations : [];
 
-    const coveredByFinalAllowedScope = (allowedWriteFiles ?? []).some((allowed) => {
+    const coveredByFinalAllowedScope = (allowedWriteFiles ?? []).some(allowed => {
       return (
         pathMatchesForAudit(filePath, String(allowed?.path ?? '')) &&
         operationMatchesForAudit(operation, String(allowed?.operation ?? 'any'))
       );
     });
 
-    const laterAllowedWrite = (factualChangedFiles ?? []).some((changed) => {
+    const laterAllowedWrite = (factualChangedFiles ?? []).some(changed => {
       return pathMatchesForAudit(String(changed?.path ?? ''), filePath);
     });
 
@@ -185,7 +200,11 @@ export function classifyBlockedWriteAttempts(
       };
     }
 
-    const authorization = findAuthorizationForBlockedPath(filePath, blocked, writeGuardAuthorizations);
+    const authorization = findAuthorizationForBlockedPath(
+      filePath,
+      blocked,
+      writeGuardAuthorizations
+    );
     if (authorization) {
       return {
         path: filePath,
@@ -247,7 +266,7 @@ export function classifyBlockedWriteAttempts(
 }
 
 export function blockedWriteClassificationToViolation(
-  classification: BlockedWriteClassification,
+  classification: BlockedWriteClassification
 ): string {
   return `UNRESOLVED_BLOCKED_WRITE_ATTEMPT: [${classification.operation}] ${classification.path} via ${
     classification.tool ?? 'unknown'

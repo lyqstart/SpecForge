@@ -15,6 +15,9 @@ specforge/
 .specforge/archive/
 .specforge/sessions/
 
+# SpecForge runtime data in nested package test projects
+**/.specforge/runtime/
+
 # SpecForge runtime logs in nested packages
 **/.specforge/logs/
 **/.specforge/logs/*.jsonl
@@ -54,3 +57,6 @@ pnpm-lock.yaml
 # SpecForge generated test artifacts
 tests/unit/artifacts/
 tests/integration/fixtures/sf_v6_arch_check/backup/
+packages/daemon-core/test-project-path
+packages/observability/test-data/observability-[0-9]*/
+packages/observability/test-data/observability-req-[0-9]*/

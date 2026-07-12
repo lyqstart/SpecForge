@@ -45,10 +45,15 @@ export interface GateReportV11 {
 // Gate 检查函数签名
 // ---------------------------------------------------------------------------
 
+export type CandidateGatePhaseV11 = 'design' | 'requirements' | 'tasks' | 'full';
+
 export interface GateContext {
   workItemId: string;
   workItemDir: string;
   projectRoot: string;
+  workflowPath?: string;
+  workflowType?: string;
+  candidatePhase?: CandidateGatePhaseV11;
 }
 
 export type GateCheckFn = (ctx: GateContext) => Promise<GateReportV11>;
@@ -78,10 +83,7 @@ export function __injectRegistry(getter: (id: GateIdV11) => GateMetaLike | undef
 /**
  * 运行单个 Gate 并生成 Gate Report（§9.4）。
  */
-export async function runGate(
-  gateId: GateIdV11,
-  ctx: GateContext,
-): Promise<GateReportV11> {
+export async function runGate(gateId: GateIdV11, ctx: GateContext): Promise<GateReportV11> {
   if (!_getMeta) {
     return makeSkippedReport(ctx.workItemId, gateId, 'Gate chain not initialized');
   }
@@ -120,7 +122,11 @@ export async function runGate(
 // 辅助函数
 // ---------------------------------------------------------------------------
 
-export function makeSkippedReport(workItemId: string, gateId: GateIdV11, reason: string): GateReportV11 {
+export function makeSkippedReport(
+  workItemId: string,
+  gateId: GateIdV11,
+  reason: string
+): GateReportV11 {
   return {
     schema_version: '1.0',
     work_item_id: workItemId,
@@ -147,10 +153,14 @@ export function makeReport(
   gateType: GateStrictness,
   required: boolean,
   checks: GateReportCheck[],
-  inputFiles: string[] = [],
+  inputFiles: string[] = []
 ): GateReportV11 {
-  const blocking = checks.filter(c => !c.passed && c.severity !== 'warning').map(c => c.description);
-  const warnings = checks.filter(c => !c.passed && c.severity === 'warning').map(c => c.description);
+  const blocking = checks
+    .filter(c => !c.passed && c.severity !== 'warning')
+    .map(c => c.description);
+  const warnings = checks
+    .filter(c => !c.passed && c.severity === 'warning')
+    .map(c => c.description);
   const allPassed = checks.every(c => c.passed);
 
   return {
@@ -159,7 +169,7 @@ export function makeReport(
     gate_id: gateId,
     gate_type: gateType,
     required,
-    status: allPassed ? 'passed' : (blocking.length > 0 ? 'failed' : 'passed'),
+    status: allPassed ? 'passed' : blocking.length > 0 ? 'failed' : 'passed',
     input_files: inputFiles,
     checks,
     blocking_issues: blocking,

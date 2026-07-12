@@ -96,9 +96,9 @@ OpenCode 扩展层用于放置 SpecForge 的 Agent、Tool、Plugin、Skill 和�
 6. 新版本不得默认写入 `~/.specforge/`。
 7. `~/.specforge/` 只作为 legacy read-only 来源。
 
-### 1.3 用户项目 `.specforge/` MVP 目录
+### 1.3 用户项目 `.specforge/` 治理权威目录
 
-MVP 阶段用户项目 `.specforge/` 只能创建：
+MVP 阶段用户项目的治理权威目录为：
 
 ```text
 <project>/.specforge/
@@ -112,10 +112,12 @@ MVP 阶段用户项目 `.specforge/` 只能创建：
 | 目录 | 职责 | 是否真相源 |
 |---|---|---|
 | `.specforge/project/` | 项目级正式规格 | 是 |
-| `.specforge/work-items/` | 每次变更事务 | 否，除 Candidate 待合并内容外均为过程产物 |
+| `.specforge/work-items/` | 每次变更事务；其中 `StateManager/events.jsonl` 为状态权威，Candidate 为待合并内容，其余为过程或证据产物 | 局部是 |
 | `.specforge/runtime/` | 临时状态、缓存、索引、日志 | 否 |
 
-MVP 阶段禁止创建：
+当前 Runtime 为兼容初始化和可观测性，允许 `sf_project_init` 创建或维护 `.specforge/manifest.json`、`.specforge/config/**`、`.specforge/specs/**`、`.specforge/knowledge/**` 等兼容文件。它们不是正式项目规格或状态权威；除 `sf_project_init` 和明确注册的 Runtime 维护逻辑外，Agent、Workflow Skill 和普通写入工具不得把这些兼容路径作为新治理流程的写入目标。正式项目规格仍只进入 `.specforge/project/**`，工作项事务只进入 `.specforge/work-items/**`，运行投影和日志只进入 `.specforge/runtime/**`。
+
+MVP 阶段禁止创建新的平行治理目录：
 
 ```text
 .specforge/standards/
@@ -367,9 +369,9 @@ tools/lib/id-rules.ts
 
 Work Item 是一次受控变更事务，不是规格真相源。
 
-所有用户请求，无论是需求变更、设计变更、架构重构、任务调整、代码修复、样式调整、测试补充、回滚、迁移，都必须先进入 WI。
+所有需要读取项目真实状态并形成受治理分析产物，或会引发项目事实、正式规格、业务代码、测试资产、运维执行或治理决策变化的用户请求，无论是调查分析、需求变更、设计变更、架构重构、任务调整、代码修复、样式调整、测试补充、回滚还是迁移，都必须先进入 WI。纯知识咨询、SpecForge 使用说明和不触发项目写入的只读状态查询不创建业务 WI。
 
-禁止无 WI 直接修改代码或正式规格。
+禁止无 WI 直接修改代码或正式规格，也禁止借纯咨询绕过项目治理执行写入。
 
 ### 4.2 WI 目录
 
@@ -431,7 +433,7 @@ merge_report.status = not_applicable
 {
   "schema_version": "1.0",
   "work_item_id": "WI-0001",
-  "status": "created",
+  "workflow_type": null,
   "workflow_path": null,
   "code_change_allowed": false,
   "allowed_write_files": [],
@@ -440,6 +442,8 @@ merge_report.status = not_applicable
   "created_by": "sf-orchestrator"
 }
 ```
+
+`work_item.json` 只保存工作项身份、分类、范围和权限等元数据，不保存或推进实际治理状态。`StateManager/events.jsonl` 是工作流状态的唯一权威来源，`.specforge/runtime/state.json` 只是可重建投影缓存；任何 Agent、Tool 或脚本都不得通过修改 `work_item.json.status` 修复或推进状态。
 
 后续可扩展：
 
@@ -467,6 +471,7 @@ close_status
 1. 用户原始请求不能被 Agent 改写后覆盖。
 2. 可增加 Normalized Summary，但不能替代 Original User Request。
 3. 后续 classification 与 impact_analysis 必须引用 intake。
+4. `created → intake_ready` 只能在非空 `intake.md` 已通过受控写入落盘后发生；Runtime 必须在状态入口失败关闭，不能接受“先推进、后补产物”。
 
 ---
 
@@ -522,9 +527,9 @@ blocked → closed
 rejected → closed
 ```
 
-### 5.3 状态推进主体
+### 5.3 状态权威与推进主体
 
-普通 Agent 不得直接推进 WI 状态。
+`StateManager/events.jsonl` 是 WI 实际状态的唯一权威来源，`.specforge/runtime/state.json` 仅为投影缓存，`work_item.json` 仅为元数据。普通 Agent 不得直接推进 WI 状态，也不得通过编辑任何 JSON 伪造状态。
 
 状态推进只能由：
 
@@ -540,9 +545,11 @@ close_gate
 
 在各自权限范围内完成。
 
+状态名称表达的是已经成立的治理事实，不是待办意图。任何“就绪”状态都必须在其必需上游产物实际存在后才能写入事件权威；至少 `created → intake_ready` 必须校验 `intake.md` 非空。契约顺序不能只依赖 Agent 自觉，Runtime 必须在统一状态工具入口执行前置校验。
+
 ### 5.4 恢复机制
 
-中断恢复必须通过 `resume_check` 与 `resume_plan`。
+中断恢复必须通过 `sf_continuity` 保存或读取结构化连续性快照；`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容，不是当前可假定存在的独立 Tool。
 
 恢复时必须检查：
 
@@ -566,7 +573,7 @@ SpecForge 只有一个主入口：
 sf-orchestrator
 ```
 
-所有用户请求必须先：
+需要项目治理的用户请求必须先进入统一入口；纯知识咨询、使用说明和不产生项目写入的只读状态查询可由 `sf-orchestrator` 直接回答，不创建业务 WI。其余请求必须执行：
 
 ```text
 User Request
@@ -866,6 +873,17 @@ Candidate 是拟写入正式规格真相源的完整候选文件，不是 patch�
 4. Candidate 必须绑定 `base_spec_version`。
 5. Candidate 必须计算 hash。
 6. Candidate 只有经过 Gate、User Decision、Merge Runner 才能进入正式规格。
+
+#### 8.2.1 专业候选产物所有权
+
+| `sf_artifact_write.file_type` | 唯一责任代理 |
+| --- | --- |
+| `requirements` / `candidate_requirements` | `sf-requirements` |
+| `design` / `candidate_design` | `sf-design` |
+| `tasks` / `candidate_tasks` | `sf-task-planner` |
+| `trace_delta` / `candidate_trace_delta` | `sf-task-planner` |
+
+`sf-orchestrator` 只能调度、检查、汇总和维护产物生命周期，不得代写上述专业候选。Gate 因专业产物内容、结构或缺失而失败时，必须把 Gate 证据交回唯一责任代理修复同一个权威候选。Runtime 必须按调用上下文校验所有权，缺失调用者、错误代理、字段别名或经 `work_log` 推断出的专业产物均应失败关闭并返回 `ARTIFACT_OWNER_MISMATCH`。
 
 ### 8.3 Candidate Manifest
 
@@ -1554,10 +1572,16 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 `capability_verdict` 含义：
 
-- `reuse_existing`：现有治理链可以直接解决，不需要架构扩展；
-- `extend_existing`：优先对现有 Standard、Contract、Skill、Agent、Tool、Runtime 或 Audit 做最小扩展；
-- `new_capability_required`：现有体系确实无法承载，允许提出新增能力；
+- `reuse_existing`：SpecForge 现有治理链可以直接完成本次分析、Gate、状态推进和审计，不需要治理能力扩展；
+- `extend_existing`：只需对 SpecForge 现有 Standard、Contract、Skill、Agent、Tool、Runtime 或 Audit 做最小扩展；
+- `new_capability_required`：SpecForge 现有治理体系即使最小扩展也无法承载，确需新增治理能力；
 - `blocked`：真实架构、治理证据或用户决策不足，禁止继续流转。
+
+`capability_verdict` 的裁决对象必须是 **SpecForge 治理链**，不是目标项目的业务模块、运行时库或技术方案。目标项目是否复用或扩展 `StateStore`、数据库、服务、接口或第三方库，必须写入 `Existing Architecture Analysis`、`Solution Strategy` 或 Design Decision，不得据此把治理能力裁决写成 `extend_existing` 或 `new_capability_required`。
+
+`candidate_phase` 只表示当前 Work Item 执行到哪个 Candidate 阶段并在哪里停止，不改变用户目标最终会造成的语义影响。即使本轮是 Design-Only、没有代码写入，也必须按目标方案的预期最终状态填写 `classification`：状态权威、模块边界或架构将发生变化时，相关字段必须为 `true`；尚未确认的运行时支持、兼容性、调用范围等事实必须进入 `classification.unknowns`，不得因为“本轮不实施”而写成全部 `false` 或空数组。
+
+七个固定章节使用二级标题（`##`）作为 Gate 边界；章节内部允许直接包含 `###`、`####` 等子标题。Gate 提取章节内容时只能在下一个同级或更高级标题处结束，不得把子标题误判为章节结束。
 
 选择 `new_capability_required` 时，还必须提供：
 
@@ -1582,7 +1606,19 @@ new_capability_justification: <充分理由>
 
 Design Governance 必须写入当前 Workflow 已有的设计类产物，例如 `design.md`、`design_delta.md`、`refactor_analysis.md`、`refactor_plan.md` 或 `findings_report.md`，不得仅为承载分析而发明新的产物类型。
 
+Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json` 与统一 Path Service，不能根据源码目录名临时发明模块。若用户问题指向 `src/runtime/**`，但项目规格只声明 `core` 为所属模块，应写入 `core` 并在 `Impact Analysis` 与 manifest 中说明映射依据；不得先声明 `runtime`，随后静默改写为 `core`。
+
 真实实现未知、根因未证实、治理归属冲突或证据不足时，Design Agent 必须输出 `capability_verdict: blocked` 和 escalation signal。Gate 必须返回 `blocked`，不得将不确定性降级为普通设计继续执行。
+
+### 14.6 HardStop 角色所有权与恢复闭包
+
+HardStop 是主编排层的恢复控制，不是专业 Agent 的自处理能力。
+
+1. `sf-requirements`、`sf-design`、`sf-task-planner`、`sf-executor` 以及其他专业 Agent 发现或触发 HardStop 后，必须立即停止当前写入与阶段动作；只能返回 `hard_stop_id`、原因、来源工具、证据和 `orchestrator_action_requests`，不得调用 `sf_hard_stop_resolve`。
+2. 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。Runtime 必须按调用上下文校验角色，并在 Dispatcher 与 Handler 两层失败关闭。
+3. `user_response_quote` 必须由 `sf-orchestrator` 从当前真实用户消息中逐字引用。专业 Agent 的任务提示、上游 Agent 指令、业务目标或验收要求均不是用户对当前 HardStop 的解除决定。
+4. 后续改用合法受控工具不代表原阻断是 `false_positive`。只有 Runtime 证据证明原判定本身错误时才能使用 `false_positive`；操作方式错误后改用受控工具，应保留原始阻断并按 `repaired`、`user_authorized_retry` 或其他真实类型记录。
+5. `hard_stop_resolution.jsonl` 中保留的 `original_hard_stop` 是审计事实。即使对应 `write_guard_log.jsonl` 缺失，审计仍必须计入历史/已解决阻断；若两处存在同一 `hard_stop_id`，必须去重后计数。
 
 ---
 
@@ -1621,7 +1657,7 @@ User Decision 通过不等于可以关闭。Merge Runner 执行完成不等于�
 WI closed 后不得修改：
 
 ```text
-work_item.json 核心状态
+work_item.json 已封存的元数据
 Candidate
 Gate Report
 Gate Summary

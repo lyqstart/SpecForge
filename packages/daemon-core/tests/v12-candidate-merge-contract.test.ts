@@ -3,6 +3,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { ProjectSpecStore, type CandidateManifestV12 } from '../src/project/ProjectSpecStore';
+import { workItemCandidateRequirements } from '@specforge/types/directory-layout';
 
 async function tempProject(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), 'sf-v12-candidate-merge-'));
@@ -18,9 +19,14 @@ describe('v1.2 Candidate Merge Contract', () => {
 
     await store.initializeProjectSpec('WI-0001');
 
-    const candidatePath = '.specforge/work-items/WI-0001/candidates/requirements.md';
-    await fs.mkdir(path.dirname(path.join(root, candidatePath)), { recursive: true });
-    await fs.writeFile(path.join(root, candidatePath), '# Requirements\n\n- REQ-1: stable project spec store\n', 'utf8');
+    const candidateAbsolutePath = workItemCandidateRequirements(root, 'WI-0001', 'core');
+    const candidatePath = path.relative(root, candidateAbsolutePath).replace(/\\/g, '/');
+    await fs.mkdir(path.dirname(candidateAbsolutePath), { recursive: true });
+    await fs.writeFile(
+      candidateAbsolutePath,
+      '# Requirements\n\n- REQ-1: stable project spec store\n',
+      'utf8'
+    );
 
     const manifest: CandidateManifestV12 = {
       schema_version: '1.2',
@@ -41,9 +47,15 @@ describe('v1.2 Candidate Merge Contract', () => {
     expect(result.merged).toBe(true);
     expect(result.previous_project_spec_version).toBe('PSV-0001');
     expect(result.project_spec_version).toBe('PSV-0002');
-    expect(await fs.readFile(path.join(root, '.specforge/project/requirements_index.md'), 'utf8')).toContain('REQ-1');
-    expect(await fs.readFile(path.join(root, '.specforge/project/spec_manifest.json'), 'utf8')).toContain('PSV-0002');
-    expect(await fs.readFile(path.join(root, '.specforge/project/versions/spec_versions.jsonl'), 'utf8')).toContain('candidate_manifest_merge');
+    expect(
+      await fs.readFile(path.join(root, '.specforge/project/requirements_index.md'), 'utf8')
+    ).toContain('REQ-1');
+    expect(
+      await fs.readFile(path.join(root, '.specforge/project/spec_manifest.json'), 'utf8')
+    ).toContain('PSV-0002');
+    expect(
+      await fs.readFile(path.join(root, '.specforge/project/versions/spec_versions.jsonl'), 'utf8')
+    ).toContain('candidate_manifest_merge');
   });
 
   it('fails closed for stale base_project_spec_version', async () => {
@@ -59,7 +71,9 @@ describe('v1.2 Candidate Merge Contract', () => {
       base_project_spec_version: 'PSV-9999',
       entries: [
         {
-          candidate_path: '.specforge/work-items/WI-0002/candidates/requirements.md',
+          candidate_path: path
+            .relative(root, workItemCandidateRequirements(root, 'WI-0002', 'core'))
+            .replace(/\\/g, '/'),
           target_project_path: '.specforge/project/requirements_index.md',
           merge_mode: 'replace_file',
         },
@@ -85,13 +99,15 @@ describe('v1.2 Candidate Merge Contract', () => {
         base_project_spec_version: 'PSV-0001',
         entries: [
           {
-            candidate_path: '.specforge/work-items/WI-0002/candidates/requirements.md',
+            candidate_path: path
+              .relative(root, workItemCandidateRequirements(root, 'WI-0002', 'core'))
+              .replace(/\\/g, '/'),
             target_project_path: '',
             merge_mode: 'replace_file',
           },
         ],
       },
-      'PSV-0001',
+      'PSV-0001'
     );
 
     expect(validation.valid).toBe(false);

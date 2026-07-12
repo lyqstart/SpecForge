@@ -79,8 +79,11 @@ function contractBody(text: string): string {
 
 function withoutContract(text: string): string {
   return text.replace(
-    new RegExp(`${CONTRACT_START.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${CONTRACT_END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'),
-    '',
+    new RegExp(
+      `${CONTRACT_START.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${CONTRACT_END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      'g'
+    ),
+    ''
   );
 }
 
@@ -88,15 +91,18 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
   it('has target Agent/Skill markdown files to govern', () => {
     const files = targetMarkdownFiles().map(relativeToRepo);
     expect(files.length).toBeGreaterThan(0);
-    expect(files.some((f) => f.endsWith('setup/userlevel-opencode/agents/sf-orchestrator.md'))).toBe(true);
-    expect(files.some((f) => f.includes('setup/userlevel-opencode/skills/sf-workflow-quick-change/'))).toBe(true);
+    expect(files.some(f => f.endsWith('setup/userlevel-opencode/agents/sf-orchestrator.md'))).toBe(
+      true
+    );
+    expect(
+      files.some(f => f.includes('setup/userlevel-opencode/skills/sf-workflow-quick-change/'))
+    ).toBe(true);
   });
 
   it('injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file', () => {
     const required = [
       'StateManager/events.jsonl',
       'runtime/state.json',
-      'work_item.json is metadata only',
       'workflowEngine.transitionFull()',
       'development',
       'review',
@@ -115,10 +121,8 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
       'candidate_manifest.entries',
       'merge_report.status=not_applicable',
       'sf_merge_run',
-      'approved -> merge_ready -> merging -> merged',
       'sf_code_permission',
       'sf_changed_files_audit',
-      'blocked_write_attempts=0',
       'AUTHORITATIVE_STATE_MISMATCH',
       'closed',
     ];
@@ -133,6 +137,22 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
       for (const needle of required) {
         expect(body, `${rel} contract missing ${needle}`).toContain(needle);
       }
+
+      expect(
+        body.includes('work_item.json is metadata only') ||
+          body.includes('work_item.json 只保存元数据'),
+        `${rel} contract missing work_item metadata-only rule`
+      ).toBe(true);
+      expect(
+        body.includes('approved -> merge_ready -> merging -> merged') ||
+          body.includes('approved → merge_ready → merging → merged'),
+        `${rel} contract missing merge seal chain`
+      ).toBe(true);
+      expect(
+        body.includes('blocked_write_attempts=0') ||
+          body.includes('unresolved_blocked_write_attempts=0'),
+        `${rel} contract missing blocked-write closure rule`
+      ).toBe(true);
     }
   });
 
@@ -155,7 +175,9 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
       const rel = relativeToRepo(file);
       const text = withoutContract(normalizeText(readFileSync(file, 'utf8')));
       for (const pattern of forbiddenPatterns) {
-        expect(text, `${rel} contains forbidden legacy instruction ${pattern}`).not.toMatch(pattern);
+        expect(text, `${rel} contains forbidden legacy instruction ${pattern}`).not.toMatch(
+          pattern
+        );
       }
     }
   });

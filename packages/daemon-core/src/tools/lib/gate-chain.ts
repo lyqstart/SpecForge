@@ -33,13 +33,13 @@ interface GateMeta {
 const gateRegistry = new Map<GateIdV11, GateMeta>();
 
 // Inject registry accessor into gate-report.ts (late-binding to avoid circular dep)
-__injectRegistry((id) => gateRegistry.get(id as GateIdV11));
+__injectRegistry(id => gateRegistry.get(id as GateIdV11));
 
 export function registerGate(
   gateId: GateIdV11,
   gateType: GateStrictness,
   required: boolean,
-  checkFn: GateCheckFn,
+  checkFn: GateCheckFn
 ): void {
   gateRegistry.set(gateId, { gateId, gateType, required, checkFn });
 }
@@ -52,15 +52,19 @@ export function isRegisteredGate(gateId: string): gateId is GateIdV11 {
   return gateRegistry.has(gateId as GateIdV11);
 }
 
-function computeSummaryStatus(reports: GateReportV11[]): GateSummaryStatus {
-  const hasFailed = reports.some((r) => r.status === 'failed' && r.required);
-  const hasWarnings = reports.some(
-    (r) => (r.status === 'failed' && !r.required) || r.warnings.length > 0,
+export function computeGateSummaryStatus(reports: GateReportV11[]): GateSummaryStatus {
+  const hasFailedRequiredGate = reports.some(
+    report => report.status === 'failed' && report.required
   );
-  const allPassed = reports.every((r) => r.status === 'passed' || r.status === 'skipped');
+  const hasExplicitWaiverRequirement = reports.some(
+    report => (report as GateReportV11 & { waiver_required?: boolean }).waiver_required === true
+  );
+  const allPassed = reports.every(
+    report => report.status === 'passed' || report.status === 'skipped'
+  );
 
-  if (hasFailed) return 'failed';
-  if (hasWarnings) return 'passed_with_waiver_required';
+  if (hasFailedRequiredGate) return 'failed';
+  if (hasExplicitWaiverRequirement) return 'passed_with_waiver_required';
   if (allPassed) return 'passed';
   return 'blocked';
 }
@@ -71,15 +75,15 @@ async function writeGateReport(ctx: GateContext, report: GateReportV11): Promise
   await fs.writeFile(
     path.join(gatesDir, `${report.gate_id}.json`),
     JSON.stringify(report, null, 2),
-    'utf-8',
+    'utf-8'
   );
 }
 
 async function writeGateSummary(
   ctx: GateContext,
-  reports: GateReportV11[],
+  reports: GateReportV11[]
 ): Promise<{ summaryStatus: GateSummaryStatus; summaryPath: string }> {
-  const summaryStatus = computeSummaryStatus(reports);
+  const summaryStatus = computeGateSummaryStatus(reports);
   const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
   const summaryContent = generateGateSummaryMd(ctx.workItemId, reports, summaryStatus);
   await fs.writeFile(summaryPath, summaryContent, 'utf-8');
@@ -95,19 +99,19 @@ async function writeGateSummary(
  */
 export async function runRequiredGates(
   gateIds: GateIdV11[],
-  ctx: GateContext,
+  ctx: GateContext
 ): Promise<{ reports: GateReportV11[]; summaryStatus: GateSummaryStatus; summaryPath: string }> {
-  const unknownGateIds = gateIds.filter((gateId) => !gateRegistry.has(gateId));
+  const unknownGateIds = gateIds.filter(gateId => !gateRegistry.has(gateId));
   if (unknownGateIds.length > 0) {
     throw new Error(
       `UNKNOWN_GATE_ID: ${unknownGateIds.join(', ')}. Registered Gate IDs: ${getRegisteredGateIds()
         .sort()
-        .join(', ')}`,
+        .join(', ')}`
     );
   }
 
   const wantsSummaryGate = gateIds.includes('gate_summary_gate');
-  const primaryGateIds = gateIds.filter((gateId) => gateId !== 'gate_summary_gate');
+  const primaryGateIds = gateIds.filter(gateId => gateId !== 'gate_summary_gate');
 
   const reports: GateReportV11[] = [];
 
