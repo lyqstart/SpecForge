@@ -96,9 +96,9 @@ OpenCode 扩展层用于放置 SpecForge 的 Agent、Tool、Plugin、Skill 和�
 6. 新版本不得默认写入 `~/.specforge/`。
 7. `~/.specforge/` 只作为 legacy read-only 来源。
 
-### 1.3 用户项目 `.specforge/` MVP 目录
+### 1.3 用户项目 `.specforge/` 治理权威目录
 
-MVP 阶段用户项目 `.specforge/` 只能创建：
+MVP 阶段用户项目的治理权威目录为：
 
 ```text
 <project>/.specforge/
@@ -112,10 +112,12 @@ MVP 阶段用户项目 `.specforge/` 只能创建：
 | 目录 | 职责 | 是否真相源 |
 |---|---|---|
 | `.specforge/project/` | 项目级正式规格 | 是 |
-| `.specforge/work-items/` | 每次变更事务 | 否，除 Candidate 待合并内容外均为过程产物 |
+| `.specforge/work-items/` | 每次变更事务；其中 `StateManager/events.jsonl` 为状态权威，Candidate 为待合并内容，其余为过程或证据产物 | 局部是 |
 | `.specforge/runtime/` | 临时状态、缓存、索引、日志 | 否 |
 
-MVP 阶段禁止创建：
+当前 Runtime 为兼容初始化和可观测性，允许 `sf_project_init` 创建或维护 `.specforge/manifest.json`、`.specforge/config/**`、`.specforge/specs/**`、`.specforge/knowledge/**` 等兼容文件。它们不是正式项目规格或状态权威；除 `sf_project_init` 和明确注册的 Runtime 维护逻辑外，Agent、Workflow Skill 和普通写入工具不得把这些兼容路径作为新治理流程的写入目标。正式项目规格仍只进入 `.specforge/project/**`，工作项事务只进入 `.specforge/work-items/**`，运行投影和日志只进入 `.specforge/runtime/**`。
+
+MVP 阶段禁止创建新的平行治理目录：
 
 ```text
 .specforge/standards/
@@ -367,9 +369,9 @@ tools/lib/id-rules.ts
 
 Work Item 是一次受控变更事务，不是规格真相源。
 
-所有用户请求，无论是需求变更、设计变更、架构重构、任务调整、代码修复、样式调整、测试补充、回滚、迁移，都必须先进入 WI。
+所有需要读取项目真实状态并形成受治理分析产物，或会引发项目事实、正式规格、业务代码、测试资产、运维执行或治理决策变化的用户请求，无论是调查分析、需求变更、设计变更、架构重构、任务调整、代码修复、样式调整、测试补充、回滚还是迁移，都必须先进入 WI。纯知识咨询、SpecForge 使用说明和不触发项目写入的只读状态查询不创建业务 WI。
 
-禁止无 WI 直接修改代码或正式规格。
+禁止无 WI 直接修改代码或正式规格，也禁止借纯咨询绕过项目治理执行写入。
 
 ### 4.2 WI 目录
 
@@ -431,7 +433,7 @@ merge_report.status = not_applicable
 {
   "schema_version": "1.0",
   "work_item_id": "WI-0001",
-  "status": "created",
+  "workflow_type": null,
   "workflow_path": null,
   "code_change_allowed": false,
   "allowed_write_files": [],
@@ -440,6 +442,8 @@ merge_report.status = not_applicable
   "created_by": "sf-orchestrator"
 }
 ```
+
+`work_item.json` 只保存工作项身份、分类、范围和权限等元数据，不保存或推进实际治理状态。`StateManager/events.jsonl` 是工作流状态的唯一权威来源，`.specforge/runtime/state.json` 只是可重建投影缓存；任何 Agent、Tool 或脚本都不得通过修改 `work_item.json.status` 修复或推进状态。
 
 后续可扩展：
 
@@ -522,9 +526,9 @@ blocked → closed
 rejected → closed
 ```
 
-### 5.3 状态推进主体
+### 5.3 状态权威与推进主体
 
-普通 Agent 不得直接推进 WI 状态。
+`StateManager/events.jsonl` 是 WI 实际状态的唯一权威来源，`.specforge/runtime/state.json` 仅为投影缓存，`work_item.json` 仅为元数据。普通 Agent 不得直接推进 WI 状态，也不得通过编辑任何 JSON 伪造状态。
 
 状态推进只能由：
 
@@ -542,7 +546,7 @@ close_gate
 
 ### 5.4 恢复机制
 
-中断恢复必须通过 `resume_check` 与 `resume_plan`。
+中断恢复必须通过 `sf_continuity` 保存或读取结构化连续性快照；`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容，不是当前可假定存在的独立 Tool。
 
 恢复时必须检查：
 
@@ -566,7 +570,7 @@ SpecForge 只有一个主入口：
 sf-orchestrator
 ```
 
-所有用户请求必须先：
+需要项目治理的用户请求必须先进入统一入口；纯知识咨询、使用说明和不产生项目写入的只读状态查询可由 `sf-orchestrator` 直接回答，不创建业务 WI。其余请求必须执行：
 
 ```text
 User Request
@@ -1629,7 +1633,7 @@ User Decision 通过不等于可以关闭。Merge Runner 执行完成不等于�
 WI closed 后不得修改：
 
 ```text
-work_item.json 核心状态
+work_item.json 已封存的元数据
 Candidate
 Gate Report
 Gate Summary

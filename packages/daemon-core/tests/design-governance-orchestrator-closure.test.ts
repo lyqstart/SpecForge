@@ -70,22 +70,54 @@ describe('Orchestrator governance execution closure', () => {
     expect(contract).toContain('# 职责边界');
     expect(contract).toContain('# 注意事项');
 
+    expect(contract).toContain('纯咨询、只读状态查询或 SpecForge 使用说明');
+    expect(contract).toContain('不调用 `sf_project_init`、不创建业务工作项');
     expect(contract).toContain('`.specforge/manifest.json` 是当前运行时要求的项目初始化标记');
     expect(contract).toContain(
       '`.specforge/project/spec_manifest.json` 是正式项目规格和模块归属清单'
     );
     expect(contract).toContain('已有活动工作项时优先恢复');
-    expect(contract).toContain('纯咨询、状态查询和 SpecForge 使用说明不创建业务工作项');
+    expect(contract).toContain('存在多个活动工作项时，必须先明确当前目标对应的 `work_item_id`');
+    expect(contract).toContain('`sf_state_read` 只提供状态权威');
+    expect(contract).toContain('`resume_check` 和 `resume_plan` 是快照中的检查与恢复计划内容');
+
     expect(contract).toContain('分类对象描述的是**用户目标实现后的预期最终语义影响**');
     expect(contract).toContain('运行证据推翻原判断时，必须重新调度 `sf-design`');
     expect(contract).toContain('专业代理不得彼此直接启动下一代理');
+    expect(contract).toContain('需要跨来源、可复核、可持久化证据时');
     expect(contract).toContain('运行时权威产物，只能由各自工具生成');
     expect(contract).toContain('门禁失败后必须先判定根因');
     expect(contract).toContain('执行失败先基于同一证据进行一次有边界的修复');
     expect(contract).toContain('硬停止是绝对停止点');
+
+    expect(contract).toContain('`user_approved` 必须来自用户对当前候选的明确决定');
+    expect(contract).toContain('`auto_approved` 只允许在当前有效策略明确授权时使用');
+    expect(contract).toContain('旧决定必须 `invalidated`');
+    expect(contract).not.toContain('只有用户在当前对话中的明确决定才能通过');
+    expect(contract).toContain('直接修改 `.specforge/project/**`');
     expect(contract).toContain(
       '工作项未由关闭门禁进入 `closed` 时，不得向用户宣称整个工作项已完成'
     );
+  });
+
+  it('aligns the governing standard with the current state, consultation, and continuity contract', () => {
+    const standard = readFileSync(
+      path.join(repoRoot(), 'docs', 'standards', 'fused_standard.md'),
+      'utf8'
+    ).replace(/\r\n/g, '\n');
+
+    expect(standard).toContain(
+      '纯知识咨询、SpecForge 使用说明和不触发项目写入的只读状态查询不创建业务 WI'
+    );
+    expect(standard).toContain('所有需要读取项目真实状态并形成受治理分析产物');
+    expect(standard).toContain('`StateManager/events.jsonl` 是工作流状态的唯一权威来源');
+    expect(standard).toContain('其中 `StateManager/events.jsonl` 为状态权威');
+    expect(standard).toContain('`.specforge/runtime/state.json` 只是可重建投影缓存');
+    expect(standard).toContain('`work_item.json` 只保存工作项身份、分类、范围和权限等元数据');
+    expect(standard).not.toContain('"status": "created"');
+    expect(standard).toContain('中断恢复必须通过 `sf_continuity`');
+    expect(standard).toContain('`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容');
+    expect(standard).toContain('当前 Runtime 为兼容初始化和可观测性');
   });
 
   it('aligns the Orchestrator route table with current Runtime pairs and registered Workflow Skills', () => {
@@ -170,6 +202,7 @@ describe('Orchestrator governance execution closure', () => {
     const workItemId = 'WI-0001';
     const handler = vi.fn().mockResolvedValue({ success: true });
     registerHandler('sf_test_governance_write', handler);
+
     await writeJson(path.join(projectRoot, '.specforge', 'runtime', 'state.json'), {
       workItems: [{ work_item_id: workItemId, current_state: 'candidate_preparing' }],
     });
@@ -188,9 +221,64 @@ describe('Orchestrator governance execution closure', () => {
     expect(handler).not.toHaveBeenCalled();
   });
 
+  it('fails closed when multiple active Work Items make a scoped HardStop ambiguous', async () => {
+    const handler = vi.fn().mockResolvedValue({ success: true });
+    registerHandler('sf_test_multi_wi_write', handler);
+
+    await writeJson(path.join(projectRoot, '.specforge', 'runtime', 'state.json'), {
+      workItems: [
+        { work_item_id: 'WI-0001', current_state: 'candidate_preparing' },
+        { work_item_id: 'WI-0002', current_state: 'implementation_ready' },
+      ],
+    });
+    setHardStop(projectRoot, 'WI-0001', 'TEST_MULTI_WI_HARD_STOP', 'test');
+
+    const dispatcher = new ToolDispatcher({} as any);
+    const ambiguous = (await dispatcher.dispatch({
+      tool: 'sf_test_multi_wi_write',
+      args: {},
+      context: { directory: projectRoot },
+    })) as any;
+
+    expect(ambiguous.success).toBe(false);
+    expect(ambiguous.hard_stop).toBe(true);
+    expect(ambiguous.error).toContain('HARD_STOP_CONTEXT_AMBIGUOUS');
+    expect(ambiguous.blocked_work_item_ids).toEqual(['WI-0001']);
+    expect(handler).not.toHaveBeenCalled();
+
+    const explicitUnblocked = (await dispatcher.dispatch({
+      tool: 'sf_test_multi_wi_write',
+      args: { work_item_id: 'WI-0002' },
+      context: { directory: projectRoot },
+    })) as any;
+
+    expect(explicitUnblocked.success).toBe(true);
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it('enforces a project-scoped HardStop even when no Work Item can be inferred', async () => {
+    const handler = vi.fn().mockResolvedValue({ success: true });
+    registerHandler('sf_test_project_write', handler);
+    setHardStop(projectRoot, 'PROJECT', 'TEST_PROJECT_HARD_STOP', 'test', 'project');
+
+    const dispatcher = new ToolDispatcher({} as any);
+    const result = (await dispatcher.dispatch({
+      tool: 'sf_test_project_write',
+      args: {},
+      context: { directory: projectRoot },
+    })) as any;
+
+    expect(result.success).toBe(false);
+    expect(result.hard_stop).toBe(true);
+    expect(result.error).toContain('HARD_STOP_ACTIVE');
+    expect(result.hard_stop_record.scope).toBe('project');
+    expect(handler).not.toHaveBeenCalled();
+  });
+
   it('persists shell governance HardStop, preserves blocked-write history, and audits it after resolution', async () => {
     const workItemId = 'WI-0001';
     const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+
     await writeJson(path.join(projectRoot, '.specforge', 'runtime', 'state.json'), {
       workItems: [{ work_item_id: workItemId, current_state: 'candidate_preparing' }],
     });
@@ -216,9 +304,7 @@ describe('Orchestrator governance execution closure', () => {
     });
 
     const blocked = (await getHandler('sf_safe_bash')!(
-      {
-        command: 'Set-Content .specforge/project/spec_manifest.json "{}"',
-      },
+      { command: 'Set-Content .specforge/project/spec_manifest.json "{}"' },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       {} as any
     )) as any;
@@ -260,7 +346,6 @@ describe('Orchestrator governance execution closure', () => {
       { directory: projectRoot, agent: 'sf-orchestrator' },
       auditDeps()
     )) as any;
-
     expect(finalAudit.passed).toBe(true);
     expect(finalAudit.blocked_write_attempts).toBe(1);
     expect(finalAudit.unresolved_blocked_write_attempts).toBe(0);

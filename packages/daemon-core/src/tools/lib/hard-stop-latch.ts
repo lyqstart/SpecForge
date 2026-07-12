@@ -38,7 +38,6 @@ export interface HardStopGuardResult {
 
 const HARD_STOP_FILENAME = 'hard_stop.json';
 const VALID_WI_ID = /^WI-(\d{3,4}|\d{8}-\d{4})$/;
-
 const ALLOWED_TOOLS_WHEN_BLOCKED = new Set([
   'sf_state_read',
   'sf_context_build',
@@ -55,7 +54,9 @@ const ALLOWED_TOOLS_WHEN_BLOCKED = new Set([
 ]);
 
 function normalizeToolName(toolName: string): string {
-  return String(toolName ?? '').toLowerCase().replace(/-/g, '_');
+  return String(toolName ?? '')
+    .toLowerCase()
+    .replace(/-/g, '_');
 }
 
 function isValidWorkItemId(value: unknown): value is string {
@@ -87,10 +88,12 @@ export function setHardStop(
   workItemId: string,
   reason: string,
   sourceTool: string,
-  scope: HardStopScope = 'work_item',
+  scope: HardStopScope = 'work_item'
 ): HardStopRecord {
   if (scope !== 'project' && !isValidWorkItemId(workItemId)) {
-    throw new Error('INVALID_WORK_ITEM_ID_FOR_HARD_STOP: hard_stop must not be persisted for empty or invalid work_item_id');
+    throw new Error(
+      'INVALID_WORK_ITEM_ID_FOR_HARD_STOP: hard_stop must not be persisted for empty or invalid work_item_id'
+    );
   }
 
   const record: HardStopRecord = {
@@ -105,9 +108,10 @@ export function setHardStop(
     resolved: false,
   };
 
-  const hardStopPath = scope === 'project'
-    ? projectHardStopPath(projectRoot)
-    : workItemHardStopPath(projectRoot, workItemId);
+  const hardStopPath =
+    scope === 'project'
+      ? projectHardStopPath(projectRoot)
+      : workItemHardStopPath(projectRoot, workItemId);
 
   fs.mkdirSync(path.dirname(hardStopPath), { recursive: true });
   fs.writeFileSync(hardStopPath, JSON.stringify(record, null, 2) + '\n', 'utf-8');
@@ -130,29 +134,38 @@ export function checkHardStop(projectRoot: string, workItemId: string): HardStop
   const scope = wiRecord.scope ?? 'work_item';
   if (scope !== 'work_item') return { blocked: false, record: null };
   if (wiRecord.work_item_id !== workItemId) return { blocked: false, record: null };
+
   return { blocked: true, record: wiRecord };
 }
 
-export function guardHardStop(projectRoot: string, workItemId: string, toolName: string): HardStopGuardResult {
+export function guardHardStop(
+  projectRoot: string,
+  workItemId: string,
+  toolName: string
+): HardStopGuardResult {
   const normalizedTool = normalizeToolName(toolName);
   if (ALLOWED_TOOLS_WHEN_BLOCKED.has(normalizedTool) || ALLOWED_TOOLS_WHEN_BLOCKED.has(toolName)) {
     return { allowed: true };
   }
 
-  if (!isValidWorkItemId(workItemId)) {
-    return { allowed: true };
-  }
-
+  // Project-scoped HardStop must also be enforced when a call has no WI context.
+  // checkHardStop checks project scope before validating workItemId.
   const { blocked, record } = checkHardStop(projectRoot, workItemId);
   if (!blocked || !record) return { allowed: true };
 
+  const projectScoped = record.scope === 'project';
   return {
     allowed: false,
-    error:
-      `HARD_STOP_ACTIVE: Work item ${workItemId} is blocked.\n` +
-      `Scope: ${record.scope ?? 'work_item'}.\n` +
-      `Reason: ${record.reason}. Source: ${record.source_tool}.\n` +
-      `Only read/debug/recovery tools are allowed for this work item. Tool ${toolName} is blocked for ${workItemId}.`,
+    error: projectScoped
+      ? `HARD_STOP_ACTIVE: Project is blocked.\n` +
+        `Scope: project.\n` +
+        `Reason: ${record.reason}. Source: ${record.source_tool}.\n` +
+        `Only read/debug/recovery tools are allowed for this project. Tool ${toolName} is blocked.`
+      : `HARD_STOP_ACTIVE: Work item ${workItemId} is blocked.\n` +
+        `Scope: ${record.scope ?? 'work_item'}.\n` +
+        `Reason: ${record.reason}. Source: ${record.source_tool}.\n` +
+        `Only read/debug/recovery tools are allowed for this work item. ` +
+        `Tool ${toolName} is blocked for ${workItemId}.`,
     hard_stop_record: record,
   };
 }
