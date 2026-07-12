@@ -47,7 +47,7 @@ describe('Orchestrator governance execution closure', () => {
     await rm(projectRoot, { recursive: true, force: true });
   });
 
-  it('keeps the Orchestrator contract compact, flow-oriented, and explicit about boundaries', () => {
+  it('uses one Chinese governance chain to cover all five Orchestrator responsibilities', () => {
     const contractPath = path.join(
       repoRoot(),
       'setup',
@@ -57,14 +57,88 @@ describe('Orchestrator governance execution closure', () => {
     );
     const contract = readFileSync(contractPath, 'utf8').replace(/\r\n/g, '\n');
 
-    expect(contract.split('\n').length).toBeLessThan(380);
-    expect(contract).toContain('# SpecForge 治理主链');
-    expect(contract).toContain('# 产物与 Tool 边界');
-    expect(contract).toContain('# HardStop 边界');
+    expect(contract.split('\n').length).toBeLessThan(320);
+    expect(contract).toContain('## SpecForge v1.1 最终治理契约');
+    expect(contract).not.toContain('## SpecForge v1.1 Final Governance Contract');
+    expect(contract).toContain('# 角色使命');
+    expect(contract).toContain('# 从用户请求到工作项关闭的治理主链');
+    expect(contract).toContain('## 一、建立并维护可信的治理上下文');
+    expect(contract).toContain('## 二、理解真实问题并形成可执行路由');
+    expect(contract).toContain('## 三、组织专业代理并维护产物生命周期');
+    expect(contract).toContain('## 四、使用权威工具守住每个继续条件');
+    expect(contract).toContain('## 五、保持流程连续并对用户负责');
+    expect(contract).toContain('# 职责边界');
     expect(contract).toContain('# 注意事项');
-    expect(contract).toContain('`.specforge/project/**` 对 Orchestrator 只读');
-    expect(contract).toContain('已有项目 `modules=[]` 或无法唯一确定模块时，状态为 `blocked`');
-    expect(contract).toContain('运行中出现新的治理证据时，Orchestrator 必须重新调度 `sf-design`');
+
+    expect(contract).toContain('`.specforge/manifest.json` 是当前运行时要求的项目初始化标记');
+    expect(contract).toContain(
+      '`.specforge/project/spec_manifest.json` 是正式项目规格和模块归属清单'
+    );
+    expect(contract).toContain('已有活动工作项时优先恢复');
+    expect(contract).toContain('纯咨询、状态查询和 SpecForge 使用说明不创建业务工作项');
+    expect(contract).toContain('分类对象描述的是**用户目标实现后的预期最终语义影响**');
+    expect(contract).toContain('运行证据推翻原判断时，必须重新调度 `sf-design`');
+    expect(contract).toContain('专业代理不得彼此直接启动下一代理');
+    expect(contract).toContain('运行时权威产物，只能由各自工具生成');
+    expect(contract).toContain('门禁失败后必须先判定根因');
+    expect(contract).toContain('执行失败先基于同一证据进行一次有边界的修复');
+    expect(contract).toContain('硬停止是绝对停止点');
+    expect(contract).toContain(
+      '工作项未由关闭门禁进入 `closed` 时，不得向用户宣称整个工作项已完成'
+    );
+  });
+
+  it('aligns the Orchestrator route table with current Runtime pairs and registered Workflow Skills', () => {
+    const root = repoRoot();
+    const contract = readFileSync(
+      path.join(root, 'setup', 'userlevel-opencode', 'agents', 'sf-orchestrator.md'),
+      'utf8'
+    ).replace(/\r\n/g, '\n');
+    const stateMachine = readFileSync(
+      path.join(root, 'packages', 'daemon-core', 'src', 'tools', 'lib', 'state_machine.ts'),
+      'utf8'
+    );
+
+    const currentPairs = [
+      ['feature_spec', 'requirement_change_path', 'sf-workflow-feature-spec'],
+      ['bugfix_spec', 'requirement_change_path', 'sf-workflow-bugfix-spec'],
+      ['change_request', 'requirement_change_path', 'sf-workflow-change-request'],
+      ['investigation', 'requirement_change_path', 'sf-workflow-investigation'],
+      ['feature_spec_design_first', 'design_change_path', 'sf-workflow-design-first'],
+      ['refactor', 'task_change_path', 'sf-workflow-refactor'],
+      ['ops_task', 'task_change_path', 'sf-workflow-ops-task'],
+      ['quick_change', 'code_only_fast_path', 'sf-workflow-quick-change'],
+    ] as const;
+
+    for (const [workflowType, workflowPath, skillName] of currentPairs) {
+      expect(stateMachine).toContain(`${workflowType}: "${workflowPath}"`);
+      const routeRow = contract
+        .split('\n')
+        .find(
+          line =>
+            line.trimStart().startsWith('|') &&
+            line.includes(`\`${workflowType}\``) &&
+            line.includes(`\`${skillName}\``)
+        );
+      expect(routeRow).toBeDefined();
+      expect(routeRow).toContain(`\`${workflowPath}\``);
+      expect(
+        existsSync(path.join(root, 'setup', 'userlevel-opencode', 'skills', skillName, 'SKILL.md')),
+        `missing registered Workflow Skill ${skillName}`
+      ).toBe(true);
+    }
+
+    expect(contract).not.toContain('| `bugfix_spec` | `task_change_path` |');
+    expect(contract).not.toContain('| `refactor` | `design_change_path` |');
+    for (const reservedPath of [
+      'architecture_change_path',
+      'spec_migration_path',
+      'rollback_path',
+    ]) {
+      expect(stateMachine).toContain(`"${reservedPath}"`);
+      expect(contract).toContain(reservedPath);
+    }
+    expect(contract).toContain('当前没有完整的用户级工作流身份和技能映射');
   });
 
   it('declares core for a new project but never rewrites an existing empty module registry', async () => {

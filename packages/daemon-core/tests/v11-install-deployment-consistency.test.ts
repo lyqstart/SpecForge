@@ -78,9 +78,9 @@ describe('v1.1.6 install/deployment consistency', () => {
     expect(exists('setup/userlevel-opencode/tools')).toBe(true);
     expect(exists('setup/userlevel-opencode/templates')).toBe(true);
 
-    const agentFiles = walkFiles(path.join(SETUP_ROOT, 'agents'), (f) => f.endsWith('.md'));
-    const skillFiles = walkFiles(path.join(SETUP_ROOT, 'skills'), (f) => f.endsWith('.md'));
-    const toolFiles = walkFiles(path.join(SETUP_ROOT, 'tools'), (f) => f.endsWith('.ts'));
+    const agentFiles = walkFiles(path.join(SETUP_ROOT, 'agents'), f => f.endsWith('.md'));
+    const skillFiles = walkFiles(path.join(SETUP_ROOT, 'skills'), f => f.endsWith('.md'));
+    const toolFiles = walkFiles(path.join(SETUP_ROOT, 'tools'), f => f.endsWith('.ts'));
     const templateFiles = walkFiles(path.join(SETUP_ROOT, 'templates'));
 
     expect(agentFiles.length).toBeGreaterThanOrEqual(5);
@@ -102,7 +102,10 @@ describe('v1.1.6 install/deployment consistency', () => {
     ];
 
     for (const tool of requiredTools) {
-      expect(exists(`setup/userlevel-opencode/tools/${tool}`), `missing setup wrapper ${tool}`).toBe(true);
+      expect(
+        exists(`setup/userlevel-opencode/tools/${tool}`),
+        `missing setup wrapper ${tool}`
+      ).toBe(true);
     }
 
     const transition = read('setup/userlevel-opencode/tools/sf_state_transition.ts');
@@ -131,13 +134,13 @@ describe('v1.1.6 install/deployment consistency', () => {
     const targets: string[] = [];
     const rootAgents = path.join(SETUP_ROOT, 'AGENTS.md');
     if (existsSync(rootAgents)) targets.push(rootAgents);
-    targets.push(...walkFiles(path.join(SETUP_ROOT, 'agents'), (f) => f.endsWith('.md')));
+    targets.push(...walkFiles(path.join(SETUP_ROOT, 'agents'), f => f.endsWith('.md')));
 
     const skillsDir = path.join(SETUP_ROOT, 'skills');
     for (const entry of existsSync(skillsDir) ? readdirSync(skillsDir) : []) {
       if (!entry.startsWith('sf-')) continue;
       const full = path.join(skillsDir, entry);
-      if (statSync(full).isDirectory()) targets.push(...walkFiles(full, (f) => f.endsWith('.md')));
+      if (statSync(full).isDirectory()) targets.push(...walkFiles(full, f => f.endsWith('.md')));
     }
 
     expect(targets.length).toBeGreaterThan(0);
@@ -147,9 +150,18 @@ describe('v1.1.6 install/deployment consistency', () => {
       const text = readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
       expect(text, `${rel} missing contract start`).toContain(contractStart);
       expect(text, `${rel} missing contract end`).toContain(contractEnd);
-      expect(text.replace(/`/g, ''), `${rel} missing state authority`).toContain('StateManager/events.jsonl');
-      expect(text.replace(/`/g, ''), `${rel} missing work_item metadata rule`).toContain('work_item.json is metadata only');
-      expect(text.replace(/`/g, ''), `${rel} missing close-gate mismatch rule`).toContain('AUTHORITATIVE_STATE_MISMATCH');
+      expect(text.replace(/`/g, ''), `${rel} missing state authority`).toContain(
+        'StateManager/events.jsonl'
+      );
+      const normalized = text.replace(/`/g, '');
+      expect(
+        normalized.includes('work_item.json is metadata only') ||
+          normalized.includes('work_item.json 只保存元数据'),
+        `${rel} missing work_item metadata rule`
+      ).toBe(true);
+      expect(text.replace(/`/g, ''), `${rel} missing close-gate mismatch rule`).toContain(
+        'AUTHORITATIVE_STATE_MISMATCH'
+      );
     }
   });
 
@@ -188,22 +200,24 @@ describe('v1.1.6 install/deployment consistency', () => {
       path.join(REPO_ROOT, 'docs'),
     ];
 
-    const sourceFiles = sourceRoots.flatMap((root) =>
-      walkFiles(root, (filePath) => /\.(ts|md|json)$/.test(filePath)),
+    const sourceFiles = sourceRoots.flatMap(root =>
+      walkFiles(root, filePath => /\.(ts|md|json)$/.test(filePath))
     );
 
     const matches = sourceFiles
-      .map((filePath) => ({ filePath, text: readFileSync(filePath, 'utf8') }))
+      .map(filePath => ({ filePath, text: readFileSync(filePath, 'utf8') }))
       .filter(({ text }) => text.includes('sf-user') && text.includes('handshake'));
 
     expect(
       matches.length,
-      'expected at least one source file to reference sf-user handshake runtime path',
+      'expected at least one source file to reference sf-user handshake runtime path'
     ).toBeGreaterThan(0);
   });
 
   it('keeps final governance regression tests present before deployment release', () => {
     expect(exists('packages/daemon-core/tests/v11-final-governance-regression.test.ts')).toBe(true);
-    expect(exists('packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts')).toBe(true);
+    expect(exists('packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts')).toBe(
+      true
+    );
   });
 });
