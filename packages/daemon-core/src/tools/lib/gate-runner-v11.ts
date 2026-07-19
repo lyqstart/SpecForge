@@ -262,6 +262,27 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
     });
   }
 
+  if (ctx.workflowType === 'investigation') {
+    for (const fileName of ['investigation_plan.md', 'findings_report.md']) {
+      const filePath = path.join(ctx.workItemDir, fileName);
+      let exists = false;
+      try {
+        await fs.access(filePath);
+        exists = true;
+      } catch {
+        exists = false;
+      }
+      inputFiles.push(filePath);
+      checks.push({
+        check_id: `file_${fileName.replace(/[^a-z0-9]/gi, '_')}`,
+        description: `Required Investigation file exists: ${fileName}`,
+        passed: exists,
+        severity: exists ? undefined : 'error',
+      });
+    }
+    return makeReport(ctx.workItemId, 'required_files_gate', 'hard_gate', true, checks, inputFiles);
+  }
+
   const requiredKinds: Array<'requirements' | 'design' | 'tasks' | 'trace_delta'> = [];
   if (ctx.workflowPath === 'task_change_path') {
     requiredKinds.push('tasks', 'trace_delta');
@@ -683,36 +704,85 @@ registerGate('merge_ready_gate', 'hard_gate', true, async ctx => {
  */
 registerGate('verification_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
-
-  // 1. verification_report.md 存在
   const reportPath = path.join(ctx.workItemDir, 'verification_report.md');
-  let reportExists = false;
-  try {
-    await fs.access(reportPath);
-    reportExists = true;
-  } catch {
-    reportExists = false;
-  }
-  checks.push({
-    check_id: 'verification_report_exists',
-    description: 'verification_report.md exists',
-    passed: reportExists,
-  });
-
-  // 2. evidence_manifest.json 存在
   const manifestPath = path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json');
-  let manifestExists = false;
+  let reportContent = '';
+  let evidenceManifest: Record<string, unknown> | null = null;
+
   try {
-    await fs.access(manifestPath);
-    manifestExists = true;
+    reportContent = await fs.readFile(reportPath, 'utf-8');
+    checks.push({
+      check_id: 'verification_report_exists',
+      description: 'verification_report.md exists',
+      passed: true,
+    });
   } catch {
-    manifestExists = false;
+    checks.push({
+      check_id: 'verification_report_exists',
+      description: 'verification_report.md exists',
+      passed: false,
+      severity: 'error',
+    });
   }
-  checks.push({
-    check_id: 'evidence_manifest_exists',
-    description: 'evidence/evidence_manifest.json exists',
-    passed: manifestExists,
-  });
+
+  try {
+    evidenceManifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8')) as Record<
+      string,
+      unknown
+    >;
+    checks.push({
+      check_id: 'evidence_manifest_exists',
+      description: 'evidence/evidence_manifest.json exists and is valid JSON',
+      passed: true,
+    });
+  } catch {
+    checks.push({
+      check_id: 'evidence_manifest_exists',
+      description: 'evidence/evidence_manifest.json exists and is valid JSON',
+      passed: false,
+      severity: 'error',
+    });
+  }
+
+  if (ctx.workflowType === 'investigation') {
+    const entries = Array.isArray(evidenceManifest?.entries)
+      ? evidenceManifest.entries
+      : Array.isArray(evidenceManifest?.evidence)
+        ? evidenceManifest.evidence
+        : [];
+    checks.push({
+      check_id: 'investigation_evidence_nonempty',
+      description: 'Investigation has registered evidence entries',
+      passed: entries.length > 0,
+      severity: entries.length > 0 ? undefined : 'error',
+    });
+    const requiredRefs = [
+      'investigation_plan.md',
+      'findings_report.md',
+      'changed_files_audit.md',
+      'evidence_only',
+      'no_code_change',
+    ];
+    for (const ref of requiredRefs) {
+      const present = reportContent.toLowerCase().includes(ref.toLowerCase());
+      checks.push({
+        check_id: `investigation_verification_${ref.replace(/[^a-z0-9]/gi, '_')}`,
+        description: `Investigation verification report references ${ref}`,
+        passed: present,
+        severity: present ? undefined : 'error',
+      });
+    }
+    const rejectsImplementation =
+      /未进入\s*implementation|implementation\s*(?:not entered|not applicable|未启用)|no implementation/i.test(
+        reportContent
+      );
+    checks.push({
+      check_id: 'investigation_no_implementation_verified',
+      description: 'Verification confirms Investigation did not enter implementation',
+      passed: rejectsImplementation,
+      severity: rejectsImplementation ? undefined : 'error',
+    });
+  }
 
   return makeReport(ctx.workItemId, 'verification_gate', 'hard_gate', true, checks, [
     reportPath,
@@ -912,9 +982,15 @@ function gateResultInputFiles(result: GateResult): string[] {
     details['design_candidate_paths'],
     details['requirements_candidate_paths'],
     details['task_candidate_paths'],
+    details['investigation_plan_path'],
+    details['findings_report_path'],
   ];
   return values.flatMap(value =>
-    Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
+    Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === 'string')
+      : typeof value === 'string'
+        ? [value]
+        : []
   );
 }
 
@@ -953,6 +1029,28 @@ function gateResultToReport(
 async function runWorkflowSpecificGate(ctx: GateContext): Promise<GateResult> {
   const phase = ctx.candidatePhase ?? 'full';
   const workflowType = ctx.workflowType ?? 'feature_spec';
+
+  if (workflowType === 'investigation') {
+    const [planResult, findingsResult] = await Promise.all([
+      checkRequirementsGate(ctx.workItemId, ctx.projectRoot, { mode: 'investigation' }),
+      checkDesignGate(ctx.workItemId, ctx.projectRoot, workflowType, { mode: 'investigation' }),
+    ]);
+    const blockingIssues = [...planResult.blocking_issues, ...findingsResult.blocking_issues];
+    const warnings = [...planResult.warnings, ...findingsResult.warnings];
+    const blocked = planResult.status === 'blocked' || findingsResult.status === 'blocked';
+    return {
+      status: blocked ? 'blocked' : blockingIssues.length > 0 ? 'fail' : 'pass',
+      blocking_issues: blockingIssues,
+      warnings,
+      next_action: blocked ? 'ask_user' : blockingIssues.length > 0 ? 'revise' : 'continue',
+      details: {
+        investigation_plan_path: planResult.details?.['document_path'],
+        findings_report_path: findingsResult.details?.['document_path'],
+        plan_gate: planResult.details,
+        findings_gate: findingsResult.details,
+      },
+    };
+  }
 
   if (ctx.workflowPath === 'code_only_fast_path' || ctx.workflowPath === 'rollback_path') {
     return {

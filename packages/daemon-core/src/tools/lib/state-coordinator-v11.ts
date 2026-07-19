@@ -78,6 +78,48 @@ async function ensureFileExists(filePath: string, description: string): Promise<
   }
 }
 
+async function assertInvestigationEvidenceOnlyVerificationTransition(
+  input: TransitionWithEvidenceInput
+): Promise<void> {
+  if (input.fromState !== 'post_merge_verified' || input.toState !== 'verification_running') {
+    return;
+  }
+
+  if (input.workflowType !== 'investigation') {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: post_merge_verified → verification_running is reserved for workflow_type=investigation'
+    );
+  }
+
+  const manifestPath = path.join(input.workItemDir, 'candidate_manifest.json');
+  let manifest: Record<string, unknown>;
+  try {
+    manifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8')) as Record<string, unknown>;
+  } catch {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: Investigation verification requires valid candidate_manifest.json'
+    );
+  }
+
+  const integrationEffect = manifest.project_integration_effect;
+  const entries = manifest.entries;
+  const canonical =
+    manifest.workflow_type === 'investigation' &&
+    manifest.no_project_spec_change === true &&
+    typeof integrationEffect === 'string' &&
+    integrationEffect.trim().toLowerCase() === 'evidence_only' &&
+    manifest.merge_required === false &&
+    manifest.merge_applicable === false &&
+    Array.isArray(entries) &&
+    entries.length === 0;
+
+  if (!canonical) {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: Investigation post_merge_verified → verification_running requires canonical evidence_only candidate manifest'
+    );
+  }
+}
+
 async function validateTransitionRequest(input: TransitionWithEvidenceInput): Promise<void> {
   if (!input.workItemId) {
     throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: workItemId is required');
@@ -109,6 +151,8 @@ async function validateTransitionRequest(input: TransitionWithEvidenceInput): Pr
       `STATE_COORDINATOR_TRANSITION_FAILED: invalid transition ${input.fromState} → ${input.toState}`,
     );
   }
+
+  await assertInvestigationEvidenceOnlyVerificationTransition(input);
 
   if (input.fromState !== '' && isSealTransition(input.fromState, input.toState)) {
     const sealEntry = getSealTransition(input.fromState, input.toState);
@@ -151,8 +195,10 @@ export async function readAuthoritativeState(input: {
   let rebuilt = false;
 
   if (typeof projectSm?.rebuildFromEventsFile === 'function') {
-    await projectSm.rebuildFromEventsFile();
-    rebuilt = true;
+    // Reflect reality: `rebuilt` is true only when an event log actually existed
+    // and was replayed, not merely because the rebuild capability is present.
+    const rebuildResult = await projectSm.rebuildFromEventsFile();
+    rebuilt = rebuildResult?.replayed ?? false;
   }
 
   if (typeof projectSm?.getState === 'function') {

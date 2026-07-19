@@ -10,10 +10,7 @@
 
 import { registerHandler } from '../ToolDispatcher';
 import { executeMerge } from '../lib/merge-runner-v11';
-import {
-  readAuthoritativeState,
-  transitionWithEvidence,
-} from '../lib/state-coordinator-v11';
+import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 
@@ -49,12 +46,25 @@ async function readJsonIfExists(filePath: string): Promise<any | null> {
 async function readWorkflowFacts(workItemDir: string): Promise<{
   workflowPath?: string;
   workflowType?: string;
+  evidenceOnly: boolean;
 }> {
-  const candidateManifest = await readJsonIfExists(path.join(workItemDir, 'candidate_manifest.json'));
+  const candidateManifest = await readJsonIfExists(
+    path.join(workItemDir, 'candidate_manifest.json')
+  );
   if (candidateManifest?.workflow_path || candidateManifest?.workflow_type) {
     return {
       workflowPath: candidateManifest.workflow_path,
       workflowType: candidateManifest.workflow_type,
+      evidenceOnly:
+        candidateManifest.workflow_type === 'investigation' &&
+        candidateManifest.no_project_spec_change === true &&
+        String(candidateManifest.project_integration_effect ?? '')
+          .trim()
+          .toLowerCase() === 'evidence_only' &&
+        candidateManifest.merge_required === false &&
+        candidateManifest.merge_applicable === false &&
+        Array.isArray(candidateManifest.entries) &&
+        candidateManifest.entries.length === 0,
     };
   }
 
@@ -62,6 +72,7 @@ async function readWorkflowFacts(workItemDir: string): Promise<{
   return {
     workflowPath: workItem?.workflow_path,
     workflowType: workItem?.workflow_type,
+    evidenceOnly: false,
   };
 }
 
@@ -75,9 +86,13 @@ async function advanceMergeState(input: {
   workflowType?: string;
   status: string;
   mergedCount: number;
+  evidenceOnly: boolean;
 }): Promise<any> {
   if (input.status === 'not_applicable') {
-    if (input.workflowPath !== 'code_only_fast_path') {
+    const validNoMergePath =
+      input.workflowPath === 'code_only_fast_path' ||
+      (input.workflowType === 'investigation' && input.evidenceOnly);
+    if (!validNoMergePath) {
       return {
         attempted: false,
         reason: 'merge_not_applicable',
@@ -90,7 +105,8 @@ async function advanceMergeState(input: {
       workItemId: input.workItemId,
     });
     const current = state.current_state;
-    const workflowTypeForNotApplicable = input.workflowType || workflowTypeFromPath(input.workflowPath);
+    const workflowTypeForNotApplicable =
+      input.workflowType || workflowTypeFromPath(input.workflowPath);
     const sequence = ['approved', 'merge_ready', 'merging', 'merged'];
     const currentIndex = current ? sequence.indexOf(current) : -1;
 
@@ -106,7 +122,7 @@ async function advanceMergeState(input: {
     if (currentIndex < 0) {
       return {
         attempted: false,
-        reason: 'current_state_not_code_only_merge_recoverable',
+        reason: 'current_state_not_not_applicable_merge_recoverable',
         current_state: current,
       };
     }
@@ -126,14 +142,18 @@ async function advanceMergeState(input: {
           toState,
           workflowType: workflowTypeForNotApplicable,
           actorRole: 'merge_runner',
-          evidence: 'merge_runner authoritative transition for code_only_fast_path merge_report not_applicable',
+          evidence:
+            input.workflowType === 'investigation'
+              ? 'merge_runner authoritative transition for Investigation evidence_only merge_report not_applicable'
+              : 'merge_runner authoritative transition for code_only_fast_path merge_report not_applicable',
           transitionContext: {
             source: 'sf_v11_merge',
             merge_status: input.status,
             merged_count: input.mergedCount,
             merge_not_applicable: true,
+            evidence_only: input.evidenceOnly,
           },
-        }),
+        })
       );
     }
 
@@ -163,8 +183,7 @@ async function advanceMergeState(input: {
   });
 
   const current = state.current_state;
-  const workflowType =
-    input.workflowType || workflowTypeFromPath(input.workflowPath);
+  const workflowType = input.workflowType || workflowTypeFromPath(input.workflowPath);
   const sequence = ['approved', 'merge_ready', 'merging', 'merged'];
   const currentIndex = current ? sequence.indexOf(current) : -1;
 
@@ -201,14 +220,13 @@ async function advanceMergeState(input: {
         toState,
         workflowType,
         actorRole: 'merge_runner',
-        evidence:
-          'merge_runner authoritative post-approval transition after merge_report success',
+        evidence: 'merge_runner authoritative post-approval transition after merge_report success',
         transitionContext: {
           source: 'sf_v11_merge',
           merge_status: input.status,
           merged_count: input.mergedCount,
         },
-      }),
+      })
     );
   }
 
@@ -241,7 +259,7 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
     });
 
     const status = result.status ?? (result.success ? 'success' : 'failed');
-    const mergedCount = result.merged_files.filter((f) => f.status === 'success').length;
+    const mergedCount = result.merged_files.filter(f => f.status === 'success').length;
     const workflowFacts = await readWorkflowFacts(workItemDir);
 
     const stateAutoAdvance = result.success
@@ -255,6 +273,7 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
           workflowType: workflowFacts.workflowType,
           status,
           mergedCount,
+          evidenceOnly: workflowFacts.evidenceOnly,
         })
       : { attempted: false, reason: 'merge_failed' };
 
@@ -264,7 +283,7 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
       reason: result.reason,
       work_item_id: workItemId,
       merged_count: mergedCount,
-      failed_count: result.merged_files.filter((f) => f.status === 'failed').length,
+      failed_count: result.merged_files.filter(f => f.status === 'failed').length,
       spec_manifest_updated: result.spec_manifest_updated,
       project_spec_version: result.project_spec_version,
       errors: result.errors,

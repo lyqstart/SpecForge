@@ -38,10 +38,20 @@ const designCandidateGates: GateIdV11[] = [
 
 const fullSpecCandidateGates: GateIdV11[] = [...designCandidateGates, 'trace_gate'];
 
+const investigationCandidateGates: GateIdV11[] = [
+  ...commonCandidateGates,
+  'required_files_gate',
+  'candidate_manifest_gate',
+  'path_policy_gate',
+  'workflow_specific_gate',
+];
+
 function getCandidateGates(
   workflowPath: string,
-  candidatePhase: CandidateGatePhaseV11
+  candidatePhase: CandidateGatePhaseV11,
+  workflowType?: string
 ): GateIdV11[] {
+  if (workflowType === 'investigation') return investigationCandidateGates;
   switch (workflowPath as WorkflowPath) {
     case 'requirement_change_path':
     case 'design_change_path':
@@ -73,7 +83,16 @@ function getCandidateGates(
   }
 }
 
-function getLegacyAllGates(workflowPath: string): GateIdV11[] {
+function getLegacyAllGates(workflowPath: string, workflowType?: string): GateIdV11[] {
+  if (workflowType === 'investigation') {
+    return [
+      ...investigationCandidateGates,
+      'merge_ready_gate',
+      'post_merge_gate',
+      'verification_gate',
+      'close_gate',
+    ];
+  }
   switch (workflowPath as WorkflowPath) {
     case 'requirement_change_path':
     case 'design_change_path':
@@ -111,11 +130,12 @@ function getLegacyAllGates(workflowPath: string): GateIdV11[] {
 export function getRequiredGates(
   workflowPath: string,
   phase: GatePhaseV11 = 'all',
-  candidatePhase: CandidateGatePhaseV11 = 'full'
+  candidatePhase: CandidateGatePhaseV11 = 'full',
+  workflowType?: string
 ): GateIdV11[] {
   switch (phase) {
     case 'candidate':
-      return dedupe(getCandidateGates(workflowPath, candidatePhase));
+      return dedupe(getCandidateGates(workflowPath, candidatePhase, workflowType));
     case 'merge':
       return ['merge_ready_gate', 'post_merge_gate'];
     case 'post_implementation':
@@ -124,7 +144,7 @@ export function getRequiredGates(
       return ['close_gate'];
     case 'all':
     default:
-      return dedupe(getLegacyAllGates(workflowPath));
+      return dedupe(getLegacyAllGates(workflowPath, workflowType));
   }
 }
 

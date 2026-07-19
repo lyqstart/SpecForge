@@ -14,6 +14,7 @@ import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
 import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { parseAllVerificationStrategies } from './sf_verification_types';
+import { buildTolerantHeaderRegex } from './sf_section_matcher';
 import { resolveRequirementsPath, checkEarsCompliance } from './sf_ears_parser';
 import { FILE_SIZE_LIMIT } from './sf_ears_types';
 import type { SyncSummary } from './sf_knowledge_graph_core';
@@ -101,19 +102,172 @@ export function checkRefactorAnalysisContent(
 }
 
 /**
+ * P5: collect the DISTINCT status tokens declared on explicit declaration LINES.
+ *
+ * A declaration line is one whose label matches `markerRe` (e.g. `PREMISE:` /
+ * `OBSERVER_EFFECT:`, optionally dash-prefixed). The status token is then extracted from
+ * that same line via `statusRe`. Prose mentions of alternative tokens on non-declaration
+ * lines (decision matrices / rationale, e.g. `- OBSERVER_EFFECT_CONTROLLED：已排除…`) never
+ * match the label marker and are therefore ignored.
+ */
+export function collectDeclaredStatuses(
+  section: string,
+  markerRe: RegExp,
+  statusRe: RegExp
+): string[] {
+  const statuses: string[] = [];
+  for (const line of section.split(/\r?\n/)) {
+    if (!markerRe.test(line)) {
+      continue;
+    }
+    const match = line.match(statusRe);
+    if (match) {
+      statuses.push(match[1]);
+    }
+  }
+  return Array.from(new Set(statuses));
+}
+
+/**
  * 检查 investigation_plan.md 内容（investigation mode）
  * pass 条件：所有 section 非空（轻量级检查）
  */
 export function checkInvestigationPlanContent(
-  _content: string,
-  _sections: Record<string, string>
+  content: string,
+  sections: Record<string, string>
 ): GateResult {
-  // 轻量级检查：只要所有 section 非空即可（已在外层检查）
+  const blockingIssues: string[] = [];
+  const warnings: string[] = [];
+  const hypothesisSection = sections['候选假设'] ?? '';
+  const hypothesisIds = Array.from(
+    new Set(Array.from(hypothesisSection.matchAll(/\bH\d+\b/gi), match => match[0].toUpperCase()))
+  );
+
+  if (
+    hypothesisIds.length < 2 &&
+    !/不存在第二个合理假设|single[- ]hypothesis exception/i.test(hypothesisSection)
+  ) {
+    blockingIssues.push(
+      '调查计划必须包含至少两个合理竞争假设，或明确证明客观上不存在第二个合理假设'
+    );
+  }
+
+  const currentState = sections['当前状态与调用链'] ?? '';
+  if (
+    !/(入口|调用链|caller|callee|状态权威|数据流)/i.test(currentState) ||
+    !/(→|->|=>|\|)/.test(currentState)
+  ) {
+    blockingIssues.push('当前状态与调用链必须给出真实入口、调用关系或状态流转，而不是只列文件名');
+  }
+
+  const facts = sections['已知事实与未知项'] ?? '';
+  if (
+    !/CODE_OBSERVED/.test(facts) ||
+    !/(RUNTIME_OBSERVED|ENV_OBSERVED|HISTORY_OBSERVED)/.test(facts)
+  ) {
+    blockingIssues.push(
+      '已知事实与未知项必须使用 CODE_OBSERVED，并至少包含一种运行时、环境或历史观察证据'
+    );
+  }
+  if (!/(ASSUMPTION|UNKNOWN)/.test(facts)) {
+    blockingIssues.push(
+      '已知事实与未知项必须显式标注 ASSUMPTION 或 UNKNOWN，禁止把未验证内容写成事实'
+    );
+  }
+
+  const premise = sections['问题前提与观察者影响'] ?? '';
+  // P5: count only explicit declaration LINES (e.g. `PREMISE: <token>` /
+  // `OBSERVER_EFFECT: <token>`), never prose mentions of alternative tokens in a
+  // decision matrix / rationale.
+  const premiseStatuses = collectDeclaredStatuses(
+    premise,
+    /^\s*(?:-\s*)?(?:PREMISE|问题前提)\s*[:：]/,
+    /\b(PREMISE_REPRODUCED|PREMISE_HISTORICALLY_EVIDENCED|PREMISE_CONTRADICTED|PREMISE_NOT_REPRODUCED)\b/
+  );
+  if (premiseStatuses.length !== 1) {
+    blockingIssues.push('问题前提与观察者影响必须且只能声明一个合法 PREMISE 状态');
+  }
+  const observerEffectStatuses = collectDeclaredStatuses(
+    premise,
+    /^\s*(?:-\s*)?(?:OBSERVER_EFFECT|观察者影响)\s*[:：]/,
+    /\b(OBSERVER_EFFECT_NONE|OBSERVER_EFFECT_CONTROLLED|OBSERVER_EFFECT_CHANGED_BEFORE_CAPTURE|OBSERVER_EFFECT_UNKNOWN)\b/
+  );
+  if (observerEffectStatuses.length !== 1) {
+    blockingIssues.push('问题前提与观察者影响必须且只能声明一个合法 OBSERVER_EFFECT 状态');
+  }
+
+  const originalEvidence = sections['原始证据来源'] ?? '';
+  if (
+    /(AGENT_CLAIM|UNVERIFIED_REPORT|INVESTIGATION_LEAD)/.test(originalEvidence) &&
+    !/(源码|配置|原始日志|调用栈|命令输出|events\.jsonl|commit|diff|tag|文件系统|截图|完整会话|一级原始证据|primary evidence)/i.test(
+      originalEvidence
+    )
+  ) {
+    blockingIssues.push(
+      '其他 Agent 的转述只能作为线索；原始证据来源必须包含独立读取的一级证据或可回溯派生证据'
+    );
+  }
+  if (
+    !/(源码|配置|原始日志|调用栈|命令输出|events\.jsonl|commit|diff|tag|文件系统|截图|完整会话|一级原始证据|primary evidence)/i.test(
+      originalEvidence
+    )
+  ) {
+    blockingIssues.push(
+      '原始证据来源必须列出源码、配置、原始日志/调用栈、命令输出、StateManager events、Git 对象、文件系统现场或用户原始材料'
+    );
+  }
+
+  const methods = sections['验证与反证方法'] ?? '';
+  if (!/(验证|experiment|check|test)/i.test(methods) || !/(反证|推翻|排除|falsif)/i.test(methods)) {
+    blockingIssues.push('验证与反证方法必须同时说明如何支持和如何推翻主要假设');
+  }
+  for (const id of hypothesisIds) {
+    if (!new RegExp(`\\b${id}\\b`, 'i').test(methods)) {
+      blockingIssues.push(`验证与反证方法未覆盖候选假设 ${id}`);
+    }
+  }
+
+  const evidencePlan = sections['证据计划'] ?? '';
+  if (!/(命令|日志|调用栈|状态快照|Git|提交|路径|文件|证据 ID|EV-)/i.test(evidencePlan)) {
+    blockingIssues.push(
+      '证据计划必须列出可执行命令、日志、状态快照、历史或文件路径等可回溯证据来源'
+    );
+  }
+
+  const rootCriteria = sections['根因判定标准'] ?? '';
+  if (
+    !/ROOT_CAUSE_CONFIRMED/.test(rootCriteria) ||
+    !/(首次偏离点|竞争假设|因果链|关键 UNKNOWN|PREMISE_)/.test(rootCriteria)
+  ) {
+    blockingIssues.push(
+      '根因判定标准必须包含 ROOT_CAUSE_CONFIRMED 及首次偏离点、竞争假设、因果链和关键 UNKNOWN 条件'
+    );
+  }
+
+  if (blockingIssues.length > 0) {
+    return {
+      status: 'fail',
+      blocking_issues: blockingIssues,
+      warnings,
+      next_action: 'revise',
+      details: {
+        hypothesis_ids: hypothesisIds,
+        premise_statuses: premiseStatuses,
+        observer_effect_statuses: observerEffectStatuses,
+      },
+    };
+  }
+
   return {
     status: 'pass',
     blocking_issues: [],
-    warnings: [],
+    warnings,
     next_action: 'continue',
+    details: {
+      hypothesis_ids: hypothesisIds,
+      premise_statuses: premiseStatuses,
+      observer_effect_statuses: observerEffectStatuses,
+    },
   };
 }
 
@@ -137,7 +291,19 @@ export const REQUIREMENTS_GATE_SPECS: GateModeSpec[] = [
   {
     mode: 'investigation',
     targetFile: 'investigation_plan.md',
-    requiredSections: ['调查目标', '调查范围', '调查方法', '预期产出格式'],
+    requiredSections: [
+      '调查问题与完成标准',
+      '当前状态与调用链',
+      '调查范围',
+      '已知事实与未知项',
+      '问题前提与观察者影响',
+      '原始证据来源',
+      '候选假设',
+      '验证与反证方法',
+      '证据计划',
+      '根因判定标准',
+      '预期产出',
+    ],
     checkFn: checkInvestigationPlanContent,
   },
 ];
@@ -153,14 +319,18 @@ export const REQUIREMENTS_GATE_SPECS: GateModeSpec[] = [
 export function parseSections(content: string, requiredSections: string[]): Record<string, string> {
   const sections: Record<string, string> = Object.create(null);
   for (const sectionName of requiredSections) {
-    // 转义正则特殊字符
-    const escapedName = escapeRegExp(sectionName);
-    const pattern = new RegExp(`^#{2,3}\\s*${escapedName}\\s*$`, 'im');
+    // 使用共享的 prefix/annotation-tolerant 匹配器：规范名称作为标题前缀，
+    // 允许其后携带可选的尾随括注（如 `## 预期产出（执行阶段，非本 plan）`）。
+    const pattern = buildTolerantHeaderRegex(sectionName, {
+      minLevel: 2,
+      maxLevel: 3,
+      requireHashSpace: false,
+    });
     const match = pattern.exec(content);
     if (match) {
       const startIdx = match.index + match[0].length;
-      // 找到下一个同级或更高级标题
-      const nextHeadingPattern = /^#{1,3}\s+/m;
+      // 找到下一个同级或更高级标题（当前必需章节为 h2，h3 属于章节内部子标题）
+      const nextHeadingPattern = /^#{1,2}\s+/m;
       const remaining = content.slice(startIdx);
       const nextMatch = nextHeadingPattern.exec(remaining);
       const sectionContent = nextMatch
@@ -172,13 +342,6 @@ export function parseSections(content: string, requiredSections: string[]): Reco
     }
   }
   return sections;
-}
-
-/**
- * 转义正则表达式特殊字符
- */
-function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // ============================================================
@@ -259,7 +422,10 @@ export async function checkRequirementsGate(
     if (missing.length > 0) {
       return {
         status: 'fail',
-        blocking_issues: missing.map(s => `Missing section: ${s}`),
+        // Cross-cutting (Req 2.8): name the EXACT expected canonical header token so
+        // revision does not require reverse-engineering the parser. The message still
+        // CONTAINS the stable `Missing section: <name>` substring for downstream matchers.
+        blocking_issues: missing.map(s => `Missing section: ${s}（期望的标题形式：## ${s}）`),
         warnings: [],
         next_action: 'revise',
       };

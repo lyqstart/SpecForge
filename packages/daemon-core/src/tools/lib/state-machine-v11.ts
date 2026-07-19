@@ -117,7 +117,7 @@ export const V11_TRANSITIONS = new Map<string, readonly string[]>([
   ['merge_ready', ['merging']],
   ['merging', ['merged', 'gates_failed']],
   ['merged', ['post_merge_verified']],
-  ['post_merge_verified', ['implementation_ready']],
+  ['post_merge_verified', ['implementation_ready', 'verification_running']],
   ['implementation_ready', ['implementation_running']],
   ['implementation_running', ['implementation_done']],
   ['implementation_done', ['verification_running']],

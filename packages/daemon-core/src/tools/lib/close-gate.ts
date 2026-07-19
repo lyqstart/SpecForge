@@ -27,10 +27,7 @@ import {
   makeReport,
 } from './gate-report.js';
 import { validateApprovedUserDecisionForClose } from './governance-invariants-v11.js';
-import {
-  validateSemanticClosure,
-  type SemanticClosureManifest,
-} from './semantic-closure-core.js';
+import { validateSemanticClosure, type SemanticClosureManifest } from './semantic-closure-core.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
 
 export interface CloseGateResult {
@@ -65,16 +62,22 @@ async function readText(filePath: string): Promise<string | null> {
 
 function details(value: unknown): string | undefined {
   if (value === undefined || value === null) return undefined;
-  if (Array.isArray(value)) return value.map((item) => String(item)).join('; ');
+  if (Array.isArray(value)) return value.map(item => String(item)).join('; ');
   return String(value);
 }
 
 function sanitizeCheckId(value: string): string {
-  return value.replace(/[^a-z0-9]+/gi, '_').replace(/^_+|_+$/g, '').toLowerCase();
+  return value
+    .replace(/[^a-z0-9]+/gi, '_')
+    .replace(/^_+|_+$/g, '')
+    .toLowerCase();
 }
 
 function normalizeWorkflowValue(value: unknown): string {
-  return String(value ?? '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, '_');
 }
 
 function isNoCodeWorkflow(wi: Record<string, unknown> | null): boolean {
@@ -93,20 +96,28 @@ function isNoCodeWorkflow(wi: Record<string, unknown> | null): boolean {
     'read_only_review',
   ]);
 
-  return allowed.has(workflowType) || allowed.has(intent) || workflowPath === 'investigation_path' || workflowPath === 'review_path';
+  return (
+    allowed.has(workflowType) ||
+    allowed.has(intent) ||
+    workflowPath === 'investigation_path' ||
+    workflowPath === 'review_path'
+  );
 }
 
 function normalizeAllowedFiles(input: unknown): Array<{ path: string; operation?: string }> {
   if (!Array.isArray(input)) return [];
   return input
-    .map((entry) => {
+    .map(entry => {
       if (typeof entry === 'string') return { path: entry, operation: 'modify' };
       if (entry && typeof entry === 'object') {
-        return { path: String((entry as any).path ?? ''), operation: String((entry as any).operation ?? 'modify') };
+        return {
+          path: String((entry as any).path ?? ''),
+          operation: String((entry as any).operation ?? 'modify'),
+        };
       }
       return { path: '', operation: 'modify' };
     })
-    .filter((entry) => entry.path.length > 0);
+    .filter(entry => entry.path.length > 0);
 }
 
 function codePermissionNeverEnabled(wi: Record<string, unknown> | null): boolean {
@@ -133,13 +144,19 @@ function isNoCodeAuditText(auditText: string | null): boolean {
   );
 }
 
-function isNoCodeAuditAccepted(auditText: string | null, wi: Record<string, unknown> | null): boolean {
+function isNoCodeAuditAccepted(
+  auditText: string | null,
+  wi: Record<string, unknown> | null
+): boolean {
   if (!auditText || !isNoCodeAuditText(auditText) || !isNoCodeWorkflow(wi)) return false;
   const verdict = evaluateChangedFilesAuditVerdict(auditText);
   return verdict.passed;
 }
 
-function semanticClosureChecks(manifest: SemanticClosureManifest | null): GateReportCheck[] {
+function semanticClosureChecks(
+  manifest: SemanticClosureManifest | null,
+  investigationWorkflow: boolean
+): GateReportCheck[] {
   if (!manifest) {
     return [
       {
@@ -156,11 +173,13 @@ function semanticClosureChecks(manifest: SemanticClosureManifest | null): GateRe
     {
       check_id: 'close_semantic_closure_valid',
       description: validation.passed
-        ? 'Semantic closure proves OUT -> REQ -> DD -> TASK -> EV'
-        : `Semantic closure failed: ${validation.errors.map((issue) => issue.check_id).join(', ')}`,
+        ? investigationWorkflow
+          ? 'Semantic closure proves QUESTION -> PLAN -> FINDING -> EVIDENCE -> VERIFICATION'
+          : 'Semantic closure proves OUT -> REQ -> DD -> TASK -> EV'
+        : `Semantic closure failed: ${validation.errors.map(issue => issue.check_id).join(', ')}`,
       passed: validation.passed,
       severity: validation.passed ? undefined : 'error',
-      details: details(validation.errors.map((issue) => `${issue.check_id}: ${issue.message}`)),
+      details: details(validation.errors.map(issue => `${issue.check_id}: ${issue.message}`)),
     },
   ];
 
@@ -179,14 +198,18 @@ function semanticClosureChecks(manifest: SemanticClosureManifest | null): GateRe
 
 export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const checks: GateReportCheck[] = [];
+  const wi = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'work_item.json'));
+  const workflowType = normalizeWorkflowValue(wi?.workflow_type ?? ctx.workflowType);
+  const investigationWorkflow = workflowType === 'investigation';
   const requiredFiles = [
     'work_item.json',
     'intake.md',
     'change_classification.md',
     'impact_analysis.md',
     'trigger_result.json',
-    'tasks.md',
-    'trace_delta.md',
+    ...(investigationWorkflow
+      ? ['investigation_plan.md', 'findings_report.md']
+      : ['tasks.md', 'trace_delta.md']),
     'candidate_manifest.json',
     'gate_summary.md',
     'verification_report.md',
@@ -206,8 +229,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
-  const wi = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'work_item.json'));
-  const changedFilesAuditText = await readText(path.join(ctx.workItemDir, 'changed_files_audit.md'));
+  const changedFilesAuditText = await readText(
+    path.join(ctx.workItemDir, 'changed_files_audit.md')
+  );
   const noCodeAuditAccepted = isNoCodeAuditAccepted(changedFilesAuditText, wi);
 
   try {
@@ -220,14 +244,25 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
 
     const lower = vr.toLowerCase();
-    const verificationEvidenceManifest = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json'));
+    const verificationEvidenceManifest = await readJson<Record<string, unknown>>(
+      path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json')
+    );
     const verificationEvidenceManifestHasEntries =
-      Array.isArray((verificationEvidenceManifest as any)?.entries) && (verificationEvidenceManifest as any).entries.length > 0;
+      Array.isArray((verificationEvidenceManifest as any)?.entries) &&
+      (verificationEvidenceManifest as any).entries.length > 0;
     checks.push({
       check_id: 'close_verification_refs_evidence',
       description: 'verification_report references Evidence (§13.3)',
-      passed: lower.includes('evidence') || lower.includes('证据') || verificationEvidenceManifestHasEntries,
-      severity: lower.includes('evidence') || lower.includes('证据') || verificationEvidenceManifestHasEntries ? undefined : 'error',
+      passed:
+        lower.includes('evidence') ||
+        lower.includes('证据') ||
+        verificationEvidenceManifestHasEntries,
+      severity:
+        lower.includes('evidence') ||
+        lower.includes('证据') ||
+        verificationEvidenceManifestHasEntries
+          ? undefined
+          : 'error',
     });
   } catch {
     checks.push({
@@ -238,7 +273,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
-  const ud = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'user_decision.json'));
+  const ud = await readJson<Record<string, unknown>>(
+    path.join(ctx.workItemDir, 'user_decision.json')
+  );
   if (ud) {
     const validDecision = ud.decision_status === 'approved' || ud.decision_status === 'waived';
     checks.push({
@@ -290,7 +327,8 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
 
     const allowedWriteFiles = normalizeAllowedFiles((wi as any).allowed_write_files);
-    const normalPermissionRevoked = wi.code_permission_revoked === true || (wi as any).code_permission_released === true;
+    const normalPermissionRevoked =
+      wi.code_permission_revoked === true || (wi as any).code_permission_released === true;
     const noCodePermissionOk = noCodeAuditAccepted && codePermissionNeverEnabled(wi);
     const permissionCheckPassed =
       allowedWriteFiles.length === 0 && (noCodePermissionOk || normalPermissionRevoked);
@@ -316,7 +354,10 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       check_id: 'close_no_write_guard_violations',
       description: 'No unresolved Write Guard violations (§15.2.12)',
       passed: !wi.write_guard_violations || (wi.write_guard_violations as unknown[]).length === 0,
-      severity: !wi.write_guard_violations || (wi.write_guard_violations as unknown[]).length === 0 ? undefined : 'error',
+      severity:
+        !wi.write_guard_violations || (wi.write_guard_violations as unknown[]).length === 0
+          ? undefined
+          : 'error',
     });
 
     if (wi.resume_plan) {
@@ -338,19 +379,68 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     }
   }
 
-  try {
-    const td = await fs.readFile(path.join(ctx.workItemDir, 'trace_delta.md'), 'utf-8');
-    checks.push({
-      check_id: 'close_trace_delta_valid',
-      description: 'trace_delta.md is not empty (§13.1)',
-      passed: td.trim().length > 0,
-      severity: td.trim().length > 0 ? undefined : 'error',
-    });
-  } catch {
-    // Covered by required files.
+  if (!investigationWorkflow) {
+    try {
+      const td = await fs.readFile(path.join(ctx.workItemDir, 'trace_delta.md'), 'utf-8');
+      checks.push({
+        check_id: 'close_trace_delta_valid',
+        description: 'trace_delta.md is not empty (§13.1)',
+        passed: td.trim().length > 0,
+        severity: td.trim().length > 0 ? undefined : 'error',
+      });
+    } catch {
+      // Covered by required files.
+    }
   }
 
-  const em = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json'));
+  if (investigationWorkflow) {
+    const plan = await readText(path.join(ctx.workItemDir, 'investigation_plan.md'));
+    const findings = await readText(path.join(ctx.workItemDir, 'findings_report.md'));
+    const manifest = await readJson<Record<string, unknown>>(
+      path.join(ctx.workItemDir, 'candidate_manifest.json')
+    );
+    const rootStatuses =
+      String(findings ?? '').match(
+        /\b(ROOT_CAUSE_CONFIRMED|ROOT_CAUSE_PROBABLE|ROOT_CAUSE_UNCONFIRMED|INSUFFICIENT_EVIDENCE)\b/g
+      ) ?? [];
+    const canonicalEvidenceOnly =
+      manifest?.workflow_type === 'investigation' &&
+      manifest?.no_project_spec_change === true &&
+      normalizeWorkflowValue(manifest?.project_integration_effect) === 'evidence_only' &&
+      manifest?.merge_required === false &&
+      manifest?.merge_applicable === false &&
+      Array.isArray(manifest?.entries) &&
+      manifest.entries.length === 0;
+
+    checks.push({
+      check_id: 'close_investigation_plan_nonempty',
+      description: 'investigation_plan.md is non-empty',
+      passed: !!plan?.trim(),
+      severity: plan?.trim() ? undefined : 'error',
+    });
+    checks.push({
+      check_id: 'close_findings_report_nonempty',
+      description: 'findings_report.md is non-empty',
+      passed: !!findings?.trim(),
+      severity: findings?.trim() ? undefined : 'error',
+    });
+    checks.push({
+      check_id: 'close_investigation_root_status_unique',
+      description: 'findings_report declares exactly one root-cause confidence status',
+      passed: new Set(rootStatuses).size === 1,
+      severity: new Set(rootStatuses).size === 1 ? undefined : 'error',
+    });
+    checks.push({
+      check_id: 'close_investigation_candidate_evidence_only',
+      description: 'Investigation candidate manifest is canonical evidence_only with empty entries',
+      passed: canonicalEvidenceOnly,
+      severity: canonicalEvidenceOnly ? undefined : 'error',
+    });
+  }
+
+  const em = await readJson<Record<string, unknown>>(
+    path.join(ctx.workItemDir, 'evidence', 'evidence_manifest.json')
+  );
   if (em) {
     const hasEntries = Array.isArray((em as any).entries) && (em as any).entries.length > 0;
     checks.push({
@@ -361,13 +451,16 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
-  const semanticManifest = await readJson<SemanticClosureManifest>(path.join(ctx.workItemDir, '.semantic_closure.json'));
-  checks.push(...semanticClosureChecks(semanticManifest));
+  const semanticManifest = await readJson<SemanticClosureManifest>(
+    path.join(ctx.workItemDir, '.semantic_closure.json')
+  );
+  checks.push(...semanticClosureChecks(semanticManifest, investigationWorkflow));
 
   try {
     const mr = await fs.readFile(path.join(ctx.workItemDir, 'merge_report.md'), 'utf-8');
     const lower = mr.toLowerCase();
-    const validStatus = lower.includes('success') || lower.includes('not_applicable') || lower.includes('merged');
+    const validStatus =
+      lower.includes('success') || lower.includes('not_applicable') || lower.includes('merged');
     checks.push({
       check_id: 'close_merge_report_valid',
       description: 'merge_report has valid status (§11)',
@@ -411,11 +504,11 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     }
 
     const blockingMatches = Array.from(gs.matchAll(/- Blocking Issues:\s*\n((?:\s+- .+\n?)*)/g));
-    const blockingIssues = blockingMatches.flatMap((match) =>
+    const blockingIssues = blockingMatches.flatMap(match =>
       String(match[1] ?? '')
         .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(Boolean),
+        .map(line => line.trim())
+        .filter(Boolean)
     );
     const closeOnlyFailedSummary =
       gs.includes('### close_gate') &&
@@ -434,7 +527,8 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
 
     const hasWaiver = gs.includes('passed_with_waiver_required') || gs.includes('waiver');
     if (hasWaiver && wi) {
-      const hasFollowUp = (wi as any).waiver_follow_up_wi ?? (wi as any).follow_up_wi ?? (wi as any).waiver_followups;
+      const hasFollowUp =
+        (wi as any).waiver_follow_up_wi ?? (wi as any).follow_up_wi ?? (wi as any).waiver_followups;
       checks.push({
         check_id: 'close_waiver_follow_up',
         description: 'Waiver follow-up WI registered (§15.2)',

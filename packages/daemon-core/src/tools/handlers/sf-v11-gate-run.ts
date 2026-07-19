@@ -168,9 +168,13 @@ function gateStatusCountsAsPassed(report: GateReportV11 | undefined): boolean {
   return ['passed', 'skipped', 'not_applicable'].includes(String(report.status));
 }
 
-function defaultGateAliasForState(currentState: string | null): string {
+function defaultGateAliasForState(currentState: string | null, workflowType?: string): string {
   if (currentState === 'merged') return 'post_merge';
-  if (currentState === 'implementation_done' || currentState === 'verification_running') {
+  if (
+    currentState === 'implementation_done' ||
+    currentState === 'verification_running' ||
+    (workflowType === 'investigation' && currentState === 'post_merge_verified')
+  ) {
     return 'verification';
   }
   return 'candidate';
@@ -181,7 +185,8 @@ function normalizeGateIds(
   gateType: unknown,
   workflowPath: string,
   currentState: string | null,
-  candidatePhase: CandidateGatePhaseV11
+  candidatePhase: CandidateGatePhaseV11,
+  workflowType?: string
 ): { gateIds: GateIdV11[]; aliasesUsed: string[]; directStageGate: boolean } {
   const aliasesUsed: string[] = [];
   const explicitGateType = String(gateType ?? '')
@@ -192,7 +197,7 @@ function normalizeGateIds(
       ? input.map(String)
       : explicitGateType
         ? [explicitGateType]
-        : [defaultGateAliasForState(currentState)];
+        : [defaultGateAliasForState(currentState, workflowType)];
   const gateIds: GateIdV11[] = [];
   let directStageGate = false;
 
@@ -208,15 +213,15 @@ function normalizeGateIds(
       case 'all':
       case 'candidate':
         aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'candidate', candidatePhase));
+        gateIds.push(...getRequiredGates(workflowPath, 'candidate', candidatePhase, workflowType));
         break;
       case 'tasks':
         aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'candidate', 'full'));
+        gateIds.push(...getRequiredGates(workflowPath, 'candidate', 'full', workflowType));
         break;
       case 'merge':
         aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'merge'));
+        gateIds.push(...getRequiredGates(workflowPath, 'merge', 'full', workflowType));
         break;
       case 'post_merge':
       case 'post-merge':
@@ -226,11 +231,13 @@ function normalizeGateIds(
       case 'post_implementation':
       case 'post-implementation':
         aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'post_implementation'));
+        gateIds.push(
+          ...getRequiredGates(workflowPath, 'post_implementation', 'full', workflowType)
+        );
         break;
       case 'full':
         aliasesUsed.push(raw);
-        gateIds.push(...getRequiredGates(workflowPath, 'all'));
+        gateIds.push(...getRequiredGates(workflowPath, 'all', 'full', workflowType));
         break;
       case 'verification':
         aliasesUsed.push(raw);
@@ -266,11 +273,17 @@ function normalizeGateIds(
 function candidateGateSetCoversRequiredGates(input: {
   workflowPath: string;
   candidatePhase: CandidateGatePhaseV11;
+  workflowType: string;
   reports: GateReportV11[];
 }):
   | { ok: true; requiredGateIds: GateIdV11[]; failedRequiredGateIds: GateIdV11[] }
   | { ok: false; reason: string; details: unknown } {
-  const requiredGateIds = getRequiredGates(input.workflowPath, 'candidate', input.candidatePhase);
+  const requiredGateIds = getRequiredGates(
+    input.workflowPath,
+    'candidate',
+    input.candidatePhase,
+    input.workflowType
+  );
   const reportById = new Map<GateIdV11, GateReportV11>();
 
   for (const report of input.reports) {
@@ -363,6 +376,7 @@ async function autoAdvanceCandidateState(input: {
   const coverage = candidateGateSetCoversRequiredGates({
     workflowPath: input.workflowPath,
     candidatePhase: input.candidatePhase,
+    workflowType: input.workflowType,
     reports: input.reports,
   });
 
@@ -453,6 +467,7 @@ async function autoAdvancePostMergeState(input: {
   workItemId: string;
   workItemDir: string;
   workflowPath: string;
+  workflowType: string;
   reports: GateReportV11[];
   summaryStatus: string;
   currentState: string | null;
@@ -476,7 +491,7 @@ async function autoAdvancePostMergeState(input: {
     };
   }
 
-  const workflowType = workflowTypeFromPath(input.workflowPath);
+  const workflowType = input.workflowType;
   const step = await transitionGateState(
     input,
     'merged',
@@ -502,6 +517,7 @@ async function autoAdvanceVerificationState(input: {
   workItemId: string;
   workItemDir: string;
   workflowPath: string;
+  workflowType: string;
   reports: GateReportV11[];
   summaryStatus: string;
   currentState: string | null;
@@ -519,7 +535,8 @@ async function autoAdvanceVerificationState(input: {
   }
   if (
     input.currentState !== 'implementation_done' &&
-    input.currentState !== 'verification_running'
+    input.currentState !== 'verification_running' &&
+    !(input.workflowType === 'investigation' && input.currentState === 'post_merge_verified')
   ) {
     return {
       attempted: false,
@@ -528,17 +545,20 @@ async function autoAdvanceVerificationState(input: {
     };
   }
 
-  const workflowType = workflowTypeFromPath(input.workflowPath);
+  const workflowType = input.workflowType;
   const steps: unknown[] = [];
 
-  if (input.currentState === 'implementation_done') {
+  if (
+    input.currentState === 'implementation_done' ||
+    input.currentState === 'post_merge_verified'
+  ) {
     steps.push(
       await transitionGateState(
         input,
-        'implementation_done',
+        input.currentState,
         'verification_running',
         workflowType,
-        'verification_gate passed; recovery step implementation_done->verification_running'
+        `verification_gate passed; recovery step ${input.currentState}->verification_running`
       )
     );
   }
@@ -640,7 +660,8 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       args['gate_type'],
       workflowPath,
       currentState,
-      candidatePhase
+      candidatePhase,
+      workflowType
     );
     const ctx = {
       workItemId,

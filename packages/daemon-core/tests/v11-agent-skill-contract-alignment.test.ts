@@ -125,6 +125,11 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
       'sf_changed_files_audit',
       'AUTHORITATIVE_STATE_MISMATCH',
       'closed',
+      'recoverable safety latch',
+      'hard_stop_id',
+      'resume_from_step',
+      'operator_error',
+      'sf_hard_stop_resolve',
     ];
 
     for (const file of targetMarkdownFiles()) {

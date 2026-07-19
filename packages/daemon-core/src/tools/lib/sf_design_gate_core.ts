@@ -15,7 +15,8 @@ import {
 } from '@specforge/types/directory-layout';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
 import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
-import { parseSections } from './sf_requirements_gate_core';
+import { parseSections, collectDeclaredStatuses } from './sf_requirements_gate_core';
+import { buildTolerantHeaderRegex } from './sf_section_matcher';
 import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { isValidVerificationType } from './sf_verification_types';
@@ -400,25 +401,217 @@ export function checkRefactorPlanContent(
 
 /** 检查 findings_report.md 内容（investigation mode）。 */
 export function checkFindingsReportContent(
-  _content: string,
+  content: string,
   sections: Record<string, string>
 ): GateResult {
   const blockingIssues: string[] = [];
-  const conclusions = sections['调查结论']?.trim() || '';
-  const evidence = sections['数据和证据']?.trim() || '';
+  const warnings: string[] = [];
+  const rootStatuses = Array.from(
+    new Set(
+      Array.from(
+        content.matchAll(
+          /\b(ROOT_CAUSE_CONFIRMED|ROOT_CAUSE_PROBABLE|ROOT_CAUSE_UNCONFIRMED|INSUFFICIENT_EVIDENCE)\b/g
+        ),
+        match => match[1]
+      )
+    )
+  );
 
-  if (evidence.length === 0) {
-    blockingIssues.push('数据和证据为空，结论缺乏支撑');
-  } else if (conclusions.length > 0 && evidence.length < 20) {
-    blockingIssues.push('数据和证据内容过少，不足以支撑调查结论');
+  if (rootStatuses.length !== 1) {
+    blockingIssues.push('根因判定必须且只能声明一个合法根因状态');
   }
 
-  const recommendations = sections['建议']?.trim() || '';
-  if (recommendations.length > 0 && recommendations.length < 10) {
-    blockingIssues.push('建议内容过短，需要包含可操作的具体建议');
+  const conclusion = sections['调查结论'] ?? '';
+  if (!/(原始调查问题|original investigation question)/i.test(conclusion)) {
+    blockingIssues.push('调查结论必须逐字或等义重述原始调查问题，防止调查目标漂移');
+  }
+  if (!/(直接回答|direct answer|结论：|回答：)/i.test(conclusion)) {
+    blockingIssues.push('调查结论必须直接回答原始调查问题，而不是改写成另一个问题');
   }
 
-  return blockingIssues.length > 0 ? failResult(blockingIssues) : passResult();
+  const premiseSection = sections['问题前提与证据完整性'] ?? '';
+  // P5: count only explicit declaration LINES (e.g. `- PREMISE: <token>` /
+  // `- OBSERVER_EFFECT: <token>`), never prose mentions of alternative tokens.
+  const premiseStatuses = collectDeclaredStatuses(
+    premiseSection,
+    /^\s*(?:-\s*)?(?:PREMISE|问题前提)\s*[:：]/,
+    /\b(PREMISE_REPRODUCED|PREMISE_HISTORICALLY_EVIDENCED|PREMISE_CONTRADICTED|PREMISE_NOT_REPRODUCED)\b/
+  );
+  if (premiseStatuses.length !== 1) {
+    // Cross-cutting (Req 2.8): clarify that only an explicit `PREMISE:` declaration line
+    // counts toward the single-declaration rule (prose mentions of alternatives are ignored).
+    blockingIssues.push(
+      '问题前提与证据完整性必须且只能声明一个合法 PREMISE 状态（仅显式 PREMISE: 声明行计入，散文中提及的备选状态不计）'
+    );
+  }
+  const observerEffectStatuses = collectDeclaredStatuses(
+    premiseSection,
+    /^\s*(?:-\s*)?(?:OBSERVER_EFFECT|观察者影响)\s*[:：]/,
+    /\b(OBSERVER_EFFECT_NONE|OBSERVER_EFFECT_CONTROLLED|OBSERVER_EFFECT_CHANGED_BEFORE_CAPTURE|OBSERVER_EFFECT_UNKNOWN)\b/
+  );
+  if (observerEffectStatuses.length !== 1) {
+    // Cross-cutting (Req 2.8): clarify that only an explicit `OBSERVER_EFFECT:` declaration
+    // line counts toward the single-declaration rule (prose mentions are ignored).
+    blockingIssues.push(
+      '问题前提与证据完整性必须且只能声明一个合法 OBSERVER_EFFECT 状态（仅显式 OBSERVER_EFFECT: 声明行计入，散文中提及的备选状态不计）'
+    );
+  }
+
+  const hypothesisSection = sections['假设验证结果'] ?? '';
+  const hypothesisIds = Array.from(
+    new Set(Array.from(hypothesisSection.matchAll(/\bH\d+\b/gi), match => match[0].toUpperCase()))
+  );
+  if (
+    hypothesisIds.length < 2 &&
+    !/不存在第二个合理假设|single[- ]hypothesis exception/i.test(hypothesisSection)
+  ) {
+    blockingIssues.push('假设验证结果必须覆盖至少两个竞争假设及其实际实验结果');
+  }
+  for (const id of hypothesisIds) {
+    // Authoritative verdict vocabulary (must match the sf-investigator contract/template
+    // exactly): canonical `confirmed / rejected / unknown / partially_confirmed` with
+    // Chinese synonyms `已确认 / 已排除 / 被推翻 / 未知 / 部分确认`, plus the rejection
+    // synonyms `falsified / refuted` and the partial synonym `partial`. Matching is
+    // case-insensitive so FALSIFIED/REFUTED/PARTIAL and their case variants are recognized.
+    const linePattern = new RegExp(
+      `(?:^|\\n)[^\\n]*\\b${id}\\b[^\\n]*(confirmed|rejected|unknown|partially_confirmed|falsified|refuted|partial|已确认|已排除|被推翻|未知|部分确认)`,
+      'i'
+    );
+    if (!linePattern.test(hypothesisSection)) {
+      // Cross-cutting (Req 2.8): name the accepted verdict vocabulary so revision does not
+      // require reverse-engineering the parser. Keeps the stable
+      // `假设 <id> 必须在同一结果项中给出明确判定` prefix for downstream matchers.
+      blockingIssues.push(
+        `假设 ${id} 必须在同一结果项中给出明确判定（可接受的判定词汇：confirmed / rejected / unknown / partially_confirmed）`
+      );
+    }
+  }
+  if (!/(实验结果|实际结果|actual result|命令输出|证据)/i.test(hypothesisSection)) {
+    blockingIssues.push('假设验证结果必须记录实验或检查的实际结果，不能只写结论标签');
+  }
+
+  const evidence = sections['事实与证据'] ?? '';
+  if (!/(CODE_OBSERVED|RUNTIME_OBSERVED|ENV_OBSERVED|HISTORY_OBSERVED)/.test(evidence)) {
+    blockingIssues.push('事实与证据必须使用正式事实分类，禁止只写概括性判断');
+  }
+  const primaryEvidencePattern =
+    /(源码|配置|原始日志|调用栈|命令输出|events\.jsonl|commit|diff|tag|文件系统|截图|完整会话|一级原始证据|primary evidence|`[^`]+`|\.specforge\/)/i;
+  if (!primaryEvidencePattern.test(evidence)) {
+    blockingIssues.push('事实与证据必须引用一级原始证据或可回溯到一级证据的派生证据');
+  }
+  if (
+    /(AGENT_CLAIM|UNVERIFIED_REPORT|INVESTIGATION_LEAD)/.test(evidence) &&
+    !/(独立核验|independently verified|亲自读取|原始证据)/i.test(evidence)
+  ) {
+    blockingIssues.push('其他 Agent 的转述只能作为线索，必须记录独立核验及对应原始证据');
+  }
+  // Canonical evidence-ID form is `EV-<id>` (`EV-[A-Za-z0-9_-]+`, e.g. EV-001). The
+  // concise `E<n>` shorthand (e.g. E1, E7) is also accepted as documented in the
+  // sf-investigator contract. The `EV-` alternative is listed first so the matcher
+  // consumes an `EV-…` token whole and never extracts a spurious inner `E<digits>` from
+  // it — preserving the ≥2 distinct-evidence credibility rule.
+  const evidenceIds = Array.from(
+    new Set(Array.from(evidence.matchAll(/\bEV-[A-Za-z0-9_-]+\b|\bE\d+\b/g), m => m[0]))
+  );
+
+  const divergence = sections['调用链与首次偏离点'] ?? '';
+  if (
+    !/(首次偏离点|第一个不符合预期|first divergence)/i.test(divergence) ||
+    !/(预期|expected)/i.test(divergence) ||
+    !/(实际|actual)/i.test(divergence)
+  ) {
+    blockingIssues.push('调用链与首次偏离点必须明确预期与实际，并指出第一个偏离节点');
+  }
+
+  const causalChain = sections['因果链'] ?? '';
+  if (
+    !/(根本缺陷|ROOT_CAUSE)/.test(causalChain) ||
+    !/(触发条件)/.test(causalChain) ||
+    !/(→|->|=>)/.test(causalChain)
+  ) {
+    blockingIssues.push('因果链必须从根本缺陷经触发条件和传播过程连接到用户症状');
+  }
+
+  const rootStatus = rootStatuses[0];
+  const premiseStatus = premiseStatuses[0];
+  if (rootStatus === 'ROOT_CAUSE_CONFIRMED') {
+    // Rejection verdict tokens must stay in sync with the authoritative verdict vocabulary
+    // (P7 fix, task 16.5): canonical `rejected` (同义 已排除 / 被推翻) plus the documented
+    // rejection synonyms `falsified` / `refuted`. Without this, a competing hypothesis
+    // correctly judged FALSIFIED/REFUTED would be treated as if it had no rejection result.
+    if (!/(rejected|已排除|被推翻|falsified|refuted)/i.test(hypothesisSection)) {
+      blockingIssues.push('ROOT_CAUSE_CONFIRMED 必须包含对主要竞争假设的反证或排除结果');
+    }
+    // `partial` is a PARTIAL verdict synonym (alongside `partially_confirmed` / `部分确认`).
+    // Matching `partial` covers `partially_confirmed` too (substring), so a partial /
+    // unclosed primary hypothesis continues to FORBID ROOT_CAUSE_CONFIRMED.
+    if (/(partial|部分确认)/i.test(hypothesisSection)) {
+      blockingIssues.push('存在部分确认或未闭合的主要假设时不得声明 ROOT_CAUSE_CONFIRMED');
+    }
+    if (!['PREMISE_REPRODUCED', 'PREMISE_HISTORICALLY_EVIDENCED'].includes(premiseStatus ?? '')) {
+      blockingIssues.push('问题前提未复现且无不可变历史原证据时不得声明 ROOT_CAUSE_CONFIRMED');
+    }
+    const observerEffectStatus = observerEffectStatuses[0];
+    if (
+      ['OBSERVER_EFFECT_CHANGED_BEFORE_CAPTURE', 'OBSERVER_EFFECT_UNKNOWN'].includes(
+        observerEffectStatus ?? ''
+      ) &&
+      premiseStatus !== 'PREMISE_HISTORICALLY_EVIDENCED'
+    ) {
+      blockingIssues.push(
+        '现场在原始取证前已被改变或观察者影响未知，且无历史原证据时不得声明 ROOT_CAUSE_CONFIRMED'
+      );
+    }
+    if (evidenceIds.length < 2) {
+      // Cross-cutting (Req 2.8): name the canonical evidence-ID form `EV-<id>` so the
+      // required form is not undocumented. Keeps the stable
+      // `ROOT_CAUSE_CONFIRMED 至少需要两个可区分的原始证据引用` prefix for downstream matchers.
+      blockingIssues.push(
+        'ROOT_CAUSE_CONFIRMED 至少需要两个可区分的原始证据引用（规范证据 ID 形式：EV-<id>，例如 EV-001）'
+      );
+    }
+    const limitations = sections['限制与未知项'] ?? '';
+    if (
+      /关键 UNKNOWN|可能推翻|尚未验证的关键/i.test(limitations) &&
+      !/(不存在|无关键|none)/i.test(limitations)
+    ) {
+      blockingIssues.push('存在可能推翻结论的关键 UNKNOWN 时不得声明 ROOT_CAUSE_CONFIRMED');
+    }
+  } else if (rootStatus) {
+    const followUp = sections['后续验证计划'] ?? '';
+    if (!/(命令|实验|复现|日志|检查|验证|test|run)/i.test(followUp)) {
+      blockingIssues.push(`${rootStatus} 必须提供可执行的后续补证或验证计划`);
+    }
+  }
+
+  if (blockingIssues.length > 0) {
+    return {
+      status: 'fail',
+      blocking_issues: blockingIssues,
+      warnings,
+      next_action: 'revise',
+      details: {
+        root_cause_status: rootStatus,
+        premise_status: premiseStatus,
+        observer_effect_status: observerEffectStatuses[0] ?? null,
+        hypothesis_ids: hypothesisIds,
+        evidence_ids: evidenceIds,
+      },
+    };
+  }
+
+  return {
+    status: 'pass',
+    blocking_issues: [],
+    warnings,
+    next_action: 'continue',
+    details: {
+      root_cause_status: rootStatus,
+      premise_status: premiseStatus,
+      hypothesis_ids: hypothesisIds,
+      evidence_ids: evidenceIds,
+    },
+  };
 }
 
 /** Design Gate 策略表。 */
@@ -452,7 +645,19 @@ export const DESIGN_GATE_SPECS: GateModeSpec[] = [
   {
     mode: 'investigation',
     targetFile: 'findings_report.md',
-    requiredSections: ['调查结论', '数据和证据', '建议', '限制'],
+    requiredSections: [
+      '调查结论',
+      '事实与证据',
+      '问题前提与证据完整性',
+      '调用链与首次偏离点',
+      '假设验证结果',
+      '根因判定',
+      '因果链',
+      '影响范围',
+      '修复方向',
+      '限制与未知项',
+      '后续验证计划',
+    ],
     checkFn: checkFindingsReportContent,
   },
 ];
@@ -677,11 +882,15 @@ async function executeDesignGateMode(
   const sections = parseSections(content, spec.requiredSections);
   const missing = spec.requiredSections.filter(section => !sections[section]?.trim());
   if (missing.length > 0) {
-    return failResult(missing.map(section => `Missing section: ${section}`));
+    // Cross-cutting (Req 2.8): name the EXACT expected canonical header token while
+    // preserving the stable `Missing section: <name>` substring for downstream matchers.
+    return failResult(
+      missing.map(section => `Missing section: ${section}（期望的标题形式：## ${section}）`)
+    );
   }
 
   const governanceRequirement =
-    mode === 'ops_task'
+    mode === 'ops_task' || mode === 'investigation'
       ? { required: false, reasons: [] }
       : await resolveSystemGovernanceRequirement(workItemId, baseDir);
   if (governanceRequirement.blocking_issue) {
@@ -709,6 +918,7 @@ async function executeDesignGateMode(
   const modeResult = spec.checkFn(content, sections);
   if (modeResult.status === 'pass') {
     modeResult.details = {
+      ...modeResult.details,
       ...governanceResult.details,
       governance_requirement_reasons: governanceRequirement.reasons,
       trigger_result_path: governanceRequirement.source_path,
@@ -800,14 +1010,24 @@ export function extractCPTestTypes(content: string): Array<{
 }
 
 function extractMarkdownSection(content: string, sectionName: string): string {
-  const headingPattern = new RegExp(
-    `^(#{1,6})\\s+(?:\\d+[.、)]\\s*)?${escapeRegExp(sectionName)}\\s*$`,
-    'im'
-  );
+  // P4 fix: use the shared prefix/annotation-tolerant matcher so a governance section header
+  // carrying a trailing parenthetical / annotation (e.g. `## Solution Strategy（本次范围）`) is
+  // still recognized. Preserve this detector's historical anchoring: levels 1–6, a required
+  // whitespace after the `#` run (`requireHashSpace`), and the optional numeric list prefix
+  // `(?:\d+[.、)]\s*)?` (`allowNumberPrefix`).
+  const headingPattern = buildTolerantHeaderRegex(sectionName, {
+    minLevel: 1,
+    maxLevel: 6,
+    requireHashSpace: true,
+    allowNumberPrefix: true,
+  });
   const headingMatch = headingPattern.exec(content);
   if (!headingMatch) return '';
 
-  const currentLevel = headingMatch[1].length;
+  // The shared matcher does not expose a capture group for the `#` run, so derive the heading
+  // level from the leading hashes of the matched text to keep the same-or-higher-level boundary
+  // scan unchanged.
+  const currentLevel = headingMatch[0].match(/^#+/)?.[0].length ?? 0;
   const bodyStart = headingMatch.index + headingMatch[0].length;
   const rest = content.slice(bodyStart);
   const headingIterator = rest.matchAll(/^(#{1,6})\s+/gm);

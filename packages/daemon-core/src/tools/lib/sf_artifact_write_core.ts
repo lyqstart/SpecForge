@@ -20,6 +20,8 @@ import { logErrorToFile } from "./utils"
 /** 支持的文件类型 */
 export type ArtifactFileType =
   | "verification_report"
+  | 'investigation_plan'
+  | 'findings_report'
   | "work_log"
   | "review_report"
   | "intake"
@@ -89,16 +91,20 @@ export interface TraceStats {
 // ============================================================
 
 /** 文件类型到路径模式的映射 */
-const FILE_TYPE_PATH_MAP: Record<ArtifactFileType, (workItemId: string, runId?: string) => string> = {
-  verification_report: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/verification_report.md`,
-  review_report: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/review_report.md`,
-  intake: (wid) => `${SPEC_DIR_NAME}/specs/${wid}/intake.md`,
-  work_log: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/work_log.md`,
-  agent_run_result: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/result.json`,
-}
+const FILE_TYPE_PATH_MAP: Record<ArtifactFileType, (workItemId: string, runId?: string) => string> =
+  {
+    verification_report: wid => `${SPEC_DIR_NAME}/specs/${wid}/verification_report.md`,
+    investigation_plan: wid => `${SPEC_DIR_NAME}/work-items/${wid}/investigation_plan.md`,
+    findings_report: wid => `${SPEC_DIR_NAME}/work-items/${wid}/findings_report.md`,
+    review_report: wid => `${SPEC_DIR_NAME}/specs/${wid}/review_report.md`,
+    intake: wid => `${SPEC_DIR_NAME}/specs/${wid}/intake.md`,
+    work_log: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/work_log.md`,
+    agent_run_result: (_wid, rid) => `${SPEC_DIR_NAME}/archive/agent_runs/${rid}/result.json`,
+  };
 
 /** 白名单路径前缀 */
 const WHITELIST_PREFIXES = [
+  `${SPEC_DIR_NAME}/work-items/`,
   `${SPEC_DIR_NAME}/specs/`,
   `${SPEC_DIR_NAME}/archive/agent_runs/`,
 ]
