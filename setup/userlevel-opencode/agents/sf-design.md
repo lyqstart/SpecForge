@@ -490,7 +490,7 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 固定章节标题必须逐字使用上述七个名称；`Actual Architecture`、`Governance Capability Assessment`、`Recommended Approach` 等近义标题不能替代。七个固定章节使用 `##`，章节内部可以直接使用 `###`、`####` 子标题，不需要为绕过 Gate 在标题后添加填充段落。设计 Agent 只能通过 `sf_artifact_write(file_type=design)` 写入一次，由现有 Path Service 路由到权威 Candidate 路径，不得为了适配不同 Gate 再复制顶层 `design.md`。
 
-写入前必须读取 `spec_manifest.json`，确定现有模块所有权。Candidate 的 `module_id` 只能使用已声明模块；源码目录名与规格模块名不一致时，必须在 `Impact Analysis` 中写明映射依据，不得静默从 `runtime` 改为 `core`，也不得为适配目录临时新增模块。
+写入前必须读取 `spec_manifest.json`，确定现有模块所有权。Candidate 的 `module_id` 必须引用同一个 canonical `MODULE_CODE`，不能形成第二套模块身份。普通流程只能使用已声明模块；只有 `architecture_change_path` 或 `spec_migration_path` 可以提出新模块，并且必须同时提交该 `MODULE_CODE` 的 `module.json`、`requirements.md`、`design.md`、`trace.md` 四个候选文件。源码目录名与规格模块名不一致时，必须在 `Impact Analysis` 中写明映射依据，不得静默改名，也不得为适配目录临时新增模块。
 
 **完整设计输出格式要求**：
 

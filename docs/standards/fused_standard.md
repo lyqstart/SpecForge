@@ -299,7 +299,7 @@ OpenCode 扩展路径
   },
   "modules": [
     {
-      "name": "AUTH",
+      "module_code": "AUTH",
       "path": ".specforge/project/modules/AUTH",
       "module_file": ".specforge/project/modules/AUTH/module.json",
       "requirements": ".specforge/project/modules/AUTH/requirements.md",
@@ -1606,7 +1606,7 @@ new_capability_justification: <充分理由>
 
 Design Governance 必须写入当前 Workflow 已有的设计类产物，例如 `design.md`、`design_delta.md`、`refactor_analysis.md` 或 `refactor_plan.md`，不得仅为承载分析而发明新的产物类型。
 
-Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json` 与统一 Path Service，不能根据源码目录名临时发明模块。若用户问题指向 `src/runtime/**`，但项目规格只声明 `core` 为所属模块，应写入 `core` 并在 `Impact Analysis` 与 manifest 中说明映射依据；不得先声明 `runtime`，随后静默改写为 `core`。
+Candidate 的 `module_id` 是对 canonical `MODULE_CODE` 的引用，不是第二套模块身份；其值和目标路径必须来自现有 `spec_manifest.json` 与统一 Path Service，不能根据源码目录名临时发明模块。若用户问题指向 `src/runtime/**`，但项目规格只声明 `CORE` 为所属模块，应写入 `CORE` 并在 `Impact Analysis` 与 manifest 中说明映射依据；不得先声明 `RUNTIME`，随后静默改写为 `CORE`。只有 `architecture_change_path` 或 `spec_migration_path` 可以提出未登记的 `MODULE_CODE`，且必须同时提交 `module.json`、`requirements.md`、`design.md`、`trace.md` 四个候选文件，经 Gate、User Decision 和 Merge Runner 后才可登记。
 
 真实实现未知、根因未证实、治理归属冲突或证据不足时，Design Agent 必须输出 `capability_verdict: blocked` 和 escalation signal。Gate 必须返回 `blocked`，不得将不确定性降级为普通设计继续执行。
 

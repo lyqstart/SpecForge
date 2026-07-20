@@ -344,7 +344,7 @@ export type UserDecision = z.infer<typeof UserDecisionSchema>;
  * spec_manifest.json 中的单个模块描述。
  */
 export const SpecModuleEntrySchema = z.object({
-  name: z
+  module_code: z
     .string()
     .regex(/^[A-Z][A-Z0-9]{1,11}$/, "Module code must be MODULE_CODE"),
   path: z.string(),
@@ -361,7 +361,9 @@ export type SpecModuleEntry = z.infer<typeof SpecModuleEntrySchema>;
  */
 export const SpecManifestSchema = z.object({
   schema_version: z.literal("1.0"),
-  project_spec_version: z.string(),
+  project_spec_version: z
+    .string()
+    .regex(/^PSV-[0-9]{4,}$/, "Invalid Project Spec Version"),
   project_name: z.string(),
   project: z.object({
     extension_registry: z.string(),
@@ -372,7 +374,10 @@ export const SpecManifestSchema = z.object({
     decisions: z.string(),
     trace_matrix: z.string(),
   }),
-  default_module: z.string().optional(),
+  default_module: z
+    .string()
+    .regex(/^[A-Z][A-Z0-9]{1,11}$/, "Default module must be MODULE_CODE")
+    .optional(),
   modules: z.array(SpecModuleEntrySchema),
   last_merged_work_item: z.string().optional(),
   last_merged_at: z.string().datetime().optional(),

@@ -9,14 +9,14 @@ async function writeJson(filePath: string, value: unknown): Promise<void> {
   await writeFile(filePath, JSON.stringify(value, null, 2), 'utf8');
 }
 
-describe('v1.2 merge runner module registry hotfix', () => {
-  it('registers module in spec_manifest.modules when project module targets are merged', async () => {
+describe('Project Spec governed module admission', () => {
+  it('registers a complete canonical module bundle approved through architecture_change_path', async () => {
     const projectRoot = await mkdtemp(join(tmpdir(), 'sf-merge-module-registry-'));
     const workItemId = 'WI-0001';
     const workItemDir = join(projectRoot, '.specforge', 'work-items', workItemId);
 
     await mkdir(join(projectRoot, '.specforge', 'project'), { recursive: true });
-    await mkdir(join(workItemDir, 'candidates', 'project', 'modules', 'todos'), { recursive: true });
+    await mkdir(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS'), { recursive: true });
     await mkdir(join(workItemDir, 'candidates'), { recursive: true });
     await mkdir(join(workItemDir, 'gates'), { recursive: true });
 
@@ -26,39 +26,39 @@ describe('v1.2 merge runner module registry hotfix', () => {
       modules: [],
     });
 
-    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'todos', 'requirements.candidate.md'), '# Requirements\n', 'utf8');
-    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'todos', 'design.candidate.md'), '# Design\n', 'utf8');
-    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'todos', 'tasks.candidate.md'), '# Tasks\n', 'utf8');
-    await writeFile(join(workItemDir, 'candidates', 'trace_delta.md'), '# Trace\n', 'utf8');
+    await writeJson(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'module.candidate.json'), { module_code: 'TODOS', status: 'active' });
+    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'requirements.candidate.md'), '# Requirements\n', 'utf8');
+    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'design.candidate.md'), '# Design\n', 'utf8');
+    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'trace.candidate.md'), '# Trace\n', 'utf8');
 
     await writeJson(join(workItemDir, 'candidate_manifest.json'), {
       schema_version: '1.1',
       work_item_id: workItemId,
       workflow_type: 'feature_spec',
-      workflow_path: 'requirement_change_path',
+      workflow_path: 'architecture_change_path',
       entries: [
         {
+          type: 'module_definition',
+          candidate_path: 'candidates/project/modules/TODOS/module.candidate.json',
+          target_path: '.specforge/project/modules/TODOS/module.json',
+          operation: 'replace',
+        },
+        {
           type: 'requirements',
-          candidate_path: 'candidates/project/modules/todos/requirements.candidate.md',
-          target_path: '.specforge/project/modules/todos/requirements.md',
+          candidate_path: 'candidates/project/modules/TODOS/requirements.candidate.md',
+          target_path: '.specforge/project/modules/TODOS/requirements.md',
           operation: 'replace',
         },
         {
           type: 'design',
-          candidate_path: 'candidates/project/modules/todos/design.candidate.md',
-          target_path: '.specforge/project/modules/todos/design.md',
+          candidate_path: 'candidates/project/modules/TODOS/design.candidate.md',
+          target_path: '.specforge/project/modules/TODOS/design.md',
           operation: 'replace',
         },
         {
-          type: 'tasks',
-          candidate_path: 'candidates/project/modules/todos/tasks.candidate.md',
-          target_path: '.specforge/project/modules/todos/tasks.md',
-          operation: 'replace',
-        },
-        {
-          type: 'trace_delta',
-          candidate_path: 'candidates/trace_delta.md',
-          target_path: '.specforge/project/trace_matrix.md',
+          type: 'module_trace',
+          candidate_path: 'candidates/project/modules/TODOS/trace.candidate.md',
+          target_path: '.specforge/project/modules/TODOS/trace.md',
           operation: 'replace',
         },
       ],
@@ -66,16 +66,16 @@ describe('v1.2 merge runner module registry hotfix', () => {
 
     await writeJson(join(workItemDir, 'work_item.json'), {
       work_item_id: workItemId,
-      workflow_path: 'requirement_change_path',
+      workflow_path: 'architecture_change_path',
       status: 'approval_required',
     });
     await writeJson(join(workItemDir, 'trigger_result.json'), {
       work_item_id: workItemId,
-      workflow_path: 'requirement_change_path',
+      workflow_path: 'architecture_change_path',
     });
     await writeJson(join(workItemDir, 'user_decision.json'), {
       work_item_id: workItemId,
-      workflow_path: 'requirement_change_path',
+      workflow_path: 'architecture_change_path',
       decision_status: 'approved',
       decision_type: 'user_approved',
       decided_by: 'tls ofn',
@@ -100,17 +100,15 @@ describe('v1.2 merge runner module registry hotfix', () => {
 
     const specManifest = JSON.parse(await readFile(join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), 'utf8'));
     expect(specManifest.project_spec_version).toBe('PSV-0002');
-    expect(specManifest.last_merged_targets).toContain('.specforge/project/modules/todos/requirements.md');
+    expect(specManifest.last_merged_targets).toContain('.specforge/project/modules/TODOS/requirements.md');
     expect(specManifest.modules).toEqual([
       {
-        module_id: 'MOD-TODOS',
-        name: 'todos',
-        prefix: 'T',
-        requirements_file: 'project/modules/todos/requirements.md',
-        design_file: 'project/modules/todos/design.md',
-        trace_file: 'project/trace_matrix.md',
-        tasks_file: 'project/modules/todos/tasks.md',
-        status: 'active',
+        module_code: 'TODOS',
+        path: '.specforge/project/modules/TODOS',
+        module_file: '.specforge/project/modules/TODOS/module.json',
+        requirements: '.specforge/project/modules/TODOS/requirements.md',
+        design: '.specforge/project/modules/TODOS/design.md',
+        trace: '.specforge/project/modules/TODOS/trace.md',
       },
     ]);
   });

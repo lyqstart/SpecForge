@@ -11,9 +11,15 @@
  * 5. 默认不释放 code_permission。
  */
 
-import { readFile, readdir, stat, writeFile, mkdir } from 'node:fs/promises';
-import { join, extname, relative } from 'node:path';
+import { readFile, readdir, stat, writeFile, mkdir, copyFile, rename, rm } from 'node:fs/promises';
+import { join, extname, relative, resolve, isAbsolute } from 'node:path';
 import { existsSync } from 'node:fs';
+import { createHash, randomUUID } from 'node:crypto';
+import {
+  canonicalProjectSpecModuleEntry,
+  normalizeModuleCodeReference,
+  resolveSpecModuleIdentity,
+} from '@specforge/types';
 
 // ── Types ──
 
@@ -65,6 +71,296 @@ export interface MigrationPlan {
   canAutoMigrate: boolean;
   /** 需要用户确认的项 */
   requiresUserConfirmation: string[];
+}
+
+export interface ProjectSpecRepairInspection {
+  schema_version: '1.0';
+  work_item_id: string;
+  manifest_path: string;
+  manifest_sha256: string | null;
+  project_spec_version: string | null;
+  declared_modules: Array<{
+    index: number;
+    module_code: string | null;
+    legacy: boolean;
+    valid: boolean;
+    errors: string[];
+  }>;
+  module_directories: Array<{
+    path: string;
+    files: string[];
+  }>;
+  issues: string[];
+  inspected_at: string;
+}
+
+export interface ProjectSpecRepairModuleMapping {
+  module_code: string;
+  requirements_source: string;
+  design_source: string;
+  trace_source: string;
+  module_definition_source?: string;
+}
+
+export interface ProjectSpecRepairPreparation {
+  expected_manifest_sha256: string;
+  expected_project_spec_version: string;
+  evidence_paths: string[];
+  modules: ProjectSpecRepairModuleMapping[];
+}
+
+function sha256(content: Buffer | string): string {
+  return `sha256:${createHash('sha256').update(content).digest('hex')}`;
+}
+
+function toPosix(value: string): string {
+  return value.replace(/\\/g, '/');
+}
+
+function isSubPath(child: string, parent: string): boolean {
+  const relativePath = relative(resolve(parent), resolve(child));
+  return relativePath === '' || (!relativePath.startsWith('..') && !isAbsolute(relativePath));
+}
+
+async function listDirectFiles(directory: string): Promise<string[]> {
+  if (!existsSync(directory)) return [];
+  const entries = await readdir(directory, { withFileTypes: true });
+  return entries.filter(entry => entry.isFile()).map(entry => entry.name).sort();
+}
+
+export async function inspectProjectSpecRepair(
+  projectRoot: string,
+  workItemId: string
+): Promise<ProjectSpecRepairInspection> {
+  const manifestPath = join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
+  const modulesRoot = join(projectRoot, '.specforge', 'project', 'modules');
+  const issues: string[] = [];
+  let manifestSha256: string | null = null;
+  let projectSpecVersion: string | null = null;
+  const declaredModules: ProjectSpecRepairInspection['declared_modules'] = [];
+
+  if (!existsSync(manifestPath)) {
+    issues.push('PROJECT_SPEC_MANIFEST_MISSING');
+  } else {
+    try {
+      const raw = await readFile(manifestPath);
+      manifestSha256 = sha256(raw);
+      const manifest = JSON.parse(raw.toString('utf8')) as Record<string, unknown>;
+      projectSpecVersion = typeof manifest.project_spec_version === 'string'
+        ? manifest.project_spec_version
+        : null;
+      if (!projectSpecVersion || !/^PSV-[0-9]{4,}$/.test(projectSpecVersion)) {
+        issues.push('PROJECT_SPEC_VERSION_INVALID');
+      }
+      const modules = Array.isArray(manifest.modules) ? manifest.modules : [];
+      if (modules.length === 0) issues.push('MODULE_REGISTRY_EMPTY');
+      modules.forEach((entry, index) => {
+        const identity = resolveSpecModuleIdentity(entry);
+        declaredModules.push({
+          index,
+          module_code: identity.moduleCode ?? null,
+          legacy: identity.legacy,
+          valid: identity.valid,
+          errors: identity.errors,
+        });
+        if (!identity.valid) issues.push(`MODULE_REGISTRY_ENTRY_${index}_INVALID`);
+        if (identity.legacy) issues.push(`MODULE_REGISTRY_ENTRY_${index}_LEGACY`);
+      });
+    } catch (error) {
+      issues.push(`PROJECT_SPEC_MANIFEST_UNREADABLE: ${(error as Error).message}`);
+    }
+  }
+
+  const moduleDirectories: ProjectSpecRepairInspection['module_directories'] = [];
+  if (existsSync(modulesRoot)) {
+    const entries = await readdir(modulesRoot, { withFileTypes: true });
+    for (const entry of entries.filter(candidate => candidate.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+      moduleDirectories.push({
+        path: toPosix(relative(projectRoot, join(modulesRoot, entry.name))),
+        files: await listDirectFiles(join(modulesRoot, entry.name)),
+      });
+    }
+  }
+
+  return {
+    schema_version: '1.0',
+    work_item_id: workItemId,
+    manifest_path: toPosix(relative(projectRoot, manifestPath)),
+    manifest_sha256: manifestSha256,
+    project_spec_version: projectSpecVersion,
+    declared_modules: declaredModules,
+    module_directories: moduleDirectories,
+    issues: Array.from(new Set(issues)),
+    inspected_at: new Date().toISOString(),
+  };
+}
+
+export async function writeProjectSpecRepairInspection(
+  workItemDir: string,
+  inspection: ProjectSpecRepairInspection
+): Promise<string> {
+  const target = join(workItemDir, 'project_spec_repair_inspection.json');
+  await mkdir(workItemDir, { recursive: true });
+  await writeFile(target, `${JSON.stringify(inspection, null, 2)}\n`, 'utf8');
+  return target;
+}
+
+function resolveProjectSpecSource(projectRoot: string, value: string): string {
+  const normalized = toPosix(value).replace(/^\.\//, '');
+  if (!normalized.startsWith('.specforge/project/')) {
+    throw new Error(`Repair source must be under .specforge/project/**: ${value}`);
+  }
+  const absolute = resolve(projectRoot, normalized);
+  const projectSpecRoot = resolve(projectRoot, '.specforge', 'project');
+  if (!isSubPath(absolute, projectSpecRoot)) {
+    throw new Error(`Repair source escapes Project Spec: ${value}`);
+  }
+  if (!existsSync(absolute)) throw new Error(`Repair source does not exist: ${value}`);
+  return absolute;
+}
+
+export async function prepareProjectSpecRepairCandidates(input: {
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  preparation: ProjectSpecRepairPreparation;
+}): Promise<{ candidate_manifest_path: string; repair_plan_path: string; candidate_manifest_hash: string }> {
+  const workItemPath = join(input.workItemDir, 'work_item.json');
+  const workItem = JSON.parse(await readFile(workItemPath, 'utf8')) as Record<string, unknown>;
+  if (workItem.workflow_path !== 'spec_migration_path') {
+    throw new Error('PROJECT_SPEC_REPAIR_REQUIRES_SPEC_MIGRATION_PATH');
+  }
+  if (!Array.isArray(input.preparation.evidence_paths) || input.preparation.evidence_paths.length === 0) {
+    throw new Error('PROJECT_SPEC_REPAIR_REQUIRES_ARCHITECTURE_EVIDENCE');
+  }
+  for (const evidencePath of input.preparation.evidence_paths) {
+    resolveProjectSpecSource(input.projectRoot, evidencePath);
+  }
+
+  const manifestPath = join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json');
+  const manifestRaw = await readFile(manifestPath);
+  const currentManifestHash = sha256(manifestRaw);
+  const currentManifest = JSON.parse(manifestRaw.toString('utf8')) as Record<string, unknown>;
+  if (currentManifestHash !== input.preparation.expected_manifest_sha256) {
+    throw new Error('PROJECT_SPEC_REPAIR_MANIFEST_HASH_STALE');
+  }
+  if (currentManifest.project_spec_version !== input.preparation.expected_project_spec_version) {
+    throw new Error('PROJECT_SPEC_REPAIR_VERSION_STALE');
+  }
+  if (!/^PSV-[0-9]{4,}$/.test(input.preparation.expected_project_spec_version)) {
+    throw new Error('PROJECT_SPEC_REPAIR_VERSION_INVALID');
+  }
+  if (!Array.isArray(input.preparation.modules) || input.preparation.modules.length === 0) {
+    throw new Error('PROJECT_SPEC_REPAIR_MODULE_MAPPINGS_REQUIRED');
+  }
+
+  const candidateRoot = join(input.workItemDir, 'candidates');
+  const candidateManifestPath = join(input.workItemDir, 'candidate_manifest.json');
+  if (existsSync(candidateRoot) || existsSync(candidateManifestPath)) {
+    throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+  }
+
+  const temporaryRoot = join(input.workItemDir, `.repair-staging-${randomUUID()}`);
+  const stagedCandidates = join(temporaryRoot, 'candidates');
+  const manifestEntries: Array<Record<string, unknown>> = [];
+  const moduleCodes = new Set<string>();
+
+  try {
+    for (const mapping of input.preparation.modules) {
+      const moduleCode = normalizeModuleCodeReference(mapping.module_code);
+      if (!moduleCode || moduleCode !== mapping.module_code) {
+        throw new Error(`Repair module_code must already be canonical MODULE_CODE: ${mapping.module_code}`);
+      }
+      if (moduleCodes.has(moduleCode)) throw new Error(`Duplicate repair module mapping: ${moduleCode}`);
+      moduleCodes.add(moduleCode);
+
+      const targetDirectory = join(stagedCandidates, 'project', 'modules', moduleCode);
+      await mkdir(targetDirectory, { recursive: true });
+      const definitionTarget = join(targetDirectory, 'module.candidate.json');
+      if (mapping.module_definition_source) {
+        const source = resolveProjectSpecSource(input.projectRoot, mapping.module_definition_source);
+        const definition = JSON.parse(await readFile(source, 'utf8')) as unknown;
+        const identity = resolveSpecModuleIdentity(definition);
+        if (!identity.valid || identity.moduleCode !== moduleCode) {
+          throw new Error(`Module definition source does not match ${moduleCode}`);
+        }
+        await copyFile(source, definitionTarget);
+      } else {
+        await writeFile(
+          definitionTarget,
+          `${JSON.stringify({ module_code: moduleCode, status: 'active' }, null, 2)}\n`,
+          'utf8'
+        );
+      }
+
+      const sources = [
+        ['requirements', 'requirements.candidate.md', 'requirements.md', mapping.requirements_source],
+        ['design', 'design.candidate.md', 'design.md', mapping.design_source],
+        ['module_trace', 'trace.candidate.md', 'trace.md', mapping.trace_source],
+      ] as const;
+      for (const [, candidateFilename, , sourcePath] of sources) {
+        await copyFile(resolveProjectSpecSource(input.projectRoot, sourcePath), join(targetDirectory, candidateFilename));
+      }
+
+      manifestEntries.push({
+        type: 'module_definition',
+        module_id: moduleCode,
+        candidate_path: `candidates/project/modules/${moduleCode}/module.candidate.json`,
+        target_path: `.specforge/project/modules/${moduleCode}/module.json`,
+        operation: 'replace',
+      });
+      for (const [type, candidateFilename, targetFilename] of sources) {
+        manifestEntries.push({
+          type,
+          module_id: moduleCode,
+          candidate_path: `candidates/project/modules/${moduleCode}/${candidateFilename}`,
+          target_path: `.specforge/project/modules/${moduleCode}/${targetFilename}`,
+          operation: 'replace',
+        });
+      }
+    }
+
+    const candidateManifest = {
+      schema_version: '1.1',
+      work_item_id: input.workItemId,
+      workflow_path: 'spec_migration_path',
+      base_spec_version: input.preparation.expected_project_spec_version,
+      project_spec_precondition_sha256: currentManifestHash,
+      repair_evidence_paths: input.preparation.evidence_paths,
+      merge_required: true,
+      entries: manifestEntries,
+    };
+    const candidateManifestContent = `${JSON.stringify(candidateManifest, null, 2)}\n`;
+    const repairPlan = {
+      schema_version: '1.0',
+      work_item_id: input.workItemId,
+      action: 'project_spec_repair',
+      manifest_sha256_before: currentManifestHash,
+      project_spec_version_before: input.preparation.expected_project_spec_version,
+      modules: Array.from(moduleCodes),
+      evidence_paths: input.preparation.evidence_paths,
+      candidate_manifest_sha256: sha256(candidateManifestContent),
+      prepared_at: new Date().toISOString(),
+    };
+    const stagedManifest = join(temporaryRoot, 'candidate_manifest.json');
+    const stagedPlan = join(temporaryRoot, 'project_spec_repair_plan.json');
+    await writeFile(stagedManifest, candidateManifestContent, 'utf8');
+    await writeFile(stagedPlan, `${JSON.stringify(repairPlan, null, 2)}\n`, 'utf8');
+
+    await rename(stagedCandidates, candidateRoot);
+    await rename(stagedManifest, candidateManifestPath);
+    const repairPlanPath = join(input.workItemDir, 'project_spec_repair_plan.json');
+    await rename(stagedPlan, repairPlanPath);
+    await rm(temporaryRoot, { recursive: true, force: true });
+    return {
+      candidate_manifest_path: candidateManifestPath,
+      repair_plan_path: repairPlanPath,
+      candidate_manifest_hash: repairPlan.candidate_manifest_sha256,
+    };
+  } catch (error) {
+    await rm(temporaryRoot, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 // ── Classification ──

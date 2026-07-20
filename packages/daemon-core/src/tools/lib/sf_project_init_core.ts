@@ -113,15 +113,15 @@ const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
           decisions: '.specforge/project/decisions.md',
           trace_matrix: '.specforge/project/trace_matrix.md',
         },
-        default_module: 'core',
+        default_module: 'CORE',
         modules: [
           {
-            name: 'CORE',
-            path: 'project/modules/core',
-            module_file: 'project/modules/core/module.md',
-            requirements: 'project/modules/core/requirements.md',
-            design: 'project/modules/core/design.md',
-            trace: 'project/trace_matrix.md',
+            module_code: 'CORE',
+            path: '.specforge/project/modules/CORE',
+            module_file: '.specforge/project/modules/CORE/module.json',
+            requirements: '.specforge/project/modules/CORE/requirements.md',
+            design: '.specforge/project/modules/CORE/design.md',
+            trace: '.specforge/project/modules/CORE/trace.md',
           },
         ],
       },
@@ -148,6 +148,9 @@ const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
       2
     ) + '\n',
 
+  'project/modules/CORE/module.json': () =>
+    JSON.stringify({ module_code: 'CORE', status: 'active' }, null, 2) + '\n',
+
   '.gitignore': () => 'runtime/\nlogs/\nsessions/\narchive/\ncas/\n',
 };
 
@@ -162,6 +165,9 @@ const V1_1_PROJECT_USER_FILES = [
   'project/glossary.md',
   'project/decisions.md',
   'project/trace_matrix.md',
+  'project/modules/CORE/requirements.md',
+  'project/modules/CORE/design.md',
+  'project/modules/CORE/trace.md',
 ];
 
 function normalizeLayoutPath(value: string): string {
@@ -216,6 +222,16 @@ function buildManifest(): InitEntry[] {
   // Observability config is project-local and must be visibly present after sf_project_init.
   // If missing, OBS is off by design, so project initialization must deploy it.
   entries.push({ path: join(SPEC_DIR_NAME, 'config', 'observability.json'), type: 'system_file' });
+  entries.push({
+    path: join(SPEC_DIR_NAME, 'project', 'modules', 'CORE', 'module.json'),
+    type: 'system_file',
+  });
+  for (const filename of ['requirements.md', 'design.md', 'trace.md']) {
+    entries.push({
+      path: join(SPEC_DIR_NAME, 'project', 'modules', 'CORE', filename),
+      type: 'user_file',
+    });
+  }
 
   for (const [key, value] of Object.entries(LAYOUT as Record<string, unknown>)) {
     if (key === 'configFiles' || key === 'projectFiles' || key === 'workItemFiles') continue;

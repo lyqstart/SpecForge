@@ -249,7 +249,7 @@ describe('SpecManifestSchema（§2.3）', () => {
       },
       modules: [
         {
-          name: 'AUTH',
+          module_code: 'AUTH',
           path: '.specforge/project/modules/AUTH',
           module_file: '.specforge/project/modules/AUTH/module.json',
           requirements: '.specforge/project/modules/AUTH/requirements.md',
@@ -259,7 +259,7 @@ describe('SpecManifestSchema（§2.3）', () => {
       ],
     };
     const parsed = SpecManifestSchema.parse(manifest);
-    expect(parsed.modules[0].name).toBe('AUTH');
+    expect(parsed.modules[0].module_code).toBe('AUTH');
   });
 });
 

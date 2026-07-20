@@ -238,8 +238,10 @@ describe('Orchestrator governance execution closure', () => {
 
     const manifestPath = path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
     const initialManifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-    expect(initialManifest.default_module).toBe('core');
-    expect(initialManifest.modules).toContainEqual(expect.objectContaining({ name: 'CORE' }));
+    expect(initialManifest.default_module).toBe('CORE');
+    expect(initialManifest.modules).toContainEqual(
+      expect.objectContaining({ module_code: 'CORE' })
+    );
 
     const legacyManifest = {
       ...initialManifest,

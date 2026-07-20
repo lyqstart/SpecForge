@@ -13,12 +13,15 @@ function source(): string {
 }
 
 describe('当前项目规格模块路由契约', () => {
-  it('只把 Candidate 路由到 spec_manifest 已声明模块，不静默回退 core', () => {
+  it('使用共享 MODULE_CODE 解析，并且只允许架构变更显式建立新模块', () => {
     const text = source();
     expect(text).toContain('resolveDeclaredCandidateModuleId');
     expect(text).toContain('readModuleOwnership');
-    expect(text).toContain("readFrontMatterField(content, ['target_module_path'])");
-    expect(text).toContain("readFrontMatterField(content, ['module_id', 'module'])");
+    expect(text).toContain('resolveSpecModuleIdentity');
+    expect(text).toContain('normalizeModuleCodeReference');
+    expect(text).toContain('isGovernedModuleAdmission');
+    expect(text).toContain("workItem?.workflow_path === 'architecture_change_path'");
+    expect(text).toContain("workItem?.workflow_path === 'spec_migration_path'");
     expect(text).toContain('MODULE_OWNERSHIP_UNRESOLVED');
     expect(text).toContain('MODULE_OWNERSHIP_AMBIGUOUS');
     expect(text).toContain('MODULE_NOT_DECLARED');

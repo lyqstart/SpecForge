@@ -19,6 +19,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 
 import {
   inferManifestEntries,
@@ -36,6 +37,11 @@ import {
   workItemTriggerResult,
 } from '@specforge/types/directory-layout';
 import {
+  moduleCodeFromProjectSpecPath,
+  normalizeModuleCodeReference,
+  resolveSpecModuleIdentity,
+} from '@specforge/types';
+import {
   validateCandidateManifestJson,
   validateTriggerResultJson,
   validateWorkItemJson,
@@ -48,6 +54,20 @@ import {
   normalizeProjectSpecTargetPath,
   readDeclaredProjectSpecTargetPaths,
 } from './path-policy.js';
+
+function projectSpecRepairPlanPath(workItemDir: string): string {
+  return path.join(workItemDir, 'project_spec_repair_plan.json');
+}
+
+async function isProjectSpecRepairWorkItem(ctx: GateContext): Promise<boolean> {
+  if (ctx.workflowPath !== 'spec_migration_path') return false;
+  try {
+    await fs.access(projectSpecRepairPlanPath(ctx.workItemDir));
+    return true;
+  } catch {
+    return false;
+  }
+}
 // ---------------------------------------------------------------------------
 // §9.2 Gate ID 枚举
 // ---------------------------------------------------------------------------
@@ -283,6 +303,17 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
     return makeReport(ctx.workItemId, 'required_files_gate', 'hard_gate', true, checks, inputFiles);
   }
 
+  if (await isProjectSpecRepairWorkItem(ctx)) {
+    const repairPlan = projectSpecRepairPlanPath(ctx.workItemDir);
+    inputFiles.push(repairPlan);
+    checks.push({
+      check_id: 'project_spec_repair_plan_exists',
+      description: 'Project Spec repair plan exists for spec_migration_path',
+      passed: true,
+    });
+    return makeReport(ctx.workItemId, 'required_files_gate', 'hard_gate', true, checks, inputFiles);
+  }
+
   const requiredKinds: Array<'requirements' | 'design' | 'tasks' | 'trace_delta'> = [];
   if (ctx.workflowPath === 'task_change_path') {
     requiredKinds.push('tasks', 'trace_delta');
@@ -312,36 +343,34 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
 });
 
 function normalizeSpecModuleId(value: unknown): string {
-  if (typeof value !== 'string' && typeof value !== 'number') return '';
-  return String(value)
-    .trim()
-    .replace(/^MOD-/i, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]+/g, '-');
+  return normalizeModuleCodeReference(value) ?? '';
 }
 
-function declaredModuleIdFromManifestEntry(entry: unknown): string {
-  if (typeof entry === 'string' || typeof entry === 'number') {
-    return normalizeSpecModuleId(entry);
-  }
-  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return '';
-  const record = entry as Record<string, unknown>;
-  return normalizeSpecModuleId(
-    record['module_id'] ?? record['module'] ?? record['name'] ?? record['id']
-  );
-}
-
-async function readDeclaredSpecModules(projectRoot: string): Promise<string[]> {
+async function readDeclaredSpecModules(
+  projectRoot: string
+): Promise<{ moduleCodes: string[]; errors: string[] }> {
   try {
     const parsed: unknown = JSON.parse(
       await fs.readFile(projectSpecManifest(projectRoot), 'utf-8')
     );
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return [];
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { moduleCodes: [], errors: ['spec_manifest.json must be a JSON object'] };
+    }
     const modulesValue = (parsed as Record<string, unknown>)['modules'];
     const modules: unknown[] = Array.isArray(modulesValue) ? modulesValue : [];
-    return Array.from(new Set(modules.map(declaredModuleIdFromManifestEntry).filter(Boolean)));
-  } catch {
-    return [];
+    const resolutions = modules.map(entry => resolveSpecModuleIdentity(entry));
+    return {
+      moduleCodes: Array.from(
+        new Set(
+          resolutions
+            .filter(resolution => resolution.valid && resolution.moduleCode)
+            .map(resolution => resolution.moduleCode as string)
+        )
+      ),
+      errors: resolutions.flatMap(resolution => resolution.errors),
+    };
+  } catch (error) {
+    return { moduleCodes: [], errors: [(error as Error).message] };
   }
 }
 
@@ -355,7 +384,11 @@ function moduleIdFromManifestEntry(entry: any): string | null {
     /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\/(?:requirements|design)\.md$/i.exec(
       targetPath
     );
-  return match?.[1] ? normalizeSpecModuleId(match[1]) : null;
+  return (
+    moduleCodeFromProjectSpecPath(targetPath) ??
+    moduleCodeFromProjectSpecPath(candidatePath) ??
+    (match?.[1] ? normalizeSpecModuleId(match[1]) : null)
+  );
 }
 
 function isEvidenceOnlyCandidateManifest(manifest: Record<string, unknown>): boolean {
@@ -444,8 +477,21 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
     });
 
     if (entriesIsArray) {
-      const declaredModules = await readDeclaredSpecModules(ctx.projectRoot);
+      const moduleRegistry = await readDeclaredSpecModules(ctx.projectRoot);
+      const declaredModules = moduleRegistry.moduleCodes;
       const declaredTargetPaths = await readDeclaredProjectSpecTargetPaths(ctx.projectRoot);
+      const governedModuleAdmission =
+        manifest.workflow_path === 'architecture_change_path' ||
+        manifest.workflow_path === 'spec_migration_path';
+      const requiredNewModuleFiles = ['module.json', 'requirements.md', 'design.md', 'trace.md'];
+      const governedModuleFiles = new Map<string, Map<string, string>>();
+      checks.push({
+        check_id: 'module_registry_valid',
+        description: 'spec_manifest.json module identity fields are valid and non-conflicting',
+        passed: moduleRegistry.errors.length === 0,
+        severity: moduleRegistry.errors.length === 0 ? undefined : 'error',
+        details: moduleRegistry.errors.join('; '),
+      });
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i] ?? {};
         const candidatePath = normalizeSlash(entry.candidate_path ?? entry.path ?? '');
@@ -468,10 +514,26 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
         });
 
         const normalizedTargetPath = normalizeProjectSpecTargetPath(targetPath);
-        const targetDeclared = declaredTargetPaths.has(normalizedTargetPath);
+        const moduleId = moduleIdFromManifestEntry(entry);
+        const newModuleRoot = moduleId ? `.specforge/project/modules/${moduleId}/` : '';
+        const newModuleFilename = newModuleRoot && normalizedTargetPath.startsWith(newModuleRoot)
+          ? normalizedTargetPath.slice(newModuleRoot.length)
+          : '';
+        const governedModuleTarget = Boolean(
+          governedModuleAdmission &&
+            moduleId &&
+            !declaredTargetPaths.has(normalizedTargetPath) &&
+            requiredNewModuleFiles.includes(newModuleFilename)
+        );
+        if (governedModuleTarget && moduleId) {
+          const files = governedModuleFiles.get(moduleId) ?? new Map<string, string>();
+          files.set(newModuleFilename, candidatePath);
+          governedModuleFiles.set(moduleId, files);
+        }
+        const targetDeclared = declaredTargetPaths.has(normalizedTargetPath) || governedModuleTarget;
         checks.push({
           check_id: `entry_${i}_target_declared`,
-          description: `Entry ${i}: target_path is declared by spec_manifest.json`,
+          description: `Entry ${i}: target_path is declared or belongs to a governed new module`,
           passed: targetDeclared,
           severity: targetDeclared ? undefined : 'error',
           details:
@@ -496,12 +558,11 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
           severity: candidateExists ? undefined : 'error',
         });
 
-        const moduleId = moduleIdFromManifestEntry(entry);
         if (moduleId) {
-          const moduleDeclared = declaredModules.includes(moduleId);
+          const moduleDeclared = declaredModules.includes(moduleId) || governedModuleTarget;
           checks.push({
             check_id: `entry_${i}_module_declared`,
-            description: `Entry ${i}: module ${moduleId} is declared in spec_manifest.json`,
+            description: `Entry ${i}: module ${moduleId} is declared or introduced by a governed architecture/migration path`,
             passed: moduleDeclared,
             severity: moduleDeclared ? undefined : 'error',
             details:
@@ -510,6 +571,40 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
                 : 'spec_manifest.json declares no modules',
           });
         }
+      }
+
+      for (const [moduleCode, files] of governedModuleFiles) {
+        const missing = requiredNewModuleFiles.filter(filename => !files.has(filename));
+        checks.push({
+          check_id: `new_module_${moduleCode}_complete`,
+          description: `New module ${moduleCode} provides module.json, requirements.md, design.md and trace.md candidates`,
+          passed: missing.length === 0,
+          severity: missing.length === 0 ? undefined : 'error',
+          details: missing.length === 0 ? undefined : `Missing: ${missing.join(', ')}`,
+        });
+
+        const moduleDefinitionCandidate = files.get('module.json');
+        let definitionValid = false;
+        let definitionDetails = '';
+        if (moduleDefinitionCandidate && !moduleDefinitionCandidate.includes('..')) {
+          try {
+            const definition = JSON.parse(
+              await fs.readFile(path.join(ctx.workItemDir, moduleDefinitionCandidate), 'utf-8')
+            );
+            const identity = resolveSpecModuleIdentity(definition);
+            definitionValid = identity.valid && identity.moduleCode === moduleCode;
+            definitionDetails = identity.errors.join('; ');
+          } catch (error) {
+            definitionDetails = (error as Error).message;
+          }
+        }
+        checks.push({
+          check_id: `new_module_${moduleCode}_definition`,
+          description: `New module ${moduleCode} module.json declares the same canonical module_code`,
+          passed: definitionValid,
+          severity: definitionValid ? undefined : 'error',
+          details: definitionDetails,
+        });
       }
     }
   } catch {
@@ -917,6 +1012,49 @@ registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
  * §9.2 trace_gate — Trace 闭环检查（弱实现）
  */
 registerGate('trace_gate', 'soft_gate', true, async ctx => {
+  if (await isProjectSpecRepairWorkItem(ctx)) {
+    const manifestPath = workItemCandidateManifest(ctx.projectRoot, ctx.workItemId);
+    const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8')) as Record<string, unknown>;
+    const entries = Array.isArray(manifest.entries) ? manifest.entries : [];
+    const traceEntries = entries.filter(
+      (entry: any) =>
+        entry?.type === 'module_trace' &&
+        normalizeProjectSpecTargetPath(entry?.target_path).endsWith('/trace.md')
+    );
+    const checks: GateReportCheck[] = [
+      {
+        check_id: 'module_trace_candidates_exist',
+        description: 'Every repair module includes an explicit module trace Candidate',
+        passed: traceEntries.length > 0,
+        severity: traceEntries.length > 0 ? undefined : 'error',
+      },
+    ];
+    for (let index = 0; index < traceEntries.length; index++) {
+      const entry = traceEntries[index] as any;
+      let nonempty = false;
+      try {
+        const content = await fs.readFile(path.join(ctx.workItemDir, entry.candidate_path), 'utf8');
+        nonempty = content.trim().length > 0;
+      } catch {
+        nonempty = false;
+      }
+      checks.push({
+        check_id: `module_trace_${index}_nonempty`,
+        description: `Module trace Candidate is present and non-empty: ${String(entry.candidate_path)}`,
+        passed: nonempty,
+        severity: nonempty ? undefined : 'error',
+      });
+    }
+    return makeReport(
+      ctx.workItemId,
+      'trace_gate',
+      'soft_gate',
+      true,
+      checks,
+      traceEntries.map((entry: any) => path.join(ctx.workItemDir, entry.candidate_path))
+    );
+  }
+
   const artifacts = await resolveWorkItemSpecArtifacts({
     projectRoot: ctx.projectRoot,
     workItemId: ctx.workItemId,
@@ -1026,6 +1164,72 @@ function gateResultToReport(
   return report;
 }
 
+async function checkProjectSpecRepairGate(ctx: GateContext): Promise<GateResult> {
+  const blockingIssues: string[] = [];
+  const planPath = projectSpecRepairPlanPath(ctx.workItemDir);
+  const candidateManifestPath = workItemCandidateManifest(ctx.projectRoot, ctx.workItemId);
+  try {
+    const plan = JSON.parse(await fs.readFile(planPath, 'utf8')) as Record<string, unknown>;
+    const candidateManifestRaw = await fs.readFile(candidateManifestPath);
+    const candidateManifest = JSON.parse(candidateManifestRaw.toString('utf8')) as Record<
+      string,
+      unknown
+    >;
+    const candidateManifestHash = `sha256:${createHash('sha256')
+      .update(candidateManifestRaw)
+      .digest('hex')}`;
+
+    if (plan.action !== 'project_spec_repair') {
+      blockingIssues.push('project_spec_repair_plan.action must be project_spec_repair');
+    }
+    if (plan.candidate_manifest_sha256 !== candidateManifestHash) {
+      blockingIssues.push('project_spec_repair_plan candidate manifest hash is stale');
+    }
+    if (
+      plan.manifest_sha256_before !== candidateManifest.project_spec_precondition_sha256
+    ) {
+      blockingIssues.push('repair plan and candidate manifest disagree on the Project Spec precondition');
+    }
+
+    const currentManifestRaw = await fs.readFile(projectSpecManifest(ctx.projectRoot));
+    const currentManifestHash = `sha256:${createHash('sha256')
+      .update(currentManifestRaw)
+      .digest('hex')}`;
+    if (currentManifestHash !== plan.manifest_sha256_before) {
+      blockingIssues.push('Project Spec manifest changed after the repair plan was prepared');
+    }
+
+    const evidencePaths = Array.isArray(plan.evidence_paths) ? plan.evidence_paths : [];
+    if (evidencePaths.length === 0) {
+      blockingIssues.push('project_spec_repair_plan requires architecture evidence paths');
+    }
+    for (const evidencePath of evidencePaths) {
+      if (typeof evidencePath !== 'string' || !evidencePath.startsWith('.specforge/project/')) {
+        blockingIssues.push(`invalid Project Spec repair evidence path: ${String(evidencePath)}`);
+        continue;
+      }
+      try {
+        await fs.access(path.resolve(ctx.projectRoot, evidencePath));
+      } catch {
+        blockingIssues.push(`Project Spec repair evidence does not exist: ${evidencePath}`);
+      }
+    }
+  } catch (error) {
+    blockingIssues.push(`Project Spec repair artifacts are unreadable: ${(error as Error).message}`);
+  }
+
+  return {
+    status: blockingIssues.length > 0 ? 'fail' : 'pass',
+    blocking_issues: blockingIssues,
+    warnings: [],
+    next_action: blockingIssues.length > 0 ? 'revise' : 'continue',
+    details: {
+      repair_plan_path: planPath,
+      candidate_manifest_path: candidateManifestPath,
+    },
+  };
+}
+
 async function runWorkflowSpecificGate(ctx: GateContext): Promise<GateResult> {
   const phase = ctx.candidatePhase ?? 'full';
   const workflowType = ctx.workflowType ?? 'feature_spec';
@@ -1060,6 +1264,10 @@ async function runWorkflowSpecificGate(ctx: GateContext): Promise<GateResult> {
       next_action: 'continue',
       details: { workflow_specific_gate: 'not_applicable' },
     };
+  }
+
+  if (await isProjectSpecRepairWorkItem(ctx)) {
+    return checkProjectSpecRepairGate(ctx);
   }
 
   if (ctx.workflowPath === 'task_change_path') {

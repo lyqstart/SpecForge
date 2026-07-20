@@ -101,7 +101,7 @@ describe('Design Governance contract alignment', () => {
     const skill = read(skillPaths.designFirst);
 
     expect(standard).toContain(
-      'Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json`'
+      'Candidate 的 `module_id` 是对 canonical `MODULE_CODE` 的引用'
     );
     expect(agent).toContain('写入前必须读取 `spec_manifest.json`');
     expect(orchestrator).toContain('生成 Candidate 前必须读取 `spec_manifest.json`');

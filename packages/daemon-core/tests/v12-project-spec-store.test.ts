@@ -18,12 +18,13 @@ describe('v1.2 ProjectSpecStore', () => {
 
     const manifest = await store.initializeProjectSpec('WI-0001');
 
-    expect(manifest.schema_version).toBe('1.2');
+    expect(manifest.schema_version).toBe('1.0');
     expect(manifest.project_spec_version).toBe('PSV-0001');
-    expect(manifest.default_module).toBe('core');
-    expect(manifest.modules).toContainEqual(
-      expect.objectContaining({ module_id: 'MOD-CORE', name: 'core', status: 'active' })
-    );
+    expect(manifest.default_module).toBe('CORE');
+    expect(manifest.modules).toContainEqual(expect.objectContaining({ module_code: 'CORE' }));
+    expect(
+      await fs.readFile(path.join(root, '.specforge/project/modules/CORE/module.json'), 'utf8')
+    ).toContain('"module_code": "CORE"');
     expect(
       await fs.readFile(path.join(root, '.specforge/project/spec_manifest.json'), 'utf8')
     ).toContain('PSV-0001');

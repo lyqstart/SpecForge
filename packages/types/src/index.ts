@@ -98,6 +98,17 @@ export {
   extractWiFromTaskId,
 } from "./id-rules.js";
 
+// ---- Project Spec module identity ----
+export {
+  SPEC_MODULE_IDENTITY_FIELDS,
+  normalizeModuleCodeReference,
+  resolveSpecModuleIdentity,
+  moduleCodeFromProjectSpecPath,
+  canonicalProjectSpecModuleEntry,
+  type SpecModuleIdentityField,
+  type SpecModuleIdentityResolution,
+} from "./project-spec-module.js";
+
 // ---- Work Item 核心类型（§4-§13）----
 export {
   // §5 状态机

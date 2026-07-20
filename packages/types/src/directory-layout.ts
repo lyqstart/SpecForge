@@ -370,7 +370,7 @@ export function projectModulesRoot(projectRoot: string): string {
 
 /**
  * 单个模块根目录路径。
- * `<projectRoot>/.specforge/project/modules/<moduleName>/`
+ * `<projectRoot>/.specforge/project/modules/<MODULE_CODE>/`
  */
 export function moduleRoot(projectRoot: string, moduleName: string): string {
   return path.join(

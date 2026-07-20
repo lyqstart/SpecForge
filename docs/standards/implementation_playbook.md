@@ -70,7 +70,7 @@ The v1.1 standard defines a spec-driven workflow system with 23 main sections pl
 **Standard Ref**: §2.3, §4.4, §8.3, §9.4, §10.2, Patch1 §4
 
 **What to implement**:
-- `SpecManifestSchema`: `schema_version`, `project_spec_version`, `project_name`, `project` (with `extension_registry`), `modules[]`, `last_merged_work_item`, `last_merged_at`
+- `SpecManifestSchema`: `schema_version`, `project_spec_version`, `project_name`, `project` (with `extension_registry`), `modules[]`, `last_merged_work_item`, `last_merged_at`; every module uses canonical `module_code: MODULE_CODE`, while Candidate `module_id` is only a reference to that same code
 - `WorkItemJsonSchema`: `schema_version`, `work_item_id`, `status`, `workflow_path`, `code_change_allowed`, `allowed_write_files`, `created_at`, `updated_at`, `created_by`
 - `CandidateManifestSchema`: `schema_version`, `work_item_id`, `workflow_path`, `base_spec_version`, `merge_required`, `entries[]`, `manifest_hash`
 - `CandidateManifestEntry`: `candidate_path`, `target_path`, `operation`, `candidate_hash`, `target_base_hash`

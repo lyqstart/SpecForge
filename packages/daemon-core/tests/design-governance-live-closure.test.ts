@@ -224,7 +224,7 @@ describe('Design Governance live closure', () => {
 
     expect((result as any).success).toBe(true);
     expect((result as any).path.replace(/\\/g, '/')).toContain(
-      '.specforge/work-items/WI-0001/candidates/project/modules/core/design.candidate.md'
+      '.specforge/work-items/WI-0001/candidates/project/modules/CORE/design.candidate.md'
     );
     expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(true);
     expect(existsSync(workItemDesign(projectRoot, workItemId))).toBe(false);
@@ -260,7 +260,7 @@ describe('Design Governance live closure', () => {
     );
     expect(manifest.candidate_phase).toBe('design');
     expect(manifest.entries[0].candidate_path).toBe(
-      'candidates/project/modules/core/design.candidate.md'
+      'candidates/project/modules/CORE/design.candidate.md'
     );
     expect(manifest.entries[0].path).toBeUndefined();
     expect(manifest.entries[0].operation).toBe('replace');

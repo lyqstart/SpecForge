@@ -28,6 +28,11 @@ import {
   workItemCandidateTraceDelta,
   workItemRoot,
 } from '@specforge/types/directory-layout';
+import {
+  moduleCodeFromProjectSpecPath,
+  normalizeModuleCodeReference,
+  resolveSpecModuleIdentity,
+} from '@specforge/types';
 import { inferManifestEntries } from '../lib/governance-invariants-v11';
 
 const V11_WI_ARTIFACT_FILES = new Set([
@@ -71,15 +76,7 @@ const V11_FILETYPE_TO_FILENAME = new Map(
 );
 
 function normalizeModuleId(value: unknown): string {
-  const normalized = String(value ?? '')
-    .trim()
-    .replace(/\\/g, '/')
-    .replace(/^modules\//i, '')
-    .replace(/\/.*$/, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return normalized || 'core';
+  return moduleCodeFromProjectSpecPath(value) ?? normalizeModuleCodeReference(value) ?? '';
 }
 
 function readFrontMatterField(content: string, names: string[]): string | undefined {
@@ -104,33 +101,70 @@ function readFrontMatterField(content: string, names: string[]): string | undefi
   return undefined;
 }
 
-type ModuleOwnership = { declared: string[]; defaultModule: string | null };
+function readExplicitModuleReference(content: string): string | undefined {
+  try {
+    const parsed = JSON.parse(content) as unknown;
+    const identity = resolveSpecModuleIdentity(parsed);
+    if (identity.valid && identity.moduleCode) return identity.moduleCode;
+  } catch {
+    // Markdown Candidates use front matter instead of JSON.
+  }
+  return readFrontMatterField(content, ['target_module_path', 'module_id', 'module_code', 'module']);
+}
+
+type ModuleOwnership = { declared: string[]; defaultModule: string | null; errors: string[] };
 
 function readModuleOwnership(baseDir: string): ModuleOwnership {
   const manifest = readJsonIfExists(projectSpecManifest(baseDir));
   const modules = Array.isArray(manifest?.modules) ? manifest.modules : [];
-  const declared = modules
-    .map((entry: any) => {
-      if (typeof entry === 'string') return normalizeModuleId(entry);
-      const raw = entry?.module ?? entry?.name ?? entry?.module_id ?? entry?.id;
-      return raw ? normalizeModuleId(String(raw).replace(/^MOD-/i, '')) : '';
-    })
-    .filter(Boolean);
+  const resolutions = modules.map(entry => resolveSpecModuleIdentity(entry));
+  const declared = resolutions
+    .filter(resolution => resolution.valid && resolution.moduleCode)
+    .map(resolution => resolution.moduleCode as string);
+  const errors = resolutions.flatMap(resolution => resolution.errors);
   const defaultModuleRaw = manifest?.default_module ?? manifest?.defaultModule;
   const defaultModule = defaultModuleRaw ? normalizeModuleId(defaultModuleRaw) : null;
-  return { declared: Array.from(new Set(declared)), defaultModule };
+  if (defaultModuleRaw && !defaultModule) {
+    errors.push(`Invalid default_module: ${String(defaultModuleRaw)}`);
+  }
+  return { declared: Array.from(new Set(declared)), defaultModule, errors };
+}
+
+function isGovernedModuleAdmission(baseDir: string, workItemId: string): boolean {
+  const workItem = readJsonIfExists(path.join(workItemRoot(baseDir, workItemId), 'work_item.json'));
+  return (
+    workItem?.workflow_path === 'architecture_change_path' ||
+    workItem?.workflow_path === 'spec_migration_path'
+  );
 }
 
 function resolveDeclaredCandidateModuleId(
   content: string,
-  baseDir: string
+  baseDir: string,
+  workItemId: string
 ): {
   moduleId?: string;
   error?: string;
   declared: string[];
 } {
   const ownership = readModuleOwnership(baseDir);
+  if (ownership.errors.length > 0) {
+    return {
+      declared: ownership.declared,
+      error: `MODULE_REGISTRY_INVALID: ${ownership.errors.join('; ')}`,
+    };
+  }
+
+  const explicit = readExplicitModuleReference(content);
+  const requested = explicit
+    ? normalizeModuleId(explicit)
+    : (ownership.defaultModule ?? (ownership.declared.length === 1 ? ownership.declared[0] : ''));
+  const governedModuleAdmission = isGovernedModuleAdmission(baseDir, workItemId);
+
   if (ownership.declared.length === 0) {
+    if (governedModuleAdmission && explicit && requested) {
+      return { moduleId: requested, declared: [] };
+    }
     return {
       declared: [],
       error:
@@ -138,12 +172,6 @@ function resolveDeclaredCandidateModuleId(
         'Do not silently fall back to core. Initialize a new project with sf_project_init or establish module ownership through the governed Project Spec flow.',
     };
   }
-
-  const targetModulePath = readFrontMatterField(content, ['target_module_path']);
-  const explicit = targetModulePath ?? readFrontMatterField(content, ['module_id', 'module']);
-  const requested = explicit
-    ? normalizeModuleId(explicit)
-    : (ownership.defaultModule ?? (ownership.declared.length === 1 ? ownership.declared[0] : ''));
 
   if (!requested) {
     return {
@@ -153,6 +181,9 @@ function resolveDeclaredCandidateModuleId(
     };
   }
   if (!ownership.declared.includes(requested)) {
+    if (governedModuleAdmission && explicit) {
+      return { moduleId: requested, declared: ownership.declared };
+    }
     return {
       declared: ownership.declared,
       error: `MODULE_NOT_DECLARED: module "${requested}" is not declared in spec_manifest.json. Declared modules: ${ownership.declared.join(', ')}`,
@@ -184,7 +215,7 @@ function inferCandidateModuleIdFromEntry(entry: any, candidatePath?: string): st
     if (stagingMatch?.[1]) return normalizeModuleId(stagingMatch[1]);
   }
 
-  return 'core';
+  return 'CORE';
 }
 
 function toWorkItemRelativePath(baseDir: string, workItemId: string, absolutePath: string): string {
@@ -209,6 +240,24 @@ function projectModuleTargetPath(
   moduleId: string,
   kind: 'requirements' | 'design'
 ): string {
+  const manifest = readJsonIfExists(projectSpecManifest(baseDir));
+  const modules = Array.isArray(manifest?.modules) ? manifest.modules : [];
+  for (const entry of modules) {
+    const identity = resolveSpecModuleIdentity(entry);
+    if (!identity.valid || identity.moduleCode !== normalizeModuleId(moduleId)) continue;
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue;
+    const record = entry as Record<string, unknown>;
+    const configured =
+      kind === 'requirements'
+        ? (record.requirements ?? record.requirements_file)
+        : (record.design ?? record.design_file);
+    if (typeof configured === 'string' && configured.trim()) {
+      const normalized = configured.trim().replace(/\\/g, '/').replace(/^\.\//, '');
+      if (normalized.startsWith('.specforge/project/')) return normalized;
+      if (normalized.startsWith('project/')) return `.specforge/${normalized}`;
+    }
+  }
+
   const absolutePath =
     kind === 'requirements'
       ? moduleRequirements(baseDir, normalizeModuleId(moduleId))
@@ -261,12 +310,18 @@ function resolveTargetFilename(
   workItemId: string,
   candidateModuleId?: string
 ): string | null {
-  const moduleId = candidateModuleId ?? 'core';
+  const moduleId = candidateModuleId ?? 'CORE';
   if (fileType === 'requirements' || fileType === 'candidate_requirements') {
     return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'requirements');
   }
   if (fileType === 'design' || fileType === 'candidate_design') {
     return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'design');
+  }
+  if (fileType === 'candidate_module_definition') {
+    return `candidates/project/modules/${moduleId}/module.candidate.json`;
+  }
+  if (fileType === 'candidate_module_trace') {
+    return `candidates/project/modules/${moduleId}/trace.candidate.md`;
   }
   if (fileType === 'tasks' || fileType === 'candidate_tasks') {
     return toWorkItemRelativePath(baseDir, workItemId, workItemCandidateTasks(baseDir, workItemId));
@@ -421,6 +476,22 @@ function canonicalCandidatePathByType(
   const moduleId = inferCandidateModuleIdFromEntry(entry, normalizedPath);
 
   if (
+    candidateType === 'module_definition' ||
+    normalizedPath.endsWith('/module.candidate.json') ||
+    targetPath.endsWith('/module.json')
+  ) {
+    return `candidates/project/modules/${moduleId}/module.candidate.json`;
+  }
+
+  if (
+    candidateType === 'module_trace' ||
+    normalizedPath.endsWith('/trace.candidate.md') ||
+    targetPath.endsWith(`/modules/${moduleId}/trace.md`)
+  ) {
+    return `candidates/project/modules/${moduleId}/trace.candidate.md`;
+  }
+
+  if (
     candidateType === 'requirements' ||
     candidateType === 'requirement' ||
     normalizedPath === 'requirements.md' ||
@@ -473,9 +544,14 @@ function canonicalCandidatePathByType(
 
 function validateCandidateManifestModuleOwnership(
   parsed: Record<string, unknown>,
-  baseDir: string
+  baseDir: string,
+  workItemId: string
 ): void {
   const ownership = readModuleOwnership(baseDir);
+  if (ownership.errors.length > 0) {
+    throw new Error(`MODULE_REGISTRY_INVALID: ${ownership.errors.join('; ')}`);
+  }
+  const governedModuleAdmission = isGovernedModuleAdmission(baseDir, workItemId);
   const rawEntries = [
     ...(Array.isArray((parsed as any).entries) ? (parsed as any).entries : []),
     ...(Array.isArray((parsed as any).candidates) ? (parsed as any).candidates : []),
@@ -485,21 +561,23 @@ function validateCandidateManifestModuleOwnership(
     const candidatePath = normalizeCandidatePath(entry?.candidate_path ?? entry?.path);
     const targetPath = normalizeCandidatePath(entry?.target_path);
     const moduleMatch =
-      /(?:^|\/)candidates\/project\/modules\/([^/]+)\/(?:requirements|design)\.candidate\.md$/i.exec(
+      /(?:^|\/)candidates\/project\/modules\/([^/]+)\/(?:module\.candidate\.json|requirements\.candidate\.md|design\.candidate\.md|trace\.candidate\.md)$/i.exec(
         candidatePath
       ) ??
-      /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\/(?:requirements|design)\.md$/i.exec(
+      /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\/(?:module\.json|requirements\.md|design\.md|trace\.md)$/i.exec(
         targetPath
       );
     if (!moduleMatch?.[1]) continue;
 
     const moduleId = normalizeModuleId(moduleMatch[1]);
     if (ownership.declared.length === 0) {
+      if (governedModuleAdmission && moduleId) continue;
       throw new Error(
         'MODULE_OWNERSHIP_UNRESOLVED: candidate_manifest references a module-scoped Candidate, but spec_manifest.json declares no modules.'
       );
     }
     if (!ownership.declared.includes(moduleId)) {
+      if (governedModuleAdmission && moduleId) continue;
       throw new Error(
         `MODULE_NOT_DECLARED: candidate_manifest references module "${moduleId}", but declared modules are: ${ownership.declared.join(', ')}`
       );
@@ -526,17 +604,25 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
   const candidateType = String(
     normalizedEntry.type ?? normalizedEntry.spec_type ?? ''
   ).toLowerCase();
+  if (candidateType === 'module_definition') {
+    normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/module.json`;
+  }
   if (candidateType === 'requirements' || candidateType === 'requirement') {
     normalizedEntry.target_path = projectModuleTargetPath(baseDir, moduleId, 'requirements');
   }
   if (candidateType === 'design') {
     normalizedEntry.target_path = projectModuleTargetPath(baseDir, moduleId, 'design');
   }
+  if (candidateType === 'module_trace') {
+    normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/trace.md`;
+  }
   if (
     !normalizedEntry.module_id &&
     (candidateType === 'requirements' ||
       candidateType === 'requirement' ||
-      candidateType === 'design')
+      candidateType === 'design' ||
+      candidateType === 'module_definition' ||
+      candidateType === 'module_trace')
   ) {
     normalizedEntry.module_id = moduleId;
   }
@@ -599,7 +685,11 @@ function normalizeCoreJsonArtifact(
   }
 
   if (filename === 'candidate_manifest.json') {
-    validateCandidateManifestModuleOwnership(parsed as Record<string, unknown>, baseDir);
+    validateCandidateManifestModuleOwnership(
+      parsed as Record<string, unknown>,
+      baseDir,
+      workItemId
+    );
     const wiDir = workItemRoot(baseDir, workItemId);
     const canonicalParsed: Record<string, unknown> = {
       ...(parsed as Record<string, unknown>),
@@ -615,7 +705,7 @@ function normalizeCoreJsonArtifact(
         canonicalizeCandidateEntry(entry, baseDir, workItemId)
       );
     }
-    validateCandidateManifestModuleOwnership(canonicalParsed, baseDir);
+    validateCandidateManifestModuleOwnership(canonicalParsed, baseDir, workItemId);
 
     const normalizedWorkflowPath = canonicalParsed.workflow_path ?? workflowPath;
     const evidenceOnly = isEvidenceOnlyNoProjectSpecChange(canonicalParsed);
@@ -707,10 +797,12 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['candidate_requirements', 'sf-requirements'],
   ['design', 'sf-design'],
   ['candidate_design', 'sf-design'],
+  ['candidate_module_definition', 'sf-design'],
   ['tasks', 'sf-task-planner'],
   ['candidate_tasks', 'sf-task-planner'],
   ['trace_delta', 'sf-task-planner'],
   ['candidate_trace_delta', 'sf-task-planner'],
+  ['candidate_module_trace', 'sf-task-planner'],
   ['investigation_plan', 'sf-investigator'],
   ['findings_report', 'sf-investigator'],
 ]);
@@ -758,8 +850,10 @@ const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'evidence_manifest',
   'candidate_requirements',
   'candidate_design',
+  'candidate_module_definition',
   'candidate_tasks',
   'candidate_trace_delta',
+  'candidate_module_trace',
 ]);
 
 function rejectExecutorGovernanceArtifact(fileType: string, context: any): any | null {
@@ -816,9 +910,11 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
     fileType === 'requirements' ||
     fileType === 'candidate_requirements' ||
     fileType === 'design' ||
-    fileType === 'candidate_design'
+    fileType === 'candidate_design' ||
+    fileType === 'candidate_module_definition' ||
+    fileType === 'candidate_module_trace'
   ) {
-    const moduleResolution = resolveDeclaredCandidateModuleId(content, baseDir);
+    const moduleResolution = resolveDeclaredCandidateModuleId(content, baseDir, workItemId);
     if (!moduleResolution.moduleId) {
       return {
         success: false,
@@ -829,6 +925,27 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
       };
     }
     candidateModuleId = moduleResolution.moduleId;
+
+    if (fileType === 'candidate_module_definition') {
+      try {
+        const identity = resolveSpecModuleIdentity(JSON.parse(content));
+        if (!identity.valid || identity.moduleCode !== candidateModuleId) {
+          return {
+            success: false,
+            error: `MODULE_DEFINITION_INVALID: module.json Candidate must declare canonical module_code ${candidateModuleId}. ${identity.errors.join('; ')}`,
+            hard_stop: false,
+            retry_allowed: true,
+          };
+        }
+      } catch (error) {
+        return {
+          success: false,
+          error: `MODULE_DEFINITION_INVALID: ${(error as Error).message}`,
+          hard_stop: false,
+          retry_allowed: true,
+        };
+      }
+    }
   }
 
   const targetFilename = resolveTargetFilename(

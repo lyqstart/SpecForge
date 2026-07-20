@@ -377,6 +377,17 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         if (!fsSync.statSync(moduleDir).isDirectory()) continue;
         const reqCandidate = path.join(moduleDir, 'requirements.candidate.md');
         const designCandidate = path.join(moduleDir, 'design.candidate.md');
+        const moduleCandidate = path.join(moduleDir, 'module.candidate.json');
+        const traceCandidate = path.join(moduleDir, 'trace.candidate.md');
+        if (fsSync.existsSync(moduleCandidate))
+          normalized.push({
+            candidate_path: normalizeSlash(path.relative(workItemDir, moduleCandidate)),
+            target_path: `.specforge/project/modules/${moduleName}/module.json`,
+            operation: 'replace',
+            type: 'module_definition',
+            inferred: true,
+            normalized: true,
+          });
         if (fsSync.existsSync(reqCandidate))
           normalized.push({
             candidate_path: normalizeSlash(path.relative(workItemDir, reqCandidate)),
@@ -392,6 +403,15 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
             target_path: `.specforge/project/modules/${moduleName}/design.md`,
             operation: 'replace',
             type: 'design',
+            inferred: true,
+            normalized: true,
+          });
+        if (fsSync.existsSync(traceCandidate))
+          normalized.push({
+            candidate_path: normalizeSlash(path.relative(workItemDir, traceCandidate)),
+            target_path: `.specforge/project/modules/${moduleName}/trace.md`,
+            operation: 'replace',
+            type: 'module_trace',
             inferred: true,
             normalized: true,
           });

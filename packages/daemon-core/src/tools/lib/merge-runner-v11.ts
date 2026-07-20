@@ -20,6 +20,11 @@ import {
   normalizeProjectSpecTargetPath,
   readDeclaredProjectSpecTargetPaths,
 } from './path-policy.js';
+import {
+  canonicalProjectSpecModuleEntry,
+  moduleCodeFromProjectSpecPath,
+  resolveSpecModuleIdentity,
+} from '@specforge/types';
 
 export interface MergeInput {
   projectRoot: string;
@@ -132,68 +137,149 @@ function normalizeProjectTargetPathV12(value: unknown): string {
     .replace(/\\/g, '/')
     .replace(/^\.\//, '');
 }
-function inferModuleNameFromProjectTargetV12(value: unknown): string | null {
-  const normalized = normalizeProjectTargetPathV12(value);
-  const match =
-    /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\//.exec(normalized) ??
-    /(?:^|\/)project\/modules\/([^/]+)\//.exec(normalized);
-  const moduleName = match?.[1]?.trim();
-  if (!moduleName || moduleName === 'core') return null;
-  return moduleName;
+function inferModuleCodeFromProjectTarget(value: unknown): string | null {
+  return moduleCodeFromProjectSpecPath(normalizeProjectTargetPathV12(value));
 }
-function modulePrefixFromNameV12(moduleName: string): string {
-  const prefix = String(moduleName ?? '')
-    .replace(/[^a-zA-Z0-9]+/g, ' ')
-    .trim()
-    .split(/\s+/)
-    .map(part => part.slice(0, 1).toUpperCase())
-    .join('');
-  return prefix || 'MOD';
-}
-function moduleIdFromNameV12(moduleName: string): string {
-  const normalized = String(moduleName ?? '')
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  return 'MOD-' + (normalized || 'MODULE');
-}
-function hasRegisteredModuleV12(modules: any[], moduleName: string): boolean {
-  const expectedId = moduleIdFromNameV12(moduleName);
-  return modules.some(entry => {
-    if (typeof entry === 'string') return entry === moduleName;
-    return (
-      entry?.name === moduleName || entry?.module === moduleName || entry?.module_id === expectedId
-    );
-  });
-}
-function registerMergedProjectModulesV12(specManifest: any): void {
+function registerMergedProjectModules(specManifest: any): void {
   if (!specManifest || typeof specManifest !== 'object') return;
   const targets = Array.isArray(specManifest.last_merged_targets)
     ? specManifest.last_merged_targets
     : [];
-  const moduleNames = Array.from(
-    new Set(targets.map(inferModuleNameFromProjectTargetV12).filter(Boolean))
+  const moduleCodes = Array.from(
+    new Set(
+      targets
+        .map(target => {
+          const moduleCode = inferModuleCodeFromProjectTarget(target);
+          const normalizedTarget = normalizeProjectTargetPathV12(target);
+          return moduleCode &&
+            normalizedTarget.startsWith(`.specforge/project/modules/${moduleCode}/`)
+            ? moduleCode
+            : null;
+        })
+        .filter(Boolean)
+    )
   ) as string[];
-  if (moduleNames.length === 0) {
+  if (moduleCodes.length === 0) {
     specManifest.modules = Array.isArray(specManifest.modules) ? specManifest.modules : [];
     return;
   }
   const modules = Array.isArray(specManifest.modules) ? [...specManifest.modules] : [];
-  for (const moduleName of moduleNames) {
-    if (hasRegisteredModuleV12(modules, moduleName)) continue;
-    modules.push({
-      module_id: moduleIdFromNameV12(moduleName),
-      name: moduleName,
-      prefix: modulePrefixFromNameV12(moduleName),
-      requirements_file: 'project/modules/' + moduleName + '/requirements.md',
-      design_file: 'project/modules/' + moduleName + '/design.md',
-      trace_file: 'project/trace_matrix.md',
-      tasks_file: 'project/modules/' + moduleName + '/tasks.md',
-      status: 'active',
+  for (const moduleCode of moduleCodes) {
+    const existingIndex = modules.findIndex(entry => {
+      const resolution = resolveSpecModuleIdentity(entry);
+      return resolution.valid && resolution.moduleCode === moduleCode;
     });
+    const canonicalEntry = canonicalProjectSpecModuleEntry(moduleCode);
+    if (existingIndex >= 0) modules[existingIndex] = canonicalEntry;
+    else modules.push(canonicalEntry);
   }
   specManifest.modules = modules;
 }
+
+const NEW_MODULE_REQUIRED_FILES = ['module.json', 'requirements.md', 'design.md', 'trace.md'] as const;
+
+async function validateGovernedNewModuleTargets(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workflowPath: unknown;
+  entries: ManifestEntry[];
+  declaredTargetPaths: Set<string>;
+}): Promise<{ allowedTargets: Set<string>; errors: string[] }> {
+  const allowedTargets = new Set<string>();
+  const errors: string[] = [];
+  const specManifestPath = path.join(
+    input.projectRoot,
+    '.specforge',
+    'project',
+    'spec_manifest.json'
+  );
+  let modules: unknown[] = [];
+  try {
+    const specManifest = await readJsonFile(specManifestPath);
+    modules = Array.isArray(specManifest?.modules) ? specManifest.modules : [];
+  } catch (error: any) {
+    errors.push(`Cannot validate Project Spec module registry: ${error.message}`);
+  }
+
+  const resolutions = modules.map(entry => resolveSpecModuleIdentity(entry));
+  const registryErrors = resolutions.flatMap(resolution => resolution.errors);
+  if (registryErrors.length > 0) {
+    errors.push(`MODULE_REGISTRY_INVALID: ${registryErrors.join('; ')}`);
+  }
+  const entriesByGovernedModule = new Map<string, Map<string, ManifestEntry>>();
+  for (const entry of input.entries) {
+    const target = normalizeProjectSpecTargetPath(entry.target_path);
+    if (!target || input.declaredTargetPaths.has(target)) continue;
+    const moduleCode = moduleCodeFromProjectSpecPath(target);
+    if (!moduleCode) continue;
+
+    const canonicalRoot = `.specforge/project/modules/${moduleCode}/`;
+    if (!target.startsWith(canonicalRoot)) {
+      errors.push(
+        `New module target must use canonical MODULE_CODE directory ${canonicalRoot}: ${target}`
+      );
+      continue;
+    }
+    if (
+      input.workflowPath !== 'architecture_change_path' &&
+      input.workflowPath !== 'spec_migration_path'
+    ) {
+      errors.push(
+        `Only architecture_change_path or spec_migration_path may introduce module ${moduleCode}: ${target}`
+      );
+      continue;
+    }
+    if (entry.operation === 'delete') {
+      errors.push(`A new module cannot be introduced with delete operation: ${target}`);
+      continue;
+    }
+    const filename = target.slice(canonicalRoot.length);
+    if (!NEW_MODULE_REQUIRED_FILES.includes(filename as (typeof NEW_MODULE_REQUIRED_FILES)[number])) {
+      errors.push(`Unsupported new module target for ${moduleCode}: ${target}`);
+      continue;
+    }
+    const moduleEntries = entriesByGovernedModule.get(moduleCode) ?? new Map<string, ManifestEntry>();
+    moduleEntries.set(filename, entry);
+    entriesByGovernedModule.set(moduleCode, moduleEntries);
+  }
+
+  for (const [moduleCode, moduleEntries] of entriesByGovernedModule) {
+    const missing = NEW_MODULE_REQUIRED_FILES.filter(filename => !moduleEntries.has(filename));
+    if (missing.length > 0) {
+      errors.push(
+        `New module ${moduleCode} requires one approved candidate for each core file; missing: ${missing.join(', ')}`
+      );
+      continue;
+    }
+
+    const definitionEntry = moduleEntries.get('module.json') as ManifestEntry;
+    const definitionPath = path.resolve(input.workItemDir, definitionEntry.candidate_path);
+    if (!isSubPath(definitionPath, path.resolve(input.workItemDir))) {
+      errors.push(`New module ${moduleCode} module.json candidate is outside the Work Item`);
+      continue;
+    }
+    try {
+      const definition = await readJsonFile(definitionPath);
+      const identity = resolveSpecModuleIdentity(definition);
+      if (!identity.valid || identity.moduleCode !== moduleCode) {
+        errors.push(
+          `New module ${moduleCode} module.json must declare the same canonical module_code: ${identity.errors.join('; ') || String(identity.moduleCode)}`
+        );
+        continue;
+      }
+    } catch (error: any) {
+      errors.push(`Cannot validate new module ${moduleCode} module.json candidate: ${error.message}`);
+      continue;
+    }
+
+    for (const filename of NEW_MODULE_REQUIRED_FILES) {
+      allowedTargets.add(`.specforge/project/modules/${moduleCode}/${filename}`);
+    }
+  }
+
+  return { allowedTargets, errors };
+}
+
 export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   const result: MergeResult = {
     success: true,
@@ -292,19 +378,56 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     return failed;
   }
 
+  if (manifest.project_spec_precondition_sha256) {
+    const currentManifestPath = path.join(
+      input.projectRoot,
+      '.specforge',
+      'project',
+      'spec_manifest.json'
+    );
+    const currentManifestHash = await computeFileHash(currentManifestPath);
+    if (currentManifestHash !== manifest.project_spec_precondition_sha256) {
+      const failed: MergeResult = {
+        ...result,
+        success: false,
+        status: 'failed',
+        errors: [
+          'PROJECT_SPEC_PRECONDITION_STALE: spec_manifest.json changed after repair Candidates were prepared.',
+        ],
+      };
+      await generateMergeReport(input, failed);
+      return failed;
+    }
+  }
+
   const declaredTargetPaths = await readDeclaredProjectSpecTargetPaths(input.projectRoot);
+  const governedNewModules = await validateGovernedNewModuleTargets({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    workflowPath: manifest.workflow_path,
+    entries,
+    declaredTargetPaths,
+  });
   const undeclaredTargets = entries
     .map(entry => normalizeProjectSpecTargetPath(entry.target_path))
-    .filter(targetPath => !declaredTargetPaths.has(targetPath));
-  if (undeclaredTargets.length > 0) {
+    .filter(
+      targetPath =>
+        !declaredTargetPaths.has(targetPath) && !governedNewModules.allowedTargets.has(targetPath)
+    );
+  if (governedNewModules.errors.length > 0 || undeclaredTargets.length > 0) {
     const failed: MergeResult = {
       ...result,
       success: false,
       status: 'failed',
       errors: [
-        `candidate_manifest contains target_path values not declared by spec_manifest.json: ${Array.from(
-          new Set(undeclaredTargets)
-        ).join(', ')}`,
+        ...governedNewModules.errors,
+        ...(undeclaredTargets.length > 0
+          ? [
+              `candidate_manifest contains target_path values not declared by spec_manifest.json: ${Array.from(
+                new Set(undeclaredTargets)
+              ).join(', ')}`,
+            ]
+          : []),
       ],
     };
     await generateMergeReport(input, failed);
@@ -430,7 +553,11 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   );
   if (result.success && entries.length > 0) {
     try {
-      const versionNum = parseInt(result.project_spec_version.replace('PSV-', ''), 10) || 0;
+      const versionMatch = /^PSV-(\d+)$/.exec(result.project_spec_version);
+      if (!versionMatch) {
+        throw new Error(`Invalid current project_spec_version: ${result.project_spec_version}`);
+      }
+      const versionNum = Number.parseInt(versionMatch[1], 10);
       const newVersion = 'PSV-' + String(versionNum + 1).padStart(4, '0');
       result.project_spec_version = newVersion;
 
@@ -450,7 +577,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         .map(entry => entry.target_path);
 
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
-      registerMergedProjectModulesV12(specManifest);
+      registerMergedProjectModules(specManifest);
       await fs.writeFile(
         projectSpecManifestPath,
         JSON.stringify(specManifest, null, 2) + '\n',

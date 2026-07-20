@@ -7,10 +7,23 @@
 import { registerHandler } from '../ToolDispatcher';
 import {
   generateMigrationPlan,
+  inspectProjectSpecRepair,
+  prepareProjectSpecRepairCandidates,
+  type ProjectSpecRepairPreparation,
+  writeProjectSpecRepairInspection,
   writeMigrationPlan,
 } from '../lib/spec-migration-v11';
+import { readAuthoritativeState } from '../lib/state-coordinator-v11';
 
-registerHandler('sf_v11_spec_migration', async (args, context, _deps) => {
+function parseRepairPreparation(value: unknown): ProjectSpecRepairPreparation {
+  if (typeof value === 'string') return JSON.parse(value) as ProjectSpecRepairPreparation;
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as ProjectSpecRepairPreparation;
+  }
+  throw new Error('repair_preparation must be a JSON object or JSON string');
+}
+
+registerHandler('sf_v11_spec_migration', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   const action = (args['action'] as string) || 'plan';
@@ -20,13 +33,74 @@ registerHandler('sf_v11_spec_migration', async (args, context, _deps) => {
   }
 
   try {
+    const workItemDir = args['work_item_dir'] as string ||
+      `${projectRoot}/.specforge/work-items/${workItemId}`;
+
+    if (action === 'inspect_repair') {
+      const authoritativeState = await readAuthoritativeState({
+        deps,
+        projectRoot,
+        workItemId,
+      });
+      if (authoritativeState.current_state !== 'candidate_preparing') {
+        return {
+          success: false,
+          error: 'PROJECT_SPEC_REPAIR_REQUIRES_CANDIDATE_PREPARING',
+          current_state: authoritativeState.current_state,
+          state_source: authoritativeState.source,
+        };
+      }
+      const inspection = await inspectProjectSpecRepair(projectRoot, workItemId);
+      const inspectionPath = await writeProjectSpecRepairInspection(workItemDir, inspection);
+      return {
+        success: true,
+        work_item_id: workItemId,
+        action,
+        inspection_path: inspectionPath,
+        manifest_sha256: inspection.manifest_sha256,
+        project_spec_version: inspection.project_spec_version,
+        declared_modules: inspection.declared_modules,
+        module_directories: inspection.module_directories,
+        issues: inspection.issues,
+        requires_explicit_module_mapping: true,
+      };
+    }
+
+    if (action === 'prepare_repair') {
+      const authoritativeState = await readAuthoritativeState({
+        deps,
+        projectRoot,
+        workItemId,
+      });
+      if (authoritativeState.current_state !== 'candidate_preparing') {
+        return {
+          success: false,
+          error: 'PROJECT_SPEC_REPAIR_REQUIRES_CANDIDATE_PREPARING',
+          current_state: authoritativeState.current_state,
+          state_source: authoritativeState.source,
+        };
+      }
+      const preparation = parseRepairPreparation(args['repair_preparation']);
+      const prepared = await prepareProjectSpecRepairCandidates({
+        projectRoot,
+        workItemId,
+        workItemDir,
+        preparation,
+      });
+      return {
+        success: true,
+        work_item_id: workItemId,
+        action,
+        ...prepared,
+        next_legal_action: 'run required Gates; do not write Project Spec directly',
+      };
+    }
+
     if (action === 'plan') {
       // Step 1: Generate migration plan (inventory + conflicts + steps)
       const plan = await generateMigrationPlan(projectRoot, workItemId);
 
       // Step 2: Write plan to WI directory
-      const workItemDir = args['work_item_dir'] as string ||
-        `${projectRoot}/.specforge/work-items/${workItemId}`;
       const planPath = await writeMigrationPlan(workItemDir, plan);
 
       return {
@@ -60,7 +134,10 @@ registerHandler('sf_v11_spec_migration', async (args, context, _deps) => {
       };
     }
 
-    return { success: false, error: `Unknown action: ${action}. Use 'plan' or 'inventory'.` };
+    return {
+      success: false,
+      error: `Unknown action: ${action}. Use 'inventory', 'plan', 'inspect_repair', or 'prepare_repair'.`,
+    };
   } catch (err: any) {
     return { success: false, error: err.message };
   }

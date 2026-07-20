@@ -28,6 +28,8 @@ export default tool({
         "design",
         "candidate_requirements",
         "candidate_design",
+        "candidate_module_definition",
+        "candidate_module_trace",
         "candidate_tasks",
         "trace_delta",
         "candidate_manifest",

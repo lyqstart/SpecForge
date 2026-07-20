@@ -1,7 +1,9 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { canonicalProjectSpecModuleEntry } from '@specforge/types';
 
 export const PROJECT_SPEC_STORE_SCHEMA_VERSION = '1.2' as const;
+export const PROJECT_SPEC_MANIFEST_SCHEMA_VERSION = '1.0' as const;
 export const INITIAL_PROJECT_SPEC_VERSION = 'PSV-0001' as const;
 
 export type CandidateMergeMode = 'replace_file' | 'append_file' | 'replace_section';
@@ -24,27 +26,22 @@ export interface CandidateManifestV12 {
 }
 
 export interface ProjectSpecManifestV12 {
-  schema_version: typeof PROJECT_SPEC_STORE_SCHEMA_VERSION;
+  schema_version: typeof PROJECT_SPEC_MANIFEST_SCHEMA_VERSION;
   project_spec_version: string;
-  updated_by_work_item_id: string;
-  updated_at: string;
+  project_name: string;
   default_module: string;
-  modules: Array<{
-    module_id: string;
-    name: string;
-    requirements_file: string;
-    design_file: string;
-    trace_file: string;
-    status: 'active' | 'inactive';
-  }>;
-  files: {
+  modules: ReturnType<typeof canonicalProjectSpecModuleEntry>[];
+  project: {
+    extension_registry: string;
     requirements_index: string;
     design_index: string;
     architecture: string;
+    glossary: string;
+    decisions: string;
     trace_matrix: string;
-    extension_registry: string;
-    versions_log: string;
   };
+  last_merged_work_item?: string;
+  last_merged_at?: string;
 }
 
 export interface ProjectSpecVersionEventV12 {
@@ -171,14 +168,21 @@ export class ProjectSpecStore {
 
   async initializeProjectSpec(workItemId = 'SYSTEM'): Promise<ProjectSpecManifestV12> {
     await fs.mkdir(path.join(this.projectRoot(), 'versions'), { recursive: true });
-    await fs.mkdir(path.join(this.projectRoot(), 'modules', 'core'), { recursive: true });
+    await fs.mkdir(path.join(this.projectRoot(), 'modules', 'CORE'), { recursive: true });
 
     await this.writeFileIfMissing('requirements_index.md', '# Requirements Index\n');
     await this.writeFileIfMissing('design_index.md', '# Design Index\n');
     await this.writeFileIfMissing('architecture.md', '# Architecture\n');
+    await this.writeFileIfMissing('glossary.md', '# Glossary\n');
+    await this.writeFileIfMissing('decisions.md', '# Decisions\n');
     await this.writeFileIfMissing('trace_matrix.md', '# Trace Matrix\n');
-    await this.writeFileIfMissing('modules/core/requirements.md', '# Core Requirements\n');
-    await this.writeFileIfMissing('modules/core/design.md', '# Core Design\n');
+    await this.writeFileIfMissing(
+      'modules/CORE/module.json',
+      JSON.stringify({ module_code: 'CORE', status: 'active' }, null, 2) + '\n'
+    );
+    await this.writeFileIfMissing('modules/CORE/requirements.md', '# Core Requirements\n');
+    await this.writeFileIfMissing('modules/CORE/design.md', '# Core Design\n');
+    await this.writeFileIfMissing('modules/CORE/trace.md', '# Core Trace\n');
     await this.writeFileIfMissing(
       'extension_registry.json',
       JSON.stringify(
@@ -204,28 +208,19 @@ export class ProjectSpecStore {
     }
 
     const manifest: ProjectSpecManifestV12 = {
-      schema_version: PROJECT_SPEC_STORE_SCHEMA_VERSION,
+      schema_version: PROJECT_SPEC_MANIFEST_SCHEMA_VERSION,
       project_spec_version: INITIAL_PROJECT_SPEC_VERSION,
-      updated_by_work_item_id: workItemId,
-      updated_at: this.now().toISOString(),
-      default_module: 'core',
-      modules: [
-        {
-          module_id: 'MOD-CORE',
-          name: 'core',
-          requirements_file: '.specforge/project/modules/core/requirements.md',
-          design_file: '.specforge/project/modules/core/design.md',
-          trace_file: '.specforge/project/trace_matrix.md',
-          status: 'active',
-        },
-      ],
-      files: {
+      project_name: path.basename(this.root),
+      default_module: 'CORE',
+      modules: [canonicalProjectSpecModuleEntry('CORE')],
+      project: {
+        extension_registry: '.specforge/project/extension_registry.json',
         requirements_index: '.specforge/project/requirements_index.md',
         design_index: '.specforge/project/design_index.md',
         architecture: '.specforge/project/architecture.md',
+        glossary: '.specforge/project/glossary.md',
+        decisions: '.specforge/project/decisions.md',
         trace_matrix: '.specforge/project/trace_matrix.md',
-        extension_registry: '.specforge/project/extension_registry.json',
-        versions_log: '.specforge/project/versions/spec_versions.jsonl',
       },
     };
 
@@ -247,7 +242,7 @@ export class ProjectSpecStore {
     try {
       const raw = await fs.readFile(this.manifestPath(), 'utf8');
       const parsed = JSON.parse(raw) as ProjectSpecManifestV12;
-      if (parsed.schema_version !== PROJECT_SPEC_STORE_SCHEMA_VERSION) {
+      if (parsed.schema_version !== PROJECT_SPEC_MANIFEST_SCHEMA_VERSION) {
         throw new ProjectSpecStoreError(
           'Unsupported project spec manifest schema_version',
           'UNSUPPORTED_PROJECT_SPEC_MANIFEST_SCHEMA',
@@ -387,8 +382,8 @@ export class ProjectSpecStore {
     const updated: ProjectSpecManifestV12 = {
       ...previous,
       project_spec_version: next,
-      updated_by_work_item_id: manifest.work_item_id,
-      updated_at: this.now().toISOString(),
+      last_merged_work_item: manifest.work_item_id,
+      last_merged_at: this.now().toISOString(),
     };
 
     await this.writeJson(this.manifestPath(), updated);
