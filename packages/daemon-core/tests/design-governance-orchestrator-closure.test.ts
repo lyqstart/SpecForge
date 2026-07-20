@@ -120,9 +120,11 @@ describe('Orchestrator governance execution closure', () => {
     expect(contract).toContain('运行时权威产物，只能由各自工具生成');
     expect(contract).toContain('门禁失败后必须先判定根因');
     expect(contract).toContain('执行失败先基于同一证据进行一次有边界的修复');
-    expect(contract).toContain('硬停止是绝对停止点');
-    expect(contract).toContain('`sf_hard_stop_resolve` 是主编排代理独占工具');
-    expect(contract).toContain('只能逐字引用当前真实用户消息');
+    expect(contract).toContain('HardStop 是可恢复安全锁存');
+    expect(contract).toContain('只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`');
+    expect(contract).toContain(
+      '只有 `scope_expanded`、`user_authorized_retry`、`risk_accepted` 或安装新授权时才必须引用当前真实 `user_response_quote`'
+    );
     expect(contract).toContain('改用合法受控工具不等于原阻断是 `false_positive`');
 
     expect(contract).toContain('`user_approved` 必须来自用户对当前候选的明确决定');

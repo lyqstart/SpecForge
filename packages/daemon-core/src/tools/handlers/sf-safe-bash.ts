@@ -221,18 +221,31 @@ function commandMentionsSensitiveSpecForgeRuntimeSecret(command: string): boolea
 
 function commandHasReadOnlyShellProbe(command: string): boolean {
   const normalized = command.trim().toLowerCase();
-  return (
-    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|select-string|findstr)\b/.test(
+  const directRead =
+    /(?:^|[;&|]\s*)(get-content|gc|type|cat|dir|ls|gci|get-childitem|get-item|test-path|resolve-path|get-filehash|select-string|findstr)\b/.test(
       normalized
     ) ||
     /(?:^|[;&|]\s*)certutil\s+-hashfile\b/.test(normalized) ||
     /(?:^|[;&|]\s*)(sha256sum|shasum|fciv)\b/.test(normalized) ||
     /(?:^|[;&|]\s*)git\s+(status|diff|log|show|branch|remote|tag)\b/.test(normalized) ||
-    /(?:^|[;&|]\s*)echo\b/.test(normalized)
+    /(?:^|[;&|]\s*)echo\b/.test(normalized);
+
+  if (directRead) return true;
+
+  // Windows OpenCode commonly wraps a read-only probe inside
+  // `powershell -Command "..."`. Detect the nested cmdlet only after write
+  // targets and write-like commands have already been ruled out by the caller.
+  const powershellWrapper = /(?:^|\s)(?:powershell|pwsh)(?:\.exe)?\s+-(?:command|c)\b/.test(
+    normalized
+  );
+  if (!powershellWrapper) return false;
+
+  return /\b(get-content|gc|get-childitem|gci|get-item|test-path|resolve-path|get-filehash|select-string|measure-object|format-list|format-table)\b/.test(
+    normalized
   );
 }
 
-function classifyProtectedSpecForgePathBashAccess(command: string): ShellAccessKind {
+export function classifyProtectedSpecForgePathBashAccess(command: string): ShellAccessKind {
   if (commandMentionsSensitiveSpecForgeRuntimeSecret(command)) return 'unknown';
 
   const writeTargets = extractShellWriteTargets(command);
@@ -308,7 +321,19 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     const activeWiId = findSingleActiveWorkItemIdForGovernance(baseDir, args);
     const reason = 'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN';
     const hardStopRecord = activeWiId
-      ? setHardStop(baseDir, activeWiId, reason, 'sf_safe_bash')
+      ? setHardStop(baseDir, activeWiId, reason, 'sf_safe_bash', 'work_item', {
+          triggering_agent: callerRole ?? String(context?.agent ?? 'unknown'),
+          blocked_action: command.slice(0, 500),
+          blocked_target: '.specforge/**',
+          policy_code: reason,
+          blocked_step: String(args['blocked_step'] ?? 'protected_path_shell_access'),
+          last_successful_step: String(args['last_successful_step'] ?? ''),
+          resume_step: String(
+            args['resume_step'] ?? 'repeat evidence collection with a controlled read tool'
+          ),
+          retry_original_action: false,
+          safe_alternative_tool: 'read/glob/grep/sf_state_read',
+        })
       : null;
     if (activeWiId)
       appendGovernanceBlockedWrite(

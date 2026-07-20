@@ -27,10 +27,13 @@ registerHandler('sf_state_read', async (args, context, deps) => {
 
   const sm = await deps.projectManager.getProjectStateManager(projectPath);
 
+  // Derive the authority flag from whether an event log actually existed and
+  // was replayed — NOT from the mere capability to rebuild. `rebuildFromEventsFile()`
+  // returns `{ replayed, eventCount }`; `replayed` is false when no event log existed.
   let rebuilt_from_events = false;
   if (typeof sm.rebuildFromEventsFile === 'function') {
-    await sm.rebuildFromEventsFile();
-    rebuilt_from_events = true;
+    const rebuildResult = await sm.rebuildFromEventsFile();
+    rebuilt_from_events = rebuildResult?.replayed ?? false;
   }
 
   if (workItemId === 'all') {

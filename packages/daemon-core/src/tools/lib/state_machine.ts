@@ -144,7 +144,7 @@ export const FINAL_TRANSITIONS: ReadonlyMap<WorkflowState, readonly WorkflowStat
   ["merge_ready", ["merging", "blocked", "rejected", "superseded"]],
   ["merging", ["merged", "blocked", "rejected", "superseded"]],
   ["merged", ["post_merge_verified", "blocked", "rejected", "superseded"]],
-  ["post_merge_verified", ["implementation_ready", "blocked", "rejected", "superseded"]],
+  ["post_merge_verified", ["implementation_ready", "verification_running", "blocked", "rejected", "superseded"]],
   ["implementation_ready", ["implementation_running", "blocked", "rejected", "superseded"]],
   ["implementation_running", ["implementation_done", "blocked", "rejected", "superseded"]],
   ["implementation_done", ["verification_running", "blocked", "rejected", "superseded"]],

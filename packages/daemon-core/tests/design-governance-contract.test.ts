@@ -67,7 +67,7 @@ describe('Design Governance contract alignment', () => {
     expect(agent).toContain('不得看到问题就直接提出新增 Tool、Skill、Router、Agent、模块或治理层');
     expect(agent).toContain('design_delta.md');
     expect(agent).toContain('refactor_analysis.md');
-    expect(agent).toContain('findings_report.md');
+    expect(agent).toContain('不得在 Investigation Workflow 中代写、补写或覆盖调查产物');
     for (const heading of governanceHeadings) expect(agent).toContain(heading);
   });
 
@@ -121,13 +121,18 @@ describe('Design Governance contract alignment', () => {
       skillPaths.changeRequest,
       skillPaths.refactor,
       skillPaths.bugfixSpec,
-      skillPaths.investigation,
     ]) {
       const skill = read(skillPath);
       expect(skill, skillPath).toContain('analysis_scope: solution_design');
       expect(skill, skillPath).toContain('analysis_scope: system_governance');
       expect(skill, skillPath).toContain('sf-design');
     }
+
+    const investigation = read(skillPaths.investigation);
+    expect(investigation).toContain('workflow_type=investigation');
+    expect(investigation).toContain('workflow_path=requirement_change_path');
+    expect(investigation).toContain('sf-investigator');
+    expect(investigation).toContain('sf-design` 可以消费结论进行后续设计，但不得生成调查产物');
   });
 
   it('preserves workflow-specific escalation boundaries', () => {

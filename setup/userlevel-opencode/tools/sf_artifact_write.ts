@@ -1,5 +1,5 @@
-import { tool } from "@opencode-ai/plugin"
-import { daemon } from "./lib/thin-client"
+import { tool } from "@opencode-ai/plugin";
+import { daemon } from "./lib/thin-client";
 
 export default tool({
   description:
@@ -13,7 +13,7 @@ export default tool({
     },
     file_type: {
       description:
-        "文件类型。正式 WI 产物使用 canonical 类型，例如 trigger_result、tasks、candidate_manifest、merge_report、evidence_manifest；work_log 仅用于 Agent Run 过程日志。",
+        "文件类型。正式 WI 产物使用 canonical 类型，例如 trigger_result、tasks、candidate_manifest、merge_report、evidence_manifest；Investigation 专业产物使用 investigation_plan、findings_report；work_log 仅用于 Agent Run 过程日志。",
       type: "string",
       enum: [
         "work_item",
@@ -21,7 +21,14 @@ export default tool({
         "change_classification",
         "impact_analysis",
         "trigger_result",
-        "tasks", "requirements", "design", "candidate_requirements", "candidate_design", "candidate_tasks",
+        "investigation_plan",
+        "findings_report",
+        "tasks",
+        "requirements",
+        "design",
+        "candidate_requirements",
+        "candidate_design",
+        "candidate_tasks",
         "trace_delta",
         "candidate_manifest",
         "merge_report",
@@ -29,7 +36,10 @@ export default tool({
         "evidence_manifest",
         "work_log",
         "review_report",
-        "agent_run_result", "extension_request", "extension_candidate", "extension_delta",
+        "agent_run_result",
+        "extension_request",
+        "extension_candidate",
+        "extension_delta",
       ],
     },
     content: {
@@ -42,7 +52,8 @@ export default tool({
       type: "string",
     },
     template: {
-      description: "Legacy 模板类型；新 v1.1 required artifact 应直接传 canonical file_type + content",
+      description:
+        "Legacy 模板类型；新 v1.1 required artifact 应直接传 canonical file_type + content",
       type: "string",
       enum: ["verification_report"],
     },
@@ -52,8 +63,8 @@ export default tool({
     },
   },
   async execute(args, context) {
-    const result = await daemon.invokeTool("sf_artifact_write", args, context)
-    if (typeof result === "string") return result
-    return JSON.stringify(result, null, 2)
+    const result = await daemon.invokeTool("sf_artifact_write", args, context);
+    if (typeof result === "string") return result;
+    return JSON.stringify(result, null, 2);
   },
-})
+});

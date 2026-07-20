@@ -11,6 +11,20 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 
 export type HardStopScope = 'work_item' | 'project';
 
+export type HardStopRecoveryStatus = 'pending' | 'resolved';
+
+export interface HardStopMetadata {
+  triggering_agent?: string;
+  blocked_action?: string;
+  blocked_target?: string;
+  policy_code?: string;
+  last_successful_step?: string;
+  blocked_step?: string;
+  resume_step?: string;
+  retry_original_action?: boolean;
+  safe_alternative_tool?: string;
+}
+
 export interface HardStopRecord {
   schema_version?: string;
   hard_stop_id?: string;
@@ -23,6 +37,16 @@ export interface HardStopRecord {
   resolved?: boolean;
   resolved_at?: string;
   resolution_reason?: string;
+  recovery_status?: HardStopRecoveryStatus;
+  triggering_agent?: string;
+  blocked_action?: string;
+  blocked_target?: string;
+  policy_code?: string;
+  last_successful_step?: string;
+  blocked_step?: string;
+  resume_step?: string;
+  retry_original_action?: boolean;
+  safe_alternative_tool?: string;
 }
 
 export interface HardStopCheckResult {
@@ -88,7 +112,8 @@ export function setHardStop(
   workItemId: string,
   reason: string,
   sourceTool: string,
-  scope: HardStopScope = 'work_item'
+  scope: HardStopScope = 'work_item',
+  metadata: HardStopMetadata = {}
 ): HardStopRecord {
   if (scope !== 'project' && !isValidWorkItemId(workItemId)) {
     throw new Error(
@@ -106,6 +131,8 @@ export function setHardStop(
     source_tool: sourceTool,
     created_at: new Date().toISOString(),
     resolved: false,
+    recovery_status: 'pending',
+    ...metadata,
   };
 
   const hardStopPath =

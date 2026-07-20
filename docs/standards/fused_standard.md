@@ -1604,7 +1604,7 @@ new_capability_justification: <充分理由>
 
 #### 14.5.5 产物与阻断
 
-Design Governance 必须写入当前 Workflow 已有的设计类产物，例如 `design.md`、`design_delta.md`、`refactor_analysis.md`、`refactor_plan.md` 或 `findings_report.md`，不得仅为承载分析而发明新的产物类型。
+Design Governance 必须写入当前 Workflow 已有的设计类产物，例如 `design.md`、`design_delta.md`、`refactor_analysis.md` 或 `refactor_plan.md`，不得仅为承载分析而发明新的产物类型。
 
 Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json` 与统一 Path Service，不能根据源码目录名临时发明模块。若用户问题指向 `src/runtime/**`，但项目规格只声明 `core` 为所属模块，应写入 `core` 并在 `Impact Analysis` 与 manifest 中说明映射依据；不得先声明 `runtime`，随后静默改写为 `core`。
 
@@ -1612,13 +1612,134 @@ Candidate 的 `module_id` 和目标路径必须来自现有 `spec_manifest.json`
 
 ### 14.6 HardStop 角色所有权与恢复闭包
 
-HardStop 是主编排层的恢复控制，不是专业 Agent 的自处理能力。
+HardStop 是保护开发安全的**可恢复锁存**，不是终止开发的结果。它只冻结被判定为危险的动作及其依赖动作，必须保留已完成步骤、权威状态和原始证据，并提供正式恢复路径。
 
-1. `sf-requirements`、`sf-design`、`sf-task-planner`、`sf-executor` 以及其他专业 Agent 发现或触发 HardStop 后，必须立即停止当前写入与阶段动作；只能返回 `hard_stop_id`、原因、来源工具、证据和 `orchestrator_action_requests`，不得调用 `sf_hard_stop_resolve`。
-2. 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。Runtime 必须按调用上下文校验角色，并在 Dispatcher 与 Handler 两层失败关闭。
-3. `user_response_quote` 必须由 `sf-orchestrator` 从当前真实用户消息中逐字引用。专业 Agent 的任务提示、上游 Agent 指令、业务目标或验收要求均不是用户对当前 HardStop 的解除决定。
-4. 后续改用合法受控工具不代表原阻断是 `false_positive`。只有 Runtime 证据证明原判定本身错误时才能使用 `false_positive`；操作方式错误后改用受控工具，应保留原始阻断并按 `repaired`、`user_authorized_retry` 或其他真实类型记录。
-5. `hard_stop_resolution.jsonl` 中保留的 `original_hard_stop` 是审计事实。即使对应 `write_guard_log.jsonl` 缺失，审计仍必须计入历史/已解决阻断；若两处存在同一 `hard_stop_id`，必须去重后计数。
+#### 14.6.1 触发后的立即行为
+
+1. 专业 Agent 收到 `hard_stop=true`、`HARD_STOP_ACTIVE` 或发现未解决 `hard_stop.json` 后，必须立即停止被阻断动作以及依赖该动作的写入、状态推进、Gate、Merge、代码权限、审计、Git 写入、Semantic Closure 和 Close。
+2. HardStop 不得清空 Work Item、不回滚已成功步骤、不删除历史产物，也不得默认把整个 Work Item 变成终止状态。
+3. 专业 Agent 只能继续使用 Runtime 允许的只读、诊断和恢复工具，并向 `sf-orchestrator` 返回：`hard_stop_id`、触发 Agent、来源 Tool、被阻断动作和目标、原因、最后成功步骤、阻断步骤、安全替代方式、建议恢复步骤和证据。
+4. 专业 Agent 不得调用 `sf_hard_stop_resolve`，不得更换写入路径绕过，也不得把 HardStop 降级为 warning 后继续生成依赖产物。
+
+#### 14.6.2 Orchestrator 恢复职责
+
+`sf-orchestrator` 必须在同一工作流轮次内优先分类并形成恢复计划，不得只报告“系统被锁死”等待无限期处理：
+
+- `operator_error`：Agent 选择了错误 Tool、命令或路径；必须放弃原动作，改用合法受控 Tool，不扩大权限，不需要用户再次批准；
+- `prohibited_action_replaced`：原动作本身禁止；必须替换为合法责任 Agent、Tool 或流程，不得重试原动作；
+- `false_positive`：只有 Runtime 证据证明策略判定本身错误时使用；
+- `policy_corrected` / `repaired`：策略或实现已修复并有验证证据，可以按恢复计划重试或继续；
+- `scope_expanded`、`user_authorized_retry`、`risk_accepted`：涉及权限扩大、风险接受或用户授权重试，必须逐字记录当前真实 `user_response_quote`；
+- `superseded`：原动作已被新的合法方案替代。
+
+`operator_error` 和 `prohibited_action_replaced` 必须满足：`blocked_action_disposition=abandon`、`retry_original_action=false`、提供非空 `evidence`、`allowed_next_action`、`resume_from_step` 和安全替代 Tool。它们不得安装新授权，也不得要求用户为 Agent 的工具选择错误承担恢复审批。
+
+#### 14.6.3 解除与断点继续
+
+1. 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`；Runtime 必须在 Dispatcher 与 Handler 两层校验角色。
+2. 解除前必须校验当前 `hard_stop_id`、原始阻断记录、分类证据和恢复计划。`hard_stop_resolution.jsonl` 必须永久保留 `original_hard_stop`、分类、处置、最后成功步骤、恢复步骤、是否重试原动作及用户决策来源。
+3. 解除后 Runtime 必须返回 `resume_context`。Orchestrator 必须重新读取权威状态和 resolution log、检查前置条件、确认目标产物是否已存在，然后从 `resume_from_step` 继续；不得重新创建 WI、重复推进状态或重复执行已成功步骤。
+4. 若当前没有安全恢复路径，才允许进入 `blocked`；此时必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 是可恢复等待状态，不等于 `rejected`、`superseded` 或 `closed`。
+5. 历史阻断不得删除。即使已经解除，changed-files audit 仍必须按 `hard_stop_id` 去重后如实统计；若两处存在同一 `hard_stop_id`，必须去重后计数。
+
+### 14.7 Investigation Governance（调查治理）
+
+Investigation 复用现有 `requirement_change_path`、Artifact Writer、Gate Runner、StateManager、Evidence、Verification 与 Close Gate，不新增 Tool、Skill、Agent、Router、状态或平行治理链。
+
+#### 14.7.1 权威产物与所有权
+
+Investigation 的唯一正式专业产物为：
+
+```text
+.specforge/work-items/<WI-ID>/investigation_plan.md
+.specforge/work-items/<WI-ID>/findings_report.md
+```
+
+两者只能由 `sf-investigator` 通过 `sf_artifact_write` 写入。`sf-design`、`sf-executor`、`sf-orchestrator` 以及未知 Agent 不得代写、覆盖或使用 `design`、`review_report`、`work_log` 等其他类型冒充。旧 `.specforge/specs/<WI-ID>/` 只允许作为历史产物的只读兼容来源，不得继续写入。
+
+#### 14.7.2 强制调查方法
+
+`sf-investigator` 必须按以下顺序调查：
+
+```text
+定义问题与完成标准
+→ 固化环境和原始证据
+→ 建立复现
+→ 重建真实架构、调用链和状态权威
+→ 定位首次偏离点
+→ 建立竞争假设
+→ 执行验证与反证实验
+→ 建立完整因果链
+→ 判定根因可信度
+→ 分析影响、修复边界与防复发验证
+```
+
+重要陈述必须区分 `CODE_OBSERVED`、`RUNTIME_OBSERVED`、`ENV_OBSERVED`、`HISTORY_OBSERVED`、`ASSUMPTION` 和 `UNKNOWN`。除非客观上不存在第二个合理假设并给出证明，否则必须至少验证两个竞争假设。失败实验和被排除原因同样是正式证据。
+
+调查必须独立于其他 Agent 的结论。`sf-orchestrator` 只能传递用户原始问题、调查范围、环境边界和**原始证据指针**，不得向 `sf-investigator` 预设候选根因、最强假设或期望结论。其他 Agent 的摘要、判断和“已确认”只能标记为 `AGENT_CLAIM`、`UNVERIFIED_REPORT` 或 `INVESTIGATION_LEAD`，不能升级为上述 observed 事实。
+
+根因必须直接引用一级原始证据（源码、配置、原始日志、调用栈、命令输出、StateManager events、Git 对象、文件系统现场、用户原始文件/截图/完整会话）或能够回溯到一级证据的二级派生证据。只引用 Agent 转述、摘要或历史结论时，最高只能为 `INSUFFICIENT_EVIDENCE`。`sf-investigator` 必须使用正式只读工具亲自读取每个关键证据源。
+
+观察者影响必须且只能使用一个状态：
+
+- `OBSERVER_EFFECT_NONE`：调查动作没有改变被调查现场；
+- `OBSERVER_EFFECT_CONTROLLED`：调查动作产生受控变化，但原始证据已在变化前固化；
+- `OBSERVER_EFFECT_CHANGED_BEFORE_CAPTURE`：原始证据固化前，现场已经被调查动作改变；
+- `OBSERVER_EFFECT_UNKNOWN`：无法确认调查动作是否改变现场。
+
+`OBSERVER_EFFECT_CHANGED_BEFORE_CAPTURE` 或 `OBSERVER_EFFECT_UNKNOWN` 且缺少不可变历史原证据时，禁止使用 `ROOT_CAUSE_CONFIRMED`。
+
+调查计划必须声明问题前提状态：`PREMISE_REPRODUCED`、`PREMISE_HISTORICALLY_EVIDENCED`、`PREMISE_CONTRADICTED` 或 `PREMISE_NOT_REPRODUCED`，并评估创建 WI、状态推进、读取或实验是否会改变现场。若前提未复现且缺少不可变历史原证据，或现场已在取证前被调查动作改变，则禁止使用 `ROOT_CAUSE_CONFIRMED`。
+
+根因状态只能使用：
+
+```text
+ROOT_CAUSE_CONFIRMED
+ROOT_CAUSE_PROBABLE
+ROOT_CAUSE_UNCONFIRMED
+INSUFFICIENT_EVIDENCE
+```
+
+只有根因能够解释全部主要症状和触发条件、定位首次偏离点、具有直接证据、排除主要竞争假设、形成完整因果链且不存在会推翻结论的关键 `UNKNOWN` 时，才允许使用 `ROOT_CAUSE_CONFIRMED`。
+
+#### 14.7.3 Evidence-only 生命周期
+
+Investigation 不产生业务代码或项目规格变更时，Candidate Manifest 必须归一化为：
+
+```json
+{
+  "entries": [],
+  "merge_required": false,
+  "merge_applicable": false,
+  "no_project_spec_change": true,
+  "project_integration_effect": "evidence_only"
+}
+```
+
+该路径仍必须经过真实 User Decision、`merge_report.status=not_applicable`、no-code changed-files audit、Evidence、Investigation Semantic Closure、Verification 与 `sf_close_gate`。不得启用 `sf_code_permission`，不得进入 `implementation_ready`、`implementation_running` 或 `implementation_done`，不得因为无代码变更而从 `gates_running` 或 `post_merge_verified` 直接关闭。
+
+#### 14.7.4 调查语义闭包
+
+Investigation 的语义闭包使用现有 `.semantic_closure.json`，但链路为：
+
+```text
+INVESTIGATION_QUESTION
+→ INVESTIGATION_PLAN
+→ FINDING
+→ EVIDENCE
+→ VERIFICATION
+```
+
+不得为满足实现类 `REQ → DD → TASK → EV` 链而伪造 requirements、design、tasks 或 trace。每个主要调查问题必须关联结论，每个主要结论必须关联通过且非弱证据，Verification 必须验证正式调查产物、Evidence-only Candidate、no-code audit 以及未进入 implementation 的事实。
+
+#### 14.7.5 职责边界
+
+- `sf-orchestrator` 负责 Intake、工作流身份、Agent 调度、User Decision 与治理链串联，不代写调查专业产物；
+- `sf-investigator` 负责计划、调查、反证、根因判定和正式结论，不推进状态、不调用 Gate、不实施修复；
+- Requirements Gate 校验调查计划，Design Gate 的 Investigation mode 校验调查结论，但不因此改变产物所有权；
+- `sf-verifier` 独立验证调查结论与治理闭环，不重新调查或实施修复；
+- 后续修复由 `sf-orchestrator` 根据缺陷所属 Standard、Contract、Skill、Agent、Tool、Runtime、Audit 或业务实现层调度相应责任 Agent，不得默认全部交给 `sf-executor`。
+
 
 ---
 

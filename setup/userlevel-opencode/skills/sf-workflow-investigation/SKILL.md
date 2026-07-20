@@ -1,6 +1,6 @@
 ---
 name: sf-workflow-investigation
-description: Investigation 工作流的阶段执行协议，包含调查计划、研究执行、调查报告和用户接受确认流程，无开发/审查/验证阶段，知识提取使用 candidate 状态（v1.1 状态机）
+description: Investigation 工作流执行协议；由 sf-investigator 形成可证伪调查产物，经 evidence-only Candidate、真实用户决策、独立验证和 Close Gate 完成无代码治理闭环
 ---
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:START -->
@@ -69,295 +69,207 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 ### 8. Required behavior on uncertainty
 
 If a requested action conflicts with this contract, stop and report the conflict instead of using an old workflow, direct file edits, shell bypass, or hand-written governance JSON.
+
+### 9. 可恢复 HardStop 协议
+
+- HardStop 是 `recoverable safety latch`（可恢复安全锁存），不是终止工作流的结果。它只阻断危险动作及依赖写入/状态推进，不得丢弃已完成工作或永久停止开发。
+- 专业 Agent 收到 `hard_stop=true`、`HARD_STOP_ACTIVE` 或发现未解决 `hard_stop.json` 后，必须停止被阻断动作及其依赖动作，不得绕过，也不得调用 `sf_hard_stop_resolve`。
+- 专业 Agent 必须向 `sf-orchestrator` 返回 `hard_stop_id`、触发 Tool、被阻断动作/目标、原因、最后成功步骤、阻断步骤、安全替代 Tool 和 `resume_from_step`。
+- `sf-orchestrator` 必须在存在安全且不扩大权限的恢复路径时，于同一工作流轮次完成分类和恢复。`operator_error`、`prohibited_action_replaced` 必须放弃原动作，改走合法 Tool，不等待用户重复批准，也不得扩大授权。
+- `scope_expanded`、`user_authorized_retry`、`risk_accepted` 或安装任何新授权时，必须引用当前真实 `user_response_quote`；任务提示、业务目标、Agent 转述或历史泛化同意均不能代替用户决定。
+- 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+- 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
-# Investigation 工作流执行协议
+# Purpose
 
-## Governance Model Workflow Contract（依据 / 承接 / 验证 / 融合）
-
-本 workflow skill 只定义流程控制和阶段责任，不替代 Agent 角色职责，也不替代 daemon gate。所有阶段继续遵守上方 v1.1 Final Governance Contract；当本节与 daemon 返回冲突时，以 daemon 返回为准。
-
-每个 workflow 阶段推进前，orchestrator 必须用四问模型做轻量自检：
-
-1. **依据**：当前阶段输入是否有明确来源（用户原话、项目规格、代码观测、运行观测、环境观测或已批准决策）？不得把 unknown / assumption 当作事实继续推进。
-2. **承接**：当前阶段是否承接了上游的责任项和约束项？不要求覆盖上游所有说明文字，但必须处理 Must 需求、设计决策、系统边界、验证义务、关闭阻断项。
-3. **验证**：当前阶段是否产生或要求了能证明用户目标的证据？文件存在、文档非空、构建成功只能证明工程动作，不自动证明用户结果。
-4. **融合**：本 WI 对项目级真相源的影响是否清楚？必须明确属于规格变更、设计变更、证据追加、知识沉淀或无项目规格变更，并在 Candidate / merge / close 产物中保持一致。
-
-调度子 Agent 时，prompt 必须明确传入本阶段的四问重点：
+本 Skill 只编排现有 Investigation 治理能力，不创建新的 Tool、Agent、状态或旁路。权威身份必须保持：
 
 ```text
-basis_inputs: 本阶段依据来源
-upstream_to_cover: 必须承接的上游责任项/约束项
-required_evidence: 本阶段或后续阶段必须产生的证据
-project_integration_effect: 本 WI 对项目级真相源的预期影响
+workflow_type=investigation
+workflow_path=requirement_change_path
 ```
 
-如果某项无法确认，orchestrator 必须选择 `ask_user`、`investigate`、`mark_unknown` 或 `block`，不得靠合理猜测继续推进。
+显式 `workflow_type=investigation` 不得被 `requirement_change_path` 默认值覆盖成 `feature_spec`。
 
+# Professional Ownership
 
-## Investigation 的四问控制点
+正式调查产物只能由 `sf-investigator` 写入：
 
-Investigation 不进入 code_permission，不产生代码实现结论。它的结果是有证据边界的调查结论。
-
-- **依据**：investigation_plan 必须明确调查问题、范围、数据来源和方法。research 阶段必须记录每个发现的来源。
-- **承接**：findings_report 必须逐项回答 investigation_plan 的核心问题；范围外问题不得混入结论。
-- **验证**：报告质量取决于证据支撑、限制说明和建议可操作性；不得把未经验证的猜测写成结论。
-- **融合**：investigation 默认只沉淀 candidate knowledge；除非后续实践验证，不得直接成为 active 项目规则。
-
-
-## 工作流阶段总览
-
-<!-- AUTO-GENERATED:START:phase-table -->
-```
-created → intake_ready → impact_analyzing → impact_analyzed → workflow_selected → candidate_preparing → candidate_prepared → gates_running → approval_required
-```
-<!-- AUTO-GENERATED:END:phase-table -->
-
-<!-- AUTO-GENERATED:START:skill-matrix -->
-## Skill 绑定矩阵
-
-| 阶段 | 调度的子 Agent | 加载的 Skill | 产物 |
-|------|---------------|-------------|------|
-| created | sf-orchestrator | — | — |
-| intake_ready | — | — | intake.md |
-| impact_analyzing | sf-design | — | change_classification.md,impact_analysis.md |
-| impact_analyzed | — | — | trigger_result.json |
-| workflow_selected | — | — | Gate 判定（pass→candidate_preparing, fail→blocked） |
-| candidate_preparing | sf-design | — | tasks.md,trace_delta.md,candidate_manifest.json |
-| candidate_prepared | — | — | — |
-| gates_running | — | — | Gate 判定（pass→approval_required, fail→gates_failed） |
-| approval_required | — | — | — |
-<!-- AUTO-GENERATED:END:skill-matrix -->
-
-## 各阶段执行协议
-
-### 阶段 1：intake（调查任务信息收集）
-
-**目标：** 收集调查任务描述，生成 intake.md
-
-**执行步骤：**
-1. 调用 `sf_state_transition`（from_state=""，to_state="created"，workflow_type="investigation"）创建新 Work Item
-2. 与用户对话，收集调查任务信息：
-   - 调查的问题或疑问
-   - 调查的背景和动机
-   - 期望的调查深度和产出形式
-   - 时间约束
-3. 调用 `sf_artifact_write`（file_type="intake"）写入 intake.md
-4. 调用 `sf_state_transition`（from_state="created"，to_state="intake_ready"，evidence="intake.md generated"）
-
-**产物：** `intake.md`
-
-### 阶段 2：investigation_plan（调查计划制定）
-
-**目标：** 生成结构化的调查计划 investigation_plan.md
-
-**产物模板（Gate 将检查以下必需 sections）：**
-```markdown
-## 调查目标
-<!-- 明确描述本次调查要回答的核心问题 -->
-<!-- 示例：
-- 评估 X 技术方案的可行性和适用性
-- 分析 Y 性能问题的根本原因
-- 比较 A、B、C 三种方案的优劣
--->
-
-## 调查范围
-<!-- 定义调查的边界：包含什么，不包含什么 -->
-<!-- 示例：
-- 包含：技术可行性、性能基准、社区活跃度
-- 不包含：具体实现细节、迁移成本估算
--->
-
-## 调查方法
-<!-- 描述将采用的调查方法和数据来源 -->
-<!-- 示例：
-- 阅读官方文档和技术博客
-- 运行基准测试
-- 分析 GitHub 仓库活跃度
-- 参考同类项目的实践经验
--->
-
-## 预期产出格式
-<!-- 描述调查报告的预期格式和内容结构 -->
-<!-- 示例：
-- 技术对比矩阵
-- 性能测试数据
-- 推荐方案及理由
-- 风险和限制说明
--->
+```text
+.specforge/work-items/<WI-ID>/investigation_plan.md
+.specforge/work-items/<WI-ID>/findings_report.md
 ```
 
-**执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `intake_ready`
-2. 调用 `sf_state_transition`（from_state="intake_ready"，to_state="candidate_preparing"，evidence="starting investigation_plan phase"）
-3. 调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文（可选，调用失败时继续）
-4. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
-   - work_item_id 和 spec_directory 路径
-   - intake.md 的内容
-   - `analysis_scope: solution_design`；调查计划阶段只定义如何取得事实，不提前把未证实问题判定为架构缺陷或治理缺陷
-   - 指令：制定调查计划，必须包含：调查目标（明确的核心问题）、调查范围（包含/不包含）、调查方法（数据来源和方法论）、预期产出格式
-5. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/investigation_plan.md` 已生成
-6. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="investigation_plan.md generated"）
+`sf-orchestrator` 负责调度和状态链；`sf-design` 可以消费结论进行后续设计，但不得生成调查产物；`sf-executor` 不参与调查且不得写治理产物。
 
-**产物：** `investigation_plan.md`
+# Workflow
 
-### 阶段 3：investigation_plan_gate（调查计划质量门禁）
+## 1. Intake 与工作流选择
 
-**执行步骤：**
-1. 调用 `sf_gate_run`（work_item_id, gate_type="requirements", mode="investigation"）
-   - Gate 检查文件：`investigation_plan.md`
-   - 必需 sections：调查目标、调查范围、调查方法、预期产出格式
-   - pass 条件：所有 section 非空（轻量级检查）
-2. 根据 Gate 结果：
-   - **pass** → **不同步 KG**（investigation 工作流不建立 KG 追溯链）→ 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="investigation_plan_gate passed, entering research"）
-   - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="investigation_plan_gate failed, re-entering investigation_plan"），重新调度 sf-design 修订
-   - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
+在创建或推进 Investigation Work Item 前，`sf-orchestrator` 必须判断 WI 创建、状态推进、状态读取或实验是否会改变被调查现场。若会改变，必须先保存用户原始描述、原始文件/截图/完整日志、文件系统状态、版本和时间线等一级原始证据指针，或在全新隔离环境建立前后对照。不得先改变现场，再把改变后的状态当作原始事实。
 
-**工具：** `sf_gate_run`（统一 Gate Runner）
+`sf-orchestrator` 建立 Intake、影响分类和 `trigger_result.json`，明确：
 
-### 阶段 4：research（调查研究执行）
-
-**目标：** 按 investigation_plan.md 执行调查，收集数据和证据
-
-**执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（research phase）
-2. 调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文（可选）
-3. **使用 `task` 工具调度子 Agent `sf-executor`**，在 prompt 中包含：
-   - work_item_id 和 spec_directory 路径
-   - investigation_plan.md 的内容（调查目标、调查方法、预期产出格式）
-   - 指令：
-     - 按调查计划执行调查，收集数据和证据
-     - 记录每个发现的来源和依据
-     - 如果发现调查范围需要调整，记录原因
-     - 将调查中间产物保存到 spec 目录
-     - 返回调查数据摘要（不需要最终报告，只需原始数据）
-4. 等待子 Agent 完成，获取调查数据摘要
-5. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="candidate_preparing"，evidence="research completed, entering findings_report"）
-
-**产物：** 调查数据/中间产物（保存在 spec 目录）
-
-### 阶段 5：findings_report（调查报告生成）
-
-**目标：** 基于调查数据生成结构化的调查报告 findings_report.md
-
-**产物模板（Gate 将检查以下必需 sections）：**
-```markdown
-## 调查结论
-<!-- 直接回答 investigation_plan.md 中定义的调查目标 -->
-<!-- 每个核心问题必须有明确的结论 -->
-
-## 数据和证据
-<!-- 支撑结论的数据、测试结果、引用来源 -->
-<!-- 每条结论必须有对应的证据支撑 -->
-
-## 建议
-<!-- 基于调查结论的可操作建议 -->
-<!-- 建议必须具体可执行，避免模糊表述 -->
-
-## 限制
-<!-- 调查的局限性、未覆盖的范围、结论的适用条件 -->
-<!-- 诚实说明调查的边界和不确定性 -->
+```text
+workflow_type=investigation
+workflow_path=requirement_change_path
+project_integration_effect=evidence_only
+no_project_spec_change=true
 ```
 
-**执行步骤：**
-1. 调用 `sf_state_read` 确认当前状态为 `candidate_preparing`（findings_report phase）
-2. 基于 investigation_plan.md 和调查证据确定报告分析范围：
-   - 已由证据确认架构缺陷、治理缺陷、状态权威、权限、Runtime 或跨模块系统问题时，设置 `analysis_scope: system_governance`；
-   - 其余事实调查、方案比较或局部问题结论使用 `analysis_scope: solution_design`；
-   - 证据不足以确认治理缺陷时必须在“限制”中保留 unknown，不得升级为确定结论。
-3. **使用 `task` 工具调度子 Agent `sf-design`**，在 prompt 中包含：
-   - work_item_id 和 spec_directory 路径
-   - investigation_plan.md 的内容（调查目标、预期产出格式）
-   - 调查数据、证据来源和限制（来自 research 阶段）
-   - 已确定的 `analysis_scope` 和触发依据
-   - 指令：基于调查数据生成结构化报告，必须包含：调查结论（直接回答核心问题）、数据和证据（每条结论有证据支撑）、建议（具体可操作）、限制（诚实说明边界）；当范围为 `system_governance` 时，同时按 `sf-design` 契约写入 `capability_verdict` 和七个固定章节，并建议进入现有 change-request、refactor 或 bugfix-spec，不得在 investigation 中直接实施
-4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/findings_report.md` 已生成
-5. 调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="findings_report.md generated"）
+随后通过现有状态工具推进到 `candidate_preparing`。不得把 Investigation 路由为 `spec_migration_path` 或 `code_only_fast_path`。
 
-**产物：** `findings_report.md`
+## 2. 调查计划
 
-### 阶段 6：findings_report_gate（调查报告质量门禁 + 用户接受确认）
+调度 `sf-investigator` 时只传递：用户原始问题、调查范围、环境/时间边界、禁止事项和一级原始证据指针。不得传递 Orchestrator 或其他 Agent 预设的候选根因、最强假设或期望结论。其他 Agent 输出必须标记为 `AGENT_CLAIM`、`UNVERIFIED_REPORT` 或 `INVESTIGATION_LEAD`，由 Investigator 独立读取原始证据后验证。
 
-**目标：** 验证报告质量，并获得用户明确接受
+调度 `sf-investigator`：
 
-**执行步骤：**
-1. 调用 `sf_gate_run`（work_item_id, gate_type="design", mode="investigation"）
-   - Gate 检查文件：`findings_report.md`
-   - 必需 sections：调查结论、数据和证据、建议、限制
-   - pass 条件：结论有证据支撑，建议可操作；声明 `system_governance` 时额外通过 Design Governance 校验
-2. 根据 Gate 结果：
-   - **fail** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="findings_report_gate failed, re-entering findings_report"），重新调度 sf-design 修订
-   - **blocked** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="blocked"）
-   - **pass** → 进入用户接受确认流程（见下方）
+1. 固化版本、环境、日志和状态等原始证据；
+2. 声明 `PREMISE_REPRODUCED`、`PREMISE_HISTORICALLY_EVIDENCED`、`PREMISE_CONTRADICTED` 或 `PREMISE_NOT_REPRODUCED`；
+3. 评估观察者动作是否已经改变现场；
+4. 重建真实架构、调用链、状态权威和产物所有权；
+5. 独立建立至少两个合理竞争假设及验证/反证方法；
+6. 写入 `investigation_plan.md`。
 
-**用户接受确认流程（Gate pass 后）：**
+随后调用：
 
-1. 向用户展示报告摘要：
-   ```
-   📋 调查报告摘要
-   ━━━━━━━━━━━━━━━━━━━━
-   调查目标：<来自 investigation_plan.md>
-   核心结论：<来自 findings_report.md 的调查结论 section>
-   主要建议：<来自 findings_report.md 的建议 section>
-   ━━━━━━━━━━━━━━━━━━━━
-   请确认是否接受此调查报告？
-   ```
-2. **调用 `sf_user_decision_record`**（work_item_id=<id>, decision_type="investigation_acceptance"）记录用户决定
-3. 等待用户响应：
-   - **用户接受** →
-     - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
-     - 调用 `sf_state_transition`（from_state="gates_running"，to_state="closed"，transition_context={"user_accepted": true}，evidence="close gate passed, user accepted"）
-     - **注意：** sf_state_transition 守卫要求 `transition_context.user_accepted === true`，否则流转会被拒绝
-   - **用户要求补充/修改** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="user requested revision, re-entering research"），重新进入 research 阶段
-   - **用户拒绝** → 调用 `sf_state_transition`（from_state="gates_running"，to_state="candidate_preparing"，evidence="user rejected, re-entering research"），重新调查
+```text
+sf_requirements_gate(mode=investigation)
+```
 
-**⚠️ 重要：** 不得在未获得用户明确接受的情况下流转到 closed。`transition_context.user_accepted` 必须为 `true`（布尔值），字符串 "true" 不被接受。必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`。
+Gate 失败时必须由 `sf-investigator` 修订计划并重新运行同一 Gate，不得由 Orchestrator 或 Design Agent 代写。在 Requirements Gate 返回 `pass` 前，必须保持在调查计划阶段，禁止执行正式调查、写入 `findings_report.md` 或调用 Findings Gate。
 
-**工具：** `sf_gate_run`（统一 Gate Runner）、`sf_user_decision_record`
+## 3. 调查执行与结论
 
-### 阶段 7：closed（完成）
+由同一责任 Agent `sf-investigator` 按已通过计划执行。每个关键结论必须直接引用一级原始证据，或引用能够回溯到一级证据的二级派生证据；只引用 Agent 转述时不得宣布根因确认。
 
-**执行步骤：**
-1. 向用户报告调查完成摘要
-2. 触发知识提取：调度 sf-knowledge（V5.0 模式），传入 work_item_id 和 session_id
-   - **特殊处理**：investigation 工作流的知识条目默认 status="candidate"，confidence="medium"
-   - sf-knowledge 在提取时会检查 Work Item 的 workflow_type，自动应用 candidate 状态
 
-## KG 同步说明
+```text
+复现与现场证据
+→ 调用链追踪
+→ 首次偏离点
+→ 竞争假设验证和反证
+→ 根因因果链
+→ 影响与防复发验证
+```
 
-**investigation 工作流不同步 KG。**
+观察者影响必须且只能使用一个状态：
 
-原因：investigation 工作流不产生代码变更，没有需求→设计→任务→代码的结构化可追溯链，强制建立 KG 节点会引入无意义的噪声数据。
+- `OBSERVER_EFFECT_NONE`：调查动作没有改变被调查现场；
+- `OBSERVER_EFFECT_CONTROLLED`：调查动作产生受控变化，但原始证据已在变化前固化；
+- `OBSERVER_EFFECT_CHANGED_BEFORE_CAPTURE`：原始证据固化前，现场已经被调查动作改变；
+- `OBSERVER_EFFECT_UNKNOWN`：无法确认调查动作是否改变现场。
 
-## 知识提取特殊规则
+`OBSERVER_EFFECT_CHANGED_BEFORE_CAPTURE` 或 `OBSERVER_EFFECT_UNKNOWN` 且缺少不可变历史原证据时，禁止使用 `ROOT_CAUSE_CONFIRMED`。
 
-| 字段 | investigation 工作流 | 其他工作流 |
-|------|---------------------|-----------|
-| status | "candidate" | "active" |
-| confidence | "medium" | "high" |
-| workflow_type | "investigation" | 对应工作流类型 |
+当问题前提未复现且缺少不可变历史原证据，或现场在取证前已经被创建 WI、状态推进或实验改变时，禁止使用 `ROOT_CAUSE_CONFIRMED`；必须说明证据缺口和后续隔离复现方案。
 
-**说明：** investigation 产出的知识是研究性结论，需要后续实践验证，因此使用 candidate 状态和 medium 置信度，而非直接标记为 active。
+写入 `findings_report.md` 后调用：
 
-<!-- SPECFORGE_V11_GOVERNANCE_POLICY_START -->
+```text
+sf_design_gate(mode=investigation)
+```
 
-## v1.1 Post-P0 治理硬约束
+这里的 Design Gate 只是复用既有专业 Gate 入口校验调查结论，不代表 `sf-design` 拥有或生成该产物。
 
-以下规则是 daemon-core P0 治理修复后的工作流约束。Skill 只能引导 Agent 遵守流程，不能替代 daemon 的硬约束；当 Skill 规则与 daemon 返回冲突时，以 daemon 返回为准，不得自行猜测或绕行。
+## 4. Evidence-only Candidate
 
-1. Gate failed 或 gates_running 状态下不得记录 user_approved。
-2. 用户审批只能通过 `sf_user_decision_record` 记录；`decided_by` 必须是 `user`，Agent 只能作为 `recorded_by`。
-3. merge failed 不得 enable code_permission。
-4. merge success 后才允许 enable code_permission。
-5. merge success 后不得 invalidate user_decision。
-6. close_gate failed 后不得 invalidate 已 merge 的 user_decision。
-7. 不得因当前 Work Item 卡住就新建 WI 绕过阻塞。
-8. 状态滞后时必须调用受控 tool 读取或推进状态，不得手工猜状态、手写状态文件或伪造报告。
-9. 每阶段最多一次修复；失败后报告阻塞事实、失败证据和下一步需要的用户决策。
-10. code_permission 必须在实现和验证后 revoke。
-11. close_gate 是正式关闭入口，不能用“实际已完成”替代 closed。
-12. investigation workflow 必须禁止进入 code_permission。
-13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
+专业 Gate 全部通过后，使用现有受控工具生成规范化 Candidate Manifest：
 
-<!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->
+```json
+{
+  "entries": [],
+  "merge_required": false,
+  "merge_applicable": false,
+  "no_project_spec_change": true,
+  "project_integration_effect": "evidence_only"
+}
+```
+
+不得生成空壳 `requirements.md`、`design.md`、`tasks.md` 或 `trace_delta.md`。随后运行 Investigation 专属 Candidate Gates，进入 `approval_required`。warning 不能自动升级为 waiver。
+
+## 5. 用户决策
+
+向用户展示调查问题、证据、假设排除结果、根因状态、影响和后续建议。只有用户真实回复后，才能调用：
+
+```text
+sf_user_decision_record
+```
+
+`user_approved` 必须携带顶层真实 `user_response_quote`。调查报告中的建议、任务提示或 Agent 自己的结论不能代替用户决定。
+
+## 6. Merge not applicable
+
+批准后调用现有 `sf_merge_run`。对于满足 Evidence-only 合同的 Investigation：
+
+```text
+merge_report.status=not_applicable
+```
+
+Runtime 仍负责 `approved → merge_ready → merging → merged` 的治理状态记录，但不得执行项目规格或业务文件的真实 Merge。随后运行 post-merge Gate 并进入 `post_merge_verified`。
+
+## 7. Audit、Evidence 与 Verification
+
+在 `post_merge_verified` 后：
+
+1. 运行 `sf_changed_files_audit(mode=no_code_change)`；
+2. 确认未启用 `sf_code_permission`；
+3. 确认没有进入任何 implementation 状态；
+4. 由现有 Evidence 机制登记调查证据；
+5. 生成 Investigation profile 的 `.semantic_closure.json`；
+6. 调度 `sf-verifier` 独立核验计划、结论、证据、根因状态、Evidence-only Candidate 和 no-code audit；
+7. 通过 Verification Gate 从 `post_merge_verified` 推进到 `verification_running`，完成后进入 `verification_done`。
+
+无代码变更不等于无 Verification。
+
+## 8. Close
+
+只有权威状态为 `verification_done`，并且以下内容全部通过时，才调用 `sf_close_gate`：
+
+```text
+investigation_plan.md
+findings_report.md
+candidate_manifest.json
+merge_report.md
+changed_files_audit.md
+evidence/evidence_manifest.json
+verification_report.md
+.semantic_closure.json
+```
+
+`closed` 只能由 Close Gate 写入。
+
+# HardStop Recovery
+
+Investigation 中出现 HardStop 时，安全保护优先，但工作流必须具备恢复路径：
+
+1. `sf-investigator` 立即停止被阻断动作及依赖调查动作，不得继续写计划/结论，不得自行调用 `sf_hard_stop_resolve`；
+2. 返回 `hard_stop_id`、来源 Tool、被阻断动作/目标、原因、最后成功步骤、阻断步骤、安全替代 Tool、`resume_step` 和证据；
+3. `sf-orchestrator` 优先分类并形成恢复计划；工具选择错误使用 `operator_error`，必须 `blocked_action_disposition=abandon`、`retry_original_action=false`，改用 `read` / `glob` / `grep` / `sf_state_read` / `sf_batch_verify` 等合法只读能力，不扩大权限且不等待用户批准；
+4. 只有扩大权限、授权重试或风险接受才请求用户决定；
+5. 正式解除后重新读取权威状态和 resolution log，从 `resume_from_step` 继续，不重复已完成步骤。
+
+# Recovery of Existing Blocked Investigation
+
+对已经停在 `gates_running` 的真实 WI，不得重建、改类型、手工补状态或清理证据。应由合法责任 Agent 补齐正式调查产物，重跑专业 Gate 和 Candidate Gates，再继续用户决策、not-applicable Merge、Audit、Verification 与 Close。
+
+# Prohibited Paths
+
+禁止：
+
+- 不得在 investigation 中直接实施任何业务代码、项目规格或治理代码变更；
+- 调度 `sf-design` 生成 `investigation_plan.md` 或 `findings_report.md`；
+- 不得把其他 Agent 的结论、摘要或预设假设冒充原始证据；
+- 不得在未复现问题前提且缺少历史原证据时声明 `ROOT_CAUSE_CONFIRMED`；
+- 不得在 HardStop 后继续生成依赖产物，或把 HardStop 降级为 warning；
+- 调度 `sf-executor` 执行调查；
+- Requirements Gate 未返回 `pass` 时继续执行调查、写入 `findings_report.md` 或调用 Findings Gate；
+- 启用 `sf_code_permission`；
+- 进入 `implementation_ready`、`implementation_running`、`implementation_done`；
+- 使用 `design`、`review_report`、`work_log` 冒充调查产物；
+- 伪造 `spec_manifest.json.modules`；
+- 从 `gates_running`、`approved` 或 `post_merge_verified` 直接关闭；
+- 绕过真实 User Decision、Verification、Semantic Closure、Audit 或 Close Gate。

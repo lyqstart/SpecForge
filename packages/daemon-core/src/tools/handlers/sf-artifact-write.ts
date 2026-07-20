@@ -36,6 +36,8 @@ const V11_WI_ARTIFACT_FILES = new Set([
   'change_classification.md',
   'impact_analysis.md',
   'trigger_result.json',
+  'investigation_plan.md',
+  'findings_report.md',
   'requirements_delta.md',
   'design_delta.md',
   'tasks.md',
@@ -52,6 +54,8 @@ const V11_FILENAME_MAP: Record<string, string> = {
   'change_classification.md': 'change_classification',
   'impact_analysis.md': 'impact_analysis',
   'trigger_result.json': 'trigger_result',
+  'investigation_plan.md': 'investigation_plan',
+  'findings_report.md': 'findings_report',
   'requirements_delta.md': 'requirements_delta',
   'design_delta.md': 'design_delta',
   'tasks.md': 'tasks',
@@ -707,6 +711,8 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['candidate_tasks', 'sf-task-planner'],
   ['trace_delta', 'sf-task-planner'],
   ['candidate_trace_delta', 'sf-task-planner'],
+  ['investigation_plan', 'sf-investigator'],
+  ['findings_report', 'sf-investigator'],
 ]);
 
 function rejectProfessionalArtifactOwnership(fileType: string, context: any): any | null {
@@ -738,6 +744,8 @@ const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'change_classification',
   'impact_analysis',
   'trigger_result',
+  'investigation_plan',
+  'findings_report',
   'requirements',
   'design',
   'requirements_delta',

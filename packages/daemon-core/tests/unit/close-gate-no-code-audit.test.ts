@@ -14,36 +14,41 @@ import type { SemanticClosureManifest } from '../../src/tools/lib/semantic-closu
 function investigationSemanticClosure(workItemId: string): SemanticClosureManifest {
   return {
     schema_version: '1.0',
+    closure_profile: 'investigation',
+    workflow_type: 'investigation',
     work_item_id: workItemId,
-    outcomes: [
-      { id: 'OUT-1', description: 'Investigation report identifies requirement coverage gaps', requirement_refs: ['REQ-1'] },
-    ],
-    requirements: [
+    investigation_questions: [
       {
-        id: 'REQ-1',
-        type: 'MUST',
-        outcome_refs: ['OUT-1'],
-        design_refs: ['DD-1'],
-        task_refs: ['TASK-1'],
+        id: 'IQ-1',
+        finding_refs: ['F-1'],
         required_evidence_refs: ['EV-1'],
       },
     ],
-    design_decisions: [{ id: 'DD-1', requirement_refs: ['REQ-1'], task_refs: ['TASK-1'] }],
-    tasks: [{ id: 'TASK-1', requirement_refs: ['REQ-1'], design_refs: ['DD-1'], evidence_refs: ['EV-1'] }],
+    findings: [
+      {
+        id: 'F-1',
+        question_refs: ['IQ-1'],
+        evidence_refs: ['EV-1'],
+        root_cause_status: 'ROOT_CAUSE_CONFIRMED',
+      },
+    ],
     evidence: [
       {
         id: 'EV-1',
         status: 'passed',
         level: 'L5',
-        evidence_type: 'code_audit',
-        supports: ['OUT-1', 'REQ-1', 'TASK-1'],
+        evidence_type: 'runtime_falsification',
+        supports: ['IQ-1', 'F-1'],
       },
     ],
-    project_integration: { status: 'not_applicable' },
+    project_integration: { required: false, status: 'not_applicable' },
   };
 }
 
-async function createCloseReadyNoCodeWorkItem(projectRoot: string, workItemId = 'WI-0001'): Promise<string> {
+async function createCloseReadyNoCodeWorkItem(
+  projectRoot: string,
+  workItemId = 'WI-0001'
+): Promise<string> {
   const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'candidates', 'project', 'modules', 'core'), { recursive: true });
@@ -60,55 +65,93 @@ async function createCloseReadyNoCodeWorkItem(projectRoot: string, workItemId = 
         allowed_write_files: [],
       },
       null,
-      2,
-    ) + '\n',
+      2
+    ) + '\n'
   );
   await fs.writeFile(path.join(wiDir, 'intake.md'), '# Intake\nInvestigation request.');
-  await fs.writeFile(path.join(wiDir, 'change_classification.md'), '# Change Classification\ninvestigation');
+  await fs.writeFile(
+    path.join(wiDir, 'change_classification.md'),
+    '# Change Classification\ninvestigation'
+  );
   await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# Impact Analysis\nNo code impact.');
   await fs.writeFile(
     path.join(wiDir, 'trigger_result.json'),
-    JSON.stringify({ work_item_id: workItemId, workflow_type: 'investigation', workflow_path: 'requirement_change_path' }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      workflow_type: 'investigation',
+      workflow_path: 'requirement_change_path',
+    }) + '\n'
   );
-  await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Review requirements and source.');
-  await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1');
-  await fs.writeFile(path.join(wiDir, 'candidates', 'project', 'modules', 'core', 'requirements.candidate.md'), '# Requirements Candidate\nREQ-1');
-  await fs.writeFile(path.join(wiDir, 'candidates', 'project', 'modules', 'core', 'design.candidate.md'), '# Design Candidate\nDD-1');
-  await fs.writeFile(path.join(wiDir, 'candidates', 'trace_delta.md'), '# Trace Candidate\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1');
+  await fs.writeFile(
+    path.join(wiDir, 'investigation_plan.md'),
+    [
+      '# Investigation Plan',
+      '',
+      '## 调查问题与完成标准',
+      '验证 Investigation no-code close 是否只依赖调查问题、发现和证据。',
+      '',
+      '## 候选假设',
+      '- H1: Close Gate 仍错误依赖 implementation 产物。',
+      '- H2: Close Gate 已使用 Investigation 专属产物。',
+      '',
+      '## 验证与反证方法',
+      '删除 requirements/design/tasks，仅保留调查产物并执行 Close Gate。',
+    ].join('\n')
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'findings_report.md'),
+    [
+      '# Findings Report',
+      '',
+      '## 调查结论',
+      'ROOT_CAUSE_CONFIRMED',
+      '',
+      '## 事实与证据',
+      'EV-1 证明专属 Investigation 关闭链通过。',
+      '',
+      '## 调用链与首次偏离点',
+      'Close Gate 根据 workflow_type 选择调查产物清单。',
+      '',
+      '## 假设验证结果',
+      'H1 rejected；H2 confirmed。',
+      '',
+      '## 根因判定',
+      '旧测试模型伪造 implementation 链，现已由 Investigation profile 替代。',
+      '',
+      '## 因果链',
+      'Investigation profile → 调查产物 → Evidence → Verification → Close。',
+    ].join('\n')
+  );
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
     JSON.stringify(
       {
+        schema_version: '1.1',
         work_item_id: workItemId,
+        workflow_type: 'investigation',
         workflow_path: 'requirement_change_path',
-        entries: [
-          {
-            candidate_path: 'candidates/project/modules/core/requirements.candidate.md',
-            target_path: '.specforge/project/modules/core/requirements.md',
-            operation: 'replace',
-            type: 'requirements',
-          },
-          {
-            candidate_path: 'candidates/project/modules/core/design.candidate.md',
-            target_path: '.specforge/project/modules/core/design.md',
-            operation: 'replace',
-            type: 'design',
-          },
-          {
-            candidate_path: 'candidates/trace_delta.md',
-            target_path: '.specforge/project/trace_matrix.md',
-            operation: 'replace',
-            type: 'trace_delta',
-          },
-        ],
+        no_project_spec_change: true,
+        project_integration_effect: 'evidence_only',
+        merge_required: false,
+        merge_applicable: false,
+        entries: [],
       },
       null,
-      2,
-    ) + '\n',
+      2
+    ) + '\n'
   );
-  await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n\n- Overall Status: passed\n');
-  await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification Report\n\nEvidence EV-1 passed.');
-  await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge Report\n\nMerge Status: not_applicable');
+  await fs.writeFile(
+    path.join(wiDir, 'gate_summary.md'),
+    '# Gate Summary\n\n- Overall Status: passed\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'verification_report.md'),
+    '# Verification Report\n\nEvidence EV-1 passed.'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'merge_report.md'),
+    '# Merge Report\n\nMerge Status: not_applicable'
+  );
   await fs.writeFile(
     path.join(wiDir, 'changed_files_audit.md'),
     [
@@ -126,11 +169,14 @@ async function createCloseReadyNoCodeWorkItem(projectRoot: string, workItemId = 
       '- Blocked write attempts: 0',
       '- Historical/resolved blocked write attempts: 0',
       '- Unresolved blocked write attempts: 0',
-    ].join('\n'),
+    ].join('\n')
   );
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
-    JSON.stringify({ work_item_id: workItemId, entries: [{ id: 'EV-1', type: 'code_audit', status: 'passed' }] }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      entries: [{ id: 'EV-1', type: 'code_audit', status: 'passed' }],
+    }) + '\n'
   );
   await fs.writeFile(
     path.join(wiDir, 'user_decision.json'),
@@ -144,10 +190,13 @@ async function createCloseReadyNoCodeWorkItem(projectRoot: string, workItemId = 
         timestamp: new Date().toISOString(),
       },
       null,
-      2,
-    ) + '\n',
+      2
+    ) + '\n'
   );
-  await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(investigationSemanticClosure(workItemId), null, 2) + '\n');
+  await fs.writeFile(
+    path.join(wiDir, '.semantic_closure.json'),
+    JSON.stringify(investigationSemanticClosure(workItemId), null, 2) + '\n'
+  );
   return wiDir;
 }
 
@@ -164,11 +213,28 @@ describe('runCloseGate no-code investigation audit', () => {
 
   it('passes no-code investigation close when code_permission was never enabled and audit is not_applicable', async () => {
     const wiDir = await createCloseReadyNoCodeWorkItem(tmpDir);
-    const result = await runCloseGate({ workItemId: 'WI-0001', workItemDir: wiDir, projectRoot: tmpDir });
+    const result = await runCloseGate({
+      workItemId: 'WI-0001',
+      workItemDir: wiDir,
+      projectRoot: tmpDir,
+    });
 
     expect(result.allChecksPassed).toBe(true);
-    expect(result.report.checks.find((check) => check.check_id === 'close_code_permission_revoked')?.passed).toBe(true);
-    expect(result.report.checks.find((check) => check.check_id === 'close_changed_files_audit_passed')?.passed).toBe(true);
+    expect(
+      result.report.checks.find(check => check.check_id === 'close_code_permission_revoked')?.passed
+    ).toBe(true);
+    expect(
+      result.report.checks.find(check => check.check_id === 'close_changed_files_audit_passed')
+        ?.passed
+    ).toBe(true);
+    expect(
+      result.report.checks.find(
+        check => check.check_id === 'close_investigation_candidate_evidence_only'
+      )?.passed
+    ).toBe(true);
+    expect(
+      result.report.checks.find(check => check.check_id === 'close_semantic_closure_valid')?.passed
+    ).toBe(true);
   });
 
   it('does not accept no-code audit wording for feature_spec implementation WI', async () => {
@@ -178,8 +244,14 @@ describe('runCloseGate no-code investigation audit', () => {
     wi.workflow_type = 'feature_spec';
     await fs.writeFile(wiPath, JSON.stringify(wi, null, 2) + '\n');
 
-    const result = await runCloseGate({ workItemId: 'WI-0001', workItemDir: wiDir, projectRoot: tmpDir });
+    const result = await runCloseGate({
+      workItemId: 'WI-0001',
+      workItemDir: wiDir,
+      projectRoot: tmpDir,
+    });
     expect(result.allChecksPassed).toBe(false);
-    expect(result.report.checks.find((check) => check.check_id === 'close_code_permission_revoked')?.passed).toBe(false);
+    expect(
+      result.report.checks.find(check => check.check_id === 'close_code_permission_revoked')?.passed
+    ).toBe(false);
   });
 });

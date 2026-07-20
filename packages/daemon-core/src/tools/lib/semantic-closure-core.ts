@@ -8,7 +8,7 @@
 
 export type SemanticClosureSeverity = 'error' | 'warning';
 
-export type SemanticEvidenceStatus = 'passed' | 'failed' | 'blocked' | 'unknown' | string;
+export type SemanticEvidenceStatus = string;
 
 export interface SemanticOutcome {
   id: string;
@@ -52,6 +52,19 @@ export interface SemanticEvidence {
   task_refs?: string[];
 }
 
+export interface SemanticInvestigationQuestion {
+  id: string;
+  finding_refs?: string[];
+  required_evidence_refs?: string[];
+}
+
+export interface SemanticFinding {
+  id: string;
+  question_refs?: string[];
+  evidence_refs?: string[];
+  root_cause_status?: string;
+}
+
 export interface SemanticProjectIntegration {
   required?: boolean;
   status?: string;
@@ -60,12 +73,16 @@ export interface SemanticProjectIntegration {
 
 export interface SemanticClosureManifest {
   schema_version?: string;
+  closure_profile?: string;
+  workflow_type?: string;
   work_item_id?: string;
   outcomes?: SemanticOutcome[];
   requirements?: SemanticRequirement[];
   design_decisions?: SemanticDesignDecision[];
   tasks?: SemanticTask[];
   evidence?: SemanticEvidence[];
+  investigation_questions?: SemanticInvestigationQuestion[];
+  findings?: SemanticFinding[];
   project_integration?: SemanticProjectIntegration;
 }
 
@@ -95,6 +112,12 @@ const PASS_STATUSES = new Set(['passed', 'pass', 'success', 'succeeded']);
 const FAIL_STATUSES = new Set(['failed', 'fail', 'blocked', 'unknown', 'pending']);
 const VALID_PROJECT_INTEGRATION_STATUSES = new Set(['merged', 'not_applicable', 'not-applicable']);
 const WEAK_EVIDENCE_LEVELS = new Set(['L0', 'L1', 'L2']);
+const INVESTIGATION_ROOT_CAUSE_STATUSES = new Set([
+  'ROOT_CAUSE_CONFIRMED',
+  'ROOT_CAUSE_PROBABLE',
+  'ROOT_CAUSE_UNCONFIRMED',
+  'INSUFFICIENT_EVIDENCE',
+]);
 const WEAK_EVIDENCE_TYPE_TOKENS = [
   'file-only',
   'file_only',
@@ -117,19 +140,27 @@ function asArray<T>(value: T[] | undefined): T[] {
 }
 
 function refs(value: string[] | undefined): string[] {
-  return Array.isArray(value) ? value.filter((item) => typeof item === 'string' && item.trim().length > 0) : [];
+  return Array.isArray(value)
+    ? value.filter(item => typeof item === 'string' && item.trim().length > 0)
+    : [];
 }
 
 function normalize(value: string | undefined): string {
-  return String(value ?? '').trim().toLowerCase();
+  return String(value ?? '')
+    .trim()
+    .toLowerCase();
 }
 
 function normalizeLevel(value: string | undefined): string {
-  return String(value ?? '').trim().toUpperCase();
+  return String(value ?? '')
+    .trim()
+    .toUpperCase();
 }
 
 function requirementKind(requirement: SemanticRequirement): string {
-  return String(requirement.type ?? requirement.requirement_type ?? '').trim().toUpperCase();
+  return String(requirement.type ?? requirement.requirement_type ?? '')
+    .trim()
+    .toUpperCase();
 }
 
 function isMustRequirement(requirement: SemanticRequirement): boolean {
@@ -159,7 +190,7 @@ function isWeakEvidence(evidence: SemanticEvidence): boolean {
     return true;
   }
 
-  return WEAK_EVIDENCE_TYPE_TOKENS.some((token) => evidenceType.includes(token));
+  return WEAK_EVIDENCE_TYPE_TOKENS.some(token => evidenceType.includes(token));
 }
 
 function evidenceRefs(evidence: SemanticEvidence, targetId: string): boolean {
@@ -173,56 +204,67 @@ function evidenceRefs(evidence: SemanticEvidence, targetId: string): boolean {
 }
 
 function isClosureEvidenceFor(evidence: SemanticEvidence, targetId: string): boolean {
-  return isPassedEvidence(evidence) && !isWeakEvidence(evidence) && evidenceRefs(evidence, targetId);
+  return (
+    isPassedEvidence(evidence) && !isWeakEvidence(evidence) && evidenceRefs(evidence, targetId)
+  );
 }
 
-function linkedRequirementIds(outcome: SemanticOutcome, requirements: SemanticRequirement[]): string[] {
+function linkedRequirementIds(
+  outcome: SemanticOutcome,
+  requirements: SemanticRequirement[]
+): string[] {
   const explicit = refs(outcome.requirement_refs);
   const reverse = requirements
-    .filter((requirement) => refs(requirement.outcome_refs).includes(outcome.id))
-    .map((requirement) => requirement.id);
+    .filter(requirement => refs(requirement.outcome_refs).includes(outcome.id))
+    .map(requirement => requirement.id);
   return Array.from(new Set([...explicit, ...reverse]));
 }
 
-function linkedTaskIdsForRequirement(requirement: SemanticRequirement, tasks: SemanticTask[]): string[] {
+function linkedTaskIdsForRequirement(
+  requirement: SemanticRequirement,
+  tasks: SemanticTask[]
+): string[] {
   const explicit = refs(requirement.task_refs);
   const reverse = tasks
-    .filter((task) => refs(task.requirement_refs).includes(requirement.id))
-    .map((task) => task.id);
+    .filter(task => refs(task.requirement_refs).includes(requirement.id))
+    .map(task => task.id);
   return Array.from(new Set([...explicit, ...reverse]));
 }
 
 function requirementHasClosureEvidence(
   requirement: SemanticRequirement,
   _tasks: SemanticTask[],
-  evidence: SemanticEvidence[],
+  evidence: SemanticEvidence[]
 ): boolean {
   // A MUST requirement must be proven by evidence that directly supports the
   // requirement id. Do not let evidence for another requirement pass merely
   // because both requirements are implemented by the same task. This closes the
   // fj1-style gap where local logging evidence could otherwise make server
   // upload or flush wiring look complete through a shared task reference.
-  return evidence.some((item) => isClosureEvidenceFor(item, requirement.id));
+  return evidence.some(item => isClosureEvidenceFor(item, requirement.id));
 }
 
 function outcomeHasClosureEvidence(
   outcome: SemanticOutcome,
   requirements: SemanticRequirement[],
   tasks: SemanticTask[],
-  evidence: SemanticEvidence[],
+  evidence: SemanticEvidence[]
 ): boolean {
-  if (evidence.some((item) => isClosureEvidenceFor(item, outcome.id))) {
+  if (evidence.some(item => isClosureEvidenceFor(item, outcome.id))) {
     return true;
   }
 
-  const requirementById = new Map(requirements.map((requirement) => [requirement.id, requirement]));
-  return linkedRequirementIds(outcome, requirements).some((requirementId) => {
+  const requirementById = new Map(requirements.map(requirement => [requirement.id, requirement]));
+  return linkedRequirementIds(outcome, requirements).some(requirementId => {
     const requirement = requirementById.get(requirementId);
     return requirement ? requirementHasClosureEvidence(requirement, tasks, evidence) : false;
   });
 }
 
-function explicitRequiredEvidenceIsPassed(refId: string, evidenceById: Map<string, SemanticEvidence>): boolean {
+function explicitRequiredEvidenceIsPassed(
+  refId: string,
+  evidenceById: Map<string, SemanticEvidence>
+): boolean {
   const evidence = evidenceById.get(refId);
   return !!evidence && isPassedEvidence(evidence) && !isWeakEvidence(evidence);
 }
@@ -242,10 +284,176 @@ function duplicateIds(items: Array<{ id: string }>): string[] {
 }
 
 function missingRefs(refIds: string[], knownIds: Set<string>): string[] {
-  return refIds.filter((refId) => !knownIds.has(refId));
+  return refIds.filter(refId => !knownIds.has(refId));
 }
 
-export function validateSemanticClosure(manifest: SemanticClosureManifest | unknown): SemanticClosureValidationResult {
+function validateInvestigationSemanticClosure(
+  manifest: SemanticClosureManifest
+): SemanticClosureValidationResult {
+  const checks: SemanticClosureCheck[] = [];
+  const questions = asArray(manifest.investigation_questions);
+  const findings = asArray(manifest.findings);
+  const evidence = asArray(manifest.evidence);
+  const questionIds = new Set(questions.map(item => item.id));
+  const findingIds = new Set(findings.map(item => item.id));
+  const evidenceIds = new Set(evidence.map(item => item.id));
+  const evidenceById = new Map(evidence.map(item => [item.id, item]));
+
+  checks.push({
+    check_id: 'investigation_semantic_profile',
+    description: 'Semantic closure profile is investigation',
+    passed:
+      normalize(manifest.closure_profile) === 'investigation' &&
+      normalize(manifest.workflow_type) === 'investigation',
+    severity:
+      normalize(manifest.closure_profile) === 'investigation' &&
+      normalize(manifest.workflow_type) === 'investigation'
+        ? undefined
+        : 'error',
+  });
+  checks.push({
+    check_id: 'investigation_semantic_has_questions',
+    description: 'At least one investigation question is declared',
+    passed: questions.length > 0,
+    severity: questions.length > 0 ? undefined : 'error',
+  });
+  checks.push({
+    check_id: 'investigation_semantic_has_findings',
+    description: 'At least one finding is declared',
+    passed: findings.length > 0,
+    severity: findings.length > 0 ? undefined : 'error',
+  });
+  checks.push({
+    check_id: 'investigation_semantic_has_evidence',
+    description: 'At least one investigation evidence item is declared',
+    passed: evidence.length > 0,
+    severity: evidence.length > 0 ? undefined : 'error',
+  });
+
+  const duplicateEntityIds = duplicateIds([...questions, ...findings, ...evidence]);
+  checks.push({
+    check_id: 'investigation_semantic_unique_ids',
+    description: 'Investigation semantic entity ids are unique',
+    passed: duplicateEntityIds.length === 0,
+    severity: duplicateEntityIds.length === 0 ? undefined : 'error',
+    details: duplicateEntityIds,
+  });
+
+  for (const question of questions) {
+    const linkedFindings = refs(question.finding_refs);
+    const missingFindingRefs = missingRefs(linkedFindings, findingIds);
+    checks.push({
+      check_id: `investigation_question_${question.id}_findings_exist`,
+      description: `Investigation question ${question.id} links to existing findings`,
+      passed: linkedFindings.length > 0 && missingFindingRefs.length === 0,
+      severity: linkedFindings.length > 0 && missingFindingRefs.length === 0 ? undefined : 'error',
+      details: missingFindingRefs,
+    });
+
+    const requiredEvidenceRefs = refs(question.required_evidence_refs);
+    const badEvidenceRefs = requiredEvidenceRefs.filter(
+      refId => !explicitRequiredEvidenceIsPassed(refId, evidenceById)
+    );
+    const hasDirectEvidence = evidence.some(item => isClosureEvidenceFor(item, question.id));
+    checks.push({
+      check_id: `investigation_question_${question.id}_evidence`,
+      description: `Investigation question ${question.id} has passed, non-weak evidence`,
+      passed:
+        (requiredEvidenceRefs.length > 0 && badEvidenceRefs.length === 0) || hasDirectEvidence,
+      severity:
+        (requiredEvidenceRefs.length > 0 && badEvidenceRefs.length === 0) || hasDirectEvidence
+          ? undefined
+          : 'error',
+      details: badEvidenceRefs,
+    });
+  }
+
+  for (const finding of findings) {
+    const linkedQuestions = refs(finding.question_refs);
+    const missingQuestionRefs = missingRefs(linkedQuestions, questionIds);
+    const linkedEvidence = refs(finding.evidence_refs);
+    const missingEvidenceRefs = missingRefs(linkedEvidence, evidenceIds);
+    const badEvidenceRefs = linkedEvidence.filter(
+      refId => !explicitRequiredEvidenceIsPassed(refId, evidenceById)
+    );
+    const rootStatus = String(finding.root_cause_status ?? '')
+      .trim()
+      .toUpperCase();
+
+    checks.push({
+      check_id: `investigation_finding_${finding.id}_questions_exist`,
+      description: `Finding ${finding.id} links to existing investigation questions`,
+      passed: linkedQuestions.length > 0 && missingQuestionRefs.length === 0,
+      severity:
+        linkedQuestions.length > 0 && missingQuestionRefs.length === 0 ? undefined : 'error',
+      details: missingQuestionRefs,
+    });
+    checks.push({
+      check_id: `investigation_finding_${finding.id}_evidence`,
+      description: `Finding ${finding.id} is supported by passed, non-weak evidence`,
+      passed:
+        linkedEvidence.length > 0 &&
+        missingEvidenceRefs.length === 0 &&
+        badEvidenceRefs.length === 0,
+      severity:
+        linkedEvidence.length > 0 &&
+        missingEvidenceRefs.length === 0 &&
+        badEvidenceRefs.length === 0
+          ? undefined
+          : 'error',
+      details: Array.from(new Set([...missingEvidenceRefs, ...badEvidenceRefs])),
+    });
+    checks.push({
+      check_id: `investigation_finding_${finding.id}_root_status`,
+      description: `Finding ${finding.id} declares a valid root-cause confidence status`,
+      passed: INVESTIGATION_ROOT_CAUSE_STATUSES.has(rootStatus),
+      severity: INVESTIGATION_ROOT_CAUSE_STATUSES.has(rootStatus) ? undefined : 'error',
+      details: rootStatus ? [rootStatus] : ['missing'],
+    });
+  }
+
+  for (const item of evidence) {
+    const supports = refs(item.supports);
+    const unknownSupports = supports.filter(
+      refId => !questionIds.has(refId) && !findingIds.has(refId)
+    );
+    checks.push({
+      check_id: `investigation_evidence_${item.id}_refs_exist`,
+      description: `Evidence ${item.id} references existing questions or findings`,
+      passed: supports.length > 0 && unknownSupports.length === 0,
+      severity: supports.length > 0 && unknownSupports.length === 0 ? undefined : 'error',
+      details: unknownSupports,
+    });
+  }
+
+  const implementationArtifactsAbsent =
+    asArray(manifest.requirements).length === 0 &&
+    asArray(manifest.design_decisions).length === 0 &&
+    asArray(manifest.tasks).length === 0;
+  checks.push({
+    check_id: 'investigation_semantic_no_fabricated_implementation_chain',
+    description:
+      'Investigation semantic closure does not fabricate requirements, design decisions, or tasks',
+    passed: implementationArtifactsAbsent,
+    severity: implementationArtifactsAbsent ? undefined : 'error',
+  });
+
+  const integrationStatus = normalize(manifest.project_integration?.status);
+  checks.push({
+    check_id: 'investigation_semantic_integration_not_applicable',
+    description: 'Investigation project integration is not_applicable',
+    passed: integrationStatus === 'not_applicable' || integrationStatus === 'not-applicable',
+    severity:
+      integrationStatus === 'not_applicable' || integrationStatus === 'not-applicable'
+        ? undefined
+        : 'error',
+    details: integrationStatus ? [integrationStatus] : ['missing'],
+  });
+
+  return buildResult(checks);
+}
+
+export function validateSemanticClosure(manifest: unknown): SemanticClosureValidationResult {
   const checks: SemanticClosureCheck[] = [];
 
   const addCheck = (check: SemanticClosureCheck): void => {
@@ -264,6 +472,13 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
   }
 
   const typedManifest = manifest as SemanticClosureManifest;
+  if (
+    normalize(typedManifest.closure_profile) === 'investigation' ||
+    normalize(typedManifest.workflow_type) === 'investigation'
+  ) {
+    return validateInvestigationSemanticClosure(typedManifest);
+  }
+
   const outcomes = asArray(typedManifest.outcomes);
   const requirements = asArray(typedManifest.requirements);
   const designDecisions = asArray(typedManifest.design_decisions);
@@ -305,12 +520,12 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
     details: duplicateEntityIds,
   });
 
-  const outcomeIds = new Set(outcomes.map((outcome) => outcome.id));
-  const requirementIds = new Set(requirements.map((requirement) => requirement.id));
-  const designDecisionIds = new Set(designDecisions.map((decision) => decision.id));
-  const taskIds = new Set(tasks.map((task) => task.id));
-  const evidenceIds = new Set(evidence.map((item) => item.id));
-  const evidenceById = new Map(evidence.map((item) => [item.id, item]));
+  const outcomeIds = new Set(outcomes.map(outcome => outcome.id));
+  const requirementIds = new Set(requirements.map(requirement => requirement.id));
+  const designDecisionIds = new Set(designDecisions.map(decision => decision.id));
+  const taskIds = new Set(tasks.map(task => task.id));
+  const evidenceIds = new Set(evidence.map(item => item.id));
+  const evidenceById = new Map(evidence.map(item => [item.id, item]));
 
   for (const outcome of outcomes) {
     const missingRequirementRefs = missingRefs(refs(outcome.requirement_refs), requirementIds);
@@ -332,12 +547,15 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
 
     const explicitEvidenceRefs = refs(outcome.required_evidence_refs);
     const missingEvidenceRefs = missingRefs(explicitEvidenceRefs, evidenceIds);
-    const badEvidenceRefs = explicitEvidenceRefs.filter((refId) => !explicitRequiredEvidenceIsPassed(refId, evidenceById));
+    const badEvidenceRefs = explicitEvidenceRefs.filter(
+      refId => !explicitRequiredEvidenceIsPassed(refId, evidenceById)
+    );
     addCheck({
       check_id: `semantic_outcome_${outcome.id}_required_evidence_passed`,
       description: `Outcome ${outcome.id} required evidence exists, passed, and is not weak evidence`,
       passed: missingEvidenceRefs.length === 0 && badEvidenceRefs.length === 0,
-      severity: missingEvidenceRefs.length === 0 && badEvidenceRefs.length === 0 ? undefined : 'error',
+      severity:
+        missingEvidenceRefs.length === 0 && badEvidenceRefs.length === 0 ? undefined : 'error',
       details: Array.from(new Set([...missingEvidenceRefs, ...badEvidenceRefs])),
     });
 
@@ -374,12 +592,15 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
 
       const explicitEvidenceRefs = refs(requirement.required_evidence_refs);
       const missingEvidenceRefs = missingRefs(explicitEvidenceRefs, evidenceIds);
-      const badEvidenceRefs = explicitEvidenceRefs.filter((refId) => !explicitRequiredEvidenceIsPassed(refId, evidenceById));
+      const badEvidenceRefs = explicitEvidenceRefs.filter(
+        refId => !explicitRequiredEvidenceIsPassed(refId, evidenceById)
+      );
       addCheck({
         check_id: `semantic_requirement_${requirement.id}_required_evidence_passed`,
         description: `MUST requirement ${requirement.id} required evidence exists, passed, and is not weak evidence`,
         passed: missingEvidenceRefs.length === 0 && badEvidenceRefs.length === 0,
-        severity: missingEvidenceRefs.length === 0 && badEvidenceRefs.length === 0 ? undefined : 'error',
+        severity:
+          missingEvidenceRefs.length === 0 && badEvidenceRefs.length === 0 ? undefined : 'error',
         details: Array.from(new Set([...missingEvidenceRefs, ...badEvidenceRefs])),
       });
 
@@ -401,7 +622,8 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
       check_id: `semantic_design_${decision.id}_refs_exist`,
       description: `Design decision ${decision.id} references existing requirements and tasks`,
       passed: missingRequirementRefs.length === 0 && missingTaskRefs.length === 0,
-      severity: missingRequirementRefs.length === 0 && missingTaskRefs.length === 0 ? undefined : 'error',
+      severity:
+        missingRequirementRefs.length === 0 && missingTaskRefs.length === 0 ? undefined : 'error',
       details: [...missingRequirementRefs, ...missingTaskRefs],
     });
     addCheck({
@@ -426,7 +648,9 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
     });
 
     const explicitEvidenceRefs = refs(task.evidence_refs);
-    const badEvidenceRefs = explicitEvidenceRefs.filter((refId) => !explicitRequiredEvidenceIsPassed(refId, evidenceById));
+    const badEvidenceRefs = explicitEvidenceRefs.filter(
+      refId => !explicitRequiredEvidenceIsPassed(refId, evidenceById)
+    );
     addCheck({
       check_id: `semantic_task_${task.id}_evidence_passed`,
       description: `Task ${task.id} evidence exists, passed, and is not weak evidence`,
@@ -444,11 +668,11 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
       ...missingRefs(refs(item.task_refs), taskIds),
     ];
     const unknownSupports = refs(item.supports).filter(
-      (refId) =>
+      refId =>
         !outcomeIds.has(refId) &&
         !requirementIds.has(refId) &&
         !designDecisionIds.has(refId) &&
-        !taskIds.has(refId),
+        !taskIds.has(refId)
     );
     addCheck({
       check_id: `semantic_evidence_${item.id}_refs_exist`,
@@ -463,7 +687,9 @@ export function validateSemanticClosure(manifest: SemanticClosureManifest | unkn
         check_id: `semantic_evidence_${item.id}_not_used_as_completion`,
         description: `Evidence ${item.id} is not a passed completion proof`,
         passed: !evidenceRefsAnyRequiredTarget(item, outcomes, requirements, tasks),
-        severity: evidenceRefsAnyRequiredTarget(item, outcomes, requirements, tasks) ? 'error' : 'warning',
+        severity: evidenceRefsAnyRequiredTarget(item, outcomes, requirements, tasks)
+          ? 'error'
+          : 'warning',
       });
     }
   }
@@ -485,26 +711,30 @@ function evidenceRefsAnyRequiredTarget(
   evidence: SemanticEvidence,
   outcomes: SemanticOutcome[],
   requirements: SemanticRequirement[],
-  tasks: SemanticTask[],
+  tasks: SemanticTask[]
 ): boolean {
-  const outcomeRequiredRefs = outcomes.flatMap((outcome) => refs(outcome.required_evidence_refs));
-  const requirementRequiredRefs = requirements.flatMap((requirement) => refs(requirement.required_evidence_refs));
-  const taskEvidenceRefs = tasks.flatMap((task) => refs(task.evidence_refs));
-  return [...outcomeRequiredRefs, ...requirementRequiredRefs, ...taskEvidenceRefs].includes(evidence.id);
+  const outcomeRequiredRefs = outcomes.flatMap(outcome => refs(outcome.required_evidence_refs));
+  const requirementRequiredRefs = requirements.flatMap(requirement =>
+    refs(requirement.required_evidence_refs)
+  );
+  const taskEvidenceRefs = tasks.flatMap(task => refs(task.evidence_refs));
+  return [...outcomeRequiredRefs, ...requirementRequiredRefs, ...taskEvidenceRefs].includes(
+    evidence.id
+  );
 }
 
 function buildResult(checks: SemanticClosureCheck[]): SemanticClosureValidationResult {
   const issues = checks
-    .filter((check) => !check.passed)
-    .map((check) => ({
+    .filter(check => !check.passed)
+    .map(check => ({
       check_id: check.check_id,
       message: check.description,
       severity: check.severity ?? 'error',
       details: check.details,
     }));
 
-  const errors = issues.filter((issue) => issue.severity === 'error');
-  const warnings = issues.filter((issue) => issue.severity === 'warning');
+  const errors = issues.filter(issue => issue.severity === 'error');
+  const warnings = issues.filter(issue => issue.severity === 'warning');
 
   return {
     passed: errors.length === 0,

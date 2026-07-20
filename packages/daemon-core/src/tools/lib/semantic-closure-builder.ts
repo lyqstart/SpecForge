@@ -27,7 +27,13 @@ export interface SemanticClosureBuildInput {
 export interface SemanticClosureBuildResult {
   manifest: SemanticClosureManifest;
   validation: SemanticClosureValidationResult;
-  source: 'existing_semantic_closure' | 'verification_report_json' | 'evidence_manifest_semantic_closure' | 'evidence_manifest_sections' | 'trace_delta_chain' | 'insufficient_artifacts';
+  source:
+    | 'existing_semantic_closure'
+    | 'verification_report_json'
+    | 'evidence_manifest_semantic_closure'
+    | 'evidence_manifest_sections'
+    | 'trace_delta_chain'
+    | 'insufficient_artifacts';
   diagnostics: string[];
 }
 
@@ -46,6 +52,10 @@ function isRecord(value: unknown): value is Record<string, any> {
 function isSemanticManifestCandidate(value: unknown): value is SemanticClosureManifest {
   if (!isRecord(value)) return false;
   return (
+    value.closure_profile === 'investigation' ||
+    value.workflow_type === 'investigation' ||
+    Array.isArray(value.investigation_questions) ||
+    Array.isArray(value.findings) ||
     Array.isArray(value.outcomes) ||
     Array.isArray(value.requirements) ||
     Array.isArray(value.design_decisions) ||
@@ -60,7 +70,10 @@ function normalizeEvidenceStatus(value: unknown): string {
   return raw;
 }
 
-function normalizeProjectIntegrationStatus(workItem: Record<string, any> | null | undefined, mergeReportMd: string | undefined): string {
+function normalizeProjectIntegrationStatus(
+  workItem: Record<string, any> | null | undefined,
+  mergeReportMd: string | undefined
+): string {
   const lower = String(mergeReportMd ?? '').toLowerCase();
   if (lower.includes('not_applicable') || lower.includes('not applicable')) return 'not_applicable';
   if (lower.includes('merged') || lower.includes('success')) return 'merged';
@@ -68,14 +81,18 @@ function normalizeProjectIntegrationStatus(workItem: Record<string, any> | null 
   return 'unknown';
 }
 
-function getEvidenceEntries(evidenceManifest: Record<string, any> | null | undefined): Record<string, any>[] {
+function getEvidenceEntries(
+  evidenceManifest: Record<string, any> | null | undefined
+): Record<string, any>[] {
   if (!evidenceManifest) return [];
   if (Array.isArray(evidenceManifest.entries)) return evidenceManifest.entries.filter(isRecord);
   if (Array.isArray(evidenceManifest.evidence)) return evidenceManifest.evidence.filter(isRecord);
   return [];
 }
 
-function evidenceById(evidenceManifest: Record<string, any> | null | undefined): Map<string, Record<string, any>> {
+function evidenceById(
+  evidenceManifest: Record<string, any> | null | undefined
+): Map<string, Record<string, any>> {
   const out = new Map<string, Record<string, any>>();
   for (const entry of getEvidenceEntries(evidenceManifest)) {
     const id = String(entry.id ?? entry.evidence_id ?? '').trim();
@@ -84,17 +101,21 @@ function evidenceById(evidenceManifest: Record<string, any> | null | undefined):
   return out;
 }
 
-function evidenceFromEntry(id: string, entry: Record<string, any> | undefined, supports: string[]): SemanticEvidence {
+function evidenceFromEntry(
+  id: string,
+  entry: Record<string, any> | undefined,
+  supports: string[]
+): SemanticEvidence {
   return {
     id,
     status: normalizeEvidenceStatus(entry?.status ?? entry?.result ?? entry?.passed_status),
     level: String(entry?.level ?? entry?.evidence_level ?? '').trim() || undefined,
     evidence_type: String(entry?.evidence_type ?? entry?.type ?? '').trim() || undefined,
     supports,
-    outcome_refs: supports.filter((ref) => ref.startsWith('OUT-')),
-    requirement_refs: supports.filter((ref) => ref.startsWith('REQ-')),
-    design_refs: supports.filter((ref) => ref.startsWith('DD-')),
-    task_refs: supports.filter((ref) => ref.startsWith('TASK-')),
+    outcome_refs: supports.filter(ref => ref.startsWith('OUT-')),
+    requirement_refs: supports.filter(ref => ref.startsWith('REQ-')),
+    design_refs: supports.filter(ref => ref.startsWith('DD-')),
+    task_refs: supports.filter(ref => ref.startsWith('TASK-')),
   };
 }
 
@@ -104,12 +125,15 @@ function unique<T>(items: T[]): T[] {
 
 function firstManifestFromJsonObject(value: unknown): SemanticClosureManifest | null {
   if (!isRecord(value)) return null;
-  if (isSemanticManifestCandidate(value.semantic_closure)) return value.semantic_closure as SemanticClosureManifest;
+  if (isSemanticManifestCandidate(value.semantic_closure))
+    return value.semantic_closure as SemanticClosureManifest;
   if (isSemanticManifestCandidate(value)) return value as SemanticClosureManifest;
   return null;
 }
 
-function extractSemanticClosureFromMarkdown(markdown: string | undefined): SemanticClosureManifest | null {
+function extractSemanticClosureFromMarkdown(
+  markdown: string | undefined
+): SemanticClosureManifest | null {
   if (!markdown) return null;
   const fenceRe = /```(?:json|semantic_closure)?\s*([\s\S]*?)```/gi;
   let match: RegExpExecArray | null;
@@ -130,7 +154,8 @@ function extractSemanticClosureFromMarkdown(markdown: string | undefined): Seman
 function traceChains(markdown: string | undefined): TraceChain[] {
   if (!markdown) return [];
   const chains: TraceChain[] = [];
-  const lineRe = /\b(OUT-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(REQ-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(DD-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(TASK-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(EV-[A-Za-z0-9_.-]+)\b/g;
+  const lineRe =
+    /\b(OUT-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(REQ-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(DD-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(TASK-[A-Za-z0-9_.-]+)\b[\s\S]{0,120}?\b(EV-[A-Za-z0-9_.-]+)\b/g;
   let match: RegExpExecArray | null;
   while ((match = lineRe.exec(markdown)) !== null) {
     chains.push({
@@ -141,10 +166,14 @@ function traceChains(markdown: string | undefined): TraceChain[] {
       evidenceId: match[5],
     });
   }
-  return unique(chains.map((chain) => JSON.stringify(chain))).map((item) => JSON.parse(item) as TraceChain);
+  return unique(chains.map(chain => JSON.stringify(chain))).map(
+    item => JSON.parse(item) as TraceChain
+  );
 }
 
-function manifestFromEvidenceManifestSections(input: SemanticClosureBuildInput): SemanticClosureManifest | null {
+function manifestFromEvidenceManifestSections(
+  input: SemanticClosureBuildInput
+): SemanticClosureManifest | null {
   const em = input.evidenceManifest;
   if (!em) return null;
   const direct = firstManifestFromJsonObject(em.semantic_closure);
@@ -164,7 +193,13 @@ function manifestFromEvidenceManifestSections(input: SemanticClosureBuildInput):
       requirements: Array.isArray(em.requirements) ? em.requirements : [],
       design_decisions: Array.isArray(em.design_decisions) ? em.design_decisions : [],
       tasks: Array.isArray(em.tasks) ? em.tasks : [],
-      evidence: evidenceEntries.map((entry) => evidenceFromEntry(String(entry.id ?? entry.evidence_id), entry, Array.isArray(entry.supports) ? entry.supports : [])),
+      evidence: evidenceEntries.map(entry =>
+        evidenceFromEntry(
+          String(entry.id ?? entry.evidence_id),
+          entry,
+          Array.isArray(entry.supports) ? entry.supports : []
+        )
+      ),
       project_integration: isRecord(em.project_integration)
         ? em.project_integration
         : { status: normalizeProjectIntegrationStatus(input.workItem, input.mergeReportMd) },
@@ -174,45 +209,71 @@ function manifestFromEvidenceManifestSections(input: SemanticClosureBuildInput):
   return null;
 }
 
-function manifestFromTraceChains(input: SemanticClosureBuildInput, chains: TraceChain[]): SemanticClosureManifest {
+function manifestFromTraceChains(
+  input: SemanticClosureBuildInput,
+  chains: TraceChain[]
+): SemanticClosureManifest {
   const entriesById = evidenceById(input.evidenceManifest);
-  const outcomeIds = unique(chains.map((chain) => chain.outcomeId));
-  const requirementIds = unique(chains.map((chain) => chain.requirementId));
-  const designIds = unique(chains.map((chain) => chain.designId));
-  const taskIds = unique(chains.map((chain) => chain.taskId));
-  const evidenceIds = unique(chains.map((chain) => chain.evidenceId));
+  const outcomeIds = unique(chains.map(chain => chain.outcomeId));
+  const requirementIds = unique(chains.map(chain => chain.requirementId));
+  const designIds = unique(chains.map(chain => chain.designId));
+  const taskIds = unique(chains.map(chain => chain.taskId));
+  const evidenceIds = unique(chains.map(chain => chain.evidenceId));
 
   return {
     schema_version: '1.0',
     work_item_id: input.workItemId,
-    outcomes: outcomeIds.map((id) => ({
+    outcomes: outcomeIds.map(id => ({
       id,
-      requirement_refs: unique(chains.filter((chain) => chain.outcomeId === id).map((chain) => chain.requirementId)),
-      required_evidence_refs: unique(chains.filter((chain) => chain.outcomeId === id).map((chain) => chain.evidenceId)),
+      requirement_refs: unique(
+        chains.filter(chain => chain.outcomeId === id).map(chain => chain.requirementId)
+      ),
+      required_evidence_refs: unique(
+        chains.filter(chain => chain.outcomeId === id).map(chain => chain.evidenceId)
+      ),
     })),
-    requirements: requirementIds.map((id) => ({
+    requirements: requirementIds.map(id => ({
       id,
       type: 'MUST',
-      outcome_refs: unique(chains.filter((chain) => chain.requirementId === id).map((chain) => chain.outcomeId)),
-      design_refs: unique(chains.filter((chain) => chain.requirementId === id).map((chain) => chain.designId)),
-      task_refs: unique(chains.filter((chain) => chain.requirementId === id).map((chain) => chain.taskId)),
-      required_evidence_refs: unique(chains.filter((chain) => chain.requirementId === id).map((chain) => chain.evidenceId)),
+      outcome_refs: unique(
+        chains.filter(chain => chain.requirementId === id).map(chain => chain.outcomeId)
+      ),
+      design_refs: unique(
+        chains.filter(chain => chain.requirementId === id).map(chain => chain.designId)
+      ),
+      task_refs: unique(
+        chains.filter(chain => chain.requirementId === id).map(chain => chain.taskId)
+      ),
+      required_evidence_refs: unique(
+        chains.filter(chain => chain.requirementId === id).map(chain => chain.evidenceId)
+      ),
     })),
-    design_decisions: designIds.map((id) => ({
+    design_decisions: designIds.map(id => ({
       id,
-      requirement_refs: unique(chains.filter((chain) => chain.designId === id).map((chain) => chain.requirementId)),
-      task_refs: unique(chains.filter((chain) => chain.designId === id).map((chain) => chain.taskId)),
+      requirement_refs: unique(
+        chains.filter(chain => chain.designId === id).map(chain => chain.requirementId)
+      ),
+      task_refs: unique(chains.filter(chain => chain.designId === id).map(chain => chain.taskId)),
     })),
-    tasks: taskIds.map((id) => ({
+    tasks: taskIds.map(id => ({
       id,
-      requirement_refs: unique(chains.filter((chain) => chain.taskId === id).map((chain) => chain.requirementId)),
-      design_refs: unique(chains.filter((chain) => chain.taskId === id).map((chain) => chain.designId)),
-      evidence_refs: unique(chains.filter((chain) => chain.taskId === id).map((chain) => chain.evidenceId)),
+      requirement_refs: unique(
+        chains.filter(chain => chain.taskId === id).map(chain => chain.requirementId)
+      ),
+      design_refs: unique(chains.filter(chain => chain.taskId === id).map(chain => chain.designId)),
+      evidence_refs: unique(
+        chains.filter(chain => chain.taskId === id).map(chain => chain.evidenceId)
+      ),
     })),
-    evidence: evidenceIds.map((id) => {
-      const linkedChains = chains.filter((chain) => chain.evidenceId === id);
+    evidence: evidenceIds.map(id => {
+      const linkedChains = chains.filter(chain => chain.evidenceId === id);
       const supports = unique(
-        linkedChains.flatMap((chain) => [chain.outcomeId, chain.requirementId, chain.designId, chain.taskId]),
+        linkedChains.flatMap(chain => [
+          chain.outcomeId,
+          chain.requirementId,
+          chain.designId,
+          chain.taskId,
+        ])
       );
       return evidenceFromEntry(id, entriesById.get(id), supports);
     }),
@@ -222,7 +283,10 @@ function manifestFromTraceChains(input: SemanticClosureBuildInput, chains: Trace
   };
 }
 
-function insufficientManifest(input: SemanticClosureBuildInput, diagnostics: string[]): SemanticClosureManifest {
+function insufficientManifest(
+  input: SemanticClosureBuildInput,
+  diagnostics: string[]
+): SemanticClosureManifest {
   const evidenceEntries = getEvidenceEntries(input.evidenceManifest);
   return {
     schema_version: '1.0',
@@ -231,8 +295,12 @@ function insufficientManifest(input: SemanticClosureBuildInput, diagnostics: str
     requirements: [],
     design_decisions: [],
     tasks: [],
-    evidence: evidenceEntries.map((entry) =>
-      evidenceFromEntry(String(entry.id ?? entry.evidence_id ?? 'EV-UNKNOWN'), entry, Array.isArray(entry.supports) ? entry.supports : []),
+    evidence: evidenceEntries.map(entry =>
+      evidenceFromEntry(
+        String(entry.id ?? entry.evidence_id ?? 'EV-UNKNOWN'),
+        entry,
+        Array.isArray(entry.supports) ? entry.supports : []
+      )
     ),
     project_integration: {
       status: normalizeProjectIntegrationStatus(input.workItem, input.mergeReportMd),
@@ -242,12 +310,17 @@ function insufficientManifest(input: SemanticClosureBuildInput, diagnostics: str
   } as SemanticClosureManifest;
 }
 
-export function buildSemanticClosureFromArtifacts(input: SemanticClosureBuildInput): SemanticClosureBuildResult {
+export function buildSemanticClosureFromArtifacts(
+  input: SemanticClosureBuildInput
+): SemanticClosureBuildResult {
   const diagnostics: string[] = [];
 
   const fromVerificationReport = extractSemanticClosureFromMarkdown(input.verificationReportMd);
   if (fromVerificationReport) {
-    const manifest = { ...fromVerificationReport, work_item_id: fromVerificationReport.work_item_id ?? input.workItemId };
+    const manifest = {
+      ...fromVerificationReport,
+      work_item_id: fromVerificationReport.work_item_id ?? input.workItemId,
+    };
     return {
       manifest,
       validation: validateSemanticClosure(manifest),
@@ -280,8 +353,12 @@ export function buildSemanticClosureFromArtifacts(input: SemanticClosureBuildInp
     };
   }
 
-  diagnostics.push('No curated semantic_closure JSON block and no explicit OUT -> REQ -> DD -> TASK -> EV trace chain found.');
-  diagnostics.push('The builder does not infer semantic completion from prose, file existence, or compile output.');
+  diagnostics.push(
+    'No curated semantic_closure JSON block and no explicit OUT -> REQ -> DD -> TASK -> EV trace chain found.'
+  );
+  diagnostics.push(
+    'The builder does not infer semantic completion from prose, file existence, or compile output.'
+  );
   const manifest = insufficientManifest(input, diagnostics);
   return {
     manifest,

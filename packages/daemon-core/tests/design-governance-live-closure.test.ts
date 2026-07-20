@@ -131,7 +131,6 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
       {
         schema_version: '1.1',
         work_item_id: workItemId,
-        status: 'gates_running',
         workflow_type: 'feature_spec_design_first',
         workflow_path: 'design_change_path',
         code_change_allowed: false,

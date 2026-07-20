@@ -76,31 +76,43 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 ### 8. Required behavior on uncertainty
 
 If a requested action conflicts with this contract, stop and report the conflict instead of using an old workflow, direct file edits, shell bypass, or hand-written governance JSON.
+
+### 9. 可恢复 HardStop 协议
+
+- HardStop 是 `recoverable safety latch`（可恢复安全锁存），不是终止工作流的结果。它只阻断危险动作及依赖写入/状态推进，不得丢弃已完成工作或永久停止开发。
+- 专业 Agent 收到 `hard_stop=true`、`HARD_STOP_ACTIVE` 或发现未解决 `hard_stop.json` 后，必须停止被阻断动作及其依赖动作，不得绕过，也不得调用 `sf_hard_stop_resolve`。
+- 专业 Agent 必须向 `sf-orchestrator` 返回 `hard_stop_id`、触发 Tool、被阻断动作/目标、原因、最后成功步骤、阻断步骤、安全替代 Tool 和 `resume_from_step`。
+- `sf-orchestrator` 必须在存在安全且不扩大权限的恢复路径时，于同一工作流轮次完成分类和恢复。`operator_error`、`prohibited_action_replaced` 必须放弃原动作，改走合法 Tool，不等待用户重复批准，也不得扩大授权。
+- `scope_expanded`、`user_authorized_retry`、`risk_accepted` 或安装任何新授权时，必须引用当前真实 `user_response_quote`；任务提示、业务目标、Agent 转述或历史泛化同意均不能代替用户决定。
+- 只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`。解除后必须重读权威状态和 resolution log、重验前置条件，并从 `resume_from_step` 继续，不得重复已完成步骤。
+- 当前没有安全恢复路径时，Work Item 才能进入 `blocked`，且必须记录恢复条件、责任方和 `resume_from_step`。`blocked` 可恢复，不等于 rejected、superseded 或 closed。
+
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
 ## HardStop 交接边界
 
-发现工具返回 `hard_stop=true`、`HARD_STOP_ACTIVE` 或存在未解决 `hard_stop.json` 时，本 Agent 必须立即停止当前写入、产物生成和阶段动作。不得调用 `sf_hard_stop_resolve`，不得把任务提示、用户业务目标或上游 Agent 指令解释为 HardStop 解除授权。
+发现工具返回 `hard_stop=true`、`HARD_STOP_ACTIVE` 或存在未解决 `hard_stop.json` 时，本 Agent 必须立即停止被阻断动作及其依赖动作，不得继续写入、推进状态、调用 Gate 或换路径绕过，也不得调用 `sf_hard_stop_resolve`。
 
 必须向 `sf-orchestrator` 返回至少以下信息：
 
 ```json
 {
   "status": "blocked",
+  "action_type": "resolve_hard_stop",
   "hard_stop_id": "HS-...",
   "reason": "<阻断原因>",
   "source_tool": "<来源工具>",
-  "evidence": [],
-  "orchestrator_action_requests": [
-    {
-      "action_type": "resolve_hard_stop",
-      "work_item_id": "WI-..."
-    }
-  ]
+  "blocked_action": "<被阻断动作>",
+  "blocked_target": "<目标路径或资源>",
+  "last_successful_step": "<最后成功步骤>",
+  "blocked_step": "<阻断步骤>",
+  "safe_alternative_tool": "<安全替代 Tool>",
+  "resume_step": "<恢复后继续步骤>",
+  "evidence": []
 }
 ```
 
-只有 `sf-orchestrator` 可以读取完整治理上下文、取得真实用户决定并调用 `sf_hard_stop_resolve`。解除后由 Orchestrator 重新调度本 Agent；本 Agent 不得自行假定流程已经恢复。
+只有 `sf-orchestrator` 可以分类并调用 `sf_hard_stop_resolve`。若属于 `operator_error` 或 `prohibited_action_replaced`，Orchestrator 应放弃原动作、改用合法 Tool 并在不扩大权限的前提下直接恢复，不需要用户重复批准；只有扩大权限、授权重试或风险接受才需要真实用户决定。解除后由 Orchestrator 重新读取权威状态并从 `resume_step` 重新调度，本 Agent 不得自行假定流程已恢复。
 
 
 # Role

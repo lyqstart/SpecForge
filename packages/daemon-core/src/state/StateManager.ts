@@ -34,6 +34,22 @@ const VALID_STATES: readonly string[] = [
  */
 const DEFAULT_WORKFLOW_TYPE = 'feature_spec';
 
+/**
+ * Result of a rebuild-from-events operation.
+ *
+ * Reports whether an event log actually existed and was replayed, so callers
+ * (e.g. `sf_state_read`'s `rebuilt_from_events` authority flag) can reflect
+ * reality instead of a mere capability check.
+ *
+ * - `replayed`   — true iff at least one event was read from the WAL
+ *                  (i.e. an event log existed and had content to replay).
+ * - `eventCount` — number of events read from the WAL during the rebuild.
+ */
+export interface RebuildResult {
+  replayed: boolean;
+  eventCount: number;
+}
+
 export class StateManager {
   private wal: WAL;
   private statePath: string;
@@ -51,6 +67,9 @@ export class StateManager {
 
   /** Timestamp of the last event from the WAL */
   private _lastEventTs: number = 0;
+
+  /** Number of events replayed from the WAL during the most recent rebuild */
+  private _lastReplayedEventCount: number = 0;
 
   /**
    * @param pathResolver Path resolver for calculating file paths
@@ -255,7 +274,11 @@ export class StateManager {
    */
   async rebuildState(): Promise<ProjectState> {
     const { events } = await this.wal.readAllEvents();
-    
+
+    // Track how many events were actually replayed so callers can distinguish
+    // "an event log existed and was replayed" from "no event log existed".
+    this._lastReplayedEventCount = events.length;
+
     // Clear and rebuild
     this.workItemStates.clear();
 
@@ -296,10 +319,18 @@ export class StateManager {
   /**
    * Rebuild state from WAL events and persist to state.json.
    * Convenience wrapper around rebuildState() + persistState().
+   *
+   * Returns a truthful replay signal derived from `wal.readAllEvents()`:
+   * `replayed` is true iff an event log actually existed and had events to
+   * replay (`eventCount > 0`). Callers use this to report the
+   * `rebuilt_from_events` authority flag honestly rather than deriving it from
+   * a capability check.
    */
-  async rebuildFromEventsFile(): Promise<void> {
+  async rebuildFromEventsFile(): Promise<RebuildResult> {
     await this.rebuildState();
     await this.persistState();
+    const eventCount = this._lastReplayedEventCount;
+    return { replayed: eventCount > 0, eventCount };
   }
 
   // ═══════════════════════════════════════════════════

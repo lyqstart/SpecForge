@@ -57,6 +57,7 @@ pnpm-lock.yaml
 # SpecForge generated test artifacts
 tests/unit/artifacts/
 tests/integration/fixtures/sf_v6_arch_check/backup/
+test-project-path
 packages/daemon-core/test-project-path
 packages/observability/test-data/observability-[0-9]*/
 packages/observability/test-data/observability-req-[0-9]*/
