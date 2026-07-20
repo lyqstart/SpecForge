@@ -11,3 +11,7 @@
 
 # SpecForge generated workflow Skill docs are rendered and compared byte-for-byte.
 setup/userlevel-opencode/skills/sf-workflow-*/SKILL.md text eol=lf
+
+# Kiro governance specifications are reviewed with git diff --check and must
+# not reintroduce CRLF-only whitespace noise from Windows authoring tools.
+.kiro/specs/** text eol=lf
