@@ -1122,6 +1122,9 @@ deferred → pending 或 expired，视上下文而定
 6. `invalidated` 表示绑定对象或 base_spec_version 变化。
 7. hard_gate 不能 waiver。
 8. User Decision 失效后不能原地恢复，必须生成新的 decision_id。
+9. `gates_running`、`approval_required`、`approved`、`merge_ready`、`merging` 期间，`candidates/**`、`candidate_manifest.json` 与 `gate_summary.md` 必须冻结；冻结判断只能读取 StateManager 权威状态。
+10. 审批失效必须通过 User Decision Recorder 的原子动作完成：确认尚未成功合并，记录原 decision、Candidate、Manifest 与 Gate 哈希，写入 `approval_invalidation.json`，将相关 Gate 证据标记为失效，并执行 `approved → blocked`。
+11. `approved → blocked` 不得由通用状态转换工具执行；只能由审批失效动作触发。之后由 `sf-orchestrator` 验证失效证据并执行 `blocked → candidate_preparing`，再重新生成 Candidate、运行 Gate 和取得新审批。
 
 ### 10.5 写入主体
 
@@ -1165,6 +1168,8 @@ Merge Runner 执行前必须通过 `merge_ready_gate`。
 12. manifest entries 与 Candidate 文件一一对应。
 13. Merge Runner 具备正式规格专用写权限。
 14. 普通 Agent 无正式规格写权限。
+
+Merge Runner 必须先完成无副作用的全量预检，并一次返回所有已发现阻塞项；预检通过前不得写入正式 Project Spec。阻塞项至少包括目标未登记或路径非法、Candidate 缺失、审批与 Candidate/Manifest/Gate 哈希不一致、Gate 或审批已失效、Project Spec 前置哈希或版本变化。
 
 ### 11.3 Merge Runner 执行规则
 
@@ -2107,9 +2112,11 @@ User Decision approved 后，Candidate 或 base_spec_version 变化。
 
 期望：
 
-1. User Decision invalidated。
-2. merge_ready_gate failed。
-3. 重新生成 Candidate / Gate Summary / User Decision。
+1. User Decision invalidated，并生成包含原 Candidate、Manifest、Gate 与审批哈希的 `approval_invalidation.json`。
+2. 相关 Gate 证据失效，权威状态原子进入 `blocked`。
+3. 通用状态转换工具不能直接执行 `approved → blocked`。
+4. `sf-orchestrator` 验证失效证据后恢复到 `candidate_preparing`。
+5. 重新生成 Candidate / Gate Summary / User Decision。
 
 ---
 

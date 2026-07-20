@@ -30,6 +30,7 @@ import { WALWriteError } from '../session/SessionRegistry';
 import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
 import { checkWrite, performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { appendWriteGuardLog } from '../tools/lib/write-guard-log';
+import { isCandidateFrozenState } from '../tools/lib/candidate-freeze-v11';
 import { JsonlAppender } from '../logs/JsonlAppender';
 import * as path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
@@ -1836,7 +1837,7 @@ export class HTTPServer {
       return;
     }
 
-    const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, callerRole ?? 'agent');
+    const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, callerRole ?? 'agent');
 
     // Block writes to .specforge/work-items/ — WI artifacts must use controlled tools
     const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
@@ -1885,7 +1886,7 @@ export class HTTPServer {
     }
 
     // For bash guard: check each expected file
-    const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, 'agent');
+    const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, 'agent');
 
     if (!wiCtx.hasActiveWI) {
       this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no active WI — call sf_code_permission enable first' }));
@@ -1955,7 +1956,7 @@ export class HTTPServer {
       return;
     }
 
-    const wiCtx = this.loadWriteGuardContext(resolvedProjectPath, 'agent');
+    const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, 'agent');
     const allowedWriteFiles = wiCtx.workItem?.allowed_write_files ?? [];
 
     // Use changedFiles if provided, otherwise use expectedFiles as changed
@@ -1988,7 +1989,7 @@ export class HTTPServer {
   }
 
   // Helper: load WriteGuardContext from project filesystem
-  private loadWriteGuardContext(projectPath: string, callerRole: string): WriteGuardContext {
+  private async loadWriteGuardContext(projectPath: string, callerRole: string): Promise<WriteGuardContext> {
     const fs = require('node:fs');
     const pathModule = require('node:path');
 
@@ -1997,17 +1998,28 @@ export class HTTPServer {
     let hasActiveWI = false;
 
     try {
+      const stateManager = await this.deps.projectManager?.getProjectStateManager?.(projectPath);
+      await stateManager?.rebuildFromEventsFile?.();
       const dirs = fs.readdirSync(workItemsDir);
       for (const dir of dirs) {
         const wiPath = pathModule.join(workItemsDir, dir, 'work_item.json');
         try {
           const content = fs.readFileSync(wiPath, 'utf-8');
           const wi = JSON.parse(content);
-          if (wi.status !== 'closed' && wi.status !== 'cancelled') {
+          const authoritative = await stateManager?.getState?.(wi.work_item_id);
+          const currentState =
+            typeof authoritative === 'string'
+              ? authoritative
+              : authoritative?.current_state ??
+                authoritative?.currentState ??
+                authoritative?.status ??
+                authoritative?.state;
+          if (!currentState) continue;
+          if (currentState !== 'closed' && currentState !== 'rejected' && currentState !== 'superseded') {
             hasActiveWI = true;
             activeWI = {
               work_item_id: wi.work_item_id,
-              status: wi.status,
+              status: currentState,
               code_change_allowed: wi.code_change_allowed ?? false,
               allowed_write_files: wi.allowed_write_files ?? [],
               workflow_path: wi.workflow_path ?? null,
@@ -2022,7 +2034,7 @@ export class HTTPServer {
       hasActiveWI,
       workItem: activeWI,
       callerRole: callerRole as any,
-      isFrozen: false,
+      isFrozen: isCandidateFrozenState(activeWI?.status),
     };
   }
 

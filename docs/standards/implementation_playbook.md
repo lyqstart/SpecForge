@@ -266,6 +266,10 @@ rejected → closed
 9. Freeze active: modify Candidate/Manifest/Gate Summary → block
 10. Closed WI: any write → block
 
+Freeze active 只能由 StateManager 权威状态计算，固定覆盖 `gates_running`、`approval_required`、`approved`、`merge_ready`、`merging`。不得读取 `work_item.json.status` 或使用写死的 `isFrozen=false`。
+
+审批失效由 `sf_user_decision_record(action="invalidate")` 原子执行并生成 `approval_invalidation.json`，随后进入 `blocked`；只有 `sf-orchestrator` 可以调用 `recover_after_invalidation` 恢复到 `candidate_preparing`。通用状态转换工具禁止直接执行 `approved → blocked`。
+
 **changed_files_audit** (§12.7):
 1. Actual changed file list
 2. All within `allowed_write_files`

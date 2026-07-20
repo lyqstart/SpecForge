@@ -319,6 +319,16 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       };
     }
 
+    if (fromState === "approved" && toState === "blocked") {
+      return {
+        success: false,
+        error:
+          "approved → blocked is reserved for sf_user_decision_record(action='invalidate')",
+        code: "APPROVAL_INVALIDATION_ACTION_REQUIRED",
+        retry_allowed: true,
+      };
+    }
+
     if (fromState !== "" && isSealTransition(fromState, toState)) {
       const sealEntry = getSealTransition(fromState, toState);
       const callerAgent = (context?.agent as string) ?? "";

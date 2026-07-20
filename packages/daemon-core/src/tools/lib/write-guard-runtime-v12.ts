@@ -7,6 +7,7 @@ import { appendWriteGuardLog } from './write-guard-log';
 import { setHardStop } from './hard-stop-latch';
 import { parseChangedFilesAuditVerdictPass } from './changed-files-audit-verdict';
 import { stripRemoteExecutionSegmentsForLocalWriteGuard } from './shell-command-write-intent';
+import { isCandidateFrozenState } from './candidate-freeze-v11';
 
 export type RuntimeWriteOperation = 'create' | 'modify' | 'delete';
 
@@ -154,11 +155,13 @@ function readRuntimeState(projectRoot: string): any | null {
   }
 }
 
-function authoritativeWorkItemState(projectRoot: string, workItemId: string, fallback: string): string {
+function authoritativeWorkItemState(projectRoot: string, workItemId: string): string | null {
   const state = readRuntimeState(projectRoot);
   const items = Array.isArray(state?.workItems) ? state.workItems : [];
   const match = items.find((item: any) => item?.work_item_id === workItemId);
-  return typeof match?.current_state === 'string' && match.current_state.length > 0 ? match.current_state : fallback;
+  return typeof match?.current_state === 'string' && match.current_state.length > 0
+    ? match.current_state
+    : null;
 }
 
 function normalizeForCompare(value: string): string {
@@ -228,7 +231,10 @@ export function enforceRuntimeWriteGuardForShell(input: {
 
     if (resolved.violation) targetViolations.push(resolved.violation);
 
-    const currentState = authoritativeWorkItemState(input.projectRoot, input.workItemId, String(wi.status ?? ''));
+    const currentState = authoritativeWorkItemState(input.projectRoot, input.workItemId);
+    if (!currentState) {
+      targetViolations.push('authoritative runtime state unavailable; write denied');
+    }
     if (actor !== ACTOR_ROLES.mergeRunner && currentState !== 'implementation_running') {
       targetViolations.push('write requires implementation_running state: current=' + currentState);
     }
@@ -245,13 +251,13 @@ export function enforceRuntimeWriteGuardForShell(input: {
           hasActiveWI: true,
           workItem: {
             work_item_id: String(wi.work_item_id ?? input.workItemId),
-            status: currentState,
+            status: currentState ?? 'unknown',
             code_change_allowed: wi.code_change_allowed === true,
             allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [],
             workflow_path: wi.workflow_path ?? null,
           },
           callerRole: actor,
-          isFrozen: false,
+          isFrozen: currentState ? isCandidateFrozenState(currentState) : true,
         },
         relative,
         target.operation,
@@ -290,4 +296,3 @@ export function enforceRuntimeWriteGuardForShell(input: {
 export function parseChangedFilesAuditPass(auditText: string): { passed: boolean; reason?: string } {
   return parseChangedFilesAuditVerdictPass(auditText);
 }
-

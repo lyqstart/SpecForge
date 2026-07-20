@@ -19,9 +19,9 @@ export default tool({
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     action: tool.schema
-      .enum(["record", "invalidate"])
+      .enum(["record", "invalidate", "recover_after_invalidation"])
       .optional()
-      .describe("操作：record=记录决策，invalidate=使已有决策失效"),
+      .describe("操作：record=记录决策；invalidate=原子失效审批并进入 blocked；recover_after_invalidation=由 sf-orchestrator 恢复到 candidate_preparing"),
     approved: tool.schema
       .boolean()
       .optional()

@@ -197,7 +197,7 @@ permission:
 → 先修治理链
 ```
 
-门禁通过后，所有决定只能通过 `sf_user_decision_record` 记录，主编排代理不得自行推断批准。`user_approved` 必须来自用户对当前候选的明确决定并保存 `user_response_quote`；`auto_approved` 只允许在当前有效策略明确授权时使用，并必须记录 `auto_approval_policy_id`；`waived` 必须有现行规则或用户授权依据；`rejected`、要求修改和已失效决定必须如实记录。候选内容、范围、基础规格版本或决定适用条件发生变化时，旧决定必须 `invalidated`，重新通过门禁并取得新决定。没有有效的 `approved` 或合法 `waived` 不得合并。批准后调用 `sf_merge_run`，由合并运行器更新正式项目规格并生成合并证据；随后通过 `sf_gate_run` 执行合并后门禁。`code_only_fast_path` 仍需形成空候选清单和合法的 `not_applicable` 合并报告，不能跳过治理证据。
+门禁通过后，所有决定只能通过 `sf_user_decision_record` 记录，主编排代理不得自行推断批准。`user_approved` 必须来自用户对当前候选的明确决定并保存 `user_response_quote`；`auto_approved` 只允许在当前有效策略明确授权时使用，并必须记录 `auto_approval_policy_id`；`waived` 必须有现行规则或用户授权依据；`rejected`、要求修改和已失效决定必须如实记录。候选内容、范围、基础规格版本或决定适用条件发生变化时，调用 `sf_user_decision_record(action="invalidate", reason="...")` 原子失效旧决定并进入 `blocked`；确认 `approval_invalidation.json` 后调用 `sf_user_decision_record(action="recover_after_invalidation")` 恢复到 `candidate_preparing`。禁止通过通用状态转换直接执行 `approved → blocked`，也禁止在恢复前修改候选。恢复后必须重新生成候选、通过门禁并取得新的 decision_id。没有有效的 `approved` 或合法 `waived` 不得合并。批准后调用 `sf_merge_run`，由合并运行器先一次返回全部预检阻塞项；只有预检通过才更新正式项目规格并生成合并证据。随后通过 `sf_gate_run` 执行合并后门禁。`code_only_fast_path` 仍需形成空候选清单和合法的 `not_applicable` 合并报告，不能跳过治理证据。
 
 当专业代理产生 `extension_request`，或 `capability_verdict=new_capability_required` 时，停止父工作项，调度 `sf-extension` 并使用当前已注册的扩展子流程；只有扩展候选完成门禁、用户决策和受控合并后，才能按恢复令牌回到父工作项。`extend_existing` 只允许对现有治理层做最小扩展；缺口影响硬停止、状态、门禁、路径或审计安全时，必须先修治理链。
 

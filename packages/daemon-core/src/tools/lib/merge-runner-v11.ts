@@ -148,7 +148,7 @@ function registerMergedProjectModules(specManifest: any): void {
   const moduleCodes = Array.from(
     new Set(
       targets
-        .map(target => {
+        .map((target: unknown) => {
           const moduleCode = inferModuleCodeFromProjectTarget(target);
           const normalizedTarget = normalizeProjectTargetPathV12(target);
           return moduleCode &&
@@ -289,6 +289,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     errors: [],
     status: 'success',
   };
+  const preflightErrors: string[] = [];
 
   let manifest: any;
   try {
@@ -323,33 +324,19 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       manifest.merge_applicable === false &&
       manifestEntries.length === 0;
     if (!evidenceOnlyCanonical) {
-      const failed: MergeResult = {
-        ...result,
-        success: false,
-        status: 'failed',
-        errors: [
-          'evidence_only candidate_manifest must set no_project_spec_change=true, project_integration_effect=evidence_only, merge_required=false, merge_applicable=false, and entries=[].',
-        ],
-      };
-      await generateMergeReport(input, failed);
-      return failed;
+      preflightErrors.push(
+        'evidence_only candidate_manifest must set no_project_spec_change=true, project_integration_effect=evidence_only, merge_required=false, merge_applicable=false, and entries=[].'
+      );
     }
   }
 
   if (!noProjectSpecMerge && !entriesSemanticallyEqual(manifestEntries, normalizedEntries)) {
-    const failed: MergeResult = {
-      ...result,
-      success: false,
-      status: 'failed',
-      errors: [
-        'candidate_manifest.entries must be normalized before user approval; merge_runner uses the same inferManifestEntries() rules as approval and will not infer or mutate entries after approval.',
-      ],
-    };
-    await generateMergeReport(input, failed);
-    return failed;
+    preflightErrors.push(
+      'candidate_manifest.entries must be normalized before user approval; merge_runner uses the same inferManifestEntries() rules as approval and will not infer or mutate entries after approval.'
+    );
   }
 
-  if (noProjectSpecMerge) {
+  if (noProjectSpecMerge && preflightErrors.length === 0) {
     const evidenceOnly = isEvidenceOnlyNoProjectSpecChange(manifest);
     const notApplicable: MergeResult = {
       ...result,
@@ -366,16 +353,11 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   }
 
   if (entries.length === 0) {
-    const failed: MergeResult = {
-      ...result,
-      success: false,
-      status: 'failed',
-      errors: [
-        'Non-code-only workflow requires at least one merge entry. candidate_manifest.entries is empty.',
-      ],
-    };
-    await generateMergeReport(input, failed);
-    return failed;
+    if (!noProjectSpecMerge) {
+      preflightErrors.push(
+        'Non-code-only workflow requires at least one merge entry. candidate_manifest.entries is empty.'
+      );
+    }
   }
 
   if (manifest.project_spec_precondition_sha256) {
@@ -387,16 +369,9 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     );
     const currentManifestHash = await computeFileHash(currentManifestPath);
     if (currentManifestHash !== manifest.project_spec_precondition_sha256) {
-      const failed: MergeResult = {
-        ...result,
-        success: false,
-        status: 'failed',
-        errors: [
-          'PROJECT_SPEC_PRECONDITION_STALE: spec_manifest.json changed after repair Candidates were prepared.',
-        ],
-      };
-      await generateMergeReport(input, failed);
-      return failed;
+      preflightErrors.push(
+        'PROJECT_SPEC_PRECONDITION_STALE: spec_manifest.json changed after repair Candidates were prepared.'
+      );
     }
   }
 
@@ -415,23 +390,14 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         !declaredTargetPaths.has(targetPath) && !governedNewModules.allowedTargets.has(targetPath)
     );
   if (governedNewModules.errors.length > 0 || undeclaredTargets.length > 0) {
-    const failed: MergeResult = {
-      ...result,
-      success: false,
-      status: 'failed',
-      errors: [
-        ...governedNewModules.errors,
-        ...(undeclaredTargets.length > 0
-          ? [
-              `candidate_manifest contains target_path values not declared by spec_manifest.json: ${Array.from(
-                new Set(undeclaredTargets)
-              ).join(', ')}`,
-            ]
-          : []),
-      ],
-    };
-    await generateMergeReport(input, failed);
-    return failed;
+    preflightErrors.push(...governedNewModules.errors);
+    if (undeclaredTargets.length > 0) {
+      preflightErrors.push(
+        `candidate_manifest contains target_path values not declared by spec_manifest.json: ${Array.from(
+          new Set(undeclaredTargets)
+        ).join(', ')}`
+      );
+    }
   }
 
   const approvalValidation = await validateApprovedUserDecisionForMerge({
@@ -443,14 +409,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   });
 
   if (!approvalValidation.valid) {
-    const failed: MergeResult = {
-      ...result,
-      success: false,
-      status: 'failed',
-      errors: approvalValidation.errors,
-    };
-    await generateMergeReport(input, failed);
-    return failed;
+    preflightErrors.push(...approvalValidation.errors);
   }
 
   const workItemRoot = path.resolve(input.workItemDir);
@@ -459,48 +418,33 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   for (const entry of entries) {
     const candidateFullPath = path.resolve(input.workItemDir, entry.candidate_path);
     const targetFullPath = path.resolve(input.projectRoot, entry.target_path);
-
     if (!isSubPath(candidateFullPath, workItemRoot)) {
-      result.errors.push('Security: candidate_path outside WI: ' + entry.candidate_path);
-      result.merged_files.push({
-        candidate_path: entry.candidate_path,
-        target_path: entry.target_path,
-        operation: entry.operation,
-        status: 'failed',
-        hash_match: false,
-        error: 'candidate_path outside WI directory',
-      });
-      result.success = false;
-      continue;
+      preflightErrors.push('Security: candidate_path outside WI: ' + entry.candidate_path);
     }
-
     if (!isSubPath(targetFullPath, projectSpecRoot)) {
-      result.errors.push('Security: target_path outside .specforge/project/: ' + entry.target_path);
-      result.merged_files.push({
-        candidate_path: entry.candidate_path,
-        target_path: entry.target_path,
-        operation: entry.operation,
-        status: 'failed',
-        hash_match: false,
-        error: 'target_path outside .specforge/project/',
-      });
-      result.success = false;
-      continue;
+      preflightErrors.push(
+        'Security: target_path outside .specforge/project/: ' + entry.target_path
+      );
     }
-
     if (!(await fileExists(candidateFullPath))) {
-      result.errors.push('Candidate file does not exist: ' + entry.candidate_path);
-      result.merged_files.push({
-        candidate_path: entry.candidate_path,
-        target_path: entry.target_path,
-        operation: entry.operation,
-        status: 'failed',
-        hash_match: false,
-        error: 'candidate file does not exist',
-      });
-      result.success = false;
-      continue;
+      preflightErrors.push('Candidate file does not exist: ' + entry.candidate_path);
     }
+  }
+
+  if (preflightErrors.length > 0) {
+    const failed: MergeResult = {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: Array.from(new Set(preflightErrors)),
+    };
+    await generateMergeReport(input, failed);
+    return failed;
+  }
+
+  for (const entry of entries) {
+    const candidateFullPath = path.resolve(input.workItemDir, entry.candidate_path);
+    const targetFullPath = path.resolve(input.projectRoot, entry.target_path);
 
     try {
       if (entry.operation === 'delete') {

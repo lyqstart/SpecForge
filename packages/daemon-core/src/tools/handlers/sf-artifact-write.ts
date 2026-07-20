@@ -34,6 +34,11 @@ import {
   resolveSpecModuleIdentity,
 } from '@specforge/types';
 import { inferManifestEntries } from '../lib/governance-invariants-v11';
+import { readAuthoritativeState } from '../lib/state-coordinator-v11';
+import {
+  isCandidateFrozenState,
+  isCandidateGovernancePath,
+} from '../lib/candidate-freeze-v11';
 
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
@@ -871,7 +876,7 @@ function rejectExecutorGovernanceArtifact(fileType: string, context: any): any |
   };
 }
 
-registerHandler('sf_artifact_write', async (args, context, _deps) => {
+registerHandler('sf_artifact_write', async (args, context, deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
   let fileType = args['file_type'] as string;
@@ -1018,6 +1023,37 @@ registerHandler('sf_artifact_write', async (args, context, _deps) => {
   }
 
   const wiDir = workItemRoot(baseDir, workItemId);
+
+  if (isCandidateGovernancePath(targetFilename)) {
+    const state = await readAuthoritativeState({
+      deps,
+      projectRoot: baseDir,
+      workItemId,
+    });
+    if (!state.current_state) {
+      return {
+        success: false,
+        error: 'CANDIDATE_FREEZE_STATE_UNAVAILABLE',
+        hard_stop: false,
+        retry_allowed: true,
+        message:
+          'Candidate write denied because the authoritative StateManager state could not be read.',
+      };
+    }
+    if (isCandidateFrozenState(state.current_state)) {
+      return {
+        success: false,
+        error: 'CANDIDATE_FROZEN',
+        hard_stop: false,
+        retry_allowed: false,
+        current_state: state.current_state,
+        state_authority: state.source,
+        message:
+          `Candidate artifacts are frozen while WI state is ${state.current_state}. ` +
+          'Invalidate the approval and recover to candidate_preparing before editing.',
+      };
+    }
+  }
   fs.mkdirSync(wiDir, { recursive: true });
 
   let targetPath: string;

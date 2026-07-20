@@ -13,37 +13,13 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { FINAL_STATES, FINAL_TRANSITIONS } from './state_machine';
 
 // ---------------------------------------------------------------------------
 // §5.1 主状态枚举
 // ---------------------------------------------------------------------------
 
-export const WI_STATUSES_V11 = [
-  'created',
-  'intake_ready',
-  'impact_analyzing',
-  'impact_analyzed',
-  'workflow_selected',
-  'candidate_preparing',
-  'candidate_prepared',
-  'gates_running',
-  'gates_failed',
-  'approval_required',
-  'approved',
-  'merge_ready',
-  'merging',
-  'merged',
-  'post_merge_verified',
-  'implementation_ready',
-  'implementation_running',
-  'implementation_done',
-  'verification_running',
-  'verification_done',
-  'closed',
-  'blocked',
-  'rejected',
-  'superseded',
-] as const;
+export const WI_STATUSES_V11 = FINAL_STATES;
 
 export type WIStatusV11 = (typeof WI_STATUSES_V11)[number];
 
@@ -102,36 +78,8 @@ export function isAuthorizedAdvancementSubject(subject: string): boolean {
 /**
  * v1.1 标准 WI 主链路合法跳转表。
  */
-export const V11_TRANSITIONS = new Map<string, readonly string[]>([
-  ['created', ['intake_ready']],
-  ['intake_ready', ['impact_analyzing']],
-  ['impact_analyzing', ['impact_analyzed']],
-  ['impact_analyzed', ['workflow_selected']],
-  ['workflow_selected', ['candidate_preparing', 'implementation_ready']],
-  ['candidate_preparing', ['candidate_prepared']],
-  ['candidate_prepared', ['gates_running']],
-  ['gates_running', ['gates_failed', 'approval_required']],
-  ['gates_failed', ['candidate_preparing', 'gates_running']],
-  ['approval_required', ['approved', 'rejected']],
-  ['approved', ['merge_ready']],
-  ['merge_ready', ['merging']],
-  ['merging', ['merged', 'gates_failed']],
-  ['merged', ['post_merge_verified']],
-  ['post_merge_verified', ['implementation_ready', 'verification_running']],
-  ['implementation_ready', ['implementation_running']],
-  ['implementation_running', ['implementation_done']],
-  ['implementation_done', ['verification_running']],
-  ['verification_running', ['verification_done', 'implementation_running']],
-  ['verification_done', ['closed']],
-  // blocked 可以回退到多个前序状态
-  ['blocked', ['candidate_preparing', 'gates_running', 'implementation_ready', 'workflow_selected']],
-  // rejected 终态
-  ['rejected', []],
-  // superseded 终态
-  ['superseded', []],
-  // closed 终态
-  ['closed', []],
-]);
+/** Compatibility export backed by the one authoritative transition table. */
+export const V11_TRANSITIONS: ReadonlyMap<string, readonly string[]> = FINAL_TRANSITIONS;
 
 /**
  * 校验 v1.1 状态跳转是否合法。

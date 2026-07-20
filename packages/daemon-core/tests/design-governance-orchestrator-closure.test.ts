@@ -129,7 +129,7 @@ describe('Orchestrator governance execution closure', () => {
 
     expect(contract).toContain('`user_approved` 必须来自用户对当前候选的明确决定');
     expect(contract).toContain('`auto_approved` 只允许在当前有效策略明确授权时使用');
-    expect(contract).toContain('旧决定必须 `invalidated`');
+    expect(contract).toContain('原子失效旧决定并进入 `blocked`');
     expect(contract).not.toContain('只有用户在当前对话中的明确决定才能通过');
     expect(contract).toContain('直接修改 `.specforge/project/**`');
     expect(contract).toContain(
@@ -378,7 +378,7 @@ describe('Orchestrator governance execution closure', () => {
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      auditDeps('candidate_preparing')
     )) as any;
 
     expect(rejected.success).toBe(false);
@@ -404,7 +404,7 @@ describe('Orchestrator governance execution closure', () => {
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      auditDeps('candidate_preparing')
     )) as any;
 
     expect(cleaned.success).toBe(true);
@@ -591,7 +591,7 @@ describe('Orchestrator governance execution closure', () => {
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      auditDeps('candidate_preparing')
     )) as any;
 
     expect(normalizedWrite.success).toBe(true);
@@ -701,7 +701,7 @@ describe('Orchestrator governance execution closure', () => {
           content: `# ${fileType}\n\nOwned artifact.`,
         },
         { directory: projectRoot, agent: 'sf-orchestrator' },
-        {} as any
+        auditDeps('candidate_preparing')
       )) as any;
 
       expect(denied.success).toBe(false);
@@ -716,7 +716,7 @@ describe('Orchestrator governance execution closure', () => {
           content: `# ${fileType}\n\nOwned artifact.`,
         },
         { directory: projectRoot, agent: requiredAgent },
-        {} as any
+        auditDeps('candidate_preparing')
       )) as any;
 
       expect(written.success).toBe(true);

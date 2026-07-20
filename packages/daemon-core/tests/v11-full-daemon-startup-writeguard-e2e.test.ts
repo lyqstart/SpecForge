@@ -42,8 +42,19 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       eventBus,
       stateManager: {} as any,
       wal: {} as any,
-      // Minimal deps — same pattern as existing v11-daemon-e2e-http.test.ts
-      // Write guard routes don't need toolDispatcher
+      projectManager: {
+        async getProjectStateManager() {
+          return {
+            async rebuildFromEventsFile() {
+              return { replayed: false };
+            },
+            async getState() {
+              return { current_state: 'implementation_running' };
+            },
+          };
+        },
+      } as any,
+      // Write Guard must obtain state from StateManager, not work_item.json.status.
     };
 
     server = new HTTPServer(deps);

@@ -22,6 +22,7 @@ import {
   checkStateEvidenceRequirement,
 } from './state-machine-v11';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 export type AuthoritativeStateRead = {
   current_state: string | null;
@@ -149,6 +150,22 @@ async function validateTransitionRequest(input: TransitionWithEvidenceInput): Pr
   if (input.fromState !== '' && !isValidV11Transition(input.fromState, input.toState)) {
     throw new Error(
       `STATE_COORDINATOR_TRANSITION_FAILED: invalid transition ${input.fromState} → ${input.toState}`,
+    );
+  }
+
+  if (input.fromState === 'approved' && input.toState === 'blocked') {
+    const source = input.transitionContext?.source;
+    if (
+      input.actorRole !== ACTOR_ROLES.userDecisionRecorder ||
+      source !== 'approval_invalidation'
+    ) {
+      throw new Error(
+        'STATE_COORDINATOR_TRANSITION_FAILED: approved → blocked is reserved for the atomic approval-invalidation flow',
+      );
+    }
+    await ensureFileExists(
+      path.join(input.workItemDir, 'approval_invalidation.json'),
+      'STATE_COORDINATOR_TRANSITION_FAILED: approval invalidation evidence',
     );
   }
 

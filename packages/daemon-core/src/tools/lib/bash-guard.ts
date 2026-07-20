@@ -6,6 +6,7 @@
  */
 
 import type { WritePolicyRule } from './write-guard-v11.js'
+import { isCandidateFrozenState } from './candidate-freeze-v11.js'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -76,6 +77,8 @@ const FILE_MODIFYING_PATTERNS: ReadonlyArray<{
 export interface BashGuardOptions {
   /** Optional caller role — defaults to 'agent' for backward compatibility */
   callerRole?: string
+  /** Authoritative StateManager state. Missing state freezes governed Candidate paths. */
+  currentState?: string
 }
 
 /**
@@ -112,7 +115,9 @@ export function guardBashCommand(
           {
             hasActiveWI: true,
             callerRole: callerRole as import('./write-guard-v11.js').WriteGuardContext['callerRole'],
-            isFrozen: false,
+            isFrozen: options?.currentState
+              ? isCandidateFrozenState(options.currentState)
+              : true,
           },
           targetPath,
         )

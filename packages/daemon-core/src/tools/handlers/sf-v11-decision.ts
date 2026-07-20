@@ -23,6 +23,8 @@ import {
 } from '../lib/state_machine';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import * as crypto from 'node:crypto';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 
 type DecisionType = 'auto_approved' | 'user_approved' | 'waived' | 'rejected';
 
@@ -55,6 +57,40 @@ async function readJsonIfExists(filePath: string): Promise<any> {
 async function writeJson(filePath: string, value: any): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   await fs.writeFile(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8');
+}
+
+async function writeJsonAtomic(filePath: string, value: any): Promise<void> {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(tempPath, JSON.stringify(value, null, 2) + '\n', 'utf-8');
+  await fs.rename(tempPath, filePath);
+}
+
+async function fileSha256(filePath: string): Promise<string> {
+  const content = await fs.readFile(filePath);
+  return `sha256:${crypto.createHash('sha256').update(content).digest('hex')}`;
+}
+
+async function collectGateEvidence(workItemDir: string): Promise<Array<{ path: string; sha256: string }>> {
+  const result: Array<{ path: string; sha256: string }> = [];
+  const gatesDir = path.join(workItemDir, 'gates');
+  try {
+    const entries = await fs.readdir(gatesDir, { withFileTypes: true });
+    for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
+      if (!entry.isFile()) continue;
+      const filePath = path.join(gatesDir, entry.name);
+      result.push({ path: `gates/${entry.name}`, sha256: await fileSha256(filePath) });
+    }
+  } catch {
+    // A missing gates directory is captured by the empty evidence list.
+  }
+  const summaryPath = path.join(workItemDir, 'gate_summary.md');
+  try {
+    result.push({ path: 'gate_summary.md', sha256: await fileSha256(summaryPath) });
+  } catch {
+    // A missing summary is captured by the absent entry.
+  }
+  return result;
 }
 
 async function enrichDecisionAudit(input: {
@@ -241,6 +277,16 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
 
   try {
     if (action === 'invalidate') {
+      const authoritativeState = await readAuthoritativeState({ deps, projectRoot, workItemId });
+      if (authoritativeState.current_state !== 'approved') {
+        return {
+          success: false,
+          error: 'USER_DECISION_INVALIDATION_REQUIRES_APPROVED_STATE',
+          current_state: authoritativeState.current_state,
+          state_authority: authoritativeState.source,
+        };
+      }
+
       const mergeGuard = await readMergeReportSuccess(workItemDir);
       if (mergeGuard.success) {
         return {
@@ -251,9 +297,155 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
         };
       }
 
-      const reason = (args['reason'] as string) || 'base_spec_version changed';
-      await invalidateUserDecision(workItemDir, reason);
-      return { success: true, work_item_id: workItemId, decision_status: 'invalidated' };
+      const reason = String(args['reason'] ?? '').trim();
+      if (!reason) {
+        return {
+          success: false,
+          error: 'USER_DECISION_INVALIDATION_REASON_REQUIRED',
+          retry_allowed: true,
+        };
+      }
+
+      const decisionPath = path.join(workItemDir, 'user_decision.json');
+      const invalidationPath = path.join(workItemDir, 'approval_invalidation.json');
+      const originalDecisionText = await fs.readFile(decisionPath, 'utf-8');
+      const originalDecision = JSON.parse(originalDecisionText);
+      let previousInvalidationText: string | null = null;
+      try {
+        previousInvalidationText = await fs.readFile(invalidationPath, 'utf-8');
+      } catch {
+        previousInvalidationText = null;
+      }
+      const workflowFacts = await readWorkflowFacts(workItemDir);
+      const workflowType = workflowTypeForDecision(
+        workflowFacts.workflowPath,
+        workflowFacts.workflowType,
+      );
+      const gateEvidence = await collectGateEvidence(workItemDir);
+      const invalidation = {
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        invalidated_at: new Date().toISOString(),
+        invalidated_by: ACTOR_ROLES.userDecisionRecorder,
+        reason,
+        prior_state: authoritativeState.current_state,
+        recovery_state: 'blocked',
+        decision_id: originalDecision.decision_id,
+        approved_manifest_hash: originalDecision.manifest_hash,
+        approved_candidate_hash: originalDecision.candidate_hash,
+        approved_gate_summary_hash: originalDecision.gate_summary_hash,
+        gate_evidence_status: 'invalidated',
+        invalidated_gate_evidence: gateEvidence,
+      };
+
+      if (previousInvalidationText !== null) {
+        const previousInvalidation = JSON.parse(previousInvalidationText);
+        const archiveName = String(previousInvalidation.decision_id ?? 'unknown-decision')
+          .replace(/[^A-Za-z0-9._-]/g, '_');
+        await writeJsonAtomic(
+          path.join(workItemDir, 'approval_invalidations', `${archiveName}.json`),
+          previousInvalidation,
+        );
+      }
+      await writeJsonAtomic(invalidationPath, invalidation);
+      try {
+        await invalidateUserDecision(workItemDir, reason);
+        await transitionWithEvidence({
+          deps,
+          context,
+          projectRoot,
+          workItemId,
+          workItemDir,
+          fromState: 'approved',
+          toState: 'blocked',
+          workflowType,
+          actorRole: ACTOR_ROLES.userDecisionRecorder,
+          evidence: 'approval_invalidation.json',
+          transitionContext: {
+            source: 'approval_invalidation',
+            decision_id: originalDecision.decision_id,
+          },
+        });
+      } catch (error) {
+        await fs.writeFile(decisionPath, originalDecisionText, 'utf-8');
+        if (previousInvalidationText === null) {
+          await fs.rm(invalidationPath, { force: true });
+        } else {
+          await fs.writeFile(invalidationPath, previousInvalidationText, 'utf-8');
+        }
+        throw error;
+      }
+
+      return {
+        success: true,
+        work_item_id: workItemId,
+        decision_status: 'invalidated',
+        current_state: 'blocked',
+        invalidation_record: 'approval_invalidation.json',
+      };
+    }
+
+    if (action === 'recover_after_invalidation') {
+      if (context?.agent !== ACTOR_ROLES.orchestrator) {
+        return {
+          success: false,
+          error: 'APPROVAL_INVALIDATION_RECOVERY_REQUIRES_ORCHESTRATOR',
+          required_actor: ACTOR_ROLES.orchestrator,
+          actual_actor: context?.agent ?? null,
+        };
+      }
+      const authoritativeState = await readAuthoritativeState({ deps, projectRoot, workItemId });
+      if (authoritativeState.current_state !== 'blocked') {
+        return {
+          success: false,
+          error: 'APPROVAL_INVALIDATION_RECOVERY_REQUIRES_BLOCKED_STATE',
+          current_state: authoritativeState.current_state,
+        };
+      }
+      const invalidation = await readJsonIfExists(
+        path.join(workItemDir, 'approval_invalidation.json'),
+      );
+      const decision = await readJsonIfExists(path.join(workItemDir, 'user_decision.json'));
+      if (
+        !invalidation ||
+        invalidation.work_item_id !== workItemId ||
+        invalidation.gate_evidence_status !== 'invalidated' ||
+        decision?.decision_status !== 'invalidated' ||
+        decision?.decision_id !== invalidation.decision_id
+      ) {
+        return {
+          success: false,
+          error: 'APPROVAL_INVALIDATION_RECOVERY_EVIDENCE_INVALID',
+        };
+      }
+      const workflowFacts = await readWorkflowFacts(workItemDir);
+      const workflowType = workflowTypeForDecision(
+        workflowFacts.workflowPath,
+        workflowFacts.workflowType,
+      );
+      const transition = await transitionWithEvidence({
+        deps,
+        context,
+        projectRoot,
+        workItemId,
+        workItemDir,
+        fromState: 'blocked',
+        toState: 'candidate_preparing',
+        workflowType,
+        actorRole: ACTOR_ROLES.orchestrator,
+        evidence: 'approval_invalidation.json',
+        transitionContext: {
+          source: 'approval_invalidation_recovery',
+          decision_id: invalidation.decision_id,
+        },
+      });
+      return {
+        success: true,
+        work_item_id: workItemId,
+        decision_status: 'invalidated',
+        current_state: 'candidate_preparing',
+        transition_result: transition.transition_result,
+      };
     }
 
     const decisionStatus = resolveDecisionStatus(args as Record<string, unknown>);

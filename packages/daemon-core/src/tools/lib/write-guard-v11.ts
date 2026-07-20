@@ -26,6 +26,7 @@
  */
 
 import { ACTOR_ROLES, type ActorRole } from '@specforge/types/actor-roles'
+import { isCandidateFrozenState } from './candidate-freeze-v11'
 
 // ---------------------------------------------------------------------------
 // Core types — canonical definitions
@@ -434,7 +435,7 @@ export function enforceWritePolicy(params: {
         }
       : undefined,
     callerRole: actor as WriteGuardContext['callerRole'],
-    isFrozen: false,
+    isFrozen: isCandidateFrozenState(wiStatus),
   };
 
   const mappedOp: 'create' | 'modify' | 'delete' =

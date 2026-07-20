@@ -211,6 +211,7 @@ describe('Design Governance live closure', () => {
     await writeBaseWorkItem(projectRoot, workItemId);
     const handler = getHandler('sf_artifact_write');
     expect(handler).toBeDefined();
+    const state = mockDeps('candidate_preparing');
 
     const result = await handler!(
       {
@@ -219,7 +220,7 @@ describe('Design Governance live closure', () => {
         content: designCandidate(),
       },
       { directory: projectRoot, agent: 'sf-design' },
-      {} as any
+      state.deps
     );
 
     expect((result as any).success).toBe(true);
@@ -251,7 +252,7 @@ describe('Design Governance live closure', () => {
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
-      {} as any
+      state.deps
     );
 
     expect((manifestResult as any).success).toBe(true);

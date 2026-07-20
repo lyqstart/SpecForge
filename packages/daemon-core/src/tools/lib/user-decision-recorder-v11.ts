@@ -54,6 +54,9 @@ export interface UserDecisionV11 {
     expires_at?: string;
     follow_up_wi?: string;
   }>;
+  previous_decision_status?: UserDecisionStatus;
+  invalidated_at?: string;
+  invalidation_reason?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -126,16 +129,27 @@ export async function recordUserDecision(input: RecordDecisionInput): Promise<Us
 export async function invalidateUserDecision(
   workItemDir: string,
   reason: string,
-): Promise<void> {
+): Promise<{ before: UserDecisionV11; after: UserDecisionV11 }> {
   const decisionPath = path.join(workItemDir, 'user_decision.json');
-  try {
-    const content = await fs.readFile(decisionPath, 'utf-8');
-    const decision = JSON.parse(content) as UserDecisionV11;
-    decision.decision_status = 'invalidated';
-    await fs.writeFile(decisionPath, JSON.stringify(decision, null, 2) + '\n', 'utf-8');
-  } catch {
-    // 文件不存在，无法失效
+  const content = await fs.readFile(decisionPath, 'utf-8');
+  const decision = JSON.parse(content) as UserDecisionV11;
+  if (!decision.decision_id || !decision.work_item_id) {
+    throw new Error('USER_DECISION_INVALID: decision_id and work_item_id are required');
   }
+  if (decision.decision_status !== 'approved' && decision.decision_status !== 'waived') {
+    throw new Error(
+      `USER_DECISION_INVALIDATION_REQUIRES_ACTIVE_APPROVAL: current=${decision.decision_status}`,
+    );
+  }
+  const before = structuredClone(decision);
+  decision.previous_decision_status = decision.decision_status;
+  decision.decision_status = 'invalidated';
+  decision.invalidated_at = new Date().toISOString();
+  decision.invalidation_reason = reason;
+  const tempPath = `${decisionPath}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(tempPath, JSON.stringify(decision, null, 2) + '\n', 'utf-8');
+  await fs.rename(tempPath, decisionPath);
+  return { before, after: decision };
 }
 
 // ---------------------------------------------------------------------------
