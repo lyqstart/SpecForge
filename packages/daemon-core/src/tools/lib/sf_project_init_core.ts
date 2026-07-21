@@ -11,10 +11,15 @@
  * after layout traversal, independent of LAYOUT drift.
  */
 
-import { mkdir, writeFile, access, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, access, readFile, readdir } from 'node:fs/promises';
 import { join, extname, dirname } from 'node:path';
 import { existsSync, statSync } from 'node:fs';
 import { LAYOUT, SPEC_DIR_NAME, legacyPaths } from '@specforge/types/directory-layout';
+import {
+  canonicalProjectSpecModuleEntry,
+  normalizeModuleCodeReference,
+  resolveSpecModuleIdentity,
+} from '@specforge/types';
 import { scanHostProfile, PROFILE_TTL_MS, getHostProfilePath } from '@specforge/host-profile';
 
 export interface InitEntry {
@@ -23,12 +28,35 @@ export interface InitEntry {
   type: 'dir' | 'system_file' | 'user_file';
 }
 
+/**
+ * Outcome of the idempotent module-registry normalization performed by
+ * ensureProjectInit for pre-existing / upgraded / damaged projects.
+ *
+ * - `unchanged`: the registry was already canonical-healthy, or nothing safe
+ *   could be read; no write was performed.
+ * - `normalized`: an empty / legacy / non-canonical single-CORE registry was
+ *   structurally repaired to the canonical CORE entry. Version was NOT bumped.
+ * - `requires_spec_migration`: the registry is broken in a way that cannot be
+ *   safely resolved as CORE-only (invalid entries, non-CORE modules, or a
+ *   missing/invalid authoritative CORE definition). Init made NO change; a
+ *   governed spec_migration_path is required.
+ */
+export interface ModuleRegistryNormalization {
+  status: 'unchanged' | 'normalized' | 'requires_spec_migration';
+  reason?: string;
+  moduleCodes?: string[];
+}
+
 export interface InitResult {
   success: boolean;
   created: string[];
   existed: string[];
   errors: string[];
   placeholderFiles: string[];
+  /** spec_manifest.json paths whose module registry was structurally normalized. */
+  normalized: string[];
+  /** Outcome of the idempotent module-registry normalization. */
+  moduleRegistry: ModuleRegistryNormalization;
 }
 
 type SystemTemplate = (projectName: string, now: string) => string;
@@ -309,6 +337,8 @@ export async function ensureProjectInit(
     existed: [],
     errors: [],
     placeholderFiles: [],
+    normalized: [],
+    moduleRegistry: { status: 'unchanged' },
   };
 
   const name = projectName || projectRoot.split(/[/\\]/).pop() || 'untitled';
@@ -421,7 +451,165 @@ export async function ensureProjectInit(
     result.success = false;
   }
 
+  // Idempotent module-registry normalization for pre-existing / upgraded /
+  // damaged projects. The main file loop never rewrites a non-empty
+  // spec_manifest.json, so an existing `modules: []` (or legacy/invalid) entry
+  // would otherwise stay unrepairable and deadlock every candidate write with
+  // MODULE_OWNERSHIP_UNRESOLVED. This step only performs the CORE structural
+  // normalization that init itself is authorized to declare; anything broader
+  // is deferred to the governed spec_migration_path.
+  try {
+    await normalizeModuleRegistry(projectRoot, result);
+  } catch (err: any) {
+    // A normalization failure must not fail bootstrap; it is an advisory repair.
+    result.moduleRegistry = {
+      status: 'requires_spec_migration',
+      reason: `normalization_error: ${err?.message ?? String(err)}`,
+    };
+  }
+
   return result;
+}
+
+/**
+ * Idempotently normalize the Project Spec module registry for the default CORE
+ * module only.
+ *
+ * Compliance boundary (sf-orchestrator §L175): init is the authority that
+ * declares the default CORE module. This function ONLY re-establishes that
+ * declaration; it never invents business modules from directory names, never
+ * drops a declared non-CORE module, and never touches project_spec_version,
+ * project metadata, or any other user field. Real multi-module / rename
+ * migrations remain spec_migration_path scope.
+ */
+async function normalizeModuleRegistry(projectRoot: string, result: InitResult): Promise<void> {
+  const manifestPath = join(projectRoot, SPEC_DIR_NAME, 'project', 'spec_manifest.json');
+  const modulesRoot = join(projectRoot, SPEC_DIR_NAME, 'project', 'modules');
+
+  let raw: string;
+  try {
+    raw = await readFile(manifestPath, 'utf-8');
+  } catch {
+    result.moduleRegistry = { status: 'unchanged', reason: 'spec_manifest_missing' };
+    return;
+  }
+
+  let manifest: any;
+  try {
+    manifest = JSON.parse(raw);
+  } catch {
+    result.moduleRegistry = { status: 'requires_spec_migration', reason: 'spec_manifest_unreadable' };
+    return;
+  }
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    result.moduleRegistry = { status: 'requires_spec_migration', reason: 'spec_manifest_not_object' };
+    return;
+  }
+
+  const rawModules: unknown[] = Array.isArray(manifest.modules) ? manifest.modules : [];
+
+  // 1) Idempotent: a non-empty registry whose every entry is already the exact
+  //    canonical shape (and has no duplicate codes) is left untouched. This
+  //    covers fresh projects (template seeds canonical CORE) and healthy
+  //    multi-module projects.
+  if (rawModules.length > 0) {
+    const codes: string[] = [];
+    let allCanonical = true;
+    for (const entry of rawModules) {
+      const identity = resolveSpecModuleIdentity(entry);
+      if (!identity.valid || !identity.moduleCode) {
+        allCanonical = false;
+        break;
+      }
+      const canonical = canonicalProjectSpecModuleEntry(identity.moduleCode);
+      if (JSON.stringify(entry) !== JSON.stringify(canonical)) {
+        allCanonical = false;
+        break;
+      }
+      codes.push(identity.moduleCode);
+    }
+    if (allCanonical && new Set(codes).size === codes.length) {
+      result.moduleRegistry = { status: 'unchanged', moduleCodes: codes };
+      return;
+    }
+  }
+
+  // 2) Registry needs normalization. Only the single-CORE structural case is in
+  //    scope; anything else fails closed to spec_migration_path.
+  const resolutions = rawModules.map(entry => resolveSpecModuleIdentity(entry));
+  const hasInvalidEntry = resolutions.some(resolution => !resolution.valid);
+  const validCodes = Array.from(
+    new Set(
+      resolutions
+        .filter(resolution => resolution.valid && resolution.moduleCode)
+        .map(resolution => resolution.moduleCode as string)
+    )
+  );
+  const hasNonCoreValid = validCodes.some(code => code !== 'CORE');
+
+  // The authoritative CORE definition must already exist on disk and resolve to
+  // canonical CORE. init itself lays this file down, so this is normally true.
+  const coreModuleJson = join(modulesRoot, 'CORE', 'module.json');
+  let coreDefinitionValid = false;
+  if (existsSync(coreModuleJson)) {
+    try {
+      const identity = resolveSpecModuleIdentity(JSON.parse(await readFile(coreModuleJson, 'utf-8')));
+      coreDefinitionValid = identity.valid && identity.moduleCode === 'CORE';
+    } catch {
+      coreDefinitionValid = false;
+    }
+  }
+
+  // Any non-CORE module directory that carries its own module.json signals a
+  // real multi-module / rename migration → spec_migration_path scope.
+  let otherModuleDirsWithDefinition = 0;
+  try {
+    const dirents = await readdir(modulesRoot, { withFileTypes: true });
+    for (const dirent of dirents) {
+      if (!dirent.isDirectory() || dirent.name === 'CORE') continue;
+      if (existsSync(join(modulesRoot, dirent.name, 'module.json'))) {
+        otherModuleDirsWithDefinition += 1;
+      }
+    }
+  } catch {
+    // modules root unreadable → coreDefinitionValid gate below fails closed.
+  }
+
+  const safeCoreOnly =
+    coreDefinitionValid &&
+    !hasInvalidEntry &&
+    !hasNonCoreValid &&
+    otherModuleDirsWithDefinition === 0;
+
+  if (!safeCoreOnly) {
+    const reasons: string[] = [];
+    if (!coreDefinitionValid) reasons.push('core_module_definition_missing_or_invalid');
+    if (hasInvalidEntry) reasons.push('invalid_module_entry_present');
+    if (hasNonCoreValid) reasons.push('non_core_module_declared');
+    if (otherModuleDirsWithDefinition > 0) reasons.push('non_core_module_directory_present');
+    result.moduleRegistry = {
+      status: 'requires_spec_migration',
+      reason: reasons.join(','),
+    };
+    return;
+  }
+
+  // Perform the minimal structural repair: seed the canonical CORE entry and,
+  // when default_module is missing/invalid, set it to CORE. Everything else —
+  // including project_spec_version — is preserved verbatim.
+  const normalizedManifest: Record<string, unknown> = {
+    ...manifest,
+    modules: [canonicalProjectSpecModuleEntry('CORE')],
+  };
+  if (normalizeModuleCodeReference(manifest.default_module) !== 'CORE') {
+    normalizedManifest.default_module = 'CORE';
+  }
+
+  await writeFile(manifestPath, JSON.stringify(normalizedManifest, null, 2) + '\n', 'utf-8');
+
+  const rel = join(SPEC_DIR_NAME, 'project', 'spec_manifest.json');
+  if (!result.normalized.includes(rel)) result.normalized.push(rel);
+  result.moduleRegistry = { status: 'normalized', moduleCodes: ['CORE'] };
 }
 
 async function getSystemFileContent(

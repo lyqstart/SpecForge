@@ -232,9 +232,11 @@ describe('Orchestrator governance execution closure', () => {
     expect(contract).toContain('当前没有完整的用户级工作流身份和技能映射');
   });
 
-  it('declares core for a new project but never rewrites an existing empty module registry', async () => {
+  it('declares core for a new project and idempotently normalizes an empty CORE registry without bumping the version', async () => {
     const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
     expect(initialized.success).toBe(true);
+    // Fresh project is already canonical-healthy; normalization is a no-op.
+    expect(initialized.moduleRegistry.status).toBe('unchanged');
 
     const manifestPath = path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
     const initialManifest = JSON.parse(await readFile(manifestPath, 'utf8'));
@@ -243,9 +245,12 @@ describe('Orchestrator governance execution closure', () => {
       expect.objectContaining({ module_code: 'CORE' })
     );
 
+    // Simulate a legacy / upgraded / damaged project: empty module registry,
+    // missing default_module, but the authoritative CORE definition still on
+    // disk (init lays modules/CORE/module.json down). This is exactly the
+    // MODULE_OWNERSHIP_UNRESOLVED deadlock precondition.
     const legacyManifest = {
       ...initialManifest,
-      default_module: undefined,
       modules: [],
       project_spec_version: 'PSV-0042',
     };
@@ -254,9 +259,22 @@ describe('Orchestrator governance execution closure', () => {
 
     const repaired = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
     expect(repaired.success).toBe(true);
+    expect(repaired.moduleRegistry.status).toBe('normalized');
+    expect(repaired.moduleRegistry.moduleCodes).toEqual(['CORE']);
+
     const preserved = JSON.parse(await readFile(manifestPath, 'utf8'));
+    // Structural repair only: version and other user fields are untouched.
     expect(preserved.project_spec_version).toBe('PSV-0042');
-    expect(preserved.modules).toEqual([]);
+    expect(preserved.default_module).toBe('CORE');
+    expect(preserved.modules).toContainEqual(expect.objectContaining({ module_code: 'CORE' }));
+    expect(preserved.modules).toHaveLength(1);
+
+    // Idempotent: running init again leaves the now-canonical registry alone.
+    const again = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    expect(again.moduleRegistry.status).toBe('unchanged');
+    const stable = JSON.parse(await readFile(manifestPath, 'utf8'));
+    expect(stable.modules).toEqual(preserved.modules);
+    expect(stable.project_spec_version).toBe('PSV-0042');
   });
 
   it('blocks every non-read tool at dispatcher level after a Work Item HardStop', async () => {

@@ -15,6 +15,7 @@ import '../src/tools/handlers/sf-v11-gate-run.js';
 import '../src/tools/handlers/sf-changed-files-audit.js';
 import { getHandler } from '../src/tools/ToolDispatcher.js';
 import { getRequiredGates } from '../src/tools/lib/required-gates.js';
+import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
 
 function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -295,6 +296,45 @@ describe('Design Governance live closure', () => {
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('MODULE_OWNERSHIP_UNRESOLVED');
     expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(false);
+  });
+
+  it('recovers an empty module registry through governed init and then writes a CORE Candidate', async () => {
+    const workItemId = 'WI-0001';
+
+    // Bootstrap a canonical project so the authoritative modules/CORE/module.json
+    // exists on disk, then reproduce the legacy deadlock precondition.
+    await ensureProjectInit(projectRoot, 'legacy-recovery-fixture');
+    await writeBaseWorkItem(projectRoot, workItemId);
+
+    const mp = projectSpecManifest(projectRoot);
+    const broken = JSON.parse(await readFile(mp, 'utf8'));
+    broken.modules = [];
+    delete broken.default_module;
+    await writeFile(mp, JSON.stringify(broken, null, 2));
+
+    // The write guard still blocks while the registry is empty.
+    const handler = getHandler('sf_artifact_write');
+    const blocked = await handler!(
+      { work_item_id: workItemId, file_type: 'design', content: designCandidate() },
+      { directory: projectRoot, agent: 'sf-design' },
+      mockDeps('candidate_preparing').deps
+    );
+    expect((blocked as any).success).toBe(false);
+    expect((blocked as any).error).toContain('MODULE_OWNERSHIP_UNRESOLVED');
+
+    // Governed repair: init re-establishes the canonical CORE declaration.
+    const repaired = await ensureProjectInit(projectRoot, 'legacy-recovery-fixture');
+    expect(repaired.moduleRegistry.status).toBe('normalized');
+
+    // Deadlock resolved: the same CORE-scoped design Candidate now writes.
+    const result = await handler!(
+      { work_item_id: workItemId, file_type: 'design', content: designCandidate() },
+      { directory: projectRoot, agent: 'sf-design' },
+      mockDeps('candidate_preparing').deps
+    );
+    expect((result as any).error ?? '').not.toContain('MODULE_OWNERSHIP_UNRESOLVED');
+    expect((result as any).success).toBe(true);
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(true);
   });
 
   it('runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required', async () => {
