@@ -105,14 +105,14 @@ describe('spec_migration governed entry via sf_state_transition', () => {
     expect(result.workflow_path).toBe('spec_migration_path');
   });
 
-  it('still fails closed for the reserved architecture_change_path without an identity', async () => {
+  it('still fails closed for the reserved rollback_path without an identity', async () => {
     const handler = getHandler('sf_state_transition');
     const result = (await handler!(
       {
         work_item_id: 'WI-0009',
         from_state: '',
         to_state: 'created',
-        workflow_path: 'architecture_change_path',
+        workflow_path: 'rollback_path',
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       mockDeps()
@@ -138,5 +138,65 @@ describe('spec_migration governed entry via sf_state_transition', () => {
 
     expect(result.success).toBe(false);
     expect(result.code).toBe('WORKFLOW_TYPE_PATH_CONFLICT');
+  });
+});
+
+describe('architecture_change governed entry via sf_state_transition', () => {
+  it('creates a Work Item on architecture_change_path with workflow_type architecture_change', async () => {
+    const handler = getHandler('sf_state_transition');
+    const result = (await handler!(
+      {
+        work_item_id: 'WI-0021',
+        from_state: '',
+        to_state: 'created',
+        workflow_type: 'architecture_change',
+        workflow_path: 'architecture_change_path',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      mockDeps()
+    )) as any;
+
+    expect(result.success).toBe(true);
+    expect(result.workflow_type).toBe('architecture_change');
+    expect(result.workflow_path).toBe('architecture_change_path');
+
+    const wi = await workItemJson('WI-0021');
+    expect(wi.workflow_type).toBe('architecture_change');
+    expect(wi.workflow_path).toBe('architecture_change_path');
+  });
+
+  it('resolves the registered default when only architecture_change_path is given (was an active deadlock)', async () => {
+    const handler = getHandler('sf_state_transition');
+    const result = (await handler!(
+      {
+        work_item_id: 'WI-0022',
+        from_state: '',
+        to_state: 'created',
+        workflow_path: 'architecture_change_path',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      mockDeps()
+    )) as any;
+
+    expect(result.success).toBe(true);
+    expect(result.workflow_type).toBe('architecture_change');
+    expect(result.workflow_path).toBe('architecture_change_path');
+  });
+
+  it('still fails closed for the reserved rollback_path without an identity', async () => {
+    const handler = getHandler('sf_state_transition');
+    const result = (await handler!(
+      {
+        work_item_id: 'WI-0023',
+        from_state: '',
+        to_state: 'created',
+        workflow_path: 'rollback_path',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      mockDeps()
+    )) as any;
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe('UNKNOWN_WORKFLOW_PATH');
   });
 });
