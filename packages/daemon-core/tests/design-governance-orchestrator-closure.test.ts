@@ -199,6 +199,7 @@ describe('Orchestrator governance execution closure', () => {
       ['refactor', 'task_change_path', 'sf-workflow-refactor'],
       ['ops_task', 'task_change_path', 'sf-workflow-ops-task'],
       ['quick_change', 'code_only_fast_path', 'sf-workflow-quick-change'],
+      ['spec_migration', 'spec_migration_path', 'sf-workflow-spec-migration'],
     ] as const;
 
     for (const [workflowType, workflowPath, skillName] of currentPairs) {
@@ -223,13 +224,14 @@ describe('Orchestrator governance execution closure', () => {
     expect(contract).not.toContain('| `refactor` | `design_change_path` |');
     for (const reservedPath of [
       'architecture_change_path',
-      'spec_migration_path',
       'rollback_path',
     ]) {
       expect(stateMachine).toContain(`"${reservedPath}"`);
       expect(contract).toContain(reservedPath);
     }
     expect(contract).toContain('当前没有完整的用户级工作流身份和技能映射');
+    // spec_migration is now a registered workflow identity, not a reserved path.
+    expect(stateMachine).toContain('spec_migration: "spec_migration_path"');
   });
 
   it('declares core for a new project and idempotently normalizes an empty CORE registry without bumping the version', async () => {

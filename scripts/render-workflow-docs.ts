@@ -23,6 +23,7 @@ const WORKFLOW_DIR = 'configs/workflows/builtin';
 const WORKFLOW_ORDER = [
   'feature_spec', 'bugfix_spec', 'feature_spec_design_first',
   'quick_change', 'change_request', 'refactor', 'ops_task', 'investigation',
+  'spec_migration',
 ];
 
 const DISPLAY_NAMES: Record<string, string> = {
@@ -34,6 +35,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   refactor: 'Refactor',
   ops_task: 'Ops Task',
   investigation: 'Investigation',
+  spec_migration: 'Spec Migration',
 };
 
 const SKILL_FILES: { relPath: string; workflowId: string }[] = [
@@ -45,6 +47,7 @@ const SKILL_FILES: { relPath: string; workflowId: string }[] = [
   { relPath: 'setup/userlevel-opencode/skills/sf-workflow-refactor/SKILL.md', workflowId: 'refactor' },
   { relPath: 'setup/userlevel-opencode/skills/sf-workflow-ops-task/SKILL.md', workflowId: 'ops_task' },
   { relPath: 'setup/userlevel-opencode/skills/sf-workflow-investigation/SKILL.md', workflowId: 'investigation' },
+  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-spec-migration/SKILL.md', workflowId: 'spec_migration' },
 ];
 
 const ORCHESTRATOR_PATH = 'setup/userlevel-opencode/agents/sf-orchestrator.md';
