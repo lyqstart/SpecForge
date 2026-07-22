@@ -1,8 +1,9 @@
 /**
  * 验证当前 workflow_type / workflow_path 边界：
  * - 显式 workflow_type 与 workflow_path 必须兼容；
- * - 只有 4 条已注册路径允许在缺少 workflow_type 时使用默认值；
- * - architecture / migration / rollback 仍是保留路径，当前不得静默映射。
+ * - 只有已注册路径允许在缺少 workflow_type 时使用默认值；
+ * - spec_migration 已成为正式工作流身份，映射到 spec_migration_path；
+ * - architecture / rollback 仍是保留路径，当前不得静默映射。
  */
 
 import { describe, expect, it } from 'vitest';
@@ -25,23 +26,24 @@ const CURRENT_PAIRS: ReadonlyArray<readonly [WorkflowType, WorkflowPath]> = [
   ['refactor', 'task_change_path'],
   ['ops_task', 'task_change_path'],
   ['quick_change', 'code_only_fast_path'],
+  ['spec_migration', 'spec_migration_path'],
 ];
 
 const RESERVED_PATHS: WorkflowPath[] = [
   'architecture_change_path',
-  'spec_migration_path',
   'rollback_path',
 ];
 
 describe('当前 workflow_type / workflow_path 边界', () => {
-  it('完整登记 8 个已注册工作流身份与路径组合', () => {
+  it('完整登记 9 个已注册工作流身份与路径组合', () => {
     expect(Object.entries(WORKFLOW_TYPE_TO_PATH)).toEqual(CURRENT_PAIRS);
   });
 
-  it('只为 4 条具有当前工作流身份的路径提供缺省映射', () => {
+  it('为 5 条具有当前工作流身份的路径提供缺省映射', () => {
     expect(WORKFLOW_PATH_DEFAULT_TYPE).toEqual({
       requirement_change_path: 'feature_spec',
       design_change_path: 'feature_spec_design_first',
+      spec_migration_path: 'spec_migration',
       task_change_path: 'refactor',
       code_only_fast_path: 'quick_change',
     });
@@ -73,6 +75,7 @@ describe('当前 workflow_type / workflow_path 边界', () => {
     expect(resolveWorkflowTypeForPath('design_change_path')).toBe('feature_spec_design_first');
     expect(resolveWorkflowTypeForPath('task_change_path')).toBe('refactor');
     expect(resolveWorkflowTypeForPath('code_only_fast_path')).toBe('quick_change');
+    expect(resolveWorkflowTypeForPath('spec_migration_path')).toBe('spec_migration');
   });
 
   it('未提供路径时可以保留已知工作流身份', () => {

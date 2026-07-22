@@ -23,6 +23,7 @@ export type WorkflowType =
   | "refactor"
   | "ops_task"
   | "investigation"
+  | "spec_migration"
 
 /** workflow_path 是治理路径，不得反向覆盖已兼容的 workflow_type。 */
 export type WorkflowPath =
@@ -44,6 +45,7 @@ export const WORKFLOW_TYPE_TO_PATH: Readonly<Record<WorkflowType, WorkflowPath>>
   refactor: "task_change_path",
   ops_task: "task_change_path",
   quick_change: "code_only_fast_path",
+  spec_migration: "spec_migration_path",
 }
 
 /**
@@ -55,6 +57,7 @@ export const WORKFLOW_PATH_DEFAULT_TYPE: Readonly<Partial<Record<WorkflowPath, W
   design_change_path: "feature_spec_design_first",
   task_change_path: "refactor",
   code_only_fast_path: "quick_change",
+  spec_migration_path: "spec_migration",
 }
 
 /**
