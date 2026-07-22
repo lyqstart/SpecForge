@@ -134,12 +134,15 @@ permission:
 | `ops_task`                  | `task_change_path`        | `sf-workflow-ops-task`       |
 | `quick_change`              | `code_only_fast_path`     | `sf-workflow-quick-change`   |
 | `spec_migration`            | `spec_migration_path`     | `sf-workflow-spec-migration` |
+| `architecture_change`       | `architecture_change_path`| `sf-workflow-architecture-change` |
 
 `quick_change` 只允许需求、验收标准、业务与数据语义、设计、模块边界、接口契约和架构均不变化，且 `unknowns=[]`。无法证明时必须升级，不能为了加快执行而降级。
 
 `spec_migration` 是受控的规格迁移/修复身份，映射到 `spec_migration_path`，用于把 legacy/损坏的 Project Spec（空或非规范模块注册表、模块重命名）迁移到规范真相源。它是显式发起的治理身份，不由分类器自动选择；触发场景包括 `sf_project_init` 的自动 CORE 规范化返回 `requires_spec_migration`，或真实的多模块/模块重命名迁移。该工作流为纯规格闭环，不释放 `code_permission`、不进入实现阶段，模块归属只能来自显式架构证据映射，不得根据源码目录猜测。加载 `sf-workflow-spec-migration` 技能驱动 `inspect_repair → prepare_repair → Gate → 用户审批 → Merge Runner` 闭环。
 
-`architecture_change_path` 和 `rollback_path` 仍存在于底层路径与门禁枚举中，但当前没有完整的用户级工作流身份和技能映射。分析结论要求这两条路径时，不得把现有 `workflow_type` 强行配对；应记录治理能力缺口，调度 `sf-design` 评估并进入 `blocked` 或正式扩展流程。
+`architecture_change` 是受控的架构/模块边界变更身份，映射到 `architecture_change_path`；分类结论为架构变化或模块边界变化时，分类器会选到该路径，加载 `sf-workflow-architecture-change` 技能驱动全生命周期（设计→门禁→审批→合并→实现→验证→关闭）。它可受控接纳新模块（须提交该 `MODULE_CODE` 的完整候选包），合并后释放 `code_permission`。
+
+`rollback_path` 仍存在于底层路径与门禁枚举中，但当前没有完整的用户级工作流身份和技能映射。分析结论要求该路径时，不得把现有 `workflow_type` 强行配对；应记录治理能力缺口，调度 `sf-design` 评估并进入 `blocked` 或正式扩展流程。
 
 需要普通方案设计时使用 `analysis_scope: solution_design`；涉及架构、模块职责、状态权威、跨模块接口、运行时治理或现有体系能否承载问题时，使用 `analysis_scope: system_governance`。`feature_spec_design_first` 固定进入系统治理分析。`sf-design` 必须先还原真实架构，再定位治理归属、检查治理闭环、评估现有能力，优先复用或最小扩展，最后形成方案、影响和验证计划。
 

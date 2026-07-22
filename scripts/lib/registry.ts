@@ -133,6 +133,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/sf-workflow-ops-task/SKILL.md", type: "skill" },
   { path: "skills/sf-workflow-refactor/SKILL.md", type: "skill" },
   { path: "skills/sf-workflow-spec-migration/SKILL.md", type: "skill" },
+  { path: "skills/sf-workflow-architecture-change/SKILL.md", type: "skill" },
   { path: "skills/superpowers-brainstorming/SKILL.md", type: "skill" },
   { path: "skills/superpowers-code-review/SKILL.md", type: "skill" },
   { path: "skills/superpowers-engineering-lessons/SKILL.md", type: "skill" },
