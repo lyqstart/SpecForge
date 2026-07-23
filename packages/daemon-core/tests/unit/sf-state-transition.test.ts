@@ -744,3 +744,139 @@ describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => 
     expect(mockTransitionFull).not.toHaveBeenCalled();
   });
 });
+
+// =========================================================================
+// Regression: sf_state_transition create path (from=""->created) must
+// initialize the closure-file skeleton at the WI root, matching
+// sf_v11_work_item_create, so close_gate can find tasks.md / trace_delta.md
+// and the other required root artifacts.
+// =========================================================================
+
+describe("sf_state_transition - closure file initialization on create", () => {
+  let tempDir: string;
+  let handler: (...args: any[]) => Promise<any>;
+
+  beforeAll(() => {
+    handler = getHandler("sf_state_transition")!;
+    expect(handler).toBeDefined();
+  });
+
+  beforeEach(async () => {
+    tempDir = path.join(
+      os.tmpdir(),
+      `sf-st-closure-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    await fs.mkdir(tempDir, { recursive: true });
+    // Simulate an initialized project (manifest.json present)
+    const specforgeDir = path.join(tempDir, ".specforge");
+    await fs.mkdir(specforgeDir, { recursive: true });
+    await fs.writeFile(path.join(specforgeDir, "manifest.json"), "{}");
+  });
+
+  afterEach(async () => {
+    try {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    } catch {
+      // Ignore cleanup errors
+    }
+  });
+
+  function makeMockDeps() {
+    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
+    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
+      transition: mockSmTransition,
+    });
+    return {
+      deps: {
+        workflowEngine: {
+          transitionFull: vi.fn().mockResolvedValue({
+            workItemId: "WI-0001",
+            currentState: "created",
+            timestamp: new Date().toISOString(),
+          }),
+        },
+        projectManager: { getProjectStateManager: mockGetProjectStateManager },
+      },
+    };
+  }
+
+  // Closure files required by close_gate at the WI root (non-investigation).
+  const REQUIRED_ROOT_FILES = [
+    "work_item.json",
+    "tasks.md",
+    "trace_delta.md",
+    "change_classification.md",
+    "impact_analysis.md",
+    "trigger_result.json",
+    "candidate_manifest.json",
+    "gate_summary.md",
+    "verification_report.md",
+    "merge_report.md",
+  ];
+
+  it("must create tasks.md/trace_delta.md and other root closure files on from=''->created", async () => {
+    const { deps } = makeMockDeps();
+
+    await handler(
+      { work_item_id: "WI-0001", from_state: "", to_state: "created", workflow_type: "feature_spec" },
+      { directory: tempDir },
+      deps,
+    );
+
+    const wiDir = path.join(tempDir, ".specforge", "work-items", "WI-0001");
+    for (const f of REQUIRED_ROOT_FILES) {
+      await expect(
+        fs.access(path.join(wiDir, f)),
+        `expected root closure file to exist: ${f}`,
+      ).resolves.toBeUndefined();
+    }
+    // evidence manifest lives in a subdirectory
+    await expect(
+      fs.access(path.join(wiDir, "evidence", "evidence_manifest.json")),
+    ).resolves.toBeUndefined();
+  });
+
+  it("must backfill missing closure files when work_item.json already exists (idempotent repair)", async () => {
+    const wiDir = path.join(tempDir, ".specforge", "work-items", "WI-0002");
+    await fs.mkdir(wiDir, { recursive: true });
+    // Pre-existing work_item.json but NO closure files — reproduces the defect
+    // (and the manual-deletion recovery scenario).
+    await fs.writeFile(
+      path.join(wiDir, "work_item.json"),
+      JSON.stringify({ work_item_id: "WI-0002", workflow_type: "feature_spec" }),
+    );
+
+    const { deps } = makeMockDeps();
+
+    await handler(
+      { work_item_id: "WI-0002", from_state: "", to_state: "created", workflow_type: "feature_spec" },
+      { directory: tempDir },
+      deps,
+    );
+
+    await expect(fs.access(path.join(wiDir, "tasks.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(wiDir, "trace_delta.md"))).resolves.toBeUndefined();
+  });
+
+  it("must NOT overwrite existing real closure content (create-if-missing)", async () => {
+    const wiDir = path.join(tempDir, ".specforge", "work-items", "WI-0003");
+    await fs.mkdir(wiDir, { recursive: true });
+    await fs.writeFile(
+      path.join(wiDir, "work_item.json"),
+      JSON.stringify({ work_item_id: "WI-0003" }),
+    );
+    const realTasks = "# Tasks\n\nTASK-1 real authored content";
+    await fs.writeFile(path.join(wiDir, "tasks.md"), realTasks);
+
+    const { deps } = makeMockDeps();
+
+    await handler(
+      { work_item_id: "WI-0003", from_state: "", to_state: "created", workflow_type: "feature_spec" },
+      { directory: tempDir },
+      deps,
+    );
+
+    const after = await fs.readFile(path.join(wiDir, "tasks.md"), "utf-8");
+    expect(after).toBe(realTasks);
+  });
+});
