@@ -23,6 +23,7 @@ import {
 } from "../lib/work-item-id-validator";
 import { guardHardStop } from "../lib/hard-stop-latch";
 import { transitionWithEvidence } from "../lib/state-coordinator-v11"; import { parseChangedFilesAuditPass } from "../lib/write-guard-runtime-v12";
+import { initializeClosureFiles } from "../lib/work-item-lifecycle-v11";
 
 /**
  * Allocate next WI-NNNN from existing .specforge/work-items directories.
@@ -165,7 +166,14 @@ async function ensureWorkItemJsonOnCreate(
   await mkdir(wiDir, { recursive: true });
   const workItemJsonPath = join(wiDir, "work_item.json");
   const existing = await readJsonIfExists(workItemJsonPath);
-  if (existing) return { path: workItemJsonPath, created: false };
+  if (existing) {
+    // Even when work_item.json already exists, ensure the closure-file skeleton
+    // is present. initializeClosureFiles is idempotent (create-if-missing), so
+    // this only backfills files that were never created or were removed, without
+    // clobbering real content.
+    await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null);
+    return { path: workItemJsonPath, created: false };
+  }
 
   const now = new Date().toISOString();
   const workItem = {
@@ -182,6 +190,13 @@ async function ensureWorkItemJsonOnCreate(
   };
 
   await writeFile(workItemJsonPath, JSON.stringify(workItem, null, 2) + "\n", "utf-8");
+
+  // Initialize the closure-file skeleton (tasks.md, trace_delta.md, and the
+  // other root-level artifacts required by close_gate). This mirrors the
+  // sf_v11_work_item_create path so both Work Item creation routes are
+  // consistent and downstream gates can find the required root files.
+  await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null);
+
   return { path: workItemJsonPath, created: true };
 }
 
