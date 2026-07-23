@@ -1,6 +1,15 @@
 /**
  * sf_state_transition handler unit tests
- * Focus: project initialization guard (manifest.json check) + v1.1 evidence guard workItemDir
+ *
+ * Covers the current v1.1/v1.2 architecture:
+ *  - project initialization guard (manifest.json) on the create transition
+ *  - StateManager authority: transitions route through
+ *    projectManager.getProjectStateManager().transition() (NOT
+ *    workflowEngine.transitionFull, which was removed to avoid a dual state writer)
+ *  - forbidden / invalid transition rejection
+ *  - implementation_running -> implementation_done audit guard
+ *  - verification_done -> closed seal + close-gate evidence enforcement
+ *  - closure-file skeleton initialization on the create path
  */
 
 import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
@@ -10,6 +19,41 @@ import "../../src/tools/handlers/sf-state-transition";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
+
+/**
+ * Build a deps object whose ProjectManager returns a StateManager with a
+ * spy-able transition(). This mirrors the real execution path
+ * (transitionWithEvidence -> projectManager.getProjectStateManager().transition()).
+ */
+function makeStateManagerDeps() {
+  const smTransition = vi.fn().mockResolvedValue(undefined);
+  const getProjectStateManager = vi.fn().mockResolvedValue({ transition: smTransition });
+  // transitionFull is intentionally provided to prove it is NEVER called.
+  const transitionFull = vi.fn().mockResolvedValue({});
+  return {
+    deps: {
+      workflowEngine: { transitionFull },
+      projectManager: { getProjectStateManager },
+    },
+    smTransition,
+    getProjectStateManager,
+    transitionFull,
+  };
+}
+
+async function writeManifest(dir: string): Promise<void> {
+  const specforgeDir = path.join(dir, ".specforge");
+  await fs.mkdir(specforgeDir, { recursive: true });
+  await fs.writeFile(path.join(specforgeDir, "manifest.json"), "{}");
+}
+
+function wiDirFor(root: string, wiId: string): string {
+  return path.join(root, ".specforge", "work-items", wiId);
+}
+
+// =========================================================================
+// Project initialization guard
+// =========================================================================
 
 describe("sf_state_transition - project initialization guard", () => {
   let tempDir: string;
@@ -23,7 +67,7 @@ describe("sf_state_transition - project initialization guard", () => {
   beforeEach(async () => {
     tempDir = path.join(
       os.tmpdir(),
-      `sf-state-transition-test-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `sf-st-init-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     await fs.mkdir(tempDir, { recursive: true });
   });
@@ -36,74 +80,68 @@ describe("sf_state_transition - project initialization guard", () => {
     }
   });
 
-  it("should return PROJECT_NOT_INITIALIZED when from='' and manifest.json does not exist", async () => {
-    // No manifest.json created - simulate uninitialized project
+  it("returns PROJECT_NOT_INITIALIZED when creating a WI (from=''->created) without manifest.json", async () => {
+    const { deps } = makeStateManagerDeps();
 
     const result = await handler(
-      { work_item_id: "WI-001", from_state: "", to_state: "intake" },
+      { work_item_id: "WI-0001", from_state: "", to_state: "created", workflow_type: "feature_spec" },
       { directory: tempDir },
-      {},
+      deps,
     );
 
     expect(result.success).toBe(false);
     expect(result.error).toBe("PROJECT_NOT_INITIALIZED");
-    expect(result.hint).toContain("初始化");
     expect(result.recovery_action).toBe("execute_startup_flow");
   });
 
-  it("should NOT trigger guard when from='intake' and manifest.json does not exist", async () => {
-    // No manifest.json, but fromState ≠ '' so guard is skipped
-    // Must mock workflowEngine since guard passes
-    const mockTransitionFull = vi.fn().mockResolvedValue({
-      workItemId: "WI-001",
-      currentState: "requirements",
-    });
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: vi.fn().mockResolvedValue(undefined),
-    });
+  it("rejects the legacy from=''->intake transition (v1.1 uses 'created')", async () => {
+    const { deps } = makeStateManagerDeps();
 
     const result = await handler(
-      { work_item_id: "WI-001", from_state: "intake", to_state: "requirements" },
+      { work_item_id: "WI-0001", from_state: "", to_state: "intake" },
       { directory: tempDir },
-      { workflowEngine: { transitionFull: mockTransitionFull }, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
+      deps,
     );
 
-    expect(result.success).toBe(true);
-    expect(result.error).toBeUndefined();
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("LEGACY_INTAKE_STATE_FORBIDDEN");
   });
 
-  it("should proceed normally when from='' and manifest.json exists", async () => {
-    // Create manifest.json to simulate an initialized project
-    const specforgeDir = path.join(tempDir, ".specforge");
-    await fs.mkdir(specforgeDir, { recursive: true });
-    await fs.writeFile(path.join(specforgeDir, "manifest.json"), "{}");
-
-    const mockTransitionFull = vi.fn().mockResolvedValue({
-      workItemId: "WI-001",
-      currentState: "intake",
-    });
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: vi.fn().mockResolvedValue(undefined),
-    });
+  it("does NOT apply the init guard to a non-create transition (guard is create-only)", async () => {
+    // No manifest.json; a non-empty fromState must skip the manifest guard.
+    const { deps, smTransition } = makeStateManagerDeps();
 
     const result = await handler(
-      { work_item_id: "WI-001", from_state: "", to_state: "intake" },
+      { work_item_id: "WI-0001", from_state: "intake_ready", to_state: "impact_analyzing" },
       { directory: tempDir },
-      { workflowEngine: { transitionFull: mockTransitionFull }, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
+      deps,
+    );
+
+    expect(result.error).not.toBe("PROJECT_NOT_INITIALIZED");
+    expect(result.success).toBe(true);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+  });
+
+  it("proceeds with creation when manifest.json exists", async () => {
+    await writeManifest(tempDir);
+    const { deps, smTransition } = makeStateManagerDeps();
+
+    const result = await handler(
+      { work_item_id: "WI-0001", from_state: "", to_state: "created", workflow_type: "feature_spec" },
+      { directory: tempDir },
+      deps,
     );
 
     expect(result.success).toBe(true);
-    expect(result.error).toBeUndefined();
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
+    expect(smTransition).toHaveBeenCalledTimes(1);
   });
 });
 
 // =========================================================================
-// v1.1 Evidence Guard: workItemDir propagation to transitionFull
+// StateManager authority + transition contract
 // =========================================================================
 
-describe("sf_state_transition - v1.1 evidence guard workItemDir", () => {
+describe("sf_state_transition - StateManager authority and transition contract", () => {
   let tempDir: string;
   let handler: (...args: any[]) => Promise<any>;
 
@@ -115,9 +153,10 @@ describe("sf_state_transition - v1.1 evidence guard workItemDir", () => {
   beforeEach(async () => {
     tempDir = path.join(
       os.tmpdir(),
-      `sf-st-evidence-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      `sf-st-contract-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     );
     await fs.mkdir(tempDir, { recursive: true });
+    await writeManifest(tempDir);
   });
 
   afterEach(async () => {
@@ -128,620 +167,268 @@ describe("sf_state_transition - v1.1 evidence guard workItemDir", () => {
     }
   });
 
-  /**
-   * Helper: create a mock deps object that captures transitionFull calls
-   */
-  function makeMockDeps(transitionFullImpl?: (input: any) => Promise<any>) {
-    const mockTransitionFull = vi.fn(transitionFullImpl ?? (async (input: any) => ({
-      workItemId: input.workItemId,
-      previousState: input.fromState,
-      currentState: input.toState,
-      timestamp: new Date().toISOString(),
-    })));
-    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: mockSmTransition,
-    });
-    return {
-      deps: {
-        workflowEngine: { transitionFull: mockTransitionFull },
-        projectManager: { getProjectStateManager: mockGetProjectStateManager },
-      },
-      mockTransitionFull,
-      mockSmTransition,
-      mockGetProjectStateManager,
-    };
-  }
+  it("routes transitions through StateManager, never workflowEngine.transitionFull", async () => {
+    const { deps, smTransition, transitionFull } = makeStateManagerDeps();
 
-  // --- ST-EV-1: transitionFull receives workItemDir for critical states ---
-  it("ST-EV-1: must pass workItemDir to transitionFull for approval_required", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
+    const result = await handler(
+      { work_item_id: "WI-0001", from_state: "intake_ready", to_state: "impact_analyzing" },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.state_authority).toBe("StateManager");
+    expect(result.workflow_engine_transition_full_used).toBe(false);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+    expect(transitionFull).not.toHaveBeenCalled();
+  });
+
+  it("passes correct from/to/workItemId to StateManager.transition", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
 
     await handler(
-      { work_item_id: "WI-001", from_state: "gates_running", to_state: "approval_required" },
+      { work_item_id: "WI-0007", from_state: "intake_ready", to_state: "impact_analyzing" },
       { directory: tempDir },
       deps,
     );
 
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-    const callArgs = mockTransitionFull.mock.calls[0][0];
-    expect(callArgs.workItemDir).toBeDefined();
-    expect(callArgs.workItemDir).toContain(".specforge");
-    expect(callArgs.workItemDir).toContain("work-items");
-    expect(callArgs.workItemDir).toContain("WI-001");
-    // Exact path: {tempDir}/.specforge/work-items/WI-001
-    expect(callArgs.workItemDir).toBe(path.join(tempDir, ".specforge", "work-items", "WI-001"));
+    expect(smTransition).toHaveBeenCalledTimes(1);
+    const callArgs = smTransition.mock.calls[0];
+    // signature: transition(workItemId, fromState, toState, actorRole, workflowType, meta)
+    expect(callArgs[0]).toBe("WI-0007");
+    expect(callArgs[1]).toBe("intake_ready");
+    expect(callArgs[2]).toBe("impact_analyzing");
   });
 
-  // --- ST-EV-2: transitionFull receives workItemDir for implementation_ready ---
-  it("ST-EV-2: must pass workItemDir to transitionFull for implementation_ready", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-
-    await handler(
-      { work_item_id: "WI-002", from_state: "post_merge_verified", to_state: "implementation_ready" },
-      { directory: tempDir },
-      deps,
-    );
-
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-    const callArgs = mockTransitionFull.mock.calls[0][0];
-    expect(callArgs.workItemDir).toBe(path.join(tempDir, ".specforge", "work-items", "WI-002"));
-  });
-
-  // --- ST-EV-3: transitionFull failure blocks StateManager.transition ---
-  it("ST-EV-3: when transitionFull throws, StateManager.transition must NOT be called", async () => {
-    const { deps, mockTransitionFull, mockSmTransition } = makeMockDeps(async () => {
-      throw new Error("Transition evidence prerequisite missing: gates/gate_summary_gate.json");
-    });
-
-    const result = await handler(
-      { work_item_id: "WI-001", from_state: "gates_running", to_state: "approval_required" },
-      { directory: tempDir },
-      deps,
-    );
-
-    // Handler should return failure
-    expect(result.success).toBe(false);
-    // StateManager.transition must NOT have been called
-    expect(mockSmTransition).not.toHaveBeenCalled();
-  });
-
-  // --- ST-EV-4: success path calls both transitionFull and StateManager ---
-  it("ST-EV-4: success path calls transitionFull then StateManager.transition", async () => {
-    const { deps, mockTransitionFull, mockSmTransition } = makeMockDeps();
-
-    const result = await handler(
-      { work_item_id: "WI-001", from_state: "intake", to_state: "requirements" },
-      { directory: tempDir },
-      deps,
-    );
-
-    expect(result.success).toBe(true);
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-    expect(mockSmTransition).toHaveBeenCalledTimes(1);
-    // transitionFull must be called before StateManager.transition
-    // (implicit: if transitionFull threw, mockSmTransition wouldn't be called)
-  });
-
-  // --- ST-EV-5: workItemDir undefined when no projectPath ---
-  it("ST-EV-5: workItemDir must be undefined when context has no directory/worktree", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-
-    const result = await handler(
-      { work_item_id: "WI-001", from_state: "intake", to_state: "requirements" },
-      {},  // No directory or worktree
-      deps,
-    );
-
-    // Without projectPath, StateManager can't be called → should fail
-    // But transitionFull IS called (and succeeds with workItemDir=undefined)
-    // Then it fails on "projectPath required"
-    expect(result.success).toBe(false);
-    expect(result.error).toContain("projectPath");
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-    const callArgs = mockTransitionFull.mock.calls[0][0];
-    expect(callArgs.workItemDir).toBeUndefined();
-  });
-
-  // --- ST-EV-6: real WorkflowEngine integration — missing gate blocks approval_required ---
-  it("ST-EV-6: real engine — missing gate_summary_gate.json blocks approval_required", async () => {
-    // Use real WorkflowEngine to test end-to-end evidence guard
-    const { WorkflowEngine } = await import("@specforge/workflow-runtime");
-    const engine = new WorkflowEngine();
-
-    // Load a minimal workflow with approval_required as a critical target
-    engine.loadWorkflow({
-      id: 'test-wf',
-      displayName: 'Test WF',
-      intent: 'test',
-      stateMachine: {
-        initial: 'created',
-        states: {
-          created: { agent: '', gate: null, skills: [], next: 'gates_running' },
-          gates_running: {
-            agent: '',
-            gate: { type: 'simple', id: 'gate_summary_gate', name: 'Gate Summary Gate', checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'ok' }) },
-            skills: [],
-            next: { pass: 'approval_required', fail: 'blocked' },
-          },
-          approval_required: { agent: '', gate: null, skills: [], next: { pass: 'merge_ready', fail: 'rejected' } },
-          blocked: { agent: '', gate: null, skills: [] },
-          rejected: { agent: '', gate: null, skills: [] },
-          merge_ready: { agent: '', gate: null, skills: [], next: 'merging' },
-          merging: { agent: '', gate: null, skills: [] },
-        },
-      },
-      artifacts: [],
-    });
-
-    // Create an instance and force to gates_running
-    const inst = engine.createInstance('test-wf');
-    (inst as Record<string, unknown>).currentState = 'gates_running';
-
-    // Create WI dir without gate_summary_gate.json
-    const wiDir = path.join(tempDir, ".specforge", "work-items", inst.id);
-    await fs.mkdir(wiDir, { recursive: true });
-
-    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: mockSmTransition,
-    });
-
-    const result = await handler(
-      { work_item_id: inst.id, from_state: "gates_running", to_state: "approval_required" },
-      { directory: tempDir },
-      { workflowEngine: engine, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
-    );
-
-    // Should fail because gate_summary.md or gate_summary_gate.json is missing
-    expect(result.success).toBe(false);
-    // StateManager must NOT be called
-    expect(mockSmTransition).not.toHaveBeenCalled();
-  });
-
-  // --- ST-EV-7: real WorkflowEngine — all evidence present, approval_required succeeds ---
-  it("ST-EV-7: real engine — gate evidence present, approval_required succeeds", async () => {
-    const { WorkflowEngine } = await import("@specforge/workflow-runtime");
-    const engine = new WorkflowEngine();
-
-    engine.loadWorkflow({
-      id: 'test-wf',
-      displayName: 'Test WF',
-      intent: 'test',
-      stateMachine: {
-        initial: 'created',
-        states: {
-          created: { agent: '', gate: null, skills: [], next: 'gates_running' },
-          gates_running: {
-            agent: '',
-            gate: { type: 'simple', id: 'gate_summary_gate', name: 'Gate Summary Gate', checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'ok' }) },
-            skills: [],
-            next: { pass: 'approval_required', fail: 'blocked' },
-          },
-          approval_required: { agent: '', gate: null, skills: [], next: { pass: 'merge_ready', fail: 'rejected' } },
-          blocked: { agent: '', gate: null, skills: [] },
-          rejected: { agent: '', gate: null, skills: [] },
-          merge_ready: { agent: '', gate: null, skills: [], next: 'merging' },
-          merging: { agent: '', gate: null, skills: [] },
-        },
-      },
-      artifacts: [],
-    });
-
-    const inst = engine.createInstance('test-wf');
-    (inst as Record<string, unknown>).currentState = 'gates_running';
-
-    // Create WI dir WITH gate evidence
-    const wiDir = path.join(tempDir, ".specforge", "work-items", inst.id);
-    await fs.mkdir(wiDir, { recursive: true });
-    await fs.writeFile(path.join(wiDir, "gate_summary.md"), "# Gate Summary\nAll passed.");
-    await fs.mkdir(path.join(wiDir, "gates"), { recursive: true });
-    await fs.writeFile(path.join(wiDir, "gates", "gate_summary_gate.json"), JSON.stringify({ status: "passed" }));
-
-    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: mockSmTransition,
-    });
-
-    const result = await handler(
-      { work_item_id: inst.id, from_state: "gates_running", to_state: "approval_required" },
-      { directory: tempDir, agent: 'gate_runner' },
-      { workflowEngine: engine, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
-    );
-
-    expect(result.success).toBe(true);
-    expect(result.currentState).toBe("approval_required");
-    // StateManager.transition IS called after transitionFull succeeds
-    expect(mockSmTransition).toHaveBeenCalledTimes(1);
-  });
-
-  // --- ST-EV-8: real engine — missing code_permission_release_gate blocks implementation_ready ---
-  it("ST-EV-8: real engine — missing code_permission_release_gate blocks implementation_ready", async () => {
-    const { WorkflowEngine } = await import("@specforge/workflow-runtime");
-    const engine = new WorkflowEngine();
-
-    engine.loadWorkflow({
-      id: 'test-wf',
-      displayName: 'Test WF',
-      intent: 'test',
-      stateMachine: {
-        initial: 'created',
-        states: {
-          created: { agent: '', gate: null, skills: [], next: 'post_merge_verified' },
-          post_merge_verified: { agent: '', gate: null, skills: [], next: 'implementation_ready' },
-          implementation_ready: {
-            agent: '',
-            gate: { type: 'simple', id: 'code_permission_release_gate', name: 'Code Permission Release Gate', checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'ok' }) },
-            skills: [],
-            next: { pass: 'implementation_running', fail: 'blocked' },
-          },
-          implementation_running: { agent: '', gate: null, skills: [] },
-          blocked: { agent: '', gate: null, skills: [] },
-        },
-      },
-      artifacts: [],
-    });
-
-    const inst = engine.createInstance('test-wf');
-    (inst as Record<string, unknown>).currentState = 'post_merge_verified';
-
-    // Create WI dir with tasks.md and work_item.json but NO gate file
-    const wiDir = path.join(tempDir, ".specforge", "work-items", inst.id);
-    await fs.mkdir(wiDir, { recursive: true });
-    await fs.writeFile(path.join(wiDir, "tasks.md"), "# Tasks");
-    await fs.writeFile(path.join(wiDir, "work_item.json"), JSON.stringify({ allowed_write_files: ["src/a.ts"] }));
-    // Deliberately NOT creating gates/code_permission_release_gate.json
-
-    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: mockSmTransition,
-    });
-
-    const result = await handler(
-      { work_item_id: inst.id, from_state: "post_merge_verified", to_state: "implementation_ready" },
-      { directory: tempDir },
-      { workflowEngine: engine, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
-    );
-
-    expect(result.success).toBe(false);
-    expect(mockSmTransition).not.toHaveBeenCalled();
-  });
-
-  // --- ST-EV-9: real engine — all evidence present, implementation_ready succeeds ---
-  it("ST-EV-9: real engine — all evidence present, implementation_ready succeeds", async () => {
-    const { WorkflowEngine } = await import("@specforge/workflow-runtime");
-    const engine = new WorkflowEngine();
-
-    engine.loadWorkflow({
-      id: 'test-wf',
-      displayName: 'Test WF',
-      intent: 'test',
-      stateMachine: {
-        initial: 'created',
-        states: {
-          created: { agent: '', gate: null, skills: [], next: 'post_merge_verified' },
-          post_merge_verified: { agent: '', gate: null, skills: [], next: 'implementation_ready' },
-          implementation_ready: {
-            agent: '',
-            gate: { type: 'simple', id: 'code_permission_release_gate', name: 'Code Permission Release Gate', checkFn: async () => ({ schema_version: '1.0', passed: true, reason: 'ok' }) },
-            skills: [],
-            next: { pass: 'implementation_running', fail: 'blocked' },
-          },
-          implementation_running: { agent: '', gate: null, skills: [] },
-          blocked: { agent: '', gate: null, skills: [] },
-        },
-      },
-      artifacts: [],
-    });
-
-    const inst = engine.createInstance('test-wf');
-    (inst as Record<string, unknown>).currentState = 'post_merge_verified';
-
-    // Create WI dir with ALL evidence
-    const wiDir = path.join(tempDir, ".specforge", "work-items", inst.id);
-    await fs.mkdir(wiDir, { recursive: true });
-    await fs.writeFile(path.join(wiDir, "tasks.md"), "# Tasks");
-    await fs.writeFile(path.join(wiDir, "work_item.json"), JSON.stringify({ allowed_write_files: ["src/a.ts"] }));
-    await fs.mkdir(path.join(wiDir, "gates"), { recursive: true });
-    await fs.writeFile(path.join(wiDir, "gates", "code_permission_release_gate.json"), JSON.stringify({ status: "passed" }));
-
-    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: mockSmTransition,
-    });
-
-    const result = await handler(
-      { work_item_id: inst.id, from_state: "post_merge_verified", to_state: "implementation_ready" },
-      { directory: tempDir },
-      { workflowEngine: engine, projectManager: { getProjectStateManager: mockGetProjectStateManager } },
-    );
-
-    expect(result.success).toBe(true);
-    expect(result.currentState).toBe("implementation_ready");
-    expect(mockSmTransition).toHaveBeenCalledTimes(1);
-  });
-});
-
-// =========================================================================
-// v1.2 M1: Close Gate Evidence Integration in sf_state_transition handler
-// =========================================================================
-
-describe("sf_state_transition - v1.2 M1 close gate evidence integration", () => {
-  let tempDir: string;
-  let handler: (...args: any[]) => Promise<any>;
-
-  beforeAll(() => {
-    handler = getHandler("sf_state_transition")!;
-    expect(handler).toBeDefined();
-  });
-
-  beforeEach(async () => {
-    tempDir = path.join(
-      os.tmpdir(),
-      `sf-v12-close-gate-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-    );
-    await fs.mkdir(tempDir, { recursive: true });
-  });
-
-  afterEach(async () => {
-    try {
-      await fs.rm(tempDir, { recursive: true, force: true });
-    } catch {
-      // Ignore cleanup errors
-    }
-  });
-
-  /**
-   * Helper: create a WI directory under tempDir/.specforge/work-items/{wiId}
-   */
-  async function createWorkItemDir(wiId: string): Promise<string> {
-    const wiDir = path.join(tempDir, ".specforge", "work-items", wiId);
-    await fs.mkdir(wiDir, { recursive: true });
-    return wiDir;
-  }
-
-  /**
-   * Helper: write all 3 close gate evidence files
-   */
-  async function writeAllCloseGateEvidence(wiDir: string): Promise<void> {
-    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
-    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
-    await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
-  }
-
-  /**
-   * Helper: create mock deps (transitionFull succeeds by default)
-   */
-  function makeMockDeps() {
-    const mockTransitionFull = vi.fn().mockResolvedValue({
-      workItemId: "WI-CG-001",
-      previousState: "verification_done",
-      currentState: "closed",
-      timestamp: new Date().toISOString(),
-    });
-    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: mockSmTransition,
-    });
-    return {
-      deps: {
-        workflowEngine: { transitionFull: mockTransitionFull },
-        projectManager: { getProjectStateManager: mockGetProjectStateManager },
-      },
-      mockTransitionFull,
-      mockSmTransition,
-    };
-  }
-
-  // --- CG-1: verification_done → closed missing verification_report.md → rejected ---
-  it("CG-1: must reject closed when verification_report.md is missing", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-    const wiDir = await createWorkItemDir("WI-CG-001");
-    // Only 2 of 3 evidence files
-    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
-    await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
+  it("rejects a forbidden transition (created -> implementation_running)", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
 
     const result = await handler(
       {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
+        work_item_id: "WI-0002",
+        from_state: "created",
+        to_state: "implementation_running",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.forbidden).toBe(true);
+    expect(smTransition).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid transition (intake_ready -> closed)", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0003",
+        from_state: "intake_ready",
         to_state: "closed",
         use_v11_state_machine: true,
       },
-      { directory: tempDir, agent: 'close_gate' },
+      { directory: tempDir },
       deps,
     );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("Invalid v1.1 transition");
+    expect(smTransition).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid work_item_id format (must be WI-NNNN)", async () => {
+    const { deps } = makeStateManagerDeps();
+
+    const result = await handler(
+      { work_item_id: "WI-1", from_state: "intake_ready", to_state: "impact_analyzing" },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("INVALID_WORK_ITEM_ID");
+  });
+
+  it("returns projectPath error when context has no directory/worktree", async () => {
+    const { deps } = makeStateManagerDeps();
+
+    const result = await handler(
+      { work_item_id: "WI-0001", from_state: "intake_ready", to_state: "impact_analyzing" },
+      {}, // no directory / worktree
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("projectPath");
+  });
+
+  it("returns 'ProjectManager not available' when deps has no projectManager", async () => {
+    const result = await handler(
+      { work_item_id: "WI-0001", from_state: "intake_ready", to_state: "impact_analyzing" },
+      { directory: tempDir },
+      {}, // no projectManager
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("ProjectManager not available");
+  });
+
+  it("blocks implementation_running -> implementation_done without a passing changed_files_audit.md", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
+    // WI dir exists but has no changed_files_audit.md
+    await fs.mkdir(wiDirFor(tempDir, "WI-0004"), { recursive: true });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "implementation_running",
+        to_state: "implementation_done",
+        use_v11_state_machine: true,
+      },
+      { directory: tempDir },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("IMPLEMENTATION_AUDIT_NOT_PASSED");
+    expect(smTransition).not.toHaveBeenCalled();
+  });
+});
+
+// =========================================================================
+// verification_done -> closed: seal transition + close-gate evidence
+// =========================================================================
+
+describe("sf_state_transition - close (verification_done -> closed)", () => {
+  let tempDir: string;
+  let handler: (...args: any[]) => Promise<any>;
+
+  beforeAll(() => {
+    handler = getHandler("sf_state_transition")!;
+    expect(handler).toBeDefined();
+  });
+
+  beforeEach(async () => {
+    tempDir = path.join(
+      os.tmpdir(),
+      `sf-st-close-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    await fs.mkdir(tempDir, { recursive: true });
+    await writeManifest(tempDir);
+  });
+
+  afterEach(async () => {
+    try {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    } catch {
+      // Ignore cleanup errors
+    }
+  });
+
+  async function writeAllCloseEvidence(wiDir: string): Promise<void> {
+    await fs.mkdir(wiDir, { recursive: true });
+    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR\nevidence");
+    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
+    await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
+  }
+
+  const closeArgs = (wiId: string) => ({
+    work_item_id: wiId,
+    from_state: "verification_done",
+    to_state: "closed",
+    use_v11_state_machine: true,
+  });
+
+  it("rejects close when verification_report.md is missing", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
+    const wiDir = wiDirFor(tempDir, "WI-0001");
+    await fs.mkdir(wiDir, { recursive: true });
+    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
+    await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
+
+    const result = await handler(closeArgs("WI-0001"), { directory: tempDir, agent: "close_gate" }, deps);
 
     expect(result.success).toBe(false);
     expect(result.error).toContain("Close gate evidence requirements not met");
-    expect(result.error).toContain("verification_report.md");
     expect(result.missing_evidence).toContain("verification_report.md");
-    // transitionFull must NOT be called — evidence check gates it
-    expect(mockTransitionFull).not.toHaveBeenCalled();
+    expect(smTransition).not.toHaveBeenCalled();
   });
 
-  // --- CG-2: verification_done → closed missing changed_files_audit.md → rejected ---
-  it("CG-2: must reject closed when changed_files_audit.md is missing", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-    const wiDir = await createWorkItemDir("WI-CG-001");
+  it("rejects close when changed_files_audit.md is missing", async () => {
+    const { deps } = makeStateManagerDeps();
+    const wiDir = wiDirFor(tempDir, "WI-0001");
+    await fs.mkdir(wiDir, { recursive: true });
     await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
     await fs.writeFile(path.join(wiDir, "close_gate.md"), "# Close Gate");
-    // Missing: changed_files_audit.md
 
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
-        to_state: "closed",
-        use_v11_state_machine: true,
-      },
-      { directory: tempDir, agent: 'close_gate' },
-      deps,
-    );
+    const result = await handler(closeArgs("WI-0001"), { directory: tempDir, agent: "close_gate" }, deps);
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain("changed_files_audit.md");
     expect(result.missing_evidence).toContain("changed_files_audit.md");
-    expect(mockTransitionFull).not.toHaveBeenCalled();
   });
 
-  // --- CG-3: verification_done → closed missing close_gate.md / close_gate.json → rejected ---
-  it("CG-3: must reject closed when close_gate.md and close_gate.json are both missing", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-    const wiDir = await createWorkItemDir("WI-CG-001");
+  it("rejects close when neither close_gate.md nor close_gate.json exists", async () => {
+    const { deps } = makeStateManagerDeps();
+    const wiDir = wiDirFor(tempDir, "WI-0001");
+    await fs.mkdir(wiDir, { recursive: true });
     await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
     await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
-    // Missing: close_gate.md (no .json either)
 
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
-        to_state: "closed",
-        use_v11_state_machine: true,
-      },
-      { directory: tempDir, agent: 'close_gate' },
-      deps,
-    );
+    const result = await handler(closeArgs("WI-0001"), { directory: tempDir, agent: "close_gate" }, deps);
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain("close_gate.md");
     expect(result.missing_evidence).toContain("close_gate.md");
-    expect(mockTransitionFull).not.toHaveBeenCalled();
   });
 
-  // --- CG-4: all 3 evidence files present → allowed (passes to transitionFull) ---
-  it("CG-4: must allow closed when all 3 evidence files are present", async () => {
-    const { deps, mockTransitionFull, mockSmTransition } = makeMockDeps();
-    const wiDir = await createWorkItemDir("WI-CG-001");
-    await writeAllCloseGateEvidence(wiDir);
+  it("reports all three files missing when the WI dir is empty", async () => {
+    const { deps } = makeStateManagerDeps();
+    await fs.mkdir(wiDirFor(tempDir, "WI-0001"), { recursive: true });
 
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
-        to_state: "closed",
-        use_v11_state_machine: true,
-      },
-      { directory: tempDir, agent: 'close_gate' },
-      deps,
-    );
-
-    expect(result.success).toBe(true);
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-    expect(mockSmTransition).toHaveBeenCalledTimes(1);
-  });
-
-  // --- CG-5: close_gate.json accepted as alternative to close_gate.md ---
-  it("CG-5: must accept close_gate.json as alternative to close_gate.md", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-    const wiDir = await createWorkItemDir("WI-CG-001");
-    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
-    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
-    await fs.writeFile(path.join(wiDir, "close_gate.json"), '{"status":"passed"}');
-    // No close_gate.md — only .json variant
-
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
-        to_state: "closed",
-        use_v11_state_machine: true,
-      },
-      { directory: tempDir, agent: 'close_gate' },
-      deps,
-    );
-
-    expect(result.success).toBe(true);
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-  });
-
-  // --- CG-6: non-closed transition does NOT trigger close gate evidence check ---
-  it("CG-6: non-closed transition must not trigger close gate evidence check", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-    await createWorkItemDir("WI-CG-001");
-    // No evidence files at all, but target is 'implementation_ready' not 'closed'
-
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "post_merge_verified",
-        to_state: "implementation_ready",
-        use_v11_state_machine: true,
-      },
-      { directory: tempDir },
-      deps,
-    );
-
-    // Should pass — no close gate check for non-closed targets
-    expect(result.success).toBe(true);
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-  });
-
-  // --- CG-7: non-v11 path is NOT affected by close gate evidence check ---
-  it("CG-7: non-v11 path must not trigger close gate evidence check", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-    await createWorkItemDir("WI-CG-001");
-    // No evidence files, no use_v11_state_machine flag
-
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
-        to_state: "closed",
-        // No use_v11_state_machine → v1.1 checks skipped entirely
-      },
-      { directory: tempDir },
-      deps,
-    );
-
-    // Should pass — v1.1 close gate check is opt-in
-    expect(result.success).toBe(true);
-    expect(mockTransitionFull).toHaveBeenCalledTimes(1);
-  });
-
-  // --- CG-8: no projectPath → clear error for close gate check ---
-  it("CG-8: must return error when projectPath missing for closed target", async () => {
-    const { deps } = makeMockDeps();
-
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
-        to_state: "closed",
-        use_v11_state_machine: true,
-      },
-      { agent: 'close_gate' }, // No directory or worktree
-      deps,
-    );
-
-    expect(result.success).toBe(false);
-    expect(result.error).toContain("projectPath");
-  });
-
-  // --- CG-9: all evidence missing → reports all 3 missing ---
-  it("CG-9: must report all 3 missing when no evidence files exist", async () => {
-    const { deps, mockTransitionFull } = makeMockDeps();
-    await createWorkItemDir("WI-CG-001");
-    // Empty WI directory — no evidence files
-
-    const result = await handler(
-      {
-        work_item_id: "WI-CG-001",
-        from_state: "verification_done",
-        to_state: "closed",
-        use_v11_state_machine: true,
-      },
-      { directory: tempDir, agent: 'close_gate' },
-      deps,
-    );
+    const result = await handler(closeArgs("WI-0001"), { directory: tempDir, agent: "close_gate" }, deps);
 
     expect(result.success).toBe(false);
     expect(result.missing_evidence).toHaveLength(3);
-    expect(result.missing_evidence).toContain("verification_report.md");
-    expect(result.missing_evidence).toContain("changed_files_audit.md");
-    expect(result.missing_evidence).toContain("close_gate.md");
-    expect(mockTransitionFull).not.toHaveBeenCalled();
+    expect(result.missing_evidence).toEqual(
+      expect.arrayContaining(["verification_report.md", "changed_files_audit.md", "close_gate.md"]),
+    );
+  });
+
+  it("accepts close_gate.json as an alternative to close_gate.md", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
+    const wiDir = wiDirFor(tempDir, "WI-0001");
+    await fs.mkdir(wiDir, { recursive: true });
+    await fs.writeFile(path.join(wiDir, "verification_report.md"), "# VR");
+    await fs.writeFile(path.join(wiDir, "changed_files_audit.md"), "# Audit");
+    await fs.writeFile(path.join(wiDir, "close_gate.json"), '{"status":"passed"}');
+
+    const result = await handler(closeArgs("WI-0001"), { directory: tempDir, agent: "close_gate" }, deps);
+
+    expect(result.success).toBe(true);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+  });
+
+  it("succeeds when all evidence is present and actor is close_gate", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
+    await writeAllCloseEvidence(wiDirFor(tempDir, "WI-0001"));
+
+    const result = await handler(closeArgs("WI-0001"), { directory: tempDir, agent: "close_gate" }, deps);
+
+    expect(result.success).toBe(true);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects close by a non-close_gate actor (seal transition)", async () => {
+    const { deps, smTransition } = makeStateManagerDeps();
+    await writeAllCloseEvidence(wiDirFor(tempDir, "WI-0001"));
+
+    const result = await handler(closeArgs("WI-0001"), { directory: tempDir, agent: "sf-orchestrator" }, deps);
+
+    expect(result.success).toBe(false);
+    expect(result.seal_transition).toBe(true);
+    expect(result.required_actor).toBe("close_gate");
+    expect(smTransition).not.toHaveBeenCalled();
   });
 });
 
@@ -768,9 +455,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
     );
     await fs.mkdir(tempDir, { recursive: true });
     // Simulate an initialized project (manifest.json present)
-    const specforgeDir = path.join(tempDir, ".specforge");
-    await fs.mkdir(specforgeDir, { recursive: true });
-    await fs.writeFile(path.join(specforgeDir, "manifest.json"), "{}");
+    await writeManifest(tempDir);
   });
 
   afterEach(async () => {
@@ -780,25 +465,6 @@ describe("sf_state_transition - closure file initialization on create", () => {
       // Ignore cleanup errors
     }
   });
-
-  function makeMockDeps() {
-    const mockSmTransition = vi.fn().mockResolvedValue(undefined);
-    const mockGetProjectStateManager = vi.fn().mockResolvedValue({
-      transition: mockSmTransition,
-    });
-    return {
-      deps: {
-        workflowEngine: {
-          transitionFull: vi.fn().mockResolvedValue({
-            workItemId: "WI-0001",
-            currentState: "created",
-            timestamp: new Date().toISOString(),
-          }),
-        },
-        projectManager: { getProjectStateManager: mockGetProjectStateManager },
-      },
-    };
-  }
 
   // Closure files required by close_gate at the WI root (non-investigation).
   const REQUIRED_ROOT_FILES = [
@@ -815,7 +481,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
   ];
 
   it("must create tasks.md/trace_delta.md and other root closure files on from=''->created", async () => {
-    const { deps } = makeMockDeps();
+    const { deps } = makeStateManagerDeps();
 
     await handler(
       { work_item_id: "WI-0001", from_state: "", to_state: "created", workflow_type: "feature_spec" },
@@ -823,7 +489,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
       deps,
     );
 
-    const wiDir = path.join(tempDir, ".specforge", "work-items", "WI-0001");
+    const wiDir = wiDirFor(tempDir, "WI-0001");
     for (const f of REQUIRED_ROOT_FILES) {
       await expect(
         fs.access(path.join(wiDir, f)),
@@ -837,7 +503,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
   });
 
   it("must backfill missing closure files when work_item.json already exists (idempotent repair)", async () => {
-    const wiDir = path.join(tempDir, ".specforge", "work-items", "WI-0002");
+    const wiDir = wiDirFor(tempDir, "WI-0002");
     await fs.mkdir(wiDir, { recursive: true });
     // Pre-existing work_item.json but NO closure files — reproduces the defect
     // (and the manual-deletion recovery scenario).
@@ -846,7 +512,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
       JSON.stringify({ work_item_id: "WI-0002", workflow_type: "feature_spec" }),
     );
 
-    const { deps } = makeMockDeps();
+    const { deps } = makeStateManagerDeps();
 
     await handler(
       { work_item_id: "WI-0002", from_state: "", to_state: "created", workflow_type: "feature_spec" },
@@ -859,7 +525,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
   });
 
   it("must NOT overwrite existing real closure content (create-if-missing)", async () => {
-    const wiDir = path.join(tempDir, ".specforge", "work-items", "WI-0003");
+    const wiDir = wiDirFor(tempDir, "WI-0003");
     await fs.mkdir(wiDir, { recursive: true });
     await fs.writeFile(
       path.join(wiDir, "work_item.json"),
@@ -868,7 +534,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
     const realTasks = "# Tasks\n\nTASK-1 real authored content";
     await fs.writeFile(path.join(wiDir, "tasks.md"), realTasks);
 
-    const { deps } = makeMockDeps();
+    const { deps } = makeStateManagerDeps();
 
     await handler(
       { work_item_id: "WI-0003", from_state: "", to_state: "created", workflow_type: "feature_spec" },
