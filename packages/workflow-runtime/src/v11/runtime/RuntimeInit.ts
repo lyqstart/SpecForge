@@ -62,6 +62,12 @@ export function createEmptyExtensionRegistry(): object {
     },
     updated_by_work_item: null,
     updated_at: null,
+    contracts: {
+      shared_enums: [],
+      invariants: [],
+      public_interfaces: [],
+      extension_points: [],
+    },
   };
 }
 

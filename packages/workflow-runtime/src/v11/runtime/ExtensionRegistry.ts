@@ -19,6 +19,59 @@ export interface ExtensionTypeEntry {
   registered_by_work_item: string;
 }
 
+// ---- Cross-module contract model (design-governance) ----
+// Canonical, machine-readable cross-module contracts consumed by design/gate
+// conformance. OPTIONAL and backward compatible: a registry without `contracts`
+// (or with empty arrays) is treated as "nothing under contract governance yet"
+// (brownfield-safe: gates warn, do not block).
+
+export interface SharedEnumContract {
+  /** Canonical enum id, e.g. "PhotoStatus". */
+  id: string;
+  /** MODULE_CODE that owns this enum (only its governed change may modify it). */
+  owner_module: string;
+  /** Authoritative value set; consumers must reference these, never invent. */
+  values: string[];
+  change_policy?: string;
+  description?: string;
+}
+
+export interface InvariantContract {
+  /** e.g. "MUST_USE_PATH_SERVICE". */
+  id: string;
+  rule: string;
+  scope: 'global' | 'module';
+  owner_module: string;
+  /** Gate/lint id that mechanically enforces it (if any). */
+  enforcement?: string;
+  rationale?: string;
+}
+
+export interface PublicInterfaceContract {
+  id: string;
+  owner_module: string;
+  /** Signature/shape summary of the public surface. */
+  surface?: string;
+  description?: string;
+}
+
+export interface ExtensionPointContract {
+  id: string;
+  owner_module: string;
+  /** The interface/port a consumer implements to extend. */
+  interface: string;
+  /** Sanctioned extension method (implement + inject), not fork. */
+  extend_by: string;
+  description?: string;
+}
+
+export interface ContractRegistry {
+  shared_enums: SharedEnumContract[];
+  invariants: InvariantContract[];
+  public_interfaces: PublicInterfaceContract[];
+  extension_points: ExtensionPointContract[];
+}
+
 export interface ExtensionRegistryData {
   schema_version: '1.0';
   project_spec_version: string;
@@ -31,6 +84,11 @@ export interface ExtensionRegistryData {
   };
   updated_by_work_item: string | null;
   updated_at: string | null;
+  /**
+   * Optional, backward-compatible cross-module contract registry.
+   * Absent/empty ⇒ brownfield-safe (no contract enforcement yet).
+   */
+  contracts?: ContractRegistry;
 }
 
 export interface ExtensionRequestData {
