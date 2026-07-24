@@ -267,3 +267,15 @@
 
 ## 端到端验证(待部署后)
 注册一条真实契约 → gate → 批准 → merge 落盘 → `spec_consistency_gate` 从 brownfield-skip 转为实际对账 → 真跑一次 executor 遇未登记值 `blocked(contract_gap)` → 治理登记 → resume。
+
+### 部署期缺陷修复(提交 `535f202`)
+- **Zod v4 record arity bug**:`sf_contract_register.ts` wrapper 用了单参 `tool.schema.record(tool.schema.any())`。Zod v4 要求 `record(keySchema, valueSchema)`,单参使 value 类型为 undefined。opencode 启动解析全部工具 schema 时 `ToolRegistry.all` 抛 `TypeError: undefined is not an object (evaluating 'r._zod')`,导致**整个工具注册表崩溃、所有目录下提示词无响应**。
+- 证据:opencode 日志 `err_cf216bf6/err_226f68d5`(一手);源码对比确认 `sf_state_transition`/`sf_safe_bash` 均用正确双参形式,仅新增的 `sf_contract_register` 单参。
+- 修复:改为 `record(tool.schema.string(), tool.schema.any())`。仅用户级 wrapper,部署 = installer upgrade --force + verify + 重开 opencode(无需重建/重启 daemon)。
+- **遗留治理增强(单列)**:installer `verify` 应加一步"加载全部 wrapper schema 干跑",提前拦截这类"一个 schema 写错拖垮全部工具"。
+
+### Step 1 结果(CONFIRMED,fj1 / WI-0003)
+- opencode 创建 WI-0003(change_request / requirement_change_path / created),调用 `sf_contract_register` 返回 `success:true`,`contract_ref=[contract:shared_enum:GpsStatus owner=CORE]`。
+- ✅ 候选 `candidates/project/extension_registry.json` 的 `contracts.shared_enums` 含 GpsStatus。
+- ✅ `candidate_manifest.json` 有显式条目 `candidates/project/extension_registry.json → .specforge/project/extension_registry.json`(replace/extension_registry)——**收件员原样回显验证成立,不走后门**。
+- ✅ 真相源 `contracts` 块为**空**(`grep -c GpsStatus`=0):bootstrap 规范化只补了空容器,契约内容未泄漏,仍待 merge 落盘。假设 B(绕过真相源)已排除。
