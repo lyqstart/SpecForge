@@ -47,6 +47,18 @@ export interface RuntimeComponents {
  * SpecForge v1.1 Runtime — the central control hub.
  *
  * Requirements: 8.1-8.11
+ *
+ * @deprecated DAEMON-UNUSED. The live runtime path is the config-driven
+ * `WorkflowEngine` (see `createV11WorkflowEngine` + `configs/workflows/builtin/*.json`,
+ * wired in daemon-core `Daemon.ts`) together with daemon-core's own
+ * `gate-runner-v11.ts`, `state_machine.ts` (FINAL_TRANSITIONS) and
+ * `merge-runner-v11.ts`. This OO Runtime and its `RuntimeInit` / `StateMachine`
+ * (v11/runtime) / `GateRunner` are never instantiated by the daemon
+ * (`packages/*/src` has no `new Runtime(`). Do NOT read them as authoritative
+ * runtime behavior — they have already misled root-cause analysis twice
+ * (unconditional registry template write; a transition table missing the
+ * implementation-phase resume edges). Removal pending a cross-package consumer
+ * audit + test cleanup.
  */
 export class Runtime {
   private readonly config: RuntimeConfig;

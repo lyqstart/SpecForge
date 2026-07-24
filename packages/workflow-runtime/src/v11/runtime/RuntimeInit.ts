@@ -75,6 +75,14 @@ export function createEmptyExtensionRegistry(): object {
  * RuntimeInit — handles .specforge/ directory initialization.
  *
  * Requirements: 1.13-1.20
+ *
+ * @deprecated DAEMON-UNUSED. Only instantiated by the deprecated OO `Runtime`
+ * class (also daemon-unused). The live project bootstrap is daemon-core's
+ * `ensureProjectInit` (sf_project_init_core.ts), called by HTTPServer on project
+ * register/sync. WARNING: this class's `writeJsonFile` overwrites
+ * extension_registry.json UNCONDITIONALLY — do not resurrect it as a bootstrap
+ * path without adding the "preserve non-empty governed truth source" guard that
+ * ensureProjectInit uses.
  */
 export class RuntimeInit {
   private readonly pathService: PathService;

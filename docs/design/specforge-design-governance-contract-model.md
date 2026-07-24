@@ -335,3 +335,6 @@ Step 3 验证 `spec_consistency_gate` 时发现它仍走 brownfield-skip。逐�
 5. **installer verify 增强**:干跑加载全部 wrapper schema,提前拦截"一个 schema 写错拖垮全部工具"(源自本轮 zod record bug)。
 6. **extension 子系统 v11/v12 整合**(Task 4 债):两套并存、互不相通、都不能真正落盘;先审计使用再保留一条干净治理路径、删死的。
 7. **workflow-runtime 死代码审计**:`Runtime`/`RuntimeInit`/`StateMachine.ts` 疑似 daemon 未使用(与 daemon-core 的 `state_machine.ts` 并存两套状态机),本轮已两次踩到("无条件写模板"机制、"只能 resume 到前期"死表);需确认活线并清理,避免再被误读。
+   - **审计结论(CONFIRMED)**:daemon 活跃路径 = 配置驱动 `WorkflowEngine`(`Daemon.ts` → `createV11WorkflowEngine` + `configs/workflows/builtin/*.json`)+ daemon-core `gate-runner-v11.ts`/`state_machine.ts`/`merge-runner-v11.ts`。`v11/runtime/` 的 `Runtime`/`RuntimeInit`/`StateMachine`/`GateRunner` 是 daemon 从不实例化的并行 OO 运行时(`packages/*/src` 无 `new Runtime(`;唯一 `@specforge/workflow-runtime` 消费者是 `contracts-registry.ts` 引类型、`Daemon.ts` 引 `WorkflowEngine`)。
+   - **已处置**:给三个 daemon-unused 类加 `@deprecated` 标注(指向活线 + 记录两处已知误导),防再被当权威读。
+   - **仍待办(单列)**:真正删除需跨包消费者审计(node_modules 副本)+ 清理包自身 Runtime/StateMachine 测试 + 构建验证,风险较大,独立 WI。
