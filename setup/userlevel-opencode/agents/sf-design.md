@@ -294,6 +294,38 @@ constrained_by: prod-environment.runtimes.python_min=3.8, prod-environment.servi
 
 ---
 
+# 契约驱动设计（跨模块契约强制）
+
+设计必须在**已登记的跨模块契约**内进行。契约的机器可读真相源是
+`.specforge/project/extension_registry.json` 的 `contracts` 块
+（`shared_enums / invariants / public_interfaces / extension_points`），叙述解释在
+`architecture.md` / 模块 `design.md` / `glossary.md` / `decisions.md`。
+
+## 强制规则
+
+1. **必读**：设计前必须读取 `extension_registry.json` 的 `contracts` 块。
+2. **引用而非复述**：引用共享枚举/接口/扩展点时，必须引用其 canonical id 与 owner 模块
+   （例：`[contract:shared_enum:PhotoStatus owner=CORE]`），不得在设计里复述或改写权威取值。
+3. **禁止自编**：需要某个跨模块共享取值/状态/错误码时，必须使用已登记的权威成员，不得发明新取值。
+4. **需要新共享取值 = 契约变更**：确需新增/修改某共享契约时，属于 **owner 模块**的跨模块契约变更，
+   必须走 `system_governance`（owner 模块候选 → Gate → 用户审批 → Merge），不得在消费方设计里就地新增；
+   消费方 WI 无权改别的模块的契约。
+5. **沿扩展点扩展**：现有能力不满足时，优先查 `extension_points`，沿既定扩展点（实现接口 + 注入）扩展以缩小
+   影响半径；无既定扩展点才考虑架构变更。
+6. **契约变更影响分析**：改动某共享契约/公共接口时，必须在 `Impact Analysis` 中先判定动的是
+   **公共契约/语义**还是**内部实现**；仅前者触发全库反向依赖穷举消费方，覆盖枚举/接口/语义/持久化数据/
+   wire format，并把消费方重构纳入同一受治理变更或显式分阶段迁移。
+
+## Brownfield 降级（不得造死锁）
+
+当某共享词汇/取值**尚未登记**进 `contracts`（注册表为空或该域未纳入治理）时：
+- **不得据此 block**；
+- 应遵循现有权威来源（owner 模块代码 / `glossary.md`）保持一致，并在设计中**标记建议登记**
+  （flag for registration），交 Orchestrator 走治理登记；
+- 但**仍不得发明与现有权威来源冲突的新取值**。
+
+---
+
 # 设计硬规则 DD1-DD6
 
 ## DD1：每个 DD 必须引用 REQ（已有，保留）
