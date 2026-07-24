@@ -12,6 +12,7 @@ import * as path from 'path';
 import { randomBytes } from 'crypto';
 import { DaemonConfig } from './DaemonConfig';
 import { HandshakeFile } from '../types';
+import { TASK_ARTIFACT_CONTRACT_VERSION } from '@specforge/types';
 
 export class HandshakeManager {
   private readonly config: DaemonConfig;
@@ -136,6 +137,9 @@ export class HandshakeManager {
       startedAt: Date.now(),
       version: this.config.getDaemonVersion(),
       serviceMode: this.config.isServiceMode(),
+      artifact_contract_versions: {
+        task_document: TASK_ARTIFACT_CONTRACT_VERSION,
+      },
     };
 
     const handshakeFile = this.config.getHandshakeFile();

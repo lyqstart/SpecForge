@@ -348,6 +348,7 @@ WI-[0-9]{4}
 REQ-[A-Z][A-Z0-9]{1,11}-[0-9]{3}
 AC-[A-Z][A-Z0-9]{1,11}-[0-9]{3}-[0-9]{2}
 DD-[A-Z][A-Z0-9]{1,11}-[0-9]{3}
+CP-[A-Z][A-Z0-9]{1,11}-[0-9]{3}
 TASK-WI-[0-9]{4}-[0-9]{3}
 ```
 
@@ -878,8 +879,8 @@ Candidate 是拟写入正式规格真相源的完整候选文件，不是 patch�
 
 | `sf_artifact_write.file_type` | 唯一责任代理 |
 | --- | --- |
-| `requirements` / `candidate_requirements` | `sf-requirements` |
-| `design` / `candidate_design` | `sf-design` |
+| `requirements` / `candidate_requirements` / `requirements_delta` | `sf-requirements` |
+| `design` / `candidate_design` / `design_delta` | `sf-design` |
 | `tasks` / `candidate_tasks` | `sf-task-planner` |
 | `trace_delta` / `candidate_trace_delta` | `sf-task-planner` |
 
@@ -921,6 +922,35 @@ Candidate 是拟写入正式规格真相源的完整候选文件，不是 patch�
 4. `code_only_fast_path` 的 entries 必须为空。
 5. Merge Runner 只能按 Manifest 合并。
 6. Merge Runner 禁止扫描 `candidates/**` 自行决定写入范围。
+
+### 8.5 Artifact Protocol Contract
+
+跨 Agent、Tool、Gate、Knowledge Graph 与 Verifier 传递的治理产物必须先定义机器可读的语义契约，再定义 Markdown 表现形式。任何关键控制不得依赖某一层独有的正则、提示词示例或 Markdown 装饰。
+
+#### 8.5.1 tasks.md 语义契约
+
+`tasks.md` 使用 `task-document/v1`。每个任务至少包含：
+
+```text
+task_id
+refs
+verification_commands
+```
+
+规则：
+
+1. `task_id` 必须符合 §3.2 的 `TASK-WI-[0-9]{4}-[0-9]{3}`。
+2. `refs` 必须是非空数组，至少包含一个符合 §3.2 的 `REQ-*`；可同时包含 `DD-*`。
+3. `verification_commands` 必须是类型化映射，合法键仅为 `unit`、`property`、`integration`、`e2e`、`regression`，且至少有一个非空命令。
+4. 使用 `property` 时，`refs` 必须包含对应的 Correctness Property 引用；局部设计属性使用 `CP-<MODULE_CODE>-<NNN>`。
+5. Markdown 表现不承载语义：`refs: [...]` 与 `**refs**: [...]` 必须解析为相同字段；规范渲染形式为 `- **refs**: [...]`。
+6. `TASK-N`、`REQ-N`、`DD-N`、`CP-N` 仅允许作为历史读取兼容别名。Runtime 对历史产物给出迁移告警；所有新写入必须使用 §3.2 的规范 ID。
+
+#### 8.5.2 Producer / Consumer 闭环
+
+`sf-task-planner` 是生产者；`sf_artifact_write` 必须在写盘前按同一契约验证；Doc Lint、Tasks Gate、Verification Gate、Knowledge Graph 与 Verifier 必须消费同一规范化解析结果。任何消费者增加必填字段或格式限制时，必须同步升级契约版本、生产者模板、部署清单与跨消费者契约测试。
+
+历史兼容只能发生在读取边界，且必须可观测；不得把兼容别名重新写成新产物。契约不一致必须失败关闭，不得等到后置 Gate 才首次发现。
 
 ---
 

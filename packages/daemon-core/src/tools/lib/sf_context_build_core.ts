@@ -14,6 +14,7 @@ import { loadGraphStore, isKGEnabled } from "./sf_knowledge_graph_core"
 import { impactAnalysis, getSubgraph } from "./sf_knowledge_query_core"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import type { GraphNode } from "./sf_knowledge_graph_core"
+import { resolveSystemGovernanceRequirement } from "./sf_design_governance_policy"
 
 // ============================================================
 // Types
@@ -459,6 +460,52 @@ export class PhaseContextSource implements ContextDataSource {
   }
 }
 
+// ============================================================
+// Runtime Policy Source: required design analysis scope
+// ============================================================
+
+export class DesignGovernancePolicySource implements ContextDataSource {
+  name = "design_governance_policy"
+
+  constructor(private baseDir: string) {}
+
+  async query(params: TaskQueryParams): Promise<ContextFragment[]> {
+    if (params.phase !== "design") return []
+
+    const requirement = await resolveSystemGovernanceRequirement(
+      params.work_item_id,
+      this.baseDir
+    )
+
+    if (requirement.blocking_issue) {
+      return [
+        {
+          source_type: this.name,
+          source_id: requirement.source_path ?? "trigger_result.json",
+          category: "warning",
+          content:
+            `DESIGN_SCOPE_BLOCKED: ${requirement.blocking_issue}. ` +
+            "Do not author a design artifact until authoritative trigger facts are available.",
+          priority: 5,
+        },
+      ]
+    }
+
+    const requiredScope = requirement.required ? "system_governance" : "solution_design"
+    return [
+      {
+        source_type: this.name,
+        source_id: requirement.source_path ?? "trigger_result.json",
+        category: "design_decision",
+        content:
+          `required_analysis_scope: ${requiredScope}; ` +
+          `runtime_basis: ${requirement.reasons.join(", ") || "no system-governance trigger"}`,
+        priority: 5,
+      },
+    ]
+  }
+}
+
 function extractKeywords(nodes: GraphNode[]): Set<string> {
   const keywords = new Set<string>()
   for (const node of nodes) {
@@ -845,6 +892,7 @@ export async function buildContext(
 
   // Build data sources
   const dataSources: ContextDataSource[] = [
+    new DesignGovernancePolicySource(baseDir),
     new KnowledgeGraphSource(baseDir),
     new ArchiveSource(baseDir),
   ]

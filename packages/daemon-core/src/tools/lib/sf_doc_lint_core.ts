@@ -11,8 +11,11 @@ import { readFile } from "node:fs/promises"
 import { join, relative } from "node:path"
 import { legacyWorkItemSpecArtifact, workItemRoot } from "@specforge/types/directory-layout"
 import { resolveWorkItemSpecArtifacts } from "./governance-invariants-v11"
-import { parseTaskVerification } from "./sf_markdown_verification_parser"
-import { isValidVerificationType } from "./sf_verification_types"
+import {
+  parseTaskSections,
+  parseTaskVerification,
+  validateTaskArtifactContract,
+} from "./sf_markdown_verification_parser"
 import { logErrorToFile } from "./utils"
 
 // ============================================================
@@ -131,7 +134,7 @@ export async function lintDocument(
 /**
  * 检查 requirements.md 的结构
  * 必须包含: 简介/Introduction, 术语表/Glossary, 需求/Requirements 章节
- * 警告: 需求标题应使用 REQ-N 标准化格式
+ * 警告: 需求标题应使用 REQ-MODULE-NNN 规范格式
  */
 function lintRequirements(content: string, fileName: string): DocLintResult {
   const issues: LintIssue[] = []
@@ -163,11 +166,12 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
     })
   }
 
-  // Check for standardized REQ-N marker format (warning level)
+  // Check for canonical REQ-MODULE-NNN marker format (warning level)
   if (!hasStandardizedMarkers(content, "requirements")) {
     issues.push({
       severity: "warning",
-      message: '需求标题未使用标准化格式"### REQ-N 标题"，Knowledge Graph 解析可能失败',
+      message:
+        '需求标题未使用规范格式"### REQ-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
       location: fileName,
     })
   }
@@ -229,7 +233,7 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
  * 检查 design.md 的结构
  * - 检查是否包含设计相关章节
  * - 检查是否不包含任务拆分内容
- * - 警告: 设计决策标题应使用 DD-N 标准化格式
+ * - 警告: 设计决策标题应使用 DD-MODULE-NNN 规范格式
  * - V6 架构: 检查核心设计原则节
  */
 function lintDesign(content: string, fileName: string): DocLintResult {
@@ -259,11 +263,12 @@ function lintDesign(content: string, fileName: string): DocLintResult {
     })
   }
 
-  // Check for standardized DD-N marker format (warning level)
+  // Check for canonical DD-MODULE-NNN marker format (warning level)
   if (!hasStandardizedMarkers(content, "design")) {
     issues.push({
       severity: "warning",
-      message: '设计决策标题未使用标准化格式"### DD-N 标题"，Knowledge Graph 解析可能失败',
+      message:
+        '设计决策标题未使用规范格式"### DD-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
       location: fileName,
     })
   }
@@ -882,7 +887,7 @@ function checkV6ArchNorthStarScenarios(content: string, fileName: string, docTyp
  * 检查 tasks.md 的结构
  * 每个 task 必须包含 verification_commands 字段
  * V3.7: 对 typed 格式验证类型键合法性，对 legacy 格式添加非阻塞警告
- * 警告: 任务标题应使用 TASK-N 标准化格式
+ * 警告: 任务标题应使用 TASK-WI-NNNN-NNN 规范格式
  */
 function lintTasks(content: string, fileName: string): DocLintResult {
   const issues: LintIssue[] = []
@@ -899,55 +904,22 @@ function lintTasks(content: string, fileName: string): DocLintResult {
     return { status: "fail", issues }
   }
 
-  // Check each task section for verification_commands using V3.7 parser
+  const contractValidation = validateTaskArtifactContract(content, {
+    allowLegacyCommands: true,
+    allowLegacyIds: true,
+  })
+  for (const issue of contractValidation.issues) {
+    issues.push({
+      severity: issue.severity,
+      message: issue.message,
+      location: issue.task_id ? `${fileName}#${issue.task_id}` : fileName,
+      errorCode: issue.code,
+    })
+  }
+
+  // Manual checks are outside task-document/v1 and retain their existing lint.
   for (const section of taskSections) {
     const taskVerification = parseTaskVerification(section.content)
-
-    if (taskVerification.format === "empty") {
-      // V3.7 parser didn't find **verification_commands**: field
-      // Fall back to basic existence check for backward compatibility
-      // (handles plain `verification_commands:` without bold markdown formatting)
-      if (!hasVerificationCommands(section.content)) {
-        issues.push({
-          severity: "error",
-          message: `任务"${section.title}"缺少 verification_commands 字段`,
-          location: `${fileName}#${section.title}`,
-        })
-      }
-    } else if (taskVerification.format === "typed") {
-      // Typed format: validate type key legality
-
-      // Check invalidTypedKeys (MUST include this check per DD-10)
-      if (taskVerification.invalidTypedKeys) {
-        for (const key of taskVerification.invalidTypedKeys) {
-          issues.push({
-            severity: "error",
-            message: `任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`,
-            location: `${fileName}#${section.title}`,
-          })
-        }
-      }
-
-      // Also validate typed command keys using isValidVerificationType
-      if (taskVerification.typedCommands) {
-        for (const key of Object.keys(taskVerification.typedCommands)) {
-          if (!isValidVerificationType(key)) {
-            issues.push({
-              severity: "error",
-              message: `任务"${section.title}"的 verification_commands 包含非法类型键: "${key}"`,
-              location: `${fileName}#${section.title}`,
-            })
-          }
-        }
-      }
-    } else if (taskVerification.format === "legacy") {
-      // Legacy format: pass + non-blocking warning (consistent with sf_tasks_gate)
-      issues.push({
-        severity: "warning",
-        message: `任务"${section.title}"使用旧格式 verification_commands，建议迁移到类型化格式`,
-        location: `${fileName}#${section.title}`,
-      })
-    }
 
     // Validate manual_verification_checks structure (must be string list)
     if (taskVerification.manualChecks !== undefined) {
@@ -972,11 +944,12 @@ function lintTasks(content: string, fileName: string): DocLintResult {
     }
   }
 
-  // Check for standardized TASK-N marker format (warning level)
+  // Check for canonical TASK-WI-NNNN-NNN marker format (warning level)
   if (!hasStandardizedMarkers(content, "tasks")) {
     issues.push({
       severity: "warning",
-      message: '任务标题未使用标准化格式"### TASK-N 标题"，Knowledge Graph 解析可能失败',
+      message:
+        '任务标题未使用规范格式"### TASK-WI-<NNNN>-<NNN> 标题"，Knowledge Graph 解析可能失败',
       location: fileName,
     })
   }
@@ -1093,42 +1066,10 @@ export interface TaskSection {
 }
 
 export function getTaskSections(content: string): TaskSection[] {
-  const sections: TaskSection[] = []
-  const lines = content.split("\n")
-  let currentTitle = ""
-  let currentContent: string[] = []
-
-  // Task heading patterns - match actual task headings, not auxiliary sections
-  // Standardized: "### TASK-1 ...", "## TASK-1 ..."
-  // Legacy: "## Task 1: ...", "## 任务 1: ...", "### Task 1: ...", "### 任务 1: ..."
-  const taskHeadingPattern = /^#{2,6}\s+(TASK-\d|Task\s+\d|任务\s*\d)/i
-
-  for (const line of lines) {
-    const headingMatch = line.match(/^#{2,6}\s+(.+)$/)
-    if (headingMatch && taskHeadingPattern.test(line)) {
-      // Save previous section if it exists
-      if (currentTitle) {
-        sections.push({
-          title: currentTitle,
-          content: currentContent.join("\n"),
-        })
-      }
-      currentTitle = headingMatch[1].trim()
-      currentContent = []
-    } else if (currentTitle) {
-      currentContent.push(line)
-    }
-  }
-
-  // Save last section
-  if (currentTitle) {
-    sections.push({
-      title: currentTitle,
-      content: currentContent.join("\n"),
-    })
-  }
-
-  return sections
+  return parseTaskSections(content).map(section => ({
+    title: section.title,
+    content: section.content,
+  }))
 }
 
 /**
@@ -1140,9 +1081,9 @@ export function hasVerificationCommands(content: string): boolean {
 
 /**
  * 检查文档是否包含标准化标记格式
- * - requirements: 至少一个 ### REQ-N 标题
- * - design: 至少一个 ### DD-N 标题
- * - tasks: 至少一个 ### TASK-N 标题
+ * - requirements: 至少一个 ### REQ-MODULE-NNN 标题
+ * - design: 至少一个 ### DD-MODULE-NNN 标题
+ * - tasks: 至少一个 ### TASK-WI-NNNN-NNN 标题
  *
  * 也接受兼容的旧格式（不报 warning）：
  * - requirements: ### 需求 N 或 ### Requirement N
@@ -1152,14 +1093,14 @@ export function hasVerificationCommands(content: string): boolean {
 export function hasStandardizedMarkers(content: string, docType: "requirements" | "design" | "tasks"): boolean {
   switch (docType) {
     case "requirements":
-      // Standardized: REQ-N, also accept legacy: 需求 N, Requirement N
-      return /^#{1,6}\s+(?:REQ-\d+|(?:需求|Requirement)\s+\d+)/m.test(content)
+      // Canonical REQ-MODULE-NNN, plus read compatibility aliases.
+      return /^#{1,6}\s+(?:REQ-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+)|(?:需求|Requirement)\s+\d+)/m.test(content)
     case "design":
-      // Standardized: DD-N, also accept legacy: N.N Title (numbered sections)
-      return /^#{1,6}\s+(?:DD-\d+|\d+(?:\.\d+)?[.、：:\s]+.+)/m.test(content)
+      // Canonical DD-MODULE-NNN, plus read compatibility aliases.
+      return /^#{1,6}\s+(?:DD-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+)|\d+(?:\.\d+)?[.、：:\s]+.+)/m.test(content)
     case "tasks":
-      // Standardized: TASK-N, also accept legacy: Task N:, - [ ] N.
-      return /(?:^#{1,6}\s+(?:TASK-\d+|Task\s+\d+)|^-\s+\[[ x~-]\]\s+\d+\.)/m.test(content)
+      // Canonical TASK-WI-NNNN-NNN, plus read compatibility aliases.
+      return /(?:^#{1,6}\s+(?:TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+)|Task\s+\d+)|^-\s+\[[ x~-]\]\s+\d+\.)/m.test(content)
   }
 }
 

@@ -200,7 +200,7 @@ not_done_when:
   - 依赖外部系统但未验证外部系统存在
 ```
 
-这些字段不改变 REQ 编号规则；仍使用 `### REQ-N 标题`。
+这些字段不改变 REQ 编号规则；仍使用 §3.2 的 `### REQ-<MODULE_CODE>-<NNN> 标题`。
 
 ## 1. 需求澄清
 
@@ -221,24 +221,24 @@ not_done_when:
 
 ❌ 错：
 ```markdown
-### REQ-3 用户管理
+### REQ-AUTH-003 用户管理
 THE 系统 SHALL 支持用户注册、登录、修改密码等基础账号管理功能。
 ```
 
 ✅ 对：
 ```markdown
-### REQ-3 用户注册
+### REQ-AUTH-003 用户注册
 WHEN 用户提交注册表单时，THE 系统 SHALL 校验邮箱格式 + 密码强度 ≥ 8 位 + 用户名唯一。
 
-### REQ-4 用户登录
+### REQ-AUTH-004 用户登录
 WHEN 用户提交账号密码时，THE 系统 SHALL 校验密码哈希 + 返回 JWT（有效期 24h）。
 
-### REQ-5 修改密码
+### REQ-AUTH-005 修改密码
 WHEN 已登录用户提交旧密码 + 新密码时，THE 系统 SHALL 校验旧密码 + 应用新密码哈希。
 ```
 
 **判定**：含"等"/"包括但不限于"/"支持 X 等多种 Y"的需求必须拆分。
-每个父需求子项 ≥ 2 时必须拆成独立 REQ-N 编号。
+每个父需求子项 ≥ 2 时必须拆成独立 `REQ-<MODULE_CODE>-<NNN>` 编号。
 
 ### 规则 2：可能变化的需求要参数化标注
 
@@ -358,7 +358,7 @@ N. [Pattern-label] EARS句式.
 | `requirements.md` | 包含"简介"、"术语表"、"需求"三个必需章节 |
 
 **输出格式要求**：
-- 每个需求使用标准化标记格式：`### REQ-N 标题`（N 为整数，不支持 REQ-3.1 格式）
+- 每个需求使用标准化标记格式：`### REQ-<MODULE_CODE>-<NNN> 标题`（例如 `REQ-AUTH-003`；`REQ-N` 仅用于历史读取兼容）
 - 每个需求包含用户故事（"作为...我希望...以便..."）
 - 每个需求包含至少 3 条 EARS 格式验收标准
 - 术语表包含所有领域特定术语的定义
@@ -386,8 +386,8 @@ requirements_format: ears
   "evidence": {
     "doc_lint_output_excerpt": "...",
     "self_check_answers": [
-      { "q": "REQ-1 的边界条件覆盖了空输入吗？", "a": "yes, REQ-1.4" },
-      { "q": "性能要求有可测量值吗？", "a": "yes, P95 < 500ms in REQ-3" }
+      { "q": "REQ-AUTH-001 的边界条件覆盖了空输入吗？", "a": "yes, AC-AUTH-001-04" },
+      { "q": "性能要求有可测量值吗？", "a": "yes, P95 < 500ms in REQ-AUTH-003" }
     ]
   },
   "self_check": { "passed": [1,2,3,4,5,6,7,8,9,10], "failed": [] },
@@ -436,6 +436,8 @@ Requirements Delta（`requirements_delta.md`）描述本次 Work Item 对现有�
 ```text
 .specforge/work-items/<WI-ID>/requirements_delta.md
 ```
+
+必须通过 `sf_artifact_write(file_type=requirements_delta)` 写入该增量说明；完整 Requirements Candidate 使用 `sf_artifact_write(file_type=requirements)`。不得用 `work_log` 代写专业需求产物，也不得直接修改 `.specforge/project/**`。
 
 ### 输出格式
 

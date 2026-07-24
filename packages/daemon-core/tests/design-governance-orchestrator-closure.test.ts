@@ -709,9 +709,48 @@ describe('Orchestrator governance execution closure', () => {
     expect(initialized.success).toBe(true);
 
     const workItemId = 'WI-0001';
+    await writeJson(
+      path.join(projectRoot, '.specforge', 'work-items', workItemId, 'trigger_result.json'),
+      {
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_path: 'task_change_path',
+        classification: {
+          requirement_changed: false,
+          acceptance_criteria_changed: false,
+          business_rule_changed: false,
+          user_visible_behavior_changed: false,
+          data_semantics_changed: false,
+          design_changed: false,
+          module_boundary_changed: false,
+          api_contract_changed: false,
+          architecture_changed: false,
+          unknowns: [],
+        },
+      }
+    );
+    const validOwnedContent: Record<string, string> = {
+      candidate_requirements: '# Requirements\n\n### REQ-CORE-001 Core requirement\n',
+      requirements_delta:
+        '# Requirements Delta\n\n## 1. Change reason\n\nOwnership contract test.\n',
+      candidate_design:
+        '---\nmodule_id: core\nanalysis_scope: solution_design\n---\n\n# Design\n\nCore design.',
+      design_delta:
+        '---\nanalysis_scope: solution_design\n---\n\n# Design Delta\n\nOwnership contract test.',
+      candidate_tasks: `### TASK-WI-0001-001 Core task
+
+- **refs**: [REQ-CORE-001, DD-CORE-001]
+- **verification_commands**:
+  - unit:
+    - \`node --test tests/core.test.mjs\`
+`,
+      trace_delta: '# Trace Delta\n\nTrace Impact: none\nReason: ownership contract test.',
+    };
     const ownershipCases = [
       ['candidate_requirements', 'sf-requirements'],
+      ['requirements_delta', 'sf-requirements'],
       ['candidate_design', 'sf-design'],
+      ['design_delta', 'sf-design'],
       ['candidate_tasks', 'sf-task-planner'],
       ['trace_delta', 'sf-task-planner'],
     ] as const;
@@ -721,7 +760,7 @@ describe('Orchestrator governance execution closure', () => {
         {
           work_item_id: workItemId,
           file_type: fileType,
-          content: `# ${fileType}\n\nOwned artifact.`,
+          content: validOwnedContent[fileType],
         },
         { directory: projectRoot, agent: 'sf-orchestrator' },
         auditDeps('candidate_preparing')
@@ -736,7 +775,7 @@ describe('Orchestrator governance execution closure', () => {
         {
           work_item_id: workItemId,
           file_type: fileType,
-          content: `# ${fileType}\n\nOwned artifact.`,
+          content: validOwnedContent[fileType],
         },
         { directory: projectRoot, agent: requiredAgent },
         auditDeps('candidate_preparing')

@@ -101,6 +101,8 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
 
   it('task planning examples use typed verification_commands', () => {
     const planner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
+    const requirements = read('setup/userlevel-opencode/agents/sf-requirements.md');
+    const design = read('setup/userlevel-opencode/agents/sf-design.md');
     const writingPlans = read(
       'setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md'
     );
@@ -108,9 +110,13 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
       expect(text).toContain('- unit:');
       expect(text).toContain('- integration:');
       expect(text).toContain('property');
-      expect(text).toContain('CP-N');
+      expect(text).toContain('CP-<MODULE_CODE>-<NNN>');
     }
     expect(planner).not.toContain('- 检查 server.mjs 文件存在');
+    expect(requirements).toContain('REQ-<MODULE_CODE>-<NNN>');
+    expect(design).toContain('DD-<MODULE_CODE>-<NNN>');
+    expect(planner).toContain('TASK-WI-NNNN-NNN');
+    expect(planner).toContain('- **refs**: [DD-WEB-001, REQ-WEB-001]');
   });
 
   it('injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file', () => {

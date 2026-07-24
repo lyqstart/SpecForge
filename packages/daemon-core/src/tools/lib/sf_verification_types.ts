@@ -88,7 +88,7 @@ export interface ParsedTaskVerification {
   legacyCommands?: string[]
   /** 人工检查项（不执行） */
   manualChecks?: string[]
-  /** refs 字段（REQ-N 和 CP-N 引用） */
+  /** refs 字段（规范 REQ / CP 引用及读取兼容别名） */
   refs?: string[]
   /** 格式类型 */
   format: "typed" | "legacy" | "empty"
@@ -163,16 +163,14 @@ export function parseAllVerificationStrategies(
   // 剥离 fenced code blocks，避免匹配代码示例中的字段
   const stripped = stripFencedCodeBlocks(content)
 
-  // 按 REQ-N 标题分割文档
-  const reqPattern = /^#{1,6}\s+(REQ-\d+[^\n]*)/gm
+  // Canonical REQ-MODULE-NNN, with REQ-N as read compatibility.
+  const reqPattern =
+    /^#{1,6}\s+(REQ-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+))\b[^\n]*/gm
   let match: RegExpExecArray | null
   const reqBoundaries: Array<{ id: string; start: number }> = []
 
   while ((match = reqPattern.exec(stripped)) !== null) {
-    const idMatch = match[1].match(/REQ-\d+/)
-    if (idMatch) {
-      reqBoundaries.push({ id: idMatch[0], start: match.index })
-    }
+    reqBoundaries.push({ id: match[1].toUpperCase(), start: match.index })
   }
 
   for (let i = 0; i < reqBoundaries.length; i++) {
@@ -200,7 +198,8 @@ export function parseVerificationStrategyField(
   const stripped = stripFencedCodeBlocks(reqContent)
 
   // 改进后的字段匹配正则（支持 list marker，行级锚定）
-  const fieldPattern = /^\s*-?\s*\*\*\s*verification_strategy\s*\*\*\s*:\s*(.*?)\s*$/im
+  const fieldPattern =
+    /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?verification_strategy(?:\s*\*\*)?\s*:\s*(.*?)\s*$/im
   const match = fieldPattern.exec(stripped)
 
   if (!match) {

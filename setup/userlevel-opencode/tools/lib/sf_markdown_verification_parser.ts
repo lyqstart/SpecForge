@@ -30,13 +30,8 @@ export function parseTaskVerification(taskContent: string): ParsedTaskVerificati
   const result: ParsedTaskVerification = { format: "empty" }
 
   // 提取 refs 字段
-  const refsMatch = taskContent.match(/\*\*refs\*\*\s*:\s*\[([^\]]*)\]/i)
-  if (refsMatch) {
-    result.refs = refsMatch[1]
-      .split(/\s*,\s*/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-  }
+  const refs = parseRefsFields(taskContent)
+  if (refs.length > 0) result.refs = refs
 
   // 提取 manual_verification_checks 字段
   const manualSection = extractFieldSection(taskContent, "manual_verification_checks")
@@ -72,6 +67,59 @@ export function parseTaskVerification(taskContent: string): ParsedTaskVerificati
   }
 
   return result
+}
+
+/** Markdown styling is presentation only; both refs forms normalize equally. */
+export function parseRefsFields(content: string): string[] {
+  const refs = new Set<string>()
+  const refsPattern =
+    /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?refs(?:\s*\*\*)?\s*:\s*\[([^\]]*)\]\s*$/gim
+  let match: RegExpExecArray | null
+
+  while ((match = refsPattern.exec(content)) !== null) {
+    for (const rawRef of match[1].split(/[,，]/)) {
+      const ref = rawRef.trim().replace(/^['"`]|['"`]$/g, "").toUpperCase()
+      if (ref) refs.add(ref)
+    }
+  }
+
+  return [...refs]
+}
+
+export interface TaskSection {
+  title: string
+  taskId: string
+  content: string
+}
+
+export function parseTaskSections(content: string): TaskSection[] {
+  const sections: TaskSection[] = []
+  const lines = content.split(/\r?\n/)
+  let current: TaskSection | null = null
+
+  for (const line of lines) {
+    const heading = /^#{2,6}\s+(.+)$/.exec(line)
+    if (heading) {
+      const taskIdMatch = /\b(TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+))\b/i.exec(heading[1])
+      const localizedMatch = /^(?:Task|任务)\s*([0-9]+)\b/i.exec(heading[1])
+      if (taskIdMatch || localizedMatch) {
+        if (current) sections.push(current)
+        current = {
+          title: heading[1].trim(),
+          taskId: taskIdMatch
+            ? taskIdMatch[1].toUpperCase()
+            : `TASK-${localizedMatch![1]}`,
+          content: "",
+        }
+        continue
+      }
+    }
+
+    if (current) current.content += current.content.length === 0 ? line : `\n${line}`
+  }
+
+  if (current) sections.push(current)
+  return sections
 }
 
 // ============================================================
@@ -154,19 +202,16 @@ export function parseTypedCommandBlock(section: string): {
 /**
  * 从 task 内容中提取指定字段的内容区块
  *
- * 查找 `**fieldName**:` 模式，提取其后的内容直到下一个 `**fieldName**:` 或内容结束。
- * 处理缩进内容块。
+ * 查找 `fieldName:` 或 `**fieldName**:`，提取其缩进内容块。
  *
  * @param content - task 章节的完整文本
  * @param fieldName - 要提取的字段名（如 "verification_commands"）
  * @returns 字段内容区块（不含字段标题行本身的值部分），或 null 表示字段不存在
  */
 export function extractFieldSection(content: string, fieldName: string): string | null {
-  // 匹配 **fieldName**: 模式（支持列表项前缀 `- `）
-  // 使用 multiline 模式逐行匹配
   const escapedName = fieldName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   const fieldPattern = new RegExp(
-    `^(\\s*-?\\s*)\\*\\*\\s*${escapedName}\\s*\\*\\*\\s*:\\s*(.*)$`,
+    `^(\\s*)(?:[-+*]\\s+)?(?:\\*\\*\\s*)?${escapedName}(?:\\s*\\*\\*)?\\s*:\\s*(.*)$`,
     "im"
   )
   const match = fieldPattern.exec(content)
@@ -175,33 +220,32 @@ export function extractFieldSection(content: string, fieldName: string): string 
     return null
   }
 
-  const matchEnd = match.index + match[0].length
+  const baseIndent = match[1].length
   const inlineValue = match[2].trim()
+  const remainingLines = content
+    .slice(match.index + match[0].length)
+    .replace(/^\r?\n/, "")
+    .split(/\r?\n/)
+  const sectionLines: string[] = []
+  const fieldBoundary =
+    /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?[A-Za-z_][\w-]*(?:\s*\*\*)?\s*:/
 
-  // 查找下一个 **fieldName**: 模式或内容结束
-  const nextFieldPattern = /^\s*-?\s*\*\*\s*[A-Za-z_][\w-]*\s*\*\*\s*:/m
-  const remaining = content.slice(matchEnd)
-  const nextMatch = nextFieldPattern.exec(remaining)
-
-  const sectionContent = nextMatch ? remaining.slice(0, nextMatch.index) : remaining
-
-  // 如果内联值非空且后续无缩进内容，直接返回内联值
-  if (inlineValue && !sectionContent.trim()) {
-    return inlineValue
+  for (const line of remainingLines) {
+    const indentation = line.match(/^\s*/)?.[0].length ?? 0
+    if (line.trim() && indentation <= baseIndent && fieldBoundary.test(line)) break
+    sectionLines.push(line)
   }
 
-  // 返回后续内容块（可能包含多行命令列表）
-  const trimmedSection = sectionContent.trim()
-  if (!trimmedSection && !inlineValue) {
+  const sectionContent = sectionLines.join("\n").trim()
+  if (!sectionContent && !inlineValue) {
     return null
   }
 
-  // 如果内联值和后续内容都存在，合并返回（内联值是被 \s* 消费换行后捕获的首行）
-  if (inlineValue && trimmedSection) {
-    return inlineValue + "\n" + trimmedSection
+  if (inlineValue && sectionContent) {
+    return inlineValue + "\n" + sectionContent
   }
 
-  return trimmedSection || inlineValue
+  return sectionContent || inlineValue
 }
 
 // ============================================================

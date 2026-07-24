@@ -8,6 +8,7 @@
  * - REQ:     REQ-[A-Z][A-Z0-9]{1,11}-[0-9]{3}
  * - AC:      AC-[A-Z][A-Z0-9]{1,11}-[0-9]{3}-[0-9]{2}
  * - DD:      DD-[A-Z][A-Z0-9]{1,11}-[0-9]{3}
+ * - CP:      CP-[A-Z][A-Z0-9]{1,11}-[0-9]{3}
  * - TASK:    TASK-WI-[0-9]{4}-[0-9]{3}
  *
  * MODULE_CODE（§3.1）：[A-Z][A-Z0-9]{1,11}
@@ -55,6 +56,11 @@ export const AC_ID_PATTERN = /^AC-[A-Z][A-Z0-9]{1,11}-[0-9]{3}-[0-9]{2}$/;
 export const DD_ID_PATTERN = /^DD-[A-Z][A-Z0-9]{1,11}-[0-9]{3}$/;
 
 /**
+ * Correctness Property ID 正则：CP-[A-Z][A-Z0-9]{1,11}-[0-9]{3}
+ */
+export const CP_ID_PATTERN = /^CP-[A-Z][A-Z0-9]{1,11}-[0-9]{3}$/;
+
+/**
  * Task ID 正则：TASK-WI-[0-9]{4}-[0-9]{3}
  */
 export const TASK_ID_PATTERN = /^TASK-WI-[0-9]{4}-[0-9]{3}$/;
@@ -89,6 +95,13 @@ export function isValidAcceptanceCriteriaId(id: string): boolean {
  */
 export function isValidDesignDecisionId(id: string): boolean {
   return DD_ID_PATTERN.test(id);
+}
+
+/**
+ * 校验字符串是否为合法 Correctness Property ID。
+ */
+export function isValidCorrectnessPropertyId(id: string): boolean {
+  return CP_ID_PATTERN.test(id);
 }
 
 /**

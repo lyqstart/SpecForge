@@ -9,7 +9,10 @@
 
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
-import { parseTaskVerification } from "./sf_markdown_verification_parser"
+import {
+  parseTaskSections,
+  parseTaskVerification,
+} from "./sf_markdown_verification_parser"
 import { isValidVerificationType } from "./sf_verification_types"
 import { logErrorToFile } from "./utils"
 
@@ -109,7 +112,7 @@ export async function lintDocument(
 /**
  * 检查 requirements.md 的结构
  * 必须包含: 简介/Introduction, 术语表/Glossary, 需求/Requirements 章节
- * 警告: 需求标题应使用 REQ-N 标准化格式
+ * 警告: 需求标题应使用 REQ-MODULE-NNN 规范格式
  */
 function lintRequirements(content: string, fileName: string): DocLintResult {
   const issues: LintIssue[] = []
@@ -145,7 +148,8 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
   if (!hasStandardizedMarkers(content, "requirements")) {
     issues.push({
       severity: "warning",
-      message: '需求标题未使用标准化格式"### REQ-N 标题"，Knowledge Graph 解析可能失败',
+      message:
+        '需求标题未使用规范格式"### REQ-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
       location: fileName,
     })
   }
@@ -207,7 +211,7 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
  * 检查 design.md 的结构
  * - 检查是否包含设计相关章节
  * - 检查是否不包含任务拆分内容
- * - 警告: 设计决策标题应使用 DD-N 标准化格式
+ * - 警告: 设计决策标题应使用 DD-MODULE-NNN 规范格式
  * - V6 架构: 检查核心设计原则节
  */
 function lintDesign(content: string, fileName: string): DocLintResult {
@@ -241,7 +245,8 @@ function lintDesign(content: string, fileName: string): DocLintResult {
   if (!hasStandardizedMarkers(content, "design")) {
     issues.push({
       severity: "warning",
-      message: '设计决策标题未使用标准化格式"### DD-N 标题"，Knowledge Graph 解析可能失败',
+      message:
+        '设计决策标题未使用规范格式"### DD-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
       location: fileName,
     })
   }
@@ -860,7 +865,7 @@ function checkV6ArchNorthStarScenarios(content: string, fileName: string, docTyp
  * 检查 tasks.md 的结构
  * 每个 task 必须包含 verification_commands 字段
  * V3.7: 对 typed 格式验证类型键合法性，对 legacy 格式添加非阻塞警告
- * 警告: 任务标题应使用 TASK-N 标准化格式
+ * 警告: 任务标题应使用 TASK-WI-NNNN-NNN 规范格式
  */
 function lintTasks(content: string, fileName: string): DocLintResult {
   const issues: LintIssue[] = []
@@ -954,7 +959,8 @@ function lintTasks(content: string, fileName: string): DocLintResult {
   if (!hasStandardizedMarkers(content, "tasks")) {
     issues.push({
       severity: "warning",
-      message: '任务标题未使用标准化格式"### TASK-N 标题"，Knowledge Graph 解析可能失败',
+      message:
+        '任务标题未使用规范格式"### TASK-WI-<NNNN>-<NNN> 标题"，Knowledge Graph 解析可能失败',
       location: fileName,
     })
   }
@@ -1071,42 +1077,10 @@ export interface TaskSection {
 }
 
 export function getTaskSections(content: string): TaskSection[] {
-  const sections: TaskSection[] = []
-  const lines = content.split("\n")
-  let currentTitle = ""
-  let currentContent: string[] = []
-
-  // Task heading patterns - match actual task headings, not auxiliary sections
-  // Standardized: "### TASK-1 ...", "## TASK-1 ..."
-  // Legacy: "## Task 1: ...", "## 任务 1: ...", "### Task 1: ...", "### 任务 1: ..."
-  const taskHeadingPattern = /^#{2,6}\s+(TASK-\d|Task\s+\d|任务\s*\d)/i
-
-  for (const line of lines) {
-    const headingMatch = line.match(/^#{2,6}\s+(.+)$/)
-    if (headingMatch && taskHeadingPattern.test(line)) {
-      // Save previous section if it exists
-      if (currentTitle) {
-        sections.push({
-          title: currentTitle,
-          content: currentContent.join("\n"),
-        })
-      }
-      currentTitle = headingMatch[1].trim()
-      currentContent = []
-    } else if (currentTitle) {
-      currentContent.push(line)
-    }
-  }
-
-  // Save last section
-  if (currentTitle) {
-    sections.push({
-      title: currentTitle,
-      content: currentContent.join("\n"),
-    })
-  }
-
-  return sections
+  return parseTaskSections(content).map(section => ({
+    title: section.title,
+    content: section.content,
+  }))
 }
 
 /**
@@ -1118,9 +1092,9 @@ export function hasVerificationCommands(content: string): boolean {
 
 /**
  * 检查文档是否包含标准化标记格式
- * - requirements: 至少一个 ### REQ-N 标题
- * - design: 至少一个 ### DD-N 标题
- * - tasks: 至少一个 ### TASK-N 标题
+ * - requirements: 至少一个 ### REQ-MODULE-NNN 标题
+ * - design: 至少一个 ### DD-MODULE-NNN 标题
+ * - tasks: 至少一个 ### TASK-WI-NNNN-NNN 标题
  *
  * 也接受兼容的旧格式（不报 warning）：
  * - requirements: ### 需求 N 或 ### Requirement N
@@ -1130,14 +1104,11 @@ export function hasVerificationCommands(content: string): boolean {
 export function hasStandardizedMarkers(content: string, docType: "requirements" | "design" | "tasks"): boolean {
   switch (docType) {
     case "requirements":
-      // Standardized: REQ-N, also accept legacy: 需求 N, Requirement N
-      return /^#{1,6}\s+(?:REQ-\d+|(?:需求|Requirement)\s+\d+)/m.test(content)
+      return /^#{1,6}\s+(?:REQ-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+)|(?:需求|Requirement)\s+\d+)/m.test(content)
     case "design":
-      // Standardized: DD-N, also accept legacy: N.N Title (numbered sections)
-      return /^#{1,6}\s+(?:DD-\d+|\d+(?:\.\d+)?[.、：:\s]+.+)/m.test(content)
+      return /^#{1,6}\s+(?:DD-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+)|\d+(?:\.\d+)?[.、：:\s]+.+)/m.test(content)
     case "tasks":
-      // Standardized: TASK-N, also accept legacy: Task N:, - [ ] N.
-      return /(?:^#{1,6}\s+(?:TASK-\d+|Task\s+\d+)|^-\s+\[[ x~-]\]\s+\d+\.)/m.test(content)
+      return /(?:^#{1,6}\s+(?:TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+)|Task\s+\d+)|^-\s+\[[ x~-]\]\s+\d+\.)/m.test(content)
   }
 }
 

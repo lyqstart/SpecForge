@@ -39,6 +39,11 @@ import {
   isCandidateFrozenState,
   isCandidateGovernancePath,
 } from '../lib/candidate-freeze-v11';
+import { validateTaskArtifactContract } from '../lib/sf_markdown_verification_parser';
+import {
+  readDeclaredDesignAnalysisScope,
+  resolveSystemGovernanceRequirement,
+} from '../lib/sf_design_governance_policy';
 
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
@@ -797,8 +802,10 @@ function isExecutorLike(context: any): boolean {
 const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['requirements', 'sf-requirements'],
   ['candidate_requirements', 'sf-requirements'],
+  ['requirements_delta', 'sf-requirements'],
   ['design', 'sf-design'],
   ['candidate_design', 'sf-design'],
+  ['design_delta', 'sf-design'],
   ['candidate_module_definition', 'sf-design'],
   ['tasks', 'sf-task-planner'],
   ['candidate_tasks', 'sf-task-planner'],
@@ -984,6 +991,62 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       },
       baseDir
     );
+  }
+
+  if (targetFilename.replace(/\\/g, '/').endsWith('/tasks.md') || targetFilename === 'tasks.md') {
+    const validation = validateTaskArtifactContract(content);
+    if (!validation.valid) {
+      return {
+        success: false,
+        error: 'INVALID_TASK_ARTIFACT_CONTRACT',
+        hard_stop: false,
+        retry_allowed: true,
+        contract_version: validation.contract_version,
+        validation_errors: validation.issues.filter(issue => issue.severity === 'error'),
+        validation_warnings: validation.issues.filter(issue => issue.severity === 'warning'),
+        message:
+          `Artifact "${targetFilename}" failed task-document/v1 validation and was NOT written to disk. ` +
+          'Use canonical IDs, refs, and typed verification_commands, then retry.',
+      };
+    }
+  }
+
+  if (
+    fileType === 'design' ||
+    fileType === 'candidate_design' ||
+    fileType === 'design_delta'
+  ) {
+    const requirement = await resolveSystemGovernanceRequirement(workItemId, baseDir);
+    if (requirement.blocking_issue) {
+      return {
+        success: false,
+        error: 'DESIGN_SCOPE_AUTHORITY_UNAVAILABLE',
+        hard_stop: false,
+        retry_allowed: true,
+        source_path: requirement.source_path,
+        message:
+          `${requirement.blocking_issue}. ` +
+          'The design artifact was NOT written because Runtime cannot derive its required analysis_scope.',
+      };
+    }
+
+    const requiredScope = requirement.required ? 'system_governance' : 'solution_design';
+    const declaredScope = readDeclaredDesignAnalysisScope(content);
+    if (declaredScope !== requiredScope) {
+      return {
+        success: false,
+        error: 'DESIGN_SCOPE_CONTRACT_MISMATCH',
+        hard_stop: false,
+        retry_allowed: true,
+        required_analysis_scope: requiredScope,
+        declared_analysis_scope: declaredScope,
+        derivation_reasons: requirement.reasons,
+        source_path: requirement.source_path,
+        message:
+          `Design artifact must declare "analysis_scope: ${requiredScope}" as derived by Runtime. ` +
+          'The artifact was NOT written.',
+      };
+    }
   }
 
   if (isJsonArtifact(targetFilename)) {

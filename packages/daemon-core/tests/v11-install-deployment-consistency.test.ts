@@ -214,6 +214,18 @@ describe('v1.1.6 install/deployment consistency', () => {
     ).toBeGreaterThan(0);
   });
 
+  it('exposes and enforces artifact protocol versions across daemon and userlevel client', () => {
+    const handshakeManager = read('packages/daemon-core/src/daemon/HandshakeManager.ts');
+    const userlevelClient = read('setup/userlevel-opencode/tools/lib/thin-client.ts');
+    const contract = read('packages/types/src/task-artifact-contract.ts');
+
+    expect(contract).toContain('task-document/v1');
+    expect(handshakeManager).toContain('artifact_contract_versions');
+    expect(handshakeManager).toContain('TASK_ARTIFACT_CONTRACT_VERSION');
+    expect(userlevelClient).toContain('EXPECTED_TASK_CONTRACT_VERSION');
+    expect(userlevelClient).toContain('Daemon task artifact contract mismatch');
+  });
+
   it('keeps final governance regression tests present before deployment release', () => {
     expect(exists('packages/daemon-core/tests/v11-final-governance-regression.test.ts')).toBe(true);
     expect(exists('packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts')).toBe(

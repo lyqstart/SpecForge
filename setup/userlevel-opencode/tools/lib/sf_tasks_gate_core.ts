@@ -55,10 +55,10 @@ async function readFileOptional(filePath: string): Promise<string | null> {
  * - "任务 1: ..." → "TASK-1"
  */
 function extractTaskId(title: string): string {
-  // Try TASK-N format first
-  const taskIdMatch = title.match(/TASK-(\d+)/i)
+  // Canonical TASK-WI-NNNN-NNN, with TASK-N as read-only compatibility.
+  const taskIdMatch = title.match(/TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+)/i)
   if (taskIdMatch) {
-    return `TASK-${taskIdMatch[1]}`
+    return taskIdMatch[0].toUpperCase()
   }
 
   // Try "Task N" or "任务 N" format
@@ -94,7 +94,7 @@ function normalizeToArray(entry: string | string[] | undefined): string[] {
  * B: refs 指向的 REQ 无 verification_strategy → 忽略，不 fail
  * C: refs 指向多个 REQ，部分有 strategy → 取并集
  * D: Planned_Verification_Types 未覆盖 Declared_Required_Types → fail
- * E: typed task 包含 property 命令但 refs 中无 CP-N → fail
+ * E: typed task 包含 property 命令但 refs 中无规范 CP 引用 → fail
  */
 export function crossValidateTask(
   taskId: string,
@@ -113,11 +113,15 @@ export function crossValidateTask(
     return { blockingIssues, warnings }
   }
 
-  // 提取 REQ-N refs 和 CP-N refs
-  const reqRefs = taskVerification.refs.filter((r) => /^REQ-\d+$/i.test(r))
-  const cpRefs = taskVerification.refs.filter((r) => /^CP-\d+$/i.test(r))
+  // 提取规范或读取兼容的 REQ / CP refs
+  const reqRefs = taskVerification.refs.filter((r) =>
+    /^REQ-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+)$/i.test(r)
+  )
+  const cpRefs = taskVerification.refs.filter((r) =>
+    /^CP-(?:[A-Z][A-Z0-9]{1,11}-)?[0-9]{1,3}$/i.test(r)
+  )
 
-  // 场景 A 增强：refs 存在但无 REQ-N（如只有 [CP-1]）
+  // 场景 A 增强：refs 存在但无 REQ（如只有 CP 引用）
   if (reqRefs.length === 0) {
     blockingIssues.push(
       `Task ${taskId} uses typed verification_commands but lacks REQ refs; cannot verify strategy coverage.`
@@ -154,10 +158,10 @@ export function crossValidateTask(
     }
   }
 
-  // 场景 E: typed task 包含 property 命令但 refs 中无 CP-N
+  // 场景 E: typed task 包含 property 命令但 refs 中无 CP
   if (taskVerification.typedCommands?.property !== undefined && cpRefs.length === 0) {
     blockingIssues.push(
-      `Task ${taskId} has property verification_commands but no CP-N ref; property test without Correctness_Property traceability is not allowed.`
+      `Task ${taskId} has property verification_commands but no canonical CP ref; property test without Correctness_Property traceability is not allowed.`
     )
   }
 
@@ -186,11 +190,11 @@ export function crossValidateTask(
 // ============================================================
 
 /**
- * 从 design.md 内容中提取指定 CP-N 的 test_file 字段值
+ * 从 design.md 内容中提取指定 CP ID 的 test_file 字段值
  * 返回 null 表示 CP 不存在或未声明 test_file
  */
 export function extractCPTestFile(designContent: string, cpRef: string): string | null {
-  // 匹配 CP 标题（如 #### CP-1 配置解析的往返一致性）
+  // 匹配 CP 标题（如 #### CP-CORE-001 配置解析的往返一致性）
   const escapedRef = cpRef.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   const cpPattern = new RegExp(`^#{1,6}\\s+${escapedRef}[^\\n]*`, "im")
   const cpMatch = cpPattern.exec(designContent)

@@ -25,6 +25,9 @@ interface HandshakeFile {
   startedAt: number;
   version: string;
   serviceMode: boolean;
+  artifact_contract_versions: {
+    task_document: string;
+  };
 }
 
 // ── Public types ──

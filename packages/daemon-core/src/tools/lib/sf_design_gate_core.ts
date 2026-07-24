@@ -11,7 +11,6 @@ import { join } from 'node:path';
 import {
   legacyWorkItemSpecArtifact,
   workItemRoot,
-  workItemTriggerResult,
 } from '@specforge/types/directory-layout';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
 import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
@@ -21,6 +20,19 @@ import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { isValidVerificationType } from './sf_verification_types';
 import type { SyncSummary } from './sf_knowledge_graph_core';
+import {
+  evaluateSystemGovernanceRequirement,
+  hasSystemGovernanceScope,
+  resolveSystemGovernanceRequirement,
+} from './sf_design_governance_policy';
+import { parseRefsFields } from './sf_markdown_verification_parser';
+export {
+  evaluateSystemGovernanceRequirement,
+  hasSystemGovernanceScope,
+  resolveSystemGovernanceRequirement,
+  type DesignAnalysisScope,
+  type SystemGovernanceRequirement,
+} from './sf_design_governance_policy';
 
 async function readFirstAvailable(
   paths: string[]
@@ -51,7 +63,6 @@ export type { GateResult };
 // Design Governance Types and Rules
 // ============================================================
 
-export type DesignAnalysisScope = 'solution_design' | 'system_governance';
 export type CapabilityVerdict =
   | 'reuse_existing'
   | 'extend_existing'
@@ -68,175 +79,10 @@ export const SYSTEM_GOVERNANCE_SECTIONS = [
   'Verification Plan',
 ] as const;
 
-const SYSTEM_GOVERNANCE_SCOPE_PATTERN =
-  /^\s*(?:[-*]\s*)?(?:\*\*)?analysis_scope(?:\*\*)?\s*:\s*system_governance\s*$/im;
 const CAPABILITY_VERDICT_PATTERN =
   /^\s*(?:[-*]\s*)?(?:\*\*)?capability_verdict(?:\*\*)?\s*:\s*(reuse_existing|extend_existing|new_capability_required|blocked)\s*$/im;
 const NEW_CAPABILITY_JUSTIFICATION_PATTERN =
   /^\s*(?:[-*]\s*)?(?:\*\*)?new_capability_justification(?:\*\*)?\s*:\s*(.+)\s*$/im;
-
-const SYSTEM_GOVERNANCE_WORKFLOW_PATHS = new Set([
-  'architecture_change_path',
-  'design_change_path',
-]);
-const CHANGE_CLASSIFICATION_BOOLEAN_KEYS = [
-  'requirement_changed',
-  'acceptance_criteria_changed',
-  'business_rule_changed',
-  'user_visible_behavior_changed',
-  'data_semantics_changed',
-  'design_changed',
-  'module_boundary_changed',
-  'api_contract_changed',
-  'architecture_changed',
-] as const;
-const SYSTEM_GOVERNANCE_CLASSIFICATION_KEYS = [
-  'business_rule_changed',
-  'data_semantics_changed',
-  'design_changed',
-  'module_boundary_changed',
-  'api_contract_changed',
-  'architecture_changed',
-] as const;
-
-export interface SystemGovernanceRequirement {
-  required: boolean;
-  reasons: string[];
-  source_path?: string;
-  blocking_issue?: string;
-}
-
-/**
- * 根据现有 trigger_result.json 中的治理事实判断是否必须进入 system_governance。
- * 该判断不依赖 Design Agent 是否主动声明 analysis_scope，避免自声明绕过 Gate。
- */
-export function evaluateSystemGovernanceRequirement(
-  triggerResult: unknown
-): SystemGovernanceRequirement {
-  if (typeof triggerResult !== 'object' || triggerResult === null) {
-    return {
-      required: false,
-      reasons: [],
-      blocking_issue: 'trigger_result.json 必须是 JSON 对象',
-    };
-  }
-
-  const trigger = triggerResult as {
-    workflow_path?: unknown;
-    classification?: unknown;
-  };
-  const reasons: string[] = [];
-
-  if (typeof trigger.workflow_path !== 'string' || trigger.workflow_path.trim().length === 0) {
-    return {
-      required: false,
-      reasons: [],
-      blocking_issue: 'trigger_result.json 缺少有效 workflow_path',
-    };
-  }
-
-  if (typeof trigger.classification !== 'object' || trigger.classification === null) {
-    return {
-      required: false,
-      reasons: [],
-      blocking_issue: 'trigger_result.json 缺少有效 classification',
-    };
-  }
-
-  const classification = trigger.classification as Record<string, unknown>;
-  const invalidBooleanKeys = CHANGE_CLASSIFICATION_BOOLEAN_KEYS.filter(
-    key => typeof classification[key] !== 'boolean'
-  );
-  if (invalidBooleanKeys.length > 0 || !Array.isArray(classification.unknowns)) {
-    const invalidFields = [
-      ...invalidBooleanKeys.map(key => `classification.${key}`),
-      ...(!Array.isArray(classification.unknowns) ? ['classification.unknowns'] : []),
-    ];
-    return {
-      required: false,
-      reasons: [],
-      blocking_issue: `trigger_result.json classification 不完整或类型错误: ${invalidFields.join(', ')}`,
-    };
-  }
-
-  if (SYSTEM_GOVERNANCE_WORKFLOW_PATHS.has(trigger.workflow_path)) {
-    reasons.push(`workflow_path=${trigger.workflow_path}`);
-  }
-
-  for (const key of SYSTEM_GOVERNANCE_CLASSIFICATION_KEYS) {
-    if (classification[key] === true) {
-      reasons.push(`classification.${key}=true`);
-    }
-  }
-
-  const unknowns = classification.unknowns as unknown[];
-  if (unknowns.length > 0) {
-    reasons.push(`classification.unknowns=${unknowns.length}`);
-  }
-
-  return {
-    required: reasons.length > 0,
-    reasons,
-  };
-}
-
-/**
- * 从既有 Work Item / Spec 目录读取 trigger_result.json。
- * 同时兼容 v1.1 work-items 路径和既有 specs 路径，不新增产物或状态。
- */
-export async function resolveSystemGovernanceRequirement(
-  workItemId: string,
-  baseDir: string
-): Promise<SystemGovernanceRequirement> {
-  const candidatePaths = [
-    workItemTriggerResult(baseDir, workItemId),
-    legacyWorkItemSpecArtifact(baseDir, workItemId, 'trigger_result.json'),
-  ];
-
-  for (const candidatePath of candidatePaths) {
-    try {
-      const content = await readFile(candidatePath, 'utf-8');
-      let parsed: unknown;
-      try {
-        parsed = JSON.parse(content);
-      } catch (err) {
-        return {
-          required: false,
-          reasons: [],
-          source_path: candidatePath,
-          blocking_issue: `trigger_result.json 不是合法 JSON: ${(err as Error).message}`,
-        };
-      }
-
-      return {
-        ...evaluateSystemGovernanceRequirement(parsed),
-        source_path: candidatePath,
-      };
-    } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException;
-      if (error.code === 'ENOENT') continue;
-      return {
-        required: false,
-        reasons: [],
-        source_path: candidatePath,
-        blocking_issue: `Failed to read trigger_result.json: ${error.message}`,
-      };
-    }
-  }
-
-  return {
-    required: false,
-    reasons: [],
-    blocking_issue: 'trigger_result.json not found；无法确定 Design Agent analysis_scope',
-  };
-}
-
-/**
- * 检查文档是否显式声明 system_governance 分析范围。
- */
-export function hasSystemGovernanceScope(content: string): boolean {
-  return SYSTEM_GOVERNANCE_SCOPE_PATTERN.test(content);
-}
 
 /**
  * 检查系统治理设计分析是否形成可审计闭环。
@@ -932,11 +778,11 @@ async function executeDesignGateMode(
 // ============================================================
 
 export function hasRequirementReferences(content: string): boolean {
+  if (parseRefsFields(content).some(ref => ref.startsWith('REQ-'))) return true;
   const patterns = [
-    /refs:\s*\[[^\]]*REQ-\d+/i,
     /需求\s*\d+/i,
     /requirement\s*\d+/i,
-    /REQ[-_]?\w*\d+/i,
+    /REQ-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+)/i,
   ];
   return patterns.some(pattern => pattern.test(content));
 }

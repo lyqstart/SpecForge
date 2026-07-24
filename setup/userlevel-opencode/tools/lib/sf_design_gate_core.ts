@@ -14,6 +14,7 @@ import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core";
 import { tryCheckCompatibility, logErrorToFile } from "./utils";
 import { isValidVerificationType } from "./sf_verification_types";
 import type { SyncSummary } from "./sf_knowledge_graph_core";
+import { parseRefsFields } from "./sf_markdown_verification_parser";
 
 const SPEC_DIR_NAME = ".specforge";
 
@@ -985,11 +986,11 @@ async function executeDesignGateMode(
 // ============================================================
 
 export function hasRequirementReferences(content: string): boolean {
+  if (parseRefsFields(content).some((ref) => ref.startsWith("REQ-"))) return true;
   const patterns = [
-    /refs:\s*\[[^\]]*REQ-\d+/i,
     /需求\s*\d+/i,
     /requirement\s*\d+/i,
-    /REQ[-_]?\w*\d+/i,
+    /REQ-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+)/i,
   ];
   return patterns.some((pattern) => pattern.test(content));
 }

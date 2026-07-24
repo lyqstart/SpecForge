@@ -16,6 +16,7 @@ import '../src/tools/handlers/sf-changed-files-audit.js';
 import { getHandler } from '../src/tools/ToolDispatcher.js';
 import { getRequiredGates } from '../src/tools/lib/required-gates.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
+import { buildContext } from '../src/tools/lib/sf_context_build_core.js';
 
 function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -266,6 +267,35 @@ describe('Design Governance live closure', () => {
     );
     expect(manifest.entries[0].path).toBeUndefined();
     expect(manifest.entries[0].operation).toBe('replace');
+  });
+
+  it('derives analysis_scope before authoring and rejects a mismatched design before write', async () => {
+    const workItemId = 'WI-0001';
+    await writeBaseWorkItem(projectRoot, workItemId);
+
+    const context = await buildContext(workItemId, undefined, 'design', false, projectRoot);
+    expect(context.task_context.context).toContain(
+      'required_analysis_scope: system_governance'
+    );
+
+    const handler = getHandler('sf_artifact_write');
+    const result = (await handler!(
+      {
+        work_item_id: workItemId,
+        file_type: 'design',
+        content: designCandidate().replace(
+          'analysis_scope: system_governance',
+          'analysis_scope: solution_design'
+        ),
+      },
+      { directory: projectRoot, agent: 'sf-design' },
+      mockDeps('candidate_preparing').deps
+    )) as any;
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('DESIGN_SCOPE_CONTRACT_MISMATCH');
+    expect(result.required_analysis_scope).toBe('system_governance');
+    expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(false);
   });
 
   it('blocks module-scoped Candidates when an existing manifest declares no modules', async () => {

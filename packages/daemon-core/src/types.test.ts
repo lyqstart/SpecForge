@@ -64,6 +64,9 @@ describe('Types', () => {
       schema_version: '1.0',
       version: '1.0.0',
       serviceMode: false,
+      artifact_contract_versions: {
+        task_document: 'task-document/v1',
+      },
     };
     
     expect(handshake.pid).toBe(12345);

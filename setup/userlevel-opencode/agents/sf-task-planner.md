@@ -177,12 +177,12 @@ Layer 3 ✅：sf-executor 拿到任意 task 都能独立执行，verification_co
 **每个 task 必须包含 context_block**，让 executor 不需要回看 design.md 也能动手：
 
 ```markdown
-### TASK-3 实现 calculate_discount 函数
+### TASK-WI-0001-003 实现 calculate_discount 函数
 
 **context_block**（executor 必读）：
 - **What**: 在 src/billing.ts 里加 calculate_discount(amount, percent) → number
-- **Why**: 实现 REQ-2 的折扣计算需求（用户购买时按百分比打折）
-- **Refs**: DD-4（折扣引擎设计，接口定义见 design.md DD-4 段）
+- **Why**: 实现 REQ-BILLING-002 的折扣计算需求（用户购买时按百分比打折）
+- **Refs**: DD-BILLING-004（折扣引擎设计，接口定义见对应 design.md 段）
 - **Constraints**:
   - 不引入新依赖
   - 纯函数无副作用
@@ -333,22 +333,22 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 
 **⚠️ 输出格式强制要求（必须严格遵守）**：
 
-每个任务的标题**必须**使用 `### TASK-N` 格式（N 为整数）。
+每个任务的标题**必须**使用 `### TASK-WI-NNNN-NNN` 格式，并与当前 Work Item ID 一致。
 这是 Knowledge Graph 解析的硬性要求，使用其他格式会导致解析失败。
 
 ✅ 正确格式：
 ```markdown
-### TASK-1 创建 HTTP 服务器主文件
+### TASK-WI-0001-001 创建 HTTP 服务器主文件
 
 **context_block**（executor 必读）：
 - **What**: 创建 server.mjs，实现 HTTP 服务器
-- **Why**: 实现 REQ-1 的 Web 服务需求
-- **Refs**: DD-1（HTTP 服务器设计）
+- **Why**: 实现 REQ-WEB-001 的 Web 服务需求
+- **Refs**: DD-WEB-001（HTTP 服务器设计）
 - **Constraints**: 不引入新依赖；端口从环境变量 PORT 读取（默认 3000）
 - **Done When**: server.mjs 存在 + `node server.mjs` 启动后 curl localhost:3000 返回 200
 
 - **依赖**: 无
-- refs: [DD-1, REQ-1]
+- **refs**: [DD-WEB-001, REQ-WEB-001]
 - files: [server.mjs]
 - **verification_commands**:
   - unit:
@@ -358,6 +358,7 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 ```
 
 ❌ 错误格式（禁止使用）：
+- `### TASK-1 创建 HTTP 服务器` — 历史兼容格式；新产物禁止使用
 - `## Task 1: 创建 HTTP 服务器` — 错误！不要用 `## Task N:` 格式
 - `### 任务 1: 创建 HTTP 服务器` — 错误！不要用中文"任务"
 - `- [ ] 1. 创建 HTTP 服务器` — 错误！不要用列表格式
@@ -388,9 +389,9 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 
 ---
 
-## Task Contract Format (§11)
+## Task Contract Format (§8.5)
 
-**标准章节**：§11 — Task Contract
+**标准章节**：§8.5 — Artifact Protocol Contract
 
 v1.1 标准要求每个 task 都是一个完整的 **合同（Contract）**，包含 executor 独立执行所需的全部信息。
 Task Planner 必须确保每个 task 的合同字段完整且无歧义。
@@ -399,7 +400,7 @@ Task Planner 必须确保每个 task 的合同字段完整且无歧义。
 
 | 字段 | 说明 | 必要性 |
 |------|------|--------|
-| `task_id` | 唯一标识，格式 `TASK-N` | 必填 |
+| `task_id` | 唯一标识，格式 `TASK-WI-NNNN-NNN` | 必填 |
 | `refs` | 引用的 REQ/DD 编号列表 | 必填 |
 | `depends_on` | 依赖的 TASK 编号列表（无依赖为空数组） | 必填 |
 | `context_block.what` | 具体要做什么 | 必填 |
@@ -418,7 +419,7 @@ Task Planner 必须确保每个 task 的合同字段完整且无歧义。
 
 Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 
-1. ✅ `refs` 非空，且引用的 REQ/DD 在对应文档中存在
+1. ✅ `refs` 非空，使用 `- **refs**: [...]` 规范渲染形式，且引用的规范 REQ/DD ID 在对应文档中存在
 2. ✅ `allowed_write_files` 中的每个文件路径都是具体的（不含通配符或模糊描述）
 3. ✅ `forbidden_files` 包含 requirements.md、design.md、tasks.md 以及其他 task 的写文件
 4. ✅ `verification_commands` 使用类型化映射，且每条命令都能返回 0/非 0 退出码
@@ -452,9 +453,9 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 
 ---
 
-## verification_commands Format (§13.3)
+## verification_commands Format (§8.5)
 
-**标准章节**：§13.3 — Verification Report
+**标准章节**：§8.5 — Artifact Protocol Contract
 
 v1.1 标准对 verification_commands 的格式有严格要求，确保每条命令都是机器可执行、结果可判定的。
 
@@ -465,7 +466,7 @@ v1.1 标准对 verification_commands 的格式有严格要求，确保每条命�
 3. **禁止手动验证命令**：不得写"检查代码是否正确"、"手动验证"等无法机器执行的描述
 4. **禁止 echo 命令冒充**：不得使用 `echo "passed"` 等自欺命令
 5. **必须可独立运行**：命令不得依赖之前的命令结果或环境状态（除非在 done_when 中显式声明前置条件）
-6. **Property 可追溯**：出现 `property` 命令时，`refs` 必须包含对应 `CP-N`
+6. **Property 可追溯**：出现 `property` 命令时，`refs` 必须包含对应的规范 `CP-<MODULE_CODE>-<NNN>`；`CP-N` 仅允许历史读取兼容
 
 ```markdown
 - **verification_commands**:

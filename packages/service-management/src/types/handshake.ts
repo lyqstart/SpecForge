@@ -17,4 +17,8 @@ export interface HandshakeFile {
   version: string;
   /** Whether started by OS service (true) vs ad-hoc (false) */
   serviceMode: boolean;
+  /** Machine-readable artifact protocol versions exposed by this daemon. */
+  artifact_contract_versions: {
+    task_document: string;
+  };
 }

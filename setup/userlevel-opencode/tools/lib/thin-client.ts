@@ -18,6 +18,7 @@ import {
 } from "./sf-observability";
 
 const SPEC_DIR_NAME = ".specforge" as const;
+const EXPECTED_TASK_CONTRACT_VERSION = "task-document/v1" as const;
 
 interface HandshakeFile {
   pid: number;
@@ -25,6 +26,9 @@ interface HandshakeFile {
   token: string;
   startedAt: number;
   schemaVersion: string;
+  artifact_contract_versions: {
+    task_document: string;
+  };
 }
 
 interface DaemonResponse<T = unknown> {
@@ -59,7 +63,18 @@ function readHandshake(): HandshakeFile {
   for (const p of paths) {
     if (fs.existsSync(p)) {
       const content = fs.readFileSync(p, "utf-8");
-      return JSON.parse(content) as HandshakeFile;
+      const handshake = JSON.parse(content) as HandshakeFile;
+      if (
+        handshake.artifact_contract_versions?.task_document !==
+        EXPECTED_TASK_CONTRACT_VERSION
+      ) {
+        throw new Error(
+          `Daemon task artifact contract mismatch: expected ${EXPECTED_TASK_CONTRACT_VERSION}, ` +
+          `received ${handshake.artifact_contract_versions?.task_document ?? "missing"}. ` +
+          "Reinstall the user-level bundle and restart the daemon before running governed tools.",
+        );
+      }
+      return handshake;
     }
   }
 

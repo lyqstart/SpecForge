@@ -30,9 +30,11 @@ phases:
 - 必须包含 verification_commands 字段
 - 每个验证命令必须是可自动执行的
 - `verification_commands` 必须是类型化映射，合法键仅为 `unit`、`property`、`integration`、`e2e`、`regression`，不得使用平铺旧列表
-- 使用 `property` 时，task 的 `refs` 必须包含对应 `CP-N`
+- 使用 `property` 时，task 的 `refs` 必须包含对应的规范 `CP-<MODULE_CODE>-<NNN>`；`CP-N` 仅允许历史读取兼容
 
 ```markdown
+### TASK-WI-0001-001 示例任务
+- **refs**: [REQ-EXAMPLE-001, DD-EXAMPLE-001]
 - **verification_commands**:
   - unit:
     - `bun test tests/unit/example.test.ts`

@@ -252,12 +252,12 @@ Layer 3 ✅：sf-task-planner 能基于 design.md 拆出可独立执行的 tasks
 - `.specforge/prod-environment.md`（生产环境：最低版本、部署目标、资源限制、网络约束）
 - `.specforge/project-rules.md`（工程规则：语言规范、依赖管理、风格要求）
 
-**每个设计决策（DD-N）必须标注它受哪些约束影响**：
+**每个设计决策（`DD-<MODULE_CODE>-<NNN>`）必须标注它受哪些约束影响**：
 
 ```markdown
-### DD-3 数据库选型
+### DD-AUTH-003 数据库选型
 
-refs: [REQ-5, REQ-6]
+- **refs**: [REQ-AUTH-005, REQ-AUTH-006]
 constrained_by: prod-environment.runtimes.python_min=3.8, prod-environment.services.database.type=postgresql
 ```
 
@@ -330,17 +330,17 @@ constrained_by: prod-environment.runtimes.python_min=3.8, prod-environment.servi
 
 ## DD1：每个 DD 必须引用 REQ（已有，保留）
 
-每个设计决策必须能回答"哪个 REQ-N 需要它"。
+每个设计决策必须能回答"哪个规范 REQ ID 需要它"。
 没有 REQ 引用的 DD = 过度设计，删除。
 
 ## DD1A：每个 DD 必须有依据
 
-每个设计决策除 `refs: [REQ-N]` 外，还必须写明 `basis_refs` 或 `basis`：
+每个设计决策除 `- **refs**: [REQ-<MODULE_CODE>-<NNN>]` 外，还必须写明 `basis_refs` 或 `basis`：
 
 ```markdown
-### DD-3 日志服务器落盘设计
+### DD-LOG-003 日志服务器落盘设计
 
-refs: [REQ-2]
+- **refs**: [REQ-LOG-002]
 basis_refs: [FACT-1, CODE_OBSERVED-2, PROJECT_RULE-1]
 ```
 
@@ -353,8 +353,8 @@ basis_refs: [FACT-1, CODE_OBSERVED-2, PROJECT_RULE-1]
 ```markdown
 | REQ   | How covered                  | DD/System Boundary/Data Flow  | Status  |
 | ----- | ---------------------------- | ----------------------------- | ------- |
-| REQ-1 | 本地日志持久化设计           | DD-1                          | covered |
-| REQ-2 | App→Backend→Server File 链路 | DD-2, DD-3, System Boundary-1 | covered |
+| REQ-LOG-001 | 本地日志持久化设计           | DD-LOG-001                          | covered |
+| REQ-LOG-002 | App→Backend→Server File 链路 | DD-LOG-002, DD-LOG-003, System Boundary-1 | covered |
 ```
 
 状态只能是：`covered`、`covered_by_existing_design`、`blocked`、`deferred_with_user_approval`、`not_applicable_with_reason`。不得静默漏掉 Must REQ。
@@ -395,7 +395,7 @@ C --> D[(Database)]
 ## DD5：每个外部调用必须有失败处理策略
 
 ```markdown
-### DD-5 HTTP 客户端设计
+### DD-NET-005 HTTP 客户端设计
 
 - timeout: 30s（来自 project-rules.R7）
 - retry: 最多 3 次，指数退避
@@ -473,8 +473,8 @@ C --> D[(Database)]
 **Step 3 的预检（文档 agent 版本）**：
 在写 design.md 之前，先写自问自答验收清单：
 
-- "每个 REQ-N 都有对应的 DD-N 覆盖吗？"
-- "每个 DD 都有 refs: [REQ-N] 吗？"
+- "每个规范 REQ ID 都有对应的规范 DD ID 覆盖吗？"
+- "每个 DD 都有 `- **refs**: [REQ-<MODULE_CODE>-<NNN>]` 吗？"
 - "架构图画了吗？Out of Scope 写了吗？Assumptions 写了吗？"
 - "每个组件都有 interface 定义 + Errors 段吗？"
 - "设计是否考虑了 prod-environment 的最低版本约束？"
@@ -519,18 +519,19 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 以及七个固定章节，不得另建 `design_governance_analysis.md`、`architecture_analysis.md` 或其他旁路产物。
 
-固定章节标题必须逐字使用上述七个名称；`Actual Architecture`、`Governance Capability Assessment`、`Recommended Approach` 等近义标题不能替代。七个固定章节使用 `##`，章节内部可以直接使用 `###`、`####` 子标题，不需要为绕过 Gate 在标题后添加填充段落。设计 Agent 只能通过 `sf_artifact_write(file_type=design)` 写入一次，由现有 Path Service 路由到权威 Candidate 路径，不得为了适配不同 Gate 再复制顶层 `design.md`。
+固定章节标题必须逐字使用上述七个名称；`Actual Architecture`、`Governance Capability Assessment`、`Recommended Approach` 等近义标题不能替代。七个固定章节使用 `##`，章节内部可以直接使用 `###`、`####` 子标题，不需要为绕过 Gate 在标题后添加填充段落。设计 Agent 必须通过同一个受控入口写入 Workflow 规定的权威产物：完整 Candidate 使用 `sf_artifact_write(file_type=design)`，增量说明使用 `sf_artifact_write(file_type=design_delta)`；不得为了适配不同 Gate 再复制顶层 `design.md`，也不得用 `work_log` 代写设计产物。
 
 写入前必须读取 `spec_manifest.json`，确定现有模块所有权。Candidate 的 `module_id` 必须引用同一个 canonical `MODULE_CODE`，不能形成第二套模块身份。普通流程只能使用已声明模块；只有 `architecture_change_path` 或 `spec_migration_path` 可以提出新模块，并且必须同时提交该 `MODULE_CODE` 的 `module.json`、`requirements.md`、`design.md`、`trace.md` 四个候选文件。源码目录名与规格模块名不一致时，必须在 `Impact Analysis` 中写明映射依据，不得静默改名，也不得为适配目录临时新增模块。
 
 **完整设计输出格式要求**：
 
-- 每个设计决策使用标准化标记格式：`### DD-N 标题`
-- 每个 DD 必须包含 `refs: [REQ-N, ...]` 和 `constrained_by: ...`（如有约束）
+- 每个设计决策使用标准化标记格式：`### DD-<MODULE_CODE>-<NNN> 标题`
+- 每个 DD 必须包含 `- **refs**: [REQ-<MODULE_CODE>-<NNN>, ...]` 和 `constrained_by: ...`（如有约束）
 - 包含 Mermaid 架构图
 - 包含接口定义（使用目标语言类型）
 - 包含数据模型定义
 - 包含正确性属性列表（用于属性测试）
+- 每个正确性属性使用规范标记 `#### CP-<MODULE_CODE>-<NNN> 标题`
 - 包含错误处理策略
 - 包含 Out of Scope 段
 - 包含 Assumptions 段
@@ -545,7 +546,7 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
   "files_changed": ["<workflow-design-artifact-path>"],
   "structure": {
     "design_decisions_count": 8,
-    "req_references": ["REQ-1", "REQ-2", "REQ-3"],
+    "req_references": ["REQ-CORE-001", "REQ-CORE-002", "REQ-CORE-003"],
     "components_defined": 5,
     "has_architecture_diagram": true,
     "has_out_of_scope": true,
@@ -576,7 +577,7 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 **Delta 必须说明的 5 项内容**（§8.1）：
 
 1. **为什么变** — 变更的业务或技术动机。
-2. **改了什么** — 新增 / 修改 / 删除了哪些设计决策（DD-N）。
+2. **改了什么** — 新增 / 修改 / 删除了哪些规范设计决策 ID。
 3. **影响哪些正式规格** — 涉及 `.specforge/project/**` 下的哪些文件。
 4. **旧内容如何处理** — 旧 DD 是标记 deprecated 还是直接删除。
 5. **是否需要 User Decision** — 变更是否需要用户确认。
@@ -595,9 +596,9 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 ### Group <X>: <组名>
 
-#### DD-<N> <模块/决策标题>
+#### DD-<MODULE_CODE>-<NNN> <模块/决策标题>
 
-refs: [REQ-N, ...]
+- **refs**: [REQ-<MODULE_CODE>-<NNN>, ...]
 constrained_by: <约束来源>
 <设计内容>
 ```

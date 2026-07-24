@@ -432,7 +432,7 @@ Reviewer 在审查时应利用 Trace 日志验证 executor 的操作是否合规
   "line": "N/A",
   "description": "Trace 日志显示 executor 修改了未在 allowed_write_files 中声明的文件",
   "suggestion": "退回 executor 重试，或修正 task 合同的 allowed_write_files",
-  "evidence_ref": "trace:TASK-5:2026-06-07T10:30:00Z",
+  "evidence_ref": "trace:TASK-WI-0001-005:2026-06-07T10:30:00Z",
   "evidence_type": "trace_analysis"
 }
 ```

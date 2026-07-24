@@ -11,6 +11,36 @@
 
 import type { TypedVerificationCommands, ParsedTaskVerification } from "./sf_verification_types"
 import { normalizeVerificationType } from "./sf_verification_types"
+import {
+  TASK_ARTIFACT_CONTRACT_VERSION,
+  TaskArtifactDocumentSchema,
+  isLegacyTaskArtifactId,
+} from "@specforge/types"
+
+export interface TaskSection {
+  title: string
+  taskId: string
+  content: string
+}
+
+export interface TaskArtifactContractIssue {
+  severity: "error" | "warning"
+  code: string
+  task_id?: string
+  path?: string
+  message: string
+}
+
+export interface TaskArtifactContractValidation {
+  valid: boolean
+  contract_version: typeof TASK_ARTIFACT_CONTRACT_VERSION
+  tasks: Array<{
+    task_id: string
+    refs: string[]
+    verification_commands: TypedVerificationCommands
+  }>
+  issues: TaskArtifactContractIssue[]
+}
 
 // ============================================================
 // 主入口：parseTaskVerification
@@ -30,13 +60,8 @@ export function parseTaskVerification(taskContent: string): ParsedTaskVerificati
   const result: ParsedTaskVerification = { format: "empty" }
 
   // 提取 refs 字段
-  const refsMatch = taskContent.match(/\*\*refs\*\*\s*:\s*\[([^\]]*)\]/i)
-  if (refsMatch) {
-    result.refs = refsMatch[1]
-      .split(/\s*,\s*/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-  }
+  const refs = parseRefsFields(taskContent)
+  if (refs.length > 0) result.refs = refs
 
   // 提取 manual_verification_checks 字段
   const manualSection = extractFieldSection(taskContent, "manual_verification_checks")
@@ -72,6 +97,174 @@ export function parseTaskVerification(taskContent: string): ParsedTaskVerificati
   }
 
   return result
+}
+
+/**
+ * Parse every refs field without coupling semantic meaning to Markdown styling.
+ * Both `refs: [...]` and `**refs**: [...]` are accepted, including list prefixes.
+ */
+export function parseRefsFields(content: string): string[] {
+  const refs = new Set<string>()
+  const refsPattern =
+    /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?refs(?:\s*\*\*)?\s*:\s*\[([^\]]*)\]\s*$/gim
+  let match: RegExpExecArray | null
+
+  while ((match = refsPattern.exec(content)) !== null) {
+    for (const rawRef of match[1].split(/[,，]/)) {
+      const ref = rawRef.trim().replace(/^['"`]|['"`]$/g, "").toUpperCase()
+      if (ref) refs.add(ref)
+    }
+  }
+
+  return [...refs]
+}
+
+/**
+ * Split tasks.md using the canonical task ID and the read-only TASK-N alias.
+ * Legacy localized headings remain readable for recovery, but cannot satisfy
+ * the semantic artifact contract because they have no stable task ID.
+ */
+export function parseTaskSections(content: string): TaskSection[] {
+  const sections: TaskSection[] = []
+  const lines = content.split(/\r?\n/)
+  let current: TaskSection | null = null
+
+  for (const line of lines) {
+    const heading = /^#{2,6}\s+(.+)$/.exec(line)
+    if (heading) {
+      const taskIdMatch = /\b(TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+))\b/i.exec(heading[1])
+      const localizedMatch = /^(?:Task|任务)\s*([0-9]+)\b/i.exec(heading[1])
+      if (taskIdMatch || localizedMatch) {
+        if (current) sections.push(current)
+        const taskId = taskIdMatch
+          ? taskIdMatch[1].toUpperCase()
+          : `TASK-${localizedMatch![1]}`
+        current = {
+          title: heading[1].trim(),
+          taskId,
+          content: "",
+        }
+        continue
+      }
+    }
+
+    if (current) {
+      current.content += current.content.length === 0 ? line : `\n${line}`
+    }
+  }
+
+  if (current) sections.push(current)
+  return sections
+}
+
+/**
+ * Normalize tasks.md into task-document/v1 and validate the semantic model.
+ * This is the shared pre-write/lint/gate contract boundary.
+ */
+export function validateTaskArtifactContract(
+  content: string,
+  options: { allowLegacyCommands?: boolean; allowLegacyIds?: boolean } = {}
+): TaskArtifactContractValidation {
+  const sections = parseTaskSections(content)
+  const issues: TaskArtifactContractIssue[] = []
+  const tasks: TaskArtifactContractValidation["tasks"] = []
+
+  if (sections.length === 0) {
+    issues.push({
+      severity: "error",
+      code: "TASK_SECTIONS_MISSING",
+      message: "tasks.md does not contain a recognized task section",
+    })
+  }
+
+  for (const section of sections) {
+    const verification = parseTaskVerification(section.content)
+
+    if (isLegacyTaskArtifactId(section.taskId)) {
+      issues.push({
+        severity: options.allowLegacyIds ? "warning" : "error",
+        code: "LEGACY_TASK_ID",
+        task_id: section.taskId,
+        path: "task_id",
+        message: `${section.taskId} is a compatibility alias; new artifacts must use TASK-WI-NNNN-NNN`,
+      })
+    }
+
+    for (const ref of verification.refs ?? []) {
+      if (isLegacyTaskArtifactId(ref)) {
+        issues.push({
+          severity: options.allowLegacyIds ? "warning" : "error",
+          code: "LEGACY_TASK_REF",
+          task_id: section.taskId,
+          path: "refs",
+          message: `${ref} is a compatibility alias; new artifacts must use canonical module-scoped IDs`,
+        })
+      }
+    }
+
+    if (verification.format === "empty") {
+      issues.push({
+        severity: "error",
+        code: "VERIFICATION_COMMANDS_MISSING",
+        task_id: section.taskId,
+        path: "verification_commands",
+        message: `${section.taskId} is missing verification_commands`,
+      })
+      continue
+    }
+
+    if (verification.format === "legacy") {
+      issues.push({
+        severity: options.allowLegacyCommands ? "warning" : "error",
+        code: "LEGACY_VERIFICATION_COMMANDS",
+        task_id: section.taskId,
+        path: "verification_commands",
+        message: `${section.taskId} must use typed verification_commands`,
+      })
+      continue
+    }
+
+    for (const invalidKey of verification.invalidTypedKeys ?? []) {
+      issues.push({
+        severity: "error",
+        code: "INVALID_VERIFICATION_TYPE",
+        task_id: section.taskId,
+        path: `verification_commands.${invalidKey}`,
+        message: `${section.taskId} uses unsupported verification type "${invalidKey}"`,
+      })
+    }
+
+    tasks.push({
+      task_id: section.taskId,
+      refs: verification.refs ?? [],
+      verification_commands: verification.typedCommands ?? {},
+    })
+  }
+
+  const document = {
+    contract_version: TASK_ARTIFACT_CONTRACT_VERSION,
+    tasks,
+  }
+  const schemaResult = tasks.length > 0 ? TaskArtifactDocumentSchema.safeParse(document) : null
+  if (schemaResult && !schemaResult.success) {
+    for (const issue of schemaResult.error.issues) {
+      const taskIndex = typeof issue.path[1] === "number" ? issue.path[1] : undefined
+      issues.push({
+        severity: "error",
+        code: "TASK_CONTRACT_SCHEMA_INVALID",
+        task_id: taskIndex === undefined ? undefined : tasks[taskIndex]?.task_id,
+        path: issue.path.join("."),
+        message: issue.message,
+      })
+    }
+  }
+
+  return {
+    valid: issues.every(issue => issue.severity !== "error"),
+    contract_version: TASK_ARTIFACT_CONTRACT_VERSION,
+    tasks,
+    issues,
+  }
 }
 
 // ============================================================
@@ -154,19 +347,17 @@ export function parseTypedCommandBlock(section: string): {
 /**
  * 从 task 内容中提取指定字段的内容区块
  *
- * 查找 `**fieldName**:` 模式，提取其后的内容直到下一个 `**fieldName**:` 或内容结束。
- * 处理缩进内容块。
+ * 查找 `fieldName:` 或 `**fieldName**:`，提取其缩进内容块。
+ * 字段名的 Markdown 装饰不是契约语义。
  *
  * @param content - task 章节的完整文本
  * @param fieldName - 要提取的字段名（如 "verification_commands"）
  * @returns 字段内容区块（不含字段标题行本身的值部分），或 null 表示字段不存在
  */
 export function extractFieldSection(content: string, fieldName: string): string | null {
-  // 匹配 **fieldName**: 模式（支持列表项前缀 `- `）
-  // 使用 multiline 模式逐行匹配
   const escapedName = fieldName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   const fieldPattern = new RegExp(
-    `^(\\s*-?\\s*)\\*\\*\\s*${escapedName}\\s*\\*\\*\\s*:\\s*(.*)$`,
+    `^(\\s*)(?:[-+*]\\s+)?(?:\\*\\*\\s*)?${escapedName}(?:\\s*\\*\\*)?\\s*:\\s*(.*)$`,
     "im"
   )
   const match = fieldPattern.exec(content)
@@ -175,33 +366,32 @@ export function extractFieldSection(content: string, fieldName: string): string 
     return null
   }
 
-  const matchEnd = match.index + match[0].length
+  const baseIndent = match[1].length
   const inlineValue = match[2].trim()
+  const remainingLines = content
+    .slice(match.index + match[0].length)
+    .replace(/^\r?\n/, "")
+    .split(/\r?\n/)
+  const sectionLines: string[] = []
+  const fieldBoundary =
+    /^\s*(?:[-+*]\s+)?(?:\*\*\s*)?[A-Za-z_][\w-]*(?:\s*\*\*)?\s*:/
 
-  // 查找下一个 **fieldName**: 模式或内容结束
-  const nextFieldPattern = /^\s*-?\s*\*\*\s*[A-Za-z_][\w-]*\s*\*\*\s*:/m
-  const remaining = content.slice(matchEnd)
-  const nextMatch = nextFieldPattern.exec(remaining)
-
-  const sectionContent = nextMatch ? remaining.slice(0, nextMatch.index) : remaining
-
-  // 如果内联值非空且后续无缩进内容，直接返回内联值
-  if (inlineValue && !sectionContent.trim()) {
-    return inlineValue
+  for (const line of remainingLines) {
+    const indentation = line.match(/^\s*/)?.[0].length ?? 0
+    if (line.trim() && indentation <= baseIndent && fieldBoundary.test(line)) break
+    sectionLines.push(line)
   }
 
-  // 返回后续内容块（可能包含多行命令列表）
-  const trimmedSection = sectionContent.trim()
-  if (!trimmedSection && !inlineValue) {
+  const sectionContent = sectionLines.join("\n").trim()
+  if (!sectionContent && !inlineValue) {
     return null
   }
 
-  // 如果内联值和后续内容都存在，合并返回（内联值是被 \s* 消费换行后捕获的首行）
-  if (inlineValue && trimmedSection) {
-    return inlineValue + "\n" + trimmedSection
+  if (inlineValue && sectionContent) {
+    return inlineValue + "\n" + sectionContent
   }
 
-  return trimmedSection || inlineValue
+  return sectionContent || inlineValue
 }
 
 // ============================================================

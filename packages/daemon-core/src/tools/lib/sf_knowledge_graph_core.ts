@@ -11,6 +11,7 @@ import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { SPEC_DIR_NAME, legacyPaths } from "@specforge/types/directory-layout"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
+import { parseRefsFields } from "./sf_markdown_verification_parser"
 
 // ============================================================
 // Types
@@ -110,11 +111,12 @@ export function isValidEdgeType(type: string): type is EdgeType {
 }
 
 /**
- * Validate node ID format: <work_item_id>:<type>:<sequence>
+ * Validate node ID format: <work_item_id>:<type>:<identity>
  * Split by last two ":" characters.
  * work_item_id matches /^[A-Za-z0-9][A-Za-z0-9_-]*$/
  * type is a valid NodeType
- * sequence is a positive integer
+ * identity is a positive integer, canonical MODULE-NNN artifact suffix,
+ * or canonical WI-NNNN-NNN task suffix
  */
 export function isValidNodeId(id: string): boolean {
   if (!id || typeof id !== "string") return false
@@ -124,7 +126,7 @@ export function isValidNodeId(id: string): boolean {
   if (lastColon === -1) return false
 
   const beforeLast = id.substring(0, lastColon)
-  const sequence = id.substring(lastColon + 1)
+  const identity = id.substring(lastColon + 1)
 
   const secondLastColon = beforeLast.lastIndexOf(":")
   if (secondLastColon === -1) return false
@@ -138,10 +140,13 @@ export function isValidNodeId(id: string): boolean {
   // Validate type
   if (!isValidNodeType(type)) return false
 
-  // Validate sequence is a positive integer
-  if (!sequence || !/^\d+$/.test(sequence)) return false
-  const seq = parseInt(sequence, 10)
-  if (seq <= 0) return false
+  // Graph nodes derived from canonical artifact IDs retain their canonical suffix.
+  const isPositiveSequence = /^\d+$/.test(identity) && parseInt(identity, 10) > 0
+  const isCanonicalArtifactIdentity = /^[A-Z][A-Z0-9]{1,11}-[0-9]{3}$/.test(identity)
+  const isCanonicalTaskIdentity = /^WI-[0-9]{4}-[0-9]{3}$/.test(identity)
+  if (!isPositiveSequence && !isCanonicalArtifactIdentity && !isCanonicalTaskIdentity) {
+    return false
+  }
 
   return true
 }
@@ -513,26 +518,28 @@ export async function updateNode(
 
 /**
  * Parse requirements.md to extract requirement nodes.
- * Matches standardized `### REQ-N Title` format, plus legacy `### 需求 N` or `### Requirement N` headings.
+ * Matches canonical `### REQ-MODULE-NNN Title`, plus read-compatible legacy headings.
  */
 function parseRequirements(content: string, workItemId: string, sourceFile: string): GraphNode[] {
   const nodes: GraphNode[] = []
-  const pattern = /^#{1,6}\s+(?:REQ-(\d+)|(?:需求|Requirement)\s+(\d+))[：:.]?\s*(.*)/gm
+  const pattern =
+    /^#{1,6}\s+(?:(REQ-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+))|(?:需求|Requirement)\s+([0-9]+))[：:.]?\s*(.*)/gm
   let match: RegExpExecArray | null
 
   while ((match = pattern.exec(content)) !== null) {
-    const reqNum = match[1] || match[2]
-    const title = match[3]?.trim() || `Requirement ${reqNum}`
+    const reqId = (match[1] ?? `REQ-${match[2]}`).toUpperCase()
+    const reqKey = reqId.replace(/^REQ-/, "")
+    const title = match[3]?.trim() || `Requirement ${reqKey}`
     const now = new Date().toISOString()
 
     nodes.push({
-      id: `${workItemId}:requirement:${reqNum}`,
+      id: `${workItemId}:requirement:${reqKey}`,
       type: "requirement",
       work_item_id: workItemId,
       label: title.substring(0, 200),
       metadata: {
         source_file: sourceFile,
-        req_id: `REQ-${reqNum}`,
+        req_id: reqId,
       },
       created_at: now,
       updated_at: now,
@@ -544,8 +551,8 @@ function parseRequirements(content: string, workItemId: string, sourceFile: stri
 
 /**
  * Parse design.md to extract design_decision nodes and traces_to edges.
- * Matches standardized `### DD-N Title` format, plus legacy `### N.N Title` headings.
- * Detects `refs: [REQ-N, ...]` and legacy `需求 N` / `Requirement N` references for traces_to edges.
+ * Matches canonical `### DD-MODULE-NNN Title`, plus read-compatible legacy headings.
+ * Detects semantic refs fields and legacy prose references for traces_to edges.
  */
 function parseDesign(
   content: string,
@@ -562,14 +569,16 @@ function parseDesign(
   let seq = 0
 
   for (let i = 0; i < lines.length; i++) {
-    // Match standardized DD-N format: ### DD-1 Title
-    const ddMatch = lines[i].match(/^#{1,6}\s+DD-(\d+)[：:.]?\s*(.*)/)
+    // Match canonical DD-MODULE-NNN and legacy DD-N formats.
+    const ddMatch = lines[i].match(
+      /^#{1,6}\s+(DD-(?:[A-Z][A-Z0-9]{1,11}-[0-9]{3}|[0-9]+))[：:.]?\s*(.*)/
+    )
     // Match legacy format: ### 3.1 Title
     const legacyMatch = lines[i].match(/^#{2,3}\s+(\d+(?:\.\d+)?)[.、：:\s]+(.+)/)
 
     if (ddMatch) {
       seq++
-      const designId = ddMatch[1]
+      const designId = ddMatch[1].replace(/^DD-/, "")
       const title = ddMatch[2]?.trim() || `Design Decision ${designId}`
       sections.push({ id: designId, startLine: i, title, seq })
 
@@ -614,41 +623,33 @@ function parseDesign(
 
     const seenReqs = new Set<string>()
 
-    // Detect standardized refs: [REQ-1, REQ-3] format
-    const refsLinePattern = /refs:\s*\[([^\]]+)\]/g
-    let refsMatch: RegExpExecArray | null
-    while ((refsMatch = refsLinePattern.exec(sectionContent)) !== null) {
-      const refsList = refsMatch[1]
-      const reqRefs = refsList.match(/REQ-(\d+)/g)
-      if (reqRefs) {
-        for (const ref of reqRefs) {
-          const reqNum = ref.replace("REQ-", "")
-          if (seenReqs.has(reqNum)) continue
-          seenReqs.add(reqNum)
+    for (const ref of parseRefsFields(sectionContent).filter(value => value.startsWith("REQ-"))) {
+      const reqKey = ref.replace(/^REQ-/, "")
+      if (seenReqs.has(reqKey)) continue
+      seenReqs.add(reqKey)
 
-          edges.push({
-            source: `${workItemId}:requirement:${reqNum}`,
-            target: `${workItemId}:design_decision:${sections[i].seq}`,
-            type: "traces_to",
-            work_item_id: workItemId,
-            inferred: false,
-            created_at: now,
-          })
-        }
-      }
+      edges.push({
+        source: `${workItemId}:requirement:${reqKey}`,
+        target: `${workItemId}:design_decision:${sections[i].seq}`,
+        type: "traces_to",
+        work_item_id: workItemId,
+        inferred: false,
+        created_at: now,
+      })
     }
 
-    // Detect legacy references: 需求 N, Requirement N, REQ-N (inline)
-    const reqRefPattern = /(?:需求|Requirement)\s+(\d+)|REQ-(\d+)/g
+    // Detect legacy references and inline canonical requirement IDs.
+    const reqRefPattern =
+      /(?:需求|Requirement)\s+([0-9]+)|REQ-((?:[A-Z][A-Z0-9]{1,11}-[0-9]{3})|[0-9]+)/g
     let refMatch: RegExpExecArray | null
 
     while ((refMatch = reqRefPattern.exec(sectionContent)) !== null) {
-      const reqNum = refMatch[1] || refMatch[2]
-      if (seenReqs.has(reqNum)) continue
-      seenReqs.add(reqNum)
+      const reqKey = refMatch[1] || refMatch[2]
+      if (seenReqs.has(reqKey)) continue
+      seenReqs.add(reqKey)
 
       edges.push({
-        source: `${workItemId}:requirement:${reqNum}`,
+        source: `${workItemId}:requirement:${reqKey}`,
         target: `${workItemId}:design_decision:${sections[i].seq}`,
         type: "traces_to",
         work_item_id: workItemId,
@@ -663,7 +664,7 @@ function parseDesign(
 
 /**
  * Parse tasks.md to extract task nodes, code_file nodes, and edges.
- * Matches standardized `### TASK-N Title` format, plus legacy `## Task N:` headings and `- [ ] N.` format.
+ * Matches canonical `### TASK-WI-NNNN-NNN Title`, plus read-compatible legacy headings.
  * Parses `files: [path1, path2]` (standardized) and `修改文件` (legacy) fields for file paths.
  */
 function parseTasks(
@@ -677,15 +678,17 @@ function parseTasks(
   const warnings: string[] = []
   const now = new Date().toISOString()
 
-  // Split into task sections — try standardized TASK-N format first
-  const standardPattern = /^#{1,6}\s+TASK-(\d+)[：:.]?\s*(.*)/gm
-  const taskSections: Array<{ num: string; title: string; startIdx: number }> = []
+  // Split into task sections — canonical TASK-WI-NNNN-NNN plus legacy TASK-N.
+  const standardPattern =
+    /^#{1,6}\s+(TASK-(?:WI-[0-9]{4}-[0-9]{3}|[0-9]+))[：:.]?\s*(.*)/gm
+  const taskSections: Array<{ key: string; taskId: string; title: string; startIdx: number }> = []
   let match: RegExpExecArray | null
 
   while ((match = standardPattern.exec(content)) !== null) {
     taskSections.push({
-      num: match[1],
-      title: match[2]?.trim() || `Task ${match[1]}`,
+      key: match[1].replace(/^TASK-/, ""),
+      taskId: match[1],
+      title: match[2]?.trim() || match[1],
       startIdx: match.index,
     })
   }
@@ -695,7 +698,8 @@ function parseTasks(
     const legacyPattern = /^##\s+Task\s+(\d+)[：:.]?\s*(.*)/gm
     while ((match = legacyPattern.exec(content)) !== null) {
       taskSections.push({
-        num: match[1],
+        key: match[1],
+        taskId: `TASK-${match[1]}`,
         title: match[2]?.trim() || `Task ${match[1]}`,
         startIdx: match.index,
       })
@@ -707,7 +711,8 @@ function parseTasks(
     const altPattern = /^-\s+\[[ x~-]\]\s+(\d+)\.\s+(.+)/gm
     while ((match = altPattern.exec(content)) !== null) {
       taskSections.push({
-        num: match[1],
+        key: match[1],
+        taskId: `TASK-${match[1]}`,
         title: match[2]?.trim() || `Task ${match[1]}`,
         startIdx: match.index,
       })
@@ -724,7 +729,7 @@ function parseTasks(
     const sectionContent = content.substring(startIdx, endIdx)
 
     // Create task node
-    const taskNodeId = `${workItemId}:task:${task.num}`
+    const taskNodeId = `${workItemId}:task:${task.key}`
     taskNodes.push({
       id: taskNodeId,
       type: "task",
@@ -732,7 +737,7 @@ function parseTasks(
       label: task.title.substring(0, 200),
       metadata: {
         source_file: sourceFile,
-        task_id: `Task ${task.num}`,
+        task_id: task.taskId,
       },
       created_at: now,
       updated_at: now,
@@ -822,28 +827,19 @@ function parseTasks(
     // Legacy format: "设计 3.1", "基于设计 N", "Design N.N"
     const seenDesignRefs = new Set<string>()
 
-    // Standardized refs: [DD-N] format
-    const refsPattern = /refs:\s*\[([^\]]+)\]/g
-    let refsMatch: RegExpExecArray | null
-    while ((refsMatch = refsPattern.exec(sectionContent)) !== null) {
-      const refsList = refsMatch[1]
-      const ddRefs = refsList.match(/DD-(\d+)/g)
-      if (ddRefs) {
-        for (const ref of ddRefs) {
-          const designRef = ref.replace("DD-", "")
-          if (seenDesignRefs.has(designRef)) continue
-          seenDesignRefs.add(designRef)
+    for (const ref of parseRefsFields(sectionContent).filter(value => value.startsWith("DD-"))) {
+      const designRef = ref.replace(/^DD-/, "")
+      if (seenDesignRefs.has(designRef)) continue
+      seenDesignRefs.add(designRef)
 
-          edges.push({
-            source: `${workItemId}:design_ref:${designRef}`,
-            target: taskNodeId,
-            type: "decomposes_to",
-            work_item_id: workItemId,
-            inferred: false,
-            created_at: now,
-          })
-        }
-      }
+      edges.push({
+        source: `${workItemId}:design_ref:${designRef}`,
+        target: taskNodeId,
+        type: "decomposes_to",
+        work_item_id: workItemId,
+        inferred: false,
+        created_at: now,
+      })
     }
 
     // Legacy format

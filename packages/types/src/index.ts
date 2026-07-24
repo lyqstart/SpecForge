@@ -92,6 +92,25 @@ export {
   type ExtensionPointContract,
 } from "./contract-model.js";
 
+// ---- Task artifact protocol contract ----
+export {
+  TASK_ARTIFACT_CONTRACT_VERSION,
+  TASK_VERIFICATION_TYPES,
+  TaskArtifactReferenceSchema,
+  TaskArtifactIdSchema,
+  TaskVerificationCommandsSchema,
+  TaskArtifactItemSchema,
+  TaskArtifactDocumentSchema,
+  isTaskRequirementRef,
+  isTaskDesignDecisionRef,
+  isTaskCorrectnessPropertyRef,
+  isLegacyTaskArtifactId,
+  type TaskVerificationType,
+  type TaskVerificationCommands,
+  type TaskArtifactItem,
+  type TaskArtifactDocument,
+} from "./task-artifact-contract.js";
+
 // ---- ID 规则（§3）----
 export {
   MODULE_CODE_PATTERN,
@@ -99,12 +118,14 @@ export {
   REQ_ID_PATTERN,
   AC_ID_PATTERN,
   DD_ID_PATTERN,
+  CP_ID_PATTERN,
   TASK_ID_PATTERN,
   isValidModuleCode,
   isValidWorkItemId,
   isValidRequirementId,
   isValidAcceptanceCriteriaId,
   isValidDesignDecisionId,
+  isValidCorrectnessPropertyId,
   isValidTaskId,
   extractModuleFromReqId,
   extractModuleFromAcId,

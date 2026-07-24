@@ -455,7 +455,7 @@ verifier 执行的每个关键验证动作，形成 REQ → AC → DD → TASK �
 |------|------|-------------|
 | `agent_id` | 执行 agent 标识 | `"sf-verifier"` |
 | `work_item_id` | 所属 Work Item | `"WI-001"` |
-| `task_id` | 所属 Task | `"TASK-5"` |
+| `task_id` | 所属 Task | `"TASK-WI-0001-005"` |
 | `action` | 动作类型 | `"verify"` / `"report"` |
 | `target` | 动作对象 | `"pytest tests/test_foo.py"` / 文件路径 |
 | `timestamp` | ISO 8601 时间戳 | `"2026-06-07T10:30:00Z"` |

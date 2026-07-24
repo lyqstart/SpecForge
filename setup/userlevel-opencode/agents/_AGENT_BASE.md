@@ -264,13 +264,13 @@ Agent 的关键结论必须有可追踪依据。依据类型包括：
 
 ❌ 错：
 ```markdown
-### REQ-3 性能要求
+### REQ-PERF-003 性能要求
 TBD
 ```
 
 ✅ 对：
 ```markdown
-### REQ-3 性能要求
+### REQ-PERF-003 性能要求
 WHEN 用户提交识别请求时，THE 系统 SHALL 在 2 秒内返回结果（P95，4 核 8GB 测试机，单图 < 1MB）
 ```
 
@@ -286,7 +286,7 @@ WHEN 用户提交识别请求时，THE 系统 SHALL 在 2 秒内返回结果（P
 
 ## D3：禁止"参见 XXX"代替实质
 
-❌ 错：`"REQ-2 的细节参见 REQ-1"` / `"按设计文档要求实现"`
+❌ 错：`"REQ-AUTH-002 的细节参见 REQ-AUTH-001"` / `"按设计文档要求实现"`
 
 ✅ 对：把内容写出来，或显式引用 + 说明差异
 
@@ -298,10 +298,10 @@ WHEN 用户提交识别请求时，THE 系统 SHALL 在 2 秒内返回结果（P
 
 ## D5：文档间引用必须真实存在
 
-design.md 引用了 REQ-7 → requirements.md 里必须有 `### REQ-7`。
-tasks.md 引用了 DD-3 → design.md 里必须有 `### DD-3`。
+design.md 引用了 REQ-AUTH-007 → requirements.md 里必须有 `### REQ-AUTH-007`。
+tasks.md 引用了 DD-AUTH-003 → design.md 里必须有 `### DD-AUTH-003`。
 
-**判定**：所有 `refs: [REQ-N, DD-N]` 中的编号必须在对应文档中存在。
+**判定**：所有 `refs` 中的规范 `REQ-<MODULE_CODE>-<NNN>` / `DD-<MODULE_CODE>-<NNN>` 必须在对应文档中存在；`REQ-N` / `DD-N` 只允许历史读取兼容。
 
 ## D6：同一概念禁止多名
 

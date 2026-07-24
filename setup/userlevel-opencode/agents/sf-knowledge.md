@@ -265,7 +265,7 @@ v1.1 标准要求知识提取必须基于 Evidence，而非主观判断。Knowle
     "evidence_refs": ["EA-001", "EA-005"],
     "trace_refs": ["trace:WI-001:2026-06-07T10:30:00Z"],
     "work_item_id": "WI-001",
-    "task_ids": ["TASK-3", "TASK-4"]
+    "task_ids": ["TASK-WI-0001-003", "TASK-WI-0001-004"]
   },
   "confidence": "high | medium | low"
 }
@@ -296,7 +296,7 @@ trace:<work_item_id>:<task_id>:<action>
 
 示例：
 - `trace:WI-001:2026-06-07T10:30:00Z` — 引用特定时间点的 Trace entry
-- `trace:WI-001:TASK-3:verify` — 引用特定 task 的验证动作
+- `trace:WI-0001:TASK-WI-0001-003:verify` — 引用特定 task 的验证动作
 
 ### Trace 在知识提取中的用途
 

@@ -148,6 +148,9 @@ describe('Design Governance contract alignment', () => {
   it('extends the existing Path Service and routes every runtime Gate through one authority', () => {
     const directoryLayout = read('packages/types/src/directory-layout.ts');
     const runtimeGate = read('packages/daemon-core/src/tools/lib/sf_design_gate_core.ts');
+    const runtimePolicy = read(
+      'packages/daemon-core/src/tools/lib/sf_design_governance_policy.ts'
+    );
     const gateRunner = read('packages/daemon-core/src/tools/lib/gate-runner-v11.ts');
     const governanceInvariants = read(
       'packages/daemon-core/src/tools/lib/governance-invariants-v11.ts'
@@ -164,7 +167,8 @@ describe('Design Governance contract alignment', () => {
 
     expect(governanceInvariants).toContain('resolveWorkItemSpecArtifacts');
     expect(runtimeGate).toContain('resolveWorkItemSpecArtifacts');
-    expect(runtimeGate).toContain('workItemTriggerResult');
+    expect(runtimePolicy).toContain('workItemTriggerResult');
+    expect(runtimePolicy).toContain('resolveSystemGovernanceRequirement');
     expect(runtimeGate).toContain('checkSystemGovernanceContent');
     expect(runtimeGate).toContain('checkSystemGovernanceContent(content, true)');
     expect(runtimeGate).toContain('resolveSystemGovernanceRequirement');
