@@ -250,3 +250,20 @@
 **契约引用语法(agent 与 gate 已对齐)**:`[contract:KIND:ID( owner=OWNER)?]`,KIND ∈ {shared_enum, invariant, public_interface, extension_point}。
 
 **下一步选项**:部署验证一轮 / 继续 3b / 开始播种真实契约(把 SpecForge 或 fj1 的跨模块枚举登记进 contracts 块,让 gate 从 brownfield-skip 转为实际对账)。
+
+---
+
+# 16. 契约治理写入路径(sf_contract_register)+ extension 技术债
+
+## 已交付(提交 `ed1d113`)
+- **`sf_contract_register`**:契约"提议填单"工具。读当前 `extension_registry.json` → 在 `contracts` 块加一条契约(dedup 守卫)→ 写 `candidates/project/extension_registry.json` → 在 `candidate_manifest.json` 登记显式条目(target = 声明过的 `.specforge/project/extension_registry.json`)。
+- **不改合并中枢、不开后门**:因 target 是声明过的 project 文件,`inferManifestEntries`(收件员)**原样回显**该显式条目 → 走既有 候选门禁 → 用户决策 → Merge Runner(唯一授权写者)落盘。测试已验证"收件员回显"成立。
+- daemon handler + dispatcher 注册 + 用户级 wrapper + installer registry + 3 测试。
+
+## 评估结论:extension 两套并存 = 需保留职责、当前实现是债
+- 职责(缺类型/契约 → 治理登记)**需要**,不删。
+- 但 daemon v11(缺"批准后写 project"步、疑似无 opencode 入口)与 opencode v12 wrapper(纯内存、不落盘)**都不能真正完成登记**,且互不相通。
+- **单独立"extension 子系统整合"工作项**:先审计使用 → 保留一条与契约合并路径一致的干净治理路径 → 删死的/重复的。**不混进本次;`sf_contract_register` 不依赖它们。**
+
+## 端到端验证(待部署后)
+注册一条真实契约 → gate → 批准 → merge 落盘 → `spec_consistency_gate` 从 brownfield-skip 转为实际对账 → 真跑一次 executor 遇未登记值 `blocked(contract_gap)` → 治理登记 → resume。
