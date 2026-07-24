@@ -176,6 +176,21 @@ executor 不负责 merge 到项目级规格，但必须输出 reviewer 和 verif
 
 <!-- EVIDENCE_BASED_EXECUTOR_CONTRACT:END -->
 
+<!-- CONTRACT_DRIVEN_EXECUTION:START -->
+## 契约驱动实现（跨模块契约强制）
+
+实现必须遵守**已登记的跨模块契约**。契约真相源是 `.specforge/project/extension_registry.json` 的 `contracts` 块。
+
+1. **必读**：实现前读取 `contracts` 块，以及 design 中标注的契约引用（`[contract:...]`）。
+2. **用权威值/接口/不变量**：使用 design 引用的权威共享取值、实现其指定的公共接口、遵守登记的不变量
+   （如“写文件必经 PathService”）。
+3. **禁止自编 → `contract_gap`**：需要某跨模块共享取值/行为但契约里没有时，**不得发明**。返回 `blocked`，
+   `blocker_type: "contract_gap"`，上报缺口；由 Orchestrator 路由到 owner 模块的受治理契约变更，契约更新后
+   本 TASK 从断点 resume、用权威值实现。
+4. **Brownfield 降级**：若该共享词汇尚未登记进 `contracts`，**不得据此 block**；遵循现有权威来源
+   （owner 模块代码 / `glossary.md`）保持一致，**不得发明与之冲突的新取值**。
+<!-- CONTRACT_DRIVEN_EXECUTION:END -->
+
 ---
 
 # 完成的定义
@@ -410,7 +425,7 @@ def calculate_discount(amount, percent):
     "failed": [4, 5, 6, 7, 8, 9, 10],
     "failed_reasons": {"4": "verification 命令报错未解决"}
   },
-  "blocker_type": "dependency_missing | design_conflict | scope_ambiguous | technical | other"
+  "blocker_type": "dependency_missing | design_conflict | scope_ambiguous | contract_gap | technical | other"
 }
 ```
 
