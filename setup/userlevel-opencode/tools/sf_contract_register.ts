@@ -14,7 +14,7 @@ export default tool({
       .enum(["shared_enum", "invariant", "public_interface", "extension_point"])
       .describe("契约种类"),
     entry: tool.schema
-      .record(tool.schema.any())
+      .record(tool.schema.string(), tool.schema.any())
       .describe("契约条目对象；必须含 id 与 owner_module。shared_enum 还需 values 数组"),
     workflow_path: tool.schema
       .string()
