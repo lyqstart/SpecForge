@@ -144,3 +144,56 @@
 ## 建议下一步
 
 按 evidence-first，先完成 §8 的核验（尤其两个闭环缺口 + skill 步骤序列），再动切片 1；确认“加了 gate 是否真能自动闭环”，避免重蹈 WI-0001 死锁。
+
+---
+
+# 补充（评审讨论 2026-07-24）
+
+## 11. 契约权限模型（谁能改、怎么保证落实）
+
+契约是 project 真相源（`.specforge/project/**`）的一部分，遵循与项目规格相同的权限链（依据 `write-guard-v11.ts`：普通 Agent 写 `.specforge/project/**` 属违规）：
+
+| 环节 | 角色 |
+|---|---|
+| 提议（写候选） | `sf-design` 写 `candidates/project/modules/<M>/…` |
+| 决策（批准） | 用户，经 `sf_user_decision_record`；跨模块/共享契约变更必须用户批准 |
+| 落盘（机械写真相源） | **只有 Merge Runner** 能写 `.specforge/project/**`，其余被 write-guard 拒 |
+| 类型命名空间 | `extension_registry.json` 经 Extension Subflow（`sf-extension`）；design 禁止直接改 |
+
+- **结论**：无单个 Agent 能直接改契约，必须 `design 提议 → gate → 用户批准 → merge runner 落盘`。消费方 WI 无权写别的模块拥有的契约定义。
+- **新增缺口**：每条契约需绑定 `owner`（哪个模块拥有该枚举/接口/不变量），并强制“消费方 WI 不得修改 owner 的契约”。
+
+**落实保证（多层）**：write-guard 机械写权限（最强，落盘后不可手工改）→ 三点确定性对账 → 完整性 gate → 闭环恢复 → 治理更新路径。当前主缺口：`spec_consistency_gate` 是空壳，第 2 层“代码符合契约”尚无保证。
+
+## 12. 契约与规格文档的关系 + 文件映射
+
+契约有两半：**可强制的真相（机器可读注册表，gate 读它对账）** 与 **人读的意图与应用（叙述规格，引用契约）**。原则：**叙述文档引用契约，不得复述权威取值**（否则漂移）。
+
+| 契约概念 | 落到的文件 | 现状/缺口 |
+|---|---|---|
+| 类型命名空间 | `extension_registry.json` | 存在，但只登记类型名 |
+| 共享取值集（枚举/状态/错误码） | **扩展 `extension_registry.json`**（新增 `shared_enums`） | 缺口（③核心） |
+| 不变量/约定（PathService/分层） | 机器可读：`extension_registry`（新增 `invariants`）；叙述：`architecture.md` | 缺口 |
+| 公共接口/API 契约 | 机器可读：`extension_registry`（新增 `public_interfaces`）；叙述：`modules/<M>/design.md` | 缺口 |
+| 扩展点 | `extension_registry`（新增 `extension_points`） | 缺口 |
+| 所有权（每条契约 owner） | `extension_registry`（新增 `contract_ownership`）+ `spec_manifest`（模块级已有） | 缺口 |
+| 决策（为什么） | `decisions.md` | 未填 |
+| 索引/范围化 | `design_index.md` / `trace_matrix.md` | 未填 |
+
+- **衔接**：契约作为 project 真相源天然走现有 候选→gate→审批→merge 管道，不需新管道。
+- **建议（reuse 而非另起）**：把机器可读契约**扩展进 `extension_registry.json` 的 schema**（新增上述命名空间），复用现成 Extension Subflow + gate + merge（= `extend_existing`）。
+- **注意**：连 SpecForge 自身仓库的 architecture/design_index/glossary/decisions 都是 TODO 占位、extension_registry 全空——机制无种子数据，印证 §6 播种策略连 SpecForge 自身也要用。
+
+## 13. 两个 Agent 契约驱动 + contract_gap 闭环（落实的预防半场）
+
+“落实” = 预防（agent 按契约）+ 检测（gate 对账），两半缺一不可（“agent 应当遵守”正是之前失败的东西，必须 gate 兜底）。
+
+**现状证据**：
+- `sf-executor` 读 TASK 合同 + `project-rules.md` + **相邻代码**，**不读契约注册表** → 这是它照局部代码编造/误用跨模块枚举的根源。
+- `sf-design` 只为类型登记读 `extension_registry`，无“必须引用权威取值/接口、禁自编”硬约束。
+
+**增量**：
+- **sf-design**：契约注册表列为强制输入；设计候选必须引用契约 id；禁止自编共享取值/接口。
+- **sf-executor**：契约注册表 + 设计的契约引用列为强制输入；实现必须用被引用的权威值/接口/不变量；**新增 `blocker_type: contract_gap`** —— 需要契约里没有的共享取值/行为时 `blocked` 上报，**不得发明**。
+- **contract_gap 闭环**：executor 遇缺口 → `blocked(contract_gap)` → orchestrator 路由到 owner 模块的受治理契约变更（design 提议→审批→merge 落盘）→ 契约更新后原 TASK 自动 resume 用权威值实现。把“自己编”从物理上堵死：要么用权威值，要么走治理把它变成权威值。
+- **为什么两个都要**：只 executor 按契约 → design 可能合法写出越界设计被忠实实现；只 design 按契约 → executor 边写边偏离。design 最早最便宜、executor 最后一道预防。
