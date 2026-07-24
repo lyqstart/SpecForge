@@ -28,6 +28,11 @@ import {
   resolveWorkItemSpecArtifacts,
 } from './governance-invariants-v11.js';
 import {
+  readContractsRegistry,
+  hasAnyContracts,
+  type ContractRegistry,
+} from './contracts-registry.js';
+import {
   projectSpecManifest,
   workItemCandidateManifest,
   workItemChangeClassification,
@@ -996,16 +1001,105 @@ registerGate('extension_gate', 'hard_gate', false, async ctx => {
 });
 
 /**
- * §9.2 spec_consistency_gate — 规格一致性（弱实现）
+ * §9.2 spec_consistency_gate — 跨模块契约一致性（step 3a）
+ *
+ * 校验设计候选里声明的契约引用 `[contract:KIND:ID( owner=OWNER)?]` 是否解析到
+ * `.specforge/project/extension_registry.json` 的 `contracts` 块里已登记的契约，
+ * 且 owner 一致。KIND ∈ {shared_enum, invariant, public_interface, extension_point}。
+ *
+ * Brownfield-safe：注册表无任何契约（未纳入治理）时，跳过并 pass（warn 不 block）；
+ * 设计未声明任何 `[contract:...]` 引用时也 pass。
  */
+const CONTRACT_REF_PATTERN =
+  /\[contract:(shared_enum|invariant|public_interface|extension_point):([A-Za-z0-9_.\-]+)(?:\s+owner=([A-Za-z0-9_]+))?\]/g;
+
+const CONTRACT_KIND_TO_FIELD: Record<string, keyof ContractRegistry> = {
+  shared_enum: 'shared_enums',
+  invariant: 'invariants',
+  public_interface: 'public_interfaces',
+  extension_point: 'extension_points',
+};
+
 registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
-  checks.push({
-    check_id: 'spec_consistency_basic',
-    description: 'Basic spec consistency check (MVP weak implementation)',
-    passed: true,
+  const registry = readContractsRegistry(ctx.projectRoot);
+
+  // Brownfield: nothing under contract governance yet — skip, do not block.
+  if (!hasAnyContracts(registry)) {
+    checks.push({
+      check_id: 'spec_consistency_brownfield_skip',
+      description:
+        'No cross-module contracts registered in extension_registry.json; consistency check skipped (brownfield-safe)',
+      passed: true,
+    });
+    return makeReport(ctx.workItemId, 'spec_consistency_gate', 'soft_gate', true, checks);
+  }
+
+  const designArtifacts = await resolveWorkItemSpecArtifacts({
+    projectRoot: ctx.projectRoot,
+    workItemId: ctx.workItemId,
+    kind: 'design',
   });
-  return makeReport(ctx.workItemId, 'spec_consistency_gate', 'soft_gate', true, checks);
+  const designText = designArtifacts.map(a => a.content).join('\n');
+
+  // Collect declared contract references.
+  const references: Array<{ kind: string; id: string; owner?: string }> = [];
+  let match: RegExpExecArray | null;
+  CONTRACT_REF_PATTERN.lastIndex = 0;
+  while ((match = CONTRACT_REF_PATTERN.exec(designText)) !== null) {
+    references.push({ kind: match[1], id: match[2], owner: match[3] });
+  }
+
+  if (references.length === 0) {
+    checks.push({
+      check_id: 'spec_consistency_no_contract_refs',
+      description: 'Design declares no [contract:...] references; nothing to reconcile',
+      passed: true,
+    });
+    return makeReport(ctx.workItemId, 'spec_consistency_gate', 'soft_gate', true, checks);
+  }
+
+  for (let i = 0; i < references.length; i++) {
+    const ref = references[i];
+    const field = CONTRACT_KIND_TO_FIELD[ref.kind];
+    const entries = (registry[field] as Array<{ id: string; owner_module: string }>) ?? [];
+    const entry = entries.find(e => e.id === ref.id);
+
+    if (!entry) {
+      checks.push({
+        check_id: `contract_ref_${i}_resolves`,
+        description: `Referenced contract does not exist in registry: [${ref.kind}:${ref.id}] — do not invent; register it in the owner module via a governed contract change`,
+        passed: false,
+        severity: 'error',
+      });
+      continue;
+    }
+
+    if (ref.owner && ref.owner !== entry.owner_module) {
+      checks.push({
+        check_id: `contract_ref_${i}_owner`,
+        description: `Owner mismatch for [${ref.kind}:${ref.id}]: design says owner=${ref.owner}, registry says owner=${entry.owner_module}`,
+        passed: false,
+        severity: 'error',
+      });
+      continue;
+    }
+
+    checks.push({
+      check_id: `contract_ref_${i}_ok`,
+      description: `Contract reference resolved: [${ref.kind}:${ref.id}] owner=${entry.owner_module}`,
+      passed: true,
+    });
+  }
+
+  return makeReport(
+    ctx.workItemId,
+    'spec_consistency_gate',
+    'soft_gate',
+    true,
+    checks,
+    designArtifacts.map(a => a.path),
+  );
 });
 
 /**
