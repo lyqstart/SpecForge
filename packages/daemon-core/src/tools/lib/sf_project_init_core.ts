@@ -396,10 +396,16 @@ export async function ensureProjectInit(
             const existing = await readFile(fullPath, 'utf-8');
             // Do not overwrite a non-empty root manifest if it already exists.
             // Do not overwrite a non-empty observability config because it is user/project policy.
+            // Do not overwrite a non-empty extension_registry.json: it is a governed
+            // project-spec truth source (namespaces + cross-module contracts) written
+            // only by the Merge Runner. Bootstrap must create it when missing, never
+            // reset it — otherwise every project-register/sync (e.g. on OpenCode start)
+            // would silently wipe registered contracts back to the empty template.
             if (
               (normalizedRel === 'manifest.json' ||
                 normalizedRel === 'config/observability.json' ||
-                normalizedRel === 'project/spec_manifest.json') &&
+                normalizedRel === 'project/spec_manifest.json' ||
+                normalizedRel === 'project/extension_registry.json') &&
               existing.trim()
             ) {
               result.existed.push(entry.path);
