@@ -197,3 +197,36 @@
 - **sf-executor**：契约注册表 + 设计的契约引用列为强制输入；实现必须用被引用的权威值/接口/不变量；**新增 `blocker_type: contract_gap`** —— 需要契约里没有的共享取值/行为时 `blocked` 上报，**不得发明**。
 - **contract_gap 闭环**：executor 遇缺口 → `blocked(contract_gap)` → orchestrator 路由到 owner 模块的受治理契约变更（design 提议→审批→merge 落盘）→ 契约更新后原 TASK 自动 resume 用权威值实现。把“自己编”从物理上堵死：要么用权威值，要么走治理把它变成权威值。
 - **为什么两个都要**：只 executor 按契约 → design 可能合法写出越界设计被忠实实现；只 design 按契约 → executor 边写边偏离。design 最早最便宜、executor 最后一道预防。
+
+---
+
+# 14. §8 证据核验结果（2026-07-24，含对方案的修正）
+
+四项均以一手源码/配置证据核验。
+
+## 14.1 闭环缺口 A（gate 失败自动打回）— 结论：基本已实现（对我们要扩展的 gate 有利）
+- `configs/workflows/builtin/*.json`：`gates_running --fail--> gates_failed --> candidate_preparing`，`retry: {maxAttempts:3, onExhausted:"blocked"}`；close gate `verification_done --fail--> implementation_running`，retry 3。`StateMachine.ts` LEGAL_TRANSITIONS 允许该回环。
+- `sf-orchestrator.md`：门禁失败先判根因——候选内容/结构错 → 重调责任 Agent 修同一候选、重跑门禁;工具/契约/路径/运行时错 → 停业务流、重调 sf-design 更新 capability_verdict、先修治理链。
+- SKILL 上限:`sf-workflow-feature-spec/SKILL.md` 阶段 5b“每阶段最多一次修复,失败后报阻塞”。
+- **对方案的意义**:把 ③ 的契约对账放进 `spec_consistency_gate`(候选门禁簇)和 close gate,**自动骑用现有打回回环**——契约违规被 gate 抓到 → 自动回 candidate_preparing → sf-design/executor 修 → 重跑。**Gap A 对我们要动的 gate 基本已闭合。**
+- 残留:`merge_ready_gate/post_merge_gate/code_permission_release_gate` 失败直接 `blocked`(可恢复但不自动回环);“每阶段一次修复”上限对迭代式契约修复可能偏紧(可调)。
+
+## 14.2 闭环缺口 B（跨 WI 依赖 + 自动 resume）— 结论：未实现（**修正 §5**）
+- 无 WI↔WI 依赖图、无“前置 WI 关闭即自动 resume 依赖 WI”。只有**单 WI 内** blocked→resume(extension subflow `recoverMainFlow`、HardStop `resume_from_step`、手动 blocked→resume)。
+- `architecture_change` 是分类期选定的 **workflow_type(in-flow)**,不是被 spawn 并等待的子 WI。
+- **修正 §5**:架构变更**默认走 in-flow 升级(Model A)**——同一 WI 升 system_governance / architecture_change_path。**Model B(独立架构 WI + 依赖 + 自动 resume)当前不被支持**,它本身需要先建“跨 WI 依赖”能力(更大扩展);过渡期只能**手动排序**(功能 WI 置 blocked/superseded → 单独架构 WI → 新功能 WI),不是自动。是否要建跨 WI 依赖能力,列为独立后续决策。
+
+## 14.3 工作流步骤序列 — 结论：已实现，但 refactor 缺 spec_consistency（**新增修正**）
+- `pre_implementation_gates` 组合含 `spec_consistency_gate` 的:feature_spec、design_first、change_request、architecture_change;**refactor.json 缺 `spec_consistency_gate`**。
+- design 在候选门禁内校验(无独立 design 状态);强化 `sf_design_gate_core` 骑用现有候选门禁。
+- **修正 §9 切片**:切片 1 把 `spec_consistency_gate` 做实后,**同时要把它加进 `refactor.json` 的组合**(重构常动共享契约,不能漏)。
+
+## 14.4 extension_registry 归属 — 结论：已实现，验证“扩展它”为正确 reuse 路径
+- 治理写路径:sf-extension 提候选 → ExtensionGate(hard) → 用户决策 → Merge 写 `.specforge/project/extension_registry.json`;`PathPolicy` **硬拦** agent 直写(`agent_cannot_write_extension_registry`)。
+- **对方案的意义**:把契约命名空间(`shared_enums/invariants/public_interfaces/extension_points/contract_ownership`)**扩展进 extension_registry.json**,直接复用这套 governed subflow + hard gate + merge + PathPolicy 硬拦 → 名副其实的 `extend_existing`,并继承写权限保证。
+- **动手前须先解决的不一致**:`extension-subflow-v12.ts` 指向**不同路径** `.specforge/project/extensions/extension_registry.json`,而 v11 与实际文件用 `.specforge/project/extension_registry.json`。**扩展 schema 前必须先确认 v11/v12 哪个是活线**,否则改错地方。
+
+## 14.5 核验小结对切片的影响
+- 切片 1(③)可**直接骑用现有 gate 打回回环**,风险低;做实 `spec_consistency_gate` + 补进 refactor 组合 + sf-design/executor 契约驱动。
+- 架构变更**只用 in-flow 升级**;跨 WI 依赖自动 resume 不在近期范围。
+- 扩展 extension_registry 前,先裁决 v11/v12 registry 路径不一致。
