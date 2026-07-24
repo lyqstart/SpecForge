@@ -327,14 +327,38 @@ Step 3 验证 `spec_consistency_gate` 时发现它仍走 brownfield-skip。逐�
 ## 契约模型落地 — 最终结论
 契约模型的**机械强制保证已全部验证闭环**:受治理登记(候选→gate→审批→merge)、真相源持久化(修复 bootstrap 覆盖 bug)、设计期确定性对账(`spec_consistency_gate`)、失败自动打回恢复、状态机支持 blocked→resume。当初审计发现的"跨模块契约一致性无人强制"核心缺口已被确定性 gate 填补。预防半场(agent 契约驱动)有 gate 作机械兜底。
 
-## 后续独立工作项(本轮不做,已记录)
+## 后续独立工作项 / backlog 消化进度
+
+### ✅ 本轮已加固完成(2026-07-24,含测试,已合并 main)
+| 项 | 结论 | 提交 |
+|---|---|---|
+| installer verify 增强 | verify 静态干跑全部 wrapper schema(`verify-tool-schemas.ts`),命中单参 `.record()` 等"拖垮全部工具"写法即失败并报 文件:行;5 回归测试。 | `feat 2395117` / merge `d6796ad` |
+| PSV 版本 desync 修复(Step 2 观察 b) | merge 后把 `extension_registry.json` 的 `project_spec_version` 同步到权威 spec_manifest 新版本;回归测试。 | `fix 5776502` / merge `80b2060` |
+| workflow-runtime 死代码审计(见下 7) | 审计确认 + `@deprecated` 标注。 | `chore 574f67f` / merge `8e71879` |
+
+### ⬜ 仍未做(独立工作项,各需 设计→最小完整实现→brownfield 安全→测试→部署验证)
 1. **contract_gap 活体演示**:feature_spec 跑到实现态,观察 executor `blocked(contract_gap)`→登记→resume(agent 行为,安全网已证,低优先级)。
 2. **切片 3b**:对改动代码做 AST 级契约对账(字面量枚举值/接口实现/PathService 绕过),分语言,较大。
-3. **切片 3(完整性 gate)**:契约变更后反向依赖扫描 + 无悬空引用才收口(§3 影响分析)。
-4. **Step 2 治理观察**:(a) `sf_merge_run` 返回值 `workflow_type` 投影错标 feature_spec;(b) PSV 版本 desync(registry 版本字段 vs spec_manifest 自增脱节);(c) 契约登记路径过重(缺轻量治理车道);(d) tasks.md `verification_commands` 旧格式 warning。
-5. **installer verify 增强**:干跑加载全部 wrapper schema,提前拦截"一个 schema 写错拖垮全部工具"(源自本轮 zod record bug)。
+3. **切片 3(完整性 gate)**:契约变更后反向依赖扫描 + 无悬空引用才收口(§3 影响分析)。**风险**:新 required gate 未产出会卡死自动推进;对存量悬空引用一刀切会复制 WI-0001 死锁 → 须先定 brownfield delta 策略。
+4. **Step 2 剩余治理观察**:(a) `sf_merge_run` 返回值 `workflow_type` 投影错标 feature_spec(权威 state 正确,仅返回值投影层);(d) tasks.md `verification_commands` 旧格式 warning(非阻塞)。〔(b) PSV 已修见上;(c) 见下 5〕
+5. **契约登记轻量车道**(Step 2 观察 c):让"纯契约登记"不必跑全套 feature 流程;改分类边界属治理身份设计。
 6. **extension 子系统 v11/v12 整合**(Task 4 债):两套并存、互不相通、都不能真正落盘;先审计使用再保留一条干净治理路径、删死的。
-7. **workflow-runtime 死代码审计**:`Runtime`/`RuntimeInit`/`StateMachine.ts` 疑似 daemon 未使用(与 daemon-core 的 `state_machine.ts` 并存两套状态机),本轮已两次踩到("无条件写模板"机制、"只能 resume 到前期"死表);需确认活线并清理,避免再被误读。
+7. **workflow-runtime 死代码删除**(审计已完成,删除待办):
    - **审计结论(CONFIRMED)**:daemon 活跃路径 = 配置驱动 `WorkflowEngine`(`Daemon.ts` → `createV11WorkflowEngine` + `configs/workflows/builtin/*.json`)+ daemon-core `gate-runner-v11.ts`/`state_machine.ts`/`merge-runner-v11.ts`。`v11/runtime/` 的 `Runtime`/`RuntimeInit`/`StateMachine`/`GateRunner` 是 daemon 从不实例化的并行 OO 运行时(`packages/*/src` 无 `new Runtime(`;唯一 `@specforge/workflow-runtime` 消费者是 `contracts-registry.ts` 引类型、`Daemon.ts` 引 `WorkflowEngine`)。
    - **已处置**:给三个 daemon-unused 类加 `@deprecated` 标注(指向活线 + 记录两处已知误导),防再被当权威读。
-   - **仍待办(单列)**:真正删除需跨包消费者审计(node_modules 副本)+ 清理包自身 Runtime/StateMachine 测试 + 构建验证,风险较大,独立 WI。
+   - **仍待办**:真正删除需跨包消费者审计(node_modules 副本)+ 清理包自身 Runtime/StateMachine 测试 + 构建验证,风险较大,独立 WI。
+
+## 变更审计索引(2026-07-24 全部代码改动 → 提交)
+> 每条改动均有描述"改了什么 + 为什么/根因"的 git 提交;本表为快速审计入口。
+- `1c4862a` feat:`sf_work_item_repair_closure`(补根级封口文件的 fail-closed 修复工具)
+- `b320bbf` fix:close_gate 的 `changed_files_audit` 判定识别 `Status: PASSED/FAILED`(WI-0001 关闭的真正最后阻断)
+- `2f04707` feat:契约注册表 schema(`contracts` 块,后向兼容)+ `contracts-registry.ts` 读助手
+- `b8a1499` feat:`sf-design`/`sf-executor` 契约驱动 + `contract_gap` blocker
+- `7ba17eb` feat:`spec_consistency_gate` 契约对账做实 + 加入 refactor 组合
+- `ac993e3` feat:`sf_contract_register` 受治理契约登记工具
+- `470d1fc` fix:`sf_contract_register` 用双参 zod `record`(修全工具无响应)
+- `444921d` fix:`ensureProjectInit` 不再覆盖非空 `extension_registry.json`(bootstrap 清空真相源 bug)
+- `2395117` feat:installer verify 干跑 wrapper schema
+- `5776502` fix:merge 同步 `extension_registry.json` 版本号(PSV desync)
+- `574f67f` chore:`@deprecated` 标注 daemon-unused 的 Runtime/RuntimeInit/StateMachine
+- 配套 docs 提交:`1932b05`/`9f1ab55`/`1507353`/`63355a3`/`9367f3f`/`c5f2a8a`/`8367c78`/`a8ba356`/`c734901`/`616feb4`(设计方案 + Step1–4 验证 + 各根因/修复记录)
