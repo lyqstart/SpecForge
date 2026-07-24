@@ -279,3 +279,14 @@
 - ✅ 候选 `candidates/project/extension_registry.json` 的 `contracts.shared_enums` 含 GpsStatus。
 - ✅ `candidate_manifest.json` 有显式条目 `candidates/project/extension_registry.json → .specforge/project/extension_registry.json`(replace/extension_registry)——**收件员原样回显验证成立,不走后门**。
 - ✅ 真相源 `contracts` 块为**空**(`grep -c GpsStatus`=0):bootstrap 规范化只补了空容器,契约内容未泄漏,仍待 merge 落盘。假设 B(绕过真相源)已排除。
+
+### Step 2 结果(CONFIRMED,fj1 / WI-0003 merged)
+- 编排器把 WI-0003 走完整 change_request 治理链:intake → impact_analysis(sf-requirements) → design(sf-design) → tasks(sf-task-planner) → candidate gate → 用户决策 → `sf_merge_run`。
+- ✅ **契约经受治理路径落盘**:合并后真相源 `contracts.shared_enums` 含 GpsStatus(`grep -c`=1);`sf_merge_run` 返回 `success/merged_count:1`;`state.json` WI-0003 `merged`/`change_request`。全程无手改真相源、无绕过 gate。
+- ✅ **闭环恢复(§4)运行验证**:candidate gate 跑 4 轮,前 3 轮 `workflow_specific_gate`/`required_files_gate` 失败 → 自动 `gates_failed → candidate_preparing` 回退 → 责任 agent 修复(补 requirements candidate、design 加 `analysis_scope: system_governance`、加 REQ-1 引用)→ 重跑,第 4 轮 9/9 通过 → `approval_required`。**无死锁、无伪造通过、失败未甩给用户**。
+
+### Step 2 暴露的治理观察(CONFIRMED,非阻塞,单列跟进)
+1. **`workflow_type` 投影错标**:`sf_merge_run.state_auto_advance.workflow_type="feature_spec"`,而权威 `state.json`=`change_request`。权威状态正确,缺陷在 transition/merge 的返回值投影层。
+2. **PSV 版本 desync**:合并后真相源 `project_spec_version` 仍=`PSV-0001`,但 `sf_merge_run` 报 `spec_manifest_updated:true / PSV-0003`。假设(待验证):`sf_contract_register` 把旧版本号原样抄进候选 + `replace` 合并不对齐版本字段 + spec_manifest 独立自增 → 三者脱节。此外 spec_manifest 变更前已是 PSV-0002 而 registry 是 PSV-0001(WI-0003 之前就存在的历史 desync)。
+3. **契约登记治理路径过重**:纯注册表加一枚举被 `candidate_phase=full` 要求 requirements+design+tasks 全套候选,4 轮 gate/~30min。契约登记缺一条轻量治理车道(design 缺口)。
+4. tasks.md `verification_commands` 旧格式 2 个 warning(非阻塞)。
