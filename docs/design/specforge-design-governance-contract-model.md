@@ -299,3 +299,21 @@ Step 3 验证 `spec_consistency_gate` 时发现它仍走 brownfield-skip。逐�
 - **责任层**:项目 bootstrap(`ensureProjectInit`),非 gate/契约工具/StateManager。
 - **修复**:把 `project/extension_registry.json` 加进"非空则保留"名单,与 `spec_manifest.json` 一致(bootstrap 只创建、不覆盖治理真相源;内容只由 merge_runner 写)。加回归测试(create-when-missing / preserve-contracts / preserve-namespaces),daemon-core + HTTPServer 测试通过。
 - **部署**:daemon-core `git pull` + `bun run build` + 重启 daemon。GpsStatus 已被清空,需修复部署后重新走一遍登记+merge(顺带重验闭环),再继续 Step 3。
+
+### 修复验证 + Step 3 结果(CONFIRMED,fj1)
+- **修复生效**:部署后放哨兵 `SENTINEL_PROBE` → **重开 opencode(未输入)** → `grep -c`=1(修复前会变 0)。bootstrap 不再清空真相源。
+- **Step 3 真实对账**:复用 WI-0004,design 候选引用三种情况,`sf_gate_run gate_ids=[spec_consistency_gate]` 返回 `status=failed`、`input_files` 含 design 候选(真读了):
+  - `SENTINEL_PROBE owner=CORE` → `contract_ref_0_ok` **passed**;
+  - `BOGUS_ENUM` → `contract_ref_1_resolves` **failed/error**(未登记);
+  - `SENTINEL_PROBE owner=WRONGMOD` → `contract_ref_2_owner` **failed/error**(owner 漂移)。
+- 结论:`spec_consistency_gate` 从 brownfield-skip 转为**确定性代码↔契约对账**,覆盖当初审计发现的"跨模块契约一致性无人强制"核心缺口。
+- 注:哨兵为诊断探针(受治理写入路径已在 Step 2 端到端证明);两验证点只关心真相源有无已登记契约 + gate 如何读,与契约来源无关。
+
+## 契约闭环端到端验证总结(截至当前)
+| 环节 | 状态 | 证据 |
+|---|---|---|
+| 受治理登记(candidate→gate→审批→merge 落盘) | ✅ CONFIRMED | Step 2,WI-0003 merged,GpsStatus 落真相源 |
+| 闭环恢复(gate 失败自动打回修复重跑) | ✅ CONFIRMED | Step 2,4 轮 gate 无死锁 |
+| 真相源持久化(不被 bootstrap 清空) | ✅ CONFIRMED(修 `d65c5f5`) | 哨兵挺过 opencode 重启 |
+| 设计期对账(spec_consistency_gate 真实校验) | ✅ CONFIRMED | Step 3,3 种情况判定正确 |
+| 实现期 `contract_gap` 闭环(executor 遇未登记→blocked→登记→resume) | ⬜ 待验证(Step 4,重流程) | — |
