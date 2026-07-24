@@ -528,6 +528,43 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         'utf-8'
       );
       result.spec_manifest_updated = true;
+
+      // Keep the (duplicated) project_spec_version field inside a merged
+      // extension_registry.json in sync with the authoritative spec_manifest
+      // version. The entry merge copies the candidate verbatim (operation:
+      // replace), and candidates carry the stale version they were authored
+      // from, so without this the registry's version field silently drifts
+      // behind spec_manifest (observed: manifest PSV-0003 vs registry PSV-0001).
+      const mergedExtensionRegistry = result.merged_files.find(
+        entry =>
+          entry.status === 'success' &&
+          entry.target_path.replace(/\\/g, '/').endsWith('project/extension_registry.json')
+      );
+      if (mergedExtensionRegistry) {
+        const registryAbsPath = path.join(
+          input.projectRoot,
+          '.specforge',
+          'project',
+          'extension_registry.json'
+        );
+        try {
+          const registry = await readJsonFile(registryAbsPath);
+          if (registry && typeof registry === 'object' && registry.project_spec_version !== newVersion) {
+            registry.project_spec_version = newVersion;
+            await fs.writeFile(
+              registryAbsPath,
+              JSON.stringify(registry, null, 2) + '\n',
+              'utf-8'
+            );
+          }
+        } catch (syncErr: any) {
+          // Non-fatal: the authoritative version lives in spec_manifest.json.
+          result.errors.push(
+            'Warning: could not sync extension_registry.json project_spec_version: ' +
+              syncErr.message
+          );
+        }
+      }
     } catch (err: any) {
       result.errors.push('Failed to update spec_manifest.json: ' + err.message);
       result.success = false;
