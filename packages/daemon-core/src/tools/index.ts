@@ -37,6 +37,7 @@ import './handlers/sf-v11-close-gate';
 import './handlers/sf-changed-files-audit';
 import './handlers/sf-hard-stop-resolve';
 import './handlers/sf-work-item-repair-closure';
+import './handlers/sf-contract-register';
 
 // Git Governance v1 — stage 1 handlers
 import './handlers/sf-git-preflight';
