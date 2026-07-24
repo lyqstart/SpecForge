@@ -99,9 +99,8 @@ try {
 
   AssertRequiredFileContains "packages\daemon-core\src\project\ProjectSpecStore.ts" "ProjectSpecStore"
   AssertRequiredFileContains "packages\daemon-core\src\tools\lib\write-guard-preflight-v12.ts" "sfWriteGuardPreflight"
-  AssertRequiredFileContains "packages\daemon-core\src\tools\lib\extension-subflow-v12.ts" "createExtensionRequest"
   AssertRequiredFileContains "scripts\lib\registry.ts" "tools/sf_write_guard_preflight.ts"
-  AssertRequiredFileContains "scripts\lib\registry.ts" "tools/sf_extension_subflow.ts"
+  AssertRequiredFileContains "scripts\lib\registry.ts" "tools/sf_contract_register.ts"
 
   $Report = @"
 # SpecForge v1.2 Integration RC Report
@@ -114,7 +113,7 @@ IN_PROGRESS
 
 - Project Spec Store slice integration evidence
 - Write Guard Preflight slice integration evidence
-- Extension Subflow slice integration evidence
+- governed contract registration integration evidence
 - installer registry alignment
 - v1.1 final governance regression
 - workspace build
@@ -138,9 +137,7 @@ IN_PROGRESS
     "tests/v12-candidate-merge-contract.test.ts",
     "tests/v12-no-spec-impact.test.ts",
     "tests/v12-write-guard-preflight.test.ts",
-    "tests/v12-write-guard-preflight-contract.test.ts",
-    "tests/v12-extension-subflow.test.ts",
-    "tests/v12-extension-subflow-negative.test.ts"
+    "tests/v12-write-guard-preflight-contract.test.ts"
   )
 
   Run-DaemonTests "v1.1 final governance regression" @(
@@ -168,7 +165,7 @@ PASSED
 
 - Project Spec Store + Candidate Merge Contract
 - Write Guard Preflight Enforcement
-- Extension Registry + Extension Request Artifact
+- Governed Contract Registry Candidate
 
 ## Evidence
 
@@ -178,7 +175,7 @@ PASSED
 - workspace build passed
 - install/deployment consistency passed
 - installer registry includes sf_write_guard_preflight
-- installer registry includes sf_extension_subflow
+- installer registry includes sf_contract_register
 
 ## Conclusion
 

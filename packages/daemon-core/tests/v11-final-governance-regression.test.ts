@@ -155,6 +155,7 @@ describe('v1.1.3 final governance regression coverage', () => {
     it('keeps workflow_type/path compatibility strict and default mapping narrow', () => {
       expect(WORKFLOW_TYPE_TO_PATH.quick_change).toBe('code_only_fast_path');
       expect(WORKFLOW_TYPE_TO_PATH.bugfix_spec).toBe('requirement_change_path');
+      expect(WORKFLOW_TYPE_TO_PATH.contract_change).toBe('contract_change_path');
       expect(WORKFLOW_PATH_DEFAULT_TYPE.code_only_fast_path).toBe('quick_change');
 
       expect(resolveWorkflowTypeForPath('code_only_fast_path', 'quick_change')).toBe(

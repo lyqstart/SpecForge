@@ -59,6 +59,8 @@ import {
   normalizeProjectSpecTargetPath,
   readDeclaredProjectSpecTargetPaths,
 } from './path-policy.js';
+import { checkContractIntegrity } from './contract-integrity.js';
+import { verifyChangedCodeContracts } from './code-contract-verifier.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -85,14 +87,14 @@ export type GateIdV11 =
   | 'path_policy_gate'
   | 'schema_gate'
   | 'spec_consistency_gate'
+  | 'contract_integrity_gate'
   | 'trace_gate'
   | 'workflow_specific_gate'
   | 'gate_summary_gate'
   | 'merge_ready_gate'
   | 'post_merge_gate'
   | 'verification_gate'
-  | 'close_gate'
-  | 'extension_gate';
+  | 'close_gate';
 
 // ---------------------------------------------------------------------------
 // §9.3 Gate 类型
@@ -210,6 +212,7 @@ registerGate('workflow_selection_gate', 'hard_gate', true, async ctx => {
         'task_change_path',
         'code_only_fast_path',
         'spec_migration_path',
+        'contract_change_path',
         'rollback_path',
       ];
       checks.push({
@@ -270,7 +273,14 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
     },
   ];
 
-  for (const file of requiredBaseFiles) {
+  const effectiveBaseFiles =
+    ctx.workflowPath === 'contract_change_path'
+      ? requiredBaseFiles.filter(
+          file => !['change_classification', 'impact_analysis'].includes(file.id)
+        )
+      : requiredBaseFiles;
+
+  for (const file of effectiveBaseFiles) {
     let exists = false;
     try {
       await fs.access(file.path);
@@ -322,7 +332,11 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
   const requiredKinds: Array<'requirements' | 'design' | 'tasks' | 'trace_delta'> = [];
   if (ctx.workflowPath === 'task_change_path') {
     requiredKinds.push('tasks', 'trace_delta');
-  } else if (ctx.workflowPath !== 'code_only_fast_path' && ctx.workflowPath !== 'rollback_path') {
+  } else if (
+    ctx.workflowPath !== 'code_only_fast_path' &&
+    ctx.workflowPath !== 'contract_change_path' &&
+    ctx.workflowPath !== 'rollback_path'
+  ) {
     if (phase === 'design') requiredKinds.push('design');
     else if (phase === 'requirements') requiredKinds.push('design', 'requirements');
     else requiredKinds.push('design', 'requirements', 'tasks', 'trace_delta');
@@ -884,9 +898,57 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
     });
   }
 
+  if (ctx.workflowType === 'contract_change') {
+    const entries = Array.isArray(evidenceManifest?.entries)
+      ? evidenceManifest.entries
+      : Array.isArray(evidenceManifest?.evidence)
+        ? evidenceManifest.evidence
+        : [];
+    checks.push({
+      check_id: 'contract_change_evidence_nonempty',
+      description: 'Contract change has registered verification evidence',
+      passed: entries.length > 0,
+      severity: entries.length > 0 ? undefined : 'error',
+    });
+    for (const ref of ['extension_registry.json', 'post_merge', 'no implementation']) {
+      const present = reportContent.toLowerCase().includes(ref.toLowerCase());
+      checks.push({
+        check_id: `contract_change_verification_${ref.replace(/[^a-z0-9]/gi, '_')}`,
+        description: `Contract change verification report references ${ref}`,
+        passed: present,
+        severity: present ? undefined : 'error',
+      });
+    }
+  }
+
+  const codeContracts = await verifyChangedCodeContracts({
+    projectRoot: ctx.projectRoot,
+    workItemDir: ctx.workItemDir,
+  });
+  checks.push({
+    check_id: 'code_contract_ast_coverage',
+    description: 'Changed TypeScript/JavaScript with explicit enum bindings was AST-checked',
+    passed: true,
+    severity: codeContracts.unsupported_files.length > 0 ? 'warning' : undefined,
+    details: [
+      `checked=${codeContracts.checked_files.join(', ') || 'none'}`,
+      `unsupported=${codeContracts.unsupported_files.join(', ') || 'none'}`,
+    ].join('; '),
+  });
+  for (const [index, issue] of codeContracts.issues.entries()) {
+    checks.push({
+      check_id: `code_contract_ast_${index}`,
+      description: `${issue.file}:${issue.line} ${issue.message}`,
+      passed: false,
+      severity: 'error',
+      details: `contract=${issue.contract_id}; value=${issue.value}`,
+    });
+  }
+
   return makeReport(ctx.workItemId, 'verification_gate', 'hard_gate', true, checks, [
     reportPath,
     manifestPath,
+    ...codeContracts.checked_files.map(file => path.join(ctx.projectRoot, file)),
   ]);
 });
 
@@ -930,74 +992,6 @@ registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
   return makeReport(ctx.workItemId, 'post_merge_gate', 'hard_gate', true, checks, [
     mergeReportPath,
   ]);
-});
-
-/**
- * §9.2 extension_gate — 扩展 Gate（Patch 1 §12）
- */
-registerGate('extension_gate', 'hard_gate', false, async ctx => {
-  const checks: GateReportCheck[] = [];
-  const extRequestPath = path.join(ctx.workItemDir, 'extension_request.json');
-
-  let hasExtensionRequest = false;
-  try {
-    await fs.access(extRequestPath);
-    hasExtensionRequest = true;
-  } catch {
-    hasExtensionRequest = false;
-  }
-
-  if (!hasExtensionRequest) {
-    // 没有扩展请求，跳过
-    return makeReport(ctx.workItemId, 'extension_gate', 'hard_gate', false, [
-      {
-        check_id: 'no_extension_request',
-        description: 'No extension request present',
-        passed: true,
-      },
-    ]);
-  }
-
-  // 有扩展请求，执行完整检查
-  try {
-    const content = await fs.readFile(extRequestPath, 'utf-8');
-    const req = JSON.parse(content);
-
-    checks.push({
-      check_id: 'ext_request_valid_json',
-      description: 'extension_request.json is valid JSON',
-      passed: true,
-    });
-    checks.push({
-      check_id: 'ext_reason_nonempty',
-      description: 'reason is non-empty',
-      passed: !!req.reason,
-    });
-
-    // extension_delta.md 存在
-    const deltaPath = path.join(ctx.workItemDir, 'extension_delta.md');
-    let deltaExists = false;
-    try {
-      await fs.access(deltaPath);
-      deltaExists = true;
-    } catch {
-      deltaExists = false;
-    }
-    checks.push({
-      check_id: 'ext_delta_exists',
-      description: 'extension_delta.md exists',
-      passed: deltaExists,
-    });
-  } catch {
-    checks.push({
-      check_id: 'ext_request_parse',
-      description: 'extension_request.json is valid JSON',
-      passed: false,
-      severity: 'error',
-    });
-  }
-
-  return makeReport(ctx.workItemId, 'extension_gate', 'hard_gate', false, checks);
 });
 
 /**
@@ -1099,6 +1093,26 @@ registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
     true,
     checks,
     designArtifacts.map(a => a.path),
+  );
+});
+
+/**
+ * Hard pre-merge reverse-dependency check for destructive contract changes.
+ * Additions and brownfield registries pass; removals/shape changes must update
+ * every explicitly marked Project Spec consumer in the same candidate.
+ */
+registerGate('contract_integrity_gate', 'hard_gate', true, async ctx => {
+  const result = await checkContractIntegrity({
+    projectRoot: ctx.projectRoot,
+    workItemDir: ctx.workItemDir,
+  });
+  return makeReport(
+    ctx.workItemId,
+    'contract_integrity_gate',
+    'hard_gate',
+    true,
+    result.checks,
+    result.inputFiles,
   );
 });
 

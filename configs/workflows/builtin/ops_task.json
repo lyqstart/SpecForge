@@ -122,6 +122,12 @@
             {
               "schema_version": "2.0",
               "type": "simple",
+              "id": "contract_integrity_gate",
+              "name": "Contract Integrity Gate"
+            },
+            {
+              "schema_version": "2.0",
+              "type": "simple",
               "id": "schema_gate",
               "name": "Schema Gate"
             },

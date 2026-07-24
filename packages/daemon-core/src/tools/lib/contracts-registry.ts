@@ -1,12 +1,11 @@
 /**
  * contracts-registry.ts — read-side access to the cross-module contract model.
  *
- * The canonical schema lives in @specforge/workflow-runtime
- * (ExtensionRegistry.ts `ContractRegistry` + entry types); the single source of
- * truth at runtime is the `contracts` block inside
+ * The canonical schema lives in @specforge/types; the single source of truth at
+ * runtime is the `contracts` block inside
  * `.specforge/project/extension_registry.json`. This module only READS and
  * normalizes it for conformance checks — it never writes the truth source
- * (writes go through the governed Extension Subflow → gate → user decision →
+ * (writes go through the governed contract-change candidate → gate → user decision →
  * merge, and PathPolicy hard-blocks direct writes to extension_registry.json).
  *
  * Brownfield-safe: a project whose registry has no `contracts` block (or empty
@@ -23,7 +22,7 @@ import type {
   InvariantContract,
   PublicInterfaceContract,
   ExtensionPointContract,
-} from '@specforge/workflow-runtime';
+} from '@specforge/types';
 
 export type {
   ContractRegistry,

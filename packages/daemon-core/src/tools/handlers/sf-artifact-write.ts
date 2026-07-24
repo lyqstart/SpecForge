@@ -340,9 +340,6 @@ function resolveTargetFilename(
   }
   if (fileType === 'requirements_delta') return 'requirements_delta.md';
   if (fileType === 'design_delta') return 'design_delta.md';
-  if (fileType === 'extension_request') return 'extension_request.json';
-  if (fileType === 'extension_candidate') return 'candidates/extension_candidate.json';
-  if (fileType === 'extension_delta') return 'candidates/extension_delta.json';
   if (V11_WI_ARTIFACT_FILES.has(fileType)) return fileType;
   return V11_FILETYPE_TO_FILENAME.get(fileType) ?? null;
 }

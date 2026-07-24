@@ -265,9 +265,8 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 2. 确认本次使用的所有 task_types 在 `namespaces.task_types` 中已注册
 3. 如果发现未注册的类型：
    - **停止**继续生成依赖该类型的 Candidate
-   - 写入 `extension_request.json` 到当前 WI 目录
-   - 在 handoff 中报告 `extension_required`
-   - 等待 Orchestrator 处理 Extension Subflow
+   - 返回 `blocked`，`blocker_type: "contract_gap"`，列明 namespace/type 或 contract kind/id/owner
+   - 等待 Orchestrator 通过 `contract_change` + `sf_contract_register` 完成受治理登记
 
 ## 1. 任务拆分
 
@@ -352,8 +351,10 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 - refs: [DD-1, REQ-1]
 - files: [server.mjs]
 - **verification_commands**:
-  - `检查 server.mjs 文件存在`
-  - `node server.mjs &; sleep 1; curl -s localhost:3000; kill %1`
+  - unit:
+    - `node --test test/server.test.mjs`
+  - integration:
+    - `node scripts/verify-server-health.mjs`
 ```
 
 ❌ 错误格式（禁止使用）：
@@ -409,7 +410,7 @@ Task Planner 必须确保每个 task 的合同字段完整且无歧义。
 | `context_block.constraints` | 约束条件列表 | 必填 |
 | `context_block.done_when` | 完成条件列表（可机器验证） | 必填 |
 | `expected_file_changes` | 预期的文件变更列表 | 必填 |
-| `verification_commands` | 验证命令列表 | 必填 |
+| `verification_commands` | 按 `unit/property/integration/e2e/regression` 分类的类型化命令映射 | 必填 |
 | `verification_evidence_expected` | 验证后期望的 Evidence 描述 | 必填 |
 | `out_of_scope` | 明确排除的事项 | 必填 |
 
@@ -420,7 +421,7 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 1. ✅ `refs` 非空，且引用的 REQ/DD 在对应文档中存在
 2. ✅ `allowed_write_files` 中的每个文件路径都是具体的（不含通配符或模糊描述）
 3. ✅ `forbidden_files` 包含 requirements.md、design.md、tasks.md 以及其他 task 的写文件
-4. ✅ `verification_commands` 每条命令都能返回 0/非 0 退出码
+4. ✅ `verification_commands` 使用类型化映射，且每条命令都能返回 0/非 0 退出码
 5. ✅ `done_when` 每条都能通过 verification_commands 验证
 6. ✅ `out_of_scope` 明确排除了不属于本 task 的工作
 
@@ -459,10 +460,22 @@ v1.1 标准对 verification_commands 的格式有严格要求，确保每条命�
 
 ### 命令格式要求
 
-1. **必须返回退出码**：每条命令执行后必须能通过 exit code 判定 pass/fail（0 = pass，非 0 = fail）
-2. **禁止手动验证命令**：不得写"检查代码是否正确"、"手动验证"等无法机器执行的描述
-3. **禁止 echo 命令冒充**：不得使用 `echo "passed"` 等自欺命令
-4. **必须可独立运行**：命令不得依赖之前的命令结果或环境状态（除非在 done_when 中显式声明前置条件）
+1. **必须使用类型化映射**：合法键只有 `unit`、`property`、`integration`、`e2e`、`regression`；禁止平铺旧列表
+2. **必须返回退出码**：每条命令执行后必须能通过 exit code 判定 pass/fail（0 = pass，非 0 = fail）
+3. **禁止手动验证命令**：不得写"检查代码是否正确"、"手动验证"等无法机器执行的描述
+4. **禁止 echo 命令冒充**：不得使用 `echo "passed"` 等自欺命令
+5. **必须可独立运行**：命令不得依赖之前的命令结果或环境状态（除非在 done_when 中显式声明前置条件）
+6. **Property 可追溯**：出现 `property` 命令时，`refs` 必须包含对应 `CP-N`
+
+```markdown
+- **verification_commands**:
+  - unit:
+    - `bun test tests/unit/example.test.ts`
+  - integration:
+    - `bun test tests/integration/example.test.ts`
+  - regression:
+    - `bun test tests/regression/example.test.ts`
+```
 
 ### 推荐的命令类型
 

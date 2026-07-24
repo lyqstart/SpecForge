@@ -100,6 +100,7 @@ export const WORKFLOW_PATHS = [
   'task_change_path',
   'code_only_fast_path',
   'spec_migration_path',
+  'contract_change_path',
   'rollback_path',
 ] as const;
 
@@ -134,6 +135,7 @@ export const GATE_IDS = [
   'path_policy_gate',
   'schema_gate',
   'spec_consistency_gate',
+  'contract_integrity_gate',
   'trace_gate',
   'workflow_specific_gate',
   'gate_summary_gate',
@@ -141,7 +143,6 @@ export const GATE_IDS = [
   'post_merge_gate',
   'verification_gate',
   'close_gate',
-  'extension_gate',
 ] as const;
 
 export type GateId = (typeof GATE_IDS)[number];

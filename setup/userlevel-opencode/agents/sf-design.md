@@ -425,9 +425,8 @@ C --> D[(Database)]
 2. 确认本次使用的所有 design_types 在 `namespaces.design_types` 中已注册
 3. 如果发现未注册的类型：
    - **停止**继续生成依赖该类型的 Candidate
-   - 写入 `extension_request.json` 到当前 WI 目录
-   - 在 handoff 中报告 `extension_required`
-   - 等待 Orchestrator 处理 Extension Subflow
+   - 返回 `blocked`，`blocker_type: "contract_gap"`，列明 namespace/type 或 contract kind/id/owner
+   - 等待 Orchestrator 通过 `contract_change` + `sf_contract_register` 完成受治理登记
 
 ## 1. 架构设计
 
@@ -686,38 +685,17 @@ constrained_by: <约束来源>
 
 ---
 
-## Extension Handling（Patch1 §5-§18）
+## 契约/类型登记缺口处理
 
-**标准章节**：v1.1 Patch1 §5-§18 Extension Subflow
-
-**定义**：Extension Subflow 是当设计 Agent 发现需要使用尚未在 `extension_registry.json` 中登记的类型或结构时，触发的扩展流程。
-
-**触发条件**（Patch1 §6）：
-
-Agent 在生成设计产物时，需要使用未在 `extension_registry.json` 中登记的类型 → 必须触发 Extension Subflow。
+**定义**：设计 Agent 发现需要使用尚未在 `extension_registry.json` 中登记的类型或跨模块契约时，必须报告 `contract_gap`。
 
 **设计 Agent 的处理流程**：
 
 1. **发现缺口**：在设计过程中发现需要使用未登记的类型或结构。
-2. **写 extension_request.json**：写入当前 WI 目录（`.specforge/work-items/<WI>/extension_request.json`）。
-3. **Handoff 报告**：在 handoff 中报告 `extension_required`。
-4. **停止并等待**：sf-orchestrator 接手，调度 sf-extension Agent 处理。
+2. **Handoff 报告**：返回 `blocked`、`blocker_type: "contract_gap"` 和结构化缺口事实。
+3. **停止并等待**：sf-orchestrator 通过唯一登记入口 `sf_contract_register` 驱动候选、Gate、审批和 Merge。
 
-**extension_request.json 结构**（Patch1 §7）：
-
-```json
-{
-  "schema_version": "1.0",
-  "work_item_id": "WI-0001",
-  "requesting_agent": "sf-design",
-  "reason": "<为什么需要扩展>",
-  "missing_types": ["<需要的类型列表>"],
-  "proposed_extension": {},
-  "created_at": "2026-06-07T00:00:00Z"
-}
-```
-
-**Extension Subflow 完成后**（Patch1 §15）：
+**受治理登记完成后**：
 
 - sf-orchestrator 恢复原 WI 主流程。
 - 设计 Agent 重新读取更新后的 `extension_registry.json`。
@@ -726,6 +704,6 @@ Agent 在生成设计产物时，需要使用未在 `extension_registry.json` �
 **设计 Agent 的禁止行为**（Patch1 §17）：
 
 - **不得**自行修改 `.specforge/project/extension_registry.json`。
-- **不得**自行启动子 Agent 或 Extension Subflow。
+- **不得**自行启动子 Agent 或调用 `sf_contract_register`。
 - **不得**把未知类型直接写入正式规格 Candidate。
-- **不得**绕过 extension_request.json 直接使用未登记的扩展类型。
+- **不得**绕过 `contract_gap` 直接使用未登记的扩展类型。

@@ -353,13 +353,11 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(lastCall.args.fromAgent).toBe('sf-executor');
   });
 
-  it('9. POST /api/v1/v11/extension — should dispatch extension subflow', async () => {
+  it('9. POST /api/v1/v11/extension — should dispatch the governed contract register', async () => {
     const payload = {
-      workItemDir: path.join(tempDir, '.specforge', 'specs', 'WI-E2E-001'),
-      action: 'request',
-      namespace: 'design_types',
-      key: 'retry_policy',
-      reason: 'Need retry_policy type for exponential backoff config',
+      work_item_id: 'WI-0001',
+      kind: 'namespace_type',
+      entry: { namespace: 'design_types', type_id: 'retry_policy' },
     };
     const res = await postJson(port, token, '/api/v1/v11/extension', payload);
 
@@ -367,8 +365,8 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_extension');
-    expect(lastCall.args.namespace).toBe('design_types');
+    expect(lastCall.tool).toBe('sf_contract_register');
+    expect(lastCall.args.kind).toBe('namespace_type');
   });
 
   it('10. POST /api/v1/v11/verification — should dispatch verification', async () => {
@@ -493,11 +491,9 @@ describe('v1.1 API E2E HTTP tests', () => {
 
       // 6. Extension (request additional design type mid-flow)
       const extRes = await postJson(port, token, '/api/v1/v11/extension', {
-        workItemDir: wiDir,
-        action: 'request',
-        namespace: 'design_types',
-        key: 'cancellation_policy',
-        reason: 'Need cancellation policy type',
+        work_item_id: wiId,
+        kind: 'namespace_type',
+        entry: { namespace: 'design_types', type_id: 'cancellation_policy' },
       });
       expect(extRes.statusCode).toBe(200);
 

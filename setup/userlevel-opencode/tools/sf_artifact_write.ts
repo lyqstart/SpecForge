@@ -39,9 +39,6 @@ export default tool({
         "work_log",
         "review_report",
         "agent_run_result",
-        "extension_request",
-        "extension_candidate",
-        "extension_delta",
       ],
     },
     content: {

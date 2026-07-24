@@ -13,6 +13,7 @@
  */
 
 import { z } from "zod";
+import { ContractRegistrySchema } from "./contract-model.js";
 
 // ---------------------------------------------------------------------------
 // §5 状态机 — 主状态枚举
@@ -92,6 +93,7 @@ export const WORKFLOW_PATHS = [
   "task_change_path",
   "code_only_fast_path",
   "spec_migration_path",
+  "contract_change_path",
   "rollback_path",
 ] as const;
 
@@ -125,6 +127,7 @@ export const WorkItemJsonSchema = z.object({
     .regex(/^WI-[0-9]{4}$/, "Work Item ID must match WI-NNNN"),
   status: z.enum(WI_STATUSES),
   workflow_path: z.enum(WORKFLOW_PATHS).nullable(),
+  workflow_type: z.string().optional(),
   code_change_allowed: z.boolean(),
   allowed_write_files: z.array(
     z.object({
@@ -186,6 +189,7 @@ export const CandidateManifestSchema = z.object({
   schema_version: z.literal("1.0"),
   work_item_id: z.string(),
   workflow_path: z.enum(WORKFLOW_PATHS),
+  workflow_type: z.string().optional(),
   candidate_phase: z
     .enum(["design", "requirements", "tasks", "full"])
     .optional(),
@@ -212,6 +216,7 @@ export const GATE_IDS = [
   "path_policy_gate",
   "schema_gate",
   "spec_consistency_gate",
+  "contract_integrity_gate",
   "trace_gate",
   "workflow_specific_gate",
   "gate_summary_gate",
@@ -219,7 +224,6 @@ export const GATE_IDS = [
   "post_merge_gate",
   "verification_gate",
   "close_gate",
-  "extension_gate",
 ] as const;
 
 export type GateId = (typeof GATE_IDS)[number];
@@ -405,6 +409,7 @@ export const ExtensionRegistrySchema = z.object({
   }),
   updated_by_work_item: z.string().nullable(),
   updated_at: z.string().datetime().nullable(),
+  contracts: ContractRegistrySchema.optional(),
 });
 
 export type ExtensionRegistry = z.infer<typeof ExtensionRegistrySchema>;

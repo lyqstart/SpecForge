@@ -1781,7 +1781,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_extension', args,
+        tool: 'sf_contract_register', args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);

@@ -57,7 +57,6 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_work_item_repair_closure.ts", type: "tool" },
   { path: "tools/sf_contract_register.ts", type: "tool" },
   { path: "tools/sf_write_guard_preflight.ts", type: "tool" },
-  { path: "tools/sf_extension_subflow.ts", type: "tool" },
   { path: "tools/sf_spec_migration.ts", type: "tool" },
 
   // Git Governance tools — stage 1
@@ -136,6 +135,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/sf-workflow-refactor/SKILL.md", type: "skill" },
   { path: "skills/sf-workflow-spec-migration/SKILL.md", type: "skill" },
   { path: "skills/sf-workflow-architecture-change/SKILL.md", type: "skill" },
+  { path: "skills/sf-workflow-contract-change/SKILL.md", type: "skill" },
   { path: "skills/superpowers-brainstorming/SKILL.md", type: "skill" },
   { path: "skills/superpowers-code-review/SKILL.md", type: "skill" },
   { path: "skills/superpowers-engineering-lessons/SKILL.md", type: "skill" },

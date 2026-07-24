@@ -44,6 +44,7 @@ export const VALID_WORKFLOW_PATHS = new Set([
   'task_change_path',
   'code_only_fast_path',
   'spec_migration_path',
+  'contract_change_path',
   'rollback_path',
 ]);
 
@@ -53,6 +54,7 @@ export const USER_APPROVAL_REQUIRED_PATHS = new Set([
   'architecture_change_path',
   'task_change_path',
   'spec_migration_path',
+  'contract_change_path',
 ]);
 
 export function normalizeSlash(value: string): string {

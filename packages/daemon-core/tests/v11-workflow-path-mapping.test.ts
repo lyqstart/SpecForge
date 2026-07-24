@@ -28,6 +28,7 @@ const CURRENT_PAIRS: ReadonlyArray<readonly [WorkflowType, WorkflowPath]> = [
   ['quick_change', 'code_only_fast_path'],
   ['spec_migration', 'spec_migration_path'],
   ['architecture_change', 'architecture_change_path'],
+  ['contract_change', 'contract_change_path'],
 ];
 
 const RESERVED_PATHS: WorkflowPath[] = [
@@ -35,16 +36,17 @@ const RESERVED_PATHS: WorkflowPath[] = [
 ];
 
 describe('当前 workflow_type / workflow_path 边界', () => {
-  it('完整登记 10 个已注册工作流身份与路径组合', () => {
+  it('完整登记 11 个已注册工作流身份与路径组合', () => {
     expect(Object.entries(WORKFLOW_TYPE_TO_PATH)).toEqual(CURRENT_PAIRS);
   });
 
-  it('为 6 条具有当前工作流身份的路径提供缺省映射', () => {
+  it('为 7 条具有当前工作流身份的路径提供缺省映射', () => {
     expect(WORKFLOW_PATH_DEFAULT_TYPE).toEqual({
       requirement_change_path: 'feature_spec',
       design_change_path: 'feature_spec_design_first',
       spec_migration_path: 'spec_migration',
       architecture_change_path: 'architecture_change',
+      contract_change_path: 'contract_change',
       task_change_path: 'refactor',
       code_only_fast_path: 'quick_change',
     });
@@ -78,6 +80,7 @@ describe('当前 workflow_type / workflow_path 边界', () => {
     expect(resolveWorkflowTypeForPath('code_only_fast_path')).toBe('quick_change');
     expect(resolveWorkflowTypeForPath('spec_migration_path')).toBe('spec_migration');
     expect(resolveWorkflowTypeForPath('architecture_change_path')).toBe('architecture_change');
+    expect(resolveWorkflowTypeForPath('contract_change_path')).toBe('contract_change');
   });
 
   it('未提供路径时可以保留已知工作流身份', () => {

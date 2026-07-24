@@ -30,7 +30,6 @@ import './handlers/sf-v11-code-permission';
 import './handlers/sf-v11-spec-migration';
 import './handlers/sf-v11-rollback';
 import './handlers/sf-v11-handoff';
-import './handlers/sf-v11-extension';
 import './handlers/sf-v11-verification';
 import './handlers/sf-semantic-closure-run';
 import './handlers/sf-v11-close-gate';

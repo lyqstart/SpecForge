@@ -97,6 +97,7 @@ function isNoCodeWorkflow(wiJson: any, triggerResult?: any): boolean {
     'no_code_review',
     'no_code_change',
     'read_only_review',
+    'contract_change',
   ]);
 
   if (allowedTypes.has(workflowType)) return true;
@@ -104,7 +105,11 @@ function isNoCodeWorkflow(wiJson: any, triggerResult?: any): boolean {
 
   // Keep this deliberately narrow: requirement_change_path alone is not enough,
   // because normal feature/bugfix Work Items also use it.
-  return workflowPath === 'investigation_path' || workflowPath === 'review_path';
+  return (
+    workflowPath === 'contract_change_path' ||
+    workflowPath === 'investigation_path' ||
+    workflowPath === 'review_path'
+  );
 }
 
 const PRE_IMPLEMENTATION_SPEC_STATES = new Set([
@@ -151,6 +156,7 @@ function isPreImplementationSpecificationPhase(input: {
     'architecture_change_path',
     'task_change_path',
     'spec_migration_path',
+    'contract_change_path',
   ]);
 
   return (

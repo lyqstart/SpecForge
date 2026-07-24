@@ -35,6 +35,7 @@ export const VALID_WORKFLOW_PATHS = [
   'task_change_path',
   'code_only_fast_path',
   'spec_migration_path',
+  'contract_change_path',
   'rollback_path',
 ] as const;
 
@@ -216,6 +217,14 @@ export function validateTriggerResultJson(
       if (!Array.isArray(parsed.classification.unknowns)) {
         errors.push('INVALID_CLASSIFICATION_FIELD: classification.unknowns must be an array');
       }
+      if (
+        parsed.classification.contract_registry_only !== undefined &&
+        typeof parsed.classification.contract_registry_only !== 'boolean'
+      ) {
+        errors.push(
+          'INVALID_CLASSIFICATION_FIELD: classification.contract_registry_only must be boolean when present'
+        );
+      }
     }
   }
 
@@ -281,6 +290,22 @@ export function validateCandidateManifestJson(
         errors.push(
           'CODE_ONLY_ENTRIES_MUST_BE_EMPTY: code_only_fast_path requires candidate_manifest.entries = []'
         );
+      }
+
+      if (effectiveWorkflowPath === 'contract_change_path') {
+        if (parsed.entries.length === 0) {
+          errors.push(
+            'CONTRACT_CHANGE_REGISTRY_ENTRY_REQUIRED: contract_change_path requires an extension_registry candidate'
+          );
+        }
+        for (const [index, entry] of parsed.entries.entries()) {
+          const target = String(entry?.target_path ?? '').replace(/\\/g, '/');
+          if (target !== '.specforge/project/extension_registry.json') {
+            errors.push(
+              `CONTRACT_CHANGE_TARGET_FORBIDDEN: entries[${index}] must target only .specforge/project/extension_registry.json`
+            );
+          }
+        }
       }
 
       if (evidenceOnly) {

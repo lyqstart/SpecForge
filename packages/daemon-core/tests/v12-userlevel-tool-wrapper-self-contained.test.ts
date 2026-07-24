@@ -21,11 +21,4 @@ describe("v1.2 userlevel tool wrappers are self-contained", () => {
     expect(text).not.toMatch(/from\s+["'][.][/][.]\//);
   });
 
-  it("sf_extension_subflow wrapper does not import repo source paths", () => {
-    const text = read("setup/userlevel-opencode/tools/sf_extension_subflow.ts");
-    expect(text).toContain("export default async function sf_extension_subflow");
-    expect(text).not.toContain("packages/daemon-core");
-    expect(text).not.toMatch(/from\s+["'][.][.]\//);
-    expect(text).not.toMatch(/from\s+["'][.][/][.]\//);
-  });
 });

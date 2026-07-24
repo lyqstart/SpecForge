@@ -17,6 +17,7 @@
  */
 
 import { z } from "zod";
+import { ContractRegistrySchema } from "./contract-model.js";
 import {
   WI_STATUSES,
   WORKFLOW_PATHS,
@@ -261,6 +262,7 @@ export const ExtensionRegistrySchema = z.object({
   }),
   updated_by_work_item: z.string().nullable(),
   updated_at: z.string().datetime().nullable(),
+  contracts: ContractRegistrySchema.optional(),
 });
 
 export type ExtensionRegistry = z.infer<typeof ExtensionRegistrySchema>;

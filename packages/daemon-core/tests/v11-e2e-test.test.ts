@@ -24,7 +24,6 @@ import { validateHandoff, writeHandoff } from '../src/tools/lib/agent-handoff-v1
 import type { AgentHandoff } from '../src/tools/lib/agent-handoff-v11';
 import { generateRollbackPlan, generateRollbackDelta, markOriginalSuperseded } from '../src/tools/lib/rollback-runner-v11';
 import { validateTraceDelta, validateVerificationReport, validateEvidenceManifest, checkTraceChain, writeTraceDeltaTemplate, writeEvidenceManifestTemplate } from '../src/tools/lib/verification-evidence-v11';
-import { validateExtensionRequest, writeExtensionRequest, generateExtensionDelta, generateExtensionCandidate, runExtensionGate } from '../src/tools/lib/extension-subflow-v11';
 
 let tempDir: string;
 let projectRoot: string;
@@ -411,57 +410,6 @@ describe('§13 Trace/Verification/Evidence', () => {
     }]);
     expect(partial.complete).toBe(false);
     expect(partial.gaps.length).toBeGreaterThan(0);
-  });
-});
-
-describe('Patch 1 Extension Subflow', () => {
-  it('should handle extension request lifecycle', async () => {
-    const wiId = 'WI-0030';
-    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Extension test' });
-
-    // Create extension request
-    const request = {
-      schema_version: '1.0' as const,
-      work_item_id: wiId,
-      requested_by_agent: 'sf-design',
-      requested_namespace: 'design_types',
-      requested_key: 'retry_policy',
-      reason: 'Need retry_policy design type for exponential backoff',
-      blocking_current_flow: true,
-      created_at: new Date().toISOString(),
-    };
-
-    // Validate and write
-    const validation = validateExtensionRequest(request);
-    expect(validation.valid).toBe(true);
-
-    const reqPath = await writeExtensionRequest(wiDir, request);
-    expect(reqPath).toContain('extension_request.json');
-
-    // Generate extension delta
-    const currentRegistry = { namespaces: { design_types: ['standard'] } };
-    const { filePath: deltaPath } = await generateExtensionDelta({
-      wiDir, currentRegistry,
-      proposedNamespace: 'design_types', proposedKey: 'retry_policy',
-      proposedValue: { type: 'exponential_backoff' },
-      reason: 'Required for login failure handling',
-    });
-    expect(deltaPath).toContain('extension_delta.md');
-
-    // Generate extension candidate
-    const { candidatePath } = await generateExtensionCandidate({
-      wiDir, currentRegistry,
-      namespace: 'design_types', key: 'retry_policy',
-      value: { type: 'exponential_backoff' },
-    });
-    expect(candidatePath).toContain('candidates');
-
-    // Run extension gate
-    const gateResult = await runExtensionGate({
-      wiDir, candidatePath,
-      currentRegistryPath: path.join(projectDir, 'extension_registry.json'),
-    });
-    expect(gateResult.gate_id).toBe('extension_gate');
   });
 });
 

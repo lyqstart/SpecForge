@@ -4,7 +4,7 @@ import { daemon } from "./lib/thin-client"
 export default tool({
   description:
     "执行 Work Item 关闭前的 v1.1 Close Gate 完整性检查。Close Gate 必须根据 workflow_path 判定 required/not_applicable，" +
-    "验证 evidence、verification、merge、audit、permission、extension_request 等闭环条件，全部通过后才能 closed。",
+    "验证 evidence、verification、merge、audit、permission 以及历史未决 extension_request 的恢复闭环，全部通过后才能 closed。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     not_applicable: tool.schema

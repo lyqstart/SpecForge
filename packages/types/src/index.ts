@@ -78,6 +78,20 @@ export {
 // ---- Actor Roles — 统一角色枚举 ----
 export { ACTOR_ROLES, type ActorRole } from "./actor-roles.js";
 
+// ---- Cross-module contract model ----
+export {
+  ContractRegistrySchema,
+  SharedEnumContractSchema,
+  InvariantContractSchema,
+  PublicInterfaceContractSchema,
+  ExtensionPointContractSchema,
+  type ContractRegistry,
+  type SharedEnumContract,
+  type InvariantContract,
+  type PublicInterfaceContract,
+  type ExtensionPointContract,
+} from "./contract-model.js";
+
 // ---- ID 规则（§3）----
 export {
   MODULE_CODE_PATTERN,

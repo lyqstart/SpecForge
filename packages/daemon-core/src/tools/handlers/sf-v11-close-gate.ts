@@ -319,6 +319,8 @@ function workflowTypeFromPath(workflowPath: string | undefined): string {
       return "quick_change";
     case "spec_migration_path":
       return "spec_migration";
+    case "contract_change_path":
+      return "contract_change";
     case "rollback_path":
       return "rollback";
     default:
@@ -567,14 +569,25 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       };
     }
 
+    const contractWorkflow =
+      workItem.workflow_type === "contract_change" ||
+      workItem.workflow_path === "contract_change_path";
     const permState = await checkCodePermission(workItemDir);
     const allowedWriteFilesSnapshot = permState.allowed_write_files;
-    if (permState.code_change_allowed || permState.allowed_write_files.length > 0) {
-      await revokeCodePermission(workItemDir);
+    if (contractWorkflow) {
+      if (permState.code_change_allowed || permState.allowed_write_files.length > 0) {
+        return {
+          ...result,
+          error: "CONTRACT_CHANGE_CODE_PERMISSION_MUST_NEVER_BE_ENABLED",
+        };
+      }
+    } else {
+      if (permState.code_change_allowed || permState.allowed_write_files.length > 0) {
+        await revokeCodePermission(workItemDir);
+      }
+      workItem = await syncPermissionFacts(workItemJsonPath, allowedWriteFilesSnapshot);
+      result.code_permission_revoked = true;
     }
-
-    workItem = await syncPermissionFacts(workItemJsonPath, allowedWriteFilesSnapshot);
-    result.code_permission_revoked = true;
 
     const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
     let auditAlreadyExists = false;

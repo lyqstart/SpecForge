@@ -28,6 +28,8 @@ function workflowTypeFromPath(workflowPath: string | undefined): string {
       return 'quick_change';
     case 'spec_migration_path':
       return 'spec_migration';
+    case 'contract_change_path':
+      return 'contract_change';
     case 'rollback_path':
       return 'rollback';
     default:
@@ -43,7 +45,7 @@ async function readJsonIfExists(filePath: string): Promise<any | null> {
   }
 }
 
-async function readWorkflowFacts(workItemDir: string): Promise<{
+export async function readWorkflowFacts(workItemDir: string): Promise<{
   workflowPath?: string;
   workflowType?: string;
   evidenceOnly: boolean;
@@ -51,28 +53,24 @@ async function readWorkflowFacts(workItemDir: string): Promise<{
   const candidateManifest = await readJsonIfExists(
     path.join(workItemDir, 'candidate_manifest.json')
   );
-  if (candidateManifest?.workflow_path || candidateManifest?.workflow_type) {
-    return {
-      workflowPath: candidateManifest.workflow_path,
-      workflowType: candidateManifest.workflow_type,
-      evidenceOnly:
-        candidateManifest.workflow_type === 'investigation' &&
-        candidateManifest.no_project_spec_change === true &&
-        String(candidateManifest.project_integration_effect ?? '')
-          .trim()
-          .toLowerCase() === 'evidence_only' &&
-        candidateManifest.merge_required === false &&
-        candidateManifest.merge_applicable === false &&
-        Array.isArray(candidateManifest.entries) &&
-        candidateManifest.entries.length === 0,
-    };
-  }
-
   const workItem = await readJsonIfExists(path.join(workItemDir, 'work_item.json'));
+  const trigger = await readJsonIfExists(path.join(workItemDir, 'trigger_result.json'));
+  const workflowType =
+    candidateManifest?.workflow_type ?? workItem?.workflow_type ?? trigger?.workflow_type;
   return {
-    workflowPath: workItem?.workflow_path,
-    workflowType: workItem?.workflow_type,
-    evidenceOnly: false,
+    workflowPath:
+      candidateManifest?.workflow_path ?? workItem?.workflow_path ?? trigger?.workflow_path,
+    workflowType,
+    evidenceOnly:
+      workflowType === 'investigation' &&
+      candidateManifest?.no_project_spec_change === true &&
+      String(candidateManifest?.project_integration_effect ?? '')
+        .trim()
+        .toLowerCase() === 'evidence_only' &&
+      candidateManifest?.merge_required === false &&
+      candidateManifest?.merge_applicable === false &&
+      Array.isArray(candidateManifest?.entries) &&
+      candidateManifest.entries.length === 0,
   };
 }
 

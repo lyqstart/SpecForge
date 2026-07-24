@@ -19,6 +19,11 @@ export interface ChangeClassification {
   module_boundary_changed: boolean;
   api_contract_changed: boolean;
   architecture_changed: boolean;
+  /**
+   * Explicit, fail-closed signal for a registry-only contract/namespace
+   * registration. This must not be inferred from api_contract_changed alone.
+   */
+  contract_registry_only?: boolean;
   /** unknowns 列表 */
   unknowns: string[];
 }

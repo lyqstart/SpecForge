@@ -20,6 +20,7 @@ export type WorkflowPath =
   | 'task_change_path'
   | 'code_only_fast_path'
   | 'spec_migration_path'
+  | 'contract_change_path'
   | 'rollback_path';
 
 // ---------------------------------------------------------------------------
@@ -39,6 +40,23 @@ export type WorkflowPath =
 export function selectWorkflowPath(
   classification: ChangeClassification,
 ): WorkflowPath {
+  const contractRegistryOnly =
+    classification.contract_registry_only === true &&
+    classification.api_contract_changed === true &&
+    classification.requirement_changed === false &&
+    classification.acceptance_criteria_changed === false &&
+    classification.business_rule_changed === false &&
+    classification.user_visible_behavior_changed === false &&
+    classification.data_semantics_changed === false &&
+    classification.design_changed === false &&
+    classification.module_boundary_changed === false &&
+    classification.architecture_changed === false &&
+    classification.unknowns.length === 0;
+
+  if (contractRegistryOnly) {
+    return 'contract_change_path';
+  }
+
   // §6.6 unknown 升级规则
   if (classification.unknowns.length > 0) {
     if (classification.architecture_changed || classification.unknowns.some(u => u.includes('architecture'))) {

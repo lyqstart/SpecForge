@@ -68,6 +68,7 @@ export const WORKFLOW_PATHS = [
   'task_change_path',
   'code_only_fast_path',
   'spec_migration_path',
+  'contract_change_path',
   'rollback_path',
 ] as const;
 
@@ -194,6 +195,7 @@ export const WORKFLOW_TYPES = [
   'ops_task',
   'quick_change',
   'feature_spec_design_first',
+  'contract_change',
   'research_investigation',
   'root_cause_investigation',
 ] as const;

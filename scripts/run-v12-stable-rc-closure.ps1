@@ -98,9 +98,8 @@ try {
   AssertFileContains "docs\reports\specforge-v1.2-integration-rc-report.md" "PASSED"
   AssertFileContains "packages\daemon-core\src\project\ProjectSpecStore.ts" "ProjectSpecStore"
   AssertFileContains "packages\daemon-core\src\tools\lib\write-guard-preflight-v12.ts" "sfWriteGuardPreflight"
-  AssertFileContains "packages\daemon-core\src\tools\lib\extension-subflow-v12.ts" "createExtensionRequest"
   AssertFileContains "scripts\lib\registry.ts" "tools/sf_write_guard_preflight.ts"
-  AssertFileContains "scripts\lib\registry.ts" "tools/sf_extension_subflow.ts"
+  AssertFileContains "scripts\lib\registry.ts" "tools/sf_contract_register.ts"
 
   $ReleaseNotes = @"
 # SpecForge v1.2 Stable RC Release Notes
@@ -136,13 +135,11 @@ Release Candidate.
 - shell write risk classification
 - close gate helper for blocked_write_attempts
 
-### Extension Subflow
+### Contract Registry
 
-- Extension Request Artifact
-- Extension Proposal Artifact
-- Extension Registry merge
-- stale registry version protection
-- unapproved merge denial
+- governed Candidate registration
+- user approval and Merge Runner authority
+- contract integrity hard gate
 - duplicate active extension_id denial
 - parent resume token
 
@@ -166,7 +163,7 @@ PASSED for automated RC closure.
 - v1.2 integration RC tests
 - v1.2 project spec slice tests
 - v1.2 write guard slice tests
-- v1.2 extension subflow slice tests
+- governed contract registration regression
 - v1.1 final governance regression
 - workspace build
 - install/deployment consistency
@@ -243,8 +240,9 @@ IN_PROGRESS
     "tests/v12-no-spec-impact.test.ts",
     "tests/v12-write-guard-preflight.test.ts",
     "tests/v12-write-guard-preflight-contract.test.ts",
-    "tests/v12-extension-subflow.test.ts",
-    "tests/v12-extension-subflow-negative.test.ts"
+    "tests/contract-change-governance.test.ts",
+    "tests/unit/contract-authoring.test.ts",
+    "tests/unit/contract-integrity.test.ts"
   )
 
   Run-DaemonTests "v1.1 final governance regression" @(

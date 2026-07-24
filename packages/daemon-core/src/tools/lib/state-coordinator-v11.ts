@@ -79,16 +79,16 @@ async function ensureFileExists(filePath: string, description: string): Promise<
   }
 }
 
-async function assertInvestigationEvidenceOnlyVerificationTransition(
+async function assertNoCodeVerificationTransition(
   input: TransitionWithEvidenceInput
 ): Promise<void> {
   if (input.fromState !== 'post_merge_verified' || input.toState !== 'verification_running') {
     return;
   }
 
-  if (input.workflowType !== 'investigation') {
+  if (!['investigation', 'contract_change'].includes(input.workflowType)) {
     throw new Error(
-      'STATE_COORDINATOR_TRANSITION_FAILED: post_merge_verified → verification_running is reserved for workflow_type=investigation'
+      'STATE_COORDINATOR_TRANSITION_FAILED: post_merge_verified → verification_running is reserved for workflow_type=investigation or contract_change'
     );
   }
 
@@ -105,18 +105,32 @@ async function assertInvestigationEvidenceOnlyVerificationTransition(
   const integrationEffect = manifest.project_integration_effect;
   const entries = manifest.entries;
   const canonical =
-    manifest.workflow_type === 'investigation' &&
-    manifest.no_project_spec_change === true &&
-    typeof integrationEffect === 'string' &&
-    integrationEffect.trim().toLowerCase() === 'evidence_only' &&
-    manifest.merge_required === false &&
-    manifest.merge_applicable === false &&
-    Array.isArray(entries) &&
-    entries.length === 0;
+    input.workflowType === 'investigation'
+      ? manifest.workflow_type === 'investigation' &&
+        manifest.no_project_spec_change === true &&
+        typeof integrationEffect === 'string' &&
+        integrationEffect.trim().toLowerCase() === 'evidence_only' &&
+        manifest.merge_required === false &&
+        manifest.merge_applicable === false &&
+        Array.isArray(entries) &&
+        entries.length === 0
+      : manifest.workflow_type === 'contract_change' &&
+        manifest.workflow_path === 'contract_change_path' &&
+        manifest.merge_required === true &&
+        Array.isArray(entries) &&
+        entries.length > 0 &&
+        entries.every(
+          entry =>
+            entry &&
+            typeof entry === 'object' &&
+            String((entry as Record<string, unknown>).target_path ?? '')
+              .replace(/\\/g, '/')
+              .endsWith('.specforge/project/extension_registry.json')
+        );
 
   if (!canonical) {
     throw new Error(
-      'STATE_COORDINATOR_TRANSITION_FAILED: Investigation post_merge_verified → verification_running requires canonical evidence_only candidate manifest'
+      'STATE_COORDINATOR_TRANSITION_FAILED: no-code verification requires a canonical workflow-specific candidate manifest'
     );
   }
 }
@@ -153,6 +167,14 @@ async function validateTransitionRequest(input: TransitionWithEvidenceInput): Pr
     );
   }
 
+  if (input.fromState === 'intake_ready' && input.toState === 'candidate_preparing') {
+    if (input.workflowType !== 'contract_change') {
+      throw new Error(
+        'STATE_COORDINATOR_TRANSITION_FAILED: intake_ready → candidate_preparing is reserved for workflow_type=contract_change',
+      );
+    }
+  }
+
   if (input.fromState === 'approved' && input.toState === 'blocked') {
     const source = input.transitionContext?.source;
     if (
@@ -169,7 +191,7 @@ async function validateTransitionRequest(input: TransitionWithEvidenceInput): Pr
     );
   }
 
-  await assertInvestigationEvidenceOnlyVerificationTransition(input);
+  await assertNoCodeVerificationTransition(input);
 
   if (input.fromState !== '' && isSealTransition(input.fromState, input.toState)) {
     const sealEntry = getSealTransition(input.fromState, input.toState);

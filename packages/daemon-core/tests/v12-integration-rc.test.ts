@@ -6,13 +6,6 @@ import {
   checkCloseGateWriteGuard,
   sfWriteGuardPreflight,
 } from '../src/tools/lib/write-guard-preflight-v12';
-import {
-  createEmptyExtensionRegistry,
-  createExtensionProposal,
-  createExtensionRequest,
-  createParentResumeToken,
-  mergeExtensionRegistry,
-} from '../src/tools/lib/extension-subflow-v12';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..', '..', '..');
@@ -28,24 +21,22 @@ function expectRepoFile(relativePath: string): string {
 }
 
 describe('v1.2 integration RC hardening', () => {
-  it('keeps the three v1.2 core slice source files present', () => {
+  it('keeps the active v1.2 core slice source files present', () => {
     const projectStore = expectRepoFile('packages/daemon-core/src/project/ProjectSpecStore.ts');
     const writeGuard = expectRepoFile('packages/daemon-core/src/tools/lib/write-guard-preflight-v12.ts');
-    const extension = expectRepoFile('packages/daemon-core/src/tools/lib/extension-subflow-v12.ts');
 
     expect(projectStore).toContain('ProjectSpecStore');
     expect(writeGuard).toContain('sfWriteGuardPreflight');
-    expect(extension).toContain('createExtensionRequest');
   });
 
   it('keeps userlevel tool wrappers registered for installer deployment', () => {
     const registry = expectRepoFile('scripts/lib/registry.ts');
 
     expect(registry).toContain('tools/sf_write_guard_preflight.ts');
-    expect(registry).toContain('tools/sf_extension_subflow.ts');
+    expect(registry).toContain('tools/sf_contract_register.ts');
 
     expectRepoFile('setup/userlevel-opencode/tools/sf_write_guard_preflight.ts');
-    expectRepoFile('setup/userlevel-opencode/tools/sf_extension_subflow.ts');
+    expectRepoFile('setup/userlevel-opencode/tools/sf_contract_register.ts');
   });
 
   it('keeps v1.2 design freeze and acceptance matrix aligned with implementation', () => {
@@ -83,34 +74,6 @@ describe('v1.2 integration RC hardening', () => {
 
     expect(close.allowed).toBe(false);
     expect(close.decision).toBe('CLOSE_BLOCKED_BY_WRITE_GUARD');
-  });
-
-  it('proves Extension Subflow can create, approve, merge, and resume parent workflow', () => {
-    const request = createExtensionRequest({
-      parent_work_item_id: 'WI-INTEGRATION',
-      missing_kind: 'artifact_type',
-      missing_name: 'security_review',
-      reason: 'integration acceptance requires controlled extension request',
-      return_state: 'candidate_preparing',
-    });
-
-    const proposal = createExtensionProposal({ request });
-    const merged = mergeExtensionRegistry({
-      registry: createEmptyExtensionRegistry('EXT-0000'),
-      proposal,
-      expected_registry_version: 'EXT-0000',
-      user_approved: true,
-    });
-
-    expect(merged.allowed).toBe(true);
-    expect(merged.decision).toBe('EXTENSION_MERGED');
-    expect(merged.registry.registry_version).toBe('EXT-0001');
-
-    const resume = createParentResumeToken(proposal, merged.registry.registry_version);
-    expect(resume.parent_work_item_id).toBe('WI-INTEGRATION');
-    expect(resume.extension_id).toBe('artifact_type.security_review');
-    expect(resume.return_state).toBe('candidate_preparing');
-    expect(resume.next_action).toBe('resume_parent_workflow');
   });
 
   it('keeps the v1.2 slice reports present as release evidence', () => {

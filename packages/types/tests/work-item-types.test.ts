@@ -52,8 +52,9 @@ describe('WORKFLOW_PATHS（§6.4）', () => {
     expect(WORKFLOW_PATHS).toContain('task_change_path');
     expect(WORKFLOW_PATHS).toContain('code_only_fast_path');
     expect(WORKFLOW_PATHS).toContain('spec_migration_path');
+    expect(WORKFLOW_PATHS).toContain('contract_change_path');
     expect(WORKFLOW_PATHS).toContain('rollback_path');
-    expect(WORKFLOW_PATHS.length).toBe(7);
+    expect(WORKFLOW_PATHS.length).toBe(8);
   });
 });
 
@@ -62,9 +63,9 @@ describe('GATE_IDS（§9.2）', () => {
     const required = [
       'entry_gate', 'workflow_selection_gate', 'required_files_gate',
       'candidate_manifest_gate', 'path_policy_gate', 'schema_gate',
-      'spec_consistency_gate', 'trace_gate', 'workflow_specific_gate',
+      'spec_consistency_gate', 'contract_integrity_gate', 'trace_gate', 'workflow_specific_gate',
       'gate_summary_gate', 'merge_ready_gate', 'post_merge_gate',
-      'verification_gate', 'close_gate', 'extension_gate',
+      'verification_gate', 'close_gate',
     ];
     for (const g of required) {
       expect(GATE_IDS).toContain(g);
@@ -280,6 +281,29 @@ describe('ExtensionRegistrySchema（v1.1 Patch 1）', () => {
     };
     const parsed = ExtensionRegistrySchema.parse(registry);
     expect(parsed.namespaces.design_types).toEqual([]);
+  });
+
+  it('preserves the optional cross-module contract registry', () => {
+    const parsed = ExtensionRegistrySchema.parse({
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      namespaces: {
+        requirement_types: [],
+        design_types: [],
+        task_types: [],
+        verification_types: [],
+        gate_types: [],
+      },
+      updated_by_work_item: null,
+      updated_at: null,
+      contracts: {
+        shared_enums: [{ id: 'PhotoStatus', owner_module: 'PHOTO', values: ['ready'] }],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+    expect(parsed.contracts?.shared_enums[0]?.id).toBe('PhotoStatus');
   });
 });
 

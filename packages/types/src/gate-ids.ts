@@ -14,6 +14,7 @@ export const GATE_IDS_V11 = [
   'path_policy_gate',
   'schema_gate',
   'spec_consistency_gate',
+  'contract_integrity_gate',
   'trace_gate',
   'workflow_specific_gate',
   'gate_summary_gate',
@@ -21,7 +22,6 @@ export const GATE_IDS_V11 = [
   'post_merge_gate',
   'verification_gate',
   'close_gate',
-  'extension_gate',
 ] as const;
 
 export type GateIdV11 = typeof GATE_IDS_V11[number];

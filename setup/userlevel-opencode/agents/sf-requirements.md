@@ -162,9 +162,8 @@ Layer 3 ✅：sf-design 能基于 requirements.md 产出 design.md，且 sf_requ
 2. 确认本次使用的所有 requirement_types 在 `namespaces.requirement_types` 中已注册
 3. 如果发现未注册的类型：
    - **停止**继续生成依赖该类型的 Candidate
-   - 写入 `extension_request.json` 到当前 WI 目录
-   - 在 handoff 中报告 `extension_required`
-   - 等待 Orchestrator 处理 Extension Subflow
+   - 返回 `blocked`，`blocker_type: "contract_gap"`，列明 namespace/type 或 contract kind/id/owner
+   - 等待 Orchestrator 通过 `contract_change` + `sf_contract_register` 完成受治理登记
 
 ## 0A. Intake 承接检查（四问模型）
 
@@ -580,13 +579,11 @@ sf-requirements 生成的 requirements.md 为 Trace 提供 REQ 和 AC 列的数�
 
 ---
 
-## Extension Request 处理（Extension §7-§8）
-
-> 参考：v1.1 标准 Extension 补丁 §7 extension_request.json、§8 Extension Subflow 发起主体
+## 契约/类型登记缺口处理
 
 ### 概念
 
-在需求分析过程中，sf-requirements 可能发现扩展缺口——例如缺少必要的需求类型、枚举值、pattern 或可解析结构。此时 sf-requirements 应发起 Extension Request。
+在需求分析过程中，sf-requirements 可能发现登记缺口——例如缺少必要的需求类型、枚举值、pattern 或可解析结构。此时必须报告 `contract_gap`，不得自行登记。
 
 ### 何时发起
 
@@ -599,39 +596,20 @@ sf-requirements 在以下情况应发起 Extension Request：
 
 ### 发起流程
 
-1. 写入 `extension_request.json` 到当前 WI 目录：
-   ```text
-   .specforge/work-items/<WI-ID>/extension_request.json
-   ```
-2. 在 handoff 中报告 `extension_required`
-3. **停止**继续生成依赖该扩展类型的正式产物
-
-### extension_request.json 最小结构
-
-```json
-{
-  "schema_version": "1.0",
-  "work_item_id": "WI-XXXX",
-  "requested_by_agent": "sf-requirements",
-  "requested_namespace": "requirement_types",
-  "requested_key": "<具体扩展项>",
-  "reason": "<为什么需要此扩展>",
-  "blocking_current_flow": true,
-  "created_at": "<ISO 8601>"
-}
-```
+1. 返回 `blocked`、`blocker_type: "contract_gap"`，并给出 namespace/type 或 contract kind/id/owner。
+2. **停止**继续生成依赖该登记项的正式产物。
+3. 等待 Orchestrator 使用 `contract_change` 工作流和 `sf_contract_register` 完成 Gate、用户审批与 Merge。
 
 ### sf-requirements 的 Extension 职责边界
 
 sf-requirements **可以**：
 - 发现扩展缺口
-- 写入 `extension_request.json`
-- 在 handoff 中报告 `extension_required`
+- 在 handoff 中报告 `contract_gap`
 
 sf-requirements **不得**：
 - 自行修改 `extension_registry.json`
-- 自行启动 Extension Subflow 或调度 sf-extension
-- 绕过 Extension Request 直接使用未注册的扩展类型
+- 自行调用 `sf_contract_register` 或调度 sf-extension
+- 绕过 `contract_gap` 直接使用未注册的扩展类型
 - 推进 WI 状态
 
-只有 **sf-orchestrator** 可以发起 Extension Subflow。sf-requirements 写入 `extension_request.json` 后，等待 Orchestrator 调度处理。
+只有 **sf-orchestrator** 可以驱动 `contract_change` 登记闭环。sf-requirements 报告缺口后等待 Orchestrator 处理。

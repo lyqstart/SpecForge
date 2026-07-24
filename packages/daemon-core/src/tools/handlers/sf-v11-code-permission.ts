@@ -51,6 +51,8 @@ function workflowTypeFromPath(workflowPath: string | undefined): string {
       return 'quick_change';
     case 'spec_migration_path':
       return 'spec_migration';
+    case 'contract_change_path':
+      return 'contract_change';
     case 'rollback_path':
       return 'rollback';
     default:
@@ -225,6 +227,20 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   if (idError) return { success: false, error: idError };
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+  const workItem = await readJsonIfExists(path.join(workItemDir, 'work_item.json'));
+  if (
+    action !== 'check' &&
+    action !== 'query' &&
+    (workItem?.workflow_type === 'contract_change' ||
+      workItem?.workflow_path === 'contract_change_path')
+  ) {
+    return {
+      success: false,
+      error: 'CODE_PERMISSION_NOT_APPLICABLE_FOR_CONTRACT_CHANGE',
+      policy_violation: true,
+      retry_allowed: false,
+    };
+  }
 
   if (action !== 'check' && action !== 'query') {
     const hardStopGuard = guardHardStop(projectRoot, workItemId, 'sf_v11_code_permission');

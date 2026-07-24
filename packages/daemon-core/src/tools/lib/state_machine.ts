@@ -25,6 +25,7 @@ export type WorkflowType =
   | "investigation"
   | "spec_migration"
   | "architecture_change"
+  | "contract_change"
 
 /** workflow_path 是治理路径，不得反向覆盖已兼容的 workflow_type。 */
 export type WorkflowPath =
@@ -34,6 +35,7 @@ export type WorkflowPath =
   | "task_change_path"
   | "code_only_fast_path"
   | "spec_migration_path"
+  | "contract_change_path"
   | "rollback_path"
 
 /** workflow_type 到 workflow_path 的兼容矩阵。 */
@@ -48,6 +50,7 @@ export const WORKFLOW_TYPE_TO_PATH: Readonly<Record<WorkflowType, WorkflowPath>>
   quick_change: "code_only_fast_path",
   spec_migration: "spec_migration_path",
   architecture_change: "architecture_change_path",
+  contract_change: "contract_change_path",
 }
 
 /**
@@ -61,6 +64,7 @@ export const WORKFLOW_PATH_DEFAULT_TYPE: Readonly<Partial<Record<WorkflowPath, W
   code_only_fast_path: "quick_change",
   spec_migration_path: "spec_migration",
   architecture_change_path: "architecture_change",
+  contract_change_path: "contract_change",
 }
 
 /**
@@ -137,7 +141,7 @@ export type WorkflowState = (typeof FINAL_STATES)[number]
 
 export const FINAL_TRANSITIONS: ReadonlyMap<WorkflowState, readonly WorkflowState[]> = new Map([
   ["created", ["intake_ready", "blocked", "rejected", "superseded"]],
-  ["intake_ready", ["impact_analyzing", "blocked", "rejected", "superseded"]],
+  ["intake_ready", ["impact_analyzing", "candidate_preparing", "blocked", "rejected", "superseded"]],
   ["impact_analyzing", ["impact_analyzed", "blocked", "rejected", "superseded"]],
   ["impact_analyzed", ["workflow_selected", "blocked", "rejected", "superseded"]],
   ["workflow_selected", ["candidate_preparing", "implementation_ready", "blocked", "rejected", "superseded"]],

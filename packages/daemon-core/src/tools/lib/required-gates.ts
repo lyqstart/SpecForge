@@ -19,6 +19,7 @@ type WorkflowPath =
   | 'task_change_path'
   | 'code_only_fast_path'
   | 'spec_migration_path'
+  | 'contract_change_path'
   | 'rollback_path';
 
 function dedupe(items: GateIdV11[]): GateIdV11[] {
@@ -33,6 +34,7 @@ const designCandidateGates: GateIdV11[] = [
   'candidate_manifest_gate',
   'path_policy_gate',
   'spec_consistency_gate',
+  'contract_integrity_gate',
   'workflow_specific_gate',
 ];
 
@@ -46,12 +48,24 @@ const investigationCandidateGates: GateIdV11[] = [
   'workflow_specific_gate',
 ];
 
+const contractCandidateGates: GateIdV11[] = [
+  ...commonCandidateGates,
+  'required_files_gate',
+  'candidate_manifest_gate',
+  'path_policy_gate',
+  'spec_consistency_gate',
+  'contract_integrity_gate',
+];
+
 function getCandidateGates(
   workflowPath: string,
   candidatePhase: CandidateGatePhaseV11,
   workflowType?: string
 ): GateIdV11[] {
   if (workflowType === 'investigation') return investigationCandidateGates;
+  if (workflowType === 'contract_change' || workflowPath === 'contract_change_path') {
+    return contractCandidateGates;
+  }
   switch (workflowPath as WorkflowPath) {
     case 'requirement_change_path':
     case 'design_change_path':
@@ -68,6 +82,7 @@ function getCandidateGates(
         'required_files_gate',
         'candidate_manifest_gate',
         'path_policy_gate',
+        'contract_integrity_gate',
         'trace_gate',
         'workflow_specific_gate',
       ];
@@ -87,6 +102,15 @@ function getLegacyAllGates(workflowPath: string, workflowType?: string): GateIdV
   if (workflowType === 'investigation') {
     return [
       ...investigationCandidateGates,
+      'merge_ready_gate',
+      'post_merge_gate',
+      'verification_gate',
+      'close_gate',
+    ];
+  }
+  if (workflowType === 'contract_change' || workflowPath === 'contract_change_path') {
+    return [
+      ...contractCandidateGates,
       'merge_ready_gate',
       'post_merge_gate',
       'verification_gate',
@@ -150,7 +174,7 @@ export function getRequiredGates(
 
 /** 返回指定 Gate 在给定 workflow 路径下的严格度。 */
 export function getGateStrictness(gateId: GateIdV11, _workflowPath: string): 'hard' | 'soft' {
-  const softGates: GateIdV11[] = ['spec_consistency_gate', 'trace_gate', 'extension_gate'];
+  const softGates: GateIdV11[] = ['spec_consistency_gate', 'trace_gate'];
 
   return softGates.includes(gateId) ? 'soft' : 'hard';
 }

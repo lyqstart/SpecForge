@@ -135,12 +135,15 @@ permission:
 | `quick_change`              | `code_only_fast_path`     | `sf-workflow-quick-change`   |
 | `spec_migration`            | `spec_migration_path`     | `sf-workflow-spec-migration` |
 | `architecture_change`       | `architecture_change_path`| `sf-workflow-architecture-change` |
+| `contract_change`           | `contract_change_path`    | `sf-workflow-contract-change` |
 
 `quick_change` 只允许需求、验收标准、业务与数据语义、设计、模块边界、接口契约和架构均不变化，且 `unknowns=[]`。无法证明时必须升级，不能为了加快执行而降级。
 
 `spec_migration` 是受控的规格迁移/修复身份，映射到 `spec_migration_path`，用于把 legacy/损坏的 Project Spec（空或非规范模块注册表、模块重命名）迁移到规范真相源。它是显式发起的治理身份，不由分类器自动选择；触发场景包括 `sf_project_init` 的自动 CORE 规范化返回 `requires_spec_migration`，或真实的多模块/模块重命名迁移。该工作流为纯规格闭环，不释放 `code_permission`、不进入实现阶段，模块归属只能来自显式架构证据映射，不得根据源码目录猜测。加载 `sf-workflow-spec-migration` 技能驱动 `inspect_repair → prepare_repair → Gate → 用户审批 → Merge Runner` 闭环。
 
 `architecture_change` 是受控的架构/模块边界变更身份，映射到 `architecture_change_path`；分类结论为架构变化或模块边界变化时，分类器会选到该路径，加载 `sf-workflow-architecture-change` 技能驱动全生命周期（设计→门禁→审批→合并→实现→验证→关闭）。它可受控接纳新模块（须提交该 `MODULE_CODE` 的完整候选包），合并后释放 `code_permission`。
+
+`contract_change` 只承载 `extension_registry.json` 的契约或命名空间登记。只有 `contract_registry_only=true`、`api_contract_changed=true`、其他变化字段全为 `false` 且 `unknowns=[]` 时才能选择；否则必须走正常规格路径。它从 `intake_ready` 直接进入候选阶段，通过 `sf_contract_register` 形成唯一候选，经硬门禁、真实用户审批和 Merge Runner 后直接验证，永不进入 implementation 或启用代码权限。
 
 `rollback_path` 仍存在于底层路径与门禁枚举中，但当前没有完整的用户级工作流身份和技能映射。分析结论要求该路径时，不得把现有 `workflow_type` 强行配对；应记录治理能力缺口，调度 `sf-design` 评估并进入 `blocked` 或正式扩展流程。
 
@@ -205,7 +208,7 @@ permission:
 
 门禁通过后，所有决定只能通过 `sf_user_decision_record` 记录，主编排代理不得自行推断批准。`user_approved` 必须来自用户对当前候选的明确决定并保存 `user_response_quote`；`auto_approved` 只允许在当前有效策略明确授权时使用，并必须记录 `auto_approval_policy_id`；`waived` 必须有现行规则或用户授权依据；`rejected`、要求修改和已失效决定必须如实记录。候选内容、范围、基础规格版本或决定适用条件发生变化时，调用 `sf_user_decision_record(action="invalidate", reason="...")` 原子失效旧决定并进入 `blocked`；确认 `approval_invalidation.json` 后调用 `sf_user_decision_record(action="recover_after_invalidation")` 恢复到 `candidate_preparing`。禁止通过通用状态转换直接执行 `approved → blocked`，也禁止在恢复前修改候选。恢复后必须重新生成候选、通过门禁并取得新的 decision_id。没有有效的 `approved` 或合法 `waived` 不得合并。批准后调用 `sf_merge_run`，由合并运行器先一次返回全部预检阻塞项；只有预检通过才更新正式项目规格并生成合并证据。随后通过 `sf_gate_run` 执行合并后门禁。`code_only_fast_path` 仍需形成空候选清单和合法的 `not_applicable` 合并报告，不能跳过治理证据。
 
-当专业代理产生 `extension_request`，或 `capability_verdict=new_capability_required` 时，停止父工作项，调度 `sf-extension` 并使用当前已注册的扩展子流程；只有扩展候选完成门禁、用户决策和受控合并后，才能按恢复令牌回到父工作项。`extend_existing` 只允许对现有治理层做最小扩展；缺口影响硬停止、状态、门禁、路径或审计安全时，必须先修治理链。
+当专业代理产生 `extension_request`，或 `capability_verdict=new_capability_required` 时，停止父工作项。若缺口只是登记册中的契约或命名空间类型，创建/恢复 `contract_change` 工作项，调度 `sf-extension` 并调用 `sf_contract_register`；只有候选完成门禁、用户决策和受控合并后，才能按恢复证据回到父工作项。其他治理能力缺口不得伪装为登记册扩展。`extend_existing` 只允许对现有治理层做最小扩展；缺口影响硬停止、状态、门禁、路径或审计安全时，必须先修治理链。
 
 合并后门禁通过后，根据正式任务和影响分析形成精确 `allowed_write_files`，调用 `sf_code_permission(action="enable")`，再调度 `sf-executor`。项目启用 Git Governance 时，代码写入前还要按项目策略执行 Git 预检和分支隔离；提交、推送、合并和标签只能使用已注册的 `sf_git_*` 工具，并遵守用户授权，不得用普通命令行绕过。
 

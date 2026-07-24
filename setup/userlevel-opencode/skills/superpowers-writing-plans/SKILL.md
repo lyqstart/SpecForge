@@ -29,6 +29,16 @@ phases:
 - 列出验证此 task 完成的具体命令或检查方法
 - 必须包含 verification_commands 字段
 - 每个验证命令必须是可自动执行的
+- `verification_commands` 必须是类型化映射，合法键仅为 `unit`、`property`、`integration`、`e2e`、`regression`，不得使用平铺旧列表
+- 使用 `property` 时，task 的 `refs` 必须包含对应 `CP-N`
+
+```markdown
+- **verification_commands**:
+  - unit:
+    - `bun test tests/unit/example.test.ts`
+  - integration:
+    - `bun test tests/integration/example.test.ts`
+```
 
 ## 粒度控制
 

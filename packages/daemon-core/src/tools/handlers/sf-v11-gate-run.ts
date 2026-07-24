@@ -27,6 +27,7 @@ const VALID_GATE_IDS: readonly GateIdV11[] = [
   'path_policy_gate',
   'schema_gate',
   'spec_consistency_gate',
+  'contract_integrity_gate',
   'trace_gate',
   'workflow_specific_gate',
   'gate_summary_gate',
@@ -34,7 +35,6 @@ const VALID_GATE_IDS: readonly GateIdV11[] = [
   'post_merge_gate',
   'verification_gate',
   'close_gate',
-  'extension_gate',
 ] as const;
 
 const POST_CANDIDATE_GATES = new Set<GateIdV11>([
@@ -156,6 +156,8 @@ function workflowTypeFromPath(workflowPath: string): string {
       return 'quick_change';
     case 'spec_migration_path':
       return 'spec_migration';
+    case 'contract_change_path':
+      return 'contract_change';
     case 'rollback_path':
       return 'rollback';
     default:
@@ -173,7 +175,8 @@ function defaultGateAliasForState(currentState: string | null, workflowType?: st
   if (
     currentState === 'implementation_done' ||
     currentState === 'verification_running' ||
-    (workflowType === 'investigation' && currentState === 'post_merge_verified')
+    (['investigation', 'contract_change'].includes(String(workflowType)) &&
+      currentState === 'post_merge_verified')
   ) {
     return 'verification';
   }
@@ -412,16 +415,25 @@ async function autoAdvanceCandidateState(input: {
     input.summaryStatus;
   const transitionSteps: unknown[] = [];
 
-  const sequence = [
-    'created',
-    'intake_ready',
-    'impact_analyzing',
-    'impact_analyzed',
-    'workflow_selected',
-    'candidate_preparing',
-    'candidate_prepared',
-    'gates_running',
-  ];
+  const sequence =
+    workflowType === 'contract_change'
+      ? [
+          'created',
+          'intake_ready',
+          'candidate_preparing',
+          'candidate_prepared',
+          'gates_running',
+        ]
+      : [
+          'created',
+          'intake_ready',
+          'impact_analyzing',
+          'impact_analyzed',
+          'workflow_selected',
+          'candidate_preparing',
+          'candidate_prepared',
+          'gates_running',
+        ];
 
   let index = sequence.indexOf(currentState);
   while (index >= 0 && sequence[index] !== 'gates_running') {

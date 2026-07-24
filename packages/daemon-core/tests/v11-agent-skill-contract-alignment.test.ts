@@ -99,6 +99,20 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     ).toBe(true);
   });
 
+  it('task planning examples use typed verification_commands', () => {
+    const planner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
+    const writingPlans = read(
+      'setup/userlevel-opencode/skills/superpowers-writing-plans/SKILL.md'
+    );
+    for (const text of [planner, writingPlans]) {
+      expect(text).toContain('- unit:');
+      expect(text).toContain('- integration:');
+      expect(text).toContain('property');
+      expect(text).toContain('CP-N');
+    }
+    expect(planner).not.toContain('- 检查 server.mjs 文件存在');
+  });
+
   it('injects the final governance contract into every userlevel SpecForge Agent and Skill markdown file', () => {
     const required = [
       'StateManager/events.jsonl',

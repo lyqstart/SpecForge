@@ -94,11 +94,13 @@ function isNoCodeWorkflow(wi: Record<string, unknown> | null): boolean {
     'no_code_review',
     'no_code_change',
     'read_only_review',
+    'contract_change',
   ]);
 
   return (
     allowed.has(workflowType) ||
     allowed.has(intent) ||
+    workflowPath === 'contract_change_path' ||
     workflowPath === 'investigation_path' ||
     workflowPath === 'review_path'
   );
@@ -201,22 +203,26 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const wi = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'work_item.json'));
   const workflowType = normalizeWorkflowValue(wi?.workflow_type ?? ctx.workflowType);
   const investigationWorkflow = workflowType === 'investigation';
+  const contractWorkflow =
+    workflowType === 'contract_change' ||
+    normalizeWorkflowValue(wi?.workflow_path ?? ctx.workflowPath) === 'contract_change_path';
   const requiredFiles = [
     'work_item.json',
     'intake.md',
-    'change_classification.md',
-    'impact_analysis.md',
     'trigger_result.json',
-    ...(investigationWorkflow
-      ? ['investigation_plan.md', 'findings_report.md']
-      : ['tasks.md', 'trace_delta.md']),
+    ...(!contractWorkflow ? ['change_classification.md', 'impact_analysis.md'] : []),
+    ...(contractWorkflow
+      ? []
+      : investigationWorkflow
+        ? ['investigation_plan.md', 'findings_report.md']
+        : ['tasks.md', 'trace_delta.md']),
     'candidate_manifest.json',
     'gate_summary.md',
     'verification_report.md',
     'merge_report.md',
     'changed_files_audit.md',
     'evidence/evidence_manifest.json',
-    '.semantic_closure.json',
+    ...(!contractWorkflow ? ['.semantic_closure.json'] : []),
   ];
 
   for (const file of requiredFiles) {
@@ -317,6 +323,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       'task_change_path',
       'code_only_fast_path',
       'spec_migration_path',
+      'contract_change_path',
       'rollback_path',
     ];
     checks.push({
@@ -379,7 +386,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     }
   }
 
-  if (!investigationWorkflow) {
+  if (!investigationWorkflow && !contractWorkflow) {
     try {
       const td = await fs.readFile(path.join(ctx.workItemDir, 'trace_delta.md'), 'utf-8');
       checks.push({
@@ -451,10 +458,12 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
-  const semanticManifest = await readJson<SemanticClosureManifest>(
-    path.join(ctx.workItemDir, '.semantic_closure.json')
-  );
-  checks.push(...semanticClosureChecks(semanticManifest, investigationWorkflow));
+  if (!contractWorkflow) {
+    const semanticManifest = await readJson<SemanticClosureManifest>(
+      path.join(ctx.workItemDir, '.semantic_closure.json')
+    );
+    checks.push(...semanticClosureChecks(semanticManifest, investigationWorkflow));
+  }
 
   try {
     const mr = await fs.readFile(path.join(ctx.workItemDir, 'merge_report.md'), 'utf-8');

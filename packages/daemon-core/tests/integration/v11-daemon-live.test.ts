@@ -91,13 +91,12 @@ describe('v1.1 Live Daemon Integration', () => {
     expect(result.error).toContain('Forbidden transition');
   });
 
-  it('daemon has extension_gate registered', async () => {
+  it('daemon has contract_integrity_gate registered', async () => {
     const result = await invokeTool('sf_gate_run', {
       work_item_id: 'WI-LIVE-V11-006',
-      gate_ids: ['extension_gate'],
+      gate_ids: ['contract_integrity_gate'],
     });
     // Gate might fail (no WI dir), but it shouldn't be "unknown gate"
-    // It should either pass (no extension_request) or fail with file-not-found
     expect(result.error).not.toContain('Unknown gate');
   });
 

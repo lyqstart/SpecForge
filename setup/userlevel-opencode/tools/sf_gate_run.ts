@@ -9,6 +9,7 @@ const GATE_IDS = [
   "path_policy_gate",
   "schema_gate",
   "spec_consistency_gate",
+  "contract_integrity_gate",
   "trace_gate",
   "workflow_specific_gate",
   "gate_summary_gate",
@@ -16,7 +17,6 @@ const GATE_IDS = [
   "post_merge_gate",
   "verification_gate",
   "close_gate",
-  "extension_gate",
 
   // Daemon-side compatibility aliases.
   "all",
