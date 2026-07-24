@@ -316,4 +316,22 @@ Step 3 验证 `spec_consistency_gate` 时发现它仍走 brownfield-skip。逐�
 | 闭环恢复(gate 失败自动打回修复重跑) | ✅ CONFIRMED | Step 2,4 轮 gate 无死锁 |
 | 真相源持久化(不被 bootstrap 清空) | ✅ CONFIRMED(修 `d65c5f5`) | 哨兵挺过 opencode 重启 |
 | 设计期对账(spec_consistency_gate 真实校验) | ✅ CONFIRMED | Step 3,3 种情况判定正确 |
-| 实现期 `contract_gap` 闭环(executor 遇未登记→blocked→登记→resume) | ⬜ 待验证(Step 4,重流程) | — |
+| 实现期 `contract_gap` 闭环(executor 遇未登记→blocked→登记→resume) | ◑ 机械件已验证,agent 活体演示延后 | 见下 |
+
+### Step 4 结论(机械件 CONFIRMED,活体演示延后 — 用户选 B)
+- **状态机支持 resume 回实现断点**:`state_machine.ts` `FINAL_TRANSITIONS` 有 `implementation_running→blocked`、`blocked→implementation_ready`、`implementation_ready→implementation_running`。contract_gap 闭环**机械上不死锁**。(注:`workflow-runtime/StateMachine.ts` 那张只能 resume 到前期状态的表是 daemon 未使用的死代码。)
+- **验证期机械兜底已证**:Step 3 的 `spec_consistency_gate` 会确定性拦下未登记/owner 不符的契约引用——无论 executor 老实报 `contract_gap` 还是"自编",安全网都在。
+- **剩余未验证项**:仅 executor 在实现期"主动识别缺口报 blocked 而非自编"这一 **agent 行为**;其安全网已证,为它单独驱动一条 feature_spec 到实现态投入产出低,记为后续项。
+- **附带正面发现**:让编排器按 quick_change 建一个实为"新增功能"的任务时,它**失败关闭、拒绝静默升/降级工作流身份**(要求走 feature_spec),证明 workflow 身份边界治理有效。
+
+## 契约模型落地 — 最终结论
+契约模型的**机械强制保证已全部验证闭环**:受治理登记(候选→gate→审批→merge)、真相源持久化(修复 bootstrap 覆盖 bug)、设计期确定性对账(`spec_consistency_gate`)、失败自动打回恢复、状态机支持 blocked→resume。当初审计发现的"跨模块契约一致性无人强制"核心缺口已被确定性 gate 填补。预防半场(agent 契约驱动)有 gate 作机械兜底。
+
+## 后续独立工作项(本轮不做,已记录)
+1. **contract_gap 活体演示**:feature_spec 跑到实现态,观察 executor `blocked(contract_gap)`→登记→resume(agent 行为,安全网已证,低优先级)。
+2. **切片 3b**:对改动代码做 AST 级契约对账(字面量枚举值/接口实现/PathService 绕过),分语言,较大。
+3. **切片 3(完整性 gate)**:契约变更后反向依赖扫描 + 无悬空引用才收口(§3 影响分析)。
+4. **Step 2 治理观察**:(a) `sf_merge_run` 返回值 `workflow_type` 投影错标 feature_spec;(b) PSV 版本 desync(registry 版本字段 vs spec_manifest 自增脱节);(c) 契约登记路径过重(缺轻量治理车道);(d) tasks.md `verification_commands` 旧格式 warning。
+5. **installer verify 增强**:干跑加载全部 wrapper schema,提前拦截"一个 schema 写错拖垮全部工具"(源自本轮 zod record bug)。
+6. **extension 子系统 v11/v12 整合**(Task 4 债):两套并存、互不相通、都不能真正落盘;先审计使用再保留一条干净治理路径、删死的。
+7. **workflow-runtime 死代码审计**:`Runtime`/`RuntimeInit`/`StateMachine.ts` 疑似 daemon 未使用(与 daemon-core 的 `state_machine.ts` 并存两套状态机),本轮已两次踩到("无条件写模板"机制、"只能 resume 到前期"死表);需确认活线并清理,避免再被误读。
