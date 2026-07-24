@@ -290,3 +290,12 @@
 2. **PSV 版本 desync**:合并后真相源 `project_spec_version` 仍=`PSV-0001`,但 `sf_merge_run` 报 `spec_manifest_updated:true / PSV-0003`。假设(待验证):`sf_contract_register` 把旧版本号原样抄进候选 + `replace` 合并不对齐版本字段 + spec_manifest 独立自增 → 三者脱节。此外 spec_manifest 变更前已是 PSV-0002 而 registry 是 PSV-0001(WI-0003 之前就存在的历史 desync)。
 3. **契约登记治理路径过重**:纯注册表加一枚举被 `candidate_phase=full` 要求 requirements+design+tasks 全套候选,4 轮 gate/~30min。契约登记缺一条轻量治理车道(design 缺口)。
 4. tasks.md `verification_commands` 旧格式 2 个 warning(非阻塞)。
+
+### Step 3 阻断缺陷:bootstrap 静默清空真相源(CONFIRMED,已修 `d65c5f5`)
+Step 3 验证 `spec_consistency_gate` 时发现它仍走 brownfield-skip。逐层取证锁定根因(全程一手证据,排除了"读取逻辑 bug""创建 WI 触发""daemon 重启"等假设):
+- **现象**:merge 后真相源含 GpsStatus(CONFIRMED),但 gate 读到空;真相源被重置成 `updated_by_work_item:null` 的空模板。
+- **触发点(复现锁定)**:放哨兵 `SENTINEL_PROBE` 后,**重开 opencode、未输入任何提示词**,哨兵即被抹(mtime 变、grep 0)。→ 触发点 = **opencode 启动连 daemon**,非创建 WI(复现:建 WI 前后 mtime 不变)、非 daemon 重启(startedAt 未变)。
+- **根因(源码)**:`HTTPServer` 在项目 register/sync 时调 `ensureProjectInit`(注释自称"幂等")。其 `system_file` 写循环只对 `manifest.json`/`observability.json`/`spec_manifest.json` 做"非空则保留",**漏了 `extension_registry.json`**;内容≠空模板时用空模板覆盖。契约模型前注册表恒等于空模板(无 diff、不覆盖)所以潜伏;merge 写入 GpsStatus 后每次 opencode 启动都把它连同 namespaces 一起清空。
+- **责任层**:项目 bootstrap(`ensureProjectInit`),非 gate/契约工具/StateManager。
+- **修复**:把 `project/extension_registry.json` 加进"非空则保留"名单,与 `spec_manifest.json` 一致(bootstrap 只创建、不覆盖治理真相源;内容只由 merge_runner 写)。加回归测试(create-when-missing / preserve-contracts / preserve-namespaces),daemon-core + HTTPServer 测试通过。
+- **部署**:daemon-core `git pull` + `bun run build` + 重启 daemon。GpsStatus 已被清空,需修复部署后重新走一遍登记+merge(顺带重验闭环),再继续 Step 3。
