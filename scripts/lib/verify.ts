@@ -14,6 +14,7 @@ import { computeSHA256 } from "./crypto"
 import { posixToNative } from "./paths"
 import type { UserLevelManifest, FileEntry, ManagedComponentType } from "./types"
 import { readAndValidateManifest } from "./manifest"
+import { lintInstalledToolSchemas, type SchemaLintIssue } from "./verify-tool-schemas"
 
 // ============================================================
 // 校验结果类型
@@ -28,6 +29,8 @@ export interface VerifyResult {
   missing: MissingFile[]
   /** 多余的文件列表（sf-* 文件不在 Manifest 中） */
   extra: ExtraFile[]
+  /** 工具 wrapper schema 静态干跑问题（防"一个 schema 写错拖垮全部工具"） */
+  schemaIssues?: SchemaLintIssue[]
   /** 校验的文件总数 */
   totalFiles: number
 }
@@ -123,7 +126,14 @@ export async function verifyInstallation(targetDir: string): Promise<VerifyResul
   // 检查多余的文件（sf-* 文件不在 Manifest 中）
   const extra = await findExtraFiles(targetDir, manifest)
 
-  const allMatch = mismatches.length === 0 && missing.length === 0 && extra.length === 0
+  // 工具 wrapper schema 静态干跑：拦截 Zod 这类"一个 schema 写错拖垮全部工具"。
+  const schemaIssues = await lintInstalledToolSchemas(targetDir)
+
+  const allMatch =
+    mismatches.length === 0 &&
+    missing.length === 0 &&
+    extra.length === 0 &&
+    schemaIssues.length === 0
   const totalFiles = Object.keys(manifest.files).length
 
   return {
@@ -131,6 +141,7 @@ export async function verifyInstallation(targetDir: string): Promise<VerifyResul
     mismatches,
     missing,
     extra,
+    schemaIssues,
     totalFiles,
   }
 }
@@ -366,8 +377,21 @@ export function printVerifyReport(result: VerifyResult): number {
     }
   }
 
+  // 显示 wrapper schema 干跑问题
+  if (result.schemaIssues && result.schemaIssues.length > 0) {
+    console.log(`\n❌ 工具 schema 静态干跑失败（${result.schemaIssues.length} 个，会导致 OpenCode 全部工具无响应）:`)
+    for (const issue of result.schemaIssues) {
+      console.log(`  ${issue.relativePath}:${issue.line} [${issue.code}]`)
+      console.log(`    ${issue.message}`)
+    }
+  }
+
   console.log("\n" + "=".repeat(50))
-  const totalIssues = result.mismatches.length + result.missing.length + result.extra.length
+  const totalIssues =
+    result.mismatches.length +
+    result.missing.length +
+    result.extra.length +
+    (result.schemaIssues?.length ?? 0)
   console.log(`❌ 校验失败: ${totalIssues} 个问题`)
   console.log(`   建议: 执行 \`upgrade --force\` 恢复共享组件到预期状态`)
 
