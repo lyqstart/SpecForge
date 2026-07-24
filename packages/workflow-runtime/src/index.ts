@@ -173,5 +173,14 @@ export {
   createV11WorkflowEngine,
 } from './workflows/v11-engine-factory.js';
 
+// Cross-module contract model types (design-governance; canonical schema)
+export {
+  type ContractRegistry,
+  type SharedEnumContract,
+  type InvariantContract,
+  type PublicInterfaceContract,
+  type ExtensionPointContract,
+} from './v11/runtime/ExtensionRegistry.js';
+
 // RBAC module exports (Phase 1)
 export * from './rbac/index.js';

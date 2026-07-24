@@ -77,6 +77,11 @@ export {
   type ExtensionRegistryData,
   type ExtensionRequestData,
   type ArtifactType,
+  type ContractRegistry,
+  type SharedEnumContract,
+  type InvariantContract,
+  type PublicInterfaceContract,
+  type ExtensionPointContract,
 } from './runtime/ExtensionRegistry.js';
 
 // Close Gate (Cross-cutting)

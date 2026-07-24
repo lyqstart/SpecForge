@@ -171,6 +171,12 @@ const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
         },
         updated_by_work_item: null,
         updated_at: null,
+        contracts: {
+          shared_enums: [],
+          invariants: [],
+          public_interfaces: [],
+          extension_points: [],
+        },
       },
       null,
       2
