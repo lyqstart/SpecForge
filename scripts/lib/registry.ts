@@ -54,6 +54,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_changed_files_audit.ts", type: "tool" },
   { path: "tools/sf_close_gate.ts", type: "tool" },
   { path: "tools/sf_hard_stop_resolve.ts", type: "tool" },
+  { path: "tools/sf_work_item_repair_closure.ts", type: "tool" },
   { path: "tools/sf_write_guard_preflight.ts", type: "tool" },
   { path: "tools/sf_extension_subflow.ts", type: "tool" },
   { path: "tools/sf_spec_migration.ts", type: "tool" },
