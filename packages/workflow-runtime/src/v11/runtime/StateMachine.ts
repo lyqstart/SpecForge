@@ -134,6 +134,13 @@ const CALLER_AUTHORIZATION: Map<string, AuthorizedCaller[]> = new Map([
  * StateMachine — manages the 24-state transaction lifecycle.
  *
  * Requirements: 2.1-2.43
+ *
+ * @deprecated DAEMON-UNUSED. The authoritative transition table used by the
+ * daemon is daemon-core's `state_machine.ts` `FINAL_TRANSITIONS`. This class's
+ * `LEGAL_TRANSITIONS` is NOT authoritative and is known to differ (e.g. it lacks
+ * the `blocked → implementation_ready` / implementation-phase resume edges that
+ * the daemon actually supports). Only referenced by the deprecated OO `Runtime`.
+ * Do not read this table as the daemon's real behavior.
  */
 export class StateMachine {
   private state: WorkItemState;
