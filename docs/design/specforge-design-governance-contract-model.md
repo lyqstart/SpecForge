@@ -230,3 +230,23 @@
 - 切片 1(③)可**直接骑用现有 gate 打回回环**,风险低;做实 `spec_consistency_gate` + 补进 refactor 组合 + sf-design/executor 契约驱动。
 - 架构变更**只用 in-flow 升级**;跨 WI 依赖自动 resume 不在近期范围。
 - 扩展 extension_registry 前,先裁决 v11/v12 registry 路径不一致。
+
+---
+
+# 15. 实施进度（切片 1）
+
+| 步骤 | 内容 | 状态 | 提交 |
+|---|---|---|---|
+| 1 | 契约注册表容器(schema `contracts` 块可选 + `contracts-registry.ts` 读助手 + init 模板 + 测试) | ✅ 已合并 | `58ed4d1` |
+| 2 | `sf-design`/`sf-executor` 契约驱动 + `contract_gap` blocker(预防层) | ✅ 已合并 | `bddd1f8` |
+| 3a | `spec_consistency_gate` 做实(设计候选 `[contract:...]` 引用对账,brownfield-safe)+ 加进 refactor + 测试 | ✅ 已合并 | `d57f7c1` |
+| 3b | 对改动代码做 AST 级契约对账(字面量枚举值/接口实现/PathService 绕过) | ⬜ 未做(更大,单列,分语言) | — |
+
+**部署要求(切片 1 累积,尚未部署)**:
+- daemon 侧(步骤 1、3a + refactor.json + workflow-runtime 类型):`git pull` → `bun run build` → **重启 daemon**。
+- 用户级 agent(步骤 2):**`bun scripts/sf-installer.ts upgrade --force` + verify**。
+- 两者都需要。契约注册表默认空 → 全程 brownfield-safe(warn 不 block),不会卡住现有 fj1 流程。
+
+**契约引用语法(agent 与 gate 已对齐)**:`[contract:KIND:ID( owner=OWNER)?]`,KIND ∈ {shared_enum, invariant, public_interface, extension_point}。
+
+**下一步选项**:部署验证一轮 / 继续 3b / 开始播种真实契约(把 SpecForge 或 fj1 的跨模块枚举登记进 contracts 块,让 gate 从 brownfield-skip 转为实际对账)。
