@@ -36,8 +36,20 @@ function readFirstNumber(text: string, patterns: RegExp[]): number | null {
 }
 
 function readResult(text: string): ChangedFilesAuditResultLabel {
-  if (/##\s*Result:\s*FAIL\b/i.test(text) || /^\s*Result:\s*FAIL\b/im.test(text)) return 'FAIL';
-  if (/##\s*Result:\s*PASS\b/i.test(text) || /^\s*Result:\s*PASS\b/im.test(text)) return 'PASS';
+  // The changed_files_audit.md report is emitted with a human-friendly
+  // "- Status: PASSED/FAILED" label (see generateChangedFilesAuditMd), while
+  // older/other producers use the canonical "Result: PASS/FAIL". As the single
+  // authority for interpreting the report, this parser must recognize BOTH so a
+  // genuinely-passing audit is not misread as UNKNOWN (which previously blocked
+  // close_gate with "changed_files_audit result is not PASS").
+  //
+  // Note: match PASSED before PASS / FAILED before FAIL so the \b boundary does
+  // not stop at the shorter alternative.
+  const label = /(?:^|\n)\s*[-#>\s]*\s*(?:Result|Status)\s*:\s*(PASSED|PASS|FAILED|FAIL)\b/i;
+  const match = label.exec(text);
+  if (match) {
+    return /^FAIL/i.test(match[1]) ? 'FAIL' : 'PASS';
+  }
   return 'UNKNOWN';
 }
 
