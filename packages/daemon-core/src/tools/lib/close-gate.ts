@@ -61,6 +61,100 @@ async function readText(filePath: string): Promise<string | null> {
   }
 }
 
+interface WaiverRecordLike {
+  waiver_id?: unknown;
+  follow_up_wi?: unknown;
+}
+
+export interface WaiverFollowUpAssessment {
+  waiverUsed: boolean;
+  passed: boolean;
+  waiverIds: string[];
+  missingFollowUpWaiverIds: string[];
+  details: string;
+}
+
+function nonEmptyString(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values));
+}
+
+export function assessWaiverFollowUp(
+  userDecision: Record<string, unknown> | null,
+  gateReports: Array<Record<string, unknown>>
+): WaiverFollowUpAssessment {
+  const rawWaivers = Array.isArray(userDecision?.waivers) ? userDecision.waivers : [];
+  const decisionWaivers = rawWaivers.filter(
+    (entry): entry is WaiverRecordLike => !!entry && typeof entry === 'object'
+  );
+  const decisionWaiverIds = decisionWaivers
+    .map(waiver => nonEmptyString(waiver.waiver_id))
+    .filter((value): value is string => value !== undefined);
+  const gateWaiverIds = gateReports.flatMap(report =>
+    Array.isArray(report.waiver_ids)
+      ? report.waiver_ids
+          .map(nonEmptyString)
+          .filter((value): value is string => value !== undefined)
+      : []
+  );
+  const gateStatusWaived = gateReports.some(report => report.status === 'waived');
+  const decisionDeclaresWaiver =
+    userDecision?.decision_status === 'waived' || userDecision?.decision_type === 'waived';
+  const waiverUsed =
+    decisionDeclaresWaiver ||
+    decisionWaivers.length > 0 ||
+    gateStatusWaived ||
+    gateWaiverIds.length > 0;
+
+  const missingDecisionFollowUps = decisionWaivers.flatMap((waiver, index) => {
+    if (nonEmptyString(waiver.follow_up_wi)) return [];
+    return [nonEmptyString(waiver.waiver_id) ?? `user_decision.waivers[${index}]`];
+  });
+  const unregisteredGateWaiverIds = gateWaiverIds.filter(
+    waiverId => !decisionWaiverIds.includes(waiverId)
+  );
+  const missingFollowUpWaiverIds = uniqueStrings([
+    ...missingDecisionFollowUps,
+    ...unregisteredGateWaiverIds,
+  ]);
+  const waiverIds = uniqueStrings([...decisionWaiverIds, ...gateWaiverIds]);
+  const passed =
+    !waiverUsed || (decisionWaivers.length > 0 && missingFollowUpWaiverIds.length === 0);
+
+  return {
+    waiverUsed,
+    passed,
+    waiverIds,
+    missingFollowUpWaiverIds,
+    details: waiverUsed
+      ? `waiver_ids=${waiverIds.join(', ') || '(declared without id)'}; missing_follow_up=${
+          missingFollowUpWaiverIds.join(', ') || 'none'
+        }`
+      : 'waiver_ids=[]; waiver_used=false',
+  };
+}
+
+async function readGateReports(workItemDir: string): Promise<Array<Record<string, unknown>>> {
+  const gatesDir = path.join(workItemDir, 'gates');
+  try {
+    const entries = await fs.readdir(gatesDir, { withFileTypes: true });
+    const reports: Array<Record<string, unknown>> = [];
+    for (const entry of entries) {
+      if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
+      const report = await readJson<Record<string, unknown>>(path.join(gatesDir, entry.name));
+      if (report) reports.push(report);
+    }
+    return reports;
+  } catch {
+    return [];
+  }
+}
+
 function details(value: unknown): string | undefined {
   if (value === undefined || value === null) return undefined;
   if (Array.isArray(value)) return value.map(item => String(item)).join('; ');
@@ -546,23 +640,17 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       severity: hasBlocking ? 'error' : undefined,
     });
 
-    const hasWaiver = gs.includes('passed_with_waiver_required') || gs.includes('waiver');
-    if (hasWaiver && wi) {
-      const hasFollowUp =
-        (wi as any).waiver_follow_up_wi ?? (wi as any).follow_up_wi ?? (wi as any).waiver_followups;
-      checks.push({
-        check_id: 'close_waiver_follow_up',
-        description: 'Waiver follow-up WI registered (§15.2)',
-        passed: !!hasFollowUp,
-        severity: hasFollowUp ? undefined : 'error',
-      });
-    } else {
-      checks.push({
-        check_id: 'close_waiver_follow_up',
-        description: 'No waivers requiring follow-up',
-        passed: true,
-      });
-    }
+    const gateReports = await readGateReports(ctx.workItemDir);
+    const waiverAssessment = assessWaiverFollowUp(ud, gateReports);
+    checks.push({
+      check_id: 'close_waiver_follow_up',
+      description: waiverAssessment.waiverUsed
+        ? 'Waiver follow-up WI registered (§15.2)'
+        : 'No waivers requiring follow-up',
+      passed: waiverAssessment.passed,
+      severity: waiverAssessment.passed ? undefined : 'error',
+      details: waiverAssessment.details,
+    });
   } catch {
     // Covered by required files.
   }

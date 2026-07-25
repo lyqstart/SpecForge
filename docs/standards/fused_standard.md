@@ -1870,7 +1870,7 @@ User Decision 通过不等于可以关闭。Merge Runner 执行完成不等于�
 14. allowed_write_files 不再可写。
 15. 无 pending 用户决策。
 16. 无 unresolved blocking issue。
-17. waiver follow-up WI 已登记。
+17. 仅在实际采用 waiver 时，waiver follow-up WI 已登记；零 waiver 时本项不适用。
 
 ### 15.3 closed 后规则
 

@@ -85,7 +85,15 @@ async function createFullWIDir(tmpDir: string, workItemId: string): Promise<stri
   );
   await fs.writeFile(
     path.join(wiDir, 'gate_summary.md'),
-    '# Gate Summary\n- Overall Status: passed'
+    [
+      '# Gate Summary',
+      '',
+      'Overall Status: passed',
+      '',
+      '## User Decision Required',
+      '',
+      'All required gates passed. Non-blocking warnings do not require a waiver.',
+    ].join('\n')
   );
   await fs.writeFile(
     path.join(wiDir, 'verification_report.md'),
@@ -143,6 +151,12 @@ describe('runCloseGate — extension_request.json check (Patch 1 §7.9)', () => 
     expect(extCheck).toBeDefined();
     expect(extCheck!.passed).toBe(true);
     expect(extCheck!.description).toContain('not applicable');
+    const waiverCheck = result.report.checks.find(
+      c => c.check_id === 'close_waiver_follow_up'
+    );
+    expect(waiverCheck).toBeDefined();
+    expect(waiverCheck!.passed).toBe(true);
+    expect(waiverCheck!.description).toBe('No waivers requiring follow-up');
   });
 
   it('pending: extension_request.json exists with no status field + blocking=true → close_gate FAILS', async () => {
