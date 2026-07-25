@@ -5,6 +5,8 @@
 > 关联主文档: `docs/design/specforge-design-governance-contract-model.md`（契约模型设计 + 已完成部分的验证记录 + 变更审计索引）
 > 关联规则: `AGENTS.md`（证据先行、架构归属优先、最小但**完整**的治理扩展、**绝不再造死锁**）
 > 实施结果: `docs/design/contract-model-followups-implementation-report.md`
+> 2026-07-25 增量: fj1 Semantic Closure 生产者—消费者契约治理见
+> `docs/design/semantic-closure-contract-governance.md`
 
 ## 0. 背景（一页读懂）
 

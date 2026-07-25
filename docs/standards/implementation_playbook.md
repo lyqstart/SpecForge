@@ -104,7 +104,7 @@ The v1.1 standard defines a spec-driven workflow system with 23 main sections pl
 - `USER_DECISION_STATUS`: `pending`, `approved`, `rejected`, `request_changes`, `waived`, `expired`, `invalidated`
 - `GATE_TYPES`: all 14+ gates from §9.2 plus `extension_gate`
 - `HARD_GATES` set: entry_gate, workflow_selection_gate, required_files_gate, candidate_manifest_gate, path_policy_gate, merge_ready_gate, post_merge_gate, close_gate, extension_gate
-- `SOFT_GATES` set: spec_consistency_gate, trace_gate, verification_gate
+- `SOFT_GATES` set: spec_consistency_gate, trace_gate
 
 **Tests**:
 - All regex constants match valid IDs, reject invalid ones
@@ -229,7 +229,7 @@ rejected → closed
 | `gate_summary_gate` | hard | All required gates completed, summary generated |
 | `merge_ready_gate` | hard | All §11.2 checks (14 items) |
 | `post_merge_gate` | hard | All §11.6 checks (10 items) |
-| `verification_gate` | soft | All §13.5 checks (6 items) |
+| `verification_gate` | hard | All §13.5–§13.6 checks, including Semantic Closure and provenance |
 | `close_gate` | hard | All §15.2 checks (17 items) |
 | `extension_gate` | hard | All Patch1 §12 checks (11 items) |
 

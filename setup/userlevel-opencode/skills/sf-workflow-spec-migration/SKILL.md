@@ -159,8 +159,8 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 ### 阶段 6：验证与关闭
 
-1. 调度 `sf-verifier` 验证合并后的正式 Project Spec 一致（模块注册表非空且规范、模块文件齐备），生成 `verification_report.md`。
-2. `sf_gate_run(verification_gate)` → `sf_semantic_closure_run` → `sf_close_gate`，从 `verification_done` 关闭。
+1. 调度 `sf-verifier` 验证合并后的正式 Project Spec 一致（模块注册表非空且规范、模块文件齐备），受控写入 `verification_report` 与 `evidence_manifest`，返回 typed `semantic_closure`。
+2. `sf_semantic_closure_run(semantic_closure=<原样对象>)` → `sf_gate_run(verification_gate)` → `sf_close_gate`；闭包无效时不得运行 Gate。
 3. 全程不启用/不撤销 code_permission（本工作流从未启用）。
 
 ## v1.1 治理硬约束（本工作流特有）

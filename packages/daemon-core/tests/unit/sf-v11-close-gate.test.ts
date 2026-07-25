@@ -13,6 +13,7 @@ import * as os from 'node:os';
 import '../../src/tools/handlers/sf-v11-close-gate.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import type { SemanticClosureManifest } from '../../src/tools/lib/semantic-closure-core.js';
+import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
 
 function semanticClosure(workItemId: string): SemanticClosureManifest {
   return {
@@ -30,7 +31,9 @@ function semanticClosure(workItemId: string): SemanticClosureManifest {
       },
     ],
     design_decisions: [{ id: 'DD-1', requirement_refs: ['REQ-1'], task_refs: ['TASK-1'] }],
-    tasks: [{ id: 'TASK-1', requirement_refs: ['REQ-1'], design_refs: ['DD-1'], evidence_refs: ['EV-1'] }],
+    tasks: [
+      { id: 'TASK-1', requirement_refs: ['REQ-1'], design_refs: ['DD-1'], evidence_refs: ['EV-1'] },
+    ],
     evidence: [
       {
         id: 'EV-1',
@@ -55,11 +58,22 @@ type MockStateDeps = {
         toState: string,
         actorRole: string,
         workflowType: string,
-        payload: unknown,
-      ) => Promise<{ source: string; workItemId: string; previousState: string; currentState: string; timestamp: string }>;
+        payload: unknown
+      ) => Promise<{
+        source: string;
+        workItemId: string;
+        previousState: string;
+        currentState: string;
+        timestamp: string;
+      }>;
     }>;
   };
-  __transitions: Array<{ fromState: string; toState: string; actorRole: string; workflowType: string }>;
+  __transitions: Array<{
+    fromState: string;
+    toState: string;
+    actorRole: string;
+    workflowType: string;
+  }>;
 };
 
 function createMockDeps(initialState = 'verification_done'): MockStateDeps {
@@ -88,7 +102,6 @@ function createMockDeps(initialState = 'verification_done'): MockStateDeps {
   };
 }
 
-
 async function createMinimalWorkItem(
   projectRoot: string,
   workItemId: string,
@@ -97,7 +110,7 @@ async function createMinimalWorkItem(
     codeChangeAllowed?: boolean;
     allowedWriteFiles?: Array<{ path: string; operation: string }>;
     includeSemanticClosure?: boolean;
-  },
+  }
 ): Promise<string> {
   const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
   await fs.mkdir(wiDir, { recursive: true });
@@ -121,29 +134,80 @@ async function createMinimalWorkItem(
   await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA\nLow impact');
   await fs.writeFile(
     path.join(wiDir, 'trigger_result.json'),
-    JSON.stringify({ work_item_id: workItemId, workflow_path: 'code_only_fast_path', triggered: true }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      workflow_path: 'code_only_fast_path',
+      triggered: true,
+      classification: {
+        requirement_changed: false,
+        acceptance_criteria_changed: false,
+        business_rule_changed: false,
+        user_visible_behavior_changed: false,
+        data_semantics_changed: false,
+        design_changed: false,
+        module_boundary_changed: false,
+        api_contract_changed: false,
+        architecture_changed: false,
+        unknowns: [],
+      },
+    }) + '\n'
   );
   await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] TASK-1 Done');
-  await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1');
+  await fs.writeFile(
+    path.join(wiDir, 'trace_delta.md'),
+    '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1'
+  );
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
-    JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      entries: [],
+      workflow_path: 'code_only_fast_path',
+    }) + '\n'
   );
-  await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n\n- Overall Status: passed\n');
-  await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification Report\n\nEvidence EV-1 passed.');
-  await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge Report\n\nMerge Status: not_applicable');
-  await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\nAll files in scope.');
+  await fs.writeFile(
+    path.join(wiDir, 'gate_summary.md'),
+    '# Gate Summary\n\n- Overall Status: passed\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'verification_report.md'),
+    '# Verification Report\n\nEvidence EV-1 passed.'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'merge_report.md'),
+    '# Merge Report\n\nMerge Status: not_applicable'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'changed_files_audit.md'),
+    '# Changed Files Audit\n\n- Status: PASSED\nAll files in scope.'
+  );
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
-    JSON.stringify({ work_item_id: workItemId, entries: [{ id: 'EV-1', type: 'behavioral_e2e', status: 'passed' }] }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      entries: [{ id: 'EV-1', type: 'behavioral_e2e', status: 'passed' }],
+    }) + '\n'
   );
   await fs.writeFile(
     path.join(wiDir, 'user_decision.json'),
-    JSON.stringify({ decision_status: 'approved', workflow_path: 'code_only_fast_path', timestamp: new Date().toISOString() }) + '\n',
+    JSON.stringify({
+      decision_status: 'approved',
+      workflow_path: 'code_only_fast_path',
+      timestamp: new Date().toISOString(),
+    }) + '\n'
   );
 
   if (opts?.includeSemanticClosure !== false) {
-    await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(semanticClosure(workItemId), null, 2) + '\n');
+    const closure = semanticClosure(workItemId);
+    closure.provenance = await captureSemanticClosureProvenance({
+      workItemDir: wiDir,
+      source: 'test_fixture',
+      manifest: closure,
+    });
+    await fs.writeFile(
+      path.join(wiDir, '.semantic_closure.json'),
+      JSON.stringify(closure, null, 2) + '\n'
+    );
   }
 
   return wiDir;
@@ -176,7 +240,11 @@ describe('sf_close_gate handler', () => {
     const workItemId = 'wi-wrong-state';
     await createMinimalWorkItem(tmpDir, workItemId, { status: 'implementation_running' });
     const handler = getHandler('sf_close_gate')!;
-    const result = await handler({ work_item_id: workItemId }, { directory: tmpDir }, createMockDeps('implementation_running') as any);
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps('implementation_running') as any
+    );
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('verification_done');
   });
@@ -188,7 +256,11 @@ describe('sf_close_gate handler', () => {
       allowedWriteFiles: [{ path: 'src/main.ts', operation: 'modify' }],
     });
     const handler = getHandler('sf_close_gate')!;
-    const result = await handler({ work_item_id: workItemId }, { directory: tmpDir }, createMockDeps() as any);
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
     expect((result as any).code_permission_revoked).toBe(true);
     const wiPath = path.join(tmpDir, '.specforge', 'work-items', workItemId, 'work_item.json');
     const wi = JSON.parse(await fs.readFile(wiPath, 'utf-8'));
@@ -200,7 +272,11 @@ describe('sf_close_gate handler', () => {
     const workItemId = 'wi-missing-semantic';
     await createMinimalWorkItem(tmpDir, workItemId, { includeSemanticClosure: false });
     const handler = getHandler('sf_close_gate')!;
-    const result = await handler({ work_item_id: workItemId }, { directory: tmpDir }, createMockDeps() as any);
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('close_file__semantic_closure_json');
   });
@@ -211,14 +287,25 @@ describe('sf_close_gate handler', () => {
     const handler = getHandler('sf_close_gate')!;
     const deps = createMockDeps();
     const result = await handler({ work_item_id: workItemId }, { directory: tmpDir }, deps as any);
-    expect((result as any).success).toBe(true);
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
 
-    const gateJsonPath = path.join(tmpDir, '.specforge', 'work-items', workItemId, 'gates', 'close_gate.json');
+    const gateJsonPath = path.join(
+      tmpDir,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'gates',
+      'close_gate.json'
+    );
     const gateJson = JSON.parse(await fs.readFile(gateJsonPath, 'utf-8'));
     expect(gateJson.status).toBe('passed');
     expect(gateJson.gate_id).toBe('close_gate');
-    expect(gateJson.checks.some((check: any) => check.check_id === 'close_semantic_closure_valid')).toBe(true);
-    expect(deps.__transitions.some((t) => t.fromState === 'verification_done' && t.toState === 'closed')).toBe(true);
+    expect(
+      gateJson.checks.some((check: any) => check.check_id === 'close_semantic_closure_valid')
+    ).toBe(true);
+    expect(
+      deps.__transitions.some(t => t.fromState === 'verification_done' && t.toState === 'closed')
+    ).toBe(true);
 
     const closeMdPath = path.join(tmpDir, '.specforge', 'work-items', workItemId, 'close_gate.md');
     const closeMd = await fs.readFile(closeMdPath, 'utf-8');
@@ -231,7 +318,11 @@ describe('sf_close_gate handler', () => {
     const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
     await fs.rm(path.join(wiDir, 'verification_report.md'));
     const handler = getHandler('sf_close_gate')!;
-    const result = await handler({ work_item_id: workItemId }, { directory: tmpDir }, createMockDeps() as any);
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('verification_report.md not found');
     expect((result as any).code_permission_revoked).toBe(false);
@@ -239,9 +330,15 @@ describe('sf_close_gate handler', () => {
 
   it('should still write close_gate.json on failure for diagnostics', async () => {
     const workItemId = 'wi-fail-evidence';
-    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, { includeSemanticClosure: false });
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, {
+      includeSemanticClosure: false,
+    });
     const handler = getHandler('sf_close_gate')!;
-    const result = await handler({ work_item_id: workItemId }, { directory: tmpDir }, createMockDeps() as any);
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
     expect((result as any).success).toBe(false);
     expect((result as any).evidence_path).toContain('close_gate.json');
 

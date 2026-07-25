@@ -345,22 +345,22 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
      5. side_effects: 无副作用检查
      6. summary: 验证总结
      ```
-3. 等待子 Agent 完成，获取验证 JSON
-4. **调用 `sf_artifact_write`** 渲染并写入验证报告：
-   - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
+3. 等待 sf-verifier 完成；确认它已受控写入 `verification_report` 与 `evidence_manifest`，并获取包含 typed `semantic_closure` 的验证 JSON
+4. **调用 `sf_semantic_closure_run`**（work_item_id=<id>, semantic_closure=<验证 JSON 中的原样对象>）；闭包无效时不得继续
 5. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_ids=["verification_gate"]）检查验证结果（统一 Gate Runner，替代旧 sf_verification_gate）
+6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_ids=["verification_gate"]）检查验证、Evidence、已通过的 changed_files_audit、Semantic Closure 及 provenance
 7. 如果 Gate pass：
-   - 调用 `sf_changed_files_audit`（work_item_id=<id>）执行变更文件审计
+   - 调用 `sf_code_permission(action="revoke")`
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
    - WI 状态由 daemon close_gate actor 推进到 closed
 8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
-- 必须先调用 `sf_gate_run`（统一 Gate Runner）确认 pass 后再流转状态
+- changed_files_audit 必须在 verifier、semantic_closure 和 verification_gate 之前完成
+- 必须先得到 semantic_closure_valid=true，再调用 `sf_gate_run`
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
-- sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
+- sf-verifier 通过 sf_artifact_write 写入验证报告与 Evidence 并返回同一验证 JSON；Orchestrator 只负责 work_log 和提交原样 semantic_closure
 - Quick Change 的 sf-verifier 启用轻量验证模式，只做核心断言，不做全量 CSS/JS 回归检查
 - 必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`
 - 必须调用 `sf_close_gate` 确认关闭条件满足后，WI 才能进入 `closed`

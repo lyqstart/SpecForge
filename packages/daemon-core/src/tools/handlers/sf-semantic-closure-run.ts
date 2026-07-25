@@ -11,8 +11,18 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { registerHandler } from '../ToolDispatcher.js';
-import { buildSemanticClosureFromArtifacts } from '../lib/semantic-closure-builder.js';
+import {
+  buildSemanticClosureFromArtifacts,
+  parseSemanticClosureManifest,
+} from '../lib/semantic-closure-builder.js';
 import { validateSemanticClosure } from '../lib/semantic-closure-core.js';
+import {
+  captureSemanticClosureProvenance,
+  SEMANTIC_CLOSURE_ACCEPTED_SOURCES,
+  SEMANTIC_CLOSURE_CONTRACT_ID,
+  validateSemanticClosureProvenance,
+} from '../lib/semantic-closure-provenance.js';
+import { readAuthoritativeState } from '../lib/state-coordinator-v11.js';
 
 async function readTextIfExists(filePath: string): Promise<string | undefined> {
   try {
@@ -40,13 +50,16 @@ function renderReport(input: {
   source: string;
   validation: ReturnType<typeof validateSemanticClosure>;
   diagnostics: string[];
+  overallPassed?: boolean;
 }): string {
+  const overallPassed = input.overallPassed ?? input.validation.passed;
   const lines: string[] = [
     '# Semantic Closure Report',
     '',
     `- Work Item: ${input.workItemId}`,
-    `- Status: ${input.validation.passed ? 'PASSED' : 'FAILED'}`,
+    `- Status: ${overallPassed ? 'PASSED' : 'FAILED'}`,
     `- Source: ${input.source}`,
+    `- Contract: ${SEMANTIC_CLOSURE_CONTRACT_ID}`,
     `- Manifest: ${input.manifestPath}`,
     `- Timestamp: ${new Date().toISOString()}`,
     '',
@@ -83,18 +96,35 @@ function renderReport(input: {
     lines.push('');
   }
 
+  lines.push('## Recovery Contract', '');
+  lines.push(`- Preferred input: typed \`semantic_closure\` argument.`);
+  lines.push(
+    '- Required normal-flow sections: outcomes, requirements, design_decisions, tasks, evidence, project_integration.'
+  );
+  lines.push(
+    '- Evidence used for completion must be passed, non-weak, and reference the semantic target it proves.'
+  );
+  lines.push(
+    '- After any verification input changes, regenerate with force=true before running verification_gate.'
+  );
+  lines.push('');
+
   lines.push('## Checks', '', '| Check ID | Passed | Description |', '|---|---:|---|');
   for (const check of input.validation.checks) {
-    lines.push(`| ${check.check_id} | ${check.passed ? 'yes' : 'no'} | ${check.description.replace(/\|/g, '\\|')} |`);
+    lines.push(
+      `| ${check.check_id} | ${check.passed ? 'yes' : 'no'} | ${check.description.replace(/\|/g, '\\|')} |`
+    );
   }
   lines.push('');
   return lines.join('\n');
 }
 
-registerHandler('sf_v11_semantic_closure_run', async (args, context) => {
-  const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
+registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
+  const projectRoot =
+    (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
-  const force = args['force'] === true;
+  const suppliedSemanticClosure = args['semantic_closure'];
+  const force = args['force'] === true || suppliedSemanticClosure !== undefined;
 
   if (!workItemId) {
     return { success: false, error: 'work_item_id is required' };
@@ -104,10 +134,33 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context) => {
   const semanticClosurePath = path.join(workItemDir, '.semantic_closure.json');
   const reportPath = path.join(workItemDir, 'semantic_closure_report.md');
 
+  const authoritativeState = await readAuthoritativeState({
+    deps,
+    projectRoot,
+    workItemId,
+  });
+  const inputsFrozen = ['verification_done', 'closed', 'rejected', 'superseded'].includes(
+    String(authoritativeState.current_state ?? '')
+  );
+  if (force && inputsFrozen) {
+    return {
+      success: false,
+      work_item_id: workItemId,
+      error: 'SEMANTIC_CLOSURE_INPUTS_FROZEN',
+      current_state: authoritativeState.current_state,
+      semantic_closure_valid: false,
+      retry_allowed: false,
+      recovery:
+        'Recover the Work Item from verification_done to implementation_ready, update verification artifacts, regenerate semantic closure, then rerun verification_gate.',
+    };
+  }
+
   if (!force) {
-    const existing = await readJsonIfExists(semanticClosurePath);
+    const existing = await readJsonIfExists<Record<string, any>>(semanticClosurePath);
     if (existing) {
       const validation = validateSemanticClosure(existing);
+      const provenanceValidation = await validateSemanticClosureProvenance(workItemDir, existing);
+      const closureValid = validation.passed && provenanceValidation.passed;
       await fs.writeFile(
         reportPath,
         renderReport({
@@ -115,59 +168,137 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context) => {
           manifestPath: rel(projectRoot, semanticClosurePath),
           source: 'existing_semantic_closure',
           validation,
-          diagnostics: ['Existing .semantic_closure.json preserved because force=true was not supplied.'],
+          overallPassed: closureValid,
+          diagnostics: [
+            'Existing .semantic_closure.json preserved because force=true was not supplied.',
+            ...provenanceValidation.errors,
+          ],
         }),
-        'utf-8',
+        'utf-8'
       );
       return {
-        success: validation.passed,
+        success: closureValid,
         work_item_id: workItemId,
-        semantic_closure_valid: validation.passed,
+        semantic_closure_valid: closureValid,
         source: 'existing_semantic_closure',
         manifest_path: rel(projectRoot, semanticClosurePath),
         report_path: rel(projectRoot, reportPath),
         errors: validation.errors,
         warnings: validation.warnings,
+        provenance_valid: provenanceValidation.passed,
+        provenance_errors: provenanceValidation.errors,
+        contract_id: SEMANTIC_CLOSURE_CONTRACT_ID,
+        accepted_sources: SEMANTIC_CLOSURE_ACCEPTED_SOURCES,
+        next_action: closureValid
+          ? 'Run verification_gate.'
+          : inputsFrozen
+            ? 'Recover to implementation_ready, then regenerate semantic closure with force=true.'
+            : 'Regenerate semantic closure with force=true after correcting its inputs.',
       };
     }
   }
 
-  const workItem = await readJsonIfExists<Record<string, any>>(path.join(workItemDir, 'work_item.json'));
-  if (!workItem) {
-    return { success: false, work_item_id: workItemId, error: `work_item.json not found at ${rel(projectRoot, path.join(workItemDir, 'work_item.json'))}` };
+  if (inputsFrozen) {
+    return {
+      success: false,
+      work_item_id: workItemId,
+      error: 'SEMANTIC_CLOSURE_INPUTS_FROZEN',
+      current_state: authoritativeState.current_state,
+      semantic_closure_valid: false,
+      retry_allowed: false,
+      recovery:
+        'No existing semantic closure is available to validate. Recover the Work Item to implementation_ready, regenerate semantic closure, then rerun verification_gate.',
+    };
   }
 
-  const evidenceManifest = await readJsonIfExists<Record<string, any>>(path.join(workItemDir, 'evidence', 'evidence_manifest.json'));
+  const workItem = await readJsonIfExists<Record<string, any>>(
+    path.join(workItemDir, 'work_item.json')
+  );
+  if (!workItem) {
+    return {
+      success: false,
+      work_item_id: workItemId,
+      error: `work_item.json not found at ${rel(projectRoot, path.join(workItemDir, 'work_item.json'))}`,
+    };
+  }
+
+  const evidenceManifest = await readJsonIfExists<Record<string, any>>(
+    path.join(workItemDir, 'evidence', 'evidence_manifest.json')
+  );
+
+  if (suppliedSemanticClosure !== undefined) {
+    const parsed = parseSemanticClosureManifest(suppliedSemanticClosure);
+    if (!parsed) {
+      return {
+        success: false,
+        work_item_id: workItemId,
+        error: 'INVALID_SEMANTIC_CLOSURE_ARGUMENT',
+        semantic_closure_valid: false,
+        contract_id: SEMANTIC_CLOSURE_CONTRACT_ID,
+        accepted_sources: SEMANTIC_CLOSURE_ACCEPTED_SOURCES,
+        recovery:
+          'Pass semantic_closure as a manifest object with outcomes, requirements, design_decisions, tasks, evidence, and project_integration.',
+      };
+    }
+    if (parsed.work_item_id && parsed.work_item_id !== workItemId) {
+      return {
+        success: false,
+        work_item_id: workItemId,
+        error: 'SEMANTIC_CLOSURE_WORK_ITEM_MISMATCH',
+        supplied_work_item_id: parsed.work_item_id,
+        semantic_closure_valid: false,
+        retry_allowed: true,
+      };
+    }
+  }
+
   const build = buildSemanticClosureFromArtifacts({
     workItemId,
     workItem,
+    curatedSemanticClosure: suppliedSemanticClosure,
     traceDeltaMd: await readTextIfExists(path.join(workItemDir, 'trace_delta.md')),
     verificationReportMd: await readTextIfExists(path.join(workItemDir, 'verification_report.md')),
     evidenceManifest,
     mergeReportMd: await readTextIfExists(path.join(workItemDir, 'merge_report.md')),
   });
 
-  await fs.writeFile(semanticClosurePath, JSON.stringify(build.manifest, null, 2) + '\n', 'utf-8');
+  const manifest = {
+    ...build.manifest,
+    provenance: await captureSemanticClosureProvenance({
+      workItemDir,
+      source: build.source,
+      manifest: build.manifest,
+    }),
+  };
+  const validation = validateSemanticClosure(manifest);
+
+  await fs.writeFile(semanticClosurePath, JSON.stringify(manifest, null, 2) + '\n', 'utf-8');
   await fs.writeFile(
     reportPath,
     renderReport({
       workItemId,
       manifestPath: rel(projectRoot, semanticClosurePath),
       source: build.source,
-      validation: build.validation,
+      validation,
       diagnostics: build.diagnostics,
     }),
-    'utf-8',
+    'utf-8'
   );
 
   return {
-    success: build.validation.passed,
+    success: validation.passed,
     work_item_id: workItemId,
-    semantic_closure_valid: build.validation.passed,
+    semantic_closure_valid: validation.passed,
     source: build.source,
     manifest_path: rel(projectRoot, semanticClosurePath),
     report_path: rel(projectRoot, reportPath),
-    errors: build.validation.errors,
-    warnings: build.validation.warnings,
+    errors: validation.errors,
+    warnings: validation.warnings,
+    provenance_valid: true,
+    contract_id: SEMANTIC_CLOSURE_CONTRACT_ID,
+    accepted_sources: SEMANTIC_CLOSURE_ACCEPTED_SOURCES,
+    next_action: validation.passed
+      ? 'Run verification_gate. Do not mutate verification inputs after the gate passes.'
+      : 'Correct the returned validation errors and call sf_semantic_closure_run again with the typed semantic_closure argument.',
   };
 });

@@ -5,6 +5,8 @@ export default tool({
   description:
     "将 SpecForge Work Item 受控产物写入白名单路径。正式 WI 产物必须使用 canonical file_type，不得用 work_log 承载 trigger_result/tasks/candidate_manifest/merge_report/evidence_manifest 等 required artifact。" +
     " JSON 产物的 content 必须是 JSON 字符串；如果上层传入对象，daemon 会尽量序列化，但 Agent 应优先使用 JSON.stringify 后的字符串。" +
+    " verification_report 必须使用 template=verification_report；daemon 会把结构化 Verification JSON 渲染为 Markdown，并保留可机读 fenced JSON。该产物和 evidence_manifest 由 sf-verifier 拥有。" +
+    " verification_gate 通过后验证输入被冻结；需要修改时必须先按恢复流程回到 implementation_ready。" +
     " file_type=work_item 时内容至少应包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
   args: {
     work_item_id: {
@@ -54,7 +56,7 @@ export default tool({
     },
     template: {
       description:
-        "Legacy 模板类型；新 v1.1 required artifact 应直接传 canonical file_type + content",
+        "verification_report 的规范渲染器；输入必须是结构化 Verification JSON 字符串",
       type: "string",
       enum: ["verification_report"],
     },

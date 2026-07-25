@@ -10,6 +10,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { runCloseGate } from '../../src/tools/lib/close-gate.js';
 import type { SemanticClosureManifest } from '../../src/tools/lib/semantic-closure-core.js';
+import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
 
 function investigationSemanticClosure(workItemId: string): SemanticClosureManifest {
   return {
@@ -193,9 +194,15 @@ async function createCloseReadyNoCodeWorkItem(
       2
     ) + '\n'
   );
+  const closure = investigationSemanticClosure(workItemId);
+  closure.provenance = await captureSemanticClosureProvenance({
+    workItemDir: wiDir,
+    source: 'test_fixture',
+    manifest: closure,
+  });
   await fs.writeFile(
     path.join(wiDir, '.semantic_closure.json'),
-    JSON.stringify(investigationSemanticClosure(workItemId), null, 2) + '\n'
+    JSON.stringify(closure, null, 2) + '\n'
   );
   return wiDir;
 }

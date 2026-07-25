@@ -118,3 +118,34 @@
 ### 用户级 live 部署一致性
 
 仓库 setup 源、installer registry 与静态一致性测试已经通过；当前环境没有 Bun，且未授权/未执行用户级 installer upgrade，因此 live 用户目录副本状态为 `INSUFFICIENT_EVIDENCE`。需在目标环境运行 installer upgrade/verify 与 SHA256 consistency check 后，才能宣称已部署一致。
+
+## 6. 2026-07-25 Semantic Closure 契约治理增量
+
+fj1 / WI-0006 暴露出新的生产者—消费者契约漂移：Verifier、Workflow、Artifact
+Writer、Semantic Closure Builder 与 Verification Gate 没有共享可发现的输入契约。
+该问题不属于 Knowledge Graph。
+
+本次增量采用 `semantic-closure/v1` typed Tool 输入，修复活跃 Artifact Writer 的模板
+旁路，把 Semantic Closure 提前到 Verification Gate 之前，由 Gate 在状态推进前校验
+结构化报告、测试、Evidence、变更审计、闭包和 provenance；Close Gate 再次复核
+provenance。Gate 后验证输入冻结，修改必须通过 `verification_done →
+implementation_ready` 恢复后重建闭包。
+
+完整设计、证据边界和恢复路径见：
+
+`docs/design/semantic-closure-contract-governance.md`
+
+该增量的定向验证结果：
+
+- Semantic Closure / FJ1 回归 / Verification Gate / Close Gate：12 files，60 tests 通过；
+- user-level wrapper 与 installer/deployment source consistency：4 files，19 tests 通过；
+- `@specforge/daemon-core` TypeScript no-emit：通过；
+- `git diff --check`：通过。
+
+全量 daemon 侦察运行并非绿色：83 个 test files 通过、50 个失败，1034 tests
+通过、277 个失败、17 个跳过。失败集中在既有旧状态期望、Session/WAL API、live
+用户目录与 sandbox HOME 写入等基线区域；本增量的上述定向测试在该后续隔离验证中
+通过。因此这里不声明“全仓测试全部通过”。
+
+远端服务器与 live 用户目录尚未在本次会话升级或复核，因此“仓库实现已验证”不等于
+“远端部署已更新”；该外部状态仍为 `INSUFFICIENT_EVIDENCE`。

@@ -10,7 +10,7 @@
 import path from 'path';
 import * as fs from 'node:fs';
 import { registerHandler } from '../ToolDispatcher';
-import { writeArtifact } from '../lib/sf_artifact_write_core';
+import { renderVerificationReport, writeArtifact } from '../lib/sf_artifact_write_core';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 import {
   validateArtifactJson,
@@ -35,10 +35,7 @@ import {
 } from '@specforge/types';
 import { inferManifestEntries } from '../lib/governance-invariants-v11';
 import { readAuthoritativeState } from '../lib/state-coordinator-v11';
-import {
-  isCandidateFrozenState,
-  isCandidateGovernancePath,
-} from '../lib/candidate-freeze-v11';
+import { isCandidateFrozenState, isCandidateGovernancePath } from '../lib/candidate-freeze-v11';
 import { validateTaskArtifactContract } from '../lib/sf_markdown_verification_parser';
 import {
   readDeclaredDesignAnalysisScope,
@@ -119,7 +116,12 @@ function readExplicitModuleReference(content: string): string | undefined {
   } catch {
     // Markdown Candidates use front matter instead of JSON.
   }
-  return readFrontMatterField(content, ['target_module_path', 'module_id', 'module_code', 'module']);
+  return readFrontMatterField(content, [
+    'target_module_path',
+    'module_id',
+    'module_code',
+    'module',
+  ]);
 }
 
 type ModuleOwnership = { declared: string[]; defaultModule: string | null; errors: string[] };
@@ -814,7 +816,11 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['candidate_module_trace', 'sf-task-planner'],
   ['investigation_plan', 'sf-investigator'],
   ['findings_report', 'sf-investigator'],
+  ['verification_report', 'sf-verifier'],
+  ['evidence_manifest', 'sf-verifier'],
 ]);
+
+const VERIFICATION_INPUT_ARTIFACT_TYPES = new Set(['verification_report', 'evidence_manifest']);
 
 function rejectProfessionalArtifactOwnership(fileType: string, context: any): any | null {
   const requiredAgent = PROFESSIONAL_ARTIFACT_OWNERS.get(String(fileType ?? ''));
@@ -914,6 +920,57 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
   if (inferredOwnershipRejection) return inferredOwnershipRejection;
 
+  if (VERIFICATION_INPUT_ARTIFACT_TYPES.has(fileType)) {
+    const state = await readAuthoritativeState({
+      deps,
+      projectRoot: baseDir,
+      workItemId,
+    });
+    if (
+      ['verification_done', 'closed', 'rejected', 'superseded'].includes(
+        String(state.current_state ?? '')
+      )
+    ) {
+      return {
+        success: false,
+        error: 'VERIFICATION_INPUTS_FROZEN',
+        hard_stop: false,
+        retry_allowed: false,
+        current_state: state.current_state,
+        state_authority: state.source,
+        message:
+          'verification_report and evidence_manifest are frozen after verification_gate passes. ' +
+          'Recover to implementation_ready before changing verification evidence, then regenerate semantic closure and rerun verification_gate.',
+      };
+    }
+  }
+
+  if (fileType === 'verification_report' && args['template'] !== 'verification_report') {
+    return {
+      success: false,
+      error: 'VERIFICATION_REPORT_TEMPLATE_REQUIRED',
+      hard_stop: false,
+      retry_allowed: true,
+      message:
+        'verification_report must use template=verification_report with the structured Verification JSON contract.',
+    };
+  }
+
+  if (fileType === 'verification_report' && args['template'] === 'verification_report') {
+    const rendered = renderVerificationReport(content);
+    if (rendered === null) {
+      return {
+        success: false,
+        error: 'INVALID_VERIFICATION_REPORT_JSON',
+        hard_stop: false,
+        retry_allowed: true,
+        message:
+          'template=verification_report requires a JSON object with conclusion and structured verification fields.',
+      };
+    }
+    content = rendered;
+  }
+
   let candidateModuleId: string | undefined;
   if (
     fileType === 'requirements' ||
@@ -1011,11 +1068,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     }
   }
 
-  if (
-    fileType === 'design' ||
-    fileType === 'candidate_design' ||
-    fileType === 'design_delta'
-  ) {
+  if (fileType === 'design' || fileType === 'candidate_design' || fileType === 'design_delta') {
     const requirement = await resolveSystemGovernanceRequirement(workItemId, baseDir);
     if (requirement.blocking_issue) {
       return {

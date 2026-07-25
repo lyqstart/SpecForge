@@ -157,7 +157,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 2. 实现完成后 `sf_changed_files_audit`（必须通过、零越权、`unresolved_blocked_write_attempts=0`）后 `implementation_running → implementation_done`。
 
 ### 阶段 7：验证与关闭
-1. `sf-verifier` 产出 `verification_report.md` 与证据；`sf_gate_run(verification_gate)` → `sf_semantic_closure_run` → `sf_code_permission(action="revoke")` → `sf_close_gate`，从 `verification_done` 关闭。
+1. `sf-verifier` 受控写入 `verification_report` 与 `evidence_manifest` 并返回 typed `semantic_closure`；`sf_semantic_closure_run(semantic_closure=<原样对象>)` → `sf_gate_run(verification_gate)` → `sf_code_permission(action="revoke")` → `sf_close_gate`。闭包无效时不得运行 verification gate。
 
 ## v1.1 治理硬约束（本工作流特有）
 1. 新模块只能在 architecture_change_path（或 spec_migration_path）上、经完整候选包 + Gate + 用户决策 + Merge 后接纳；不得据源码目录静默发明或改名模块。

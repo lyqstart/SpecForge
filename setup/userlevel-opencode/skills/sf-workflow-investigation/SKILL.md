@@ -219,9 +219,9 @@ Runtime 仍负责 `approved → merge_ready → merging → merged` 的治理状
 2. 确认未启用 `sf_code_permission`；
 3. 确认没有进入任何 implementation 状态；
 4. 由现有 Evidence 机制登记调查证据；
-5. 生成 Investigation profile 的 `.semantic_closure.json`；
-6. 调度 `sf-verifier` 独立核验计划、结论、证据、根因状态、Evidence-only Candidate 和 no-code audit；
-7. 通过 Verification Gate 从 `post_merge_verified` 推进到 `verification_running`，完成后进入 `verification_done`。
+5. 调度 `sf-verifier` 独立核验计划、结论、证据、根因状态、Evidence-only Candidate 和 no-code audit；由 verifier 受控写入报告与 Evidence，并返回 Investigation profile 的 typed `semantic_closure`；
+6. 调用 `sf_semantic_closure_run(semantic_closure=<verifier 原样对象>)` 生成并校验 `.semantic_closure.json`；
+7. 只有闭包有效时才运行 Verification Gate，由 Gate 从 `post_merge_verified` 推进到 `verification_running`，完成后进入 `verification_done`。
 
 无代码变更不等于无 Verification。
 

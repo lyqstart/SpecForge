@@ -358,6 +358,11 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 | tasks_gate pass | tasks | task 节点 |
 | verification_gate pass | verification | 全量同步 |
 
+验证收口必须遵循统一顺序：sf-verifier 受控写入报告与 Evidence 并返回 typed
+`semantic_closure` → `sf_semantic_closure_run(semantic_closure=<原样对象>)` →
+仅在闭包有效时执行 `sf_gate_run(verification_gate)` → 撤销代码权限 → close gate。
+Knowledge Graph 同步不是 Semantic Closure 的数据源或恢复路径。
+
 ## 安全执行规则汇总
 
 | 规则 | 说明 |

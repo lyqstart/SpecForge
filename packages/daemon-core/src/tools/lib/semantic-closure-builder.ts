@@ -18,6 +18,7 @@ import {
 export interface SemanticClosureBuildInput {
   workItemId: string;
   workItem?: Record<string, any> | null;
+  curatedSemanticClosure?: unknown;
   traceDeltaMd?: string;
   verificationReportMd?: string;
   evidenceManifest?: Record<string, any> | null;
@@ -29,6 +30,7 @@ export interface SemanticClosureBuildResult {
   validation: SemanticClosureValidationResult;
   source:
     | 'existing_semantic_closure'
+    | 'tool_argument'
     | 'verification_report_json'
     | 'evidence_manifest_semantic_closure'
     | 'evidence_manifest_sections'
@@ -123,7 +125,14 @@ function unique<T>(items: T[]): T[] {
   return Array.from(new Set(items));
 }
 
-function firstManifestFromJsonObject(value: unknown): SemanticClosureManifest | null {
+export function parseSemanticClosureManifest(value: unknown): SemanticClosureManifest | null {
+  if (typeof value === 'string') {
+    try {
+      return parseSemanticClosureManifest(JSON.parse(value));
+    } catch {
+      return null;
+    }
+  }
   if (!isRecord(value)) return null;
   if (isSemanticManifestCandidate(value.semantic_closure))
     return value.semantic_closure as SemanticClosureManifest;
@@ -142,7 +151,7 @@ function extractSemanticClosureFromMarkdown(
     if (!body) continue;
     try {
       const parsed = JSON.parse(body);
-      const manifest = firstManifestFromJsonObject(parsed);
+      const manifest = parseSemanticClosureManifest(parsed);
       if (manifest) return manifest;
     } catch {
       // ignore non-JSON fenced blocks
@@ -176,7 +185,7 @@ function manifestFromEvidenceManifestSections(
 ): SemanticClosureManifest | null {
   const em = input.evidenceManifest;
   if (!em) return null;
-  const direct = firstManifestFromJsonObject(em.semantic_closure);
+  const direct = parseSemanticClosureManifest(em.semantic_closure);
   if (direct) return { ...direct, work_item_id: direct.work_item_id ?? input.workItemId };
 
   if (
@@ -315,6 +324,34 @@ export function buildSemanticClosureFromArtifacts(
 ): SemanticClosureBuildResult {
   const diagnostics: string[] = [];
 
+  if (input.curatedSemanticClosure !== undefined) {
+    const supplied = parseSemanticClosureManifest(input.curatedSemanticClosure);
+    if (supplied) {
+      const manifest = {
+        ...supplied,
+        work_item_id: supplied.work_item_id ?? input.workItemId,
+      };
+      return {
+        manifest,
+        validation: validateSemanticClosure(manifest),
+        source: 'tool_argument',
+        diagnostics: [
+          'Semantic closure was supplied through the typed sf_semantic_closure_run contract.',
+        ],
+      };
+    }
+    diagnostics.push(
+      'INVALID_SEMANTIC_CLOSURE_ARGUMENT: semantic_closure must be a manifest object or a JSON string containing one.'
+    );
+    const manifest = insufficientManifest(input, diagnostics);
+    return {
+      manifest,
+      validation: validateSemanticClosure(manifest),
+      source: 'tool_argument',
+      diagnostics,
+    };
+  }
+
   const fromVerificationReport = extractSemanticClosureFromMarkdown(input.verificationReportMd);
   if (fromVerificationReport) {
     const manifest = {
@@ -353,8 +390,15 @@ export function buildSemanticClosureFromArtifacts(
     };
   }
 
+  diagnostics.push('No machine-readable semantic closure source was found.');
   diagnostics.push(
-    'No curated semantic_closure JSON block and no explicit OUT -> REQ -> DD -> TASK -> EV trace chain found.'
+    'Preferred recovery: call sf_semantic_closure_run with the typed semantic_closure argument containing outcomes, requirements, design_decisions, tasks, evidence, and project_integration.'
+  );
+  diagnostics.push(
+    'Backward-compatible sources: verification_report fenced JSON, evidence_manifest semantic sections, or explicit OUT -> REQ -> DD -> TASK -> EV trace chains.'
+  );
+  diagnostics.push(
+    'Knowledge Graph is not a Semantic Closure data source; do not add KG nodes to recover this error.'
   );
   diagnostics.push(
     'The builder does not infer semantic completion from prose, file existence, or compile output.'

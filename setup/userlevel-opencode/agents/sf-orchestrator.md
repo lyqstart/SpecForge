@@ -220,12 +220,18 @@ permission:
 变更审计通过
 → 必要的 sf-reviewer 审查
 → sf-verifier 执行测试和验收
-→ verification_report + evidence_manifest
-→ sf_gate_run(verification_gate)
-→ sf_semantic_closure_run
+→ sf-verifier 受控写入 verification_report + evidence_manifest，并返回 typed semantic_closure
+→ sf_semantic_closure_run(work_item_id, semantic_closure=<verifier 原样输出>)
+→ 仅当 semantic_closure_valid=true 时执行 sf_gate_run(verification_gate)
 → sf_code_permission(action="revoke")
 → sf_close_gate
 ```
+
+`verification_gate` 会同时校验结构化验证结论、测试状态、Evidence Manifest、变更审计、
+Semantic Closure 及其 provenance，然后才自动推进到 `verification_done`。主编排代理不得
+代写 verifier 产物、不得改写 `semantic_closure`、不得用 Knowledge Graph 补闭包。
+若闭包失败，重新调度 sf-verifier 修复输入；若 Gate 通过后确需改变任何验证输入，先从
+`verification_done` 恢复到 `implementation_ready`，再重新验证、重建闭包并重跑 Gate。
 
 关闭前必须确认权威状态为 `verification_done`，`trigger_result.json`、`candidate_manifest.json`、用户决策、合并报告、验证报告、证据清单、变更审计和语义闭包均有效；代码权限已撤销；没有未解决硬停止、门禁阻断、待处理扩展请求或恢复计划事项。只有 `sf_close_gate` 可以写入 `closed`。
 

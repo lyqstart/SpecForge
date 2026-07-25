@@ -28,6 +28,7 @@ import {
 } from './gate-report.js';
 import { validateApprovedUserDecisionForClose } from './governance-invariants-v11.js';
 import { validateSemanticClosure, type SemanticClosureManifest } from './semantic-closure-core.js';
+import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
 
 export interface CloseGateResult {
@@ -463,6 +464,17 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       path.join(ctx.workItemDir, '.semantic_closure.json')
     );
     checks.push(...semanticClosureChecks(semanticManifest, investigationWorkflow));
+    const provenanceValidation = await validateSemanticClosureProvenance(
+      ctx.workItemDir,
+      semanticManifest
+    );
+    checks.push({
+      check_id: 'close_semantic_closure_provenance_current',
+      description: 'semantic closure is bound to the current verification artifacts',
+      passed: provenanceValidation.passed,
+      severity: provenanceValidation.passed ? undefined : 'error',
+      details: provenanceValidation.errors.join('; ') || undefined,
+    });
   }
 
   try {

@@ -468,23 +468,21 @@ intake / impact / trigger_result
      5. side_effects: 无副作用检查
      6. summary: 验证总结
      ```
-3. 等待子 Agent 完成，获取验证 JSON
-4. **调用 `sf_artifact_write`** 渲染并写入验证报告：
-   - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
+3. 等待 sf-verifier 完成；确认它已受控写入 `verification_report` 与 `evidence_manifest`，并获取包含 typed `semantic_closure` 的验证 JSON。Orchestrator 不得代写或改写。
+4. **调用 `sf_semantic_closure_run`**（work_item_id=<id>, semantic_closure=<验证 JSON 中的原样对象>）；仅在 `semantic_closure_valid=true` 时继续。
 5. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_type="verification"）检查验证结果（统一 Gate Runner）
+6. **调用 `sf_gate_run`**（work_item_id=<id>, gate_ids=["verification_gate"]）检查验证、Evidence、变更审计、语义闭包及 provenance；通过后自动推进 `verification_done`
 7. 如果 Gate pass：
-   - 调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification gate passed"）
+   - 调用 `sf_code_permission(action="revoke")`
    - 调用 `sf_close_gate`（work_item_id=<id>）确认关闭条件满足
-   - 调用 `sf_state_transition`（from_state="verification_done"，to_state="closed"，evidence="close gate passed"）
-8. 如果 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 Gate 的 blocking_issues 作为修订反馈传递
+8. 如果闭包或 Gate fail：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier；不得用 Knowledge Graph 或手工产物绕过失败
 
 **⚠️ 重要规则：**
 
 - 必须先调用 `sf_gate_run`（统一 Gate Runner）确认 pass 后再流转状态
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
-- sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
+- sf-verifier 通过 sf_artifact_write 写入验证报告与 Evidence 并返回同一验证 JSON；Orchestrator 只负责 work_log 和提交原样 semantic_closure
 - 必须调用 `sf_close_gate` 确认关闭条件满足后，才能流转到 `closed`
 - `sf_state_read` 保留用于状态查询（legacy compatibility），但主流程不以它为门控
 - `sf_state_transition` 由 sf-orchestrator 通过 daemon 调用，Agent 不直接推进关键状态

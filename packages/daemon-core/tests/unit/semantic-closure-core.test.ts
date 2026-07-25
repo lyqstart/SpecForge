@@ -3,7 +3,10 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { validateSemanticClosure, type SemanticClosureManifest } from '../../src/tools/lib/semantic-closure-core.js';
+import {
+  validateSemanticClosure,
+  type SemanticClosureManifest,
+} from '../../src/tools/lib/semantic-closure-core.js';
 
 function closedManifest(): SemanticClosureManifest {
   return {
@@ -80,8 +83,12 @@ describe('validateSemanticClosure', () => {
     const result = validateSemanticClosure(manifest);
 
     expect(result.passed).toBe(false);
-    expect(result.errors.map((error) => error.check_id)).toContain('semantic_requirement_REQ-1_has_passed_evidence');
-    expect(result.errors.map((error) => error.check_id)).toContain('semantic_outcome_OUT-1_has_passed_evidence');
+    expect(result.errors.map(error => error.check_id)).toContain(
+      'semantic_requirement_REQ-1_has_passed_evidence'
+    );
+    expect(result.errors.map(error => error.check_id)).toContain(
+      'semantic_outcome_OUT-1_has_passed_evidence'
+    );
   });
 
   it('blocks required evidence when the evidence exists but is unknown', () => {
@@ -99,8 +106,12 @@ describe('validateSemanticClosure', () => {
     const result = validateSemanticClosure(manifest);
 
     expect(result.passed).toBe(false);
-    expect(result.errors.map((error) => error.check_id)).toContain('semantic_requirement_REQ-1_required_evidence_passed');
-    expect(result.errors.map((error) => error.check_id)).toContain('semantic_task_TASK-1_evidence_passed');
+    expect(result.errors.map(error => error.check_id)).toContain(
+      'semantic_requirement_REQ-1_required_evidence_passed'
+    );
+    expect(result.errors.map(error => error.check_id)).toContain(
+      'semantic_task_TASK-1_evidence_passed'
+    );
   });
 
   it('blocks missing project integration status', () => {
@@ -110,7 +121,9 @@ describe('validateSemanticClosure', () => {
     const result = validateSemanticClosure(manifest);
 
     expect(result.passed).toBe(false);
-    expect(result.errors.map((error) => error.check_id)).toContain('semantic_project_integration_closed');
+    expect(result.errors.map(error => error.check_id)).toContain(
+      'semantic_project_integration_closed'
+    );
   });
 
   it('blocks design decisions that are not justified by requirements', () => {
@@ -126,6 +139,24 @@ describe('validateSemanticClosure', () => {
     const result = validateSemanticClosure(manifest);
 
     expect(result.passed).toBe(false);
-    expect(result.errors.map((error) => error.check_id)).toContain('semantic_design_DD-1_has_requirement');
+    expect(result.errors.map(error => error.check_id)).toContain(
+      'semantic_design_DD-1_has_requirement'
+    );
+  });
+
+  it('blocks a shortcut chain that omits the design layer', () => {
+    const manifest = closedManifest();
+    manifest.design_decisions = [];
+    manifest.requirements![0].design_refs = [];
+    manifest.tasks![0].design_refs = [];
+
+    const result = validateSemanticClosure(manifest);
+
+    expect(result.passed).toBe(false);
+    expect(result.errors.map(error => error.check_id)).toContain('semantic_has_design_decisions');
+    expect(result.errors.map(error => error.check_id)).toContain(
+      'semantic_requirement_REQ-1_has_design'
+    );
+    expect(result.errors.map(error => error.check_id)).toContain('semantic_task_TASK-1_has_design');
   });
 });

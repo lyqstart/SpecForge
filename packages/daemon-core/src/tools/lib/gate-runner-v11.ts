@@ -61,6 +61,7 @@ import {
 } from './path-policy.js';
 import { checkContractIntegrity } from './contract-integrity.js';
 import { verifyChangedCodeContracts } from './code-contract-verifier.js';
+import { evaluateVerificationGovernanceContract } from './verification-governance-contract.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -535,21 +536,23 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
         const normalizedTargetPath = normalizeProjectSpecTargetPath(targetPath);
         const moduleId = moduleIdFromManifestEntry(entry);
         const newModuleRoot = moduleId ? `.specforge/project/modules/${moduleId}/` : '';
-        const newModuleFilename = newModuleRoot && normalizedTargetPath.startsWith(newModuleRoot)
-          ? normalizedTargetPath.slice(newModuleRoot.length)
-          : '';
+        const newModuleFilename =
+          newModuleRoot && normalizedTargetPath.startsWith(newModuleRoot)
+            ? normalizedTargetPath.slice(newModuleRoot.length)
+            : '';
         const governedModuleTarget = Boolean(
           governedModuleAdmission &&
-            moduleId &&
-            !declaredTargetPaths.has(normalizedTargetPath) &&
-            requiredNewModuleFiles.includes(newModuleFilename)
+          moduleId &&
+          !declaredTargetPaths.has(normalizedTargetPath) &&
+          requiredNewModuleFiles.includes(newModuleFilename)
         );
         if (governedModuleTarget && moduleId) {
           const files = governedModuleFiles.get(moduleId) ?? new Map<string, string>();
           files.set(newModuleFilename, candidatePath);
           governedModuleFiles.set(moduleId, files);
         }
-        const targetDeclared = declaredTargetPaths.has(normalizedTargetPath) || governedModuleTarget;
+        const targetDeclared =
+          declaredTargetPaths.has(normalizedTargetPath) || governedModuleTarget;
         checks.push({
           check_id: `entry_${i}_target_declared`,
           description: `Entry ${i}: target_path is declared or belongs to a governed new module`,
@@ -839,6 +842,12 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
     });
   }
 
+  const verificationContract = await evaluateVerificationGovernanceContract({
+    workItemDir: ctx.workItemDir,
+    workflowType: ctx.workflowType,
+  });
+  checks.push(...verificationContract.checks);
+
   try {
     evidenceManifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8')) as Record<
       string,
@@ -945,11 +954,21 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
     });
   }
 
-  return makeReport(ctx.workItemId, 'verification_gate', 'hard_gate', true, checks, [
-    reportPath,
-    manifestPath,
-    ...codeContracts.checked_files.map(file => path.join(ctx.projectRoot, file)),
-  ]);
+  return makeReport(
+    ctx.workItemId,
+    'verification_gate',
+    'hard_gate',
+    true,
+    checks,
+    Array.from(
+      new Set([
+        reportPath,
+        manifestPath,
+        ...verificationContract.inputFiles,
+        ...codeContracts.checked_files.map(file => path.join(ctx.projectRoot, file)),
+      ])
+    )
+  );
 });
 
 /**
@@ -1092,7 +1111,7 @@ registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
     'soft_gate',
     true,
     checks,
-    designArtifacts.map(a => a.path),
+    designArtifacts.map(a => a.path)
   );
 });
 
@@ -1112,7 +1131,7 @@ registerGate('contract_integrity_gate', 'hard_gate', true, async ctx => {
     'hard_gate',
     true,
     result.checks,
-    result.inputFiles,
+    result.inputFiles
   );
 });
 
@@ -1293,10 +1312,10 @@ async function checkProjectSpecRepairGate(ctx: GateContext): Promise<GateResult>
     if (plan.candidate_manifest_sha256 !== candidateManifestHash) {
       blockingIssues.push('project_spec_repair_plan candidate manifest hash is stale');
     }
-    if (
-      plan.manifest_sha256_before !== candidateManifest.project_spec_precondition_sha256
-    ) {
-      blockingIssues.push('repair plan and candidate manifest disagree on the Project Spec precondition');
+    if (plan.manifest_sha256_before !== candidateManifest.project_spec_precondition_sha256) {
+      blockingIssues.push(
+        'repair plan and candidate manifest disagree on the Project Spec precondition'
+      );
     }
 
     const currentManifestRaw = await fs.readFile(projectSpecManifest(ctx.projectRoot));
@@ -1323,7 +1342,9 @@ async function checkProjectSpecRepairGate(ctx: GateContext): Promise<GateResult>
       }
     }
   } catch (error) {
-    blockingIssues.push(`Project Spec repair artifacts are unreadable: ${(error as Error).message}`);
+    blockingIssues.push(
+      `Project Spec repair artifacts are unreadable: ${(error as Error).message}`
+    );
   }
 
   return {

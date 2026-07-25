@@ -226,7 +226,8 @@
 | §13.2 trace_delta.md | `packages/types/src/schema.ts` (TraceDeltaSchema) | Types | 6 impact types |
 | §13.3 verification_report.md | `packages/types/src/schema.ts` (VerificationReportSchema) | Types | Must reference evidence |
 | §13.4 evidence_manifest.json | `packages/types/src/schema.ts` (EvidenceManifestSchema) | Types | 8 evidence types |
-| §13.5 verification_gate | `packages/daemon-core/src/gate-runner-v11.ts` | Enforcement | 6-item check |
+| §13.5 verification_gate | `packages/daemon-core/src/tools/lib/gate-runner-v11.ts`, `verification-governance-contract.ts` | Enforcement | Structured report, tests, Evidence, audit, Semantic Closure and provenance |
+| §13.6 Semantic Closure | `semantic-closure-core.ts`, `semantic-closure-builder.ts`, `semantic-closure-provenance.ts`, `sf-semantic-closure-run.ts` | Contract + Enforcement | Typed producer contract with backward-compatible artifact sources |
 
 ---
 
@@ -423,7 +424,7 @@
 | `gate_summary_gate` | hard | §9.2, §9.5 | gate_summary.md, all gate reports | All required gates completed, summary generated, freeze triggers | Gate Runner |
 | `merge_ready_gate` | hard | §11.2 | user_decision.json, candidate_manifest.json | 14-item checklist | Gate Runner |
 | `post_merge_gate` | hard | §11.6 | merge_report.md, spec_manifest.json | 10-item checklist | Gate Runner |
-| `verification_gate` | soft | §13.5 | verification_report.md, evidence_manifest.json | 6-item checklist | Gate Runner |
+| `verification_gate` | hard | §13.5–§13.6 | verification_report.md, evidence_manifest.json, changed_files_audit.md, .semantic_closure.json | Structured verification + semantic proof + current provenance | Gate Runner |
 | `close_gate` | hard | §15.2 | All WI files | 17-item checklist | Gate Runner |
 | `extension_gate` | hard | Patch1 §12 | extension_request.json, extension_delta.md, candidate | 11-item checklist | Gate Runner |
 

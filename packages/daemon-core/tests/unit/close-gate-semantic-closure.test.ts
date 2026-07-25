@@ -7,6 +7,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { runCloseGate } from '../../src/tools/lib/close-gate.js';
 import type { SemanticClosureManifest } from '../../src/tools/lib/semantic-closure-core.js';
+import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
 
 function passingSemanticClosure(workItemId: string): SemanticClosureManifest {
   return {
@@ -78,37 +79,76 @@ async function createCloseReadyWorkItem(tmpDir: string, workItemId: string): Pro
         workflow_path: 'code_only_fast_path',
       },
       null,
-      2,
-    ) + '\n',
+      2
+    ) + '\n'
   );
   await fs.writeFile(path.join(wiDir, 'intake.md'), '# Intake\nUser outcome captured.\n');
-  await fs.writeFile(path.join(wiDir, 'change_classification.md'), '# Change Classification\ncode_only_fast_path\n');
+  await fs.writeFile(
+    path.join(wiDir, 'change_classification.md'),
+    '# Change Classification\ncode_only_fast_path\n'
+  );
   await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# Impact Analysis\nLow impact.\n');
   await fs.writeFile(
     path.join(wiDir, 'trigger_result.json'),
-    JSON.stringify({ work_item_id: workItemId, workflow_path: 'code_only_fast_path', triggered: true }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      workflow_path: 'code_only_fast_path',
+      triggered: true,
+    }) + '\n'
   );
   await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] TASK-1 implemented.\n');
-  await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1\n');
+  await fs.writeFile(
+    path.join(wiDir, 'trace_delta.md'),
+    '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1\n'
+  );
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
-    JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      entries: [],
+      workflow_path: 'code_only_fast_path',
+    }) + '\n'
   );
-  await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n\n- Overall Status: passed\n');
-  await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification Report\n\nEvidence EV-1 passed.\n');
-  await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge Report\n\nMerge Status: not_applicable\n');
-  await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n');
+  await fs.writeFile(
+    path.join(wiDir, 'gate_summary.md'),
+    '# Gate Summary\n\n- Overall Status: passed\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'verification_report.md'),
+    '# Verification Report\n\nEvidence EV-1 passed.\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'merge_report.md'),
+    '# Merge Report\n\nMerge Status: not_applicable\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'changed_files_audit.md'),
+    '# Changed Files Audit\n\n- Status: PASSED\n'
+  );
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
-    JSON.stringify({ work_item_id: workItemId, entries: [{ id: 'EV-1', type: 'behavioral_e2e', status: 'passed' }] }) + '\n',
+    JSON.stringify({
+      work_item_id: workItemId,
+      entries: [{ id: 'EV-1', type: 'behavioral_e2e', status: 'passed' }],
+    }) + '\n'
   );
   await fs.writeFile(
     path.join(wiDir, 'user_decision.json'),
-    JSON.stringify({ decision_status: 'approved', workflow_path: 'code_only_fast_path', timestamp: new Date().toISOString() }) + '\n',
+    JSON.stringify({
+      decision_status: 'approved',
+      workflow_path: 'code_only_fast_path',
+      timestamp: new Date().toISOString(),
+    }) + '\n'
   );
+  const semanticClosure = passingSemanticClosure(workItemId);
+  semanticClosure.provenance = await captureSemanticClosureProvenance({
+    workItemDir: wiDir,
+    source: 'test_fixture',
+    manifest: semanticClosure,
+  });
   await fs.writeFile(
     path.join(wiDir, '.semantic_closure.json'),
-    JSON.stringify(passingSemanticClosure(workItemId), null, 2) + '\n',
+    JSON.stringify(semanticClosure, null, 2) + '\n'
   );
 
   return wiDir;
@@ -132,7 +172,9 @@ describe('runCloseGate semantic closure hard gate', () => {
     const result = await runCloseGate({ workItemId, workItemDir: wiDir, projectRoot: tmpDir });
 
     expect(result.allChecksPassed).toBe(true);
-    expect(result.report.checks.find((check) => check.check_id === 'close_semantic_closure_valid')?.passed).toBe(true);
+    expect(
+      result.report.checks.find(check => check.check_id === 'close_semantic_closure_valid')?.passed
+    ).toBe(true);
   });
 
   it('fails closed when .semantic_closure.json is missing', async () => {
@@ -143,8 +185,14 @@ describe('runCloseGate semantic closure hard gate', () => {
     const result = await runCloseGate({ workItemId, workItemDir: wiDir, projectRoot: tmpDir });
 
     expect(result.allChecksPassed).toBe(false);
-    expect(result.report.checks.find((check) => check.check_id === 'close_file__semantic_closure_json')?.passed).toBe(false);
-    expect(result.report.checks.find((check) => check.check_id === 'close_semantic_closure_json_valid')?.passed).toBe(false);
+    expect(
+      result.report.checks.find(check => check.check_id === 'close_file__semantic_closure_json')
+        ?.passed
+    ).toBe(false);
+    expect(
+      result.report.checks.find(check => check.check_id === 'close_semantic_closure_json_valid')
+        ?.passed
+    ).toBe(false);
   });
 
   it('blocks compile-only evidence from closing user outcome', async () => {
@@ -160,12 +208,17 @@ describe('runCloseGate semantic closure hard gate', () => {
         supports: ['OUT-1', 'REQ-1', 'TASK-1'],
       },
     ];
-    await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(manifest, null, 2) + '\n');
+    await fs.writeFile(
+      path.join(wiDir, '.semantic_closure.json'),
+      JSON.stringify(manifest, null, 2) + '\n'
+    );
 
     const result = await runCloseGate({ workItemId, workItemDir: wiDir, projectRoot: tmpDir });
 
     expect(result.allChecksPassed).toBe(false);
-    const semanticCheck = result.report.checks.find((check) => check.check_id === 'close_semantic_closure_valid');
+    const semanticCheck = result.report.checks.find(
+      check => check.check_id === 'close_semantic_closure_valid'
+    );
     expect(semanticCheck?.passed).toBe(false);
     expect(semanticCheck?.details).toContain('semantic_outcome_OUT-1_has_passed_evidence');
   });
@@ -175,12 +228,17 @@ describe('runCloseGate semantic closure hard gate', () => {
     const wiDir = await createCloseReadyWorkItem(tmpDir, workItemId);
     const manifest = passingSemanticClosure(workItemId);
     delete manifest.project_integration;
-    await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(manifest, null, 2) + '\n');
+    await fs.writeFile(
+      path.join(wiDir, '.semantic_closure.json'),
+      JSON.stringify(manifest, null, 2) + '\n'
+    );
 
     const result = await runCloseGate({ workItemId, workItemDir: wiDir, projectRoot: tmpDir });
 
     expect(result.allChecksPassed).toBe(false);
-    const semanticCheck = result.report.checks.find((check) => check.check_id === 'close_semantic_closure_valid');
+    const semanticCheck = result.report.checks.find(
+      check => check.check_id === 'close_semantic_closure_valid'
+    );
     expect(semanticCheck?.details).toContain('semantic_project_integration_closed');
   });
 });

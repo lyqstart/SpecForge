@@ -2,8 +2,9 @@
  * semantic-closure-core.ts — minimal semantic closure validator.
  *
  * This module is intentionally pure: it does not read files, write state,
- * advance workflow, or depend on daemon runtime objects. The core remains pure: it validates a machine-readable semantic closure manifest
- * produced by sf_semantic_closure_run and consumed by close_gate.
+ * advance workflow, or depend on daemon runtime objects. It validates a
+ * machine-readable manifest produced by sf_semantic_closure_run and consumed
+ * by verification_gate and close_gate.
  */
 
 export type SemanticClosureSeverity = 'error' | 'warning';
@@ -19,6 +20,7 @@ export interface SemanticOutcome {
 
 export interface SemanticRequirement {
   id: string;
+  description?: string;
   type?: string;
   requirement_type?: string;
   outcome_refs?: string[];
@@ -29,12 +31,14 @@ export interface SemanticRequirement {
 
 export interface SemanticDesignDecision {
   id: string;
+  description?: string;
   requirement_refs?: string[];
   task_refs?: string[];
 }
 
 export interface SemanticTask {
   id: string;
+  description?: string;
   requirement_refs?: string[];
   design_refs?: string[];
   evidence_refs?: string[];
@@ -42,6 +46,7 @@ export interface SemanticTask {
 
 export interface SemanticEvidence {
   id: string;
+  description?: string;
   status?: SemanticEvidenceStatus;
   level?: string;
   evidence_type?: string;
@@ -71,6 +76,17 @@ export interface SemanticProjectIntegration {
   refs?: string[];
 }
 
+export interface SemanticClosureProvenance {
+  contract_id: string;
+  generated_at: string;
+  source: string;
+  semantic_payload_sha256: string;
+  inputs: Array<{
+    path: string;
+    sha256: string;
+  }>;
+}
+
 export interface SemanticClosureManifest {
   schema_version?: string;
   closure_profile?: string;
@@ -84,6 +100,7 @@ export interface SemanticClosureManifest {
   investigation_questions?: SemanticInvestigationQuestion[];
   findings?: SemanticFinding[];
   project_integration?: SemanticProjectIntegration;
+  provenance?: SemanticClosureProvenance;
 }
 
 export interface SemanticClosureCheck {
@@ -228,6 +245,47 @@ function linkedTaskIdsForRequirement(
   const reverse = tasks
     .filter(task => refs(task.requirement_refs).includes(requirement.id))
     .map(task => task.id);
+  return Array.from(new Set([...explicit, ...reverse]));
+}
+
+function linkedDesignIdsForRequirement(
+  requirement: SemanticRequirement,
+  designDecisions: SemanticDesignDecision[]
+): string[] {
+  const explicit = refs(requirement.design_refs);
+  const reverse = designDecisions
+    .filter(decision => refs(decision.requirement_refs).includes(requirement.id))
+    .map(decision => decision.id);
+  return Array.from(new Set([...explicit, ...reverse]));
+}
+
+function linkedTaskIdsForDesign(decision: SemanticDesignDecision, tasks: SemanticTask[]): string[] {
+  const explicit = refs(decision.task_refs);
+  const reverse = tasks
+    .filter(task => refs(task.design_refs).includes(decision.id))
+    .map(task => task.id);
+  return Array.from(new Set([...explicit, ...reverse]));
+}
+
+function linkedRequirementIdsForTask(
+  task: SemanticTask,
+  requirements: SemanticRequirement[]
+): string[] {
+  const explicit = refs(task.requirement_refs);
+  const reverse = requirements
+    .filter(requirement => refs(requirement.task_refs).includes(task.id))
+    .map(requirement => requirement.id);
+  return Array.from(new Set([...explicit, ...reverse]));
+}
+
+function linkedDesignIdsForTask(
+  task: SemanticTask,
+  designDecisions: SemanticDesignDecision[]
+): string[] {
+  const explicit = refs(task.design_refs);
+  const reverse = designDecisions
+    .filter(decision => refs(decision.task_refs).includes(task.id))
+    .map(decision => decision.id);
   return Array.from(new Set([...explicit, ...reverse]));
 }
 
@@ -498,6 +556,12 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
     severity: requirements.length > 0 ? undefined : 'error',
   });
   addCheck({
+    check_id: 'semantic_has_design_decisions',
+    description: 'At least one design decision is declared',
+    passed: designDecisions.length > 0,
+    severity: designDecisions.length > 0 ? undefined : 'error',
+  });
+  addCheck({
     check_id: 'semantic_has_tasks',
     description: 'At least one task is declared',
     passed: tasks.length > 0,
@@ -581,6 +645,14 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
       details: refErrors,
     });
 
+    const linkedDesigns = linkedDesignIdsForRequirement(requirement, designDecisions);
+    addCheck({
+      check_id: `semantic_requirement_${requirement.id}_has_design`,
+      description: `Requirement ${requirement.id} is realized by at least one design decision`,
+      passed: linkedDesigns.length > 0,
+      severity: linkedDesigns.length > 0 ? undefined : 'error',
+    });
+
     if (isMustRequirement(requirement)) {
       const linkedTasks = linkedTaskIdsForRequirement(requirement, tasks);
       addCheck({
@@ -632,6 +704,13 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
       passed: linkedRequirements.length > 0,
       severity: linkedRequirements.length > 0 ? undefined : 'error',
     });
+    const linkedTasks = linkedTaskIdsForDesign(decision, tasks);
+    addCheck({
+      check_id: `semantic_design_${decision.id}_has_task`,
+      description: `Design decision ${decision.id} is implemented by at least one task`,
+      passed: linkedTasks.length > 0,
+      severity: linkedTasks.length > 0 ? undefined : 'error',
+    });
   }
 
   for (const task of tasks) {
@@ -647,6 +726,21 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
       details: refErrors,
     });
 
+    const linkedRequirements = linkedRequirementIdsForTask(task, requirements);
+    addCheck({
+      check_id: `semantic_task_${task.id}_has_requirement`,
+      description: `Task ${task.id} implements at least one requirement`,
+      passed: linkedRequirements.length > 0,
+      severity: linkedRequirements.length > 0 ? undefined : 'error',
+    });
+    const linkedDesigns = linkedDesignIdsForTask(task, designDecisions);
+    addCheck({
+      check_id: `semantic_task_${task.id}_has_design`,
+      description: `Task ${task.id} implements at least one design decision`,
+      passed: linkedDesigns.length > 0,
+      severity: linkedDesigns.length > 0 ? undefined : 'error',
+    });
+
     const explicitEvidenceRefs = refs(task.evidence_refs);
     const badEvidenceRefs = explicitEvidenceRefs.filter(
       refId => !explicitRequiredEvidenceIsPassed(refId, evidenceById)
@@ -654,8 +748,9 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
     addCheck({
       check_id: `semantic_task_${task.id}_evidence_passed`,
       description: `Task ${task.id} evidence exists, passed, and is not weak evidence`,
-      passed: badEvidenceRefs.length === 0,
-      severity: badEvidenceRefs.length === 0 ? undefined : 'error',
+      passed: explicitEvidenceRefs.length > 0 && badEvidenceRefs.length === 0,
+      severity:
+        explicitEvidenceRefs.length > 0 && badEvidenceRefs.length === 0 ? undefined : 'error',
       details: badEvidenceRefs,
     });
   }

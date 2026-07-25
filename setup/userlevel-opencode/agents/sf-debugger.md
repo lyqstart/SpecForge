@@ -291,9 +291,12 @@ environment_defect
 
 ### 调试 Evidence 操作
 
-1. **读取现有 Evidence**：通过 `sf_evidence_query` 查询 executor 已收集的 Evidence
-2. **补充调试 Evidence**：通过 `sf_evidence_write` 写入调试过程中发现的新证据
-3. **关联到 Evidence Request**：调试 Evidence 应关联到对应的 Evidence Request
+1. **读取现有 Evidence**：读取 `evidence/evidence_manifest.json` 及其中登记的可复核位置
+2. **补充调试 Evidence**：把原始输出、来源位置和建议 Evidence ID 返回给
+   Orchestrator / Verifier；Debugger 不得代写 Verifier 拥有的 manifest
+3. **登记与关联**：由 `sf-verifier` 通过
+   `sf_artifact_write(file_type="evidence_manifest")` 受控登记，并关联对应的
+   Evidence Request；当前没有独立的 Evidence 写入/查询工具，不得猜测工具名
 
 ---
 

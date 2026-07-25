@@ -126,7 +126,10 @@ Feature Spec 是规格优先工作流，验证强度最高。必须保证用户�
 5. Gate 阶段不得创建 placeholder 的 `verification_report`、`merge_report`、`evidence_manifest` 来通过当前阶段。
 6. 每个阶段最多一次自检、一次修正、一次继续；仍失败则报告阻塞事实。
 7. 写权限撤销顺序固定为：实现完成后先运行一次 `sf_changed_files_audit`，再调度 `sf-verifier`，再写入 `verification_report` 与 `evidence_manifest`，最后在 close_gate 前调用 `sf_code_permission revoke`。不得在验证前 revoke。
-8. `sf-verifier` 是只读验证角色，不得调用 `sf_changed_files_audit`。如果需要审计证据，应读取或引用已有 `changed_files_audit.md`，不得重跑审计。
+8. `sf-verifier` 对业务源码和其他专业产物只读；除自己拥有的
+   `verification_report` / `evidence_manifest` 外不得写文件，也不得调用
+   `sf_changed_files_audit`。如果需要审计证据，应读取或引用已有
+   `changed_files_audit.md`，不得重跑审计。
 9. 如果 `sf_changed_files_audit` 在 revoke 后被误调用，daemon 应使用 `allowed_write_files_snapshot` 做只读审计，不得触发 `CODE_PERMISSION_NOT_ENABLED`。
 # Feature Spec 工作流执行协议（Requirements-First · v1.1）
 
@@ -459,17 +462,16 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
      5. side_effects: 无副作用检查
      6. summary: 验证总结
      ```
-4. 等待子 Agent 完成，获取验证 JSON
-5. **调用 `sf_artifact_write`** 渲染并写入验证报告：
-   - `sf_artifact_write`（work_item_id=<id>, file_type="verification_report", template="verification_report", content=<验证 JSON 字符串>）
+4. 等待 sf-verifier 完成；确认其已受控写入 `verification_report` 与 `evidence_manifest`，获取包含 typed `semantic_closure` 的验证 JSON
+5. **调用 `sf_semantic_closure_run`**（work_item_id=<id>, semantic_closure=<验证 JSON 中的原样对象>）；闭包无效时重新调度 verifier，不得继续 Gate
 6. **调用 `sf_artifact_write`** 写入工作日志：
    - `sf_artifact_write`（work_item_id=<id>, file_type="work_log", run_id=<run_id>, agent_content=<验证 JSON 的 summary>）
-7. 如果验证通过：调用 `sf_state_transition`（from_state="verification_running"，to_state="verification_done"，evidence="verification passed"）
+7. 如果闭包有效：调用 `sf_gate_run(gate_ids=["verification_gate"])`；Gate Runner 通过后自动推进 `verification_done`
 8. 如果验证失败：**生成新的 run_id**（如 WI-001-sf-verifier-2），重新调度 sf-verifier 补充缺失内容，将 blocking_issues 作为修订反馈传递
 
 **⚠️ 重要规则：**
 - 每次重新调度 sf-verifier 必须使用新的 run_id 和新的 archive_path，不得复用之前的
-- sf-verifier 返回验证 JSON，Orchestrator 负责调用 sf_artifact_write 写入报告和工作日志
+- sf-verifier 自己受控写入验证报告与 Evidence；Orchestrator 只写 work_log，并把 `semantic_closure` 原样提交给专用 Tool
 
 **产物：** 验证报告（由 sf_artifact_write 渲染写入）
 
@@ -681,6 +683,7 @@ implementation_running → implementation_done
 调度 sf-verifier
 sf_artifact_write verification_report
 sf_artifact_write evidence_manifest
+sf_semantic_closure_run(work_item_id=WI-XXXX, semantic_closure=<verifier 原样输出>)
 sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
 ```
 
@@ -688,10 +691,12 @@ sf_gate_run(work_item_id=WI-XXXX, gate_ids=["verification_gate"])
 
 ```text
 1. implementation_running → implementation_done 只允许在 executor 全部完成且 changed_files_audit passed 后执行一次；
-2. sf-verifier 是只读验证角色，不得调用 changed_files_audit；
-3. verification_report 和 evidence_manifest 写入完成后，必须调用 verification_gate；
-4. verification_gate 通过后，由 gate_runner 自动推进 implementation_done → verification_running → verification_done；
-5. 不得手动推进 verification_done。
+2. sf-verifier 对业务源码只读，仅通过受控 Writer 写入自己拥有的验证产物，
+   不得调用 changed_files_audit；
+3. verification_report、evidence_manifest 和 changed_files_audit 完成后，必须先调用 semantic_closure_run；
+4. 只有 semantic_closure_valid=true 才能调用 verification_gate；
+5. verification_gate 通过后，由 gate_runner 自动推进 implementation_done → verification_running → verification_done；
+6. 不得手动推进 verification_done；Gate 后若需修改验证输入，必须先恢复到 implementation_ready。
 ```
 
 ## 阶段 11：verification_done → closed
@@ -720,8 +725,9 @@ Orchestrator 在后半段每次继续前必须自检：
 2. 是否没有手动补 post_merge_verified？
 3. 是否没有手动补 implementation_ready？
 4. verification_report / evidence_manifest 是否已写入？
-5. verification_done 是否由 verification_gate 推进？
-6. closed 是否由 close_gate 推进？
+5. semantic_closure 是否在 verification_gate 前生成并通过？
+6. verification_done 是否由 verification_gate 推进？
+7. closed 是否由 close_gate 推进？
 ```
 
 任一为否，必须停止并按本节修正流程。

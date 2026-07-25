@@ -1428,6 +1428,10 @@ Reason: ...
 
 验证报告不得只写"已验证"。必须引用 Evidence。
 
+验证报告的专业所有者是 `sf-verifier`。`sf-verifier` 必须通过受控 Artifact Writer
+写入结构化 Verification JSON；Runtime 负责渲染 Markdown 并保留机器可读 JSON。
+Orchestrator 不得代写、补写或改写 Verifier 的结论。
+
 ### 13.4 evidence_manifest.json
 
 所有证据必须登记到：
@@ -1460,6 +1464,66 @@ Merge Report
 4. required tests 已执行或明确 not_applicable。
 5. changed_files_audit 已完成。
 6. Trace 与 Evidence 可连接。
+7. 适用工作流的 `.semantic_closure.json` 已通过语义校验、与 Evidence Manifest 对账，
+   且 provenance 证明它绑定到当前版本的验证报告、Evidence、Trace、Merge 和变更审计。
+
+`verification_gate` 只有在以上检查全部通过后才能推进到 `verification_done`。
+
+### 13.6 Semantic Closure 生产者契约
+
+Semantic Closure 是用户业务目标完成证明，不是测试通过的同义词。除
+`contract_change` 等由工作流标准明确声明不适用通用闭包的类型外，Verification Gate
+之前必须由 `sf_semantic_closure_run` 生成：
+
+```text
+.specforge/work-items/<WI-ID>/.semantic_closure.json
+.specforge/work-items/<WI-ID>/semantic_closure_report.md
+```
+
+正常实现型工作流使用 `semantic-closure/v1`，至少显式声明：
+
+```text
+outcomes
+requirements
+design_decisions
+tasks
+evidence
+project_integration
+```
+
+闭包必须证明 `OUT → REQ → DD → TASK → EV`。MUST Requirement 必须由直接支持该
+Requirement 的 passed、非弱 Evidence 证明；Evidence 的 status、level、type 和
+supports 必须与 `evidence_manifest.json` 登记一致。Knowledge Graph 不是 Semantic
+Closure 的数据源，也不得作为闭包失败的恢复路径。
+
+权威输入方式为 `sf_semantic_closure_run(work_item_id, semantic_closure=<typed object>)`。
+兼容历史产物时，Runtime 还可以读取：
+
+1. verification_report fenced JSON 中的 `semantic_closure`；
+2. evidence_manifest 的语义 sections；
+3. trace_delta 中显式的 `OUT → REQ → DD → TASK → EV` 链。
+
+Tool Schema、Verifier Required Output、Workflow Skill、Artifact Writer、Builder 与 Gate
+必须对同一个 typed contract 保持一致。不得要求 Agent 从模糊错误文本反推隐藏格式。
+
+闭包生成时必须记录输入 hash provenance。闭包生成后若 verification_report、
+evidence_manifest、trace_delta、merge_report、changed_files_audit 或闭包 payload
+变化，Verification/Close Gate 必须判定闭包陈旧并失败。Verification Gate 通过后，
+验证输入冻结；如确需修改，必须从 `verification_done` 合法恢复到
+`implementation_ready`，重新验证、重新生成闭包并重跑 Verification Gate。
+
+强制收口顺序：
+
+```text
+changed_files_audit passed
+→ sf-verifier 写 verification_report + evidence_manifest，并返回 typed semantic_closure
+→ sf_semantic_closure_run
+→ semantic_closure_valid=true
+→ verification_gate
+→ verification_done
+→ code_permission revoke
+→ close_gate
+```
 
 ---
 
@@ -2179,6 +2243,8 @@ User Request
 → verification_report.md
 → evidence_manifest.json
 → changed_files_audit
+→ sf_semantic_closure_run
+→ verification_gate
 → code_permission revoke
 → close_gate
 → closed

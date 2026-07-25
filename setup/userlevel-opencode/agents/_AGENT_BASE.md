@@ -488,7 +488,10 @@ Evidence 体系的层级结构：
 - **Evidence Bundle（EB）**：完整验证周期的所有证据包
 - **Evidence Artifact（EA）**：单条证据的原始内容（文件、日志、截图、命令输出等）
 
-Evidence 存储在 `.specforge/work-items/<work_item_id>/evidence/` 目录下，通过 `index.json` 索引。sub-agent 通过 `sf_evidence_write` 和 `sf_evidence_query` 工具操作 Evidence。
+Evidence 登记在
+`.specforge/work-items/<work_item_id>/evidence/evidence_manifest.json`。拥有该产物的
+`sf-verifier` 通过 `sf_artifact_write(file_type="evidence_manifest")` 受控写入；
+其他 Agent 返回原始证据及其可复核位置，不得调用未注册工具或用 shell 手写治理产物。
 
 ---
 
