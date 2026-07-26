@@ -11,7 +11,11 @@
  */
 
 import { registerHandler } from '../ToolDispatcher';
-import { authorContractCandidate, type RegistrationKind } from '../lib/contract-authoring';
+import {
+  authorContractCandidate,
+  type ContractCandidateAction,
+  type RegistrationKind,
+} from '../lib/contract-authoring';
 
 const VALID_KINDS: RegistrationKind[] = [
   'shared_enum',
@@ -25,12 +29,24 @@ registerHandler('sf_contract_register', async (args, context) => {
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
-  const kind = args['kind'] as RegistrationKind;
+  const action = (args['action'] as ContractCandidateAction | undefined) ?? 'add';
+  const kind = args['kind'] as RegistrationKind | undefined;
   const entry = args['entry'] as Record<string, unknown> | undefined;
   const workflowPath = args['workflow_path'] as string | undefined;
 
   if (!workItemId) {
     return { success: false, error: 'work_item_id is required' };
+  }
+  if (action !== 'add' && action !== 'reset') {
+    return { success: false, error: 'action must be one of: add, reset' };
+  }
+  if (action === 'reset') {
+    return authorContractCandidate({
+      projectRoot,
+      workItemId,
+      action,
+      workflowPath,
+    });
   }
   if (!kind || !VALID_KINDS.includes(kind)) {
     return {
@@ -42,5 +58,5 @@ registerHandler('sf_contract_register', async (args, context) => {
     return { success: false, error: 'entry (contract entry object) is required' };
   }
 
-  return authorContractCandidate({ projectRoot, workItemId, kind, entry, workflowPath });
+  return authorContractCandidate({ projectRoot, workItemId, action, kind, entry, workflowPath });
 });

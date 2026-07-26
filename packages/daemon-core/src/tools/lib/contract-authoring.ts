@@ -3,12 +3,15 @@
  *
  * This is the "proposal-form filler" for the cross-module contract model. It
  * does NOT write the project truth source. It only:
- *   1. reads the existing WI candidate registry when present; otherwise reads
- *      the current project extension_registry.json (or an empty template),
- *   2. adds one contract entry to the `contracts` block (dedup-guarded),
- *   3. writes the proposed full registry to
+ *   1. for action=add, reads the existing WI candidate registry when present;
+ *      otherwise reads the current project extension_registry.json,
+ *   2. for action=reset, discards the current WI candidate content and rebuilds
+ *      it from the current project extension_registry.json,
+ *   3. for action=add, adds one contract entry to the `contracts` block
+ *      (dedup-guarded),
+ *   4. writes the proposed full registry to
  *      `candidates/project/extension_registry.json` (a WI candidate), and
- *   4. registers an explicit entry in `candidate_manifest.json` targeting
+ *   5. registers an explicit entry in `candidate_manifest.json` targeting
  *      `.specforge/project/extension_registry.json`.
  *
  * From there the change flows through the SAME governed path as any project-spec
@@ -25,6 +28,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 export type ContractKind = 'shared_enum' | 'invariant' | 'public_interface' | 'extension_point';
 
 export type RegistrationKind = ContractKind | 'namespace_type';
+export type ContractCandidateAction = 'add' | 'reset';
 
 type NamespaceName =
   | 'requirement_types'
@@ -54,6 +58,7 @@ const TARGET_REL = '.specforge/project/extension_registry.json';
 
 export interface AuthorContractResult {
   success: boolean;
+  action?: ContractCandidateAction;
   error?: string;
   candidate_path?: string;
   target_path?: string;
@@ -81,11 +86,62 @@ function emptyRegistry(): Record<string, any> {
 export async function authorContractCandidate(params: {
   projectRoot: string;
   workItemId: string;
-  kind: RegistrationKind;
-  entry: Record<string, unknown>;
+  action?: ContractCandidateAction;
+  kind?: RegistrationKind;
+  entry?: Record<string, unknown>;
   workflowPath?: string;
 }): Promise<AuthorContractResult> {
-  const { projectRoot, workItemId, kind, entry } = params;
+  const { projectRoot, workItemId } = params;
+  const action = params.action ?? 'add';
+  const kind = params.kind;
+  const entry = params.entry;
+
+  if (action !== 'add' && action !== 'reset') {
+    return { success: false, error: `invalid contract candidate action: ${action}` };
+  }
+
+  const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
+  const candidateAbs = path.join(wiDir, 'candidates', 'project', 'extension_registry.json');
+  const registryPath = path.join(projectRoot, SPEC_DIR_NAME, 'project', 'extension_registry.json');
+
+  let liveRegistry: Record<string, any>;
+  try {
+    liveRegistry = JSON.parse(await fs.readFile(registryPath, 'utf-8'));
+    if (!liveRegistry || typeof liveRegistry !== 'object') {
+      return {
+        success: false,
+        error: `live extension_registry is invalid: ${registryPath}`,
+      };
+    }
+  } catch (liveError: any) {
+    if (liveError?.code === 'ENOENT') {
+      liveRegistry = emptyRegistry();
+    } else {
+      return {
+        success: false,
+        error: `failed to read live extension_registry: ${liveError?.message ?? String(liveError)}`,
+      };
+    }
+  }
+
+  if (action === 'reset') {
+    const next: Record<string, any> = JSON.parse(JSON.stringify(liveRegistry));
+    return writeContractCandidate({
+      projectRoot,
+      workItemId,
+      workflowPath: params.workflowPath,
+      registry: next,
+      action,
+      contractRef: undefined,
+    });
+  }
+
+  if (!kind) {
+    return { success: false, error: 'kind is required when action=add' };
+  }
+  if (!entry || typeof entry !== 'object') {
+    return { success: false, error: 'entry (contract entry object) is required when action=add' };
+  }
 
   const field = kind === 'namespace_type' ? null : KIND_TO_FIELD[kind];
   const namespace = String((entry as any)?.namespace ?? '').trim() as NamespaceName;
@@ -117,12 +173,8 @@ export async function authorContractCandidate(params: {
     }
   }
 
-  const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
-  const candidateAbs = path.join(wiDir, 'candidates', 'project', 'extension_registry.json');
-
   // 1. Read the existing WI candidate first so repeated registrations accumulate.
   //    Only the first registration starts from the live project registry.
-  const registryPath = path.join(projectRoot, SPEC_DIR_NAME, 'project', 'extension_registry.json');
   let registry: Record<string, any>;
   try {
     registry = JSON.parse(await fs.readFile(candidateAbs, 'utf-8'));
@@ -139,13 +191,7 @@ export async function authorContractCandidate(params: {
         error: `failed to read existing extension_registry candidate: ${candidateError?.message ?? String(candidateError)}`,
       };
     }
-
-    try {
-      registry = JSON.parse(await fs.readFile(registryPath, 'utf-8'));
-      if (!registry || typeof registry !== 'object') registry = emptyRegistry();
-    } catch {
-      registry = emptyRegistry();
-    }
+    registry = JSON.parse(JSON.stringify(liveRegistry));
   }
 
   // 2. Clone + add the contract entry to the contracts block (dedup-guarded).
@@ -180,8 +226,31 @@ export async function authorContractCandidate(params: {
   next.updated_by_work_item = workItemId;
   next.updated_at = new Date().toISOString();
 
-  // 3. Validate the existing manifest identity before creating any candidate.
+  return writeContractCandidate({
+    projectRoot,
+    workItemId,
+    workflowPath: params.workflowPath,
+    registry: next,
+    action,
+    contractRef:
+      kind === 'namespace_type'
+        ? `[extension:${namespace}:${typeId}]`
+        : `[contract:${kind}:${id} owner=${owner}]`,
+  });
+}
+
+async function writeContractCandidate(params: {
+  projectRoot: string;
+  workItemId: string;
+  workflowPath?: string;
+  registry: Record<string, any>;
+  action: ContractCandidateAction;
+  contractRef?: string;
+}): Promise<AuthorContractResult> {
+  const wiDir = path.join(params.projectRoot, SPEC_DIR_NAME, 'work-items', params.workItemId);
+  const candidateAbs = path.join(wiDir, 'candidates', 'project', 'extension_registry.json');
   const manifestPath = path.join(wiDir, 'candidate_manifest.json');
+
   let manifest: Record<string, any> | null = null;
   try {
     manifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8'));
@@ -191,11 +260,11 @@ export async function authorContractCandidate(params: {
   if (!manifest || typeof manifest !== 'object') {
     manifest = {
       schema_version: '1.0',
-      work_item_id: workItemId,
+      work_item_id: params.workItemId,
       workflow_type: 'contract_change',
       workflow_path: params.workflowPath ?? 'contract_change_path',
       candidate_phase: 'full',
-      base_spec_version: registry.project_spec_version ?? 'PSV-0001',
+      base_spec_version: params.registry.project_spec_version ?? 'PSV-0001',
       merge_required: true,
       entries: [],
     };
@@ -211,13 +280,11 @@ export async function authorContractCandidate(params: {
     };
   }
 
-  // 4. Write the proposed registry as a WI candidate (not the truth source).
   await fs.mkdir(path.dirname(candidateAbs), { recursive: true });
-  await fs.writeFile(candidateAbs, JSON.stringify(next, null, 2) + '\n', 'utf-8');
+  await fs.writeFile(candidateAbs, JSON.stringify(params.registry, null, 2) + '\n', 'utf-8');
 
-  // 5. Register the explicit merge entry in candidate_manifest.json.
   if (!Array.isArray(manifest.entries)) manifest.entries = [];
-  manifest.work_item_id = workItemId;
+  manifest.work_item_id = params.workItemId;
   if (!manifest.schema_version) manifest.schema_version = '1.0';
   if (!manifest.workflow_path)
     manifest.workflow_path = params.workflowPath ?? 'contract_change_path';
@@ -242,13 +309,11 @@ export async function authorContractCandidate(params: {
 
   return {
     success: true,
+    action: params.action,
     candidate_path: CANDIDATE_REL,
     target_path: TARGET_REL,
     manifest_path: manifestPath,
-    contract_ref:
-      kind === 'namespace_type'
-        ? `[extension:${namespace}:${typeId}]`
-        : `[contract:${kind}:${id} owner=${owner}]`,
-    registry_after: next,
+    contract_ref: params.contractRef,
+    registry_after: params.registry,
   };
 }

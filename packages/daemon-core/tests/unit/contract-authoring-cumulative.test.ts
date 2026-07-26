@@ -151,6 +151,76 @@ describe('authorContractCandidate cumulative registration', () => {
     expect(live.updated_by_work_item).toBeNull();
   });
 
+  it('reset removes polluted candidate entries and rebuilds from the live registry', async () => {
+    await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'public_interface',
+      entry: {
+        id: 'sync_pull_request_v1',
+        owner_module: 'sync',
+        description: 'placeholder - will be rebuilt',
+      },
+    });
+
+    const reset = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      action: 'reset',
+    });
+
+    expect(reset.success).toBe(true);
+    expect(reset.action).toBe('reset');
+
+    const resetContracts = reset.registry_after?.contracts as {
+      public_interfaces: unknown[];
+    };
+    expect(resetContracts.public_interfaces).toEqual([]);
+
+    const add = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'public_interface',
+      entry: {
+        id: 'sync_push_request_v1',
+        owner_module: 'sync',
+      },
+    });
+
+    expect(add.success).toBe(true);
+    const contracts = add.registry_after?.contracts as {
+      public_interfaces: Array<{ id: string }>;
+    };
+    expect(contracts.public_interfaces.map((entry) => entry.id)).toEqual([
+      'sync_push_request_v1',
+    ]);
+  });
+
+  it('reset can recover from a malformed existing candidate because it intentionally discards it', async () => {
+    const candidatePath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      'WI-0009',
+      'candidates',
+      'project',
+      'extension_registry.json',
+    );
+
+    await fs.mkdir(path.dirname(candidatePath), { recursive: true });
+    await fs.writeFile(candidatePath, '{invalid-json', 'utf-8');
+
+    const result = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      action: 'reset',
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.action).toBe('reset');
+    expect((result.registry_after?.contracts as { invariants: unknown[] }).invariants).toEqual([]);
+  });
+
   it('fails closed when an existing candidate is malformed', async () => {
     const candidatePath = path.join(
       projectRoot,
