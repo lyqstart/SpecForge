@@ -3,7 +3,8 @@
  *
  * This is the "proposal-form filler" for the cross-module contract model. It
  * does NOT write the project truth source. It only:
- *   1. reads the current project extension_registry.json (or an empty template),
+ *   1. reads the existing WI candidate registry when present; otherwise reads
+ *      the current project extension_registry.json (or an empty template),
  *   2. adds one contract entry to the `contracts` block (dedup-guarded),
  *   3. writes the proposed full registry to
  *      `candidates/project/extension_registry.json` (a WI candidate), and
@@ -116,14 +117,35 @@ export async function authorContractCandidate(params: {
     }
   }
 
-  // 1. Read current project registry (or start from an empty template).
+  const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
+  const candidateAbs = path.join(wiDir, 'candidates', 'project', 'extension_registry.json');
+
+  // 1. Read the existing WI candidate first so repeated registrations accumulate.
+  //    Only the first registration starts from the live project registry.
   const registryPath = path.join(projectRoot, SPEC_DIR_NAME, 'project', 'extension_registry.json');
   let registry: Record<string, any>;
   try {
-    registry = JSON.parse(await fs.readFile(registryPath, 'utf-8'));
-    if (!registry || typeof registry !== 'object') registry = emptyRegistry();
-  } catch {
-    registry = emptyRegistry();
+    registry = JSON.parse(await fs.readFile(candidateAbs, 'utf-8'));
+    if (!registry || typeof registry !== 'object') {
+      return {
+        success: false,
+        error: `existing extension_registry candidate is invalid: ${candidateAbs}`,
+      };
+    }
+  } catch (candidateError: any) {
+    if (candidateError?.code !== 'ENOENT') {
+      return {
+        success: false,
+        error: `failed to read existing extension_registry candidate: ${candidateError?.message ?? String(candidateError)}`,
+      };
+    }
+
+    try {
+      registry = JSON.parse(await fs.readFile(registryPath, 'utf-8'));
+      if (!registry || typeof registry !== 'object') registry = emptyRegistry();
+    } catch {
+      registry = emptyRegistry();
+    }
   }
 
   // 2. Clone + add the contract entry to the contracts block (dedup-guarded).
@@ -159,7 +181,6 @@ export async function authorContractCandidate(params: {
   next.updated_at = new Date().toISOString();
 
   // 3. Validate the existing manifest identity before creating any candidate.
-  const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
   const manifestPath = path.join(wiDir, 'candidate_manifest.json');
   let manifest: Record<string, any> | null = null;
   try {
@@ -191,7 +212,6 @@ export async function authorContractCandidate(params: {
   }
 
   // 4. Write the proposed registry as a WI candidate (not the truth source).
-  const candidateAbs = path.join(wiDir, 'candidates', 'project', 'extension_registry.json');
   await fs.mkdir(path.dirname(candidateAbs), { recursive: true });
   await fs.writeFile(candidateAbs, JSON.stringify(next, null, 2) + '\n', 'utf-8');
 

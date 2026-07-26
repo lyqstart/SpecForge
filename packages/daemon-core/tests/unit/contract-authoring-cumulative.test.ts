@@ -1,0 +1,181 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+import { authorContractCandidate } from '../../src/tools/lib/contract-authoring';
+
+describe('authorContractCandidate cumulative registration', () => {
+  let projectRoot: string;
+
+  beforeEach(async () => {
+    projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-contract-authoring-'));
+
+    const projectDir = path.join(projectRoot, '.specforge', 'project');
+    await fs.mkdir(projectDir, { recursive: true });
+    await fs.writeFile(
+      path.join(projectDir, 'extension_registry.json'),
+      JSON.stringify(
+        {
+          schema_version: '1.0',
+          project_spec_version: 'PSV-0001',
+          namespaces: {
+            requirement_types: [],
+            design_types: [],
+            task_types: [],
+            verification_types: [],
+            gate_types: [],
+          },
+          contracts: {
+            shared_enums: [],
+            invariants: [],
+            public_interfaces: [],
+            extension_points: [],
+          },
+          updated_by_work_item: null,
+          updated_at: null,
+        },
+        null,
+        2,
+      ) + '\n',
+      'utf-8',
+    );
+  });
+
+  afterEach(async () => {
+    await fs.rm(projectRoot, { recursive: true, force: true });
+  });
+
+  it('keeps the first contract when a second registration uses another contract kind', async () => {
+    const first = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'invariant',
+      entry: {
+        id: 'server_seq_global_monotonic',
+        owner_module: 'sync',
+      },
+    });
+
+    expect(first.success).toBe(true);
+
+    const second = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'public_interface',
+      entry: {
+        id: 'sync_pull_request_v1',
+        owner_module: 'sync',
+      },
+    });
+
+    expect(second.success).toBe(true);
+
+    const contracts = second.registry_after?.contracts as {
+      invariants: Array<{ id: string }>;
+      public_interfaces: Array<{ id: string }>;
+    };
+
+    expect(contracts.invariants.map((entry) => entry.id)).toEqual([
+      'server_seq_global_monotonic',
+    ]);
+    expect(contracts.public_interfaces.map((entry) => entry.id)).toEqual([
+      'sync_pull_request_v1',
+    ]);
+  });
+
+  it('accumulates 13 sequential registrations in one WI candidate', async () => {
+    const registrations = [
+      ['invariant', 'inv-01'],
+      ['invariant', 'inv-02'],
+      ['invariant', 'inv-03'],
+      ['invariant', 'inv-04'],
+      ['public_interface', 'api-01'],
+      ['public_interface', 'api-02'],
+      ['public_interface', 'api-03'],
+      ['public_interface', 'api-04'],
+      ['shared_enum', 'enum-01'],
+      ['shared_enum', 'enum-02'],
+      ['shared_enum', 'enum-03'],
+      ['extension_point', 'ext-01'],
+      ['extension_point', 'ext-02'],
+    ] as const;
+
+    let lastResult: Awaited<ReturnType<typeof authorContractCandidate>> | undefined;
+
+    for (const [kind, id] of registrations) {
+      lastResult = await authorContractCandidate({
+        projectRoot,
+        workItemId: 'WI-0009',
+        kind,
+        entry:
+          kind === 'shared_enum'
+            ? { id, owner_module: 'sync', values: ['a', 'b'] }
+            : { id, owner_module: 'sync' },
+      });
+
+      expect(lastResult.success).toBe(true);
+    }
+
+    const contracts = lastResult?.registry_after?.contracts as {
+      shared_enums: unknown[];
+      invariants: unknown[];
+      public_interfaces: unknown[];
+      extension_points: unknown[];
+    };
+
+    expect(contracts.shared_enums).toHaveLength(3);
+    expect(contracts.invariants).toHaveLength(4);
+    expect(contracts.public_interfaces).toHaveLength(4);
+    expect(contracts.extension_points).toHaveLength(2);
+  });
+
+  it('does not modify the live registry before merge', async () => {
+    await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'invariant',
+      entry: {
+        id: 'server_seq_global_monotonic',
+        owner_module: 'sync',
+      },
+    });
+
+    const live = JSON.parse(
+      await fs.readFile(
+        path.join(projectRoot, '.specforge', 'project', 'extension_registry.json'),
+        'utf-8',
+      ),
+    );
+
+    expect(live.contracts.invariants).toEqual([]);
+    expect(live.updated_by_work_item).toBeNull();
+  });
+
+  it('fails closed when an existing candidate is malformed', async () => {
+    const candidatePath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      'WI-0009',
+      'candidates',
+      'project',
+      'extension_registry.json',
+    );
+
+    await fs.mkdir(path.dirname(candidatePath), { recursive: true });
+    await fs.writeFile(candidatePath, '{invalid-json', 'utf-8');
+
+    const result = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'invariant',
+      entry: {
+        id: 'server_seq_global_monotonic',
+        owner_module: 'sync',
+      },
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('failed to read existing extension_registry candidate');
+  });
+});
