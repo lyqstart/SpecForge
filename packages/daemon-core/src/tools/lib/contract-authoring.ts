@@ -160,16 +160,20 @@ export async function authorContractCandidate(params: {
     if (!field) return { success: false, error: `invalid contract kind: ${kind}` };
     if (!id) return { success: false, error: 'contract entry requires "id"' };
     if (!owner) return { success: false, error: 'contract entry requires "owner_module"' };
-    if (
-      kind === 'shared_enum' &&
-      (!Array.isArray((entry as any).values) ||
-        (entry as any).values.length === 0 ||
-        new Set((entry as any).values).size !== (entry as any).values.length)
-    ) {
-      return {
-        success: false,
-        error: 'shared_enum entry requires a non-empty, duplicate-free "values" array',
-      };
+    if (kind === 'shared_enum') {
+      const values = (entry as any).values;
+      const validValues =
+        Array.isArray(values) &&
+        values.length > 0 &&
+        values.every((value: unknown) => typeof value === 'string' && value.trim().length > 0) &&
+        new Set(values).size === values.length;
+
+      if (!validValues) {
+        return {
+          success: false,
+          error: 'shared_enum entry requires "values" to contain unique non-empty strings',
+        };
+      }
     }
   }
 

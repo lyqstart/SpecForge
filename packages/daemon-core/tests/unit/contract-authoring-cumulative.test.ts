@@ -129,6 +129,82 @@ describe('authorContractCandidate cumulative registration', () => {
     expect(contracts.extension_points).toHaveLength(2);
   });
 
+  it('accepts shared_enum values only when they are unique non-empty strings', async () => {
+    const result = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'shared_enum',
+      entry: {
+        id: 'sync_op_enum',
+        owner_module: 'sync',
+        values: ['upsert', 'delete'],
+      },
+    });
+
+    expect(result.success).toBe(true);
+    expect(
+      (
+        result.registry_after?.contracts as {
+          shared_enums: Array<{ id: string; values: string[] }>;
+        }
+      ).shared_enums[0].values,
+    ).toEqual(['upsert', 'delete']);
+  });
+
+  it('rejects shared_enum object values before writing the candidate', async () => {
+    const result = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'shared_enum',
+      entry: {
+        id: 'sync_op_enum',
+        owner_module: 'sync',
+        values: [
+          { value: 'upsert', description: 'create or update' },
+          { value: 'delete', description: 'delete record' },
+        ],
+      },
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('unique non-empty strings');
+
+    const candidatePath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      'WI-0009',
+      'candidates',
+      'project',
+      'extension_registry.json',
+    );
+    await expect(fs.access(candidatePath)).rejects.toThrow();
+  });
+
+  it('rejects numeric, blank, and duplicate shared_enum values', async () => {
+    const invalidValues = [
+      [4004, 4006, 4007, 4008],
+      ['ok', '   '],
+      ['upsert', 'upsert'],
+    ];
+
+    for (const values of invalidValues) {
+      const result = await authorContractCandidate({
+        projectRoot,
+        workItemId: 'WI-0009',
+        kind: 'shared_enum',
+        entry: {
+          id: `enum-${JSON.stringify(values)}`,
+          owner_module: 'sync',
+          values,
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('unique non-empty strings');
+    }
+  });
+
   it('does not modify the live registry before merge', async () => {
     await authorContractCandidate({
       projectRoot,
