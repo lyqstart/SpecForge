@@ -61,6 +61,16 @@ function contractEntries(registry: Registry, field: string): Array<Record<string
   return Array.isArray(value) ? value : [];
 }
 
+function sharedEnumValueType(entry: Record<string, unknown>): 'string' | 'number' | null {
+  const raw = entry.value_type;
+  if (raw === undefined) return 'string';
+  return raw === 'string' || raw === 'number' ? raw : null;
+}
+
+function enumValueKey(value: unknown): string {
+  return `${typeof value}:${String(value)}`;
+}
+
 function validateRegistry(registry: Registry): string[] {
   const errors: string[] = [];
   const seen = new Set<string>();
@@ -74,14 +84,28 @@ function validateRegistry(registry: Registry): string[] {
       if (id && seen.has(key)) errors.push(`duplicate contract id: ${key}`);
       seen.add(key);
       if (kind === 'shared_enum') {
+        const valueType = sharedEnumValueType(entry);
         const values = entry.values;
-        if (!Array.isArray(values) || values.length === 0) {
+        if (!valueType) {
+          errors.push(`${field}[${index}].value_type must be "string" or "number"`);
+        } else if (!Array.isArray(values) || values.length === 0) {
           errors.push(`${field}[${index}].values must be a non-empty array`);
         } else if (
-          values.some(value => typeof value !== 'string' || value.length === 0) ||
-          new Set(values).size !== values.length
+          valueType === 'string' &&
+          (values.some(value => typeof value !== 'string' || value.trim().length === 0) ||
+            new Set(values).size !== values.length)
         ) {
-          errors.push(`${field}[${index}].values must contain unique non-empty strings`);
+          errors.push(
+            `${field}[${index}].values must contain unique non-empty strings when value_type is "string"`
+          );
+        } else if (
+          valueType === 'number' &&
+          (values.some(value => typeof value !== 'number' || !Number.isFinite(value)) ||
+            new Set(values).size !== values.length)
+        ) {
+          errors.push(
+            `${field}[${index}].values must contain unique finite numbers when value_type is "number"`
+          );
         }
       }
     }
@@ -264,7 +288,7 @@ export async function checkContractIntegrity(input: {
   const checks: ContractIntegrityCheck[] = [
     {
       check_id: 'contract_candidate_registry_schema',
-      description: 'Candidate contract entries have unique IDs and required fields',
+      description: 'Candidate contract entries have unique IDs, required fields, and typed enum values',
       passed: schemaErrors.length === 0,
       severity: schemaErrors.length === 0 ? undefined : 'error',
       details: schemaErrors.join('; '),
@@ -288,13 +312,15 @@ export async function checkContractIntegrity(input: {
           continue;
         }
         if (kind === 'shared_enum') {
-          const oldValues = Array.isArray(oldEntry.values) ? oldEntry.values.map(String) : [];
+          const oldValues = Array.isArray(oldEntry.values) ? oldEntry.values : [];
           const newValues = new Set(
-            Array.isArray(nextEntry.values) ? nextEntry.values.map(String) : []
+            Array.isArray(nextEntry.values) ? nextEntry.values.map(enumValueKey) : []
           );
-          for (const removed of oldValues.filter(value => !newValues.has(value))) {
-            if (containsExact(content, removed)) {
-              stale.push(`${file}: still uses removed ${kind}:${id} value "${removed}"`);
+          for (const removed of oldValues.filter(value => !newValues.has(enumValueKey(value)))) {
+            if (containsExact(content, String(removed))) {
+              stale.push(
+                `${file}: still uses removed ${kind}:${id} value ${JSON.stringify(removed)}`
+              );
             }
           }
         }

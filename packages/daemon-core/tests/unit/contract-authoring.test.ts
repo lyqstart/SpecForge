@@ -82,7 +82,7 @@ describe('contract-authoring', () => {
       projectRoot,
       workItemId,
       kind: 'shared_enum',
-      entry: { id: 'PhotoStatus', owner_module: 'CORE', values: ['pending', 'uploaded', 'failed'] },
+      entry: { id: 'PhotoStatus', owner_module: 'CORE', value_type: 'string', values: ['pending', 'uploaded', 'failed'] },
     });
 
     expect(res.success).toBe(true);
@@ -124,7 +124,7 @@ describe('contract-authoring', () => {
       projectRoot,
       workItemId,
       kind: 'shared_enum',
-      entry: { id: 'PhotoStatus', owner_module: 'CORE', values: ['a'] },
+      entry: { id: 'PhotoStatus', owner_module: 'CORE', value_type: 'string', values: ['a'] },
     });
     expect(first.success).toBe(true);
 
@@ -160,7 +160,7 @@ describe('contract-authoring', () => {
       projectRoot,
       workItemId,
       kind: 'shared_enum',
-      entry: { id: 'PhotoStatus', owner_module: 'CORE', values: ['a'] },
+      entry: { id: 'PhotoStatus', owner_module: 'CORE', value_type: 'string', values: ['a'] },
     });
     expect(dup.success).toBe(false);
     expect(dup.error).toContain('already registered');
@@ -196,7 +196,7 @@ describe('contract-authoring', () => {
       projectRoot,
       workItemId,
       kind: 'shared_enum',
-      entry: { id: 'PhotoStatus', owner_module: 'CORE', values: ['ready'] },
+      entry: { id: 'PhotoStatus', owner_module: 'CORE', value_type: 'string', values: ['ready'] },
       workflowPath: 'contract_change_path',
     });
     expect(result.success).toBe(false);
@@ -230,7 +230,7 @@ describe('contract-authoring', () => {
       projectRoot,
       workItemId,
       kind: 'shared_enum',
-      entry: { id: 'DeviceLinkState', owner_module: 'CORE', values: ['linked'] },
+      entry: { id: 'DeviceLinkState', owner_module: 'CORE', value_type: 'string', values: ['linked'] },
     });
     expect(authored.success).toBe(true);
 

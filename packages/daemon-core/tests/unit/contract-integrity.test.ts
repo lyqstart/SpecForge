@@ -85,6 +85,80 @@ describe('contract integrity reverse dependencies', () => {
     expect(result.checks.every(check => check.passed)).toBe(true);
   });
 
+  it('accepts a numeric shared enum with explicit value_type=number', async () => {
+    await fs.writeFile(
+      path.join(wiDir, 'candidates', 'project', 'extension_registry.json'),
+      JSON.stringify({
+        contracts: {
+          shared_enums: [
+            { id: 'PhotoStatus', owner_module: 'PHOTO', values: ['pending', 'ready'] },
+            {
+              id: 'SyncErrorCode',
+              owner_module: 'SYNC',
+              value_type: 'number',
+              values: [4004, 4006, 4007, 4008],
+            },
+          ],
+          invariants: [],
+          public_interfaces: [],
+          extension_points: [],
+        },
+      })
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'candidate_manifest.json'),
+      JSON.stringify({
+        entries: [
+          {
+            candidate_path: 'candidates/project/extension_registry.json',
+            target_path: '.specforge/project/extension_registry.json',
+            operation: 'replace',
+          },
+        ],
+      })
+    );
+
+    const result = await checkContractIntegrity({ projectRoot: root, workItemDir: wiDir });
+    expect(result.checks.every(check => check.passed)).toBe(true);
+  });
+
+  it('rejects shared enum values that conflict with value_type', async () => {
+    await fs.writeFile(
+      path.join(wiDir, 'candidates', 'project', 'extension_registry.json'),
+      JSON.stringify({
+        contracts: {
+          shared_enums: [
+            {
+              id: 'SyncErrorCode',
+              owner_module: 'SYNC',
+              value_type: 'number',
+              values: ['4004', '4006'],
+            },
+          ],
+          invariants: [],
+          public_interfaces: [],
+          extension_points: [],
+        },
+      })
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'candidate_manifest.json'),
+      JSON.stringify({
+        entries: [
+          {
+            candidate_path: 'candidates/project/extension_registry.json',
+            target_path: '.specforge/project/extension_registry.json',
+            operation: 'replace',
+          },
+        ],
+      })
+    );
+
+    const result = await checkContractIntegrity({ projectRoot: root, workItemDir: wiDir });
+    expect(result.checks[0].passed).toBe(false);
+    expect(result.checks[0].details).toContain('unique finite numbers');
+  });
+
   it('is not applicable when the registry is not targeted', async () => {
     await fs.writeFile(
       path.join(wiDir, 'candidate_manifest.json'),

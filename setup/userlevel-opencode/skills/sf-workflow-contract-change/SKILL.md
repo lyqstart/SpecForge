@@ -14,6 +14,7 @@ description: 仅用于 extension_registry 契约或命名空间登记的轻量�
 - `candidate_manifest.entries` is merge authority. `sf_merge_run` owns merge; `merge_report.status=not_applicable` is only for canonical no-merge paths.
 - This workflow must not call `sf_code_permission`. It must use `sf_changed_files_audit` in no-code mode and fail with `AUTHORITATIVE_STATE_MISMATCH` when state evidence disagrees.
 - A HardStop is a `recoverable safety latch`. Preserve `hard_stop_id`, classify `operator_error` honestly, use `sf_hard_stop_resolve`, and continue only from `resume_from_step`.
+- New `shared_enum` registrations must declare `entry.value_type` as `string` or `number`; `values` must be homogeneous, non-empty, and unique. Legacy registry entries without `value_type` remain string enums for backward compatibility.
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 

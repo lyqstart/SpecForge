@@ -161,17 +161,35 @@ export async function authorContractCandidate(params: {
     if (!id) return { success: false, error: 'contract entry requires "id"' };
     if (!owner) return { success: false, error: 'contract entry requires "owner_module"' };
     if (kind === 'shared_enum') {
+      const valueType = (entry as any).value_type;
       const values = (entry as any).values;
+
+      if (valueType !== 'string' && valueType !== 'number') {
+        return {
+          success: false,
+          error: 'shared_enum entry requires "value_type" to be "string" or "number"',
+        };
+      }
+
       const validValues =
         Array.isArray(values) &&
         values.length > 0 &&
-        values.every((value: unknown) => typeof value === 'string' && value.trim().length > 0) &&
+        (valueType === 'string'
+          ? values.every(
+              (value: unknown) => typeof value === 'string' && value.trim().length > 0
+            )
+          : values.every(
+              (value: unknown) => typeof value === 'number' && Number.isFinite(value)
+            )) &&
         new Set(values).size === values.length;
 
       if (!validValues) {
         return {
           success: false,
-          error: 'shared_enum entry requires "values" to contain unique non-empty strings',
+          error:
+            valueType === 'string'
+              ? 'shared_enum entry requires "values" to contain unique non-empty strings when value_type="string"'
+              : 'shared_enum entry requires "values" to contain unique finite numbers when value_type="number"',
         };
       }
     }

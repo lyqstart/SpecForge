@@ -104,6 +104,34 @@ describe("contracts-registry read helper", () => {
     expect(getEnumOwner(reg, "UnknownEnum")).toBeUndefined();
   });
 
+  it("reads numeric shared enums without coercing their values", async () => {
+    await writeRegistry({
+      schema_version: "1.0",
+      project_spec_version: "PSV-0001",
+      namespaces: { requirement_types: [], design_types: [], task_types: [], verification_types: [], gate_types: [] },
+      updated_by_work_item: "WI-0009",
+      updated_at: "2026-07-26T00:00:00Z",
+      contracts: {
+        shared_enums: [
+          {
+            id: "SyncErrorCode",
+            owner_module: "SYNC",
+            value_type: "number",
+            values: [4004, 4006, 4007, 4008],
+          },
+        ],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+
+    const reg = readContractsRegistry(tempDir);
+    expect(findSharedEnum(reg, "SyncErrorCode")?.values).toEqual([4004, 4006, 4007, 4008]);
+    expect(isRegisteredEnumValue(reg, "SyncErrorCode", 4004)).toBe(true);
+    expect(isRegisteredEnumValue(reg, "SyncErrorCode", "4004")).toBe(false);
+  });
+
   it("tolerates a contracts block with missing/partial arrays", async () => {
     await writeRegistry({
       schema_version: "1.0",

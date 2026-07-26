@@ -18,7 +18,7 @@ export type CodeContractIssue = {
   file: string;
   line: number;
   contract_id: string;
-  value: string;
+  value: string | number;
   message: string;
 };
 
@@ -85,9 +85,18 @@ function typeName(typeNode: ts.TypeNode | undefined, source: ts.SourceFile): str
   return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(simple) ? simple : null;
 }
 
-function stringLiteralValue(node: ts.Node | undefined): string | null {
+function literalValue(node: ts.Node | undefined): string | number | null {
   if (!node) return null;
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+  if (ts.isNumericLiteral(node)) return Number(node.text);
+  if (
+    ts.isPrefixUnaryExpression(node) &&
+    (node.operator === ts.SyntaxKind.MinusToken || node.operator === ts.SyntaxKind.PlusToken) &&
+    ts.isNumericLiteral(node.operand)
+  ) {
+    const value = Number(node.operand.text);
+    return node.operator === ts.SyntaxKind.MinusToken ? -value : value;
+  }
   return null;
 }
 
@@ -151,7 +160,11 @@ export async function verifyChangedCodeContracts(input: {
     );
     const typedIdentifiers = new Map<string, string>();
 
-    function report(node: ts.Node, contractId: string | null, value: string | null): void {
+    function report(
+      node: ts.Node,
+      contractId: string | null,
+      value: string | number | null
+    ): void {
       if (!contractId || value === null) return;
       const allowed = enums.get(contractId);
       if (!allowed || allowed.has(value)) return;
@@ -161,7 +174,7 @@ export async function verifyChangedCodeContracts(input: {
         line: pos.line + 1,
         contract_id: contractId,
         value,
-        message: `"${value}" is not registered in shared_enum:${contractId}`,
+        message: `${JSON.stringify(value)} is not registered in shared_enum:${contractId}`,
       });
     }
 
@@ -176,16 +189,16 @@ export async function verifyChangedCodeContracts(input: {
         const contractId = declarationType(node);
         if (contractId && enums.has(contractId)) {
           if (ts.isIdentifier(node.name)) typedIdentifiers.set(node.name.text, contractId);
-          report(node.initializer ?? node, contractId, stringLiteralValue(node.initializer));
+          report(node.initializer ?? node, contractId, literalValue(node.initializer));
         }
       } else if (ts.isPropertyDeclaration(node)) {
         const contractId = typeName(node.type ?? ts.getJSDocType(node), source);
         if (contractId && enums.has(contractId)) {
-          report(node.initializer ?? node, contractId, stringLiteralValue(node.initializer));
+          report(node.initializer ?? node, contractId, literalValue(node.initializer));
         }
       } else if (ts.isAsExpression(node) || ts.isSatisfiesExpression(node)) {
         const contractId = typeName(node.type, source);
-        report(node.expression, contractId, stringLiteralValue(node.expression));
+        report(node.expression, contractId, literalValue(node.expression));
       } else if (
         ts.isBinaryExpression(node) &&
         node.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
@@ -194,7 +207,7 @@ export async function verifyChangedCodeContracts(input: {
         report(
           node.right,
           typedIdentifiers.get(node.left.text) ?? null,
-          stringLiteralValue(node.right)
+          literalValue(node.right)
         );
       }
       ts.forEachChild(node, visit);

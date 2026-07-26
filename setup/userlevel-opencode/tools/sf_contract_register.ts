@@ -23,7 +23,7 @@ export default tool({
     entry: tool.schema
       .record(tool.schema.string(), tool.schema.any())
       .optional()
-      .describe("action=add 时必填：契约条目需 id/owner_module；namespace_type 需 namespace/type_id；shared_enum 的 values 必须是唯一非空字符串数组，不能使用对象或数字"),
+      .describe("action=add 时必填：契约条目需 id/owner_module；namespace_type 需 namespace/type_id；shared_enum 必须显式提供 value_type=string|number，values 必须与该类型一致、非空且唯一；不支持对象数组或混合类型"),
     workflow_path: tool.schema
       .string()
       .optional()

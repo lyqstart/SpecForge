@@ -95,7 +95,7 @@ export function findSharedEnum(
 export function isRegisteredEnumValue(
   registry: ContractRegistry,
   enumId: string,
-  value: string,
+  value: string | number,
 ): boolean {
   const entry = findSharedEnum(registry, enumId);
   return !!entry && entry.values.includes(value);

@@ -60,6 +60,76 @@ describe('code contract AST verifier', () => {
     expect(result.checked_files).toEqual(['src/photo.ts']);
   });
 
+  it('accepts an authoritative numeric literal for a number shared enum', async () => {
+    await fs.writeFile(
+      path.join(root, '.specforge', 'project', 'extension_registry.json'),
+      JSON.stringify({
+        contracts: {
+          shared_enums: [
+            {
+              id: 'SyncErrorCode',
+              owner_module: 'SYNC',
+              value_type: 'number',
+              values: [4004, 4006, 4007, 4008],
+            },
+          ],
+          invariants: [],
+          public_interfaces: [],
+          extension_points: [],
+        },
+      })
+    );
+    await fs.writeFile(
+      path.join(root, 'src', 'sync.ts'),
+      'const errorCode: SyncErrorCode = 4004;\n'
+    );
+
+    const result = await verifyChangedCodeContracts({
+      projectRoot: root,
+      workItemDir: wiDir,
+      changedFiles: [{ path: 'src/sync.ts', operation: 'modify' }],
+    });
+
+    expect(result.issues).toEqual([]);
+  });
+
+  it('rejects an unregistered numeric literal without coercing it to string', async () => {
+    await fs.writeFile(
+      path.join(root, '.specforge', 'project', 'extension_registry.json'),
+      JSON.stringify({
+        contracts: {
+          shared_enums: [
+            {
+              id: 'SyncErrorCode',
+              owner_module: 'SYNC',
+              value_type: 'number',
+              values: [4004, 4006, 4007, 4008],
+            },
+          ],
+          invariants: [],
+          public_interfaces: [],
+          extension_points: [],
+        },
+      })
+    );
+    await fs.writeFile(
+      path.join(root, 'src', 'sync.ts'),
+      'const errorCode: SyncErrorCode = 4999;\n'
+    );
+
+    const result = await verifyChangedCodeContracts({
+      projectRoot: root,
+      workItemDir: wiDir,
+      changedFiles: [{ path: 'src/sync.ts', operation: 'modify' }],
+    });
+
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0]).toMatchObject({
+      contract_id: 'SyncErrorCode',
+      value: 4999,
+    });
+  });
+
   it('reports unsupported languages without pretending they were checked', async () => {
     const result = await verifyChangedCodeContracts({
       projectRoot: root,

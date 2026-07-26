@@ -109,7 +109,7 @@ describe('authorContractCandidate cumulative registration', () => {
         kind,
         entry:
           kind === 'shared_enum'
-            ? { id, owner_module: 'sync', values: ['a', 'b'] }
+            ? { id, owner_module: 'sync', value_type: 'string', values: ['a', 'b'] }
             : { id, owner_module: 'sync' },
       });
 
@@ -137,6 +137,7 @@ describe('authorContractCandidate cumulative registration', () => {
       entry: {
         id: 'sync_op_enum',
         owner_module: 'sync',
+        value_type: 'string',
         values: ['upsert', 'delete'],
       },
     });
@@ -145,10 +146,13 @@ describe('authorContractCandidate cumulative registration', () => {
     expect(
       (
         result.registry_after?.contracts as {
-          shared_enums: Array<{ id: string; values: string[] }>;
+          shared_enums: Array<{ id: string; value_type: string; values: string[] }>;
         }
-      ).shared_enums[0].values,
-    ).toEqual(['upsert', 'delete']);
+      ).shared_enums[0],
+    ).toMatchObject({
+      value_type: 'string',
+      values: ['upsert', 'delete'],
+    });
   });
 
   it('rejects shared_enum object values before writing the candidate', async () => {
@@ -159,6 +163,7 @@ describe('authorContractCandidate cumulative registration', () => {
       entry: {
         id: 'sync_op_enum',
         owner_module: 'sync',
+        value_type: 'string',
         values: [
           { value: 'upsert', description: 'create or update' },
           { value: 'delete', description: 'delete record' },
@@ -181,27 +186,70 @@ describe('authorContractCandidate cumulative registration', () => {
     await expect(fs.access(candidatePath)).rejects.toThrow();
   });
 
-  it('rejects numeric, blank, and duplicate shared_enum values', async () => {
-    const invalidValues = [
-      [4004, 4006, 4007, 4008],
-      ['ok', '   '],
-      ['upsert', 'upsert'],
+  it('requires explicit value_type for new shared_enum registrations', async () => {
+    const result = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'shared_enum',
+      entry: {
+        id: 'sync_op_enum',
+        owner_module: 'sync',
+        values: ['upsert', 'delete'],
+      },
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('value_type');
+  });
+
+  it('accepts numeric shared_enum values when value_type is number', async () => {
+    const result = await authorContractCandidate({
+      projectRoot,
+      workItemId: 'WI-0009',
+      kind: 'shared_enum',
+      entry: {
+        id: 'sync_error_code_enum',
+        owner_module: 'sync',
+        value_type: 'number',
+        values: [4004, 4006, 4007, 4008],
+      },
+    });
+
+    expect(result.success).toBe(true);
+    const contracts = result.registry_after?.contracts as {
+      shared_enums: Array<{ id: string; value_type: string; values: number[] }>;
+    };
+    expect(contracts.shared_enums[0]).toMatchObject({
+      id: 'sync_error_code_enum',
+      value_type: 'number',
+      values: [4004, 4006, 4007, 4008],
+    });
+  });
+
+  it('rejects shared_enum values that do not match value_type or uniqueness rules', async () => {
+    const invalidEntries = [
+      { value_type: 'string', values: [4004, 4006] },
+      { value_type: 'number', values: ['4004', '4006'] },
+      { value_type: 'string', values: ['ok', '   '] },
+      { value_type: 'string', values: ['upsert', 'upsert'] },
+      { value_type: 'number', values: [4004, 4004] },
+      { value_type: 'number', values: [4004, Number.POSITIVE_INFINITY] },
     ];
 
-    for (const values of invalidValues) {
+    for (const [index, invalid] of invalidEntries.entries()) {
       const result = await authorContractCandidate({
         projectRoot,
         workItemId: 'WI-0009',
         kind: 'shared_enum',
         entry: {
-          id: `enum-${JSON.stringify(values)}`,
+          id: `invalid-enum-${index}`,
           owner_module: 'sync',
-          values,
+          ...invalid,
         },
       });
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('unique non-empty strings');
+      expect(result.error).toContain('shared_enum entry requires "values"');
     }
   });
 
