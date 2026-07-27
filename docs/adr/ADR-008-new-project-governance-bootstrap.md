@@ -106,3 +106,25 @@ ADR-007 以及《SpecForge架构一致性治理最终实施方案》中已经确
 Phase 11 = 新业务项目首次治理自举闭环
 Phase 12 = Phase 11 实际验证通过后的最终 Hard Enforcement
 ```
+
+## 8. Implementation Status
+
+提交 `1904d72`（`feat(governance): bootstrap new project governance`）已完成本 ADR 第 4 节定义的代码级最小实现。当前验证证据：
+
+```text
+Deterministic workspace build: PASS
+git diff --check: PASS
+Bootstrap targeted tests: 5 files passed / 18 tests passed
+New-project governance bootstrap behavior test: PASS
+```
+
+当前状态：
+
+```text
+Phase 11 = IN PROGRESS
+代码级自举能力 = VERIFIED
+真实 OpenCode + 全新业务项目端到端验证 = PENDING
+Phase 12 Hard Enforcement = NOT ENABLED
+```
+
+只有第 7 条要求的真实端到端验证通过后，Phase 11 才能标记完成。

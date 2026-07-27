@@ -4,6 +4,7 @@
 - **Date**: 2026-07-27
 - **Decision owner**: Project governance decision
 - **Related design**: [`../design/SpecForge架构一致性治理最终实施方案.md`](../design/SpecForge架构一致性治理最终实施方案.md)
+- **Phase 11/12 execution decision**: [`ADR-008-new-project-governance-bootstrap.md`](ADR-008-new-project-governance-bootstrap.md)
 - **Superseded proposal**: [`../archive/SpecForge治理架构完整修改方案-已取代.md`](../archive/SpecForge治理架构完整修改方案-已取代.md)
 
 ## Context
@@ -180,11 +181,11 @@ Git Merge 必须要求：WI 已关闭、Formal Version Gate 通过，并且 Gate
 
 本决策阶段不增加 CI。
 
-### 14. 采用兼容迁移，不立即硬切换
+### 14. 采用兼容上线，不立即硬切换
 
-新 Schema 先兼容旧项目缺少 `data_model`、`contracts`、`code_paths`。
+新 Schema 先兼容旧项目缺少 `data_model`、`contracts`、`code_paths`。旧项目迁移不是当前版本交付目标；现有 `spec_migration_path` 保留已有能力，但本阶段不为历史项目兼容继续扩展。
 
-SpecForge 自身当前 Project Spec 必须通过现有 `spec_migration_path` 完成正式迁移后，才能把：
+按照 ADR-008，必须先完成真实全新项目的首次治理自举端到端验证，确认第一个正式 Requirement 能在同一个 WI 中建立 Architecture、Data Model、Module `code_paths`、Module Design、Module Contract 和 Trace，并通过现有 Gate / Merge 使新治理模型正式激活。验证通过后，才能把：
 
 ```text
 spec_consistency_gate
@@ -192,7 +193,7 @@ trace_gate
 contract_integrity_gate
 ```
 
-全部切换为 Hard Enforcement。
+切换为最终 Hard Enforcement。旧项目继续由兼容行为处理，不以完成迁移作为 Hard Enforcement 的前置条件。
 
 ## Alternatives Rejected
 
@@ -210,7 +211,7 @@ contract_integrity_gate
 
 ### 立即开启全部 Hard Gate
 
-拒绝。SpecForge 自身 Project Spec 尚未完成新模型迁移，立即硬切换会先把现有项目锁死。
+拒绝。真实全新项目的首次治理自举尚未完成端到端验证；在合法 Candidate 生产、Gate、Merge 和治理激活链未被真实运行证明前，不应提前切换最终 Hard Enforcement。
 
 ### 为 Fast Path 跳过上层设计检查
 
@@ -228,13 +229,13 @@ contract_integrity_gate
 
 ### Costs / Constraints
 
-- 旧 Project Spec 需要迁移后才能进入最终 Hard Enforcement。
+- 旧项目可继续保持兼容状态；当前版本不要求为了进入最终 Hard Enforcement 而先完成历史项目迁移。
 - Module 必须补齐明确的 `code_paths`，否则真实代码归属无法安全推导。
-- 在迁移完成前，需要保留兼容行为，不能把“运行时支持新模型”误认为“全项目已经强制启用新模型”。
+- 在 Phase 11 真实新项目端到端验证完成前，需要保留兼容行为，不能把“运行时支持新模型”或“代码级行为测试通过”误认为“新项目完整治理链已经在真实 OpenCode 环境中验证”。
 
 ## Implementation and Audit Boundary
 
-2026-07-27 本轮实现已完成一组兼容性和治理闭环代码修改，并取得以下本地验证证据：
+2026-07-27 架构一致性治理主体改造已取得以下本地验证证据：
 
 ```text
 Deterministic workspace build: PASS
@@ -242,13 +243,20 @@ git diff --check: PASS
 Governance targeted tests: 9 files passed / 82 tests passed
 ```
 
-这些证据证明当前改动通过了本轮定向构建和回归测试。
+随后在提交 `1904d72`（`feat(governance): bootstrap new project governance`）中补齐了新项目首次治理自举所需的受控 Candidate 入口和 Module Contract 完整性检查，并取得：
 
-它们**不代表** `spec_migration_path` 已经完成 SpecForge 自身 Project Spec 迁移，也不代表最终 Hard Enforcement 已经启用。上述两项继续按照现行实施方案的 Phase 11 和 Phase 12 执行。
+```text
+Deterministic workspace build: PASS
+git diff --check: PASS
+Bootstrap targeted tests: 5 files passed / 18 tests passed
+New-project governance bootstrap behavior test: PASS
+```
+
+这些证据证明当前代码级新项目自举行为已通过定向构建和回归测试。它们**不代表**真实 OpenCode 环境中的首次项目开发端到端流程已经完成，也不代表最终 Hard Enforcement 已经启用。Phase 11 / Phase 12 的现行执行定义以 ADR-008 为准。
 
 ## Follow-up
 
-1. 通过 `spec_migration_path` 建立 SpecForge 自身正式 Architecture、Data Model、Modules、code_paths、Module Design、Module Contract 和 Trace。
-2. 对迁移后的正式 Project Spec 执行完整治理验收。
-3. 验证通过后，把 spec consistency、trace、contract integrity 切换为 Hard Enforcement。
-4. 在最终 Hard Enforcement 完成时新增后续 ADR 或更新本 ADR 的实施状态，不改写本决策历史。
+1. 将当前 `main` 安装/升级到实际 OpenCode 用户级运行环境。
+2. 使用干净的新业务项目执行第一个正式 Requirement，完整验证 Architecture、Data Model、Module `code_paths`、Module Design、Module Contract、Trace、Gate、Merge 和治理激活。
+3. Phase 11 验收通过后，把 spec consistency、trace、contract integrity 切换为最终 Hard Enforcement。
+4. 完成 Phase 12 后更新实施状态和验证证据；旧项目迁移继续保持非当前交付目标。

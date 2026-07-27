@@ -1,12 +1,12 @@
 # 文档状态
 
 - **状态**：Accepted / Implementation in Progress
-- **决策记录**：[`ADR-007-architecture-consistency-governance.md`](../adr/ADR-007-architecture-consistency-governance.md)
+- **决策记录**：[`ADR-007-architecture-consistency-governance.md`](../adr/ADR-007-architecture-consistency-governance.md)、[`ADR-008-new-project-governance-bootstrap.md`](../adr/ADR-008-new-project-governance-bootstrap.md)
 - **权威性**：本文件是 SpecForge 架构一致性治理的现行目标设计与实施路线图。
 - **取代**：`docs/archive/SpecForge治理架构完整修改方案-已取代.md`
 - **审计日期**：2026-07-27
-- **当前验证证据**：本轮本地 deterministic workspace build 通过；治理定向测试 9 个测试文件、82 个测试全部通过；`git diff --check` 通过。
-- **上线边界**：兼容模式先落地；SpecForge 自身 Project Spec 迁移和最终 Hard Enforcement 必须按本文件 Phase 11、Phase 12 继续完成后才能宣称全部治理目标正式启用。
+- **当前验证证据**：架构一致性治理主体定向测试 9 个测试文件、82 个测试通过；提交 `1904d72` 的新项目自举定向测试 5 个测试文件、18 个测试通过；deterministic workspace build 与 `git diff --check` 通过。
+- **上线边界**：兼容模式先落地；Phase 11 必须完成真实全新项目在 OpenCode + SpecForge 中的首次治理自举端到端验证，随后 Phase 12 才能启用最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
 
 > 本文件描述目标架构、实施顺序和验收标准；测试通过只证明当前已覆盖实现没有破坏所列定向回归，不等同于 Phase 11/12 已完成。
 
@@ -1170,7 +1170,7 @@ contract_integrity_gate = hard
 
 但是不能马上切换。
 
-必须等 SpecForge 自身正式 Spec 完成迁移以后再切换。
+必须等 Phase 11 的真实全新项目首次治理自举端到端验证通过，并确认兼容行为没有被破坏以后再切换。
 
 ---
 
@@ -1624,48 +1624,43 @@ data_model.md
 
 ---
 
-# 三十七、SpecForge 自己怎么迁移
+# 三十七、新项目首次治理自举
 
-当前 SpecForge 自己的：
+SpecForge 产品本身不使用 SpecForge / OpenCode 自治理开发，因此不存在“SpecForge 自迁移”这一产品目标。旧项目升级迁移也不是当前版本交付目标；现有 `spec_migration_path` 保留已有能力，但本阶段不为历史项目兼容继续扩展。
 
-```text
-architecture.md
-design_index.md
-requirements_index.md
-glossary.md
-decisions.md
-```
-
-仍然只是 TODO，占位内容，而且当前正式 `modules=[]`。
-
-因此不能实现完新 Gate 就立即 Hard。
+Phase 11 真正需要验证的是：一个全新的业务项目第一次使用 SpecForge 时，能否自然建立完整的新治理模型。
 
 顺序必须是：
 
 ```text
-先让 Runtime 支持新模型
+新项目初始化
 ↓
-Gate 暂时兼容旧 Project Spec
+第一个正式 Requirement
 ↓
-使用现有 spec_migration_path
+Impact Analysis
 ↓
-正式建立 SpecForge 自己的：
-
-Architecture
-Data Model
-Modules
-code_paths
+Project Architecture
+↓
+Project Data Model（或有事实依据的不适用声明）
+↓
+已声明 Module 的真实 code_paths
+↓
 Module Design
+↓
 Module Contract
+↓
 Trace
-
 ↓
-验证迁移成功
+现有 Gate / User Decision / 原子 Merge
 ↓
-再把新一致性规则切成 Hard
+新治理模型 active=true
+↓
+后续正常开发
 ```
 
-这样不会把 SpecForge 自己锁死。
+首次 Requirement 即使需要同时建立上层设计，也继续遵守 Requirement 治理优先规则，并在同一个 WI 内完成；不新增初始化 Workflow，不新增专业 Agent，不允许直接写正式 Project Spec。
+
+Phase 11 必须在真实 OpenCode + SpecForge 环境中完成端到端验证。代码级单元/行为测试通过只能证明实现具备对应能力，不能替代真实项目链路验收。
 
 ---
 
@@ -1889,21 +1884,32 @@ Git Merge Guard
 
 ---
 
-## Phase 11：SpecForge 自迁移
+## Phase 11：新项目首次治理自举闭环
 
-通过：
+在真实全新业务项目中，使用实际 OpenCode + SpecForge 完整执行第一个正式 Requirement，验证：
 
 ```text
-spec_migration_path
+Requirement
+→ Impact Analysis
+→ Architecture
+→ Data Model
+→ Module code_paths
+→ Module Design
+→ Module Contract
+→ Trace
+→ Gate
+→ User Decision
+→ 原子 Merge
+→ governance active=true
 ```
 
-建立 SpecForge 自己的完整 Project Spec。
+同时确认旧项目兼容行为没有被破坏。
 
 ---
 
 ## Phase 12：正式 Hard Enforcement
 
-确认迁移和全部测试通过后：
+确认 Phase 11 真实端到端验收和全部相关测试通过后：
 
 ```text
 spec_consistency_gate → HARD
