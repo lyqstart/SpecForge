@@ -41,7 +41,6 @@ import {
   readDeclaredDesignAnalysisScope,
   resolveSystemGovernanceRequirement,
 } from '../lib/sf_design_governance_policy';
-
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
   'intake.md',
@@ -59,7 +58,6 @@ const V11_WI_ARTIFACT_FILES = new Set([
   'verification_report.md',
   'evidence_manifest.json',
 ]);
-
 const V11_FILENAME_MAP: Record<string, string> = {
   'work_item.json': 'work_item',
   'intake.md': 'intake',
@@ -77,7 +75,6 @@ const V11_FILENAME_MAP: Record<string, string> = {
   'verification_report.md': 'verification_report',
   'evidence_manifest.json': 'evidence_manifest',
 };
-
 const V11_FILETYPE_TO_FILENAME = new Map(
   Object.entries(V11_FILENAME_MAP).map(([filename, fileType]) => [fileType, filename])
 );
@@ -85,7 +82,6 @@ const V11_FILETYPE_TO_FILENAME = new Map(
 function normalizeModuleId(value: unknown): string {
   return moduleCodeFromProjectSpecPath(value) ?? normalizeModuleCodeReference(value) ?? '';
 }
-
 function readFrontMatterField(content: string, names: string[]): string | undefined {
   const text = String(content ?? '');
   const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(text);
@@ -107,12 +103,15 @@ function readFrontMatterField(content: string, names: string[]): string | undefi
   }
   return undefined;
 }
-
 function readExplicitModuleReference(content: string): string | undefined {
   try {
     const parsed = JSON.parse(content) as unknown;
     const identity = resolveSpecModuleIdentity(parsed);
     if (identity.valid && identity.moduleCode) return identity.moduleCode;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      const ownerModule = normalizeModuleId((parsed as Record<string, unknown>).owner_module);
+      if (ownerModule) return ownerModule;
+    }
   } catch {
     // Markdown Candidates use front matter instead of JSON.
   }
@@ -121,11 +120,10 @@ function readExplicitModuleReference(content: string): string | undefined {
     'module_id',
     'module_code',
     'module',
+    'owner_module',
   ]);
 }
-
 type ModuleOwnership = { declared: string[]; defaultModule: string | null; errors: string[] };
-
 function readModuleOwnership(baseDir: string): ModuleOwnership {
   const manifest = readJsonIfExists(projectSpecManifest(baseDir));
   const modules = Array.isArray(manifest?.modules) ? manifest.modules : [];
@@ -141,7 +139,6 @@ function readModuleOwnership(baseDir: string): ModuleOwnership {
   }
   return { declared: Array.from(new Set(declared)), defaultModule, errors };
 }
-
 function isGovernedModuleAdmission(baseDir: string, workItemId: string): boolean {
   const workItem = readJsonIfExists(path.join(workItemRoot(baseDir, workItemId), 'work_item.json'));
   return (
@@ -149,7 +146,6 @@ function isGovernedModuleAdmission(baseDir: string, workItemId: string): boolean
     workItem?.workflow_path === 'spec_migration_path'
   );
 }
-
 function resolveDeclaredCandidateModuleId(
   content: string,
   baseDir: string,
@@ -166,13 +162,11 @@ function resolveDeclaredCandidateModuleId(
       error: `MODULE_REGISTRY_INVALID: ${ownership.errors.join('; ')}`,
     };
   }
-
   const explicit = readExplicitModuleReference(content);
   const requested = explicit
     ? normalizeModuleId(explicit)
     : (ownership.defaultModule ?? (ownership.declared.length === 1 ? ownership.declared[0] : ''));
   const governedModuleAdmission = isGovernedModuleAdmission(baseDir, workItemId);
-
   if (ownership.declared.length === 0) {
     if (governedModuleAdmission && explicit && requested) {
       return { moduleId: requested, declared: [] };
@@ -184,7 +178,6 @@ function resolveDeclaredCandidateModuleId(
         'Do not silently fall back to core. Initialize a new project with sf_project_init or establish module ownership through the governed Project Spec flow.',
     };
   }
-
   if (!requested) {
     return {
       declared: ownership.declared,
@@ -203,7 +196,6 @@ function resolveDeclaredCandidateModuleId(
   }
   return { moduleId: requested, declared: ownership.declared };
 }
-
 function inferCandidateModuleIdFromEntry(entry: any, candidatePath?: string): string {
   const explicit =
     entry?.module_id ??
@@ -219,7 +211,6 @@ function inferCandidateModuleIdFromEntry(entry: any, candidatePath?: string): st
     normalizeCandidatePath(entry?.path),
     normalizeCandidatePath(candidatePath),
   ];
-
   for (const candidate of candidates) {
     const projectMatch = /(?:^|\/)(?:\.specforge\/project\/)?modules\/([^/]+)\//.exec(candidate);
     if (projectMatch?.[1]) return normalizeModuleId(projectMatch[1]);
@@ -229,11 +220,9 @@ function inferCandidateModuleIdFromEntry(entry: any, candidatePath?: string): st
 
   return 'CORE';
 }
-
 function toWorkItemRelativePath(baseDir: string, workItemId: string, absolutePath: string): string {
   return path.relative(workItemRoot(baseDir, workItemId), absolutePath).replace(/\\/g, '/');
 }
-
 function candidateModuleRelativePath(
   baseDir: string,
   workItemId: string,
@@ -246,7 +235,6 @@ function candidateModuleRelativePath(
       : workItemCandidateDesign(baseDir, workItemId, normalizeModuleId(moduleId));
   return toWorkItemRelativePath(baseDir, workItemId, absolutePath);
 }
-
 function projectModuleTargetPath(
   baseDir: string,
   moduleId: string,
@@ -269,7 +257,6 @@ function projectModuleTargetPath(
       if (normalized.startsWith('project/')) return `.specforge/${normalized}`;
     }
   }
-
   const absolutePath =
     kind === 'requirements'
       ? moduleRequirements(baseDir, normalizeModuleId(moduleId))
@@ -282,7 +269,6 @@ function normalizeToken(value: unknown): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-');
 }
-
 function stringifyArtifactContent(value: unknown, fallback?: unknown): string {
   const chosen = value ?? fallback ?? '';
   if (typeof chosen === 'string') return chosen;
@@ -290,7 +276,6 @@ function stringifyArtifactContent(value: unknown, fallback?: unknown): string {
   if (typeof chosen === 'object') return JSON.stringify(chosen, null, 2);
   return String(chosen);
 }
-
 function inferCanonicalFileType(args: Record<string, unknown>): string | null {
   const fileType = String(args['file_type'] ?? '');
   const runId = normalizeToken(args['run_id']);
@@ -298,7 +283,6 @@ function inferCanonicalFileType(args: Record<string, unknown>): string | null {
   const content = stringifyArtifactContent(args['content'], args['agent_content']);
   const contentToken = normalizeToken(content.slice(0, 400));
   const probe = `${runId} ${template} ${contentToken}`;
-
   if (fileType !== 'work_log') return null;
   if (probe.includes('trigger-result') || probe.includes('trigger-result-json'))
     return 'trigger_result';
@@ -314,7 +298,6 @@ function inferCanonicalFileType(args: Record<string, unknown>): string | null {
   if (probe.includes('evidence-manifest')) return 'evidence_manifest';
   return null;
 }
-
 function resolveTargetFilename(
   fileType: string,
   content: string,
@@ -323,6 +306,12 @@ function resolveTargetFilename(
   candidateModuleId?: string
 ): string | null {
   const moduleId = candidateModuleId ?? 'CORE';
+  if (fileType === 'candidate_architecture') {
+    return 'candidates/project/architecture.candidate.md';
+  }
+  if (fileType === 'candidate_data_model') {
+    return 'candidates/project/data_model.candidate.md';
+  }
   if (fileType === 'requirements' || fileType === 'candidate_requirements') {
     return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'requirements');
   }
@@ -331,6 +320,9 @@ function resolveTargetFilename(
   }
   if (fileType === 'candidate_module_definition') {
     return `candidates/project/modules/${moduleId}/module.candidate.json`;
+  }
+  if (fileType === 'candidate_module_contract') {
+    return `candidates/project/modules/${moduleId}/contracts.candidate.json`;
   }
   if (fileType === 'candidate_module_trace') {
     return `candidates/project/modules/${moduleId}/trace.candidate.md`;
@@ -353,7 +345,6 @@ function resolveTargetFilename(
 function isJsonArtifact(filename: string): boolean {
   return filename.endsWith('.json');
 }
-
 function readJsonIfExists(filePath: string): Record<string, unknown> | null {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Record<string, unknown>;
@@ -361,7 +352,6 @@ function readJsonIfExists(filePath: string): Record<string, unknown> | null {
     return null;
   }
 }
-
 function normalizeWorkItemJsonArtifact(input: {
   parsed: Record<string, unknown>;
   workItemId: string;
@@ -374,7 +364,6 @@ function normalizeWorkItemJsonArtifact(input: {
   const existingMetadata = { ...existing };
   delete existingMetadata.status;
   delete existingMetadata.work_item_status_mutation_forbidden;
-
   const normalized = {
     ...existingMetadata,
     ...input.parsed,
@@ -385,7 +374,6 @@ function normalizeWorkItemJsonArtifact(input: {
     workflow_path: input.parsed.workflow_path ?? existing.workflow_path ?? input.workflowPath,
     updated_at: new Date().toISOString(),
   };
-
   const forbiddenDecisionFields = findForbiddenWorkItemDecisionFields(normalized);
   if (forbiddenDecisionFields.length > 0) {
     // Keep the forbidden fields in the returned JSON so schema validation rejects
@@ -395,7 +383,6 @@ function normalizeWorkItemJsonArtifact(input: {
 
   return normalized;
 }
-
 function normalizeTriggerResultUnknowns(parsed: Record<string, unknown>): Record<string, unknown> {
   const classification =
     typeof parsed.classification === 'object' &&
@@ -403,13 +390,11 @@ function normalizeTriggerResultUnknowns(parsed: Record<string, unknown>): Record
     !Array.isArray(parsed.classification)
       ? { ...(parsed.classification as Record<string, unknown>) }
       : parsed.classification;
-
   const topLevelUnknowns = parsed.unknowns;
   const classificationUnknowns =
     classification && typeof classification === 'object' && !Array.isArray(classification)
       ? (classification as Record<string, unknown>).unknowns
       : undefined;
-
   if (topLevelUnknowns !== undefined && !Array.isArray(topLevelUnknowns)) {
     throw new Error('TRIGGER_RESULT_TOP_LEVEL_UNKNOWNS_MUST_BE_ARRAY');
   }
@@ -423,13 +408,11 @@ function normalizeTriggerResultUnknowns(parsed: Record<string, unknown>): Record
   ) {
     throw new Error('TRIGGER_RESULT_UNKNOWNS_CONFLICT');
   }
-
   const canonicalUnknowns = Array.isArray(classificationUnknowns)
     ? classificationUnknowns
     : Array.isArray(topLevelUnknowns)
       ? topLevelUnknowns
       : [];
-
   const withoutTopLevelUnknowns = { ...parsed };
   delete withoutTopLevelUnknowns.unknowns;
   return {
@@ -443,7 +426,6 @@ function normalizeTriggerResultUnknowns(parsed: Record<string, unknown>): Record
         : classification,
   };
 }
-
 function inferWorkflowFacts(
   baseDir: string,
   workItemId: string,
@@ -456,7 +438,6 @@ function inferWorkflowFacts(
     readJsonIfExists(path.join(wiDir, 'trigger_result.json')),
     readJsonIfExists(path.join(wiDir, 'candidate_manifest.json')),
   ];
-
   for (const json of candidates) {
     if (!json) continue;
     const workflowPath = typeof json.workflow_path === 'string' ? json.workflow_path : undefined;
@@ -467,12 +448,10 @@ function inferWorkflowFacts(
   }
   return {};
 }
-
 function normalizeCandidatePath(value: unknown): string {
   const normalized = String(value ?? '').replace(/\\/g, '/');
   return normalized.startsWith('./') ? normalized.slice(2) : normalized;
 }
-
 function canonicalCandidatePathByType(
   entry: any,
   candidatePath: string,
@@ -483,7 +462,22 @@ function canonicalCandidatePathByType(
   const targetPath = normalizeCandidatePath(entry?.target_path);
   const normalizedPath = normalizeCandidatePath(candidatePath);
   const moduleId = inferCandidateModuleIdFromEntry(entry, normalizedPath);
-
+  if (
+    candidateType === 'architecture' ||
+    normalizedPath === 'candidates/project/architecture.candidate.md' ||
+    normalizedPath.endsWith('/architecture.candidate.md') ||
+    targetPath === '.specforge/project/architecture.md'
+  ) {
+    return 'candidates/project/architecture.candidate.md';
+  }
+  if (
+    candidateType === 'data_model' ||
+    normalizedPath === 'candidates/project/data_model.candidate.md' ||
+    normalizedPath.endsWith('/data_model.candidate.md') ||
+    targetPath === '.specforge/project/data_model.md'
+  ) {
+    return 'candidates/project/data_model.candidate.md';
+  }
   if (
     candidateType === 'module_definition' ||
     normalizedPath.endsWith('/module.candidate.json') ||
@@ -493,13 +487,20 @@ function canonicalCandidatePathByType(
   }
 
   if (
+    candidateType === 'module_contract' ||
+    normalizedPath.endsWith('/contracts.candidate.json') ||
+    targetPath.endsWith(`/modules/${moduleId}/contracts.json`)
+  ) {
+    return `candidates/project/modules/${moduleId}/contracts.candidate.json`;
+  }
+
+  if (
     candidateType === 'module_trace' ||
     normalizedPath.endsWith('/trace.candidate.md') ||
     targetPath.endsWith(`/modules/${moduleId}/trace.md`)
   ) {
     return `candidates/project/modules/${moduleId}/trace.candidate.md`;
   }
-
   if (
     candidateType === 'requirements' ||
     candidateType === 'requirement' ||
@@ -511,7 +512,6 @@ function canonicalCandidatePathByType(
   ) {
     return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'requirements');
   }
-
   if (
     candidateType === 'design' ||
     normalizedPath === 'design.md' ||
@@ -522,7 +522,6 @@ function canonicalCandidatePathByType(
   ) {
     return candidateModuleRelativePath(baseDir, workItemId, moduleId, 'design');
   }
-
   if (
     candidateType === 'tasks' ||
     candidateType === 'task' ||
@@ -532,7 +531,6 @@ function canonicalCandidatePathByType(
   ) {
     return toWorkItemRelativePath(baseDir, workItemId, workItemCandidateTasks(baseDir, workItemId));
   }
-
   if (
     candidateType === 'trace' ||
     candidateType === 'trace_delta' ||
@@ -550,7 +548,6 @@ function canonicalCandidatePathByType(
 
   return null;
 }
-
 function validateCandidateManifestModuleOwnership(
   parsed: Record<string, unknown>,
   baseDir: string,
@@ -565,19 +562,17 @@ function validateCandidateManifestModuleOwnership(
     ...(Array.isArray((parsed as any).entries) ? (parsed as any).entries : []),
     ...(Array.isArray((parsed as any).candidates) ? (parsed as any).candidates : []),
   ];
-
   for (const entry of rawEntries) {
     const candidatePath = normalizeCandidatePath(entry?.candidate_path ?? entry?.path);
     const targetPath = normalizeCandidatePath(entry?.target_path);
     const moduleMatch =
-      /(?:^|\/)candidates\/project\/modules\/([^/]+)\/(?:module\.candidate\.json|requirements\.candidate\.md|design\.candidate\.md|trace\.candidate\.md)$/i.exec(
+      /(?:^|\/)candidates\/project\/modules\/([^/]+)\/(?:module\.candidate\.json|requirements\.candidate\.md|design\.candidate\.md|contracts\.candidate\.json|trace\.candidate\.md)$/i.exec(
         candidatePath
       ) ??
-      /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\/(?:module\.json|requirements\.md|design\.md|trace\.md)$/i.exec(
+      /(?:^|\/)\.specforge\/project\/modules\/([^/]+)\/(?:module\.json|requirements\.md|design\.md|contracts\.json|trace\.md)$/i.exec(
         targetPath
       );
     if (!moduleMatch?.[1]) continue;
-
     const moduleId = normalizeModuleId(moduleMatch[1]);
     if (ownership.declared.length === 0) {
       if (governedModuleAdmission && moduleId) continue;
@@ -593,13 +588,11 @@ function validateCandidateManifestModuleOwnership(
     }
   }
 }
-
 function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: string): any {
   if (!entry || typeof entry !== 'object') return entry;
   const candidatePath = normalizeCandidatePath(entry.candidate_path ?? entry.path);
   const canonicalPath = canonicalCandidatePathByType(entry, candidatePath, baseDir, workItemId);
   const normalizedEntry = { ...entry };
-
   // `path` is a legacy input alias only. Persist one canonical field so Writer,
   // Gate, approval and Merge compare the same object.
   normalizedEntry.candidate_path = canonicalPath ?? candidatePath;
@@ -609,10 +602,15 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
   if (!canonicalPath) return normalizedEntry;
 
   const moduleId = inferCandidateModuleIdFromEntry(entry, candidatePath);
-
   const candidateType = String(
     normalizedEntry.type ?? normalizedEntry.spec_type ?? ''
   ).toLowerCase();
+  if (candidateType === 'architecture') {
+    normalizedEntry.target_path = '.specforge/project/architecture.md';
+  }
+  if (candidateType === 'data_model') {
+    normalizedEntry.target_path = '.specforge/project/data_model.md';
+  }
   if (candidateType === 'module_definition') {
     normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/module.json`;
   }
@@ -621,6 +619,9 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
   }
   if (candidateType === 'design') {
     normalizedEntry.target_path = projectModuleTargetPath(baseDir, moduleId, 'design');
+  }
+  if (candidateType === 'module_contract') {
+    normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/contracts.json`;
   }
   if (candidateType === 'module_trace') {
     normalizedEntry.target_path = `.specforge/project/modules/${moduleId}/trace.md`;
@@ -631,13 +632,76 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
       candidateType === 'requirement' ||
       candidateType === 'design' ||
       candidateType === 'module_definition' ||
+      candidateType === 'module_contract' ||
       candidateType === 'module_trace')
   ) {
     normalizedEntry.module_id = moduleId;
   }
-
   return normalizedEntry;
 }
+function augmentGovernanceCandidateEntries(entries: any[], workItemDir: string): any[] {
+  const augmented = [...entries];
+  const seenCandidates = new Set(
+    augmented.map(entry => normalizeCandidatePath(entry?.candidate_path ?? entry?.path)).filter(Boolean)
+  );
+  const seenTargets = new Set(
+    augmented.map(entry => normalizeCandidatePath(entry?.target_path)).filter(Boolean)
+  );
+  const appendIfPresent = (
+    candidatePath: string,
+    targetPath: string,
+    type: string,
+    moduleId?: string
+  ): void => {
+    const absolutePath = path.join(workItemDir, candidatePath);
+    if (!fs.existsSync(absolutePath)) return;
+    if (seenCandidates.has(candidatePath) || seenTargets.has(targetPath)) return;
+    const entry: Record<string, unknown> = {
+      candidate_path: candidatePath,
+      target_path: targetPath,
+      operation: 'replace',
+      type,
+      inferred: true,
+      normalized: true,
+    };
+    if (moduleId) entry.module_id = moduleId;
+    augmented.push(entry);
+    seenCandidates.add(candidatePath);
+    seenTargets.add(targetPath);
+  };
+
+  appendIfPresent(
+    'candidates/project/architecture.candidate.md',
+    '.specforge/project/architecture.md',
+    'architecture'
+  );
+  appendIfPresent(
+    'candidates/project/data_model.candidate.md',
+    '.specforge/project/data_model.md',
+    'data_model'
+  );
+
+  const modulesRoot = path.join(workItemDir, 'candidates', 'project', 'modules');
+  try {
+    for (const entry of fs.readdirSync(modulesRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const moduleId = normalizeModuleId(entry.name);
+      if (!moduleId) continue;
+      const root = `candidates/project/modules/${moduleId}`;
+      const targetRoot = `.specforge/project/modules/${moduleId}`;
+      appendIfPresent(`${root}/module.candidate.json`, `${targetRoot}/module.json`, 'module_definition', moduleId);
+      appendIfPresent(`${root}/requirements.candidate.md`, `${targetRoot}/requirements.md`, 'requirements', moduleId);
+      appendIfPresent(`${root}/design.candidate.md`, `${targetRoot}/design.md`, 'design', moduleId);
+      appendIfPresent(`${root}/contracts.candidate.json`, `${targetRoot}/contracts.json`, 'module_contract', moduleId);
+      appendIfPresent(`${root}/trace.candidate.md`, `${targetRoot}/trace.md`, 'module_trace', moduleId);
+    }
+  } catch {
+    // No module Candidates have been produced yet.
+  }
+
+  return augmented;
+}
+
 function isEvidenceOnlyNoProjectSpecChange(value: Record<string, unknown>): boolean {
   return (
     value.no_project_spec_change === true ||
@@ -659,13 +723,11 @@ function normalizeCoreJsonArtifact(
   } catch {
     return content;
   }
-
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return content;
 
   const facts = inferWorkflowFacts(baseDir, workItemId, parsed);
   const workflowPath = parsed.workflow_path ?? facts.workflowPath;
   const workflowType = parsed.workflow_type ?? facts.workflowType;
-
   if (filename === 'work_item.json') {
     const normalized = normalizeWorkItemJsonArtifact({
       parsed,
@@ -676,7 +738,6 @@ function normalizeCoreJsonArtifact(
     });
     return JSON.stringify(normalized, null, 2);
   }
-
   if (filename === 'trigger_result.json') {
     const canonical = normalizeTriggerResultUnknowns(parsed as Record<string, unknown>);
     return JSON.stringify(
@@ -692,7 +753,6 @@ function normalizeCoreJsonArtifact(
       2
     );
   }
-
   if (filename === 'candidate_manifest.json') {
     validateCandidateManifestModuleOwnership(
       parsed as Record<string, unknown>,
@@ -703,7 +763,6 @@ function normalizeCoreJsonArtifact(
     const canonicalParsed: Record<string, unknown> = {
       ...(parsed as Record<string, unknown>),
     };
-
     if (Array.isArray(parsed.candidates)) {
       canonicalParsed.candidates = parsed.candidates.map((entry: any) =>
         canonicalizeCandidateEntry(entry, baseDir, workItemId)
@@ -715,7 +774,6 @@ function normalizeCoreJsonArtifact(
       );
     }
     validateCandidateManifestModuleOwnership(canonicalParsed, baseDir, workItemId);
-
     const normalizedWorkflowPath = canonicalParsed.workflow_path ?? workflowPath;
     const evidenceOnly = isEvidenceOnlyNoProjectSpecChange(canonicalParsed);
     if (evidenceOnly || normalizedWorkflowPath === 'code_only_fast_path') {
@@ -730,7 +788,6 @@ function normalizeCoreJsonArtifact(
       };
       delete normalized.candidates;
       delete normalized.candidate_artifacts;
-
       if (evidenceOnly) {
         normalized.no_project_spec_change = true;
         normalized.project_integration_effect = 'evidence_only';
@@ -744,7 +801,6 @@ function normalizeCoreJsonArtifact(
 
       return JSON.stringify(normalized, null, 2);
     }
-
     const preliminary = {
       ...canonicalParsed,
       workflow_path: normalizedWorkflowPath,
@@ -754,9 +810,10 @@ function normalizeCoreJsonArtifact(
         ? canonicalParsed.entries
         : inferManifestEntries(preliminary, wiDir);
     const entries = Array.isArray(rawEntries)
-      ? rawEntries.map((entry: any) => canonicalizeCandidateEntry(entry, baseDir, workItemId))
+      ? augmentGovernanceCandidateEntries(rawEntries, wiDir).map((entry: any) =>
+          canonicalizeCandidateEntry(entry, baseDir, workItemId)
+        )
       : rawEntries;
-
     const normalized: Record<string, unknown> = {
       ...canonicalParsed,
       schema_version: canonicalParsed.schema_version ?? '1.1',
@@ -767,7 +824,6 @@ function normalizeCoreJsonArtifact(
 
     return JSON.stringify(normalized, null, 2);
   }
-
   if (filename === 'evidence_manifest.json') {
     const entries = Array.isArray(parsed.entries)
       ? parsed.entries
@@ -786,7 +842,6 @@ function normalizeCoreJsonArtifact(
     delete normalized.evidence;
     return JSON.stringify(normalized, null, 2);
   }
-
   return content;
 }
 
@@ -800,7 +855,6 @@ function normalizeAgentName(value: unknown): string {
 function isExecutorLike(context: any): boolean {
   return normalizeAgentName(context?.agent).includes('executor');
 }
-
 const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['requirements', 'sf-requirements'],
   ['candidate_requirements', 'sf-requirements'],
@@ -808,7 +862,10 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['design', 'sf-design'],
   ['candidate_design', 'sf-design'],
   ['design_delta', 'sf-design'],
+  ['candidate_architecture', 'sf-design'],
+  ['candidate_data_model', 'sf-design'],
   ['candidate_module_definition', 'sf-design'],
+  ['candidate_module_contract', 'sf-design'],
   ['tasks', 'sf-task-planner'],
   ['candidate_tasks', 'sf-task-planner'],
   ['trace_delta', 'sf-task-planner'],
@@ -819,7 +876,6 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['verification_report', 'sf-verifier'],
   ['evidence_manifest', 'sf-verifier'],
 ]);
-
 const VERIFICATION_INPUT_ARTIFACT_TYPES = new Set(['verification_report', 'evidence_manifest']);
 
 function rejectProfessionalArtifactOwnership(fileType: string, context: any): any | null {
@@ -828,7 +884,6 @@ function rejectProfessionalArtifactOwnership(fileType: string, context: any): an
 
   const callerAgent = normalizeAgentName(context?.agent) || 'unknown';
   if (callerAgent === requiredAgent) return null;
-
   return {
     success: false,
     error: 'ARTIFACT_OWNER_MISMATCH',
@@ -843,7 +898,6 @@ function rejectProfessionalArtifactOwnership(fileType: string, context: any): an
       'sf-orchestrator must re-dispatch the owning professional agent instead of writing the artifact itself.',
   };
 }
-
 const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'work_item',
   'work_item.json',
@@ -864,13 +918,15 @@ const EXECUTOR_FORBIDDEN_ARTIFACT_TYPES = new Set([
   'verification_report',
   'evidence_manifest',
   'candidate_requirements',
+  'candidate_architecture',
+  'candidate_data_model',
   'candidate_design',
   'candidate_module_definition',
+  'candidate_module_contract',
   'candidate_tasks',
   'candidate_trace_delta',
   'candidate_module_trace',
 ]);
-
 function rejectExecutorGovernanceArtifact(fileType: string, context: any): any | null {
   if (!isExecutorLike(context)) return null;
   if (!EXECUTOR_FORBIDDEN_ARTIFACT_TYPES.has(String(fileType ?? ''))) return null;
@@ -885,7 +941,6 @@ function rejectExecutorGovernanceArtifact(fileType: string, context: any): any |
       'sf-executor must return a task report to the orchestrator. Governance artifacts under .specforge/work-items must be written by orchestrator/verifier/planner through controlled tools.',
   };
 }
-
 registerHandler('sf_artifact_write', async (args, context, deps) => {
   const baseDir = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const workItemId = args['work_item_id'] as string;
@@ -894,13 +949,11 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
 
   const initialExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (initialExecutorRejection) return initialExecutorRejection;
-
   const initialOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
   if (initialOwnershipRejection) return initialOwnershipRejection;
 
   const idError = validateWorkItemId(workItemId);
   if (idError) return { success: false, error: idError, hard_stop: false, retry_allowed: true };
-
   const guardResult = guardHardStop(baseDir, workItemId, 'sf_artifact_write');
   if (!guardResult.allowed) {
     return {
@@ -916,10 +969,8 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
 
   const inferredExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (inferredExecutorRejection) return inferredExecutorRejection;
-
   const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
   if (inferredOwnershipRejection) return inferredOwnershipRejection;
-
   if (VERIFICATION_INPUT_ARTIFACT_TYPES.has(fileType)) {
     const state = await readAuthoritativeState({
       deps,
@@ -944,7 +995,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
   }
-
   if (fileType === 'verification_report' && args['template'] !== 'verification_report') {
     return {
       success: false,
@@ -955,7 +1005,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
         'verification_report must use template=verification_report with the structured Verification JSON contract.',
     };
   }
-
   if (fileType === 'verification_report' && args['template'] === 'verification_report') {
     const rendered = renderVerificationReport(content);
     if (rendered === null) {
@@ -970,7 +1019,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     }
     content = rendered;
   }
-
   let candidateModuleId: string | undefined;
   if (
     fileType === 'requirements' ||
@@ -978,6 +1026,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     fileType === 'design' ||
     fileType === 'candidate_design' ||
     fileType === 'candidate_module_definition' ||
+    fileType === 'candidate_module_contract' ||
     fileType === 'candidate_module_trace'
   ) {
     const moduleResolution = resolveDeclaredCandidateModuleId(content, baseDir, workItemId);
@@ -991,7 +1040,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
     candidateModuleId = moduleResolution.moduleId;
-
     if (fileType === 'candidate_module_definition') {
       try {
         const identity = resolveSpecModuleIdentity(JSON.parse(content));
@@ -1013,7 +1061,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       }
     }
   }
-
   const targetFilename = resolveTargetFilename(
     fileType,
     content,
@@ -1021,7 +1068,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     workItemId,
     candidateModuleId
   );
-
   if (!targetFilename && String(args['file_type']) === 'work_log') {
     return writeArtifact(
       {
@@ -1035,7 +1081,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       baseDir
     );
   }
-
   if (!targetFilename) {
     return writeArtifact(
       {
@@ -1049,7 +1094,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       baseDir
     );
   }
-
   if (targetFilename.replace(/\\/g, '/').endsWith('/tasks.md') || targetFilename === 'tasks.md') {
     const validation = validateTaskArtifactContract(content);
     if (!validation.valid) {
@@ -1067,7 +1111,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
   }
-
   if (fileType === 'design' || fileType === 'candidate_design' || fileType === 'design_delta') {
     const requirement = await resolveSystemGovernanceRequirement(workItemId, baseDir);
     if (requirement.blocking_issue) {
@@ -1082,7 +1125,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
           'The design artifact was NOT written because Runtime cannot derive its required analysis_scope.',
       };
     }
-
     const requiredScope = requirement.required ? 'system_governance' : 'solution_design';
     const declaredScope = readDeclaredDesignAnalysisScope(content);
     if (declaredScope !== requiredScope) {
@@ -1101,7 +1143,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
   }
-
   if (isJsonArtifact(targetFilename)) {
     try {
       content = normalizeCoreJsonArtifact(targetFilename, content, workItemId, baseDir);
@@ -1120,7 +1161,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     } catch {
       // non-critical; validator can still validate with artifact content.
     }
-
     const validation = validateArtifactJson(targetFilename, content, workItemId, workflowPath);
     if (validation && !validation.valid) {
       return {
@@ -1134,9 +1174,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
   }
-
   const wiDir = workItemRoot(baseDir, workItemId);
-
   if (isCandidateGovernancePath(targetFilename)) {
     const state = await readAuthoritativeState({
       deps,
@@ -1168,7 +1206,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     }
   }
   fs.mkdirSync(wiDir, { recursive: true });
-
   let targetPath: string;
   if (targetFilename === 'evidence_manifest.json') {
     const evidenceDir = path.join(wiDir, 'evidence');
@@ -1178,7 +1215,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     targetPath = path.join(wiDir, targetFilename);
     fs.mkdirSync(path.dirname(targetPath), { recursive: true });
   }
-
   try {
     fs.writeFileSync(targetPath, content, 'utf-8');
     const size = Buffer.byteLength(content, 'utf-8');

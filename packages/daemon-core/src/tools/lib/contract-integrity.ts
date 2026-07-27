@@ -4,11 +4,23 @@
  * The check projects candidate Project Spec entries over the current truth
  * source, then blocks destructive registry deltas while an explicitly marked
  * consumer still describes the removed contract surface.
+ *
+ * Architecture consistency governance also requires every Module Contract
+ * candidate to be validated before merge. This is especially important during
+ * new-project bootstrap, where the current Project Spec may still be in
+ * compatibility mode and therefore cannot rely on post-merge governance checks.
  */
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import {
+  ContractRegistrySchema,
+  extractModuleFromDdId,
+  moduleCodeFromProjectSpecPath,
+} from '@specforge/types';
 
 type Registry = {
+  schema_version?: unknown;
+  owner_module?: unknown;
   contracts?: {
     shared_enums?: Array<Record<string, unknown>>;
     invariants?: Array<Record<string, unknown>>;
@@ -113,6 +125,61 @@ function validateRegistry(registry: Registry): string[] {
   return errors;
 }
 
+function validateModuleContractCandidate(candidate: Registry, moduleCode: string): string[] {
+  const errors: string[] = [];
+  if (candidate.schema_version !== '1.0') {
+    errors.push('schema_version must be "1.0"');
+  }
+  const owner = String(candidate.owner_module ?? '').trim();
+  if (owner !== moduleCode) {
+    errors.push(`owner_module must equal target module ${moduleCode}`);
+  }
+
+  const registry = ContractRegistrySchema.safeParse(candidate.contracts);
+  if (!registry.success) {
+    errors.push(
+      `contracts must match ContractRegistrySchema: ${registry.error.issues
+        .map(issue => `${issue.path.join('.') || 'contracts'} ${issue.message}`)
+        .join('; ')}`
+    );
+    return errors;
+  }
+  errors.push(...validateRegistry(candidate));
+
+  for (const [, field] of CONTRACT_FIELDS) {
+    for (const [index, entry] of contractEntries(candidate, field).entries()) {
+      const entryOwner = String(entry.owner_module ?? '').trim();
+      if (entryOwner !== moduleCode) {
+        errors.push(`${field}[${index}].owner_module must equal ${moduleCode}`);
+      }
+
+      const sourceRefs = Array.isArray(entry.source_refs)
+        ? entry.source_refs.map(value => String(value ?? '').trim()).filter(Boolean)
+        : [];
+      if (sourceRefs.length === 0) {
+        errors.push(`${field}[${index}].source_refs must contain at least one DD-* reference`);
+      } else {
+        for (const sourceRef of sourceRefs) {
+          const sourceModule = extractModuleFromDdId(sourceRef);
+          if (!sourceModule) {
+            errors.push(`${field}[${index}].source_refs contains non-DD reference ${sourceRef}`);
+          } else if (sourceModule !== moduleCode) {
+            errors.push(
+              `${field}[${index}].source_refs ${sourceRef} belongs to ${sourceModule}, expected ${moduleCode}`
+            );
+          }
+        }
+      }
+
+      const enforcement = String(entry.enforcement ?? '').trim();
+      if (!enforcement) {
+        errors.push(`${field}[${index}].enforcement is required`);
+      }
+    }
+  }
+  return errors;
+}
+
 async function listMarkdownFiles(root: string): Promise<string[]> {
   const result: string[] = [];
   async function visit(current: string): Promise<void> {
@@ -145,7 +212,6 @@ async function projectedSpecs(input: {
       await fs.readFile(filePath, 'utf-8')
     );
   }
-
   const entries = Array.isArray(input.manifest.entries) ? input.manifest.entries : [];
   for (const rawEntry of entries) {
     if (!rawEntry || typeof rawEntry !== 'object') continue;
@@ -217,23 +283,83 @@ export async function checkContractIntegrity(input: {
   }
 
   const entries = Array.isArray(manifest.entries) ? manifest.entries : [];
+  const inputFiles = [manifestPath];
+  const checks: ContractIntegrityCheck[] = [];
+
+  for (const rawEntry of entries) {
+    if (!rawEntry || typeof rawEntry !== 'object') continue;
+    const entry = rawEntry as Record<string, unknown>;
+    const target = normalize(entry.target_path);
+    const moduleCode = moduleCodeFromProjectSpecPath(target);
+    if (!moduleCode || target !== `.specforge/project/modules/${moduleCode}/contracts.json`) continue;
+
+    const checkPrefix = `module_contract_${moduleCode.toLowerCase()}`;
+    if (String(entry.operation ?? 'replace') === 'delete') {
+      checks.push({
+        check_id: `${checkPrefix}_not_deleted`,
+        description: `Module Contract for ${moduleCode} remains present while the module is governed`,
+        passed: false,
+        severity: 'error',
+        details: `Deleting ${target} is not a valid governed Module Contract change.`,
+      });
+      continue;
+    }
+
+    const candidatePath = path.resolve(input.workItemDir, normalize(entry.candidate_path));
+    inputFiles.push(candidatePath);
+    const confined = isWithin(input.workItemDir, candidatePath);
+    checks.push({
+      check_id: `${checkPrefix}_candidate_confined`,
+      description: `Module Contract candidate for ${moduleCode} stays within its Work Item`,
+      passed: confined,
+      severity: confined ? undefined : 'error',
+    });
+    if (!confined) continue;
+
+    let candidate: Registry;
+    try {
+      candidate = await readJson(candidatePath);
+      checks.push({
+        check_id: `${checkPrefix}_candidate_readable`,
+        description: `Module Contract candidate for ${moduleCode} is valid JSON`,
+        passed: true,
+      });
+    } catch {
+      checks.push({
+        check_id: `${checkPrefix}_candidate_readable`,
+        description: `Module Contract candidate for ${moduleCode} is valid JSON`,
+        passed: false,
+        severity: 'error',
+      });
+      continue;
+    }
+
+    const errors = validateModuleContractCandidate(candidate, moduleCode);
+    checks.push({
+      check_id: `${checkPrefix}_candidate_integrity`,
+      description:
+        `Module Contract candidate for ${moduleCode} has the correct owner, DD provenance, and enforcement metadata`,
+      passed: errors.length === 0,
+      severity: errors.length === 0 ? undefined : 'error',
+      details: errors.join('; '),
+    });
+  }
+
   const registryEntry = entries.find(raw => {
     if (!raw || typeof raw !== 'object') return false;
     return normalize((raw as Record<string, unknown>).target_path) === REGISTRY_TARGET;
   }) as Record<string, unknown> | undefined;
 
   if (!registryEntry) {
+    checks.push({
+      check_id: 'contract_registry_not_targeted',
+      description: 'No extension_registry candidate; Project Contract delta check is not applicable',
+      passed: true,
+    });
     return {
       registryTargeted: false,
-      inputFiles: [manifestPath],
-      checks: [
-        {
-          check_id: 'contract_registry_not_targeted',
-          description:
-            'No extension_registry candidate; contract integrity delta check is not applicable',
-          passed: true,
-        },
-      ],
+      inputFiles,
+      checks,
     };
   }
 
@@ -244,19 +370,18 @@ export async function checkContractIntegrity(input: {
     'project',
     'extension_registry.json'
   );
-  const inputFiles = [manifestPath, registryPath, candidatePath];
+  inputFiles.push(registryPath, candidatePath);
   if (!isWithin(input.workItemDir, candidatePath)) {
+    checks.push({
+      check_id: 'contract_candidate_path_confined',
+      description: 'extension_registry candidate stays within its Work Item',
+      passed: false,
+      severity: 'error',
+    });
     return {
       registryTargeted: true,
       inputFiles,
-      checks: [
-        {
-          check_id: 'contract_candidate_path_confined',
-          description: 'extension_registry candidate stays within its Work Item',
-          passed: false,
-          severity: 'error',
-        },
-      ],
+      checks,
     };
   }
 
@@ -270,36 +395,32 @@ export async function checkContractIntegrity(input: {
   try {
     after = await readJson(candidatePath);
   } catch {
+    checks.push({
+      check_id: 'contract_candidate_registry_readable',
+      description: 'Candidate extension_registry.json is valid JSON',
+      passed: false,
+      severity: 'error',
+    });
     return {
       registryTargeted: true,
       inputFiles,
-      checks: [
-        {
-          check_id: 'contract_candidate_registry_readable',
-          description: 'Candidate extension_registry.json is valid JSON',
-          passed: false,
-          severity: 'error',
-        },
-      ],
+      checks,
     };
   }
 
   const schemaErrors = validateRegistry(after);
-  const checks: ContractIntegrityCheck[] = [
-    {
-      check_id: 'contract_candidate_registry_schema',
-      description: 'Candidate contract entries have unique IDs, required fields, and typed enum values',
-      passed: schemaErrors.length === 0,
-      severity: schemaErrors.length === 0 ? undefined : 'error',
-      details: schemaErrors.join('; '),
-    },
-  ];
+  checks.push({
+    check_id: 'contract_candidate_registry_schema',
+    description: 'Candidate contract entries have unique IDs, required fields, and typed enum values',
+    passed: schemaErrors.length === 0,
+    severity: schemaErrors.length === 0 ? undefined : 'error',
+    details: schemaErrors.join('; '),
+  });
   if (schemaErrors.length > 0) return { registryTargeted: true, inputFiles, checks };
 
   const specs = await projectedSpecs({ ...input, manifest });
   inputFiles.push(...Array.from(specs.keys()).map(file => path.join(input.projectRoot, file)));
   const stale: string[] = [];
-
   for (const [kind, field] of CONTRACT_FIELDS) {
     const oldById = new Map(contractEntries(before, field).map(entry => [String(entry.id), entry]));
     const newById = new Map(contractEntries(after, field).map(entry => [String(entry.id), entry]));
@@ -334,7 +455,6 @@ export async function checkContractIntegrity(input: {
       }
     }
   }
-
   checks.push({
     check_id: 'contract_reverse_dependencies_aligned',
     description:

@@ -1,6 +1,7 @@
 /** Path policy enforcement for SpecForge. */
 import * as fs from 'node:fs/promises';
 import { isAbsolute } from 'node:path';
+import { resolveSpecModuleIdentity } from '@specforge/types';
 import { projectSpecManifest } from '@specforge/types/directory-layout';
 import { MVP_FORBIDDEN_DIRS } from './project-layout.js';
 import {
@@ -9,12 +10,10 @@ import {
 } from './write-guard-v11.js';
 
 export interface PathPolicyResult { valid: boolean; violations: string[]; }
-
 const MODULE_SPEC_TARGET_KEYS = new Set([
   'module_file', 'requirements', 'requirements_file', 'design', 'design_file',
   'contracts', 'contracts_file', 'trace', 'trace_file', 'tasks', 'tasks_file',
 ]);
-
 export function normalizeProjectSpecTargetPath(value: unknown): string {
   if (typeof value !== 'string') return '';
   const normalized = value.trim().replace(/\\/g, '/').replace(/^\.\//, '');
@@ -22,12 +21,10 @@ export function normalizeProjectSpecTargetPath(value: unknown): string {
   if (normalized.startsWith('project/')) return `.specforge/${normalized}`;
   return normalized;
 }
-
 function isCanonicalGovernanceTarget(target: string): boolean {
   if (target === '.specforge/project/data_model.md') return true;
   return /^\.specforge\/project\/modules\/[A-Z][A-Z0-9]{1,11}\/(?:module\.json|requirements\.md|design\.md|contracts\.json|trace\.md)$/.test(target);
 }
-
 export async function readDeclaredProjectSpecTargetPaths(projectRoot: string): Promise<Set<string>> {
   try {
     const parsed: unknown = JSON.parse(await fs.readFile(projectSpecManifest(projectRoot), 'utf-8'));
@@ -44,6 +41,10 @@ export async function readDeclaredProjectSpecTargetPaths(projectRoot: string): P
     const modules: unknown[] = Array.isArray(manifest['modules']) ? manifest['modules'] as unknown[] : [];
     for (const moduleEntry of modules) {
       if (!moduleEntry || typeof moduleEntry !== 'object' || Array.isArray(moduleEntry)) continue;
+      const identity = resolveSpecModuleIdentity(moduleEntry);
+      if (identity.valid && identity.moduleCode) {
+        declared.add(`.specforge/project/modules/${identity.moduleCode}/contracts.json`);
+      }
       for (const [key, target] of Object.entries(moduleEntry as Record<string, unknown>)) {
         if (!MODULE_SPEC_TARGET_KEYS.has(key)) continue;
         const normalized = normalizeProjectSpecTargetPath(target);
@@ -55,7 +56,6 @@ export async function readDeclaredProjectSpecTargetPaths(projectRoot: string): P
     return new Set(['.specforge/project/data_model.md']);
   }
 }
-
 export async function isDeclaredProjectSpecTargetPath(projectRoot: string, targetPath: unknown): Promise<boolean> {
   const normalized = normalizeProjectSpecTargetPath(targetPath);
   if (!normalized) return false;
@@ -63,7 +63,6 @@ export async function isDeclaredProjectSpecTargetPath(projectRoot: string, targe
   const declared = await readDeclaredProjectSpecTargetPaths(projectRoot);
   return declared.has(normalized);
 }
-
 export function enforcePathPolicy(filePath: string): PathPolicyResult {
   const violations: string[] = [];
   if (filePath.includes('\\')) violations.push('backslash not allowed');
@@ -76,6 +75,5 @@ export function enforcePathPolicy(filePath: string): PathPolicyResult {
   }
   return { valid: violations.length === 0, violations };
 }
-
 export type { WritePolicyResult } from './write-guard-v11.js';
 export const enforceWritePolicy = canonicalEnforceWritePolicy;
