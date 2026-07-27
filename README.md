@@ -38,7 +38,25 @@ bun scripts/sf-installer.ts install
 
 这会将共享组件（Agent、Tool、Skill、Plugin）部署到 `~/.config/opencode/`。组件数量由安装器运行时自动扫描确定，无需硬编码。
 
-安装完成后，打开任何项目的 OpenCode，Plugin 会自动初始化项目运行时（`.specforge/` 目录），无需额外操作。
+安装完成后，先确保 SpecForge daemon 已由部署环境启动并保持可用，再打开项目的 OpenCode。Plugin 负责连接 daemon、注册项目并自动初始化项目运行时（`.specforge/` 目录），但不负责启动、停止、重启或替换 daemon。
+
+### Daemon 运行模型
+
+SpecForge daemon 是独立的共享治理服务，生命周期由部署环境负责管理：
+
+- 本地开发环境可以先启动 daemon，再启动 OpenCode。
+- 服务器环境可以使用长期运行的 daemon，由多个 OpenCode 实例共同连接。
+- OpenCode Plugin 只作为 daemon 客户端，不接管 daemon 生命周期。
+- daemon 不可用时，Plugin 必须失败关闭并报告连接问题，不能绕过 daemon 继续执行治理写操作。
+
+若使用 SpecForge CLI 管理 daemon，可使用：
+
+```bash
+specforge daemon start
+specforge daemon status
+```
+
+服务器环境也可以使用既有的服务管理方式启动 daemon。
 
 ### 升级
 
@@ -107,14 +125,20 @@ bun scripts/sf-installer.ts --version
 
 ### 安装后
 
+先确认 daemon 已运行，再启动 OpenCode：
+
 ```bash
+specforge daemon status
+
 cd <你的项目>
 opencode             # 启动 OpenCode
-# Plugin 自动初始化项目运行时
+# Plugin 连接现有 daemon 并自动初始化项目运行时
 # 按 Tab 切换到 sf-orchestrator
 ```
 
-**注意：** 安装/升级后需要重启 OpenCode 才能加载新版 Plugin。
+如果 daemon 尚未启动，先按当前部署环境的方式启动 daemon。服务器上可以由一个长期运行的 daemon 同时服务多个 OpenCode 实例。
+
+**注意：** 安装/升级后需要重启 OpenCode 才能加载新版 Plugin；重启 OpenCode 不等于重启 daemon。
 
 ### 安装器设计优势
 
@@ -452,8 +476,13 @@ bun scripts/sf-installer.ts install
 # 2. 验证安装
 bun scripts/sf-installer.ts verify
 
-# 3. 重启 OpenCode 加载 Plugin
-# （需要重启 OpenCode 才能加载新版 Plugin）
+# 3. 启动或确认 SpecForge daemon
+specforge daemon status
+# 未运行时，按当前部署方式启动；使用 CLI 管理时可执行：
+# specforge daemon start
+
+# 4. 重启 OpenCode 加载 Plugin
+# Plugin 连接已经运行的 daemon
 ```
 
 #### 升级流程
@@ -466,6 +495,9 @@ bun scripts/sf-installer.ts upgrade --force
 
 # 3. 验证升级结果
 bun scripts/sf-installer.ts verify
+
+# 4. 按部署计划管理 daemon，并重启 OpenCode 加载新版 Plugin
+# OpenCode Plugin 不会自动停止、替换或重启 daemon
 ```
 
 #### 故障排查
