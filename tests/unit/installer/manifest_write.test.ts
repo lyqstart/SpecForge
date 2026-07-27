@@ -4,28 +4,28 @@
  * Validates Requirements: 4.3, 4.5, 5.5, 5.6
  */
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
-import { mkdtemp, rm, readFile, writeFile, mkdir } from "node:fs/promises"
+import { mkdtemp, rm, readFile, writeFile } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 import { existsSync } from "node:fs"
 import {
   writeManifest,
   readAndValidateManifest,
-  type ManifestWriteOptions,
 } from "../../../scripts/lib/manifest"
 import type { DesiredState } from "../../../scripts/lib/discovery"
 import type {
   ExecutionResult,
   PendingDeleteEntry,
   DesiredStateEntry,
-  ExecutedAction,
 } from "../../../scripts/lib/types"
 
-// ============================================================
-// Test Helpers
-// ============================================================
+function canonicalManifestPath(targetDir: string): string {
+  return join(targetDir, "specforge-manifest.json")
+}
 
-function makeDesiredState(entries?: Map<string, DesiredStateEntry>): DesiredState {
+function makeDesiredState(
+  entries?: Map<string, DesiredStateEntry>
+): DesiredState {
   const defaultEntries = new Map<string, DesiredStateEntry>([
     [
       "agents/sf-orchestrator.md",
@@ -62,24 +62,33 @@ function makeDesiredState(entries?: Map<string, DesiredStateEntry>): DesiredStat
   }
 }
 
-function makeExecutionResult(overrides?: Partial<ExecutionResult>): ExecutionResult {
+function makeExecutionResult(
+  overrides?: Partial<ExecutionResult>
+): ExecutionResult {
   return {
     success: true,
     executed: [
-      { relativePath: "agents/sf-orchestrator.md", action: "create", resultHash: "a".repeat(64) },
-      { relativePath: "tools/sf_state_read.ts", action: "update", resultHash: "b".repeat(64) },
-      { relativePath: "plugins/sf_specforge.ts", action: "skip" },
+      {
+        relativePath: "agents/sf-orchestrator.md",
+        action: "create",
+        resultHash: "a".repeat(64),
+      },
+      {
+        relativePath: "tools/sf_state_read.ts",
+        action: "update",
+        resultHash: "b".repeat(64),
+      },
+      {
+        relativePath: "plugins/sf_specforge.ts",
+        action: "skip",
+      },
     ],
     failed: null,
     warnings: [],
     pendingDeletes: [],
     ...overrides,
-  }
+  } as unknown as ExecutionResult
 }
-
-// ============================================================
-// Tests
-// ============================================================
 
 describe("writeManifest", () => {
   let tempDir: string
@@ -93,23 +102,16 @@ describe("writeManifest", () => {
   })
 
   it("should write a valid manifest file with all successfully executed files", async () => {
-    const desiredState = makeDesiredState()
-    const executionResult = makeExecutionResult()
-
     const result = await writeManifest({
       targetDir: tempDir,
-      desiredState,
-      executionResult,
+      desiredState: makeDesiredState(),
+      executionResult: makeExecutionResult(),
       pendingDeletes: [],
     })
 
     expect(result).toBe(true)
+    expect(existsSync(canonicalManifestPath(tempDir))).toBe(true)
 
-    // Verify the manifest was written
-    const manifestPath = join(tempDir, "specforge-manifest.json")
-    expect(existsSync(manifestPath)).toBe(true)
-
-    // Read and validate the written manifest
     const validated = await readAndValidateManifest(tempDir)
     expect(validated.valid).toBe(true)
     if (!validated.valid) return
@@ -119,7 +121,6 @@ describe("writeManifest", () => {
     expect(validated.data.install_mode).toBe("user_level")
     expect(validated.data.updated_at).toBeDefined()
 
-    // Verify files recorded
     expect(validated.data.files["agents/sf-orchestrator.md"]).toEqual({
       sha256: "a".repeat(64),
       size: 1024,
@@ -130,7 +131,6 @@ describe("writeManifest", () => {
       size: 2048,
       type: "tool",
     })
-    // skip action should record the file from desiredState
     expect(validated.data.files["plugins/sf_specforge.ts"]).toEqual({
       sha256: "c".repeat(64),
       size: 4096,
@@ -139,13 +139,13 @@ describe("writeManifest", () => {
   })
 
   it("should include pending_deletes in the manifest", async () => {
-    const pendingDeletes: PendingDeleteEntry[] = [
+    const pendingDeletes = [
       {
         relativePath: "tools/sf_old_tool.ts",
         failedAt: "2024-06-15T12:00:00.000Z",
         reason: "EPERM: permission denied",
       },
-    ]
+    ] as unknown as PendingDeleteEntry[]
 
     const result = await writeManifest({
       targetDir: tempDir,
@@ -156,11 +156,11 @@ describe("writeManifest", () => {
 
     expect(result).toBe(true)
 
-    // Read raw JSON to check pending_deletes
-    const content = await readFile(join(tempDir, "specforge-manifest.json"), "utf-8")
-    const parsed = JSON.parse(content)
-
-    expect(parsed.pending_deletes).toEqual(pendingDeletes)
+    const content = await readFile(
+      canonicalManifestPath(tempDir),
+      "utf-8"
+    )
+    expect(JSON.parse(content).pending_deletes).toEqual(pendingDeletes)
   })
 
   it("should not include pending_deletes when array is empty", async () => {
@@ -173,25 +173,29 @@ describe("writeManifest", () => {
 
     expect(result).toBe(true)
 
-    const content = await readFile(join(tempDir, "specforge-manifest.json"), "utf-8")
-    const parsed = JSON.parse(content)
-
-    // pending_deletes should be undefined (not serialized) when empty
-    expect(parsed.pending_deletes).toBeUndefined()
+    const content = await readFile(
+      canonicalManifestPath(tempDir),
+      "utf-8"
+    )
+    expect(JSON.parse(content).pending_deletes).toBeUndefined()
   })
 
   it("should build partial manifest on partial failure (only successful files)", async () => {
     const executionResult = makeExecutionResult({
       success: false,
       executed: [
-        { relativePath: "agents/sf-orchestrator.md", action: "create", resultHash: "a".repeat(64) },
+        {
+          relativePath: "agents/sf-orchestrator.md",
+          action: "create",
+          resultHash: "a".repeat(64),
+        },
       ],
       failed: {
         relativePath: "tools/sf_state_read.ts",
         action: "update",
         error: "ENOSPC: no space left on device",
       },
-    })
+    } as any)
 
     const result = await writeManifest({
       targetDir: tempDir,
@@ -206,18 +210,19 @@ describe("writeManifest", () => {
     expect(validated.valid).toBe(true)
     if (!validated.valid) return
 
-    // Only the successfully executed file should be recorded
-    expect(validated.data.files["agents/sf-orchestrator.md"]).toBeDefined()
-    // Failed file should NOT be recorded
-    expect(validated.data.files["tools/sf_state_read.ts"]).toBeUndefined()
-    // File not in executed list should NOT be recorded
-    expect(validated.data.files["plugins/sf_specforge.ts"]).toBeUndefined()
+    expect(
+      validated.data.files["agents/sf-orchestrator.md"]
+    ).toBeDefined()
+    expect(
+      validated.data.files["tools/sf_state_read.ts"]
+    ).toBeUndefined()
+    expect(
+      validated.data.files["plugins/sf_specforge.ts"]
+    ).toBeUndefined()
   })
 
-  it("should preserve installed_at from existing manifest (not fresh install)", async () => {
+  it("should preserve installed_at from existing legacy OpenCode-root manifest", async () => {
     const existingInstallTime = "2024-01-01T00:00:00.000Z"
-
-    // Write an existing manifest first
     const existingManifest = {
       schema_version: "1.0",
       shared_version: "3.5.0",
@@ -228,12 +233,12 @@ describe("writeManifest", () => {
       managed_agent_hashes: {},
       files: {},
     }
+
     await writeFile(
       join(tempDir, "specforge-manifest.json"),
       JSON.stringify(existingManifest, null, 2)
     )
 
-    // Now write new manifest
     const result = await writeManifest({
       targetDir: tempDir,
       desiredState: makeDesiredState(),
@@ -247,10 +252,10 @@ describe("writeManifest", () => {
     expect(validated.valid).toBe(true)
     if (!validated.valid) return
 
-    // installed_at should be preserved from existing manifest
     expect(validated.data.installed_at).toBe(existingInstallTime)
-    // updated_at should be a new timestamp
-    expect(validated.data.updated_at).not.toBe("2024-03-01T00:00:00.000Z")
+    expect(validated.data.updated_at).not.toBe(
+      "2024-03-01T00:00:00.000Z"
+    )
   })
 
   it("should set installed_at to current time for fresh install (no existing manifest)", async () => {
@@ -271,7 +276,6 @@ describe("writeManifest", () => {
     expect(validated.valid).toBe(true)
     if (!validated.valid) return
 
-    // installed_at should be between before and after
     expect(validated.data.installed_at >= beforeTime).toBe(true)
     expect(validated.data.installed_at <= afterTime).toBe(true)
   })
@@ -316,10 +320,17 @@ describe("writeManifest", () => {
   it("should not record deleted files in the manifest", async () => {
     const executionResult = makeExecutionResult({
       executed: [
-        { relativePath: "agents/sf-orchestrator.md", action: "create", resultHash: "a".repeat(64) },
-        { relativePath: "tools/sf_old_tool.ts", action: "delete" },
+        {
+          relativePath: "agents/sf-orchestrator.md",
+          action: "create",
+          resultHash: "a".repeat(64),
+        },
+        {
+          relativePath: "tools/sf_old_tool.ts",
+          action: "delete",
+        },
       ],
-    })
+    } as any)
 
     const result = await writeManifest({
       targetDir: tempDir,
@@ -334,11 +345,12 @@ describe("writeManifest", () => {
     expect(validated.valid).toBe(true)
     if (!validated.valid) return
 
-    expect(validated.data.files["tools/sf_old_tool.ts"]).toBeUndefined()
+    expect(
+      validated.data.files["tools/sf_old_tool.ts"]
+    ).toBeUndefined()
   })
 
   it("should use atomic write (manifest file is complete or absent)", async () => {
-    // Write manifest to a valid directory
     const result = await writeManifest({
       targetDir: tempDir,
       desiredState: makeDesiredState(),
@@ -348,12 +360,14 @@ describe("writeManifest", () => {
 
     expect(result).toBe(true)
 
-    // Verify the file is valid JSON (atomic write ensures no partial content)
-    const content = await readFile(join(tempDir, "specforge-manifest.json"), "utf-8")
+    const content = await readFile(
+      canonicalManifestPath(tempDir),
+      "utf-8"
+    )
     expect(() => JSON.parse(content)).not.toThrow()
   })
 
-  it("should return false when atomic write fails (e.g., invalid directory)", async () => {
+  it("should return true when atomic write creates missing directories recursively", async () => {
     const result = await writeManifest({
       targetDir: join(tempDir, "nonexistent", "deeply", "nested"),
       desiredState: makeDesiredState(),
@@ -361,8 +375,6 @@ describe("writeManifest", () => {
       pendingDeletes: [],
     })
 
-    // atomicWrite creates directories recursively, so this should actually succeed
-    // Let's test with a truly invalid path instead
     expect(result).toBe(true)
   })
 })

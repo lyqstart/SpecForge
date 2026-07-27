@@ -1,37 +1,36 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
-import { mkdtemp, rm, writeFile, mkdir } from "node:fs/promises"
+import { mkdtemp, rm } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 import { writeFileSync, mkdirSync } from "node:fs"
 import * as crypto from "node:crypto"
 
-// Mock resolveUserLevelDirectory before importing cmdVerify
 let mockUserLevelDir: string
 
-// Simple mock without importOriginal
 vi.mock("../../../scripts/lib/paths", () => {
   return {
     resolveUserLevelDirectory: () => mockUserLevelDir,
-    toPosix: (path: string) => path.replace(/\\/g, '/'),
-    toNative: (path: string) => path.replace(/\//g, '\\'),
-    normalizeSeparators: (path: string) => path.replace(/\\/g, '/'),
+    posixToNative: (path: string) => path.replace(/\//g, "\\"),
+    toPosix: (path: string) => path.replace(/\\/g, "/"),
+    toNative: (path: string) => path.replace(/\//g, "\\"),
+    normalizeSeparators: (path: string) => path.replace(/\\/g, "/"),
     resolveTargetDir: () => mockUserLevelDir,
   }
 })
 
 import { cmdVerify } from "../../../scripts/sf-installer"
 import type { UserLevelManifest } from "../../../scripts/lib/types"
-import { EXIT_CODES, InstallerErrorCode } from "../../../scripts/lib/errors"
-
-// ============================================================
-// Test Helpers
-// ============================================================
 
 function computeHash(content: string): string {
   return crypto.createHash("sha256").update(content).digest("hex")
 }
 
-function makeManifest(files: Record<string, { sha256: string; size: number; type: string }>): UserLevelManifest {
+function makeManifest(
+  files: Record<
+    string,
+    { sha256: string; size: number; type: string }
+  >
+): UserLevelManifest {
   return {
     schema_version: "1.0",
     shared_version: "3.5.0",
@@ -44,9 +43,12 @@ function makeManifest(files: Record<string, { sha256: string; size: number; type
   }
 }
 
-// ============================================================
-// cmdVerify Tests
-// ============================================================
+function writeCanonicalManifest(manifest: UserLevelManifest): void {
+  writeFileSync(
+    join(mockUserLevelDir, "specforge-manifest.json"),
+    JSON.stringify(manifest, null, 2)
+  )
+}
 
 describe("cmdVerify", () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>
@@ -55,13 +57,21 @@ describe("cmdVerify", () => {
   let exitSpy: ReturnType<typeof vi.spyOn>
 
   beforeEach(async () => {
-    mockUserLevelDir = await mkdtemp(join(tmpdir(), "sf-verify-cmd-"))
+    mockUserLevelDir = await mkdtemp(
+      join(tmpdir(), "sf-verify-cmd-")
+    )
     consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {})
-    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
-    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+    consoleWarnSpy = vi
+      .spyOn(console, "warn")
+      .mockImplementation(() => {})
+    consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {})
     exitSpy = vi
       .spyOn(process, "exit")
-      .mockImplementation((() => {}) as unknown as (code?: number) => never)
+      .mockImplementation(
+        (() => {}) as unknown as (code?: number) => never
+      )
   })
 
   afterEach(async () => {
@@ -85,60 +95,76 @@ describe("cmdVerify", () => {
     const content = "# SF Orchestrator\nTest content"
     const hash = computeHash(content)
 
-    // Create the file
     mkdirSync(join(mockUserLevelDir, "agents"), { recursive: true })
-    writeFileSync(join(mockUserLevelDir, "agents", "sf-orchestrator.md"), content)
-
-    // Write manifest
-    const manifest = makeManifest({
-      "agents/sf-orchestrator.md": { sha256: hash, size: content.length, type: "agent" },
-    })
     writeFileSync(
-      join(mockUserLevelDir, "specforge-manifest.json"),
-      JSON.stringify(manifest, null, 2)
+      join(mockUserLevelDir, "agents", "sf-orchestrator.md"),
+      content
+    )
+
+    writeCanonicalManifest(
+      makeManifest({
+        "agents/sf-orchestrator.md": {
+          sha256: hash,
+          size: content.length,
+          type: "agent",
+        },
+      })
     )
 
     await cmdVerify()
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("校验通过"))
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("校验通过")
+    )
     expect(exitSpy).not.toHaveBeenCalled()
   })
 
   it("should report missing files and exit with exit code 6", async () => {
-    // Write manifest referencing a file that doesn't exist
-    const manifest = makeManifest({
-      "agents/sf-orchestrator.md": { sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", size: 100, type: "agent" },
-    })
-    writeFileSync(
-      join(mockUserLevelDir, "specforge-manifest.json"),
-      JSON.stringify(manifest, null, 2)
+    writeCanonicalManifest(
+      makeManifest({
+        "agents/sf-orchestrator.md": {
+          sha256: "a".repeat(64),
+          size: 100,
+          type: "agent",
+        },
+      })
     )
 
     await cmdVerify()
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("缺失的文件"))
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("校验失败"))
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("缺失的文件")
+    )
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("校验失败")
+    )
     expect(exitSpy).toHaveBeenCalledWith(6)
   })
 
   it("should report checksum mismatches and exit with exit code 6", async () => {
     const content = "actual content"
-    const wrongHash = "0000000000000000000000000000000000000000000000000000000000000000"
 
     mkdirSync(join(mockUserLevelDir, "agents"), { recursive: true })
-    writeFileSync(join(mockUserLevelDir, "agents", "sf-orchestrator.md"), content)
-
-    const manifest = makeManifest({
-      "agents/sf-orchestrator.md": { sha256: wrongHash, size: content.length, type: "agent" },
-    })
     writeFileSync(
-      join(mockUserLevelDir, "specforge-manifest.json"),
-      JSON.stringify(manifest, null, 2)
+      join(mockUserLevelDir, "agents", "sf-orchestrator.md"),
+      content
+    )
+
+    writeCanonicalManifest(
+      makeManifest({
+        "agents/sf-orchestrator.md": {
+          sha256: "0".repeat(64),
+          size: content.length,
+          type: "agent",
+        },
+      })
     )
 
     await cmdVerify()
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("哈希不匹配的文件"))
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("哈希不匹配的文件")
+    )
     expect(exitSpy).toHaveBeenCalledWith(6)
   })
 
@@ -147,85 +173,122 @@ describe("cmdVerify", () => {
     const hash = computeHash(content)
 
     mkdirSync(join(mockUserLevelDir, "agents"), { recursive: true })
-    writeFileSync(join(mockUserLevelDir, "agents", "sf-orchestrator.md"), content)
-
-    // Create lock file
     writeFileSync(
-      join(mockUserLevelDir, ".specforge.lock"),
-      JSON.stringify({ lock_id: "test", pid: 9999, command: "install", acquired_at: new Date().toISOString(), last_heartbeat: new Date().toISOString(), hostname: "test" })
+      join(mockUserLevelDir, "agents", "sf-orchestrator.md"),
+      content
     )
 
-    // Write manifest
-    const manifest = makeManifest({
-      "agents/sf-orchestrator.md": { sha256: hash, size: content.length, type: "agent" },
-    })
     writeFileSync(
-      join(mockUserLevelDir, "specforge-manifest.json"),
-      JSON.stringify(manifest, null, 2)
+      join(mockUserLevelDir, ".specforge.lock"),
+      JSON.stringify({
+        lock_id: "test",
+        pid: 9999,
+        command: "install",
+        acquired_at: new Date().toISOString(),
+        last_heartbeat: new Date().toISOString(),
+        hostname: "test",
+      })
+    )
+
+    writeCanonicalManifest(
+      makeManifest({
+        "agents/sf-orchestrator.md": {
+          sha256: hash,
+          size: content.length,
+          type: "agent",
+        },
+      })
     )
 
     await cmdVerify()
 
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining("安装正在进行，校验结果可能不准确")
+      expect.stringContaining(
+        "安装正在进行，校验结果可能不准确"
+      )
     )
-    // Should still complete verification successfully
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("校验通过"))
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("校验通过")
+    )
   })
 
-  it("should display summary with total, passed, failed, and missing counts", async () => {
+  it("should display summary with failed and missing counts", async () => {
     const content1 = "file one"
-    const hash1 = computeHash(content1)
     const content2 = "file two"
-    const wrongHash = "0000000000000000000000000000000000000000000000000000000000000000"
 
     mkdirSync(join(mockUserLevelDir, "agents"), { recursive: true })
     mkdirSync(join(mockUserLevelDir, "tools"), { recursive: true })
-    writeFileSync(join(mockUserLevelDir, "agents", "sf-orchestrator.md"), content1)
-    writeFileSync(join(mockUserLevelDir, "tools", "sf_state_read.ts"), content2)
-
-    const manifest = makeManifest({
-      "agents/sf-orchestrator.md": { sha256: hash1, size: content1.length, type: "agent" },
-      "tools/sf_state_read.ts": { sha256: wrongHash, size: content2.length, type: "tool" },
-      "agents/sf-executor.md": { sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", size: 50, type: "agent" },
-    })
     writeFileSync(
-      join(mockUserLevelDir, "specforge-manifest.json"),
-      JSON.stringify(manifest, null, 2)
+      join(mockUserLevelDir, "agents", "sf-orchestrator.md"),
+      content1
+    )
+    writeFileSync(
+      join(mockUserLevelDir, "tools", "sf_state_read.ts"),
+      content2
+    )
+
+    writeCanonicalManifest(
+      makeManifest({
+        "agents/sf-orchestrator.md": {
+          sha256: computeHash(content1),
+          size: content1.length,
+          type: "agent",
+        },
+        "tools/sf_state_read.ts": {
+          sha256: "0".repeat(64),
+          size: content2.length,
+          type: "tool",
+        },
+        "agents/sf-executor.md": {
+          sha256: "a".repeat(64),
+          size: 50,
+          type: "agent",
+        },
+      })
     )
 
     await cmdVerify()
 
-    // Check summary output - new format doesn't show "总计: 3 个文件" but shows individual counts
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("哈希不匹配的文件"))
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("缺失的文件"))
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("校验失败"))
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("哈希不匹配的文件")
+    )
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("缺失的文件")
+    )
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("校验失败")
+    )
     expect(exitSpy).toHaveBeenCalledWith(6)
   })
 
   it("should not acquire install lock during verify", async () => {
-    // cmdVerify does not import or call acquireInstallLock.
-    // We verify this by checking the source code does not contain acquireInstallLock call,
-    // and by confirming that no lock file is created during verify execution.
     const content = "test"
     const hash = computeHash(content)
 
     mkdirSync(join(mockUserLevelDir, "agents"), { recursive: true })
-    writeFileSync(join(mockUserLevelDir, "agents", "sf-orchestrator.md"), content)
-
-    const manifest = makeManifest({
-      "agents/sf-orchestrator.md": { sha256: hash, size: content.length, type: "agent" },
-    })
     writeFileSync(
-      join(mockUserLevelDir, "specforge-manifest.json"),
-      JSON.stringify(manifest, null, 2)
+      join(mockUserLevelDir, "agents", "sf-orchestrator.md"),
+      content
+    )
+
+    writeCanonicalManifest(
+      makeManifest({
+        "agents/sf-orchestrator.md": {
+          sha256: hash,
+          size: content.length,
+          type: "agent",
+        },
+      })
     )
 
     await cmdVerify()
 
-    // Verify no lock file was created (cmdVerify should not acquire lock)
     const { existsSync } = await import("node:fs")
-    expect(existsSync(join(mockUserLevelDir, ".specforge.lock"))).toBe(false)
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("校验通过"))
+    expect(
+      existsSync(join(mockUserLevelDir, ".specforge.lock"))
+    ).toBe(false)
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining("校验通过")
+    )
   })
 })

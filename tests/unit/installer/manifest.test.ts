@@ -11,10 +11,6 @@ import {
 import { InstallerError, InstallerErrorCode } from "../../../scripts/lib/errors"
 import type { UserLevelManifest } from "../../../scripts/lib/types"
 
-// ============================================================
-// Test Fixtures
-// ============================================================
-
 function makeValidUserManifest(): UserLevelManifest {
   return {
     schema_version: "1.0",
@@ -28,8 +24,16 @@ function makeValidUserManifest(): UserLevelManifest {
       "sf-executor": "def456",
     },
     files: {
-      "agents/sf-orchestrator.md": { sha256: "aaa", size: 100, type: "agent" },
-      "tools/sf_state_read.ts": { sha256: "bbb", size: 200, type: "tool" },
+      "agents/sf-orchestrator.md": {
+        sha256: "aaa",
+        size: 100,
+        type: "agent",
+      },
+      "tools/sf_state_read.ts": {
+        sha256: "bbb",
+        size: 200,
+        type: "tool",
+      },
     },
   }
 }
@@ -45,17 +49,13 @@ describe("manifest — V3.5", () => {
     await rm(tempDir, { recursive: true, force: true })
   })
 
-  // ============================================================
-  // readUserManifest
-  // ============================================================
-
   describe("readUserManifest", () => {
     it("should return null when file does not exist", async () => {
       const result = await readUserManifest(tempDir)
       expect(result).toBeNull()
     })
 
-    it("should read and return valid manifest", async () => {
+    it("should read and return valid legacy OpenCode-root manifest", async () => {
       const manifest = makeValidUserManifest()
       const manifestPath = join(tempDir, "specforge-manifest.json")
       await writeFile(manifestPath, JSON.stringify(manifest))
@@ -97,32 +97,26 @@ describe("manifest — V3.5", () => {
     })
   })
 
-  // ============================================================
-  // writeUserManifest
-  // ============================================================
-
   describe("writeUserManifest", () => {
-    it("should write valid manifest to file", async () => {
+    it("should write valid manifest to canonical OpenCode root location", async () => {
       const manifest = makeValidUserManifest()
       await writeUserManifest(tempDir, manifest)
 
       const manifestPath = join(tempDir, "specforge-manifest.json")
       const content = await readFile(manifestPath, "utf-8")
-      const parsed = JSON.parse(content)
-      expect(parsed).toEqual(manifest)
+      expect(JSON.parse(content)).toEqual(manifest)
     })
 
     it("should throw when manifest is invalid", async () => {
-      const invalid = { schema_version: "1.0" } as unknown as UserLevelManifest
+      const invalid = {
+        schema_version: "1.0",
+      } as unknown as UserLevelManifest
+
       await expect(writeUserManifest(tempDir, invalid)).rejects.toThrow(
         InstallerError
       )
     })
   })
-
-  // ============================================================
-  // validateUserManifest
-  // ============================================================
 
   describe("validateUserManifest", () => {
     it("should return true for valid manifest", () => {
@@ -145,7 +139,10 @@ describe("manifest — V3.5", () => {
     })
 
     it("should return false when managed_agents is not an array", () => {
-      const data = { ...makeValidUserManifest(), managed_agents: "not-array" }
+      const data = {
+        ...makeValidUserManifest(),
+        managed_agents: "not-array",
+      }
       expect(validateUserManifest(data)).toBe(false)
     })
 
@@ -160,7 +157,7 @@ describe("manifest — V3.5", () => {
     it("should return false when files entry is missing type field", () => {
       const data = {
         ...makeValidUserManifest(),
-        files: { "some/file.ts": { sha256: "abc", size: 100 } }, // missing type
+        files: { "some/file.ts": { sha256: "abc", size: 100 } },
       }
       expect(validateUserManifest(data)).toBe(false)
     })
@@ -168,32 +165,62 @@ describe("manifest — V3.5", () => {
     it("should return false when files entry has invalid type", () => {
       const data = {
         ...makeValidUserManifest(),
-        files: { "some/file.ts": { sha256: "abc", size: 100, type: "invalid" } },
+        files: {
+          "some/file.ts": {
+            sha256: "abc",
+            size: 100,
+            type: "invalid",
+          },
+        },
       }
       expect(validateUserManifest(data)).toBe(false)
     })
 
     it("should return false when install_mode is not user_level", () => {
-      const data = { ...makeValidUserManifest(), install_mode: "project_level" }
+      const data = {
+        ...makeValidUserManifest(),
+        install_mode: "project_level",
+      }
       expect(validateUserManifest(data)).toBe(false)
     })
 
     it("should accept all valid type values", () => {
       const data = makeValidUserManifest()
       data.files = {
-        "agents/sf-orchestrator.md": { sha256: "a", size: 1, type: "agent" },
-        "tools/sf_state_read.ts": { sha256: "b", size: 2, type: "tool" },
-        "tools/lib/utils.ts": { sha256: "c", size: 3, type: "tool_lib" },
-        "skills/sf-workflow/SKILL.md": { sha256: "d", size: 4, type: "skill" },
-        "plugins/sf_specforge.ts": { sha256: "e", size: 5, type: "plugin" },
+        "agents/sf-orchestrator.md": {
+          sha256: "a",
+          size: 1,
+          type: "agent",
+        },
+        "tools/sf_state_read.ts": {
+          sha256: "b",
+          size: 2,
+          type: "tool",
+        },
+        "tools/lib/utils.ts": {
+          sha256: "c",
+          size: 3,
+          type: "tool_lib",
+        },
+        "skills/sf-workflow/SKILL.md": {
+          sha256: "d",
+          size: 4,
+          type: "skill",
+        },
+        "plugins/sf_specforge.ts": {
+          sha256: "e",
+          size: 5,
+          type: "plugin",
+        },
+        "AGENTS.md": {
+          sha256: "f",
+          size: 6,
+          type: "config",
+        },
       }
       expect(validateUserManifest(data)).toBe(true)
     })
   })
-
-  // ============================================================
-  // buildUserManifest
-  // ============================================================
 
   describe("buildUserManifest", () => {
     it("should generate correct manifest structure with type field", async () => {
@@ -203,21 +230,32 @@ describe("manifest — V3.5", () => {
         JSON.stringify({ version: "3.5.0" })
       )
 
-      // Create a deployed file in userLevelDir
       const agentsDir = join(tempDir, "agents")
       await mkdir(agentsDir, { recursive: true })
-      await writeFile(join(agentsDir, "sf-orchestrator.md"), "# SF Orchestrator")
+      await writeFile(
+        join(agentsDir, "sf-orchestrator.md"),
+        "# SF Orchestrator"
+      )
 
       const sourceAgents = {
         "sf-orchestrator": {
           mode: "primary" as const,
           model: "anthropic/claude-sonnet-4-20250514",
           prompt: "{file:./agents/sf-orchestrator.md}",
-          permission: { task: "allow", edit: "allow", bash: "allow", skill: "allow" },
+          permission: {
+            task: "allow",
+            edit: "allow",
+            bash: "allow",
+            skill: "allow",
+          },
         },
       }
 
-      const result = await buildUserManifest(tempDir, sourceAgents, sourceDir)
+      const result = await buildUserManifest(
+        tempDir,
+        sourceAgents,
+        sourceDir
+      )
 
       expect(result.schema_version).toBe("1.0")
       expect(result.shared_version).toBe("3.5.0")
@@ -235,6 +273,7 @@ describe("manifest — V3.5", () => {
     it("should return version 0.0.0 when package.json is missing", async () => {
       const sourceDir = await mkdtemp(join(tmpdir(), "sf-source-"))
       const result = await buildUserManifest(tempDir, {}, sourceDir)
+
       expect(result.shared_version).toBe("0.0.0")
       await rm(sourceDir, { recursive: true, force: true })
     })

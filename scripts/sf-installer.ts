@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url"
 import { InstallerError, InstallerErrorCode, EXIT_CODES } from "./lib/errors"
 import { resolveUserLevelDirectory } from "./lib/paths"
 import { acquireInstallLock, releaseInstallLock } from "./lib/install_lock"
-import { readUserManifest, writeUserManifest, buildUserManifest } from "./lib/manifest"
+import { readUserManifest, writeUserManifest, buildUserManifest, getUserManifestPath } from "./lib/manifest"
 import { computeSHA256 } from "./lib/crypto"
 import { atomicWriteFile, backupFile } from "./lib/atomic"
 import { mergeOpenCodeJsonUserLevel } from "./lib/opencode_merge"
@@ -124,12 +124,24 @@ SpecForge 安装器 V3.5 — 用户级共享组件管理
 `)
 }
 
-function showVersion(userLevelDir: string): void {
-  const sfUserDir = getSpecForgeUserDir()
-  const manifestPath = path.join(sfUserDir, "specforge-manifest.json")
-  // Legacy fallback: try reading from old location for display only
-  const legacyManifestPath = path.join(getLegacySpecForgeDir(), "specforge-manifest.json")
-  const effectivePath = fs.existsSync(manifestPath) ? manifestPath : (fs.existsSync(legacyManifestPath) ? legacyManifestPath : null)
+export function showVersion(userLevelDir: string): void {
+  const manifestPath = getUserManifestPath(userLevelDir)
+  const sfUserLegacyManifestPath = path.join(
+    getSpecForgeUserDir(),
+    "specforge-manifest.json"
+  )
+  const homeLegacyManifestPath = path.join(
+    getLegacySpecForgeDir(),
+    "specforge-manifest.json"
+  )
+
+  const effectivePath = fs.existsSync(manifestPath)
+    ? manifestPath
+    : fs.existsSync(sfUserLegacyManifestPath)
+      ? sfUserLegacyManifestPath
+      : fs.existsSync(homeLegacyManifestPath)
+        ? homeLegacyManifestPath
+        : null
 
   if (effectivePath) {
     try {
@@ -138,9 +150,11 @@ function showVersion(userLevelDir: string): void {
       console.log(`安装时间: ${manifest.installed_at}`)
       console.log(`更新时间: ${manifest.updated_at}`)
       console.log(`已部署文件: ${Object.keys(manifest.files).length} 个`)
-      console.log(`目录: ${sfUserDir}`)
-      if (effectivePath === legacyManifestPath) {
-        console.log(`⚠️  Manifest found at legacy location. Run 'install' to migrate to ${sfUserDir}`)
+      console.log(`目录: ${userLevelDir}`)
+      if (effectivePath !== manifestPath) {
+        console.log(
+          `⚠️  Manifest found at legacy location. Run 'install' to migrate to ${manifestPath}`
+        )
       }
     } catch {
       console.log("SpecForge Manifest 解析失败")
@@ -602,7 +616,6 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
     const oldPathsUpg = [
       path.resolve(userLevelDir, "..", "scripts"),          // ~/.config/scripts/
       path.join(userLevelDir, "scripts"),                   // ~/.config/opencode/scripts/
-      path.join(userLevelDir, "specforge-manifest.json"),   // 旧版 manifest
     ]
 
     for (const oldPath of oldPathsUpg) {
@@ -652,7 +665,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
             .sort()
           if (backupFiles.length > 0) {
             const latestBackup = path.join(manifestBackup, backupFiles[backupFiles.length - 1])
-            const manifestTarget = path.join(getSpecForgeUserDir(), "specforge-manifest.json")
+            const manifestTarget = getUserManifestPath(userLevelDir)
             fs.copyFileSync(latestBackup, manifestTarget)
           }
         }
@@ -714,10 +727,10 @@ export async function cmdVerify(): Promise<void> {
     // 使用新的 verify 模块
     const { verifyInstallation, printVerifyReport } = await import("./lib/verify")
     const result = await verifyInstallation(userLevelDir)
-    
+
     // 输出结果并获取退出码
     const exitCode = printVerifyReport(result)
-    
+
     if (exitCode !== 0) {
       process.exit(exitCode)
     }
@@ -781,8 +794,8 @@ export async function cmdUninstall(): Promise<void> {
     // Step 5: 从 opencode.json 移除 sf-* agents（Merge_Write 反向操作）
     await removeSfAgentsFromOpenCodeJson(userLevelDir)
 
-    // Step 6: 删除 User_Manifest（位于 sf-user/）
-    const manifestPath = path.join(getSpecForgeUserDir(), "specforge-manifest.json")
+    // Step 6: 删除 User_Manifest（位于 OpenCode 用户配置根目录）
+    const manifestPath = getUserManifestPath(userLevelDir)
     if (fs.existsSync(manifestPath)) {
       fs.unlinkSync(manifestPath)
     }
@@ -809,7 +822,6 @@ export async function cmdUninstall(): Promise<void> {
     const oldPaths = [
       path.resolve(userLevelDir, "..", "scripts"),          // ~/.config/scripts/ (package.json + node_modules + 26 .ts)
       path.join(userLevelDir, "scripts"),                   // ~/.config/opencode/scripts/ (sf_plugin_client.ts)
-      path.join(userLevelDir, "specforge-manifest.json"),   // 旧版 manifest 位置（若仍存在）
     ]
 
     for (const oldPath of oldPaths) {
