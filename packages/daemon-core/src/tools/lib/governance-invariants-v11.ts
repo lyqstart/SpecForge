@@ -274,6 +274,13 @@ export function targetPathForCandidate(type: string, candidatePath: string): str
   );
   if (moduleDesignCandidate)
     return `.specforge/project/modules/${moduleDesignCandidate[1]}/design.md`;
+  const moduleContractsCandidate = p.match(
+    /(?:^|\/)candidates\/project\/modules\/([^\/]+)\/contracts\.candidate\.json$/
+  );
+  if (moduleContractsCandidate)
+    return `.specforge/project/modules/${moduleContractsCandidate[1]}/contracts.json`;
+  if (t === 'data_model' || p.endsWith('/data_model.md') || p === 'data_model.md')
+    return '.specforge/project/data_model.md';
   if (t === 'requirements' || p.endsWith('/requirements.md') || p === 'requirements.md')
     return '.specforge/project/requirements_index.md';
   if (t === 'design' || p.endsWith('/design.md') || p === 'design.md')
@@ -380,6 +387,7 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
         const reqCandidate = path.join(moduleDir, 'requirements.candidate.md');
         const designCandidate = path.join(moduleDir, 'design.candidate.md');
         const moduleCandidate = path.join(moduleDir, 'module.candidate.json');
+        const contractsCandidate = path.join(moduleDir, 'contracts.candidate.json');
         const traceCandidate = path.join(moduleDir, 'trace.candidate.md');
         if (fsSync.existsSync(moduleCandidate))
           normalized.push({
@@ -405,6 +413,15 @@ export function inferManifestEntries(manifest: any, workItemDir: string): Manife
             target_path: `.specforge/project/modules/${moduleName}/design.md`,
             operation: 'replace',
             type: 'design',
+            inferred: true,
+            normalized: true,
+          });
+        if (fsSync.existsSync(contractsCandidate))
+          normalized.push({
+            candidate_path: normalizeSlash(path.relative(workItemDir, contractsCandidate)),
+            target_path: `.specforge/project/modules/${moduleName}/contracts.json`,
+            operation: 'replace',
+            type: 'module_contract',
             inferred: true,
             normalized: true,
           });

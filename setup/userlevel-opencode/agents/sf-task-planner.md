@@ -606,3 +606,12 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
 任一答案为否，必须继续修复，不得返回 success。
 
 <!-- SpecForge V7 Candidate Completeness Governance END -->
+
+---
+# Architecture / Data / Contract 消费规则
+
+1. 拆 Task 前必须读取本 WI 已批准/待批准的 Module Design、相关 `ARCH-*`、`DATA-*`、Project/Module Contract 和 Impact Scope。
+2. 每个 Task 继续以 `DD-*` 为主要实现依据；涉及数据结构时必须列出相关 `DATA-*`；直接落实系统级工作时才直接引用 `ARCH-*`。
+3. 每个 Task 必须列出适用 Contract refs，并把 Runtime 已批准的写入范围落实为具体 `allowed_write_files`；不得自行扩大 Impact Scope。
+4. Task 无法唯一落到正式 Module / DD / DATA / Contract 时必须 blocked，不得让 Executor 猜测。
+5. Trace 只记录真实关系变化；没有 Architecture/Data/Design/Contract 关系变化时不得为了形式制造空治理 Trace Delta。

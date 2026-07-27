@@ -1,27 +1,29 @@
 /**
  * gate-chain.ts — Gate registry and chain execution.
  *
- * V8.1 gate_summary_gate scheduling fix:
- * - gate_summary_gate checks gate_summary.md.
- * - gate_summary.md is produced by runRequiredGates().
- * - Therefore gate_summary_gate cannot be executed before the summary exists.
- *
- * The chain now runs all non-summary gates first, writes an initial summary,
- * runs gate_summary_gate against that initial summary, writes its report,
- * then writes the final summary including gate_summary_gate.
+ * Architecture/Data/Module governance is layered onto the existing gates here
+ * so the existing gate implementations remain reusable and migration-safe.
  */
-
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
 import {
   runGate,
   __injectRegistry,
+  makeReport,
   type GateReportV11,
   type GateContext,
   type GateCheckFn,
+  type GateReportCheck,
 } from './gate-report.js';
 import { generateGateSummaryMd, type GateSummaryStatus } from './gate-summary.js';
+import {
+  checkProjectGovernanceConsistency,
+  checkProjectGovernanceContracts,
+  checkProjectGovernanceTrace,
+  verifyProjectGovernanceAfterImplementation,
+  type GovernanceCheckResult,
+} from './project-governance-v2.js';
 
 interface GateMeta {
   gateId: GateIdV11;
@@ -29,112 +31,144 @@ interface GateMeta {
   required: boolean;
   checkFn: GateCheckFn;
 }
-
 const gateRegistry = new Map<GateIdV11, GateMeta>();
-
-// Inject registry accessor into gate-report.ts (late-binding to avoid circular dep)
 __injectRegistry(id => gateRegistry.get(id as GateIdV11));
 
-export function registerGate(
-  gateId: GateIdV11,
-  gateType: GateStrictness,
-  required: boolean,
-  checkFn: GateCheckFn
-): void {
+export function registerGate(gateId: GateIdV11, gateType: GateStrictness, required: boolean, checkFn: GateCheckFn): void {
   gateRegistry.set(gateId, { gateId, gateType, required, checkFn });
 }
-
-export function getRegisteredGateIds(): GateIdV11[] {
-  return Array.from(gateRegistry.keys());
-}
-
-export function isRegisteredGate(gateId: string): gateId is GateIdV11 {
-  return gateRegistry.has(gateId as GateIdV11);
-}
+export function getRegisteredGateIds(): GateIdV11[] { return Array.from(gateRegistry.keys()); }
+export function isRegisteredGate(gateId: string): gateId is GateIdV11 { return gateRegistry.has(gateId as GateIdV11); }
 
 export function computeGateSummaryStatus(reports: GateReportV11[]): GateSummaryStatus {
-  const hasFailedRequiredGate = reports.some(
-    report => report.status === 'failed' && report.required
-  );
-  const hasExplicitWaiverRequirement = reports.some(
-    report => (report as GateReportV11 & { waiver_required?: boolean }).waiver_required === true
-  );
-  const allPassed = reports.every(
-    report => report.status === 'passed' || report.status === 'skipped'
-  );
-
-  if (hasFailedRequiredGate) return 'failed';
-  if (hasExplicitWaiverRequirement) return 'passed_with_waiver_required';
-  if (allPassed) return 'passed';
+  if (reports.some(report => report.status === 'failed' && report.required)) return 'failed';
+  if (reports.some(report => (report as GateReportV11 & { waiver_required?: boolean }).waiver_required === true)) {
+    return 'passed_with_waiver_required';
+  }
+  if (reports.every(report => report.status === 'passed' || report.status === 'skipped')) return 'passed';
   return 'blocked';
 }
 
 async function writeGateReport(ctx: GateContext, report: GateReportV11): Promise<void> {
   const gatesDir = path.join(ctx.workItemDir, 'gates');
   await fs.mkdir(gatesDir, { recursive: true });
-  await fs.writeFile(
-    path.join(gatesDir, `${report.gate_id}.json`),
-    JSON.stringify(report, null, 2),
-    'utf-8'
-  );
+  await fs.writeFile(path.join(gatesDir, `${report.gate_id}.json`), JSON.stringify(report, null, 2), 'utf-8');
 }
 
-async function writeGateSummary(
-  ctx: GateContext,
-  reports: GateReportV11[]
-): Promise<{ summaryStatus: GateSummaryStatus; summaryPath: string }> {
+async function writeGateSummary(ctx: GateContext, reports: GateReportV11[]): Promise<{ summaryStatus: GateSummaryStatus; summaryPath: string }> {
   const summaryStatus = computeGateSummaryStatus(reports);
   const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
-  const summaryContent = generateGateSummaryMd(ctx.workItemId, reports, summaryStatus);
-  await fs.writeFile(summaryPath, summaryContent, 'utf-8');
+  await fs.writeFile(summaryPath, generateGateSummaryMd(ctx.workItemId, reports, summaryStatus), 'utf-8');
   return { summaryStatus, summaryPath };
 }
 
-/**
- * 运行指定 Gate 链，生成 Gate Reports 和 Gate Summary（§9.4-§9.5）。
- *
- * V8.1 rule:
- * gate_summary_gate is a meta gate over the generated summary.
- * If requested, it is intentionally run after the first summary has been written.
- */
+function combineWithGovernance(
+  ctx: GateContext,
+  gateId: GateIdV11,
+  base: GateReportV11,
+  governance: GovernanceCheckResult,
+  options: { replaceBase?: boolean; forceHardWhenActive?: boolean } = {},
+): GateReportV11 {
+  if (!governance.active && !options.replaceBase) return base;
+  const baseChecks: GateReportCheck[] = options.replaceBase ? [] : base.checks;
+  const checks: GateReportCheck[] = [...baseChecks, ...governance.checks];
+  const gateType: GateStrictness = governance.active && options.forceHardWhenActive !== false ? 'hard_gate' : base.gate_type;
+  return makeReport(
+    ctx.workItemId,
+    gateId,
+    gateType,
+    true,
+    checks,
+    Array.from(new Set([...base.input_files, ...governance.inputFiles])),
+  );
+}
+
+async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ctx: GateContext): Promise<GateReportV11> {
+  const input = { projectRoot: ctx.projectRoot, workItemDir: ctx.workItemDir, workItemId: ctx.workItemId };
+  if (gateId === 'spec_consistency_gate') {
+    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceConsistency(input), { forceHardWhenActive: true });
+  }
+  if (gateId === 'contract_integrity_gate') {
+    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceContracts(input), { forceHardWhenActive: true });
+  }
+  if (gateId === 'trace_gate') {
+    // Governance trace is semantic. Absence of a trace_delta is valid when no
+    // formal relation changed, so the old existence/non-empty trace check is replaced.
+    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceTrace(input), { replaceBase: true, forceHardWhenActive: true });
+  }
+  if (gateId === 'verification_gate') {
+    return combineWithGovernance(ctx, gateId, base, await verifyProjectGovernanceAfterImplementation(input), { forceHardWhenActive: true });
+  }
+  if (gateId === 'close_gate') {
+    const filtered = ctx.workflowPath === 'code_only_fast_path'
+      ? base.checks.filter(check => !['close_file_trace_delta_md', 'close_trace_delta_valid'].includes(check.check_id))
+      : base.checks;
+    if (ctx.workflowPath !== 'rollback_path') {
+      let formal: any = null;
+      try {
+        formal = JSON.parse(await fs.readFile(path.join(ctx.workItemDir, 'gates', 'formal_version_gate.json'), 'utf-8'));
+      } catch {
+        formal = null;
+      }
+      filtered.push({
+        check_id: 'close_formal_version_gate',
+        description: 'Formal Version Gate passed before Close',
+        passed: formal?.status === 'passed',
+        severity: 'error',
+      });
+    }
+    return makeReport(ctx.workItemId, gateId, 'hard_gate', true, filtered, base.input_files);
+  }
+  return base;
+}
+
+async function runAndWrite(gateId: GateIdV11, ctx: GateContext): Promise<GateReportV11> {
+  const base = await runGate(gateId, ctx);
+  const report = await applyGovernanceOverlay(gateId, base, ctx);
+  await writeGateReport(ctx, report);
+  return report;
+}
+
 export async function runRequiredGates(
   gateIds: GateIdV11[],
-  ctx: GateContext
+  ctx: GateContext,
 ): Promise<{ reports: GateReportV11[]; summaryStatus: GateSummaryStatus; summaryPath: string }> {
   const unknownGateIds = gateIds.filter(gateId => !gateRegistry.has(gateId));
   if (unknownGateIds.length > 0) {
-    throw new Error(
-      `UNKNOWN_GATE_ID: ${unknownGateIds.join(', ')}. Registered Gate IDs: ${getRegisteredGateIds()
-        .sort()
-        .join(', ')}`
-    );
+    throw new Error(`UNKNOWN_GATE_ID: ${unknownGateIds.join(', ')}. Registered Gate IDs: ${getRegisteredGateIds().sort().join(', ')}`);
   }
 
   const wantsSummaryGate = gateIds.includes('gate_summary_gate');
-  const primaryGateIds = gateIds.filter(gateId => gateId !== 'gate_summary_gate');
-
+  const wantsFormalVersionGate = gateIds.includes('formal_version_gate');
+  const primaryGateIds = gateIds.filter(
+    gateId => gateId !== 'gate_summary_gate' && gateId !== 'formal_version_gate'
+  );
   const reports: GateReportV11[] = [];
 
   for (const gateId of primaryGateIds) {
-    const report = await runGate(gateId, ctx);
+    const report = await runAndWrite(gateId, ctx);
     reports.push(report);
-    await writeGateReport(ctx, report);
+
+    // Formal Version is a first-class Gate, but Verification owns its normal
+    // sequencing so callers do not have to create a second workflow branch.
+    if (gateId === 'verification_gate' && report.status === 'passed') {
+      const formal = await runAndWrite('formal_version_gate', ctx);
+      reports.push(formal);
+    }
   }
 
-  // Write a summary before gate_summary_gate runs, because that gate validates
-  // gate_summary.md itself. This prevents first-run self-reference failure.
+  if (
+    wantsFormalVersionGate &&
+    !reports.some(report => report.gate_id === 'formal_version_gate')
+  ) {
+    reports.push(await runAndWrite('formal_version_gate', ctx));
+  }
+
   await writeGateSummary(ctx, reports);
-
   if (wantsSummaryGate) {
-    const summaryReport = await runGate('gate_summary_gate', ctx);
+    const summaryReport = await runAndWrite('gate_summary_gate', ctx);
     reports.push(summaryReport);
-    await writeGateReport(ctx, summaryReport);
   }
-
   const finalSummary = await writeGateSummary(ctx, reports);
-  return {
-    reports,
-    summaryStatus: finalSummary.summaryStatus,
-    summaryPath: finalSummary.summaryPath,
-  };
+  return { reports, summaryStatus: finalSummary.summaryStatus, summaryPath: finalSummary.summaryPath };
 }

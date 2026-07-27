@@ -42,6 +42,7 @@ import {
   workItemTriggerResult,
 } from '@specforge/types/directory-layout';
 import {
+  ContractRegistrySchema,
   moduleCodeFromProjectSpecPath,
   normalizeModuleCodeReference,
   resolveSpecModuleIdentity,
@@ -62,6 +63,7 @@ import {
 import { checkContractIntegrity } from './contract-integrity.js';
 import { verifyChangedCodeContracts } from './code-contract-verifier.js';
 import { evaluateVerificationGovernanceContract } from './verification-governance-contract.js';
+import { checkFormalVersionEligibility } from './project-governance-v2.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -95,6 +97,7 @@ export type GateIdV11 =
   | 'merge_ready_gate'
   | 'post_merge_gate'
   | 'verification_gate'
+  | 'formal_version_gate'
   | 'close_gate';
 
 // ---------------------------------------------------------------------------
@@ -503,7 +506,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
       const governedModuleAdmission =
         manifest.workflow_path === 'architecture_change_path' ||
         manifest.workflow_path === 'spec_migration_path';
-      const requiredNewModuleFiles = ['module.json', 'requirements.md', 'design.md', 'trace.md'];
+      const requiredNewModuleFiles = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'];
       const governedModuleFiles = new Map<string, Map<string, string>>();
       checks.push({
         check_id: 'module_registry_valid',
@@ -599,7 +602,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
         const missing = requiredNewModuleFiles.filter(filename => !files.has(filename));
         checks.push({
           check_id: `new_module_${moduleCode}_complete`,
-          description: `New module ${moduleCode} provides module.json, requirements.md, design.md and trace.md candidates`,
+          description: `New module ${moduleCode} provides module.json, requirements.md, design.md, contracts.json and trace.md candidates`,
           passed: missing.length === 0,
           severity: missing.length === 0 ? undefined : 'error',
           details: missing.length === 0 ? undefined : `Missing: ${missing.join(', ')}`,
@@ -626,6 +629,67 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
           passed: definitionValid,
           severity: definitionValid ? undefined : 'error',
           details: definitionDetails,
+        });
+
+        const moduleDefinitionCandidateForOwnership = files.get('module.json');
+        let codePathsValid = false;
+        let codePathsDetails = '';
+        if (
+          moduleDefinitionCandidateForOwnership &&
+          !moduleDefinitionCandidateForOwnership.includes('..')
+        ) {
+          try {
+            const definition = JSON.parse(
+              await fs.readFile(
+                path.join(ctx.workItemDir, moduleDefinitionCandidateForOwnership),
+                'utf-8'
+              )
+            );
+            const codePaths = Array.isArray(definition?.code_paths)
+              ? definition.code_paths
+                  .map((value: unknown) => String(value ?? '').trim())
+                  .filter(Boolean)
+              : [];
+            codePathsValid = codePaths.length > 0;
+            codePathsDetails = `code_paths=${codePaths.join(',') || 'none'}`;
+          } catch (error) {
+            codePathsDetails = (error as Error).message;
+          }
+        }
+        checks.push({
+          check_id: `new_module_${moduleCode}_code_paths`,
+          description: `New module ${moduleCode} declares non-empty code_paths`,
+          passed: codePathsValid,
+          severity: codePathsValid ? undefined : 'error',
+          details: codePathsDetails,
+        });
+
+        const contractsCandidate = files.get('contracts.json');
+        let contractsValid = false;
+        let contractsDetails = '';
+        if (contractsCandidate && !contractsCandidate.includes('..')) {
+          try {
+            const contracts = JSON.parse(
+              await fs.readFile(path.join(ctx.workItemDir, contractsCandidate), 'utf-8')
+            );
+            const registry = ContractRegistrySchema.safeParse(contracts?.contracts);
+            contractsValid =
+              contracts?.schema_version === '1.0' &&
+              String(contracts?.owner_module ?? '').trim() === moduleCode &&
+              registry.success;
+            contractsDetails = contractsValid
+              ? `owner_module=${moduleCode}`
+              : `schema_version=${String(contracts?.schema_version ?? 'missing')}; owner_module=${String(contracts?.owner_module ?? 'missing')}; registry_valid=${String(registry.success)}`;
+          } catch (error) {
+            contractsDetails = (error as Error).message;
+          }
+        }
+        checks.push({
+          check_id: `new_module_${moduleCode}_contracts`,
+          description: `New module ${moduleCode} contracts.json has matching owner_module and valid internal contracts`,
+          passed: contractsValid,
+          severity: contractsValid ? undefined : 'error',
+          details: contractsDetails,
         });
       }
     }
@@ -968,6 +1032,26 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
         ...codeContracts.checked_files.map(file => path.join(ctx.projectRoot, file)),
       ])
     )
+  );
+});
+
+/**
+ * formal_version_gate — Verification 后、Close 前的正式版本边界。
+ */
+registerGate('formal_version_gate', 'hard_gate', true, async ctx => {
+  const result = await checkFormalVersionEligibility({
+    projectRoot: ctx.projectRoot,
+    workItemDir: ctx.workItemDir,
+    workItemId: ctx.workItemId,
+    workflowPath: ctx.workflowPath ?? '',
+  });
+  return makeReport(
+    ctx.workItemId,
+    'formal_version_gate',
+    'hard_gate',
+    true,
+    result.checks,
+    result.inputFiles
   );
 });
 

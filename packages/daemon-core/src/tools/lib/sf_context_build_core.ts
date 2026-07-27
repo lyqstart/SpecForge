@@ -8,7 +8,7 @@
  */
 
 import { readFile, readdir } from "node:fs/promises"
-import { join } from "node:path"
+import { isAbsolute, join } from "node:path"
 import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
 import { loadGraphStore, isKGEnabled } from "./sf_knowledge_graph_core"
 import { impactAnalysis, getSubgraph } from "./sf_knowledge_query_core"
@@ -33,7 +33,7 @@ export interface TaskQueryParams {
 export interface ContextFragment {
   source_type: string
   source_id: string
-  category: "requirement" | "design_decision" | "success_pattern" | "failure_pattern" | "warning"
+  category: "governance" | "requirement" | "design_decision" | "success_pattern" | "failure_pattern" | "warning"
   content: string
   priority: number
 }
@@ -460,6 +460,293 @@ export class PhaseContextSource implements ContextDataSource {
   }
 }
 
+
+// ============================================================
+// Project Governance Context: authoritative upper-layer constraints
+// ============================================================
+
+function normalizeContextPath(value: unknown): string {
+  return String(value ?? "")
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\.\//, "")
+}
+
+async function readJsonForContext(filePath: string): Promise<any | null> {
+  try {
+    return JSON.parse(await readFile(filePath, "utf-8"))
+  } catch {
+    return null
+  }
+}
+
+function stringArrayForContext(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return Array.from(
+    new Set(value.map((item) => String(item ?? "").trim()).filter(Boolean))
+  ).sort()
+}
+
+function clipContext(value: string, max = 800): string {
+  const compact = value.replace(/\r/g, "").trim()
+  return compact.length <= max ? compact : compact.slice(0, max - 3) + "..."
+}
+
+function referencedMarkdown(text: string, refs: string[]): string {
+  const lines = text.replace(/\r/g, "").split("\n")
+  const chunks: string[] = []
+  for (const ref of refs) {
+    const index = lines.findIndex((line) => line.includes(ref))
+    if (index < 0) continue
+    const start = Math.max(0, index - 1)
+    const end = Math.min(lines.length, index + 5)
+    chunks.push(lines.slice(start, end).join("\n").trim())
+  }
+  return clipContext(Array.from(new Set(chunks)).join("\n"), 900)
+}
+
+function collectContractEntries(
+  value: unknown,
+  wanted: Set<string>,
+  out: Array<Record<string, unknown>>
+): void {
+  if (Array.isArray(value)) {
+    for (const item of value) collectContractEntries(item, wanted, out)
+    return
+  }
+  if (!value || typeof value !== "object") return
+  const record = value as Record<string, unknown>
+  if (typeof record.id === "string" && wanted.has(record.id)) {
+    out.push(record)
+  }
+  for (const child of Object.values(record)) {
+    collectContractEntries(child, wanted, out)
+  }
+}
+
+export class ProjectGovernanceContextSource implements ContextDataSource {
+  name = "project_governance"
+
+  constructor(private baseDir: string) {}
+
+  async query(params: TaskQueryParams): Promise<ContextFragment[]> {
+    const workItemDir = join(
+      this.baseDir,
+      SPEC_DIR_NAME,
+      "work-items",
+      params.work_item_id
+    )
+    const trigger = await readJsonForContext(join(workItemDir, "trigger_result.json"))
+    const rawScope = trigger?.impact_scope
+    if (!rawScope || typeof rawScope !== "object" || Array.isArray(rawScope)) return []
+
+    const scope = {
+      affected_modules: stringArrayForContext(rawScope.affected_modules),
+      architecture_refs: stringArrayForContext(rawScope.architecture_refs),
+      data_model_refs: stringArrayForContext(rawScope.data_model_refs),
+      design_refs: stringArrayForContext(rawScope.design_refs),
+      project_contract_refs: stringArrayForContext(rawScope.project_contract_refs),
+      module_contract_refs: stringArrayForContext(rawScope.module_contract_refs),
+      planned_code_paths: stringArrayForContext(rawScope.planned_code_paths),
+    }
+
+    const manifestPath = join(
+      this.baseDir,
+      SPEC_DIR_NAME,
+      "project",
+      "spec_manifest.json"
+    )
+    const manifest = (await readJsonForContext(manifestPath)) ?? {}
+    const project = manifest.project ?? {}
+    const candidateManifest =
+      (await readJsonForContext(join(workItemDir, "candidate_manifest.json"))) ?? {}
+    const targetMap = new Map<string, string>()
+    for (const entry of Array.isArray(candidateManifest.entries)
+      ? candidateManifest.entries
+      : []) {
+      const target = normalizeContextPath(entry?.target_path)
+      const candidate = normalizeContextPath(entry?.candidate_path ?? entry?.path)
+      if (target && candidate && !candidate.includes("..")) {
+        targetMap.set(target, join(workItemDir, candidate))
+      }
+    }
+
+    const prospectiveText = async (
+      targetPath: string,
+      conventionalCandidate?: string
+    ): Promise<string> => {
+      const target = normalizeContextPath(targetPath)
+      const explicit = targetMap.get(target)
+      if (explicit) {
+        try {
+          return await readFile(explicit, "utf-8")
+        } catch {
+          // fall through to conventional/formal source
+        }
+      }
+      if (conventionalCandidate) {
+        try {
+          return await readFile(join(workItemDir, conventionalCandidate), "utf-8")
+        } catch {
+          // fall through to formal source
+        }
+      }
+      try {
+        return await readFile(
+          isAbsolute(targetPath) ? targetPath : join(this.baseDir, target),
+          "utf-8"
+        )
+      } catch {
+        return ""
+      }
+    }
+
+    const architectureTarget = normalizeContextPath(
+      project.architecture ?? `${SPEC_DIR_NAME}/project/architecture.md`
+    )
+    const dataModelTarget = normalizeContextPath(
+      project.data_model ?? `${SPEC_DIR_NAME}/project/data_model.md`
+    )
+    const extensionRegistryTarget = normalizeContextPath(
+      project.extension_registry ?? `${SPEC_DIR_NAME}/project/extension_registry.json`
+    )
+
+    const architectureText = await prospectiveText(
+      architectureTarget,
+      "candidates/project/architecture.candidate.md"
+    )
+    const dataModelText = await prospectiveText(
+      dataModelTarget,
+      "candidates/project/data_model.candidate.md"
+    )
+    const extensionRegistryText = await prospectiveText(extensionRegistryTarget)
+
+    const blocks: string[] = [
+      `Impact Scope: modules=${scope.affected_modules.join(",") || "none"}; ` +
+        `planned_code_paths=${scope.planned_code_paths.join(",") || "none"}`,
+    ]
+
+    const architectureBlock = referencedMarkdown(
+      architectureText,
+      scope.architecture_refs
+    )
+    if (architectureBlock) {
+      blocks.push(
+        `Architecture [${scope.architecture_refs.join(",")}]\n${architectureBlock}`
+      )
+    }
+
+    const dataModelBlock = referencedMarkdown(dataModelText, scope.data_model_refs)
+    if (dataModelBlock) {
+      blocks.push(`Data Model [${scope.data_model_refs.join(",")}]\n${dataModelBlock}`)
+    }
+
+    const projectContracts: Array<Record<string, unknown>> = []
+    if (extensionRegistryText && scope.project_contract_refs.length > 0) {
+      try {
+        collectContractEntries(
+          JSON.parse(extensionRegistryText),
+          new Set(scope.project_contract_refs),
+          projectContracts
+        )
+      } catch {
+        // malformed content is handled by Contract Integrity Gate
+      }
+    }
+    if (projectContracts.length > 0) {
+      blocks.push(`Project Contracts\n${clipContext(JSON.stringify(projectContracts), 700)}`)
+    }
+
+    for (const moduleCode of scope.affected_modules) {
+      const rawModule = (Array.isArray(manifest.modules) ? manifest.modules : []).find(
+        (entry: any) =>
+          String(
+            entry?.module_code ??
+              entry?.name ??
+              entry?.module_id ??
+              entry?.module ??
+              entry?.id ??
+              ""
+          )
+            .replace(/^MOD-/i, "")
+            .toUpperCase() === moduleCode.toUpperCase()
+      )
+      const moduleRoot = `${SPEC_DIR_NAME}/project/modules/${moduleCode}`
+      const requirementsTarget = normalizeContextPath(
+        rawModule?.requirements ?? `${moduleRoot}/requirements.md`
+      )
+      const designTarget = normalizeContextPath(
+        rawModule?.design ?? `${moduleRoot}/design.md`
+      )
+      const contractsTarget = normalizeContextPath(
+        rawModule?.contracts ?? `${moduleRoot}/contracts.json`
+      )
+
+      const requirementsText = await prospectiveText(
+        requirementsTarget,
+        `candidates/project/modules/${moduleCode}/requirements.candidate.md`
+      )
+      if (requirementsText) {
+        blocks.push(
+          `Requirement ${moduleCode}\n${clipContext(requirementsText, 550)}`
+        )
+      }
+
+      const moduleDesignRefs = scope.design_refs.filter((ref) =>
+        ref.toUpperCase().includes(`-${moduleCode.toUpperCase()}-`)
+      )
+      const designText = await prospectiveText(
+        designTarget,
+        `candidates/project/modules/${moduleCode}/design.candidate.md`
+      )
+      const designBlock = referencedMarkdown(designText, moduleDesignRefs)
+      if (designBlock) {
+        blocks.push(`Module Design ${moduleCode}\n${designBlock}`)
+      }
+
+      const moduleContractIds = new Set(scope.module_contract_refs)
+      if (moduleContractIds.size > 0) {
+        const contractsText = await prospectiveText(
+          contractsTarget,
+          `candidates/project/modules/${moduleCode}/contracts.candidate.json`
+        )
+        if (contractsText) {
+          try {
+            const internalContracts: Array<Record<string, unknown>> = []
+            collectContractEntries(
+              JSON.parse(contractsText),
+              moduleContractIds,
+              internalContracts
+            )
+            if (internalContracts.length > 0) {
+              blocks.push(
+                `Module Contracts ${moduleCode}\n${clipContext(
+                  JSON.stringify(internalContracts),
+                  650
+                )}`
+              )
+            }
+          } catch {
+            // malformed content is handled by Contract Integrity Gate
+          }
+        }
+      }
+    }
+
+    return [
+      {
+        source_type: this.name,
+        source_id: normalizeContextPath(
+          `${SPEC_DIR_NAME}/work-items/${params.work_item_id}/trigger_result.json`
+        ),
+        category: "governance",
+        content: clipContext(blocks.join("\n\n"), 2400),
+        priority: 5,
+      },
+    ]
+  }
+}
+
 // ============================================================
 // Runtime Policy Source: required design analysis scope
 // ============================================================
@@ -674,6 +961,7 @@ export async function buildTaskContext(
   }
 
   // Group by category
+  const governance = allFragments.filter((f) => f.category === "governance")
   const requirements = allFragments.filter((f) => f.category === "requirement")
   const designDecisions = allFragments.filter((f) => f.category === "design_decision")
   const successPatterns = allFragments.filter((f) => f.category === "success_pattern")
@@ -683,6 +971,7 @@ export async function buildTaskContext(
   // Build sections with priority ordering for truncation
   // Priority: 历史经验(4) > 注意事项(3) > 设计决策(2) > 需求(1)
   const sections: Array<{ heading: string; items: ContextFragment[]; priority: number }> = [
+    { heading: "## 治理约束", items: governance, priority: 5 },
     { heading: "## 历史经验", items: [...successPatterns, ...failurePatterns], priority: 4 },
     { heading: "## 注意事项", items: warnings, priority: 3 },
     { heading: "## 设计决策", items: designDecisions, priority: 2 },
@@ -892,6 +1181,7 @@ export async function buildContext(
 
   // Build data sources
   const dataSources: ContextDataSource[] = [
+    new ProjectGovernanceContextSource(baseDir),
     new DesignGovernancePolicySource(baseDir),
     new KnowledgeGraphSource(baseDir),
     new ArchiveSource(baseDir),

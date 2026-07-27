@@ -708,3 +708,19 @@ constrained_by: <约束来源>
 - **不得**自行启动子 Agent 或调用 `sf_contract_register`。
 - **不得**把未知类型直接写入正式规格 Candidate。
 - **不得**绕过 `contract_gap` 直接使用未登记的扩展类型。
+
+---
+# Project Architecture / Data Model / Module Design 治理扩展
+
+以下规则属于本 Agent 的正式生产契约：
+
+1. 每次设计必须先读取当前正式 Project Architecture、Project Data Model、相关 Module Design、Project/Module Contract 和本 WI 的 Impact Scope。
+2. 如果当前项目尚未形成有效 Project Architecture，而本次需求需要实现正式系统功能，必须先在同一个 WI 中形成 Architecture Candidate，再基于该 Candidate 继续 Data Model / Module Design；不得直接绕过上层设计。
+3. 如果本次需求改变系统整体结构、Module 边界、公共基础设施、跨模块调用/依赖、系统级数据架构或全局约束，必须形成 `.specforge/project/architecture.md` Candidate。重要规则使用 `ARCH-<DOMAIN>-NNN`。
+4. 如果项目使用数据库或本次变化影响全局数据结构，必须从全局业务数据关系出发建立/更新 `.specforge/project/data_model.md` Candidate。重要数据设计使用 `DATA-<DOMAIN>-NNN`。不得先按 Module 机械拆表再拼数据库。
+5. Project Data Model 至少负责核心实体、表及职责、主要字段业务含义、主外键/关联、关键约束、共享数据、历史/审计/汇总结构、事务一致性和重要索引/性能设计。
+6. Module Design 必须基于即将生效的 Architecture / Data Model（正式版本或本 WI Candidate）设计，并继续使用现有 `DD-*` ID；不得另造 `DES-*`。
+7. 需要机器强制的 Architecture / Data / Design 规则才进入 Contract。跨 Module 规则进入 Project Contract；仅一个 Module 内部共同消费的规则进入 Module Contract。
+8. Module Contract 的 `source_refs` 必须来自相关 `DD-*`；Project Contract 的 `source_refs` 必须来自相关 `ARCH-*` / `DATA-*`；Contract 必须声明可执行的 `enforcement`。
+9. 设计输出必须覆盖 Impact Scope 中声明需要治理的正式对象；未覆盖时返回 blocked，不得把缺失责任下推给 Task Planner 或 Executor。
+10. `requirements_index.md`、`design_index.md` 等可由 Runtime 从正式数据推导的索引不得由本 Agent凭空重复维护。

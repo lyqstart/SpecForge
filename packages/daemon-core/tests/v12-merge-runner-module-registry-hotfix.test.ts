@@ -26,10 +26,42 @@ describe('Project Spec governed module admission', () => {
       modules: [],
     });
 
-    await writeJson(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'module.candidate.json'), { module_code: 'TODOS', status: 'active' });
-    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'requirements.candidate.md'), '# Requirements\n', 'utf8');
-    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'design.candidate.md'), '# Design\n', 'utf8');
-    await writeFile(join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'trace.candidate.md'), '# Trace\n', 'utf8');
+    await writeJson(
+      join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'module.candidate.json'),
+      {
+        module_code: 'TODOS',
+        status: 'active',
+        code_paths: ['packages/todos/src/**'],
+      }
+    );
+    await writeFile(
+      join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'requirements.candidate.md'),
+      '# Requirements\n',
+      'utf8'
+    );
+    await writeFile(
+      join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'design.candidate.md'),
+      '# Design\n',
+      'utf8'
+    );
+    await writeJson(
+      join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'contracts.candidate.json'),
+      {
+        schema_version: '1.0',
+        owner_module: 'TODOS',
+        contracts: {
+          shared_enums: [],
+          invariants: [],
+          public_interfaces: [],
+          extension_points: [],
+        },
+      }
+    );
+    await writeFile(
+      join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'trace.candidate.md'),
+      '# Trace\n',
+      'utf8'
+    );
 
     await writeJson(join(workItemDir, 'candidate_manifest.json'), {
       schema_version: '1.1',
@@ -53,6 +85,12 @@ describe('Project Spec governed module admission', () => {
           type: 'design',
           candidate_path: 'candidates/project/modules/TODOS/design.candidate.md',
           target_path: '.specforge/project/modules/TODOS/design.md',
+          operation: 'replace',
+        },
+        {
+          type: 'module_contract',
+          candidate_path: 'candidates/project/modules/TODOS/contracts.candidate.json',
+          target_path: '.specforge/project/modules/TODOS/contracts.json',
           operation: 'replace',
         },
         {
@@ -98,9 +136,16 @@ describe('Project Spec governed module admission', () => {
     expect(result.success).toBe(true);
     expect(result.project_spec_version).toBe('PSV-0002');
 
-    const specManifest = JSON.parse(await readFile(join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), 'utf8'));
+    const specManifest = JSON.parse(
+      await readFile(join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), 'utf8')
+    );
     expect(specManifest.project_spec_version).toBe('PSV-0002');
-    expect(specManifest.last_merged_targets).toContain('.specforge/project/modules/TODOS/requirements.md');
+    expect(specManifest.last_merged_targets).toContain(
+      '.specforge/project/modules/TODOS/requirements.md'
+    );
+    expect(specManifest.last_merged_targets).toContain(
+      '.specforge/project/modules/TODOS/contracts.json'
+    );
     expect(specManifest.modules).toEqual([
       {
         module_code: 'TODOS',
@@ -109,6 +154,8 @@ describe('Project Spec governed module admission', () => {
         requirements: '.specforge/project/modules/TODOS/requirements.md',
         design: '.specforge/project/modules/TODOS/design.md',
         trace: '.specforge/project/modules/TODOS/trace.md',
+        contracts: '.specforge/project/modules/TODOS/contracts.json',
+        code_paths: ['packages/todos/src/**'],
       },
     ]);
   });

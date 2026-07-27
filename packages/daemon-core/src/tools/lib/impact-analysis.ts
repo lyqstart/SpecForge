@@ -1,17 +1,9 @@
 /**
- * impact-analysis.ts — §6.5 路径选择逻辑 + Trigger Result 生成
- *
- * 从 workflow-path-selector-v11.ts 提取。
- * 依赖 change-classification.ts 和 trigger-result.ts（单向）。
+ * impact-analysis.ts — workflow selection + Trigger Result.
  */
-
 import type { ChangeClassification } from './change-classification.js';
 import { canUseCodeOnlyFastPath } from './change-classification.js';
 import type { MatchResultType } from './trigger-result.js';
-
-// ---------------------------------------------------------------------------
-// §6.4 workflow_path 枚举（impact-analysis 使用）
-// ---------------------------------------------------------------------------
 
 export type WorkflowPath =
   | 'requirement_change_path'
@@ -23,23 +15,35 @@ export type WorkflowPath =
   | 'contract_change_path'
   | 'rollback_path';
 
-// ---------------------------------------------------------------------------
-// §6.5 路径选择逻辑
-// ---------------------------------------------------------------------------
+export interface ImpactScope {
+  affected_modules: string[];
+  architecture_refs: string[];
+  data_model_refs: string[];
+  design_refs: string[];
+  project_contract_refs: string[];
+  module_contract_refs: string[];
+  planned_code_paths: string[];
+}
 
-/**
- * 根据 Classification 选择 workflow_path（§6.5）。
- *
- * 优先级：
- * 1. architecture_change_path（最高）
- * 2. requirement_change_path
- * 3. design_change_path
- * 4. task_change_path
- * 5. code_only_fast_path（最低）
- */
-export function selectWorkflowPath(
-  classification: ChangeClassification,
-): WorkflowPath {
+function strings(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return Array.from(new Set(value.map(item => String(item ?? '').trim()).filter(Boolean))).sort();
+}
+
+export function normalizeImpactScope(value?: Partial<ImpactScope> | null): ImpactScope {
+  const scope = value ?? {};
+  return {
+    affected_modules: strings(scope.affected_modules),
+    architecture_refs: strings(scope.architecture_refs),
+    data_model_refs: strings(scope.data_model_refs),
+    design_refs: strings(scope.design_refs),
+    project_contract_refs: strings(scope.project_contract_refs),
+    module_contract_refs: strings(scope.module_contract_refs),
+    planned_code_paths: strings(scope.planned_code_paths),
+  };
+}
+
+export function selectWorkflowPath(classification: ChangeClassification): WorkflowPath {
   const contractRegistryOnly =
     classification.contract_registry_only === true &&
     classification.api_contract_changed === true &&
@@ -51,56 +55,56 @@ export function selectWorkflowPath(
     classification.design_changed === false &&
     classification.module_boundary_changed === false &&
     classification.architecture_changed === false &&
+    classification.data_model_changed !== true &&
+    classification.module_contract_changed !== true &&
     classification.unknowns.length === 0;
+  if (contractRegistryOnly) return 'contract_change_path';
 
-  if (contractRegistryOnly) {
-    return 'contract_change_path';
-  }
-
-  // §6.6 unknown 升级规则
   if (classification.unknowns.length > 0) {
-    if (classification.architecture_changed || classification.unknowns.some(u => u.includes('architecture'))) {
-      return 'architecture_change_path';
-    }
-    if (classification.requirement_changed || classification.unknowns.some(u => u.includes('requirement'))) {
-      return 'requirement_change_path';
-    }
-    if (classification.design_changed || classification.unknowns.some(u => u.includes('design'))) {
-      return 'design_change_path';
-    }
-    // unknown 存在但不明确层级 → 最高安全路径
+    if (
+      classification.requirement_changed ||
+      classification.acceptance_criteria_changed ||
+      classification.business_rule_changed ||
+      classification.unknowns.some(u => /requirement|acceptance|business/i.test(u))
+    ) return 'requirement_change_path';
+    if (
+      classification.architecture_changed ||
+      classification.module_boundary_changed ||
+      classification.unknowns.some(u => /architecture|module boundary/i.test(u))
+    ) return 'architecture_change_path';
+    if (
+      classification.design_changed ||
+      classification.data_model_changed === true ||
+      classification.module_contract_changed === true ||
+      classification.unknowns.some(u => /design|data model|contract/i.test(u))
+    ) return 'design_change_path';
     return 'requirement_change_path';
   }
 
-  // §6.5 普通路径优先级
+  // A user/business requirement change owns the WI even when it cascades into
+  // Architecture/Data/Design changes; Impact Scope decides which Candidates are required.
+  if (
+    classification.requirement_changed ||
+    classification.acceptance_criteria_changed ||
+    classification.business_rule_changed
+  ) return 'requirement_change_path';
+
   if (classification.architecture_changed || classification.module_boundary_changed) {
     return 'architecture_change_path';
   }
 
-  if (classification.requirement_changed || classification.acceptance_criteria_changed || classification.business_rule_changed) {
-    return 'requirement_change_path';
-  }
+  if (
+    classification.design_changed ||
+    classification.api_contract_changed ||
+    classification.data_semantics_changed ||
+    classification.data_model_changed === true ||
+    classification.module_contract_changed === true
+  ) return 'design_change_path';
 
-  if (classification.design_changed || classification.api_contract_changed || classification.data_semantics_changed) {
-    return 'design_change_path';
-  }
-
-  if (classification.user_visible_behavior_changed) {
-    return 'task_change_path';
-  }
-
-  // §6.7 code-only 条件检查
-  if (canUseCodeOnlyFastPath(classification)) {
-    return 'code_only_fast_path';
-  }
-
-  // 默认走 task_change_path（安全降级）
+  if (classification.user_visible_behavior_changed) return 'task_change_path';
+  if (canUseCodeOnlyFastPath(classification)) return 'code_only_fast_path';
   return 'task_change_path';
 }
-
-// ---------------------------------------------------------------------------
-// Trigger Result 生成
-// ---------------------------------------------------------------------------
 
 export interface TriggerResult {
   schema_version: '1.0';
@@ -112,16 +116,15 @@ export interface TriggerResult {
     spec_path: string;
     match_type: MatchResultType;
   }>;
+  impact_scope: ImpactScope;
   selected_at: string;
 }
 
-/**
- * 生成 trigger_result.json（§6.1）。
- */
 export function generateTriggerResult(
   workItemId: string,
   classification: ChangeClassification,
   matchResults: TriggerResult['match_results'],
+  impactScope?: Partial<ImpactScope> | null,
 ): TriggerResult {
   return {
     schema_version: '1.0',
@@ -129,6 +132,7 @@ export function generateTriggerResult(
     workflow_path: selectWorkflowPath(classification),
     classification,
     match_results: matchResults,
+    impact_scope: normalizeImpactScope(impactScope),
     selected_at: new Date().toISOString(),
   };
 }

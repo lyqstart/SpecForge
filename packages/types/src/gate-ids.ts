@@ -5,7 +5,6 @@
  * Legacy aliases are provided only for explicit normalization/fail-closed
  * compatibility at the dispatcher/handler boundary.
  */
-
 export const GATE_IDS_V11 = [
   'entry_gate',
   'workflow_selection_gate',
@@ -21,11 +20,11 @@ export const GATE_IDS_V11 = [
   'merge_ready_gate',
   'post_merge_gate',
   'verification_gate',
+  'formal_version_gate',
   'close_gate',
 ] as const;
 
 export type GateIdV11 = typeof GATE_IDS_V11[number];
-
 export const LEGACY_GATE_ID_ALIASES_V11 = [
   'all',
   'tasks',

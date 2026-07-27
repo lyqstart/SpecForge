@@ -746,3 +746,18 @@ Evidence 必须同时登记在 evidence_manifest 中，且 status、level、type
 - 发现越界写入 → 整体验证结果为 **blocked**（不是 fail，因为问题不在验证本身）
 - 在 `summary` 中明确说明哪个 TASK 修改了哪些越界文件
 - 推荐 Orchestrator 执行 `root_cause_investigation` 或退回 `tasks` 修正合同
+
+---
+# Architecture / Data / Contract / Scope 验证规则
+
+Verification 除现有 Requirement、Acceptance Criteria、测试和 Evidence 外，还必须验证：
+
+1. Actual Changed Files 能唯一解析到已批准 Module；
+2. 实现符合相关 `DD-*`；
+3. 实现符合相关 `DATA-*` 和 Project Data Model；
+4. 实现没有违反相关 `ARCH-*` 和 Project Architecture；
+5. Project Contract 与 Module Contract 均未被破坏；
+6. Actual Governance Scope 是 Code Permission 冻结范围的子集；
+7. Code Permission 发放后 Project Spec Version 未发生未治理变化。
+
+任一项不能由事实证明即不得通过 Verification。

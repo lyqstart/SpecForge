@@ -1,18 +1,11 @@
 /**
  * state-coordinator-v11.ts — SpecForge v1.1.3 state authority coordinator
  *
- * Design rule:
- * - StateManager / events.jsonl is the authoritative state source.
- * - runtime/state.json is a projection cache.
- * - work_item.json is WI metadata and must not drive governance state.
- *
- * Important:
- * This module MUST NOT call workflowEngine.transitionFull().
- * transitionFull mutates WorkflowEngine's private in-memory instances before
- * StateManager.transition() can perform optimistic locking. That creates two
- * state writers and caused the post-P0 state split.
+ * StateManager / events.jsonl is the authoritative state source.
+ * runtime/state.json is a projection cache.
+ * work_item.json is WI metadata and must not drive governance state.
+ * MUST NOT call workflowEngine.transitionFull()
  */
-
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import {
@@ -29,7 +22,6 @@ export type AuthoritativeStateRead = {
   source: 'StateManager' | 'missing';
   rebuilt_from_events: boolean;
 };
-
 export type TransitionWithEvidenceInput = {
   deps: any;
   context?: any;
@@ -43,7 +35,6 @@ export type TransitionWithEvidenceInput = {
   evidence: string;
   transitionContext?: Record<string, unknown>;
 };
-
 export type TransitionWithEvidenceResult = {
   attempted: true;
   advanced: true;
@@ -70,224 +61,139 @@ function normalizeState(value: unknown): string | null {
   }
   return null;
 }
-
 async function ensureFileExists(filePath: string, description: string): Promise<void> {
-  try {
-    await fs.access(filePath);
-  } catch {
-    throw new Error(`${description} missing: ${path.basename(filePath)}`);
+  try { await fs.access(filePath); }
+  catch { throw new Error(`${description} missing: ${path.basename(filePath)}`); }
+}
+
+async function assertNoCodeVerificationTransition(input: TransitionWithEvidenceInput): Promise<void> {
+  if (input.fromState !== 'post_merge_verified' || input.toState !== 'verification_running') return;
+  if (!['investigation', 'contract_change'].includes(input.workflowType)) {
+    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: post_merge_verified → verification_running is reserved for workflow_type=investigation or contract_change');
+  }
+  const manifestPath = path.join(input.workItemDir, 'candidate_manifest.json');
+  let manifest: Record<string, unknown>;
+  try { manifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8')) as Record<string, unknown>; }
+  catch { throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: Investigation verification requires valid candidate_manifest.json'); }
+  const integrationEffect = manifest.project_integration_effect;
+  const entries = manifest.entries;
+  const canonical = input.workflowType === 'investigation'
+    ? manifest.workflow_type === 'investigation' && manifest.no_project_spec_change === true &&
+      typeof integrationEffect === 'string' && integrationEffect.trim().toLowerCase() === 'evidence_only' &&
+      manifest.merge_required === false && manifest.merge_applicable === false && Array.isArray(entries) && entries.length === 0
+    : manifest.workflow_type === 'contract_change' && manifest.workflow_path === 'contract_change_path' &&
+      manifest.merge_required === true && Array.isArray(entries) && entries.length > 0 &&
+      entries.every(entry => entry && typeof entry === 'object' &&
+        String((entry as Record<string, unknown>).target_path ?? '').replace(/\\/g, '/').endsWith('.specforge/project/extension_registry.json'));
+  if (!canonical) {
+    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: no-code verification requires a canonical workflow-specific candidate manifest');
   }
 }
 
-async function assertNoCodeVerificationTransition(
-  input: TransitionWithEvidenceInput
-): Promise<void> {
-  if (input.fromState !== 'post_merge_verified' || input.toState !== 'verification_running') {
-    return;
-  }
+async function assertFormalVersionBeforeClose(input: TransitionWithEvidenceInput): Promise<void> {
+  if (input.fromState !== 'verification_done' || input.toState !== 'closed') return;
 
-  if (!['investigation', 'contract_change'].includes(input.workflowType)) {
-    throw new Error(
-      'STATE_COORDINATOR_TRANSITION_FAILED: post_merge_verified → verification_running is reserved for workflow_type=investigation or contract_change'
-    );
-  }
+  // Rollout compatibility: Formal Version Gate is mandatory for Work Items
+  // created under the Architecture Consistency governance contract. Older WIs
+  // do not have Impact Scope and must remain closable while the project is
+  // bootstrapped through spec_migration. Investigation/rollback are not version
+  // publication workflows and therefore do not require this gate.
+  if (input.workflowType === 'investigation' || input.workflowType === 'rollback') return;
 
-  const manifestPath = path.join(input.workItemDir, 'candidate_manifest.json');
-  let manifest: Record<string, unknown>;
+  let triggerResult: any = null;
   try {
-    manifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8')) as Record<string, unknown>;
+    triggerResult = JSON.parse(
+      await fs.readFile(path.join(input.workItemDir, 'trigger_result.json'), 'utf-8'),
+    );
   } catch {
-    throw new Error(
-      'STATE_COORDINATOR_TRANSITION_FAILED: Investigation verification requires valid candidate_manifest.json'
-    );
+    triggerResult = null;
   }
+  const governedByImpactScope =
+    triggerResult?.impact_scope &&
+    typeof triggerResult.impact_scope === 'object' &&
+    !Array.isArray(triggerResult.impact_scope);
+  if (!governedByImpactScope) return;
 
-  const integrationEffect = manifest.project_integration_effect;
-  const entries = manifest.entries;
-  const canonical =
-    input.workflowType === 'investigation'
-      ? manifest.workflow_type === 'investigation' &&
-        manifest.no_project_spec_change === true &&
-        typeof integrationEffect === 'string' &&
-        integrationEffect.trim().toLowerCase() === 'evidence_only' &&
-        manifest.merge_required === false &&
-        manifest.merge_applicable === false &&
-        Array.isArray(entries) &&
-        entries.length === 0
-      : manifest.workflow_type === 'contract_change' &&
-        manifest.workflow_path === 'contract_change_path' &&
-        manifest.merge_required === true &&
-        Array.isArray(entries) &&
-        entries.length > 0 &&
-        entries.every(
-          entry =>
-            entry &&
-            typeof entry === 'object' &&
-            String((entry as Record<string, unknown>).target_path ?? '')
-              .replace(/\\/g, '/')
-              .endsWith('.specforge/project/extension_registry.json')
-        );
-
-  if (!canonical) {
-    throw new Error(
-      'STATE_COORDINATOR_TRANSITION_FAILED: no-code verification requires a canonical workflow-specific candidate manifest'
-    );
+  const reportPath = path.join(input.workItemDir, 'gates', 'formal_version_gate.json');
+  let report: any = null;
+  try { report = JSON.parse(await fs.readFile(reportPath, 'utf-8')); } catch { report = null; }
+  if (report?.status !== 'passed') {
+    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: formal_version_gate must pass before verification_done → closed');
   }
 }
 
 async function validateTransitionRequest(input: TransitionWithEvidenceInput): Promise<void> {
-  if (!input.workItemId) {
-    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: workItemId is required');
-  }
-
+  if (!input.workItemId) throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: workItemId is required');
   if (!(WI_STATUSES_V11 as readonly string[]).includes(input.toState)) {
-    throw new Error(
-      `STATE_COORDINATOR_TRANSITION_FAILED: invalid target state "${input.toState}"`,
-    );
+    throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: invalid target state "${input.toState}"`);
   }
-
-  if (
-    input.fromState !== '' &&
-    !(WI_STATUSES_V11 as readonly string[]).includes(input.fromState)
-  ) {
-    throw new Error(
-      `STATE_COORDINATOR_TRANSITION_FAILED: invalid from_state "${input.fromState}"`,
-    );
+  if (input.fromState !== '' && !(WI_STATUSES_V11 as readonly string[]).includes(input.fromState)) {
+    throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: invalid from_state "${input.fromState}"`);
   }
-
   if (input.fromState !== '' && isForbiddenTransition(input.fromState, input.toState)) {
-    throw new Error(
-      `STATE_COORDINATOR_TRANSITION_FAILED: forbidden transition ${input.fromState} → ${input.toState}`,
-    );
+    throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: forbidden transition ${input.fromState} → ${input.toState}`);
   }
-
   if (input.fromState !== '' && !isValidV11Transition(input.fromState, input.toState)) {
-    throw new Error(
-      `STATE_COORDINATOR_TRANSITION_FAILED: invalid transition ${input.fromState} → ${input.toState}`,
-    );
+    throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: invalid transition ${input.fromState} → ${input.toState}`);
   }
-
-  if (input.fromState === 'intake_ready' && input.toState === 'candidate_preparing') {
-    if (input.workflowType !== 'contract_change') {
-      throw new Error(
-        'STATE_COORDINATOR_TRANSITION_FAILED: intake_ready → candidate_preparing is reserved for workflow_type=contract_change',
-      );
-    }
+  if (input.fromState === 'intake_ready' && input.toState === 'candidate_preparing' && input.workflowType !== 'contract_change') {
+    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: intake_ready → candidate_preparing is reserved for workflow_type=contract_change');
   }
-
   if (input.fromState === 'approved' && input.toState === 'blocked') {
     const source = input.transitionContext?.source;
-    if (
-      input.actorRole !== ACTOR_ROLES.userDecisionRecorder ||
-      source !== 'approval_invalidation'
-    ) {
-      throw new Error(
-        'STATE_COORDINATOR_TRANSITION_FAILED: approved → blocked is reserved for the atomic approval-invalidation flow',
-      );
+    if (input.actorRole !== ACTOR_ROLES.userDecisionRecorder || source !== 'approval_invalidation') {
+      throw new Error("STATE_COORDINATOR_TRANSITION_FAILED: approved → blocked is reserved for the atomic approval-invalidation flow");
     }
-    await ensureFileExists(
-      path.join(input.workItemDir, 'approval_invalidation.json'),
-      'STATE_COORDINATOR_TRANSITION_FAILED: approval invalidation evidence',
-    );
+    await ensureFileExists(path.join(input.workItemDir, 'approval_invalidation.json'), 'STATE_COORDINATOR_TRANSITION_FAILED: approval invalidation evidence');
   }
 
   await assertNoCodeVerificationTransition(input);
+  await assertFormalVersionBeforeClose(input);
 
   if (input.fromState !== '' && isSealTransition(input.fromState, input.toState)) {
     const sealEntry = getSealTransition(input.fromState, input.toState);
     if (sealEntry && input.actorRole !== sealEntry.authorizedSubject) {
-      throw new Error(
-        `STATE_COORDINATOR_TRANSITION_FAILED: seal transition ${input.fromState} → ${input.toState} requires actor '${sealEntry.authorizedSubject}', got '${input.actorRole || 'none'}'`,
-      );
+      throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: seal transition ${input.fromState} → ${input.toState} requires actor '${sealEntry.authorizedSubject}', got '${input.actorRole || 'none'}'`);
     }
-
     if (sealEntry?.evidenceRequired) {
-      await ensureFileExists(
-        path.join(input.workItemDir, sealEntry.evidenceRequired),
-        `STATE_COORDINATOR_TRANSITION_FAILED: seal transition evidence for ${input.fromState} → ${input.toState}`,
-      );
+      await ensureFileExists(path.join(input.workItemDir, sealEntry.evidenceRequired), `STATE_COORDINATOR_TRANSITION_FAILED: seal transition evidence for ${input.fromState} → ${input.toState}`);
     }
   }
-
-  const evidenceResult = await checkStateEvidenceRequirement(
-    input.toState,
-    input.workItemDir,
-  );
+  const evidenceResult = await checkStateEvidenceRequirement(input.toState, input.workItemDir);
   if (!evidenceResult.met) {
-    throw new Error(
-      `STATE_COORDINATOR_TRANSITION_FAILED: evidence requirement not met for ${input.toState}. Missing: ${evidenceResult.missing}. ${evidenceResult.description ?? ''}`.trim(),
-    );
+    throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: evidence requirement not met for ${input.toState}. Missing: ${evidenceResult.missing}. ${evidenceResult.description ?? ''}`.trim());
   }
 }
 
-export async function readAuthoritativeState(input: {
-  deps: any;
-  projectRoot: string;
-  workItemId: string;
-}): Promise<AuthoritativeStateRead> {
+export async function readAuthoritativeState(input: { deps: any; projectRoot: string; workItemId: string; }): Promise<AuthoritativeStateRead> {
   const projectManager = input.deps?.projectManager;
-  if (!projectManager?.getProjectStateManager) {
-    return { current_state: null, source: 'missing', rebuilt_from_events: false };
-  }
-
+  if (!projectManager?.getProjectStateManager) return { current_state: null, source: 'missing', rebuilt_from_events: false };
   const projectSm = await projectManager.getProjectStateManager(input.projectRoot);
   let rebuilt = false;
-
   if (typeof projectSm?.rebuildFromEventsFile === 'function') {
-    // Reflect reality: `rebuilt` is true only when an event log actually existed
-    // and was replayed, not merely because the rebuild capability is present.
     const rebuildResult = await projectSm.rebuildFromEventsFile();
     rebuilt = rebuildResult?.replayed ?? false;
   }
-
   if (typeof projectSm?.getState === 'function') {
     const state = normalizeState(await projectSm.getState(input.workItemId));
-    if (state) {
-      return { current_state: state, source: 'StateManager', rebuilt_from_events: rebuilt };
-    }
+    if (state) return { current_state: state, source: 'StateManager', rebuilt_from_events: rebuilt };
   }
-
   return { current_state: null, source: 'missing', rebuilt_from_events: rebuilt };
 }
 
-export async function transitionWithEvidence(
-  input: TransitionWithEvidenceInput,
-): Promise<TransitionWithEvidenceResult> {
-  if (!input.deps?.projectManager) {
-    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: ProjectManager not available');
-  }
-
+export async function transitionWithEvidence(input: TransitionWithEvidenceInput): Promise<TransitionWithEvidenceResult> {
+  if (!input.deps?.projectManager) throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: ProjectManager not available');
   await validateTransitionRequest(input);
-
   const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
-
   await projectSm.transition(
-    input.workItemId,
-    input.fromState,
-    input.toState,
-    input.actorRole,
-    input.workflowType,
-    {
-      evidence: input.evidence,
-      transition_context: {
-        source: 'state_coordinator_v11',
-        ...(input.transitionContext ?? {}),
-      },
-    },
+    input.workItemId, input.fromState, input.toState, input.actorRole, input.workflowType,
+    { evidence: input.evidence, transition_context: { source: 'state_coordinator_v11', ...(input.transitionContext ?? {}) } },
   );
-
   return {
-    attempted: true,
-    advanced: true,
-    from_state: input.fromState,
-    to_state: input.toState,
-    evidence: input.evidence,
+    attempted: true, advanced: true, from_state: input.fromState, to_state: input.toState, evidence: input.evidence,
     transition_result: {
-      source: 'StateManager',
-      workItemId: input.workItemId,
-      previousState: input.fromState,
-      currentState: input.toState,
-      timestamp: new Date().toISOString(),
+      source: 'StateManager', workItemId: input.workItemId, previousState: input.fromState,
+      currentState: input.toState, timestamp: new Date().toISOString(),
     },
   };
 }

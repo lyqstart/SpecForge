@@ -22,6 +22,7 @@ import {
 } from './path-policy.js';
 import {
   canonicalProjectSpecModuleEntry,
+  ContractRegistrySchema,
   moduleCodeFromProjectSpecPath,
   resolveSpecModuleIdentity,
 } from '@specforge/types';
@@ -140,7 +141,10 @@ function normalizeProjectTargetPathV12(value: unknown): string {
 function inferModuleCodeFromProjectTarget(value: unknown): string | null {
   return moduleCodeFromProjectSpecPath(normalizeProjectTargetPathV12(value));
 }
-function registerMergedProjectModules(specManifest: any): void {
+async function registerMergedProjectModules(
+  specManifest: any,
+  projectRoot: string
+): Promise<void> {
   if (!specManifest || typeof specManifest !== 'object') return;
   const targets = Array.isArray(specManifest.last_merged_targets)
     ? specManifest.last_merged_targets
@@ -159,24 +163,79 @@ function registerMergedProjectModules(specManifest: any): void {
         .filter(Boolean)
     )
   ) as string[];
+
   if (moduleCodes.length === 0) {
     specManifest.modules = Array.isArray(specManifest.modules) ? specManifest.modules : [];
     return;
   }
+
   const modules = Array.isArray(specManifest.modules) ? [...specManifest.modules] : [];
   for (const moduleCode of moduleCodes) {
     const existingIndex = modules.findIndex(entry => {
       const resolution = resolveSpecModuleIdentity(entry);
       return resolution.valid && resolution.moduleCode === moduleCode;
     });
-    const canonicalEntry = canonicalProjectSpecModuleEntry(moduleCode);
-    if (existingIndex >= 0) modules[existingIndex] = canonicalEntry;
-    else modules.push(canonicalEntry);
+    const existing =
+      existingIndex >= 0 && modules[existingIndex] && typeof modules[existingIndex] === 'object'
+        ? modules[existingIndex]
+        : {};
+
+    const moduleRoot = path.join(
+      projectRoot,
+      '.specforge',
+      'project',
+      'modules',
+      moduleCode
+    );
+    let moduleDefinition: any = null;
+    try {
+      moduleDefinition = await readJsonFile(path.join(moduleRoot, 'module.json'));
+    } catch {
+      moduleDefinition = null;
+    }
+    const moduleCodePaths: string[] = Array.isArray(moduleDefinition?.code_paths)
+      ? Array.from(
+          new Set<string>(
+            moduleDefinition.code_paths
+              .map((value: unknown) => String(value ?? '').trim())
+              .filter(Boolean)
+          )
+        )
+      : [];
+    const existingCodePaths: string[] = Array.isArray((existing as any).code_paths)
+      ? Array.from(
+          new Set<string>(
+            (existing as any).code_paths
+              .map((value: unknown) => String(value ?? '').trim())
+              .filter(Boolean)
+          )
+        )
+      : [];
+    const codePaths = moduleCodePaths.length > 0 ? moduleCodePaths : existingCodePaths;
+    const contractsPath = path.join(moduleRoot, 'contracts.json');
+    const governanceReady =
+      codePaths.length > 0 && (await fileExists(contractsPath));
+
+    const canonicalEntry = canonicalProjectSpecModuleEntry(moduleCode, {
+      include_governance: governanceReady,
+      code_paths: codePaths,
+    });
+
+    // Preserve forward-compatible fields already established by migration.
+    const mergedEntry = { ...existing, ...canonicalEntry };
+    if (governanceReady) {
+      (mergedEntry as any).contracts =
+        `.specforge/project/modules/${moduleCode}/contracts.json`;
+      (mergedEntry as any).code_paths = codePaths;
+    }
+
+    if (existingIndex >= 0) modules[existingIndex] = mergedEntry;
+    else modules.push(mergedEntry);
   }
   specManifest.modules = modules;
 }
 
-const NEW_MODULE_REQUIRED_FILES = ['module.json', 'requirements.md', 'design.md', 'trace.md'] as const;
+const NEW_MODULE_REQUIRED_FILES = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'] as const;
 
 async function validateGovernedNewModuleTargets(input: {
   projectRoot: string;
@@ -269,6 +328,46 @@ async function validateGovernedNewModuleTargets(input: {
       }
     } catch (error: any) {
       errors.push(`Cannot validate new module ${moduleCode} module.json candidate: ${error.message}`);
+      continue;
+    }
+
+    try {
+      const definition = await readJsonFile(definitionPath);
+      const codePaths = Array.isArray(definition?.code_paths)
+        ? definition.code_paths
+            .map((value: unknown) => String(value ?? '').trim())
+            .filter(Boolean)
+        : [];
+      if (codePaths.length === 0) {
+        errors.push(`New module ${moduleCode} module.json must declare non-empty code_paths`);
+        continue;
+      }
+    } catch (error: any) {
+      errors.push(`Cannot validate new module ${moduleCode} code_paths: ${error.message}`);
+      continue;
+    }
+
+    const contractsEntry = moduleEntries.get('contracts.json') as ManifestEntry;
+    const contractsPath = path.resolve(input.workItemDir, contractsEntry.candidate_path);
+    if (!isSubPath(contractsPath, path.resolve(input.workItemDir))) {
+      errors.push(`New module ${moduleCode} contracts.json candidate is outside the Work Item`);
+      continue;
+    }
+    try {
+      const contracts = await readJsonFile(contractsPath);
+      const registry = ContractRegistrySchema.safeParse(contracts?.contracts);
+      if (
+        contracts?.schema_version !== '1.0' ||
+        String(contracts?.owner_module ?? '').trim() !== moduleCode ||
+        !registry.success
+      ) {
+        errors.push(
+          `New module ${moduleCode} contracts.json must declare schema_version=1.0, owner_module=${moduleCode}, and a valid contracts registry`
+        );
+        continue;
+      }
+    } catch (error: any) {
+      errors.push(`Cannot validate new module ${moduleCode} contracts.json candidate: ${error.message}`);
       continue;
     }
 
@@ -521,7 +620,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         .map(entry => entry.target_path);
 
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
-      registerMergedProjectModules(specManifest);
+      await registerMergedProjectModules(specManifest, input.projectRoot);
       await fs.writeFile(
         projectSpecManifestPath,
         JSON.stringify(specManifest, null, 2) + '\n',

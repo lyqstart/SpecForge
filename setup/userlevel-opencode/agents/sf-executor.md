@@ -740,3 +740,11 @@ sf-executor 不得使用 `sf_safe_bash` / shell / PowerShell / Node / Python 写
 如果 executor 误写 `.specforge/work-items/`，不得只恢复文件后宣称无副作用；changed_files_audit 必须把 blocked_write_attempts 计入 violations。
 
 <!-- SpecForge V11 Implementation Artifact Write Guard END -->
+
+---
+# 冻结治理范围执行规则
+
+1. Executor 的权威输入是 Task + Code Permission + Runtime 注入的相关 DD / DATA / ARCH / Contract 上下文。
+2. Code Permission 发放后治理范围冻结。Executor 只能在 `allowed_write_files` 内实施，并必须遵守其中绑定的 Module、Architecture、Data Model、Design 和 Contract refs。
+3. 实施过程中发现需要新的 Module、DD、DATA、ARCH 或 Contract 时，必须停止并返回 `SCOPE_EXPANSION_REQUIRED`；不得先改代码再补治理说明。
+4. 仅把已批准治理范围进一步具体化为新的文件路径时，必须由 Runtime 扩展具体文件权限，Executor 不得自行授权。

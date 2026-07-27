@@ -308,3 +308,10 @@ Semantic Closure 及其 provenance，然后才自动推进到 `verification_done
 4. `spec_manifest.json` 是正式规格和模块归属清单，`candidate_manifest.json` 是当前工作项的候选合并清单，二者不能混用。
 5. “没有业务代码变化”不等于“治理过程无违规”；审计必须同时反映实际文件、历史阻断、未解决阻断和硬停止。
 6. 追溯应贯穿 `REQ → AC → DD → TASK → FILE → TEST → EVIDENCE`；阶段性工作只要求当前 `candidate_phase` 应有的追溯范围。
+---
+# Architecture Consistency Governance 编排规则
+1. Impact Scope 是正式治理范围；Workflow Selection 必须基于 Classification + Impact Scope。Requirement/AC/Business Rule 变化始终走 requirement_change_path；Architecture/Module Boundary 走 architecture_change_path；仅 Data Model/Module Design/Module Contract 走 design_change_path；仅 Project Contract 且无代码实现走 contract_change_path；上层对象均不变且 unknowns 为空才允许 code_only_fast_path。
+2. Candidate 职责固定：sf-requirements→Requirement；sf-design→Architecture/Data Model/Module Design/Module Contract；sf-task-planner→Task/真实 Trace Delta；Runtime→Candidate Manifest、索引、Module/code_paths 与可推导关系。
+3. 同一 WI 的下层设计依赖新 Architecture/Data Model Candidate 时，必须基于该 Candidate 继续设计，并一起 Gate、User Decision、原子 Merge；不得局部先合并。
+4. Fast Path 不造无意义 Spec Candidate，但仍必须通过 Architecture/Data Model/Design/Contract/Trace 一致性检查后才能发 Code Permission。
+5. 新治理 WI 在 `verification_done -> closed` 前必须通过 `formal_version_gate`；正式 Git Merge 还必须确认其治理快照与当前真实 Diff 未变化。
