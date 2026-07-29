@@ -109,7 +109,7 @@ Layer 3 ✅：失败的 task 重新跑 verification_command 真通过。
 # 读取配置文件（调试时必读）
 
 调试失败 task 时，必须读取：
-- `~/.specforge/host-profile.json`（全文）：主机环境的 OS、工具版本、shell、网络配置
+- `<OpenCode config>/sf-user/host-profile.json`（全文）：主机环境的 OS、工具版本、shell、网络配置
 - `.specforge/prod-environment.md`（全文）：生产环境约束，排查"开发能跑但生产不行"的问题
 - `.specforge/project-rules.md`（全文）：确认修复方案符合工程规则
 

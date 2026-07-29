@@ -20,6 +20,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as path from 'path';
 import * as os from 'os';
 import { ModeSwitch, formatData, formatError } from '../src/mode-switch';
+import { getDefaultHandshakePath, getRuntimeDirPath } from '../src/auth/AuthManager';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // Mock platform detection helpers
 const originalPlatform = os.platform;
@@ -30,7 +32,7 @@ describe('Cross-Platform Path Handling', () => {
   describe('path.sep awareness', () => {
     it('should use correct path separator for current platform', () => {
       // path.join automatically uses the correct separator
-      const testPath = path.join('home', 'user', '.specforge', 'runtime');
+      const testPath = path.join('home', 'user', 'sf-user', 'runtime');
       
       // On Windows, should contain \ separators (when normalized)
       // On Unix, should contain / separators
@@ -42,27 +44,22 @@ describe('Cross-Platform Path Handling', () => {
     });
 
     it('should construct runtime directory correctly on all platforms', () => {
-      // This simulates how the CLI constructs paths
-      const homeDir = os.homedir();
-      const runtimeDir = path.join(homeDir, '.specforge', 'runtime');
-      
-      // The path should be valid and contain home directory
-      expect(runtimeDir).toContain(homeDir);
-      expect(runtimeDir).toContain('.specforge');
-      expect(runtimeDir).toContain('runtime');
+      const runtimeDir = getRuntimeDirPath();
+
+      expect(runtimeDir).toBe(resolveSpecForgeUserPath('runtime'));
     });
 
     it('should handle nested path joins correctly', () => {
-      const base = '.specforge';
+      const base = 'sf-user';
       const subdirs = ['runtime', 'daemon', 'sessions'];
-      
-      let result = path.join(os.homedir(), base);
+
+      let result = path.join('home', 'user', base);
       for (const subdir of subdirs) {
         result = path.join(result, subdir);
       }
       
       // Should end with the expected path
-      expect(result).toMatch(/\.specforge[\\/]runtime[\\/]daemon[\\/]sessions$/);
+      expect(result).toMatch(/sf-user[\\/]runtime[\\/]daemon[\\/]sessions$/);
     });
   });
 
@@ -80,15 +77,13 @@ describe('Cross-Platform Path Handling', () => {
     });
 
     it('should construct platform-appropriate config path', () => {
-      const homeDir = os.homedir();
-      const configDir = path.join(homeDir, '.specforge');
-      const handshakePath = path.join(configDir, 'runtime', 'daemon.sock.json');
+      const handshakePath = getDefaultHandshakePath();
       
       // Path should be absolute
       expect(path.isAbsolute(handshakePath)).toBe(true);
       
       // Should correctly join all parts
-      const expectedParts = ['.specforge', 'runtime', 'daemon.sock.json'];
+      const expectedParts = ['sf-user', 'runtime', 'handshake.json'];
       for (const part of expectedParts) {
         expect(handshakePath).toContain(part);
       }
@@ -220,13 +215,13 @@ describe('Path Construction Edge Cases', () => {
     const homeDir = os.homedir();
     
     // Path with .. should be resolved
-    const normalized = path.normalize(path.join(homeDir, '.specforge', '..', '.specforge', 'runtime'));
+    const normalized = path.normalize(path.join(homeDir, '.config', 'opencode', 'sf-user', '..', 'sf-user', 'runtime'));
     
     // Should not contain ..
     expect(normalized).not.toContain('..');
     
     // Should be equivalent to direct path
-    const direct = path.join(homeDir, '.specforge', 'runtime');
+    const direct = path.join(homeDir, '.config', 'opencode', 'sf-user', 'runtime');
     expect(path.normalize(normalized)).toBe(path.normalize(direct));
   });
 
@@ -322,29 +317,17 @@ describe('CLI Config Platform Info', () => {
 
 describe('Cross-Platform File Operations Simulation', () => {
   it('should handle daemon handshake file path correctly', () => {
-    // Simulate the path construction used in cli.ts
-    const getHandshakePath = () => {
-      const homeDir = os.homedir();
-      return path.join(homeDir, '.specforge', 'runtime', 'daemon.sock.json');
-    };
-    
-    const handshakePath = getHandshakePath();
+    const handshakePath = getDefaultHandshakePath();
     
     // Should be absolute
     expect(path.isAbsolute(handshakePath)).toBe(true);
     
     // Should end with the correct filename
-    expect(handshakePath.endsWith('daemon.sock.json')).toBe(true);
+    expect(handshakePath.endsWith('handshake.json')).toBe(true);
   });
 
   it('should handle runtime directory path correctly', () => {
-    // Simulate the path construction used in multiple places
-    const getRuntimeDir = () => {
-      const homeDir = os.homedir();
-      return path.join(homeDir, '.specforge', 'runtime');
-    };
-    
-    const runtimeDir = getRuntimeDir();
+    const runtimeDir = getRuntimeDirPath();
     
     // Should be absolute
     expect(path.isAbsolute(runtimeDir)).toBe(true);

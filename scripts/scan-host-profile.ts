@@ -9,7 +9,7 @@
  *   bun run scripts/scan-host-profile.ts --check    # CI 用：扫描后输出 JSON 摘要
  *
  * 输出：
- *   ~/.specforge/host-profile.json
+ *   <OpenCode config>/sf-user/host-profile.json
  *
  * 详细规范见 docs/engineering-lessons/universal/host-environment-detection.md
  */
@@ -69,7 +69,7 @@ function parseArgs(argv: string[]): CliArgs {
 
 function showHelp(): void {
   console.log(`
-Host Profile 扫描器 — 探测宿主机环境并写入 ~/.specforge/host-profile.json
+Host Profile 扫描器 — 探测宿主机环境并写入 <OpenCode config>/sf-user/host-profile.json
 
 用法:
   bun run scripts/scan-host-profile.ts [选项]

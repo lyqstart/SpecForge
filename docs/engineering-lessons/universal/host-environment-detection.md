@@ -123,7 +123,7 @@ PATH 里有什么完全是用户决定的：
 
 ### 一、host-profile.json 数据模型
 
-存储位置：`~/.specforge/host-profile.json`
+存储位置：`~/.config/opencode/sf-user/host-profile.json`
 
 完整结构（字段全必填，缺则走探测）：
 
@@ -229,7 +229,7 @@ PATH 里有什么完全是用户决定的：
 
 **触发点 1：OpenCode 启动（plugin 自动）**
 
-`.opencode/plugins/sf_specforge.ts` 在加载时检查 `~/.specforge/host-profile.json`：
+`.opencode/plugins/sf_specforge.ts` 在加载时检查 `~/.config/opencode/sf-user/host-profile.json`：
 - 不存在 → 完整扫描
 - 存在但 `scanned_at` 超过 30 天 → 重新扫描
 - 存在且新鲜 → 直接读取
@@ -395,7 +395,7 @@ await fs.rename(tmpPath, profilePath)
 console.error('[host-profile] scanning OS info...')
 console.error('[host-profile] probing shells: pwsh, powershell, cmd...')
 console.error('[host-profile] probing tools: git, bun, node...')
-console.error('[host-profile] saved to ~/.specforge/host-profile.json (47 entries)')
+console.error('[host-profile] saved to ~/.config/opencode/sf-user/host-profile.json (47 entries)')
 ```
 
 写 stderr 不污染 stdout，方便调用方区分扫描日志和实际命令输出。
@@ -507,7 +507,12 @@ bun run scripts/scan-host-profile.ts --show     # 只打印当前档案
 
 ```typescript
 async function ensureHostProfile() {
-  const profilePath = join(homedir(), '.specforge', 'host-profile.json')
+  const configRoot = process.env.OPENCODE_CONFIG_DIR?.trim()
+    ? resolve(process.env.OPENCODE_CONFIG_DIR.trim())
+    : process.env.XDG_CONFIG_HOME?.trim()
+      ? join(process.env.XDG_CONFIG_HOME, 'opencode')
+      : join(homedir(), '.config', 'opencode')
+  const profilePath = join(configRoot, 'sf-user', 'host-profile.json')
   
   if (!await exists(profilePath)) {
     await runHostScan()
@@ -553,7 +558,7 @@ specforge doctor host    # 显示当前档案 + 检查关键工具
 - name: Scan host profile
   run: bun run scripts/scan-host-profile.ts --force
 - name: Show profile
-  run: cat ~/.specforge/host-profile.json
+  run: cat ~/.config/opencode/sf-user/host-profile.json
 ```
 
 CI 日志能看到每次跑的环境，调试 CI 问题时有据可查。
@@ -590,6 +595,6 @@ if (command starts with toolName && !profile.tools[toolName].available) {
 
 - 互补经验：[shell-command-execution](shell-command-execution.md) — 规定如何按档案执行命令
 - 扫描脚本：`scripts/lessons/scan-host-profile.ts`
-- 配置文件：`~/.specforge/host-profile.json`
+- 配置文件：`~/.config/opencode/sf-user/host-profile.json`
 - 自动触发：`.opencode/plugins/sf_specforge.ts` 启动钩子
 - 用户工具：`specforge env scan` / `specforge doctor host`

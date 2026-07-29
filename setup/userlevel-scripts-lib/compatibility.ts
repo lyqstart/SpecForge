@@ -137,9 +137,7 @@ export function assertCompatibility(baseDir: string): CompatibilityResult {
   }
 
   // Step 4: user_level 模式 → 检查用户级 Manifest
-  // manifest 现在位于 ~/.specforge/specforge-manifest.json
-  const home = require("node:os").homedir()
-  const userManifestPath = join(home, SPEC_DIR_NAME, `${SPEC_DIR_NAME.slice(1)}-manifest.json`)
+  const userManifestPath = join(resolveUserLevelDirectory(), "specforge-manifest.json")
 
   if (!existsSync(userManifestPath)) {
     return {

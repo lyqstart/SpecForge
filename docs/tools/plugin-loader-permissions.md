@@ -51,7 +51,7 @@ Plugin Loader 采用**显式声明 + 最小权限**模型：
 | 层级 | 位置 | 说明 |
 |------|------|------|
 | 1 | 内置默认 | 无默认权限，全部拒绝 |
-| 2 | 用户级 | `~/.specforge/config/plugin-grants.json` |
+| 2 | 用户级 | `~/.config/opencode/sf-user/config/plugin-grants.json` |
 | 3 | 项目级 | `<project>/.specforge/config/plugin-grants.json` |
 | 4 | 运行时 | CLI/API 动态更新 |
 
@@ -201,7 +201,7 @@ Plugin Loader 采用**显式声明 + 最小权限**模型：
 
 ### 示例 4：用户级 + 项目级覆盖
 
-**用户级配置** (`~/.specforge/config/plugin-grants.json`)：
+**用户级配置** (`~/.config/opencode/sf-user/config/plugin-grants.json`)：
 
 ```json
 {

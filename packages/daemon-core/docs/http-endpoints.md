@@ -8,7 +8,7 @@ The Daemon Core exposes the following HTTP/1.1 endpoints for client communicatio
 http://127.0.0.1:<port>
 ```
 
-The port is dynamically allocated and written to the handshake file at `~/.specforge/runtime/daemon.sock.json`.
+The port is dynamically allocated and written to the handshake file at `~/.config/opencode/sf-user/runtime/handshake.json`.
 
 ## Endpoints
 

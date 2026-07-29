@@ -12,7 +12,7 @@
 
 import { resolve } from 'path'
 import { existsSync, mkdirSync } from 'fs'
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths'
 
 // ============================================================================
 // Migration Configuration Types
@@ -64,8 +64,8 @@ export const DEFAULT_MIGRATION_CONFIG: MigrationConfig = {
   enableRepair: true,
   blockOnDowngrade: true,
   blockOnMigrationFailure: false,
-  migrationsDir: `${SPEC_DIR_NAME}/migrations`,
-  backupDir: `${SPEC_DIR_NAME}/backups`,
+  migrationsDir: resolve(resolveSpecForgeUserRoot(), 'migrations'),
+  backupDir: resolve(resolveSpecForgeUserRoot(), 'backups'),
   backupRetentionDays: 7,
   scriptTimeoutMs: 30000,
   dryRun: false,
@@ -223,14 +223,8 @@ export function configToLayerData(config: MigrationConfig): Record<string, unkno
  */
 export function ensureMigrationDirectories(config: MigrationConfig): boolean {
   try {
-    const homeDir = process.env.HOME || process.env.USERPROFILE || '.'
-    const migrationsDir = config.migrationsDir.startsWith(SPEC_DIR_NAME)
-      ? resolve(homeDir, config.migrationsDir)
-      : config.migrationsDir
-    const backupDir = config.backupDir.startsWith(SPEC_DIR_NAME)
-      ? resolve(homeDir, config.backupDir)
-      : config.backupDir
-
+    const migrationsDir = config.migrationsDir
+    const backupDir = config.backupDir
     if (!existsSync(migrationsDir)) {
       mkdirSync(migrationsDir, { recursive: true })
     }

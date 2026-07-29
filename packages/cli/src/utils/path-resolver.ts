@@ -2,7 +2,7 @@
  * PathResolver - 跨平台路径解析工具
  * 
  * 职责：
- * - 解析安装根目录 (~/.specforge)
+ * - 解析安装根目录（<OpenCode config>/sf-user）
  * - 解析用户 HOME 目录（跨平台）
  * - 提供平台和架构信息
  * - 判断安装来源（npm-global / npm-local / dev）
@@ -14,7 +14,7 @@
 import * as os from "node:os";
 import * as path from "node:path";
 import { ErrorCode } from "../distribution/types.js";
-import { SPEC_DIR_NAME } from './directory-layout';
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 
 /**
  * PathResolver 接口
@@ -24,7 +24,7 @@ export interface PathResolver {
   /**
    * 解析安装根目录
    * @param override 可选的覆盖路径（测试用）
-   * @returns ~/.specforge 的绝对路径
+   * @returns <OpenCode config>/sf-user 的绝对路径
    */
   resolveInstallRoot(override?: string): string;
 
@@ -68,8 +68,11 @@ export class DefaultPathResolver implements PathResolver {
       return path.resolve(override);
     }
 
-    const home = this.resolveHomeDirectory();
-    return path.join(home, SPEC_DIR_NAME);
+    if (process.env.OPENCODE_CONFIG_DIR?.trim() || process.env.XDG_CONFIG_HOME?.trim()) {
+      return resolveSpecForgeUserRoot();
+    }
+
+    return resolveSpecForgeUserRoot({ homeDir: this.resolveHomeDirectory() });
   }
 
   /**

@@ -15,13 +15,13 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import type { PluginPermission } from '../manifest';
 import type { GrantsConfig } from '../grants';
 import { isGrantsConfig, mergeGrants } from '../grants';
 import { AuthorizationCollection, type AuthorizationSource } from './AuthorizationCollection';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // ---------------------------------------------------------------------------
 // 常量
@@ -84,27 +84,6 @@ export interface ConfigLoadResult {
 // ---------------------------------------------------------------------------
 // 工具函数
 // ---------------------------------------------------------------------------
-
-/**
- * 获取用户主目录路径
- */
-function getUserHomeDir(): string {
-  // 尝试从环境变量获取
-  if (process.env['HOME']) {
-    return process.env['HOME']!;
-  }
-  if (process.env['USERPROFILE']) {
-    return process.env['USERPROFILE']!;
-  }
-  // 尝试使用 os 模块
-  try {
-    const os = require('node:os');
-    return os.homedir();
-  } catch {
-    // 回退到当前工作目录
-    return process.cwd();
-  }
-}
 
 /**
  * 检查路径是否安全（防止路径遍历攻击）
@@ -226,15 +205,15 @@ async function loadGrantsConfig(filePath: string): Promise<GrantsConfig | null> 
  * 多级配置加载器
  *
  * 职责：
- *   1. 加载用户级授权配置（~/.specforge/config/plugin-grants.json）
- *   2. 加载项目级授权配置（<project>/specforge/config/plugin-grants.json）
+ *   1. 加载用户级授权配置（<OpenCode config>/sf-user/config/plugin-grants.json）
+ *   2. 加载项目级授权配置（<project>/.specforge/config/plugin-grants.json）
  *   3. 支持运行时授权配置
  *   4. 按优先级合并配置
  *
  * 层级顺序（优先级从低到高）：
  *   1. 默认（内置空配置）
- *   2. 全局/用户级（~/.specforge/config/plugin-grants.json）
- *   3. 项目级（<project>/specforge/config/plugin-grants.json）
+ *   2. 全局/用户级（<OpenCode config>/sf-user/config/plugin-grants.json）
+ *   3. 项目级（<project>/.specforge/config/plugin-grants.json）
  *   4. 运行时（通过 API/CLI 动态设置）
  *
  * 使用示例：
@@ -264,8 +243,7 @@ export class ConfigLoader {
 
   constructor() {
     // 初始化用户配置目录
-    const homeDir = getUserHomeDir();
-    this.userConfigDir = path.join(homeDir, SPEC_DIR_NAME, 'config');
+    this.userConfigDir = resolveSpecForgeUserPath('config');
   }
 
   /**
@@ -370,8 +348,8 @@ export class ConfigLoader {
    *
    * 优先级规则（从低到高）：
    *   1. 默认（空集合）
-   *   2. 用户级（~/.specforge/）
-   * 3. 项目级（<project>/specforge/）
+   *   2. 用户级（<OpenCode config>/sf-user/）
+   * 3. 项目级（<project>/.specforge/）
    * 4. 运行时（memory）
    *
    * "覆盖"语义：

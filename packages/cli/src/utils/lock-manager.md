@@ -24,7 +24,7 @@
 
 ### 1. 锁文件路径
 
-- 默认路径：`~/.specforge/.init.lock`
+- 默认路径：`<OpenCode config>/sf-user/.init.lock`
 - 可通过构造函数自定义
 
 ### 2. 锁文件元数据
@@ -69,7 +69,7 @@ await lock.acquire(5000);
 ```typescript
 import { createLockManager } from "./utils/lock-manager.js";
 
-const lock = createLockManager("~/.specforge");
+const lock = createLockManager("<OpenCode config>/sf-user");
 
 try {
   const acquired = await lock.acquire(5000); // 5 秒超时
@@ -90,7 +90,7 @@ try {
 ```typescript
 import { createLockManager } from "./utils/lock-manager.js";
 
-await using lock = createLockManager("~/.specforge");
+await using lock = createLockManager("<OpenCode config>/sf-user");
 
 const acquired = await lock.acquire(5000);
 if (!acquired) {
@@ -153,7 +153,7 @@ if (!acquired) {
 
 ## Requirements 映射
 
-- **REQ-3.9**: 锁文件路径 `~/.specforge/.init.lock`
+- **REQ-3.9**: 锁文件路径 `<OpenCode config>/sf-user/.init.lock`
 - **REQ-3.9**: 锁文件元数据 `{ pid, hostname, timestamp }`
 - **REQ-3.9**: 并发第二个 init 退出码 2 + stderr 含锁路径（由调用方实现）
 

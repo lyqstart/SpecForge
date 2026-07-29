@@ -17,7 +17,7 @@
 import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 类型定义
@@ -279,8 +279,7 @@ class ThinPluginClient {
    * 初始化：读取握手文件，建立与 Daemon 的连接
    */
   async initialize(): Promise<void> {
-    const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? '';
-    const handshakePath = path.join(homeDir, SPEC_DIR_NAME, 'runtime', 'daemon.sock.json');
+    const handshakePath = resolveSpecForgeUserPath('runtime', 'handshake.json');
 
     if (!fs.existsSync(handshakePath)) {
       throw new Error(

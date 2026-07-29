@@ -1404,7 +1404,18 @@ export class HTTPServer {
     try {
       await this.withTimeout(
         (async () => {
-          await this.deps.recoverySubsystem?.saveCheckpoint?.(sessionId, data);
+          const projectPath = this.deps.sessionRegistry?.getProjectPath?.(sessionId);
+          if (!projectPath) {
+            console.error(
+              `[INGEST] Refusing checkpoint for session ${sessionId}: no project binding`,
+            );
+            return;
+          }
+          await this.deps.recoverySubsystem?.saveCheckpoint?.(
+            sessionId,
+            data,
+            projectPath,
+          );
         })(),
         10_000,
         undefined,

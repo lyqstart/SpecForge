@@ -7,12 +7,24 @@ import { mkdir, rm } from 'fs/promises'
 
 // Create a temporary directory for testing
 const tempDir = path.join(tmpdir(), `specforge-test-${Date.now()}`)
+let originalOpenCodeConfigDir: string | undefined
+
+function projectConfigPath(): string {
+  return path.join(tempDir, '.specforge', 'config', '.specforge.json')
+}
 
 beforeEach(async () => {
+  originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR
+  process.env.OPENCODE_CONFIG_DIR = path.join(tempDir, 'opencode-config')
   await mkdir(tempDir, { recursive: true })
 })
 
 afterEach(async () => {
+  if (originalOpenCodeConfigDir === undefined) {
+    delete process.env.OPENCODE_CONFIG_DIR
+  } else {
+    process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir
+  }
   await rm(tempDir, { recursive: true, force: true })
 })
 
@@ -69,6 +81,14 @@ describe('config-loader', () => {
           debounceMs: 100,
           watchPaths: [],
         },
+        service_management: {
+          schema_version: '1.0',
+          auto_enable_at_boot: true,
+          stop_timeout_sec: 10,
+          plugin_reconnect_max_sec: 60,
+          plugin_reconnect_initial_sec: 1,
+          plugin_reconnect_backoff_factor: 2,
+        },
         sensitiveFields: [
           'apiKeys',
           'tokens',
@@ -106,7 +126,7 @@ describe('config-loader', () => {
     })
 
     it('should throw error for invalid JSON in project config', async () => {
-      const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
+      const testFile = projectConfigPath()
       await mkdir(path.dirname(testFile), { recursive: true })
       await fs.writeFile(testFile, 'invalid json')
 
@@ -116,7 +136,7 @@ describe('config-loader', () => {
     })
 
     it('should throw error for permission denied on project config', async () => {
-      const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
+      const testFile = projectConfigPath()
       await mkdir(path.dirname(testFile), { recursive: true })
       await fs.writeFile(testFile, JSON.stringify({ key: 'value' }))
       // Make file unreadable
@@ -134,7 +154,7 @@ describe('config-loader', () => {
 })
 describe('loadAndMergeConfig', () => {
     it('should load and merge all configuration layers', async () => {
-      const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
+      const testFile = projectConfigPath()
       await mkdir(path.dirname(testFile), { recursive: true })
       await fs.writeFile(testFile, JSON.stringify({ projectKey: 'projectValue' }))
 
@@ -152,7 +172,7 @@ describe('loadAndMergeConfig', () => {
   })
 describe('loadProjectConfig with valid config', () => {
   it('should load valid project config file', async () => {
-    const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
+    const testFile = projectConfigPath()
     await mkdir(path.dirname(testFile), { recursive: true })
     await fs.writeFile(testFile, JSON.stringify({ key: 'value', nested: { a: 1 } }))
 
@@ -163,7 +183,7 @@ describe('loadProjectConfig with valid config', () => {
   })
 
   it('should throw for non-ENOENT errors on project config', async () => {
-    const testFile = path.join(tempDir, 'specforge', 'config', '.specforge.json')
+    const testFile = projectConfigPath()
     await mkdir(path.dirname(testFile), { recursive: true })
     await fs.writeFile(testFile, 'invalid json')
 
@@ -172,10 +192,20 @@ describe('loadProjectConfig with valid config', () => {
 })
 
 describe('loadUserConfig with valid config', () => {
-  it('should load valid user config file', async () => {
-    // We can't actually create a file in a real home dir in tests
-    // But we can verify the function exists and is exported
-    expect(loadUserConfig).toBeDefined()
+  it('should load user config from the canonical sf-user directory', async () => {
+    const testFile = path.join(
+      process.env.OPENCODE_CONFIG_DIR!,
+      'sf-user',
+      'config',
+      'config.json',
+    )
+    await mkdir(path.dirname(testFile), { recursive: true })
+    await fs.writeFile(testFile, JSON.stringify({ key: 'value' }))
+
+    const result = await loadUserConfig()
+    expect(result.type).toBe('user')
+    expect(result.path).toBe(testFile)
+    expect(result.data).toEqual({ key: 'value' })
   })
 })
 

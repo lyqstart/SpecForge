@@ -6,7 +6,7 @@
  * adapted to work without any @specforge/* or relative-package imports.
  *
  * All external types and constants are inlined so this single file can be
- * deployed to ~/.config/opencode/scripts/lib/ and imported by the plugin
+ * deployed to <OpenCode config>/sf-user/lib/ and imported by the plugin
  * without requiring the full monorepo package tree.
  */
 
@@ -254,6 +254,10 @@ export class ReconnectingDaemonClient implements Disposable {
       throw new Error(`Register returned unexpected response: ${JSON.stringify(body)}`);
     }
 
+    // Keep postEvent on the exact daemon instance that accepted this project
+    // binding. Without this refresh, a daemon restart can leave a stale cached
+    // token/port between register() and the following checkpoint event.
+    this.cachedHandshake = handshake;
     return body.data as RegisterResponse;
   }
 

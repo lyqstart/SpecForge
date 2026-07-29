@@ -82,7 +82,7 @@ describe('config-validator', () => {
     it('should validate a single layer', () => {
       const layer: ConfigLayer = {
         type: 'user',
-        path: '/home/user/.specforge/config/config.json',
+        path: '/home/user/.config/opencode/sf-user/config/config.json',
         timestamp: Date.now(),
         data: { logLevel: 'debug' },
         schemaVersion: '1.0',
@@ -96,7 +96,7 @@ describe('config-validator', () => {
     it('should warn if layer has no schemaVersion', () => {
       const layer: ConfigLayer = {
         type: 'user',
-        path: '/home/user/.specforge/config/config.json',
+        path: '/home/user/.config/opencode/sf-user/config/config.json',
         timestamp: Date.now(),
         data: { logLevel: 'debug' },
       }
@@ -109,7 +109,7 @@ describe('config-validator', () => {
     it('should warn if layer schemaVersion differs from schema', () => {
       const layer: ConfigLayer = {
         type: 'user',
-        path: '/home/user/.specforge/config/config.json',
+        path: '/home/user/.config/opencode/sf-user/config/config.json',
         timestamp: Date.now(),
         data: { logLevel: 'debug' },
         schemaVersion: '2.0',
@@ -132,7 +132,7 @@ describe('config-validator', () => {
         },
         {
           type: 'user',
-          path: '/home/user/.specforge/config/config.json',
+          path: '/home/user/.config/opencode/sf-user/config/config.json',
           timestamp: Date.now(),
           data: { logLevel: 'debug' },
           schemaVersion: '1.0',
@@ -154,7 +154,7 @@ describe('config-validator', () => {
         },
         {
           type: 'user',
-          path: '/home/user/.specforge/config/config.json',
+          path: '/home/user/.config/opencode/sf-user/config/config.json',
           timestamp: Date.now(),
           data: { logLevel: 'invalid' },
           schemaVersion: '1.0',

@@ -1,8 +1,8 @@
 /**
  * Authentication Manager for SpecForge CLI.
- * 
+ *
  * Provides:
- * - Reading handshake file (`~/.specforge/runtime/daemon.sock.json`)
+ * - Reading handshake file from the canonical SpecForge user runtime
  * - Validating Bearer Token
  * - Generating Authorization headers
  * 
@@ -11,8 +11,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
-import { SPEC_DIR_NAME } from '../utils/directory-layout';
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 
 // ============================================================================
 // Types
@@ -38,7 +37,7 @@ export interface DaemonHandshake {
  * Auth configuration options
  */
 export interface AuthManagerConfig {
-  /** Custom handshake file path (defaults to ~/.specforge/runtime/daemon.sock.json) */
+  /** Custom handshake file path (defaults to <OpenCode config>/sf-user/runtime/handshake.json) */
   handshakePath?: string;
   /** Skip file existence validation (for testing) */
   skipValidation?: boolean;
@@ -144,22 +143,20 @@ export class TokenExpiredError extends AuthError {
 // Constants
 // ============================================================================
 
-const DEFAULT_HANDSHAKE_FILENAME = 'daemon.sock.json';
-
+const DEFAULT_HANDSHAKE_FILENAME = 'handshake.json';
 /**
  * Get the default handshake file path
  */
 export function getDefaultHandshakePath(): string {
-  const homeDir = os.homedir();
-  return path.join(homeDir, SPEC_DIR_NAME, 'runtime', DEFAULT_HANDSHAKE_FILENAME);
+  return path.join(getRuntimeDirPath(), DEFAULT_HANDSHAKE_FILENAME);
 }
+
 
 /**
  * Get the runtime directory path
  */
 export function getRuntimeDirPath(): string {
-  const homeDir = os.homedir();
-  return path.join(homeDir, SPEC_DIR_NAME, 'runtime');
+  return path.join(resolveSpecForgeUserRoot(), 'runtime');
 }
 
 // Token expiration time in milliseconds (24 hours by default)

@@ -165,8 +165,11 @@ import * as pathModule from 'node:path';
  * Defaults to ~/.config/opencode on all platforms.
  */
 export function resolveUserLevelDirectory(): string {
-  const home = osModule.homedir();
-  return pathModule.join(home, '.config', 'opencode');
+  const explicit = process.env.OPENCODE_CONFIG_DIR?.trim();
+  if (explicit) return pathModule.resolve(pathModule.normalize(explicit));
+  const xdg = process.env.XDG_CONFIG_HOME?.trim();
+  if (xdg) return pathModule.join(xdg, 'opencode');
+  return pathModule.join(osModule.homedir(), '.config', 'opencode');
 }
 
 /**
@@ -185,30 +188,17 @@ export function toPosix(nativePath: string): string {
   return nativePath.replace(/\\/g, '/');
 }
 
-/** SpecForge 用户级安装目录名 */
+/** SpecForge 项目级治理目录名 */
 export const SPEC_DIR_NAME = ".specforge" as const;
 
+/** SpecForge 当前用户级安装目录名 */
+export const SPEC_USER_DIR_NAME = "sf-user" as const;
+
 /**
- * SpecForge 安装根目录路径（~/.specforge/）
- *
- * 读取 install.json 中的 base_dir 字段获取安装根路径。
- * 若 install.json 不存在或无法解析，回退到 ~/.specforge/。
+ * SpecForge 当前用户级安装根目录。
+ * Legacy ~/.specforge/install.json may be read by dedicated migration code only;
+ * it must never redirect current writes or executable loading.
  */
 export function resolveSpecForgeHome(): string {
-  const home = osModule.homedir();
-  const defaultDir = pathModule.join(home, '.specforge');
-
-  try {
-    const installJsonPath = pathModule.join(defaultDir, 'install.json');
-    const raw = require('node:fs').readFileSync(installJsonPath, 'utf-8');
-    const data = JSON.parse(raw);
-    if (data && typeof data.base_dir === 'string') {
-      // 展开 ~ 为 home 目录
-      return data.base_dir.replace(/^~[/\\]/, home + pathModule.sep);
-    }
-  } catch {
-    // install.json 不存在或解析失败，使用默认路径
-  }
-
-  return defaultDir;
+  return pathModule.join(resolveUserLevelDirectory(), SPEC_USER_DIR_NAME);
 }

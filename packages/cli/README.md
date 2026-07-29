@@ -69,12 +69,12 @@ The CLI supports two output modes:
 To completely remove SpecForge including all user data, run the following commands in order:
 
 1. npm uninstall -g @specforge/cli
-2. rm -rf ~/.specforge/
+2. rm -rf ~/.config/opencode/sf-user/
 
 For Windows PowerShell, use:
 
 1. npm uninstall -g @specforge/cli
-2. Remove-Item -Recurse -Force $env:USERPROFILE\.specforge
+2. Remove-Item -Recurse -Force $env:USERPROFILE\.config\opencode\sf-user
 
 ## Development
 

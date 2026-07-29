@@ -39,26 +39,35 @@ async function createTempConfig(dir: string, filename: string, config: GrantsCon
   return configPath;
 }
 
+/** 创建用户级配置文件 */
+async function createUserConfig(configRoot: string, filename: string, config: GrantsConfig): Promise<string> {
+  const configDir = path.join(configRoot, 'sf-user', 'config');
+  await fs.mkdir(configDir, { recursive: true });
+  const configPath = path.join(configDir, filename);
+  await fs.writeFile(configPath, JSON.stringify(config), 'utf-8');
+  return configPath;
+}
+
 describe('ConfigLoader', () => {
   let loader: ConfigLoader;
   let tempDir: string;
-  let originalHome: string | undefined;
+  let originalOpenCodeConfigDir: string | undefined;
 
   beforeEach(async () => {
     tempDir = await createTempDir();
-    // 保存原始 HOME 并设置测试用的临时目录
-    originalHome = process.env.HOME;
-    process.env.HOME = tempDir;
-    // 创建新的 loader 实例以使用新的 HOME
+    // 保存并设置测试用的 OpenCode 配置根目录
+    originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
+    process.env.OPENCODE_CONFIG_DIR = tempDir;
+    // 创建新的 loader 实例以使用新的配置根目录
     loader = new ConfigLoader();
   });
 
   afterEach(async () => {
-    // 恢复原始 HOME
-    if (originalHome !== undefined) {
-      process.env.HOME = originalHome;
+    // 恢复原始 OpenCode 配置根目录
+    if (originalOpenCodeConfigDir !== undefined) {
+      process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir;
     } else {
-      delete process.env.HOME;
+      delete process.env.OPENCODE_CONFIG_DIR;
     }
     // 清理临时目录
     try {
@@ -74,7 +83,7 @@ describe('ConfigLoader', () => {
 
   describe('constructor', () => {
     it('应该正确初始化用户配置目录', () => {
-      expect(loader.getUserConfigDir()).toBe(path.join(tempDir, '.specforge', 'config'));
+      expect(loader.getUserConfigDir()).toBe(path.join(tempDir, 'sf-user', 'config'));
     });
 
     it('应该初始化空缓存', () => {
@@ -111,9 +120,9 @@ describe('ConfigLoader', () => {
         schema_version: '1.0',
         grantedPermissions: ['filesystem.read', 'network'] as PluginPermission[],
       };
-      await createTempConfig(tempDir, 'plugin-grants.json', userConfig);
+      await createUserConfig(tempDir, 'plugin-grants.json', userConfig);
 
-      // 重新创建 loader 以使用新的 HOME
+      // 重新创建 loader 以使用新的配置根目录
       loader = new ConfigLoader();
 
       const result = await loader.loadConfig({});
@@ -130,7 +139,7 @@ describe('ConfigLoader', () => {
         schema_version: '1.0',
         grantedPermissions: ['filesystem.read'] as PluginPermission[],
       };
-      await createTempConfig(tempDir, 'plugin-grants.json', userConfig);
+      await createUserConfig(tempDir, 'plugin-grants.json', userConfig);
 
       // 创建项目级配置
       const projectConfig: GrantsConfig = {
@@ -161,7 +170,7 @@ describe('ConfigLoader', () => {
         schema_version: '1.0',
         grantedPermissions: ['filesystem.read'] as PluginPermission[],
       };
-      await createTempConfig(tempDir, 'plugin-grants.json', userConfig);
+      await createUserConfig(tempDir, 'plugin-grants.json', userConfig);
 
       // 项目级覆盖为 network
       const projectConfig: GrantsConfig = {
@@ -216,7 +225,7 @@ describe('ConfigLoader', () => {
         schema_version: '1.0',
         grantedPermissions: [],
       };
-      await createTempConfig(tempDir, 'plugin-grants.json', config);
+      await createUserConfig(tempDir, 'plugin-grants.json', config);
 
       // 重新创建 loader
       loader = new ConfigLoader();
@@ -258,7 +267,7 @@ describe('ConfigLoader', () => {
         schema_version: '1.0',
         grantedPermissions: ['network'] as PluginPermission[],
       };
-      await createTempConfig(tempDir, 'plugin-grants.json', existing);
+      await createUserConfig(tempDir, 'plugin-grants.json', existing);
 
       // 重新创建 loader
       loader = new ConfigLoader();
@@ -363,7 +372,7 @@ describe('ConfigLoader', () => {
         schema_version: '1.0',
         grantedPermissions: ['filesystem.read'] as PluginPermission[],
       };
-      await createTempConfig(tempDir, 'plugin-grants.json', userConfig);
+      await createUserConfig(tempDir, 'plugin-grants.json', userConfig);
 
       // 重新创建 loader
       loader = new ConfigLoader();

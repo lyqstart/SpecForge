@@ -2,7 +2,7 @@
  * LockManager - 基于 proper-lockfile 的锁管理器
  * 
  * 职责：
- * - 获取和释放文件锁（~/.specforge/.init.lock）
+ * - 获取和释放文件锁（<OpenCode config>/sf-user/.init.lock）
  * - 防止多个 specforge init 并发执行
  * - 实现 AsyncDisposable 接口自动释放
  * - 提供自检 API 用于测试断言
@@ -14,7 +14,7 @@
  * - C1: Promise.race 超时时 finally 中 clearTimeout 败者 timer
  * - P5/X2: 提供 getActiveLockCount() 自检 API
  * 
- * REQ-3.9: 锁文件路径 ~/.specforge/.init.lock
+ * REQ-3.9: 锁文件路径 <OpenCode config>/sf-user/.init.lock
  * REQ-3.9: 锁文件元数据 { pid, hostname, timestamp }
  */
 
@@ -86,7 +86,7 @@ export class DefaultLockManager implements LockManager {
    * 
    * lessons-injected JS1: 构造器只赋值依赖句柄，不做 I/O
    * 
-   * @param lockPath 锁文件的绝对路径（默认 ~/.specforge/.init.lock）
+   * @param lockPath 锁文件的绝对路径（默认 <OpenCode config>/sf-user/.init.lock）
    */
   constructor(lockPath: string) {
     this.lockPath = lockPath;
@@ -277,7 +277,7 @@ export class DefaultLockManager implements LockManager {
 /**
  * 工厂函数：创建 LockManager 实例
  * 
- * @param installRoot ~/.specforge 的绝对路径
+ * @param installRoot <OpenCode config>/sf-user 的绝对路径
  * @returns LockManager 实例
  */
 export function createLockManager(installRoot: string): LockManager {

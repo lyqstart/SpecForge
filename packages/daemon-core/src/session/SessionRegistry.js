@@ -9,7 +9,21 @@
  * - Supports session tree via parentSessionId (REQ-6.4)
  * - Three record types: pending, active, history (REQ-6.2)
  */
-import { createPendingIdentity, activateIdentity, terminateIdentity, updateLastActive, } from './AgentIdentity';
+import { createPendingIdentity, activateIdentity, terminateIdentity, } from './AgentIdentity';
+/**
+ * Error thrown when a WAL write operation fails.
+ * Wraps the underlying cause for diagnostic purposes.
+ */
+export class WALWriteError extends Error {
+    cause;
+    constructor(message, cause) {
+        super(message);
+        this.name = 'WALWriteError';
+        this.cause = cause;
+        // Fix: Set prototype explicitly for proper Error subclassing in ES5
+        Object.setPrototypeOf(this, WALWriteError.prototype);
+    }
+}
 /**
  * Session Registry
  *
@@ -40,9 +54,17 @@ export class SessionRegistry {
     subscription = null;
     sessionTimeoutMs;
     cleanupTimerId = null;
-    constructor(eventBus, sessionTimeoutMs = 30 * 60 * 1000) {
+    wal;
+    touchThrottleMap = new Map();
+    TOUCH_THROTTLE_INTERVAL_MS;
+    constructor(eventBus, sessionTimeoutMs = 30 * 60 * 1000, wal, touchThrottleMs) {
         this.eventBus = eventBus;
         this.sessionTimeoutMs = sessionTimeoutMs;
+        this.wal = wal;
+        this.TOUCH_THROTTLE_INTERVAL_MS = touchThrottleMs ?? 60_000;
+        if (!wal) {
+            console.warn('[SessionRegistry] WAL not injected — running in memory-only mode');
+        }
     }
     /**
      * Start the registry
@@ -50,7 +72,7 @@ export class SessionRegistry {
      */
     start() {
         this.subscription = this.eventBus.subscribe('session.*', (event) => {
-            this.handleSessionEvent(event);
+            void this.handleSessionEvent(event);
         });
     }
     /**
@@ -133,7 +155,7 @@ export class SessionRegistry {
      * @param projectPath Project filesystem path
      * @returns The created or existing AgentIdentity
      */
-    registerPluginSession(projectId, projectPath) {
+    async registerPluginSession(projectId, projectPath) {
         // Idempotency: check if this projectPath already has a session
         for (const [sid, pp] of this.projectBindings) {
             if (pp === projectPath) {
@@ -143,17 +165,35 @@ export class SessionRegistry {
             }
         }
         const identity = createPendingIdentity('plugin', 'plugin-daemon-bridge', '', '', null, projectId);
+        // WAL-first: write to WAL before in-memory mutation
+        if (this.wal) {
+            try {
+                const event = this.wal.createEvent(projectId, 'session', 'session.registered', {
+                    sessionId: identity.sessionId,
+                    agentRole: identity.agentRole,
+                    workflowRole: identity.workflowRole,
+                    workItemId: identity.workItemId,
+                    spawnIntentId: identity.spawnIntentId,
+                    parentSessionId: identity.parentSessionId,
+                    projectPath,
+                });
+                await this.wal.appendEvent(event);
+            }
+            catch (cause) {
+                throw new WALWriteError('Failed to write session.registered event', cause);
+            }
+        }
         this.pendingSessions.set(identity.sessionId, identity);
         this.projectBindings.set(identity.sessionId, projectPath);
         return identity;
     }
     /**
-     * Get the count of active sessions (pending + active)
+     * Get the count of active sessions
      *
-     * @returns Number of pending and active sessions
+     * @returns Number of active sessions (not including pending)
      */
     getActiveSessionCount() {
-        return this.pendingSessions.size + this.activeSessions.size;
+        return this.activeSessions.size;
     }
     /**
      * Register a new pending session
@@ -168,8 +208,25 @@ export class SessionRegistry {
      * @param parentSessionId Optional parent session ID for tree structure
      * @returns The created AgentIdentity
      */
-    registerPending(agentRole, workflowRole, workItemId, spawnIntentId, parentSessionId = null) {
+    async registerPending(agentRole, workflowRole, workItemId, spawnIntentId, parentSessionId = null) {
         const identity = createPendingIdentity(agentRole, workflowRole, workItemId, spawnIntentId, parentSessionId);
+        // WAL-first: write to WAL before in-memory mutation
+        if (this.wal) {
+            try {
+                const event = this.wal.createEvent(workItemId, 'session', 'session.registered', {
+                    sessionId: identity.sessionId,
+                    agentRole,
+                    workflowRole,
+                    workItemId,
+                    spawnIntentId,
+                    parentSessionId,
+                });
+                await this.wal.appendEvent(event);
+            }
+            catch (cause) {
+                throw new WALWriteError('Failed to write session.registered event', cause);
+            }
+        }
         this.pendingSessions.set(identity.sessionId, identity);
         return identity;
     }
@@ -183,10 +240,20 @@ export class SessionRegistry {
      * @param spawnIntentId Spawn intent ID for validation
      * @returns The activated AgentIdentity, or null if validation fails
      */
-    activate(sessionId, spawnIntentId) {
+    async activate(sessionId, spawnIntentId) {
         const pending = this.pendingSessions.get(sessionId);
         if (!pending || pending.spawnIntentId !== spawnIntentId) {
             return null;
+        }
+        // WAL-first: write to WAL before in-memory mutation
+        if (this.wal) {
+            try {
+                const event = this.wal.createEvent('session', 'session', 'session.activated', { sessionId, spawnIntentId });
+                await this.wal.appendEvent(event);
+            }
+            catch (err) {
+                throw new WALWriteError(`WAL write failed for session.activated: ${sessionId}`, err instanceof Error ? err : new Error(String(err)));
+            }
         }
         const active = activateIdentity(pending);
         this.pendingSessions.delete(sessionId);
@@ -201,10 +268,20 @@ export class SessionRegistry {
      * @param sessionId Session ID to terminate
      * @returns The terminated AgentIdentity, or null if not found
      */
-    terminate(sessionId) {
+    async terminate(sessionId) {
         const active = this.activeSessions.get(sessionId);
         if (!active) {
             return null;
+        }
+        // WAL-first: write to WAL before in-memory mutation
+        if (this.wal) {
+            try {
+                const event = this.wal.createEvent('session', 'session', 'session.terminated', { sessionId });
+                await this.wal.appendEvent(event);
+            }
+            catch (err) {
+                throw new WALWriteError(`WAL write failed for session.terminated: ${sessionId}`, err instanceof Error ? err : new Error(String(err)));
+            }
         }
         const history = terminateIdentity(active);
         this.activeSessions.delete(sessionId);
@@ -303,18 +380,36 @@ export class SessionRegistry {
         return Array.from(this.historySessions.values());
     }
     /**
-     * Update session last active timestamp
+     * Update session last active timestamp with WAL write throttle
+     *
+     * In-memory lastActiveAt is updated EVERY call (no throttle).
+     * WAL write is throttled: only writes if enough time has passed since
+     * the last WAL write for this session, or if this is the first touch.
      *
      * @param sessionId Session ID
      * @returns Updated AgentIdentity, or null if not found
      */
-    touch(sessionId) {
+    async touch(sessionId) {
         const active = this.activeSessions.get(sessionId);
         if (!active) {
             return null;
         }
-        const updated = updateLastActive(active);
+        const now = Date.now();
+        const updated = { ...active, lastActiveAt: now };
         this.activeSessions.set(sessionId, updated);
+        if (this.wal) {
+            const lastWalTouch = this.touchThrottleMap.get(sessionId);
+            if (lastWalTouch === undefined || now - lastWalTouch >= this.TOUCH_THROTTLE_INTERVAL_MS) {
+                try {
+                    const event = this.wal.createEvent('session', 'session', 'session.touched', { sessionId, lastActiveAt: now });
+                    await this.wal.appendEvent(event);
+                    this.touchThrottleMap.set(sessionId, now);
+                }
+                catch (err) {
+                    throw new WALWriteError(`WAL write failed for session.touched: ${sessionId}`, err instanceof Error ? err : new Error(String(err)));
+                }
+            }
+        }
         return updated;
     }
     /**
@@ -374,26 +469,40 @@ export class SessionRegistry {
      * @param projectPath Project filesystem path
      * @returns true if the session was found and bound, false otherwise
      */
-    bindProject(sessionId, projectPath) {
+    async bindProject(sessionId, projectPath) {
         // Compute projectId from the last segment of the project path
         const normalizedPath = projectPath.replace(/\\/g, '/');
         const segments = normalizedPath.split('/');
         const lastSegment = segments[segments.length - 1];
         const projectId = lastSegment ?? projectPath;
-        // Update the session in whichever state it's in
+        // (1) Validation: find the session in whichever state it's in
         const pending = this.pendingSessions.get(sessionId);
+        const active = this.activeSessions.get(sessionId);
+        const history = this.historySessions.get(sessionId);
+        if (!pending && !active && !history) {
+            return false;
+        }
+        // (2) WAL-first: persist event before in-memory mutation
+        if (this.wal) {
+            try {
+                const event = this.wal.createEvent(sessionId, 'session', 'session.bound', { sessionId, projectPath });
+                await this.wal.appendEvent(event);
+            }
+            catch (err) {
+                throw new WALWriteError(`Failed to write session.bound WAL event for session ${sessionId}`, err instanceof Error ? err : new Error(String(err)));
+            }
+        }
+        // (3) In-memory apply
         if (pending) {
             this.pendingSessions.set(sessionId, { ...pending, projectId });
             this.projectBindings.set(sessionId, projectPath);
             return true;
         }
-        const active = this.activeSessions.get(sessionId);
         if (active) {
             this.activeSessions.set(sessionId, { ...active, projectId });
             this.projectBindings.set(sessionId, projectPath);
             return true;
         }
-        const history = this.historySessions.get(sessionId);
         if (history) {
             this.historySessions.set(sessionId, { ...history, projectId });
             this.projectBindings.set(sessionId, projectPath);
@@ -424,7 +533,7 @@ export class SessionRegistry {
      * @param subType OpenCode event subtype (e.g., "session.created")
      * @param data Event payload containing sessionID and optional projectPath
      */
-    handleOpenCodeEvent(subType, data) {
+    async handleOpenCodeEvent(subType, data) {
         const projectPath = data.projectPath;
         // Resolve the daemon's internal sessionId
         let internalSessionId = null;
@@ -457,9 +566,10 @@ export class SessionRegistry {
         // 4. Handle cases where no mapping exists
         if (!internalSessionId) {
             if (subType === 'session.created' && projectPath) {
-                // Register a new plugin session to create the binding
-                const identity = this.registerPluginSession(projectPath, projectPath);
-                internalSessionId = identity.sessionId;
+                // B2: No longer auto-create sessions. Project must be registered via ingest/register first.
+                // If we get here, ingest/register was not called or failed (possibly PROJECT_NOT_INITIALIZED)
+                console.warn(`[SessionRegistry] No session binding for project: ${projectPath}. Project may not be initialized. Skipping auto-registration.`);
+                return;
             }
             else {
                 console.warn(`[SessionRegistry] No session binding found for OpenCode event subtype: ${subType}, projectPath: ${projectPath}`);
@@ -468,6 +578,16 @@ export class SessionRegistry {
         }
         // Lazy-alias: establish OpenCode sessionID → daemon sessionId mapping
         if (internalSessionId && opencodeSessionId && !this.sessionAliases.has(opencodeSessionId)) {
+            // alias_bound WAL event: only on FIRST alias establishment
+            if (this.wal) {
+                try {
+                    const aliasEvent = this.wal.createEvent(internalSessionId, 'session', 'session.alias_bound', { sessionId: internalSessionId, opencodeSessionId });
+                    await this.wal.appendEvent(aliasEvent);
+                }
+                catch (err) {
+                    throw new WALWriteError(`Failed to write session.alias_bound WAL event for session ${internalSessionId}`, err instanceof Error ? err : new Error(String(err)));
+                }
+            }
             this.sessionAliases.set(opencodeSessionId, internalSessionId);
         }
         switch (subType) {
@@ -475,10 +595,10 @@ export class SessionRegistry {
                 // Session already created via registerPluginSession above
                 break;
             case 'session.idle':
-                this.touch(internalSessionId);
+                await this.touch(internalSessionId);
                 break;
             case 'session.error':
-                this.terminate(internalSessionId);
+                await this.terminate(internalSessionId);
                 break;
             default:
                 // Unrecognized subtype: log WARNING, do not interrupt
@@ -517,11 +637,132 @@ export class SessionRegistry {
         this.projectBindings = new Map(snapshot.projectBindings);
     }
     /**
+     * Replay WAL events to restore in-memory state after daemon restart.
+     *
+     * Only performs in-memory mutations — never calls this.wal.appendEvent().
+     * Idempotent: calling twice with the same events produces identical Map states.
+     *
+     * @param events Array of WAL events to replay (already filtered by caller)
+     * @returns ReplaySummary with counts of replayed events, restored bindings and aliases
+     */
+    async startupReplay(events) {
+        // 1. Sort events by monotonicSeq (fallback to timestamp)
+        const sorted = [...events].sort((a, b) => (a.monotonicSeq ?? 0) - (b.monotonicSeq ?? 0) ||
+            a.ts - b.ts);
+        let replayedCount = 0;
+        let restoredBindings = 0;
+        let restoredAliases = 0;
+        for (const event of sorted) {
+            const action = event.action;
+            const payload = event.payload;
+            switch (action) {
+                case 'session.registered': {
+                    const sessionId = payload.sessionId;
+                    if (!sessionId)
+                        break;
+                    // Idempotent: only set if session doesn't exist in any map
+                    if (!this.pendingSessions.has(sessionId) &&
+                        !this.activeSessions.has(sessionId) &&
+                        !this.historySessions.has(sessionId)) {
+                        const identity = {
+                            sessionId,
+                            agentRole: payload.agentRole ?? '',
+                            workflowRole: payload.workflowRole ?? '',
+                            parentSessionId: payload.parentSessionId ?? null,
+                            workItemId: payload.workItemId ?? '',
+                            projectId: null,
+                            spawnIntentId: payload.spawnIntentId ?? '',
+                            createdAt: event.ts,
+                            lastActiveAt: event.ts,
+                            status: 'pending',
+                        };
+                        this.pendingSessions.set(sessionId, identity);
+                        if (payload.projectPath) {
+                            this.projectBindings.set(sessionId, payload.projectPath);
+                            restoredBindings++;
+                        }
+                    }
+                    replayedCount++;
+                    break;
+                }
+                case 'session.activated': {
+                    const sessionId = payload.sessionId;
+                    if (!sessionId)
+                        break;
+                    if (this.pendingSessions.has(sessionId)) {
+                        const identity = this.pendingSessions.get(sessionId);
+                        this.pendingSessions.delete(sessionId);
+                        this.activeSessions.set(sessionId, {
+                            ...identity,
+                            status: 'active',
+                            lastActiveAt: event.ts,
+                        });
+                        restoredBindings++;
+                    }
+                    replayedCount++;
+                    break;
+                }
+                case 'session.bound': {
+                    const sessionId = payload.sessionId;
+                    const projectPath = payload.projectPath;
+                    if (sessionId && projectPath) {
+                        this.projectBindings.set(sessionId, projectPath);
+                        restoredBindings++;
+                    }
+                    replayedCount++;
+                    break;
+                }
+                case 'session.terminated': {
+                    const sessionId = payload.sessionId;
+                    if (!sessionId)
+                        break;
+                    if (this.activeSessions.has(sessionId)) {
+                        const identity = this.activeSessions.get(sessionId);
+                        this.activeSessions.delete(sessionId);
+                        this.historySessions.set(sessionId, {
+                            ...identity,
+                            status: 'history',
+                            lastActiveAt: event.ts,
+                        });
+                    }
+                    replayedCount++;
+                    break;
+                }
+                case 'session.alias_bound': {
+                    const opencodeSessionId = payload.opencodeSessionId;
+                    const daemonSessionId = payload.sessionId;
+                    if (opencodeSessionId && daemonSessionId) {
+                        this.sessionAliases.set(opencodeSessionId, daemonSessionId);
+                        restoredAliases++;
+                    }
+                    replayedCount++;
+                    break;
+                }
+                case 'session.touched': {
+                    const sessionId = payload.sessionId;
+                    if (!sessionId)
+                        break;
+                    // Update lastActiveAt only (no WAL write — avoid circular writes)
+                    if (this.activeSessions.has(sessionId)) {
+                        const identity = this.activeSessions.get(sessionId);
+                        identity.lastActiveAt = payload.lastActiveAt ?? event.ts;
+                    }
+                    replayedCount++;
+                    break;
+                }
+                default:
+                    // Skip unknown actions
+                    break;
+            }
+        }
+        return { replayedCount, restoredBindings, restoredAliases };
+    }
+    /**
      * Handle session events from EventBus
      *
      * @param event Event to handle
      */
-    handleSessionEvent(event) {
+    async handleSessionEvent(event) {
         const payload = event.payload;
         switch (event.action) {
             case 'session.created':
@@ -530,22 +771,22 @@ export class SessionRegistry {
                     payload.agentRole &&
                     payload.workflowRole &&
                     payload.workItemId) {
-                    this.registerPending(payload.agentRole, payload.workflowRole, payload.workItemId, payload.spawnIntentId, payload.parentSessionId ?? null);
+                    await this.registerPending(payload.agentRole, payload.workflowRole, payload.workItemId, payload.spawnIntentId, payload.parentSessionId ?? null);
                 }
                 break;
             case 'session.activated':
                 if (payload.sessionId && payload.spawnIntentId) {
-                    this.activate(payload.sessionId, payload.spawnIntentId);
+                    await this.activate(payload.sessionId, payload.spawnIntentId);
                 }
                 break;
             case 'session.terminated':
                 if (payload.sessionId) {
-                    this.terminate(payload.sessionId);
+                    await this.terminate(payload.sessionId);
                 }
                 break;
             case 'session.touched':
                 if (payload.sessionId) {
-                    this.touch(payload.sessionId);
+                    await this.touch(payload.sessionId);
                 }
                 break;
         }

@@ -13,14 +13,14 @@
  *            REQ-1.4 (Startup failure handling)
  */
 
-import { resolve, join } from 'path'
+import { join } from 'path'
 import { existsSync, mkdirSync } from 'fs'
 import { detectSchemaVersion, detectFromDirectory, compareWithCodeVersion, compareVersions } from './schema-detector'
 import { detectAndRepair, RepairEngine, type RepairResult } from './repair-engine'
 import { MigrationRunner, type TransactionalMigrationOptions } from './runner'
 import { discoverMigrationScripts } from './discovery'
 import type { MigrationScript, MigrationContext } from './types'
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths'
 
 // ============================================================================
 // Types
@@ -124,14 +124,13 @@ export interface RepairEventPayload {
 export const DEFAULT_SCHEMA_VERSION = '1.0.0'
 
 /**
- * Migration directory name (relative to home)
+ * Migration directory name under the canonical SpecForge user root
  */
-export const MIGRATION_DIR_NAME = `${SPEC_DIR_NAME}/migrations`
-
+export const MIGRATION_DIR_NAME = 'migrations'
 /**
- * Backup directory name (relative to home)
+ * Backup directory name under the canonical SpecForge user root
  */
-export const BACKUP_DIR_NAME = `${SPEC_DIR_NAME}/backups`
+export const BACKUP_DIR_NAME = 'backups'
 
 // ============================================================================
 // Core Functions
@@ -141,16 +140,13 @@ export const BACKUP_DIR_NAME = `${SPEC_DIR_NAME}/backups`
  * Get the default migration directory path
  */
 export function getMigrationDir(): string {
-  const homeDir = process.env.HOME || process.env.USERPROFILE || '.'
-  return resolve(homeDir, MIGRATION_DIR_NAME)
+  return join(resolveSpecForgeUserRoot(), MIGRATION_DIR_NAME)
 }
-
 /**
  * Get the default backup directory path
  */
 export function getBackupDir(): string {
-  const homeDir = process.env.HOME || process.env.USERPROFILE || '.'
-  return resolve(homeDir, BACKUP_DIR_NAME)
+  return join(resolveSpecForgeUserRoot(), BACKUP_DIR_NAME)
 }
 
 /**

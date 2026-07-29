@@ -14,8 +14,8 @@
  *
  * 四层合并语义（design.md §「与 Configuration Subsystem 集成」）：
  *   Layer 1: 内置默认（空集合）
- *   Layer 2: 用户级（~/.specforge/）
-   *   Layer 3: 项目级（<project>/specforge/）
+ *   Layer 2: 用户级（<OpenCode config>/sf-user/）
+   *   Layer 3: 项目级（<project>/.specforge/）
  *   Layer 4: 运行时（CLI/API）
  */
 

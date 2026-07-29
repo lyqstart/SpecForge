@@ -4,7 +4,7 @@
  * Implementation of ServiceManager for Windows using NSSM (Non-Sucking Service Manager).
  *
  * Key features:
- * - Uses NSSM CLI from ~/.specforge/bin/nssm.exe (via PathResolver)
+ * - Uses NSSM CLI from <OpenCode config>/sf-user/bin/nssm.exe
  * - 30s timeout for all NSSM commands
  * - Environment precheck for elevated privileges and NSSM availability
  * - Accepts LocalSystem as fallback with warning
@@ -36,7 +36,7 @@ import type {
   RestartResult,
 } from './service-manager.js';
 import { createServiceError, ErrorCode } from '../errors/service-error.js';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 
 /**
  * Package version - could be read from package.json at runtime
@@ -53,9 +53,9 @@ const DEFAULT_TIMEOUT_MS = 30_000;
  * Options for NssmServiceManager
  */
 export interface NssmOptions extends ServiceManagerOptions {
-  /** NSSM binary directory (default: ~/.specforge/bin/) */
+  /** NSSM binary directory (default: <OpenCode config>/sf-user/bin/) */
   binDir?: string;
-  /** Service installation directory (default: ~/.specforge/) */
+  /** Service installation directory (default: <OpenCode config>/sf-user/) */
   serviceDir?: string;
 }
 
@@ -75,8 +75,8 @@ export class NssmServiceManager implements ServiceManager {
    * Only assigns fields, no spawn/register/start timers
    */
   constructor(opts: NssmOptions = {}) {
-    this.binDir = opts.binDir ?? path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
-    this.serviceDir = opts.serviceDir ?? path.join(os.homedir(), SPEC_DIR_NAME);
+    this.binDir = opts.binDir ?? path.join(resolveSpecForgeUserRoot(), 'bin');
+    this.serviceDir = opts.serviceDir ?? resolveSpecForgeUserRoot();
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     this.unitGenerator = new DefaultServiceUnitGenerator(PACKAGE_VERSION);
   }
@@ -612,7 +612,7 @@ export class NssmServiceManager implements ServiceManager {
       result.blockers.push({
         code: 'NSSM_NOT_FOUND',
         message: 'NSSM executable not found',
-        suggestion: 'NSSM (Non-Sucking Service Manager) is required for Windows service management. It should be installed at ~/.specforge/bin/nssm.exe.',
+        suggestion: 'NSSM (Non-Sucking Service Manager) is required for Windows service management. It should be installed at <OpenCode config>/sf-user/bin/nssm.exe.',
       });
     } else {
       // Get NSSM version

@@ -7,6 +7,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./directory-layout": "./src/directory-layout.ts",
+    "./user-level-paths": {
+      "types": "./dist/user-level-paths.d.ts",
+      "default": "./src/user-level-paths.ts"
+    },
     "./actor-roles": "./src/actor-roles.ts",
     "./constants": "./src/constants.ts",
     "./principal": "./src/principal.ts",
@@ -26,5 +30,18 @@
   "devDependencies": {
     "typescript": "^5.8.2"
   },
-  "schema_version": "1.0"
+  "schema_version": "1.0",
+  "typesVersions": {
+    "*": {
+      "directory-layout": [
+        "dist/directory-layout.d.ts"
+      ],
+      "user-level-paths": [
+        "dist/user-level-paths.d.ts"
+      ],
+      "*": [
+        "dist/*"
+      ]
+    }
+  }
 }

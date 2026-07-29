@@ -22,7 +22,7 @@ This document describes the JSON schema and configuration structure for the Spec
 The Configuration Subsystem manages configuration through a four-layer model:
 
 1. **Builtin** (Layer 1) - Default values from code
-2. **User** (Layer 2) - User-level overrides in `~/.specforge/config/`
+2. **User** (Layer 2) - User-level overrides in `~/.config/opencode/sf-user/config/`
 3. **Project** (Layer 3) - Project-level overrides in `<project>/.specforge/`
 4. **Runtime** (Layer 4) - CLI flags / environment variables
 
@@ -185,7 +185,7 @@ export const DEFAULT_CONFIG = {
 
 ### Layer 2: User-Level Configuration
 
-Location: `~/.specforge/config/config.json`
+Location: `~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {

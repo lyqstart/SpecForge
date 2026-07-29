@@ -1,7 +1,7 @@
 /**
  * Handshake file management
  * 
- * Manages the daemon.sock.json file that contains connection
+ * Manages the handshake.json file that contains connection
  * information for clients to discover and authenticate with the Daemon.
  * Implements single instance enforcement using file locking.
  */

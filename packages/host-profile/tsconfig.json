@@ -9,10 +9,12 @@
     "outDir": "dist",
     "declaration": true,
     "sourceMap": true,
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src"
   ]
 }
-

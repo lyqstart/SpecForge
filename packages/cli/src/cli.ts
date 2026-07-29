@@ -23,7 +23,7 @@ import yargs, { Argv, Arguments } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
+import { resolveSpecForgeManifestPath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 import { DaemonClient } from './http/DaemonClient';
 import { createJobTracker, JobTracker, isTerminalStatus, JobStatusType } from './job';
 import { AuthManager } from './auth';
@@ -63,18 +63,17 @@ let jobTracker: JobTracker | null = null;
 let authManager: AuthManager | null = null;
 
 /**
- * Get the runtime directory path (~/.specforge/runtime)
+ * Get the runtime directory path under the canonical SpecForge user root
  */
 function getRuntimeDir(): string {
-  const homeDir = os.homedir();
-  return path.join(homeDir, SPEC_DIR_NAME, 'runtime');
+  return path.join(resolveSpecForgeUserRoot(), 'runtime');
 }
 
 /**
  * Get the daemon handshake file path
  */
 function getHandshakePath(): string {
-  return path.join(getRuntimeDir(), 'daemon.sock.json');
+  return path.join(getRuntimeDir(), 'handshake.json');
 }
 
 /**
@@ -185,7 +184,7 @@ async function runStartupCheck(
   const highestKnownSchema = vu.HIGHEST_KNOWN_SCHEMA;
 
   // Determine manifest paths
-  const defaultUserManifestPath = path.join(os.homedir(), SPEC_DIR_NAME, LAYOUT.manifest);
+  const defaultUserManifestPath = resolveSpecForgeManifestPath();
   const actualUserManifestPath = userManifestPath ?? defaultUserManifestPath;
   const projectManifestPath = path.join(projectDir, SPEC_DIR_NAME, LAYOUT.manifest);
 
@@ -622,7 +621,7 @@ function addDoctorCommands(yargsInstance: Argv): Argv {
         })
         .option('user-manifest-path', {
           type: 'string',
-          describe: 'Path to user manifest (defaults to ~/.specforge/manifest.json)',
+          describe: 'Path to user manifest (defaults to <OpenCode config>/specforge-manifest.json)',
         });
     },
     async (argv: Arguments) => {

@@ -136,7 +136,7 @@ const USER_ACTIONS: Record<ErrorCategory, UserAction> = {
   },
   script_load: {
     title: 'Migration Script Error',
-    description: 'A migration script could not be loaded. Please verify the migration scripts in ~/.specforge/migrations/.',
+    description: 'A migration script could not be loaded. Please verify the migration scripts in <OpenCode config>/sf-user/migrations/.',
     critical: true,
     retryable: true
   },

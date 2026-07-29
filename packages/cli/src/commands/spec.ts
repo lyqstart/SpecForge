@@ -17,22 +17,20 @@ import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors
 import { JobTracker, createJobTracker } from '../job';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as os from 'os';
-import { SPEC_DIR_NAME } from '../utils/directory-layout';
-
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
- * Runtime directory path (~/.specforge/runtime)
+ * Runtime directory path under the canonical SpecForge user root
  */
 function getRuntimeDir(): string {
-  const homeDir = os.homedir();
-  return path.join(homeDir, SPEC_DIR_NAME, 'runtime');
+  return path.join(resolveSpecForgeUserRoot(), 'runtime');
 }
+
 
 /**
  * Daemon handshake file path
  */
 function getHandshakePath(): string {
-  return path.join(getRuntimeDir(), 'daemon.sock.json');
+  return path.join(getRuntimeDir(), 'handshake.json');
 }
 
 /**

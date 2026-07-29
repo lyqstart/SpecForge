@@ -11,6 +11,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 import {
   AuthManager,
   createAuthManager,
@@ -24,9 +25,12 @@ import {
   DaemonHandshake,
 } from '../src/auth/AuthManager';
 
-// Mock fs module (both fs and fs.promises)
-const mockFsAccess = vi.fn();
-const mockFsReadFile = vi.fn();
+// Mock fs module (both fs and fs.promises). vi.mock factories are hoisted,
+// so the mock functions must be created with vi.hoisted to avoid TDZ failures.
+const { mockFsAccess, mockFsReadFile } = vi.hoisted(() => ({
+  mockFsAccess: vi.fn(),
+  mockFsReadFile: vi.fn(),
+}));
 
 vi.mock('fs', () => ({
   constants: {
@@ -39,7 +43,7 @@ vi.mock('fs', () => ({
 }));
 
 // Test temp path
-const TEST_HANDSHAKE_PATH = path.join(os.tmpdir(), 'test-daemon.sock.json');
+const TEST_HANDSHAKE_PATH = path.join(os.tmpdir(), 'test-handshake.json');
 
 describe('AuthManager', () => {
   let auth: AuthManager;
@@ -58,14 +62,14 @@ describe('AuthManager', () => {
 
   describe('getDefaultHandshakePath', () => {
     it('should return correct default path', () => {
-      const expected = path.join(os.homedir(), '.specforge', 'runtime', 'daemon.sock.json');
+      const expected = path.join(resolveSpecForgeUserRoot(), 'runtime', 'handshake.json');
       expect(getDefaultHandshakePath()).toBe(expected);
     });
   });
 
   describe('getRuntimeDirPath', () => {
     it('should return correct runtime directory path', () => {
-      const expected = path.join(os.homedir(), '.specforge', 'runtime');
+      const expected = path.join(resolveSpecForgeUserRoot(), 'runtime');
       expect(getRuntimeDirPath()).toBe(expected);
     });
   });
@@ -77,7 +81,7 @@ describe('AuthManager', () => {
     });
 
     it('should use custom path when provided', () => {
-      const customPath = '/custom/path/daemon.sock.json';
+      const customPath = '/custom/path/handshake.json';
       const authCustom = new AuthManager({ handshakePath: customPath });
       expect(authCustom.handshakePath).toBe(customPath);
     });

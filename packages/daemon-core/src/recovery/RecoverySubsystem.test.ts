@@ -157,6 +157,42 @@ describe('RecoverySubsystem', () => {
     expect(parsed).toEqual(snapshotData);
   });
 
+  it('should bind an unbound daemon checkpoint to the explicit project path', async () => {
+    const coordinator = new RecoverySubsystem(mockResolver);
+    const resolveProjectRuntimeDir = vi.spyOn(mockResolver, 'resolveProjectRuntimeDir');
+    const sessionId = 'project-bound-session';
+    const projectPath = path.join(tmpDir, 'actual-project');
+    const snapshotData = { checkpoint: 'project-bound' };
+
+    await coordinator.saveCheckpoint(sessionId, snapshotData, projectPath);
+
+    expect(resolveProjectRuntimeDir).toHaveBeenCalledWith(projectPath);
+    const checkpointPath = path.join(
+      mockResolver.resolveProjectRuntimeDir(projectPath),
+      'checkpoints',
+      `${sessionId}.json`,
+    );
+    expect(JSON.parse(await fs.readFile(checkpointPath, 'utf-8'))).toEqual(snapshotData);
+  });
+
+  it('should refuse an unbound daemon checkpoint without a project path', async () => {
+    const coordinator = new RecoverySubsystem(mockResolver);
+    const resolveProjectRuntimeDir = vi.spyOn(mockResolver, 'resolveProjectRuntimeDir');
+
+    await expect(
+      coordinator.saveCheckpoint('unbound-session', { checkpoint: 'must-not-write' }),
+    ).resolves.toBeUndefined();
+
+    expect(resolveProjectRuntimeDir).not.toHaveBeenCalled();
+  });
+
+  it('should keep daemon coordinator state storage unbound', () => {
+    const coordinator = new RecoverySubsystem(mockResolver);
+
+    expect(() => coordinator.getEventsPath()).toThrow('not bound');
+    expect(() => coordinator.getStatePath()).toThrow('not bound');
+  });
+
   it('should not throw on saveCheckpoint write failure', async () => {
     // Create an invalid statePath that cannot be written (use a path with
     // a file where a directory should be — but simpler: use null byte trick).

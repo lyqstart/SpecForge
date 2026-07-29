@@ -217,7 +217,7 @@ System administrators manage plugin permissions through configuration files.
 
 ### User-Level Grants
 
-Located at `~/.specforge/config/plugin-grants.json`:
+Located at `~/.config/opencode/sf-user/config/plugin-grants.json`:
 
 ```json
 {

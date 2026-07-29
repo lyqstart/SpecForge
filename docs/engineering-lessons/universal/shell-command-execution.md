@@ -59,7 +59,7 @@ Agent 死等 bash 工具
 
 ```
 Agent 帮用户清理 logs：
-  rm -rf ~/.specforge/logs/*
+  rm -rf ~/.config/opencode/sf-user/logs/*
 
 但 ~ 解析失败返回空字符串：
   rm -rf /logs/*
@@ -371,7 +371,7 @@ timeout <TIMEOUT_SECONDS> bash -c '<ORIGINAL_COMMAND>'
 
 ### 十二、命令审计日志
 
-每次 sf_safe_bash 调用**异步**追加一行 JSON 到 `~/.specforge/logs/shell-history.jsonl`：
+每次 sf_safe_bash 调用**异步**追加一行 JSON 到 `~/.config/opencode/sf-user/logs/shell-history.jsonl`：
 
 ```json
 {
@@ -594,5 +594,5 @@ prompt 是辅助提醒，**真正不让 agent 翻车的是代码**。
 - 互补经验：[host-environment-detection](host-environment-detection.md) — 规定如何探测和写入 host-profile
 - 互补经验：[async-resource-lifecycle](async-resource-lifecycle.md) — 资源泄漏导致 bun test 卡死的根因
 - 工具实现：`.opencode/tools/sf_safe_bash.ts`
-- 配置文件：`~/.specforge/host-profile.json`、`~/.specforge/shell-config.json`
-- 审计日志：`~/.specforge/logs/shell-history.jsonl`
+- 配置文件：`~/.config/opencode/sf-user/host-profile.json`、`~/.config/opencode/sf-user/config/shell-config.json`
+- 审计日志：`~/.config/opencode/sf-user/logs/shell-history.jsonl`

@@ -1,12 +1,11 @@
 /**
  * Daemon Restart Command
- * 
+ *
  * Implements `specforge daemon restart`
  * Restarts the specforge-daemon service.
- * 
+ *
  * @packageDocumentation
  */
-
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -16,6 +15,7 @@ import {
   NssmServiceManager,
 } from '@specforge/service-management';
 import type { ServiceManager } from '@specforge/service-management';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { ModeSwitch } from '../../mode-switch';
 import { toCliError } from '../../errors';
 import {
@@ -23,29 +23,15 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServiceOperationJsonPayload } from '@specforge/service-management';
-import { SPEC_DIR_NAME } from '../../utils/directory-layout';
-
-/**
- * Get the binary directory path (~/.specforge/bin)
- */
+/** Canonical user-level binary directory. */
 function getBinDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
+  return resolveSpecForgeUserPath('bin');
 }
 
-/**
- * Get the runtime directory path (~/.specforge/runtime)
- */
-function getRuntimeDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'runtime');
-}
-
-/**
- * Get the daemon handshake file path
- */
+/** Canonical daemon handshake file path. */
 function getHandshakePath(): string {
-  return path.join(getRuntimeDir(), 'daemon.sock.json');
+  return resolveSpecForgeUserPath('runtime', 'handshake.json');
 }
-
 /**
  * Create service manager based on platform
  */
@@ -60,7 +46,6 @@ function createServiceManager(): ServiceManager {
     unitDir: path.join(os.homedir(), '.config', 'systemd', 'user'),
   });
 }
-
 /**
  * Handle daemon restart command
  */
@@ -76,7 +61,6 @@ export async function handleRestart(
       serviceManager,
       stopTimeoutMs: timeoutSec * 1000,
     });
-
     // Stop then start
     await orchestrator.stopAll(['specforge-daemon'], timeoutSec * 1000);
     const result = await orchestrator.startAll(['specforge-daemon']);
@@ -86,7 +70,6 @@ export async function handleRestart(
     // Get additional info from handshake
     let pid: number | undefined;
     let port: number | undefined;
-
     const handshakePath = getHandshakePath();
     if (fs.existsSync(handshakePath)) {
       try {
@@ -99,7 +82,6 @@ export async function handleRestart(
     }
 
     const formatted = formatOperationJson(result);
-
     if (isJson) {
       const sanitized = sanitizeForJson(formatted);
       console.log(JSON.stringify(sanitized, null, 2));
@@ -113,7 +95,6 @@ export async function handleRestart(
       } else {
         console.log(modeSwitch.formatError('Failed to restart specforge-daemon'));
       }
-
       for (const service of formatted.perService) {
         const icon = service.state === 'running' ? '✓' : service.state === 'stopped' ? '○' : '✗';
         console.log(`  ${icon} ${service.name}: ${service.message || service.state}`);
@@ -125,7 +106,6 @@ export async function handleRestart(
           console.log(`Suggestion: ${formatted.error.suggestion}`);
         }
       }
-
       process.exit(formatted.success ? 0 : 1);
     }
   } catch (error) {

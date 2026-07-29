@@ -12,7 +12,7 @@
  */
 
 import path from 'path';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { EventBus } from '../event-bus/EventBus';
 import { Event } from '../types';
 
@@ -369,11 +369,11 @@ export class ExtensionLoader {
       const { WorkflowDefinitionLoader } = await import('@specforge/workflow-runtime');
       const loader = new WorkflowDefinitionLoader();
       // Try multiple locations for workflow JSON files:
-      // 1. Relative to binary location (production: ~/.specforge/workflows/builtin)
+      // 1. Relative to binary location (production: <OpenCode config>/sf-user/workflows/builtin)
       // 2. Relative to cwd (development: configs/workflows/builtin)
       // 3. SpecForge project root (development)
       const candidateDirs: string[] = [
-        path.join(require('os').homedir(), SPEC_DIR_NAME, 'workflows', 'builtin'),
+        resolveSpecForgeUserPath('workflows', 'builtin'),
         path.resolve(process.cwd(), 'configs/workflows/builtin'),
         path.resolve(__dirname, '../../../../configs/workflows/builtin'),
       ];

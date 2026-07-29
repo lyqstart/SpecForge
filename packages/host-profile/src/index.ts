@@ -2,7 +2,7 @@
  * @specforge/host-profile — Host Profile 扫描器
  *
  * 组合 OS / Locale / Shell / Tools 探测，输出完整 HostProfile，
- * 原子写入 ~/.specforge/host-profile.json。
+ * 原子写入 <OpenCode config>/sf-user/host-profile.json。
  *
  * 用法：
  *   import { scanHostProfile, loadHostProfile } from '@specforge/host-profile';

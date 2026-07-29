@@ -107,7 +107,7 @@ export class AuthFailedError extends CliError {
 
   constructor(
     message = 'Authentication failed',
-    hint = 'Check your token in ~/.specforge/runtime/daemon.sock.json or re-run handshake.',
+    hint = 'Check your token in sf-user/runtime/handshake.json under the OpenCode config directory or re-run handshake.',
   ) {
     super(message, hint);
   }
@@ -216,7 +216,7 @@ export function toCliError(err: unknown): CliError {
     
     // Check for DaemonAuthError
     if (errName === 'DaemonAuthError' || errAny.code === 'AUTH_FAILED') {
-      return new AuthFailedError(err.message, 'Check your token in ~/.specforge/runtime/daemon.sock.json or re-run handshake.');
+      return new AuthFailedError(err.message, 'Check your token in sf-user/runtime/handshake.json under the OpenCode config directory or re-run handshake.');
     }
     
     // Check for DaemonTimeoutError

@@ -13,7 +13,7 @@
  * Iterations: 100+ (configured via fast-check)
  * 
  * Note: Test uses random baseline strings (valid + invalid) × random 
- * ~/.specforge/.installation.json states (missing/unparseable/missing_field/present(v))
+ * <OpenCode config>/sf-user/.installation.json states (missing/unparseable/missing_field/present(v))
  * to comprehensively verify baseline equality.
  */
 

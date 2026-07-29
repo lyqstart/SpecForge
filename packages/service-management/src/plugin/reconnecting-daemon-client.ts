@@ -16,9 +16,8 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { homedir } from "node:os";
 import type { HandshakeFile } from "../types/handshake.js";
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
+import { resolveSpecForgeUserRoot } from "@specforge/types/user-level-paths";
 
 /**
  * Result of a postEvent call
@@ -58,7 +57,7 @@ export interface ReconnectingDaemonClientOptions {
   backoffFactor?: number;
   /** Maximum cumulative backoff time in milliseconds (default: 60000) */
   maxCumulativeBackoffMs?: number;
-  /** Path to handshake.json (defaults to ~/.specforge/runtime/handshake.json) */
+  /** Path to handshake.json (defaults to <OpenCode config>/sf-user/runtime/handshake.json) */
   handshakePath?: string;
   /** Base URL for daemon health check endpoint */
   healthzUrl?: string;
@@ -71,7 +70,7 @@ const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
   initialDelayMs: 1000,
   backoffFactor: 2.0,
   maxCumulativeBackoffMs: 60000,
-  handshakePath: join(homedir(), SPEC_DIR_NAME, "runtime", "handshake.json"),
+  handshakePath: join(resolveSpecForgeUserRoot(), "runtime", "handshake.json"),
   healthzUrl: "http://127.0.0.1",
 };
 

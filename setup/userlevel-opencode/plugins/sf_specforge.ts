@@ -103,6 +103,7 @@ function resolveClientPath(): string {
   );
   if (existsSync(sfUserPath)) return sfUserPath;
 
+  // Legacy v1.1 client path: read-only fallback; never a current deployment target.
   const v11Path = join(
     homedir(),
     ".config",
@@ -1668,13 +1669,129 @@ function createNativeApplyPatchTool() {
   });
 }
 
+const COMPACTION_BRIDGE_TIMEOUT_MS = 6000;
+
+function resolveCompactionBridgeLogPath(): string {
+  return join(
+    resolve(__dirname, ".."),
+    "sf-user",
+    "runtime",
+    "compaction-bridge.jsonl",
+  );
+}
+
+function appendCompactionBridgeEvent(
+  event: string,
+  details: Record<string, unknown> = {},
+): void {
+  try {
+    const logPath = resolveCompactionBridgeLogPath();
+    mkdirSync(dirname(logPath), { recursive: true });
+    appendFileSync(
+      logPath,
+      `${JSON.stringify({
+        ts: new Date().toISOString(),
+        event,
+        ...details,
+      })}\n`,
+      "utf8",
+    );
+  } catch {
+    // Diagnostics must never break plugin loading or compaction.
+  }
+}
+
+async function awaitWithTimeout<T>(
+  operation: Promise<T>,
+  timeoutMs: number,
+  label: string,
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      operation,
+      new Promise<T>((_resolve, reject) => {
+        timer = setTimeout(
+          () => reject(new Error(`${label} timed out after ${timeoutMs}ms`)),
+          timeoutMs,
+        );
+      }),
+    ]);
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+async function forwardCompactionCheckpoint(
+  projectDir: string,
+  opencodeSessionId: string,
+): Promise<void> {
+  appendCompactionBridgeEvent("checkpoint.forward.start", {
+    projectDir,
+    opencodeSessionId,
+  });
+
+  // Always register immediately before the checkpoint. Registration is
+  // idempotent and refreshes the daemon-side project binding after a daemon
+  // restart. OpenCode session IDs are not daemon SessionRegistry IDs.
+  const registration = await daemonClient.register(projectDir);
+  appendCompactionBridgeEvent("checkpoint.project.registered", {
+    projectDir,
+    opencodeSessionId,
+    daemonSessionId: registration.sessionId,
+    projectId: registration.projectId,
+    mode: registration.mode,
+  });
+
+  const result = await daemonClient.postEvent(
+    registration.sessionId,
+    "session.compacting",
+    {
+      schema_version: "1.0",
+      source: "opencode.experimental.session.compacting",
+      phase: "pre-compaction",
+      projectPath: projectDir,
+      opencodeSessionId,
+      capturedAt: new Date().toISOString(),
+    },
+  );
+
+  appendCompactionBridgeEvent("checkpoint.event.result", {
+    projectDir,
+    opencodeSessionId,
+    daemonSessionId: registration.sessionId,
+    ok: result.ok,
+    dropped: result.dropped,
+    reason: result.reason,
+  });
+
+  if (!result.ok) {
+    throw new Error(`daemon rejected checkpoint event: ${result.reason}`);
+  }
+}
+
 export async function sf_specforge(input: PluginInput): Promise<any> {
   const projectDir = (input as any).directory ?? process.cwd();
 
+  appendCompactionBridgeEvent("plugin.initialized", {
+    projectDir,
+    pluginDir: __dirname,
+  });
+
   try {
-    await daemonClient.register(projectDir);
+    const registration = await daemonClient.register(projectDir);
+    appendCompactionBridgeEvent("plugin.project.registered", {
+      projectDir,
+      daemonSessionId: registration.sessionId,
+      projectId: registration.projectId,
+      mode: registration.mode,
+    });
     console.log(`[sf:specforge] Project registered: ${projectDir}`);
   } catch (e) {
+    appendCompactionBridgeEvent("plugin.project.registration_failed", {
+      projectDir,
+      error: (e as Error).message,
+    });
     console.warn(
       `[sf:specforge] Project registration failed (will retry on first tool call): ${(e as Error).message}`,
     );
@@ -1693,6 +1810,50 @@ export async function sf_specforge(input: PluginInput): Promise<any> {
 
     "tool.execute.after": async (input: any, output: any) => {
       await afterToolExecute(projectDir, input, output);
+    },
+
+    "experimental.session.compacting": async (input: any, _output: any) => {
+      const opencodeSessionId = String(input?.sessionID ?? "").trim();
+      appendCompactionBridgeEvent("compaction.hook.received", {
+        projectDir,
+        opencodeSessionId,
+      });
+
+      if (!opencodeSessionId) {
+        appendCompactionBridgeEvent("compaction.hook.skipped", {
+          projectDir,
+          reason: "missing_opencode_session_id",
+        });
+        console.warn(
+          "[sf:specforge] Compaction hook received no OpenCode sessionID; checkpoint skipped.",
+        );
+        return;
+      }
+
+      try {
+        // The hook waits for a bounded acknowledgement so checkpoint transport
+        // cannot be silently abandoned when the callback returns. Failure is
+        // recorded but never propagated to OpenCode compaction.
+        await awaitWithTimeout(
+          forwardCompactionCheckpoint(projectDir, opencodeSessionId),
+          COMPACTION_BRIDGE_TIMEOUT_MS,
+          "compaction checkpoint bridge",
+        );
+        appendCompactionBridgeEvent("compaction.hook.completed", {
+          projectDir,
+          opencodeSessionId,
+        });
+      } catch (e) {
+        appendCompactionBridgeEvent("compaction.hook.failed", {
+          projectDir,
+          opencodeSessionId,
+          error: (e as Error).message,
+        });
+        // Checkpoint persistence must never fail OpenCode compaction.
+        console.warn(
+          `[sf:specforge] Compaction checkpoint forwarding failed: ${(e as Error).message}`,
+        );
+      }
     },
   };
 }

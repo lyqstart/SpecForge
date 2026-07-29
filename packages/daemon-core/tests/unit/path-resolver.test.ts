@@ -7,13 +7,13 @@
 
 import { describe, it, expect } from 'vitest';
 import * as path from 'path';
-import * as os from 'os';
 import {
   IPathResolver,
   PersonalPathResolver,
   EnterprisePathResolver,
   InvalidProjectPath,
 } from '../../src/daemon/path-resolver';
+import { resolveOpenCodeConfigRoot, resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -43,8 +43,7 @@ describe('IPathResolver', () => {
     expect(sd.startsWith(dp)).toBe(true);
 
     const dr = resolver.resolveDaemonRuntimeDir();
-    expect(dr).toContain('.specforge');
-    expect(dr).toContain('runtime');
+    expect(dr).toBe(resolveSpecForgeUserPath('runtime'));
 
     const hp = resolver.resolveHandshakePath();
     expect(hp).toContain('handshake.json');
@@ -112,9 +111,9 @@ describe('PersonalPathResolver', () => {
   });
 
   describe('resolveDaemonRuntimeDir', () => {
-    it('returns ~/.specforge/runtime', () => {
+    it('returns the canonical sf-user runtime directory', () => {
       const dir = resolver.resolveDaemonRuntimeDir();
-      const expected = path.join(os.homedir(), '.specforge', 'runtime');
+      const expected = resolveSpecForgeUserPath('runtime');
       expect(dir).toBe(expected);
     });
   });
@@ -122,7 +121,7 @@ describe('PersonalPathResolver', () => {
   describe('resolveHandshakePath', () => {
     it('returns handshake.json inside the daemon runtime dir', () => {
       const p = resolver.resolveHandshakePath();
-      const expected = path.join(os.homedir(), '.specforge', 'runtime', 'handshake.json');
+      const expected = resolveSpecForgeUserPath('runtime', 'handshake.json');
       expect(p).toBe(expected);
     });
   });
@@ -130,7 +129,7 @@ describe('PersonalPathResolver', () => {
   describe('resolveDaemonJsonPath', () => {
     it('returns ~/.config/opencode/daemon.json', () => {
       const p = resolver.resolveDaemonJsonPath();
-      const expected = path.join(os.homedir(), '.config', 'opencode', 'daemon.json');
+      const expected = path.join(resolveOpenCodeConfigRoot(), 'daemon.json');
       expect(p).toBe(expected);
     });
   });
@@ -143,11 +142,9 @@ describe('EnterprisePathResolver', () => {
   const resolver = new EnterprisePathResolver();
 
   describe('resolveProjectRuntimeDir', () => {
-    it('returns a path under ~/.specforge/projects/<hash>', () => {
+    it('returns a path under the canonical sf-user projects directory', () => {
       const dir = resolver.resolveProjectRuntimeDir(sampleProject);
-      expect(dir).toContain('.specforge');
-      expect(dir).toContain('projects');
-      expect(dir.startsWith(os.homedir())).toBe(true);
+      expect(dir.startsWith(resolveSpecForgeUserPath('projects'))).toBe(true);
     });
 
     it('produces a hash that differs across project paths', () => {
@@ -188,9 +185,9 @@ describe('EnterprisePathResolver', () => {
   });
 
   describe('resolveDaemonRuntimeDir', () => {
-    it('returns ~/.specforge/runtime (same as personal)', () => {
+    it('returns the canonical sf-user runtime directory (same as personal)', () => {
       const dir = resolver.resolveDaemonRuntimeDir();
-      const expected = path.join(os.homedir(), '.specforge', 'runtime');
+      const expected = resolveSpecForgeUserPath('runtime');
       expect(dir).toBe(expected);
     });
   });
@@ -198,7 +195,7 @@ describe('EnterprisePathResolver', () => {
   describe('resolveHandshakePath', () => {
     it('returns handshake.json inside the daemon runtime dir (same as personal)', () => {
       const p = resolver.resolveHandshakePath();
-      const expected = path.join(os.homedir(), '.specforge', 'runtime', 'handshake.json');
+      const expected = resolveSpecForgeUserPath('runtime', 'handshake.json');
       expect(p).toBe(expected);
     });
   });
@@ -206,7 +203,7 @@ describe('EnterprisePathResolver', () => {
   describe('resolveDaemonJsonPath', () => {
     it('returns ~/.config/opencode/daemon.json (same as personal)', () => {
       const p = resolver.resolveDaemonJsonPath();
-      const expected = path.join(os.homedir(), '.config', 'opencode', 'daemon.json');
+      const expected = path.join(resolveOpenCodeConfigRoot(), 'daemon.json');
       expect(p).toBe(expected);
     });
   });
@@ -348,7 +345,7 @@ describe('EnterprisePathResolver hash stability', () => {
 
     for (const tp of testPaths) {
       const dir = resolver.resolveProjectRuntimeDir(tp);
-      const expected = path.join(os.homedir(), '.specforge', 'projects', legacyHash(tp));
+      const expected = resolveSpecForgeUserPath('projects', legacyHash(tp));
       expect(dir).toBe(expected);
     }
   });

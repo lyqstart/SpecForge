@@ -23,9 +23,9 @@
  */
 
 import * as path from 'node:path';
-import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
 import { SPEC_DIR_NAME, LAYOUT } from '../utils/directory-layout';
+import { resolveSpecForgeManifestPath } from '@specforge/types/user-level-paths';
 
 /**
  * Doctor 命令的参数。
@@ -35,7 +35,7 @@ import { SPEC_DIR_NAME, LAYOUT } from '../utils/directory-layout';
 export interface RunDoctorCommandArgs {
   /** 项目根目录（用于定位 project manifest）；默认 process.cwd() */
   projectDir?: string;
-  /** 用户级 manifest 的绝对路径；默认 ~/.specforge/manifest.json */
+  /** 用户级 manifest 的绝对路径；默认 <OpenCode config>/specforge-manifest.json */
   userManifestPath?: string;
   /** stdout 写入器（用于测试捕获） */
   write?: (chunk: string) => void;
@@ -77,10 +77,10 @@ function renderDoctorReport(state: {
 }
 
 /**
- * 默认用户 manifest 路径：~/.specforge/manifest.json。
+ * 默认用户 manifest 路径：<OpenCode config>/specforge-manifest.json。
  */
 function defaultUserManifestPath(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, LAYOUT.manifest);
+  return resolveSpecForgeManifestPath();
 }
 
 /**

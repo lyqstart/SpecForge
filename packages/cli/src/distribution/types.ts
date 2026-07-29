@@ -81,7 +81,7 @@ export interface ValidationError {
 
 /**
  * 安装记录
- * 写入路径：~/.specforge/.installation.json
+ * 写入路径：<OpenCode config>/sf-user/.installation.json
  * REQ-4.3: 必须包含 schema_version 和 5 个元数据字段
  */
 export interface InstallationRecord {

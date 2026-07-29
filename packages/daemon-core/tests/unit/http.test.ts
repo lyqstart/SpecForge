@@ -2,7 +2,7 @@
  * HTTP Server authentication and register endpoint tests
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { HTTPServer, HTTPServerDeps } from '../../src/http/HTTPServer';
 import { EventBus } from '../../src/event-bus/EventBus';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
@@ -12,6 +12,29 @@ import * as http from 'http';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs/promises';
+
+const originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
+let testOpenCodeConfigDir: string;
+
+beforeAll(async () => {
+  testOpenCodeConfigDir = await fs.mkdtemp(
+    path.join(os.tmpdir(), 'specforge-http-test-config-'),
+  );
+  process.env.OPENCODE_CONFIG_DIR = testOpenCodeConfigDir;
+  await fs.mkdir(
+    path.join(testOpenCodeConfigDir, 'sf-user', 'runtime'),
+    { recursive: true },
+  );
+});
+
+afterAll(async () => {
+  if (originalOpenCodeConfigDir === undefined) {
+    delete process.env.OPENCODE_CONFIG_DIR;
+  } else {
+    process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir;
+  }
+  await fs.rm(testOpenCodeConfigDir, { recursive: true, force: true });
+});
 
 describe('HTTPServer Authentication', () => {
   let server: HTTPServer;
@@ -392,7 +415,7 @@ describe('HTTPServer Ingest Event Endpoint', () => {
   let loggedEvents: any[];
   let permissionEvaluations: any[];
   let openCodeEvents: any[];
-  let checkpoints: Map<string, unknown>;
+  let checkpoints: Map<string, { data: unknown; projectPath: string }>;
   let projectPathMap: Map<string, string>;
   let touchedSessions: string[];
   let toolCallsLogger: any;
@@ -447,8 +470,8 @@ describe('HTTPServer Ingest Event Endpoint', () => {
 
     // Mock RecoverySubsystem
     mockRecoverySubsystem = {
-      saveCheckpoint: async (sessionId: string, data: unknown) => {
-        checkpoints.set(sessionId, data);
+      saveCheckpoint: async (sessionId: string, data: unknown, projectPath: string) => {
+        checkpoints.set(sessionId, { data, projectPath });
       },
     };
 
@@ -614,7 +637,9 @@ describe('HTTPServer Ingest Event Endpoint', () => {
     expect(openCodeEvents[0].subType).toBe('session.idle');
   });
 
-  it('should handle session.compacting event', async () => {
+  it('should handle session.compacting event with the bound project path', async () => {
+    projectPathMap.set('/tmp/project-for-session-4', 'test-session-4');
+
     const result = await sendEvent('test-session-4', 'session.compacting', {
       checkpoint: 'snapshot-data',
     });
@@ -623,9 +648,20 @@ describe('HTTPServer Ingest Event Endpoint', () => {
     const response = JSON.parse(result.body);
     expect(response.success).toBe(true);
 
-    // Verify RecoverySubsystem.saveCheckpoint was called
-    expect(checkpoints.has('test-session-4')).toBe(true);
-    expect(checkpoints.get('test-session-4')).toEqual({ checkpoint: 'snapshot-data' });
+    // Verify RecoverySubsystem.saveCheckpoint received the real project binding.
+    expect(checkpoints.get('test-session-4')).toEqual({
+      data: { checkpoint: 'snapshot-data' },
+      projectPath: '/tmp/project-for-session-4',
+    });
+  });
+
+  it('should not save a checkpoint when the session has no project binding', async () => {
+    const result = await sendEvent('unbound-session', 'session.compacting', {
+      checkpoint: 'snapshot-data',
+    });
+
+    expect(result.statusCode).toBe(200);
+    expect(checkpoints.has('unbound-session')).toBe(false);
   });
 
   it('should handle chat.params event', async () => {

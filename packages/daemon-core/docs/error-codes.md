@@ -107,7 +107,7 @@ These errors occur during Daemon startup.
 | Error Code | HTTP Status | Description | Resolution |
 |------------|-------------|-------------|------------|
 | `INSTANCE_RUNNING` | 500 | Another Daemon instance is already running | Stop existing instance or use different environment |
-| `LOCK_FAILED` | 500 | Failed to acquire file lock | Check file permissions on `~/.specforge/runtime/` |
+| `LOCK_FAILED` | 500 | Failed to acquire file lock | Check file permissions on `~/.config/opencode/sf-user/runtime/` |
 | `HANDSHAKE_FAILED` | 500 | Failed to write handshake file | Check directory permissions |
 | `INITIALIZATION_FAILED` | 500 | Component initialization failed | Check logs for details |
 
@@ -117,7 +117,7 @@ These errors occur during Daemon startup.
   "error": "INSTANCE_RUNNING",
   "reason": "Another Daemon instance is already running",
   "details": {
-    "lockFile": "~/.specforge/runtime/daemon.lock"
+    "lockFile": "~/.config/opencode/sf-user/runtime/daemon.lock"
   }
 }
 ```
@@ -191,7 +191,7 @@ These errors are related to crash recovery.
 **Log**:
 ```
 Error: Another Daemon instance is already running
-Lock file: ~/.specforge/runtime/daemon.lock
+Lock file: ~/.config/opencode/sf-user/runtime/daemon.lock
 ```
 
 ---
@@ -201,8 +201,8 @@ Lock file: ~/.specforge/runtime/daemon.lock
 **Cause**: Cannot create or acquire the file lock
 
 **Resolution**:
-1. Check directory permissions: `ls -la ~/.specforge/runtime/`
-2. Remove stale lock file manually: `rm ~/.specforge/runtime/daemon.lock`
+1. Check directory permissions: `ls -la ~/.config/opencode/sf-user/runtime/`
+2. Remove stale lock file manually: `rm ~/.config/opencode/sf-user/runtime/daemon.lock`
 3. Check if directory exists, create if needed
 
 ---
@@ -212,9 +212,9 @@ Lock file: ~/.specforge/runtime/daemon.lock
 **Cause**: Cannot write the handshake file
 
 **Resolution**:
-1. Check directory exists: `ls -la ~/.specforge/runtime/`
+1. Check directory exists: `ls -la ~/.config/opencode/sf-user/runtime/`
 2. Check write permissions
-3. Create directory if needed: `mkdir -p ~/.specforge/runtime/`
+3. Create directory if needed: `mkdir -p ~/.config/opencode/sf-user/runtime/`
 
 ---
 
@@ -226,7 +226,7 @@ Lock file: ~/.specforge/runtime/daemon.lock
 
 **Resolution**:
 1. Check disk space: `df -h`
-2. Check file permissions: `ls -la ~/.specforge/projects/*/events.jsonl`
+2. Check file permissions: `ls -la ~/.config/opencode/sf-user/projects/*/events.jsonl`
 3. Check filesystem is not read-only
 
 **Log**:
@@ -291,7 +291,7 @@ The Daemon will:
 **Identification**:
 ```bash
 # Find corrupted lines
-while read line; do echo "$line" | jq . > /dev/null 2>&1 || echo "CORRUPT: $line"; done < ~/.specforge/projects/*/events.jsonl
+while read line; do echo "$line" | jq . > /dev/null 2>&1 || echo "CORRUPT: $line"; done < ~/.config/opencode/sf-user/projects/*/events.jsonl
 ```
 
 ---

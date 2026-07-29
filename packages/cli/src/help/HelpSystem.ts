@@ -490,7 +490,7 @@ export function createDefaultHelpSystem(): HelpSystem {
           },
           {
             problem: 'Permission denied',
-            solution: 'Ensure you have write permissions to ~/.specforge/ or use --install-root to specify a different location',
+            solution: 'Ensure you have write permissions to <OpenCode config>/sf-user/ or use --install-root to specify a different location',
           },
         ],
       },
@@ -656,7 +656,7 @@ export function createDefaultHelpSystem(): HelpSystem {
         troubleshooting: [
           {
             problem: 'Spec fails to start',
-            solution: 'Check daemon logs for errors: `tail -f ~/.specforge/logs/daemon.log`',
+            solution: 'Check daemon logs under the OpenCode config directory: sf-user/logs/daemon.log',
           },
           {
             problem: 'Spec times out',

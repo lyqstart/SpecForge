@@ -15,14 +15,13 @@ import { resolve, join, basename, dirname } from 'path'
 import { existsSync, createReadStream, createWriteStream } from 'fs'
 import { createHash } from 'crypto'
 import type { MigrationBackupError, ErrnoException } from './types'
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
-
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths'
 // ============================================================================
 // Configuration
 // ============================================================================
 
-/** Default backup directory name under ~/.specforge/ */
-export const DEFAULT_BACKUP_DIR = `${SPEC_DIR_NAME}/backups`
+/** Default backup directory under the canonical SpecForge user root */
+export const DEFAULT_BACKUP_DIR = join(resolveSpecForgeUserRoot(), 'backups')
 
 /** Default retention period in days */
 export const DEFAULT_RETENTION_DAYS = 7
@@ -70,7 +69,7 @@ export interface BackupSession {
  * Options for creating a backup
  */
 export interface BackupOptions {
-  /** Base directory for backups (default: ~/.specforge/backups) */
+  /** Base directory for backups (default: <OpenCode config>/sf-user/backups) */
   backupDir?: string
   /** Create backup in a specific named session (instead of auto-generated timestamp) */
   sessionName?: string

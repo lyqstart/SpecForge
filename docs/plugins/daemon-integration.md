@@ -335,7 +335,7 @@ try {
 ```
 Layer 1: 内置默认授权（空集合）
     │
-Layer 2: 用户级 ~/.specforge/config/plugin-grants.json
+Layer 2: 用户级 ~/.config/opencode/sf-user/config/plugin-grants.json
     │
 Layer 3: 项目级 <project>/.specforge/config/plugin-grants.json
     │
@@ -345,7 +345,7 @@ Layer 4: 运行时授权（通过 updateGrants()）
 ### 配置示例
 
 ```json
-// ~/.specforge/config/plugin-grants.json
+// ~/.config/opencode/sf-user/config/plugin-grants.json
 {
   "schema_version": "1.0",
   "grants": ["filesystem.read", "env.read"]

@@ -8,7 +8,7 @@
 
 ### 功能
 
-- **resolveInstallRoot(override?)**: 解析 `~/.specforge` 安装根目录
+- **resolveInstallRoot(override?)**: 解析 `<OpenCode config>/sf-user` 安装根目录
 - **resolveHomeDirectory()**: 解析用户 HOME 目录（跨平台）
 - **platform()**: 返回当前平台 (`"win32" | "darwin" | "linux"`)
 - **arch()**: 返回当前架构 (`"x64" | "arm64"`)

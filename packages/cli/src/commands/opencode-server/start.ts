@@ -1,12 +1,11 @@
 /**
  * OpenCode Server Start Command
- * 
+ *
  * Implements `specforge opencode-server start`
  * Starts the opencode-server service.
- * 
+ *
  * @packageDocumentation
  */
-
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -22,13 +21,12 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServiceOperationJsonPayload } from '@specforge/service-management';
-import { SPEC_DIR_NAME } from '../../utils/directory-layout';
-
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 /**
- * Get the binary directory path (~/.specforge/bin)
+ * Get the binary directory path under the canonical SpecForge user root.
  */
 function getBinDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
+  return resolveSpecForgeUserPath('bin');
 }
 
 /**
@@ -45,7 +43,6 @@ function createServiceManager(): ServiceManager {
     unitDir: path.join(os.homedir(), '.config', 'systemd', 'user'),
   });
 }
-
 /**
  * Handle opencode-server start command
  */
@@ -63,7 +60,6 @@ export async function handleStart(
     await serviceManager.dispose();
 
     const formatted = formatOperationJson(result);
-
     if (isJson) {
       const sanitized = sanitizeForJson(formatted);
       console.log(JSON.stringify(sanitized, null, 2));
@@ -74,7 +70,6 @@ export async function handleStart(
       } else {
         console.log(modeSwitch.formatError('Failed to start opencode-server'));
       }
-
       for (const service of formatted.perService) {
         const icon = service.state === 'running' ? '✓' : service.state === 'stopped' ? '○' : '✗';
         console.log(`  ${icon} ${service.name}: ${service.message || service.state}`);
@@ -86,7 +81,6 @@ export async function handleStart(
           console.log(`Suggestion: ${formatted.error.suggestion}`);
         }
       }
-
       process.exit(formatted.success ? 0 : 1);
     }
   } catch (error) {

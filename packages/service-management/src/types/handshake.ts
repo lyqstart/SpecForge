@@ -1,7 +1,7 @@
 /**
  * Handshake file written by daemon at startup.
  * Contains connection information for clients.
- * Stored at ~/.specforge/runtime/handshake.json with permissions 0600.
+ * Stored at <OpenCode config>/sf-user/runtime/handshake.json with permissions 0600.
  */
 export interface HandshakeFile {
   schema_version: "1.0";

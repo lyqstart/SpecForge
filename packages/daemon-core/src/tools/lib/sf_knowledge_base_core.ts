@@ -9,8 +9,8 @@
 
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
 import { join, dirname } from "node:path"
-import { homedir } from "node:os"
 import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import type { WorkflowType } from "./state_machine"
 import { logErrorToFile } from "./utils"
 
@@ -138,13 +138,7 @@ export interface OperationResult {
 // ============================================================
 
 function getGlobalStoreDir(): string {
-  return process.env.SF_KNOWLEDGE_STORE_DIR || join(
-    homedir(),
-    ".config",
-    "opencode",
-    "specforge",
-    "knowledge"
-  )
+  return process.env.SF_KNOWLEDGE_STORE_DIR || resolveSpecForgeUserPath("knowledge")
 }
 
 const DEFAULT_CATEGORIES: KnowledgeCategory[] = [

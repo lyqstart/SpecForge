@@ -11,7 +11,7 @@ The Daemon uses a cryptographically secure random token that is:
 
 ## Handshake File
 
-When the Daemon starts, it writes a handshake file to `~/.specforge/runtime/daemon.sock.json`:
+When the Daemon starts, it writes a handshake file to `~/.config/opencode/sf-user/runtime/handshake.json`:
 
 ```json
 {
@@ -26,10 +26,10 @@ When the Daemon starts, it writes a handshake file to `~/.specforge/runtime/daem
 ### File Location
 
 ```
-~/.specforge/runtime/daemon.sock.json
+~/.config/opencode/sf-user/runtime/handshake.json
 ```
 
-On Windows: `C:\Users\<username>\.specforge\runtime\daemon.sock.json`
+On Windows: `C:\Users\<username>\.config\opencode\sf-user\runtime\handshake.json`
 
 ### File Permissions
 
@@ -41,15 +41,10 @@ The handshake file is created with permissions `0600` (owner read/write only) to
 
 ```javascript
 import * as fs from 'fs';
-import * as path from 'path';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 async function discoverDaemon() {
-  const handshakePath = path.join(
-    process.env.HOME || process.env.USERPROFILE,
-    '.specforge',
-    'runtime',
-    'daemon.sock.json'
-  );
+  const handshakePath = resolveSpecForgeUserPath('runtime', 'handshake.json');
   
   const content = fs.readFileSync(handshakePath, 'utf-8');
   const handshake = JSON.parse(content);
@@ -325,7 +320,7 @@ In future versions, the Daemon may support token rotation. Clients should:
 
 ```bash
 # Read token from handshake file
-TOKEN=$(cat ~/.specforge/runtime/daemon.sock.json | jq -r '.token')
+TOKEN=$(cat ~/.config/opencode/sf-user/runtime/handshake.json | jq -r '.token')
 
 # Make authenticated request
 curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8080/status

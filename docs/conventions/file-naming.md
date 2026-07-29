@@ -22,7 +22,7 @@
 
 | 名称 | 说明 |
 |------|------|
-| `~/.specforge/` | 用户级 SpecForge 数据目录 |
+| `~/.config/opencode/sf-user/` | 用户级 SpecForge 数据目录 |
 
 ## Work Item ID 命名
 
@@ -99,7 +99,7 @@
 | `skill_fragments.json` | Skill Fragment 配置 |
 
 > **注意**：开发环境配置已从项目级 `dev-environment.md` 迁移至用户级
-> `~/.specforge/host-profile.json`，由 `sf_project_init` 工具在启动时自动扫描生成。
+> `~/.config/opencode/sf-user/host-profile.json`，由 `sf_project_init` 工具在启动时自动扫描生成。
 
 ## 日志文件命名
 

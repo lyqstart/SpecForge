@@ -17,7 +17,7 @@
 import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 类型定义
@@ -58,12 +58,11 @@ interface DaemonStatus {
 /**
  * 读取 Daemon 握手文件
  *
- * 握手文件位于 ~/.specforge/runtime/daemon.sock.json
+ * 握手文件位于 <OpenCode config>/sf-user/runtime/handshake.json
  * 包含 pid、port、token 等连接信息
  */
 function readHandshakeFile(): HandshakeFile {
-  const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? '';
-  const handshakePath = path.join(homeDir, SPEC_DIR_NAME, 'runtime', 'daemon.sock.json');
+  const handshakePath = resolveSpecForgeUserPath('runtime', 'handshake.json');
 
   if (!fs.existsSync(handshakePath)) {
     throw new Error(
@@ -80,8 +79,7 @@ function readHandshakeFile(): HandshakeFile {
  * 等待 Daemon 启动并就绪（最多等待 maxWaitSec 秒）
  */
 async function waitForDaemon(maxWaitSec = 30): Promise<HandshakeFile> {
-  const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? '';
-  const handshakePath = path.join(homeDir, SPEC_DIR_NAME, 'runtime', 'daemon.sock.json');
+  const handshakePath = resolveSpecForgeUserPath('runtime', 'handshake.json');
 
   for (let i = 0; i < maxWaitSec * 2; i++) {
     if (fs.existsSync(handshakePath)) {

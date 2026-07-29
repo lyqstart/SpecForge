@@ -10,7 +10,10 @@ function Fail($Cause, $Next) {
 }
 
 function Resolve-LiveRoot {
-  if ($env:XDG_CONFIG_HOME -and (Test-Path $env:XDG_CONFIG_HOME)) {
+  if (-not [string]::IsNullOrWhiteSpace($env:OPENCODE_CONFIG_DIR)) {
+    return [System.IO.Path]::GetFullPath($env:OPENCODE_CONFIG_DIR)
+  }
+  if (-not [string]::IsNullOrWhiteSpace($env:XDG_CONFIG_HOME)) {
     return (Join-Path $env:XDG_CONFIG_HOME "opencode")
   }
   return (Join-Path $env:USERPROFILE ".config\opencode")

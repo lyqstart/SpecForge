@@ -95,7 +95,7 @@ runtime (CLI/env) > project > user > builtin
 
 **Example**: Given the following configuration sources:
 
-**~/.specforge/config/config.json** (User):
+**~/.config/opencode/sf-user/config/config.json** (User):
 ```json
 {
   "schema_version": "1.0",
@@ -408,7 +408,7 @@ hotReloadManager.clearWorkItemSnapshot('workitem-123')
 
 ### Minimal User Config
 
-`~/.specforge/config/config.json`
+`~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {
@@ -420,7 +420,7 @@ This uses all builtin defaults.
 
 ### Basic with Log Level
 
-`~/.specforge/config/config.json`
+`~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {
@@ -435,7 +435,7 @@ This uses all builtin defaults.
 
 ### User-Level Development Config
 
-`~/.specforge/config/config.json`
+`~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {
@@ -493,7 +493,7 @@ When merged, the development configuration resolves to:
 
 ### User-Level Production Config
 
-`~/.specforge/config/config.json`
+`~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {
@@ -590,7 +590,7 @@ When merged, the development configuration resolves to:
 
 ### User-Level API Keys (Recommended)
 
-`~/.specforge/config/config.json`
+`~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {
@@ -605,7 +605,7 @@ When merged, the development configuration resolves to:
 
 ### Provider Credentials
 
-`~/.specforge/config/config.json`
+`~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {
@@ -626,7 +626,7 @@ When merged, the development configuration resolves to:
 
 ### Tokens Configuration
 
-`~/.specforge/config/config.json`
+`~/.config/opencode/sf-user/config/config.json`
 
 ```json
 {

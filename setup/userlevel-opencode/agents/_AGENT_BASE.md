@@ -383,7 +383,7 @@ grep -c "new Engine()" path/to/file.ts  # 期望 = 1
 # 配置文件加载规则
 
 所有 agent 在执行前，Orchestrator 会自动注入以下文件（如存在）：
-- `~/.specforge/host-profile.json`（主机环境事实：OS / Shell / 工具版本）
+- `<OpenCode config>/sf-user/host-profile.json`（主机环境事实：OS / Shell / 工具版本）
 - `.specforge/prod-environment.md`（生产环境事实）
 - `.specforge/project-rules.md`（项目工程规则）
 

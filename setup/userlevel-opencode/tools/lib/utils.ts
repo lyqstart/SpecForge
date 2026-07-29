@@ -4,7 +4,10 @@
  */
 
 import { mkdir, appendFile } from "node:fs/promises"
-import { dirname, join } from "node:path"
+import { dirname, join, normalize, resolve } from "node:path"
+import { homedir } from "node:os"
+import { existsSync, readFileSync } from "node:fs"
+import { pathToFileURL } from "node:url"
 
 /** SpecForge 项目级目录名 — 与 setup/userlevel-scripts-lib/paths.ts 的 SPEC_DIR_NAME 保持同步 */
 const SPEC_DIR_NAME = '.specforge' as const;
@@ -135,37 +138,33 @@ export async function tryCheckCompatibility(
   component: string
 ): Promise<void> {
   try {
-    // v1.1: Try new config path first, fall back to legacy ~/.specforge/install.json (read-only)
-    const home = require("node:os").homedir()
-    const pathMod = require("node:path")
-    const { pathToFileURL } = require("node:url")
+    // Resolve the canonical OpenCode config root and SpecForge user root.
+    const explicitConfigDir = process.env.OPENCODE_CONFIG_DIR?.trim()
+    const xdgConfigHome = process.env.XDG_CONFIG_HOME?.trim()
+    const home = homedir()
+    const configRoot = explicitConfigDir
+      ? resolve(normalize(explicitConfigDir))
+      : xdgConfigHome
+        ? join(xdgConfigHome, "opencode")
+        : join(home, ".config", "opencode")
+    const specForgeHome = join(configRoot, "sf-user")
 
-    // 尝试读取 install.json 获取 base_dir
-    // Primary: ~/.config/opencode/sf-runtime/install.json
-    // Fallback: ~/.specforge/install.json (legacy read-only)
-    let specForgeHome = pathMod.join(home, ".specforge")
+    // The legacy install record may be read for migration evidence only.
+    // It never changes the current executable/configuration root.
     try {
-      const primaryPath = pathMod.join(home, ".config", "opencode", "sf-runtime", "install.json")
-      const legacyPath = pathMod.join(specForgeHome, "install.json")
-      const fsMod = require("node:fs")
-      let installJsonContent: string | null = null
-
-      if (fsMod.existsSync(primaryPath)) {
-        installJsonContent = fsMod.readFileSync(primaryPath, "utf-8")
-      } else if (fsMod.existsSync(legacyPath)) {
-        // Legacy path (read-only fallback)
-        installJsonContent = fsMod.readFileSync(legacyPath, "utf-8")
+      const canonicalInstallPath = join(specForgeHome, "install.json")
+      const legacyInstallPath = join(home, ".specforge", "install.json")
+      const installPath = existsSync(canonicalInstallPath)
+        ? canonicalInstallPath
+        : existsSync(legacyInstallPath)
+          ? legacyInstallPath
+          : null
+      if (installPath) {
+        JSON.parse(readFileSync(installPath, "utf-8"))
       }
+    } catch { /* ignore invalid install metadata */ }
 
-      if (installJsonContent) {
-        const data = JSON.parse(installJsonContent)
-        if (data && typeof data.base_dir === "string") {
-          specForgeHome = data.base_dir.replace(/^~[/\\]/, home + pathMod.sep)
-        }
-      }
-    } catch { /* 使用默认路径 */ }
-
-    const compatibilityPath = pathMod.join(specForgeHome, "lib", "compatibility.ts")
+    const compatibilityPath = join(specForgeHome, "lib", "compatibility.ts")
     const mod = await import(pathToFileURL(compatibilityPath).href)
     if (mod && typeof mod.checkCompatibilityAtEntry === "function") {
       mod.checkCompatibilityAtEntry(baseDir)

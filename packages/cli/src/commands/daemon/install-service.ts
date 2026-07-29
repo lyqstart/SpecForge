@@ -1,12 +1,11 @@
 /**
  * Daemon Install Service Command
- * 
+ *
  * Implements `specforge daemon install-service`
  * Reuses services install logic for specforge-daemon service.
- * 
+ *
  * @packageDocumentation
  */
-
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -15,6 +14,7 @@ import {
   NssmServiceManager,
 } from '@specforge/service-management';
 import type { ServiceManager } from '@specforge/service-management';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { ModeSwitch } from '../../mode-switch';
 import { toCliError } from '../../errors';
 import {
@@ -22,22 +22,19 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServiceOperationJsonPayload } from '@specforge/service-management';
-import { SPEC_DIR_NAME } from '../../utils/directory-layout';
-
 /**
- * Get the binary directory path (~/.specforge/bin)
+ * Get the binary directory path under the canonical SpecForge user root.
  */
 function getBinDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
+  return resolveSpecForgeUserPath('bin');
 }
 
 /**
- * Get the logs directory path (~/.specforge/logs)
+ * Get the logs directory path under the canonical SpecForge user root.
  */
 function getLogsDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'logs');
+  return resolveSpecForgeUserPath('logs');
 }
-
 /**
  * Get service install spec for specforge-daemon
  */
@@ -51,7 +48,6 @@ function getDaemonServiceSpec(): {
   const binDir = getBinDir();
   const logsDir = getLogsDir();
   const specforgeBin = path.join(binDir, process.platform === 'win32' ? 'specforged.exe' : 'specforged');
-
   return {
     name: 'specforge-daemon',
     displayName: 'SpecForge Daemon',
@@ -60,7 +56,6 @@ function getDaemonServiceSpec(): {
     dependsOn: [],
   };
 }
-
 /**
  * Create service manager based on platform
  */
@@ -75,7 +70,6 @@ function createServiceManager(): ServiceManager {
     unitDir: path.join(os.homedir(), '.config', 'systemd', 'user'),
   });
 }
-
 /**
  * Handle daemon install-service command
  */
@@ -87,7 +81,6 @@ export async function handleInstallService(
     const serviceManager = createServiceManager();
 
     const orchestrator = new ServiceLifecycleOrchestrator({ serviceManager });
-
     const spec = getDaemonServiceSpec();
     const result = await orchestrator.installAll([{
       name: spec.name,
@@ -103,7 +96,6 @@ export async function handleInstallService(
       stderrLogPath: path.join(getLogsDir(), `${spec.name}.err`),
       enableAtBoot: true,
     }]);
-
     await serviceManager.dispose();
 
     const formatted = formatOperationJson(result);
@@ -118,7 +110,6 @@ export async function handleInstallService(
       } else {
         console.log(modeSwitch.formatError(`Failed to install specforge-daemon`));
       }
-
       for (const service of formatted.perService) {
         const icon = service.state === 'running' ? '✓' : service.state === 'stopped' ? '○' : '✗';
         console.log(`  ${icon} ${service.name}: ${service.message || service.state}`);
@@ -130,7 +121,6 @@ export async function handleInstallService(
           console.log(`Suggestion: ${formatted.error.suggestion}`);
         }
       }
-
       process.exit(formatted.success ? 0 : 1);
     }
   } catch (error) {
