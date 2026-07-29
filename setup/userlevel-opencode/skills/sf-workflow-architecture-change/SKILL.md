@@ -164,14 +164,3 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 2. 合并前不释放 code_permission；实现与验证后必须 revoke。
 3. 每阶段最多一次有边界修复；失败如实报告并在必要时进入可恢复 `blocked`。
 4. 不得手工修改 `.specforge/project/**`、状态文件或审批文件绕过工具。
-
-## Requirement-Owned Greenfield Multi-Module Contract
-
-This section supersedes any earlier statement that only `architecture_change_path` may introduce a module.
-
-- A user/business Requirement change remains `requirement_change_path` even when it also changes Architecture, Data Model, module boundaries, Module Design, or Contract.
-- A first real Requirement Work Item may introduce new modules when the authoritative classification sets `architecture_changed=true` or `module_boundary_changed=true`.
-- Every module-scoped `sf_artifact_write` call MUST pass `module_id`. Never rely on CORE fallback or last-write-wins.
-- Every new module must provide one complete Candidate set: `module.candidate.json`, `requirements.candidate.md`, `design.candidate.md`, `contracts.candidate.json`, and `trace.candidate.md`.
-- A governance-required Work Item must contain at least one overall design with `analysis_scope: system_governance`. Module projection designs use `analysis_scope: solution_design` and do not repeat the seven overall governance sections.
-- Runtime derives canonical `candidate_manifest.entries` from actual Candidate files. The Orchestrator must not invent target paths.

@@ -140,27 +140,16 @@ function readModuleOwnership(baseDir: string): ModuleOwnership {
   return { declared: Array.from(new Set(declared)), defaultModule, errors };
 }
 function isGovernedModuleAdmission(baseDir: string, workItemId: string): boolean {
-  const wiDir = workItemRoot(baseDir, workItemId);
-  const workItem = readJsonIfExists(path.join(wiDir, 'work_item.json'));
-  const workflowPath = String(workItem?.workflow_path ?? '');
-  if (workflowPath === 'architecture_change_path' || workflowPath === 'spec_migration_path') {
-    return true;
-  }
-  if (workflowPath !== 'requirement_change_path') return false;
-  const trigger = readJsonIfExists(path.join(wiDir, 'trigger_result.json'));
+  const workItem = readJsonIfExists(path.join(workItemRoot(baseDir, workItemId), 'work_item.json'));
   return (
-    trigger?.classification &&
-    typeof trigger.classification === 'object' &&
-    !Array.isArray(trigger.classification) &&
-    (((trigger.classification as Record<string, unknown>).architecture_changed === true) ||
-      ((trigger.classification as Record<string, unknown>).module_boundary_changed === true))
+    workItem?.workflow_path === 'architecture_change_path' ||
+    workItem?.workflow_path === 'spec_migration_path'
   );
 }
-export function resolveDeclaredCandidateModuleId(
+function resolveDeclaredCandidateModuleId(
   content: string,
   baseDir: string,
-  workItemId: string,
-  explicitModuleReference?: unknown
+  workItemId: string
 ): {
   moduleId?: string;
   error?: string;
@@ -173,28 +162,9 @@ export function resolveDeclaredCandidateModuleId(
       error: `MODULE_REGISTRY_INVALID: ${ownership.errors.join('; ')}`,
     };
   }
-  const contentExplicit = readExplicitModuleReference(content);
-  const argumentProvided =
-    explicitModuleReference !== undefined &&
-    explicitModuleReference !== null &&
-    String(explicitModuleReference).trim().length > 0;
-  const argumentExplicit = argumentProvided ? normalizeModuleId(explicitModuleReference) : '';
-  if (argumentProvided && !argumentExplicit) {
-    return {
-      declared: ownership.declared,
-      error: `MODULE_REFERENCE_INVALID: module_id "${String(explicitModuleReference)}" is invalid.`,
-    };
-  }
-  const contentModule = contentExplicit ? normalizeModuleId(contentExplicit) : '';
-  if (argumentExplicit && contentModule && argumentExplicit !== contentModule) {
-    return {
-      declared: ownership.declared,
-      error: `MODULE_REFERENCE_CONFLICT: args.module_id=${argumentExplicit}, content=${contentModule}`,
-    };
-  }
-  const explicit = argumentExplicit || contentModule;
+  const explicit = readExplicitModuleReference(content);
   const requested = explicit
-    ? explicit
+    ? normalizeModuleId(explicit)
     : (ownership.defaultModule ?? (ownership.declared.length === 1 ? ownership.declared[0] : ''));
   const governedModuleAdmission = isGovernedModuleAdmission(baseDir, workItemId);
   if (ownership.declared.length === 0) {
@@ -1059,12 +1029,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     fileType === 'candidate_module_contract' ||
     fileType === 'candidate_module_trace'
   ) {
-    const moduleResolution = resolveDeclaredCandidateModuleId(
-      content,
-      baseDir,
-      workItemId,
-      args['module_id']
-    );
+    const moduleResolution = resolveDeclaredCandidateModuleId(content, baseDir, workItemId);
     if (!moduleResolution.moduleId) {
       return {
         success: false,
@@ -1162,24 +1127,19 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     }
     const requiredScope = requirement.required ? 'system_governance' : 'solution_design';
     const declaredScope = readDeclaredDesignAnalysisScope(content);
-    const allowedScopes =
-      requirement.required && fileType !== 'design_delta'
-        ? ['system_governance', 'solution_design']
-        : [requiredScope];
-    if (!declaredScope || !allowedScopes.includes(declaredScope)) {
+    if (declaredScope !== requiredScope) {
       return {
         success: false,
         error: 'DESIGN_SCOPE_CONTRACT_MISMATCH',
         hard_stop: false,
         retry_allowed: true,
         required_analysis_scope: requiredScope,
-        allowed_analysis_scopes: allowedScopes,
         declared_analysis_scope: declaredScope,
         derivation_reasons: requirement.reasons,
         source_path: requirement.source_path,
         message:
-          `Design artifact must declare one allowed analysis_scope: ${allowedScopes.join(', ')}. ` +
-          'A governance-required WI must contain at least one system_governance design; module projections may use solution_design. The artifact was NOT written.',
+          `Design artifact must declare "analysis_scope: ${requiredScope}" as derived by Runtime. ` +
+          'The artifact was NOT written.',
       };
     }
   }

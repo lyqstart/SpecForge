@@ -315,14 +315,3 @@ Semantic Closure 及其 provenance，然后才自动推进到 `verification_done
 3. 同一 WI 的下层设计依赖新 Architecture/Data Model Candidate 时，必须基于该 Candidate 继续设计，并一起 Gate、User Decision、原子 Merge；不得局部先合并。
 4. Fast Path 不造无意义 Spec Candidate，但仍必须通过 Architecture/Data Model/Design/Contract/Trace 一致性检查后才能发 Code Permission。
 5. 新治理 WI 在 `verification_done -> closed` 前必须通过 `formal_version_gate`；正式 Git Merge 还必须确认其治理快照与当前真实 Diff 未变化。
-
-## Requirement-Owned Greenfield Multi-Module Contract
-
-This section supersedes any earlier statement that only `architecture_change_path` may introduce a module.
-
-- A user/business Requirement change remains `requirement_change_path` even when it also changes Architecture, Data Model, module boundaries, Module Design, or Contract.
-- A first real Requirement Work Item may introduce new modules when the authoritative classification sets `architecture_changed=true` or `module_boundary_changed=true`.
-- Every module-scoped `sf_artifact_write` call MUST pass `module_id`. Never rely on CORE fallback or last-write-wins.
-- Every new module must provide one complete Candidate set: `module.candidate.json`, `requirements.candidate.md`, `design.candidate.md`, `contracts.candidate.json`, and `trace.candidate.md`.
-- A governance-required Work Item must contain at least one overall design with `analysis_scope: system_governance`. Module projection designs use `analysis_scope: solution_design` and do not repeat the seven overall governance sections.
-- Runtime derives canonical `candidate_manifest.entries` from actual Candidate files. The Orchestrator must not invent target paths.

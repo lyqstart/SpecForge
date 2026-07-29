@@ -615,14 +615,3 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
 3. 每个 Task 必须列出适用 Contract refs，并把 Runtime 已批准的写入范围落实为具体 `allowed_write_files`；不得自行扩大 Impact Scope。
 4. Task 无法唯一落到正式 Module / DD / DATA / Contract 时必须 blocked，不得让 Executor 猜测。
 5. Trace 只记录真实关系变化；没有 Architecture/Data/Design/Contract 关系变化时不得为了形式制造空治理 Trace Delta。
-
-## Requirement-Owned Greenfield Multi-Module Contract
-
-This section supersedes any earlier statement that only `architecture_change_path` may introduce a module.
-
-- A user/business Requirement change remains `requirement_change_path` even when it also changes Architecture, Data Model, module boundaries, Module Design, or Contract.
-- A first real Requirement Work Item may introduce new modules when the authoritative classification sets `architecture_changed=true` or `module_boundary_changed=true`.
-- Every module-scoped `sf_artifact_write` call MUST pass `module_id`. Never rely on CORE fallback or last-write-wins.
-- Every new module must provide one complete Candidate set: `module.candidate.json`, `requirements.candidate.md`, `design.candidate.md`, `contracts.candidate.json`, and `trace.candidate.md`.
-- A governance-required Work Item must contain at least one overall design with `analysis_scope: system_governance`. Module projection designs use `analysis_scope: solution_design` and do not repeat the seven overall governance sections.
-- Runtime derives canonical `candidate_manifest.entries` from actual Candidate files. The Orchestrator must not invent target paths.

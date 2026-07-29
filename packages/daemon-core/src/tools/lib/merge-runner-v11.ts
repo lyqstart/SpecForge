@@ -236,25 +236,6 @@ async function registerMergedProjectModules(
 }
 
 const NEW_MODULE_REQUIRED_FILES = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'] as const;
-export async function isGovernedNewModuleAdmission(
-  workItemDir: string,
-  workflowPath: unknown
-): Promise<boolean> {
-  const normalizedPath = String(workflowPath ?? '');
-  if (normalizedPath === 'architecture_change_path' || normalizedPath === 'spec_migration_path') {
-    return true;
-  }
-  if (normalizedPath !== 'requirement_change_path') return false;
-  try {
-    const trigger = await readJsonFile(path.join(workItemDir, 'trigger_result.json'));
-    return (
-      trigger?.classification?.architecture_changed === true ||
-      trigger?.classification?.module_boundary_changed === true
-    );
-  } catch {
-    return false;
-  }
-}
 
 async function validateGovernedNewModuleTargets(input: {
   projectRoot: string;
@@ -265,10 +246,6 @@ async function validateGovernedNewModuleTargets(input: {
 }): Promise<{ allowedTargets: Set<string>; errors: string[] }> {
   const allowedTargets = new Set<string>();
   const errors: string[] = [];
-  const governedModuleAdmission = await isGovernedNewModuleAdmission(
-    input.workItemDir,
-    input.workflowPath
-  );
   const specManifestPath = path.join(
     input.projectRoot,
     '.specforge',
@@ -302,9 +279,12 @@ async function validateGovernedNewModuleTargets(input: {
       );
       continue;
     }
-    if (!governedModuleAdmission) {
+    if (
+      input.workflowPath !== 'architecture_change_path' &&
+      input.workflowPath !== 'spec_migration_path'
+    ) {
       errors.push(
-        `Workflow ${String(input.workflowPath)} is not authorized to introduce module ${moduleCode}: ${target}`
+        `Only architecture_change_path or spec_migration_path may introduce module ${moduleCode}: ${target}`
       );
       continue;
     }
