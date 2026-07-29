@@ -77,8 +77,8 @@ V6.0 的 Plugin Loader 引入了以下重大变化：
 
 **用户级配置**：
 ```bash
-mkdir -p ~/.specforge/config/
-cat > ~/.specforge/config/plugin-grants.json << 'EOF'
+mkdir -p ~/.config/opencode/sf-user/config/
+cat > ~/.config/opencode/sf-user/config/plugin-grants.json << 'EOF'
 {
   "schema_version": "1.0",
   "grantedPermissions": ["filesystem.read", "filesystem.write", "network"]
@@ -201,7 +201,7 @@ V6.0 提供以下权限类型：
 授权配置按以下优先级合并（从低到高）：
 
 1. **内置默认**：`[]`（空集合，拒绝所有权限）
-2. **用户级**：`~/.specforge/config/plugin-grants.json`
+2. **用户级**：`~/.config/opencode/sf-user/config/plugin-grants.json`
 3. **项目级**：`<project>/.specforge/config/plugin-grants.json`
 4. **运行时**：通过 CLI/API 动态设置
 

@@ -49,21 +49,37 @@ export class RecoverySubsystem {
   private stateManager: StateManager | null = null;
   private sessionRegistry?: SessionRegistry;
 
-  constructor(pathResolver: IPathResolver, projectPath: string, wal?: WAL, stateManager?: StateManager, sessionRegistry?: SessionRegistry) {
+  constructor(pathResolver: IPathResolver, projectPath?: string, wal?: WAL, stateManager?: StateManager, sessionRegistry?: SessionRegistry) {
     this.pathResolver = pathResolver;
-    this.projectPath = projectPath;
+    this.projectPath = projectPath ?? '';
     this.wal = wal ?? null;
     this.stateManager = stateManager ?? null;
     this.sessionRegistry = sessionRegistry;
-    // Always use project-level paths
-    this.eventsPath = this.pathResolver.resolveEventsPath(projectPath);
-    this.statePath = this.pathResolver.resolveStatePath(projectPath);
+
+    // Recovery state has two supported scopes:
+    // 1. Injected WAL + StateManager: daemon-global recovery state.
+    // 2. Explicit projectPath: project-scoped recovery state.
+    // A shared daemon may also use this subsystem only as a startup/checkpoint
+    // coordinator. In that mode no fake project path is assigned.
+    if (this.wal && this.stateManager) {
+      this.eventsPath = this.pathResolver.resolveDaemonEventsPath();
+      this.statePath = this.pathResolver.resolveDaemonStatePath();
+    } else if (projectPath) {
+      this.eventsPath = this.pathResolver.resolveEventsPath(projectPath);
+      this.statePath = this.pathResolver.resolveStatePath(projectPath);
+    } else {
+      this.eventsPath = '';
+      this.statePath = '';
+    }
   }
 
   /**
    * Get events path
    */
   getEventsPath(): string {
+    if (!this.eventsPath) {
+      throw new Error('RecoverySubsystem is not bound to recovery event storage');
+    }
     return this.eventsPath;
   }
 
@@ -71,6 +87,9 @@ export class RecoverySubsystem {
    * Get state path
    */
   getStatePath(): string {
+    if (!this.statePath) {
+      throw new Error('RecoverySubsystem is not bound to recovery state storage');
+    }
     return this.statePath;
   }
 
@@ -168,10 +187,10 @@ export class RecoverySubsystem {
     
     try {
       // Check if events.jsonl exists
-      await fs.access(this.eventsPath);
+      await fs.access(this.getEventsPath());
       
       // Check if state.json exists
-      await fs.access(this.statePath);
+      await fs.access(this.getStatePath());
       
       // Load events
       const events = await this.loadEvents();
@@ -468,7 +487,7 @@ export class RecoverySubsystem {
    */
   async loadEvents(): Promise<Event[]> {
     try {
-      const content = await fs.readFile(this.eventsPath, 'utf-8');
+      const content = await fs.readFile(this.getEventsPath(), 'utf-8');
       return content
         .split('\n')
         .filter(line => line.trim())
@@ -483,7 +502,7 @@ export class RecoverySubsystem {
    */
   async loadState(): Promise<ProjectState> {
     try {
-      const content = await fs.readFile(this.statePath, 'utf-8');
+      const content = await fs.readFile(this.getStatePath(), 'utf-8');
       return JSON.parse(content);
     } catch (error) {
       return this.createEmptyState();
@@ -498,11 +517,12 @@ export class RecoverySubsystem {
       await this.stateManager.persistStateFromExternal(state);
       return;
     }
-    await fs.mkdir(path.dirname(this.statePath), { recursive: true });
-    await fs.writeFile(this.statePath, JSON.stringify(state, null, 2));
+    const statePath = this.getStatePath();
+    await fs.mkdir(path.dirname(statePath), { recursive: true });
+    await fs.writeFile(statePath, JSON.stringify(state, null, 2));
     
     // fsync to ensure durability
-    const handle = await fs.open(this.statePath, 'a');
+    const handle = await fs.open(statePath, 'a');
     try {
       await handle.sync();
     } finally {
@@ -512,14 +532,32 @@ export class RecoverySubsystem {
 
   /**
    * Save a session checkpoint snapshot.
-   * 
-   * Writes the snapshot to sessions/<sessionId>.json relative to the state
-   * directory, followed by fsync for durability.  Write failures are logged
-   * at ERROR level but never thrown — they must not block session compaction.
+   *
+   * Checkpoints are always project-scoped. A shared daemon must provide the
+   * actual project path resolved from the session binding; daemon runtime is
+   * never accepted as a substitute project path.
+   *
+   * Write failures are logged at ERROR level but never thrown — they must not
+   * block session compaction.
    */
-  async saveCheckpoint(sessionId: string, snapshotData: unknown): Promise<void> {
+  async saveCheckpoint(
+    sessionId: string,
+    snapshotData: unknown,
+    projectPath?: string,
+  ): Promise<void> {
     try {
-      const checkpointDir = path.join(path.dirname(this.statePath), 'checkpoints');
+      const checkpointProjectPath = projectPath ?? this.projectPath;
+      if (!checkpointProjectPath) {
+        console.error(
+          `[RecoverySubsystem] Refusing checkpoint for session ${sessionId}: no project binding`,
+        );
+        return;
+      }
+
+      const checkpointDir = path.join(
+        this.pathResolver.resolveProjectRuntimeDir(checkpointProjectPath),
+        'checkpoints',
+      );
       const checkpointPath = path.join(checkpointDir, `${sessionId}.json`);
 
       await fs.mkdir(checkpointDir, { recursive: true });
@@ -541,7 +579,7 @@ export class RecoverySubsystem {
    * Initialize the recovery subsystem
    */
   async initialize(): Promise<void> {
-    await fs.mkdir(path.dirname(this.eventsPath), { recursive: true });
-    await fs.mkdir(path.dirname(this.statePath), { recursive: true });
+    await fs.mkdir(path.dirname(this.getEventsPath()), { recursive: true });
+    await fs.mkdir(path.dirname(this.getStatePath()), { recursive: true });
   }
 }

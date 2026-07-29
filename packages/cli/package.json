@@ -44,6 +44,7 @@
     "@specforge/configuration": "workspace:*",
     "@specforge/scope-gate": "workspace:*",
     "@specforge/service-management": "workspace:*",
+    "@specforge/types": "workspace:*",
     "@specforge/version-unification": "workspace:*",
     "axios": "^1.6.0",
     "chalk": "^4.1.2",

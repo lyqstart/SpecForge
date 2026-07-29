@@ -44,34 +44,32 @@ import {
   createConfigAccess,
   ConfigAccess,
 } from '@specforge/configuration';
-import { SPEC_DIR_NAME } from '../../utils/directory-layout';
-
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
- * Get the binary directory path (~/.specforge/bin)
+ * Get the binary directory path under the canonical SpecForge user root
  */
 function getBinDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
+  return path.join(resolveSpecForgeUserRoot(), 'bin');
 }
 
 /**
- * Get the runtime directory path (~/.specforge/runtime)
+ * Get the runtime directory path under the canonical SpecForge user root
  */
 function getRuntimeDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'runtime');
+  return path.join(resolveSpecForgeUserRoot(), 'runtime');
 }
 
 /**
- * Get the logs directory path (~/.specforge/logs)
+ * Get the logs directory path under the canonical SpecForge user root
  */
 function getLogsDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'logs');
+  return path.join(resolveSpecForgeUserRoot(), 'logs');
 }
-
 /**
  * Daemon handshake file path
  */
 function getHandshakePath(): string {
-  return path.join(getRuntimeDir(), 'daemon.sock.json');
+  return path.join(getRuntimeDir(), 'handshake.json');
 }
 
 /**

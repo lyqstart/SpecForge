@@ -32,7 +32,7 @@ This document provides best practices for managing configuration in SpecForge V6
 ### Recommended File Structure
 
 ```
-~/.specforge/
+~/.config/opencode/sf-user/
 └── config/
     └── config.json          # User-level configuration
 
@@ -64,7 +64,7 @@ This enables future migration support and helps the system detect configuration 
 
 | Sensitive Data | Recommended Location | Reason |
 |---------------|---------------------|--------|
-| API keys | User-level (`~/.specforge/config.json`) | Never committed to repo |
+| API keys | User-level (`~/.config/opencode/sf-user/config/config.json`) | Never committed to repo |
 | Tokens | User-level | Never committed to repo |
 | Credentials | User-level | Never committed to repo |
 | Project settings | Project-level | Can be shared with team |
@@ -116,7 +116,7 @@ Always put sensitive data in user-level configuration.
 
 ### Development vs Production
 
-**User-level config** (`~/.specforge/config/config.json`):
+**User-level config** (`~/.config/opencode/sf-user/config/config.json`):
 
 ```json
 {
@@ -258,7 +258,7 @@ Ensure configuration files have appropriate permissions:
 
 ```bash
 # User-level config should be readable only by user
-chmod 600 ~/.specforge/config/config.json
+chmod 600 ~/.config/opencode/sf-user/config/config.json
 
 # Project-level config can be readable by team
 chmod 644 <project>/.specforge/config.json
@@ -289,7 +289,7 @@ echo "API Key: ${SPECFORGE_API_KEYS_OPENAI:0:4}..."
 
 **Checklist**:
 1. Is the file in the correct location?
-   - User: `~/.specforge/config/config.json`
+   - User: `~/.config/opencode/sf-user/config/config.json`
    - Project: `<project>/.specforge/config.json`
 2. Is the JSON valid? (Use a JSON validator)
 3. Is `schema_version` included?

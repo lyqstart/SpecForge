@@ -21,7 +21,7 @@ import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 类型定义
@@ -316,8 +316,7 @@ async function main(): Promise<void> {
   console.log('=== Daemon Core 错误处理示例 ===\n');
 
   // 读取握手文件
-  const homeDir = process.env.HOME ?? process.env.USERPROFILE ?? '';
-  const handshakePath = path.join(homeDir, SPEC_DIR_NAME, 'runtime', 'daemon.sock.json');
+  const handshakePath = resolveSpecForgeUserPath('runtime', 'handshake.json');
 
   if (!fs.existsSync(handshakePath)) {
     console.error('✗ 握手文件不存在，请先启动 Daemon');

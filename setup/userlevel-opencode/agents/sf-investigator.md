@@ -452,5 +452,5 @@ If a requested action conflicts with this contract, stop and report the conflict
 - 不得清理、覆盖或伪造不利于结论的证据；
 - 不得把警告自动升级为 waiver；
 - 根因无法确认时必须如实降低根因状态；
-- 读取 `.specforge/**`、`~/.specforge/**`、`~/.config/opencode/**` 时优先使用 `read`、`glob`、`grep`、`sf_state_read`、`sf_batch_verify` 等正式只读能力；不得使用未知或写入型 shell 命令探测治理路径；
+- 读取项目 `.specforge/**`、当前用户级 `<OpenCode config>/sf-user/**`，以及仅用于迁移取证的 legacy `~/.specforge/**` 时优先使用 `read`、`glob`、`grep`、`sf_state_read`、`sf_batch_verify` 等正式只读能力；不得使用未知或写入型 shell 命令探测治理路径；
 - 触发 HardStop 后必须立即停止被阻断动作及依赖动作，并向 Orchestrator 返回 `hard_stop_id`、触发 Tool、被阻断动作/目标、最后成功步骤、阻断步骤、安全替代方式和 `resume_step`；不得自行解除、不得把 HardStop 称为 incidental warning 后继续调查。

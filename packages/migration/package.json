@@ -35,6 +35,7 @@
     "vitest": "^1.2.0"
   },
   "dependencies": {
+    "@specforge/types": "workspace:*",
     "fast-check": "^3.13.0",
     "zod": "^3.22.4"
   },

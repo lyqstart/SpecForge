@@ -2,7 +2,7 @@
 
 > ⚠️ **已弃用**：此模板已不再使用。
 > 开发环境信息现由 `@specforge/host-profile` 包自动扫描，
-> 存储在用户级 `~/.specforge/host-profile.json` 中。
+> 存储在用户级 `<OpenCode config>/sf-user/host-profile.json` 中。
 > 本文件保留仅为向后兼容，新项目不需要此文件。
 
 <!-- 这是什么 -->

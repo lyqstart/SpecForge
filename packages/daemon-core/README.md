@@ -45,7 +45,7 @@ bun run src/index.ts --detach
 
 ### Connecting Clients
 
-1. Read the handshake file at `~/.specforge/runtime/daemon.sock.json`
+1. Read the handshake file at `~/.config/opencode/sf-user/runtime/handshake.json`
 2. Use the `port` to connect to the HTTP server
 3. Include `Authorization: Bearer <token>` header in all requests
 

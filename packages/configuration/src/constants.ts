@@ -3,6 +3,7 @@
  */
 
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths'
 import { ConfigLayerType } from './types'
 
 /**
@@ -67,7 +68,7 @@ export const CONFIG_FILE_NAMES = {
  * Configuration directory paths
  */
 export const CONFIG_DIRS = {
-  user: '~/.specforge/config',
+  user: resolveSpecForgeUserPath('config'),
   project: `${SPEC_DIR_NAME}/config`,
 } as const
 

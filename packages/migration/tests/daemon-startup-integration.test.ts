@@ -27,6 +27,7 @@ import {
   type StartupMigrationCheckResult,
   type DaemonStartupOptions
 } from '../src/daemon-startup-integration'
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths'
 
 // Test utilities
 function createTempDir(prefix: string): string {
@@ -457,14 +458,12 @@ describe('Daemon Startup Integration', () => {
   describe('directory utilities', () => {
     it('getMigrationDir should return valid path', () => {
       const dir = getMigrationDir()
-      expect(dir).toContain('.specforge')
-      expect(dir).toContain('migrations')
+      expect(dir).toBe(resolveSpecForgeUserPath('migrations'))
     })
 
     it('getBackupDir should return valid path', () => {
       const dir = getBackupDir()
-      expect(dir).toContain('.specforge')
-      expect(dir).toContain('backups')
+      expect(dir).toBe(resolveSpecForgeUserPath('backups'))
     })
 
     it('ensureMigrationDirectories should not throw', () => {

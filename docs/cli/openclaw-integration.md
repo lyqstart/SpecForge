@@ -34,7 +34,7 @@ Before integrating with OpenClaw, ensure:
    - Configurable via: `specforge daemon config --bind <addr>`
 
 3. **Authentication token is available**:
-   - Located at: `~/.specforge/runtime/daemon.sock.json`
+   - Located at: `~/.config/opencode/sf-user/runtime/handshake.json`
    - Contains: `token`, `port`, `pid`, `bound_to`
 
 ### 1.2 OpenClaw Configuration
@@ -48,7 +48,7 @@ integrations:
     type: "cli"
     daemon_url: "http://127.0.0.1:3000"
     cli_path: "/usr/local/bin/specforge"  # or full path to CLI binary
-    auth_token_file: "~/.specforge/runtime/daemon.sock.json"
+    auth_token_file: "~/.config/opencode/sf-user/runtime/handshake.json"
     timeout_seconds: 30
     retry_policy:
       max_attempts: 3
@@ -700,7 +700,7 @@ class SpecForgeAdapter {
 const adapter = new SpecForgeAdapter({
   daemonUrl: 'http://127.0.0.1:3000',
   cliPath: '/usr/local/bin/specforge',
-  authTokenFile: '~/.specforge/runtime/daemon.sock.json',
+  authTokenFile: '~/.config/opencode/sf-user/runtime/handshake.json',
   timeoutSeconds: 30,
 });
 
@@ -727,7 +727,7 @@ console.log('Workflow completed:', workflowResult.result);
 | Issue | Cause | Solution |
 |-------|-------|----------|
 | `daemon_unreachable` | Daemon not running | Run `specforge daemon start` |
-| `auth_failed` | Invalid token | Check `~/.specforge/runtime/daemon.sock.json` |
+| `auth_failed` | Invalid token | Check `~/.config/opencode/sf-user/runtime/handshake.json` |
 | `timeout` | Operation too slow | Increase `--timeout` or use async mode |
 | `job_not_found` | Job ID expired | Jobs expire after 24 hours |
 | `rate_limited` | Too many requests | Implement exponential backoff |
@@ -751,7 +751,7 @@ Check Daemon logs:
 specforge daemon logs --tail 100
 
 # Or directly
-tail -f ~/.specforge/runtime/daemon.log
+tail -f ~/.config/opencode/sf-user/logs/daemon.log
 ```
 
 ### 7.3 Performance Tuning
@@ -905,7 +905,7 @@ tmux kill-session -t specforge
 OpenCode 进程池使用的端口范围可通过配置文件调整：
 
 ```json
-// ~/.specforge/config/daemon.json
+// ~/.config/opencode/daemon.json
 {
   "opencode": {
     "portPool": {

@@ -29,6 +29,8 @@ describe('Version Command', () => {
 
     // 保存原始环境变量
     originalEnv = { ...process.env };
+    delete process.env.OPENCODE_CONFIG_DIR;
+    delete process.env.XDG_CONFIG_HOME;
   });
 
   afterEach(() => {
@@ -81,7 +83,7 @@ describe('Version Command', () => {
     });
 
     it('当 .installation.json 不存在时，installRootSchemaVersion 应为 null', async () => {
-      // 这是默认情况（测试环境通常没有 ~/.specforge/.installation.json）
+      // 这是默认情况（测试环境通常没有 <OpenCode config>/sf-user/.installation.json）
       await runVersionCommand({ json: true });
 
       const payload = JSON.parse(capturedOutput[0]) as VersionInfoPayload;
@@ -136,7 +138,7 @@ describe('Version Command', () => {
       await runVersionCommand({ json: true });
       const payload = JSON.parse(capturedOutput[0]) as VersionInfoPayload;
 
-      const expectedRoot = path.join(process.env.USERPROFILE!, '.specforge');
+      const expectedRoot = path.join(process.env.USERPROFILE!, '.config', 'opencode', 'sf-user');
       expect(payload.installRoot).toBe(expectedRoot);
     });
 
@@ -149,7 +151,7 @@ describe('Version Command', () => {
       await runVersionCommand({ json: true });
       const payload = JSON.parse(capturedOutput[0]) as VersionInfoPayload;
 
-      const expectedRoot = path.join(process.env.HOME!, '.specforge');
+      const expectedRoot = path.join(process.env.HOME!, '.config', 'opencode', 'sf-user');
       expect(payload.installRoot).toBe(expectedRoot);
     });
 
@@ -166,7 +168,7 @@ describe('Version Command', () => {
         const payload = JSON.parse(capturedOutput[0]) as VersionInfoPayload;
 
         // 应该使用占位符，而不是抛错
-        expect(payload.installRoot).toBe('<HOME not set>');
+        expect(payload.installRoot).toBe('<user config root unavailable>');
       } finally {
         // 恢复环境变量
         if (originalHome !== undefined) {
@@ -254,8 +256,8 @@ describe('Version Command', () => {
     });
 
     it('路径 2: JSON 解析失败（unparseable）', async () => {
-      // 创建 .specforge 目录和损坏的 .installation.json
-      const specforgeDir = path.join(tempDir, '.specforge');
+      // 创建 canonical sf-user 目录和损坏的 .installation.json
+      const specforgeDir = path.join(tempDir, '.config', 'opencode', 'sf-user');
       await fs.mkdir(specforgeDir, { recursive: true });
       
       const installationPath = path.join(specforgeDir, '.installation.json');
@@ -293,8 +295,8 @@ describe('Version Command', () => {
     });
 
     it('路径 3: 缺少 schema_version 字段（missing_field）', async () => {
-      // 创建 .specforge 目录和缺少 schema_version 字段的 .installation.json
-      const specforgeDir = path.join(tempDir, '.specforge');
+      // 创建 canonical sf-user 目录和缺少 schema_version 字段的 .installation.json
+      const specforgeDir = path.join(tempDir, '.config', 'opencode', 'sf-user');
       await fs.mkdir(specforgeDir, { recursive: true });
       
       const installationPath = path.join(specforgeDir, '.installation.json');
@@ -339,8 +341,8 @@ describe('Version Command', () => {
     });
 
     it('正常路径: 文件存在且有效时应该返回 schema_version', async () => {
-      // 创建 .specforge 目录和有效的 .installation.json
-      const specforgeDir = path.join(tempDir, '.specforge');
+      // 创建 canonical sf-user 目录和有效的 .installation.json
+      const specforgeDir = path.join(tempDir, '.config', 'opencode', 'sf-user');
       await fs.mkdir(specforgeDir, { recursive: true });
       
       const installationPath = path.join(specforgeDir, '.installation.json');

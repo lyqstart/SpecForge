@@ -171,20 +171,20 @@ SPEC_DIR_NAME = '.specforge'
 | sessions | `sessions` | 会话归档目录（gitignored）— `<root>/.specforge/sessions/` |
 | cas | `cas` | 内容寻址存储（gitignored）— `<root>/.specforge/cas/` |
 
-## 用户级路径 (~/.specforge/)
+## 用户级路径 (<OpenCode config>/sf-user/)
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| runtime | `runtime` | 运行时状态目录 — `~/.specforge/runtime/` |
-| runtimeHandshake | `runtime/handshake.json` | 握手文件 — `~/.specforge/runtime/handshake.json` |
-| runtimeState | `runtime/state.json` | 持久化状态 — `~/.specforge/runtime/state.json` |
-| runtimeEvents | `runtime/events.jsonl` | 事件日志 — `~/.specforge/runtime/events.jsonl` |
-| runtimeDaemonLock | `runtime/daemon.lock` | Daemon 锁文件 — `~/.specforge/runtime/daemon.lock` |
-| hostProfile | `host-profile.json` | 主机配置文件 — `~/.specforge/host-profile.json` |
-| logs | `logs` | 日志目录 — `~/.specforge/logs/` |
-| projects | `projects` | 项目目录 — `~/.specforge/projects/` |
-| templates | `templates` | 模板目录 — `~/.specforge/templates/` |
-| backups | `backups` | 备份目录 — `~/.specforge/backups/` |
+| runtime | `runtime` | 运行时状态目录 — `<OpenCode config>/sf-user/runtime/` |
+| runtimeHandshake | `runtime/handshake.json` | 握手文件 — `<OpenCode config>/sf-user/runtime/handshake.json` |
+| runtimeState | `runtime/state.json` | 持久化状态 — `<OpenCode config>/sf-user/runtime/state.json` |
+| runtimeEvents | `runtime/events.jsonl` | 事件日志 — `<OpenCode config>/sf-user/runtime/events.jsonl` |
+| runtimeDaemonLock | `runtime/daemon.lock` | Daemon 锁文件 — `<OpenCode config>/sf-user/runtime/daemon.lock` |
+| hostProfile | `host-profile.json` | 主机配置文件 — `<OpenCode config>/sf-user/host-profile.json` |
+| logs | `logs` | 日志目录 — `<OpenCode config>/sf-user/logs/` |
+| projects | `projects` | 项目目录 — `<OpenCode config>/sf-user/projects/` |
+| templates | `templates` | 模板目录 — `<OpenCode config>/sf-user/templates/` |
+| backups | `backups` | 备份目录 — `<OpenCode config>/sf-user/backups/` |
 
 ---
 <!-- END: directory-layout -->

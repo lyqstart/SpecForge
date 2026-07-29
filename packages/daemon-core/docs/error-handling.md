@@ -108,7 +108,7 @@ class DaemonClient {
  * Read handshake file
  */
 async function readHandshakeFile(): Promise<{ port: number; token: string }> {
-  const handshakePath = `${process.env.HOME}/.specforge/runtime/daemon.sock.json`;
+  const handshakePath = `${process.env.HOME}/.config/opencode/sf-user/runtime/handshake.json`;
   const fs = await import('fs/promises');
   const content = await fs.readFile(handshakePath, 'utf-8');
   return JSON.parse(content);
@@ -126,7 +126,7 @@ request() {
   local url=$2
   local data=$3
   
-  HANDSHAKE_FILE="$HOME/.specforge/runtime/daemon.sock.json"
+  HANDSHAKE_FILE="$HOME/.config/opencode/sf-user/runtime/handshake.json"
   
   # Read credentials
   PORT=$(jq -r '.port' "$HANDSHAKE_FILE")
@@ -311,7 +311,7 @@ class DaemonConnectionManager {
   private pollInterval = 500; // 500ms
 
   constructor() {
-    this.handshakePath = `${process.env.HOME}/.specforge/runtime/daemon.sock.json`;
+    this.handshakePath = `${process.env.HOME}/.config/opencode/sf-user/runtime/handshake.json`;
   }
 
   /**
@@ -619,7 +619,7 @@ class RobustDaemonClient {
   private handshakePath: string;
 
   constructor() {
-    this.handshakePath = `${process.env.HOME}/.specforge/runtime/daemon.sock.json`;
+    this.handshakePath = `${process.env.HOME}/.config/opencode/sf-user/runtime/handshake.json`;
     this.port = 0;
     this.token = '';
   }
@@ -802,7 +802,7 @@ class HttpError extends Error {
 set -e
 
 # Configuration
-HANDSHAKE_FILE="$HOME/.specforge/runtime/daemon.sock.json"
+HANDSHAKE_FILE="$HOME/.config/opencode/sf-user/runtime/handshake.json"
 MAX_RETRIES=3
 RETRY_DELAY=2
 

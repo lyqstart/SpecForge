@@ -3,8 +3,8 @@ import { promisify } from 'node:util';
 import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
-import { homedir } from 'node:os';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { analyzeIgnore, getCurrentBranch, getHeadCommit, normalizeRelativePath, preflight } from './git-governance-core';
 
 const execFileAsync = promisify(execFile);
@@ -42,7 +42,7 @@ function specRuntimePath(projectRoot: string, ...parts: string[]): string {
 }
 
 function userGitDir(): string {
-  return path.join(homedir(), '.config', 'opencode', 'sf-user', 'git');
+  return resolveSpecForgeUserPath('git');
 }
 
 function parseRemotes(stdout: string) {

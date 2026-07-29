@@ -23,7 +23,7 @@ bun run scripts/sync-task-status.ts list
 bun test packages/plugin-loader/tests/
 
 # 检查配置文件
-cat ~/.specforge/config/plugin-grants.json
+cat ~/.config/opencode/sf-user/config/plugin-grants.json
 cat <project>/.specforge/config/plugin-grants.json
 ```
 
@@ -179,7 +179,7 @@ Missing permissions: ['network', 'filesystem.write']
 
 ```bash
 # 查看当前授权
-cat ~/.specforge/config/plugin-grants.json
+cat ~/.config/opencode/sf-user/config/plugin-grants.json
 ```
 
 **步骤 2：添加授权**

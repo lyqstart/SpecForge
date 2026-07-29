@@ -22,20 +22,19 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServiceOperationJsonPayload } from '@specforge/service-management';
-import { SPEC_DIR_NAME } from '../../utils/directory-layout';
-
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
- * Get the binary directory path (~/.specforge/bin)
+ * Get the binary directory path under the canonical SpecForge user root
  */
 function getBinDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
+  return path.join(resolveSpecForgeUserRoot(), 'bin');
 }
 
 /**
- * Get the logs directory path (~/.specforge/logs)
+ * Get the logs directory path under the canonical SpecForge user root
  */
 function getLogsDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'logs');
+  return path.join(resolveSpecForgeUserRoot(), 'logs');
 }
 
 /**

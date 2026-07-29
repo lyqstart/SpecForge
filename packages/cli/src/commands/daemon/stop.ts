@@ -1,12 +1,11 @@
 /**
  * Daemon Stop Command
- * 
+ *
  * Implements `specforge daemon stop`
  * Stops the specforge-daemon service.
- * 
+ *
  * @packageDocumentation
  */
-
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -15,6 +14,7 @@ import {
   NssmServiceManager,
 } from '@specforge/service-management';
 import type { ServiceManager } from '@specforge/service-management';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { ModeSwitch } from '../../mode-switch';
 import { toCliError } from '../../errors';
 import {
@@ -22,13 +22,9 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServiceOperationJsonPayload } from '@specforge/service-management';
-import { SPEC_DIR_NAME } from '../../utils/directory-layout';
-
-/**
- * Get the binary directory path (~/.specforge/bin)
- */
+/** Canonical user-level binary directory. */
 function getBinDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME, 'bin');
+  return resolveSpecForgeUserPath('bin');
 }
 
 /**
@@ -45,7 +41,6 @@ function createServiceManager(): ServiceManager {
     unitDir: path.join(os.homedir(), '.config', 'systemd', 'user'),
   });
 }
-
 /**
  * Handle daemon stop command
  */
@@ -65,7 +60,6 @@ export async function handleStop(
     const result = await orchestrator.stopAll(['specforge-daemon'], timeoutSec * 1000);
 
     await serviceManager.dispose();
-
     const formatted = formatOperationJson(result);
 
     if (isJson) {
@@ -78,7 +72,6 @@ export async function handleStop(
       } else {
         console.log(modeSwitch.formatError('Failed to stop specforge-daemon'));
       }
-
       for (const service of formatted.perService) {
         const icon = service.state === 'stopped' ? '○' : service.state === 'running' ? '✓' : '✗';
         console.log(`  ${icon} ${service.name}: ${service.message || service.state}`);
@@ -90,7 +83,6 @@ export async function handleStop(
           console.log(`Suggestion: ${formatted.error.suggestion}`);
         }
       }
-
       process.exit(formatted.success ? 0 : 1);
     }
   } catch (error) {

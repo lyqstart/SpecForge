@@ -119,9 +119,9 @@ export interface UserInfo {
 
 /** SpecForge 相关路径 */
 export interface SpecForgePaths {
-  /** ~/.specforge 路径 */
+  /** <OpenCode config>/sf-user 路径 */
   install_root: string;
-  /** ~/.specforge/logs */
+  /** <OpenCode config>/sf-user/logs */
   logs_dir: string;
 }
 

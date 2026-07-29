@@ -9,8 +9,26 @@
  * - Supports session tree via parentSessionId (REQ-6.4)
  * - Three record types: pending, active, history (REQ-6.2)
  */
+import { Event } from '../types';
 import { EventBus } from '../event-bus/EventBus';
+import { WAL } from '../wal/WAL';
 import { AgentIdentity } from './AgentIdentity';
+/**
+ * Summary returned by startupReplay after replaying WAL events.
+ */
+export interface ReplaySummary {
+    replayedCount: number;
+    restoredBindings: number;
+    restoredAliases: number;
+}
+/**
+ * Error thrown when a WAL write operation fails.
+ * Wraps the underlying cause for diagnostic purposes.
+ */
+export declare class WALWriteError extends Error {
+    readonly cause: Error;
+    constructor(message: string, cause: Error);
+}
 /**
  * SessionSnapshot for daemon restart reconnect support.
  * Contains the full serializable state of the registry at a point in time.
@@ -52,7 +70,10 @@ export declare class SessionRegistry {
     private subscription;
     private sessionTimeoutMs;
     private cleanupTimerId;
-    constructor(eventBus: EventBus, sessionTimeoutMs?: number);
+    private wal?;
+    private touchThrottleMap;
+    private readonly TOUCH_THROTTLE_INTERVAL_MS;
+    constructor(eventBus: EventBus, sessionTimeoutMs?: number, wal?: WAL, touchThrottleMs?: number);
     /**
      * Start the registry
      * Subscribes to session events from EventBus
@@ -92,11 +113,11 @@ export declare class SessionRegistry {
      * @param projectPath Project filesystem path
      * @returns The created or existing AgentIdentity
      */
-    registerPluginSession(projectId: string, projectPath: string): AgentIdentity;
+    registerPluginSession(projectId: string, projectPath: string): Promise<AgentIdentity>;
     /**
-     * Get the count of active sessions (pending + active)
+     * Get the count of active sessions
      *
-     * @returns Number of pending and active sessions
+     * @returns Number of active sessions (not including pending)
      */
     getActiveSessionCount(): number;
     /**
@@ -112,7 +133,7 @@ export declare class SessionRegistry {
      * @param parentSessionId Optional parent session ID for tree structure
      * @returns The created AgentIdentity
      */
-    registerPending(agentRole: string, workflowRole: string, workItemId: string, spawnIntentId: string, parentSessionId?: string | null): AgentIdentity;
+    registerPending(agentRole: string, workflowRole: string, workItemId: string, spawnIntentId: string, parentSessionId?: string | null): Promise<AgentIdentity>;
     /**
      * Activate a pending session
      *
@@ -123,7 +144,7 @@ export declare class SessionRegistry {
      * @param spawnIntentId Spawn intent ID for validation
      * @returns The activated AgentIdentity, or null if validation fails
      */
-    activate(sessionId: string, spawnIntentId: string): AgentIdentity | null;
+    activate(sessionId: string, spawnIntentId: string): Promise<AgentIdentity | null>;
     /**
      * Terminate an active session
      *
@@ -132,7 +153,7 @@ export declare class SessionRegistry {
      * @param sessionId Session ID to terminate
      * @returns The terminated AgentIdentity, or null if not found
      */
-    terminate(sessionId: string): AgentIdentity | null;
+    terminate(sessionId: string): Promise<AgentIdentity | null>;
     /**
      * Lookup session by sessionId
      *
@@ -174,12 +195,16 @@ export declare class SessionRegistry {
      */
     getHistorySessions(): AgentIdentity[];
     /**
-     * Update session last active timestamp
+     * Update session last active timestamp with WAL write throttle
+     *
+     * In-memory lastActiveAt is updated EVERY call (no throttle).
+     * WAL write is throttled: only writes if enough time has passed since
+     * the last WAL write for this session, or if this is the first touch.
      *
      * @param sessionId Session ID
      * @returns Updated AgentIdentity, or null if not found
      */
-    touch(sessionId: string): AgentIdentity | null;
+    touch(sessionId: string): Promise<AgentIdentity | null>;
     /**
      * Check if a session exists
      *
@@ -223,7 +248,7 @@ export declare class SessionRegistry {
      * @param projectPath Project filesystem path
      * @returns true if the session was found and bound, false otherwise
      */
-    bindProject(sessionId: string, projectPath: string): boolean;
+    bindProject(sessionId: string, projectPath: string): Promise<boolean>;
     /**
      * Get the project path bound to a session
      *
@@ -245,7 +270,7 @@ export declare class SessionRegistry {
      * @param subType OpenCode event subtype (e.g., "session.created")
      * @param data Event payload containing sessionID and optional projectPath
      */
-    handleOpenCodeEvent(subType: string, data: Record<string, unknown>): void;
+    handleOpenCodeEvent(subType: string, data: Record<string, unknown>): Promise<void>;
     /**
      * Get a snapshot of all sessions for daemon restart reconnect support
      *
@@ -264,6 +289,16 @@ export declare class SessionRegistry {
      * @param snapshot SessionSnapshot to restore from
      */
     restoreFromSnapshot(snapshot: SessionSnapshot): void;
+    /**
+     * Replay WAL events to restore in-memory state after daemon restart.
+     *
+     * Only performs in-memory mutations — never calls this.wal.appendEvent().
+     * Idempotent: calling twice with the same events produces identical Map states.
+     *
+     * @param events Array of WAL events to replay (already filtered by caller)
+     * @returns ReplaySummary with counts of replayed events, restored bindings and aliases
+     */
+    startupReplay(events: Event[]): Promise<ReplaySummary>;
     /**
      * Handle session events from EventBus
      *

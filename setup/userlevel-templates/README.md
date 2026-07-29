@@ -40,7 +40,7 @@ templates/
 ```
 host-profile.json（自动扫描，用户级）
     ↓ 描述"这台机器有什么"
-    ↓ 存储在 ~/.specforge/host-profile.json
+    ↓ 存储在 <OpenCode config>/sf-user/host-profile.json
     ↓ 由 @specforge/host-profile 包在 sf_project_init 时自动扫描
     ↓ sf_project_init 每次启动时检查新鲜度（30 天）
 
@@ -58,7 +58,7 @@ project-rules.md（项目规则，项目级）
 ### 自动方式（推荐）
 
 首次使用 SpecForge 时，orchestrator 会自动引导你完成初始化：
-1. `sf_project_init` 工具自动扫描主机环境 → 生成 `~/.specforge/host-profile.json`
+1. `sf_project_init` 工具自动扫描主机环境 → 生成 `<OpenCode config>/sf-user/host-profile.json`
 2. 在 intake 阶段询问技术栈 → 拼装 `project-rules.md`
 3. 在 intake 阶段询问生产环境信息 → 生成 `prod-environment.md`
 
@@ -81,4 +81,4 @@ project-rules.md（项目规则，项目级）
 - **不要把密码写在这些文件里**——密码通过环境变量或密钥管理服务注入
 - **这些文件应该提交到 git**——它们描述的是配置结构，不是敏感值
 - **修改后通知 SpecForge**——下次启动时 orchestrator 会检测变化并提示相关 Agent 重新评估
-- **host-profile.json 是用户级的**——存储在 `~/.specforge/`，不属于任何项目，不应提交到 git
+- **host-profile.json 是用户级的**——存储在 `<OpenCode config>/sf-user/`，不属于任何项目，不应提交到 git

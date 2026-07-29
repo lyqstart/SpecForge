@@ -57,14 +57,14 @@ CLI / Thin Plugin
 └─────────────────────────────────────┘
       │
       ▼
-~/.specforge/runtime/daemon.sock.json  ← 握手文件（pid/port/token）
-~/.specforge/projects/<id>/events.jsonl ← WAL 事件日志
-~/.specforge/projects/<id>/state.json   ← 状态快照
+~/.config/opencode/sf-user/runtime/handshake.json  ← 握手文件（pid/port/token）
+~/.config/opencode/sf-user/projects/<id>/events.jsonl ← WAL 事件日志
+~/.config/opencode/sf-user/projects/<id>/state.json   ← 状态快照
 ```
 
 ## 关键概念
 
-- **握手文件**：Daemon 启动后写入 `~/.specforge/runtime/daemon.sock.json`，包含 `pid`、`port`、`token`
+- **握手文件**：Daemon 启动后写入 `~/.config/opencode/sf-user/runtime/handshake.json`，包含 `pid`、`port`、`token`
 - **Bearer Token**：所有 HTTP 请求（除健康检查外）必须携带 `Authorization: Bearer <token>`
 - **Session 生命周期**：`pending` → `active` → `history`
 - **WAL 语义**：先写 `events.jsonl` 并 fsync，再更新 `state.json`

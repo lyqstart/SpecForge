@@ -11,13 +11,13 @@
 
 import { existsSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
-import { homedir } from "node:os"
-import { LAYOUT, SPEC_DIR_NAME, SPEC_USER_DIR_NAME, legacyPaths, legacyUserLayoutReadOnly } from "@specforge/types/directory-layout"
+import { LAYOUT, SPEC_DIR_NAME, legacyPaths } from "@specforge/types/directory-layout"
+import { resolveOpenCodeConfigRoot, resolveSpecForgeManifestPath, resolveSpecForgeUserPath } from "@specforge/types/user-level-paths"
 import { logErrorToFile } from "./utils"
 
 // ── 内联 resolveUserLevelDirectory（原 scripts/lib/paths.ts）──
 function resolveUserLevelDirectory(): string {
-  return join(homedir(), ".config", "opencode")
+  return resolveOpenCodeConfigRoot()
 }
 
 // ── 内联 CompatibilityResult + assertCompatibility（原 scripts/lib/compatibility.ts）──
@@ -44,7 +44,7 @@ function assertCompatibility(baseDir: string): CompatibilityResult {
   if (installMode === "project_level") {
     return { compatible: true, installMode: "project_level" }
   }
-  const userManifestPath = join(homedir(), SPEC_DIR_NAME, "specforge-manifest.json")
+  const userManifestPath = resolveSpecForgeManifestPath()
   if (!existsSync(userManifestPath)) {
     return { compatible: false, installMode: "user_level", error: "共享组件未安装：用户级 specforge-manifest.json 不存在" }
   }
@@ -223,7 +223,7 @@ export async function checkUserLevelInstallation(baseDir: string): Promise<UserL
  *
  * 检查：
  * 1. manifest.json — 项目注册标识
- * 2. host-profile.json — 主机环境配置（~/.specforge/host-profile.json）
+ * 2. host-profile.json — 主机环境配置（<OpenCode config>/sf-user/host-profile.json）
  * 3. prod-environment.md — 生产环境配置
  * 4. project-rules.md — 项目规则
  */
@@ -241,13 +241,16 @@ function checkInitializationCompleteness(
     checks.push({ name: "初始化: manifest.json", status: "error", detail: "项目未初始化（manifest.json 不存在）" })
   }
 
-  // host-profile.json（用户级：~/.specforge/host-profile.json）
-  const hostProfilePath = join(homedir(), SPEC_USER_DIR_NAME, legacyUserLayoutReadOnly.hostProfile)
+  // host-profile.json（用户级：<OpenCode config>/sf-user/host-profile.json）
+  const hostProfilePath = resolveSpecForgeUserPath('host-profile.json')
   if (existsSync(hostProfilePath)) {
-    // 检查新鲜度（30 天）
+    // 检查新鲜度（30 天）。优先使用档案自身的 scanned_at，
+    // 与 @specforge/host-profile 的缓存判定保持一致；旧档案缺少该字段时回退到文件时间。
     try {
-      const stat = statSync(hostProfilePath)
-      const ageDays = (Date.now() - stat.mtimeMs) / (1000 * 60 * 60 * 24)
+      const profile = JSON.parse(readFileSync(hostProfilePath, "utf-8")) as { scanned_at?: unknown }
+      const scannedAt = typeof profile.scanned_at === "string" ? Date.parse(profile.scanned_at) : Number.NaN
+      const generatedAt = Number.isFinite(scannedAt) ? scannedAt : statSync(hostProfilePath).mtimeMs
+      const ageDays = (Date.now() - generatedAt) / (1000 * 60 * 60 * 24)
       if (ageDays > 30) {
         checks.push({ name: "初始化: host-profile.json", status: "warning", detail: `主机环境配置已过期（${Math.floor(ageDays)} 天前生成）` })
       } else {

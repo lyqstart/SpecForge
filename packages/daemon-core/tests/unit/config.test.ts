@@ -5,6 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
 import { PersonalPathResolver, EnterprisePathResolver } from '../../src/daemon/path-resolver';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 describe('DaemonConfig', () => {
   // -----------------------------------------------------------------------
@@ -47,17 +48,14 @@ describe('DaemonConfig', () => {
       const config = new DaemonConfig();
       const runtimeDir = config.getRuntimeDir();
 
-      expect(runtimeDir).toContain('.specforge');
-      expect(runtimeDir).toContain('runtime');
+      expect(runtimeDir).toBe(resolveSpecForgeUserPath('runtime'));
     });
 
     it('should set correct handshake file path', () => {
       const config = new DaemonConfig();
       const handshakeFile = config.getHandshakeFile();
 
-      expect(handshakeFile).toContain('.specforge');
-      expect(handshakeFile).toContain('runtime');
-      expect(handshakeFile).toContain('handshake.json');
+      expect(handshakeFile).toBe(resolveSpecForgeUserPath('runtime', 'handshake.json'));
     });
 
     it('should set max payload size to 64 KiB', () => {

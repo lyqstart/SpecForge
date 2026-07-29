@@ -662,7 +662,7 @@ class ThinPlugin {
   private async readHandshakeFile(): Promise<{ port: number; token: string }> {
     const handshakePath = path.join(
       process.env.HOME || process.env.USERPROFILE || '',
-      '.specforge/runtime/daemon.sock.json'
+      '.config/opencode/sf-user/runtime/handshake.json'
     );
     
     const content = await fs.promises.readFile(handshakePath, 'utf-8');

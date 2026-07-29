@@ -22,6 +22,7 @@ import type { GrantsConfig } from '../grants';
 import { isGrantsConfig } from '../grants';
 import { AuthorizationCollection, type AuthorizationSource } from './AuthorizationCollection';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // ---------------------------------------------------------------------------
 // 类型定义
@@ -121,8 +122,7 @@ const DEFAULT_POLL_INTERVAL_MS = 1000;
  * 获取默认的用户配置目录
  */
 function getDefaultUserConfigDir(): string {
-  const homeDir = process.env['HOME'] || process.env['USERPROFILE'] || process.cwd();
-  return path.join(homeDir, SPEC_DIR_NAME, 'config');
+  return resolveSpecForgeUserPath('config');
 }
 
 // ---------------------------------------------------------------------------
@@ -141,7 +141,7 @@ function getDefaultUserConfigDir(): string {
  * 使用示例：
  * ```typescript
  * const reloader = new ConfigHotReloader({
- *   userConfigDir: '~/.specforge/config',
+ *   userConfigDir: '<OpenCode config>/sf-user/config',
  *   projectRoot: '/path/to/project',
  *   onChange: async (event) => {
  *     console.log('配置已更新:', event.source, event.changedPermissions);

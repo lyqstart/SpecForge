@@ -48,8 +48,8 @@ export const ALL_KNOWN_PERMISSIONS: readonly PluginPermission[] = [
  *
  * 用于追踪权限的来源层级：
  *   - default: 内置默认授权（始终存在但通常为空）
- *   - user: 用户级授权（~/.specforge/）
-   *   - project: 项目级授权（<project>/specforge/）
+ *   - user: 用户级授权（<OpenCode config>/sf-user/）
+   *   - project: 项目级授权（<project>/.specforge/）
  *   - runtime: 运行时动态授权（CLI/API）
  */
 export type AuthorizationSource = 'default' | 'user' | 'project' | 'runtime';

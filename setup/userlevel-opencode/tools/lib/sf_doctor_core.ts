@@ -10,7 +10,7 @@
  */
 
 import { existsSync, readFileSync } from "node:fs"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 import { homedir } from "node:os"
 import { logErrorToFile } from "./utils"
 
@@ -18,7 +18,15 @@ const SPEC_DIR_NAME = '.specforge' as const;
 
 // ── 内联 resolveUserLevelDirectory（原 scripts/lib/paths.ts）──
 function resolveUserLevelDirectory(): string {
+  const explicit = process.env.OPENCODE_CONFIG_DIR?.trim()
+  if (explicit) return resolve(explicit)
+  const xdg = process.env.XDG_CONFIG_HOME?.trim()
+  if (xdg) return join(xdg, "opencode")
   return join(homedir(), ".config", "opencode")
+}
+
+function resolveSpecForgeManifestPath(): string {
+  return join(resolveUserLevelDirectory(), "specforge-manifest.json")
 }
 
 // ── 内联 CompatibilityResult + assertCompatibility（原 scripts/lib/compatibility.ts）──
@@ -45,7 +53,7 @@ function assertCompatibility(baseDir: string): CompatibilityResult {
   if (installMode === "project_level") {
     return { compatible: true, installMode: "project_level" }
   }
-  const userManifestPath = join(homedir(), SPEC_DIR_NAME, "specforge-manifest.json")
+  const userManifestPath = resolveSpecForgeManifestPath()
   if (!existsSync(userManifestPath)) {
     return { compatible: false, installMode: "user_level", error: "共享组件未安装：用户级 specforge-manifest.json 不存在" }
   }

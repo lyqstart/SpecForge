@@ -2,7 +2,7 @@
  * Daemon HealthCheck - 守护进程启动早期的版本一致性检查
  * 
  * 本模块实现 design.md "健康检查（Daemon 启动早期）" 章节定义的逻辑：
- * 1. 加载 ~/.specforge/.installation.json 安装记录
+ * 1. 加载 <OpenCode config>/sf-user/.installation.json 安装记录
  * 2. 比较磁盘 schema_version 与代码嵌入的 SCHEMA_VERSION_BASELINE
  * 3. 根据比较结果决定 daemon 是否可以启动
  * 
@@ -35,7 +35,7 @@ import type { ErrorCode } from './types.js';
  * - .installation.json 损坏/缺失 → exit 5（提示运行 init 修复）
  * - equal → 继续启动
  * 
- * @param installRoot - 安装根目录（通常是 ~/.specforge/）
+ * @param installRoot - 安装根目录（通常是 <OpenCode config>/sf-user/）
  * @param jsonMode - 是否为 JSON 输出模式
  * @returns 0 表示可以继续启动，非 0 表示应该退出
  */
@@ -79,7 +79,7 @@ function dispatchHealthCheckResult(
           message: 'Installation record not found',
           details: {
             file: '.installation.json',
-            installRoot: '~/.specforge/',
+            installRoot: '<OpenCode config>/sf-user/',
           },
           remediation: {
             action: 'Run specforge init to repair your installation',
@@ -170,7 +170,7 @@ function dispatchHealthCheckResult(
                 relation: 'code_lower',
               },
               remediation: {
-                action: 'Reinstall the previously installed version or remove ~/.specforge/ manually',
+                action: 'Reinstall the previously installed version or remove the sf-user installation directory manually',
                 command: 'npm install -g @specforge/cli@' + recordResult.record.cliVersion,
               },
             },
@@ -278,7 +278,7 @@ export async function getDaemonHealthCheckStatus(
  * // daemon-core 中的集成示例
  * import { createHealthCheckHook } from '@specforge/cli/distribution/daemon-healthcheck';
  * 
- * const healthCheck = createHealthCheckHook('~/.specforge/', (message) => {
+ * const healthCheck = createHealthCheckHook('<OpenCode config>/sf-user/', (message) => {
  *   daemonLogger.error(message);
  * });
  * 

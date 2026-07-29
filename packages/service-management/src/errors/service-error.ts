@@ -140,7 +140,7 @@ const ErrorMessages: Record<ErrorCode, { message: (ctx: ServiceErrorContext) => 
   },
   SVC_NSSM_NOT_FOUND: {
     message: () => 'NSSM executable not found',
-    suggestion: () => 'NSSM (Non-Sucking Service Manager) is required for Windows service management. It should be installed at ~/.specforge/bin/nssm.exe.',
+    suggestion: () => 'NSSM (Non-Sucking Service Manager) is required for Windows service management. It should be installed at <OpenCode config>/sf-user/bin/nssm.exe.',
   },
   SVC_NOT_ELEVATED: {
     message: () => 'Administrator privileges are required',
@@ -174,7 +174,7 @@ const ErrorMessages: Record<ErrorCode, { message: (ctx: ServiceErrorContext) => 
   },
   SVC_HEALTH_CHECK_FAILED: {
     message: (ctx) => `Health check failed for service: ${ctx.serviceName ?? 'unknown'}`,
-    suggestion: (ctx) => `Service did not become healthy within the expected time. Check logs at: ${ctx.logPath ?? '~/.specforge/logs/<service>.err'}`,
+    suggestion: (ctx) => `Service did not become healthy within the expected time. Check logs at: ${ctx.logPath ?? '<OpenCode config>/sf-user/logs/<service>.err'}`,
   },
   SVC_NSSM_REQUIRES_USER_PASSWORD: {
     message: () => 'NSSM requires user password to run service as current user',

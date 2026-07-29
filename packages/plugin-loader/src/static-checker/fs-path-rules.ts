@@ -20,6 +20,7 @@
 
 import path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 /**
  * 插件目录白名单配置
@@ -816,7 +817,7 @@ export const DEFAULT_WHITELISTS: DirectoryWhitelist[] = [
   {
     id: 'config-dir',
     name: '配置目录',
-    allowedDirs: ['~/.specforge/config', `${SPEC_DIR_NAME}/config`],
+    allowedDirs: [resolveSpecForgeUserPath('config'), `${SPEC_DIR_NAME}/config`],
     allowSubdirs: true,
     requiredPermissions: ['filesystem.read'],
     enabled: true,

@@ -250,10 +250,10 @@ docker pull specforge/cli:latest
 
 ```bash
 # Linux/macOS
-alias specforge='docker run --rm -v ~/.specforge:/root/.specforge specforge/cli:latest'
+alias specforge='docker run --rm -v ~/.config/opencode:/root/.config/opencode specforge/cli:latest'
 
 # Windows PowerShell
-function specforge { docker run --rm -v $env:USERPROFILE\.specforge:/root/.specforge specforge/cli:latest @args }
+function specforge { docker run --rm -v $env:USERPROFILE\.config\opencode:/root/.config/opencode specforge/cli:latest @args }
 ```
 
 **Step 3: Verify installation**
@@ -273,7 +273,7 @@ services:
   specforge-cli:
     image: specforge/cli:latest
     volumes:
-      - ~/.specforge:/root/.specforge
+      - ~/.config/opencode:/root/.config/opencode
     environment:
       - SPECFORGE_DEBUG=0
     command: specforge --help
@@ -456,8 +456,8 @@ Daemon:
 
 CLI:
   Version: 0.1.0
-  Config Directory: /home/user/.specforge
-  Runtime Directory: /home/user/.specforge/runtime
+  Config Directory: /home/user/.config/opencode/sf-user/config
+  Runtime Directory: /home/user/.config/opencode/sf-user/runtime
 
 System:
   Platform: linux (x64)
@@ -466,21 +466,21 @@ System:
 
 ### Step 4: Create Configuration Files (Optional)
 
-Configuration files are automatically created in `~/.specforge/`:
+Configuration files are automatically created in `~/.config/opencode/sf-user/`:
 
 ```
-~/.specforge/
-├── config.json              # CLI configuration
+~/.config/opencode/sf-user/
+├── config/
+│   └── config.json          # CLI configuration
 ├── runtime/
-│   ├── daemon.sock.json     # Daemon connection info
-│   └── daemon.log           # Daemon logs
-└── webhooks/
-    └── registered.json      # Registered webhooks
+│   └── handshake.json       # Daemon connection info
+└── logs/
+    └── daemon.log           # Daemon logs
 ```
 
 #### Manual Configuration
 
-Create `~/.specforge/config.json`:
+Create `~/.config/opencode/sf-user/config/config.json`:
 
 ```json
 {
@@ -750,7 +750,7 @@ Hint: Is the Daemon running? Try 'specforge daemon start'
 
 3. **Check Daemon logs**:
    ```bash
-   tail -f ~/.specforge/runtime/daemon.log
+   tail -f ~/.config/opencode/sf-user/logs/daemon.log
    ```
 
 4. **Verify port is not in use**:
@@ -793,7 +793,7 @@ Message: Invalid or missing authentication token
 
 1. **Check handshake file**:
    ```bash
-   cat ~/.specforge/runtime/daemon.sock.json
+   cat ~/.config/opencode/sf-user/runtime/handshake.json
    ```
 
 2. **Restart Daemon**:
@@ -804,12 +804,12 @@ Message: Invalid or missing authentication token
 
 3. **Verify handshake file exists**:
    ```bash
-   ls -la ~/.specforge/runtime/daemon.sock.json
+   ls -la ~/.config/opencode/sf-user/runtime/handshake.json
    ```
 
 4. **Check file permissions**:
    ```bash
-   chmod 600 ~/.specforge/runtime/daemon.sock.json
+   chmod 600 ~/.config/opencode/sf-user/runtime/handshake.json
    ```
 
 ---
@@ -870,7 +870,7 @@ Error: Port 3847 is already in use
 **Symptoms**:
 ```
 Error: Permission denied
-Message: Cannot access ~/.specforge directory
+Message: Cannot access ~/.config/opencode/sf-user directory
 ```
 
 **Causes**:
@@ -882,18 +882,18 @@ Message: Cannot access ~/.specforge directory
 
 1. **Fix directory permissions**:
    ```bash
-   chmod 700 ~/.specforge
-   chmod 600 ~/.specforge/runtime/daemon.sock.json
+   chmod 700 ~/.config/opencode/sf-user
+   chmod 600 ~/.config/opencode/sf-user/runtime/handshake.json
    ```
 
 2. **Check ownership**:
    ```bash
-   ls -la ~/.specforge
+   ls -la ~/.config/opencode/sf-user
    ```
 
 3. **Fix ownership** (if needed):
    ```bash
-   chown -R $USER:$USER ~/.specforge
+   chown -R $USER:$USER ~/.config/opencode/sf-user
    ```
 
 4. **Check SELinux** (Linux):
@@ -976,7 +976,7 @@ Message: Failed to parse JSON output
 
 3. **Check for encoding issues**:
    ```bash
-   file ~/.specforge/runtime/daemon.sock.json
+   file ~/.config/opencode/sf-user/runtime/handshake.json
    ```
 
 4. **Enable debug mode**:
@@ -1042,7 +1042,7 @@ If you encounter issues not covered above:
 
 1. **Check logs**:
    ```bash
-   tail -f ~/.specforge/runtime/daemon.log
+   tail -f ~/.config/opencode/sf-user/logs/daemon.log
    ```
 
 2. **Enable debug mode**:
@@ -1110,10 +1110,10 @@ bun unlink packages/cli
 
 ```bash
 # Linux/macOS
-rm -rf ~/.specforge
+rm -rf ~/.config/opencode/sf-user
 
 # Windows PowerShell
-Remove-Item -Recurse -Force $env:USERPROFILE\.specforge
+Remove-Item -Recurse -Force $env:USERPROFILE\.config\opencode\sf-user
 ```
 
 ### Stop Daemon

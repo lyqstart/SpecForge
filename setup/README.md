@@ -9,4 +9,4 @@ This directory contains all installation sources for SpecForge deployment.
 - `userlevel-scripts-lib/` — Shared library scripts for deployed tools
   - Install target: `~/.config/opencode/scripts/lib/`
 - `userlevel-templates/` — Project templates
-  - Install target: `~/.specforge/templates/`
+  - Install target: `<OpenCode config>/sf-user/templates/`

@@ -8,7 +8,7 @@
  * - afterEach 断言 getActiveLockCount() === 0
  * - Symbol.asyncDispose 释放锁
  * 
- * REQ-3.9: 锁文件路径 ~/.specforge/.init.lock
+ * REQ-3.9: 锁文件路径 <OpenCode config>/sf-user/.init.lock
  * lessons-injected T1: 动态追踪列表清理
  */
 

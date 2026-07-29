@@ -24,7 +24,7 @@ const value = manager.get('some.key')
 ## Configuration Layers
 
 1. **Builtin**: Default values from code
-2. **User**: User-level overrides in `~/.specforge/config/`
+2. **User**: User-level overrides in `~/.config/opencode/sf-user/config/`
 3. **Project**: Project-level overrides in `<project>/.specforge/config/`
 4. **Runtime**: CLI/env overrides
 

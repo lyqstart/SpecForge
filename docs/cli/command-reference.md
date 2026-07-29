@@ -1014,7 +1014,7 @@ Message: Invalid or missing authentication token
 
 **Solutions**:
 1. Restart daemon: `specforge daemon stop && specforge daemon start`
-2. Check handshake file: `cat ~/.specforge/runtime/daemon.sock.json`
+2. Check handshake file: `cat ~/.config/opencode/sf-user/runtime/handshake.json`
 3. Verify daemon is running: `specforge daemon status`
 
 ---
@@ -1096,7 +1096,7 @@ $ specforge daemon stop
 $ specforge daemon start
 
 # Check daemon logs (if available)
-$ tail -f ~/.specforge/runtime/daemon.log
+$ tail -f ~/.config/opencode/sf-user/logs/daemon.log
 ```
 
 ---
@@ -1204,7 +1204,7 @@ specforge <command>
 
 ### Daemon Handshake File
 
-Location: `~/.specforge/runtime/daemon.sock.json`
+Location: `~/.config/opencode/sf-user/runtime/handshake.json`
 
 Contains daemon connection information:
 
@@ -1220,7 +1220,7 @@ Contains daemon connection information:
 
 ### CLI Configuration
 
-Location: `~/.specforge/config.json`
+Location: `~/.config/opencode/sf-user/config/config.json`
 
 User-specific CLI settings (if applicable).
 
@@ -1265,7 +1265,7 @@ For issues, questions, or feedback:
 
 1. Check this command reference
 2. Run `specforge <command> --help` for command-specific help
-3. Check daemon logs: `~/.specforge/runtime/daemon.log`
+3. Check daemon logs: `~/.config/opencode/sf-user/logs/daemon.log`
 4. Report issues with: `specforge --version` and error details
 
 ---

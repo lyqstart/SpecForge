@@ -1,9 +1,7 @@
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
+export default {
   test: {
     globals: true,
     environment: 'node',
-    include: ['tests/**/*.test.ts'],
+    include: ['scripts/tests/**/*.test.ts'],
   },
-});
+};

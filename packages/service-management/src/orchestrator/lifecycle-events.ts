@@ -25,10 +25,9 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import * as os from 'node:os';
 import { createServiceError } from '../errors/service-error.js';
 import type { HandshakeFile } from '../types/handshake.js';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 
 /**
  * Supported service lifecycle event actions
@@ -75,7 +74,7 @@ export interface ServiceLifecycleEvent {
  * Options for lifecycle event emitter
  */
 export interface LifecycleEventEmitterOptions {
-  /** Handshake file path. Defaults to ~/.specforge/runtime/handshake.json */
+  /** Handshake file path. Defaults to <OpenCode config>/sf-user/runtime/handshake.json */
   handshakePath?: string;
   /** HTTP request timeout in milliseconds */
   requestTimeoutMs?: number;
@@ -85,7 +84,7 @@ export interface LifecycleEventEmitterOptions {
  * Default options
  */
 const DEFAULT_OPTIONS: Required<LifecycleEventEmitterOptions> = {
-  handshakePath: path.join(os.homedir(), SPEC_DIR_NAME, 'runtime', 'handshake.json'),
+  handshakePath: path.join(resolveSpecForgeUserRoot(), 'runtime', 'handshake.json'),
   requestTimeoutMs: 5000,
 };
 

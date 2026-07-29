@@ -27,7 +27,7 @@ import type { PluginPermission } from './manifest';
  * 字段说明：
  *   - permission: 未被授权的权限名称
  *   - reason: 人类可读的拒绝原因（例 "未在授权集合中"）
- *   - suggestion: 可选的行动建议（例 "请在 ~/.specforge/config/plugin-grants.json 中添加该权限"）
+ *   - suggestion: 可选的行动建议（例 "请在 <OpenCode config>/sf-user/config/plugin-grants.json 中添加该权限"）
  */
 export interface ValidationError {
   permission: string;

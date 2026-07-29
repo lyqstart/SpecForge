@@ -16,7 +16,7 @@ import scopeGateExports from './scope-gate-bridge';
 /**
  * 生成默认配置 YAML 字符串
  * 
- * 此函数是 `specforge init` 写入 ~/.specforge/config/config.yaml 的唯一来源。
+ * 此函数是 `specforge init` 写入 <OpenCode config>/sf-user/config/config.yaml 的唯一来源。
  * 
  * 流程：
  * 1. 从 @specforge/configuration 获取默认配置对象
@@ -61,7 +61,7 @@ export function generateDefaultConfig(): string {
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(
       `Failed to generate default configuration: ${message}. ` +
-      `This is a critical error as it prevents creating ~/.specforge/config/config.yaml.`
+      `This is a critical error as it prevents creating <OpenCode config>/sf-user/config/config.yaml.`
     );
   }
 }

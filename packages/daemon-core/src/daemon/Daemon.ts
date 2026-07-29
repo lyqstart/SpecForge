@@ -43,12 +43,14 @@ export class Daemon {
     this.eventBus = new EventBus();
     // Shared path resolver for all subsystems (TASK-8)
     const pathResolver = this.config.getPathResolver();
-    const runtimeDir = this.config.getRuntimeDir();
 
-    // Create session registry first so it can be injected into RecoverySubsystem
+    // Create session registry first so it can be injected into RecoverySubsystem.
+    // The shared daemon is not a project, so RecoverySubsystem is intentionally
+    // left without a fixed project path. Project checkpoints are bound later
+    // from SessionRegistry at event-ingest time.
     const sessionRegistry = new SessionRegistry(this.eventBus, 30 * 60 * 1000, undefined);
     this.recoverySubsystem = new RecoverySubsystem(
-      pathResolver, runtimeDir, undefined, undefined, sessionRegistry
+      pathResolver, undefined, undefined, undefined, sessionRegistry
     );
     this.handshakeManager = new HandshakeManager(this.config);
     this.sessionRegistry = sessionRegistry;

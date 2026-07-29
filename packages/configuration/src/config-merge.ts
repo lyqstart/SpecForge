@@ -90,7 +90,7 @@ function validateSensitiveFieldProtection(
  * 
  * Layer priority (lowest to highest):
  * 1. Builtin defaults (code constants)
- * 2. User-level overrides (~/.specforge/config/)
+ * 2. User-level overrides (<OpenCode config>/sf-user/config/)
  * 3. Project-level overrides (<project>/.specforge/config/)
  * 4. Runtime overrides (CLI/env)
  * 

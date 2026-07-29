@@ -2,7 +2,7 @@
  * v6-dir-backup.ts — 备份 SpecForge 工具目录（committed + gitignored 全量快照）
  *
  * 用途：在执行 v6-dir-rename（或任何潜在破坏性目录操作）前，对源目录做
- * 完整文件树快照（结构 + 内容 + mtime），落到 `~/.specforge/backups/<ISO-ts>/`。
+ * 完整文件树快照（结构 + 内容 + mtime），落到 `<OpenCode config>/sf-user/backups/<ISO-ts>/`。
  *
  * 设计要点：
  * - 默认源目录是 `<cwd>/<SPEC_DIR_NAME>` 与 `<cwd>/specforge`（双扫描）
@@ -31,10 +31,10 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import * as os from 'node:os';
 import process from 'node:process';
 
 import { SPEC_DIR_NAME } from '../../packages/types/src/directory-layout';
+import { resolveSpecForgeUserPath } from '../../packages/types/src/user-level-paths';
 
 // ---------------------------------------------------------------------------
 // CLI 参数解析
@@ -83,7 +83,7 @@ function printHelp(): void {
       '  --dry-run              List files to be backed up without writing',
       '  --source <path>        Source directory to back up (default: scan cwd for',
       '                         <cwd>/.specforge and <cwd>/specforge)',
-      '  --dest <path>          Destination root (default: ~/.specforge/backups/<ts>/)',
+      '  --dest <path>          Destination root (default: <OpenCode config>/sf-user/backups/<ts>/)',
       '  -h, --help             Show this help',
     ].join('\n'),
   );
@@ -136,7 +136,7 @@ async function walk(root: string): Promise<FileEntry[]> {
 
 function buildDefaultDest(): string {
   const ts = new Date().toISOString().replace(/[:.]/g, '-');
-  return path.join(os.homedir(), '.specforge', 'backups', ts);
+  return resolveSpecForgeUserPath('backups', ts);
 }
 
 /**

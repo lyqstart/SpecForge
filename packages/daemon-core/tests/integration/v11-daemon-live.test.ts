@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import * as os from 'node:os';
+
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 interface Handshake { pid: number; port: number; token: string; }
 
@@ -12,8 +13,7 @@ describe('v1.1 Live Daemon Integration', () => {
   const projectDir = 'D:\\code\\temp\\SpecForge';
 
   beforeAll(() => {
-    // Read handshake from legacy location (daemon still writes here)
-    const handshakePath = path.join(os.homedir(), '.specforge', 'runtime', 'handshake.json');
+    const handshakePath = resolveSpecForgeUserPath('runtime', 'handshake.json');
     if (!fs.existsSync(handshakePath)) {
       throw new Error(`Daemon handshake not found at ${handshakePath}. Is daemon running?`);
     }

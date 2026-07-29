@@ -8,7 +8,7 @@
  */
 
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
-import { join, dirname } from "node:path"
+import { join, dirname, normalize, resolve } from "node:path"
 import { homedir } from "node:os"
 import { logErrorToFile } from "./utils"
 
@@ -156,14 +156,22 @@ export interface OperationResult {
 // Constants
 // ============================================================
 
+function resolveSpecForgeUserRoot(): string {
+  const explicitConfigDir = process.env.OPENCODE_CONFIG_DIR?.trim()
+  if (explicitConfigDir) {
+    return join(resolve(normalize(explicitConfigDir)), "sf-user")
+  }
+
+  const xdgConfigHome = process.env.XDG_CONFIG_HOME?.trim()
+  if (xdgConfigHome) {
+    return join(xdgConfigHome, "opencode", "sf-user")
+  }
+
+  return join(homedir(), ".config", "opencode", "sf-user")
+}
+
 function getGlobalStoreDir(): string {
-  return process.env.SF_KNOWLEDGE_STORE_DIR || join(
-    homedir(),
-    ".config",
-    "opencode",
-    SPEC_DIR_NAME,
-    "knowledge"
-  )
+  return process.env.SF_KNOWLEDGE_STORE_DIR || join(resolveSpecForgeUserRoot(), "knowledge")
 }
 
 const DEFAULT_CATEGORIES: KnowledgeCategory[] = [

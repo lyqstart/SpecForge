@@ -4,27 +4,42 @@
  * Tests the initialization completeness check that verifies
  * 4 key items:
  * 1. manifest.json（项目级）
- * 2. host-profile.json（用户级 ~/.specforge/）
+ * 2. host-profile.json（用户级 <OpenCode config>/sf-user/）
  * 3. prod-environment.md（项目级）
  * 4. project-rules.md（项目级）
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
-import { mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from "node:fs"
+import { mkdirSync, rmSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
-import { tmpdir, homedir } from "node:os"
+import { tmpdir } from "node:os"
 
 import { checkUserLevelInstallation } from "../../src/tools/lib/sf_doctor_core"
 
 describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () => {
   let testDir: string
+  let configRoot: string
+  let originalOpenCodeConfigDir: string | undefined
 
   beforeEach(() => {
     testDir = join(tmpdir(), `sf-doctor-init-test-${Date.now()}`)
-    mkdirSync(testDir, { recursive: true })
+    configRoot = join(testDir, "opencode-config")
+    originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR
+    process.env.OPENCODE_CONFIG_DIR = configRoot
+
+    mkdirSync(join(configRoot, "agents"), { recursive: true })
+    mkdirSync(join(configRoot, "tools"), { recursive: true })
+    writeFileSync(join(configRoot, "opencode.json"), "{}")
+    writeFileSync(join(configRoot, "agents", "sf-orchestrator.md"), "# test")
+    writeFileSync(join(configRoot, "tools", "sf_state_read.ts"), "export {}")
   })
 
   afterEach(() => {
+    if (originalOpenCodeConfigDir === undefined) {
+      delete process.env.OPENCODE_CONFIG_DIR
+    } else {
+      process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir
+    }
     rmSync(testDir, { recursive: true, force: true })
   })
 
@@ -70,41 +85,29 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     writeFileSync(join(specDir, "runtime", "state.json"), "{}")
     writeFileSync(join(specDir, "config", "project.json"), "{}")
 
-    // Create host-profile.json at user level
-    const userSpecDir = join(homedir(), ".specforge")
-    const hostProfileExisted = existsSync(join(userSpecDir, "host-profile.json"))
-    let createdHostProfile = false
-    if (!hostProfileExisted) {
-      mkdirSync(userSpecDir, { recursive: true })
-      writeFileSync(join(userSpecDir, "host-profile.json"), JSON.stringify({
-        scanner_version: "1.0.0",
-        scanned_at: new Date().toISOString(),
-        os: { platform: "test" },
-      }))
-      createdHostProfile = true
-    }
+    // Create host-profile.json under the isolated canonical user root.
+    const userSpecDir = join(configRoot, "sf-user")
+    mkdirSync(userSpecDir, { recursive: true })
+    writeFileSync(join(userSpecDir, "host-profile.json"), JSON.stringify({
+      scanner_version: "1.0.0",
+      scanned_at: new Date().toISOString(),
+      os: { platform: "test" },
+    }))
 
-    try {
-      const report = await checkUserLevelInstallation(testDir)
+    const report = await checkUserLevelInstallation(testDir)
 
-      // All initialization checks should be ok
-      const initChecks = report.checks.filter(
-        (c) =>
-          c.name.includes("manifest.json") ||
-          c.name.includes("host-profile.json") ||
-          c.name.includes("prod-environment.md") ||
-          c.name.includes("project-rules.md")
-      )
+    // All initialization checks should be ok
+    const initChecks = report.checks.filter(
+      (c) =>
+        c.name.includes("manifest.json") ||
+        c.name.includes("host-profile.json") ||
+        c.name.includes("prod-environment.md") ||
+        c.name.includes("project-rules.md")
+    )
 
-      expect(initChecks.length).toBe(4)
-      for (const check of initChecks) {
-        expect(check.status).toBe("ok")
-      }
-    } finally {
-      // Clean up if we created it
-      if (createdHostProfile) {
-        try { rmSync(join(userSpecDir, "host-profile.json"), { force: true }) } catch {}
-      }
+    expect(initChecks.length).toBe(4)
+    for (const check of initChecks) {
+      expect(check.status).toBe("ok")
     }
   })
 
@@ -168,13 +171,8 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     writeFileSync(join(specDir, "runtime", "state.json"), "{}")
     writeFileSync(join(specDir, "config", "project.json"), "{}")
 
-    // Create stale host-profile.json
-    const userSpecDir = join(homedir(), ".specforge")
-    const hostProfileExisted = existsSync(join(userSpecDir, "host-profile.json"))
-    let existingContent: string | null = null
-    if (hostProfileExisted) {
-      existingContent = readFileSync(join(userSpecDir, "host-profile.json"), "utf-8")
-    }
+    // Create stale host-profile.json under the isolated canonical user root.
+    const userSpecDir = join(configRoot, "sf-user")
     mkdirSync(userSpecDir, { recursive: true })
     writeFileSync(join(userSpecDir, "host-profile.json"), JSON.stringify({
       scanner_version: "1.0.0",
@@ -182,20 +180,11 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
       os: { platform: "test" },
     }))
 
-    try {
-      const report = await checkUserLevelInstallation(testDir)
+    const report = await checkUserLevelInstallation(testDir)
 
-      const hostProfileCheck = report.checks.find((c) => c.name.includes("host-profile.json"))
-      expect(hostProfileCheck).toBeDefined()
-      expect(hostProfileCheck!.status).toBe("warning")
-      expect(hostProfileCheck!.detail).toContain("过期")
-    } finally {
-      // Restore original state
-      if (existingContent) {
-        writeFileSync(join(userSpecDir, "host-profile.json"), existingContent)
-      } else if (!hostProfileExisted) {
-        try { rmSync(join(userSpecDir, "host-profile.json"), { force: true }) } catch {}
-      }
-    }
+    const hostProfileCheck = report.checks.find((c) => c.name.includes("host-profile.json"))
+    expect(hostProfileCheck).toBeDefined()
+    expect(hostProfileCheck!.status).toBe("warning")
+    expect(hostProfileCheck!.detail).toContain("过期")
   })
 })

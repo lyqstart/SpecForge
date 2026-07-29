@@ -31,11 +31,11 @@ describe('ServiceError', () => {
   it('should include service name in message', () => {
     const error = createServiceError('SVC_HEALTH_CHECK_FAILED', {
       serviceName: 'specforge-daemon',
-      logPath: '~/.specforge/logs/daemon.err',
+      logPath: '<OpenCode config>/sf-user/logs/daemon.err',
     });
 
     expect(error.message).toContain('specforge-daemon');
-    expect(error.suggestion).toContain('~/.specforge/logs/daemon.err');
+    expect(error.suggestion).toContain('<OpenCode config>/sf-user/logs/daemon.err');
   });
 
   it('should include dependency info in message', () => {

@@ -16,7 +16,7 @@ bun run packages/daemon-core/src/index.ts
 The daemon will:
 1. Check for existing instance (single instance enforcement)
 2. Generate a random bearer token
-3. Write handshake file to `~/.specforge/runtime/daemon.sock.json`
+3. Write handshake file to `~/.config/opencode/sf-user/runtime/handshake.json`
 4. Start HTTP server on a dynamic port
 5. Exit after 30 seconds of inactivity
 
@@ -49,10 +49,10 @@ Before making any API requests, clients must read the handshake file to get conn
 
 ```bash
 # Read handshake file (Unix)
-cat ~/.specforge/runtime/daemon.sock.json
+cat ~/.config/opencode/sf-user/runtime/handshake.json
 
 # Read handshake file (PowerShell)
-Get-Content ~/.specforge/runtime/daemon.sock.json | ConvertFrom-Json
+Get-Content ~/.config/opencode/sf-user/runtime/handshake.json | ConvertFrom-Json
 ```
 
 **Handshake file format:**
@@ -71,7 +71,7 @@ Get-Content ~/.specforge/runtime/daemon.sock.json | ConvertFrom-Json
 ```bash
 #!/bin/bash
 
-HANDSHAKE_FILE="$HOME/.specforge/runtime/daemon.sock.json"
+HANDSHAKE_FILE="$HOME/.config/opencode/sf-user/runtime/handshake.json"
 
 # Wait for daemon to start (if needed)
 for i in {1..30}; do
@@ -96,7 +96,7 @@ echo "Connecting to port $PORT with token $TOKEN"
 ### Example: PowerShell Script to Read Handshake
 
 ```powershell
-$handshakePath = Join-Path $env:USERPROFILE ".specforge\runtime\daemon.sock.json"
+$handshakePath = Join-Path $env:USERPROFILE ".config\opencode\sf-user\runtime\handshake.json"
 
 # Wait for daemon to start (if needed)
 $timeout = 15
@@ -126,7 +126,7 @@ Write-Host "Connecting to port $port with token $token"
 
 ```bash
 # Get port and make health check request
-PORT=$(jq -r '.port' ~/.specforge/runtime/daemon.sock.json)
+PORT=$(jq -r '.port' ~/.config/opencode/sf-user/runtime/handshake.json)
 curl "http://127.0.0.1:$PORT/"
 ```
 
@@ -142,8 +142,8 @@ Response:
 
 ```bash
 # Extract credentials
-PORT=$(jq -r '.port' ~/.specforge/runtime/daemon.sock.json)
-TOKEN=$(jq -r '.token' ~/.specforge/runtime/daemon.sock.json)
+PORT=$(jq -r '.port' ~/.config/opencode/sf-user/runtime/handshake.json)
+TOKEN=$(jq -r '.token' ~/.config/opencode/sf-user/runtime/handshake.json)
 
 # Create a session
 curl -X POST "http://127.0.0.1:$PORT/session/create" \
@@ -168,7 +168,7 @@ curl -X POST "http://127.0.0.1:$PORT/session/create" \
 set -e
 
 # Read handshake
-HANDSHAKE_FILE="$HOME/.specforge/runtime/daemon.sock.json"
+HANDSHAKE_FILE="$HOME/.config/opencode/sf-user/runtime/handshake.json"
 PORT=$(jq -r '.port' "$HANDSHAKE_FILE")
 TOKEN=$(jq -r '.token' "$HANDSHAKE_FILE")
 BASE_URL="http://127.0.0.1:$PORT"
@@ -222,7 +222,7 @@ echo "=== Session lifecycle complete ==="
 ```powershell
 # Complete session lifecycle example (PowerShell)
 
-$handshakePath = Join-Path $env:USERPROFILE ".specforge\runtime\daemon.sock.json"
+$handshakePath = Join-Path $env:USERPROFILE ".config\opencode\sf-user\runtime\handshake.json"
 $handshake = Get-Content $handshakePath | ConvertFrom-Json
 
 $port = $handshake.port
@@ -288,8 +288,8 @@ Write-Host "`n=== Session lifecycle complete ==="
 ### Stop the Daemon Gracefully
 
 ```bash
-PORT=$(jq -r '.port' ~/.specforge/runtime/daemon.sock.json)
-TOKEN=$(jq -r '.token' ~/.specforge/runtime/daemon.sock.json)
+PORT=$(jq -r '.port' ~/.config/opencode/sf-user/runtime/handshake.json)
+TOKEN=$(jq -r '.token' ~/.config/opencode/sf-user/runtime/handshake.json)
 
 curl -X POST "http://127.0.0.1:$PORT/daemon/stop" \
   -H "Authorization: Bearer $TOKEN"
@@ -306,8 +306,8 @@ Response:
 ### Get Daemon Status
 
 ```bash
-PORT=$(jq -r '.port' ~/.specforge/runtime/daemon.sock.json)
-TOKEN=$(jq -r '.token' ~/.specforge/runtime/daemon.sock.json)
+PORT=$(jq -r '.port' ~/.config/opencode/sf-user/runtime/handshake.json)
+TOKEN=$(jq -r '.token' ~/.config/opencode/sf-user/runtime/handshake.json)
 
 curl -s "http://127.0.0.1:$PORT/status" \
   -H "Authorization: Bearer $TOKEN" | jq .
@@ -339,7 +339,7 @@ request() {
   local data=$3
   
   # Read credentials
-  HANDSHAKE_FILE="$HOME/.specforge/runtime/daemon.sock.json"
+  HANDSHAKE_FILE="$HOME/.config/opencode/sf-user/runtime/handshake.json"
   PORT=$(jq -r '.port' "$HANDSHAKE_FILE" 2>/dev/null)
   TOKEN=$(jq -r '.token' "$HANDSHAKE_FILE" 2>/dev/null)
   
@@ -388,7 +388,7 @@ request() {
 #!/bin/bash
 # Wait for daemon to start and be ready
 
-HANDSHAKE_FILE="$HOME/.specforge/runtime/daemon.sock.json"
+HANDSHAKE_FILE="$HOME/.config/opencode/sf-user/runtime/handshake.json"
 MAX_WAIT=30
 
 for i in $(seq 1 $MAX_WAIT); do

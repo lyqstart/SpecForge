@@ -5,7 +5,7 @@
  * 
  * Layer priority (lowest to highest):
  * 1. Builtin defaults (code constants)
- * 2. User-level overrides (~/.specforge/config/)
+ * 2. User-level overrides (<OpenCode config>/sf-user/config/)
  * 3. Project-level overrides (<project>/.specforge/config/)
  * 4. Runtime overrides (CLI/env)
  * 
@@ -111,7 +111,7 @@ function validateSensitiveFieldProtection(
     if (isSensitiveField(key, sensitiveFields)) {
       const error: ValidationError = {
         field: key,
-        message: `Project-level configuration cannot define sensitive field "${key}". Sensitive fields must be configured at user-level (~/.specforge/) or runtime (CLI/env).`,
+        message: `Project-level configuration cannot define sensitive field "${key}". Sensitive fields must be configured at user-level (<OpenCode config>/sf-user/) or runtime (CLI/env).`,
         layer: 'project',
         path: projectLayer.path,
       }
@@ -143,7 +143,7 @@ function sortLayersByPriority(layers: ConfigLayer[]): ConfigLayer[] {
  * 
  * Implements the four-layer configuration model:
  * 1. Builtin defaults (code constants)
- * 2. User-level overrides (~/.specforge/config/)
+ * 2. User-level overrides (<OpenCode config>/sf-user/config/)
  * 3. Project-level overrides (<project>/.specforge/config/)
  * 4. Runtime overrides (CLI/env)
  * 

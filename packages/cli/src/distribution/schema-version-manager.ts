@@ -171,7 +171,7 @@ export class SchemaVersionManager {
    * 
    * 用于 daemon 启动时检查磁盘 schema_version 与代码 baseline 是否一致。
    * 
-   * @param diskValue - 磁盘上读取的 schema_version（来自 ~/.specforge/.installation.json）
+   * @param diskValue - 磁盘上读取的 schema_version（来自 <OpenCode config>/sf-user/.installation.json）
    * @param baseline - 代码中嵌入的 baseline（通常是 this.baseline）
    * @returns 三态结果：
    *   - "equal": 完全相等，放行

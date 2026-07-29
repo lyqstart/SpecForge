@@ -8,17 +8,16 @@
  * 功能：
  * - 读取 CLI 版本（package.json#version）
  * - 读取 schema_version baseline（SchemaVersionManager.baseline）
- * - 读取磁盘安装记录（~/.specforge/.installation.json#schema_version，可能不存在/损坏）
+ * - 读取磁盘安装记录（<OpenCode config>/sf-user/.installation.json#schema_version，可能不存在/损坏）
  * - JSON 模式：输出 VersionInfoPayload 单行 JSON
  * - 非 JSON 模式：输出 <cliVersion>\n<schema_version>
  */
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import * as os from 'node:os';
 import { SchemaVersionManager } from '../distribution/schema-version-manager.js';
 import type { VersionInfoPayload, InstallationRecord } from '../distribution/types.js';
-import { SPEC_DIR_NAME } from '../utils/directory-layout';
+import { pathResolver } from '../utils/path-resolver.js';
 
 /**
  * Version 命令选项
@@ -29,35 +28,7 @@ export interface VersionCommandOptions {
 }
 
 /**
- * 解析 HOME 目录
- * 
- * Windows: %USERPROFILE%
- * macOS/Linux: $HOME
- * 
- * @returns HOME 目录绝对路径
- * @throws 如果 HOME 环境变量未设置（Linux/macOS）
- */
-function resolveHomeDirectory(): string {
-  const platform = process.platform;
-  
-  if (platform === 'win32') {
-    const userProfile = process.env.USERPROFILE;
-    if (!userProfile) {
-      throw new Error('USERPROFILE environment variable is not set');
-    }
-    return userProfile;
-  } else {
-    // darwin 或 linux
-    const home = process.env.HOME;
-    if (!home || home.trim() === '') {
-      throw new Error('HOME environment variable is not set');
-    }
-    return home;
-  }
-}
-
-/**
- * 读取 ~/.specforge/.installation.json 的 schema_version 字段
+ * 读取 <OpenCode config>/sf-user/.installation.json 的 schema_version 字段
  * 
  * 处理三种失败情况：
  * - missing: 文件不存在
@@ -68,8 +39,7 @@ function resolveHomeDirectory(): string {
  */
 async function loadInstallationSchemaVersion(): Promise<string | null> {
   try {
-    const home = resolveHomeDirectory();
-    const installationPath = path.join(home, SPEC_DIR_NAME, '.installation.json');
+    const installationPath = path.join(pathResolver.resolveInstallRoot(), '.installation.json');
     
     // 尝试读取文件
     const content = await fs.readFile(installationPath, 'utf-8');
@@ -148,11 +118,10 @@ export async function runVersionCommand(options: VersionCommandOptions): Promise
   // 4. 获取 installRoot 路径
   let installRoot: string;
   try {
-    const home = resolveHomeDirectory();
-    installRoot = path.join(home, SPEC_DIR_NAME);
+    installRoot = pathResolver.resolveInstallRoot();
   } catch (error) {
-    // 如果 HOME 未设置，使用占位符
-    installRoot = '<HOME not set>';
+    // 如果用户配置根目录无法解析，使用占位符
+    installRoot = '<user config root unavailable>';
   }
   
   // 5. 获取平台字符串

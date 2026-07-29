@@ -4,12 +4,12 @@
 
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { homedir } from 'node:os'
 import { ConfigLayer, ConfigLayerType, MergedConfig } from './types'
 import { CONFIG_SCHEMA_VERSION, DEFAULT_CONFIG, SENSITIVE_FIELDS } from './constants'
 import { logger } from './logger'
 import { mergeConfigLayers } from './config-merge'
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths'
 
 /**
  * Runtime configuration source
@@ -70,12 +70,11 @@ export async function loadBuiltinConfig(): Promise<ConfigLayer> {
 }
 
 /**
- * Load user-level configuration from ~/.specforge/config/
+ * Load user-level configuration from <OpenCode config>/sf-user/config/
  */
 export async function loadUserConfig(): Promise<ConfigLayer> {
-  const homeDir = homedir()
-  const configPath = path.join(homeDir, SPEC_DIR_NAME, 'config', 'config.json')
-  logger.debug('Loading user-level configuration', { configPath, homeDir })
+  const configPath = path.join(resolveSpecForgeUserRoot(), 'config', 'config.json')
+  logger.debug('Loading user-level configuration', { configPath })
 
   const data = await loadConfigFile(configPath)
   return createConfigLayer('user', configPath, data)

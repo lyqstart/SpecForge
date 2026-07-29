@@ -24,13 +24,13 @@ plugin-loader 使用四层配置模型，配置文件位置如下：
 | 层级 | 位置 | 优先级 |
 |------|------|--------|
 | 1 (默认) | 内置 | 最低 |
-| 2 (用户级) | `~/.specforge/config/plugin-grants.json` | |
+| 2 (用户级) | `~/.config/opencode/sf-user/config/plugin-grants.json` | |
 | 3 (项目级) | `<project>/.specforge/config/plugin-grants.json` | |
 | 4 (运行时) | 内存中 (CLI/API 设置) | 最高 |
 
 **目录结构**：
 ```
-~/.specforge/
+~/.config/opencode/sf-user/
 └── config/
     └── plugin-grants.json
 
@@ -299,7 +299,7 @@ plugin-loader 使用四层配置模型，配置文件位置如下：
 
 ### 多层配置合并
 
-#### 用户级配置 (`~/.specforge/config/plugin-grants.json`)
+#### 用户级配置 (`~/.config/opencode/sf-user/config/plugin-grants.json`)
 
 ```json
 {
@@ -563,6 +563,6 @@ plugin-loader 使用四层配置模型，配置文件位置如下：
 ### 配置优先级（从低到高）
 
 1. 内置默认（空集合）
-2. 用户级配置 (`~/.specforge/config/plugin-grants.json`)
+2. 用户级配置 (`~/.config/opencode/sf-user/config/plugin-grants.json`)
 3. 项目级配置 (`<project>/.specforge/config/plugin-grants.json`)
 4. 运行时配置（CLI/API 动态设置）

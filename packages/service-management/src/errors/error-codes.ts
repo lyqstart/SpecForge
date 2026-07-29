@@ -14,7 +14,7 @@ export const ErrorCode = {
   SVC_SYSTEMD_NOT_AVAILABLE: 'SVC_SYSTEMD_NOT_AVAILABLE',
   /** Linux: linger is not enabled for the user (services won't run after logout) */
   SVC_LINGER_NOT_ENABLED: 'SVC_LINGER_NOT_ENABLED',
-  /** Windows: NSSM executable not found in ~/.specforge/bin/ or PATH */
+  /** Windows: NSSM executable not found in <OpenCode config>/sf-user/bin/ or PATH */
   SVC_NSSM_NOT_FOUND: 'SVC_NSSM_NOT_FOUND',
   /** Windows: process is not running with Administrator privileges */
   SVC_NOT_ELEVATED: 'SVC_NOT_ELEVATED',

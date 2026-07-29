@@ -2,7 +2,7 @@
  * Integration Tests — Personal Mode E2E + Enterprise Backward Compatibility
  *
  * Tests:
- * - CP-2: enterprise mode WAL writes under ~/.specforge/projects/<hash>/
+ * - CP-2: enterprise mode WAL writes under <OpenCode config>/sf-user/projects/<hash>/
  * - Personal mode: WAL writes under project/.specforge/runtime/
  * - End-to-end: register → ingest event → subsystem routing → persistence
  * - .specforge/.gitignore SpecForge managed block
@@ -20,6 +20,7 @@ import { StateManager } from '../../src/state/StateManager';
 import { ProjectManager } from '../../src/project/ProjectManager';
 import { EventBus } from '../../src/event-bus/EventBus';
 import type { Event } from '../../src/types';
+import { resolveOpenCodeConfigRoot, resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -79,14 +80,14 @@ describe('PersonalPathResolver — path resolution', () => {
     );
   });
 
-  it('should resolve daemon runtime dir under ~/.specforge/runtime', () => {
+  it('should resolve daemon runtime dir under the canonical sf-user runtime', () => {
     const dir = resolver.resolveDaemonRuntimeDir();
-    expect(dir).toBe(path.join(os.homedir(), '.specforge', 'runtime'));
+    expect(dir).toBe(resolveSpecForgeUserPath('runtime'));
   });
 
   it('should resolve daemon.json under ~/.config/opencode', () => {
     const daemonJsonPath = resolver.resolveDaemonJsonPath();
-    expect(daemonJsonPath).toBe(path.join(os.homedir(), '.config', 'opencode', 'daemon.json'));
+    expect(daemonJsonPath).toBe(path.join(resolveOpenCodeConfigRoot(), 'daemon.json'));
   });
 });
 
@@ -97,22 +98,22 @@ describe('PersonalPathResolver — path resolution', () => {
 describe('EnterprisePathResolver — path resolution (CP-2)', () => {
   const resolver = new EnterprisePathResolver();
 
-  it('should resolve runtime dir under ~/.specforge/projects/<hash>/', () => {
+  it('should resolve runtime dir under the canonical sf-user projects directory', () => {
     const dir = resolver.resolveProjectRuntimeDir('/home/user/my-project');
-    expect(dir).toContain(path.join(os.homedir(), '.specforge', 'projects'));
+    expect(dir).toContain(resolveSpecForgeUserPath('projects'));
     // Verify it's NOT inside the project directory
     expect(dir).not.toContain(path.join('/home/user/my-project', '.specforge', 'runtime'));
   });
 
-  it('should resolve WAL events path under ~/.specforge/projects/<hash>/', () => {
+  it('should resolve WAL events path under the canonical sf-user projects directory', () => {
     const eventsPath = resolver.resolveEventsPath('/home/user/my-project');
-    expect(eventsPath).toContain(path.join(os.homedir(), '.specforge', 'projects'));
+    expect(eventsPath).toContain(resolveSpecForgeUserPath('projects'));
     expect(eventsPath).toContain('events.jsonl');
   });
 
-  it('should resolve state path under ~/.specforge/projects/<hash>/', () => {
+  it('should resolve state path under the canonical sf-user projects directory', () => {
     const statePath = resolver.resolveStatePath('/home/user/my-project');
-    expect(statePath).toContain(path.join(os.homedir(), '.specforge', 'projects'));
+    expect(statePath).toContain(resolveSpecForgeUserPath('projects'));
     expect(statePath).toContain('state.json');
   });
 
@@ -284,18 +285,18 @@ describe('Enterprise Mode E2E — backward compatibility', () => {
     await rmRF(tmpDir);
   });
 
-  it('CP-2: should write WAL under ~/.specforge/projects/<hash>/', async () => {
+  it('CP-2: should write WAL under the canonical sf-user projects directory', async () => {
     const eventsPath = resolver.resolveEventsPath(projectPath);
     expect(await fileExists(eventsPath)).toBe(true);
-    expect(eventsPath).toContain(path.join('.specforge', 'projects'));
+    expect(eventsPath).toContain(path.join('sf-user', 'projects'));
     expect(eventsPath).toContain('events.jsonl');
   });
 
-  it('CP-2: should write state.json under ~/.specforge/projects/<hash>/', async () => {
+  it('CP-2: should write state.json under the canonical sf-user projects directory', async () => {
     const statePath = resolver.resolveStatePath(projectPath);
     // state.json exists after initialize
     expect(await fileExists(statePath)).toBe(true);
-    expect(statePath).toContain(path.join('.specforge', 'projects'));
+    expect(statePath).toContain(path.join('sf-user', 'projects'));
     expect(statePath).toContain('state.json');
   });
 
@@ -561,8 +562,8 @@ describe('Cross-mode — file layout verification', () => {
     // Personal: inside project
     expect(personalRuntime).toContain(projectPath);
 
-    // Enterprise: under ~/.specforge/projects/
-    expect(enterpriseRuntime).toContain(path.join('.specforge', 'projects'));
+    // Enterprise: under <OpenCode config>/sf-user/projects/
+    expect(enterpriseRuntime).toContain(path.join('sf-user', 'projects'));
     expect(enterpriseRuntime).not.toContain(projectPath);
   });
 });

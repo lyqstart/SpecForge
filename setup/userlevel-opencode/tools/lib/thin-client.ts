@@ -17,7 +17,6 @@ import {
   sha256,
 } from "./sf-observability";
 
-const SPEC_DIR_NAME = ".specforge" as const;
 const EXPECTED_TASK_CONTRACT_VERSION = "task-document/v1" as const;
 
 interface HandshakeFile {
@@ -53,12 +52,7 @@ function readHandshake(): HandshakeFile {
     }
   }
 
-  const paths = [
-    path.join(process.cwd(), SPEC_DIR_NAME, "runtime", "handshake.json"),
-    path.join(configRoot, "sf-user", "runtime", "handshake.json"),
-    path.join(home, ".config", "opencode", "sf-runtime", "handshake.json"),
-    path.join(home, SPEC_DIR_NAME, "runtime", "handshake.json"),
-  ];
+  const paths = [path.join(configRoot, "sf-user", "runtime", "handshake.json")];
 
   for (const p of paths) {
     if (fs.existsSync(p)) {

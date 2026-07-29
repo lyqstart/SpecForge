@@ -40,7 +40,7 @@ import type {
   MigrationScript,
   MigrationErrorCode
 } from './types'
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths'
 
 // ============================================================================
 // Configuration
@@ -250,7 +250,7 @@ export class MigrationRunner {
 
   constructor(options: TransactionalMigrationOptions = {}) {
     this.options = {
-      migrationsDir: `${SPEC_DIR_NAME}/migrations`,
+      migrationsDir: join(resolveSpecForgeUserRoot(), 'migrations'),
       backupDir: DEFAULT_BACKUP_DIR,
       filesToBackup: [],
       scriptTimeoutMs: 30000,

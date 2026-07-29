@@ -336,7 +336,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       fs.mkdirSync(libTarget, { recursive: true })
     }
 
-    // 源 1: setup/userlevel-scripts-lib/ → ~/.specforge/lib/
+    // 源 1: setup/userlevel-scripts-lib/ → <OpenCode config>/sf-user/lib/
     const scriptsLibSource = path.join(sourceDir, "setup", "userlevel-scripts-lib")
     if (fs.existsSync(scriptsLibSource)) {
       const scriptsLibFiles = fs.readdirSync(scriptsLibSource).filter((f) => f.endsWith(".ts"))
@@ -349,7 +349,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       deployedCount += scriptsLibFiles.length
     }
 
-    // 源 2: setup/userlevel-opencode/scripts/lib/ → ~/.specforge/lib/
+    // 源 2: setup/userlevel-opencode/scripts/lib/ → <OpenCode config>/sf-user/lib/
     const pluginScriptsLibSource = path.join(sourceDir, "setup", "userlevel-opencode", "scripts", "lib")
     if (fs.existsSync(pluginScriptsLibSource)) {
       const pluginScriptsLibFiles = fs.readdirSync(pluginScriptsLibSource).filter((f) => f.endsWith(".ts"))
@@ -388,7 +388,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
     fs.writeFileSync(installJsonPath, JSON.stringify(installJson, null, 2) + "\n")
     console.log(`   install.json 已写入: ${installJsonPath}`)
 
-    // 部署模板库到 ~/.specforge/templates/
+    // 部署模板库到 <OpenCode config>/sf-user/templates/
     const templateCount = await deployTemplates(sourceDir)
     if (templateCount > 0) {
       console.log(`   已部署模板: ${templateCount} 个文件`)
@@ -631,7 +631,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
 
     console.log(`   已升级: ${upgradedCount} 个文件`)
     console.log(`   已跳过: ${skippedCount} 个文件（无变化）`)
-    // 部署模板库到 ~/.specforge/templates/
+    // 部署模板库到 <OpenCode config>/sf-user/templates/
     const templateCount = await deployTemplates(sourceDir)
     if (templateCount > 0) {
       console.log(`   已更新模板: ${templateCount} 个文件`)
@@ -656,7 +656,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
           }
         }
 
-        // 回滚 User_Manifest（从备份恢复到 sf-user/）
+        // 回滚 User_Manifest（从备份恢复到 OpenCode 配置根目录）
         const manifestBackup = path.join(userLevelDir, ".backup")
         if (fs.existsSync(manifestBackup)) {
           // Find the manifest backup (most recent specforge-manifest.json.bak.*)
@@ -969,12 +969,12 @@ async function removeSfAgentsFromOpenCodeJson(userLevelDir: string): Promise<voi
 // ============================================================================
 
 /**
- * 把仓库 scripts/package.json 复制到 ~/.specforge/package.json，
+ * 把仓库 scripts/package.json 复制到 <OpenCode config>/sf-user/package.json，
  * 并在该目录运行 `bun install`，确保 scripts/lib/types.ts 顶部的
- * `import { z } from 'zod'` 能解析到 ~/.specforge/node_modules/zod。
+ * `import { z } from 'zod'` 能解析到 <OpenCode config>/sf-user/node_modules/zod。
  *
  * 没有这一步，tools/lib/utils.ts 的 dynamic import
- *   import("~/.specforge/lib/compatibility")
+ *   import("<OpenCode config>/sf-user/lib/compatibility")
  * 会因 zod 找不到全部失败，所有 sf_*_core 工具集体降级。
  *
  * 返回部署的文件数（0 = 跳过，1 = 复制了 package.json）。

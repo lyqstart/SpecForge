@@ -17,6 +17,7 @@
     "@specforge/types": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^25.6.2",
     "vitest": "^4.1.5"
   }
 }

@@ -6,6 +6,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+import path from 'node:path'
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths'
 import {
   MigrationConfig,
   DEFAULT_MIGRATION_CONFIG,
@@ -26,8 +28,8 @@ describe('Migration Configuration Integration', () => {
       expect(DEFAULT_MIGRATION_CONFIG.enableRepair).toBe(true)
       expect(DEFAULT_MIGRATION_CONFIG.blockOnDowngrade).toBe(true)
       expect(DEFAULT_MIGRATION_CONFIG.blockOnMigrationFailure).toBe(false)
-      expect(DEFAULT_MIGRATION_CONFIG.migrationsDir).toBe('.specforge/migrations')
-      expect(DEFAULT_MIGRATION_CONFIG.backupDir).toBe('.specforge/backups')
+      expect(DEFAULT_MIGRATION_CONFIG.migrationsDir).toBe(path.join(resolveSpecForgeUserRoot(), 'migrations'))
+      expect(DEFAULT_MIGRATION_CONFIG.backupDir).toBe(path.join(resolveSpecForgeUserRoot(), 'backups'))
       expect(DEFAULT_MIGRATION_CONFIG.backupRetentionDays).toBe(7)
       expect(DEFAULT_MIGRATION_CONFIG.scriptTimeoutMs).toBe(30000)
       expect(DEFAULT_MIGRATION_CONFIG.dryRun).toBe(false)

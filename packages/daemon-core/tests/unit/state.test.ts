@@ -9,6 +9,7 @@ import * as os from 'os';
 import { StateManager } from '../../src/state/StateManager';
 import { Event, ProjectState } from '../../src/types';
 import { PersonalPathResolver } from '../../src/daemon/path-resolver';
+import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 
 describe('StateManager', () => {
   let stateManager: StateManager;
@@ -275,10 +276,10 @@ describe('StateManager', () => {
       const pr = new PersonalPathResolver();
       const sm = new StateManager(pr, tempDir, true);
       const statePath: string = (sm as any).statePath;
-      // Daemon state path should be ~/.specforge/runtime/state.json
-      // NOT ~/.specforge/runtime/.specforge/runtime/state.json
+      // Daemon state path should be under the canonical sf-user runtime.
+      // It must never nest a project .specforge/runtime path inside daemon runtime.
       expect(statePath).not.toContain('.specforge' + path.sep + 'runtime' + path.sep + '.specforge');
-      expect(statePath).toBe(path.join(os.homedir(), '.specforge', 'runtime', 'state.json'));
+      expect(statePath).toBe(resolveSpecForgeUserPath('runtime', 'state.json'));
     });
 
     it('should maintain backward compatibility — omitting isDaemonGlobal uses project paths', () => {

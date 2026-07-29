@@ -16,29 +16,27 @@ import * as os from 'os';
 import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
 import { toCliError } from '../errors';
-import { SPEC_DIR_NAME } from '../utils/directory-layout';
-
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
- * Runtime directory path (~/.specforge/runtime)
+ * Runtime directory path under the canonical SpecForge user root
  */
 function getRuntimeDir(): string {
-  const homeDir = os.homedir();
-  return path.join(homeDir, SPEC_DIR_NAME, 'runtime');
+  return path.join(resolveSpecForgeUserRoot(), 'runtime');
 }
+
 
 /**
  * Daemon handshake file path
  */
 function getHandshakePath(): string {
-  return path.join(getRuntimeDir(), 'daemon.sock.json');
+  return path.join(getRuntimeDir(), 'handshake.json');
 }
 
 /**
- * Config directory path (~/.specforge)
+ * Config directory path under the canonical SpecForge user root
  */
 function getConfigDir(): string {
-  const homeDir = os.homedir();
-  return path.join(homeDir, SPEC_DIR_NAME);
+  return resolveSpecForgeUserRoot();
 }
 
 /**

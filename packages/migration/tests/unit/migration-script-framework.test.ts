@@ -4,7 +4,7 @@
  * Task: migration / 7.2 Write unit tests for migration script framework
  * Validates: Requirements 1.5, 2.1
  *   - 1.5  Migration_Subsystem looks for vX.Y-to-vA.B scripts in
- *          ~/.specforge/migrations/
+ *          <OpenCode config>/sf-user/migrations/
  *   - 2.1  (per tasks.md cross-reference) Migration script interface contract:
  *          version range matching + script metadata validation
  *
@@ -568,7 +568,7 @@ describe('discover -> filterMigrationsForUpgrade pipeline', () => {
 
   it('a subdirectory inside the migrations dir is skipped (never recursed) by strict discovery', async () => {
     // Pin the no-recursion contract so dropping a backup folder inside
-    // ~/.specforge/migrations/ cannot accidentally pollute discovery.
+    // <OpenCode config>/sf-user/migrations/ cannot accidentally pollute discovery.
     await mkdir(join(dir, 'nested'))
     await writeFile(join(dir, 'nested', 'v9.9.9-to-v10.0.0.ts'), '')
     await writeFile(join(dir, 'v1.0.0-to-v1.1.0.ts'), '')

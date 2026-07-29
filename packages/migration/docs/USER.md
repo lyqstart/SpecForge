@@ -45,7 +45,7 @@ When you start SpecForge after upgrading:
 
 1. **Version Detection**: SpecForge checks the schema version in your data files
 2. **Migration Discovery**: If needed, it finds the appropriate migration scripts
-3. **Backup Creation**: Before any changes, a backup is created in `~/.specforge/backups/`
+3. **Backup Creation**: Before any changes, a backup is created in `~/.config/opencode/sf-user/backups/`
 4. **Migration Execution**: Migration scripts transform your data to the new format
 5. **Validation**: After migration, SpecForge validates the result
 6. **Completion**: If successful, the new schema version is recorded
@@ -54,7 +54,7 @@ When you start SpecForge after upgrading:
 
 Before migration, SpecForge automatically creates backups:
 
-- **Backup Location**: `~/.specforge/backups/<timestamp>/`
+- **Backup Location**: `~/.config/opencode/sf-user/backups/<timestamp>/`
 - **Default Retention**: 7 days
 - **Files Backed Up**: `state.json`, `events.jsonl`, and other persistent files
 
@@ -62,7 +62,7 @@ You can restore from backup if something goes wrong:
 
 ```bash
 # Restore from backup (example path)
-cp ~/.specforge/backups/2024-01-15T10-30-00/state.json ~/.specforge/state.json
+cp ~/.config/opencode/sf-user/backups/2024-01-15T10-30-00/state.json <project>/.specforge/runtime/state.json
 ```
 
 ### Dry-Run Mode
@@ -74,8 +74,8 @@ import { createMigrationRunner } from '@specforge/migration'
 
 const runner = createMigrationRunner({
   dryRun: true,
-  migrationsDir: '.specforge/migrations',
-  backupDir: '.specforge/backups'
+  migrationsDir: '~/.config/opencode/sf-user/migrations',
+  backupDir: '~/.config/opencode/sf-user/backups'
 })
 
 const result = await runner.dryRun(
@@ -92,7 +92,7 @@ console.log('Changes that would be made:', result.changeSummary)
 
 ### Migration Scripts Directory
 
-Migration scripts are stored in: `~/.specforge/migrations/`
+Migration scripts are stored in: `~/.config/opencode/sf-user/migrations/`
 
 Script naming convention: `v<from-version>-to-v<to-version>.ts`
 
@@ -103,7 +103,7 @@ Example: `v1.0.0-to-v1.1.0.ts`
 If you need to create a custom migration script:
 
 ```typescript
-// ~/.specforge/migrations/v1.0.0-to-v1.1.0.ts
+// ~/.config/opencode/sf-user/migrations/v1.0.0-to-v1.1.0.ts
 import { MigrationScript } from '@specforge/migration'
 
 export const migration: MigrationScript = {
@@ -237,7 +237,7 @@ if (result.repaired) {
 1. Check backup was created
 2. Restore from backup:
    ```bash
-   cp ~/.specforge/backups/<timestamp>/state.json ~/.specforge/state.json
+   cp ~/.config/opencode/sf-user/backups/<timestamp>/state.json <project>/.specforge/runtime/state.json
    ```
 3. Check migration script for errors
 4. Try dry-run mode to see what would happen
@@ -271,12 +271,12 @@ if (result.repaired) {
 3. Consider resetting state if data is corrupted:
    ```bash
    # Backup current state first
-   cp ~/.specforge/state.json ~/state.backup.json
-   cp ~/.specforge/events.jsonl ~/events.backup.jsonl
+   cp <project>/.specforge/runtime/state.json ~/state.backup.json
+   cp <project>/.specforge/runtime/events.jsonl ~/events.backup.jsonl
    
    # Reset to fresh state
-   rm ~/.specforge/state.json
-   rm ~/.specforge/events.jsonl
+   rm <project>/.specforge/runtime/state.json
+   rm <project>/.specforge/runtime/events.jsonl
    ```
 
 #### Issue: Backup Not Created
@@ -286,7 +286,7 @@ if (result.repaired) {
 
 **Solutions:**
 1. Check disk space is available
-2. Verify write permissions for `~/.specforge/backups/`
+2. Verify write permissions for `~/.config/opencode/sf-user/backups/`
 3. Check disk is not full
 
 #### Issue: Inconsistent State Not Detected
@@ -331,7 +331,7 @@ if (result.repaired) {
 
 | Error Message | Meaning | Resolution |
 |---------------|---------|------------|
-| `Migration script not found` | Required migration script missing | Check ~/.specforge/migrations/ directory |
+| `Migration script not found` | Required migration script missing | Check ~/.config/opencode/sf-user/migrations/ directory |
 | `Backup failed` | Could not create backup | Check disk space and permissions |
 | `Validation failed` | Post-migration check failed | Check data integrity, try restoring backup |
 | `Version too old` | Version difference too large | May need multiple sequential migrations |
@@ -341,12 +341,12 @@ if (result.repaired) {
 
 If you encounter issues not covered here:
 
-1. Check the logs in `~/.specforge/logs/`
+1. Check the logs in `~/.config/opencode/sf-user/logs/`
 2. Run with verbose logging:
    ```bash
    specforge daemon start --verbose
    ```
-3. Review backup files in `~/.specforge/backups/`
+3. Review backup files in `~/.config/opencode/sf-user/backups/`
 4. Contact support with error messages and logs
 
 ---
@@ -376,10 +376,10 @@ const config = {
     scriptTimeoutMs: 30000,
     
     // Migration scripts directory
-    migrationsDir: '.specforge/migrations',
+    migrationsDir: '~/.config/opencode/sf-user/migrations',
     
     // Backup directory
-    backupDir: '.specforge/backups'
+    backupDir: '~/.config/opencode/sf-user/backups'
   }
 }
 ```
@@ -387,7 +387,7 @@ const config = {
 ### Configuration File Location
 
 Configuration can be set in:
-- `~/.specforge/config.json` (user-level)
+- `~/.config/opencode/sf-user/config/config.json` (user-level)
 - Project-level config files
 
 ### Viewing Current Configuration
@@ -403,12 +403,12 @@ specforge config get migration
 
 | Purpose | Location |
 |---------|----------|
-| Data directory | `~/.specforge/` |
-| Migration scripts | `~/.specforge/migrations/` |
-| Backups | `~/.specforge/backups/<timestamp>/` |
-| Logs | `~/.specforge/logs/` |
-| State file | `~/.specforge/state.json` |
-| Events log | `~/.specforge/events.jsonl` |
+| User data directory | `~/.config/opencode/sf-user/` |
+| Migration scripts | `~/.config/opencode/sf-user/migrations/` |
+| Backups | `~/.config/opencode/sf-user/backups/<timestamp>/` |
+| Logs | `~/.config/opencode/sf-user/logs/` |
+| Project state file | `<project>/.specforge/runtime/state.json` |
+| Project events log | `<project>/.specforge/runtime/events.jsonl` |
 
 ---
 
@@ -421,7 +421,7 @@ specforge daemon start
 
 ### Checking Schema Version
 ```bash
-cat ~/.specforge/state.json | jq '.schema_version'
+cat <project>/.specforge/runtime/state.json | jq '.schema_version'
 ```
 
 ### Running Manual Repair
@@ -432,10 +432,10 @@ specforge repair run
 ### Restoring from Backup
 ```bash
 # List backups
-ls ~/.specforge/backups/
+ls ~/.config/opencode/sf-user/backups/
 
 # Restore specific backup
-cp ~/.specforge/backups/2024-01-15T10-30-00/state.json ~/.specforge/state.json
+cp ~/.config/opencode/sf-user/backups/2024-01-15T10-30-00/state.json <project>/.specforge/runtime/state.json
 ```
 
 ### Previewing Migration

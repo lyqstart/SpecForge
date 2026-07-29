@@ -2,36 +2,16 @@
  * Path Resolver interface and implementations
  *
  * Abstracts path calculation logic for daemon storage across personal and
- * enterprise modes. Currently StateManager, WAL, RecoverySubsystem, and
- * ProjectManager each hard-code their own path logic — this module provides
- * a single unified abstraction.
+ * enterprise modes.
  */
-
 import * as path from 'path';
-import * as os from 'os';
-import { SPEC_DIR_NAME, SPEC_USER_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
+import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
+import {
+  resolveOpenCodeConfigRoot,
+  resolveSpecForgeUserPath,
+} from '@specforge/types/user-level-paths';
 
-/**
- * Resolve the OpenCode user-level config root.
- *
- * Resolution order (same as scripts/lib/paths.ts resolveUserLevelDirectory):
- *   1. OPENCODE_CONFIG_DIR (explicit override for testing/CI)
- *   2. XDG_CONFIG_HOME/opencode
- *   3. ~/.config/opencode
- *
- * This is used to derive the daemon runtime directory under sf-user/runtime/.
- */
-export function resolveOpenCodeConfigRoot(): string {
-  const configDir = process.env.OPENCODE_CONFIG_DIR;
-  if (configDir && configDir.trim() !== '') {
-    return path.resolve(path.normalize(configDir));
-  }
-  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
-  if (xdgConfigHome && xdgConfigHome.trim() !== '') {
-    return path.join(xdgConfigHome, 'opencode');
-  }
-  return path.join(os.homedir(), '.config', 'opencode');
-}
+export { resolveOpenCodeConfigRoot } from '@specforge/types/user-level-paths';
 
 /**
  * Critical system paths that must never be used as a projectPath.
@@ -95,29 +75,21 @@ export interface IPathResolver {
 // Validation helpers (internal)
 // ---------------------------------------------------------------------------
 
-/**
- * Validate projectPath for safety.
- * Throws InvalidProjectPath if the path is empty or a critical system path.
- */
 function validateProjectPath(projectPath: string): void {
   if (!projectPath || projectPath.trim() === '') {
     throw new InvalidProjectPath(projectPath, 'projectPath must not be empty');
   }
 
   const critical = getCriticalSystemPaths();
-
-  // Check raw input
   if (critical.has(projectPath)) {
     throw new InvalidProjectPath(projectPath, 'projectPath must not be a critical system path');
   }
 
-  // Check resolved absolute form
   const resolved = path.resolve(projectPath);
   if (critical.has(resolved)) {
     throw new InvalidProjectPath(projectPath, 'projectPath resolves to a critical system path');
   }
 
-  // Guard against root-of-drive
   const rootCheck = path.resolve('/');
   if (resolved === rootCheck) {
     throw new InvalidProjectPath(projectPath, 'projectPath resolves to filesystem root');
@@ -125,8 +97,7 @@ function validateProjectPath(projectPath: string): void {
 }
 
 // ---------------------------------------------------------------------------
-// Hash helper (replicates the same simple djb2-style hash used across WAL,
-// StateManager, and RecoverySubsystem)
+// Hash helper
 // ---------------------------------------------------------------------------
 
 function hashPath(projectPath: string): string {
@@ -134,7 +105,7 @@ function hashPath(projectPath: string): string {
   for (let i = 0; i < projectPath.length; i++) {
     const char = projectPath.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
+    hash = hash & hash;
   }
   return Math.abs(hash).toString(16).padStart(8, '0');
 }
@@ -146,8 +117,8 @@ function hashPath(projectPath: string): string {
 /**
  * PersonalPathResolver
  *
- * Project data is stored **inside** the project directory:
- *   <projectPath>/${SPEC_DIR_NAME}/runtime/
+ * Project data is stored inside the project directory:
+ *   <projectPath>/.specforge/runtime/
  */
 export class PersonalPathResolver implements IPathResolver {
   resolveProjectRuntimeDir(projectPath: string): string {
@@ -168,7 +139,7 @@ export class PersonalPathResolver implements IPathResolver {
   }
 
   resolveDaemonRuntimeDir(): string {
-    return path.join(resolveOpenCodeConfigRoot(), 'sf-user', 'runtime');
+    return resolveSpecForgeUserPath('runtime');
   }
 
   resolveHandshakePath(): string {
@@ -181,7 +152,7 @@ export class PersonalPathResolver implements IPathResolver {
 
   /**
    * @deprecated Daemon-global state is no longer supported.
-   *   Use project-scoped resolveStatePath() instead.
+   * Use project-scoped resolveStatePath() instead.
    */
   resolveDaemonStatePath(): string {
     console.warn('[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.');
@@ -190,7 +161,7 @@ export class PersonalPathResolver implements IPathResolver {
 
   /**
    * @deprecated Daemon-global events are no longer supported.
-   *   Use project-scoped resolveEventsPath() instead.
+   * Use project-scoped resolveEventsPath() instead.
    */
   resolveDaemonEventsPath(): string {
     console.warn('[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.');
@@ -201,17 +172,16 @@ export class PersonalPathResolver implements IPathResolver {
 /**
  * EnterprisePathResolver
  *
- * Backward-compatible layout: project data lives under
- *   ~/${SPEC_USER_DIR_NAME}/projects/<hash>/
+ * Project runtime data is centralized under:
+ *   <OpenCode config>/sf-user/projects/<hash>/
  *
- * Daemon-global paths (runtime dir, handshake, daemon.json) are identical
- * to PersonalPathResolver.
+ * User-home ~/.specforge is legacy read-only and is never a current write target.
  */
 export class EnterprisePathResolver implements IPathResolver {
   resolveProjectRuntimeDir(projectPath: string): string {
     validateProjectPath(projectPath);
     const hash = hashPath(projectPath);
-    return path.join(os.homedir(), SPEC_USER_DIR_NAME, 'projects', hash);
+    return resolveSpecForgeUserPath('projects', hash);
   }
 
   resolveStatePath(projectPath: string): string {
@@ -227,7 +197,7 @@ export class EnterprisePathResolver implements IPathResolver {
   }
 
   resolveDaemonRuntimeDir(): string {
-    return path.join(resolveOpenCodeConfigRoot(), 'sf-user', 'runtime');
+    return resolveSpecForgeUserPath('runtime');
   }
 
   resolveHandshakePath(): string {
@@ -240,7 +210,7 @@ export class EnterprisePathResolver implements IPathResolver {
 
   /**
    * @deprecated Daemon-global state is no longer supported.
-   *   Use project-scoped resolveStatePath() instead.
+   * Use project-scoped resolveStatePath() instead.
    */
   resolveDaemonStatePath(): string {
     console.warn('[DEPRECATED] resolveDaemonStatePath() is deprecated. Use resolveStatePath(projectPath) instead.');
@@ -249,7 +219,7 @@ export class EnterprisePathResolver implements IPathResolver {
 
   /**
    * @deprecated Daemon-global events are no longer supported.
-   *   Use project-scoped resolveEventsPath() instead.
+   * Use project-scoped resolveEventsPath() instead.
    */
   resolveDaemonEventsPath(): string {
     console.warn('[DEPRECATED] resolveDaemonEventsPath() is deprecated. Use resolveEventsPath(projectPath) instead.');

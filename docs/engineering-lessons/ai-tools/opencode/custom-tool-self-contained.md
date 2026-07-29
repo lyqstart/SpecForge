@@ -74,7 +74,12 @@ interface HostProfile {
 
 // 不 import 外部函数，直接内联加载逻辑
 async function loadHostProfile(): Promise<HostProfile | null> {
-  const profilePath = path.join(os.homedir(), ".specforge", "host-profile.json")
+  const configRoot = process.env.OPENCODE_CONFIG_DIR?.trim()
+    ? path.resolve(process.env.OPENCODE_CONFIG_DIR.trim())
+    : process.env.XDG_CONFIG_HOME?.trim()
+      ? path.join(process.env.XDG_CONFIG_HOME, "opencode")
+      : path.join(os.homedir(), ".config", "opencode")
+  const profilePath = path.join(configRoot, "sf-user", "host-profile.json")
   try {
     return JSON.parse(await fs.readFile(profilePath, "utf-8"))
   } catch { return null }
@@ -87,7 +92,7 @@ async function loadHostProfile(): Promise<HostProfile | null> {
 
 ```typescript
 // 运行时读取，不在 import 阶段解析
-const config = JSON.parse(await fs.readFile("~/.specforge/host-profile.json", "utf-8"))
+const config = JSON.parse(await fs.readFile("~/.config/opencode/sf-user/host-profile.json", "utf-8"))
 ```
 
 **方案 C：只 import node: 内置模块**

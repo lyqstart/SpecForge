@@ -11,41 +11,27 @@
  *
  * 详细规范见 docs/engineering-lessons/universal/shell-command-execution.md
  */
-
 import * as os from "node:os"
 import * as path from "node:path"
 import * as fs from "node:fs/promises"
 import { existsSync } from "node:fs"
-import { SPEC_USER_DIR_NAME, SPEC_DIR_NAME, legacyUserLayoutReadOnly } from "@specforge/types/directory-layout"
+import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import {
+  resolveSpecForgeUserPath,
+  resolveSpecForgeUserRoot,
+} from '@specforge/types/user-level-paths';
 import type { SafeBashArgs, SafeBashResult } from "./sf_safe_bash_types"
 import { applyRules } from "./sf_safe_bash_rules"
 import { executeCommand, resolveCwd } from "./sf_safe_bash_executor"
 import { guardBashCommand } from "./bash-guard"
 import type { WritePolicyRule } from "./write-guard-v11"
 
-// ---------------------------------------------------------------------------
-// Default write policy for bash-guard integration (v1.2 M2)
-// ---------------------------------------------------------------------------
-
-/**
- * Default write policy used when no WI-specific policy is available.
- *
- * v1.2 M2: guardBashCommand is called to propagate callerRole through
- * the chain. This default policy allows all writes — the actual enforcement
- * happens at the write guard level (write-guard-v11) when a WI context
- * is available. The bash guard's dangerous pattern checks still apply
- * independently of this policy.
- */
 const DEFAULT_BASH_WRITE_POLICY: WritePolicyRule = {
   id: 'sf-safe-bash-default',
   description: 'Default bash write policy — allows all (enforcement is at write-guard level)',
   check: () => null,
 }
 
-// ── Host Profile 内联类型和加载逻辑 ──
-// 不再 import 仓库外文件，改为运行时读取 JSON 文件
-
-/** Host Profile 最小类型（只取 sf_safe_bash 需要的字段） */
 interface HostProfile {
   schema_version: string
   hostname: string
@@ -57,12 +43,11 @@ interface HostProfile {
   user: { username: string; home_dir: string; shell_history_file: string | null }
   specforge: { install_root: string; logs_dir: string }
 }
-
 export type { HostProfile }
 
-/** 加载 host-profile.json（只读，不触发扫描） */
+/** 加载当前用户级 host-profile.json（只读，不触发扫描） */
 async function loadHostProfile(): Promise<HostProfile | null> {
-  const profilePath = path.join(os.homedir(), SPEC_USER_DIR_NAME, legacyUserLayoutReadOnly.hostProfile)
+  const profilePath = resolveSpecForgeUserPath("host-profile.json")
   try {
     const content = await fs.readFile(profilePath, "utf-8")
     const data = JSON.parse(content)
@@ -73,7 +58,6 @@ async function loadHostProfile(): Promise<HostProfile | null> {
   }
 }
 
-/** 构造一个最小的默认 profile（当 host-profile.json 不存在时） */
 function buildDefaultProfile(): HostProfile {
   const platform = os.platform()
   const isWin = platform === "win32"
@@ -100,39 +84,28 @@ function buildDefaultProfile(): HostProfile {
       ci_mode: false,
     },
     user: { username: os.userInfo().username, home_dir: os.homedir(), shell_history_file: null },
-    specforge: { install_root: path.join(os.homedir(), SPEC_USER_DIR_NAME), logs_dir: path.join(os.homedir(), SPEC_USER_DIR_NAME, 'logs') },
+    specforge: {
+      install_root: resolveSpecForgeUserRoot(),
+      logs_dir: resolveSpecForgeUserPath("logs"),
+    },
   }
 }
 
-/** 默认超时（60 秒） */
 const DEFAULT_TIMEOUT_MS = 60_000
-/** 默认输出截断（4 KB） */
 const DEFAULT_OUTPUT_LIMIT = 4096
-/** 最小允许的超时（避免误传 0） */
 const MIN_TIMEOUT_MS = 1000
-/** 最大允许的超时（10 分钟，避免 agent 设过大值） */
 const MAX_TIMEOUT_MS = 10 * 60 * 1000
 
-/**
- * 主入口
- *
- * @param args 用户输入参数
- * @param baseDir 调用方所在目录（context.directory），用作 cwd 默认和 fallback
- */
 export async function safeBashExecute(
   args: SafeBashArgs,
   baseDir: string
 ): Promise<SafeBashResult> {
-  // ── Step 1: 加载 host-profile ──
   let profile = await loadHostProfile()
   if (!profile) {
-    // 没有 host-profile.json，用内置默认值（不触发扫描，避免阻塞）
     profile = buildDefaultProfile()
   }
 
-  // ── Step 2: 规则引擎 ──
   const ruleResult = applyRules(args.command, profile)
-
   if (ruleResult.kind === "reject") {
     const r = ruleResult.rejection
     return {
@@ -153,7 +126,6 @@ export async function safeBashExecute(
     }
   }
 
-  // 命令可能被规则重写（如自动包装 Start-Job）
   let effectiveCommand = args.command
   let rewriteHint: string | undefined
   let rewriteRule: string | undefined
@@ -161,17 +133,11 @@ export async function safeBashExecute(
     effectiveCommand = ruleResult.rewrite.rewrittenCommand
     rewriteHint = ruleResult.rewrite.explanation
     rewriteRule = ruleResult.rewrite.rule
-    // 重写规则可能调整了 timeout
     if (ruleResult.rewrite.adjustedTimeoutMs && !args.timeoutMs) {
       args = { ...args, timeoutMs: ruleResult.rewrite.adjustedTimeoutMs }
     }
   }
 
-  // ── Step 2b: Bash guard (v1.2 M2) ──
-  // Propagate callerRole through to guardBashCommand.
-  // Uses DEFAULT_BASH_WRITE_POLICY (allow-all) — actual enforcement
-  // is at the write-guard level. This ensures callerRole flows through
-  // the chain for future dispatcher-level RBAC integration.
   const bashGuardResult = guardBashCommand(
     effectiveCommand,
     DEFAULT_BASH_WRITE_POLICY,
@@ -196,7 +162,6 @@ export async function safeBashExecute(
     }
   }
 
-  // ── Step 3: 解析 cwd ──
   const homeDir = profile.user.home_dir
   const { cwd: resolvedCwd, reason: cwdReason } = resolveCwd(args.cwd, baseDir, homeDir)
   if (!resolvedCwd) {
@@ -216,14 +181,12 @@ export async function safeBashExecute(
     }
   }
 
-  // ── Step 4: 规范超时 ──
   let timeoutMs = args.timeoutMs ?? DEFAULT_TIMEOUT_MS
   if (timeoutMs < MIN_TIMEOUT_MS) timeoutMs = MIN_TIMEOUT_MS
   if (timeoutMs > MAX_TIMEOUT_MS) timeoutMs = MAX_TIMEOUT_MS
 
   const outputLimit = args.outputLimit ?? DEFAULT_OUTPUT_LIMIT
 
-  // ── Step 5: 执行 ──
   const result = await executeCommand({
     command: effectiveCommand,
     cwd: resolvedCwd,
@@ -234,31 +197,20 @@ export async function safeBashExecute(
     profile,
   })
 
-  // 如果命令被重写，把信息附给 agent
   if (rewriteHint) {
     result.hint = result.hint
       ? `${rewriteHint}\n\n${result.hint}`
       : rewriteHint
     result.originalCommand = args.command
-    // 不覆盖 result.rule（rule 字段仅在 rejected 时有意义）
   }
 
-  // ── Step 6: 异步写审计日志（不阻塞主流程） ──
   writeAuditLog(args, result, profile, baseDir).catch(err => {
-    // 日志失败仅打 warning，不影响主流程
     console.warn(`[sf_safe_bash] 审计日志写入失败：${err.message}`)
   })
 
   return result
 }
 
-/**
- * 异步写审计日志
- *
- * 路径：<project>/.specforge/logs/shell-history.jsonl
- * 每行一个 JSON 对象，append-only。
- * baseDir 为项目根目录，审计日志按项目隔离存储。
- */
 async function writeAuditLog(
   args: SafeBashArgs,
   result: SafeBashResult,
@@ -268,9 +220,7 @@ async function writeAuditLog(
   const logFile = path.join(baseDir, SPEC_DIR_NAME, 'runtime', 'logs', 'shell-history.jsonl')
   const logDir = path.dirname(logFile)
 
-  // 确保目录存在
   await fs.mkdir(logDir, { recursive: true })
-
   const entry = {
     schema_version: "1.0",
     ts: new Date().toISOString(),
@@ -289,6 +239,5 @@ async function writeAuditLog(
     truncated_stderr: result.truncated?.stderr ?? false,
     callerRole: args.callerRole || null,
   }
-
   await fs.appendFile(logFile, JSON.stringify(entry) + "\n", "utf-8")
 }
