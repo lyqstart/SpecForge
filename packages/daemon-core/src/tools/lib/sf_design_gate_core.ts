@@ -562,11 +562,11 @@ export async function checkDesignGate(
     const blockingIssues: string[] = [];
     const warnings: string[] = [];
     let governanceDetails: Record<string, unknown> | undefined;
+    let systemGovernanceArtifactCount = 0;
 
     for (const artifact of designArtifacts) {
       const content = artifact.content;
       const artifactLabel = artifact.path.replace(/\\/g, '/');
-
       if (workflowType === 'feature_spec_design_first') {
         const designFirstResult = checkDesignGateDesignFirst(content);
         if (designFirstResult.status !== 'pass') {
@@ -579,28 +579,33 @@ export async function checkDesignGate(
           continue;
         }
         governanceDetails = designFirstResult.details;
+        systemGovernanceArtifactCount += 1;
         continue;
       }
 
+      const systemGovernanceArtifact = hasSystemGovernanceScope(content);
       const governanceResult = checkSystemGovernanceContent(
         content,
-        governanceRequirement.required
+        systemGovernanceArtifact
       );
       if (governanceResult.status !== 'pass') {
         blockingIssues.push(
           ...governanceResult.blocking_issues.map(issue => `${artifactLabel}: ${issue}`)
         );
-        warnings.push(...governanceResult.warnings.map(warning => `${artifactLabel}: ${warning}`));
+        warnings.push(
+          ...governanceResult.warnings.map(warning => `${artifactLabel}: ${warning}`)
+        );
         continue;
       }
-      governanceDetails = governanceResult.details;
-
+      if (systemGovernanceArtifact) {
+        systemGovernanceArtifactCount += 1;
+        governanceDetails = governanceResult.details;
+      }
       if (!hasRequirementReferences(content)) {
         blockingIssues.push(
           `${artifactLabel}: 设计文档未引用需求编号（需要包含"需求 X"、"REQ-XXX"或"Requirement X"格式的引用）`
         );
       }
-
       const cpTestTypes = extractCPTestTypes(content);
       for (const { cpId, testType } of cpTestTypes) {
         if (!isValidVerificationType(testType)) {
@@ -609,6 +614,12 @@ export async function checkDesignGate(
           );
         }
       }
+    }
+
+    if (governanceRequirement.required && systemGovernanceArtifactCount === 0) {
+      blockingIssues.push(
+        '当前 Work Item 需要系统治理分析，但没有任何 design Candidate 声明 analysis_scope: system_governance'
+      );
     }
 
     if (blockingIssues.length > 0) {

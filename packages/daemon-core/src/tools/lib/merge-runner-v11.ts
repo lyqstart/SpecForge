@@ -143,7 +143,8 @@ function inferModuleCodeFromProjectTarget(value: unknown): string | null {
 }
 async function registerMergedProjectModules(
   specManifest: any,
-  projectRoot: string
+  projectRoot: string,
+  replaceLegacyModuleEntries = false
 ): Promise<void> {
   if (!specManifest || typeof specManifest !== 'object') return;
   const targets = Array.isArray(specManifest.last_merged_targets)
@@ -221,8 +222,11 @@ async function registerMergedProjectModules(
       code_paths: codePaths,
     });
 
-    // Preserve forward-compatible fields already established by migration.
-    const mergedEntry = { ...existing, ...canonicalEntry };
+    // Normal merges preserve forward-compatible fields. A governed Project
+    // Spec repair replaces the legacy record so deprecated aliases do not survive.
+    const mergedEntry = replaceLegacyModuleEntries
+      ? canonicalEntry
+      : { ...existing, ...canonicalEntry };
     if (governanceReady) {
       (mergedEntry as any).contracts =
         `.specforge/project/modules/${moduleCode}/contracts.json`;
@@ -237,6 +241,42 @@ async function registerMergedProjectModules(
 
 const NEW_MODULE_REQUIRED_FILES = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'] as const;
 
+const PROJECT_SPEC_REPAIR_REQUIRED_FILES = [
+  'module.json',
+  'requirements.md',
+  'design.md',
+  'trace.md',
+] as const;
+
+async function isGovernedNewModuleAdmission(
+  workItemDir: string,
+  workflowPath: unknown
+): Promise<boolean> {
+  if (workflowPath === 'architecture_change_path' || workflowPath === 'spec_migration_path') {
+    return true;
+  }
+  if (workflowPath !== 'requirement_change_path') return false;
+  try {
+    const trigger = await readJsonFile(path.join(workItemDir, 'trigger_result.json'));
+    return (
+      trigger?.classification?.architecture_changed === true ||
+      trigger?.classification?.module_boundary_changed === true
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function isProjectSpecRepairMerge(
+  workItemDir: string,
+  workflowPath: unknown
+): Promise<boolean> {
+  return (
+    workflowPath === 'spec_migration_path' &&
+    (await fileExists(path.join(workItemDir, 'project_spec_repair_plan.json')))
+  );
+}
+
 async function validateGovernedNewModuleTargets(input: {
   projectRoot: string;
   workItemDir: string;
@@ -246,6 +286,15 @@ async function validateGovernedNewModuleTargets(input: {
 }): Promise<{ allowedTargets: Set<string>; errors: string[] }> {
   const allowedTargets = new Set<string>();
   const errors: string[] = [];
+  const governedModuleAdmission = await isGovernedNewModuleAdmission(
+    input.workItemDir,
+    input.workflowPath
+  );
+  const projectSpecRepair = await isProjectSpecRepairMerge(
+    input.workItemDir,
+    input.workflowPath
+  );
+
   const specManifestPath = path.join(
     input.projectRoot,
     '.specforge',
@@ -265,10 +314,12 @@ async function validateGovernedNewModuleTargets(input: {
   if (registryErrors.length > 0) {
     errors.push(`MODULE_REGISTRY_INVALID: ${registryErrors.join('; ')}`);
   }
+
   const entriesByGovernedModule = new Map<string, Map<string, ManifestEntry>>();
   for (const entry of input.entries) {
     const target = normalizeProjectSpecTargetPath(entry.target_path);
     if (!target || input.declaredTargetPaths.has(target)) continue;
+
     const moduleCode = moduleCodeFromProjectSpecPath(target);
     if (!moduleCode) continue;
 
@@ -279,34 +330,44 @@ async function validateGovernedNewModuleTargets(input: {
       );
       continue;
     }
-    if (
-      input.workflowPath !== 'architecture_change_path' &&
-      input.workflowPath !== 'spec_migration_path'
-    ) {
+
+    if (!governedModuleAdmission) {
       errors.push(
-        `Only architecture_change_path or spec_migration_path may introduce module ${moduleCode}: ${target}`
+        `Only architecture_change_path or spec_migration_path, or a governed requirement_change_path with architecture/module-boundary impact, may introduce module ${moduleCode}: ${target}`
       );
       continue;
     }
+
     if (entry.operation === 'delete') {
       errors.push(`A new module cannot be introduced with delete operation: ${target}`);
       continue;
     }
+
     const filename = target.slice(canonicalRoot.length);
-    if (!NEW_MODULE_REQUIRED_FILES.includes(filename as (typeof NEW_MODULE_REQUIRED_FILES)[number])) {
+    const supportedFiles = projectSpecRepair
+      ? PROJECT_SPEC_REPAIR_REQUIRED_FILES
+      : NEW_MODULE_REQUIRED_FILES;
+
+    if (!supportedFiles.includes(filename as never)) {
       errors.push(`Unsupported new module target for ${moduleCode}: ${target}`);
       continue;
     }
-    const moduleEntries = entriesByGovernedModule.get(moduleCode) ?? new Map<string, ManifestEntry>();
+
+    const moduleEntries =
+      entriesByGovernedModule.get(moduleCode) ?? new Map<string, ManifestEntry>();
     moduleEntries.set(filename, entry);
     entriesByGovernedModule.set(moduleCode, moduleEntries);
   }
 
   for (const [moduleCode, moduleEntries] of entriesByGovernedModule) {
-    const missing = NEW_MODULE_REQUIRED_FILES.filter(filename => !moduleEntries.has(filename));
+    const requiredFiles = projectSpecRepair
+      ? PROJECT_SPEC_REPAIR_REQUIRED_FILES
+      : NEW_MODULE_REQUIRED_FILES;
+    const missing = requiredFiles.filter(filename => !moduleEntries.has(filename));
+
     if (missing.length > 0) {
       errors.push(
-        `New module ${moduleCode} requires one approved candidate for each core file; missing: ${missing.join(', ')}`
+        `New module ${moduleCode} requires one approved candidate for each required file; missing: ${missing.join(', ')}`
       );
       continue;
     }
@@ -317,8 +378,10 @@ async function validateGovernedNewModuleTargets(input: {
       errors.push(`New module ${moduleCode} module.json candidate is outside the Work Item`);
       continue;
     }
+
+    let definition: any;
     try {
-      const definition = await readJsonFile(definitionPath);
+      definition = await readJsonFile(definitionPath);
       const identity = resolveSpecModuleIdentity(definition);
       if (!identity.valid || identity.moduleCode !== moduleCode) {
         errors.push(
@@ -327,23 +390,26 @@ async function validateGovernedNewModuleTargets(input: {
         continue;
       }
     } catch (error: any) {
-      errors.push(`Cannot validate new module ${moduleCode} module.json candidate: ${error.message}`);
+      errors.push(
+        `Cannot validate new module ${moduleCode} module.json candidate: ${error.message}`
+      );
       continue;
     }
 
-    try {
-      const definition = await readJsonFile(definitionPath);
-      const codePaths = Array.isArray(definition?.code_paths)
-        ? definition.code_paths
-            .map((value: unknown) => String(value ?? '').trim())
-            .filter(Boolean)
-        : [];
-      if (codePaths.length === 0) {
-        errors.push(`New module ${moduleCode} module.json must declare non-empty code_paths`);
-        continue;
+    if (projectSpecRepair) {
+      for (const filename of PROJECT_SPEC_REPAIR_REQUIRED_FILES) {
+        allowedTargets.add(`.specforge/project/modules/${moduleCode}/${filename}`);
       }
-    } catch (error: any) {
-      errors.push(`Cannot validate new module ${moduleCode} code_paths: ${error.message}`);
+      continue;
+    }
+
+    const codePaths = Array.isArray(definition?.code_paths)
+      ? definition.code_paths
+          .map((value: unknown) => String(value ?? '').trim())
+          .filter(Boolean)
+      : [];
+    if (codePaths.length === 0) {
+      errors.push(`New module ${moduleCode} module.json must declare non-empty code_paths`);
       continue;
     }
 
@@ -353,6 +419,7 @@ async function validateGovernedNewModuleTargets(input: {
       errors.push(`New module ${moduleCode} contracts.json candidate is outside the Work Item`);
       continue;
     }
+
     try {
       const contracts = await readJsonFile(contractsPath);
       const registry = ContractRegistrySchema.safeParse(contracts?.contracts);
@@ -367,7 +434,9 @@ async function validateGovernedNewModuleTargets(input: {
         continue;
       }
     } catch (error: any) {
-      errors.push(`Cannot validate new module ${moduleCode} contracts.json candidate: ${error.message}`);
+      errors.push(
+        `Cannot validate new module ${moduleCode} contracts.json candidate: ${error.message}`
+      );
       continue;
     }
 
@@ -620,7 +689,15 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         .map(entry => entry.target_path);
 
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
-      await registerMergedProjectModules(specManifest, input.projectRoot);
+      const replaceLegacyModuleEntries = await isProjectSpecRepairMerge(
+        input.workItemDir,
+        manifest.workflow_path
+      );
+      await registerMergedProjectModules(
+        specManifest,
+        input.projectRoot,
+        replaceLegacyModuleEntries
+      );
       await fs.writeFile(
         projectSpecManifestPath,
         JSON.stringify(specManifest, null, 2) + '\n',

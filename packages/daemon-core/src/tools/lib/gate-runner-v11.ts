@@ -414,6 +414,26 @@ function moduleIdFromManifestEntry(entry: any): string | null {
   );
 }
 
+async function isGovernedNewModuleAdmission(
+  ctx: GateContext,
+  workflowPath: unknown
+): Promise<boolean> {
+  if (workflowPath === 'architecture_change_path' || workflowPath === 'spec_migration_path') {
+    return true;
+  }
+  if (workflowPath !== 'requirement_change_path') return false;
+  try {
+    const trigger = JSON.parse(
+      await fs.readFile(workItemTriggerResult(ctx.projectRoot, ctx.workItemId), 'utf-8')
+    );
+    return (
+      trigger?.classification?.architecture_changed === true ||
+      trigger?.classification?.module_boundary_changed === true
+    );
+  } catch {
+    return false;
+  }
+}
 function isEvidenceOnlyCandidateManifest(manifest: Record<string, unknown>): boolean {
   return (
     manifest.no_project_spec_change === true ||
@@ -503,9 +523,11 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
       const moduleRegistry = await readDeclaredSpecModules(ctx.projectRoot);
       const declaredModules = moduleRegistry.moduleCodes;
       const declaredTargetPaths = await readDeclaredProjectSpecTargetPaths(ctx.projectRoot);
-      const governedModuleAdmission =
-        manifest.workflow_path === 'architecture_change_path' ||
-        manifest.workflow_path === 'spec_migration_path';
+      const projectSpecRepair = await isProjectSpecRepairWorkItem(ctx);
+      const governedModuleAdmission = await isGovernedNewModuleAdmission(
+        ctx,
+        manifest.workflow_path
+      );
       const requiredNewModuleFiles = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'];
       const governedModuleFiles = new Map<string, Map<string, string>>();
       checks.push({
@@ -599,6 +621,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
       }
 
       for (const [moduleCode, files] of governedModuleFiles) {
+        if (projectSpecRepair) continue;
         const missing = requiredNewModuleFiles.filter(filename => !files.has(filename));
         checks.push({
           check_id: `new_module_${moduleCode}_complete`,

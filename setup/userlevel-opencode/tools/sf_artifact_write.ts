@@ -4,13 +4,18 @@ export default tool({
   description:
     "将 SpecForge Work Item 受控产物写入白名单路径。正式 WI 产物必须使用 canonical file_type，不得用 work_log 承载 trigger_result/tasks/candidate_manifest/merge_report/evidence_manifest 等 required artifact。" +
     " JSON 产物的 content 必须是 JSON 字符串；如果上层传入对象，daemon 会尽量序列化，但 Agent 应优先使用 JSON.stringify 后的字符串。" +
-    " 新项目第一次正式功能如果尚无有效 Project Architecture / Project Data Model，sf-design 必须在同一个 Requirement WI 中使用 candidate_architecture、candidate_data_model，并为已声明 Module 使用 candidate_module_definition 写入真实 code_paths、使用 candidate_module_contract 建立 Module Contract；不得编造架构、数据模型或代码归属。" +
+    " 新项目第一次正式功能如果尚无有效 Project Architecture / Project Data Model，sf-design 必须在同一个 Requirement WI 中使用 candidate_architecture、candidate_data_model，并为已声明或受控新增 Module 使用 candidate_module_definition 写入真实 code_paths、使用 candidate_module_contract 建立 Module Contract；不得编造架构、数据模型或代码归属。" +
     " verification_report 必须使用 template=verification_report；daemon 会把结构化 Verification JSON 渲染为 Markdown，并保留可机读 fenced JSON。该产物和 evidence_manifest 由 sf-verifier 拥有。" +
     " verification_gate 通过后验证输入被冻结；需要修改时必须先按恢复流程回到 implementation_ready。" +
     " file_type=work_item 时内容至少应包含 schema_version、work_item_id、status、workflow_type、workflow_path。",
   args: {
     work_item_id: {
       description: "Work Item ID，例如 WI-20260614-0001",
+      type: "string",
+    },
+    module_id: {
+      description:
+        "模块级 Candidate 的明确 MODULE_CODE。多模块或新增模块场景必须填写，例如 DOMAIN；用于 candidate_requirements、candidate_design、candidate_module_definition、candidate_module_contract、candidate_module_trace。",
       type: "string",
     },
     file_type: {

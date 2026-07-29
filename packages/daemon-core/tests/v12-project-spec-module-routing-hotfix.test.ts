@@ -40,8 +40,7 @@ describe('当前项目规格模块路由契约', () => {
     expect(text).toContain("projectModuleTargetPath(baseDir, moduleId, 'requirements')");
     expect(text).toContain("projectModuleTargetPath(baseDir, moduleId, 'design')");
     expect(text).toContain('rawEntries');
-    expect(text).toContain(
-      'rawEntries.map((entry: any) => canonicalizeCandidateEntry(entry, baseDir, workItemId))'
-    );
+    expect(text).toContain('augmentGovernanceCandidateEntries(rawEntries, wiDir)');
+    expect(text).toContain('canonicalizeCandidateEntry(entry, baseDir, workItemId)');
   });
 });
