@@ -36,9 +36,21 @@ cd /path/to/specforge-repo
 bun scripts/sf-installer.ts install
 ```
 
-这会将共享组件（Agent、Tool、Skill、Plugin）部署到 `~/.config/opencode/`。组件数量由安装器运行时自动扫描确定，无需硬编码。
+这会将共享组件（Agent、Tool、Skill、Plugin）部署到 OpenCode 用户配置目录。默认目录为 `~/.config/opencode/`；设置 `OPENCODE_CONFIG_DIR` 时以该目录为准。组件数量由安装器运行时自动扫描确定，无需硬编码。
 
 安装完成后，先确保 SpecForge daemon 已由部署环境启动并保持可用，再打开项目的 OpenCode。Plugin 负责连接 daemon、注册项目并自动初始化项目运行时（`.specforge/` 目录），但不负责启动、停止、重启或替换 daemon。
+
+### 用户级与项目级路径边界
+
+| 数据类型 | 标准位置 | 归属 |
+|---|---|---|
+| 安装 Manifest | `<OpenCode config>/specforge-manifest.json` | 安装器 |
+| Agent、Tool、Skill、Plugin | `<OpenCode config>/agents`、`tools`、`skills`、`plugins` | 所有项目共享 |
+| daemon 握手、锁和桥接日志 | `<OpenCode config>/sf-user/runtime` | 共享 daemon |
+| 个人模式 checkpoint | `<project>/.specforge/runtime/checkpoints` | 当前项目 |
+| 企业模式 checkpoint | `<OpenCode config>/sf-user/projects/<project-hash>/checkpoints` | 当前项目的用户级隔离副本 |
+
+`~/.specforge` 只允许作为旧版本迁移读取来源。新安装、升级、daemon 运行和项目压缩不得创建或写入该目录。共享 daemon 没有明确项目绑定时不得生成 checkpoint。
 
 ### Daemon 运行模型
 
@@ -96,24 +108,34 @@ bun scripts/sf-installer.ts uninstall
 - ✅ **安全保留**：保留用户其他配置不变
 - ✅ **残留检测**：报告未在 Manifest 中记录的 sf-* 文件
 
-### 完整卸载（含用户数据）
+### 完整卸载（含用户级运行数据）
 
-上面的 `uninstall` 命令只移除 SpecForge 的共享组件（Agent/Tool/Skill/Plugin）
-
-如需彻底清除所有内容，在执行 `uninstall` 后，额外运行：
+上面的 `uninstall` 命令只移除 Manifest 管理的共享组件，并保留 `<OpenCode config>/sf-user` 中的运行数据、模板、备份和项目隔离数据。彻底清理前必须先关闭全部 OpenCode 并停止 daemon。
 
 **macOS / Linux：**
 ```bash
 bun scripts/sf-installer.ts uninstall
+OPEN_CODE_ROOT="${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}"
+rm -rf "$OPEN_CODE_ROOT/sf-user"
 ```
 
 **Windows PowerShell：**
 ```powershell
 bun scripts/sf-installer.ts uninstall
-Remove-Item -Recurse -Force $env:USERPROFILE\.specforge
+
+$OpenCodeRoot = $env:OPENCODE_CONFIG_DIR
+if ([string]::IsNullOrWhiteSpace($OpenCodeRoot)) {
+    if (-not [string]::IsNullOrWhiteSpace($env:XDG_CONFIG_HOME)) {
+        $OpenCodeRoot = Join-Path $env:XDG_CONFIG_HOME "opencode"
+    } else {
+        $OpenCodeRoot = Join-Path $HOME ".config\opencode"
+    }
+}
+
+Remove-Item -LiteralPath (Join-Path $OpenCodeRoot "sf-user") -Recurse -Force -ErrorAction SilentlyContinue
 ```
 
-> ⚠️ **警告**：此操作不可逆。`.specforge/` 目录包含你的配置文件、运行日志、迁移脚本等用户数据，删除后无法恢复。
+> ⚠️ **警告**：此操作不可逆。不要删除用户主目录下的 `~/.specforge` 作为正常卸载步骤；该目录是旧版本遗留路径，不是当前用户级数据目录。上述命令也不会删除任何项目的 `<project>/.specforge`。项目目录包含正式规格、Work Item 和项目运行数据，是否删除必须逐项目单独决定。
 
 ### 版本信息
 
@@ -182,13 +204,19 @@ SpecForge/                        # 仓库根目录
 ### 安装后（用户项目视角）
 
 ```
-~/.config/opencode/              # 用户级共享组件（一次安装，所有项目共享）
+~/.config/opencode/              # OpenCode 用户配置根目录
 ├── opencode.json                # sf-* Agent 注册
-├── specforge-manifest.json      # 安装清单
+├── specforge-manifest.json      # 安装清单（固定在配置根目录）
 ├── agents/                      # sf-* Agent 定义
 ├── tools/ + tools/lib/          # sf_* Tool 文件
 ├── skills/                      # sf-* Skill
-└── plugins/                     # 统一 Plugin
+├── plugins/                     # 统一 Plugin
+└── sf-user/                     # SpecForge 用户级数据根目录
+    ├── runtime/                 # daemon handshake、锁、桥接日志
+    ├── lib/                     # 用户级运行依赖
+    ├── templates/               # 模板
+    ├── backups/                 # 备份
+    └── projects/                # 企业模式项目隔离数据
 
 project-root/                    # 项目级（Plugin 自动初始化）
 ├── AGENTS.md                    # Agent 总览（自动生成）
@@ -424,6 +452,12 @@ bun run test:watch     # 监听模式
 bun run test:coverage  # 带覆盖率
 ```
 
+Windows 上可在隔离的临时 OpenCode 配置目录中执行完整安装生命周期验收，不会修改当前用户的正式 OpenCode 配置：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-userlevel-installer-lifecycle-acceptance.ps1
+```
+
 ---
 
 ## 配置模型
@@ -514,15 +548,21 @@ bun scripts/sf-installer.ts upgrade --force
 
 ### 安装位置
 
-**用户级共享组件目录：**
+**用户级共享组件与运行数据目录：**
 ```
-~/.config/opencode/
-├── agents/           # sf-* Agent 定义文件
-├── tools/           # sf_* Tool + lib 文件
-├── skills/          # sf-* Skill 目录
-├── plugins/         # 统一 Plugin (sf_specforge.ts)
-├── opencode.json    # Agent 注册配置
-└── specforge-manifest.json  # 用户级 Manifest
+<OpenCode config>/
+├── agents/                     # sf-* Agent 定义文件
+├── tools/                      # sf_* Tool + lib 文件
+├── skills/                     # sf-* Skill 目录
+├── plugins/                    # 统一 Plugin (sf_specforge.ts)
+├── opencode.json               # Agent 注册配置
+├── specforge-manifest.json     # 用户级 Manifest（固定在配置根目录）
+└── sf-user/
+    ├── runtime/                # daemon handshake、锁、桥接日志
+    ├── lib/                    # 用户级运行依赖
+    ├── templates/              # 模板
+    ├── backups/                # 备份
+    └── projects/               # 企业模式 checkpoint 等项目隔离数据
 ```
 
 **项目级运行时目录（Plugin 自动初始化）：**
