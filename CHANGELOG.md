@@ -2,6 +2,28 @@
 
 All notable changes to SpecForge are documented in this file.
 
+## [Unreleased]
+
+### Added
+- 新增 `scripts/run-userlevel-installer-lifecycle-acceptance.ps1`，使用隔离的临时 OpenCode 配置目录验证 install → verify → upgrade → verify → force upgrade → verify → uninstall 全生命周期，不修改正式用户配置。
+- OpenCode 压缩桥接增加可观测日志，记录插件初始化、项目注册、压缩钩子、checkpoint 转发和 daemon 返回结果。
+
+### Changed
+- 用户级路径统一为 `<OpenCode config>/sf-user`；安装 Manifest 固定为 `<OpenCode config>/specforge-manifest.json`。
+- daemon 自身握手、锁和桥接日志保留在 `sf-user/runtime`；个人模式 checkpoint 写入 `<project>/.specforge/runtime/checkpoints`；企业模式 checkpoint 写入 `sf-user/projects/<project-hash>/checkpoints`。
+- README 的彻底卸载步骤改为删除 `sf-user`，不再把用户主目录下的 `~/.specforge` 当作当前用户级数据目录。
+
+### Fixed
+- 消除用户主目录 `~/.specforge` 的新建和写入来源；该路径只保留旧版本迁移读取能力。
+- shared daemon 不再把自己的运行目录当作项目目录；没有明确项目绑定时拒绝生成 checkpoint。
+- 补齐 OpenCode `experimental.session.compacting` 到 daemon 的 checkpoint 事件桥接，并使用 daemon 返回的项目绑定 sessionId。
+- 修复测试读取过期生成文件、使用真实用户 handshake 和并行争用 daemon 锁的问题。
+
+### Validation
+- 确定性 workspace build 通过。
+- Stage 3 定向验证 8 个测试文件、114 个测试全部通过。
+- Windows 真实运行验证确认 `/compact` 在当前项目生成 checkpoint，canonical handshake 位于 `sf-user/runtime/handshake.json`，错误嵌套目录和 `C:\Users\<user>\.specforge` 均未重新生成。
+
 ## [5.1.0] — 2026-05-20
 
 ### Fixed
