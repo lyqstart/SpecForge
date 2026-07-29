@@ -52,6 +52,7 @@ function Resolve-LiveRoot {
 
 function IsDeployableSharedSourceFile($FilePath) {
   $Name = [System.IO.Path]::GetFileName($FilePath)
+  if ($Name -eq ".gitkeep") { return $false }
   if ($Name -like "*.bak") { return $false }
   if ($Name -like "*.tmp") { return $false }
   if ($Name -match "\.v\d+\.bak$") { return $false }
@@ -166,5 +167,5 @@ if (
 }
 
 Write-Host "RESULT: USERLEVEL_LIVE_CONSISTENCY_PASSED"
-Write-Host "CAUSE: Shared setup components and repository template library match live OpenCode userlevel deployment by SHA256. Backup artifacts are excluded from deployment-source checks."
+Write-Host "CAUSE: Shared setup components and repository template library match live OpenCode userlevel deployment by SHA256. Directory placeholders and backup artifacts are excluded from deployment-source checks."
 Write-Host "NEXT ACTION: continue release closure."
