@@ -724,3 +724,14 @@ constrained_by: <约束来源>
 8. Module Contract 的 `source_refs` 必须来自相关 `DD-*`；Project Contract 的 `source_refs` 必须来自相关 `ARCH-*` / `DATA-*`；Contract 必须声明可执行的 `enforcement`。
 9. 设计输出必须覆盖 Impact Scope 中声明需要治理的正式对象；未覆盖时返回 blocked，不得把缺失责任下推给 Task Planner 或 Executor。
 10. `requirements_index.md`、`design_index.md` 等可由 Runtime 从正式数据推导的索引不得由本 Agent凭空重复维护。
+
+## Requirement-Owned Greenfield Multi-Module Contract
+
+This section supersedes any earlier statement that only `architecture_change_path` may introduce a module.
+
+- A user/business Requirement change remains `requirement_change_path` even when it also changes Architecture, Data Model, module boundaries, Module Design, or Contract.
+- A first real Requirement Work Item may introduce new modules when the authoritative classification sets `architecture_changed=true` or `module_boundary_changed=true`.
+- Every module-scoped `sf_artifact_write` call MUST pass `module_id`. Never rely on CORE fallback or last-write-wins.
+- Every new module must provide one complete Candidate set: `module.candidate.json`, `requirements.candidate.md`, `design.candidate.md`, `contracts.candidate.json`, and `trace.candidate.md`.
+- A governance-required Work Item must contain at least one overall design with `analysis_scope: system_governance`. Module projection designs use `analysis_scope: solution_design` and do not repeat the seven overall governance sections.
+- Runtime derives canonical `candidate_manifest.entries` from actual Candidate files. The Orchestrator must not invent target paths.

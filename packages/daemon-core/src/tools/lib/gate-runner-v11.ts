@@ -64,6 +64,7 @@ import { checkContractIntegrity } from './contract-integrity.js';
 import { verifyChangedCodeContracts } from './code-contract-verifier.js';
 import { evaluateVerificationGovernanceContract } from './verification-governance-contract.js';
 import { checkFormalVersionEligibility } from './project-governance-v2.js';
+import { selectWorkflowPath } from './impact-analysis.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -225,6 +226,36 @@ registerGate('workflow_selection_gate', 'hard_gate', true, async ctx => {
         passed: validPaths.includes(json.workflow_path),
         severity: undefined,
       });
+      const selectedPath = String(json.workflow_path ?? '');
+      if (
+        validPaths.includes(selectedPath) &&
+        selectedPath !== 'spec_migration_path' &&
+        selectedPath !== 'rollback_path'
+      ) {
+        const raw = json.classification ?? {};
+        const expectedPath = selectWorkflowPath({
+          requirement_changed: raw.requirement_changed === true,
+          acceptance_criteria_changed: raw.acceptance_criteria_changed === true,
+          business_rule_changed: raw.business_rule_changed === true,
+          user_visible_behavior_changed: raw.user_visible_behavior_changed === true,
+          data_semantics_changed: raw.data_semantics_changed === true,
+          design_changed: raw.design_changed === true,
+          module_boundary_changed: raw.module_boundary_changed === true,
+          api_contract_changed: raw.api_contract_changed === true,
+          architecture_changed: raw.architecture_changed === true,
+          data_model_changed: raw.data_model_changed === true,
+          module_contract_changed: raw.module_contract_changed === true,
+          contract_registry_only: raw.contract_registry_only === true,
+          unknowns: Array.isArray(raw.unknowns) ? raw.unknowns.map((value: unknown) => String(value)) : [],
+        });
+        const routeConsistent = selectedPath === expectedPath;
+        checks.push({
+          check_id: 'workflow_path_matches_classification',
+          description: `workflow_path matches authoritative classification route: expected=${expectedPath}, actual=${selectedPath}`,
+          passed: routeConsistent,
+          severity: routeConsistent ? undefined : 'error',
+        });
+      }
     } catch {
       checks.push({
         check_id: 'trigger_parse',
@@ -414,6 +445,26 @@ function moduleIdFromManifestEntry(entry: any): string | null {
   );
 }
 
+async function isGovernedNewModuleAdmission(
+  ctx: GateContext,
+  workflowPath: string
+): Promise<boolean> {
+  if (workflowPath === 'architecture_change_path' || workflowPath === 'spec_migration_path') {
+    return true;
+  }
+  if (workflowPath !== 'requirement_change_path') return false;
+  try {
+    const trigger = JSON.parse(
+      await fs.readFile(workItemTriggerResult(ctx.projectRoot, ctx.workItemId), 'utf-8')
+    );
+    return (
+      trigger?.classification?.architecture_changed === true ||
+      trigger?.classification?.module_boundary_changed === true
+    );
+  } catch {
+    return false;
+  }
+}
 function isEvidenceOnlyCandidateManifest(manifest: Record<string, unknown>): boolean {
   return (
     manifest.no_project_spec_change === true ||
@@ -503,9 +554,10 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
       const moduleRegistry = await readDeclaredSpecModules(ctx.projectRoot);
       const declaredModules = moduleRegistry.moduleCodes;
       const declaredTargetPaths = await readDeclaredProjectSpecTargetPaths(ctx.projectRoot);
-      const governedModuleAdmission =
-        manifest.workflow_path === 'architecture_change_path' ||
-        manifest.workflow_path === 'spec_migration_path';
+      const governedModuleAdmission = await isGovernedNewModuleAdmission(
+        ctx,
+        String(manifest.workflow_path ?? '')
+      );
       const requiredNewModuleFiles = ['module.json', 'requirements.md', 'design.md', 'contracts.json', 'trace.md'];
       const governedModuleFiles = new Map<string, Map<string, string>>();
       checks.push({
@@ -556,6 +608,7 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
         }
         const targetDeclared =
           declaredTargetPaths.has(normalizedTargetPath) || governedModuleTarget;
+
         checks.push({
           check_id: `entry_${i}_target_declared`,
           description: `Entry ${i}: target_path is declared or belongs to a governed new module`,
