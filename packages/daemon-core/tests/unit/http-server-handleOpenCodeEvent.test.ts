@@ -8,12 +8,35 @@
  * Fix: merge sessionId into payload as fallback: `{ ...payload, sessionId: payload.sessionId ?? sessionId }`
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import { HTTPServer, HTTPServerDeps } from '../../src/http/HTTPServer';
 import { EventBus } from '../../src/event-bus/EventBus';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
 import { HandshakeManager } from '../../src/daemon/HandshakeManager';
 import * as http from 'http';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+
+const originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
+let testOpenCodeConfigDir: string;
+
+beforeAll(async () => {
+  testOpenCodeConfigDir = await fs.mkdtemp(
+    path.join(os.tmpdir(), 'specforge-http-event-test-config-')
+  );
+  process.env.OPENCODE_CONFIG_DIR = testOpenCodeConfigDir;
+  await fs.mkdir(path.join(testOpenCodeConfigDir, 'sf-user', 'runtime'), { recursive: true });
+});
+
+afterAll(async () => {
+  if (originalOpenCodeConfigDir === undefined) {
+    delete process.env.OPENCODE_CONFIG_DIR;
+  } else {
+    process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir;
+  }
+  await fs.rm(testOpenCodeConfigDir, { recursive: true, force: true });
+});
 
 /**
  * Helper: make an HTTP request to the test server
@@ -88,6 +111,12 @@ describe('HTTPServer.handleOpenCodeEvent — sessionId merge into payload', () =
   afterEach(async () => {
     if (server) { await server.stop(); }
     await handshakeManager.cleanup();
+  });
+
+  it('isolates handshake writes from the active user-level daemon runtime', () => {
+    expect(config.getHandshakeFile()).toBe(
+      path.join(testOpenCodeConfigDir, 'sf-user', 'runtime', 'handshake.json')
+    );
   });
 
   /**

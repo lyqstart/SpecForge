@@ -2,12 +2,35 @@
  * HTTP Server unit tests
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { HTTPServer, HTTPServerDeps, replaceDataWithCasRef } from './HTTPServer';
 import { EventBus } from '../event-bus/EventBus';
 import { DaemonConfig } from '../daemon/DaemonConfig';
 import { HandshakeManager } from '../daemon/HandshakeManager';
 import * as http from 'http';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+
+const originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
+let testOpenCodeConfigDir: string;
+
+beforeAll(async () => {
+  testOpenCodeConfigDir = await fs.mkdtemp(
+    path.join(os.tmpdir(), 'specforge-http-server-test-config-')
+  );
+  process.env.OPENCODE_CONFIG_DIR = testOpenCodeConfigDir;
+  await fs.mkdir(path.join(testOpenCodeConfigDir, 'sf-user', 'runtime'), { recursive: true });
+});
+
+afterAll(async () => {
+  if (originalOpenCodeConfigDir === undefined) {
+    delete process.env.OPENCODE_CONFIG_DIR;
+  } else {
+    process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir;
+  }
+  await fs.rm(testOpenCodeConfigDir, { recursive: true, force: true });
+});
 
 describe('HTTPServer', () => {
   let server: HTTPServer;
@@ -22,6 +45,12 @@ describe('HTTPServer', () => {
 
   afterEach(async () => {
     await server.stop();
+  });
+
+  it('isolates daemon configuration from the active user-level runtime', () => {
+    expect(config.getHandshakeFile()).toBe(
+      path.join(testOpenCodeConfigDir, 'sf-user', 'runtime', 'handshake.json')
+    );
   });
 
   it('should start and stop successfully', async () => {
