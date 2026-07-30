@@ -67,6 +67,7 @@ type ContractEntry = {
 
 type ModuleModel = {
   module_code: string;
+  code_paths_declared: boolean;
   contract_file_exists: boolean;
   contract_file_valid: boolean;
   contract_file_owner: string;
@@ -89,6 +90,7 @@ type TraceEdge = {
 
 type ProjectModel = {
   active: boolean;
+  default_module: string;
   manifest: any;
   manifestPath: string;
   architecturePath: string;
@@ -146,8 +148,13 @@ function normalizeArray(value: unknown): string[] {
 
 export function normalizeImpactScope(value: unknown): ImpactScope {
   const scope = value && typeof value === 'object' ? (value as any) : {};
+  const affectedModules = [
+    ...normalizeArray(scope.affected_modules),
+    ...normalizeArray(scope.existing_modules),
+    ...normalizeArray(scope.new_modules),
+  ];
   return {
-    affected_modules: normalizeArray(scope.affected_modules),
+    affected_modules: unique(affectedModules),
     architecture_refs: normalizeArray(scope.architecture_refs),
     data_model_refs: normalizeArray(scope.data_model_refs),
     design_refs: normalizeArray(scope.design_refs),
@@ -205,6 +212,40 @@ export function resolveModuleOwnershipFromManifest(manifest: any, filePath: stri
   return unique(owners);
 }
 
+function parseStructuredTraceDeclarations(text: string, source: string): TraceEdge[] {
+  const edges: TraceEdge[] = [];
+  const jsonBlocks = text.matchAll(/```json\s*([\s\S]*?)```/gi);
+  for (const match of jsonBlocks) {
+    let parsed: any;
+    try {
+      parsed = JSON.parse(match[1]);
+    } catch {
+      continue;
+    }
+
+    for (const field of ['data_designs', 'module_designs']) {
+      for (const entry of Array.isArray(parsed?.[field]) ? parsed[field] : []) {
+        const from = String(entry?.id ?? '').trim();
+        if (!from) continue;
+        for (const to of normalizeArray(entry?.constrained_by)) {
+          edges.push({ from, relation: 'constrained_by', to, source });
+        }
+      }
+    }
+
+    for (const entry of Array.isArray(parsed?.contract_enforcements)
+      ? parsed.contract_enforcements
+      : []) {
+      const from = String(entry?.id ?? entry?.contract_id ?? '').trim();
+      if (!from) continue;
+      for (const to of normalizeArray(entry?.enforces ?? entry?.source_refs)) {
+        edges.push({ from, relation: 'enforces', to, source });
+      }
+    }
+  }
+  return edges;
+}
+
 function parseTrace(text: string, source: string): TraceEdge[] {
   const edges: TraceEdge[] = [];
   for (const line of text.split(/\r?\n/)) {
@@ -219,6 +260,7 @@ function parseTrace(text: string, source: string): TraceEdge[] {
       edges.push({ from, relation, to, source });
     }
   }
+  edges.push(...parseStructuredTraceDeclarations(text, source));
   return edges;
 }
 
@@ -310,6 +352,56 @@ function flattenContracts(registry: any, moduleInternal: boolean): ContractEntry
   return result;
 }
 
+function canonicalModuleEntry(moduleCode: string, existing: any = {}): any {
+  const root = `${SPEC_DIR}/project/modules/${moduleCode}`;
+  return {
+    ...existing,
+    module_code: moduleCode,
+    path: existing?.path ?? root,
+    module_file: existing?.module_file ?? `${root}/module.json`,
+    requirements: existing?.requirements ?? `${root}/requirements.md`,
+    design: existing?.design ?? `${root}/design.md`,
+    trace: existing?.trace ?? `${root}/trace.md`,
+  };
+}
+
+async function prospectiveModuleEntries(
+  projectRoot: string,
+  manifest: any,
+  reader: Awaited<ReturnType<typeof prospectiveReader>>,
+  prospective: boolean,
+): Promise<any[]> {
+  const entries = new Map<string, any>();
+  for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
+    const identity = resolveSpecModuleIdentity(raw);
+    if (!identity.valid || !identity.moduleCode) continue;
+    entries.set(identity.moduleCode, canonicalModuleEntry(identity.moduleCode, raw));
+  }
+
+  if (!prospective) return Array.from(entries.values());
+
+  for (const target of reader.targets) {
+    const match = /^\.specforge\/project\/modules\/([^/]+)\/module\.json$/i.exec(target);
+    if (!match?.[1]) continue;
+    const moduleCode = match[1].toUpperCase();
+    const modulePath = absolute(projectRoot, target);
+    const definition = await reader.json(modulePath);
+    const identity = resolveSpecModuleIdentity(definition);
+    if (!identity.valid || identity.moduleCode !== moduleCode) continue;
+    const existing = entries.get(moduleCode) ?? {};
+    entries.set(
+      moduleCode,
+      canonicalModuleEntry(moduleCode, {
+        ...existing,
+        ...definition,
+        module_code: moduleCode,
+      }),
+    );
+  }
+
+  return Array.from(entries.values());
+}
+
 async function loadProjectModel(
   projectRoot: string,
   workItemDir: string,
@@ -351,7 +443,18 @@ async function loadProjectModel(
     ? await reader.json(extensionRegistryPath)
     : await readJson(extensionRegistryPath);
   if (extensionRegistry?.contracts) {
-    contracts.push(...flattenContracts(extensionRegistry.contracts, false));
+    const projectContracts = flattenContracts(extensionRegistry.contracts, false);
+    contracts.push(...projectContracts);
+    for (const contract of projectContracts) {
+      for (const ref of contract.source_refs) {
+        trace.push({
+          from: contract.id,
+          relation: 'enforces',
+          to: ref,
+          source: extensionRegistryPath,
+        });
+      }
+    }
   }
   inputFiles.push(extensionRegistryPath);
 
@@ -367,17 +470,26 @@ async function loadProjectModel(
   );
   inputFiles.push(projectTracePath);
 
-  for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
+  const effectiveModuleEntries = await prospectiveModuleEntries(
+    projectRoot,
+    manifest,
+    reader,
+    prospective,
+  );
+
+  for (const raw of effectiveModuleEntries) {
     const identity = resolveSpecModuleIdentity(raw);
     if (!identity.valid || !identity.moduleCode) continue;
     const moduleCode = identity.moduleCode;
     const moduleRoot = `${SPEC_DIR}/project/modules/${moduleCode}`;
     const moduleFilePath = absolute(projectRoot, String(raw.module_file ?? `${moduleRoot}/module.json`));
+    const moduleDefinition = prospective
+      ? await reader.json(moduleFilePath)
+      : await readJson(moduleFilePath);
     const designPath = absolute(projectRoot, String(raw.design ?? `${moduleRoot}/design.md`));
-    const contractsPath = absolute(
-      projectRoot,
-      String(raw.contracts ?? `${moduleRoot}/contracts.json`),
-    );
+    const configuredContracts =
+      raw.contracts ?? moduleDefinition?.contracts ?? `${moduleRoot}/contracts.json`;
+    const contractsPath = absolute(projectRoot, String(configuredContracts));
     const tracePath = absolute(projectRoot, String(raw.trace ?? `${moduleRoot}/trace.md`));
     const designText = prospective ? await reader.text(designPath) : await readText(designPath);
     const moduleContractJson = prospective
@@ -401,18 +513,38 @@ async function loadProjectModel(
       ? flattenContracts(parsedModuleContract.contracts, true)
       : [];
     contracts.push(...internalContracts);
+    for (const contract of internalContracts) {
+      for (const ref of contract.source_refs) {
+        trace.push({
+          from: contract.id,
+          relation: 'enforces',
+          to: ref,
+          source: contractsPath,
+        });
+      }
+    }
+
+    const codePathsDeclared =
+      Array.isArray(raw.code_paths) || Array.isArray(moduleDefinition?.code_paths);
+    const codePaths = normalizeArray(moduleDefinition?.code_paths ?? raw.code_paths);
+    const contractsTarget = slash(path.relative(projectRoot, contractsPath));
+    const contractsDeclared =
+      (typeof raw.contracts === 'string' && String(raw.contracts).trim().length > 0) ||
+      (typeof moduleDefinition?.contracts === 'string' &&
+        String(moduleDefinition.contracts).trim().length > 0) ||
+      (prospective && reader.targets.has(contractsTarget));
 
     modules.push({
       module_code: moduleCode,
+      code_paths_declared: codePathsDeclared,
       contract_file_exists: moduleContractJson !== null,
       contract_file_valid: parsedModuleContract !== null,
       contract_file_owner: parsedModuleContract?.owner_module ?? '',
       design_path: designPath,
       contracts_path: contractsPath,
-      contracts_declared:
-        typeof raw.contracts === 'string' && String(raw.contracts).trim().length > 0,
+      contracts_declared: contractsDeclared,
       trace_path: tracePath,
-      code_paths: normalizeArray(raw.code_paths),
+      code_paths: codePaths,
       design_ids: extractIds(designText, 'DD'),
       design_text: designText,
       contract_entries: internalContracts,
@@ -455,16 +587,25 @@ async function loadProjectModel(
   const effectiveManifest = manifest && typeof manifest === 'object'
     ? {
         ...manifest,
-        modules: (Array.isArray(manifest.modules) ? manifest.modules : []).map((raw: any) => {
+        modules: effectiveModuleEntries.map((raw: any) => {
           const identity = resolveSpecModuleIdentity(raw);
           const model = modules.find(item => item.module_code === identity.moduleCode);
-          return model ? { ...raw, code_paths: model.code_paths } : raw;
+          return model
+            ? {
+                ...raw,
+                code_paths: model.code_paths,
+                ...(model.contracts_declared
+                  ? { contracts: slash(path.relative(projectRoot, model.contracts_path)) }
+                  : {}),
+              }
+            : raw;
         }),
       }
     : manifest;
 
   return {
     active,
+    default_module: String(manifest?.default_module ?? '').trim().toUpperCase(),
     manifest: effectiveManifest,
     manifestPath,
     architecturePath,
@@ -567,11 +708,20 @@ export async function checkProjectGovernanceConsistency(input: {
   );
 
   for (const module of model.modules) {
+    const governanceOnlyDefault =
+      module.module_code === model.default_module &&
+      module.code_paths_declared &&
+      module.code_paths.length === 0 &&
+      model.modules.some(
+        candidate =>
+          candidate.module_code !== module.module_code && candidate.code_paths.length > 0,
+      );
     addCheck(
       checks,
       `module_${module.module_code}_code_paths`,
       `Module ${module.module_code} declares explicit code_paths in spec_manifest.json`,
-      module.code_paths.length > 0,
+      module.code_paths.length > 0 || governanceOnlyDefault,
+      governanceOnlyDefault ? 'default Module is an explicit governance/specification root' : undefined,
     );
     addCheck(
       checks,
@@ -607,7 +757,7 @@ export async function checkProjectGovernanceConsistency(input: {
 
   const trigger = await readTrigger(input.workItemDir);
   const workflowPath = String(trigger?.workflow_path ?? '');
-  const impactScope = normalizeImpactScope(trigger?.impact_scope);
+  const impactScope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
 
   if (workflowPath !== 'spec_migration_path') {
     const scopePresent = Object.values(impactScope).some(values => values.length > 0);
@@ -926,7 +1076,7 @@ export async function freezeGovernanceScopeForCodePermission(input: {
 }> {
   const model = await loadProjectModel(input.projectRoot, input.workItemDir, false);
   const trigger = await readTrigger(input.workItemDir);
-  const scope = normalizeImpactScope(trigger?.impact_scope);
+  const scope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
   const allowedPaths = unique(
     input.allowedWriteFiles
       .map(entry => {

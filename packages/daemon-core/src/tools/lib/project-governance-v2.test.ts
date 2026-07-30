@@ -14,6 +14,23 @@ describe('project governance v2', () => {
     });
   });
 
+  test('accepts legacy impact_summary module aliases', () => {
+    expect(
+      normalizeImpactScope({
+        existing_modules: ['CORE'],
+        new_modules: ['DOMAIN'],
+      })
+    ).toEqual({
+      affected_modules: ['CORE', 'DOMAIN'],
+      architecture_refs: [],
+      data_model_refs: [],
+      design_refs: [],
+      project_contract_refs: [],
+      module_contract_refs: [],
+      planned_code_paths: [],
+    });
+  });
+
   test('code_paths establish unique Module ownership', () => {
     const manifest = { modules: [
       { module_code: 'SYNC', code_paths: ['packages/sync/**'] },

@@ -214,8 +214,13 @@ async function registerMergedProjectModules(
       : [];
     const codePaths = moduleCodePaths.length > 0 ? moduleCodePaths : existingCodePaths;
     const contractsPath = path.join(moduleRoot, 'contracts.json');
+    const defaultModule = String(specManifest.default_module ?? '').trim().toUpperCase();
+    const governanceOnlyDefault =
+      moduleCode === defaultModule &&
+      Array.isArray(moduleDefinition?.code_paths) &&
+      moduleCodePaths.length === 0;
     const governanceReady =
-      codePaths.length > 0 && (await fileExists(contractsPath));
+      (codePaths.length > 0 || governanceOnlyDefault) && (await fileExists(contractsPath));
 
     const canonicalEntry = canonicalProjectSpecModuleEntry(moduleCode, {
       include_governance: governanceReady,

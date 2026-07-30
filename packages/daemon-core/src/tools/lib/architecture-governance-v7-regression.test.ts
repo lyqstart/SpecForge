@@ -38,6 +38,7 @@ describe('Architecture governance v7 closure', () => {
     expect(moduleModel).toContain('contracts: `${root}/contracts.json`');
     expect(moduleModel).toContain('code_paths: Array.from');
     expect(mergeRunner).toContain('include_governance: governanceReady');
+    expect(mergeRunner).toContain('governanceOnlyDefault');
     expect(governance).toContain('modules.length > 0');
     expect(governance).toContain('module.contracts_declared');
     expect(governance).toContain('module.code_paths.length > 0');
