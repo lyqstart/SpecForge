@@ -164,6 +164,43 @@ export function normalizeImpactScope(value: unknown): ImpactScope {
   };
 }
 
+function isCrossModuleTestHarnessPath(value: string): boolean {
+  const normalized = slash(value);
+  return (
+    normalized.startsWith('tests/') ||
+    /(?:^|\/)[^/]+\.(?:integration\.)?test\.[cm]?[jt]sx?$/i.test(normalized)
+  );
+}
+
+async function readApprovedTaskFiles(workItemDir: string): Promise<Set<string>> {
+  const approved = new Set<string>();
+  for (const taskPath of [
+    path.join(workItemDir, 'candidates', 'tasks.md'),
+    path.join(workItemDir, 'tasks.md'),
+  ]) {
+    const content = await readText(taskPath);
+    for (const match of content.matchAll(/\*\*files\*\*\s*:\s*\[([^\]]*)\]/gi)) {
+      for (const raw of match[1].split(',')) {
+        const candidate = slash(raw.replace(/[`'"]/g, '').trim());
+        if (candidate) approved.add(candidate);
+      }
+    }
+  }
+  return approved;
+}
+
+function isApprovedMergedArchitectureScope(
+  trigger: any,
+  model: ProjectModel,
+  workItemId: string,
+): boolean {
+  return (
+    String(trigger?.workflow_path ?? '') === 'architecture_change_path' &&
+    trigger?.classification?.architecture_changed === true &&
+    String(model.manifest?.last_merged_work_item ?? '') === workItemId
+  );
+}
+
 function extractIds(text: string, prefix: 'ARCH' | 'DATA' | 'DD'): string[] {
   const candidates = text.match(new RegExp(`\\b${prefix}-[A-Z][A-Z0-9]{1,11}-[0-9]{3}\\b`, 'g')) ?? [];
   return unique(
@@ -1077,6 +1114,12 @@ export async function freezeGovernanceScopeForCodePermission(input: {
   const model = await loadProjectModel(input.projectRoot, input.workItemDir, false);
   const trigger = await readTrigger(input.workItemDir);
   const scope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
+  const mergedArchitectureScope = isApprovedMergedArchitectureScope(
+    trigger,
+    model,
+    input.workItemId,
+  );
+  const approvedTaskFiles = await readApprovedTaskFiles(input.workItemDir);
   const allowedPaths = unique(
     input.allowedWriteFiles
       .map(entry => {
@@ -1118,12 +1161,19 @@ export async function freezeGovernanceScopeForCodePermission(input: {
   const inferredModules: string[] = [];
   for (const allowedPath of allowedPaths) {
     const owners = resolveModuleOwnershipFromManifest(model.manifest, allowedPath);
+    const approvedCrossModuleTestHarness =
+      owners.length === 0 &&
+      isCrossModuleTestHarnessPath(allowedPath) &&
+      approvedTaskFiles.has(allowedPath);
     addCheck(
       checks,
       `permission_owner_${digest(allowedPath).slice(0, 8)}`,
-      `Allowed write file maps to exactly one Module: ${allowedPath}`,
-      owners.length === 1,
-      `owners=${owners.join(',') || 'none'}`,
+      `Allowed write file maps to exactly one Module or an approved cross-module test harness: ${allowedPath}`,
+      owners.length === 1 || approvedCrossModuleTestHarness,
+      [
+        `owners=${owners.join(',') || 'none'}`,
+        `approved_cross_module_test_harness=${approvedCrossModuleTestHarness}`,
+      ].join('; '),
     );
     if (owners.length === 1) inferredModules.push(owners[0]);
   }
@@ -1137,7 +1187,18 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     `derived=${snapshot.affected_modules.join(',')}; declared=${scope.affected_modules.join(',')}`,
   );
 
-  snapshot.design_refs = unique(scope.design_refs);
+  const mergedModuleDesignRefs = unique(
+    model.modules
+      .filter(module => snapshot.affected_modules.includes(module.module_code))
+      .flatMap(module => module.design_ids),
+  );
+  snapshot.design_refs =
+    scope.design_refs.length > 0
+      ? unique(scope.design_refs)
+      : mergedArchitectureScope
+        ? mergedModuleDesignRefs
+        : [];
+
   for (const moduleCode of snapshot.affected_modules) {
     const module = model.modules.find(candidate => candidate.module_code === moduleCode);
     const moduleRefs = snapshot.design_refs.filter(ref => extractModuleFromDdId(ref) === moduleCode);
@@ -1193,10 +1254,34 @@ export async function freezeGovernanceScopeForCodePermission(input: {
   );
 
   const comparisons: Array<[string, string[], string[]]> = [
-    ['architecture', snapshot.architecture_refs, scope.architecture_refs],
-    ['data_model', snapshot.data_model_refs, scope.data_model_refs],
-    ['project_contract', snapshot.project_contract_refs, scope.project_contract_refs],
-    ['module_contract', snapshot.module_contract_refs, scope.module_contract_refs],
+    [
+      'architecture',
+      snapshot.architecture_refs,
+      scope.architecture_refs.length > 0 || !mergedArchitectureScope
+        ? scope.architecture_refs
+        : snapshot.architecture_refs,
+    ],
+    [
+      'data_model',
+      snapshot.data_model_refs,
+      scope.data_model_refs.length > 0 || !mergedArchitectureScope
+        ? scope.data_model_refs
+        : snapshot.data_model_refs,
+    ],
+    [
+      'project_contract',
+      snapshot.project_contract_refs,
+      scope.project_contract_refs.length > 0 || !mergedArchitectureScope
+        ? scope.project_contract_refs
+        : snapshot.project_contract_refs,
+    ],
+    [
+      'module_contract',
+      snapshot.module_contract_refs,
+      scope.module_contract_refs.length > 0 || !mergedArchitectureScope
+        ? scope.module_contract_refs
+        : snapshot.module_contract_refs,
+    ],
   ];
   for (const [name, derived, declared] of comparisons) {
     addCheck(
@@ -1371,12 +1456,20 @@ export async function auditActualGovernanceScope(input: {
   }
   actualFiles = unique(actualFiles.filter(Boolean));
 
+  const approvedPermissionPaths = new Set(
+    normalizeArray(snapshot.allowed_write_files).map(value => slash(value)),
+  );
   for (const changedPath of actualFiles) {
     if (changedPath === SPEC_DIR || changedPath.startsWith(`${SPEC_DIR}/`)) {
       continue;
     }
     const owners = resolveModuleOwnershipFromManifest(manifest, changedPath);
+    const approvedCrossModuleTestHarness =
+      owners.length === 0 &&
+      isCrossModuleTestHarnessPath(changedPath) &&
+      approvedPermissionPaths.has(changedPath);
     if (owners.length !== 1) {
+      if (approvedCrossModuleTestHarness) continue;
       violations.push(
         `ACTUAL_FILE_MODULE_OWNERSHIP_INVALID: ${changedPath}; owners=${owners.join(',') || 'none'}`,
       );

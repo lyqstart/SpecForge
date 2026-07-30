@@ -162,27 +162,12 @@ async function advanceImplementationStateBeforeCode(input: {
     );
   }
 
-  steps.push(
-    await transitionWithEvidence({
-      deps: input.deps,
-      context: input.context,
-      projectRoot: input.projectRoot,
-      workItemId: input.workItemId,
-      workItemDir: input.workItemDir,
-      fromState: 'implementation_ready',
-      toState: 'implementation_running',
-      workflowType: input.workflowType,
-      actorRole: 'code_permission_service',
-      evidence: 'code_permission_service released write permission for implementation',
-      transitionContext: { source: 'sf_v11_code_permission' },
-    }),
-  );
-
   return {
     attempted: true,
-    advanced: true,
+    advanced: steps.length > 0,
     from_state: current,
-    to_state: 'implementation_running',
+    to_state: 'implementation_ready',
+    current_state: 'implementation_ready',
     transition_steps: steps,
   };
 }
@@ -304,7 +289,7 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
       }
 
       const workflowFacts = await assertMergeSucceededBeforeCode(workItemDir);
-      const stateAutoAdvance = await advanceImplementationStateBeforeCode({
+      const statePreparation = await advanceImplementationStateBeforeCode({
         deps,
         context,
         projectRoot,
@@ -314,19 +299,57 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
         workflowType: workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
       });
 
-      if ((action === 'extend' || action === 'append') && stateAutoAdvance.current_state !== 'implementation_running') {
+      if (
+        (action === 'extend' || action === 'append') &&
+        statePreparation.current_state !== 'implementation_running'
+      ) {
         return {
           success: false,
           error: 'CODE_PERMISSION_EXTEND_REQUIRES_IMPLEMENTATION_RUNNING',
           hard_stop: false,
           policy_violation: true,
           retry_allowed: false,
-          current_state: stateAutoAdvance.current_state,
+          current_state: statePreparation.current_state,
         };
       }
 
       const normalized = normalizeAllowedForPolicy(allowedWriteFiles);
-      const state = await releaseCodePermission({ workItemDir, workItemId, allowedWriteFiles: normalized });
+      const state = await releaseCodePermission({
+        workItemDir,
+        workItemId,
+        allowedWriteFiles: normalized,
+      });
+
+      let stateAutoAdvance = statePreparation;
+      if (statePreparation.current_state === 'implementation_ready') {
+        const runningStep = await transitionWithEvidence({
+          deps,
+          context,
+          projectRoot,
+          workItemId,
+          workItemDir,
+          fromState: 'implementation_ready',
+          toState: 'implementation_running',
+          workflowType:
+            workflowFacts.workflowType || workflowTypeFromPath(workflowFacts.workflowPath),
+          actorRole: 'code_permission_service',
+          evidence: 'code_permission_service released write permission for implementation',
+          transitionContext: { source: 'sf_v11_code_permission' },
+        });
+        stateAutoAdvance = {
+          attempted: true,
+          advanced: true,
+          from_state: statePreparation.from_state,
+          to_state: 'implementation_running',
+          current_state: 'implementation_running',
+          transition_steps: [
+            ...(Array.isArray(statePreparation.transition_steps)
+              ? statePreparation.transition_steps
+              : []),
+            runningStep,
+          ],
+        };
+      }
 
       try {
         const baseline = takeSnapshot(projectRoot);
