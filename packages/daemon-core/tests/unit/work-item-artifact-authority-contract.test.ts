@@ -75,4 +75,13 @@ describe('Work Item artifact authority contract', () => {
       );
     }
   });
+
+  it('describes the legacy repair tool as a read-only audit', () => {
+    const wrapper = read(
+      'setup/userlevel-opencode/tools/sf_work_item_repair_closure.ts',
+    );
+    expect(wrapper).toContain('只读审计');
+    expect(wrapper).toContain('已停止修复写入');
+    expect(wrapper).not.toContain('才在根目录补一个骨架标记');
+  });
 });
