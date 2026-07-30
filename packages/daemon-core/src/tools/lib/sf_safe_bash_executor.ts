@@ -226,7 +226,7 @@ export async function executeCommand(opts: ExecuteOptions): Promise<SafeBashResu
 /**
  * 根据 host profile 选择 shell + 构造调用参数
  */
-function buildShellInvocation(
+export function buildShellInvocation(
   command: string,
   profile: HostProfile,
   platform: NodeJS.Platform
@@ -249,7 +249,9 @@ function buildShellInvocation(
   // 编码设置前缀（按需注入）
   const encodingPrefix = profile.shell_rules.encoding_setup_command
   const finalCommand = encodingPrefix
-    ? `${encodingPrefix}; ${command}`
+    ? preferredShell === "cmd"
+      ? `${encodingPrefix} && ${command}`
+      : `${encodingPrefix}; ${command}`
     : command
 
   let shellArgs: string[]
@@ -346,4 +348,3 @@ export function resolveCwd(
 
   return { cwd: resolved }
 }
-

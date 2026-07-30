@@ -9,7 +9,7 @@
  * 5. guardBashCommand 接收到 callerRole
  * 6. enableRBAC=false/undefined 时默认行为不变
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from 'vitest';
 import { getHandler } from '../../src/tools/ToolDispatcher';
 // Import triggers registerHandler side-effect
 import '../../src/tools/handlers/sf-safe-bash';
