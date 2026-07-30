@@ -64,6 +64,11 @@ export interface ContextBuildResult {
   capabilities?: CapabilityRecommendation
 }
 
+export type ContextBuildOptions = Pick<
+  TaskQueryParams,
+  "task_description" | "workflow_type" | "target_files" | "file_types"
+>
+
 // ============================================================
 // Skill Fragment Config Types
 // ============================================================
@@ -487,6 +492,74 @@ function stringArrayForContext(value: unknown): string[] {
   ).sort()
 }
 
+function recordForContext(value: unknown): Record<string, any> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null
+  return value as Record<string, any>
+}
+
+function firstNonEmptyStringArray(...values: unknown[]): string[] {
+  for (const value of values) {
+    const normalized = stringArrayForContext(value)
+    if (normalized.length > 0) return normalized
+  }
+  return []
+}
+
+async function resolveContextScope(
+  workItemDir: string,
+  trigger: Record<string, any> | null
+): Promise<{
+  rawScope: Record<string, any>
+  sourceFile: "governance_scope.json" | "trigger_result.json"
+  preferCandidate: boolean
+} | null> {
+  const frozenScope = recordForContext(
+    await readJsonForContext(join(workItemDir, "governance_scope.json"))
+  )
+  if (frozenScope?.active === true) {
+    return {
+      rawScope: {
+        ...frozenScope,
+        planned_code_paths:
+          frozenScope.planned_code_paths ?? frozenScope.allowed_write_files,
+      },
+      sourceFile: "governance_scope.json",
+      preferCandidate: false,
+    }
+  }
+
+  const impactScope = recordForContext(trigger?.impact_scope)
+  if (impactScope) {
+    return {
+      rawScope: impactScope,
+      sourceFile: "trigger_result.json",
+      preferCandidate: true,
+    }
+  }
+
+  const impactSummary = recordForContext(trigger?.impact_summary)
+  if (!impactSummary) return null
+
+  return {
+    rawScope: {
+      ...impactSummary,
+      affected_modules: firstNonEmptyStringArray(
+        impactSummary.affected_modules,
+        impactSummary.impacted_modules,
+        impactSummary.changed_modules,
+        impactSummary.new_modules,
+        impactSummary.existing_modules
+      ),
+      planned_code_paths:
+        impactSummary.planned_code_paths ??
+        impactSummary.allowed_write_files ??
+        impactSummary.target_files,
+    },
+    sourceFile: "trigger_result.json",
+    preferCandidate: true,
+  }
+}
+
 function clipContext(value: string, max = 800): string {
   const compact = value.replace(/\r/g, "").trim()
   return compact.length <= max ? compact : compact.slice(0, max - 3) + "..."
@@ -536,9 +609,12 @@ export class ProjectGovernanceContextSource implements ContextDataSource {
       "work-items",
       params.work_item_id
     )
-    const trigger = await readJsonForContext(join(workItemDir, "trigger_result.json"))
-    const rawScope = trigger?.impact_scope
-    if (!rawScope || typeof rawScope !== "object" || Array.isArray(rawScope)) return []
+    const trigger = recordForContext(
+      await readJsonForContext(join(workItemDir, "trigger_result.json"))
+    )
+    const resolvedScope = await resolveContextScope(workItemDir, trigger)
+    if (!resolvedScope) return []
+    const { rawScope, sourceFile, preferCandidate } = resolvedScope
 
     const scope = {
       affected_modules: stringArrayForContext(rawScope.affected_modules),
@@ -577,28 +653,38 @@ export class ProjectGovernanceContextSource implements ContextDataSource {
     ): Promise<string> => {
       const target = normalizeContextPath(targetPath)
       const explicit = targetMap.get(target)
-      if (explicit) {
+
+      const readFormal = async (): Promise<string> => {
         try {
-          return await readFile(explicit, "utf-8")
+          return await readFile(
+            isAbsolute(targetPath) ? targetPath : join(this.baseDir, target),
+            "utf-8"
+          )
         } catch {
-          // fall through to conventional/formal source
+          return ""
         }
       }
-      if (conventionalCandidate) {
+
+      const readCandidate = async (): Promise<string> => {
+        if (explicit) {
+          try {
+            return await readFile(explicit, "utf-8")
+          } catch {
+            // fall through to conventional candidate
+          }
+        }
+        if (!conventionalCandidate) return ""
         try {
           return await readFile(join(workItemDir, conventionalCandidate), "utf-8")
         } catch {
-          // fall through to formal source
+          return ""
         }
       }
-      try {
-        return await readFile(
-          isAbsolute(targetPath) ? targetPath : join(this.baseDir, target),
-          "utf-8"
-        )
-      } catch {
-        return ""
+
+      if (preferCandidate) {
+        return (await readCandidate()) || (await readFormal())
       }
+      return (await readFormal()) || (await readCandidate())
     }
 
     const architectureTarget = normalizeContextPath(
@@ -737,7 +823,7 @@ export class ProjectGovernanceContextSource implements ContextDataSource {
       {
         source_type: this.name,
         source_id: normalizeContextPath(
-          `${SPEC_DIR_NAME}/work-items/${params.work_item_id}/trigger_result.json`
+          `${SPEC_DIR_NAME}/work-items/${params.work_item_id}/${sourceFile}`
         ),
         category: "governance",
         content: clipContext(blocks.join("\n\n"), 2400),
@@ -1167,13 +1253,15 @@ export async function buildContext(
   taskId: string | undefined,
   phase: string | undefined,
   includeCapabilities: boolean,
-  baseDir: string
+  baseDir: string,
+  options: Partial<ContextBuildOptions> = {}
 ): Promise<ContextBuildResult> {
   try {
   // V3.4.0: 版本兼容性检查
   await tryCheckCompatibility(baseDir, "sf_context_build_core")
 
   const params: TaskQueryParams = {
+    ...options,
     work_item_id: workItemId,
     task_id: taskId,
     phase,

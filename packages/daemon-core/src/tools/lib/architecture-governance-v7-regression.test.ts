@@ -46,7 +46,10 @@ describe('Architecture governance v7 closure', () => {
   it('injects Impact Scope and authoritative upper-layer constraints into runtime context', () => {
     const context = source('src/tools/lib/sf_context_build_core.ts');
     expect(context).toContain('class ProjectGovernanceContextSource');
-    expect(context).toContain('rawScope = trigger?.impact_scope');
+    expect(context).toContain('resolveContextScope');
+    expect(context).toContain('governance_scope.json');
+    expect(context).toContain('trigger?.impact_scope');
+    expect(context).toContain('trigger?.impact_summary');
     expect(context).toContain('Architecture [');
     expect(context).toContain('Data Model [');
     expect(context).toContain('Project Contracts');
