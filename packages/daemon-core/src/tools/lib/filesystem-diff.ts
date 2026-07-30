@@ -7,6 +7,8 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 export interface FileSnapshot {
   /** Relative path from scan root */
@@ -15,12 +17,20 @@ export interface FileSnapshot {
   size: number;
   /** Last modified time (ms since epoch) */
   mtimeMs: number;
+  /** Content identity. Optional only for legacy baselines created before v2. */
+  sha256?: string;
 }
 
 export interface BaselineSnapshot {
+  schema_version?: '2.0';
+  content_hash_algorithm?: 'sha256';
   timestamp: string;
   root: string;
   files: FileSnapshot[];
+  legacy_reconciliation?: {
+    artifact: string;
+    reconciled_paths: string[];
+  };
 }
 
 export interface FileDiffEntry {
@@ -39,6 +49,28 @@ export interface FilesystemDiffResult {
   untracked_changes: string[];
   /** Number of ignored runtime/observability files removed from the diff scope. */
   ignored_runtime_files?: number;
+  /** Number of baseline files whose content identity is available. */
+  baseline_files_with_content_hash?: number;
+  /** Controlled legacy-baseline reconciliation paths applied in memory. */
+  legacy_reconciled_metadata_only_paths?: string[];
+}
+
+export interface LegacyBaselineReconciliationResult {
+  success: boolean;
+  error?: string;
+  reconciliation_path?: string;
+  baseline_sha256?: string;
+  preflight_trace_id?: string;
+  preflight_timestamp?: string;
+  branch_name?: string;
+  head_commit?: string;
+  reconciled_files?: Array<{
+    path: string;
+    sha256: string;
+    baseline_size: number;
+    baseline_mtime_ms: number;
+    current_mtime_ms: number;
+  }>;
 }
 
 const DEFAULT_EXCLUDE_DIR_NAMES = new Set(['node_modules', '.git', 'dist']);
@@ -116,6 +148,26 @@ function filterSnapshot(snapshot: BaselineSnapshot): { snapshot: BaselineSnapsho
   };
 }
 
+function hashBuffer(content: Buffer | string): string {
+  return createHash('sha256').update(content).digest('hex');
+}
+
+function hashFile(filePath: string): string {
+  const hash = createHash('sha256');
+  const buffer = Buffer.allocUnsafe(64 * 1024);
+  const descriptor = fs.openSync(filePath, 'r');
+  try {
+    let bytesRead = 0;
+    do {
+      bytesRead = fs.readSync(descriptor, buffer, 0, buffer.length, null);
+      if (bytesRead > 0) hash.update(buffer.subarray(0, bytesRead));
+    } while (bytesRead > 0);
+  } finally {
+    fs.closeSync(descriptor);
+  }
+  return hash.digest('hex');
+}
+
 /**
  * Take a snapshot of all files in a directory (recursive).
  * Excludes source/runtime noise: node_modules, .git, dist, and SpecForge runtime/log directories.
@@ -145,7 +197,12 @@ export function takeSnapshot(rootDir: string, excludeDirs?: string[]): BaselineS
         if (isSpecForgeRuntimePath(normalized)) continue;
         try {
           const stat = fs.statSync(fullPath);
-          files.push({ path: normalized, size: stat.size, mtimeMs: stat.mtimeMs });
+          files.push({
+            path: normalized,
+            size: stat.size,
+            mtimeMs: stat.mtimeMs,
+            sha256: hashFile(fullPath),
+          });
         } catch {
           // Skip unreadable files.
         }
@@ -154,7 +211,13 @@ export function takeSnapshot(rootDir: string, excludeDirs?: string[]): BaselineS
   }
 
   walk(rootDir, '');
-  return { timestamp: new Date().toISOString(), root: rootDir, files };
+  return {
+    schema_version: '2.0',
+    content_hash_algorithm: 'sha256',
+    timestamp: new Date().toISOString(),
+    root: rootDir,
+    files,
+  };
 }
 
 /** Compare two snapshots and return the diff. */
@@ -173,7 +236,11 @@ export function diffSnapshots(
     const baselineFile = baselineMap.get(filePath);
     if (!baselineFile) {
       created.push(filePath);
-    } else if (currentFile.size !== baselineFile.size || currentFile.mtimeMs !== baselineFile.mtimeMs) {
+    } else if (currentFile.size !== baselineFile.size) {
+      modified.push(filePath);
+    } else if (baselineFile.sha256 && currentFile.sha256) {
+      if (baselineFile.sha256 !== currentFile.sha256) modified.push(filePath);
+    } else if (currentFile.mtimeMs !== baselineFile.mtimeMs) {
       modified.push(filePath);
     }
   }
@@ -219,6 +286,9 @@ export function computeFilesystemDiff(
     all_changes: allChanges,
     untracked_changes: untracked,
     ignored_runtime_files: baselineFiltered.ignored + currentFiltered.ignored,
+    baseline_files_with_content_hash: baselineFiltered.snapshot.files.filter(file => Boolean(file.sha256)).length,
+    legacy_reconciled_metadata_only_paths:
+      baselineFiltered.snapshot.legacy_reconciliation?.reconciled_paths ?? [],
   };
 }
 
@@ -235,8 +305,277 @@ export function loadBaseline(workItemDir: string): BaselineSnapshot | null {
   try {
     const content = fs.readFileSync(filePath, 'utf-8');
     const parsed = JSON.parse(content) as BaselineSnapshot;
+    const reconciliationPath = path.join(workItemDir, 'legacy_baseline_reconciliation.json');
+    try {
+      const reconciliation = JSON.parse(fs.readFileSync(reconciliationPath, 'utf-8')) as any;
+      if (
+        reconciliation?.status === 'applied' &&
+        reconciliation?.baseline_sha256 === hashBuffer(content) &&
+        Array.isArray(reconciliation?.reconciled_files)
+      ) {
+        const byPath = new Map<string, any>(
+          reconciliation.reconciled_files.map((entry: any) => [
+            normalizeFsPath(String(entry?.path ?? '')),
+            entry,
+          ] as [string, any]),
+        );
+        for (const file of parsed.files ?? []) {
+          const entry = byPath.get(normalizeFsPath(file.path)) as any;
+          if (
+            entry &&
+            Number(entry.baseline_size) === file.size &&
+            /^[a-f0-9]{64}$/i.test(String(entry.sha256 ?? ''))
+          ) {
+            file.sha256 = String(entry.sha256).toLowerCase();
+          }
+        }
+        parsed.legacy_reconciliation = {
+          artifact: 'legacy_baseline_reconciliation.json',
+          reconciled_paths: Array.from(byPath.keys()),
+        };
+      }
+    } catch {
+      // No valid controlled reconciliation artifact: retain fail-closed legacy mtime semantics.
+    }
     return filterSnapshot(parsed).snapshot;
   } catch {
     return null;
   }
+}
+
+function normalizePayloadPath(projectRoot: string, payloadFile: string): string {
+  const normalized = payloadFile.replace(/[\\/]+/g, path.sep);
+  return path.resolve(projectRoot, normalized);
+}
+
+function readLatestPreflightBeforeBaseline(
+  projectRoot: string,
+  baselineTimestamp: string,
+): {
+  index: any;
+  payload: any;
+  payloadSha256: string;
+} | null {
+  const indexPath = path.join(projectRoot, '.specforge', 'logs', 'observability', 'index.jsonl');
+  const baselineMs = Date.parse(baselineTimestamp);
+  const maxPreflightAgeMs = 5 * 60 * 1000;
+  if (!Number.isFinite(baselineMs)) return null;
+
+  let entries: any[];
+  try {
+    entries = fs
+      .readFileSync(indexPath, 'utf-8')
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map(line => JSON.parse(line))
+      .filter(
+        entry =>
+          entry?.tool_name === 'sf_git_preflight' &&
+          entry?.category === 'rpc' &&
+          entry?.phase === 'response' &&
+          entry?.status === 'success' &&
+          typeof entry?.payload_file === 'string' &&
+          Date.parse(String(entry?.timestamp ?? '')) <= baselineMs &&
+          baselineMs - Date.parse(String(entry?.timestamp ?? '')) <= maxPreflightAgeMs,
+      )
+      .sort(
+        (left, right) =>
+          Date.parse(String(right.timestamp ?? '')) - Date.parse(String(left.timestamp ?? '')),
+      );
+  } catch {
+    return null;
+  }
+
+  for (const entry of entries) {
+    try {
+      const payloadPath = normalizePayloadPath(projectRoot, entry.payload_file);
+      const payloadContent = fs.readFileSync(payloadPath, 'utf-8');
+      const payloadFileName = String(entry.payload_file).split(/[\\/]/).pop() ?? '';
+      const pathEncodedSha256 = payloadFileName.replace(/\.json$/i, '');
+      const expectedSha256 = String(entry.payload_sha256 ?? pathEncodedSha256).toLowerCase();
+      if (
+        !/^[a-f0-9]{64}$/.test(expectedSha256) ||
+        hashBuffer(payloadContent) !== expectedSha256
+      ) {
+        continue;
+      }
+      const payload = JSON.parse(payloadContent);
+      if (
+        payload?.success === true &&
+        payload?.inside_work_tree === true &&
+        typeof payload?.current_branch === 'string' &&
+        typeof payload?.head_commit === 'string' &&
+        Array.isArray(payload?.status_entries)
+      ) {
+        return { index: entry, payload, payloadSha256: expectedSha256 };
+      }
+    } catch {
+      // Try the next earlier preflight evidence record.
+    }
+  }
+  return null;
+}
+
+function runGit(projectRoot: string, args: string[]): string {
+  return execFileSync('git', args, {
+    cwd: projectRoot,
+    encoding: 'utf-8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+}
+
+/**
+ * Create a controlled compatibility record for a pre-v2 baseline.
+ *
+ * Reconciliation is fail-closed and only covers metadata-only candidates when:
+ * - a hash-verified sf_git_preflight immediately preceding the baseline proves
+ *   the path was clean on the same branch and HEAD;
+ * - the current branch and HEAD are unchanged;
+ * - Git still reports the tracked path clean;
+ * - size is unchanged and only mtime differs.
+ *
+ * The original baseline is never rewritten. loadBaseline() overlays the
+ * reconciled hashes only while its original SHA-256 still matches the record.
+ */
+export function reconcileLegacyBaselineWithGitPreflight(input: {
+  projectRoot: string;
+  workItemDir: string;
+  reason: string;
+}): LegacyBaselineReconciliationResult {
+  const baselinePath = path.join(input.workItemDir, 'filesystem_baseline.json');
+  let baselineContent: string;
+  let baseline: BaselineSnapshot;
+  try {
+    baselineContent = fs.readFileSync(baselinePath, 'utf-8');
+    baseline = JSON.parse(baselineContent) as BaselineSnapshot;
+  } catch {
+    return { success: false, error: 'LEGACY_BASELINE_NOT_FOUND_OR_INVALID' };
+  }
+
+  if (!input.reason.trim()) {
+    return { success: false, error: 'LEGACY_BASELINE_RECONCILIATION_REASON_REQUIRED' };
+  }
+
+  const preflight = readLatestPreflightBeforeBaseline(input.projectRoot, baseline.timestamp);
+  if (!preflight) {
+    return { success: false, error: 'LEGACY_BASELINE_PREFLIGHT_EVIDENCE_NOT_FOUND' };
+  }
+
+  let currentBranch: string;
+  let currentHead: string;
+  try {
+    currentBranch = runGit(input.projectRoot, ['branch', '--show-current']);
+    currentHead = runGit(input.projectRoot, ['rev-parse', 'HEAD']);
+  } catch {
+    return { success: false, error: 'LEGACY_BASELINE_GIT_EVIDENCE_UNAVAILABLE' };
+  }
+
+  if (
+    currentBranch !== preflight.payload.current_branch ||
+    currentHead !== preflight.payload.head_commit
+  ) {
+    return {
+      success: false,
+      error: 'LEGACY_BASELINE_GIT_IDENTITY_CHANGED',
+      branch_name: currentBranch,
+      head_commit: currentHead,
+    };
+  }
+
+  const current = takeSnapshot(input.projectRoot);
+  const currentByPath = new Map(current.files.map(file => [normalizeFsPath(file.path), file]));
+  const preflightDirty = new Set(
+    preflight.payload.status_entries.map((entry: any) =>
+      normalizeFsPath(String(entry?.path ?? '')),
+    ),
+  );
+  const preflightMs = Date.parse(String(preflight.index.timestamp ?? ''));
+  const reconciledFiles: NonNullable<LegacyBaselineReconciliationResult['reconciled_files']> = [];
+
+  for (const baselineFile of baseline.files ?? []) {
+    const normalized = normalizeFsPath(baselineFile.path);
+    const currentFile = currentByPath.get(normalized);
+    if (
+      baselineFile.sha256 ||
+      !currentFile?.sha256 ||
+      currentFile.size !== baselineFile.size ||
+      currentFile.mtimeMs === baselineFile.mtimeMs ||
+      preflightDirty.has(normalized) ||
+      !Number.isFinite(preflightMs) ||
+      baselineFile.mtimeMs > preflightMs
+    ) {
+      continue;
+    }
+
+    try {
+      runGit(input.projectRoot, ['ls-files', '--error-unmatch', '--', normalized]);
+      const status = runGit(input.projectRoot, [
+        'status',
+        '--porcelain=v1',
+        '--untracked-files=all',
+        '--',
+        normalized,
+      ]);
+      if (status) continue;
+    } catch {
+      continue;
+    }
+
+    reconciledFiles.push({
+      path: normalized,
+      sha256: currentFile.sha256,
+      baseline_size: baselineFile.size,
+      baseline_mtime_ms: baselineFile.mtimeMs,
+      current_mtime_ms: currentFile.mtimeMs,
+    });
+  }
+
+  if (reconciledFiles.length === 0) {
+    return {
+      success: false,
+      error: 'NO_PROVABLE_LEGACY_METADATA_ONLY_CHANGES',
+      branch_name: currentBranch,
+      head_commit: currentHead,
+    };
+  }
+
+  const reconciliationPath = path.join(
+    input.workItemDir,
+    'legacy_baseline_reconciliation.json',
+  );
+  const record = {
+    schema_version: '1.0',
+    status: 'applied',
+    applied_at: new Date().toISOString(),
+    work_item_id: path.basename(input.workItemDir),
+    reason: input.reason.trim(),
+    baseline_file: 'filesystem_baseline.json',
+    baseline_sha256: hashBuffer(baselineContent),
+    preflight_evidence: {
+      timestamp: preflight.index.timestamp,
+      trace_id: preflight.index.trace_id,
+      payload_file: preflight.index.payload_file,
+      payload_sha256: preflight.payloadSha256,
+      branch_name: preflight.payload.current_branch,
+      head_commit: preflight.payload.head_commit,
+      status_entries: preflight.payload.status_entries,
+    },
+    current_git_evidence: {
+      branch_name: currentBranch,
+      head_commit: currentHead,
+    },
+    reconciled_files: reconciledFiles,
+  };
+  fs.writeFileSync(reconciliationPath, JSON.stringify(record, null, 2) + '\n', 'utf-8');
+
+  return {
+    success: true,
+    reconciliation_path: reconciliationPath,
+    baseline_sha256: record.baseline_sha256,
+    preflight_trace_id: preflight.index.trace_id,
+    preflight_timestamp: preflight.index.timestamp,
+    branch_name: currentBranch,
+    head_commit: currentHead,
+    reconciled_files: reconciledFiles,
+  };
 }

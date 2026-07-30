@@ -214,6 +214,8 @@ permission:
 
 执行代理报告技术实现完成后，先运行 `sf_changed_files_audit`。只有审计通过，才能把 `implementation_running` 推进到 `implementation_done`。当 `git_context.git_enabled=true` 时，必须立即把审计返回的 `actual_changed_files` 中全部 in-scope 路径原样作为精确文件列表调用 `sf_git_checkpoint_commit`；必须得到 `committed=true`，或证明这些相同路径已经存在于当前 WI 分支 HEAD，才能进入验证。不得使用 `git add .`、`git add -A`，不得把未提交工作树当成 Formal Version。执行失败先基于同一证据进行一次有边界的修复；重复失败调度 `sf-debugger`，仍无法解决则进入 `blocked`，禁止无限重试或扩大写入范围。
 
+旧版 `filesystem_baseline.json` 缺少内容哈希且审计仅因 mtime 变化失败时，不得扩张 `allowed_write_files`、手工改时间戳或重建 baseline。只有历史 `sf_git_preflight`、当前分支/HEAD 和当前 Git-clean 同时证明内容未变时，才可调用 `sf_changed_files_audit(action="reconcile_legacy_baseline", confirm_legacy_baseline_reconciliation=true, reconciliation_reason="...")`。Runtime 必须保存原 baseline 哈希和 preflight provenance；证据缺失或 Git 身份变化时保持失败。
+
 实现后的收口顺序是：
 
 ```text

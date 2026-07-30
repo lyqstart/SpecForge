@@ -37,7 +37,11 @@ import {
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { checkHardStop, guardHardStop, resetHardStop, setHardStop } from '../lib/hard-stop-latch';
 import { readAuthoritativeState } from '../lib/state-coordinator-v11';
-import { computeFilesystemDiff, loadBaseline } from '../lib/filesystem-diff';
+import {
+  computeFilesystemDiff,
+  loadBaseline,
+  reconcileLegacyBaselineWithGitPreflight,
+} from '../lib/filesystem-diff';
 
 type ChangedFile = { path: string; operation: 'create' | 'modify' | 'delete' };
 type AllowedFile = { path: string; operation: string };
@@ -340,6 +344,10 @@ export function changedFilesFromFacts(input: {
   const baseline = loadBaseline(input.workItemDir);
   if (baseline) {
     const diff = computeFilesystemDiff(baseline, input.projectRoot, []);
+    const reconciliationDescription =
+      (diff.legacy_reconciled_metadata_only_paths?.length ?? 0) > 0
+        ? `; controlled legacy reconciliation=${diff.legacy_reconciled_metadata_only_paths!.join('|')}`
+        : '';
     return {
       changedFiles: diff.all_changes.map(entry => ({
         path: entry.path,
@@ -350,7 +358,10 @@ export function changedFilesFromFacts(input: {
               ? 'delete'
               : 'modify',
       })),
-      dataSource: `filesystem_baseline.json (${diff.all_changes.length} observed project changes)`,
+      dataSource:
+        `filesystem_baseline.json (${diff.all_changes.length} observed project changes; ` +
+        `${diff.baseline_files_with_content_hash ?? 0} content-hashed baseline files` +
+        `${reconciliationDescription})`,
       writeGuardSummary,
     };
   }
@@ -565,9 +576,18 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   const workItemId = args['work_item_id'] as string;
   const command = args['command'] as string | undefined;
   const actualChangedFiles = args['actual_changed_files'];
+  const rawAction = args['action'];
+  const action = typeof rawAction === 'string' ? rawAction : 'run';
+  const confirmLegacyReconciliation = args['confirm_legacy_baseline_reconciliation'] === true;
+  const rawReconciliationReason = args['reconciliation_reason'];
+  const reconciliationReason =
+    typeof rawReconciliationReason === 'string' ? rawReconciliationReason : '';
   const noCodeMode = isNoCodeAuditMode(args['mode']) || isNoCodeAuditMode(args['audit_mode']);
   const idError = validateWorkItemId(workItemId);
   if (idError) return { success: false, error: idError };
+  if (!['run', 'reconcile_legacy_baseline'].includes(action)) {
+    return { success: false, error: `UNSUPPORTED_CHANGED_FILES_AUDIT_ACTION: ${action}` };
+  }
 
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
@@ -658,6 +678,30 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
         'ALLOWED_WRITE_FILES_EMPTY: allowed_write_files and allowed_write_files_snapshot are empty.\nAudit cannot proceed.',
       hard_stop: true,
     };
+  }
+
+  let legacyBaselineReconciliation:
+    | ReturnType<typeof reconcileLegacyBaselineWithGitPreflight>
+    | undefined;
+  if (action === 'reconcile_legacy_baseline') {
+    if (!confirmLegacyReconciliation) {
+      return {
+        success: false,
+        error: 'LEGACY_BASELINE_RECONCILIATION_CONFIRMATION_REQUIRED',
+      };
+    }
+    legacyBaselineReconciliation = reconcileLegacyBaselineWithGitPreflight({
+      projectRoot,
+      workItemDir,
+      reason: reconciliationReason,
+    });
+    if (!legacyBaselineReconciliation.success) {
+      return {
+        success: false,
+        error: legacyBaselineReconciliation.error,
+        legacy_baseline_reconciliation: legacyBaselineReconciliation,
+      };
+    }
   }
 
   const { changedFiles, dataSource, writeGuardSummary } = changedFilesFromFacts({
@@ -810,5 +854,6 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     hard_stop_resolutions: hardStopResolutions.length,
     write_guard_authorizations: writeGuardAuthorizations.length,
     blocked_write_classifications: blockedWriteClassifications,
+    legacy_baseline_reconciliation: legacyBaselineReconciliation,
   };
 });

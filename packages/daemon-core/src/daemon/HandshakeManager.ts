@@ -17,6 +17,13 @@ import { TASK_ARTIFACT_CONTRACT_VERSION } from '@specforge/types';
 export class HandshakeManager {
   private readonly config: DaemonConfig;
   private lockFd: number | null = null;
+  private ownedHandshake:
+    | {
+        pid: number;
+        token: string;
+        startedAt: number;
+      }
+    | null = null;
 
   constructor(config: DaemonConfig) {
     this.config = config;
@@ -148,19 +155,56 @@ export class HandshakeManager {
       JSON.stringify(handshake, null, 2),
       { mode: 0o600 },
     );
+    this.ownedHandshake = {
+      pid: handshake.pid,
+      token: handshake.token,
+      startedAt: handshake.startedAt,
+    };
     console.log(`Handshake file written to: ${handshakeFile}`);
   }
 
   async removeHandshake(): Promise<void> {
     const handshakeFile = this.config.getHandshakeFile();
+    const owned = this.ownedHandshake;
+    if (!owned) {
+      console.log(`Handshake cleanup skipped (not owned by this instance): ${handshakeFile}`);
+      return;
+    }
+
+    let current: HandshakeFile;
+    try {
+      current = JSON.parse(await fs.readFile(handshakeFile, 'utf-8')) as HandshakeFile;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        this.ownedHandshake = null;
+        return;
+      }
+      // Invalid/unreadable content cannot prove ownership. Preserve it fail-closed.
+      console.warn(`Handshake cleanup skipped (ownership could not be verified): ${handshakeFile}`);
+      this.ownedHandshake = null;
+      return;
+    }
+
+    if (
+      current.pid !== owned.pid ||
+      current.token !== owned.token ||
+      current.startedAt !== owned.startedAt
+    ) {
+      console.log(`Handshake cleanup skipped (ownership changed): ${handshakeFile}`);
+      this.ownedHandshake = null;
+      return;
+    }
+
     try {
       await fs.unlink(handshakeFile);
+      this.ownedHandshake = null;
       console.log(`Handshake file deleted: ${handshakeFile}`);
     } catch (error) {
-      // File might not exist, ignore
-      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
-        throw error;
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        this.ownedHandshake = null;
+        return;
       }
+      throw error;
     }
   }
 
