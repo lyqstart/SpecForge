@@ -42,6 +42,18 @@ describe('semantic closure contract alignment', () => {
     expect(verifier).not.toContain('sf_evidence_write');
   });
 
+  it('routes verifier governance reads away from sf_safe_bash', () => {
+    const verifier = read('setup/userlevel-opencode/agents/sf-verifier.md');
+    expect(verifier).toContain('验证只读工具路由（强制）');
+    expect(verifier).toContain('sf_safe_bash` 只用于执行目标项目自身的测试');
+    expect(verifier).toContain('读取已知文件使用 OpenCode `Read`');
+    expect(verifier).toContain('发现路径使用 `Glob`');
+    expect(verifier).toContain('搜索内容使用 `Grep`');
+    expect(verifier).toContain('权威状态必须使用 `sf_state_read`');
+    expect(verifier).toContain('禁止**通过 `sf_safe_bash`');
+    expect(verifier).toContain('`.specforge/logs/trace.jsonl` 的写入与审计属于 Runtime/Orchestrator');
+  });
+
   it('orders semantic closure before verification_gate in the Orchestrator contract', () => {
     const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
     const closeout = orchestrator.slice(orchestrator.indexOf('实现后的收口顺序是：'));

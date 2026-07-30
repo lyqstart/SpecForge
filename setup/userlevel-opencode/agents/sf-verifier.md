@@ -289,6 +289,22 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 - **检查模式未匹配**：这是正常验证结果（可能是 FAIL），不需要停止
 - **通用原则**：验证过程只依赖 OpenCode 内置工具（Grep/Read/sf_safe_bash）和目标项目自身的测试命令
 
+### 验证只读工具路由（强制）
+
+- `sf_safe_bash` 只用于执行目标项目自身的测试、构建、lint、类型检查和 CLI
+  冒烟命令，不用于读取治理文件或运行日志。
+- 读取已知文件使用 OpenCode `Read`（`read_file`），发现路径使用 `Glob`
+  （`file_search`），搜索内容使用 `Grep`（`grep_search`）；超过 5 个文件内模式时
+  使用 `sf_batch_verify`。
+- 读取 Work Item 权威状态必须使用 `sf_state_read`，不得读取
+  `runtime/state.json` 或从 `work_item.json.status` 推断状态。
+- **禁止**通过 `sf_safe_bash`、`Get-Content`、`type`、`cat`、`dir`、`rg` 等
+  shell 命令读取 `.specforge/**`，尤其是 `.specforge/runtime/**` 与
+  `.specforge/logs/**`。
+- `.specforge/logs/trace.jsonl` 的写入与审计属于 Runtime/Orchestrator；
+  verifier 不得读取该文件来证明自己的验证动作。需要 Trace 审计时，向
+  Orchestrator 返回待核验对象和证据位置，不得改用 shell 探测。
+
 ## 规则 2：使用 sf_batch_verify 工具
 
 当需要检查超过 5 个模式/条件时，**必须**使用 `sf_batch_verify` 工具，一次调用完成所有断言。
