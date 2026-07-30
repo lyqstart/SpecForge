@@ -10,6 +10,33 @@ import * as os from 'node:os';
 // Import handler registration (side-effect)
 import '../../src/tools/handlers/sf-semantic-closure-run.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
+import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_core.js';
+
+function verificationPayload() {
+  return {
+    conclusion: 'pass',
+    test_matrix: {
+      L1_unit: 'pass',
+      L2_integration: 'pass',
+      L3_pbt: 'not_applicable',
+      L4_e2e: 'pass',
+      L5_smoke: 'pass',
+      L6_regression: 'not_applicable',
+      L7_performance: 'not_applicable',
+      L8_security: 'not_applicable',
+      L9_compatibility: 'not_applicable',
+      L10_uat: 'not_applicable',
+    },
+    verification_commands: [
+      { command: 'bun test', status: 'pass', output_summary: '1 pass, 0 fail' },
+    ],
+    acceptance_criteria: [{ req_id: 'REQ-1', name: 'works', status: 'pass', evidence: 'EV-1' }],
+    e2e_tests: [{ name: 'lifecycle', status: 'pass', evidence: 'EV-1' }],
+    side_effects: 'none',
+    summary: 'verified',
+    semantic_closure: {},
+  };
+}
 
 async function createWorkItem(
   projectRoot: string,
@@ -26,7 +53,7 @@ async function createWorkItem(
   await fs.writeFile(path.join(wiDir, 'trace_delta.md'), traceDeltaMd);
   await fs.writeFile(
     path.join(wiDir, 'verification_report.md'),
-    '# Verification\nEvidence EV-1 passed.'
+    renderVerificationReport(JSON.stringify(verificationPayload()))!
   );
   await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nMerge Status: not_applicable');
   await fs.writeFile(
@@ -195,6 +222,49 @@ describe('sf_semantic_closure_run handler', () => {
       await fs.readFile(path.join(wiDir, '.semantic_closure.json'), 'utf-8')
     );
     expect(manifest.provenance.source).toBe('tool_argument');
+  });
+
+  it('rejects an incomplete verification report before writing semantic closure artifacts', async () => {
+    const workItemId = 'WI-9106';
+    const wiDir = await createWorkItem(
+      tmpDir,
+      workItemId,
+      '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1'
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'verification_report.md'),
+      [
+        '# Verification',
+        '```json',
+        JSON.stringify({
+          conclusion: 'pass',
+          test_results: [{ command: 'bun test', passed: true }],
+          acceptance_criteria: [{ id: 'AC-1', status: 'pass', evidence_ref: 'EV-1' }],
+          side_effects: 'none',
+          summary: 'verified',
+        }),
+        '```',
+      ].join('\n')
+    );
+
+    const result = await getHandler('sf_v11_semantic_closure_run')!(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      {} as any
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toBe('VERIFICATION_INPUT_CONTRACT_INVALID');
+    expect((result as any).verification_contract_id).toBe('verification-report/v1');
+    expect((result as any).validation_errors).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('test_matrix'),
+        expect.stringContaining('verification_commands'),
+        expect.stringContaining('e2e_tests'),
+      ])
+    );
+    await expect(fs.access(path.join(wiDir, '.semantic_closure.json'))).rejects.toThrow();
+    await expect(fs.access(path.join(wiDir, 'semantic_closure_report.md'))).rejects.toThrow();
   });
 
   it('refuses to regenerate closure after verification inputs are frozen', async () => {

@@ -16,6 +16,13 @@ import {
 } from './semantic-closure-core.js';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import {
+  extractStructuredVerificationReport,
+  validateVerificationReportContract,
+  VERIFICATION_REPORT_CONTRACT_ID,
+} from './verification-report-contract.js';
+
+export { extractStructuredVerificationReport } from './verification-report-contract.js';
 
 const PASS_STATUSES = new Set(['pass', 'passed', 'success', 'succeeded']);
 const NON_BLOCKING_TEST_STATUSES = new Set([
@@ -50,27 +57,6 @@ async function readJson<T>(filePath: string): Promise<T | null> {
   } catch {
     return null;
   }
-}
-
-export function extractStructuredVerificationReport(content: string): Record<string, any> | null {
-  try {
-    const parsed = JSON.parse(content);
-    if (isRecord(parsed) && typeof parsed.conclusion === 'string') return parsed;
-  } catch {
-    // Markdown is the canonical on-disk representation.
-  }
-
-  const fenceRe = /```(?:json|verification_report)?\s*([\s\S]*?)```/gi;
-  let match: RegExpExecArray | null;
-  while ((match = fenceRe.exec(content)) !== null) {
-    try {
-      const parsed = JSON.parse(String(match[1] ?? '').trim());
-      if (isRecord(parsed) && typeof parsed.conclusion === 'string') return parsed;
-    } catch {
-      // Keep searching later fenced blocks.
-    }
-  }
-  return null;
 }
 
 function verificationExecutionStatuses(report: Record<string, any> | null): string[] {
@@ -220,12 +206,14 @@ export async function evaluateVerificationGovernanceContract(input: {
     : await readJson<SemanticClosureManifest>(closurePath);
 
   const checks: GateReportCheck[] = [];
+  const reportContract = validateVerificationReportContract(structuredReport);
   const conclusion = normalize(structuredReport?.conclusion);
   checks.push({
     check_id: 'verification_report_contract_valid',
-    description: 'verification_report contains the machine-readable verification contract',
-    passed: structuredReport !== null,
-    severity: structuredReport ? undefined : 'error',
+    description: `verification_report satisfies the shared ${VERIFICATION_REPORT_CONTRACT_ID} contract`,
+    passed: reportContract.valid,
+    severity: reportContract.valid ? undefined : 'error',
+    details: reportContract.errors.join('; ') || undefined,
   });
   checks.push({
     check_id: 'verification_report_conclusion_pass',

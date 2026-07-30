@@ -23,6 +23,11 @@ import {
   validateSemanticClosureProvenance,
 } from '../lib/semantic-closure-provenance.js';
 import { readAuthoritativeState } from '../lib/state-coordinator-v11.js';
+import {
+  extractStructuredVerificationReport,
+  validateVerificationReportContract,
+  VERIFICATION_REPORT_CONTRACT_ID,
+} from '../lib/verification-report-contract.js';
 
 async function readTextIfExists(filePath: string): Promise<string | undefined> {
   try {
@@ -133,6 +138,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
   const semanticClosurePath = path.join(workItemDir, '.semantic_closure.json');
   const reportPath = path.join(workItemDir, 'semantic_closure_report.md');
+  const verificationReportPath = path.join(workItemDir, 'verification_report.md');
 
   const authoritativeState = await readAuthoritativeState({
     deps,
@@ -152,6 +158,27 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       retry_allowed: false,
       recovery:
         'Recover the Work Item from verification_done to implementation_ready, update verification artifacts, regenerate semantic closure, then rerun verification_gate.',
+    };
+  }
+
+  const verificationReportText = await readTextIfExists(verificationReportPath);
+  const verificationReport = verificationReportText
+    ? extractStructuredVerificationReport(verificationReportText)
+    : null;
+  const verificationContract = validateVerificationReportContract(verificationReport);
+  if (!verificationContract.valid) {
+    return {
+      success: false,
+      work_item_id: workItemId,
+      error: 'VERIFICATION_INPUT_CONTRACT_INVALID',
+      semantic_closure_valid: false,
+      retry_allowed: !inputsFrozen,
+      verification_contract_id: VERIFICATION_REPORT_CONTRACT_ID,
+      validation_errors: verificationContract.errors,
+      verification_report_path: rel(projectRoot, verificationReportPath),
+      recovery: inputsFrozen
+        ? `Recover the Work Item to implementation_ready, have sf-verifier rewrite verification_report with the complete ${VERIFICATION_REPORT_CONTRACT_ID} contract, then regenerate semantic closure.`
+        : `Have sf-verifier rewrite verification_report with the complete ${VERIFICATION_REPORT_CONTRACT_ID} contract, then call sf_semantic_closure_run again.`,
     };
   }
 
@@ -257,7 +284,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
     workItem,
     curatedSemanticClosure: suppliedSemanticClosure,
     traceDeltaMd: await readTextIfExists(path.join(workItemDir, 'trace_delta.md')),
-    verificationReportMd: await readTextIfExists(path.join(workItemDir, 'verification_report.md')),
+    verificationReportMd: verificationReportText,
     evidenceManifest,
     mergeReportMd: await readTextIfExists(path.join(workItemDir, 'merge_report.md')),
   });

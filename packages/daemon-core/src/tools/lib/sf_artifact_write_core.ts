@@ -12,7 +12,10 @@ import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { logErrorToFile } from './utils';
-import type { SemanticClosureManifest } from './semantic-closure-core';
+import {
+  parseVerificationReportJson,
+  type VerificationReportContract,
+} from './verification-report-contract';
 
 // ============================================================
 // Types
@@ -56,31 +59,8 @@ export interface ArtifactWriteFailure {
 
 export type ArtifactWriteResult = ArtifactWriteSuccess | ArtifactWriteFailure;
 
-/** 验证 JSON 结构 */
-export interface VerificationJSON {
-  conclusion: 'pass' | 'fail' | 'blocked';
-  test_matrix?: Record<string, 'pass' | 'fail' | 'skip' | 'skipped' | 'not_applicable'>;
-  verification_commands: Array<{
-    command: string;
-    status: 'pass' | 'fail' | 'skip' | 'skipped' | 'not_applicable';
-    output_summary: string;
-  }>;
-  acceptance_criteria: Array<{
-    req_id: string;
-    name: string;
-    status: 'pass' | 'fail';
-    evidence: string;
-  }>;
-  e2e_tests: Array<{
-    name: string;
-    status: 'pass' | 'fail';
-    evidence: string;
-  }>;
-  side_effects: string;
-  summary: string;
-  semantic_closure?: SemanticClosureManifest;
-  [key: string]: unknown;
-}
+/** Backward-compatible export; the shared contract is authoritative. */
+export type VerificationJSON = VerificationReportContract;
 
 /** Trace 统计结果 */
 export interface TraceStats {
@@ -309,41 +289,14 @@ function buildSidecarResult(
  * JSON 解析失败时返回 null
  */
 export function renderVerificationReport(jsonContent: string): string | null {
-  let data: VerificationJSON;
-  try {
-    data = JSON.parse(jsonContent);
-  } catch {
-    return null;
-  }
-  if (
-    !data ||
-    typeof data !== 'object' ||
-    !['pass', 'fail', 'blocked'].includes(String(data.conclusion ?? ''))
-  ) {
-    return null;
-  }
+  const parsed = parseVerificationReportJson(jsonContent);
+  if (!parsed.valid || !parsed.report) return null;
+  const data: VerificationReportContract = parsed.report;
 
-  // Schema 容错：确保数组字段为数组
-  if (!Array.isArray(data.verification_commands)) {
-    data.verification_commands = [];
-  }
-  if (!Array.isArray(data.acceptance_criteria)) {
-    data.acceptance_criteria = [];
-  }
-  if (!Array.isArray(data.e2e_tests)) {
-    // 如果是字符串，转为单元素数组
-    if (typeof data.e2e_tests === 'string') {
-      data.e2e_tests = [{ name: 'E2E', status: 'pass' as const, evidence: data.e2e_tests }];
-    } else {
-      data.e2e_tests = [];
-    }
-  }
-  if (!data.side_effects) {
-    data.side_effects = '无副作用。';
-  }
-  if (!data.summary) {
-    data.summary = '';
-  }
+  const displayEvidence = (claim: { evidence?: string; evidence_refs?: string[] }): string =>
+    claim.evidence ?? claim.evidence_refs?.join(', ') ?? '';
+  const statusIcon = (status: string): string =>
+    status === 'pass' ? '✅' : ['skip', 'skipped', 'not_applicable'].includes(status) ? '➖' : '❌';
 
   // 统计汇总
   const allChecks = [
@@ -378,7 +331,7 @@ export function renderVerificationReport(jsonContent: string): string | null {
     lines.push('| 命令 | 状态 | 输出摘要 |');
     lines.push('|------|------|----------|');
     for (const cmd of data.verification_commands) {
-      const icon = cmd.status === 'pass' ? '✅' : '❌';
+      const icon = statusIcon(cmd.status);
       lines.push(`| \`${cmd.command}\` | ${icon} ${cmd.status} | ${cmd.output_summary} |`);
     }
   } else {
@@ -393,8 +346,8 @@ export function renderVerificationReport(jsonContent: string): string | null {
     lines.push('| 需求 | 名称 | 状态 | 证据 |');
     lines.push('|------|------|------|------|');
     for (const ac of data.acceptance_criteria) {
-      const icon = ac.status === 'pass' ? '✅' : '❌';
-      lines.push(`| ${ac.req_id} | ${ac.name} | ${icon} ${ac.status} | ${ac.evidence} |`);
+      const icon = statusIcon(ac.status);
+      lines.push(`| ${ac.req_id} | ${ac.name} | ${icon} ${ac.status} | ${displayEvidence(ac)} |`);
     }
   } else {
     lines.push('无验收标准检查。');
@@ -408,8 +361,8 @@ export function renderVerificationReport(jsonContent: string): string | null {
     lines.push('| 测试名称 | 状态 | 证据 |');
     lines.push('|----------|------|------|');
     for (const e2e of data.e2e_tests) {
-      const icon = e2e.status === 'pass' ? '✅' : '❌';
-      lines.push(`| ${e2e.name} | ${icon} ${e2e.status} | ${e2e.evidence} |`);
+      const icon = statusIcon(e2e.status);
+      lines.push(`| ${e2e.name} | ${icon} ${e2e.status} | ${displayEvidence(e2e)} |`);
     }
   } else {
     lines.push('无端到端测试。');

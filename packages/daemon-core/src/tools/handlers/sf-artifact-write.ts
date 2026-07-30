@@ -11,6 +11,10 @@ import path from 'path';
 import * as fs from 'node:fs';
 import { registerHandler } from '../ToolDispatcher';
 import { renderVerificationReport, writeArtifact } from '../lib/sf_artifact_write_core';
+import {
+  parseVerificationReportJson,
+  VERIFICATION_REPORT_CONTRACT_ID,
+} from '../lib/verification-report-contract';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 import {
   validateArtifactJson,
@@ -1041,6 +1045,20 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     };
   }
   if (fileType === 'verification_report' && args['template'] === 'verification_report') {
+    const validation = parseVerificationReportJson(content);
+    if (!validation.valid) {
+      return {
+        success: false,
+        error: 'INVALID_VERIFICATION_REPORT_CONTRACT',
+        hard_stop: false,
+        retry_allowed: true,
+        contract_id: VERIFICATION_REPORT_CONTRACT_ID,
+        validation_errors: validation.errors,
+        message:
+          `verification_report failed ${VERIFICATION_REPORT_CONTRACT_ID} validation and was NOT written to disk. ` +
+          'Use the sf-verifier Required Output contract exactly, then retry.',
+      };
+    }
     const rendered = renderVerificationReport(content);
     if (rendered === null) {
       return {

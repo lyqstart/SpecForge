@@ -9,10 +9,23 @@ import { buildSemanticClosureFromArtifacts } from '../../src/tools/lib/semantic-
 function verificationPayload(workItemId: string) {
   return {
     conclusion: 'pass',
-    test_matrix: { L1_unit: 'pass' },
+    test_matrix: {
+      L1_unit: 'pass',
+      L2_integration: 'pass',
+      L3_pbt: 'not_applicable',
+      L4_e2e: 'pass',
+      L5_smoke: 'pass',
+      L6_regression: 'not_applicable',
+      L7_performance: 'not_applicable',
+      L8_security: 'not_applicable',
+      L9_compatibility: 'not_applicable',
+      L10_uat: 'not_applicable',
+    },
     verification_commands: [{ command: 'test', status: 'pass', output_summary: 'passed' }],
-    acceptance_criteria: [{ req_id: 'REQ-1', name: 'works', status: 'pass', evidence: 'EV-1' }],
-    e2e_tests: [{ name: 'e2e', status: 'pass', evidence: 'EV-1' }],
+    acceptance_criteria: [
+      { req_id: 'REQ-1', name: 'works', status: 'pass', evidence_refs: ['EV-1'] },
+    ],
+    e2e_tests: [{ name: 'e2e', status: 'pass', evidence_refs: ['EV-1'] }],
     side_effects: 'none',
     summary: 'verified',
     semantic_closure: {
@@ -106,6 +119,84 @@ describe('semantic closure producer governance', () => {
 
     expect((result as any).success).toBe(false);
     expect((result as any).error).toBe('VERIFICATION_REPORT_TEMPLATE_REQUIRED');
+  });
+
+  it('rejects the historical incomplete report shape before it reaches disk', async () => {
+    const reportPath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'verification_report.md'
+    );
+    await fs.mkdir(path.dirname(reportPath), { recursive: true });
+    await fs.writeFile(reportPath, 'preserved report\n');
+
+    const result = await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'verification_report',
+        template: 'verification_report',
+        content: JSON.stringify({
+          conclusion: 'pass',
+          verification_status: 'pass',
+          test_results: [{ command: 'bun test', passed: true }],
+          acceptance_criteria: [
+            {
+              id: 'AC-001',
+              description: 'works',
+              status: 'pass',
+              evidence_ref: 'EV-1',
+            },
+          ],
+          side_effects: 'none',
+          summary: 'verified',
+        }),
+      },
+      { directory: projectRoot, agent: 'sf-verifier' },
+      {} as any
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toBe('INVALID_VERIFICATION_REPORT_CONTRACT');
+    expect((result as any).contract_id).toBe('verification-report/v1');
+    expect((result as any).contract_id).toBe('verification-report/v1');
+    expect((result as any).validation_errors).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('test_matrix'),
+        expect.stringContaining('verification_commands'),
+        expect.stringContaining('e2e_tests'),
+        expect.stringContaining('evidence_ref'),
+        expect.stringContaining('semantic_closure'),
+      ])
+    );
+    await expect(fs.readFile(reportPath, 'utf-8')).resolves.toBe('preserved report\n');
+  });
+
+  it('rejects descriptive evidence text that is not an Evidence ID', async () => {
+    const payload = verificationPayload(workItemId);
+    payload.acceptance_criteria[0] = {
+      req_id: 'REQ-1',
+      name: 'works',
+      status: 'pass',
+      evidence: '已通过',
+    } as any;
+
+    const result = await getHandler('sf_artifact_write')!(
+      {
+        work_item_id: workItemId,
+        file_type: 'verification_report',
+        template: 'verification_report',
+        content: JSON.stringify(payload),
+      },
+      { directory: projectRoot, agent: 'sf-verifier' },
+      {} as any
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).validation_errors).toEqual(
+      expect.arrayContaining([expect.stringContaining('INVALID_EVIDENCE_REFERENCE')])
+    );
   });
 
   it('freezes verification inputs after verification_gate advances state', async () => {

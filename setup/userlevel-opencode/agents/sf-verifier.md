@@ -318,7 +318,9 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 
 维护一个结构化的 results 数组，报告只能从 results 渲染。
 **禁止**凭记忆补写未实际执行的检查结果。
-如果某条检查没有执行，报告中标记为 "not_executed"，不要标记为 "pass"。
+如果某条验证命令没有执行，`verification_commands[*].status` 标记为 `"skipped"`，
+不要标记为 `"pass"`；`required_evidence_results[*].status` 仍使用其契约中的
+`"not_executed"`。
 
 ---
 
@@ -542,6 +544,11 @@ Verification report 必须直接使用上文 **Required Output** 的同一结构
 
 `acceptance_criteria[*].evidence` 与 `e2e_tests[*].evidence` 必须写已登记的
 `EV-...` ID（或使用 `evidence_refs: ["EV-..."]`），不得只写描述性结论。
+
+Artifact Writer 会在写盘前按同一契约严格校验全部必填字段和嵌套条目；不会把缺失数组
+补为空数组、不会补默认副作用/摘要，也不接受 `evidence_ref` 单数别名。校验失败时报告
+不会落盘，必须根据结构化 `validation_errors` 修正同一份 Verification JSON 后重试。
+`sf_semantic_closure_run` 会再次执行相同的报告契约校验，不完整报告不能生成或复用闭包。
 
 ### 禁止行为
 

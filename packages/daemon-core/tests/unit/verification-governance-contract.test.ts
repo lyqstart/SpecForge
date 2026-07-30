@@ -61,7 +61,18 @@ describe('verification governance contract', () => {
     const report = renderVerificationReport(
       JSON.stringify({
         conclusion: 'pass',
-        test_matrix: { L1_unit: 'pass', L4_e2e: 'pass' },
+        test_matrix: {
+          L1_unit: 'pass',
+          L2_integration: 'pass',
+          L3_pbt: 'not_applicable',
+          L4_e2e: 'pass',
+          L5_smoke: 'pass',
+          L6_regression: 'not_applicable',
+          L7_performance: 'not_applicable',
+          L8_security: 'not_applicable',
+          L9_compatibility: 'not_applicable',
+          L10_uat: 'not_applicable',
+        },
         verification_commands: [{ command: 'test', status: 'pass', output_summary: 'passed' }],
         acceptance_criteria: [{ req_id: 'REQ-1', name: 'works', status: 'pass', evidence: 'EV-1' }],
         e2e_tests: [{ name: 'e2e', status: 'pass', evidence: 'EV-1' }],
@@ -189,5 +200,33 @@ describe('verification governance contract', () => {
         check => check.check_id === 'verification_report_claims_have_registered_evidence'
       )?.passed
     ).toBe(false);
+  });
+
+  it('uses the shared report contract to reject structurally incomplete fenced JSON', async () => {
+    await fs.writeFile(
+      path.join(workItemDir, 'verification_report.md'),
+      [
+        '# Verification',
+        '```json',
+        JSON.stringify({
+          conclusion: 'pass',
+          test_results: [{ command: 'bun test', passed: true }],
+          acceptance_criteria: [],
+          side_effects: 'none',
+          summary: 'verified',
+        }),
+        '```',
+      ].join('\n')
+    );
+
+    const result = await evaluateVerificationGovernanceContract({
+      workItemDir,
+      workflowType: 'quick_change',
+    });
+    const contractCheck = result.checks.find(
+      check => check.check_id === 'verification_report_contract_valid'
+    );
+    expect(contractCheck?.passed).toBe(false);
+    expect(contractCheck?.details).toContain('verification_commands');
   });
 });
