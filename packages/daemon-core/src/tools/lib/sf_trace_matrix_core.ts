@@ -9,6 +9,11 @@
 
 import { logErrorToFile } from "./utils"
 import { resolveWorkItemSpecArtifacts } from "./governance-invariants-v11"
+import { parseRefsFields } from "./sf_markdown_verification_parser"
+import {
+  isValidDesignDecisionId,
+  isValidRequirementId,
+} from "@specforge/types"
 
 // ============================================================
 // Types
@@ -33,96 +38,82 @@ export interface TraceMatrixResult {
 // ============================================================
 
 /**
- * 从 requirements.md 中提取需求编号
- * 匹配模式:
- * - "### 需求 N" 或 "### 需求N"
- * - "### Requirement N" 或 "### RequirementN"
- * - "## N." (numbered sections like "## 1." "## 12.")
- * - "REQ-XXX" or "REQ-F001" style IDs
+ * 从 requirements.md 中提取需求声明。
+ * 优先读取标题中的规范 ID；仅当不存在规范声明时回退到旧式本地化、
+ * 数字章节或正文 ID。正文中的格式示例不得与真实声明混合计数。
  */
 export function extractRequirementIds(content: string): string[] {
-  const ids = new Set<string>()
+  const headingLines = content
+    .split(/\r?\n/)
+    .map(line => /^#{2,6}\s+(.+)$/.exec(line)?.[1] ?? "")
+    .filter(Boolean)
 
-  // Match "### 需求 N" or "### 需求N" (with or without space)
-  const chinesePattern = /###\s*需求\s*(\d+)/g
-  let match: RegExpExecArray | null
-  while ((match = chinesePattern.exec(content)) !== null) {
-    ids.add(match[1])
+  const declaredIds = unique(
+    headingLines.flatMap(line => extractRequirementTokens(line))
+  )
+  if (declaredIds.length > 0) return declaredIds
+
+  const localizedIds = new Set<string>()
+  for (const line of headingLines) {
+    const localized = /^(?:需求|Requirement)\s*(\d+)\b/i.exec(line)
+    if (localized) localizedIds.add(localized[1])
   }
+  if (localizedIds.size > 0) return [...localizedIds]
 
-  // Match "### Requirement N" or "### RequirementN"
-  const englishPattern = /###\s*Requirement\s*(\d+)/gi
-  while ((match = englishPattern.exec(content)) !== null) {
-    ids.add(match[1])
+  const numberedIds = new Set<string>()
+  for (const line of headingLines) {
+    const numbered = /^(\d+)\./.exec(line)
+    if (numbered) numberedIds.add(numbered[1])
   }
+  if (numberedIds.size > 0) return [...numberedIds]
 
-  // Match "## N." numbered sections (top-level requirement sections)
-  const numberedPattern = /^##\s+(\d+)\./gm
-  while ((match = numberedPattern.exec(content)) !== null) {
-    ids.add(match[1])
-  }
-
-  // Match REQ-XXX style IDs (e.g., REQ-001, REQ-F001, REQ_AUTH_01)
-  const reqIdPattern = /REQ[-_]\w+/g
-  while ((match = reqIdPattern.exec(content)) !== null) {
-    ids.add(match[0])
-  }
-
-  return Array.from(ids)
+  // Read-only compatibility for old documents that declared IDs in prose.
+  return unique(extractRequirementTokens(content))
 }
 
 /**
- * 从 design.md 中提取引用的需求编号
- * 匹配模式:
- * - "需求 N" 或 "需求N"
- * - "Requirement N" 或 "RequirementN"
- * - "REQ-XXX" style IDs
- * - "Req-N" or "Req N"
+ * 从 design.md 中提取引用的需求编号。
+ * 结构化 refs 是权威入口；旧文档没有 refs 时才读取正文兼容引用。
  */
 export function extractDesignReqReferences(content: string): string[] {
+  const structuredRefs = parseRefsFields(content)
+    .flatMap(expandRequirementReference)
+    .filter(isSupportedRequirementReference)
+  if (structuredRefs.length > 0) return unique(structuredRefs)
+
   const ids = new Set<string>()
-
-  // Match "需求 N" or "需求N" (anywhere in text)
-  const chinesePattern = /需求\s*(\d+)/g
   let match: RegExpExecArray | null
-  while ((match = chinesePattern.exec(content)) !== null) {
-    ids.add(match[1])
-  }
-
-  // Match "Requirement N" or "RequirementN"
+  const chinesePattern = /需求\s*(\d+)/g
+  while ((match = chinesePattern.exec(content)) !== null) ids.add(match[1])
   const englishPattern = /Requirement\s*(\d+)/gi
-  while ((match = englishPattern.exec(content)) !== null) {
-    ids.add(match[1])
-  }
-
-  // Match REQ-XXX style IDs
-  const reqIdPattern = /REQ[-_]\w+/g
-  while ((match = reqIdPattern.exec(content)) !== null) {
-    ids.add(match[0])
-  }
-
-  return Array.from(ids)
+  while ((match = englishPattern.exec(content)) !== null) ids.add(match[1])
+  for (const ref of extractRequirementTokens(content)) ids.add(ref)
+  return [...ids]
 }
 
 /**
- * 从 design.md 中提取设计章节标题
- * 匹配 ## 和 ### 级别的标题
- * 返回标题文本（去除 # 前缀和前后空白）
+ * 从 design.md 中提取可追溯设计实体。
+ * 规范文档只把 DD ID 声明视为实体；旧文档回退到带编号的设计章节。
  */
 export function extractDesignSections(content: string): string[] {
-  const sections: string[] = []
+  const headings = content
+    .split(/\r?\n/)
+    .map(line => /^#{2,6}\s+(.+)$/.exec(line)?.[1]?.trim() ?? "")
+    .filter(Boolean)
+  const decisionIds = unique(
+    headings.flatMap(heading =>
+      extractIdentifierCandidates(heading).filter(isValidDesignDecisionId)
+    )
+  )
+  if (decisionIds.length > 0) return decisionIds
 
-  // Match ## or ### level headings
-  const headingPattern = /^(#{2,3})\s+(.+)$/gm
-  let match: RegExpExecArray | null
-  while ((match = headingPattern.exec(content)) !== null) {
-    const title = match[2].trim()
-    if (title) {
-      sections.push(title)
-    }
-  }
-
-  return sections
+  // Legacy documents had no DD IDs and referenced numbered design sections.
+  // Unnumbered headings are document structure, not traceable design entities.
+  return unique(
+    headings
+      .map(heading => /^(\d+(?:\.\d+)+)\b/.exec(heading)?.[1] ?? "")
+      .filter(Boolean)
+  )
 }
 
 /**
@@ -134,8 +125,12 @@ export function extractDesignSections(content: string): string[] {
  * - Direct section title references (partial match)
  */
 export function extractTaskDesignReferences(content: string): string[] {
-  const refs = new Set<string>()
+  const structuredRefs = parseRefsFields(content).filter(ref =>
+    isValidDesignDecisionId(ref) || /^DD-\d+$/.test(ref)
+  )
+  if (structuredRefs.length > 0) return unique(structuredRefs)
 
+  const refs = new Set<string>()
   // Match "设计 N.N" or "设计N.N"
   const chinesePattern = /设计\s*([\d]+(?:\.[\d]+)*)/g
   let match: RegExpExecArray | null
@@ -188,13 +183,20 @@ export async function checkTraceMatrix(
     if (designs.length === 0) return createFailResult([], [], "design artifact not found")
     if (tasks.length === 0) return createFailResult([], [], "tasks artifact not found")
 
-    const requirementsContent = requirements.map(artifact => artifact.content).join("\n\n")
+    const authoritativeRequirements = requirements.filter(
+      artifact => !isExplicitRequirementProjection(artifact.content)
+    )
+    const requirementsContent = (
+      authoritativeRequirements.length > 0 ? authoritativeRequirements : requirements
+    ).map(artifact => artifact.content).join("\n\n")
     const designContent = designs.map(artifact => artifact.content).join("\n\n")
     const tasksContent = tasks.map(artifact => artifact.content).join("\n\n")
 
     // Extract data
     const requirementIds = extractRequirementIds(requirementsContent)
     const designReqRefs = extractDesignReqReferences(designContent)
+      .map(ref => normalizeRequirementReference(ref, requirementIds))
+      .filter((ref): ref is string => ref !== null)
     const designSections = extractDesignSections(designContent)
     const taskDesignRefs = extractTaskDesignReferences(tasksContent)
 
@@ -210,7 +212,8 @@ export async function checkTraceMatrix(
     // We match design sections by checking if any task design reference appears in the section title
     const uncoveredDesigns: string[] = []
     for (const section of designSections) {
-      const isCovered = taskDesignRefs.some((ref) => section.includes(ref)) ||
+      const isCovered = taskDesignRefs.includes(section) ||
+        taskDesignRefs.some((ref) => section.includes(ref)) ||
         isDesignSectionReferencedInTasks(section, tasksContent)
       if (!isCovered) {
         uncoveredDesigns.push(section)
@@ -230,7 +233,10 @@ export async function checkTraceMatrix(
       ? Math.round((coveredDesignSections / totalDesignSections) * 100)
       : 100
 
-    const status = uncoveredRequirements.length === 0 && uncoveredDesigns.length === 0
+    const hasTraceNodes = totalRequirements > 0 && totalDesignSections > 0
+    const status = hasTraceNodes &&
+      uncoveredRequirements.length === 0 &&
+      uncoveredDesigns.length === 0
       ? "pass"
       : "fail"
 
@@ -288,6 +294,67 @@ function isDesignSectionReferencedInTasks(
   }
 
   return false
+}
+
+function unique(values: string[]): string[] {
+  return [...new Set(values)]
+}
+
+function extractIdentifierCandidates(content: string): string[] {
+  return content.toUpperCase().match(/[A-Z][A-Z0-9_-]*/g) ?? []
+}
+
+function isSupportedRequirementReference(value: string): boolean {
+  return (
+    isValidRequirementId(value) ||
+    /^REQ-\d+$/.test(value) ||
+    /^REQ-[A-Z]\d+$/.test(value) ||
+    /^REQ_[A-Z0-9_]+$/.test(value)
+  )
+}
+
+function extractRequirementTokens(content: string): string[] {
+  return extractIdentifierCandidates(content)
+    .flatMap(expandRequirementReference)
+    .filter(isSupportedRequirementReference)
+}
+
+function expandRequirementReference(value: string): string[] {
+  const normalized = value.trim().toUpperCase()
+  const range = /^(REQ-(?:[A-Z][A-Z0-9]{1,11}-)?)(\d{3})\s*(?:\.\.|~)\s*(?:REQ-(?:[A-Z][A-Z0-9]{1,11}-)?)?(\d{3})$/.exec(
+    normalized
+  )
+  if (!range) return [normalized]
+
+  const start = Number(range[2])
+  const end = Number(range[3])
+  if (end < start || end - start > 999) return [normalized]
+  return Array.from(
+    { length: end - start + 1 },
+    (_, index) => `${range[1]}${String(start + index).padStart(3, "0")}`
+  )
+}
+
+function normalizeRequirementReference(
+  reference: string,
+  declaredRequirements: string[]
+): string | null {
+  if (declaredRequirements.includes(reference)) return reference
+
+  const legacy = /^REQ-(\d{3})$/.exec(reference)
+  if (!legacy) return null
+  const matchingCanonical = declaredRequirements.filter(id =>
+    isValidRequirementId(id) && id.endsWith(`-${legacy[1]}`)
+  )
+  return matchingCanonical.length === 1 ? matchingCanonical[0] : null
+}
+
+function isExplicitRequirementProjection(content: string): boolean {
+  return (
+    /投影声明/.test(content) ||
+    /\bprojection\s+declaration\b/i.test(content) ||
+    /\bthis\s+(?:document|file)\s+is\s+(?:an?\s+)?projection\b/i.test(content)
+  )
 }
 
 /**

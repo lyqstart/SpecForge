@@ -10,6 +10,11 @@
 import { readFile } from "node:fs/promises"
 import { join } from "node:path"
 import { logErrorToFile } from "./utils"
+import { parseRefsFields } from "./sf_markdown_verification_parser"
+import {
+  isValidDesignDecisionId,
+  isValidRequirementId,
+} from "@specforge/types"
 
 const SPEC_DIR_NAME = '.specforge' as const;
 
@@ -44,34 +49,31 @@ export interface TraceMatrixResult {
  * - "REQ-XXX" or "REQ-F001" style IDs
  */
 export function extractRequirementIds(content: string): string[] {
-  const ids = new Set<string>()
+  const headingLines = content
+    .split(/\r?\n/)
+    .map(line => /^#{2,6}\s+(.+)$/.exec(line)?.[1] ?? "")
+    .filter(Boolean)
 
-  // Match "### 需求 N" or "### 需求N" (with or without space)
-  const chinesePattern = /###\s*需求\s*(\d+)/g
-  let match: RegExpExecArray | null
-  while ((match = chinesePattern.exec(content)) !== null) {
-    ids.add(match[1])
+  const declaredIds = unique(
+    headingLines.flatMap(line => extractRequirementTokens(line))
+  )
+  if (declaredIds.length > 0) return declaredIds
+
+  const localizedIds = new Set<string>()
+  for (const line of headingLines) {
+    const localized = /^(?:需求|Requirement)\s*(\d+)\b/i.exec(line)
+    if (localized) localizedIds.add(localized[1])
   }
+  if (localizedIds.size > 0) return [...localizedIds]
 
-  // Match "### Requirement N" or "### RequirementN"
-  const englishPattern = /###\s*Requirement\s*(\d+)/gi
-  while ((match = englishPattern.exec(content)) !== null) {
-    ids.add(match[1])
+  const numberedIds = new Set<string>()
+  for (const line of headingLines) {
+    const numbered = /^(\d+)\./.exec(line)
+    if (numbered) numberedIds.add(numbered[1])
   }
+  if (numberedIds.size > 0) return [...numberedIds]
 
-  // Match "## N." numbered sections (top-level requirement sections)
-  const numberedPattern = /^##\s+(\d+)\./gm
-  while ((match = numberedPattern.exec(content)) !== null) {
-    ids.add(match[1])
-  }
-
-  // Match REQ-XXX style IDs (e.g., REQ-001, REQ-F001, REQ_AUTH_01)
-  const reqIdPattern = /REQ[-_]\w+/g
-  while ((match = reqIdPattern.exec(content)) !== null) {
-    ids.add(match[0])
-  }
-
-  return Array.from(ids)
+  return unique(extractRequirementTokens(content))
 }
 
 /**
@@ -83,28 +85,19 @@ export function extractRequirementIds(content: string): string[] {
  * - "Req-N" or "Req N"
  */
 export function extractDesignReqReferences(content: string): string[] {
+  const structuredRefs = parseRefsFields(content)
+    .flatMap(expandRequirementReference)
+    .filter(isSupportedRequirementReference)
+  if (structuredRefs.length > 0) return unique(structuredRefs)
+
   const ids = new Set<string>()
-
-  // Match "需求 N" or "需求N" (anywhere in text)
-  const chinesePattern = /需求\s*(\d+)/g
   let match: RegExpExecArray | null
-  while ((match = chinesePattern.exec(content)) !== null) {
-    ids.add(match[1])
-  }
-
-  // Match "Requirement N" or "RequirementN"
+  const chinesePattern = /需求\s*(\d+)/g
+  while ((match = chinesePattern.exec(content)) !== null) ids.add(match[1])
   const englishPattern = /Requirement\s*(\d+)/gi
-  while ((match = englishPattern.exec(content)) !== null) {
-    ids.add(match[1])
-  }
-
-  // Match REQ-XXX style IDs
-  const reqIdPattern = /REQ[-_]\w+/g
-  while ((match = reqIdPattern.exec(content)) !== null) {
-    ids.add(match[0])
-  }
-
-  return Array.from(ids)
+  while ((match = englishPattern.exec(content)) !== null) ids.add(match[1])
+  for (const ref of extractRequirementTokens(content)) ids.add(ref)
+  return [...ids]
 }
 
 /**
@@ -113,19 +106,22 @@ export function extractDesignReqReferences(content: string): string[] {
  * 返回标题文本（去除 # 前缀和前后空白）
  */
 export function extractDesignSections(content: string): string[] {
-  const sections: string[] = []
+  const headings = content
+    .split(/\r?\n/)
+    .map(line => /^#{2,6}\s+(.+)$/.exec(line)?.[1]?.trim() ?? "")
+    .filter(Boolean)
+  const decisionIds = unique(
+    headings.flatMap(heading =>
+      extractIdentifierCandidates(heading).filter(isValidDesignDecisionId)
+    )
+  )
+  if (decisionIds.length > 0) return decisionIds
 
-  // Match ## or ### level headings
-  const headingPattern = /^(#{2,3})\s+(.+)$/gm
-  let match: RegExpExecArray | null
-  while ((match = headingPattern.exec(content)) !== null) {
-    const title = match[2].trim()
-    if (title) {
-      sections.push(title)
-    }
-  }
-
-  return sections
+  return unique(
+    headings
+      .map(heading => /^(\d+(?:\.\d+)+)\b/.exec(heading)?.[1] ?? "")
+      .filter(Boolean)
+  )
 }
 
 /**
@@ -137,6 +133,11 @@ export function extractDesignSections(content: string): string[] {
  * - Direct section title references (partial match)
  */
 export function extractTaskDesignReferences(content: string): string[] {
+  const structuredRefs = parseRefsFields(content).filter(ref =>
+    isValidDesignDecisionId(ref) || /^DD-\d+$/.test(ref)
+  )
+  if (structuredRefs.length > 0) return unique(structuredRefs)
+
   const refs = new Set<string>()
 
   // Match "设计 N.N" or "设计N.N"
@@ -223,6 +224,8 @@ export async function checkTraceMatrix(
     // Extract data
     const requirementIds = extractRequirementIds(requirementsContent)
     const designReqRefs = extractDesignReqReferences(designContent)
+      .map(ref => normalizeRequirementReference(ref, requirementIds))
+      .filter((ref): ref is string => ref !== null)
     const designSections = extractDesignSections(designContent)
     const taskDesignRefs = extractTaskDesignReferences(tasksContent)
 
@@ -238,7 +241,8 @@ export async function checkTraceMatrix(
     // We match design sections by checking if any task design reference appears in the section title
     const uncoveredDesigns: string[] = []
     for (const section of designSections) {
-      const isCovered = taskDesignRefs.some((ref) => section.includes(ref)) ||
+      const isCovered = taskDesignRefs.includes(section) ||
+        taskDesignRefs.some((ref) => section.includes(ref)) ||
         isDesignSectionReferencedInTasks(section, tasksContent)
       if (!isCovered) {
         uncoveredDesigns.push(section)
@@ -258,7 +262,10 @@ export async function checkTraceMatrix(
       ? Math.round((coveredDesignSections / totalDesignSections) * 100)
       : 100
 
-    const status = uncoveredRequirements.length === 0 && uncoveredDesigns.length === 0
+    const hasTraceNodes = totalRequirements > 0 && totalDesignSections > 0
+    const status = hasTraceNodes &&
+      uncoveredRequirements.length === 0 &&
+      uncoveredDesigns.length === 0
       ? "pass"
       : "fail"
 
@@ -316,6 +323,59 @@ function isDesignSectionReferencedInTasks(
   }
 
   return false
+}
+
+function unique(values: string[]): string[] {
+  return [...new Set(values)]
+}
+
+function extractIdentifierCandidates(content: string): string[] {
+  return content.toUpperCase().match(/[A-Z][A-Z0-9_-]*/g) ?? []
+}
+
+function isSupportedRequirementReference(value: string): boolean {
+  return (
+    isValidRequirementId(value) ||
+    /^REQ-\d+$/.test(value) ||
+    /^REQ-[A-Z]\d+$/.test(value) ||
+    /^REQ_[A-Z0-9_]+$/.test(value)
+  )
+}
+
+function extractRequirementTokens(content: string): string[] {
+  return extractIdentifierCandidates(content)
+    .flatMap(expandRequirementReference)
+    .filter(isSupportedRequirementReference)
+}
+
+function expandRequirementReference(value: string): string[] {
+  const normalized = value.trim().toUpperCase()
+  const range = /^(REQ-(?:[A-Z][A-Z0-9]{1,11}-)?)(\d{3})\s*(?:\.\.|~)\s*(?:REQ-(?:[A-Z][A-Z0-9]{1,11}-)?)?(\d{3})$/.exec(
+    normalized
+  )
+  if (!range) return [normalized]
+
+  const start = Number(range[2])
+  const end = Number(range[3])
+  if (end < start || end - start > 999) return [normalized]
+  return Array.from(
+    { length: end - start + 1 },
+    (_, index) => `${range[1]}${String(start + index).padStart(3, "0")}`
+  )
+}
+
+function normalizeRequirementReference(
+  reference: string,
+  declaredRequirements: string[]
+): string | null {
+  if (declaredRequirements.includes(reference)) return reference
+
+  const legacy = /^REQ-(\d{3})$/.exec(reference)
+  if (!legacy) return null
+  const matchingCanonical = declaredRequirements.filter(id =>
+    isValidRequirementId(id) && id.endsWith(`-${legacy[1]}`)
+  )
+  return matchingCanonical.length === 1 ? matchingCanonical[0] : null
 }
 
 /**
