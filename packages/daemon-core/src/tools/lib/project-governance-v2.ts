@@ -11,6 +11,7 @@ import {
 } from '@specforge/types';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
 import { getFactualChangedFiles } from './write-guard-log.js';
+import { computeFilesystemDiff, loadBaseline } from './filesystem-diff.js';
 
 const execFileAsync = promisify(execFile);
 const SPEC_DIR = '.specforge';
@@ -1396,7 +1397,7 @@ async function deriveActualChangedFiles(
   }
 
   const workItem = await readJson(path.join(workItemDir, 'work_item.json'));
-  if (Array.isArray(workItem?.actual_changed_files)) {
+  if (Array.isArray(workItem?.actual_changed_files) && workItem.actual_changed_files.length > 0) {
     return {
       files: unique(
         workItem.actual_changed_files
@@ -1412,6 +1413,17 @@ async function deriveActualChangedFiles(
       ),
       source: 'work_item.actual_changed_files',
     };
+  }
+
+  const baseline = loadBaseline(workItemDir);
+  if (baseline) {
+    const diff = computeFilesystemDiff(baseline, projectRoot, []);
+    if (diff.all_changes.length > 0) {
+      return {
+        files: unique(diff.all_changes.map(entry => repositoryRelativePath(projectRoot, entry.path))),
+        source: 'filesystem_baseline.json',
+      };
+    }
   }
 
   return { files: [], source: 'none' };
@@ -1559,6 +1571,139 @@ async function gitHead(projectRoot: string): Promise<string> {
   }
 }
 
+async function gitLines(projectRoot: string, args: string[]): Promise<string[]> {
+  const { stdout } = await execFileAsync('git', args, {
+    cwd: projectRoot,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return unique(
+    String(stdout ?? '')
+      .split(/\r?\n/)
+      .map(value => slash(value.trim()))
+      .filter(Boolean),
+  );
+}
+
+async function gitCurrentBranch(projectRoot: string): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync('git', ['branch', '--show-current'], {
+      cwd: projectRoot,
+    });
+    return String(stdout ?? '').trim();
+  } catch {
+    return '';
+  }
+}
+
+async function gitIsAncestor(
+  projectRoot: string,
+  ancestor: string,
+  descendant: string,
+): Promise<boolean> {
+  if (!ancestor || !descendant) return false;
+  try {
+    await execFileAsync('git', ['merge-base', '--is-ancestor', ancestor, descendant], {
+      cwd: projectRoot,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function gitImplementationFingerprint(
+  projectRoot: string,
+  commit: string,
+  files: string[],
+): Promise<string> {
+  const facts: string[] = [];
+  for (const relativePath of unique(files.map(slash))) {
+    try {
+      const { stdout } = await execFileAsync(
+        'git',
+        ['rev-parse', `${commit}:${relativePath}`],
+        { cwd: projectRoot },
+      );
+      facts.push(`${relativePath}\0${String(stdout ?? '').trim()}`);
+    } catch {
+      facts.push(`${relativePath}\0deleted`);
+    }
+  }
+  return digest(facts.join('\n'));
+}
+
+export interface FormalGitBinding {
+  enabled: boolean;
+  branch_name: string;
+  expected_branch: string;
+  head_commit: string;
+  base_commit: string;
+  base_is_ancestor: boolean;
+  committed_files: string[];
+  worktree_files: string[];
+  implementation_files: string[];
+  missing_from_commit: string[];
+  uncommitted_implementation_files: string[];
+}
+
+export async function inspectFormalGitBinding(input: {
+  projectRoot: string;
+  gitContext: any;
+  implementationFiles: string[];
+}): Promise<FormalGitBinding> {
+  const enabled = input.gitContext?.git_enabled === true;
+  const expectedBranch = String(input.gitContext?.branch_name ?? '');
+  const baseCommit = String(input.gitContext?.base_commit ?? '');
+  const implementationFiles = unique(
+    input.implementationFiles
+      .map(value => repositoryRelativePath(input.projectRoot, value))
+      .filter(value => value && value !== SPEC_DIR && !value.startsWith(`${SPEC_DIR}/`)),
+  );
+  if (!enabled) {
+    return {
+      enabled,
+      branch_name: '',
+      expected_branch: expectedBranch,
+      head_commit: '',
+      base_commit: baseCommit,
+      base_is_ancestor: false,
+      committed_files: [],
+      worktree_files: [],
+      implementation_files: implementationFiles,
+      missing_from_commit: implementationFiles,
+      uncommitted_implementation_files: implementationFiles,
+    };
+  }
+
+  const headCommit = await gitHead(input.projectRoot);
+  const [branchName, committedFiles, trackedWorktreeFiles, untrackedFiles] =
+    await Promise.all([
+      gitCurrentBranch(input.projectRoot),
+      baseCommit && headCommit
+        ? gitLines(input.projectRoot, ['diff', '--name-only', `${baseCommit}...${headCommit}`, '--'])
+        : Promise.resolve([]),
+      gitLines(input.projectRoot, ['diff', '--name-only', 'HEAD', '--']),
+      gitLines(input.projectRoot, ['ls-files', '--others', '--exclude-standard']),
+    ]);
+  const worktreeFiles = unique([...trackedWorktreeFiles, ...untrackedFiles]);
+  const committedSet = new Set(committedFiles.map(slash));
+  const worktreeSet = new Set(worktreeFiles.map(slash));
+
+  return {
+    enabled,
+    branch_name: branchName,
+    expected_branch: expectedBranch,
+    head_commit: headCommit,
+    base_commit: baseCommit,
+    base_is_ancestor: await gitIsAncestor(input.projectRoot, baseCommit, headCommit),
+    committed_files: committedFiles,
+    worktree_files: worktreeFiles,
+    implementation_files: implementationFiles,
+    missing_from_commit: implementationFiles.filter(file => !committedSet.has(file)),
+    uncommitted_implementation_files: implementationFiles.filter(file => worktreeSet.has(file)),
+  };
+}
+
 async function gitDiffFingerprint(projectRoot: string, baseCommit: string): Promise<string> {
   try {
     const [{ stdout: trackedStdout }, { stdout: untrackedStdout }] = await Promise.all([
@@ -1613,17 +1758,6 @@ export async function checkFormalVersionEligibility(input: {
     verification?.status === 'passed',
   );
 
-  const gateSummaryPath = path.join(input.workItemDir, 'gate_summary.md');
-  const gateSummary = await readText(gateSummaryPath);
-  inputFiles.push(gateSummaryPath);
-  addCheck(
-    checks,
-    'formal_gate_summary',
-    'Candidate Gate Summary is not failed/blocked/invalidated/expired',
-    Boolean(gateSummary) &&
-      !/Overall Status:\s*(failed|blocked|invalidated|expired)/i.test(gateSummary),
-  );
-
   const auditPath = path.join(input.workItemDir, 'changed_files_audit.md');
   const audit = await readText(auditPath);
   inputFiles.push(auditPath);
@@ -1649,6 +1783,72 @@ export async function checkFormalVersionEligibility(input: {
     actualScope.passed,
     `actual_modules=${actualScope.actual_modules.join(',') || 'none'}; violations=${actualScope.violations.join(' | ') || 'none'}`,
   );
+
+  const gitContextPath = path.join(input.workItemDir, 'git_context.json');
+  const gitContext = await readJson(gitContextPath);
+  const governanceScope = await readJson(path.join(input.workItemDir, 'governance_scope.json'));
+  const gitRequired =
+    actualScope.active &&
+    input.workflowPath !== 'contract_change_path' &&
+    input.workflowPath !== 'rollback_path';
+  const expectedImplementation =
+    gitRequired &&
+    normalizeArray(governanceScope?.allowed_write_files).some(
+      value => value !== SPEC_DIR && !slash(value).startsWith(`${SPEC_DIR}/`),
+    );
+  const gitBinding = await inspectFormalGitBinding({
+    projectRoot: input.projectRoot,
+    gitContext,
+    implementationFiles: actualScope.actual_files,
+  });
+  inputFiles.push(gitContextPath);
+  addCheck(
+    checks,
+    'formal_git_context',
+    'Git-enabled implementation is bound to WI branch and base commit',
+    !gitRequired ||
+      (gitBinding.enabled &&
+        Boolean(gitBinding.expected_branch) &&
+        Boolean(gitBinding.base_commit)),
+    `required=${gitRequired}; enabled=${gitBinding.enabled}; branch=${gitBinding.expected_branch || 'missing'}; base=${gitBinding.base_commit || 'missing'}`,
+  );
+  if (gitBinding.enabled) {
+    addCheck(
+      checks,
+      'formal_git_branch',
+      'Current branch matches git_context branch',
+      gitBinding.branch_name === gitBinding.expected_branch,
+      `current=${gitBinding.branch_name || 'missing'}; expected=${gitBinding.expected_branch || 'missing'}`,
+    );
+    addCheck(
+      checks,
+      'formal_git_base_ancestor',
+      'git_context base commit is an ancestor of the implementation commit',
+      gitBinding.base_is_ancestor,
+      `base=${gitBinding.base_commit || 'missing'}; head=${gitBinding.head_commit || 'missing'}`,
+    );
+    addCheck(
+      checks,
+      'formal_git_actual_files_present',
+      'Implementation produced observable project-file changes',
+      !expectedImplementation || gitBinding.implementation_files.length > 0,
+      `expected=${expectedImplementation}; actual=${gitBinding.implementation_files.join(',') || 'none'}`,
+    );
+    addCheck(
+      checks,
+      'formal_git_implementation_committed',
+      'Every observed implementation file is present in the WI committed diff',
+      gitBinding.missing_from_commit.length === 0,
+      `implementation_commit=${gitBinding.head_commit || 'missing'}; missing=${gitBinding.missing_from_commit.join(',') || 'none'}`,
+    );
+    addCheck(
+      checks,
+      'formal_git_implementation_worktree_clean',
+      'Observed implementation files have no staged, unstaged, or untracked changes',
+      gitBinding.uncommitted_implementation_files.length === 0,
+      `uncommitted=${gitBinding.uncommitted_implementation_files.join(',') || 'none'}`,
+    );
+  }
 
   const semanticRequired =
     input.workflowPath !== 'contract_change_path' && input.workflowPath !== 'rollback_path';
@@ -1691,7 +1891,12 @@ export async function checkFormalVersionEligibility(input: {
   const gatesDirectory = path.join(input.workItemDir, 'gates');
   try {
     for (const name of await fs.readdir(gatesDirectory)) {
-      if (!name.endsWith('.json') || name === 'formal_version_gate.json' || name === 'close_gate.json') {
+      if (
+        !name.endsWith('.json') ||
+        name === 'formal_version_gate.json' ||
+        name === 'close_gate.json' ||
+        name === 'gate_summary_gate.json'
+      ) {
         continue;
       }
       const report = await readJson(path.join(gatesDirectory, name));
@@ -1746,13 +1951,23 @@ export async function checkFormalVersionEligibility(input: {
 
   const passed = checks.every(check => check.passed);
   if (passed) {
-    const gitContext = await readJson(path.join(input.workItemDir, 'git_context.json'));
-    const headCommit = await gitHead(input.projectRoot);
-    const baseCommit = String(gitContext?.base_commit ?? '');
+    const headCommit = gitBinding.head_commit || (await gitHead(input.projectRoot));
+    const baseCommit = gitBinding.base_commit || String(gitContext?.base_commit ?? '');
     const snapshot = {
       schema_version: '1.0',
       work_item_id: input.workItemId,
       head_commit: headCommit,
+      implementation_commit: gitBinding.enabled ? headCommit : '',
+      branch_name: gitBinding.enabled ? gitBinding.branch_name : '',
+      implementation_files: gitBinding.implementation_files,
+      implementation_tree_fingerprint:
+        gitBinding.enabled && headCommit
+          ? await gitImplementationFingerprint(
+              input.projectRoot,
+              headCommit,
+              gitBinding.implementation_files,
+            )
+          : '',
       base_commit: baseCommit,
       diff_fingerprint: baseCommit
         ? await gitDiffFingerprint(input.projectRoot, baseCommit)
@@ -1789,6 +2004,35 @@ export async function assertFormalVersionSnapshotForGitMerge(
   const snapshot = await readJson(path.join(workItemDir, 'formal_version_snapshot.json'));
   if (!snapshot || typeof snapshot !== 'object') {
     throw new Error('FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE');
+  }
+
+  if (snapshot.implementation_commit) {
+    const [currentHead, currentBranch, trackedWorktreeFiles, untrackedFiles] =
+      await Promise.all([
+        gitHead(projectRoot),
+        gitCurrentBranch(projectRoot),
+        gitLines(projectRoot, ['diff', '--name-only', 'HEAD', '--']),
+        gitLines(projectRoot, ['ls-files', '--others', '--exclude-standard']),
+      ]);
+    if (unique([...trackedWorktreeFiles, ...untrackedFiles]).length > 0) {
+      throw new Error('FORMAL_VERSION_WORKTREE_NOT_CLEAN_BEFORE_GIT_MERGE');
+    }
+    if (snapshot.branch_name && currentBranch !== snapshot.branch_name) {
+      throw new Error('FORMAL_VERSION_BRANCH_CHANGED_AFTER_GATE');
+    }
+    if (!(await gitIsAncestor(projectRoot, snapshot.implementation_commit, currentHead))) {
+      throw new Error('FORMAL_VERSION_IMPLEMENTATION_COMMIT_NOT_ANCESTOR');
+    }
+    const implementationFiles = normalizeArray(snapshot.implementation_files);
+    const fingerprint = await gitImplementationFingerprint(
+      projectRoot,
+      currentHead,
+      implementationFiles,
+    );
+    if (fingerprint !== snapshot.implementation_tree_fingerprint) {
+      throw new Error('FORMAL_VERSION_IMPLEMENTATION_CHANGED_AFTER_GATE');
+    }
+    return;
   }
 
   if (snapshot.base_commit) {

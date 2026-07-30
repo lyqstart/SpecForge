@@ -37,10 +37,16 @@ import {
 } from "../lib/artifact-schema-validation.js";
 import {
   readAuthoritativeState,
+  recoverInvalidClosureWithEvidence,
   transitionWithEvidence,
 } from "../lib/state-coordinator-v11.js";
+import {
+  auditActualGovernanceScope,
+  inspectFormalGitBinding,
+} from "../lib/project-governance-v2.js";
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
+import { createHash } from "node:crypto";
 
 interface FilesystemDiffSummary {
   baseline_timestamp?: string;
@@ -67,6 +73,178 @@ interface CloseGateHandlerResult {
   closed_from_state?: string;
   authoritative_state_used?: boolean;
   state_auto_advance?: unknown;
+}
+
+async function hashFileIfPresent(filePath: string): Promise<string | null> {
+  try {
+    return createHash("sha256").update(await fs.readFile(filePath)).digest("hex");
+  } catch {
+    return null;
+  }
+}
+
+async function recoverInvalidClosure(input: {
+  args: Record<string, unknown>;
+  context: any;
+  deps: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workItem: Record<string, any>;
+}): Promise<any> {
+  if (input.args["confirm_invalid_closure_recovery"] !== true) {
+    return {
+      success: false,
+      error:
+        "INVALID_CLOSURE_RECOVERY_CONFIRMATION_REQUIRED: set confirm_invalid_closure_recovery=true",
+    };
+  }
+  const reason = String(input.args["recovery_reason"] ?? "").trim();
+  if (reason.length < 10) {
+    return {
+      success: false,
+      error: "INVALID_CLOSURE_RECOVERY_REASON_REQUIRED: provide a specific recovery_reason",
+    };
+  }
+
+  const state = await readAuthoritativeState({
+    deps: input.deps,
+    projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
+  });
+  if (state.current_state !== "closed") {
+    return {
+      success: false,
+      error: `INVALID_CLOSURE_RECOVERY_STATE_MISMATCH: expected closed, got '${state.current_state ?? "N/A"}'`,
+    };
+  }
+
+  const closeGatePath = path.join(input.workItemDir, "gates", "close_gate.json");
+  const formalGatePath = path.join(input.workItemDir, "gates", "formal_version_gate.json");
+  const closeGate = await readJsonFile(closeGatePath).catch(() => null);
+  const formalGate = await readJsonFile(formalGatePath).catch(() => null);
+  if (closeGate?.status !== "passed") {
+    return {
+      success: false,
+      error:
+        "INVALID_CLOSURE_RECOVERY_EVIDENCE_MISSING: prior close_gate.json with status=passed is required",
+    };
+  }
+
+  const invalidityReasons: string[] = [];
+  if (formalGate?.status !== "passed") {
+    invalidityReasons.push(
+      `formal_version_gate_status=${formalGate?.status ?? "missing"}`,
+    );
+  }
+
+  let gitBinding: Awaited<ReturnType<typeof inspectFormalGitBinding>> | null = null;
+  try {
+    const gitContext = await readJsonFile(path.join(input.workItemDir, "git_context.json"));
+    const actualScope = await auditActualGovernanceScope({
+      projectRoot: input.projectRoot,
+      workItemDir: input.workItemDir,
+    });
+    gitBinding = await inspectFormalGitBinding({
+      projectRoot: input.projectRoot,
+      gitContext,
+      implementationFiles: actualScope.actual_files,
+    });
+    const gitBindingFailures = [
+      ...(gitBinding.branch_name !== gitBinding.expected_branch
+        ? ["branch_mismatch"]
+        : []),
+      ...(!gitBinding.base_is_ancestor ? ["base_not_ancestor"] : []),
+      ...(gitBinding.missing_from_commit.length > 0
+        ? [`missing_from_commit:${gitBinding.missing_from_commit.join("|")}`]
+        : []),
+      ...(gitBinding.uncommitted_implementation_files.length > 0
+        ? [
+            `uncommitted_implementation_files:${gitBinding.uncommitted_implementation_files.join("|")}`,
+          ]
+        : []),
+    ];
+    if (gitBinding.enabled && gitBindingFailures.length > 0) {
+      invalidityReasons.push(
+        `formal_git_binding_failed=${gitBindingFailures.join(",")}`,
+      );
+    }
+  } catch (error) {
+    if (formalGate?.status === "passed") {
+      return {
+        success: false,
+        error: `INVALID_CLOSURE_RECOVERY_GIT_EVIDENCE_UNAVAILABLE: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      };
+    }
+  }
+
+  if (invalidityReasons.length === 0) {
+    return {
+      success: false,
+      error:
+        "INVALID_CLOSURE_RECOVERY_NOT_PROVEN: formal version and Git binding evidence do not prove the prior closure invalid",
+    };
+  }
+
+  const recoveryRecord = {
+    schema_version: "1.0",
+    work_item_id: input.workItemId,
+    recovery_action: "closed_to_implementation_ready",
+    status: "authorized",
+    reason,
+    invalidity_reasons: invalidityReasons,
+    prior_evidence: {
+      close_gate_status: closeGate.status,
+      close_gate_sha256: await hashFileIfPresent(closeGatePath),
+      formal_version_gate_status: formalGate?.status ?? "missing",
+      formal_version_gate_sha256: await hashFileIfPresent(formalGatePath),
+      git_binding: gitBinding,
+    },
+    permission_state: {
+      code_change_allowed: input.workItem.code_change_allowed === true,
+      code_permission_revoked: input.workItem.code_permission_revoked === true,
+    },
+    authorized_by: String(input.context?.agent ?? "close_gate"),
+    authorized_at: new Date().toISOString(),
+  };
+  const recoveryPath = path.join(input.workItemDir, "closure_recovery.json");
+  await fs.writeFile(recoveryPath, JSON.stringify(recoveryRecord, null, 2) + "\n", "utf-8");
+
+  const transition = await recoverInvalidClosureWithEvidence({
+    deps: input.deps,
+    projectRoot: input.projectRoot,
+    workItemId: input.workItemId,
+    workItemDir: input.workItemDir,
+    workflowType:
+      String(input.workItem.workflow_type ?? "") ||
+      workflowTypeFromPath(input.workItem.workflow_path),
+    evidence: `Prior closure invalidated: ${invalidityReasons.join("; ")}`,
+    invalidityReasons,
+  });
+  recoveryRecord.status = "applied";
+  Object.assign(recoveryRecord, {
+    applied_at: new Date().toISOString(),
+    transition: {
+      from_state: "closed",
+      to_state: "implementation_ready",
+      actor: "close_gate",
+    },
+  });
+  await fs.writeFile(recoveryPath, JSON.stringify(recoveryRecord, null, 2) + "\n", "utf-8");
+
+  return {
+    success: true,
+    action: "recover_invalid_closure",
+    work_item_id: input.workItemId,
+    authoritative_state_used: true,
+    state_advanced: true,
+    state_auto_advance: transition,
+    recovery_record: recoveryPath,
+    invalidity_reasons: invalidityReasons,
+    code_permission_remains_revoked: input.workItem.code_change_allowed !== true,
+  };
 }
 
 const CLOSE_RECOVERABLE_STATES = new Set([
@@ -241,9 +419,22 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   workItemId: string,
   workItemJsonPath: string,
   fallbackAllowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
+  filesystemDiff?: FilesystemDiffResult | null,
 ): Promise<ChangedFilesAuditResult | null> {
   const factualFiles = getFactualChangedFiles(workItemDir);
-  if (factualFiles.length === 0) return null;
+  const actualFiles =
+    factualFiles.length > 0
+      ? factualFiles
+      : (filesystemDiff?.all_changes ?? []).map(entry => ({
+          path: entry.path,
+          operation:
+            entry.change === "created"
+              ? ("create" as const)
+              : entry.change === "deleted"
+                ? ("delete" as const)
+                : ("modify" as const),
+        }));
+  if (actualFiles.length === 0) return null;
 
   let updatedWi: Record<string, any> = {};
   try {
@@ -269,10 +460,13 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
     trustedAllowedWrites,
   );
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
-  const auditResult = runChangedFilesAudit(factualFiles, allowedWriteFilesForAudit, "agent");
+  const auditResult = runChangedFilesAudit(actualFiles, allowedWriteFilesForAudit, "agent");
 
   const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
-  const auditDataSource = `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot + factual allowed writes)`;
+  const auditDataSource =
+    factualFiles.length > 0
+      ? `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot + factual allowed writes)`
+      : `filesystem_baseline.json (${actualFiles.length} observed project changes, allowed_write_files_snapshot policy)`;
 
   await fs.writeFile(
     changedFilesPath,
@@ -467,6 +661,18 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       return { ...result, error: `work_item.json not found at ${workItemJsonPath}` };
     }
 
+    if (String(args["action"] ?? "close") === "recover_invalid_closure") {
+      return recoverInvalidClosure({
+        args,
+        context,
+        deps,
+        projectRoot,
+        workItemId,
+        workItemDir,
+        workItem,
+      });
+    }
+
     const authoritativeState = await readAuthoritativeState({
       deps,
       projectRoot,
@@ -633,9 +839,11 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     }
 
     const baseline = loadBaseline(workItemDir);
+    let filesystemDiff: FilesystemDiffResult | null = null;
     if (baseline) {
       const writeGuardAllowed = getFactualChangedFiles(workItemDir).map((f) => f.path);
       const fullDiff = computeFilesystemDiff(baseline, projectRoot, writeGuardAllowed);
+      filesystemDiff = fullDiff;
       const diffEvidencePath = await saveFilesystemDiffEvidence(workItemDir, fullDiff);
 
       await normalizeWriteGuardOperationsFromDiff(projectRoot, workItemDir, fullDiff);
@@ -645,6 +853,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         workItemId,
         workItemJsonPath,
         allowedWriteFilesSnapshot,
+        fullDiff,
       );
       if (refreshedAudit) result.changed_files_audit = refreshedAudit;
       result.filesystem_diff = summarizeFilesystemDiff(
@@ -660,6 +869,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       workItemId,
       workItemJsonPath,
       allowedWriteFilesSnapshot,
+      filesystemDiff,
     );
     if (finalAuditRefresh) result.changed_files_audit = finalAuditRefresh;
 

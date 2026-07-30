@@ -352,10 +352,14 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
       }
 
       try {
-        const baseline = takeSnapshot(projectRoot);
-        saveBaseline(workItemDir, baseline);
+        await fs.access(path.join(workItemDir, 'filesystem_baseline.json'));
       } catch {
-        // Non-critical: changed_files_audit can still fall back to write_guard_log.
+        try {
+          const baseline = takeSnapshot(projectRoot);
+          saveBaseline(workItemDir, baseline);
+        } catch {
+          // Non-critical: changed_files_audit can still fall back to write_guard_log.
+        }
       }
 
       return {

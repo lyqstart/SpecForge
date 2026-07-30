@@ -55,10 +55,42 @@ async function writeGateReport(ctx: GateContext, report: GateReportV11): Promise
   await fs.writeFile(path.join(gatesDir, `${report.gate_id}.json`), JSON.stringify(report, null, 2), 'utf-8');
 }
 
+async function latestGateReports(
+  ctx: GateContext,
+  currentReports: GateReportV11[],
+): Promise<GateReportV11[]> {
+  const byId = new Map<string, GateReportV11>();
+  const gatesDir = path.join(ctx.workItemDir, 'gates');
+  try {
+    for (const name of await fs.readdir(gatesDir)) {
+      if (!name.endsWith('.json') || name === 'close_gate.json') continue;
+      try {
+        const report = JSON.parse(
+          await fs.readFile(path.join(gatesDir, name), 'utf-8'),
+        ) as GateReportV11;
+        if (report?.gate_id) byId.set(report.gate_id, report);
+      } catch {
+        // Invalid Gate JSON remains the responsibility of its owning Gate.
+      }
+    }
+  } catch {
+    // The current run may be creating the first Gate reports.
+  }
+  for (const report of currentReports) byId.set(report.gate_id, report);
+  return Array.from(byId.values()).sort((left, right) =>
+    left.gate_id.localeCompare(right.gate_id),
+  );
+}
+
 async function writeGateSummary(ctx: GateContext, reports: GateReportV11[]): Promise<{ summaryStatus: GateSummaryStatus; summaryPath: string }> {
-  const summaryStatus = computeGateSummaryStatus(reports);
+  const latestReports = await latestGateReports(ctx, reports);
+  const summaryStatus = computeGateSummaryStatus(latestReports);
   const summaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
-  await fs.writeFile(summaryPath, generateGateSummaryMd(ctx.workItemId, reports, summaryStatus), 'utf-8');
+  await fs.writeFile(
+    summaryPath,
+    generateGateSummaryMd(ctx.workItemId, latestReports, summaryStatus),
+    'utf-8',
+  );
   return { summaryStatus, summaryPath };
 }
 
@@ -103,20 +135,6 @@ async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ct
     const filtered = ctx.workflowPath === 'code_only_fast_path'
       ? base.checks.filter(check => !['close_file_trace_delta_md', 'close_trace_delta_valid'].includes(check.check_id))
       : base.checks;
-    if (ctx.workflowPath !== 'rollback_path') {
-      let formal: any = null;
-      try {
-        formal = JSON.parse(await fs.readFile(path.join(ctx.workItemDir, 'gates', 'formal_version_gate.json'), 'utf-8'));
-      } catch {
-        formal = null;
-      }
-      filtered.push({
-        check_id: 'close_formal_version_gate',
-        description: 'Formal Version Gate passed before Close',
-        passed: formal?.status === 'passed',
-        severity: 'error',
-      });
-    }
     return makeReport(ctx.workItemId, gateId, 'hard_gate', true, filtered, base.input_files);
   }
   return base;

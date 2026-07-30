@@ -409,7 +409,14 @@ system (root)
 | `verification_running` | `implementation_running` | `sf-verifier` (via `agent`) |
 | `verification_done` | `closed` | `close_gate` |
 | `blocked` | (various rollback targets) | `sf-orchestrator` |
-| `closed` | *(none — terminal)* | nobody |
+| `closed` | *(none — terminal for normal workflow transitions)* | nobody |
+
+`closed` 的普通工作流语义仍是终态。唯一例外是补偿式“无效关闭恢复”：
+既有 `close_gate=passed`，且持久化的 Formal Version Gate 或当前 Git 绑定证据能够直接证明
+该关闭无效时，`close_gate` 可通过受控 `recover_invalid_closure` 动作追加
+`closed → implementation_ready` 事件。该动作必须要求显式确认和原因，写入
+`closure_recovery.json`（包含原 Close/Formal 证据哈希），保持代码权限撤销，并复用原
+Work Item；通用状态转换工具仍禁止任何 `closed → *` 跳转。
 
 ### 6.2 File Write Permissions
 
@@ -1085,4 +1092,3 @@ Phase final             enableRBAC 默认 true，移除 opt-out
 | enableRBAC default flip to true | Requires full production validation | v1.3 |
 | Evidence guard RBAC integration in state machine | checkCloseGateEvidenceRequirements is available but not wired into transition flow | v1.2 |
 | RBAC policy configuration (YAML/JSON driven) | Current policy is code-defined; sufficient for v1.1 | v1.3 |
-

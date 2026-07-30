@@ -57,7 +57,13 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 ### 7. Verification and close gate
 
 - Verification must produce required evidence before close.
+- `verification_gate` owns the subsequent `formal_version_gate`; a
+  Git-governed implementation is eligible only when the current branch matches
+  `git_context`, every observed implementation file is committed, and none of
+  those files has staged, unstaged, or untracked changes.
 - `sf_close_gate` may close only from authoritative `verification_done`.
+- `sf_close_gate` must require `formal_version_gate=passed` for every
+  Git/governance-scope Work Item except explicit investigation/rollback paths.
 - If authoritative state is not `verification_done`, `sf_close_gate` must fail fast with `AUTHORITATIVE_STATE_MISMATCH`.
 - `closed` must be written only by `close_gate`.
 

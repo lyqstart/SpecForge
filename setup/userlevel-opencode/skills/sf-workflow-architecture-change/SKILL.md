@@ -154,13 +154,16 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 ### 阶段 6：实现
 1. 依据正式任务与影响分析形成精确 `allowed_write_files`，`sf_code_permission(action="enable")`，调度 `sf-executor`。
-2. 实现完成后 `sf_changed_files_audit`（必须通过、零越权、`unresolved_blocked_write_attempts=0`）后 `implementation_running → implementation_done`。
+2. 实现完成后 `sf_changed_files_audit`（必须通过、零越权、`unresolved_blocked_write_attempts=0`）。若 `git_context.git_enabled=true`，把工具返回的 in-scope `actual_changed_files` 作为精确文件列表调用 `sf_git_checkpoint_commit`；必须确认实现文件已进入当前 WI 分支 HEAD 且没有 staged/unstaged/untracked 实现修改，之后才允许 `implementation_running → implementation_done`。
 
 ### 阶段 7：验证与关闭
-1. `sf-verifier` 受控写入 `verification_report` 与 `evidence_manifest` 并返回 typed `semantic_closure`；`sf_semantic_closure_run(semantic_closure=<原样对象>)` → `sf_gate_run(verification_gate)` → `sf_code_permission(action="revoke")` → `sf_close_gate`。闭包无效时不得运行 verification gate。
+1. `sf-verifier` 受控写入 `verification_report` 与 `evidence_manifest` 并返回 typed `semantic_closure`；`sf_semantic_closure_run(semantic_closure=<原样对象>)` → `sf_gate_run(verification_gate)`（同时要求 `formal_version_gate` 绑定已提交实现）→ `sf_code_permission(action="revoke")` → `sf_close_gate`。闭包无效、实现未提交或 Formal Version 失败时不得运行 close gate。关闭后、Git merge 前，用 `sf_git_checkpoint_commit` 精确提交本 WI 在 Formal/Close 阶段新增的治理证据并确认工作树干净。
 
 ## v1.1 治理硬约束（本工作流特有）
 1. 新模块只能在 architecture_change_path（或 spec_migration_path）上、经完整候选包 + Gate + 用户决策 + Merge 后接纳；不得据源码目录静默发明或改名模块。
 2. 合并前不释放 code_permission；实现与验证后必须 revoke。
 3. 每阶段最多一次有边界修复；失败如实报告并在必要时进入可恢复 `blocked`。
-4. 不得手工修改 `.specforge/project/**`、状态文件或审批文件绕过工具。
+4. 若 Formal Version 或 Git 绑定证据证明既有 `closed` 无效，复用原 Work Item 调用
+   `sf_close_gate(action="recover_invalid_closure", confirm_invalid_closure_recovery=true, recovery_reason=...)`；
+   必须生成 `closure_recovery.json` 且仅恢复到 `implementation_ready`，不得手工改状态或新建替代 Work Item。
+5. 不得手工修改 `.specforge/project/**`、状态文件或审批文件绕过工具。

@@ -108,11 +108,29 @@ async function assertFormalVersionBeforeClose(input: TransitionWithEvidenceInput
   } catch {
     triggerResult = null;
   }
-  const governedByImpactScope =
-    triggerResult?.impact_scope &&
-    typeof triggerResult.impact_scope === 'object' &&
-    !Array.isArray(triggerResult.impact_scope);
-  if (!governedByImpactScope) return;
+  let governanceScope: any = null;
+  let gitContext: any = null;
+  try {
+    governanceScope = JSON.parse(
+      await fs.readFile(path.join(input.workItemDir, 'governance_scope.json'), 'utf-8'),
+    );
+  } catch {
+    governanceScope = null;
+  }
+  try {
+    gitContext = JSON.parse(
+      await fs.readFile(path.join(input.workItemDir, 'git_context.json'), 'utf-8'),
+    );
+  } catch {
+    gitContext = null;
+  }
+  const governedByFormalVersionContract =
+    (triggerResult?.impact_scope &&
+      typeof triggerResult.impact_scope === 'object' &&
+      !Array.isArray(triggerResult.impact_scope)) ||
+    governanceScope?.active === true ||
+    gitContext?.git_enabled === true;
+  if (!governedByFormalVersionContract) return;
 
   const reportPath = path.join(input.workItemDir, 'gates', 'formal_version_gate.json');
   let report: any = null;
@@ -194,6 +212,85 @@ export async function transitionWithEvidence(input: TransitionWithEvidenceInput)
     transition_result: {
       source: 'StateManager', workItemId: input.workItemId, previousState: input.fromState,
       currentState: input.toState, timestamp: new Date().toISOString(),
+    },
+  };
+}
+
+export async function recoverInvalidClosureWithEvidence(input: {
+  deps: any;
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowType: string;
+  evidence: string;
+  invalidityReasons: string[];
+}): Promise<TransitionWithEvidenceResult> {
+  if (!input.deps?.projectManager) {
+    throw new Error('STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: ProjectManager not available');
+  }
+  if (input.invalidityReasons.length === 0) {
+    throw new Error(
+      'STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: at least one verified invalidity reason is required',
+    );
+  }
+
+  const recoveryPath = path.join(input.workItemDir, 'closure_recovery.json');
+  let recovery: any = null;
+  try {
+    recovery = JSON.parse(await fs.readFile(recoveryPath, 'utf-8'));
+  } catch {
+    recovery = null;
+  }
+  if (
+    recovery?.work_item_id !== input.workItemId ||
+    recovery?.recovery_action !== 'closed_to_implementation_ready' ||
+    recovery?.status !== 'authorized'
+  ) {
+    throw new Error(
+      'STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: authorized closure_recovery.json is required',
+    );
+  }
+
+  const projectSm = await input.deps.projectManager.getProjectStateManager(input.projectRoot);
+  if (typeof projectSm?.rebuildFromEventsFile === 'function') {
+    await projectSm.rebuildFromEventsFile();
+  }
+  const current = normalizeState(await projectSm.getState(input.workItemId));
+  if (current !== 'closed') {
+    throw new Error(
+      `STATE_COORDINATOR_CLOSURE_RECOVERY_FAILED: expected authoritative state closed, got ${current ?? 'null'}`,
+    );
+  }
+
+  await projectSm.transition(
+    input.workItemId,
+    'closed',
+    'implementation_ready',
+    ACTOR_ROLES.closeGate,
+    input.workflowType,
+    {
+      evidence: input.evidence,
+      transition_context: {
+        source: 'closure_invalidation',
+        recovery_record: 'closure_recovery.json',
+        invalidity_reasons: input.invalidityReasons,
+        compensating_transition: true,
+      },
+    },
+  );
+
+  return {
+    attempted: true,
+    advanced: true,
+    from_state: 'closed',
+    to_state: 'implementation_ready',
+    evidence: input.evidence,
+    transition_result: {
+      source: 'StateManager',
+      workItemId: input.workItemId,
+      previousState: 'closed',
+      currentState: 'implementation_ready',
+      timestamp: new Date().toISOString(),
     },
   };
 }

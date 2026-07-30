@@ -313,6 +313,116 @@ describe('sf_close_gate handler', () => {
     expect(closeMd).toContain(workItemId);
   });
 
+  it('blocks close when a Git-governed Work Item has a failed formal version gate', async () => {
+    const workItemId = 'wi-formal-failed';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'git_context.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        git_enabled: true,
+        branch_name: 'feature/formal-failed',
+        base_branch: 'main',
+        base_commit: 'deadbeef',
+      }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'failed' }),
+    );
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('close_formal_version_gate');
+    const closeReport = JSON.parse(
+      await fs.readFile(path.join(wiDir, 'gates', 'close_gate.json'), 'utf-8'),
+    );
+    expect(
+      closeReport.checks.find(
+        (check: { check_id: string }) => check.check_id === 'close_formal_version_gate',
+      )?.passed,
+    ).toBe(false);
+  });
+
+  it('recovers a proven-invalid prior closure through a compensating state event', async () => {
+    const workItemId = 'wi-invalid-close-recovery';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, { status: 'closed' });
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'failed' }),
+    );
+
+    const handler = getHandler('sf_close_gate')!;
+    const deps = createMockDeps('closed');
+    const result = await handler(
+      {
+        work_item_id: workItemId,
+        action: 'recover_invalid_closure',
+        recovery_reason: 'Formal Version Gate failed before the prior close event.',
+        confirm_invalid_closure_recovery: true,
+      },
+      { directory: tmpDir, agent: 'sf-orchestrator' },
+      deps as any,
+    );
+
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
+    expect((result as any).state_auto_advance.from_state).toBe('closed');
+    expect((result as any).state_auto_advance.to_state).toBe('implementation_ready');
+    expect(
+      deps.__transitions.some(
+        transition =>
+          transition.fromState === 'closed' &&
+          transition.toState === 'implementation_ready' &&
+          transition.actorRole === 'close_gate',
+      ),
+    ).toBe(true);
+
+    const recovery = JSON.parse(
+      await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'),
+    );
+    expect(recovery.status).toBe('applied');
+    expect(recovery.invalidity_reasons).toContain('formal_version_gate_status=failed');
+    expect(recovery.prior_evidence.close_gate_sha256).toMatch(/^[a-f0-9]{64}$/);
+  });
+
+  it('refuses invalid-closure recovery without explicit confirmation', async () => {
+    const workItemId = 'wi-invalid-close-unconfirmed';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, { status: 'closed' });
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'failed' }),
+    );
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      {
+        work_item_id: workItemId,
+        action: 'recover_invalid_closure',
+        recovery_reason: 'Formal Version Gate failed before the prior close event.',
+      },
+      { directory: tmpDir },
+      createMockDeps('closed') as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toContain('CONFIRMATION_REQUIRED');
+  });
+
   it('should fail when required evidence files are missing', async () => {
     const workItemId = 'wi-missing-evidence';
     const wiDir = await createMinimalWorkItem(tmpDir, workItemId);

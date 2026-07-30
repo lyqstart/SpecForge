@@ -297,10 +297,12 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const checks: GateReportCheck[] = [];
   const wi = await readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'work_item.json'));
   const workflowType = normalizeWorkflowValue(wi?.workflow_type ?? ctx.workflowType);
+  const workflowPath = normalizeWorkflowValue(wi?.workflow_path ?? ctx.workflowPath);
   const investigationWorkflow = workflowType === 'investigation';
+  const rollbackWorkflow = workflowType === 'rollback' || workflowPath === 'rollback_path';
   const contractWorkflow =
     workflowType === 'contract_change' ||
-    normalizeWorkflowValue(wi?.workflow_path ?? ctx.workflowPath) === 'contract_change_path';
+    workflowPath === 'contract_change_path';
   const requiredFiles = [
     'work_item.json',
     'intake.md',
@@ -329,6 +331,36 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       severity: ok ? undefined : 'error',
     });
   }
+
+  const [formalVersionReport, governanceScope, gitContext, triggerResult] = await Promise.all([
+    readJson<Record<string, unknown>>(
+      path.join(ctx.workItemDir, 'gates', 'formal_version_gate.json'),
+    ),
+    readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'governance_scope.json')),
+    readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'git_context.json')),
+    readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'trigger_result.json')),
+  ]);
+  const formalVersionRequired =
+    !investigationWorkflow &&
+    !rollbackWorkflow &&
+    (formalVersionReport !== null ||
+      governanceScope?.active === true ||
+      gitContext?.git_enabled === true ||
+      (triggerResult?.impact_scope !== null &&
+        typeof triggerResult?.impact_scope === 'object' &&
+        !Array.isArray(triggerResult?.impact_scope)));
+  checks.push({
+    check_id: 'close_formal_version_gate',
+    description: formalVersionRequired
+      ? 'Formal Version Gate passed before Close'
+      : 'Formal Version Gate is not applicable to this legacy/no-code workflow',
+    passed: !formalVersionRequired || formalVersionReport?.status === 'passed',
+    severity:
+      !formalVersionRequired || formalVersionReport?.status === 'passed' ? undefined : 'error',
+    details: formalVersionRequired
+      ? `status=${String(formalVersionReport?.status ?? 'missing')}`
+      : 'not_applicable',
+  });
 
   const changedFilesAuditText = await readText(
     path.join(ctx.workItemDir, 'changed_files_audit.md')
@@ -687,6 +719,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     }
   }
 
-  const report = makeReport(ctx.workItemId, 'close_gate', 'hard_gate', true, checks, requiredFiles);
+  const inputFiles = formalVersionRequired
+    ? [...requiredFiles, 'gates/formal_version_gate.json']
+    : requiredFiles;
+  const report = makeReport(ctx.workItemId, 'close_gate', 'hard_gate', true, checks, inputFiles);
   return { report, allChecksPassed: report.status === 'passed' };
 }

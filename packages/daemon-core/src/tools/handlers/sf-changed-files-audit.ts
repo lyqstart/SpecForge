@@ -37,6 +37,7 @@ import {
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { checkHardStop, guardHardStop, resetHardStop, setHardStop } from '../lib/hard-stop-latch';
 import { readAuthoritativeState } from '../lib/state-coordinator-v11';
+import { computeFilesystemDiff, loadBaseline } from '../lib/filesystem-diff';
 
 type ChangedFile = { path: string; operation: 'create' | 'modify' | 'delete' };
 type AllowedFile = { path: string; operation: string };
@@ -292,7 +293,8 @@ function mergeBlockedWriteEvidence(
   return merged;
 }
 
-function changedFilesFromFacts(input: {
+export function changedFilesFromFacts(input: {
+  projectRoot: string;
   workItemDir: string;
   wiJson: any;
   actualChangedFiles: unknown;
@@ -335,6 +337,24 @@ function changedFilesFromFacts(input: {
     };
   }
 
+  const baseline = loadBaseline(input.workItemDir);
+  if (baseline) {
+    const diff = computeFilesystemDiff(baseline, input.projectRoot, []);
+    return {
+      changedFiles: diff.all_changes.map(entry => ({
+        path: entry.path,
+        operation:
+          entry.change === 'created'
+            ? 'create'
+            : entry.change === 'deleted'
+              ? 'delete'
+              : 'modify',
+      })),
+      dataSource: `filesystem_baseline.json (${diff.all_changes.length} observed project changes)`,
+      writeGuardSummary,
+    };
+  }
+
   return { changedFiles: [], dataSource: 'none', writeGuardSummary };
 }
 
@@ -351,6 +371,7 @@ async function writeNoCodeAudit(input: {
   activeCodePermissionHardStop: boolean;
 }) {
   const { changedFiles, dataSource, writeGuardSummary } = changedFilesFromFacts({
+    projectRoot: input.projectRoot,
     workItemDir: input.workItemDir,
     wiJson: input.wiJson,
     actualChangedFiles: input.actualChangedFiles,
@@ -640,6 +661,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   }
 
   const { changedFiles, dataSource, writeGuardSummary } = changedFilesFromFacts({
+    projectRoot,
     workItemDir,
     wiJson,
     actualChangedFiles,
@@ -656,6 +678,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   const projectChangedFiles = changedFiles.filter(file => !isRemoteOpsAuditPath(file.path));
 
   const auditResult = runChangedFilesAudit(projectChangedFiles, allowedWriteFiles, 'agent');
+  const evidenceAvailable = dataSource !== 'none';
   const blockedWriteClassifications = classifyBlockedWriteAttempts(
     blockedWrites,
     changedFiles,
@@ -676,9 +699,20 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     blockedWriteClassificationToViolation
   );
 
-  const finalPassed = auditResult.passed && unresolvedBlockedWriteViolations.length === 0;
-  const finalViolations = [...auditResult.violations, ...unresolvedBlockedWriteViolations];
-  const finalOutOfScope = auditResult.out_of_scope + unresolvedBlockedWriteViolations.length;
+  const evidenceViolations = evidenceAvailable
+    ? []
+    : ['changed_file_evidence_unavailable: filesystem_baseline.json or trusted Write Guard facts required'];
+  const finalPassed =
+    evidenceAvailable && auditResult.passed && unresolvedBlockedWriteViolations.length === 0;
+  const finalViolations = [
+    ...auditResult.violations,
+    ...unresolvedBlockedWriteViolations,
+    ...evidenceViolations,
+  ];
+  const finalOutOfScope =
+    auditResult.out_of_scope +
+    unresolvedBlockedWriteViolations.length +
+    evidenceViolations.length;
 
   const historicalBlockedLines = resolvedBlockedWriteClassifications.map(c => {
     return `- [${c.operation}] ${c.path} → ${c.status} (${c.reason})`;
@@ -764,6 +798,11 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
     remote_ops_files: remoteOpsFiles,
     work_item_id: workItemId,
     data_source: dataSource,
+    actual_changed_files: auditResult.entries.map(entry => ({
+      path: entry.path,
+      operation: entry.operation,
+      in_allowed_write_files: entry.in_allowed_write_files,
+    })),
     blocked_write_attempts: blockedWrites.length,
     resolved_blocked_write_attempts: resolvedBlockedWriteClassifications.length,
     authorization_resolved_blocked_write_attempts: authorizationResolvedClassifications.length,

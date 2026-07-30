@@ -20,4 +20,20 @@ describe('code permission state ordering regression', () => {
     expect(releaseIndex).toBeGreaterThan(-1);
     expect(runningIndex).toBeGreaterThan(releaseIndex);
   });
+
+  test('preserves the original filesystem baseline across a recovery release', () => {
+    const source = fs.readFileSync(
+      path.join(__dirname, '..', 'src', 'tools', 'handlers', 'sf-v11-code-permission.ts'),
+      'utf8',
+    );
+    const baselineSectionStart = source.indexOf(
+      "await fs.access(path.join(workItemDir, 'filesystem_baseline.json'))",
+    );
+    const snapshotIndex = source.indexOf('const baseline = takeSnapshot(projectRoot)', baselineSectionStart);
+    const saveIndex = source.indexOf('saveBaseline(workItemDir, baseline)', snapshotIndex);
+
+    expect(baselineSectionStart).toBeGreaterThan(-1);
+    expect(snapshotIndex).toBeGreaterThan(baselineSectionStart);
+    expect(saveIndex).toBeGreaterThan(snapshotIndex);
+  });
 });

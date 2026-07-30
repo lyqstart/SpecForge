@@ -212,7 +212,7 @@ permission:
 
 合并后门禁通过后，根据正式任务和影响分析形成精确 `allowed_write_files`，调用 `sf_code_permission(action="enable")`，再调度 `sf-executor`。项目启用 Git Governance 时，代码写入前还要按项目策略执行 Git 预检和分支隔离；提交、推送、合并和标签只能使用已注册的 `sf_git_*` 工具，并遵守用户授权，不得用普通命令行绕过。
 
-执行代理报告技术实现完成后，先运行 `sf_changed_files_audit`。只有审计通过，才能把 `implementation_running` 推进到 `implementation_done`。执行失败先基于同一证据进行一次有边界的修复；重复失败调度 `sf-debugger`，仍无法解决则进入 `blocked`，禁止无限重试或扩大写入范围。
+执行代理报告技术实现完成后，先运行 `sf_changed_files_audit`。只有审计通过，才能把 `implementation_running` 推进到 `implementation_done`。当 `git_context.git_enabled=true` 时，必须立即把审计返回的 `actual_changed_files` 中全部 in-scope 路径原样作为精确文件列表调用 `sf_git_checkpoint_commit`；必须得到 `committed=true`，或证明这些相同路径已经存在于当前 WI 分支 HEAD，才能进入验证。不得使用 `git add .`、`git add -A`，不得把未提交工作树当成 Formal Version。执行失败先基于同一证据进行一次有边界的修复；重复失败调度 `sf-debugger`，仍无法解决则进入 `blocked`，禁止无限重试或扩大写入范围。
 
 实现后的收口顺序是：
 
@@ -227,9 +227,7 @@ permission:
 → sf_close_gate
 ```
 
-`verification_gate` 会同时校验结构化验证结论、测试状态、Evidence Manifest、变更审计、
-Semantic Closure 及其 provenance，然后才自动推进到 `verification_done`。主编排代理不得
-代写 verifier 产物、不得改写 `semantic_closure`、不得用 Knowledge Graph 补闭包。
+`verification_gate` 会同时校验结构化验证结论、测试状态、Evidence Manifest、变更审计、Semantic Closure 及其 provenance，并执行 `formal_version_gate`；Formal Version 必须绑定 `git_context` 分支、base commit 和已提交实现，任一实现文件仍为 staged、unstaged 或 untracked 时必须失败，`sf_close_gate` 不得忽略失败或缺失的 Formal Version Gate。关闭后、Git merge 前，使用 `sf_git_checkpoint_commit` 精确提交本 WI 新增的 Formal/Close 治理证据并确认工作树干净，且不得改变已绑定实现文件。若持久化的 Formal Version 或 Git 绑定证据证明既有 `closed` 无效，必须复用原 Work Item 调用 `sf_close_gate(action="recover_invalid_closure", confirm_invalid_closure_recovery=true, recovery_reason=...)`，生成带原关闭证据哈希的 `closure_recovery.json` 并仅恢复到 `implementation_ready`；不得手工改状态、创建替代 Work Item 或自动释放代码权限。主编排代理不得代写 verifier 产物、改写 `semantic_closure` 或用 Knowledge Graph 补闭包。
 若闭包失败，重新调度 sf-verifier 修复输入；若 Gate 通过后确需改变任何验证输入，先从
 `verification_done` 恢复到 `implementation_ready`，再重新验证、重建闭包并重跑 Gate。
 
