@@ -1,20 +1,20 @@
 /**
  * sf_project_init_core.test.ts
  *
- * Regression coverage for the bootstrap data-loss defect: ensureProjectInit is
+ * Regression coverage for bootstrap data-loss defects: ensureProjectInit is
  * called on every project register/sync (e.g. on OpenCode start via
- * HTTPServer). It must CREATE .specforge/project/extension_registry.json when
- * missing but must NEVER overwrite a non-empty one, because that file is a
- * governed project-spec truth source (namespaces + cross-module contracts)
- * written only by the Merge Runner. A prior version omitted it from the
- * preservation whitelist, so every re-init silently reset registered contracts
- * back to the empty template.
+ * HTTPServer). It must create missing system files but preserve files whose
+ * existing content is owned by another governance component.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import { PersonalPathResolver } from '../../daemon/path-resolver';
+import { ProjectManager } from '../../project/ProjectManager';
+import { EventBus } from '../../event-bus/EventBus';
+import type { StateManager } from '../../state/StateManager';
 
 // Stub host-profile so init stays hermetic and fast (no host scan, no ~/.specforge write).
 vi.mock('@specforge/host-profile', () => ({
@@ -84,5 +84,71 @@ describe('ensureProjectInit — extension_registry.json preservation', () => {
 
     const after = JSON.parse(await fs.readFile(registryPath(), 'utf-8'));
     expect(after.namespaces.requirement_types).toContain('REQ_CUSTOM');
+  });
+});
+
+describe('ensureProjectInit — .gitignore ownership', () => {
+  let tmp: string;
+
+  beforeEach(async () => {
+    tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-init-gitignore-'));
+  });
+
+  afterEach(async () => {
+    await fs.rm(tmp, { recursive: true, force: true });
+  });
+
+  const gitignorePath = () => path.join(tmp, '.specforge', '.gitignore');
+
+  it('creates the bootstrap .gitignore when missing', async () => {
+    await ensureProjectInit(tmp, 'regression-project');
+
+    expect(await fs.readFile(gitignorePath(), 'utf-8')).toBe(
+      'runtime/\nlogs/\nsessions/\narchive/\ncas/\n'
+    );
+  });
+
+  it('does not overwrite the ProjectManager-owned managed block on re-init', async () => {
+    await ensureProjectInit(tmp, 'regression-project');
+    const managed =
+      'runtime/\nlogs/\nsessions/\narchive/\ncas/\n\n' +
+      '# SpecForge managed (BEGIN)\n' +
+      'runtime/\n' +
+      '# SpecForge managed (END)\n';
+    await fs.writeFile(gitignorePath(), managed, 'utf-8');
+
+    await ensureProjectInit(tmp, 'regression-project');
+
+    expect(await fs.readFile(gitignorePath(), 'utf-8')).toBe(managed);
+  });
+
+  it('preserves the managed block across the real init-register-reinit call chain', async () => {
+    await ensureProjectInit(tmp, 'regression-project');
+
+    const eventBus = new EventBus();
+    const projectManager = new ProjectManager(
+      eventBus,
+      new PersonalPathResolver(),
+      undefined as unknown as StateManager
+    );
+    try {
+      await projectManager.registerProject(tmp);
+
+      let registered = '';
+      for (let attempt = 0; attempt < 20; attempt++) {
+        registered = await fs.readFile(gitignorePath(), 'utf-8');
+        if (registered.includes('# SpecForge managed (END)')) break;
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      expect(registered).toContain('# SpecForge managed (BEGIN)');
+      expect(registered).toContain('# SpecForge managed (END)');
+
+      await ensureProjectInit(tmp, 'regression-project');
+
+      expect(await fs.readFile(gitignorePath(), 'utf-8')).toBe(registered);
+    } finally {
+      projectManager.stop();
+      eventBus.stop();
+    }
   });
 });

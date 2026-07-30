@@ -401,11 +401,14 @@ export async function ensureProjectInit(
             // only by the Merge Runner. Bootstrap must create it when missing, never
             // reset it — otherwise every project-register/sync (e.g. on OpenCode start)
             // would silently wipe registered contracts back to the empty template.
+            // Do not overwrite a non-empty .gitignore. Bootstrap owns only its initial
+            // creation; ProjectManager exclusively maintains the managed block.
             if (
               (normalizedRel === 'manifest.json' ||
                 normalizedRel === 'config/observability.json' ||
                 normalizedRel === 'project/spec_manifest.json' ||
-                normalizedRel === 'project/extension_registry.json') &&
+                normalizedRel === 'project/extension_registry.json' ||
+                normalizedRel === '.gitignore') &&
               existing.trim()
             ) {
               result.existed.push(entry.path);
