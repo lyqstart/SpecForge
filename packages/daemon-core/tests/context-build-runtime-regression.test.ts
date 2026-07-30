@@ -218,4 +218,51 @@ describe('sf_context_build runtime contract', () => {
       error: 'target_files must be valid JSON',
     });
   });
+
+  it('resolves task target files from candidates/tasks.md before legacy paths', async () => {
+    const projectRoot = await makeProject('sf-context-candidate-tasks-');
+    const wiDir = path.join(projectRoot, '.specforge', 'work-items', 'WI-0002');
+    const runDir = path.join(
+      projectRoot,
+      '.specforge',
+      'runtime',
+      'archive',
+      'agent_runs',
+      'run-002',
+    );
+    await writeText(
+      path.join(wiDir, 'tasks.md'),
+      '# Tasks\n\nWork Item: WI-0002\n\n> TODO: 由 Agent 填充\n',
+    );
+    await writeText(
+      path.join(wiDir, 'candidates', 'tasks.md'),
+      '# Tasks\n\n### TASK-WI-0002-001\n\n- **files**: [src/domain/types.ts]\n',
+    );
+    await writeJson(path.join(projectRoot, '.specforge', 'knowledge', 'graph.json'), {
+      version: '1.0',
+      nodes: [],
+      edges: [],
+    });
+    await writeJson(path.join(runDir, 'files_changed.json'), {
+      files: [{ path: 'src/domain/types.ts' }],
+    });
+    await writeJson(path.join(runDir, 'result.json'), {
+      status: 'success',
+      task_description: 'Candidate task path was authoritative',
+    });
+
+    const result = await buildContext(
+      'WI-0002',
+      'TASK-WI-0002-001',
+      undefined,
+      false,
+      projectRoot,
+    );
+
+    expect(result.task_context.context).toContain('Candidate task path was authoritative');
+    expect(result.task_context.sources).toContainEqual({
+      type: 'archive',
+      id: 'run-002',
+    });
+  });
 });

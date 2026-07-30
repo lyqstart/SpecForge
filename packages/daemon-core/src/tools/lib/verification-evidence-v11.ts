@@ -156,8 +156,9 @@ export async function writeTraceDeltaTemplate(
     '',
   ];
 
-  await mkdir(wiDir, { recursive: true });
-  const filePath = join(wiDir, 'trace_delta.md');
+  const candidateDir = join(wiDir, 'candidates');
+  await mkdir(candidateDir, { recursive: true });
+  const filePath = join(candidateDir, 'trace_delta.md');
   await writeFile(filePath, lines.join('\n'), 'utf-8');
   return filePath;
 }

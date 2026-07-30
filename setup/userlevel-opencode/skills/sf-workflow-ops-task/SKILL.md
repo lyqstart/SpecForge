@@ -261,7 +261,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
      - verification_commands（验证操作结果的命令）
      - requires_user_confirmation 标记（从 ops_plan.md 继承）
      - parallel 标记（从 ops_plan.md 继承，默认 false）
-4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/tasks.md` 已生成
+4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/candidates/tasks.md` 已生成
 5. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
 6. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="tasks.md generated, doc_lint passed"）
 

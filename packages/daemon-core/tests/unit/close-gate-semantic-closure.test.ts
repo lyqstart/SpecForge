@@ -64,6 +64,7 @@ function passingSemanticClosure(workItemId: string): SemanticClosureManifest {
 async function createCloseReadyWorkItem(tmpDir: string, workItemId: string): Promise<string> {
   const wiDir = path.join(tmpDir, '.specforge', 'work-items', workItemId);
   await fs.mkdir(wiDir, { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
 
@@ -96,10 +97,21 @@ async function createCloseReadyWorkItem(tmpDir: string, workItemId: string): Pro
       triggered: true,
     }) + '\n'
   );
-  await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] TASK-1 implemented.\n');
+  await fs.writeFile(
+    path.join(wiDir, 'tasks.md'),
+    '# Tasks\n\nWork Item: placeholder\n\n> TODO: 由 Agent 填充\n',
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'tasks.md'),
+    '# Tasks\n- [x] TASK-1 implemented.\n',
+  );
   await fs.writeFile(
     path.join(wiDir, 'trace_delta.md'),
-    '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1\n'
+    '# Trace Delta\n\nTrace Impact: none\n\nReason: Not yet analyzed\n',
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'trace_delta.md'),
+    '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1\n',
   );
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
@@ -175,6 +187,19 @@ describe('runCloseGate semantic closure hard gate', () => {
     expect(
       result.report.checks.find(check => check.check_id === 'close_semantic_closure_valid')?.passed
     ).toBe(true);
+    expect(
+      result.report.checks.find(
+        check => check.check_id === 'close_artifact_tasks_authoritative',
+      )?.details,
+    ).toContain('candidates/tasks.md');
+    expect(
+      result.report.checks.find(
+        check => check.check_id === 'close_artifact_trace_delta_authoritative',
+      )?.details,
+    ).toContain('candidates/trace_delta.md');
+    expect(result.report.input_files).toEqual(
+      expect.arrayContaining(['candidates/tasks.md', 'candidates/trace_delta.md']),
+    );
   });
 
   it('fails closed when .semantic_closure.json is missing', async () => {

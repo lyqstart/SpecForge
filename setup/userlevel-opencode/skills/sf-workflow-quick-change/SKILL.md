@@ -224,7 +224,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 #### Step 1：读取 tasks.md 和配置
 
 1. sf-orchestrator 确认 WI 处于 implementation 阶段
-2. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
+2. 读取 `.specforge/work-items/<work_item_id>/candidates/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
    - `依赖` 声明

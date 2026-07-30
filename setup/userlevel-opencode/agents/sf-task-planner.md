@@ -517,11 +517,15 @@ Task Planner 必须确保 verification_evidence_expected 与 verification_comman
 每次 feature_spec / requirement_change_path 的 Candidate 生成阶段，`sf-task-planner` 必须通过 `sf_artifact_write` 写入：
 
 ```text
-1. candidates/tasks.md 或 tasks.md
-2. trace_delta.md
+1. candidates/tasks.md
+2. candidates/trace_delta.md
 ```
 
-`trace_delta.md` 必须是独立文件，不得只在 tasks.md 中写追溯章节。
+`candidates/trace_delta.md` 必须是独立文件，不得只在 tasks.md 中写追溯章节。
+
+`candidates/tasks.md` 与 `candidates/trace_delta.md` 是新 Work Item 的唯一写入权威路径。
+Work Item 顶层同名文件只允许作为历史数据的只读兼容回退；不得读取顶层占位、
+不得向顶层写入，也不得在完成报告中把顶层路径声明为本次产物。
 
 ## 二、trace_delta.md 必填内容
 
@@ -566,7 +570,7 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
   "status": "success",
   "files_changed": [
     ".specforge/work-items/WI-XXXX/candidates/tasks.md",
-    ".specforge/work-items/WI-XXXX/trace_delta.md"
+    ".specforge/work-items/WI-XXXX/candidates/trace_delta.md"
   ],
   "trace_delta": {
     "generated": true,

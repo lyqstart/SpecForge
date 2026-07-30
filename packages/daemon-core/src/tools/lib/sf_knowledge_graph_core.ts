@@ -8,8 +8,12 @@
  */
 
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises"
-import { join, dirname } from "node:path"
-import { SPEC_DIR_NAME, legacyPaths } from "@specforge/types/directory-layout"
+import { join, dirname, relative } from "node:path"
+import {
+  SPEC_DIR_NAME,
+  legacyPaths,
+  workItemSpecArtifactReadCandidates,
+} from "@specforge/types/directory-layout"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import { parseRefsFields } from "./sf_markdown_verification_parser"
 
@@ -996,7 +1000,7 @@ export async function syncFromSpec(
     }
 
     if (scope === "tasks" || scope === "verification") {
-      const tasksResult = await syncTasks(store, workItemId, specDir)
+      const tasksResult = await syncTasks(store, workItemId, baseDir)
       summary = mergeSummaries(summary, tasksResult.summary)
       warnings.push(...tasksResult.warnings)
     }
@@ -1090,20 +1094,27 @@ async function syncDesign(
 async function syncTasks(
   store: GraphStore,
   workItemId: string,
-  specDir: string
+  baseDir: string
 ): Promise<{ summary: SyncSummary; warnings: string[] }> {
-  const filePath = join(specDir, "tasks.md")
-  const sourceFile = `${SPEC_DIR_NAME}/specs/${workItemId}/tasks.md`
-  let content: string
-
-  try {
-    content = await readFile(filePath, "utf-8")
-  } catch {
-    return {
-      summary: { nodes_added: 0, nodes_updated: 0, nodes_removed: 0, edges_added: 0, edges_removed: 0 },
-      warnings: [`tasks.md not found at ${filePath}`],
+  let filePath: string | null = null
+  let content: string | null = null
+  for (const candidatePath of workItemSpecArtifactReadCandidates(baseDir, workItemId, "tasks")) {
+    try {
+      content = await readFile(candidatePath, "utf-8")
+      filePath = candidatePath
+      break
+    } catch {
+      // Continue through Candidate -> Work Item -> legacy read-only precedence.
     }
   }
+
+  if (!filePath || content === null) {
+    return {
+      summary: { nodes_added: 0, nodes_updated: 0, nodes_removed: 0, edges_added: 0, edges_removed: 0 },
+      warnings: [`tasks artifact not found for ${workItemId}`],
+    }
+  }
+  const sourceFile = relative(baseDir, filePath).replace(/\\/g, "/")
 
   const { nodes: parsedNodes, edges: parsedEdges, warnings: parseWarnings } = parseTasks(content, workItemId, sourceFile)
 

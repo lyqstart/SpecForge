@@ -12,6 +12,8 @@ import {
 } from '../lib/verification-evidence-v11';
 import * as path from 'node:path';
 import { readFile } from 'node:fs/promises';
+import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11';
+import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 
 registerHandler('sf_v11_verification', async (args, context, _deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
@@ -28,13 +30,18 @@ registerHandler('sf_v11_verification', async (args, context, _deps) => {
     if (action === 'validate_trace_delta') {
       const content = args['content'] as string;
       if (!content) {
-        try {
-          const raw = await readFile(path.join(wiDir, 'trace_delta.md'), 'utf-8');
-          const result = validateTraceDelta(raw);
-          return { success: true, action, ...result };
-        } catch {
+        const artifact = (
+          await resolveWorkItemSpecArtifacts({
+            projectRoot,
+            workItemId,
+            kind: 'trace_delta',
+          })
+        )[0];
+        if (!artifact || isWorkItemSpecArtifactPlaceholder('trace_delta', artifact.content)) {
           return { success: false, error: 'trace_delta.md not found and no content provided' };
         }
+        const result = validateTraceDelta(artifact.content);
+        return { success: true, action, path: artifact.path, ...result };
       }
       const result = validateTraceDelta(content);
       return { success: true, action, ...result };

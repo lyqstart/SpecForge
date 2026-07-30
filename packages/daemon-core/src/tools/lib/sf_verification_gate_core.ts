@@ -10,12 +10,13 @@
 
 import { readFile, readdir } from "node:fs/promises"
 import { join } from "node:path"
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import { workItemRoot } from "@specforge/types/directory-layout"
 import type { GateResult, GateModeSpec } from "./sf_gate_types"
 import { parseSections } from "./sf_requirements_gate_core"
 import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import type { SyncSummary } from "./sf_knowledge_graph_core"
+import { resolveWorkItemSpecArtifacts } from "./governance-invariants-v11"
 
 // V3.7 imports
 import { parseTaskVerification } from "./sf_markdown_verification_parser"
@@ -492,7 +493,7 @@ export async function checkVerificationGate(
       return executeVerificationGateMode(workItemId, baseDir, mode)
     }
 
-  const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
+  const specDir = workItemRoot(baseDir, workItemId)
 
   // 1. 检查 spec 目录是否存在
   let dirEntries: string[]
@@ -599,7 +600,13 @@ export async function checkVerificationGate(
   // 读取 tasks.md 推导 Planned_Verification_Types
   let tasksContent: string | null = null
   try {
-    tasksContent = await readFile(join(specDir, "tasks.md"), "utf-8")
+    tasksContent = (
+      await resolveWorkItemSpecArtifacts({
+        projectRoot: baseDir,
+        workItemId,
+        kind: "tasks",
+      })
+    )[0]?.content ?? null
   } catch {
     tasksContent = null
   }
@@ -692,7 +699,7 @@ async function executeVerificationGateMode(
   }
 
   // 读取目标文件
-  const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
+  const specDir = workItemRoot(baseDir, workItemId)
   const filePath = join(specDir, spec.targetFile)
   let content: string
   try {

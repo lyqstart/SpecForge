@@ -6,6 +6,7 @@
  *
  * Requirements: 7.1-7.14
  */
+import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 
 // ---- Types ----
 
@@ -191,12 +192,20 @@ export class CloseGate {
     // Derive booleans from filesystem
     const evidenceManifestPath = `${workItemDir}/evidence/evidence_manifest.json`;
     const verificationReportPath = `${workItemDir}/verification_report.md`;
-    const traceDeltaPath = `${workItemDir}/trace_delta.md`;
+    const candidateTraceDeltaPath = `${workItemDir}/candidates/trace_delta.md`;
+    const legacyTraceDeltaPath = `${workItemDir}/trace_delta.md`;
+    const traceDeltaPath = params.fileExists(candidateTraceDeltaPath)
+      ? candidateTraceDeltaPath
+      : legacyTraceDeltaPath;
     const changedFilesAuditPath = `${workItemDir}/changed_files_audit.json`;
 
     const evidenceManifestExists = params.fileExists(evidenceManifestPath);
     const verificationReportExists = params.fileExists(verificationReportPath);
-    const traceDeltaExists = params.fileExists(traceDeltaPath);
+    const traceDeltaContent = params.readFile(traceDeltaPath);
+    const traceDeltaExists =
+      params.fileExists(traceDeltaPath) &&
+      traceDeltaContent !== null &&
+      !isWorkItemSpecArtifactPlaceholder('trace_delta', traceDeltaContent);
     const changedFilesAuditExists = params.fileExists(changedFilesAuditPath);
 
     // For code_only_fast_path: validate merge_report contains "not_applicable"

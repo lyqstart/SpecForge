@@ -27,7 +27,7 @@ export const SEMANTIC_CLOSURE_ACCEPTED_SOURCES = [
 // revocation mutate lifecycle metadata after verification without changing the
 // semantic claim. Binding it would make the normal gate/close path self-invalidating.
 export const SEMANTIC_CLOSURE_PROVENANCE_INPUTS = [
-  'trace_delta.md',
+  'candidates/trace_delta.md',
   'verification_report.md',
   'evidence/evidence_manifest.json',
   'merge_report.md',
@@ -58,12 +58,22 @@ async function currentInputFingerprints(
 ): Promise<Array<{ path: string; sha256: string }>> {
   const inputs: Array<{ path: string; sha256: string }> = [];
   for (const relativePath of SEMANTIC_CLOSURE_PROVENANCE_INPUTS) {
-    try {
-      const content = await fs.readFile(path.join(workItemDir, relativePath), 'utf-8');
-      inputs.push({ path: relativePath, sha256: sha256(content) });
-    } catch (error: any) {
-      if (error?.code !== 'ENOENT') throw error;
+    const readPaths =
+      relativePath === 'candidates/trace_delta.md'
+        ? [relativePath, 'trace_delta.md']
+        : [relativePath];
+    let captured = false;
+    for (const readPath of readPaths) {
+      try {
+        const content = await fs.readFile(path.join(workItemDir, readPath), 'utf-8');
+        inputs.push({ path: readPath, sha256: sha256(content) });
+        captured = true;
+        break;
+      } catch (error: any) {
+        if (error?.code !== 'ENOENT') throw error;
+      }
     }
+    if (captured) continue;
   }
   return inputs;
 }

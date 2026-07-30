@@ -285,7 +285,7 @@ intake / impact / trigger_result
    - work_item_id 和 spec_directory 路径
    - requirements.md 和 design.md 的内容或路径
    - 指令：将设计拆分为可执行任务，每个 task 必须包含 verification_commands
-4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/tasks.md` 已生成
+4. 等待子 Agent 完成，确认 `.specforge/work-items/<work_item_id>/candidates/tasks.md` 已生成
 5. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
 6. 如果 lint 通过，调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="gates_running"，evidence="tasks.md generated, doc_lint passed"）
 
@@ -334,7 +334,7 @@ intake / impact / trigger_result
 #### Step 1：读取 tasks.md 和配置
 
 1. 调用 `sf_state_read`（legacy compatibility）确认当前状态为 `implementation_running`
-2. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
+2. 读取 `.specforge/work-items/<work_item_id>/candidates/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
    - `依赖` 声明

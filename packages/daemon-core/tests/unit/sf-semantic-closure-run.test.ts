@@ -45,12 +45,17 @@ async function createWorkItem(
 ): Promise<string> {
   const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
   await fs.writeFile(
     path.join(wiDir, 'work_item.json'),
     JSON.stringify({ work_item_id: workItemId, workflow_path: 'code_only_fast_path' }, null, 2) +
       '\n'
   );
-  await fs.writeFile(path.join(wiDir, 'trace_delta.md'), traceDeltaMd);
+  await fs.writeFile(
+    path.join(wiDir, 'trace_delta.md'),
+    '# Trace Delta\n\nTrace Impact: none\n\nReason: Not yet analyzed\n',
+  );
+  await fs.writeFile(path.join(wiDir, 'candidates', 'trace_delta.md'), traceDeltaMd);
   await fs.writeFile(
     path.join(wiDir, 'verification_report.md'),
     renderVerificationReport(JSON.stringify(verificationPayload()))!
@@ -97,6 +102,11 @@ describe('sf_semantic_closure_run handler', () => {
     );
     expect(manifest.outcomes[0].id).toBe('OUT-1');
     expect(manifest.provenance.contract_id).toBe('semantic-closure/v1');
+    expect(manifest.provenance.inputs).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'candidates/trace_delta.md' }),
+      ]),
+    );
     const report = await fs.readFile(path.join(wiDir, 'semantic_closure_report.md'), 'utf-8');
     expect(report).toContain('Semantic Closure Report');
     expect(report).toContain('PASSED');

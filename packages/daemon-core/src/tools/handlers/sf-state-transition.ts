@@ -167,10 +167,8 @@ async function ensureWorkItemJsonOnCreate(
   const workItemJsonPath = join(wiDir, "work_item.json");
   const existing = await readJsonIfExists(workItemJsonPath);
   if (existing) {
-    // Even when work_item.json already exists, ensure the closure-file skeleton
-    // is present. initializeClosureFiles is idempotent (create-if-missing), so
-    // this only backfills files that were never created or were removed, without
-    // clobbering real content.
+    // Even when work_item.json already exists, ensure non-Candidate lifecycle
+    // files are present. Candidate tasks/trace artifacts are never synthesized.
     await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null);
     return { path: workItemJsonPath, created: false };
   }
@@ -191,10 +189,8 @@ async function ensureWorkItemJsonOnCreate(
 
   await writeFile(workItemJsonPath, JSON.stringify(workItem, null, 2) + "\n", "utf-8");
 
-  // Initialize the closure-file skeleton (tasks.md, trace_delta.md, and the
-  // other root-level artifacts required by close_gate). This mirrors the
-  // sf_v11_work_item_create path so both Work Item creation routes are
-  // consistent and downstream gates can find the required root files.
+  // Initialize non-Candidate lifecycle files. tasks.md and trace_delta.md are
+  // authored only at their canonical candidates/ paths.
   await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null);
 
   return { path: workItemJsonPath, created: true };

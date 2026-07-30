@@ -347,7 +347,7 @@ Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manif
 1. 调用 `sf_state_read` 确认当前状态为 `post_merge_verified`
 2. 调用 `sf_state_transition`（from_state="post_merge_verified"，to_state="implementation_ready"，evidence="ready for implementation"）
 3. 调用 `sf_code_permission`（work_item_id=<id>, allowed_write_files=[<从 tasks.md 提取的修改文件列表>]）设置 Write Guard 白名单
-4. 读取 `.specforge/work-items/<work_item_id>/tasks.md`，解析每个 Task 的：
+4. 读取 `.specforge/work-items/<work_item_id>/candidates/tasks.md`，解析每个 Task 的：
    - Task 编号和描述
    - `修改文件`（files_to_modify）列表
    - `依赖` 声明

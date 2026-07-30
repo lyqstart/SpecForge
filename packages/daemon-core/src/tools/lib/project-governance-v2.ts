@@ -12,6 +12,12 @@ import {
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
 import { getFactualChangedFiles } from './write-guard-log.js';
 import { computeFilesystemDiff, loadBaseline } from './filesystem-diff.js';
+import {
+  workItemCandidateTasks,
+  workItemCandidateTraceDelta,
+  workItemTasks,
+  workItemTraceDelta,
+} from '@specforge/types/directory-layout';
 
 const execFileAsync = promisify(execFile);
 const SPEC_DIR = '.specforge';
@@ -128,6 +134,20 @@ async function readText(filePath: string): Promise<string> {
   }
 }
 
+async function readFirstExistingText(
+  filePaths: string[],
+): Promise<{ path: string; content: string } | null> {
+  for (const filePath of filePaths) {
+    try {
+      return { path: filePath, content: await fs.readFile(filePath, 'utf8') };
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT') throw error;
+    }
+  }
+  return null;
+}
+
 async function readJson(filePath: string): Promise<any | null> {
   try {
     return JSON.parse(await fs.readFile(filePath, 'utf8'));
@@ -175,16 +195,18 @@ function isCrossModuleTestHarnessPath(value: string): boolean {
 
 async function readApprovedTaskFiles(workItemDir: string): Promise<Set<string>> {
   const approved = new Set<string>();
-  for (const taskPath of [
-    path.join(workItemDir, 'candidates', 'tasks.md'),
-    path.join(workItemDir, 'tasks.md'),
-  ]) {
-    const content = await readText(taskPath);
-    for (const match of content.matchAll(/\*\*files\*\*\s*:\s*\[([^\]]*)\]/gi)) {
-      for (const raw of match[1].split(',')) {
-        const candidate = slash(raw.replace(/[`'"]/g, '').trim());
-        if (candidate) approved.add(candidate);
-      }
+  const projectRoot = path.resolve(workItemDir, '..', '..', '..');
+  const workItemId = path.basename(workItemDir);
+  const artifact = await readFirstExistingText([
+    workItemCandidateTasks(projectRoot, workItemId),
+    workItemTasks(projectRoot, workItemId),
+  ]);
+  if (!artifact) return approved;
+
+  for (const match of artifact.content.matchAll(/\*\*files\*\*\s*:\s*\[([^\]]*)\]/gi)) {
+    for (const raw of match[1].split(',')) {
+      const candidate = slash(raw.replace(/[`'"]/g, '').trim());
+      if (candidate) approved.add(candidate);
     }
   }
   return approved;
@@ -445,6 +467,7 @@ async function loadProjectModel(
   workItemDir: string,
   prospective: boolean,
 ): Promise<ProjectModel> {
+  const workItemId = path.basename(workItemDir);
   const reader = await prospectiveReader(projectRoot, workItemDir);
   const manifestPath = path.join(projectRoot, SPEC_DIR, 'project', 'spec_manifest.json');
   const manifest = prospective ? await reader.json(manifestPath) : await readJson(manifestPath);
@@ -597,11 +620,16 @@ async function loadProjectModel(
   }
 
   if (prospective) {
-    const traceDeltaPath = path.join(workItemDir, 'trace_delta.md');
-    const traceDeltaText = await readText(traceDeltaPath);
-    if (traceDeltaText.trim()) {
-      inputFiles.push(traceDeltaPath);
-      for (const operation of parseTraceDelta(traceDeltaText, traceDeltaPath)) {
+    const traceDeltaArtifact = await readFirstExistingText([
+      workItemCandidateTraceDelta(projectRoot, workItemId),
+      workItemTraceDelta(projectRoot, workItemId),
+    ]);
+    if (traceDeltaArtifact?.content.trim()) {
+      inputFiles.push(traceDeltaArtifact.path);
+      for (const operation of parseTraceDelta(
+        traceDeltaArtifact.content,
+        traceDeltaArtifact.path,
+      )) {
         const index = trace.findIndex(edge => sameTraceEdge(edge, operation.edge));
         if (operation.operation === 'REMOVE') {
           if (index >= 0) trace.splice(index, 1);

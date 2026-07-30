@@ -26,10 +26,14 @@ import {
   type GateReportV11,
   makeReport,
 } from './gate-report.js';
-import { validateApprovedUserDecisionForClose } from './governance-invariants-v11.js';
+import {
+  resolveWorkItemSpecArtifacts,
+  validateApprovedUserDecisionForClose,
+} from './governance-invariants-v11.js';
 import { validateSemanticClosure, type SemanticClosureManifest } from './semantic-closure-core.js';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 
 export interface CloseGateResult {
   report: GateReportV11;
@@ -303,6 +307,21 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const contractWorkflow =
     workflowType === 'contract_change' ||
     workflowPath === 'contract_change_path';
+  const [taskArtifacts, traceDeltaArtifacts] =
+    investigationWorkflow || contractWorkflow
+      ? [[], []]
+      : await Promise.all([
+          resolveWorkItemSpecArtifacts({
+            projectRoot: ctx.projectRoot,
+            workItemId: ctx.workItemId,
+            kind: 'tasks',
+          }),
+          resolveWorkItemSpecArtifacts({
+            projectRoot: ctx.projectRoot,
+            workItemId: ctx.workItemId,
+            kind: 'trace_delta',
+          }),
+        ]);
   const requiredFiles = [
     'work_item.json',
     'intake.md',
@@ -312,7 +331,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       ? []
       : investigationWorkflow
         ? ['investigation_plan.md', 'findings_report.md']
-        : ['tasks.md', 'trace_delta.md']),
+        : []),
     'candidate_manifest.json',
     'gate_summary.md',
     'verification_report.md',
@@ -330,6 +349,39 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       passed: ok,
       severity: ok ? undefined : 'error',
     });
+  }
+
+  if (!investigationWorkflow && !contractWorkflow) {
+    const authoritativeArtifacts = [
+      { kind: 'tasks' as const, file: 'candidates/tasks.md', artifacts: taskArtifacts },
+      {
+        kind: 'trace_delta' as const,
+        file: 'candidates/trace_delta.md',
+        artifacts: traceDeltaArtifacts,
+      },
+    ];
+    for (const artifact of authoritativeArtifacts) {
+      const resolved = artifact.artifacts[0];
+      const valid = Boolean(
+        resolved &&
+          !isWorkItemSpecArtifactPlaceholder(artifact.kind, resolved.content),
+      );
+      checks.push({
+        check_id: `close_artifact_${artifact.kind}_authoritative`,
+        description:
+          `Authoritative ${artifact.kind} artifact is present ` +
+          `(Candidate first; authored legacy fallback only)`,
+        passed: valid,
+        severity: valid ? undefined : 'error',
+        details: valid
+          ? `path=${path.relative(ctx.projectRoot, resolved!.path).replace(/\\/g, '/')}`
+          : `expected=${artifact.file}; reason=${
+              resolved
+                ? 'resolved artifact is empty or a lifecycle placeholder'
+                : 'authoritative artifact not found'
+            }`,
+      });
+    }
   }
 
   const [formalVersionReport, governanceScope, gitContext, triggerResult] = await Promise.all([
@@ -514,16 +566,18 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   }
 
   if (!investigationWorkflow && !contractWorkflow) {
-    try {
-      const td = await fs.readFile(path.join(ctx.workItemDir, 'trace_delta.md'), 'utf-8');
+    const traceDelta = traceDeltaArtifacts[0];
+    if (traceDelta) {
+      const valid =
+        !isWorkItemSpecArtifactPlaceholder('trace_delta', traceDelta.content) &&
+        traceDelta.content.trim().length > 0;
       checks.push({
         check_id: 'close_trace_delta_valid',
-        description: 'trace_delta.md is not empty (§13.1)',
-        passed: td.trim().length > 0,
-        severity: td.trim().length > 0 ? undefined : 'error',
+        description: 'authoritative trace_delta is not empty or a lifecycle placeholder (§13.1)',
+        passed: valid,
+        severity: valid ? undefined : 'error',
+        details: `path=${path.relative(ctx.projectRoot, traceDelta.path).replace(/\\/g, '/')}`,
       });
-    } catch {
-      // Covered by required files.
     }
   }
 
@@ -719,9 +773,14 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     }
   }
 
-  const inputFiles = formalVersionRequired
-    ? [...requiredFiles, 'gates/formal_version_gate.json']
-    : requiredFiles;
+  const artifactInputFiles = [...taskArtifacts, ...traceDeltaArtifacts].map(artifact =>
+    path.relative(ctx.workItemDir, artifact.path).replace(/\\/g, '/'),
+  );
+  const inputFiles = [
+    ...requiredFiles,
+    ...artifactInputFiles,
+    ...(formalVersionRequired ? ['gates/formal_version_gate.json'] : []),
+  ];
   const report = makeReport(ctx.workItemId, 'close_gate', 'hard_gate', true, checks, inputFiles);
   return { report, allChecksPassed: report.status === 'passed' };
 }

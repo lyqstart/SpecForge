@@ -305,15 +305,20 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
     // 验证所有闭环文件存在
     const requiredFiles = [
       'work_item.json', 'intake.md', 'change_classification.md',
-      'impact_analysis.md', 'trigger_result.json', 'tasks.md',
-      'trace_delta.md', 'candidate_manifest.json', 'gate_summary.md',
-      'verification_report.md', 'merge_report.md',
-      'evidence/evidence_manifest.json',
+      'impact_analysis.md', 'trigger_result.json',
+      'candidate_manifest.json', 'gate_summary.md',
+      'merge_report.md',
     ];
 
     for (const file of requiredFiles) {
       await expect(fs.access(path.join(wiDir, file))).resolves.toBeUndefined();
     }
+    await expect(fs.access(path.join(wiDir, 'tasks.md'))).rejects.toBeTruthy();
+    await expect(fs.access(path.join(wiDir, 'trace_delta.md'))).rejects.toBeTruthy();
+    await expect(fs.access(path.join(wiDir, 'verification_report.md'))).rejects.toBeTruthy();
+    await expect(
+      fs.access(path.join(wiDir, 'evidence', 'evidence_manifest.json')),
+    ).rejects.toBeTruthy();
 
     // code_only_fast_path 的 merge_report 应该是 not_applicable
     const mergeReport = await fs.readFile(path.join(wiDir, 'merge_report.md'), 'utf-8');
@@ -360,6 +365,23 @@ describe('v1.1 Resume Check（§5.4）', () => {
     });
 
     await initializeClosureFiles(wiDir, 'WI-0005', 'code_only_fast_path');
+    await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
+    await fs.writeFile(
+      path.join(wiDir, 'candidates', 'tasks.md'),
+      '# Tasks\n\n### TASK-WI-0005-001\n',
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'candidates', 'trace_delta.md'),
+      '# Trace Delta\n\nTrace Impact: none\n\nAuthored analysis.\n',
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'verification_report.md'),
+      '# Verification Report\n\nVerified.\n',
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'evidence', 'evidence_manifest.json'),
+      JSON.stringify({ entries: [{ id: 'EV-1', status: 'passed' }] }),
+    );
 
     const result = await performResumeCheck(wiDir);
     expect(result.requiredFilesExist).toBe(true);

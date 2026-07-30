@@ -12,6 +12,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { FINAL_STATES, FINAL_TRANSITIONS } from './state_machine';
 
@@ -118,8 +119,6 @@ export const V11_REQUIRED_FILES = [
   'change_classification.md',
   'impact_analysis.md',
   'trigger_result.json',
-  'tasks.md',
-  'trace_delta.md',
   'candidate_manifest.json',
   'gate_summary.md',
   'verification_report.md',
@@ -142,6 +141,28 @@ export async function performResumeCheck(
     } catch {
       missingFiles.push(file);
     }
+  }
+
+  for (const artifact of [
+    { kind: 'tasks' as const, file: 'tasks.md' },
+    { kind: 'trace_delta' as const, file: 'trace_delta.md' },
+  ]) {
+    let resolved = false;
+    for (const candidatePath of [
+      path.join(workItemDir, 'candidates', artifact.file),
+      path.join(workItemDir, artifact.file),
+    ]) {
+      try {
+        const content = await fs.readFile(candidatePath, 'utf-8');
+        if (!isWorkItemSpecArtifactPlaceholder(artifact.kind, content)) {
+          resolved = true;
+          break;
+        }
+      } catch {
+        // Continue to the read-only legacy fallback.
+      }
+    }
+    if (!resolved) missingFiles.push(`candidates/${artifact.file}`);
   }
 
   const requiredFilesExist = missingFiles.length === 0;

@@ -28,6 +28,8 @@ import {
   validateVerificationReportContract,
   VERIFICATION_REPORT_CONTRACT_ID,
 } from '../lib/verification-report-contract.js';
+import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11.js';
+import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 
 async function readTextIfExists(filePath: string): Promise<string | undefined> {
   try {
@@ -279,11 +281,24 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
     }
   }
 
+  const traceDeltaArtifact = (
+    await resolveWorkItemSpecArtifacts({
+      projectRoot,
+      workItemId,
+      kind: 'trace_delta',
+    })
+  )[0];
+  const traceDeltaMd =
+    traceDeltaArtifact &&
+    !isWorkItemSpecArtifactPlaceholder('trace_delta', traceDeltaArtifact.content)
+      ? traceDeltaArtifact.content
+      : undefined;
+
   const build = buildSemanticClosureFromArtifacts({
     workItemId,
     workItem,
     curatedSemanticClosure: suppliedSemanticClosure,
-    traceDeltaMd: await readTextIfExists(path.join(workItemDir, 'trace_delta.md')),
+    traceDeltaMd,
     verificationReportMd: verificationReportText,
     evidenceManifest,
     mergeReportMd: await readTextIfExists(path.join(workItemDir, 'merge_report.md')),

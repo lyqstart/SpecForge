@@ -1,11 +1,11 @@
 /**
  * sf_work_item_repair_closure handler unit tests
  *
- * Verifies the fail-closed repair of a Work Item's root-level closure skeleton
- * (tasks.md / trace_delta.md):
- *  - restores root markers only when the authoritative candidate exists non-empty
- *  - refuses (fail-closed) when the candidate is missing/empty
- *  - never overwrites an existing root file (idempotent)
+ * Verifies the deprecated repair tool is now a read-only compatibility audit:
+ *  - accepts authoritative Candidate artifacts
+ *  - accepts real authored legacy roots only as a fallback
+ *  - refuses missing/empty/placeholder-only evidence
+ *  - never creates root skeletons
  *  - never advances state / never touches project truth source
  */
 
@@ -62,7 +62,7 @@ describe("sf_work_item_repair_closure", () => {
     }
   }
 
-  it("restores root tasks.md and trace_delta.md when candidates exist non-empty", async () => {
+  it("accepts non-empty Candidates without creating root skeletons", async () => {
     await seedWorkItem("WI-0001", {
       tasksCandidate: "# Tasks\n\nTASK-1 real content",
       traceCandidate: "# Trace Delta\n\nTrace Impact: REQ-1 -> TASK-1",
@@ -72,32 +72,36 @@ describe("sf_work_item_repair_closure", () => {
 
     expect(result.success).toBe(true);
     expect(result.state_changed).toBe(false);
-    expect(result.repaired).toEqual(expect.arrayContaining(["tasks.md", "trace_delta.md"]));
+    expect(result.deprecated_repair).toBe(true);
+    expect(result.files_written).toEqual([]);
+    expect(result.canonical_present).toEqual(
+      expect.arrayContaining(["tasks.md", "trace_delta.md"]),
+    );
 
     const rootTasks = path.join(wiDir("WI-0001"), "tasks.md");
     const rootTrace = path.join(wiDir("WI-0001"), "trace_delta.md");
-    await expect(fs.access(rootTasks)).resolves.toBeUndefined();
-    await expect(fs.access(rootTrace)).resolves.toBeUndefined();
-
-    // trace_delta marker must retain a "Trace Impact" line so validators tolerate it
-    const traceContent = await fs.readFile(rootTrace, "utf-8");
-    expect(traceContent).toContain("Trace Impact");
+    await expect(fs.access(rootTasks)).rejects.toBeTruthy();
+    await expect(fs.access(rootTrace)).rejects.toBeTruthy();
   });
 
-  it("is idempotent: never overwrites an existing root file", async () => {
+  it("accepts real authored legacy roots as a read-only fallback", async () => {
     await seedWorkItem("WI-0002", {
-      tasksCandidate: "# Tasks\n\nreal",
-      traceCandidate: "# Trace Delta\n\nTrace Impact: none",
+      tasksCandidate: null,
+      traceCandidate: null,
     });
     const rootTasks = path.join(wiDir("WI-0002"), "tasks.md");
+    const rootTrace = path.join(wiDir("WI-0002"), "trace_delta.md");
     const original = "# Tasks\n\nPRE-EXISTING ROOT CONTENT";
     await fs.writeFile(rootTasks, original);
+    await fs.writeFile(rootTrace, "# Trace Delta\n\nTrace Impact: none\n\nAuthored legacy record");
 
     const result = await handler({ work_item_id: "WI-0002" }, { directory: tempDir }, {});
 
     expect(result.success).toBe(true);
-    expect(result.present).toContain("tasks.md");
-    expect(result.repaired).toContain("trace_delta.md");
+    expect(result.legacy_present).toEqual(
+      expect.arrayContaining(["tasks.md", "trace_delta.md"]),
+    );
+    expect(result.files_written).toEqual([]);
     expect(await fs.readFile(rootTasks, "utf-8")).toBe(original);
   });
 
@@ -115,8 +119,8 @@ describe("sf_work_item_repair_closure", () => {
     expect(refusedFiles).toContain("tasks.md");
     // root tasks.md must NOT have been created
     await expect(fs.access(path.join(wiDir("WI-0003"), "tasks.md"))).rejects.toBeTruthy();
-    // trace_delta was repairable and should exist
-    expect(result.repaired).toContain("trace_delta.md");
+    expect(result.canonical_present).toContain("trace_delta.md");
+    await expect(fs.access(path.join(wiDir("WI-0003"), "trace_delta.md"))).rejects.toBeTruthy();
   });
 
   it("fail-closed: refuses when candidate exists but is empty", async () => {

@@ -9,7 +9,11 @@
 
 import { readFile, readdir } from "node:fs/promises"
 import { isAbsolute, join } from "node:path"
-import { SPEC_DIR_NAME, resolveProjectPath } from "@specforge/types/directory-layout"
+import {
+  SPEC_DIR_NAME,
+  resolveProjectPath,
+  workItemSpecArtifactReadCandidates,
+} from "@specforge/types/directory-layout"
 import { loadGraphStore, isKGEnabled } from "./sf_knowledge_graph_core"
 import { impactAnalysis, getSubgraph } from "./sf_knowledge_query_core"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
@@ -315,12 +319,21 @@ export class ArchiveSource implements ContextDataSource {
   private async getTargetFilesFromTasksMd(params: TaskQueryParams): Promise<string[]> {
     const files: string[] = []
 
-    // Try to read tasks.md from spec directory
-    const tasksPath = join(this.baseDir, SPEC_DIR_NAME, 'specs', params.work_item_id, "tasks.md")
-    let content: string
-    try {
-      content = await readFile(tasksPath, "utf-8")
-    } catch {
+    // Candidate is authoritative; Work Item root and legacy specs are read-only fallbacks.
+    let content: string | null = null
+    for (const tasksPath of workItemSpecArtifactReadCandidates(
+      this.baseDir,
+      params.work_item_id,
+      "tasks",
+    )) {
+      try {
+        content = await readFile(tasksPath, "utf-8")
+        break
+      } catch {
+        // Continue through the declared compatibility order.
+      }
+    }
+    if (content === null) {
       return files
     }
 
@@ -331,24 +344,41 @@ export class ArchiveSource implements ContextDataSource {
     // Look for 修改文件 field in the task section
     const lines = content.split("\n")
     let inTargetTask = false
+    const normalizedTaskId = taskId.trim().toUpperCase()
 
     for (const line of lines) {
       // Check if we're entering the target task section
-      const taskMatch = line.match(/^(?:##\s+Task\s+|[-]\s+\[[ x~-]\]\s+)(\d+)[.：:]/i)
-      if (taskMatch) {
-        inTargetTask = taskMatch[1] === taskId
+      const canonicalTaskMatch = line.match(/^#{2,4}\s+(TASK-WI-\d{4}-\d{3})\b/i)
+      const legacyTaskMatch = line.match(
+        /^(?:##\s+Task\s+|[-]\s+\[[ x~-]\]\s+)(\d+)[.：:]/i,
+      )
+      if (canonicalTaskMatch || legacyTaskMatch) {
+        const foundTaskId = (canonicalTaskMatch?.[1] ?? legacyTaskMatch?.[1] ?? "")
+          .trim()
+          .toUpperCase()
+        inTargetTask =
+          foundTaskId === normalizedTaskId ||
+          (legacyTaskMatch !== null &&
+            normalizedTaskId.endsWith(`-${foundTaskId.padStart(3, "0")}`))
         continue
       }
 
       if (inTargetTask) {
-        // Look for 修改文件 lines
-        const fileMatch = line.match(/修改文件[：:]\s*(.+)/)
+        // Support the canonical task-document/v1 fields and the legacy Chinese label.
+        const fileMatch = line.match(
+          /(?:修改文件[：:]|\*\*(?:files|allowed_write_files)\*\*\s*:)\s*(.+)/i,
+        )
         if (fileMatch) {
           const raw = fileMatch[1]
           const backtickPaths = raw.match(/`([^`]+)`/g)
           if (backtickPaths) {
             for (const bp of backtickPaths) {
               files.push(bp.replace(/`/g, "").trim())
+            }
+          } else {
+            for (const entry of raw.replace(/^\[/, "").replace(/\]$/, "").split(",")) {
+              const candidate = entry.replace(/['"]/g, "").trim()
+              if (candidate) files.push(candidate)
             }
           }
         }

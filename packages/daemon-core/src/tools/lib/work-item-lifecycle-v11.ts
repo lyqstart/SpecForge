@@ -7,7 +7,7 @@
  * - §4.2 WI 目录创建
  * - §4.4 work_item.json 初始化
  * - §4.5 intake.md 生成
- * - 完整闭环文件初始化
+ * - 非 Candidate 闭环文件初始化
  */
 
 import * as fs from 'node:fs/promises';
@@ -79,8 +79,12 @@ export async function createWorkItem(input: CreateWorkItemInput): Promise<string
 }
 
 /**
- * 初始化 WI 的闭环文件骨架（§4.3）。
- * 这些文件在实际流程中逐步填充，但可以先创建占位。
+ * 初始化 WI 的非 Candidate 闭环文件骨架（§4.3）。
+ *
+ * tasks.md 与 trace_delta.md 的新写入权威路径位于 candidates/。不得在
+ * Work Item 顶层预建同名占位。verification_report.md 与
+ * evidence/evidence_manifest.json 也不得预建空壳；它们只能由 Verifier
+ * 在真实验证阶段写入。旧顶层 tasks/trace 仍由 Path Service 只读兼容。
  */
 export async function initializeClosureFiles(
   workItemDir: string,
@@ -90,6 +94,11 @@ export async function initializeClosureFiles(
   const now = new Date().toISOString();
   const isCodeOnly = workflowPath === 'code_only_fast_path';
   const isTaskChange = workflowPath === 'task_change_path';
+  await Promise.all([
+    fs.mkdir(path.join(workItemDir, 'candidates'), { recursive: true }),
+    fs.mkdir(path.join(workItemDir, 'gates'), { recursive: true }),
+    fs.mkdir(path.join(workItemDir, 'evidence'), { recursive: true }),
+  ]);
 
   // change_classification.md
   await ensureFile(path.join(workItemDir, 'change_classification.md'), [
@@ -116,21 +125,6 @@ export async function initializeClosureFiles(
     selected_at: now,
   }, null, 2) + '\n');
 
-  // tasks.md
-  await ensureFile(path.join(workItemDir, 'tasks.md'), [
-    '# Tasks', '',
-    `Work Item: ${workItemId}`, '',
-    '> TODO: 由 Agent 填充', '',
-  ].join('\n'));
-
-  // trace_delta.md
-  await ensureFile(path.join(workItemDir, 'trace_delta.md'), [
-    '# Trace Delta', '',
-    `Work Item: ${workItemId}`, '',
-    'Trace Impact: none', '',
-    'Reason: Not yet analyzed', '',
-  ].join('\n'));
-
   // candidate_manifest.json
   await ensureFile(path.join(workItemDir, 'candidate_manifest.json'), JSON.stringify({
     schema_version: '1.0',
@@ -149,13 +143,6 @@ export async function initializeClosureFiles(
     '> TODO: 由 Gate Runner 生成', '',
   ].join('\n'));
 
-  // verification_report.md
-  await ensureFile(path.join(workItemDir, 'verification_report.md'), [
-    '# Verification Report', '',
-    `Work Item: ${workItemId}`, '',
-    '> TODO: 由 Verifier 生成', '',
-  ].join('\n'));
-
   // merge_report.md
   const mergeStatus = isCodeOnly || isTaskChange ? 'not_applicable' : 'pending';
   await ensureFile(path.join(workItemDir, 'merge_report.md'), [
@@ -167,12 +154,6 @@ export async function initializeClosureFiles(
     '',
   ].filter(Boolean).join('\n'));
 
-  // evidence/evidence_manifest.json
-  await ensureFile(path.join(workItemDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({
-    schema_version: '1.0',
-    work_item_id: workItemId,
-    entries: [],
-  }, null, 2) + '\n');
 }
 
 /**

@@ -1,31 +1,17 @@
 /**
- * sf-work-item-repair-closure — repair a Work Item's missing root-level
- * closure-skeleton files (tasks.md / trace_delta.md).
+ * sf-work-item-repair-closure — legacy compatibility audit.
  *
  * Public name: sf_work_item_repair_closure.
  *
- * Why this exists:
- *   Work Items created through the legacy sf_state_transition create path (before
- *   the fix that calls initializeClosureFiles) never received their root-level
- *   closure skeleton. close_gate requires tasks.md and trace_delta.md to exist at
- *   the Work Item root, so such Work Items can never be closed even though the
- *   authoritative content lives under candidates/.
- *
- * Fail-closed guarantee (evidence-based):
- *   The root-level tasks.md / trace_delta.md are lifecycle SKELETON markers, not
- *   the source of authoritative content — the real task breakdown and trace delta
- *   live in candidates/tasks.md and candidates/trace_delta.md and are validated by
- *   the gates. This tool therefore only restores a root marker when the
- *   corresponding authoritative candidate artifact exists and is non-empty. If the
- *   candidate is missing/empty, the tool REFUSES to create the marker (fail-closed)
- *   and reports the gap, so it can never fabricate closure for a genuinely
- *   incomplete Work Item.
+ * This public tool name is retained for compatibility, but the Runtime no longer
+ * creates or requires root-level closure skeletons. It now verifies that the
+ * canonical Candidate exists, or that a real authored legacy root artifact is
+ * available as a read-only fallback.
  *
  * Boundaries:
- *   - Never overwrites an existing root file (create-if-missing / idempotent).
+ *   - Never creates or overwrites tasks.md / trace_delta.md.
  *   - Never advances workflow state.
  *   - Never modifies code or project truth source (.specforge/project/**).
- *   - Only ever writes tasks.md / trace_delta.md inside the target Work Item root.
  */
 
 import * as fs from 'node:fs/promises';
@@ -37,6 +23,7 @@ import {
   workItemTraceDelta,
   workItemCandidateTasks,
   workItemCandidateTraceDelta,
+  isWorkItemSpecArtifactPlaceholder,
 } from '@specforge/types/directory-layout';
 
 async function pathExists(filePath: string): Promise<boolean> {
@@ -63,51 +50,17 @@ function rel(projectRoot: string, filePath: string): string {
   return path.relative(projectRoot, filePath).replace(/\\/g, '/');
 }
 
-function tasksSkeleton(workItemId: string): string {
-  return [
-    '# Tasks',
-    '',
-    `Work Item: ${workItemId}`,
-    '',
-    '> Closure-skeleton marker restored by sf_work_item_repair_closure.',
-    '>',
-    '> The authoritative task breakdown for this Work Item lives in',
-    '> candidates/tasks.md and was validated by the Tasks Gate. This root-level',
-    '> file is the lifecycle skeleton that close_gate checks for structural',
-    '> completeness; it is intentionally not the source of task content.',
-    '',
-  ].join('\n');
-}
-
-function traceDeltaSkeleton(workItemId: string): string {
-  return [
-    '# Trace Delta',
-    '',
-    `Work Item: ${workItemId}`,
-    '',
-    'Trace Impact: recorded in candidates/trace_delta.md',
-    '',
-    '> Closure-skeleton marker restored by sf_work_item_repair_closure.',
-    '>',
-    '> The authoritative trace delta lives in candidates/trace_delta.md, was',
-    '> validated by the gates, and is merged into',
-    '> .specforge/project/trace_matrix.md. This root-level file is the lifecycle',
-    '> skeleton that close_gate checks for structural completeness.',
-    '',
-  ].join('\n');
-}
-
 interface RepairTarget {
   file: 'tasks.md' | 'trace_delta.md';
   rootPath: string;
   candidatePath: string;
-  skeleton: string;
 }
 
 interface RepairOutcome {
   file: string;
-  action: 'present' | 'repaired' | 'refused';
+  action: 'canonical_present' | 'legacy_present' | 'refused';
   candidate?: string;
+  legacy?: string;
   reason?: string;
 }
 
@@ -136,13 +89,11 @@ registerHandler('sf_work_item_repair_closure', async (args, context) => {
       file: 'tasks.md',
       rootPath: workItemTasks(projectRoot, workItemId),
       candidatePath: workItemCandidateTasks(projectRoot, workItemId),
-      skeleton: tasksSkeleton(workItemId),
     },
     {
       file: 'trace_delta.md',
       rootPath: workItemTraceDelta(projectRoot, workItemId),
       candidatePath: workItemCandidateTraceDelta(projectRoot, workItemId),
-      skeleton: traceDeltaSkeleton(workItemId),
     },
   ];
 
@@ -150,42 +101,54 @@ registerHandler('sf_work_item_repair_closure', async (args, context) => {
   let allComplete = true;
 
   for (const target of targets) {
-    // Idempotent: never overwrite an existing root file.
-    if (await pathExists(target.rootPath)) {
-      outcomes.push({ file: target.file, action: 'present' });
+    if (await isNonEmptyFile(target.candidatePath)) {
+      outcomes.push({
+        file: target.file,
+        action: 'canonical_present',
+        candidate: rel(projectRoot, target.candidatePath),
+      });
       continue;
     }
 
-    // Fail-closed: only restore the marker when the authoritative candidate
-    // artifact exists and is non-empty.
-    if (await isNonEmptyFile(target.candidatePath)) {
-      await fs.mkdir(path.dirname(target.rootPath), { recursive: true });
-      await fs.writeFile(target.rootPath, target.skeleton, 'utf-8');
-      outcomes.push({
-        file: target.file,
-        action: 'repaired',
-        candidate: rel(projectRoot, target.candidatePath),
-      });
-    } else {
-      outcomes.push({
-        file: target.file,
-        action: 'refused',
-        reason: `authoritative candidate missing or empty: ${rel(projectRoot, target.candidatePath)}`,
-      });
-      allComplete = false;
+    if (await isNonEmptyFile(target.rootPath)) {
+      const content = await fs.readFile(target.rootPath, 'utf-8');
+      const kind = target.file === 'tasks.md' ? 'tasks' : 'trace_delta';
+      if (!isWorkItemSpecArtifactPlaceholder(kind, content)) {
+        outcomes.push({
+          file: target.file,
+          action: 'legacy_present',
+          legacy: rel(projectRoot, target.rootPath),
+        });
+        continue;
+      }
     }
+
+    outcomes.push({
+      file: target.file,
+      action: 'refused',
+      reason:
+        `canonical candidate missing or empty: ${rel(projectRoot, target.candidatePath)}; ` +
+        'no authored legacy fallback is available',
+    });
+    allComplete = false;
   }
 
   return {
     success: allComplete,
     work_item_id: workItemId,
     state_changed: false,
-    repaired: outcomes.filter((o) => o.action === 'repaired').map((o) => o.file),
-    present: outcomes.filter((o) => o.action === 'present').map((o) => o.file),
+    deprecated_repair: true,
+    files_written: [],
+    canonical_present: outcomes
+      .filter((o) => o.action === 'canonical_present')
+      .map((o) => o.file),
+    legacy_present: outcomes
+      .filter((o) => o.action === 'legacy_present')
+      .map((o) => o.file),
     refused: outcomes.filter((o) => o.action === 'refused'),
     outcomes,
     note: allComplete
-      ? 'Root closure skeleton for tasks.md and trace_delta.md is complete.'
-      : 'Fail-closed: some root markers were not restored because their authoritative candidate artifact is missing or empty. Produce the candidate via the proper workflow before closing.',
+      ? 'Compatibility audit passed. Runtime consumes canonical Candidate artifacts first and wrote no root skeletons.'
+      : 'Fail-closed: an authoritative Candidate or real authored legacy fallback is missing. Produce the Candidate via the proper workflow; no root skeleton was written.',
   };
 });

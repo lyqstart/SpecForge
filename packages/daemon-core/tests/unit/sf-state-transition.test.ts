@@ -434,9 +434,8 @@ describe("sf_state_transition - close (verification_done -> closed)", () => {
 
 // =========================================================================
 // Regression: sf_state_transition create path (from=""->created) must
-// initialize the closure-file skeleton at the WI root, matching
-// sf_v11_work_item_create, so close_gate can find tasks.md / trace_delta.md
-// and the other required root artifacts.
+// initialize lifecycle files without synthesizing duplicate root tasks/trace
+// placeholders. Those artifacts are authored only under candidates/.
 // =========================================================================
 
 describe("sf_state_transition - closure file initialization on create", () => {
@@ -466,21 +465,18 @@ describe("sf_state_transition - closure file initialization on create", () => {
     }
   });
 
-  // Closure files required by close_gate at the WI root (non-investigation).
+  // Non-Candidate lifecycle files initialized at the WI root.
   const REQUIRED_ROOT_FILES = [
     "work_item.json",
-    "tasks.md",
-    "trace_delta.md",
     "change_classification.md",
     "impact_analysis.md",
     "trigger_result.json",
     "candidate_manifest.json",
     "gate_summary.md",
-    "verification_report.md",
     "merge_report.md",
   ];
 
-  it("must create tasks.md/trace_delta.md and other root closure files on from=''->created", async () => {
+  it("creates lifecycle files without duplicate root tasks/trace placeholders", async () => {
     const { deps } = makeStateManagerDeps();
 
     await handler(
@@ -496,13 +492,15 @@ describe("sf_state_transition - closure file initialization on create", () => {
         `expected root closure file to exist: ${f}`,
       ).resolves.toBeUndefined();
     }
-    // evidence manifest lives in a subdirectory
+    await expect(fs.access(path.join(wiDir, "tasks.md"))).rejects.toBeTruthy();
+    await expect(fs.access(path.join(wiDir, "trace_delta.md"))).rejects.toBeTruthy();
+    await expect(fs.access(path.join(wiDir, "verification_report.md"))).rejects.toBeTruthy();
     await expect(
       fs.access(path.join(wiDir, "evidence", "evidence_manifest.json")),
-    ).resolves.toBeUndefined();
+    ).rejects.toBeTruthy();
   });
 
-  it("must backfill missing closure files when work_item.json already exists (idempotent repair)", async () => {
+  it("backfills lifecycle files without synthesizing Candidate artifacts", async () => {
     const wiDir = wiDirFor(tempDir, "WI-0002");
     await fs.mkdir(wiDir, { recursive: true });
     // Pre-existing work_item.json but NO closure files — reproduces the defect
@@ -520,8 +518,8 @@ describe("sf_state_transition - closure file initialization on create", () => {
       deps,
     );
 
-    await expect(fs.access(path.join(wiDir, "tasks.md"))).resolves.toBeUndefined();
-    await expect(fs.access(path.join(wiDir, "trace_delta.md"))).resolves.toBeUndefined();
+    await expect(fs.access(path.join(wiDir, "tasks.md"))).rejects.toBeTruthy();
+    await expect(fs.access(path.join(wiDir, "trace_delta.md"))).rejects.toBeTruthy();
   });
 
   it("must NOT overwrite existing real closure content (create-if-missing)", async () => {

@@ -23,6 +23,7 @@ import {
   type RetryConfig,
 } from './WorkflowErrorHandling.js';
 import { CRITICAL_STATES } from '@specforge/types/constants';
+import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 
 export type EventHandler = (event: WorkflowEvent) => void | Promise<void>;
 
@@ -480,7 +481,7 @@ export class WorkflowEngine {
         await this.requireGateJsonStatus(workItemDir, 'gates/post_merge_gate.json', 'passed');
         break;
       case 'implementation_ready':
-        await this.requireFile(workItemDir, 'tasks.md');
+        await this.requireSpecArtifact(workItemDir, 'tasks');
         await this.requireAllowedWriteFiles(workItemDir);
         await this.requireGateJsonStatus(workItemDir, 'gates/code_permission_release_gate.json', 'passed');
         break;
@@ -508,6 +509,31 @@ export class WorkflowEngine {
     try { await fs.access(fullPath); } catch {
       throw new Error(`Transition evidence prerequisite missing: ${file} (required for target state)`);
     }
+  }
+
+  private async requireSpecArtifact(
+    workItemDir: string,
+    kind: 'tasks' | 'trace_delta',
+  ): Promise<void> {
+    const file = kind === 'tasks' ? 'tasks.md' : 'trace_delta.md';
+    const candidates = [
+      path.join(workItemDir, 'candidates', file),
+      path.join(workItemDir, file),
+    ];
+
+    for (const candidate of candidates) {
+      try {
+        const content = await fs.readFile(candidate, 'utf-8');
+        if (!isWorkItemSpecArtifactPlaceholder(kind, content)) return;
+      } catch {
+        // Continue to the legacy read-only fallback.
+      }
+    }
+
+    throw new Error(
+      `Transition evidence prerequisite missing: candidates/${file} ` +
+      `(legacy ${file} is accepted only when it contains real authored content)`,
+    );
   }
 
   private async requireFileWithStatus(workItemDir: string, file: string, _status: string | undefined): Promise<void> {

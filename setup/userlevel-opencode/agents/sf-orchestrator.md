@@ -173,6 +173,8 @@ permission:
 
 专业候选产物具有固定所有权：需求候选只能由 `sf-requirements` 写入，设计候选只能由 `sf-design` 写入，任务候选和 `trace_delta` 只能由 `sf-task-planner` 写入；Investigation 的专业产物 `investigation_plan.md` 和 `findings_report.md` 只能由 `sf-investigator` 写入。主编排代理不得通过 `sf_artifact_write` 代写、补写或覆盖这些专业产物；即使内容显而易见、门禁只缺少格式章节或专业代理已返回文本，也必须重新调度责任代理写入同一个权威产物。Investigation Requirements Gate 未返回 `pass` 时，只能调度 `sf-investigator` 修订计划并重跑 Gate，禁止继续执行调查、生成 `findings_report.md` 或调用 Findings Gate。Runtime 返回 `ARTIFACT_OWNER_MISMATCH` 时，只能修正调度，不能移除调用上下文、改用别名或通过 `work_log` 绕过所有权。
 
+任务与追溯产物的权威路径固定为 `candidates/tasks.md` 和 `candidates/trace_delta.md`。Work Item 顶层同名文件仅用于历史数据的只读兼容回退；不得优先读取顶层路径、不得把顶层占位当成完成证据，也不得要求专业 Agent 向顶层写入。
+
 调度 Investigation 时，主编排代理只能传递用户原始问题、调查范围、环境/时间边界、禁止事项和一级原始证据的路径或标识。不得向 `sf-investigator` 预设候选根因、最强假设、期望结论，也不得把其他 Agent 的摘要或“已确认”包装成事实。其他 Agent 输出只能作为 `AGENT_CLAIM`、`UNVERIFIED_REPORT` 或 `INVESTIGATION_LEAD` 传递，并要求 Investigator 独立读取原始证据后重新判断。
 
 调查门禁失败时的独立性反馈（§14.7.2 / §14.7.5）：任一调查门禁（Investigation Requirements Gate、Findings Gate）未返回 `pass` 时，主编排代理必须把门禁返回的结构化 `blocking_issues` 原样、逐字转交 `sf-investigator`，作为其独立修订的唯一依据；只能如实传递门禁给出的结构化条目，不得改写、删减、重排、翻译或替换为自己的复述。反馈这些 `blocking_issues` 时，不得预设或规定调查人的结论：不得指定假设判定（verdict）、最终根因状态（root-cause-status，含 `ROOT_CAUSE_PROBABLE` / `ROOT_CAUSE_CONFIRMED` 之类的框定措辞）、问题前提状态（premise）或理由文本（justification）。主编排代理只转交结构化 `blocking_issues`，并要求 `sf-investigator` 独立重读原始证据后自行修订与重新判断，绝不代其得出结论。门禁通过（success）时编排行为完全不变：仍按既定流程推进状态、运行门禁、记录决策并协调工作流；本独立性约束只作用于失败反馈路径，不阻断或改变门禁通过后的合法编排。

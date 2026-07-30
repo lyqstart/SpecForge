@@ -118,9 +118,9 @@ export const LAYOUT = {
     projectSpecVersionBefore: "project_spec_version_before.json",
     /** `/.specforge/work-items/<WI>/project_spec_version_after.json` */
     projectSpecVersionAfter: "project_spec_version_after.json",
-    /** `<root>/.specforge/work-items/<WI-ID>/tasks.md` */
+    /** `<root>/.specforge/work-items/<WI-ID>/tasks.md`（legacy 兼容读取；新写入使用 candidates/tasks.md） */
     tasks: "tasks.md",
-    /** `<root>/.specforge/work-items/<WI-ID>/trace_delta.md` */
+    /** `<root>/.specforge/work-items/<WI-ID>/trace_delta.md`（legacy 兼容读取；新写入使用 candidates/trace_delta.md） */
     traceDelta: "trace_delta.md",
     /** `<root>/.specforge/work-items/<WI-ID>/candidate_manifest.json` */
     candidateManifest: "candidate_manifest.json",
@@ -667,6 +667,36 @@ export type WorkItemSpecArtifactKind =
   | "design"
   | "tasks"
   | "trace_delta";
+
+/**
+ * 判断 Work Item 顶层兼容文件是否只是生命周期占位，而非真实规格产物。
+ *
+ * Candidate 路径存在时始终由 Candidate 取得权威性；本函数用于旧路径回退时
+ * 防止 `TODO` / closure-skeleton 被 existence-only Gate 误当成有效证据。
+ */
+export function isWorkItemSpecArtifactPlaceholder(
+  kind: WorkItemSpecArtifactKind,
+  content: string,
+): boolean {
+  const normalized = content.replace(/\r\n/g, "\n").trim();
+  if (!normalized) return true;
+
+  if (kind === "tasks") {
+    return (
+      normalized.includes("> TODO: 由 Agent 填充") ||
+      normalized.includes("Closure-skeleton marker restored by sf_work_item_repair_closure")
+    );
+  }
+
+  if (kind === "trace_delta") {
+    return (
+      normalized.includes("Reason: Not yet analyzed") ||
+      normalized.includes("Closure-skeleton marker restored by sf_work_item_repair_closure")
+    );
+  }
+
+  return normalized.includes("> TODO: 由 Agent 填充");
+}
 
 /**
  * 返回规格类 Work Item 产物的只读解析顺序。

@@ -339,7 +339,10 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
     expect(mergedContent).toContain('Requirements Delta');
 
     // Verify trace_delta is valid
-    const traceDelta = await fs.readFile(path.join(wiDir, 'trace_delta.md'), 'utf-8');
+    const traceDelta = await fs.readFile(
+      path.join(wiDir, 'candidates', 'trace_delta.md'),
+      'utf-8',
+    );
     const traceValidation = validateTraceDelta(traceDelta);
     expect(traceValidation.valid).toBe(true);
 

@@ -7,10 +7,8 @@
  * Requirements: 13.2, 13.3, 13.4
  */
 
-import { readFile } from "node:fs/promises"
-import { join } from "node:path"
-import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
 import { logErrorToFile } from "./utils"
+import { resolveWorkItemSpecArtifacts } from "./governance-invariants-v11"
 
 // ============================================================
 // Types
@@ -181,43 +179,18 @@ export async function checkTraceMatrix(
   baseDir: string
 ): Promise<TraceMatrixResult> {
   try {
-    const specDir = join(baseDir, SPEC_DIR_NAME, 'specs', workItemId)
+    const [requirements, designs, tasks] = await Promise.all([
+      resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: "requirements" }),
+      resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: "design" }),
+      resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: "tasks" }),
+    ])
+    if (requirements.length === 0) return createFailResult([], [], "requirements artifact not found")
+    if (designs.length === 0) return createFailResult([], [], "design artifact not found")
+    if (tasks.length === 0) return createFailResult([], [], "tasks artifact not found")
 
-    // Read requirements.md
-    let requirementsContent: string
-    try {
-      requirementsContent = await readFile(join(specDir, "requirements.md"), "utf-8")
-    } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException
-      if (error.code === "ENOENT") {
-        return createFailResult([], [], "requirements.md not found")
-      }
-      return createFailResult([], [], `Failed to read requirements.md: ${error.message}`)
-    }
-
-    // Read design.md
-    let designContent: string
-    try {
-      designContent = await readFile(join(specDir, "design.md"), "utf-8")
-    } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException
-      if (error.code === "ENOENT") {
-        return createFailResult([], [], "design.md not found")
-      }
-      return createFailResult([], [], `Failed to read design.md: ${error.message}`)
-    }
-
-    // Read tasks.md
-    let tasksContent: string
-    try {
-      tasksContent = await readFile(join(specDir, "tasks.md"), "utf-8")
-    } catch (err: unknown) {
-      const error = err as NodeJS.ErrnoException
-      if (error.code === "ENOENT") {
-        return createFailResult([], [], "tasks.md not found")
-      }
-      return createFailResult([], [], `Failed to read tasks.md: ${error.message}`)
-    }
+    const requirementsContent = requirements.map(artifact => artifact.content).join("\n\n")
+    const designContent = designs.map(artifact => artifact.content).join("\n\n")
+    const tasksContent = tasks.map(artifact => artifact.content).join("\n\n")
 
     // Extract data
     const requirementIds = extractRequirementIds(requirementsContent)
