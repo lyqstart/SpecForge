@@ -313,6 +313,65 @@ describe('sf_close_gate handler', () => {
     expect(closeMd).toContain(workItemId);
   });
 
+  it('recomputes an existing passed changed-files audit without invalidating closure provenance', async () => {
+    const workItemId = 'wi-close-preserve-audit';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'write_guard_log.jsonl'),
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: 'src/main.ts',
+        operation: 'modify',
+        actor: 'sf-executor',
+        allowed: true,
+        violations: [],
+        tool: 'sf_safe_bash',
+      }) + '\n'
+    );
+    const auditPath = path.join(wiDir, 'changed_files_audit.md');
+    const auditBeforeClose = await fs.readFile(auditPath, 'utf-8');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
+    expect((result as any).changed_files_audit?.passed).toBe(true);
+    expect(await fs.readFile(auditPath, 'utf-8')).toBe(auditBeforeClose);
+  });
+
+  it('persists and blocks on a newly failing recomputed audit', async () => {
+    const workItemId = 'wi-close-new-audit-failure';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    await fs.writeFile(
+      path.join(wiDir, 'write_guard_log.jsonl'),
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: '.specforge/project/architecture.md',
+        operation: 'modify',
+        actor: 'sf-executor',
+        allowed: true,
+        violations: [],
+        tool: 'sf_safe_bash',
+      }) + '\n'
+    );
+    const auditPath = path.join(wiDir, 'changed_files_audit.md');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).changed_files_audit?.passed).toBe(false);
+    expect(await fs.readFile(auditPath, 'utf-8')).toContain('- Status: FAILED');
+  });
+
   it('blocks close when a Git-governed Work Item has a failed formal version gate', async () => {
     const workItemId = 'wi-formal-failed';
     const wiDir = await createMinimalWorkItem(tmpDir, workItemId);

@@ -420,6 +420,7 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   workItemJsonPath: string,
   fallbackAllowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
   filesystemDiff?: FilesystemDiffResult | null,
+  preserveExistingPassedReport = false,
 ): Promise<ChangedFilesAuditResult | null> {
   const factualFiles = getFactualChangedFiles(workItemDir);
   const actualFiles =
@@ -468,11 +469,19 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
       ? `write_guard_log.jsonl (${writeGuardSummary.totalEntries} entries, ${factualFiles.length} allowed writes, refreshed after operation normalization, allowed_write_files_snapshot + factual allowed writes)`
       : `filesystem_baseline.json (${actualFiles.length} observed project changes, allowed_write_files_snapshot policy)`;
 
-  await fs.writeFile(
-    changedFilesPath,
-    generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource),
-    "utf-8",
-  );
+  // Verification Gate binds semantic-closure provenance to the exact bytes of
+  // changed_files_audit.md. Close Gate must still recompute the audit from the
+  // current factual sources, but rewriting an unchanged passing report would
+  // invalidate that provenance solely because the renderer adds a timestamp.
+  // A newly failing audit is always persisted so Close Gate cannot rely on a
+  // stale PASS report.
+  if (!preserveExistingPassedReport || !auditResult.passed) {
+    await fs.writeFile(
+      changedFilesPath,
+      generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource),
+      "utf-8",
+    );
+  }
 
   return auditResult;
 }
@@ -854,6 +863,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         workItemJsonPath,
         allowedWriteFilesSnapshot,
         fullDiff,
+        auditAlreadyExists,
       );
       if (refreshedAudit) result.changed_files_audit = refreshedAudit;
       result.filesystem_diff = summarizeFilesystemDiff(
@@ -870,6 +880,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       workItemJsonPath,
       allowedWriteFilesSnapshot,
       filesystemDiff,
+      auditAlreadyExists,
     );
     if (finalAuditRefresh) result.changed_files_audit = finalAuditRefresh;
 
