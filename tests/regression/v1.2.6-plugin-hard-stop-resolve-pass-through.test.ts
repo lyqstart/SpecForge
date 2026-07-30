@@ -17,7 +17,7 @@ describe('v1.2.6 plugin hard_stop recovery pass-through', () => {
     const body = source.slice(functionStart, functionEnd);
 
     const exemptionIndex = body.indexOf('sf_hard_stop_resolve');
-    const readRecordIndex = body.indexOf('readHardStopRecord(projectDir, argWorkItemId)');
+    const readRecordIndex = body.indexOf('readHardStopRecord(projectDir, relevantWorkItemId)');
 
     expect(exemptionIndex).toBeGreaterThanOrEqual(0);
     expect(readRecordIndex).toBeGreaterThanOrEqual(0);
@@ -34,7 +34,7 @@ describe('v1.2.6 plugin hard_stop recovery pass-through', () => {
     const functionEnd = source.indexOf('function assertCodePermissionEnableHasAllowedFiles', functionStart);
     const body = source.slice(functionStart, functionEnd);
 
-    expect(body).toContain('readHardStopRecord(projectDir, argWorkItemId)');
+    expect(body).toContain('readHardStopRecord(projectDir, relevantWorkItemId)');
     expect(body).toContain('Tool "${toolName}" is not allowed');
     expect(body).toContain('Only read/debug tools are permitted for that work item.');
   });

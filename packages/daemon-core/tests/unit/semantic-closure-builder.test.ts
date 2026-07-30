@@ -11,7 +11,7 @@ function baseInput() {
     workItem: { work_item_id: 'WI-9001', workflow_path: 'code_only_fast_path' },
     traceDeltaMd: '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1',
     verificationReportMd: '# Verification\nEvidence EV-1 passed.',
-    mergeReportMd: '# Merge\nMerge Status: not_applicable',
+    mergeReportMd: '# Merge\nStatus: not_applicable',
     evidenceManifest: {
       work_item_id: 'WI-9001',
       entries: [{ id: 'EV-1', status: 'passed', level: 'L5', type: 'behavioral_e2e' }],

@@ -60,7 +60,7 @@ async function createWorkItem(
     path.join(wiDir, 'verification_report.md'),
     renderVerificationReport(JSON.stringify(verificationPayload()))!
   );
-  await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nMerge Status: not_applicable');
+  await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
     JSON.stringify(

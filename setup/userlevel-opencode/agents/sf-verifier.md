@@ -224,24 +224,19 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 
 #### Step 2：执行后冒烟
 
-修改完成后，执行完整生命周期后再次快照：
+修改完成后，记录文件系统状态快照。Verifier 自身不得停止 daemon、运行 installer 或等待
+Plugin 初始化 —— 这些是 Orchestrator 或 ops 的职责。
 
 ```powershell
-# 1. 停止 daemon（如有）
-Stop-Process -Name bun -Force -ErrorAction SilentlyContinue
-
-# 2. 运行 installer reconcile（如涉及）
-bun scripts/sf-installer.ts install
-
-# 3. 等待 Plugin 初始化（模拟 OpenCode 启动）
-Start-Sleep -Seconds 60
-
-# 4. 再次快照
+# 仅记录当前文件系统状态（不停止 daemon、不运行 installer、不 sleep）
 Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue `
   | Select-Object FullName, LastWriteTime `
   | Sort-Object FullName `
   | Out-File -FilePath .tmp/fs-after.txt -Encoding utf8
 ```
+
+> ⚠️ 如果验证场景需要 daemon 重启或 installer reconcile，向 Orchestrator 报告
+> `blocked`，由 Orchestrator 决定是否调度 ops_task。Verifier 不得自行执行这些操作。
 
 #### Step 3：关键不变性断言
 

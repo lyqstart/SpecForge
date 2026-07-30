@@ -14,6 +14,10 @@ import * as path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
+import {
+  validateVerificationReportContract,
+  extractStructuredVerificationReport,
+} from '../lib/verification-report-contract';
 
 registerHandler('sf_v11_verification', async (args, context, _deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
@@ -48,18 +52,38 @@ registerHandler('sf_v11_verification', async (args, context, _deps) => {
     }
 
     if (action === 'validate_verification_report') {
-      const content = args['content'] as string;
-      if (!content) {
+      const content = (args['content'] as string) || '';
+      const reportContent = content || await (async () => {
         try {
-          const raw = await readFile(path.join(wiDir, 'verification_report.md'), 'utf-8');
-          const result = validateVerificationReport(raw);
-          return { success: true, action, ...result };
+          return await readFile(path.join(wiDir, 'verification_report.md'), 'utf-8');
         } catch {
-          return { success: false, error: 'verification_report.md not found and no content provided' };
+          return '';
         }
+      })();
+      if (!reportContent) {
+        return { success: false, error: 'verification_report.md not found and no content provided' };
       }
-      const result = validateVerificationReport(content);
-      return { success: true, action, ...result };
+      // Prefer canonical structured contract validation
+      const structured = extractStructuredVerificationReport(reportContent);
+      if (structured) {
+        const contractResult = validateVerificationReportContract(structured);
+        return {
+          success: true,
+          action,
+          validator: 'verification-report-contract/v1',
+          valid: contractResult.valid,
+          errors: contractResult.errors,
+          ...(contractResult.report ? { conclusion: contractResult.report.conclusion } : {}),
+        };
+      }
+      // Fallback to legacy validator for old Markdown-only reports
+      const result = validateVerificationReport(reportContent);
+      return {
+        success: true,
+        action,
+        validator: 'legacy-markdown-fallback',
+        ...result,
+      };
     }
 
     if (action === 'validate_evidence_manifest') {

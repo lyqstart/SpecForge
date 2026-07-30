@@ -243,7 +243,7 @@ describe('v1.1 Daemon/OpenCode Write Guard E2E', () => {
       writeFileSync(join(wiDir, 'changed_files_audit.json'), JSON.stringify({
         status: 'passed', actual_changed_files: ['src/app.ts'], violations: [],
       }));
-      writeFileSync(join(wiDir, 'merge_report.md'), '# Merge Report\n\n**Merge Status**: not_applicable\n');
+      writeFileSync(join(wiDir, 'merge_report.md'), '# Merge Report\n\nStatus: not_applicable\n');
 
       // Validate all evidence files exist (simulating CloseGate.validateFromFileSystem)
       const evidencePath = join(tempDir, `.specforge/work-items/${WI_ID}/evidence/evidence_manifest.json`);
@@ -335,7 +335,7 @@ describe('v1.1 Daemon/OpenCode Write Guard E2E', () => {
       writeFileSync(join(wiDir, 'trace_delta.md'), '# Trace Delta\nTrace Impact: none\n');
       writeFileSync(join(wiDir, 'verification_report.md'), '# Verification Report\n');
       writeFileSync(join(wiDir, 'evidence', 'evidence_manifest.json'), '{}');
-      writeFileSync(join(wiDir, 'merge_report.md'), '**Merge Status**: not_applicable\n');
+      writeFileSync(join(wiDir, 'merge_report.md'), 'Status: not_applicable\n');
 
       // Write audit with violations
       writeFileSync(join(wiDir, 'changed_files_audit.json'), JSON.stringify({
@@ -409,7 +409,7 @@ describe('v1.1 Daemon/OpenCode Write Guard E2E', () => {
       writeFileSync(join(wiDir, 'trace_delta.md'), '# Trace\nTrace Impact: none\n');
       writeFileSync(join(wiDir, 'verification_report.md'), '# Verification\n');
       writeFileSync(join(wiDir, 'evidence', 'evidence_manifest.json'), '{}');
-      writeFileSync(join(wiDir, 'merge_report.md'), '**Merge Status**: not_applicable\n');
+      writeFileSync(join(wiDir, 'merge_report.md'), 'Status: not_applicable\n');
       writeFileSync(join(wiDir, 'changed_files_audit.json'), JSON.stringify({
         status: 'failed',
         actual_changed_files: ['src/app.ts', 'node_modules/.package-lock.json'],

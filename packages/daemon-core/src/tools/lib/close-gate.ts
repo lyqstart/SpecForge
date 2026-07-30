@@ -333,7 +333,6 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
         ? ['investigation_plan.md', 'findings_report.md']
         : []),
     'candidate_manifest.json',
-    'gate_summary.md',
     'verification_report.md',
     'merge_report.md',
     'changed_files_audit.md',
@@ -659,14 +658,15 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
 
   try {
     const mr = await fs.readFile(path.join(ctx.workItemDir, 'merge_report.md'), 'utf-8');
-    const lower = mr.toLowerCase();
-    const validStatus =
-      lower.includes('success') || lower.includes('not_applicable') || lower.includes('merged');
+    const statusMatch = mr.match(/^Status:\s*(\S+)/im);
+    const mergeStatus = statusMatch ? statusMatch[1].toLowerCase() : '';
+    const validMergeStatus = mergeStatus === 'success' || mergeStatus === 'not_applicable';
     checks.push({
       check_id: 'close_merge_report_valid',
-      description: 'merge_report has valid status (§11)',
-      passed: validStatus,
-      severity: validStatus ? undefined : 'error',
+      description: 'merge_report has valid Status line (success or not_applicable) (§11)',
+      passed: validMergeStatus,
+      severity: validMergeStatus ? undefined : 'error',
+      details: `status=${mergeStatus || 'missing'}`,
     });
   } catch {
     // Covered by required files.
@@ -685,61 +685,56 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
-  try {
-    const gs = await fs.readFile(path.join(ctx.workItemDir, 'gate_summary.md'), 'utf-8');
-    const pmgSection = gs.match(/### post_merge_gate[\s\S]*?- Status: (\S+)/);
-    if (pmgSection) {
-      const status = pmgSection[1];
-      checks.push({
-        check_id: 'close_post_merge_gate',
-        description: 'post_merge_gate passed or not_applicable (§15.2)',
-        passed: status === 'passed' || status === 'not_applicable',
-        severity: status === 'passed' || status === 'not_applicable' ? undefined : 'error',
-      });
-    } else {
-      checks.push({
-        check_id: 'close_post_merge_gate',
-        description: 'post_merge_gate not present (assumed not_applicable)',
-        passed: true,
-      });
-    }
+  // Read post_merge_gate status from structured JSON report (not gate_summary.md)
+  const postMergeReport = await readJson<Record<string, unknown>>(
+    path.join(ctx.workItemDir, 'gates', 'post_merge_gate.json')
+  );
+  const pmgStatus = postMergeReport?.status;
+  const pmgPassed =
+    pmgStatus === 'passed' ||
+    pmgStatus === 'not_applicable' ||
+    pmgStatus === undefined ||
+    pmgStatus === null;
+  checks.push({
+    check_id: 'close_post_merge_gate',
+    description: 'post_merge_gate passed or not_applicable (§15.2)',
+    passed: pmgPassed,
+    severity: pmgPassed ? undefined : 'error',
+    details: `status=${String(pmgStatus ?? 'not_present')}`,
+  });
 
-    const blockingMatches = Array.from(gs.matchAll(/- Blocking Issues:\s*\n((?:\s+- .+\n?)*)/g));
-    const blockingIssues = blockingMatches.flatMap(match =>
-      String(match[1] ?? '')
-        .split(/\r?\n/)
-        .map(line => line.trim())
+  // Aggregate blocking issues from structured gates/*.json reports
+  const gateReports = await readGateReports(ctx.workItemDir);
+  const blockingIssues = gateReports
+    .filter(report => {
+      const gateId = String(report.gate_id ?? '');
+      return gateId !== 'close_gate' && gateId !== 'gate_summary_gate';
+    })
+    .filter(report => Array.isArray(report.blocking_issues))
+    .flatMap(report =>
+      (report.blocking_issues as unknown[])
+        .map(issue => String(issue ?? '').trim())
         .filter(Boolean)
     );
-    const closeOnlyFailedSummary =
-      gs.includes('### close_gate') &&
-      !gs.includes('### required_files_gate') &&
-      !gs.includes('### candidate_manifest_gate') &&
-      !gs.includes('### workflow_selection_gate');
-    const hasBlocking = blockingIssues.length > 0 && !closeOnlyFailedSummary;
-    checks.push({
-      check_id: 'close_no_blocking_issues',
-      description: closeOnlyFailedSummary
-        ? 'Ignoring stale close_gate-only Gate Summary from previous failed close attempt'
-        : 'No unresolved blocking issues (§15.2)',
-      passed: !hasBlocking,
-      severity: hasBlocking ? 'error' : undefined,
-    });
+  const hasBlocking = blockingIssues.length > 0;
+  checks.push({
+    check_id: 'close_no_blocking_issues',
+    description: 'No unresolved blocking issues from gates/*.json (§15.2)',
+    passed: !hasBlocking,
+    severity: hasBlocking ? 'error' : undefined,
+    details: hasBlocking ? `${blockingIssues.length} issue(s): ${blockingIssues.slice(0, 5).join('; ')}` : undefined,
+  });
 
-    const gateReports = await readGateReports(ctx.workItemDir);
-    const waiverAssessment = assessWaiverFollowUp(ud, gateReports);
-    checks.push({
-      check_id: 'close_waiver_follow_up',
-      description: waiverAssessment.waiverUsed
-        ? 'Waiver follow-up WI registered (§15.2)'
-        : 'No waivers requiring follow-up',
-      passed: waiverAssessment.passed,
-      severity: waiverAssessment.passed ? undefined : 'error',
-      details: waiverAssessment.details,
-    });
-  } catch {
-    // Covered by required files.
-  }
+  const waiverAssessment = assessWaiverFollowUp(ud, gateReports);
+  checks.push({
+    check_id: 'close_waiver_follow_up',
+    description: waiverAssessment.waiverUsed
+      ? 'Waiver follow-up WI registered (§15.2)'
+      : 'No waivers requiring follow-up',
+    passed: waiverAssessment.passed,
+    severity: waiverAssessment.passed ? undefined : 'error',
+    details: waiverAssessment.details,
+  });
 
   try {
     const extReqPath = path.join(ctx.workItemDir, 'extension_request.json');

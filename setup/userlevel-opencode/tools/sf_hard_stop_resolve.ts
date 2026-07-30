@@ -3,13 +3,15 @@ import { daemon } from "./lib/thin-client";
 
 export default tool({
   description:
-    "结构化恢复 Work Item HardStop。安全类阻断可由 Orchestrator 在不扩大权限的前提下自动改走合法路径；扩大权限、风险接受或用户授权重试仍必须引用真实用户原话。",
+    "结构化恢复 Work Item HardStop。Runtime 会按 work_item_id 定位唯一权威活跃 HardStop，hard_stop_id 仅用于可选的一致性保护；安全类阻断可由 Orchestrator 在不扩大权限的前提下自动改走合法路径；扩大权限、风险接受或用户授权重试仍必须引用真实用户原话。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID"),
     hard_stop_id: tool.schema
       .string()
       .optional()
-      .describe("可选：当前 hard_stop_id，用于防止误解除"),
+      .describe(
+        "可选：当前权威 hard_stop_id，用于防止误解除；省略时由 Runtime 按 work_item_id 定位活跃 HardStop",
+      ),
     resolution_type: tool.schema
       .enum([
         "operator_error",

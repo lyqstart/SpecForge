@@ -781,6 +781,7 @@ function persistHardStop(
   reason: string,
   sourceTool: string,
   args: Record<string, any> = {},
+  authoritativeRecord?: any,
 ): any | null {
   const resolvedWorkItemId = isValidWorkItemId(workItemId)
     ? workItemId
@@ -797,6 +798,12 @@ function persistHardStop(
   }
 
   try {
+    // The daemon owns the authoritative latch. OpenCode's after-hook observes
+    // the daemon result, so it must never replace an already-persisted latch
+    // with a second timestamp-derived ID.
+    const existing = readHardStopRecord(projectDir, resolvedWorkItemId);
+    if (existing) return existing;
+
     const wiDir = join(
       projectDir,
       ".specforge",
@@ -804,17 +811,30 @@ function persistHardStop(
       resolvedWorkItemId,
     );
     mkdirSync(wiDir, { recursive: true });
-    const record = {
-      schema_version: "1.2",
-      hard_stop_id: `HS-${Date.now()}`,
-      scope: "work_item",
-      work_item_id: resolvedWorkItemId,
-      blocked: true,
-      reason,
-      source_tool: sourceTool,
-      created_at: new Date().toISOString(),
-      resolved: false,
-    };
+    const returnedRecordIsAuthoritative =
+      authoritativeRecord?.blocked === true &&
+      authoritativeRecord?.work_item_id === resolvedWorkItemId &&
+      typeof authoritativeRecord?.hard_stop_id === "string" &&
+      authoritativeRecord.hard_stop_id.trim().length > 0;
+    const record = returnedRecordIsAuthoritative
+      ? {
+          ...authoritativeRecord,
+          scope: "work_item",
+          work_item_id: resolvedWorkItemId,
+          blocked: true,
+          resolved: false,
+        }
+      : {
+          schema_version: "1.2",
+          hard_stop_id: `HS-${Date.now()}`,
+          scope: "work_item",
+          work_item_id: resolvedWorkItemId,
+          blocked: true,
+          reason,
+          source_tool: sourceTool,
+          created_at: new Date().toISOString(),
+          resolved: false,
+        };
     writeFileSync(
       join(wiDir, "hard_stop.json"),
       JSON.stringify(record, null, 2) + "\n",
@@ -846,6 +866,7 @@ function maybePersistHardStopFromGuardResult(
     result.error ?? result.reason ?? "HARD_STOP_FROM_GUARD",
     toolName,
     args,
+    result.hard_stop_record,
   );
 }
 
@@ -1253,6 +1274,7 @@ async function afterToolExecute(projectDir: string, input: any, output: any) {
         toolOutput.error ?? toolOutput.reason ?? "HARD_STOP_FROM_TOOL",
         toolName,
         args,
+        toolOutput.hard_stop_record,
       );
     }
   }

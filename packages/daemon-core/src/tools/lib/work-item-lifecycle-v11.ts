@@ -148,7 +148,7 @@ export async function initializeClosureFiles(
   await ensureFile(path.join(workItemDir, 'merge_report.md'), [
     '# Merge Report', '',
     `Work Item: ${workItemId}`,
-    `Merge Status: ${mergeStatus}`, '',
+    `Status: ${mergeStatus}`, '',
     isCodeOnly ? 'Reason: This WI does not change project specs (code_only_fast_path).' : '',
     isTaskChange ? 'Reason: This WI does not change formal specs (task_change_path).' : '',
     '',

@@ -743,13 +743,19 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     const mergePath = path.join(workItemDir, "merge_report.md");
     try {
       const mergeReport = await fs.readFile(mergePath, "utf-8");
-      if (
-        workItem.workflow_path === "code_only_fast_path" &&
-        !mergeReport.toLowerCase().includes("not_applicable")
-      ) {
+      const statusMatch = mergeReport.match(/^Status:\s*(\S+)/im);
+      const mergeStatus = statusMatch ? statusMatch[1].toLowerCase() : "";
+      const validMergeStatus = mergeStatus === "success" || mergeStatus === "not_applicable";
+      if (!validMergeStatus) {
         return {
           ...result,
-          error: "code_only_fast_path requires merge_report.status = not_applicable",
+          error: `merge_report.md must have a valid Status line (success or not_applicable); got: "${mergeStatus || "missing"}"`,
+        };
+      }
+      if (workItem.workflow_path === "code_only_fast_path" && mergeStatus !== "not_applicable") {
+        return {
+          ...result,
+          error: "code_only_fast_path requires merge_report Status = not_applicable",
         };
       }
     } catch {

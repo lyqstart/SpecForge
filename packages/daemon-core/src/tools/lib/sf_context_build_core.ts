@@ -20,6 +20,20 @@ import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import type { GraphNode } from "./sf_knowledge_graph_core"
 import { resolveSystemGovernanceRequirement } from "./sf_design_governance_policy"
 
+/**
+ * Thrown when sf_context_build cannot collect any governance context fragments.
+ * This is a fail-closed behavior: an empty context means the consuming agent
+ * has no governance constraints, which is unsafe for task execution.
+ */
+export class ContextBuildError extends Error {
+  readonly code: string
+  constructor(code: string, message: string) {
+    super(message)
+    this.name = "ContextBuildError"
+    this.code = code
+  }
+}
+
 // ============================================================
 // Types
 // ============================================================
@@ -51,6 +65,8 @@ export interface TaskContext {
   context: string
   sources: Array<{ type: string; id: string }>
   estimated_tokens: number
+  context_id: string
+  context_sha256: string
 }
 
 export interface CapabilityRecommendation {
@@ -64,7 +80,7 @@ export interface CapabilityRecommendation {
 }
 
 export interface ContextBuildResult {
-  task_context: TaskContext
+  task_context?: TaskContext
   capabilities?: CapabilityRecommendation
 }
 
@@ -1066,7 +1082,12 @@ export async function buildTaskContext(
   }
 
   if (allFragments.length === 0) {
-    return { context: "", sources: [], estimated_tokens: 0 }
+    throw new ContextBuildError(
+      "CONTEXT_INCOMPLETE",
+      "No governance context fragments were collected from any data source. " +
+        "The Work Item may be missing trigger_result.json, governance_scope.json, " +
+        "or candidate_manifest.json. Cannot build task context without governance constraints.",
+    )
   }
 
   // Collect sources
@@ -1131,10 +1152,17 @@ export async function buildTaskContext(
   const trimmedContext = context.trim()
   const estimatedTokens = Math.ceil(trimmedContext.length / 3)
 
+  // Generate deterministic context identity for executor binding
+  const { createHash } = await import("node:crypto")
+  const contextHash = createHash("sha256").update(trimmedContext).digest("hex")
+  const contextId = "CTX-" + contextHash.substring(0, 16)
+
   return {
     context: trimmedContext,
     sources,
     estimated_tokens: estimatedTokens,
+    context_id: contextId,
+    context_sha256: contextHash,
   }
   } catch (err) {
     await logErrorToFile(baseDir, "sf_context_build_core", "buildTaskContext", err)
@@ -1316,7 +1344,13 @@ export async function buildContext(
     dataSources.push(new PhaseContextSource(baseDir))
   }
 
-  const taskContext = await buildTaskContext(params, dataSources, baseDir)
+  let taskContext: TaskContext | undefined
+  try {
+    taskContext = await buildTaskContext(params, dataSources, baseDir)
+  } catch (err) {
+    if (!(err instanceof ContextBuildError)) throw err
+    // Context is incomplete; fall through to still build capabilities when requested
+  }
 
   let capabilities: CapabilityRecommendation | undefined
   if (includeCapabilities) {
@@ -1325,6 +1359,16 @@ export async function buildContext(
     if (capabilities.recommended_fragments.length === 0) {
       capabilities = undefined
     }
+  }
+
+  // Fail-closed: incomplete context with no capabilities to return
+  if (!taskContext && !capabilities) {
+    throw new ContextBuildError(
+      "CONTEXT_INCOMPLETE",
+      "No governance context fragments were collected from any data source. " +
+        "The Work Item may be missing trigger_result.json, governance_scope.json, " +
+        "or candidate_manifest.json. Cannot build task context without governance constraints.",
+    )
   }
 
   return {

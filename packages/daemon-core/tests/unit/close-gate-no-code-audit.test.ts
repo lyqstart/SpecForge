@@ -151,7 +151,7 @@ async function createCloseReadyNoCodeWorkItem(
   );
   await fs.writeFile(
     path.join(wiDir, 'merge_report.md'),
-    '# Merge Report\n\nMerge Status: not_applicable'
+    '# Merge Report\n\nStatus: not_applicable'
   );
   await fs.writeFile(
     path.join(wiDir, 'changed_files_audit.md'),

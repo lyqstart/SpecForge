@@ -143,6 +143,47 @@ describe('Recoverable HardStop protocol', () => {
     expect(resolution.original_hard_stop.blocked_step).toBe('collect runtime evidence');
   });
 
+  it('locates the authoritative active latch by work_item_id when hard_stop_id is omitted', async () => {
+    const record = setHardStop(
+      projectRoot,
+      workItemId,
+      'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN',
+      'sf_safe_bash',
+      'work_item',
+      {
+        blocked_action: 'shell read of protected governance runtime',
+        blocked_target: '.specforge/logs/trace.jsonl',
+        last_successful_step: 'verification commands passed',
+        resume_step: 'collect evidence with controlled read',
+        retry_original_action: false,
+        safe_alternative_tool: 'read/glob/grep',
+      }
+    );
+
+    const handler = getHandler('sf_hard_stop_resolve');
+    const result = (await handler!(
+      {
+        work_item_id: workItemId,
+        resolution_type: 'operator_error',
+        reason: 'The shell tool was incorrect for a protected governance read.',
+        evidence: ['hard_stop.json identifies the active latch for this Work Item'],
+        blocked_action_disposition: 'abandon',
+        allowed_next_action: 'use controlled read tools',
+        last_successful_step: 'verification commands passed',
+        resume_from_step: 'collect evidence with controlled read',
+        retry_original_action: false,
+        safe_alternative_tool: 'read/glob/grep',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(result.success).toBe(true);
+    expect(result.hard_stop_id).toBe(record.hard_stop_id);
+    expect(result.cleared).toBe(true);
+    expect(checkHardStop(projectRoot, workItemId).blocked).toBe(false);
+  });
+
   it('rejects unsafe or incomplete operator-error recovery plans', async () => {
     const handler = getHandler('sf_hard_stop_resolve');
     expect(handler).toBeDefined();

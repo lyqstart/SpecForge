@@ -96,7 +96,7 @@ async function createFullWorkItem(
   if (!skip.has('merge_report.md'))
     await fs.writeFile(
       path.join(wiDir, 'merge_report.md'),
-      '# Merge Report\n\nMerge Status: not_applicable\ncode_only_fast_path — no spec merge required.',
+      '# Merge Report\n\nStatus: not_applicable\ncode_only_fast_path — no spec merge required.',
     );
   if (!skip.has('changed_files_audit.md'))
     await fs.writeFile(
