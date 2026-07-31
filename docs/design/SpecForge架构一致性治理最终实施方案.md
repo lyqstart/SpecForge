@@ -2,13 +2,333 @@
 
 - **状态**：Accepted / Implementation in Progress
 - **决策记录**：[`ADR-007-architecture-consistency-governance.md`](../adr/ADR-007-architecture-consistency-governance.md)、[`ADR-008-new-project-governance-bootstrap.md`](../adr/ADR-008-new-project-governance-bootstrap.md)
-- **权威性**：本文件是 SpecForge 架构一致性治理的现行目标设计与实施路线图。
+- **权威性**：本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。
 - **取代**：`docs/archive/SpecForge治理架构完整修改方案-已取代.md`
 - **审计日期**：2026-07-27
 - **当前验证证据**：架构一致性治理主体定向测试 9 个测试文件、82 个测试通过；提交 `1904d72` 的新项目自举定向测试 5 个测试文件、18 个测试通过；deterministic workspace build 与 `git diff --check` 通过。
 - **上线边界**：兼容模式先落地；Phase 11 必须完成真实全新项目在 OpenCode + SpecForge 中的首次治理自举端到端验证，随后 Phase 12 才能启用最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
 
 > 本文件描述目标架构、实施顺序和验收标准；测试通过只证明当前已覆盖实现没有破坏所列定向回归，不等同于 Phase 11/12 已完成。
+
+> 状态：AUTHORITATIVE（唯一当前权威源）
+>
+> 本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。
+> 其他设计草案、专项说明、实施报告、交接文件和决策记录，只保存历史背景、实施证据或决策原因，不得作为并列设计权威。
+> 任何其他文件与本文件冲突时，以本文件为准。任何新的架构或契约决策，必须先修订本文件，再修改实现。
+
+<!-- SPECFORGE_AUTHORITY_PROTOCOL:START -->
+## 〇、权威边界、开发模式与固定执行协议
+
+### 0.1 唯一权威源
+
+**GOV-AUTH-001：** SpecForge 架构一致性治理和契约治理只保留一个当前权威源：
+
+```text
+docs/design/SpecForge架构一致性治理最终实施方案.md
+```
+
+以下文件均为非权威历史或专项资料：
+
+```text
+docs/design/semantic-closure-contract-governance.md
+docs/design/contract-model-followups-implementation-report.md
+docs/design/contract-model-followups-handoff.md
+docs/design/specforge-design-governance-contract-model.md
+```
+
+它们可以记录专项细节、实施事实、交接事项、备选方案和决策原因，但不能覆盖本文件。
+
+架构或契约决策可以通过多个 ADR 或专题文件记录原因，但决策文件必须：
+
+1. 引用本文件中的稳定规则 ID；
+2. 说明决策日期、备选方案、选择原因和影响范围；
+3. 说明替代了哪些旧规则；
+4. 不复制形成第二套当前规则；
+5. 最终把有效结论同步回本文件。
+
+### 0.2 两种开发模式
+
+#### 模式 A：SpecForge 自身开发
+
+**GOV-MODE-001：** SpecForge 自身修改必须遵守本文件的架构一致性与契约治理要求。
+
+**GOV-SELF-001：** SpecForge 自身由 ChatGPT 或其他直接开发工具修改，不运行 SpecForge 自己的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程，不采用“SpecForge 使用 SpecForge 治理自己”的自治理模式。
+
+模式 A 必须执行：
+
+```text
+人工架构一致性治理
++ 契约治理
++ 修改范围治理
++ 普通软件工程验证
+```
+
+#### 模式 B：使用 SpecForge 开发其他项目
+
+其他项目必须完整执行 SpecForge 程序性治理：
+
+```text
+Work Item
+→ Impact Analysis
+→ Architecture / Data Model / Module Design / Contract
+→ Candidate
+→ Gate
+→ User Decision
+→ Merge
+→ Code Permission
+→ OpenCode Implementation
+→ Actual Scope Audit
+→ Verification
+→ Close
+```
+
+OpenCode、Agent、Runtime、Gate 和 Write Guard 必须强制遵守本文件定义的架构一致性原则。
+
+### 0.3 新会话的远程权威入口
+
+**GOV-REMOTE-001：** ChatGPT 不依赖跨会话记忆，也不把仓库根目录 `AGENTS.md` 当作当然入口。每次新的 SpecForge 自身开发会话，用户必须在提示词中明确要求 ChatGPT 从 GitHub 远程仓库读取本文件。
+
+开始工作前必须记录：
+
+```text
+Repository URL
+Remote branch
+Remote HEAD commit SHA
+Authority file path
+Authority file所在 commit SHA
+Local branch（如使用本地证据）
+Local HEAD（如使用本地证据）
+Working tree status（如使用本地证据）
+```
+
+远程文件、本地文件或用户上传副本不一致时，必须先报告差异并确定本次基线，禁止混用不同版本规则。
+
+### 0.4 SpecForge 自身开发：修改前治理
+
+**GOV-PRE-001：** 修改任何代码前，必须完成源码取证和治理前置结论。治理前置结论至少包含：
+
+```text
+任务目标：
+当前事实和一手证据：
+适用架构规则 ID：
+受影响模块：
+受影响 Project Architecture：
+受影响 Project Data Model：
+受影响 Module Design：
+受影响 Project Contract：
+受影响 Module Contract：
+受影响生产者和消费者：
+受影响 Workflow / Gate / Runtime：
+允许修改文件：
+明确不允许修改范围：
+需要新增或修改的测试：
+是否需要修订本权威文件：
+证据不足项：
+```
+
+以下任一项未完成时，不得修改代码：
+
+```text
+未读取远程权威文件
+未固定远程 commit SHA
+未调查当前源码事实
+未判断架构影响
+未判断契约影响
+未确定生产者和消费者
+未确定修改范围
+未确定验证计划
+```
+
+### 0.5 架构变化必须在同一任务/WI闭环
+
+**ARCH-WI-001：** 一个需求或任务引起架构变化时，必须在同一个任务范围内完成 Architecture、Data Model、Module Design、Contract、Task、实现和验证的同步修改。
+
+对于使用 SpecForge 开发其他项目的模式 B：
+
+```text
+同一个 WI 内扩大治理范围
+→ Architecture Candidate
+→ Data Model Candidate（需要时）
+→ Module Design Candidate
+→ Contract Candidate（需要时）
+→ Task
+→ 一次审批
+→ 一次原子 Spec Merge
+→ Implementation
+→ Verification
+```
+
+不为同一个需求另建独立架构 WI。旧文件中“新建架构 WI，并依赖跨 WI 自动恢复原 WI”的要求已经废止。
+
+### 0.6 两级契约模型
+
+**GOV-CONTRACT-001：** 契约治理是架构一致性治理的必需组成部分。任何修改都必须完成契约分类、所有权、来源、消费者、兼容性、执行方式和回归验证检查。
+
+**CON-MODEL-001：** 契约采用两级模型：
+
+```text
+Project / Public Contract
+→ .specforge/project/extension_registry.json
+
+Module / Internal Contract
+→ .specforge/project/modules/<MODULE>/contracts.json
+```
+
+**CON-PROJ-001：** 跨 Module 或全项目共同依赖、必须由机器强制的规则属于 Project / Public Contract，存放于 `.specforge/project/extension_registry.json`。
+
+**CON-MOD-001：** 只被同一个 Module 内部共同依赖、需要机器强制的规则属于 Module / Internal Contract，存放于 `.specforge/project/modules/<MODULE>/contracts.json`。
+
+旧设计中把全部契约统一存放在 `extension_registry.json` 的要求已经废止。
+
+固定边界：
+
+```text
+所有消费者属于同一个 Module
+→ Module Contract
+
+出现其他 Module 消费者
+→ 必须升级为 Project Contract
+
+其他 Module 直接引用 Module Contract
+→ BLOCK
+```
+
+**CON-PROM-001：** Module Contract 一旦出现其他 Module 消费者，必须在同一个 WI 内升级为 Project Contract，并同步更新受影响设计、消费者、Trace、验证和迁移内容；禁止其他 Module 直接消费 Internal Contract。
+
+每次修改必须检查：
+
+1. **CON-OWN-001：** 每条契约必须有明确 owner；历史名称 `CON-OWNER-001` 视为本规则的别名，不再新增引用；
+2. **CON-REF-001：** 每条契约必须有可验证的 `source_refs`；Project Contract 来源于 ARCH/DATA，Module Contract 来源于 DD；历史名称 `CON-SOURCE-001` 视为本规则的别名，不再新增引用；
+3. **CON-CONS-001：** 全部生产者和消费者必须识别完整；
+4. **CON-COMPAT-001：** 必须判断变更属于兼容新增、兼容修改、破坏性修改、废弃还是迁移，并明确消费者处理方式；
+5. **CON-PROM-001：** 必须检查 Module Contract 是否产生跨模块消费者，并执行升级或阻断；
+6. **CON-ENFORCE-001：** 必须明确由哪个 Gate、Verifier、类型检查、静态分析或 Runtime 机制执行；
+7. **CON-TEST-001：** 必须具备合法、非法、兼容、悬空引用、删除和跨模块边界回归测试；
+8. **CON-REVIEW-001：** 机器无法确定执行的规则必须明确标记为“人工审查契约”。
+
+只有文字说明、没有确定执行机制的规则，不得声称已经机器强制。
+
+### 0.7 实施过程中的范围冻结
+
+**GOV-SCOPE-001：** 实施过程中必须：
+
+```text
+只修改前置结论批准的范围
+不临时扩大任务目标
+不绕过现有架构
+不自行发明跨模块契约
+不为通过测试而削弱正式规则
+不把测试兼容逻辑误写成生产规则
+```
+
+发现新的架构、契约、模块、消费者或文件影响时，必须停止扩大修改，重新执行治理前置分析并更新允许范围。
+
+### 0.8 修改后治理闭环
+
+**GOV-POST-001：** 修改完成后必须逐项验证：
+
+```text
+实际修改文件是否超出批准范围
+是否符合 Project Architecture
+是否符合 Project Data Model
+是否符合 Module Design
+是否破坏 Project Contract
+是否破坏 Module Contract
+是否遗漏生产者或消费者
+是否破坏 Workflow / Gate / Runtime 状态边界
+权威文件是否需要同步且已经同步
+```
+
+同时执行所有适用的普通软件工程验证：
+
+```text
+单元测试
+属性测试（适用时）
+集成测试（适用时）
+端到端测试（适用时）
+回归测试
+TypeScript no-emit 检查
+相关 package 构建
+全仓确定性构建（达到集成或发布边界时）
+git diff --check
+git status --short
+```
+
+工程验证不是治理的全部内容。完整闭环是：
+
+```text
+架构一致性
++ 契约一致性
++ 实际范围审计
++ 功能与工程验证
++ 唯一权威文件同步
+```
+
+最终报告必须包含：
+
+```text
+实际修改：
+架构一致性结论：
+契约一致性结论：
+实际范围审计：
+测试结果：
+构建和类型检查结果：
+git diff/status 结果：
+权威文件同步情况：
+仍未解决的问题：
+证据不足项：
+```
+
+### 0.9 Fail Closed 与“完全做到”的保证机制
+
+**GOV-EVID-001：** 任何必需事实、验证或契约证据不足时，必须标记 `INSUFFICIENT_EVIDENCE`，不得猜测、提交、推送或宣布完成。
+
+出现以下任一情况，不得进入完成边界：
+
+```text
+架构未对账
+契约未对账
+实际范围未核对
+生产者或消费者未查全
+必需测试未完成或失败
+必需构建或类型检查未完成或失败
+应更新权威文件但尚未更新
+存在未解决治理缺陷
+存在 INSUFFICIENT_EVIDENCE
+```
+
+“每次完全做到”不依赖模型记忆，而由四个机制共同保证：
+
+```text
+用户提示词强制读取远程权威文件
++ 远程 commit SHA 固定本次规则版本
++ 修改前/修改后固定输出结构
++ Fail Closed 完成条件
+```
+
+如未来增加结构性回归测试，该测试只能检查本文件的唯一权威声明、必要章节、规则 ID 和旧文件非权威声明是否仍然存在；它属于普通仓库回归测试，不是 SpecForge 自治理流程。
+
+### 0.10 新会话固定提示词
+
+每次新会话至少使用以下提示词：
+
+```text
+继续 SpecForge 自身开发。
+
+在采取任何修改行动前，必须先从 GitHub 远程仓库读取：
+docs/design/SpecForge架构一致性治理最终实施方案.md
+
+该文件是 SpecForge 架构一致性治理和契约治理的唯一当前权威源。请记录远程仓库、分支、HEAD commit SHA 和该文件对应版本，并严格执行文件中的固定执行协议。
+
+本次是 SpecForge 自身直接开发：必须执行人工架构一致性治理、契约治理、修改范围治理和普通软件工程验证；不得运行 SpecForge 自身的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程。
+
+先调查远程仓库和当前代码事实，再输出治理前置结论。治理前置结论必须至少包括：任务目标、适用架构规则、受影响模块、Architecture、Data Model、Module Design、Project/Module Contract、生产者和消费者、Workflow/Gate/Runtime、允许修改文件、不允许修改范围、验证计划、是否需要修订权威文件和证据不足项。
+
+治理前置结论完成前不得修改代码。修改后必须完成架构对账、契约对账、实际范围审计、单元/回归测试、适用的属性/集成/端到端测试、TypeScript 检查、构建、git diff --check、git status，并同步唯一权威文件。任何必需证据不足时标记 INSUFFICIENT_EVIDENCE，不得猜测、提交、推送或宣布完成。
+```
+
+用户在上述固定提示词后追加本次具体任务、仓库地址、目标分支和已知基线。
+<!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 
 ---
 
@@ -272,6 +592,8 @@ DATA-*
 
 ## 5. Module Contract
 
+> 权威说明：旧文件中将所有契约统一存放于 `extension_registry.json` 的方案已被替代。当前必须采用 Project / Public Contract 与 Module / Internal Contract 两级模型。
+
 新增：
 
 ```text
@@ -448,6 +770,8 @@ Requirement
 ---
 
 # 七、第一次开发项目时怎么做
+
+> 权威说明：架构变化必须在同一个 WI 内扩大治理范围并闭环，不为同一需求另建独立架构 WI。
 
 不存在额外的 Project Spec Readiness Gate。
 

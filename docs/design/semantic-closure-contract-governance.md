@@ -1,11 +1,18 @@
 # Semantic Closure 生产者—消费者契约治理
 
+<!-- SPECFORGE_NON_AUTHORITY_NOTICE_1:START -->
+> 文档状态：SUBORDINATE SPECIALIZED DESIGN（非权威专项设计）
+>
+> 本文件只展开 Semantic Closure 专项设计，不是 SpecForge 架构一致性治理的并列权威源。
+> 当前有效的总体架构、契约模型、开发模式和治理流程，以
+> `docs/design/SpecForge架构一致性治理最终实施方案.md` 为唯一权威。
+> 本文件与该权威文件冲突时，以权威文件为准；本文件中的历史实现描述不得反向覆盖当前架构。
+<!-- SPECFORGE_NON_AUTHORITY_NOTICE_1:END -->
+
 > 日期：2026-07-25
 > 事件：fj1 / WI-0006 在 `verification_done` 后反复进入 `insufficient_artifacts`
 > 契约 ID：`semantic-closure/v1`
-
 ## 1. 已确认事实
-
 1. 旧 `sf_semantic_closure_run` 只能从 verification report fenced JSON、Evidence
    Manifest sections 或显式 Trace chain 构建闭包；它不读取 Knowledge Graph。
 2. OpenCode Tool 描述没有公开上述完整输入格式。
@@ -18,11 +25,9 @@
    没有输入 hash 失效机制。
 7. 部署 Agent 文档还引用了仓库中不存在的 Evidence 专用写入/查询工具，与实际
    `sf_artifact_write(file_type="evidence_manifest")` 路径冲突。
-
 因此，Semantic Closure validator 的失败关闭行为正确；首次偏离发生在上游
 Contract / Agent / Workflow Skill / Artifact Writer / Verification Gate 的契约漂移。
 能力判定为 `CONTRACT_CONFLICT + PARTIALLY_SUPPORTED`。
-
 ## 2. 治理目标
 
 ```text
@@ -38,7 +43,6 @@ Contract / Agent / Workflow Skill / Artifact Writer / Verification Gate 的契�
 Markdown 装饰和 Agent 猜测。
 
 ## 3. 权威合同
-
 ### 3.1 所有权
 
 - `sf-verifier` 拥有 `verification_report`、`evidence_manifest` 和返回的
@@ -49,7 +53,6 @@ Markdown 装饰和 Agent 猜测。
   `semantic_closure` 原样传给专用 Tool。
 - `.semantic_closure.json` 和 `semantic_closure_report.md` 只能由
   `sf_semantic_closure_run` 生成。
-
 ### 3.2 Typed Tool 输入
 
 首选调用：
@@ -74,7 +77,6 @@ project_integration
 
 Investigation 使用同一 Tool 的 investigation profile。`contract_change` 由其专属
 registry/merge 契约关闭，不强行伪造通用 OUT/REQ/DD/TASK 链。
-
 ### 3.3 兼容入口
 
 为恢复旧 Work Item，Builder 继续接受：
@@ -85,7 +87,6 @@ registry/merge 契约关闭，不强行伪造通用 OUT/REQ/DD/TASK 链。
 
 这些是迁移兼容入口，不再是要求 Agent 猜测的首选协议。Knowledge Graph 明确不在
 数据源集合中。
-
 ## 4. 强制执行顺序
 
 ```text
@@ -102,7 +103,6 @@ changed_files_audit passed
 ```
 
 Verification Gate 负责：
-
 1. 解析机器可读 Verification Contract；
 2. 要求 conclusion=pass；
 3. 要求测试已执行或明确 not_applicable；
@@ -113,7 +113,6 @@ Verification Gate 负责：
 8. 要求 Semantic Closure 有效；
 9. 对账 closure evidence 与 Evidence Manifest 的 status、level、type、supports；
 10. 校验 closure provenance。
-
 ## 5. 陈旧性与恢复
 
 闭包生成时记录以下输入的 SHA-256：
@@ -134,7 +133,6 @@ Gate 失败并要求重建。
 元数据，Verification Gate 推进状态、Close Gate 撤权都会合法修改这些字段；把它整体
 绑定到闭包会导致正常流程自我失效。Work Item ID 已由 typed closure 和 Tool 调用上下文
 校验，生命周期状态由 StateManager 独立负责。
-
 `verification_done` 后，Artifact Writer 冻结 verification report / Evidence；
 Semantic Closure Tool 拒绝 force 重建。合法恢复为：
 
@@ -147,7 +145,6 @@ verification_done
 ```
 
 该路径保留旧失败与 Gate 证据，不创建重复 Work Item，也不允许手改 `.specforge`。
-
 ## 6. 部署一致性
 
 改动必须同步：

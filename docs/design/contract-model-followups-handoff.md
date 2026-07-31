@@ -1,5 +1,13 @@
 # 契约治理 — 未完成事项接手文档（Handoff）
 
+<!-- SPECFORGE_NON_AUTHORITY_NOTICE_3:START -->
+> 文档状态：SUPERSEDED HISTORICAL HANDOFF（已被替代的历史交接文件）
+>
+> 本文件只表示特定时间点的待办和交接背景，不再作为当前开发要求或设计权威。
+> 已完成、取消或被后续决策替代的事项不得继续从本文件恢复为要求。
+> 当前有效规则以 `docs/design/SpecForge架构一致性治理最终实施方案.md` 为唯一权威。
+<!-- SPECFORGE_NON_AUTHORITY_NOTICE_3:END -->
+
 > 生成日期: 2026-07-24
 > 面向: 接手这些工作的工程师（无需读原始对话即可理解）
 > 关联主文档: `docs/design/specforge-design-governance-contract-model.md`（契约模型设计 + 已完成部分的验证记录 + 变更审计索引）
@@ -9,7 +17,6 @@
 > `docs/design/semantic-closure-contract-governance.md`
 
 ## 0. 背景（一页读懂）
-
 SpecForge 是一个用"工作流 + 门禁（gate）+ 受治理写入"来约束 AI 改代码的系统。本轮做了一个**跨模块契约模型**：把"共享枚举 / 不变量 / 公共接口 / 扩展点"登记进项目真相源 `.specforge/project/extension_registry.json` 的 `contracts` 块，并用确定性门禁强制设计/代码引用这些登记过的契约（不许 agent 自编）。
 
 **已完成并验证闭环**（详见主文档）：
@@ -46,7 +53,6 @@ SpecForge 是一个用"工作流 + 门禁（gate）+ 受治理写入"来约束 A
 3. 有悬空引用（引用了被删的 id/取值）→ 失败；要求消费方对齐纳入同一受治理变更或显式分阶段迁移，才收口。
 
 复用点：契约读取用 `packages/daemon-core/src/tools/lib/contracts-registry.ts`（`findSharedEnum` / `isRegisteredEnumValue` / `getEnumOwner`）。门禁注册用 `gate-runner-v11.ts` 的 `registerGate` 模式，产出报告用 `makeReport`。
-
 **关键风险（必须先解决，否则复制 WI-0001 死锁）**
 - **死锁风险 1**：把它做成新的 *required* gate 后，`sf-v11-gate-run.ts` 里的 `candidateGateSetCoversRequiredGates` / `autoAdvance*` 会检查"所有 required gate 是否产出报告"。若新 gate 没被正确纳入 `required-gates.ts` 的 `getRequiredGates()`，会因"缺 required gate"卡住状态自动推进。改 required 集合务必同步这三处：`required-gates.ts`、各 `configs/workflows/builtin/*.json` 的 gate 组合、`sf-v11-gate-run.ts` 覆盖判定。
 - **死锁风险 2（brownfield）**：存量项目大量既有引用可能本就"悬空"（从未登记）。若上线即对存量一刀切硬拦，等于把所有历史债务变成阻断。**必须**：只对本次变更 delta 强制、存量违规基线豁免（grandfather），空注册表/未登记区域 skip（参照 `spec_consistency_gate` 的 brownfield-skip 与主文档 §6）。
@@ -195,7 +201,6 @@ Step 2 中 tasks 门禁对 `tasks.md` 的 `verification_commands` 报了 2 个**
 - 低风险。验收：新生成的 tasks.md 不再触发该 warning，或门禁明确接受新旧两种格式。
 
 ---
-
 ## 8. `contract_gap` 实现期闭环 — 活体演示（低优先级）
 
 **问题**
@@ -210,7 +215,6 @@ Step 2 中 tasks 门禁对 `tasks.md` 的 `verification_commands` 报了 2 个**
 
 **解决办法（演示步骤）**
 驱动一条 `feature_spec` WI 到 `implementation_running`：任务需要一个**未登记**的新枚举（如 `DeviceLinkState`）→ 观察 executor 报 `blocked(contract_gap)` → 用 `sf_contract_register` 登记（或既有 owner 模块走治理）→ resume 回 `implementation_running` → 用权威值实现。契约引用/blocker 语义定义见 `setup/userlevel-opencode/agents/sf-executor.md`（搜 `contract_gap`）。
-
 **风险 / 验收**
 - 成本高（要跑完整 feature_spec 到实现态）、依赖 agent 当场表现；价值主要是"信心演示"，机械正确性已由上面几条兜住。可最后做。
 - 验收：一次真实 WI 里出现 `blocked(contract_gap)` → 登记 → resume → 实现用权威值的完整时间线（`.specforge/runtime/events.jsonl` 可查）。
@@ -225,7 +229,7 @@ Step 2 中 tasks 门禁对 `tasks.md` 的 `verification_commands` 报了 2 个**
 4. **同步四处一致**：core 源码 + dist（服务器 pull 后 rebuild）+ 用户级 wrapper（`bun scripts/sf-installer.ts upgrade --force` + `verify`）+ 相关测试。
 5. **改 required gate 集合**要同步：`required-gates.ts`、`configs/workflows/builtin/*.json`、`sf-v11-gate-run.ts` 的覆盖/自动推进判定——否则会卡死状态推进。
 6. **两套状态机/运行时**：daemon 权威是 daemon-core 的 `state_machine.ts` + `WorkflowEngine`；`workflow-runtime/v11/runtime/**` 已 `@deprecated`，别当权威。
-7. 部署：源码改在 Windows（`d:\code\temp\SpecForge`），远程 Linux 服务器 svr3 部署（`git pull` + `bun run build` + tmux 重启 daemon；用户级改动另需 installer upgrade + verify）。单一维护者，不走 PR。
+7. 部署：源码改在 Windows（`d:\code	emp\SpecForge`），远程 Linux 服务器 svr3 部署（`git pull` + `bun run build` + tmux 重启 daemon；用户级改动另需 installer upgrade + verify）。单一维护者，不走 PR。
 
 ## 10. 优先级建议
 1)（可用性痛点，纯增量、风险可控）第 3 条 轻量车道 → 2) 第 1 条 完整性 gate（先定 brownfield 策略）→ 3) 第 6/7 条 小修 → 4) 第 2 条 AST（分语言多切片）→ 5) 第 4/5 条 债务清理 → 6) 第 8 条 活体演示。

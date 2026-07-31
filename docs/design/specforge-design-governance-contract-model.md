@@ -1,5 +1,20 @@
 # SpecForge 设计治理能力强化 — 契约模型与落地方案
 
+<!-- SPECFORGE_NON_AUTHORITY_NOTICE_4:START -->
+> 文档状态：SUPERSEDED DRAFT（已被替代的历史草案）
+>
+> 本文件不再作为当前实现依据。以下旧设想已被后续决策替代：
+>
+> 1. 将全部契约统一存放于 `extension_registry.json`；
+> 2. 为同一个需求另建独立架构 WI；
+> 3. 依赖跨 WI 自动恢复；
+> 4. 使用 SpecForge 的程序性工作流治理 SpecForge 自身。
+>
+> 当前采用 Project / Public Contract 与 Module / Internal Contract 两级模型；
+> 架构变化在同一个 WI 内完成；SpecForge 自身采用直接开发下的人工架构一致性治理。
+> 全部当前规则以 `docs/design/SpecForge架构一致性治理最终实施方案.md` 为唯一权威。
+<!-- SPECFORGE_NON_AUTHORITY_NOTICE_4:END -->
+
 > 状态: DRAFT（讨论汇总，待评审后按切片实施）
 > 生成日期: 2026-07-24
 > 适用范围: SpecForge 自身治理链（sf-design agent / gates / skills / runtime / project-spec 契约记录）
@@ -46,7 +61,6 @@
 
 - **新约定 = 注册一条新条目**，通用机器自动适用，不加特例代码。
 - **边界（诚实标注）**：通用性在框架 / 生命周期，非 100% 自动。每条契约标注“机械可校验（gate 硬拦）”或“仅语义可审（设计门禁 + 评审）”。
-
 **契约文件装什么**：上述 4 类机器可读注册表 + `architecture.md` / `decisions.md` / `glossary.md` 三类人读叙述。**当前实现细节一律不进**（那是代码，进了必漂移）。
 
 **事实 vs 契约（来源不同）**：
