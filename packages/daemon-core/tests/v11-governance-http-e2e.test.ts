@@ -19,6 +19,7 @@ import { HTTPServer, HTTPServerDeps } from '../src/http/HTTPServer';
 import { EventBus } from '../src/event-bus/EventBus';
 import { DaemonConfig } from '../src/daemon/DaemonConfig';
 import { ToolDispatcher } from '../src/tools/ToolDispatcher';
+import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-closure-provenance.js';
 
 // Import ALL handler registrations (side-effects)
 import '../src/tools/index';
@@ -64,7 +65,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
   let port: number;
   const token = `test-gov-e2e-${Date.now()}`;
   let tempDir: string;
-  const workItemId = 'WI-GOV-HTTP-001';
+  const workItemId = 'WI-0001';
 
   beforeAll(async () => {
     // Create temp project directory with .specforge structure
@@ -77,10 +78,28 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     );
 
     // Create a real ToolDispatcher with real handlers
+    let httpTestState = 'verification_done';
+    const mockProjectManager = {
+      getProjectStateManager: async () => ({
+        rebuildFromEventsFile: async () => {},
+        getState: async () => ({ current_state: httpTestState }),
+        transition: async (workItemId: string, fromState: string, toState: string) => {
+          httpTestState = toState;
+          return {
+            source: 'StateManager',
+            workItemId,
+            previousState: fromState,
+            currentState: toState,
+            timestamp: new Date().toISOString(),
+          };
+        },
+      }),
+    };
+
     const dispatcher = new ToolDispatcher({
       stateManager: {},
       workflowEngine: {},
-      projectManager: {},
+      projectManager: mockProjectManager,
       eventLogger: {},
       eventBus: new EventBus(),
       permissionEngine: {},
@@ -96,6 +115,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       stateManager: {} as any,
       wal: {} as any,
       toolDispatcher: dispatcher,
+      projectManager: mockProjectManager,
     };
 
     server = new HTTPServer(deps);
@@ -140,7 +160,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       context: { directory: tempDir },
     });
     expect(permResult.json?.success).toBe(true);
-    expect(permResult.json?.data?.success).toBe(true);
+        expect(permResult.json?.data?.success).toBe(true);
     expect(permResult.json?.data?.action).toBe('release');
 
     // Verify WI directory was created with work_item.json
@@ -203,15 +223,28 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     await fs.writeFile(path.join(wiDir, 'intake.md'), '# Intake');
     await fs.writeFile(path.join(wiDir, 'change_classification.md'), '# CC\ncode_only');
     await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA');
-    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), '{"triggered":true}');
+    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), '{"work_item_id":"WI-0001","workflow_path":"code_only_fast_path","triggered":true,"classification":{"requirement_changed":false,"acceptance_criteria_changed":false,"business_rule_changed":false,"user_visible_behavior_changed":false,"data_semantics_changed":false,"design_changed":false,"module_boundary_changed":false,"api_contract_changed":false,"architecture_changed":false,"unknowns":[]}}');
     await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
     await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nNo spec impact');
-    await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ entries: [] }));
+    await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }));
     await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n- Overall Status: passed');
+    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (2 entries, 1 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |');
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
-    await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ entries: [{ type: 'log', path: 'test.log' }] }));
-    await fs.writeFile(path.join(wiDir, 'user_decision.json'), JSON.stringify({ decision_status: 'approved' }));
+    await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [{ id: 'EV-1', type: 'log', path: 'test.log', status: 'passed' }] }));
+    await fs.writeFile(path.join(wiDir, 'user_decision.json'), JSON.stringify({ work_item_id: workItemId, decision_status: 'approved' }));
+    const _closure = {
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      outcomes: [{ id: 'OUT-1', requirement_refs: ['REQ-1'], required_evidence_refs: ['EV-1'] }],
+      requirements: [{ id: 'REQ-1', type: 'MUST', outcome_refs: ['OUT-1'], design_refs: ['DD-1'], task_refs: ['TASK-1'], required_evidence_refs: ['EV-1'] }],
+      design_decisions: [{ id: 'DD-1', requirement_refs: ['REQ-1'], task_refs: ['TASK-1'] }],
+      tasks: [{ id: 'TASK-1', requirement_refs: ['REQ-1'], design_refs: ['DD-1'], evidence_refs: ['EV-1'] }],
+      evidence: [{ id: 'EV-1', status: 'passed', level: 'L5', evidence_type: 'behavioral_e2e', supports: ['OUT-1', 'REQ-1', 'TASK-1'] }],
+      project_integration: { status: 'not_applicable' },
+    };
+    _closure.provenance = await captureSemanticClosureProvenance({ workItemDir: wiDir, source: 'test_fixture', manifest: _closure as any });
+    await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(_closure, null, 2));
 
     // Update work_item.json status to verification_done
     const wiContent = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
@@ -228,7 +261,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       context: { directory: tempDir },
     });
     expect(closeResult.json?.success).toBe(true);
-    expect(closeResult.json?.data?.success).toBe(true);
+                expect(closeResult.json?.data?.success).toBe(true);
     expect(closeResult.json?.data?.state_advanced).toBe(true);
     expect(closeResult.json?.data?.code_permission_revoked).toBe(true);
 
@@ -236,9 +269,9 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     // Step 7: Verify WI is closed
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const finalWi = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
-    expect(finalWi.status).toBe('closed');
-    expect(finalWi.closed_at).toBeDefined();
+    // Handler does NOT update work_item.json.status (authoritative state is in StateManager)
     expect(finalWi.code_change_allowed).toBe(false);
+    expect(finalWi.code_permission_revoked).toBe(true);
     expect(finalWi.allowed_write_files).toEqual([]);
 
     // Verify changed_files_audit.md uses write_guard_log

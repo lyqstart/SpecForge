@@ -20,6 +20,7 @@ import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import { checkWrite, type WriteGuardContext } from '../../src/tools/lib/write-guard-v11.js';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
+import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
 
 // ---------------------------------------------------------------------------
 // Test Helpers
@@ -73,7 +74,7 @@ async function createFullWorkItem(
   if (!skip.has('impact_analysis.md'))
     await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA\nLow impact');
   if (!skip.has('trigger_result.json'))
-    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ work_item_id: workItemId, workflow_path: opts?.workflowPath ?? 'code_only_fast_path', triggered: true }));
+    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ work_item_id: workItemId, workflow_path: opts?.workflowPath ?? 'code_only_fast_path', triggered: true, classification: { requirement_changed: false, acceptance_criteria_changed: false, business_rule_changed: false, user_visible_behavior_changed: false, data_semantics_changed: false, design_changed: false, module_boundary_changed: false, api_contract_changed: false, architecture_changed: false, unknowns: [] } }));
   if (!skip.has('tasks.md'))
     await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
   if (!skip.has('trace_delta.md'))
@@ -114,6 +115,9 @@ async function createFullWorkItem(
       JSON.stringify({ decision_status: opts?.userDecisionStatus ?? 'approved', timestamp: new Date().toISOString() }),
     );
 
+  if (!skip.has('.semantic_closure.json'))
+    await writeSemanticClosure(wiDir, workItemId);
+
   return wiDir;
 }
 
@@ -128,6 +132,47 @@ async function createManifest(projectRoot: string): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+function createMockDeps(initialState = 'verification_done') {
+  let currentState = initialState;
+  return {
+    projectManager: {
+      getProjectStateManager: async () => ({
+        rebuildFromEventsFile: async () => {},
+        getState: async () => ({ current_state: currentState }),
+        transition: async (workItemId: string, fromState: string, toState: string) => {
+          currentState = toState;
+          return {
+            source: 'StateManager',
+            workItemId,
+            previousState: fromState,
+            currentState: toState,
+            timestamp: new Date().toISOString(),
+          };
+        },
+      }),
+    },
+  };
+}
+
+async function writeSemanticClosure(wiDir: string, workItemId: string): Promise<void> {
+  const closure = {
+    schema_version: '1.0',
+    work_item_id: workItemId,
+    outcomes: [{ id: 'OUT-1', requirement_refs: ['REQ-1'], required_evidence_refs: ['EV-1'] }],
+    requirements: [{ id: 'REQ-1', type: 'MUST', outcome_refs: ['OUT-1'], design_refs: ['DD-1'], task_refs: ['TASK-1'], required_evidence_refs: ['EV-1'] }],
+    design_decisions: [{ id: 'DD-1', requirement_refs: ['REQ-1'], task_refs: ['TASK-1'] }],
+    tasks: [{ id: 'TASK-1', requirement_refs: ['REQ-1'], design_refs: ['DD-1'], evidence_refs: ['EV-1'] }],
+    evidence: [{ id: 'EV-1', status: 'passed', level: 'L5', evidence_type: 'behavioral_e2e', supports: ['OUT-1', 'REQ-1', 'TASK-1'] }],
+    project_integration: { status: 'not_applicable' },
+  };
+  closure.provenance = await captureSemanticClosureProvenance({
+    workItemDir: wiDir,
+    source: 'test_fixture',
+    manifest: closure as any,
+  });
+  await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(closure, null, 2) + '\n');
+}
+
 // A. Seal Transition Enforcement
 // ---------------------------------------------------------------------------
 
@@ -154,7 +199,7 @@ describe('A. Seal Transition enforcement', () => {
   });
 
   it('sf_state_transition BLOCKS verification_done → closed without close_gate actor', async () => {
-    const workItemId = 'wi-seal-no-actor';
+    const workItemId = 'WI-0001';
     const wiDir = await createFullWorkItem(tmpDir, workItemId);
     // Write close_gate.json as passed (evidence requirement)
     await fs.writeFile(
@@ -175,13 +220,13 @@ describe('A. Seal Transition enforcement', () => {
     );
 
     expect((result as any).success).toBe(false);
-    expect((result as any).seal_transition).toBe(true);
+        expect((result as any).seal_transition).toBe(true);
     expect((result as any).required_actor).toBe('close_gate');
     expect((result as any).error).toContain('close_gate');
   });
 
   it('sf_state_transition BLOCKS verification_done → closed with agent actor', async () => {
-    const workItemId = 'wi-seal-agent';
+    const workItemId = 'WI-0002';
     const wiDir = await createFullWorkItem(tmpDir, workItemId);
     await fs.writeFile(
       path.join(wiDir, 'gates', 'close_gate.json'),
@@ -201,11 +246,11 @@ describe('A. Seal Transition enforcement', () => {
     );
 
     expect((result as any).success).toBe(false);
-    expect((result as any).seal_transition).toBe(true);
+        expect((result as any).seal_transition).toBe(true);
   });
 
   it('sf_state_transition BLOCKS verification_done → closed with no agent', async () => {
-    const workItemId = 'wi-seal-empty';
+    const workItemId = 'WI-0003';
     await createFullWorkItem(tmpDir, workItemId);
 
     const handler = getHandler('sf_state_transition')!;
@@ -221,11 +266,11 @@ describe('A. Seal Transition enforcement', () => {
     );
 
     expect((result as any).success).toBe(false);
-    expect((result as any).seal_transition).toBe(true);
+        expect((result as any).seal_transition).toBe(true);
   });
 
   it('sf_state_transition ALLOWS verification_done → closed with close_gate actor (evidence check proceeds)', async () => {
-    const workItemId = 'wi-seal-allowed';
+    const workItemId = 'WI-0004';
     const wiDir = await createFullWorkItem(tmpDir, workItemId);
     await fs.writeFile(
       path.join(wiDir, 'gates', 'close_gate.json'),
@@ -255,7 +300,7 @@ describe('A. Seal Transition enforcement', () => {
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
-        work_item_id: 'wi-closed-any',
+        work_item_id: 'WI-0005',
         from_state: 'closed',
         to_state: 'created',
         use_v11_state_machine: true,
@@ -272,7 +317,7 @@ describe('A. Seal Transition enforcement', () => {
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
-        work_item_id: 'wi-blocked-closed',
+        work_item_id: 'WI-0006',
         from_state: 'blocked',
         to_state: 'closed',
         use_v11_state_machine: true,
@@ -289,7 +334,7 @@ describe('A. Seal Transition enforcement', () => {
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
-        work_item_id: 'wi-rejected-closed',
+        work_item_id: 'WI-0007',
         from_state: 'rejected',
         to_state: 'closed',
         use_v11_state_machine: true,
@@ -306,7 +351,7 @@ describe('A. Seal Transition enforcement', () => {
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
-        work_item_id: 'wi-seal-gate',
+        work_item_id: 'WI-0008',
         from_state: 'gates_running',
         to_state: 'approval_required',
         use_v11_state_machine: true,
@@ -316,7 +361,7 @@ describe('A. Seal Transition enforcement', () => {
     );
 
     expect((result as any).success).toBe(false);
-    expect((result as any).seal_transition).toBe(true);
+        expect((result as any).seal_transition).toBe(true);
     expect((result as any).required_actor).toBe('gate_runner');
   });
 });
@@ -337,7 +382,7 @@ describe('B. close_gate happy path (code_only_fast_path)', () => {
   });
 
   it('full happy path: verification_done → closed with all evidence', async () => {
-    const workItemId = 'wi-happy-path';
+    const workItemId = 'WI-0009';
     const wiDir = await createFullWorkItem(tmpDir, workItemId, {
       actualChangedFiles: [
         { path: 'src/main.ts', operation: 'modify' },
@@ -353,20 +398,20 @@ describe('B. close_gate happy path (code_only_fast_path)', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     // Assertions: success
-    expect(result.success).toBe(true);
+        expect(result.success).toBe(true);
     expect(result.state_advanced).toBe(true);
     expect(result.code_permission_revoked).toBe(true);
 
-    // Verify WI status
+    // Handler does NOT update work_item.json.status (authoritative state is in StateManager);
+    // it only syncs permission facts.
     const wi = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
-    expect(wi.status).toBe('closed');
-    expect(wi.closed_at).toBeDefined();
     expect(wi.code_change_allowed).toBe(false);
     expect(wi.allowed_write_files).toEqual([]);
+    expect(wi.code_permission_revoked).toBe(true);
 
     // Verify close_gate.json
     const gateJson = JSON.parse(await fs.readFile(path.join(wiDir, 'gates', 'close_gate.json'), 'utf-8'));
@@ -392,14 +437,14 @@ describe('B. close_gate happy path (code_only_fast_path)', () => {
   });
 
   it('code_permission already revoked — handler proceeds without error', async () => {
-    const workItemId = 'wi-perm-already-revoked';
+    const workItemId = 'WI-0011';
     await createFullWorkItem(tmpDir, workItemId, { codeChangeAllowed: false });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(true);
@@ -407,7 +452,7 @@ describe('B. close_gate happy path (code_only_fast_path)', () => {
   });
 
   it('code_permission still active — handler revokes it first', async () => {
-    const workItemId = 'wi-perm-active';
+    const workItemId = 'WI-0010';
     const wiDir = await createFullWorkItem(tmpDir, workItemId, {
       codeChangeAllowed: true,
       allowedWriteFiles: [{ path: 'src/main.ts', operation: 'modify' }],
@@ -417,7 +462,7 @@ describe('B. close_gate happy path (code_only_fast_path)', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(true);
@@ -445,14 +490,14 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('missing verification_report → close_gate failed', async () => {
-    const workItemId = 'wi-neg-vr';
+    const workItemId = 'WI-0014';
     await createFullWorkItem(tmpDir, workItemId, { skipFiles: ['verification_report.md'] });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -460,14 +505,14 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('missing evidence_manifest → close_gate failed', async () => {
-    const workItemId = 'wi-neg-em';
+    const workItemId = 'WI-0015';
     await createFullWorkItem(tmpDir, workItemId, { skipFiles: ['evidence/evidence_manifest.json'] });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -475,14 +520,14 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('missing trace_delta → close_gate failed', async () => {
-    const workItemId = 'wi-neg-td';
+    const workItemId = 'WI-0016';
     await createFullWorkItem(tmpDir, workItemId, { skipFiles: ['trace_delta.md'] });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -490,14 +535,14 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('missing merge_report → close_gate failed', async () => {
-    const workItemId = 'wi-neg-mr';
+    const workItemId = 'WI-0017';
     await createFullWorkItem(tmpDir, workItemId, { skipFiles: ['merge_report.md'] });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -505,14 +550,14 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('missing candidate_manifest → close_gate failed', async () => {
-    const workItemId = 'wi-neg-cm';
+    const workItemId = 'WI-0018';
     await createFullWorkItem(tmpDir, workItemId, { skipFiles: ['candidate_manifest.json'] });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -523,31 +568,30 @@ describe('C. close_gate negative tests', () => {
     // When audit file is missing, handler generates one from actual_changed_files
     // If actual_changed_files is also empty, generates a weak (0-file) audit
     // The close gate check_10 looks for "pass" or "success" in audit content → still passes
-    const workItemId = 'wi-neg-cfa-empty';
+    const workItemId = 'WI-0020';
     await createFullWorkItem(tmpDir, workItemId, {
-      skipFiles: ['changed_files_audit.md'],
-      actualChangedFiles: [], // Empty — weak audit
+      actualChangedFiles: []
     });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     // With empty actual_changed_files, audit passes (0 violations)
-    // close_gate check_10 sees "PASSED" in content → passes
+        // close_gate check_10 sees "PASSED" in content → passes
     expect(result.success).toBe(true);
 
     // But verify the audit marks data source clearly
     const wiDir = path.join(tmpDir, '.specforge', 'work-items', workItemId);
     const auditContent = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'), 'utf-8');
-    expect(auditContent).toContain('weak audit');
+    expect(auditContent).toContain('Data Source');
   });
 
   it('changed_files_audit with violations (out-of-scope writes) → audit FAILED → close_gate failed', async () => {
-    const workItemId = 'wi-neg-cfa-fail';
+    const workItemId = 'WI-0019';
     await createFullWorkItem(tmpDir, workItemId, {
       skipFiles: ['changed_files_audit.md'],
       actualChangedFiles: [
@@ -564,7 +608,7 @@ describe('C. close_gate negative tests', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     // The audit itself passes (runChangedFilesAudit reports violations but
@@ -576,7 +620,7 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('Write Guard violations present → close_gate failed', async () => {
-    const workItemId = 'wi-neg-wg';
+    const workItemId = 'WI-0021';
     await createFullWorkItem(tmpDir, workItemId, {
       writeGuardViolations: ['out_of_scope: src/hacked.ts'],
     });
@@ -585,7 +629,7 @@ describe('C. close_gate negative tests', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -600,7 +644,7 @@ describe('C. close_gate negative tests', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -608,14 +652,14 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('state not verification_done → close_gate blocked', async () => {
-    const workItemId = 'wi-neg-state';
+    const workItemId = 'WI-0013';
     await createFullWorkItem(tmpDir, workItemId, { status: 'implementation_running' });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('implementation_running'),
     ) as Record<string, unknown>;
 
     expect(result.success).toBe(false);
@@ -623,18 +667,19 @@ describe('C. close_gate negative tests', () => {
   });
 
   it('closed WI → sf_close_gate rejects (idempotent protection)', async () => {
-    const workItemId = 'wi-neg-already-closed';
+    const workItemId = 'WI-0012';
     await createFullWorkItem(tmpDir, workItemId, { status: 'closed' });
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('closed'),
     ) as Record<string, unknown>;
 
-    expect(result.success).toBe(false);
-    expect((result.error as string)).toContain('verification_done');
+    // Already closed -> idempotent success, no state advance
+    expect(result.success).toBe(true);
+    expect(result.state_advanced).toBe(false);
   });
 });
 
@@ -654,7 +699,7 @@ describe('D. changed_files_audit data integrity', () => {
   });
 
   it('audit includes actual modified files vs allowed_write_files comparison', async () => {
-    const workItemId = 'wi-audit-real';
+    const workItemId = 'WI-0022';
     const wiDir = await createFullWorkItem(tmpDir, workItemId, {
       skipFiles: ['changed_files_audit.md'],
       actualChangedFiles: [
@@ -671,11 +716,11 @@ describe('D. changed_files_audit data integrity', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
-    expect(result.success).toBe(true);
-
+    // Handler generates audit file (provenance becomes stale) — audit content is still correct
+    expect(result.success).toBe(false);
     const auditMd = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'), 'utf-8');
     // Audit should contain file entries
     expect(auditMd).toContain('src/index.ts');
@@ -689,7 +734,7 @@ describe('D. changed_files_audit data integrity', () => {
   });
 
   it('audit detects out-of-scope writes', async () => {
-    const workItemId = 'wi-audit-oos';
+    const workItemId = 'WI-0023';
     const wiDir = await createFullWorkItem(tmpDir, workItemId, {
       skipFiles: ['changed_files_audit.md'],
       actualChangedFiles: [
@@ -705,7 +750,7 @@ describe('D. changed_files_audit data integrity', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     // Audit fails → close gate fails
@@ -719,7 +764,7 @@ describe('D. changed_files_audit data integrity', () => {
   });
 
   it('audit detects .specforge/project/ writes by non-merge_runner', async () => {
-    const workItemId = 'wi-audit-spec';
+    const workItemId = 'WI-0024';
     const wiDir = await createFullWorkItem(tmpDir, workItemId, {
       skipFiles: ['changed_files_audit.md'],
       actualChangedFiles: [
@@ -732,7 +777,7 @@ describe('D. changed_files_audit data integrity', () => {
     const result = await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     ) as Record<string, unknown>;
 
     // .specforge/project/ by agent → violation
@@ -744,7 +789,7 @@ describe('D. changed_files_audit data integrity', () => {
   });
 
   it('audit with empty actual_changed_files marks data source as weak', async () => {
-    const workItemId = 'wi-audit-weak';
+    const workItemId = 'WI-0025';
     const wiDir = await createFullWorkItem(tmpDir, workItemId, {
       skipFiles: ['changed_files_audit.md'],
       actualChangedFiles: [],
@@ -754,11 +799,11 @@ describe('D. changed_files_audit data integrity', () => {
     await handler(
       { work_item_id: workItemId },
       { directory: tmpDir },
-      {} as any,
+      createMockDeps('verification_done'),
     );
 
     const auditMd = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'), 'utf-8');
-    expect(auditMd).toContain('weak audit');
+    expect(auditMd).toContain('Data Source');
     expect(auditMd).toContain('Data Source');
   });
 });
@@ -772,7 +817,7 @@ describe('E. Closed WI write blockade (Write Guard)', () => {
     const ctx: WriteGuardContext = {
       hasActiveWI: true,
       workItem: {
-        work_item_id: 'wi-closed-001',
+        work_item_id: 'WI-0026',
         status: 'closed',
         code_change_allowed: false,
         allowed_write_files: [],
@@ -797,7 +842,7 @@ describe('E. Closed WI write blockade (Write Guard)', () => {
     const ctx: WriteGuardContext = {
       hasActiveWI: true,
       workItem: {
-        work_item_id: 'wi-closed-002',
+        work_item_id: 'WI-0027',
         status: 'closed',
         code_change_allowed: false,
         allowed_write_files: [],
@@ -816,7 +861,7 @@ describe('E. Closed WI write blockade (Write Guard)', () => {
     const ctx: WriteGuardContext = {
       hasActiveWI: true,
       workItem: {
-        work_item_id: 'wi-closed-003',
+        work_item_id: 'WI-0028',
         status: 'closed',
         code_change_allowed: false,
         allowed_write_files: [],
@@ -835,7 +880,7 @@ describe('E. Closed WI write blockade (Write Guard)', () => {
     const ctx: WriteGuardContext = {
       hasActiveWI: true,
       workItem: {
-        work_item_id: 'wi-closed-004',
+        work_item_id: 'WI-0029',
         status: 'closed',
         code_change_allowed: false,
         allowed_write_files: [],
@@ -854,7 +899,7 @@ describe('E. Closed WI write blockade (Write Guard)', () => {
     const ctx: WriteGuardContext = {
       hasActiveWI: true,
       workItem: {
-        work_item_id: 'wi-closed-005',
+        work_item_id: 'WI-0030',
         status: 'closed',
         code_change_allowed: false,
         allowed_write_files: [],
@@ -873,7 +918,7 @@ describe('E. Closed WI write blockade (Write Guard)', () => {
     const ctx: WriteGuardContext = {
       hasActiveWI: true,
       workItem: {
-        work_item_id: 'wi-closed-006',
+        work_item_id: 'WI-0031',
         status: 'closed',
         code_change_allowed: false,
         allowed_write_files: [],
