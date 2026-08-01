@@ -4,11 +4,11 @@
 - **决策记录**：[`ADR-007-architecture-consistency-governance.md`](../adr/ADR-007-architecture-consistency-governance.md)、[`ADR-008-new-project-governance-bootstrap.md`](../adr/ADR-008-new-project-governance-bootstrap.md)
 - **权威性**：本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。
 - **取代**：`docs/archive/SpecForge治理架构完整修改方案-已取代.md`
-- **审计日期**：2026-07-27
-- **当前验证证据**：架构一致性治理主体定向测试 9 个测试文件、82 个测试通过；提交 `1904d72` 的新项目自举定向测试 5 个测试文件、18 个测试通过；deterministic workspace build 与 `git diff --check` 通过。
-- **上线边界**：兼容模式先落地；Phase 11 必须完成真实全新项目在 OpenCode + SpecForge 中的首次治理自举端到端验证，随后 Phase 12 才能启用最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
+- **审计日期**：2026-08-01
+- **当前验证证据**：架构一致性治理主体定向测试 9 个测试文件、82 个测试通过；提交 `1904d72` 的新项目自举定向测试 5 个测试文件、18 个测试通过；deterministic workspace build 与 `git diff --check` 通过。本次文件角色、Gate 最终状态、Contract 消费关系和 Phase 生命周期规则修订尚未完成对应源码对账、代码修复与回归测试。
+- **产品完成边界**：本文件中的 Phase 1—12 是本次开发 SpecForge 架构一致性治理能力的一次性产品实施路线，不是业务项目每个 WI 的运行流程。最终交付的 SpecForge 必须把本文件的规则落实到程序、Tool、Skill、Agent、Gate、Runtime、项目模板和回归测试中；业务项目不直接读取本文件。首次宣布本能力完成前，必须完成 Phase 11 的真实全新项目端到端验收，并在 Phase 12 固化最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
 
-> 本文件描述目标架构、实施顺序和验收标准；测试通过只证明当前已覆盖实现没有破坏所列定向回归，不等同于 Phase 11/12 已完成。
+> 本文件描述 SpecForge 产品的目标架构、产品实现顺序和产品验收标准；测试通过只证明当前已覆盖实现没有破坏所列定向回归，不等同于本次产品实施路线已完成。
 
 > 状态：AUTHORITATIVE（唯一当前权威源）
 >
@@ -46,7 +46,35 @@ docs/design/specforge-design-governance-contract-model.md
 4. 不复制形成第二套当前规则；
 5. 最终把有效结论同步回本文件。
 
-### 0.2 两种开发模式
+### 0.2 文件作用范围与两种开发模式
+
+**GOV-ROLE-001：** 本文件是开发 SpecForge 产品中“架构一致性治理与契约治理能力”的设计依据，不是业务项目运行时直接读取或人工执行的项目治理手册。
+
+本文件中的有效规则最终必须落实到：
+
+```text
+SpecForge 程序
+Tool
+Skill
+Agent 说明
+Gate
+Runtime 状态约束
+项目初始化模板
+正式治理文件结构
+自动化测试
+```
+
+完成后的业务项目直接遵守 SpecForge 已实现的程序性治理，以及该业务项目自己的 Architecture、Data Model、Module Design、Contract、Trace、Work Item 和 Task；业务项目不以读取本文件作为治理成立条件。
+
+必须严格区分：
+
+```text
+开发 SpecForge 产品时怎样工作
+≠
+完成后的 SpecForge 怎样治理业务项目
+≠
+本次产品能力按哪些 Phase 实施和验收
+```
 
 #### 模式 A：SpecForge 自身开发
 
@@ -63,9 +91,11 @@ docs/design/specforge-design-governance-contract-model.md
 + 普通软件工程验证
 ```
 
-#### 模式 B：使用 SpecForge 开发其他项目
+模式 A 中源代码可能暂时处于未完成的中间状态；中间状态只能用于产品开发和验证，不能被描述为完成后的业务项目治理规则，也不能作为正式产品完成依据。
 
-其他项目必须完整执行 SpecForge 程序性治理：
+#### 模式 B：完成后的 SpecForge 治理其他项目
+
+完成后的 SpecForge 必须通过已经实现到程序、Tool、Skill、Agent、Gate 和 Runtime 中的能力，强制业务项目执行：
 
 ```text
 Work Item
@@ -82,7 +112,7 @@ Work Item
 → Close
 ```
 
-OpenCode、Agent、Runtime、Gate 和 Write Guard 必须强制遵守本文件定义的架构一致性原则。
+业务项目不直接读取本文件；OpenCode、Agent、Runtime、Gate 和 Write Guard 必须把本文件定义的架构一致性原则转化为可执行、可验证、失败关闭的产品行为。
 
 ### 0.3 新会话的远程权威入口
 
@@ -194,6 +224,44 @@ Module / Internal Contract
 ```
 
 **CON-PROM-001：** Module Contract 一旦出现其他 Module 消费者，必须在同一个 WI 内升级为 Project Contract，并同步更新受影响设计、消费者、Trace、验证和迁移内容；禁止其他 Module 直接消费 Internal Contract。
+
+**CON-CONS-SOURCE-001：** Contract 的正式消费者关系只以现有 Trace 系统为真相源，不在 Contract 文件、Module 定义或其他文档中再维护一份可独立修改的消费者列表。
+
+固定登记方式：
+
+```text
+具体 Module Design 规则（DD-*）
+constrained_by
+Contract ID
+```
+
+Module 消费者由该 `DD-*` 所属 Module 自动推导。不得只登记模糊的“某 Module 消费某 Contract”，也不得通过人工搜索或 Agent 猜测代替正式关系。
+
+**CON-CONS-DELTA-001：** Contract 消费关系的增加、取消和变更必须进入同一个 WI 的 `trace_delta.md`：
+
+```text
+新增关系 → ADD
+取消关系 → REMOVE
+变更关系 → REMOVE 旧关系 + ADD 新关系
+```
+
+Runtime 必须以“当前正式 Trace + ADD - REMOVE”形成 Prospective Trace，并对合并后的关系执行完整性检查；ADD 与 REMOVE 必须随本次 Spec Merge 原子生效。
+
+**CON-CODE-CONS-001：** 生产代码的实际 Contract 消费不得建立第二套治理机制。现有 `contract_integrity_gate` 必须结合 Module `code_paths`、Impact Scope、Code Permission、Changed Files Audit 和验证阶段取得的实际依赖证据，对账“Trace 声明的正式消费者”与“生产代码的实际 Module 依赖”。无法证明实际依赖完整时必须 Fail Closed，不得猜测。
+
+Module Contract 升级为 Project Contract 时，Prospective Project Spec 必须同时包含：
+
+```text
+新的 Project Contract
+原 Module Contract 的废弃、删除或替代说明
+全部消费者关系的 REMOVE / ADD
+受影响 Module Design 更新
+Trace 更新
+兼容性或迁移说明
+验证与回归测试
+```
+
+缺少任一项，`contract_integrity_gate` 必须 BLOCK。
 
 每次修改必须检查：
 
@@ -1344,16 +1412,60 @@ DD-ORDER-003
 
 ---
 
-# 二十一、Trace Delta
+# 二十一、Trace Delta 与唯一关系真相源
 
 现有 Requirement/Task Trace 继续按当前 Requirement 治理规则工作。
 
-新增的 Architecture/Data/Contract 关系：
+Trace 只保留一个逻辑真相源：
 
 ```text
-只有关系变化
-→ 才增加对应 Delta
+.specforge/project/trace_matrix.md
+= 当前正式关系的项目级权威矩阵
+
+.specforge/project/modules/<MODULE>/trace.md
+= 从项目级权威矩阵按 Module 形成的受控视图，不得独立产生另一套关系事实
+
+.specforge/work-items/<WI>/trace_delta.md
+= 本次 WI 对正式关系提出的变更输入
 ```
+
+Contract 消费关系必须登记为：
+
+```text
+DD-*
+constrained_by
+Contract ID
+```
+
+其所属 Module 由 `DD-*` 的正式归属自动推导。
+
+`trace_delta.md` 必须明确支持：
+
+```text
+ADD
+REMOVE
+```
+
+关系变更统一表达为：
+
+```text
+REMOVE 旧关系
++
+ADD 新关系
+```
+
+Runtime 必须计算：
+
+```text
+Current Trace
++ ADD
+- REMOVE
+= Prospective Trace
+```
+
+Trace Gate、Spec Consistency Gate 和 Contract Integrity Gate 检查的是 Prospective Trace；通过审批和原子 Spec Merge 后，Prospective Trace 才成为新的正式 Trace。
+
+新增的 Architecture/Data/Contract 关系只有真正发生变化时才要求对应 Delta。
 
 Fast Path：
 
@@ -1362,7 +1474,7 @@ Fast Path：
 → 不要求制造新的治理关系 Delta
 ```
 
-当前 Quick Change 强制要求 `trace_delta.md`，这一形式主义要求需要取消。
+当前 Quick Change 强制要求 `trace_delta.md`，这一形式主义要求需要取消；但声称关系没有变化时，Gate 仍必须根据 Impact Scope 和实际修改范围验证该声明。
 
 ---
 
@@ -1451,40 +1563,67 @@ contract_integrity_gate
 
 当前它已经针对 `extension_registry.json` Candidate 做 Schema 和消费者完整性检查。
 
-增加：
+不增加第二个 Contract Gate。现有 Gate 必须在两个边界执行同一套 Contract 规则：
+
+```text
+Candidate 合并前
+→ 检查 Prospective Project Spec 和 Prospective Trace
+
+实现与验证后
+→ 结合 code_paths、Code Permission、Changed Files Audit 和实际依赖证据复核生产代码消费者
+```
+
+必须检查：
 
 ```text
 Module Contract Schema
-
 owner_module 正确
-
 source_refs 存在
-
 enforcement 已声明
-
+消费者关系来自 Trace 唯一真相源
+ADD / REMOVE 合法且原子
 Internal Contract 没有跨 Module 消费
-
-Project Contract 变化后的消费者完整性
-
-Module → Project Contract Promotion 完整性
+Project Contract 变化后的全部消费者已同步
+Module → Project Contract Promotion 完整
+删除 Contract 后不存在悬空关系
+Trace 声明消费者与生产代码实际 Module 依赖一致
 ```
 
-不增加第二个 Contract Gate。
+出现以下任一情况必须 BLOCK：
+
+```text
+生产代码实际消费 Contract，但 Trace 未登记
+Trace 登记消费，但 Contract 不存在或已删除
+其他 Module 消费 Internal Contract
+Promotion 缺少 Contract、Design、消费者、Trace、兼容性或测试中的任一项
+无法取得足够证据证明消费者完整
+```
 
 ---
 
-# 二十五、Gate 的硬阻断
+# 二十五、Gate 的硬阻断与产品完成边界
 
-当前：
+**GATE-HARD-001：** Soft / Hard 描述的是 Gate 失败后是否由程序阻断流程：
 
 ```text
-spec_consistency_gate
-trace_gate
+Soft
+= 发现问题并记录，但不形成最终硬阻断
+
+Hard
+= 发现问题后立即阻断 Candidate Merge、Code Permission 或后续状态推进
 ```
 
-仍然被定义为 Soft Gate。
+必须区分：
 
-最终必须：
+```text
+开发 SpecForge 产品时的中间代码状态
+≠
+完成后的 SpecForge 治理业务项目时的正式行为
+```
+
+开发过程中，源代码可以暂时存在部分 Gate 为 Soft 的中间状态，以便完成实现和验证；该状态只表示产品尚未完成，不能发布为本能力的正式完成版本，也不能设计成“某业务项目第一个 WI 完成后自动切换”。
+
+**GATE-FINAL-001：** 本能力最终完成后，SpecForge 治理任何业务项目时，从第一个 WI、后续 WI 到 Fast Path，以下三个 Gate 必须始终全部为 Hard：
 
 ```text
 spec_consistency_gate = hard
@@ -1492,9 +1631,27 @@ trace_gate = hard
 contract_integrity_gate = hard
 ```
 
-但是不能马上切换。
+不存在按项目、按 WI 或按“第一个 WI 是否完成”从 Soft 自动切换到 Hard 的状态机。
 
-必须等 Phase 11 的真实全新项目首次治理自举端到端验证通过，并确认兼容行为没有被破坏以后再切换。
+最终 Hard 状态必须由现有机制共同保证，不新增平行配置体系：
+
+```text
+Gate 注册定义
+→ 三个 Gate 的 severity 全部为 hard
+
+Workflow Required Gates
+→ 所有适用 Workflow 和 Fast Path 必须调用三个 Gate
+
+Runtime 状态推进
+→ 任一 Gate 失败，不得 Merge、不得发 Code Permission、不得继续推进
+
+普通回归测试
+→ 固定断言三个 Gate 的 severity、Workflow 覆盖和失败阻断行为
+```
+
+任一层不满足，SpecForge 不得宣布本能力完成或发布对应正式版本。
+
+Phase 11 必须在候选实现已经具备上述最终 Hard 行为时进行真实端到端验收；Phase 12 不是让业务项目自行切换，而是确认、固化并发布这一最终产品行为。
 
 ---
 
@@ -1948,11 +2105,13 @@ data_model.md
 
 ---
 
-# 三十七、新项目首次治理自举
+# 三十七、完成后的 SpecForge：新项目首次治理自举
+
+本节定义的是完成后的 SpecForge 治理业务项目时的目标产品行为，不是开发 SpecForge 时每次修改都要执行的 Phase，也不要求业务项目直接读取本文件。
 
 SpecForge 产品本身不使用 SpecForge / OpenCode 自治理开发，因此不存在“SpecForge 自迁移”这一产品目标。旧项目升级迁移也不是当前版本交付目标；现有 `spec_migration_path` 保留已有能力，但本阶段不为历史项目兼容继续扩展。
 
-Phase 11 真正需要验证的是：一个全新的业务项目第一次使用 SpecForge 时，能否自然建立完整的新治理模型。
+一个全新的业务项目第一次使用完成后的 SpecForge 时，必须能够在第一个正式 WI 内自然建立完整治理模型。
 
 顺序必须是：
 
@@ -1984,11 +2143,33 @@ Trace
 
 首次 Requirement 即使需要同时建立上层设计，也继续遵守 Requirement 治理优先规则，并在同一个 WI 内完成；不新增初始化 Workflow，不新增专业 Agent，不允许直接写正式 Project Spec。
 
-Phase 11 必须在真实 OpenCode + SpecForge 环境中完成端到端验证。代码级单元/行为测试通过只能证明实现具备对应能力，不能替代真实项目链路验收。
+从第一个 WI 开始，三个核心 Gate 就必须按最终产品规则全部 Hard；第一个 WI 完成后不发生 Gate 严格度切换。后续 WI 必须消费已经生效的正式 Architecture、Data Model、Module Design、Contract 和 Trace，并按同一套 Hard Gate 继续治理。
+
+Phase 11 是开发 SpecForge 产品时对上述目标行为进行的真实端到端验收；代码级单元/行为测试通过只能证明实现具备对应能力，不能替代真实项目链路验收。
 
 ---
 
-# 三十八、正式实施阶段
+# 三十八、SpecForge 产品正式实施阶段
+
+**PHASE-LIFE-001：** Phase 1—12 是本次开发 SpecForge 架构一致性治理能力的一次性产品实施与验收路线，不是业务项目的 WI 流程，也不是以后每次普通代码修改都从 Phase 1 重新执行。
+
+首次完成本能力时按 Phase 1—12 推进。完成并发布后，后续修改按影响范围决定验证深度：
+
+```text
+不影响治理主链的局部修改
+→ 定向单元测试、回归测试、类型检查、构建和架构/契约对账
+
+影响项目初始化、Impact、Architecture、Data、Module、Contract、Trace、Candidate、Gate、Merge、Code Permission、Audit、Verification 或 Close
+→ 追加全新临时项目的首个 WI 端到端回归
+
+影响真实 OpenCode、Agent 协作、daemon 生命周期、用户审批交互或安装后运行路径
+→ 发布前追加真实环境验收
+
+改变三个核心 Gate 的 severity、阻断条件、调用范围或绕过规则
+→ 必须重新执行完整的 Phase 11 等价验收
+```
+
+已经进入最终 Hard 状态后，普通修改不得把任一核心 Gate 静默降级为 Soft；验证未通过时应阻止新版本发布，而不是降低治理强度。
 
 ## Phase 1：建立数据结构
 
@@ -2131,7 +2312,7 @@ contract_integrity_gate
 trace_gate
 ```
 
-先支持兼容模式。
+开发过程中可以先完成检查、报告和定向测试能力；本能力最终完成时必须满足 `GATE-FINAL-001`，不得把中间状态作为业务项目的正式治理模式。
 
 ---
 
@@ -2208,9 +2389,9 @@ Git Merge Guard
 
 ---
 
-## Phase 11：新项目首次治理自举闭环
+## Phase 11：最终 Hard 行为的真实新项目验收
 
-在真实全新业务项目中，使用实际 OpenCode + SpecForge 完整执行第一个正式 Requirement，验证：
+Phase 11 是首次宣布本能力完成前的一次性产品验收阶段。候选实现此时必须已经把三个核心 Gate 全部设为 Hard，并在真实全新业务项目中使用实际 OpenCode + SpecForge 完整执行第一个正式 Requirement，验证：
 
 ```text
 Requirement
@@ -2227,23 +2408,32 @@ Requirement
 → governance active=true
 ```
 
-同时确认旧项目兼容行为没有被破坏。
+同时验证：
+
+```text
+三个核心 Gate 的合法场景全部通过
+三个核心 Gate 的非法场景全部真实阻断
+任何 Gate 失败都不能 Merge 或发 Code Permission
+Fast Path 不能绕过三个 Gate
+旧项目兼容读取行为没有被破坏
+```
+
+首次完成后，不要求每次普通修改都重新创建长期真实业务项目；后续按 `PHASE-LIFE-001` 的影响触发规则执行相应级别的端到端或真实环境回归。
 
 ---
 
-## Phase 12：正式 Hard Enforcement
+## Phase 12：最终 Hard Enforcement 固化与发布边界
 
-确认 Phase 11 真实端到端验收和全部相关测试通过后：
+确认 Phase 11 真实端到端验收和全部相关测试通过后，检查并固化：
 
 ```text
-spec_consistency_gate → HARD
-
-trace_gate → HARD
-
-contract_integrity_gate → HARD
+Gate 注册：三个核心 Gate 全部 hard
+Workflow：所有适用流程和 Fast Path 必须调用三个 Gate
+Runtime：任一失败都阻断 Merge、Code Permission 和状态推进
+测试：severity、调用覆盖、合法通过和非法阻断全部有回归测试
 ```
 
-从此正式执行新闭环。
+Phase 12 是 SpecForge 产品完成和发布边界，不是业务项目内部的状态切换。完成后的业务项目从第一个 WI 开始即执行三个 Hard Gate，后续所有 WI 保持相同行为。
 
 ---
 
