@@ -1,0 +1,1240 @@
+# SpecForge P0：Contract 消费者闭环根因分析与完整实现设计
+
+> **状态**：APPROVED_FOR_IMPLEMENTATION
+> **文件性质**：非权威实施文件
+> **目标仓库路径**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
+> **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
+> **缺陷编号**：`GOV-DEFECT-CONTRACT-CONSUMER-001`
+> **设计基线**：`main@08629b58c6aad82bf669a35e1f2bc8473cfa7ef3`
+> **当前执行边界**：本文件用于开发 SpecForge 产品；业务项目不直接读取本文件。标记为 `PROJECT_GOVERNANCE` 或 `BOTH` 的规则，必须最终落实到 SpecForge 的程序、Tool、Skill、Agent、Workflow、Gate、Runtime、项目模板和回归测试中。
+
+## 0. 文档权威边界
+
+本文件回答：
+
+```text
+当前 P0 缺陷为什么存在
+本次怎样修改 SpecForge
+允许修改哪些范围
+需要验证哪些场景
+怎样证明实现完成
+```
+
+本文件不建立第二个架构权威源。发生冲突时：
+
+```text
+《SpecForge架构一致性治理最终实施方案.md》
+优先于
+本实施文件
+```
+
+实施过程中如果发现权威规则本身需要变化，必须：
+
+```text
+先修订唯一权威文件
+→ 再更新本实施文件
+→ 再修改代码
+```
+
+不得让实现细节反向、隐式改变产品架构。
+
+本文件从设计到关闭始终维护同一份，不再为同一 P0 问题创建独立的“实施报告”“交接文件”或“最终修正版”。
+
+## 1. 规则适用范围
+
+以后所有 SpecForge 架构治理规则、缺陷和实施决定都必须标记以下适用范围之一。
+
+### `PRODUCT_DEVELOPMENT`
+
+只约束当前如何开发、修改和验证 SpecForge 产品本身，例如：
+
+```text
+读取远程唯一权威文件并固定 commit SHA
+修改前形成治理前置结论
+冻结允许修改范围
+执行单元测试、类型检查和构建
+维护本实施文件的状态与证据
+不使用 SpecForge 自治理 SpecForge
+```
+
+### `PROJECT_GOVERNANCE`
+
+描述 SpecForge 完成后治理业务项目时必须自动执行的产品行为，例如：
+
+```text
+Trace 作为 Contract 消费关系唯一真相源
+DD constrained_by Contract
+Trace Delta 使用 ADD / REMOVE
+跨 Module 消费 Internal Contract 必须阻断
+Impact Scope 自动展开全部消费者
+Code Permission 覆盖全部消费 Module
+Verification 对账正式 Trace 与实际代码依赖
+```
+
+业务项目不直接读取本实施文件；以上规则必须由 SpecForge 产品能力执行。
+
+### `BOTH`
+
+既约束当前开发 SpecForge，也必须成为以后业务项目治理的不变式，例如：
+
+```text
+唯一真相源
+Fail Closed
+证据不足不得猜测
+影响范围必须完整
+生产者和消费者必须完整
+正式关系必须原子变更
+实际修改不得越过批准范围
+不能以警告冒充已机器强制
+```
+
+当前开发 SpecForge 时，由人工治理和普通软件工程验证执行；产品完成后，由 SpecForge 的程序、Gate 和 Runtime 自动执行。
+
+### 本 P0 设计的适用范围矩阵
+
+| 设计内容 | 适用范围 | 当前开发阶段怎样落实 | 最终业务项目中怎样执行 |
+|---|---|---|---|
+| 根因取证、允许修改范围、测试命令、实施记录 | `PRODUCT_DEVELOPMENT` | 开发者按本文件修改并验证仓库 | 业务项目不可见 |
+| Trace 唯一消费者真相源 | `BOTH` | 当前实现不得再创建第二消费者来源 | SpecForge Gate 只认正式 Trace |
+| `DD constrained_by Contract` | `PROJECT_GOVERNANCE` | 修改解析、Gate、Agent/Skill 和测试 | 每个 WI 由 Trace Gate 强制 |
+| ADD、REMOVE、Prospective Trace | `BOTH` | 当前代码和测试必须按同一语义实现 | 每个业务 WI 原子变更正式关系 |
+| Internal Contract 跨 Module 阻断 | `PROJECT_GOVERNANCE` | 完善现有 Contract Integrity Gate | 业务 Candidate 合并前自动阻断 |
+| Impact Scope 反向展开消费者 | `PROJECT_GOVERNANCE` | 完善现有 Runtime 推导 | 每个涉及 Contract 的 WI 自动补全范围 |
+| Code Permission 覆盖消费者 | `PROJECT_GOVERNANCE` | 完善现有权限冻结逻辑 | Executor 只能修改批准的消费者范围 |
+| 实际代码依赖对账 | `BOTH` | 使用现有 verifier、审计和证据机制实现 | Verification、Close 阶段失败关闭 |
+| 不新增平行消费者 Registry / 新 Gate / 新 Trace 系统 | `BOTH` | 本次实现不得扩大架构 | 后续产品演进也不得绕过唯一机制 |
+
+---
+
+## 2. 当前基线与结论
+
+本步只完成分析和设计，不修改代码，不启动 daemon，不启动 OpenCode。
+
+基线：
+
+- 仓库：`https://github.com/lyqstart/SpecForge`
+- 分支：`main`
+- Commit：`08629b58c6aad82bf669a35e1f2bc8473cfa7ef3`
+- 唯一产品设计依据：`docs/design/SpecForge架构一致性治理最终实施方案.md`
+- `08629b5` 只修改权威文档，因此本次代码事实与上一代码基线一致。
+
+最终定性：
+
+> 当前 P0 不是“Contract 文件格式不完整”，而是“Contract 的正式消费者、实际代码消费者和变更后的未来状态没有形成同一个可验证闭环”。
+
+权威方案已经明确目标；当前程序尚未完整落实。该问题属于实际代码治理缺陷。
+
+---
+
+## 3. 业务目标
+
+> **适用范围**：`BOTH`。当前用于指导产品实现；最终成为业务项目治理的不变式。
+
+Contract 是多个设计或代码共同遵守的稳定规则，例如：
+
+- 状态枚举；
+- 错误码；
+- 数据结构；
+- 公共接口；
+- 模块内部不变量。
+
+治理必须回答四个问题：
+
+1. 谁定义这条 Contract；
+2. 哪些设计规则消费它；
+3. 哪些生产代码实际依赖它；
+4. Contract 修改、删除或从 Module Contract 升级为 Project Contract 时，是否处理了全部消费者。
+
+最终必须保证：
+
+```text
+正式 Trace 声明的消费者
+=
+本次影响分析纳入的消费者
+=
+批准修改范围覆盖的消费者
+=
+生产代码中的实际消费者
+=
+验证阶段确认的消费者
+```
+
+任何一边不一致都必须阻断。
+
+---
+
+## 4. 名词说明
+
+> **适用范围**：`BOTH`。开发和运行使用同一语义，执行主体不同。
+
+### Contract
+
+需要被机器检查的稳定设计规则。
+
+### Module Contract
+
+只允许同一个 Module 内部消费的 Contract，存放在：
+
+```text
+.specforge/project/modules/<MODULE>/contracts.json
+```
+
+### Project Contract
+
+允许跨 Module 或全项目共同消费的 Contract，存放在：
+
+```text
+.specforge/project/extension_registry.json
+```
+
+### Trace
+
+正式设计对象之间关系的唯一事实记录。
+
+Contract 消费关系固定表达为：
+
+```text
+DD-* constrained_by Contract-ID
+```
+
+其中 `DD-*` 是 Module Design 中的正式设计规则。
+
+### Trace Delta
+
+当前 WI 对正式 Trace 提出的变更：
+
+```text
+ADD
+REMOVE
+```
+
+关系变化使用：
+
+```text
+REMOVE 旧关系
++
+ADD 新关系
+```
+
+### Prospective Trace
+
+本次 Candidate 如果批准并合并后将形成的 Trace：
+
+```text
+当前正式 Trace
++ ADD
+- REMOVE
+= Prospective Trace
+```
+
+三个核心 Gate 必须检查 Prospective Trace，而不是只检查当前旧状态。
+
+### Gate
+
+流程中的程序化检查关卡。Hard Gate 失败后必须阻断审批、合并或后续执行。
+
+---
+
+## 5. 当前实际代码已经具备的基础
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`。这是当前仓库实现事实，不是业务项目规则。
+
+当前程序并非从零开始，已经具备：
+
+1. Project Contract 与 Module Contract 两级存储；
+2. Contract `owner_module` 检查；
+3. Contract `source_refs` 检查；
+4. Contract `enforcement` 声明检查；
+5. Module `code_paths`，可把生产代码文件映射到 Module；
+6. Impact Scope 中已有：
+   - `affected_modules`
+   - `design_refs`
+   - `project_contract_refs`
+   - `module_contract_refs`
+   - `planned_code_paths`
+7. Trace 已有：
+   - `constrained_by`
+   - `enforces`
+8. Trace Delta 解析基础已经支持：
+   - `ADD`
+   - `REMOVE`
+9. Candidate 投影基础已经能够计算本次修改后的正式对象；
+10. Code Permission、Changed Files Audit、Verification 已经存在；
+11. TS/JS shared enum 的部分实际代码检查已经存在。
+
+这些能力应当连接起来，不另建平行的 Contract 消费者系统。
+
+---
+
+## 6. 当前根因
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`。用于定位当前 SpecForge 产品缺陷。
+
+### 根因一：正式消费者真相源使用错误
+
+当前 `contract_integrity_gate` 主要检查“明确标记的 Project Spec 消费者”，例如设计文档中的 `[contract:...]` 标记。
+
+这存在三个问题：
+
+1. 标记不是当前权威规则规定的正式 Trace；
+2. 没有标记的真实消费者会被漏掉；
+3. 标记与 Trace 可能形成两套不同事实。
+
+正确方向：
+
+```text
+删除“文档标记是消费者真相源”的地位
+→ Trace 成为唯一正式消费者真相源
+```
+
+文本标记可以保留为显示或兼容信息，但不能决定 Gate 是否通过。
+
+---
+
+### 根因二：现有 Trace 语义不能完整表达 Contract 消费
+
+现有关系合法性主要支持：
+
+```text
+DATA constrained_by ARCH
+DD constrained_by ARCH / DATA
+Contract enforces ARCH / DATA / DD
+```
+
+但新权威规则要求：
+
+```text
+DD constrained_by Contract
+```
+
+如果这一关系未进入合法关系模型，即使 `trace_delta.md` 写入消费者关系，Trace Gate 也无法把它作为合法正式关系处理。
+
+因此必须扩展现有 Trace 语义，而不是新增关系类型。
+
+---
+
+### 根因三：跨 Module Internal Contract 检查仍依赖文本搜索
+
+当前 Module Contract 的跨模块检查，会在其他 Module 的设计文本中搜索 Contract ID。
+
+这种方式不能证明消费者完整：
+
+- 可能误匹配普通文字；
+- 可能因别名、表格格式或间接引用而漏检；
+- 无法表达关系取消；
+- 无法可靠支持 Contract Promotion；
+- 无法反向查询一个 Contract 的全部正式消费者。
+
+正确方式：
+
+```text
+从 Prospective Trace 反向查询 Contract 的所有 DD 消费者
+→ 根据 DD 所属 Module 推导消费者 Module
+→ 判断是否跨 Module
+```
+
+---
+
+### 根因四：ADD / REMOVE 已能解析，但没有严格验证操作本身
+
+现有基础逻辑倾向于：
+
+- REMOVE 找不到关系时静默忽略；
+- ADD 已存在时静默忽略。
+
+这不满足正式治理要求。
+
+因为：
+
+- REMOVE 不存在关系通常代表基线错误、旧 ID 写错或关系已经漂移；
+- 重复 ADD 可能代表 Candidate 生成错误或重复维护；
+- 静默忽略会让用户以为变更已经执行。
+
+正确规则：
+
+```text
+REMOVE 的关系在 Current Trace 中不存在
+→ BLOCK
+
+ADD 的关系在 Current Trace 中已经存在
+→ BLOCK
+
+同一个 Delta 中互相冲突或重复
+→ BLOCK
+```
+
+关系变化必须明确用一条有效 REMOVE 和一条有效 ADD 表达。
+
+---
+
+### 根因五：Impact Scope 没有以 Contract 消费者反向展开
+
+当前影响范围能够保存 Contract 引用和 Module，但没有充分证据证明它会执行：
+
+```text
+变化的 Contract
+→ 反向查询全部消费 DD
+→ 推导全部消费 Module
+→ 自动补全 affected_modules、design_refs 和 planned_code_paths
+```
+
+如果没有反向展开，会出现：
+
+```text
+Project Contract 被修改
+→ 只批准了 Contract owner Module
+→ 其他消费 Module 没进入影响范围
+→ Code Permission 不允许修改它们
+→ 或消费者根本没被处理
+```
+
+---
+
+### 根因六：Code Permission 的 Contract 范围主要从来源推导，不是从消费者推导
+
+当前代码权限冻结已包含 Project/Module Contract refs，但主要围绕：
+
+- Contract owner；
+- Contract source_refs；
+- 已声明 affected_modules。
+
+完整闭环还必须纳入：
+
+```text
+Contract 的全部消费 DD
+→ 全部消费 Module
+→ 对应 code_paths
+```
+
+否则“设计已经知道消费者”与“实际允许修改哪些代码”会断开。
+
+---
+
+### 根因七：生产代码实际消费者检查只有部分能力
+
+现有代码检查能确定一部分 TS/JS shared enum 的显式类型绑定，例如：
+
+- 有类型标注的变量；
+- 参数或属性；
+- `as` / `satisfies`；
+- 已知类型变量的赋值；
+- 可解析的 JSDoc 类型。
+
+当前不能可靠证明：
+
+- 未显式绑定的普通字符串；
+- 自由文本 public interface；
+- 自由文本 invariant；
+- 未支持语言的代码。
+
+正确处理不是假装全部检查完成，也不是建立第三套消费者清单，而是：
+
+```text
+能够机器证明
+→ 由现有代码 Contract Verifier 检查
+
+暂时不能机器证明
+→ 必须有明确人工审查 Contract 和验证证据
+
+没有机器证据，也没有人工审查证据
+→ Fail Closed
+```
+
+---
+
+### 根因八：职责分散，没有统一的 Prospective Contract Consumer 结果
+
+当前相关判断分布在：
+
+- Contract Integrity；
+- Project Governance；
+- Trace Gate；
+- Gate Runner；
+- Code Contract Verifier；
+- Changed Files Audit；
+- Verification。
+
+各部分使用的消费者依据不完全一致。
+
+需要在现有 Trace 核心中形成一个统一结果：
+
+```text
+Prospective Contract Consumer Graph
+```
+
+它不是新治理系统，只是对现有 Project Spec、Contract 和 Trace 的统一解析结果。
+
+所有 Gate 和后续阶段读取同一个结果，不再各自搜索和猜测。
+
+---
+
+## 7. 目标架构
+
+> **适用范围**：`PROJECT_GOVERNANCE`，并由当前产品开发负责实现。
+
+完整闭环如下：
+
+```text
+用户需求
+↓
+Impact Analysis 识别发生变化的 Contract
+↓
+Runtime 从当前正式 Trace 反向查询全部消费者
+↓
+自动补全受影响 DD、Module 和代码路径
+↓
+sf-design 产生 Contract Candidate、Module Design Candidate 和 Trace Delta
+↓
+Current Trace + ADD - REMOVE
+形成 Prospective Trace
+↓
+Trace Gate 检查关系语义与闭包
+↓
+Contract Integrity Gate 检查消费者、跨 Module 边界、Promotion 和兼容处理
+↓
+Spec Consistency Gate 检查 Impact Scope 与 Candidate 是否完整
+↓
+用户一次审批
+↓
+Contract、Design 和 Trace 原子 Merge
+↓
+Code Permission 按批准后的消费者范围冻结代码修改权限
+↓
+生产代码实现
+↓
+Changed Files Audit 确认实际文件所属 Module
+↓
+Code Contract Verifier / 人工审查证据检查实际依赖
+↓
+Verification 对账正式 Trace 与实际代码消费者
+↓
+不一致则 BLOCK，闭合后才允许 Close
+```
+
+---
+
+## 8. 唯一数据来源
+
+> **适用范围**：`BOTH`。
+
+### 8.1 当前正式关系
+
+唯一权威：
+
+```text
+.specforge/project/trace_matrix.md
+```
+
+### 8.2 Module Trace
+
+```text
+.specforge/project/modules/<MODULE>/trace.md
+```
+
+只能是项目级 Trace 的受控 Module 视图，不能独立写出另一套关系事实。
+
+### 8.3 本次变更输入
+
+```text
+.specforge/work-items/<WI>/trace_delta.md
+```
+
+只记录本次 ADD / REMOVE。
+
+### 8.4 Contract 文件
+
+Contract 文件只保存 Contract 自身定义：
+
+```text
+id
+owner_module
+source_refs
+enforcement
+Contract 类型所需字段
+```
+
+不再维护独立消费者数组。
+
+---
+
+## 9. Trace 语义
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+只保留现有两个 Relation：
+
+```text
+constrained_by
+enforces
+```
+
+合法关系固定为：
+
+### 上层设计约束下层设计
+
+```text
+DATA constrained_by ARCH
+DD constrained_by ARCH
+DD constrained_by DATA
+```
+
+### Contract 消费关系
+
+```text
+DD constrained_by Project Contract
+DD constrained_by 本 Module 的 Module Contract
+```
+
+### Contract 来源与机器执行关系
+
+```text
+Project Contract enforces ARCH / DATA
+Module Contract enforces DD
+```
+
+非法关系示例：
+
+```text
+其他 Module 的 DD constrained_by Module Contract
+→ BLOCK
+
+Contract constrained_by DD
+→ BLOCK
+
+DD enforces Contract
+→ BLOCK
+```
+
+---
+
+## 10. 消费者反向查询
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+现有 Trace 核心增加统一查询能力：
+
+```text
+getContractConsumers(contractId)
+```
+
+输出至少包含：
+
+```text
+contract_id
+consumer_design_ids
+consumer_modules
+consumer_edges
+source_trace_files
+```
+
+Module 归属通过正式 DD 归属推导，不接受人工填写一个容易漂移的 Module 名称。
+
+如果 DD 无法唯一归属 Module：
+
+```text
+BLOCK
+```
+
+---
+
+## 11. Trace Delta 的硬规则
+
+> **适用范围**：`BOTH`。
+
+每条操作必须精确验证。
+
+### ADD
+
+必须满足：
+
+1. From ID 存在；
+2. To ID 存在；
+3. 关系类型合法；
+4. 关系方向合法；
+5. Current Trace 中不存在同一关系；
+6. 同一个 Delta 中没有重复；
+7. 加入后不造成 Module Contract 跨模块消费；
+8. 加入后 Prospective Trace 保持闭合。
+
+### REMOVE
+
+必须满足：
+
+1. Current Trace 中存在完全相同关系；
+2. 同一个 Delta 中没有重复 REMOVE；
+3. 删除后没有留下缺失的必需来源或消费者关系；
+4. 删除后 Prospective Trace 保持闭合。
+
+### 变更
+
+必须是：
+
+```text
+REMOVE 旧关系
++
+ADD 新关系
+```
+
+两个操作必须在同一个 WI、同一次审批和同一次原子 Merge 中完成。
+
+---
+
+## 12. Module Contract 边界
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+对每个 Module Contract：
+
+```text
+owner_module = M
+```
+
+Contract Integrity Gate 从 Prospective Trace 查询全部消费者。
+
+### 合法
+
+```text
+全部消费 DD 都属于 M
+→ PASS
+```
+
+### 非法
+
+```text
+任意消费 DD 属于其他 Module
+→ BLOCK
+```
+
+不能通过“删除文本中的 Contract ID”规避；以正式 Trace 和实际代码依赖为准。
+
+---
+
+## 13. Module Contract 升级为 Project Contract
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+Promotion 是 Contract 治理级别发生变化，不是简单移动文件。
+
+完整 Promotion 在同一个 WI 中必须包含：
+
+1. 新的 Project Contract；
+2. 原 Module Contract 删除、废弃或明确替代；
+3. 所有旧消费者关系 REMOVE；
+4. 所有消费者到新 Project Contract 的关系 ADD；
+5. 受影响 Module Design 同步修改；
+6. 原 `MCON enforces DD` 来源关系处理；
+7. 新 `PCON enforces ARCH / DATA` 来源关系建立；
+8. Impact Scope 覆盖全部消费 Module；
+9. 兼容性或迁移结论；
+10. 回归测试；
+11. 所有内容原子 Merge。
+
+设计决定：
+
+> Promotion 使用新的 Project Contract ID，并明确替代原 Module Contract ID。
+
+理由：
+
+- Contract 治理级别变化可以在 Trace 中被看见；
+- 所有消费者必须显式迁移；
+- 不会把“同 ID 但语义和可见范围已变化”隐藏成普通修改；
+- 能可靠检查 REMOVE / ADD 是否完整。
+
+禁止：
+
+```text
+原 Module Contract 与新 Project Contract 同时长期有效
+```
+
+除非明确进入受控迁移期，并有唯一替代关系和截止条件；普通 Promotion 不允许双重真相源。
+
+---
+
+## 14. 三个 Gate 的职责边界
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+### 14.1 Trace Gate
+
+负责关系本身：
+
+- ADD / REMOVE 格式与操作合法；
+- From / To ID 存在；
+- Relation 类型与方向合法；
+- DD Module 归属唯一；
+- Prospective Trace 闭合；
+- 删除后没有悬空关系；
+- Module Trace 视图与项目权威矩阵一致。
+
+### 14.2 Contract Integrity Gate
+
+负责 Contract 业务语义：
+
+- owner、source_refs、enforcement；
+- 正式消费者完整；
+- Module Contract 不被其他 Module 消费；
+- Contract 删除时全部消费者已经解除或迁移；
+- Promotion 是否完整；
+- 破坏性变化是否处理全部消费者；
+- Trace 声明消费者与实际代码依赖证据是否一致；
+- 无法机器证明时，人工审查证据是否存在。
+
+### 14.3 Spec Consistency Gate
+
+负责本次治理范围和 Candidate：
+
+- Contract 变化是否纳入 Impact Scope；
+- 全部消费 DD 和 Module 是否纳入影响范围；
+- 必需的 Design、Contract、Trace Candidate 是否齐全；
+- Promotion 所需产物是否齐全；
+- Fast Path 是否错误声称 Contract/Trace 不变。
+
+三个 Gate 读取同一个 Prospective Project Model，但各自负责不同问题，避免重复实现不同解释。
+
+---
+
+## 15. Impact Scope 自动补全
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+当某个 Contract 被新增、修改、删除或 Promotion 时：
+
+```text
+Contract ID
+→ 从 Current / Prospective Trace 查询消费者 DD
+→ 推导消费者 Module
+→ 推导 Module code_paths
+```
+
+Runtime 必须自动补全：
+
+```text
+design_refs
+affected_modules
+project_contract_refs / module_contract_refs
+planned_code_paths
+```
+
+Agent 可以提出初步范围，但不能删掉 Runtime 确定的消费者范围。
+
+关系或归属无法唯一确定：
+
+```text
+BLOCK
+```
+
+---
+
+## 16. Code Permission
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+Code Permission 必须基于批准后的 Prospective Trace 冻结：
+
+```text
+owner Module
++
+全部 consumer Modules
++
+对应 Design refs
++
+Contract refs
++
+允许修改的 code_paths
+```
+
+不能只根据 Contract owner 或 source_refs 发放权限。
+
+如果 Task 需要修改某个消费者 Module，但该 Module 没有进入批准范围：
+
+```text
+不发放 Code Permission
+```
+
+---
+
+## 17. 生产代码实际消费者对账
+
+> **适用范围**：`BOTH`。
+
+不新增平行治理机制，完善现有能力。
+
+### 17.1 Changed Files Audit
+
+负责确定：
+
+```text
+实际修改文件
+→ 唯一所属 Module
+```
+
+无归属或多重归属：
+
+```text
+BLOCK
+```
+
+### 17.2 现有 Code Contract Verifier
+
+继续负责能够确定的代码依赖：
+
+- TS/JS 显式 shared enum 类型绑定；
+- 后续可在已有 verifier 中扩展其他结构化 Contract。
+
+### 17.3 暂时不能机器确定的情况
+
+例如：
+
+- 未支持语言；
+- 自由文本 public interface；
+- 自由文本 invariant；
+- 无法可靠证明的间接依赖。
+
+必须在现有 Verification / Semantic Closure 证据中提供：
+
+```text
+人工审查 Contract ID
+审查文件
+审查 Module
+结论
+审查依据
+```
+
+如果 Contract 声明需要检查，但既无机器结果也无人工审查证据：
+
+```text
+BLOCK
+```
+
+不得以 warning 冒充完成。
+
+---
+
+## 18. 合并和关闭边界
+
+> **适用范围**：`PROJECT_GOVERNANCE`。
+
+### 18.1 原子 Merge
+
+以下内容必须同时成功或同时不生效：
+
+```text
+Contract Candidate
+Module Design Candidate
+Trace Delta
+Project Trace Matrix
+Module Trace 受控视图
+相关 Manifest / version 更新
+```
+
+不能出现 Contract 已生效、Trace 未生效的中间状态。
+
+### 18.2 Verification
+
+必须对账：
+
+```text
+批准的 Prospective Trace 消费者
+↔
+合并后的正式 Trace 消费者
+↔
+实际改变的 Module
+↔
+代码检查或人工审查证据
+```
+
+### 18.3 Close
+
+存在以下任一情况不得 Close：
+
+- 悬空 Contract 消费关系；
+- 未登记实际消费者；
+- 跨 Module 消费 Internal Contract；
+- Promotion 未完成；
+- Contract 删除但消费者仍存在；
+- Code Permission 未覆盖实际消费 Module；
+- 实际代码依赖证据不足；
+- Trace 正式矩阵与 Module 视图不一致。
+
+---
+
+## 19. 需要修改的现有实现范围
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`。
+
+下列是未来实施 P0 闭环时允许进入的范围。实施前仍需以当前仓库逐文件确认。
+
+### 必须修改
+
+```text
+packages/daemon-core/src/tools/lib/sf_trace_matrix_core.ts
+packages/daemon-core/src/tools/lib/project-governance-v2.ts
+packages/daemon-core/src/tools/lib/contract-integrity.ts
+packages/daemon-core/src/tools/lib/impact-analysis.ts
+packages/daemon-core/src/tools/lib/code-contract-verifier.ts
+```
+
+职责：
+
+- 统一 Trace 解析和 Prospective Trace；
+- 支持并验证 DD → Contract 消费关系；
+- 从 Trace 反向查询消费者；
+- 检查 Module Contract 边界和 Promotion；
+- 自动展开 Impact Scope；
+- 对账实际代码依赖。
+
+### 根据现有调用链确认后修改
+
+```text
+packages/daemon-core/src/tools/lib/gate-runner-v11.ts
+packages/daemon-core/src/tools/lib/merge-runner-v11.ts
+packages/types/src/contract-model.ts
+```
+
+只有在以下情况才修改：
+
+- Gate Runner 尚未把统一 Prospective Model 传给三个 Gate；
+- Merge Runner 尚不能原子合并 Contract 与 Trace；
+- 现有类型无法表达必需的 Promotion / 兼容性分类。
+
+### 部署态同步文件
+
+```text
+setup/userlevel-opencode/tools/lib/sf_trace_matrix_core.ts
+```
+
+不得手工形成与源码不同的第二实现；应由现有安装/同步机制保持一致。
+
+### Agent / Skill
+
+必须同步其职责文字，但不赋予它们最终裁决权：
+
+```text
+setup/userlevel-opencode/agents/sf-design.md
+setup/userlevel-opencode/agents/sf-task-planner.md
+setup/userlevel-opencode/agents/sf-verifier.md
+相关 Workflow Skill
+```
+
+要求：
+
+- sf-design 产生正确的 Contract 消费 Trace Delta；
+- task planner 覆盖全部消费者工作；
+- verifier 对账正式 Trace 与实际代码；
+- Runtime / Gate 才是最终强制者。
+
+### 明确不允许扩大
+
+本次 P0 不应：
+
+- 新建第二套消费者 Registry；
+- 在 Module 定义中增加独立消费者列表；
+- 新建新的 Contract Gate；
+- 新建新的 Trace 文件体系；
+- 新建新的 Relation 名称；
+- 改造 Requirement 治理；
+- 修改无关 daemon 生命周期；
+- 处理延期的 `packages/daemon-core/.specforge` 问题。
+
+---
+
+## 20. 回归测试矩阵
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`；被验证行为属于 `PROJECT_GOVERNANCE`。
+
+必须一次性覆盖以下场景。
+
+### Trace 基础
+
+1. 合法 ADD；
+2. 合法 REMOVE；
+3. 关系变更 REMOVE + ADD；
+4. REMOVE 不存在关系 → BLOCK；
+5. 重复 ADD → BLOCK；
+6. 重复 REMOVE → BLOCK；
+7. From ID 不存在 → BLOCK；
+8. To Contract 不存在 → BLOCK；
+9. 非法关系方向 → BLOCK；
+10. 合并后悬空关系 → BLOCK。
+
+### Module Contract
+
+11. 本 Module DD 消费本 Module Contract → PASS；
+12. 其他 Module DD 消费 Module Contract → BLOCK；
+13. 文本中出现 Contract ID 但 Trace 未登记，不把文本当正式关系；
+14. Trace 登记但 DD Module 不可确定 → BLOCK。
+
+### Project Contract
+
+15. 多 Module 正常消费 Project Contract → PASS；
+16. 删除 Project Contract但仍有消费者 → BLOCK；
+17. 破坏性修改且所有消费者同步更新 → PASS；
+18. 破坏性修改遗漏一个消费者 → BLOCK。
+
+### Promotion
+
+19. 完整 Module → Project Promotion → PASS；
+20. 缺少新 Project Contract → BLOCK；
+21. 未删除或替代旧 Module Contract → BLOCK；
+22. 缺少消费者 REMOVE → BLOCK；
+23. 缺少消费者 ADD → BLOCK；
+24. 缺少 Design 更新 → BLOCK；
+25. 缺少 Contract 来源关系更新 → BLOCK；
+26. 缺少兼容或迁移结论 → BLOCK；
+27. Contract 与 Trace 不能原子合并 → 整体失败且正式状态不改变。
+
+### Impact Scope / Code Permission
+
+28. Contract 变化自动展开全部 consumer Modules；
+29. Impact Scope 人工漏写消费者，Runtime 自动补全；
+30. 无法唯一确定消费者 → BLOCK；
+31. Code Permission 覆盖全部批准消费者；
+32. 未批准消费者 Module 的代码文件不能写入。
+
+### 实际代码对账
+
+33. 支持的 TS/JS 依赖与 Trace 一致 → PASS；
+34. 代码实际消费但 Trace 未登记 → BLOCK；
+35. Trace 声明消费但 Contract 已删除 → BLOCK；
+36. 其他 Module 生产代码直接依赖 Internal Contract → BLOCK；
+37. 未支持语言且无人工审查证据 → BLOCK；
+38. 未支持语言但有完整人工审查证据 → PASS。
+
+### 流程
+
+39. Fast Path 声称 Contract 不变但实际关系变化 → BLOCK；
+40. Candidate Gate、Merge、Verification、Close 全链路闭环；
+41. Module Trace 视图与项目权威矩阵不一致 → BLOCK；
+42. 安装态 Tool/Agent/Skill 与仓库源码规则一致。
+
+---
+
+## 21. 实施文件生命周期
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`。
+
+本文件是该 P0 缺陷唯一实施记录，状态只允许：
+
+```text
+APPROVED_FOR_IMPLEMENTATION
+IN_PROGRESS
+COMPLETED
+```
+
+### 开始修改代码时
+
+状态改为：
+
+```text
+IN_PROGRESS
+```
+
+并在本文件追加：
+
+```text
+实施开始 commit SHA
+实际允许修改文件
+与原设计相比的范围变化
+新增证据不足项
+```
+
+### 实施过程中
+
+发现新的 Module、消费者、Contract、Trace、Gate 或文件影响时：
+
+```text
+停止扩大修改
+→ 更新本文件的影响范围与测试矩阵
+→ 重新完成治理前置结论
+→ 再继续
+```
+
+不得只在聊天中说明，也不得另建一个临时实施方案取代本文件。
+
+### 实施完成时
+
+状态改为：
+
+```text
+COMPLETED
+```
+
+并在本文件追加：
+
+```text
+完成 commit SHA
+实际修改文件
+架构一致性结论
+Contract 一致性结论
+Trace 一致性结论
+实际范围审计
+测试、类型检查和构建结果
+真实项目验证结果
+未解决问题
+INSUFFICIENT_EVIDENCE
+```
+
+只有上述内容闭合后，本缺陷才允许关闭。
+
+## 22. 缺陷记录
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`。
+
+```text
+编号：GOV-DEFECT-CONTRACT-CONSUMER-001
+
+名称：
+Contract 正式消费者与实际代码消费者未形成 Trace 驱动闭环
+
+分类：
+CONTRACT_CONSUMER_TRUTH_SOURCE_MISMATCH
+TRACE_SEMANTIC_GAP
+CROSS_MODULE_BOUNDARY_ENFORCEMENT_GAP
+IMPACT_SCOPE_UNDER_APPROXIMATION
+CODE_CONSUMER_EVIDENCE_GAP
+
+优先级：
+P0
+
+直接根因：
+现有实现沿用“显式文档标记/文本扫描”的旧消费者模型，
+未以 Prospective Trace 为唯一正式消费者依据。
+
+修复目标：
+Trace 唯一真相源；
+ADD/REMOVE 原子变更；
+跨 Module Internal Contract 阻断；
+Promotion 完整性检查；
+Impact Scope 与 Code Permission 反向展开；
+正式消费者与实际代码依赖闭环。
+
+关闭条件：
+本报告中的 42 项回归场景全部通过；
+相关类型检查、构建和全仓回归通过；
+真实业务项目验证 Contract 增加、取消、变更及 Promotion；
+没有 INSUFFICIENT_EVIDENCE。
+```
+
+---
+
+## 23. 设计批准状态
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`。
+
+```text
+根因分析：完成
+目标架构：完成
+Gate 职责划分：完成
+Trace ADD/REMOVE 规则：完成
+Module Contract 边界设计：完成
+Promotion 设计：完成
+Impact Scope / Code Permission 设计：完成
+生产代码消费者对账设计：完成
+允许修改范围：完成
+回归测试矩阵：完成
+
+代码修改：未开始
+daemon/OpenCode：未操作
+```
+
+本文件已经达到 `APPROVED_FOR_IMPLEMENTATION` 状态。下一步依据本文件，把 P0 Contract 消费者闭环作为一个完整治理主题实施，不再重新设计同一架构逻辑。实施期间的新事实、范围变化、实际修改和验证证据都回写本文件，不再为同一问题另建实施报告或交接文件。
