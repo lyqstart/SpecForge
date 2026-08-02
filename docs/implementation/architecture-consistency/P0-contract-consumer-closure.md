@@ -1,11 +1,11 @@
 # SpecForge P0：Contract 消费者闭环根因分析与完整实现设计
 
-> **状态**：APPROVED_FOR_IMPLEMENTATION
+> **状态**：IN_PROGRESS
 > **文件性质**：非权威实施文件
 > **目标仓库路径**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
 > **缺陷编号**：`GOV-DEFECT-CONTRACT-CONSUMER-001`
-> **设计基线**：`main@57c5eb5`（程序代码与 `08629b5` 相同；`57c5eb5` 新增本实施文件和交接文件）
+> **设计基线**：`main@e242768`（P0 精确源码取证与实施范围已在该提交冻结；程序实现已整文件替换到用户仓库并完成自动化验证，尚未提交）
 > **当前执行边界**：本文件用于开发 SpecForge 产品；业务项目不直接读取本文件。标记为 `PROJECT_GOVERNANCE` 或 `BOTH` 的规则，必须最终落实到 SpecForge 的程序、Tool、Skill、Agent、Workflow、Gate、Runtime、项目模板和回归测试中。
 
 ## 0. 文档权威边界
@@ -1019,6 +1019,7 @@ packages/daemon-core/src/tools/lib/code-contract-verifier.ts
 packages/daemon-core/src/tools/lib/gate-runner-v11.ts
 packages/daemon-core/src/tools/lib/merge-runner-v11.ts
 packages/daemon-core/src/tools/lib/verification-report-contract.ts
+packages/daemon-core/src/tools/lib/verification-governance-contract.ts              （实施中经一手调用链证据确认）
 ```
 
 #### `governance-trace-model.ts`
@@ -1140,6 +1141,12 @@ Trace 已合并但 Module 视图未更新
 
 不得用自由文本“已审查”代替结构化证据。
 
+#### `verification-governance-contract.ts`
+
+实施中通过真实调用链确认：结构化人工 Contract 审查虽然由报告 Schema 定义，但其 Evidence ID 还必须进入 Verification 的证据一致性检查，否则报告可以携带审查记录，闭包却无法证明该记录引用了已登记 Evidence。
+
+因此该文件进入最小生产范围，只负责把 `contract_reviews[].evidence` 纳入现有 Evidence 对账，不增加新的验证体系。
+
 ### 19.3 当前不需要修改的生产文件
 
 源码证据已经证明以下文件不是本 P0 的主要缺口位置：
@@ -1176,6 +1183,7 @@ setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md
 setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md
 setup/userlevel-opencode/skills/sf-workflow-contract-change/SKILL.md
 setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md
+setup/userlevel-opencode/skills/sf-workflow-spec-migration/SKILL.md                  （实施中经回归证据确认）
 ```
 
 要求：
@@ -1187,6 +1195,8 @@ setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md
 - Quick Change 发现 Contract 消费或正式关系变化时必须升级，不得以“无影响”声明绕过。
 
 Agent 和 Skill 只负责正确生产和消费治理信息；最终裁决仍由 Runtime 和 Gate 执行。
+
+实施中运行仓库既有 Agent/Skill 最终治理合同回归时，确认 `sf-workflow-architecture-change` 与 `sf-workflow-spec-migration` 的合同区段遗漏了仓库统一要求的 Fast Path、no-merge、Code Permission / Audit 边界词项。该缺口在 `e242768` 基线已经存在，属于 P2 Agent/Skill 合同对齐缺陷，不是 P0 新逻辑造成。为使同一治理合同恢复一致，本轮只补足通用边界，不改变两个 Workflow 的业务行为：Architecture Change 仍需正常 Merge 和代码权限；Spec Migration 仍为纯规格、不得释放代码权限。
 
 ### 19.5 明确禁止扩大
 
@@ -1622,30 +1632,33 @@ Merge 失败后留下部分正式文件
 Module Trace 与项目 Trace 不一致
 ```
 
-### 21.8 冻结的测试文件范围
+### 21.8 实际测试文件范围
 
 新增：
 
 ```text
-packages/daemon-core/src/tools/lib/governance-trace-model.test.ts
-packages/daemon-core/tests/contract-trace-atomic-merge.test.ts
+packages/daemon-core/tests/unit/governance-trace-model.test.ts
+packages/daemon-core/tests/unit/p0-contract-consumer-merge.test.ts
 ```
 
 扩展：
 
 ```text
-packages/daemon-core/src/tools/lib/project-governance-v2.test.ts
-packages/daemon-core/src/tools/lib/project-governance-greenfield-premerge.test.ts
 packages/daemon-core/src/tools/lib/project-governance-greenfield-code-permission.test.ts
-packages/daemon-core/src/tools/lib/contract-integrity.test.ts
-packages/daemon-core/tests/unit/contract-integrity.test.ts
 packages/daemon-core/tests/unit/code-contract-verifier.test.ts
+packages/daemon-core/tests/unit/contract-integrity.test.ts
+packages/daemon-core/tests/unit/contracts-registry.test.ts
 packages/daemon-core/tests/unit/verification-governance-contract.test.ts
 packages/daemon-core/tests/v11-agent-skill-contract-alignment.test.ts
-packages/daemon-core/tests/v11-install-deployment-consistency.test.ts
+packages/daemon-core/tests/verification-report-contract-delegation.test.ts
 ```
 
-实施时允许在同一职责测试文件中增加场景；不得建立与生产实现脱离的纯字符串假测试代替行为测试。
+实施结果与冻结计划相比有两项路径收敛：
+
+1. Trace 共享模型测试放在统一的 `tests/unit`，避免把新的治理语义测试混入旧 Requirement Trace Core；
+2. 原子 Merge 场景放在 `p0-contract-consumer-merge.test.ts`，直接覆盖现有 Merge Runner，而不是建立独立测试子系统。
+
+所有新增测试都执行真实生产函数，不以纯字符串断言代替核心行为；Agent/Skill 合同测试只负责文档运行合同的一致性防退化。
 
 ### 21.9 治理前置结论
 
@@ -1663,7 +1676,7 @@ daemon/OpenCode：不需要
 证据不足项：真实 OpenCode + WorkDesk 运行验证尚未执行
 ```
 
-当前仅允许进入本文件第 19 节冻结的范围。代码实施完成前不得宣布 P0 关闭；自动化验证完成后仍需 WorkDesk 真实项目验证。
+当前实现已经整文件替换到用户仓库，并保持在第 19 节及本轮一手证据批准的最小扩展范围内。用户仓库真实依赖环境中的目标测试、TypeScript no-emit、daemon-core 构建、全仓 deterministic build、格式检查和精确范围审计已经通过。P0 状态仍保持 `IN_PROGRESS`，因为实现提交尚未完成，且 WorkDesk 真实 OpenCode + SpecForge 项目验证仍未执行；在真实项目验证完成前不得宣布关闭。
 
 ---
 
@@ -1773,6 +1786,18 @@ Impact Scope 与 Code Permission 反向展开；
 没有 INSUFFICIENT_EVIDENCE。
 ```
 
+本轮同时确认并修复一个既有 P2 对齐缺陷：
+
+```text
+编号：GOV-DEFECT-AGENT-SKILL-CONTRACT-ALIGNMENT-001
+分类：P2_AGENT_SKILL_CONTRACT_ALIGNMENT_BASELINE_GAP
+事实：e242768 基线中的 Architecture Change 和 Spec Migration Skill 合同区段不满足仓库既有统一合同回归。
+根因：工作流特定文本省略了统一 Fast Path、no-merge、Code Permission 和 Audit 边界词项。
+修复：只补足统一合同边界，不改变两个工作流的既有业务路径。
+回归：v11-agent-skill-contract-alignment.test.ts 全部通过。
+真实项目验证：随 Phase 11 WorkDesk 验证。
+```
+
 ---
 
 ## 24. 设计批准状态
@@ -1790,11 +1815,251 @@ Impact Scope / Code Permission 设计：完成
 生产代码消费者对账设计：完成
 精确源码取证：完成
 正式治理前置结论：完成
-允许修改范围：已冻结
+允许修改范围：已冻结并按一手证据记录最小扩展
 回归测试矩阵：已冻结
 
-代码修改：未开始
+隔离工作副本代码实现：完成
+程序实现整文件替换：完成
+用户仓库目标测试：95 通过，0 失败
+TypeScript no-emit：通过
+daemon-core build：通过
+全仓 deterministic build：通过
+精确修改范围审计：29 个文件，无缺失、无越界
+git diff --check：通过
+用户仓库提交：未执行
+WorkDesk 真实验证：未执行
 daemon/OpenCode：未操作
 ```
 
-本文件已经达到 `APPROVED_FOR_IMPLEMENTATION` 状态，并完成 `main@57c5eb5` 精确源码取证与治理前置结论。下一步只允许依据第 19、20、21 节冻结的范围实施 P0 Contract 消费者闭环，不再重新设计同一架构逻辑。实施期间的新事实、范围变化、实际修改和验证证据都回写本文件，不再为同一问题另建实施报告或交接文件。
+本文件当前状态为 `IN_PROGRESS`。程序实现已经在用户仓库 `main@e242768` 上完成整文件替换和自动化验证。下一步只允许用包含本次真实验证记录的最终整文件包覆盖相同 29 个文件，随后暂存、复核并提交；在提交成功前保留全部替换包，在 WorkDesk 真实项目验证完成前不得把本缺陷标记为 `COMPLETED`。
+
+---
+
+## 25. 本轮实施记录
+
+> **适用范围**：`PRODUCT_DEVELOPMENT`；实现的产品行为属于 `PROJECT_GOVERNANCE` 和 `BOTH`。
+>
+> **实施开始基线**：`main@e242768`
+>
+> **实现位置**：已整文件替换到用户仓库 `main@e242768` 工作区；自动化验证通过，尚未提交。
+
+### 25.1 关键实现决定
+
+#### 同一个 Trace 文件承载两类关系，但只保留一个物理真相源
+
+现有 `.specforge/project/trace_matrix.md` 同时承担：
+
+```text
+REQ → AC → DD → TASK → FILE → TEST → EVIDENCE 的工程追溯
+Architecture / Data / Design / Contract 的治理关系
+```
+
+本轮不新建第二个 Trace 文件，而是在同一正式文件中使用受控区段：
+
+```text
+<!-- SPECFORGE_GOVERNANCE_RELATIONS_START -->
+<!-- SPECFORGE_GOVERNANCE_RELATIONS_END -->
+```
+
+WI 的关系变更只写入：
+
+```text
+<!-- SPECFORGE_GOVERNANCE_DELTA_START -->
+<!-- SPECFORGE_GOVERNANCE_DELTA_END -->
+```
+
+Merge 只替换治理关系区段，保留原有工程追溯内容。旧项目未激活治理关系区段时继续兼容原 Trace Delta 和 Module Trace；一旦激活，Project Trace 成为唯一权威，Module Trace 只能由它生成。
+
+#### 原子 Merge
+
+Merge Runner 在写入前保存全部目标快照；Contract、Design、Project Trace、Module Trace 投影或 Manifest 任一步失败时恢复全部目标，并把返回的版本和 `spec_manifest` 更新状态恢复为事务前事实。
+
+#### 实际代码消费者证据
+
+支持的 TypeScript/JavaScript 显式 Contract 绑定由现有代码验证器机器检查；未支持语言和自由文本依赖必须在 `verification_report` 中提供结构化 `contract_reviews`。机器证据和人工证据都不存在时，Verification Gate 失败关闭。
+
+### 25.2 实际生产修改
+
+新增：
+
+```text
+packages/daemon-core/src/tools/lib/governance-trace-model.ts
+```
+
+修改：
+
+```text
+packages/daemon-core/src/tools/lib/project-governance-v2.ts
+packages/daemon-core/src/tools/lib/contract-integrity.ts
+packages/daemon-core/src/tools/lib/contracts-registry.ts
+packages/daemon-core/src/tools/lib/code-contract-verifier.ts
+packages/daemon-core/src/tools/lib/gate-runner-v11.ts
+packages/daemon-core/src/tools/lib/merge-runner-v11.ts
+packages/daemon-core/src/tools/lib/verification-report-contract.ts
+packages/daemon-core/src/tools/lib/verification-governance-contract.ts
+```
+
+未修改冻结排除项：
+
+```text
+sf_trace_matrix_core.ts
+impact-analysis.ts
+gate-chain.ts
+changed-files-audit.ts
+code-permission-service-v11.ts
+packages/types/src/contract-model.ts
+```
+
+### 25.3 实际 Agent / Skill 修改
+
+```text
+setup/userlevel-opencode/agents/sf-design.md
+setup/userlevel-opencode/agents/sf-task-planner.md
+setup/userlevel-opencode/agents/sf-verifier.md
+setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md
+setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md
+setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md
+setup/userlevel-opencode/skills/sf-workflow-contract-change/SKILL.md
+setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md
+setup/userlevel-opencode/skills/sf-workflow-spec-migration/SKILL.md
+```
+
+### 25.4 隔离环境验证结果
+
+使用从 `e242768` 同源代码构造的轻量 Vitest 兼容运行器执行真实生产函数和真实测试文件：
+
+```text
+测试文件：9
+测试场景：67
+通过：67
+失败：0
+```
+
+覆盖：
+
+```text
+Trace 工程追溯内容保留与治理区段替换
+严格 ADD / REMOVE 与重复、冲突、缺失操作阻断
+DD constrained_by Project/Module Contract
+Internal Contract 跨 Module 阻断
+Contract 删除、破坏性修改与 Promotion
+消费者反向展开到 Impact Scope / Code Permission
+正式消费者与实际代码消费者对账
+未支持语言结构化人工审查
+应用级原子 Merge 和失败回滚
+Verification Gate 集成
+Agent / Skill 最终治理合同一致性
+```
+
+对 18 个变更 TypeScript 文件执行 TypeScript 5.8.3 `transpileModule` 语法诊断：
+
+```text
+通过：18
+失败：0
+```
+
+该语法诊断不能替代仓库真实 `tsc --noEmit`。
+
+### 25.5 用户仓库真实自动化验证结果
+
+在 Windows 用户仓库 `main@e242768`、真实依赖和真实构建链中完成：
+
+```text
+目标测试文件：18
+测试场景：95
+通过：95
+失败：0
+expect 调用：1691
+```
+
+通过范围包括：
+
+```text
+Contract 正式消费者与破坏性变更
+Module Contract → Project Contract Promotion
+Trace Current + ADD - REMOVE
+Trace 工程追溯内容保留
+Module Trace 受控投影
+跨 Module Internal Contract 阻断
+Contract 消费者反向展开
+Code Permission 消费 Module 覆盖
+正式消费者与实际代码消费者对账
+未支持语言结构化人工审查
+原子 Merge 与失败回滚
+Verification Gate 集成
+Agent / Skill 合同一致性
+安装态一致性
+既有 Candidate Merge 与 Greenfield 回归
+```
+
+编译和构建结果：
+
+```text
+bunx tsc --noEmit -p packages/daemon-core/tsconfig.json：通过
+packages/daemon-core bun run build：通过
+根目录 bun run build：通过
+全仓 deterministic workspace build：全部 package 通过
+git diff --check：通过
+```
+
+实际范围审计：
+
+```text
+实现包预期文件：29
+Git 实际变化文件：29
+缺失：0
+越界：0
+构建新增非预期文件：0
+```
+
+根目录构建执行了工作流文档确定性渲染。渲染过程触及多个 Skill 的生成区段，但最终 Git 范围仍保持为批准的 29 个文件，没有产生额外差异。
+
+### 25.6 验证期间发现并修复的测试夹具缺陷
+
+```text
+编号：GOV-TEST-FIXTURE-CONTRACT-PROMOTION-001
+分类：P2_TEST_FIXTURE_SCHEMA_GAP
+事实：第一次真实测试运行结果为 93 通过、2 失败；两项均为 Module Contract Promotion 场景。
+根因：测试夹具创建 Module Invariant Contract 时遗漏必填字段 scope: "module"。
+判断：生产代码按 Schema 拒绝无效 Module Contract，属于正确的 Fail Closed 行为，不能放宽生产规则。
+修复：只替换 packages/daemon-core/tests/unit/contract-integrity.test.ts，
+      为两个 Promotion 夹具补齐 scope: "module"。
+回归：重新运行完整目标测试集，95 通过、0 失败。
+治理结论：测试数据必须与正式 Contract Schema 一致，不能通过降低生产校验来迁就无效夹具。
+```
+
+### 25.7 当前证据不足
+
+```text
+INSUFFICIENT_EVIDENCE：WorkDesk 真实 OpenCode + SpecForge 新项目链路尚未运行
+INSUFFICIENT_EVIDENCE：真实业务项目中的 Contract 增加、取消、破坏性变更和 Promotion 尚未完成端到端验证
+```
+
+用户仓库自动化验证已完成，因此不再把目标测试、TypeScript no-emit、package build、deterministic build 或安装态一致性列为证据不足。
+
+P0 仍不得标记为 `COMPLETED`，也不得据此启用最终 Hard Enforcement。上述动作必须等待实现提交完成，并在后续 Phase 11 WorkDesk 真实项目验证中关闭剩余证据缺口。
+
+### 25.8 下一执行边界
+
+下一步只允许：
+
+```text
+用最终整文件包覆盖批准的 29 个文件
+→ 确认 Git 变化仍为同一 29 个文件
+→ git diff --check
+→ 暂存全部 29 个文件
+→ git diff --cached --check
+→ 提交 P0 实现
+→ 确认工作区干净
+→ 成功后清理本轮全部压缩包
+```
+
+本次提交完成后：
+
+```text
+更新远程 main
+→ 重新读取 current-handoff.md
+→ 决定进入后续静态差距项，或安排 Phase 11 WorkDesk 真实验证
+```
+
+涉及 daemon 或 OpenCode 时，必须先明确告知用户，由用户手工操作。

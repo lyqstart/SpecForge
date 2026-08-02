@@ -52,4 +52,62 @@ describe('verification-report.ts contract delegation', () => {
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
   });
+
+  it('accepts structured manual Contract review evidence', () => {
+    const report = JSON.stringify({
+      conclusion: 'pass',
+      test_matrix: {
+        L1_unit: 'pass', L2_integration: 'pass', L3_pbt: 'skip',
+        L4_e2e: 'pass', L5_smoke: 'pass', L6_regression: 'pass',
+        L7_performance: 'skip', L8_security: 'skip', L9_compatibility: 'skip', L10_uat: 'skip',
+      },
+      verification_commands: [{ command: 'review', status: 'pass', output_summary: 'reviewed' }],
+      acceptance_criteria: [{ req_id: 'REQ-001', name: 'AC1', status: 'pass', evidence: 'EV-001' }],
+      e2e_tests: [{ name: 'e2e', status: 'pass', evidence: 'EV-002' }],
+      contract_reviews: [{
+        contract_id: 'PhotoStatus',
+        files: ['src/photo.py'],
+        modules: ['PHOTO'],
+        review_method: 'manual',
+        reviewer: 'sf-verifier',
+        conclusion: 'pass',
+        summary: 'No invalid Contract values found.',
+        evidence: 'EV-CONTRACT-001',
+      }],
+      side_effects: 'none',
+      summary: 'verified',
+      semantic_closure: { schema_version: '1.0' },
+    });
+    expect(validateVerificationReport('```json\n' + report + '\n```').valid).toBe(true);
+  });
+
+  it('rejects incomplete manual Contract review evidence', () => {
+    const report = JSON.stringify({
+      conclusion: 'pass',
+      test_matrix: {
+        L1_unit: 'pass', L2_integration: 'pass', L3_pbt: 'skip',
+        L4_e2e: 'pass', L5_smoke: 'pass', L6_regression: 'pass',
+        L7_performance: 'skip', L8_security: 'skip', L9_compatibility: 'skip', L10_uat: 'skip',
+      },
+      verification_commands: [{ command: 'review', status: 'pass', output_summary: 'reviewed' }],
+      acceptance_criteria: [{ req_id: 'REQ-001', name: 'AC1', status: 'pass', evidence: 'EV-001' }],
+      e2e_tests: [{ name: 'e2e', status: 'pass', evidence: 'EV-002' }],
+      contract_reviews: [{
+        contract_id: 'PhotoStatus',
+        files: [],
+        modules: [],
+        review_method: 'manual',
+        reviewer: '',
+        conclusion: 'pass',
+        summary: '',
+      }],
+      side_effects: 'none',
+      summary: 'verified',
+      semantic_closure: { schema_version: '1.0' },
+    });
+    const result = validateVerificationReport('```json\n' + report + '\n```');
+    expect(result.valid).toBe(false);
+    expect(result.errors.join('; ')).toContain('contract_reviews');
+  });
+
 });

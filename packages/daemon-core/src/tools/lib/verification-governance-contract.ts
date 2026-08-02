@@ -75,7 +75,7 @@ function verificationExecutionStatuses(report: Record<string, any> | null): stri
 
 function reportClaims(
   report: Record<string, any> | null,
-  field: 'acceptance_criteria' | 'e2e_tests'
+  field: 'acceptance_criteria' | 'e2e_tests' | 'contract_reviews'
 ): Record<string, any>[] {
   return Array.isArray(report?.[field]) ? report[field].filter(isRecord) : [];
 }
@@ -163,6 +163,10 @@ function reportEvidenceAlignment(
     })),
     ...reportClaims(report, 'e2e_tests').map((claim, index) => ({
       label: `e2e_tests[${index}]`,
+      claim,
+    })),
+    ...reportClaims(report, 'contract_reviews').map((claim, index) => ({
+      label: `contract_reviews[${index}]`,
       claim,
     })),
   ];

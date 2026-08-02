@@ -10,6 +10,20 @@ import {
   resolveSpecModuleIdentity,
 } from '@specforge/types';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
+import {
+  applyGovernanceTraceDelta,
+  compareGovernanceTraceEdges,
+  getGovernanceContractConsumers,
+  moduleTraceProjection,
+  normalizeGovernanceTraceEdges,
+  parseGovernanceTrace,
+  parseGovernanceTraceDelta,
+  validateGovernanceTraceSemantics,
+  type GovernanceContractConsumer,
+  type GovernanceTraceDeltaOperation,
+  type GovernanceTraceEdge,
+  type GovernanceTraceIssue,
+} from './governance-trace-model.js';
 import { getFactualChangedFiles } from './write-guard-log.js';
 import { computeFilesystemDiff, loadBaseline } from './filesystem-diff.js';
 import {
@@ -70,6 +84,7 @@ type ContractEntry = {
   enforcement: string;
   kind: string;
   module_internal: boolean;
+  raw: Record<string, unknown>;
 };
 
 type ModuleModel = {
@@ -82,18 +97,15 @@ type ModuleModel = {
   contracts_path: string;
   contracts_declared: boolean;
   trace_path: string;
+  trace_edges: GovernanceTraceEdge[];
+  trace_generated: boolean;
   code_paths: string[];
   design_ids: string[];
   design_text: string;
   contract_entries: ContractEntry[];
 };
 
-type TraceEdge = {
-  from: string;
-  relation: 'constrained_by' | 'enforces';
-  to: string;
-  source: string;
-};
+type TraceEdge = GovernanceTraceEdge;
 
 type ProjectModel = {
   active: boolean;
@@ -108,6 +120,10 @@ type ProjectModel = {
   modules: ModuleModel[];
   contracts: ContractEntry[];
   trace: TraceEdge[];
+  current_trace: TraceEdge[];
+  trace_delta_operations: GovernanceTraceDeltaOperation[];
+  trace_issues: GovernanceTraceIssue[];
+  already_merged: boolean;
   inputFiles: string[];
 };
 
@@ -272,83 +288,6 @@ export function resolveModuleOwnershipFromManifest(manifest: any, filePath: stri
   return unique(owners);
 }
 
-function parseStructuredTraceDeclarations(text: string, source: string): TraceEdge[] {
-  const edges: TraceEdge[] = [];
-  const jsonBlocks = text.matchAll(/```json\s*([\s\S]*?)```/gi);
-  for (const match of jsonBlocks) {
-    let parsed: any;
-    try {
-      parsed = JSON.parse(match[1]);
-    } catch {
-      continue;
-    }
-
-    for (const field of ['data_designs', 'module_designs']) {
-      for (const entry of Array.isArray(parsed?.[field]) ? parsed[field] : []) {
-        const from = String(entry?.id ?? '').trim();
-        if (!from) continue;
-        for (const to of normalizeArray(entry?.constrained_by)) {
-          edges.push({ from, relation: 'constrained_by', to, source });
-        }
-      }
-    }
-
-    for (const entry of Array.isArray(parsed?.contract_enforcements)
-      ? parsed.contract_enforcements
-      : []) {
-      const from = String(entry?.id ?? entry?.contract_id ?? '').trim();
-      if (!from) continue;
-      for (const to of normalizeArray(entry?.enforces ?? entry?.source_refs)) {
-        edges.push({ from, relation: 'enforces', to, source });
-      }
-    }
-  }
-  return edges;
-}
-
-function parseTrace(text: string, source: string): TraceEdge[] {
-  const edges: TraceEdge[] = [];
-  for (const line of text.split(/\r?\n/)) {
-    if (!line.trim().startsWith('|')) continue;
-    const cells = line
-      .split('|')
-      .slice(1, -1)
-      .map(cell => cell.trim());
-    if (cells.length < 3) continue;
-    const [from, relation, to] = cells;
-    if (relation === 'constrained_by' || relation === 'enforces') {
-      edges.push({ from, relation, to, source });
-    }
-  }
-  edges.push(...parseStructuredTraceDeclarations(text, source));
-  return edges;
-}
-
-type TraceDeltaOperation = { operation: 'ADD' | 'REMOVE'; edge: TraceEdge };
-
-function parseTraceDelta(text: string, source: string): TraceDeltaOperation[] {
-  const operations: TraceDeltaOperation[] = [];
-  for (const line of text.split(/\r?\n/)) {
-    if (!line.trim().startsWith('|')) continue;
-    const cells = line
-      .split('|')
-      .slice(1, -1)
-      .map(cell => cell.trim());
-    if (cells.length < 4 || (cells[0] !== 'ADD' && cells[0] !== 'REMOVE')) continue;
-    const relation = cells[2];
-    if (relation !== 'constrained_by' && relation !== 'enforces') continue;
-    operations.push({
-      operation: cells[0] as 'ADD' | 'REMOVE',
-      edge: { from: cells[1], relation, to: cells[3], source },
-    });
-  }
-  return operations;
-}
-
-function sameTraceEdge(a: TraceEdge, b: TraceEdge): boolean {
-  return a.from === b.from && a.relation === b.relation && a.to === b.to;
-}
-
 function candidateAbsolute(projectRoot: string, workItemDir: string, candidatePath: string): string {
   if (path.isAbsolute(candidatePath)) return candidatePath;
   const normalized = slash(candidatePath);
@@ -406,6 +345,7 @@ function flattenContracts(registry: any, moduleInternal: boolean): ContractEntry
         enforcement: String(entry.enforcement ?? '').trim(),
         kind: field,
         module_internal: moduleInternal,
+        raw: entry as Record<string, unknown>,
       });
     }
   }
@@ -470,7 +410,10 @@ async function loadProjectModel(
   const workItemId = path.basename(workItemDir);
   const reader = await prospectiveReader(projectRoot, workItemDir);
   const manifestPath = path.join(projectRoot, SPEC_DIR, 'project', 'spec_manifest.json');
-  const manifest = prospective ? await reader.json(manifestPath) : await readJson(manifestPath);
+  const formalManifest = await readJson(manifestPath);
+  const alreadyMerged = String(formalManifest?.last_merged_work_item ?? '') === workItemId;
+  const useCandidateProjection = prospective && !alreadyMerged;
+  const manifest = useCandidateProjection ? await reader.json(manifestPath) : formalManifest;
   const project = manifest?.project ?? {};
 
   const architecturePath = absolute(
@@ -481,10 +424,10 @@ async function loadProjectModel(
     projectRoot,
     String(project.data_model ?? `${SPEC_DIR}/project/data_model.md`),
   );
-  const architectureText = prospective
+  const architectureText = useCandidateProjection
     ? await reader.text(architecturePath)
     : await readText(architecturePath);
-  const dataModelText = prospective
+  const dataModelText = useCandidateProjection
     ? await reader.text(dataModelPath)
     : await readText(dataModelPath);
   const architectureIds = extractIds(architectureText, 'ARCH');
@@ -493,29 +436,18 @@ async function loadProjectModel(
 
   const modules: ModuleModel[] = [];
   const contracts: ContractEntry[] = [];
-  const trace: TraceEdge[] = [];
   const inputFiles = [manifestPath, architecturePath, dataModelPath];
+  const traceIssues: GovernanceTraceIssue[] = [];
 
   const extensionRegistryPath = absolute(
     projectRoot,
     String(project.extension_registry ?? `${SPEC_DIR}/project/extension_registry.json`),
   );
-  const extensionRegistry = prospective
+  const extensionRegistry = useCandidateProjection
     ? await reader.json(extensionRegistryPath)
     : await readJson(extensionRegistryPath);
   if (extensionRegistry?.contracts) {
-    const projectContracts = flattenContracts(extensionRegistry.contracts, false);
-    contracts.push(...projectContracts);
-    for (const contract of projectContracts) {
-      for (const ref of contract.source_refs) {
-        trace.push({
-          from: contract.id,
-          relation: 'enforces',
-          to: ref,
-          source: extensionRegistryPath,
-        });
-      }
-    }
+    contracts.push(...flattenContracts(extensionRegistry.contracts, false));
   }
   inputFiles.push(extensionRegistryPath);
 
@@ -523,19 +455,18 @@ async function loadProjectModel(
     projectRoot,
     String(project.trace_matrix ?? `${SPEC_DIR}/project/trace_matrix.md`),
   );
-  trace.push(
-    ...parseTrace(
-      prospective ? await reader.text(projectTracePath) : await readText(projectTracePath),
-      projectTracePath,
-    ),
-  );
+  // The candidate artifact is a Delta, never a replacement truth source. Always
+  // read the current formal matrix directly and apply the Delta below.
+  const currentTraceParse = parseGovernanceTrace(await readText(projectTracePath), projectTracePath);
+  traceIssues.push(...currentTraceParse.issues);
+  const currentTrace = currentTraceParse.edges;
   inputFiles.push(projectTracePath);
 
   const effectiveModuleEntries = await prospectiveModuleEntries(
     projectRoot,
     manifest,
     reader,
-    prospective,
+    useCandidateProjection,
   );
 
   for (const raw of effectiveModuleEntries) {
@@ -543,8 +474,11 @@ async function loadProjectModel(
     if (!identity.valid || !identity.moduleCode) continue;
     const moduleCode = identity.moduleCode;
     const moduleRoot = `${SPEC_DIR}/project/modules/${moduleCode}`;
-    const moduleFilePath = absolute(projectRoot, String(raw.module_file ?? `${moduleRoot}/module.json`));
-    const moduleDefinition = prospective
+    const moduleFilePath = absolute(
+      projectRoot,
+      String(raw.module_file ?? `${moduleRoot}/module.json`),
+    );
+    const moduleDefinition = useCandidateProjection
       ? await reader.json(moduleFilePath)
       : await readJson(moduleFilePath);
     const designPath = absolute(projectRoot, String(raw.design ?? `${moduleRoot}/design.md`));
@@ -552,8 +486,10 @@ async function loadProjectModel(
       raw.contracts ?? moduleDefinition?.contracts ?? `${moduleRoot}/contracts.json`;
     const contractsPath = absolute(projectRoot, String(configuredContracts));
     const tracePath = absolute(projectRoot, String(raw.trace ?? `${moduleRoot}/trace.md`));
-    const designText = prospective ? await reader.text(designPath) : await readText(designPath);
-    const moduleContractJson = prospective
+    const designText = useCandidateProjection
+      ? await reader.text(designPath)
+      : await readText(designPath);
+    const moduleContractJson = useCandidateProjection
       ? await reader.json(contractsPath)
       : await readJson(contractsPath);
     const registryParse = moduleContractJson
@@ -574,16 +510,6 @@ async function loadProjectModel(
       ? flattenContracts(parsedModuleContract.contracts, true)
       : [];
     contracts.push(...internalContracts);
-    for (const contract of internalContracts) {
-      for (const ref of contract.source_refs) {
-        trace.push({
-          from: contract.id,
-          relation: 'enforces',
-          to: ref,
-          source: contractsPath,
-        });
-      }
-    }
 
     const codePathsDeclared =
       Array.isArray(raw.code_paths) || Array.isArray(moduleDefinition?.code_paths);
@@ -593,7 +519,9 @@ async function loadProjectModel(
       (typeof raw.contracts === 'string' && String(raw.contracts).trim().length > 0) ||
       (typeof moduleDefinition?.contracts === 'string' &&
         String(moduleDefinition.contracts).trim().length > 0) ||
-      (prospective && reader.targets.has(contractsTarget));
+      (useCandidateProjection && reader.targets.has(contractsTarget));
+    const moduleTraceText = await readText(tracePath);
+    const moduleTraceParse = parseGovernanceTrace(moduleTraceText, tracePath);
 
     modules.push({
       module_code: moduleCode,
@@ -605,69 +533,86 @@ async function loadProjectModel(
       contracts_path: contractsPath,
       contracts_declared: contractsDeclared,
       trace_path: tracePath,
+      trace_edges: moduleTraceParse.edges,
+      trace_generated: /GENERATED_FROM_PROJECT_TRACE:\s*module projection/i.test(moduleTraceText),
       code_paths: codePaths,
       design_ids: extractIds(designText, 'DD'),
       design_text: designText,
       contract_entries: internalContracts,
     });
-    trace.push(
-      ...parseTrace(
-        prospective ? await reader.text(tracePath) : await readText(tracePath),
-        tracePath,
-      ),
-    );
     inputFiles.push(moduleFilePath, designPath, contractsPath, tracePath);
   }
 
-  if (prospective) {
+  let traceDeltaOperations: GovernanceTraceDeltaOperation[] = [];
+  let trace = normalizeGovernanceTraceEdges(currentTrace);
+  if (useCandidateProjection) {
     const traceDeltaArtifact = await readFirstExistingText([
       workItemCandidateTraceDelta(projectRoot, workItemId),
       workItemTraceDelta(projectRoot, workItemId),
     ]);
     if (traceDeltaArtifact?.content.trim()) {
       inputFiles.push(traceDeltaArtifact.path);
-      for (const operation of parseTraceDelta(
+      const deltaParse = parseGovernanceTraceDelta(
         traceDeltaArtifact.content,
         traceDeltaArtifact.path,
-      )) {
-        const index = trace.findIndex(edge => sameTraceEdge(edge, operation.edge));
-        if (operation.operation === 'REMOVE') {
-          if (index >= 0) trace.splice(index, 1);
-        } else if (index < 0) {
-          trace.push(operation.edge);
-        }
-      }
+      );
+      traceDeltaOperations = deltaParse.operations;
+      const projection = applyGovernanceTraceDelta({
+        current: currentTrace,
+        operations: traceDeltaOperations,
+        inheritedIssues: deltaParse.issues,
+      });
+      trace = projection.prospective;
+      traceIssues.push(...projection.issues);
     }
   }
 
+  const designOwners = new Map<string, string>();
+  for (const module of modules) {
+    for (const designId of module.design_ids) designOwners.set(designId, module.module_code);
+  }
+  traceIssues.push(
+    ...validateGovernanceTraceSemantics({
+      edges: trace,
+      context: {
+        architecture_ids: architectureIds,
+        data_model_ids: dataModelIds,
+        design_owners: designOwners,
+        contracts: contracts.map(contract => ({
+          id: contract.id,
+          owner_module: contract.owner_module,
+          module_internal: contract.module_internal,
+        })),
+      },
+    }),
+  );
+
   // Compatibility rule: Architecture + Data Model are the migration boundary.
-  // Before that boundary, legacy projects remain readable. Once the boundary is
-  // established, missing Module contracts/code_paths must fail consistency
-  // checks instead of switching governance back off (fail-closed after migration).
   const active = Boolean(
     architectureIds.length > 0 &&
       (dataModelIds.length > 0 || dataModelNotApplicable) &&
       modules.length > 0,
   );
 
-  const effectiveManifest = manifest && typeof manifest === 'object'
-    ? {
-        ...manifest,
-        modules: effectiveModuleEntries.map((raw: any) => {
-          const identity = resolveSpecModuleIdentity(raw);
-          const model = modules.find(item => item.module_code === identity.moduleCode);
-          return model
-            ? {
-                ...raw,
-                code_paths: model.code_paths,
-                ...(model.contracts_declared
-                  ? { contracts: slash(path.relative(projectRoot, model.contracts_path)) }
-                  : {}),
-              }
-            : raw;
-        }),
-      }
-    : manifest;
+  const effectiveManifest =
+    manifest && typeof manifest === 'object'
+      ? {
+          ...manifest,
+          modules: effectiveModuleEntries.map((raw: any) => {
+            const identity = resolveSpecModuleIdentity(raw);
+            const model = modules.find(item => item.module_code === identity.moduleCode);
+            return model
+              ? {
+                  ...raw,
+                  code_paths: model.code_paths,
+                  ...(model.contracts_declared
+                    ? { contracts: slash(path.relative(projectRoot, model.contracts_path)) }
+                    : {}),
+                }
+              : raw;
+          }),
+        }
+      : manifest;
 
   return {
     active,
@@ -682,6 +627,10 @@ async function loadProjectModel(
     modules,
     contracts,
     trace,
+    current_trace: currentTrace,
+    trace_delta_operations: traceDeltaOperations,
+    trace_issues: traceIssues,
+    already_merged: alreadyMerged,
     inputFiles: unique(inputFiles),
   };
 }
@@ -722,22 +671,130 @@ function allIds(model: ProjectModel): Set<string> {
   ]);
 }
 
+function designOwnerMap(model: ProjectModel): Map<string, string> {
+  const owners = new Map<string, string>();
+  for (const module of model.modules) {
+    for (const designId of module.design_ids) owners.set(designId, module.module_code);
+  }
+  return owners;
+}
+
+function contractOwnerMap(model: ProjectModel): Map<string, string> {
+  return new Map(model.contracts.map(contract => [contract.id, contract.owner_module]));
+}
+
+function contractConsumers(
+  model: ProjectModel,
+  contractIds?: Iterable<string>,
+): GovernanceContractConsumer[] {
+  return getGovernanceContractConsumers({
+    edges: model.trace,
+    design_owners: designOwnerMap(model),
+    contract_ids: contractIds,
+  });
+}
+
+function expandImpactScopeWithContractConsumers(
+  scope: ImpactScope,
+  model: ProjectModel,
+): ImpactScope & { consumer_modules: string[]; consumer_design_refs: string[] } {
+  const changedContracts = unique([
+    ...scope.project_contract_refs,
+    ...scope.module_contract_refs,
+  ]);
+  const consumers = contractConsumers(model, changedContracts);
+  const consumerModules = unique(consumers.map(consumer => consumer.module_code));
+  const consumerDesignRefs = unique(consumers.map(consumer => consumer.design_id));
+  const consumerCodePaths = unique(
+    model.modules
+      .filter(module => consumerModules.includes(module.module_code))
+      .flatMap(module => module.code_paths),
+  );
+  return {
+    affected_modules: unique([...scope.affected_modules, ...consumerModules]),
+    architecture_refs: scope.architecture_refs,
+    data_model_refs: scope.data_model_refs,
+    design_refs: unique([...scope.design_refs, ...consumerDesignRefs]),
+    project_contract_refs: scope.project_contract_refs,
+    module_contract_refs: scope.module_contract_refs,
+    planned_code_paths: unique([...scope.planned_code_paths, ...consumerCodePaths]),
+    consumer_modules: consumerModules,
+    consumer_design_refs: consumerDesignRefs,
+  };
+}
+
 function relationValid(edge: TraceEdge, model: ProjectModel): boolean {
   const architecture = new Set(model.architectureIds);
   const data = new Set(model.dataModelIds);
-  const design = new Set(model.modules.flatMap(module => module.design_ids));
-  const contracts = new Set(model.contracts.map(contract => contract.id));
+  const owners = designOwnerMap(model);
+  const design = new Set(owners.keys());
+  const contracts = new Map(model.contracts.map(contract => [contract.id, contract]));
 
   if (edge.relation === 'constrained_by') {
-    return (
-      (data.has(edge.from) && architecture.has(edge.to)) ||
-      (design.has(edge.from) && (architecture.has(edge.to) || data.has(edge.to)))
-    );
+    if (data.has(edge.from) && architecture.has(edge.to)) return true;
+    if (!design.has(edge.from)) return false;
+    if (architecture.has(edge.to) || data.has(edge.to)) return true;
+    const contract = contracts.get(edge.to);
+    if (!contract) return false;
+    return !contract.module_internal || owners.get(edge.from) === contract.owner_module;
   }
   return (
     contracts.has(edge.from) &&
     (architecture.has(edge.to) || data.has(edge.to) || design.has(edge.to))
   );
+}
+
+export type ProjectGovernanceContractConsumerSnapshot = {
+  active: boolean;
+  already_merged: boolean;
+  contracts: Array<{
+    id: string;
+    owner_module: string;
+    module_internal: boolean;
+    kind: string;
+    source_refs: string[];
+    raw: Record<string, unknown>;
+  }>;
+  consumers: GovernanceContractConsumer[];
+  trace: GovernanceTraceEdge[];
+  current_trace: GovernanceTraceEdge[];
+  trace_delta_operations: GovernanceTraceDeltaOperation[];
+  trace_issues: GovernanceTraceIssue[];
+  module_code_paths: Record<string, string[]>;
+  inputFiles: string[];
+};
+
+export async function inspectProjectGovernanceContractConsumers(input: {
+  projectRoot: string;
+  workItemDir: string;
+  prospective?: boolean;
+}): Promise<ProjectGovernanceContractConsumerSnapshot> {
+  const model = await loadProjectModel(
+    input.projectRoot,
+    input.workItemDir,
+    input.prospective !== false,
+  );
+  return {
+    active: model.active,
+    already_merged: model.already_merged,
+    contracts: model.contracts.map(contract => ({
+      id: contract.id,
+      owner_module: contract.owner_module,
+      module_internal: contract.module_internal,
+      kind: contract.kind,
+      source_refs: contract.source_refs,
+      raw: contract.raw,
+    })),
+    consumers: contractConsumers(model),
+    trace: model.trace,
+    current_trace: model.current_trace,
+    trace_delta_operations: model.trace_delta_operations,
+    trace_issues: model.trace_issues,
+    module_code_paths: Object.fromEntries(
+      model.modules.map(module => [module.module_code, module.code_paths]),
+    ),
+    inputFiles: model.inputFiles,
+  };
 }
 
 export async function checkProjectGovernanceConsistency(input: {
@@ -803,6 +860,18 @@ export async function checkProjectGovernanceConsistency(input: {
     );
   }
 
+  for (const [index, issue] of model.trace_issues.entries()) {
+    addCheck(
+      checks,
+      `governance_trace_issue_${index}`,
+      issue.message,
+      false,
+      [issue.code, issue.source ?? '', issue.line ? `line=${issue.line}` : '']
+        .filter(Boolean)
+        .join('; '),
+    );
+  }
+
   const ids = allIds(model);
   for (const [index, edge] of model.trace.entries()) {
     addCheck(
@@ -823,9 +892,24 @@ export async function checkProjectGovernanceConsistency(input: {
 
   const trigger = await readTrigger(input.workItemDir);
   const workflowPath = String(trigger?.workflow_path ?? '');
-  const impactScope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
+  const declaredImpactScope = normalizeImpactScope(
+    trigger?.impact_scope ?? trigger?.impact_summary,
+  );
+  const impactScope = expandImpactScopeWithContractConsumers(declaredImpactScope, model);
 
   if (workflowPath !== 'spec_migration_path') {
+    addCheck(
+      checks,
+      'impact_scope_contract_consumers_expanded',
+      'Impact Scope is expanded from changed Contracts to every formal DD and Module consumer',
+      true,
+      [
+        `declared_modules=${declaredImpactScope.affected_modules.join(',') || 'none'}`,
+        `consumer_modules=${impactScope.consumer_modules.join(',') || 'none'}`,
+        `effective_modules=${impactScope.affected_modules.join(',') || 'none'}`,
+      ].join('; '),
+      'info',
+    );
     const scopePresent = Object.values(impactScope).some(values => values.length > 0);
     addCheck(
       checks,
@@ -924,6 +1008,13 @@ export async function checkProjectGovernanceConsistency(input: {
         'Fast Path is legal only when Architecture/Data/Design/Contracts remain unchanged',
         upperUnchanged,
       );
+      addCheck(
+        checks,
+        'fast_path_trace_unchanged',
+        'Fast Path is legal only when formal Trace relations remain unchanged',
+        model.trace_delta_operations.length === 0,
+        `trace_delta_operations=${model.trace_delta_operations.length}`,
+      );
     }
   }
 
@@ -957,6 +1048,30 @@ export async function checkProjectGovernanceContracts(input: {
       ],
       inputFiles: model.inputFiles,
     };
+  }
+
+  for (const [index, issue] of model.trace_issues.entries()) {
+    addCheck(
+      checks,
+      `contract_trace_issue_${index}`,
+      issue.message,
+      false,
+      issue.code,
+    );
+  }
+
+  const contractIdCounts = new Map<string, number>();
+  for (const contract of model.contracts) {
+    contractIdCounts.set(contract.id, (contractIdCounts.get(contract.id) ?? 0) + 1);
+  }
+  for (const [contractId, count] of contractIdCounts) {
+    addCheck(
+      checks,
+      `contract_${contractId}_unique_truth_source`,
+      `Contract ${contractId} has exactly one governance-level definition`,
+      count === 1,
+      `definitions=${count}`,
+    );
   }
 
   for (const module of model.modules) {
@@ -1018,19 +1133,30 @@ export async function checkProjectGovernanceContracts(input: {
       );
     }
 
-    if (contract.module_internal) {
-      const matcher = new RegExp(`\\b${escapeRegex(contract.id)}\\b`);
-      for (const module of model.modules.filter(
-        candidate => candidate.module_code !== contract.owner_module,
-      )) {
-        addCheck(
-          checks,
-          `contract_${contract.id}_not_consumed_by_${module.module_code}`,
-          `Internal Contract ${contract.id} is not consumed by Module ${module.module_code}`,
-          !matcher.test(module.design_text),
-        );
-      }
+    const consumers = contractConsumers(model, [contract.id]);
+    for (const consumer of consumers) {
+      addCheck(
+        checks,
+        `contract_${contract.id}_consumer_${consumer.design_id}`,
+        `Contract ${contract.id} consumer ${consumer.design_id} resolves to Module ${consumer.module_code}`,
+        Boolean(consumer.module_code),
+      );
     }
+    if (contract.module_internal) {
+      const crossModule = consumers.filter(
+        consumer => consumer.module_code !== contract.owner_module,
+      );
+      addCheck(
+        checks,
+        `contract_${contract.id}_internal_boundary`,
+        `Internal Contract ${contract.id} is consumed only inside owner Module ${contract.owner_module}`,
+        crossModule.length === 0,
+        crossModule
+          .map(consumer => `${consumer.design_id}->${consumer.module_code}`)
+          .join(', ') || 'all consumers are internal',
+      );
+    }
+
   }
 
   return {
@@ -1065,6 +1191,16 @@ export async function checkProjectGovernanceTrace(input: {
     };
   }
 
+  for (const [index, issue] of model.trace_issues.entries()) {
+    addCheck(
+      checks,
+      `trace_model_issue_${index}`,
+      issue.message,
+      false,
+      [issue.code, issue.source ?? ''].filter(Boolean).join('; '),
+    );
+  }
+
   const hasEdge = (from: string, relation: TraceEdge['relation'], to?: string) =>
     model.trace.some(
       edge => edge.from === from && edge.relation === relation && (!to || edge.to === to),
@@ -1090,7 +1226,7 @@ export async function checkProjectGovernanceTrace(input: {
       addCheck(
         checks,
         `trace_dd_${designId}`,
-        `Module Design ${designId} is constrained by Architecture or Data Model`,
+        `Module Design ${designId} is constrained by Architecture, Data Model, or a formal Contract`,
         hasEdge(designId, 'constrained_by'),
       );
     }
@@ -1115,6 +1251,31 @@ export async function checkProjectGovernanceTrace(input: {
       relationValid(edge, model),
       edge.source,
     );
+  }
+
+  if (model.already_merged) {
+    const designOwners = designOwnerMap(model);
+    const contractOwners = contractOwnerMap(model);
+    for (const module of model.modules) {
+      const expected = moduleTraceProjection({
+        edges: model.trace,
+        module_code: module.module_code,
+        design_owners: designOwners,
+        contract_owners: contractOwners,
+      });
+      const comparison = compareGovernanceTraceEdges(expected, module.trace_edges);
+      addCheck(
+        checks,
+        `trace_module_view_${module.module_code}`,
+        `Module ${module.module_code} trace.md is a generated projection of the canonical project Trace Matrix`,
+        module.trace_generated && comparison.matches,
+        [
+          `generated=${module.trace_generated}`,
+          `missing=${comparison.missing.join(',') || 'none'}`,
+          `unexpected=${comparison.unexpected.join(',') || 'none'}`,
+        ].join('; '),
+      );
+    }
   }
 
   return {
@@ -1142,7 +1303,8 @@ export async function freezeGovernanceScopeForCodePermission(input: {
 }> {
   const model = await loadProjectModel(input.projectRoot, input.workItemDir, false);
   const trigger = await readTrigger(input.workItemDir);
-  const scope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
+  const declaredScope = normalizeImpactScope(trigger?.impact_scope ?? trigger?.impact_summary);
+  const scope = expandImpactScopeWithContractConsumers(declaredScope, model);
   const mergedArchitectureScope = isApprovedMergedArchitectureScope(
     trigger,
     model,
@@ -1207,26 +1369,43 @@ export async function freezeGovernanceScopeForCodePermission(input: {
     if (owners.length === 1) inferredModules.push(owners[0]);
   }
 
-  snapshot.affected_modules = unique(inferredModules);
+  snapshot.affected_modules = unique([...inferredModules, ...scope.consumer_modules]);
   addCheck(
     checks,
-    'permission_affected_modules_declared',
-    'Impact Scope covers every Module reached by allowed write files',
-    isSubset(snapshot.affected_modules, scope.affected_modules),
-    `derived=${snapshot.affected_modules.join(',')}; declared=${scope.affected_modules.join(',')}`,
+    'permission_affected_modules_effective',
+    'Code Permission scope includes every Module reached by files and every formal Contract consumer',
+    isSubset(inferredModules, snapshot.affected_modules) &&
+      isSubset(scope.consumer_modules, snapshot.affected_modules),
+    [
+      `file_modules=${unique(inferredModules).join(',') || 'none'}`,
+      `consumer_modules=${scope.consumer_modules.join(',') || 'none'}`,
+      `effective=${snapshot.affected_modules.join(',') || 'none'}`,
+    ].join('; '),
   );
+
+  for (const consumerModule of scope.consumer_modules) {
+    const module = model.modules.find(candidate => candidate.module_code === consumerModule);
+    const requiresCodeCoverage = Boolean(module && module.code_paths.length > 0);
+    const coveredByAllowedFile = inferredModules.includes(consumerModule);
+    addCheck(
+      checks,
+      `permission_consumer_module_${consumerModule}`,
+      `Code Permission includes an approved file for Contract consumer Module ${consumerModule}`,
+      !requiresCodeCoverage || coveredByAllowedFile,
+      `code_paths=${module?.code_paths.join(',') || 'none'}; covered=${coveredByAllowedFile}`,
+    );
+  }
 
   const mergedModuleDesignRefs = unique(
     model.modules
       .filter(module => snapshot.affected_modules.includes(module.module_code))
       .flatMap(module => module.design_ids),
   );
-  snapshot.design_refs =
-    scope.design_refs.length > 0
-      ? unique(scope.design_refs)
-      : mergedArchitectureScope
-        ? mergedModuleDesignRefs
-        : [];
+  snapshot.design_refs = unique([
+    ...scope.design_refs,
+    ...(scope.design_refs.length === 0 && mergedArchitectureScope ? mergedModuleDesignRefs : []),
+    ...scope.consumer_design_refs,
+  ]);
 
   for (const moduleCode of snapshot.affected_modules) {
     const module = model.modules.find(candidate => candidate.module_code === moduleCode);
@@ -1259,28 +1438,43 @@ export async function freezeGovernanceScopeForCodePermission(input: {
       )
       .map(edge => edge.to),
   ]);
-  snapshot.project_contract_refs = unique(
-    model.contracts
-      .filter(
-        contract =>
-          !contract.module_internal &&
-          contract.source_refs.some(
-            ref =>
-              snapshot.architecture_refs.includes(ref) || snapshot.data_model_refs.includes(ref),
-          ),
-      )
-      .map(contract => contract.id),
+  const designContractEdges = model.trace.filter(
+    edge =>
+      snapshot.design_refs.includes(edge.from) &&
+      edge.relation === 'constrained_by' &&
+      model.contracts.some(contract => contract.id === edge.to),
   );
-  snapshot.module_contract_refs = unique(
-    model.contracts
-      .filter(
-        contract =>
-          contract.module_internal &&
-          snapshot.affected_modules.includes(contract.owner_module) &&
-          contract.source_refs.some(ref => snapshot.design_refs.includes(ref)),
-      )
+  const consumedContractIds = unique(designContractEdges.map(edge => edge.to));
+  snapshot.project_contract_refs = unique([
+    ...scope.project_contract_refs,
+    ...model.contracts
+      .filter(contract => !contract.module_internal && consumedContractIds.includes(contract.id))
       .map(contract => contract.id),
+  ]);
+  snapshot.module_contract_refs = unique([
+    ...scope.module_contract_refs,
+    ...model.contracts
+      .filter(contract => contract.module_internal && consumedContractIds.includes(contract.id))
+      .map(contract => contract.id),
+  ]);
+
+  const contractSourceEdges = model.trace.filter(
+    edge =>
+      snapshot.project_contract_refs.includes(edge.from) && edge.relation === 'enforces',
   );
+  snapshot.data_model_refs = unique([
+    ...snapshot.data_model_refs,
+    ...contractSourceEdges
+      .filter(edge => model.dataModelIds.includes(edge.to))
+      .map(edge => edge.to),
+  ]);
+  snapshot.architecture_refs = unique([
+    ...snapshot.architecture_refs,
+    ...contractSourceEdges
+      .filter(edge => model.architectureIds.includes(edge.to))
+      .map(edge => edge.to),
+  ]);
+
 
   const comparisons: Array<[string, string[], string[]]> = [
     [

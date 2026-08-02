@@ -779,3 +779,13 @@ Verification 除现有 Requirement、Acceptance Criteria、测试和 Evidence �
 7. Code Permission 发放后 Project Spec Version 未发生未治理变化。
 
 任一项不能由事实证明即不得通过 Verification。
+
+---
+# Contract 实际消费者对账
+
+1. Verification 必须对账：正式 Trace 消费者、批准范围、实际代码消费者和验证结论。
+2. TypeScript/JavaScript 中可机器证明的显式 Contract 绑定由现有 Verifier 自动检查；发现实际消费者但正式 Trace 未声明时必须失败。
+3. 不支持的语言、自由文本 Contract 或不能机器证明的依赖，必须在结构化 `verification_report.contract_reviews` 中逐文件登记：`contract_id`、`files`、`modules`、`review_method=manual`、`reviewer`、`conclusion`、`summary` 和 Evidence ID。
+4. 经人工确认某文件没有 Contract 使用时，使用 `contract_id=NO_CONTRACT_USAGE`，仍须提供 reviewer、结论和 Evidence。
+5. 没有机器证据也没有有效人工审查证据时必须 Fail Closed；不得以警告代替验证通过。
+6. Module Contract 的实际消费者不属于 owner Module，或生产文件不能唯一映射到一个 Module 时，Verification 必须失败。

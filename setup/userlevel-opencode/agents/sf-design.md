@@ -724,3 +724,12 @@ constrained_by: <约束来源>
 8. Module Contract 的 `source_refs` 必须来自相关 `DD-*`；Project Contract 的 `source_refs` 必须来自相关 `ARCH-*` / `DATA-*`；Contract 必须声明可执行的 `enforcement`。
 9. 设计输出必须覆盖 Impact Scope 中声明需要治理的正式对象；未覆盖时返回 blocked，不得把缺失责任下推给 Task Planner 或 Executor。
 10. `requirements_index.md`、`design_index.md` 等可由 Runtime 从正式数据推导的索引不得由本 Agent凭空重复维护。
+
+---
+# Contract 消费者与 Trace 唯一真相源
+
+1. Contract 消费者只能通过正式关系 `DD-* constrained_by Contract-ID` 声明；不得用正文标记、Contract 内的 consumers 数组或 Module 内的消费者清单建立第二真相源。
+2. 本 WI 新增消费者时，在 `candidates/trace_delta.md` 的 Governance Relation Delta 标记区段写 `ADD`；取消消费者时写 `REMOVE`；关系迁移必须在同一个 WI 中成对写入有效的 `REMOVE 旧关系` 与 `ADD 新关系`。既有 REQ→AC→DD→TASK 追溯矩阵继续保留，不得被治理关系区段替代。
+3. 修改、删除或提升 Contract 前，必须从 Prospective Trace 反向取得全部消费 DD 和消费 Module，并在同一个 WI 中更新这些 Module Design。
+4. Module Contract 仅允许 owner Module 的 DD 消费。需要跨 Module 消费时，必须按正式 Promotion 流程创建新的 Project Contract ID，不得直接放宽旧 Module Contract。
+5. `trace_delta.md` 只表达变化，不得复制完整正式矩阵，也不得把 Module `trace.md` 当作独立权威文件维护。

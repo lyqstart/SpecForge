@@ -26,6 +26,8 @@ export const TEST_MATRIX_STATUSES = ['pass', 'fail', 'skip', 'not_applicable'] a
 export const VERIFICATION_COMMAND_STATUSES = ['pass', 'fail', 'skipped'] as const;
 export const ACCEPTANCE_STATUSES = ['pass', 'fail'] as const;
 export const E2E_STATUSES = ['pass', 'fail', 'not_applicable'] as const;
+export const CONTRACT_REVIEW_METHODS = ['manual'] as const;
+export const CONTRACT_REVIEW_CONCLUSIONS = ['pass', 'fail'] as const;
 const EVIDENCE_ID_PATTERN = /^[A-Z][A-Z0-9_]*-[A-Za-z0-9_.-]+$/;
 
 export interface VerificationCommand {
@@ -50,12 +52,23 @@ export interface VerificationE2ETest extends VerificationClaim {
   status: (typeof E2E_STATUSES)[number];
 }
 
+export interface VerificationContractReview extends VerificationClaim {
+  contract_id: string;
+  files: string[];
+  modules: string[];
+  review_method: (typeof CONTRACT_REVIEW_METHODS)[number];
+  reviewer: string;
+  conclusion: (typeof CONTRACT_REVIEW_CONCLUSIONS)[number];
+  summary: string;
+}
+
 export interface VerificationReportContract {
   conclusion: (typeof VERIFICATION_CONCLUSIONS)[number];
   test_matrix: Record<string, (typeof TEST_MATRIX_STATUSES)[number]>;
   verification_commands: VerificationCommand[];
   acceptance_criteria: VerificationAcceptanceCriterion[];
   e2e_tests: VerificationE2ETest[];
+  contract_reviews?: VerificationContractReview[];
   side_effects: string;
   summary: string;
   semantic_closure: Record<string, unknown>;
@@ -197,6 +210,56 @@ export function validateVerificationReportContract(
       }
       validateEnum(errors, `${itemPath}.status`, test.status, E2E_STATUSES);
       validateEvidenceReference(errors, itemPath, test);
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(value, 'contract_reviews')) {
+    if (!Array.isArray(value.contract_reviews)) {
+      errors.push('INVALID_STRUCTURE: contract_reviews must be an array when provided');
+    } else {
+      for (const [index, review] of value.contract_reviews.entries()) {
+        const itemPath = `contract_reviews[${index}]`;
+        if (!isRecord(review)) {
+          errors.push(`INVALID_STRUCTURE: ${itemPath} must be an object`);
+          continue;
+        }
+        if (!isNonEmptyString(review.contract_id)) {
+          errors.push(`MISSING_FIELD: ${itemPath}.contract_id must be a non-empty string`);
+        }
+        if (
+          !Array.isArray(review.files) ||
+          review.files.length === 0 ||
+          !review.files.every(isNonEmptyString)
+        ) {
+          errors.push(`MISSING_FIELD: ${itemPath}.files must be a non-empty string array`);
+        }
+        if (
+          !Array.isArray(review.modules) ||
+          review.modules.length === 0 ||
+          !review.modules.every(isNonEmptyString)
+        ) {
+          errors.push(`MISSING_FIELD: ${itemPath}.modules must be a non-empty string array`);
+        }
+        validateEnum(
+          errors,
+          `${itemPath}.review_method`,
+          review.review_method,
+          CONTRACT_REVIEW_METHODS,
+        );
+        if (!isNonEmptyString(review.reviewer)) {
+          errors.push(`MISSING_FIELD: ${itemPath}.reviewer must be a non-empty string`);
+        }
+        validateEnum(
+          errors,
+          `${itemPath}.conclusion`,
+          review.conclusion,
+          CONTRACT_REVIEW_CONCLUSIONS,
+        );
+        if (!isNonEmptyString(review.summary)) {
+          errors.push(`MISSING_FIELD: ${itemPath}.summary must be a non-empty string`);
+        }
+        validateEvidenceReference(errors, itemPath, review);
+      }
     }
   }
 

@@ -469,3 +469,7 @@ quick_change 也不得使用 legacy `intake` 作为创建状态。
 若 quick_change 需要自动批准，必须使用显式 `decision_type=auto_approved` 和已配置的 `auto_approval_policy_id`。不得把 Orchestrator 自主判断伪装成 `user_approved`。
 
 <!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+
+## Contract 与 Trace Fast Path 边界
+
+quick_change 不允许新增、删除或改变 Contract 消费关系。只要发现 Contract 定义变化、`DD-* constrained_by Contract-ID` 变化、消费者 Module 扩大、Module Contract 跨边界使用或需要在 `trace_delta.md` 的 Governance Relation Delta 区段写 ADD/REMOVE，必须退出 Fast Path 并重新分类；不得以“小改动”为由绕过 Contract、Trace 和消费者检查。

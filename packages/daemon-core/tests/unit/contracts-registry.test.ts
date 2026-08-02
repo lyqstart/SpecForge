@@ -14,6 +14,8 @@ import {
   findSharedEnum,
   isRegisteredEnumValue,
   getEnumOwner,
+  readUnifiedContracts,
+  resolveCodePathModules,
 } from "../../src/tools/lib/contracts-registry";
 
 describe("contracts-registry read helper", () => {
@@ -146,5 +148,163 @@ describe("contracts-registry read helper", () => {
     expect(reg.invariants).toEqual([]);
     expect(reg.public_interfaces).toEqual([]);
     expect(reg.extension_points).toEqual([]);
+  });
+});
+
+async function writeJson(filePath: string, value: unknown): Promise<void> {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8');
+}
+
+describe('unified Project and Module Contract registry', () => {
+  const roots: string[] = [];
+
+  afterEach(async () => {
+    await Promise.all(roots.splice(0).map(root => fs.rm(root, { recursive: true, force: true })));
+  });
+
+  it('reads both governance levels without creating a consumer registry', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-unified-contracts-'));
+    roots.push(root);
+    const project = path.join(root, '.specforge', 'project');
+    await writeJson(path.join(project, 'spec_manifest.json'), {
+      modules: [
+        {
+          module_code: 'ORDER',
+          contracts: '.specforge/project/modules/ORDER/contracts.json',
+          code_paths: ['src/order/**'],
+        },
+      ],
+    });
+    await writeJson(path.join(project, 'extension_registry.json'), {
+      contracts: {
+        shared_enums: [
+          {
+            id: 'PCON-STATUS-001',
+            owner_module: 'CORE',
+            values: ['ready'],
+            source_refs: ['DD-CORE-001'],
+            enforcement: 'unit_test',
+          },
+        ],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+    await writeJson(path.join(project, 'modules', 'ORDER', 'contracts.json'), {
+      schema_version: '1.0',
+      owner_module: 'ORDER',
+      contracts: {
+        shared_enums: [],
+        invariants: [
+          {
+            id: 'MCON-ORDER-001',
+            owner_module: 'ORDER',
+            rule: 'total >= 0',
+            source_refs: ['DD-ORDER-001'],
+            enforcement: 'unit_test',
+          },
+        ],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+
+    const result = readUnifiedContracts(root);
+
+    expect(result.errors).toEqual([]);
+    expect(result.contracts).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'PCON-STATUS-001',
+          governance_level: 'project',
+          owner_module: 'CORE',
+        }),
+        expect.objectContaining({
+          id: 'MCON-ORDER-001',
+          governance_level: 'module',
+          owner_module: 'ORDER',
+        }),
+      ]),
+    );
+    expect(result.contracts.every(contract => !('consumers' in contract))).toBe(true);
+    expect(resolveCodePathModules(root, 'src/order/service.ts')).toEqual(['ORDER']);
+  });
+
+  it('fails closed when one Contract ID has multiple formal definitions', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-duplicate-contracts-'));
+    roots.push(root);
+    const project = path.join(root, '.specforge', 'project');
+    await writeJson(path.join(project, 'spec_manifest.json'), {
+      modules: [
+        {
+          module_code: 'ORDER',
+          contracts: '.specforge/project/modules/ORDER/contracts.json',
+          code_paths: ['src/order/**'],
+        },
+      ],
+    });
+    const duplicate = {
+      id: 'PCON-DUP-001',
+      owner_module: 'ORDER',
+      values: ['ready'],
+      source_refs: ['DD-ORDER-001'],
+      enforcement: 'unit_test',
+    };
+    await writeJson(path.join(project, 'extension_registry.json'), {
+      contracts: {
+        shared_enums: [duplicate],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+    await writeJson(path.join(project, 'modules', 'ORDER', 'contracts.json'), {
+      schema_version: '1.0',
+      owner_module: 'ORDER',
+      contracts: {
+        shared_enums: [duplicate],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+
+    const result = readUnifiedContracts(root);
+    expect(result.errors.join('\n')).toContain('multiple formal definitions');
+  });
+
+  it('keeps an undeclared missing legacy Module Contract file compatibility-safe', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-legacy-contracts-'));
+    roots.push(root);
+    const project = path.join(root, '.specforge', 'project');
+    await writeJson(path.join(project, 'spec_manifest.json'), {
+      modules: [{ module_code: 'LEGACY', code_paths: ['src/legacy/**'] }],
+    });
+    await writeJson(path.join(project, 'extension_registry.json'), { contracts: {} });
+
+    const result = readUnifiedContracts(root);
+    expect(result.errors).toEqual([]);
+    expect(result.module_registries.LEGACY).toBeDefined();
+  });
+
+  it('blocks an explicitly declared missing Module Contract file', async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-missing-contracts-'));
+    roots.push(root);
+    const project = path.join(root, '.specforge', 'project');
+    await writeJson(path.join(project, 'spec_manifest.json'), {
+      modules: [
+        {
+          module_code: 'ORDER',
+          contracts: '.specforge/project/modules/ORDER/contracts.json',
+          code_paths: ['src/order/**'],
+        },
+      ],
+    });
+    await writeJson(path.join(project, 'extension_registry.json'), { contracts: {} });
+
+    const result = readUnifiedContracts(root);
+    expect(result.errors.join('\n')).toContain('modules/ORDER/contracts.json');
   });
 });

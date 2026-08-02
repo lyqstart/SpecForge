@@ -30,6 +30,8 @@ import {
 import {
   readContractsRegistry,
   hasAnyContracts,
+  readUnifiedContracts,
+  resolveCodePathModules,
   type ContractRegistry,
 } from './contracts-registry.js';
 import {
@@ -63,7 +65,11 @@ import {
 import { checkContractIntegrity } from './contract-integrity.js';
 import { verifyChangedCodeContracts } from './code-contract-verifier.js';
 import { evaluateVerificationGovernanceContract } from './verification-governance-contract.js';
-import { checkFormalVersionEligibility } from './project-governance-v2.js';
+import { extractStructuredVerificationReport } from './verification-report-contract.js';
+import {
+  checkFormalVersionEligibility,
+  inspectProjectGovernanceContractConsumers,
+} from './project-governance-v2.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -1021,14 +1027,55 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
     projectRoot: ctx.projectRoot,
     workItemDir: ctx.workItemDir,
   });
+  const unifiedContracts = readUnifiedContracts(ctx.projectRoot);
+  const governanceConsumers = await inspectProjectGovernanceContractConsumers({
+    projectRoot: ctx.projectRoot,
+    workItemDir: ctx.workItemDir,
+    prospective: false,
+  });
+  const structuredReport = extractStructuredVerificationReport(reportContent);
+  const contractReviews = Array.isArray(structuredReport?.contract_reviews)
+    ? structuredReport.contract_reviews.filter(
+        (review): review is Record<string, unknown> =>
+          Boolean(review) && typeof review === 'object' && !Array.isArray(review),
+      )
+    : [];
+  const normalizeReviewPath = (value: unknown): string =>
+    String(value ?? '').replace(/\\/g, '/').replace(/^\.\//, '');
+  const passingReviews = contractReviews.filter(
+    review => review.review_method === 'manual' && review.conclusion === 'pass',
+  );
+  const reviewCovers = (file: string, contractId: string, moduleCode: string): boolean =>
+    passingReviews.some(review => {
+      const files = Array.isArray(review.files)
+        ? review.files.map(normalizeReviewPath)
+        : [];
+      const modules = Array.isArray(review.modules)
+        ? review.modules.map(value => String(value ?? '').trim().toUpperCase())
+        : [];
+      return (
+        files.includes(normalizeReviewPath(file)) &&
+        review.contract_id === contractId &&
+        modules.includes(moduleCode)
+      );
+    });
+
+  checks.push({
+    check_id: 'code_contract_registry_readable',
+    description: 'Project and Module Contract registries are readable for code reconciliation',
+    passed: codeContracts.registry_errors.length === 0,
+    severity: codeContracts.registry_errors.length === 0 ? undefined : 'error',
+    details: codeContracts.registry_errors.join('; '),
+  });
   checks.push({
     check_id: 'code_contract_ast_coverage',
-    description: 'Changed TypeScript/JavaScript with explicit enum bindings was AST-checked',
-    passed: true,
-    severity: codeContracts.unsupported_files.length > 0 ? 'warning' : undefined,
+    description: 'Changed TypeScript/JavaScript explicit Contract bindings were AST-checked',
+    passed: codeContracts.issues.length === 0,
+    severity: codeContracts.issues.length === 0 ? undefined : 'error',
     details: [
       `checked=${codeContracts.checked_files.join(', ') || 'none'}`,
-      `unsupported=${codeContracts.unsupported_files.join(', ') || 'none'}`,
+      `machine_contracts=${codeContracts.machine_checked_contract_ids.join(', ') || 'none'}`,
+      `manual_review=${codeContracts.files_requiring_manual_review.join(', ') || 'none'}`,
     ].join('; '),
   });
   for (const [index, issue] of codeContracts.issues.entries()) {
@@ -1039,6 +1086,91 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
       severity: 'error',
       details: `contract=${issue.contract_id}; value=${issue.value}`,
     });
+  }
+
+  for (const [index, file] of codeContracts.files_requiring_manual_review.entries()) {
+    const fileConsumers = codeContracts.actual_consumers.filter(consumer => consumer.file === file);
+    const detectedIds = Array.from(new Set(fileConsumers.map(consumer => consumer.contract_id)));
+    const owners = resolveCodePathModules(ctx.projectRoot, file);
+    const moduleCode =
+      fileConsumers.find(consumer => consumer.module_code)?.module_code ??
+      (owners.length === 1 ? owners[0] : '');
+    checks.push({
+      check_id: `code_contract_manual_review_module_${index}`,
+      description: `Manual-review source ${file} resolves to exactly one owning Module`,
+      passed: codeContracts.registered_contract_ids.length === 0 || moduleCode.length > 0,
+      severity:
+        codeContracts.registered_contract_ids.length === 0 || moduleCode.length > 0
+          ? undefined
+          : 'error',
+      details: `owners=${owners.join(', ') || 'none'}`,
+    });
+    const requiredReviewIds = detectedIds.length > 0 ? detectedIds : ['NO_CONTRACT_USAGE'];
+    for (const contractId of requiredReviewIds) {
+      const covered =
+        codeContracts.registered_contract_ids.length === 0 ||
+        (moduleCode.length > 0 && reviewCovers(file, contractId, moduleCode));
+      checks.push({
+        check_id: `code_contract_manual_review_${index}_${contractId.replace(/[^A-Za-z0-9_-]/g, '_')}`,
+        description:
+          contractId === 'NO_CONTRACT_USAGE'
+            ? `Unsupported or unverified source ${file} has a structured manual review confirming no Contract consumption`
+            : `Unverified Contract consumer ${file} has structured manual review for ${contractId}`,
+        passed: covered,
+        severity: covered ? undefined : 'error',
+        details: covered
+          ? undefined
+          : 'Add a passing contract_reviews entry with reviewer, evidence, modules, files, and review_method=manual.',
+      });
+    }
+  }
+
+  const formalConsumerPairs = new Set(
+    governanceConsumers.consumers.map(
+      consumer => `${consumer.contract_id}\u0000${consumer.module_code}`,
+    ),
+  );
+  const definitions = new Map(
+    unifiedContracts.contracts.map(contract => [contract.id, contract]),
+  );
+  for (const [index, consumer] of codeContracts.actual_consumers.entries()) {
+    const moduleResolved = consumer.module_code.length > 0;
+    checks.push({
+      check_id: `code_contract_consumer_module_${index}`,
+      description: `${consumer.file} resolves to exactly one owning Module`,
+      passed: moduleResolved,
+      severity: moduleResolved ? undefined : 'error',
+      details: `contract=${consumer.contract_id}`,
+    });
+    if (!moduleResolved) continue;
+
+    const definition = definitions.get(consumer.contract_id);
+    const internalBoundaryValid =
+      !definition ||
+      definition.governance_level !== 'module' ||
+      definition.owner_module === consumer.module_code;
+    checks.push({
+      check_id: `code_contract_internal_boundary_${index}`,
+      description: `Actual consumer ${consumer.module_code} respects ${consumer.contract_id} Contract visibility`,
+      passed: internalBoundaryValid,
+      severity: internalBoundaryValid ? undefined : 'error',
+      details: definition
+        ? `level=${definition.governance_level}; owner=${definition.owner_module}`
+        : 'Contract definition not found in unified registry',
+    });
+
+    if (governanceConsumers.active) {
+      const declared = formalConsumerPairs.has(
+        `${consumer.contract_id}\u0000${consumer.module_code}`,
+      );
+      checks.push({
+        check_id: `code_contract_trace_reconciliation_${index}`,
+        description: `Actual Contract consumer ${consumer.module_code}/${consumer.file} is declared by formal Trace`,
+        passed: declared,
+        severity: declared ? undefined : 'error',
+        details: `contract=${consumer.contract_id}; verification=${consumer.verification}`,
+      });
+    }
   }
 
   return makeReport(
@@ -1053,6 +1185,11 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
         manifestPath,
         ...verificationContract.inputFiles,
         ...codeContracts.checked_files.map(file => path.join(ctx.projectRoot, file)),
+        ...codeContracts.files_requiring_manual_review.map(file =>
+          path.join(ctx.projectRoot, file),
+        ),
+        ...unifiedContracts.input_files,
+        ...governanceConsumers.inputFiles,
       ])
     )
   );

@@ -11,8 +11,8 @@ description: 仅用于 extension_registry 契约或命名空间登记的轻量�
 - Use only final states; legacy `development`, `review`, `implementation`, and `done` are not state authority. Only the Close Gate may enter `closed`.
 - Preserve `workflow_type` and `workflow_path`. `quick_change` pairs with `code_only_fast_path`; `bugfix_spec` does not. This skill pairs `contract_change` with `contract_change_path`.
 - Approval belongs to `sf_user_decision_record`: `user_response_quote` proves user approval, `auto_approval_policy_id` proves auto approval, while `comments` and `reason` are notes.
-- `candidate_manifest.entries` is merge authority. `sf_merge_run` owns merge; `merge_report.status=not_applicable` is only for canonical no-merge paths.
-- This workflow must not call `sf_code_permission`. It must use `sf_changed_files_audit` in no-code mode and fail with `AUTHORITATIVE_STATE_MISMATCH` when state evidence disagrees.
+- `candidate_manifest.entries` is merge authority. `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`; `merge_report.status=not_applicable` is only for canonical no-merge paths.
+- This workflow must not call `sf_code_permission`. It must use `sf_changed_files_audit` in no-code mode, require `blocked_write_attempts=0`, and fail with `AUTHORITATIVE_STATE_MISMATCH` when state evidence disagrees.
 - A HardStop is a `recoverable safety latch`. Preserve `hard_stop_id`, classify `operator_error` honestly, use `sf_hard_stop_resolve`, and continue only from `resume_from_step`.
 - New `shared_enum` registrations must declare `entry.value_type` as `string` or `number`; `values` must be homogeneous, non-empty, and unique. Legacy registry entries without `value_type` remain string enums for backward compatibility.
 
@@ -30,3 +30,9 @@ description: 仅用于 extension_registry 契约或命名空间登记的轻量�
 - 候选必须通过 schema、path、spec consistency 和硬性的 `contract_integrity_gate`，再取得真实用户审批并由 `sf_merge_run` 合并。
 - 合并后直接进入验证；不得进入任何 implementation 状态，不得启用或撤销从未启用的 `code_permission`。
 - 验证证据必须明确记录 `extension_registry.json`、post-merge 结果和“no implementation”，然后由 Close Gate 关闭。
+
+## Contract 消费者边界
+
+- `contract_change_path` 仅允许不影响消费者、设计和生产代码的登记册单文件变化。
+- 一旦 Contract 修改、删除或 Promotion 需要更新任何消费 DD、Trace 关系、Module Design 或代码，必须退出本路径并重新分类到能够完成同一 WI 全链路闭环的工作流。
+- Gate 必须基于 Prospective Trace 判断消费者，不得使用正文标记或字符串搜索替代正式关系。

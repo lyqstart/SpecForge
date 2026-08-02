@@ -23,9 +23,19 @@ import {
 import {
   canonicalProjectSpecModuleEntry,
   ContractRegistrySchema,
+  extractModuleFromDdId,
   moduleCodeFromProjectSpecPath,
   resolveSpecModuleIdentity,
 } from '@specforge/types';
+import { readUnifiedContracts } from './contracts-registry.js';
+import {
+  applyGovernanceTraceDelta,
+  parseGovernanceTrace,
+  parseGovernanceTraceDelta,
+  renderGovernanceModuleTrace,
+  renderGovernanceTraceDocument,
+  type GovernanceTraceEdge,
+} from './governance-trace-model.js';
 
 export interface MergeInput {
   projectRoot: string;
@@ -52,6 +62,7 @@ export interface MergeResult {
   errors: string[];
   status?: 'success' | 'failed' | 'not_applicable';
   reason?: string;
+  rolled_back?: boolean;
 }
 
 type ManifestEntry = {
@@ -453,6 +464,213 @@ async function validateGovernedNewModuleTargets(input: {
   return { allowedTargets, errors };
 }
 
+
+type MergeFileSnapshot = {
+  filePath: string;
+  existed: boolean;
+  content: Buffer | null;
+};
+
+async function snapshotFiles(filePaths: Iterable<string>): Promise<MergeFileSnapshot[]> {
+  const snapshots: MergeFileSnapshot[] = [];
+  for (const filePath of Array.from(new Set(Array.from(filePaths).map(value => path.resolve(value))))) {
+    try {
+      snapshots.push({ filePath, existed: true, content: await fs.readFile(filePath) });
+    } catch {
+      snapshots.push({ filePath, existed: false, content: null });
+    }
+  }
+  return snapshots;
+}
+
+async function restoreSnapshots(snapshots: MergeFileSnapshot[]): Promise<string[]> {
+  const errors: string[] = [];
+  for (const snapshot of [...snapshots].reverse()) {
+    try {
+      if (snapshot.existed) {
+        await fs.mkdir(path.dirname(snapshot.filePath), { recursive: true });
+        await fs.writeFile(snapshot.filePath, snapshot.content as Buffer);
+      } else {
+        await fs.rm(snapshot.filePath, { force: true });
+      }
+    } catch (error) {
+      errors.push(`${snapshot.filePath}: ${(error as Error).message}`);
+    }
+  }
+  return errors;
+}
+
+function isProjectTraceTarget(targetPath: string): boolean {
+  return normalizeProjectSpecTargetPath(targetPath) === '.specforge/project/trace_matrix.md';
+}
+
+function targetModuleTrace(targetPath: string): string | null {
+  const normalized = normalizeProjectSpecTargetPath(targetPath);
+  const moduleCode = moduleCodeFromProjectSpecPath(normalized);
+  return moduleCode && normalized === `.specforge/project/modules/${moduleCode}/trace.md`
+    ? moduleCode
+    : null;
+}
+
+function designOwnersFromTrace(edges: Iterable<GovernanceTraceEdge>): Map<string, string> {
+  const owners = new Map<string, string>();
+  for (const edge of edges) {
+    for (const id of [edge.from, edge.to]) {
+      const moduleCode = extractModuleFromDdId(id);
+      if (moduleCode) owners.set(id, moduleCode);
+    }
+  }
+  return owners;
+}
+
+async function governedModuleCodes(projectRoot: string, entries: ManifestEntry[]): Promise<string[]> {
+  const result = new Set<string>();
+  try {
+    const manifest = await readJsonFile(
+      path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'),
+    );
+    for (const raw of Array.isArray(manifest?.modules) ? manifest.modules : []) {
+      const moduleCode = String(raw?.module_code ?? raw?.module ?? '').trim().toUpperCase();
+      if (moduleCode) result.add(moduleCode);
+    }
+  } catch {
+    // New Project Spec bootstrap.
+  }
+  for (const entry of entries) {
+    const moduleCode = moduleCodeFromProjectSpecPath(
+      normalizeProjectSpecTargetPath(entry.target_path),
+    );
+    if (moduleCode) result.add(moduleCode);
+  }
+  return Array.from(result).sort();
+}
+
+async function projectTraceProjection(input: {
+  projectRoot: string;
+  workItemDir: string;
+  entries: ManifestEntry[];
+}): Promise<{
+  targeted: boolean;
+  governanceChanged: boolean;
+  governanceActive: boolean;
+  edges: GovernanceTraceEdge[];
+  content: string | null;
+  errors: string[];
+}> {
+  const traceEntry = input.entries.find(entry => isProjectTraceTarget(entry.target_path));
+  const currentPath = path.join(
+    input.projectRoot,
+    '.specforge',
+    'project',
+    'trace_matrix.md',
+  );
+  let currentContent = '';
+  try {
+    currentContent = await fs.readFile(currentPath, 'utf-8');
+  } catch {
+    // Empty current Trace is valid during bootstrap.
+  }
+  const current = parseGovernanceTrace(currentContent, currentPath);
+  const currentGovernanceActive = current.marked_section || current.edges.length > 0;
+  if (!traceEntry) {
+    return {
+      targeted: false,
+      governanceChanged: false,
+      governanceActive: currentGovernanceActive,
+      edges: current.edges,
+      content: null,
+      errors: current.issues.map(issue => issue.message),
+    };
+  }
+
+  if (traceEntry.operation === 'delete') {
+    return {
+      targeted: true,
+      governanceChanged: false,
+      governanceActive: currentGovernanceActive,
+      edges: current.edges,
+      content: null,
+      errors: [
+        'The canonical Project Trace Matrix cannot be deleted; use explicit REMOVE operations in the Governance Relation Delta section.',
+      ],
+    };
+  }
+
+  const candidatePath = path.resolve(input.workItemDir, traceEntry.candidate_path);
+  let deltaContent = '';
+  try {
+    deltaContent = await fs.readFile(candidatePath, 'utf-8');
+  } catch (error) {
+    return {
+      targeted: true,
+      governanceChanged: false,
+      governanceActive: currentGovernanceActive,
+      edges: current.edges,
+      content: null,
+      errors: [`Cannot read Trace Delta ${traceEntry.candidate_path}: ${(error as Error).message}`],
+    };
+  }
+
+  const delta = parseGovernanceTraceDelta(deltaContent, candidatePath);
+  const candidateAsFormalTrace = parseGovernanceTrace(deltaContent, candidatePath);
+  if (
+    delta.operations.length === 0 &&
+    !delta.marked_section &&
+    candidateAsFormalTrace.edges.length > 0
+  ) {
+    delta.issues.push({
+      code: 'TRACE_DELTA_FULL_GOVERNANCE_MATRIX_FORBIDDEN',
+      message:
+        'trace_delta.md cannot replace Governance Relations with a full From/Relation/To matrix; use explicit ADD/REMOVE operations.',
+      source: candidatePath,
+    });
+  }
+
+  if (delta.operations.length === 0) {
+    const errors = [...current.issues, ...delta.issues, ...candidateAsFormalTrace.issues].map(
+      issue => issue.message,
+    );
+    const legacyContent = delta.marked_section
+      ? delta.content_without_governance_delta
+      : deltaContent;
+    let content: string | null = legacyContent;
+    if (currentGovernanceActive && errors.length === 0) {
+      content = renderGovernanceTraceDocument(legacyContent, current.edges);
+    }
+    return {
+      targeted: true,
+      governanceChanged: false,
+      governanceActive: currentGovernanceActive,
+      edges: current.edges,
+      content: errors.length === 0 ? content : null,
+      errors,
+    };
+  }
+
+  const projection = applyGovernanceTraceDelta({
+    current: current.edges,
+    operations: delta.operations,
+  });
+  const errors = [...current.issues, ...delta.issues, ...projection.issues].map(
+    issue => issue.message,
+  );
+  const baseContent =
+    delta.marked_section && delta.has_legacy_trace_payload
+      ? delta.content_without_governance_delta
+      : currentContent;
+  return {
+    targeted: true,
+    governanceChanged: true,
+    governanceActive: true,
+    edges: projection.prospective,
+    content:
+      errors.length === 0
+        ? renderGovernanceTraceDocument(baseContent, projection.prospective)
+        : null,
+    errors,
+  };
+}
+
 export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   const result: MergeResult = {
     success: true,
@@ -486,6 +704,7 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   const entries = normalizedEntries;
 
   result.project_spec_version = await readCurrentProjectSpecVersion(input.projectRoot);
+  const previousProjectSpecVersion = result.project_spec_version;
 
   if (isEvidenceOnlyNoProjectSpecChange(manifest)) {
     const evidenceOnlyCanonical =
@@ -604,6 +823,23 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     }
   }
 
+  const traceProjection = await projectTraceProjection({
+    projectRoot: input.projectRoot,
+    workItemDir: input.workItemDir,
+    entries,
+  });
+  if (traceProjection.errors.length > 0) {
+    preflightErrors.push(...traceProjection.errors.map(error => `TRACE_DELTA_INVALID: ${error}`));
+  }
+  const independentModuleTraceTargets = entries
+    .map(entry => ({ entry, moduleCode: targetModuleTrace(entry.target_path) }))
+    .filter(item => item.moduleCode && traceProjection.governanceActive && !traceProjection.governanceChanged);
+  if (independentModuleTraceTargets.length > 0) {
+    preflightErrors.push(
+      'Module trace.md is a generated projection and cannot be merged independently; update the canonical Project Trace through Trace Delta.',
+    );
+  }
+
   if (preflightErrors.length > 0) {
     const failed: MergeResult = {
       ...result,
@@ -615,17 +851,43 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
     return failed;
   }
 
-  for (const entry of entries) {
-    const candidateFullPath = path.resolve(input.workItemDir, entry.candidate_path);
-    const targetFullPath = path.resolve(input.projectRoot, entry.target_path);
+  const projectSpecManifestPath = path.join(
+    input.projectRoot,
+    '.specforge',
+    'project',
+    'spec_manifest.json',
+  );
+  const moduleCodes = await governedModuleCodes(input.projectRoot, entries);
+  const transactionTargets = new Set<string>([
+    projectSpecManifestPath,
+    ...entries.map(entry => path.resolve(input.projectRoot, entry.target_path)),
+    ...moduleCodes.map(moduleCode =>
+      path.join(
+        input.projectRoot,
+        '.specforge',
+        'project',
+        'modules',
+        moduleCode,
+        'trace.md',
+      ),
+    ),
+  ]);
+  const snapshots = await snapshotFiles(transactionTargets);
 
-    try {
+  try {
+    for (const entry of entries) {
+      const candidateFullPath = path.resolve(input.workItemDir, entry.candidate_path);
+      const targetFullPath = path.resolve(input.projectRoot, entry.target_path);
+      const moduleTraceCode = targetModuleTrace(entry.target_path);
+
+      if (traceProjection.governanceChanged && moduleTraceCode) {
+        // Module Trace is a generated projection and is written after all formal
+        // objects and spec_manifest.json are committed inside this transaction.
+        continue;
+      }
+
       if (entry.operation === 'delete') {
-        try {
-          await fs.unlink(targetFullPath);
-        } catch {
-          // Missing file is idempotent for delete.
-        }
+        await fs.rm(targetFullPath, { force: true });
         result.merged_files.push({
           candidate_path: entry.candidate_path,
           target_path: entry.target_path,
@@ -633,43 +895,35 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
           status: 'success',
           hash_match: true,
         });
-      } else {
-        await fs.mkdir(path.dirname(targetFullPath), { recursive: true });
-        await fs.copyFile(candidateFullPath, targetFullPath);
-        const candidateHash = await computeFileHash(candidateFullPath);
-        const targetHash = await computeFileHash(targetFullPath);
-        const hashMatch = candidateHash === targetHash;
-        result.merged_files.push({
-          candidate_path: entry.candidate_path,
-          target_path: entry.target_path,
-          operation: entry.operation,
-          status: hashMatch ? 'success' : 'failed',
-          hash_match: hashMatch,
-          error: hashMatch ? undefined : 'Hash mismatch after copy',
-        });
-        if (!hashMatch) result.success = false;
+        continue;
       }
-    } catch (err: any) {
+
+      await fs.mkdir(path.dirname(targetFullPath), { recursive: true });
+      if (isProjectTraceTarget(entry.target_path) && traceProjection.targeted) {
+        await fs.writeFile(targetFullPath, traceProjection.content as string, 'utf-8');
+      } else {
+        await fs.copyFile(candidateFullPath, targetFullPath);
+      }
+      const expectedHash = isProjectTraceTarget(entry.target_path) && traceProjection.targeted
+        ? 'sha256:' + crypto
+            .createHash('sha256')
+            .update(traceProjection.content as string)
+            .digest('hex')
+        : await computeFileHash(candidateFullPath);
+      const targetHash = await computeFileHash(targetFullPath);
+      if (expectedHash !== targetHash) {
+        throw new Error(`Hash mismatch after writing ${entry.target_path}`);
+      }
       result.merged_files.push({
         candidate_path: entry.candidate_path,
         target_path: entry.target_path,
         operation: entry.operation,
-        status: 'failed',
-        hash_match: false,
-        error: err.message,
+        status: 'success',
+        hash_match: true,
       });
-      result.success = false;
     }
-  }
 
-  const projectSpecManifestPath = path.join(
-    input.projectRoot,
-    '.specforge',
-    'project',
-    'spec_manifest.json'
-  );
-  if (result.success && entries.length > 0) {
-    try {
+    if (entries.length > 0) {
       const versionMatch = /^PSV-(\d+)$/.exec(result.project_spec_version);
       if (!versionMatch) {
         throw new Error(`Invalid current project_spec_version: ${result.project_spec_version}`);
@@ -684,7 +938,6 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       } catch {
         // First spec merge.
       }
-
       specManifest.schema_version = specManifest.schema_version ?? '1.0';
       specManifest.project_spec_version = newVersion;
       specManifest.last_merged_work_item = input.workItemId;
@@ -696,59 +949,111 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       await fs.mkdir(path.dirname(projectSpecManifestPath), { recursive: true });
       const replaceLegacyModuleEntries = await isProjectSpecRepairMerge(
         input.workItemDir,
-        manifest.workflow_path
+        manifest.workflow_path,
       );
       await registerMergedProjectModules(
         specManifest,
         input.projectRoot,
-        replaceLegacyModuleEntries
+        replaceLegacyModuleEntries,
       );
       await fs.writeFile(
         projectSpecManifestPath,
         JSON.stringify(specManifest, null, 2) + '\n',
-        'utf-8'
+        'utf-8',
       );
       result.spec_manifest_updated = true;
 
-      // Keep the (duplicated) project_spec_version field inside a merged
-      // extension_registry.json in sync with the authoritative spec_manifest
-      // version. The entry merge copies the candidate verbatim (operation:
-      // replace), and candidates carry the stale version they were authored
-      // from, so without this the registry's version field silently drifts
-      // behind spec_manifest (observed: manifest PSV-0003 vs registry PSV-0001).
       const mergedExtensionRegistry = result.merged_files.find(
         entry =>
           entry.status === 'success' &&
-          entry.target_path.replace(/\\/g, '/').endsWith('project/extension_registry.json')
+          entry.target_path.replace(/\\/g, '/').endsWith('project/extension_registry.json'),
       );
       if (mergedExtensionRegistry) {
         const registryAbsPath = path.join(
           input.projectRoot,
           '.specforge',
           'project',
-          'extension_registry.json'
+          'extension_registry.json',
         );
-        try {
-          const registry = await readJsonFile(registryAbsPath);
-          if (registry && typeof registry === 'object' && registry.project_spec_version !== newVersion) {
-            registry.project_spec_version = newVersion;
-            await fs.writeFile(
-              registryAbsPath,
-              JSON.stringify(registry, null, 2) + '\n',
-              'utf-8'
-            );
-          }
-        } catch (syncErr: any) {
-          // Non-fatal: the authoritative version lives in spec_manifest.json.
-          result.errors.push(
-            'Warning: could not sync extension_registry.json project_spec_version: ' +
-              syncErr.message
+        const registry = await readJsonFile(registryAbsPath);
+        if (registry && typeof registry === 'object' && registry.project_spec_version !== newVersion) {
+          registry.project_spec_version = newVersion;
+          await fs.writeFile(
+            registryAbsPath,
+            JSON.stringify(registry, null, 2) + '\n',
+            'utf-8',
           );
         }
       }
-    } catch (err: any) {
-      result.errors.push('Failed to update spec_manifest.json: ' + err.message);
-      result.success = false;
+    }
+
+    if (traceProjection.governanceChanged) {
+      const unifiedContracts = readUnifiedContracts(input.projectRoot);
+      if (unifiedContracts.errors.length > 0) {
+        throw new Error(
+          `Cannot generate Module Trace projections: ${unifiedContracts.errors.join('; ')}`,
+        );
+      }
+      const designOwners = designOwnersFromTrace(traceProjection.edges);
+      const contractOwners = new Map(
+        unifiedContracts.contracts.map(contract => [contract.id, contract.owner_module]),
+      );
+      const finalModuleCodes = await governedModuleCodes(input.projectRoot, entries);
+      for (const moduleCode of finalModuleCodes) {
+        const targetPath = `.specforge/project/modules/${moduleCode}/trace.md`;
+        const targetFullPath = path.join(input.projectRoot, ...targetPath.split('/'));
+        const content = renderGovernanceModuleTrace({
+          edges: traceProjection.edges,
+          module_code: moduleCode,
+          design_owners: designOwners,
+          contract_owners: contractOwners,
+        });
+        await fs.mkdir(path.dirname(targetFullPath), { recursive: true });
+        await fs.writeFile(targetFullPath, content, 'utf-8');
+        const existing = result.merged_files.find(
+          entry => normalizeProjectSpecTargetPath(entry.target_path) === targetPath,
+        );
+        if (existing) {
+          existing.status = 'success';
+          existing.hash_match = true;
+          existing.error = undefined;
+        } else {
+          result.merged_files.push({
+            candidate_path: 'generated:project_trace_projection',
+            target_path: targetPath,
+            operation: 'replace',
+            status: 'success',
+            hash_match: true,
+          });
+        }
+      }
+
+      const specManifest = await readJsonFile(projectSpecManifestPath);
+      specManifest.last_merged_targets = result.merged_files
+        .filter(entry => entry.status === 'success')
+        .map(entry => entry.target_path);
+      await fs.writeFile(
+        projectSpecManifestPath,
+        JSON.stringify(specManifest, null, 2) + '\n',
+        'utf-8',
+      );
+    }
+  } catch (error) {
+    const rollbackErrors = await restoreSnapshots(snapshots);
+    result.success = false;
+    result.rolled_back = rollbackErrors.length === 0;
+    result.spec_manifest_updated = false;
+    result.project_spec_version = previousProjectSpecVersion;
+    result.errors.push(`Atomic merge failed and was rolled back: ${(error as Error).message}`);
+    if (rollbackErrors.length > 0) {
+      result.errors.push(`Rollback errors: ${rollbackErrors.join('; ')}`);
+    }
+    for (const entry of result.merged_files) {
+      if (entry.status === 'success') {
+        entry.status = 'failed';
+        entry.hash_match = false;
+        entry.error = 'Rolled back because another merge operation failed';
+      }
     }
   }
 

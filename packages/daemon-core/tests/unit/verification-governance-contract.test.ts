@@ -48,6 +48,11 @@ function closure(workItemId: string): SemanticClosureManifest {
   };
 }
 
+async function writeJson(filePath: string, value: unknown): Promise<void> {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8');
+}
+
 describe('verification governance contract', () => {
   let projectRoot: string;
   let workItemDir: string;
@@ -120,6 +125,108 @@ describe('verification governance contract', () => {
       JSON.stringify(semanticClosure, null, 2) + '\n'
     );
   });
+
+  async function refreshClosureProvenance(): Promise<void> {
+    const semanticClosure = closure(workItemId);
+    semanticClosure.provenance = await captureSemanticClosureProvenance({
+      workItemDir,
+      source: 'tool_argument',
+      manifest: semanticClosure,
+    });
+    await fs.writeFile(
+      path.join(workItemDir, '.semantic_closure.json'),
+      JSON.stringify(semanticClosure, null, 2) + '\n',
+    );
+  }
+
+  async function establishContractGovernance(options?: {
+    traceConsumer?: boolean;
+    changedFile?: string;
+    source?: string;
+  }): Promise<void> {
+    const project = path.join(projectRoot, '.specforge', 'project');
+    const changedFile = options?.changedFile ?? 'src/order/status.ts';
+    await writeJson(path.join(project, 'spec_manifest.json'), {
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      project: {
+        architecture: '.specforge/project/architecture.md',
+        data_model: '.specforge/project/data_model.md',
+        trace_matrix: '.specforge/project/trace_matrix.md',
+        extension_registry: '.specforge/project/extension_registry.json',
+      },
+      modules: [
+        {
+          module_code: 'ORDER',
+          design: '.specforge/project/modules/ORDER/design.md',
+          contracts: '.specforge/project/modules/ORDER/contracts.json',
+          trace: '.specforge/project/modules/ORDER/trace.md',
+          code_paths: ['src/order/**'],
+        },
+      ],
+    });
+    await fs.writeFile(path.join(project, 'architecture.md'), 'ARCH-WD-001\n');
+    await fs.writeFile(path.join(project, 'data_model.md'), 'DATA-WD-001\n');
+    await fs.mkdir(path.join(project, 'modules', 'ORDER'), { recursive: true });
+    await fs.writeFile(
+      path.join(project, 'modules', 'ORDER', 'design.md'),
+      'DD-ORDER-001\n',
+    );
+    await writeJson(path.join(project, 'modules', 'ORDER', 'contracts.json'), {
+      schema_version: '1.0',
+      owner_module: 'ORDER',
+      contracts: {
+        shared_enums: [],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+    await fs.writeFile(
+      path.join(project, 'modules', 'ORDER', 'trace.md'),
+      '<!-- GENERATED_FROM_PROJECT_TRACE: module projection; do not edit independently -->\n',
+    );
+    await writeJson(path.join(project, 'extension_registry.json'), {
+      contracts: {
+        shared_enums: [
+          {
+            id: 'OrderStatus',
+            owner_module: 'ORDER',
+            values: ['ready'],
+            source_refs: ['DD-ORDER-001'],
+            enforcement: 'unit_test',
+          },
+        ],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    });
+    await fs.writeFile(
+      path.join(project, 'trace_matrix.md'),
+      [
+        '| From | Relation | To |',
+        '|---|---|---|',
+        '| DATA-WD-001 | constrained_by | ARCH-WD-001 |',
+        '| OrderStatus | enforces | DD-ORDER-001 |',
+        ...(options?.traceConsumer === false
+          ? []
+          : ['| DD-ORDER-001 | constrained_by | OrderStatus |']),
+        '',
+      ].join('\n'),
+    );
+    const absoluteChangedFile = path.join(projectRoot, ...changedFile.split('/'));
+    await fs.mkdir(path.dirname(absoluteChangedFile), { recursive: true });
+    await fs.writeFile(
+      absoluteChangedFile,
+      options?.source ?? 'const status: OrderStatus = "ready";\n',
+    );
+    await writeJson(path.join(workItemDir, 'work_item.json'), {
+      work_item_id: workItemId,
+      workflow_type: 'quick_change',
+      actual_changed_files: [{ path: changedFile, operation: 'modify' }],
+    });
+  }
 
   afterEach(async () => {
     await fs.rm(projectRoot, { recursive: true, force: true });
@@ -229,4 +336,102 @@ describe('verification governance contract', () => {
     expect(contractCheck?.passed).toBe(false);
     expect(contractCheck?.details).toContain('verification_commands');
   });
+
+  it('reconciles an actual machine-verified consumer with formal Trace', async () => {
+    await establishContractGovernance();
+    await refreshClosureProvenance();
+
+    const report = await runGate('verification_gate', {
+      workItemId,
+      workItemDir,
+      projectRoot,
+      workflowType: 'quick_change',
+      workflowPath: 'code_only_fast_path',
+    });
+
+    expect(report.status).toBe('passed');
+    expect(
+      report.checks.find(check => check.check_id === 'code_contract_trace_reconciliation_0')
+        ?.passed,
+    ).toBe(true);
+  });
+
+  it('blocks an actual Contract consumer that formal Trace does not declare', async () => {
+    await establishContractGovernance({ traceConsumer: false });
+    await refreshClosureProvenance();
+
+    const report = await runGate('verification_gate', {
+      workItemId,
+      workItemDir,
+      projectRoot,
+      workflowType: 'quick_change',
+      workflowPath: 'code_only_fast_path',
+    });
+
+    expect(report.status).toBe('failed');
+    expect(
+      report.checks.find(check => check.check_id === 'code_contract_trace_reconciliation_0')
+        ?.passed,
+    ).toBe(false);
+  });
+
+  it('accepts unsupported source only with structured manual-review Evidence', async () => {
+    await establishContractGovernance({
+      changedFile: 'src/order/status.py',
+      source: 'status = "ready"\n',
+    });
+    const reportPath = path.join(workItemDir, 'verification_report.md');
+    const structured = extractStructuredVerificationReport(
+      await fs.readFile(reportPath, 'utf-8'),
+    )!;
+    structured.contract_reviews = [
+      {
+        contract_id: 'NO_CONTRACT_USAGE',
+        files: ['src/order/status.py'],
+        modules: ['ORDER'],
+        review_method: 'manual',
+        reviewer: 'sf-verifier',
+        conclusion: 'pass',
+        summary: 'Reviewed the unsupported source and confirmed no Contract consumption.',
+        evidence: 'EV-1',
+      },
+    ];
+    await fs.writeFile(reportPath, renderVerificationReport(JSON.stringify(structured))!);
+    await refreshClosureProvenance();
+
+    const report = await runGate('verification_gate', {
+      workItemId,
+      workItemDir,
+      projectRoot,
+      workflowType: 'quick_change',
+      workflowPath: 'code_only_fast_path',
+    });
+
+    expect(report.status).toBe('passed');
+    expect(
+      report.checks.find(check => check.check_id.includes('NO_CONTRACT_USAGE'))?.passed,
+    ).toBe(true);
+  });
+
+  it('blocks unsupported source when structured manual-review Evidence is absent', async () => {
+    await establishContractGovernance({
+      changedFile: 'src/order/status.py',
+      source: 'status = "ready"\n',
+    });
+    await refreshClosureProvenance();
+
+    const report = await runGate('verification_gate', {
+      workItemId,
+      workItemDir,
+      projectRoot,
+      workflowType: 'quick_change',
+      workflowPath: 'code_only_fast_path',
+    });
+
+    expect(report.status).toBe('failed');
+    expect(
+      report.checks.find(check => check.check_id.includes('NO_CONTRACT_USAGE'))?.passed,
+    ).toBe(false);
+  });
+
 });

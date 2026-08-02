@@ -509,7 +509,7 @@ Task Planner 必须确保 verification_evidence_expected 与 verification_comman
 
 # V7 Task Planner 追溯产物强制输出规则
 
-本节优先级高于旧版 Required Output。  
+本节优先级高于旧版 Required Output。
 `sf-task-planner` 不再只生成 `tasks.md`，还必须生成 `trace_delta.md`。
 
 ## 一、必须输出的两个文件
@@ -560,6 +560,20 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
 - 无悬空 DD：
 - 无悬空 TASK：
 ```
+
+当且仅当本 WI 改变 Architecture/Data/Design/Contract 正式关系时，还必须在同一 `trace_delta.md` 中增加以下独立区段：
+
+```markdown
+<!-- SPECFORGE_GOVERNANCE_DELTA_START -->
+## Governance Relation Delta
+
+| Operation | From | Relation | To |
+|---|---|---|---|
+| ADD 或 REMOVE | 正式对象 ID | constrained_by 或 enforces | 正式对象 ID |
+<!-- SPECFORGE_GOVERNANCE_DELTA_END -->
+```
+
+该区段只表达正式治理关系变化。既有的 REQ→AC→DD→TASK→FILE→TEST/EVIDENCE 矩阵仍是 `trace_delta.md` 的必填主体，二者不得互相替代。
 
 ## 三、完成报告必须声明 trace_delta
 
@@ -618,4 +632,12 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
 2. 每个 Task 继续以 `DD-*` 为主要实现依据；涉及数据结构时必须列出相关 `DATA-*`；直接落实系统级工作时才直接引用 `ARCH-*`。
 3. 每个 Task 必须列出适用 Contract refs，并把 Runtime 已批准的写入范围落实为具体 `allowed_write_files`；不得自行扩大 Impact Scope。
 4. Task 无法唯一落到正式 Module / DD / DATA / Contract 时必须 blocked，不得让 Executor 猜测。
-5. Trace 只记录真实关系变化；没有 Architecture/Data/Design/Contract 关系变化时不得为了形式制造空治理 Trace Delta。
+5. `trace_delta.md` 继续保留既有的 REQ→AC→DD→TASK→FILE→TEST/EVIDENCE 完整追溯内容；Architecture/Data/Design/Contract 的治理关系变化必须写入同一文件内独立标记的 Governance Relation Delta 区段。没有治理关系变化时不得制造空区段。
+
+---
+# Contract 消费者任务闭环
+
+1. Task Planner 必须从 Prospective Trace 反向取得本 WI 变化 Contract 的全部消费 DD、消费 Module 和对应 `code_paths`，并将其纳入 Task 与 `allowed_write_files`。
+2. 不得仅按 Contract owner、`source_refs` 或文本中出现的 Contract ID 推导影响范围。
+3. Governance Relation Delta 区段中的 `ADD`、`REMOVE` 必须分别对应明确 Task；Contract Promotion 必须包含旧关系移除、新关系新增、消费者设计更新、迁移验证和兼容性结论。该区段固定使用 `SPECFORGE_GOVERNANCE_DELTA_START/END` 标记，不得把 ADD/REMOVE 混入既有 REQ 追溯矩阵。
+4. 任何正式消费者没有 Task、验证方法或批准写入范围时必须 blocked。

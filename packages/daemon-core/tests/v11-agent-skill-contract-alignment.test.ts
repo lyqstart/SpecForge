@@ -253,4 +253,33 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     expect(closeGate).toContain('AUTHORITATIVE_STATE_MISMATCH');
     expect(closeGate).toContain('current_state_not_verification_done');
   });
+
+  it('keeps Contract consumer truth-source and manual-review rules aligned in Agents and Skills', () => {
+    const design = read('setup/userlevel-opencode/agents/sf-design.md');
+    const planner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
+    const verifier = read('setup/userlevel-opencode/agents/sf-verifier.md');
+    const feature = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
+    const architecture = read('setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md');
+    const designFirst = read('setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md');
+    const contractChange = read('setup/userlevel-opencode/skills/sf-workflow-contract-change/SKILL.md');
+    const quickChange = read('setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md');
+
+    expect(design).toContain('DD-* constrained_by Contract-ID');
+    expect(design).toContain('Trace 唯一真相源');
+    expect(design).toContain('REMOVE 旧关系');
+    expect(planner).toContain('全部消费 DD');
+    expect(planner).toContain('allowed_write_files');
+    expect(verifier).toContain('verification_report.contract_reviews');
+    expect(verifier).toContain('NO_CONTRACT_USAGE');
+    expect(verifier).toContain('Fail Closed');
+    expect(feature).toContain('Current Governance Relations + ADD - REMOVE');
+    expect(feature).toContain('Module trace.md');
+    expect(architecture).toContain('新的 Project Contract ID');
+    expect(architecture).toContain('整体回滚');
+    expect(designFirst).toContain('重复 ADD');
+    expect(designFirst).toContain('REMOVE 不存在关系');
+    expect(contractChange).toContain('必须退出本路径并重新分类');
+    expect(quickChange).toContain('必须退出 Fast Path 并重新分类');
+  });
+
 });

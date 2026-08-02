@@ -31,6 +31,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 - `workflow_type` is the specific workflow identity.
 - `workflow_path` is the governance route.
 - `spec_migration` must pair with `spec_migration_path`.
+- `quick_change` is valid only with `code_only_fast_path`; `bugfix_spec` must not be silently reclassified as `quick_change`.
 - An explicit `workflow_type` must not be silently overwritten by a `workflow_path` default.
 - Workflow identity and path that are incompatible must fail closed, not be silently re-mapped.
 
@@ -48,10 +49,12 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 - `candidate_manifest.entries` must reference canonical candidate paths.
 - After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
 - `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
+- For `quick_change` on `code_only_fast_path`, `candidate_manifest.entries` must be empty and `merge_report.status=not_applicable`; this exception does not apply to `spec_migration`.
 
 ### 6. Code permission and executor boundary
 
-- Spec Migration is spec-only. It must NOT release `code_permission` and must NOT enter implementation states.
+- Spec Migration is spec-only. It must NOT call or release `sf_code_permission` and must NOT enter implementation states.
+- Because no business code is written, `sf_changed_files_audit` is not applicable to implementation and must not be used to fabricate an implementation result; any no-code audit evidence must still show `unresolved_blocked_write_attempts=0`.
 - No business code is written; only `.specforge/project/**` module truth-source files are updated through the governed merge.
 
 ### 7. Verification and close gate

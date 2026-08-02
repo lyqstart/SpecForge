@@ -797,3 +797,10 @@ user_response_quote="用户原话"
 没有用户原话，不得记录 `user_approved`。
 
 <!-- SpecForge V12 Workflow Authority + Approval Boundary END -->
+
+## Contract 消费者闭环
+
+- 设计阶段用 `DD-* constrained_by Contract-ID` 在 `candidates/trace_delta.md` 的 `SPECFORGE_GOVERNANCE_DELTA_START/END` 标记区段登记消费者变化；同一文件原有的 REQ→AC→DD→TASK 追溯内容继续保留。
+- Contract 变化必须从 Prospective Trace 展开全部消费 Module，并在同一个 WI 中完成 Design、Task、Code Permission、Implementation 和 Verification 闭环。
+- Merge 保留 `trace_delta.md` 中完整的 REQ 追溯内容，并仅对正式 `trace_matrix.md` 的 Governance Relations 标记区段执行 `Current Governance Relations + ADD - REMOVE`；不得用治理 Delta 覆盖整个正式 Trace 文档。
+- Module `trace.md` 由正式 Project Trace 自动生成，不得独立编辑。

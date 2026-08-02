@@ -31,6 +31,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 - `workflow_type` is the specific workflow identity.
 - `workflow_path` is the governance route.
 - `architecture_change` must pair with `architecture_change_path`.
+- `quick_change` is valid only with `code_only_fast_path`; `bugfix_spec` must not be silently reclassified as `quick_change`.
 - An explicit `workflow_type` must not be silently overwritten by a `workflow_path` default.
 - Workflow identity and path that are incompatible must fail closed, not be silently re-mapped.
 
@@ -48,6 +49,7 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 - `candidate_manifest.entries` must reference canonical candidate paths.
 - After `approved`, call `sf_merge_run`; do not manually force `approved -> merge_ready`.
 - `sf_merge_run` owns `approved -> merge_ready -> merging -> merged`.
+- For `quick_change` on `code_only_fast_path`, `candidate_manifest.entries` must be empty and `merge_report.status=not_applicable`; this exception does not apply to `architecture_change`.
 - A new module may be introduced only on `architecture_change_path` (or `spec_migration_path`), and only with a complete approved candidate set for that MODULE_CODE (`module.json`, `requirements.md`, `design.md`, `trace.md`).
 
 ### 6. Code permission and executor boundary
@@ -167,3 +169,9 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
    `sf_close_gate(action="recover_invalid_closure", confirm_invalid_closure_recovery=true, recovery_reason=...)`；
    必须生成 `closure_recovery.json` 且仅恢复到 `implementation_ready`，不得手工改状态或新建替代 Work Item。
 5. 不得手工修改 `.specforge/project/**`、状态文件或审批文件绕过工具。
+
+## Contract 消费者闭环
+
+1. Architecture 或 Module 边界变化涉及 Contract 时，必须在同一 WI 中完成 Contract 定义、全部消费 DD、Trace Delta、Task 和迁移验证。
+2. Module Contract 需要跨 Module 使用时，必须创建新的 Project Contract ID，并原子执行旧消费者关系 `REMOVE`、新消费者关系 `ADD`、旧 Contract 退出和兼容性/迁移结论。
+3. Merge 只接受 Governance Relation Delta 标记区段内严格有效的 ADD/REMOVE，并只更新正式 Trace 文档中的 Governance Relations 标记区段；既有 REQ 追溯内容必须保留，任一文件写入失败必须整体回滚。

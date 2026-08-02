@@ -3,7 +3,7 @@
 > **文件性质**：非权威当前交接文件
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
 > **当前活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
-> **最后确认的远程基线**：`main@57c5eb5`
+> **最后确认的远程基线**：`main@e242768`
 > **重要说明**：新会话开始时必须重新读取 GitHub `main` 当前 HEAD，不得把上述 SHA 当成永远不变的基线。
 
 继续 SpecForge 架构一致性治理能力的开发和验证。
@@ -153,16 +153,21 @@ INSUFFICIENT_EVIDENCE
 完成 P0 Contract 消费者闭环根因分析和完整实现设计
 完成 `main@57c5eb5` 精确源码取证
 完成正式治理前置结论和最小修改范围冻结
+完成 P0 隔离工作副本实现和 67 项行为验证
+完成 18 个变更 TypeScript 文件语法诊断
+完成用户仓库 95 项目标测试，0 项失败
+完成 TypeScript no-emit、daemon-core build 和全仓 deterministic build
+完成 29 个文件精确范围审计，0 缺失、0 越界
 ```
 
 最后确认的提交：
 
 ```text
-57c5eb5
-docs(governance): add contract consumer closure plan
+e242768
+docs(governance): freeze contract consumer implementation scope
 ```
 
-新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `57c5eb5`。
+新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `e242768`。
 
 ## 五、当前 P0 缺陷
 
@@ -182,7 +187,14 @@ Contract 正式消费者与实际代码消费者未形成 Trace 驱动闭环
 
 ```text
 权威方案：已经闭环
-当前程序：尚未完整落实
+程序实现：已整文件替换到用户仓库
+用户仓库目标测试：95 通过，0 失败
+TypeScript no-emit：通过
+daemon-core build：通过
+全仓 deterministic build：通过
+实现提交：尚未执行
+WorkDesk 真实验证：尚未执行
+活动实施状态：IN_PROGRESS
 优先级：P0
 ```
 
@@ -237,17 +249,13 @@ Module 定义中的独立消费者列表
 docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
 ```
 
-其状态应为：
-
-```text
-APPROVED_FOR_IMPLEMENTATION
-```
-
-开始修改代码时，先把状态改为：
+其当前状态应为：
 
 ```text
 IN_PROGRESS
 ```
+
+程序实现已经整文件替换到用户仓库，目标测试、TypeScript no-emit、daemon-core build、全仓 deterministic build 和范围审计全部通过；实现提交和 WorkDesk 真实项目验证尚未完成。
 
 实施过程中发现新影响时，必须先更新该实施文件，再扩大代码修改范围。
 
@@ -323,34 +331,50 @@ git diff --check 预期可通过
 
 ## 八、当前下一项工作
 
-当前已经完成代码实施前的全部只读取证和治理前置结论。
+当前程序实现已经在用户仓库 `main@e242768` 工作区完成整文件替换和真实自动化验证。
 
-下一步必须先由用户确认本次治理前置结论，然后把活动实施文件状态改为：
-
-```text
-IN_PROGRESS
-```
-
-再一次性实施：
+验证结果：
 
 ```text
-Trace 共享模型
-→ Contract 消费者 Gate
-→ Scope / Code Permission
-→ 原子 Merge 与 Module Trace 投影
-→ 实际代码消费者 Verification
-→ Agent / Skill 同步
-→ 全部回归测试
+目标测试：95 通过，0 失败
+TypeScript no-emit：通过
+daemon-core build：通过
+全仓 deterministic build：通过
+精确修改范围：29 个文件
+缺失：0
+越界：0
+git diff --check：通过
 ```
 
-开始代码修改前不得重新扩大范围。发现第 19 节以外的新生产文件确实必须修改时：
+验证期间发现一项测试夹具缺陷：
 
 ```text
-停止修改
-→ 用一手证据更新 P0 实施文件
-→ 重新确认治理前置结论
-→ 再继续
+GOV-TEST-FIXTURE-CONTRACT-PROMOTION-001
+原因：两个 Module Contract Promotion 夹具遗漏 scope: "module"
+处理：只修复测试夹具，不放宽生产校验
+回归：95 通过，0 失败
 ```
+
+下一步只允许：
+
+```text
+用包含最终实施记录的整文件包覆盖相同 29 个文件
+→ 再次确认精确范围和格式
+→ 暂存全部 29 个文件
+→ 提交 P0 实现
+→ 确认工作区干净
+→ 成功后删除实现包、夹具修复包和最终整文件包
+```
+
+在该步骤中：
+
+- 不启动 daemon；
+- 不启动 OpenCode；
+- 不推送远程；
+- 不在用户本地编辑文件内容；
+- 提交失败时不删除压缩包；
+- WorkDesk 真实项目验证完成前，P0 状态保持 `IN_PROGRESS`。
+
 
 ## 九、P0 已冻结实施边界
 
@@ -365,6 +389,7 @@ packages/daemon-core/src/tools/lib/code-contract-verifier.ts
 packages/daemon-core/src/tools/lib/gate-runner-v11.ts
 packages/daemon-core/src/tools/lib/merge-runner-v11.ts
 packages/daemon-core/src/tools/lib/verification-report-contract.ts
+packages/daemon-core/src/tools/lib/verification-governance-contract.ts
 ```
 
 必须同步：
@@ -374,7 +399,7 @@ sf-design
 sf-task-planner
 sf-verifier
 feature_spec / architecture_change / design_first
-contract_change / quick_change Workflow Skill
+contract_change / quick_change / spec_migration Workflow Skill
 ```
 
 当前明确不修改：
@@ -402,6 +427,8 @@ daemon 生命周期
 fj1
 GOV-DEBT-001 packages/daemon-core/.specforge
 ```
+
+当前实现包已覆盖上述生产范围；`verification-governance-contract.ts` 和 `spec_migration` Skill 是实施中通过一手调用链及既有回归证据确认的最小扩展，原因已经回写活动实施文件第 19、23、25 节。
 
 ## 十、P0 完成条件
 

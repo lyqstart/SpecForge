@@ -510,3 +510,10 @@ intake / impact / trigger_result
 13. quick_change workflow 必须保持 fast path boundary，不得把小改动扩大成未审批的设计变更或重构。
 
 <!-- SPECFORGE_V11_GOVERNANCE_POLICY_END -->
+
+## Contract 消费者闭环
+
+1. Contract 消费关系只存在于正式 Trace：`DD-* constrained_by Contract-ID`。
+2. 修改 Contract 时，Impact Scope 和 Code Permission 必须覆盖全部正式消费者 Module 及其 `code_paths`。
+3. `trace_delta.md` 继续包含既有完整追溯矩阵；治理关系变更只在 `SPECFORGE_GOVERNANCE_DELTA_START/END` 标记区段写 ADD/REMOVE。重复 ADD、重复 REMOVE、REMOVE 不存在关系或同边冲突必须视为阻塞，不得静默忽略。
+4. Module `trace.md` 是自动生成视图，不得作为第二权威源。
