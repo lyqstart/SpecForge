@@ -3,7 +3,7 @@
 > **文件性质**：非权威当前交接文件
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
 > **当前活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
-> **最后确认的远程基线**：`main@08629b58c6aad82bf669a35e1f2bc8473cfa7ef3`
+> **最后确认的远程基线**：`main@57c5eb5`
 > **重要说明**：新会话开始时必须重新读取 GitHub `main` 当前 HEAD，不得把上述 SHA 当成永远不变的基线。
 
 继续 SpecForge 架构一致性治理能力的开发和验证。
@@ -151,16 +151,18 @@ INSUFFICIENT_EVIDENCE
 明确 Trace Delta 使用 ADD、REMOVE
 完成权威规则—源码—测试静态对账
 完成 P0 Contract 消费者闭环根因分析和完整实现设计
+完成 `main@57c5eb5` 精确源码取证
+完成正式治理前置结论和最小修改范围冻结
 ```
 
 最后确认的提交：
 
 ```text
-08629b58c6aad82bf669a35e1f2bc8473cfa7ef3
-docs(governance): clarify product and runtime boundaries
+57c5eb5
+docs(governance): add contract consumer closure plan
 ```
 
-新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `08629b5`。
+新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `57c5eb5`。
 
 ## 五、当前 P0 缺陷
 
@@ -321,68 +323,80 @@ git diff --check 预期可通过
 
 ## 八、当前下一项工作
 
-现在直接开始：
+当前已经完成代码实施前的全部只读取证和治理前置结论。
+
+下一步必须先由用户确认本次治理前置结论，然后把活动实施文件状态改为：
 
 ```text
-依据 P0-contract-consumer-closure.md，
-把 Contract 消费者闭环作为一个完整治理主题实施。
+IN_PROGRESS
 ```
 
-一次只完成这一项，不同时处理其他 P1、P2 或延期债务。
-
-修改前必须输出治理前置结论，至少包括：
+再一次性实施：
 
 ```text
-任务目标
-当前事实和一手证据
-规则适用范围：PRODUCT_DEVELOPMENT / PROJECT_GOVERNANCE / BOTH
-适用的权威规则 ID
-受影响模块
-受影响 Architecture、Data Model、Module Design
-受影响 Project Contract、Module Contract
-受影响生产者和消费者
-受影响 Trace、Impact Scope、Gate、Code Permission、Audit、Verification、Close
-允许修改文件
-明确禁止修改范围
-测试矩阵
-是否需要再次修订权威文件
-证据不足项
+Trace 共享模型
+→ Contract 消费者 Gate
+→ Scope / Code Permission
+→ 原子 Merge 与 Module Trace 投影
+→ 实际代码消费者 Verification
+→ Agent / Skill 同步
+→ 全部回归测试
 ```
 
-治理前置结论完成前不得修改代码。
-
-## 九、P0 实施边界
-
-主要检查并按证据修改现有能力：
+开始代码修改前不得重新扩大范围。发现第 19 节以外的新生产文件确实必须修改时：
 
 ```text
-sf_trace_matrix_core
-project-governance-v2
-contract-integrity
-impact-analysis
-code-contract-verifier
+停止修改
+→ 用一手证据更新 P0 实施文件
+→ 重新确认治理前置结论
+→ 再继续
 ```
 
-如现有调用链确有需要，再修改：
+## 九、P0 已冻结实施边界
+
+主要生产实现：
 
 ```text
-gate-runner
-merge-runner
-共享 Contract 类型
-部署态同步 Tool
+packages/daemon-core/src/tools/lib/governance-trace-model.ts
+packages/daemon-core/src/tools/lib/project-governance-v2.ts
+packages/daemon-core/src/tools/lib/contract-integrity.ts
+packages/daemon-core/src/tools/lib/contracts-registry.ts
+packages/daemon-core/src/tools/lib/code-contract-verifier.ts
+packages/daemon-core/src/tools/lib/gate-runner-v11.ts
+packages/daemon-core/src/tools/lib/merge-runner-v11.ts
+packages/daemon-core/src/tools/lib/verification-report-contract.ts
+```
+
+必须同步：
+
+```text
 sf-design
 sf-task-planner
 sf-verifier
-相关 Workflow Skill
+feature_spec / architecture_change / design_first
+contract_change / quick_change Workflow Skill
 ```
 
-所有代码名词必须先解释其在业务治理流程中的作用，再说明源码位置。
+当前明确不修改：
+
+```text
+sf_trace_matrix_core
+impact-analysis
+gate-chain
+changed-files-audit
+code-permission-service-v11
+Contract Schema
+```
+
+完整文件路径、原因和测试文件范围以活动实施文件第 19、20、21 节为准。
 
 明确不处理：
 
 ```text
 其他 P1/P2 差距
 Requirement 治理扩展
+所有语言的通用静态分析
+最终 Gate Hard 收口
 daemon 生命周期
 服务器部署
 fj1
@@ -440,7 +454,7 @@ Trace 一致性
 INSUFFICIENT_EVIDENCE
 ```
 
-## 十、daemon、OpenCode、提交和推送边界
+## 十一、daemon、OpenCode、提交和推送边界
 
 不得自动启动、停止或重启 daemon。
 
@@ -459,7 +473,7 @@ C:\Users\luo\.config\opencode
 C:\Users\luo\.specforge
 ```
 
-## 十一、后续路线
+## 十二、后续路线
 
 P0 完成并闭环后，再逐项处理：
 
