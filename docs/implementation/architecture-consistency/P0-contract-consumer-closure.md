@@ -5,7 +5,7 @@
 > **目标仓库路径**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
 > **缺陷编号**：`GOV-DEFECT-CONTRACT-CONSUMER-001`
-> **设计基线**：`main@e242768`（P0 精确源码取证与实施范围已在该提交冻结；程序实现已整文件替换到用户仓库并完成自动化验证，尚未提交）
+> **设计基线**：`main@e242768`（P0 精确源码取证与实施范围已在该提交冻结；本轮实现包尚未写入用户仓库）
 > **当前执行边界**：本文件用于开发 SpecForge 产品；业务项目不直接读取本文件。标记为 `PROJECT_GOVERNANCE` 或 `BOTH` 的规则，必须最终落实到 SpecForge 的程序、Tool、Skill、Agent、Workflow、Gate、Runtime、项目模板和回归测试中。
 
 ## 0. 文档权威边界
@@ -1676,7 +1676,7 @@ daemon/OpenCode：不需要
 证据不足项：真实 OpenCode + WorkDesk 运行验证尚未执行
 ```
 
-当前实现已经整文件替换到用户仓库，并保持在第 19 节及本轮一手证据批准的最小扩展范围内。用户仓库真实依赖环境中的目标测试、TypeScript no-emit、daemon-core 构建、全仓 deterministic build、格式检查和精确范围审计已经通过。P0 状态仍保持 `IN_PROGRESS`，因为实现提交尚未完成，且 WorkDesk 真实 OpenCode + SpecForge 项目验证仍未执行；在真实项目验证完成前不得宣布关闭。
+当前实现已经在隔离工作副本中完成，并保持在第 19 节及本轮一手证据批准的最小扩展范围内。实现包尚未替换进用户仓库，仓库内真实依赖环境的单元测试、TypeScript no-emit、构建和 Git 范围审计仍未执行，因此 P0 状态保持 `IN_PROGRESS`，不得宣布关闭；自动化验证完成后仍需 WorkDesk 真实项目验证。
 
 ---
 
@@ -1818,20 +1818,20 @@ Impact Scope / Code Permission 设计：完成
 允许修改范围：已冻结并按一手证据记录最小扩展
 回归测试矩阵：已冻结
 
-隔离工作副本代码实现：完成
-程序实现整文件替换：完成
+用户仓库代码实现：完成
 用户仓库目标测试：95 通过，0 失败
 TypeScript no-emit：通过
 daemon-core build：通过
 全仓 deterministic build：通过
-精确修改范围审计：29 个文件，无缺失、无越界
-git diff --check：通过
-用户仓库提交：未执行
+实施提交：60cbbd3829c67d67f99cf76570b59fb6fa79b35d
+本地与远程 main：已同步
+工作区：干净
+安装压缩包：已清理
 WorkDesk 真实验证：未执行
 daemon/OpenCode：未操作
 ```
 
-本文件当前状态为 `IN_PROGRESS`。程序实现已经在用户仓库 `main@e242768` 上完成整文件替换和自动化验证。下一步只允许用包含本次真实验证记录的最终整文件包覆盖相同 29 个文件，随后暂存、复核并提交；在提交成功前保留全部替换包，在 WorkDesk 真实项目验证完成前不得把本缺陷标记为 `COMPLETED`。
+本文件当前状态仍为 `IN_PROGRESS`。程序实现、自动化测试、类型检查、构建、提交和远程同步已经完成；只有 WorkDesk 真实 OpenCode + SpecForge 新项目链路仍未验证，因此不得提前标记 `COMPLETED`，也不得启用最终 Hard Enforcement。
 
 ---
 
@@ -1841,7 +1841,9 @@ daemon/OpenCode：未操作
 >
 > **实施开始基线**：`main@e242768`
 >
-> **实现位置**：已整文件替换到用户仓库 `main@e242768` 工作区；自动化验证通过，尚未提交。
+> **实施提交**：`60cbbd3829c67d67f99cf76570b59fb6fa79b35d`
+>
+> **实现位置**：用户仓库 `main`；本地与远程已经同步，工作区干净。
 
 ### 25.1 关键实现决定
 
@@ -1924,15 +1926,18 @@ setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md
 setup/userlevel-opencode/skills/sf-workflow-spec-migration/SKILL.md
 ```
 
-### 25.4 隔离环境验证结果
+### 25.4 隔离环境与用户仓库真实验证结果
 
-使用从 `e242768` 同源代码构造的轻量 Vitest 兼容运行器执行真实生产函数和真实测试文件：
+隔离工作副本首先执行了 67 项行为验证和 18 个变更 TypeScript 文件语法诊断，全部通过。
+
+随后在用户仓库 `main@e242768` 的真实依赖环境中完成：
 
 ```text
-测试文件：9
-测试场景：67
-通过：67
+目标测试文件：18
+测试场景：95
+通过：95
 失败：0
+expect 调用：1691
 ```
 
 覆盖：
@@ -1949,117 +1954,40 @@ Contract 删除、破坏性修改与 Promotion
 应用级原子 Merge 和失败回滚
 Verification Gate 集成
 Agent / Skill 最终治理合同一致性
+安装态结构一致性
+候选合并兼容性
 ```
 
-对 18 个变更 TypeScript 文件执行 TypeScript 5.8.3 `transpileModule` 语法诊断：
-
-```text
-通过：18
-失败：0
-```
-
-该语法诊断不能替代仓库真实 `tsc --noEmit`。
-
-### 25.5 用户仓库真实自动化验证结果
-
-在 Windows 用户仓库 `main@e242768`、真实依赖和真实构建链中完成：
-
-```text
-目标测试文件：18
-测试场景：95
-通过：95
-失败：0
-expect 调用：1691
-```
-
-通过范围包括：
-
-```text
-Contract 正式消费者与破坏性变更
-Module Contract → Project Contract Promotion
-Trace Current + ADD - REMOVE
-Trace 工程追溯内容保留
-Module Trace 受控投影
-跨 Module Internal Contract 阻断
-Contract 消费者反向展开
-Code Permission 消费 Module 覆盖
-正式消费者与实际代码消费者对账
-未支持语言结构化人工审查
-原子 Merge 与失败回滚
-Verification Gate 集成
-Agent / Skill 合同一致性
-安装态一致性
-既有 Candidate Merge 与 Greenfield 回归
-```
-
-编译和构建结果：
+仓库真实验证：
 
 ```text
 bunx tsc --noEmit -p packages/daemon-core/tsconfig.json：通过
 packages/daemon-core bun run build：通过
-根目录 bun run build：通过
-全仓 deterministic workspace build：全部 package 通过
+根目录 deterministic workspace build：通过
+29 个批准文件范围审计：通过
 git diff --check：通过
 ```
 
-实际范围审计：
+测试过程中曾发现两条 Module Contract Promotion 测试夹具遗漏必填字段 `scope: "module"`。生产代码正确拒绝该无效 Contract。修复方式是整文件替换测试夹具，不放宽生产规则；修复后 95 项测试全部通过。
 
-```text
-实现包预期文件：29
-Git 实际变化文件：29
-缺失：0
-越界：0
-构建新增非预期文件：0
-```
-
-根目录构建执行了工作流文档确定性渲染。渲染过程触及多个 Skill 的生成区段，但最终 Git 范围仍保持为批准的 29 个文件，没有产生额外差异。
-
-### 25.6 验证期间发现并修复的测试夹具缺陷
-
-```text
-编号：GOV-TEST-FIXTURE-CONTRACT-PROMOTION-001
-分类：P2_TEST_FIXTURE_SCHEMA_GAP
-事实：第一次真实测试运行结果为 93 通过、2 失败；两项均为 Module Contract Promotion 场景。
-根因：测试夹具创建 Module Invariant Contract 时遗漏必填字段 scope: "module"。
-判断：生产代码按 Schema 拒绝无效 Module Contract，属于正确的 Fail Closed 行为，不能放宽生产规则。
-修复：只替换 packages/daemon-core/tests/unit/contract-integrity.test.ts，
-      为两个 Promotion 夹具补齐 scope: "module"。
-回归：重新运行完整目标测试集，95 通过、0 失败。
-治理结论：测试数据必须与正式 Contract Schema 一致，不能通过降低生产校验来迁就无效夹具。
-```
-
-### 25.7 当前证据不足
+### 25.5 当前证据不足
 
 ```text
 INSUFFICIENT_EVIDENCE：WorkDesk 真实 OpenCode + SpecForge 新项目链路尚未运行
-INSUFFICIENT_EVIDENCE：真实业务项目中的 Contract 增加、取消、破坏性变更和 Promotion 尚未完成端到端验证
+INSUFFICIENT_EVIDENCE：真实业务项目中的 Contract 增加、删除、破坏性变更和 Module→Project Promotion 尚未端到端验证
 ```
 
-用户仓库自动化验证已完成，因此不再把目标测试、TypeScript no-emit、package build、deterministic build 或安装态一致性列为证据不足。
+因此当前不得把 P0 状态改为 `COMPLETED`，也不得启用最终 Hard Enforcement。
 
-P0 仍不得标记为 `COMPLETED`，也不得据此启用最终 Hard Enforcement。上述动作必须等待实现提交完成，并在后续 Phase 11 WorkDesk 真实项目验证中关闭剩余证据缺口。
+### 25.6 下一验证边界
 
-### 25.8 下一执行边界
-
-下一步只允许：
+下一步进入 WorkDesk 真实项目验证前置检查和执行准备：
 
 ```text
-用最终整文件包覆盖批准的 29 个文件
-→ 确认 Git 变化仍为同一 29 个文件
-→ git diff --check
-→ 暂存全部 29 个文件
-→ git diff --cached --check
-→ 提交 P0 实现
-→ 确认工作区干净
-→ 成功后清理本轮全部压缩包
+确认 WorkDesk 仓库与测试基线
+确认当前用户级安装来源与版本
+确认 daemon、OpenCode 启动前提
+设计一个同时覆盖 Contract 增加、消费者登记、破坏性变更和 Promotion 的真实 WI 链路
 ```
 
-本次提交完成后：
-
-```text
-更新远程 main
-→ 重新读取 current-handoff.md
-→ 决定进入后续静态差距项，或安排 Phase 11 WorkDesk 真实验证
-```
-
-涉及 daemon 或 OpenCode 时，必须先明确告知用户，由用户手工操作。
+涉及 daemon 或 OpenCode 时，必须先明确告知用户，由用户手工启动。不得自动启动、停止或重启 daemon/OpenCode。

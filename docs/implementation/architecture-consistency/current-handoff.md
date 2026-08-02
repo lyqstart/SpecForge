@@ -3,7 +3,7 @@
 > **文件性质**：非权威当前交接文件
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
 > **当前活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
-> **最后确认的远程基线**：`main@e242768`
+> **最后确认的远程基线**：`main@60cbbd3829c67d67f99cf76570b59fb6fa79b35d`
 > **重要说明**：新会话开始时必须重新读取 GitHub `main` 当前 HEAD，不得把上述 SHA 当成永远不变的基线。
 
 继续 SpecForge 架构一致性治理能力的开发和验证。
@@ -154,20 +154,22 @@ INSUFFICIENT_EVIDENCE
 完成 `main@57c5eb5` 精确源码取证
 完成正式治理前置结论和最小修改范围冻结
 完成 P0 隔离工作副本实现和 67 项行为验证
-完成 18 个变更 TypeScript 文件语法诊断
-完成用户仓库 95 项目标测试，0 项失败
-完成 TypeScript no-emit、daemon-core build 和全仓 deterministic build
-完成 29 个文件精确范围审计，0 缺失、0 越界
+完成用户仓库 95 项目标测试，0 失败
+完成 TypeScript no-emit
+完成 daemon-core build
+完成全仓 deterministic build
+完成 29 文件实际范围审计
+完成 P0 实现提交并同步远程
 ```
 
 最后确认的提交：
 
 ```text
-e242768
-docs(governance): freeze contract consumer implementation scope
+60cbbd3829c67d67f99cf76570b59fb6fa79b35d
+fix(governance): close contract consumer trace loop
 ```
 
-新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `e242768`。
+新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `60cbbd3`。
 
 ## 五、当前 P0 缺陷
 
@@ -187,13 +189,8 @@ Contract 正式消费者与实际代码消费者未形成 Trace 驱动闭环
 
 ```text
 权威方案：已经闭环
-程序实现：已整文件替换到用户仓库
-用户仓库目标测试：95 通过，0 失败
-TypeScript no-emit：通过
-daemon-core build：通过
-全仓 deterministic build：通过
-实现提交：尚未执行
-WorkDesk 真实验证：尚未执行
+隔离工作副本实现：已完成
+用户仓库内真实验证：尚未执行
 活动实施状态：IN_PROGRESS
 优先级：P0
 ```
@@ -255,7 +252,7 @@ docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
 IN_PROGRESS
 ```
 
-程序实现已经整文件替换到用户仓库，目标测试、TypeScript no-emit、daemon-core build、全仓 deterministic build 和范围审计全部通过；实现提交和 WorkDesk 真实项目验证尚未完成。
+隔离工作副本已经开始并完成第一轮代码实现；仓库内验证和提交尚未完成。
 
 实施过程中发现新影响时，必须先更新该实施文件，再扩大代码修改范围。
 
@@ -329,54 +326,91 @@ UTF-8 编码正确
 git diff --check 预期可通过
 ```
 
-## 八、当前下一项工作
+## 八、CMD 命令最小反馈规则
 
-当前程序实现已经在用户仓库 `main@e242768` 工作区完成整文件替换和真实自动化验证。
+> **适用范围**：`PRODUCT_DEVELOPMENT`。以后所有新会话提供的 CMD 命令都必须遵守。
 
-验证结果：
-
-```text
-目标测试：95 通过，0 失败
-TypeScript no-emit：通过
-daemon-core build：通过
-全仓 deterministic build：通过
-精确修改范围：29 个文件
-缺失：0
-越界：0
-git diff --check：通过
-```
-
-验证期间发现一项测试夹具缺陷：
+CMD 可以在本地输出完整执行过程，但命令末尾必须生成一个独立的最小反馈区块：
 
 ```text
-GOV-TEST-FIXTURE-CONTRACT-PROMOTION-001
-原因：两个 Module Contract Promotion 夹具遗漏 scope: "module"
-处理：只修复测试夹具，不放宽生产校验
-回归：95 通过，0 失败
+===== FEEDBACK TO CHATGPT =====
+RESULT=SUCCESS 或 FAILED
+STEP=<本次完整步骤名称>
+LOCAL_HEAD=<适用时>
+REMOTE_HEAD=<适用时>
+DIVERGENCE=<适用时>
+WORKTREE=CLEAN 或 DIRTY
+TESTS=<适用时>
+TYPECHECK=<适用时>
+BUILD=<适用时>
+PACKAGE_CLEANUP=<适用时>
+FAILED_STAGE=<失败时>
+ERROR_LOG=<失败时>
+===== END FEEDBACK =====
 ```
 
-下一步只允许：
+用户运行后只需要反馈该区块，不需要粘贴全部正常执行日志。
+
+失败时，命令必须：
 
 ```text
-用包含最终实施记录的整文件包覆盖相同 29 个文件
-→ 再次确认精确范围和格式
-→ 暂存全部 29 个文件
-→ 提交 P0 实现
-→ 确认工作区干净
-→ 成功后删除实现包、夹具修复包和最终整文件包
+保留安装包和错误日志
+明确 FAILED_STAGE
+输出足够定位问题的最小错误信息
+不得继续提交、推送或清理
 ```
 
-在该步骤中：
+成功时，反馈区块必须足以判断：
 
-- 不启动 daemon；
-- 不启动 OpenCode；
-- 不推送远程；
-- 不在用户本地编辑文件内容；
-- 提交失败时不删除压缩包；
-- WorkDesk 真实项目验证完成前，P0 状态保持 `IN_PROGRESS`。
+```text
+步骤是否完成
+本地和远程版本是否一致
+工作区是否干净
+测试、类型检查和构建是否通过
+安装包是否已按规则清理
+```
 
+不得要求用户从长日志中自行筛选结果。
 
-## 九、P0 已冻结实施边界
+## 九、当前下一项工作
+
+P0 程序实现、自动化测试、类型检查、构建、提交和远程同步已经完成。
+
+当前下一项完整工作是：
+
+```text
+WorkDesk 真实项目验证前置检查
+→ 确认 WorkDesk 当前仓库状态
+→ 确认用户级 SpecForge 安装来源和版本
+→ 固定真实验证场景与验收证据
+→ 再由用户手工启动 daemon 和 OpenCode
+→ 执行真实 WI 链路
+```
+
+真实场景至少覆盖：
+
+```text
+新建 Project Contract
+登记多个 DD 消费者
+Contract 变更时自动展开 Impact Scope
+Code Permission 覆盖消费 Module
+实际代码消费者与正式 Trace 对账
+删除或破坏性变更的阻断
+Module Contract 升级为 Project Contract
+原子 Merge、Verification 和 Close
+```
+
+在完成 WorkDesk 真实验证前：
+
+```text
+P0 状态保持 IN_PROGRESS
+不得启用最终 Hard Enforcement
+不得把自动化测试冒充真实业务项目验收
+```
+
+任何需要 daemon 或 OpenCode 的步骤，必须先明确告诉用户，由用户手工执行。
+
+## 十、P0 已冻结实施边界
 
 主要生产实现：
 
@@ -430,7 +464,7 @@ GOV-DEBT-001 packages/daemon-core/.specforge
 
 当前实现包已覆盖上述生产范围；`verification-governance-contract.ts` 和 `spec_migration` Skill 是实施中通过一手调用链及既有回归证据确认的最小扩展，原因已经回写活动实施文件第 19、23、25 节。
 
-## 十、P0 完成条件
+## 十一、P0 完成条件
 
 必须覆盖活动实施文件中的全部回归场景，至少包括：
 
@@ -481,7 +515,7 @@ Trace 一致性
 INSUFFICIENT_EVIDENCE
 ```
 
-## 十一、daemon、OpenCode、提交和推送边界
+## 十二、daemon、OpenCode、提交和推送边界
 
 不得自动启动、停止或重启 daemon。
 
@@ -500,18 +534,17 @@ C:\Users\luo\.config\opencode
 C:\Users\luo\.specforge
 ```
 
-## 十二、后续路线
+## 十三、后续路线
 
-P0 完成并闭环后，再逐项处理：
+当前先完成 WorkDesk 真实新项目 P0 验证。P0 状态达到 `COMPLETED` 后，再逐项处理：
 
 ```text
 P1：Contract 完整兼容性分类
 P1：Trace 架构语义闭包
-P1：删除 Contract 后悬空关系及 Promotion 回归
+P1：删除 Contract 后悬空关系及 Promotion 扩展回归
 P2：唯一权威源结构性回归测试
 P2：同一 WI 架构闭环防退化测试
-最终三个核心 Gate 全部 Hard
-WorkDesk 真实新项目完整验收
+全部 P0/P1/P2 和 Phase 11 条件满足后再决定最终三个核心 Gate Hard
 GOV-DEBT-001 延期污染问题
 ```
 
