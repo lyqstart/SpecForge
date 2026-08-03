@@ -4,7 +4,7 @@
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
 > **当前主线活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
 > **当前阻断缺陷实施文件**：`docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md`
-> **最后确认的远程基线**：`main@fd93b966f4663335133aca9612112dc4fe2e37ff`
+> **本轮已验证实现提交**：`main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`
 > **重要说明**：新会话开始时必须重新读取 GitHub `main` 当前 HEAD，不得把上述 SHA 当成永远不变的基线。
 
 继续 SpecForge 架构一致性治理能力的开发和验证。
@@ -192,14 +192,21 @@ INSUFFICIENT_EVIDENCE
 完成 P0 实现提交并同步远程
 ```
 
-最后确认的提交：
+本轮已验证实现提交：
+
+```text
+95befe8b35812aeb09e4d9e68f4497e12b3ac2a9
+fix(governance): bind project spec versions and close lifecycle gaps
+```
+
+其中 P0 Contract Consumer 主线实现提交仍为：
 
 ```text
 60cbbd3829c67d67f99cf76570b59fb6fa79b35d
 fix(governance): close contract consumer trace loop
 ```
 
-新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `60cbbd3`。
+新会话必须以 GitHub 当前 `main` 实际 HEAD 为准。如果已经存在更新提交，先读取更新内容，不得回退到 `95befe8`。
 
 ## 五、当前 P0 缺陷
 
@@ -456,35 +463,44 @@ ERROR_LOG=<失败时>
 
 P0 Contract Consumer 程序实现、自动化测试、类型检查、构建、提交和远程同步已经完成。
 
-当前本地未提交跟进工作是：
+P0-PSV-BINDING-001 及同轮治理修复已经完成仓库验证、提交和远程同步：
 
 ```text
-P0-PSV-BINDING-001 修复
-+ 历史测试夹具与当前治理 Contract 对齐
-+ code_only_fast_path Close Gate 适用性修复
-+ 开发错误经验门禁与单一完整交付包规则
-+ 仓库根 `AGENTS.md` 经验门禁消费者闭环
+提交：95befe8b35812aeb09e4d9e68f4497e12b3ac2a9
+范围：19 个文件
+内容：
+- Project Spec Version Binding 修复
+- 历史测试夹具与当前治理 Contract 对齐
+- code_only_fast_path Close Gate 适用性修复
+- 开发错误经验门禁与单一完整交付包规则
+- 仓库根 AGENTS.md 经验门禁消费者闭环
 ```
 
-提交前验证事实：
+提交与验证事实：
 
 ```text
-基线：main@fd93b966f4663335133aca9612112dc4fe2e37ff
-完整变更范围：19 个文件（12 tracked modified，7 untracked）
+验证基线：main@fd93b966f4663335133aca9612112dc4fe2e37ff
+已验证实现提交：95befe8b35812aeb09e4d9e68f4497e12b3ac2a9
+实现提交已同步远程 main：是
+当前远程 HEAD：每次新会话实时读取，不在本文件中自引用状态对账提交 SHA
 目标测试：9 个文件、106 项测试通过、0 失败
 TypeScript no-emit：通过
 daemon-core build：通过
 全仓 deterministic build：通过
 git diff --check：通过
 完整字节级变更证据审计：通过
-install / daemon / OpenCode / commit / push：均未执行
+提交与推送：完成
+本地与远程：一致
+工作区：干净
+install / daemon / OpenCode：均未执行
 ```
 
 当前下一项完整工作是：
 
 ```text
-用户暂存、提交并推送当前 19 文件变更
-→ 核对并升级用户级 SpecForge 安装版本
+核对用户级 SpecForge 安装来源与当前版本
+→ 从已提交版本 main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9 升级用户级安装
+→ 验证安装 Manifest、Tool、Skill、Agent 与源码一致
 → 受控清理并重建 WorkDesk WI-0003
 → 用户手工启动 daemon 和 OpenCode
 → 继续 WorkDesk 真实 WI 链路

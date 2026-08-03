@@ -11,6 +11,10 @@ const currentHandoffPath = join(
   repoRoot,
   'docs/implementation/architecture-consistency/current-handoff.md',
 );
+const psvImplementationPath = join(
+  repoRoot,
+  'docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md',
+);
 const rootAgentsPath = join(repoRoot, 'AGENTS.md');
 const userLevelAgentsPath = join(repoRoot, 'setup/userlevel-opencode/AGENTS.md');
 
@@ -37,7 +41,7 @@ describe('SpecForge development experience pre-read gate', () => {
 
     const experienceRuleIds = experience.match(/^## EXP-\d{3}：/gm) ?? [];
     expect(experience.trim().length).toBeGreaterThan(500);
-    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(36);
+    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(37);
     expect(experienceRuleIds).toContain('## EXP-021：');
     expect(experienceRuleIds).toContain('## EXP-022：');
     expect(experienceRuleIds).toContain('## EXP-023：');
@@ -54,6 +58,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experienceRuleIds).toContain('## EXP-034：');
     expect(experienceRuleIds).toContain('## EXP-035：');
     expect(experienceRuleIds).toContain('## EXP-036：');
+    expect(experienceRuleIds).toContain('## EXP-037：');
 
     expect(checklist.trim().length).toBeGreaterThan(500);
     expect(checklist).toContain('APPLICABLE_EXPERIENCE_RULES');
@@ -76,6 +81,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(checklist).toContain('迁移/升级工具已先识别 SOURCE/TARGET 状态');
     expect(checklist).toContain('状态对账目标描述成功结束后的下一阶段');
     expect(checklist).toContain('强制经验门禁已同步仓库根 AGENTS.md');
+    expect(checklist).toContain('提交依赖状态已在实现提交和推送成功后执行二次对账');
   });
 
   it('records every new error with a class-level prevention rule', () => {
@@ -111,12 +117,15 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('## EXP-035：状态对账目标必须描述成功后的下一阶段');
     expect(document).toContain('### ERR-055：经验前置门禁只同步到交接和用户级模板，遗漏仓库根 AGENTS 入口');
     expect(document).toContain('## EXP-036：强制治理规则必须覆盖全部实际入口消费者');
+    expect(document).toContain('### ERR-056：包含“待提交”状态的当前文档在提交成功后没有执行提交后对账');
+    expect(document).toContain('## EXP-037：提交依赖状态必须通过提交后对账闭环');
     expect(document).toContain('## EXP-032：最终证据必须使完整变更集可重建、可审查');
     expect(document).toContain('一个错误必须产生一个类防护');
   });
 
   it('requires every delivery round to use one complete downloadable bundle', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
+    const psvImplementation = readFileSync(psvImplementationPath, 'utf-8');
     const rootAgents = readFileSync(rootAgentsPath, 'utf-8');
     const userLevelAgents = readFileSync(userLevelAgentsPath, 'utf-8');
 
@@ -126,8 +135,16 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('scripts/validate.py');
     expect(handoff).toContain('不得在应用成功后再要求用户第二次下载验证文件');
     expect(handoff).toContain('只能包含预期的仓库替换文件');
-    expect(handoff).toContain('用户暂存、提交并推送当前 19 文件变更');
+    expect(handoff).toContain('本轮已验证实现提交');
+    expect(handoff).toContain('main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9');
+    expect(handoff).toContain('当前远程 HEAD：每次新会话实时读取');
+    expect(handoff).toContain('核对用户级 SpecForge 安装来源与当前版本');
+    expect(handoff).not.toContain('用户暂存、提交并推送当前 19 文件变更');
     expect(handoff).not.toContain('完成当前状态文档同步并复跑同一验证集');
+    expect(psvImplementation).toContain('`COMMITTED_AND_REMOTE_SYNCED_PENDING_INSTALL_AND_REAL_PROJECT_RETEST`');
+    expect(psvImplementation).toContain('`95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`');
+    expect(psvImplementation).toContain('6. [x] Commit the validated change set');
+    expect(psvImplementation).not.toContain('remains uncommitted');
 
     for (const entry of [rootAgents, userLevelAgents]) {
       expect(entry).toContain('docs/rule/specforge-development-error-ledger-and-experience.md');

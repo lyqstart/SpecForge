@@ -2,7 +2,7 @@
 
 ## Status
 
-`REPOSITORY_VALIDATED_PENDING_COMMIT_INSTALL_AND_REAL_PROJECT_RETEST`
+`COMMITTED_AND_REMOTE_SYNCED_PENDING_INSTALL_AND_REAL_PROJECT_RETEST`
 
 ## Defect ID
 
@@ -90,9 +90,9 @@ Repository validation completed on 2026-08-03 against:
 
 - remote repository: `https://github.com/lyqstart/SpecForge.git`;
 - remote branch: `main`;
-- local and remote baseline: `fd93b966f4663335133aca9612112dc4fe2e37ff`;
-- complete local change set: 19 files, including 12 tracked modifications and 7
-  untracked additions.
+- validation baseline: `fd93b966f4663335133aca9612112dc4fe2e37ff`;
+- committed and remote-synchronized implementation: `95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`;
+- committed change set: 19 files, including 12 tracked modifications and 7 additions.
 
 Validated results:
 
@@ -103,8 +103,9 @@ Validated results:
 - `git diff --check` passed;
 - complete 19-file scope and byte-level evidence audit passed.
 
-The repository implementation is validated but remains uncommitted and is not yet
-installed into the user-level runtime. No daemon or OpenCode action was performed.
+The repository implementation is validated, committed, and synchronized to remote
+`main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`. The user-level runtime has not been upgraded from this commit.
+No daemon or OpenCode action was performed.
 
 ## Required Validation
 
@@ -116,7 +117,7 @@ Before marking this defect closed:
 4. [x] Run the relevant governance, runtime and Section 21 regression suite.
 5. [x] Complete deterministic workspace build, `git diff --check` and the exact
    19-file final scope audit.
-6. [ ] Commit the validated change set and synchronize remote `main`.
+6. [x] Commit the validated change set and synchronize remote `main` at `95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`.
 7. [ ] Reinstall/upgrade the user-level SpecForge runtime from the committed version.
 8. [ ] Remove the invalid untracked WorkDesk `WI-0003` artifact using a controlled,
    evidence-preserving cleanup.
