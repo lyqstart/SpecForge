@@ -627,16 +627,79 @@ Module Contract文件：5
 `GOV-DEFECT-CONTRACT-CONSUMER-001` 仍为 `IN_PROGRESS`，不得把Work Item创建链验证
 冒充完整Contract Consumer端到端验收。
 
+V24 WorkDesk源码与Contract基线审计事实：
+
+```text
+SpecForge：main@553a6e4bcf414118dc4e038d96d4b1f1f980870f，工作区干净
+WorkDesk：main@254e24646d10c6f71fc150ac80f689d007392170
+WorkDesk状态：调查前后porcelain字节等价，index未修改
+Project Modules：CORE、CLI、DOMAIN、REPORTING、STORAGE
+Project Contract：0
+Module contracts.json文件：5
+正式Contract Registry条目：4
+legacy internal namespace条目：2
+Module Design constrained_by文本：16
+正式Project Trace治理关系：0
+WorkItemStatus源码文件：4
+WorkItemRepository源码文件：2
+ReportFormatter源码文件：3
+```
+
+V24 原始摘要中的 `DIRECT_PERSISTENCE_OUTSIDE_STORAGE=1` 是辅助取证脚本误报。
+唯一命中来自 `src/cli/main.ts` 注释中的 `no direct fs / Bun.file calls`。
+去除注释后，CLI、DOMAIN、REPORTING均无 `node:fs`、`fs`、`Bun.file(...)`
+可执行调用；真实文件系统API只位于 `src/storage/json-file-store.ts`。
+该误报不构成WorkDesk产品缺陷，但必须作为脚本/证据缺陷记录并修复。
+
+WI-0004 已冻结为第一阶段真实场景：
+
+```text
+场景名称：WorkItemStatus Project Contract同ID规范化与正式Trace激活
+当前Module Contract：DOMAIN/contracts.json中的WorkItemStatus
+目标Project Contract：extension_registry.json中的WorkItemStatus
+Contract来源：DATA-WD-003
+正式消费者：
+- DD-DOMAIN-003
+- DD-STORAGE-001
+- DD-REPORTING-002
+- DD-CLI-002
+保留并建立owner内正式关系：
+- ReportFormatter ↔ DD-REPORTING-001
+- WorkItemRepository ↔ DD-STORAGE-001
+- PERSISTENCE_VIA_REPOSITORY ↔ DD-STORAGE-001
+显式代码绑定目标：
+- src/domain/transitions.ts
+- src/storage/repository.ts
+- src/reporting/formatters.ts
+- src/cli/main.ts
+```
+
+该场景不是 `CON-PROM-001` 显式Promotion：
+当前正式Trace为空，旧Module Contract没有可合法REMOVE的正式关系。
+WI-0004先完成同ID规范化、Project Contract新增、多个消费者、Impact Scope、
+Code Permission、实际代码对账、原子Merge、Verification和Close。
+随后使用独立Work Item验证：
+
+```text
+WI-0005：WorkItemStatus破坏性变更/删除阻断
+WI-0006：ReportFormatter正式Module→Project Promotion
+```
+
 当前下一项完整工作是：
 
 ```text
-只读审计WorkDesk当前Project Architecture、Data Model、Module、Project/Module Contract、Trace和代码基线
-→ 识别可用于真实验证的Contract生产者、多个DD消费者和对应Module
-→ 在WI-0004中设计一个最小但完整的Contract Consumer验证场景
-→ 场景必须覆盖Project Contract新增、多个DD消费者、Impact Scope和Code Permission反向展开
-→ 随后覆盖实际代码消费者对账、破坏性变更阻断和Module→Project Promotion
-→ 最后覆盖原子Merge、Verification和Close
-→ 涉及daemon或OpenCode时仍由用户手工启动
+生成WI-0004 Phase 1受控提示词
+→ 用户手工启动daemon
+→ 用户手工在D:\code\temp\WorkDesk启动OpenCode
+→ sf-orchestrator只通过正式Tool推进WI-0004
+→ 写入intake、classification、impact scope和Candidate
+→ Project Contract、DOMAIN Module Contract和正式Trace Delta完成对账
+→ 运行适用Gate
+→ 到gates_passed立即停止
+→ 不记录User Decision
+→ 不Merge
+→ 不释放Code Permission
+→ 不修改业务代码
 ```
 
 真实场景至少覆盖：

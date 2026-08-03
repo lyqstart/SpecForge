@@ -794,6 +794,20 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **类防护**：`EXP-033`、`EXP-037`、`EXP-045`。
 
 
+### ERR-066：源码审计把注释中的 `Bun.file` 文本误判为可执行持久化调用
+
+- **日期与阶段**：2026-08-04，V24 WorkDesk Contract Consumer源码取证。
+- **分类**：`SCRIPT_DEFECT / STATIC_ANALYSIS_DEFECT / EVIDENCE_DEFECT`
+- **现场表现**：V24摘要报告 `DIRECT_PERSISTENCE_OUTSIDE_STORAGE=1`，路径为 `src/cli/main.ts`，命中内容为 `Bun.file`。
+- **已执行与未执行**：两个仓库均未写入；WorkDesk porcelain调查前后字节等价；daemon/OpenCode停止；仅生成仓库外证据包。
+- **根因**：辅助脚本直接对原始文本执行正则，没有先区分注释、字符串和可执行语法。命中来自注释 `no direct fs / Bun.file calls`，不是调用表达式。
+- **影响**：会把正确遵守 `PERSISTENCE_VIA_REPOSITORY` 的CLI误判为架构违规，进而错误扩大WI范围或修改合法代码。
+- **正确做法**：源码依赖和API调用证据必须使用AST或至少使用注释感知的词法扫描；注释命中只能作为文本证据，不得作为可执行调用证据。结论必须分别报告 `executable_usage` 与 `comment_or_text_usage`。
+- **新增防护**：新增 `EXP-046`；V25使用注释感知扫描重新验证 `node:fs`/`fs` import、`require(...)` 和 `Bun.file(...)`，并要求非STORAGE可执行持久化调用为0。
+- **状态**：`FIXED_PENDING_V25_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-044`、`EXP-046`。
+
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -1299,6 +1313,12 @@ Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导�
 验证包中的状态文档如果在运行前生成，只能描述预期，不能自动代表运行结果。最终验证成功后必须先审计证据包，再把成功结果、实际范围、未完成事项和下一阶段写回当前状态文档；随后复跑同一测试和构建集。只有“证据、状态文档、测试、Git范围”四者一致时才允许提交。不得提交仍写“待验证”“待继续”或与成功证据冲突的当前交接。
 
 
+
+## EXP-046：源码调用证据必须区分可执行语法、注释和普通文本
+
+架构边界审计不得直接把原始源码正则命中解释为调用关系。优先使用语言AST；无法使用AST时，至少使用能识别行注释、块注释、字符串和模板文本的词法扫描。报告必须分开列出可执行调用、import/require依赖、注释命中和普通字符串命中。只有可执行语法或正式import/require才能进入生产者—消费者和架构违规判断。
+
+
 ---
 
 # 第四部分：修改前强制检查
@@ -1326,6 +1346,7 @@ Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导�
 □ 实施文档重构已同步经验门禁、结构测试、脚本选择器和报告模板中的全部固定文本消费者；稳定治理事实在新结构中仍有明确表述，并完成 `toContain` / `not.toContain` 静态交叉检查
 □ 每条验证断言已绑定真实生产者、正式 schema、类型定义或权威规则；未要求非权威文件复制其他产物的字段，无法确认职责时已标记 `INSUFFICIENT_EVIDENCE`
 □ 最终成功证据已与当前状态文档、经验记录、测试断言和Git范围完成提交前对账；当前交接不再保留与成功证据冲突的“待验证”状态
+□ 源码调用和依赖审计已区分可执行语法、正式import/require、注释和普通文本；未把注释中的API名称当成生产调用关系
 □ 脚本 stdout/stderr、编码和失败恢复已设计
 □ 新回归测试可独立运行
 □ 已准备 A/B 归因方案
@@ -1489,5 +1510,6 @@ ERR-061 / ERR-062：CLOSED。V22证明零写入进程前置检查、精确目标
 ERR-063：CLOSED。V22经验门禁通过，固定文本消费者与当前交接完成同步。
 ERR-064：CLOSED。V22按真实生产者契约验证trigger_result skeleton，并以candidate_manifest.base_spec_version作为Project Spec Version权威产物。
 ERR-065：V22证据审计发现，V23执行提交前最终状态对账。
+ERR-066：V24源码审计误把CLI注释中的Bun.file当成直接持久化调用；V25使用注释感知扫描修复并冻结WI-0004场景。
 ```
 

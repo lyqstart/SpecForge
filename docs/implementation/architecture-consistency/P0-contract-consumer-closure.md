@@ -2031,3 +2031,164 @@ Project Contract新增
 ```
 
 涉及 daemon 或 OpenCode 时，必须先明确告知用户，由用户手工启动。不得自动启动、停止或重启 daemon/OpenCode。
+
+### 25.8 V24 WorkDesk源码与Contract基线审计
+
+2026-08-04 在 daemon/OpenCode 均停止的条件下执行只读审计：
+
+```text
+SpecForge HEAD：553a6e4bcf414118dc4e038d96d4b1f1f980870f
+WorkDesk HEAD：254e24646d10c6f71fc150ac80f689d007392170
+WorkDesk tracked文件：48
+WorkDesk Runtime/WI快照文件：17
+SpecForge相关生产者/消费者文件：138
+Project Modules：CORE、CLI、DOMAIN、REPORTING、STORAGE
+Project Contract：0
+Module contracts.json：5
+正式Contract Registry条目：4
+legacy internal namespace条目：2
+正式Project Trace治理关系：0
+```
+
+正式 Contract Registry 能消费的4项 Module Contract 为：
+
+```text
+DOMAIN / WorkItemStatus / shared_enum
+REPORTING / ReportFormatter / extension_point
+STORAGE / WorkItemRepository / public_interface
+STORAGE / PERSISTENCE_VIA_REPOSITORY / invariant
+```
+
+`CommandName` 与 `TransitionErrorCode` 位于 legacy `internal_contracts`，
+不属于当前 `ContractRegistrySchema` 的四类正式 Contract，不能把外部审计统计
+`6` 直接解释为六项正式 Contract。
+
+V24 辅助脚本曾报告一处非 STORAGE 持久化调用。复核源码后确认该命中仅来自：
+
+```text
+src/cli/main.ts 注释：no direct fs / Bun.file calls
+```
+
+去除注释后的可执行源码中，CLI、DOMAIN、REPORTING没有文件系统API调用。
+真实 `node:fs` import 和读写调用只存在于 `src/storage/json-file-store.ts`。
+该问题属于辅助取证脚本误报，不属于WorkDesk产品缺陷。
+
+### 25.9 WI-0004 第一阶段真实场景冻结
+
+#### 场景目标
+
+```text
+把DOMAIN Module Contract中的WorkItemStatus同ID规范化为Project Contract
+激活Project Trace正式治理区段
+建立四个Module的正式DD消费者
+为后续Impact Scope、Code Permission和实际代码对账建立真实基线
+```
+
+#### Project Contract定义
+
+```json
+{
+  "id": "WorkItemStatus",
+  "owner_module": "DOMAIN",
+  "value_type": "string",
+  "values": ["NEW", "IN_PROGRESS", "DONE"],
+  "source_refs": ["DATA-WD-003"],
+  "enforcement": "TypeScript explicit binding + DOMAIN runtime state-machine validation"
+}
+```
+
+#### 正式治理关系
+
+```text
+ADD WorkItemStatus enforces DATA-WD-003
+ADD DD-DOMAIN-003 constrained_by WorkItemStatus
+ADD DD-STORAGE-001 constrained_by WorkItemStatus
+ADD DD-REPORTING-002 constrained_by WorkItemStatus
+ADD DD-CLI-002 constrained_by WorkItemStatus
+
+ADD ReportFormatter enforces DD-REPORTING-001
+ADD DD-REPORTING-001 constrained_by ReportFormatter
+
+ADD WorkItemRepository enforces DD-STORAGE-001
+ADD DD-STORAGE-001 constrained_by WorkItemRepository
+
+ADD PERSISTENCE_VIA_REPOSITORY enforces DD-STORAGE-001
+ADD DD-STORAGE-001 constrained_by PERSISTENCE_VIA_REPOSITORY
+```
+
+#### 冻结Impact Scope
+
+```text
+affected_modules:
+- DOMAIN
+- STORAGE
+- REPORTING
+- CLI
+
+architecture_refs:
+- ARCH-WD-003
+- ARCH-WD-006
+
+data_model_refs:
+- DATA-WD-003
+
+design_refs:
+- DD-DOMAIN-003
+- DD-STORAGE-001
+- DD-REPORTING-001
+- DD-REPORTING-002
+- DD-CLI-002
+
+project_contract_refs:
+- WorkItemStatus
+
+module_contract_refs:
+- ReportFormatter
+- WorkItemRepository
+- PERSISTENCE_VIA_REPOSITORY
+
+planned_code_paths:
+- src/domain/transitions.ts
+- src/storage/repository.ts
+- src/reporting/formatters.ts
+- src/cli/main.ts
+```
+
+#### Phase 1停止边界
+
+Phase 1 只允许完成 Candidate 和 Gate：
+
+```text
+created
+→ intake_ready
+→ impact_analyzing
+→ impact_analyzed
+→ workflow_selected
+→ candidate_preparing
+→ gates_running
+→ gates_passed
+```
+
+到 `gates_passed` 必须停止。不得在Phase 1执行：
+
+```text
+User Decision
+Merge
+Code Permission
+业务代码修改
+Verification
+Close
+```
+
+任何Gate要求新增未冻结模块、Contract、正式文件或业务代码时，必须停止并重新执行影响分析。
+
+#### 后续Work Item边界
+
+```text
+WI-0004：Project Contract新增、多DD消费者、Impact Scope、Code Permission、实际代码对账、原子Merge、Verification、Close
+WI-0005：WorkItemStatus删除或删值的破坏性变更阻断
+WI-0006：ReportFormatter显式Module→Project Promotion
+```
+
+不能把WI-0004的同ID规范化宣称为 `CON-PROM-001` Promotion；显式Promotion必须具有
+旧正式关系REMOVE、新正式关系ADD、消费者迁移、兼容性结论和promotion记录。

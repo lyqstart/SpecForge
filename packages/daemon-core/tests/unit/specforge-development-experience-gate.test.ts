@@ -45,7 +45,7 @@ describe('SpecForge development experience pre-read gate', () => {
 
     const experienceRuleIds = experience.match(/^## EXP-\d{3}：/gm) ?? [];
     expect(experience.trim().length).toBeGreaterThan(500);
-    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(45);
+    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(46);
     expect(experienceRuleIds).toContain('## EXP-021：');
     expect(experienceRuleIds).toContain('## EXP-022：');
     expect(experienceRuleIds).toContain('## EXP-023：');
@@ -71,6 +71,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experienceRuleIds).toContain('## EXP-043：');
     expect(experienceRuleIds).toContain('## EXP-044：');
     expect(experienceRuleIds).toContain('## EXP-045：');
+    expect(experienceRuleIds).toContain('## EXP-046：');
 
     expect(checklist.trim().length).toBeGreaterThan(500);
     expect(checklist).toContain('APPLICABLE_EXPERIENCE_RULES');
@@ -102,6 +103,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(checklist).toContain('实施文档重构已同步经验门禁');
     expect(checklist).toContain('每条验证断言已绑定真实生产者');
     expect(checklist).toContain('最终成功证据已与当前状态文档');
+    expect(checklist).toContain('源码调用和依赖审计已区分可执行语法');
   });
 
   it('records every new error with a class-level prevention rule', () => {
@@ -159,6 +161,8 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('## EXP-044：验证断言必须绑定真实生产者契约和文件职责');
     expect(document).toContain('### ERR-065：最终验证成功后当前交接仍停留在“待验证”状态');
     expect(document).toContain('## EXP-045：成功证据产生后必须执行提交前最终状态对账');
+    expect(document).toContain('### ERR-066：源码审计把注释中的 `Bun.file` 文本误判为可执行持久化调用');
+    expect(document).toContain('## EXP-046：源码调用证据必须区分可执行语法、注释和普通文本');
     expect(document).toContain('ERR-064：CLOSED');
     expect(document).toContain('## EXP-032：最终证据必须使完整变更集可重建、可审查');
     expect(document).toContain('一个错误必须产生一个类防护');
@@ -199,7 +203,11 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('V22 最终验证事实');
     expect(handoff).toContain('场景准备结论：READY_FOR_CONTRACT_CONSUMER_SCENARIO_DESIGN');
     expect(handoff).toContain('V23 提交前最终状态对账');
-    expect(handoff).toContain('只读审计WorkDesk当前Project Architecture');
+    expect(handoff).toContain('V24 WorkDesk源码与Contract基线审计事实');
+    expect(handoff).toContain('辅助取证脚本误报');
+    expect(handoff).toContain('场景名称：WorkItemStatus Project Contract同ID规范化与正式Trace激活');
+    expect(handoff).toContain('WI-0005：WorkItemStatus破坏性变更/删除阻断');
+    expect(handoff).toContain('WI-0006：ReportFormatter正式Module→Project Promotion');
     expect(handoff).toContain('GOV-DEFECT-CONTRACT-CONSUMER-001 仍保持 IN_PROGRESS');
     expect(handoff).toContain('`STAT_ONLY_CONTENT_NEUTRAL`');
     expect(handoff).toContain('WorkDesk文件和index保持原状');
@@ -223,6 +231,10 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(p0ContractClosure).toContain('WI-0004 candidate_manifest.base_spec_version：PSV-0002');
     expect(p0ContractClosure).toContain('INSUFFICIENT_EVIDENCE：真实业务项目中的 Project Contract 新增和多个DD消费者尚未端到端验证');
     expect(p0ContractClosure).toContain('### 25.7 下一验证边界');
+    expect(p0ContractClosure).toContain('### 25.8 V24 WorkDesk源码与Contract基线审计');
+    expect(p0ContractClosure).toContain('### 25.9 WI-0004 第一阶段真实场景冻结');
+    expect(p0ContractClosure).toContain('ADD DD-CLI-002 constrained_by WorkItemStatus');
+    expect(p0ContractClosure).toContain('到 `gates_passed` 必须停止');
 
     for (const entry of [rootAgents, userLevelAgents]) {
       expect(entry).toContain('docs/rule/specforge-development-error-ledger-and-experience.md');
