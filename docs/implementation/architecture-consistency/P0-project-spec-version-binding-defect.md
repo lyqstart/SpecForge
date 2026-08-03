@@ -2,7 +2,7 @@
 
 ## Status
 
-`WORKDESK_WI0003_SUPERSEDE_AND_WI0004_RECREATE_PLAN_READY_PENDING_REAL_PROJECT_RETEST`
+`CLOSED_REAL_PROJECT_VALIDATED`
 
 ## Defect ID
 
@@ -135,6 +135,34 @@ were empty, and no WorkDesk project file was changed. This status is now treated
 than a governed content delta. Recovery preparation must verify normalized Git blob equality and empty diffs,
 preserve the WorkDesk index and files unchanged, and must not require a clean porcelain display.
 
+## WorkDesk Real-Project Validation Evidence
+
+Real-project validation completed on 2026-08-04 through the installed SpecForge
+Tool and authoritative Runtime state machine:
+
+- WorkDesk repository: `main@254e24646d10c6f71fc150ac80f689d007392170`;
+- authoritative Project Spec version: `PSV-0002`;
+- WI-0003 preserved all historical files and transitioned through
+  `sf_state_transition` from `workflow_selected` to `superseded`;
+- Runtime `state.json`, `events.jsonl` and `sf_state_read` agreed on the
+  `superseded` result;
+- a new Work Item was created without supplying an ID and was automatically
+  allocated as `WI-0004`;
+- WI-0004 `candidate_manifest.base_spec_version` is `PSV-0002`;
+- WI-0004 `candidate_manifest.entries` is empty and its Runtime state is
+  `created`;
+- the run stopped before `candidate_preparing`, created no Candidate and changed
+  no business code;
+- no Work Item directory, Runtime event, observability record or historical
+  payload was deleted or manually edited.
+
+This proves that both the repository fix and the installed creation path bind a
+new Work Item to the current authoritative Project Spec version. The independent
+defect `P0-PSV-BINDING-001` is closed. This closure does not complete
+`GOV-DEFECT-CONTRACT-CONSUMER-001`; its Contract, Trace, Impact Scope, Code
+Permission, Promotion, Merge, Verification and Close scenarios still require
+real-project validation.
+
 ## Required Validation
 
 Before marking this defect closed:
@@ -149,8 +177,10 @@ Before marking this defect closed:
 7. [x] Upgrade the user-level SpecForge runtime and verify all 119 registered files against `main@c5ed2f1cb74b807812dab8dae3255afaacff1bd9`.
 8. [x] Classify WI-0003 references, Runtime state and allocator ID space; preserve all
    historical evidence and reject direct directory deletion or manual Candidate repair.
-9. [ ] Transition WI-0003 from `workflow_selected` to `superseded` through the formal
+9. [x] Transition WI-0003 from `workflow_selected` to `superseded` through the formal
    `sf_state_transition` path.
-10. [ ] Create the next Work Item without supplying an ID, confirm allocation of WI-0004 and verify
+10. [x] Create the next Work Item without supplying an ID, confirm allocation of WI-0004 and verify
     `candidate_manifest.base_spec_version = PSV-0002`.
-11. [ ] Continue the WorkDesk P0 real-project validation without manual governed-artifact edits.
+11. [x] Continue the WorkDesk P0 real-project validation through WI-0004 creation without manual
+    governed-artifact edits; continue the separate Contract Consumer scenarios under its active
+    implementation file.

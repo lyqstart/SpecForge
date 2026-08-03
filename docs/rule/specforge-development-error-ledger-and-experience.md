@@ -724,6 +724,76 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **类防护**：`EXP-007`、`EXP-013`、`EXP-015`、`EXP-017`、`EXP-018`、`EXP-039`、`EXP-041`。
 
 
+### ERR-061：运行边界前置条件在写入之后检查
+
+- **日期与阶段**：2026-08-04，V19 第一次执行。
+- **分类**：`SCRIPT_DEFECT / PROCESS_VIOLATION / SCOPE_GOVERNANCE_DEFECT`
+- **现场表现**：V19 先把5个治理文件写入工作区，随后才检查 daemon/OpenCode，最终因进程仍在运行而失败。反馈同时出现 `PATCH_ACTION=APPLIED` 和 `FAILED_STAGE=PROCESS_BOUNDARY`。
+- **已执行与未执行**：5个目标文件已写入；测试、构建、WorkDesk审计、提交和推送均未执行；WorkDesk未写入。
+- **根因**：不可变前置条件和可变写入阶段顺序颠倒。进程边界、远程基线、分支、HEAD、暂存区和允许源状态本应在第一次仓库写入前全部验证。
+- **影响**：失败运行会留下部分已应用状态，破坏“前置条件失败即零写入”的治理承诺，并增加后续恢复和证据解释成本。
+- **正确做法**：所有不可变前置条件必须先完成并形成证据，再允许第一次写入。前置条件失败时必须报告 `PREWRITE_MUTATION=NONE`。写入之后只能执行后置验证，不能再把本应前置的条件作为首次检查。
+- **新增防护**：V20 在调用应用逻辑前先验证 daemon/OpenCode、远程HEAD、本地分支/HEAD、暂存区和精确源状态；应用逻辑内部再次验证基线，形成双重防护。
+- **状态**：`CLOSED_V22_VALIDATED`。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-015`、`EXP-020`、`EXP-042`。
+
+
+### ERR-062：精确目标状态在干净工作区要求之后识别，导致失败运行不可重入
+
+- **日期与阶段**：2026-08-04，V19 第二次执行。
+- **分类**：`SCRIPT_DEFECT / RECOVERY_DEFECT / EVIDENCE_DEFECT`
+- **现场表现**：第一次运行已经精确写入5个V19目标文件。用户停止 daemon/OpenCode 后重跑，脚本在比较文件哈希前先要求工作区完全干净，因此把自身精确目标状态拒绝为 `SOURCE_WORKTREE`。
+- **已执行与未执行**：第二次运行零写入；远程、本地和验证流程均未继续。
+- **根因**：脚本只定义了“干净源状态”，没有把“精确已应用目标状态”建模为合法可恢复状态；状态分类顺序又晚于通用 clean 检查。
+- **影响**：任何写入后中断都无法安全续跑，只能依赖人工判断或重新打包，违反确定性和失败关闭要求。
+- **正确做法**：在写入前基于分支、HEAD、暂存区、porcelain路径集合和每个批准文件哈希分类精确状态。允许 `CLEAN_SOURCE`、`EXACT_PREVIOUS_TARGET`、`EXACT_CURRENT_TARGET`；混合状态或额外路径一律停止。目标状态允许继续验证，但不得掩盖额外修改。
+- **新增防护**：V20 先分类精确 V19/V20 目标状态，再决定应用或直接验证；同一个包可重复运行，任何额外路径、暂存内容或混合哈希均 fail closed。
+- **状态**：`CLOSED_V22_VALIDATED`。
+- **类防护**：`EXP-007`、`EXP-013`、`EXP-015`、`EXP-021`、`EXP-042`。
+
+
+### ERR-063：实施状态文档重构后保留了已经失效的固定文本断言
+
+- **日期与阶段**：2026-08-04，V20 经验门禁测试。
+- **分类**：`TEST_DEFECT / DOCUMENT_SYNC_DEFECT / REGRESSION_DEFECT`
+- **现场表现**：V19 将交接文件的“当前下一项完整工作”整体替换为真实验证后的下一阶段，但经验门禁仍要求旧段落中的固定文本 `保留 WorkDesk文件与index原状`。V20 已正确识别 `EXACT_V19_TARGET`、完成零写入进程前置检查并应用5个目标文件，随后在该过期断言失败。
+- **已执行与未执行**：V20 写入5个精确目标文件；经验门禁失败后，TypeScript、构建、WorkDesk只读审计、提交和推送均未执行。daemon/OpenCode已证明停止，WorkDesk未写入。
+- **根因**：重构实施状态文档时只更新了主要结论，没有同步审计所有依赖该段落的固定文本断言；测试验证的是历史措辞而不是仍需保留的治理事实。
+- **影响**：文档结构合法更新会被无效断言阻断；如果简单删除断言，又可能丢失“不得为获得clean展示修改WorkDesk文件或index”的关键治理事实。
+- **正确做法**：文档重构必须建立“事实—文本—测试”对账表。稳定治理事实应在当前状态文档中保留明确表述，测试断言当前事实而不是已被替换的段落位置。删除或迁移文本时必须扫描全部消费者，并对所有 `toContain` / schema / selector / parser 依赖做同步审计。
+- **新增防护**：新增 `EXP-043`；V21 在当前交接的V19/V20执行事实中恢复明确的“WorkDesk文件和index保持原状”事实，同时门禁新增ERR-063/EXP-043检查，并在打包阶段静态交叉验证所有文档 `toContain` / `not.toContain` 断言。
+- **状态**：`CLOSED_V22_VALIDATED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-013`、`EXP-015`、`EXP-021`、`EXP-043`。
+
+
+### ERR-064：验证器要求生产者契约中不存在的 `trigger_result.project_spec_version`
+
+- **日期与阶段**：2026-08-04，V21 WorkDesk 只读审计。
+- **分类**：`VALIDATION_DEFECT / CONTRACT_CONSUMER_DEFECT / EVIDENCE_DEFECT`
+- **现场表现**：经验门禁、TypeScript、daemon-core build、全仓 build、`git diff --check` 和 installer verify 全部通过；WorkDesk 状态范围也通过。随后校验器要求 WI-0004 `trigger_result.json` 包含 `project_spec_version=PSV-0002`，但真实文件只有 `schema_version`、`work_item_id`、`workflow_path`、`classification`、`match_results` 和 `selected_at`，因此在 `WI0004_TRIGGER_SPEC` 失败。
+- **已执行与未执行**：V21 3个目标文件已写入，总工作区仍是批准的5文件；WorkDesk未写入；Project/Module/Contract/Trace基线审计尚未执行；提交和推送未执行。
+- **根因**：验证器没有从实际生产者和正式文件职责推导断言，而是把 Project Spec Version 在多个产物间重复存在当成当然要求。`initializeClosureFiles` 的真实生产契约明确：`trigger_result.json` 保存路径选择骨架；权威创建基线写入 `candidate_manifest.base_spec_version`。
+- **影响**：合法产物被错误拒绝；更严重的是会推动在多个文件中重复存储同一权威字段，制造双写和状态漂移。
+- **正确做法**：每个验证断言必须绑定真实生产者、正式 schema 或权威规则。Project Spec Version Binding 的验收对象是 `candidate_manifest.base_spec_version`，并辅以 Project `spec_manifest.json` 和 Runtime 创建成功证据；不得要求 `trigger_result.json` 复制该字段。`trigger_result` 只校验其真实职责字段和类型。
+- **新增防护**：新增 `EXP-044`；V22 同时读取本地生产者源码和真实 WI-0004 文件，校验 trigger skeleton 与 candidate baseline 的职责分离，并在打包阶段禁止校验脚本再次出现 `trigger.get("project_spec_version")`。
+- **状态**：`CLOSED_V22_VALIDATED`。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-015`、`EXP-017`、`EXP-021`、`EXP-044`。
+
+
+### ERR-065：最终验证成功后当前交接仍停留在“待验证”状态
+
+- **日期与阶段**：2026-08-04，V22证据审计与提交前对账。
+- **分类**：`DOCUMENT_SYNC_DEFECT / DELIVERY_DEFECT / EVIDENCE_DEFECT`
+- **现场表现**：V22 已完成经验门禁、TypeScript、两级构建、`git diff --check`、installer verify、WorkDesk状态和Project基线审计，最终结果为 `SUCCESS`；但包内 `current-handoff.md` 仍写“V22从精确V21目标状态继续”，没有记录V22成功结果。
+- **已执行与未执行**：V22目标5文件处于未提交工作区；提交和推送尚未执行；WorkDesk未写入。
+- **根因**：状态文档在验证执行前生成，验证器只校验预生成文本，没有在成功证据产生后执行“证据→当前状态→下一阶段”最终对账。
+- **影响**：直接提交会把过期状态写入主分支，使交接文件与真实证据冲突，并可能让下一会话重复已经完成的验证。
+- **正确做法**：最终验证成功后必须先审计证据包，再生成提交前状态对账；对账必须记录成功结果、真实修改范围、剩余证据不足和下一阶段。完成对账后复跑同一验证集，才能提交。
+- **新增防护**：新增 `EXP-045`；V23 把V22成功证据写入当前交接，更新ERR-061至ERR-064状态，复跑全部验证后才暂存、提交和推送。
+- **状态**：`FIXED_BY_V23_PENDING_EXECUTION`。
+- **类防护**：`EXP-033`、`EXP-037`、`EXP-045`。
+
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -1205,6 +1275,30 @@ Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导�
 `git status` 是范围发现入口，但单独的 porcelain `M` 不能证明业务内容变化。对疑似内容中性的跟踪文件，必须以 Git规范化 blob 哈希、未暂存状态和 `git diff --quiet` 共同判定；全部一致时明确报告 `STAT_ONLY_CONTENT_NEUTRAL`，不得为了获得 clean 展示而修改 index、重写文件或改变换行。只有正式内容差异才能进入修改范围和消费者影响分析。
 
 
+
+## EXP-042：可恢复脚本必须先验证零写入前置条件，再识别精确源/目标状态
+
+修改脚本必须把执行分成三个不可混淆的阶段：第一阶段在零写入条件下验证进程边界、远程基线、分支、HEAD、暂存区和允许状态；第二阶段按完整路径集合与文件哈希识别 `CLEAN_SOURCE`、`EXACT_PREVIOUS_TARGET`、`EXACT_CURRENT_TARGET`，混合状态失败关闭；第三阶段才允许写入和后置验证。脚本必须支持从精确已应用目标状态继续验证，同一包重复执行不得依赖工作区必须干净。任何前置失败必须证明未发生写入。
+
+
+
+## EXP-043：实施文档重构必须同步全部固定文本消费者
+
+实施状态、交接和专题文档重构时，必须把稳定治理事实与段落布局分开管理。移动、替换或删除段落前，必须搜索经验门禁、结构测试、脚本选择器、解析器和报告模板中的全部文本消费者；稳定事实应在新结构中保留明确表述，测试应断言当前事实而不是历史段落位置。交付前必须静态交叉检查所有文档 `toContain`、`not.toContain` 和等值断言，任何缺失或冲突均失败关闭。
+
+
+
+## EXP-044：验证断言必须绑定真实生产者契约和文件职责
+
+验证器不得凭字段名称相似、历史样例或跨文件重复推断必填字段。每条断言必须能够指向真实生产者、正式 schema、类型定义或权威规则，并明确该文件承担的职责。一个权威事实应由其正式产物验证，其他文件没有契约要求时不得强制复制。无法找到生产者或 schema 依据时必须标记 `INSUFFICIENT_EVIDENCE`，不能通过增加双写字段让测试通过。
+
+
+
+## EXP-045：成功证据产生后必须执行提交前最终状态对账
+
+验证包中的状态文档如果在运行前生成，只能描述预期，不能自动代表运行结果。最终验证成功后必须先审计证据包，再把成功结果、实际范围、未完成事项和下一阶段写回当前状态文档；随后复跑同一测试和构建集。只有“证据、状态文档、测试、Git范围”四者一致时才允许提交。不得提交仍写“待验证”“待继续”或与成功证据冲突的当前交接。
+
+
 ---
 
 # 第四部分：修改前强制检查
@@ -1228,6 +1322,10 @@ Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导�
 □ Git porcelain 等机器结构化输出使用原始 bytes 和协议分隔符解析，未对完整输出先执行 `.strip()` 或展示层空白规范化；首条、末条和含空格路径回归已通过
 □ 引用审计已区分活跃权威依赖、对象自身产物、Runtime 当前状态和不可变历史日志；未用未分类文本命中总数直接阻断或允许清理
 □ Git porcelain `M` 已通过规范化 blob、未暂存状态和空 diff 区分正式内容差异与 stat/index 元数据差异；未为获得 clean 展示而修改 index 或重写文件
+□ 修改脚本已在首次写入前验证进程、远程、本地基线、暂存区和精确源/目标状态；精确目标可重入，混合状态失败关闭，前置失败保持零写入
+□ 实施文档重构已同步经验门禁、结构测试、脚本选择器和报告模板中的全部固定文本消费者；稳定治理事实在新结构中仍有明确表述，并完成 `toContain` / `not.toContain` 静态交叉检查
+□ 每条验证断言已绑定真实生产者、正式 schema、类型定义或权威规则；未要求非权威文件复制其他产物的字段，无法确认职责时已标记 `INSUFFICIENT_EVIDENCE`
+□ 最终成功证据已与当前状态文档、经验记录、测试断言和Git范围完成提交前对账；当前交接不再保留与成功证据冲突的“待验证”状态
 □ 脚本 stdout/stderr、编码和失败恢复已设计
 □ 新回归测试可独立运行
 □ 已准备 A/B 归因方案
@@ -1376,5 +1474,20 @@ V14 Git porcelain 首行被整体裁剪导致路径丢失首字符：按 ERR-058
 V15 将109个 WI-0003 字面命中统一当成外部引用：按 ERR-059 修复，引用审计分离正式活跃依赖与不可变历史证据。
 V17 把内容中性的 WorkDesk porcelain `M` 当成必须清除的业务变更：按 ERR-060 修复，使用 Git规范化 blob和空 diff证明内容中性，不修改 index。
 WorkDesk WI-0003：用户级安装已升级并通过 119/119 一致性校验；等待受控审计、证据保存和重建。
+```
+
+## 22. 2026-08-04 真实环境关闭更新
+
+```text
+P0-PSV-BINDING-001：CLOSED。WI-0003通过正式状态机转为superseded；WI-0004由分配器自动创建，candidate_manifest.base_spec_version=PSV-0002，entries=[]，Runtime=created。
+ERR-057：CLOSED。后续V15/V16/V18进程快照均成功、可解析并正确证明daemon/OpenCode边界。
+ERR-058：CLOSED。NUL分隔porcelain解析器真实临时仓库回归和后续多轮实际范围检查通过。
+ERR-059：CLOSED。WI-0003引用被正确分类为自身8、Runtime2、历史观测99、正式阻断0，并据此完成合法恢复。
+ERR-060：CLOSED。V18使用Git规范化blob、未暂存和空diff证明4个porcelain M为STAT_ONLY_CONTENT_NEUTRAL，全程未修改WorkDesk文件或index。
+GOV-DEFECT-CONTRACT-CONSUMER-001：仍为IN_PROGRESS。Work Item创建链已真实运行，但完整Contract Consumer场景尚未端到端验证。
+ERR-061 / ERR-062：CLOSED。V22证明零写入进程前置检查、精确目标状态续跑和混合状态失败关闭有效。
+ERR-063：CLOSED。V22经验门禁通过，固定文本消费者与当前交接完成同步。
+ERR-064：CLOSED。V22按真实生产者契约验证trigger_result skeleton，并以candidate_manifest.base_spec_version作为Project Spec Version权威产物。
+ERR-065：V22证据审计发现，V23执行提交前最终状态对账。
 ```
 

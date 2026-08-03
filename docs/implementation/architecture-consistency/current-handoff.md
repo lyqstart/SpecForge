@@ -3,7 +3,7 @@
 > **文件性质**：非权威当前交接文件
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
 > **当前主线活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
-> **当前阻断缺陷实施文件**：`docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md`
+> **已关闭独立缺陷实施文件**：`docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md`
 > **本轮已验证实现提交**：`main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`
 > **重要说明**：新会话开始时必须重新读取 GitHub `main` 当前 HEAD，不得把上述 SHA 当成永远不变的基线。
 
@@ -66,7 +66,7 @@ docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
 docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md
 ```
 
-两个实施文件都不是第二权威源。前者记录 Contract Consumer P0 主线，后者记录真实项目验证中发现的 Project Spec Version Binding 独立产品缺陷。与唯一权威文件冲突时，以唯一权威文件为准。
+两个实施文件都不是第二权威源。前者记录仍处于 `IN_PROGRESS` 的 Contract Consumer P0 主线，后者记录已经通过真实项目验证关闭的 Project Spec Version Binding 独立产品缺陷。与唯一权威文件冲突时，以唯一权威文件为准。
 
 开始工作前必须记录并报告：
 
@@ -542,20 +542,101 @@ WI-0003 是修复前创建并按计划停在 workflow_selected 的活跃历史�
 随后由分配器创建 WI-0004，真实验证新版创建器把 candidate_manifest.base_spec_version 绑定为 PSV-0002。
 ```
 
+V19 WorkDesk 真实创建验证事实：
+
+```text
+WI-0003：workflow_selected → superseded，正式状态机执行成功
+WI-0003历史目录、Runtime events、Observability和payload：全部保留
+新Work Item：未提供ID，由分配器自动创建WI-0004
+WI-0004 candidate_manifest.base_spec_version：PSV-0002
+WI-0004 candidate_manifest.entries：[]
+WI-0004 Runtime状态：created
+Candidate / 业务代码修改：无
+P0-PSV-BINDING-001：CLOSED_REAL_PROJECT_VALIDATED
+```
+
+V19 辅助脚本执行事实：
+
+```text
+第一次运行：5个治理文件已精确写入，随后因daemon/OpenCode仍运行在PROCESS_BOUNDARY停止
+第二次运行：daemon/OpenCode已停止，但脚本在目标哈希识别前要求工作区干净，拒绝自身5文件精确目标状态
+SpecForge远程、本地HEAD：均保持11481fb010917f0cb98d0ed11bd208ecc9add349
+提交与推送：均未执行
+WorkDesk写入：未执行
+```
+
+该问题属于开发辅助脚本的前置顺序和可重入状态建模缺陷，不改变
+`P0-PSV-BINDING-001` 的真实验证结论，也不改变 Contract Consumer P0 的完成边界。
+V20 必须从精确V19目标状态继续验证，不回退已记录的真实证据。
+WorkDesk文件和index保持原状；不得为获得clean展示执行refresh、重写或换行转换。
+
+V20 经验门禁失败事实：
+
+```text
+零写入进程前置检查：通过
+源状态：EXACT_V19_TARGET
+V20目标文件：5/5已应用
+失败点：经验门禁仍要求重构前旧段落中的固定文本
+TypeScript、构建、WorkDesk审计、提交和推送：未执行
+```
+
+V21 从精确V20目标状态继续，修复文档与固定文本消费者同步后复跑完整验证。
+
+V21 验证执行事实：
+
+```text
+零写入进程前置检查：通过
+源状态：EXACT_V20_TARGET
+V21增量文件：3/3已应用；总工作区范围仍为批准的5文件
+经验门禁、TypeScript、daemon-core build、全仓build、git diff --check、installer verify：全部通过
+WorkDesk状态范围：通过
+失败点：校验器错误要求WI-0004 trigger_result.json包含project_spec_version
+真实生产契约：trigger_result保存路径选择骨架；Project Spec创建基线由candidate_manifest.base_spec_version保存
+WorkDesk写入、提交、推送：均未执行
+```
+
+V22 最终验证事实：
+
+```text
+零写入进程前置检查：通过
+源状态：EXACT_V21_TARGET
+V22增量文件：3/3已应用；总工作区范围仍为批准的5文件
+经验门禁：PASS
+TypeScript no-emit：PASS
+daemon-core build：PASS
+全仓 deterministic build：PASS
+git diff --check：PASS
+installer verify：PASS（119/119）
+daemon / OpenCode：STOPPED
+WI-0003 Runtime状态：superseded
+WI-0004 Runtime状态：created
+WI-0004 candidate_manifest.base_spec_version：PSV-0002
+WI-0004 candidate_manifest.entries：[]
+WI-0004 trigger_result：符合真实生产者skeleton
+Project Spec Version权威产物：candidate_manifest.base_spec_version
+WorkDesk状态范围：4个STAT_ONLY_CONTENT_NEUTRAL + 8个WI-0003文件 + 7个WI-0004文件
+WorkDesk文件与index：未修改
+Project Modules：CLI、CORE、DOMAIN、REPORTING、STORAGE
+Project Contract：0
+Module Contract文件：5
+正式Trace治理关系：0
+场景准备结论：READY_FOR_CONTRACT_CONSUMER_SCENARIO_DESIGN
+```
+
+`P0-PSV-BINDING-001` 已完成真实项目验证并关闭。
+`GOV-DEFECT-CONTRACT-CONSUMER-001` 仍为 `IN_PROGRESS`，不得把Work Item创建链验证
+冒充完整Contract Consumer端到端验收。
+
 当前下一项完整工作是：
 
 ```text
-提交并同步本轮4个 SpecForge 治理文件
-→ 在仓库外保存 WI-0003、Runtime 和相关 Observability 完整证据
-→ 用 Git规范化 blob和空 diff确认4个 porcelain `M` 为 `STAT_ONLY_CONTENT_NEUTRAL`
-→ 保留 WorkDesk文件与index原状，不为获得clean展示执行refresh或重写
-→ 用户手工启动 daemon
-→ 用户手工启动 WorkDesk 的 OpenCode
-→ sf-orchestrator 通过 sf_state_transition 将 WI-0003 从 workflow_selected 转为 superseded
-→ 省略 work_item_id 创建新 WI，预期自动分配 WI-0004
-→ 立即检查 WI-0004 candidate_manifest.base_spec_version = PSV-0002
-→ 保存 Tool、Runtime、文件和事件证据
-→ 通过后继续 WorkDesk 真实 WI 链路
+只读审计WorkDesk当前Project Architecture、Data Model、Module、Project/Module Contract、Trace和代码基线
+→ 识别可用于真实验证的Contract生产者、多个DD消费者和对应Module
+→ 在WI-0004中设计一个最小但完整的Contract Consumer验证场景
+→ 场景必须覆盖Project Contract新增、多个DD消费者、Impact Scope和Code Permission反向展开
+→ 随后覆盖实际代码消费者对账、破坏性变更阻断和Module→Project Promotion
+→ 最后覆盖原子Merge、Verification和Close
+→ 涉及daemon或OpenCode时仍由用户手工启动
 ```
 
 真实场景至少覆盖：
@@ -571,13 +652,14 @@ Module Contract 升级为 Project Contract
 原子 Merge、Verification 和 Close
 ```
 
-在完成 WorkDesk 真实验证前：
+当前完成边界：
 
 ```text
-P0 状态保持 IN_PROGRESS
-P0-PSV-BINDING-001 不得标记 CLOSED
+P0-PSV-BINDING-001 已通过真实项目创建验证关闭
+GOV-DEFECT-CONTRACT-CONSUMER-001 仍保持 IN_PROGRESS
+Contract增加、消费者展开、实际代码对账、破坏性变更、Promotion、Merge、Verification和Close尚未真实端到端验证
 不得启用最终 Hard Enforcement
-不得把自动化测试冒充真实业务项目验收
+不得把自动化测试或仅完成Work Item创建冒充完整真实业务项目验收
 ```
 
 任何需要 daemon 或 OpenCode 的步骤，必须先明确告诉用户，由用户手工执行。
@@ -687,6 +769,34 @@ Trace 一致性
 活动实施文件是否已更新
 仍未解决问题
 INSUFFICIENT_EVIDENCE
+```
+
+## 十一.一、V23 提交前最终状态对账
+
+```text
+V22证据包：已审计
+证据包文件数：61
+工程验证日志：6项全部EXIT=0
+SpecForge实际修改范围：5个批准文件
+权威文件：未修改
+WorkDesk：只读审计，未修改文件或index
+V23允许增量：仅current-handoff、经验库、经验门禁测试
+提交范围：当前全部5个批准文件
+提交后下一阶段：设计WI-0004最小完整Contract Consumer真实场景
+```
+
+V23 成功执行时必须在同一脚本中完成：
+
+```text
+零写入前置检查
+→ 精确识别EXACT_V22_TARGET或EXACT_V23_TARGET
+→ 应用3文件状态对账
+→ 复跑全部验证
+→ 暂存精确5文件
+→ 提交
+→ 推送yc/main
+→ 远程HEAD与本地HEAD一致
+→ 工作区干净
 ```
 
 ## 十二、daemon、OpenCode、提交和推送边界

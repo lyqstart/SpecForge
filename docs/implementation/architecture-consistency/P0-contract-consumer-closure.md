@@ -1827,11 +1827,12 @@ daemon-core build：通过
 本地与远程 main：已同步
 工作区：干净
 安装压缩包：已清理
-WorkDesk 真实验证：未执行
-daemon/OpenCode：未操作
+WorkDesk 真实创建链验证：已执行，WI-0003正式superseded，WI-0004自动创建并绑定PSV-0002
+WorkDesk Contract Consumer完整场景：未执行
+daemon/OpenCode：由用户手工启动并完成本轮创建验证
 ```
 
-本文件当前状态仍为 `IN_PROGRESS`。程序实现、自动化测试、类型检查、构建、提交和远程同步已经完成；只有 WorkDesk 真实 OpenCode + SpecForge 新项目链路仍未验证，因此不得提前标记 `COMPLETED`，也不得启用最终 Hard Enforcement。
+本文件当前状态仍为 `IN_PROGRESS`。程序实现、自动化测试、类型检查、构建、提交和远程同步已经完成；WorkDesk 已完成正式 Tool/Runtime 创建链和 Project Spec Version Binding 真实验证，但 Contract Consumer 的 Contract、Trace、Impact Scope、Code Permission、实际代码消费者、Promotion、Merge、Verification 和 Close 场景仍未真实端到端验证，因此不得提前标记 `COMPLETED`，也不得启用最终 Hard Enforcement。
 
 ---
 
@@ -1970,24 +1971,63 @@ git diff --check：通过
 
 测试过程中曾发现两条 Module Contract Promotion 测试夹具遗漏必填字段 `scope: "module"`。生产代码正确拒绝该无效 Contract。修复方式是整文件替换测试夹具，不放宽生产规则；修复后 95 项测试全部通过。
 
-### 25.5 当前证据不足
+### 25.5 WorkDesk 真实创建链验证
+
+2026-08-04 使用已安装 SpecForge Tool 和正式 Runtime 状态机完成：
 
 ```text
-INSUFFICIENT_EVIDENCE：WorkDesk 真实 OpenCode + SpecForge 新项目链路尚未运行
-INSUFFICIENT_EVIDENCE：真实业务项目中的 Contract 增加、删除、破坏性变更和 Module→Project Promotion 尚未端到端验证
+WI-0003：workflow_selected → superseded
+历史WI目录、events、observability和payload：全部保留
+新建WI：省略work_item_id，自动分配WI-0004
+WI-0004 candidate_manifest.base_spec_version：PSV-0002
+WI-0004 candidate_manifest.entries：[]
+WI-0004 Runtime状态：created
+Candidate：未生成
+业务代码：未修改
+```
+
+该结果关闭独立缺陷 `P0-PSV-BINDING-001`，并证明 WorkDesk 已经能够通过真实
+OpenCode + SpecForge Tool 进入新 Work Item 创建链。它不证明 Contract Consumer
+主线的 Contract、Trace、Impact Scope、Code Permission、实际代码消费者、
+Promotion、Merge、Verification 和 Close 已完成。
+
+### 25.6 当前证据不足
+
+```text
+INSUFFICIENT_EVIDENCE：真实业务项目中的 Project Contract 新增和多个DD消费者尚未端到端验证
+INSUFFICIENT_EVIDENCE：Impact Scope与Code Permission按正式Trace反向展开尚未真实验证
+INSUFFICIENT_EVIDENCE：实际代码消费者与正式Trace对账尚未真实验证
+INSUFFICIENT_EVIDENCE：Contract删除、破坏性变更和Module→Project Promotion尚未真实验证
+INSUFFICIENT_EVIDENCE：原子Merge、Verification和Close尚未真实验证
 ```
 
 因此当前不得把 P0 状态改为 `COMPLETED`，也不得启用最终 Hard Enforcement。
 
-### 25.6 下一验证边界
+### 25.7 下一验证边界
 
-下一步进入 WorkDesk 真实项目验证前置检查和执行准备：
+下一步先只读重建 WorkDesk 当前真实项目基线：
 
 ```text
-确认 WorkDesk 仓库与测试基线
-确认当前用户级安装来源与版本
-确认 daemon、OpenCode 启动前提
-设计一个同时覆盖 Contract 增加、消费者登记、破坏性变更和 Promotion 的真实 WI 链路
+读取Project Architecture和Data Model
+读取全部Module定义、Module Design和Module Contract
+读取Project Contract和正式Trace
+读取Module code_paths及现有生产代码
+识别一个Contract生产者、多个DD消费者和对应Module
+设计WI-0004的最小完整真实场景
+```
+
+场景执行顺序必须为：
+
+```text
+Project Contract新增
+→ 多个DD constrained_by登记
+→ Impact Scope和Code Permission反向展开
+→ 实际代码消费者与正式Trace对账
+→ 破坏性变更阻断
+→ Module Contract升级为Project Contract
+→ 原子Merge
+→ Verification
+→ Close
 ```
 
 涉及 daemon 或 OpenCode 时，必须先明确告知用户，由用户手工启动。不得自动启动、停止或重启 daemon/OpenCode。

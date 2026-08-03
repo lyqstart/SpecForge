@@ -15,6 +15,10 @@ const psvImplementationPath = join(
   repoRoot,
   'docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md',
 );
+const p0ContractClosurePath = join(
+  repoRoot,
+  'docs/implementation/architecture-consistency/P0-contract-consumer-closure.md',
+);
 const rootAgentsPath = join(repoRoot, 'AGENTS.md');
 const userLevelAgentsPath = join(repoRoot, 'setup/userlevel-opencode/AGENTS.md');
 
@@ -41,7 +45,7 @@ describe('SpecForge development experience pre-read gate', () => {
 
     const experienceRuleIds = experience.match(/^## EXP-\d{3}：/gm) ?? [];
     expect(experience.trim().length).toBeGreaterThan(500);
-    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(41);
+    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(45);
     expect(experienceRuleIds).toContain('## EXP-021：');
     expect(experienceRuleIds).toContain('## EXP-022：');
     expect(experienceRuleIds).toContain('## EXP-023：');
@@ -63,6 +67,10 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experienceRuleIds).toContain('## EXP-039：');
     expect(experienceRuleIds).toContain('## EXP-040：');
     expect(experienceRuleIds).toContain('## EXP-041：');
+    expect(experienceRuleIds).toContain('## EXP-042：');
+    expect(experienceRuleIds).toContain('## EXP-043：');
+    expect(experienceRuleIds).toContain('## EXP-044：');
+    expect(experienceRuleIds).toContain('## EXP-045：');
 
     expect(checklist.trim().length).toBeGreaterThan(500);
     expect(checklist).toContain('APPLICABLE_EXPERIENCE_RULES');
@@ -90,6 +98,10 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(checklist).toContain('Git porcelain 等机器结构化输出使用原始 bytes 和协议分隔符解析');
     expect(checklist).toContain('引用审计已区分活跃权威依赖');
     expect(checklist).toContain('Git porcelain `M` 已通过规范化 blob');
+    expect(checklist).toContain('修改脚本已在首次写入前验证进程');
+    expect(checklist).toContain('实施文档重构已同步经验门禁');
+    expect(checklist).toContain('每条验证断言已绑定真实生产者');
+    expect(checklist).toContain('最终成功证据已与当前状态文档');
   });
 
   it('records every new error with a class-level prevention rule', () => {
@@ -135,6 +147,19 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('## EXP-040：引用审计必须区分活跃权威依赖与不可变历史证据');
     expect(document).toContain('### ERR-060：把内容中性的 Git `M` 状态当成必须通过 index 刷新清除的业务变更');
     expect(document).toContain('## EXP-041：Git 工作区状态必须区分正式内容差异与 stat/index 元数据差异');
+    expect(document).toContain('## 22. 2026-08-04 真实环境关闭更新');
+    expect(document).toContain('P0-PSV-BINDING-001：CLOSED');
+    expect(document).toContain('ERR-060：CLOSED');
+    expect(document).toContain('### ERR-061：运行边界前置条件在写入之后检查');
+    expect(document).toContain('### ERR-062：精确目标状态在干净工作区要求之后识别，导致失败运行不可重入');
+    expect(document).toContain('## EXP-042：可恢复脚本必须先验证零写入前置条件，再识别精确源/目标状态');
+    expect(document).toContain('### ERR-063：实施状态文档重构后保留了已经失效的固定文本断言');
+    expect(document).toContain('## EXP-043：实施文档重构必须同步全部固定文本消费者');
+    expect(document).toContain('### ERR-064：验证器要求生产者契约中不存在的 `trigger_result.project_spec_version`');
+    expect(document).toContain('## EXP-044：验证断言必须绑定真实生产者契约和文件职责');
+    expect(document).toContain('### ERR-065：最终验证成功后当前交接仍停留在“待验证”状态');
+    expect(document).toContain('## EXP-045：成功证据产生后必须执行提交前最终状态对账');
+    expect(document).toContain('ERR-064：CLOSED');
     expect(document).toContain('## EXP-032：最终证据必须使完整变更集可重建、可审查');
     expect(document).toContain('一个错误必须产生一个类防护');
   });
@@ -142,6 +167,7 @@ describe('SpecForge development experience pre-read gate', () => {
   it('requires every delivery round to use one complete downloadable bundle', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
     const psvImplementation = readFileSync(psvImplementationPath, 'utf-8');
+    const p0ContractClosure = readFileSync(p0ContractClosurePath, 'utf-8');
     const rootAgents = readFileSync(rootAgentsPath, 'utf-8');
     const userLevelAgents = readFileSync(userLevelAgentsPath, 'utf-8');
 
@@ -160,22 +186,43 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('Project Spec / Module Design / Contract / Trace / 其他 WI 正式引用：0');
     expect(handoff).toContain('WI-0003 Runtime状态：workflow_selected');
     expect(handoff).toContain('当前分配器下一编号：WI-0004');
-    expect(handoff).toContain('通过正式 sf_state_transition 将 WI-0003 标记为 superseded');
-    expect(handoff).toContain('预期自动分配 WI-0004');
+    expect(handoff).toContain('WI-0003：workflow_selected → superseded');
+    expect(handoff).toContain('WI-0004 candidate_manifest.base_spec_version：PSV-0002');
+    expect(handoff).toContain('P0-PSV-BINDING-001：CLOSED_REAL_PROJECT_VALIDATED');
+    expect(handoff).toContain('V19 辅助脚本执行事实');
+    expect(handoff).toContain('拒绝自身5文件精确目标状态');
+    expect(handoff).toContain('V20 必须从精确V19目标状态继续验证');
+    expect(handoff).toContain('V20 经验门禁失败事实');
+    expect(handoff).toContain('V21 从精确V20目标状态继续');
+    expect(handoff).toContain('V21 验证执行事实');
+    expect(handoff).toContain('WI-0004 trigger_result：符合真实生产者skeleton');
+    expect(handoff).toContain('V22 最终验证事实');
+    expect(handoff).toContain('场景准备结论：READY_FOR_CONTRACT_CONSUMER_SCENARIO_DESIGN');
+    expect(handoff).toContain('V23 提交前最终状态对账');
+    expect(handoff).toContain('只读审计WorkDesk当前Project Architecture');
+    expect(handoff).toContain('GOV-DEFECT-CONTRACT-CONSUMER-001 仍保持 IN_PROGRESS');
     expect(handoff).toContain('`STAT_ONLY_CONTENT_NEUTRAL`');
-    expect(handoff).toContain('保留 WorkDesk文件与index原状');
+    expect(handoff).toContain('WorkDesk文件和index保持原状');
     expect(handoff).not.toContain('刷新 WorkDesk Git index 中4个字节未变文件的 stat 状态');
     expect(handoff).not.toContain('核对用户级 SpecForge 安装来源与当前版本');
     expect(handoff).not.toContain('用户暂存、提交并推送当前 19 文件变更');
     expect(handoff).not.toContain('完成当前状态文档同步并复跑同一验证集');
-    expect(psvImplementation).toContain('`WORKDESK_WI0003_SUPERSEDE_AND_WI0004_RECREATE_PLAN_READY_PENDING_REAL_PROJECT_RETEST`');
-    expect(psvImplementation).toContain('transitioned to `superseded` through the formal state machine');
-    expect(psvImplementation).toContain('writes `candidate_manifest.base_spec_version = PSV-0002`');
+    expect(psvImplementation).toContain('`CLOSED_REAL_PROJECT_VALIDATED`');
+    expect(psvImplementation).toContain('## WorkDesk Real-Project Validation Evidence');
+    expect(psvImplementation).toContain('allocated as `WI-0004`;');
+    expect(psvImplementation).toContain('defect `P0-PSV-BINDING-001` is closed');
+    expect(psvImplementation).toContain('9. [x] Transition WI-0003');
+    expect(psvImplementation).toContain('10. [x] Create the next Work Item');
     expect(psvImplementation).toContain('must not require a clean porcelain display');
     expect(psvImplementation).toContain('`95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`');
     expect(psvImplementation).toContain('6. [x] Commit the validated change set');
     expect(psvImplementation).toContain('7. [x] Upgrade the user-level SpecForge runtime');
     expect(psvImplementation).not.toContain('remains uncommitted');
+    expect(p0ContractClosure).toContain('> **状态**：IN_PROGRESS');
+    expect(p0ContractClosure).toContain('### 25.5 WorkDesk 真实创建链验证');
+    expect(p0ContractClosure).toContain('WI-0004 candidate_manifest.base_spec_version：PSV-0002');
+    expect(p0ContractClosure).toContain('INSUFFICIENT_EVIDENCE：真实业务项目中的 Project Contract 新增和多个DD消费者尚未端到端验证');
+    expect(p0ContractClosure).toContain('### 25.7 下一验证边界');
 
     for (const entry of [rootAgents, userLevelAgents]) {
       expect(entry).toContain('docs/rule/specforge-development-error-ledger-and-experience.md');
