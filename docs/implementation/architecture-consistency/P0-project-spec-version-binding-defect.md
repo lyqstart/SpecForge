@@ -2,7 +2,7 @@
 
 ## Status
 
-`COMMITTED_AND_REMOTE_SYNCED_PENDING_INSTALL_AND_REAL_PROJECT_RETEST`
+`WORKDESK_WI0003_SUPERSEDE_AND_WI0004_RECREATE_PLAN_READY_PENDING_REAL_PROJECT_RETEST`
 
 ## Defect ID
 
@@ -104,8 +104,36 @@ Validated results:
 - complete 19-file scope and byte-level evidence audit passed.
 
 The repository implementation is validated, committed, and synchronized to remote
-`main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`. The user-level runtime has not been upgraded from this commit.
-No daemon or OpenCode action was performed.
+`main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`. The post-commit status reconciliation is synchronized at
+`main@c5ed2f1cb74b807812dab8dae3255afaacff1bd9`.
+
+The user-level installation was upgraded from the clean `main@c5ed2f1cb74b807812dab8dae3255afaacff1bd9`
+repository on 2026-08-03. Installer verification passed, all 119 registered files matched the repository,
+Manifest integrity passed, and the legacy home `.specforge`, legacy sf-user Manifest and nested runtime path
+were absent. The user manually stopped daemon and OpenCode before the upgrade; neither was restarted by the
+upgrade package.
+
+V15 then audited WorkDesk without writing it. WI-0003 contains 8 untracked and 0 tracked files; its stale
+Candidate baseline is PSV-0001 while the authoritative Project Spec is PSV-0002. The 109 textual reference
+matches consist of 8 WI-local files, 2 Runtime state files and 99 observability/history files. No Project
+Spec, Module Design, Contract, Trace or other Work Item formal reference was found. Historical logs must be
+preserved, while the Runtime state and allocator ID space require a separate fail-closed audit before any
+directory cleanup or Work Item recreation.
+
+V16 completed that audit. WI-0003 is an active Runtime object in `workflow_selected`; directory, state and
+event IDs agree for WI-0001 through WI-0003. The existing allocator will assign WI-0004 and has no state
+conflict. The four tracked WorkDesk paths reported as modified have byte-identical HEAD and working-tree
+content and empty ordinary diffs.
+
+The approved recovery is therefore not deletion or manual Candidate repair. WI-0003 must be preserved and
+transitioned to `superseded` through the formal state machine. A newly allocated WI-0004 must then prove that
+the installed fixed creation path writes `candidate_manifest.base_spec_version = PSV-0002`.
+
+V17 attempted to clear four content-neutral WorkDesk porcelain `M` entries with `git add --refresh`.
+The command returned success but the display state remained. The files were not staged, their ordinary diffs
+were empty, and no WorkDesk project file was changed. This status is now treated as stat/index metadata rather
+than a governed content delta. Recovery preparation must verify normalized Git blob equality and empty diffs,
+preserve the WorkDesk index and files unchanged, and must not require a clean porcelain display.
 
 ## Required Validation
 
@@ -118,8 +146,11 @@ Before marking this defect closed:
 5. [x] Complete deterministic workspace build, `git diff --check` and the exact
    19-file final scope audit.
 6. [x] Commit the validated change set and synchronize remote `main` at `95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`.
-7. [ ] Reinstall/upgrade the user-level SpecForge runtime from the committed version.
-8. [ ] Remove the invalid untracked WorkDesk `WI-0003` artifact using a controlled,
-   evidence-preserving cleanup.
-9. [ ] Recreate the Work Item and confirm its base version is `PSV-0002`.
-10. [ ] Continue the WorkDesk P0 real-project validation without manual artifact edits.
+7. [x] Upgrade the user-level SpecForge runtime and verify all 119 registered files against `main@c5ed2f1cb74b807812dab8dae3255afaacff1bd9`.
+8. [x] Classify WI-0003 references, Runtime state and allocator ID space; preserve all
+   historical evidence and reject direct directory deletion or manual Candidate repair.
+9. [ ] Transition WI-0003 from `workflow_selected` to `superseded` through the formal
+   `sf_state_transition` path.
+10. [ ] Create the next Work Item without supplying an ID, confirm allocation of WI-0004 and verify
+    `candidate_manifest.base_spec_version = PSV-0002`.
+11. [ ] Continue the WorkDesk P0 real-project validation without manual governed-artifact edits.

@@ -668,6 +668,62 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **类防护**：`EXP-001`、`EXP-003`、`EXP-007`、`EXP-015`、`EXP-033`、`EXP-035`、`EXP-037`。
 
 
+### ERR-057：进程存活检查命令执行失败仍被解释为 daemon 未运行
+
+- **日期与阶段**：2026-08-03，V13 用户级升级证据复核。
+- **分类**：`SCRIPT_DEFECT / EVIDENCE_DEFECT / ENVIRONMENT_ERROR`
+- **现场表现**：升级脚本通过 `cmd.exe` 执行 `tasklist /FI "PID eq 33268" /FO CSV /NH` 时返回“无效参数/选项”，但进程检查函数仍把命令失败解释为 `daemon_running=false`，最终反馈将该结果作为升级前置证据。
+- **已执行与未执行**：用户已按要求手工停止 daemon 和 OpenCode；升级、119 文件一致性校验和 Manifest 完整性校验均成功。完整 `tasklist /FO CSV /NH` 快照中未出现握手文件记录的 PID，因此现有独立证据支持当时未发现该进程；但失败的 PID 过滤命令本身不能作为“未运行”的证明。
+- **根因**：布尔判断只检查输出是否包含 PID，没有先要求进程查询命令成功；同时把含嵌套引号的 Windows 命令经 `cmd.exe /c` 再解释，未验证最终参数。
+- **影响**：如果真实 daemon 仍在运行，失败的查询可能被错误降级为“未运行”，使升级或清理操作越过用户手工生命周期边界。
+- **正确做法**：进程不存在结论必须来自成功且可解析的完整进程快照。Windows 上优先直接执行 `tasklist.exe /FO CSV /NH`，按 CSV 解析一次快照，再用握手 PID和明确进程名交叉核对；命令失败、CSV 不可解析、PID 不明确时必须 `INSUFFICIENT_EVIDENCE` 并 fail closed。
+- **新增防护**：新增 `EXP-038`；后续脚本禁止把非零退出码解释为进程不存在；WorkDesk 前置审计使用单次完整进程快照，同时输出匹配 PID、进程名和解析状态。
+- **状态**：`FIXED_PENDING_VALIDATION`。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-015`、`EXP-018`、`EXP-038`。
+
+
+### ERR-058：Git porcelain 输出被整体裁剪后首个文件路径丢失首字符
+
+- **日期与阶段**：2026-08-04，V14 应用后范围审计。
+- **分类**：`SCRIPT_DEFECT / EVIDENCE_DEFECT / PROCESS_VIOLATION`
+- **现场表现**：V14 已写入4个目标文件后，范围检查把首个路径 `docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md` 解析成 `ocs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md`，因此报 `POST_APPLY_SCOPE` 失败。
+- **已执行与未执行**：4个目标文件曾进入写入阶段；异常处理包含4文件恢复逻辑，但 V14 没有输出回滚后哈希和 Git 状态验证，所以当前本地实际状态在下一轮检查前为 `INSUFFICIENT_EVIDENCE`。测试、类型检查、构建和 WorkDesk 审计均未执行。
+- **根因**：通用 `git_text()` 对完整 `git status --porcelain=v1` 输出调用 `.strip()`。首行合法状态为 ` M <path>`，整体裁剪删除了最前面的状态空格；后续固定使用 `line[3:]` 取路径时又删除了路径首字符。展示层的空白规范化错误地作用于机器结构化协议。
+- **影响**：合法范围会被误报；更严重时也可能把真实范围外文件变形成另一个路径，破坏修改范围审计的可信度。
+- **正确做法**：机器读取 Git 状态必须使用 `git status --porcelain=v1 -z -uall`，直接解析原始 bytes 和 NUL 分隔记录；不得对完整输出做 `.strip()`、行尾归一化或展示层清理。解析器必须验证两字节状态、分隔空格、路径非空，并对 rename/copy 等额外记录显式处理或 fail closed。
+- **新增防护**：新增 `EXP-039`；V15 在任何仓库写入前运行真实临时 Git 仓库回归，证明首行 ` M docs/...`、未跟踪文件和含空格路径均能完整解析；应用程序先识别精确 SOURCE、V14_TARGET 或 V15_TARGET 状态，混合状态停止。
+- **状态**：`FIXED_PENDING_VALIDATION`。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-013`、`EXP-015`、`EXP-021`、`EXP-039`。
+
+
+### ERR-059：历史观测日志命中被误判为 Work Item 的正式外部引用
+
+- **日期与阶段**：2026-08-04，V15 WorkDesk WI-0003 清理前置审计。
+- **分类**：`EVIDENCE_DEFECT / VALIDATION_DEFECT / PROCESS_VIOLATION`
+- **现场表现**：审计脚本在 `.specforge/**` 中搜索字面量 `WI-0003`，得到109个命中文件，并统一归类为“外部引用”，从而阻断清理。完整证据显示：8个是 WI-0003 自身文件，2个是 Runtime 状态文件，99个是 observability 索引、调用记录和按哈希保存的历史 payload；Project Spec、Module Design、Contract、Trace、其他 Work Item 和业务代码中的正式引用为0。
+- **已执行与未执行**：V15 只读审计成功；未修改 WorkDesk，未清理 WI-0003，未启动 daemon/OpenCode。用户级安装保持119/119一致。
+- **根因**：把文本命中等同于正式依赖，没有先按文件角色、权威级别和生命周期语义分类。历史日志承担审计证据职责，但不是可驱动当前治理状态的活跃引用。
+- **影响**：合法恢复被大量日志噪声阻断；反方向也可能因忽略真正权威文件角色而误删正式状态或消费者关系。
+- **正确做法**：引用审计必须至少区分：WI 自身产物、Runtime 权威状态、不可变历史日志、Project/Module 正式规格、其他 WI 活跃引用和普通业务文件。只有 Project/Module 正式规格、其他活跃 WI、Runtime 活跃状态或明确的业务消费者引用能够阻断清理；observability 和 payload 必须保留，但其存在本身不构成活跃依赖。
+- **新增防护**：新增 `EXP-040`；V16 输出逐类计数、正式阻断引用清单和历史证据清单，并单独审计 Runtime 当前状态与 WI 编号分配来源。
+- **状态**：`FIXED_PENDING_VALIDATION`。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-015`、`EXP-017`、`EXP-021`、`EXP-040`。
+
+
+### ERR-060：把内容中性的 Git `M` 状态当成必须通过 index 刷新清除的业务变更
+
+- **日期与阶段**：2026-08-04，V17 WorkDesk 恢复准备。
+- **分类**：`SCRIPT_DEFECT / EVIDENCE_DEFECT / PROCESS_VIOLATION`
+- **现场表现**：4个 WorkDesk 跟踪文件在 `git status --porcelain` 中显示 ` M`。V17 已证明它们的 HEAD 与工作区内容一致、普通 `git diff --binary` 为空，但仍执行 `git add --refresh` 并要求 `M` 必须消失。命令返回0后状态未消失，脚本因此在 `WORKDESK_INDEX_REFRESH` 失败。
+- **已执行与未执行**：SpecForge 4文件补丁、经验门禁测试、TypeScript检查、daemon-core构建、全仓构建、`git diff --check` 和 installer verify 均通过；未提交、未推送。WorkDesk index refresh 没有暂存文件，也没有改变项目文件；daemon/OpenCode 保持停止。
+- **根因**：脚本把 porcelain 的 stat/index 状态与 Git 正式内容差异混为一体，并错误假设 `git add --refresh` 返回0就必须清除显示状态。Windows 文件时间、大小缓存、换行过滤或 index stat 元数据可以让 porcelain 显示 `M`，但不代表规范化 blob 或业务内容发生变化。
+- **影响**：为了追求表面 clean 状态而修改 index，会越过“WorkDesk 不写入”的批准边界；也会让真实恢复被无业务影响的状态显示阻断。
+- **正确做法**：对每个预期的 stat-only 路径同时验证：未暂存、`git diff --quiet -- <path>` 返回0、`git hash-object --path=<path> <path>` 等于 `git rev-parse HEAD:<path>`。全部成立时标记 `STAT_ONLY_CONTENT_NEUTRAL`，保留原 porcelain 状态并继续；任何一项不成立都必须 fail closed。禁止仅为让 `git status` 变干净而刷新 index、重写文件或改变换行。
+- **新增防护**：新增 `EXP-041`；V18 不调用 `git add --refresh` 或 `git update-index`，仅以 Git规范化 blob和空 diff双重证明内容中性，并把4个状态与8个 WI 文件分别报告。
+- **状态**：`FIXED_PENDING_VALIDATION`。
+- **类防护**：`EXP-007`、`EXP-013`、`EXP-015`、`EXP-017`、`EXP-018`、`EXP-039`、`EXP-041`。
+
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -1125,6 +1181,30 @@ SOURCE/TARGET 双契约不仅要分别列出，还必须决定执行顺序。迁
 实际实现 commit SHA、远程推送结果和提交后 clean worktree 只能在实现提交成功后成为事实。包含这些字段的实施状态和当前交接不得试图在实现提交中一次性最终化。标准流程必须是：验证实现 → 提交并推送 → 读取提交证据 → 窄范围同步状态文档 → 再提交状态对账。状态对账提交不得在自身内容中保存“当前提交 SHA”，否则会形成不可满足的自引用；应记录被对账的实现提交，并要求新会话实时读取远程 HEAD。远程当前版本不得长期保留“未提交”“待推送”或把已经完成的提交动作继续列为下一步。
 
 
+
+## EXP-038：进程不存在结论必须建立在成功且可解析的进程快照上
+
+daemon、OpenCode 和其他受控进程的“未运行”不是默认值。检查程序必须先证明查询命令成功、输出结构可解析，再用完整进程快照中的 PID 和进程名进行匹配。任何非零退出码、空输出、字段数量异常、编码失败或握手 PID 无法解释的情况都必须标记 `INSUFFICIENT_EVIDENCE` 并 fail closed；不得把查询失败、过滤语法错误或解析异常转换成布尔值 `false`。
+
+
+
+## EXP-039：机器结构化输出必须先解析，不能先做展示层空白规范化
+
+Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导空格、分隔符与空记录可能属于正式结构。读取程序必须保留原始 bytes，按协议边界解析后再规范化单个字段；禁止对整段机器输出先执行 `.strip()`、`.splitlines()` 后裁剪或合并 stdout/stderr。解析器必须对首条、末条、含空格路径、空输出和异常记录建立回归测试，无法解析时 fail closed。
+
+
+
+## EXP-040：引用审计必须区分活跃权威依赖与不可变历史证据
+
+字符串出现不等于正式引用。清理、迁移或重建治理对象前，必须按文件角色分类：对象自身产物、Runtime 权威状态、Project/Module 正式规格、其他活跃 Work Item、业务消费者、observability 索引和历史 payload。历史日志必须保存，但不得仅因保留了对象 ID 就阻断清理；Runtime 当前状态和其他权威消费者必须单独 fail closed。审计结论必须同时报告“正式阻断引用”和“历史证据引用”，禁止用一个未分类总数代替治理判断。
+
+
+
+## EXP-041：Git 工作区状态必须区分正式内容差异与 stat/index 元数据差异
+
+`git status` 是范围发现入口，但单独的 porcelain `M` 不能证明业务内容变化。对疑似内容中性的跟踪文件，必须以 Git规范化 blob 哈希、未暂存状态和 `git diff --quiet` 共同判定；全部一致时明确报告 `STAT_ONLY_CONTENT_NEUTRAL`，不得为了获得 clean 展示而修改 index、重写文件或改变换行。只有正式内容差异才能进入修改范围和消费者影响分析。
+
+
 ---
 
 # 第四部分：修改前强制检查
@@ -1144,6 +1224,10 @@ SOURCE/TARGET 双契约不仅要分别列出，还必须决定执行顺序。迁
 □ 已确认用户操作边界
 □ 已选择最简单的交付和验证方式
 □ 命令已按实际 Windows/CMD/Bun 环境验证
+□ daemon/OpenCode 进程检查命令已成功并可解析；命令失败、输出异常或 PID 无法判定时已 fail closed，未解释为“未运行”
+□ Git porcelain 等机器结构化输出使用原始 bytes 和协议分隔符解析，未对完整输出先执行 `.strip()` 或展示层空白规范化；首条、末条和含空格路径回归已通过
+□ 引用审计已区分活跃权威依赖、对象自身产物、Runtime 当前状态和不可变历史日志；未用未分类文本命中总数直接阻断或允许清理
+□ Git porcelain `M` 已通过规范化 blob、未暂存状态和空 diff 区分正式内容差异与 stat/index 元数据差异；未为获得 clean 展示而修改 index 或重写文件
 □ 脚本 stdout/stderr、编码和失败恢复已设计
 □ 新回归测试可独立运行
 □ 已准备 A/B 归因方案
@@ -1287,6 +1371,10 @@ V7 在状态分类前检查目标标记：按 ERR-053 修复，源/目标语义�
 V8 成功后交接仍重复本轮动作：按 ERR-054 修复，目标交接直接进入提交和推送阶段。
 仓库根 AGENTS 遗漏经验门禁：按 ERR-055 修复，强制入口消费者和测试闭环扩展到根 AGENTS。
 提交后状态文档仍保留待提交描述：按 ERR-056 修复，`95befe8` 提交证据通过窄范围状态对账同步到 PSV 实施文件和当前交接。
-WorkDesk WI-0003：等待用户级安装升级后受控重建。
+V13 进程过滤命令失败仍报告 daemon 未运行：按 ERR-057 修复，后续进程边界使用成功且可解析的完整进程快照并在异常时 fail closed。
+V14 Git porcelain 首行被整体裁剪导致路径丢失首字符：按 ERR-058 修复，机器状态改用原始 bytes、NUL 分隔和真实临时仓库回归。
+V15 将109个 WI-0003 字面命中统一当成外部引用：按 ERR-059 修复，引用审计分离正式活跃依赖与不可变历史证据。
+V17 把内容中性的 WorkDesk porcelain `M` 当成必须清除的业务变更：按 ERR-060 修复，使用 Git规范化 blob和空 diff证明内容中性，不修改 index。
+WorkDesk WI-0003：用户级安装已升级并通过 119/119 一致性校验；等待受控审计、证据保存和重建。
 ```
 

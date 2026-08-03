@@ -492,18 +492,70 @@ git diff --check：通过
 提交与推送：完成
 本地与远程：一致
 工作区：干净
-install / daemon / OpenCode：均未执行
+用户级安装来源：main@c5ed2f1cb74b807812dab8dae3255afaacff1bd9
+用户级安装升级：完成
+安装 Manifest、Tool、Skill、Agent 与源码一致性：119/119
+安装 Manifest 完整性与 installer verify：通过
+遗留用户主目录 `.specforge`、旧 sf-user Manifest、错误嵌套 runtime：均不存在
+daemon / OpenCode：升级前由用户手工停止，升级后尚未启动
+```
+
+V15 WorkDesk 前置审计事实：
+
+```text
+WorkDesk branch：main
+WorkDesk HEAD：254e24646d10c6f71fc150ac80f689d007392170
+WorkDesk working tree：DIRTY
+Project Spec Version：PSV-0002
+WI-0003 candidate_manifest.base_spec_version：PSV-0001
+WI-0003 tracked files：0
+WI-0003 untracked files：8
+WI-0003 字面引用总数：109
+  - WI-0003 自身产物：8
+  - Runtime 状态文件：2
+  - Observability / payload 历史证据：99
+  - Project Spec / Module Design / Contract / Trace / 其他 WI 正式引用：0
+```
+
+Observability 和 payload 是必须保留的历史证据，不是活跃消费者。Runtime 状态仍是权威引用，且当前 Work Item 创建器按 `.specforge/work-items` 目录最大编号分配下一 ID，因此不得仅删除 WI-0003 目录后直接重建同一编号。
+
+V16 Runtime 与编号审计事实：
+
+```text
+Work Item目录：WI-0001、WI-0002、WI-0003
+Runtime state ID：WI-0001、WI-0002、WI-0003
+Runtime event ID：WI-0001、WI-0002、WI-0003
+WI-0003 Runtime状态：workflow_selected
+当前分配器下一编号：WI-0004
+WI-0004状态冲突：无
+WI-0003正式阻断引用：0
+WorkDesk既有 tracked status：4个 porcelain `M`，但 Git规范化 blob与HEAD一致、未暂存、普通 diff为空，分类为 `STAT_ONLY_CONTENT_NEUTRAL`
+```
+
+恢复决策：
+
+```text
+WI-0003 是修复前创建并按计划停在 workflow_selected 的活跃历史对象。
+不得删除目录、人工改 candidate_manifest 或直接编辑 Runtime。
+通过正式 sf_state_transition 将 WI-0003 标记为 superseded。
+保留 WI-0003、Runtime events、Observability 和 payload 全部历史证据。
+随后由分配器创建 WI-0004，真实验证新版创建器把 candidate_manifest.base_spec_version 绑定为 PSV-0002。
 ```
 
 当前下一项完整工作是：
 
 ```text
-核对用户级 SpecForge 安装来源与当前版本
-→ 从已提交版本 main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9 升级用户级安装
-→ 验证安装 Manifest、Tool、Skill、Agent 与源码一致
-→ 受控清理并重建 WorkDesk WI-0003
-→ 用户手工启动 daemon 和 OpenCode
-→ 继续 WorkDesk 真实 WI 链路
+提交并同步本轮4个 SpecForge 治理文件
+→ 在仓库外保存 WI-0003、Runtime 和相关 Observability 完整证据
+→ 用 Git规范化 blob和空 diff确认4个 porcelain `M` 为 `STAT_ONLY_CONTENT_NEUTRAL`
+→ 保留 WorkDesk文件与index原状，不为获得clean展示执行refresh或重写
+→ 用户手工启动 daemon
+→ 用户手工启动 WorkDesk 的 OpenCode
+→ sf-orchestrator 通过 sf_state_transition 将 WI-0003 从 workflow_selected 转为 superseded
+→ 省略 work_item_id 创建新 WI，预期自动分配 WI-0004
+→ 立即检查 WI-0004 candidate_manifest.base_spec_version = PSV-0002
+→ 保存 Tool、Runtime、文件和事件证据
+→ 通过后继续 WorkDesk 真实 WI 链路
 ```
 
 真实场景至少覆盖：

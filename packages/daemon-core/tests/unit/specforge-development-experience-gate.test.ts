@@ -41,7 +41,7 @@ describe('SpecForge development experience pre-read gate', () => {
 
     const experienceRuleIds = experience.match(/^## EXP-\d{3}：/gm) ?? [];
     expect(experience.trim().length).toBeGreaterThan(500);
-    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(37);
+    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(41);
     expect(experienceRuleIds).toContain('## EXP-021：');
     expect(experienceRuleIds).toContain('## EXP-022：');
     expect(experienceRuleIds).toContain('## EXP-023：');
@@ -59,6 +59,10 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experienceRuleIds).toContain('## EXP-035：');
     expect(experienceRuleIds).toContain('## EXP-036：');
     expect(experienceRuleIds).toContain('## EXP-037：');
+    expect(experienceRuleIds).toContain('## EXP-038：');
+    expect(experienceRuleIds).toContain('## EXP-039：');
+    expect(experienceRuleIds).toContain('## EXP-040：');
+    expect(experienceRuleIds).toContain('## EXP-041：');
 
     expect(checklist.trim().length).toBeGreaterThan(500);
     expect(checklist).toContain('APPLICABLE_EXPERIENCE_RULES');
@@ -82,6 +86,10 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(checklist).toContain('状态对账目标描述成功结束后的下一阶段');
     expect(checklist).toContain('强制经验门禁已同步仓库根 AGENTS.md');
     expect(checklist).toContain('提交依赖状态已在实现提交和推送成功后执行二次对账');
+    expect(checklist).toContain('daemon/OpenCode 进程检查命令已成功并可解析');
+    expect(checklist).toContain('Git porcelain 等机器结构化输出使用原始 bytes 和协议分隔符解析');
+    expect(checklist).toContain('引用审计已区分活跃权威依赖');
+    expect(checklist).toContain('Git porcelain `M` 已通过规范化 blob');
   });
 
   it('records every new error with a class-level prevention rule', () => {
@@ -119,6 +127,14 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('## EXP-036：强制治理规则必须覆盖全部实际入口消费者');
     expect(document).toContain('### ERR-056：包含“待提交”状态的当前文档在提交成功后没有执行提交后对账');
     expect(document).toContain('## EXP-037：提交依赖状态必须通过提交后对账闭环');
+    expect(document).toContain('### ERR-057：进程存活检查命令执行失败仍被解释为 daemon 未运行');
+    expect(document).toContain('## EXP-038：进程不存在结论必须建立在成功且可解析的进程快照上');
+    expect(document).toContain('### ERR-058：Git porcelain 输出被整体裁剪后首个文件路径丢失首字符');
+    expect(document).toContain('## EXP-039：机器结构化输出必须先解析，不能先做展示层空白规范化');
+    expect(document).toContain('### ERR-059：历史观测日志命中被误判为 Work Item 的正式外部引用');
+    expect(document).toContain('## EXP-040：引用审计必须区分活跃权威依赖与不可变历史证据');
+    expect(document).toContain('### ERR-060：把内容中性的 Git `M` 状态当成必须通过 index 刷新清除的业务变更');
+    expect(document).toContain('## EXP-041：Git 工作区状态必须区分正式内容差异与 stat/index 元数据差异');
     expect(document).toContain('## EXP-032：最终证据必须使完整变更集可重建、可审查');
     expect(document).toContain('一个错误必须产生一个类防护');
   });
@@ -138,12 +154,27 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('本轮已验证实现提交');
     expect(handoff).toContain('main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9');
     expect(handoff).toContain('当前远程 HEAD：每次新会话实时读取');
-    expect(handoff).toContain('核对用户级 SpecForge 安装来源与当前版本');
+    expect(handoff).toContain('用户级安装升级：完成');
+    expect(handoff).toContain('安装 Manifest、Tool、Skill、Agent 与源码一致性：119/119');
+    expect(handoff).toContain('WI-0003 字面引用总数：109');
+    expect(handoff).toContain('Project Spec / Module Design / Contract / Trace / 其他 WI 正式引用：0');
+    expect(handoff).toContain('WI-0003 Runtime状态：workflow_selected');
+    expect(handoff).toContain('当前分配器下一编号：WI-0004');
+    expect(handoff).toContain('通过正式 sf_state_transition 将 WI-0003 标记为 superseded');
+    expect(handoff).toContain('预期自动分配 WI-0004');
+    expect(handoff).toContain('`STAT_ONLY_CONTENT_NEUTRAL`');
+    expect(handoff).toContain('保留 WorkDesk文件与index原状');
+    expect(handoff).not.toContain('刷新 WorkDesk Git index 中4个字节未变文件的 stat 状态');
+    expect(handoff).not.toContain('核对用户级 SpecForge 安装来源与当前版本');
     expect(handoff).not.toContain('用户暂存、提交并推送当前 19 文件变更');
     expect(handoff).not.toContain('完成当前状态文档同步并复跑同一验证集');
-    expect(psvImplementation).toContain('`COMMITTED_AND_REMOTE_SYNCED_PENDING_INSTALL_AND_REAL_PROJECT_RETEST`');
+    expect(psvImplementation).toContain('`WORKDESK_WI0003_SUPERSEDE_AND_WI0004_RECREATE_PLAN_READY_PENDING_REAL_PROJECT_RETEST`');
+    expect(psvImplementation).toContain('transitioned to `superseded` through the formal state machine');
+    expect(psvImplementation).toContain('writes `candidate_manifest.base_spec_version = PSV-0002`');
+    expect(psvImplementation).toContain('must not require a clean porcelain display');
     expect(psvImplementation).toContain('`95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`');
     expect(psvImplementation).toContain('6. [x] Commit the validated change set');
+    expect(psvImplementation).toContain('7. [x] Upgrade the user-level SpecForge runtime');
     expect(psvImplementation).not.toContain('remains uncommitted');
 
     for (const entry of [rootAgents, userLevelAgents]) {
