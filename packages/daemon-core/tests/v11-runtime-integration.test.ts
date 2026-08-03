@@ -13,6 +13,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -87,8 +88,8 @@ describe('v1.1 State Machine（§5）', () => {
   });
 
   it('recognizes authorized advancement subjects', () => {
-    expect(isAuthorizedAdvancementSubject('sf-orchestrator')).toBe(true);
-    expect(isAuthorizedAdvancementSubject('Merge Runner')).toBe(true);
+    expect(isAuthorizedAdvancementSubject(ACTOR_ROLES.orchestrator)).toBe(true);
+    expect(isAuthorizedAdvancementSubject(ACTOR_ROLES.mergeRunner)).toBe(true);
     expect(isAuthorizedAdvancementSubject('random_agent')).toBe(false);
   });
 });
@@ -127,7 +128,7 @@ describe('v1.1 Write Guard（§12）', () => {
   it('blocks agent from writing .specforge/project/', () => {
     const result = checkWrite(baseCtx, '.specforge/project/spec_manifest.json', 'modify');
     expect(result.allowed).toBe(false);
-    expect(result.violations[0]).toContain('agent cannot write');
+    expect(result.violations[0]).toContain('only merge_runner may write .specforge/project/');
   });
 
   it('blocks writing when code_change_allowed=false', () => {
@@ -143,7 +144,7 @@ describe('v1.1 Write Guard（§12）', () => {
   });
 
   it('allows Merge Runner to write .specforge/project/', () => {
-    const ctx = { ...baseCtx, callerRole: 'Merge Runner' as const };
+    const ctx = { ...baseCtx, callerRole: ACTOR_ROLES.mergeRunner };
     const result = checkWrite(ctx, '.specforge/project/spec_manifest.json', 'modify');
     expect(result.allowed).toBe(true);
   });
@@ -300,7 +301,7 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
       userRequest: 'Test closure files',
     });
 
-    await initializeClosureFiles(wiDir, 'WI-0002', 'code_only_fast_path');
+    await initializeClosureFiles(wiDir, 'WI-0002', 'code_only_fast_path', 'PSV-0001');
 
     // 验证所有闭环文件存在
     const requiredFiles = [
@@ -311,7 +312,7 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
     ];
 
     for (const file of requiredFiles) {
-      await expect(fs.access(path.join(wiDir, file))).resolves.toBeUndefined();
+      await fs.access(path.join(wiDir, file));
     }
     await expect(fs.access(path.join(wiDir, 'tasks.md'))).rejects.toBeTruthy();
     await expect(fs.access(path.join(wiDir, 'trace_delta.md'))).rejects.toBeTruthy();
@@ -364,7 +365,7 @@ describe('v1.1 Resume Check（§5.4）', () => {
       userRequest: 'Test resume complete',
     });
 
-    await initializeClosureFiles(wiDir, 'WI-0005', 'code_only_fast_path');
+    await initializeClosureFiles(wiDir, 'WI-0005', 'code_only_fast_path', 'PSV-0001');
     await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
     await fs.writeFile(
       path.join(wiDir, 'candidates', 'tasks.md'),

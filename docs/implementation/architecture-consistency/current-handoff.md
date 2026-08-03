@@ -2,11 +2,40 @@
 
 > **文件性质**：非权威当前交接文件
 > **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
-> **当前活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
-> **最后确认的远程基线**：`main@60cbbd3829c67d67f99cf76570b59fb6fa79b35d`
+> **当前主线活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
+> **当前阻断缺陷实施文件**：`docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md`
+> **最后确认的远程基线**：`main@fd93b966f4663335133aca9612112dc4fe2e37ff`
 > **重要说明**：新会话开始时必须重新读取 GitHub `main` 当前 HEAD，不得把上述 SHA 当成永远不变的基线。
 
 继续 SpecForge 架构一致性治理能力的开发和验证。
+
+
+## 零、修改前强制经验读取门禁
+
+在分析、设计、修改代码、修改文档、生成批处理、生成命令、制作补丁或运行验证之前，必须先完整读取：
+
+```text
+docs/rule/specforge-development-error-ledger-and-experience.md
+```
+
+至少必须读取其中：
+
+```text
+第三部分：工程经验总则
+第四部分：修改前强制检查
+```
+
+开始工作前必须记录：
+
+```text
+EXPERIENCE_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
+REPEATED_ERROR_CHECK=PASS
+```
+
+无法读取、规则冲突或不能确认适用经验时，必须停止修改，不得凭记忆继续。
+
+本门禁适用于代码、测试、Markdown、JSON、配置、CMD/BAT、PowerShell、Python 辅助程序、补丁包、压缩包、安装器、Git 命令和真实项目验证。
 
 ## 一、仓库与权威入口
 
@@ -30,13 +59,14 @@ docs/design/SpecForge架构一致性治理最终实施方案.md
 
 该文件是开发 SpecForge 架构一致性治理与契约治理能力的唯一当前产品设计依据。
 
-同时读取当前活动实施文件：
+同时读取当前主线活动实施文件和当前阻断缺陷实施文件：
 
 ```text
 docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
+docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md
 ```
 
-该实施文件不是第二权威源。它只说明当前 P0 缺陷为什么存在、怎样实现、允许修改哪些范围和怎样验收。与唯一权威文件冲突时，以唯一权威文件为准。
+两个实施文件都不是第二权威源。前者记录 Contract Consumer P0 主线，后者记录真实项目验证中发现的 Project Spec Version Binding 独立产品缺陷。与唯一权威文件冲突时，以唯一权威文件为准。
 
 开始工作前必须记录并报告：
 
@@ -189,8 +219,8 @@ Contract 正式消费者与实际代码消费者未形成 Trace 驱动闭环
 
 ```text
 权威方案：已经闭环
-隔离工作副本实现：已完成
-用户仓库内真实验证：尚未执行
+程序实现、仓库自动化验证、提交和远程同步：已完成
+WorkDesk 真实 OpenCode + SpecForge 项目验证：尚未执行
 活动实施状态：IN_PROGRESS
 优先级：P0
 ```
@@ -252,7 +282,7 @@ docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
 IN_PROGRESS
 ```
 
-隔离工作副本已经开始并完成第一轮代码实现；仓库内验证和提交尚未完成。
+P0 Contract Consumer 实现已经提交并同步远程；自动化测试、类型检查和构建已经完成。当前仍缺 WorkDesk 真实 OpenCode + SpecForge 业务链路验证，因此状态保持 `IN_PROGRESS`。
 
 实施过程中发现新影响时，必须先更新该实施文件，再扩大代码修改范围。
 
@@ -277,52 +307,102 @@ COMPLETED
 
 同一个 P0 问题不得再建立独立实施报告、交接文件或“最终修正版”。
 
-## 七、文件交付、替换与压缩包清理规则
+## 七、文件交付、替换与单一完整压缩包规则
 
 > **适用范围**：`PRODUCT_DEVELOPMENT`。这是以后所有新会话和文件交付必须遵守的固定操作规则。
+
+### 7.1 同一轮只允许一次下载
+
+同一轮修改、诊断或验证，用户只下载一个完整压缩包。不得把补丁、应用脚本、验证脚本、Manifest 或说明拆成多个下载链接。
+
+完整交付包固定结构：
+
+```text
+<bundle-name>/
+  patch/
+    <仅包含仓库相对路径下的完整替换文件>
+  scripts/
+    apply.py        # 有仓库写入时必须提供
+    validate.py     # 修改包必须提供
+    diagnose.py     # 仅诊断包按需提供
+  manifest.json
+  README.txt
+```
+
+允许应用和验证分两步执行，但两步脚本必须已经位于同一个下载包中，不得在应用成功后再要求用户第二次下载验证文件。
+
+诊断轮次也必须采用单一完整压缩包；若只有诊断脚本，`patch/` 和 `apply.py` 可以省略。
+
+### 7.2 文件修改方式
 
 当需要修改用户本地仓库中的文件时：
 
 ```text
 由 ChatGPT 在工作环境中完成文件修改
 → 完成编码、格式和内容验证
-→ 生成保留仓库相对路径的替换压缩包
-→ 用户只负责把完整文件替换到本地仓库
+→ 冻结 patch/ 中的完整替换文件
+→ 从最终 patch/ 字节生成 apply.py、validate.py 和 manifest.json
+→ 把全部产物封装为一个完整交付包
+→ 用户只负责解压、运行包内脚本和反馈最小结果区块
 ```
 
-禁止要求用户通过 Python、PowerShell、sed、文本替换命令或其他脚本在本地修改文件内容。
+禁止要求用户通过 PowerShell、sed、手工文本替换或内联多行 Python 修改仓库文件。
 
 用户本地允许执行的操作仅包括：
 
 ```text
-删除错误文件
-解压并覆盖完整文件
+解压一个完整交付包
+运行包内 scripts/apply.py
+运行包内 scripts/validate.py 或 scripts/diagnose.py
 Git 暂存
-验证
 提交
 推送（仅在用户明确同意时）
+删除已确认不再需要的交付包和备份
 ```
 
-压缩包生命周期固定为：
+### 7.3 外层交付包与 patch/ 内容边界
+
+外层完整交付包可以并且应当包含：
 
 ```text
-解压替换
-→ 验证文件内容、目录和 Git 差异
+patch/
+scripts/
+manifest.json
+README.txt
+```
+
+其中 `patch/` 只能包含预期的仓库替换文件，并必须保留仓库相对路径。`patch/` 内禁止 README、临时文件、日志、缓存和其他附带文件。
+
+### 7.4 发布单元冻结与清理
+
+完整交付包生命周期固定为：
+
+```text
+下载一次
+→ 解压
+→ 运行 apply.py（如有）
+→ 运行 validate.py 或 diagnose.py
+→ 验证 Git 差异和反馈区块
 → 提交或确认安装成功
-→ 删除本地压缩包
+→ 删除本地交付包和无用备份
 ```
 
-验证或提交失败时保留压缩包，便于重新替换；只有确认成功后才能清理。
+验证或提交失败时保留交付包、备份和错误日志；只有确认成功后才能清理。
 
-ChatGPT 生成替换包前必须自行检查：
+ChatGPT 生成交付包前必须自行检查：
 
 ```text
-压缩包只包含预期文件
+同一轮只有一个下载包
+外层包结构符合固定目录
+patch/ 只包含预期完整文件
 仓库相对路径正确
 UTF-8 编码正确
 没有行尾空格
 没有重复文件
-没有 README、临时文件或其他附带文件
+没有 __pycache__、.pyc 或临时文件
+apply.py、validate.py、Manifest 均由最终 patch/ 字节派生
+Manifest 记录包内文件 SHA256
+失败不会自动提交、推送或清理证据
 git diff --check 预期可通过
 ```
 
@@ -374,17 +454,40 @@ ERROR_LOG=<失败时>
 
 ## 九、当前下一项工作
 
-P0 程序实现、自动化测试、类型检查、构建、提交和远程同步已经完成。
+P0 Contract Consumer 程序实现、自动化测试、类型检查、构建、提交和远程同步已经完成。
+
+当前本地未提交跟进工作是：
+
+```text
+P0-PSV-BINDING-001 修复
++ 历史测试夹具与当前治理 Contract 对齐
++ code_only_fast_path Close Gate 适用性修复
++ 开发错误经验门禁与单一完整交付包规则
++ 仓库根 `AGENTS.md` 经验门禁消费者闭环
+```
+
+提交前验证事实：
+
+```text
+基线：main@fd93b966f4663335133aca9612112dc4fe2e37ff
+完整变更范围：19 个文件（12 tracked modified，7 untracked）
+目标测试：9 个文件、106 项测试通过、0 失败
+TypeScript no-emit：通过
+daemon-core build：通过
+全仓 deterministic build：通过
+git diff --check：通过
+完整字节级变更证据审计：通过
+install / daemon / OpenCode / commit / push：均未执行
+```
 
 当前下一项完整工作是：
 
 ```text
-WorkDesk 真实项目验证前置检查
-→ 确认 WorkDesk 当前仓库状态
-→ 确认用户级 SpecForge 安装来源和版本
-→ 固定真实验证场景与验收证据
-→ 再由用户手工启动 daemon 和 OpenCode
-→ 执行真实 WI 链路
+用户暂存、提交并推送当前 19 文件变更
+→ 核对并升级用户级 SpecForge 安装版本
+→ 受控清理并重建 WorkDesk WI-0003
+→ 用户手工启动 daemon 和 OpenCode
+→ 继续 WorkDesk 真实 WI 链路
 ```
 
 真实场景至少覆盖：
@@ -404,6 +507,7 @@ Module Contract 升级为 Project Contract
 
 ```text
 P0 状态保持 IN_PROGRESS
+P0-PSV-BINDING-001 不得标记 CLOSED
 不得启用最终 Hard Enforcement
 不得把自动化测试冒充真实业务项目验收
 ```
@@ -436,7 +540,7 @@ feature_spec / architecture_change / design_first
 contract_change / quick_change / spec_migration Workflow Skill
 ```
 
-当前明确不修改：
+原 P0 Contract Consumer 实现冻结范围内明确不修改：
 
 ```text
 sf_trace_matrix_core
@@ -446,6 +550,8 @@ changed-files-audit
 code-permission-service-v11
 Contract Schema
 ```
+
+该冻结清单只描述 `GOV-DEFECT-CONTRACT-CONSUMER-001` 的原实施范围。当前独立跟进缺陷允许修改 `gate-chain.ts`，但仅用于删除已被正式 Close Handler 绕过的重复 `code_only_fast_path` 过滤；Workflow 适用性唯一责任层已经收敛到 `close-gate.ts`，未新增 Gate 或第二套规则。
 
 完整文件路径、原因和测试文件范围以活动实施文件第 19、20、21 节为准。
 

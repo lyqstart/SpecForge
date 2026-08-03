@@ -24,7 +24,6 @@ import {
   verifyProjectGovernanceAfterImplementation,
   type GovernanceCheckResult,
 } from './project-governance-v2.js';
-
 interface GateMeta {
   gateId: GateIdV11;
   gateType: GateStrictness;
@@ -33,13 +32,11 @@ interface GateMeta {
 }
 const gateRegistry = new Map<GateIdV11, GateMeta>();
 __injectRegistry(id => gateRegistry.get(id as GateIdV11));
-
 export function registerGate(gateId: GateIdV11, gateType: GateStrictness, required: boolean, checkFn: GateCheckFn): void {
   gateRegistry.set(gateId, { gateId, gateType, required, checkFn });
 }
 export function getRegisteredGateIds(): GateIdV11[] { return Array.from(gateRegistry.keys()); }
 export function isRegisteredGate(gateId: string): gateId is GateIdV11 { return gateRegistry.has(gateId as GateIdV11); }
-
 export function computeGateSummaryStatus(reports: GateReportV11[]): GateSummaryStatus {
   if (reports.some(report => report.status === 'failed' && report.required)) return 'failed';
   if (reports.some(report => (report as GateReportV11 & { waiver_required?: boolean }).waiver_required === true)) {
@@ -48,13 +45,11 @@ export function computeGateSummaryStatus(reports: GateReportV11[]): GateSummaryS
   if (reports.every(report => report.status === 'passed' || report.status === 'skipped')) return 'passed';
   return 'blocked';
 }
-
 async function writeGateReport(ctx: GateContext, report: GateReportV11): Promise<void> {
   const gatesDir = path.join(ctx.workItemDir, 'gates');
   await fs.mkdir(gatesDir, { recursive: true });
   await fs.writeFile(path.join(gatesDir, `${report.gate_id}.json`), JSON.stringify(report, null, 2), 'utf-8');
 }
-
 async function latestGateReports(
   ctx: GateContext,
   currentReports: GateReportV11[],
@@ -81,7 +76,6 @@ async function latestGateReports(
     left.gate_id.localeCompare(right.gate_id),
   );
 }
-
 async function writeGateSummary(ctx: GateContext, reports: GateReportV11[]): Promise<{ summaryStatus: GateSummaryStatus; summaryPath: string }> {
   const latestReports = await latestGateReports(ctx, reports);
   const summaryStatus = computeGateSummaryStatus(latestReports);
@@ -93,7 +87,6 @@ async function writeGateSummary(ctx: GateContext, reports: GateReportV11[]): Pro
   );
   return { summaryStatus, summaryPath };
 }
-
 function combineWithGovernance(
   ctx: GateContext,
   gateId: GateIdV11,
@@ -114,7 +107,6 @@ function combineWithGovernance(
     Array.from(new Set([...base.input_files, ...governance.inputFiles])),
   );
 }
-
 async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ctx: GateContext): Promise<GateReportV11> {
   const input = { projectRoot: ctx.projectRoot, workItemDir: ctx.workItemDir, workItemId: ctx.workItemId };
   if (gateId === 'spec_consistency_gate') {
@@ -132,21 +124,18 @@ async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ct
     return combineWithGovernance(ctx, gateId, base, await verifyProjectGovernanceAfterImplementation(input), { forceHardWhenActive: true });
   }
   if (gateId === 'close_gate') {
-    const filtered = ctx.workflowPath === 'code_only_fast_path'
-      ? base.checks.filter(check => !['close_file_trace_delta_md', 'close_trace_delta_valid'].includes(check.check_id))
-      : base.checks;
-    return makeReport(ctx.workItemId, gateId, 'hard_gate', true, filtered, base.input_files);
+    // close-gate.ts owns workflow-specific Close applicability because the
+    // formal sf_close_gate handler calls runCloseGate() directly.
+    return base;
   }
   return base;
 }
-
 async function runAndWrite(gateId: GateIdV11, ctx: GateContext): Promise<GateReportV11> {
   const base = await runGate(gateId, ctx);
   const report = await applyGovernanceOverlay(gateId, base, ctx);
   await writeGateReport(ctx, report);
   return report;
 }
-
 export async function runRequiredGates(
   gateIds: GateIdV11[],
   ctx: GateContext,
@@ -155,7 +144,6 @@ export async function runRequiredGates(
   if (unknownGateIds.length > 0) {
     throw new Error(`UNKNOWN_GATE_ID: ${unknownGateIds.join(', ')}. Registered Gate IDs: ${getRegisteredGateIds().sort().join(', ')}`);
   }
-
   const wantsSummaryGate = gateIds.includes('gate_summary_gate');
   const wantsFormalVersionGate = gateIds.includes('formal_version_gate');
   const primaryGateIds = gateIds.filter(
@@ -166,7 +154,6 @@ export async function runRequiredGates(
   for (const gateId of primaryGateIds) {
     const report = await runAndWrite(gateId, ctx);
     reports.push(report);
-
     // Formal Version is a first-class Gate, but Verification owns its normal
     // sequencing so callers do not have to create a second workflow branch.
     if (gateId === 'verification_gate' && report.status === 'passed') {
@@ -174,14 +161,12 @@ export async function runRequiredGates(
       reports.push(formal);
     }
   }
-
   if (
     wantsFormalVersionGate &&
     !reports.some(report => report.gate_id === 'formal_version_gate')
   ) {
     reports.push(await runAndWrite('formal_version_gate', ctx));
   }
-
   await writeGateSummary(ctx, reports);
   if (wantsSummaryGate) {
     const summaryReport = await runAndWrite('gate_summary_gate', ctx);

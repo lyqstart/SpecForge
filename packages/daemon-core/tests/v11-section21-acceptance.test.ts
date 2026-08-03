@@ -23,10 +23,13 @@ import type { UserDecisionV11 } from '../src/tools/lib/user-decision-recorder-v1
 import { runGate, runRequiredGates } from '../src/tools/lib/gate-runner-v11';
 import type { GateContext, GateReportV11 } from '../src/tools/lib/gate-runner-v11';
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
-import { validateTraceDelta, validateVerificationReport, validateEvidenceManifest, checkTraceChain, writeTraceDeltaTemplate, writeEvidenceManifestTemplate } from '../src/tools/lib/verification-evidence-v11';
+import { validateTraceDelta, validateVerificationReport, validateEvidenceManifest, checkTraceChain, writeEvidenceManifestTemplate } from '../src/tools/lib/verification-evidence-v11';
 import { releaseCodePermission, revokeCodePermission, checkCodePermission } from '../src/tools/lib/code-permission-service-v11';
 import { createWorkItem, updateWorkItemStatus, initializeClosureFiles } from '../src/tools/lib/work-item-lifecycle-v11';
+import type { SemanticClosureManifest } from '../src/tools/lib/semantic-closure-core';
+import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-closure-provenance';
 import { isValidV11Transition, isForbiddenTransition, performResumeCheck } from '../src/tools/lib/state-machine-v11';
+import { renderVerificationReport } from '../src/tools/lib/sf_artifact_write_core';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -50,6 +53,86 @@ afterEach(async () => {
   try { await fs.rm(tempDir, { recursive: true, force: true }); } catch { /* ok */ }
 });
 
+function passingSemanticClosure(
+  workItemId: string,
+  workflowPath: WorkflowPath,
+): SemanticClosureManifest {
+  const projectIntegration =
+    workflowPath === 'code_only_fast_path'
+      ? { status: 'not_applicable' as const }
+      : {
+          status: 'merged' as const,
+          required: true,
+          refs: ['merge_report.md'],
+        };
+
+  return {
+    schema_version: '1.0',
+    work_item_id: workItemId,
+    outcomes: [
+      {
+        id: 'OUT-1',
+        description: `Governed outcome for ${workItemId}`,
+        requirement_refs: ['REQ-1'],
+        required_evidence_refs: ['EV-001'],
+      },
+    ],
+    requirements: [
+      {
+        id: 'REQ-1',
+        type: 'MUST',
+        outcome_refs: ['OUT-1'],
+        design_refs: ['DD-1'],
+        task_refs: ['TASK-1'],
+        required_evidence_refs: ['EV-001'],
+      },
+    ],
+    design_decisions: [
+      {
+        id: 'DD-1',
+        requirement_refs: ['REQ-1'],
+        task_refs: ['TASK-1'],
+      },
+    ],
+    tasks: [
+      {
+        id: 'TASK-1',
+        requirement_refs: ['REQ-1'],
+        design_refs: ['DD-1'],
+        evidence_refs: ['EV-001'],
+      },
+    ],
+    evidence: [
+      {
+        id: 'EV-001',
+        status: 'passed',
+        level: 'L5',
+        evidence_type: 'behavioral_e2e',
+        supports: ['OUT-1', 'REQ-1', 'TASK-1'],
+      },
+    ],
+    project_integration: projectIntegration,
+  };
+}
+
+async function writePassingSemanticClosure(
+  wiDir: string,
+  wiId: string,
+  workflowPath: WorkflowPath,
+): Promise<void> {
+  const semanticClosure = passingSemanticClosure(wiId, workflowPath);
+  semanticClosure.provenance = await captureSemanticClosureProvenance({
+    workItemDir: wiDir,
+    source: 'section21_acceptance_fixture',
+    manifest: semanticClosure,
+  });
+  await fs.writeFile(
+    path.join(wiDir, '.semantic_closure.json'),
+    JSON.stringify(semanticClosure, null, 2) + '\n',
+    'utf-8',
+  );
+}
+
 /**
  * Full lifecycle helper: builds a WI dir that satisfies close_gate.
  * Returns the WI directory path.
@@ -58,10 +141,13 @@ async function buildCompleteWI(
   wiId: string,
   workflowPath: WorkflowPath,
   classification: ChangeClassification,
-  extra?: { allowedWriteFiles?: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }> },
+  extra?: {
+    allowedWriteFiles?: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>;
+    deferPostMergeGates?: boolean;
+  },
 ): Promise<string> {
   const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: `Request for ${wiId}` });
-  await initializeClosureFiles(wiDir, wiId, workflowPath);
+  await initializeClosureFiles(wiDir, wiId, workflowPath, 'PSV-0001');
 
   // Write trigger_result.json with correct workflow_path
   const trigger = generateTriggerResult(wiId, classification, []);
@@ -82,13 +168,23 @@ async function buildCompleteWI(
     'utf-8',
   );
 
-  // Write tasks
-  await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n\n- TASK-1: Implement\n', 'utf-8');
+  // Write authoritative Candidate tasks and trace artifacts.
+  const candidatesDir = path.join(wiDir, 'candidates');
+  await fs.mkdir(candidatesDir, { recursive: true });
+  await fs.writeFile(
+    path.join(candidatesDir, 'tasks.md'),
+    '# Tasks\n\n- [x] TASK-1: Implement\n',
+    'utf-8',
+  );
+  if (workflowPath !== 'code_only_fast_path') {
+    await fs.writeFile(
+      path.join(candidatesDir, 'trace_delta.md'),
+      '# Trace Delta\n\n## Trace Impact\n\nmodified\n\n## Reason\n\nAcceptance fixture\n\n## Trace Chain\n\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-001\n',
+      'utf-8',
+    );
+  }
 
-  // Write trace_delta with content
-  await writeTraceDeltaTemplate(wiDir, wiId, 'new', `New requirement for ${wiId}`);
-
-  // Candidate manifest — with at least one entry for non-code-only paths
+  // Candidate manifest — every newly written spec artifact is explicitly governed.
   const manifestEntries = workflowPath === 'code_only_fast_path'
     ? []
     : [
@@ -96,6 +192,12 @@ async function buildCompleteWI(
           candidate_path: 'candidates/requirements_delta.md',
           target_path: '.specforge/project/requirements.md',
           operation: 'replace' as const,
+        },
+        {
+          candidate_path: 'candidates/trace_delta.md',
+          target_path: '.specforge/project/trace_matrix.md',
+          operation: 'replace' as const,
+          type: 'trace_delta',
         },
       ];
   await fs.writeFile(
@@ -125,9 +227,14 @@ async function buildCompleteWI(
     );
   }
 
-  // Write evidence manifest with entries
+  // Register Evidence in both the legacy file schema and the active Verification Contract.
   const evidenceDir = path.join(wiDir, 'evidence');
   await fs.mkdir(evidenceDir, { recursive: true });
+  await fs.writeFile(
+    path.join(evidenceDir, 'test-output.txt'),
+    `PASS ${wiId} ${workflowPath}\n`,
+    'utf-8',
+  );
   await fs.writeFile(
     path.join(evidenceDir, 'evidence_manifest.json'),
     JSON.stringify(
@@ -137,24 +244,73 @@ async function buildCompleteWI(
         entries: [
           {
             evidence_id: 'EV-001',
+            id: 'EV-001',
+            status: 'passed',
+            level: 'L5',
             type: 'test_output',
+            evidence_type: 'behavioral_e2e',
             path: 'evidence/test-output.txt',
-            description: 'Test output evidence',
+            description: 'Behavioral end-to-end verification evidence',
             hash: 'sha256:abc123',
             created_at: new Date().toISOString(),
+            supports: ['OUT-1', 'REQ-1', 'DD-1', 'TASK-1'],
           },
         ],
       },
       null,
       2,
-    ),
+    ) + '\n',
     'utf-8',
   );
 
-  // Write verification report with evidence reference
+  // Produce the shared structured Verification Report through the production renderer.
+  const structuredVerification = {
+    conclusion: 'pass',
+    test_matrix: {
+      L1_unit: 'pass',
+      L2_integration: 'pass',
+      L3_pbt: 'not_applicable',
+      L4_e2e: 'pass',
+      L5_smoke: 'pass',
+      L6_regression: 'not_applicable',
+      L7_performance: 'not_applicable',
+      L8_security: 'not_applicable',
+      L9_compatibility: 'not_applicable',
+      L10_uat: 'not_applicable',
+    },
+    verification_commands: [
+      {
+        command: 'bun test section21 fixture',
+        status: 'pass',
+        output_summary: 'passed',
+      },
+    ],
+    acceptance_criteria: [
+      {
+        req_id: 'REQ-1',
+        name: 'governed lifecycle completes',
+        status: 'pass',
+        evidence: 'EV-001',
+      },
+    ],
+    e2e_tests: [
+      {
+        name: `${workflowPath} lifecycle`,
+        status: 'pass',
+        evidence: 'EV-001',
+      },
+    ],
+    side_effects: 'none',
+    summary: `${wiId} verified through the shared Verification Report Contract`,
+    semantic_closure: passingSemanticClosure(wiId, workflowPath),
+  };
+  const renderedVerification = renderVerificationReport(
+    JSON.stringify(structuredVerification),
+  );
+  expect(renderedVerification).toBeDefined();
   await fs.writeFile(
     path.join(wiDir, 'verification_report.md'),
-    `# Verification Report\n\nWork Item: ${wiId}\n\n## Commands\n- test run: exit_code=0 passed=true\n\n## Evidence\n- EV-001 test_output\n\n## Conclusion\nAll checks passed with evidence.\n`,
+    renderedVerification!,
     'utf-8',
   );
 
@@ -176,7 +332,7 @@ async function buildCompleteWI(
   } else {
     await fs.writeFile(
       path.join(wiDir, 'merge_report.md'),
-      '# Merge Report\n\nWork Item: ' + wiId + '\nStatus: success\nTimestamp: ' + new Date().toISOString() + '\n\n## Summary\n- Total entries: 1\n- Successful: 1\n\n## Evidence\n- merge_runner_execution_log\n',
+      '# Merge Report\n\nWork Item: ' + wiId + '\nStatus: success\nTimestamp: ' + new Date().toISOString() + `\n\n## Summary\n- Total entries: ${manifestEntries.length}\n- Successful: ${manifestEntries.length}\n\n## Evidence\n- merge_runner_execution_log\n`,
       'utf-8',
     );
   }
@@ -208,7 +364,50 @@ async function buildCompleteWI(
   // Revoke code permission (close_gate requires this)
   await revokeCodePermission(wiDir);
 
+  await fs.writeFile(
+    path.join(wiDir, 'changed_files_audit.md'),
+    [
+      '# Changed Files Audit',
+      '',
+      'Result: PASS',
+      '- Status: PASSED',
+      '- Out of scope: 0',
+      '- Violations: 0',
+      '',
+    ].join('\n'),
+    'utf-8',
+  );
+  await writePassingSemanticClosure(wiDir, wiId, workflowPath);
+
+  // Post-merge Verification/Formal Version must not run before a real Merge.
+  // Running them after User Decision but before Merge rewrites gate_summary.md and
+  // invalidates the approval hash that Merge is required to verify.
+  if (!extra?.deferPostMergeGates) {
+    const formalCtx: GateContext = {
+      ...ctx,
+      workflowPath,
+    };
+    await runRequiredGates(
+      ['verification_gate', 'formal_version_gate'],
+      formalCtx,
+    );
+    const formalVersionReport = JSON.parse(
+      await fs.readFile(
+        path.join(wiDir, 'gates', 'formal_version_gate.json'),
+        'utf-8',
+      ),
+    );
+    expect(formalVersionReport.status).toBe('passed');
+  }
+
   return wiDir;
+}
+
+async function runCloseGateThroughChain(ctx: GateContext): Promise<GateReportV11> {
+  const { reports } = await runRequiredGates(['close_gate'], ctx);
+  const closeReport = reports.find(report => report.gate_id === 'close_gate');
+  expect(closeReport).toBeDefined();
+  return closeReport!;
 }
 
 // ===========================================================================
@@ -306,6 +505,7 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
 
     const wiDir = await buildCompleteWI(wiId, 'requirement_change_path', classification, {
       allowedWriteFiles: [{ path: 'src/orders.ts', operation: 'modify' }],
+      deferPostMergeGates: true,
     });
 
     const ctx: GateContext = { workItemId: wiId, workItemDir: wiDir, projectRoot };
@@ -314,13 +514,24 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
     // Create spec_manifest.json in project dir
     await fs.writeFile(
       path.join(projectDir, 'spec_manifest.json'),
-      JSON.stringify({ project_spec_version: 'PSV-0001' }),
+      JSON.stringify({
+        project_spec_version: 'PSV-0001',
+        project: {
+          requirements: '.specforge/project/requirements.md',
+          trace_matrix: '.specforge/project/trace_matrix.md',
+        },
+      }),
       'utf-8',
     );
     // Create target file in project
     await fs.writeFile(
       path.join(projectDir, 'requirements.md'),
       '# Requirements\n\nOld content.\n',
+      'utf-8',
+    );
+    await fs.writeFile(
+      path.join(projectDir, 'trace_matrix.md'),
+      '# Trace Matrix\n\nOld trace content.\n',
       'utf-8',
     );
 
@@ -331,8 +542,22 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
       candidateManifestPath: path.join(wiDir, 'candidate_manifest.json'),
       userDecisionPath: path.join(wiDir, 'user_decision.json'),
     });
-    expect(mergeResult.success).toBe(true);
+    expect(mergeResult.success, mergeResult.errors.join('; ')).toBe(true);
     expect(mergeResult.merged_files.length).toBeGreaterThan(0);
+    await writePassingSemanticClosure(wiDir, wiId, 'requirement_change_path');
+
+    // Verification and Formal Version are post-merge phases. Run them only after
+    // Merge has consumed the still-valid pre-merge User Decision.
+    const postMergeGates = await runRequiredGates(
+      ['verification_gate', 'formal_version_gate'],
+      { ...ctx, workflowPath: 'requirement_change_path' },
+    );
+    expect(
+      postMergeGates.reports.find(report => report.gate_id === 'verification_gate')?.status,
+    ).toBe('passed');
+    expect(
+      postMergeGates.reports.find(report => report.gate_id === 'formal_version_gate')?.status,
+    ).toBe('passed');
 
     // Verify the merged file exists
     const mergedContent = await fs.readFile(path.join(projectDir, 'requirements.md'), 'utf-8');
@@ -369,8 +594,8 @@ describe('§21.1 Acceptance: requirement_change_path', () => {
     expect(permState.allowed_write_files).toEqual([]);
 
     // Run close_gate
-    const closeGateReport = await runGate('close_gate', ctx);
-    expect(closeGateReport.status).toBe('passed');
+    const closeGateReport = await runCloseGateThroughChain(ctx);
+    expect(closeGateReport.status, closeGateReport.blocking_issues.join('; ')).toBe('passed');
 
     // Verify state transitions are valid
     expect(isValidV11Transition('verification_done', 'closed')).toBe(true);
@@ -492,8 +717,8 @@ describe('§21.2 Acceptance: design_change_path', () => {
     expect(wsReport.status).toBe('passed');
 
     // Verify close_gate passes
-    const closeReport = await runGate('close_gate', ctx);
-    expect(closeReport.status).toBe('passed');
+    const closeReport = await runCloseGateThroughChain(ctx);
+    expect(closeReport.status, closeReport.blocking_issues.join('; ')).toBe('passed');
   });
 });
 
@@ -603,7 +828,7 @@ describe('§21.3 Acceptance: code_only_fast_path', () => {
     const ctx: GateContext = { workItemId: wiId, workItemDir: wiDir, projectRoot };
 
     // Verify tasks.md exists and is not empty
-    const tasksContent = await fs.readFile(path.join(wiDir, 'tasks.md'), 'utf-8');
+    const tasksContent = await fs.readFile(path.join(wiDir, 'candidates', 'tasks.md'), 'utf-8');
     expect(tasksContent.trim().length).toBeGreaterThan(0);
 
     // Verify Write Guard enforces allowed_write_files
@@ -648,8 +873,8 @@ describe('§21.3 Acceptance: code_only_fast_path', () => {
     expect(auditResult.out_of_scope).toBe(0);
 
     // close_gate should pass
-    const closeReport = await runGate('close_gate', ctx);
-    expect(closeReport.status).toBe('passed');
+    const closeReport = await runCloseGateThroughChain(ctx);
+    expect(closeReport.status, closeReport.blocking_issues.join('; ')).toBe('passed');
   });
 });
 
@@ -731,7 +956,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
     const result = checkWrite(ctx, '.specforge/project/requirements.md', 'modify');
     expect(result.allowed).toBe(false);
     expect(result.violations).toEqual(
-      expect.arrayContaining([expect.stringContaining('agent cannot write .specforge/project/')]),
+      expect.arrayContaining([expect.stringContaining('only merge_runner may write .specforge/project/')]),
     );
   });
 
@@ -897,7 +1122,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
     expect(result.spec_writes).toBe(1);
     expect(result.violations).toEqual(
       expect.arrayContaining([
-        expect.stringContaining('spec_write_by_agent'),
+        expect.stringContaining('spec_write_by_non_merge_runner'),
       ]),
     );
   });
@@ -926,7 +1151,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
     await fs.writeFile(wiPath, JSON.stringify(wiJson, null, 2), 'utf-8');
 
     const ctx: GateContext = { workItemId: wiId, workItemDir: wiDir, projectRoot };
-    const closeReport = await runGate('close_gate', ctx);
+    const closeReport = await runCloseGateThroughChain(ctx);
 
     // close_gate should fail because write_guard_violations is not empty
     const violationCheck = closeReport.checks.find(c => c.check_id === 'close_no_write_guard_violations');
@@ -956,7 +1181,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
     };
 
     const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test invalidation' });
-    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path');
+    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     // Write candidate_manifest and gate_summary
     const trigger = generateTriggerResult(wiId, classification, []);
@@ -1043,7 +1268,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
     };
 
     const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test merge_ready failure' });
-    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path');
+    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     const trigger = generateTriggerResult(wiId, classification, []);
     await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify(trigger, null, 2), 'utf-8');
@@ -1106,7 +1331,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
     };
 
     const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test regeneration' });
-    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path');
+    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     const trigger = generateTriggerResult(wiId, classification, []);
     await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify(trigger, null, 2), 'utf-8');
@@ -1184,7 +1409,7 @@ describe('§21.5 Acceptance: User Decision Invalidation', () => {
     };
 
     const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Test hashes' });
-    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path');
+    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     const trigger = generateTriggerResult(wiId, classification, []);
     await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify(trigger, null, 2), 'utf-8');
@@ -1331,7 +1556,15 @@ describe('§21 Cross-cutting: Code Permission lifecycle', () => {
 
     const releasedState = await checkCodePermission(wiDir);
     expect(releasedState.code_change_allowed).toBe(true);
-    expect(releasedState.allowed_write_files).toHaveLength(2);
+    expect(releasedState.allowed_write_files).toHaveLength(8);
+    expect(releasedState.allowed_write_files).toEqual(
+      expect.arrayContaining([
+        { path: 'src/orders.ts', operation: 'create' },
+        { path: 'src/orders.ts', operation: 'modify' },
+        { path: 'tests/orders.test.ts', operation: 'create' },
+        { path: 'tests/orders.test.ts', operation: 'modify' },
+      ]),
+    );
 
     // Write Guard should now allow writes to allowed files
     const guardCtx: WriteGuardContext = {

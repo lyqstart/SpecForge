@@ -179,6 +179,27 @@ function normalizeWorkflowValue(value: unknown): string {
     .replace(/[-\s]+/g, '_');
 }
 
+export interface CloseSpecArtifactRequirements {
+  tasks: boolean;
+  traceDelta: boolean;
+}
+
+export function closeSpecArtifactRequirements(
+  workflowPath: string,
+  workflowType: string,
+): CloseSpecArtifactRequirements {
+  const investigationWorkflow = workflowType === 'investigation';
+  const contractWorkflow =
+    workflowType === 'contract_change' || workflowPath === 'contract_change_path';
+  if (investigationWorkflow || contractWorkflow) {
+    return { tasks: false, traceDelta: false };
+  }
+  return {
+    tasks: true,
+    traceDelta: workflowPath !== 'code_only_fast_path',
+  };
+}
+
 function isNoCodeWorkflow(wi: Record<string, unknown> | null): boolean {
   if (!wi) return false;
   const workflowType = normalizeWorkflowValue(wi.workflow_type);
@@ -307,21 +328,21 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const contractWorkflow =
     workflowType === 'contract_change' ||
     workflowPath === 'contract_change_path';
-  const [taskArtifacts, traceDeltaArtifacts] =
-    investigationWorkflow || contractWorkflow
-      ? [[], []]
-      : await Promise.all([
-          resolveWorkItemSpecArtifacts({
-            projectRoot: ctx.projectRoot,
-            workItemId: ctx.workItemId,
-            kind: 'tasks',
-          }),
-          resolveWorkItemSpecArtifacts({
-            projectRoot: ctx.projectRoot,
-            workItemId: ctx.workItemId,
-            kind: 'trace_delta',
-          }),
-        ]);
+  const specArtifactRequirements = closeSpecArtifactRequirements(workflowPath, workflowType);
+  const taskArtifacts = specArtifactRequirements.tasks
+    ? await resolveWorkItemSpecArtifacts({
+        projectRoot: ctx.projectRoot,
+        workItemId: ctx.workItemId,
+        kind: 'tasks',
+      })
+    : [];
+  const traceDeltaArtifacts = specArtifactRequirements.traceDelta
+    ? await resolveWorkItemSpecArtifacts({
+        projectRoot: ctx.projectRoot,
+        workItemId: ctx.workItemId,
+        kind: 'trace_delta',
+      })
+    : [];
   const requiredFiles = [
     'work_item.json',
     'intake.md',
@@ -350,14 +371,20 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     });
   }
 
-  if (!investigationWorkflow && !contractWorkflow) {
+  if (specArtifactRequirements.tasks || specArtifactRequirements.traceDelta) {
     const authoritativeArtifacts = [
-      { kind: 'tasks' as const, file: 'candidates/tasks.md', artifacts: taskArtifacts },
-      {
-        kind: 'trace_delta' as const,
-        file: 'candidates/trace_delta.md',
-        artifacts: traceDeltaArtifacts,
-      },
+      ...(specArtifactRequirements.tasks
+        ? [{ kind: 'tasks' as const, file: 'candidates/tasks.md', artifacts: taskArtifacts }]
+        : []),
+      ...(specArtifactRequirements.traceDelta
+        ? [
+            {
+              kind: 'trace_delta' as const,
+              file: 'candidates/trace_delta.md',
+              artifacts: traceDeltaArtifacts,
+            },
+          ]
+        : []),
     ];
     for (const artifact of authoritativeArtifacts) {
       const resolved = artifact.artifacts[0];
@@ -564,7 +591,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     }
   }
 
-  if (!investigationWorkflow && !contractWorkflow) {
+  if (specArtifactRequirements.traceDelta) {
     const traceDelta = traceDeltaArtifacts[0];
     if (traceDelta) {
       const valid =

@@ -83,6 +83,27 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 <!-- SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT:END -->
 
+
+## SpecForge 产品开发经验前置门禁
+
+当当前仓库是 SpecForge 产品仓库，或任务涉及修改 SpecForge 的代码、测试、文档、配置、脚本、命令、补丁、安装器或验证流程时，在任何修改前必须读取：
+
+```text
+docs/rule/specforge-development-error-ledger-and-experience.md
+```
+
+必须完整阅读第三部分“工程经验总则”和第四部分“修改前强制检查”，并在工作记录中写明：
+
+```text
+EXPERIENCE_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
+REPEATED_ERROR_CHECK=PASS
+```
+
+无法访问该文件或无法完成检查时，必须 fail closed，不得修改文件、生成写操作命令或以旧经验继续。
+
+该规则只约束 SpecForge 产品开发；不得把 SpecForge 自身纳入 SpecForge 的业务项目自治理流程。
+
 # SpecForge Agent Rules
 
 > This file defines the SpecForge agent system rules for this project.

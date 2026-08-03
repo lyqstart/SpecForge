@@ -41,10 +41,26 @@ function makeStateManagerDeps() {
   };
 }
 
-async function writeManifest(dir: string): Promise<void> {
+async function writeManifest(
+  dir: string,
+  projectSpecVersion = "PSV-0001",
+): Promise<void> {
   const specforgeDir = path.join(dir, ".specforge");
-  await fs.mkdir(specforgeDir, { recursive: true });
+  const projectDir = path.join(specforgeDir, "project");
+  await fs.mkdir(projectDir, { recursive: true });
   await fs.writeFile(path.join(specforgeDir, "manifest.json"), "{}");
+  await fs.writeFile(
+    path.join(projectDir, "spec_manifest.json"),
+    JSON.stringify(
+      {
+        schema_version: "1.0",
+        project_spec_version: projectSpecVersion,
+        modules: [],
+      },
+      null,
+      2,
+    ) + "\n",
+  );
 }
 
 function wiDirFor(root: string, wiId: string): string {
@@ -135,6 +151,8 @@ describe("sf_state_transition - project initialization guard", () => {
     expect(result.success).toBe(true);
     expect(smTransition).toHaveBeenCalledTimes(1);
   });
+
+
 });
 
 // =========================================================================
@@ -487,10 +505,7 @@ describe("sf_state_transition - closure file initialization on create", () => {
 
     const wiDir = wiDirFor(tempDir, "WI-0001");
     for (const f of REQUIRED_ROOT_FILES) {
-      await expect(
-        fs.access(path.join(wiDir, f)),
-        `expected root closure file to exist: ${f}`,
-      ).resolves.toBeUndefined();
+      await fs.access(path.join(wiDir, f));
     }
     await expect(fs.access(path.join(wiDir, "tasks.md"))).rejects.toBeTruthy();
     await expect(fs.access(path.join(wiDir, "trace_delta.md"))).rejects.toBeTruthy();

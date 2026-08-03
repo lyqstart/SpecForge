@@ -78,6 +78,52 @@ export async function createWorkItem(input: CreateWorkItemInput): Promise<string
   return wiDir;
 }
 
+const PROJECT_SPEC_VERSION_PATTERN = /^PSV-[0-9]{4,}$/;
+
+/**
+ * Read the authoritative Project Spec version for Work Item creation.
+ *
+ * candidate_manifest.base_spec_version is a merge precondition, so production
+ * creation must never guess or silently fall back to PSV-0001 for an existing
+ * project. The sole authority is project/spec_manifest.json.
+ */
+export async function readAuthoritativeProjectSpecVersion(
+  projectRoot: string,
+): Promise<string> {
+  const manifestPath = path.join(
+    projectRoot,
+    '.specforge',
+    'project',
+    'spec_manifest.json',
+  );
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(await fs.readFile(manifestPath, 'utf-8'));
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `PROJECT_SPEC_VERSION_UNAVAILABLE: cannot read ${manifestPath}: ${detail}`,
+    );
+  }
+
+  const version =
+    parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>).project_spec_version
+      : undefined;
+
+  if (
+    typeof version !== 'string' ||
+    !PROJECT_SPEC_VERSION_PATTERN.test(version)
+  ) {
+    throw new Error(
+      `PROJECT_SPEC_VERSION_UNAVAILABLE: ${manifestPath} must contain a valid project_spec_version`,
+    );
+  }
+
+  return version;
+}
+
 /**
  * 初始化 WI 的非 Candidate 闭环文件骨架（§4.3）。
  *
@@ -90,7 +136,13 @@ export async function initializeClosureFiles(
   workItemDir: string,
   workItemId: string,
   workflowPath: string | null,
+  baseSpecVersion: string,
 ): Promise<void> {
+  if (!PROJECT_SPEC_VERSION_PATTERN.test(baseSpecVersion)) {
+    throw new Error(
+      `PROJECT_SPEC_VERSION_INVALID: ${baseSpecVersion}`,
+    );
+  }
   const now = new Date().toISOString();
   const isCodeOnly = workflowPath === 'code_only_fast_path';
   const isTaskChange = workflowPath === 'task_change_path';
@@ -130,7 +182,7 @@ export async function initializeClosureFiles(
     schema_version: '1.0',
     work_item_id: workItemId,
     workflow_path: workflowPath ?? 'unknown',
-    base_spec_version: 'PSV-0001',
+    base_spec_version: baseSpecVersion,
     merge_required: !isCodeOnly,
     entries: [],
   }, null, 2) + '\n');
@@ -158,7 +210,7 @@ export async function initializeClosureFiles(
 
 /**
  * v1.1: States that MUST NOT be set via updateWorkItemStatus().
- * These require the full state machine path: WorkflowEngine.transitionFull() + StateManager.transition().
+ * These require the authoritative state path: sf_state_transition -> StateManager.transition().
  *
  * Alias for the canonical CRITICAL_STATES set from @specforge/types.
  */
@@ -179,7 +231,7 @@ export async function updateWorkItemStatus(
   if (BLOCKED_STATUS_UPDATES.has(newStatus)) {
     throw new Error(
       `Cannot set status '${newStatus}' via updateWorkItemStatus() — ` +
-      `critical states must go through WorkflowEngine.transitionFull() + StateManager.transition()`
+      `critical states must go through sf_state_transition and StateManager.transition()`
     );
   }
 

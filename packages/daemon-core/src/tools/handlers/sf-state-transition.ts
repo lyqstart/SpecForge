@@ -23,7 +23,10 @@ import {
 } from "../lib/work-item-id-validator";
 import { guardHardStop } from "../lib/hard-stop-latch";
 import { transitionWithEvidence } from "../lib/state-coordinator-v11"; import { parseChangedFilesAuditPass } from "../lib/write-guard-runtime-v12";
-import { initializeClosureFiles } from "../lib/work-item-lifecycle-v11";
+import {
+  initializeClosureFiles,
+  readAuthoritativeProjectSpecVersion,
+} from "../lib/work-item-lifecycle-v11";
 
 /**
  * Allocate next WI-NNNN from existing .specforge/work-items directories.
@@ -162,6 +165,7 @@ async function ensureWorkItemJsonOnCreate(
   workflowType: string | undefined,
   workflowPath: string | undefined,
 ): Promise<{ path: string; created: boolean }> {
+  const baseSpecVersion = await readAuthoritativeProjectSpecVersion(projectRoot);
   const wiDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
   await mkdir(wiDir, { recursive: true });
   const workItemJsonPath = join(wiDir, "work_item.json");
@@ -169,7 +173,7 @@ async function ensureWorkItemJsonOnCreate(
   if (existing) {
     // Even when work_item.json already exists, ensure non-Candidate lifecycle
     // files are present. Candidate tasks/trace artifacts are never synthesized.
-    await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null);
+    await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null, baseSpecVersion);
     return { path: workItemJsonPath, created: false };
   }
 
@@ -191,7 +195,7 @@ async function ensureWorkItemJsonOnCreate(
 
   // Initialize non-Candidate lifecycle files. tasks.md and trace_delta.md are
   // authored only at their canonical candidates/ paths.
-  await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null);
+  await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null, baseSpecVersion);
 
   return { path: workItemJsonPath, created: true };
 }
@@ -388,12 +392,31 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     }
 
     if (toState === "created") {
-      await ensureWorkItemJsonOnCreate(
-        baseDir,
-        workItemId,
-        resolvedWorkflowType,
-        inheritedWorkflowPath,
-      );
+      try {
+        await ensureWorkItemJsonOnCreate(
+          baseDir,
+          workItemId,
+          resolvedWorkflowType,
+          inheritedWorkflowPath,
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const projectSpecVersionUnavailable = message.startsWith(
+          "PROJECT_SPEC_VERSION_UNAVAILABLE:",
+        );
+        return {
+          success: false,
+          error: message,
+          code: projectSpecVersionUnavailable
+            ? "PROJECT_SPEC_VERSION_UNAVAILABLE"
+            : "WORK_ITEM_INITIALIZATION_FAILED",
+          hard_stop: true,
+          retry_allowed: false,
+          remediation: projectSpecVersionUnavailable
+            ? "Repair .specforge/project/spec_manifest.json before creating a Work Item."
+            : "Inspect Work Item initialization evidence and retry only after the root cause is fixed.",
+        };
+      }
     }
   }
 

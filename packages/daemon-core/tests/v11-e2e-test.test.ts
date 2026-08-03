@@ -9,6 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -24,6 +25,7 @@ import { validateHandoff, writeHandoff } from '../src/tools/lib/agent-handoff-v1
 import type { AgentHandoff } from '../src/tools/lib/agent-handoff-v11';
 import { generateRollbackPlan, generateRollbackDelta, markOriginalSuperseded } from '../src/tools/lib/rollback-runner-v11';
 import { validateTraceDelta, validateVerificationReport, validateEvidenceManifest, checkTraceChain, writeTraceDeltaTemplate, writeEvidenceManifestTemplate } from '../src/tools/lib/verification-evidence-v11';
+import { transitionWithEvidence } from '../src/tools/lib/state-coordinator-v11';
 
 let tempDir: string;
 let projectRoot: string;
@@ -52,7 +54,7 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
     expect(wiDir).toBeDefined();
 
     // Step 2: Initialize closure files (§4)
-    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path');
+    await initializeClosureFiles(wiDir, wiId, 'requirement_change_path', 'PSV-0001');
 
     // Verify required files created
     const wiJson = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
@@ -182,11 +184,16 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
     const perm = await releaseCodePermission({
       workItemDir: wiDir,
       workItemId: wiId,
-      allowedWriteFiles: ['src/orders/status.ts'],
-      forbiddenFiles: [],
+      allowedWriteFiles: [{ path: 'src/orders/status.ts', operation: 'modify' }],
     });
     expect(perm.code_change_allowed).toBe(true);
-    expect(perm.allowed_write_files).toEqual(['src/orders/status.ts']);
+    expect(perm.allowed_write_files).toHaveLength(4);
+    expect(perm.allowed_write_files).toEqual(
+      expect.arrayContaining([
+        { path: 'src/orders/status.ts', operation: 'create' },
+        { path: 'src/orders/status.ts', operation: 'modify' },
+      ]),
+    );
 
     // Step 21: Write Guard check (§12)
     const guardResult = checkWrite(
@@ -226,6 +233,11 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
       [{ path: 'src/orders/status.ts', operation: 'modify' }],
     );
     expect(audit.passed).toBe(true);
+    await fs.writeFile(
+      path.join(wiDir, 'changed_files_audit.md'),
+      '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: explicit expected/actual comparison\n',
+      'utf-8',
+    );
 
     // Step 24: Revoke code_permission (§12)
     await revokeCodePermission(wiDir);
@@ -242,11 +254,83 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
     expect(closeGateReport).toBeDefined();
     // close_gate may have findings (some files missing) but it runs
     expect(closeGateReport.gate_id).toBe('close_gate');
+    await fs.writeFile(
+      path.join(wiDir, 'close_gate.md'),
+      '# Close Gate\n\n- Status: PASSED\n- Gate: close_gate\n',
+      'utf-8',
+    );
 
-    // Step 26: Transition to closed (§5)
-    await updateWorkItemStatus(wiDir, 'closed');
+    // Step 26: Transition to closed through the authoritative StateManager path (§5)
+    let authoritativeState = 'verification_done';
+    const transitionCalls: Array<{
+      workItemId: string;
+      fromState: string;
+      toState: string;
+      actorRole: string;
+      workflowType: string;
+    }> = [];
+    const projectStateManager = {
+      transition: async (
+        transitionWorkItemId: string,
+        fromState: string,
+        toState: string,
+        actorRole: string,
+        workflowType: string,
+      ) => {
+        transitionCalls.push({
+          workItemId: transitionWorkItemId,
+          fromState,
+          toState,
+          actorRole,
+          workflowType,
+        });
+        authoritativeState = toState;
+      },
+      getState: async () => ({ current_state: authoritativeState }),
+    };
+
+    const closeTransition = await transitionWithEvidence({
+      deps: {
+        projectManager: {
+          getProjectStateManager: async () => projectStateManager,
+        },
+      },
+      context: { directory: projectRoot, agent: ACTOR_ROLES.closeGate },
+      projectRoot,
+      workItemId: wiId,
+      workItemDir: wiDir,
+      fromState: 'verification_done',
+      toState: 'closed',
+      workflowType: 'requirement_change',
+      actorRole: ACTOR_ROLES.closeGate,
+      evidence: 'close_gate.md',
+      transitionContext: {
+        source: 'v11_e2e_requirement_change_path',
+      },
+    });
+
+    expect(closeTransition.transition_result).toMatchObject({
+      source: 'StateManager',
+      workItemId: wiId,
+      previousState: 'verification_done',
+      currentState: 'closed',
+    });
+    expect(await projectStateManager.getState()).toEqual({
+      current_state: 'closed',
+    });
+    expect(transitionCalls).toEqual([
+      expect.objectContaining({
+        workItemId: wiId,
+        fromState: 'verification_done',
+        toState: 'closed',
+        actorRole: ACTOR_ROLES.closeGate,
+        workflowType: 'requirement_change',
+      }),
+    ]);
+
+    // work_item.json is metadata; authoritative governance state lives in StateManager/events.
     const finalWi = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
-    expect(finalWi.status).toBe('closed');
+    expect(finalWi.status).toBe('intake_ready');
   });
 });
 
@@ -257,7 +341,7 @@ describe('§16 Rollback', () => {
 
     // Create original WI with merge_report
     const originalDir = await createWorkItem({ projectRoot, workItemId: originalWiId, userRequest: 'Rollback test' });
-    await initializeClosureFiles(originalDir, originalWiId, 'requirement_change_path');
+    await initializeClosureFiles(originalDir, originalWiId, 'requirement_change_path', 'PSV-0001');
 
     // Simulate completed merge
     await fs.writeFile(path.join(originalDir, 'merge_report.md'), '# Merge Report\n\nStatus: success\n', 'utf-8');
@@ -512,7 +596,7 @@ describe('§12 Write Guard enforcement', () => {
           allowed_write_files: [{ path: '.specforge/project/requirements.md', operation: 'modify' }],
           workflow_path: 'requirement_change_path',
         },
-        callerRole: 'Merge Runner', isFrozen: false,
+        callerRole: ACTOR_ROLES.mergeRunner, isFrozen: false,
       },
       '.specforge/project/requirements.md', 'modify',
     );

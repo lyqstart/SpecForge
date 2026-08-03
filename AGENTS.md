@@ -1,5 +1,25 @@
 # SpecForge 项目协作规则
 
+## SpecForge 产品开发经验前置门禁
+
+在分析、设计或修改 SpecForge 的代码、测试、文档、配置、脚本、命令、补丁、安装器、验证流程或 Git 操作前，必须先完整读取：
+
+```text
+docs/rule/specforge-development-error-ledger-and-experience.md
+```
+
+至少完整阅读第三部分“工程经验总则”和第四部分“修改前强制检查”，并记录：
+
+```text
+EXPERIENCE_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
+REPEATED_ERROR_CHECK=PASS
+```
+
+无法读取经验文件、没有适用规则或不能完成重复错误检查时，必须 fail closed，不得修改文件或生成写操作命令。
+
+本门禁只约束 SpecForge 产品自身的直接开发；不得启动 SpecForge 自身的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程。
+
 ## 证据先行与结论可追溯原则
 
 本项目中的事实判断、架构判断、根因判断和解决方案，必须以用户提供的证据或可复核的一手证据为依据。不得把经验、可能性、相似案例、未验证推断或“很可能”表述当作事实和结论。

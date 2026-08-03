@@ -8,7 +8,12 @@
  */
 import { join } from 'node:path';
 import { registerHandler } from '../ToolDispatcher';
-import { createWorkItem, initializeClosureFiles, updateWorkItemStatus } from '../lib/work-item-lifecycle-v11';
+import {
+  createWorkItem,
+  initializeClosureFiles,
+  readAuthoritativeProjectSpecVersion,
+  updateWorkItemStatus,
+} from '../lib/work-item-lifecycle-v11';
 import { selectWorkflowPath, generateTriggerResult } from '../lib/workflow-path-selector-v11';
 import {
   WORKFLOW_TYPE_TO_PATH,
@@ -91,6 +96,11 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
   }
 
   try {
+    // Resolve the authoritative Project Spec version before creating any WI
+    // directory or lifecycle file. A missing/invalid authority must fail closed
+    // without leaving a partial Work Item behind.
+    const baseSpecVersion = await readAuthoritativeProjectSpecVersion(projectRoot);
+
     // 1. Create WI directory
     const wiDir = await createWorkItem({
       projectRoot,
@@ -117,7 +127,7 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
     const workflowType = inferWorkflowTypeFromClassification(classification, workflowPath);
 
     // 4. Initialize closure files
-    await initializeClosureFiles(wiDir, workItemId, workflowPath);
+    await initializeClosureFiles(wiDir, workItemId, workflowPath, baseSpecVersion);
 
     // 5. Update status to intake_ready
     await updateWorkItemStatus(wiDir, 'intake_ready');
@@ -145,6 +155,15 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
       status: 'intake_ready',
     };
   } catch (err: any) {
-    return { success: false, error: err.message };
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.startsWith('PROJECT_SPEC_VERSION_UNAVAILABLE:')) {
+      return {
+        success: false,
+        error: message,
+        code: 'PROJECT_SPEC_VERSION_UNAVAILABLE',
+        hard_stop: true,
+      };
+    }
+    return { success: false, error: message };
   }
 });
