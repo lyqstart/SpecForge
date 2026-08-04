@@ -121,7 +121,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 | impact_analyzing | sf-design | — | change_classification.md,impact_analysis.md |
 | impact_analyzed | — | — | trigger_result.json |
 | workflow_selected | — | — | Gate 判定（pass→candidate_preparing, fail→blocked） |
-| candidate_preparing | sf-design | — | tasks.md,trace_delta.md,candidate_manifest.json |
+| candidate_preparing | sf-design + sf-task-planner + Runtime | — | Architecture/Data/Module Design/Module Contract Candidates；tasks.md；trace_delta.md；Runtime candidate_manifest.json |
 | candidate_prepared | — | — | — |
 | gates_running | — | — | Gate 判定（pass→approval_required, fail→gates_failed） |
 | approval_required | — | — | — |
@@ -141,9 +141,12 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 3. 生成 `trigger_result.json`（workflow_type=architecture_change、workflow_path=architecture_change_path），`impact_analyzed → workflow_selected → candidate_preparing`。
 
 ### 阶段 3：candidate_preparing（设计与候选）
-1. 由 `sf-design` 写入唯一权威设计候选；若引入新模块，必须同时提交该 `MODULE_CODE` 的完整候选包（`module.json`、`requirements.md`、`design.md`、`trace.md`），模块只能来自架构证据映射。
-2. 由 `sf-task-planner` 写入 `tasks.md`、`trace_delta.md`。
-3. 主编排代理在正确阶段通过受控写入形成 `candidate_manifest.json`（引用规范候选路径），`candidate_preparing → candidate_prepared → gates_running`。
+1. 由 `sf-design` 根据 `trigger_result.classification` 只写实际需要的 Architecture / Data Model / Module Design / Module Contract Candidate；若引入新模块，必须同时提交该 `MODULE_CODE` 的完整候选包，模块只能来自架构证据映射。
+2. Requirement 相关分类全部为 `false` 时，不得为了满足 Workflow 模板额外制造 Requirement Candidate。
+3. 由 `sf-task-planner` 写入 `tasks.md`、`trace_delta.md`。
+4. 专业 Agent 和主编排代理都不得写入或猜测 `candidate_manifest.json`。Runtime 在 `candidate_preparing → candidate_prepared` 状态边界读取实际 Classification 和规范 Candidate 路径，原子形成完整 Manifest；缺少必需 Candidate 或存在目标冲突时必须拒绝状态推进。
+5. `sf-design`、`sf-task-planner` 和其他专业 Agent 不得调用 `sf_safe_bash`、bash、PowerShell、Node 或 Python 写入治理产物；只能使用各自产物对应的受控 Tool。
+6. Runtime Manifest 生成成功后，推进 `candidate_prepared → gates_running`。
 
 ### 阶段 4：gates
 1. `sf_gate_run(gate_type="candidate", workflow_type="architecture_change")`，由 Gate Runner 运行 entry/required_files/spec_consistency/trace/schema/candidate_manifest/path_policy/gate_summary 等，并把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。新模块目标由 `architecture_change_path` 的受控接纳规则校验。

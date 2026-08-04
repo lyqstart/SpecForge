@@ -45,7 +45,7 @@ describe('SpecForge development experience pre-read gate', () => {
 
     const experienceRuleIds = experience.match(/^## EXP-\d{3}：/gm) ?? [];
     expect(experience.trim().length).toBeGreaterThan(500);
-    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(46);
+    expect(experienceRuleIds.length).toBeGreaterThanOrEqual(50);
     expect(experienceRuleIds).toContain('## EXP-021：');
     expect(experienceRuleIds).toContain('## EXP-022：');
     expect(experienceRuleIds).toContain('## EXP-023：');
@@ -72,6 +72,12 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experienceRuleIds).toContain('## EXP-044：');
     expect(experienceRuleIds).toContain('## EXP-045：');
     expect(experienceRuleIds).toContain('## EXP-046：');
+    expect(experienceRuleIds).toContain('## EXP-047：');
+    expect(experienceRuleIds).toContain('## EXP-048：');
+    expect(experienceRuleIds).toContain('## EXP-049：');
+    expect(experienceRuleIds).toContain('## EXP-050：');
+    expect(experienceRuleIds).toContain('## EXP-051：');
+    expect(experienceRuleIds).toContain('## EXP-052：');
 
     expect(checklist.trim().length).toBeGreaterThan(500);
     expect(checklist).toContain('APPLICABLE_EXPERIENCE_RULES');
@@ -104,6 +110,12 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(checklist).toContain('每条验证断言已绑定真实生产者');
     expect(checklist).toContain('最终成功证据已与当前状态文档');
     expect(checklist).toContain('源码调用和依赖审计已区分可执行语法');
+    expect(checklist).toContain('Runtime已在candidate_preparing→candidate_prepared边界按Classification物化完整Manifest');
+    expect(checklist).toContain('Candidate文件和专业Gate要求已逐项绑定正式Classification');
+    expect(checklist).toContain('状态名均来自正式状态枚举与迁移表');
+    expect(checklist).toContain('专业Agent只通过受控Tool写治理Candidate');
+    expect(checklist).toContain('HardStop活动锁与resolution历史已分层取证');
+    expect(checklist).toContain('Monorepo单包TypeScript检查前已按正式拓扑生成内部依赖声明');
   });
 
   it('records every new error with a class-level prevention rule', () => {
@@ -163,6 +175,25 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('## EXP-045：成功证据产生后必须执行提交前最终状态对账');
     expect(document).toContain('### ERR-066：源码审计把注释中的 `Bun.file` 文本误判为可执行持久化调用');
     expect(document).toContain('## EXP-046：源码调用证据必须区分可执行语法、注释和普通文本');
+    expect(document).toContain('### ERR-067：混合 Candidate 生产者使 Runtime-owned `candidate_manifest` 只保留首个显式条目');
+    expect(document).toContain('## EXP-047：多Tool Candidate生产必须在Runtime状态边界收口为完整冻结Manifest');
+    expect(document).toContain('### ERR-068：`architecture_change` full Candidate Gate无条件要求未发生变化的 Requirement Candidate');
+    expect(document).toContain('## EXP-048：Candidate和Gate要求必须由正式Classification决定');
+    expect(document).toContain('### ERR-069：场景文档和提示词使用状态机中不存在的 `gates_passed`');
+    expect(document).toContain('## EXP-049：状态名是生产者—消费者契约，文档和提示词不得发明描述性状态');
+    expect(document).toContain('### ERR-070：专业设计Agent在受控Candidate写入阶段调用 `sf_safe_bash`');
+    expect(document).toContain('## EXP-050：专业Agent的治理产物写入必须走精确受控Tool边界');
+    expect(document).toContain('### ERR-071：把已恢复HardStop的活动锁文件当作永久历史证据');
+    expect(document).toContain('## EXP-051：活动锁、恢复历史和独立修复前置条件必须分层');
+    expect(document).toContain('### ERR-072：在内部依赖声明生成前执行daemon-core TypeScript检查，并遗漏可选工作流路径类型');
+    expect(document).toContain('## EXP-052：Monorepo TypeScript验证必须先准备内部声明，并分离环境错误与代码错误');
+    expect(readSection(document, '### ERR-067：', '### ERR-068：')).toContain('`FIXED_PENDING_WORKDESK_RETEST`');
+    expect(readSection(document, '### ERR-068：', '### ERR-069：')).toContain('`FIXED_PENDING_WORKDESK_RETEST`');
+    expect(readSection(document, '### ERR-069：', '### ERR-070：')).toContain('`FIXED_VALIDATED_V28`');
+    expect(readSection(document, '### ERR-070：', '### ERR-071：')).toContain('`FIXED_PENDING_WORKDESK_RETEST`');
+    expect(readSection(document, '### ERR-071：', '### ERR-072：')).toContain('`FIXED_VALIDATED_V28`');
+    expect(readSection(document, '### ERR-072：', '# 第二部分：正确做法')).toContain('`FIXED_VALIDATED_V28`');
+    expect(document).toContain('V28隔离验证：RESULT=SUCCESS');
     expect(document).toContain('ERR-064：CLOSED');
     expect(document).toContain('## EXP-032：最终证据必须使完整变更集可重建、可审查');
     expect(document).toContain('一个错误必须产生一个类防护');
@@ -208,6 +239,22 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('场景名称：WorkItemStatus Project Contract同ID规范化与正式Trace激活');
     expect(handoff).toContain('WI-0005：WorkItemStatus破坏性变更/删除阻断');
     expect(handoff).toContain('WI-0006：ReportFormatter正式Module→Project Promotion');
+    expect(handoff).toContain('WI-0004 Phase 1真实运行结果');
+    expect(handoff).toContain('Runtime最终状态：gates_failed');
+    expect(handoff).toContain('ERR-067：混合Candidate生产者导致Runtime Manifest缺项');
+    expect(handoff).toContain('ERR-068：Candidate Gate不按Classification要求产物');
+    expect(handoff).toContain('ERR-069：V25提示词和文档使用不存在的gates_passed状态');
+    expect(handoff).toContain('ERR-070：sf-design仍调用sf_safe_bash写治理产物并触发可避免HardStop');
+    expect(handoff).toContain('Runtime在candidate_preparing→candidate_prepared边界按Classification物化完整Manifest');
+    expect(handoff).toContain('产品修复提交和用户级升级后的下一项完整工作');
+    expect(handoff).toContain('## V26实际执行结果与V27隔离验证边界（2026-08-04）');
+    expect(handoff).toContain('PATCH_FILES_APPLIED=0/13');
+    expect(handoff).toContain('## V27失败结果与V28隔离验证边界（2026-08-04）');
+    expect(handoff).toContain('V27定向测试：73/73通过');
+    expect(handoff).toContain('## V28隔离验证成功与V29真实仓库应用边界（2026-08-04）');
+    expect(handoff).toContain('TARGETED_TESTS=PASS（74/74）');
+    expect(handoff).toContain('FINAL_SCOPE=PASS_EXACT_13_FILES');
+    expect(handoff).toContain('V29成功证据复核前不得提交、推送、安装真实用户级组件或恢复WI-0004');
     expect(handoff).toContain('GOV-DEFECT-CONTRACT-CONSUMER-001 仍保持 IN_PROGRESS');
     expect(handoff).toContain('`STAT_ONLY_CONTENT_NEUTRAL`');
     expect(handoff).toContain('WorkDesk文件和index保持原状');
@@ -234,7 +281,20 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(p0ContractClosure).toContain('### 25.8 V24 WorkDesk源码与Contract基线审计');
     expect(p0ContractClosure).toContain('### 25.9 WI-0004 第一阶段真实场景冻结');
     expect(p0ContractClosure).toContain('ADD DD-CLI-002 constrained_by WorkItemStatus');
-    expect(p0ContractClosure).toContain('到 `gates_passed` 必须停止');
+    expect(p0ContractClosure).toContain('到 `approval_required` 必须停止');
+    expect(p0ContractClosure).toContain('### 25.10 WI-0004 Phase 1真实运行结果');
+    expect(p0ContractClosure).toContain('### 25.11 修复设计');
+    expect(p0ContractClosure).toContain('### 25.12 修复后恢复边界');
+    expect(p0ContractClosure).toContain('### 25.13 V26产品修复与工程验证边界');
+    expect(p0ContractClosure).toContain('Runtime在candidate_preparing→candidate_prepared物化Manifest');
+    expect(p0ContractClosure).toContain('### 25.14 V26零写入失败与V27隔离验证修正');
+    expect(p0ContractClosure).toContain('WorkDesk只读审计不再作为源码修复的因果前置');
+    expect(p0ContractClosure).toContain('### 25.15 V27类型检查失败与V28验证顺序修正');
+    expect(p0ContractClosure).toContain('V27定向测试73/73通过');
+    expect(p0ContractClosure).toContain('### 25.16 V28隔离验证成功与V29真实仓库应用边界');
+    expect(p0ContractClosure).toContain('定向测试：74/74通过');
+    expect(p0ContractClosure).toContain('ERR-067、ERR-068、ERR-070：FIXED_PENDING_WORKDESK_RETEST');
+    expect(p0ContractClosure).not.toContain('到 `gates_passed` 必须停止');
 
     for (const entry of [rootAgents, userLevelAgents]) {
       expect(entry).toContain('docs/rule/specforge-development-error-ledger-and-experience.md');

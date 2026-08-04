@@ -808,6 +808,90 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-044`、`EXP-046`。
 
 
+### ERR-067：混合 Candidate 生产者使 Runtime-owned `candidate_manifest` 只保留首个显式条目
+
+- **日期与阶段**：2026-08-04，WI-0004 Contract Consumer Phase 1真实 Candidate Gate。
+- **分类**：`RUNTIME_DEFECT / MANIFEST_OWNERSHIP_DEFECT / MERGE_SCOPE_DEFECT`
+- **现场表现**：`sf_contract_register` 正确登记 `extension_registry` 后，`sf-design` 和 `sf-task-planner` 又通过受控 Tool 生成 Architecture、Module Design、Module Contract 和 Trace Delta Candidate；但 `candidate_manifest.entries` 最终仍只有1项。第二次 Gate 因 Module Contract Candidate 未进入 Prospective Spec，把 `WorkItemStatus` 同时识别为正式 DOMAIN Module Contract 和候选 Project Contract。
+- **已执行与未执行**：WI-0004 最终停在 `gates_failed`；未执行 User Decision、Merge、Code Permission、业务代码修改、Verification 或 Close；WorkDesk正式Project文件未修改。
+- **根因**：`inferManifestEntries()` 在检测到一组合法显式条目后立即返回，适合 Gate/Approval/Merge消费冻结Manifest，却不适合 Candidate生产阶段的多Tool增量写入。Runtime 在 `candidate_preparing → candidate_prepared` 没有执行一次Classification驱动的完整Manifest物化。
+- **影响**：合法受控Candidate无法进入Prospective Spec和Merge范围；Contract唯一真相源、Spec一致性和Trace Gate产生连锁误判。要求Agent手工补Manifest会违反Runtime所有权并制造第二写入者。
+- **正确做法**：Candidate生产者只负责规范Candidate文件。Runtime在 `candidate_preparing → candidate_prepared` 状态边界读取正式Classification，合并已有合法显式条目与实际需要的规范Candidate，检测candidate/target冲突、缺项和重复目标，原子写入完整Manifest；Gate及后续阶段只消费该冻结Manifest。
+- **新增防护**：新增 Runtime Manifest materialization、状态边界回归、混合生产者回归、冲突与缺项回归；恢复WI-0004时验证Manifest精确包含5项。
+- **状态**：`FIXED_PENDING_WORKDESK_RETEST`。
+- **类防护**：`EXP-007`、`EXP-011`、`EXP-015`、`EXP-021`、`EXP-047`。
+
+
+### ERR-068：`architecture_change` full Candidate Gate无条件要求未发生变化的 Requirement Candidate
+
+- **日期与阶段**：2026-08-04，WI-0004两次Candidate Gate。
+- **分类**：`GATE_DEFECT / CLASSIFICATION_CONSUMER_DEFECT / SCOPE_EXPANSION_DEFECT`
+- **现场表现**：WI-0004正式Classification中 `requirement_changed=false`、`acceptance_criteria_changed=false`、`business_rule_changed=false`，但第一次Gate仍要求Requirement Candidate并执行Requirements Gate。一次修复被迫生成CORE Requirement Candidate；第二次Gate又据此扩大Design要求。
+- **已执行与未执行**：补充的CORE Requirement和Project Data Model Candidate只存在于失败轮次WI证据；未进入正式Project Spec；未Merge。
+- **根因**：`required_files_gate` 和 `workflow_specific_gate` 仅根据 `candidate_phase=full` 套用固定模板，没有消费 `trigger_result.classification`。Workflow阶段被错误等同于本次实际变更范围。
+- **影响**：合法任务被迫制造无变化Candidate；专业Agent和Gate扩大Module/Design范围，增加HardStop与伪变更风险，违反范围冻结。
+- **正确做法**：Required Candidate与专业Gate必须由正式Classification决定。Requirement相关字段任一为true才要求Requirement Candidate和Requirements Gate；`design_changed`、`architecture_changed`、`data_model_changed`、`module_contract_changed`分别控制对应Candidate。Classification不可用时保持历史严格配置并失败关闭。
+- **新增防护**：新增Classification-driven Candidate Gate纯函数和回归，覆盖Requirement不变、Requirement变化、task_change及Classification缺失回退。
+- **状态**：`FIXED_PENDING_WORKDESK_RETEST`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-021`、`EXP-048`。
+
+
+### ERR-069：场景文档和提示词使用状态机中不存在的 `gates_passed`
+
+- **日期与阶段**：2026-08-04，WI-0004 Phase 1场景冻结与OpenCode执行。
+- **分类**：`DOCUMENT_CONTRACT_DEFECT / STATE_CONSUMER_DEFECT`
+- **现场表现**：V25活动实施文件、current-handoff、经验门禁断言和OpenCode提示词把Candidate Gate通过终点写为 `gates_passed`；实际v1.1状态机从 `gates_running` 通过后进入 `approval_required`。OpenCode在运行时自行识别并采用正式状态。
+- **已执行与未执行**：错误文字未产生非法状态写入；Runtime拒绝未知状态的既有保护未被绕过。
+- **根因**：场景设计没有从 `WI_STATUSES`、状态迁移表和architecture_change Skill核对状态消费者，使用了描述性名称代替正式枚举。
+- **影响**：可能使Agent尝试非法迁移、错误判断停止点或提前进入审批；文档、提示词和测试形成互相强化的错误契约。
+- **正确做法**：所有提示词、Skill、Agent、文档和测试只能引用正式状态枚举和迁移表；Candidate Gate通过终点统一为 `approval_required`。
+- **新增防护**：替换全部V25新增的 `gates_passed`，经验门禁检查正式停止状态，Agent/Skill契约测试覆盖architecture_change阶段表。
+- **状态**：`FIXED_VALIDATED_V28`。
+- **类防护**：`EXP-030`、`EXP-043`、`EXP-049`。
+
+
+### ERR-070：专业设计Agent在受控Candidate写入阶段调用 `sf_safe_bash`
+
+- **日期与阶段**：2026-08-04，WI-0004第一次Gate后的正式修复。
+- **分类**：`AGENT_CONTRACT_DEFECT / TOOL_BOUNDARY_DEFECT / AVOIDABLE_HARDSTOP`
+- **现场表现**：`sf-design` 使用 `sf_safe_bash` 尝试写 `.specforge/work-items/**`，Write Guard正确生成HardStop。该HardStop随后阻断合法 `sf_artifact_write`，由Orchestrator按 `operator_error` 放弃原动作、解析恢复并重新调度受控Tool。
+- **已执行与未执行**：禁止写入被拦截；没有越权文件落盘；HardStop及resolution证据完整保留；后续受控Candidate写入成功。
+- **根因**：通用Agent规则虽禁止Shell旁路治理，但 `sf-design` 和architecture_change Skill没有把 `sf_safe_bash`、只读调查工具、Candidate写入Tool和Runtime Manifest所有权写成精确可测试契约。
+- **影响**：产生可避免HardStop、打断合法受控写入、增加恢复复杂度；若边界弱化可能演变为治理产物旁路写入。
+- **正确做法**：专业Agent只使用Read/Glob/Grep等只读能力调查，只通过其拥有的受控Tool写Candidate；不得使用 `sf_safe_bash`、Shell、Node、Python或PowerShell写治理产物。受控Tool不足时停止并报告产品缺口。
+- **新增防护**：补强 `sf-design` 和architecture_change Skill，新增Agent/Skill文本契约回归；Runtime Write Guard和HardStop行为保持不变。
+- **状态**：`FIXED_PENDING_WORKDESK_RETEST`。
+- **类防护**：`EXP-004`、`EXP-015`、`EXP-036`、`EXP-044`、`EXP-050`。
+
+
+### ERR-071：把已恢复HardStop的活动锁文件当作永久历史证据
+
+- **日期与阶段**：2026-08-04，V26零写入前置审计。
+- **分类**：`SCRIPT_DEFECT / EVIDENCE_LIFECYCLE_DEFECT / SCOPE_COUPLING_DEFECT`
+- **现场表现**：V26在任何补丁写入前以 `missing hard_stop.json` 失败，`PATCH_FILES_APPLIED=0/13`。同一WI已存在 `hard_stop_resolution.jsonl`，其中保存了完整 `original_hard_stop`、恢复分类、恢复位置和安全替代Tool。
+- **已执行与未执行**：SpecForge本地与远程均保持 `d6dc931072aca519354fb4bc0857a64aacc58961`，工作区干净；未应用补丁、未测试、未构建、未提交、未安装、未推送；WorkDesk未写入。
+- **根因**：脚本没有区分“当前活动锁”和“已完成恢复的历史证据”。`sf_hard_stop_resolve` 把原始记录追加到 `hard_stop_resolution.jsonl` 后删除活动 `hard_stop.json`，因此恢复后缺少活动文件是正常生命周期结果。脚本还把WorkDesk场景证据完整性错误耦合成SpecForge独立源码修复的硬前置。
+- **影响**：正确恢复后的现场被误判为证据缺失，导致与该活动锁无关的产品修复无法进入隔离验证；重复要求活动文件会诱导伪造或保留过期锁。
+- **正确做法**：历史恢复证据以 `hard_stop_resolution.jsonl` 为稳定来源，并校验其中 `original_hard_stop`、`resolution_type`、`safe_alternative_tool` 和 `authoritative_state_at_resolution`。`hard_stop.json` 只表示当前活动锁，存在时单独报告，不要求恢复后保留。WorkDesk证据不足只记录 `INSUFFICIENT_EVIDENCE`，不得阻断与其无关的SpecForge隔离源码验证；远程、本地、进程、工作区和补丁源哈希仍必须在写入前严格通过。
+- **新增防护**：新增 `EXP-051`；V27脚本包含无活动锁但有resolution log的生命周期自测，并把WorkDesk审计改为只读、非阻断证据；所有源码补丁只写入隔离副本。
+- **状态**：`FIXED_VALIDATED_V28`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-011`、`EXP-015`、`EXP-021`、`EXP-042`、`EXP-051`。
+
+
+### ERR-072：在内部依赖声明生成前执行daemon-core TypeScript检查，并遗漏可选工作流路径类型
+
+- **日期与阶段**：2026-08-04，V27隔离工程验证。
+- **分类**：`VALIDATION_ORDER_DEFECT / TYPESCRIPT_CONTRACT_DEFECT / ERROR_CLASSIFICATION_DEFECT`
+- **现场表现**：V27定向测试73/73通过，但随后TypeScript阶段同时报告6项内部workspace包声明不可解析，以及 `gate-runner-v11.ts` 两处 `string | undefined` 不能赋给 `string`。验证器把环境准备错误和补丁真实类型错误合并为一个失败摘要。
+- **已执行与未执行**：13个目标文件只应用在隔离副本；真实SpecForge、WorkDesk、真实用户级安装均未写入；未提交、未推送；daemon/OpenCode未启动。daemon-core build、全仓build、installer隔离验证尚未执行。
+- **根因**：第一，daemon-core依赖的workspace包以各自 `dist/*.d.ts` 作为类型入口，V27在生成这些声明前直接运行daemon-core noEmit。第二，正式 `GateContext.workflowPath` 是可选字段，V27新增的Classification辅助函数错误收窄为必填 `string`，定向运行测试未覆盖编译期契约。
+- **影响**：验证报告无法区分环境准备缺口与产品代码缺陷；真实类型错误会阻断daemon-core和全仓构建；缺省工作流路径若被强制断言为存在，可能在非完整调用上下文中产生静默放宽。
+- **正确做法**：隔离验证先按正式workspace构建顺序生成daemon-core全部内部依赖声明，再运行定向测试，随后立即执行daemon-core TypeScript noEmit。辅助函数必须接受正式可选类型；工作流路径缺失时采用历史严格profile失败关闭。环境错误和代码错误必须分项报告。
+- **新增防护**：V28新增workspace依赖预构建阶段、缺省workflowPath失败关闭回归、TypeScript检查和两级构建；验证摘要单独记录dependency preparation与typecheck结果。
+- **状态**：`FIXED_VALIDATED_V28`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-011`、`EXP-015`、`EXP-021`、`EXP-052`。
+
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -1319,6 +1403,37 @@ Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导�
 架构边界审计不得直接把原始源码正则命中解释为调用关系。优先使用语言AST；无法使用AST时，至少使用能识别行注释、块注释、字符串和模板文本的词法扫描。报告必须分开列出可执行调用、import/require依赖、注释命中和普通字符串命中。只有可执行语法或正式import/require才能进入生产者—消费者和架构违规判断。
 
 
+
+## EXP-047：多Tool Candidate生产必须在Runtime状态边界收口为完整冻结Manifest
+
+Candidate文件可以由Contract Tool、专业Agent和Task Planner分阶段生成，但 `candidate_manifest.json` 只能有一个权威写入者。Runtime必须在 `candidate_preparing → candidate_prepared` 前，根据正式Classification和规范Candidate路径完成完整物化、冲突检查和缺项检查；状态推进成功后，Gate、Approval和Merge只消费冻结显式Manifest，不再重新猜测文件系统。专业Agent不得手工补Manifest。
+
+
+## EXP-048：Candidate和Gate要求必须由正式Classification决定
+
+Workflow路径和candidate phase描述流程阶段，不等同于本次真实变化范围。Requirement、Architecture、Data Model、Module Design、Module Contract及其专业Gate必须消费 `trigger_result.classification`：对应变化为true才要求对应Candidate或Gate。Classification缺失、无法解析或相互矛盾时保持严格回退并失败关闭，不能静默放宽，也不能为满足模板制造无变化产物。
+
+
+## EXP-049：状态名是生产者—消费者契约，文档和提示词不得发明描述性状态
+
+Runtime状态枚举、迁移表、Tool输入、Skill阶段表、Agent提示词、测试和实施文档必须使用同一组正式状态。描述性阶段名称不能替代状态值。任何状态新增、删除或重命名都必须同步全部消费者；交付前必须全仓检索未知状态。Candidate Gate通过后的正式状态以状态机为准，本版本为 `approval_required`。
+
+
+## EXP-050：专业Agent的治理产物写入必须走精确受控Tool边界
+
+专业Agent必须把只读调查与治理写入分开：Read/Glob/Grep用于读取，`sf_artifact_write`、Contract Tool等受控Tool用于其拥有的Candidate。不得使用 `sf_safe_bash`、Shell、PowerShell、Node或Python写 `.specforge/work-items/**`、`candidates/**` 或正式治理文件。受控Tool无法表达需求时必须停止并报告产品能力缺口，不能用Shell补洞。
+
+
+## EXP-051：活动锁、恢复历史和独立修复前置条件必须分层
+
+活动 `hard_stop.json` 只证明当前仍被阻断，不能作为恢复历史的永久文件；恢复后的稳定证据是追加式 `hard_stop_resolution.jsonl`，其中必须保存原始HardStop和恢复决定。脚本必须按证据生命周期读取正确来源。业务项目现场证据与SpecForge产品源码修复没有因果依赖时，现场缺项只能记录 `INSUFFICIENT_EVIDENCE`，不能阻断隔离源码验证；但远程HEAD、本地HEAD、工作区、暂存区、进程边界和补丁源哈希仍是首次写入前的硬门禁。
+
+
+## EXP-052：Monorepo TypeScript验证必须先准备内部声明，并分离环境错误与代码错误
+
+当包的 `types` 入口指向workspace构建产物时，单包noEmit不是零准备检查。验证器必须先按仓库正式拓扑生成被测包全部内部依赖声明，再执行定向测试和被测包TypeScript检查；随后仍要执行相关包构建和必要的全仓确定性构建。缺失声明、工具链不可用和源码类型错误必须分别记录，不能合并成同一种产品缺陷。任何新增辅助函数都必须保持调用上下文的正式可选性；关键上下文缺失时失败关闭，并增加编译和运行双重回归。
+
+
 ---
 
 # 第四部分：修改前强制检查
@@ -1347,6 +1462,12 @@ Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导�
 □ 每条验证断言已绑定真实生产者、正式 schema、类型定义或权威规则；未要求非权威文件复制其他产物的字段，无法确认职责时已标记 `INSUFFICIENT_EVIDENCE`
 □ 最终成功证据已与当前状态文档、经验记录、测试断言和Git范围完成提交前对账；当前交接不再保留与成功证据冲突的“待验证”状态
 □ 源码调用和依赖审计已区分可执行语法、正式import/require、注释和普通文本；未把注释中的API名称当成生产调用关系
+□ 多Tool生成Candidate时，Runtime已在candidate_preparing→candidate_prepared边界按Classification物化完整Manifest；Agent未手工写Manifest，Gate/Approval/Merge只消费冻结Manifest
+□ Candidate文件和专业Gate要求已逐项绑定正式Classification；未因workflow full模板制造Requirement、Data Model或其他无变化Candidate
+□ 文档、提示词、Skill、Agent和测试中的状态名均来自正式状态枚举与迁移表，不含描述性自创状态
+□ 专业Agent只通过受控Tool写治理Candidate，未使用sf_safe_bash、Shell、PowerShell、Node或Python写治理产物
+□ HardStop活动锁与resolution历史已分层取证；恢复后未要求hard_stop.json继续存在，非因果相关的业务现场证据不足未阻断隔离源码验证
+□ Monorepo单包TypeScript检查前已按正式拓扑生成内部依赖声明；环境准备错误与源码类型错误已分项报告
 □ 脚本 stdout/stderr、编码和失败恢复已设计
 □ 新回归测试可独立运行
 □ 已准备 A/B 归因方案
@@ -1394,7 +1515,7 @@ Git porcelain、JSONL、CSV、NUL 分隔记录和其他机器协议中的前导�
 □ 权威字段无隐式默认
 □ 写入前前置条件已验证
 □ 新测试为独立文件
-□ typecheck 在回归测试后立即执行
+□ 内部依赖声明已在回归测试前准备完成，typecheck 在回归测试后立即执行
 □ build、diff check、范围审计已安排
 ```
 
@@ -1510,6 +1631,12 @@ ERR-061 / ERR-062：CLOSED。V22证明零写入进程前置检查、精确目标
 ERR-063：CLOSED。V22经验门禁通过，固定文本消费者与当前交接完成同步。
 ERR-064：CLOSED。V22按真实生产者契约验证trigger_result skeleton，并以candidate_manifest.base_spec_version作为Project Spec Version权威产物。
 ERR-065：V22证据审计发现，V23执行提交前最终状态对账。
-ERR-066：V24源码审计误把CLI注释中的Bun.file当成直接持久化调用；V25使用注释感知扫描修复并冻结WI-0004场景。
+ERR-066：CLOSED。V25注释感知扫描证明非STORAGE可执行持久化调用为0，并提交场景冻结证据。
+ERR-067：FIXED_PENDING_WORKDESK_RETEST。V28证明Runtime Classification驱动Manifest物化、缺项和冲突回归通过；等待真实仓库提交、用户级升级和WI-0004恢复重验。
+ERR-068：FIXED_PENDING_WORKDESK_RETEST。V28证明Classification驱动Candidate与专业Gate要求回归通过；等待WI-0004恢复重验。
+ERR-069：FIXED_VALIDATED_V28。正式停止状态统一为approval_required，Agent/Skill/文档回归通过。
+ERR-070：FIXED_PENDING_WORKDESK_RETEST。sf-design和architecture_change Skill受控工具边界回归通过；等待WI-0004恢复时证明不再产生可避免HardStop。
+ERR-071：FIXED_VALIDATED_V28。无活动hard_stop.json但存在hard_stop_resolution.jsonl的生命周期自测和WorkDesk只读取证通过。
+ERR-072：FIXED_VALIDATED_V28。V28先准备workspace内部声明，74项定向测试、TypeScript、daemon-core和全仓构建全部通过。
+V28隔离验证：RESULT=SUCCESS；13文件精确范围、git diff --check和隔离installer 119/119全部通过；真实仓库、WorkDesk、真实用户级安装、提交和推送均未修改。
 ```
-

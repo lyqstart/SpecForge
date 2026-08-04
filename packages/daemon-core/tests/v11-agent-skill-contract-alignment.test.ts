@@ -207,6 +207,26 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     }
   });
 
+  it('keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization', () => {
+    const design = read('setup/userlevel-opencode/agents/sf-design.md');
+    const architectureSkill = read(
+      'setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md'
+    );
+
+    expect(design).toContain('本 Agent 不得调用 sf_safe_bash');
+    expect(design).toContain('Candidate 写入只能调用 sf_artifact_write');
+    expect(design).toContain('candidate_manifest.json 由 Runtime');
+    expect(architectureSkill).toContain(
+      'Runtime 在 candidate_preparing → candidate_prepared 状态边界'
+    );
+    expect(architectureSkill).toContain(
+      'Requirement 相关分类全部为 false 时，不得为了满足 Workflow 模板额外制造 Requirement Candidate'
+    );
+    expect(architectureSkill).not.toContain(
+      '主编排代理在正确阶段通过受控写入形成 candidate_manifest.json'
+    );
+  });
+
   it('keeps setup wrappers aligned with final governance fields', () => {
     const transitionWrapper = read('setup/userlevel-opencode/tools/sf_state_transition.ts');
     expect(transitionWrapper).toContain('workflow_type');

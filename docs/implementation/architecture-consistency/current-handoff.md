@@ -685,21 +685,65 @@ WI-0005：WorkItemStatus破坏性变更/删除阻断
 WI-0006：ReportFormatter正式Module→Project Promotion
 ```
 
-当前下一项完整工作是：
+WI-0004 Phase 1真实运行结果：
 
 ```text
-生成WI-0004 Phase 1受控提示词
-→ 用户手工启动daemon
-→ 用户手工在D:\code\temp\WorkDesk启动OpenCode
-→ sf-orchestrator只通过正式Tool推进WI-0004
-→ 写入intake、classification、impact scope和Candidate
-→ Project Contract、DOMAIN Module Contract和正式Trace Delta完成对账
-→ 运行适用Gate
-→ 到gates_passed立即停止
-→ 不记录User Decision
-→ 不Merge
-→ 不释放Code Permission
-→ 不修改业务代码
+Runtime最终状态：gates_failed
+第一次Candidate Gate：5 passed / 5 failed
+一次正式修复后第二次Candidate Gate：6 passed / 4 failed
+Project Contract、DOMAIN Module Contract、Trace Delta候选内容：正确
+candidate_manifest.entries：仅extension_registry 1项
+User Decision / Merge / Code Permission / 业务代码修改：均未执行
+```
+
+确认的SpecForge产品缺陷：
+
+```text
+ERR-067：混合Candidate生产者导致Runtime Manifest缺项
+ERR-068：Candidate Gate不按Classification要求产物
+ERR-069：V25提示词和文档使用不存在的gates_passed状态
+ERR-070：sf-design仍调用sf_safe_bash写治理产物并触发可避免HardStop
+```
+
+V26 已冻结并实现的产品修复：
+
+```text
+Runtime在candidate_preparing→candidate_prepared边界按Classification物化完整Manifest
+已有显式Project Contract条目与规范Architecture、Module Design、Module Contract、Trace Delta统一收口
+未变化的CORE Requirement和Project Data Model Candidate只保留为历史证据，不进入Manifest或Merge
+Candidate required_files和workflow_specific Gate按正式Classification执行
+Classification缺失时保持原有严格配置并失败关闭
+sf-design和architecture_change Skill禁止sf_safe_bash写治理产物
+Candidate Gate正式通过状态统一为approval_required
+```
+
+V26 只有在以下全部通过后才允许提交、升级用户级安装并推送：
+
+```text
+Manifest物化、状态边界、Classification Gate、Agent/Skill、Contract和Spec一致性回归
+TypeScript no-emit
+daemon-core build
+全仓deterministic build
+git diff --check
+installer verify
+用户级upgrade后再次verify
+WorkDesk调查前后Git状态字节等价
+权威文件未修改
+```
+
+产品修复提交和用户级升级后的下一项完整工作是：
+
+```text
+用户上传V26证据包
+→ 用户手工启动daemon和OpenCode
+→ WI-0004从gates_failed恢复到candidate_preparing
+→ 不新增、不删除、不重写现有Candidate
+→ candidate_preparing→candidate_prepared触发Runtime Manifest物化
+→ Manifest精确包含extension_registry、architecture、DOMAIN design、DOMAIN module_contract、trace_delta
+→ CORE Requirement和Project Data Model Candidate保留但不进入Manifest
+→ 运行Candidate Gate一次
+→ 通过时进入approval_required并立即停止
+→ 不记录User Decision、不Merge、不释放Code Permission、不修改业务代码
 ```
 
 真实场景至少覆盖：
@@ -898,3 +942,100 @@ GOV-DEBT-001 延期污染问题
 不得提前把自动化测试冒充真实 OpenCode + SpecForge 业务项目验收。
 
 不要重新生成全仓巨大日志。优先使用针对性的源码读取、测试和小范围证据。
+
+## V26实际执行结果与V27隔离验证边界（2026-08-04）
+
+```text
+V26 RESULT=FAILED
+FAILED_STAGE=WORKDESK_WI0004_EVIDENCE
+ERROR=missing hard_stop.json
+PATCH_FILES_APPLIED=0/13
+COMMIT/INSTALL/PUSH=NOT_PERFORMED
+SpecForge main/远程HEAD=d6dc931072aca519354fb4bc0857a64aacc58961
+```
+
+根因已经由源码和现场resolution日志证明：`hard_stop.json` 是活动锁；`sf_hard_stop_resolve` 把完整原记录写入 `hard_stop_resolution.jsonl` 后删除活动锁。恢复后缺少活动文件是正常结果。
+
+V27固定执行边界：
+
+```text
+只读验证真实SpecForge远程、本地、工作区和进程边界
+只读审计WorkDesk；hard_stop_resolution.jsonl为稳定历史证据
+WorkDesk证据不足只标记INSUFFICIENT_EVIDENCE，不阻断独立源码修复
+从SpecForge HEAD导出隔离副本
+仅在隔离副本应用13文件补丁
+运行定向测试、TypeScript、daemon-core build、全仓build、git diff --check
+在隔离OPENCODE_CONFIG_DIR执行installer install + verify
+不修改真实SpecForge工作区
+不修改WorkDesk
+不提交、不安装到真实用户目录、不推送
+```
+
+V27隔离验证成功前，不得启动daemon/OpenCode，不得恢复WI-0004。
+
+## V27失败结果与V28隔离验证边界（2026-08-04）
+
+```text
+V27定向测试：73/73通过
+失败阶段：TYPECHECK-DAEMON-CORE
+workspace内部声明未准备：6项模块解析错误
+本次补丁真实类型错误：2处可选workflowPath被收窄为必填string
+真实SpecForge写入：未执行
+WorkDesk写入：未执行
+真实安装、提交、推送：未执行
+```
+
+V28保持原13文件范围，只在隔离副本执行：
+
+```text
+按正式workspace顺序预构建daemon-core内部依赖声明
+定向测试
+紧接daemon-core TypeScript noEmit
+缺省workflowPath失败关闭回归
+daemon-core build
+全仓deterministic build
+git diff --check
+隔离OPENCODE_CONFIG_DIR installer install + verify
+```
+
+V28隔离验证已经成功。真实仓库应用、提交、用户级升级和安装一致性复核完成前，仍不得启动daemon/OpenCode，不得恢复WI-0004，不得修改WorkDesk。
+
+## V28隔离验证成功与V29真实仓库应用边界（2026-08-04）
+
+V28证据包已经复核，结果为：
+
+```text
+RESULT=SUCCESS
+SOURCE_STATE=CLEAN_SOURCE
+LOCAL_HEAD=d6dc931072aca519354fb4bc0857a64aacc58961
+REMOTE_HEAD=d6dc931072aca519354fb4bc0857a64aacc58961
+AUTHORITY_COMMIT=08629b58c6aad82bf669a35e1f2bc8473cfa7ef3
+ISOLATED_PATCH_ACTION=APPLIED_13_OF_13
+DEPENDENCY_PREPARATION=PASS
+TARGETED_TESTS=PASS（74/74）
+TYPECHECK=PASS
+DAEMON_CORE_BUILD=PASS
+WORKSPACE_BUILD=PASS
+GIT_DIFF_CHECK=PASS
+INSTALLER_ISOLATED_VERIFY=PASS（119/119）
+FINAL_SCOPE=PASS_EXACT_13_FILES
+真实SpecForge、WorkDesk、真实用户级安装、提交和推送：均未执行
+daemon/OpenCode：均未启动
+```
+
+V29只允许把同一13文件应用到真实SpecForge仓库，并在真实工作树中复跑同一工程验证。V29必须：
+
+```text
+写入前重新验证远程main、本地HEAD、权威文件、工作区和进程边界
+验证12个已有源文件SHA256和1个新增文件不存在
+在仓库外保存完整备份和日志
+只修改冻结的13个文件
+运行依赖准备、74项定向测试、TypeScript、daemon-core build、全仓build
+运行git diff --check和精确13文件范围审计
+在隔离OPENCODE_CONFIG_DIR执行installer install + verify
+失败时恢复12个原文件并删除新增测试文件
+不修改WorkDesk
+不提交、不推送、不写真实用户级安装
+```
+
+V29成功证据复核前不得提交、推送、安装真实用户级组件或恢复WI-0004。

@@ -246,6 +246,97 @@ registerGate('workflow_selection_gate', 'hard_gate', true, async ctx => {
   ]);
 });
 
+
+type CandidateClassificationForGate = Record<string, unknown>;
+
+function isCandidateClassificationForGate(
+  value: unknown
+): value is CandidateClassificationForGate {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+async function readCandidateClassificationForGate(
+  ctx: GateContext
+): Promise<CandidateClassificationForGate | null> {
+  try {
+    const trigger = JSON.parse(
+      await fs.readFile(workItemTriggerResult(ctx.projectRoot, ctx.workItemId), 'utf-8')
+    );
+    return isCandidateClassificationForGate(trigger?.classification)
+      ? trigger.classification
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+export function classificationRequiresRequirementsCandidateForGate(
+  classification: CandidateClassificationForGate | null
+): boolean {
+  if (!classification) return true;
+  return (
+    classification.requirement_changed === true ||
+    classification.acceptance_criteria_changed === true ||
+    classification.business_rule_changed === true
+  );
+}
+
+export function requiredCandidateKindsForGate(input: {
+  workflowPath?: string;
+  candidatePhase: 'design' | 'requirements' | 'tasks' | 'full';
+  classification: CandidateClassificationForGate | null;
+}): Array<'requirements' | 'design' | 'tasks' | 'trace_delta'> {
+  const { workflowPath, candidatePhase: phase, classification } = input;
+  if (workflowPath === 'task_change_path') return ['tasks', 'trace_delta'];
+  if (
+    workflowPath === 'code_only_fast_path' ||
+    workflowPath === 'contract_change_path' ||
+    workflowPath === 'rollback_path'
+  ) {
+    return [];
+  }
+
+  // Backward-compatible fail-closed fallback when the authoritative
+  // Classification is unavailable.
+  if (!workflowPath || !classification) {
+    if (phase === 'design') return ['design'];
+    if (phase === 'requirements') return ['design', 'requirements'];
+    return ['design', 'requirements', 'tasks', 'trace_delta'];
+  }
+
+  const kinds: Array<'requirements' | 'design' | 'tasks' | 'trace_delta'> = [];
+  if (classification.design_changed === true) kinds.push('design');
+  if (classificationRequiresRequirementsCandidateForGate(classification)) {
+    kinds.push('requirements');
+  }
+  if (phase === 'tasks' || phase === 'full') kinds.push('tasks', 'trace_delta');
+  return Array.from(new Set(kinds));
+}
+
+export function workflowSpecificGateStages(input: {
+  workflowPath?: string;
+  candidatePhase: 'design' | 'requirements' | 'tasks' | 'full';
+  classification: CandidateClassificationForGate | null;
+}): Array<'requirements' | 'design' | 'tasks'> {
+  const { workflowPath, candidatePhase: phase, classification } = input;
+  if (workflowPath === 'task_change_path') return ['tasks'];
+  if (workflowPath === 'code_only_fast_path' || workflowPath === 'rollback_path') return [];
+
+  if (!workflowPath || !classification) {
+    if (phase === 'design') return ['design'];
+    if (phase === 'requirements') return ['requirements'];
+    return ['requirements', 'design', 'tasks'];
+  }
+
+  const stages: Array<'requirements' | 'design' | 'tasks'> = [];
+  if (classificationRequiresRequirementsCandidateForGate(classification)) {
+    stages.push('requirements');
+  }
+  if (classification.design_changed === true) stages.push('design');
+  if (phase === 'tasks' || phase === 'full') stages.push('tasks');
+  return stages;
+}
+
 /**
  * §9.2 required_files_gate — 必需文件存在性
  */
@@ -339,18 +430,12 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
     return makeReport(ctx.workItemId, 'required_files_gate', 'hard_gate', true, checks, inputFiles);
   }
 
-  const requiredKinds: Array<'requirements' | 'design' | 'tasks' | 'trace_delta'> = [];
-  if (ctx.workflowPath === 'task_change_path') {
-    requiredKinds.push('tasks', 'trace_delta');
-  } else if (
-    ctx.workflowPath !== 'code_only_fast_path' &&
-    ctx.workflowPath !== 'contract_change_path' &&
-    ctx.workflowPath !== 'rollback_path'
-  ) {
-    if (phase === 'design') requiredKinds.push('design');
-    else if (phase === 'requirements') requiredKinds.push('design', 'requirements');
-    else requiredKinds.push('design', 'requirements', 'tasks', 'trace_delta');
-  }
+  const classification = await readCandidateClassificationForGate(ctx);
+  const requiredKinds = requiredCandidateKindsForGate({
+    workflowPath: ctx.workflowPath,
+    candidatePhase: phase,
+    classification,
+  });
 
   for (const kind of requiredKinds) {
     const artifacts = await resolveWorkItemSpecArtifacts({
@@ -1643,35 +1728,55 @@ async function runWorkflowSpecificGate(ctx: GateContext): Promise<GateResult> {
     return checkProjectSpecRepairGate(ctx);
   }
 
-  if (ctx.workflowPath === 'task_change_path') {
-    return checkTasksGate(ctx.workItemId, ctx.projectRoot);
+  const classification = await readCandidateClassificationForGate(ctx);
+  const stages = workflowSpecificGateStages({
+    workflowPath: ctx.workflowPath,
+    candidatePhase: phase,
+    classification,
+  });
+  if (stages.length === 0) {
+    return {
+      status: 'pass',
+      blocking_issues: [],
+      warnings: [],
+      next_action: 'continue',
+      details: { workflow_specific_gate: 'not_applicable_for_classification' },
+    };
   }
 
-  if (phase === 'design') {
-    return checkDesignGate(ctx.workItemId, ctx.projectRoot, workflowType);
-  }
-  if (phase === 'requirements') {
-    return checkRequirementsGate(ctx.workItemId, ctx.projectRoot);
-  }
-
-  const results = await Promise.all([
-    checkRequirementsGate(ctx.workItemId, ctx.projectRoot),
-    checkDesignGate(ctx.workItemId, ctx.projectRoot, workflowType),
-    checkTasksGate(ctx.workItemId, ctx.projectRoot),
-  ]);
+  const results = await Promise.all(
+    stages.map(stage => {
+      if (stage === 'requirements') {
+        return checkRequirementsGate(ctx.workItemId, ctx.projectRoot);
+      }
+      if (stage === 'design') {
+        return checkDesignGate(ctx.workItemId, ctx.projectRoot, workflowType);
+      }
+      return checkTasksGate(ctx.workItemId, ctx.projectRoot);
+    })
+  );
   const blockingIssues = results.flatMap(result => result.blocking_issues);
   const warnings = results.flatMap(result => result.warnings);
   const blocked = results.some(result => result.status === 'blocked');
+  const details: Record<string, unknown> = {
+    executed_stages: stages,
+  };
+  for (const [index, stage] of stages.entries()) {
+    const stageDetails = results[index]?.details;
+    if (stage === 'requirements') {
+      details['requirements_candidate_paths'] = stageDetails?.['requirements_candidate_paths'];
+    } else if (stage === 'design') {
+      details['design_candidate_paths'] = stageDetails?.['design_candidate_paths'];
+    } else {
+      details['task_candidate_paths'] = stageDetails?.['task_candidate_paths'];
+    }
+  }
   return {
     status: blocked ? 'blocked' : blockingIssues.length > 0 ? 'fail' : 'pass',
     blocking_issues: blockingIssues,
     warnings,
     next_action: blocked ? 'ask_user' : blockingIssues.length > 0 ? 'revise' : 'continue',
-    details: {
-      requirements_candidate_paths: results[0]?.details?.['requirements_candidate_paths'],
-      design_candidate_paths: results[1]?.details?.['design_candidate_paths'],
-      task_candidate_paths: results[2]?.details?.['task_candidate_paths'],
-    },
+    details,
   };
 }
 

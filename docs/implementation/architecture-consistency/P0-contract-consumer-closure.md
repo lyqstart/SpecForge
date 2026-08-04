@@ -2166,10 +2166,10 @@ created
 → workflow_selected
 → candidate_preparing
 → gates_running
-→ gates_passed
+→ approval_required
 ```
 
-到 `gates_passed` 必须停止。不得在Phase 1执行：
+到 `approval_required` 必须停止。不得在Phase 1执行：
 
 ```text
 User Decision
@@ -2192,3 +2192,231 @@ WI-0006：ReportFormatter显式Module→Project Promotion
 
 不能把WI-0004的同ID规范化宣称为 `CON-PROM-001` Promotion；显式Promotion必须具有
 旧正式关系REMOVE、新正式关系ADD、消费者迁移、兼容性结论和promotion记录。
+
+### 25.10 WI-0004 Phase 1真实运行结果
+
+OpenCode 通过正式 Tool 将 WI-0004 从 `created` 推进到 Candidate Gate，并严格在第二次
+Gate失败后停止：
+
+```text
+第一次Candidate Gate：5 passed / 5 failed
+一次正式修复：补充候选产物并按可恢复HardStop协议恢复
+第二次Candidate Gate：6 passed / 4 failed
+Runtime最终状态：gates_failed
+User Decision：未执行
+Merge：未执行
+Code Permission：未执行
+业务代码修改：未执行
+Verification / Close：未执行
+```
+
+Candidate内容事实：
+
+```text
+Project Contract候选：WorkItemStatus，内容正确
+DOMAIN Module Contract候选：已删除WorkItemStatus，内容正确
+Governance Relation Delta：11条ADD，0条REMOVE，内容正确
+candidate_manifest.entries：仅extension_registry 1项
+```
+
+失败链不是WorkDesk业务内容错误，而是SpecForge产品链存在三个阻断缺陷：
+
+```text
+1. sf_contract_register写入1条显式Manifest后，inferManifestEntries采用“显式条目完全优先”，
+   后续Architecture、Module Design、Module Contract和Trace Delta候选不再进入Manifest。
+2. architecture_change full Candidate Gate无条件要求并执行Requirement Candidate/Gate，
+   与本WI requirement_changed=false等正式Classification冲突。
+3. V25场景文档和提示词使用不存在的gates_passed状态；正式通过状态是approval_required。
+```
+
+运行中 `sf-design` 还调用了 `sf_safe_bash` 尝试写治理产物。Write Guard正确产生HardStop，
+Orchestrator按 `operator_error` 放弃原动作并改用 `sf_artifact_write` 后安全恢复；说明Runtime
+安全边界有效，但Agent/Skill工具约束仍需补强。
+
+### 25.11 修复设计
+
+#### Runtime Candidate Manifest物化
+
+```text
+candidate_preparing
+→ Runtime读取trigger_result.classification
+→ 合并已有显式Manifest条目
+→ 发现规范Candidate路径
+→ 只加入实际Classification要求的Candidate
+→ 检查同一candidate/target冲突
+→ 缺少必需Candidate时拒绝推进
+→ 写入完整candidate_manifest.entries
+→ candidate_prepared
+```
+
+Gate、Approval和Merge继续消费已经冻结的显式Manifest，不在后续阶段重新猜测文件系统。
+这同时保留既有“显式有效Manifest优先”回归规则，并把路径发现职责放回Runtime边界。
+
+WI-0004恢复时，已有CORE Requirement Candidate和Project Data Model Candidate不属于正式
+Classification要求，只保留为失败轮次历史证据，不进入Manifest，也不参与Merge。
+
+#### Classification驱动Candidate Gate
+
+```text
+Requirement相关字段为true → Requirement Candidate + Requirements Gate
+design_changed=true → Module Design Candidate + Design Gate
+architecture_changed=true → Architecture Candidate
+data_model_changed=true → Data Model Candidate
+module_contract_changed=true → Module Contract Candidate
+full实现路径 → tasks.md + trace_delta.md + Tasks Gate
+```
+
+Classification缺失时保留原有严格配置并失败关闭，避免旧项目静默降级。
+
+#### Agent / Skill边界
+
+```text
+sf-design不得调用sf_safe_bash写治理产物
+专业Agent只写自己拥有的Candidate
+Runtime在candidate_preparing→candidate_prepared物化Manifest
+Candidate Gate通过后的正式状态是approval_required
+```
+
+### 25.12 修复后恢复边界
+
+修复、测试、提交、推送和用户级升级完成前，不得继续WI-0004。
+
+升级后由用户手工启动daemon/OpenCode，通过正式Tool执行：
+
+```text
+gates_failed → candidate_preparing
+→ 不新增、不删除、不手工改写现有Candidate
+→ candidate_preparing → candidate_prepared
+→ 验证Runtime生成完整Manifest
+→ candidate_prepared → gates_running
+→ 运行Candidate Gate一次
+→ 通过时进入approval_required并立即停止
+```
+
+恢复阶段不得记录User Decision、不得Merge、不得释放Code Permission、不得修改业务代码。
+
+### 25.13 V26产品修复与工程验证边界
+
+V26实现范围：
+
+```text
+packages/daemon-core/src/tools/lib/governance-invariants-v11.ts
+packages/daemon-core/src/tools/handlers/sf-state-transition.ts
+packages/daemon-core/src/tools/lib/gate-runner-v11.ts
+setup/userlevel-opencode/agents/sf-design.md
+setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md
+相关Manifest、状态边界、Gate、Agent/Skill和经验回归测试
+```
+
+Runtime职责收口：
+
+```text
+candidate_preparing → candidate_prepared前读取权威Runtime状态
+→ 读取trigger_result.classification
+→ 从已有显式条目与规范Candidate文件形成实际所需Manifest
+→ 排除Classification未要求的历史Candidate
+→ 检查缺项、重复candidate和重复target
+→ 原子替换candidate_manifest.json
+→ 状态迁移失败时恢复迁移前Manifest
+```
+
+Gate职责收口：
+
+```text
+Requirement语义未变化 → 不要求Requirement Candidate，不执行Requirements Gate
+Requirement语义变化 → 要求Requirement Candidate并执行Requirements Gate
+design_changed=true → 要求Design Candidate并执行Design Gate
+full实现阶段 → tasks.md、trace_delta.md和Tasks Gate保持必需
+Classification缺失 → 保留历史严格profile并失败关闭
+```
+
+V26自动化验证不能替代WorkDesk恢复重验。产品修复提交、用户级安装升级和
+installer一致性通过后，`ERR-067`、`ERR-068`、`ERR-070`仍保持
+`FIXED_PENDING_WORKDESK_RETEST`；只有WI-0004通过正式Tool进入
+`approval_required`，且Manifest和Gate证据符合冻结预期，才能关闭。
+
+### 25.14 V26零写入失败与V27隔离验证修正
+
+V26没有进入产品修复或工程验证。实际结果：
+
+```text
+RESULT=FAILED
+FAILED_STAGE=WORKDESK_WI0004_EVIDENCE
+ERROR=missing hard_stop.json
+PATCH_FILES_APPLIED=0/13
+```
+
+HardStop生命周期一手证据表明：活动 `hard_stop.json` 在恢复完成后由Runtime删除；完整历史记录稳定保存在 `hard_stop_resolution.jsonl` 的 `original_hard_stop` 字段中。V26把活动锁错误当作永久证据，属于ERR-071。
+
+V27保持13文件产品修复范围，不修改权威方案，不修改WorkDesk。V27先从 `main@d6dc931072aca519354fb4bc0857a64aacc58961` 导出隔离副本，只在隔离副本应用补丁并完成：
+
+```text
+Candidate Manifest Runtime物化与同步回归
+规范Candidate发现、缺项和冲突回归
+Classification驱动Candidate与专业Gate回归
+正式approval_required状态回归
+sf-design禁止sf_safe_bash写治理产物
+architecture_change Skill使用sf_artifact_write
+TypeScript noEmit
+daemon-core build
+全仓deterministic build
+git diff --check
+隔离用户目录installer install + verify
+```
+
+WorkDesk只读审计不再作为源码修复的因果前置。缺少活动HardStop时读取resolution日志；其他现场证据不足标记 `INSUFFICIENT_EVIDENCE`，但不得触碰或清理WorkDesk。V27成功前不提交、不安装真实用户级组件、不推送、不恢复WI-0004。
+
+### 25.15 V27类型检查失败与V28验证顺序修正
+
+V27只在隔离副本应用13个文件，真实仓库、WorkDesk、用户级安装、daemon和OpenCode均未改变。实际证据：
+
+```text
+V27定向测试73/73通过
+TYPECHECK-DAEMON-CORE失败
+workspace内部依赖声明缺失：6项
+本次gate-runner可选workflowPath类型错误：2项
+后续daemon-core build、全仓build、installer隔离验证：未执行
+```
+
+内部workspace包的 `types` 入口指向各自构建生成的 `dist` 声明，因此V27直接运行daemon-core noEmit的顺序不成立；同时正式 `GateContext.workflowPath` 为可选字段，本次新增辅助函数错误收窄为必填字符串。
+
+V28继续冻结同一13文件产品范围：先按正式workspace拓扑构建daemon-core的内部依赖声明，再运行定向测试；随后立即运行daemon-core TypeScript noEmit、daemon-core build、全仓deterministic build、`git diff --check` 和隔离installer install/verify。缺少workflowPath时Candidate和专业Gate采用历史严格profile失败关闭，并由运行回归与TypeScript共同覆盖。
+
+V28隔离验证已经成功；真实SpecForge、WorkDesk和真实用户级安装在V28中均未修改。
+
+### 25.16 V28隔离验证成功与V29真实仓库应用边界
+
+V28证据结果：
+
+```text
+13个冻结文件：隔离应用成功
+依赖声明准备：通过
+定向测试：74/74通过
+daemon-core TypeScript noEmit：通过
+daemon-core build：通过
+全仓deterministic build：通过
+git diff --check：通过
+隔离installer install + verify：119/119通过
+最终范围：精确13文件
+权威文件：未修改
+真实SpecForge、WorkDesk、真实用户级安装：未修改
+提交、推送：未执行
+daemon、OpenCode：未启动
+```
+
+V28证明当前13文件实现和验证顺序能够闭合，但不能替代真实仓库应用，也不能替代WorkDesk恢复重验。
+
+V29允许把同一13文件应用到真实SpecForge仓库并复跑相同验证。V29失败必须回滚到
+`main@d6dc931072aca519354fb4bc0857a64aacc58961` 的12个原文件并删除新增测试文件；
+V29成功后保持13文件未提交状态，先上传证据复核，不安装真实用户级组件、不推送、不启动
+daemon/OpenCode、不恢复WI-0004。
+
+V29成功并完成提交、推送和用户级升级后：
+
+```text
+ERR-067、ERR-068、ERR-070：FIXED_PENDING_WORKDESK_RETEST
+ERR-069、ERR-071、ERR-072：FIXED_VALIDATED_V28
+```
+
+只有WI-0004通过正式Tool重新进入 `approval_required`，且Manifest、Classification Gate和
+Agent工具边界符合冻结预期，才能关闭ERR-067、ERR-068和ERR-070。

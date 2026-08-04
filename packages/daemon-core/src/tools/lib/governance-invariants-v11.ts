@@ -33,6 +33,7 @@ export type ManifestEntry = {
   target_path: string;
   operation: string;
   type?: string;
+  module_id?: string;
   inferred?: boolean;
   normalized?: boolean;
 };
@@ -337,6 +338,323 @@ function preferExplicitManifestEntriesForInferenceV12(manifest: any): any[] | nu
   if (!entries.every(isUsableExplicitManifestEntryForInferenceV12)) return null;
   return entries.map(normalizeManifestEntryForInferenceV12);
 }
+
+export type CandidateManifestMaterializationResult = {
+  entries: ManifestEntry[];
+  required_candidate_types: string[];
+  ignored_candidate_paths: string[];
+};
+
+type CandidateClassificationLike = Record<string, unknown>;
+
+function isClassificationObject(value: unknown): value is CandidateClassificationLike {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function classificationRequiresRequirementsCandidate(
+  classification: CandidateClassificationLike
+): boolean {
+  return (
+    classification.requirement_changed === true ||
+    classification.acceptance_criteria_changed === true ||
+    classification.business_rule_changed === true
+  );
+}
+
+function candidateEntryKey(entry: ManifestEntry): string {
+  return `${normalizeSlash(entry.candidate_path).toLowerCase()}=>${normalizeSlash(entry.target_path).toLowerCase()}`;
+}
+
+function canonicalExplicitManifestEntriesForMaterialization(manifest: any): ManifestEntry[] {
+  const rawEntries = Array.isArray(manifest?.entries) ? manifest.entries : [];
+  const entries: ManifestEntry[] = [];
+  for (const raw of rawEntries) {
+    if (!isUsableExplicitManifestEntryForInferenceV12(raw)) {
+      throw new Error(
+        'CANDIDATE_MANIFEST_EXPLICIT_ENTRY_INVALID: every explicit entry must have a canonical candidate_path and a .specforge/project target_path'
+      );
+    }
+    const normalized = normalizeManifestEntryForInferenceV12(raw);
+    entries.push({
+      candidate_path: normalized.candidate_path,
+      target_path: normalized.target_path,
+      operation: String(raw?.operation ?? 'replace'),
+      type: normalized.type,
+      module_id: normalized.module_id,
+      inferred: false,
+      normalized: true,
+    });
+  }
+  return entries;
+}
+
+function listCanonicalCandidateFiles(workItemDir: string): Array<{
+  candidate_path: string;
+  target_path: string;
+  type: string;
+  module_id?: string;
+}> {
+  const discovered: Array<{
+    candidate_path: string;
+    target_path: string;
+    type: string;
+    module_id?: string;
+  }> = [];
+  const append = (
+    candidatePath: string,
+    targetPath: string,
+    type: string,
+    moduleId?: string
+  ): void => {
+    if (!fsSync.existsSync(path.join(workItemDir, candidatePath))) return;
+    discovered.push({
+      candidate_path: candidatePath,
+      target_path: targetPath,
+      type,
+      module_id: moduleId,
+    });
+  };
+
+  append(
+    'candidates/project/architecture.candidate.md',
+    '.specforge/project/architecture.md',
+    'architecture'
+  );
+  append(
+    'candidates/project/data_model.candidate.md',
+    '.specforge/project/data_model.md',
+    'data_model'
+  );
+  append(
+    'candidates/project/extension_registry.json',
+    '.specforge/project/extension_registry.json',
+    'extension_registry'
+  );
+
+  const modulesRoot = path.join(workItemDir, 'candidates', 'project', 'modules');
+  try {
+    for (const entry of fsSync
+      .readdirSync(modulesRoot, { withFileTypes: true })
+      .filter(item => item.isDirectory())
+      .sort((left, right) => left.name.localeCompare(right.name))) {
+      const moduleId = String(entry.name ?? '').trim();
+      if (!moduleId) continue;
+      const candidateRoot = `candidates/project/modules/${moduleId}`;
+      const targetRoot = `.specforge/project/modules/${moduleId}`;
+      append(
+        `${candidateRoot}/module.candidate.json`,
+        `${targetRoot}/module.json`,
+        'module_definition',
+        moduleId
+      );
+      append(
+        `${candidateRoot}/requirements.candidate.md`,
+        `${targetRoot}/requirements.md`,
+        'requirements',
+        moduleId
+      );
+      append(
+        `${candidateRoot}/design.candidate.md`,
+        `${targetRoot}/design.md`,
+        'design',
+        moduleId
+      );
+      append(
+        `${candidateRoot}/contracts.candidate.json`,
+        `${targetRoot}/contracts.json`,
+        'module_contract',
+        moduleId
+      );
+      append(
+        `${candidateRoot}/trace.candidate.md`,
+        `${targetRoot}/trace.md`,
+        'module_trace',
+        moduleId
+      );
+    }
+  } catch {
+    // No module Candidates have been produced.
+  }
+
+  append(
+    'candidates/trace_delta.md',
+    '.specforge/project/trace_matrix.md',
+    'trace_delta'
+  );
+  return discovered;
+}
+
+/**
+ * Runtime-owned Candidate Manifest materialization.
+ *
+ * Candidate-producing Tools may create files at different times. Before the
+ * authoritative candidate_preparing -> candidate_prepared transition, Runtime
+ * merges already-explicit entries with the canonical Candidates required by the
+ * actual Classification. Unrelated files remain historical WI evidence and are
+ * deliberately excluded from the merge list.
+ */
+export function materializeCandidateManifestEntries(
+  manifest: any,
+  workItemDir: string,
+  classificationValue: unknown
+): CandidateManifestMaterializationResult {
+  if (!isClassificationObject(classificationValue)) {
+    throw new Error(
+      'CANDIDATE_MANIFEST_CLASSIFICATION_REQUIRED: trigger_result.classification must exist before candidate_prepared'
+    );
+  }
+  const classification = classificationValue;
+  const explicit = canonicalExplicitManifestEntriesForMaterialization(manifest);
+  const discovered = listCanonicalCandidateFiles(workItemDir);
+  const selected: ManifestEntry[] = [];
+  const candidateToTarget = new Map<string, string>();
+  const targetToCandidate = new Map<string, string>();
+
+  const appendEntry = (entry: ManifestEntry): void => {
+    const candidatePath = normalizeSlash(entry.candidate_path);
+    const targetPath = normalizeSlash(entry.target_path);
+    const candidateKey = candidatePath.toLowerCase();
+    const targetKey = targetPath.toLowerCase();
+    const existingTarget = candidateToTarget.get(candidateKey);
+    const existingCandidate = targetToCandidate.get(targetKey);
+    if (existingTarget && existingTarget !== targetKey) {
+      throw new Error(
+        `CANDIDATE_MANIFEST_CONFLICT: ${candidatePath} maps to both ${existingTarget} and ${targetPath}`
+      );
+    }
+    if (existingCandidate && existingCandidate !== candidateKey) {
+      throw new Error(
+        `CANDIDATE_MANIFEST_CONFLICT: target ${targetPath} is produced by both ${existingCandidate} and ${candidatePath}`
+      );
+    }
+    candidateToTarget.set(candidateKey, targetKey);
+    targetToCandidate.set(targetKey, candidateKey);
+    const key = candidateEntryKey({
+      ...entry,
+      candidate_path: candidatePath,
+      target_path: targetPath,
+    });
+    if (selected.some(existing => candidateEntryKey(existing) === key)) return;
+    selected.push({
+      ...entry,
+      candidate_path: candidatePath,
+      target_path: targetPath,
+      operation: String(entry.operation ?? 'replace'),
+    });
+  };
+
+  const requirementsRequired = classificationRequiresRequirementsCandidate(classification);
+  const architectureRequired = classification.architecture_changed === true;
+  const dataModelRequired = classification.data_model_changed === true;
+  const designRequired = classification.design_changed === true;
+  const moduleContractRequired = classification.module_contract_changed === true;
+  const moduleDefinitionRequired = classification.module_boundary_changed === true;
+  const projectContractChanged =
+    classification.api_contract_changed === true ||
+    classification.contract_registry_only === true;
+  const workflowPath = String(manifest?.workflow_path ?? '').trim();
+  const knownMaterializedTypes = new Set([
+    'architecture',
+    'data_model',
+    'requirements',
+    'design',
+    'module_contract',
+    'module_definition',
+    'extension_registry',
+    'trace_delta',
+    'module_trace',
+  ]);
+  const includeType = (type: string): boolean => {
+    switch (type) {
+      case 'architecture':
+        return architectureRequired;
+      case 'data_model':
+        return dataModelRequired;
+      case 'requirements':
+        return requirementsRequired;
+      case 'design':
+        return designRequired;
+      case 'module_contract':
+        return moduleContractRequired;
+      case 'module_definition':
+        return moduleDefinitionRequired;
+      case 'extension_registry':
+        return projectContractChanged;
+      case 'trace_delta':
+        return workflowPath !== 'code_only_fast_path';
+      case 'module_trace':
+        return false;
+      default:
+        return true;
+    }
+  };
+  const discoveredByCandidate = new Map(
+    discovered.map(entry => [normalizeSlash(entry.candidate_path).toLowerCase(), entry])
+  );
+  for (const entry of explicit) {
+    const discoveredEntry = discoveredByCandidate.get(
+      normalizeSlash(entry.candidate_path).toLowerCase()
+    );
+    const effectiveEntry: ManifestEntry = {
+      ...entry,
+      type: entry.type ?? discoveredEntry?.type,
+      module_id: entry.module_id ?? discoveredEntry?.module_id,
+    };
+    const effectiveType = String(effectiveEntry.type ?? '').trim();
+    if (knownMaterializedTypes.has(effectiveType) && !includeType(effectiveType)) {
+      continue;
+    }
+    appendEntry(effectiveEntry);
+  }
+
+  const includeDiscovered = (entry: (typeof discovered)[number]): boolean =>
+    includeType(entry.type);
+
+  for (const entry of discovered) {
+    if (!includeDiscovered(entry)) continue;
+    appendEntry({
+      ...entry,
+      operation: 'replace',
+      inferred: true,
+      normalized: true,
+    });
+  }
+
+  const requiredCandidateTypes: string[] = [];
+  const requireType = (required: boolean, type: string, description: string): void => {
+    if (!required) return;
+    requiredCandidateTypes.push(type);
+    if (!selected.some(entry => entry.type === type)) {
+      throw new Error(
+        `CANDIDATE_MANIFEST_REQUIRED_ENTRY_MISSING: ${description} requires a ${type} Candidate`
+      );
+    }
+  };
+  requireType(architectureRequired, 'architecture', 'architecture_changed=true');
+  requireType(dataModelRequired, 'data_model', 'data_model_changed=true');
+  requireType(requirementsRequired, 'requirements', 'Requirement Classification changed');
+  requireType(designRequired, 'design', 'design_changed=true');
+  requireType(moduleContractRequired, 'module_contract', 'module_contract_changed=true');
+  requireType(moduleDefinitionRequired, 'module_definition', 'module_boundary_changed=true');
+  requireType(
+    projectContractChanged,
+    'extension_registry',
+    'api_contract_changed=true or contract_registry_only=true'
+  );
+
+  const selectedPaths = new Set(selected.map(entry => normalizeSlash(entry.candidate_path)));
+  const ignoredCandidatePaths = discovered
+    .map(entry => normalizeSlash(entry.candidate_path))
+    .filter(candidatePath => !selectedPaths.has(candidatePath))
+    .sort();
+
+  return {
+    entries: selected,
+    required_candidate_types: requiredCandidateTypes,
+    ignored_candidate_paths: ignoredCandidatePaths,
+  };
+}
+
 export function inferManifestEntries(manifest: any, workItemDir: string): ManifestEntry[] {
   const explicitEntriesV12 = preferExplicitManifestEntriesForInferenceV12(manifest);
   if (explicitEntriesV12) {

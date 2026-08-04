@@ -25,9 +25,19 @@ import * as os from "node:os";
  * spy-able transition(). This mirrors the real execution path
  * (transitionWithEvidence -> projectManager.getProjectStateManager().transition()).
  */
-function makeStateManagerDeps() {
-  const smTransition = vi.fn().mockResolvedValue(undefined);
-  const getProjectStateManager = vi.fn().mockResolvedValue({ transition: smTransition });
+function makeStateManagerDeps(options?: {
+  transitionError?: Error;
+  currentState?: string | null;
+}) {
+  const smTransition = options?.transitionError
+    ? vi.fn().mockRejectedValue(options.transitionError)
+    : vi.fn().mockResolvedValue(undefined);
+  const stateManager: Record<string, any> = { transition: smTransition };
+  if (options && Object.prototype.hasOwnProperty.call(options, "currentState")) {
+    stateManager.getState = vi.fn().mockResolvedValue(options.currentState);
+    stateManager.rebuildFromEventsFile = vi.fn().mockResolvedValue({ replayed: true });
+  }
+  const getProjectStateManager = vi.fn().mockResolvedValue(stateManager);
   // transitionFull is intentionally provided to prove it is NEVER called.
   const transitionFull = vi.fn().mockResolvedValue({});
   return {
@@ -38,6 +48,7 @@ function makeStateManagerDeps() {
     smTransition,
     getProjectStateManager,
     transitionFull,
+    stateManager,
   };
 }
 
@@ -558,4 +569,257 @@ describe("sf_state_transition - closure file initialization on create", () => {
     const after = await fs.readFile(path.join(wiDir, "tasks.md"), "utf-8");
     expect(after).toBe(realTasks);
   });
+});
+
+// =========================================================================
+// Runtime-owned Candidate Manifest materialization at the phase boundary.
+// =========================================================================
+
+describe("sf_state_transition - Candidate Manifest materialization", () => {
+  let tempDir: string;
+  let handler: (...args: any[]) => Promise<any>;
+
+  beforeAll(() => {
+    handler = getHandler("sf_state_transition")!;
+    expect(handler).toBeDefined();
+  });
+
+  beforeEach(async () => {
+    tempDir = path.join(
+      os.tmpdir(),
+      `sf-st-manifest-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    await fs.mkdir(tempDir, { recursive: true });
+    await writeManifest(tempDir, "PSV-0002");
+  });
+
+  afterEach(async () => {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  });
+
+  async function writeCandidate(relative: string, content = "# Candidate\n"): Promise<void> {
+    const target = path.join(wiDirFor(tempDir, "WI-0004"), relative);
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, content, "utf-8");
+  }
+
+  async function writeCandidateContext(options?: { includeDesign?: boolean }): Promise<void> {
+    const wiDir = wiDirFor(tempDir, "WI-0004");
+    await fs.mkdir(wiDir, { recursive: true });
+    await fs.writeFile(
+      path.join(wiDir, "work_item.json"),
+      JSON.stringify({
+        schema_version: "1.1",
+        work_item_id: "WI-0004",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, "trigger_result.json"),
+      JSON.stringify({
+        schema_version: "1.0",
+        work_item_id: "WI-0004",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+        classification: {
+          requirement_changed: false,
+          acceptance_criteria_changed: false,
+          business_rule_changed: false,
+          architecture_changed: true,
+          data_model_changed: false,
+          design_changed: true,
+          module_contract_changed: true,
+          module_boundary_changed: false,
+          api_contract_changed: true,
+        },
+      }),
+    );
+    await fs.writeFile(
+      path.join(wiDir, "candidate_manifest.json"),
+      JSON.stringify({
+        schema_version: "1.0",
+        work_item_id: "WI-0004",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+        base_spec_version: "PSV-0002",
+        entries: [
+          {
+            candidate_path: "candidates/project/extension_registry.json",
+            target_path: ".specforge/project/extension_registry.json",
+            operation: "replace",
+            type: "extension_registry",
+          },
+        ],
+      }),
+    );
+    await writeCandidate(
+      "candidates/project/extension_registry.json",
+      '{"contracts":{"shared_enums":[]}}\n',
+    );
+    await writeCandidate("candidates/project/architecture.candidate.md");
+    await writeCandidate("candidates/project/data_model.candidate.md");
+    await writeCandidate("candidates/project/modules/DOMAIN/requirements.candidate.md");
+    if (options?.includeDesign !== false) {
+      await writeCandidate("candidates/project/modules/DOMAIN/design.candidate.md");
+    }
+    await writeCandidate(
+      "candidates/project/modules/DOMAIN/contracts.candidate.json",
+      '{"schema_version":"1.0","module_code":"DOMAIN","contracts":{}}\n',
+    );
+    await writeCandidate("candidates/trace_delta.md");
+  }
+
+  it("materializes the complete Classification-driven manifest before advancing state", async () => {
+    await writeCandidateContext();
+    const { deps, smTransition } = makeStateManagerDeps({ currentState: "candidate_preparing" });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.candidate_manifest_materialization.entry_count).toBe(5);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+
+    const manifest = JSON.parse(
+      await fs.readFile(
+        path.join(wiDirFor(tempDir, "WI-0004"), "candidate_manifest.json"),
+        "utf-8",
+      ),
+    );
+    expect(manifest.base_spec_version).toBe("PSV-0002");
+    expect(manifest.entries.map((entry: any) => entry.type)).toEqual([
+      "extension_registry",
+      "architecture",
+      "design",
+      "module_contract",
+      "trace_delta",
+    ]);
+    expect(
+      manifest.entries.some((entry: any) => entry.type === "requirements"),
+    ).toBe(false);
+    expect(
+      manifest.entries.some((entry: any) => entry.type === "data_model"),
+    ).toBe(false);
+  });
+
+  it("does not advance when a required Candidate is missing", async () => {
+    await writeCandidateContext({ includeDesign: false });
+    const { deps, smTransition } = makeStateManagerDeps({ currentState: "candidate_preparing" });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("CANDIDATE_MANIFEST_MATERIALIZATION_FAILED");
+    expect(result.error).toContain("CANDIDATE_MANIFEST_REQUIRED_ENTRY_MISSING");
+    expect(result.state_advanced).toBe(false);
+    expect(smTransition).not.toHaveBeenCalled();
+  });
+  it("rejects a missing authoritative state before changing the Manifest", async () => {
+    await writeCandidateContext();
+    const manifestPath = path.join(
+      wiDirFor(tempDir, "WI-0004"),
+      "candidate_manifest.json",
+    );
+    const before = await fs.readFile(manifestPath, "utf-8");
+    const { deps, smTransition } = makeStateManagerDeps({
+      currentState: null,
+    });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("CANDIDATE_MANIFEST_STATE_MISMATCH");
+    expect(smTransition).not.toHaveBeenCalled();
+    expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+  });
+
+  it("rejects an authoritative-state mismatch before changing the Manifest", async () => {
+    await writeCandidateContext();
+    const manifestPath = path.join(
+      wiDirFor(tempDir, "WI-0004"),
+      "candidate_manifest.json",
+    );
+    const before = await fs.readFile(manifestPath, "utf-8");
+    const { deps, smTransition } = makeStateManagerDeps({
+      currentState: "gates_failed",
+    });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("CANDIDATE_MANIFEST_STATE_MISMATCH");
+    expect(smTransition).not.toHaveBeenCalled();
+    expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+  });
+
+  it("restores the previous Manifest when the authoritative transition fails", async () => {
+    await writeCandidateContext();
+    const manifestPath = path.join(
+      wiDirFor(tempDir, "WI-0004"),
+      "candidate_manifest.json",
+    );
+    const before = await fs.readFile(manifestPath, "utf-8");
+    const { deps, smTransition } = makeStateManagerDeps({
+      transitionError: new Error("simulated StateManager failure"),
+      currentState: "candidate_preparing",
+    });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.candidate_manifest_rolled_back).toBe(true);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+    expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+  });
+
 });

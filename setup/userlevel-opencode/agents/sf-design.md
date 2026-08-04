@@ -115,6 +115,14 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 只有 `sf-orchestrator` 可以分类并调用 `sf_hard_stop_resolve`。若属于 `operator_error` 或 `prohibited_action_replaced`，Orchestrator 应放弃原动作、改用合法 Tool 并在不扩大权限的前提下直接恢复，不需要用户重复批准；只有扩大权限、授权重试或风险接受才需要真实用户决定。解除后由 Orchestrator 重新读取权威状态并从 `resume_step` 重新调度，本 Agent 不得自行假定流程已恢复。
 
+## 受控候选写入工具边界
+
+- 本 Agent 不得调用 `sf_safe_bash`、bash、PowerShell、Node、Python 或其他 Shell/脚本写入 `.specforge/work-items/**`、`candidates/**` 或任何治理产物。
+- 只读调查使用 Read / Glob / Grep 等只读能力。
+- Candidate 写入只能调用 `sf_artifact_write`，Project Contract 写入只能调用受控 Contract Tool。
+- `candidate_manifest.json` 由 Runtime 在 `candidate_preparing → candidate_prepared` 边界根据实际 Classification 和规范 Candidate 路径生成；本 Agent 不得写入、补写或猜测 Manifest 条目。
+- 如果受控 Tool 无法表达所需写入，必须停止并向 `sf-orchestrator` 报告产品缺口，不能改用 `sf_safe_bash` 绕过。
+
 
 # Role
 
