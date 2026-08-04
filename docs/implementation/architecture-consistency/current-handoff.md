@@ -1269,3 +1269,210 @@ V42不执行用户级安装，不修改WorkDesk或WI-0004。下一阶段按顺�
 ```
 
 WorkDesk重验期间禁止修改Candidate内容、运行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V43真实重验、V44失败与V45边界（2026-08-04）
+
+```text
+SPECFORGE_HEAD=c01d09866aeef93d64bd08026bf0ccff654f51cd
+V43_USERLEVEL_UPGRADE=SUCCESS
+WORKDESK_STATE=gates_failed
+CANDIDATE_CONTENT_CHANGED=NO
+MANIFEST_ENTRIES=5
+MANIFEST_EXCLUDED_HISTORY=2
+ERR-078=CLOSED_WORKDESK_REAL_RETEST
+ERR-075=BLOCKED_BY_ERR-088
+```
+
+V44隔离验证结果：
+
+```text
+REAL_ARCHITECTURE_TITLE_TEST=PASS
+ARCHITECTURE_CARRIER_TEST=PASS
+DESIGN_GOVERNANCE_TESTS=PASS
+INVESTIGATION_GATE_TESTS=3_FAILED
+FIXED_TEXT_CONSUMER_TESTS=2_FAILED
+REAL_REPOSITORY_WRITE=NONE
+WORKDESK_WRITE=NONE
+USERLEVEL_INSTALL=NONE
+```
+
+失败分类：
+
+```text
+ERR-088=真实Architecture标题需要受控后缀兼容
+ERR-089=V44使用\s导致标题匹配跨行吞掉首条正文
+ERR-090=两个固定文本消费者未与最终状态生产者同步
+```
+
+V45允许精确8文件：共享Matcher、Architecture Carrier真实标题测试、Matcher专项回归、既有经验门禁、ERR-088专项测试、经验台账和两份状态文档。产品架构、Contract、Gate职责、Write Guard、Agent/Skill、状态机均不变。
+
+WorkDesk保持 `gates_failed`。V45隔离验证、真实应用、提交、用户级升级完成前，不得修改Candidate、回退状态或再次运行Gate。
+
+## V45唯一测试转义失败与V46边界（2026-08-04）
+
+```text
+V45_BASELINE_CONTROL=PASS
+V45_ISOLATED_PATCH=APPLIED_EXACT_8_FILES
+V45_TARGETED_TESTS=143 passed / 1 failed
+PRODUCT_MATCHER_TESTS=PASS
+REAL_ARCHITECTURE_TITLE=PASS
+INVESTIGATION_GATES=PASS
+DESIGN_GOVERNANCE=PASS
+EXPERIENCE_GATE=PASS
+FAILED_TEST=ERR-088—ERR-090专项测试第54行
+REAL_REPOSITORY_WRITE=NONE
+WORKDESK_WRITE=NONE
+USERLEVEL_INSTALL=NONE
+```
+
+唯一失败ERR-091：
+
+```text
+正式P0文本=标题内部空白全部使用[ \t]（字面量反斜杠+t）
+测试普通字符串=标题内部空白全部使用[ <TAB>]（运行时制表符）
+```
+
+V46不修改产品Matcher、Architecture Carrier或Investigation逻辑，只把专项测试改为 `String.raw`，补录ERR-091/EXP-069，并同步全部状态消费者。最终范围仍为精确8文件。
+
+WorkDesk保持 `gates_failed`。V46隔离验证、真实应用、提交和用户级升级完成前，不得修改Candidate、回退状态或再次运行Gate。
+
+## V46唯一String.raw非ASCII失败与V47边界（2026-08-04）
+
+```text
+V46_BASELINE_CONTROL=PASS
+V46_ISOLATED_PATCH=APPLIED_EXACT_8_FILES
+V46_TARGETED_TESTS=143 passed / 1 failed
+PRODUCT_MATCHER_TESTS=PASS
+REAL_ARCHITECTURE_TITLE=PASS
+INVESTIGATION_GATES=PASS
+DESIGN_GOVERNANCE=PASS
+FAILED_TEST=ERR-088—ERR-091专项测试第59行
+EXPECTED_RUNTIME_VALUE=\u6807\u9898...（字面量Unicode转义）
+P0_ACTUAL_VALUE=中文正文 + 字面量\t
+REAL_REPOSITORY_WRITE=NONE
+WORKDESK_WRITE=NONE
+USERLEVEL_INSTALL=NONE
+```
+
+ERR-092说明：在当前Bun测试转换链中，`String.raw` 的非ASCII模板内容被暴露为Unicode转义源文本。V47改用普通中文字符串并对反斜杠做双重转义。
+
+V47不修改产品Matcher、Architecture Carrier或Matcher专项产品测试，只补录ERR-092/EXP-070并同步固定文本消费者。最终范围仍为精确8文件。
+
+WorkDesk保持 `gates_failed`。V47隔离验证、真实应用、提交和用户级升级完成前，不得修改Candidate、回退状态或再次运行Gate。
+
+## V47隔离成功与V48真实应用边界（2026-08-04）
+
+```text
+V47_RESULT=SUCCESS
+V47_BASELINE_CONTROL=PASS
+V47_TARGETED_TESTS=PASS_144
+V47_TYPECHECK=PASS
+V47_DAEMON_CORE_BUILD=PASS
+V47_WORKSPACE_BUILD=PASS
+V47_GIT_DIFF_CHECK=PASS
+V47_INSTALLER_ISOLATED_VERIFY=PASS
+V47_FINAL_SCOPE=PASS_EXACT_8_FILES
+V47_WORKDESK_AUDIT=PASS_UNCHANGED
+V47_REAL_REPOSITORY_WRITE=NONE
+```
+
+V47证明：
+
+```text
+真实Project Architecture破折号标题可以识别
+标准标题和直接括号标题继续兼容
+标题匹配不会跨行吞掉下一行首条正文
+嵌入式标题、无受控分隔符后缀和空说明继续拒绝
+Requirements、Design和Architecture Carrier消费者共同通过
+ERR-090—ERR-092固定文本验证缺陷闭合
+```
+
+V48只允许把V47精确8文件应用到真实SpecForge，并重新执行144项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check`和隔离installer verify。
+
+WorkDesk保持 `gates_failed`，Candidate内容保持不变。V48不提交、不推送、不安装真实用户级组件，不运行WI-0004 Gate。
+
+## V48真实应用成功与V49提交前状态闭包（2026-08-04）
+
+```text
+V48_RESULT=SUCCESS
+V48_PATCH_ACTION_REAL_REPOSITORY=APPLIED_EXACT_8_FILES
+V48_TARGETED_TESTS=PASS_144
+V48_TYPECHECK=PASS
+V48_DAEMON_CORE_BUILD=PASS
+V48_WORKSPACE_BUILD=PASS
+V48_GIT_DIFF_CHECK=PASS
+V48_INSTALLER_ISOLATED_VERIFY=PASS
+V48_FINAL_SCOPE=PASS_EXACT_8_FILES
+V48_WORKTREE=DIRTY_EXACT_8_FILES
+V48_WORKDESK_AUDIT=PASS_UNCHANGED
+V48_REAL_INSTALL_ACTION=NOT_PERFORMED
+V48_COMMIT_ACTION=NOT_PERFORMED
+V48_PUSH_ACTION=NOT_PERFORMED
+```
+
+V48已经把V47验证通过的精确8文件应用到真实SpecForge。共享Matcher、真实Architecture标题、Investigation和Design Governance消费者均在真实工作树重新验证通过。
+
+V49只允许更新现有8文件中的5个状态消费者：
+
+```text
+docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
+docs/implementation/architecture-consistency/current-handoff.md
+docs/rule/specforge-development-error-ledger-and-experience.md
+packages/daemon-core/tests/unit/specforge-development-err088.test.ts
+packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts
+```
+
+以下3个产品/回归文件必须保持V48哈希：
+
+```text
+packages/daemon-core/src/tools/lib/sf_section_matcher.ts
+packages/daemon-core/tests/design-governance-architecture-carrier.test.ts
+packages/daemon-core/tests/section-matcher-real-title-regression.test.ts
+```
+
+V49成功后进入提交推送。提交前不安装真实用户级组件，不修改WorkDesk或WI-0004，不运行Gate。
+
+## V50提交推送闭包与下一阶段边界（2026-08-04）
+
+V50提交内容保持V49验证通过的精确8文件，其中5个状态消费者在提交前对账为稳定的提交后状态。提交前完整验证必须满足：
+
+```text
+PRIOR_FAILURE_RECONCILIATION=PASS
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+TARGETED_TESTS=PASS_144
+TYPECHECK=PASS
+DAEMON_CORE_BUILD=PASS
+WORKSPACE_BUILD=PASS
+GIT_DIFF_CHECK=PASS
+INSTALLER_ISOLATED_VERIFY=PASS
+COMMIT_SCOPE=PASS_EXACT_8_FILES
+WORKDESK_AUDIT=PASS_UNCHANGED
+```
+
+V50成功路径：
+
+```text
+COMMIT_ACTION=COMMITTED_EXACT_8_FILES
+PUSH_ACTION=PUSHED_MAIN
+LOCAL_HEAD_AFTER_COMMIT=REMOTE_HEAD_AFTER_PUSH
+WORKTREE=CLEAN
+REAL_INSTALL_ACTION=NOT_PERFORMED
+WI0004_ACTION=NOT_PERFORMED
+```
+
+本文件不写入包含自身内容的提交SHA。实际SHA、提交标题、远程核对和8文件清单以V50证据包为正式执行证据。
+
+V50完成后按顺序执行：
+
+```text
+用户级安装升级与119/119一致性验证
+→ 用户手工启动daemon
+→ 用户手工启动OpenCode
+→ 只读确认WI-0004仍为gates_failed且Candidate未改变
+→ 按Runtime允许的受控恢复路径重新进入gates_running
+→ 只运行一次正式Candidate Gate
+→ 成功进入approval_required后立即停止
+```
+
+WorkDesk重验期间禁止修改Candidate、运行User Decision、Merge、Code Permission、业务代码、Verification或Close。

@@ -3,13 +3,16 @@
  *
  * Both `sf_requirements_gate_core.ts` (`parseSections`) and `sf_design_gate_core.ts`
  * (`extractMarkdownSection` / findings-report section detection) need to recognize a required
- * section by its canonical name even when the header carries a trailing parenthetical /
- * annotation, e.g. `## 预期产出（执行阶段，非本 plan）` or `## 调查结论（直接回答原始问题）`.
+ * section by its canonical name even when the header carries a controlled same-line
+ * annotation: a direct parenthetical or a dash/colon-separated explanation. Examples include
+ * `## 预期产出（执行阶段，非本 plan）`, `## 调查结论：直接回答原始问题`, and
+ * `## Solution Strategy — 架构决策（逐字继承现有设计事实）`.
  *
  * The rule (P4 fix — Requirements 2.1, 2.2): the canonical section name must appear as a PREFIX
- * of the header text; an OPTIONAL trailing parenthetical / annotation (full-width `（）` or
- * half-width `()`) after the canonical name is ignored. A header whose text merely EMBEDS the
- * canonical name without starting with it (e.g. `## 关于预期产出的备注`) is NOT a match and
+ * of the header text. An OPTIONAL direct parenthetical, or an OPTIONAL same-line explanation
+ * introduced by one controlled separator (`-`, `–`, `—`, `:`, `：`), is ignored. Horizontal
+ * whitespace is allowed, but line breaks are never part of a heading. A header whose text merely
+ * EMBEDS the canonical name without starting with it (e.g. `## 关于预期产出的备注`) is NOT a match and
  * remains a genuine miss (Requirement 3.2).
  *
  * This module centralizes the matcher so both cores stay consistent (task 16.1 wires it into the
@@ -53,11 +56,14 @@ export interface TolerantHeaderMatcherOptions {
  * Build a prefix/annotation-tolerant header-matching regex for the given canonical section name.
  *
  * The produced pattern matches a single header line whose text begins with `sectionName`, optionally
- * followed by a trailing parenthetical / annotation, e.g.:
+ * followed by a controlled same-line annotation, e.g.:
  *   - `## 预期产出`
  *   - `## 预期产出（执行阶段，非本 plan）`
- *   - `## 预期产出 (execution phase)`
- * but NOT `## 关于预期产出的备注` (canonical name is embedded, not a prefix).
+ *   - `## 预期产出: execution phase`
+ *   - `## Solution Strategy — 架构决策（逐字继承现有设计事实）`
+ * but NOT `## 关于预期产出的备注` (canonical name is embedded), not
+ * `## Solution Strategy arbitrary suffix` (no controlled separator), and never the first
+ * `- evidence` line below a canonical heading.
  */
 export function buildTolerantHeaderRegex(
   sectionName: string,
@@ -72,14 +78,28 @@ export function buildTolerantHeaderRegex(
   } = options;
 
   const escapedName = escapeRegExp(sectionName);
-  const hashSpacing = requireHashSpace ? '\\s+' : '\\s*';
-  const numberPrefix = allowNumberPrefix ? '(?:\\d+[.、)]\\s*)?' : '';
-  // The canonical name must start the header text; an optional trailing parenthetical / annotation
-  // (full-width or half-width parentheses) after the name is tolerated and ignored.
-  const trailingAnnotation = '(?:\\s*[（(].*[)）])?';
+  // A Markdown heading is a single physical line. `\\s` is intentionally forbidden here because
+  // JavaScript treats CR/LF as whitespace; using it around the suffix separator can consume the
+  // first `- evidence` line below the heading.
+  const horizontalWhitespace = '[\\t ]';
+  const hashSpacing = requireHashSpace
+    ? `${horizontalWhitespace}+`
+    : `${horizontalWhitespace}*`;
+  const numberPrefix = allowNumberPrefix
+    ? `(?:\\d+[.、)]${horizontalWhitespace}*)?`
+    : '';
+  // Tolerate only a direct parenthetical or explanatory text introduced by one controlled
+  // separator. The separator and explanation must remain on the same physical line, and the
+  // explanation must contain at least one non-whitespace character.
+  const trailingAnnotation =
+    `(?:${horizontalWhitespace}*(?:` +
+    `[（(][^\\r\\n]*[)）]|` +
+    `[-–—:：]${horizontalWhitespace}*[^\\s\\r\\n][^\\r\\n]*` +
+    `))?`;
 
   return new RegExp(
-    `^#{${minLevel},${maxLevel}}${hashSpacing}${numberPrefix}${escapedName}${trailingAnnotation}\\s*$`,
+    `^#{${minLevel},${maxLevel}}${hashSpacing}${numberPrefix}${escapedName}` +
+      `${trailingAnnotation}${horizontalWhitespace}*$`,
     flags
   );
 }

@@ -40,7 +40,7 @@ capability_verdict: extend_existing
 
 现有Standard、Contract、Workflow、Agent、Tool、Runtime和Audit能够通过最小扩展完成治理闭环。
 
-## 5. Solution Strategy
+## 5. Solution Strategy — 架构决策（逐字继承现有设计事实）
 
 复用现有Project Architecture Candidate承担system_governance，模块投影继续使用solution_design。
 

@@ -2611,3 +2611,127 @@ WI-0004动作=未执行
 提交推送后，ERR-075和ERR-078保持“代码已提交推送、待用户级安装和WorkDesk真实重验”。ERR-082—ERR-087的过程治理防护随本提交进入远程基线。
 
 下一阶段必须先完成用户级升级和部署文件一致性验证，再由用户手工启动daemon/OpenCode，恢复WI-0004 `candidate_preparing` 现场。只有正式Gate进入 `approval_required`，且不修改现有Candidate内容，才能关闭ERR-075和ERR-078。
+
+### 25.26 ERR-088—ERR-090真实标题解析与V45边界
+
+WI-0004真实重验证明Runtime和Classification链正确：Project Architecture Candidate进入冻结Manifest，Requirement Candidate未被错误要求。失败集中在共享标题解析。
+
+V44正向测试证明破折号标题方向正确，但实现使用 `\s*` 允许跨行，导致Requirements/Design Investigation消费者把标题下一行首个 `-` 证据吞作标题后缀。3个Investigation测试因此失败。另有2个固定文本测试未与最终状态生产者同步。
+
+V45修复边界：
+
+```text
+标题内部空白全部使用[ \t]
+受控分隔符和说明必须位于同一物理行
+说明必须至少包含一个非空白字符
+真实Architecture标题通过
+原有标准/括号标题继续通过
+标题下一行首条证据不得被消费
+嵌入式标题与无受控分隔符后缀继续拒绝
+既有与新增固定文本消费者原子同步
+```
+
+V45只做隔离验证，不修改真实SpecForge、WorkDesk、用户级安装或WI-0004。
+
+### 25.27 ERR-091固定文本转义假阴性与V46边界
+
+V45产品和共享消费者回归已经通过。唯一失败来自测试源代码：
+
+```ts
+expect(p0).toContain('标题内部空白全部使用[ \t]');
+```
+
+普通TypeScript字符串把 `\t` 转成真实制表符，而P0正式文本保存的是代码字面量反斜杠加`t`。因此该失败不表示文档或Matcher错误。
+
+V46改用：
+
+```ts
+expect(p0).toContain(String.raw`标题内部空白全部使用[ \t]`);
+```
+
+V46不改变V45产品实现，只补录ERR-091/EXP-069并同步固定文本消费者。仍须重新运行144项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check` 和隔离installer verify。
+
+### 25.28 ERR-092 String.raw非ASCII运行时差异与V47边界
+
+V46唯一失败日志直接显示：
+
+```text
+Expected to contain: "\u6807\u9898..."
+Received: 正确中文P0正文
+```
+
+这证明 `String.raw` 已保留字面量 `\t`，但在当前Bun 1.3.11测试转换链中同时把中文模板内容变成 `\uXXXX` 字面量。
+
+V47使用普通字符串保存中文，并在源码中把反斜杠双重转义：
+
+```ts
+expect(p0).toContain('标题内部空白全部使用[ \\t]');
+```
+
+上面TypeScript源码中的 `\\` 在运行时形成一个字面量反斜杠。V47不改变产品实现，仍须重新运行144项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check` 和隔离installer verify。
+
+### 25.29 V47隔离验证成功与V48真实应用边界
+
+V47在c01d098导出的隔离副本完成精确8文件验证：
+
+```text
+144项定向测试=PASS
+TypeScript=PASS
+daemon-core build=PASS
+workspace build=PASS
+git diff --check=PASS
+installer isolated verify=PASS
+WorkDesk审计=PASS_UNCHANGED
+```
+
+产品结论：
+
+```text
+Project Architecture真实标题可由共享Matcher正确消费
+标题语法保持物理单行
+Requirements和Design消费者无正文截断回归
+非法嵌入式或无分隔符后缀继续被拒绝
+```
+
+V48只进行真实仓库应用和同链验证，不扩大产品、架构、契约、Workflow或Runtime范围。失败时必须恢复c01d098干净工作树；成功时只保留精确8文件未提交修改。
+
+### 25.30 V48真实应用成功与V49提交前状态闭包
+
+V48在真实SpecForge工作树完成精确8文件应用和完整验证：
+
+```text
+144项定向测试=PASS
+TypeScript=PASS
+daemon-core build=PASS
+workspace build=PASS
+git diff --check=PASS
+installer isolated verify=PASS
+WorkDesk audit=PASS_UNCHANGED
+```
+
+V49不修改共享Matcher及两个产品回归文件，只更新5个状态消费者，把ERR-075和ERR-088—ERR-092从“V48待真实应用”对账为“真实仓库已应用、待提交”。
+
+V49必须保持最终工作树精确8文件，并重新完成同一验证链。成功前不得提交、推送、安装或再次运行WI-0004 Gate。
+
+### 25.31 V50提交推送闭包与用户级升级边界
+
+V49已在真实工作树完成提交前状态闭包和完整验证。V50保持精确8文件范围，再执行相同验证链后提交并推送。
+
+V50成功必须由独立执行证据证明：
+
+```text
+提交文件=精确8个
+提交标题=fix(governance): support annotated section titles safely
+推送分支=main
+远程HEAD=本地提交HEAD
+工作树=干净
+WorkDesk=未改变
+用户级安装=未执行
+WI-0004动作=未执行
+```
+
+提交SHA不能写入包含自身内容的提交文件，由V50证据包记录和核验。
+
+提交推送后，ERR-075和ERR-088保持“代码已提交推送，待用户级升级和WorkDesk真实重验”。ERR-089—ERR-092的解析器及验证防护随本提交进入远程基线。
+
+下一阶段必须先完成用户级升级和部署文件一致性验证，再由用户手工启动daemon/OpenCode，恢复WI-0004 `gates_failed` 现场。只有正式Gate进入 `approval_required` 且Candidate内容未改变，才能关闭ERR-075和ERR-088。

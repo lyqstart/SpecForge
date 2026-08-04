@@ -995,7 +995,7 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 
 - **日期与阶段**：2026-08-04，V36隔离定向测试。
 - **分类**：`TEST_CONTRACT_DEFECT / STATE_ASSERTION_STALENESS / FALSE_NEGATIVE`
-- **现场表现**：V36补丁态129项测试通过，唯一失败的经验门禁仍要求 `ERR-075=FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION` 和 `ERR-076=FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION`；同一经验文件的正式当前状态已经是 `ERR-075=FIXED_V42_COMMITTED_PUSHED_PENDING_USERLEVEL_INSTALL_WORKDESK_RETEST`、`ERR-076=CLOSED_V35_SOURCE_CONTRACT_VALIDATED`。
+- **现场表现**：V36补丁态129项测试通过，唯一失败的经验门禁仍要求 `ERR-075=FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION` 和 `ERR-076=FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION`；同一经验文件的正式当前状态已经是 `ERR-075=BLOCKED_BY_ERR-088_ERR-089_PENDING_V47_ISOLATED_VALIDATION`、`ERR-076=CLOSED_V35_SOURCE_CONTRACT_VALIDATED`。
 - **已执行与未执行**：失败仅发生于Git HEAD导出的隔离副本；真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改，daemon/OpenCode保持停止。
 - **根因**：更新ERR条目和当前状态块时，没有同步审计经验门禁中对状态值的固定文本消费者；测试同时保留了上一轮临时状态，形成台账生产者与测试消费者自相矛盾。
 - **影响**：V36产品实现、阶段—分类回归和其余129项测试均通过，但完整验证被一个过期状态断言阻断。
@@ -1090,6 +1090,71 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **新增防护**：`EXP-065`。
 - **状态**：`FIX_IMPLEMENTED_PENDING_V39_ISOLATED_VALIDATION`。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-065`。
+
+### ERR-088：共享章节匹配器只支持直接括号后缀，真实Project Architecture标题被误判为缺失
+
+- **日期与阶段**：2026-08-04，V43用户级升级后的WorkDesk WI-0004真实Gate重验。
+- **分类**：`GATE_PARSER_DEFECT / REAL_ARTIFACT_TITLE / FALSE_NEGATIVE`
+- **现场表现**：Runtime正确物化5项Candidate Manifest，9个Gate通过；`workflow_specific_gate`读取了Project Architecture Candidate，但把标题 `## 5. Solution Strategy — 架构决策（逐字继承现有设计事实）` 判定为缺少 `Solution Strategy`，继而报告没有合规的Project Architecture Candidate。
+- **一级证据**：WI-0004 `architecture.candidate.md`、`workflow_specific_gate.json`、Gate Summary和OpenCode完整运行日志。
+- **根因**：`buildTolerantHeaderRegex` 只允许规范章节名后直接跟全角/半角括号；真实标题使用破折号引入说明。V42正向测试只覆盖无后缀标准标题，没有使用真实项目标题。
+- **影响**：ERR-078已在真实项目闭合；ERR-075的Architecture载体识别已进入正确消费者路径，但因标题解析假阴性仍无法进入 `approval_required`。
+- **正确做法**：规范章节名必须位于标题开头；仅允许直接括号或由 `-`、`–`、`—`、`:`、`：` 引入的同一行说明后缀；继续拒绝嵌入式标题和无受控分隔符的任意后缀。
+- **新增防护**：使用真实WorkDesk标题更新Architecture Carrier测试，并新增共享Matcher正向/反向回归。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V45_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-032`、`EXP-066`、`EXP-067`。
+
+### ERR-089：V44标题后缀正则使用跨行空白，把下一行首条证据误吞为标题说明
+
+- **日期与阶段**：2026-08-04，V44隔离定向测试。
+- **分类**：`GATE_PARSER_REGRESSION / MULTILINE_WHITESPACE / BODY_TRUNCATION`
+- **现场表现**：真实Architecture标题、Architecture Carrier及Design Governance测试通过，但3个Investigation Gate测试失败。合法计划和结论被判定失败；仅含Agent转述的负向夹具没有产生预期提示。
+- **一级证据**：V44 `targeted-tests.log` 中3个 `investigation-artifact-gates.test.ts` 失败和c01d098基线源码。
+- **根因**：V44在分隔符前使用 `\s*`。JavaScript中的 `\s` 包含CR/LF；在multiline模式下，`## 原始证据来源\n- EV-1...` 的换行和首个 `-` 被匹配成标题后缀，导致首条证据从章节正文中消失。同样机制影响候选假设、事实证据和Agent转述。
+- **影响**：共享Matcher的Requirements和Design消费者出现正文截断回归；不能应用V44。
+- **正确做法**：标题语法只能使用水平空白 `[ \t]`；hash间距、编号间距、后缀分隔符和结尾空白都不得使用可跨行的 `\s`。必须增加“标题下一行以 `-` 开头”的反向回归。
+- **新增防护**：V45先证明c01d098上的Investigation回归基线通过，再应用单行Matcher并运行共享函数、Requirements、Design和Architecture Carrier测试。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V45_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-010`、`EXP-015`、`EXP-067`。
+
+### ERR-090：V44两个固定文本测试未与最终状态生产者原子同步
+
+- **日期与阶段**：2026-08-04，V44隔离定向测试。
+- **分类**：`TEST_CONTRACT_DEFECT / FIXED_TEXT_CONSUMER / FALSE_NEGATIVE`
+- **现场表现**：经验门禁仍断言ERR-075/ERR-078的V42待重验状态；新增ERR-088测试断言自然语言 `Candidate内容未修改`，而交接文件正式字段为 `CANDIDATE_CONTENT_CHANGED=NO`。两项测试失败。
+- **一级证据**：V44 `targeted-tests.log` 中 `specforge-development-experience-gate.test.ts` 和 `specforge-development-err088.test.ts` 的实际Expected/Received。
+- **根因**：V44更新经验台账和交接状态时没有同步既有固定文本消费者；新增测试又把人工概括当成正式生产者文本，没有先读取目标文件的精确字段。
+- **影响**：正确文档状态被测试误判，完整验证被阻断。
+- **正确做法**：状态生产者、既有经验门禁、新增专项测试和交接字段必须在同一目标字节集中同步；断言正式状态枚举和正式字段，不断言未写入文档的自然语言概括。
+- **新增防护**：V45更新既有经验门禁的ERR-075/078状态，专项测试改为断言 `CANDIDATE_CONTENT_CHANGED=NO`，并固定ERR-088—090与EXP-066—068。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V45_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-058`、`EXP-068`。
+
+### ERR-091：固定文本测试把字面量反斜杠t解释为真实制表符，正确文档被误判
+
+- **日期与阶段**：2026-08-04，V45隔离定向测试。
+- **分类**：`TEST_LITERAL_DEFECT / ESCAPE_SEMANTICS / FALSE_NEGATIVE`
+- **现场表现**：V45的真实Architecture标题、共享Matcher、Investigation、Design Governance、经验门禁等143项测试通过；唯一失败是ERR-088专项测试断言P0文档包含 `标题内部空白全部使用[ \t]`。
+- **一级证据**：V45 `targeted-tests.log` 显示测试源第54行使用普通TypeScript字符串；Expected运行时包含真实制表符，而P0文档正确保存字面量反斜杠加`t`。
+- **根因**：测试把文档中的代码/正则字面量写进普通字符串，`\t`被JavaScript解释为制表符；没有使用 `String.raw` 或双重转义表达字面量。
+- **影响**：产品Matcher和全部产品回归已经通过，但完整验证被一个测试字面量假失败阻断。
+- **正确做法**：测试文档中的正则、路径、转义序列和代码字面量时，必须显式区分运行时字符与源文本；优先使用 `String.raw`，并增加正向字符码或精确字符串检查。
+- **新增防护**：V46把该断言改为 `String.raw`，经验门禁固定ERR-091/EXP-069，并验证P0目标文件确实包含字面量反斜杠加`t`。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V46_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-058`、`EXP-068`、`EXP-069`。
+
+### ERR-092：Bun测试环境中的String.raw把中文模板内容暴露为Unicode转义字面量
+
+- **日期与阶段**：2026-08-04，V46隔离定向测试。
+- **分类**：`TEST_LITERAL_DEFECT / TAGGED_TEMPLATE_TRANSFORM / FALSE_NEGATIVE`
+- **现场表现**：V46仍为143项通过、1项失败。失败日志中的Expected不是中文正文，而是字面量 `\u6807\u9898...`；同时Expected中的 `\t` 已正确保持为反斜杠加`t`。
+- **一级证据**：V46 `targeted-tests.log` 明确显示 `Expected to contain: "\\u6807\\u9898..."`，失败位置为 `specforge-development-err088.test.ts:59:16`；Received中的P0正文包含正确中文和字面量 `\t`。
+- **根因**：在Bun 1.3.11测试转换/执行链中，非ASCII tagged template进入 `String.raw` 后暴露为Unicode转义源文本；`String.raw` 虽解决了 `\t` 控制字符问题，却把中文正文变成 `\uXXXX` 字面量。
+- **影响**：V45/V46产品Matcher、真实Architecture标题、Investigation、Design Governance及143项其他测试均已通过；完整验证被一个测试表示方式假失败阻断。
+- **正确做法**：匹配“中文正文 + 字面量反斜杠序列”时，使用普通字符串保存中文，并对反斜杠做双重转义，例如 `'标题内部空白全部使用[ \\t]'` 的测试源码必须包含两个反斜杠字符；不得使用未经目标运行时验证的非ASCII `String.raw` tagged template。
+- **新增防护**：V47改为普通中文字符串加双反斜杠，增加测试源字节、运行时期望值和P0目标字节三方静态检查；产品文件保持V46字节不变。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V47_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-058`、`EXP-068`、`EXP-069`、`EXP-070`。
 
 # 第二部分：正确做法
 
@@ -1724,6 +1789,54 @@ CMD/BAT交付必须使用目标环境可识别编码和CRLF，避免未经验证
 
 任何修改脚本在定义锚点前必须读取当前文件和目标段落。锚点必须来自实际内容或结构标题，并验证数量；不能使用上一轮记忆中的句子。
 
+## EXP-066：解析器回归必须使用真实项目原始格式，并同时验证正向兼容与反向拒绝
+
+解析器、Schema、路径和Gate修复不能只使用人为简化的理想夹具。真实项目已经出现的原始标题、字段、路径或Manifest必须进入回归测试。标题容错扩展必须成对证明真实合法格式、原有合法格式、嵌入式非法格式和无受控分隔符非法格式。
+
+## EXP-067：Markdown标题匹配必须是物理单行语法，标题空白不得使用可跨行的 `\s`
+
+JavaScript正则中的 `\s` 包含空格、制表符、CR和LF。凡用于标题内部的hash间距、编号间距、后缀间距、分隔符间距和结尾空白，都必须使用水平空白 `[ \t]`。共享Matcher必须固定回归：标题下一行以 `-`、`:` 或括号开始时，匹配结果仍只能是标题行，不能吞掉正文。
+
+## EXP-068：固定文本测试必须断言正式生产者字段，不得断言未写入文档的概括
+
+状态型文档修改时，必须同步全部既有和新增固定文本消费者。测试应断言正式状态枚举、字段名和精确值，例如 `CANDIDATE_CONTENT_CHANGED=NO`；不得把解释性自然语言当成隐式文档契约。封包前必须搜索旧状态残留，并对生产者值与所有消费者期望值做原子对账。
+
+## EXP-069：固定文本测试必须明确区分源文本转义与运行时字符
+
+当测试对象包含 `\t`、`\n`、`\r`、正则、Windows路径或其他反斜杠序列时，普通JavaScript/TypeScript字符串会先解释转义。测试必须根据正式生产者字节选择：
+
+```text
+匹配字面量反斜杠序列
+→ 优先使用普通字符串中的双重转义
+→ String.raw仅在目标运行时验证非ASCII实际值后使用
+
+匹配真实控制字符
+→ 显式写入控制字符并验证字符码
+```
+
+不得仅凭源代码视觉相同判断字符串等价。固定文本消费者封包前必须同时检查测试源文本、运行时期望值和目标文件真实字节。
+
+## EXP-070：非ASCII固定文本不得默认使用String.raw，必须按目标运行时验证实际值
+
+`String.raw` 是tagged template，不只是普通字符串转义工具。构建器或测试运行时可能先把非ASCII模板内容转换为 `\uXXXX`，随后 `String.raw` 会把这些转义作为字面量返回。
+
+匹配“中文正文 + 字面量反斜杠序列”时，固定做法是：
+
+```text
+中文正文
+→ 普通字符串直接保存
+
+字面量反斜杠
+→ 在普通字符串源码中双重转义
+
+封包前
+→ 验证测试源字节
+→ 验证运行时期望字符码
+→ 验证目标文件真实字节
+```
+
+只有在目标Bun/Node/测试转换链中验证实际返回值后，才能使用非ASCII `String.raw`。不得根据ECMAScript直觉替代目标工具链证据。
+
 # 第四部分：修改前强制检查
 
 ## 13. 通用检查清单
@@ -1769,6 +1882,10 @@ CMD/BAT交付必须使用目标环境可识别编码和CRLF，避免未经验证
 □ 补丁验证已先运行最小A/B基线控制；文本行数等度量已排除标准末尾换行产生的空尾项
 □ ERR/EXP状态变化已同步条目正文、当前状态块、交接文件、活动实施文件和全部固定文本测试；不存在上一轮PENDING状态残留
 □ 所有生成文本文件以一个且仅一个LF结束；封包前和补丁应用后已完成字节级EOF检查
+□ Markdown标题正则只使用水平空白；已验证不会跨行吞掉首条正文
+□ 固定文本测试只断言正式生产者状态和字段；不存在旧状态或未写入概括
+□ 含反斜杠序列的固定文本测试已区分源文本字面量与运行时控制字符；非ASCII文本优先使用普通字符串双重转义
+□ 非ASCII tagged template已在目标Bun/Node转换链验证运行时实际值；未经验证不得使用String.raw
 □ 脚本 stdout/stderr、编码和失败恢复已设计
 □ 新回归测试可独立运行
 □ 已准备 A/B 归因方案
@@ -1972,7 +2089,7 @@ ERR-071=CLOSED_V28_V29_VALIDATED
 ERR-072=CLOSED_V28_VALIDATED
 ERR-073=CLOSED_V33_REAL_UPGRADE_VALIDATED
 ERR-074=CLOSED_V33_REAL_UPGRADE_VALIDATED
-ERR-075=FIXED_V42_COMMITTED_PUSHED_PENDING_USERLEVEL_INSTALL_WORKDESK_RETEST
+ERR-075=FIXED_V50_COMMITTED_PUSHED_PENDING_USERLEVEL_UPGRADE_WORKDESK_RETEST
 ERR-076=CLOSED_V35_SOURCE_CONTRACT_VALIDATED
 ```
 
@@ -1981,7 +2098,7 @@ V35隔离验证在定向测试阶段停止：124通过、3失败；真实仓库�
 
 ```text
 ERR-077=CLOSED_V38_ISOLATED_VALIDATED
-ERR-078=FIXED_V42_COMMITTED_PUSHED_PENDING_USERLEVEL_INSTALL_WORKDESK_RETEST
+ERR-078=CLOSED_WORKDESK_REAL_RETEST
 ERR-079=CLOSED_V38_ISOLATED_VALIDATED
 ERR-080=CLOSED_V38_ISOLATED_VALIDATED
 ERR-081=CLOSED_V38_ISOLATED_VALIDATED
@@ -1991,6 +2108,11 @@ ERR-084=CLOSED_V42_COMMITTED_PUSHED
 ERR-085=CLOSED_V42_COMMITTED_PUSHED
 ERR-086=CLOSED_V42_COMMITTED_PUSHED
 ERR-087=CLOSED_V42_COMMITTED_PUSHED
+ERR-088=FIXED_V50_COMMITTED_PUSHED_PENDING_USERLEVEL_UPGRADE_WORKDESK_RETEST
+ERR-089=CLOSED_V50_COMMITTED_PUSHED
+ERR-090=CLOSED_V50_COMMITTED_PUSHED
+ERR-091=CLOSED_V50_COMMITTED_PUSHED
+ERR-092=CLOSED_V50_COMMITTED_PUSHED
 ```
 
 V36隔离验证完成A/B基线控制并应用精确11文件补丁：129项通过、1项失败；唯一失败是ERR-080经验门禁状态断言过期。产品实现、真实SpecForge、WorkDesk、用户级安装和WI-0004均未改变。
@@ -2012,3 +2134,27 @@ V41提交前状态闭包已经成功：4个状态消费者、130项定向测试�
 本变更集由V42完成一次提交并推送到远程 `main`。提交内容不在自身文件中写入自引用SHA；实际 `COMMIT_SHA`、`REMOTE_HEAD_AFTER_PUSH` 和提交文件清单以V42证据包为准。
 
 下一阶段是用户级安装升级和WorkDesk WI-0004真实重验。安装完成前不得启动daemon/OpenCode；重验只恢复当前 `candidate_preparing` 现场，不得修改Candidate内容、执行User Decision、Merge、Code Permission或业务代码。
+
+V43用户级升级成功：119/119部署文件、9/9 Agent、installer verify、旧目录不变、错误嵌套runtime缺失、SpecForge和WorkDesk审计均通过。
+
+WI-0004真实重验确认ERR-078已闭合：Manifest精确5项、历史2项排除、Requirement Candidate未被错误要求。ERR-075被ERR-088阻断，WorkDesk停在 `gates_failed`，Candidate内容未修改，Gate未重复运行。
+
+V44隔离验证确认真实Architecture标题与Carrier正向路径通过，但新增ERR-089导致3个Investigation回归，ERR-090导致2个固定文本测试失败。真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改。
+
+V45隔离验证完成c01d098基线控制并应用精确8文件：143项测试通过，唯一失败为ERR-091固定文本转义假阴性。真实Architecture标题、共享Matcher、Investigation、Design Governance、经验门禁和ERR-088—090第一组治理断言均已通过。真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改。
+
+V46隔离验证继续保持精确8文件和c01d098基线控制：143项测试通过，唯一失败为ERR-092。日志证明ERR-091的字面量反斜杠问题已消除，但Bun 1.3.11把非ASCII `String.raw` 模板内容暴露为 `\uXXXX` 字面量。产品Matcher、真实Architecture标题、Investigation、Design Governance和其他治理测试均通过；真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改。
+
+V47隔离验证成功：c01d098基线控制、144项定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify和精确8文件范围全部通过。真实Architecture标题、共享Matcher、Investigation和Design Governance消费者全部闭合。真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改。
+
+V48只把V47验证通过的精确8文件应用到真实SpecForge并重复完整验证。产品文件保持V47目标字节；状态消费者对账为V47隔离成功、V48待真实应用。V48不提交、不推送、不安装真实用户级组件，不修改WorkDesk或WI-0004。
+
+V48真实仓库应用成功：精确8文件已写入真实SpecForge；144项定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify和WorkDesk不变审计全部通过。未提交、未推送、未安装真实用户级组件，WI-0004保持 `gates_failed`。
+
+V49只更新5个状态消费者，使经验台账、交接文件、实施状态和固定文本测试与V48真实应用证据一致。共享Matcher、Architecture Carrier真实标题测试和Matcher专项回归3个产品文件保持V48字节不变。V49成功后下一步才是提交推送。
+
+V49提交前状态闭包成功：5个状态消费者、3个产品文件哈希、144项定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify和精确8文件范围全部通过。
+
+本变更集由V50完成一次提交并推送到远程 `main`。提交文件不写入自引用SHA；实际 `COMMIT_SHA`、远程HEAD和精确8文件清单以 `SpecForge-v50-commit-evidence-*.zip` 为正式执行证据。
+
+V50不执行真实用户级安装，不修改WorkDesk或WI-0004。下一阶段先完成用户级升级和119/119一致性验证，再由用户手工启动daemon/OpenCode，在当前 `gates_failed` 现场按受控恢复路径重新运行一次正式Gate。
