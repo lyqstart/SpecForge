@@ -305,6 +305,15 @@ export function requiredCandidateKindsForGate(input: {
   }
 
   const kinds: Array<'requirements' | 'design' | 'tasks' | 'trace_delta'> = [];
+
+  // Candidate Phase is the time boundary; Classification is the scope boundary.
+  // A design-first workflow must not require a later Requirement Candidate while
+  // it is still running the design phase. Later phases retain earlier artifacts.
+  if (phase === 'design') {
+    if (classification.design_changed === true) kinds.push('design');
+    return kinds;
+  }
+
   if (classification.design_changed === true) kinds.push('design');
   if (classificationRequiresRequirementsCandidateForGate(classification)) {
     kinds.push('requirements');
@@ -329,6 +338,21 @@ export function workflowSpecificGateStages(input: {
   }
 
   const stages: Array<'requirements' | 'design' | 'tasks'> = [];
+
+  // Stage Gate execution follows the active Candidate Phase. Classification
+  // decides whether that phase has semantic work; it must not pull a future
+  // professional Gate into an earlier phase.
+  if (phase === 'design') {
+    if (classification.design_changed === true) stages.push('design');
+    return stages;
+  }
+  if (phase === 'requirements') {
+    if (classificationRequiresRequirementsCandidateForGate(classification)) {
+      stages.push('requirements');
+    }
+    return stages;
+  }
+
   if (classificationRequiresRequirementsCandidateForGate(classification)) {
     stages.push('requirements');
   }

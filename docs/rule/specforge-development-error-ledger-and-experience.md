@@ -818,7 +818,7 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **影响**：合法受控Candidate无法进入Prospective Spec和Merge范围；Contract唯一真相源、Spec一致性和Trace Gate产生连锁误判。要求Agent手工补Manifest会违反Runtime所有权并制造第二写入者。
 - **正确做法**：Candidate生产者只负责规范Candidate文件。Runtime在 `candidate_preparing → candidate_prepared` 状态边界读取正式Classification，合并已有合法显式条目与实际需要的规范Candidate，检测candidate/target冲突、缺项和重复目标，原子写入完整Manifest；Gate及后续阶段只消费该冻结Manifest。
 - **新增防护**：新增 Runtime Manifest materialization、状态边界回归、混合生产者回归、冲突与缺项回归；恢复WI-0004时验证Manifest精确包含5项。
-- **状态**：`FIXED_PENDING_WORKDESK_RETEST`。
+- **状态**：`CLOSED_V28_AUTOMATED_AND_WORKDESK_MANIFEST_RETEST`。V28隔离验证、V29真实应用、V30提交推送、V33安装以及WI-0004真实恢复均证明Runtime自动物化5项Manifest并排除2项历史Candidate。
 - **类防护**：`EXP-007`、`EXP-011`、`EXP-015`、`EXP-021`、`EXP-047`。
 
 
@@ -832,7 +832,7 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **影响**：合法任务被迫制造无变化Candidate；专业Agent和Gate扩大Module/Design范围，增加HardStop与伪变更风险，违反范围冻结。
 - **正确做法**：Required Candidate与专业Gate必须由正式Classification决定。Requirement相关字段任一为true才要求Requirement Candidate和Requirements Gate；`design_changed`、`architecture_changed`、`data_model_changed`、`module_contract_changed`分别控制对应Candidate。Classification不可用时保持历史严格配置并失败关闭。
 - **新增防护**：新增Classification-driven Candidate Gate纯函数和回归，覆盖Requirement不变、Requirement变化、task_change及Classification缺失回退。
-- **状态**：`FIXED_PENDING_WORKDESK_RETEST`。
+- **状态**：`CLOSED_V28_AUTOMATED_AND_WORKDESK_CLASSIFICATION_RETEST`。WI-0004真实Gate只要求Classification对应的5项Candidate，Requirement和Data Model历史Candidate未进入Manifest。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-021`、`EXP-048`。
 
 
@@ -846,7 +846,7 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **影响**：可能使Agent尝试非法迁移、错误判断停止点或提前进入审批；文档、提示词和测试形成互相强化的错误契约。
 - **正确做法**：所有提示词、Skill、Agent、文档和测试只能引用正式状态枚举和迁移表；Candidate Gate通过终点统一为 `approval_required`。
 - **新增防护**：替换全部V25新增的 `gates_passed`，经验门禁检查正式停止状态，Agent/Skill契约测试覆盖architecture_change阶段表。
-- **状态**：`FIXED_VALIDATED_V28`。
+- **状态**：`FIXED_AUTOMATED_VALIDATED_REAL_SUCCESS_PATH_PENDING_ERR-075`。正式状态名和失败回收已验证；真实Gate通过进入approval_required仍被ERR-075阻断。
 - **类防护**：`EXP-030`、`EXP-043`、`EXP-049`。
 
 
@@ -860,7 +860,7 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **影响**：产生可避免HardStop、打断合法受控写入、增加恢复复杂度；若边界弱化可能演变为治理产物旁路写入。
 - **正确做法**：专业Agent只使用Read/Glob/Grep等只读能力调查，只通过其拥有的受控Tool写Candidate；不得使用 `sf_safe_bash`、Shell、Node、Python或PowerShell写治理产物。受控Tool不足时停止并报告产品缺口。
 - **新增防护**：补强 `sf-design` 和architecture_change Skill，新增Agent/Skill文本契约回归；Runtime Write Guard和HardStop行为保持不变。
-- **状态**：`FIXED_PENDING_WORKDESK_RETEST`。
+- **状态**：`CLOSED_V28_AUTOMATED_AND_WORKDESK_TOOL_BOUNDARY_RETEST`。真实重试中sf-design只调用sf_artifact_write，未使用sf_safe_bash或Shell写治理文件。
 - **类防护**：`EXP-004`、`EXP-015`、`EXP-036`、`EXP-044`、`EXP-050`。
 
 
@@ -874,7 +874,7 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **影响**：正确恢复后的现场被误判为证据缺失，导致与该活动锁无关的产品修复无法进入隔离验证；重复要求活动文件会诱导伪造或保留过期锁。
 - **正确做法**：历史恢复证据以 `hard_stop_resolution.jsonl` 为稳定来源，并校验其中 `original_hard_stop`、`resolution_type`、`safe_alternative_tool` 和 `authoritative_state_at_resolution`。`hard_stop.json` 只表示当前活动锁，存在时单独报告，不要求恢复后保留。WorkDesk证据不足只记录 `INSUFFICIENT_EVIDENCE`，不得阻断与其无关的SpecForge隔离源码验证；远程、本地、进程、工作区和补丁源哈希仍必须在写入前严格通过。
 - **新增防护**：新增 `EXP-051`；V27脚本包含无活动锁但有resolution log的生命周期自测，并把WorkDesk审计改为只读、非阻断证据；所有源码补丁只写入隔离副本。
-- **状态**：`FIXED_VALIDATED_V28`。
+- **状态**：`CLOSED_V28_V29_VALIDATED`。后续隔离验证和真实应用均未再要求已恢复的活动HardStop文件。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-011`、`EXP-015`、`EXP-021`、`EXP-042`、`EXP-051`。
 
 
@@ -888,9 +888,208 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **影响**：验证报告无法区分环境准备缺口与产品代码缺陷；真实类型错误会阻断daemon-core和全仓构建；缺省工作流路径若被强制断言为存在，可能在非完整调用上下文中产生静默放宽。
 - **正确做法**：隔离验证先按正式workspace构建顺序生成daemon-core全部内部依赖声明，再运行定向测试，随后立即执行daemon-core TypeScript noEmit。辅助函数必须接受正式可选类型；工作流路径缺失时采用历史严格profile失败关闭。环境错误和代码错误必须分项报告。
 - **新增防护**：V28新增workspace依赖预构建阶段、缺省workflowPath失败关闭回归、TypeScript检查和两级构建；验证摘要单独记录dependency preparation与typecheck结果。
-- **状态**：`FIXED_VALIDATED_V28`。
+- **状态**：`CLOSED_V28_VALIDATED`。V28完成依赖准备、74项定向测试、TypeScript、daemon-core build、全仓build、git diff check和隔离installer verify。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-011`、`EXP-015`、`EXP-021`、`EXP-052`。
 
+
+### ERR-073：V31由Python直接启动Windows npm Bun包装器导致安装器未启动
+
+- **日期与阶段**：2026-08-04，V31真实用户级升级前置。
+- **分类**：`SCRIPT_DEFECT / WINDOWS_PROCESS_BOUNDARY_DEFECT / REPEATED_ERROR_ERR-024`
+- **现场表现**：远程、本地、权威文件、进程边界均通过，随后Python以 `bun scripts/sf-installer.ts ...` 直接创建进程，Windows返回 `[WinError 2] 系统找不到指定的文件`；安装器未启动。
+- **已执行与未执行**：未执行upgrade、verify、安装目录写入、WorkDesk写入、daemon/OpenCode启动、提交或推送。
+- **根因**：重复违反ERR-024和EXP-002。Windows npm命令是包装器，不是Python可直接执行的稳定Win32程序；验证脚本没有先解析实际 `.cmd`/`.exe` 边界。
+- **影响**：合法安装流程在入口前失败，并让用户重复下载和执行。
+- **正确做法**：先通过 `where.exe` 和已知用户路径解析Windows可执行入口；`.cmd/.bat` 必须经 `COMSPEC` 调用；启动前记录最终路径、后缀和调用方式。
+- **新增防护**：V32加入Bun路径解析和调用模式证据；V33进一步增加Windows后缀白名单并完成真实升级验证。
+- **状态**：`CLOSED_V33_REAL_UPGRADE_VALIDATED`。
+- **类防护**：`EXP-002`、`EXP-012`、`EXP-015`、`EXP-019`。
+
+
+### ERR-074：V32把无扩展名POSIX Bun shim误当成Win32可执行文件
+
+- **日期与阶段**：2026-08-04，V32真实用户级升级前置。
+- **分类**：`SCRIPT_DEFECT / EXECUTABLE_CLASSIFICATION_DEFECT / WINDOWS_SHIM_DEFECT`
+- **现场表现**：解析器选择 `C:\Users\luo\AppData\Roaming\npm\bun`，标记为 `DIRECT_EXECUTABLE`，Windows返回 `[WinError 193] %1 不是有效的 Win32 应用程序`；实际同目录存在 `bun.cmd`。
+- **已执行与未执行**：安装器仍未启动；SpecForge、WorkDesk、用户级安装目录、daemon/OpenCode均未改变。
+- **根因**：解析器仅判断“文件存在”，没有按Windows可执行后缀分类；`where bun`返回的无扩展名POSIX shim被错误排在 `bun.cmd` 前。
+- **影响**：同类环境会稳定选择错误入口，重复ERR-024的环境边界问题。
+- **正确做法**：Windows只接受 `.exe/.com/.cmd/.bat`；明确拒绝无扩展名shim；`.cmd/.bat`必须经 `cmd.exe`。不能把PATH首个文本文件解释为可执行程序。
+- **新增防护**：V33只查询和接受Windows后缀，记录accepted/rejected候选；真实选择 `bun.cmd`、通过COMSPEC执行，Bun 1.3.11、upgrade、119/119 verify和源码部署一致性全部成功。
+- **状态**：`CLOSED_V33_REAL_UPGRADE_VALIDATED`。
+- **类防护**：`EXP-002`、`EXP-012`、`EXP-015`、`EXP-016`、`EXP-019`。
+
+
+### ERR-075：Design Gate要求模块Design承载系统治理，但Write Guard禁止该模块投影使用system_governance
+
+- **日期与阶段**：2026-08-04，WI-0004 V33安装后真实Candidate Gate恢复验证。
+- **分类**：`GATE_DEFECT / GOVERNANCE_RESPONSIBILITY_DEFECT / PRODUCER_CONSUMER_CONTRACT_CONTRADICTION`
+- **现场表现**：Runtime已正确物化5项Manifest并按Classification运行Gate；Design Gate仅扫描 `kind=design`，要求至少一个Design Candidate声明 `analysis_scope: system_governance`。sf-design按要求通过 `sf_artifact_write` 修复DOMAIN模块Design时，Write Guard以 `DESIGN_SCOPE_CONTRACT_MISMATCH` 拒绝，因为显式非默认模块投影只允许 `solution_design`。同一冻结Manifest中的Project Architecture Candidate已经合法声明 `system_governance`，但Design Gate没有消费它。
+- **已执行与未执行**：WI-0004从 `gates_failed` 转到 `candidate_preparing` 后停止；Candidate未修改；Gate未重跑；无User Decision、Merge、Code Permission、业务代码、Git index或HardStop动作。
+- **根因**：生产者责任和消费者责任没有闭合。Write Guard正确把系统级治理分析留在项目级整体设计，把模块投影限制为模块内部solution design；Design Gate却把“系统治理载体”错误收窄为模块Design Candidate，并忽略冻结Manifest中的Project Architecture Candidate。
+- **影响**：合法生产者无法生成Gate要求的产物，形成不可满足契约；若放宽Write Guard，会迫使模块Design复制项目级治理事实，破坏Project Architecture与Module Design边界。
+- **正确做法**：不修改Write Guard。Design Gate在系统治理必需时，必须从Runtime冻结Manifest读取Project Architecture Candidate，并按七章节和capability_verdict验证其 `system_governance`；模块Design继续按 `solution_design` 验证。Manifest外历史Architecture文件不得计入，非法路径或缺失文件必须失败关闭。允许默认模块Design按既有契约承载system_governance的兼容能力继续保留。
+- **新增防护**：新增冻结Manifest Architecture载体正向回归、Manifest外历史文件排除、畸形Architecture失败关闭、Gate—Write Guard责任契约静态回归；V34只在隔离副本验证。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-017`、`EXP-021`、`EXP-047`、`EXP-053`。
+
+
+
+### ERR-076：V34声明a0333ba基线却使用提交前旧临时树生成Source Contract
+
+- **日期与阶段**：2026-08-04，V34 Design Governance Carrier隔离验证前置。
+- **分类**：`SCRIPT_DEFECT / STALE_BASELINE_DEFECT / SOURCE_CONTRACT_MISMATCH / EVIDENCE_DEFECT`
+- **现场表现**：V34声明 `baseline_head=a0333ba56854b26780960823b25db2faf67f080f`，但对P0实施文件要求旧哈希 `6bf1688c...`；本地实际哈希为已由V29/V30正式应用和提交的 `094a08e4...`。脚本在 `SOURCE_HASH` 阶段失败。
+- **已执行与未执行**：Bundle完整性和进程边界通过；未创建隔离补丁状态，未修改真实SpecForge、WorkDesk、用户级安装或WI-0004，未提交、推送或启动daemon/OpenCode。
+- **根因**：生成器复用了未绑定提交的 `/tmp/specforge-current` 旧树，并只把Manifest中的 `baseline_head` 改为新提交，没有从声明HEAD的精确字节重新生成全部Source Contract，也没有在发布ZIP前把每个源文件哈希与V30提交证据交叉验证。
+- **影响**：正确的本地仓库被误判为基线漂移，用户重复下载和执行；如果脚本放宽哈希检查，则可能把基于旧文件生成的完整替换文件覆盖到新提交，丢失已经验证的治理记录。
+- **正确做法**：每个包的Source Contract必须直接来自声明HEAD的精确文件字节；已有提交范围可使用已验证目标文件和提交证据重建，但必须逐文件校验。临时树只有在记录来源commit且所有源哈希与声明HEAD一致时才可复用。任一文件无法证明时标记 `INSUFFICIENT_EVIDENCE`，不得交付。
+- **新增防护**：V35从 `a0333ba...` 精确基线重建8文件，保留V29/V30已提交内容，通过Manifest同时固定 `baseline_head`、全部Source SHA256和Target SHA256；经验门禁新增Source Contract—HEAD绑定断言。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-021`、`EXP-032`、`EXP-054`。
+
+
+
+### ERR-077：V35新增测试把不受当前运行器支持的非对称匹配器嵌入数组深比较
+
+- **日期与阶段**：2026-08-04，V35 Design Governance Carrier定向测试。
+- **分类**：`TEST_DEFECT / ASSERTION_COMPATIBILITY_DEFECT / FALSE_NEGATIVE`
+- **现场表现**：Architecture载体实现已返回唯一正确绝对路径，但测试使用 `toEqual([expect.stringContaining(...)])`；Bun 1.3.11把数组内非对称匹配器按普通值比较，正向场景失败。
+- **已执行与未执行**：失败仅发生在隔离副本；真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改。
+- **根因**：测试没有按实际Bun/Vitest兼容行为验证断言组合，只验证了TypeScript语法。
+- **影响**：正确产品行为被误报为失败，掩盖同轮其他真实回归。
+- **正确做法**：先断言数组长度，再对规范化后的实际字符串执行 `toContain`；关键断言组合必须在实际Bun版本运行。
+- **新增防护**：V36把路径断言改为显式字符串规范化，并在同一正向测试中验证Architecture和Module Design两条路径。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V36_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-055`。
+
+
+### ERR-078：Classification驱动Gate忽略Candidate Phase，Design阶段提前要求Requirement
+
+- **日期与阶段**：2026-08-04，V35现有Design-First真实Gate回归。
+- **分类**：`GATE_DEFECT / PHASE_SCOPE_DEFECT / CLASSIFICATION_INTERSECTION_DEFECT`
+- **现场表现**：`candidate_phase=design`、`design_changed=true`、`acceptance_criteria_changed=true` 时，`requiredCandidateKindsForGate` 和 `workflowSpecificGateStages` 同时要求Requirement Candidate与Requirements Gate，导致只应验证Design的阶段失败。
+- **已执行与未执行**：该失败存在于 `main@a0333ba...` 基线逻辑；V35未修改Gate Runner，真实仓库和WorkDesk未写入。
+- **根因**：ERR-068修复把Classification作为范围边界后，只对Task/Trace使用Phase裁剪，却没有对Requirement和Design专业阶段取交集。Classification被错误解释为“当前阶段立即执行全部未来产物”。
+- **影响**：Design-First流程在Design阶段被迫提前生成Requirement，破坏专业Agent顺序；合法流程无法进入 `approval_required`。WI-0004使用full阶段，不改变其5项冻结范围。
+- **正确做法**：Candidate Phase决定当前时间边界，Classification决定语义范围。Design阶段只要求Design；Requirements阶段要求已存在Design并执行Requirements Gate；Tasks/full阶段再对全部适用专业产物和Gate对账。Classification缺失继续采用历史严格profile。
+- **新增防护**：V36修正两个Gate辅助函数，新增design/requirements/full三阶段独立回归，并复跑真实 `sf_gate_run` Design-First集成测试。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V36_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-021`、`EXP-048`、`EXP-056`。
+
+
+### ERR-079：回归测试把文件末尾换行计算为额外逻辑行并形成基线假失败
+
+- **日期与阶段**：2026-08-04，V35扩展回归测试集。
+- **分类**：`TEST_FIXTURE_DEFECT / BASELINE_ATTRIBUTION_DEFECT / TEXT_NORMALIZATION_DEFECT`
+- **现场表现**：`sf-orchestrator.md` 基线为319个实际文本行并带标准末尾换行，测试使用 `contract.split('\n').length < 320` 得到320并失败；V35没有修改该文件。
+- **已执行与未执行**：失败只在隔离测试；没有产品或业务写入。
+- **根因**：测试把分隔符后的空尾项当成逻辑行，同时验证器未在应用补丁前运行最小A/B基线控制，导致基线债务与补丁回归混在同一摘要。
+- **影响**：无关历史测试阻断当前产品修复，并降低失败归因可信度。
+- **正确做法**：文本行数按 `trimEnd()` 后的逻辑行计算；隔离补丁验证必须先运行受影响测试的基线控制，记录已存在失败，再要求补丁态全部通过。
+- **新增防护**：V36修正行数断言；验证器在应用补丁前运行Design-First和Orchestrator两项基线控制，必须精确观察到ERR-078/ERR-079，再应用补丁并要求全部通过。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V36_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-011`、`EXP-015`、`EXP-057`。
+
+### ERR-080：经验门禁仍断言上一轮临时状态，与同一经验台账的当前状态块冲突
+
+- **日期与阶段**：2026-08-04，V36隔离定向测试。
+- **分类**：`TEST_CONTRACT_DEFECT / STATE_ASSERTION_STALENESS / FALSE_NEGATIVE`
+- **现场表现**：V36补丁态129项测试通过，唯一失败的经验门禁仍要求 `ERR-075=FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION` 和 `ERR-076=FIX_IMPLEMENTED_PENDING_V35_ISOLATED_VALIDATION`；同一经验文件的正式当前状态已经是 `ERR-075=FIXED_V42_COMMITTED_PUSHED_PENDING_USERLEVEL_INSTALL_WORKDESK_RETEST`、`ERR-076=CLOSED_V35_SOURCE_CONTRACT_VALIDATED`。
+- **已执行与未执行**：失败仅发生于Git HEAD导出的隔离副本；真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改，daemon/OpenCode保持停止。
+- **根因**：更新ERR条目和当前状态块时，没有同步审计经验门禁中对状态值的固定文本消费者；测试同时保留了上一轮临时状态，形成台账生产者与测试消费者自相矛盾。
+- **影响**：V36产品实现、阶段—分类回归和其余129项测试均通过，但完整验证被一个过期状态断言阻断。
+- **正确做法**：ERR状态改变时，必须把条目正文、当前状态块、current-handoff、活动实施文件和全部固定文本测试作为一个原子状态闭包更新；测试应断言同一轮最终状态，不得保留上一轮 `PENDING_Vxx`。
+- **新增防护**：V37同步ERR-075—ERR-080最终状态，并由经验门禁精确断言当前状态块；验证器继续执行未打补丁A/B基线控制和完整130项定向测试。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V37_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-032`、`EXP-058`。
+
+
+### ERR-081：生成状态文档时保留额外EOF空行，导致git diff --check阻断完整验证
+
+- **日期与阶段**：2026-08-04，V37隔离验证。
+- **分类**：`DELIVERY_FORMAT_DEFECT / EOF_WHITESPACE / VALIDATION_BLOCKER`
+- **现场表现**：V37完成A/B基线控制、130项定向测试、TypeScript、daemon-core构建和全仓构建后，`git diff --check` 报告 `P0-contract-consumer-closure.md` 与 `current-handoff.md` 各新增一个文件末尾空白行。
+- **已执行与未执行**：失败仅发生于Git HEAD导出的隔离副本；真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改，daemon/OpenCode保持停止。
+- **根因**：文档追加逻辑使用 `rstrip() + block + "\n"`，而追加块本身已经包含结尾换行，最终形成两个LF；包内生成阶段没有对目标文本文件执行“恰好一个结尾换行”的字节级检查。
+- **影响**：产品代码和130项定向测试均通过，但必需的 `git diff --check` 失败，因此不能进入真实应用或完成边界。
+- **正确做法**：所有生成或重写的文本文件在封包前统一执行 `rstrip("\r\n") + "\n"`；补丁应用后、测试前和最终封包前均检查目标文本文件以且仅以一个换行结束。
+- **新增防护**：V38在包生成器和隔离验证器中增加精确EOF检查；经验门禁固定断言ERR-081和EXP-059。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V38_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-032`、`EXP-059`。
+
+
+### ERR-082：首个证据收集批处理使用错误换行和复杂CMD组合语法，脚本未进入有效执行
+
+- **日期与阶段**：2026-08-04，V27输入证据收集。
+- **分类**：`DELIVERY_SCRIPT_DEFECT / WINDOWS_CMD_PARSE / PREEXEC_FAILURE`
+- **现场表现**：用户执行证据收集包后出现 `'nsions' 不是内部或外部命令` 和 `此时不应有 ||`，脚本没有完成证据收集。
+- **根因**：批处理没有按真实Windows `cmd.exe` 解析契约验证；换行、编码和复杂 `||` 组合不适配目标环境。
+- **影响**：用户无法生成V27输入证据，真实仓库和WorkDesk未变化。
+- **正确做法**：CMD/BAT必须使用目标环境可识别编码、CRLF换行和简单顺序语句；封包前通过真实 `cmd.exe` 做无副作用语法烟雾测试。
+- **新增防护**：`EXP-061`。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V39_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-061`。
+
+### ERR-083：多轮压缩包交付链接缺失或被其他标记污染，用户无法下载已生成文件
+
+- **日期与阶段**：2026-08-04，V28、V31、V33、V36等压缩包交付。
+- **分类**：`ARTIFACT_HANDOFF_DEFECT / DOWNLOAD_LINK / USER_BLOCKER`
+- **现场表现**：文件已生成，但回复中的下载链接缺失、格式损坏或与引用标记混排，用户反馈“没有压缩包”或“无法下载压缩包”。
+- **根因**：交付前没有对最终用户可见链接做独立检查。
+- **影响**：正确产物无法交付，用户被迫重复请求下载；仓库未变化。
+- **正确做法**：每轮只提供一个经存在性和SHA256验证的文件；链接必须是独立、完整、无嵌套的 `sandbox:/mnt/data/<exact-name>.zip`。
+- **新增防护**：`EXP-062`。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V39_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-062`。
+
+### ERR-084：V37包生成器使用脆弱的整段文本锚点，两次因锚点不存在而中断
+
+- **日期与阶段**：2026-08-04，V37包生成。
+- **分类**：`PATCH_GENERATOR_DEFECT / BRITTLE_TEXT_ANCHOR / PREPACKAGE_FAILURE`
+- **现场表现**：生成器先后报 `Could not locate V36 patch-scope anchor` 和 `V36 feedback anchor not found`。
+- **根因**：直接依赖大段精确字符串，没有先读取实际源文本和验证锚点数量。
+- **影响**：同一版本生成过程重复失败；真实仓库和WorkDesk未变化。
+- **正确做法**：优先按标题、JSON结构或AST修改；文本锚点必须先验证匹配数恰好为1，并在临时副本完成修改和静态检查。
+- **新增防护**：`EXP-063`。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V39_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-063`。
+
+### ERR-085：修改前门禁只要求读取已有经验，没有强制先补录上一轮和历史遗漏失败
+
+- **日期与阶段**：2026-08-04，V38成功后的过程治理复核。
+- **分类**：`PROCESS_GOVERNANCE_DEFECT / FAILURE_BACKFILL_GAP / REPEAT_RISK`
+- **现场表现**：台账要求修改前读取经验，但ERR-082—ERR-084长期未登记，后续版本仍继续生成和验证。
+- **根因**：门禁没有先要求失败盘点和 `UNRECORDED_FAILURES=0`。
+- **影响**：重复错误检查可能在不完整台账上假通过。
+- **正确做法**：每轮先盘点和补录全部失败，再重读更新后的经验台账；未补录时必须Fail Closed。
+- **新增防护**：`EXP-060`。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V39_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-060`。
+
+### ERR-086：V39生成器假定其他工具的临时解压目录存在，跨运行环境后立即失败
+
+- **日期与阶段**：2026-08-04，V39第一次生成。
+- **分类**：`PATCH_GENERATOR_DEFECT / CROSS_TOOL_TEMP_PATH_ASSUMPTION / PREPACKAGE_FAILURE`
+- **现场表现**：生成器复制不存在的已解压目录，触发 `FileNotFoundError`。
+- **根因**：依赖另一个工具会话的临时目录，没有从当前环境已确认存在的V38 ZIP自举。
+- **影响**：V39未生成，真实仓库和WorkDesk未变化。
+- **正确做法**：生成器必须验证固定输入文件，并由本轮自行解压或创建目录。
+- **新增防护**：`EXP-064`。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V39_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-064`。
+
+### ERR-087：V39生成器按记忆使用不存在的经验检查表固定句，结构定位前置失败
+
+- **日期与阶段**：2026-08-04，V39第二次生成。
+- **分类**：`PATCH_GENERATOR_DEFECT / STALE_ANCHOR_ASSUMPTION / PREPACKAGE_FAILURE`
+- **现场表现**：生成器查找 `□ 已执行重复错误检查，确认未重复`，但V38真实文本为 `□ 已执行重复错误检查；当前问题已归入已有类别或新增 ERR/EXP`，因此锚点数量为0。
+- **根因**：修改前没有先读取目标段落，仍按记忆构造锚点。
+- **影响**：V39未生成，真实仓库和WorkDesk未变化。
+- **正确做法**：修改脚本必须先读取当前目标结构，按标题或已验证的实际行定位；禁止根据记忆写锚点。
+- **新增防护**：`EXP-065`。
+- **状态**：`FIX_IMPLEMENTED_PENDING_V39_ISOLATED_VALIDATION`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-065`。
 
 # 第二部分：正确做法
 
@@ -1434,13 +1633,109 @@ Runtime状态枚举、迁移表、Tool输入、Skill阶段表、Agent提示词�
 当包的 `types` 入口指向workspace构建产物时，单包noEmit不是零准备检查。验证器必须先按仓库正式拓扑生成被测包全部内部依赖声明，再执行定向测试和被测包TypeScript检查；随后仍要执行相关包构建和必要的全仓确定性构建。缺失声明、工具链不可用和源码类型错误必须分别记录，不能合并成同一种产品缺陷。任何新增辅助函数都必须保持调用上下文的正式可选性；关键上下文缺失时失败关闭，并增加编译和运行双重回归。
 
 
+## EXP-053：Gate必须按正式治理对象职责消费冻结Manifest，不能要求下层产物复制上层责任
+
+Project Architecture负责系统整体结构、模块边界、跨模块依赖和所有模块共同遵守的系统级约束；Module Design只描述模块在上层约束下如何完成自身职责。Gate验证系统治理分析时，必须从Runtime冻结的Candidate Manifest中读取承担该职责的Project Architecture Candidate，并验证其正式内容契约；不得只因Gate实现位于Design Gate中，就要求非默认模块Design复制 `system_governance`。同时不得扫描Manifest外历史文件或放宽Write Guard。任何生产者允许范围与消费者必需条件必须存在至少一个合法交集，并由正向、缺失、畸形和历史排除回归证明。
+
+
 ---
+
+
+## EXP-054：补丁Source Contract必须由声明HEAD的精确字节生成并逐文件交叉验证
+
+补丁包、隔离验证包和真实应用包中的 `baseline_head` 不是说明文字，而是全部源文件前置条件的
+唯一版本合同。每个已有目标文件的Source SHA256必须来自该HEAD的精确字节，并在交付前与
+当前远程/本地HEAD或已验证提交证据逐文件交叉验证；新增文件必须证明在该HEAD不存在。
+不得复用来源提交不明的临时树，也不得只更新Manifest中的HEAD而保留旧Source哈希。无法取得
+精确字节时必须标记 `INSUFFICIENT_EVIDENCE`，不得生成或交付可能覆盖新提交内容的完整文件包。
+
+
+
+## EXP-055：关键测试断言必须以实际运行器支持的组合表达
+
+测试语义不能只在TypeScript层面成立。数组、对象、非对称匹配器、路径分隔符和错误对象等组合断言，必须在项目实际Bun/Vitest版本运行；跨平台路径应先规范化，再分别断言集合规模和字符串语义。新增测试自身失败时先判断断言表达是否受支持，不能立即归因产品实现。
+
+
+## EXP-056：Candidate Phase与Classification必须取交集，不能互相替代
+
+Classification回答“本WI哪些语义发生变化”，Candidate Phase回答“当前时点哪些专业产物到期”。Gate和必需文件必须同时满足二者：design阶段不得提前要求Requirement；requirements阶段保留上阶段Design并只执行Requirements专业Gate；tasks/full阶段才汇总全部适用专业产物和Gate。缺少Classification时保持历史严格profile失败关闭，不能用Phase掩盖未知范围。
+
+
+## EXP-057：补丁验证必须先做最小A/B基线归因，文本度量必须排除格式尾项
+
+扩展回归集发现失败时，验证器必须在应用补丁前对相关测试做最小基线控制，区分既有失败、补丁新增失败和测试自身缺陷。文件行数、列表项和分隔文本等度量必须先定义逻辑单位；标准末尾换行产生的空尾项不能计为额外内容。基线控制结果应进入证据包，不能只在最终失败后人工推断。
+
+## EXP-058：状态型固定文本消费者必须与最终状态块原子同步
+
+错误状态、阶段状态和交付状态一旦变化，条目正文、正式当前状态块、交接文件、活动实施文件和测试中的固定文本断言必须在同一目标字节集中同步。测试不得继续断言上一轮 `PENDING_Vxx` 临时状态；验证前必须静态对账“生产者当前值”和全部消费者期望值，并在实际Bun测试中再次证明。状态消费者不同步属于验证契约缺陷，不能把正确产品实现误判为失败。
+
+
+## EXP-059：生成文本文件必须以字节级单一EOF换行契约收口
+
+补丁包、状态文档和生成脚本不得依赖编辑器或字符串拼接自然形成正确文件结尾。每个生成文本文件必须在封包前规范化为 `content.rstrip("\r\n") + "\n"`，并验证文件以一个且仅一个LF结束：`endswith(b"\n")` 为真、`endswith(b"\n\n")` 为假。该检查必须早于完整测试和 `git diff --check`，避免在长验证链末端才发现纯格式阻断。
+
+
+## EXP-060：每轮修改必须先补录全部既往失败，再重读最新版经验并执行重复错误检查
+
+每一轮调查、设计、修改、脚本生成、打包、安装或验证开始前，必须先盘点上一轮及历史尚未登记的全部失败。固定顺序：
+
+```text
+失败盘点
+→ 每个失败补录ERR、根因、影响、正确做法、EXP类防护和状态
+→ UNRECORDED_FAILURES=0
+→ 重新读取补录后的最新版经验台账
+→ 映射APPLICABLE_EXPERIENCE_RULES
+→ REPEATED_ERROR_CHECK=PASS
+→ 固定基线和范围
+→ 才允许首次修改
+```
+
+开始修改前必须记录：
+
+```text
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-...或NONE
+UNRECORDED_FAILURES=0
+EXPERIENCE_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-...
+REPEATED_ERROR_CHECK=PASS
+BASELINE_EVIDENCE=...
+```
+
+任何字段缺失、存在未补录失败或失败没有类防护时必须Fail Closed。失败后不得直接重试。
+
+## EXP-061：Windows CMD/BAT交付必须通过真实解析器、编码和换行契约验证
+
+CMD/BAT交付必须使用目标环境可识别编码和CRLF，避免未经验证的复杂 `||` 组合，并通过真实 `cmd.exe` 无副作用烟雾测试。
+
+## EXP-062：文件生成成功不等于交付成功，下载链接必须独立验证
+
+交付前必须验证文件存在、文件名和SHA256一致；链接必须独立、完整、无嵌套，不得与Web引用混排。
+
+## EXP-063：补丁生成器必须使用结构化边界或受控锚点，禁止盲目整段替换
+
+优先按标题、JSON结构或AST修改。文本锚点必须先验证匹配数恰好为1，并在临时副本完成修改和检查。
+
+## EXP-064：生成器必须从当前环境已验证输入自举，禁止依赖跨工具临时目录
+
+每轮必须验证固定输入文件存在并自行解压或创建目录，不得依赖其他工具或会话的临时路径。
+
+## EXP-065：修改脚本必须先读取当前目标结构，禁止根据记忆构造锚点
+
+任何修改脚本在定义锚点前必须读取当前文件和目标段落。锚点必须来自实际内容或结构标题，并验证数量；不能使用上一轮记忆中的句子。
 
 # 第四部分：修改前强制检查
 
 ## 13. 通用检查清单
 
 ```text
+□ 已盘点上一轮和历史遗漏失败，所有失败均已先补录ERR、根因、EXP类防护和状态
+□ PRIOR_FAILURE_RECONCILIATION=PASS
+□ BACKFILLED_ERROR_IDS已明确记录为ERR列表或NONE
+□ UNRECORDED_FAILURES=0
+□ 已在补录完成后重新读取最新版经验文件
+□ 失败后未直接重试，已先记录、学习并增加防复发措施
+
 □ 已完整阅读第三部分
 □ 已记录 EXPERIENCE_FILE_READ=YES
 □ 已记录 APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
@@ -1468,6 +1763,12 @@ Runtime状态枚举、迁移表、Tool输入、Skill阶段表、Agent提示词�
 □ 专业Agent只通过受控Tool写治理Candidate，未使用sf_safe_bash、Shell、PowerShell、Node或Python写治理产物
 □ HardStop活动锁与resolution历史已分层取证；恢复后未要求hard_stop.json继续存在，非因果相关的业务现场证据不足未阻断隔离源码验证
 □ Monorepo单包TypeScript检查前已按正式拓扑生成内部依赖声明；环境准备错误与源码类型错误已分项报告
+□ Gate验证的治理职责已绑定正式治理对象和冻结Manifest；生产者允许范围与消费者必需条件存在合法交集，未要求Module Design复制Project Architecture责任
+□ 补丁包Source Contract已由声明HEAD的精确字节生成并逐文件交叉验证；未复用来源提交不明的临时树
+□ Candidate Phase与Classification已取交集；当前阶段未提前要求后续专业Candidate或Gate
+□ 补丁验证已先运行最小A/B基线控制；文本行数等度量已排除标准末尾换行产生的空尾项
+□ ERR/EXP状态变化已同步条目正文、当前状态块、交接文件、活动实施文件和全部固定文本测试；不存在上一轮PENDING状态残留
+□ 所有生成文本文件以一个且仅一个LF结束；封包前和补丁应用后已完成字节级EOF检查
 □ 脚本 stdout/stderr、编码和失败恢复已设计
 □ 新回归测试可独立运行
 □ 已准备 A/B 归因方案
@@ -1494,6 +1795,14 @@ Runtime状态枚举、迁移表、Tool输入、Skill阶段表、Agent提示词�
 ## 14. 命令交付检查
 
 ```text
+□ CMD/BAT已使用目标环境可识别编码和CRLF换行
+□ CMD/BAT已通过真实cmd.exe无副作用语法烟雾测试
+□ 下载文件存在、文件名、SHA256和sandbox链接已核对
+□ 用户可见下载链接独立完整，不含Web引用或嵌套Markdown
+□ 补丁生成器已按结构边界修改；文本锚点匹配数量恰好为1
+□ 生成器输入文件已在当前运行环境验证存在，未依赖其他工具临时目录
+□ 修改脚本已先读取当前目标结构，未根据记忆构造锚点
+
 □ 交互 CMD 未使用批处理 %% 变量
 □ 没有多行 Python/JSON/正则嵌入 CMD
 □ npm 工具解析到明确 .cmd
@@ -1632,11 +1941,74 @@ ERR-063：CLOSED。V22经验门禁通过，固定文本消费者与当前交接�
 ERR-064：CLOSED。V22按真实生产者契约验证trigger_result skeleton，并以candidate_manifest.base_spec_version作为Project Spec Version权威产物。
 ERR-065：V22证据审计发现，V23执行提交前最终状态对账。
 ERR-066：CLOSED。V25注释感知扫描证明非STORAGE可执行持久化调用为0，并提交场景冻结证据。
-ERR-067：FIXED_PENDING_WORKDESK_RETEST。V28证明Runtime Classification驱动Manifest物化、缺项和冲突回归通过；等待真实仓库提交、用户级升级和WI-0004恢复重验。
-ERR-068：FIXED_PENDING_WORKDESK_RETEST。V28证明Classification驱动Candidate与专业Gate要求回归通过；等待WI-0004恢复重验。
-ERR-069：FIXED_VALIDATED_V28。正式停止状态统一为approval_required，Agent/Skill/文档回归通过。
-ERR-070：FIXED_PENDING_WORKDESK_RETEST。sf-design和architecture_change Skill受控工具边界回归通过；等待WI-0004恢复时证明不再产生可避免HardStop。
-ERR-071：FIXED_VALIDATED_V28。无活动hard_stop.json但存在hard_stop_resolution.jsonl的生命周期自测和WorkDesk只读取证通过。
-ERR-072：FIXED_VALIDATED_V28。V28先准备workspace内部声明，74项定向测试、TypeScript、daemon-core和全仓构建全部通过。
-V28隔离验证：RESULT=SUCCESS；13文件精确范围、git diff --check和隔离installer 119/119全部通过；真实仓库、WorkDesk、真实用户级安装、提交和推送均未修改。
+ERR-067：V27保留Runtime Classification驱动Manifest物化实现；待隔离测试、TypeScript和构建验证。
+ERR-068：V27保留Classification驱动Candidate/Gate要求实现；待隔离测试、TypeScript和构建验证。
+ERR-069：V27统一正式状态approval_required；待隔离Agent/Skill/文档回归验证。
+ERR-070：V27补强sf-design和architecture_change Skill受控工具边界；待隔离回归验证。
+ERR-071：V26因错误要求已恢复的hard_stop.json而在零写入阶段失败；V27改读hard_stop_resolution.jsonl，并把WorkDesk现场证据改为非阻断只读审计。
+ERR-072：V27定向测试73/73通过后，TypeScript阶段暴露workspace声明未准备和两处可选workflowPath类型错误；V28分离依赖准备并修复失败关闭类型契约。
 ```
+
+## 23. 2026-08-04 V28—V33与WI-0004真实复测更新
+
+```text
+V28隔离验证：SUCCESS，74项定向测试、TypeScript、daemon-core build、全仓build、git diff check、installer隔离verify全部通过。
+V29真实仓库应用：SUCCESS，精确13文件，WorkDesk未改变。
+V30提交推送：SUCCESS，main=d6dc931072aca519354fb4bc0857a64aacc58961 → a0333ba56854b26780960823b25db2faf67f080f。
+V33用户级升级：SUCCESS，Bun 1.3.11，installer verify=119/119，源码与部署=119/119，WorkDesk和legacy目录未改变。
+WI-0004第一次恢复：Manifest自动物化5项，历史Requirement/Data Model 2项排除，Classification驱动Gate正确；因旧DOMAIN Design标签问题回到gates_failed。
+WI-0004有边界修复尝试：sf-design只使用sf_artifact_write，无sf_safe_bash；Write Guard拒绝模块Design声明system_governance，Candidate未写入，状态停在candidate_preparing。
+V34隔离验证：在SOURCE_HASH前置失败；实际a0333ba文件哈希094a08e4...正确，包内旧基线哈希6bf1688c...错误；全部真实写入均未执行。
+```
+
+当前错误状态：
+
+```text
+ERR-067=CLOSED_V28_AUTOMATED_AND_WORKDESK_MANIFEST_RETEST
+ERR-068=CLOSED_V28_AUTOMATED_AND_WORKDESK_CLASSIFICATION_RETEST
+ERR-069=FIXED_AUTOMATED_VALIDATED_REAL_SUCCESS_PATH_PENDING_ERR-075
+ERR-070=CLOSED_V28_AUTOMATED_AND_WORKDESK_TOOL_BOUNDARY_RETEST
+ERR-071=CLOSED_V28_V29_VALIDATED
+ERR-072=CLOSED_V28_VALIDATED
+ERR-073=CLOSED_V33_REAL_UPGRADE_VALIDATED
+ERR-074=CLOSED_V33_REAL_UPGRADE_VALIDATED
+ERR-075=FIXED_V42_COMMITTED_PUSHED_PENDING_USERLEVEL_INSTALL_WORKDESK_RETEST
+ERR-076=CLOSED_V35_SOURCE_CONTRACT_VALIDATED
+```
+
+V35隔离验证在定向测试阶段停止：124通过、3失败；真实仓库和WorkDesk未写入。
+当前新增状态：
+
+```text
+ERR-077=CLOSED_V38_ISOLATED_VALIDATED
+ERR-078=FIXED_V42_COMMITTED_PUSHED_PENDING_USERLEVEL_INSTALL_WORKDESK_RETEST
+ERR-079=CLOSED_V38_ISOLATED_VALIDATED
+ERR-080=CLOSED_V38_ISOLATED_VALIDATED
+ERR-081=CLOSED_V38_ISOLATED_VALIDATED
+ERR-082=CLOSED_V42_COMMITTED_PUSHED
+ERR-083=CLOSED_V42_COMMITTED_PUSHED
+ERR-084=CLOSED_V42_COMMITTED_PUSHED
+ERR-085=CLOSED_V42_COMMITTED_PUSHED
+ERR-086=CLOSED_V42_COMMITTED_PUSHED
+ERR-087=CLOSED_V42_COMMITTED_PUSHED
+```
+
+V36隔离验证完成A/B基线控制并应用精确11文件补丁：129项通过、1项失败；唯一失败是ERR-080经验门禁状态断言过期。产品实现、真实SpecForge、WorkDesk、用户级安装和WI-0004均未改变。
+
+V37隔离验证完成A/B基线控制、130项定向测试、TypeScript、daemon-core构建和全仓构建；唯一失败为ERR-081：两个状态文档各多一个EOF空白行，`git diff --check` 阻断。真实SpecForge、WorkDesk、用户级安装和WI-0004均未改变。
+
+V38隔离验证成功：A/B基线控制、130项定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify和精确11文件范围全部通过。真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改。
+
+过程复核补录ERR-082—ERR-087。V39只补齐过程治理和固定文本消费者，不改变V38产品代码。
+
+V39隔离验证成功：过程门禁、130项定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify和精确11文件范围全部通过。
+
+V40真实仓库应用成功：精确11文件已写入真实SpecForge；同一完整验证链再次通过；WorkDesk未改变；未安装、未提交、未推送；daemon/OpenCode保持停止。
+
+V41只更新4个状态消费者，使ERR状态、current-handoff、活动实施文件和经验门禁与V39/V40实际证据一致；产品代码和11文件总范围不变。
+
+V41提交前状态闭包已经成功：4个状态消费者、130项定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify和精确11文件范围全部通过。
+
+本变更集由V42完成一次提交并推送到远程 `main`。提交内容不在自身文件中写入自引用SHA；实际 `COMMIT_SHA`、`REMOTE_HEAD_AFTER_PUSH` 和提交文件清单以V42证据包为准。
+
+下一阶段是用户级安装升级和WorkDesk WI-0004真实重验。安装完成前不得启动daemon/OpenCode；重验只恢复当前 `candidate_preparing` 现场，不得修改Candidate内容、执行User Decision、Merge、Code Permission或业务代码。

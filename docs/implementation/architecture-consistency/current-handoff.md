@@ -37,6 +37,43 @@ REPEATED_ERROR_CHECK=PASS
 
 本门禁适用于代码、测试、Markdown、JSON、配置、CMD/BAT、PowerShell、Python 辅助程序、补丁包、压缩包、安装器、Git 命令和真实项目验证。
 
+### 0.1 上一轮失败补录与本轮经验重读门禁
+
+每一轮调查、设计、修改、脚本生成、打包或验证开始前，必须先盘点上一轮及历史尚未登记的全部失败，包括仓库测试、类型检查、构建、Git、命令、脚本、包生成、下载交付、工具调用和助手侧预处理失败。
+
+每个失败必须先写入 `docs/rule/specforge-development-error-ledger-and-experience.md`，具备ERR编号、事实证据、分类、根因、影响、正确做法、EXP类防护、回归或机器防护和当前状态。
+
+补录完成后，必须重新读取更新后的最新版经验台账，再确定本轮适用经验。禁止读取旧版本后补录，却继续使用补录前的经验判断。
+
+每轮首次修改前必须记录：
+
+```text
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-...或NONE
+UNRECORDED_FAILURES=0
+EXPERIENCE_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-...（至少一项）
+REPEATED_ERROR_CHECK=PASS
+BASELINE_EVIDENCE=远程HEAD、权威文件版本、本地状态和上轮证据
+```
+
+强制顺序：
+
+```text
+失败盘点
+→ 错误补录
+→ 类经验和防护补齐
+→ UNRECORDED_FAILURES=0
+→ 重新学习最新版经验
+→ 重复错误检查
+→ 基线和范围冻结
+→ 首次修改
+```
+
+存在未补录失败、失败没有根因或类防护、没有重读补录后的经验文件、同类错误再次出现但未说明旧防护为何失效，或者 `REPEATED_ERROR_CHECK` 不是PASS时，必须停止。
+
+失败后不得直接重试、改版本号或重新打包。必须先记录失败、学习经验并增加防复发措施，再开始下一轮。
+
 ## 一、仓库与权威入口
 
 远程仓库：
@@ -731,7 +768,7 @@ WorkDesk调查前后Git状态字节等价
 权威文件未修改
 ```
 
-产品修复提交和用户级升级后的下一项完整工作是：
+V26成功后的下一项完整工作是：
 
 ```text
 用户上传V26证据包
@@ -998,44 +1035,237 @@ git diff --check
 隔离OPENCODE_CONFIG_DIR installer install + verify
 ```
 
-V28隔离验证已经成功。真实仓库应用、提交、用户级升级和安装一致性复核完成前，仍不得启动daemon/OpenCode，不得恢复WI-0004，不得修改WorkDesk。
+V28成功前不得启动daemon/OpenCode，不得恢复WI-0004，不得修改真实仓库、WorkDesk或用户级安装。
 
-## V28隔离验证成功与V29真实仓库应用边界（2026-08-04）
+## V28—V33完成事实与WI-0004当前冻结状态（2026-08-04）
 
-V28证据包已经复核，结果为：
+本节是本文件中最新的当前状态；此前V26、V27、V28“待执行”段落仅保留历史过程。
 
 ```text
-RESULT=SUCCESS
-SOURCE_STATE=CLEAN_SOURCE
-LOCAL_HEAD=d6dc931072aca519354fb4bc0857a64aacc58961
-REMOTE_HEAD=d6dc931072aca519354fb4bc0857a64aacc58961
-AUTHORITY_COMMIT=08629b58c6aad82bf669a35e1f2bc8473cfa7ef3
-ISOLATED_PATCH_ACTION=APPLIED_13_OF_13
+远程仓库=https://github.com/lyqstart/SpecForge.git
+目标分支=main
+当前实现提交=a0333ba56854b26780960823b25db2faf67f080f
+V28隔离验证=SUCCESS
+V29真实应用=SUCCESS_EXACT_13_FILES
+V30提交推送=SUCCESS
+V33用户级升级=SUCCESS
+installer verify=119/119
+源码与部署一致性=119/119
+SpecForge工作区=V33证据时CLEAN
+WorkDesk=V33升级前后UNCHANGED
+```
+
+WI-0004真实恢复已经证明：
+
+```text
+Runtime在candidate_preparing→candidate_prepared自动物化5项Manifest
+extension_registry、architecture、DOMAIN design、DOMAIN module_contract、trace_delta全部进入Manifest
+历史CORE Requirement和Project Data Model Candidate被排除
+Classification驱动Candidate和专业Gate范围正确
+sf-design真实重试只使用sf_artifact_write，未使用sf_safe_bash
+```
+
+新的真实阻断为 `ERR-075`：
+
+```text
+Design Gate只扫描模块Design Candidate并要求system_governance
+Write Guard正确限制显式非默认模块Design只允许solution_design
+Project Architecture Candidate已声明system_governance但未被Design Gate消费
+sf_artifact_write返回DESIGN_SCOPE_CONTRACT_MISMATCH
+Candidate未修改
+Gate未重跑
+WI-0004当前状态=candidate_preparing
+```
+
+修复边界：不放宽Write Guard，不修改WorkDesk。Design Gate必须从冻结Candidate Manifest读取Project Architecture Candidate作为系统治理载体；Manifest外历史文件不得计入。V34冻结8文件，仅做隔离验证。V34成功前保持daemon/OpenCode停止，不回退或继续WI-0004。
+
+## V34失败与V35隔离验证边界（2026-08-04）
+
+V34未进入隔离应用阶段：
+
+```text
+RESULT=FAILED
+FAILED_STAGE=SOURCE_HASH
+BUNDLE_INTEGRITY=PASS
+实际P0文件SHA256=094a08e41c74b418907d98757594833d8988dc24916c4df9f5c837509159d6af
+V34错误预期SHA256=6bf1688ca749c56ef3364d98e7623ba2e2167d19ee64dbbe3b609a06e99348d2
+真实SpecForge、WorkDesk、用户级安装、WI-0004=均未修改
+daemon/OpenCode=停止
+```
+
+实际哈希与 `main@a0333ba56854b26780960823b25db2faf67f080f` 已提交文件一致。
+V34生成器错误地复用了V30提交前的旧临时树，导致声明HEAD与Source Contract不一致。
+
+V35只允许：
+
+```text
+按a0333ba精确字节重建8文件Source Contract
+保留V34的ERR-075产品修复方向
+增加ERR-076 / EXP-054及对应经验门禁
+在Git HEAD导出的隔离副本中完成测试、TypeScript、构建、diff和installer验证
+```
+
+WI-0004继续保持 `candidate_preparing`。V35成功证据复核前，不得回退状态、修改Candidate、
+运行Gate、启动daemon/OpenCode、修改真实SpecForge或用户级安装。
+
+
+## V35失败与V36隔离验证边界（2026-08-04）
+
+```text
+V35 RESULT=FAILED
+FAILED_STAGE=TARGETED-TESTS
+BASELINE/SOURCE_CONTRACT=PASS_EXACT_A0333BA
+ISOLATED_PATCH=APPLIED_8_OF_8
 DEPENDENCY_PREPARATION=PASS
-TARGETED_TESTS=PASS（74/74）
+TESTS=124 passed / 3 failed
+真实SpecForge、WorkDesk、用户级安装、WI-0004=未修改
+```
+
+失败闭包：
+
+```text
+ERR-077：Architecture载体新测试断言与Bun运行器不兼容
+ERR-078：Design阶段错误提前要求Requirement Candidate和Requirements Gate
+ERR-079：Orchestrator行数测试把末尾换行计为额外逻辑行
+```
+
+V36允许11文件：V35原实现和文档、`gate-runner-v11.ts`、Candidate Phase独立回归、Orchestrator测试。V36必须先运行未打补丁基线A/B控制，再应用补丁并完成定向测试、TypeScript、daemon-core build、全仓build、`git diff --check` 和隔离installer verify。
+
+WI-0004继续冻结在 `candidate_preparing`。V36成功、真实应用、提交、用户级升级完成前，不得启动daemon/OpenCode，不得修改Candidate、回退状态或运行Gate。
+
+## V36失败与V37隔离验证边界（2026-08-04）
+
+```text
+V36 RESULT=FAILED
+FAILED_STAGE=TARGETED-TESTS
+SOURCE_CONTRACT=PASS_EXACT_A0333BA
+BASELINE_CONTROL=PASS_EXPECTED_2_FAILS
+ISOLATED_PATCH=APPLIED_11_OF_11
+DEPENDENCY_PREPARATION=PASS
+TESTS=129 passed / 1 failed
+唯一失败=经验门禁仍断言V35旧状态
+真实SpecForge、WorkDesk、用户级安装、WI-0004=未修改
+daemon/OpenCode=停止
+```
+
+V36产品代码和其余129项测试通过。唯一缺陷为 `ERR-080`：经验台账已经更新ERR-075/076当前状态，但经验门禁仍要求上一轮V35临时状态，形成状态生产者与固定文本消费者冲突。
+
+V37保持V36精确11文件和产品实现不变，只同步ERR-075—ERR-080状态、EXP-058、经验门禁和两份状态文档。V37必须重新执行A/B基线控制、130项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check` 和隔离installer verify。
+
+WI-0004继续冻结在 `candidate_preparing`。V37成功、真实应用、提交和用户级升级完成前，不得启动daemon/OpenCode，不得修改Candidate、回退状态或运行Gate。
+
+## V37失败与V38隔离验证边界（2026-08-04）
+
+```text
+V37 RESULT=FAILED
+FAILED_STAGE=GIT-DIFF-CHECK
+SOURCE_CONTRACT=PASS_EXACT_A0333BA
+BASELINE_CONTROL=PASS_EXPECTED_2_FAILS
+ISOLATED_PATCH=APPLIED_11_OF_11
+EXPERIENCE_STATE_CONTRACT=PASS_ATOMIC_V37
+TARGETED_TESTS=130/130
+TYPECHECK=PASS
+DAEMON_CORE_BUILD=PASS
+WORKSPACE_BUILD=PASS
+唯一失败=两个Markdown文件新增EOF空白行
+真实SpecForge、WorkDesk、用户级安装、WI-0004=未修改
+daemon/OpenCode=停止
+```
+
+V38保持V37产品实现和精确11文件范围不变，新增ERR-081/EXP-059，对全部目标文本文件执行“一个且仅一个LF结尾”的字节级检查，并重新运行完整验证链。
+
+WI-0004继续冻结在 `candidate_preparing`。V38成功、真实应用、提交和用户级升级完成前，不得启动daemon/OpenCode，不得修改Candidate、回退状态或运行Gate。
+
+## V38成功与V39过程治理补录边界（2026-08-04）
+
+V38隔离验证全部通过，真实SpecForge、WorkDesk、用户级安装和WI-0004均未修改。
+
+V39补录：
+
+```text
+ERR-082=证据收集CMD换行和组合语法失败
+ERR-083=压缩包下载链接缺失或损坏
+ERR-084=V37生成器脆弱文本锚点两次失败
+ERR-085=修改前经验门禁没有强制先补录全部既往失败
+ERR-086=生成器错误依赖跨工具临时目录
+ERR-087=生成器按记忆使用不存在的旧锚点
+```
+
+V39保持V38产品代码和精确11文件范围不变，补录ERR-082—ERR-087、EXP-060—EXP-065，并把“先补录失败、再重读经验、再开始修改”的门禁同步到本文件、经验台账、经验门禁测试和验证器。
+
+WI-0004继续冻结在 `candidate_preparing`。V39成功、真实应用、提交和用户级升级完成前，不得启动daemon/OpenCode，不得修改Candidate、回退状态或运行Gate。
+
+## V39/V40成功与V41提交前状态闭包（2026-08-04）
+
+```text
+V39_ISOLATED_VALIDATION=SUCCESS
+V40_REAL_REPOSITORY_APPLY=SUCCESS
+V40_PATCH_ACTION_REAL_REPOSITORY=APPLIED_11_OF_11
+V40_TARGETED_TESTS=PASS
+V40_TYPECHECK=PASS
+V40_DAEMON_CORE_BUILD=PASS
+V40_WORKSPACE_BUILD=PASS
+V40_GIT_DIFF_CHECK=PASS
+V40_INSTALLER_ISOLATED_VERIFY=PASS
+V40_FINAL_SCOPE=PASS_EXACT_11_FILES
+V40_WORKDESK_AUDIT=PASS_UNCHANGED
+V40_REAL_INSTALL_ACTION=NOT_PERFORMED
+V40_COMMIT_ACTION=NOT_PERFORMED
+V40_PUSH_ACTION=NOT_PERFORMED
+```
+
+V40已把V39验证通过的精确11文件应用到真实SpecForge。产品实现、过程治理门禁和测试均已在真实工作树重新验证。
+
+V40应用后的状态文件仍保存“V39待真实应用”描述，因此不得直接提交。V41只允许更新：
+
+```text
+docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
+docs/implementation/architecture-consistency/current-handoff.md
+docs/rule/specforge-development-error-ledger-and-experience.md
+packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts
+```
+
+V41不修改产品代码，不扩大最终11文件范围。V41必须验证当前工作树精确等于V40的11个目标哈希，更新4个状态消费者后重新执行过程门禁、130项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check`、隔离installer verify和最终精确11文件审计。
+
+V41成功后下一步才是提交和推送。提交前不得安装用户级组件，不得启动daemon/OpenCode，不得继续WI-0004。
+
+## V42提交推送闭包与下一阶段边界（2026-08-04）
+
+V42提交内容保持V41验证通过的精确11文件，其中4个状态消费者在提交前对账为稳定的提交后状态。完整提交前验证包括：
+
+```text
+PRIOR_FAILURE_RECONCILIATION=PASS
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+TARGETED_TESTS=PASS
 TYPECHECK=PASS
 DAEMON_CORE_BUILD=PASS
 WORKSPACE_BUILD=PASS
 GIT_DIFF_CHECK=PASS
-INSTALLER_ISOLATED_VERIFY=PASS（119/119）
-FINAL_SCOPE=PASS_EXACT_13_FILES
-真实SpecForge、WorkDesk、真实用户级安装、提交和推送：均未执行
-daemon/OpenCode：均未启动
+INSTALLER_ISOLATED_VERIFY=PASS
+FINAL_SCOPE=PASS_EXACT_11_FILES
+WORKDESK_AUDIT=PASS_UNCHANGED
 ```
 
-V29只允许把同一13文件应用到真实SpecForge仓库，并在真实工作树中复跑同一工程验证。V29必须：
+V42成功路径必须同时满足：
 
 ```text
-写入前重新验证远程main、本地HEAD、权威文件、工作区和进程边界
-验证12个已有源文件SHA256和1个新增文件不存在
-在仓库外保存完整备份和日志
-只修改冻结的13个文件
-运行依赖准备、74项定向测试、TypeScript、daemon-core build、全仓build
-运行git diff --check和精确13文件范围审计
-在隔离OPENCODE_CONFIG_DIR执行installer install + verify
-失败时恢复12个原文件并删除新增测试文件
-不修改WorkDesk
-不提交、不推送、不写真实用户级安装
+COMMIT_ACTION=COMMITTED_EXACT_11_FILES
+PUSH_ACTION=PUSHED_MAIN
+LOCAL_HEAD_AFTER_COMMIT=REMOTE_HEAD_AFTER_PUSH
+WORKTREE=CLEAN
 ```
 
-V29成功证据复核前不得提交、推送、安装真实用户级组件或恢复WI-0004。
+本文件不写入包含自身内容的提交SHA，避免自引用提交。实际SHA、提交标题、远程核对和11文件清单以 `SpecForge-v42-commit-evidence-*.zip` 为正式执行证据。
+
+V42不执行用户级安装，不修改WorkDesk或WI-0004。下一阶段按顺序执行：
+
+```text
+用户级安装升级与119/119一致性验证
+→ 用户手工启动daemon
+→ 用户手工启动OpenCode
+→ 在当前WI-0004 candidate_preparing现场重跑正式Candidate准备和Gate
+→ 通过时进入approval_required并立即停止
+```
+
+WorkDesk重验期间禁止修改Candidate内容、运行User Decision、Merge、Code Permission、业务代码、Verification或Close。

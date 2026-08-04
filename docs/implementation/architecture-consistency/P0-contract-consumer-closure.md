@@ -2382,41 +2382,232 @@ workspace内部依赖声明缺失：6项
 
 V28继续冻结同一13文件产品范围：先按正式workspace拓扑构建daemon-core的内部依赖声明，再运行定向测试；随后立即运行daemon-core TypeScript noEmit、daemon-core build、全仓deterministic build、`git diff --check` 和隔离installer install/verify。缺少workflowPath时Candidate和专业Gate采用历史严格profile失败关闭，并由运行回归与TypeScript共同覆盖。
 
-V28隔离验证已经成功；真实SpecForge、WorkDesk和真实用户级安装在V28中均未修改。
+V28成功前仍不得修改真实SpecForge、WorkDesk或用户级安装，不得提交、推送、启动daemon/OpenCode或恢复WI-0004。
 
-### 25.16 V28隔离验证成功与V29真实仓库应用边界
-
-V28证据结果：
+### 25.16 V28—V33产品修复、提交与安装结果
 
 ```text
-13个冻结文件：隔离应用成功
-依赖声明准备：通过
-定向测试：74/74通过
-daemon-core TypeScript noEmit：通过
-daemon-core build：通过
-全仓deterministic build：通过
-git diff --check：通过
-隔离installer install + verify：119/119通过
-最终范围：精确13文件
-权威文件：未修改
-真实SpecForge、WorkDesk、真实用户级安装：未修改
-提交、推送：未执行
-daemon、OpenCode：未启动
+V28隔离验证：SUCCESS，74项定向测试、TypeScript、daemon-core build、全仓build、git diff check和隔离installer verify全部通过。
+V29真实仓库应用：SUCCESS，精确13文件，WorkDesk未改变。
+V30提交推送：SUCCESS，提交a0333ba56854b26780960823b25db2faf67f080f已推送main。
+V33用户级升级：SUCCESS，Bun 1.3.11，installer verify=119/119，源码部署一致性=119/119。
 ```
 
-V28证明当前13文件实现和验证顺序能够闭合，但不能替代真实仓库应用，也不能替代WorkDesk恢复重验。
+因此ERR-067、ERR-068、ERR-070已进入WorkDesk真实重测，不再停留在自动化验证阶段；ERR-069的正式状态名已修复，但真实成功路径仍需Gate通过后验证。
 
-V29允许把同一13文件应用到真实SpecForge仓库并复跑相同验证。V29失败必须回滚到
-`main@d6dc931072aca519354fb4bc0857a64aacc58961` 的12个原文件并删除新增测试文件；
-V29成功后保持13文件未提交状态，先上传证据复核，不安装真实用户级组件、不推送、不启动
-daemon/OpenCode、不恢复WI-0004。
+### 25.17 WI-0004 Manifest、Classification与工具边界真实重测
 
-V29成功并完成提交、推送和用户级升级后：
+第一次恢复验证结果：
 
 ```text
-ERR-067、ERR-068、ERR-070：FIXED_PENDING_WORKDESK_RETEST
-ERR-069、ERR-071、ERR-072：FIXED_VALIDATED_V28
+STATE_BEFORE=gates_failed
+Runtime Manifest=5项
+Manifest历史排除=CORE Requirement、Project Data Model
+Classification=requirement false / data_model false / design true / architecture true / module_contract true
+Candidate Gate=9/10
+失败Gate=workflow_specific_gate
+FINAL_STATE=gates_failed
 ```
 
-只有WI-0004通过正式Tool重新进入 `approval_required`，且Manifest、Classification Gate和
-Agent工具边界符合冻结预期，才能关闭ERR-067、ERR-068和ERR-070。
+这次真实运行关闭ERR-067和ERR-068：Manifest与Classification消费均符合冻结场景。随后一次有边界Candidate修复真实验证了ERR-070：sf-design使用 `sf_artifact_write`，未调用 `sf_safe_bash` 或Shell。
+
+### 25.18 ERR-075系统治理载体责任冲突与V34边界
+
+有边界修复发现不可满足的生产者—消费者契约：
+
+```text
+Write Guard：显式非默认模块Design只允许analysis_scope=solution_design
+Design Gate：系统治理必需时只统计Design Candidate中的analysis_scope=system_governance
+Project Architecture Candidate：已合法声明analysis_scope=system_governance
+结果：满足Gate的模块Design写入被DESIGN_SCOPE_CONTRACT_MISMATCH拒绝
+```
+
+正确责任边界来自现有权威设计：Project Architecture负责系统级约束，Module Design负责模块内部实现设计。因此V34不放宽Write Guard，只修复Design Gate消费者：
+
+```text
+系统治理必需
+→ 只从Runtime冻结candidate_manifest读取type=architecture Candidate
+→ 验证analysis_scope=system_governance、capability_verdict和七个固定章节
+→ 模块Design继续使用solution_design
+→ Manifest外历史Architecture不计入
+→ 非法路径、缺失文件和畸形Architecture失败关闭
+```
+
+V34允许修改精确8文件：两个daemon-core实现、两个Design治理测试、经验门禁测试、错误经验台账、活动实施文件和current-handoff。权威文件、Write Guard、Agent/Skill、状态机、Gate Runner、安装器、WorkDesk和WI-0004 Candidate均不得修改。
+
+WI-0004当前冻结在 `candidate_preparing`。V35隔离验证成功前不得回退状态、重跑Gate、启动daemon/OpenCode或继续业务流程。
+
+### 25.19 V34源基线哈希错误与V35隔离验证边界
+
+V34在任何隔离副本创建或补丁应用前失败：
+
+```text
+RESULT=FAILED
+FAILED_STAGE=SOURCE_HASH
+BUNDLE_INTEGRITY=PASS
+实际文件=docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
+实际SHA256=094a08e41c74b418907d98757594833d8988dc24916c4df9f5c837509159d6af
+V34错误预期SHA256=6bf1688ca749c56ef3364d98e7623ba2e2167d19ee64dbbe3b609a06e99348d2
+真实SpecForge写入=未执行
+WorkDesk写入=未执行
+WI-0004动作=未执行
+daemon/OpenCode=停止
+```
+
+`094a08e4...` 是V29真实应用、V30提交并推送到
+`a0333ba56854b26780960823b25db2faf67f080f` 的正式文件字节。V34包虽然声明
+baseline为 `a0333ba...`，但 `source_files` 却来自V30提交前的旧临时树，形成
+“声明HEAD与Source Contract不一致”。
+
+根因不是本地仓库异常，而是V34生成器复用了未绑定提交的临时源码快照，并且在交付前
+没有把全部Source Contract哈希与声明HEAD及V30提交证据逐文件交叉验证。
+
+V35保持原8文件修复范围，不改变ERR-075设计方向：
+
+```text
+Project Architecture Candidate承担system_governance
+Module Design Candidate保持solution_design
+Design Gate只消费冻结Candidate Manifest
+Write Guard不放宽
+WorkDesk和WI-0004继续冻结在candidate_preparing
+```
+
+V35必须使用 `a0333ba...` 的精确文件字节重新生成Source Contract，同时保留V29/V30已提交
+的ERR-067—ERR-072状态与工程证据。V35隔离验证成功前，不得真实应用、提交、安装、
+启动daemon/OpenCode或继续WI-0004。
+
+
+### 25.20 V35定向测试失败与V36阶段—分类交集修复
+
+V35已证明Source Contract来自 `main@a0333ba56854b26780960823b25db2faf67f080f` 精确字节，且8文件只应用于隔离副本。定向测试结果：
+
+```text
+124 passed
+3 failed
+TypeScript、build、installer：因测试失败未执行
+真实SpecForge、WorkDesk、用户级安装、WI-0004：均未修改
+```
+
+三项失败归因：
+
+```text
+ERR-077：新增Architecture载体测试使用Bun 1.3.11不支持的数组内非对称匹配组合
+ERR-078：a0333ba Gate Runner在candidate_phase=design时仍提前要求Requirement Candidate/Gate
+ERR-079：Orchestrator测试把标准末尾换行计为额外逻辑行，形成基线假失败
+```
+
+ERR-078不是ERR-075设计方向变化。V36继续保持：
+
+```text
+Project Architecture Candidate承担system_governance
+Module Design Candidate保持solution_design
+Write Guard不放宽
+WI-0004 full阶段5项Manifest和Gate范围不变
+```
+
+V36新增阶段—分类交集规则：
+
+```text
+design phase：只要求并执行Design
+requirements phase：保留Design Candidate，要求并执行Requirements
+tasks/full phase：汇总全部Classification适用专业产物和Gate
+Classification缺失：历史严格profile失败关闭
+```
+
+V36隔离验证先在未打补丁基线运行最小A/B控制，精确确认ERR-078和ERR-079；随后应用11文件补丁，运行定向测试、TypeScript、daemon-core build、全仓build、git diff check和隔离installer verify。V36成功前不得真实应用、安装、提交、推送或继续WI-0004。
+
+### 25.21 V36经验门禁状态断言失败与V37原子状态闭包
+
+V36按 `main@a0333ba56854b26780960823b25db2faf67f080f` 精确Source Contract完成未打补丁A/B控制，并在隔离副本应用11文件。结果：
+
+```text
+BASELINE_CONTROL=PASS_EXPECTED_2_FAILS
+ISOLATED_PATCH=APPLIED_11_OF_11
+DEPENDENCY_PREPARATION=PASS
+TARGETED_TESTS=129 passed / 1 failed
+失败测试=SpecForge development experience pre-read gate
+真实SpecForge、WorkDesk、用户级安装、WI-0004=均未修改
+daemon/OpenCode=停止
+```
+
+V36产品实现、ERR-075 Architecture治理载体、ERR-078阶段—分类交集和ERR-079文本行数修复对应测试均已通过。唯一失败是经验门禁继续断言V35临时状态，而同一经验文件已更新为V36当前状态，形成ERR-080。
+
+V37不改变V36产品实现和11文件范围，只原子同步ERR-075—ERR-080条目与当前状态、经验门禁固定文本消费者、current-handoff、本活动实施文件和EXP-058类防护。
+
+V37继续执行完整A/B基线控制、130项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check` 和隔离installer verify。V37成功前不得真实应用、提交、安装、推送或继续WI-0004。
+
+### 25.22 V37 EOF空行失败与V38字节级收口
+
+V37在隔离副本中的验证结果：
+
+```text
+SOURCE_CONTRACT=PASS_EXACT_A0333BA
+BASELINE_CONTROL=PASS_EXPECTED_2_FAILS
+ISOLATED_PATCH=APPLIED_11_OF_11
+EXPERIENCE_STATE_CONTRACT=PASS_ATOMIC_V37
+TARGETED_TESTS=130 passed / 0 failed
+TYPECHECK=PASS
+DAEMON_CORE_BUILD=PASS
+WORKSPACE_BUILD=PASS
+GIT_DIFF_CHECK=FAILED
+```
+
+唯一失败为：
+
+```text
+P0-contract-consumer-closure.md=new blank line at EOF
+current-handoff.md=new blank line at EOF
+```
+
+该失败归类为ERR-081。V38不改变V37产品代码和11文件范围，只把所有目标文本文件规范化为一个且仅一个LF结尾，并在隔离验证器中增加补丁应用后EOF字节检查。V38仍须重新完成A/B基线控制、130项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check` 和隔离installer verify。
+
+### 25.23 V38成功与V39失败补录/经验重读门禁
+
+V38隔离验证全部通过。过程治理复核补录ERR-082—ERR-087和EXP-060—EXP-065。V39不改变V38产品代码，只把“先补录全部失败、再重读最新版经验、再开始修改”的固定顺序同步到current-handoff、经验台账、经验门禁测试和验证器。
+
+V39仍须重新完成A/B基线控制、130项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check`、隔离installer verify和精确11文件范围审计。
+
+### 25.24 V39/V40成功与V41提交前状态闭包
+
+V39隔离验证与V40真实仓库应用均已成功：
+
+```text
+PRIOR_FAILURE_RECONCILIATION=PASS
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+TARGETED_TESTS=PASS
+TYPECHECK=PASS
+DAEMON_CORE_BUILD=PASS
+WORKSPACE_BUILD=PASS
+GIT_DIFF_CHECK=PASS
+INSTALLER_ISOLATED_VERIFY=PASS
+FINAL_SCOPE=PASS_EXACT_11_FILES
+WORKDESK_AUDIT=PASS_UNCHANGED
+```
+
+V40未安装、未提交、未推送，也未修改WorkDesk或WI-0004。V41不改变产品代码，只更新4个状态消费者，把ERR-075、ERR-078和ERR-082—ERR-087从隔离待应用状态对账为真实仓库已应用、待提交状态。
+
+V41必须保持最终工作树精确11文件，并重新完成过程门禁、130项定向测试、TypeScript、daemon-core build、全仓build、`git diff --check` 和隔离installer verify。V41成功前不得提交、安装或继续WI-0004。
+
+### 25.25 V42提交推送闭包与用户级升级边界
+
+V41已在真实工作树完成提交前状态闭包和完整验证。V42保持精确11文件范围，在提交前把4个状态消费者对账为稳定的提交后状态，再重新执行相同验证链。
+
+V42成功必须由独立执行证据证明：
+
+```text
+提交文件=精确11个
+提交标题=fix(governance): align design governance carrier and phase gates
+推送分支=main
+远程HEAD=本地提交HEAD
+工作树=干净
+WorkDesk=未改变
+用户级安装=未执行
+WI-0004动作=未执行
+```
+
+提交SHA不能写入包含自身内容的提交文件；由V42证据包记录和核验。
+
+提交推送后，ERR-075和ERR-078保持“代码已提交推送、待用户级安装和WorkDesk真实重验”。ERR-082—ERR-087的过程治理防护随本提交进入远程基线。
+
+下一阶段必须先完成用户级升级和部署文件一致性验证，再由用户手工启动daemon/OpenCode，恢复WI-0004 `candidate_preparing` 现场。只有正式Gate进入 `approval_required`，且不修改现有Candidate内容，才能关闭ERR-075和ERR-078。

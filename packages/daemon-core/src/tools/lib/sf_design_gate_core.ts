@@ -13,7 +13,10 @@ import {
   workItemRoot,
 } from '@specforge/types/directory-layout';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
-import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
+import {
+  resolveFrozenManifestArtifacts,
+  resolveWorkItemSpecArtifacts,
+} from './governance-invariants-v11';
 import { parseSections, collectDeclaredStatuses } from './sf_requirements_gate_core';
 import { buildTolerantHeaderRegex } from './sf_section_matcher';
 import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
@@ -563,6 +566,42 @@ export async function checkDesignGate(
     const warnings: string[] = [];
     let governanceDetails: Record<string, unknown> | undefined;
     let systemGovernanceArtifactCount = 0;
+    let governanceArtifacts: Array<{ content: string; path: string }> = [];
+
+    if (governanceRequirement.required) {
+      try {
+        governanceArtifacts = await resolveFrozenManifestArtifacts({
+          projectRoot: baseDir,
+          workItemId,
+          artifactTypes: ['architecture'],
+        });
+      } catch (err: unknown) {
+        return {
+          status: 'blocked',
+          blocking_issues: [
+            `Failed to read frozen Project Architecture candidate: ${(err as Error).message}`,
+          ],
+          warnings: [],
+          next_action: 'ask_user',
+        };
+      }
+
+      for (const artifact of governanceArtifacts) {
+        const artifactLabel = artifact.path.replace(/\\/g, '/');
+        const governanceResult = checkSystemGovernanceContent(artifact.content, true);
+        if (governanceResult.status !== 'pass') {
+          blockingIssues.push(
+            ...governanceResult.blocking_issues.map(issue => `${artifactLabel}: ${issue}`)
+          );
+          warnings.push(
+            ...governanceResult.warnings.map(warning => `${artifactLabel}: ${warning}`)
+          );
+          continue;
+        }
+        systemGovernanceArtifactCount += 1;
+        governanceDetails = governanceResult.details;
+      }
+    }
 
     for (const artifact of designArtifacts) {
       const content = artifact.content;
@@ -618,7 +657,7 @@ export async function checkDesignGate(
 
     if (governanceRequirement.required && systemGovernanceArtifactCount === 0) {
       blockingIssues.push(
-        '当前 Work Item 需要系统治理分析，但没有任何 design Candidate 声明 analysis_scope: system_governance'
+        '当前 Work Item 需要系统治理分析，但冻结 Candidate Manifest 中没有合规的 Project Architecture Candidate，且没有允许承载 system_governance 的 Design Candidate'
       );
     }
 
@@ -632,6 +671,7 @@ export async function checkDesignGate(
           governance_requirement_reasons: governanceRequirement.reasons,
           trigger_result_path: governanceRequirement.source_path,
           design_candidate_paths: designArtifacts.map(artifact => artifact.path),
+          governance_candidate_paths: governanceArtifacts.map(artifact => artifact.path),
         },
       };
     }
@@ -646,6 +686,7 @@ export async function checkDesignGate(
         governance_requirement_reasons: governanceRequirement.reasons,
         trigger_result_path: governanceRequirement.source_path,
         design_candidate_paths: designArtifacts.map(artifact => artifact.path),
+        governance_candidate_paths: governanceArtifacts.map(artifact => artifact.path),
       },
     };
 

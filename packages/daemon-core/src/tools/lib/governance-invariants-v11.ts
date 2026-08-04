@@ -95,6 +95,75 @@ export type ResolvedWorkItemSpecArtifact = {
   content: string;
 };
 
+/**
+ * 只从 Runtime 已冻结的 candidate_manifest 中解析指定类型的 Candidate。
+ *
+ * 与 resolveWorkItemSpecArtifacts 不同，本函数不扫描 Candidate 目录，也不读取
+ * 兼容路径。用于 Gate 判断“哪个正式 Candidate 承担某项治理职责”，避免把
+ * 被 Classification 排除的历史文件重新当成当前 Candidate。
+ *
+ * Manifest 中命中目标类型的条目若路径非法或文件缺失，必须失败关闭；不能
+ * 静默退回目录扫描，因为 Gate、Approval 和 Merge 都以冻结 Manifest 为边界。
+ */
+export async function resolveFrozenManifestArtifacts(input: {
+  projectRoot: string;
+  workItemId: string;
+  artifactTypes: string[];
+}): Promise<ResolvedWorkItemSpecArtifact[]> {
+  const manifest = await readJsonOrNull<any>(
+    workItemCandidateManifest(input.projectRoot, input.workItemId)
+  );
+  const entries = [
+    ...(Array.isArray(manifest?.entries) ? manifest.entries : []),
+    ...(Array.isArray(manifest?.candidates) ? manifest.candidates : []),
+  ];
+  const acceptedTypes = new Set(
+    input.artifactTypes.map(value => String(value ?? '').trim().toLowerCase()).filter(Boolean)
+  );
+  const resolved: ResolvedWorkItemSpecArtifact[] = [];
+  const seen = new Set<string>();
+
+  for (const entry of entries) {
+    const type = String(entry?.type ?? entry?.spec_type ?? '')
+      .trim()
+      .toLowerCase();
+    const candidatePath = normalizeSlash(
+      String(entry?.candidate_path ?? entry?.path ?? '')
+    ).toLowerCase();
+    const architectureFallback =
+      acceptedTypes.has('architecture') && candidatePath.endsWith('architecture.candidate.md');
+    if (!acceptedTypes.has(type) && !architectureFallback) continue;
+
+    const absolutePath = manifestCandidatePathToAbsolute(
+      input.projectRoot,
+      input.workItemId,
+      entry?.candidate_path ?? entry?.path
+    );
+    if (!absolutePath) {
+      throw new Error(`invalid frozen Candidate path: ${candidatePath || '<empty>'}`);
+    }
+
+    const normalizedAbsolutePath = path.resolve(absolutePath);
+    if (seen.has(normalizedAbsolutePath)) continue;
+    seen.add(normalizedAbsolutePath);
+
+    try {
+      resolved.push({
+        path: normalizedAbsolutePath,
+        content: await fs.readFile(normalizedAbsolutePath, 'utf-8'),
+      });
+    } catch (err: unknown) {
+      const error = err as NodeJS.ErrnoException;
+      if (error.code === 'ENOENT') {
+        throw new Error(`frozen Candidate file not found: ${candidatePath}`);
+      }
+      throw error;
+    }
+  }
+
+  return resolved;
+}
+
 function manifestCandidatePathToAbsolute(
   projectRoot: string,
   workItemId: string,

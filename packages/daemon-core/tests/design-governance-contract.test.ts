@@ -166,7 +166,10 @@ describe('Design Governance contract alignment', () => {
     expect(directoryLayout).toContain('workItemSpecArtifactReadCandidates');
 
     expect(governanceInvariants).toContain('resolveWorkItemSpecArtifacts');
+    expect(governanceInvariants).toContain('resolveFrozenManifestArtifacts');
     expect(runtimeGate).toContain('resolveWorkItemSpecArtifacts');
+    expect(runtimeGate).toContain('resolveFrozenManifestArtifacts');
+    expect(runtimeGate).toContain('governance_candidate_paths');
     expect(runtimePolicy).toContain('workItemTriggerResult');
     expect(runtimePolicy).toContain('resolveSystemGovernanceRequirement');
     expect(runtimeGate).toContain('checkSystemGovernanceContent');
