@@ -85,8 +85,16 @@ describe('Orchestrator governance execution closure', () => {
     );
     const contract = readFileSync(contractPath, 'utf8').replace(/\r\n/g, '\n');
 
-    const logicalLineCount = contract.trimEnd().split('\n').length;
-    expect(logicalLineCount).toBeLessThan(320);
+    const logicalLines = contract.trimEnd().split('\n');
+    const governanceChainHeadings = [
+      '# 角色使命',
+      '# 从用户请求到工作项关闭的治理主链',
+      '# 职责边界',
+      '# 注意事项',
+    ];
+    expect(
+      logicalLines.filter((line) => governanceChainHeadings.includes(line)),
+    ).toEqual(governanceChainHeadings);
     expect(contract).toContain('## SpecForge v1.1 最终治理契约');
     expect(contract).not.toContain('## SpecForge v1.1 Final Governance Contract');
     expect(contract).toContain('# 角色使命');

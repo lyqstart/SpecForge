@@ -2663,3 +2663,123 @@ WI0001_STATE=gates_failed
 WI0001_GATE_ACTION=NOT_PERFORMED
 NEXT_ACTION=RESTART_DAEMON_OPENCODE_AND_RESUME_EXISTING_WI0001_GATE_ONCE_AFTER_V75_SUCCESS
 ```
+
+## WI-0001关闭后正式Git Merge缺口与V76修复边界（2026-08-05）
+
+独立项目WI-0001已取得以下真实证据：
+
+```text
+Candidate Gate=10/10 passed
+User Decision=approved
+Project Spec Merge=24 candidates, PSV-0002
+Code Permission=exact 4 files
+Implementation Commit=69d5fd64
+Governance Evidence Commit=10fd4ff7
+bun test=10/10 passed
+Verification Gate=passed
+Formal Version Gate=passed
+Close Gate=32/32 passed
+Authoritative State=closed
+```
+
+关闭后的Git现场证明仓库交付尚未完成：
+
+```text
+CURRENT_BRANCH=feature/architecture-change-project-contract-wi-0001
+CURRENT_HEAD=10fd4ff7c6640877794a89ed73cc50533d330a42
+DEFAULT_MAIN=b7fa10bdd40bc6c55a9fdfd151e6e31bde39b57f
+MAIN_CONTAINS_IMPLEMENTATION_COMMIT=NO
+MAIN_CONTAINS_GOVERNANCE_EVIDENCE_COMMIT=NO
+UNCOMMITTED_CLOSE_ARTIFACTS=4
+```
+
+未提交Close产物精确为：
+
+```text
+.specforge/work-items/WI-0001/work_item.json
+.specforge/work-items/WI-0001/close_gate.md
+.specforge/work-items/WI-0001/filesystem_diff_evidence.json
+.specforge/work-items/WI-0001/gates/close_gate.json
+```
+
+因此V76修复三个缺陷：
+
+```text
+ERR-127=正常architecture-change主链遗漏正式Git Merge阶段
+ERR-128=closed但未进入main且工作树脏时错误报告完成
+ERR-129=Merge工具缺少权威closed、Formal Version、祖先关系和实现指纹完整门禁
+```
+
+V76只修改SpecForge Git Governance、Orchestrator、architecture-change Skill、用户级Git工具入口、治理文档和回归测试；不修改权威文件、业务Candidate、Project Spec、业务代码、WorkDesk或WI-0002/WI-0003。
+
+V76部署成功后恢复现有WI-0001，固定分两次用户边界执行：
+
+```text
+第一次：
+读取closed权威状态和Git现场
+→ 精确提交上述4个Close产物
+→ sf_git_merge_plan
+→ 到独立Git Merge用户确认处停止
+
+第二次（仅在用户明确确认后）：
+→ sf_git_merge_run(confirmed=true)
+→ sf_git_post_merge_verify(work_item_id=WI-0001)
+→ repository_delivery_complete=true后报告完成
+```
+
+```text
+ERR127_STATUS=FIX_IMPLEMENTED
+ERR128_STATUS=FIX_IMPLEMENTED
+ERR129_STATUS=FIX_IMPLEMENTED
+WI0001_GOVERNANCE_STATE=closed
+WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_PENDING_GIT_MERGE
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0002_ACTION=NOT_STARTED
+WI0003_ACTION=NOT_STARTED
+NEXT_ACTION=DEPLOY_V76_THEN_COMMIT_CLOSE_EVIDENCE_AND_PLAN_GIT_MERGE
+```
+
+### V76封包前ERR-130单LF重复错误闭包
+
+V76首次静态检查在三个治理文档发现EOF空白行。该失败发生在真实仓库修改、测试、安装、提交、推送和ZIP生成之前，分类为`PACKAGE_PREFLIGHT_DEFECT`，与ERR-121同类。最终目标统一为一个LF结尾，并把单LF检查放在Manifest哈希和ZIP生成之前。
+
+```text
+ERR130_STATUS=CLOSED_PREFLIGHT
+REPEATED_ERROR_CHECK=PASS_REPEATED_ERR121_GUARD_APPLIED
+```
+
+## V76测试阈值漂移、ERR-131与V77闭包边界（2026-08-05）
+
+V76在隔离工作树应用精确14文件后，42项定向测试通过、1项失败。唯一失败为 Orchestrator 结构测试中的绝对行数断言：
+
+```text
+EXPECTED_LOGICAL_LINES=<320
+REMOTE_E84_BASELINE_LOGICAL_LINES=335
+V76_TARGET_LOGICAL_LINES=349
+FAILED_TEST=Orchestrator governance execution closure > uses one Chinese governance chain to cover all five Orchestrator responsibilities
+```
+
+远程基线在V76产品补丁应用前已经违反旧阈值，因此该失败登记为 `ERR-131 / TEST_DRIFT`，不是正式Git Merge规则导致的产品缺陷。V77不提高阈值、不删除V76新增规则，而是把测试契约改为四个治理主链顶层章节按固定顺序各出现一次，并继续检查关键职责和禁止项。
+
+V77范围为V76原14文件加两个真实测试消费者，共精确16文件：
+
+```text
+packages/daemon-core/tests/design-governance-orchestrator-closure.test.ts
+packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts
+```
+
+V77必须先在未应用目标的 `e84ab54` 隔离基线精确复现ERR-131唯一失败，再应用16文件并完成定向测试、workspace build、renderer check、TypeScript、daemon-core build、`git diff --check`和完整路径集合审计。成功后才能提交、推送和用户级升级。V77不得操作WorkDesk或独立项目WI-0001。
+
+```text
+ERR127_STATUS=FIX_IMPLEMENTED
+ERR128_STATUS=FIX_IMPLEMENTED
+ERR129_STATUS=FIX_IMPLEMENTED
+ERR130_STATUS=CLOSED_PREFLIGHT
+ERR131_STATUS=FIX_IMPLEMENTED
+WI0001_GOVERNANCE_STATE=closed
+WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_PENDING_GIT_MERGE
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=USER_MANUALLY_RESTART_DAEMON_OPENCODE_AND_RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONLY
+```

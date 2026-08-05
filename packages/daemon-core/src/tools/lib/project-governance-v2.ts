@@ -2264,3 +2264,82 @@ export async function assertFormalVersionSnapshotForGitMerge(
     }
   }
 }
+
+export interface FormalVersionPostMergeVerification {
+  work_item_id: string;
+  close_gate_passed: boolean;
+  formal_version_gate_passed: boolean;
+  snapshot_present: boolean;
+  implementation_commit: string;
+  implementation_commit_ancestor: boolean;
+  implementation_tree_matches: boolean;
+  base_diff_matches: boolean;
+}
+
+export async function verifyFormalVersionSnapshotAfterGitMerge(
+  projectRoot: string,
+  workItemId: string,
+  targetHead: string,
+): Promise<FormalVersionPostMergeVerification> {
+  const workItemDir = path.join(projectRoot, SPEC_DIR, 'work-items', workItemId);
+  const closeReport = await readJson(path.join(workItemDir, 'gates', 'close_gate.json'));
+  if (closeReport?.status !== 'passed') {
+    throw new Error('POST_MERGE_VERIFY_REQUIRES_CLOSE_GATE');
+  }
+  const formalReport = await readJson(
+    path.join(workItemDir, 'gates', 'formal_version_gate.json'),
+  );
+  if (formalReport?.status !== 'passed') {
+    throw new Error('POST_MERGE_VERIFY_REQUIRES_FORMAL_VERSION_GATE');
+  }
+  const snapshot = await readJson(path.join(workItemDir, 'formal_version_snapshot.json'));
+  if (!snapshot || typeof snapshot !== 'object') {
+    throw new Error('POST_MERGE_VERIFY_REQUIRES_FORMAL_VERSION_SNAPSHOT');
+  }
+  if (!targetHead) {
+    throw new Error('POST_MERGE_VERIFY_TARGET_HEAD_REQUIRED');
+  }
+
+  let implementationCommitAncestor = true;
+  let implementationTreeMatches = true;
+  let baseDiffMatches = true;
+  const implementationCommit = String(snapshot.implementation_commit ?? '');
+
+  if (implementationCommit) {
+    implementationCommitAncestor = await gitIsAncestor(
+      projectRoot,
+      implementationCommit,
+      targetHead,
+    );
+    if (!implementationCommitAncestor) {
+      throw new Error('POST_MERGE_IMPLEMENTATION_COMMIT_NOT_ANCESTOR');
+    }
+    const fingerprint = await gitImplementationFingerprint(
+      projectRoot,
+      targetHead,
+      normalizeArray(snapshot.implementation_files),
+    );
+    implementationTreeMatches =
+      fingerprint === String(snapshot.implementation_tree_fingerprint ?? '');
+    if (!implementationTreeMatches) {
+      throw new Error('POST_MERGE_IMPLEMENTATION_TREE_CHANGED');
+    }
+  } else if (snapshot.base_commit) {
+    const fingerprint = await gitDiffFingerprint(projectRoot, String(snapshot.base_commit));
+    baseDiffMatches = fingerprint === String(snapshot.diff_fingerprint ?? '');
+    if (!baseDiffMatches) {
+      throw new Error('POST_MERGE_FORMAL_DIFF_CHANGED');
+    }
+  }
+
+  return {
+    work_item_id: workItemId,
+    close_gate_passed: true,
+    formal_version_gate_passed: true,
+    snapshot_present: true,
+    implementation_commit: implementationCommit,
+    implementation_commit_ancestor: implementationCommitAncestor,
+    implementation_tree_matches: implementationTreeMatches,
+    base_diff_matches: baseDiffMatches,
+  };
+}

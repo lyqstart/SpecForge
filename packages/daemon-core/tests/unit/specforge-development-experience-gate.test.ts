@@ -467,6 +467,10 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experience).toContain('## EXP-100：Windows命令shim必须通过其所属命令解释器启动并先做真实入口预检');
     expect(experience).toContain('### ERR-124：V73在workspace类型声明生成前运行daemon-core TypeScript检查');
     expect(experience).toContain('## EXP-101：workspace类型消费者必须在声明生产者构建后验证');
+    expect(experience).toContain('### ERR-131：V76用绝对行数阈值限制Orchestrator，远程基线已超过阈值');
+    expect(experience).toContain('## EXP-107：演进型治理文档回归必须验证语义结构，不得用无权威来源的绝对行数代替');
+    expect(handoff).toContain('## V76测试阈值漂移、ERR-131与V77闭包边界（2026-08-05）');
+    expect(p0ContractClosure).toContain('### 25.63 V76测试阈值漂移与ERR-131边界');
     expect(handoff).toContain('## V65测试消费者漂移与V66闭包边界（2026-08-05）');
     expect(handoff).not.toMatch(/ERR-?11[5-7](?:_STATUS)?=CLOSED_AFTER_V\d+/);
     expect(handoff).not.toMatch(/NEXT_ACTION=.*PASTE_V\d+_VERIFIED_UNICODE_WI0001/);

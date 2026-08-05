@@ -2807,6 +2807,7 @@ CLOSED
 
 V编号、commit SHA、证据包路径和时间戳只记录在哪次执行取得证据，不得进入状态枚举或下一动作契约。任何状态生产者变更必须先枚举全部固定文本、Schema、解析器和测试消费者；封包前必须实际解释目标测试中的字符串断言并与目标文档对账。发现 `CLOSED_AFTER_V*`、`NEXT_ACTION=...V*...` 等版本绑定状态时必须失败关闭。
 
+
 # 第四部分：修改前强制检查
 
 ## 13. 通用检查清单
@@ -2839,6 +2840,10 @@ V编号、commit SHA、证据包路径和时间戳只记录在哪次执行取得
 □ UTF-8中文文件进入Windows剪贴板时已显式UTF-8解码、以CF_UNICODETEXT写入并逐字符回读；未使用type|clip、chcp或PowerShell兜底
 □ cmd.exe /c未接收含嵌套引号的跨运行时完整命令字符串；复杂调用已使用独立CMD包装文件和真实Windows执行验证
 □ 生命周期状态和下一动作未绑定V版本；全部固定文本消费者已由目标断言解释器对账
+□ 启用Git Governance时已区分closed与repository_delivery_complete；未在Post-Merge Verify前报告完整完成
+□ Close后新增治理证据已在原WI分支按精确路径提交，工作树干净后才运行Merge Plan
+□ Candidate批准未被当作默认主线Git Merge确认；Merge Plan通过后已单独取得用户明确确认
+□ Post-Merge Verify已实际验证默认分支、fan-in merge commit、WI分支祖先、实现提交祖先和Formal Version实现指纹
 □ daemon/OpenCode 进程检查命令已成功并可解析；命令失败、输出异常或 PID 无法判定时已 fail closed，未解释为“未运行”
 □ Git porcelain 等机器结构化输出使用原始 bytes 和协议分隔符解析，未对完整输出先执行 `.strip()` 或展示层空白规范化；首条、末条和含空格路径回归已通过
 □ 引用审计已区分活跃权威依赖、对象自身产物、Runtime 当前状态和不可变历史日志；未用未分类文本命中总数直接阻断或允许清理
@@ -3439,3 +3444,140 @@ bun scripts/render-workflow-docs.ts --check
 ```
 
 不得通过忽略生成文件、恢复生成结果或只检查 `git diff --check` 宣布完成。
+### ERR-127：WI-0001治理关闭后未执行正式Git Merge
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：独立项目WI-0001已通过Candidate Gate、User Decision、Spec Merge、Code Permission、Implementation、Verification、Formal Version和Close Gate，权威状态为`closed`；实现提交`69d5fd64`和治理证据提交`10fd4ff7`只存在于`feature/architecture-change-project-contract-wi-0001`，未进入`main`。
+- **根因**：architecture-change Skill和Orchestrator的正常主链停在`sf_close_gate`，只提醒“Git merge前提交证据”，没有把`sf_git_merge_plan → 独立用户确认 → sf_git_merge_run → sf_git_post_merge_verify`定义为必须完成的仓库交付阶段。
+- **影响**：治理生命周期关闭，但正式代码和治理规格没有进入默认主线；P0场景中的正式Git交付证据缺失。
+- **修复**：新增Stage 8正式Git Merge协议；Close后精确提交治理证据，Merge Plan通过后单独取得用户确认，使用正式Tool合并并执行真实Post-Merge Verify。
+- **回归**：真实临时Git仓库覆盖closed、干净工作树、无远程、`--no-ff` merge、分支祖先关系和实现指纹。
+
+```text
+ERR-127=FIX_IMPLEMENTED
+```
+
+## EXP-104：Close后产生的治理证据必须在原WI分支精确提交
+
+`sf_close_gate`可以在状态进入`closed`后生成或更新Close证据。启用Git Governance时，Close成功后必须立即读取完整工作树状态，并且只允许当前WI目录中的Formal/Close治理证据进入最后一次checkpoint commit。
+
+```text
+sf_git_preflight
+→ actual_status_paths全部位于.specforge/work-items/<WI>/**
+→ 精确files调用sf_git_checkpoint_commit
+→ 工作树重新验证为clean
+```
+
+存在业务文件、其他WI文件、未分类文件或实现文件变化时必须停止，不得切换主线、手工提交、隐藏文件或直接合并。Close Gate通过不能替代该提交证据。
+
+
+### ERR-128：仍在WI分支且Close产物未提交时错误报告工作项完成
+
+- **分类**：`EVIDENCE_REPORTING_DEFECT`
+- **现场**：OpenCode最终报告称“WI-0001完成”，但当前分支仍是WI feature分支，默认`main`仍停在种子提交，且`work_item.json`、`close_gate.md`、`filesystem_diff_evidence.json`、`gates/close_gate.json`仍未提交。
+- **根因**：最终摘要把`authoritative_state=closed`错误等同于“仓库交付完成”，没有核对当前分支、主线祖先关系、工作树和Post-Merge Verify。
+- **影响**：用户被告知完成，但主线没有包含实现和最终治理证据。
+- **修复**：报告模型分离`governance_closed_pending_git_merge`、`git_merged_pending_post_merge_verify`和`closed_and_git_merged`；只有Post-Merge Verify返回`repository_delivery_complete=true`才允许报告完整完成。
+- **回归**：Agent/Skill、工具返回和状态文档固定消费者同时检查三态边界。
+
+```text
+ERR-128=FIX_IMPLEMENTED
+```
+
+## EXP-105：Candidate批准不能替代默认主线Git Merge确认
+
+用户批准Candidate Package只授权规格候选进入正式Project Spec和后续实现，不自动授权把Git分支写入默认主线。正式Git Merge是独立的不可逆仓库动作，必须在Merge Plan列出目标分支、实际Diff和全部阻塞项后，取得当前用户明确确认。
+
+固定流程：
+
+```text
+sf_git_merge_plan.can_merge=true
+→ 向用户展示目标分支与变更边界
+→ 用户明确确认合并到默认主线
+→ sf_git_merge_run(confirmed=true)
+```
+
+历史批准、Close成功、`can_merge=true`或Agent推断均不能替代确认。没有确认时必须停止，不能用普通Git命令绕过Tool。
+
+
+### ERR-129：Git Merge工具没有形成closed到主线交付的完整硬门禁
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：原`gitMergePlan`只检查工作树和非空Diff；原`gitPostMergeVerify`仅返回`plan_only`，没有实际验证；Merge Handler没有从StateManager读取权威状态；无远程项目会默认尝试`origin`。
+- **根因**：Git Governance只覆盖“执行一个merge命令”，没有把权威closed状态、Formal Version不变性、原WI分支、用户确认、主线merge commit、分支祖先关系和实现指纹组成一个生产者—消费者闭环。
+- **影响**：非closed WI、错误分支、未提交Close证据、实现漂移或未实际合并的场景可能被错误允许或错误报告成功。
+- **修复**：Merge Plan/Run/Post-Merge Verify均读取StateManager权威状态；Run在WI分支验证Formal Version后合并；无已配置远程时明确跳过pull；Post-Merge Verify真实检查默认分支、clean、fan-in merge commit、WI分支祖先、实现提交祖先和实现树指纹。
+- **回归**：正向真实Git闭环，以及非closed、脏工作树、未确认、实现树被后续改写的失败反例。
+
+```text
+ERR-129=FIX_IMPLEMENTED
+```
+
+## EXP-106：治理关闭与仓库交付完成必须使用不同状态
+
+工作流权威状态`closed`只证明治理生命周期已封口。启用Git Governance的项目还必须完成仓库交付状态机：
+
+```text
+governance_closed_pending_git_merge
+→ git_merged_pending_post_merge_verify
+→ closed_and_git_merged
+```
+
+只有最后状态同时具备以下证据时，才可设置`repository_delivery_complete=true`：
+
+```text
+StateManager权威状态=closed
+Close Gate=passed
+Formal Version Gate=passed
+当前分支=默认主线
+工作树=clean
+WI分支是主线HEAD祖先
+HEAD是--no-ff merge commit
+Formal Version实现提交是HEAD祖先
+实现文件指纹与快照一致
+```
+
+任何摘要、交接文件或Agent最终报告不得用“closed”“Close Gate通过”或“提交存在”代替正式主线交付完成。
+
+### ERR-130：V76文档追加后再次产生EOF空白行
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **现场**：V76全部TypeScript目标语法转译通过，但首次`git diff --check`精确报告经验台账、current-handoff和P0实施文件各有一个`new blank line at EOF`。
+- **根因**：文档追加函数在已规范化正文后同时拼接了段落前导换行和最终换行，没有执行最终字节单LF归一化；属于ERR-121同类重复错误。
+- **影响**：产品代码未执行、真实仓库未修改、ZIP未生成；封包被正确阻断。
+- **修复**：全部文本目标在Manifest冻结前执行`rstrip()+"\\n"`，并再次运行`git diff --check`和逐文件单LF检查。
+- **防护**：V76最终脚本对全部目标文本检查恰好一个LF结尾且禁止双LF EOF；重复错误检查标记`PASS_REPEATED_ERR121_GUARD_APPLIED`。
+
+```text
+ERR-130=CLOSED_PREFLIGHT
+```
+
+### ERR-131：V76用绝对行数阈值限制Orchestrator，远程基线已超过阈值
+
+- **分类**：`TEST_DRIFT`
+- **现场**：V76隔离定向测试只有 `Orchestrator governance execution closure > uses one Chinese governance chain to cover all five Orchestrator responsibilities` 失败；断言要求 `sf-orchestrator.md` 逻辑行数 `<320`，V76目标为349行。
+- **基线控制**：远程 `e84ab54f4d76cb5b6dde6c80f3cc99e22f4329f3` 的未修改 Orchestrator 已有335行，同一旧断言在产品补丁应用前即失败。
+- **根因**：测试把“只有一条中文治理主链”的语义要求错误实现为绝对文件行数；该阈值没有权威规则、预算所有者或生成器契约，且未随既有治理职责增长同步。
+- **影响**：V76在隔离测试阶段正确停止；真实仓库、用户级安装、提交、推送、WorkDesk和WI-0001均未修改。
+- **修复**：删除绝对行数断言，改为精确验证四个治理主链顶层章节按固定顺序各出现一次，并继续验证全部关键职责文本和禁止项。
+- **回归**：V77先在未应用补丁的远程基线精确复现唯一批准失败，再应用16文件目标并要求全部定向测试通过。
+
+```text
+ERR-131=FIX_IMPLEMENTED
+```
+
+## EXP-107：演进型治理文档回归必须验证语义结构，不得用无权威来源的绝对行数代替
+
+Agent、Skill和治理说明会随着正式职责增加而演进。除非唯一权威文件明确给出尺寸预算、预算责任人和超限处置方式，否则测试不得用固定行数、字符数或字节数代表“单一主链”“不重复”或“可维护”。
+
+正确验证对象是：
+
+```text
+必需章节按固定顺序存在
++ 每个主章节恰好出现一次
++ 禁止的旧章节或重复链不存在
++ 关键责任、继续条件和失败关闭文本完整
++ 自动生成区段与源定义一致
+```
+
+需要控制重复时，应检查章节唯一性、规则ID重复、同义主链重复和生成区段漂移。不得为了通过行数阈值删除正式治理规则，也不得在基线本身已经超限时把新增正确规则误判为产品回归。

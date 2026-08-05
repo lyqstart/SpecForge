@@ -3525,3 +3525,56 @@ P0_OVERALL_STATUS=IN_PROGRESS
 P1_ACTION=NOT_STARTED
 NEXT_ACTION=RESUME_EXISTING_WI0001_GATE_ONCE_AFTER_V75_SUCCESS
 ```
+
+### 25.61 WI-0001关闭后正式Git Merge缺口与V76修复边界
+
+WI-0001已完成Project Contract新增、四个正式Design消费者、四个实际代码消费者、Code Permission、Verification、Formal Version和Close。该证据覆盖P0矩阵中的治理闭环部分，但Git现场显示实现和最终治理证据仍只在WI分支，默认`main`未包含两个提交，且Close Gate新增4个治理文件尚未提交。
+
+因此本阶段不能把WI-0001计为“正式仓库交付完成”，也不能开始WI-0002。状态分层为：
+
+```text
+WI0001_GOVERNANCE_STATE=closed
+WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_PENDING_GIT_MERGE
+P0_OVERALL_STATUS=IN_PROGRESS
+WI0002_ACTION=NOT_STARTED
+WI0003_ACTION=NOT_STARTED
+```
+
+V76修复边界：
+
+```text
+Close后精确治理证据checkpoint commit
+→ StateManager closed校验
+→ Formal Version快照未变校验
+→ WI分支与clean工作树校验
+→ Merge Plan
+→ 独立用户Git Merge确认
+→ --no-ff正式Merge
+→ 默认主线、祖先关系、merge commit和实现指纹Post-Merge Verify
+```
+
+V76不得修改独立项目业务代码、Candidate、正式Project Spec或WI状态。部署后只允许恢复现有closed WI-0001完成Git仓库交付；`repository_delivery_complete=true`之前不得启动WI-0002。
+
+### 25.62 V76封包前ERR-130单LF重复错误闭包
+
+V76三个治理文档的EOF空白行由`git diff --check`在封包前阻断。该问题不改变Git Governance产品设计、独立项目或WI-0001现场。最终目标执行单LF字节归一化并复跑完整范围审计。
+
+```text
+ERR130_STATUS=CLOSED_PREFLIGHT
+```
+
+### 25.63 V76测试阈值漂移与ERR-131边界
+
+V76正式Git Merge产品修复在隔离定向测试中被一个既有绝对行数断言阻断。远程 `e84ab54` 的 Orchestrator 在应用V76目标前已有335行，而测试要求小于320行；V76目标增加正式Close后Git交付链后为349行。因此失败属于测试消费者漂移，不允许删除正确产品规则或简单提高阈值。
+
+V77把回归契约改为语义结构：四个治理主链顶层章节必须按固定顺序各出现一次，全部关键职责与失败关闭文本继续受现有断言保护。V77先执行未修改基线的精确失败控制，再验证精确16文件目标。
+
+```text
+ERR131_CLASS=TEST_DRIFT
+ERR131_BASELINE_CONTROL=PASS_EXPECTED_EXACT_1_FAILURE_AT_335_LINES
+ERR131_TARGET_CONTRACT=UNIQUE_ORDERED_GOVERNANCE_CHAIN_HEADINGS
+WI0001_ACTION=NOT_PERFORMED
+WI0002_ACTION=NOT_STARTED
+WI0003_ACTION=NOT_STARTED
+P0_OVERALL_STATUS=IN_PROGRESS
+```

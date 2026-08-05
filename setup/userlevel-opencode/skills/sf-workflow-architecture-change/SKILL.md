@@ -164,6 +164,14 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 ### 阶段 7：验证与关闭
 1. `sf-verifier` 受控写入 `verification_report` 与 `evidence_manifest` 并返回 typed `semantic_closure`；`sf_semantic_closure_run(semantic_closure=<原样对象>)` → `sf_gate_run(verification_gate)`（同时要求 `formal_version_gate` 绑定已提交实现）→ `sf_code_permission(action="revoke")` → `sf_close_gate`。闭包无效、实现未提交或 Formal Version 失败时不得运行 close gate。关闭后、Git merge 前，用 `sf_git_checkpoint_commit` 精确提交本 WI 在 Formal/Close 阶段新增的治理证据并确认工作树干净。
 
+### 阶段 8：正式 Git Merge 与仓库交付验证
+1. `closed` 是治理状态，不是默认主线交付完成状态。先调用 `sf_git_preflight`，把 Close 后新增且全部位于当前 `.specforge/work-items/<WI>/**` 的治理文件作为精确 `files` 调用 `sf_git_checkpoint_commit`；若存在业务文件、其他WI文件或未分类文件，必须停止。
+2. 工作树干净后调用 `sf_git_merge_plan(work_item_id)`。计划必须证明权威状态为 `closed`、当前分支等于 `git_context.branch_name`、Formal Version快照未变、存在实际Diff且 `blocking_issues=[]`。
+3. 计划通过后必须单独请求用户确认“将当前WI分支合并到默认主线”。Candidate Package批准、Close成功或历史同意均不能替代该确认。未确认时停止。
+4. 用户明确确认后调用 `sf_git_merge_run(work_item_id, confirmed=true)`；不得使用普通Git命令手工切换、拉取或合并。没有已配置远程时不得虚构 `origin`，由工具跳过pull。
+5. 合并成功后立即调用 `sf_git_post_merge_verify(work_item_id)`，验证默认分支、干净工作树、`--no-ff` merge commit、WI分支祖先关系、实现提交祖先关系和Formal Version实现指纹。
+6. 只有返回 `repository_delivery_complete=true` 与 `repository_delivery_state=closed_and_git_merged` 后，才能报告工作项已经完成并进入主线。否则报告 `governance_closed_pending_git_merge` 或具体失败，并停止。
+
 ## v1.1 治理硬约束（本工作流特有）
 1. 新模块只能在 architecture_change_path（或 spec_migration_path）上、经完整候选包 + Gate + 用户决策 + Merge 后接纳；不得据源码目录静默发明或改名模块。
 2. 合并前不释放 code_permission；实现与验证后必须 revoke。

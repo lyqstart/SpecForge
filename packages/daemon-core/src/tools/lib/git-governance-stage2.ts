@@ -5,7 +5,10 @@ import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { analyzeIgnore, getCurrentBranch, getHeadCommit, normalizeRelativePath, preflight } from './git-governance-core';
-import { assertFormalVersionSnapshotForGitMerge } from './project-governance-v2.js';
+import {
+  assertFormalVersionSnapshotForGitMerge,
+  verifyFormalVersionSnapshotAfterGitMerge,
+} from './project-governance-v2.js';
 
 const execFileAsync = promisify(execFile);
 export interface GitContextV1 {
@@ -91,35 +94,187 @@ export async function gitPushBranch(input: { projectRoot: string; remoteName?: s
   const result = await runGit(input.projectRoot, args, true);
   return { success: result.code === 0, remote_name: remote, branch_name: branch, stdout: result.stdout, stderr: result.stderr, code: result.code };
 }
-export async function gitMergePlan(input: { projectRoot: string; workItemId: string; defaultBranch?: string }) {
+export interface GitMergeBoundaryInput {
+  authoritativeState?: string | null;
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+export async function gitMergePlan(input: {
+  projectRoot: string;
+  workItemId: string;
+  defaultBranch?: string;
+} & GitMergeBoundaryInput) {
   const context = await readGitContext(input.projectRoot, input.workItemId);
   const pf = await preflight(input.projectRoot, input.defaultBranch || context.base_branch || 'main');
   const changedFiles = await diffFromBase(input.projectRoot, context.base_commit);
+  const blockingIssues: string[] = [];
+
+  if (input.authoritativeState !== 'closed') {
+    blockingIssues.push(
+      `AUTHORITATIVE_STATE_CLOSED_REQUIRED: current=${input.authoritativeState ?? 'missing'}`,
+    );
+  }
+  if (pf.current_branch !== context.branch_name) {
+    blockingIssues.push(
+      `WORK_ITEM_BRANCH_REQUIRED_BEFORE_MERGE_PLAN: current=${pf.current_branch ?? 'missing'}, expected=${context.branch_name}`,
+    );
+  }
+  if (!pf.worktree_clean) blockingIssues.push('WORKTREE_NOT_CLEAN_BEFORE_MERGE');
+  if (changedFiles.length === 0) blockingIssues.push('NO_WORK_ITEM_DIFF_TO_MERGE');
+  try {
+    await assertFormalVersionSnapshotForGitMerge(input.projectRoot, input.workItemId);
+  } catch (error) {
+    blockingIssues.push(error instanceof Error ? error.message : String(error));
+  }
+
+  const dedupedIssues = uniqueStrings(blockingIssues);
   return {
-    success: true, work_item_id: input.workItemId, branch_name: context.branch_name, base_branch: context.base_branch,
-    base_commit: context.base_commit, current_branch: pf.current_branch, worktree_clean: pf.worktree_clean,
-    changed_files: changedFiles, can_merge: pf.worktree_clean && changedFiles.length > 0,
-    required_next_step: 'user_confirmation_before_merge_to_default_branch',
+    success: true,
+    work_item_id: input.workItemId,
+    branch_name: context.branch_name,
+    base_branch: context.base_branch,
+    base_commit: context.base_commit,
+    current_branch: pf.current_branch,
+    authoritative_state: input.authoritativeState ?? null,
+    worktree_clean: pf.worktree_clean,
+    changed_files: changedFiles,
+    blocking_issues: dedupedIssues,
+    can_merge: dedupedIssues.length === 0,
+    repository_delivery_state:
+      dedupedIssues.length === 0
+        ? 'governance_closed_pending_user_confirmed_git_merge'
+        : 'git_merge_blocked',
+    required_next_step: 'explicit_user_confirmation_before_merge_to_default_branch',
   };
 }
-export async function gitMergeRun(input: { projectRoot: string; workItemId: string; confirmed: boolean; remoteName?: string; message?: string; pullFirst?: boolean }) {
+
+export async function gitMergeRun(input: {
+  projectRoot: string;
+  workItemId: string;
+  confirmed: boolean;
+  remoteName?: string;
+  message?: string;
+  pullFirst?: boolean;
+} & GitMergeBoundaryInput) {
   if (input.confirmed !== true) throw new Error('MERGE_REQUIRES_USER_CONFIRMATION');
-  // Validate the closed/formal boundary while still on the feature branch; the
-  // snapshot fingerprints the approved diff rather than requiring HEAD identity.
-  await assertFormalVersionSnapshotForGitMerge(input.projectRoot, input.workItemId);
+  if (input.authoritativeState !== 'closed') {
+    throw new Error(
+      `AUTHORITATIVE_STATE_CLOSED_REQUIRED: current=${input.authoritativeState ?? 'missing'}`,
+    );
+  }
+
   const context = await readGitContext(input.projectRoot, input.workItemId);
   const defaultBranch = context.base_branch || 'main';
-  const remote = input.remoteName || context.remote_name || 'origin';
   const pf = await preflight(input.projectRoot, defaultBranch);
+  if (pf.current_branch !== context.branch_name) {
+    throw new Error(
+      `WORK_ITEM_BRANCH_REQUIRED_BEFORE_GIT_MERGE: current=${pf.current_branch ?? 'missing'}, expected=${context.branch_name}`,
+    );
+  }
   if (!pf.worktree_clean) throw new Error('WORKTREE_NOT_CLEAN_BEFORE_MERGE');
-  if (pf.current_branch !== defaultBranch) await runGit(input.projectRoot, ['switch', defaultBranch]);
-  if (input.pullFirst !== false) await runGit(input.projectRoot, ['pull', '--ff-only', remote, defaultBranch]);
+
+  await assertFormalVersionSnapshotForGitMerge(input.projectRoot, input.workItemId);
+  const featureHead = await getHeadCommit(input.projectRoot);
+  if (!featureHead) throw new Error('WORK_ITEM_BRANCH_HEAD_NOT_FOUND');
+
+  const configuredRemoteNames = new Set(pf.remotes.map(remote => remote.name));
+  const requestedRemote = input.remoteName || context.remote_name || undefined;
+  const remote = requestedRemote || (configuredRemoteNames.has('origin') ? 'origin' : undefined);
+  if (requestedRemote && !configuredRemoteNames.has(requestedRemote)) {
+    throw new Error(`GIT_REMOTE_NOT_FOUND: ${requestedRemote}`);
+  }
+
+  await runGit(input.projectRoot, ['switch', defaultBranch]);
+  let pullPerformed = false;
+  if (input.pullFirst !== false && remote) {
+    await runGit(input.projectRoot, ['pull', '--ff-only', remote, defaultBranch]);
+    pullPerformed = true;
+  }
+
   const message = input.message || `merge: ${input.workItemId} ${context.branch_name}`;
-  const result = await runGit(input.projectRoot, ['merge', '--no-ff', context.branch_name, '-m', message], true);
+  const result = await runGit(
+    input.projectRoot,
+    ['merge', '--no-ff', context.branch_name, '-m', message],
+    true,
+  );
   const headCommit = await getHeadCommit(input.projectRoot);
-  return { success: result.code === 0, work_item_id: input.workItemId, merged_branch: context.branch_name, target_branch: defaultBranch, head_commit: headCommit, stdout: result.stdout, stderr: result.stderr, code: result.code };
+  return {
+    success: result.code === 0,
+    work_item_id: input.workItemId,
+    authoritative_state: input.authoritativeState,
+    merged_branch: context.branch_name,
+    feature_head: featureHead,
+    target_branch: defaultBranch,
+    target_head: headCommit,
+    pull_performed: pullPerformed,
+    remote_name: remote ?? null,
+    repository_delivery_state:
+      result.code === 0 ? 'git_merged_pending_post_merge_verify' : 'git_merge_failed',
+    stdout: result.stdout,
+    stderr: result.stderr,
+    code: result.code,
+  };
 }
-export async function gitPostMergeVerify(input: { projectRoot: string; commands?: string[] }) {
+
+export async function gitPostMergeVerify(input: {
+  projectRoot: string;
+  workItemId: string;
+  commands?: string[];
+} & GitMergeBoundaryInput) {
+  if (input.authoritativeState !== 'closed') {
+    throw new Error(
+      `AUTHORITATIVE_STATE_CLOSED_REQUIRED: current=${input.authoritativeState ?? 'missing'}`,
+    );
+  }
+  const context = await readGitContext(input.projectRoot, input.workItemId);
+  const pf = await preflight(input.projectRoot, context.base_branch || 'main');
+  if (pf.current_branch !== context.base_branch) {
+    throw new Error(
+      `POST_MERGE_TARGET_BRANCH_REQUIRED: current=${pf.current_branch ?? 'missing'}, expected=${context.base_branch}`,
+    );
+  }
+  if (!pf.worktree_clean) throw new Error('POST_MERGE_WORKTREE_NOT_CLEAN');
   const headCommit = await getHeadCommit(input.projectRoot);
-  return { success: true, head_commit: headCommit, verification_mode: 'plan_only', commands: input.commands ?? [], message: 'post-merge verification plan recorded; execute project-specific verification commands through approved safe-bash workflow' };
+  if (!headCommit) throw new Error('POST_MERGE_HEAD_NOT_FOUND');
+
+  const ancestor = await runGit(
+    input.projectRoot,
+    ['merge-base', '--is-ancestor', context.branch_name, headCommit],
+    true,
+  );
+  if (ancestor.code !== 0) {
+    throw new Error('POST_MERGE_WORK_ITEM_BRANCH_NOT_ANCESTOR');
+  }
+  const parentResult = await runGit(
+    input.projectRoot,
+    ['rev-list', '--parents', '-n', '1', headCommit],
+    true,
+  );
+  const mergeCommit = parentResult.code === 0 && parentResult.stdout.trim().split(/\s+/).length >= 3;
+  if (!mergeCommit) throw new Error('POST_MERGE_NO_FAN_IN_MERGE_COMMIT');
+
+  const formalVersion = await verifyFormalVersionSnapshotAfterGitMerge(
+    input.projectRoot,
+    input.workItemId,
+    headCommit,
+  );
+  return {
+    success: true,
+    work_item_id: input.workItemId,
+    authoritative_state: input.authoritativeState,
+    target_branch: context.base_branch,
+    merged_branch: context.branch_name,
+    head_commit: headCommit,
+    worktree_clean: true,
+    work_item_branch_is_ancestor: true,
+    merge_commit: true,
+    formal_version: formalVersion,
+    verification_mode: 'actual_git_merge_verification',
+    commands: input.commands ?? [],
+    repository_delivery_complete: true,
+    repository_delivery_state: 'closed_and_git_merged',
+  };
 }

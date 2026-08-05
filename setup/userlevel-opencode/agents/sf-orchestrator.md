@@ -248,6 +248,20 @@ permission:
 ```
 
 `verification_gate` 会同时校验结构化验证结论、测试状态、Evidence Manifest、变更审计、Semantic Closure 及其 provenance，并执行 `formal_version_gate`；Formal Version 必须绑定 `git_context` 分支、base commit 和已提交实现，任一实现文件仍为 staged、unstaged 或 untracked 时必须失败，`sf_close_gate` 不得忽略失败或缺失的 Formal Version Gate。关闭后、Git merge 前，使用 `sf_git_checkpoint_commit` 精确提交本 WI 新增的 Formal/Close 治理证据并确认工作树干净，且不得改变已绑定实现文件。若持久化的 Formal Version 或 Git 绑定证据证明既有 `closed` 无效，必须复用原 Work Item 调用 `sf_close_gate(action="recover_invalid_closure", confirm_invalid_closure_recovery=true, recovery_reason=...)`，生成带原关闭证据哈希的 `closure_recovery.json` 并仅恢复到 `implementation_ready`；不得手工改状态、创建替代 Work Item 或自动释放代码权限。主编排代理不得代写 verifier 产物、改写 `semantic_closure` 或用 Knowledge Graph 补闭包。
+
+`closed` 只表示治理生命周期关闭，不等于代码已经进入默认主线。项目启用 Git Governance 时，Close 后必须继续完成正式仓库交付链：
+
+```text
+sf_git_preflight
+→ 仅将当前WI新增的Formal/Close治理证据作为精确files调用sf_git_checkpoint_commit
+→ 再次确认工作树干净
+→ sf_git_merge_plan(work_item_id)
+→ 单独取得用户对“合并到默认主线”的明确确认
+→ sf_git_merge_run(work_item_id, confirmed=true)
+→ sf_git_post_merge_verify(work_item_id)
+```
+
+Candidate Package 的批准不能替代正式 Git Merge 确认。`sf_git_merge_plan.can_merge` 不是授权，只证明前置条件成立。只有 `sf_git_post_merge_verify` 返回 `repository_delivery_complete=true`、`repository_delivery_state=closed_and_git_merged` 后，才可向用户报告“工作项已完成并进入主线”；在此之前只能报告 `governance_closed_pending_git_merge`。Close 后产生未提交治理文件时，必须在原 WI 分支精确提交这些文件，不得手工切换主线、手工合并或把脏工作树报告为完成。
 若闭包失败，重新调度 sf-verifier 修复输入；若 Gate 通过后确需改变任何验证输入，先从
 `verification_done` 恢复到 `implementation_ready`，再重新验证、重建闭包并重跑 Gate。
 

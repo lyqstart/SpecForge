@@ -2,7 +2,7 @@ import { tool } from "@opencode-ai/plugin"
 import { daemon } from "./lib/thin-client"
 const TOOL_NAME = "sf_git_merge_run"
 export default tool({
-  description: "Git 合并执行：在用户确认后，将 Work Item 分支合并到主线分支。",
+  description: "正式 Git 合并执行：仅在用户明确确认且 closed/Formal Version/工作树边界全部通过后，将 Work Item 分支以 --no-ff 合并到主线。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item 编号，例如 WI-0036"),
     confirmed: tool.schema.boolean().describe("用户是否已确认合并，必须为 true"),
