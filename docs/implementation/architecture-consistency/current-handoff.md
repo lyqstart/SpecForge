@@ -2298,7 +2298,7 @@ P1_ACTION=NOT_STARTED
 WORKDESK_WI0004_STATE=approval_required
 WORKDESK_WI0004_ACTION=NONE
 V68_ACTION=PREPARE_ISOLATED_P0_VALIDATION_PROJECT
-NEXT_ACTION=RUN_P0_VALIDATION_WI0001_AFTER_USER_MANUAL_DAEMON_OPENCODE_START
+NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001
 ```
 
 
@@ -2331,3 +2331,146 @@ V68_FINAL_SCOPE=EXACT_6_FILES
 ```
 
 该修正不扩大6文件范围，不改变独立项目内容、SpecForge产品、Runtime、WorkDesk或用户级安装。
+
+
+## V68成功与ERR-115 Windows Unicode剪贴板闭包（2026-08-05）
+
+V68执行证据确认独立P0验证项目已经建立并保持与WorkDesk、SpecForge源码和Phase 11隔离：
+
+```text
+V68_RESULT=SUCCESS
+V68_COMMIT_SHA=ba451d6f3a12739a76faa1a858f8fac699c310b6
+V68_VALIDATION_PROJECT=D:\code\temp\SpecForge-P0-Validation
+V68_VALIDATION_PROJECT_HEAD=b7fa10bdd40bc6c55a9fdfd151e6e31bde39b57f
+V68_VALIDATION_PROJECT_TESTS=PASS
+V68_WORKDESK_AUDIT=PASS_UNCHANGED
+V68_USERLEVEL_AUDIT=PASS_UNCHANGED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+```
+
+用户随后手工启动daemon和OpenCode，但在提交WI-0001前发现：
+
+```text
+SOURCE_FILE=prompts/WI-0001.txt
+SOURCE_ENCODING=UTF-8
+FAILED_TRANSPORT=type "prompts\WI-0001.txt" | clip
+OBSERVED_RESULT=OPENCODE_PASTE_GARBLED
+WI0001_ACTION=NOT_PERFORMED
+```
+
+该问题登记为 `ERR-115 / PACKAGE_PREFLIGHT_DEFECT`。根因不是提示词文件错误，而是旧命令没有建立UTF-8解码和Windows Unicode剪贴板传输契约。`current-handoff.md`只能记录状态，不能单独防止复发。
+
+V69新增唯一批准入口：
+
+```text
+scripts/windows/copy-utf8-to-clipboard.cmd
+→ scripts/windows/copy-utf8-to-clipboard.py
+→ utf-8-sig严格解码
+→ Win32 CF_UNICODETEXT写入
+→ GetClipboardData回读
+→ 与原提示词逐字符一致
+```
+
+固定禁止：
+
+```text
+type <UTF-8文件> | clip
+chcp后直接管道复制
+PowerShell剪贴板兜底
+仅凭退出码或终端显示宣布中文正确
+```
+
+V69只有在用户Windows上使用真实 `WI-0001.txt` 完成 `CLIPBOARD_UNICODE_ROUNDTRIP=PASS` 后，才允许应用、提交和推送精确8文件。V69不修改验证项目业务代码或 `.specforge`，不运行WI-0001，不执行Gate、User Decision、Merge、Code Permission、Verification或Close。
+
+```text
+ERR115_STATUS=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_ACTION=NOT_PERFORMED
+WORKDESK_WI0004_ACTION=NONE
+NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001
+```
+
+
+## V69失败、ERR-116与V70 CMD包装调用闭包（2026-08-05）
+
+V69在精确8文件隔离测试、TypeScript、daemon-core构建、全仓构建和 `git diff --check` 通过后，首次执行真实WI-0001剪贴板往返时停止：
+
+```text
+V69_FAILED_STAGE=ISOLATED_CLIPBOARD_ROUNDTRIP
+V69_ERROR=copy-utf8-to-clipboard.cmd不是内部或外部命令
+V69_PATCH_ACTION_REAL_REPOSITORY=NOT_PERFORMED
+V69_COMMIT_ACTION=NOT_PERFORMED
+V69_PUSH_ACTION=NOT_PERFORMED
+V69_WI0001_ACTION=NOT_PERFORMED
+```
+
+该失败登记为 `ERR-116 / VALIDATOR_DEFECT`。Unicode工具没有被启动，因此不能据此判断工具失败。根因是验证器把含双引号的完整 `call` 命令作为 `cmd.exe /c` 参数传递；Python的Windows参数序列化产生字面量 `\"`，而CMD不把反斜杠解释为引号转义。
+
+V70固定调用方式：
+
+```text
+生成独立ASCII CMD包装文件
+→ 包装文件内部使用call "helper.cmd" "prompt.txt"
+→ cmd.exe /d /c只接收无空格包装文件名
+→ 从包装文件目录启动
+→ 禁止把含嵌套引号的完整命令字符串作为/c参数
+```
+
+V70在任何真实仓库写入前必须：读取V69不可变summary与原始日志完成纯解析对账；使用含空格合成路径验证包装文件文本；证明不存在字面量反斜杠引号；再在用户Windows使用真实WI-0001完成 `CF_UNICODETEXT` 逐字符往返。
+
+```text
+ERR115_STATUS=FIX_IMPLEMENTED
+ERR116_STATUS=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_ACTION=NOT_PERFORMED
+WORKDESK_WI0004_ACTION=NONE
+NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001
+```
+
+
+## V70失败、ERR-117与V71稳定状态消费者闭包（2026-08-05）
+
+V70在远程、本地、权威文件、V68/V69历史证据和目标状态预检通过后，于精确8文件隔离定向测试阶段停止。失败集合只有两项：
+
+```text
+SpecForge development experience pre-read gate > requires every delivery round to use one complete downloadable bundle
+ERR-088—ERR-116 real title and validation regression governance > keeps the WorkDesk evidence and no-second-run boundary exact
+```
+
+一手日志计数满足：
+
+```text
+FAIL_COUNT=2
+TOTAL_COUNT=PASS_COUNT+FAIL_COUNT
+EXIT_CODE=1
+```
+
+根因是目标文档生产者已使用V70状态，但两个固定文本测试仍要求V69字面值。真实仓库、WorkDesk、用户级安装、WI-0001、提交、推送、daemon和OpenCode均未被V70改变。
+
+该失败登记为 `ERR-117 / TEST_DRIFT`。V71不再把错误关闭状态和下一动作绑定某次尝试的V编号：
+
+```text
+错误生命周期状态=IDENTIFIED/FIX_IMPLEMENTED/ISOLATED_VALIDATED/REAL_APPLIED/COMMITTED/CLOSED
+V版本、证据包、commit SHA=只放证据字段
+全部固定文本消费者=从同一稳定状态契约对账
+```
+
+V71使用V70不可变summary和原始Bun日志纯解析精确失败集合，并对全部8个目标文件扫描版本绑定状态。只有定向测试、TypeScript、构建、`git diff --check` 和真实Windows `CF_UNICODETEXT` 往返全部通过后，才应用、提交和推送。
+
+```text
+V70_FAILURE_RECONCILIATION=PASS_TEST_DRIFT_EXACT_2
+ERR115_STATUS=CLOSED
+ERR116_STATUS=CLOSED
+ERR117_STATUS=CLOSED
+ERR115_CLOSURE_EVIDENCE=V71_WINDOWS_CLIPBOARD_ROUNDTRIP_PASS
+ERR116_CLOSURE_EVIDENCE=V71_WRAPPER_CMD_REAL_EXECUTION_PASS
+ERR117_CLOSURE_EVIDENCE=V71_ALL_FIXED_TEXT_CONSUMERS_PASS
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_ACTION=NOT_PERFORMED
+WORKDESK_WI0004_ACTION=NONE
+NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001
+```

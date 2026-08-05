@@ -37,7 +37,7 @@ describe('P0 parent phase and subtask lifecycle boundary', () => {
     );
     expect(handoff).toContain('WORKDESK_WI0004_ACTION=NONE');
     expect(handoff).toContain(
-      'NEXT_ACTION=RUN_P0_VALIDATION_WI0001_AFTER_USER_MANUAL_DAEMON_OPENCODE_START',
+      'NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001',
     );
     expect(handoff).toContain(
       'P0_VALIDATION_PROJECT_RELATION_TO_PHASE11=NOT_PHASE11_EVIDENCE',
@@ -112,5 +112,13 @@ describe('P0 parent phase and subtask lifecycle boundary', () => {
     expect(p0).toContain(
       '### 25.48 ERR-111—ERR-112封包格式与完整Git证据集合',
     );
+    expect(handoff).toContain('ERR115_STATUS=CLOSED');
+    expect(handoff).toContain('ERR116_STATUS=CLOSED');
+    expect(handoff).toContain('ERR117_STATUS=CLOSED');
+    expect(handoff).toContain('V70_FAILURE_RECONCILIATION=PASS_TEST_DRIFT_EXACT_2');
+    expect(handoff).toContain('WI0001_ACTION=NOT_PERFORMED');
+    expect(p0).toContain('### 25.52 V68成功与ERR-115 Windows Unicode提示词传输边界');
+    expect(p0).toContain('### 25.53 V69 CMD脚本调用假失败与ERR-116验证器闭包');
+    expect(p0).toContain('### 25.54 V70固定文本消费者漂移与ERR-117稳定状态闭包');
   });
 });

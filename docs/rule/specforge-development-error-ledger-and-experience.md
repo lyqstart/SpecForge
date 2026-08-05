@@ -1554,6 +1554,67 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **状态**：`CLOSED`。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-022`、`EXP-058`、`EXP-078`、`EXP-091`。
 
+
+### ERR-115：使用CMD的type管道把UTF-8中文提示词写入clip，OpenCode粘贴结果乱码
+
+- **日期与阶段**：2026-08-05，V68独立P0验证项目准备完成后、WI-0001尚未执行前。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / WINDOWS_TEXT_TRANSPORT / REPEATED_USER_VISIBLE_ENCODING_FAILURE`。
+- **现场表现**：`prompts/WI-0001.txt` 文件内容和UTF-8字节正确；用户执行 `type "prompts\WI-0001.txt" | clip` 后，在OpenCode粘贴得到乱码。daemon已由用户手工启动，但WI-0001提示词尚未成功提交，Work Item流程未开始。
+- **一级证据**：V68生成的UTF-8提示词文件；用户实际CMD命令；OpenCode粘贴乱码反馈；远程经验台账和current-handoff中不存在 `clip`、`CF_UNICODETEXT` 或对应往返测试。
+- **根因**：把“源文件是UTF-8”错误等同于“CMD管道和Windows剪贴板会保持Unicode”。`type | clip` 没有建立显式UTF-8解码、UTF-16/Unicode剪贴板格式写入和写后回读契约；现有ERR-015只覆盖Python子进程输出解码，不能保护剪贴板传输层。
+- **旧防护为何失效**：既有命令烟雾测试只验证CMD可执行和退出码，没有使用真实中文内容跨越“UTF-8文件→命令入口→Windows剪贴板→消费者粘贴”完成逐字符往返；`current-handoff.md`也只记录阶段边界，没有机器执行能力。
+- **影响**：用户无法可靠把治理提示词提交给OpenCode；继续操作可能把损坏文本当成真实需求输入，污染后续Work Item证据。
+- **正确做法**：
+  - 禁止用 `type <UTF-8文件> | clip`、仅切换代码页或PowerShell兜底复制非ASCII提示词
+  - 读取源文件原始字节并严格按 `utf-8-sig` 解码
+  - 通过Win32 `CF_UNICODETEXT` 写入剪贴板
+  - 写入后重新读取剪贴板并与原文本逐字符比较
+  - 控制台状态只输出ASCII，避免把显示编码误当成剪贴板内容证据
+  - 用户执行前必须用真实中文提示词完成Windows往返验证
+- **新增防护**：新增 `scripts/windows/copy-utf8-to-clipboard.py` 和同名CMD入口；经验门禁测试禁止该入口包含 `type|clip`、`chcp` 或PowerShell，并验证UTF-8解码、`CF_UNICODETEXT`、Set/GetClipboardData和精确回读断言。V69执行器在任何真实仓库写入前使用真实WI-0001提示词完成Windows剪贴板往返。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-022`、`EXP-028`、`EXP-045`、`EXP-058`、`EXP-078`、`EXP-092`。
+
+
+
+### ERR-116：V69把含嵌套双引号的call命令作为cmd.exe /c参数，脚本路径变成字面量反斜杠引号
+
+- **日期与阶段**：2026-08-05，V69隔离剪贴板真实往返。
+- **分类**：`VALIDATOR_DEFECT / WINDOWS_CMD_ARGUMENT_SERIALIZATION / SCRIPT_NOT_STARTED`。
+- **现场表现**：隔离测试、TypeScript、构建和范围检查通过；随后CMD报告 `'\"D:\\...\\copy-utf8-to-clipboard.cmd\"' 不是内部或外部命令`，退出1。真实仓库、WorkDesk、用户级安装、WI-0001、提交和推送均未执行。
+- **一级证据**：`SpecForge-v69-execution-evidence-20260805-132145.zip` 中summary、commands.log与 `logs/isolated_clipboard_roundtrip.log`。
+- **根因**：验证器使用参数列表启动 `cmd.exe /d /s /c`，同时把含嵌套双引号的完整 `call` 命令放入单个参数。Python为Windows CreateProcess序列化时使用反斜杠保护双引号，但CMD不采用该转义规则，最终把反斜杠作为普通字符传给 `call`。
+- **影响**：批准的Unicode工具根本没有启动，V69产生验证器假失败；ERR-115仍未取得Windows真实往返证据。
+- **正确做法**：
+  - 复杂CMD调用写入独立临时 `.cmd` 文件，不通过 `/c` 单参数承载嵌套引号
+  - 包装文件内部使用CMD原生 `call "..." "..."`
+  - `cmd.exe /c`只接收包装文件basename，并从包装文件目录启动
+  - 用含空格路径做包装文本正例，字面量 `\"` 做反例
+  - 读取真实历史失败日志验证分类，不重建有副作用历史现场
+- **新增防护**：V70新增纯函数 `build_clipboard_wrapper`、含空格路径正例、非法引号反例、V69不可变日志解析和实际Windows包装执行；只有真实WI-0001往返通过后才应用8文件。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-058`、`EXP-073`、`EXP-078`、`EXP-092`、`EXP-093`。
+
+
+
+### ERR-117：V70目标状态生产者已切换但两个固定文本测试仍要求V69状态字面值
+
+- **日期与阶段**：2026-08-05，V70精确8文件隔离定向测试。
+- **分类**：`TEST_DRIFT / VERSION_BOUND_LIFECYCLE_STATUS / INCOMPLETE_CONSUMER_INVENTORY`。
+- **现场表现**：V70目标交接和经验状态已经使用V70闭包字面值，但两个测试仍分别要求 `ERR-115=CLOSED`、`NEXT_ACTION=...V69...` 和 `ERR115_STATUS=CLOSED_AFTER_V69_WINDOWS_ROUNDTRIP`；Bun结果为5 pass、2 fail、7 total。真实仓库、WorkDesk、用户级安装、WI-0001、提交和推送均未执行。
+- **一级证据**：`SpecForge-v70-execution-evidence-20260805-133631.zip` 中summary与 `logs/isolated-targeted-tests.log`。
+- **根因**：生命周期状态和下一动作错误绑定交付尝试版本；修改生产者时只更新部分测试消费者，封包预检没有实际解释全部固定文本断言。
+- **影响**：V70在真实Unicode往返前停止，用户再次承担本可在封包前发现的测试漂移。
+- **正确做法**：
+  - 当前状态只使用稳定生命周期值，不把V号写入状态枚举
+  - V号、commit、证据包和时间戳只写证据字段
+  - 修改状态生产者前枚举全部固定文本消费者
+  - 封包前解析目标测试中的字符串断言并与目标文档实际执行对账
+  - 历史失败只用不可变日志纯解析，不通过当前目标文件伪复现
+- **新增防护**：V71新增V70失败集合纯解析、全部8文件版本绑定状态扫描、3个测试消费者稳定下一动作检查，以及封包期TypeScript AST字符串断言对账。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-015`、`EXP-033`、`EXP-035`、`EXP-036`、`EXP-058`、`EXP-073`、`EXP-078`、`EXP-086`、`EXP-094`。
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -2695,6 +2756,57 @@ CLI文件同时承担可执行入口和可复用模块时，顶层直接运行�
 
 `transpileModule()`、Babel转译或字符串检查只能证明语法可生成，不能证明名称解析和作用域正确。封包前必须补充TypeScript Program语义诊断或等价的完整类型检查；用户环境仍必须执行项目正式TypeScript和定向测试。
 
+
+## EXP-092：跨编码边界必须显式解码、使用Unicode协议并完成真实往返
+
+文件编码正确只证明静态字节，不证明命令管道、剪贴板、终端或下游消费者仍得到相同文本。非ASCII文本跨越边界时固定执行：
+
+```text
+读取原始字节
+→ 按声明编码严格解码
+→ 使用目标平台的明确Unicode协议传输
+→ 从目标消费者入口回读
+→ 与源文本逐字符比较
+```
+
+Windows剪贴板固定使用 `CF_UNICODETEXT`。禁止把 `type <UTF-8文件> | clip`、`chcp 65001`、终端肉眼显示正常或命令退出0当成Unicode正确证据；禁止为了CMD入口改用PowerShell兜底。用户可见中文、路径、提示词和证据文本必须在交付前使用真实内容完成往返。交接文档只能记录边界，不能替代可执行工具和机器回归。
+
+
+
+## EXP-093：cmd.exe /c不得通过跨运行时参数序列化承载含嵌套引号的完整命令
+
+Python、Node等运行时把参数列表转换为Windows命令行时使用的引号规则，不等于CMD命令语言的引号规则。需要调用带空格路径的批处理文件时固定执行：
+
+```text
+生成独立CMD包装文件
+→ 在文件内部按CMD语法写call和双引号
+→ cmd.exe /d /c只接收包装文件basename
+→ cwd固定为包装文件目录
+→ 校验包装文本不存在字面量反斜杠引号
+→ 使用真实Windows执行验证
+```
+
+禁止把 `call "路径" "参数"` 作为含嵌套引号的单个 `/c` 参数交给非CMD运行时序列化。封包前必须用含空格合成路径验证包装文本，并用真实历史失败日志证明错误分类；不得用当前目标文件重建历史失败。
+
+
+
+## EXP-094：生命周期状态必须稳定，尝试版本只属于证据
+
+错误、任务和阶段的当前状态固定使用稳定生命周期：
+
+```text
+IDENTIFIED
+FIX_IMPLEMENTED
+ISOLATED_VALIDATED
+REAL_APPLIED
+COMMITTED
+USERLEVEL_DEPLOYED
+REAL_PROJECT_VALIDATED
+CLOSED
+```
+
+V编号、commit SHA、证据包路径和时间戳只记录在哪次执行取得证据，不得进入状态枚举或下一动作契约。任何状态生产者变更必须先枚举全部固定文本、Schema、解析器和测试消费者；封包前必须实际解释目标测试中的字符串断言并与目标文档对账。发现 `CLOSED_AFTER_V*`、`NEXT_ACTION=...V*...` 等版本绑定状态时必须失败关闭。
+
 # 第四部分：修改前强制检查
 
 ## 13. 通用检查清单
@@ -2724,6 +2836,9 @@ CLI文件同时承担可执行入口和可复用模块时，顶层直接运行�
 □ 已确认用户操作边界
 □ 已选择最简单的交付和验证方式
 □ 命令已按实际 Windows/CMD/Bun 环境验证
+□ UTF-8中文文件进入Windows剪贴板时已显式UTF-8解码、以CF_UNICODETEXT写入并逐字符回读；未使用type|clip、chcp或PowerShell兜底
+□ cmd.exe /c未接收含嵌套引号的跨运行时完整命令字符串；复杂调用已使用独立CMD包装文件和真实Windows执行验证
+□ 生命周期状态和下一动作未绑定V版本；全部固定文本消费者已由目标断言解释器对账
 □ daemon/OpenCode 进程检查命令已成功并可解析；命令失败、输出异常或 PID 无法判定时已 fail closed，未解释为“未运行”
 □ Git porcelain 等机器结构化输出使用原始 bytes 和协议分隔符解析，未对完整输出先执行 `.strip()` 或展示层空白规范化；首条、末条和含空格路径回归已通过
 □ 引用审计已区分活跃权威依赖、对象自身产物、Runtime 当前状态和不可变历史日志；未用未分类文本命中总数直接阻断或允许清理
@@ -2998,6 +3113,9 @@ ERR-111=CLOSED
 ERR-112=CLOSED
 ERR-113=CLOSED
 ERR-114=CLOSED
+ERR-115=CLOSED
+ERR-116=CLOSED
+ERR-117=CLOSED
 ```
 
 V36隔离验证完成A/B基线控制并应用精确11文件补丁：129项通过、1项失败；唯一失败是ERR-080经验门禁状态断言过期。产品实现、真实SpecForge、WorkDesk、用户级安装和WI-0004均未改变。

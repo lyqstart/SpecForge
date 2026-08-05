@@ -21,6 +21,8 @@ const p0ContractClosurePath = join(
 );
 const rootAgentsPath = join(repoRoot, 'AGENTS.md');
 const userLevelAgentsPath = join(repoRoot, 'setup/userlevel-opencode/AGENTS.md');
+const unicodeClipboardCmdPath = join(repoRoot, 'scripts/windows/copy-utf8-to-clipboard.cmd');
+const unicodeClipboardPythonPath = join(repoRoot, 'scripts/windows/copy-utf8-to-clipboard.py');
 
 function readSection(document: string, heading: string, nextHeading: string): string {
   const start = document.indexOf(heading);
@@ -94,6 +96,9 @@ describe('SpecForge development experience pre-read gate', () => {
 
     expect(experienceRuleIds).toContain('## EXP-088：');
     expect(experienceRuleIds).toContain('## EXP-089：');
+    expect(experienceRuleIds).toContain('## EXP-090：');
+    expect(experienceRuleIds).toContain('## EXP-091：');
+    expect(experienceRuleIds).toContain('## EXP-092：');
 
     expect(checklist.trim().length).toBeGreaterThan(500);
     expect(checklist).toContain('APPLICABLE_EXPERIENCE_RULES');
@@ -145,6 +150,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(checklist).toContain('文本锚点匹配数量恰好为1');
     expect(checklist).toContain('未依赖其他工具临时目录');
     expect(checklist).toContain('未根据记忆构造锚点');
+    expect(checklist).toContain('UTF-8中文文件进入Windows剪贴板时已显式UTF-8解码、以CF_UNICODETEXT写入并逐字符回读');
   });
 
   it('records every new error with a class-level prevention rule', () => {
@@ -426,7 +432,7 @@ describe('SpecForge development experience pre-read gate', () => {
     );
     expect(handoff).toContain('WORKDESK_WI0004_ACTION=NONE');
     expect(handoff).toContain(
-      'NEXT_ACTION=RUN_P0_VALIDATION_WI0001_AFTER_USER_MANUAL_DAEMON_OPENCODE_START',
+      'NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001',
     );
     expect(handoff).toContain(
       'P0_VALIDATION_PROJECT_RELATION_TO_PHASE11=NOT_PHASE11_EVIDENCE',
@@ -441,7 +447,15 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experience).toContain('### ERR-114：V68新增ERR-113测试断言错误引用另一测试块局部变量，语法转译通过但语义作用域无效');
     expect(experience).toContain('## EXP-091：测试断言必须与其局部证据生产者处于同一语义作用域');
     expect(experience).toContain('ERR-114=CLOSED');
+    expect(experience).toContain('### ERR-115：使用CMD的type管道把UTF-8中文提示词写入clip，OpenCode粘贴结果乱码');
+    expect(experience).toContain('## EXP-092：跨编码边界必须显式解码、使用Unicode协议并完成真实往返');
+    expect(experience).toContain('ERR-115=CLOSED');
+    expect(experience).toContain('### ERR-117：V70目标状态生产者已切换但两个固定文本测试仍要求V69状态字面值');
+    expect(experience).toContain('## EXP-094：生命周期状态必须稳定，尝试版本只属于证据');
+    expect(experience).toContain('ERR-117=CLOSED');
     expect(handoff).toContain('## V65测试消费者漂移与V66闭包边界（2026-08-05）');
+    expect(handoff).not.toMatch(/ERR-?11[5-7](?:_STATUS)?=CLOSED_AFTER_V\d+/);
+    expect(handoff).not.toMatch(/NEXT_ACTION=.*PASTE_V\d+_VERIFIED_UNICODE_WI0001/);
     expect(handoff).not.toMatch(/^CURRENT_TASK_STATUS=CLOSED\s*$/m);
     expect(handoff).not.toMatch(/^NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS\s*$/m);
     expect(handoff).not.toContain('刷新 WorkDesk Git index 中4个字节未变文件的 stat 状态');
@@ -502,6 +516,37 @@ describe('SpecForge development experience pre-read gate', () => {
       expect(entry).toContain('APPLICABLE_EXPERIENCE_RULES');
       expect(entry).toContain('REPEATED_ERROR_CHECK=PASS');
     }
+  });
+
+
+  it('uses an explicit Windows Unicode clipboard transport for UTF-8 prompts', () => {
+    const cmd = readFileSync(unicodeClipboardCmdPath, 'utf-8');
+    const python = readFileSync(unicodeClipboardPythonPath, 'utf-8');
+    const handoff = readFileSync(currentHandoffPath, 'utf-8');
+    const p0 = readFileSync(p0ContractClosurePath, 'utf-8');
+
+    expect(cmd).toContain('copy-utf8-to-clipboard.py');
+    expect(cmd).not.toMatch(/\btype\b[^\r\n]*\|\s*clip/i);
+    expect(cmd).not.toMatch(/\bchcp\b/i);
+    expect(cmd).not.toMatch(/powershell/i);
+    expect(python).toContain('decode("utf-8-sig")');
+    expect(python).toContain('CF_UNICODETEXT = 13');
+    expect(python).toContain('SetClipboardData(CF_UNICODETEXT, handle)');
+    expect(python).toContain('GetClipboardData(CF_UNICODETEXT)');
+    expect(python).toContain('if actual != expected:');
+    expect(python).toContain('CLIPBOARD_UNICODE_ROUNDTRIP=PASS');
+    const experience = readFileSync(experiencePath, 'utf-8');
+    expect(experience).toContain('### ERR-116：V69把含嵌套双引号的call命令作为cmd.exe /c参数');
+    expect(experience).toContain('## EXP-093：cmd.exe /c不得通过跨运行时参数序列化承载含嵌套引号的完整命令');
+    expect(handoff).toContain('## V68成功与ERR-115 Windows Unicode剪贴板闭包（2026-08-05）');
+    expect(handoff).toContain('WI0001_ACTION=NOT_PERFORMED');
+    expect(handoff).toContain('NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001');
+    expect(p0).toContain('### 25.52 V68成功与ERR-115 Windows Unicode提示词传输边界');
+    expect(handoff).toContain('## V69失败、ERR-116与V70 CMD包装调用闭包（2026-08-05）');
+    expect(handoff).toContain('ERR116_STATUS=CLOSED');
+    expect(handoff).toContain('ERR117_STATUS=CLOSED');
+    expect(handoff).toContain('V70_FAILURE_RECONCILIATION=PASS_TEST_DRIFT_EXACT_2');
+    expect(p0).toContain('### 25.53 V69 CMD脚本调用假失败与ERR-116验证器闭包');
   });
 
 });

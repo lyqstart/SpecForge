@@ -3303,3 +3303,85 @@ V68新增经验回归时发现：语法转译不能证明测试断言所引用�
 ```
 
 该缺陷只影响封包前测试消费者，不改变P0产品规则或后续独立真实项目验证边界。
+
+
+### 25.52 V68成功与ERR-115 Windows Unicode提示词传输边界
+
+V68已提交 `ba451d6f3a12739a76faa1a858f8fac699c310b6`，独立项目 `D:\code\temp\SpecForge-P0-Validation` 已建立，基础测试通过且未预建 `.specforge`。用户手工启动daemon和OpenCode后，在WI-0001执行前使用 `type "prompts\WI-0001.txt" | clip`，OpenCode粘贴出现中文乱码。WI-0001尚未创建或运行，因此本失败不构成Workflow、Gate或Runtime产品缺陷。
+
+该失败分类为 `ERR-115 / PACKAGE_PREFLIGHT_DEFECT`。静态UTF-8文件必须通过明确传输协议进入消费者；文件哈希和编码检查不能替代剪贴板往返。
+
+```text
+UTF-8源字节
+→ utf-8-sig严格解码
+→ Win32 CF_UNICODETEXT
+→ Windows剪贴板回读
+→ 与源文本逐字符相等
+```
+
+V69新增仓库内开发交付工具：
+
+```text
+scripts/windows/copy-utf8-to-clipboard.cmd
+scripts/windows/copy-utf8-to-clipboard.py
+```
+
+CMD只负责定位Python入口，不使用 `type|clip`、`chcp` 或PowerShell。Python工具显式使用 `SetClipboardData(CF_UNICODETEXT)` 和 `GetClipboardData(CF_UNICODETEXT)`，写后回读不一致时失败关闭。V69执行器必须在真实仓库写入前使用真实 `prompts/WI-0001.txt` 完成Windows中文往返。
+
+该修复属于 `PRODUCT_DEVELOPMENT` 交付边界，不改变Project Architecture、Data Model、Module Design、Project Contract、Module Contract、Trace、Gate或Runtime。`current-handoff.md`负责记录现场和下一动作，经验台账负责类规则，可执行工具与回归测试负责真正防止复发；三者缺一不可。
+
+```text
+V68_RESULT=SUCCESS
+ERR115_STATUS=FIX_IMPLEMENTED
+WI0001_ACTION=NOT_PERFORMED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+```
+
+
+### 25.53 V69 CMD脚本调用假失败与ERR-116验证器闭包
+
+V69在真实仓库写入前运行隔离剪贴板往返时，CMD收到包含字面量 `\"` 的脚本路径并返回“不是内部或外部命令”。该结果只证明验证器没有启动脚本，不证明UTF-8解码或 `CF_UNICODETEXT` 工具失败。
+
+```text
+ERR-116_CLASS=VALIDATOR_DEFECT
+ERR-116_ROOT_CAUSE=INLINE_CMD_C_ARGUMENT_USED_BACKSLASH_QUOTE_SERIALIZATION
+V69_REAL_REPOSITORY_ACTION=NOT_PERFORMED
+V69_WI0001_ACTION=NOT_PERFORMED
+```
+
+V70不再把嵌套引号命令作为 `/c` 参数。验证器生成独立包装CMD，在文件内部执行带引号的 `call`，然后仅把无空格包装文件名交给 `cmd.exe /d /c`。包装文本、实际调用参数和V69历史日志解析均为纯函数预检；真实WI-0001中文往返仍必须在所有仓库写入前通过。
+
+```text
+ERR115_STATUS=FIX_IMPLEMENTED
+ERR116_STATUS=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_ACTION=NOT_PERFORMED
+```
+
+
+### 25.54 V70固定文本消费者漂移与ERR-117稳定状态闭包
+
+V70在隔离定向测试阶段以精确两项失败停止。目标交接、P0文档和经验台账已从V69更新到V70，但 `specforge-development-experience-gate.test.ts` 与 `specforge-development-err088.test.ts` 仍要求V69状态字面值。该失败是状态消费者漂移，不是Unicode工具、Contract、Gate或Runtime产品缺陷。
+
+```text
+ERR-117_CLASS=TEST_DRIFT
+ERR-117_ROOT_CAUSE=VERSION_BOUND_STATUS_PRODUCER_CHANGED_WITHOUT_ALL_FIXED_TEXT_CONSUMERS
+V70_FAILED_TEST_SET=EXACT_2
+V70_REAL_REPOSITORY_ACTION=NOT_PERFORMED
+V70_WI0001_ACTION=NOT_PERFORMED
+```
+
+V71把ERR-115—ERR-117的当前生命周期状态统一为稳定 `CLOSED`，把V71、证据包和提交信息保留在证据字段；下一动作也不再包含交付包版本。验证器扫描全部目标文档和测试，任何 `CLOSED_AFTER_V*` 或版本绑定的WI-0001下一动作均失败关闭。
+
+```text
+ERR115_STATUS=CLOSED
+ERR116_STATUS=CLOSED
+ERR117_STATUS=CLOSED
+V70_FAILURE_RECONCILIATION=PASS_TEST_DRIFT_EXACT_2
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_ACTION=NOT_PERFORMED
+NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001
+```
