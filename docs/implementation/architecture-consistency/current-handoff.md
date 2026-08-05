@@ -2057,10 +2057,183 @@ V63_PRODUCT_STATUS=USERLEVEL_DEPLOYED
 V64_REAL_INSTALL_ACTION=NOT_PERFORMED
 V63_USERLEVEL_UPGRADE=CONFIRMED_SUCCESS
 CURRENT_REMOTE_HEAD_BEFORE_V64=688cf64c6e190a707f9f0e7306db5cf474f0ae35
-CURRENT_TASK_STATUS=CLOSED
-NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS
+V64_TASK_STATUS=CLOSED
+P0_PHASE1_STATUS=REAL_PROJECT_VALIDATED_AT_APPROVAL_REQUIRED
+P0_OVERALL_STATUS=IN_PROGRESS
+P0_COMPLETION_EVIDENCE_MISSING=CODE_PERMISSION,ACTUAL_CODE_CONSUMER,DESTRUCTIVE_CHANGE,PROMOTION,MERGE,VERIFICATION,CLOSE
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1
 WORKDESK_WI0004_STATE=approval_required
 WORKDESK_WI0004_ACTION=NONE
 ```
 
 不得再次运行WorkDesk Gate，不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。后续新任务必须重新读取远程唯一权威文件并执行新的影响分析。
+## V65 P0父阶段与V64子任务状态边界闭包（2026-08-05）
+
+V64关闭的是ERR-106—ERR-107用户级证据消费子任务，不是P0 Contract Consumer整体实施。现有一手证据只能证明：
+
+```text
+WI-0004正式Gate=10/10通过
+WI-0004最终状态=approval_required
+Candidate内容=未改变
+ERR-075、ERR-088真实项目重验=通过
+```
+
+P0实施文件仍为 `IN_PROGRESS`，并明确缺少以下真实闭环证据：
+
+```text
+Code Permission覆盖全部消费者
+实际代码消费者与正式Trace对账
+Contract删除或删值的破坏性变更阻断
+Module Contract到Project Contract显式Promotion
+原子Merge
+Verification
+Close
+```
+
+因此状态必须分层记录：
+
+```text
+V64_TASK_STATUS=CLOSED
+P0_PHASE1_STATUS=REAL_PROJECT_VALIDATED_AT_APPROVAL_REQUIRED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1
+```
+
+`P0_OVERALL_STATUS=COMPLETED` 之前不得把P1、P2或最终Hard Enforcement作为当前实施动作。当前用户边界继续保持：不再次运行WI-0004 Gate，不执行User Decision、Merge、Code Permission、业务代码、Verification或Close。该边界未解除前，P0保持 `IN_PROGRESS`，缺失证据继续标记 `INSUFFICIENT_EVIDENCE`。
+## V65测试消费者漂移与V66闭包边界（2026-08-05）
+
+V65先在隔离副本应用精确4文件，并正确建立P0父阶段与V64子任务的分层状态。新增独立状态回归通过，但两个既有固定文本消费者仍要求已废止的无作用域状态：
+
+```text
+FAILED_STAGE=ISOLATED-TARGETED-TESTS
+FAILURE_CLASS=TEST_DRIFT
+FAILED_TEST_1=SpecForge development experience pre-read gate > requires every delivery round to use one complete downloadable bundle
+FAILED_TEST_2=ERR-088—ERR-107 real title and validation regression governance > keeps the WorkDesk evidence and no-second-run boundary exact
+ACTUAL_COUNTS=PASS_4_FAIL_2_TOTAL_6
+PATCH_ACTION_REAL_REPOSITORY=NOT_PERFORMED
+COMMIT_ACTION=NOT_PERFORMED
+PUSH_ACTION=NOT_PERFORMED
+WORKDESK_WRITE=NOT_PERFORMED
+WI0004_ACTION=NOT_PERFORMED
+```
+
+两个失败都来自同一旧断言：
+
+```text
+expect current-handoff contains CURRENT_TASK_STATUS=CLOSED
+```
+
+该断言与ERR-108要求的作用域状态冲突。V67保持V65的业务状态结论不变，并把全部已知状态消费者原子同步为：
+
+```text
+V64_TASK_STATUS=CLOSED
+P0_PHASE1_STATUS=REAL_PROJECT_VALIDATED_AT_APPROVAL_REQUIRED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1
+```
+
+V67继承精确6文件：V65的3个治理文档、1个独立状态回归，加上两个实际失败的既有测试消费者。V67只用V65真实失败日志执行纯解析和正反例，不再通过修改隔离工作树伪造历史失败；随后在隔离副本和真实仓库应用精确6文件并执行定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、WorkDesk不变审计后单次提交并推送。
+
+```text
+ERR109_FAILURE_CLASS=TEST_DRIFT
+ERR109_ROOT_CAUSE=STATE_PRODUCER_CHANGED_WITHOUT_FULL_FIXED_TEXT_CONSUMER_INVENTORY
+ERR109_STATUS=CLOSED_AFTER_V67_VALIDATION
+V65_REAL_REPOSITORY_ACTION=NOT_PERFORMED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1
+WORKDESK_WI0004_ACTION=NONE
+```
+
+不得运行WorkDesk Gate，不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V66历史失败伪复现与V67闭包边界（2026-08-05）
+
+V66在任何真实写入前停止：
+
+```text
+RESULT=FAILED
+FAILED_STAGE=V65_FAILURE_PARSER
+ERROR=expected nonzero return code
+PATCH_ACTION_REAL_REPOSITORY=NOT_PERFORMED
+COMMIT_ACTION=NOT_PERFORMED
+PUSH_ACTION=NOT_PERFORMED
+WORKDESK_WRITE=NOT_PERFORMED
+WI0004_ACTION=NOT_PERFORMED
+```
+
+V66包内的V65真实日志纯解析已经能够识别原始 `4 pass / 2 fail / 6 total` 和精确两个失败测试；实际错误发生在有副作用的历史复现步骤。该步骤从当前包的 `patch/` 目录复制4个文件，而这些文件已经是V66目标版本，不是冻结的V65目标版本，因此两个旧测试在复现阶段变成 `6 pass / 0 fail`，随后被“必须非零退出码”正确阻断。
+
+固定事实：
+
+```text
+V65_REAL_FAILURE_SET=EXACT_2
+V65_REAL_COUNTS=PASS_4_FAIL_2_TOTAL_6
+V66_REPRODUCER_ACTUAL_COUNTS=PASS_6_FAIL_0_TOTAL_6
+V66_REPRODUCER_SOURCE=V66_CURRENT_TARGET_FILES
+V66_REAL_REPOSITORY_ACTION=NOT_PERFORMED
+V66_WORKDESK_ACTION=NOT_PERFORMED
+```
+
+V67删除有副作用的历史失败复现函数。历史失败控制只消费不可变的一手日志和摘要：
+
+```text
+V65真实失败日志
+→ 纯解析失败身份、退出码和数量关系
+V66执行摘要与隔离日志
+→ 纯解析ERR-110原因和零真实动作
+当前8aed基线
+→ 直接应用精确6文件
+→ 运行目标测试和完整工程验证
+```
+
+```text
+ERR110_FAILURE_CLASS=VALIDATOR_DEFECT
+ERR110_ROOT_CAUSE=HISTORICAL_REPRODUCER_REUSED_CURRENT_TARGET_PATCH
+ERR110_STATUS=CLOSED_AFTER_V67_VALIDATION
+V67_TARGET_FILE_COUNT=6
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1
+WORKDESK_WI0004_ACTION=NONE
+```
+
+不得运行WorkDesk Gate，不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V67封包前ERR-111—ERR-112闭包（2026-08-05）
+
+V67封包前静态对账发现并在交付前阻断两个过程缺陷：
+
+```text
+ERR-111=PACKAGE_PREFLIGHT_DEFECT
+ERR-111_ROOT_CAUSE=GENERATED_STATUS_DOCUMENTS_ENDED_WITH_EXTRA_BLANK_LINE
+ERR-111_REPEATED_CLASS=ERR-081
+ERR-112=EVIDENCE_REPORTING_DEFECT
+ERR-112_ROOT_CAUSE=GIT_DIFF_BINARY_OMITS_UNTRACKED_NEW_TEST
+REAL_REPOSITORY_ACTION=NOT_PERFORMED
+WORKDESK_ACTION=NOT_PERFORMED
+```
+
+ERR-111由 `git diff --check` 在 `current-handoff.md` 和 `P0-contract-consumer-closure.md` 报告 `new blank line at EOF`。V67按EXP-059把所有生成文本规范化为一个且仅一个LF，并在Manifest生成前执行字节级EOF检查。
+
+ERR-112来自精确6文件集合中的新增测试：
+
+```text
+packages/daemon-core/tests/unit/specforge-p0-phase-boundary.test.ts
+SOURCE_CONTRACT=ABSENT
+```
+
+未暂存的新增文件不会进入 `git diff --binary`，因此旧证据捕获方式不能满足“Manifest路径集合=Git diff路径集合=实际修改集合”。V67在隔离验证完成后先暂存精确6文件，验证cached diff路径集合，再由 `git diff --cached --binary` 生成完整证据；隔离仓库随后删除，不影响真实仓库。
+
+```text
+ERR111_STATUS=CLOSED_BEFORE_V67_DELIVERY
+ERR112_STATUS=CLOSED_BEFORE_V67_DELIVERY
+V67_EVIDENCE_DIFF_SOURCE=ISOLATED_CACHED_EXACT_CHANGED_PATHS
+V67_TARGET_FILE_COUNT=6
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WORKDESK_WI0004_ACTION=NONE
+```

@@ -16,7 +16,7 @@ function read(relativePath: string): string {
   return readFileSync(path.join(repoRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
-describe('ERR-088—ERR-107 real title and validation regression governance', () => {
+describe('ERR-088—ERR-109 real title and validation regression governance', () => {
   it('records every V43—V63 evidence failure and its class-level prevention', () => {
     const ledger = read('docs/rule/specforge-development-error-ledger-and-experience.md');
 
@@ -84,6 +84,12 @@ describe('ERR-088—ERR-107 real title and validation regression governance', ()
     expect(ledger).toContain('### ERR-107：V63升级成功后未立即记录动作状态，失败摘要误报REAL_INSTALL_ACTION=NOT_PERFORMED');
     expect(ledger).toContain('## EXP-085：有副作用动作成功后必须立即固化动作事实');
     expect(ledger).toContain('ERR-107=CLOSED');
+    expect(ledger).toContain('### ERR-108：V64子任务关闭状态被无作用域地写成当前任务关闭，并把P0未完成状态错误投影为可进入下一阶段');
+    expect(ledger).toContain('## EXP-086：子任务关闭不能覆盖父阶段生命周期');
+    expect(ledger).toContain('ERR-108=CLOSED');
+    expect(ledger).toContain('### ERR-109：V65修改状态生产者后遗漏两个既有固定文本消费者，正确状态被旧CURRENT_TASK_STATUS断言阻断');
+    expect(ledger).toContain('## EXP-087：状态生产者变更必须先完成全消费者清单再冻结范围');
+    expect(ledger).toContain('ERR-109=CLOSED');
   });
 
   it('keeps the WorkDesk evidence and no-second-run boundary exact', () => {
@@ -134,7 +140,17 @@ describe('ERR-088—ERR-107 real title and validation regression governance', ()
     expect(handoff).toContain('ERR106_STATUS=CLOSED');
     expect(handoff).toContain('ERR107_STATUS=CLOSED');
     expect(handoff).toContain('V63_USERLEVEL_UPGRADE=CONFIRMED_SUCCESS');
-    expect(handoff).toContain('CURRENT_TASK_STATUS=CLOSED');
+    expect(handoff).toContain('V64_TASK_STATUS=CLOSED');
+    expect(handoff).toContain('P0_OVERALL_STATUS=IN_PROGRESS');
+    expect(handoff).toContain('P1_ACTION=NOT_STARTED');
+    expect(handoff).toContain('NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1');
+    expect(handoff).toContain('## V65测试消费者漂移与V66闭包边界（2026-08-05）');
+    expect(handoff).toContain('## V66历史失败伪复现与V67闭包边界（2026-08-05）');
+    expect(handoff).toContain('ERR110_ROOT_CAUSE=HISTORICAL_REPRODUCER_REUSED_CURRENT_TARGET_PATCH');
+    expect(handoff).toContain('## V67封包前ERR-111—ERR-112闭包（2026-08-05）');
+    expect(handoff).toContain('ERR-112_ROOT_CAUSE=GIT_DIFF_BINARY_OMITS_UNTRACKED_NEW_TEST');
+    expect(handoff).not.toMatch(/^CURRENT_TASK_STATUS=CLOSED\s*$/m);
+    expect(handoff).not.toMatch(/^NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS\s*$/m);
     expect(handoff).toContain("V56_ERROR=NameError: name 're' is not defined");
     expect(handoff).toContain('V55_TARGET_HASH_COUNT=8');
     expect(handoff).toContain('V55_SUMMARY_PATCH_SCOPE=7_FILES_INCORRECT');
@@ -173,6 +189,10 @@ describe('ERR-088—ERR-107 real title and validation regression governance', ()
     expect(p0).toContain('git push --force-with-lease=refs/heads/main:<baseline>');
     expect(p0).toContain('### 25.43 ERR-105封包期Python零字节码边界');
     expect(p0).toContain('### 25.44 ERR-106—ERR-107用户级Manifest Schema与动作证据闭包');
+    expect(p0).toContain('### 25.45 V64后P0父阶段与子任务状态对账');
+    expect(p0).toContain('### 25.46 ERR-109状态生产者与固定文本消费者原子同步');
+    expect(p0).toContain('### 25.47 ERR-110历史失败复现不得复用当前目标补丁');
+    expect(p0).toContain('### 25.48 ERR-111—ERR-112封包格式与完整Git证据集合');
     expect(p0).toContain('specforge-manifest.json files对象精确119项');
     expect(p0).toContain('动作状态与后续验证状态分别报告');
     expect(p0).toContain('语法检查使用内存compile且禁止python -m py_compile');

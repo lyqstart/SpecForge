@@ -92,6 +92,9 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experienceRuleIds).toContain('## EXP-064：');
     expect(experienceRuleIds).toContain('## EXP-065：');
 
+    expect(experienceRuleIds).toContain('## EXP-088：');
+    expect(experienceRuleIds).toContain('## EXP-089：');
+
     expect(checklist.trim().length).toBeGreaterThan(500);
     expect(checklist).toContain('APPLICABLE_EXPERIENCE_RULES');
     expect(checklist).toContain('NONE_FOUND');
@@ -296,6 +299,12 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('### ERR-107：V63升级成功后未立即记录动作状态，失败摘要误报REAL_INSTALL_ACTION=NOT_PERFORMED');
     expect(document).toContain('## EXP-085：有副作用动作成功后必须立即固化动作事实');
     expect(document).toContain('ERR-107=CLOSED');
+    expect(document).toContain('### ERR-108：V64子任务关闭状态被无作用域地写成当前任务关闭，并把P0未完成状态错误投影为可进入下一阶段');
+    expect(document).toContain('## EXP-086：子任务关闭不能覆盖父阶段生命周期');
+    expect(document).toContain('ERR-108=CLOSED');
+    expect(document).toContain('### ERR-109：V65修改状态生产者后遗漏两个既有固定文本消费者，正确状态被旧CURRENT_TASK_STATUS断言阻断');
+    expect(document).toContain('## EXP-087：状态生产者变更必须先完成全消费者清单再冻结范围');
+    expect(document).toContain('ERR-109=CLOSED');
 
     expect(document).toContain('ERR-088=CLOSED_V51_WORKDESK_REAL_RETEST');
     expect(document).toContain('ERR-089=CLOSED_V50_COMMITTED_PUSHED');
@@ -406,7 +415,13 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('ERR106_STATUS=CLOSED');
     expect(handoff).toContain('ERR107_STATUS=CLOSED');
     expect(handoff).toContain('V63_USERLEVEL_UPGRADE=CONFIRMED_SUCCESS');
-    expect(handoff).toContain('CURRENT_TASK_STATUS=CLOSED');
+    expect(handoff).toContain('V64_TASK_STATUS=CLOSED');
+    expect(handoff).toContain('P0_OVERALL_STATUS=IN_PROGRESS');
+    expect(handoff).toContain('P1_ACTION=NOT_STARTED');
+    expect(handoff).toContain('NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1');
+    expect(handoff).toContain('## V65测试消费者漂移与V66闭包边界（2026-08-05）');
+    expect(handoff).not.toMatch(/^CURRENT_TASK_STATUS=CLOSED\s*$/m);
+    expect(handoff).not.toMatch(/^NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS\s*$/m);
     expect(handoff).not.toContain('刷新 WorkDesk Git index 中4个字节未变文件的 stat 状态');
     expect(handoff).not.toContain('核对用户级 SpecForge 安装来源与当前版本');
     expect(handoff).not.toContain('用户暂存、提交并推送当前 19 文件变更');
@@ -453,6 +468,8 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(p0ContractClosure).toContain('### 25.19 V34源基线哈希错误与V35隔离验证边界');
     expect(p0ContractClosure).toContain('WI-0004当前冻结在 `candidate_preparing`');
     expect(p0ContractClosure).toContain('### 25.44 ERR-106—ERR-107用户级Manifest Schema与动作证据闭包');
+    expect(p0ContractClosure).toContain('### 25.45 V64后P0父阶段与子任务状态对账');
+    expect(p0ContractClosure).toContain('### 25.46 ERR-109状态生产者与固定文本消费者原子同步');
     expect(p0ContractClosure).toContain('specforge-manifest.json files对象精确119项');
     expect(p0ContractClosure).toContain('动作状态与后续验证状态分别报告');
     expect(p0ContractClosure).not.toContain('到 `gates_passed` 必须停止');

@@ -1431,6 +1431,93 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **状态**：`CLOSED`。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-045`、`EXP-058`、`EXP-073`、`EXP-077`、`EXP-078`、`EXP-085`。
 
+### ERR-108：V64子任务关闭状态被无作用域地写成当前任务关闭，并把P0未完成状态错误投影为可进入下一阶段
+
+- **日期与阶段**：2026-08-05，V64证据审计后的下一阶段影响分析。
+- **分类**：`EVIDENCE_REPORTING_DEFECT / LIFECYCLE_SCOPE_AMBIGUITY / P0_P1_BOUNDARY_CONFLICT`。
+- **现场表现**：`current-handoff.md` 第十三节明确要求P0达到 `COMPLETED` 后才能进入P1；`P0-contract-consumer-closure.md` 顶部和关闭条件仍明确为 `IN_PROGRESS`，并保留Code Permission、实际代码消费者、破坏性变更、Promotion、Merge、Verification和Close的证据不足项。但V64尾部使用无父阶段作用域的 `CURRENT_TASK_STATUS=CLOSED` 和 `NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS`，可能被下游解释为P0已完成并可启动P1。
+- **一级证据**：远程 `main@8aed1e0329cddd823e5c643ed16df99549d4d94e` 的 `current-handoff.md`、`P0-contract-consumer-closure.md`；V64执行证据中的 `WORKDESK_WI0004_STATE=approval_required`、`WI0004_ACTION=NOT_PERFORMED`、`USER_DECISION_ACTION=NOT_PERFORMED`、`MERGE_ACTION=NOT_PERFORMED`、`CODE_PERMISSION_ACTION=NOT_PERFORMED`。
+- **根因**：状态投影没有区分“V64证据消费子任务”与“P0 Contract Consumer父阶段”；成功摘要直接生成下一动作，没有先校验父阶段关闭条件和剩余 `INSUFFICIENT_EVIDENCE`。
+- **影响**：未修改产品代码、WorkDesk、Gate或Runtime，但错误的下一动作可能导致P1提前开始，违反当前实施顺序和修改范围治理。
+- **正确做法**：
+  - 子任务状态必须带明确作用域，例如 `V64_TASK_STATUS`
+  - 父阶段状态必须独立记录，例如 `P0_OVERALL_STATUS`
+  - 下一动作必须由父阶段关闭条件派生，不能只由最近一次包执行成功派生
+  - 父阶段存在证据不足时，后续阶段固定为 `NOT_STARTED`
+  - 当前用户边界阻断父阶段后续动作时，明确记录需要先解决边界，不得隐式越过
+- **新增防护**：V65新增独立状态回归，固定验证P0仍为 `IN_PROGRESS`、V64子任务为 `CLOSED`、P1为 `NOT_STARTED`，并禁止无作用域的 `CURRENT_TASK_STATUS=CLOSED` 和提前进入下一阶段的旧下一动作。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-017`、`EXP-033`、`EXP-035`、`EXP-045`、`EXP-058`、`EXP-060`、`EXP-068`、`EXP-077`、`EXP-079`、`EXP-086`。
+
+
+### ERR-109：V65修改状态生产者后遗漏两个既有固定文本消费者，正确状态被旧CURRENT_TASK_STATUS断言阻断
+
+- **日期与阶段**：2026-08-05，V65隔离定向测试阶段。
+- **分类**：`TEST_DRIFT / STALE_FIXED_TEXT_CONSUMER / IMPACT_SCOPE_OMISSION`。
+- **现场表现**：V65新增的 `specforge-p0-phase-boundary.test.ts` 已通过，证明P0父阶段保持 `IN_PROGRESS`、V64子任务为 `CLOSED`、P1为 `NOT_STARTED`。但 `specforge-development-experience-gate.test.ts` 和 `specforge-development-err088.test.ts` 仍要求 `current-handoff.md` 包含已经由ERR-108废止的 `CURRENT_TASK_STATUS=CLOSED`，导致隔离定向测试4项通过、2项失败。
+- **一级证据**：`SpecForge-v65-execution-evidence-20260805-101157.zip` 的 `logs/isolated-targeted-tests.log`、`summary.json`、`baseline-state-control.json` 和 `target-state-control.json`。证据同时证明真实SpecForge、WorkDesk、用户级安装、提交和推送均未执行。
+- **根因**：V65影响分析识别了状态生产者和新增回归，但冻结范围前没有检索所有读取 `CURRENT_TASK_STATUS=CLOSED` 的既有固定文本消费者；新测试与旧测试形成互斥契约。
+- **影响**：未产生真实仓库或业务项目变更，但V65无法进入真实应用。若仅删除失败断言而不建立完整消费者集合，会继续留下状态治理盲区。
+- **正确做法**：
+  - 状态生产者字段变更前，必须检索仓库内全部固定文本、Schema、解析器和文档消费者
+  - 新旧消费者必须在同一修改范围原子同步
+  - 基线控制必须用真实失败日志比较精确失败集合，不固定无关pass数量
+  - 目标测试必须同时证明新作用域状态存在、旧无作用域状态不存在
+  - 新增回归不能替代既有消费者对账
+- **新增防护**：V67把两个实际失败的既有测试加入范围；封包验证器用V65真实日志执行正向、无耗时后缀、错误失败名、错误计数和错误退出码反例；隔离阶段直接在8aed基线上应用全部六文件完成闭包，不再修改工作树复现历史失败。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-017`、`EXP-033`、`EXP-035`、`EXP-045`、`EXP-058`、`EXP-060`、`EXP-068`、`EXP-073`、`EXP-074`、`EXP-077`、`EXP-079`、`EXP-086`、`EXP-087`。
+
+
+### ERR-110：V66历史失败复现错误复用V66当前目标补丁，V65旧测试被目标修复提前消除
+
+- **日期与阶段**：2026-08-05，V66隔离历史失败控制阶段。
+- **分类**：`VALIDATOR_DEFECT / HISTORICAL_REPRODUCER_SOURCE_CONFUSION / SIDE_EFFECT_CONTROL_DEFECT`。
+- **现场表现**：V66已用V65真实日志正确解析精确两个失败和 `4 pass / 2 fail / 6 total`，但随后有副作用复现返回 `6 pass / 0 fail`，验证器以 `V65_FAILURE_PARSER=expected nonzero return code` 停止。
+- **一级证据**：`SpecForge-v66-execution-evidence-20260805-102914.zip` 的 `summary.json`、`commands.log`、`logs/isolated-v65-test-drift.log`；V66包中 `apply_v65_reproducer()`、`run_v65_drift_control()` 和当前 `patch/` 文件。
+- **根因**：历史复现函数从当前包 `patch/` 目录复制4个文件；这些文件已经包含V66目标修复，不是V65冻结目标。历史证据源与当前目标补丁共用同一目录，并通过有副作用执行函数重复制造已经存在的一手失败。
+- **影响**：V66在真实仓库写入、安装、提交、推送和WorkDesk动作前失败关闭，没有产生产品或业务项目变更。
+- **正确做法**：
+  - 已有真实历史日志时只调用纯解析函数，不再修改工作树复现同一失败
+  - 历史失败证据与当前目标补丁必须是不同事实源
+  - 必须重建历史状态时，独立保存历史源/目标文件和哈希，不得读取当前 `patch/`
+  - 纯解析验证完成后，当前目标只在当前基线上应用一次
+  - 正反例必须覆盖错误退出码、错误失败集合、错误数量和错误动作状态
+- **新增防护**：V67删除V65有副作用复现函数；封包前实际加载最终脚本，用V65真实失败日志和V66真实失败证据调用全部新增纯解析函数，并检查脚本中不存在历史复现入口。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-045`、`EXP-058`、`EXP-073`、`EXP-074`、`EXP-077`、`EXP-078`、`EXP-079`、`EXP-087`、`EXP-088`。
+
+
+### ERR-111：V67草稿状态文档再次产生额外EOF空白行，被git diff --check阻断
+
+- **日期与阶段**：2026-08-05，V67封包前8aed静态Git对账。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / EOF_WHITESPACE / REPEATED_ERR081_CLASS`。
+- **现场表现**：`git diff --check` 报告 `current-handoff.md` 和 `P0-contract-consumer-closure.md` 各有 `new blank line at EOF`。
+- **一级证据**：V67封包前临时8aed仓库的 `git diff --check` 原始输出；两个目标文件的字节结尾。
+- **根因**：追加章节后使用了带前后换行的文本拼接，没有在目标哈希计算前执行EXP-059规定的单LF规范化。
+- **影响**：V67尚未生成最终ZIP，真实SpecForge、WorkDesk、安装、提交和推送均未执行。
+- **正确做法**：所有生成文本在计算目标哈希和Manifest前统一执行 `content.rstrip("\r\n") + "\n"`，并验证 `endswith(b"\n")` 且不以 `b"\n\n"` 结束。
+- **新增防护**：V67封包预检对全部patch文本执行单LF检查，并在8aed临时Git仓库再次执行 `git diff --check`。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-059`、`EXP-080`。
+
+### ERR-112：V67隔离证据使用普通git diff，遗漏8aed中不存在的新增测试文件
+
+- **日期与阶段**：2026-08-05，V67封包前Manifest、Git diff和实际文件集合对账。
+- **分类**：`EVIDENCE_REPORTING_DEFECT / UNTRACKED_DIFF_OMISSION / MANIFEST_DIFF_SET_MISMATCH`。
+- **现场表现**：Manifest和实际修改集合为6文件，但普通 `git diff --name-only` 只报告5文件；遗漏 `source_contract=ABSENT` 的新增 `specforge-p0-phase-boundary.test.ts`。
+- **一级证据**：8aed临时Git仓库的 `git status --short`、`git diff --name-only` 和Manifest.changed_paths集合。
+- **根因**：普通Git diff只包含tracked改动；验证器在生成二进制patch前没有把Manifest精确路径暂存，因此untracked新增文件无法进入证据patch。
+- **影响**：不会改变产品字节，但若未阻断，证据包中的Git patch将少一个实际修改文件，违反Manifest单一事实源和完整范围证据合同。
+- **正确做法**：
+  - 隔离验证完成后只暂存Manifest.changed_paths
+  - cached diff路径集合必须精确等于Manifest.changed_paths
+  - 使用 `git diff --cached --binary` 捕获包含新增文件的完整patch
+  - 暂存仅发生在可删除的隔离仓库，不提前改变真实仓库index
+- **新增防护**：V67增加隔离cached diff集合门禁；封包静态预检以8aed真实基线验证6文件集合和完整binary patch。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-058`、`EXP-077`、`EXP-080`、`EXP-089`。
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -2466,6 +2553,84 @@ managed_agents=Agent名称数组
 
 结果摘要必须同时报告动作事实和验证事实。后续验证失败时，可以把整体结果标记为失败，但不得把已经发生的安装、提交或推送重新描述为 `NOT_PERFORMED`。封包前必须覆盖“动作成功且后续验证失败”的反例。
 
+## EXP-086：子任务关闭不能覆盖父阶段生命周期
+
+状态必须具有明确作用域。一次补丁、验证包或证据消费任务成功，只能关闭该子任务；父阶段是否完成必须由父阶段自己的关闭条件、真实环境证据和 `INSUFFICIENT_EVIDENCE` 集合决定。固定模型：
+
+```text
+SUBTASK_STATUS=CLOSED
++ PARENT_COMPLETION_CONDITIONS全部满足
++ PARENT_INSUFFICIENT_EVIDENCE为空
+→ PARENT_STATUS=COMPLETED
+→ 才允许派生NEXT_PHASE_ACTION
+```
+
+只要父阶段仍为 `IN_PROGRESS`，后续阶段必须明确记录为 `NOT_STARTED`。`CURRENT_TASK_STATUS` 等无作用域字段不得同时承担子任务和父阶段状态；下一动作不能只由最近一次执行成功派生，必须先校验父阶段生命周期。
+
+
+## EXP-087：状态生产者变更必须先完成全消费者清单再冻结范围
+
+生命周期状态、下一动作或证据字段发生变更时，新增一个回归测试不能证明消费者已经闭环。修改前必须从旧字段和值反向检索全部消费者：
+
+```text
+生产者字段
+→ 固定文本测试
+→ Schema/解析器
+→ 状态汇总
+→ 交接与实施文档
+→ 安装或运行时消费者
+```
+
+冻结范围必须覆盖全部实际消费者；任何旧消费者与新正式状态互斥时，分类为 `TEST_DRIFT` 或实际消费者缺陷，并重新执行影响分析。验证顺序固定为：
+
+```text
+真实历史失败集合精确重现
+→ 原子同步全部消费者
+→ 新状态正向断言
+→ 旧状态负向断言
+→ 完整定向与回归测试
+```
+
+不得只增加新测试后把旧测试失败解释为无关历史债务，也不得为通过测试重新恢复已经废止的无作用域状态。
+
+
+## EXP-088：历史失败验证必须消费不可变历史证据，不能复用当前目标补丁
+
+已有一手失败日志和摘要时，历史控制固定为纯证据解析：
+
+```text
+不可变历史日志/摘要
+→ 纯函数解析
+→ 精确失败集合、退出码、数量和动作事实
+→ 正向与失败反例
+```
+
+不得通过修改当前隔离工作树再次制造同一历史失败。当前包的 `patch/` 目录只代表当前目标，不能同时充当历史目标。确需重建历史状态时，必须单独保存：
+
+```text
+historical_source_contract
+historical_target_hashes
+historical_changed_paths
+historical_expected_result
+```
+
+历史重建函数与当前目标应用函数必须分离，且封包前分别使用真实证据实际调用。任何历史复现读取当前目标文件，均按验证器缺陷失败关闭。
+
+
+## EXP-089：包含新增文件的Git证据必须从Manifest精确暂存集合生成
+
+当 `source_contract` 中存在 `ABSENT` 路径时，普通 `git diff` 不能作为完整修改集合证据。隔离证据固定流程：
+
+```text
+apply target files
+→ verify actual status paths == Manifest.changed_paths
+→ git add -- Manifest.changed_paths
+→ verify cached diff paths == Manifest.changed_paths
+→ git diff --cached --binary
+```
+
+禁止通过 `git add -A` 扩大暂存范围；禁止把不含untracked文件的普通diff报告为完整patch。真实仓库只能在全部验证通过后执行同一精确路径暂存，隔离证据暂存不构成真实提交动作。
+
 # 第四部分：修改前强制检查
 
 ## 13. 通用检查清单
@@ -2489,6 +2654,7 @@ managed_agents=Agent名称数组
 □ 封包期所有Python执行均禁用字节码，并在每个步骤后证明__pycache__和*.pyc为零
 □ Manifest集合形状已由生产者Schema和真实产物确认；files对象、managed_agents数组及entry结构均用正反例执行验证
 □ 有副作用动作退出0后已立即固化动作事实；后续验证失败未把已执行动作误报为NOT_PERFORMED
+□ 子任务、父阶段和下一阶段状态已分层；父阶段未满足关闭条件或仍有INSUFFICIENT_EVIDENCE时，后续阶段保持NOT_STARTED
 □ 已区分产品、脚本、环境、验证、证据和历史债务
 □ 已画出定义—调用者—消费者—测试—安装—真实验证闭包
 □ 已确认用户操作边界
@@ -2761,6 +2927,11 @@ ERR-104=CLOSED
 ERR-105=CLOSED
 ERR-106=CLOSED
 ERR-107=CLOSED
+ERR-108=CLOSED
+ERR-109=CLOSED
+ERR-110=CLOSED
+ERR-111=CLOSED
+ERR-112=CLOSED
 ```
 
 V36隔离验证完成A/B基线控制并应用精确11文件补丁：129项通过、1项失败；唯一失败是ERR-080经验门禁状态断言过期。产品实现、真实SpecForge、WorkDesk、用户级安装和WI-0004均未改变。

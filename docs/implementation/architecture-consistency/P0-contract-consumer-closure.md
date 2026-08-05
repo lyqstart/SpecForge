@@ -3067,3 +3067,130 @@ installer verify退出码0
 ```
 
 V64只修改5个过程治理和测试消费者，不改变Project Architecture、Data Model、Module Design、Project Contract、Module Contract、Agent产品行为、Gate、Runtime或WorkDesk。该状态闭包提交前必须重新完成定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify、真实用户级只读verify和WorkDesk不变审计。
+### 25.45 V64后P0父阶段与子任务状态对账
+
+V64证据证明ERR-106—ERR-107状态闭包、用户级119/119、Managed Agents 9/9以及治理文档提交推送成功。该成功只关闭V64子任务，不改变本文件第22节定义的P0生命周期。
+
+WI-0004本轮真实重验已经达到Phase 1冻结边界：
+
+```text
+正式Gate=10/10通过
+最终状态=approval_required
+Candidate内容=未改变
+User Decision=未执行
+Merge=未执行
+Code Permission=未执行
+业务代码=未修改
+Verification=未执行
+Close=未执行
+```
+
+根据本文件第23节关闭条件和第25.6节证据不足项，当前状态固定为：
+
+```text
+P0_PHASE1_STATUS=REAL_PROJECT_VALIDATED_AT_APPROVAL_REQUIRED
+P0_OVERALL_STATUS=IN_PROGRESS
+P0_COMPLETION_EVIDENCE_MISSING=CODE_PERMISSION,ACTUAL_CODE_CONSUMER,DESTRUCTIVE_CHANGE,PROMOTION,MERGE,VERIFICATION,CLOSE
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1
+```
+
+当前用户边界禁止继续执行WI-0004后续生命周期，因此本次只完成状态对账，不运行Work Item、Gate、User Decision、Merge、Code Permission、业务代码、Verification或Close，不修改WorkDesk。缺失的真实项目证据继续标记 `INSUFFICIENT_EVIDENCE`；在P0改为 `COMPLETED` 前不得进入P1、P2或最终Hard Enforcement。
+### 25.46 ERR-109状态生产者与固定文本消费者原子同步
+
+V65在隔离副本正确修复父阶段/子任务状态边界，但定向测试暴露两个既有消费者漂移：
+
+```text
+新增独立P0状态回归=PASS
+既有经验门禁消费者=FAIL
+既有ERR-088固定文本消费者=FAIL
+失败主类=TEST_DRIFT
+真实仓库写入=NONE
+WorkDesk写入=NONE
+```
+
+两个旧测试继续要求 `CURRENT_TASK_STATUS=CLOSED`，而ERR-108已经禁止该无作用域状态。根因不是P0状态设计错误，而是V65修改范围只纳入新状态生产者和新增回归，没有在冻结前完整检索全部固定文本消费者。
+
+V67保持以下正式状态不变：
+
+```text
+V64_TASK_STATUS=CLOSED
+P0_PHASE1_STATUS=REAL_PROJECT_VALIDATED_AT_APPROVAL_REQUIRED
+P0_OVERALL_STATUS=IN_PROGRESS
+P0_COMPLETION_EVIDENCE_MISSING=CODE_PERMISSION,ACTUAL_CODE_CONSUMER,DESTRUCTIVE_CHANGE,PROMOTION,MERGE,VERIFICATION,CLOSE
+P1_ACTION=NOT_STARTED
+NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1
+```
+
+V67把两个既有测试消费者纳入同一原子范围，并要求：
+
+```text
+V65真实失败集合通过不可变日志精确解析
+→ 两个旧消费者改为断言作用域状态
+→ 禁止CURRENT_TASK_STATUS=CLOSED
+→ 禁止提前进入下一阶段的旧NEXT_ACTION
+→ 新旧三个状态测试共同通过
+```
+
+该修正不改变Project Architecture、Data Model、Module Design、Project Contract、Module Contract、Gate、Runtime或WorkDesk。P0仍为 `IN_PROGRESS`，缺失真实生命周期证据继续标记 `INSUFFICIENT_EVIDENCE`。
+
+### 25.47 ERR-110历史失败复现不得复用当前目标补丁
+
+V66验证器同时包含两种历史控制：
+
+```text
+纯解析V65真实失败日志
+有副作用地在隔离工作树复现V65失败
+```
+
+第一种控制正确识别：
+
+```text
+失败集合=精确2项
+pass=4
+fail=2
+total=6
+files=3
+```
+
+第二种控制错误地从V66当前 `patch/` 目录复制4个目标文件。该目录已经包含V66对旧测试消费者的修复，不是V65冻结目标，因此运行结果为 `6 pass / 0 fail`。验证器随后以 `V65_FAILURE_PARSER=expected nonzero return code` 失败关闭；真实SpecForge、WorkDesk、用户级安装、提交和推送均未发生。
+
+ERR-110固定修正：
+
+```text
+删除apply_v65_reproducer
+删除run_v65_drift_control
+历史失败只读取不可变V65日志
+V66失败只读取不可变V66 summary与日志
+解析器保持纯函数
+当前目标补丁只用于当前8aed基线的隔离与真实验证
+```
+
+如果未来必须重建历史工作树，历史目标文件必须作为独立证据对象保存，并具有独立Manifest、源哈希和目标哈希；禁止引用当前包的 `patch/` 目录。V67继续保持精确6个状态生产者/消费者文件，不修改Project Architecture、Data Model、Module Design、Project Contract、Module Contract、Gate、Runtime或WorkDesk。P0仍为 `IN_PROGRESS`。
+
+### 25.48 ERR-111—ERR-112封包格式与完整Git证据集合
+
+V67封包前先对8aed基线应用精确6文件并执行静态Git审计。第一次审计发现：
+
+```text
+current-handoff.md=new blank line at EOF
+P0-contract-consumer-closure.md=new blank line at EOF
+git diff --name-only=5 files
+actual changed paths=6 files
+missing path=packages/daemon-core/tests/unit/specforge-p0-phase-boundary.test.ts
+```
+
+第一个问题是ERR-081同类格式缺陷，按EXP-059在封包前统一执行 `content.rstrip("\r\n") + "\n"` 和单LF字节检查。
+
+第二个问题不是修改范围错误，而是Git证据捕获入口错误：新增测试在8aed中不存在，应用后处于untracked状态，普通 `git diff` 不包含该文件。V67固定证据流程：
+
+```text
+目标验证完成
+→ git add -- 精确Manifest.changed_paths
+→ git diff --cached --name-only -z
+→ 集合必须精确等于Manifest.changed_paths
+→ git diff --cached --binary生成完整证据
+→ 删除隔离仓库
+```
+
+真实仓库仍在全部验证通过后才执行同一精确路径暂存、`git diff --cached --check`、单次提交和推送。该修正只影响交付验证器与证据捕获，不改变P0产品状态、Contract、Gate、Runtime或WorkDesk。
