@@ -16,7 +16,7 @@ function read(relativePath: string): string {
   return readFileSync(path.join(repoRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
-describe('ERR-088—ERR-117 real title and validation regression governance', () => {
+describe('ERR-088—ERR-124 real title and validation regression governance', () => {
   it('records every V43—V63 evidence failure and its class-level prevention', () => {
     const ledger = read('docs/rule/specforge-development-error-ledger-and-experience.md');
 
@@ -105,6 +105,15 @@ describe('ERR-088—ERR-117 real title and validation regression governance', ()
     expect(ledger).toContain('### ERR-117：V70目标状态生产者已切换但两个固定文本测试仍要求V69状态字面值');
     expect(ledger).toContain('## EXP-094：生命周期状态必须稳定，尝试版本只属于证据');
     expect(ledger).toContain('ERR-117=CLOSED');
+    expect(ledger).toContain('### ERR-118：新模块完整候选被 Runtime 自己排除后又被 Gate 强制要求');
+    expect(ledger).toContain('### ERR-119：project_contract_changed没有进入Project Contract Candidate物化条件');
+    expect(ledger).toContain('### ERR-120：专业Agent在Candidate修订后使用sf_safe_bash验证治理目录并触发HardStop');
+    expect(ledger).toContain('### ERR-121：V72治理文档结尾多出空白行被git diff --check阻断');
+    expect(ledger).toContain('### ERR-122：固定文本测试把第二个期望值误作toContain提示参数');
+    expect(ledger).toContain('### ERR-123：V72使用Python shell=False直接启动Bun shim，隔离依赖阶段发生FileNotFoundError');
+    expect(ledger).toContain('## EXP-100：Windows命令shim必须通过其所属命令解释器启动并先做真实入口预检');
+    expect(ledger).toContain('### ERR-124：V73在workspace类型声明生成前运行daemon-core TypeScript检查');
+    expect(ledger).toContain('## EXP-101：workspace类型消费者必须在声明生产者构建后验证');
   });
 
   it('keeps the WorkDesk evidence and no-second-run boundary exact', () => {
@@ -169,6 +178,9 @@ describe('ERR-088—ERR-117 real title and validation regression governance', ()
     expect(handoff).toContain(
       'NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001',
     );
+    expect(handoff).toContain('NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_THEN_RESUME_WI0001_ONCE');
+    expect(handoff).toContain('## V72 Bun入口失败、ERR-123与V73验证器闭包边界（2026-08-05）');
+    expect(handoff).toContain('## V73工作区类型声明顺序失败、ERR-124与V74验证器闭包边界（2026-08-05）');
     expect(handoff).toContain(
       'P0_VALIDATION_PROJECT_RELATION_TO_PHASE11=NOT_PHASE11_EVIDENCE',
     );

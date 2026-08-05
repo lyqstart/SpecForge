@@ -2474,3 +2474,138 @@ WI0001_ACTION=NOT_PERFORMED
 WORKDESK_WI0004_ACTION=NONE
 NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001
 ```
+
+## WI-0001真实Gate阻断、ERR-118—ERR-120与Runtime修复边界（2026-08-05）
+
+独立项目 `D:\code\temp\SpecForge-P0-Validation` 已通过正式Runtime创建WI-0001。基础业务测试10/10通过。Candidate内容问题经多轮正式Gate反馈修正后，最终Gate Run #7为9/10通过，唯一失败为 `candidate_manifest_gate`：DOMAIN、STORAGE、REPORTING、CLI四个新模块均缺少Manifest中的 `requirements.md` 和 `trace.md`，但对应八个Candidate文件实际存在。
+
+源码对账确认：Runtime能够发现这八个文件，却在 `requirement_changed=false` 时排除模块Requirements，并固定排除全部 `module_trace`；Gate则无条件要求新模块五件套。另有 `project_contract_changed=true` 未被Project Contract物化条件消费，导致存在的extension_registry Candidate被排除。
+
+```text
+ERR118_CLASS=PRODUCT_DEFECT
+ERR119_CLASS=PRODUCT_DEFECT
+ERR120_CLASS=PRODUCT_DEFECT
+WI0001_STATE=gates_failed
+WI0001_GATE_RESULT=9_OF_10
+USER_DECISION_ACTION=NOT_PERFORMED
+MERGE_ACTION=NOT_PERFORMED
+CODE_PERMISSION_ACTION=NOT_PERFORMED
+IMPLEMENTATION_ACTION=NOT_PERFORMED
+VERIFICATION_ACTION=NOT_PERFORMED
+CLOSE_ACTION=NOT_PERFORMED
+WORKDESK_ACTION=NONE
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+```
+
+本轮产品修复只改变Runtime Candidate Manifest物化契约和Orchestrator专业Agent委派边界；Gate的新模块完整性规则保持不变。修复、自动化验证、提交、推送和用户级升级完成前，不得在独立项目重跑Gate。升级后由用户手工启动daemon/OpenCode，只允许从现有 `gates_failed` 恢复到 `candidate_preparing → candidate_prepared → gates_running` 并运行一次正式Gate；不得重建WI-0001、手工编辑Manifest、修改已正确Candidate或执行用户决定。
+
+```text
+ERR118_STATUS=FIX_IMPLEMENTED
+ERR119_STATUS=FIX_IMPLEMENTED
+ERR120_STATUS=FIX_IMPLEMENTED
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_THEN_RESUME_WI0001_ONCE
+```
+
+### V72封包前ERR-121单LF闭包
+
+V72最终静态Git对账发现3个治理文档结尾多一个空白行，分类为 `PACKAGE_PREFLIGHT_DEFECT`。产品代码、真实仓库、独立项目、WorkDesk、用户级安装和WI-0001均未改变。目标字节已统一为单个LF结尾，并把单LF与 `git diff --check` 放在Manifest和ZIP生成之前。
+
+```text
+ERR121_STATUS=CLOSED_PREFLIGHT
+```
+
+### V72封包前ERR-122断言参数闭包
+
+V72固定文本消费者审计发现，一个 `toContain` 调用把新下一动作放在第二参数。该参数只作为失败提示，不会验证业务事实。修正为两个独立断言，并加入断言API语义门禁；产品Runtime、独立项目、WorkDesk、用户级安装和WI-0001均未改变。
+
+```text
+ERR122_STATUS=CLOSED_PREFLIGHT
+BACKFILLED_ERROR_IDS=ERR-118,ERR-119,ERR-120,ERR-121,ERR-122
+```
+
+## V72 Bun入口失败、ERR-123与V73验证器闭包边界（2026-08-05）
+
+V72在任何真实仓库写入前停止。已完成的事实包括远程与本地HEAD一致、权威文件一致、11文件源哈希一致、WorkDesk只读快照和隔离worktree创建。失败发生在隔离worktree中的首条Bun命令：
+
+```text
+V72_FAILED_STAGE=UNHANDLED
+V72_ERROR=FileNotFoundError [WinError 2]
+V72_EFFECTIVE_STAGE=ISOLATED_DEPENDENCIES
+V72_COMMAND=bun install --frozen-lockfile
+V72_PATCH_ACTION_REAL_REPOSITORY=NOT_PERFORMED
+V72_COMMIT_ACTION=NOT_PERFORMED
+V72_PUSH_ACTION=NOT_PERFORMED
+V72_WI0001_ACTION=NOT_PERFORMED
+```
+
+失败分类为 `ERR-123 / VALIDATOR_DEFECT`。根因是Python `shell=False` 把Bun命令名直接交给Windows CreateProcess，而本机Bun通过CMD shim解析。V73不改变11文件产品修复内容，只修交付验证器：
+
+```text
+所有Bun命令=静态ASCII CMD包装文件
+CMD入口=%COMSPEC% /d /c
+首次动作=bun --version真实预检
+FileNotFoundError=转换为具体失败阶段
+用户级upgrade成功=立即记录动作事实
+```
+
+不得在V73成功部署前重跑WI-0001 Gate。V73成功后，用户手工启动daemon和OpenCode，只从现有 `gates_failed` 恢复并运行一次正式Gate。
+
+```text
+ERR123_STATUS=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_STATE=gates_failed
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_THEN_RESUME_WI0001_ONCE
+```
+
+## V73工作区类型声明顺序失败、ERR-124与V74验证器闭包边界（2026-08-05）
+
+V73已正确解决Windows Bun shim启动问题。隔离worktree中：
+
+```text
+bun install --frozen-lockfile=PASS_1059_PACKAGES
+targeted tests=PASS_52_OF_52
+```
+
+随后独立执行daemon-core TypeScript no-emit时失败，缺失模块精确为：
+
+```text
+@specforge/permission-engine
+@specforge/workflow-runtime
+@specforge/service-management
+@specforge/observability
+```
+
+这些都是workspace内部包。`bun install`只建立workspace链接；这些包的`package.json`把类型入口指向`dist/**/*.d.ts`，而V73在确定性workspace build生成声明前运行daemon-core TypeScript检查。因此该失败不证明V72产品补丁存在类型错误。
+
+```text
+ERR124_CLASS=VALIDATOR_DEFECT
+ERR124_ROOT_CAUSE=DAEMON_CORE_TYPECHECK_RAN_BEFORE_WORKSPACE_DECLARATION_PRODUCERS
+V73_FAILED_STAGE=ISOLATED-TYPECHECK
+V73_TARGETED_TESTS=PASS_52_OF_52
+V73_PATCH_ACTION_REAL_REPOSITORY=NOT_PERFORMED
+V73_COMMIT_ACTION=NOT_PERFORMED
+V73_PUSH_ACTION=NOT_PERFORMED
+V73_WI0001_ACTION=NOT_PERFORMED
+```
+
+V74保持原精确11文件产品范围，不修改Runtime方案、Gate规则、WorkDesk或独立项目。固定验证顺序为：
+
+```text
+定向测试
+→ 确定性workspace build（生成全部workspace类型声明）
+→ daemon-core TypeScript no-emit
+→ daemon-core相关构建复核
+→ git diff --check
+```
+
+V74必须读取V73不可变summary、commands和两份原始日志，证明安装成功、52项测试通过、失败发生在workspace build之前，并验证上述四个缺失包均是声明生产者未准备。V74成功提交、推送和用户级升级前，不得重跑WI-0001 Gate。
+
+```text
+ERR124_STATUS=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_STATE=gates_failed
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_THEN_RESUME_WI0001_ONCE
+```

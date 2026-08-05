@@ -3205,3 +3205,161 @@ V61保持精确8文件产品范围并完成ERR-103解析器封包预检，但在
 V62继续保持精确8文件产品范围并实现远程HEAD三层入口，但封包前语法检查重新生成Python字节码，Manifest预检按ERR-105停止；V62 ZIP未生成，所有真实动作未执行。
 
 V63继承V62远程回退和安全推送设计，完成隔离验证、精确8文件真实应用、提交 `688cf64c6e190a707f9f0e7306db5cf474f0ae35`、远程推送和用户级升级；正式installer verify通过119个文件。随后ERR-106因验证器把真实Manifest的files对象误判为列表而产生假失败，ERR-107使失败摘要把已成功执行的升级误报为未执行。V64不重复升级，只重新验证正式Manifest、逐项复核119文件和9个Agent，并提交5个治理状态消费者完成闭包。
+
+### ERR-118：新模块完整候选被 Runtime 自己排除后又被 Gate 强制要求
+
+```text
+分类=PRODUCT_DEFECT
+事实=WI-0001 Gate Run #7为9/10通过；四个新模块均只缺requirements.md和trace.md清单条目；八个Candidate文件实际存在
+根因=Manifest物化只在Requirement业务字段变化时包含requirements，并对module_trace固定返回false；candidate_manifest_gate却对每个新模块固定要求五件套
+影响=合法architecture_change永远无法到达approval_required，正确Candidate被迫反复重写
+修复=module_boundary_changed=true时同时要求module_definition、requirements、design、module_contract、module_trace
+防护=Runtime物化单元测试+sf_state_transition真实状态边界测试+既有candidate_manifest_gate完整性检查
+状态=FIX_IMPLEMENTED
+```
+
+### ERR-119：project_contract_changed没有进入Project Contract Candidate物化条件
+
+```text
+分类=PRODUCT_DEFECT
+事实=WI-0001明确project_contract_changed=true且extension_registry Candidate存在，但Runtime将其列入ignored_candidate_paths
+根因=Project Contract物化条件只读取api_contract_changed和contract_registry_only，遗漏正式分类字段project_contract_changed
+影响=Project Contract生产者与分类消费者断链，Project Contract Candidate可能未进入冻结Manifest和原子Merge
+修复=project_contract_changed、api_contract_changed、contract_registry_only任一为true都必须要求extension_registry Candidate
+防护=正向物化回归+缺失Candidate失败关闭回归
+状态=FIX_IMPLEMENTED
+```
+
+### ERR-120：专业Agent在Candidate修订后使用sf_safe_bash验证治理目录并触发HardStop
+
+```text
+分类=PRODUCT_DEFECT
+事实=HS-1785915221772由子Agent验证动作触发；Write Guard正确阻断；实际Candidate写入此前已由sf_artifact_write完成；原动作abandon且retry_original_action=false
+根因=专业Agent自身规则虽已禁止shell治理目录，但Orchestrator委派任务没有强制逐次重申“只读验证也不得使用sf_safe_bash”
+影响=正确Candidate修订后产生可避免HardStop，增加恢复风险和证据噪声
+修复=Orchestrator所有Candidate子任务必须显式携带无shell验证边界；Write Guard继续作为最终机器阻断
+防护=Agent/Skill契约固定文本回归+HardStop原始证据保留
+状态=FIX_IMPLEMENTED
+```
+
+## EXP-095：新模块Candidate完整性必须由同一个Runtime规则生产并由Gate消费
+
+`module_boundary_changed=true` 不等于业务Requirement变化，但新模块正式落地必须原子包含 `module.json`、`requirements.md`、`design.md`、`contracts.json`、`trace.md`。Runtime不得排除Gate必需对象；Gate也不得要求Runtime永远不会生产的对象。
+
+## EXP-096：每个正式Classification字段必须完成生产者—全部消费者清单
+
+新增或使用 `project_contract_changed` 等正式字段时，必须对账 Classification Schema、Manifest物化、Required Candidate、Gate、Merge、测试和真实项目。只在Agent输出中出现字段不构成产品支持。
+
+## EXP-097：专业Agent的受控工具边界必须进入每次委派任务
+
+静态Agent说明不是唯一防线。Orchestrator调度治理Candidate任务时必须重申：治理目录不得使用shell读取、检查或验证；只读目的也不例外。Runtime Write Guard继续失败关闭，任何触发均必须登记而不能被后续恢复覆盖。
+
+```text
+ERR-118=FIX_IMPLEMENTED
+ERR-119=FIX_IMPLEMENTED
+ERR-120=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+WI0001_STATE=gates_failed
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_THEN_RESUME_WI0001_ONCE
+```
+
+### ERR-121：V72治理文档结尾多出空白行被git diff --check阻断
+
+```text
+分类=PACKAGE_PREFLIGHT_DEFECT
+事实=V72最终静态仓库对账时，3个治理文档报告new blank line at EOF
+根因=追加章节时同时保留旧尾换行并再次写入双换行，未在目标字节冻结前执行单换行检查
+影响=不影响产品逻辑；若未阻断会导致用户侧git diff --check失败
+修复=所有目标文本统一规范为单个LF结尾，并在Manifest冻结前检查
+防护=包内逐文件单LF检查+临时Git仓库git diff --check
+状态=CLOSED_PREFLIGHT
+```
+
+## EXP-098：文档追加后必须在目标字节冻结前规范单个LF结尾
+
+文档内容正确不代表Git补丁合格。每次追加Markdown后必须先执行单LF、无行尾空格和 `git diff --check`，通过后才能生成目标哈希、Manifest和ZIP。
+
+```text
+ERR-121=CLOSED_PREFLIGHT
+```
+
+### ERR-122：固定文本测试把第二个期望值误作toContain提示参数
+
+```text
+分类=PACKAGE_PREFLIGHT_DEFECT
+事实=最终消费者审计发现toContain(actualNeedle, secondValue)中的secondValue只是失败提示，不会验证第二个业务事实
+根因=把两个独立状态事实写进同一次断言调用，未执行断言API语义检查
+影响=新下一动作即使缺失，测试仍可能通过，形成治理状态假阳性
+修复=拆成两个独立toContain断言，并由经验门禁检查ERR-122与EXP-099
+防护=新增断言调用语义预检，禁止用matcher可选message参数承载业务事实
+状态=CLOSED_PREFLIGHT
+```
+
+## EXP-099：断言API的可选参数不得承载第二个业务事实
+
+每个业务事实必须对应一个独立可执行断言。`toContain(expected, message)`、`toBe(expected, message)`等可选参数只能作为诊断文本，不得放置第二个期望值。封包前必须解析新增断言调用并确认每个状态事实都有独立matcher调用。
+
+```text
+ERR-122=CLOSED_PREFLIGHT
+```
+
+### ERR-123：V72使用Python shell=False直接启动Bun shim，隔离依赖阶段发生FileNotFoundError
+
+```text
+分类=VALIDATOR_DEFECT
+事实=V72已创建隔离worktree；首条bun install --frozen-lockfile在CreateProcess阶段失败；产品补丁、提交、推送、安装和WI-0001均未执行
+根因=验证器假定bun是可直接启动的原生EXE，没有识别Windows环境通过CMD解析bun.exe或bun.cmd shim的执行边界
+影响=正确产品补丁无法进入隔离验证，且失败被错误报告为UNHANDLED
+修复=全部Bun命令统一经静态ASCII CMD包装文件和%COMSPEC% /d /c启动；创建隔离修改前先执行bun --version真实预检；FileNotFoundError映射到当前阶段
+防护=V72真实summary/commands纯解析+禁止直接subprocess启动bun+CMD包装参数正反例+用户Windows真实Bun入口预检
+状态=FIX_IMPLEMENTED
+```
+
+## EXP-100：Windows命令shim必须通过其所属命令解释器启动并先做真实入口预检
+
+Python `shell=False` 只适合直接可执行文件，不能假定CMD shim、BAT或CMD入口可由CreateProcess按命令名解析。Windows交付验证器调用Bun等shim时必须：
+
+```text
+静态ASCII包装CMD
+→ %COMSPEC% /d /c
+→ 真实--version预检
+→ 再进入隔离依赖、测试、构建和安装
+```
+
+禁止直接使用 `subprocess.run(["bun", ...], shell=False)`。任何进程入口缺失必须归入具体阶段并保留命令证据，不得落入 `UNHANDLED`。有副作用动作成功后仍须立即记录动作事实。
+
+```text
+ERR-123=FIX_IMPLEMENTED
+```
+
+### ERR-124：V73在workspace类型声明生成前运行daemon-core TypeScript检查
+
+```text
+分类=VALIDATOR_DEFECT
+事实=bun install成功安装1059项；52项定向测试全部通过；随后daemon-core no-emit报告permission-engine、workflow-runtime、service-management、observability无法解析
+根因=workspace内部包的类型入口指向dist声明；验证器在确定性workspace build生成这些声明之前运行类型消费者
+影响=正确产品补丁被错误阻断；真实仓库、提交、推送、安装、WorkDesk和WI-0001均未改变
+修复=验证顺序调整为定向测试→确定性workspace build→daemon-core no-emit→daemon-core相关构建→diff检查
+防护=V73真实summary/commands/targeted/typecheck日志纯解析+四个缺失workspace包精确集合+命令顺序检查+V74脚本顺序静态断言
+状态=FIX_IMPLEMENTED
+```
+
+## EXP-101：workspace类型消费者必须在声明生产者构建后验证
+
+Monorepo中`bun install`或其他workspace安装只证明依赖链接建立，不证明各包`types`入口对应的`dist/*.d.ts`已经存在。对依赖workspace声明的包执行独立TypeScript检查前，必须先完成仓库规定的确定性依赖构建顺序。
+
+固定顺序：
+
+```text
+依赖安装
+→ 定向测试
+→ 确定性workspace build
+→ 目标包TypeScript no-emit
+→ 目标包相关构建复核
+```
+
+不得通过删除TypeScript检查、添加临时paths映射或把缺失内部声明误报为产品源码错误来绕过。验证器必须保留原始命令顺序证据，并用真实失败日志验证声明生产者集合。
+
+```text
+ERR-124=FIX_IMPLEMENTED
+```

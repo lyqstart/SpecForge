@@ -3385,3 +3385,104 @@ P1_ACTION=NOT_STARTED
 WI0001_ACTION=NOT_PERFORMED
 NEXT_ACTION=USER_MANUALLY_OPEN_OPENCODE_AND_PASTE_VERIFIED_UNICODE_WI0001
 ```
+
+### 25.55 WI-0001新模块Candidate Manifest生产者与Gate消费者闭包
+
+WI-0001最终正式Gate证据为9/10通过。四个新模块的 `requirements.candidate.md` 和 `trace.candidate.md` 均已由各自产物Owner通过受控Tool写入，但Runtime物化后将八个路径列为ignored；同一个 `candidate_manifest_gate` 又要求每个新模块必须提供 `module.json + requirements.md + design.md + contracts.json + trace.md`。
+
+该问题属于SpecForge产品Runtime缺陷，不属于业务Candidate缺陷。正确修复边界为：
+
+```text
+module_boundary_changed=true
+→ requirements Candidate必须进入Manifest
+→ module_trace Candidate必须进入Manifest
+→ 五件套同一原子Merge
+
+project_contract_changed=true
+→ extension_registry Candidate必须进入Manifest
+```
+
+Gate规则、Project Architecture、Data Model、Module Design、Contract模型和Trace关系类型均不修改。修复部署后复用现有WI-0001和正确Candidate，从 `gates_failed` 受控恢复并只运行一次Gate。
+
+同轮HardStop `HS-1785915221772` 由专业Agent错误使用 `sf_safe_bash` 验证治理目录触发。Write Guard和恢复流程正确；Orchestrator委派契约增加“只读验证也不得使用shell”明确边界。
+
+```text
+ERR118_STATUS=FIX_IMPLEMENTED
+ERR119_STATUS=FIX_IMPLEMENTED
+ERR120_STATUS=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_STATE=gates_failed
+NEXT_ACTION=PRODUCT_FIX_AND_DEPLOY_BEFORE_SINGLE_GATE_RESUME
+```
+
+### 25.56 V72封包前ERR-121单LF闭包
+
+V72静态Git对账在交付前阻断3个治理文档EOF空白行。该缺陷只影响产品开发交付字节，不改变P0 Runtime修复、Gate规则或真实项目状态。所有目标文本在Manifest冻结前统一为单LF结尾。
+
+```text
+ERR121_STATUS=CLOSED_PREFLIGHT
+```
+
+### 25.57 V72封包前ERR-122断言参数闭包
+
+V72固定文本测试曾把第二个状态事实放入 `toContain` 的可选提示参数，不能形成实际断言。现已拆分为两个独立matcher调用，并增加经验消费者。该缺陷不改变P0 Runtime修复范围、WI-0001状态或后续单次Gate恢复边界。
+
+```text
+ERR122_STATUS=CLOSED_PREFLIGHT
+BACKFILLED_ERROR_IDS=ERR-118,ERR-119,ERR-120,ERR-121,ERR-122
+```
+
+### 25.58 V72 Bun命令入口解析失败与ERR-123验证器闭包
+
+V72已完成远程、本地、权威文件、OpenCode证据和11文件源基线对账，并成功创建隔离Git worktree。首次执行隔离依赖命令时，Python通过 `subprocess.run(["bun", ...], shell=False)` 直接创建进程，Windows返回 `FileNotFoundError [WinError 2]`。当前环境中的Bun由CMD可解析的shim提供，不是可由CreateProcess直接启动的原生EXE。
+
+该失败只影响交付验证器入口，产品补丁尚未应用：
+
+```text
+ERR-123_CLASS=VALIDATOR_DEFECT
+V72_FAILED_STAGE=UNHANDLED
+V72_EFFECTIVE_STAGE=ISOLATED_DEPENDENCIES
+V72_REAL_REPOSITORY_ACTION=NOT_PERFORMED
+V72_COMMIT_ACTION=NOT_PERFORMED
+V72_PUSH_ACTION=NOT_PERFORMED
+V72_WI0001_ACTION=NOT_PERFORMED
+```
+
+V73将全部Bun调用统一为：
+
+```text
+静态ASCII run-bun.cmd
+→ %COMSPEC% /d /c run-bun.cmd <args>
+→ CMD解析bun.exe或bun.cmd shim
+→ 原始退出码返回Python
+```
+
+在创建隔离修改前先执行真实 `bun --version` 入口预检。Python进程启动失败必须转换为明确阶段错误，不再落入 `UNHANDLED`。用户级升级动作成功后立即记录动作事实，再执行installer verify，避免重复ERR-107。
+
+```text
+ERR123_STATUS=FIX_IMPLEMENTED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_STATE=gates_failed
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_THEN_RESUME_WI0001_ONCE
+```
+
+### 25.59 V73 workspace声明未准备与ERR-124验证顺序闭包
+
+V73隔离依赖安装和52项定向测试均通过，随后daemon-core no-emit报告4个workspace内部包无法解析。根目录确定性构建脚本明确先构建类型生产者和依赖包，最后才构建daemon-core；V73却在该构建之前单独运行daemon-core TypeScript检查。
+
+```text
+ERR-124_CLASS=VALIDATOR_DEFECT
+ERR-124_ROOT_CAUSE=TYPECHECK_CONSUMER_RAN_BEFORE_WORKSPACE_DECLARATION_PRODUCERS
+V73_INSTALL=PASS_1059_PACKAGES
+V73_TARGETED_TESTS=PASS_52_OF_52
+V73_REAL_REPOSITORY_ACTION=NOT_PERFORMED
+```
+
+V74不修改11文件产品方案。普通软件工程验证顺序改为先完成确定性workspace build，再运行daemon-core no-emit和相关包构建复核。类型检查仍为Hard条件，不因该调整被删除或降级。
+
+```text
+VALIDATION_ORDER=TARGETED_TESTS,WORKSPACE_BUILD,DAEMON_CORE_TYPECHECK,DAEMON_CORE_BUILD,GIT_DIFF_CHECK
+NEXT_ACTION=PRODUCT_FIX_AND_DEPLOY_BEFORE_SINGLE_GATE_RESUME
+```

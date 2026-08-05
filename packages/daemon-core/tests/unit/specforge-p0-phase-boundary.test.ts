@@ -120,5 +120,11 @@ describe('P0 parent phase and subtask lifecycle boundary', () => {
     expect(p0).toContain('### 25.52 V68成功与ERR-115 Windows Unicode提示词传输边界');
     expect(p0).toContain('### 25.53 V69 CMD脚本调用假失败与ERR-116验证器闭包');
     expect(p0).toContain('### 25.54 V70固定文本消费者漂移与ERR-117稳定状态闭包');
+    expect(p0).toContain('### 25.55 WI-0001新模块Candidate Manifest生产者与Gate消费者闭包');
+    expect(p0).toContain('NEXT_ACTION=PRODUCT_FIX_AND_DEPLOY_BEFORE_SINGLE_GATE_RESUME');
+    expect(p0).toContain('### 25.57 V72封包前ERR-122断言参数闭包');
+    expect(p0).toContain('### 25.58 V72 Bun命令入口解析失败与ERR-123验证器闭包');
+    expect(p0).toContain('### 25.59 V73 workspace声明未准备与ERR-124验证顺序闭包');
+    expect(handoff).toContain('## V73工作区类型声明顺序失败、ERR-124与V74验证器闭包边界（2026-08-05）');
   });
 });

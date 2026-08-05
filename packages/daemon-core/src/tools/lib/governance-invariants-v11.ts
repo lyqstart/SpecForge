@@ -612,13 +612,18 @@ export function materializeCandidateManifestEntries(
     });
   };
 
-  const requirementsRequired = classificationRequiresRequirementsCandidate(classification);
   const architectureRequired = classification.architecture_changed === true;
   const dataModelRequired = classification.data_model_changed === true;
   const designRequired = classification.design_changed === true;
   const moduleContractRequired = classification.module_contract_changed === true;
   const moduleDefinitionRequired = classification.module_boundary_changed === true;
+  // A governed new module is incomplete without its canonical Requirements and
+  // module Trace views, even when the business Requirement itself did not change.
+  const requirementsRequired =
+    classificationRequiresRequirementsCandidate(classification) || moduleDefinitionRequired;
+  const moduleTraceRequired = moduleDefinitionRequired;
   const projectContractChanged =
+    classification.project_contract_changed === true ||
     classification.api_contract_changed === true ||
     classification.contract_registry_only === true;
   const workflowPath = String(manifest?.workflow_path ?? '').trim();
@@ -652,7 +657,7 @@ export function materializeCandidateManifestEntries(
       case 'trace_delta':
         return workflowPath !== 'code_only_fast_path';
       case 'module_trace':
-        return false;
+        return moduleTraceRequired;
       default:
         return true;
     }
@@ -705,10 +710,11 @@ export function materializeCandidateManifestEntries(
   requireType(designRequired, 'design', 'design_changed=true');
   requireType(moduleContractRequired, 'module_contract', 'module_contract_changed=true');
   requireType(moduleDefinitionRequired, 'module_definition', 'module_boundary_changed=true');
+  requireType(moduleTraceRequired, 'module_trace', 'module_boundary_changed=true');
   requireType(
     projectContractChanged,
     'extension_registry',
-    'api_contract_changed=true or contract_registry_only=true'
+    'project_contract_changed=true, api_contract_changed=true or contract_registry_only=true'
   );
 
   const selectedPaths = new Set(selected.map(entry => normalizeSlash(entry.candidate_path)));

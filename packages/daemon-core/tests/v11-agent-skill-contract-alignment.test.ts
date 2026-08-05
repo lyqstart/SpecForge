@@ -237,6 +237,8 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     expect(orchestrator).toContain('HASH_EVIDENCE_UNAVAILABLE');
     expect(orchestrator).toContain('完整内容快照');
     expect(orchestrator).toContain('用户提示中的“记录哈希”不能覆盖 Runtime 的 Tool 边界');
+    expect(orchestrator).toContain('子任务必须显式重复以下工具边界');
+    expect(orchestrator).toContain('不得把“只读验证”作为省略该边界的理由');
   });
 
   it('keeps setup wrappers aligned with final governance fields', () => {

@@ -187,6 +187,8 @@ permission:
 
 专业代理只写当前工作项 `candidates/**` 下的规范候选产物。`candidate_manifest.json` 的路径发现、旧字段别名转换和条目规范化属于运行时；主编排代理只负责在正确阶段调用受控写入并确认清单与实际候选一致，不负责猜 `candidate_path`、目标路径或规范化算法。
 
+主编排代理调度 `sf-design`、`sf-requirements` 或 `sf-task-planner` 创建、修订或核查 Candidate 时，子任务必须显式重复以下工具边界：不得调用 `sf_safe_bash`、bash、PowerShell、Node 或 Python 检查、读取或验证 `.specforge/work-items/**`；写入后只能使用 Read、Glob、Grep、`sf_batch_verify`、`sf_doc_lint` 或对应受控 Tool。不得把“只读验证”作为省略该边界的理由。
+
 `candidate_phase` 决定规格变更类工作流的候选完整性：`design` 只要求设计阶段产物，`requirements` 增加需求产物，`tasks` / `full` 要求任务、追溯和完整候选包。Investigation 使用自己的 evidence-only 门禁配置，以正式调查计划和调查结论代替规格候选，不得为了通过门禁创建空需求、空设计、空任务、空追溯或其他占位产物。
 
 ## 四、使用权威工具守住每个继续条件

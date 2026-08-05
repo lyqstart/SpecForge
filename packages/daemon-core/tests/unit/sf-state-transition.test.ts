@@ -603,7 +603,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     await fs.writeFile(target, content, "utf-8");
   }
 
-  async function writeCandidateContext(options?: { includeDesign?: boolean }): Promise<void> {
+  async function writeCandidateContext(options?: { includeDesign?: boolean; includeNewModule?: boolean; projectContractChanged?: boolean }): Promise<void> {
     const wiDir = wiDirFor(tempDir, "WI-0004");
     await fs.mkdir(wiDir, { recursive: true });
     await fs.writeFile(
@@ -630,8 +630,9 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
           data_model_changed: false,
           design_changed: true,
           module_contract_changed: true,
-          module_boundary_changed: false,
-          api_contract_changed: true,
+          module_boundary_changed: options?.includeNewModule === true,
+          project_contract_changed: options?.projectContractChanged === true,
+          api_contract_changed: options?.projectContractChanged !== true,
         },
       }),
     );
@@ -659,6 +660,12 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     );
     await writeCandidate("candidates/project/architecture.candidate.md");
     await writeCandidate("candidates/project/data_model.candidate.md");
+    if (options?.includeNewModule) {
+      await writeCandidate(
+        "candidates/project/modules/DOMAIN/module.candidate.json",
+        '{"schema_version":"1.0","module_code":"DOMAIN","code_paths":["src/domain/**"]}\n',
+      );
+    }
     await writeCandidate("candidates/project/modules/DOMAIN/requirements.candidate.md");
     if (options?.includeDesign !== false) {
       await writeCandidate("candidates/project/modules/DOMAIN/design.candidate.md");
@@ -667,6 +674,9 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
       "candidates/project/modules/DOMAIN/contracts.candidate.json",
       '{"schema_version":"1.0","module_code":"DOMAIN","contracts":{}}\n',
     );
+    if (options?.includeNewModule) {
+      await writeCandidate("candidates/project/modules/DOMAIN/trace.candidate.md");
+    }
     await writeCandidate("candidates/trace_delta.md");
   }
 
@@ -710,6 +720,45 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     expect(
       manifest.entries.some((entry: any) => entry.type === "data_model"),
     ).toBe(false);
+  });
+
+  it("materializes new-module requirements, trace and Project Contract before advancing", async () => {
+    await writeCandidateContext({ includeNewModule: true, projectContractChanged: true });
+    const { deps, smTransition } = makeStateManagerDeps({ currentState: "candidate_preparing" });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.candidate_manifest_materialization.entry_count).toBe(8);
+    const manifest = JSON.parse(
+      await fs.readFile(
+        path.join(wiDirFor(tempDir, "WI-0004"), "candidate_manifest.json"),
+        "utf-8",
+      ),
+    );
+    expect(manifest.entries.map((entry: any) => entry.type)).toEqual(
+      expect.arrayContaining([
+        "extension_registry",
+        "architecture",
+        "module_definition",
+        "requirements",
+        "design",
+        "module_contract",
+        "module_trace",
+        "trace_delta",
+      ]),
+    );
+    expect(smTransition).toHaveBeenCalledTimes(1);
   });
 
   it("does not advance when a required Candidate is missing", async () => {

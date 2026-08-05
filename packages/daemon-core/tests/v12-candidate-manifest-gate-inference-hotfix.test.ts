@@ -163,6 +163,93 @@ describe('Runtime Candidate Manifest materialization', () => {
     );
   });
 
+
+  it('materializes the complete five-file module Candidate set when a module boundary changes', async () => {
+    const workItemDir = await mkdtemp(path.join(tmpdir(), 'sf-manifest-new-module-'));
+    tempRoots.push(workItemDir);
+    for (const relative of [
+      'candidates/project/architecture.candidate.md',
+      'candidates/project/extension_registry.json',
+      'candidates/project/modules/DOMAIN/module.candidate.json',
+      'candidates/project/modules/DOMAIN/requirements.candidate.md',
+      'candidates/project/modules/DOMAIN/design.candidate.md',
+      'candidates/project/modules/DOMAIN/contracts.candidate.json',
+      'candidates/project/modules/DOMAIN/trace.candidate.md',
+      'candidates/trace_delta.md',
+    ]) {
+      await candidateFile(workItemDir, relative);
+    }
+
+    const result = materializeCandidateManifestEntries(
+      { workflow_path: 'architecture_change_path', entries: [] },
+      workItemDir,
+      {
+        requirement_changed: false,
+        acceptance_criteria_changed: false,
+        business_rule_changed: false,
+        architecture_changed: true,
+        data_model_changed: false,
+        design_changed: true,
+        module_contract_changed: true,
+        module_boundary_changed: true,
+        project_contract_changed: true,
+        api_contract_changed: false,
+      }
+    );
+
+    expect(result.entries).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'module_definition', module_id: 'DOMAIN' }),
+        expect.objectContaining({ type: 'requirements', module_id: 'DOMAIN' }),
+        expect.objectContaining({ type: 'design', module_id: 'DOMAIN' }),
+        expect.objectContaining({ type: 'module_contract', module_id: 'DOMAIN' }),
+        expect.objectContaining({ type: 'module_trace', module_id: 'DOMAIN' }),
+        expect.objectContaining({ type: 'extension_registry' }),
+      ])
+    );
+    expect(result.ignored_candidate_paths).not.toEqual(
+      expect.arrayContaining([
+        'candidates/project/extension_registry.json',
+        'candidates/project/modules/DOMAIN/requirements.candidate.md',
+        'candidates/project/modules/DOMAIN/trace.candidate.md',
+      ])
+    );
+    expect(result.required_candidate_types).toEqual(
+      expect.arrayContaining([
+        'architecture',
+        'requirements',
+        'design',
+        'module_contract',
+        'module_definition',
+        'module_trace',
+        'extension_registry',
+      ])
+    );
+  });
+
+  it('requires the Project Contract candidate for project_contract_changed classification', async () => {
+    const workItemDir = await mkdtemp(path.join(tmpdir(), 'sf-manifest-project-contract-flag-'));
+    tempRoots.push(workItemDir);
+    await candidateFile(workItemDir, 'candidates/project/architecture.candidate.md');
+    await candidateFile(workItemDir, 'candidates/trace_delta.md');
+
+    expect(() =>
+      materializeCandidateManifestEntries(
+        { workflow_path: 'architecture_change_path', entries: [] },
+        workItemDir,
+        {
+          architecture_changed: true,
+          design_changed: false,
+          data_model_changed: false,
+          module_contract_changed: false,
+          module_boundary_changed: false,
+          project_contract_changed: true,
+          api_contract_changed: false,
+        }
+      )
+    ).toThrow('CANDIDATE_MANIFEST_REQUIRED_ENTRY_MISSING');
+  });
+
   it('requires the Project Contract candidate when API Contract Classification changed', async () => {
     const workItemDir = await mkdtemp(path.join(tmpdir(), 'sf-manifest-project-contract-'));
     tempRoots.push(workItemDir);
