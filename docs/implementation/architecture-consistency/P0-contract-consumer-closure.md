@@ -3194,3 +3194,112 @@ missing path=packages/daemon-core/tests/unit/specforge-p0-phase-boundary.test.ts
 ```
 
 真实仓库仍在全部验证通过后才执行同一精确路径暂存、`git diff --cached --check`、单次提交和推送。该修正只影响交付验证器与证据捕获，不改变P0产品状态、Contract、Gate、Runtime或WorkDesk。
+
+### 25.49 V67成功与P0独立真实项目续跑边界
+
+V67证据确认提交 `f06b45d508026173aff53f45823a08fd59907772` 已推送到远程 `main`，精确6文件修改、隔离验证、真实验证、WorkDesk不变审计和用户级不变审计全部通过。ERR-108—ERR-112已经闭环，但本P0缺陷的真实生命周期证据仍未闭合。
+
+WorkDesk `WI-0004`继续保留为不可变历史证据：
+
+```text
+状态=approval_required
+Candidate Gate=10/10通过且只运行一次
+Candidate内容=不改变
+User Decision=不执行
+Merge=不执行
+Code Permission=不执行
+业务代码=不修改
+Verification=不执行
+Close=不执行
+```
+
+为避免把“继续WorkDesk”错误解释为关闭P0的唯一方式，P0真实验证载体收敛为独立临时业务项目：
+
+```text
+项目路径=D:\code\temp\SpecForge-P0-Validation
+项目性质=一次性P0真实项目验证
+与WorkDesk关系=无
+与SpecForge源码仓库关系=无
+与Phase 11关系=不构成Phase 11完成证据
+.specforge创建方式=只能由sf_project_init和正式Runtime创建
+```
+
+该项目使用普通JavaScript业务代码种子，包含DOMAIN、STORAGE、REPORTING和CLI四个业务边界。V68只创建业务代码、测试、三阶段验证提示词和独立Git基线；不得在种子中预建 `.specforge`，不得自动启动daemon或OpenCode。
+
+真实验证顺序固定为：
+
+```text
+阶段A / WI-0001
+Project Contract WorkItemStatus新增
+→ 四个DD正式消费者
+→ Impact Scope消费者反向展开
+→ Candidate Gate
+→ User Decision
+→ 原子Merge
+→ Code Permission覆盖四个Module
+→ 四个JS/JSDoc显式代码消费者
+→ Verification实际代码与Trace对账
+→ Close
+
+阶段B / WI-0002
+WorkItemStatus删除或删值且遗漏一个消费者同步
+→ Candidate Gate必须阻断
+→ 保留失败证据
+→ 修正Candidate
+→ 合法Contract变更闭环
+
+阶段C / WI-0003
+REPORTING内部Module Contract ReportFormat出现CLI消费者
+→ Module→Project Promotion
+→ 旧Internal关系REMOVE
+→ 新Project关系ADD
+→ 全部Design、来源、兼容和迁移结论
+→ 原子Merge
+→ Code Permission
+→ 实际代码对账
+→ Verification
+→ Close
+```
+
+验证证据必须按本文件第20节42项矩阵逐项映射。阶段A—C完成前：
+
+```text
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+FINAL_HARD_ENFORCEMENT=NOT_STARTED
+INSUFFICIENT_EVIDENCE=CODE_PERMISSION,ACTUAL_CODE_CONSUMER,DESTRUCTIVE_CHANGE,PROMOTION,MERGE,VERIFICATION,CLOSE
+```
+
+本边界只改变真实验证载体，不改变Project Architecture、Data Model、Module Design、Project Contract、Module Contract、Trace、Gate或Runtime产品规则，因此不修订唯一权威文件。
+
+
+### 25.50 ERR-113独立项目种子入口预检边界
+
+V68在最终封包前同时验证业务种子的直接CLI运行和纯模块导入。纯模块导入暴露 `process.argv[1]` 可缺失的入口假设，分类为 `PACKAGE_PREFLIGHT_DEFECT`。修复只作用于包内普通业务种子和SpecForge经验台账，不修改SpecForge产品代码、Contract、Gate、Runtime或WorkDesk。
+
+固定预检要求：
+
+```text
+无脚本参数纯ES Module导入=PASS
+导出runCli调用=PASS
+直接CLI运行=PASS
+基础业务函数正反例=PASS
+种子文件集合和SHA256=Manifest精确一致
+.specforge目录=ABSENT
+```
+
+该预检通过仅证明V68种子可作为后续真实验证载体，不构成Code Permission、实际代码消费者、破坏性变更、Promotion、Merge、Verification、Close或Phase 11证据。
+
+
+### 25.51 ERR-114测试断言语义作用域预检边界
+
+V68新增经验回归时发现：语法转译不能证明测试断言所引用的局部证据生产者在当前测试块可见。修复后，经验台账读取与ERR-113断言位于同一测试作用域，并增加TypeScript名称解析预检。
+
+```text
+语法转译=PASS
+未定义新增标识符=0
+正式定向测试=用户执行V68时运行
+正式TypeScript检查=用户执行V68时运行
+```
+
+该缺陷只影响封包前测试消费者，不改变P0产品规则或后续独立真实项目验证边界。

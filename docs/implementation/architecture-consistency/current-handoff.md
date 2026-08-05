@@ -2237,3 +2237,97 @@ P0_OVERALL_STATUS=IN_PROGRESS
 P1_ACTION=NOT_STARTED
 WORKDESK_WI0004_ACTION=NONE
 ```
+
+## V67成功与P0独立真实项目验证边界（2026-08-05）
+
+V67执行证据已经完成状态生产者与全部已知固定文本消费者的原子闭包：
+
+```text
+V67_RESULT=SUCCESS
+V67_BASELINE_HEAD=8aed1e0329cddd823e5c643ed16df99549d4d94e
+V67_COMMIT_SHA=f06b45d508026173aff53f45823a08fd59907772
+V67_REMOTE_HEAD_AFTER_PUSH=f06b45d508026173aff53f45823a08fd59907772
+V67_TARGET_FILE_COUNT=6
+V67_ISOLATED_VALIDATION=PASS
+V67_REAL_VALIDATION=PASS
+V67_WORKDESK_AUDIT=PASS_UNCHANGED
+V67_USERLEVEL_AUDIT=PASS_UNCHANGED
+```
+
+P0剩余证据不能通过再次推进WorkDesk `WI-0004`取得。该Work Item继续冻结在 `approval_required`，Candidate、User Decision、Merge、Code Permission、业务代码、Verification和Close均不得改变。
+
+P0后续真实验证改由独立临时业务项目承担：
+
+```text
+P0_VALIDATION_PROJECT=D:\code\temp\SpecForge-P0-Validation
+P0_VALIDATION_PROJECT_PURPOSE=GOV_DEFECT_CONTRACT_CONSUMER_001_REAL_PROJECT_EVIDENCE
+P0_VALIDATION_PROJECT_RELATION_TO_WORKDESK=NONE
+P0_VALIDATION_PROJECT_RELATION_TO_PHASE11=NOT_PHASE11_EVIDENCE
+P0_VALIDATION_PROJECT_SPEC_DIR=CREATED_ONLY_BY_SPECFORGE_RUNTIME
+```
+
+V68只准备普通业务代码种子、三阶段验证提示词和Git基线，不创建或手写 `.specforge`，不启动daemon/OpenCode，不运行任何业务Work Item。后续由用户手工启动daemon和OpenCode，并按顺序执行：
+
+```text
+WI-0001：
+建立Project Architecture、Data Model、DOMAIN/STORAGE/REPORTING/CLI Module；
+建立Project Contract WorkItemStatus及4个正式DD消费者；
+建立REPORTING内部Module Contract ReportFormat；
+完成Impact Scope、Gate、User Decision、原子Merge、Code Permission、
+四个代码消费者修改、Verification和Close。
+
+WI-0002：
+先提交遗漏消费者同步的WorkItemStatus破坏性删除/删值候选并证明Gate阻断；
+保留失败证据后，在同一正式治理边界内修正为合法变更并完成闭环。
+
+WI-0003：
+新增CLI对REPORTING内部ReportFormat的跨Module需求；
+执行完整Module Contract到Project Contract Promotion，
+包含旧关系REMOVE、新关系ADD、Design、兼容/迁移、原子Merge、
+Code Permission、实际代码对账、Verification和Close。
+```
+
+只有三项真实场景证据全部完成、42项矩阵对账无缺口且没有 `INSUFFICIENT_EVIDENCE` 时，P0才允许改为 `COMPLETED`。该独立项目验证不替代权威 Phase 11；Phase 11仍须在最终三个核心Gate已经全部Hard后使用另一个全新业务项目执行。
+
+```text
+P0_PHASE1_STATUS=REAL_PROJECT_VALIDATED_AT_APPROVAL_REQUIRED
+P0_OVERALL_STATUS=IN_PROGRESS
+P0_CONTINUATION_BOUNDARY=ISOLATED_REAL_PROJECT
+P0_COMPLETION_EVIDENCE_MISSING=CODE_PERMISSION,ACTUAL_CODE_CONSUMER,DESTRUCTIVE_CHANGE,PROMOTION,MERGE,VERIFICATION,CLOSE
+P1_ACTION=NOT_STARTED
+WORKDESK_WI0004_STATE=approval_required
+WORKDESK_WI0004_ACTION=NONE
+V68_ACTION=PREPARE_ISOLATED_P0_VALIDATION_PROJECT
+NEXT_ACTION=RUN_P0_VALIDATION_WI0001_AFTER_USER_MANUAL_DAEMON_OPENCODE_START
+```
+
+
+## V68封包前ERR-113闭包（2026-08-05）
+
+V68独立项目种子在交付前的纯ES Module功能预检中发现：`src/cli/main.js` 顶层直接调用 `pathToFileURL(process.argv[1])`，在无脚本参数的模块导入场景抛出 `ERR_INVALID_ARG_TYPE`。该失败发生在最终ZIP生成前，真实SpecForge、WorkDesk、用户级安装、daemon、OpenCode和独立验证项目均未改变。
+
+```text
+ERR-113_CLASS=PACKAGE_PREFLIGHT_DEFECT
+ERR-113_ROOT_CAUSE=CLI_ENTRYPOINT_ASSUMED_PROCESS_ARGV_1_ALWAYS_PRESENT
+ERR-113_FIX=GUARD_OPTIONAL_ENTRY_ARGUMENT_BEFORE_PATH_TO_FILE_URL
+ERR-113_REGRESSION=PURE_ESM_IMPORT_AND_DIRECT_CLI_BOTH_PASS
+V68_TARGET_FILE_COUNT=6
+V68_REAL_ACTION=NOT_PERFORMED_BEFORE_USER_RUN
+```
+
+V68最终范围由原5个P0边界生产者/消费者文件增加经验台账，共精确6文件；新增范围只记录ERR-113和EXP-090，不改变Project Architecture、Data Model、Module Design、Project Contract、Module Contract、Gate或Runtime。
+
+
+## V68封包前ERR-114闭包（2026-08-05）
+
+ERR-113回归断言首次加入 `specforge-development-experience-gate.test.ts` 时，错误引用另一个测试块中的局部变量 `experience`。语法转译未报告该名称解析错误；完整作用域审计在最终ZIP生成前阻断。
+
+```text
+ERR-114_CLASS=PACKAGE_PREFLIGHT_DEFECT
+ERR-114_ROOT_CAUSE=ASSERTION_REFERENCED_LOCAL_PRODUCER_FROM_DIFFERENT_TEST_SCOPE
+ERR-114_FIX=READ_EXPERIENCE_LEDGER_IN_CURRENT_TEST_SCOPE
+ERR-114_REGRESSION=TYPESCRIPT_PROGRAM_UNDEFINED_IDENTIFIER_CHECK_PASS
+V68_FINAL_SCOPE=EXACT_6_FILES
+```
+
+该修正不扩大6文件范围，不改变独立项目内容、SpecForge产品、Runtime、WorkDesk或用户级安装。

@@ -331,6 +331,7 @@ describe('SpecForge development experience pre-read gate', () => {
 
   it('requires every delivery round to use one complete downloadable bundle', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
+    const experience = readFileSync(experiencePath, 'utf-8');
     const psvImplementation = readFileSync(psvImplementationPath, 'utf-8');
     const p0ContractClosure = readFileSync(p0ContractClosurePath, 'utf-8');
     const rootAgents = readFileSync(rootAgentsPath, 'utf-8');
@@ -419,6 +420,27 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('P0_OVERALL_STATUS=IN_PROGRESS');
     expect(handoff).toContain('P1_ACTION=NOT_STARTED');
     expect(handoff).toContain('NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1');
+    expect(handoff).toContain('P0_CONTINUATION_BOUNDARY=ISOLATED_REAL_PROJECT');
+    expect(handoff).toContain(
+      'P0_VALIDATION_PROJECT=D:\\code\\temp\\SpecForge-P0-Validation',
+    );
+    expect(handoff).toContain('WORKDESK_WI0004_ACTION=NONE');
+    expect(handoff).toContain(
+      'NEXT_ACTION=RUN_P0_VALIDATION_WI0001_AFTER_USER_MANUAL_DAEMON_OPENCODE_START',
+    );
+    expect(handoff).toContain(
+      'P0_VALIDATION_PROJECT_RELATION_TO_PHASE11=NOT_PHASE11_EVIDENCE',
+    );
+    expect(handoff).toContain('## V68封包前ERR-113闭包（2026-08-05）');
+    expect(handoff).toContain('ERR-113_REGRESSION=PURE_ESM_IMPORT_AND_DIRECT_CLI_BOTH_PASS');
+    expect(experience).toContain('### ERR-113：V68独立项目种子CLI入口判断假定process.argv[1]必然存在，纯模块导入在封包前失败');
+    expect(experience).toContain('## EXP-090：CLI可执行入口必须允许模块被无副作用导入');
+    expect(experience).toContain('ERR-113=CLOSED');
+    expect(handoff).toContain('## V68封包前ERR-114闭包（2026-08-05）');
+    expect(handoff).toContain('ERR-114_REGRESSION=TYPESCRIPT_PROGRAM_UNDEFINED_IDENTIFIER_CHECK_PASS');
+    expect(experience).toContain('### ERR-114：V68新增ERR-113测试断言错误引用另一测试块局部变量，语法转译通过但语义作用域无效');
+    expect(experience).toContain('## EXP-091：测试断言必须与其局部证据生产者处于同一语义作用域');
+    expect(experience).toContain('ERR-114=CLOSED');
     expect(handoff).toContain('## V65测试消费者漂移与V66闭包边界（2026-08-05）');
     expect(handoff).not.toMatch(/^CURRENT_TASK_STATUS=CLOSED\s*$/m);
     expect(handoff).not.toMatch(/^NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS\s*$/m);

@@ -31,6 +31,17 @@ describe('P0 parent phase and subtask lifecycle boundary', () => {
     expect(handoff).toContain(
       'NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1',
     );
+    expect(handoff).toContain('P0_CONTINUATION_BOUNDARY=ISOLATED_REAL_PROJECT');
+    expect(handoff).toContain(
+      'P0_VALIDATION_PROJECT=D:\\code\\temp\\SpecForge-P0-Validation',
+    );
+    expect(handoff).toContain('WORKDESK_WI0004_ACTION=NONE');
+    expect(handoff).toContain(
+      'NEXT_ACTION=RUN_P0_VALIDATION_WI0001_AFTER_USER_MANUAL_DAEMON_OPENCODE_START',
+    );
+    expect(handoff).toContain(
+      'P0_VALIDATION_PROJECT_RELATION_TO_PHASE11=NOT_PHASE11_EVIDENCE',
+    );
     expect(handoff).not.toMatch(/^CURRENT_TASK_STATUS=CLOSED\s*$/m);
     expect(handoff).not.toMatch(
       /^NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS\s*$/m,
@@ -42,6 +53,13 @@ describe('P0 parent phase and subtask lifecycle boundary', () => {
     );
     expect(p0).toContain('P0_OVERALL_STATUS=IN_PROGRESS');
     expect(p0).toContain('P1_ACTION=NOT_STARTED');
+    expect(p0).toContain(
+      '项目路径=D:\\code\\temp\\SpecForge-P0-Validation',
+    );
+    expect(p0).toContain('与Phase 11关系=不构成Phase 11完成证据');
+    expect(p0).toContain(
+      'INSUFFICIENT_EVIDENCE=CODE_PERMISSION,ACTUAL_CODE_CONSUMER,DESTRUCTIVE_CHANGE,PROMOTION,MERGE,VERIFICATION,CLOSE',
+    );
     expect(p0).toContain(
       'P0_COMPLETION_EVIDENCE_MISSING=CODE_PERMISSION,ACTUAL_CODE_CONSUMER,DESTRUCTIVE_CHANGE,PROMOTION,MERGE,VERIFICATION,CLOSE',
     );

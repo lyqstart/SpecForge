@@ -16,7 +16,7 @@ function read(relativePath: string): string {
   return readFileSync(path.join(repoRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
-describe('ERR-088—ERR-109 real title and validation regression governance', () => {
+describe('ERR-088—ERR-114 real title and validation regression governance', () => {
   it('records every V43—V63 evidence failure and its class-level prevention', () => {
     const ledger = read('docs/rule/specforge-development-error-ledger-and-experience.md');
 
@@ -90,6 +90,12 @@ describe('ERR-088—ERR-109 real title and validation regression governance', ()
     expect(ledger).toContain('### ERR-109：V65修改状态生产者后遗漏两个既有固定文本消费者，正确状态被旧CURRENT_TASK_STATUS断言阻断');
     expect(ledger).toContain('## EXP-087：状态生产者变更必须先完成全消费者清单再冻结范围');
     expect(ledger).toContain('ERR-109=CLOSED');
+    expect(ledger).toContain('### ERR-113：V68独立项目种子CLI入口判断假定process.argv[1]必然存在，纯模块导入在封包前失败');
+    expect(ledger).toContain('## EXP-090：CLI可执行入口必须允许模块被无副作用导入');
+    expect(ledger).toContain('ERR-113=CLOSED');
+    expect(ledger).toContain('### ERR-114：V68新增ERR-113测试断言错误引用另一测试块局部变量，语法转译通过但语义作用域无效');
+    expect(ledger).toContain('## EXP-091：测试断言必须与其局部证据生产者处于同一语义作用域');
+    expect(ledger).toContain('ERR-114=CLOSED');
   });
 
   it('keeps the WorkDesk evidence and no-second-run boundary exact', () => {
@@ -144,6 +150,23 @@ describe('ERR-088—ERR-109 real title and validation regression governance', ()
     expect(handoff).toContain('P0_OVERALL_STATUS=IN_PROGRESS');
     expect(handoff).toContain('P1_ACTION=NOT_STARTED');
     expect(handoff).toContain('NEXT_ACTION=RESOLVE_P0_CONTINUATION_BOUNDARY_BEFORE_P1');
+    expect(handoff).toContain('P0_CONTINUATION_BOUNDARY=ISOLATED_REAL_PROJECT');
+    expect(handoff).toContain(
+      'P0_VALIDATION_PROJECT=D:\\code\\temp\\SpecForge-P0-Validation',
+    );
+    expect(handoff).toContain('WORKDESK_WI0004_ACTION=NONE');
+    expect(handoff).toContain(
+      'NEXT_ACTION=RUN_P0_VALIDATION_WI0001_AFTER_USER_MANUAL_DAEMON_OPENCODE_START',
+    );
+    expect(handoff).toContain(
+      'P0_VALIDATION_PROJECT_RELATION_TO_PHASE11=NOT_PHASE11_EVIDENCE',
+    );
+    expect(handoff).toContain('## V68封包前ERR-113闭包（2026-08-05）');
+    expect(handoff).toContain('ERR-113_REGRESSION=PURE_ESM_IMPORT_AND_DIRECT_CLI_BOTH_PASS');
+    expect(p0).toContain('### 25.50 ERR-113独立项目种子入口预检边界');
+    expect(handoff).toContain('## V68封包前ERR-114闭包（2026-08-05）');
+    expect(handoff).toContain('ERR-114_REGRESSION=TYPESCRIPT_PROGRAM_UNDEFINED_IDENTIFIER_CHECK_PASS');
+    expect(p0).toContain('### 25.51 ERR-114测试断言语义作用域预检边界');
     expect(handoff).toContain('## V65测试消费者漂移与V66闭包边界（2026-08-05）');
     expect(handoff).toContain('## V66历史失败伪复现与V67闭包边界（2026-08-05）');
     expect(handoff).toContain('ERR110_ROOT_CAUSE=HISTORICAL_REPRODUCER_REUSED_CURRENT_TARGET_PATCH');

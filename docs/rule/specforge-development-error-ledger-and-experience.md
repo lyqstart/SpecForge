@@ -1518,6 +1518,42 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **状态**：`CLOSED`。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-058`、`EXP-077`、`EXP-080`、`EXP-089`。
 
+
+### ERR-113：V68独立项目种子CLI入口判断假定process.argv[1]必然存在，纯模块导入在封包前失败
+
+- **日期与阶段**：2026-08-05，V68独立业务项目种子封包前功能预检。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SEED_ENTRYPOINT_IMPORT_ASSUMPTION / MODULE_SIDE_EFFECT_BOUNDARY`。
+- **现场表现**：使用Node以纯ES Module方式导入 `src/cli/main.js` 并调用导出的 `runCli()` 时，`process.argv[1]` 为 `undefined`；模块顶层直接执行 `pathToFileURL(process.argv[1])`，抛出 `ERR_INVALID_ARG_TYPE`。V68尚未生成最终ZIP，真实SpecForge、WorkDesk、用户级安装和独立验证项目均未修改。
+- **一级证据**：V68封包前Node功能预检的原始异常；种子 `src/cli/main.js` 顶层入口判断；修复后的纯导入正向回归。
+- **根因**：命令行直接运行场景被错误当成模块加载的唯一场景，入口判断没有先验证 `process.argv[1]` 是否为字符串，导致可复用模块在导入阶段产生副作用失败。
+- **影响**：若未在封包前阻断，Bun测试导入CLI模块或后续Contract消费者测试可能因运行器参数形状差异失败，形成与P0治理无关的业务种子噪声。
+- **正确做法**：
+  - CLI模块必须先导出纯业务入口，再以可选的命令行路径判断是否直接执行
+  - 只有 `process.argv[1]` 为非空字符串时才能调用 `pathToFileURL`
+  - 封包前必须同时验证直接运行和纯模块导入
+  - 种子功能预检失败必须在交付前修复，不能交给用户环境发现
+- **新增防护**：V68把入口判断改为可空检查；封包前使用不提供脚本参数的纯ES Module导入调用 `runCli()`，同时执行直接CLI、业务函数正反例和最终种子哈希对账。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-023`、`EXP-058`、`EXP-078`、`EXP-090`。
+
+
+### ERR-114：V68新增ERR-113测试断言错误引用另一测试块局部变量，语法转译通过但语义作用域无效
+
+- **日期与阶段**：2026-08-05，V68精确6文件封包前测试消费者静态审计。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / TEST_SCOPE_REFERENCE_ERROR / TRANSPILE_ONLY_FALSE_CONFIDENCE`。
+- **现场表现**：`specforge-development-experience-gate.test.ts` 在“完整下载包”测试块新增 `expect(experience)`，但 `experience` 只在前一个测试块中声明。`transpileModule()`只做语法转译而未报告未定义标识符；人工作用域对账发现完整TypeScript检查会产生语义错误。
+- **一级证据**：V68目标测试文件的局部变量声明范围；TypeScript语法转译结果；修复后当前测试块独立读取经验文件并通过语义未定义标识符检查。
+- **根因**：封包预检把无类型语义的转译成功误当成完整TypeScript检查，并在复制断言时没有同时复制该断言依赖的局部生产者。
+- **影响**：若未阻断，V68会在用户环境的TypeScript或定向测试阶段失败；真实SpecForge、WorkDesk、用户级安装和独立验证项目仍未改变。
+- **正确做法**：
+  - 新增测试断言时必须列出它依赖的局部变量和文件读取生产者
+  - 语法转译不能替代作用域、名称解析和完整TypeScript检查
+  - 封包前至少对新增标识符执行语义未定义引用检查
+  - 依赖局部变量的断言必须与变量声明处于同一测试作用域
+- **新增防护**：V68在目标测试块内独立读取经验台账；封包前使用TypeScript Program语义诊断检查新增测试不存在未定义 `experience`，用户执行时仍运行正式TypeScript、定向测试和完整构建。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-022`、`EXP-058`、`EXP-078`、`EXP-091`。
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -2631,6 +2667,34 @@ apply target files
 
 禁止通过 `git add -A` 扩大暂存范围；禁止把不含untracked文件的普通diff报告为完整patch。真实仓库只能在全部验证通过后执行同一精确路径暂存，隔离证据暂存不构成真实提交动作。
 
+
+## EXP-090：CLI可执行入口必须允许模块被无副作用导入
+
+CLI文件同时承担可执行入口和可复用模块时，顶层直接运行判断必须把运行器参数视为可选输入。固定模型：
+
+```text
+导出纯业务函数
+→ 检查process.argv[1]是否为非空字符串
+→ 才执行pathToFileURL与direct-run比较
+→ 纯模块导入不得触发CLI输出或参数异常
+```
+
+封包前必须同时执行：直接CLI运行、测试运行器导入、无脚本参数的纯ES Module导入和导出函数调用。任何入口判断依赖特定运行器必然提供参数，均按封包预检缺陷失败关闭。
+
+
+## EXP-091：测试断言必须与其局部证据生产者处于同一语义作用域
+
+复制或新增测试断言时，必须同时核对断言读取的变量、fixture、文件内容和helper是否在当前测试作用域可见。固定检查：
+
+```text
+新增断言引用集合
+→ 当前函数/测试块局部声明
+→ 模块级导入与常量
+→ 未定义引用集合必须为空
+```
+
+`transpileModule()`、Babel转译或字符串检查只能证明语法可生成，不能证明名称解析和作用域正确。封包前必须补充TypeScript Program语义诊断或等价的完整类型检查；用户环境仍必须执行项目正式TypeScript和定向测试。
+
 # 第四部分：修改前强制检查
 
 ## 13. 通用检查清单
@@ -2932,6 +2996,8 @@ ERR-109=CLOSED
 ERR-110=CLOSED
 ERR-111=CLOSED
 ERR-112=CLOSED
+ERR-113=CLOSED
+ERR-114=CLOSED
 ```
 
 V36隔离验证完成A/B基线控制并应用精确11文件补丁：129项通过、1项失败；唯一失败是ERR-080经验门禁状态断言过期。产品实现、真实SpecForge、WorkDesk、用户级安装和WI-0004均未改变。
