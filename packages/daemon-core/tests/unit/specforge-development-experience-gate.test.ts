@@ -572,4 +572,34 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(p0).toContain('### 25.53 V69 CMD脚本调用假失败与ERR-116验证器闭包');
   });
 
+
+  it('records exact Git repository recovery and keeps WI-0001 pending formal merge', () => {
+    const experience = readFileSync(experiencePath, 'utf-8');
+    const handoff = readFileSync(currentHandoffPath, 'utf-8');
+    const p0 = readFileSync(p0ContractClosurePath, 'utf-8');
+
+    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135']) {
+      expect(experience).toContain(`### ${id}：`);
+    }
+    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111']) {
+      expect(experience).toContain(`## ${id}：`);
+    }
+
+    expect(experience).toContain('INSUFFICIENT_EVIDENCE');
+    expect(experience).toContain('Git porcelain是固定列协议');
+    expect(experience).toContain('禁止容器内部自引用');
+    expect(experience).toContain('sys.modules[spec.name] = module');
+
+    expect(handoff).toContain('## WI-0001仓库消失、精确恢复与ERR-132—ERR-135闭包（2026-08-05）');
+    expect(handoff).toContain('RECOVERY_STATUS=EXACT_GIT_REPOSITORY_RESTORED');
+    expect(handoff).toContain('SOURCE_RECYCLE_PAYLOAD=RETAINED_UNCHANGED');
+    expect(handoff).toContain('STATUS=PASS_EXACT_4_CLOSE_ARTIFACTS');
+    expect(handoff).toContain('WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_PENDING_GIT_MERGE');
+    expect(handoff).toContain('NEXT_ACTION=USER_MANUALLY_RESTART_DAEMON_OPENCODE_AND_RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONLY');
+
+    expect(p0).toContain('### 25.64 WI-0001原Git仓库精确恢复与正式Merge边界保持');
+    expect(p0).toContain('GIT_MERGE_ACTION=NOT_PERFORMED');
+    expect(p0).toContain('NEXT_ACTION=RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONLY');
+  });
+
 });

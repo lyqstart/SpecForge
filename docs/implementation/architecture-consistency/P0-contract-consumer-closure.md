@@ -3578,3 +3578,38 @@ WI0002_ACTION=NOT_STARTED
 WI0003_ACTION=NOT_STARTED
 P0_OVERALL_STATUS=IN_PROGRESS
 ```
+
+### 25.64 WI-0001原Git仓库精确恢复与正式Merge边界保持
+
+V77成功部署正式Git Merge产品能力后，独立验证项目目录从原路径消失。因为WI-0001已经包含正式Project Spec、实现、Verification、Formal Version、Close和未合并Git提交，禁止根据V68种子或OpenCode日志重新创建项目。
+
+只读恢复扫描在回收站找到唯一包含提交 `10fd4ff7c6640877794a89ed73cc50533d330a42` 的完整Git仓库。恢复流程先复制到临时目录，复核分支、HEAD、main、Git对象和四个未提交Close产物，再原子恢复到：
+
+```text
+D:\code\temp\SpecForge-P0-Validation
+```
+
+恢复后事实与删除前完全一致：
+
+```text
+BRANCH=feature/architecture-change-project-contract-wi-0001
+HEAD=10fd4ff7c6640877794a89ed73cc50533d330a42
+MAIN=b7fa10bdd40bc6c55a9fdfd151e6e31bde39b57f
+STATUS=PASS_EXACT_4_CLOSE_ARTIFACTS
+SOURCE_RECYCLE_PAYLOAD=RETAINED_UNCHANGED
+WI0001_ACTION=NOT_PERFORMED
+GIT_COMMIT_ACTION=NOT_PERFORMED
+GIT_MERGE_ACTION=NOT_PERFORMED
+```
+
+因此原V77后续边界不变：只能恢复现有closed WI-0001，精确提交四个Close产物，生成 `sf_git_merge_plan` 并在独立用户确认处停止。不得开始WI-0002或WI-0003，不得重建WI、修改Candidate、业务代码、Project Spec、Verification或Close证据。
+
+```text
+ERR132_STATUS=CLOSED_RECOVERED_EXACT_GIT_REPOSITORY
+ERR133_STATUS=CLOSED
+ERR134_STATUS=CLOSED
+ERR135_STATUS=CLOSED_PREFLIGHT
+WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_PENDING_GIT_MERGE
+P0_OVERALL_STATUS=IN_PROGRESS
+NEXT_ACTION=RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONLY
+```
