@@ -573,15 +573,15 @@ describe('SpecForge development experience pre-read gate', () => {
   });
 
 
-  it('records exact Git repository recovery and keeps WI-0001 pending formal merge', () => {
+  it('records repository recovery, formal merge blocking, and controlled invalid-closure recovery', () => {
     const experience = readFileSync(experiencePath, 'utf-8');
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
     const p0 = readFileSync(p0ContractClosurePath, 'utf-8');
 
-    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146']) {
+    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146', 'ERR-147']) {
       expect(experience).toContain(`### ${id}：`);
     }
-    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123']) {
+    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123', 'EXP-124']) {
       expect(experience).toContain(`## ${id}：`);
     }
 
@@ -601,6 +601,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experience).toContain('用户环境不是补丁开发调试环境');
     expect(experience).toContain('A/B验证必须在对称构建的临时工作树中按同粒度结果比较');
     expect(experience).toContain('机器协议stdout与诊断stderr必须分离');
+    expect(experience).toContain('终态失败关闭Guard与补偿恢复必须消费同一份持久化证据');
 
     expect(handoff).toContain('## WI-0001仓库消失、精确恢复与ERR-132—ERR-135闭包（2026-08-05）');
     expect(handoff).toContain('RECOVERY_STATUS=EXACT_GIT_REPOSITORY_RESTORED');
@@ -627,6 +628,10 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('ERR145_AB_INCOMPARABLE_FILE_COUNT=8');
     expect(handoff).toContain('## V89封包前Git输出通道隔离与ERR-146（2026-08-06）');
     expect(handoff).toContain('ERR146_STATUS=CLOSED_PREFLIGHT_BEFORE_V89_DELIVERY');
+    expect(handoff).toContain('## WI-0001真实Merge Plan复检、ERR-136关闭与ERR-147恢复消费者缺口（2026-08-06）');
+    expect(handoff).toContain('ERR136_STATUS=CLOSED_REAL_WI_RECHECK_PASS');
+    expect(handoff).toContain('ERR147_CLASSIFICATION=PRODUCT_DEFECT');
+    expect(handoff).toContain('WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_MERGE_BLOCKED_PENDING_CONTROLLED_INVALID_CLOSURE_RECOVERY');
 
     expect(p0).toContain('### 25.64 WI-0001原Git仓库精确恢复与正式Merge边界保持');
     expect(p0).toContain('GIT_MERGE_ACTION=NOT_PERFORMED');

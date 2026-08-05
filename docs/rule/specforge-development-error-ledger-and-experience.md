@@ -3693,7 +3693,7 @@ ERR-135=CLOSED_PREFLIGHT
 - **现场**：WI-0001分支相对 `main` 存在4个业务代码文件，但正式版本快照登记0个实现文件；Merge Plan仍返回可合并。
 - **根因**：只校验已登记文件指纹，没有把登记集合与完整非 `.specforge/**` Git Diff对账。
 - **修复**：Formal Version生产、Merge Plan、Merge Run和Post-Merge Verify均执行精确文件集合对账。
-- **状态**：`PRODUCT_FIX_ENGINEERING_VALIDATED_PENDING_COMMIT_DEPLOY_AND_REAL_WI_RECHECK`
+- **状态**：`CLOSED_REAL_WI_RECHECK_PASS`
 
 ## EXP-112：Formal Version文件集合必须与真实非治理Git Diff精确一致
 
@@ -3909,7 +3909,7 @@ mkdir parents
 - **根因**：baseline临时工作树只执行 `bun install`，没有先执行workspace build；patched侧直接使用真实仓库已有构建产物，A/B前置条件不对称。比较器又把baseline的Suite级加载失败与patched的用例级失败放入同一字符串集合，导致同一文件的失败被错误计算为“旧Suite失败已解决 + 42个新用例失败”。
 - **影响**：V88正确阻止提交、推送、安装和WI-0001 Git Merge；真实仓库仍只有精确6个未暂存批准文件。42项不能作为ERR-136产品回归证据。
 - **修复**：V89在两个独立detached临时工作树中重建同一 `92792ec...`；只向patched临时工作树应用最终6文件；两侧使用同一Bun、安装命令、workspace build、测试命令和彼此隔离的HOME/TEMP。比较器分别处理Suite加载失败与已收集用例失败；任一文件两侧收集层级不同即标记A/B不可比较并失败关闭。全部验证通过前不修改真实仓库。
-- **状态**：`FIX_INCLUDED_IN_V89_PENDING_REAL_EXECUTION`
+- **状态**：`CLOSED_BY_V89_SYMMETRIC_AB_VALIDATION`
 
 ## EXP-122：A/B验证必须在对称构建的临时工作树中按同粒度结果比较
 
@@ -3968,3 +3968,34 @@ git ls-remote
 3. stderr警告必须保存为诊断证据，但不得进入路径、SHA、分支或状态集合；
 4. 返回码非0时同时报告stdout和stderr；
 5. 封包前必须用会产生CRLF warning的Git仓库执行范围审计回归。
+
+### ERR-147：Merge Plan识别无效Formal Version，但无效关闭恢复入口无法消费同一证据
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：V89部署后，独立项目WI-0001真实 `sf_git_merge_plan` 正确返回 `can_merge=false`，并报告4个业务文件缺失于 `formal_version_snapshot.implementation_files`。旧Formal Version Gate仍为passed。
+- **根因**：`recover_invalid_closure` 只消费Formal Gate状态和以当前实际范围重新计算的Git绑定，没有调用正式Git Merge使用的Formal Version快照验证器。当前Git绑定合法时，`invalidity_reasons`为空，恢复入口返回 `INVALID_CLOSURE_RECOVERY_NOT_PROVEN`。
+- **影响**：已关闭WI进入死锁：正式Git Merge必须阻断，但既有补偿恢复也无法证明关闭无效，无法复用原WI回到 `implementation_ready`。手工修改状态、修改快照或创建替代WI均违反既有治理规则。
+- **修复**：无效关闭恢复复用 `assertFormalVersionSnapshotForGitMerge`；只将快照缺失、实现提交失效、base缺失、文件集合不一致、实现指纹变化和base diff变化识别为持久化关闭无效证据。工作树不干净和当前分支错误仍作为环境阻断。恢复记录新增快照SHA256和原始验证错误。
+- **回归**：新增“Formal Gate passed、快照遗漏已提交业务文件”真实Git夹具，必须生成 `closure_recovery.json` 并执行 `closed → implementation_ready`；保留显式确认和原关闭证据哈希检查。
+- **状态**：`FIX_IMPLEMENTED_PENDING_VALIDATION_COMMIT_DEPLOY_AND_REAL_RECOVERY`
+
+## EXP-124：终态失败关闭Guard与补偿恢复必须消费同一份持久化证据
+
+当一个Guard在终态之后阻断后续交付时，受控补偿恢复不能使用较弱或不同的判断口径。
+
+固定要求：
+
+```text
+Formal Version / Git Merge Guard使用的持久化不变量
+=
+recover_invalid_closure用于证明旧关闭无效的不变量
+```
+
+必须保证：
+
+1. Merge Plan、Merge Run与无效关闭恢复复用同一个Formal Version快照验证器；
+2. 文件集合、实现指纹、实现提交和base diff不一致均可形成恢复证据；
+3. 当前工作树不干净、当前分支错误等运行环境问题不能被误写成“旧关闭无效”；
+4. 恢复记录必须保存被判无效证据的哈希和原始机器错误；
+5. 恢复只允许 `closed → implementation_ready`，继续保持代码权限撤销；
+6. 必须使用原WI，不得手工改状态、改Formal快照或创建替代WI绕过。

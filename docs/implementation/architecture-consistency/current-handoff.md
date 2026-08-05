@@ -3192,3 +3192,85 @@ git diff --check
 精确6文件路径和payload SHA256审计
 最终ZIP成员与哈希审计
 ```
+
+## WI-0001真实Merge Plan复检、ERR-136关闭与ERR-147恢复消费者缺口（2026-08-06）
+
+V89已完成产品修复、对称临时工作树A/B验证、提交、推送和用户级升级：
+
+```text
+SPECFORGE_COMMIT=f756a95ae9486dc7f4d9922e890833f59d76dc72
+REMOTE_HEAD_AFTER_PUSH=f756a95ae9486dc7f4d9922e890833f59d76dc72
+TARGETED_TESTS=20/20_PASS
+AB_INCOMPARABLE=0
+AB_NEW_FAILURES=0
+TYPESCRIPT_NO_EMIT=PASS
+DAEMON_CORE_BUILD=PASS
+WORKSPACE_BUILD=PASS
+USERLEVEL_UPGRADE=PASS
+USERLEVEL_VERIFY=PASS
+```
+
+用户随后在独立验证项目中只运行 `sf_git_merge_plan(WI-0001)`。真实复检结果：
+
+```text
+SOURCE_BRANCH=feature/architecture-change-project-contract-wi-0001
+SOURCE_BRANCH_HEAD=4f616d167f01ba24a63165f094386bd9157167c1
+SNAPSHOT_IMPLEMENTATION_FILES=[]
+ACTUAL_NON_GOVERNANCE_IMPLEMENTATION_FILES=src/cli/main.js,src/domain/status.js,src/reporting/formatter.js,src/storage/repository.js
+MISSING_FROM_SNAPSHOT=src/cli/main.js,src/domain/status.js,src/reporting/formatter.js,src/storage/repository.js
+UNEXPECTED_IN_SNAPSHOT=none
+BLOCKING_ISSUE=FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH
+CAN_MERGE=false
+REPOSITORY_DELIVERY_STATE=git_merge_blocked
+GIT_MERGE_ACTION=NOT_PERFORMED
+POST_MERGE_VERIFY=NOT_PERFORMED
+```
+
+该结果证明ERR-136在真实已关闭WI上失败关闭：
+
+```text
+ERR136_STATUS=CLOSED_REAL_WI_RECHECK_PASS
+ERR136_REAL_WI_CAN_MERGE=false
+ERR136_REAL_WI_MISSING_FROM_SNAPSHOT=4
+```
+
+### ERR-147：无效关闭恢复未消费Formal Version文件集合不一致
+
+现有 `recover_invalid_closure` 只检查旧Formal Gate状态和基于当前实际范围重新计算的Git绑定。WI-0001的旧Formal Gate为passed，当前Git绑定本身合法；真正证明旧关闭无效的是：
+
+```text
+formal_version_snapshot.implementation_files=[]
+!=
+base_commit...source_head的4个非治理Git Diff路径
+```
+
+因此Merge Plan已经正确阻断，但恢复入口会返回：
+
+```text
+INVALID_CLOSURE_RECOVERY_NOT_PROVEN
+```
+
+这会把原WI锁在closed：既不能合并，也不能按既有受控补偿流程恢复到implementation_ready。
+
+修复要求：
+
+```text
+recover_invalid_closure
+→ 复用assertFormalVersionSnapshotForGitMerge
+→ 只把持久化Formal Version不变量错误作为关闭无效证据
+→ worktree dirty、当前分支错误等运行环境问题继续阻断
+→ closure_recovery.json记录formal_version_snapshot哈希和验证错误
+→ closed → implementation_ready
+```
+
+```text
+ERR147_CLASSIFICATION=PRODUCT_DEFECT
+ERR147_STATUS=FIX_IMPLEMENTED_PENDING_VALIDATION_COMMIT_DEPLOY_AND_REAL_RECOVERY
+AUTHORITY_REVISION=NOT_REQUIRED_EXISTING_INVALID_CLOSURE_RECOVERY_RULE_ALREADY_APPLIES
+P0_OVERALL_STATUS=IN_PROGRESS
+WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_MERGE_BLOCKED_PENDING_CONTROLLED_INVALID_CLOSURE_RECOVERY
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+WI0002_ACTION=NOT_PERFORMED
+WI0003_ACTION=NOT_PERFORMED
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR147_THEN_RUN_RECOVER_INVALID_CLOSURE_ON_WI0001_ONLY
+```

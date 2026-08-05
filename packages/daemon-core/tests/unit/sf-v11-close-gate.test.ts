@@ -8,6 +8,15 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
+
+async function git(cwd: string, args: string[]): Promise<string> {
+  const { stdout } = await execFileAsync('git', args, { cwd });
+  return String(stdout ?? '').trim();
+}
 
 // Import handler registration (side-effect)
 import '../../src/tools/handlers/sf-v11-close-gate.js';
@@ -453,6 +462,101 @@ describe('sf_close_gate handler', () => {
     expect(recovery.status).toBe('applied');
     expect(recovery.invalidity_reasons).toContain('formal_version_gate_status=failed');
     expect(recovery.prior_evidence.close_gate_sha256).toMatch(/^[a-f0-9]{64}$/);
+  });
+
+  it('recovers a passed prior closure when the Formal Version snapshot omits committed code', async () => {
+    const workItemId = 'wi-invalid-close-file-set';
+    const featureBranch = 'feature/invalid-close-file-set';
+
+    await git(tmpDir, ['init', '-b', 'main']);
+    await git(tmpDir, ['config', 'user.name', 'SpecForge Test']);
+    await git(tmpDir, ['config', 'user.email', 'specforge-test@example.invalid']);
+    await fs.writeFile(path.join(tmpDir, 'README.md'), '# baseline\n');
+    await git(tmpDir, ['add', '--', 'README.md']);
+    await git(tmpDir, ['commit', '-m', 'chore: baseline']);
+    const baseCommit = await git(tmpDir, ['rev-parse', 'HEAD']);
+    await git(tmpDir, ['switch', '-c', featureBranch]);
+
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, { status: 'closed' });
+    await fs.mkdir(path.join(tmpDir, 'src'), { recursive: true });
+    await fs.writeFile(path.join(tmpDir, 'src', 'main.ts'), 'export const value = 1;\n');
+    await fs.writeFile(
+      path.join(wiDir, 'git_context.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        git_enabled: true,
+        branch_name: featureBranch,
+        base_branch: 'main',
+        base_commit: baseCommit,
+      }, null, 2) + '\n',
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'close_gate.json'),
+      JSON.stringify({ gate_id: 'close_gate', status: 'passed' }) + '\n',
+    );
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }) + '\n',
+    );
+    await git(tmpDir, ['add', '--', '.']);
+    await git(tmpDir, ['commit', '-m', 'feat: committed implementation']);
+    const implementationCommit = await git(tmpDir, ['rev-parse', 'HEAD']);
+
+    await fs.writeFile(
+      path.join(wiDir, 'formal_version_snapshot.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        branch_name: featureBranch,
+        implementation_commit: implementationCommit,
+        implementation_files: [],
+        implementation_tree_fingerprint:
+          'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        base_commit: baseCommit,
+        diff_fingerprint: '',
+      }, null, 2) + '\n',
+    );
+    await git(tmpDir, [
+      'add',
+      '--',
+      path.relative(tmpDir, path.join(wiDir, 'formal_version_snapshot.json')).split(path.sep).join('/'),
+    ]);
+    await git(tmpDir, ['commit', '-m', 'chore: persist invalid formal snapshot']);
+
+    const handler = getHandler('sf_close_gate')!;
+    const deps = createMockDeps('closed');
+    const result = await handler(
+      {
+        work_item_id: workItemId,
+        action: 'recover_invalid_closure',
+        recovery_reason:
+          'Formal Version snapshot omitted the committed implementation file proven by Git diff.',
+        confirm_invalid_closure_recovery: true,
+      },
+      { directory: tmpDir, agent: 'sf-orchestrator' },
+      deps as any,
+    );
+
+    expect((result as any).success, JSON.stringify(result, null, 2)).toBe(true);
+    expect((result as any).state_auto_advance.to_state).toBe('implementation_ready');
+    expect(
+      (result as any).invalidity_reasons.some((reason: string) =>
+        reason.startsWith(
+          'formal_version_snapshot_invalid=FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH',
+        ),
+      ),
+    ).toBe(true);
+
+    const recovery = JSON.parse(
+      await fs.readFile(path.join(wiDir, 'closure_recovery.json'), 'utf-8'),
+    );
+    expect(recovery.prior_evidence.formal_version_snapshot_sha256).toMatch(
+      /^[a-f0-9]{64}$/,
+    );
+    expect(recovery.prior_evidence.formal_version_snapshot_validation_error).toContain(
+      'missing_from_snapshot=src/main.ts',
+    );
   });
 
   it('refuses invalid-closure recovery without explicit confirmation', async () => {

@@ -41,6 +41,7 @@ import {
   transitionWithEvidence,
 } from "../lib/state-coordinator-v11.js";
 import {
+  assertFormalVersionSnapshotForGitMerge,
   auditActualGovernanceScope,
   inspectFormalGitBinding,
 } from "../lib/project-governance-v2.js";
@@ -58,6 +59,21 @@ interface FilesystemDiffSummary {
   untracked_changes_count: number;
   ignored_runtime_files: number;
   evidence_file?: string;
+}
+
+const RECOVERABLE_FORMAL_VERSION_INVALIDITY_PREFIXES = [
+  "FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE",
+  "FORMAL_VERSION_IMPLEMENTATION_COMMIT_NOT_ANCESTOR",
+  "FORMAL_VERSION_BASE_COMMIT_REQUIRED",
+  "FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH",
+  "FORMAL_VERSION_IMPLEMENTATION_CHANGED_AFTER_GATE",
+  "FORMAL_VERSION_DIFF_CHANGED_AFTER_GATE",
+] as const;
+
+function isRecoverableFormalVersionInvalidity(message: string): boolean {
+  return RECOVERABLE_FORMAL_VERSION_INVALIDITY_PREFIXES.some(prefix =>
+    message.startsWith(prefix),
+  );
 }
 
 interface CloseGateHandlerResult {
@@ -121,6 +137,7 @@ async function recoverInvalidClosure(input: {
 
   const closeGatePath = path.join(input.workItemDir, "gates", "close_gate.json");
   const formalGatePath = path.join(input.workItemDir, "gates", "formal_version_gate.json");
+  const formalSnapshotPath = path.join(input.workItemDir, "formal_version_snapshot.json");
   const closeGate = await readJsonFile(closeGatePath).catch(() => null);
   const formalGate = await readJsonFile(formalGatePath).catch(() => null);
   if (closeGate?.status !== "passed") {
@@ -132,10 +149,31 @@ async function recoverInvalidClosure(input: {
   }
 
   const invalidityReasons: string[] = [];
+  let formalSnapshotValidationError: string | null = null;
   if (formalGate?.status !== "passed") {
     invalidityReasons.push(
       `formal_version_gate_status=${formalGate?.status ?? "missing"}`,
     );
+  } else {
+    try {
+      await assertFormalVersionSnapshotForGitMerge(
+        input.projectRoot,
+        input.workItemId,
+      );
+    } catch (error) {
+      formalSnapshotValidationError =
+        error instanceof Error ? error.message : String(error);
+      if (isRecoverableFormalVersionInvalidity(formalSnapshotValidationError)) {
+        invalidityReasons.push(
+          `formal_version_snapshot_invalid=${formalSnapshotValidationError}`,
+        );
+      } else {
+        return {
+          success: false,
+          error: `INVALID_CLOSURE_RECOVERY_FORMAL_VERSION_EVIDENCE_UNAVAILABLE: ${formalSnapshotValidationError}`,
+        };
+      }
+    }
   }
 
   let gitBinding: Awaited<ReturnType<typeof inspectFormalGitBinding>> | null = null;
@@ -155,6 +193,11 @@ async function recoverInvalidClosure(input: {
         ? ["branch_mismatch"]
         : []),
       ...(!gitBinding.base_is_ancestor ? ["base_not_ancestor"] : []),
+      ...(!gitBinding.implementation_file_set_matches
+        ? [
+            `implementation_file_set_mismatch:unrecorded=${gitBinding.unrecorded_committed_implementation_files.join("|") || "none"};absent=${gitBinding.missing_from_commit.join("|") || "none"}`,
+          ]
+        : []),
       ...(gitBinding.missing_from_commit.length > 0
         ? [`missing_from_commit:${gitBinding.missing_from_commit.join("|")}`]
         : []),
@@ -170,7 +213,7 @@ async function recoverInvalidClosure(input: {
       );
     }
   } catch (error) {
-    if (formalGate?.status === "passed") {
+    if (formalGate?.status === "passed" && invalidityReasons.length === 0) {
       return {
         success: false,
         error: `INVALID_CLOSURE_RECOVERY_GIT_EVIDENCE_UNAVAILABLE: ${
@@ -200,6 +243,8 @@ async function recoverInvalidClosure(input: {
       close_gate_sha256: await hashFileIfPresent(closeGatePath),
       formal_version_gate_status: formalGate?.status ?? "missing",
       formal_version_gate_sha256: await hashFileIfPresent(formalGatePath),
+      formal_version_snapshot_sha256: await hashFileIfPresent(formalSnapshotPath),
+      formal_version_snapshot_validation_error: formalSnapshotValidationError,
       git_binding: gitBinding,
     },
     permission_state: {
