@@ -578,10 +578,10 @@ describe('SpecForge development experience pre-read gate', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
     const p0 = readFileSync(p0ContractClosurePath, 'utf-8');
 
-    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146', 'ERR-147', 'ERR-148', 'ERR-149', 'ERR-150']) {
+    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146', 'ERR-147', 'ERR-148', 'ERR-149', 'ERR-150', 'ERR-151']) {
       expect(experience).toContain(`### ${id}：`);
     }
-    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123', 'EXP-124', 'EXP-125', 'EXP-126', 'EXP-127']) {
+    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123', 'EXP-124', 'EXP-125', 'EXP-126', 'EXP-127', 'EXP-128']) {
       expect(experience).toContain(`## ${id}：`);
     }
 
@@ -639,6 +639,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('ERR147_STATUS=CLOSED_REAL_WI_RECOVERY_PASS');
     expect(handoff).toContain('ERR148_STATUS=CLOSED_BY_EXPLICIT_DAEMON_RESTART_AND_REAL_WI_RECOVERY');
     expect(handoff).toContain('## WI-0001恢复后Formal Version重建失败与ERR-149—ERR-150（2026-08-06）');
+    expect(handoff).toContain('## WI-0001真实重试仍被治理日志遮蔽与ERR-151（2026-08-06）');
     expect(handoff).toContain('ERR149_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY');
     expect(handoff).toContain('ERR150_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY');
 

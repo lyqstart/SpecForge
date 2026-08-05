@@ -7,6 +7,7 @@ import { promisify } from 'node:util';
 import { changedFilesFromFacts } from '../../src/tools/handlers/sf-changed-files-audit.js';
 import {
   compareFormalImplementationFileSets,
+  deriveActualChangedFiles,
   extractPassedChangedFilesAuditEntries,
   inspectFormalGitBinding,
 } from '../../src/tools/lib/project-governance-v2.js';
@@ -297,6 +298,82 @@ Work Item: WI-0001
       matches: true,
       missing_from_recorded_files: [],
       unexpected_recorded_files: [],
+    });
+  });
+
+  it('prefers a passed durable audit over a later governance-only Write Guard log', async () => {
+    await fs.writeFile(
+      path.join(workItemDir, 'changed_files_audit.md'),
+      `# Changed Files Audit
+
+## Result: PASS
+
+## Entries
+
+- [modify] src/cli/main.js → in_scope
+- [modify] src/domain/status.js → in_scope
+- [modify] src/reporting/formatter.js → in_scope
+- [modify] src/storage/repository.js → in_scope
+`,
+    );
+    await fs.writeFile(
+      path.join(workItemDir, 'write_guard_log.jsonl'),
+      [
+        {
+          timestamp: new Date().toISOString(),
+          path: '.specforge/work-items/WI-0002/work_item.json',
+          operation: 'modify',
+          actor: 'code_permission_service',
+          allowed: true,
+          violations: [],
+        },
+        {
+          timestamp: new Date().toISOString(),
+          path: '.specforge/work-items/WI-0002/.semantic_closure.json',
+          operation: 'modify',
+          actor: 'semantic_closure',
+          allowed: false,
+          violations: ['SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN'],
+        },
+      ].map(entry => JSON.stringify(entry)).join('\n') + '\n',
+    );
+
+    await expect(deriveActualChangedFiles(projectRoot, workItemDir)).resolves.toEqual({
+      files: [
+        'src/cli/main.js',
+        'src/domain/status.js',
+        'src/reporting/formatter.js',
+        'src/storage/repository.js',
+      ],
+      source: 'changed_files_audit.md',
+    });
+  });
+
+  it('does not let governance-only Write Guard facts suppress later durable fallbacks', async () => {
+    await fs.writeFile(
+      path.join(workItemDir, 'write_guard_log.jsonl'),
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: '.specforge/work-items/WI-0002/governance_scope.json',
+        operation: 'modify',
+        actor: 'code_permission_service',
+        allowed: true,
+        violations: [],
+      }) + '\n',
+    );
+    await fs.writeFile(
+      path.join(workItemDir, 'work_item.json'),
+      JSON.stringify({
+        actual_changed_files: [
+          { path: 'src/domain/status.js', operation: 'modify' },
+          { path: '.specforge/work-items/WI-0002/work_item.json', operation: 'modify' },
+        ],
+      }),
+    );
+
+    await expect(deriveActualChangedFiles(projectRoot, workItemDir)).resolves.toEqual({
+      files: ['src/domain/status.js'],
+      source: 'work_item.actual_changed_files',
     });
   });
 

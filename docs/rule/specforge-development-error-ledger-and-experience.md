@@ -4077,3 +4077,16 @@ AND summary_status=passed
 3. Summary失败时不推进；
 4. 返回缺失Gate、失败Gate和summary状态供机器诊断；
 5. 回归必须覆盖“Verification通过但Formal Version失败”真实组合。
+
+### ERR-151：非空治理类Write Guard日志遮蔽已通过的Changed Files Audit，Formal Version仍无法重建
+
+- **分类**：`PRODUCT_DEFECT`
+- **触发事实**：V92部署后，真实WI-0001再次运行Verification Gate；ERR-150修复已生效，Formal Version失败时状态保持`verification_running`，但`formal_version_snapshot.json`仍未重建。
+- **根因**：`deriveActualChangedFiles`仍优先消费`write_guard_log.jsonl`。恢复、权限、Semantic Closure和HardStop处理会生成非空的治理类或阻断类日志；该来源一旦非空就阻止读取已经PASS的`changed_files_audit.md`。后续过滤`.specforge/**`后得到空实现集合，Formal Version继续失败。
+- **影响**：持久化审计生产者存在且正确，但被较低生命周期、非阶段完成态的瞬时日志遮蔽；WI无法生成正确Formal Version快照。
+- **修复**：Formal Version实际文件集合先消费PASS的`changed_files_audit.md`；仅当不存在可用PASS审计时才消费成功Write Guard业务文件；治理类日志在来源判定前剔除，不能阻断后续回退。
+- **状态**：`FIX_IMPLEMENTED_PENDING_VALIDATION_DEPLOY_AND_REAL_WI_RETRY`
+
+## EXP-128：阶段完成态持久化证据必须优先于后续瞬时运行日志
+
+当下游在恢复或跨进程阶段重建事实时，已经通过的阶段完成态产物是该阶段的正式生产者合同。后续运行日志可能包含权限元数据、治理产物或被阻断尝试，不能因为“非空”就遮蔽正式产物。证据选择必须先按生命周期和语义作用域排序，再按是否非空选择；治理路径必须在决定来源可用性之前被剔除。

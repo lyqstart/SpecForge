@@ -1627,52 +1627,51 @@ export function extractPassedChangedFilesAuditEntries(auditText: string): string
   return unique(files);
 }
 
-async function deriveActualChangedFiles(
+export async function deriveActualChangedFiles(
   projectRoot: string,
   workItemDir: string
 ): Promise<{ files: string[]; source: string }> {
-  // Reuse the same factual source as sf_changed_files_audit. This keeps the
-  // governance-scope audit scoped to this WI instead of treating unrelated
-  // working-tree/untracked files as implementation changes.
-  const factual = getFactualChangedFiles(workItemDir);
-  if (factual.length > 0) {
+  // A passed Changed Files Audit is the durable, phase-complete producer
+  // contract.  It must take precedence over a later Write Guard log because
+  // recovery/gate activity can append governance-only or blocked-operation
+  // entries that do not describe the committed implementation file set.
+  const auditPath = path.join(workItemDir, 'changed_files_audit.md');
+  const auditFiles = normalizeFormalImplementationFiles(
+    extractPassedChangedFilesAuditEntries(await readText(auditPath)),
+    projectRoot,
+  );
+  if (auditFiles.length > 0) {
     return {
-      files: unique(
-        factual
-          .map(entry => repositoryRelativePath(projectRoot, entry.path))
-          .filter(Boolean)
-      ),
-      source: 'write_guard_log.jsonl',
+      files: auditFiles,
+      source: 'changed_files_audit.md',
     };
   }
 
-  const auditPath = path.join(workItemDir, 'changed_files_audit.md');
-  const auditFiles = extractPassedChangedFilesAuditEntries(await readText(auditPath));
-  if (auditFiles.length > 0) {
+  // Before a durable PASS audit exists, successful Write Guard observations
+  // remain the preferred live evidence.  Governance-only entries are removed
+  // before deciding whether this source is usable; they must not suppress the
+  // remaining fail-closed fallback chain.
+  const factualFiles = normalizeFormalImplementationFiles(
+    getFactualChangedFiles(workItemDir).map(entry => entry.path),
+    projectRoot,
+  );
+  if (factualFiles.length > 0) {
     return {
-      files: unique(
-        auditFiles
-          .map(value => repositoryRelativePath(projectRoot, value))
-          .filter(Boolean)
-      ),
-      source: 'changed_files_audit.md',
+      files: factualFiles,
+      source: 'write_guard_log.jsonl',
     };
   }
 
   const workItem = await readJson(path.join(workItemDir, 'work_item.json'));
   if (Array.isArray(workItem?.actual_changed_files) && workItem.actual_changed_files.length > 0) {
     return {
-      files: unique(
-        workItem.actual_changed_files
-          .map((entry: unknown) =>
-            repositoryRelativePath(
-              projectRoot,
-              typeof entry === 'string'
-                ? entry
-                : String((entry as { path?: unknown } | null)?.path ?? '')
-            )
-          )
-          .filter(Boolean)
+      files: normalizeFormalImplementationFiles(
+        workItem.actual_changed_files.map((entry: unknown) =>
+          typeof entry === 'string'
+            ? entry
+            : String((entry as { path?: unknown } | null)?.path ?? '')
+        ),
+        projectRoot,
       ),
       source: 'work_item.actual_changed_files',
     };
@@ -1683,7 +1682,10 @@ async function deriveActualChangedFiles(
     const diff = computeFilesystemDiff(baseline, projectRoot, []);
     if (diff.all_changes.length > 0) {
       return {
-        files: unique(diff.all_changes.map(entry => repositoryRelativePath(projectRoot, entry.path))),
+        files: normalizeFormalImplementationFiles(
+          diff.all_changes.map(entry => entry.path),
+          projectRoot,
+        ),
         source: 'filesystem_baseline.json',
       };
     }
