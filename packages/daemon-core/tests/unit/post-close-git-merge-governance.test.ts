@@ -119,6 +119,97 @@ describe('post-close formal Git merge governance', () => {
     expect(dirtyPlan.blocking_issues).toContain('WORKTREE_NOT_CLEAN_BEFORE_MERGE');
   });
 
+  it('blocks merge planning and merge execution when the snapshot omits committed code', async () => {
+    const snapshotPath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'formal_version_snapshot.json',
+    );
+    const snapshot = JSON.parse(await fs.readFile(snapshotPath, 'utf8'));
+    snapshot.implementation_files = [];
+    snapshot.implementation_tree_fingerprint = digest('');
+    await writeJson(snapshotPath, snapshot);
+    await git(projectRoot, ['add', '--', snapshotPath]);
+    await git(projectRoot, ['commit', '-m', 'test: invalid empty formal file set']);
+
+    const plan = await gitMergePlan({
+      projectRoot,
+      workItemId,
+      authoritativeState: 'closed',
+    });
+    expect(plan.can_merge).toBe(false);
+    expect(
+      plan.blocking_issues.some(issue =>
+        issue.startsWith('FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH'),
+      ),
+    ).toBe(true);
+    await expect(
+      gitMergeRun({
+        projectRoot,
+        workItemId,
+        confirmed: true,
+        authoritativeState: 'closed',
+        pullFirst: false,
+      }),
+    ).rejects.toThrow('FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH');
+  });
+
+  it('blocks merge planning when a new implementation path appears after Formal Version', async () => {
+    await fs.writeFile(path.join(projectRoot, 'src', 'extra.js'), 'export const extra = true;\n');
+    await git(projectRoot, ['add', '--', 'src/extra.js']);
+    await git(projectRoot, ['commit', '-m', 'feat: unrecorded implementation path']);
+
+    const plan = await gitMergePlan({
+      projectRoot,
+      workItemId,
+      authoritativeState: 'closed',
+    });
+    expect(plan.can_merge).toBe(false);
+    expect(
+      plan.blocking_issues.some(issue =>
+        issue.includes('missing_from_snapshot=src/extra.js'),
+      ),
+    ).toBe(true);
+  });
+
+  it('rejects post-merge verification when a new implementation path was merged outside the controlled runner', async () => {
+    await fs.writeFile(path.join(projectRoot, 'src', 'extra.js'), 'export const extra = true;\n');
+    await git(projectRoot, ['add', '--', 'src/extra.js']);
+    await git(projectRoot, ['commit', '-m', 'feat: unrecorded implementation path']);
+    await git(projectRoot, ['switch', 'main']);
+    await git(projectRoot, ['merge', '--no-ff', featureBranch, '-m', 'merge: unrecorded implementation path']);
+    const targetHead = await git(projectRoot, ['rev-parse', 'HEAD']);
+
+    await expect(
+      verifyFormalVersionSnapshotAfterGitMerge(projectRoot, workItemId, targetHead),
+    ).rejects.toThrow('POST_MERGE_IMPLEMENTATION_FILE_SET_MISMATCH');
+  });
+
+  it('rejects post-merge verification when an invalid snapshot was merged outside the controlled runner', async () => {
+    const snapshotPath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'formal_version_snapshot.json',
+    );
+    const snapshot = JSON.parse(await fs.readFile(snapshotPath, 'utf8'));
+    snapshot.implementation_files = [];
+    snapshot.implementation_tree_fingerprint = digest('');
+    await writeJson(snapshotPath, snapshot);
+    await git(projectRoot, ['add', '--', snapshotPath]);
+    await git(projectRoot, ['commit', '-m', 'test: invalid snapshot before manual merge']);
+    await git(projectRoot, ['switch', 'main']);
+    await git(projectRoot, ['merge', '--no-ff', featureBranch, '-m', 'merge: invalid snapshot']);
+    const targetHead = await git(projectRoot, ['rev-parse', 'HEAD']);
+
+    await expect(
+      verifyFormalVersionSnapshotAfterGitMerge(projectRoot, workItemId, targetHead),
+    ).rejects.toThrow('POST_MERGE_IMPLEMENTATION_FILE_SET_MISMATCH');
+  });
+
   it('requires explicit confirmation and proves actual repository delivery after merge', async () => {
     const plan = await gitMergePlan({
       projectRoot,
@@ -164,6 +255,7 @@ describe('post-close formal Git merge governance', () => {
     expect(verified.repository_delivery_state).toBe('closed_and_git_merged');
     expect(verified.work_item_branch_is_ancestor).toBe(true);
     expect(verified.merge_commit).toBe(true);
+    expect(verified.formal_version.implementation_file_set_matches).toBe(true);
     expect(verified.formal_version.implementation_tree_matches).toBe(true);
   });
 

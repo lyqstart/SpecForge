@@ -2838,3 +2838,357 @@ WI0002_ACTION=NOT_STARTED
 WI0003_ACTION=NOT_STARTED
 NEXT_ACTION=USER_MANUALLY_RESTART_DAEMON_OPENCODE_AND_RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONLY
 ```
+
+## WI-0001 Merge Plan文件集合缺口、ERR-136—ERR-139闭包（2026-08-05）
+
+### 当前远程与权威基线
+
+```text
+REMOTE_URL=https://github.com/lyqstart/SpecForge.git
+REMOTE_BRANCH=main
+REMOTE_HEAD=92792ec35cfddad42a7214e6822ba222c4e8fe7a
+AUTHORITY_PATH=docs/design/SpecForge架构一致性治理最终实施方案.md
+AUTHORITY_COMMIT=08629b58c6aad82bf669a35e1f2bc8473cfa7ef3
+AUTHORITY_SHA256=98410b513692acc049403c9cc8d2b6264edbb3cbc2d0798089e7458ac6674ccd
+```
+
+### WI-0001真实Merge Plan证据
+
+```text
+CHECKPOINT_COMMIT=4f616d167f01ba24a63165f094386bd9157167c1
+MERGE_PLAN_CAN_MERGE_REPORTED=true
+MERGE_PLAN_BLOCKING_ISSUES_REPORTED=0
+FORMAL_VERSION_IMPLEMENTATION_FILES_REPORTED=0
+ACTUAL_NON_GOVERNANCE_DIFF_FILES=4
+ACTUAL_DIFF_PATHS=src/cli/main.js,src/domain/status.js,src/reporting/formatter.js,src/storage/repository.js
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+POST_MERGE_VERIFY=NOT_PERFORMED
+WI0002_ACTION=NOT_PERFORMED
+WI0003_ACTION=NOT_PERFORMED
+```
+
+### ERR-136产品修复
+
+Formal Version此前只证明已登记文件内容，没有证明登记文件集合覆盖
+`base_commit...source_head` 的全部非 `.specforge/**` Git Diff。
+
+本次要求 Formal Version Gate、Git Merge Plan、Git Merge Run和Post-Merge Verify统一执行：
+
+```text
+snapshot.implementation_files
+=
+git diff --name-only base_commit...source_head
+- .specforge/**
+```
+
+缺失或多余任一路径立即失败关闭。
+
+```text
+ERR136_CLASSIFICATION=PRODUCT_DEFECT
+ERR136_STATUS=PRODUCT_FIX_ENGINEERING_VALIDATED_PENDING_COMMIT_DEPLOY_AND_REAL_WI_RECHECK
+AUTHORITY_REVISION=NOT_REQUIRED_EXISTING_FAIL_CLOSED_RULES_ALREADY_APPLY
+```
+
+### ERR-137证据纠正
+
+此前把缓存网页结果误报为当前远程 `main`。真实Git预检证明远程已经是
+`92792ec35cfddad42a7214e6822ba222c4e8fe7a`，没有执行推送。
+
+```text
+ERR137_CLASSIFICATION=EVIDENCE_REPORTING_DEFECT
+ERR137_STATUS=CLOSED_EVIDENCE_CORRECTED_NO_REMOTE_WRITE
+REMOTE_MAIN_RECOVERY_ACTION=NOT_REQUIRED_REMOTE_ALREADY_92792EC
+```
+
+### V79失败与ERR-138
+
+```text
+FAILED_STAGE=APPLY_PATCH
+ERROR=ANCHOR_COUNT_MISMATCH[binding_comparison]=0
+FILES_CHANGED=0
+```
+
+```text
+V79_FAILURE_CLASS=PACKAGE_PREFLIGHT_DEFECT
+ERR138_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR138_STATUS=CLOSED_BY_TRANSACTIONAL_PREWRITE_VALIDATION
+```
+
+### V80失败与ERR-139
+
+V80的全部转换仍在内存中执行，因此没有修改文件；但用于截取Post-Merge函数的结束标记
+`\n}` 在源码中命中81次，完整转换失败。
+
+```text
+FAILED_STAGE=APPLY_PATCH
+ERROR=SEGMENT_MARKER_MISMATCH[source_postmerge_segment]:start=1;end=81
+FILES_CHANGED=0
+V80_FAILURE_CLASS=PACKAGE_PREFLIGHT_DEFECT
+ERR139_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR139_STATUS=FIX_INCLUDED_IN_V81_PENDING_REAL_EXECUTION
+```
+
+V81不再推断函数结束位置，只替换已经核对为唯一命中的语义代码块。
+
+### 后续边界
+
+```text
+P0_OVERALL_STATUS=IN_PROGRESS
+WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_MERGE_BLOCKED_BY_ERR136
+NEXT_ACTION=COMMIT_PUSH_DEPLOY_ERR136_THEN_REVALIDATE_CLOSED_WI0001_MERGE_PLAN_ONLY
+```
+
+在修复提交、正式安装和独立验证项目重新运行Merge Plan前，不得执行WI-0001 Git Merge。
+
+## V81范围审计解析失败与ERR-140（2026-08-05）
+
+V81已经完成6个批准文件的内存转换和实际写入，但范围审计错误地把：
+
+```text
+ M docs/implementation/architecture-consistency/current-handoff.md
+```
+
+解析为：
+
+```text
+ocs/implementation/architecture-consistency/current-handoff.md
+```
+
+因此停止在测试前，没有提交、推送、安装或执行WI-0001 Merge。
+
+根因是V81的通用Git输出函数对完整输出调用 `strip()`，删除了第一行Porcelain状态中的语义前导空格；后续仍按固定三列截取路径，导致首个路径字符被删除。这与ERR-133属于同一已知错误类型，说明既有经验规则没有进入封包脚本机器预检。
+
+V82取消使用Porcelain列解析，分别使用：
+
+```text
+git diff --name-only
+git diff --cached --name-only
+git ls-files --others --exclude-standard
+```
+
+核对未暂存、已暂存和未跟踪文件。
+
+```text
+ERR140_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR140_REPEATED_ERROR=ERR-133
+ERR140_STATUS=FIX_INCLUDED_IN_V82_PENDING_REAL_EXECUTION
+V81_FILES_CHANGED=EXACT_6_APPROVED_FILES
+V81_COMMIT_ACTION=NOT_PERFORMED
+V81_PUSH_ACTION=NOT_PERFORMED
+V81_WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+```
+
+## V82定向测试入口漂移与ERR-141（2026-08-05）
+
+V82已完成ERR-140记录、精确6文件范围审计并进入定向测试，但测试命令从仓库根目录执行：
+
+```text
+bunx vitest run packages/daemon-core/tests/unit/...
+```
+
+实际使用了根目录 `vitest.config.ts`。该配置只匹配：
+
+```text
+tests/**/*.test.ts
+tests/**/*.property.test.ts
+```
+
+因此没有发现 `packages/daemon-core/tests/**`。根目录未直接声明 `vitest`，`bunx`还临时解析到Vitest 4.1.5；daemon-core包自身声明Vitest 3.x并具有独立配置。
+
+V83改为进入：
+
+```text
+packages/daemon-core
+```
+
+然后运行该包自己的：
+
+```text
+bun run test -- tests/unit/formal-version-git-closure-regression.test.ts tests/unit/post-close-git-merge-governance.test.ts tests/unit/specforge-development-experience-gate.test.ts
+```
+
+```text
+ERR141_CLASSIFICATION=TEST_DRIFT
+ERR141_PRODUCT_CODE_IMPACT=NONE
+ERR141_STATUS=FIX_INCLUDED_IN_V83_PENDING_REAL_EXECUTION
+V82_COMMIT_ACTION=NOT_PERFORMED
+V82_PUSH_ACTION=NOT_PERFORMED
+V82_WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+```
+
+## V83—V87全量回归归因与隔离交付方法闭包（2026-08-05）
+
+V83使用daemon-core包级入口完成了本次3个目标文件的定向回归：
+
+```text
+TARGETED_TEST_FILES=3
+TARGETED_TESTS=19
+TARGETED_PASSED=19
+TARGETED_FAILED=0
+TYPESCRIPT_NO_EMIT=PASS
+DAEMON_CORE_BUILD=PASS
+WORKSPACE_BUILD=PASS
+GIT_DIFF_CHECK=PASS
+```
+
+daemon-core全量侦察结果为：
+
+```text
+TOTAL_TESTS=1550
+PASSED_TESTS=1385
+FAILED_TESTS=165
+FAILED_TEST_FILES=37
+```
+
+失败分布包含旧状态名、live daemon单实例、用户目录运行态、历史源码字面断言及旧治理消费者，和仓库既有全量测试债务类型一致。该结果不能直接归因于ERR-136，也不能被后续成功覆盖。
+
+### ERR-142：缺少同提交A/B基线即执行全量归因
+
+V83先运行补丁版本全量测试，未先对精确 `92792ec...` 干净基线运行相同命令，因此不能证明165个失败是否由本次补丁新增。
+
+```text
+ERR142_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR142_STATUS=CLOSED_BY_FINAL_EXACT_HEAD_AB_GATE
+```
+
+最终交付命令必须在临时detached worktree对干净基线和最终补丁使用同一Bun、同一测试参数、隔离HOME/TEMP和固定seed执行全量测试，并比较规范化失败测试集合。补丁新增失败不为0时禁止提交和推送。
+
+### ERR-143：Windows Bun CMD包装器直接CreateProcess失败
+
+V84临时worktree创建成功后，Python以 `shell=False` 直接执行 `bun.cmd`，Windows返回 `WinError 2`。
+
+```text
+ERR143_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR143_STATUS=CLOSED_BY_COMSPEC_CALL_WRAPPER
+```
+
+`.cmd/.bat` 必须通过 `%COMSPEC% /d /s /c call` 执行；`.exe` 才允许直接CreateProcess。
+
+### ERR-144：Git Bundle输出目录未预创建
+
+V86在 `git bundle create` 前未创建 `evidence` 目录，Git无法创建 `.lock` 文件。V87先创建全部目录、生成Bundle并立即执行 `git bundle verify`，最终交接包成功且真实仓库未变化。
+
+```text
+ERR144_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR144_STATUS=CLOSED_BY_DIRECTORY_AND_BUNDLE_VERIFY_PREFLIGHT
+HANDOFF_ZIP_SHA256=4341c9fffba87f10befcf8bc528a01ee6941a8b4e6574cb843ae14b012c6df2a
+WORKING_DIFF_SHA256=c94aee67c21380dada82edf9f6676d70c71561d9f3592fb072fee93569a211fc
+```
+
+### 最终产品闭包补充
+
+Post-Merge Verify除验证Formal Version时的实现提交外，还必须解析最终源分支HEAD，并证明：
+
+```text
+source_branch_head is ancestor of target_head
+snapshot.implementation_files
+=
+git diff --name-only base_commit...source_branch_head
+- .specforge/**
+```
+
+这样即使有人绕过受控Merge Runner，在Formal Version后向源分支新增业务文件并手工合并，Post-Merge Verify也会失败关闭。
+
+```text
+ERR136_STATUS=FIX_IMPLEMENTED_FINAL_SOURCE_BRANCH_FILE_SET_CONSUMER_INCLUDED
+FINAL_DELIVERY_METHOD=COMPLETE_FILES_PLUS_SINGLE_FAIL_CLOSED_CMD
+COMMIT_GATE=TARGETED_PASS_AND_EXACT_HEAD_AB_NEW_FAILURES_ZERO_AND_TYPECHECK_BUILD_DIFF_SCOPE_PASS
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+POST_MERGE_VERIFY=NOT_PERFORMED
+WI0002_ACTION=NOT_PERFORMED
+WI0003_ACTION=NOT_PERFORMED
+P0_OVERALL_STATUS=IN_PROGRESS
+NEXT_ACTION=APPLY_VALIDATE_COMMIT_PUSH_AND_INSTALL_ERR136_THEN_RESTART_MANUALLY_AND_RECHECK_WI0001_MERGE_PLAN_ONLY
+```
+
+## V88全量A/B比较器误报与ERR-145闭包（2026-08-06）
+
+V88在提交前完成最终产品定向测试：
+
+```text
+TARGETED_TESTS=20
+TARGETED_PASSED=20
+TARGETED_FAILED=0
+```
+
+随后全量A/B报告：
+
+```text
+BASELINE_FULL_EXIT=1
+PATCHED_FULL_EXIT=1
+BASELINE_FAILED_TEST_COUNT=121
+PATCHED_FAILED_TEST_COUNT=154
+PATCH_INTRODUCED_FAILED_TEST_COUNT=42
+COMMIT_ACTION=NOT_PERFORMED
+PUSH_ACTION=NOT_PERFORMED
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+V88_EVIDENCE_ZIP_SHA256=7f359b83a6fc1d37b2faf0576710d1d3fcf67ffb05d6508368771c7270a27514
+```
+
+证据复核确认，42项全部位于以下6个文件：
+
+```text
+tests/integration/api-endpoints.test.ts
+tests/integration/daemon-integration.test.ts
+tests/integration/daemon-lifecycle.test.ts
+tests/integration/extension-loader.test.ts
+tests/integration/pbt-state.test.ts
+tests/performance.test.ts
+```
+
+baseline中A/B收集层级不一致实际共有8个文件。上述6个文件在patched侧产生42个具体失败；另外 `tests/unit/daemon.test.ts` 和 `tests/unit/governance-closure-core.test.ts` 在patched侧已正常收集。baseline侧8个文件均因workspace包 `dist` 入口未生成而在加载阶段失败，没有收集任何测试用例。V88比较器把baseline `SUITE_LEVEL_FAILURE` 与patched具体失败用例按字符串做差，产生42项错误归因。
+
+```text
+ERR145_CLASSIFICATION=VALIDATOR_DEFECT
+ERR145_PRODUCT_CODE_IMPACT=NONE
+ERR145_FALSE_NEW_FAILURE_COUNT=42
+ERR145_AB_INCOMPARABLE_FILE_COUNT=8
+ERR145_STATUS=FIX_INCLUDED_IN_V89_PENDING_REAL_EXECUTION
+```
+
+V89最终交付方法：
+
+```text
+创建baseline和patched两个detached临时工作树
+→ 只在patched临时工作树应用完整6文件
+→ 两侧执行相同bun install与workspace build
+→ 两侧使用独立运行目录执行相同全量测试
+→ Suite加载失败与用例失败分层比较
+→ 定向测试、A/B、TypeScript、构建、Installer、Diff和范围全部通过
+→ 才将完整6文件写入真实仓库
+→ 提交、正常推送main、用户级upgrade与verify
+```
+
+```text
+ERR136_STATUS=FIX_IMPLEMENTED_PENDING_V89_VALIDATION_COMMIT_DEPLOY_AND_REAL_WI_RECHECK
+P0_OVERALL_STATUS=IN_PROGRESS
+WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_MERGE_BLOCKED_PENDING_ERR136_DEPLOYMENT
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+POST_MERGE_VERIFY=NOT_PERFORMED
+WI0002_ACTION=NOT_PERFORMED
+WI0003_ACTION=NOT_PERFORMED
+NEXT_ACTION=RUN_SINGLE_V89_FAIL_CLOSED_DELIVERY_THEN_MANUALLY_RESTART_AND_RECHECK_WI0001_MERGE_PLAN_ONLY
+```
+
+## V89封包前Git输出通道隔离与ERR-146（2026-08-06）
+
+V89最终ZIP生成前使用V87 Git Bundle在隔离仓库执行完整文件替换演练。Git针对历史二进制ZIP路径输出CRLF warning；旧包装器把stderr合并到stdout，导致范围审计把警告文本误判为额外路径。
+
+```text
+ERR146_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR146_STAGE=FINAL_PACKAGE_ISOLATED_REHEARSAL
+ERR146_REAL_REPOSITORY_ACTION=NOT_PERFORMED
+ERR146_REMOTE_ACTION=NOT_PERFORMED
+ERR146_STATUS=CLOSED_PREFLIGHT_BEFORE_V89_DELIVERY
+```
+
+V89最终包装器对机器Git协议分别捕获stdout与stderr，成功时只解析stdout；stderr仅进入诊断日志。随后必须重新完成：
+
+```text
+Comparator纯函数回归
+V88真实报告复算
+Git Bundle隔离克隆完整文件替换
+git diff --check
+精确6文件路径和payload SHA256审计
+最终ZIP成员与哈希审计
+```

@@ -578,10 +578,10 @@ describe('SpecForge development experience pre-read gate', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
     const p0 = readFileSync(p0ContractClosurePath, 'utf-8');
 
-    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135']) {
+    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146']) {
       expect(experience).toContain(`### ${id}：`);
     }
-    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111']) {
+    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123']) {
       expect(experience).toContain(`## ${id}：`);
     }
 
@@ -589,6 +589,18 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experience).toContain('Git porcelain是固定列协议');
     expect(experience).toContain('禁止容器内部自引用');
     expect(experience).toContain('sys.modules[spec.name] = module');
+    expect(experience).toContain('Formal Version文件集合必须与真实非治理Git Diff精确一致');
+    expect(experience).toContain('远程分支HEAD必须由实时Git协议确认');
+    expect(experience).toContain('交付补丁必须事务化写入');
+    expect(experience).toContain('补丁定位必须使用唯一语义代码块');
+    expect(experience).toContain('Porcelain状态列不得经过strip');
+    expect(experience).toContain('包内测试必须从包级入口运行');
+    expect(experience).toContain('全量回归失败必须先做同提交A/B归因');
+    expect(experience).toContain('Windows命令包装器必须通过COMSPEC执行');
+    expect(experience).toContain('证据产物必须先建目录再生成并立即自检');
+    expect(experience).toContain('用户环境不是补丁开发调试环境');
+    expect(experience).toContain('A/B验证必须在对称构建的临时工作树中按同粒度结果比较');
+    expect(experience).toContain('机器协议stdout与诊断stderr必须分离');
 
     expect(handoff).toContain('## WI-0001仓库消失、精确恢复与ERR-132—ERR-135闭包（2026-08-05）');
     expect(handoff).toContain('RECOVERY_STATUS=EXACT_GIT_REPOSITORY_RESTORED');
@@ -596,6 +608,25 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('STATUS=PASS_EXACT_4_CLOSE_ARTIFACTS');
     expect(handoff).toContain('WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_PENDING_GIT_MERGE');
     expect(handoff).toContain('NEXT_ACTION=USER_MANUALLY_RESTART_DAEMON_OPENCODE_AND_RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONLY');
+    expect(handoff).toContain('## WI-0001 Merge Plan文件集合缺口、ERR-136—ERR-139闭包（2026-08-05）');
+    expect(handoff).toContain('V80_FAILURE_CLASS=PACKAGE_PREFLIGHT_DEFECT');
+    expect(handoff).toContain('ERR136_STATUS=PRODUCT_FIX_ENGINEERING_VALIDATED_PENDING_COMMIT_DEPLOY_AND_REAL_WI_RECHECK');
+    expect(handoff).toContain('WI0001_GIT_MERGE_ACTION=NOT_PERFORMED');
+    expect(handoff).toContain('## V81范围审计解析失败与ERR-140（2026-08-05）');
+    expect(handoff).toContain('ERR140_REPEATED_ERROR=ERR-133');
+    expect(handoff).toContain('## V82定向测试入口漂移与ERR-141（2026-08-05）');
+    expect(handoff).toContain('ERR141_CLASSIFICATION=TEST_DRIFT');
+    expect(handoff).toContain('## V83—V87全量回归归因与隔离交付方法闭包（2026-08-05）');
+    expect(handoff).toContain('ERR142_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT');
+    expect(handoff).toContain('ERR143_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT');
+    expect(handoff).toContain('ERR144_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT');
+    expect(handoff).toContain('FINAL_DELIVERY_METHOD=COMPLETE_FILES_PLUS_SINGLE_FAIL_CLOSED_CMD');
+    expect(handoff).toContain('## V88全量A/B比较器误报与ERR-145闭包（2026-08-06）');
+    expect(handoff).toContain('ERR145_CLASSIFICATION=VALIDATOR_DEFECT');
+    expect(handoff).toContain('ERR145_FALSE_NEW_FAILURE_COUNT=42');
+    expect(handoff).toContain('ERR145_AB_INCOMPARABLE_FILE_COUNT=8');
+    expect(handoff).toContain('## V89封包前Git输出通道隔离与ERR-146（2026-08-06）');
+    expect(handoff).toContain('ERR146_STATUS=CLOSED_PREFLIGHT_BEFORE_V89_DELIVERY');
 
     expect(p0).toContain('### 25.64 WI-0001原Git仓库精确恢复与正式Merge边界保持');
     expect(p0).toContain('GIT_MERGE_ACTION=NOT_PERFORMED');

@@ -3686,3 +3686,285 @@ ERR-135=CLOSED_PREFLIGHT
 ```
 
 这类自检必须在最终ZIP生成前完成。
+
+### ERR-136：Formal Version文件集合漏记实际业务代码但Git Merge仍被放行
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：WI-0001分支相对 `main` 存在4个业务代码文件，但正式版本快照登记0个实现文件；Merge Plan仍返回可合并。
+- **根因**：只校验已登记文件指纹，没有把登记集合与完整非 `.specforge/**` Git Diff对账。
+- **修复**：Formal Version生产、Merge Plan、Merge Run和Post-Merge Verify均执行精确文件集合对账。
+- **状态**：`PRODUCT_FIX_ENGINEERING_VALIDATED_PENDING_COMMIT_DEPLOY_AND_REAL_WI_RECHECK`
+
+## EXP-112：Formal Version文件集合必须与真实非治理Git Diff精确一致
+
+```text
+recorded implementation_files
+=
+git diff --name-only base_commit...source_head
+- .specforge/**
+```
+
+缺失和多余路径都必须阻断；空集合只有在真实非治理Diff也为空时合法。
+
+### ERR-137：把缓存网页证据误报为当前远程main状态
+
+- **分类**：`EVIDENCE_REPORTING_DEFECT`
+- **根因**：把缓存网页视图当作实时Git引用。
+- **修复**：远程HEAD和恢复判断只接受实时Git协议证据。
+- **状态**：`CLOSED_EVIDENCE_CORRECTED_NO_REMOTE_WRITE`
+
+## EXP-113：远程分支HEAD必须由实时Git协议确认
+
+```text
+git ls-remote <remote> refs/heads/<branch>
+或
+git fetch <remote> <branch>
++ git rev-parse refs/remotes/<remote>/<branch>
+```
+
+网页资料不能替代实时远程引用证据。
+
+### ERR-138：V79补丁锚点未对当前远程源码完成真实预演
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **现场**：V79因一个长段字面锚点0次命中停止。
+- **影响**：没有修改、提交、推送或WI操作。
+- **修复**：全部目标文件先在内存转换和校验，全部成功后才写入。
+- **状态**：`CLOSED_BY_TRANSACTIONAL_PREWRITE_VALIDATION`
+
+## EXP-114：交付补丁必须事务化写入
+
+```text
+读取全部批准文件
+→ 全部转换仅在内存执行
+→ 校验全部锚点和最终标记
+→ 全部成功后一次写入
+```
+
+禁止边匹配边写入。
+
+### ERR-139：V80使用非唯一函数结束标记导致完整转换失败
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **现场**：V80用通用 `\n}` 识别Post-Merge函数结束位置，在源码中命中81次。
+- **影响**：事务化预检阻止了任何文件写入，但用户执行仍失败。
+- **根因**：开始标记唯一，结束标记不唯一；封包逻辑把文件级通用符号误作函数级边界。
+- **修复**：V81取消该函数区段截取，改为替换经过精确核对的唯一语义代码块。
+- **状态**：`FIX_INCLUDED_IN_V81_PENDING_REAL_EXECUTION`
+
+## EXP-115：补丁定位必须使用唯一语义代码块
+
+补丁定位必须满足：
+
+```text
+开始和结束边界均唯一
+或
+直接替换完整且唯一的语义代码块
+```
+
+禁止把通用大括号、空行、缩进或行号单独用作结构边界。锚点命中次数不是1时必须在写入前停止。
+
+### ERR-140：V81再次删除git status porcelain首行语义前导空格
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **重复错误**：`ERR-133`
+- **现场**：V81已写入精确6个批准文件，但范围审计把 `docs/implementation/...` 解析为 `ocs/implementation/...`，随后失败关闭。
+- **根因**：封包脚本的通用Git输出函数对完整输出调用 `strip()`，删除第一行 `git status --short` 的状态前导空格；路径解析仍按三列格式截取。
+- **影响**：6个批准文件处于未暂存修改状态；没有提交、推送、安装或WI操作；测试尚未运行。
+- **修复**：V82不再从Porcelain状态列提取文件路径，分别使用 `git diff --name-only`、`git diff --cached --name-only` 和 `git ls-files --others --exclude-standard` 审计三类文件。
+- **状态**：`FIX_INCLUDED_IN_V82_PENDING_REAL_EXECUTION`
+
+## EXP-116：Porcelain状态列不得经过strip
+
+`git status --short` 和 `git status --porcelain` 的前导空格是状态协议的一部分，禁止对完整输出执行：
+
+```text
+strip()
+lstrip()
+trim()
+```
+
+文件范围审计优先使用不依赖状态列宽度的命令：
+
+```text
+未暂存文件 → git diff --name-only
+已暂存文件 → git diff --cached --name-only
+未跟踪文件 → git ls-files --others --exclude-standard
+```
+
+必须增加机器预检，证明首个状态为“仅工作树修改”的文件仍保留完整首字符。
+
+### ERR-141：V82从仓库根目录调用错误的Vitest配置
+
+- **分类**：`TEST_DRIFT`
+- **现场**：V82使用 `bunx vitest run packages/daemon-core/tests/unit/...`；Vitest读取根目录配置，只包含根目录 `tests/**`，报告 `No test files found`。根目录没有直接声明Vitest，`bunx`临时使用4.1.5。
+- **根因**：验证脚本没有遵守daemon-core包级测试入口和包级Vitest配置。
+- **影响**：产品补丁和范围审计已完成，但测试未实际执行；没有提交、推送、安装或WI操作。
+- **修复**：进入 `packages/daemon-core` 后通过包自身的 `bun run test -- <包内相对测试路径>` 执行定向测试；全量测试继续使用同一包级入口。
+- **状态**：`FIX_INCLUDED_IN_V83_PENDING_REAL_EXECUTION`
+
+## EXP-117：包内测试必须从包级入口运行
+
+Monorepo中的测试必须先确认：
+
+```text
+测试文件所属package
+package.json中的test脚本
+该package的Vitest配置
+测试路径相对于哪个工作目录
+```
+
+daemon-core测试固定使用：
+
+```text
+cd packages/daemon-core
+bun run test -- tests/unit/<file>.test.ts
+```
+
+禁止从仓库根目录使用 `bunx vitest` 猜测配置或临时解析测试框架版本。定向测试输出必须证明实际发现并执行目标文件。
+
+### ERR-142：未建立同提交全量A/B基线就尝试归因补丁回归
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **现场**：V83定向测试、TypeScript和构建通过，但daemon-core全量运行有165个失败；执行前没有先运行精确 `92792ec...` 干净基线。
+- **根因**：把“运行全量测试”和“证明补丁新增失败”混为一件事。
+- **修复**：最终交付在相同Bun、固定seed、隔离HOME/TEMP和相同参数下运行干净基线与补丁版本，按规范化测试全名比较失败集合。
+- **状态**：`CLOSED_BY_FINAL_EXACT_HEAD_AB_GATE`
+
+## EXP-118：全量回归失败必须先做同提交A/B归因
+
+```text
+clean exact HEAD + same environment + same command
+versus
+patched exact HEAD + same environment + same command
+```
+
+只有 `patched_failures - baseline_failures = ∅` 才能证明补丁没有新增全量回归。历史失败数量、不同环境日志或只运行补丁版本都不能替代A/B。
+
+### ERR-143：Windows Python直接执行bun.cmd导致WinError 2
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **现场**：V84已经创建临时worktree，随后Python直接CreateProcess `bun.cmd` 失败。
+- **根因**：Windows `.cmd/.bat` 是命令解释器脚本，不是可直接CreateProcess的PE可执行文件。
+- **修复**：解析Bun真实路径；`.exe`直接执行，`.cmd/.bat`通过 `%COMSPEC% /d /s /c call` 执行，并在创建临时工作树前运行 `bun --version` 自检。
+- **状态**：`CLOSED_BY_COMSPEC_CALL_WRAPPER`
+
+## EXP-119：Windows命令包装器必须通过COMSPEC执行
+
+跨平台封包器调用外部工具时必须按扩展名分流：
+
+```text
+.exe → direct CreateProcess
+.cmd/.bat → %COMSPEC% /d /s /c call
+```
+
+禁止仅用 `shutil.which()` 成功作为“可执行”证据；必须实际运行版本自检。
+
+### ERR-144：Git Bundle生成前未创建证据目录
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **现场**：V86执行 `git bundle create .../evidence/SpecForge.bundle --all` 时，父目录不存在，Git无法创建Bundle锁文件。
+- **根因**：产物目录创建顺序错误，封包前模拟验证未覆盖真实目录层级。
+- **修复**：先创建全部输出目录，再生成Bundle，立即执行 `git bundle verify`，最后校验ZIP成员和SHA256。
+- **状态**：`CLOSED_BY_DIRECTORY_AND_BUNDLE_VERIFY_PREFLIGHT`
+
+## EXP-120：证据产物必须先建目录再生成并立即自检
+
+所有证据封包固定执行：
+
+```text
+mkdir parents
+→ generate artifact
+→ artifact-native verify
+→ manifest hash
+→ final archive
+→ archive verify
+```
+
+仅检查脚本语法或最终ZIP存在，不足以证明内部证据可用。
+
+## EXP-121：用户环境不是补丁开发调试环境
+
+产品修改必须先在精确仓库副本完成：
+
+```text
+权威文件读取
+→ 精确HEAD重建
+→ 修改范围冻结
+→ 完整文件修改
+→ 定向测试
+→ 同提交A/B回归
+→ TypeScript与构建
+→ 范围和Diff审计
+→ 最终完整文件封包
+```
+
+用户侧只接收一个完成验证的完整ZIP和一条失败关闭命令。禁止把字符串锚点调试、测试入口试错、环境探测或封包脚本开发转移到用户仓库。
+
+### ERR-145：V88未对称构建A/B工作树并混用Suite级与用例级失败
+
+- **分类**：`VALIDATOR_DEFECT`
+- **现场**：V88定向测试20/20通过；全量A/B报告baseline失败121项、patched失败154项，并误报42项补丁新增失败。
+- **一手证据**：V88两侧收集层级不一致共8个测试文件。42项错误“新增失败”全部来自其中6个文件；另外 `tests/unit/daemon.test.ts` 与 `tests/unit/governance-closure-core.test.ts` 在patched侧已收集且没有对应新增失败。baseline侧8个文件都没有收集到任何用例，而是在加载阶段因workspace包 `dist` 入口不存在而记录为 `SUITE_LEVEL_FAILURE`；patched侧使用此前已构建的真实仓库，能够收集用例。
+- **根因**：baseline临时工作树只执行 `bun install`，没有先执行workspace build；patched侧直接使用真实仓库已有构建产物，A/B前置条件不对称。比较器又把baseline的Suite级加载失败与patched的用例级失败放入同一字符串集合，导致同一文件的失败被错误计算为“旧Suite失败已解决 + 42个新用例失败”。
+- **影响**：V88正确阻止提交、推送、安装和WI-0001 Git Merge；真实仓库仍只有精确6个未暂存批准文件。42项不能作为ERR-136产品回归证据。
+- **修复**：V89在两个独立detached临时工作树中重建同一 `92792ec...`；只向patched临时工作树应用最终6文件；两侧使用同一Bun、安装命令、workspace build、测试命令和彼此隔离的HOME/TEMP。比较器分别处理Suite加载失败与已收集用例失败；任一文件两侧收集层级不同即标记A/B不可比较并失败关闭。全部验证通过前不修改真实仓库。
+- **状态**：`FIX_INCLUDED_IN_V89_PENDING_REAL_EXECUTION`
+
+## EXP-122：A/B验证必须在对称构建的临时工作树中按同粒度结果比较
+
+A/B回归固定满足：
+
+```text
+baseline = detached exact HEAD + install + workspace build
+patched  = detached exact HEAD + exact payload + install + workspace build
+```
+
+两侧必须使用：
+
+```text
+同一Bun路径和版本
+同一锁文件和安装参数
+同一构建命令
+同一测试入口和参数
+不同且完全隔离的HOME/TEMP/APPDATA/OPENCODE_CONFIG_DIR
+```
+
+比较规则：
+
+1. Suite加载失败与具体用例失败分开建模；
+2. 同一测试文件一侧未收集用例、另一侧已收集用例时，结果为 `AB_INCOMPARABLE`，不得计算新增失败；
+3. 只有两侧均完成同层级收集后，才能比较规范化失败用例集合；
+4. baseline和patched均不得直接使用真实开发工作树；
+5. 定向测试、全量A/B、TypeScript、构建、Installer和Diff审计全部通过后，才允许把已验证的完整文件写入真实仓库；
+6. A/B验证脚本必须用历史错误证据执行纯函数回归，至少覆盖“Suite级失败对用例级失败不得比较”。
+
+### ERR-146：机器读取Git路径列表时把stderr警告混入stdout
+
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT`
+- **现场**：V89封包前在隔离Git Bundle克隆仓库执行完整文件替换演练时，`git diff --name-only` 的stdout包含批准文件路径，stderr同时输出CRLF转换警告。通用命令包装器把stderr合并到stdout，范围审计将警告文本误当成额外文件路径并失败关闭。
+- **根因**：同一个命令执行函数同时服务“人类日志”和“机器协议”，统一使用 `stderr=STDOUT`；调用方无法区分Git路径协议与诊断信息。
+- **影响**：问题在最终ZIP生成前的隔离演练被阻断；用户仓库、远程仓库、安装和WI均未操作。
+- **修复**：所有用于分支名、HEAD、远程引用、路径集合和状态判断的Git调用分别捕获stdout与stderr；成功时只解析stdout，失败时同时报告stdout和stderr。人类可读日志命令仍可合并输出。
+- **状态**：`CLOSED_PREFLIGHT_BEFORE_V89_DELIVERY`
+
+## EXP-123：机器协议stdout与诊断stderr必须分离
+
+以下命令输出属于机器协议：
+
+```text
+git diff --name-only
+git diff --cached --name-only
+git ls-files
+git rev-parse
+git branch --show-current
+git ls-remote
+```
+
+固定要求：
+
+1. stdout和stderr分别捕获；
+2. 返回码为0时只解析stdout；
+3. stderr警告必须保存为诊断证据，但不得进入路径、SHA、分支或状态集合；
+4. 返回码非0时同时报告stdout和stderr；
+5. 封包前必须用会产生CRLF warning的Git仓库执行范围审计回归。

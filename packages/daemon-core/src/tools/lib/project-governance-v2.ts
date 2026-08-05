@@ -1833,6 +1833,59 @@ async function gitIsAncestor(
   }
 }
 
+async function gitResolveCommit(projectRoot: string, ref: string): Promise<string> {
+  if (!ref) return '';
+  try {
+    const { stdout } = await execFileAsync('git', ['rev-parse', `${ref}^{commit}`], {
+      cwd: projectRoot,
+    });
+    return String(stdout ?? '').trim();
+  } catch {
+    return '';
+  }
+}
+
+function normalizeFormalImplementationFiles(
+  files: string[],
+  projectRoot?: string,
+): string[] {
+  return unique(
+    files
+      .map(value => (projectRoot ? repositoryRelativePath(projectRoot, value) : slash(value)))
+      .filter(value => value && value !== SPEC_DIR && !value.startsWith(`${SPEC_DIR}/`)),
+  );
+}
+export interface FormalImplementationFileSetComparison {
+  matches: boolean;
+  missing_from_recorded_files: string[];
+  unexpected_recorded_files: string[];
+}
+export function compareFormalImplementationFileSets(
+  recordedFiles: string[],
+  committedFiles: string[],
+): FormalImplementationFileSetComparison {
+  const recorded = normalizeFormalImplementationFiles(recordedFiles);
+  const committed = normalizeFormalImplementationFiles(committedFiles);
+  const recordedSet = new Set(recorded);
+  const committedSet = new Set(committed);
+  const missingFromRecordedFiles = committed.filter(file => !recordedSet.has(file));
+  const unexpectedRecordedFiles = recorded.filter(file => !committedSet.has(file));
+  return {
+    matches: missingFromRecordedFiles.length === 0 && unexpectedRecordedFiles.length === 0,
+    missing_from_recorded_files: missingFromRecordedFiles,
+    unexpected_recorded_files: unexpectedRecordedFiles,
+  };
+}
+async function gitCommittedImplementationFiles(
+  projectRoot: string,
+  baseCommit: string,
+  headCommit: string,
+): Promise<string[]> {
+  if (!baseCommit || !headCommit) return [];
+  return normalizeFormalImplementationFiles(
+    await gitLines(projectRoot, ['diff', '--name-only', `${baseCommit}...${headCommit}`, '--']),
+  );
+}
 async function gitImplementationFingerprint(
   projectRoot: string,
   commit: string,
@@ -1862,8 +1915,11 @@ export interface FormalGitBinding {
   base_commit: string;
   base_is_ancestor: boolean;
   committed_files: string[];
+  committed_implementation_files: string[];
   worktree_files: string[];
   implementation_files: string[];
+  implementation_file_set_matches: boolean;
+  unrecorded_committed_implementation_files: string[];
   missing_from_commit: string[];
   uncommitted_implementation_files: string[];
 }
@@ -1890,8 +1946,11 @@ export async function inspectFormalGitBinding(input: {
       base_commit: baseCommit,
       base_is_ancestor: false,
       committed_files: [],
+      committed_implementation_files: [],
       worktree_files: [],
       implementation_files: implementationFiles,
+      implementation_file_set_matches: implementationFiles.length === 0,
+      unrecorded_committed_implementation_files: [],
       missing_from_commit: implementationFiles,
       uncommitted_implementation_files: implementationFiles,
     };
@@ -1908,7 +1967,11 @@ export async function inspectFormalGitBinding(input: {
       gitLines(input.projectRoot, ['ls-files', '--others', '--exclude-standard']),
     ]);
   const worktreeFiles = unique([...trackedWorktreeFiles, ...untrackedFiles]);
-  const committedSet = new Set(committedFiles.map(slash));
+  const committedImplementationFiles = normalizeFormalImplementationFiles(committedFiles);
+  const implementationFileSet = compareFormalImplementationFileSets(
+    implementationFiles,
+    committedImplementationFiles,
+  );
   const worktreeSet = new Set(worktreeFiles.map(slash));
 
   return {
@@ -1919,9 +1982,13 @@ export async function inspectFormalGitBinding(input: {
     base_commit: baseCommit,
     base_is_ancestor: await gitIsAncestor(input.projectRoot, baseCommit, headCommit),
     committed_files: committedFiles,
+    committed_implementation_files: committedImplementationFiles,
     worktree_files: worktreeFiles,
     implementation_files: implementationFiles,
-    missing_from_commit: implementationFiles.filter(file => !committedSet.has(file)),
+    implementation_file_set_matches: implementationFileSet.matches,
+    unrecorded_committed_implementation_files:
+      implementationFileSet.missing_from_recorded_files,
+    missing_from_commit: implementationFileSet.unexpected_recorded_files,
     uncommitted_implementation_files: implementationFiles.filter(file => worktreeSet.has(file)),
   };
 }
@@ -2058,6 +2125,13 @@ export async function checkFormalVersionEligibility(input: {
     );
     addCheck(
       checks,
+      'formal_git_implementation_file_set_complete',
+      'Formal Version implementation files exactly match the WI committed non-governance Git diff',
+      gitBinding.implementation_file_set_matches,
+      `committed=${gitBinding.committed_implementation_files.join(',') || 'none'}; unrecorded=${gitBinding.unrecorded_committed_implementation_files.join(',') || 'none'}; absent_from_commit=${gitBinding.missing_from_commit.join(',') || 'none'}`,
+    );
+    addCheck(
+      checks,
       'formal_git_implementation_committed',
       'Every observed implementation file is present in the WI committed diff',
       gitBinding.missing_from_commit.length === 0,
@@ -2181,13 +2255,13 @@ export async function checkFormalVersionEligibility(input: {
       head_commit: headCommit,
       implementation_commit: gitBinding.enabled ? headCommit : '',
       branch_name: gitBinding.enabled ? gitBinding.branch_name : '',
-      implementation_files: gitBinding.implementation_files,
+      implementation_files: gitBinding.committed_implementation_files,
       implementation_tree_fingerprint:
         gitBinding.enabled && headCommit
           ? await gitImplementationFingerprint(
               input.projectRoot,
               headCommit,
-              gitBinding.implementation_files,
+              gitBinding.committed_implementation_files,
             )
           : '',
       base_commit: baseCommit,
@@ -2245,7 +2319,27 @@ export async function assertFormalVersionSnapshotForGitMerge(
     if (!(await gitIsAncestor(projectRoot, snapshot.implementation_commit, currentHead))) {
       throw new Error('FORMAL_VERSION_IMPLEMENTATION_COMMIT_NOT_ANCESTOR');
     }
-    const implementationFiles = normalizeArray(snapshot.implementation_files);
+    const baseCommit = String(snapshot.base_commit ?? '');
+    if (!baseCommit) {
+      throw new Error('FORMAL_VERSION_BASE_COMMIT_REQUIRED');
+    }
+    const implementationFiles = normalizeFormalImplementationFiles(
+      normalizeArray(snapshot.implementation_files),
+    );
+    const currentImplementationFiles = await gitCommittedImplementationFiles(
+      projectRoot,
+      baseCommit,
+      currentHead,
+    );
+    const implementationFileSet = compareFormalImplementationFileSets(
+      implementationFiles,
+      currentImplementationFiles,
+    );
+    if (!implementationFileSet.matches) {
+      throw new Error(
+        `FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH: missing_from_snapshot=${implementationFileSet.missing_from_recorded_files.join(',') || 'none'}; unexpected_in_snapshot=${implementationFileSet.unexpected_recorded_files.join(',') || 'none'}`,
+      );
+    }
     const fingerprint = await gitImplementationFingerprint(
       projectRoot,
       currentHead,
@@ -2272,6 +2366,7 @@ export interface FormalVersionPostMergeVerification {
   snapshot_present: boolean;
   implementation_commit: string;
   implementation_commit_ancestor: boolean;
+  implementation_file_set_matches: boolean;
   implementation_tree_matches: boolean;
   base_diff_matches: boolean;
 }
@@ -2301,6 +2396,7 @@ export async function verifyFormalVersionSnapshotAfterGitMerge(
   }
 
   let implementationCommitAncestor = true;
+  let implementationFileSetMatches = true;
   let implementationTreeMatches = true;
   let baseDiffMatches = true;
   const implementationCommit = String(snapshot.implementation_commit ?? '');
@@ -2314,10 +2410,40 @@ export async function verifyFormalVersionSnapshotAfterGitMerge(
     if (!implementationCommitAncestor) {
       throw new Error('POST_MERGE_IMPLEMENTATION_COMMIT_NOT_ANCESTOR');
     }
+    const baseCommit = String(snapshot.base_commit ?? '');
+    if (!baseCommit) {
+      throw new Error('POST_MERGE_BASE_COMMIT_REQUIRED');
+    }
+    const sourceBranch = String(snapshot.branch_name ?? '');
+    const sourceHead = await gitResolveCommit(projectRoot, sourceBranch);
+    if (!sourceBranch || !sourceHead) {
+      throw new Error('POST_MERGE_SOURCE_BRANCH_REQUIRED');
+    }
+    if (!(await gitIsAncestor(projectRoot, sourceHead, targetHead))) {
+      throw new Error('POST_MERGE_SOURCE_HEAD_NOT_ANCESTOR');
+    }
+    const implementationFiles = normalizeFormalImplementationFiles(
+      normalizeArray(snapshot.implementation_files),
+    );
+    const sourceImplementationFiles = await gitCommittedImplementationFiles(
+      projectRoot,
+      baseCommit,
+      sourceHead,
+    );
+    const implementationFileSet = compareFormalImplementationFileSets(
+      implementationFiles,
+      sourceImplementationFiles,
+    );
+    implementationFileSetMatches = implementationFileSet.matches;
+    if (!implementationFileSetMatches) {
+      throw new Error(
+        `POST_MERGE_IMPLEMENTATION_FILE_SET_MISMATCH: missing_from_snapshot=${implementationFileSet.missing_from_recorded_files.join(',') || 'none'}; unexpected_in_snapshot=${implementationFileSet.unexpected_recorded_files.join(',') || 'none'}`,
+      );
+    }
     const fingerprint = await gitImplementationFingerprint(
       projectRoot,
       targetHead,
-      normalizeArray(snapshot.implementation_files),
+      implementationFiles,
     );
     implementationTreeMatches =
       fingerprint === String(snapshot.implementation_tree_fingerprint ?? '');
@@ -2339,6 +2465,7 @@ export async function verifyFormalVersionSnapshotAfterGitMerge(
     snapshot_present: true,
     implementation_commit: implementationCommit,
     implementation_commit_ancestor: implementationCommitAncestor,
+    implementation_file_set_matches: implementationFileSetMatches,
     implementation_tree_matches: implementationTreeMatches,
     base_diff_matches: baseDiffMatches,
   };

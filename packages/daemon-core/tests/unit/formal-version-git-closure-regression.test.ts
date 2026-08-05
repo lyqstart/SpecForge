@@ -117,6 +117,35 @@ describe('formal version Git closure regressions', () => {
     expect(afterCommit.uncommitted_implementation_files).toEqual([]);
   });
 
+  it('detects committed implementation files omitted from observed formal evidence', async () => {
+    await git(projectRoot, ['init', '-b', 'main']);
+    await git(projectRoot, ['config', 'user.name', 'SpecForge Test']);
+    await git(projectRoot, ['config', 'user.email', 'specforge-test@example.invalid']);
+    await fs.writeFile(path.join(projectRoot, 'README.md'), '# test\n');
+    await git(projectRoot, ['add', '--', 'README.md']);
+    await git(projectRoot, ['commit', '-m', 'chore: baseline']);
+    const baseCommit = await git(projectRoot, ['rev-parse', 'HEAD']);
+    await git(projectRoot, ['switch', '-c', 'feature/workdesk-wi-0002']);
+    await fs.mkdir(path.join(projectRoot, 'src'), { recursive: true });
+    await fs.writeFile(path.join(projectRoot, 'src', 'main.ts'), 'export const value = 1;\n');
+    await git(projectRoot, ['add', '--', 'src/main.ts']);
+    await git(projectRoot, ['commit', '-m', 'feat: implement workdesk']);
+
+    const binding = await inspectFormalGitBinding({
+      projectRoot,
+      gitContext: {
+        git_enabled: true,
+        branch_name: 'feature/workdesk-wi-0002',
+        base_commit: baseCommit,
+      },
+      implementationFiles: [],
+    });
+
+    expect(binding.committed_implementation_files).toEqual(['src/main.ts']);
+    expect(binding.unrecorded_committed_implementation_files).toEqual(['src/main.ts']);
+    expect(binding.missing_from_commit).toEqual([]);
+    expect(binding.implementation_file_set_matches).toBe(false);
+  });
   it('does not skip the formal-version close guard when trigger_result lacks impact_scope', async () => {
     await fs.writeFile(
       path.join(workItemDir, 'trigger_result.json'),
