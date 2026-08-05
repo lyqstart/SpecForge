@@ -121,7 +121,7 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 | impact_analyzing | sf-design | — | change_classification.md,impact_analysis.md |
 | impact_analyzed | — | — | trigger_result.json |
 | workflow_selected | — | — | Gate 判定（pass→candidate_preparing, fail→blocked） |
-| candidate_preparing | sf-design + sf-task-planner + Runtime | — | Architecture/Data/Module Design/Module Contract Candidates；tasks.md；trace_delta.md；Runtime candidate_manifest.json |
+| candidate_preparing | sf-design | — | tasks.md,trace_delta.md,candidate_manifest.json |
 | candidate_prepared | — | — | — |
 | gates_running | — | — | Gate 判定（pass→approval_required, fail→gates_failed） |
 | approval_required | — | — | — |

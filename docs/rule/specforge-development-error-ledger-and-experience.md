@@ -3363,3 +3363,79 @@ Monorepo中`bun install`或其他workspace安装只证明依赖链接建立，�
 ```text
 ERR-124=FIX_IMPLEMENTED
 ```
+
+### ERR-125：V74全仓构建生成范围外Skill，但验证器在提交前未执行完整修改集合审计
+
+- **分类**：`VALIDATOR_DEFECT`
+- **现场**：V74的定向测试、workspace build、TypeScript、daemon-core build和 `git diff --check` 均通过，随后提交并推送精确11文件；最终状态发现 `setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md` 仍为修改状态。
+- **根因**：验证器把 `git diff --check` 当作范围审计。该命令只检查空白错误，不证明实际修改路径等于批准集合。workspace build运行 `render-workflow-docs.ts` 后，验证器没有立即重新读取完整 `git status` 集合。
+- **影响**：V74产品修复和用户级升级成功，但真实仓库在提交后不干净，`REAL_VALIDATION=PASS` 的证据语义不完整。
+- **修复**：任何可能生成文件的测试、构建、格式化、代码生成或安装动作后，立即重新读取完整状态并与Manifest集合精确比较；比较通过前不得声明验证通过、提交或推送。
+- **回归**：V75在workspace build后、提交前和提交后分别执行完整路径集合审计，并对范围外生成文件设置失败反例。
+
+```text
+ERR-125=CLOSED
+```
+
+## EXP-102：每个有文件副作用的验证动作后必须立即重算精确修改集合
+
+`git diff --check`、退出码为0和测试通过都不能证明修改范围正确。以下动作完成后必须立即重新计算完整 tracked/untracked 路径集合：
+
+```text
+build
+code generation
+format
+installer
+test with snapshots
+documentation renderer
+```
+
+固定顺序：
+
+```text
+执行动作
+→ 读取git status --porcelain=v1 -z -uall
+→ set(actual_paths) == set(Manifest.changed_paths或预期空集)
+→ git diff --check
+→ 才能记录该阶段PASS
+```
+
+如果动作发生在提交后，预期集合必须为空。范围对账必须发生在动作之后，不能使用动作之前的快照代替。
+
+### ERR-126：architecture-change自动生成阶段矩阵与workflow JSON不同步
+
+- **分类**：`TEST_DRIFT`
+- **现场**：`bun run build` 调用 `scripts/render-workflow-docs.ts` 后，仅 `setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md` 发生修改。
+- **根因**：该Skill的自动生成区段保留了人工扩展的 `candidate_preparing` 矩阵行，而生成器以 `configs/workflows/builtin/architecture_change.json` 为唯一输入，确定性输出不同文本。仓库缺少提交前 `render-workflow-docs.ts --check` 硬门禁。
+- **影响**：远程提交中的生成文件不是源定义的确定性投影；每次全仓构建都会重新产生同一差异。
+- **修复**：提交生成器的确定性输出，不改变非自动生成正文；增加renderer `--check`回归；生成区段禁止人工维护第二事实源。
+- **回归**：V75测试要求renderer check退出码为0，并验证生成后的仓库不产生额外路径。
+
+```text
+ERR-126=CLOSED
+```
+
+## EXP-103：自动生成区段只能由正式源定义生成，提交前必须执行只读一致性检查
+
+带有以下标记的内容属于生成物：
+
+```text
+AUTO-GENERATED:START
+AUTO-GENERATED:END
+```
+
+生成区段的唯一事实源是对应配置与生成器。不得在生成区段内维护无法由源定义重现的人工文本。每次修改工作流定义、Skill、Agent或构建链时，必须在提交前执行：
+
+```text
+bun scripts/render-workflow-docs.ts --check
+```
+
+检查失败时必须先判断：
+
+```text
+源定义错误 → 修改源定义和必要消费者
+生成物漂移 → 提交确定性生成结果
+生成器错误 → 修生成器及正反例
+```
+
+不得通过忽略生成文件、恢复生成结果或只检查 `git diff --check` 宣布完成。

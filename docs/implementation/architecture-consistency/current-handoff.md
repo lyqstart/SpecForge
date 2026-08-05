@@ -2609,3 +2609,57 @@ P1_ACTION=NOT_STARTED
 WI0001_STATE=gates_failed
 NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_THEN_RESUME_WI0001_ONCE
 ```
+
+## V74真实提交部署、最终状态失败与V75构建生成物闭包（2026-08-05）
+
+V74已完成原冻结11文件的隔离验证、真实仓库验证、提交、推送和用户级升级。正式证据为：
+
+```text
+V74_COMMIT_SHA=58d507821d2ae78c8a77b2b949514086ce1f7510
+V74_REMOTE_HEAD_AFTER_PUSH=58d507821d2ae78c8a77b2b949514086ce1f7510
+V74_PATCH_ACTION=APPLIED_EXACT_11_FILES
+V74_USERLEVEL_UPGRADE=PASS
+V74_USERLEVEL_VERIFY=PASS_119_FILES
+V74_WORKDESK_WRITE=NOT_PERFORMED
+V74_WI0001_ACTION=NOT_PERFORMED
+```
+
+V74最终失败发生在提交、推送和用户级升级之后。全仓构建中的 `scripts/render-workflow-docs.ts` 根据 `configs/workflows/builtin/architecture_change.json` 重新生成：
+
+```text
+setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md
+```
+
+该文件未进入V74批准的11文件集合。V74只执行了 `git diff --check`，没有在每次全仓构建后立即比较完整 `git status` 集合，因此把存在范围外生成修改的验证阶段错误报告为PASS，并在提交推送后才由 `FINAL_STATUS` 发现。
+
+```text
+ERR125_CLASS=VALIDATOR_DEFECT
+ERR125_ROOT_CAUSE=BUILD_OUTPUT_NOT_AUDITED_AS_EXACT_CHANGED_PATH_SET_BEFORE_PASS_AND_COMMIT
+ERR126_CLASS=TEST_DRIFT
+ERR126_ROOT_CAUSE=GENERATED_ARCHITECTURE_CHANGE_SKILL_NOT_SYNCHRONIZED_WITH_WORKFLOW_JSON
+```
+
+V75只提交该确定性生成文件，并补充开发经验、当前交接、P0状态和独立回归测试。不得修改V74 Runtime修复、Gate规则、业务项目或WI-0001。V75验证必须在每次 workspace build 后立即执行：
+
+```text
+bun scripts/render-workflow-docs.ts --check
+→ git status完整路径集合 == Manifest.changed_paths
+→ git diff --check
+```
+
+提交后必须再次运行workspace build与renderer检查，并要求SpecForge工作树完全干净。V74用户级升级已经把同一生成字节部署到用户级目录，因此V75不重复升级，只执行正式installer verify。
+
+```text
+ERR118_STATUS=USERLEVEL_DEPLOYED
+ERR119_STATUS=USERLEVEL_DEPLOYED
+ERR120_STATUS=USERLEVEL_DEPLOYED
+ERR123_STATUS=CLOSED
+ERR124_STATUS=CLOSED
+ERR125_STATUS=CLOSED
+ERR126_STATUS=CLOSED
+P0_OVERALL_STATUS=IN_PROGRESS
+P1_ACTION=NOT_STARTED
+WI0001_STATE=gates_failed
+WI0001_GATE_ACTION=NOT_PERFORMED
+NEXT_ACTION=RESTART_DAEMON_OPENCODE_AND_RESUME_EXISTING_WI0001_GATE_ONCE_AFTER_V75_SUCCESS
+```
