@@ -578,10 +578,10 @@ describe('SpecForge development experience pre-read gate', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
     const p0 = readFileSync(p0ContractClosurePath, 'utf-8');
 
-    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146', 'ERR-147']) {
+    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146', 'ERR-147', 'ERR-148', 'ERR-149', 'ERR-150']) {
       expect(experience).toContain(`### ${id}：`);
     }
-    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123', 'EXP-124']) {
+    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123', 'EXP-124', 'EXP-125', 'EXP-126', 'EXP-127']) {
       expect(experience).toContain(`## ${id}：`);
     }
 
@@ -602,6 +602,9 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experience).toContain('A/B验证必须在对称构建的临时工作树中按同粒度结果比较');
     expect(experience).toContain('机器协议stdout与诊断stderr必须分离');
     expect(experience).toContain('终态失败关闭Guard与补偿恢复必须消费同一份持久化证据');
+    expect(experience).toContain('运行时产品修复必须证明进程来源而不能只证明磁盘文件已升级');
+    expect(experience).toContain('Formal Version文件集合必须来自可跨进程恢复的持久化审计证据');
+    expect(experience).toContain('复合Gate阶段的状态推进必须绑定全部Owned Gate和Summary');
 
     expect(handoff).toContain('## WI-0001仓库消失、精确恢复与ERR-132—ERR-135闭包（2026-08-05）');
     expect(handoff).toContain('RECOVERY_STATUS=EXACT_GIT_REPOSITORY_RESTORED');
@@ -632,6 +635,12 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('ERR136_STATUS=CLOSED_REAL_WI_RECHECK_PASS');
     expect(handoff).toContain('ERR147_CLASSIFICATION=PRODUCT_DEFECT');
     expect(handoff).toContain('WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_MERGE_BLOCKED_PENDING_CONTROLLED_INVALID_CLOSURE_RECOVERY');
+    expect(handoff).toContain('## V90运行时代码未切换、ERR-148闭包与WI-0001真实恢复（2026-08-06）');
+    expect(handoff).toContain('ERR147_STATUS=CLOSED_REAL_WI_RECOVERY_PASS');
+    expect(handoff).toContain('ERR148_STATUS=CLOSED_BY_EXPLICIT_DAEMON_RESTART_AND_REAL_WI_RECOVERY');
+    expect(handoff).toContain('## WI-0001恢复后Formal Version重建失败与ERR-149—ERR-150（2026-08-06）');
+    expect(handoff).toContain('ERR149_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY');
+    expect(handoff).toContain('ERR150_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY');
 
     expect(p0).toContain('### 25.64 WI-0001原Git仓库精确恢复与正式Merge边界保持');
     expect(p0).toContain('GIT_MERGE_ACTION=NOT_PERFORMED');

@@ -3977,7 +3977,7 @@ git ls-remote
 - **影响**：已关闭WI进入死锁：正式Git Merge必须阻断，但既有补偿恢复也无法证明关闭无效，无法复用原WI回到 `implementation_ready`。手工修改状态、修改快照或创建替代WI均违反既有治理规则。
 - **修复**：无效关闭恢复复用 `assertFormalVersionSnapshotForGitMerge`；只将快照缺失、实现提交失效、base缺失、文件集合不一致、实现指纹变化和base diff变化识别为持久化关闭无效证据。工作树不干净和当前分支错误仍作为环境阻断。恢复记录新增快照SHA256和原始验证错误。
 - **回归**：新增“Formal Gate passed、快照遗漏已提交业务文件”真实Git夹具，必须生成 `closure_recovery.json` 并执行 `closed → implementation_ready`；保留显式确认和原关闭证据哈希检查。
-- **状态**：`FIX_IMPLEMENTED_PENDING_VALIDATION_COMMIT_DEPLOY_AND_REAL_RECOVERY`
+- **状态**：`CLOSED_REAL_WI_RECOVERY_PASS`
 
 ## EXP-124：终态失败关闭Guard与补偿恢复必须消费同一份持久化证据
 
@@ -3999,3 +3999,81 @@ recover_invalid_closure用于证明旧关闭无效的不变量
 4. 恢复记录必须保存被判无效证据的哈希和原始机器错误；
 5. 恢复只允许 `closed → implementation_ready`，继续保持代码权限撤销；
 6. 必须使用原WI，不得手工改状态、改Formal快照或创建替代WI绕过。
+
+### ERR-148：产品修复已部署但运行中daemon未切换到新实现
+
+- **分类**：`ENVIRONMENT_FAILURE`
+- **现场**：V90提交、推送、用户级upgrade和verify均通过后，WI-0001首次 `recover_invalid_closure` 仍返回旧错误 `INVALID_CLOSURE_RECOVERY_NOT_PROVEN`。
+- **一手证据**：V91使用真实WI快照直接调用当前源码和当前dist验证器，两者都返回4文件 `FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH`；运行中的daemon仍表现为旧处理器。用户随后确认上一轮没有按要求启动当前源码daemon。
+- **根因**：用户级OpenCode共享文件升级不等于替换正在运行的daemon进程；未完成进程重启和运行来源确认就执行真实WI验证。
+- **修复**：手工停止旧daemon，从精确SpecForge仓库提交启动新daemon，再启动OpenCode。重新读取时，持久化证据显示恢复已成功执行：`closed → implementation_ready`、`closure_recovery.status=applied`、代码权限保持撤销。
+- **状态**：`CLOSED_BY_EXPLICIT_DAEMON_RESTART_AND_REAL_WI_RECOVERY`
+
+## EXP-125：运行时产品修复必须证明进程来源而不能只证明磁盘文件已升级
+
+涉及daemon行为的产品修复固定要求：
+
+```text
+source/dist hash正确
+AND daemon旧进程已停止
+AND 新进程从目标仓库/提交启动
+AND 真实Tool行为符合新实现
+```
+
+用户级installer upgrade/verify只能证明安装载荷一致，不能证明已经运行的daemon加载了新代码。真实WI复检前必须完成手工生命周期切换；不得把旧进程行为误判为新提交产品回归。
+
+### ERR-149：恢复后的 Formal Version Gate 只消费瞬时观测，未消费已通过的 Changed Files Audit
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：WI-0001 从无效关闭恢复到 `implementation_ready` 后，重新完成 Executor、Changed Files Audit、Verifier 和 Semantic Closure；`sf_gate_run(gate_type=verification)` 中 Verification Gate 通过，但 Formal Version Gate 报告4个已提交业务文件全部 `unrecorded`，旧快照未被替换。
+- **一手证据**：新的 `changed_files_audit.md` 明确记录4个 `in_scope` 条目；当前Git `base...HEAD` 同样包含这4个非治理文件；但 `auditActualGovernanceScope` 在新的daemon进程中优先依赖已经不存在的瞬时Write Guard观测，且 `work_item.actual_changed_files` 没有持久化，最终得到空文件集合。
+- **根因**：Formal Version生产者没有把已通过的 `changed_files_audit.md` 作为持久化文件集合契约。恢复或重启后，瞬时观测丢失，Gate无法重建快照。
+- **修复**：只在 Changed Files Audit verdict为PASS时，解析其 `## Entries` 中显式 `→ in_scope` 路径作为持久化事实；用该集合执行模块范围检查和与 `base...HEAD` 非治理Git Diff的精确对账。FAIL报告、治理路径和非in_scope条目不得进入集合。
+- **状态**：`FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY`
+
+## EXP-126：Formal Version文件集合必须来自可跨进程恢复的持久化审计证据
+
+Formal Version不能只依赖当前daemon进程中的Write Guard观测。固定事实优先级必须包含：
+
+```text
+当前WI事实日志
+→ 已通过的changed_files_audit.md显式Entries
+→ work_item.actual_changed_files兼容字段
+→ filesystem baseline
+```
+
+其中Changed Files Audit只有同时满足以下条件才能作为正式文件集合生产者：
+
+1. verdict为PASS；
+2. 路径位于 `## Entries`；
+3. 条目显式标记 `in_scope`；
+4. 排除 `.specforge/**`；
+5. 最终仍必须与 `git diff --name-only base...HEAD` 的非治理路径精确相等。
+
+### ERR-150：Formal Version Gate失败后Gate Runner仍推进到verification_done
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：同一次 `sf_gate_run` 返回 Verification Gate passed、Formal Version Gate failed、summary failed，但状态自动执行 `verification_running → verification_done`。
+- **根因**：`autoAdvanceVerificationState` 只查找并判断 `verification_gate`，忽略同一Verification阶段拥有的 `formal_version_gate` 和整体 `summaryStatus`。
+- **影响**：权威状态宣称验证完成，但正式版本资格仍失败，形成状态与Gate事实矛盾；Close虽然仍应阻断，但后续编排会收到错误状态信号。
+- **修复**：Verification阶段状态推进必须同时要求 Verification Gate、Formal Version Gate和Gate Summary全部通过；任一Gate缺失或失败时返回明确原因，不执行状态转换。
+- **状态**：`FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY`
+
+## EXP-127：复合Gate阶段的状态推进必须绑定全部Owned Gate和Summary
+
+当一个阶段由多个Gate组成时，状态机不能以其中一个报告代替阶段结论：
+
+```text
+verification_gate=passed
+AND formal_version_gate=passed
+AND summary_status=passed
+→ verification_done
+```
+
+固定要求：
+
+1. Owned Gate缺失时不推进；
+2. 任一Owned Gate失败时不推进；
+3. Summary失败时不推进；
+4. 返回缺失Gate、失败Gate和summary状态供机器诊断；
+5. 回归必须覆盖“Verification通过但Formal Version失败”真实组合。

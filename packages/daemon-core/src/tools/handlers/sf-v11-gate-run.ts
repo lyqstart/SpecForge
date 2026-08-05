@@ -165,9 +165,57 @@ function workflowTypeFromPath(workflowPath: string): string {
   }
 }
 
-function gateStatusCountsAsPassed(report: GateReportV11 | undefined): boolean {
+function gateStatusCountsAsPassed(report: Pick<GateReportV11, 'status'> | undefined): boolean {
   if (!report) return false;
   return ['passed', 'skipped', 'not_applicable'].includes(String(report.status));
+}
+
+export function evaluateVerificationGateAutoAdvanceEligibility(input: {
+  reports: Array<Pick<GateReportV11, 'gate_id' | 'status'>>;
+  summaryStatus: string;
+}): {
+  allowed: boolean;
+  reason: string;
+  failed_gate_ids: string[];
+  missing_gate_ids: string[];
+} {
+  const reportById = new Map(input.reports.map(report => [report.gate_id, report]));
+  const requiredGateIds: GateIdV11[] = ['verification_gate', 'formal_version_gate'];
+  const missingGateIds = requiredGateIds.filter(gateId => !reportById.has(gateId));
+  const failedGateIds = requiredGateIds.filter(
+    gateId => reportById.has(gateId) && !gateStatusCountsAsPassed(reportById.get(gateId)),
+  );
+
+  if (missingGateIds.length > 0) {
+    return {
+      allowed: false,
+      reason: 'verification_owned_gate_missing',
+      failed_gate_ids: failedGateIds,
+      missing_gate_ids: missingGateIds,
+    };
+  }
+  if (failedGateIds.length > 0) {
+    return {
+      allowed: false,
+      reason: 'verification_owned_gate_failed',
+      failed_gate_ids: failedGateIds,
+      missing_gate_ids: [],
+    };
+  }
+  if (input.summaryStatus !== 'passed') {
+    return {
+      allowed: false,
+      reason: 'verification_gate_summary_not_passed',
+      failed_gate_ids: [],
+      missing_gate_ids: [],
+    };
+  }
+  return {
+    allowed: true,
+    reason: 'verification_and_formal_version_gates_passed',
+    failed_gate_ids: [],
+    missing_gate_ids: [],
+  };
 }
 
 function defaultGateAliasForState(currentState: string | null, workflowType?: string): string {
@@ -534,15 +582,17 @@ async function autoAdvanceVerificationState(input: {
   summaryStatus: string;
   currentState: string | null;
 }): Promise<any> {
-  const report = input.reports.find(r => r.gate_id === 'verification_gate');
-  if (!report) {
-    return { attempted: false, reason: 'verification_gate_not_run' };
-  }
-  if (!gateStatusCountsAsPassed(report)) {
+  const eligibility = evaluateVerificationGateAutoAdvanceEligibility({
+    reports: input.reports,
+    summaryStatus: input.summaryStatus,
+  });
+  if (!eligibility.allowed) {
     return {
       attempted: false,
-      reason: 'verification_gate_not_passed',
-      status: report.status,
+      reason: eligibility.reason,
+      failed_gate_ids: eligibility.failed_gate_ids,
+      missing_gate_ids: eligibility.missing_gate_ids,
+      summary_status: input.summaryStatus,
     };
   }
   if (

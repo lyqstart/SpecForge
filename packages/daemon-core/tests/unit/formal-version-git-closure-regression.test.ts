@@ -5,7 +5,12 @@ import * as path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { changedFilesFromFacts } from '../../src/tools/handlers/sf-changed-files-audit.js';
-import { inspectFormalGitBinding } from '../../src/tools/lib/project-governance-v2.js';
+import {
+  compareFormalImplementationFileSets,
+  extractPassedChangedFilesAuditEntries,
+  inspectFormalGitBinding,
+} from '../../src/tools/lib/project-governance-v2.js';
+import { evaluateVerificationGateAutoAdvanceEligibility } from '../../src/tools/handlers/sf-v11-gate-run.js';
 import { saveBaseline, takeSnapshot } from '../../src/tools/lib/filesystem-diff.js';
 import { transitionWithEvidence } from '../../src/tools/lib/state-coordinator-v11.js';
 import { runRequiredGates } from '../../src/tools/lib/gate-runner-v11.js';
@@ -257,5 +262,100 @@ describe('formal version Git closure regressions', () => {
     );
     expect(rbacModel).toContain('terminal for normal workflow transitions');
     expect(rbacModel).toContain('closed → implementation_ready');
+  });
+
+  it('recovers the Formal Version file set from a passed durable Changed Files Audit', () => {
+    const audit = `# Changed Files Audit
+
+Work Item: WI-0001
+
+## Result: PASS
+
+- Total files: 4
+- In scope: 4
+- Out of scope: 0
+- Violations: 0
+- Unresolved blocked write attempts: 0
+
+## Entries
+
+- [modify] src/cli/main.js → in_scope
+- [modify] src/domain/status.js → in_scope
+- [modify] src/reporting/formatter.js → in_scope
+- [modify] src/storage/repository.js → in_scope
+`;
+    const committed = [
+      'src/cli/main.js',
+      'src/domain/status.js',
+      'src/reporting/formatter.js',
+      'src/storage/repository.js',
+    ];
+
+    const recorded = extractPassedChangedFilesAuditEntries(audit);
+    expect(recorded).toEqual(committed);
+    expect(compareFormalImplementationFileSets(recorded, committed)).toEqual({
+      matches: true,
+      missing_from_recorded_files: [],
+      unexpected_recorded_files: [],
+    });
+  });
+
+  it('does not trust file entries from a failed Changed Files Audit', () => {
+    expect(
+      extractPassedChangedFilesAuditEntries(`# Changed Files Audit
+
+## Result: FAIL
+
+## Entries
+
+- [modify] src/cli/main.js → in_scope
+`),
+    ).toEqual([]);
+  });
+
+  it('does not advance verification_done when Formal Version fails', () => {
+    expect(
+      evaluateVerificationGateAutoAdvanceEligibility({
+        reports: [
+          { gate_id: 'verification_gate', status: 'passed' },
+          { gate_id: 'formal_version_gate', status: 'failed' },
+        ],
+        summaryStatus: 'failed',
+      }),
+    ).toEqual({
+      allowed: false,
+      reason: 'verification_owned_gate_failed',
+      failed_gate_ids: ['formal_version_gate'],
+      missing_gate_ids: [],
+    });
+  });
+
+  it('requires both owned verification gates and the summary before advancing', () => {
+    expect(
+      evaluateVerificationGateAutoAdvanceEligibility({
+        reports: [{ gate_id: 'verification_gate', status: 'passed' }],
+        summaryStatus: 'passed',
+      }),
+    ).toEqual({
+      allowed: false,
+      reason: 'verification_owned_gate_missing',
+      failed_gate_ids: [],
+      missing_gate_ids: ['formal_version_gate'],
+    });
+
+    expect(
+      evaluateVerificationGateAutoAdvanceEligibility({
+        reports: [
+          { gate_id: 'verification_gate', status: 'passed' },
+          { gate_id: 'formal_version_gate', status: 'passed' },
+        ],
+        summaryStatus: 'passed',
+      }),
+    ).toEqual({
+      allowed: true,
+      reason: 'verification_and_formal_version_gates_passed',
+      failed_gate_ids: [],
+      missing_gate_ids: [],
+    });
   });
 });

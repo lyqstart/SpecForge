@@ -3274,3 +3274,99 @@ WI0002_ACTION=NOT_PERFORMED
 WI0003_ACTION=NOT_PERFORMED
 NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR147_THEN_RUN_RECOVER_INVALID_CLOSURE_ON_WI0001_ONLY
 ```
+
+## V90运行时代码未切换、ERR-148闭包与WI-0001真实恢复（2026-08-06）
+
+V90产品修改已提交、推送和用户级升级，但第一次真实恢复仍返回旧行为。V91只读取证证明：
+
+```text
+PRODUCT_HEAD=35c34c040ea5eb646bfac1417191ef38cf3675ab
+SOURCE_ASSERT_PROBE=FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH_4_FILES
+DIST_ASSERT_PROBE=FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH_4_FILES
+FIRST_REAL_RECOVERY=INVALID_CLOSURE_RECOVERY_NOT_PROVEN
+```
+
+用户确认首次复检前没有按要求启动当前源码daemon。手工切换daemon后，持久化状态显示恢复已应用：
+
+```text
+RECOVERY_STATUS=applied
+RECOVERY_TRANSITION=closed_TO_implementation_ready
+INVALIDITY_REASONS=FORMAL_VERSION_IMPLEMENTATION_FILE_SET_MISMATCH,FORMAL_GIT_BINDING_FAILED
+CODE_PERMISSION_REMAINED_REVOKED=true
+PRODUCTION_CODE_MODIFIED=NO
+```
+
+```text
+ERR147_STATUS=CLOSED_REAL_WI_RECOVERY_PASS
+ERR148_CLASSIFICATION=ENVIRONMENT_FAILURE
+ERR148_STATUS=CLOSED_BY_EXPLICIT_DAEMON_RESTART_AND_REAL_WI_RECOVERY
+WI0001_STATE_AFTER_RECOVERY=implementation_ready
+```
+
+## WI-0001恢复后Formal Version重建失败与ERR-149—ERR-150（2026-08-06）
+
+WI-0001已按ERR-147受控恢复并重新完成：
+
+```text
+closed → implementation_ready
+→ implementation_running
+→ implementation_done
+→ verification_running
+Executor=NO_PRODUCTION_CHANGE
+Changed_Files_Audit=PASS_4_IN_SCOPE_0_OUT_OF_SCOPE
+Verifier=PASS_11_0
+Semantic_Closure=VALID
+```
+
+随后真实调用：
+
+```text
+sf_gate_run(work_item_id=WI-0001, gate_type=verification)
+```
+
+结果：
+
+```text
+VERIFICATION_GATE=passed
+FORMAL_VERSION_GATE=failed
+GATE_SUMMARY=failed
+FORMAL_SNAPSHOT_REGENERATED=NO
+SNAPSHOT_IMPLEMENTATION_FILES=[]
+ACTUAL_NON_GOVERNANCE_FILES=src/cli/main.js,src/domain/status.js,src/reporting/formatter.js,src/storage/repository.js
+MISSING_FROM_SNAPSHOT=4
+STATE_BEFORE=verification_running
+STATE_AFTER=verification_done
+PRODUCTION_CODE_MODIFIED=NO
+CLOSE_ACTION=NOT_PERFORMED
+GIT_MERGE_ACTION=NOT_PERFORMED
+```
+
+根因对账：
+
+```text
+ERR149=Formal Version实际范围只消费瞬时观测，恢复后的新进程未从PASS changed_files_audit.md恢复4文件集合
+ERR150=Gate Runner只判断verification_gate，忽略formal_version_gate失败与summary failed仍推进verification_done
+```
+
+产品修复范围冻结为：
+
+```text
+packages/daemon-core/src/tools/lib/project-governance-v2.ts
+packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts
+packages/daemon-core/tests/unit/formal-version-recovery-chain.test.ts
+packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts
+docs/rule/specforge-development-error-ledger-and-experience.md
+docs/implementation/architecture-consistency/current-handoff.md
+```
+
+```text
+ERR149_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY
+ERR150_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY
+AUTHORITY_REVISION=NOT_REQUIRED_EXISTING_VERIFICATION_FORMAL_CLOSE_FAIL_CLOSED_RULES_ALREADY_APPLY
+WI0001_CURRENT_STATE=verification_done_INCONSISTENT_WITH_FORMAL_VERSION_FAILED
+WI0001_CLOSE_ACTION=NOT_PERFORMED
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+WI0002_ACTION=NOT_PERFORMED
+WI0003_ACTION=NOT_PERFORMED
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR149_ERR150_THEN_RUN_CONTROLLED_VERIFICATION_RECOVERY_AND_RETRY_GATE_ONLY
+```

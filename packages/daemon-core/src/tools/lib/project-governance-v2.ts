@@ -1599,6 +1599,34 @@ function repositoryRelativePath(projectRoot: string, value: string): string {
   return slash(relative);
 }
 
+/**
+ * Read the durable, passed Changed Files Audit entry set.
+ *
+ * Recovery can legitimately start from a new daemon process where the
+ * in-memory/write-guard observation stream is no longer available.  The
+ * freshly regenerated changed_files_audit.md is therefore the durable
+ * producer contract for the implementation file set used by Formal Version.
+ * Only PASS reports and explicit in_scope entries are accepted.
+ */
+export function extractPassedChangedFilesAuditEntries(auditText: string): string[] {
+  if (!evaluateChangedFilesAuditVerdict(auditText).passed) return [];
+
+  const entriesMatch = auditText.match(
+    /(?:^|\n)## Entries\s*\r?\n([\s\S]*?)(?=\r?\n##\s|\s*$)/,
+  );
+  if (!entriesMatch) return [];
+
+  const files: string[] = [];
+  for (const line of entriesMatch[1].split(/\r?\n/)) {
+    const match = line.match(/^\s*-\s*\[[^\]]+\]\s+(.+?)\s+→\s+in_scope\s*$/);
+    if (!match) continue;
+    const file = slash(match[1].trim());
+    if (!file || file === SPEC_DIR || file.startsWith(`${SPEC_DIR}/`)) continue;
+    files.push(file);
+  }
+  return unique(files);
+}
+
 async function deriveActualChangedFiles(
   projectRoot: string,
   workItemDir: string
@@ -1615,6 +1643,19 @@ async function deriveActualChangedFiles(
           .filter(Boolean)
       ),
       source: 'write_guard_log.jsonl',
+    };
+  }
+
+  const auditPath = path.join(workItemDir, 'changed_files_audit.md');
+  const auditFiles = extractPassedChangedFilesAuditEntries(await readText(auditPath));
+  if (auditFiles.length > 0) {
+    return {
+      files: unique(
+        auditFiles
+          .map(value => repositoryRelativePath(projectRoot, value))
+          .filter(Boolean)
+      ),
+      source: 'changed_files_audit.md',
     };
   }
 
