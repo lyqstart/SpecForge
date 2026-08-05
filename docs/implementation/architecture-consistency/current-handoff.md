@@ -1476,3 +1476,520 @@ V50完成后按顺序执行：
 ```
 
 WorkDesk重验期间禁止修改Candidate、运行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V51用户级升级、WorkDesk重验成功与V52边界（2026-08-04）
+
+```text
+SPECFORGE_HEAD=07962406e8ddae9daaf456a4cb185dfe0a340cf3
+V51_USERLEVEL_UPGRADE=SUCCESS
+MANIFEST=119/119
+MANAGED_AGENTS=9/9
+WORKDESK_STATE_BEFORE=gates_failed
+RECOVERY_PATH=gates_failed→candidate_preparing→candidate_prepared→gates_running
+GATE_RUN_COUNT=1
+GATES=10/10 PASSED
+WORKDESK_STATE_AFTER=approval_required
+CANDIDATE_CONTENT_CHANGED=NO
+ERR-075=CLOSED_WORKDESK_REAL_RETEST
+ERR-088=CLOSED_WORKDESK_REAL_RETEST
+```
+
+真实重验确认：
+
+```text
+Project Architecture Candidate正确承担system_governance
+DOMAIN Module Design保持solution_design
+带破折号说明的Solution Strategy真实标题正确识别
+Requirement Candidate未被错误要求
+Manifest外历史Candidate未被扫描
+```
+
+本轮还产生一次可避免HardStop：
+
+```text
+HARD_STOP_ID=HS-1785858808264
+REASON=SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN
+TRIGGER=sf_safe_bash执行certutil/Get-FileHash只读哈希
+RESOLUTION=operator_error
+BLOCKED_ACTION_DISPOSITION=abandon
+SAFE_ALTERNATIVE=Read完整内容快照
+FINAL_HARD_STOP=RESOLVED
+```
+
+Write Guard与HardStop恢复协议工作正确；缺陷位于验证指令和主编排代理的只读证据工具选择。V52只修改主编排代理、两项过程测试和三份状态/经验文档，共精确7文件。
+
+WI-0004保持 `approval_required`。V52不得运行User Decision、Merge、Code Permission、业务代码、Verification或Close，不得修改WorkDesk或Candidate。
+
+## V52证据消费者假阴性与V53边界（2026-08-05）
+
+```text
+V52_RESULT=FAILED
+V52_FAILED_STAGE=OPENCODE_EVIDENCE
+V52_ONLY_MISSING_ASSERTION=HARD_STOP_ID=HS-1785858808264
+V52_PATCH_ACTION_REAL_REPOSITORY=NOT_PERFORMED
+V52_WORKDESK_WRITE=NOT_PERFORMED
+V52_WI0004_ACTION=NOT_PERFORMED
+V52_TESTS_NOT_STARTED=YES
+```
+
+OpenCode一手日志真实表达为：
+
+```text
+发现真实 HardStop：HS-1785858808264
+hard_stop_id=HS-1785858808264
+HARD_STOP_STATUS=RESOLVED（HS-1785858808264...）
+```
+
+因此V52失败属于证据消费者固定格式假阴性，不是HardStop证据不足，也不是V52七文件方案失败。
+
+V53保持V52精确7文件范围，验证器改为要求以下事实组全部成立：
+
+```text
+HardStop ID
+SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN
+operator_error
+blocked_action_disposition=abandon
+retry_original_action=false
+最终HardStop已解除
+Gate 10/10通过且最终approval_required
+```
+
+WI-0004继续保持 `approval_required`。V53不得运行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V53基线测试漂移与V54边界（2026-08-05）
+
+```text
+V53_RESULT=FAILED
+V53_FAILED_STAGE=BASELINE-CONTROL
+V53_STABLE_TESTS=73 PASSED
+V53_STALE_TESTS=2 FAILED
+V53_PATCH_APPLIED=NO
+V53_REAL_REPOSITORY_WRITE=NONE
+V53_WORKDESK_WRITE=NONE
+```
+
+两个失败均来自同一旧契约消费者：
+
+```text
+packages/daemon-core/tests/unit/v11-hard-stop-artifact-closure.test.ts
+```
+
+当前正式实现规定：
+
+```text
+work_item.json=元数据
+必填=schema_version + work_item_id
+status=禁止字段
+权威状态=StateManager/events.jsonl
+```
+
+旧测试仍要求 `status` 必填，并把含 `status` 的样例视为合法。
+
+V54冻结精确8文件：V53七文件加该旧测试文件。V54不修改 `artifact-schema-validation.ts`，只同步测试消费者和fixture，并要求补丁前精确重现2项失败、补丁后同一文件全部通过。
+
+WI-0004继续保持 `approval_required`，不得运行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V54通过数量硬编码假阴性与V55边界（2026-08-05）
+
+```text
+V54_RESULT=FAILED
+V54_FAILED_STAGE=BASELINE_KNOWN_ERR096
+V54_PROCESS_EXIT=1
+V54_ACTUAL_PASS=52
+V54_ACTUAL_FAIL=2
+V54_ACTUAL_TOTAL=54
+V54_EXPECTED_FAILURE_SET=EXACT_2_MATCHED
+V54_ONLY_MISSING_ASSERTION=49 pass
+V54_PATCH_APPLIED=NO
+V54_REAL_REPOSITORY_WRITE=NONE
+V54_WORKDESK_WRITE=NONE
+```
+
+V54已经取得ERR-096所需的一手事实，但验证器错误固定无关通过数量。
+
+V55保持精确8文件，已知失败验证改为：
+
+```text
+提取全部(fail)测试名
+失败集合必须精确等于ERR-096两项
+fail计数必须为2
+Ran total必须等于pass+fail
+不固定pass数量
+```
+
+WI-0004继续保持 `approval_required`，不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V55封包静态审计作用域修正（2026-08-05）
+
+```text
+FIRST_PACKAGE_ATTEMPT=BLOCKED_BY_STATIC_AUDIT
+ERR-098=SELF_CAUGHT
+ZIP_CREATED_ON_FIRST_ATTEMPT=NO
+USER_ACTION_REQUIRED_ON_FIRST_ATTEMPT=NO
+REAL_REPOSITORY_WRITE=NONE
+WORKDESK_WRITE=NONE
+```
+
+V55验证器必须在 `verify_v54_failure` 中保留 `49 pass`，证明V54原始失败；但 `BASELINE_KNOWN_ERR096` 当前解析算法不得再固定该数量。
+
+最终封包审计分别检查两个作用域，并使用V54真实日志验证失败集合、pass/fail/total关系。
+
+## V55实际8文件成功与摘要旧常量不一致、V56边界（2026-08-05）
+
+```text
+V55_RESULT=SUCCESS
+V55_TARGET_HASH_COUNT=8
+V55_GIT_DIFF_FILE_COUNT=8
+V55_MANIFEST_FILE_COUNT=8
+V55_TARGETED_TESTS=PASS
+V55_TYPECHECK=PASS
+V55_BUILD=PASS
+V55_INSTALLER_VERIFY=PASS
+V55_WORKDESK_AUDIT=PASS_UNCHANGED
+V55_SUMMARY_PATCH_SCOPE=7_FILES_INCORRECT
+V55_SUMMARY_FINAL_SCOPE=7_FILES_INCORRECT
+V55_SUMMARY_ERROR_IDS=ERR-093,ERR-094_INCOMPLETE
+```
+
+V55产品与测试结果有效，但证据摘要不满足内部一致性，不能进入真实应用。
+
+V56保持精确8文件，摘要字段必须由Manifest派生，并增加：
+
+```text
+TARGET_FILE_COUNT=8
+SUMMARY_MANIFEST_TARGET_CONSISTENCY=PASS
+BACKFILLED_ERROR_IDS=Manifest正式值
+ISOLATED_PATCH_ACTION=APPLIED_EXACT_8_FILES
+FINAL_SCOPE=PASS_EXACT_8_FILES
+```
+
+WI-0004继续保持 `approval_required`。不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V56验证器模块依赖失败与V57边界（2026-08-05）
+
+```text
+V56_RESULT=FAILED
+V56_FAILED_STAGE=UNEXPECTED
+V56_ERROR=NameError: name 're' is not defined
+V56_FAILURE_FUNCTION=verify_v55_evidence_mismatch
+V56_PATCH_ACTION_REAL_REPOSITORY=NOT_PERFORMED
+V56_REAL_INSTALL_ACTION=NOT_PERFORMED
+V56_WORKDESK_WRITE=NOT_PERFORMED
+V56_WI0004_ACTION=NOT_PERFORMED
+V56_TESTS_STARTED=NO
+```
+
+根因：
+
+```text
+模块级函数调用re.findall
+验证器没有模块级import re
+另一个执行块中的局部import re不可被模块级函数使用
+compile静态检查无法发现NameError
+```
+
+V57保持精确8文件范围。验证器增加模块级 `import re`，并在压缩包生成前实际加载最终脚本、调用V55和V56证据对账函数。
+
+V57成功摘要必须同时满足：
+
+```text
+V56_FAILURE_RECONCILIATION=PASS_ERR-100
+V55_EVIDENCE_RECONCILIATION=PASS_ERR-099
+TARGET_FILE_COUNT=8
+ISOLATED_PATCH_ACTION=APPLIED_EXACT_8_FILES
+FINAL_SCOPE=PASS_EXACT_8_FILES
+BACKFILLED_ERROR_IDS=ERR-093—ERR-100完整集合
+```
+
+WI-0004继续保持 `approval_required`，不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## V57实际成功与经验规则摘要遗漏、V58边界（2026-08-05）
+
+```text
+V57_RESULT=SUCCESS
+V57_TARGET_FILE_COUNT=8
+V57_TARGETED_TESTS=86/86 PASS
+V57_TYPECHECK=PASS
+V57_DAEMON_CORE_BUILD=PASS
+V57_WORKSPACE_BUILD=PASS
+V57_GIT_DIFF_CHECK=PASS
+V57_INSTALLER_VERIFY=119 FILES
+V57_WORKDESK_AUDIT=PASS_UNCHANGED
+V57_MANIFEST_EXPERIENCE_RULES=EXP-004...EXP-079
+V57_SUMMARY_EXPERIENCE_RULES=EXP-004...EXP-076
+```
+
+V57产品验证有效，但摘要仍遗漏 `EXP-077,EXP-078`，不能直接进入真实应用。
+
+V58保持精确8文件。摘要中的全部经验治理字段必须从Manifest原子派生：
+
+```text
+PRIOR_FAILURE_RECONCILIATION
+BACKFILLED_ERROR_IDS
+UNRECORDED_FAILURES
+EXPERIENCE_FILE_READ
+APPLICABLE_EXPERIENCE_RULES
+REPEATED_ERROR_CHECK
+```
+
+V58成功必须报告 `V57_EVIDENCE_RECONCILIATION=PASS_ERR-101`，且适用经验规则包含EXP-077、EXP-078、EXP-079。
+
+WI-0004继续保持 `approval_required`，不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。
+
+## 新会话接续与验证效率强制规则（2026-08-05）
+
+### 1. 新会话读取顺序
+
+新会话不能只依赖本文件，也不能依赖模型跨会话记忆。固定读取顺序：
+
+```text
+1. GitHub远程main当前HEAD
+2. docs/design/SpecForge架构一致性治理最终实施方案.md
+3. 本文件 current-handoff.md
+4. docs/rule/specforge-development-error-ledger-and-experience.md
+5. 最新成功证据包的summary.json、manifest.json、target-hashes.json和Git patch
+6. 当前远程源码事实
+```
+
+权威层级：
+
+```text
+唯一权威实施方案
+> 当前远程源码与正式契约
+> current-handoff.md交接事实
+> 历史实施文档和对话记忆
+```
+
+本文件只负责当前阶段、证据索引、下一动作和操作边界；不得覆盖唯一权威实施方案。
+
+### 2. 当前稳定接续事实
+
+```text
+REMOTE_MAIN_BASELINE=07962406e8ddae9daaf456a4cb185dfe0a340cf3
+AUTHORITY_COMMIT=08629b58c6aad82bf669a35e1f2bc8473cfa7ef3
+AUTHORITY_SHA256=98410b513692acc049403c9cc8d2b6264edbb3cbc2d0798089e7458ac6674ccd
+V59_ISOLATED_VALIDATION=SUCCESS
+V59_EVIDENCE_SHA256=c690707c1b98a3cdb29b401af433fdd52c182f6245f3806a0647bc56b3963995
+V59_TARGET_FILE_COUNT=8
+V59_TARGETED_TESTS=PASS
+V59_TYPECHECK=PASS
+V59_DAEMON_CORE_BUILD=PASS
+V59_WORKSPACE_BUILD=PASS
+V59_GIT_DIFF_CHECK=PASS
+V59_INSTALLER_ISOLATED_VERIFY=PASS
+V59_WORKDESK_AUDIT=PASS_UNCHANGED
+V59_PACKAGE_INTEGRITY_AUDIT=ERR-102_CLOSED
+V60_ISOLATED_VALIDATION=FAILED
+V60_FAILED_STAGE=ISOLATED_BASELINE_ERR096
+V60_FAILURE_CLASS=VALIDATOR_DEFECT
+V60_ERROR_ID=ERR-103
+V60_SEMANTIC_FAILURE_SET=PASS_ERR096_EXACT_2
+V60_COUNTS=PASS_52_FAIL_2_TOTAL_54
+V60_REAL_REPOSITORY_APPLY=NOT_PERFORMED
+V60_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+V60_COMMIT_PUSH=NOT_PERFORMED
+V61_EXECUTION=FAILED
+V61_FAILED_STAGE=REMOTE_HEAD
+V61_FAILURE_CLASS=ENVIRONMENT_FAILURE
+V61_ERROR_ID=ERR-104
+V61_LOCAL_BRANCH=main
+V61_LOCAL_HEAD=07962406e8ddae9daaf456a4cb185dfe0a340cf3
+V61_LOCAL_WORKTREE=CLEAN
+V61_REMOTE_URL=https://github.com/lyqstart/SpecForge.git
+V61_REAL_REPOSITORY_APPLY=NOT_PERFORMED
+V61_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+V61_COMMIT_PUSH=NOT_PERFORMED
+V62_PACKAGE_GENERATION=FAILED
+V62_FAILURE_CLASS=PACKAGE_PREFLIGHT_DEFECT
+V62_ERROR_ID=ERR-105
+V62_FORBIDDEN_CACHE=scripts/__pycache__/run.cpython-313.pyc
+V62_ZIP_GENERATED=NO
+V62_REAL_REPOSITORY_APPLY=NOT_PERFORMED
+V63_REMOTE_HEAD_CONTRACT=GIT_DEFAULT_THEN_GIT_OPENSSL_THEN_OFFICIAL_GITHUB_REF_API
+V63_PUSH_CONTRACT=EXPLICIT_FORCE_WITH_LEASE_AND_REMOTE_FACT_RECHECK
+V63_BYTECODE_CONTRACT=ZERO_PYC_AFTER_EVERY_PYTHON_STAGE
+V63_ACTUAL_RESULT=READ_FROM_V63_EXECUTION_EVIDENCE
+WORKDESK_WI0004_STATE=approval_required
+WORKDESK_WRITE=NOT_PERFORMED
+```
+
+WI-0004的正式Gate已经只运行一次并10/10通过。不得为了验证SpecForge自身修改再次运行Gate，也不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close，除非用户后续明确启动WorkDesk业务项目生命周期。
+
+### 3. 失败分类先于修改
+
+任何失败必须先归入一个且仅一个主类：
+
+```text
+PRODUCT_DEFECT
+TEST_DRIFT
+VALIDATOR_DEFECT
+ENVIRONMENT_FAILURE
+PACKAGE_PREFLIGHT_DEFECT
+EVIDENCE_REPORTING_DEFECT
+```
+
+处理规则：
+
+```text
+PRODUCT_DEFECT / TEST_DRIFT
+→ 可以重新执行影响分析并调整仓库修改范围
+
+VALIDATOR_DEFECT / PACKAGE_PREFLIGHT_DEFECT / EVIDENCE_REPORTING_DEFECT
+→ 不得扩大产品模块、架构、契约或Runtime范围
+→ 只修验证器、过程经验和必要状态消费者
+
+ENVIRONMENT_FAILURE
+→ 保留原始证据
+→ 使用批准的替代入口
+→ 不得误报为产品缺陷
+```
+
+不得以“后来通过”覆盖中间失败。每个实际失败必须有ERR、根因、EXP类防护和机器回归或封包预检。
+
+### 4. 连续验证器失败的停止重构规则
+
+同一任务连续出现两个验证器、封包或结果摘要缺陷时，必须停止复制上一版继续打补丁，先完成：
+
+```text
+列出所有重复事实源
+→ 删除手工文件数量、错误ID、经验规则和状态常量
+→ 重构为Manifest单一事实源
+→ 拆分纯证据解析函数与有副作用执行函数
+→ 用真实历史证据调用全部变更函数
+→ 通过后才生成下一包
+```
+
+不得继续采用：
+
+```text
+复制上一版
+→ 修改一个字符串
+→ 交给用户运行
+→ 再根据下一个错误继续修补
+```
+
+### 5. Manifest单一事实源
+
+以下字段必须只由Manifest派生：
+
+```text
+changed_paths
+target_file_count
+source_hashes
+target_hashes
+backfilled_error_ids
+unrecorded_failures
+experience_file_read
+applicable_experience_rules
+repeated_error_check
+patch_scope
+final_scope
+```
+
+成功前必须满足：
+
+```text
+set(Manifest.changed_paths)
+= set(target-hashes.json)
+= set(Git diff paths)
+= 实际修改文件集合
+
+summary.target_file_count
+= len(Manifest.changed_paths)
+
+summary经验治理字段
+= Manifest.prior_failure_reconciliation全部字段
+```
+
+禁止在验证器多个位置重复手工维护 `7_FILES`、`8_FILES`、ERR列表或EXP列表。
+
+### 6. 验证器交付前自检
+
+交给用户运行前必须依次完成：
+
+```text
+compile最终脚本
+→ importlib实际加载最终脚本
+→ 验证模块级依赖可见
+→ 使用真实历史证据包调用所有新增或修改的纯解析函数
+→ 对正向与失败证据各执行一次
+→ 生成临时summary
+→ 对账summary、Manifest、target hashes和Git diff
+→ 检查RUN.cmd
+→ 最后生成ZIP
+```
+
+只执行 `compile()`、字符串搜索或人工阅读，不能作为验证器完成证据。
+
+### 7. 证据按语义和集合验证
+
+运行日志验证使用事实组合，不绑定人工合成字段或单一自然语言格式。
+
+正确方式：
+
+```text
+ID、原因、状态、动作、结果分别形成事实组
+→ 每组允许正式来源中的多种表达
+→ 所有事实组必须同时成立
+```
+
+已知失败验证必须比较精确失败集合，并校验：
+
+```text
+actual_failed_tests == approved_failed_tests
+fail_count == len(approved_failed_tests)
+total_count == pass_count + fail_count
+```
+
+不得固定与缺陷判定无关的pass数量。
+
+### 8. 稳定状态优先
+
+经验台账和交接状态优先使用稳定生命周期：
+
+```text
+IDENTIFIED
+FIX_IMPLEMENTED
+ISOLATED_VALIDATED
+REAL_APPLIED
+COMMITTED
+USERLEVEL_DEPLOYED
+REAL_PROJECT_VALIDATED
+CLOSED
+```
+
+V版本、commit SHA、证据包路径和时间戳放在对应证据段，不为每次重试反复改写多个状态消费者。
+
+### 9. 用户执行应是最后一步
+
+凡是可以在封包环境中完成的无副作用检查，必须在交付前完成。用户只负责运行必须依赖其本地真实仓库、Bun、Windows用户级目录或手工daemon/OpenCode生命周期的步骤。
+
+每轮仍固定：
+
+```text
+一个完整ZIP
++ 一条可直接复制的CMD命令
+```
+
+涉及daemon或OpenCode的启动、停止、重启，只告知用户，由用户手工操作。
+
+### 10. 当前下一步
+
+V60在隔离基线控制中因ERR-103停止。V61已用真实V60日志完成语义失败集合解析预检，但在远程HEAD读取时遭遇ERR-104环境失败并在任何真实写入前停止。
+
+V62实现了ERR-104远程读取回退，但封包期默认py_compile重新生成 `__pycache__`，Manifest预检以ERR-105阻断，V62 ZIP未生成。
+
+V63继续使用同一精确8文件产品范围和远程三层入口，并把所有封包期Python步骤改为零字节码执行。默认Git、Git OpenSSL和官方GitHub Ref API返回的远程SHA都必须与Manifest基线精确一致；不得把网络回退解释为放宽基线。V63的实际结果、commit SHA、远程HEAD和用户级119/119结果只以V63执行证据包为准。
+
+```text
+V60_FAILURE_RECONCILIATION=PASS_ERR-103
+V61_FAILURE_RECONCILIATION=PASS_ERR-104_ENVIRONMENT_FAILURE
+V62_FAILURE_RECONCILIATION=PASS_ERR-105_PACKAGE_PREFLIGHT_DEFECT
+V63_REMOTE_HEAD_FALLBACK=DEFAULT_GIT_OPENSSL_GITHUB_API
+V63_BYTECODE_PREFLIGHT=ZERO_CACHE_EACH_STAGE
+CURRENT_TASK_STATUS=EXECUTION_CONTRACT_FROZEN
+NEXT_ACTION=RUN_V63_AND_AUDIT_EXECUTION_EVIDENCE
+WORKDESK_WI0004_ACTION=NONE
+```
+
+不得再次运行WorkDesk Gate。V63失败时必须按实际阶段保留证据并停止；V63成功后以其证据包确认提交、推送和用户级部署结果。

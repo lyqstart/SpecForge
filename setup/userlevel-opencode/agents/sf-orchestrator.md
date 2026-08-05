@@ -191,6 +191,20 @@ permission:
 
 ## 四、使用权威工具守住每个继续条件
 
+### 只读证据与受限状态工具边界
+
+当权威状态、活动 HardStop 或 Tool 返回明确限制为“只能使用 read/debug 工具”时，主编排代理不得调用 `sf_safe_bash`，即使目的只是执行 `certutil -hashfile`、PowerShell `Get-FileHash`、Node、Python 或其他只读哈希命令。用户提示中的“记录哈希”不能覆盖 Runtime 的 Tool 边界。
+
+此类现场只能优先使用已批准的 Read、Glob、Grep 或正式只读 Tool。没有获批的只读哈希 Tool 时，必须：
+
+```text
+保留完整内容快照、文件路径、大小和可取得的只读元数据
+→ 报告 HASH_EVIDENCE_UNAVAILABLE 或采用已声明的等效内容对比
+→ 不得为了补一个哈希触发 sf_safe_bash 或新的 HardStop
+```
+
+误触发后必须按可恢复 HardStop 协议将原动作标记为 `abandon`，使用安全替代 Tool，并保留 resolution log；不得把“最终恢复成功”当作无需记录该操作错误的理由。
+
 主编排代理只能通过 `sf_state_transition` 请求非封口状态推进；不得直接写状态，也不得执行由门禁运行器、用户决策记录器、合并运行器或关闭门禁独占的封口转换。每次推进前都要核对当前权威状态、上游产物和本阶段证据，工具失败后不得手工补状态。特别是 `created → intake_ready` 只能在非空 `intake.md` 已经通过受控写入落盘后请求；不得先推进状态再补产物。
 
 候选产物完成后，先做必要的文档检查，再调用统一的 `sf_gate_run`。候选门禁根据 `candidate_phase` 选择实际门禁组合，并由门禁运行器把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。门禁失败后必须先判定根因：

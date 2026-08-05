@@ -227,6 +227,18 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     );
   });
 
+  it('keeps sf-orchestrator on read-only evidence tools in restricted states', () => {
+    const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
+
+    expect(orchestrator).toContain('只能使用 read/debug 工具');
+    expect(orchestrator).toContain('不得调用 sf_safe_bash');
+    expect(orchestrator).toContain('certutil -hashfile');
+    expect(orchestrator).toContain('Get-FileHash');
+    expect(orchestrator).toContain('HASH_EVIDENCE_UNAVAILABLE');
+    expect(orchestrator).toContain('完整内容快照');
+    expect(orchestrator).toContain('用户提示中的“记录哈希”不能覆盖 Runtime 的 Tool 边界');
+  });
+
   it('keeps setup wrappers aligned with final governance fields', () => {
     const transitionWrapper = read('setup/userlevel-opencode/tools/sf_state_transition.ts');
     expect(transitionWrapper).toContain('workflow_type');

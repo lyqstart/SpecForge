@@ -64,7 +64,6 @@ function writeWorkItemJson(wiDir: string, overrides: Record<string, any> = {}): 
   const wiJson = {
     schema_version: '1.0',
     work_item_id: 'WI-0001',
-    status: 'implementation_running',
     workflow_path: 'code_only_fast_path',
     code_change_allowed: true,
     allowed_write_files: [{ path: 'index.html', operation: 'create' }],
@@ -318,26 +317,37 @@ describe('7.2 artifact writer schema validation', () => {
       const content = JSON.stringify({
         schema_version: '1.0',
         work_item_id: 'WI-9999',
-        status: 'created',
       });
       const result = validateWorkItemJson(content, 'WI-0001');
       expect(result.valid).toBe(false);
       expect(result.errors[0]).toContain('WORK_ITEM_ID_MISMATCH');
     });
 
-    it('rejects missing required fields', () => {
+    it('rejects missing schema_version without treating status as required', () => {
       const content = JSON.stringify({ work_item_id: 'WI-0001' });
       const result = validateWorkItemJson(content, 'WI-0001');
       expect(result.valid).toBe(false);
       expect(result.errors.some(e => e.includes('schema_version'))).toBe(true);
-      expect(result.errors.some(e => e.includes('status'))).toBe(true);
+      expect(result.errors.some(e => e.includes('status is required'))).toBe(false);
     });
 
-    it('accepts valid work_item.json', () => {
+    it('rejects status because authoritative state belongs to StateManager', () => {
       const content = JSON.stringify({
         schema_version: '1.0',
         work_item_id: 'WI-0001',
         status: 'created',
+      });
+      const result = validateWorkItemJson(content, 'WI-0001');
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain(
+        'WORK_ITEM_STATUS_FORBIDDEN: work_item.json is metadata only; authoritative state belongs to StateManager/events.jsonl'
+      );
+    });
+
+    it('accepts valid metadata-only work_item.json', () => {
+      const content = JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: 'WI-0001',
       });
       const result = validateWorkItemJson(content, 'WI-0001');
       expect(result.valid).toBe(true);

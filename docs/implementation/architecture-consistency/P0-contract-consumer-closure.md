@@ -2735,3 +2735,291 @@ WI-0004动作=未执行
 提交推送后，ERR-075和ERR-088保持“代码已提交推送，待用户级升级和WorkDesk真实重验”。ERR-089—ERR-092的解析器及验证防护随本提交进入远程基线。
 
 下一阶段必须先完成用户级升级和部署文件一致性验证，再由用户手工启动daemon/OpenCode，恢复WI-0004 `gates_failed` 现场。只有正式Gate进入 `approval_required` 且Candidate内容未改变，才能关闭ERR-075和ERR-088。
+
+### 25.32 V51 WorkDesk真实闭环与ERR-093只读证据工具边界
+
+V51部署后，WI-0004真实运行取得以下结果：
+
+```text
+Runtime Manifest=精确5项
+Project Architecture analysis_scope=system_governance
+DOMAIN Design analysis_scope=solution_design
+正式Gate=10/10 passed
+最终状态=approval_required
+Candidate内容=未改变
+```
+
+因此ERR-075和ERR-088完成真实项目闭环。
+
+运行过程中，验证提示要求5个Candidate SHA256。主编排代理在 `gates_failed` / read-debug受限现场调用 `sf_safe_bash` 执行 `certutil -hashfile`，随后尝试PowerShell `Get-FileHash`，触发 `HS-1785858808264`。Runtime正确拦截；Orchestrator按 `operator_error` 放弃原动作，并使用Read内容快照恢复。
+
+V52不修改HardStop、Gate或Runtime。只补强消费规则：
+
+```text
+read/debug-only现场禁止sf_safe_bash
+哈希Tool不可用时使用完整内容快照等效对比
+提示词中的哈希要求不能覆盖Runtime Tool边界
+误触发必须保留resolution log并记录为失败
+```
+
+验证范围为主编排代理文本契约、HardStop协议回归、经验门禁、TypeScript、构建、`git diff --check`和隔离installer verify。
+
+### 25.33 ERR-095一手日志语义证据消费边界
+
+V52包在任何修改和测试前执行OpenCode证据检查。它错误要求原始日志包含：
+
+```text
+HARD_STOP_ID=HS-1785858808264
+```
+
+但原始日志的正式事实来源是：
+
+```text
+自然语言发现记录
+sf_hard_stop_resolve的hard_stop_id参数
+最终HARD_STOP_STATUS=RESOLVED记录
+WorkDesk hard_stop_resolution.jsonl
+```
+
+V53将证据消费从单一固定字符串改为事实组全部满足。该修改只影响隔离验证器，不改变SpecForge Runtime、HardStop、Gate、Agent产品方案或WorkDesk状态。
+
+仓库内仍补录ERR-095/EXP-073，使后续验证脚本不得把语义事实绑定到人工合成字段。
+
+### 25.34 ERR-096 work_item元数据契约测试漂移
+
+V53基线控制确认产品实现与测试期望发生历史漂移：
+
+```text
+生产者：validateWorkItemJson
+正式规则：work_item.json不得携带status
+旧消费者：v11-hard-stop-artifact-closure.test.ts
+旧期望：status必填且含status的样例合法
+```
+
+V54选择修正测试消费者，不放宽正确实现。测试将覆盖：
+
+```text
+缺少schema_version必须失败
+status不是必填字段
+出现status必须以WORK_ITEM_STATUS_FORBIDDEN失败
+仅schema_version + work_item_id必须通过
+辅助fixture不得写入status
+```
+
+该变化不影响Project Architecture、Data Model、Module Design、Contract、Gate、Runtime或WorkDesk。
+
+### 25.35 ERR-097已知失败集合验证边界
+
+V54的未修改基线日志已经精确证明ERR-096：
+
+```text
+(fail) work_item.json > rejects missing required fields
+(fail) work_item.json > accepts valid work_item.json
+52 pass
+2 fail
+Ran 54 tests across 1 file
+```
+
+验证器错误要求 `49 pass`，该数字既不是产品契约，也不是ERR-096成立条件。
+
+V55改为结构化解析：
+
+```text
+actual_failed_tests == approved_failed_tests
+fail_count == len(approved_failed_tests)
+total_count == pass_count + fail_count
+```
+
+V55不改变V54的8文件产品范围、work_item元数据契约或测试修复方案。
+
+### 25.36 ERR-098静态审计作用域边界
+
+V55验证器中 `49 pass` 有两种不同语义：
+
+```text
+verify_v54_failure
+→ 历史原始错误证据，必须保留
+
+BASELINE_KNOWN_ERR096
+→ 当前识别算法，不得作为通过数量契约
+```
+
+封包审计必须按函数作用域检查，不能全文件禁止字符串。最终包同时保留历史可审计性和新算法正确性。
+
+### 25.37 ERR-099结果摘要与实际范围一致性边界
+
+V55隔离副本的实际证据集合为精确8文件：
+
+```text
+Manifest.changed_paths=8
+target-hashes.json=8
+git diff文件=8
+测试与构建=PASS
+```
+
+成功摘要却仍报告7文件，证明结果输出没有与范围生产者建立单一事实源。
+
+V56不改变8文件产品内容，只修正证据消费者：
+
+```text
+file_count从Manifest.changed_paths派生
+错误ID从Manifest.prior_failure_reconciliation派生
+summary、target-hashes和diff集合必须一致
+```
+
+证据摘要不一致属于验证失败，即使测试全部通过也不得进入真实应用。
+
+### 25.38 ERR-100验证器运行时依赖完整性边界
+
+V56失败证明“脚本可以compile”不等于“关键验证函数可以运行”。
+
+```text
+verify_v55_evidence_mismatch
+→ 使用re.findall解析Git patch
+→ 模块顶层未import re
+→ 首次调用NameError
+```
+
+V57防护：
+
+```text
+模块级显式import re
+封包时importlib加载最终run.py
+覆盖V55/V56证据路径
+实际调用verify_v55_evidence_mismatch
+实际调用verify_v56_failure
+两项均通过后才允许生成zip
+```
+
+此修复只影响隔离验证器和过程经验，不改变SpecForge产品架构、契约、Gate、Runtime或WorkDesk。
+
+### 25.39 ERR-101经验治理摘要原子派生边界
+
+V57的文件范围、错误ID和实际验证结果已经正确，但经验规则字段仍独立维护：
+
+```text
+Manifest=包含EXP-077、EXP-078
+summary=只到EXP-076
+```
+
+V58将 `prior_failure_reconciliation` 作为原子对象消费，不再逐字段混用动态值和手工常量。
+
+成功证据必须同时证明：
+
+```text
+summary经验字段 == Manifest经验字段
+target-hashes集合 == changed_paths集合
+Git diff集合 == changed_paths集合
+文件数量 == 8
+```
+
+该变化不修改SpecForge产品架构、Contract、Gate、Runtime或WorkDesk。
+
+### 25.40 ERR-102最终交付ZIP完整性边界
+
+V59产品补丁和隔离验证成功，但最终交付ZIP包含可变Python缓存：
+
+```text
+scripts/__pycache__/run.cpython-313.pyc
+```
+
+ZIP实际条目与Manifest记录的大小和SHA256不一致。该问题分类为 `PACKAGE_PREFLIGHT_DEFECT`，不得扩大产品、架构、Contract、Gate、Runtime或WorkDesk范围。
+
+V60固定封包合同：
+
+```text
+禁止__pycache__和*.pyc
+最终脚本使用PYTHONDONTWRITEBYTECODE=1加载
+新增或修改的纯函数必须实际正反例调用
+Manifest只声明稳定文件
+ZIP生成后必须重开
+ZIP条目集合、大小、SHA256必须与Manifest完全一致
+最终ZIP SHA256只能在重开审计通过后发布
+```
+
+V60保持精确8文件范围，在同一次用户执行中先隔离验证，再真实应用、完整验证、用户级119/119升级、单次提交和推送。任一隔离验证失败时不得写入真实SpecForge。
+
+### 25.41 ERR-103 Bun失败名称运行时装饰解析边界
+
+V60的ERR-096基线控制取得的产品事实没有变化：
+
+```text
+语义失败集合=批准的精确2项
+pass=52
+fail=2
+total=54
+真实仓库动作=未执行
+```
+
+假阴性来自第一条失败名称行尾的 `[16.00ms]`。该值是Bun运行时耗时，不属于测试身份。V61固定证据消费合同：
+
+```text
+批准失败集合由Manifest提供
+解析函数去除ANSI控制符
+仅剥离行尾[数字+时间单位]
+精确比较语义失败集合
+校验fail数量和total加和
+```
+
+封包前必须使用V60真实日志调用纯解析函数，并用无耗时、不同耗时、错误名称和错误统计执行正反例。该修复只影响验证器、过程经验和固定测试消费者，不改变SpecForge产品架构、Contract、Gate、Runtime或WorkDesk。
+
+V61保持精确8文件范围。任一隔离验证失败时不得写入真实SpecForge；只有完整隔离验证通过后，才能继续真实应用、119/119升级、单次提交和推送。
+### 25.42 ERR-104远程HEAD TLS环境回退与安全推送边界
+
+V61在任何真实写入前完成了本地基线事实确认：
+
+```text
+branch=main
+HEAD=07962406e8ddae9daaf456a4cb185dfe0a340cf3
+working_tree=CLEAN
+remote=yc
+remote_url=https://github.com/lyqstart/SpecForge.git
+```
+
+随后 `git ls-remote yc refs/heads/main` 因Windows Git schannel TLS握手失败而停止。该失败属于环境入口不可用，不是产品、架构、Contract、Gate、Runtime或WorkDesk缺陷。V61的精确8文件、用户级安装、提交和推送均未执行。
+
+V62固定远程读取合同：
+
+```text
+默认git ls-remote
+→ Git OpenSSL后端ls-remote
+→ Python官方GitHub Ref API
+→ 严格解析refs/heads/main和40位SHA
+→ SHA必须等于Manifest remote_head_baseline
+```
+
+V62固定推送合同：
+
+```text
+git push --force-with-lease=refs/heads/main:<baseline>
+→ 推送异常时读取远程HEAD
+→ 远程等于本次commit：幂等成功
+→ 远程仍等于baseline：允许切换TLS后端重试
+→ 远程为其他SHA：并发变化，立即阻断
+```
+
+官方API只作为独立TLS取证入口，不替代Git写入，不允许忽略远程不一致。V62继续保持精确8文件范围，不修改WorkDesk，不运行WI-0004 Gate或后续生命周期。
+### 25.43 ERR-105封包期Python零字节码边界
+
+V62在最终Manifest生成前发现：
+
+```text
+forbidden_path=scripts/__pycache__/run.cpython-313.pyc
+size=62906
+sha256=be4129f197bcf6b15133cfba097afc83eab53658f88e8abea2b2e16541e5068f
+zip_generated=NO
+real_actions=NONE
+```
+
+该失败是ERR-102同类问题在封包内部再次出现。Manifest扫描正确阻断了交付，但默认 `python -m py_compile` 本身违反零缓存合同。V63固定：
+
+```text
+语法检查使用内存compile且禁止python -m py_compile
+→ compile后扫描
+→ importlib加载后扫描
+→ 纯函数正反例后扫描
+→ Manifest前扫描
+→ ZIP重开后扫描
+```
+
+任一阶段出现 `__pycache__` 或 `*.pyc` 时必须终止该版本并记录路径、大小和SHA256。不得静默清理后沿用原版本号。该修正只影响交付验证器和过程治理，不扩大精确8文件产品范围。
