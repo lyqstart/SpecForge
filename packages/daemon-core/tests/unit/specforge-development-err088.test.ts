@@ -16,8 +16,8 @@ function read(relativePath: string): string {
   return readFileSync(path.join(repoRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
-describe('ERR-088—ERR-105 real title and validation regression governance', () => {
-  it('records every V43—V62 evidence failure and its class-level prevention', () => {
+describe('ERR-088—ERR-107 real title and validation regression governance', () => {
+  it('records every V43—V63 evidence failure and its class-level prevention', () => {
     const ledger = read('docs/rule/specforge-development-error-ledger-and-experience.md');
 
     expect(ledger).toContain('### ERR-088：共享章节匹配器只支持直接括号后缀');
@@ -78,6 +78,12 @@ describe('ERR-088—ERR-105 real title and validation regression governance', ()
     expect(ledger).toContain('### ERR-105：V62封包前py_compile再次生成__pycache__并被Manifest预检阻断');
     expect(ledger).toContain('## EXP-083：封包期Python检查必须以零字节码产生为执行合同');
     expect(ledger).toContain('ERR-105=CLOSED');
+    expect(ledger).toContain('### ERR-106：V63用户级验证器把Manifest的files对象误判为列表，成功升级被报告为files=None');
+    expect(ledger).toContain('## EXP-084：Manifest集合形状必须由生产者Schema和真实产物确定');
+    expect(ledger).toContain('ERR-106=CLOSED');
+    expect(ledger).toContain('### ERR-107：V63升级成功后未立即记录动作状态，失败摘要误报REAL_INSTALL_ACTION=NOT_PERFORMED');
+    expect(ledger).toContain('## EXP-085：有副作用动作成功后必须立即固化动作事实');
+    expect(ledger).toContain('ERR-107=CLOSED');
   });
 
   it('keeps the WorkDesk evidence and no-second-run boundary exact', () => {
@@ -120,6 +126,15 @@ describe('ERR-088—ERR-105 real title and validation regression governance', ()
     expect(handoff).toContain('V63_PUSH_CONTRACT=EXPLICIT_FORCE_WITH_LEASE_AND_REMOTE_FACT_RECHECK');
     expect(handoff).toContain('V63_BYTECODE_CONTRACT=ZERO_PYC_AFTER_EVERY_PYTHON_STAGE');
     expect(handoff).toContain('CURRENT_TASK_STATUS=EXECUTION_CONTRACT_FROZEN');
+    expect(handoff).toContain('## V63真实提交、用户级升级成功与ERR-106—ERR-107状态闭包（2026-08-05）');
+    expect(handoff).toContain('V63_COMMIT_SHA=688cf64c6e190a707f9f0e7306db5cf474f0ae35');
+    expect(handoff).toContain('V63_INSTALLER_VERIFY=PASS_119_FILES');
+    expect(handoff).toContain('V63_VALIDATOR_EXPECTED_FILES_TYPE=list');
+    expect(handoff).toContain('V63_ACTUAL_FILES_TYPE=object');
+    expect(handoff).toContain('ERR106_STATUS=CLOSED');
+    expect(handoff).toContain('ERR107_STATUS=CLOSED');
+    expect(handoff).toContain('V63_USERLEVEL_UPGRADE=CONFIRMED_SUCCESS');
+    expect(handoff).toContain('CURRENT_TASK_STATUS=CLOSED');
     expect(handoff).toContain("V56_ERROR=NameError: name 're' is not defined");
     expect(handoff).toContain('V55_TARGET_HASH_COUNT=8');
     expect(handoff).toContain('V55_SUMMARY_PATCH_SCOPE=7_FILES_INCORRECT');
@@ -157,6 +172,9 @@ describe('ERR-088—ERR-105 real title and validation regression governance', ()
     expect(p0).toContain('### 25.42 ERR-104远程HEAD TLS环境回退与安全推送边界');
     expect(p0).toContain('git push --force-with-lease=refs/heads/main:<baseline>');
     expect(p0).toContain('### 25.43 ERR-105封包期Python零字节码边界');
+    expect(p0).toContain('### 25.44 ERR-106—ERR-107用户级Manifest Schema与动作证据闭包');
+    expect(p0).toContain('specforge-manifest.json files对象精确119项');
+    expect(p0).toContain('动作状态与后续验证状态分别报告');
     expect(p0).toContain('语法检查使用内存compile且禁止python -m py_compile');
     expect(p0).toContain('禁止__pycache__和*.pyc');
     expect(p0).toContain('正式Gate=10/10 passed');

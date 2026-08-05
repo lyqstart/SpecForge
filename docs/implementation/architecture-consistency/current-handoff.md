@@ -1993,3 +1993,74 @@ WORKDESK_WI0004_ACTION=NONE
 ```
 
 不得再次运行WorkDesk Gate。V63失败时必须按实际阶段保留证据并停止；V63成功后以其证据包确认提交、推送和用户级部署结果。
+
+## V63真实提交、用户级升级成功与ERR-106—ERR-107状态闭包（2026-08-05）
+
+V63执行证据确认：
+
+```text
+V63_BASELINE_HEAD=07962406e8ddae9daaf456a4cb185dfe0a340cf3
+V63_COMMIT_SHA=688cf64c6e190a707f9f0e7306db5cf474f0ae35
+V63_REMOTE_HEAD_AFTER_PUSH=688cf64c6e190a707f9f0e7306db5cf474f0ae35
+V63_PATCH_ACTION=APPLIED_EXACT_8_FILES
+V63_COMMIT_ACTION=COMMITTED_EXACT_8_FILES
+V63_PUSH_ACTION=PUSHED_MAIN
+V63_USERLEVEL_UPGRADE_COMMAND=PASS_EXIT_0
+V63_INSTALLER_VERIFY=PASS_119_FILES
+V63_WORKDESK_WRITE=NOT_PERFORMED
+V63_WI0004_ACTION=NOT_PERFORMED
+V63_USER_DECISION_ACTION=NOT_PERFORMED
+V63_MERGE_ACTION=NOT_PERFORMED
+V63_CODE_PERMISSION_ACTION=NOT_PERFORMED
+V63_DAEMON_ACTION=NOT_PERFORMED
+V63_OPENCODE_ACTION=NOT_PERFORMED
+```
+
+V63最终失败阶段是 `USERLEVEL_VERIFY`，错误为 `files=None`。该错误不是用户级安装失败。V63验证器读取的是正确文件：
+
+```text
+%USERPROFILE%\.config\opencode\specforge-manifest.json
+```
+
+错误发生在Schema消费：
+
+```text
+V63_VALIDATOR_EXPECTED_FILES_TYPE=list
+V63_ACTUAL_FILES_TYPE=object
+V63_ACTUAL_FILES_COUNT=119
+```
+
+同时，V63只在自定义Manifest校验完成后设置安装动作状态，因此ERR-106先发生时，摘要错误保留：
+
+```text
+REAL_INSTALL_ACTION=NOT_PERFORMED
+```
+
+V64使用V63真实Manifest和脚本重构证据消费，并在任何仓库修改前重新执行正式installer verify、Manifest 119项、Agent 9项和逐文件哈希检查。V64不重复用户级升级；动作事实和验证事实分别报告。V64不修改产品Agent、Runtime、Gate或WorkDesk，只提交以下5个治理状态与回归消费者：
+
+```text
+docs/rule/specforge-development-error-ledger-and-experience.md
+docs/implementation/architecture-consistency/current-handoff.md
+docs/implementation/architecture-consistency/P0-contract-consumer-closure.md
+packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts
+packages/daemon-core/tests/unit/specforge-development-err088.test.ts
+```
+
+```text
+ERR106_FAILURE_CLASS=VALIDATOR_DEFECT
+ERR106_ROOT_CAUSE=MANIFEST_SCHEMA_OBJECT_LIST_CONFUSION
+ERR106_STATUS=CLOSED
+ERR107_FAILURE_CLASS=EVIDENCE_REPORTING_DEFECT
+ERR107_ROOT_CAUSE=ACTION_STATUS_UPDATED_AFTER_POST_ACTION_VALIDATION
+ERR107_STATUS=CLOSED
+V63_PRODUCT_STATUS=USERLEVEL_DEPLOYED
+V64_REAL_INSTALL_ACTION=NOT_PERFORMED
+V63_USERLEVEL_UPGRADE=CONFIRMED_SUCCESS
+CURRENT_REMOTE_HEAD_BEFORE_V64=688cf64c6e190a707f9f0e7306db5cf474f0ae35
+CURRENT_TASK_STATUS=CLOSED
+NEXT_ACTION=START_NEXT_AUTHORITY_PHASE_ONLY_AFTER_NEW_IMPACT_ANALYSIS
+WORKDESK_WI0004_STATE=approval_required
+WORKDESK_WI0004_ACTION=NONE
+```
+
+不得再次运行WorkDesk Gate，不得执行User Decision、Merge、Code Permission、业务代码、Verification或Close。后续新任务必须重新读取远程唯一权威文件并执行新的影响分析。

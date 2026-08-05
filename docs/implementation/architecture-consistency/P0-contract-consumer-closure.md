@@ -3023,3 +3023,47 @@ real_actions=NONE
 ```
 
 任一阶段出现 `__pycache__` 或 `*.pyc` 时必须终止该版本并记录路径、大小和SHA256。不得静默清理后沿用原版本号。该修正只影响交付验证器和过程治理，不扩大精确8文件产品范围。
+
+### 25.44 ERR-106—ERR-107用户级Manifest Schema与动作证据闭包
+
+V63已经完成精确8文件真实应用、提交和远程推送：
+
+```text
+baseline=07962406e8ddae9daaf456a4cb185dfe0a340cf3
+commit=688cf64c6e190a707f9f0e7306db5cf474f0ae35
+remote_main=688cf64c6e190a707f9f0e7306db5cf474f0ae35
+changed_paths=8
+```
+
+用户级执行随后取得两个连续成功事实：
+
+```text
+bun scripts/sf-installer.ts upgrade --force → exit 0
+bun scripts/sf-installer.ts verify → 119个文件完整
+```
+
+ERR-106来自包内自定义验证器对正确Manifest的错误Schema假设：
+
+```text
+读取文件=specforge-manifest.json
+错误假设=files必须是列表
+正式契约=files是以相对路径为键的对象
+真实数量=119
+```
+
+ERR-107来自动作事实记录顺序错误：升级和正式verify已成功，但 `real_install_action` 只在后续自定义校验通过后赋值，因此假失败摘要仍报告 `NOT_PERFORMED`。
+
+V64固定消费者和证据合同：
+
+```text
+installer verify退出码0
++ specforge-manifest.json files对象精确119项
++ managed_agents数组精确9项
++ 每个entry的type、size和sha256合法
++ 每项实际大小和SHA256一致
++ sf-orchestrator部署哈希与V63提交目标一致
++ 动作事实在命令退出0后立即固化
++ 动作状态与后续验证状态分别报告
+```
+
+V64只修改5个过程治理和测试消费者，不改变Project Architecture、Data Model、Module Design、Project Contract、Module Contract、Agent产品行为、Gate、Runtime或WorkDesk。该状态闭包提交前必须重新完成定向测试、TypeScript、daemon-core构建、全仓构建、`git diff --check`、隔离installer verify、真实用户级只读verify和WorkDesk不变审计。

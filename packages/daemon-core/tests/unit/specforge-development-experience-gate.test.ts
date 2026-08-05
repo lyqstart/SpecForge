@@ -290,6 +290,12 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('### ERR-105：V62封包前py_compile再次生成__pycache__并被Manifest预检阻断');
     expect(document).toContain('## EXP-083：封包期Python检查必须以零字节码产生为执行合同');
     expect(document).toContain('ERR-105=CLOSED');
+    expect(document).toContain('### ERR-106：V63用户级验证器把Manifest的files对象误判为列表，成功升级被报告为files=None');
+    expect(document).toContain('## EXP-084：Manifest集合形状必须由生产者Schema和真实产物确定');
+    expect(document).toContain('ERR-106=CLOSED');
+    expect(document).toContain('### ERR-107：V63升级成功后未立即记录动作状态，失败摘要误报REAL_INSTALL_ACTION=NOT_PERFORMED');
+    expect(document).toContain('## EXP-085：有副作用动作成功后必须立即固化动作事实');
+    expect(document).toContain('ERR-107=CLOSED');
 
     expect(document).toContain('ERR-088=CLOSED_V51_WORKDESK_REAL_RETEST');
     expect(document).toContain('ERR-089=CLOSED_V50_COMMITTED_PUSHED');
@@ -393,6 +399,14 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('GOV-DEFECT-CONTRACT-CONSUMER-001 仍保持 IN_PROGRESS');
     expect(handoff).toContain('`STAT_ONLY_CONTENT_NEUTRAL`');
     expect(handoff).toContain('WorkDesk文件和index保持原状');
+    expect(handoff).toContain('## V63真实提交、用户级升级成功与ERR-106—ERR-107状态闭包（2026-08-05）');
+    expect(handoff).toContain('V63_COMMIT_SHA=688cf64c6e190a707f9f0e7306db5cf474f0ae35');
+    expect(handoff).toContain('V63_VALIDATOR_EXPECTED_FILES_TYPE=list');
+    expect(handoff).toContain('V63_ACTUAL_FILES_TYPE=object');
+    expect(handoff).toContain('ERR106_STATUS=CLOSED');
+    expect(handoff).toContain('ERR107_STATUS=CLOSED');
+    expect(handoff).toContain('V63_USERLEVEL_UPGRADE=CONFIRMED_SUCCESS');
+    expect(handoff).toContain('CURRENT_TASK_STATUS=CLOSED');
     expect(handoff).not.toContain('刷新 WorkDesk Git index 中4个字节未变文件的 stat 状态');
     expect(handoff).not.toContain('核对用户级 SpecForge 安装来源与当前版本');
     expect(handoff).not.toContain('用户暂存、提交并推送当前 19 文件变更');
@@ -438,6 +452,9 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(p0ContractClosure).toContain('待用户级安装和WorkDesk真实重验');
     expect(p0ContractClosure).toContain('### 25.19 V34源基线哈希错误与V35隔离验证边界');
     expect(p0ContractClosure).toContain('WI-0004当前冻结在 `candidate_preparing`');
+    expect(p0ContractClosure).toContain('### 25.44 ERR-106—ERR-107用户级Manifest Schema与动作证据闭包');
+    expect(p0ContractClosure).toContain('specforge-manifest.json files对象精确119项');
+    expect(p0ContractClosure).toContain('动作状态与后续验证状态分别报告');
     expect(p0ContractClosure).not.toContain('到 `gates_passed` 必须停止');
 
     for (const entry of [rootAgents, userLevelAgents]) {

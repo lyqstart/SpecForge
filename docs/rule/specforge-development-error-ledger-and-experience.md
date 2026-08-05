@@ -1395,6 +1395,42 @@ HISTORICAL_DEBT       发现的既有失败或历史治理债务
 - **状态**：`CLOSED`。
 - **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-060`、`EXP-078`、`EXP-080`、`EXP-083`。
 
+### ERR-106：V63用户级验证器把Manifest的files对象误判为列表，成功升级被报告为files=None
+
+- **日期与阶段**：2026-08-05，V63真实提交推送后的 `USERLEVEL_VERIFY`。
+- **分类**：`VALIDATOR_DEFECT / MANIFEST_SCHEMA_SHAPE_MISMATCH / OBJECT_LIST_CONFUSION`。
+- **现场表现**：V63已将精确8文件提交为 `688cf64c6e190a707f9f0e7306db5cf474f0ae35` 并推送到远程 `main`；随后 `bun scripts/sf-installer.ts upgrade --force` 和正式 `bun scripts/sf-installer.ts verify` 均退出0，正式校验明确通过119个文件。包内验证器读取正确的 `%USERPROFILE%\.config\opencode\specforge-manifest.json`，但要求 `files` 必须是列表；真实Manifest的 `files` 是以相对路径为键的对象，因此生成 `files=None` 假失败。
+- **一级证据**：`SpecForge-v63-execution-evidence-20260805-090719.zip`，SHA256为 `a21ba55d2540b53cd62cd8b29d1306256987091db3deaf31bab559eddb98c9ca`；其中 `summary.json`、`commands.log`、`remote-after-push.json`、V63 `run.py` 和真实隔离安装生成的 `specforge-manifest.json`。
+- **已执行事实**：真实仓库已应用精确8文件；提交和推送成功；远程HEAD为 `688cf64c6e190a707f9f0e7306db5cf474f0ae35`；用户级升级命令和正式119文件校验均成功；WorkDesk、WI-0004、User Decision、Merge、Code Permission、daemon和OpenCode动作均未执行。
+- **根因**：验证器没有从安装器生产者Schema和真实Manifest确定集合形状，而是凭字段名把 `files` 假定为列表。正式Manifest契约是 `files: Record<relativePath, entry>`，不是数组。
+- **影响**：SpecForge产品修改、提交、推送和用户级部署事实有效，但V63成功摘要未形成，状态消费者仍停在执行前描述。
+- **正确做法**：
+  - 用户级文件完整性读取 `%USERPROFILE%\.config\opencode\specforge-manifest.json`
+  - `files` 必须是对象且精确119项，`managed_agents` 必须是数组且精确9项
+  - 每个 `files` 值必须包含合法 `sha256`、`size` 和 `type`
+  - 对Manifest记录的每个文件重新计算大小和SHA256
+  - 封包前用V63真实Manifest做正例，并用 `files` 列表、空对象、错误数量和错误Agent集合做反例
+- **新增防护**：V64把Manifest Schema解析和文件完整性检查拆为纯函数；封包前实际加载V63真实Manifest执行正反例，并在任何仓库修改前重新运行正式installer verify和119/9逐文件审计。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-044`、`EXP-058`、`EXP-068`、`EXP-073`、`EXP-078`、`EXP-084`。
+
+### ERR-107：V63升级成功后未立即记录动作状态，失败摘要误报REAL_INSTALL_ACTION=NOT_PERFORMED
+
+- **日期与阶段**：2026-08-05，V63 `USERLEVEL_VERIFY` 失败摘要生成阶段。
+- **分类**：`EVIDENCE_REPORTING_DEFECT / ACTION_STATUS_UPDATED_TOO_LATE / EXECUTION_FACT_LOST`。
+- **现场表现**：`commands.log` 证明用户级 `upgrade --force` 与正式 `verify` 已成功执行，但V63只在后续自定义Manifest校验全部通过后才设置 `real_install_action=UPGRADED_USERLEVEL_119_OF_119`。ERR-106先发生后，摘要保留初始化值 `NOT_PERFORMED`，与真实执行事实冲突。
+- **一级证据**：同一V63证据包中的 `commands.log`、`summary.json` 和V63 `run.py`；脚本中动作状态赋值位于升级、正式verify和自定义校验之后。
+- **根因**：有副作用动作的执行状态与后续证据验证状态被绑定到同一个迟延赋值点，导致后续验证失败覆盖已经成立的动作事实。
+- **影响**：没有产生第二次安装或产品损坏，但执行摘要不可信，无法直接作为部署生命周期状态来源。
+- **正确做法**：
+  - 每个有副作用命令退出0后立即固化对应动作状态
+  - 动作事实与后续验证事实使用不同字段
+  - 后续验证失败只能改变验证状态，不得把已执行动作回写为未执行
+  - 摘要必须由不可变动作事件和验证结果分别派生
+- **新增防护**：V64从V63命令日志独立解析升级、正式verify、提交和推送事实；V64自身不重复升级，明确报告 `V64_REAL_INSTALL_ACTION=NOT_PERFORMED` 与 `V63_USERLEVEL_UPGRADE=CONFIRMED_SUCCESS`，并用“动作成功、后续校验失败”反例测试状态生成。
+- **状态**：`CLOSED`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-015`、`EXP-045`、`EXP-058`、`EXP-073`、`EXP-077`、`EXP-078`、`EXP-085`。
+
 # 第二部分：正确做法
 
 ## 3. 基线与权威
@@ -2393,6 +2429,43 @@ __pycache__目录数量=0
 
 发现缓存时该版本封包失败，必须保留路径、大小和SHA256证据；不得静默删除并继续使用同一版本号。最终ZIP重开后仍需重复该检查。
 
+## EXP-084：Manifest集合形状必须由生产者Schema和真实产物确定
+
+验证器不得根据字段名称、旧样例或其他系统惯例猜测集合是数组还是对象。用户级正式Manifest的当前契约是：
+
+```text
+<OpenCode配置根>/specforge-manifest.json
+files=以相对路径为键的对象
+managed_agents=Agent名称数组
+```
+
+固定验证顺序：
+
+```text
+读取生产者实现或正式Schema
+→ 读取真实历史Manifest
+→ 校验根对象
+→ 校验files对象精确数量
+→ 校验managed_agents数组精确数量
+→ 校验每个entry的sha256、size、type
+→ 逐项复算实际文件
+```
+
+封包前必须实际调用纯解析函数：真实Manifest正例通过；`files`改成列表、空对象、错误数量、非法entry或错误Agent集合必须失败。禁止通过 `len()` 前的类型错误把真实对象报告成 `None`，也禁止把“字段存在”误当成“Schema正确”。
+
+## EXP-085：有副作用动作成功后必须立即固化动作事实
+
+安装、提交、推送、写入等动作一旦真实命令退出0，动作事实必须立即记录，且后续检查不能回写为未执行。固定模型：
+
+```text
+动作命令退出0
+→ action_status=PERFORMED（立即、不可变）
+→ 独立执行post_action_verification
+→ verification_status=PASS或FAIL
+```
+
+结果摘要必须同时报告动作事实和验证事实。后续验证失败时，可以把整体结果标记为失败，但不得把已经发生的安装、提交或推送重新描述为 `NOT_PERFORMED`。封包前必须覆盖“动作成功且后续验证失败”的反例。
+
 # 第四部分：修改前强制检查
 
 ## 13. 通用检查清单
@@ -2414,6 +2487,8 @@ __pycache__目录数量=0
 □ 已固定 HEAD、分支、工作区和权威文件
 □ 远程Git TLS失败时已保留原始证据，并只使用官方独立入口回退；远程SHA仍与Manifest精确比较
 □ 封包期所有Python执行均禁用字节码，并在每个步骤后证明__pycache__和*.pyc为零
+□ Manifest集合形状已由生产者Schema和真实产物确认；files对象、managed_agents数组及entry结构均用正反例执行验证
+□ 有副作用动作退出0后已立即固化动作事实；后续验证失败未把已执行动作误报为NOT_PERFORMED
 □ 已区分产品、脚本、环境、验证、证据和历史债务
 □ 已画出定义—调用者—消费者—测试—安装—真实验证闭包
 □ 已确认用户操作边界
@@ -2684,6 +2759,8 @@ ERR-102=CLOSED
 ERR-103=CLOSED
 ERR-104=CLOSED
 ERR-105=CLOSED
+ERR-106=CLOSED
+ERR-107=CLOSED
 ```
 
 V36隔离验证完成A/B基线控制并应用精确11文件补丁：129项通过、1项失败；唯一失败是ERR-080经验门禁状态断言过期。产品实现、真实SpecForge、WorkDesk、用户级安装和WI-0004均未改变。
@@ -2772,4 +2849,4 @@ V61保持精确8文件产品范围并完成ERR-103解析器封包预检，但在
 
 V62继续保持精确8文件产品范围并实现远程HEAD三层入口，但封包前语法检查重新生成Python字节码，Manifest预检按ERR-105停止；V62 ZIP未生成，所有真实动作未执行。
 
-V63继承V62远程回退和安全推送设计，所有封包期Python步骤强制零字节码并逐阶段扫描。V63实际隔离验证、真实应用、提交、推送和用户级部署结果只以V63执行证据包为准，仓库文档不预写自引用commit SHA。
+V63继承V62远程回退和安全推送设计，完成隔离验证、精确8文件真实应用、提交 `688cf64c6e190a707f9f0e7306db5cf474f0ae35`、远程推送和用户级升级；正式installer verify通过119个文件。随后ERR-106因验证器把真实Manifest的files对象误判为列表而产生假失败，ERR-107使失败摘要把已成功执行的升级误报为未执行。V64不重复升级，只重新验证正式Manifest、逐项复核119文件和9个Agent，并提交5个治理状态消费者完成闭包。
