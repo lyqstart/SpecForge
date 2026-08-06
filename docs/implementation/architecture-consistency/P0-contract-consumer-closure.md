@@ -3613,3 +3613,29 @@ WI0001_REPOSITORY_DELIVERY_STATE=GOVERNANCE_CLOSED_PENDING_GIT_MERGE
 P0_OVERALL_STATUS=IN_PROGRESS
 NEXT_ACTION=RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONLY
 ```
+
+<!-- ERR155_ERR166_V8_P0_CLOSURE:START -->
+## P0 独立真实项目验证：ERR-155—ERR-166 产品修复闭环
+
+| 项目 | 结论 |
+|---|---|
+| 第一次 WI-0002 Gate 证据 | 保留不变，不修补、不删除、不重跑 |
+| ERR-155 | `sf_contract_register update`：同 kind、同 ID、Candidate-only |
+| ERR-156 | Tasks Gate 根据三项 Requirement 分类选择 Candidate 或正式 Module Requirements |
+| ERR-157 | Planner Relation Delta 只允许 ADD/REMOVE |
+| ERR-158 | Orchestrator 强制 OPERATION_BOUNDARY |
+| ERR-159 | 声明 Project Contract 变化时，metadata-only/no-op Registry Candidate Fail Closed |
+| ERR-160 | V1 固定次数文本断言；改为语义预演与事务落盘 |
+| ERR-161 | V2 ZIP 双层目录；改为平铺根目录并演练最终入口 |
+| ERR-162 | V3 CMD 内联 IF 截断主流程；改为多行 `run.cmd` |
+| ERR-163 | V4 未解析 Windows `bun.cmd`；固定实际入口并执行版本预检 |
+| ERR-164 | V5 `bun x vitest` 产生独立临时工具环境；V6 改为仓库本地工具 |
+| ERR-165 | V6 错把根目录固定 `node_modules/vitest` 路径当作 workspace 工具可用性；V7 改用 daemon-core 正式脚本和配置 |
+| ERR-166 | V7 目标测试把 workspace cwd 误当仓库根目录；V8 使用显式仓库根解析和 JSON 失败标识 |
+| Validation Project | 不修改 |
+| WorkDesk | 不修改 |
+| 权威方案 | 不修改；本次为既有规则的产品实现、消费者闭环和交付执行可靠性修复 |
+| 状态 | PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION |
+
+V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer verify、范围审计和 Git 证据由 V8 执行器在用户本地生成。控制台仅反馈结构化结果，完整执行明细写入包目录下的 `execution-details.log`。
+<!-- ERR155_ERR166_V8_P0_CLOSURE:END -->

@@ -7,6 +7,9 @@
  * Requirements: 8.3, 8.6, REQ-3 AC-6, REQ-3 AC-7, REQ-3 AC-8, REQ-3 AC-9, REQ-3 AC-10
  */
 
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
 import type { GateResult } from './sf_gate_types';
 import { getTaskSections } from './sf_doc_lint_core';
@@ -212,27 +215,178 @@ export function extractCPTestFile(designContent: string, cpRef: string): string 
  * @param baseDir - 项目根目录路径
  * @returns Gate 检查结果
  */
+type SpecArtifact = { content: string; path: string };
+type RequirementClassificationKey =
+  | 'requirement_changed'
+  | 'acceptance_criteria_changed'
+  | 'business_rule_changed';
+type RequirementSource = 'candidate' | 'formal_module_requirements';
+
+type RequirementResolution = {
+  source: RequirementSource;
+  artifacts: SpecArtifact[];
+  classification: Record<RequirementClassificationKey, boolean | null>;
+  classification_status: 'changed' | 'unchanged' | 'unknown_fail_closed';
+  classification_files: string[];
+};
+
+const REQUIREMENT_CLASSIFICATION_KEYS: RequirementClassificationKey[] = [
+  'requirement_changed',
+  'acceptance_criteria_changed',
+  'business_rule_changed',
+];
+
+function findBooleanRecursively(value: unknown, key: string): boolean | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  if (!Array.isArray(value)) {
+    const record = value as Record<string, unknown>;
+    if (typeof record[key] === 'boolean') return record[key] as boolean;
+    for (const nested of Object.values(record)) {
+      const found = findBooleanRecursively(nested, key);
+      if (found !== undefined) return found;
+    }
+    return undefined;
+  }
+  for (const nested of value) {
+    const found = findBooleanRecursively(nested, key);
+    if (found !== undefined) return found;
+  }
+  return undefined;
+}
+
+function findMarkdownBoolean(content: string, key: string): boolean | undefined {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = new RegExp(`(?:^|\\n)\\s*(?:[-*|]\\s*)?${escaped}\\s*(?::|=|\\|)\\s*(true|false)\\b`, 'i').exec(content);
+  return match ? match[1].toLowerCase() === 'true' : undefined;
+}
+
+async function readRequirementClassification(baseDir: string, workItemId: string): Promise<{
+  values: Record<RequirementClassificationKey, boolean | null>;
+  files: string[];
+}> {
+  const workItemDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
+  const jsonPath = path.join(workItemDir, 'trigger_result.json');
+  const markdownPath = path.join(workItemDir, 'change_classification.md');
+  const values = Object.fromEntries(
+    REQUIREMENT_CLASSIFICATION_KEYS.map(key => [key, null]),
+  ) as Record<RequirementClassificationKey, boolean | null>;
+  const files: string[] = [];
+
+  try {
+    const parsed = JSON.parse(await fs.readFile(jsonPath, 'utf-8')) as unknown;
+    files.push(jsonPath);
+    for (const key of REQUIREMENT_CLASSIFICATION_KEYS) {
+      const found = findBooleanRecursively(parsed, key);
+      if (found !== undefined) values[key] = found;
+    }
+  } catch {
+    // Markdown fallback below. Unknown classification remains fail-closed.
+  }
+
+  if (REQUIREMENT_CLASSIFICATION_KEYS.some(key => values[key] === null)) {
+    try {
+      const content = await fs.readFile(markdownPath, 'utf-8');
+      files.push(markdownPath);
+      for (const key of REQUIREMENT_CLASSIFICATION_KEYS) {
+        if (values[key] !== null) continue;
+        const found = findMarkdownBoolean(content, key);
+        if (found !== undefined) values[key] = found;
+      }
+    } catch {
+      // Unknown classification remains fail-closed.
+    }
+  }
+  return { values, files };
+}
+
+async function collectFormalModuleRequirements(baseDir: string): Promise<SpecArtifact[]> {
+  const modulesRoot = path.join(baseDir, SPEC_DIR_NAME, 'project', 'modules');
+  const result: SpecArtifact[] = [];
+  const visit = async (directory: string): Promise<void> => {
+    let entries: import('node:fs').Dirent[];
+    try {
+      entries = await fs.readdir(directory, { withFileTypes: true });
+    } catch (error: any) {
+      if (error?.code === 'ENOENT') return;
+      throw error;
+    }
+    for (const entry of entries) {
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) await visit(absolute);
+      else if (entry.isFile() && entry.name === 'requirements.md') {
+        result.push({ content: await fs.readFile(absolute, 'utf-8'), path: absolute });
+      }
+    }
+  };
+  await visit(modulesRoot);
+  return result.sort((left, right) => left.path.localeCompare(right.path));
+}
+
+export async function resolveTaskRequirementArtifacts(
+  baseDir: string,
+  workItemId: string,
+): Promise<RequirementResolution> {
+  const classification = await readRequirementClassification(baseDir, workItemId);
+  const values = classification.values;
+  const anyChanged = REQUIREMENT_CLASSIFICATION_KEYS.some(key => values[key] === true);
+  const allUnchanged = REQUIREMENT_CLASSIFICATION_KEYS.every(key => values[key] === false);
+  const source: RequirementSource = allUnchanged ? 'formal_module_requirements' : 'candidate';
+  const artifacts =
+    source === 'candidate'
+      ? await resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'requirements' })
+      : await collectFormalModuleRequirements(baseDir);
+  return {
+    source,
+    artifacts,
+    classification: values,
+    classification_status: anyChanged
+      ? 'changed'
+      : allUnchanged
+        ? 'unchanged'
+        : 'unknown_fail_closed',
+    classification_files: classification.files,
+  };
+}
+
 export async function checkTasksGate(workItemId: string, baseDir: string): Promise<GateResult> {
   try {
     await tryCheckCompatibility(baseDir, 'sf_tasks_gate_core');
-
-    let taskArtifacts: Array<{ content: string; path: string }>;
-    let requirementArtifacts: Array<{ content: string; path: string }>;
-    let designArtifacts: Array<{ content: string; path: string }>;
+    let taskArtifacts: SpecArtifact[];
+    let requirementResolution: RequirementResolution;
+    let designArtifacts: SpecArtifact[];
     try {
-      [taskArtifacts, requirementArtifacts, designArtifacts] = await Promise.all([
+      [taskArtifacts, requirementResolution, designArtifacts] = await Promise.all([
         resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'tasks' }),
-        resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'requirements' }),
+        resolveTaskRequirementArtifacts(baseDir, workItemId),
         resolveWorkItemSpecArtifacts({ projectRoot: baseDir, workItemId, kind: 'design' }),
       ]);
     } catch (err: unknown) {
       return {
         status: 'blocked',
-        blocking_issues: [`Failed to read task planning candidates: ${(err as Error).message}`],
+        blocking_issues: [`Failed to read task planning inputs: ${(err as Error).message}`],
         warnings: [],
         next_action: 'ask_user',
       };
     }
+
+    const requirementArtifacts = requirementResolution.artifacts;
+    const buildDetails = () => ({
+      task_candidate_paths: taskArtifacts.map(artifact => artifact.path),
+      requirements_source: requirementResolution.source,
+      requirements_paths: requirementArtifacts.map(artifact => artifact.path),
+      requirements_candidate_paths:
+        requirementResolution.source === 'candidate'
+          ? requirementArtifacts.map(artifact => artifact.path)
+          : [],
+      formal_module_requirements_paths:
+        requirementResolution.source === 'formal_module_requirements'
+          ? requirementArtifacts.map(artifact => artifact.path)
+          : [],
+      requirements_change_classification: requirementResolution.classification,
+      requirements_classification_status: requirementResolution.classification_status,
+      requirements_classification_files: requirementResolution.classification_files,
+      design_candidate_paths: designArtifacts.map(artifact => artifact.path),
+    });
 
     if (taskArtifacts.length === 0) {
       return {
@@ -240,6 +394,7 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
         blocking_issues: ['tasks candidate not found'],
         warnings: [],
         next_action: 'revise',
+        details: buildDetails(),
       };
     }
 
@@ -253,12 +408,10 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
       const content = artifact.content;
       const label = artifact.path.replace(/\\/g, '/');
       const taskSections = getTaskSections(content);
-
       if (taskSections.length === 0) {
         blockingIssues.push(`${label}: tasks candidate 中未找到任何任务章节`);
         continue;
       }
-
       const contractValidation = validateTaskArtifactContract(content, {
         allowLegacyCommands: true,
         allowLegacyIds: true,
@@ -268,32 +421,26 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
         if (issue.severity === 'error') blockingIssues.push(message);
         else warnings.push(message);
       }
-
       for (const section of taskSections) {
         const taskVerification = parseTaskVerification(section.content);
-
         if (taskVerification.format !== 'typed') continue;
-
         const taskId = extractTaskId(section.title);
-
         if (!requirementsContent) {
           blockingIssues.push(
-            `${label}: Task ${taskId} uses typed verification_commands but requirements candidate is missing or unreadable; cannot verify strategy coverage.`
+            `${label}: Task ${taskId} uses typed verification_commands but ${requirementResolution.source} requirements are missing or unreadable; cannot verify strategy coverage.`,
           );
           continue;
         }
-
         const refs = taskVerification.refs ?? [];
         const propertyIsTraceable =
           taskVerification.typedCommands?.property === undefined ||
           refs.some(isTaskCorrectnessPropertyRef);
         if (!refs.some(isTaskRequirementRef) || !propertyIsTraceable) continue;
-
         const crossResult = crossValidateTask(
           taskId,
           taskVerification,
           requirementsContent,
-          designContent
+          designContent,
         );
         blockingIssues.push(...crossResult.blockingIssues.map(issue => `${label}: ${issue}`));
         warnings.push(...crossResult.warnings.map(warning => `${label}: ${warning}`));
@@ -306,11 +453,7 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
         blocking_issues: blockingIssues,
         warnings,
         next_action: 'revise',
-        details: {
-          task_candidate_paths: taskArtifacts.map(artifact => artifact.path),
-          requirements_candidate_paths: requirementArtifacts.map(artifact => artifact.path),
-          design_candidate_paths: designArtifacts.map(artifact => artifact.path),
-        },
+        details: buildDetails(),
       };
     }
 
@@ -324,18 +467,13 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
     } catch (err) {
       warnings.push(`KG sync failed: ${(err as Error).message}`);
     }
-
     return {
       status: 'pass',
       blocking_issues: [],
       warnings,
       next_action: 'continue',
       kg_sync: kgSync,
-      details: {
-        task_candidate_paths: taskArtifacts.map(artifact => artifact.path),
-        requirements_candidate_paths: requirementArtifacts.map(artifact => artifact.path),
-        design_candidate_paths: designArtifacts.map(artifact => artifact.path),
-      },
+      details: buildDetails(),
     };
   } catch (err) {
     await logErrorToFile(baseDir, 'sf_tasks_gate_core', 'checkTasksGate', err);

@@ -4191,3 +4191,133 @@ actual_files
 5. 权限服务与Close不得各自复制字段写入规则，必须复用同一助手；
 6. `allowed_write_files_snapshot`必须保留非空历史快照，不能因撤权清空；
 7. 回归必须同时覆盖事件刷新、同步保留、缺失补齐和快照保留。
+
+<!-- ERR155_ERR166_V8:START -->
+## ERR-155—ERR-166：P0 独立真实项目验证产品修复与 V1—V7 封包失败
+
+### ERR-155 — PRODUCT_DEFECT
+
+- **事实**：`sf_contract_register` 只有 `add/reset`，无法受控更新正式 Registry 中既有 Project Contract。
+- **根因**：产品只实现新增与重建 Candidate，没有“同 kind、同 ID、仅写 WI Candidate”的 update 契约。
+- **修复**：增加 `update`；不存在、kind 不一致、namespace_type 更新均失败；保留其他 Contract；不直接写正式 Registry。
+
+### ERR-156 — PRODUCT_DEFECT
+
+- **事实**：Tasks Gate 无条件读取 Requirements Candidate。
+- **根因**：Gate 未消费 `requirement_changed`、`acceptance_criteria_changed`、`business_rule_changed` 分类。
+- **修复**：任一为 true 时读取 Candidate；三项均 false 时读取正式 Module Requirements；分类不完整时 Fail Closed 到 Candidate。
+
+### ERR-157 — PRODUCT_DEFECT
+
+- **事实**：Task Planner 可生成 `MODIFY/GAP` 等非法 Governance Relation Delta Operation。
+- **根因**：Planner 输出契约未把操作集合收敛为 `ADD/REMOVE`，成功前也没有自检。
+- **修复**：只允许 `ADD/REMOVE`；修改拆成 REMOVE+ADD；禁止占位操作；Gate 保持严格。
+
+### ERR-158 — PRODUCT_DEFECT
+
+- **事实**：Orchestrator 越过用户明确指定的单轮停止边界。
+- **根因**：运行指令中缺少不可由摘要、Skill 或后续流程扩张的机器可检查授权边界。
+- **修复**：增加 `OPERATION_BOUNDARY` 静态契约，达到停止点后必须等待新用户消息。
+
+### ERR-159 — PRODUCT_DEFECT
+
+- **事实**：声明 Project Contract 变化时，只有 metadata 变化的 extension_registry Candidate 未 Fail Closed。
+- **根因**：Contract Integrity 没有把分类声明与 `namespaces/contracts` 的真实语义差异绑定。
+- **修复**：仅比较 `namespaces/contracts`，忽略 `updated_at/updated_by_work_item` 等 metadata；语义相同则失败。
+
+### ERR-160 — PACKAGE_PREFLIGHT_DEFECT
+
+- **原始失败**：`ERROR=tasks gate details: expected two requirements_source insertions`。
+- **根因**：V1 执行器把代码显示结构中的固定出现次数当成产品语义，使用脆弱文本计数断言。
+- **处置**：改为命名语义锚点、完整内存预演、精确文件集合校验、对称 A/B 验证和原子落盘。
+
+### EXP-132 — 封包执行器必须以语义和事务为边界
+
+1. 不得用某段文本“应出现 N 次”代表业务语义；固定数量只有在权威 Schema 明确规定基数时才可使用。
+2. 写入真实仓库前，必须完成全部内存转换、精确范围校验、关键不变量和变异样例检查。
+3. 真实落盘必须原子替换；失败时恢复全部原始字节。
+
+### ERR-161 — PACKAGE_PREFLIGHT_DEFECT
+
+- **原始现场**：V2 正式 CMD 无任何执行器字段输出。
+- **根因**：ZIP 包含同名顶层目录，正式命令再次解压到同名目录，形成双层路径。
+- **修复**：ZIP 根目录平铺，并从最终 ZIP 演练真实解压和脚本入口。
+
+### EXP-133 — 交付包必须验证用户实际执行入口
+
+1. ZIP 成员路径、解压目标和调用路径必须构成同一个可执行契约。
+2. 封包前必须从最终 ZIP 开始演练正式入口。
+3. 入口演练必须验证返回码和规定输出字段。
+
+### ERR-162 — PACKAGE_PREFLIGHT_DEFECT
+
+- **原始现场**：V3 正式 CMD 无输出；诊断命令仅输出 `STEP=ZIP_CHECK`。
+- **根因**：Windows CMD 同一逻辑行中的 `IF` 与命令链导致后续主流程被条件作用域吞并。
+- **修复**：ZIP 内置逐行 `run.cmd`，正式一键命令不承载复杂条件控制流。
+
+### EXP-134 — Windows CMD 交付入口必须避免内联条件链
+
+1. 不得把 `IF` 与后续主流程拼接在同一逻辑行。
+2. 条件逻辑放入可审计的多行批处理文件。
+3. 批处理必须输出入口阶段和执行器退出码。
+
+### ERR-163 — PACKAGE_PREFLIGHT_DEFECT
+
+- **原始现场**：V4 已进入执行器，在 A/B 基线依赖安装前抛出 `[WinError 2] 系统找不到指定的文件`。
+- **根因**：V4 未解析 Windows 实际 `bun.cmd` 入口，直接把无扩展名 `bun` 传给 `subprocess.run(..., shell=False)`。
+- **修复**：V5 使用 `shutil.which` 解析 Bun 绝对入口；`.cmd/.bat` 通过受控 `COMSPEC` 包装执行；全部 Bun 调用复用同一入口。
+
+### EXP-135 — 外部工具必须解析真实入口并在昂贵操作前验证
+
+1. Windows 上不得假设无扩展名命令可由 `subprocess.run(..., shell=False)`直接解析。
+2. 使用 `shutil.which`、`PATHEXT` 和绝对路径固定入口。
+3. `.cmd/.bat` 经受控 `COMSPEC` 调用，原生可执行文件直接调用。
+4. 创建临时工作树或写入真实文件前执行版本预检。
+
+### ERR-164 — PACKAGE_PREFLIGHT_DEFECT
+
+- **原始现场**：V5 的 Bun 解析、两个干净临时工作树、依赖安装和全仓构建均成功；随后基线测试通过 `bun x vitest` 启动临时下载的 Vitest，报 `Cannot find module 'vitest/config'`，没有生成可比较 JSON，`FAILED_STAGE=TEMP_WORKTREE_AB_VALIDATION`。
+- **一手证据**：日志显示命令进入 `%TEMP%unx-...-vitest@latest`，而工作树已经通过 `bun install --frozen-lockfile` 安装本地 Vitest；临时下载环境无法从工作树配置文件解析 `vitest/config`。
+- **根因**：执行器错误地把“运行已安装的仓库工具”实现为 `bun x`，引入了独立临时依赖环境，破坏了 A/B 的相同依赖和相同解析器契约。
+- **影响**：失败发生在真实产品仓库原子写入前；V5 报告本地工作树在执行前为干净状态，产品修复未落盘。临时工作树删除命令曾返回失败，V5 未输出删除后的残留核验结果，因此残留状态为 `INSUFFICIENT_EVIDENCE`。
+- **修复**：V6 使用 `bun run vitest` 和 `bun run tsc` 调用每个临时工作树本地安装的二进制；禁止测试和类型检查阶段使用 `bun x`；清理后显式验证临时路径和 Git worktree 注册均不存在。
+
+### EXP-136 — A/B 验证必须固定工作树本地工具并验证临时资源清理
+
+1. A/B 两侧必须先使用相同锁文件安装依赖，再通过工作区正式脚本或等价本地入口运行测试和类型检查。
+2. 不得使用会下载独立临时包的 `bun x`、`npx` 或“latest”解析代替仓库本地工具。
+3. A/B 报告必须确认测试配置、测试运行器和依赖解析均来自各自工作树。
+4. 临时工作树清理必须检查 Git 注册和文件系统路径；不得只调用删除命令后假定成功。
+5. 控制台只输出结构化反馈区；完整命令、stdout、stderr 写入单独详细日志。
+
+### ERR-165 — PACKAGE_PREFLIGHT_DEFECT
+
+- **原始现场**：V6 在两个临时工作树完成冻结依赖安装前置后，报 `worktree local toolchain missing after frozen install: ['node_modules\vitest\package.json']`，`PRODUCT_REPOSITORY_WRITE_STATUS=NOT_STARTED`，随后 `TEMP_WORKTREE_CLEANUP=PASS`。
+- **一手证据**：远程根 `package.json` 未声明 `vitest`；`packages/daemon-core/package.json` 的 `devDependencies` 声明 `vitest`，并提供 `test: vitest run`；该工作区还具有自己的 `vitest.config.ts`。
+- **根因**：V6 把“工作区已安装且可通过正式脚本解析”错误等同于“根目录必须存在固定物理路径 `node_modules/vitest/package.json`”，并从仓库根调用本地工具。该断言不符合 Bun workspace 的依赖归属。
+- **影响**：失败发生在真实仓库原子写入前；本地基线工作树为干净状态；临时工作树 Git 注册和文件系统残留检查通过。
+- **修复**：V7 从 `packages/daemon-core` 工作区执行 `bun run test`、`bun run tsc` 和 `bun run build`；验证 package script、依赖声明和工作区配置，不再要求根目录固定 `node_modules` 布局；A/B 测试标识按相对测试文件与测试全名组合比较。
+
+### EXP-137 — Workspace 工具必须按所属包的正式脚本解析
+
+1. Monorepo 工具可用性的证据是所属 workspace 的依赖声明、正式 script、配置文件和实际执行结果，不是根目录固定 `node_modules` 路径。
+2. 测试、类型检查和构建必须从工具所属 workspace 执行，禁止把 workspace 依赖假设为根依赖。
+3. 不得依赖 hoist、软链接或包管理器内部目录布局作为跨环境契约。
+4. A/B 测试标识必须包含归一化的相对测试文件路径和测试全名，避免绝对临时路径或同名测试碰撞。
+
+### ERR-166 — TEST_DRIFT
+
+- **原始现场**：V7 的 A/B 对比完成，基线与补丁侧均为 36 项、加载失败 0、不可比 0、新增失败 0；随后目标回归命令从 `packages/daemon-core` 工作区运行并返回退出码 1，真实产品仓库仍处于 `PRODUCT_REPOSITORY_WRITE_STATUS=NOT_STARTED`。
+- **一手证据**：V7 目标测试使用 `path.resolve(process.cwd(), 'setup/...')` 和 `path.resolve(process.cwd(), 'packages/...')` 读取仓库级安装源；执行器明确以 `packages/daemon-core` 作为命令工作目录，因此这些路径被错误解析到 `packages/daemon-core/setup/...` 和 `packages/daemon-core/packages/...`。
+- **根因**：新增目标测试把测试运行工作区误当成仓库根目录，测试夹具路径与正式 workspace 执行入口漂移；V7 包内预检只检查了测试文本标识，没有检查路径解析契约。
+- **影响**：属于测试覆盖实现错误，不证明 ERR-155—ERR-159 产品实现失败；但目标回归未通过，因此必须 Fail Closed，不能写入真实仓库。
+- **修复**：V8 在测试中显式解析仓库根目录；所有仓库级 Agent、Tool 和 handler 路径均基于该根目录；目标回归使用 JSON 报告输出测试总数、加载失败和失败测试标识。
+
+### EXP-138 — Workspace 测试必须区分命令工作目录与仓库根目录
+
+1. 从 package workspace 运行测试时，`process.cwd()` 只代表命令工作目录，不得当然视为 monorepo 根目录。
+2. 读取仓库级文件必须使用显式仓库根解析器，并同时覆盖“从根目录运行”和“从所属 workspace 运行”两种入口。
+3. 新增目标回归必须在交付前检查路径解析契约；仅检查测试文件包含某些字符串不足以证明测试可执行。
+4. 失败反馈必须输出稳定的测试标识和最小失败计数，完整 stdout/stderr 继续保存在详细日志。
+
+<!-- ERR155_ERR166_V8:END -->

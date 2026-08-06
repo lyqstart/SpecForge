@@ -1,15 +1,11 @@
 /**
- * sf-contract-register — author a governed contract-registration candidate.
+ * sf-contract-register — author a governed Project Contract Candidate.
  *
  * Public name: sf_contract_register.
  *
- * Produces a candidate `extension_registry.json` (current registry + one new
- * contract entry in the `contracts` block) and registers an explicit merge
- * entry in candidate_manifest.json. It never writes the project truth source;
- * the change lands only through the normal candidate gate → user decision →
- * Merge Runner path.
+ * add/update/reset only mutate the current Work Item Candidate. The live Project
+ * Registry remains unchanged until the normal governed merge path writes it.
  */
-
 import { registerHandler } from '../ToolDispatcher';
 import {
   authorContractCandidate,
@@ -34,19 +30,12 @@ registerHandler('sf_contract_register', async (args, context) => {
   const entry = args['entry'] as Record<string, unknown> | undefined;
   const workflowPath = args['workflow_path'] as string | undefined;
 
-  if (!workItemId) {
-    return { success: false, error: 'work_item_id is required' };
-  }
-  if (action !== 'add' && action !== 'reset') {
-    return { success: false, error: 'action must be one of: add, reset' };
+  if (!workItemId) return { success: false, error: 'work_item_id is required' };
+  if (!['add', 'update', 'reset'].includes(action)) {
+    return { success: false, error: 'action must be one of: add, update, reset' };
   }
   if (action === 'reset') {
-    return authorContractCandidate({
-      projectRoot,
-      workItemId,
-      action,
-      workflowPath,
-    });
+    return authorContractCandidate({ projectRoot, workItemId, action, workflowPath });
   }
   if (!kind || !VALID_KINDS.includes(kind)) {
     return {
@@ -54,9 +43,14 @@ registerHandler('sf_contract_register', async (args, context) => {
       error: `kind is required and must be one of: ${VALID_KINDS.join(', ')}`,
     };
   }
+  if (action === 'update' && kind === 'namespace_type') {
+    return {
+      success: false,
+      error: 'action=update only supports Project Contract kinds; namespace_type cannot be updated',
+    };
+  }
   if (!entry || typeof entry !== 'object') {
     return { success: false, error: 'entry (contract entry object) is required' };
   }
-
   return authorContractCandidate({ projectRoot, workItemId, action, kind, entry, workflowPath });
 });

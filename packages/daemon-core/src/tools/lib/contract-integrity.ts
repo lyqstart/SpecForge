@@ -67,6 +67,105 @@ function unique(values: string[]): string[] {
   return Array.from(new Set(values.filter(Boolean))).sort();
 }
 
+type ContractChangeClassificationKey =
+  | 'api_contract_changed'
+  | 'project_contract_changed'
+  | 'contract_registry_only';
+
+const CONTRACT_CHANGE_CLASSIFICATION_KEYS: ContractChangeClassificationKey[] = [
+  'api_contract_changed',
+  'project_contract_changed',
+  'contract_registry_only',
+];
+
+function canonicalSemanticValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value
+      .map(canonicalSemanticValue)
+      .sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, nested]) => [key, canonicalSemanticValue(nested)]),
+    );
+  }
+  return value;
+}
+
+export function projectContractSemanticProjection(registry: Registry): unknown {
+  return canonicalSemanticValue({
+    namespaces: registry.namespaces ?? {},
+    contracts: registry.contracts ?? {},
+  });
+}
+
+export function hasProjectContractSemanticChange(before: Registry, after: Registry): boolean {
+  return JSON.stringify(projectContractSemanticProjection(before)) !==
+    JSON.stringify(projectContractSemanticProjection(after));
+}
+
+function findClassificationBoolean(value: unknown, key: string): boolean | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  if (Array.isArray(value)) {
+    for (const nested of value) {
+      const found = findClassificationBoolean(nested, key);
+      if (found !== undefined) return found;
+    }
+    return undefined;
+  }
+  const record = value as Record<string, unknown>;
+  if (typeof record[key] === 'boolean') return record[key] as boolean;
+  for (const nested of Object.values(record)) {
+    const found = findClassificationBoolean(nested, key);
+    if (found !== undefined) return found;
+  }
+  return undefined;
+}
+
+function findClassificationMarkdownBoolean(content: string, key: string): boolean | undefined {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = new RegExp(`(?:^|\\n)\\s*(?:[-*|]\\s*)?${escaped}\\s*(?::|=|\\|)\\s*(true|false)\\b`, 'i').exec(content);
+  return match ? match[1].toLowerCase() === 'true' : undefined;
+}
+
+async function readProjectContractChangeClassification(workItemDir: string): Promise<{
+  values: Record<ContractChangeClassificationKey, boolean | null>;
+  files: string[];
+}> {
+  const values = Object.fromEntries(
+    CONTRACT_CHANGE_CLASSIFICATION_KEYS.map(key => [key, null]),
+  ) as Record<ContractChangeClassificationKey, boolean | null>;
+  const files: string[] = [];
+  const jsonPath = path.join(workItemDir, 'trigger_result.json');
+  const markdownPath = path.join(workItemDir, 'change_classification.md');
+  try {
+    const parsed = JSON.parse(await fs.readFile(jsonPath, 'utf-8')) as unknown;
+    files.push(jsonPath);
+    for (const key of CONTRACT_CHANGE_CLASSIFICATION_KEYS) {
+      const found = findClassificationBoolean(parsed, key);
+      if (found !== undefined) values[key] = found;
+    }
+  } catch {
+    // Optional source. Missing values remain null.
+  }
+  if (CONTRACT_CHANGE_CLASSIFICATION_KEYS.some(key => values[key] === null)) {
+    try {
+      const content = await fs.readFile(markdownPath, 'utf-8');
+      files.push(markdownPath);
+      for (const key of CONTRACT_CHANGE_CLASSIFICATION_KEYS) {
+        if (values[key] !== null) continue;
+        const found = findClassificationMarkdownBoolean(content, key);
+        if (found !== undefined) values[key] = found;
+      }
+    } catch {
+      // Optional source. Missing values remain null.
+    }
+  }
+  return { values, files };
+}
+
 function isWithin(parent: string, child: string): boolean {
   const rel = path.relative(path.resolve(parent), path.resolve(child));
   return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
@@ -383,6 +482,24 @@ export async function checkContractIntegrity(input: {
       });
       return { registryTargeted, inputFiles, checks };
     }
+  }
+
+  const contractClassification = await readProjectContractChangeClassification(input.workItemDir);
+  inputFiles.push(...contractClassification.files);
+  const declaredProjectContractChange = CONTRACT_CHANGE_CLASSIFICATION_KEYS.some(
+    key => contractClassification.values[key] === true,
+  );
+  if (declaredProjectContractChange) {
+    const semanticChange =
+      registryTargeted && hasProjectContractSemanticChange(beforeRegistry, afterRegistry);
+    checks.push({
+      check_id: 'contract_registry_semantic_change_required',
+      description:
+        'Declared Project Contract change must alter namespaces or contracts, not metadata only',
+      passed: semanticChange,
+      severity: semanticChange ? undefined : 'error',
+      details: `classification=${JSON.stringify(contractClassification.values)}; registry_targeted=${registryTargeted}`,
+    });
   }
 
   const current = await inspectProjectGovernanceContractConsumers({

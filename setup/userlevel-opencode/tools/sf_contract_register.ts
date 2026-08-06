@@ -4,26 +4,23 @@ import { daemon } from "./lib/thin-client"
 export default tool({
   description:
     "受治理地维护当前 Work Item 的 extension_registry Candidate。" +
-    "action=add 时登记一条跨模块契约或命名空间类型；同一 WI 连续调用会在已有 Candidate 上累积。" +
-    "action=reset 时丢弃当前 WI 的旧 extension_registry Candidate 内容，并从正式 live registry 基线重建 Candidate，" +
-    "用于清理缺陷/测试产生的候选污染；reset 不修改正式 registry，也不执行 Merge。" +
-    "工具会把完整提议写入 candidates/project/extension_registry.json，并在 candidate_manifest.json 登记显式合并条目。" +
-    "它绝不直接写 project 真相源——变更只通过正常的 候选门禁 → 用户决策 → Merge Runner 路径落盘。" +
-    "适用于消费方遇到 contract_gap（需要未登记的共享取值/接口）时，由 owner 模块走治理把它正式登记。",
+    "action=add 时登记新 Contract 或 namespace_type；action=update 时仅更新正式 Registry 中已存在的同 kind、同 ID Project Contract；" +
+    "action=reset 时从正式 Registry 基线重建当前 WI Candidate。" +
+    "update 不支持 namespace_type，不允许改变 Contract ID，不存在或 kind 不一致时失败；所有动作只写 WI Candidate，绝不直接写正式 Project Registry。",
   args: {
     work_item_id: tool.schema.string().describe("Work Item ID，例如 WI-0001"),
     action: tool.schema
-      .enum(["add", "reset"])
+      .enum(["add", "update", "reset"])
       .optional()
-      .describe("可选：add=登记（默认）；reset=从 live registry 基线重建当前 WI Candidate"),
+      .describe("可选：add=新增（默认）；update=更新同 kind、同 ID 的既有 Project Contract；reset=从 live registry 重建 Candidate"),
     kind: tool.schema
       .enum(["shared_enum", "invariant", "public_interface", "extension_point", "namespace_type"])
       .optional()
-      .describe("action=add 时必填：契约种类"),
+      .describe("action=add/update 时必填；update 不支持 namespace_type"),
     entry: tool.schema
       .record(tool.schema.string(), tool.schema.any())
       .optional()
-      .describe("action=add 时必填：契约条目需 id/owner_module；namespace_type 需 namespace/type_id；shared_enum 必须显式提供 value_type=string|number，values 必须与该类型一致、非空且唯一；不支持对象数组或混合类型"),
+      .describe("action=add/update 时必填；Project Contract 需 id/owner_module；update 的 id 必须已存在且 kind 相同；shared_enum 需 value_type=string|number 且 values 非空、同类型、唯一"),
     workflow_path: tool.schema
       .string()
       .optional()

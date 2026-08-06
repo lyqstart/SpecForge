@@ -5,13 +5,15 @@
  * does NOT write the project truth source. It only:
  *   1. for action=add, reads the existing WI candidate registry when present;
  *      otherwise reads the current project extension_registry.json,
- *   2. for action=reset, discards the current WI candidate content and rebuilds
+ *   2. for action=update, replaces one existing same-kind, same-ID Project
+ *      Contract in the WI Candidate while preserving every other entry,
+ *   3. for action=reset, discards the current WI candidate content and rebuilds
  *      it from the current project extension_registry.json,
- *   3. for action=add, adds one contract entry to the `contracts` block
+ *   4. for action=add, adds one contract entry to the `contracts` block
  *      (dedup-guarded),
- *   4. writes the proposed full registry to
+ *   5. writes the proposed full registry to
  *      `candidates/project/extension_registry.json` (a WI candidate), and
- *   5. registers an explicit entry in `candidate_manifest.json` targeting
+ *   6. registers an explicit entry in `candidate_manifest.json` targeting
  *      `.specforge/project/extension_registry.json`.
  *
  * From there the change flows through the SAME governed path as any project-spec
@@ -28,7 +30,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 export type ContractKind = 'shared_enum' | 'invariant' | 'public_interface' | 'extension_point';
 
 export type RegistrationKind = ContractKind | 'namespace_type';
-export type ContractCandidateAction = 'add' | 'reset';
+export type ContractCandidateAction = 'add' | 'update' | 'reset';
 
 type NamespaceName =
   | 'requirement_types'
@@ -96,7 +98,7 @@ export async function authorContractCandidate(params: {
   const kind = params.kind;
   const entry = params.entry;
 
-  if (action !== 'add' && action !== 'reset') {
+  if (action !== 'add' && action !== 'update' && action !== 'reset') {
     return { success: false, error: `invalid contract candidate action: ${action}` };
   }
 
@@ -137,10 +139,13 @@ export async function authorContractCandidate(params: {
   }
 
   if (!kind) {
-    return { success: false, error: 'kind is required when action=add' };
+    return { success: false, error: 'kind is required when action=add or action=update' };
   }
   if (!entry || typeof entry !== 'object') {
-    return { success: false, error: 'entry (contract entry object) is required when action=add' };
+    return {
+      success: false,
+      error: 'entry (contract entry object) is required when action=add or action=update',
+    };
   }
 
   const field = kind === 'namespace_type' ? null : KIND_TO_FIELD[kind];
@@ -148,6 +153,12 @@ export async function authorContractCandidate(params: {
   const typeId = String((entry as any)?.type_id ?? '').trim();
   const id = String((entry as any)?.id ?? '').trim();
   const owner = String((entry as any)?.owner_module ?? '').trim();
+  if (action === 'update' && kind === 'namespace_type') {
+    return {
+      success: false,
+      error: 'action=update only supports Project Contract kinds; namespace_type cannot be updated',
+    };
+  }
   if (kind === 'namespace_type') {
     if (!NAMESPACE_NAMES.has(namespace)) {
       return {
@@ -216,7 +227,7 @@ export async function authorContractCandidate(params: {
     registry = JSON.parse(JSON.stringify(liveRegistry));
   }
 
-  // 2. Clone + add the contract entry to the contracts block (dedup-guarded).
+  // 2. Clone and perform the requested Candidate-only mutation.
   const next: Record<string, any> = JSON.parse(JSON.stringify(registry));
   if (kind === 'namespace_type') {
     if (!next.namespaces || typeof next.namespaces !== 'object') next.namespaces = {};
@@ -240,10 +251,42 @@ export async function authorContractCandidate(params: {
     for (const f of CONTRACT_FIELDS) {
       if (!Array.isArray(next.contracts[f])) next.contracts[f] = [];
     }
-    if (next.contracts[field!].some((e: any) => e?.id === id)) {
-      return { success: false, error: `contract already registered: ${kind}:${id}` };
+    if (action === 'update') {
+      let liveField: string | null = null;
+      for (const candidateField of CONTRACT_FIELDS) {
+        const entries = Array.isArray((liveRegistry.contracts as any)?.[candidateField])
+          ? (liveRegistry.contracts as any)[candidateField]
+          : [];
+        if (entries.some((candidate: any) => String(candidate?.id ?? '').trim() === id)) {
+          liveField = candidateField;
+          break;
+        }
+      }
+      if (!liveField) {
+        return { success: false, error: `contract does not exist in live registry: ${kind}:${id}` };
+      }
+      if (liveField !== field) {
+        return {
+          success: false,
+          error: `contract kind mismatch for ${id}: live=${liveField}; requested=${field}`,
+        };
+      }
+      const candidateIndex = next.contracts[field!].findIndex(
+        (candidate: any) => String(candidate?.id ?? '').trim() === id,
+      );
+      if (candidateIndex < 0) {
+        return {
+          success: false,
+          error: `contract ${id} is missing from the current WI Candidate; reset or repair the Candidate before update`,
+        };
+      }
+      next.contracts[field!][candidateIndex] = entry;
+    } else {
+      if (next.contracts[field!].some((e: any) => e?.id === id)) {
+        return { success: false, error: `contract already registered: ${kind}:${id}` };
+      }
+      next.contracts[field!].push(entry);
     }
-    next.contracts[field!].push(entry);
   }
   next.updated_by_work_item = workItemId;
   next.updated_at = new Date().toISOString();

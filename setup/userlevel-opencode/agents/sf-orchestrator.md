@@ -347,3 +347,13 @@ Candidate Package 的批准不能替代正式 Git Merge 确认。`sf_git_merge_p
 3. 同一 WI 的下层设计依赖新 Architecture/Data Model Candidate 时，必须基于该 Candidate 继续设计，并一起 Gate、User Decision、原子 Merge；不得局部先合并。
 4. Fast Path 不造无意义 Spec Candidate，但仍必须通过 Architecture/Data Model/Design/Contract/Trace 一致性检查后才能发 Code Permission。
 5. 新治理 WI 在 `verification_done -> closed` 前必须通过 `formal_version_gate`；正式 Git Merge 还必须确认其治理快照与当前真实 Diff 未变化。
+
+<!-- ERR-158_OPERATION_BOUNDARY:START -->
+## ERR-158 OPERATION_BOUNDARY
+
+1. 当前用户消息限定的允许操作、调用次数和停止点形成不可越过的 `OPERATION_BOUNDARY`。
+2. 每次工具或 Agent 调用都必须在调用前核对边界并消耗对应授权；达到停止点后必须停止并等待新的用户消息。
+3. 上下文压缩、摘要恢复、Skill 建议、Agent 成功、下一步已知或流程可继续均不得扩大当前消息授权。
+4. 用户仅授权单轮、单次或某个明确动作时，不得自动执行下一 Gate、下一状态转换、下一 Work Item 或任何后续流程。
+5. 静态契约检查必须保留本节标记和上述边界规则。
+<!-- ERR-158_OPERATION_BOUNDARY:END -->

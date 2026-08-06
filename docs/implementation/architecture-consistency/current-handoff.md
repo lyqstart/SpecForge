@@ -3615,3 +3615,23 @@ WI0002_ACTION=NOT_PERFORMED
 WI0003_ACTION=NOT_PERFORMED
 NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR154_THEN_REPEAT_EXPLICIT_REVOKE_ONCE_AND_VERIFY_TIMESTAMP_BEFORE_CLOSE
 ```
+
+<!-- ERR155_ERR166_V8_HANDOFF:START -->
+## ERR-155—ERR-166 V8 交接状态
+
+- 远程基线：`main@04a98a5dd0d0ac7410e58975238e04a3fe7335ee`；V5 用户现场已通过 `git ls-remote` 精确校验。
+- 权威文件：`docs/design/SpecForge架构一致性治理最终实施方案.md`，commit `08629b58c6aad82bf669a35e1f2bc8473cfa7ef3`，SHA256 `98410b513692acc049403c9cc8d2b6264edbb3cbc2d0798089e7458ac6674ccd`。
+- WI-0002 第一次 Gate 失败证据保持原样；Candidate 修复冻结；禁止 Gate 重跑；未操作 WI-0003。
+- V1：`ERR-160 / EXP-132`，固定文本次数断言。
+- V2：`ERR-161 / EXP-133`，ZIP 双层目录。
+- V3：`ERR-162 / EXP-134`，CMD 内联 IF 命令链未进入 Python。
+- V4：`ERR-163 / EXP-135`，未解析 Windows `bun.cmd`。
+- V5：`ERR-164 / EXP-136`，`bun x vitest` 使用临时下载环境，无法加载工作树的 `vitest/config`；真实产品文件尚未落盘。
+- V6：`ERR-165 / EXP-137`，错误要求根目录固定存在 `node_modules/vitest/package.json`；真实产品文件尚未落盘，临时工作树清理已证明通过。
+- V7：`ERR-166 / EXP-138`，目标测试把 daemon-core 工作目录误当仓库根目录；A/B 36/36 可比且无新增失败，真实产品文件尚未落盘，临时工作树清理已通过。
+- V8 冻结修改范围仍为 11 个产品源码、Agent、测试和实施记录文件。
+- V8 从 `packages/daemon-core` 工作区正式 `test`/`tsc`/`build` 入口执行，目标测试通过显式仓库根解析器读取仓库级文件。
+- V8 控制台只输出 `BEGIN/END FEEDBACK TO CHATGPT` 之间的结构化字段，目标测试失败时额外输出稳定失败标识，完整过程保存在 `execution-details.log`.
+- 明确不修改：P0 Validation 项目、WorkDesk、WI-0001、WI-0002 现场、WI-0003、权威实施方案。
+- 当前状态：`PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION`。
+<!-- ERR155_ERR166_V8_HANDOFF:END -->

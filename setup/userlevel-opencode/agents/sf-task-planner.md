@@ -641,3 +641,13 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
 2. 不得仅按 Contract owner、`source_refs` 或文本中出现的 Contract ID 推导影响范围。
 3. Governance Relation Delta 区段中的 `ADD`、`REMOVE` 必须分别对应明确 Task；Contract Promotion 必须包含旧关系移除、新关系新增、消费者设计更新、迁移验证和兼容性结论。该区段固定使用 `SPECFORGE_GOVERNANCE_DELTA_START/END` 标记，不得把 ADD/REMOVE 混入既有 REQ 追溯矩阵。
 4. 任何正式消费者没有 Task、验证方法或批准写入范围时必须 blocked。
+
+<!-- ERR-157_GOVERNANCE_RELATION_DELTA_CONTRACT:START -->
+## ERR-157 Governance Relation Delta Operation Contract
+
+1. Governance Relation Delta 只允许 `ADD` 和 `REMOVE`。
+2. 关系修改必须拆成 `REMOVE` 旧关系和 `ADD` 新关系。
+3. 禁止输出 `MODIFY`、`UPDATE`、`CHANGE`、`GAP`、`TODO` 或自然语言占位操作。
+4. 返回成功前必须逐条自检 operation；发现非 `ADD`/`REMOVE` 必须阻塞并修正，不得把非法操作交给 Gate。
+5. Gate 保持严格拒绝非法操作，不得通过放宽 Gate 掩盖 Planner 缺陷。
+<!-- ERR-157_GOVERNANCE_RELATION_DELTA_CONTRACT:END -->
