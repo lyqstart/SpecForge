@@ -578,10 +578,10 @@ describe('SpecForge development experience pre-read gate', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
     const p0 = readFileSync(p0ContractClosurePath, 'utf-8');
 
-    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146', 'ERR-147', 'ERR-148', 'ERR-149', 'ERR-150', 'ERR-151', 'ERR-152', 'ERR-153']) {
+    for (const id of ['ERR-132', 'ERR-133', 'ERR-134', 'ERR-135', 'ERR-136', 'ERR-137', 'ERR-138', 'ERR-139', 'ERR-140', 'ERR-141', 'ERR-142', 'ERR-143', 'ERR-144', 'ERR-145', 'ERR-146', 'ERR-147', 'ERR-148', 'ERR-149', 'ERR-150', 'ERR-151', 'ERR-152', 'ERR-153', 'ERR-154']) {
       expect(experience).toContain(`### ${id}：`);
     }
-    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123', 'EXP-124', 'EXP-125', 'EXP-126', 'EXP-127', 'EXP-128', 'EXP-129', 'EXP-130']) {
+    for (const id of ['EXP-108', 'EXP-109', 'EXP-110', 'EXP-111', 'EXP-112', 'EXP-113', 'EXP-114', 'EXP-115', 'EXP-116', 'EXP-117', 'EXP-118', 'EXP-119', 'EXP-120', 'EXP-121', 'EXP-122', 'EXP-123', 'EXP-124', 'EXP-125', 'EXP-126', 'EXP-127', 'EXP-128', 'EXP-129', 'EXP-130', 'EXP-131']) {
       expect(experience).toContain(`## ${id}：`);
     }
 
@@ -607,6 +607,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(experience).toContain('复合Gate阶段的状态推进必须绑定全部Owned Gate和Summary');
     expect(experience).toContain('交付报告中的范围数量必须从同一Manifest动态生成');
     expect(experience).toContain('治理能力未激活不能抹除实现事实');
+    expect(experience).toContain('事件时间字段必须标识当前事件，状态同步不得冒充新事件');
 
     expect(handoff).toContain('## WI-0001仓库消失、精确恢复与ERR-132—ERR-135闭包（2026-08-05）');
     expect(handoff).toContain('RECOVERY_STATUS=EXACT_GIT_REPOSITORY_RESTORED');
@@ -648,6 +649,9 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('ERR152_CLASSIFICATION=EVIDENCE_REPORTING_DEFECT');
     expect(handoff).toContain('ERR153_CLASSIFICATION=PRODUCT_DEFECT');
     expect(handoff).toContain('GOVERNANCE_SCOPE_ACTIVE=false');
+    expect(handoff).toContain('## V95真实闭环、代码权限撤销时间证据与ERR-154（2026-08-06）');
+    expect(handoff).toContain('ERR154_CLASSIFICATION=PRODUCT_DEFECT');
+    expect(handoff).toContain('WI0001_CODE_PERMISSION=REVOKED_FUNCTIONALLY_WITH_STALE_AUDIT_TIMESTAMP');
 
     expect(p0).toContain('### 25.64 WI-0001原Git仓库精确恢复与正式Merge边界保持');
     expect(p0).toContain('GIT_MERGE_ACTION=NOT_PERFORMED');

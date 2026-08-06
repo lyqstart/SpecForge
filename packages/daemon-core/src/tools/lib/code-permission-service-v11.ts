@@ -5,7 +5,6 @@ import {
   freezeGovernanceScopeForCodePermission,
   persistGovernanceScope,
 } from './project-governance-v2.js';
-
 export type WriteOperation = 'create' | 'modify' | 'delete';
 export interface PermissionState {
   code_change_allowed: boolean;
@@ -16,8 +15,11 @@ export interface ReleasePermissionInput {
   workItemId: string;
   allowedWriteFiles: Array<{ path: string; operation: WriteOperation }>;
 }
+export interface ApplyRevokedPermissionFactsOptions {
+  now?: string;
+  recordRevocationEvent?: boolean;
+}
 export const DEFAULT_PERMISSION: PermissionState = { code_change_allowed: false, allowed_write_files: [] };
-
 function projectRootFromWorkItemDir(workItemDir: string): string { return path.resolve(workItemDir, '..', '..', '..'); }
 function normalizeSlash(value: string): string { return String(value ?? '').replace(/\\/g, '/').replace(/\/+/g, '/'); }
 function canonicalPath(projectRoot: string, value: string): { relative: string; absolute: string } {
@@ -56,7 +58,6 @@ function dedupePermissionEntries(entries: Array<{ path: string; operation: Write
   }
   return result;
 }
-
 export function expandAllowedWriteFiles(workItemDir: string, entries: Array<{ path: string; operation: WriteOperation }>): Array<{ path: string; operation: WriteOperation }> {
   const projectRoot = projectRootFromWorkItemDir(workItemDir);
   const seen = new Set<string>();
@@ -75,7 +76,35 @@ export function expandAllowedWriteFiles(workItemDir: string, entries: Array<{ pa
   }
   return result;
 }
-
+export function applyRevokedPermissionFacts(
+  workItem: Record<string, any>,
+  fallbackAllowedWriteFilesSnapshot: Array<{ path: string; operation: string }> = [],
+  options: ApplyRevokedPermissionFactsOptions = {},
+): Record<string, any> {
+  const now = options.now ?? new Date().toISOString();
+  const existingSnapshot = Array.isArray(workItem.allowed_write_files_snapshot)
+    ? workItem.allowed_write_files_snapshot
+    : [];
+  const currentAllowed = Array.isArray(workItem.allowed_write_files)
+    ? workItem.allowed_write_files
+    : [];
+  if (existingSnapshot.length === 0) {
+    workItem.allowed_write_files_snapshot = currentAllowed.length > 0
+      ? currentAllowed
+      : fallbackAllowedWriteFilesSnapshot.map(entry => ({
+          path: entry.path,
+          operation: normalizeOperation(entry.operation),
+        }));
+  }
+  workItem.code_change_allowed = false;
+  workItem.allowed_write_files = [];
+  workItem.code_permission_revoked = true;
+  if (options.recordRevocationEvent !== false || !workItem.code_permission_revoked_at) {
+    workItem.code_permission_revoked_at = now;
+  }
+  workItem.updated_at = now;
+  return workItem;
+}
 export async function releaseCodePermission(input: ReleasePermissionInput): Promise<PermissionState> {
   const workItemJsonPath = path.join(input.workItemDir, 'work_item.json');
   const projectRoot = projectRootFromWorkItemDir(input.workItemDir);
@@ -85,7 +114,6 @@ export async function releaseCodePermission(input: ReleasePermissionInput): Prom
     const existingAllowed = initial.code_change_allowed === true && initial.code_permission_revoked !== true
       ? normalizePermissionEntries(initial.allowed_write_files) : [];
     const mergedAllowed = dedupePermissionEntries([...existingAllowed, ...incomingAllowed]);
-
     const frozen = await freezeGovernanceScopeForCodePermission({
       projectRoot,
       workItemDir: input.workItemDir,
@@ -96,7 +124,6 @@ export async function releaseCodePermission(input: ReleasePermissionInput): Prom
       throw new Error(`${frozen.error ?? 'SCOPE_EXPANSION_REQUIRED'}: ${frozen.checks.filter(check => !check.passed).map(check => check.description).join('; ')}`);
     }
     await persistGovernanceScope(input.workItemDir, frozen.snapshot);
-
     const wi = JSON.parse(await fs.readFile(workItemJsonPath, 'utf-8'));
     const releaseMode = existingAllowed.length > 0 ? 'extend' : 'release';
     const now = new Date().toISOString();
@@ -119,25 +146,16 @@ export async function releaseCodePermission(input: ReleasePermissionInput): Prom
     throw new Error(`Failed to release code permission: ${err.message}`);
   }
 }
-
 export async function revokeCodePermission(workItemDir: string): Promise<void> {
   const workItemJsonPath = path.join(workItemDir, 'work_item.json');
   try {
     const wi = JSON.parse(await fs.readFile(workItemJsonPath, 'utf-8'));
-    if (!Array.isArray(wi.allowed_write_files_snapshot) || wi.allowed_write_files_snapshot.length === 0) {
-      wi.allowed_write_files_snapshot = Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [];
-    }
-    wi.code_change_allowed = false;
-    wi.allowed_write_files = [];
-    wi.code_permission_revoked = true;
-    wi.code_permission_revoked_at = wi.code_permission_revoked_at ?? new Date().toISOString();
-    wi.updated_at = new Date().toISOString();
+    applyRevokedPermissionFacts(wi, [], { recordRevocationEvent: true });
     await fs.writeFile(workItemJsonPath, JSON.stringify(wi, null, 2) + '\n', 'utf-8');
   } catch (err: any) {
     throw new Error(`Failed to revoke code permission: ${err.message}`);
   }
 }
-
 export async function checkCodePermission(workItemDir: string): Promise<PermissionState> {
   try {
     const wi = JSON.parse(await fs.readFile(path.join(workItemDir, 'work_item.json'), 'utf-8'));

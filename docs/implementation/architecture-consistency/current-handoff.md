@@ -3521,3 +3521,97 @@ WI0002_ACTION=NOT_PERFORMED
 WI0003_ACTION=NOT_PERFORMED
 NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR153_THEN_RETRY_WI0001_VERIFICATION_GATE_ONLY
 ```
+
+
+## V95真实闭环、代码权限撤销时间证据与ERR-154（2026-08-06）
+
+V95完成定向测试、对称全量A/B、TypeScript、构建、Installer、提交、推送和用户级升级：
+
+```text
+PRODUCT_HEAD=cb6d427216f0f8b99f2272ddc679441799c44544
+TARGETED_TESTS=41_OF_41_PASS
+AB_INCOMPARABLE=0
+AB_NEW_FAILURES=0
+USERLEVEL_VERIFY=PASS
+```
+
+重启目标daemon后，真实WI-0001只重试Verification Gate，ERR-149、ERR-151和ERR-153完成真实闭环：
+
+```text
+VERIFICATION_GATE=passed
+FORMAL_VERSION_GATE=passed
+GATE_SUMMARY=passed
+STATE_AUTO_ADVANCE=verification_running_TO_verification_done
+FORMAL_SNAPSHOT_HEAD=4f616d167f01ba24a63165f094386bd9157167c1
+FORMAL_SNAPSHOT_IMPLEMENTATION_FILES=4
+MISSING_FROM_SNAPSHOT=none
+UNEXPECTED_IN_SNAPSHOT=none
+PRODUCTION_CODE_MODIFIED=NO
+```
+
+随后按Architecture Change固定顺序显式执行`sf_code_permission(action=revoke)`。功能状态正确：
+
+```text
+STATE_BEFORE=verification_done
+STATE_AFTER=verification_done
+CODE_CHANGE_ALLOWED=false
+CODE_PERMISSION_REVOKED=true
+ALLOWED_WRITE_FILES=[]
+ALLOWED_WRITE_FILES_SNAPSHOT_COUNT=16
+FORMAL_VERSION_UNCHANGED=YES
+PRODUCTION_CODE_MODIFIED=NO
+```
+
+但审计时间仍为旧撤权事件：
+
+```text
+LATEST_REVOKE_WORK_ITEM_UPDATED_AT=2026-08-06T01:50:12.895Z
+CODE_PERMISSION_REVOKED_AT=2026-08-05T10:32:26.209Z
+```
+
+根因是显式撤权生产者使用`code_permission_revoked_at ?? now`，历史时间一旦存在就不会被当前撤权事件刷新；Close Gate兼容同步路径复制了相同字段写入逻辑。权限功能已撤销，但审计字段无法证明当前撤权事件何时发生。
+
+V96范围冻结为：
+
+```text
+packages/daemon-core/src/tools/lib/code-permission-service-v11.ts
+packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts
+packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts
+packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts
+docs/rule/specforge-development-error-ledger-and-experience.md
+docs/implementation/architecture-consistency/current-handoff.md
+```
+
+修复契约：
+
+```text
+显式revoke
+→ 总是把code_permission_revoked_at和updated_at写成同一个当前事件时间
+
+Close兼容同步
+→ 复用同一权限事实助手
+→ 已有撤权时间时不伪造新的撤权事件
+→ 缺少撤权时间时才补齐
+
+allowed_write_files_snapshot
+→ 始终保留已有非空快照
+→ 否则依次使用当前权限集合或Close传入的冻结快照
+```
+
+```text
+ERR149_STATUS=CLOSED_REAL_WI_FORMAL_VERSION_REBUILD_PASS
+ERR150_STATUS=CLOSED_REAL_WI_FAIL_CLOSED_PASS
+ERR151_STATUS=CLOSED_REAL_WI_DURABLE_AUDIT_PASS
+ERR152_STATUS=CLOSED_DELIVERY_REPORTING_DYNAMIC_COUNT_PASS
+ERR153_STATUS=CLOSED_REAL_WI_COMPATIBILITY_SCOPE_PASS
+ERR154_CLASSIFICATION=PRODUCT_DEFECT
+ERR154_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_REVOKE_RECHECK
+AUTHORITY_REVISION=NOT_REQUIRED_EXISTING_AUDIT_PROVENANCE_AND_FAIL_CLOSED_RULES_ALREADY_APPLY
+WI0001_CURRENT_STATE=verification_done
+WI0001_CODE_PERMISSION=REVOKED_FUNCTIONALLY_WITH_STALE_AUDIT_TIMESTAMP
+WI0001_CLOSE_ACTION=NOT_PERFORMED
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+WI0002_ACTION=NOT_PERFORMED
+WI0003_ACTION=NOT_PERFORMED
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR154_THEN_REPEAT_EXPLICIT_REVOKE_ONCE_AND_VERIFY_TIMESTAMP_BEFORE_CLOSE
+```

@@ -23,6 +23,10 @@ import '../../src/tools/handlers/sf-v11-close-gate.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import type { SemanticClosureManifest } from '../../src/tools/lib/semantic-closure-core.js';
 import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
+import {
+  applyRevokedPermissionFacts,
+  revokeCodePermission,
+} from '../../src/tools/lib/code-permission-service-v11.js';
 
 function semanticClosure(workItemId: string): SemanticClosureManifest {
   return {
@@ -619,4 +623,61 @@ describe('sf_close_gate handler', () => {
     const gateJson = JSON.parse(await fs.readFile(gateJsonPath, 'utf-8'));
     expect(gateJson.status).toBe('failed');
   });
+
+  it('records the timestamp of the current explicit code-permission revocation event', async () => {
+    const workItemDir = path.join(tmpDir, '.specforge', 'work-items', 'wi-revoke-timestamp');
+    await fs.mkdir(workItemDir, { recursive: true });
+    const priorSnapshot = [{ path: 'src/main.ts', operation: 'modify' }];
+    await fs.writeFile(
+      path.join(workItemDir, 'work_item.json'),
+      JSON.stringify({
+        id: 'wi-revoke-timestamp',
+        code_change_allowed: true,
+        code_permission_revoked: false,
+        code_permission_revoked_at: '2000-01-01T00:00:00.000Z',
+        allowed_write_files: [{ path: 'src/main.ts', operation: 'modify' }],
+        allowed_write_files_snapshot: priorSnapshot,
+        updated_at: '2000-01-01T00:00:00.000Z',
+      }, null, 2) + '\n',
+      'utf-8',
+    );
+
+    await revokeCodePermission(workItemDir);
+
+    const workItem = JSON.parse(
+      await fs.readFile(path.join(workItemDir, 'work_item.json'), 'utf-8'),
+    );
+    expect(workItem.code_change_allowed).toBe(false);
+    expect(workItem.code_permission_revoked).toBe(true);
+    expect(workItem.allowed_write_files).toEqual([]);
+    expect(workItem.allowed_write_files_snapshot).toEqual(priorSnapshot);
+    expect(workItem.code_permission_revoked_at).not.toBe('2000-01-01T00:00:00.000Z');
+    expect(workItem.code_permission_revoked_at).toBe(workItem.updated_at);
+  });
+
+  it('preserves the current revoke event while Close synchronizes permission facts', () => {
+    const currentRevocation = '2026-08-06T01:50:12.895Z';
+    const closeSyncTime = '2026-08-06T02:00:00.000Z';
+    const workItem: Record<string, any> = {
+      code_change_allowed: false,
+      code_permission_revoked: true,
+      code_permission_revoked_at: currentRevocation,
+      allowed_write_files: [],
+      allowed_write_files_snapshot: [],
+      updated_at: currentRevocation,
+    };
+
+    applyRevokedPermissionFacts(
+      workItem,
+      [{ path: 'src/main.ts', operation: 'modify' }],
+      { now: closeSyncTime, recordRevocationEvent: false },
+    );
+
+    expect(workItem.code_permission_revoked_at).toBe(currentRevocation);
+    expect(workItem.updated_at).toBe(closeSyncTime);
+    expect(workItem.allowed_write_files_snapshot).toEqual([
+      { path: 'src/main.ts', operation: 'modify' },
+    ]);
+  });
+
 });

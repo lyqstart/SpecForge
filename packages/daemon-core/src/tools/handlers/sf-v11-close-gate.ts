@@ -17,6 +17,7 @@ import {
   type ChangedFilesAuditResult,
 } from "../lib/changed-files-audit.js";
 import {
+  applyRevokedPermissionFacts,
   revokeCodePermission,
   checkCodePermission,
 } from "../lib/code-permission-service-v11.js";
@@ -536,23 +537,14 @@ async function syncPermissionFacts(
   allowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
 ): Promise<Record<string, any>> {
   const workItem = await readJsonFile(workItemJsonPath);
-  workItem.code_change_allowed = false;
-  workItem.allowed_write_files = [];
-  workItem.code_permission_revoked = true;
-  workItem.code_permission_revoked_at =
-    workItem.code_permission_revoked_at ?? new Date().toISOString();
-  workItem.allowed_write_files_snapshot =
-    Array.isArray(workItem.allowed_write_files_snapshot) &&
-    workItem.allowed_write_files_snapshot.length > 0
-      ? workItem.allowed_write_files_snapshot
-      : allowedWriteFilesSnapshot.map((f) => ({ path: f.path, operation: f.operation }));
-  workItem.updated_at = new Date().toISOString();
+  applyRevokedPermissionFacts(workItem, allowedWriteFilesSnapshot, {
+    recordRevocationEvent: false,
+  });
 
   // Compatibility only: do not change workItem.status here.
   await fs.writeFile(workItemJsonPath, JSON.stringify(workItem, null, 2) + "\n", "utf-8");
   return workItem;
 }
-
 function workflowTypeFromPath(workflowPath: string | undefined): string {
   switch (workflowPath) {
     case "requirement_change_path":

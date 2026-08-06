@@ -4156,3 +4156,38 @@ actual_files
 4. Formal Version、Git Binding和Merge Guard必须继续消费真实文件集合；
 5. 兼容模式、恢复模式、跨进程重建和Project Spec未完全激活场景都必须覆盖回归；
 6. 下游需要“是否适用治理强制”时读取`active`，需要“发生了哪些实现变化”时读取`actual_files`，不得混用。
+
+
+### ERR-154：显式代码权限撤销沿用历史撤销时间，当前撤权事件缺少准确审计时间
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：WI-0001在Verification Gate与Formal Version Gate全部通过后执行`sf_code_permission(action=revoke)`；权限事实正确变为`code_change_allowed=false`、`code_permission_revoked=true`、`allowed_write_files=[]`，但`code_permission_revoked_at`仍为前一次撤权时间，而`work_item.updated_at`已经刷新到当前操作时间。
+- **一手证据**：当前撤权后`updated_at=2026-08-06T01:50:12.895Z`，`code_permission_revoked_at=2026-08-05T10:32:26.209Z`。源码`revokeCodePermission`和Close兼容同步均使用`code_permission_revoked_at ?? new Date().toISOString()`。
+- **根因**：字段生产者把“字段已存在”错误等同于“当前撤权事件已记录”。经历释放、恢复和再次撤权后，历史时间不会被新的显式撤权覆盖；Close Gate又复制同一写入语义，形成两个可能漂移的生产者。
+- **影响**：权限功能边界正确，但审计证据不能证明当前撤权事件发生时间；Close和后续Git交付无法把撤权事实与本轮验证收口准确关联。
+- **修复**：建立统一`applyRevokedPermissionFacts`助手。显式撤权以`recordRevocationEvent=true`强制写入同一个`now`到`code_permission_revoked_at`和`updated_at`；Close兼容同步以`recordRevocationEvent=false`保留已有当前事件时间，仅在缺失时补齐。统一保留或回填`allowed_write_files_snapshot`。
+- **回归**：覆盖“已有历史撤权时间→再次显式撤权必须刷新并等于updated_at”，以及“Close同步不得覆盖已经记录的当前撤权事件，同时必须保留冻结权限快照”。
+- **状态**：`FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_REVOKE_RECHECK`
+
+## EXP-131：事件时间字段必须标识当前事件，状态同步不得冒充新事件
+
+对带`*_at`的治理审计字段，必须区分：
+
+```text
+显式状态变更事件
+→ 总是记录本次事件时间
+
+兼容同步或事实对账
+→ 保留已有事件时间
+→ 仅在字段缺失时补齐
+```
+
+固定要求：
+
+1. `sf_code_permission(action=revoke)`每次成功都必须刷新`code_permission_revoked_at`；
+2. 同一次显式撤权的`code_permission_revoked_at`必须与`updated_at`使用同一个`now`；
+3. 重新释放后再次撤权不得沿用前一轮时间；
+4. Close Gate同步权限事实时不得伪造一次新的显式撤权事件；
+5. 权限服务与Close不得各自复制字段写入规则，必须复用同一助手；
+6. `allowed_write_files_snapshot`必须保留非空历史快照，不能因撤权清空；
+7. 回归必须同时覆盖事件刷新、同步保留、缺失补齐和快照保留。
