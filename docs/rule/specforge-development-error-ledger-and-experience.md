@@ -4090,3 +4090,69 @@ AND summary_status=passed
 ## EXP-128：阶段完成态持久化证据必须优先于后续瞬时运行日志
 
 当下游在恢复或跨进程阶段重建事实时，已经通过的阶段完成态产物是该阶段的正式生产者合同。后续运行日志可能包含权限元数据、治理产物或被阻断尝试，不能因为“非空”就遮蔽正式产物。证据选择必须先按生命周期和语义作用域排序，再按是否非空选择；治理路径必须在决定来源可用性之前被剔除。
+
+### ERR-152：V93交付脚本把5文件范围报告为6文件
+
+- **分类**：`EVIDENCE_REPORTING_DEFECT`
+- **现场**：V93实际`TARGET_FILE_COUNT=5`，Git提交和`ACTUAL_MODIFIED_FILES`也只有5个文件，但脚本仍输出`TEMP_PATCH_ACTION=APPLIED_EXACT_6_FILES_TO_PATCHED_WORKTREE`和`PATCH_ACTION=APPLIED_COMPLETE_FINAL_6_FILES`。
+- **根因**：交付脚本沿用V92的硬编码文件数量文本，没有从Manifest的`changed_files`动态生成。
+- **影响**：Git实际修改范围、提交、推送和安装均未扩大，但机器反馈内部自相矛盾，不能作为精确范围证据。
+- **修复**：全部范围进度、最终结果和回滚文本从Manifest动态计算文件数量和版本名；封包前验证输出数量等于Manifest数量。
+- **状态**：`FIX_INCLUDED_IN_V95_DELIVERY_SCRIPT`
+
+## EXP-129：交付报告中的范围数量必须从同一Manifest动态生成
+
+以下字段不得硬编码或从旧版本复制：
+
+```text
+TARGET_FILE_COUNT
+TEMP_PATCH_ACTION文件数
+PATCH_ACTION文件数
+ACTUAL_MODIFIED_FILE_COUNT
+回滚文件数
+```
+
+固定要求：
+
+1. 唯一来源是最终Manifest的`changed_files`；
+2. 补丁工作树、真实仓库和最终Git Diff必须分别对账该集合；
+3. 输出文本中的文件数必须由`len(changed_files)`动态生成；
+4. Manifest、实际Git Diff和反馈字段任一不一致时失败关闭；
+5. 报告错误即使不影响代码，也必须登记并修复，不能以“实际提交正确”代替证据闭环。
+
+### ERR-153：兼容模式治理范围提前返回空文件集合，Formal Version丢失持久化实现证据
+
+- **分类**：`PRODUCT_DEFECT`
+- **现场**：V93部署并重启目标daemon后，真实WI-0001的PASS Changed Files Audit、源码解析器和真实Git Diff都包含同样4个业务文件，但Formal Version Gate仍收到空实现集合并失败。
+- **V94一手证据**：
+  - `extractPassedChangedFilesAuditEntries`返回4个文件；
+  - `deriveActualChangedFiles`返回4个文件，来源为`changed_files_audit.md`；
+  - `git diff base...HEAD`返回相同4个文件；
+  - `governance_scope.json.active=false`；
+  - 源码Formal Version探针仍报告4个文件全部`unrecorded`，旧快照保持`implementation_files=[]`。
+- **根因**：`auditActualGovernanceScope`在读取实际文件前判断`governance_scope.active`。当其为false时直接返回`actual_files=[]`，因此正确的持久化审计证据从未传给`inspectFormalGitBinding`。
+- **架构错误**：把“Project Architecture/Data/Module范围治理是否激活”错误等同于“是否存在实际实现文件”。兼容模式只应跳过模块所有权与范围强制，不能清空Changed Files Audit和Git闭环需要的事实。
+- **修复**：始终先取得并规范化实际文件；`active=false`时返回`passed=true`、`active=false`和真实`actual_files`，只跳过模块所有权与影响范围校验。Formal Version继续用该集合与`base...HEAD`非治理Git Diff精确对账。
+- **回归**：新增真实Git夹具，覆盖`governance_scope.active=false + PASS audit + committed implementation`，要求Actual Scope返回文件、Formal Git Binding集合一致且无缺失。
+- **状态**：`FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY`
+
+## EXP-130：治理能力未激活不能抹除实现事实
+
+必须区分两个维度：
+
+```text
+governance_scope.active
+= 是否执行Module所有权、Architecture/Data/Contract范围强制
+
+actual_files
+= Changed Files Audit、Write Guard、Work Item或Filesystem Baseline证明的实际实现文件
+```
+
+固定规则：
+
+1. 实际文件取证必须先于`active`分支；
+2. `active=false`只允许跳过模块所有权和范围约束校验；
+3. `active=false`不得返回伪造的空`actual_files`；
+4. Formal Version、Git Binding和Merge Guard必须继续消费真实文件集合；
+5. 兼容模式、恢复模式、跨进程重建和Project Spec未完全激活场景都必须覆盖回归；
+6. 下游需要“是否适用治理强制”时读取`active`，需要“发生了哪些实现变化”时读取`actual_files`，不得混用。

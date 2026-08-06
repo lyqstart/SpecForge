@@ -6,6 +6,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { changedFilesFromFacts } from '../../src/tools/handlers/sf-changed-files-audit.js';
 import {
+  auditActualGovernanceScope,
   compareFormalImplementationFileSets,
   deriveActualChangedFiles,
   extractPassedChangedFilesAuditEntries,
@@ -347,6 +348,78 @@ Work Item: WI-0001
       ],
       source: 'changed_files_audit.md',
     });
+  });
+
+  it('preserves durable implementation files when governance scope is in compatibility mode', async () => {
+    await git(projectRoot, ['init', '-b', 'main']);
+    await git(projectRoot, ['config', 'user.name', 'SpecForge Test']);
+    await git(projectRoot, ['config', 'user.email', 'specforge-test@example.invalid']);
+    await fs.writeFile(path.join(projectRoot, 'README.md'), '# baseline\n');
+    await git(projectRoot, ['add', '--', 'README.md']);
+    await git(projectRoot, ['commit', '-m', 'chore: baseline']);
+    const baseCommit = await git(projectRoot, ['rev-parse', 'HEAD']);
+    await git(projectRoot, ['switch', '-c', 'feature/workdesk-wi-0002']);
+    await fs.mkdir(path.join(projectRoot, 'src'), { recursive: true });
+    await fs.writeFile(path.join(projectRoot, 'src', 'main.ts'), 'export const value = 1;\n');
+    await git(projectRoot, ['add', '--', 'src/main.ts']);
+    await git(projectRoot, ['commit', '-m', 'feat: implement workdesk']);
+
+    await fs.writeFile(
+      path.join(workItemDir, 'changed_files_audit.md'),
+      `# Changed Files Audit
+
+## Result: PASS
+
+## Entries
+
+- [modify] src/main.ts → in_scope
+`,
+    );
+    await fs.writeFile(
+      path.join(workItemDir, 'governance_scope.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: 'WI-0002',
+        active: false,
+        affected_modules: [],
+        allowed_write_files: ['src/main.ts'],
+        architecture_refs: [],
+        data_model_refs: [],
+        design_refs: [],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        project_spec_version: 'PSV-0002',
+        impact_scope_hash: 'compatibility-mode',
+        frozen_at: new Date().toISOString(),
+      }),
+    );
+
+    const actualScope = await auditActualGovernanceScope({
+      projectRoot,
+      workItemDir,
+    });
+    expect(actualScope).toEqual({
+      passed: true,
+      active: false,
+      violations: [],
+      actual_modules: [],
+      actual_files: ['src/main.ts'],
+    });
+
+    const binding = await inspectFormalGitBinding({
+      projectRoot,
+      gitContext: {
+        git_enabled: true,
+        branch_name: 'feature/workdesk-wi-0002',
+        base_commit: baseCommit,
+      },
+      implementationFiles: actualScope.actual_files,
+    });
+    expect(binding.implementation_files).toEqual(['src/main.ts']);
+    expect(binding.committed_implementation_files).toEqual(['src/main.ts']);
+    expect(binding.implementation_file_set_matches).toBe(true);
+    expect(binding.unrecorded_committed_implementation_files).toEqual([]);
+    expect(binding.missing_from_commit).toEqual([]);
   });
 
   it('does not let governance-only Write Guard facts suppress later durable fallbacks', async () => {

@@ -3424,3 +3424,100 @@ WI0002_ACTION=NOT_PERFORMED
 WI0003_ACTION=NOT_PERFORMED
 NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR151_THEN_RETRY_VERIFICATION_GATE_ONLY
 ```
+
+## V93真实复检、V94四方取证与ERR-152—ERR-153（2026-08-06）
+
+V93已完成定向测试、对称全量A/B、TypeScript、构建、Installer、提交、推送和用户级升级：
+
+```text
+PRODUCT_HEAD=9984c894ba0fd7b0808588ff21c3fc63920fdc01
+TARGETED_TESTS=40_OF_40_PASS
+AB_INCOMPARABLE=0
+AB_NEW_FAILURES=0
+USERLEVEL_VERIFY=PASS
+```
+
+V93交付脚本实际修改文件为5个，但两处进度输出仍硬编码为`6_FILES`：
+
+```text
+TARGET_FILE_COUNT=5
+ACTUAL_MODIFIED_FILE_COUNT=5
+TEMP_PATCH_ACTION=APPLIED_EXACT_6_FILES_TO_PATCHED_WORKTREE
+PATCH_ACTION=APPLIED_COMPLETE_FINAL_6_FILES
+```
+
+该问题只影响机器报告准确性，不改变Git实际范围；登记为`ERR-152 EVIDENCE_REPORTING_DEFECT`。后续封包器必须从Manifest动态输出目标文件数，不得复制上一版本常量。
+
+重启目标提交daemon后，真实WI-0001只重试Verification Gate，结果：
+
+```text
+VERIFICATION_GATE=passed
+FORMAL_VERSION_GATE=failed
+GATE_SUMMARY=failed
+STATE_AUTO_ADVANCE=NOT_ATTEMPTED
+FINAL_STATE=verification_running
+FORMAL_SNAPSHOT_REGENERATED=NO
+SNAPSHOT_IMPLEMENTATION_FILES=[]
+PRODUCTION_CODE_MODIFIED=NO
+```
+
+ERR-150真实失败关闭继续有效，但ERR-149尚未闭环。V94只读四方一致性取证证明：
+
+```text
+REMOTE_AND_LOCAL_PRODUCT_HEAD=9984c894ba0fd7b0808588ff21c3fc63920fdc01
+AUDIT_EXTRACTED_FILES=4
+DERIVE_ACTUAL_CHANGED_FILES=4
+DERIVE_SOURCE=changed_files_audit.md
+ACTUAL_GIT_IMPLEMENTATION_FILES=4
+SOURCE_FORMAL_VERSION_RESULT=failed
+SOURCE_FORMAL_SNAPSHOT_FILES=0
+GOVERNANCE_SCOPE_ACTIVE=false
+PRODUCT_REPOSITORY_UNCHANGED=YES
+VALIDATION_REPOSITORY_UNCHANGED=YES
+WI_ACTION=NOT_PERFORMED
+```
+
+最终根因：
+
+```text
+deriveActualChangedFiles
+→ 正确返回PASS审计中的4个业务文件
+
+auditActualGovernanceScope
+→ 先读取governance_scope.active
+→ active=false时提前返回actual_files=[]
+→ 未调用deriveActualChangedFiles
+
+inspectFormalGitBinding
+→ 收到implementationFiles=[]
+→ 与base...HEAD的4个业务文件对账失败
+→ Formal Version快照不重建
+```
+
+`governance_scope.active`只表示Project Architecture/Data/Module范围治理是否启用，不能表示“没有实际实现文件”。兼容模式、恢复模式或范围治理未激活时，Formal Version仍必须消费Changed Files Audit和Git Diff完成文件集合闭环。
+
+V95产品修复范围冻结为：
+
+```text
+packages/daemon-core/src/tools/lib/project-governance-v2.ts
+packages/daemon-core/tests/unit/formal-version-git-closure-regression.test.ts
+packages/daemon-core/tests/unit/specforge-development-experience-gate.test.ts
+docs/rule/specforge-development-error-ledger-and-experience.md
+docs/implementation/architecture-consistency/current-handoff.md
+```
+
+```text
+ERR151_STATUS=IMPLEMENTATION_CORRECT_BUT_NOT_SUFFICIENT_TO_CLOSE_ERR149
+ERR152_CLASSIFICATION=EVIDENCE_REPORTING_DEFECT
+ERR152_STATUS=FIX_INCLUDED_IN_V95_DELIVERY_SCRIPT
+ERR153_CLASSIFICATION=PRODUCT_DEFECT
+ERR153_STATUS=FIX_IMPLEMENTED_PENDING_SYMMETRIC_VALIDATION_DEPLOY_AND_REAL_WI_RETRY
+AUTHORITY_REVISION=NOT_REQUIRED_EXISTING_ACTUAL_SCOPE_FORMAL_VERSION_FAIL_CLOSED_RULES_ALREADY_APPLY
+WI0001_CURRENT_STATE=verification_running
+WI0001_CODE_PERMISSION=ENABLED
+WI0001_CLOSE_ACTION=NOT_PERFORMED
+WI0001_GIT_MERGE_ACTION=NOT_PERFORMED
+WI0002_ACTION=NOT_PERFORMED
+WI0003_ACTION=NOT_PERFORMED
+NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR153_THEN_RETRY_WI0001_VERIFICATION_GATE_ONLY
+```

@@ -1708,22 +1708,10 @@ export async function auditActualGovernanceScope(input: {
   const snapshot = (await readJson(
     path.join(input.workItemDir, 'governance_scope.json'),
   )) as GovernanceScopeSnapshot | null;
-  if (!snapshot?.active) {
-    return {
-      passed: true,
-      active: false,
-      violations: [],
-      actual_modules: [],
-      actual_files: [],
-    };
-  }
 
-  const manifest = await readJson(
-    path.join(input.projectRoot, SPEC_DIR, 'project', 'spec_manifest.json'),
-  );
-  const violations: string[] = [];
-  const actualModules: string[] = [];
-
+  // The governance activation flag controls module/scope enforcement only.
+  // It must never erase durable implementation-file evidence needed by
+  // Formal Version Git closure, including compatibility-mode and recovered WIs.
   let actualFiles = (input.changedFiles ?? []).map(raw =>
     slash(typeof raw === 'string' ? raw : raw.path),
   );
@@ -1732,6 +1720,22 @@ export async function auditActualGovernanceScope(input: {
     actualFiles = derived.files;
   }
   actualFiles = unique(actualFiles.filter(Boolean));
+
+  if (!snapshot?.active) {
+    return {
+      passed: true,
+      active: false,
+      violations: [],
+      actual_modules: [],
+      actual_files: actualFiles,
+    };
+  }
+
+  const manifest = await readJson(
+    path.join(input.projectRoot, SPEC_DIR, 'project', 'spec_manifest.json'),
+  );
+  const violations: string[] = [];
+  const actualModules: string[] = [];
 
   const approvedPermissionPaths = new Set(
     normalizeArray(snapshot.allowed_write_files).map(value => slash(value)),
