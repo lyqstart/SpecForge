@@ -3865,3 +3865,31 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | 下一阶段 | WI-0003（需新的用户操作边界） |
 | P0 总体 | 仍 NO；第一次 Candidate Gate 完整机器报告永久缺失 |
 <!-- ERR192_POST_MERGE_TEST_ORCHESTRATION_P0:END -->
+
+<!-- P0_WI0003_PROMOTION_PRODUCT_GAP_ERR193_ERR210:START -->
+## WI-0003 Stage C — Promotion 产品缺口取证（ERR-193～ERR-210）
+
+WI-0003 V39 Candidate 已确认 `NOT_GATE_READY`，Candidate Gate 从未运行。本轮先修 SpecForge 的 Module→Project Contract Promotion Producer、Manifest Schema 与 non-phantom Trace Gate 语义。
+
+V55/V56 同时确认当前 SpecForge main 全仓存在 13-package 历史测试债务；该债务与 WI-0003 Candidate 未建立因果关系，不得据此修改 WI-0003，也不得据此扩大 ERR-193～195 的本轮产品范围。
+
+产品修复并部署成功后必须：
+1. 只读调查 `candidate_prepared` 的合法 invalidation / recovery / reprepare 路径；
+2. 禁止手工删除或改写 V39 Candidate；
+3. 禁止为了制造 `gates_failed` 而运行已知无效 Candidate Gate；
+4. 合法恢复到 `candidate_preparing` 或正式等价状态；
+5. 用 `sf_contract_register(action=promote)` 重新生成 Promotion；
+6. 静态对账 old/new ID、`contract_promotions`、ARCH/DATA source_refs、Module Contract 退休、只 REMOVE 真实旧边、新 consumer/source ADD、compatibility/migration、dual-truth/cross-module boundary；
+7. 全部静态通过后，仍需用户新的明确授权才运行 Candidate Gate。
+
+永久停止条件：
+`FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`
+`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`
+`P0_OVERALL_COMPLETION_ALLOWED=NO`
+<!-- P0_WI0003_PROMOTION_PRODUCT_GAP_ERR193_ERR210:END -->
+
+V57 的 `FAILED_STAGE=V57_EXECUTOR` 已归因于 scope audit 路径解析器自身（ERR-208）；失败发生在 detached worktree，真实 SpecForge 仓库、Validation/WI-0003、user-level 与 Git 历史均未修改。
+
+V58 的 Promotion 定向回归已 PASS；TypeScript `exit=2` 未建立 clean-main A/B，因此先记 ERR-209，不能把该 exit code直接归因为 Promotion 产品补丁。V59 负责同环境 A/B 归因。
+
+V59 已证明 Promotion 定向回归 PASS，daemon-core `tsc/build` post 均为 `exit=0`，workspace build baseline/post 均为 `exit=0`。V59 最终失败仅因比较器把成功日志中的非确定耗时误当错误键（ERR-210）；V60 改为 exit-code-first A/B。

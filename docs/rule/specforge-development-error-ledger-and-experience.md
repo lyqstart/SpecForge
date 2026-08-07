@@ -4773,3 +4773,45 @@ actual_files
 4. `sf_git_post_merge_verify.commands` 是证据/说明字段，不代表 Tool 会执行命令。
 5. closed WI 的 WriteGuard 阻断代码/测试类 shell 命令是预期保护，不得为了 Prompt 多余步骤而放宽。
 <!-- ERR192_POST_MERGE_TEST_ORCHESTRATION:END -->
+
+<!-- SPECFORGE_EXP165_EXP180_PROMOTION_DELIVERY:START -->
+## 2026-08-07 — Promotion Producer / Manifest / Trace 与交付测量经验
+
+### 错误记录
+- **ERR-193**：Promotion Gate 无同构受控 Producer。修复：扩展现有 `sf_contract_register`，新增 `action=promote`，不新增 Tool。
+- **ERR-194**：Manifest Schema 未覆盖 Gate 控制字段 `contract_promotions`。
+- **ERR-195**：Promotion Gate 对不存在的旧 source edge 产生 phantom REMOVE 要求。
+- **ERR-196**：V41/V42 fragile full-text promotion-manifest anchor 连续失败。
+- **ERR-197**：V43 handler full-text anchor 继续失败。
+- **ERR-198**：V44 integrity full-text anchor 再次失败，确认必须停止逐 anchor 调试。
+- **ERR-199**：把可访问祖先 commit 误判为 remote branch HEAD。
+- **ERR-200**：V49 Windows Bun shim 入口解析错误。
+- **ERR-201**：V50 Windows junction quoting 错误。
+- **ERR-202**：V51 evidence parser 错误耦合不同 artifact 的字段。
+- **ERR-203**：V52 未验证 baseline 执行有效性就比较失败集合。
+- **ERR-204**：V52 临时 workspace + junction 改变模块解析，baseline 非等价。
+- **ERR-205**：V54 测试 identity 未 trim，产生假差异。
+- **ERR-206**：13-package 既有全仓债务无因果扩大 Promotion 窄补丁范围。
+- **ERR-207**：V57 交付前 runner 生成器发生嵌套三引号 SyntaxError；包未生成、未交付、未写用户仓库。修复为 payload 分离，并强制 runner compile + ZIP reopen。
+- **ERR-208**：V57 scope audit 对 `git status --porcelain` 整体执行 `.strip()`，破坏第一条记录的结构性前导空格，再固定切片导致路径首字符丢失；隔离验证被假范围差异阻断，真实仓库未写入。修复为 Git 直接文件集合命令，不解析 porcelain 展示列。
+- **ERR-209**：V58 在有历史验证债务的 main 上只执行 post-patch TypeScript noEmit，并把 `exit=2` 直接归因于补丁；缺少 clean-head A/B。修复：V59 同一 detached worktree 先 baseline，再应用补丁，比较规范化新增错误集合。
+- **ERR-210**：V59 workspace build baseline/post 都成功，却继续比较普通 stdout 尾部，把 `Bundled ... in 474ms` 的非确定耗时当作新增错误。修复：exit-code-first A/B；双成功不比较普通日志。
+
+### 经验规则
+- **EXP-165 — Gate/Producer 同构**：任何 Gate 支持的结构化治理动作，都必须存在同构、受控、可审计 Producer。
+- **EXP-166 — Schema 覆盖 Gate 控制面**：Gate 消费的 Manifest 控制字段必须先被 Schema 完整校验。
+- **EXP-167 — REMOVE 仅删除真实边**：Trace Delta 的 REMOVE 只能针对当前正式 Trace 中真实存在的边；禁止 phantom REMOVE。
+- **EXP-168 — 用户机器不是补丁调试器**：交付 ZIP 前必须基于固定 remote HEAD 形成完整修改与验证方案。
+- **EXP-169 — 按文件尺度选择修改方法**：小型 Handler/Tool 优先完整最终文件；大型源码使用结构化语义定位修改；重复 anchor 失败后必须换方法。
+- **EXP-170 — 包验证覆盖真实执行链**：compile/ZIP integrity 只证明包装；产品交付前还必须实际应用、scope audit、定向测试、TypeScript、build、`git diff --check`。
+- **EXP-171 — branch HEAD 以 branch ref 为准**：优先 `git ls-remote`；commit 可访问不等于当前 branch HEAD。
+- **EXP-172 — Windows shim 必须解析真实入口**：Python/Node 启动 Bun/npm 类工具时解析 `.cmd/.exe`，批处理通过 CMD 入口执行。
+- **EXP-173 — 证据字段遵守 provenance**：失败名称、计数、摘要可来自不同可信 artifact，不得为解析方便虚构单一来源。
+- **EXP-174 — baseline 必须语义等价**：复制源码、junction、symlink、缓存重定向只要改变模块解析/cwd/路径语义，就不能作为 A/B baseline。
+- **EXP-175 — 比较键规范化非语义差异**：集合比较前 trim、normalize slash、去展示前缀；稳定 key、数量、原因分层比较。
+- **EXP-176 — 历史全仓债务与窄补丁分离**：先专用回归、类型检查、相关 build、同环境增量验证；原 HEAD 既有且无因果的失败独立治理。
+- **EXP-177 — runner 本身必须先可执行**：生成执行器时 payload 与 runner 分离，交付前必须编译/解析 runner、重开 ZIP 并校验文件清单，避免把字符串生成器语法错误转嫁给用户。
+- **EXP-178 — 结构化 Git 输出禁止先做全局 trim 再定长切片**：范围审计优先用 `git diff --name-only HEAD` 与 `git ls-files --others --exclude-standard` 形成集合；若必须解析 porcelain，应使用 `-z`/NUL 记录并保留状态列原始字节，不得让人类文本清洗破坏机器协议。
+- **EXP-179 — 有历史债务时静态检查必须 A/B 归因**：clean-head 与 post-patch 必须使用同一 worktree、同一 frozen dependencies、同一命令；错误集合使用相对路径+TS code+消息等稳定键比较，忽略非语义行列漂移。post 只有新增错误才归因本轮，baseline 既有失败必须显式保留。
+- **EXP-180 — 成功日志不是错误集合**：A/B build/static-check 先以 exit code 建立语义。双成功直接 PASS；成功→失败直接回归；失败→成功直接改善；仅双失败才比较稳定错误键。禁止比较耗时、bundle 数量、缓存文本等成功输出。
+<!-- SPECFORGE_EXP165_EXP180_PROMOTION_DELIVERY:END -->

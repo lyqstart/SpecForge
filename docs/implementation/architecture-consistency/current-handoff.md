@@ -3861,3 +3861,63 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
   `INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`
   `P0_OVERALL_COMPLETION_ALLOWED=NO`
 <!-- ERR192_POST_MERGE_TEST_ORCHESTRATION_HANDOFF:END -->
+
+<!-- SPECFORGE_ERR193_ERR210_PROMOTION_RECOVERY:START -->
+## 2026-08-07 — WI-0003 Promotion 产品缺口与 V41～V60 取证闭环
+
+固定错误事实：
+
+- ERR-193：Module→Project Contract Promotion 有 Gate 契约，但缺少同构受控 Candidate Producer；`sf_contract_register(action=update)` 不能模拟 Promotion。
+- ERR-194：`candidate_manifest.json` schema 未覆盖 Gate 消费的 `contract_promotions`。
+- ERR-195：Promotion Gate 对旧 Contract `source_refs` 无条件要求 REMOVE，可能制造当前正式 Trace 中不存在的 phantom REMOVE。
+- ERR-196：V41/V42 继续依赖大段源码全文字符串 anchor，连续 `promotion manifest write anchor count=0`。
+- ERR-197：V43 同一路线继续触发 `handler args anchor count=0`。
+- ERR-198：V44 同一路线继续触发 `integrity current keys anchor count=0`，证明逐个修“下一个 anchor”不是可接受交付方法。
+- ERR-199：曾把 main 祖先 `77f02f46045d08c84288a7db753b2c897632790a` 误判为当前 remote HEAD；V45 用 `git ls-remote` 证明真实 main 为 `a7357c2088d7e3a56fc113a7bc86d19bf0df9d35`。
+- ERR-200：V49 Python 直接执行 Windows `bun`，未解析真实 `bun.cmd` / `bun.exe`。
+- ERR-201：V50 `mklink /J` 嵌套 CMD quoting 错误，baseline 测试未启动。
+- ERR-202：V51 把失败测试名与汇总计数错误要求来自同一个 artifact。
+- ERR-203：V52 在 baseline 命令真实失败原因未解释前就比较失败集合。
+- ERR-204：V52 “临时源码树 + 真实 node_modules junction”改变 Vite/Vitest 模块解析，不是等价 workspace baseline。
+- ERR-205：V54 比较器未规范化非语义前导空格，产生失败集合假差异。
+- ERR-206：V47～V56 一度把当前 main 的 13-package 历史全仓测试债务扩大成 Promotion 本轮阻塞范围；V55/V56 后按因果边界重新收敛。
+- ERR-207：V57 在交付前本地生成 ZIP 时首次 runner 生成器发生嵌套三引号 Python SyntaxError；该包未生成、未交付、未写用户仓库。修正为 runner 与 payload 分离，并在交付前执行 runner `py_compile` 与 ZIP reopen integrity。
+- ERR-208：V57 的 scope audit 使用 `one(git status --porcelain).strip()` 后再按固定列切路径；`.strip()` 删除了整个输出第一行的结构性前导状态空格，导致第一条路径 `docs/...` 被误切成 `ocs/...`。V57 因此在隔离 worktree 范围审计阶段失败，真实仓库未写入。V58 改为 `git diff HEAD --name-only` + `git ls-files --others --exclude-standard` 直接取得精确变更文件集合，不再解析 porcelain 展示文本。
+- ERR-209：V58 在已知当前 main 存在历史验证债务的前提下，没有先执行 clean-main daemon-core `tsc --noEmit` / build baseline，就把 post-patch `exit=2` 直接判为补丁失败；该判定缺少 A/B 因果证据。V59 改为同一 detached worktree、同一 frozen dependencies、同一命令先 baseline 后 patch，比较新增错误集合。
+- ERR-210：V59 的 A/B build 比较器在 baseline/post workspace build 都 `exit=0` 时仍把普通成功日志尾部当“错误键”比较，将 `Bundled 368 modules in 474ms` 这类非确定耗时文本误判为新增 build error。V60 改为退出码优先：两侧均成功时不比较普通输出；仅有非零退出时才比较稳定错误键。
+
+V55/V56 基线：
+
+- `bun install --frozen-lockfile` PASS，Bun 1.3.11，worktree clean。
+- 当前 main 全仓 13 个 package 存在既有失败。
+- 声明/实际 Vitest major 分布一致：1.x=8、3.x=3、4.x=2；不是统一依赖漂移。
+- 失败类型跨 Module Resolution、Test Framework API、Filesystem、Path/Fixture、Performance/Timeout、Property、Assertion、Unhandled Async；必须作为独立历史测试债务治理，不能无因果扩大 ERR-193～195 的批准范围。
+
+经验索引：
+
+- EXP-165：Gate 支持的结构化治理动作必须有同构受控 Producer。
+- EXP-166：Manifest Schema 必须覆盖 Gate 消费的控制字段。
+- EXP-167：REMOVE 只能删除当前正式 Trace 中真实存在的边。
+- EXP-168：用户机器不能作为补丁逐 anchor 调试环境。
+- EXP-169：按文件尺度选择完整文件或结构化修改方法。
+- EXP-170：包交付验证必须覆盖真实应用、范围、测试、类型、构建和 diff。
+- EXP-171：branch HEAD 优先以 `git ls-remote <remote> refs/heads/<branch>` 为一手证据。
+- EXP-172：Windows 外部工具必须解析真实 `.cmd/.exe` shim。
+- EXP-173：证据字段按真实 artifact provenance 读取，不强迫来自同一文件。
+- EXP-174：A/B baseline 环境必须语义等价。
+- EXP-175：比较键必须规范化非语义空格、路径与展示前缀。
+- EXP-176：历史全仓测试债务不得无因果扩大窄补丁。
+- EXP-177：生成执行器的脚本本身也是交付物；必须在交付 ZIP 前编译/解析 runner，并使用 payload 分离避免嵌套字符串语法风险。
+- EXP-178：机器结构化输出不能先经过面向人类文本的全局 `strip()/trim()` 再按固定列解析；文件范围审计优先使用 Git 直接集合命令（`git diff --name-only HEAD` + `git ls-files --others --exclude-standard`），避免状态列、首行空格、rename 展示格式造成路径损坏。
+- EXP-179：当当前 HEAD 已知存在历史验证债务时，窄补丁的静态检查/构建不得只看 post exit code；必须在语义等价环境中先跑 clean-head baseline，再用稳定错误键比较新增/消失错误。只有补丁新增错误才归因于本轮；baseline 既有错误必须单独登记且不得伪装成通过。
+- EXP-180：build/test 的成功 stdout 不是错误身份。A/B 验证必须先比较命令退出契约：baseline/post 均成功即 PASS；baseline 成功而 post 失败必为新增回归；baseline 失败而 post 成功是改善；只有两侧都失败时才比较规范化稳定错误键，禁止把耗时、模块数量、缓存命中等非确定成功日志作为差异门禁。
+
+本轮产品修复：`sf_contract_register(action=promote)` 只允许 `architecture_change_path`，受控地产生新的 Project Contract、退休旧 Module Contract Candidate，并登记 `contract_promotions`；Manifest Schema 校验 Promotion 控制字段；Gate 只对当前正式 Trace 真实存在的旧 source edge 要求 REMOVE。Runtime 状态机和最终 Manifest entries 物化权威不变。
+
+WI-0003 仍保持原 Candidate 状态。产品修复部署后必须先调查并使用合法 Candidate invalidation/recovery/reprepare 路径，再重新生成 Promotion Candidate；不得直接运行已知无效 V39 Candidate Gate。
+
+永久边界：
+`FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`
+`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`
+`P0_OVERALL_COMPLETION_ALLOWED=NO`
+<!-- SPECFORGE_ERR193_ERR210_PROMOTION_RECOVERY:END -->

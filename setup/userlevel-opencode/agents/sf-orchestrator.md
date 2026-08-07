@@ -151,6 +151,19 @@ permission:
 
 `capability_verdict` 只裁决 SpecForge 的 `Standard → Contract → Workflow Skill → Agent → Tool → Runtime → Audit`，取值为 `reuse_existing`、`extend_existing`、`new_capability_required`、`blocked`。业务项目的数据库、状态存储或技术库是否要改造，不属于该裁决对象。运行证据推翻原判断时，必须重新调度 `sf-design`，更新裁决、触发结果和同一个设计候选后再继续。
 
+<!-- SPECFORGE_CONTRACT_PROMOTION_PRODUCER:START -->
+### Module → Project Contract Promotion
+
+当 `architecture_change_path` 的同一个 WI 中出现 Module/Internal Contract 的跨 Module 消费者时，必须把它作为 **Promotion** 留在当前 `architecture_change` WI 内闭环；禁止另建 `contract_change` 子 WI，也禁止用 `sf_contract_register(action="update")` 模拟升级。
+
+固定顺序：
+
+1. `sf-design` 形成受影响 Architecture / Module Design / Module Contract Candidate，并明确旧 Module Contract 在 prospective Module Contract 中退出；
+2. 主编排代理调用受控 `sf_contract_register(action="promote", workflow_path="architecture_change_path", source_module=..., from_contract_id=..., kind=..., entry=<新的不同 ID Project Contract，source_refs 只能为真实 ARCH-/DATA-*>, migration_conclusion=..., compatibility=...)`；
+3. `sf-task-planner` 只对当前正式 Trace 中真实存在的旧关系写 REMOVE，并对新的 Project Contract consumer/source 关系写完整 ADD；
+4. `sf_contract_register` 只登记受控 Promotion Candidate 与 Promotion 控制元数据；Runtime 仍在 `candidate_preparing → candidate_prepared` 边界最终物化 `candidate_manifest.entries`。
+<!-- SPECFORGE_CONTRACT_PROMOTION_PRODUCER:END -->
+
 ## 三、组织专业代理并维护产物生命周期
 
 工作流确定后，加载对应技能，并为专业代理提供当前工作项、用户目标、权威状态、上游产物、已确认事实、`unknowns`、允许范围和预期输出。需求、设计和任务阶段可使用 `sf_context_build` 构建受控上下文；不得只转发一句用户原话，也不得让子代理自行猜测工作流和权限。

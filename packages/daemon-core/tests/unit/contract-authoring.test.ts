@@ -272,4 +272,214 @@ describe('contract-authoring', () => {
       await expect(fs.access(path.join(wiDir(), featureSpec))).rejects.toThrow();
     }
   });
+
+async function preparePromotionFixture(): Promise<void> {
+  const project = path.join(projectRoot, '.specforge', 'project');
+  const moduleRoot = path.join(project, 'modules', 'PHOTO');
+  await fs.mkdir(moduleRoot, { recursive: true });
+  await fs.writeFile(path.join(project, 'architecture.md'), '# Architecture\nARCH-CORE-001\n');
+  await fs.writeFile(path.join(project, 'data_model.md'), '# Data\nDATA-CORE-001\n');
+  await fs.writeFile(
+    path.join(project, 'spec_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      project: {
+        architecture: '.specforge/project/architecture.md',
+        data_model: '.specforge/project/data_model.md',
+        extension_registry: '.specforge/project/extension_registry.json',
+        trace_matrix: '.specforge/project/trace_matrix.md',
+      },
+      modules: [{
+        module_code: 'PHOTO',
+        module_file: '.specforge/project/modules/PHOTO/module.json',
+        design: '.specforge/project/modules/PHOTO/design.md',
+        contracts: '.specforge/project/modules/PHOTO/contracts.json',
+        trace: '.specforge/project/modules/PHOTO/trace.md',
+        code_paths: ['src/photo/**'],
+      }],
+    }),
+  );
+  await fs.writeFile(
+    path.join(moduleRoot, 'contracts.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      owner_module: 'PHOTO',
+      contracts: {
+        shared_enums: [],
+        invariants: [{
+          id: 'MCON-PHOTO-STATUS',
+          owner_module: 'PHOTO',
+          source_refs: ['DD-PHOTO-001'],
+          enforcement: 'manual',
+          scope: 'module',
+          rule: 'photo status remains valid',
+        }],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    }),
+  );
+  await fs.mkdir(wiDir(), { recursive: true });
+  await fs.writeFile(
+    path.join(wiDir(), 'trigger_result.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      workflow_type: 'architecture_change',
+      workflow_path: 'architecture_change_path',
+      classification: {
+        requirement_changed: false,
+        acceptance_criteria_changed: false,
+        business_rule_changed: false,
+        user_visible_behavior_changed: false,
+        data_semantics_changed: false,
+        design_changed: true,
+        module_boundary_changed: false,
+        api_contract_changed: true,
+        architecture_changed: true,
+        module_contract_changed: true,
+        project_contract_changed: true,
+        unknowns: [],
+      },
+    }),
+  );
+}
+
+it('ERR-193/194 authors controlled Module-to-Project Promotion metadata and retires the Module Contract Candidate', async () => {
+  await preparePromotionFixture();
+  const result = await authorContractCandidate({
+    projectRoot,
+    workItemId,
+    action: 'promote',
+    workflowPath: 'architecture_change_path',
+    kind: 'invariant',
+    sourceModule: 'PHOTO',
+    fromContractId: 'MCON-PHOTO-STATUS',
+    migrationConclusion: 'all current formal consumers migrate in this WI',
+    compatibility: 'atomic internal-to-public migration',
+    entry: {
+      id: 'PCON-PHOTO-STATUS',
+      owner_module: 'PHOTO',
+      source_refs: ['DATA-CORE-001'],
+      enforcement: 'manual',
+      rule: 'photo status remains valid',
+    },
+  });
+  expect(result.success, result.error).toBe(true);
+
+  const projectCandidate = JSON.parse(
+    await fs.readFile(path.join(wiDir(), 'candidates', 'project', 'extension_registry.json'), 'utf-8'),
+  );
+  expect(projectCandidate.contracts.invariants.map((item: any) => item.id))
+    .toContain('PCON-PHOTO-STATUS');
+
+  const moduleCandidate = JSON.parse(
+    await fs.readFile(
+      path.join(wiDir(), 'candidates', 'project', 'modules', 'PHOTO', 'contracts.candidate.json'),
+      'utf-8',
+    ),
+  );
+  expect(moduleCandidate.contracts.invariants.map((item: any) => item.id))
+    .not.toContain('MCON-PHOTO-STATUS');
+
+  const manifestRaw = await fs.readFile(path.join(wiDir(), 'candidate_manifest.json'), 'utf-8');
+  const manifest = JSON.parse(manifestRaw);
+  expect(manifest.workflow_path).toBe('architecture_change_path');
+  expect(manifest.workflow_type).toBe('architecture_change');
+  expect(manifest.contract_promotions).toEqual([{
+    from_contract_id: 'MCON-PHOTO-STATUS',
+    to_contract_id: 'PCON-PHOTO-STATUS',
+    migration_conclusion: 'all current formal consumers migrate in this WI',
+    compatibility: 'atomic internal-to-public migration',
+  }]);
+  expect(
+    manifest.entries.some(
+      (entry: any) =>
+        entry.candidate_path === 'candidates/project/modules/PHOTO/contracts.candidate.json' &&
+        entry.target_path === '.specforge/project/modules/PHOTO/contracts.json',
+    ),
+  ).toBe(true);
+  const validation = validateCandidateManifestJson(
+    manifestRaw,
+    workItemId,
+    'architecture_change_path',
+  );
+  expect(validation.valid, validation.errors.join('; ')).toBe(true);
+});
+
+it('ERR-193/194 fails closed for invalid Promotion identity, provenance and manifest metadata', async () => {
+  await preparePromotionFixture();
+
+  const sameId = await authorContractCandidate({
+    projectRoot,
+    workItemId,
+    action: 'promote',
+    workflowPath: 'architecture_change_path',
+    kind: 'invariant',
+    sourceModule: 'PHOTO',
+    fromContractId: 'MCON-PHOTO-STATUS',
+    migrationConclusion: 'migrate',
+    compatibility: 'compatible',
+    entry: {
+      id: 'MCON-PHOTO-STATUS',
+      owner_module: 'PHOTO',
+      source_refs: ['DATA-CORE-001'],
+      enforcement: 'manual',
+      rule: 'x',
+    },
+  });
+  expect(sameId.success).toBe(false);
+  expect(sameId.error).toContain('distinct');
+
+  const invalidSource = await authorContractCandidate({
+    projectRoot,
+    workItemId,
+    action: 'promote',
+    workflowPath: 'architecture_change_path',
+    kind: 'invariant',
+    sourceModule: 'PHOTO',
+    fromContractId: 'MCON-PHOTO-STATUS',
+    migrationConclusion: 'migrate',
+    compatibility: 'compatible',
+    entry: {
+      id: 'PCON-PHOTO-STATUS',
+      owner_module: 'PHOTO',
+      source_refs: ['DD-PHOTO-001'],
+      enforcement: 'manual',
+      rule: 'x',
+    },
+  });
+  expect(invalidSource.success).toBe(false);
+  expect(invalidSource.error).toContain('ARCH-/DATA-');
+
+  const malformed = validateCandidateManifestJson(
+    JSON.stringify({
+      work_item_id: workItemId,
+      workflow_path: 'architecture_change_path',
+      entries: [],
+      contract_promotions: [
+        {
+          from_contract_id: 'A',
+          to_contract_id: 'A',
+          migration_conclusion: '',
+          compatibility: '',
+        },
+        {
+          from_contract_id: 'A',
+          to_contract_id: 'B',
+          migration_conclusion: 'm',
+          compatibility: 'c',
+        },
+      ],
+    }),
+    workItemId,
+    'architecture_change_path',
+  );
+  expect(malformed.valid).toBe(false);
+  expect(malformed.errors.join('; ')).toContain('CONTRACT_PROMOTION_IDS_MUST_DIFFER');
+  expect(malformed.errors.join('; ')).toContain('CONTRACT_PROMOTION_DUPLICATE_FROM');
+  expect(malformed.errors.join('; ')).toContain('CONTRACT_PROMOTION_MIGRATION_REQUIRED');
+  expect(malformed.errors.join('; ')).toContain('CONTRACT_PROMOTION_COMPATIBILITY_REQUIRED');
+});
 });

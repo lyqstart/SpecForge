@@ -284,6 +284,75 @@ export function validateCandidateManifestJson(
       errors.push('MISSING_FIELD: entries must be an array');
     } else {
       const effectiveWorkflowPath = workflowPath ?? parsed.workflow_path;
+if (Object.prototype.hasOwnProperty.call(parsed, 'contract_promotions')) {
+  if (!Array.isArray(parsed.contract_promotions)) {
+    errors.push('CONTRACT_PROMOTIONS_MUST_BE_ARRAY: contract_promotions must be an array');
+  } else {
+    const seenFrom = new Set<string>();
+    const seenTo = new Set<string>();
+    for (const [index, promotion] of parsed.contract_promotions.entries()) {
+      if (!isPlainObject(promotion)) {
+        errors.push(
+          `CONTRACT_PROMOTION_INVALID_ENTRY: contract_promotions[${index}] must be an object`
+        );
+        continue;
+      }
+      const from = String(promotion.from_contract_id ?? '').trim();
+      const to = String(promotion.to_contract_id ?? '').trim();
+      const migration = String(promotion.migration_conclusion ?? '').trim();
+      const compatibility = String(promotion.compatibility ?? '').trim();
+      if (!from) {
+        errors.push(
+          `CONTRACT_PROMOTION_FROM_REQUIRED: contract_promotions[${index}].from_contract_id is required`
+        );
+      }
+      if (!to) {
+        errors.push(
+          `CONTRACT_PROMOTION_TO_REQUIRED: contract_promotions[${index}].to_contract_id is required`
+        );
+      }
+      if (from && to && from === to) {
+        errors.push(
+          `CONTRACT_PROMOTION_IDS_MUST_DIFFER: contract_promotions[${index}] from/to IDs must differ`
+        );
+      }
+      if (!migration) {
+        errors.push(
+          `CONTRACT_PROMOTION_MIGRATION_REQUIRED: contract_promotions[${index}].migration_conclusion is required`
+        );
+      }
+      if (!compatibility) {
+        errors.push(
+          `CONTRACT_PROMOTION_COMPATIBILITY_REQUIRED: contract_promotions[${index}].compatibility is required`
+        );
+      }
+      if (from) {
+        if (seenFrom.has(from)) {
+          errors.push(
+            `CONTRACT_PROMOTION_DUPLICATE_FROM: from_contract_id "${from}" appears more than once`
+          );
+        }
+        seenFrom.add(from);
+      }
+      if (to) {
+        if (seenTo.has(to)) {
+          errors.push(
+            `CONTRACT_PROMOTION_DUPLICATE_TO: to_contract_id "${to}" appears more than once`
+          );
+        }
+        seenTo.add(to);
+      }
+    }
+    if (
+      parsed.contract_promotions.length > 0 &&
+      effectiveWorkflowPath !== 'architecture_change_path'
+    ) {
+      errors.push(
+        'CONTRACT_PROMOTION_WORKFLOW_PATH_INVALID: contract_promotions require architecture_change_path'
+      );
+    }
+  }
+}
       const evidenceOnly = isEvidenceOnlyCandidateManifest(parsed);
 
       if (effectiveWorkflowPath === 'code_only_fast_path' && parsed.entries.length > 0) {

@@ -466,4 +466,136 @@ describe('contract integrity formal Trace consumers', () => {
     ).toBe(false);
   });
 
+
+it('ERR-195 does not require a phantom old-source REMOVE when the edge is absent from current formal Trace', async () => {
+  const project = path.join(root, '.specforge', 'project');
+  const moduleRoot = path.join(project, 'modules', 'PHOTO');
+
+  await fs.writeFile(
+    path.join(moduleRoot, 'contracts.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      owner_module: 'PHOTO',
+      contracts: {
+        shared_enums: [],
+        invariants: [{
+          id: 'MCON-PHOTO-STATUS',
+          owner_module: 'PHOTO',
+          source_refs: ['DD-PHOTO-001'],
+          enforcement: 'manual',
+          scope: 'module',
+          rule: 'photo status remains valid',
+        }],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    }),
+  );
+  await fs.writeFile(
+    path.join(project, 'trace_matrix.md'),
+    [
+      '| From | Relation | To |',
+      '|---|---|---|',
+      '| DATA-CORE-001 | constrained_by | ARCH-CORE-001 |',
+      '| DD-PHOTO-001 | constrained_by | MCON-PHOTO-STATUS |',
+    ].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'project', 'extension_registry.json'),
+    JSON.stringify({
+      contracts: {
+        shared_enums: [{
+          id: 'PhotoStatus',
+          owner_module: 'PHOTO',
+          source_refs: ['DATA-CORE-001'],
+          enforcement: 'static',
+          values: ['pending', 'ready'],
+        }],
+        invariants: [{
+          id: 'PCON-PHOTO-STATUS',
+          owner_module: 'PHOTO',
+          source_refs: ['DATA-CORE-001'],
+          enforcement: 'manual',
+          rule: 'photo status remains valid',
+        }],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    }),
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'project', 'modules', 'PHOTO', 'contracts.candidate.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      owner_module: 'PHOTO',
+      contracts: {
+        shared_enums: [],
+        invariants: [],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    }),
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'project', 'modules', 'PHOTO', 'design.candidate.md'),
+    '# Design\nDD-PHOTO-001\nPromoted to PCON-PHOTO-STATUS.\n',
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'trace_delta.md'),
+    [
+      'REMOVE | DD-PHOTO-001 | constrained_by | MCON-PHOTO-STATUS',
+      'ADD | DD-PHOTO-001 | constrained_by | PCON-PHOTO-STATUS',
+      'ADD | PCON-PHOTO-STATUS | enforces | DATA-CORE-001',
+    ].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'candidate_manifest.json'),
+    JSON.stringify({
+      work_item_id: 'WI-0001',
+      workflow_path: 'architecture_change_path',
+      contract_promotions: [{
+        from_contract_id: 'MCON-PHOTO-STATUS',
+        to_contract_id: 'PCON-PHOTO-STATUS',
+        compatibility: 'atomic migration',
+        migration_conclusion: 'all formal consumers migrated',
+      }],
+      entries: [
+        {
+          candidate_path: 'candidates/project/extension_registry.json',
+          target_path: '.specforge/project/extension_registry.json',
+          operation: 'replace',
+          type: 'extension_registry',
+        },
+        {
+          candidate_path: 'candidates/project/modules/PHOTO/contracts.candidate.json',
+          target_path: '.specforge/project/modules/PHOTO/contracts.json',
+          operation: 'replace',
+          type: 'module_contract',
+          module_id: 'PHOTO',
+        },
+        {
+          candidate_path: 'candidates/project/modules/PHOTO/design.candidate.md',
+          target_path: '.specforge/project/modules/PHOTO/design.md',
+          operation: 'replace',
+          type: 'design',
+          module_id: 'PHOTO',
+        },
+        {
+          candidate_path: 'candidates/trace_delta.md',
+          target_path: '.specforge/project/trace_matrix.md',
+          operation: 'replace',
+          type: 'trace_delta',
+        },
+      ],
+    }),
+  );
+
+  const result = await checkContractIntegrity({ projectRoot: root, workItemDir: wiDir });
+  const promotion = result.checks.find(check => check.check_id === 'contract_promotion_0');
+  expect(promotion?.passed, JSON.stringify(result.checks)).toBe(true);
+  expect(promotion?.details ?? '').not.toContain(
+    'missing REMOVE MCON-PHOTO-STATUS enforces DD-PHOTO-001',
+  );
+  expect(result.checks.every(check => check.passed), JSON.stringify(result.checks)).toBe(true);
+});
 });

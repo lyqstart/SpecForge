@@ -3,8 +3,8 @@
  *
  * Public name: sf_contract_register.
  *
- * add/update/reset only mutate the current Work Item Candidate. The live Project
- * Registry remains unchanged until the normal governed merge path writes it.
+ * add/update/promote/reset only mutate the current Work Item Candidate. The live
+ * Project/Module Contract truth sources remain unchanged until governed merge.
  */
 import { registerHandler } from '../ToolDispatcher';
 import {
@@ -29,10 +29,14 @@ registerHandler('sf_contract_register', async (args, context) => {
   const kind = args['kind'] as RegistrationKind | undefined;
   const entry = args['entry'] as Record<string, unknown> | undefined;
   const workflowPath = args['workflow_path'] as string | undefined;
+  const sourceModule = args['source_module'] as string | undefined;
+  const fromContractId = args['from_contract_id'] as string | undefined;
+  const migrationConclusion = args['migration_conclusion'] as string | undefined;
+  const compatibility = args['compatibility'] as string | undefined;
 
   if (!workItemId) return { success: false, error: 'work_item_id is required' };
-  if (!['add', 'update', 'reset'].includes(action)) {
-    return { success: false, error: 'action must be one of: add, update, reset' };
+  if (!['add', 'update', 'promote', 'reset'].includes(action)) {
+    return { success: false, error: 'action must be one of: add, update, promote, reset' };
   }
   if (action === 'reset') {
     return authorContractCandidate({ projectRoot, workItemId, action, workflowPath });
@@ -43,14 +47,26 @@ registerHandler('sf_contract_register', async (args, context) => {
       error: `kind is required and must be one of: ${VALID_KINDS.join(', ')}`,
     };
   }
-  if (action === 'update' && kind === 'namespace_type') {
+  if ((action === 'update' || action === 'promote') && kind === 'namespace_type') {
     return {
       success: false,
-      error: 'action=update only supports Project Contract kinds; namespace_type cannot be updated',
+      error: `action=${action} only supports Project Contract kinds; namespace_type is not allowed`,
     };
   }
   if (!entry || typeof entry !== 'object') {
     return { success: false, error: 'entry (contract entry object) is required' };
   }
-  return authorContractCandidate({ projectRoot, workItemId, action, kind, entry, workflowPath });
+
+  return authorContractCandidate({
+    projectRoot,
+    workItemId,
+    action,
+    kind,
+    entry,
+    workflowPath,
+    sourceModule,
+    fromContractId,
+    migrationConclusion,
+    compatibility,
+  });
 });

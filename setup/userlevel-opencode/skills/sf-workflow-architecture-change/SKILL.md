@@ -148,6 +148,18 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 5. `sf-design`、`sf-task-planner` 和其他专业 Agent 不得调用 `sf_safe_bash`、bash、PowerShell、Node 或 Python 写入治理产物；只能使用各自产物对应的受控 Tool。
 6. Runtime Manifest 生成成功后，推进 `candidate_prepared → gates_running`。
 
+<!-- SPECFORGE_ARCH_CHANGE_CONTRACT_PROMOTION:START -->
+#### Module → Project Contract Promotion
+
+若本 WI 的 Contract 从 Module/Internal 升级为 Project/Public：
+
+- Promotion 必须保留在当前 `architecture_change_path` WI 内；不得创建 `contract_change` 子 WI，也不得用 `action=update` 模拟。
+- `sf-design` 先产生受影响 Module Design / Module Contract Candidate，并让旧 Module Contract 在 prospective Candidate 中退出。
+- 主编排代理随后调用 `sf_contract_register(action="promote", workflow_path="architecture_change_path", source_module, from_contract_id, kind, entry, migration_conclusion, compatibility)`；新 Project Contract ID 必须与旧 ID 不同，`source_refs` 只能引用真实 `ARCH-*` / `DATA-*`。
+- `sf-task-planner` 对当前正式 Trace 中真实存在的旧 consumer/source edge 才写 REMOVE，并完整写入新 Project Contract 的 consumer/source ADD。
+- 受控 Tool 可以登记 Promotion 控制元数据；专业 Agent 和主编排代理仍不得手写 `candidate_manifest.json`，Runtime 仍是 `candidate_preparing → candidate_prepared` 时 `candidate_manifest.entries` 的最终物化权威。
+<!-- SPECFORGE_ARCH_CHANGE_CONTRACT_PROMOTION:END -->
+
 ### 阶段 4：gates
 1. `sf_gate_run(gate_type="candidate", workflow_type="architecture_change")`，由 Gate Runner 运行 entry/required_files/spec_consistency/trace/schema/candidate_manifest/path_policy/gate_summary 等，并把 `gates_running` 收口为 `approval_required` 或 `gates_failed`。新模块目标由 `architecture_change_path` 的受控接纳规则校验。
 2. 门禁失败先判根因：候选内容/映射有误 → 按产物所有权重新调度对应代理修复同一权威候选，重跑同一门禁；治理链/工具缺陷 → 保留证据、重新调度 `sf-design`、先修治理链。不得手动补状态。

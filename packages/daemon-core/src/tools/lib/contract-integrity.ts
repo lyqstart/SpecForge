@@ -550,6 +550,9 @@ export async function checkContractIntegrity(input: {
       .filter(operation => operation.operation === 'ADD')
       .map(operation => edgeKey(operation.edge.from, operation.edge.relation, operation.edge.to)),
   );
+  const currentTraceKeys = new Set(
+    current.current_trace.map(edge => edgeKey(edge.from, edge.relation, edge.to)),
+  );
 
   const stale: string[] = [];
   for (const [id, oldEntry] of currentDefinitions) {
@@ -611,7 +614,8 @@ export async function checkContractIntegrity(input: {
       }
     }
     for (const sourceRef of oldDefinition?.source_refs ?? []) {
-      if (!removeKeys.has(edgeKey(from, 'enforces', sourceRef))) {
+      const currentSourceEdge = edgeKey(from, 'enforces', sourceRef);
+      if (currentTraceKeys.has(currentSourceEdge) && !removeKeys.has(currentSourceEdge)) {
         promotionErrors.push(`missing REMOVE ${from} enforces ${sourceRef}`);
       }
     }
