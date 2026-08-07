@@ -6,6 +6,7 @@
  */
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
 import {
   runGate,
@@ -251,6 +252,75 @@ async function writeGateSummary(
   return { summaryStatus, summaryPath, summaryContent, summaryReports };
 }
 
+export type GateAttemptInputSnapshotEntry = {
+  path: string;
+  exists: boolean;
+  kind: 'file' | 'directory' | 'other' | 'missing';
+  sha256?: string;
+  size?: number;
+  mtime_ms?: number;
+};
+
+export async function buildGateAttemptInputSnapshot(
+  reports: GateReportV11[],
+): Promise<GateAttemptInputSnapshotEntry[]> {
+  const inputPaths = Array.from(
+    new Set(
+      reports.flatMap(report =>
+        Array.isArray(report.input_files)
+          ? report.input_files.map(value => String(value ?? '').trim()).filter(Boolean)
+          : [],
+      ),
+    ),
+  ).sort();
+
+  const snapshot: GateAttemptInputSnapshotEntry[] = [];
+  for (const inputPath of inputPaths) {
+    try {
+      const stats = await fs.stat(inputPath);
+      if (stats.isFile()) {
+        const bytes = await fs.readFile(inputPath);
+        snapshot.push({
+          path: inputPath,
+          exists: true,
+          kind: 'file',
+          sha256: createHash('sha256').update(bytes).digest('hex'),
+          size: stats.size,
+          mtime_ms: stats.mtimeMs,
+        });
+      } else if (stats.isDirectory()) {
+        snapshot.push({
+          path: inputPath,
+          exists: true,
+          kind: 'directory',
+          mtime_ms: stats.mtimeMs,
+        });
+      } else {
+        snapshot.push({
+          path: inputPath,
+          exists: true,
+          kind: 'other',
+          mtime_ms: stats.mtimeMs,
+        });
+      }
+    } catch (error: any) {
+      if (error?.code === 'ENOENT') {
+        snapshot.push({
+          path: inputPath,
+          exists: false,
+          kind: 'missing',
+        });
+        continue;
+      }
+      throw new Error(
+        `GATE_ATTEMPT_INPUT_SNAPSHOT_FAILED: ${inputPath}: ${error?.message ?? String(error)}`,
+      );
+    }
+  }
+  return snapshot;
+}
+
+// GATE_ATTEMPT_INPUT_SNAPSHOT_V29
 async function finalizeGateAttempt(input: {
   ctx: GateContext;
   attempt: GateAttemptContext;
@@ -259,6 +329,14 @@ async function finalizeGateAttempt(input: {
   summaryContent: string;
   summaryReports: GateReportV11[];
 }): Promise<void> {
+  const inputSnapshot = await buildGateAttemptInputSnapshot(input.summaryReports);
+  await writeExclusiveJson(path.join(input.attempt.attemptPath, 'input-snapshot.json'), {
+    schema_version: '1.0',
+    attempt_id: input.attempt.attemptId,
+    work_item_id: input.ctx.workItemId,
+    captured_at: new Date().toISOString(),
+    inputs: inputSnapshot,
+  });
   await writeExclusive(
     path.join(input.attempt.attemptPath, 'gate_summary.md'),
     input.summaryContent,
@@ -276,6 +354,7 @@ async function finalizeGateAttempt(input: {
       current_report_gate_ids: input.reports.map(report => report.gate_id),
       summary_report_gate_ids: input.summaryReports.map(report => report.gate_id),
       summary_status: input.summaryStatus,
+      input_snapshot: 'input-snapshot.json',
     },
   );
 }

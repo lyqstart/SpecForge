@@ -3783,3 +3783,22 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | WI-0002 后续 | 只 reconcile attempt-0003 到 approval_required，随后停在 User Decision 前 |
 | 第一次 Gate 机器报告 | 永久不可恢复；P0_OVERALL_COMPLETION_ALLOWED=NO |
 <!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE_P0:END -->
+
+<!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT_P0:START -->
+## P0 WI-0002 Gate Attempt 输入快照闭环
+
+| 项目 | 结论 |
+|---|---|
+| 当前 WI-0002 state | gates_running |
+| attempt-0003 | 10/10 passed，保留不可变 |
+| V28 reconciliation | Fail Closed；无 Gate、无新 Attempt、无状态变化 |
+| V28 错误 | 把 `input_files` 路径集合当成历史存在性快照 |
+| CORE/contracts.json | Project Governance Loader 的默认探测路径；当前未 materialize |
+| ERR-185 | `input_files` 语义与 V28 freshness 假设冲突 |
+| ERR-186 | historical reconciliation 缺少历史 input snapshot |
+| V29 | 每个新 Attempt 写 `input-snapshot.json`，记录 exists/kind/file sha256 |
+| legacy Attempt | 无 snapshot 时 reconciliation 必须 Fail Closed |
+| WI-0002 下一步 | 保留 attempt-0003；只运行一次正常 Candidate Gate，生成 attempt-0004 + snapshot |
+| 预期状态 | attempt-0004 10/10 passed 后由 gate_runner 正常 seal 到 approval_required |
+| P0 总体 | 仍 NO；第一次完整 Gate 机器报告永久缺失 |
+<!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT_P0:END -->

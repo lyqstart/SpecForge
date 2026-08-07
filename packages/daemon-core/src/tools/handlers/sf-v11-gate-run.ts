@@ -15,6 +15,7 @@ import { getRequiredGates, type CandidateGatePhaseV11 } from '../lib/required-ga
 import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { workItemCandidateManifest, workItemRoot } from '@specforge/types/directory-layout';
 import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11';
@@ -731,7 +732,9 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   required_gate_ids: GateIdV11[];
   latest_view_matches: true;
   input_freshness_check: 'pass';
+  freshness_mode: 'attempt_input_snapshot';
   checked_input_files: string[];
+  non_materialized_input_paths: string[];
 }> {
   const attemptsRoot = path.join(input.workItemDir, 'gate_attempts');
   let attemptIds: string[] = [];
@@ -846,32 +849,122 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     throw new Error('RECONCILE_LATEST_SUMMARY_MISMATCH');
   }
 
-  const checkedInputFiles = Array.from(
-    new Set(
-      coverage.requiredGateIds.flatMap(
-        gateId => reportById.get(gateId)?.input_files ?? [],
-      ),
-    ),
-  ).sort();
-
-  for (const inputFile of checkedInputFiles) {
-    const resolved = resolveGateInputPath(input.projectRoot, inputFile);
-    let stats;
-    try {
-      stats = await fs.stat(resolved);
-    } catch (error: any) {
-      throw new Error(`RECONCILE_GATE_INPUT_MISSING: ${resolved}: ${error.message}`);
-    }
-
-    if (stats.mtimeMs > completedAt + 1000) {
+  const inputSnapshotPath = path.join(attemptPath, 'input-snapshot.json');
+  let inputSnapshot: {
+    schema_version?: unknown;
+    attempt_id?: unknown;
+    work_item_id?: unknown;
+    captured_at?: unknown;
+    inputs?: unknown;
+  };
+  try {
+    inputSnapshot = await readJsonFile<typeof inputSnapshot>(
+      inputSnapshotPath,
+      'RECONCILE_INPUT_SNAPSHOT_INVALID',
+    );
+  } catch (error: any) {
+    if (String(error?.message ?? '').includes('ENOENT')) {
       throw new Error(
-        `RECONCILE_GATE_INPUT_CHANGED_AFTER_ATTEMPT: ${resolved}; mtime=${new Date(
-          stats.mtimeMs,
-        ).toISOString()}; attempt_completed=${new Date(completedAt).toISOString()}`
+        `RECONCILE_INPUT_SNAPSHOT_REQUIRED: attempt=${input.attemptId}; historical Attempt predates GATE-ATTEMPT-INPUT-SNAPSHOT-001 and cannot be safely reconciled without a new Gate Attempt`
       );
     }
+    throw error;
   }
 
+  if (
+    inputSnapshot.schema_version !== '1.0' ||
+    inputSnapshot.attempt_id !== input.attemptId ||
+    inputSnapshot.work_item_id !== input.workItemId ||
+    !Array.isArray(inputSnapshot.inputs)
+  ) {
+    throw new Error(
+      `RECONCILE_INPUT_SNAPSHOT_SCHEMA_INVALID: attempt=${input.attemptId}`
+    );
+  }
+
+  const checkedInputFiles: string[] = [];
+  const nonMaterializedInputPaths: string[] = [];
+  for (const raw of inputSnapshot.inputs) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+      throw new Error(
+        `RECONCILE_INPUT_SNAPSHOT_ENTRY_INVALID: attempt=${input.attemptId}`
+      );
+    }
+    const entry = raw as Record<string, unknown>;
+    const inputPath = String(entry.path ?? '').trim();
+    const expectedExists = entry.exists === true;
+    const expectedKind = String(entry.kind ?? '').trim();
+    if (!inputPath || !['file', 'directory', 'other', 'missing'].includes(expectedKind)) {
+      throw new Error(
+        `RECONCILE_INPUT_SNAPSHOT_ENTRY_INVALID: attempt=${input.attemptId}; path=${JSON.stringify(inputPath)}; kind=${JSON.stringify(expectedKind)}`
+      );
+    }
+
+    if (!expectedExists) {
+      try {
+        await fs.access(inputPath);
+        throw new Error(
+          `RECONCILE_INPUT_EXISTENCE_CHANGED: path=${inputPath}; expected=missing; actual=exists`
+        );
+      } catch (error: any) {
+        if (String(error?.message ?? '').startsWith('RECONCILE_INPUT_EXISTENCE_CHANGED:')) {
+          throw error;
+        }
+        if (error?.code !== 'ENOENT') {
+          throw new Error(
+            `RECONCILE_INPUT_STATE_READ_FAILED: path=${inputPath}: ${error?.message ?? String(error)}`
+          );
+        }
+      }
+      nonMaterializedInputPaths.push(inputPath);
+      continue;
+    }
+
+    let stats;
+    try {
+      stats = await fs.stat(inputPath);
+    } catch (error: any) {
+      if (error?.code === 'ENOENT') {
+        throw new Error(
+          `RECONCILE_INPUT_EXISTENCE_CHANGED: path=${inputPath}; expected=exists; actual=missing`
+        );
+      }
+      throw new Error(
+        `RECONCILE_INPUT_STATE_READ_FAILED: path=${inputPath}: ${error?.message ?? String(error)}`
+      );
+    }
+
+    const actualKind = stats.isFile()
+      ? 'file'
+      : stats.isDirectory()
+        ? 'directory'
+        : 'other';
+    if (actualKind !== expectedKind) {
+      throw new Error(
+        `RECONCILE_INPUT_KIND_CHANGED: path=${inputPath}; expected=${expectedKind}; actual=${actualKind}`
+      );
+    }
+
+    if (actualKind === 'file') {
+      const expectedSha256 = String(entry.sha256 ?? '').trim();
+      if (!/^[0-9a-f]{64}$/i.test(expectedSha256)) {
+        throw new Error(
+          `RECONCILE_INPUT_SNAPSHOT_HASH_INVALID: path=${inputPath}`
+        );
+      }
+      const bytes = await fs.readFile(inputPath);
+      const actualSha256 = createHash('sha256').update(bytes).digest('hex');
+      if (actualSha256.toLowerCase() !== expectedSha256.toLowerCase()) {
+        throw new Error(
+          `RECONCILE_INPUT_HASH_CHANGED: path=${inputPath}; expected=${expectedSha256}; actual=${actualSha256}`
+        );
+      }
+    }
+
+    checkedInputFiles.push(inputPath);
+  }
+
+  const freshnessMode = 'attempt_input_snapshot';
   return {
     attempt_id: input.attemptId,
     attempt_path: attemptPath,
@@ -880,7 +973,9 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     required_gate_ids: coverage.requiredGateIds,
     latest_view_matches: true,
     input_freshness_check: 'pass',
+    freshness_mode: freshnessMode,
     checked_input_files: checkedInputFiles,
+    non_materialized_input_paths: nonMaterializedInputPaths,
   };
 }
 
@@ -993,6 +1088,12 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
         gate_count: reconciliation.reports.length,
         latest_view_matches: reconciliation.latest_view_matches,
         input_freshness_check: reconciliation.input_freshness_check,
+        freshness_mode: reconciliation.freshness_mode,
+        non_materialized_input_paths: reconciliation.non_materialized_input_paths.map(file =>
+          path.isAbsolute(file)
+            ? path.relative(projectRoot, file).replace(/\\/g, '/')
+            : file.replace(/\\/g, '/'),
+        ),
         checked_input_files: reconciliation.checked_input_files.map(file =>
           path.isAbsolute(file)
             ? path.relative(projectRoot, file).replace(/\\/g, '/')

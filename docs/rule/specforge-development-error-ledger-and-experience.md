@@ -4609,3 +4609,41 @@ actual_files
 3. 封包前必须 `compile()` 执行器并校验 ZIP 文件集合与 SHA256。
 4. 生成失败不留下半成品 ZIP。
 <!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE:END -->
+
+<!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT:START -->
+### ERR-185：V28 把 GateReport.input_files 误当成“当时实际存在的文件快照”
+
+- 分类：`PRODUCT_DEFECT / EVIDENCE_SEMANTICS_DEFECT`。
+- 现场：WI-0002 `attempt-0003` reconciliation 在 `.specforge/project/modules/CORE/contracts.json` 处返回 `RECONCILE_GATE_INPUT_MISSING`。
+- 一手源码事实：
+  1. `GateReportV11.input_files` 只有 `string[]`，没有 `exists/hash` 历史状态；
+  2. `loadProjectModel()` 会为每个 Module 计算默认 `contracts.json`，并把该路径无条件加入 `inputFiles`；
+  3. 对缺失 `contracts.json`，读取逻辑允许返回空/兼容状态，因此该路径可以出现在 passed Gate Report 的 `input_files` 中而文件本身并不存在。
+- 根因：V28 reconciliation 将“曾探测的路径”错误解释成“Attempt 完成时必然存在的文件”，然后对所有路径执行当前 `stat()`。
+- 修复：新增 `GATE-ATTEMPT-INPUT-SNAPSHOT-001`；`input_files` 保持路径审计语义，真实历史状态改由 `input-snapshot.json` 冻结。
+
+## EXP-157：路径审计列表与内容快照必须分离
+
+1. `input_files` 可以记录存在性探测目标，不代表路径必然存在。
+2. 历史 freshness 不能从路径列表反推存在状态。
+3. 需要历史对账时必须在 Attempt 当时冻结 `exists/kind/hash`。
+4. 缺失本身也是一种需要冻结的输入状态。
+
+### ERR-186：V28 在没有 Attempt 输入快照的情况下设计了历史 freshness reconciliation
+
+- 分类：`PRODUCT_DEFECT / EVIDENCE_MODEL_GAP`。
+- 现场：attempt-0003 早于 input snapshot 能力，其 Gate Report 只能证明 Gate 当时 passed，不能证明每个 `input_files` 路径当时的存在/内容状态。
+- 根因：V28 先增加 historical reconciliation，再用当前 mtime/stat 代替缺失的历史证据模型。
+- 修复：
+  1. 新 Attempt 完成时生成不可变 `input-snapshot.json`；
+  2. reconciliation 必须逐项比较 snapshot；
+  3. 没有 snapshot 的 legacy Attempt 明确返回 `RECONCILE_INPUT_SNAPSHOT_REQUIRED`；
+  4. legacy Attempt 不修改、不覆盖；Workflow 如需继续，只运行一次新的正式 Gate Attempt。
+
+## EXP-158：恢复能力不能先于它所需要的证据模型
+
+1. 设计 reconciliation 前先定义“历史事实如何冻结”。
+2. 没有历史 snapshot 时不得用当前文件系统状态补造历史事实。
+3. 对旧数据的兼容策略可以是 Fail Closed + 新 Attempt，不能是假定。
+4. 新 Attempt 是新的事实记录，不会破坏旧 Attempt 的不可变性。
+<!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT:END -->

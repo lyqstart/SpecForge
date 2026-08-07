@@ -3764,3 +3764,34 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
 - V28 部署后 WI-0002 只允许使用 `reconcile_attempt_id=attempt-0003`；禁止普通 sf_gate_run。
 - 第一次完整 Gate 机器报告仍永久不可恢复：`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；P0 总体不得宣布完成。
 <!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE_HANDOFF:END -->
+
+<!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT_HANDOFF:START -->
+## WI-0002 V28 reconciliation freshness 失败后的最终处理
+
+- WI-0002 当前 Validation：`main@6801fd76bf4a435502fafccc4ba7f14bceb5fe56`，当前状态 `gates_running`。
+- attempt-0003：
+  - source=gate_run；
+  - 10/10 Candidate Gates passed；
+  - immutable Attempt 与 latest Gate view 一致；
+  - 无 attempt-0004；
+  - Candidate 未修改。
+- V28 reconciliation：
+  - 没有运行 Gate；
+  - 没有创建新 Attempt；
+  - 没有状态推进；
+  - 在 `.specforge/project/modules/CORE/contracts.json` 返回 `RECONCILE_GATE_INPUT_MISSING`。
+- 根因不是 Validation 文件丢失，而是 V28 证据模型错误：
+  - `input_files` 是 Gate 输入/探测路径集合；
+  - Project Governance Loader 会把默认 Module `contracts.json` 路径加入 inputFiles，即使文件并未 materialize；
+  - attempt-0003 没有冻结路径存在状态/hash，因此无法安全做 historical freshness。
+- ERR-185 / EXP-157：路径列表不能当历史快照。
+- ERR-186 / EXP-158：reconciliation 能力必须建立在 Attempt 输入快照之上。
+- 产品修复后：
+  1. 新 Gate Attempt 生成 `input-snapshot.json`；
+  2. historical reconciliation 只接受有 snapshot 的 Attempt；
+  3. attempt-0003 永久保留，不再尝试 reconcile；
+  4. WI-0002 从当前 `gates_running` 只运行一次正常 Candidate Gate，预期创建 `attempt-0004`；
+  5. attempt-0004 必须 10/10 passed、生成 input-snapshot，其中未 materialize 的 CORE/contracts.json 记录 `exists=false`；
+  6. Gate Runner 正常 seal 到 `approval_required` 后立即停止，等待 User Decision。
+- 第一次完整 Gate 机器报告仍永久不可恢复：`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`，P0 总体不得宣布完成。
+<!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT_HANDOFF:END -->

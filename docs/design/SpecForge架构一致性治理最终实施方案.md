@@ -1667,6 +1667,23 @@ Hard
 9. `sf-orchestrator`、人工状态工具或其他 actor 不得代替 `gate_runner` 完成该 seal；
 10. 返回结果必须显式包含 `reconciliation_mode=true`、`gate_run_action=NOT_PERFORMED`、`new_gate_attempt_created=false` 和被消费的 `reconciled_attempt_id`。
 
+**GATE-ATTEMPT-INPUT-SNAPSHOT-001：** Gate Attempt 的 `input_files` 只表示 Gate 声明/探测过的输入路径集合，不等价于“这些路径当时都存在”，也不是可用于历史 freshness 判断的内容快照。每个新的正式 Gate Attempt 必须额外冻结输入状态。
+
+固定规则：
+
+1. 每次 Gate Attempt 完成时，必须在该 Attempt 目录写入不可变 `input-snapshot.json`；
+2. `input-snapshot.json` 对全部 Gate Report `input_files` 去重后逐路径记录：
+   - `path`
+   - `exists`
+   - `kind=file|directory|other|missing`
+   - 对存在的普通文件记录 `sha256`、`size`、`mtime_ms`
+   - 对缺失路径明确记录 `exists=false, kind=missing`
+3. 缺失路径是合法的 Gate 输入观测状态；不得仅因为 `input_files` 中某路径当前不存在，就推断“Attempt 后被删除”；
+4. `GATE-ATTEMPT-RECONCILE-001` 的 freshness 判断必须使用 `input-snapshot.json` 比较当前存在状态、类型和文件 hash；
+5. 历史 Attempt 如果没有 `input-snapshot.json`，不得通过 `mtime`、当前缺失状态或 Gate Report 文本反推历史输入状态；必须 Fail Closed；
+6. 对没有输入快照的旧 Attempt，如仍需继续 Workflow，只能保留旧 Attempt 不变，并运行一次新的正式 Gate Attempt，让新 Attempt 生成输入快照并由 Gate Runner 正常完成状态 seal；
+7. 新 Gate Attempt 不覆盖旧 Attempt；旧 Attempt 继续作为不可变历史证据存在。
+
 **GATE-FINAL-001：** 本能力最终完成后，SpecForge 治理任何业务项目时，从第一个 WI、后续 WI 到 Fast Path，以下三个 Gate 必须始终全部为 Hard：
 
 ```text
