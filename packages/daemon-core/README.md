@@ -35,24 +35,33 @@ See the [API Documentation](./docs/README.md) for detailed information on:
 
 ### Starting the Daemon
 
+From the repository root:
+
 ```bash
-# Start as thin plugin (auto-exit on idle)
+bun run packages/daemon-core/src/index.ts
+```
+
+Or from `packages/daemon-core`:
+
+```bash
 bun run src/index.ts
-
-# Start in detached mode (persistent)
-bun run src/index.ts --detach
 ```
 
-### Connecting Clients
+The current implementation runs in the foreground. Keep the terminal open and press `Ctrl+C` to stop it. `--detach` is not implemented, and `--no-foreground` is marked as future support. Use an operating-system service manager to supervise the same foreground command for persistent operation.
 
-1. Read the handshake file at `~/.config/opencode/sf-user/runtime/handshake.json`
-2. Use the `port` to connect to the HTTP server
-3. Include `Authorization: Bearer <token>` header in all requests
+A successful startup writes the handshake file and logs `Daemon Core started on port <port>`.
+
+### Connecting Clients and Health Check
+
+1. Read the handshake file at `~/.config/opencode/sf-user/runtime/handshake.json`.
+2. Use its `port` for the HTTP server.
+3. Check the public health endpoint:
 
 ```bash
-# Example request
-curl -H "Authorization: Bearer <token>" http://127.0.0.1:<port>/
+curl http://127.0.0.1:<port>/api/v1/healthz
 ```
+
+All non-public API requests require `Authorization: Bearer <token>` using the token from the handshake file.
 
 ## Development
 

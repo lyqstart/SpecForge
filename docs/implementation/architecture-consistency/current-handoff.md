@@ -3635,3 +3635,58 @@ NEXT_ACTION=VALIDATE_COMMIT_DEPLOY_ERR154_THEN_REPEAT_EXPLICIT_REVOKE_ONCE_AND_V
 - 明确不修改：P0 Validation 项目、WorkDesk、WI-0001、WI-0002 现场、WI-0003、权威实施方案。
 - 当前状态：`PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION`。
 <!-- ERR155_ERR166_V8_HANDOFF:END -->
+
+<!-- ERR167_DAEMON_STARTUP_README_CONTRACT_HANDOFF:START -->
+## ERR-167 daemon 启动 README 契约修复交接
+
+```text
+REMOTE_BASELINE=dc7db378025b95df4278872c57b57afd9d83ef46
+CLASSIFICATION=PRODUCT_DEFECT
+ROOT_CAUSE=README把CLI客户端占位请求误写为daemon进程启动与状态入口，并宣称未实现的detach
+SUPPORTED_START_COMMAND=bun run packages/daemon-core/src/index.ts
+SUPPORTED_HEALTH_ENDPOINT=/api/v1/healthz
+DAEMON_MODE=FOREGROUND_ONLY_CURRENTLY
+CLI_DAEMON_LIFECYCLE=NOT_SUPPORTED_CURRENTLY
+MODIFIED_FILE_COUNT=7
+VALIDATION_PROJECT_MODIFIED=NO
+WORKDESK_MODIFIED=NO
+WI0002_ACTION=NOT_PERFORMED
+AUTHORITY_REVISION=NOT_REQUIRED
+STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
+```
+<!-- ERR167_DAEMON_STARTUP_README_CONTRACT_HANDOFF:END -->
+
+<!-- ERR167_ERR168_V12_HANDOFF:START -->
+## ERR-167 / ERR-168：daemon 启动 README 修复 V12 交接
+
+- 远程基线：`main@dc7db378025b95df4278872c57b57afd9d83ef46`。
+- ERR-167：README 把 legacy CLI 客户端占位调用误写为 daemon 进程启动入口，并宣称未实现的后台脱离模式。
+- V11：直接 README 契约测试 3/3 通过；相关运行时测试采用 patched-only 合并调用，无法证明失败是否由补丁引入。
+- ERR-168：V11 验证器缺少相关测试对称基线、逐文件隔离和稳定失败标识。
+- V12：基线/补丁两个独立工作树；四个相关测试逐文件执行；按相对文件路径与完整测试名比较。
+- V12 只有全部相关基线和补丁测试通过、目标测试通过、TypeScript/daemon-core build、全仓 build、installer verify、范围审计和 Git 检查通过后，才原子写入 7 个文件。
+- 明确不修改：产品运行代码、权威方案、SpecForge-P0-Validation、WorkDesk、WI-0002 现场、用户级安装目录。
+<!-- ERR167_ERR168_V12_HANDOFF:END -->
+
+<!-- ERR167_ERR171_V14_HANDOFF:START -->
+## daemon 启动 README 修复 V14 交接
+
+- 远程基线：`main@dc7db378025b95df4278872c57b57afd9d83ef46`。
+- ERR-167：三个 README 与真实 daemon 入口、HTTP 路由和后台运行能力漂移。
+- ERR-168：V11 相关回归缺少对称基线和稳定测试标识。
+- ERR-169：V12 加载失败反馈缺少结构化根因。
+- ERR-170：V12/V13 在运行 daemon 测试前只安装依赖，未执行仓库确定性工作区构建，导致 `@specforge/permission-engine` 的 `dist/src/index.js` 不存在。
+- ERR-171：V13 失败签名混入 baseline/patched 动态报告路径。
+- V14 固定顺序：两个干净工作树 → 冻结依赖安装 → 全仓确定性构建 → workspace runtime entry 检查 → README 目标测试 → 四个相关测试逐文件 A/B → no-emit TypeScript → installer verify → 范围与 Git 审计 → 原子写入。
+- 允许修改仍为 7 个文件；产品运行代码、权威方案、Validation 项目、WorkDesk、WI-0002 第一次失败证据和用户级安装目录均禁止修改。
+<!-- ERR167_ERR171_V14_HANDOFF:END -->
+
+<!-- ERR172_V15_HANDOFF:START -->
+## daemon 启动 README 修复 V15 交接
+
+- V14 的全部功能、构建和测试验证已通过，但三个治理文档各新增一个 EOF 空白行，最终 `git diff --check` 失败。
+- 分类：`PACKAGE_PREFLIGHT_DEFECT`。
+- 新登记：`ERR-172 / EXP-144`。
+- V15 保持原 7 文件冻结范围，不修改产品运行代码、权威方案、Validation 项目、WorkDesk、WI-0002 第一次失败证据或用户级安装目录。
+- V15 新顺序：包内文本卫生检查 → 临时工作树应用 payload → 早期 `git diff --check` → 精确 7 文件审计 → 冻结安装 → baseline/patched 构建 → runtime entry → 目标测试 → 相关测试逐文件 A/B → TypeScript → installer verify → 最终审计 → 原子写入。
+<!-- ERR172_V15_HANDOFF:END -->

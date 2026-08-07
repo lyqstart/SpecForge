@@ -56,19 +56,36 @@ bun scripts/sf-installer.ts install
 
 SpecForge daemon 是独立的共享治理服务，生命周期由部署环境负责管理：
 
-- 本地开发环境可以先启动 daemon，再启动 OpenCode。
-- 服务器环境可以使用长期运行的 daemon，由多个 OpenCode 实例共同连接。
+- 本地开发环境先从 SpecForge 仓库启动 daemon，再启动 OpenCode。
+- 服务器环境由服务管理器托管同一个前台启动入口，可供多个 OpenCode 实例共同连接。
 - OpenCode Plugin 只作为 daemon 客户端，不接管 daemon 生命周期。
 - daemon 不可用时，Plugin 必须失败关闭并报告连接问题，不能绕过 daemon 继续执行治理写操作。
 
-若使用 SpecForge CLI 管理 daemon，可使用：
+当前支持的直接启动入口是 daemon-core 源码入口。在 SpecForge 仓库根目录执行：
 
 ```bash
-specforge daemon start
-specforge daemon status
+bun run packages/daemon-core/src/index.ts
 ```
 
-服务器环境也可以使用既有的服务管理方式启动 daemon。
+Windows CMD：
+
+```cmd
+cd /d <SpecForge仓库>
+bun run packages\daemon-core\src\index.ts
+```
+
+出现 `Daemon Core started on port <port>` 后保持该终端运行；按 `Ctrl+C` 停止。当前代码没有实现 `--detach` 或 `--no-foreground` 后台脱离运行，长期运行必须由操作系统服务管理器托管上述前台命令。
+
+当前版本不要使用 `specforge daemon start`、`specforge daemon status` 或 `specforge daemon stop` 管理生命周期。这些 CLI 子命令是客户端占位实现，会先尝试连接已经运行的 daemon，不能创建 daemon 进程；其请求路由也不属于当前 daemon HTTP 路由。
+
+启动后检查：
+
+1. 读取 `<OpenCode config>/sf-user/runtime/handshake.json` 中的 `port`；
+2. 请求公开健康端点：
+
+```bash
+curl http://127.0.0.1:<port>/api/v1/healthz
+```
 
 ### 升级
 
@@ -147,18 +164,22 @@ bun scripts/sf-installer.ts --version
 
 ### 安装后
 
-先确认 daemon 已运行，再启动 OpenCode：
+在第一个终端从 SpecForge 仓库根目录启动 daemon：
 
 ```bash
-specforge daemon status
+bun run packages/daemon-core/src/index.ts
+```
 
+看到 `Daemon Core started on port <port>` 后，在第二个终端启动项目 OpenCode：
+
+```bash
 cd <你的项目>
-opencode             # 启动 OpenCode
+opencode
 # Plugin 连接现有 daemon 并自动初始化项目运行时
 # 按 Tab 切换到 sf-orchestrator
 ```
 
-如果 daemon 尚未启动，先按当前部署环境的方式启动 daemon。服务器上可以由一个长期运行的 daemon 同时服务多个 OpenCode 实例。
+需要检查 daemon 时，读取 `<OpenCode config>/sf-user/runtime/handshake.json` 中的 `port`，再请求 `http://127.0.0.1:<port>/api/v1/healthz`。不要使用当前 CLI 的 `specforge daemon start/status/stop` 子命令管理进程生命周期。
 
 **注意：** 安装/升级后需要重启 OpenCode 才能加载新版 Plugin；重启 OpenCode 不等于重启 daemon。
 
@@ -510,12 +531,11 @@ bun scripts/sf-installer.ts install
 # 2. 验证安装
 bun scripts/sf-installer.ts verify
 
-# 3. 启动或确认 SpecForge daemon
-specforge daemon status
-# 未运行时，按当前部署方式启动；使用 CLI 管理时可执行：
-# specforge daemon start
+# 3. 从仓库根目录以前台方式启动 SpecForge daemon
+bun run packages/daemon-core/src/index.ts
+# 保持该终端运行；服务化部署由服务管理器托管同一命令
 
-# 4. 重启 OpenCode 加载 Plugin
+# 4. 在另一个终端启动或重启 OpenCode
 # Plugin 连接已经运行的 daemon
 ```
 

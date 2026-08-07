@@ -4321,3 +4321,104 @@ actual_files
 4. 失败反馈必须输出稳定的测试标识和最小失败计数，完整 stdout/stderr 继续保存在详细日志。
 
 <!-- ERR155_ERR166_V8:END -->
+
+<!-- ERR167_DAEMON_STARTUP_README_CONTRACT:START -->
+### ERR-167 — PRODUCT_DEFECT
+
+- **现场**：根 `README.md` 指示用户执行 `specforge daemon start` 和 `specforge daemon status`；`packages/daemon-core/README.md` 又宣称支持 `--detach`。用户按 README 询问启动方式后发现说明不正确。
+- **一手证据**：daemon 的真实进程入口位于 `packages/daemon-core/src/index.ts`，直接构造 `Daemon` 并调用 `Daemon.start()`；CLI 的 `daemon start/status/stop` 只向现有 daemon 请求 `/api/daemon/start`、`/api/daemon/health`、`/api/daemon/stop`，而当前 HTTPServer 未注册这些路由，只注册 `/health`、`/api/v1/healthz` 和 `/api/v1/admin/stop`；`DaemonConfig` 明确把后台模式标记为 future support。
+- **根因**：README 把旧 CLI 客户端占位命令当成进程生命周期入口，且未与 daemon-core 真实入口、HTTP 路由和后台运行能力对账。
+- **影响**：用户无法按公开文档启动 daemon；错误状态命令也不能证明运行来源。真实 WI 复检可能继续连接旧进程或根本没有 daemon。
+- **修复**：三个 README 统一为从仓库运行 `bun run packages/daemon-core/src/index.ts`；说明前台窗口必须保持运行，长期运行由外部服务管理器托管；状态检查读取 canonical handshake 并请求 `/api/v1/healthz`；明确禁止使用当前 CLI 生命周期占位命令和未实现的 detach 模式。
+- **回归**：新增静态契约测试，对账三个 README、daemon 入口、CLI 请求路由、HTTPServer 实际路由和 DaemonConfig 后台支持状态。
+- **状态**：`FIX_IMPLEMENTED_PENDING_LOCAL_VALIDATION_COMMIT_PUSH`
+
+### EXP-139 — 运行命令文档必须与进程入口、服务路由和部署载荷同时对账
+
+1. “启动命令”必须能够创建目标进程，不能只是向已经运行的服务发送请求。
+2. README 宣称的状态、停止和健康检查端点必须存在于当前服务路由表。
+3. 文档不得宣称 `detach`、background 或 service 能力，除非程序真实实现并有回归测试。
+4. 安装器没有部署或链接的 CLI，不能作为默认安装后入口。
+5. daemon 行为修复后的真实验证必须记录启动仓库和目标 commit，不能只证明用户级文件已升级。
+6. README、模块 README、CLI README 和源码发生冲突时必须作为产品缺陷登记，并增加静态契约测试防止再次漂移。
+<!-- ERR167_DAEMON_STARTUP_README_CONTRACT:END -->
+
+<!-- ERR168_V12:START -->
+## ERR-168 — VALIDATOR_DEFECT：README 修复相关回归缺少对称基线与稳定失败标识
+
+- **原始现场**：V11 的直接 README 契约测试 3/3 通过；随后把 `daemon.test.ts`、`config.test.ts`、`http.test.ts`、`handshake-ownership.test.ts` 合并成一次 patched-only 调用，命令退出 1，但反馈只保留命令失败和 Vite CJS 警告，没有基线结果和失败测试标识。
+- **事实根因**：V11 验证器没有用相同命令、相同环境对称执行基线与补丁；多个运行时测试文件被合并执行；非零退出时没有优先解析 Vitest JSON 测试标识。
+- **修复**：V12 在两个独立干净工作树中安装同一冻结依赖，四个相关测试逐文件执行，按“相对文件路径 + 完整测试名”比较基线与补丁；存在基线失败、加载失败、不可比测试或补丁新增失败时均停止且不写真实仓库。
+
+### EXP-140 — 相关回归必须可归因、可比较
+
+1. 文档或静态契约修改选择运行时相关回归时，必须先证明该测试集合的基线状态。
+2. 不得把多个具有进程、环境变量、临时目录或全局处理器生命周期的测试文件机械合并成一次调用。
+3. A/B 必须逐测试标识比较，不得按数组位置或单个进程退出码判断补丁影响。
+4. 非零退出时必须优先解析结构化报告；控制台反馈失败测试标识，完整 stdout/stderr 写入证据日志。
+5. 只有基线和补丁均无必需失败、无加载失败、无不可比结果时，才允许进入真实仓库写入。
+<!-- ERR168_V12:END -->
+
+<!-- ERR169_ERR171_V14:START -->
+## ERR-169 — EVIDENCE_REPORTING_DEFECT：加载失败缺少结构化根因
+
+- **原始现场**：V12 只输出 `RELATED_*_LOAD_FAILURE_FILES=tests/unit/daemon.test.ts`，没有输出 Vitest suite message、failureMessages 和最小根因。
+- **根因**：验证器把“报告文件存在但测试数为 0”归类为加载失败后立即停止，没有把结构化 suite 错误带入反馈区。
+- **修复**：V13 同时采集 JSON 与 verbose 结果，输出 suite 状态、结构化错误、标准化失败签名和最小详细摘要。
+
+### EXP-141 — 测试收集失败必须输出结构化根因
+
+1. 测试总数为 0 且 suite failed 时，必须读取 suite `message`、`failureMessages` 和进程退出码。
+2. 控制台必须给出最小根因；完整 stdout/stderr 进入详细日志。
+3. 只报告失败文件名不足以支持分类，不得据此扩大产品修改范围。
+
+## ERR-170 — VALIDATOR_DEFECT：运行时测试前缺少确定性工作区构建
+
+- **原始现场**：V13 在 baseline 与 patched 工作树中，`daemon.test.ts` 均在收集阶段失败：`Failed to resolve entry for package "@specforge/permission-engine"`。
+- **一手证据**：`@specforge/permission-engine/package.json` 的 `main` 指向 `dist/src/index.js`；`bun install --frozen-lockfile` 不生成 `dist`；`scripts/build-workspace.ts` 明确先构建 `permission-engine`，再构建 `daemon-core`。
+- **根因**：V12/V13 在依赖安装后直接运行 daemon 运行时测试，遗漏了该仓库测试所依赖的确定性工作区构建前置条件。
+- **分类**：验证器缺陷，不是 README 补丁引入的产品失败。
+- **修复**：V14 在 baseline 与 patched 两个独立工作树中先执行相同冻结依赖安装和相同全仓确定性构建，验证 workspace runtime entry 存在且构建未产生意外源码漂移，再逐文件运行相关测试。
+
+### EXP-142 — 依赖已安装不等于工作区包可运行
+
+1. package 入口指向 `dist` 时，运行依赖该包的测试前必须完成仓库规定的构建顺序。
+2. A/B 两侧必须使用相同锁文件、相同构建命令和相同测试入口。
+3. 构建完成后必须验证关键 package entry 实际存在。
+4. 构建产生批准范围外的 Git 变更时必须失败关闭。
+
+## ERR-171 — EVIDENCE_REPORTING_DEFECT：失败签名混入动态报告路径
+
+- **原始现场**：V13 baseline 与 patched 的核心结构化错误完全相同，但 `FAILURE_SIGNATURE_MATCH=NO`。
+- **根因**：签名输入混入了命令行中的 `baseline.json` / `patched.json` 动态报告文件名及运行输出，而不是只基于结构化根因。
+- **影响**：补丁差异被错误标记为 `UNDETERMINED`，但不影响本次通过结构化错误识别 ERR-170。
+- **修复**：V14 的测试标识和失败判断只使用规范化相对测试路径、完整测试名、suite 结构化错误和状态；命令行、报告输出路径、时间戳与临时目录不进入语义签名。
+
+### EXP-143 — 失败签名必须只包含稳定语义
+
+1. 失败签名不得包含临时目录、报告文件名、时间戳、PID、端口或命令回显。
+2. 测试 A/B 主键必须是相对测试文件路径与完整测试名。
+3. 加载失败签名只基于规范化 suite 根因和错误类型。
+4. 原始日志必须保留，但不得作为语义等价比较的直接输入。
+<!-- ERR169_ERR171_V14:END -->
+
+<!-- ERR172_V15:START -->
+## ERR-172 — PACKAGE_PREFLIGHT_DEFECT：治理文档包尾多写空白行，昂贵验证完成后才被 Git 拒绝
+
+- **原始现场**：V14 的依赖安装、baseline/patched 全仓构建、运行入口检查、目标测试、72/72 相关回归 A/B、TypeScript 和 installer verify 全部通过；随后 `git diff --check` 失败。
+- **精确证据**：
+  - `docs/implementation/architecture-consistency/P0-contract-consumer-closure.md:3694: new blank line at EOF`
+  - `docs/implementation/architecture-consistency/current-handoff.md:3683: new blank line at EOF`
+  - `docs/rule/specforge-development-error-ledger-and-experience.md:4404: new blank line at EOF`
+- **根因**：封包生成使用“原文去尾 + 以换行开头和结尾的追加块 + 再追加换行”，导致三个治理文档以两个 LF 结束；包内预检只检查逐文件 SHA256，没有检查文本卫生，也没有在依赖安装和构建前执行真实 Git diff 预检。
+- **影响**：真实产品仓库尚未写入；README 产品修复和测试结果未被否定，但不能绕过 Git 质量门。
+- **修复**：V15 将全部目标文本规范化为无行尾空白且仅一个 EOF 换行；包内静态预检验证文本卫生；临时工作树应用 payload 后，先执行 `git diff --check` 和精确 7 文件范围审计，再开始依赖安装、构建与测试。
+
+### EXP-144 — 文本卫生和 Git diff 必须位于昂贵验证之前
+
+1. 所有新增或替换文本文件必须无行尾空格、无 EOF 空白行，并且只保留一个最终换行。
+2. ZIP 自检必须检查每个目标文本的行尾和 EOF 规范，不得只校验哈希。
+3. 临时工作树应用 payload 后，必须在安装依赖、构建和测试之前执行 `git diff --check`。
+4. 早期 Git diff 预检必须同时核对实际文件集合精确等于冻结范围。
+5. 任何文本卫生或范围失败必须立即停止，真实仓库保持未写入。
+<!-- ERR172_V15:END -->

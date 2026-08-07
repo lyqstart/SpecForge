@@ -17,14 +17,15 @@ npm link
 
 ## Usage
 
+The current CLI daemon subcommands are legacy client placeholders, not supported daemon lifecycle entry points. They attempt HTTP calls to an already running daemon and do not spawn the daemon process. Start daemon-core from the repository instead:
+
 ```bash
-# Start daemon
-specforge daemon start
-specforge daemon start --detach
+bun run packages/daemon-core/src/index.ts
+```
 
-# Check daemon status
-specforge daemon status
+Do not use `specforge daemon start`, `specforge daemon status`, `specforge daemon stop`, or `--detach` for the current deployment.
 
+```bash
 # Manage workflows
 specforge spec start --template my-template
 specforge workflow status <id>
@@ -56,7 +57,7 @@ The CLI supports two output modes:
 
 ## Commands
 
-- `daemon` - Manage the SpecForge daemon (start, stop, status, config)
+- `daemon` - Legacy client placeholders; not supported for daemon process lifecycle
 - `spec` - Manage specs
 - `workflow` - Manage workflows
 - `job` - Query async job status

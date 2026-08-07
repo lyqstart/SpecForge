@@ -3639,3 +3639,70 @@ NEXT_ACTION=RESUME_CLOSED_WI0001_TO_CLOSE_EVIDENCE_CHECKPOINT_AND_MERGE_PLAN_ONL
 
 V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer verify、范围审计和 Git 证据由 V8 执行器在用户本地生成。控制台仅反馈结构化结果，完整执行明细写入包目录下的 `execution-details.log`。
 <!-- ERR155_ERR166_V8_P0_CLOSURE:END -->
+
+<!-- ERR167_DAEMON_STARTUP_README_CONTRACT_P0:START -->
+## P0 独立真实项目验证：ERR-167 daemon 启动文档契约
+
+| 项目 | 结论 |
+|---|---|
+| 缺陷分类 | `PRODUCT_DEFECT` |
+| 真实 daemon 入口 | `bun run packages/daemon-core/src/index.ts` |
+| CLI `daemon start/status/stop` | 当前仅为客户端占位请求，不是可用生命周期入口 |
+| 健康检查 | canonical handshake 的 port + `/api/v1/healthz` |
+| 后台运行 | 当前未实现 detach；由外部服务管理器托管前台命令 |
+| README 消费者 | 根 README、daemon-core README、CLI README 同步修复 |
+| 回归 | 新增 README/源码/路由静态契约测试 |
+| WI-0002 第一次失败证据 | 保留不变 |
+| Validation Project | 不修改 |
+| WorkDesk | 不修改 |
+| 权威方案 | 不修改；现有运行来源、消费者一致性和证据规则已覆盖 |
+| 状态 | `PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION` |
+
+本修复只纠正公开运行契约并增加防漂移测试，不启动、停止或重启 daemon/OpenCode，不运行 WI-0002。
+<!-- ERR167_DAEMON_STARTUP_README_CONTRACT_P0:END -->
+
+<!-- ERR167_ERR168_V12_P0_CLOSURE:START -->
+## P0 验证补充：daemon 启动 README 与验证器修复
+
+| 项目 | 结论 |
+|---|---|
+| ERR-167 | 纠正 daemon 真实前台启动入口、健康检查和 CLI 生命周期边界 |
+| ERR-168 | V11 相关回归缺少对称基线和失败测试标识；V12 改为逐文件 A/B |
+| 修改范围 | 3 个 README、1 个静态契约测试、3 个治理记录，共 7 个文件 |
+| Validation Project | 不修改 |
+| WorkDesk | 不修改 |
+| WI-0002 第一次失败证据 | 保持不变 |
+| 状态 | V12_PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION |
+<!-- ERR167_ERR168_V12_P0_CLOSURE:END -->
+
+<!-- ERR167_ERR171_V14_P0:START -->
+## P0 验证补充：daemon 启动文档 V14
+
+| 项目 | 结论 |
+|---|---|
+| ERR-167 | README 产品缺陷，修复真实启动入口与生命周期边界 |
+| ERR-168 | related regression 必须逐文件对称 A/B |
+| ERR-169 | 加载失败必须反馈结构化 suite 根因 |
+| ERR-170 | daemon 运行时测试前必须完成确定性工作区构建 |
+| ERR-171 | 失败签名不得包含动态报告路径 |
+| 产品修改范围 | 3 个 README、1 个静态契约测试、3 个治理记录，共 7 个文件 |
+| 运行代码 | 不修改 |
+| Validation / WorkDesk | 不修改 |
+| WI-0002 第一次失败证据 | 保持不变 |
+| 状态 | V14_PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION |
+<!-- ERR167_ERR171_V14_P0:END -->
+
+<!-- ERR172_V15_P0:START -->
+## P0 验证补充：V14 Git diff 失败与 V15 修复
+
+| 项目 | 结论 |
+|---|---|
+| V14 功能验证 | 目标测试 3/3、相关回归 baseline/patched 72/72、无加载失败、无状态差异、无补丁新增失败 |
+| V14 工程验证 | baseline/patched 全仓构建、runtime entry、TypeScript、installer verify 通过 |
+| V14 最终失败 | 三个治理文档新增 EOF 空白行，`git diff --check` 失败 |
+| 分类 | `PACKAGE_PREFLIGHT_DEFECT` |
+| 新记录 | `ERR-172 / EXP-144` |
+| V15 修复 | 单一 EOF 换行、包内文本卫生检查、昂贵验证前 Git diff 与范围预检 |
+| 修改范围 | 仍为 7 个文件 |
+| 真实仓库状态 | V14 未写入 |
+<!-- ERR172_V15_P0:END -->
