@@ -4739,3 +4739,37 @@ actual_files
 ## EXP-163：Workflow 的连续性分类必须与真实生命周期一致
 凡 Workflow 允许进入 Code Permission → Production Code → Verification，就必须被 Continuity 视为代码型 Workflow；新增/变更 Workflow 时必须测试其 snapshot 文件状态和验证证据是否保留。
 <!-- ERR189_ERR191_COMPACTION_BOUNDARY:END -->
+
+<!-- ERR192_POST_MERGE_TEST_ORCHESTRATION:START -->
+### ERR-192：V37 错把 Git Merge 后再次运行 `bun test` 作为 repository delivery 的必需步骤
+
+- 分类：`PACKAGE_ORCHESTRATION_DEFECT`，不是 SpecForge 产品缺陷。
+- 真实现场：
+  1. WI-0002 已完成 Verification、Formal Version Gate、Close；
+  2. `sf_git_merge_run` 成功生成 main merge commit `793f3b1814f17e75f6e6356ab8213197c41c6fad`；
+  3. V37 Prompt 又要求 closed WI 在 Git Merge 后通过 `sf_safe_bash` 执行 `bun test`；
+  4. WriteGuard 正常阻断该命令，因为 closed WI 不再具有活动 Code Permission；
+  5. `sf_git_post_merge_verify` 随后成功，Formal Version 的 implementation tree / base diff / file set 均匹配，repository delivery state=`closed_and_git_merged`。
+- 权威规则事实：
+  - 业务正确性由 Close 前 Verification 负责；
+  - Formal Version Gate 证明已验证实现具备进入默认主分支资格；
+  - Git Merge / post-merge verify 负责证明合并后的主线仍对应同一正式版本，不重新承担业务 Verification。
+- 当前源码事实：
+  - `sf_git_post_merge_verify.commands` 仅作为返回证据字段保存；
+  - `gitPostMergeVerify()` 不执行这些 command；
+  - post-merge verify 校验 target branch、clean worktree、WI branch ancestor、fan-in merge commit、Formal Version after merge。
+- 正确处理：
+  - 不放宽 closed-WI WriteGuard；
+  - 不重新开启 Code Permission；
+  - 不修改 Git/Post-Merge Runtime；
+  - 后续 Prompt 不再把 post-merge 业务测试作为 repository delivery 必需步骤；
+  - 若未来确实需要部署后 smoke test，应作为独立、明确设计的验证边界另行治理，不能借 closed WI 的 Code Permission 执行。
+
+## EXP-164：Git Merge 后不要重复业务 Verification
+
+1. `Verification → Formal Version → Close → Git Merge` 的职责边界必须保持单向。
+2. Close 前测试证明业务正确；Formal Version 固定已验证实现；post-merge verify 证明 Git 交付没有改变该实现。
+3. Formal Version 的 tree/diff match 不能替代本来就缺失的 Close 前测试；但当 Close 前 Verification 已完整通过时，也不应在 closed WI 后再次要求同一业务测试。
+4. `sf_git_post_merge_verify.commands` 是证据/说明字段，不代表 Tool 会执行命令。
+5. closed WI 的 WriteGuard 阻断代码/测试类 shell 命令是预期保护，不得为了 Prompt 多余步骤而放宽。
+<!-- ERR192_POST_MERGE_TEST_ORCHESTRATION:END -->

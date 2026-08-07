@@ -3835,3 +3835,29 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
 - V35 后只读对账当前 closed/commits/merge plan，不重跑任何 Gate/Close、不修改 WI-0002，然后重新由用户决定 Git Merge。
 - 第一次 Candidate Gate 完整机器报告仍永久不可恢复，`P0_OVERALL_COMPLETION_ALLOWED=NO`。
 <!-- ERR189_ERR191_COMPACTION_BOUNDARY_HANDOFF:END -->
+
+<!-- ERR192_POST_MERGE_TEST_ORCHESTRATION_HANDOFF:START -->
+## WI-0002 Git 交付完成与 V37 编排纠正
+
+- WI-0002 当前 Git 交付已完成：
+  - main merge commit=`793f3b1814f17e75f6e6356ab8213197c41c6fad`
+  - parents=`6801fd76...` + `dc413fff...`
+  - feature head / implementation commit 均为 main HEAD 祖先
+  - `sf_git_post_merge_verify.success=true`
+  - `repository_delivery_complete=true`
+  - `repository_delivery_state=closed_and_git_merged`
+  - Formal Version after merge：implementation tree / base diff / file set 均匹配
+  - Validation repo 无 remote，因此无 push 动作
+- V37 Prompt 额外要求 Git Merge 后运行 `bun test`，该步骤被 closed-WI WriteGuard 正常阻断。
+- 该阻断不属于产品缺陷；错误在 V37 orchestration：
+  - 业务测试已在 Close 前完成：targeted 9/9，full 10/10，Verification Gate passed；
+  - Git Merge 后正式职责是 repository identity/integrity verification，不重复业务 Verification。
+- ERR-192 / EXP-164 已记录。
+- 不修改 WriteGuard、Code Permission、Git merge/post-merge runtime。
+- WI-0002 后续不得重跑 Verification / Close / Git Merge / post-merge verify。
+- 下一阶段可以开始 WI-0003，但必须建立新的明确 OPERATION_BOUNDARY。
+- 第一次 Candidate Gate 完整机器报告仍永久不可恢复：
+  `FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`
+  `INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`
+  `P0_OVERALL_COMPLETION_ALLOWED=NO`
+<!-- ERR192_POST_MERGE_TEST_ORCHESTRATION_HANDOFF:END -->
