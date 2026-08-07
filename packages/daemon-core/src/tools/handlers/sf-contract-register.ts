@@ -3,7 +3,7 @@
  *
  * Public name: sf_contract_register.
  *
- * add/update/promote/reset only mutate the current Work Item Candidate. The live
+ * add/update/promote/repair_relocate_to_module/reset only mutate the current Work Item Candidate. The live
  * Project/Module Contract truth sources remain unchanged until governed merge.
  */
 import { registerHandler } from '../ToolDispatcher';
@@ -35,8 +35,8 @@ registerHandler('sf_contract_register', async (args, context) => {
   const compatibility = args['compatibility'] as string | undefined;
 
   if (!workItemId) return { success: false, error: 'work_item_id is required' };
-  if (!['add', 'update', 'promote', 'reset'].includes(action)) {
-    return { success: false, error: 'action must be one of: add, update, promote, reset' };
+  if (!['add', 'update', 'promote', 'repair_relocate_to_module', 'reset'].includes(action)) {
+    return { success: false, error: 'action must be one of: add, update, promote, repair_relocate_to_module, reset' };
   }
   if (action === 'reset') {
     return authorContractCandidate({ projectRoot, workItemId, action, workflowPath });
@@ -47,7 +47,7 @@ registerHandler('sf_contract_register', async (args, context) => {
       error: `kind is required and must be one of: ${VALID_KINDS.join(', ')}`,
     };
   }
-  if ((action === 'update' || action === 'promote') && kind === 'namespace_type') {
+  if ((action === 'update' || action === 'promote' || action === 'repair_relocate_to_module') && kind === 'namespace_type') {
     return {
       success: false,
       error: `action=${action} only supports Project Contract kinds; namespace_type is not allowed`,

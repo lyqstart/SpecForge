@@ -3921,3 +3921,19 @@ WI-0003 仍保持原 Candidate 状态。产品修复部署后必须先调查并�
 `INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`
 `P0_OVERALL_COMPLETION_ALLOWED=NO`
 <!-- SPECFORGE_ERR193_ERR210_PROMOTION_RECOVERY:END -->
+
+<!-- SPECFORGE_ERR211_ERR214_SPEC_MIGRATION_CONTRACT_REPAIR:START -->
+## ERR-211 / ERR-212 / ERR-213 / ERR-214 — spec_migration Contract 归位能力与交付器回归
+- **ERR-211**：Validation WI-0003 只读取证确认正式 `ReportFormat` 只存在于 Project `extension_registry.json`，REPORTING `contracts.json` 没有 Contract 对象；P0 Stage C 不具备真正 Module→Project Promotion 前置条件。
+- 源码对账确认：`sf_spec_migration(action="prepare_repair")` 不生成 Project/Module Contract Candidates；现有 `sf_contract_register` 也不能表达 Project→Module damaged-spec relocation。
+- 修复：扩展既有 Contract Tool，新增仅限 `spec_migration_path` 的 `repair_relocate_to_module`；保持 ID、要求 canonical owner、真实 DD source_refs、migration/compatibility，存在跨 Module 正式 Trace consumer 时 Fail Closed，并禁止独立 consumers 字段。
+- Runtime/Gate/状态机均不增加新机制；Runtime 继续在 candidate_preparing→candidate_prepared 最终 materialize canonical Candidate entries。
+- **ERR-212**：首次生成 V63 runner 时再次出现 ERR-207 同类“外层生成器字符串被内层三引号提前终止”的 SyntaxError，ZIP 未生成、用户仓库未执行。该错误属于 **REPEATED_CLASS=ERR-207 / EXP-177**；V64 改为大段内容全部独立 payload，runner 仅读取 payload 与短锚点。
+- Validation/WI-0003 在产品修复期间冻结于 `candidate_preparing`，不得运行 Candidate Gate。
+<!-- SPECFORGE_ERR211_ERR212_SPEC_MIGRATION_CONTRACT_REPAIR:END -->
+
+- **ERR-213**：V64 在隔离 worktree 已成功应用 ERR-211 补丁并完成范围形成后，交付器 `content_audit` 要求 `current-handoff.md` 含字面量 `PRODUCT_RECOVERY_CAPABILITY_GAP`，但 V64 自身 payload 未生成该字段，因此在产品测试前产生假失败；真实 SpecForge 仓库、Validation/WI-0003、Git 历史均未写入。
+- `PRODUCT_RECOVERY_CAPABILITY_GAP=YES`：ERR-211 的产品能力缺口已由源码与 Validation 一手证据确认；V65 在治理记录中显式保留该机器可审计结论。
+
+- **ERR-214**：V65 在当前 main 已知 daemon-core TypeScript/build 存在历史 workspace 模块解析债务、且错误台账已经固化 EXP-179 的情况下，再次只运行 post-patch `tsc --noEmit` 并因 `exit=2` 阻断，重复 ERR-209 类错误。V65 的 ERR-211 定向测试已 `exit=0`，但没有 clean-main A/B，因此 TypeScript 失败不能归因于 ERR-211 产品补丁。
+- `REPEATED_ERROR_CLASS=ERR-209`；`APPLICABLE_EXPERIENCE=EXP-179`。V66 在同一 detached worktree、同一 frozen dependencies、同一命令下先建立 clean-main tsc/daemon build/workspace build baseline，再应用补丁并只阻断新增稳定错误键；成功 stdout 不参与错误身份比较（继续遵守 EXP-180）。

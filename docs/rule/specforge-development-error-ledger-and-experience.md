@@ -4815,3 +4815,15 @@ actual_files
 - **EXP-179 — 有历史债务时静态检查必须 A/B 归因**：clean-head 与 post-patch 必须使用同一 worktree、同一 frozen dependencies、同一命令；错误集合使用相对路径+TS code+消息等稳定键比较，忽略非语义行列漂移。post 只有新增错误才归因本轮，baseline 既有失败必须显式保留。
 - **EXP-180 — 成功日志不是错误集合**：A/B build/static-check 先以 exit code 建立语义。双成功直接 PASS；成功→失败直接回归；失败→成功直接改善；仅双失败才比较稳定错误键。禁止比较耗时、bundle 数量、缓存文本等成功输出。
 <!-- SPECFORGE_EXP165_EXP180_PROMOTION_DELIVERY:END -->
+
+<!-- SPECFORGE_ERR211_ERR214_EXP181_EXP182_CONTRACT_REPAIR:START -->
+## ERR-211 / ERR-212 / ERR-213 / ERR-214 / EXP-181 / EXP-182
+- **ERR-211**：只确认 `spec_migration` Workflow 语义正确，却未逐一确认 Candidate Producer 能生成 extension_registry / module contracts 等全部 canonical artifacts，导致错误判断“产品无需修改”。现有 prepare_repair 与 Contract Tool 组合无法完成 Project→Module Contract 归位。
+- **EXP-181 — Workflow 语义正确不等于 Producer 能力完整**：宣布恢复/迁移路线可执行前，必须列出全部目标 canonical artifacts，并证明受控 Producer 能生成每一个 artifact、Runtime 会 materialize、Gate 会消费；缺少任一 Producer 必须登记产品缺口，禁止 Agent 手写 Candidate/manifest 或运行已知无效 Gate 绕过。
+- **ERR-212**：V63 包生成阶段再次触发 ERR-207 同类嵌套三引号 SyntaxError。`REPEATED_ERROR_CLASS=ERR-207`，`APPLICABLE_EXPERIENCE=EXP-177`。处理：V64 强制 runner 与所有长 payload 分离，并在交付前执行 runner `py_compile` 与 ZIP reopen integrity。
+<!-- SPECFORGE_ERR211_ERR212_EXP181_CONTRACT_REPAIR:END -->
+
+- **ERR-213**：V64 的 post-patch 内容审计要求一个自身 payload 没有写入的机器字面量，导致补丁已形成但尚未进入测试即被假失败阻断。根因是交付器的“期望内容”和“实际生成内容”由两个独立位置维护，缺少交付前一致性自检。
+- **EXP-182 — 内容审计必须与产物契约同源并在交付前自检**：执行器只能审计补丁明确承诺并实际生成的稳定语义标记；新增审计 needle 时，必须在 ZIP 生成前证明对应 payload/patch 会生成该 needle。禁止执行器凭空要求未生成字段。治理结论若需要机器字段，应由治理 payload 明确写出，再由审计器验证。
+
+- **ERR-214**：V65 重复 ERR-209 类验证错误：在已有历史 TypeScript/build 债务且 EXP-179 已明确要求 clean-head/post-patch A/B 的情况下，仍仅看 post-patch `tsc` 非零退出码。`REPEATED_ERROR_CLASS=ERR-209`，不新增经验规则，直接复用 **EXP-179**；同时继续应用 EXP-180，双成功 build 不比较非确定成功日志。

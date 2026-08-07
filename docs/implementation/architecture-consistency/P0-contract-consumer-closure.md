@@ -3893,3 +3893,18 @@ V57 的 `FAILED_STAGE=V57_EXECUTOR` 已归因于 scope audit 路径解析器自�
 V58 的 Promotion 定向回归已 PASS；TypeScript `exit=2` 未建立 clean-main A/B，因此先记 ERR-209，不能把该 exit code直接归因为 Promotion 产品补丁。V59 负责同环境 A/B 归因。
 
 V59 已证明 Promotion 定向回归 PASS，daemon-core `tsc/build` post 均为 `exit=0`，workspace build baseline/post 均为 `exit=0`。V59 最终失败仅因比较器把成功日志中的非确定耗时误当错误键（ERR-210）；V60 改为 exit-code-first A/B。
+
+<!-- P0_WI0003_ERR211_ERR214_BASELINE_NORMALIZATION_GAP:START -->
+## WI-0003 Stage C — Baseline Normalization 产品缺口
+只读取证确认当前 Validation Project Spec 不满足 Stage C Promotion 前置条件：`ReportFormat` 只位于 Project Registry；REPORTING Module Registry 无正式 Contract 对象；CLI 生产代码只消费 `renderDefaultReport` 公共函数，不直接消费 `ReportFormat`。
+因此必须先建立合法 REPORTING Module/Internal Contract baseline，再创建新的真实 Promotion WI。
+当前 `spec_migration` Workflow 语义正确，但缺少 Project→Module Contract 的受控 Candidate Producer，登记 ERR-211。V63 交付器在生成阶段又触发 ERR-212（ERR-207/EXP-177 重复类），未生成 ZIP、未触达用户仓库；V64 修正交付器边界。
+产品修复期间 WI-0003 保持 `candidate_preparing`，Candidate Gate 不得运行。
+恢复路线保持：
+`supersede invalid WI-0003 → Baseline Normalization spec_migration WI → 完整治理/Git delivery → 新 Promotion architecture_change WI`。
+P0 总体仍受历史 first-gate machine report 永久证据缺口约束。
+<!-- P0_WI0003_ERR211_ERR212_BASELINE_NORMALIZATION_GAP:END -->
+
+V64 未进入产品测试：隔离补丁形成后被交付器自身错误的内容审计字面量要求阻断，登记 ERR-213。真实 SpecForge 仓库与 WI-0003 均未写入。V65 修正审计-产物一致性后继续同一 ERR-211 产品修复。
+
+V65 的 ERR-211 定向回归已 PASS，但 daemon-core `tsc` 在没有 clean-main baseline 的情况下 以 TS2307 历史 workspace 模块解析错误阻断；登记 ERR-214（重复 ERR-209 / EXP-179）。V66 改用同环境 A/B 归因，Validation/WI-0003 继续冻结。

@@ -145,7 +145,16 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 1. 调用 `sf_spec_migration(action="inspect_repair")`，检查 `spec_manifest.json`，返回 manifest 哈希、`project_spec_version`、已声明模块、模块目录清单和 `issues`，并落盘 `project_spec_repair_inspection.json`。
 2. 向用户展示检查结果与拟定的显式模块映射，取得用户对修复计划的审阅。
 3. 调用 `sf_spec_migration(action="prepare_repair", repair_preparation=<JSON>)`，其中必须包含 `expected_manifest_sha256`、`expected_project_spec_version`、`evidence_paths`（`.specforge/project/**` 下的架构证据）和**显式 `modules` 映射**（canonical `MODULE_CODE` 及其 requirements/design/trace 来源）。该工具只生成 `candidates/**` 与 `candidate_manifest.json` + `project_spec_repair_plan.json`，**不直接写 `.specforge/project/**`**。
-4. 推进 `candidate_preparing → candidate_prepared → gates_running`。
+4. **Contract 层级修复（仅在损坏/legacy Contract 放错层时）**：
+   - `prepare_repair` 完成后，若证据证明某 Contract 当前错误地存在于 Project `extension_registry.json`，但真实消费者全部属于同一个 Module，必须使用受控 Contract Tool：`sf_contract_register(action="repair_relocate_to_module", workflow_path="spec_migration_path", ...)`。
+   - 该动作只用于 **Project Registry → canonical Module Contract Registry** 的规格修复，不是普通 demotion；存在跨 Module 正式 Trace 消费者时必须 Fail Closed。
+   - `from_contract_id` 与 `entry.id` 必须相同；`source_module` 必须等于 `entry.owner_module`；Module Contract `source_refs` 只能是该 Module Prospective Design 中真实存在的 `DD-*`；不得携带独立 `consumers` 字段。
+   - 必须提供非空 `migration_conclusion` 与 `compatibility`。
+   - `trigger_result.classification` 必须显式包含 `module_contract_changed=true`、`project_contract_changed=true`；若同时修正 Module Design，必须保持 `design_changed=true`。这些字段用于 Runtime 在 `candidate_preparing → candidate_prepared` 时保留 `module_contract` / `extension_registry` / `design` Candidate。
+   - Tool 必须在同一 WI Candidate 中同时从 Project Candidate 删除旧条目，并向 `candidates/project/modules/<MODULE>/contracts.candidate.json` 写入同 ID canonical Module Contract；不得直接修改正式 Project Spec。
+   - Contract 正式消费者仍只以 Trace 为真相源。随后由 `sf-task-planner` 写 canonical `candidates/trace_delta.md` 表达真实 `ADD/REMOVE` 边。
+   - Project Contract Candidate 仍只能由受控 Contract Tool 产生；不得由 Agent 手写 `extension_registry.json` 或 `candidate_manifest.json`。
+5. 完成所有 Candidate Producer 后，再推进 `candidate_preparing → candidate_prepared`；Runtime 负责最终 materialize manifest entries，然后才允许进入 Gate。
 
 **边界**：不得根据源码目录推断模块；不得覆盖已有 Candidate；manifest 哈希/版本过期时工具会失败关闭（`PROJECT_SPEC_REPAIR_MANIFEST_HASH_STALE` / `..._VERSION_STALE`），此时重新 `inspect_repair` 取最新哈希后再准备。
 

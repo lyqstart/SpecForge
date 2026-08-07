@@ -26,11 +26,12 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { inspectProjectGovernanceContractConsumers } from './project-governance-v2.js';
 
 export type ContractKind = 'shared_enum' | 'invariant' | 'public_interface' | 'extension_point';
 
 export type RegistrationKind = ContractKind | 'namespace_type';
-export type ContractCandidateAction = 'add' | 'update' | 'promote' | 'reset';
+export type ContractCandidateAction = 'add' | 'update' | 'promote' | 'repair_relocate_to_module' | 'reset';
 
 type NamespaceName =
   | 'requirement_types'
@@ -102,7 +103,7 @@ export async function authorContractCandidate(params: {
   const kind = params.kind;
   const entry = params.entry;
 
-  if (action !== 'add' && action !== 'update' && action !== 'promote' && action !== 'reset') {
+  if (action !== 'add' && action !== 'update' && action !== 'promote' && action !== 'repair_relocate_to_module' && action !== 'reset') {
     return { success: false, error: `invalid contract candidate action: ${action}` };
   }
 
@@ -143,12 +144,12 @@ export async function authorContractCandidate(params: {
   }
 
   if (!kind) {
-    return { success: false, error: 'kind is required when action=add, action=update, or action=promote' };
+    return { success: false, error: 'kind is required when action=add, action=update, action=promote, or action=repair_relocate_to_module' };
   }
   if (!entry || typeof entry !== 'object') {
     return {
       success: false,
-      error: 'entry (contract entry object) is required when action=add, action=update, or action=promote',
+      error: 'entry (contract entry object) is required when action=add, action=update, action=promote, or action=repair_relocate_to_module',
     };
   }
 
@@ -157,7 +158,7 @@ export async function authorContractCandidate(params: {
   const typeId = String((entry as any)?.type_id ?? '').trim();
   const id = String((entry as any)?.id ?? '').trim();
   const owner = String((entry as any)?.owner_module ?? '').trim();
-  if ((action === 'update' || action === 'promote') && kind === 'namespace_type') {
+  if ((action === 'update' || action === 'promote' || action === 'repair_relocate_to_module') && kind === 'namespace_type') {
     return {
       success: false,
       error: `action=${action} only supports Project Contract kinds; namespace_type is not allowed`,
@@ -228,6 +229,23 @@ export async function authorContractCandidate(params: {
     });
   }
 
+  if (action === 'repair_relocate_to_module') {
+    return authorContractRepairRelocationCandidate({
+      projectRoot,
+      workItemId,
+      wiDir,
+      liveRegistry,
+      field: field!,
+      entry,
+      id,
+      owner,
+      sourceModule: params.sourceModule,
+      fromContractId: params.fromContractId,
+      migrationConclusion: params.migrationConclusion,
+      compatibility: params.compatibility,
+      workflowPath: params.workflowPath,
+    });
+  }
   // 1. Read the existing WI candidate first so repeated registrations accumulate.
   //    Only the first registration starts from the live project registry.
   let registry: Record<string, any>;
@@ -333,7 +351,7 @@ type PromotionMetadata = {
   compatibility: string;
 };
 
-type PromotionModuleCandidate = {
+type ContractModuleCandidate = {
   moduleCode: string;
   candidatePath: string;
   targetPath: string;
@@ -434,6 +452,327 @@ async function currentOrCandidateModuleContractIds(
     }
   }
   return ids;
+}
+
+function governanceModuleDesignIds(content: string): Set<string> {
+  return new Set(content.match(/\bDD-[A-Z][A-Z0-9]{1,11}-[0-9]{3}\b/g) ?? []);
+}
+
+async function readProspectiveModuleDesignIds(
+  projectRoot: string,
+  wiDir: string,
+  sourceModule: string,
+): Promise<Set<string>> {
+  const candidatePath = path.join(
+    wiDir, 'candidates', 'project', 'modules', sourceModule, 'design.candidate.md',
+  );
+  const formalPath = path.join(
+    projectRoot, SPEC_DIR_NAME, 'project', 'modules', sourceModule, 'design.md',
+  );
+  let content = '';
+  try {
+    content = await fs.readFile(candidatePath, 'utf-8');
+  } catch {
+    try {
+      content = await fs.readFile(formalPath, 'utf-8');
+    } catch {
+      content = '';
+    }
+  }
+  return governanceModuleDesignIds(content);
+}
+
+async function authorContractRepairRelocationCandidate(params: {
+  projectRoot: string;
+  workItemId: string;
+  wiDir: string;
+  liveRegistry: Record<string, any>;
+  field: string;
+  entry: Record<string, unknown>;
+  id: string;
+  owner: string;
+  sourceModule?: string;
+  fromContractId?: string;
+  migrationConclusion?: string;
+  compatibility?: string;
+  workflowPath?: string;
+}): Promise<AuthorContractResult> {
+  if (params.workflowPath !== 'spec_migration_path') {
+    return { success: false, error: 'action=repair_relocate_to_module requires workflow_path=spec_migration_path' };
+  }
+
+  const sourceModule = String(params.sourceModule ?? '').trim();
+  const fromContractId = String(params.fromContractId ?? '').trim();
+  const migrationConclusion = String(params.migrationConclusion ?? '').trim();
+  const compatibility = String(params.compatibility ?? '').trim();
+
+  if (!sourceModule || !/^[A-Z][A-Z0-9_-]*$/.test(sourceModule)) {
+    return { success: false, error: 'action=repair_relocate_to_module requires a canonical source_module' };
+  }
+  if (!fromContractId) {
+    return { success: false, error: 'action=repair_relocate_to_module requires from_contract_id' };
+  }
+  if (params.id !== fromContractId) {
+    return { success: false, error: 'Contract repair relocation preserves identity: entry.id must equal from_contract_id' };
+  }
+  if (params.owner !== sourceModule) {
+    return { success: false, error: 'Relocated Module Contract owner_module must equal source_module' };
+  }
+  if (!migrationConclusion) {
+    return { success: false, error: 'action=repair_relocate_to_module requires migration_conclusion' };
+  }
+  if (!compatibility) {
+    return { success: false, error: 'action=repair_relocate_to_module requires compatibility' };
+  }
+  if (Object.prototype.hasOwnProperty.call(params.entry, 'consumers')) {
+    return {
+      success: false,
+      error: 'Relocated Module Contract must not carry an independent consumers field; consumers belong to formal Trace',
+    };
+  }
+
+  const sourceRefs = Array.isArray((params.entry as any).source_refs)
+    ? (params.entry as any).source_refs
+        .map((value: unknown) => String(value ?? '').trim())
+        .filter(Boolean)
+    : [];
+  if (sourceRefs.length === 0) {
+    return { success: false, error: 'Relocated Module Contract requires non-empty source_refs' };
+  }
+  if (sourceRefs.some((sourceRef: string) => !/^DD-[A-Z][A-Z0-9]{1,11}-[0-9]{3}$/.test(sourceRef))) {
+    return { success: false, error: 'Relocated Module Contract source_refs must contain only DD-* IDs' };
+  }
+  if (new Set(sourceRefs).size !== sourceRefs.length) {
+    return { success: false, error: 'Relocated Module Contract source_refs must be unique' };
+  }
+
+  const manifestRead = await readJsonObjectForPromotion(
+    path.join(params.wiDir, 'candidate_manifest.json'),
+    'candidate_manifest.json',
+  );
+  if (!manifestRead.value) {
+    return {
+      success: false,
+      error:
+        'Contract repair relocation requires an existing spec_migration Candidate; ' +
+        'run sf_spec_migration(action=prepare_repair) first',
+    };
+  }
+  const manifest = manifestRead.value;
+  if (String(manifest.workflow_path ?? '').trim() !== 'spec_migration_path') {
+    return { success: false, error: 'Contract repair relocation requires candidate_manifest.workflow_path=spec_migration_path' };
+  }
+  if (
+    manifest.workflow_type !== undefined &&
+    String(manifest.workflow_type ?? '').trim() !== 'spec_migration'
+  ) {
+    return { success: false, error: 'Contract repair relocation requires candidate_manifest.workflow_type=spec_migration when present' };
+  }
+
+  const triggerRead = await readJsonObjectForPromotion(
+    path.join(params.wiDir, 'trigger_result.json'),
+    'trigger_result.json',
+  );
+  if (!triggerRead.value) return { success: false, error: triggerRead.error };
+  const trigger = triggerRead.value;
+  if (String(trigger.workflow_path ?? '').trim() !== 'spec_migration_path') {
+    return { success: false, error: 'Contract repair relocation requires trigger_result.workflow_path=spec_migration_path' };
+  }
+  const classification =
+    trigger.classification && typeof trigger.classification === 'object'
+      ? (trigger.classification as Record<string, unknown>)
+      : {};
+  if (classification.module_contract_changed !== true) {
+    return {
+      success: false,
+      error: 'Contract repair relocation requires module_contract_changed=true for Runtime materialization',
+    };
+  }
+  if (classification.project_contract_changed !== true) {
+    return {
+      success: false,
+      error: 'Contract repair relocation requires project_contract_changed=true for Runtime materialization',
+    };
+  }
+
+  const designIds = await readProspectiveModuleDesignIds(params.projectRoot, params.wiDir, sourceModule);
+  const missingSourceRefs = sourceRefs.filter((sourceRef: string) => !designIds.has(sourceRef));
+  if (missingSourceRefs.length > 0) {
+    return {
+      success: false,
+      error:
+        `Relocated Module Contract source_refs are not real prospective ${sourceModule} DD IDs: ` +
+        missingSourceRefs.join(', '),
+    };
+  }
+
+  if (!params.liveRegistry.contracts || typeof params.liveRegistry.contracts !== 'object') {
+    return { success: false, error: 'live extension_registry has no contracts object for repair relocation' };
+  }
+  const liveHits: Array<{ field: string; entry: Record<string, unknown> }> = [];
+  for (const candidateField of CONTRACT_FIELDS) {
+    const contracts = Array.isArray(params.liveRegistry.contracts[candidateField])
+      ? params.liveRegistry.contracts[candidateField]
+      : [];
+    for (const candidate of contracts) {
+      if (String(candidate?.id ?? '').trim() === fromContractId) {
+        liveHits.push({ field: candidateField, entry: candidate });
+      }
+    }
+  }
+  if (liveHits.length !== 1) {
+    return {
+      success: false,
+      error: `Contract repair relocation requires exactly one live Project Contract ${fromContractId}; found ${liveHits.length}`,
+    };
+  }
+  if (liveHits[0].field !== params.field) {
+    return {
+      success: false,
+      error: `Contract repair relocation kind mismatch: live=${liveHits[0].field}; requested=${params.field}`,
+    };
+  }
+  if (String((liveHits[0].entry as any).owner_module ?? '').trim() !== sourceModule) {
+    return { success: false, error: `live Project Contract owner mismatch: expected ${sourceModule}` };
+  }
+
+  const currentSnapshot = await inspectProjectGovernanceContractConsumers({
+    projectRoot: params.projectRoot,
+    workItemDir: params.wiDir,
+    prospective: false,
+  });
+  if (!currentSnapshot.active) {
+    return {
+      success: false,
+      error: 'Contract repair relocation cannot prove current formal consumers because Project governance is inactive',
+    };
+  }
+  const crossModuleConsumers = currentSnapshot.consumers.filter(
+    consumer =>
+      consumer.contract_id === fromContractId &&
+      consumer.module_code !== sourceModule,
+  );
+  if (crossModuleConsumers.length > 0) {
+    return {
+      success: false,
+      error:
+        'Project-to-Module repair relocation is forbidden while cross-module consumers exist: ' +
+        crossModuleConsumers
+          .map(consumer => `${consumer.design_id}@${consumer.module_code || 'UNKNOWN'}`)
+          .join(', '),
+    };
+  }
+
+  const projectCandidatePath = path.join(
+    params.wiDir, 'candidates', 'project', 'extension_registry.json',
+  );
+  let projectRegistry: Record<string, any>;
+  try {
+    projectRegistry = JSON.parse(await fs.readFile(projectCandidatePath, 'utf-8'));
+  } catch (candidateError: any) {
+    if (candidateError?.code !== 'ENOENT') {
+      return {
+        success: false,
+        error: `failed to read existing extension_registry candidate: ${candidateError?.message ?? String(candidateError)}`,
+      };
+    }
+    projectRegistry = JSON.parse(JSON.stringify(params.liveRegistry));
+  }
+  if (!projectRegistry.contracts || typeof projectRegistry.contracts !== 'object') {
+    return { success: false, error: 'current Project Candidate has no contracts object' };
+  }
+  for (const contractField of CONTRACT_FIELDS) {
+    if (!Array.isArray(projectRegistry.contracts[contractField])) {
+      projectRegistry.contracts[contractField] = [];
+    }
+  }
+  const projectMatches = CONTRACT_FIELDS.flatMap(contractField =>
+    projectRegistry.contracts[contractField]
+      .filter((candidate: any) => String(candidate?.id ?? '').trim() === fromContractId)
+      .map((candidate: any) => ({ contractField, candidate })),
+  );
+  if (projectMatches.length !== 1 || projectMatches[0].contractField !== params.field) {
+    return {
+      success: false,
+      error:
+        `current Project Candidate must contain exactly one ${params.field}:${fromContractId} before repair relocation`,
+    };
+  }
+
+  const allModuleIds = await currentOrCandidateModuleContractIds(params.projectRoot, params.wiDir);
+  if (allModuleIds.has(fromContractId)) {
+    return {
+      success: false,
+      error:
+        `repair relocation would create duplicate Project/Module Contract truth: ${fromContractId} ` +
+        'already exists in a Module Contract registry',
+    };
+  }
+
+  const formalModulePath = path.join(
+    params.projectRoot, SPEC_DIR_NAME, 'project', 'modules', sourceModule, 'contracts.json',
+  );
+  const moduleCandidatePath = path.join(
+    params.wiDir, 'candidates', 'project', 'modules', sourceModule, 'contracts.candidate.json',
+  );
+  let moduleRegistry: Record<string, any>;
+  try {
+    moduleRegistry = JSON.parse(await fs.readFile(moduleCandidatePath, 'utf-8'));
+  } catch (candidateError: any) {
+    if (candidateError?.code !== 'ENOENT') {
+      return {
+        success: false,
+        error: `failed to read existing Module Contract candidate: ${candidateError?.message ?? String(candidateError)}`,
+      };
+    }
+    const formalRead = await readJsonObjectForPromotion(formalModulePath, 'formal Module Contract registry');
+    if (!formalRead.value) return { success: false, error: formalRead.error };
+    moduleRegistry = formalRead.value;
+  }
+  if (String(moduleRegistry.owner_module ?? '').trim() !== sourceModule) {
+    return { success: false, error: `Module Contract owner mismatch: expected ${sourceModule}` };
+  }
+  if (!moduleRegistry.contracts || typeof moduleRegistry.contracts !== 'object') {
+    return { success: false, error: 'Module Contract registry has no contracts object' };
+  }
+  for (const contractField of CONTRACT_FIELDS) {
+    if (!Array.isArray(moduleRegistry.contracts[contractField])) {
+      moduleRegistry.contracts[contractField] = [];
+    }
+    if (
+      moduleRegistry.contracts[contractField].some(
+        (candidate: any) => String(candidate?.id ?? '').trim() === fromContractId,
+      )
+    ) {
+      return { success: false, error: `Module Contract already contains repair relocation identity: ${fromContractId}` };
+    }
+  }
+
+  const nextProjectRegistry = JSON.parse(JSON.stringify(projectRegistry));
+  nextProjectRegistry.contracts[params.field] =
+    nextProjectRegistry.contracts[params.field].filter(
+      (candidate: any) => String(candidate?.id ?? '').trim() !== fromContractId,
+    );
+  nextProjectRegistry.updated_by_work_item = params.workItemId;
+  nextProjectRegistry.updated_at = new Date().toISOString();
+
+  const nextModuleRegistry = JSON.parse(JSON.stringify(moduleRegistry));
+  nextModuleRegistry.contracts[params.field].push(params.entry);
+
+  return writeContractCandidate({
+    projectRoot: params.projectRoot,
+    workItemId: params.workItemId,
+    workflowPath: 'spec_migration_path',
+    registry: nextProjectRegistry,
+    action: 'repair_relocate_to_module',
+    contractRef: `[repair-relocation:${fromContractId} project->${sourceModule}]`,
+    moduleCandidate: {
+      moduleCode: sourceModule,
+      candidatePath: `candidates/project/modules/${sourceModule}/contracts.candidate.json`,
+      targetPath: `.specforge/project/modules/${sourceModule}/contracts.json`,
+      registry: nextModuleRegistry,
+    },
+  });
 }
 
 async function authorContractPromotionCandidate(params: {
@@ -707,7 +1046,7 @@ async function writeContractCandidate(params: {
   action: ContractCandidateAction;
   contractRef?: string;
   promotion?: PromotionMetadata;
-  moduleCandidate?: PromotionModuleCandidate;
+  moduleCandidate?: ContractModuleCandidate;
 }): Promise<AuthorContractResult> {
   const wiDir = path.join(params.projectRoot, SPEC_DIR_NAME, 'work-items', params.workItemId);
   const candidateAbs = path.join(wiDir, 'candidates', 'project', 'extension_registry.json');
@@ -792,18 +1131,23 @@ async function writeContractCandidate(params: {
       type: 'extension_registry',
     });
   }
-  if (params.action === 'promote' && params.promotion && params.moduleCandidate) {
-    manifest.workflow_type = 'architecture_change';
-    manifest.workflow_path = 'architecture_change_path';
+  if (params.moduleCandidate) {
     const moduleListed = manifest.entries.some((e: any) =>
       e?.candidate_path === params.moduleCandidate!.candidatePath && e?.target_path === params.moduleCandidate!.targetPath);
     if (!moduleListed) {
       manifest.entries.push({ candidate_path: params.moduleCandidate.candidatePath, target_path: params.moduleCandidate.targetPath, operation: 'replace', type: 'module_contract', module_id: params.moduleCandidate.moduleCode });
     }
+  }
+  if (params.action === 'promote' && params.promotion && params.moduleCandidate) {
+    manifest.workflow_type = 'architecture_change';
+    manifest.workflow_path = 'architecture_change_path';
     if (!Array.isArray(manifest.contract_promotions)) manifest.contract_promotions = [];
     manifest.contract_promotions.push(params.promotion);
   }
-
+  if (params.action === 'repair_relocate_to_module' && params.moduleCandidate) {
+    manifest.workflow_type = 'spec_migration';
+    manifest.workflow_path = 'spec_migration_path';
+  }
   await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n', 'utf-8');
 
   return {

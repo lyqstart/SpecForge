@@ -482,4 +482,297 @@ it('ERR-193/194 fails closed for invalid Promotion identity, provenance and mani
   expect(malformed.errors.join('; ')).toContain('CONTRACT_PROMOTION_MIGRATION_REQUIRED');
   expect(malformed.errors.join('; ')).toContain('CONTRACT_PROMOTION_COMPATIBILITY_REQUIRED');
 });
+async function prepareRepairRelocationFixture(): Promise<void> {
+  const project = path.join(projectRoot, '.specforge', 'project');
+  const reportingRoot = path.join(project, 'modules', 'REPORTING');
+  const cliRoot = path.join(project, 'modules', 'CLI');
+  await fs.mkdir(reportingRoot, { recursive: true });
+  await fs.mkdir(cliRoot, { recursive: true });
+
+  await fs.writeFile(path.join(project, 'architecture.md'), '# Architecture\nARCH-CORE-001\n');
+  await fs.writeFile(path.join(project, 'data_model.md'), '# Data Model\nDATA-CORE-001\n');
+  await fs.writeFile(
+    path.join(project, 'trace_matrix.md'),
+    [
+      '# Trace',
+      '<!-- SPECFORGE_GOVERNANCE_RELATIONS_START -->',
+      '| From | Relation | To |',
+      '| --- | --- | --- |',
+      '<!-- SPECFORGE_GOVERNANCE_RELATIONS_END -->',
+      '',
+    ].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(project, 'extension_registry.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0003',
+      namespaces: {
+        requirement_types: [], design_types: [], task_types: [],
+        verification_types: [], gate_types: [],
+      },
+      contracts: {
+        shared_enums: [{
+          id: 'ReportFormat',
+          owner_module: 'REPORTING',
+          value_type: 'string',
+          values: ['text', 'json'],
+          source_refs: ['DD-REPORTING-002'],
+          scope: 'Module Contract (REPORTING-internal)',
+        }],
+        invariants: [], public_interfaces: [], extension_points: [],
+      },
+    }, null, 2),
+  );
+
+  for (const [moduleCode, moduleRoot, designId] of [
+    ['REPORTING', reportingRoot, 'DD-REPORTING-002'],
+    ['CLI', cliRoot, 'DD-CLI-001'],
+  ] as const) {
+    await fs.writeFile(
+      path.join(moduleRoot, 'module.json'),
+      JSON.stringify({ module_code: moduleCode, status: 'active' }, null, 2),
+    );
+    await fs.writeFile(path.join(moduleRoot, 'design.md'), `# ${moduleCode} Design\n${designId}\n`);
+    await fs.writeFile(path.join(moduleRoot, 'trace.md'), '# Module Trace\n');
+    await fs.writeFile(
+      path.join(moduleRoot, 'contracts.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        owner_module: moduleCode,
+        contracts: {
+          shared_enums: [], invariants: [], public_interfaces: [], extension_points: [],
+        },
+      }, null, 2),
+    );
+  }
+
+  await fs.writeFile(
+    path.join(project, 'spec_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0003',
+      project: {
+        architecture: '.specforge/project/architecture.md',
+        data_model: '.specforge/project/data_model.md',
+        extension_registry: '.specforge/project/extension_registry.json',
+        trace_matrix: '.specforge/project/trace_matrix.md',
+      },
+      modules: [
+        {
+          module_code: 'REPORTING',
+          module_file: '.specforge/project/modules/REPORTING/module.json',
+          design: '.specforge/project/modules/REPORTING/design.md',
+          contracts: '.specforge/project/modules/REPORTING/contracts.json',
+          trace: '.specforge/project/modules/REPORTING/trace.md',
+          code_paths: ['src/reporting/**'],
+        },
+        {
+          module_code: 'CLI',
+          module_file: '.specforge/project/modules/CLI/module.json',
+          design: '.specforge/project/modules/CLI/design.md',
+          contracts: '.specforge/project/modules/CLI/contracts.json',
+          trace: '.specforge/project/modules/CLI/trace.md',
+          code_paths: ['src/cli/**'],
+        },
+      ],
+    }, null, 2),
+  );
+
+  await fs.mkdir(
+    path.join(wiDir(), 'candidates', 'project', 'modules', 'REPORTING'),
+    { recursive: true },
+  );
+  await fs.writeFile(
+    path.join(wiDir(), 'candidates', 'project', 'modules', 'REPORTING', 'design.candidate.md'),
+    '# REPORTING Design Candidate\nDD-REPORTING-002\n',
+  );
+  await fs.writeFile(
+    path.join(wiDir(), 'work_item.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      workflow_type: 'spec_migration',
+      workflow_path: 'spec_migration_path',
+    }, null, 2),
+  );
+  await fs.writeFile(
+    path.join(wiDir(), 'trigger_result.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      workflow_type: 'spec_migration',
+      workflow_path: 'spec_migration_path',
+      classification: {
+        requirement_changed: false,
+        acceptance_criteria_changed: false,
+        business_rule_changed: false,
+        user_visible_behavior_changed: false,
+        data_semantics_changed: false,
+        design_changed: true,
+        module_boundary_changed: false,
+        api_contract_changed: true,
+        architecture_changed: false,
+        module_contract_changed: true,
+        project_contract_changed: true,
+        unknowns: [],
+      },
+    }, null, 2),
+  );
+  await fs.writeFile(
+    path.join(wiDir(), 'candidate_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'spec_migration',
+      workflow_path: 'spec_migration_path',
+      base_spec_version: 'PSV-0003',
+      merge_required: true,
+      entries: [],
+    }, null, 2),
+  );
+}
+
+it('ERR-211 relocates a legacy Project-registry Module Contract into the canonical Module registry during spec_migration', async () => {
+  await prepareRepairRelocationFixture();
+  const result = await authorContractCandidate({
+    projectRoot,
+    workItemId,
+    action: 'repair_relocate_to_module',
+    workflowPath: 'spec_migration_path',
+    kind: 'shared_enum',
+    sourceModule: 'REPORTING',
+    fromContractId: 'ReportFormat',
+    migrationConclusion:
+      'legacy Project-registry mirror is normalized into the REPORTING Module Contract truth source',
+    compatibility:
+      'metadata-only repair; runtime values text|json are unchanged and no cross-module formal consumer exists',
+    entry: {
+      id: 'ReportFormat',
+      owner_module: 'REPORTING',
+      value_type: 'string',
+      values: ['text', 'json'],
+      source_refs: ['DD-REPORTING-002'],
+      enforcement: 'src/reporting/formatter.js REPORT_FORMATS + assertReportFormat',
+      scope: 'Module Contract (REPORTING-internal)',
+    },
+  });
+  expect(result.success, result.error).toBe(true);
+  expect(result.contract_ref).toBe('[repair-relocation:ReportFormat project->REPORTING]');
+
+  const projectCandidate = JSON.parse(
+    await fs.readFile(
+      path.join(wiDir(), 'candidates', 'project', 'extension_registry.json'),
+      'utf-8',
+    ),
+  );
+  expect(projectCandidate.contracts.shared_enums.map((item: any) => item.id))
+    .not.toContain('ReportFormat');
+
+  const moduleCandidate = JSON.parse(
+    await fs.readFile(
+      path.join(
+        wiDir(), 'candidates', 'project', 'modules', 'REPORTING', 'contracts.candidate.json',
+      ),
+      'utf-8',
+    ),
+  );
+  expect(moduleCandidate.contracts.shared_enums.map((item: any) => item.id))
+    .toContain('ReportFormat');
+  expect(moduleCandidate.contracts.shared_enums[0].source_refs)
+    .toEqual(['DD-REPORTING-002']);
+  expect(moduleCandidate.contracts.shared_enums[0].consumers).toBeUndefined();
+
+  const manifestRaw = await fs.readFile(
+    path.join(wiDir(), 'candidate_manifest.json'), 'utf-8',
+  );
+  const manifest = JSON.parse(manifestRaw);
+  expect(manifest.workflow_type).toBe('spec_migration');
+  expect(manifest.workflow_path).toBe('spec_migration_path');
+  expect(manifest.entries.some(
+    (entry: any) =>
+      entry.candidate_path === 'candidates/project/extension_registry.json' &&
+      entry.target_path === '.specforge/project/extension_registry.json',
+  )).toBe(true);
+  expect(manifest.entries.some(
+    (entry: any) =>
+      entry.candidate_path ===
+        'candidates/project/modules/REPORTING/contracts.candidate.json' &&
+      entry.target_path === '.specforge/project/modules/REPORTING/contracts.json',
+  )).toBe(true);
+
+  const validation = validateCandidateManifestJson(
+    manifestRaw, workItemId, 'spec_migration_path',
+  );
+  expect(validation.valid, validation.errors.join('; ')).toBe(true);
+});
+
+it('ERR-211 fails closed for unsafe Project-to-Module repair relocation inputs and cross-module consumers', async () => {
+  await prepareRepairRelocationFixture();
+  const baseArgs = {
+    projectRoot,
+    workItemId,
+    action: 'repair_relocate_to_module' as const,
+    workflowPath: 'spec_migration_path',
+    kind: 'shared_enum' as const,
+    sourceModule: 'REPORTING',
+    fromContractId: 'ReportFormat',
+    migrationConclusion: 'repair legacy placement',
+    compatibility: 'runtime behavior unchanged',
+    entry: {
+      id: 'ReportFormat',
+      owner_module: 'REPORTING',
+      value_type: 'string',
+      values: ['text', 'json'],
+      source_refs: ['DD-REPORTING-002'],
+      enforcement: 'manual',
+    },
+  };
+
+  const wrongWorkflow = await authorContractCandidate({
+    ...baseArgs, workflowPath: 'architecture_change_path',
+  });
+  expect(wrongWorkflow.success).toBe(false);
+  expect(wrongWorkflow.error).toContain('spec_migration_path');
+
+  const wrongIdentity = await authorContractCandidate({
+    ...baseArgs,
+    entry: { ...baseArgs.entry, id: 'ReportFormatV2' },
+  });
+  expect(wrongIdentity.success).toBe(false);
+  expect(wrongIdentity.error).toContain('preserves identity');
+
+  const invalidSource = await authorContractCandidate({
+    ...baseArgs,
+    entry: { ...baseArgs.entry, source_refs: ['ARCH-CORE-001'] },
+  });
+  expect(invalidSource.success).toBe(false);
+  expect(invalidSource.error).toContain('DD-*');
+
+  const duplicateConsumerTruth = await authorContractCandidate({
+    ...baseArgs,
+    entry: {
+      ...baseArgs.entry,
+      consumers: [{ module: 'REPORTING', role: 'owner' }],
+    } as any,
+  });
+  expect(duplicateConsumerTruth.success).toBe(false);
+  expect(duplicateConsumerTruth.error).toContain('formal Trace');
+
+  await fs.writeFile(
+    path.join(projectRoot, '.specforge', 'project', 'trace_matrix.md'),
+    [
+      '# Trace',
+      '<!-- SPECFORGE_GOVERNANCE_RELATIONS_START -->',
+      '| From | Relation | To |',
+      '| --- | --- | --- |',
+      '| DD-CLI-001 | constrained_by | ReportFormat |',
+      '<!-- SPECFORGE_GOVERNANCE_RELATIONS_END -->',
+      '',
+    ].join('\n'),
+  );
+  const crossModule = await authorContractCandidate(baseArgs);
+  expect(crossModule.success).toBe(false);
+  expect(crossModule.error).toContain('cross-module consumers');
+});
 });
