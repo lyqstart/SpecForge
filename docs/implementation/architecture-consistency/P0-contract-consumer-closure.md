@@ -3802,3 +3802,20 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | 预期状态 | attempt-0004 10/10 passed 后由 gate_runner 正常 seal 到 approval_required |
 | P0 总体 | 仍 NO；第一次完整 Gate 机器报告永久缺失 |
 <!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT_P0:END -->
+
+<!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT_P0:START -->
+## P0 WI-0002 attempt-0004 前置修复
+
+| 项目 | 结论 |
+|---|---|
+| 当前 Validation HEAD | 6801fd76bf4a435502fafccc4ba7f14bceb5fe56 |
+| 当前 state | gates_running |
+| attempt-0004 | 不存在 |
+| 最近一次 OpenCode | 预检停止，Gate 未运行 |
+| ERR-187 | V29 Prompt 错把治理现场导致的 worktree dirty 当硬阻断 |
+| 正确 Git 预检 | 固定 project/branch/HEAD；dirty paths 只允许已知 WI-0002 治理现场；非治理/staged 漂移阻断 |
+| ERR-188 | V29 input snapshot producer/consumer 对 relative path 未绑定业务 projectRoot |
+| V30 | producer/consumer 统一以 Validation projectRoot 解析，snapshot 保留原始审计 path |
+| 下一步 | 单次正常 Candidate Gate → attempt-0004 → input-snapshot → approval_required |
+| P0 总体 | 仍 NO；第一次完整 Gate 机器报告不可恢复 |
+<!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT_P0:END -->

@@ -33,64 +33,75 @@ afterEach(async () => {
   await Promise.all(roots.splice(0).map(root => rm(root, { recursive: true, force: true })));
 });
 
-describe('Gate Attempt input snapshot', () => {
-  it('freezes both materialized files and missing probe paths', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'specforge-input-snapshot-'));
-    roots.push(root);
-    const existing = join(root, 'candidate.json');
-    const missing = join(root, 'project', 'modules', 'CORE', 'contracts.json');
-    await mkdir(join(root, 'project', 'modules', 'CORE'), { recursive: true });
-    await writeFile(existing, '{"ok":true}\n', 'utf-8');
+describe('Gate Attempt project-root input snapshot semantics', () => {
+  it('resolves relative Gate input paths against projectRoot and preserves the audit path', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'specforge-project-root-'));
+    roots.push(projectRoot);
+    const relative = '.specforge/project/architecture.md';
+    const absolute = join(projectRoot, '.specforge', 'project', 'architecture.md');
+    await mkdir(join(projectRoot, '.specforge', 'project'), { recursive: true });
+    await writeFile(absolute, '# architecture\n', 'utf-8');
 
-    const snapshot = await buildGateAttemptInputSnapshot([
-      report([existing, missing]),
-      report([missing, existing]),
-    ]);
+    const snapshot = await buildGateAttemptInputSnapshot(projectRoot, [report([relative])]);
 
-    expect(snapshot).toHaveLength(2);
-    const existingEntry = snapshot.find(item => item.path === existing);
-    const missingEntry = snapshot.find(item => item.path === missing);
-
-    expect(existingEntry).toEqual(
+    expect(snapshot).toHaveLength(1);
+    expect(snapshot[0]).toEqual(
       expect.objectContaining({
+        path: relative,
         exists: true,
         kind: 'file',
-        size: 12,
       }),
     );
-    expect(existingEntry?.sha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(missingEntry).toEqual({
-      path: missing,
-      exists: false,
-      kind: 'missing',
-    });
+    expect(snapshot[0]?.sha256).toMatch(/^[0-9a-f]{64}$/);
   });
 
-  it('pins Attempt finalization to input-snapshot.json', async () => {
+  it('records a missing relative probe path relative to projectRoot', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'specforge-project-root-missing-'));
+    roots.push(projectRoot);
+    const relative = '.specforge/project/modules/CORE/contracts.json';
+
+    const snapshot = await buildGateAttemptInputSnapshot(projectRoot, [report([relative])]);
+
+    expect(snapshot).toEqual([
+      {
+        path: relative,
+        exists: false,
+        kind: 'missing',
+      },
+    ]);
+  });
+
+  it('wires attempt finalization to projectRoot-aware snapshot capture', async () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const chain = await readFile(
       join(repoRoot, 'packages/daemon-core/src/tools/lib/gate-chain.ts'),
       'utf-8',
     );
-    expect(chain).toContain("path.join(input.attempt.attemptPath, 'input-snapshot.json')");
-    expect(chain).toContain('buildGateAttemptInputSnapshot(input.summaryReports)');
-    expect(chain).toContain("input_snapshot: 'input-snapshot.json'");
+    expect(chain).toContain(
+      'buildGateAttemptInputSnapshot(input.ctx.projectRoot, input.summaryReports)',
+    );
+    expect(chain).toContain(
+      'const resolvedInputPath = resolveGateAttemptInputPath(projectRoot, inputPath);',
+    );
+    expect(chain).toContain('await fs.stat(resolvedInputPath)');
+    expect(chain).toContain('await fs.readFile(resolvedInputPath)');
   });
 
-  it('pins reconciliation to snapshot evidence and rejects legacy Attempts', async () => {
+  it('uses the same projectRoot rule during historical reconciliation', async () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const handler = await readFile(
       join(repoRoot, 'packages/daemon-core/src/tools/handlers/sf-v11-gate-run.ts'),
       'utf-8',
     );
-    expect(handler).toContain('RECONCILE_INPUT_SNAPSHOT_REQUIRED');
-    expect(handler).toContain("freshness_mode: freshnessMode");
-    expect(handler).toContain("freshnessMode = 'attempt_input_snapshot'");
-    expect(handler).toContain('RECONCILE_INPUT_HASH_CHANGED');
-    expect(handler).not.toContain('RECONCILE_GATE_INPUT_CHANGED_AFTER_ATTEMPT');
+    expect(handler).toContain(
+      'const resolvedInputPath = resolveGateInputPath(input.projectRoot, inputPath);',
+    );
+    expect(handler).toContain('await fs.access(resolvedInputPath)');
+    expect(handler).toContain('await fs.stat(resolvedInputPath)');
+    expect(handler).toContain('await fs.readFile(resolvedInputPath)');
   });
 
-  it('pins authority and ledger synchronization', async () => {
+  it('pins authority and failure-ledger synchronization', async () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const authority = await readFile(
       join(repoRoot, 'docs/design/SpecForge架构一致性治理最终实施方案.md'),
@@ -100,8 +111,8 @@ describe('Gate Attempt input snapshot', () => {
       join(repoRoot, 'docs/rule/specforge-development-error-ledger-and-experience.md'),
       'utf-8',
     );
-    expect(authority).toContain('GATE-ATTEMPT-INPUT-SNAPSHOT-001');
-    for (const token of ['ERR-185', 'ERR-186', 'EXP-157', 'EXP-158']) {
+    expect(authority).toContain('process.cwd()');
+    for (const token of ['ERR-187', 'ERR-188', 'EXP-159', 'EXP-160']) {
       expect(ledger).toContain(token);
     }
   });

@@ -892,6 +892,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     }
     const entry = raw as Record<string, unknown>;
     const inputPath = String(entry.path ?? '').trim();
+    const resolvedInputPath = resolveGateInputPath(input.projectRoot, inputPath);
     const expectedExists = entry.exists === true;
     const expectedKind = String(entry.kind ?? '').trim();
     if (!inputPath || !['file', 'directory', 'other', 'missing'].includes(expectedKind)) {
@@ -902,7 +903,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
 
     if (!expectedExists) {
       try {
-        await fs.access(inputPath);
+        await fs.access(resolvedInputPath);
         throw new Error(
           `RECONCILE_INPUT_EXISTENCE_CHANGED: path=${inputPath}; expected=missing; actual=exists`
         );
@@ -922,7 +923,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
 
     let stats;
     try {
-      stats = await fs.stat(inputPath);
+      stats = await fs.stat(resolvedInputPath);
     } catch (error: any) {
       if (error?.code === 'ENOENT') {
         throw new Error(
@@ -952,7 +953,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
           `RECONCILE_INPUT_SNAPSHOT_HASH_INVALID: path=${inputPath}`
         );
       }
-      const bytes = await fs.readFile(inputPath);
+      const bytes = await fs.readFile(resolvedInputPath);
       const actualSha256 = createHash('sha256').update(bytes).digest('hex');
       if (actualSha256.toLowerCase() !== expectedSha256.toLowerCase()) {
         throw new Error(

@@ -261,7 +261,14 @@ export type GateAttemptInputSnapshotEntry = {
   mtime_ms?: number;
 };
 
+function resolveGateAttemptInputPath(projectRoot: string, inputPath: string): string {
+  return path.isAbsolute(inputPath)
+    ? path.normalize(inputPath)
+    : path.resolve(projectRoot, inputPath);
+}
+
 export async function buildGateAttemptInputSnapshot(
+  projectRoot: string,
   reports: GateReportV11[],
 ): Promise<GateAttemptInputSnapshotEntry[]> {
   const inputPaths = Array.from(
@@ -276,10 +283,11 @@ export async function buildGateAttemptInputSnapshot(
 
   const snapshot: GateAttemptInputSnapshotEntry[] = [];
   for (const inputPath of inputPaths) {
+    const resolvedInputPath = resolveGateAttemptInputPath(projectRoot, inputPath);
     try {
-      const stats = await fs.stat(inputPath);
+      const stats = await fs.stat(resolvedInputPath);
       if (stats.isFile()) {
-        const bytes = await fs.readFile(inputPath);
+        const bytes = await fs.readFile(resolvedInputPath);
         snapshot.push({
           path: inputPath,
           exists: true,
@@ -329,7 +337,7 @@ async function finalizeGateAttempt(input: {
   summaryContent: string;
   summaryReports: GateReportV11[];
 }): Promise<void> {
-  const inputSnapshot = await buildGateAttemptInputSnapshot(input.summaryReports);
+  const inputSnapshot = await buildGateAttemptInputSnapshot(input.ctx.projectRoot, input.summaryReports);
   await writeExclusiveJson(path.join(input.attempt.attemptPath, 'input-snapshot.json'), {
     schema_version: '1.0',
     attempt_id: input.attempt.attemptId,

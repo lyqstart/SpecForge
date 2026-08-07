@@ -4647,3 +4647,47 @@ actual_files
 3. 对旧数据的兼容策略可以是 Fail Closed + 新 Attempt，不能是假定。
 4. 新 Attempt 是新的事实记录，不会破坏旧 Attempt 的不可变性。
 <!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT:END -->
+
+<!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT:START -->
+### ERR-187：V29 后续提示词把 sf_git_preflight.worktree_clean=false 错当成 Candidate Gate 硬阻断
+
+- 分类：`PACKAGE_ORCHESTRATION_DEFECT`。
+- 现场：WI-0002 当前 Git HEAD、branch、state、attempt-0003 和 Candidate 证据全部符合预期，但 `.specforge/knowledge/graph.json` 为 modified、`.specforge/work-items/WI-0002/**` 为未跟踪治理工件，导致 `worktree_clean=false`；OpenCode 按 V29 提示词停止，没有运行 Gate。
+- 一手源码事实：
+  1. `sf_git_preflight` 在 status entries 非空时只追加 `WORKTREE_NOT_CLEAN` warning；
+  2. `preflight.success` 仍由 `errors.length === 0` 决定；
+  3. `.specforge/project/**` 和 `.specforge/work-items/**` 在 Git governance 分类中明确属于 `track / SpecForge committed governance artifact`。
+- 根因：V29 Prompt 把“Git 工作区完全空”误写成业务项目现有 WI 继续 Gate 的必要条件，没有区分治理现场与生产代码漂移。
+- 修复：后续 Candidate Gate 预检要求 `sf_git_preflight.success=true`、固定 project/branch/HEAD，并逐项检查 dirty paths；只允许已知 WI-0002 治理现场，任何非治理代码/配置漂移或 staged 漂移继续 Fail Closed。
+
+## EXP-159：业务 WI 继续执行时必须审计 dirty path 语义，不能机械要求整个 worktree clean
+
+1. `worktree_clean=false` 是事实信号，不自动等价于 Gate 禁止。
+2. 已存在 WI 的 `.specforge/work-items/<WI>/**` 正是 Workflow 持久化治理现场。
+3. 必须区分治理现场、生产代码漂移、无关文件和 staged 修改。
+4. Prompt 只能对真正影响本轮证据边界的 dirty path Fail Closed。
+5. 分支创建、正式版本、Git Merge 等明确要求 clean 的边界继续遵守各自产品规则，不得泛化。
+
+### ERR-188：V29 Gate Attempt input snapshot 的相对路径错误依赖 daemon process.cwd()
+
+- 分类：`PRODUCT_DEFECT / EVIDENCE_PATH_RESOLUTION_DEFECT`。
+- 一手源码事实：
+  1. `buildGateAttemptInputSnapshot()` 对 Gate Report 的相对 `input_files` 直接执行 `fs.stat(inputPath)` / `fs.readFile(inputPath)`；
+  2. Gate Context 已有 `projectRoot`，但 snapshot producer 未使用；
+  3. V29 reconciliation snapshot consumer 同样直接对 snapshot `path` 执行 `fs.access/stat/readFile`；
+  4. 同一 Handler 中已有 `resolveGateInputPath(projectRoot, inputFile)`，证明正确基准应为业务项目根目录。
+- 影响：daemon 从 SpecForge 产品仓库启动时，Validation 项目的相对 Gate input 可能在错误目录被判断为 missing，形成错误且不可变的 `input-snapshot.json`。
+- 修复：
+  1. snapshot producer 接收 `projectRoot`；
+  2. relative input 在读取时统一 `path.resolve(projectRoot, inputPath)`；
+  3. snapshot 中继续保存 Gate Report 原始规范路径；
+  4. reconciliation consumer 对相对 snapshot path 使用同一 `resolveGateInputPath(projectRoot, path)`；
+  5. 新回归测试必须从与 projectRoot 不同的 cwd 验证相对路径仍正确命中业务项目文件。
+
+## EXP-160：所有持久化证据路径必须显式绑定业务 projectRoot
+
+1. daemon 的 `process.cwd()` 不是业务项目路径权威。
+2. Gate Report、Attempt snapshot、reconciliation 对同一相对路径必须共享一个 projectRoot 解析函数/规则。
+3. 持久化路径值与运行时 resolved path 必须区分：前者用于审计，后者用于文件访问。
+4. 回归测试必须覆盖 daemon cwd 与业务 projectRoot 不同的真实部署形态。
+<!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT:END -->

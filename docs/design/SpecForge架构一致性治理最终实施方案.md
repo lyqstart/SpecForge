@@ -1683,6 +1683,7 @@ Hard
 5. 历史 Attempt 如果没有 `input-snapshot.json`，不得通过 `mtime`、当前缺失状态或 Gate Report 文本反推历史输入状态；必须 Fail Closed；
 6. 对没有输入快照的旧 Attempt，如仍需继续 Workflow，只能保留旧 Attempt 不变，并运行一次新的正式 Gate Attempt，让新 Attempt 生成输入快照并由 Gate Runner 正常完成状态 seal；
 7. 新 Gate Attempt 不覆盖旧 Attempt；旧 Attempt 继续作为不可变历史证据存在。
+8. `input-snapshot.json` 中的相对 `path` 必须以该 Gate Attempt 所属业务项目的 `projectRoot` 作为唯一解析基准；禁止相对于 daemon/SpecForge 产品仓库的 `process.cwd()` 解析。Snapshot 保存 Gate Report 的原始规范路径值，生产者读取与 reconciliation 消费者校验时必须使用同一 `projectRoot` 解析规则。
 
 **GATE-FINAL-001：** 本能力最终完成后，SpecForge 治理任何业务项目时，从第一个 WI、后续 WI 到 Fast Path，以下三个 Gate 必须始终全部为 Hard：
 

@@ -3795,3 +3795,24 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
   6. Gate Runner 正常 seal 到 `approval_required` 后立即停止，等待 User Decision。
 - 第一次完整 Gate 机器报告仍永久不可恢复：`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`，P0 总体不得宣布完成。
 <!-- ERR185_ERR186_GATE_INPUT_SNAPSHOT_HANDOFF:END -->
+
+<!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT_HANDOFF:START -->
+## WI-0002 attempt-0004 前的 V30 前置修复
+
+- V29 产品修复已提交 `581812bad1b87abb7863e693cccad3175251bc7b`。
+- OpenCode 执行 V29 后续提示词时：
+  - project/branch/HEAD/state/attempt-0003/Candidate 证据均通过；
+  - `sf_git_preflight.worktree_clean=false`，原因仅为 `.specforge/knowledge/graph.json` + `.specforge/work-items/WI-0002/**` 治理现场；
+  - 按错误 Prompt 停止；
+  - Gate run count=0；
+  - attempt-0004 不存在；
+  - state 仍 gates_running。
+- ERR-187 / EXP-159：`worktree_clean` 不能机械作为已有 WI Gate 前置条件；后续改为“只允许已知治理 dirty paths，禁止任何非治理或 staged 漂移”。
+- V29 产品源码复核同时发现 ERR-188 / EXP-160：
+  - input snapshot producer 对 relative input path 使用 daemon cwd；
+  - reconciliation consumer 同样未以 projectRoot 解析；
+  - 这会污染未来不可变 snapshot。
+- V30 在 attempt-0004 创建前修复 producer/consumer 的 projectRoot 一致路径解析。
+- V30 后再运行一次正式 Candidate Gate，预期创建 attempt-0004 + 正确 input-snapshot 并 seal 到 approval_required。
+- 第一次完整 Gate 机器报告仍不可恢复；`P0_OVERALL_COMPLETION_ALLOWED=NO`。
+<!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT_HANDOFF:END -->
