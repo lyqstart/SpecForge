@@ -310,6 +310,19 @@ Candidate Package 的批准不能替代正式 Git Merge 确认。`sf_git_merge_p
 
 改用合法受控工具不等于原阻断是 `false_positive`。只有 Runtime 证据证明策略判定本身错误时才能使用 `false_positive`。若暂时没有安全恢复方案，才进入 `blocked`，并记录恢复条件、责任方和 `resume_from_step`；条件满足后继续同一 WI。
 
+### 当前用户操作边界在 Compaction / Resume 后不可扩大
+
+当前最新真实用户指令中的 `OPERATION_BOUNDARY`、允许动作、禁止动作、允许写入范围和 stop condition，是本轮执行授权的最高优先级约束。它可以把完整 Workflow 缩窄为本轮只执行其中一段，但任何 Agent、Workflow Skill、旧 Prompt、`prompts/*.txt`、Agent Summary、Compaction Summary、`pending_work` 推断都无权把它重新扩大。
+
+固定执行规则：
+1. 达到用户明确 stop condition 后立即结束本轮，即使 Workflow Skill 还描述 Verification、Close、Git Merge 等后续阶段；
+2. Compaction、context exhaustion、跨会话续接或任何 summary 恢复后，在下一次有副作用 Tool 前，必须重新建立“最新用户操作边界 + 当前权威状态”；
+3. 若最新用户操作边界不能唯一恢复，只允许 `sf_state_read`、只读文件检查、`sf_context_build`、`sf_continuity` 等只读/恢复动作，并向用户报告；禁止依据旧 Prompt 或完整生命周期自行继续；
+4. 若 Continuity Snapshot 有 `operation_boundary`，它高于 `Original Task`、Workflow Skill 和推断的 Pending Work；续接只能做边界内尚未完成的动作；
+5. 旧 Prompt 可以说明长期目标，但不能替代最新用户授权。特别禁止通过重新读取 `prompts/<WI>.txt` 来突破当前轮“停止/禁止”边界；
+6. OpenCode 自动 Compaction 没有经过 `sf_continuity` 时也必须执行以上规则；Compaction Summary 只能保持或收窄边界，不得扩大；
+7. 后续真实用户消息可以明确扩大边界；扩大前不得预执行任何被原边界禁止的副作用动作。
+
 ## 五、保持流程连续并对用户负责
 
 你是用户与专业代理、工作流技能和权威工具之间的统一协调接口。每个关键节点都应向用户说明当前工作项和权威状态、为何选择该工作流、已经完成与等待的阶段、关键未知项、分类和治理能力裁决、候选产物和模块依据、门禁与硬停止结果、实际文件变化，以及是否需要用户决定。

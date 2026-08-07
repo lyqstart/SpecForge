@@ -4691,3 +4691,51 @@ actual_files
 3. 持久化路径值与运行时 resolved path 必须区分：前者用于审计，后者用于文件访问。
 4. 回归测试必须覆盖 daemon cwd 与业务 projectRoot 不同的真实部署形态。
 <!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT:END -->
+
+<!-- ERR189_ERR191_COMPACTION_BOUNDARY:START -->
+### ERR-189：Compaction 后 Orchestrator 越过最新用户 stop boundary
+
+- 分类：`PRODUCT_DEFECT / ORCHESTRATION_AUTHORIZATION_DRIFT`。
+- 真实 P0 现场：WI-0002 的 V34 当前用户边界明确要求“到 implementation_done 撤销 Code Permission 后停止”，并明确禁止 Verification、Formal Version、Close、Git checkpoint/merge/push。
+- 实际：V34 的合法步骤已完成并正确停到 `implementation_done`；随后 OpenCode Compaction 后重新读取旧 `prompts/WI-0002.txt` 和完整 workflow skill，自行继续执行 checkpoint commit、Verification、Semantic Closure 修复、Verification Gate、Close、第二个 checkpoint commit 和 Git Merge Plan。
+- 已产生但尚未 Git Merge 的实际证据：
+  - implementation checkpoint commit `85c5f5dd`；
+  - governance checkpoint commit `dc413fff`；
+  - WI-0002 已被推进到 `closed`；
+  - Git Merge Plan 已生成，但 `sf_git_merge_run` 未执行。
+- 根因：现有 Orchestrator 只泛化要求“恢复时看用户当前意图”，没有规定最新用户操作边界对旧 Prompt/完整 Workflow 的强制优先级，也没有规定 Compaction 后副作用动作前的 fail-closed revalidation。
+- 修复：新增 `GOV-CONT-001`，在 Orchestrator 明确“最新用户边界 > 状态/Skill > 旧 Prompt > inferred pending”，达到 stop condition 后不得自动继续。
+
+## EXP-161：Compaction/Resume 不能重新解释用户授权
+1. 完整 Workflow 是长期合法路径，不等于当前轮用户授权。
+2. “继续 WI”与“本轮允许继续到哪里”是两个不同边界；后者必须优先。
+3. 用户说“到 X 停止”后，任何自动压缩、summary、旧 Prompt、Skill 都不能把 X 后的动作重新变成已授权。
+4. 恢复上下文不足时应只读停住，不应读取更旧、更宽的任务描述来补授权。
+5. 后续已经执行成功不能抹掉越界事实；必须保留、记录、修产品并补回归测试。
+
+### ERR-190：Continuity Snapshot 不保存最新用户操作边界
+
+- 分类：`PRODUCT_DEFECT / CONTINUITY_CONTRACT_GAP`。
+- 源码事实：V34 时 `ContextSnapshot` 没有最新用户指令或授权边界；Continuation Prompt 把 Original Task 放在前面，并要求根据 pending work 继续。
+- 修复：
+  1. `ContextSnapshot.operation_boundary` 保存最新真实 user message 原文；
+  2. continuation prompt 在 Original Task 前输出 Authorization Boundary；
+  3. boundary 缺失时明确禁止副作用续接；
+  4. continuation instruction 明确不能扩大当前用户授权。
+
+## EXP-162：连续性快照首先保存授权，再保存进度
+1. “做到了哪里”不能回答“现在还允许做什么”。
+2. Continuity Snapshot 必须把最新真实用户指令作为独立原始证据，不得只把它压缩成 key decision/pending work。
+3. Continuation Prompt 必须优先恢复授权边界，再恢复 Original Task 和 Pending Work。
+4. 无授权边界证据时，副作用续接必须 Fail Closed。
+
+### ERR-191：architecture_change 被遗漏在 Continuity CODE_WORKFLOWS
+
+- 分类：`PRODUCT_DEFECT / WORKFLOW_CONTINUITY_CLASSIFICATION_GAP`。
+- 源码事实：`CODE_WORKFLOWS` 包含 feature/bugfix/quick_change/change_request/refactor/ops_task，但遗漏 `architecture_change`。
+- 影响：architecture_change 在 Continuity Snapshot 中不会生成 `files_state` / `verification_results`。
+- 修复：把 `architecture_change` 纳入 `CODE_WORKFLOWS` 并补回归测试。
+
+## EXP-163：Workflow 的连续性分类必须与真实生命周期一致
+凡 Workflow 允许进入 Code Permission → Production Code → Verification，就必须被 Continuity 视为代码型 Workflow；新增/变更 Workflow 时必须测试其 snapshot 文件状态和验证证据是否保留。
+<!-- ERR189_ERR191_COMPACTION_BOUNDARY:END -->

@@ -3819,3 +3819,24 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | 下一步 | 单次正常 Candidate Gate → attempt-0004 → input-snapshot → approval_required |
 | P0 总体 | 仍 NO；第一次完整 Gate 机器报告不可恢复 |
 <!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT_P0:END -->
+
+<!-- ERR189_ERR191_COMPACTION_BOUNDARY_P0:START -->
+## P0 WI-0002：Compaction 后操作边界漂移
+
+| 项目 | 事实 |
+|---|---|
+| V34 用户 stop boundary | implementation_done + revoke 后停止；禁止 Verification/Close/Git |
+| V34 合法实施 | 4 文件；targeted 9/9；full 10/10；Audit 4/4 |
+| 越界触发点 | OpenCode Compaction 后重新读取旧 Prompt/Workflow |
+| 越界动作 | checkpoint → Verification → Closure 修复 → Verification Gate → Close → governance checkpoint → merge plan |
+| implementation commit | 85c5f5dd |
+| governance commit | dc413fff |
+| 当前 WI-0002 | closed |
+| Git Merge | 未执行 |
+| ERR-189 | 最新用户 stop boundary 未被 Compaction/Resume 强制保持 |
+| ERR-190 | ContextSnapshot 无 operation_boundary |
+| ERR-191 | architecture_change 不在 CODE_WORKFLOWS |
+| V35 | 修 Orchestrator + Continuity，不改 Validation |
+| 恢复原则 | 保留越界证据，不重跑成功 Gate/Close；修产品后只读对账，再由用户重新决定 Git Merge |
+| P0 总体 | 仍 NO；第一次完整 Candidate Gate 机器报告永久缺失 |
+<!-- ERR189_ERR191_COMPACTION_BOUNDARY_P0:END -->

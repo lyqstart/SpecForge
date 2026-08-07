@@ -109,6 +109,12 @@ export interface KeyDecision {
 /**
  * Workflow context within a Context_Snapshot
  */
+export interface OperationBoundarySnapshot {
+  latest_user_instruction: string
+  source: "latest_user_instruction"
+  must_not_expand: true
+}
+
 export interface WorkflowContext {
   workflow_type: WorkflowType
   stage: string
@@ -163,6 +169,7 @@ export interface ContextSnapshot {
   pending_work: PendingWork
   key_decisions: KeyDecision[]
   workflow_context: WorkflowContext
+  operation_boundary?: OperationBoundarySnapshot
 
   // === Optional code-related fields ===
   files_state?: FileState[]
@@ -292,6 +299,7 @@ export const EXHAUSTION_EXIT_REASONS: readonly string[] = [
  * Workflow types that involve code changes (have files_state/verification_results)
  */
 export const CODE_WORKFLOWS: readonly WorkflowType[] = [
+  "architecture_change",
   "feature_spec",
   "bugfix_spec",
   "feature_spec_design_first",
@@ -524,7 +532,18 @@ export async function extractContextSnapshot(
       .map((tc) => tc.arguments?.command as string)
       .filter(Boolean)
 
-    // Step 5: Extract key_decisions (priority: work_log.md → agent_summary → empty)
+    // Step 5: Preserve the latest real user instruction as the current authorization boundary.
+    const boundaryConversation = await readConversationMessages(sessionId, baseDir)
+    const latestUserInstruction = extractLatestUserInstruction(boundaryConversation)
+    if (latestUserInstruction) {
+      snapshot.operation_boundary = {
+        latest_user_instruction: latestUserInstruction,
+        source: "latest_user_instruction",
+        must_not_expand: true,
+      }
+    }
+
+    // Step 6: Extract key_decisions (priority: work_log.md → agent_summary → empty)
     const workLog = await readWorkLog(runId, baseDir)
     if (workLog) {
       const decisions = parseDecisionSections(workLog)
@@ -1177,6 +1196,18 @@ export function classifyMessage(msg: ConversationMessage): string {
  *
  * Requirements: 1.4
  */
+export function extractLatestUserInstruction(
+  conversation: ConversationMessage[],
+): string | null {
+  for (let i = conversation.length - 1; i >= 0; i--) {
+    const msg = conversation[i]
+    if (msg?.role === "user" && typeof msg.content === "string" && msg.content.trim()) {
+      return msg.content
+    }
+  }
+  return null
+}
+
 export function filterKeyMessages(
   conversation: ConversationMessage[],
   maxCount: number
@@ -1242,7 +1273,25 @@ export function generateContinuationPrompt(
   sections.push(`**Continuation of:** ${snapshot.workflow_context.run_id}`)
   sections.push("")
 
-  // Original task
+  // Current user authorization boundary has higher precedence than old task/workflow context.
+  sections.push("## Current User Authorization Boundary")
+  sections.push("")
+  if (snapshot.operation_boundary?.latest_user_instruction) {
+    sections.push(snapshot.operation_boundary.latest_user_instruction)
+    sections.push("")
+    sections.push(
+      "**ENFORCEMENT:** This boundary MUST NOT expand because of Original Task, Workflow Skill, " +
+        "Compaction Summary, or inferred Pending Work. Reaching its stop condition ends this turn."
+    )
+  } else {
+    sections.push(
+      "BOUNDARY_UNAVAILABLE: current user authorization could not be recovered. " +
+        "Do not perform any side-effectful continuation. Only read authoritative state/evidence and ask the user."
+    )
+  }
+  sections.push("")
+
+  // Original task (lower precedence than the current user authorization boundary)
   sections.push("## Original Task")
   sections.push("")
   sections.push(originalTask)
@@ -1396,9 +1445,9 @@ export function generateContinuationPrompt(
   sections.push("")
   sections.push(
     "This is a continuation session. The previous session was interrupted due to context exhaustion. " +
-      "Please resume work from where the previous session left off. " +
+      "Please resume only work that remains inside the Current User Authorization Boundary. " +
       "Do NOT repeat work that has already been completed. " +
-      "Focus on the pending work described above."
+      "Never expand the latest user boundary because the Original Task, workflow lifecycle, or Pending Work is broader."
   )
   sections.push("")
   sections.push(`**Your Run ID:** ${continuationRunId}`)

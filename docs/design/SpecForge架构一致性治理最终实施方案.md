@@ -393,6 +393,29 @@ git diff/status 结果：
 
 如未来增加结构性回归测试，该测试只能检查本文件的唯一权威声明、必要章节、规则 ID 和旧文件非权威声明是否仍然存在；它属于普通仓库回归测试，不是 SpecForge 自治理流程。
 
+### 0.9.1 上下文压缩、续接与当前用户授权边界
+
+**GOV-CONT-001：** Context Compaction、跨会话续接、Agent Summary、旧 Prompt、Workflow Skill 和从状态推导出的剩余生命周期，不得扩大当前用户在本轮明确给出的操作授权边界。
+
+固定优先级：
+
+```text
+当前最新用户指令 / OPERATION_BOUNDARY
+> 当前持久化 Work Item 权威状态与运行证据
+> 当前 Workflow Skill
+> 旧 Prompt / Original Task / 历史交接
+> Agent 根据阶段推断的 Pending Work
+```
+
+强制规则：
+1. 用户明确规定“只执行到某状态后停止”“禁止 Verification / Close / Git 操作”或限定允许 Tool/写入范围时，该边界只允许由后续新的真实用户指令扩大，Agent、Skill、Compaction Summary、旧 Prompt 和连续性引擎均无权扩大；
+2. 达到用户指定 stop condition 后，本轮即结束；即使完整 Workflow 仍有后续阶段，也必须等待新的用户指令；
+3. 任何 Compaction、上下文恢复或续接发生后，在执行新的有副作用 Tool 前，Orchestrator 必须重新确认最新用户操作边界；边界无法从当前上下文或持久化 Continuity Snapshot 唯一恢复时，只允许只读取证并 Fail Closed；
+4. `ContextSnapshot` 必须保存最新真实用户指令作为 `operation_boundary` 的原始证据；Continuation Prompt 必须把它放在 Original Task、Workflow Skill 和 Pending Work 之前，并明确禁止隐式扩大；
+5. `architecture_change` 属于代码型 Workflow，Continuity Snapshot 必须像其他代码型 Workflow 一样保留文件状态和验证结果；
+6. OpenCode 自身自动 Compaction 即使未显式调用 `sf_continuity`，重新加载后的 Orchestrator 也必须遵守同一优先级；不得读取旧 `prompts/*.txt` 或完整 Workflow Skill 来覆盖更窄的当前用户边界；
+7. 本规则只约束当前用户授权与执行连续性，不改变 Work Item 状态机、Gate 判定或业务 Contract 语义。
+
 ### 0.10 新会话固定提示词
 
 每次新会话至少使用以下提示词：

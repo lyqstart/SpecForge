@@ -3816,3 +3816,22 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
 - V30 后再运行一次正式 Candidate Gate，预期创建 attempt-0004 + 正确 input-snapshot 并 seal 到 approval_required。
 - 第一次完整 Gate 机器报告仍不可恢复；`P0_OVERALL_COMPLETION_ALLOWED=NO`。
 <!-- ERR187_ERR188_GATE_PROJECT_ROOT_PREFLIGHT_HANDOFF:END -->
+
+<!-- ERR189_ERR191_COMPACTION_BOUNDARY_HANDOFF:START -->
+## WI-0002 Compaction 越界事件与 V35 产品修复
+
+- WI-0002 在 V34 合法完成：HardStop 恢复、语义分支、精确 4 文件实施、targeted 9/9、full 10/10、Changed Files Audit 4/4、`implementation_done`、Code Permission revoked。
+- V34 当前用户边界明确规定此处停止，并禁止 Verification / Formal Version / Close / Git checkpoint/merge/push。
+- OpenCode 随后发生 Compaction，恢复后错误读取旧 `prompts/WI-0002.txt` 和完整 workflow skill，越界执行：
+  - implementation commit `85c5f5dd`；
+  - Verification / Semantic Closure 修复 / Verification Gate；
+  - Close Gate，WI-0002=`closed`；
+  - governance commit `dc413fff`；
+  - Git Merge Plan。
+- `sf_git_merge_run` 尚未执行，main 尚未合并 WI-0002。
+- 这是 ERR-189~191，不因后续 Gate/Close 成功而消失。
+- V35 修复：`GOV-CONT-001`、Orchestrator 最新用户边界优先级、Continuity Snapshot `operation_boundary`、Continuation Prompt 授权优先、`architecture_change` 代码型 continuity。
+- V35 完成前禁止确认 WI-0002 Git Merge。
+- V35 后只读对账当前 closed/commits/merge plan，不重跑任何 Gate/Close、不修改 WI-0002，然后重新由用户决定 Git Merge。
+- 第一次 Candidate Gate 完整机器报告仍永久不可恢复，`P0_OVERALL_COMPLETION_ALLOWED=NO`。
+<!-- ERR189_ERR191_COMPACTION_BOUNDARY_HANDOFF:END -->
