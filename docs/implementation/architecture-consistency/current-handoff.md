@@ -3746,3 +3746,21 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
 - V27 产品部署后，当前 WI-0002 **禁止再次 Gate**；只读确认 attempt-0003/Candidate 未变化后，通过四个合法 sf_state_transition 恢复到 approval_required。
 - 第一次完整 Gate 机器报告永久不可恢复：`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；P0 总体不得宣布完成。
 <!-- ERR178_ERR181_GATE_RETRY_STATE_HANDOFF:END -->
+
+<!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE_HANDOFF:START -->
+## WI-0002 attempt-0003 seal reconciliation
+
+- attempt-0003：Candidate Gate 10/10 passed，immutable history 与 latest view 均已证明。
+- V27 后续状态恢复：
+  - gates_failed→candidate_preparing：成功；
+  - candidate_preparing→candidate_prepared：成功；
+  - candidate_prepared→gates_running：成功；
+  - gates_running→approval_required：被 `SEAL_TRANSITION_ACTOR_FORBIDDEN` 正确阻断。
+- 当前 WI-0002 权威状态：`gates_running`。
+- ERR-182 / EXP-154：产品缺少 gate_runner 消费历史 passed Attempt 完成 seal 的受控入口。
+- ERR-183 / EXP-155：V27 提示词只核对状态边，没有核对 seal authorized actor。
+- ERR-184 / EXP-156：V28 两次本地封包生成均在 ZIP 前因三引号嵌套 SyntaxError 停止，无用户仓库写入。
+- V28：`sf_gate_run(reconcile_attempt_id=...)` 进入 reconciliation mode；不执行 Gate、不创建 Attempt，只接受最新完整 passed Attempt、latest view 一致且 Gate 输入未变化，然后由 gate_runner 完成状态 seal。
+- V28 部署后 WI-0002 只允许使用 `reconcile_attempt_id=attempt-0003`；禁止普通 sf_gate_run。
+- 第一次完整 Gate 机器报告仍永久不可恢复：`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；P0 总体不得宣布完成。
+<!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE_HANDOFF:END -->

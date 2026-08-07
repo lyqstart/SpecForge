@@ -3764,3 +3764,22 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | 当前 WI-0002 后续 | 不重跑 Gate；基于 attempt-0003 恢复到 approval_required |
 | 第一次 Gate 机器报告 | 永久不可恢复；P0_OVERALL_COMPLETION_ALLOWED=NO |
 <!-- ERR178_ERR181_GATE_RETRY_STATE_P0:END -->
+
+<!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE_P0:START -->
+## P0 WI-0002 historical Attempt seal reconciliation
+
+| 项目 | 结论 |
+|---|---|
+| attempt-0003 | Candidate Gate 10/10 passed |
+| 当前状态 | gates_running |
+| 前三步状态恢复 | 成功 |
+| gates_running→approval_required | seal actor 阻断；required=gate_runner，sf_state_transition actor=sf-orchestrator |
+| ERR-182 | 缺少 gate_runner 历史 passed Attempt reconciliation 模式 |
+| ERR-183 | V27 提示词遗漏 seal actor 对账 |
+| ERR-184 | V28 两次本地封包生成器 SyntaxError，均未生成交付 ZIP |
+| V28 | sf_gate_run 增加 reconcile_attempt_id；不运行 Gate、不创建新 Attempt |
+| reconciliation 证据 | 最新 Attempt + source=gate_run + summary passed + required Gate严格passed + latest view字节一致 + input_files 未晚于 Attempt |
+| seal actor | 仍为 gate_runner；不修改 seal-transitions |
+| WI-0002 后续 | 只 reconcile attempt-0003 到 approval_required，随后停在 User Decision 前 |
+| 第一次 Gate 机器报告 | 永久不可恢复；P0_OVERALL_COMPLETION_ALLOWED=NO |
+<!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE_P0:END -->

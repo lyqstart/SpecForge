@@ -4563,3 +4563,49 @@ actual_files
 4. 结构节点数量不唯一即 Fail Closed。
 5. 修改后必须再次检查关键节点和行为 token 均存在。
 <!-- ERR178_ERR181_GATE_RETRY_STATE:END -->
+
+<!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE:START -->
+### ERR-182：已有 passed Gate Attempt 时缺少 gate_runner 历史 seal reconciliation 能力
+
+- 分类：`PRODUCT_DEFECT / RUNTIME_RECOVERY_CAPABILITY_GAP`。
+- 现场：WI-0002 attempt-0003 已 10/10 passed；状态经合法非 seal 转换恢复到 `gates_running` 后，`gates_running→approval_required` 被 seal actor 约束阻断，因为 `sf_state_transition` 的 actor 是 `sf-orchestrator`。
+- 一手架构事实：`state-coordinator-v11` 对 seal transition 强制 `actorRole === authorizedSubject`；Candidate Gate seal 的 authorizedSubject 是 `gate_runner`；`sf_v11_gate_run.transitionGateState()` 本来就使用 `actorRole='gate_runner'`。
+- 缺口：现有 `sf_v11_gate_run` 只有“执行 Gate 后自动收口”，没有“消费既有 immutable passed Attempt、不重跑 Gate 而收口”的入口。
+- 修复：新增 `GATE-ATTEMPT-RECONCILE-001` 和 `reconcile_attempt_id` 模式；验证 latest Attempt、required Gate 全 pass、latest view 字节一致和 Gate 输入未变化后，由 gate_runner 使用既有自动状态恢复逻辑完成 seal，不调用 `runRequiredGates`、不创建新 Attempt。
+
+## EXP-154：seal 恢复必须由拥有 seal 的 actor 消费既有权威证据
+
+1. seal transition 不能由 orchestrator、人工状态工具或其他 actor 代签。
+2. 已有完整 immutable passed Attempt 时，不应为了取得正确 actor 而重复执行 Gate。
+3. 正确做法是给 seal owner 提供“消费历史权威证据”的专用 reconciliation 模式。
+4. reconciliation 必须证明 Attempt 最新、完整、passed、latest view 一致且输入未漂移。
+5. reconciliation 返回必须明确未执行 Gate、未创建 Attempt。
+
+### ERR-183：V27 后续提示词让 sf-orchestrator 直接执行 gate_runner seal
+
+- 分类：`PACKAGE_ORCHESTRATION_DEFECT`。
+- 现场：V27 后续提示词要求用 `sf_state_transition` 执行四步状态恢复；前三步成功，第四步 `gates_running→approval_required` 失败：`SEAL_TRANSITION_ACTOR_FORBIDDEN`，required_actor=`gate_runner`，actual actor=`sf-orchestrator`。
+- 根因：提示词只检查了 state_machine 合法边，没有同时读取 seal-transitions/actor-role 约束。
+- 修复：任何包含 seal 边的恢复提示词必须同时检查“边是否合法 + 谁拥有该 seal”；seal owner 不可用普通 state transition 代替。
+
+## EXP-155：Workflow 恢复方案必须同时对账状态边与 seal actor
+
+1. `isValidTransition=true` 只证明状态边存在，不代表任意 Tool/actor 都能执行。
+2. 任何 seal 边必须读取 authorizedSubject 和 evidenceRequired。
+3. Prompt 在规划状态恢复路径时必须逐边标注 actor。
+4. 如果最终边属于 gate_runner，应调用 gate_runner 的受控恢复能力，而不是 sf_state_transition。
+
+### ERR-184：V28 封包生成器两次因嵌套三引号产生 Python SyntaxError
+
+- 分类：`PACKAGE_GENERATION_DEFECT`。
+- 现场：两次都在 ZIP 创建前由 Python parser 停止；没有生成可交付 V28 ZIP，没有触碰用户仓库。
+- 根因：生成脚本把外层 Python 三引号和内部 TypeScript/Markdown 三引号混在同一个嵌套层级。
+- 修复：把 Handler、Wrapper、Authority、Ledger、Handoff、P0 的大段模板全部外置为独立 payload snippet；执行器只读取 snippet，不再嵌套多语言三引号。
+
+## EXP-156：多语言补丁包的大段模板必须外置，禁止深层三引号嵌套
+
+1. 大段 TypeScript/Markdown 模板使用独立 payload 文件。
+2. Python 执行器只读取 payload，不在自身源码里嵌套大段多语言模板。
+3. 封包前必须 `compile()` 执行器并校验 ZIP 文件集合与 SHA256。
+4. 生成失败不留下半成品 ZIP。
+<!-- ERR182_ERR184_HISTORICAL_SEAL_RECONCILE:END -->

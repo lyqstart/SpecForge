@@ -686,6 +686,204 @@ async function autoAdvanceStateAfterGateRun(input: {
   return autoAdvanceCandidateState(input);
 }
 
+function normalizeReconcileAttemptId(value: unknown): string | null {
+  if (value === undefined || value === null || String(value).trim() === '') return null;
+  const normalized = String(value).trim();
+  if (!/^attempt-\d{4}$/.test(normalized)) {
+    throw new Error(
+      `RECONCILE_ATTEMPT_ID_INVALID: expected attempt-NNNN, got ${JSON.stringify(normalized)}`
+    );
+  }
+  return normalized;
+}
+
+function gateAttemptNumber(attemptId: string): number {
+  return Number(attemptId.slice('attempt-'.length));
+}
+
+async function readJsonFile<T>(filePath: string, errorCode: string): Promise<T> {
+  try {
+    return JSON.parse(await fs.readFile(filePath, 'utf-8')) as T;
+  } catch (error: any) {
+    throw new Error(`${errorCode}: ${filePath}: ${error.message}`);
+  }
+}
+
+function resolveGateInputPath(projectRoot: string, inputFile: string): string {
+  return path.isAbsolute(inputFile)
+    ? path.normalize(inputFile)
+    : path.resolve(projectRoot, inputFile);
+}
+
+export async function inspectCandidateGateAttemptForReconciliation(input: {
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+  workflowPath: string;
+  workflowType: string;
+  candidatePhase: CandidateGatePhaseV11;
+  attemptId: string;
+}): Promise<{
+  attempt_id: string;
+  attempt_path: string;
+  summary_status: 'passed';
+  reports: GateReportV11[];
+  required_gate_ids: GateIdV11[];
+  latest_view_matches: true;
+  input_freshness_check: 'pass';
+  checked_input_files: string[];
+}> {
+  const attemptsRoot = path.join(input.workItemDir, 'gate_attempts');
+  let attemptIds: string[] = [];
+  try {
+    attemptIds = (await fs.readdir(attemptsRoot, { withFileTypes: true }))
+      .filter(entry => entry.isDirectory() && /^attempt-\d{4}$/.test(entry.name))
+      .map(entry => entry.name)
+      .sort((left, right) => gateAttemptNumber(left) - gateAttemptNumber(right));
+  } catch (error: any) {
+    throw new Error(`RECONCILE_ATTEMPTS_READ_FAILED: ${error.message}`);
+  }
+
+  if (attemptIds.length === 0 || attemptIds[attemptIds.length - 1] !== input.attemptId) {
+    throw new Error(
+      `RECONCILE_ATTEMPT_NOT_LATEST: requested=${input.attemptId}; latest=${attemptIds[attemptIds.length - 1] ?? 'none'}`
+    );
+  }
+
+  const attemptPath = path.join(attemptsRoot, input.attemptId);
+  const attemptResult = await readJsonFile<Record<string, unknown>>(
+    path.join(attemptPath, 'attempt-result.json'),
+    'RECONCILE_ATTEMPT_RESULT_INVALID',
+  );
+  if (
+    attemptResult.attempt_id !== input.attemptId ||
+    attemptResult.work_item_id !== input.workItemId ||
+    attemptResult.source !== 'gate_run' ||
+    attemptResult.summary_status !== 'passed'
+  ) {
+    throw new Error(
+      `RECONCILE_ATTEMPT_NOT_PASSED_GATE_RUN: attempt=${input.attemptId}; source=${String(
+        attemptResult.source,
+      )}; summary_status=${String(attemptResult.summary_status)}`
+    );
+  }
+
+  const completedAt = Date.parse(String(attemptResult.completed_at ?? ''));
+  if (!Number.isFinite(completedAt)) {
+    throw new Error(`RECONCILE_ATTEMPT_COMPLETED_AT_INVALID: attempt=${input.attemptId}`);
+  }
+
+  const gatesPath = path.join(attemptPath, 'gates');
+  const gateNames = (await fs.readdir(gatesPath))
+    .filter(name => name.endsWith('.json'))
+    .sort();
+  const reports: GateReportV11[] = [];
+  for (const name of gateNames) {
+    const report = await readJsonFile<GateReportV11>(
+      path.join(gatesPath, name),
+      'RECONCILE_GATE_REPORT_INVALID',
+    );
+    if (report.work_item_id !== input.workItemId) {
+      throw new Error(
+        `RECONCILE_GATE_REPORT_WORK_ITEM_MISMATCH: gate=${report.gate_id}; work_item_id=${report.work_item_id}`
+      );
+    }
+    reports.push(report);
+  }
+
+  const coverage = candidateGateSetCoversRequiredGates({
+    workflowPath: input.workflowPath,
+    candidatePhase: input.candidatePhase,
+    workflowType: input.workflowType,
+    reports,
+  });
+  if (!coverage.ok) {
+    throw new Error(
+      `RECONCILE_CANDIDATE_GATE_COVERAGE_INVALID: ${coverage.reason}: ${JSON.stringify(
+        coverage.details,
+      )}`
+    );
+  }
+  if (coverage.failedRequiredGateIds.length > 0) {
+    throw new Error(
+      `RECONCILE_CANDIDATE_GATE_NOT_PASSED: ${coverage.failedRequiredGateIds.join(',')}`
+    );
+  }
+
+  const reportById = new Map(reports.map(report => [report.gate_id, report]));
+  for (const gateId of coverage.requiredGateIds) {
+    const report = reportById.get(gateId);
+    if (!report || report.status !== 'passed') {
+      throw new Error(
+        `RECONCILE_REQUIRED_GATE_NOT_STRICTLY_PASSED: gate=${gateId}; status=${report?.status ?? 'missing'}`
+      );
+    }
+
+    const attemptBytes = await fs.readFile(path.join(gatesPath, `${gateId}.json`));
+    let latestBytes: Buffer;
+    try {
+      latestBytes = await fs.readFile(
+        path.join(input.workItemDir, 'gates', `${gateId}.json`),
+      );
+    } catch (error: any) {
+      throw new Error(
+        `RECONCILE_LATEST_GATE_VIEW_MISSING: gate=${gateId}: ${error.message}`
+      );
+    }
+    if (!attemptBytes.equals(latestBytes)) {
+      throw new Error(`RECONCILE_LATEST_GATE_VIEW_MISMATCH: gate=${gateId}`);
+    }
+  }
+
+  const attemptSummary = await fs.readFile(path.join(attemptPath, 'gate_summary.md'));
+  let latestSummary: Buffer;
+  try {
+    latestSummary = await fs.readFile(path.join(input.workItemDir, 'gate_summary.md'));
+  } catch (error: any) {
+    throw new Error(`RECONCILE_LATEST_SUMMARY_MISSING: ${error.message}`);
+  }
+  if (!attemptSummary.equals(latestSummary)) {
+    throw new Error('RECONCILE_LATEST_SUMMARY_MISMATCH');
+  }
+
+  const checkedInputFiles = Array.from(
+    new Set(
+      coverage.requiredGateIds.flatMap(
+        gateId => reportById.get(gateId)?.input_files ?? [],
+      ),
+    ),
+  ).sort();
+
+  for (const inputFile of checkedInputFiles) {
+    const resolved = resolveGateInputPath(input.projectRoot, inputFile);
+    let stats;
+    try {
+      stats = await fs.stat(resolved);
+    } catch (error: any) {
+      throw new Error(`RECONCILE_GATE_INPUT_MISSING: ${resolved}: ${error.message}`);
+    }
+
+    if (stats.mtimeMs > completedAt + 1000) {
+      throw new Error(
+        `RECONCILE_GATE_INPUT_CHANGED_AFTER_ATTEMPT: ${resolved}; mtime=${new Date(
+          stats.mtimeMs,
+        ).toISOString()}; attempt_completed=${new Date(completedAt).toISOString()}`
+      );
+    }
+  }
+
+  return {
+    attempt_id: input.attemptId,
+    attempt_path: attemptPath,
+    summary_status: 'passed',
+    reports,
+    required_gate_ids: coverage.requiredGateIds,
+    latest_view_matches: true,
+    input_freshness_check: 'pass',
+    checked_input_files: checkedInputFiles,
+  };
+}
+
 registerHandler('sf_v11_gate_run', async (args, context, deps) => {
   const projectRoot =
     (context?.directory as string) || (context?.worktree as string) || process.cwd();
@@ -733,6 +931,79 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       (typeof args['workflow_type'] === 'string' && args['workflow_type']) ||
       workflowFacts.workflowType ||
       workflowTypeFromPath(workflowPath);
+    const reconcileAttemptId = normalizeReconcileAttemptId(args['reconcile_attempt_id']);
+    if (reconcileAttemptId) {
+      if (
+        (Array.isArray(args['gate_ids']) && args['gate_ids'].length > 0) ||
+        (typeof args['gate_type'] === 'string' && args['gate_type'].trim().length > 0)
+      ) {
+        throw new Error(
+          'RECONCILE_ATTEMPT_ARGUMENT_CONFLICT: reconcile_attempt_id cannot be combined with gate_ids or gate_type'
+        );
+      }
+      if (
+        !currentState ||
+        !['gates_failed', 'candidate_preparing', 'candidate_prepared', 'gates_running'].includes(
+          currentState,
+        )
+      ) {
+        throw new Error(
+          `RECONCILE_STATE_NOT_ALLOWED: expected Candidate retry state, got ${currentState ?? 'null'}`
+        );
+      }
+
+      const reconciliation = await inspectCandidateGateAttemptForReconciliation({
+        projectRoot,
+        workItemId,
+        workItemDir,
+        workflowPath,
+        workflowType,
+        candidatePhase,
+        attemptId: reconcileAttemptId,
+      });
+
+      const stateAutoAdvance = await autoAdvanceCandidateState({
+        deps,
+        context,
+        projectRoot,
+        workItemId,
+        workItemDir,
+        workflowPath,
+        workflowType,
+        candidatePhase,
+        directStageGate: false,
+        reports: reconciliation.reports,
+        summaryStatus: reconciliation.summary_status,
+        currentState,
+      });
+
+      return {
+        success: true,
+        work_item_id: workItemId,
+        workflow_path: workflowPath,
+        workflow_type: workflowType,
+        authoritative_state_before_reconciliation: currentState,
+        reconciliation_mode: true,
+        reconciled_attempt_id: reconciliation.attempt_id,
+        reconciled_attempt_path: path
+          .relative(projectRoot, reconciliation.attempt_path)
+          .replace(/\\/g, '/'),
+        summary_status: reconciliation.summary_status,
+        required_gate_ids: reconciliation.required_gate_ids,
+        gate_count: reconciliation.reports.length,
+        latest_view_matches: reconciliation.latest_view_matches,
+        input_freshness_check: reconciliation.input_freshness_check,
+        checked_input_files: reconciliation.checked_input_files.map(file =>
+          path.isAbsolute(file)
+            ? path.relative(projectRoot, file).replace(/\\/g, '/')
+            : file.replace(/\\/g, '/'),
+        ),
+        gate_run_action: 'NOT_PERFORMED',
+        new_gate_attempt_created: false,
+        state_auto_advance: stateAutoAdvance,
+      };
+    }
+
     const normalized = normalizeGateIds(
       args['gate_ids'],
       args['gate_type'],

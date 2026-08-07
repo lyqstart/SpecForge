@@ -63,6 +63,21 @@ export default tool({
         "Candidate Gate 阶段：design 只要求设计候选；requirements 要求设计+需求；tasks/full 要求完整候选包。" +
           "默认读取 candidate_manifest.json.candidate_phase。",
       ),
+
+reconcile_attempt_id: tool.schema
+
+.string()
+
+.optional()
+
+.describe(
+
+"只用于历史 Candidate Gate Attempt 状态对账。指定 attempt-NNNN 后不会重新执行 Gate、不会创建新 Attempt；" +
+
+"daemon 只接受最新、完整 passed、与 latest view 一致且 Gate 输入未变化的 Attempt，并由 gate_runner 完成权威状态收口。",
+
+),
+
   },
   async execute(args, context) {
     const result = await daemon.invokeTool("sf_gate_run", args, {

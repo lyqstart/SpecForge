@@ -1652,6 +1652,21 @@ Hard
 5. 每次重跑继续创建新的不可变 Gate Attempt，状态恢复不得覆盖旧 Attempt；
 6. 已有修复前生成的有效 passed Attempt 时，不得为修复状态展示而重复 Gate；必须先只读证明 Candidate 与 Attempt 未变化，再沿合法状态边做证据驱动的状态权威恢复。
 
+**GATE-ATTEMPT-RECONCILE-001：** 已经存在不可变 Candidate Gate Attempt、但因 Runtime 缺陷导致 Work Item 权威状态未完成 seal 时，只允许由 `gate_runner` 执行“历史 Attempt 状态对账”，不得通过重新运行 Gate 修复状态展示。
+
+固定规则：
+
+1. 对账入口必须显式指定 `reconcile_attempt_id=attempt-NNNN`，并与普通 `gate_ids/gate_type` 互斥；
+2. 对账模式不得调用 `runRequiredGates`，不得创建新的 `gate_attempts/attempt-NNNN`；
+3. 只能消费 `source=gate_run`、`summary_status=passed` 的最新 Attempt；
+4. 该 Attempt 必须覆盖当前 Workflow/Candidate Phase 的全部 required Candidate Gates，且每个 required Gate 必须严格 `status=passed`；
+5. 固定 `gates/*.json` 与 `gate_summary.md` latest compatibility view 必须与指定 Attempt 字节一致；
+6. 指定 Attempt 的全部 required Gate `input_files` 必须仍存在，且文件修改时间不得晚于 Attempt 完成时间；无法证明未发生 Candidate/Gate 输入漂移时 Fail Closed；
+7. 当前状态只允许处于 Candidate retry 边界：`gates_failed / candidate_preparing / candidate_prepared / gates_running`；
+8. 状态恢复继续使用 `GATE-RETRY-STATE-001` 的合法状态链；最终 `gates_running → approval_required` seal 必须由 `gate_runner` actor 执行；
+9. `sf-orchestrator`、人工状态工具或其他 actor 不得代替 `gate_runner` 完成该 seal；
+10. 返回结果必须显式包含 `reconciliation_mode=true`、`gate_run_action=NOT_PERFORMED`、`new_gate_attempt_created=false` 和被消费的 `reconciled_attempt_id`。
+
 **GATE-FINAL-001：** 本能力最终完成后，SpecForge 治理任何业务项目时，从第一个 WI、后续 WI 到 Fast Path，以下三个 Gate 必须始终全部为 Hard：
 
 ```text
