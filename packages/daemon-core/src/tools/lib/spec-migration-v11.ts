@@ -219,6 +219,116 @@ function resolveProjectSpecSource(projectRoot: string, value: string): string {
   return absolute;
 }
 
+interface RuntimeEmptyCandidateScaffold {
+  candidateRootExists: boolean;
+  candidateManifestExists: boolean;
+  candidateManifestContent: string | null;
+}
+
+async function inspectRuntimeEmptyCandidateScaffold(input: {
+  candidateRoot: string;
+  candidateManifestPath: string;
+  repairPlanPath: string;
+  workItemId: string;
+  expectedProjectSpecVersion: string;
+}): Promise<RuntimeEmptyCandidateScaffold | null> {
+  const candidateRootExists = existsSync(input.candidateRoot);
+  const candidateManifestExists = existsSync(input.candidateManifestPath);
+
+  if (existsSync(input.repairPlanPath)) {
+    throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+  }
+
+  if (!candidateRootExists && !candidateManifestExists) {
+    return null;
+  }
+
+  if (candidateRootExists) {
+    const rootStat = await stat(input.candidateRoot);
+    if (!rootStat.isDirectory()) {
+      throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+    }
+    const entries = await readdir(input.candidateRoot);
+    if (entries.length !== 0) {
+      throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+    }
+  }
+
+  let candidateManifestContent: string | null = null;
+  if (candidateManifestExists) {
+    candidateManifestContent = await readFile(input.candidateManifestPath, 'utf8');
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(candidateManifestContent);
+    } catch {
+      throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+    }
+
+    const manifest = parsed as Record<string, unknown>;
+    const canonicalKeys = [
+      'base_spec_version',
+      'entries',
+      'merge_required',
+      'schema_version',
+      'work_item_id',
+      'workflow_path',
+    ];
+    const actualKeys = Object.keys(manifest).sort();
+    if (
+      actualKeys.length !== canonicalKeys.length ||
+      actualKeys.some((key, index) => key !== canonicalKeys[index])
+    ) {
+      throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+    }
+    if (
+      manifest.schema_version !== '1.0' ||
+      manifest.work_item_id !== input.workItemId ||
+      manifest.workflow_path !== 'spec_migration_path' ||
+      manifest.base_spec_version !== input.expectedProjectSpecVersion ||
+      manifest.merge_required !== true ||
+      !Array.isArray(manifest.entries) ||
+      manifest.entries.length !== 0
+    ) {
+      throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
+    }
+  }
+
+  return {
+    candidateRootExists,
+    candidateManifestExists,
+    candidateManifestContent,
+  };
+}
+
+async function restoreRuntimeEmptyCandidateScaffold(input: {
+  scaffold: RuntimeEmptyCandidateScaffold;
+  candidateRoot: string;
+  candidateManifestPath: string;
+  repairPlanPath: string;
+}): Promise<void> {
+  await rm(input.candidateRoot, { recursive: true, force: true });
+  await rm(input.candidateManifestPath, { force: true });
+  await rm(input.repairPlanPath, { force: true });
+
+  if (input.scaffold.candidateRootExists) {
+    await mkdir(input.candidateRoot, { recursive: true });
+  }
+  if (
+    input.scaffold.candidateManifestExists &&
+    input.scaffold.candidateManifestContent !== null
+  ) {
+    await writeFile(
+      input.candidateManifestPath,
+      input.scaffold.candidateManifestContent,
+      'utf8',
+    );
+  }
+}
+
 export async function prepareProjectSpecRepairCandidates(input: {
   projectRoot: string;
   workItemId: string;
@@ -236,7 +346,6 @@ export async function prepareProjectSpecRepairCandidates(input: {
   for (const evidencePath of input.preparation.evidence_paths) {
     resolveProjectSpecSource(input.projectRoot, evidencePath);
   }
-
   const manifestPath = join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json');
   const manifestRaw = await readFile(manifestPath);
   const currentManifestHash = sha256(manifestRaw);
@@ -256,9 +365,14 @@ export async function prepareProjectSpecRepairCandidates(input: {
 
   const candidateRoot = join(input.workItemDir, 'candidates');
   const candidateManifestPath = join(input.workItemDir, 'candidate_manifest.json');
-  if (existsSync(candidateRoot) || existsSync(candidateManifestPath)) {
-    throw new Error('PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES');
-  }
+  const repairPlanPath = join(input.workItemDir, 'project_spec_repair_plan.json');
+  const runtimeScaffold = await inspectRuntimeEmptyCandidateScaffold({
+    candidateRoot,
+    candidateManifestPath,
+    repairPlanPath,
+    workItemId: input.workItemId,
+    expectedProjectSpecVersion: input.preparation.expected_project_spec_version,
+  });
 
   const temporaryRoot = join(input.workItemDir, `.repair-staging-${randomUUID()}`);
   const stagedCandidates = join(temporaryRoot, 'candidates');
@@ -271,12 +385,15 @@ export async function prepareProjectSpecRepairCandidates(input: {
       if (!moduleCode || moduleCode !== mapping.module_code) {
         throw new Error(`Repair module_code must already be canonical MODULE_CODE: ${mapping.module_code}`);
       }
-      if (moduleCodes.has(moduleCode)) throw new Error(`Duplicate repair module mapping: ${moduleCode}`);
+      if (moduleCodes.has(moduleCode)) {
+        throw new Error(`Duplicate repair module mapping: ${moduleCode}`);
+      }
       moduleCodes.add(moduleCode);
 
       const targetDirectory = join(stagedCandidates, 'project', 'modules', moduleCode);
       await mkdir(targetDirectory, { recursive: true });
       const definitionTarget = join(targetDirectory, 'module.candidate.json');
+
       if (mapping.module_definition_source) {
         const source = resolveProjectSpecSource(input.projectRoot, mapping.module_definition_source);
         const definition = JSON.parse(await readFile(source, 'utf8')) as unknown;
@@ -298,8 +415,12 @@ export async function prepareProjectSpecRepairCandidates(input: {
         ['design', 'design.candidate.md', 'design.md', mapping.design_source],
         ['module_trace', 'trace.candidate.md', 'trace.md', mapping.trace_source],
       ] as const;
+
       for (const [, candidateFilename, , sourcePath] of sources) {
-        await copyFile(resolveProjectSpecSource(input.projectRoot, sourcePath), join(targetDirectory, candidateFilename));
+        await copyFile(
+          resolveProjectSpecSource(input.projectRoot, sourcePath),
+          join(targetDirectory, candidateFilename),
+        );
       }
 
       manifestEntries.push({
@@ -309,6 +430,7 @@ export async function prepareProjectSpecRepairCandidates(input: {
         target_path: `.specforge/project/modules/${moduleCode}/module.json`,
         operation: 'replace',
       });
+
       for (const [type, candidateFilename, targetFilename] of sources) {
         manifestEntries.push({
           type,
@@ -342,15 +464,49 @@ export async function prepareProjectSpecRepairCandidates(input: {
       candidate_manifest_sha256: sha256(candidateManifestContent),
       prepared_at: new Date().toISOString(),
     };
+
     const stagedManifest = join(temporaryRoot, 'candidate_manifest.json');
     const stagedPlan = join(temporaryRoot, 'project_spec_repair_plan.json');
     await writeFile(stagedManifest, candidateManifestContent, 'utf8');
     await writeFile(stagedPlan, `${JSON.stringify(repairPlan, null, 2)}\n`, 'utf8');
 
-    await rename(stagedCandidates, candidateRoot);
-    await rename(stagedManifest, candidateManifestPath);
-    const repairPlanPath = join(input.workItemDir, 'project_spec_repair_plan.json');
-    await rename(stagedPlan, repairPlanPath);
+    let scaffoldAdoptionStarted = false;
+    try {
+      if (runtimeScaffold) {
+        scaffoldAdoptionStarted = true;
+        if (runtimeScaffold.candidateRootExists) {
+          await rm(candidateRoot, { recursive: true, force: true });
+        }
+        if (runtimeScaffold.candidateManifestExists) {
+          await rm(candidateManifestPath, { force: true });
+        }
+      }
+
+      await rename(stagedCandidates, candidateRoot);
+      await rename(stagedManifest, candidateManifestPath);
+      await rename(stagedPlan, repairPlanPath);
+    } catch (commitError) {
+      if (runtimeScaffold && scaffoldAdoptionStarted) {
+        try {
+          await restoreRuntimeEmptyCandidateScaffold({
+            scaffold: runtimeScaffold,
+            candidateRoot,
+            candidateManifestPath,
+            repairPlanPath,
+          });
+        } catch (restoreError) {
+          const commitDetail =
+            commitError instanceof Error ? commitError.message : String(commitError);
+          const restoreDetail =
+            restoreError instanceof Error ? restoreError.message : String(restoreError);
+          throw new Error(
+            `PROJECT_SPEC_REPAIR_SCAFFOLD_RESTORE_FAILED: commit=${commitDetail}; restore=${restoreDetail}`,
+          );
+        }
+      }
+      throw commitError;
+    }
+
     await rm(temporaryRoot, { recursive: true, force: true });
     return {
       candidate_manifest_path: candidateManifestPath,
@@ -362,7 +518,6 @@ export async function prepareProjectSpecRepairCandidates(input: {
     throw error;
   }
 }
-
 // ── Classification ──
 
 function classifyFile(filename: string): MigrationInventory['legacyFiles'][number]['type'] {

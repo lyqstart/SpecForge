@@ -4827,3 +4827,12 @@ actual_files
 - **EXP-182 — 内容审计必须与产物契约同源并在交付前自检**：执行器只能审计补丁明确承诺并实际生成的稳定语义标记；新增审计 needle 时，必须在 ZIP 生成前证明对应 payload/patch 会生成该 needle。禁止执行器凭空要求未生成字段。治理结论若需要机器字段，应由治理 payload 明确写出，再由审计器验证。
 
 - **ERR-214**：V65 重复 ERR-209 类验证错误：在已有历史 TypeScript/build 债务且 EXP-179 已明确要求 clean-head/post-patch A/B 的情况下，仍仅看 post-patch `tsc` 非零退出码。`REPEATED_ERROR_CLASS=ERR-209`，不新增经验规则，直接复用 **EXP-179**；同时继续应用 EXP-180，双成功 build 不比较非确定成功日志。
+
+<!-- SPECFORGE_ERR215_ERR217_EXP183_RUNTIME_SCAFFOLD:START -->
+## ERR-215 / ERR-216 / ERR-217 / EXP-183
+- **ERR-215**：Runtime 合法预建空 Candidate scaffold，而专用 Candidate Producer 仅按“路径存在”判断覆盖风险，造成 Producer 永远无法在正常 WI 上启动。Validation 中任何手工删除 scaffold 的尝试都必须被 Write Guard 阻断，不能作为产品恢复方案。
+- **EXP-183 — Producer 覆盖保护必须区分 Runtime-owned 空 scaffold 与 authored Candidate state**：当 Runtime 按稳定契约预建空壳时，后续受控 Producer只能接管“严格可证明为 canonical 空 scaffold”的状态；判断必须覆盖目录内容、manifest 精确字段集合、WI/workflow/base version、entries 为空以及下游 plan 不存在。任何未知字段、真实 Candidate、非空 entries、版本/身份不一致或已有正式 producer 产物都必须 Fail Closed。接管必须在 staging 完成后发生，并具备失败恢复，禁止通过 shell/Agent 手删 Runtime artifact。
+<!-- SPECFORGE_ERR215_EXP183_RUNTIME_SCAFFOLD:END -->
+
+- **ERR-216**：V69 大型源码 full-text anchor=0；重复 ERR-196/197/198，复用 EXP-169。
+- **ERR-217**：V70 虽改为语义行定位，却继续对语义标记之间的物理相邻行号做严格断言，导致合法文本布局差异再次形成假失败。继续复用 **EXP-169**：结构化定位只依赖稳定语义边界，不得把空行、注释、缩进或相邻行号提升为源码契约。重复失败后应整函数/完整最终文件交付，并用 fixed HEAD + tests 验证，而不是继续在用户机器调锚点。

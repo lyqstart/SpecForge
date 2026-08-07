@@ -3908,3 +3908,12 @@ P0 总体仍受历史 first-gate machine report 永久证据缺口约束。
 V64 未进入产品测试：隔离补丁形成后被交付器自身错误的内容审计字面量要求阻断，登记 ERR-213。真实 SpecForge 仓库与 WI-0003 均未写入。V65 修正审计-产物一致性后继续同一 ERR-211 产品修复。
 
 V65 的 ERR-211 定向回归已 PASS，但 daemon-core `tsc` 在没有 clean-main baseline 的情况下 以 TS2307 历史 workspace 模块解析错误阻断；登记 ERR-214（重复 ERR-209 / EXP-179）。V66 改用同环境 A/B 归因，Validation/WI-0003 继续冻结。
+
+<!-- P0_WI0004_ERR215_ERR217_RUNTIME_SCAFFOLD_DEADLOCK:START -->
+## WI-0004 Baseline Normalization — ERR-215
+WI-0004 已到 `candidate_preparing`，`inspect_repair` 成功；随后真实 `prepare_repair` 被正常 Runtime 空 `candidate_manifest.json` / `candidates/` scaffold 阻断，三次返回 `PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES`。`repair_relocate_to_module` 在 repair context 未建立时也按预期 Fail Closed，因此 Stage C Baseline Normalization 暂停。
+产品修复必须只解决 Runtime empty scaffold adoption，不得放宽真实 Candidate 覆盖保护，不得修改 Validation WI-0004。修复并部署、人工重启 daemon/OpenCode 后，从 WI-0004 `candidate_preparing` 重新执行原 `prepare_repair → repair_relocate_to_module → Design/Trace Candidate → candidate_prepared` 路径。
+P0 总体仍受 WI-0001 first-gate machine report 永久证据缺口约束，不得宣布 overall evidence-complete。
+<!-- P0_WI0004_ERR215_RUNTIME_SCAFFOLD_DEADLOCK:END -->
+
+V69/V70 均已在 clean source 复现 ERR-215，但分别被 ERR-216 full-text anchor 和 ERR-217 非语义物理相邻断言阻断；两次均未修改真实产品仓库或 WI-0004。V71 改为固定 commit 下整函数替换，产品修复目标和 5 文件范围不变。

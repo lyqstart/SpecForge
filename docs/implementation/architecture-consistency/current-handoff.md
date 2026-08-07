@@ -3937,3 +3937,18 @@ WI-0003 仍保持原 Candidate 状态。产品修复部署后必须先调查并�
 
 - **ERR-214**：V65 在当前 main 已知 daemon-core TypeScript/build 存在历史 workspace 模块解析债务、且错误台账已经固化 EXP-179 的情况下，再次只运行 post-patch `tsc --noEmit` 并因 `exit=2` 阻断，重复 ERR-209 类错误。V65 的 ERR-211 定向测试已 `exit=0`，但没有 clean-main A/B，因此 TypeScript 失败不能归因于 ERR-211 产品补丁。
 - `REPEATED_ERROR_CLASS=ERR-209`；`APPLICABLE_EXPERIENCE=EXP-179`。V66 在同一 detached worktree、同一 frozen dependencies、同一命令下先建立 clean-main tsc/daemon build/workspace build baseline，再应用补丁并只阻断新增稳定错误键；成功 stdout 不参与错误身份比较（继续遵守 EXP-180）。
+
+<!-- SPECFORGE_ERR215_ERR217_RUNTIME_SCAFFOLD_PREPARE_REPAIR:START -->
+## ERR-215 / ERR-216 / ERR-217 — Runtime 空 Candidate 脚手架与 prepare_repair 覆盖保护死锁
+- P0 Validation WI-0004 在 `candidate_preparing` 的真实运行中确认：正常 Work Item 初始化会预建 `candidates/` 空目录和 `candidate_manifest.json` 空壳；manifest 为 Runtime canonical 1.0 scaffold，`entries=[]`。
+- `prepareProjectSpecRepairCandidates()` 旧实现只按路径是否存在判断覆盖风险，因此连 Runtime 自己合法创建的空 scaffold 也返回 `PROJECT_SPEC_REPAIR_REFUSES_TO_OVERWRITE_EXISTING_CANDIDATES`，导致 `prepare_repair` 无法启动；而 ERR-211 `repair_relocate_to_module` 又要求 repair context 已建立，形成真实死锁。
+- OpenCode 曾尝试 shell 删除 `.specforge/**` scaffold，被 Write Guard 以 `SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN` 正确阻断并按 operator_error 放弃。该次阻断证明手工/ shell 绕过不是恢复路径。
+- 修复边界：不修改通用 Runtime / Work Item 初始化。只让 `prepare_repair` 接管严格匹配 Runtime canonical 空 scaffold 的状态：candidate 目录为空；manifest 若存在必须恰好只有 `schema_version/work_item_id/workflow_path/base_spec_version/merge_required/entries` 六个 canonical 字段，值与当前 WI/spec_migration/expected PSV 匹配且 `entries=[]`；repair plan 必须不存在。
+- 任一真实 Candidate 文件/子目录、非空 entries、未知 authored 字段、WI/workflow/version 不匹配、非 canonical schema 或已存在 repair plan，继续 Fail Closed。
+- staging 完成前不动 scaffold；最终接管阶段若文件系统提交失败，恢复原 Runtime 空 scaffold，禁止留下半成品。
+- Validation/WI-0004 在产品修复、提交、部署/重启前冻结于 `candidate_preparing`；不得再重试 prepare_repair 或运行 Candidate Gate。
+<!-- SPECFORGE_ERR215_RUNTIME_SCAFFOLD_PREPARE_REPAIR:END -->
+
+- **ERR-216**：V69 已在 exact clean source 稳定复现 ERR-215，但交付器使用大型源码 full-text anchor，应用补丁时报 `expected exactly one anchor, got 0`。真实仓库未写入。`REPEATED_ERROR_CLASS=ERR-196/ERR-197/ERR-198`，复用 EXP-169。
+- **ERR-217**：V70 已改成结构化行定位，但又额外要求 guard 与 `temporaryRoot` 之间必须原始行号紧邻，把合法空行/格式差异当成异常，产品补丁仍未应用。真实仓库、Validation/WI-0004、用户级安装均未写入。该错误继续属于 EXP-169 所覆盖的“大型源码修改方法不应依赖非语义文本布局”重复类。
+- V71 不再解析函数内部布局：仅用唯一函数起点 `prepareProjectSpecRepairCandidates` 与其后的唯一 `// ── Classification ──` 作为结构边界，整段替换为已基于固定 commit 构造的最终函数；找不到唯一边界即 Fail Closed。
