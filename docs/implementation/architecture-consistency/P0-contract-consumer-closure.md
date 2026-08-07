@@ -3743,3 +3743,24 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | WI-0002 | 产品部署后重新从正式 Trace 计算真实 Relation Delta；只允许再运行一次 Gate |
 | P0 总体完成 | `NO`；第一次机器报告证据缺口永久保留 |
 <!-- ERR176_ERR177_TRACE_DELTA_P0:END -->
+
+<!-- ERR178_ERR181_GATE_RETRY_STATE_P0:START -->
+## P0 WI-0002 attempt-0003 与 Candidate Gate retry 状态闭环
+
+| 项目 | 结论 |
+|---|---|
+| attempt-0003 | Candidate Gate 10/10 passed |
+| contract_integrity_gate | passed |
+| immutable attempts | attempt-0001/0002/0003 共存 |
+| latest view | attempt-0003 |
+| 当前 state | gates_failed |
+| ERR-178 | Gate Handler 接受 gates_failed Candidate Gate，但 autoAdvance 排除 gates_failed |
+| 正确恢复 | gates_failed→candidate_preparing→candidate_prepared→gates_running→approval_required/gates_failed |
+| state_machine | 不修改；直接 gates_failed→approval_required 继续非法 |
+| ERR-179 | V24 提示词遗漏起始状态 Tool 契约 |
+| ERR-180 | V25 整段源码锚点失败，无真实写入 |
+| ERR-181 | V26 组合式局部边界仍失败，无真实写入 |
+| V27 | 函数区间 + 单行结构定位；新增 candidateGateRecoverySequence；完整回归 |
+| 当前 WI-0002 后续 | 不重跑 Gate；基于 attempt-0003 恢复到 approval_required |
+| 第一次 Gate 机器报告 | 永久不可恢复；P0_OVERALL_COMPLETION_ALLOWED=NO |
+<!-- ERR178_ERR181_GATE_RETRY_STATE_P0:END -->

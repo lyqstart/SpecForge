@@ -4503,3 +4503,63 @@ actual_files
 5. 没有正式边拓扑变化时不得生成 Relation Delta。
 6. Agent 无法从正式 Trace 证明 delta 时必须 blocked；不能“为了表现 Contract 有变化”人工制造边。
 <!-- ERR176_ERR177_TRACE_DELTA_CANONICAL:END -->
+
+<!-- ERR178_ERR181_GATE_RETRY_STATE:START -->
+### ERR-178：Candidate Gate 在 gates_failed 重跑通过后权威状态仍为 gates_failed
+
+- 分类：`PRODUCT_DEFECT / RUNTIME_STATE_RECOVERY_DEFECT`。
+- 现场：WI-0002 `attempt-0003` Candidate Gate 10/10 passed；latest view 对应 attempt-0003，但 `state_auto_advance.attempted=false`、reason=`current_state_is_not_candidate_gate_recoverable`。
+- 根因：`defaultGateAliasForState(gates_failed)` 允许 Candidate Gate；`autoAdvanceCandidateState()` 的 `recoverableGateStates` 却排除 `gates_failed`；v1.1 状态机正确只允许 `gates_failed→candidate_preparing`。
+- 修复：新增 `GATE-RETRY-STATE-001`；将 gates_failed 纳入 recoverable states，并给 `candidateGateRecoverySequence()` 增加 `gates_failed→candidate_preparing→candidate_prepared→gates_running`，最终仍由原有 `gates_running→approval_required/gates_failed` 判定收口。
+
+## EXP-150：Gate 重跑必须同时闭合 Attempt 与权威状态
+
+1. Tool 允许从失败态重跑，就必须支持失败态的合法状态恢复。
+2. 不得只生成 passed Attempt 而让状态保持旧失败值。
+3. 恢复必须走现有合法状态边，禁止新增失败态到成功态直连边。
+4. Attempt 历史和状态事件必须同时保留。
+
+### ERR-179：V24 后续提示词遗漏 Candidate Gate 重试状态前置契约
+
+- 分类：`PACKAGE_ORCHESTRATION_DEFECT`。
+- 现场：V24 提示词允许从 gates_failed 修正 Candidate 后运行 Gate，但没有先对账 Gate Runner 对该起始状态的恢复能力。
+- 影响：触发 ERR-178；随后 OpenCode 直接尝试 `gates_failed→approval_required`，被正确状态机拒绝。
+- 修复：后续提示词必须明确 STATE_BEFORE、Tool 接受状态、已有有效 Attempt 和合法恢复路径；已有有效 passed Attempt 时不再重跑 Gate。
+
+## EXP-151：Workflow 提示词必须把起始状态当作 Tool 前置契约
+
+1. 推进 Workflow 的 Tool 调用必须明确 STATE_BEFORE、Tool 接受状态和期望 STATE_AFTER。
+2. 状态机要求中间状态时不得省略恢复路径。
+3. 已有有效 passed Attempt 时优先恢复状态，不重复 Gate 修复状态展示。
+4. Prompt 预检必须同时对账状态、Attempt、Candidate 是否变化。
+
+### ERR-180：V25 使用整段 Handler 文本替换导致临时预检失败
+
+- 分类：`PACKAGE_PREFLIGHT_DEFECT`。
+- 现场：`handler recovery block mismatch: 0`；真实仓库未写入、未提交、未推送。
+- 根因：把大型函数局部块作为整段逐字锚点。
+- 修复方向：改用最小语义边界。
+
+## EXP-152：源码补丁禁止依赖大型函数整段逐字相等
+
+1. 大型函数不得使用整段文本作为唯一锚点。
+2. 必须限制到唯一局部语义结构。
+3. 写入前必须在固定 remote HEAD 的实际结构上预演。
+4. 失败发生在预演阶段时真实仓库保持未写入。
+
+### ERR-181：V26 仍把局部边界组合成脆弱字符串标记
+
+- 分类：`PACKAGE_PREFLIGHT_DEFECT`。
+- 现场：V26 在 `SEMANTIC_PATCH_PREVIEW` 失败：`recoverableGateStates semantic boundary not found`；真实仓库未写入。
+- 远程源码事实：`autoAdvanceCandidateState` 中 recoverableGateStates 实际位于 lines 414-423，sequence 位于 lines 438-456，消费点位于 line 457；语义事实本身与调查一致。
+- 根因：虽然 V26 缩小了范围，仍用多行字符串/结束标记组合定位数组边界，没有直接按函数范围和逐行结构解析。
+- 修复：V27 先定位 `autoAdvanceCandidateState` 与下一个函数形成闭区间，再逐行唯一匹配 `const recoverableGateStates = [`、该数组的 `];`、`const sequence =`、`let index = sequence.indexOf(currentState);`，完全取消多行边界字符串。
+
+## EXP-153：源码结构补丁必须按“函数区间 + 单行语义节点”定位
+
+1. 先唯一定位目标函数起止范围。
+2. 在函数内部按单行语义节点寻找数组、赋值和消费点。
+3. 不把“数组结束 + 下一行 if”等相邻格式拼成边界。
+4. 结构节点数量不唯一即 Fail Closed。
+5. 修改后必须再次检查关键节点和行为 token 均存在。
+<!-- ERR178_ERR181_GATE_RETRY_STATE:END -->

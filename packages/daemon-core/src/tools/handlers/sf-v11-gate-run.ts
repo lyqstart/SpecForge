@@ -407,6 +407,40 @@ async function transitionGateState(
   });
 }
 
+export function candidateGateRecoverySequence(
+  currentState: string,
+  workflowType: string
+): string[] {
+  if (currentState === 'gates_failed') {
+    return [
+      'gates_failed',
+      'candidate_preparing',
+      'candidate_prepared',
+      'gates_running',
+    ];
+  }
+
+  return workflowType === 'contract_change'
+    ? [
+        'created',
+        'intake_ready',
+        'candidate_preparing',
+        'candidate_prepared',
+        'gates_running',
+      ]
+    : [
+        'created',
+        'intake_ready',
+        'impact_analyzing',
+        'impact_analyzed',
+        'workflow_selected',
+        'candidate_preparing',
+        'candidate_prepared',
+        'gates_running',
+      ];
+}
+
+// GATE_RETRY_STATE_V27
 async function autoAdvanceCandidateState(input: {
   deps: any;
   context: any;
@@ -445,6 +479,7 @@ async function autoAdvanceCandidateState(input: {
     'candidate_preparing',
     'candidate_prepared',
     'gates_running',
+    'gates_failed',
   ];
 
   if (!currentState || !recoverableGateStates.includes(currentState)) {
@@ -463,26 +498,7 @@ async function autoAdvanceCandidateState(input: {
     input.summaryStatus;
   const transitionSteps: unknown[] = [];
 
-  const sequence =
-    workflowType === 'contract_change'
-      ? [
-          'created',
-          'intake_ready',
-          'candidate_preparing',
-          'candidate_prepared',
-          'gates_running',
-        ]
-      : [
-          'created',
-          'intake_ready',
-          'impact_analyzing',
-          'impact_analyzed',
-          'workflow_selected',
-          'candidate_preparing',
-          'candidate_prepared',
-          'gates_running',
-        ];
-
+  const sequence = candidateGateRecoverySequence(currentState, workflowType);
   let index = sequence.indexOf(currentState);
   while (index >= 0 && sequence[index] !== 'gates_running') {
     const from = sequence[index];

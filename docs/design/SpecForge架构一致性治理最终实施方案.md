@@ -1640,6 +1640,18 @@ Hard
 
 开发过程中，源代码可以暂时存在部分 Gate 为 Soft 的中间状态，以便完成实现和验证；该状态只表示产品尚未完成，不能发布为本能力的正式完成版本，也不能设计成“某业务项目第一个 WI 完成后自动切换”。
 
+**GATE-RETRY-STATE-001：** Candidate Gate 在 `gates_failed` 后修正 Candidate 并重跑时，Runtime 必须保证 Gate Attempt 判定与 Work Item 权威状态闭环一致。
+
+固定规则：
+
+1. `gates_failed` 仍只能按 v1.1 状态机进入 `candidate_preparing`；禁止新增 `gates_failed → approval_required` 直接边；
+2. 如果 `sf_v11_gate_run` 接受并完成一次从 `gates_failed` 发起的完整 Candidate Gate 重跑，状态权威恢复必须沿现有合法边补齐：
+   `gates_failed → candidate_preparing → candidate_prepared → gates_running → approval_required/gates_failed`；
+3. Gate 通过最终必须为 `approval_required`；Hard Gate 失败最终必须回到 `gates_failed`；
+4. 禁止出现“新的完整 Gate Attempt 已 passed，但 Work Item 仍保持旧 gates_failed”；
+5. 每次重跑继续创建新的不可变 Gate Attempt，状态恢复不得覆盖旧 Attempt；
+6. 已有修复前生成的有效 passed Attempt 时，不得为修复状态展示而重复 Gate；必须先只读证明 Candidate 与 Attempt 未变化，再沿合法状态边做证据驱动的状态权威恢复。
+
 **GATE-FINAL-001：** 本能力最终完成后，SpecForge 治理任何业务项目时，从第一个 WI、后续 WI 到 Fast Path，以下三个 Gate 必须始终全部为 Hard：
 
 ```text

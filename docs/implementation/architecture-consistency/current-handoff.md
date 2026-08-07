@@ -3731,3 +3731,18 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
   5. 只运行一次 Candidate Gate；
   6. 无论通过/失败都停，不执行 User Decision。
 <!-- ERR176_ERR177_TRACE_DELTA_HANDOFF:END -->
+
+<!-- ERR178_ERR181_GATE_RETRY_STATE_HANDOFF:START -->
+## WI-0002 attempt-0003 通过与状态恢复
+
+- 当前产品基线：`main@77f02f46045d08c84288a7db753b2c897632790a`。
+- WI-0002 attempt-0003：Candidate Gate 10/10 passed；contract_integrity_gate passed；latest view 对应 attempt-0003。
+- 当前 Work Item state 仍为 gates_failed，仅因为 attempt-0003 发生于状态恢复产品修复前。
+- ERR-178 / EXP-150：Candidate Gate retry 状态闭环缺失。
+- ERR-179 / EXP-151：V24 提示词遗漏起始状态 Tool 契约。
+- ERR-180 / EXP-152：V25 整段源码锚点失败；无真实写入。
+- ERR-181 / EXP-153：V26 仍使用组合式边界字符串；在 SEMANTIC_PATCH_PREVIEW 停止，无真实写入。
+- V27：Handler 新增 `candidateGateRecoverySequence()`；gates_failed 完整重跑后沿合法边恢复到 gates_running，再使用现有最终判定收口。
+- V27 产品部署后，当前 WI-0002 **禁止再次 Gate**；只读确认 attempt-0003/Candidate 未变化后，通过四个合法 sf_state_transition 恢复到 approval_required。
+- 第一次完整 Gate 机器报告永久不可恢复：`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；P0 总体不得宣布完成。
+<!-- ERR178_ERR181_GATE_RETRY_STATE_HANDOFF:END -->
