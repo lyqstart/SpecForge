@@ -650,4 +650,9 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
 3. 禁止输出 `MODIFY`、`UPDATE`、`CHANGE`、`GAP`、`TODO` 或自然语言占位操作。
 4. 返回成功前必须逐条自检 operation；发现非 `ADD`/`REMOVE` 必须阻塞并修正，不得把非法操作交给 Gate。
 5. Gate 保持严格拒绝非法操作，不得通过放宽 Gate 掩盖 Planner 缺陷。
+6. `Relation` 只能是 `constrained_by` 或 `enforces`；`owned_by`、`consumed_by-*`、`depends_on` 等任何其他词都非法。
+7. `From` / `To` 必须是正式对象 ID。禁止把 `WorkItemStatus (values: ...)`、值列表、说明句或模块角色描述当成 ID。
+8. Contract 消费者关系必须写成 `DD-* | constrained_by | <Contract ID>`；Contract owner 由 Contract 元数据表达，不得生成 `owned_by` Trace。
+9. Contract 值、schema、枚举成员发生变化，但消费者/来源等正式 Trace 边集合不变时，**不得制造 Governance Relation Delta**。
+10. 返回 success 前执行 `TRACE_DELTA_CANONICAL_ROW_SELF_CHECK`：每个数据行必须恰好四列，Operation 合法，Relation 合法，From/To 为正式 ID；任何一项无法证明则 blocked，不得交给 Gate。
 <!-- ERR-157_GOVERNANCE_RELATION_DELTA_CONTRACT:END -->

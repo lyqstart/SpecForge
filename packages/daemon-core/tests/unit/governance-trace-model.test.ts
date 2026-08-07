@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import {
   applyGovernanceTraceDelta,
   getGovernanceContractConsumers,
@@ -131,6 +133,54 @@ describe('governance Trace prospective model', () => {
     expect(malformed.issues.map(issue => issue.code)).toEqual(
       expect.arrayContaining(['TRACE_RELATION_INVALID', 'TRACE_ROW_INCOMPLETE']),
     );
+  });
+
+  it('diagnoses Governance Delta column and relation failures precisely', () => {
+    const invalidRelation = parseGovernanceTraceDelta(
+      [
+        '| Operation | From | Relation | To |',
+        '|---|---|---|---|',
+        '| ADD | DD-ORDER-001 | owned_by | PCON-001 |',
+      ].join('\n'),
+      'trace_delta.md',
+    );
+    expect(invalidRelation.issues).toEqual([
+      expect.objectContaining({
+        code: 'TRACE_DELTA_ROW_INVALID',
+        message: expect.stringContaining('relation must be constrained_by or enforces'),
+      }),
+    ]);
+    expect(invalidRelation.issues[0]?.message).toContain('"owned_by"');
+    expect(invalidRelation.issues[0]?.message).not.toContain('Invalid Trace Delta operation');
+
+    const extraColumn = parseGovernanceTraceDelta(
+      [
+        '| Operation | From | Relation | To |',
+        '|---|---|---|---|',
+        '| ADD | DD-ORDER-001 | constrained_by | PCON-001 | EXTRA |',
+      ].join('\n'),
+      'trace_delta.md',
+    );
+    expect(extraColumn.issues).toEqual([
+      expect.objectContaining({
+        code: 'TRACE_DELTA_ROW_INVALID',
+        message: expect.stringContaining('exactly four columns'),
+      }),
+    ]);
+  });
+
+  it('pins the Task Planner canonical Governance Delta self-check contract', async () => {
+    const repoRoot = join(import.meta.dirname, '../../../..');
+    const planner = await readFile(
+      join(repoRoot, 'setup/userlevel-opencode/agents/sf-task-planner.md'),
+      'utf-8',
+    );
+    expect(planner).toContain('TRACE_DELTA_CANONICAL_ROW_SELF_CHECK');
+    expect(planner).toContain('`Relation` 只能是 `constrained_by` 或 `enforces`');
+    expect(planner).toContain('`owned_by`、`consumed_by-*`');
+    expect(planner).toContain('Contract 值、schema、枚举成员发生变化');
+    expect(planner).toContain('不得制造 Governance Relation Delta');
+    expect(planner).toContain('`DD-* | constrained_by | <Contract ID>`');
   });
 
   it('fails closed for duplicate ADD, duplicate REMOVE, conflict, and missing REMOVE', () => {

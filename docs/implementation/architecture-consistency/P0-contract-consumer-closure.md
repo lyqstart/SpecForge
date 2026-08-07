@@ -3725,3 +3725,21 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | V19 | `ANCHOR_PREFLIGHT` 失败；脆弱复合文本锚点；真实仓库未写入 |
 | ERR-175 | V20 改用唯一章节标题 + 最近章节分隔线，并执行远程权威原字节转换预演 |
 <!-- ERR174_GATE_ATTEMPT_P0:END -->
+
+<!-- ERR176_ERR177_TRACE_DELTA_P0:START -->
+## P0 WI-0002 V23 Trace Delta Canonicalization 结论
+
+| 项目 | 结论 |
+|---|---|
+| 第一次完整 Gate 机器报告 | 永久不可证明恢复；`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES` |
+| Gate Attempt 修复 | `attempt-0001` legacy snapshot + `attempt-0002` V23 gate_run 验证通过；不可变历史与 latest 兼容视图正确 |
+| V23 Gate | 9/10；仅 `contract_integrity_gate` failed |
+| V23 初始判断 | cell 内 `|` 已修复但相同错误持续，曾怀疑 parser/cache |
+| 源码最终根因 | Relation 只能 `constrained_by/enforces`；Candidate 的 `owned_by/consumed_by-*` 非法 |
+| ERR-176 | parser 把非法 Relation 误报为 `Invalid Trace Delta operation` |
+| ERR-177 | Planner 只强制自检 Operation，没有强制 Relation、正式 ID、实际边变化 |
+| 权威修订 | 新增 `CON-CONS-DELTA-CANON-001` |
+| 产品修复 | 精确诊断 + Planner canonical row self-check + 回归测试 |
+| WI-0002 | 产品部署后重新从正式 Trace 计算真实 Relation Delta；只允许再运行一次 Gate |
+| P0 总体完成 | `NO`；第一次机器报告证据缺口永久保留 |
+<!-- ERR176_ERR177_TRACE_DELTA_P0:END -->

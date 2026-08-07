@@ -4466,3 +4466,40 @@ actual_files
 4. 封包前必须用远程目标 commit 的实际文件字节执行转换预演。
 5. 预演必须验证新规则 ID 唯一、原目标章节仍唯一、章节顺序正确、`git diff --check` 预期通过。
 <!-- ERR173_ERR174_GATE_ATTEMPT:END -->
+
+<!-- ERR176_ERR177_TRACE_DELTA_CANONICAL:START -->
+### ERR-176：Trace Delta 非法 Relation 被误报为“Invalid Trace Delta operation”
+
+- 分类：`PRODUCT_DEFECT / DIAGNOSTIC_MESSAGE_DEFECT`。
+- 现场：WI-0002 在 V23 已把 Governance Relation Delta 的单元格内部 `|` 改为逗号、Operation 保持 4 REMOVE + 4 ADD，但 `contract_integrity_gate` 仍报告同样的 `Invalid Trace Delta operation at line 90-97`。
+- 一手根因：`parseGovernanceTraceDelta()` 先解析 `relation = normalizeRelation(cells[2])`，合法 Relation 只有 `constrained_by/enforces`；当前 Candidate 实际使用 `owned_by`、`consumed_by-static`、`consumed_by-runtime`、`consumed_by-indirect`。当 Relation 非法时，代码却统一输出 `TRACE_DELTA_ROW_INVALID / Invalid Trace Delta operation`，把 Relation 错误误写成 Operation 错误。
+- 影响：第一次修复只处理了 Markdown `|`，没有处理真正非法的 Relation，浪费了一次 Gate Attempt 并造成“可能是 cache/parser defect”的错误诊断。
+- 修复：保留现有 Fail Closed 错误码兼容性，但把列数、Relation、From/To 的错误消息精确区分，并在消息中输出实际非法 Relation。
+
+## EXP-148：Gate 诊断必须指向真正失败字段
+
+1. 一个校验分支同时验证多个字段时，不得用“operation invalid”等错误描述覆盖 Relation、endpoint 或列结构错误。
+2. 错误信息必须包含失败字段、合法值范围、行号以及安全的实际值。
+3. 诊断增强不得放宽 Gate；合法性模型保持不变。
+4. 修复前必须对照解析源码确认“哪一个字段返回 falsy”，不得仅根据自然语言错误消息猜根因。
+
+### ERR-177：Task Planner 只强制自检 Operation，未强制自检 Relation / 正式对象 ID / 是否真的需要 Relation Delta
+
+- 分类：`PRODUCT_DEFECT / AGENT_PREFLIGHT_DEFECT`。
+- 现场：`sf-task-planner` 的 Governance Delta 模板已经写明 `From/To=正式对象 ID`、`Relation=constrained_by/enforces`，但 ERR-157 强制自检只要求逐条检查 Operation 为 ADD/REMOVE。
+- 根因：Agent 完成边界缺少三项强制检查：
+  1. Relation 是否属于 `constrained_by/enforces`；
+  2. From/To 是否为正式 ID；
+  3. Contract 内容变化但 Trace 边不变时是否错误制造了 Relation Delta。
+- 真实结果：WI-0002 生成了 `WorkItemStatus (values: ...) owned_by/consumed_by-* ...`，这些不是正式 Trace 模型。
+- 修复：权威规则新增 `CON-CONS-DELTA-CANON-001`；Task Planner 增加 `TRACE_DELTA_CANONICAL_ROW_SELF_CHECK`，并明确 Contract 值/schema/枚举变化但边集合不变时不生成 Governance Relation Delta。
+
+## EXP-149：Planner 必须验证完整 Governance Delta 行语义
+
+1. Operation 只能 ADD/REMOVE。
+2. Relation 只能 constrained_by/enforces。
+3. From/To 必须是正式对象 ID，禁止描述性文本和值快照。
+4. Contract consumer 使用 `DD-* constrained_by ContractID`；owner 元数据不能转成 Trace Relation。
+5. 没有正式边拓扑变化时不得生成 Relation Delta。
+6. Agent 无法从正式 Trace 证明 delta 时必须 blocked；不能“为了表现 Contract 有变化”人工制造边。
+<!-- ERR176_ERR177_TRACE_DELTA_CANONICAL:END -->

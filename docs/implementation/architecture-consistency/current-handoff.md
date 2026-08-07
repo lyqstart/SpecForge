@@ -3704,3 +3704,30 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
 - V19 执行状态：在写入前 `ANCHOR_PREFLIGHT` 失败，分类 `ERR-175 PACKAGE_PREFLIGHT_DEFECT`；产品仓库、Validation 项目、WorkDesk 和 WI-0002 均未修改。
 - V20 防复发：以唯一章节标题和相对章节边界定位权威插入点，并用远程权威文件原字节完成封包前转换预演。
 <!-- ERR174_GATE_ATTEMPT_HANDOFF:END -->
+
+<!-- ERR176_ERR177_TRACE_DELTA_HANDOFF:START -->
+## WI-0002 V23 Trace Delta 根因与产品修复
+
+- 产品基线：`main@521d4ddc8e113152291fae0542a7a8e75ec38a11`。
+- V23 恢复审计：
+  - 第一次完整 Gate 机器报告永久不可证明恢复；`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES` 持续；
+  - `attempt-0001` 正确保存升级前第二次 latest，`source=legacy_latest_snapshot`；
+  - `attempt-0002` 为 V23 唯一 Gate，新 Attempt 与 latest 兼容视图正确；
+  - Gate Attempt 不可变证据修复验证成功。
+- V23 Candidate 修复只把 cell 内 `|` 改成逗号，但 `contract_integrity_gate` 仍失败。
+- 重新对照源码后确认真实根因：
+  - 正式 Trace Relation 只允许 `constrained_by/enforces`；
+  - 当前 Candidate 使用 `owned_by/consumed_by-*`，不属于正式 Trace；
+  - parser 的通用消息 `Invalid Trace Delta operation` 误导了第一次诊断。
+- 产品缺陷：
+  - `ERR-176 / EXP-148`：Gate 诊断没有区分 Operation、Relation、endpoint；
+  - `ERR-177 / EXP-149`：Task Planner 强制自检只覆盖 Operation，没有覆盖 Relation、正式 ID 和“无边变化则无 delta”。
+- 修复范围：权威规则、Trace parser 诊断、Task Planner、Trace 模型测试、error ledger、handoff、P0 closure，共 7 文件。
+- WI-0002 后续：
+  1. 产品修复部署并重启 daemon/OpenCode；
+  2. 只读比较正式 Trace 与 Candidate 需要的真实边变化；
+  3. 若 Contract 值变化但边集合不变，删除 Governance Relation Delta 区段；
+  4. 若确有消费者 DD 新增/删除，只生成 `DD-* constrained_by WorkItemStatus` 的真实 ADD/REMOVE；
+  5. 只运行一次 Candidate Gate；
+  6. 无论通过/失败都停，不执行 User Decision。
+<!-- ERR176_ERR177_TRACE_DELTA_HANDOFF:END -->

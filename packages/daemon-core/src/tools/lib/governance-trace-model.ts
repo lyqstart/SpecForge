@@ -484,22 +484,32 @@ export function parseGovernanceTraceDelta(
       });
       continue;
     }
-    if (cells.length < 4) {
+    if (cells.length !== 4) {
       issues.push({
-        code: 'TRACE_DELTA_ROW_INCOMPLETE',
-        message: `Trace Delta row must contain Operation, From, Relation and To at line ${line}`,
+        code: cells.length < 4 ? 'TRACE_DELTA_ROW_INCOMPLETE' : 'TRACE_DELTA_ROW_INVALID',
+        message: `Trace Delta row must contain exactly four columns (Operation, From, Relation, To) at line ${line}; got ${cells.length}`,
         source,
         line,
       });
       continue;
     }
-    const relation = normalizeRelation(cells[2]);
+    const rawRelation = normalizeId(cells[2]);
+    const relation = normalizeRelation(rawRelation);
     const from = normalizeId(cells[1]);
     const to = normalizeId(cells[3]);
-    if (!relation || !from || !to) {
+    if (!relation) {
       issues.push({
         code: 'TRACE_DELTA_ROW_INVALID',
-        message: `Invalid Trace Delta operation at line ${line}`,
+        message: `Trace Delta relation must be constrained_by or enforces at line ${line}; got ${JSON.stringify(rawRelation)}`,
+        source,
+        line,
+      });
+      continue;
+    }
+    if (!from || !to) {
+      issues.push({
+        code: 'TRACE_DELTA_ROW_INVALID',
+        message: `Trace Delta From and To must be non-empty formal object IDs at line ${line}`,
         source,
         line,
       });

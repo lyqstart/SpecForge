@@ -247,6 +247,23 @@ Module 消费者由该 `DD-*` 所属 Module 自动推导。不得只登记模糊
 
 Runtime 必须以“当前正式 Trace + ADD - REMOVE”形成 Prospective Trace，并对合并后的关系执行完整性检查；ADD 与 REMOVE 必须随本次 Spec Merge 原子生效。
 
+**CON-CONS-DELTA-CANON-001：** Governance Relation Delta 只表达“正式 Trace 边本身发生变化”，并且必须使用正式 Trace 的规范模型：
+
+```text
+Operation = ADD | REMOVE
+From / To = 正式治理对象 ID
+Relation = constrained_by | enforces
+```
+
+固定规则：
+
+1. `From` / `To` 必须是可在 Prospective Architecture / Data Model / Module Design / Contract 中解析的正式 ID，不得写说明文字、值快照或人工标签；
+2. Contract 消费关系固定表达为 `DD-* constrained_by <Contract ID>`；
+3. Contract 的 `owner_module`、`source_refs`、枚举成员、schema 字段等 Contract 内容不得伪造为 `owned_by`、`consumed_by-*` 或其他 Trace Relation；
+4. Contract 值、schema、枚举成员发生变化，但正式 Trace 边集合没有变化时，不得生成 Governance Relation Delta；
+5. 只有消费者 DD、source/enforcement 正式对象或其他真实 Trace 边发生增加、删除、替换时，才生成对应 `ADD` / `REMOVE`；
+6. Planner 在写入 Candidate 前必须逐行验证四列、Relation 枚举和正式 ID；无法证明合法时必须 Fail Closed。
+
 **CON-CODE-CONS-001：** 生产代码的实际 Contract 消费不得建立第二套治理机制。现有 `contract_integrity_gate` 必须结合 Module `code_paths`、Impact Scope、Code Permission、Changed Files Audit 和验证阶段取得的实际依赖证据，对账“Trace 声明的正式消费者”与“生产代码的实际 Module 依赖”。无法证明实际依赖完整时必须 Fail Closed，不得猜测。
 
 Module Contract 升级为 Project Contract 时，Prospective Project Spec 必须同时包含：
