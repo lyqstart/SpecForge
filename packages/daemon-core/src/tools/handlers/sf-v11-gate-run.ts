@@ -734,7 +734,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       candidatePhase,
     };
 
-    const { reports, summaryStatus, summaryPath } = await runRequiredGates(normalized.gateIds, ctx);
+    const { reports, summaryStatus, summaryPath, attemptId, attemptPath } = await runRequiredGates(normalized.gateIds, ctx);
 
     const stateAutoAdvance = await autoAdvanceStateAfterGateRun({
       deps,
@@ -769,6 +769,8 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       aliases_used: normalized.aliasesUsed,
       summary_status: summaryStatus,
       summary_path: path.relative(projectRoot, summaryPath).replace(/\\/g, '/'),
+      gate_attempt_id: attemptId,
+      gate_attempt_path: path.relative(projectRoot, attemptPath).replace(/\\/g, '/'),
       gate_count: reports.length,
       passed: reports.filter(r => r.status === 'passed').length,
       failed: reports.filter(r => r.status === 'failed').length,

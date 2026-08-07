@@ -4422,3 +4422,47 @@ actual_files
 4. 早期 Git diff 预检必须同时核对实际文件集合精确等于冻结范围。
 5. 任何文本卫生或范围失败必须立即停止，真实仓库保持未写入。
 <!-- ERR172_V15:END -->
+
+<!-- ERR173_ERR174_GATE_ATTEMPT:START -->
+### ERR-173：V17 Windows 剪贴板脚本未声明 64 位 Win32 句柄签名
+
+- 分类：`PACKAGE_PREFLIGHT_DEFECT`。
+- 现场：`GlobalLock failed: 6`。
+- 根因：`ctypes` 默认把未声明返回类型的 `GlobalAlloc/GlobalLock` 当作 32 位整数，64 位 `HGLOBAL` 被截断。
+- 修复：V18 显式声明 `HGLOBAL/LPVOID/HANDLE` 参数与返回类型，并执行 `CF_UNICODETEXT` 回读对账。
+
+## EXP-145：Windows FFI 必须显式声明位宽
+
+所有 Win32 FFI 调用必须声明 `argtypes/restype`；句柄、指针和 `size_t` 不得依赖 `ctypes` 默认整数类型。封包静态预检必须检查关键签名，Windows 现场必须执行写入后回读。
+
+### ERR-174：重复 Gate 运行覆盖第一次失败证据
+
+- 分类：`PRODUCT_DEFECT`。
+- 现场：WI-0002 第二次授权 Gate 运行把第一次的 `gates/*.json` 与 `gate_summary.md` 直接覆盖；第一次机器报告无法原样读取。
+- 一手根因：`gate-chain.ts` 的 `writeGateReport` 和 `writeGateSummary` 每次写入固定 latest 路径，没有 Attempt 身份和追加式历史目录。
+- 影响：真实失败证据、修正前后差异和 Gate attempt 审计链被破坏；`events.jsonl` 只能证明状态转换，不能替代完整 Gate Report。
+- 修复：每次运行创建 `gate_attempts/attempt-NNNN`，独占写入 start、reports、summary、result；固定 latest 路径仅保留兼容视图；升级时先快照既有 latest。
+
+## EXP-146：可重跑 Gate 必须同时具备 latest 视图和不可变 Attempt
+
+1. 任何可重跑 Gate 都不能把固定 latest 文件当作唯一证据。
+2. 历史 Attempt 必须追加式、单调编号、完成后不可覆盖。
+3. Runtime 必须向调用者返回 Attempt ID 和路径。
+4. 升级迁移只能快照当前可证明的 latest；已经丢失的更早历史必须标记 `INSUFFICIENT_EVIDENCE`。
+5. 回归测试必须证明第二次、第三次运行后第一次 Attempt 字节哈希不变。
+
+### ERR-175：V19 权威文件插入使用脆弱复合文本锚点
+
+- 分类：`PACKAGE_PREFLIGHT_DEFECT`。
+- 现场：V19 在 `ANCHOR_PREFLIGHT` 阶段失败：`authority insertion anchor not found`；真实仓库未写入。
+- 根因：补丁把章节分隔线和中文标题拼成一个完整字符串锚点，没有先独立证明稳定章节标题唯一存在，也没有用远程权威文件原字节执行封包前转换预演。
+- 修复：V20 唯一定位 `# 二十六、Fast Path 的正确含义`，再向前寻找最近章节分隔线；封包前对远程 `main@a09f06f...` 权威文件原字节执行转换、规则 ID、章节顺序和单次插入检查。
+
+## EXP-147：文档结构修改必须使用稳定语义锚点和真实基线预演
+
+1. 不得把空行、分隔线、标题和邻接文本拼成一个脆弱锚点。
+2. 必须先断言稳定标题或规则 ID 在目标基线中唯一存在。
+3. 插入位置应由稳定对象和相对结构推导，例如“目标章节前最近的章节分隔线”。
+4. 封包前必须用远程目标 commit 的实际文件字节执行转换预演。
+5. 预演必须验证新规则 ID 唯一、原目标章节仍唯一、章节顺序正确、`git diff --check` 预期通过。
+<!-- ERR173_ERR174_GATE_ATTEMPT:END -->

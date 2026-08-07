@@ -3706,3 +3706,22 @@ V8 成功不得覆盖 V1—V7 原始失败；A/B、测试、构建、installer v
 | 修改范围 | 仍为 7 个文件 |
 | 真实仓库状态 | V14 未写入 |
 <!-- ERR172_V15_P0:END -->
+
+<!-- ERR174_GATE_ATTEMPT_P0:START -->
+## P0 WI-0002 第二次 Gate 与不可变 Attempt 缺陷
+
+| 项目 | 结论 |
+|---|---|
+| 第二次 Gate | 9/10 通过；workflow_specific_gate 通过；contract_integrity_gate 失败 |
+| 第一次 Gate 固定文件 | 被第二次运行覆盖 |
+| events.jsonl | 只保留状态事件，不能替代完整 Gate Report |
+| 缺陷 | `ERR-174 PRODUCT_DEFECT` |
+| 产品修复 | 每次运行形成不可变 `gate_attempts/attempt-NNNN`；latest 路径保留兼容 |
+| 升级迁移 | 现有 latest 先形成 legacy snapshot |
+| WI-0002 | 停在 `gates_failed`，禁止第三次 Gate |
+| 第一次失败证据 | `INSUFFICIENT_EVIDENCE`，待产品修复后独立审计可恢复性 |
+| Validation Project | 本产品修复不修改 |
+| WorkDesk | 不修改 |
+| V19 | `ANCHOR_PREFLIGHT` 失败；脆弱复合文本锚点；真实仓库未写入 |
+| ERR-175 | V20 改用唯一章节标题 + 最近章节分隔线，并执行远程权威原字节转换预演 |
+<!-- ERR174_GATE_ATTEMPT_P0:END -->

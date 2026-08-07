@@ -1653,6 +1653,40 @@ Runtime 状态推进
 
 Phase 11 必须在候选实现已经具备上述最终 Hard 行为时进行真实端到端验收；Phase 12 不是让业务项目自行切换，而是确认、固化并发布这一最终产品行为。
 
+
+<!-- SPECFORGE_GATE_ATTEMPT_EVIDENCE:START -->
+### 25.1 Gate Attempt 证据不可变性
+
+**GATE-ATTEMPT-001：** 每次 Gate 运行必须形成一个独立、追加式、完成后不可修改的 Gate Attempt：
+
+```text
+.specforge/work-items/<WI>/gate_attempts/attempt-NNNN/
+├── attempt-start.json
+├── gates/<gate_id>.json
+├── gate_summary.md
+└── attempt-result.json
+```
+
+固定规则：
+
+1. `attempt-NNNN` 单调递增，同一个 WI 内不得复用；
+2. `attempt-start.json`、每个 Gate Report、`gate_summary.md` 和 `attempt-result.json` 使用独占创建，完成后不得覆盖；
+3. Gate 失败、修正 Candidate 后重跑、部分 Gate 重跑和完整 Gate 重跑都必须创建新 Attempt；
+4. 后续 Attempt 不得删除、修改或替换旧 Attempt；
+5. Agent、Runtime 和人工审计必须报告 `attempt_id` 与 `attempt_path`，不能只报告可变的 latest 文件。
+
+**GATE-LATEST-001：** 现有路径继续保留：
+
+```text
+.specforge/work-items/<WI>/gates/<gate_id>.json
+.specforge/work-items/<WI>/gate_summary.md
+```
+
+它们只表示“当前最新兼容视图”，供既有 Merge、Verification、Close 和读取消费者继续使用；它们不是历史审计真相源。历史审计必须读取 `gate_attempts/attempt-NNNN`。
+
+**GATE-MIGRATION-001：** 升级前已经存在 latest Gate 文件、但尚无 `gate_attempts` 时，第一次升级后 Gate 运行前，Runtime 必须先把现有 latest 文件完整复制为 `attempt-0001` legacy snapshot，再创建新的 Attempt。无法证明被更早覆盖的历史内容时必须标记 `INSUFFICIENT_EVIDENCE`，不得伪造或声称已恢复。
+<!-- SPECFORGE_GATE_ATTEMPT_EVIDENCE:END -->
+
 ---
 
 # 二十六、Fast Path 的正确含义

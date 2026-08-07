@@ -3690,3 +3690,17 @@ STATUS=PACKAGE_READY_PENDING_USER_APPLICATION_AND_VALIDATION
 - V15 保持原 7 文件冻结范围，不修改产品运行代码、权威方案、Validation 项目、WorkDesk、WI-0002 第一次失败证据或用户级安装目录。
 - V15 新顺序：包内文本卫生检查 → 临时工作树应用 payload → 早期 `git diff --check` → 精确 7 文件审计 → 冻结安装 → baseline/patched 构建 → runtime entry → 目标测试 → 相关测试逐文件 A/B → TypeScript → installer verify → 最终审计 → 原子写入。
 <!-- ERR172_V15_HANDOFF:END -->
+
+<!-- ERR174_GATE_ATTEMPT_HANDOFF:START -->
+## WI-0002 第二次 Gate、ERR-174 与 Gate Attempt 修复边界
+
+- 产品基线：`main@a09f06f9ab1e1aa588958d0bc173088c90433892`。
+- WI-0002 第二次 Candidate Gate：9/10 通过，`workflow_specific_gate` 已通过，`contract_integrity_gate` 因当前 `trace_delta.md` 行格式失败。
+- 严重治理事实：第二次运行覆盖了第一次 `gates/*.json` 和 `gate_summary.md`；第一次完整机器报告不再原样存在。
+- 分类：`ERR-174 PRODUCT_DEFECT`。
+- V19：新增不可变 `gate_attempts/attempt-NNNN`；固定 `gates/*.json` 和 `gate_summary.md` 继续作为 latest 兼容视图；已有 latest 在第一次升级后运行前形成 legacy snapshot。
+- WI-0002 当前边界：保持 `gates_failed`，禁止第三次 Gate，禁止继续修改 Candidate，直到产品修复、提交部署、daemon 重启并完成第一次证据可恢复性审计。
+- 当前证据状态：`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT`。
+- V19 执行状态：在写入前 `ANCHOR_PREFLIGHT` 失败，分类 `ERR-175 PACKAGE_PREFLIGHT_DEFECT`；产品仓库、Validation 项目、WorkDesk 和 WI-0002 均未修改。
+- V20 防复发：以唯一章节标题和相对章节边界定位权威插入点，并用远程权威文件原字节完成封包前转换预演。
+<!-- ERR174_GATE_ATTEMPT_HANDOFF:END -->
