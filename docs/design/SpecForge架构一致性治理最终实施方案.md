@@ -649,31 +649,152 @@ LOCAL_PATH_QUOTING=
 4. 一键命令必须使用 handoff 中当前 `DOWNLOAD_PACKAGE_DIR` 的实际值；用户后续修改该值时，只更新 handoff 动态状态，不把个人机器目录硬编码进本权威规则；
 5. 新会话恢复 Stage Input 时，必须把 `LOCAL_COMMAND_SHELL`、`DOWNLOAD_PACKAGE_DIR`、`LOCAL_PATH_QUOTING` 作为本地执行环境输入一起恢复并对账。
 
-### 0.10 新会话固定提示词
+**GOV-STAGE-BRANCH-001：** 权威规则分支与实际工作分支必须分离建模，禁止把 `main` 同时隐式解释为二者。
 
-每次新会话至少使用以下提示词：
+固定定义：
 
 ```text
-继续 SpecForge 自身开发。
-
-在采取任何修改行动前，必须先从 GitHub 远程仓库读取：
-docs/design/SpecForge架构一致性治理最终实施方案.md
-
-该文件是 SpecForge 架构一致性治理和契约治理的唯一当前权威源。请记录远程仓库、分支、HEAD commit SHA 和该文件对应版本，并严格执行文件中的固定执行协议。
-
-本次是 SpecForge 自身直接开发：必须执行人工架构一致性治理、契约治理、修改范围治理和普通软件工程验证；不得运行 SpecForge 自身的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程。
-
-先调查远程仓库和当前代码事实，再输出治理前置结论。治理前置结论必须至少包括：任务目标、适用架构规则、受影响模块、Architecture、Data Model、Module Design、Project/Module Contract、生产者和消费者、Workflow/Gate/Runtime、允许修改文件、不允许修改范围、验证计划、是否需要修订权威文件和证据不足项。
-
-治理前置结论完成前不得修改代码。修改后必须完成架构对账、契约对账、实际范围审计、单元/回归测试、适用的属性/集成/端到端测试、TypeScript 检查、构建、git diff --check、git status，并同步唯一权威文件。任何必需证据不足时标记 INSUFFICIENT_EVIDENCE，不得猜测、提交、推送或宣布完成。
-
-读取权威文件后，再读取 docs/implementation/architecture-consistency/current-handoff.md 的唯一 CURRENT EXECUTION STATE 动态区；该文件不是并列权威。必须用当前持久化 Work Item 状态、immutable evidence 和最新用户 OPERATION_BOUNDARY 对账 handoff，冲突时以远程权威规则、当前持久化事实和最新用户授权为准。
-
-执行任何完整阶段前必须输出 Stage Input，至少明确 GLOBAL_GOAL、CURRENT_STAGE、STAGE_GOAL、SUCCESS_CRITERIA、EXPECTED_SIDE_EFFECTS、FORBIDDEN_SIDE_EFFECTS、STOP_CONDITION、BLOCKER、BACKLOG 和 NEXT_STAGE。完整阶段内部必须保留可诊断 Checkpoint；成功时输出固定 Stage Output；失败时输出 Failure Diagnostic，并区分 PRODUCT_DEFECT、GOVERNANCE_FAILURE、VALIDATION_HARNESS_DEFECT、ENVIRONMENT_FAILURE、AMBIGUOUS_SIDE_EFFECT。任何有副作用动作已经开始后，不得因为外围 runner/审计器失败而自动重试，必须先读取持久化证据判断实际效果。
-生成任何提供给用户执行的本地命令前，必须从 current-handoff 的 CURRENT EXECUTION STATE 读取 LOCAL_COMMAND_SHELL、DOWNLOAD_PACKAGE_DIR、LOCAL_PATH_QUOTING；不得假设默认下载目录。若 shell 为 CMD，则只输出 CMD；所有包含空格或非 ASCII 字符的路径参数必须完整使用双引号包裹。
+AUTHORITY_BRANCH=main
+AUTHORITY_HEAD=
+WORK_BRANCH=
+WORK_HEAD=
+REMOTE_WORK_HEAD=
+WORKTREE_STATUS=
 ```
 
-用户在上述固定提示词后追加本次具体任务、仓库地址、目标分支和已知基线。
+固定规则：
+
+1. `AUTHORITY_BRANCH` 表示唯一权威规则的读取分支；SpecForge 当前固定从远程 `main` 读取本权威文件。
+2. `WORK_BRANCH` 表示当前实际调查、开发、验证或交付所在分支；可以是 `main`、feature、fix 或其他经用户授权的分支。
+3. 新会话必须先从 `AUTHORITY_BRANCH` 读取本权威文件，再从上一轮标准执行回执恢复 `WORK_BRANCH`；不得因为 `AUTHORITY_BRANCH=main` 就自动把工作分支设为 `main`。
+4. 如果 `WORK_BRANCH != AUTHORITY_BRANCH`，当前源码、当前工作 HEAD、worktree 和适用动态状态必须按 `WORK_BRANCH` 对账；本权威文件仍从 `AUTHORITY_BRANCH` 读取。
+5. `WORK_HEAD` 必须来自当前本地工作分支；`REMOTE_WORK_HEAD` 必须来自对应远程 branch ref。commit 可访问不等于 branch HEAD。
+6. `AUTHORITY_HEAD`、`WORK_HEAD`、`REMOTE_WORK_HEAD` 是每轮运行时事实和标准回执字段，不要求把当前 commit SHA 自引用写进同一 commit 的 handoff；新会话必须重新读取远程 refs 并与上一轮回执对账。
+7. `current-handoff.md` 只持久化当前 `AUTHORITY_BRANCH`、`WORK_BRANCH` 和其他非自引用动态环境/阶段信息；精确 HEAD 以当前远程/本地读取结果与上一轮回执为准。
+8. 任何分支切换必须成为显式 Stage，不得由补丁、验证、提交或生命周期 runner 顺便执行。
+9. 分支切换前必须证明当前 worktree 没有未分类修改；需要与远程同步时必须先证明当前 branch lineage，无法证明时 Fail Closed。
+10. 分支切换 Stage 必须输出 `BRANCH_SWITCH_FROM`、`BRANCH_SWITCH_TO`、`BRANCH_SWITCHED`，并在切换后重新读取 `WORK_HEAD`、`REMOTE_WORK_HEAD`、`WORKTREE_STATUS`。
+11. 未取得当前真实工作分支证据时，只允许只读调查并标记 `INSUFFICIENT_EVIDENCE`，不得猜测分支后继续写入。
+12. 历史字段 `TARGET_BRANCH` 可以保留在旧证据中；新的 Stage Input、Stage Output、Failure Diagnostic 与标准执行回执必须优先使用本规则的 `AUTHORITY_BRANCH` / `WORK_BRANCH` 分离模型。
+
+**GOV-STAGE-DELIVERY-001：** SpecForge 本地交付固定为一个完整 ZIP + 一条可直接复制执行的 Windows CMD。
+
+固定交付契约：
+
+```text
+DELIVERY_FORMAT=ONE_COMPLETE_ZIP_PLUS_ONE_COPY_PASTE_CMD
+LOCAL_COMMAND_SHELL=CMD
+POWERSHELL_ALLOWED=NO
+```
+
+固定规则：
+
+1. 每轮需要用户本地执行时，只交付一个完整 ZIP 和一条完整可复制 CMD；不得拆成多个需要用户人工拼装的操作。
+2. CMD 只负责从 `DOWNLOAD_PACKAGE_DIR` 解压并调用 ZIP 内独立 runner；复杂 Python、Node、Git 解析逻辑放在 ZIP 内，不嵌入交互式 CMD。
+3. 禁止以 PowerShell 替代 CMD；只有用户后续明确改变 `LOCAL_COMMAND_SHELL` 时才允许修订动态环境设置。
+4. 下载目录以及中文/空格路径继续遵守 `GOV-STAGE-ENV-001`。
+5. ZIP 交付前必须执行 runner 语法检查、ZIP reopen、文件清单和包内文件 SHA256 对账。
+6. 用户约定：旧会话只要已经收到 ZIP + CMD，就一定先执行该 CMD，再开启新会话；框架不维护“已下发但尚未执行”的 Pending Operation 状态。
+7. 新会话只需要固定启动提示词 + 上一轮完整标准执行回执，不需要复制旧 ZIP 内容、旧 CMD 内容或旧聊天历史。
+
+**GOV-STAGE-RECEIPT-001：** 每个 ZIP/CMD 执行必须输出统一、可跨会话解释的标准执行回执；SUCCESS 与 FAILED 使用同一字段模型。
+
+固定最小回执：
+
+```text
+===== BEGIN FEEDBACK TO CHATGPT =====
+PACKAGE_NAME=
+PACKAGE_SHA256=
+
+GLOBAL_GOAL=
+CURRENT_STAGE=
+STAGE_GOAL=
+OPERATION_BOUNDARY=
+
+ACTION_NAME=
+ACTION_TYPE=READ_ONLY|LOCAL_PATCH|COMMIT_PUSH|LIFECYCLE_ACTION|ENVIRONMENT_OPERATION
+
+RESULT=SUCCESS|FAILED
+LAST_SUCCESSFUL_STEP=
+FIRST_FAILED_STEP=
+FAILURE_CLASS=
+ERROR_CODE=
+ERROR=
+
+AUTHORITY_BRANCH=
+AUTHORITY_HEAD=
+
+WORK_BRANCH_BEFORE=
+WORK_HEAD_BEFORE=
+REMOTE_WORK_HEAD_BEFORE=
+
+WORK_BRANCH_AFTER=
+WORK_HEAD_AFTER=
+REMOTE_WORK_HEAD_AFTER=
+BRANCH_SWITCHED=YES|NO
+WORKTREE_AFTER=
+
+STATE_BEFORE=
+STATE_AFTER=
+
+FILES_CHANGED=
+IMMUTABLE_EVIDENCE_CREATED=
+
+REQUEST_STARTED=
+RESPONSE_RECEIVED=
+
+EXPECTED_SIDE_EFFECTS_AUDIT=
+FORBIDDEN_SIDE_EFFECTS_AUDIT=
+
+NEXT_STAGE=
+NEXT_LEGAL_ACTION=
+STOP_CONDITION_REACHED=
+INSUFFICIENT_EVIDENCE=
+===== END FEEDBACK TO CHATGPT =====
+```
+
+固定规则：
+
+1. 上述字段全部必须位于 BEGIN/END 回执边界内部；不得把 `FAILURE_CLASS`、`ERROR_CODE`、`ERROR` 等关键失败信息打印在 END 之后。
+2. 所有字段都必须出现；不适用时显式写 `NOT_APPLICABLE`，未知且必须知道时写 `INSUFFICIENT_EVIDENCE`，不得省略后让新会话猜测。
+3. `RESULT=SUCCESS` 必须能回答：本轮目标是什么、实际动作是什么、在哪个工作分支执行、状态和文件发生了什么、下一合法阶段是什么。
+4. `RESULT=FAILED` 必须结合 `LAST_SUCCESSFUL_STEP`、`FIRST_FAILED_STEP`、`FAILURE_CLASS`、`ERROR_CODE`、`ERROR`、`REQUEST_STARTED`、`RESPONSE_RECEIVED`、分支/HEAD、状态和副作用判断实际执行效果；不得把 runner 的 FAILED 直接解释为正式动作未执行。
+5. 有副作用动作已经开始时，新会话必须先用持久化状态和 immutable evidence 对账，再决定下一动作；禁止仅依据 `RESULT=FAILED` 重试。
+6. `PACKAGE_NAME` 与 `PACKAGE_SHA256` 只用于识别上一轮实际执行包；不能代替远程 commit、branch ref 或持久化治理证据。
+7. 新会话从上一轮完整回执恢复 `WORK_BRANCH_AFTER` 和最后已知 HEAD/状态，再重新读取当前远程/本地 refs；两者冲突时必须先报告并 Fail Closed。
+8. 如果上一轮回执与当前持久化事实冲突，按 `GOV-CONT-001`、`GOV-STAGE-TRUTH-001` 处理，不得用旧会话记忆覆盖当前事实。
+
+### 0.10 新会话固定提示词
+
+每次新会话使用以下固定短提示词：
+
+```text
+继续 SpecForge。
+
+从 https://github.com/lyqstart/SpecForge.git 的 AUTHORITY_BRANCH=main 读取唯一权威文件：
+docs/design/SpecForge架构一致性治理最终实施方案.md
+
+严格执行本文件的“新会话启动协议”：
+- 固定当前 AUTHORITY_HEAD；
+- 从我下面粘贴的上一轮完整 CMD 执行回执恢复 WORK_BRANCH 和最后已知工作 HEAD/状态；
+- 重新读取当前 WORK_BRANCH 的本地/远程 HEAD、worktree，并按适用范围读取 current-handoff、源码和持久化 Work Item / immutable evidence 对账；
+- 恢复 GLOBAL_GOAL、CURRENT_STAGE、OPERATION_BOUNDARY、NEXT_LEGAL_ACTION、本地 ZIP/CMD 环境；
+- 不依赖旧会话记忆；不得因为 RESULT=FAILED 自动重试已经开始的有副作用动作；
+- 对账完成后先输出 GOVERNANCE PRECONCLUSION + STAGE INPUT，然后直接继续当前 NEXT_LEGAL_ACTION；只有当前操作边界要求人工授权时才停止。
+
+上一轮 CMD 完整执行回执：
+
+【粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容】
+```
+
+固定跨会话使用方式：
+
+1. 只要旧会话已经提供 ZIP + CMD，用户先执行 CMD，再开启新会话。
+2. 新会话只粘贴上面的固定短提示词，并附上一轮完整标准执行回执。
+3. 不设计“ZIP 已下发但尚未执行”的 Pending Operation。
+4. SUCCESS 与 FAILED 都必须由标准回执 + 当前 authority branch/ref + 当前 work branch/ref + handoff + 持久化状态/immutable evidence 联合解释。
+5. 新会话不得要求用户重复上一会话已经通过标准回执、远程仓库或持久化证据提供的事实。
+6. 如果没有上一轮执行回执，写 `上一轮 CMD 完整执行回执：NONE`；只有 current-handoff 和当前持久化事实足以唯一恢复工作分支与操作边界时才允许继续，否则 Fail Closed。
 <!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 
 ---

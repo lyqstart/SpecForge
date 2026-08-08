@@ -4926,3 +4926,18 @@ actual_files
 - **防复发**：V102 的 authority 使用唯一 `### 0.10 新会话固定提示词` 作为插入边界；提示词修改限定在 0.10 章节第一个 `text` code fence；handoff 只替换唯一 CURRENT EXECUTION STATE marker 区间。
 - `UNRECORDED_FAILURES=0`（截至 V102 前置对账）。
 <!-- SPECFORGE_ERR226_EXP191_STRUCTURAL_PATCH_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR227_EXP192_SCOPED_TEST_PATCH:START -->
+## ERR-227 / EXP-192 — 测试补丁必须先限定测试块作用域，禁止全文件字段唯一性假设
+- **ERR-227**：V104 在 `PATCH_PREFLIGHT` 失败，错误为 `authority field anchor not unique`。真实 `stage-execution-authority-contract.test.ts` 中 `'NEXT_LEGAL_ACTION='` 分别存在于 authority 字段测试和 handoff 字段测试两个独立 `it(...)` 块，因此全文件计数为 2；V104 错误要求该字段在整个测试文件中唯一。
+- **附带发现**：V104 的原型失败输出把 `FAILURE_CLASS / ERROR_CODE / ERROR` 打印在 `===== END FEEDBACK TO CHATGPT =====` 之后。若用户只复制标准回执区块，新会话会丢失关键失败诊断，因此统一回执必须要求所有关键诊断字段位于 BEGIN/END 内部。
+- **分类**：`VALIDATION_HARNESS_DEFECT`。V104 在任何仓库写入前 Fail Closed；用户反馈证明 `WORKTREE_AFTER=CLEAN`、`FILES_CHANGED=NONE_AFTER_ROLLBACK`、`REQUEST_STARTED=NO`、`RESPONSE_RECEIVED=NO`、WI-0004 保持 `approval_required`。
+- **EXP-192**：
+  1. 修改测试文件时必须先定位具体 `describe` / `it` 结构块，再在块内定位字段数组或断言；
+  2. 同名字面量在不同测试块重复是合法结构，不得把“全文件唯一”当成语义约束；
+  3. runner 的 patch preflight 必须验证“结构块唯一 + 块内锚点唯一”，而不是“任意字面量全文件唯一”；
+  4. 标准执行回执的关键诊断字段必须全部在 BEGIN/END 内，确保新会话只复制一段就能解释 SUCCESS 或 FAILED；
+  5. 对历史验证器错误的修复不得触碰真实 WI 生命周期状态。
+- **防复发**：V105 对结构测试分别限定 authority `it(...)` 与 handoff `it(...)` 块后再修改各自字段数组，并把失败诊断统一放入标准反馈边界。
+- `UNRECORDED_FAILURES=0`（截至 V105 前置对账）。
+<!-- SPECFORGE_ERR227_EXP192_SCOPED_TEST_PATCH:END -->

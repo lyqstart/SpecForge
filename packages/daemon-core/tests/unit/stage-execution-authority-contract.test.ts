@@ -19,6 +19,9 @@ const stageRuleIds = [
   'GOV-STAGE-BLOCKER-001',
   'GOV-STAGE-HANDOFF-001',
   'GOV-STAGE-ENV-001',
+  'GOV-STAGE-BRANCH-001',
+  'GOV-STAGE-DELIVERY-001',
+  'GOV-STAGE-RECEIPT-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -45,6 +48,23 @@ describe('Stage Execution Contract authority', () => {
       'RESPONSE_RECEIVED=',
       'RETRY_SAFETY=',
       'NEXT_LEGAL_ACTION=',
+      'AUTHORITY_BRANCH=',
+      'AUTHORITY_HEAD=',
+      'WORK_BRANCH=',
+      'WORK_HEAD=',
+      'REMOTE_WORK_HEAD=',
+      'PACKAGE_NAME=',
+      'PACKAGE_SHA256=',
+      'ACTION_TYPE=',
+      'BRANCH_SWITCHED=',
+      'WORKTREE_AFTER=',
+      'FILES_CHANGED=',
+      'IMMUTABLE_EVIDENCE_CREATED=',
+      'FAILURE_CLASS=',
+      'ERROR_CODE=',
+      'ERROR=',
+      'POWERSHELL_ALLOWED=NO',
+      'DELIVERY_FORMAT=ONE_COMPLETE_ZIP_PLUS_ONE_COPY_PASTE_CMD',
     ]) {
       expect(authority, field).toContain(field);
     }
@@ -78,6 +98,12 @@ describe('Stage Execution Contract authority', () => {
       'DOWNLOAD_PACKAGE_DIR=',
       'LOCAL_PATH_QUOTING=',
       'PERMANENT_INSUFFICIENT_EVIDENCE=',
+      'AUTHORITY_BRANCH=',
+      'WORK_BRANCH=',
+      'DELIVERY_FORMAT=',
+      'POWERSHELL_ALLOWED=',
+      'FEEDBACK_CONTRACT=',
+      'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);
     }
