@@ -3934,3 +3934,27 @@ ERR-220 修复保持既有架构：Runtime 继续负责冻结 manifest；Gate Ru
 
 V76 的 `kind:'trace'` TypeScript 失败属于 ERR-072 / EXP-052 重复实现错误；正式 artifact kind 为 `trace_delta`。V77 首次交付命令因交互式 CMD 条件控制流未进入 Python，归入既有 ERR-014 / EXP-007 / EXP-012；真实产品补丁因此尚未执行。P0 overall completion 继续受 WI-0001 first-gate machine report 永久证据缺口约束。
 <!-- P0_WI0004_ERR220_TRACE_PHASE_INFERENCE:END -->
+
+<!-- P0_WI0004_ERR221_REPAIR_FREEZE_BINDING:START -->
+## WI-0004 Baseline Normalization — ERR-221 repair plan final Candidate binding
+| 项目 | 事实 |
+|---|---|
+| SpecForge baseline | `36ddf60d0152178b43cc249a49bc5da3ce3f95c7` |
+| WI-0004 当前权威状态 | `gates_failed` |
+| Candidate phase | `full` |
+| immutable Gate Attempt | `attempt-0002 source=gate_run` |
+| Candidate Gate | 9/10 passed |
+| trace_gate | passed |
+| workflow_specific_gate | failed |
+| 唯一失败 | `project_spec_repair_plan candidate manifest hash is stale` |
+| Project Spec precondition | plan / Candidate / current Project manifest 三方一致 |
+| evidence paths | 3/3 valid + exists |
+| 根因 | prepare_repair 绑定初始 Candidate Manifest；Runtime freeze 最终 Manifest 时未同步 repair plan |
+| 修复原则 | 在 Candidate freeze transaction 内重绑最终 Manifest hash；旧 binding 必须先与 freeze 前 Manifest 精确匹配；transition 失败双文件回滚 |
+| Gate 修改 | NO |
+| Workflow / StateManager 修改 | NO |
+| Validation/WI-0004 修改 | NO（产品修复期间冻结） |
+| Candidate Gate 重跑 | NO |
+| User Decision | NO |
+| P0 overall | NO；WI-0001 first-gate machine report 永久缺失 |
+<!-- P0_WI0004_ERR221_REPAIR_FREEZE_BINDING:END -->

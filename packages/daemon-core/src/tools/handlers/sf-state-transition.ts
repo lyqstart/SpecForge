@@ -1,4 +1,5 @@
 import { access, mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { registerHandler } from "../ToolDispatcher";
 import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { join } from "node:path";
@@ -202,6 +203,88 @@ async function ensureWorkItemJsonOnCreate(
   return { path: workItemJsonPath, created: true };
 }
 
+
+function sha256CandidateFreezeContent(content: string | Buffer): string {
+  return `sha256:${createHash("sha256").update(content).digest("hex")}`;
+}
+
+type ProjectSpecRepairPlanFreezeBinding = {
+  path: string;
+  previous_text: string;
+};
+
+async function bindProjectSpecRepairPlanToFrozenCandidateManifest(input: {
+  workItemDir: string;
+  workItemId: string;
+  frozenManifestPath: string;
+  previousManifestText: string;
+}): Promise<ProjectSpecRepairPlanFreezeBinding | undefined> {
+  const repairPlanPath = join(input.workItemDir, "project_spec_repair_plan.json");
+  let previousRepairPlanText: string;
+  try {
+    previousRepairPlanText = await readFile(repairPlanPath, "utf-8");
+  } catch (error: any) {
+    if (error?.code === "ENOENT") return undefined;
+    throw error;
+  }
+
+  let repairPlan: Record<string, any>;
+  try {
+    repairPlan = JSON.parse(previousRepairPlanText);
+  } catch {
+    throw new Error("PROJECT_SPEC_REPAIR_PLAN_INVALID_DURING_CANDIDATE_FREEZE");
+  }
+  if (
+    repairPlan.action !== "project_spec_repair" ||
+    repairPlan.work_item_id !== input.workItemId
+  ) {
+    throw new Error("PROJECT_SPEC_REPAIR_PLAN_INVALID_DURING_CANDIDATE_FREEZE");
+  }
+
+  const expectedPreviousManifestHash = sha256CandidateFreezeContent(
+    input.previousManifestText,
+  );
+  if (repairPlan.candidate_manifest_sha256 !== expectedPreviousManifestHash) {
+    throw new Error("PROJECT_SPEC_REPAIR_PLAN_PRE_FREEZE_BINDING_STALE");
+  }
+
+  const frozenManifestRaw = await readFile(input.frozenManifestPath);
+  const frozenManifestHash = sha256CandidateFreezeContent(frozenManifestRaw);
+  const updatedRepairPlan = {
+    ...repairPlan,
+    candidate_manifest_sha256: frozenManifestHash,
+  };
+  const updatedRepairPlanText = JSON.stringify(updatedRepairPlan, null, 2) + "\n";
+  const temporaryPath =
+    `${repairPlanPath}.freezing-${process.pid}-${Date.now()}`;
+  try {
+    await writeFile(temporaryPath, updatedRepairPlanText, "utf-8");
+    await rename(temporaryPath, repairPlanPath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+
+  return {
+    path: repairPlanPath,
+    previous_text: previousRepairPlanText,
+  };
+}
+
+async function restoreRepairPlanBinding(
+  repairPlanPath: string,
+  previousRepairPlanText: string,
+): Promise<void> {
+  const temporaryPath =
+    `${repairPlanPath}.rollback-${process.pid}-${Date.now()}`;
+  try {
+    await writeFile(temporaryPath, previousRepairPlanText, "utf-8");
+    await rename(temporaryPath, repairPlanPath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+}
 
 async function materializeCandidateManifestBeforePreparedTransition(
   projectRoot: string,
@@ -524,6 +607,9 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         previous_manifest_text: string;
       }
     | undefined;
+  let projectSpecRepairPlanFreezeBinding:
+    | ProjectSpecRepairPlanFreezeBinding
+    | undefined;
   if (fromState === "candidate_preparing" && toState === "candidate_prepared") {
     const authoritativeState = await readAuthoritativeState({
       deps,
@@ -544,16 +630,48 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     try {
       candidateManifestMaterialization =
         await materializeCandidateManifestBeforePreparedTransition(projectPath, workItemId);
+      projectSpecRepairPlanFreezeBinding =
+        await bindProjectSpecRepairPlanToFrozenCandidateManifest({
+          workItemDir,
+          workItemId,
+          frozenManifestPath: candidateManifestMaterialization.manifest_path,
+          previousManifestText:
+            candidateManifestMaterialization.previous_manifest_text,
+        });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      if (candidateManifestMaterialization) {
+        try {
+          await restoreCandidateManifest(
+            candidateManifestMaterialization.manifest_path,
+            candidateManifestMaterialization.previous_manifest_text,
+          );
+        } catch (rollbackError) {
+          const rollbackMessage =
+            rollbackError instanceof Error
+              ? rollbackError.message
+              : String(rollbackError);
+          return {
+            success: false,
+            error:
+              `CANDIDATE_FREEZE_ROLLBACK_FAILED: ${rollbackMessage}; ` +
+              `original freeze error: ${message}`,
+            code: "CANDIDATE_FREEZE_ROLLBACK_FAILED",
+            hard_stop: true,
+            state_advanced: false,
+          };
+        }
+      }
       return {
         success: false,
         error: message,
         code: "CANDIDATE_MANIFEST_MATERIALIZATION_FAILED",
         retry_allowed: true,
         state_advanced: false,
+        candidate_manifest_rolled_back:
+          candidateManifestMaterialization ? true : undefined,
         remediation:
-          "Fix the missing/conflicting controlled Candidate artifacts and retry candidate_preparing -> candidate_prepared. Do not hand-edit candidate_manifest.json.",
+          "Fix the missing/conflicting controlled Candidate artifacts or repair-plan binding and retry candidate_preparing -> candidate_prepared. Do not hand-edit candidate_manifest.json or project_spec_repair_plan.json.",
       };
     }
   }
@@ -603,20 +721,36 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     if (candidateManifestMaterialization) {
+      const rollbackErrors: string[] = [];
       try {
         await restoreCandidateManifest(
           candidateManifestMaterialization.manifest_path,
           candidateManifestMaterialization.previous_manifest_text,
         );
       } catch (rollbackError) {
-        const rollbackMessage =
-          rollbackError instanceof Error ? rollbackError.message : String(rollbackError);
+        rollbackErrors.push(
+          `candidate_manifest=${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`,
+        );
+      }
+      if (projectSpecRepairPlanFreezeBinding) {
+        try {
+          await restoreRepairPlanBinding(
+            projectSpecRepairPlanFreezeBinding.path,
+            projectSpecRepairPlanFreezeBinding.previous_text,
+          );
+        } catch (rollbackError) {
+          rollbackErrors.push(
+            `project_spec_repair_plan=${rollbackError instanceof Error ? rollbackError.message : String(rollbackError)}`,
+          );
+        }
+      }
+      if (rollbackErrors.length > 0) {
         return {
           success: false,
           error:
-            `CANDIDATE_MANIFEST_ROLLBACK_FAILED: ${rollbackMessage}; ` +
+            `CANDIDATE_FREEZE_ROLLBACK_FAILED: ${rollbackErrors.join("; ")}; ` +
             `original transition error: ${message}`,
-          code: "CANDIDATE_MANIFEST_ROLLBACK_FAILED",
+          code: "CANDIDATE_FREEZE_ROLLBACK_FAILED",
           hard_stop: true,
           state_advanced: false,
         };
@@ -625,6 +759,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         success: false,
         error: message,
         candidate_manifest_rolled_back: true,
+        repair_plan_rolled_back:
+          projectSpecRepairPlanFreezeBinding ? true : undefined,
         state_advanced: false,
       };
     }
@@ -638,6 +774,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         required_candidate_types:
           candidateManifestMaterialization.required_candidate_types,
         ignored_candidate_paths: candidateManifestMaterialization.ignored_candidate_paths,
+        repair_plan_binding_updated:
+          projectSpecRepairPlanFreezeBinding !== undefined,
       }
     : undefined;
 

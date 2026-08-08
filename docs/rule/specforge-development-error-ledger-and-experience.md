@@ -4854,3 +4854,24 @@ actual_files
 - **V77 交付命令重复错误记录**：用户首次执行 V77 CMD 后立即返回且无任何输出。复核确认 Python 入口只要被执行就会立即打印 `BUNDLE_INTEGRITY`；实际启动命令把 `if exist ... rmdir ...` 放在 `&&` 连锁中，首次目录不存在时后续 `mkdir -> tar -> python` 被控制流跳过。归入既有 **ERR-014**，复用 **EXP-007 / EXP-012**，不新增错误号。V78 改为 ZIP 自带顶层目录，交互式 CMD 仅执行 `tar -xf -> python`，不再使用条件删除/创建链。
 - **V79 提交器重复错误记录**：V79 对 `git status --porcelain=v1 -z` 的完整输出复用了会执行 `.strip()` 的通用读取函数，删除首条记录有语义的状态前导空格，随后按固定列截取路径时把 `docs/...` 错读为 `ocs/...`。该错误与 **ERR-133 / ERR-140** 完全同型，复用 **EXP-109 / EXP-116**，不新增错误号。V80 取消 porcelain 路径解析，范围审计分别使用 `git diff --name-only`、`git diff --cached --name-only`、`git ls-files --others --exclude-standard`。
 <!-- SPECFORGE_ERR220_EXP185_TRACE_PHASE_INFERENCE:END -->
+
+<!-- SPECFORGE_ERR221_EXP186_REPAIR_FREEZE_BINDING:START -->
+## ERR-221 / EXP-186 — Project Spec repair plan 必须绑定最终冻结 Candidate Manifest
+- **ERR-221**：P0 Validation WI-0004 首次正式 Candidate Gate 已生成 immutable `attempt-0002`；10 个 required Gates 中 9 个通过，`trace_gate=passed`，仅 `workflow_specific_gate=failed`。唯一 blocking issue 为 `project_spec_repair_plan candidate manifest hash is stale`。
+- 一手现场：repair plan 的 `candidate_manifest_sha256=sha256:1ba8b34c...`，最终冻结 Candidate Manifest 实际为 `sha256:e4f716bc...`；但 `manifest_sha256_before`、Candidate `project_spec_precondition_sha256`、当前 Project `spec_manifest.json` 三者均为 `sha256:44ff476f...`，3 条 architecture evidence path 全部存在。因此失败仅是 Candidate Manifest binding stale，不是 Project Spec 漂移、证据缺失或 Trace 缺陷。
+- Producer/Consumer 根因：`prepareProjectSpecRepairCandidates()` 在 repair 建立阶段把 plan 绑定到当时 Candidate Manifest；随后 Runtime 在 `candidate_preparing -> candidate_prepared` 权威边界合法重写并冻结最终 Candidate Manifest，却没有同步 repair plan。`workflow_specific_gate` 后续正确地要求 plan 哈希等于当前冻结 Manifest，因此正常生命周期会制造必然过期的 binding。
+- 修复：不放宽 Gate。Candidate freeze 后若存在 `project_spec_repair_plan.json`，Runtime 必须先证明 plan 的 `candidate_manifest_sha256` 仍精确等于 freeze 前 Manifest 哈希、action/work_item 身份合法，再仅把该字段更新为 freeze 后 Manifest 哈希。若 freeze 前 binding 已 stale 必须 Fail Closed，禁止自动洗白未知/人工漂移。
+- 事务边界：repair plan binding 与 Candidate Manifest 属于同一次 freeze transaction。StateManager transition 失败时二者必须一起恢复到 freeze 前字节；任何回滚失败必须 hard stop。
+- **EXP-186 — 派生绑定必须在权威冻结边界重绑，并与主体同事务回滚**：
+  1. 较早 Producer 对可继续演化 artifact 生成的 hash binding 不能被当作最终冻结 binding。
+  2. 当 Runtime 是最终 frozen artifact 的权威 Producer 时，依赖该最终字节的派生 binding 必须在同一 freeze 边界更新。
+  3. 更新前必须证明旧 binding 精确对应 freeze 前主体，禁止把任意 stale plan 自动刷新成“合法”。
+  4. 主体与 binding 的提交/回滚必须视作一个事务；Gate 继续严格消费最终 binding，不通过放宽消费者掩盖 Producer 缺口。
+- 本轮验证器失败补录：
+  - V81：自写 Trace 文本前缀统计绕过正式 `parseGovernanceTraceDelta()`，违反 EXP-148 的“先对照正式 parser 再诊断”；未修改产品/WI。
+  - V82：把 latest 兼容视图 `gate_summary.md` 的存在误当 immutable Gate Attempt 身份，违反 EXP-146 / EXP-151；未运行 Gate。
+  - V83：Python 直接启动 `bun` 再现 ERR-024，复用 EXP-002 / EXP-007；V84 固定 Windows shim 执行层。
+  - V86：正式 Gate 只执行一次且响应已收到；post-audit 错把总 Attempt 数断言为1，忽略首次运行会先把旧 latest 快照成 `attempt-0001 legacy_latest_snapshot`，实际 `attempt-0002` 才是本次 `gate_run`。复用 EXP-146 / EXP-151；禁止因审计器失败重跑 Gate。
+  - V89 第一次封包生成：外层 Python 与内层多行 payload 再次触发 ERR-207 同类嵌套三引号语法失败；ZIP 未生成、真实仓库未触达。复用 EXP-177，改为 runner + 独立 `patch_contract.json` payload。
+- `UNRECORDED_FAILURES=0`（截至 ERR-221 V89 修改前置对账）。
+<!-- SPECFORGE_ERR221_EXP186_REPAIR_FREEZE_BINDING:END -->

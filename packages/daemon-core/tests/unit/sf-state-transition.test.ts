@@ -13,6 +13,7 @@
  */
 
 import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vitest";
+import { createHash } from "node:crypto";
 import { getHandler } from "../../src/tools/ToolDispatcher";
 // Import triggers registerHandler side-effect
 import "../../src/tools/handlers/sf-state-transition";
@@ -602,6 +603,39 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     await fs.mkdir(path.dirname(target), { recursive: true });
     await fs.writeFile(target, content, "utf-8");
   }
+  function hashText(content: string): string {
+    return `sha256:${createHash("sha256").update(content).digest("hex")}`;
+  }
+
+  async function writeRepairPlanBoundToCurrentManifest(
+    candidateManifestHashOverride?: string,
+  ): Promise<{ path: string; text: string }> {
+    const wiDir = wiDirFor(tempDir, "WI-0004");
+    const manifestText = await fs.readFile(
+      path.join(wiDir, "candidate_manifest.json"),
+      "utf-8",
+    );
+    const repairPlanPath = path.join(wiDir, "project_spec_repair_plan.json");
+    const repairPlanText =
+      JSON.stringify(
+        {
+          schema_version: "1.0",
+          work_item_id: "WI-0004",
+          action: "project_spec_repair",
+          manifest_sha256_before: "sha256:project-spec-before",
+          project_spec_version_before: "PSV-0002",
+          modules: ["DOMAIN"],
+          evidence_paths: [".specforge/project/architecture.md"],
+          candidate_manifest_sha256:
+            candidateManifestHashOverride ?? hashText(manifestText),
+          prepared_at: "2026-08-08T00:00:00.000Z",
+        },
+        null,
+        2,
+      ) + "\n";
+    await fs.writeFile(repairPlanPath, repairPlanText, "utf-8");
+    return { path: repairPlanPath, text: repairPlanText };
+  }
 
   async function writeCandidateContext(options?: { includeDesign?: boolean; includeNewModule?: boolean; projectContractChanged?: boolean }): Promise<void> {
     const wiDir = wiDirFor(tempDir, "WI-0004");
@@ -839,6 +873,118 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     expect(result.code).toBe("CANDIDATE_MANIFEST_STATE_MISMATCH");
     expect(smTransition).not.toHaveBeenCalled();
     expect(await fs.readFile(manifestPath, "utf-8")).toBe(before);
+  });
+
+  it("rebinds a Project Spec repair plan to the final frozen Candidate Manifest", async () => {
+    await writeCandidateContext();
+    const repairPlanBefore = await writeRepairPlanBoundToCurrentManifest();
+    const { deps, smTransition } = makeStateManagerDeps({
+      currentState: "candidate_preparing",
+    });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(true);
+    expect(
+      result.candidate_manifest_materialization.repair_plan_binding_updated,
+    ).toBe(true);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+
+    const manifestText = await fs.readFile(
+      path.join(wiDirFor(tempDir, "WI-0004"), "candidate_manifest.json"),
+      "utf-8",
+    );
+    const repairPlanAfter = JSON.parse(
+      await fs.readFile(repairPlanBefore.path, "utf-8"),
+    );
+    expect(repairPlanAfter.candidate_manifest_sha256).toBe(hashText(manifestText));
+    expect(repairPlanAfter.prepared_at).toBe("2026-08-08T00:00:00.000Z");
+    expect(repairPlanAfter.manifest_sha256_before).toBe(
+      "sha256:project-spec-before",
+    );
+  });
+
+  it("fails closed before state advance when the repair plan was already stale before Candidate freeze", async () => {
+    await writeCandidateContext();
+    const manifestPath = path.join(
+      wiDirFor(tempDir, "WI-0004"),
+      "candidate_manifest.json",
+    );
+    const manifestBefore = await fs.readFile(manifestPath, "utf-8");
+    const repairPlanBefore = await writeRepairPlanBoundToCurrentManifest(
+      "sha256:already-stale",
+    );
+    const { deps, smTransition } = makeStateManagerDeps({
+      currentState: "candidate_preparing",
+    });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.code).toBe("CANDIDATE_MANIFEST_MATERIALIZATION_FAILED");
+    expect(result.error).toContain(
+      "PROJECT_SPEC_REPAIR_PLAN_PRE_FREEZE_BINDING_STALE",
+    );
+    expect(smTransition).not.toHaveBeenCalled();
+    expect(await fs.readFile(manifestPath, "utf-8")).toBe(manifestBefore);
+    expect(await fs.readFile(repairPlanBefore.path, "utf-8")).toBe(
+      repairPlanBefore.text,
+    );
+  });
+
+  it("rolls back both Candidate Manifest and repair-plan binding when StateManager transition fails", async () => {
+    await writeCandidateContext();
+    const manifestPath = path.join(
+      wiDirFor(tempDir, "WI-0004"),
+      "candidate_manifest.json",
+    );
+    const manifestBefore = await fs.readFile(manifestPath, "utf-8");
+    const repairPlanBefore = await writeRepairPlanBoundToCurrentManifest();
+    const { deps, smTransition } = makeStateManagerDeps({
+      transitionError: new Error("simulated StateManager failure"),
+      currentState: "candidate_preparing",
+    });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.candidate_manifest_rolled_back).toBe(true);
+    expect(result.repair_plan_rolled_back).toBe(true);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+    expect(await fs.readFile(manifestPath, "utf-8")).toBe(manifestBefore);
+    expect(await fs.readFile(repairPlanBefore.path, "utf-8")).toBe(
+      repairPlanBefore.text,
+    );
   });
 
   it("restores the previous Manifest when the authoritative transition fails", async () => {

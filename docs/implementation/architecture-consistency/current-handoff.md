@@ -3974,3 +3974,17 @@ WI-0003 仍保持原 Candidate 状态。产品修复部署后必须先调查并�
 - 永久边界不变：`FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`；`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；`P0_OVERALL_COMPLETION_ALLOWED=NO`。
 - V79 commit/push 前置范围审计因再次对 porcelain 完整输出执行 `.strip()`，把 `docs/...` 错读为 `ocs/...` 后 Fail Closed；属于 ERR-133 / ERR-140 重复错误，复用 EXP-109 / EXP-116。V79 未暂存、未提交、未推送、未修改 WI-0004。V80 改用不依赖 porcelain 状态列的三路文件集合审计。
 <!-- SPECFORGE_ERR220_TRACE_PHASE_INFERENCE_HANDOFF:END -->
+
+<!-- SPECFORGE_ERR221_REPAIR_FREEZE_BINDING_HANDOFF:START -->
+## ERR-221 — WI-0004 Project Spec repair plan / frozen Candidate binding
+- SpecForge 当前产品基线：`36ddf60d0152178b43cc249a49bc5da3ce3f95c7`；ERR-220 已提交推送并由 daemon/OpenCode 重启加载。
+- WI-0004 首次正式 Candidate Gate 已执行且只执行一次。新版 Attempt 机制先把旧 pending latest 兼容视图保存为 `attempt-0001 source=legacy_latest_snapshot`，真正 Gate 为 immutable `attempt-0002 source=gate_run`。
+- `attempt-0002`：10 个 required Gates 中 9 PASS；`trace_gate=passed`；唯一失败 `workflow_specific_gate`。权威状态已自动收口为 `gates_failed`。禁止重跑 Gate、禁止 User Decision。
+- V88 一手根因：repair plan 只在 `candidate_manifest_sha256` 上 stale；Project Spec precondition/current manifest/evidence paths 全部一致。
+- 产品生命周期缺口：prepare_repair 绑定初始 Candidate Manifest；Runtime 在 `candidate_preparing -> candidate_prepared` 冻结最终 Manifest 后未同步 repair plan；Gate 正确消费最终 Manifest 因而失败。
+- ERR-221 修复保持现有架构：Gate、Workflow、required-gates、StateManager、prepare_repair 的 Project Spec precondition 语义均不放宽。只在 Candidate freeze transaction 中同步 repair plan 的最终 Candidate hash，并在 transition 失败时连同 Manifest 一起回滚。
+- 修复前必须证明 repair plan 仍绑定 freeze 前 Manifest；若旧 binding 已 stale，Runtime Fail Closed，不得自动修复未知漂移。
+- V89 修改范围：`sf-state-transition.ts`、其单元测试、本 handoff、错误台账、P0 closure，共5文件；Validation/WI-0004 保持冻结。
+- V89 成功仅代表产品补丁本地验证完成、待单独 commit/push。提交部署并由用户手工重启 daemon/OpenCode 后，必须先调查并使用正式 `gates_failed` Candidate recovery 路径；不得手改 repair plan，不得直接重复 Gate。
+- 永久边界不变：`FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`；`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；`P0_OVERALL_COMPLETION_ALLOWED=NO`。
+<!-- SPECFORGE_ERR221_REPAIR_FREEZE_BINDING_HANDOFF:END -->
