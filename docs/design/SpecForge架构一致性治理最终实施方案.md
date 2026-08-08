@@ -133,6 +133,87 @@ Working tree status（如使用本地证据）
 
 远程文件、本地文件或用户上传副本不一致时，必须先报告差异并确定本次基线，禁止混用不同版本规则。
 
+**GOV-STAGE-AUTHORITY-BOOTSTRAP-001：** 新会话必须先建立不可由 branch 页面缓存替代的 Authority Bootstrap Root of Trust；未固定 live `AUTHORITY_HEAD` 前，不得把 branch URL、`raw/.../main/...`、搜索索引、compare 页面或“某 commit 可访问”当作当前 authority。
+
+固定启动顺序：
+
+```text
+BOOTSTRAP COORDINATES FROM USER PROMPT
+→ RESOLVE LIVE AUTHORITY BRANCH REF
+→ FIX AUTHORITY_HEAD
+→ READ AUTHORITY BY EXACT COMMIT REF
+→ VALIDATE UNIQUE AUTHORITY MARKER
+→ AUTHORITY_BOOTSTRAP_ACCEPTED=YES
+→ GOVERNANCE PRECONCLUSION
+→ canonical Stage Input
+→ Recovery Acceptance
+```
+
+Bootstrap Coordinates 是固定入口坐标，不属于从仓库推导的动态事实：
+
+```text
+AUTHORITY_BOOTSTRAP_REMOTE_URL=https://github.com/lyqstart/SpecForge.git
+AUTHORITY_BOOTSTRAP_BRANCH=main
+AUTHORITY_BOOTSTRAP_PATH=docs/design/SpecForge架构一致性治理最终实施方案.md
+```
+
+当前 branch ref 的可接受来源：
+
+```text
+AUTHORITY_HEAD_SOURCE=
+STRUCTURED_GIT_LS_REMOTE
+| GITHUB_REF_API_LIVE
+| USER_BOOTSTRAP_GIT_LS_REMOTE
+```
+
+以下只能作为辅助或 last-known 线索，不能单独把当前 `AUTHORITY_HEAD` 提升为 confirmed：
+
+```text
+LAST_COMPLETE_RECEIPT
+WEB_AUXILIARY
+BRANCH_HTML_VIEW
+BRANCH_RAW_CONTENT
+SEARCH_INDEX
+COMPARE_VIEW
+COMMIT_REACHABLE
+```
+
+Authority Bootstrap 必须输出：
+
+```text
+AUTHORITY_BOOTSTRAP_REMOTE_URL=
+AUTHORITY_BOOTSTRAP_BRANCH=
+AUTHORITY_BOOTSTRAP_PATH=
+AUTHORITY_HEAD_SOURCE=
+AUTHORITY_HEAD=
+AUTHORITY_EXACT_CONTENT_REF=
+AUTHORITY_UNIQUE_MARKER_AUDIT=PASS|FAIL
+AUTHORITY_BOOTSTRAP_EVIDENCE=
+AUTHORITY_BOOTSTRAP_EVIDENCE_FRESHNESS=
+AUTHORITY_BOOTSTRAP_VALIDATOR_ID=
+AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES|NO
+AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO
+```
+
+固定规则：
+
+1. `AUTHORITY_HEAD_SOURCE` 只有 `STRUCTURED_GIT_LS_REMOTE`、`GITHUB_REF_API_LIVE` 或 `USER_BOOTSTRAP_GIT_LS_REMOTE` 才允许作为 live branch-ref 真相源。
+2. `LAST_COMPLETE_RECEIPT` 只能提供 `LAST_CONFIRMED_AUTHORITY_HEAD` 和跨会话线索；即使上一轮 `PUSH_SUCCEEDED=YES`，新会话仍不得把旧 receipt 直接表述成“当前 live remote HEAD”。它可以先用 exact commit 读取最后确认规则，但任何有副作用动作前必须重新取得 live branch ref。
+3. `BRANCH_RAW_CONTENT`（包括 `raw.githubusercontent.com/.../main/...`）只能在 `AUTHORITY_HEAD` 已经由 live branch-ref 固定后用于辅助比较；它不能决定 `AUTHORITY_HEAD`。
+4. 固定 `AUTHORITY_HEAD` 后，authority 正文必须从 exact commit 引用读取：
+   `https://raw.githubusercontent.com/lyqstart/SpecForge/<AUTHORITY_HEAD>/docs/design/SpecForge架构一致性治理最终实施方案.md`。
+   禁止先读取 `.../main/...` 再从正文或网页推断 HEAD。
+5. exact commit authority 必须包含且只包含一个唯一权威标记：
+   `本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。`
+   唯一标记验证失败时 `AUTHORITY_BOOTSTRAP_ACCEPTED=NO`。
+6. `AUTHORITY_COMMIT` 与 `AUTHORITY_HEAD` 是不同事实：`AUTHORITY_HEAD` 是 authority branch 当前 ref；`AUTHORITY_COMMIT` 是 authority 文件最近一次变更 commit。只有当结构化 Git / commit-path evidence 证明二者相同时才能写成相等，禁止因为 authority 内容来自 exact HEAD 就自动推断二者相同。
+7. 如果当前会话工具无法取得 live Git ref，必须 `AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 并 Fail Closed；不得退回网页缓存继续 Recovery。唯一允许的下一动作是取得 branch ref 的只读 Bootstrap Evidence。
+8. 只读 Bootstrap Evidence 的最小允许动作是 `git ls-remote <REMOTE_URL> refs/heads/<AUTHORITY_BRANCH>`。该动作不得读写 SpecForge Work Item、不得触发 Gate/User Decision/Merge/Code Permission/Verification/Close，不得修改仓库。
+9. 如果上一轮存在 ZIP+CMD 但用户没有提供完整标准执行回执，必须把 `MISSING_LAST_EXECUTION_RECEIPT` 列入 Bootstrap/Recovery evidence gap；不得假装“上一轮没有执行回执”。用户明确说明上一轮没有 ZIP+CMD 时，receipt 才允许为 `NONE`。
+10. Authority Bootstrap Validator 必须遵守 `GOV-STAGE-VALIDATOR-001`。阻断依据必须是 structured ref、exact commit content、稳定 marker/schema；网页抓取时间、搜索排序和自然语言摘要不得作为阻断性真相源。
+11. 只有 `AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES`、`AUTHORITY_UNIQUE_MARKER_AUDIT=PASS` 且 `AUTHORITY_HEAD_SOURCE` 属于允许的 live source 时，才能 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES`。
+12. `AUTHORITY_BOOTSTRAP_ACCEPTED != YES` 时，不得输出“已按当前远程 authority 完成恢复”、不得把 handoff 状态提升为 authoritative fact、不得进入常规 Recovery Acceptance；只能取得缺失的 live branch-ref evidence。
+
 ### 0.4 SpecForge 自身开发：修改前治理
 
 **GOV-PRE-001：** 修改任何代码前，必须完成源码取证和治理前置结论。治理前置结论至少包含：
@@ -964,38 +1045,51 @@ RECOVERY_ACCEPTED=YES|NO
 
 ### 0.10 新会话固定提示词
 
-每次新会话使用以下固定短提示词：
+每次新会话使用以下固定短提示词。该提示词本身提供 Bootstrap Root-of-Trust 规则，因此不依赖新会话先成功读取仓库中的最新协议：
 
 ```text
 继续 SpecForge。
 
-从 https://github.com/lyqstart/SpecForge.git 的 AUTHORITY_BRANCH=main 读取唯一权威文件：
-docs/design/SpecForge架构一致性治理最终实施方案.md
+BOOTSTRAP COORDINATES：
+REMOTE_URL=https://github.com/lyqstart/SpecForge.git
+AUTHORITY_BRANCH=main
+AUTHORITY_PATH=docs/design/SpecForge架构一致性治理最终实施方案.md
 
-严格执行本文件的“新会话启动协议”：
-- 固定当前 AUTHORITY_HEAD；
-- 从我下面粘贴的上一轮完整 CMD 执行回执恢复 WORK_BRANCH 和最后已知工作 HEAD/状态；没有回执时按 NONE 处理；
-- 重新读取当前 WORK_BRANCH 的本地/远程 HEAD、worktree，并按适用范围读取 current-handoff、源码和持久化 Work Item / immutable evidence 对账；
-- 恢复 GLOBAL_GOAL、CURRENT_STAGE、OPERATION_BOUNDARY、NEXT_LEGAL_ACTION、本地 ZIP/CMD 环境；
-- 不依赖旧会话记忆；不得因为 RESULT=FAILED 自动重试已经开始的有副作用动作；
-- 先输出完整 GOVERNANCE PRECONCLUSION + canonical Stage Input；
-- 随后按 GOV-STAGE-RECOVERY-ACCEPT-001 输出 Recovery Acceptance，只有 RECOVERY_ACCEPTED=YES 才允许继续；
-- 如果缺失事实只允许通过本地取证取得，先把 NEXT_ACTION_CLASS 固定为 READ_ONLY_RECONCILIATION；该只读取证计划本身必须先通过 Recovery Acceptance，取证 ZIP+CMD 还必须单独通过 Artifact Acceptance；
-- 只有当前操作边界要求人工授权时才停止；不得因未完成 Workflow 自行跨越授权边界。
+第一步只做 Authority Bootstrap：
+1. 不得使用 GitHub branch HTML、raw/main、搜索结果、compare 页面或“commit 可访问”来确定当前 HEAD。
+2. 必须先用 live structured branch-ref evidence 确定 AUTHORITY_HEAD：
+   - STRUCTURED_GIT_LS_REMOTE；或
+   - GITHUB_REF_API_LIVE；或
+   - 用户返回的只读 USER_BOOTSTRAP_GIT_LS_REMOTE。
+3. 固定 AUTHORITY_HEAD 后，只读取：
+   https://raw.githubusercontent.com/lyqstart/SpecForge/<AUTHORITY_HEAD>/docs/design/SpecForge架构一致性治理最终实施方案.md
+4. 输出 GOV-STAGE-AUTHORITY-BOOTSTRAP-001 规定的 Authority Bootstrap Acceptance。
+5. AUTHORITY_BOOTSTRAP_ACCEPTED!=YES 时立即 Fail Closed，不得继续 PRECONCLUSION / Stage Input / Recovery，也不得生成常规执行 ZIP+CMD。
+6. 如果你的工具无法取得 live structured branch ref，只允许请求一次只读 git ls-remote 根信任取证；不得用网页缓存替代。
+7. 如果上一轮存在 ZIP+CMD，下面必须粘贴完整标准执行回执；如果上一轮确实没有 ZIP+CMD，则写 NONE。缺失应有的回执必须标记 MISSING_LAST_EXECUTION_RECEIPT，不能解释成 NONE。
+
+Authority Bootstrap 通过后，再严格执行 exact-commit authority 中的“新会话启动协议”：
+- 读取 current-handoff；
+- 重新读取当前 WORK_BRANCH 的本地/远程 HEAD、worktree；
+- 用持久化 Work Item / immutable evidence 对账 handoff；
+- 输出完整 GOVERNANCE PRECONCLUSION；
+- 输出 canonical Stage Input；
+- 按 GOV-STAGE-RECOVERY-ACCEPT-001 输出 Recovery Acceptance；
+- 只有 RECOVERY_ACCEPTED=YES 才允许执行被接受的 NEXT_LEGAL_ACTION；
+- 不依赖旧会话记忆，不自动重试已经开始的有副作用动作。
 
 上一轮 CMD 完整执行回执：
-【粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；如果上一轮没有 ZIP+CMD，则写 NONE】
+【粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；上一轮确实没有 ZIP+CMD 时写 NONE】
 ```
 
-固定跨会话使用方式：
+固定跨会话规则：
 
-1. 只要旧会话已经提供 ZIP + CMD，用户先执行 CMD，再开启新会话。
-2. 新会话只粘贴上面的固定短提示词，并附上一轮完整标准执行回执；上一轮没有 ZIP+CMD 时写 `NONE`。
-3. 不设计“ZIP 已下发但尚未执行”的 Pending Operation。
-4. SUCCESS 与 FAILED 都必须由标准回执 + 当前 authority branch/ref + 当前 work branch/ref + handoff + 持久化状态/immutable evidence 联合解释。
-5. 新会话不得要求用户重复上一会话已经通过标准回执、远程仓库或持久化证据提供的事实。
-6. 没有上一轮执行回执时，只有 current-handoff + 当前持久化事实足以唯一恢复工作分支和操作边界才允许直接继续；否则进入 `READ_ONLY_RECONCILIATION` 并 Fail Closed 于任何写动作。
-7. `GOVERNANCE PRECONCLUSION + Stage Input + Recovery Acceptance` 是固定三段式启动成果；缺少任何一段不得进入后续执行。
+1. Bootstrap Coordinates 只负责找到 live authority，不承载业务/治理动态状态。
+2. 新会话绝不从 `raw/main` 开始；必须先 branch ref、后 exact commit authority。
+3. 有上一轮标准回执时，它是 last-confirmed continuity evidence，不替代 live branch-ref recheck。
+4. 无上一轮 ZIP+CMD 时可以写 `NONE`；有 ZIP+CMD 却漏回执时必须 Fail Closed。
+5. `Authority Bootstrap Acceptance → GOVERNANCE PRECONCLUSION → Stage Input → Recovery Acceptance` 是固定四段式启动成果。
+6. Authority Bootstrap 尚未接受时，唯一允许的本地动作是取得 live branch ref 的只读取证；该 bootstrap 行为不属于 WI 生命周期动作。
 <!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 
 ---

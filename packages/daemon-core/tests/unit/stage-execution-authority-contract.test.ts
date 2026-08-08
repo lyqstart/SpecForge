@@ -25,6 +25,7 @@ const stageRuleIds = [
   'GOV-STAGE-ARTIFACT-VERIFY-001',
   'GOV-STAGE-VALIDATOR-001',
   'GOV-STAGE-RECOVERY-ACCEPT-001',
+  'GOV-STAGE-AUTHORITY-BOOTSTRAP-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -119,6 +120,17 @@ describe('Stage Execution Contract authority', () => {
       'ASSERTION_ID=',
       'ASSERTION_TYPE=',
       'BLOCKING=',
+      'AUTHORITY_BOOTSTRAP_REMOTE_URL=',
+      'AUTHORITY_BOOTSTRAP_BRANCH=',
+      'AUTHORITY_BOOTSTRAP_PATH=',
+      'AUTHORITY_HEAD_SOURCE=',
+      'AUTHORITY_EXACT_CONTENT_REF=',
+      'AUTHORITY_UNIQUE_MARKER_AUDIT=',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE=',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE_FRESHNESS=',
+      'AUTHORITY_BOOTSTRAP_VALIDATOR_ID=',
+      'AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=',
+      'AUTHORITY_BOOTSTRAP_ACCEPTED=',
     ]) {
       expect(authority, field).toContain(field);
     }
@@ -160,6 +172,7 @@ describe('Stage Execution Contract authority', () => {
       'ARTIFACT_ACCEPTANCE_CONTRACT=',
       'VALIDATOR_CONTRACT=',
       'RECOVERY_ACCEPTANCE_CONTRACT=',
+      'AUTHORITY_BOOTSTRAP_CONTRACT=',
       'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);
@@ -235,6 +248,51 @@ describe('Stage Execution Contract authority', () => {
     expect(recoverySection).toContain('READ_ONLY_RECONCILIATION');
     expect(recoverySection).toContain('SIDE_EFFECT_ACTION');
     expect(recoverySection).toContain('WAIT_USER_AUTHORIZATION');
+  });
+
+  it('enforces live-ref-first authority bootstrap before new-session recovery', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+
+    const bootstrapStart = authority.indexOf('**GOV-STAGE-AUTHORITY-BOOTSTRAP-001：**');
+    const bootstrapEnd = authority.indexOf('### 0.4 SpecForge 自身开发：修改前治理', bootstrapStart);
+    expect(bootstrapStart).toBeGreaterThanOrEqual(0);
+    expect(bootstrapEnd).toBeGreaterThan(bootstrapStart);
+    const bootstrapSection = authority.slice(bootstrapStart, bootstrapEnd);
+
+    for (const field of [
+      'AUTHORITY_BOOTSTRAP_REMOTE_URL=',
+      'AUTHORITY_BOOTSTRAP_BRANCH=',
+      'AUTHORITY_BOOTSTRAP_PATH=',
+      'AUTHORITY_HEAD_SOURCE=',
+      'AUTHORITY_HEAD=',
+      'AUTHORITY_EXACT_CONTENT_REF=',
+      'AUTHORITY_UNIQUE_MARKER_AUDIT=',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE=',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE_FRESHNESS=',
+      'AUTHORITY_BOOTSTRAP_VALIDATOR_ID=',
+      'AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=',
+      'AUTHORITY_BOOTSTRAP_ACCEPTED=',
+    ]) {
+      expect(bootstrapSection, field).toContain(field);
+    }
+
+    for (const source of [
+      'STRUCTURED_GIT_LS_REMOTE',
+      'GITHUB_REF_API_LIVE',
+      'USER_BOOTSTRAP_GIT_LS_REMOTE',
+      'LAST_COMPLETE_RECEIPT',
+      'WEB_AUXILIARY',
+      'BRANCH_RAW_CONTENT',
+    ]) {
+      expect(bootstrapSection, source).toContain(source);
+    }
+
+    const promptStart = authority.indexOf('### 0.10 新会话固定提示词');
+    expect(promptStart).toBeGreaterThanOrEqual(0);
+    const promptSection = authority.slice(promptStart);
+    expect(promptSection).toContain('AUTHORITY_BOOTSTRAP_ACCEPTED!=YES');
+    expect(promptSection).toContain('raw/main');
+    expect(promptSection).toContain('MISSING_LAST_EXECUTION_RECEIPT');
   });
 
 });

@@ -5030,3 +5030,40 @@ actual_files
   6. handoff / old receipt 是 claim，StateManager / immutable evidence / structured Git 才能把相应事实提升为 confirmed；
   7. Recovery validator 自身继续执行 `GOV-STAGE-VALIDATOR-001`，不能回退到自然语言字符串检查。
 <!-- SPECFORGE_ERR230_EXP196_RECOVERY_ACCEPTANCE:END -->
+
+<!-- SPECFORGE_ERR231_EXP197_AUTHORITY_BOOTSTRAP_ROOT_OF_TRUST:START -->
+## ERR-231 / EXP-197 — 新会话必须先固定 live branch ref，再读取 exact-commit authority
+
+- **ERR-231 现场**：V112 已成功提交 `GOV-STAGE-RECOVERY-ACCEPT-001`，结构化执行回执证明 `main=de501390c4d2752570d34022557ea9ac83d32617`、authority commit 同为该 SHA、push 成功、worktree clean。随后一次真实新会话却把缓存/历史网页结果 `b78766e...` 当作 `AUTHORITY_HEAD`，把 `56d20c...` 当作 authority file commit，并因此没有看到 V112 已存在的 Recovery Acceptance 规则；回复直接从 PRECONCLUSION / Stage Input 跳到“等待 User Decision 授权”。
+- **附加事实**：该新会话还声明“本轮没有上一轮标准 CMD 回执”，而上一阶段实际存在 V112 ZIP+CMD 完整执行回执。框架没有把“应有回执缺失”作为 bootstrap blocker。
+- **影响**：用户没有执行新的生命周期动作，WI-0004 未变化；问题属于新会话 authority root-of-trust 和 evidence continuity 缺口。
+- **分类**：`GOVERNANCE_FAILURE / EVIDENCE_DEFECT / VALIDATION_HARNESS_GAP`。
+- **根因**：
+  1. 旧启动协议要求“从 GitHub 当前远程分支读取 authority 并固定 HEAD”，但没有规定必须先独立取得 live branch ref；
+  2. authority 自己承载“不要相信 raw/main”的规则，形成循环依赖：若 raw/main 已缓存旧版本，新会话看不到禁止缓存的最新规则；
+  3. last receipt 的 last-confirmed 证据、live branch-ref 证据与 web auxiliary 没有在 Authority Bootstrap 层单独建模；
+  4. 缺失应有上一轮 receipt 时没有 fail closed。
+- **EXP-197**：
+  1. 新会话第一真相不是 raw branch 内容，而是 live branch ref；
+  2. 固定 `AUTHORITY_HEAD` 后必须读取 exact-commit authority，避免 branch raw/HTML 缓存；
+  3. `AUTHORITY_HEAD` 与 authority file last-modifying commit 分开证明；
+  4. last receipt 只能证明 last-confirmed，不等于 current live remote；
+  5. 无 live ref 证据时只能请求只读 `git ls-remote`，不得用网页结果降级继续；
+  6. Bootstrap Root-of-Trust 的最小规则必须直接写入固定新会话提示词，避免依赖尚未可靠读取的 authority；
+  7. 上一轮有 ZIP+CMD 却缺少 receipt 时必须标记 `MISSING_LAST_EXECUTION_RECEIPT`；
+  8. Authority Bootstrap 通过后才进入 PRECONCLUSION / Stage Input / Recovery Acceptance。
+<!-- SPECFORGE_ERR231_EXP197_AUTHORITY_BOOTSTRAP_ROOT_OF_TRUST:END -->
+
+<!-- SPECFORGE_ERR232_EXP198_PACKAGE_GENERATOR_SYNTAX_GUARD:START -->
+## ERR-232 / EXP-198 — 包生成器自身必须先通过语法验收，失败产物不得视为已生成
+
+- **ERR-232 现场**：首次构建 V113 时，包生成器在 Python 解析阶段因嵌套三引号导致 `IndentationError`，工具明确返回“代码未成功执行，不得假设任何文件或副作用已产生”。
+- **影响**：失败发生在交付前；没有可交付 ZIP、没有用户执行、没有仓库修改。
+- **分类**：`VALIDATION_HARNESS_DEFECT / SCRIPT_DEFECT`。
+- **根因**：生成器源码同时承载 runner 字符串和 runner 内测试字符串，使用相同三引号边界导致外层字符串被提前终止。
+- **EXP-198**：
+  1. 生成器、runner、verifier 三层源码都必须在 ZIP 构建前完成语法解析/compile；
+  2. 复杂嵌套源码模板必须使用不同字符串定界方式或结构化拼装，禁止依赖肉眼判断三引号边界；
+  3. 工具执行失败时不得沿用预期文件名、SHA 或“已生成”结论；
+  4. 只有 ZIP reopen、manifest/hash、runner/verifier compile 全部通过后才允许发布。
+<!-- SPECFORGE_ERR232_EXP198_PACKAGE_GENERATOR_SYNTAX_GUARD:END -->
