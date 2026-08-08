@@ -577,7 +577,7 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
       '## 9. 项目初始化、首次 WI 与后续 WI',
       '## 10. SpecForge 产品实施路线',
       '## 11. 实施影响范围',
-      '## 12. 验收与完成标准',
+      '## 12. 验收矩阵与完成标准',
       '## 附录 A. 新会话固定启动提示词',
       '## 附录 B. Rule ID 索引',
     ];
@@ -596,8 +596,102 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
 
     expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->').length - 1).toBe(1);
     expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->').length - 1).toBe(1);
-    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8');
+    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14');
     expect(authority).toContain('RULE_ID_DEFINITION_SET_PRESERVED=YES');
+  });
+
+it('keeps D9-D14 authority content architecture canonical and non-overlapping', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+
+    const protocolHeadings = [
+      '### 2.6 Fail Closed 与证据不足',
+      '### 2.7 Continuity 与当前用户授权边界',
+      '### 2.8 Stage Execution Contract',
+      '### 2.9 Truth Source、Artifact Acceptance 与 Validator',
+      '### 2.10 Delivery、Receipt 与 Delivery Identity',
+      '### 2.11 Bootstrap Envelope',
+      '### 2.12 Recovery Acceptance',
+    ];
+    let protocolCursor = -1;
+    for (const heading of protocolHeadings) {
+      expect(authority.split(heading).length - 1, heading).toBe(1);
+      const next = authority.indexOf(heading);
+      expect(next, heading).toBeGreaterThan(protocolCursor);
+      protocolCursor = next;
+    }
+
+    const lifecycleStart = '<!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:START -->';
+    const lifecycleEnd = '<!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:END -->';
+    expect(authority.split(lifecycleStart).length - 1).toBe(1);
+    expect(authority.split(lifecycleEnd).length - 1).toBe(1);
+    const lifecycle = authority.slice(authority.indexOf(lifecycleStart), authority.indexOf(lifecycleEnd) + lifecycleEnd.length);
+    for (const token of [
+      'Work Item / Intake',
+      'Classification / Workflow Routing',
+      'Candidate Preparation',
+      'Required Candidate Gates',
+      'User Decision',
+      'Atomic Spec Merge',
+      'Post-Merge Gate',
+      'Code Permission',
+      'Implementation',
+      'Actual Scope Audit',
+      'Verification',
+      'Formal Version Gate',
+      'Close Gate',
+      'Git Merge',
+    ]) {
+      expect(lifecycle, token).toContain(token);
+    }
+
+    for (const forbidden of [
+      '审计日期：2026-08-01',
+      '9 个测试文件、82 个测试',
+      '尚未完成对应源码对账',
+      'governance active=true',
+      '新治理模型 active=true',
+      '当前代码虽然预留了 `domain_model.md`',
+      '当前 Classification 已有',
+      '当前 `canUseCodeOnlyFastPath()`',
+      '当前 Code Permission 主要只有',
+      '当前 Changed Files Audit 已经可以',
+      '当前 Verification Gate 已经',
+      '当前 `sf_close_gate` 已经要求',
+    ]) {
+      expect(authority, forbidden).not.toContain(forbidden);
+    }
+
+    for (let phase = 2; phase <= 13; phase += 1) {
+      const startToken = `### 10.${phase} `;
+      const start = authority.indexOf(startToken);
+      expect(start, startToken).toBeGreaterThanOrEqual(0);
+      const next = phase < 13 ? authority.indexOf(`### 10.${phase + 1} `, start) : authority.indexOf('## 11. 实施影响范围', start);
+      expect(next, startToken).toBeGreaterThan(start);
+      const section = authority.slice(start, next);
+      for (const label of [
+        '**Goal**',
+        '**Canonical References**',
+        '**Required Outputs**',
+        '**Exit Criteria**',
+        '**Required Tests**',
+      ]) {
+        expect(section, `${startToken}${label}`).toContain(label);
+      }
+    }
+
+    expect(authority).toContain('IMPLEMENTATION_MAPPING_ONLY=YES');
+    expect(authority).toContain('TASK_WRITE_SCOPE_AUTHORITY=NO');
+    expect(authority).toContain('| Scenario | Preconditions | Applicable Rules | Expected Artifact / Evidence | Expected Gate / Control | Expected State / Result |');
+    expect(authority).toContain('### 12.1 Acceptance Matrix');
+    expect(authority).toContain('### 12.2 最终完成标准');
+    expect(authority).not.toContain('### 12.19');
+
+    expect(authority).toContain('STATUS=ACTIVE');
+    expect(authority).toContain('STATUS=NOT_APPLICABLE');
+    expect(authority).toContain('REASON=<为什么不适用>');
+    expect(authority).toContain('EVIDENCE=<支持该结论的事实来源>');
+
+    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14');
   });
 
 });

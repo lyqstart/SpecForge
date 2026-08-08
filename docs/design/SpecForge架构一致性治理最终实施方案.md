@@ -4,22 +4,21 @@
 
 ### 1.1 文档状态
 
-- **状态**：Accepted / Implementation in Progress
+- **设计状态**：Accepted / AUTHORITATIVE
+- **产品实施状态**：动态状态不在本文件固化；以 `docs/implementation/architecture-consistency/current-handoff.md` 的当前执行状态和正式 Git / immutable evidence 为准。
 - **决策记录**：[`ADR-007-architecture-consistency-governance.md`](../adr/ADR-007-architecture-consistency-governance.md)、[`ADR-008-new-project-governance-bootstrap.md`](../adr/ADR-008-new-project-governance-bootstrap.md)
 - **权威性**：AUTHORITATIVE；唯一当前权威源定义见 1.2。
 - **取代**：`docs/archive/SpecForge治理架构完整修改方案-已取代.md`
-- **审计日期**：2026-08-01
-- **当前验证证据**：架构一致性治理主体定向测试 9 个测试文件、82 个测试通过；提交 `1904d72` 的新项目自举定向测试 5 个测试文件、18 个测试通过；deterministic workspace build 与 `git diff --check` 通过。本次文件角色、Gate 最终状态、Contract 消费关系和 Phase 生命周期规则修订尚未完成对应源码对账、代码修复与回归测试。
-- **产品完成边界**：本文件中的 Phase 1—12 是本次开发 SpecForge 架构一致性治理能力的一次性产品实施路线，不是业务项目每个 WI 的运行流程。最终交付的 SpecForge 必须把本文件的规则落实到程序、Tool、Skill、Agent、Gate、Runtime、项目模板和回归测试中；业务项目不直接读取本文件。首次宣布本能力完成前，必须完成 Phase 11 的真实全新项目端到端验收，并在 Phase 12 固化最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
+- **动态验证证据**：测试数量、commit、当前 Stage、Blocker、最新验证结果和实施进度属于运行事实，只进入 `current-handoff.md`、标准执行回执、Git 或 immutable evidence；不得复制到本权威文件形成会过期的“当前事实”。
+- **产品完成边界**：第 10 章 Phase 1—12 是首次实现本治理能力的一次性产品实施路线；首次宣布完成前必须通过 Phase 11 真实全新项目端到端验收，并在 Phase 12 固化最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
 
-> 本文件描述 SpecForge 产品的目标架构、产品实现顺序和产品验收标准；测试通过只证明当前已覆盖实现没有破坏所列定向回归，不等同于本次产品实施路线已完成。
+> 本文件只保存稳定目标架构、稳定治理契约、实施路线定义和验收标准，不保存会随开发推进变化的测试计数、HEAD、当前缺陷或“尚未完成”状态。
 
 > 状态：AUTHORITATIVE（唯一当前权威源）
 >
 > 本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。
 > 其他设计草案、专项说明、实施报告、交接文件和决策记录，只保存历史背景、实施证据或决策原因，不得作为并列设计权威。
 > 任何其他文件与本文件冲突时，以本文件为准。任何新的架构或契约决策，必须先修订本文件，再修改实现。
-
 ### 1.2 唯一权威源
 
 **GOV-AUTH-001：** SpecForge 架构一致性治理和契约治理只保留一个当前权威源：
@@ -96,48 +95,41 @@ Runtime 状态约束
 
 #### 1.3.2 模式 B：完成后的 SpecForge 治理其他项目
 
-完成后的 SpecForge 必须通过已经实现到程序、Tool、Skill、Agent、Gate 和 Runtime 中的能力，强制业务项目执行：
+完成后的 SpecForge 必须通过已经实现到程序、Tool、Skill、Agent、Gate 和 Runtime 中的能力，强制业务项目执行第 3.1 节定义的 **Canonical Product Lifecycle**。
+
+本节只定义运行模式边界，不复制生命周期步骤：
 
 ```text
-Work Item
-→ Impact Analysis
-→ Architecture / Data Model / Module Design / Contract
-→ Candidate
-→ Gate
-→ User Decision
-→ Merge
-→ Code Permission
-→ OpenCode Implementation
-→ Actual Scope Audit
-→ Verification
-→ Close
+模式 B
+→ 业务项目进入第 3.1 Canonical Product Lifecycle
+→ 各阶段分别消费第 4—9 章的唯一规范
+→ 第 12 章按同一组 Rule ID / Gate / Evidence 验收
 ```
 
 业务项目不直接读取本文件；OpenCode、Agent、Runtime、Gate 和 Write Guard 必须把本文件定义的架构一致性原则转化为可执行、可验证、失败关闭的产品行为。
-
 ### 1.4 文档导航与内容唯一归属
 
 | 治理主题 | 唯一规范位置 |
 |---|---|
 | 文档身份、权威边界、开发模式、设计原则 | 第 1 章 |
 | SpecForge 自身开发、Stage、Bootstrap、交付、Recovery | 第 2 章 |
-| 完成后的产品治理对象与总体架构 | 第 3 章 |
+| 完成后的产品治理对象、Canonical Product Lifecycle 与总体架构 | 第 3 章 |
 | Requirement / Impact / Classification / Workflow | 第 4 章 |
 | Candidate 与正式 Spec 生产 | 第 5 章 |
 | Contract / Trace | 第 6 章 |
 | Gate / Fast Path | 第 7 章 |
 | Code Permission → Implementation → Verification → Release | 第 8 章 |
 | 新项目首次 WI 与后续 WI | 第 9 章 |
-| SpecForge 产品 Phase 1-12 实施路线 | 第 10 章 |
-| 实施文件影响范围 | 第 11 章 |
-| 验收与最终完成标准 | 第 12 章 |
+| SpecForge 产品 Phase 1-12 实施路线（只引用正式规则，不重复定义） | 第 10 章 |
+| 实施映射（不是任务 write scope） | 第 11 章 |
+| 验收矩阵与最终完成标准 | 第 12 章 |
 | 新会话固定启动提示词 | 附录 A |
 | 稳定 Rule ID 导航 | 附录 B |
 
 固定说明：
 
 ```text
-APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8
+APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14
 RULE_ID_DEFINITION_SET_PRESERVED=YES
 章节号 = 人工阅读导航
 Rule ID = 机器稳定契约
@@ -472,7 +464,7 @@ LIFECYCLE_ACTIONS=NONE
 → Contract Candidate（需要时）
 → Task
 → 一次审批
-→ 一次原子 Spec Merge
+→ 一次 Atomic Spec Merge
 → Implementation
 → Verification
 ```
@@ -550,7 +542,9 @@ git diff/status 结果：
 证据不足项：
 ```
 
-### 2.6 Fail Closed 与“完全做到”的保证机制
+### 2.6 Fail Closed 与证据不足
+
+本节只定义什么时候必须停止；Stage、Artifact、Delivery、Bootstrap 和 Recovery 的具体协议分别归属于 2.8—2.12。
 
 **GOV-EVID-001：** 任何必需事实、验证或契约证据不足时，必须标记 `INSUFFICIENT_EVIDENCE`，不得猜测、提交、推送或宣布完成。
 
@@ -581,7 +575,7 @@ git diff/status 结果：
 
 如未来增加结构性回归测试，该测试只能检查本文件的唯一权威声明、必要章节、规则 ID 和旧文件非权威声明是否仍然存在；它属于普通仓库回归测试，不是 SpecForge 自治理流程。
 
-#### 2.6.1 上下文压缩、续接与当前用户授权边界
+### 2.7 Continuity 与当前用户授权边界
 
 **GOV-CONT-001：** Context Compaction、跨会话续接、Agent Summary、旧 Prompt、Workflow Skill 和从状态推导出的剩余生命周期，不得扩大当前用户在本轮明确给出的操作授权边界。
 
@@ -604,7 +598,9 @@ git diff/status 结果：
 6. OpenCode 自身自动 Compaction 即使未显式调用 `sf_continuity`，重新加载后的 Orchestrator 也必须遵守同一优先级；不得读取旧 `prompts/*.txt` 或完整 Workflow Skill 来覆盖更窄的当前用户边界；
 7. 本规则只约束当前用户授权与执行连续性，不改变 Work Item 状态机、Gate 判定或业务 Contract 语义。
 
-#### 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议
+### 2.8 Stage Execution Contract
+
+本节是普通阶段执行的唯一规范位置；Stage Input、Checkpoint、Output、失败诊断、副作用、重试、Blocker、handoff、环境和分支模型都在这里定义。
 
 **GOV-STAGE-001：** 完整阶段是用户交互粒度，Checkpoint 是内部证据粒度。
 
@@ -765,21 +761,6 @@ AMBIGUOUS_SIDE_EFFECT
 4. Gate、User Decision、Merge、Code Permission、Verification、Close 不得由外围 runner 自动重试；
 5. 旧 immutable evidence 不得删除、覆盖或改写。
 
-**GOV-STAGE-TRUTH-001：** 验证器必须复用正式产品真相源，禁止近似判断替代。
-
-优先级：
-
-```text
-正式 StateManager / authority reader
-> immutable Gate Attempt / input snapshot / Formal Version 等持久化证据
-> 正式 parser / resolver / required-gates / reconciliation
-> 受控 Tool handler 返回
-> Git 精确结构化协议
-> 人工文本搜索或临时近似解析
-```
-
-禁止用泛关键词推断产品能力；禁止猜 `events.jsonl` 字段代替 StateManager；禁止自写与正式 Trace/Candidate/Contract parser 不同的近似语义；禁止把 compatibility latest view 当 immutable Attempt。
-
 **GOV-STAGE-BLOCKER-001：** 新问题必须先分类为 Blocker 或 Backlog。
 
 ```text
@@ -877,101 +858,24 @@ WORKTREE_STATUS=
 11. 未取得当前真实工作分支证据时，只允许只读调查并标记 `INSUFFICIENT_EVIDENCE`，不得猜测分支后继续写入。
 12. 历史字段 `TARGET_BRANCH` 可以保留在旧证据中；新的 Stage Input、Stage Output、Failure Diagnostic 与标准执行回执必须优先使用本规则的 `AUTHORITY_BRANCH` / `WORK_BRANCH` 分离模型。
 
-**GOV-STAGE-DELIVERY-001：** SpecForge 本地交付固定为一个完整 ZIP + 一条可直接复制执行的 Windows CMD。
+### 2.9 Truth Source、Artifact Acceptance 与 Validator
 
-固定交付契约：
+本节只定义“事实从哪里来、成果如何验收、验证器如何自证”，不定义 Delivery 或 Bootstrap 状态机。
 
-```text
-DELIVERY_FORMAT=ONE_COMPLETE_ZIP_PLUS_ONE_COPY_PASTE_CMD
-LOCAL_COMMAND_SHELL=CMD
-POWERSHELL_ALLOWED=NO
-```
+**GOV-STAGE-TRUTH-001：** 验证器必须复用正式产品真相源，禁止近似判断替代。
 
-固定规则：
-
-1. 每轮需要用户本地执行时，只交付一个完整 ZIP 和一条完整可复制 CMD；不得拆成多个需要用户人工拼装的操作。
-2. CMD 只负责从 `DOWNLOAD_PACKAGE_DIR` 解压并调用 ZIP 内独立 runner；复杂 Python、Node、Git 解析逻辑放在 ZIP 内，不嵌入交互式 CMD。
-3. 禁止以 PowerShell 替代 CMD；只有用户后续明确改变 `LOCAL_COMMAND_SHELL` 时才允许修订动态环境设置。
-4. 下载目录以及中文/空格路径继续遵守 `GOV-STAGE-ENV-001`。
-5. ZIP 交付前必须执行 runner 语法检查、ZIP reopen、文件清单和包内文件 SHA256 对账。
-6. 用户约定：旧会话只要已经收到 ZIP + CMD，就一定先执行该 CMD，再开启新会话；框架不维护“已下发但尚未执行”的 Pending Operation 状态。
-7. 新会话只需要固定启动提示词 + 上一轮完整标准执行回执，不需要复制旧 ZIP 内容、旧 CMD 内容或旧聊天历史。
-
-**GOV-STAGE-RECEIPT-001：** 每个 ZIP/CMD 执行必须输出统一、可跨会话解释的标准执行回执；SUCCESS 与 FAILED 使用同一字段模型。
-
-固定最小回执：
+优先级：
 
 ```text
-===== BEGIN FEEDBACK TO CHATGPT =====
-PACKAGE_NAME=
-PACKAGE_SHA256=
-DELIVERY_ID=
-RUNNER_ID=
-VALIDATOR_ID=
-RECEIPT_EMITTER_ID=
-IDENTITY_MANIFEST=
-IDENTITY_BINDING_AUDIT=
-DELIVERY_INTERNAL_REFERENCE_AUDIT=
-DELIVERY_INTERNAL_REFERENCE_MISMATCHES=
-
-GLOBAL_GOAL=
-CURRENT_STAGE=
-STAGE_GOAL=
-OPERATION_BOUNDARY=
-
-ACTION_NAME=
-ACTION_TYPE=READ_ONLY|LOCAL_PATCH|COMMIT_PUSH|LIFECYCLE_ACTION|ENVIRONMENT_OPERATION
-
-RESULT=SUCCESS|FAILED
-LAST_SUCCESSFUL_STEP=
-FIRST_FAILED_STEP=
-FAILURE_CLASS=
-ERROR_CODE=
-ERROR=
-
-AUTHORITY_BRANCH=
-AUTHORITY_HEAD=
-
-WORK_BRANCH_BEFORE=
-WORK_HEAD_BEFORE=
-REMOTE_WORK_HEAD_BEFORE=
-
-WORK_BRANCH_AFTER=
-WORK_HEAD_AFTER=
-REMOTE_WORK_HEAD_AFTER=
-BRANCH_SWITCHED=YES|NO
-WORKTREE_AFTER=
-
-STATE_BEFORE=
-STATE_AFTER=
-
-FILES_CHANGED=
-IMMUTABLE_EVIDENCE_CREATED=
-
-REQUEST_STARTED=
-RESPONSE_RECEIVED=
-
-EXPECTED_SIDE_EFFECTS_AUDIT=
-FORBIDDEN_SIDE_EFFECTS_AUDIT=
-ARTIFACT_ACCEPTANCE_AUDIT=
-
-NEXT_STAGE=
-NEXT_LEGAL_ACTION=
-STOP_CONDITION_REACHED=
-INSUFFICIENT_EVIDENCE=
-===== END FEEDBACK TO CHATGPT =====
+正式 StateManager / authority reader
+> immutable Gate Attempt / input snapshot / Formal Version 等持久化证据
+> 正式 parser / resolver / required-gates / reconciliation
+> 受控 Tool handler 返回
+> Git 精确结构化协议
+> 人工文本搜索或临时近似解析
 ```
 
-固定规则：
-
-1. 上述字段全部必须位于 BEGIN/END 回执边界内部；不得把 `FAILURE_CLASS`、`ERROR_CODE`、`ERROR` 等关键失败信息打印在 END 之后。
-2. 所有字段都必须出现；不适用时显式写 `NOT_APPLICABLE`，未知且必须知道时写 `INSUFFICIENT_EVIDENCE`，不得省略后让新会话猜测。
-3. `RESULT=SUCCESS` 必须能回答：本轮目标是什么、实际动作是什么、在哪个工作分支执行、状态和文件发生了什么、下一合法阶段是什么。
-4. `RESULT=FAILED` 必须结合 `LAST_SUCCESSFUL_STEP`、`FIRST_FAILED_STEP`、`FAILURE_CLASS`、`ERROR_CODE`、`ERROR`、`REQUEST_STARTED`、`RESPONSE_RECEIVED`、分支/HEAD、状态和副作用判断实际执行效果；不得把 runner 的 FAILED 直接解释为正式动作未执行。
-5. 有副作用动作已经开始时，新会话必须先用持久化状态和 immutable evidence 对账，再决定下一动作；禁止仅依据 `RESULT=FAILED` 重试。
-6. `PACKAGE_NAME` 与 `PACKAGE_SHA256` 只用于识别上一轮实际执行包；不能代替远程 commit、branch ref 或持久化治理证据。
-7. 新会话从上一轮完整回执恢复 `WORK_BRANCH_AFTER` 和最后已知 HEAD/状态，再重新读取当前远程/本地 refs；两者冲突时必须先报告并 Fail Closed。
-8. 如果上一轮回执与当前持久化事实冲突，按 `GOV-CONT-001`、`GOV-STAGE-TRUTH-001` 处理，不得用旧会话记忆覆盖当前事实。
+禁止用泛关键词推断产品能力；禁止猜 `events.jsonl` 字段代替 StateManager；禁止自写与正式 Trace/Candidate/Contract parser 不同的近似语义；禁止把 compatibility latest view 当 immutable Attempt。
 
 **GOV-STAGE-ARTIFACT-VERIFY-001：** 任何阶段成果都必须在生成后执行独立后验验收；“生成成功”不等于“成果有效”。
 
@@ -1082,6 +986,106 @@ BLOCKING=YES|NO
 9. 验证器失败必须先分类 `VALIDATION_HARNESS_DEFECT`、`ENVIRONMENT_FAILURE`、产品/治理失败或 `AMBIGUOUS_SIDE_EFFECT`；外围验证器失败不得直接覆盖已存在的正式产品成功证据，也不得自动重试已经开始的有副作用动作。
 10. `VALIDATOR_ACCEPTED=YES` 只有在 Validator Contract 完整、Self Check 通过、全部阻断断言都有正式真相源且不存在必需证据不足时成立；否则验证器本身不得作为 Artifact Acceptance 的依据。
 
+### 2.10 Delivery、Receipt 与 Delivery Identity
+
+本节是 ZIP/CMD、标准回执和 Delivery Identity 的唯一规范位置。
+
+**GOV-STAGE-DELIVERY-001：** SpecForge 本地交付固定为一个完整 ZIP + 一条可直接复制执行的 Windows CMD。
+
+固定交付契约：
+
+```text
+DELIVERY_FORMAT=ONE_COMPLETE_ZIP_PLUS_ONE_COPY_PASTE_CMD
+LOCAL_COMMAND_SHELL=CMD
+POWERSHELL_ALLOWED=NO
+```
+
+固定规则：
+
+1. 每轮需要用户本地执行时，只交付一个完整 ZIP 和一条完整可复制 CMD；不得拆成多个需要用户人工拼装的操作。
+2. CMD 只负责从 `DOWNLOAD_PACKAGE_DIR` 解压并调用 ZIP 内独立 runner；复杂 Python、Node、Git 解析逻辑放在 ZIP 内，不嵌入交互式 CMD。
+3. 禁止以 PowerShell 替代 CMD；只有用户后续明确改变 `LOCAL_COMMAND_SHELL` 时才允许修订动态环境设置。
+4. 下载目录以及中文/空格路径继续遵守 `GOV-STAGE-ENV-001`。
+5. ZIP 交付前必须执行 runner 语法检查、ZIP reopen、文件清单和包内文件 SHA256 对账。
+6. 用户约定：旧会话只要已经收到 ZIP + CMD，就一定先执行该 CMD，再开启新会话；框架不维护“已下发但尚未执行”的 Pending Operation 状态。
+7. 新会话只需要固定启动提示词 + 上一轮完整标准执行回执，不需要复制旧 ZIP 内容、旧 CMD 内容或旧聊天历史。
+
+**GOV-STAGE-RECEIPT-001：** 每个 ZIP/CMD 执行必须输出统一、可跨会话解释的标准执行回执；SUCCESS 与 FAILED 使用同一字段模型。
+
+固定最小回执：
+
+```text
+===== BEGIN FEEDBACK TO CHATGPT =====
+PACKAGE_NAME=
+PACKAGE_SHA256=
+DELIVERY_ID=
+RUNNER_ID=
+VALIDATOR_ID=
+RECEIPT_EMITTER_ID=
+IDENTITY_MANIFEST=
+IDENTITY_BINDING_AUDIT=
+DELIVERY_INTERNAL_REFERENCE_AUDIT=
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=
+
+GLOBAL_GOAL=
+CURRENT_STAGE=
+STAGE_GOAL=
+OPERATION_BOUNDARY=
+
+ACTION_NAME=
+ACTION_TYPE=READ_ONLY|LOCAL_PATCH|COMMIT_PUSH|LIFECYCLE_ACTION|ENVIRONMENT_OPERATION
+
+RESULT=SUCCESS|FAILED
+LAST_SUCCESSFUL_STEP=
+FIRST_FAILED_STEP=
+FAILURE_CLASS=
+ERROR_CODE=
+ERROR=
+
+AUTHORITY_BRANCH=
+AUTHORITY_HEAD=
+
+WORK_BRANCH_BEFORE=
+WORK_HEAD_BEFORE=
+REMOTE_WORK_HEAD_BEFORE=
+
+WORK_BRANCH_AFTER=
+WORK_HEAD_AFTER=
+REMOTE_WORK_HEAD_AFTER=
+BRANCH_SWITCHED=YES|NO
+WORKTREE_AFTER=
+
+STATE_BEFORE=
+STATE_AFTER=
+
+FILES_CHANGED=
+IMMUTABLE_EVIDENCE_CREATED=
+
+REQUEST_STARTED=
+RESPONSE_RECEIVED=
+
+EXPECTED_SIDE_EFFECTS_AUDIT=
+FORBIDDEN_SIDE_EFFECTS_AUDIT=
+ARTIFACT_ACCEPTANCE_AUDIT=
+
+NEXT_STAGE=
+NEXT_LEGAL_ACTION=
+STOP_CONDITION_REACHED=
+INSUFFICIENT_EVIDENCE=
+===== END FEEDBACK TO CHATGPT =====
+```
+
+固定规则：
+
+1. 上述字段全部必须位于 BEGIN/END 回执边界内部；不得把 `FAILURE_CLASS`、`ERROR_CODE`、`ERROR` 等关键失败信息打印在 END 之后。
+2. 所有字段都必须出现；不适用时显式写 `NOT_APPLICABLE`，未知且必须知道时写 `INSUFFICIENT_EVIDENCE`，不得省略后让新会话猜测。
+3. `RESULT=SUCCESS` 必须能回答：本轮目标是什么、实际动作是什么、在哪个工作分支执行、状态和文件发生了什么、下一合法阶段是什么。
+4. `RESULT=FAILED` 必须结合 `LAST_SUCCESSFUL_STEP`、`FIRST_FAILED_STEP`、`FAILURE_CLASS`、`ERROR_CODE`、`ERROR`、`REQUEST_STARTED`、`RESPONSE_RECEIVED`、分支/HEAD、状态和副作用判断实际执行效果；不得把 runner 的 FAILED 直接解释为正式动作未执行。
+5. 有副作用动作已经开始时，新会话必须先用持久化状态和 immutable evidence 对账，再决定下一动作；禁止仅依据 `RESULT=FAILED` 重试。
+6. `PACKAGE_NAME` 与 `PACKAGE_SHA256` 只用于识别上一轮实际执行包；不能代替远程 commit、branch ref 或持久化治理证据。
+7. 新会话从上一轮完整回执恢复 `WORK_BRANCH_AFTER` 和最后已知 HEAD/状态，再重新读取当前远程/本地 refs；两者冲突时必须先报告并 Fail Closed。
+8. 如果上一轮回执与当前持久化事实冲突，按 `GOV-CONT-001`、`GOV-STAGE-TRUTH-001` 处理，不得用旧会话记忆覆盖当前事实。
+
 **GOV-STAGE-DELIVERY-IDENTITY-001：** 每个 ZIP/CMD 交付必须有唯一 Delivery Identity，并把 package、runner、validator 与标准执行回执绑定到同一个不可混用的身份命名空间；禁止复制上一版本 runner 后遗留旧 `VALIDATOR_ID`、`RUNNER_ID` 或 receipt emitter 身份。
 
 每个交付的正式身份至少包含：
@@ -1122,7 +1126,7 @@ identity.receipt_emitter.delivery_id
 10. runner 启动后、执行任何仓库写入前必须完成 identity self-check。identity 失败时不得修改仓库。
 11. commit/push 后的最终 Stage Output / receipt Artifact Acceptance 必须同时验证 package、runner、validator、receipt emitter 身份属于同一 `DELIVERY_ID`。
 12. 该规则属于交付与证据治理，不改变任何业务 Workflow、Gate、Runtime、Work Item 状态机或 Project Contract。
-#### 2.6.3 Delivery Internal Reference Binding
+#### 2.10.1 Delivery Internal Reference Binding
 
 Delivery Identity 不只绑定 package / runner / validator / receipt emitter 的顶层身份，还必须约束标准执行回执内部所有“当前交付版本引用”，防止 `DELIVERY_ID=V121` 但 `NEXT_LEGAL_ACTION` 仍引用 `V120` 的证据漂移。
 
@@ -1152,6 +1156,11 @@ DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
 19. receipt emitter 必须在输出 SUCCESS 回执之前执行内部引用审计；不能先打印 SUCCESS 再事后发现旧版本引用。
 20. package verifier 必须独立检查 manifest 的 `receipt_current_delivery_reference_fields`、runner 的 receipt 构造来源以及用户可见成功回执控制字段；只验证顶层 `DELIVERY_ID` 不足以接受交付。
 21. 当前交付版本字符串应从 `identity.delivery_id` 派生；需要在 `NEXT_LEGAL_ACTION` 中引用当前 receipt 时必须动态构造，不得复制上一 runner 的 `Vxxx` 常量。
+
+### 2.11 Bootstrap Envelope
+
+本节只定义 pre-authority Bootstrap Envelope 及其 receipt/failure/evidence/success/coverage/order 自包含契约。
+
 **GOV-STAGE-BOOTSTRAP-ENVELOPE-001：** 新会话在读取 exact-commit authority 之前只能依赖用户提示词中的 Bootstrap Envelope；凡是会约束 pre-authority 阶段行为的稳定规则，都必须被该 Envelope 自包含携带，并由同一结构回归测试覆盖。禁止出现“authority 已新增规则，但固定启动提示词尚未携带”的协议断层。
 
 Bootstrap Envelope 至少覆盖以下五个子契约：
@@ -1166,7 +1175,7 @@ BOOTSTRAP_SUCCESS_TRANSITION_CONTRACT=PASS|FAIL
 BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
 ```
 
-#### 2.6.4 Receipt Presence / Consumption
+#### 2.11.1 Receipt Presence / Consumption
 
 上一轮回执必须先在用户提示词内完成存在性分类：
 
@@ -1193,7 +1202,7 @@ LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE
 4. 回执存在但缺必填字段、身份不一致或结构损坏时使用 `PRESENT_INVALID`。
 5. `LAST_COMPLETE_RECEIPT` 只提供 last-confirmed continuity，不替代 live branch ref。
 
-#### 2.6.5 Bootstrap Failure
+#### 2.11.2 Bootstrap Failure
 
 失败路径继续完整遵守：
 
@@ -1206,7 +1215,7 @@ BOOTSTRAP_FAILURE_DELIVERY_MODE=ONE_ACCEPTED_ZIP_PLUS_ONE_CMD
 
 失败阶段不得读取 handoff / Work Item / immutable evidence / Stage Input / Recovery。
 
-#### 2.6.6 Bootstrap Evidence Delivery Identity
+#### 2.11.3 Bootstrap Evidence Delivery Identity
 
 Bootstrap Failure evidence 的 canonical 机器模板统一定义在 `GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001`；本节不再复制第二套字段模板。
 
@@ -1224,7 +1233,7 @@ ARTIFACT_ACCEPTED=YES
 
 只有以上全部成立后，才允许发布一个 ZIP + 一个 CMD。evidence runner 不接收 SpecForge / Validation 仓库路径，不读取项目文件，不执行生命周期动作。
 
-#### 2.6.7 Bootstrap Success
+#### 2.11.4 Bootstrap Success
 
 取得允许的 live ref 后必须重新开始本回合 Authority Bootstrap，并输出完整：
 
@@ -1245,7 +1254,7 @@ AUTHORITY_BOOTSTRAP_ACCEPTED=
 
 只有 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES` 后才允许读取 exact-commit authority 之后的 handoff、持久化 Work Item / immutable evidence，并进入 PRECONCLUSION → canonical Stage Input → Recovery Acceptance。
 
-#### 2.6.8 Coverage Closure
+#### 2.11.5 Coverage Closure
 
 以下属于 pre-authority contract inventory：
 
@@ -1272,7 +1281,7 @@ GOV-STAGE-BOOTSTRAP-ENVELOPE-001
 4. `BOOTSTRAP_ENVELOPE_ACCEPTED=YES` 是启动协议完整性，不替代 Authority Bootstrap Acceptance、Artifact Acceptance 或 Recovery Acceptance。
 5. 当前 Envelope 若发现 receipt / identity / failure / success 任一子契约未覆盖，必须先修 Envelope，不得继续 WI 生命周期动作。
 
-#### 2.6.9 Stable Prompt / Rule Section Scope
+#### 2.11.6 Stable Prompt / Rule Section Scope
 
 固定新会话 prompt 使用两个唯一 marker ID：`SPECFORGE_NEW_SESSION_PROMPT:START` 与 `SPECFORGE_NEW_SESSION_PROMPT:END`；完整 HTML comment marker 只允许在实际 prompt 边界各出现一次。
 
@@ -1284,7 +1293,7 @@ GOV-STAGE-BOOTSTRAP-ENVELOPE-001
 4. 禁止硬编码“某 Rule 的下一个 Rule 一定是 Recovery”。
 5. 自然语言原句不得作为 blocking assertion；必须使用 Rule ID、schema 字段、parser 或结构 marker。
 6. pre-authority rule inventory、固定 prompt、Bootstrap Envelope consumer test 必须原子更新。
-#### 2.6.10 Ordered Bootstrap Execution / Pre-tool Guard
+#### 2.11.7 Ordered Bootstrap Execution / Pre-tool Guard
 
 Bootstrap Envelope 不只定义“必须有哪些字段”，还必须定义这些字段在任何工具读取之前的执行顺序。固定状态机：
 
@@ -1368,6 +1377,11 @@ BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
    - live-ref source 出现在 handoff / Recovery transition 之前；
    - Envelope Self Check 在本回合结束条件中不可省略。
 11. 该顺序契约只治理新会话 Bootstrap 执行，不改变业务 Workflow、Gate、Runtime 或 WI 状态机。
+
+### 2.12 Recovery Acceptance
+
+Bootstrap 成功后才允许进入 Recovery；本节是 Recovery Acceptance 的唯一规范位置。
+
 **GOV-STAGE-RECOVERY-ACCEPT-001：** 新会话恢复必须形成可机器检查的 Recovery Acceptance；生成 `GOVERNANCE PRECONCLUSION + Stage Input` 不等于恢复完成。
 
 新会话的 `GOVERNANCE PRECONCLUSION` 至少包含：
@@ -1441,78 +1455,76 @@ RECOVERY_ACCEPTED=YES|NO
 10. 只有 `RECOVERY_VALIDATOR_ACCEPTED=YES` 且六项 Recovery Audit 全部 `PASS` 时，才允许 `RECOVERY_ACCEPTED=YES`。
 11. `RECOVERY_ACCEPTED != YES` 时必须 Fail Closed：不得生成供用户执行的下一 ZIP+CMD，不得执行有副作用动作，不得进入下一 Stage；只能修正恢复成果或执行为取得缺失事实所必需的、已经被接受的只读取证。
 12. `RECOVERY_ACCEPTED=YES` 后，后续 ZIP/CMD、runner、代码/文档补丁、执行回执仍分别遵守 `GOV-STAGE-ARTIFACT-VERIFY-001`；Recovery Acceptance 不替代后续 Artifact Acceptance。
-
 <!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 
 ## 3. SpecForge 目标治理架构
 
-### 3.1 改造目标
+### 3.1 Canonical Product Lifecycle
 
-本次只解决一件事：
+本文件只保留一条完整业务项目治理主线。其他章节只能引用该主线或描述其中一个局部阶段，不得再定义第二条“完整流程”。
 
-> **保证用户需求最终形成的 Architecture、Data Model、Module Design、Contract、Task 和 Production Code 始终一致，并且任何偏离都能被机器阻断。**
-
-最终主链：
-
+<!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:START -->
 ```text
-用户需求
-↓
-Requirement
-↓
-Impact Analysis
-↓
-Project Architecture
-↓
-Project Data Model
-↓
-Module Design
-↓
-Contract
-↓
-Task
-↓
-Code Permission
-↓
-Production Code
-↓
-Actual Scope Audit
-↓
-Verification
-↓
-Formal Version Gate
-↓
-Close
-↓
-Git Merge
-```
-
-Trace 贯穿整个过程。
-
-### 3.2 现有 SpecForge 哪些东西继续保留
-
-现有 SpecForge 已经具有完整的流程骨架：
-
-```text
-Intake
-→ Classification
+User Need
+→ Work Item / Intake
+→ Requirement
 → Impact Analysis
-→ Candidate
-→ Gate
+→ Classification / Workflow Routing
+→ Candidate Preparation
+   ├─ Requirement Candidate（需要时）
+   ├─ Project Architecture Candidate（需要时）
+   ├─ Project Data Model Candidate（需要时）
+   ├─ Module Design Candidate（需要时）
+   ├─ Project / Module Contract Candidate（需要时）
+   ├─ Task
+   └─ Trace Delta / Prospective Trace
+→ Required Candidate Gates
 → User Decision
-→ Merge
+→ Atomic Spec Merge
+→ Post-Merge Gate
 → Code Permission
 → Implementation
+→ Actual Scope Audit
 → Verification
-→ Close
+→ Formal Version Gate
+→ Close Gate
+→ Git Merge
+```
+<!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:END -->
+
+Trace 贯穿 Requirement、Architecture、Data Model、Module Design、Contract、Task、Implementation 和 Verification。
+
+术语固定：
+
+```text
+Atomic Spec Merge
+= Candidate / Prospective Spec 原子生效为正式 Project Spec
+
+Git Merge
+= 已通过 Close Gate 的工作分支合入目标 Git 分支
 ```
 
-当前 Orchestrator 也已经明确了 `sf-requirements`、`sf-design`、`sf-task-planner`、`sf-executor`、`sf-verifier` 的专业职责，以及 Candidate、Merge、Code Permission、Changed Files Audit 的受控关系。
+全文禁止用裸 `Merge` 或 `原子 Merge` 同时指代两种操作；涉及 Spec 生效必须写 `Atomic Spec Merge`，涉及 Git 分支必须写 `Git Merge`。
+### 3.2 流程能力复用原则
 
-因此本次不是重造流程，而是把新的正式设计对象接进现有流程。
+SpecForge 的目标实现必须复用既有 Workflow、专业 Agent、Candidate、Gate、User Decision、Code Permission、Verification 和 Close 能力，不建立第二套平行治理流程。
 
+固定原则：
+
+```text
+已有能力能够承载第 3.1 Canonical Product Lifecycle
+→ 扩展现有能力
+
+已有能力缺少正式 Architecture / Data / Contract / Trace 语义
+→ 在原能力中补齐正式对象和机器约束
+
+不得为了本方案再新增 Workflow / Agent / 平行 Gate 体系
+```
+
+`sf-requirements`、`sf-design`、`sf-task-planner`、`sf-executor`、`sf-verifier` 的职责边界以第 3.5 节和第 5 章为准；Candidate、Atomic Spec Merge、Code Permission、Actual Scope Audit、Verification、Close Gate、Git Merge 分别以第 5、7、8 章为唯一规范位置。
 ### 3.3 正式治理对象
 
-最终只增加和强化下面这些对象。
+正式治理对象固定如下。
 
 #### 3.3.1 Project Architecture
 
@@ -1595,13 +1607,24 @@ Data Model
 = 数据和数据库具体怎么设计
 ```
 
-当前代码虽然预留了 `domain_model.md` 路径，但它没有进入当前正式 `spec_manifest.json`；正式清单目前也没有 `data_model`。
+`data_model.md` 必须进入正式 Project Spec manifest，并作为唯一正式项目级数据模型。
 
-最终规则：
+Data Model 适用性不得通过“文件缺失”表达。新项目必须始终存在 `data_model.md`：
 
-> `data_model.md` 是唯一正式项目级数据模型。
+```text
+有项目级数据/数据库设计
+→ STATUS=ACTIVE
+→ 写入正式 DATA-* 设计
 
-已有 `domain_model.md` 能力只保留兼容读取，不再发展成另一套正式数据治理体系，不双写、不双向同步。
+确实不适用
+→ STATUS=NOT_APPLICABLE
+→ REASON=<为什么不适用>
+→ EVIDENCE=<支持该结论的事实来源>
+```
+
+`STATUS=NOT_APPLICABLE` 只表示当前项目确实没有项目级数据模型内容，不允许用来绕过 Impact / Gate；后续需求一旦产生项目级数据语义，必须在同一个正式 WI 中把状态变为 `ACTIVE` 并形成正式 Data Model Candidate。
+
+兼容读取 `domain_model.md` 时，只能把它当作历史输入；不得发展成第二套正式数据治理体系，不双写、不双向同步。
 
 #### 3.3.3 Module Design
 
@@ -1615,7 +1638,7 @@ Data Model
 
 > **Module 在 Project Architecture 和 Project Data Model 约束下，具体如何完成自身职责的正式设计。**
 
-继续沿用 SpecForge 当前已有的设计编号：
+Module Design 的稳定设计编号统一使用：
 
 ```text
 DD-*
@@ -1648,25 +1671,7 @@ Module Contract 是正式治理对象；其内部边界、owner_module、source_
 
 ### 3.4 Module 与代码归属
 
-当前 Module Schema 只有：
-
-```text
-module_file
-requirements
-design
-trace
-```
-
-没有 Contract 和代码归属。
-
-增加：
-
-```text
-contracts
-code_paths
-```
-
-最终每个 Module：
+正式 Module Schema 必须同时覆盖治理对象归属和生产代码归属：
 
 ```text
 module_file
@@ -1726,7 +1731,7 @@ BLOCK
 | Module Contract      | `sf-design`           | Module Design                                | Task、Executor、Verification                   |
 | Task                 | `sf-task-planner`     | 已批准 Design、Contract、Impact Scope             | Executor、Verifier                            |
 | Impact Scope         | Agent 分析 + Runtime 推导 | Classification、Spec、Trace、code_paths         | Workflow、Candidate、Code Permission、Audit     |
-| Trace                | 现有 Trace 系统受控维护       | 正式 ID 和引用                                    | Impact、Gate、Code Permission、Verification     |
+| Trace                | 受控 Trace 系统维护           | 正式 ID 和引用                                    | Impact、Gate、Code Permission、Verification     |
 
 核心原则：
 
@@ -1736,16 +1741,11 @@ BLOCK
 
 ### 4.1 Impact Scope
 
-扩展现有：
+Impact Scope 固定写入：
 
 ```text
 trigger_result.json
-```
-
-增加：
-
-```text
-impact_scope
+→ impact_scope
 ```
 
 固定结构：
@@ -1858,12 +1858,12 @@ module_contract_changed=true
 
 不是增加 Readiness Gate。
 
-而是现有 Candidate 完整性和 Gate 根据 Impact Scope 强制要求对应产物。
+而是 Candidate 完整性规则和适用 Gate 根据 Impact Scope 强制要求对应产物。
 
 
 #### 4.3.3 形成 Code Permission
 
-Impact Scope 再经过正式 Spec Merge 和 Task 精确化以后，形成最终开发许可。
+Impact Scope 再经过 Atomic Spec Merge 和 Task 精确化以后，形成最终开发许可。
 
 
 #### 4.3.4 开发后验证有没有越界
@@ -1880,9 +1880,9 @@ Actual Scope
 Actual Scope ⊆ Approved Scope
 ```
 
-### 4.4 Classification 修改
+### 4.4 Classification 最终字段与 Fast Path 判定
 
-当前 Classification 已有：
+Classification 的正式变化字段统一为：
 
 ```text
 requirement_changed
@@ -1894,19 +1894,12 @@ design_changed
 module_boundary_changed
 api_contract_changed
 architecture_changed
+data_model_changed
+module_contract_changed
 unknowns
 ```
 
-但是当前 `canUseCodeOnlyFastPath()` **没有检查 `architecture_changed`**。
-
-增加：
-
-```text
-data_model_changed
-module_contract_changed
-```
-
-并修复 Fast Path：
+只有下列条件全部成立，才允许进入 Code-only Fast Path：
 
 ```text
 requirement_changed = false
@@ -1924,10 +1917,9 @@ unknowns = []
 ```
 
 缺一个条件都不能进入 Fast Path。
-
 ### 4.5 Workflow 路由最终规则
 
-继续使用现有 Workflow，不增加新的 Workflow。
+使用既有 Workflow 类型，不增加新的 Workflow。
 
 但是调整路由职责。
 
@@ -1974,7 +1966,7 @@ design_change_path
 contract_change_path
 ```
 
-当前这条路径本来就是 Registry-only、无 Code Permission 的纯规格工作流。
+该路径定义为 Registry-only、无 Code Permission 的纯规格工作流。
 
 如果 Project Contract 修改同时要求消费者代码变化：
 
@@ -1995,30 +1987,18 @@ code_only_fast_path
 
 ### 5.1 sf-design 的正式职责
 
-不增加 Architecture Agent。
+不增加 Architecture Agent，不增加 Data Agent；Architecture、Data Model 和 Module Design 统一由 `sf-design` 负责。
 
-不增加 Data Agent。
-
-统一由现有：
-
-```text
-sf-design
-```
-
-负责设计。
-
-当前 `sf-design` 已经负责系统架构、数据模型、接口、验证设计，并要求设计有 Requirement 和真实实现依据。
-
-需要把正式生产顺序固定下来：
+正式生产顺序固定为：
 
 ```text
 Requirement
 ↓
-读取现有 Project Architecture
+读取正式 Project Architecture
 ↓
 决定 Architecture 保持 / 建立 / 修改
 ↓
-读取现有 Project Data Model
+读取正式 Project Data Model
 ↓
 决定 Data Model 保持 / 建立 / 修改
 ↓
@@ -2029,15 +2009,10 @@ Requirement
 识别需要机器强制的 Contract
 ```
 
-### 5.2 Candidate 阶段职责重新统一
+`sf-design` 只能基于 Requirement、正式上层 Spec 和真实系统事实产生 Candidate，不得跳过上层对象或以实现代码反向覆盖已批准设计。
+### 5.2 Candidate 阶段专业产物所有权
 
-当前存在一个明确问题：
-
-例如 `feature_spec` 当前 Candidate 阶段由 `sf-requirements` 同时产生 `requirements_delta.md`、`tasks.md`、`trace_delta.md` 和 Candidate Manifest；而 Orchestrator 的正式职责又规定 Task 和 Trace 只能由 `sf-task-planner` 负责。
-
-必须统一。
-
-最终固定为：
+Candidate 阶段的专业产物所有权固定为：
 
 ```text
 sf-requirements
@@ -2054,18 +2029,15 @@ sf-design
 
 sf-task-planner
 → tasks.md
-→ 现有 Requirement/Task Trace
+→ Requirement / Task Trace
 
 Runtime
 → candidate_manifest.json
 → derived indexes
-→ Trace prospective calculation
+→ Prospective Trace calculation
 ```
 
-Candidate Manifest 不让 Agent 自己猜目标路径。
-
-现有 Orchestrator 已经明确“Candidate 路径发现和规范化属于 Runtime”。
-
+Agent 不得替 Runtime 猜 Candidate 目标路径、派生索引或 manifest；同一类正式产物只能有一个 owner。
 ### 5.3 Candidate 的正式目录
 
 统一：
@@ -2095,12 +2067,12 @@ spec_manifest.json Candidate
 ↓
 一次 User Decision
 ↓
-一次原子 Merge
+一次 Atomic Spec Merge
 ↓
 Project Spec Version +1
 ```
 
-不能一部分 Architecture 已经生效、另一部分 Data Model 还没有生效。
+Architecture、Data Model 等同一 Atomic Spec Merge 中的正式对象必须原子生效，禁止部分生效。
 
 ### 5.4 requirements_index 和 design_index
 
@@ -2166,7 +2138,7 @@ Module / Internal Contract
 
 **CON-MOD-001：** 只被同一个 Module 内部共同依赖、需要机器强制的规则属于 Module / Internal Contract，存放于 `.specforge/project/modules/<MODULE>/contracts.json`。
 
-旧设计中把全部契约统一存放在 `extension_registry.json` 的要求已经废止。
+Contract 存储不得统一塞入 `extension_registry.json`；正式位置以本章两级 Contract 模型为准。
 
 固定边界：
 
@@ -2183,7 +2155,7 @@ Module / Internal Contract
 
 **CON-PROM-001：** Module Contract 一旦出现其他 Module 消费者，必须在同一个 WI 内升级为 Project Contract，并同步更新受影响设计、消费者、Trace、验证和迁移内容；禁止其他 Module 直接消费 Internal Contract。
 
-**CON-CONS-SOURCE-001：** Contract 的正式消费者关系只以现有 Trace 系统为真相源，不在 Contract 文件、Module 定义或其他文档中再维护一份可独立修改的消费者列表。
+**CON-CONS-SOURCE-001：** Contract 的正式消费者关系只以正式 Trace 系统为真相源，不在 Contract 文件、Module 定义或其他文档中再维护一份可独立修改的消费者列表。
 
 固定登记方式：
 
@@ -2203,7 +2175,7 @@ Module 消费者由该 `DD-*` 所属 Module 自动推导。不得只登记模糊
 变更关系 → REMOVE 旧关系 + ADD 新关系
 ```
 
-Runtime 必须以“当前正式 Trace + ADD - REMOVE”形成 Prospective Trace，并对合并后的关系执行完整性检查；ADD 与 REMOVE 必须随本次 Spec Merge 原子生效。
+Runtime 必须以“当前正式 Trace + ADD - REMOVE”形成 Prospective Trace，并对合并后的关系执行完整性检查；ADD 与 REMOVE 必须随本次 Atomic Spec Merge 原子生效。
 
 **CON-CONS-DELTA-CANON-001：** Governance Relation Delta 只表达“正式 Trace 边本身发生变化”，并且必须使用正式 Trace 的规范模型：
 
@@ -2222,7 +2194,7 @@ Relation = constrained_by | enforces
 5. 只有消费者 DD、source/enforcement 正式对象或其他真实 Trace 边发生增加、删除、替换时，才生成对应 `ADD` / `REMOVE`；
 6. Planner 在写入 Candidate 前必须逐行验证四列、Relation 枚举和正式 ID；无法证明合法时必须 Fail Closed。
 
-**CON-CODE-CONS-001：** 生产代码的实际 Contract 消费不得建立第二套治理机制。现有 `contract_integrity_gate` 必须结合 Module `code_paths`、Impact Scope、Code Permission、Changed Files Audit 和验证阶段取得的实际依赖证据，对账“Trace 声明的正式消费者”与“生产代码的实际 Module 依赖”。无法证明实际依赖完整时必须 Fail Closed，不得猜测。
+**CON-CODE-CONS-001：** 生产代码的实际 Contract 消费不得建立第二套治理机制。`contract_integrity_gate` 必须结合 Module `code_paths`、Impact Scope、Code Permission、Changed Files Audit 和验证阶段取得的实际依赖证据，对账“Trace 声明的正式消费者”与“生产代码的实际 Module 依赖”。无法证明实际依赖完整时必须 Fail Closed，不得猜测。
 
 Module Contract 升级为 Project Contract 时，Prospective Project Spec 必须同时包含：
 
@@ -2267,7 +2239,7 @@ Trace 更新
 
 > 跨 Module 或全项目共同依赖、必须由机器强制的规则。
 
-继续复用现有 Contract 模型：
+Contract Schema 固定复用统一模型：
 
 ```text
 shared_enums
@@ -2276,7 +2248,7 @@ public_interfaces
 extension_points
 ```
 
-当前这些类型已经是正式机器 Contract 模型。
+这些类型构成正式机器 Contract 模型。
 
 增加统一元数据：
 
@@ -2300,7 +2272,7 @@ DATA-*
 
 #### 6.2.2 Module Contract
 
-> 权威说明：旧文件中将所有契约统一存放于 `extension_registry.json` 的方案已被替代。当前必须采用 Project / Public Contract 与 Module / Internal Contract 两级模型。
+> 权威说明：正式 Contract 采用 Project / Public Contract 与 Module / Internal Contract 两级模型；`extension_registry.json` 不得成为第二套 Contract 存储权威。
 
 新增：
 
@@ -2321,7 +2293,7 @@ DATA-*
 * 内部接口约束；
 * 不变量。
 
-复用现有 Contract 的基础数据结构，不另建完全不同的 Contract 系统。
+复用统一 Contract 基础数据结构，不另建平行 Contract 系统。
 
 边界只有一条：
 
@@ -2349,7 +2321,7 @@ DD-*
 
 ### 6.3 Trace：只保留一套
 
-当前 SpecForge 已有 Requirement → Design → Task 的追踪能力，其核心实现就是检查 requirements、design、tasks 的覆盖关系。
+Trace 系统必须保留 Requirement → Design → Task 覆盖关系，并扩展到 Architecture、Data Model、Contract 与治理范围关系；不得建立第二套 Trace。
 
 这一套继续保留，不重构 Requirement Trace。
 
@@ -2429,7 +2401,7 @@ DD-ORDER-003
 
 ### 6.5 Trace Delta 与唯一关系真相源
 
-现有 Requirement/Task Trace 继续按当前 Requirement 治理规则工作。
+Requirement / Task Trace 继续按 Requirement 治理规则工作。
 
 Trace 只保留一个逻辑真相源：
 
@@ -2478,7 +2450,7 @@ Current Trace
 = Prospective Trace
 ```
 
-Trace Gate、Spec Consistency Gate 和 Contract Integrity Gate 检查的是 Prospective Trace；通过审批和原子 Spec Merge 后，Prospective Trace 才成为新的正式 Trace。
+Trace Gate、Spec Consistency Gate 和 Contract Integrity Gate 检查的是 Prospective Trace；通过审批和 Atomic Spec Merge 后，Prospective Trace 才成为新的正式 Trace。
 
 新增的 Architecture/Data/Contract 关系只有真正发生变化时才要求对应 Delta。
 
@@ -2489,15 +2461,13 @@ Fast Path：
 → 不要求制造新的治理关系 Delta
 ```
 
-当前 Quick Change 强制要求 `trace_delta.md`，这一形式主义要求需要取消；但声称关系没有变化时，Gate 仍必须根据 Impact Scope 和实际修改范围验证该声明。
+Quick Change 在关系没有变化时不得为了形式强制产生 `trace_delta.md`；但 Gate 仍必须根据 Impact Scope 和实际修改范围验证“关系未变化”的声明。
 
 ## 7. Gate 与 Fast Path 强制治理
 
 ### 7.1 Trace Gate
 
-当前 Trace 主要检查 Requirement → Design → Task 覆盖，不具备本方案要求的架构关系语义验证。
-
-扩展现有 Trace Gate，不新建 Gate。
+Trace Gate 必须同时验证 Requirement → Design → Task 覆盖和本方案定义的 Architecture / Data / Contract / Scope 关系语义；不新建平行 Gate。
 
 新增检查：
 
@@ -2528,7 +2498,7 @@ Current Trace + Trace Delta
 
 ### 7.2 Spec Consistency Gate
 
-继续扩展现有：
+正式使用：
 
 ```text
 spec_consistency_gate
@@ -2560,21 +2530,19 @@ Module Design 引用了不存在的 DATA ID
 ```
 
 ```text
-Design 违反当前 Architecture
+Design 违反正式 Architecture
 → BLOCK
 ```
 
 ### 7.3 Contract Integrity Gate
 
-继续扩展现有：
+正式使用：
 
 ```text
 contract_integrity_gate
 ```
 
-当前它已经针对 `extension_registry.json` Candidate 做 Schema 和消费者完整性检查。
-
-不增加第二个 Contract Gate。现有 Gate 必须在两个边界执行同一套 Contract 规则：
+不增加第二个 Contract Gate。`contract_integrity_gate` 必须在两个边界执行同一套 Contract 规则：
 
 ```text
 Candidate 合并前
@@ -2687,7 +2655,7 @@ contract_integrity_gate = hard
 
 不存在按项目、按 WI 或按“第一个 WI 是否完成”从 Soft 自动切换到 Hard 的状态机。
 
-最终 Hard 状态必须由现有机制共同保证，不新增平行配置体系：
+最终 Hard 状态必须由统一 Gate/Workflow/Runtime 机制共同保证，不新增平行配置体系：
 
 ```text
 Gate 注册定义
@@ -2729,62 +2697,51 @@ Phase 11 必须在候选实现已经具备上述最终 Hard 行为时进行真�
 4. 后续 Attempt 不得删除、修改或替换旧 Attempt；
 5. Agent、Runtime 和人工审计必须报告 `attempt_id` 与 `attempt_path`，不能只报告可变的 latest 文件。
 
-**GATE-LATEST-001：** 现有路径继续保留：
+**GATE-LATEST-001：** latest compatibility 路径固定为：
 
 ```text
 .specforge/work-items/<WI>/gates/<gate_id>.json
 .specforge/work-items/<WI>/gate_summary.md
 ```
 
-它们只表示“当前最新兼容视图”，供既有 Merge、Verification、Close 和读取消费者继续使用；它们不是历史审计真相源。历史审计必须读取 `gate_attempts/attempt-NNNN`。
+它们只表示“latest compatibility view”，供既有 Merge、Verification、Close 和读取消费者继续使用；它们不是历史审计真相源。历史审计必须读取 `gate_attempts/attempt-NNNN`。
 
 **GATE-MIGRATION-001：** 升级前已经存在 latest Gate 文件、但尚无 `gate_attempts` 时，第一次升级后 Gate 运行前，Runtime 必须先把现有 latest 文件完整复制为 `attempt-0001` legacy snapshot，再创建新的 Attempt。无法证明被更早覆盖的历史内容时必须标记 `INSUFFICIENT_EVIDENCE`，不得伪造或声称已恢复。
 <!-- SPECFORGE_GATE_ATTEMPT_EVIDENCE:END -->
 
 ### 7.5 Fast Path 的正确含义
 
-Fast Path：
+Fast Path 只表示“正式上层治理对象确认不变时，不制造无意义 Candidate”；它不表示绕过治理。
 
-> **只是不修改上层正式 Spec，不是不遵守上层正式 Spec。**
-
-当前 `code_only_fast_path` 的 Candidate Gates 明确没有：
+进入 Fast Path 前，Classification 必须满足 4.4 的全部 false / empty 条件。Fast Path 仍必须执行：
 
 ```text
-spec_consistency_gate
-trace_gate
-```
-
-最终 Fast Path 必须执行：
-
-```text
-schema_gate
-path_policy_gate
-candidate_manifest_gate
-
 spec_consistency_gate
 contract_integrity_gate
 trace_gate
 ```
 
-其中后面三个验证的是：
+并验证：
 
 ```text
-当前正式 Architecture
-当前 Data Model
-当前 Module Design
-当前 Contract
-当前 Trace
+正式 Architecture
+正式 Data Model
+正式 Module Design
+正式 Contract
+正式 Trace
 +
-本次 Impact Scope
+本次实际修改
+→ 一致
 ```
 
-全部通过以后才能发 Code Permission。
+只有在确实不存在关系变化时才允许不产生 Trace Delta；Gate 必须用 Impact Scope 和实际修改验证“无关系变化”声明。
 
+Fast Path 不得降低三个核心 Gate 的 severity，不得绕过 Code Permission、Actual Scope Audit、Verification、Formal Version Gate、Close Gate 或 Git Merge Guard。
 ## 8. Implementation → Verification → Release
 
 ### 8.1 Code Permission
 
-当前 Code Permission 主要只有：
+Code Permission 的正式许可模型必须包含：
 
 ```text
 allowed_write_files
@@ -2874,7 +2831,7 @@ SCOPE_EXPANSION_REQUIRED
 
 `sf-task-planner` 继续负责 Task。
 
-当前它已经要求：
+Task 的正式内容必须包含：
 
 ```text
 Task 引用 Requirement / Design
@@ -2904,7 +2861,7 @@ Architecture 一般通过 DD 继承。
 
 不能只靠 Task 文本转述。
 
-现有 `sf_context_build` 要扩展。
+`sf_context_build` 必须构建正式执行上下文。
 
 Executor 被调度时，Runtime 根据：
 
@@ -2936,13 +2893,7 @@ Task
 
 ### 8.5 Actual Scope Audit
 
-当前 Changed Files Audit 已经可以根据真实 Write Guard 记录和文件系统 Diff 判断文件是否超出 `allowed_write_files`。
-
-不新建另一套 Changed Files Audit。
-
-直接扩展现有能力。
-
-当前：
+Changed Files Audit 必须根据真实 Write Guard 记录和文件系统 Diff 判断文件是否超出 `allowed_write_files`；不新建第二套 Changed Files Audit。正式对账从文件级扩展为治理范围级：
 
 ```text
 Actual File
@@ -3010,7 +2961,7 @@ Verification 必须证明：
 8. Actual Scope 未超过 Code Permission
 ```
 
-继续复用当前：
+Verification 正式证据对象固定为：
 
 ```text
 verification_report
@@ -3021,7 +2972,7 @@ verification_gate
 
 不建立第二套 Verification。
 
-当前 Verification Gate 已经是验证、证据、Semantic Closure 后才进入 `verification_done` 的正式入口。
+`verification_gate` 只有在验证、证据和 Semantic Closure 全部满足后才能进入 `verification_done`。
 
 ### 8.7 Formal Version Gate
 
@@ -3045,7 +2996,7 @@ Closed
 
 它不再检查业务是否正确。
 
-业务正确性已经由 Verification 负责。
+业务正确性由 Verification 负责。
 
 Formal Version Gate 只回答：
 
@@ -3060,7 +3011,7 @@ workflow_type / workflow_path 合法
 
 Gate 仍然有效，没有过期
 
-User Decision 与当前 Candidate 一致
+User Decision 与批准的 Candidate 一致
 
 需要 Merge 的 Candidate 已正确 Merge
 
@@ -3115,7 +3066,7 @@ Code Permission 已撤销
 closed
 ```
 
-当前 `sf_close_gate` 已经要求 `verification_done`、验证报告、Candidate、Merge、Audit 等证据并独占关闭操作，因此直接收敛职责即可。
+`sf_close_gate` 独占关闭操作，并必须消费 `verification_done`、验证报告、Candidate、Atomic Spec Merge、Audit、Formal Version 等正式证据。
 
 ### 8.9 Git Merge
 
@@ -3173,51 +3124,53 @@ data_model.md
 
 旧 `domain_model.md` 只兼容读取。
 
-### 9.2 完成后的 SpecForge：新项目首次治理自举
+### 9.2 新项目首次治理自举
 
-本节定义的是完成后的 SpecForge 治理业务项目时的目标产品行为，不是开发 SpecForge 时每次修改都要执行的 Phase，也不要求业务项目直接读取本文件。
+新项目的首个正式 WI 不定义第二条完整生命周期；它只是第 3.1 Canonical Product Lifecycle 在“项目尚无正式 Project Spec”条件下的首次运行。
 
-SpecForge 产品本身不使用 SpecForge / OpenCode 自治理开发，因此不存在“SpecForge 自迁移”这一产品目标。旧项目升级迁移也不是当前版本交付目标；现有 `spec_migration_path` 保留已有能力，但本阶段不为历史项目兼容继续扩展。
-
-一个全新的业务项目第一次使用完成后的 SpecForge 时，必须能够在第一个正式 WI 内自然建立完整治理模型。
-
-顺序必须是：
+首次 WI 必须在同一个 Candidate 范围内建立本项目所需的初始正式对象：
 
 ```text
-新项目初始化
-↓
-第一个正式 Requirement
-↓
-Impact Analysis
-↓
-Project Architecture
-↓
-Project Data Model（或有事实依据的不适用声明）
-↓
-已声明 Module 的真实 code_paths
-↓
-Module Design
-↓
-Module Contract
-↓
-Trace
-↓
-现有 Gate / User Decision / 原子 Merge
-↓
-新治理模型 active=true
-↓
-后续正常开发
+Requirement
+→ Project Architecture
+→ Project Data Model（ACTIVE 或有证据的 NOT_APPLICABLE）
+→ Module / code_paths
+→ Module Design
+→ Project / Module Contract（适用时）
+→ Trace / Prospective Trace
+→ Task
 ```
 
-首次 Requirement 即使需要同时建立上层设计，也继续遵守 Requirement 治理优先规则，并在同一个 WI 内完成；不新增初始化 Workflow，不新增专业 Agent，不允许直接写正式 Project Spec。
+随后继续进入第 3.1 的统一阶段：
+
+```text
+Required Candidate Gates
+→ User Decision
+→ Atomic Spec Merge
+→ Post-Merge Gate
+→ Code Permission
+→ Implementation
+→ Actual Scope Audit
+→ Verification
+→ Formal Version Gate
+→ Close Gate
+→ Git Merge
+```
+
+治理 Spec 的生效条件固定为：
+
+```text
+Atomic Spec Merge 成功
++
+全部 required Gate / Post-Merge Gate 满足
+→ 正式治理 Spec 生效
+```
+
+不再定义或维护独立的 `独立治理激活字段` 状态字段。
 
 从第一个 WI 开始，三个核心 Gate 就必须按最终产品规则全部 Hard；第一个 WI 完成后不发生 Gate 严格度切换。后续 WI 必须消费已经生效的正式 Architecture、Data Model、Module Design、Contract 和 Trace，并按同一套 Hard Gate 继续治理。
 
-Phase 11 是开发 SpecForge 产品时对上述目标行为进行的真实端到端验收；代码级单元/行为测试通过只能证明实现具备对应能力，不能替代真实项目链路验收。
-
-
 首次治理统一规则：不增加 Project Spec Readiness Gate；Architecture / Data Model / Module Design / Contract 必须在同一个正式 WI 内闭环，不拆分第二个架构 WI。
-
 ### 9.3 后续需求时怎么做
 
 每次设计仍然先消费现有正式设计。
@@ -3271,7 +3224,7 @@ Data Model 也要变
 不影响治理主链的局部修改
 → 定向单元测试、回归测试、类型检查、构建和架构/契约对账
 
-影响项目初始化、Impact、Architecture、Data、Module、Contract、Trace、Candidate、Gate、Merge、Code Permission、Audit、Verification 或 Close
+影响项目初始化、Impact、Architecture、Data、Module、Contract、Trace、Candidate、Gate、Atomic Spec Merge、Code Permission、Audit、Verification 或 Close
 → 追加全新临时项目的首个 WI 端到端回归
 
 影响真实 OpenCode、Agent 协作、daemon 生命周期、用户审批交互或安装后运行路径
@@ -3282,252 +3235,273 @@ Data Model 也要变
 ```
 
 已经进入最终 Hard 状态后，普通修改不得把任一核心 Gate 静默降级为 Soft；验证未通过时应阻止新版本发布，而不是降低治理强度。
-
 ### 10.2 Phase 1：建立数据结构
 
-修改：
+**Goal**
 
-```text
-work-item / project schema
-directory layout
-contract model
-gate ids
-trigger result
-classification
-```
+建立治理对象的类型、Schema、目录和变更标志，使第 3—9 章的正式对象可被机器表达。
 
-实现：
+**Canonical References**
 
-```text
-data_model
+第 3.3、3.4、4.1、4.4、6.1、7.4；`GOV-CONTRACT-001`、`CON-MODEL-001`、`GATE-FINAL-001`
 
-contracts
+**Required Outputs**
 
-code_paths
+`data_model`、`contracts`、`code_paths`、`impact_scope`、`data_model_changed`、`module_contract_changed`、Formal Version Gate ID 等结构进入正式类型/Schema。
 
-impact_scope
+**Exit Criteria**
 
-data_model_changed
+Schema/类型/路径彼此一致，兼容读取边界明确；没有第二套 Data/Contract/Trace 数据模型。
 
-module_contract_changed
+**Required Tests**
 
-formal_version_gate
-```
-
-先保持向后兼容。
-
+类型检查、Schema 单测、目录/序列化回归、workspace build
 ### 10.3 Phase 2：建立正式对象解析能力
 
-实现：
+**Goal**
 
-```text
-ARCH ID parser
+建立稳定 ID、引用和代码归属解析能力，为 Impact、Gate、Trace、Contract 消费提供统一真相源。
 
-DATA ID parser
+**Canonical References**
 
-现有 DD parser 继续复用
+第 3.3、3.4、4.2、6.4、6.5；`CON-CONS-SOURCE-001`
 
-Contract source ref resolver
+**Required Outputs**
 
-code_paths → Module resolver
+ARCH/DATA/DD/Contract source ref resolver、code_paths→Module resolver、Project Spec graph resolver。
 
-Project Spec graph resolver
-```
+**Exit Criteria**
 
-不建设复杂 Markdown AST。
+所有治理关系可由稳定 ID/固定结构解析；无法唯一解析时 Fail Closed。
 
-只解析治理真正需要的稳定 ID、引用和固定表格。
+**Required Tests**
 
+parser/resolver 单测、冲突/缺失 ID 负例、Module 唯一归属测试
 ### 10.4 Phase 3：改造 sf-design 和上下文
 
-修改：
+**Goal**
 
-```text
-sf-design
-sf-orchestrator
-sf_context_build
-相关 Workflow Skills
-```
+让设计生产严格消费正式 Requirement、Architecture、Data Model、Contract 和 Impact Scope。
 
-实现：
+**Canonical References**
 
-```text
-Architecture 生产规则
+第 3.3、3.5、5.1；`GOV-ROLE-001`、`GOV-CONTRACT-001`
 
-Data Model 生产规则
+**Required Outputs**
 
-Module Design 强制消费上层设计
+`sf-design` 与 `sf_context_build` 能构造完整 Design Context 并生产适用 Candidate。
 
-Contract 提取规则
+**Exit Criteria**
 
-按 Impact Scope 构建 Design Context
-```
+Module Design 不越过 Architecture/Data；Contract 来源可追溯；不新增 Architecture/Data Agent。
 
+**Required Tests**
+
+design/context 单测、缺少上层对象负例、端到端 Candidate context 测试
 ### 10.5 Phase 4：改造 Candidate
 
-统一专业产物所有权：
+**Goal**
 
-```text
-Requirements → sf-requirements
+固定专业产物 owner，并让 Runtime 独占 manifest、索引和 Prospective Spec/Trace 派生。
 
-Architecture/Data/Module Design/Module Contract
-→ sf-design
+**Canonical References**
 
-Task/现有交付 Trace
-→ sf-task-planner
+第 5.2—5.6、第 3.1
 
-Candidate Manifest / Index / Prospective Spec
-→ Runtime
-```
+**Required Outputs**
 
-修复目前 Workflow 配置与正式 Agent 职责不一致的问题。
+Requirement/Design/Task/Trace/Candidate Manifest 的 producer 归属一致。
 
+**Exit Criteria**
+
+不存在一个产物被多个专业 Agent 同时生产；Candidate 路径由 Runtime 决定。
+
+**Required Tests**
+
+Candidate producer/consumer 单测、manifest 完整性测试、Workflow 回归
 ### 10.6 Phase 5：扩展 Contract 与 Trace
 
-实现：
+**Goal**
 
-```text
-Module Contract reader / validator
+把两级 Contract、消费者关系、Promotion、Prospective Trace 和代码消费者对账接入统一治理链。
 
-source_refs
+**Canonical References**
 
-Internal Contract scope
+第 6 章；`GOV-CONTRACT-001`、`CON-MODEL-001`、`CON-PROJ-001`、`CON-MOD-001`、`CON-PROM-001`、`CON-CONS-SOURCE-001`、`CON-CONS-DELTA-001`、`CON-CODE-CONS-001`
 
-Project Contract promotion checks
+**Required Outputs**
 
-Architecture/Data/Design governance trace
+Module Contract reader/validator、source_refs、Promotion checks、Prospective Trace、代码消费者证据。
 
-Prospective Trace
-```
+**Exit Criteria**
 
-不建立第二套 Contract 或 Trace。
+Contract 关系只有一个真相源；跨 Module 消费正确 Promotion；无法证明代码消费者时 Fail Closed。
 
+**Required Tests**
+
+Contract/Trace 单测、Promotion 正负例、生产代码消费者集成测试
 ### 10.7 Phase 6：扩展 Gate
 
-扩展：
+**Goal**
 
-```text
-spec_consistency_gate
+让三个核心 Gate 完整覆盖 Spec、Contract、Trace，并满足最终 Hard Enforcement。
 
-contract_integrity_gate
+**Canonical References**
 
-trace_gate
-```
+第 7.1—7.4；`GATE-HARD-001`、`GATE-FINAL-001`、`GATE-ATTEMPT-001`、`GATE-LATEST-001`
 
-开发过程中可以先完成检查、报告和定向测试能力；本能力最终完成时必须满足 `GATE-FINAL-001`，不得把中间状态作为业务项目的正式治理模式。
+**Required Outputs**
 
+`spec_consistency_gate`、`contract_integrity_gate`、`trace_gate` 的正式报告、Attempt、阻断行为。
+
+**Exit Criteria**
+
+所有适用 Workflow/Candidate Phase 的 required Gate 完整执行；非法场景真实阻断。
+
+**Required Tests**
+
+Gate 单测、required-gates 覆盖、Attempt/retry/reconciliation 集成测试
 ### 10.8 Phase 7：修复 Fast Path
 
-完成：
+**Goal**
 
-```text
-architecture_changed Fast Path 漏检修复
+保证 Fast Path 只省略无意义 Candidate，不绕过正式对象一致性或核心 Gate。
 
-data_model_changed 检查
+**Canonical References**
 
-module_contract_changed 检查
+第 4.4、7.5；`GATE-FINAL-001`
 
-Fast Path 增加：
-spec_consistency
-contract_integrity
-trace
+**Required Outputs**
 
-删除无关系变化时强制治理 Trace Delta
-```
+Fast Path classification 条件和三个核心 Gate 调用覆盖。
 
+**Exit Criteria**
+
+任一上层对象变化或 unknown 存在即退出 Fast Path；无关系变化时可不制造 Trace Delta。
+
+**Required Tests**
+
+Fast Path 正负例、Gate 调用覆盖测试、关系变化回归
 ### 10.9 Phase 8：Code Permission 与 Actual Scope
 
-扩展：
+**Goal**
 
-```text
-Code Permission frozen governance scope
+把批准治理范围冻结到开发许可，并用真实写入证据验证 Actual Scope。
 
-code_paths Module resolution
+**Canonical References**
 
-Changed Files Audit governance scope calculation
+第 4.3.3、8.1、8.2、8.5；`GOV-SCOPE-001`
 
-Actual Scope ⊆ Approved Scope
-```
+**Required Outputs**
 
+Code Permission governance scope、code_paths Module resolution、Changed Files Audit。
+
+**Exit Criteria**
+
+`Actual Scope ⊆ Approved Scope`；新治理范围需求必须停止并重新分析。
+
+**Required Tests**
+
+permission/audit 单测、范围扩张负例、实际文件系统 diff 集成测试
 ### 10.10 Phase 9：Verification
 
-扩展现有：
+**Goal**
 
-```text
-sf-verifier
-verification_gate
-semantic closure
-```
+让 Verification 同时证明业务正确性和 Architecture/Data/Design/Contract/Scope 一致性。
 
-增加 Architecture / Data / Design / Contract / Scope 的正式验证。
+**Canonical References**
 
+第 8.6；`GOV-CONTRACT-001`、`CON-CODE-CONS-001`
+
+**Required Outputs**
+
+`sf-verifier`、`verification_gate`、Semantic Closure 的正式证据链。
+
+**Exit Criteria**
+
+只有验证、证据和 Semantic Closure 全部满足才进入 `verification_done`。
+
+**Required Tests**
+
+verification 单测、semantic closure 回归、消费者/范围集成测试
 ### 10.11 Phase 10：Formal Version Gate
 
-新增：
+**Goal**
 
-```text
-formal_version_gate
-```
+在 Verification 与 Close 之间冻结可交付正式版本，阻断验证后漂移。
 
-接到：
+**Canonical References**
 
-```text
-verification_gate
-↓
-formal_version_gate
-↓
-sf_close_gate
-↓
-Git Merge Guard
-```
+第 8.7—8.9
 
+**Required Outputs**
+
+Formal Version evidence、Close consumption、Git Merge Guard linkage。
+
+**Exit Criteria**
+
+Formal Version 后任何未授权漂移都会阻断 Close/Git Merge。
+
+**Required Tests**
+
+Formal Version 正负例、dirty worktree 回归、Close/Git Merge 集成测试
 ### 10.12 Phase 11：最终 Hard 行为的真实新项目验收
 
-Phase 11 是首次宣布本能力完成前的一次性产品验收阶段。候选实现此时必须已经把三个核心 Gate 全部设为 Hard，并在真实全新业务项目中使用实际 OpenCode + SpecForge 完整执行第一个正式 Requirement，验证：
+**Goal**
 
-```text
-Requirement
-→ Impact Analysis
-→ Architecture
-→ Data Model
-→ Module code_paths
-→ Module Design
-→ Module Contract
-→ Trace
-→ Gate
-→ User Decision
-→ 原子 Merge
-→ governance active=true
-```
+用真实全新业务项目验证第 3.1 Canonical Product Lifecycle 的首个正式 WI，证明最终 Hard 行为可实际运行。
 
-同时验证：
+**Canonical References**
 
-```text
-三个核心 Gate 的合法场景全部通过
-三个核心 Gate 的非法场景全部真实阻断
-任何 Gate 失败都不能 Merge 或发 Code Permission
-Fast Path 不能绕过三个 Gate
-旧项目兼容读取行为没有被破坏
-```
+第 3.1、第 9.2、第 12 章；`PHASE-LIFE-001`、`GATE-FINAL-001`
 
-首次完成后，不要求每次普通修改都重新创建长期真实业务项目；后续按 `PHASE-LIFE-001` 的影响触发规则执行相应级别的端到端或真实环境回归。
+**Required Outputs**
 
+真实项目的 Requirement、Candidate、Gate Attempt、User Decision、Atomic Spec Merge、Code Permission、Implementation、Verification、Close、Git Merge 全链证据。
+
+**Exit Criteria**
+
+合法场景全部通过；非法场景全部真实阻断；Fast Path 不能绕过核心 Gate；不使用独立治理激活字段。
+
+**Required Tests**
+
+真实 OpenCode + SpecForge E2E、核心 Gate 正负例、审批/实现/Close/Git Merge 全链回归
 ### 10.13 Phase 12：最终 Hard Enforcement 固化与发布边界
 
-确认 Phase 11 真实端到端验收和全部相关测试通过后，检查并固化：
+**Goal**
 
-```text
-Gate 注册：三个核心 Gate 全部 hard
-Workflow：所有适用流程和 Fast Path 必须调用三个 Gate
-Runtime：任一失败都阻断 Merge、Code Permission 和状态推进
-测试：severity、调用覆盖、合法通过和非法阻断全部有回归测试
-```
+把 Phase 11 已证明的行为固化为发布版本，不在业务项目运行时再切换治理强度。
 
-Phase 12 是 SpecForge 产品完成和发布边界，不是业务项目内部的状态切换。完成后的业务项目从第一个 WI 开始即执行三个 Hard Gate，后续所有 WI 保持相同行为。
+**Canonical References**
 
+第 7.4、第 10.1；`PHASE-LIFE-001`、`GATE-FINAL-001`
+
+**Required Outputs**
+
+三个核心 Gate hard 注册、Workflow/Fast Path 调用覆盖、Runtime 阻断、最终回归测试。
+
+**Exit Criteria**
+
+发布版本从业务项目第一个 WI 起即执行最终 Hard 行为；任何必需验证失败都阻止发布。
+
+**Required Tests**
+
+全量回归、TypeScript、相关/全仓 build、真实环境验收、发布前 E2E
 ## 11. 实施影响范围
 
-### 11.1 类型和正式路径
+### 11.1 Implementation Mapping 边界
+
+本章只描述“哪些实现区域通常承载第 3—10 章规则”，用于架构对账、消费者检查和实施规划；**不是任何具体任务的 write scope 或代码权限来源**。
+
+```text
+IMPLEMENTATION_MAPPING_ONLY=YES
+TASK_WRITE_SCOPE_AUTHORITY=NO
+```
+
+任何具体任务允许修改哪些文件，必须由该任务自己的 `GOV-PRE-001` / `GOV-SCOPE-001` 影响分析、批准范围和运行时证据决定；不得因为文件出现在本章就自动取得修改权限。
+
+
+### 11.2 类型和正式路径
 
 重点修改：
 
@@ -3538,7 +3512,7 @@ packages/types/src/directory-layout.ts
 packages/types/src/gate-ids.ts
 ```
 
-### 11.2 Classification / Impact
+### 11.3 Classification / Impact
 
 重点修改：
 
@@ -3549,7 +3523,7 @@ packages/daemon-core/src/tools/lib/trigger-result.ts
 packages/daemon-core/src/tools/lib/workflow-path-selector-v11.ts
 ```
 
-### 11.3 Project Spec / Context
+### 11.4 Project Spec / Context
 
 重点修改：
 
@@ -3568,7 +3542,7 @@ module code-path resolver
 data-model parser
 ```
 
-### 11.4 Contract / Trace
+### 11.5 Contract / Trace
 
 重点修改：
 
@@ -3579,7 +3553,7 @@ sf_trace_matrix_core.ts
 verification-evidence-v11.ts
 ```
 
-### 11.5 Gates
+### 11.6 Gates
 
 重点修改：
 
@@ -3592,7 +3566,7 @@ sf_verification_gate_core.ts
 
 增加 Formal Version Gate 核心实现。
 
-### 11.6 Permission / Audit / Merge
+### 11.7 Permission / Audit / Merge
 
 重点修改：
 
@@ -3605,7 +3579,7 @@ merge-runner-v11.ts
 Git governance merge guard
 ```
 
-### 11.7 Agent
+### 11.8 Agent
 
 修改：
 
@@ -3619,7 +3593,7 @@ sf-verifier.md
 
 不增加 Agent。
 
-### 11.8 Workflow / Skills
+### 11.9 Workflow / Skills
 
 修改已有：
 
@@ -3638,218 +3612,50 @@ spec_migration
 
 不增加 Data Model Workflow。
 
-## 12. 验收与完成标准
+## 12. 验收矩阵与完成标准
 
-### 12.1 第一个功能，项目没有 Architecture
+### 12.1 Acceptance Matrix
 
-结果：
+第 12 章只把第 3—9 章的正式规则实例化为验收场景；**不得在这里重新定义 Architecture、Contract、Trace、Gate、Scope 或 Lifecycle 规则**。如果矩阵与对应 Rule ID / canonical section 冲突，以正式规则为准并修订本矩阵。
 
-```text
-同一个 WI 自动先产生 Architecture
-再产生 Data Model / Design
-PASS
-```
+| Scenario | Preconditions | Applicable Rules | Expected Artifact / Evidence | Expected Gate / Control | Expected State / Result |
+|---|---|---|---|---|---|
+| 首次项目没有 Architecture | 项目尚无正式 Project Architecture | 3.1, 3.3, 9.2 | Architecture/Data/Design Candidate + Trace/Task | Required Candidate Gates | PASS 后进入 User Decision；不得直接跳 Module Design |
+| Architecture 已存在且不变 | Impact 判定 architecture_changed=false | 3.3, 4.3, 5.1 | 引用正式 Architecture 的下层 Candidate | spec_consistency_gate | PASS |
+| 数据库全局模型变化 | data_model_changed=true | 3.3.2, 4.3.2, 6.5 | Data Model Candidate + 受影响 Design/Task/Trace | spec_consistency_gate + trace_gate | 全部闭合才 PASS |
+| Module 私有 Contract | 消费者仅 owner Module | 6.1, 6.2; CON-MOD-001 | Module Contract + source_refs/Trace | contract_integrity_gate | PASS |
+| 跨 Module 消费 Internal Contract | 其他 Module 消费 Module Contract | CON-PROM-001 | Promotion 所需 Project Contract Candidate | contract_integrity_gate | BLOCK，直到 Promotion 完整 |
+| Module Contract Promotion | 跨 Module 消费已识别 | CON-PROM-001, CON-CONS-DELTA-001 | Project Contract + Consumers + Trace + 必要 Design | contract_integrity_gate + trace_gate | 完整才 PASS；缺一项 BLOCK |
+| 普通 Fast Path | 4.4 全部 false / unknowns=[] | 4.4, 7.5 | 无无意义 Spec Candidate；保留一致性证据 | 三个核心 Gate | PASS |
+| Fast Path 违反 Architecture | 实际修改与正式 Architecture 冲突 | 7.2, 7.5 | 冲突证据 | spec_consistency_gate | BLOCK |
+| Fast Path 实际需要 Data Model 变化 | data_model_changed=true 或证据表明需变更 | 4.4, 7.5 | 重新分类后的 Candidate 要求 | Classification + spec_consistency_gate | 退出 Fast Path，进入完整 Candidate |
+| 代码文件没有 Module 归属 | code_paths 解析 0 个 Module | 3.4, 8.1 | Module resolution evidence | Code Permission / Scope control | BLOCK |
+| 代码文件匹配多个 Module | code_paths 解析 >1 Module | 3.4, 8.1 | 冲突 resolution evidence | Code Permission / Scope control | BLOCK |
+| 多修改文件但仍在批准范围 | Actual Scope 仍是 Approved Scope 子集 | 8.2, 8.5; GOV-SCOPE-001 | Changed Files Audit | Actual Scope Audit | PASS |
+| Implementation 需要新治理范围 | 实现发现新 Module/Contract/架构影响 | 8.2; GOV-SCOPE-001 | Scope expansion evidence | Scope Freeze | STOP；重新 Impact/批准，不得自行扩大 |
+| 已经产生越界修改 | Actual Scope 不是 Approved Scope 子集 | 8.5; GOV-SCOPE-001 | 真实 Write Guard / filesystem diff | Actual Scope Audit | BLOCK |
+| Project Contract 删除但消费者未更新 | 删除/变更 Project Contract | CON-CONS-SOURCE-001, CON-CONS-DELTA-001, CON-CODE-CONS-001 | Prospective Trace + consumer reconciliation | contract_integrity_gate | BLOCK |
+| Trace 出现不存在 ID | Trace/Delta 引用无法解析 | 6.4, 6.5 | resolver / Trace evidence | trace_gate | BLOCK |
+| 功能测试通过但治理未闭合 | 业务测试 PASS，治理证据缺失 | 8.6, 8.7 | Verification + governance evidence | Formal Version Gate | BLOCK |
+| Formal Version 后工作区漂移 | Formal Version evidence 后发生修改 | 8.7, 8.8, 8.9 | worktree / fingerprint delta | Close Gate / Git Merge Guard | BLOCK |
+| 完整最终交付 | 第 3.1 全链全部合法完成 | 3.1 + 第 4—9 章全部适用规则 | 完整 Candidate/Gate/Decision/Atomic Spec Merge/Permission/Audit/Verification/Formal Version/Close evidence | 全部适用 Gate | Close 成功且 Git Merge 才允许 |
 
-不能直接跳到 Module Design。
+### 12.2 最终完成标准
 
-### 12.2 Architecture 已存在且不变
-
-新的 Module Design：
-
-```text
-必须引用并遵守现有 Architecture
-PASS
-```
-
-### 12.3 数据库全局模型变化
-
-```text
-Data Model Candidate
-↓
-受影响 Module Design
-↓
-Task
-↓
-Code
-```
-
-全部闭合才 PASS。
-
-### 12.4 Module 私有 Contract
-
-只有本 Module 使用：
+SpecForge 架构一致性治理能力只有同时满足以下条件，才能宣布产品能力完成：
 
 ```text
-PASS
+1. 第 3.1 Canonical Product Lifecycle 已由实现完整承载；
+2. 第 3—9 章所有适用正式对象、Contract、Trace、Gate、Scope、Verification、Formal Version、Close、Git Merge 规则均有生产者和消费者；
+3. 三个核心 Gate 在所有适用 Workflow / Fast Path 中保持 Hard；
+4. Phase 11 真实全新项目端到端验收通过；
+5. Phase 12 发布边界验证通过；
+6. 单元、属性、集成、端到端、TypeScript、相关构建和必要全仓构建全部满足发布要求；
+7. `git diff --check`、实际修改范围审计、生产者/消费者对账、authority 同步检查通过；
+8. 不存在未解释的 `INSUFFICIENT_EVIDENCE`。
 ```
 
-### 12.5 其他 Module 引用 Internal Contract
-
-```text
-BLOCK
-```
-
-### 12.6 Module Contract 升级成 Project Contract
-
-必须完成：
-
-```text
-Project Contract
-消费者更新
-Trace 更新
-Design 更新（需要时）
-```
-
-缺一个：
-
-```text
-BLOCK
-```
-
-### 12.7 普通 Fast Path
-
-所有正式上层对象不变：
-
-```text
-PASS
-```
-
-不产生 Spec Candidate。
-
-### 12.8 Fast Path 实际违反 Architecture
-
-```text
-BLOCK
-```
-
-### 12.9 Fast Path 实际需要改变 Data Model
-
-```text
-不能继续 Fast Path
-```
-
-### 12.10 代码文件没有 Module 归属
-
-```text
-BLOCK
-```
-
-### 12.11 一个代码文件匹配两个 Module
-
-```text
-BLOCK
-```
-
-### 12.12 Implementation 多修改一个文件，但仍属于批准治理范围
-
-Runtime 可以精确补充文件许可。
-
-不能增加新的治理对象。
-
-### 12.13 Implementation 需要进入新的治理范围
-
-```text
-SCOPE_EXPANSION_REQUIRED
-BLOCK
-```
-
-### 12.14 实际已经产生越界修改
-
-```text
-Changed Files Audit FAILED
-Verification BLOCK
-Close BLOCK
-```
-
-### 12.15 Project Contract 删除但消费者未更新
-
-```text
-Contract Integrity BLOCK
-```
-
-### 12.16 Trace 出现不存在的 ID
-
-```text
-Trace Gate BLOCK
-```
-
-### 12.17 WI 所有功能测试都通过，但治理未完整
-
-```text
-Formal Version Gate BLOCK
-```
-
-### 12.18 Formal Version Gate 后工作区又出现修改
-
-```text
-Git Merge BLOCK
-```
-
-### 12.19 最终完成标准
-
-改造完成后，对任意实际修改文件，SpecForge 必须能自动回答：
-
-```text
-这个文件属于哪个 Module？
-
-为什么允许修改？
-
-它落实哪个 DD？
-
-它受哪些 DATA 设计约束？
-
-它受哪些 ARCH 规则约束？
-
-它受哪些 Project / Module Contract 强制？
-
-本次 WI 是否批准了这些范围？
-
-实际修改有没有越界？
-
-功能和设计一致性是否验证通过？
-
-它是否有资格进入正式版本？
-```
-
-反方向也必须能够回答：
-
-```text
-一个 Requirement 变化
-↓
-需要不要改变 Architecture？
-↓
-需要不要改变 Data Model？
-↓
-影响哪些 Module Design？
-↓
-影响哪些 Contract？
-↓
-最终允许修改哪些代码？
-```
-
-最终形成真正完整的：
-
-```text
-Requirement
-↓
-Architecture
-↓
-Data Model
-↓
-Module Design
-↓
-Contract
-↓
-Task
-↓
-Code
-↓
-Verification
-↓
-Formal Version
-```
-
-双向可追溯、机器可验证、违规可阻断的 SpecForge 治理闭环。
+最终验收只引用第 3.1 Canonical Product Lifecycle，不再复制另一条流程。
 
 <!-- SPECFORGE_NEW_SESSION_PROMPT:START -->
 
@@ -4072,9 +3878,9 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
 | `GATE-MIGRATION-001` | 7.4.1 Gate Attempt 证据不可变性 |
 | `GATE-RETRY-STATE-001` | 7.4 Gate 的硬阻断与产品完成边界 |
 | `GOV-AUTH-001` | 1.2 唯一权威源 |
-| `GOV-CONT-001` | 2.6.1 上下文压缩、续接与当前用户授权边界 |
+| `GOV-CONT-001` | 2.7 Continuity 与当前用户授权边界 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
-| `GOV-EVID-001` | 2.6 Fail Closed 与“完全做到”的保证机制 |
+| `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |
 | `GOV-MODE-001` | 1.3.1 模式 A：SpecForge 自身开发 |
 | `GOV-POST-001` | 2.5 修改后治理闭环 |
 | `GOV-PRE-001` | 2.2 SpecForge 自身开发：修改前治理 |
@@ -4082,26 +3888,26 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
 | `GOV-ROLE-001` | 1.3 文件作用范围与两种开发模式 |
 | `GOV-SCOPE-001` | 2.4 实施过程中的范围冻结 |
 | `GOV-SELF-001` | 1.3.1 模式 A：SpecForge 自身开发 |
-| `GOV-STAGE-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-ARTIFACT-VERIFY-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
+| `GOV-STAGE-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-ARTIFACT-VERIFY-001` | 2.9 Truth Source、Artifact Acceptance 与 Validator |
 | `GOV-STAGE-AUTHORITY-BOOTSTRAP-001` | 2.1 新会话的远程权威入口 |
 | `GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001` | 2.1 新会话的远程权威入口 |
 | `GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001` | 2.1 新会话的远程权威入口 |
-| `GOV-STAGE-BLOCKER-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-BOOTSTRAP-ENVELOPE-001` | 2.6.3 Delivery Internal Reference Binding |
-| `GOV-STAGE-BRANCH-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-CHK-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-DELIVERY-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-DELIVERY-IDENTITY-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-DIAG-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-ENV-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-HANDOFF-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-INPUT-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-OUTPUT-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-RECEIPT-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-RECOVERY-ACCEPT-001` | 2.6.10 Ordered Bootstrap Execution / Pre-tool Guard |
-| `GOV-STAGE-RETRY-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-SIDEFX-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-TRUTH-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
-| `GOV-STAGE-VALIDATOR-001` | 2.6.2 完整阶段执行、失败诊断与跨会话一致性协议 |
+| `GOV-STAGE-BLOCKER-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-BOOTSTRAP-ENVELOPE-001` | 2.11 Bootstrap Envelope |
+| `GOV-STAGE-BRANCH-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-CHK-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-DELIVERY-001` | 2.10 Delivery、Receipt 与 Delivery Identity |
+| `GOV-STAGE-DELIVERY-IDENTITY-001` | 2.10 Delivery、Receipt 与 Delivery Identity |
+| `GOV-STAGE-DIAG-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-ENV-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-HANDOFF-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-INPUT-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-OUTPUT-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-RECEIPT-001` | 2.10 Delivery、Receipt 与 Delivery Identity |
+| `GOV-STAGE-RECOVERY-ACCEPT-001` | 2.12 Recovery Acceptance |
+| `GOV-STAGE-RETRY-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-SIDEFX-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-TRUTH-001` | 2.9 Truth Source、Artifact Acceptance 与 Validator |
+| `GOV-STAGE-VALIDATOR-001` | 2.9 Truth Source、Artifact Acceptance 与 Validator |
 | `PHASE-LIFE-001` | 10.1 Phase 生命周期与发布边界 |

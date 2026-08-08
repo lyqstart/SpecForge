@@ -5457,3 +5457,55 @@ actual_files
   5. receipt verifier 必须使用正例验证“HEAD 新于 authority file commit”可以 PASS，并用负例拒绝把 authority file commit 填入 `AUTHORITY_HEAD`；
   6. `AUTHORITY_SYNC_CHECK` 必须明确分别说明 branch HEAD 与 authority last-modifying commit，不得用一个 `AUTHORITY_HEAD` 字段承载两个语义。
 <!-- SPECFORGE_ERR260_EXP226_AUTHORITY_HEAD_COMMIT_CONFLATION:END -->
+
+<!-- SPECFORGE_ERR261_EXP227_AUTHORITY_CONTENT_INFORMATION_ARCHITECTURE_OVERLAP:START -->
+## ERR-261 / EXP-227 — 一级编号统一后，权威正文仍存在协议域混排、生命周期多副本、动态历史与正式规范混写
+
+- **现场**：V127 已把 authority 统一为 12 个正式章节 + 附录 A/B，但第二轮内容审计确认：
+  1. 第 2 章的 Stage / Truth / Artifact / Validator / Delivery / Receipt / Bootstrap / Recovery 仍压在同一大节中，Rule ID 归属不清；
+  2. 模式 B、3.1、9.2、Phase 11、最终完成标准存在多套不完整生命周期表达；
+  3. 首页固化 2026-08-01 审计日期、旧测试数量和动态“尚未完成”状态；
+  4. 第 3—9 章混入“当前代码/当前 Classification/当前 Fast Path/当前 Gate”等历史实现 baseline；
+  5. 第 10 章重复定义第 3—9 章正式规则；
+  6. 第 12 章用散落 PASS/BLOCK 文案重复正式规则，缺少 Rule / Evidence / Gate / State 对账。
+- **用户批准**：2026-08-08 明确批准 D9-D14 删除/合并范围。
+- **分类**：`GOVERNANCE_FAILURE / AUTHORITY_INFORMATION_ARCHITECTURE_QUALITY_DEFECT`。
+- **D9-D14 处理**：
+  - D9：动态日期、测试计数、HEAD、实施进度只进入 handoff / receipt / Git / immutable evidence；
+  - D10：第 3.1 成为唯一 `Canonical Product Lifecycle`，其他章节只允许引用或描述局部阶段；
+  - D11：删除未定义 `governance active=true`，以 Atomic Spec Merge + required Gate 成功作为正式 Spec 生效条件；
+  - D12：第 3—9 章删除历史“当前实现缺什么”叙述，只保留最终规范；历史原因进入本 ledger；
+  - D13：Phase 1—12 统一为 `Goal / Canonical References / Required Outputs / Exit Criteria / Required Tests`；
+  - D14：第 12 章统一为 Acceptance Matrix，不再重新定义正式规则。
+- **EXP-227**：
+  1. authority 只保存稳定规范，不保存会随开发推进变化的运行事实；
+  2. 一个完整产品生命周期只能有一个 canonical source；
+  3. 协议域必须按 Authority / Fail Closed / Continuity / Stage / Truth+Artifact+Validator / Delivery / Bootstrap / Recovery 分开；
+  4. Phase 只引用正式规则，不建立规则副本；
+  5. Acceptance 只实例化正式规则，不建立第二套 PASS/BLOCK 语义；
+  6. Implementation Mapping 不是 write scope；
+  7. 重构前后 canonical Rule Definition 集合必须完全一致；
+  8. 固定新会话 Prompt 若 pre-authority 契约未变化必须字节保持不变；
+  9. 正文（排除代码块和固定 Prompt 镜像）不得出现完全重复的长段落；
+  10. 删除/合并必须能追溯到用户批准范围。
+<!-- SPECFORGE_ERR261_EXP227_AUTHORITY_CONTENT_INFORMATION_ARCHITECTURE_OVERLAP:END -->
+
+<!-- SPECFORGE_ERR262_EXP228_DATA_MODEL_NOT_APPLICABLE_UNDEFINED:START -->
+## ERR-262 / EXP-228 — Project Data Model 的“不适用”没有正式表示方式
+
+- **现场**：旧 authority 一方面规定 `.specforge/project/data_model.md` 是唯一正式 Project Data Model，另一方面首次项目流程允许“Data Model 或有事实依据的不适用声明”，但没有定义该声明存放位置、结构、证据或状态转换。
+- **分类**：`GOVERNANCE_FAILURE / PROJECT_DATA_MODEL_CONTRACT_AMBIGUITY`。
+- **修订**：新项目始终存在 `data_model.md`；有数据模型时 `STATUS=ACTIVE`，确实不适用时 `STATUS=NOT_APPLICABLE + REASON + EVIDENCE`。不得用文件缺失表达不适用；后续出现项目级数据语义时必须在同一正式 WI 中转为 `ACTIVE` 并产生正式 Candidate。
+- **EXP-228**：治理对象“不适用”必须有机器可读状态和证据，不能依赖文件缺失或自然语言旁注；NOT_APPLICABLE 不能绕过 Impact / Gate。
+<!-- SPECFORGE_ERR262_EXP228_DATA_MODEL_NOT_APPLICABLE_UNDEFINED:END -->
+
+<!-- SPECFORGE_ERR263_EXP229_MERGE_TERM_AMBIGUITY:START -->
+## ERR-263 / EXP-229 — `Merge / 原子 Merge / Spec Merge / Git Merge` 混用导致生命周期语义歧义
+
+- **现场**：旧 authority 在不同章节使用 `Merge`、`原子 Merge`、`Spec Merge`、`Git Merge`，其中前几种实际表示 Candidate/Prospective Spec 生效，最后一种表示 Git 分支合并。
+- **分类**：`GOVERNANCE_FAILURE / LIFECYCLE_TERMINOLOGY_AMBIGUITY`。
+- **修订**：
+  - `Atomic Spec Merge` = Candidate / Prospective Spec 原子生效为正式 Project Spec；
+  - `Git Merge` = 已通过 Close Gate 的工作分支合入目标 Git 分支。
+- **EXP-229**：正式生命周期禁止用裸 `Merge` 同时承载 Spec 生效和 Git 合并两种语义；规范、Phase 和 Acceptance 必须使用明确术语。
+<!-- SPECFORGE_ERR263_EXP229_MERGE_TERM_AMBIGUITY:END -->
