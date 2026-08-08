@@ -3917,3 +3917,12 @@ P0 总体仍受 WI-0001 first-gate machine report 永久证据缺口约束，不
 <!-- P0_WI0004_ERR215_RUNTIME_SCAFFOLD_DEADLOCK:END -->
 
 V69/V70 均已在 clean source 复现 ERR-215，但分别被 ERR-216 full-text anchor 和 ERR-217 非语义物理相邻断言阻断；两次均未修改真实产品仓库或 WI-0004。V71 改为固定 commit 下整函数替换，产品修复目标和 5 文件范围不变。
+
+<!-- P0_WI0004_ERR218_ERR219_COMPATIBILITY_CONSUMER_PROOF:START -->
+## WI-0004 Baseline Normalization — ERR-218 / ERR-219
+WI-0004 在 ERR-215 部署并重启后，真实 `prepare_repair` 已 SUCCESS；candidate_manifest schema_version=1.1、precondition SHA 正确，8 个 REPORTING/CLI module definition/requirements/design/module_trace entries 已形成。
+`repair_relocate_to_module` 随后因 Project Governance `active=false` Fail Closed；此次失败完全回滚，没有 extension_registry/module_contract Candidate，没有业务代码或正式 Project Spec 修改。
+ERR-218 产品修复后，应保留现有 WI-0004 prepare_repair Candidate，从 `candidate_preparing` 重试 `repair_relocate_to_module`；成功后继续 Design/Trace Candidate，仍不得提前运行 Candidate Gate。
+ERR-219 仅为 V73 交付前自检假失败，未触及任何仓库。
+P0 overall completion 继续受 WI-0001 first-gate machine report 永久证据缺口约束。
+<!-- P0_WI0004_ERR218_ERR219_COMPATIBILITY_CONSUMER_PROOF:END -->

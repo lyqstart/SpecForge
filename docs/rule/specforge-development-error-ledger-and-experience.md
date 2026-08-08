@@ -4836,3 +4836,10 @@ actual_files
 
 - **ERR-216**：V69 大型源码 full-text anchor=0；重复 ERR-196/197/198，复用 EXP-169。
 - **ERR-217**：V70 虽改为语义行定位，却继续对语义标记之间的物理相邻行号做严格断言，导致合法文本布局差异再次形成假失败。继续复用 **EXP-169**：结构化定位只依赖稳定语义边界，不得把空行、注释、缩进或相邻行号提升为源码契约。重复失败后应整函数/完整最终文件交付，并用 fixed HEAD + tests 验证，而不是继续在用户机器调锚点。
+
+<!-- SPECFORGE_ERR218_ERR219_EXP184_DOMAIN_EVIDENCE:START -->
+## ERR-218 / ERR-219 / EXP-184
+- **ERR-218**：领域操作 `repair_relocate_to_module` 需要证明的是目标 Contract 当前 formal Trace consumer 是否完整、是否跨 Module，但实现使用更宽泛的 Project Governance `active` 作为前置条件，导致兼容模式中的 spec_migration 循环依赖。
+- **EXP-184 — 领域操作必须直接证明领域证据，不得用更宽泛 readiness 标志替代**：Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consumer edges，逐边证明 DD→Module owner 可解析，再检查跨 Module；无法解析的正式边必须 Fail Closed。全局 Architecture/Data readiness 只约束真正需要该全局模型的检查。
+- **ERR-219**：V73 交付前内容审计要求自身 payload 未稳定承诺的英文 needle，重复 ERR-213 类假失败。`REPEATED_ERROR_CLASS=ERR-213`，继续复用 **EXP-182**：内容审计只能检查 payload 实际生成并明确承诺的稳定标记。
+<!-- SPECFORGE_ERR218_ERR219_EXP184_DOMAIN_EVIDENCE:END -->

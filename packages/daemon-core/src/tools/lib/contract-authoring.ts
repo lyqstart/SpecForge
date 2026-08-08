@@ -641,16 +641,32 @@ async function authorContractRepairRelocationCandidate(params: {
     workItemDir: params.wiDir,
     prospective: false,
   });
-  if (!currentSnapshot.active) {
+  const formalConsumerEdges = currentSnapshot.current_trace.filter(
+    edge => edge.relation === 'constrained_by' && edge.to === fromContractId,
+  );
+  const currentFormalConsumers = currentSnapshot.consumers.filter(
+    consumer => consumer.contract_id === fromContractId,
+  );
+  const resolvedConsumerIdentities = new Set(
+    currentFormalConsumers.map(
+      consumer => `${consumer.design_id}::${consumer.contract_id}`,
+    ),
+  );
+  const unresolvedConsumerEdges = formalConsumerEdges.filter(
+    edge => !resolvedConsumerIdentities.has(`${edge.from}::${edge.to}`),
+  );
+  if (unresolvedConsumerEdges.length > 0) {
     return {
       success: false,
-      error: 'Contract repair relocation cannot prove current formal consumers because Project governance is inactive',
+      error:
+        'Contract repair relocation cannot resolve every current formal consumer edge to a DD-owned Module: ' +
+        unresolvedConsumerEdges
+          .map(edge => `${edge.from} ${edge.relation} ${edge.to}`)
+          .join(', '),
     };
   }
-  const crossModuleConsumers = currentSnapshot.consumers.filter(
-    consumer =>
-      consumer.contract_id === fromContractId &&
-      consumer.module_code !== sourceModule,
+  const crossModuleConsumers = currentFormalConsumers.filter(
+    consumer => consumer.module_code !== sourceModule,
   );
   if (crossModuleConsumers.length > 0) {
     return {

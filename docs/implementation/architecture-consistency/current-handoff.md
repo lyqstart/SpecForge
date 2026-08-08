@@ -3952,3 +3952,13 @@ WI-0003 仍保持原 Candidate 状态。产品修复部署后必须先调查并�
 - **ERR-216**：V69 已在 exact clean source 稳定复现 ERR-215，但交付器使用大型源码 full-text anchor，应用补丁时报 `expected exactly one anchor, got 0`。真实仓库未写入。`REPEATED_ERROR_CLASS=ERR-196/ERR-197/ERR-198`，复用 EXP-169。
 - **ERR-217**：V70 已改成结构化行定位，但又额外要求 guard 与 `temporaryRoot` 之间必须原始行号紧邻，把合法空行/格式差异当成异常，产品补丁仍未应用。真实仓库、Validation/WI-0004、用户级安装均未写入。该错误继续属于 EXP-169 所覆盖的“大型源码修改方法不应依赖非语义文本布局”重复类。
 - V71 不再解析函数内部布局：仅用唯一函数起点 `prepareProjectSpecRepairCandidates` 与其后的唯一 `// ── Classification ──` 作为结构边界，整段替换为已基于固定 commit 构造的最终函数；找不到唯一边界即 Fail Closed。
+
+<!-- SPECFORGE_ERR218_ERR219_COMPATIBILITY_CONSUMER_PROOF:START -->
+## ERR-218 / ERR-219 — Contract repair compatibility consumer proof
+- ERR-218：WI-0004 已证明 ERR-215 在真实 WI 上修复成功，`prepare_repair` 成功接管 Runtime 空 scaffold；随后 `repair_relocate_to_module` 因 Project Governance `active=false` 被错误阻断。
+- `active` 是 Architecture + Data + Modules 的全局 readiness；而 Contract 正式消费者的唯一真相源是 formal Trace 中 `DD-* constrained_by <Contract>`，消费者 Module 由 DD owner 推导。
+- 修复不直接放行 `active=false`：对目标 Contract 的 `current_trace` consumer edges 逐边证明。每一条 `constrained_by -> target Contract` 边都必须在 `currentSnapshot.consumers` 中解析到 DD/Module；任一无法解析则 Fail Closed；全部可解析后继续执行原有跨 Module consumer 阻断。
+- 不修改 Project Governance active 定义、不修改 Architecture/Data Model、Runtime 状态机、Gate，也不把 prose 或独立 `consumers[]` 当消费者真相源。
+- WI-0004 在产品修复、提交和 daemon 重启前冻结于 `candidate_preparing`；现有 prepare_repair Candidate 保留，不运行 Gate。
+- ERR-219：V73 在 ChatGPT 交付前自检阶段要求 handoff payload 含英文稳定字面量 `formal Trace`，而生成 payload 使用中文表述，导致 ZIP 创建前假失败。真实仓库和 Validation 均未写入。`REPEATED_ERROR_CLASS=ERR-213`，复用 EXP-182。
+<!-- SPECFORGE_ERR218_ERR219_COMPATIBILITY_CONSUMER_PROOF:END -->
