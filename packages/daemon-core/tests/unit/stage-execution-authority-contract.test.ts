@@ -24,6 +24,7 @@ const stageRuleIds = [
   'GOV-STAGE-RECEIPT-001',
   'GOV-STAGE-ARTIFACT-VERIFY-001',
   'GOV-STAGE-VALIDATOR-001',
+  'GOV-STAGE-RECOVERY-ACCEPT-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -51,6 +52,21 @@ describe('Stage Execution Contract authority', () => {
       'RETRY_SAFETY=',
       'NEXT_LEGAL_ACTION=',
       'AUTHORITY_BRANCH=',
+      'WORKTREE_STATUS=',
+      'LOCAL_COMMAND_SHELL=',
+      'DOWNLOAD_PACKAGE_DIR=',
+      'LOCAL_PATH_QUOTING=',
+      'RECOVERY_PRECONCLUSION_FIELDS_AUDIT=',
+      'RECOVERY_STAGE_INPUT_FIELDS_AUDIT=',
+      'RECOVERY_BRANCH_MODEL_AUDIT=',
+      'RECOVERY_ENVIRONMENT_AUDIT=',
+      'RECOVERY_TRUTH_SOURCE_AUDIT=',
+      'RECOVERY_OPERATION_BOUNDARY_AUDIT=',
+      'RECOVERY_NEXT_ACTION_CLASS=',
+      'RECOVERY_EVIDENCE_GAPS=',
+      'RECOVERY_VALIDATOR_ID=',
+      'RECOVERY_VALIDATOR_ACCEPTED=',
+      'RECOVERY_ACCEPTED=',
       'AUTHORITY_HEAD=',
       'WORK_BRANCH=',
       'WORK_HEAD=',
@@ -68,8 +84,6 @@ describe('Stage Execution Contract authority', () => {
       'POWERSHELL_ALLOWED=NO',
       'DELIVERY_FORMAT=ONE_COMPLETE_ZIP_PLUS_ONE_COPY_PASTE_CMD',
       'REMOTE_URL=',
-      'TARGET_BRANCH=',
-      'REMOTE_HEAD=',
       'AUTHORITY_PATH=',
       'AUTHORITY_COMMIT=',
       'CURRENT_AUTHORITATIVE_STATE=',
@@ -145,9 +159,82 @@ describe('Stage Execution Contract authority', () => {
       'FEEDBACK_CONTRACT=',
       'ARTIFACT_ACCEPTANCE_CONTRACT=',
       'VALIDATOR_CONTRACT=',
+      'RECOVERY_ACCEPTANCE_CONTRACT=',
       'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);
     }
   });
+  it('enforces canonical Stage Input and new-session Recovery Acceptance structurally', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+
+    const stageInputStart = authority.indexOf('**GOV-STAGE-INPUT-001：**');
+    const stageInputEnd = authority.indexOf('**GOV-STAGE-CHK-001：**', stageInputStart);
+    expect(stageInputStart).toBeGreaterThanOrEqual(0);
+    expect(stageInputEnd).toBeGreaterThan(stageInputStart);
+    const stageInputSection = authority.slice(stageInputStart, stageInputEnd);
+
+    for (const field of [
+      'GLOBAL_GOAL=',
+      'CURRENT_STAGE=',
+      'STAGE_GOAL=',
+      'REMOTE_URL=',
+      'AUTHORITY_BRANCH=',
+      'AUTHORITY_HEAD=',
+      'AUTHORITY_PATH=',
+      'AUTHORITY_COMMIT=',
+      'WORK_BRANCH=',
+      'WORK_HEAD=',
+      'REMOTE_WORK_HEAD=',
+      'WORKTREE_STATUS=',
+      'CURRENT_AUTHORITATIVE_STATE=',
+      'CURRENT_IMMUTABLE_EVIDENCE=',
+      'OPERATION_BOUNDARY=',
+      'SUCCESS_CRITERIA=',
+      'EXPECTED_SIDE_EFFECTS=',
+      'FORBIDDEN_SIDE_EFFECTS=',
+      'STOP_CONDITION=',
+      'BLOCKER=',
+      'BACKLOG=',
+      'NEXT_STAGE=',
+      'LOCAL_COMMAND_SHELL=',
+      'DOWNLOAD_PACKAGE_DIR=',
+      'LOCAL_PATH_QUOTING=',
+    ]) {
+      expect(stageInputSection, field).toContain(field);
+    }
+
+    const requiredBlockStart = stageInputSection.indexOf('```text');
+    const requiredBlockEnd = stageInputSection.indexOf('```', requiredBlockStart + 7);
+    const requiredBlock = stageInputSection.slice(requiredBlockStart, requiredBlockEnd);
+    expect(requiredBlock).not.toContain('TARGET_BRANCH=');
+    expect(requiredBlock).not.toContain('REMOTE_HEAD=');
+
+    const recoveryStart = authority.indexOf('**GOV-STAGE-RECOVERY-ACCEPT-001：**');
+    const recoveryEnd = authority.indexOf('### 0.10 新会话固定提示词', recoveryStart);
+    expect(recoveryStart).toBeGreaterThanOrEqual(0);
+    expect(recoveryEnd).toBeGreaterThan(recoveryStart);
+    const recoverySection = authority.slice(recoveryStart, recoveryEnd);
+
+    for (const field of [
+      'RECOVERY_PRECONCLUSION_FIELDS_AUDIT=',
+      'RECOVERY_STAGE_INPUT_FIELDS_AUDIT=',
+      'RECOVERY_BRANCH_MODEL_AUDIT=',
+      'RECOVERY_ENVIRONMENT_AUDIT=',
+      'RECOVERY_TRUTH_SOURCE_AUDIT=',
+      'RECOVERY_OPERATION_BOUNDARY_AUDIT=',
+      'RECOVERY_NEXT_ACTION_CLASS=',
+      'RECOVERY_EVIDENCE_GAPS=',
+      'RECOVERY_VALIDATOR_ID=',
+      'RECOVERY_VALIDATOR_ACCEPTED=',
+      'RECOVERY_ACCEPTED=',
+    ]) {
+      expect(recoverySection, field).toContain(field);
+    }
+
+    expect(recoverySection).toContain('READ_ONLY_RECONCILIATION');
+    expect(recoverySection).toContain('SIDE_EFFECT_ACTION');
+    expect(recoverySection).toContain('WAIT_USER_AUTHORIZATION');
+  });
+
 });

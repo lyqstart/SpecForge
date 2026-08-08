@@ -5006,3 +5006,27 @@ actual_files
   8. 验证器失败先分类，不能直接覆盖正式产品成功证据或自动重试有副作用动作。
 - **防复发目标**：以后不再为“多一个反引号、换一句等价文案、字段合法重复、网页缓存滞后”等非语义变化制造假失败。
 <!-- SPECFORGE_EXP195_VALIDATOR_CONTRACT_HARDENING:END -->
+
+<!-- SPECFORGE_ERR230_EXP196_RECOVERY_ACCEPTANCE:START -->
+## ERR-230 / EXP-196 — 新会话恢复成果必须机器验收，Stage Input 必须统一到当前分支模型
+
+- **ERR-230 现场**：在 `GOV-STAGE-ARTIFACT-VERIFY-001` 与 `GOV-STAGE-VALIDATOR-001` 已提交后，一次真实新会话能够正确读取远程 authority、识别网页证据仅为辅助、识别 WI-0004 当前 handoff 停在 User Decision 前，并选择只读取证；但仍出现：
+  1. 生成 `GOVERNANCE PRECONCLUSION + Stage Input` 后没有输出 Artifact/Recovery Acceptance 就直接生成 ZIP+CMD；
+  2. Stage Input 漏掉 `AUTHORITY_PATH/AUTHORITY_COMMIT/WORKTREE_STATUS` 及 `LOCAL_COMMAND_SHELL/DOWNLOAD_PACKAGE_DIR/LOCAL_PATH_QUOTING`；
+  3. `GOV-STAGE-INPUT-001` 仍列旧 `TARGET_BRANCH/REMOTE_HEAD`，与 `GOV-STAGE-BRANCH-001` 的新分支模型存在契约不一致；
+  4. PRECONCLUSION 把 handoff 中的 `approval_required/attempt-0003` 写入 CURRENT_FACTS，而 Stage Input 又正确标记为 pending persisted-state confirmation，事实状态表达前后不统一。
+- **影响**：该新会话尚未得到用户执行其只读取证包，因此没有 SpecForge / Validation 仓库副作用；问题属于治理执行框架缺口。
+- **分类**：`GOVERNANCE_FAILURE / VALIDATION_HARNESS_GAP`。
+- **根因**：
+  1. 通用 Artifact Acceptance 已规定 PRECONCLUSION/Stage Input 是成果，但新会话启动协议没有规定固定 Recovery Acceptance 输出结构，AI 仍可“读懂规则但跳过验收步骤”；
+  2. Stage Input 规范与后来引入的 authority/work branch 分离模型没有完成契约归一；
+  3. 对 handoff claim、receipt claim、web auxiliary、structured truth 缺少新会话专用的事实状态模型。
+- **EXP-196**：
+  1. 新会话固定三段式启动：`GOVERNANCE PRECONCLUSION → Stage Input → Recovery Acceptance`；
+  2. `RECOVERY_ACCEPTED != YES` 不得生成下一执行 ZIP+CMD、不得写仓库、不得执行生命周期动作；
+  3. 只读取证可以在真实事实尚缺失时被接受，但必须显式列出 evidence gaps，且 accepted 的对象是“只读取证计划”，不是待确认事实本身；
+  4. 新 Stage Input 统一使用 `AUTHORITY_BRANCH/AUTHORITY_HEAD` 与 `WORK_BRANCH/WORK_HEAD/REMOTE_WORK_HEAD/WORKTREE_STATUS`，旧 `TARGET_BRANCH/REMOTE_HEAD` 只保留历史兼容；
+  5. 本地 CMD 环境是 Stage Input 固定字段，不允许仅因为最终 CMD 恰好写对路径就视为恢复完成；
+  6. handoff / old receipt 是 claim，StateManager / immutable evidence / structured Git 才能把相应事实提升为 confirmed；
+  7. Recovery validator 自身继续执行 `GOV-STAGE-VALIDATOR-001`，不能回退到自然语言字符串检查。
+<!-- SPECFORGE_ERR230_EXP196_RECOVERY_ACCEPTANCE:END -->

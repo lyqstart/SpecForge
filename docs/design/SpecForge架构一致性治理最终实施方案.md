@@ -433,17 +433,21 @@ git diff/status 结果：
 
 **GOV-STAGE-INPUT-001：** 每个阶段执行前必须冻结 Stage Input。
 
-至少包含：
+新的 Stage Input 至少包含：
 
 ```text
 GLOBAL_GOAL=
 CURRENT_STAGE=
 STAGE_GOAL=
 REMOTE_URL=
-TARGET_BRANCH=
-REMOTE_HEAD=
+AUTHORITY_BRANCH=
+AUTHORITY_HEAD=
 AUTHORITY_PATH=
 AUTHORITY_COMMIT=
+WORK_BRANCH=
+WORK_HEAD=
+REMOTE_WORK_HEAD=
+WORKTREE_STATUS=
 CURRENT_AUTHORITATIVE_STATE=
 CURRENT_IMMUTABLE_EVIDENCE=
 OPERATION_BOUNDARY=
@@ -454,9 +458,19 @@ STOP_CONDITION=
 BLOCKER=
 BACKLOG=
 NEXT_STAGE=
+LOCAL_COMMAND_SHELL=
+DOWNLOAD_PACKAGE_DIR=
+LOCAL_PATH_QUOTING=
 ```
 
-缺少 `SUCCESS_CRITERIA`、`EXPECTED_SIDE_EFFECTS`、`FORBIDDEN_SIDE_EFFECTS` 或 `STOP_CONDITION` 任一项时，不得执行有副作用动作。
+固定规则：
+
+1. 字段不得因为同一事实已在 `GOVERNANCE PRECONCLUSION`、handoff、上一轮 receipt 或其他正文出现而省略；未知值必须显式写 `INSUFFICIENT_EVIDENCE` 或带来源状态的 pending 值。
+2. `TARGET_BRANCH` / `REMOTE_HEAD` 是历史证据兼容字段；新的 Stage Input、Stage Output、Failure Diagnostic 与标准执行回执按 `GOV-STAGE-BRANCH-001` 使用 `AUTHORITY_BRANCH` / `WORK_BRANCH` 分离模型，不再把 `TARGET_BRANCH` / `REMOTE_HEAD` 当作新 Stage Input 必填字段。
+3. `AUTHORITY_HEAD` 表示当前 authority branch 的 ref；`REMOTE_WORK_HEAD` 表示当前 work branch 的 remote ref；二者不得混用。
+4. `CURRENT_AUTHORITATIVE_STATE` / `CURRENT_IMMUTABLE_EVIDENCE` 若仅来自 handoff 或旧 receipt，必须明确标记为 pending confirmation，不能写成已经由 StateManager / immutable evidence 重新确认的 authoritative fact。
+5. 缺少 `SUCCESS_CRITERIA`、`EXPECTED_SIDE_EFFECTS`、`FORBIDDEN_SIDE_EFFECTS`、`STOP_CONDITION` 或当前动作所需的 branch/state/evidence 任一事实时，不得执行有副作用动作。
+6. `LOCAL_COMMAND_SHELL`、`DOWNLOAD_PACKAGE_DIR`、`LOCAL_PATH_QUOTING` 是 Stage Input 的固定字段；即使当前 Stage 只读，也必须恢复并对账，避免后续交付重新猜测本地执行环境。
 
 **GOV-STAGE-CHK-001：** 完整阶段内部必须形成可诊断 Checkpoint。
 
@@ -597,7 +611,6 @@ AMBIGUOUS_SIDE_EFFECT
 **GOV-STAGE-HANDOFF-001：** 稳定规则写入本权威文件；current-handoff 只保存一个当前执行动态状态区。
 
 `docs/implementation/architecture-consistency/current-handoff.md` 是非权威动态交接，不得形成第二套治理规则。唯一 `CURRENT EXECUTION STATE` 至少包含：
-
 ```text
 GLOBAL_GOAL=
 CURRENT_STAGE=
@@ -620,14 +633,14 @@ PERMANENT_INSUFFICIENT_EVIDENCE=
 ```
 
 新会话固定恢复顺序：
-
 ```text
-1. 从 GitHub 当前远程分支读取本权威文件并固定 remote HEAD
+1. 从 GitHub 当前远程分支读取本权威文件并固定 AUTHORITY_HEAD
 2. 读取 current-handoff 唯一 CURRENT EXECUTION STATE
 3. 用当前持久化 Work Item 状态和 immutable evidence 对账 handoff
 4. 应用最新用户 OPERATION_BOUNDARY
-5. 输出本轮 Stage Input
-6. 前五步一致且证据充分后，才允许有副作用动作
+5. 输出完整 GOVERNANCE PRECONCLUSION + canonical Stage Input
+6. 按 GOV-STAGE-RECOVERY-ACCEPT-001 执行 Recovery Acceptance
+7. RECOVERY_ACCEPTED=YES 后才允许执行被接受的 NEXT_LEGAL_ACTION；否则 Fail Closed
 ```
 
 冲突时以远程权威规则 + 当前持久化事实 + 最新用户授权为准，不得用模型记忆、旧 Prompt 或旧 handoff 覆盖当前事实。
@@ -875,6 +888,80 @@ BLOCKING=YES|NO
 9. 验证器失败必须先分类 `VALIDATION_HARNESS_DEFECT`、`ENVIRONMENT_FAILURE`、产品/治理失败或 `AMBIGUOUS_SIDE_EFFECT`；外围验证器失败不得直接覆盖已存在的正式产品成功证据，也不得自动重试已经开始的有副作用动作。
 10. `VALIDATOR_ACCEPTED=YES` 只有在 Validator Contract 完整、Self Check 通过、全部阻断断言都有正式真相源且不存在必需证据不足时成立；否则验证器本身不得作为 Artifact Acceptance 的依据。
 
+**GOV-STAGE-RECOVERY-ACCEPT-001：** 新会话恢复必须形成可机器检查的 Recovery Acceptance；生成 `GOVERNANCE PRECONCLUSION + Stage Input` 不等于恢复完成。
+
+新会话的 `GOVERNANCE PRECONCLUSION` 至少包含：
+
+```text
+REMOTE_URL=
+AUTHORITY_BRANCH=
+AUTHORITY_HEAD=
+AUTHORITY_PATH=
+AUTHORITY_COMMIT=
+WORK_BRANCH=
+WORK_HEAD=
+REMOTE_WORK_HEAD=
+WORKTREE_STATUS=
+LOCAL_REMOTE_CONSISTENCY=
+TASK_GOAL=
+CURRENT_FACTS_AND_EVIDENCE=
+APPLICABLE_RULES=
+AFFECTED_MODULES=
+PROJECT_ARCHITECTURE_IMPACT=
+PROJECT_DATA_MODEL_IMPACT=
+MODULE_DESIGN_IMPACT=
+PROJECT_CONTRACT_IMPACT=
+MODULE_CONTRACT_IMPACT=
+PRODUCER_CONSUMER_IMPACT=
+WORKFLOW_GATE_RUNTIME_IMPACT=
+ALLOWED_MODIFIED_FILES=
+FORBIDDEN_SCOPE=
+TEST_CHANGES_REQUIRED=
+AUTHORITY_REVISION_REQUIRED=
+INSUFFICIENT_EVIDENCE=
+```
+
+关键恢复事实必须区分事实本身与证据状态。至少使用以下证据状态之一：
+
+```text
+CONFIRMED_STRUCTURED=
+HANDOFF_CLAIM_PENDING_CONFIRMATION=
+RECEIPT_CLAIM_PENDING_CONFIRMATION=
+WEB_AUXILIARY=
+INSUFFICIENT_EVIDENCE=
+```
+
+在执行任何 `NEXT_LEGAL_ACTION`、生成供用户执行的 ZIP+CMD、commit/push 或生命周期动作前，必须输出并验收：
+
+```text
+RECOVERY_PRECONCLUSION_FIELDS_AUDIT=PASS|FAIL
+RECOVERY_STAGE_INPUT_FIELDS_AUDIT=PASS|FAIL
+RECOVERY_BRANCH_MODEL_AUDIT=PASS|FAIL
+RECOVERY_ENVIRONMENT_AUDIT=PASS|FAIL
+RECOVERY_TRUTH_SOURCE_AUDIT=PASS|FAIL
+RECOVERY_OPERATION_BOUNDARY_AUDIT=PASS|FAIL
+RECOVERY_NEXT_ACTION_CLASS=READ_ONLY_RECONCILIATION|SIDE_EFFECT_ACTION|WAIT_USER_AUTHORIZATION
+RECOVERY_EVIDENCE_GAPS=
+RECOVERY_VALIDATOR_ID=
+RECOVERY_VALIDATOR_ACCEPTED=YES|NO
+RECOVERY_ACCEPTED=YES|NO
+```
+
+固定规则：
+
+1. `GOVERNANCE PRECONCLUSION` 或 Stage Input 任一必填字段缺失，`RECOVERY_ACCEPTED=NO`。
+2. handoff 和上一轮 receipt 是恢复线索，不自动等于当前 authoritative product fact；State / immutable evidence 未按 `GOV-STAGE-TRUTH-001` 重新读取前，必须以 pending confirmation 表达。
+3. `RECOVERY_NEXT_ACTION_CLASS=SIDE_EFFECT_ACTION` 时，当前动作所需的 authority ref、work branch/ref、worktree、State、immutable evidence、operation boundary 必须全部由适用正式 truth source 确认；任一关键事实仍为 pending/insufficient 时 `RECOVERY_ACCEPTED=NO`。
+4. `RECOVERY_NEXT_ACTION_CLASS=READ_ONLY_RECONCILIATION` 时，可以存在待获取事实，但这些缺口必须同时出现在 `INSUFFICIENT_EVIDENCE`、`BLOCKER`、`RECOVERY_EVIDENCE_GAPS`，且 Stage Input 必须把 expected side effect 限定为取证包解压/输出等仓库外行为，禁止项目仓库写入和生命周期动作。此时 `RECOVERY_ACCEPTED=YES` 只表示“只读取证计划正确且完整”，不表示待确认的 State/ref/evidence 已经被确认。
+5. `RECOVERY_NEXT_ACTION_CLASS=WAIT_USER_AUTHORIZATION` 时，必须证明当前停止边界来自最新真实用户授权边界或已对账的持久化连续性事实；不得仅因为旧 handoff 写着“等待授权”就省略必要的 branch/state 对账。
+6. `RECOVERY_BRANCH_MODEL_AUDIT` 必须验证 Stage Input 使用 `AUTHORITY_BRANCH/AUTHORITY_HEAD` 与 `WORK_BRANCH/WORK_HEAD/REMOTE_WORK_HEAD/WORKTREE_STATUS` 分离模型；新的 Stage Input 不依赖历史 `TARGET_BRANCH/REMOTE_HEAD`。
+7. `RECOVERY_ENVIRONMENT_AUDIT` 必须验证 `LOCAL_COMMAND_SHELL`、`DOWNLOAD_PACKAGE_DIR`、`LOCAL_PATH_QUOTING` 已从 handoff 恢复；需要本地执行时还必须验证交付遵守 `GOV-STAGE-ENV-001` / `GOV-STAGE-DELIVERY-001`。
+8. `RECOVERY_TRUTH_SOURCE_AUDIT` 必须按 `GOV-STAGE-TRUTH-001` / `GOV-STAGE-VALIDATOR-001` 区分 structured truth、immutable evidence、handoff/receipt claim 与 web auxiliary；网页证据不得伪装成 `git ls-remote`。
+9. Recovery validator 自身必须遵守 `GOV-STAGE-VALIDATOR-001`，使用稳定 Rule ID、结构字段和正式 truth source；自然语言正文只能是辅助证据。
+10. 只有 `RECOVERY_VALIDATOR_ACCEPTED=YES` 且六项 Recovery Audit 全部 `PASS` 时，才允许 `RECOVERY_ACCEPTED=YES`。
+11. `RECOVERY_ACCEPTED != YES` 时必须 Fail Closed：不得生成供用户执行的下一 ZIP+CMD，不得执行有副作用动作，不得进入下一 Stage；只能修正恢复成果或执行为取得缺失事实所必需的、已经被接受的只读取证。
+12. `RECOVERY_ACCEPTED=YES` 后，后续 ZIP/CMD、runner、代码/文档补丁、执行回执仍分别遵守 `GOV-STAGE-ARTIFACT-VERIFY-001`；Recovery Acceptance 不替代后续 Artifact Acceptance。
+
 ### 0.10 新会话固定提示词
 
 每次新会话使用以下固定短提示词：
@@ -887,25 +974,28 @@ docs/design/SpecForge架构一致性治理最终实施方案.md
 
 严格执行本文件的“新会话启动协议”：
 - 固定当前 AUTHORITY_HEAD；
-- 从我下面粘贴的上一轮完整 CMD 执行回执恢复 WORK_BRANCH 和最后已知工作 HEAD/状态；
+- 从我下面粘贴的上一轮完整 CMD 执行回执恢复 WORK_BRANCH 和最后已知工作 HEAD/状态；没有回执时按 NONE 处理；
 - 重新读取当前 WORK_BRANCH 的本地/远程 HEAD、worktree，并按适用范围读取 current-handoff、源码和持久化 Work Item / immutable evidence 对账；
 - 恢复 GLOBAL_GOAL、CURRENT_STAGE、OPERATION_BOUNDARY、NEXT_LEGAL_ACTION、本地 ZIP/CMD 环境；
 - 不依赖旧会话记忆；不得因为 RESULT=FAILED 自动重试已经开始的有副作用动作；
-- 对账完成后先输出 GOVERNANCE PRECONCLUSION + STAGE INPUT，然后直接继续当前 NEXT_LEGAL_ACTION；只有当前操作边界要求人工授权时才停止。
+- 先输出完整 GOVERNANCE PRECONCLUSION + canonical Stage Input；
+- 随后按 GOV-STAGE-RECOVERY-ACCEPT-001 输出 Recovery Acceptance，只有 RECOVERY_ACCEPTED=YES 才允许继续；
+- 如果缺失事实只允许通过本地取证取得，先把 NEXT_ACTION_CLASS 固定为 READ_ONLY_RECONCILIATION；该只读取证计划本身必须先通过 Recovery Acceptance，取证 ZIP+CMD 还必须单独通过 Artifact Acceptance；
+- 只有当前操作边界要求人工授权时才停止；不得因未完成 Workflow 自行跨越授权边界。
 
 上一轮 CMD 完整执行回执：
-
-【粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容】
+【粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；如果上一轮没有 ZIP+CMD，则写 NONE】
 ```
 
 固定跨会话使用方式：
 
 1. 只要旧会话已经提供 ZIP + CMD，用户先执行 CMD，再开启新会话。
-2. 新会话只粘贴上面的固定短提示词，并附上一轮完整标准执行回执。
+2. 新会话只粘贴上面的固定短提示词，并附上一轮完整标准执行回执；上一轮没有 ZIP+CMD 时写 `NONE`。
 3. 不设计“ZIP 已下发但尚未执行”的 Pending Operation。
 4. SUCCESS 与 FAILED 都必须由标准回执 + 当前 authority branch/ref + 当前 work branch/ref + handoff + 持久化状态/immutable evidence 联合解释。
 5. 新会话不得要求用户重复上一会话已经通过标准回执、远程仓库或持久化证据提供的事实。
-6. 如果没有上一轮执行回执，写 `上一轮 CMD 完整执行回执：NONE`；只有 current-handoff 和当前持久化事实足以唯一恢复工作分支与操作边界时才允许继续，否则 Fail Closed。
+6. 没有上一轮执行回执时，只有 current-handoff + 当前持久化事实足以唯一恢复工作分支和操作边界才允许直接继续；否则进入 `READ_ONLY_RECONCILIATION` 并 Fail Closed 于任何写动作。
+7. `GOVERNANCE PRECONCLUSION + Stage Input + Recovery Acceptance` 是固定三段式启动成果；缺少任何一段不得进入后续执行。
 <!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 
 ---
