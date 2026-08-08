@@ -5431,3 +5431,29 @@ actual_files
   4. receipt validator 负例必须证明历史 token 即使语义上用于“描述被对账对象”也会被拒绝；
   5. current-handoff 必须分别记录 current remote HEAD、authority file last-modifying commit 和历史 delivery evidence，禁止把三者混成一个 baseline。
 <!-- SPECFORGE_ERR259_EXP225_HISTORICAL_DELIVERY_TOKEN_IN_CURRENT_CONTROL_FIELD:END -->
+
+<!-- SPECFORGE_ERR260_EXP226_AUTHORITY_HEAD_COMMIT_CONFLATION:START -->
+## ERR-260 / EXP-226 — V130 SUCCESS receipt 把 AUTHORITY_HEAD 与 AUTHORITY_COMMIT 混写
+
+- **现场**：V130 成功提交并推送到 `f1de17be55cc96358df9f9ac8c193bb657ba16dc`，worktree clean，目标测试、TypeScript、daemon-core build、workspace build、`git diff --check` 全部通过；但其标准回执同时输出：
+  - `REMOTE_WORK_HEAD_AFTER=f1de17be55cc96358df9f9ac8c193bb657ba16dc`
+  - `AUTHORITY_HEAD=2b82912925c62049ed8f968946fc284b94adfcd4`
+  - `AUTHORITY_SYNC_CHECK=PASS_AUTHORITY_UNCHANGED_LAST_MODIFYING_COMMIT_2b829129...`
+- **权威冲突**：`GOV-STAGE-AUTHORITY-BOOTSTRAP-001` 明确规定：
+  - `AUTHORITY_HEAD` = authority branch 当前 ref；
+  - `AUTHORITY_COMMIT` = authority 文件最近一次变更 commit；
+  - 二者只有在结构化 Git / commit-path 证据证明相同时才允许相等。
+- **分类**：`VALIDATION_HARNESS_DEFECT / RECEIPT_SEMANTIC_IDENTITY_DEFECT / AUTHORITY_HEAD_COMMIT_CONFLATION`。
+- **影响**：
+  1. V130 仓库提交和 3 文件治理修复事实有效；
+  2. V130 receipt 的 `AUTHORITY_HEAD` 字段语义错误，不能作为完整 Stage/Receipt Acceptance 证据；
+  3. authority 文件本身未在 V130 修改，最近修改 commit 仍为 `2b829129...`；
+  4. WI-0004 状态未变化，仍为 `approval_required`。
+- **EXP-226**：
+  1. SUCCESS receipt 必须同时输出 `AUTHORITY_HEAD` 与 `AUTHORITY_COMMIT`；
+  2. `AUTHORITY_HEAD` 必须来自 push 后重新读取的 live authority branch ref；
+  3. `AUTHORITY_COMMIT` 必须来自 `git log -1 --format=%H -- <AUTHORITY_PATH>`；
+  4. 当本轮不修改 authority 文件时，允许 `AUTHORITY_HEAD != AUTHORITY_COMMIT`，且必须把这种差异视为正常、可解释事实；
+  5. receipt verifier 必须使用正例验证“HEAD 新于 authority file commit”可以 PASS，并用负例拒绝把 authority file commit 填入 `AUTHORITY_HEAD`；
+  6. `AUTHORITY_SYNC_CHECK` 必须明确分别说明 branch HEAD 与 authority last-modifying commit，不得用一个 `AUTHORITY_HEAD` 字段承载两个语义。
+<!-- SPECFORGE_ERR260_EXP226_AUTHORITY_HEAD_COMMIT_CONFLATION:END -->

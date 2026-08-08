@@ -334,6 +334,9 @@ describe('Stage Execution Contract authority', () => {
     expect(promptSection).toContain('raw/main');
     expect(promptSection).toContain('LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID|PRESENT_INVALID|NONE_ALLOWED|MISSING_REQUIRED');
     expect(promptSection).toContain('LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE');
+    expect(bootstrapSection).toContain('`AUTHORITY_COMMIT` 与 `AUTHORITY_HEAD` 是不同事实');
+    expect(bootstrapSection).toContain('`AUTHORITY_HEAD` 是 authority branch 当前 ref');
+    expect(bootstrapSection).toContain('`AUTHORITY_COMMIT` 是 authority 文件最近一次变更 commit');
   });
 
   it('enforces complete fail-closed bootstrap output and accepted live-ref evidence artifact', async () => {
