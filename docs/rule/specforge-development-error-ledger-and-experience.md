@@ -5627,7 +5627,7 @@ actual_files
 - **正确做法**：从 authority 的正式编号标题语法定义边界：非 fenced、物理单行 `### [0-9]+(\.[0-9]+)+`；内部 `####` 子标题仍保留；fenced fake heading / fake Rule ID 必须忽略。
 - **新增类防护 / EXP-237**：结构 parser 的边界集合必须从正式文档语法一次性枚举，并建立正反例矩阵；禁止通过连续新增一个 if 条件追着失败修。
 - **自动防护**：至少覆盖 next Rule ID、`### 0.9`、`### 3.1`、内部 `#### 2.11.7`、fenced fake heading、Prompt START。
-- **状态**：`OPEN`；这是当前唯一 parser blocker。
+- **状态**：`OPEN_BLOCKED_BY_ERR-275`；其“任意编号 `###` 标题作为边界”的建议尚未成为唯一权威规则，必须先完成 Authority / consumer 契约对账。
 <!-- SPECFORGE_ERR271_EXP237_NUMBERED_HEADING_BOUNDARY_MISSING:END -->
 
 <!-- SPECFORGE_ERR272_EXP238_WEB_AUXILIARY_PROMOTED_TO_LIVE_HEAD:START -->
@@ -5674,3 +5674,18 @@ actual_files
 - **自动防护**：至少验证 CURRENT EXECUTION STATE 唯一 START/END、既有必需字段全保留、动态字段更新正确、无重复 key、EOF newline 和 `git diff --check`。
 - **状态**：`CLOSED`；V147 已证明 handoff 基线必需字段全部保留，目标测试、TypeScript、daemon-core build、workspace build 和 `git diff --check` 全部通过。
 <!-- SPECFORGE_ERR274_EXP240_HANDOFF_CONTRACT_FIELD_OMISSION:END -->
+
+<!-- SPECFORGE_ERR275_EXP241_NONAUTH_REMEDIATION_CONFLICTS_AUTHORITY:START -->
+## ERR-275 / EXP-241 — 非权威错误台账中的修复建议与唯一权威 Rule Section 契约冲突
+- **日期与阶段**：2026-08-09，V148 后 ERR-271 重启前治理对账。
+- **分类**：`CONTRACT_CONFLICT / AUTHORITY_PRECEDENCE_DEFECT / PREIMPLEMENTATION_GOVERNANCE_DEFECT`。
+- **现场表现**：最新错误台账 ERR-271 / EXP-237 建议把任意非 fenced 编号 `### [0-9]+(\.[0-9]+)+` 标题作为 Rule Section 边界；但当前唯一权威 `GOV-STAGE-BOOTSTRAP-ENVELOPE-001` 的 2.11.6 明确规定边界为“下一个 Rule ID / 下一个 `### 0.*` 结构标题 / prompt START marker”。
+- **已执行与未执行**：发现冲突后停止原计划的 parser/test 修改；未修改 authority、test、runtime；未执行 WI-0004 生命周期动作。
+- **仓库变化**：本缺陷发现于 V148 已成功提交推送后的重新读取阶段；发现时工作区干净。
+- **根因**：ERR-271 的修复建议根据 V144 synthetic test 结果形成，但形成时没有先把建议语义与唯一权威 Rule Section 正式契约逐项对账，导致非权威台账出现了比 authority 更宽的行为定义。
+- **影响**：若直接按 ERR-271 修改测试解析器，会形成“测试定义新规则、authority 仍定义旧规则”的反向治理，违反 `GOV-AUTH-001`、`GOV-SCOPE-001` 和 `GOV-STAGE-VALIDATOR-001`。
+- **正确做法**：Fail Closed；先登记本冲突并恢复 `UNRECORDED_FAILURES=0`，重新读取最新经验；随后单独执行 Authority + consumer 影响分析。若正式决定把边界扩展为一般编号 `###` 结构标题，必须先修订唯一权威，再原子同步 consumer test；若不修 authority，则必须撤回 ERR-271 的扩展建议。
+- **新增类防护 / EXP-241**：任何错误台账、handoff、失败诊断中的“正确做法”在进入实现前，都必须与当前唯一权威 Rule ID 做 CONTRACT_RECONCILIATION；非权威材料不能直接成为新行为契约。发现冲突必须先重新前置分析，禁止以“修测试”为由跳过 authority 修订。
+- **自动防护**：产品修改前输出 `AUTHORITY_RULE_TEXT / PROPOSED_REMEDIATION / CONTRACT_RECONCILIATION=PASS|CONFLICT`；CONFLICT 时允许范围只能是缺陷登记与后续重新前置分析，不允许直接修改 consumer。
+- **状态**：`OPEN`；下一 Stage 必须先重新读取远程 authority / ledger / handoff，再决定正式 Authority + consumer 原子修订范围。
+<!-- SPECFORGE_ERR275_EXP241_NONAUTH_REMEDIATION_CONFLICTS_AUTHORITY:END -->
