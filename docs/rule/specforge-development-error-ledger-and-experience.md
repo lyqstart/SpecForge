@@ -5067,3 +5067,40 @@ actual_files
   3. 工具执行失败时不得沿用预期文件名、SHA 或“已生成”结论；
   4. 只有 ZIP reopen、manifest/hash、runner/verifier compile 全部通过后才允许发布。
 <!-- SPECFORGE_ERR232_EXP198_PACKAGE_GENERATOR_SYNTAX_GUARD:END -->
+
+<!-- SPECFORGE_ERR233_EXP199_BOOTSTRAP_FAILURE_PATH:START -->
+## ERR-233 / EXP-199 — Bootstrap Fail Closed 已生效，但失败路径输出、阶段边界和取证包验收仍未闭环
+
+- **ERR-233 现场**：V113 已提交并推送 `GOV-STAGE-AUTHORITY-BOOTSTRAP-001`。随后真实新会话在其执行环境 `git ls-remote` DNS 失败时，正确拒绝把网页辅助值 `b78766e...` 当作 live `AUTHORITY_HEAD`，输出 `AUTHORITY_HEAD=INSUFFICIENT_EVIDENCE`、`AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 并停止 WI 生命周期动作；但仍存在三项缺口：
+  1. Bootstrap 失败输出省略 `AUTHORITY_HEAD_SOURCE / AUTHORITY_EXACT_CONTENT_REF / AUTHORITY_UNIQUE_MARKER_AUDIT / AUTHORITY_BOOTSTRAP_EVIDENCE / FRESHNESS / VALIDATOR_ID / VALIDATOR_ACCEPTED` 等强制字段；
+  2. Bootstrap 尚未接受时仍读取了远程 `current-handoff.md`，并列出 WI-0004 / attempt-0003 / operation boundary 等 pending claim；
+  3. 随后交付只读取证 ZIP 只报告 `POST_BUILD_VERIFY=PASS`、`NO_PYC_CACHE=PASS`，没有完整 `GOV-STAGE-ARTIFACT-VERIFY-001` / `GOV-STAGE-VALIDATOR-001` Artifact Acceptance。
+- **影响**：用户尚未执行该新会话生成的 Bootstrap 取证包；没有 SpecForge / Validation 仓库副作用，没有 WI-0004 生命周期动作。
+- **分类**：`GOVERNANCE_FAILURE / VALIDATION_HARNESS_GAP`。
+- **根因**：
+  1. V113 规定 Bootstrap 失败只能取得 live branch-ref evidence，但没有给失败路径独立的完整字段/验收契约；
+  2. “不得进入 Recovery”没有被细化为“不得读取 handoff/Work Item/immutable evidence”；
+  3. Bootstrap evidence ZIP 作为特殊只读例外，没有在启动提示词内再次明确它仍受完整 Artifact Acceptance 约束。
+- **EXP-199**：
+  1. Bootstrap PASS 与 FAIL 都必须输出完整结构；失败不能用一句 `AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 代替；
+  2. Fail Closed 期间必须执行 `AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=PASS_NO_HANDOFF_OR_RECOVERY_READ`；
+  3. Bootstrap 失败时唯一下一动作固定为 `ACQUIRE_LIVE_BRANCH_REF_ONLY`；
+  4. 只读取证包只能执行 `git ls-remote`，不得读取任何项目仓库；
+  5. 只读取证包仍必须完整执行 Artifact Acceptance + Validator Self Check，局部 build/zip 检查不能替代；
+  6. 失败路径自身先 `AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES`，取证包再 `ARTIFACT_ACCEPTED=YES`，之后才允许发布 ZIP+CMD；
+  7. 用户返回 live ref 后重新 Bootstrap，禁止复用失败回合提前读取的 handoff/Recovery 内容。
+<!-- SPECFORGE_ERR233_EXP199_BOOTSTRAP_FAILURE_PATH:END -->
+
+<!-- SPECFORGE_ERR234_EXP200_ASSISTANT_LIVE_REF_ENVIRONMENT:START -->
+## ERR-234 / EXP-200 — 助手侧 live Git DNS 不可用时只能使用 last-confirmed exact authority 设计，并把 live preflight 下沉到用户 runner
+
+- **ERR-234 现场**：准备本轮修复时，助手执行环境调用 `git ls-remote https://github.com/lyqstart/SpecForge.git refs/heads/main` 返回 `Could not resolve host: github.com`。随后使用上一轮 V113 结构化回执中的 `main=426bdc5396f75cc6c93c8fd4074cfa85691212f5` 作为 `LAST_CONFIRMED`，并从 GitHub exact commit URL 读取该 SHA 对应的唯一权威文件；未把网页 branch/raw 辅助结果声称为 live branch ref。
+- **影响**：助手侧没有仓库写入；本轮交付 runner 必须在任何写操作前重新执行 live `git ls-remote`，若 remote main 不等于 last-confirmed baseline 则零写入 Fail Closed。
+- **分类**：`ENVIRONMENT_FAILURE`。
+- **根因**：当前助手容器 DNS 无法解析 GitHub；不是 SpecForge 产品缺陷。
+- **EXP-200**：
+  1. 助手环境无法取得 live ref 时，必须明确区分 `LAST_CONFIRMED_REMOTE_HEAD` 与 `LIVE_REMOTE_HEAD=INSUFFICIENT_EVIDENCE`；
+  2. 可以使用 last-confirmed exact commit authority 进行无副作用设计/打包，但不能宣称 live remote 已重新确认；
+  3. 任何用户侧实际修改 runner 必须把 `git ls-remote` 放在首次写入之前，并在 remote drift 或网络失败时零写入退出；
+  4. exact-commit GitHub 内容可以证明“该 commit 的规则内容”，不能证明“该 commit 仍是当前 branch head”。
+<!-- SPECFORGE_ERR234_EXP200_ASSISTANT_LIVE_REF_ENVIRONMENT:END -->

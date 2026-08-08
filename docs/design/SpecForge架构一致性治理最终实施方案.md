@@ -214,6 +214,74 @@ AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO
 11. 只有 `AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES`、`AUTHORITY_UNIQUE_MARKER_AUDIT=PASS` 且 `AUTHORITY_HEAD_SOURCE` 属于允许的 live source 时，才能 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES`。
 12. `AUTHORITY_BOOTSTRAP_ACCEPTED != YES` 时，不得输出“已按当前远程 authority 完成恢复”、不得把 handoff 状态提升为 authoritative fact、不得进入常规 Recovery Acceptance；只能取得缺失的 live branch-ref evidence。
 
+**GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001：** Authority Bootstrap 失败路径本身也是必须验收的治理成果；`AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 不等于可以省略 Bootstrap 字段、读取 handoff 或直接交付未经 Artifact Acceptance 的取证包。
+
+当 live branch ref 无法取得、live source 返回错误或 Bootstrap 其他前置条件不成立时，必须完整输出：
+
+```text
+AUTHORITY_BOOTSTRAP_REMOTE_URL=
+AUTHORITY_BOOTSTRAP_BRANCH=
+AUTHORITY_BOOTSTRAP_PATH=
+AUTHORITY_HEAD_SOURCE=INSUFFICIENT_EVIDENCE
+AUTHORITY_HEAD=INSUFFICIENT_EVIDENCE
+AUTHORITY_EXACT_CONTENT_REF=NOT_APPLICABLE_NO_LIVE_HEAD
+AUTHORITY_UNIQUE_MARKER_AUDIT=NOT_RUN_NO_EXACT_COMMIT
+AUTHORITY_BOOTSTRAP_EVIDENCE=
+AUTHORITY_BOOTSTRAP_EVIDENCE_FRESHNESS=CURRENT_SESSION
+AUTHORITY_BOOTSTRAP_VALIDATOR_ID=
+AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES|NO
+AUTHORITY_BOOTSTRAP_ACCEPTED=NO
+AUTHORITY_BOOTSTRAP_FAILURE_REASON=
+AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=PASS|FAIL
+AUTHORITY_BOOTSTRAP_NEXT_ACTION=ACQUIRE_LIVE_BRANCH_REF_ONLY
+AUTHORITY_BOOTSTRAP_READ_ONLY_EVIDENCE_REQUIRED=YES
+AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ID=
+AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED=YES|NO|NOT_YET_GENERATED
+AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES|NO
+```
+
+固定规则：
+
+1. Bootstrap 失败不允许缩写字段；`AUTHORITY_HEAD=INSUFFICIENT_EVIDENCE` 时，`AUTHORITY_EXACT_CONTENT_REF` 和 `AUTHORITY_UNIQUE_MARKER_AUDIT` 必须明确写 `NOT_APPLICABLE_NO_LIVE_HEAD` / `NOT_RUN_NO_EXACT_COMMIT`，不能直接省略。
+2. `AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES` 只表示“验证器正确证明 Bootstrap 当前失败”；它不把 `AUTHORITY_BOOTSTRAP_ACCEPTED` 提升为 `YES`。
+3. `AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=PASS` 的必要条件是：本次 Bootstrap 尚未接受期间，没有读取 `current-handoff`、Work Item、immutable evidence、Stage Input、Recovery Acceptance 或任何 WI 生命周期事实。只允许读取用户提示词中的 Bootstrap Coordinates、上一轮完整 receipt（仅作 last-confirmed continuity）和取得 live branch ref 所必需的证据。
+4. `AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 时禁止进入 PRECONCLUSION、Stage Input、Recovery Acceptance；也禁止提前把 handoff 中的 `WORK_BRANCH`、WI state、attempt、operation boundary 当作本轮恢复材料，即使标记为 pending claim 也不允许在 Bootstrap 失败阶段读取。
+5. Bootstrap 失败后唯一合法下一动作固定为 `AUTHORITY_BOOTSTRAP_NEXT_ACTION=ACQUIRE_LIVE_BRANCH_REF_ONLY`。
+6. 若需要用户本地取证，只允许生成一个“Bootstrap live-ref evidence”只读交付包。该包只允许：
+   - 执行 `git ls-remote <REMOTE_URL> refs/heads/<AUTHORITY_BRANCH>`；
+   - 输出 stdout / exit code / exact ref；
+   - 不读取或修改任何 SpecForge / Validation 仓库文件；
+   - 不调用任何 Work Item / Workflow / Gate / User Decision / Merge / Code Permission / Verification / Close。
+7. 上述只读取证包仍是 Artifact；发布给用户前必须完整通过 `GOV-STAGE-ARTIFACT-VERIFY-001` 与 `GOV-STAGE-VALIDATOR-001`，至少输出：
+```text
+ARTIFACT_ID=
+ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP
+ARTIFACT_CONTRACT=
+STRUCTURE_VALIDATION=PASS|FAIL
+COMPLETENESS_VALIDATION=PASS|FAIL
+SEMANTIC_VALIDATION=PASS|FAIL
+REFERENCE_VALIDATION=PASS|FAIL
+SCOPE_VALIDATION=PASS|FAIL
+EXECUTABILITY_VALIDATION=PASS|FAIL
+CONSUMER_VALIDATION=PASS|FAIL
+VALIDATION_EVIDENCE=
+VALIDATOR_ID=
+VALIDATOR_SELF_CHECK=PASS|FAIL
+VALIDATOR_ACCEPTED=YES|NO
+ARTIFACT_ACCEPTED=YES|NO
+```
+8. `POST_BUILD_VERIFY=PASS`、`ZIP reopen PASS`、`NO_PYC_CACHE=PASS` 或类似局部检查不能替代完整 Artifact Acceptance。
+9. 只有取证包已经 `ARTIFACT_ACCEPTED=YES` 时，才允许：
+   `AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED=YES` 并向用户发布 ZIP+CMD。
+10. `AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES` 仅在以下全部成立时允许：
+   - 本规则全部失败字段完整；
+   - `AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES`；
+   - `AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=PASS`；
+   - `AUTHORITY_BOOTSTRAP_NEXT_ACTION=ACQUIRE_LIVE_BRANCH_REF_ONLY`；
+   - 若已生成取证包，则该包 `ARTIFACT_ACCEPTED=YES`。
+11. `AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED != YES` 时不得发布取证 ZIP+CMD；先修正 Bootstrap Failure Acceptance 本身。
+12. 用户返回结构化 `git ls-remote` 证据后，新的会话回合必须重新从 Authority Bootstrap 开始；不得把前一个失败回合中未授权读取的 handoff/Recovery 内容沿用到通过后的恢复阶段。
+
 ### 0.4 SpecForge 自身开发：修改前治理
 
 **GOV-PRE-001：** 修改任何代码前，必须完成源码取证和治理前置结论。治理前置结论至少包含：
@@ -1045,7 +1113,7 @@ RECOVERY_ACCEPTED=YES|NO
 
 ### 0.10 新会话固定提示词
 
-每次新会话使用以下固定短提示词。该提示词本身提供 Bootstrap Root-of-Trust 规则，因此不依赖新会话先成功读取仓库中的最新协议：
+每次新会话使用以下固定短提示词。该提示词直接携带 Bootstrap 成功/失败最小契约，不依赖先读到仓库最新 branch 内容：
 
 ```text
 继续 SpecForge。
@@ -1063,12 +1131,45 @@ AUTHORITY_PATH=docs/design/SpecForge架构一致性治理最终实施方案.md
    - 用户返回的只读 USER_BOOTSTRAP_GIT_LS_REMOTE。
 3. 固定 AUTHORITY_HEAD 后，只读取：
    https://raw.githubusercontent.com/lyqstart/SpecForge/<AUTHORITY_HEAD>/docs/design/SpecForge架构一致性治理最终实施方案.md
-4. 输出 GOV-STAGE-AUTHORITY-BOOTSTRAP-001 规定的 Authority Bootstrap Acceptance。
-5. AUTHORITY_BOOTSTRAP_ACCEPTED!=YES 时立即 Fail Closed，不得继续 PRECONCLUSION / Stage Input / Recovery，也不得生成常规执行 ZIP+CMD。
-6. 如果你的工具无法取得 live structured branch ref，只允许请求一次只读 git ls-remote 根信任取证；不得用网页缓存替代。
-7. 如果上一轮存在 ZIP+CMD，下面必须粘贴完整标准执行回执；如果上一轮确实没有 ZIP+CMD，则写 NONE。缺失应有的回执必须标记 MISSING_LAST_EXECUTION_RECEIPT，不能解释成 NONE。
+4. Bootstrap 成功必须输出 GOV-STAGE-AUTHORITY-BOOTSTRAP-001 的完整 Authority Bootstrap Acceptance。
+5. live branch ref 取得失败时，不得缩写为一句 AUTHORITY_BOOTSTRAP_ACCEPTED=NO；必须按 GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001 输出完整失败块，至少包含：
+   AUTHORITY_HEAD_SOURCE
+   AUTHORITY_HEAD
+   AUTHORITY_EXACT_CONTENT_REF
+   AUTHORITY_UNIQUE_MARKER_AUDIT
+   AUTHORITY_BOOTSTRAP_EVIDENCE
+   AUTHORITY_BOOTSTRAP_EVIDENCE_FRESHNESS
+   AUTHORITY_BOOTSTRAP_VALIDATOR_ID
+   AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED
+   AUTHORITY_BOOTSTRAP_ACCEPTED
+   AUTHORITY_BOOTSTRAP_FAILURE_REASON
+   AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT
+   AUTHORITY_BOOTSTRAP_NEXT_ACTION
+   AUTHORITY_BOOTSTRAP_READ_ONLY_EVIDENCE_REQUIRED
+   AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ID
+   AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED
+   AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED
+6. AUTHORITY_BOOTSTRAP_ACCEPTED!=YES 时，不得读取 current-handoff、Work Item、immutable evidence、Stage Input 或 Recovery，不得输出任何 WI 当前状态；唯一下一动作是取得 live branch ref。
+7. 如果需要给我本地只读取证 ZIP+CMD，该 ZIP 必须只执行 git ls-remote，不得访问项目仓库；发布前必须显示完整 Artifact Acceptance：
+   ARTIFACT_ID
+   ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP
+   ARTIFACT_CONTRACT
+   STRUCTURE_VALIDATION
+   COMPLETENESS_VALIDATION
+   SEMANTIC_VALIDATION
+   REFERENCE_VALIDATION
+   SCOPE_VALIDATION
+   EXECUTABILITY_VALIDATION
+   CONSUMER_VALIDATION
+   VALIDATION_EVIDENCE
+   VALIDATOR_ID
+   VALIDATOR_SELF_CHECK
+   VALIDATOR_ACCEPTED
+   ARTIFACT_ACCEPTED=YES
+8. 只有 AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES 且取证包 ARTIFACT_ACCEPTED=YES，才允许发布这个 Bootstrap 只读取证 ZIP+CMD。
+9. 如果上一轮存在 ZIP+CMD，下面必须粘贴完整标准执行回执；如果上一轮确实没有 ZIP+CMD，则写 NONE。缺失应有的回执必须标记 MISSING_LAST_EXECUTION_RECEIPT。
 
-Authority Bootstrap 通过后，再严格执行 exact-commit authority 中的“新会话启动协议”：
+Authority Bootstrap 成功后，再严格执行 exact-commit authority：
 - 读取 current-handoff；
 - 重新读取当前 WORK_BRANCH 的本地/远程 HEAD、worktree；
 - 用持久化 Work Item / immutable evidence 对账 handoff；
@@ -1085,11 +1186,12 @@ Authority Bootstrap 通过后，再严格执行 exact-commit authority 中的“
 固定跨会话规则：
 
 1. Bootstrap Coordinates 只负责找到 live authority，不承载业务/治理动态状态。
-2. 新会话绝不从 `raw/main` 开始；必须先 branch ref、后 exact commit authority。
-3. 有上一轮标准回执时，它是 last-confirmed continuity evidence，不替代 live branch-ref recheck。
-4. 无上一轮 ZIP+CMD 时可以写 `NONE`；有 ZIP+CMD 却漏回执时必须 Fail Closed。
-5. `Authority Bootstrap Acceptance → GOVERNANCE PRECONCLUSION → Stage Input → Recovery Acceptance` 是固定四段式启动成果。
-6. Authority Bootstrap 尚未接受时，唯一允许的本地动作是取得 live branch ref 的只读取证；该 bootstrap 行为不属于 WI 生命周期动作。
+2. 新会话绝不从 `raw/main` 开始；必须先 live branch ref、后 exact commit authority。
+3. Bootstrap 失败时绝不读取 handoff；失败回合只允许取得 live branch-ref evidence。
+4. 有上一轮标准回执时，它是 last-confirmed continuity evidence，不替代 live branch-ref recheck。
+5. 无上一轮 ZIP+CMD 时可以写 `NONE`；有 ZIP+CMD 却漏回执时必须 Fail Closed。
+6. `Authority Bootstrap Acceptance → GOVERNANCE PRECONCLUSION → Stage Input → Recovery Acceptance` 是成功路径固定四段式启动成果。
+7. `Authority Bootstrap Failure Acceptance → accepted Bootstrap live-ref evidence ZIP/CMD → 用户返回 live ref → 重新 Bootstrap` 是失败路径固定闭环。
 <!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 
 ---

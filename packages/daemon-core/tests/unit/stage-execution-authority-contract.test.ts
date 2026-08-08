@@ -26,6 +26,7 @@ const stageRuleIds = [
   'GOV-STAGE-VALIDATOR-001',
   'GOV-STAGE-RECOVERY-ACCEPT-001',
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-001',
+  'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -173,6 +174,7 @@ describe('Stage Execution Contract authority', () => {
       'VALIDATOR_CONTRACT=',
       'RECOVERY_ACCEPTANCE_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_CONTRACT=',
+      'AUTHORITY_BOOTSTRAP_FAILURE_CONTRACT=',
       'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);
@@ -293,6 +295,45 @@ describe('Stage Execution Contract authority', () => {
     expect(promptSection).toContain('AUTHORITY_BOOTSTRAP_ACCEPTED!=YES');
     expect(promptSection).toContain('raw/main');
     expect(promptSection).toContain('MISSING_LAST_EXECUTION_RECEIPT');
+  });
+
+  it('enforces complete fail-closed bootstrap output and accepted live-ref evidence artifact', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+
+    const failureStart = authority.indexOf('**GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001：**');
+    const failureEnd = authority.indexOf('### 0.4 SpecForge 自身开发：修改前治理', failureStart);
+    expect(failureStart).toBeGreaterThanOrEqual(0);
+    expect(failureEnd).toBeGreaterThan(failureStart);
+    const failureSection = authority.slice(failureStart, failureEnd);
+
+    for (const field of [
+      'AUTHORITY_BOOTSTRAP_FAILURE_REASON=',
+      'AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=',
+      'AUTHORITY_BOOTSTRAP_NEXT_ACTION=',
+      'AUTHORITY_BOOTSTRAP_READ_ONLY_EVIDENCE_REQUIRED=',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ID=',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED=',
+      'AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=',
+      'ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP',
+      'VALIDATION_EVIDENCE=',
+      'ARTIFACT_ACCEPTED=YES|NO',
+    ]) {
+      expect(failureSection, field).toContain(field);
+    }
+
+    expect(failureSection).toContain('ACQUIRE_LIVE_BRANCH_REF_ONLY');
+
+    const promptStart = authority.indexOf('### 0.10 新会话固定提示词');
+    expect(promptStart).toBeGreaterThanOrEqual(0);
+    const promptSection = authority.slice(promptStart);
+    for (const field of [
+      'AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED',
+      'AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED',
+      'ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP',
+    ]) {
+      expect(promptSection, field).toContain(field);
+    }
   });
 
 });
