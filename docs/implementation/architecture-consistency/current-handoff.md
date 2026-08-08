@@ -3988,3 +3988,16 @@ WI-0003 仍保持原 Candidate 状态。产品修复部署后必须先调查并�
 - V89 成功仅代表产品补丁本地验证完成、待单独 commit/push。提交部署并由用户手工重启 daemon/OpenCode 后，必须先调查并使用正式 `gates_failed` Candidate recovery 路径；不得手改 repair plan，不得直接重复 Gate。
 - 永久边界不变：`FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`；`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；`P0_OVERALL_COMPLETION_ALLOWED=NO`。
 <!-- SPECFORGE_ERR221_REPAIR_FREEZE_BINDING_HANDOFF:END -->
+
+<!-- SPECFORGE_ERR222_CONTROLLED_REPAIR_BINDING_RECOVERY_HANDOFF:START -->
+## ERR-222 — WI-0004 历史 repair binding 受控恢复
+- SpecForge 当前基线：`83d66358ac5b1f228e88f4d0ed1ca5a34f6907b9`（ERR-221 已提交推送）。
+- WI-0004 当前业务治理状态保持 `gates_failed`；Candidate Gate 不重跑、User Decision 不运行。
+- 历史 stale binding 仍存在：plan `sha256:1ba8b34c...`，当前冻结 Candidate `sha256:e4f716bc...`。ERR-221 只修复未来 freeze，不能安全地自动修改历史 WI。
+- 当前正式产品事实：`sf_v11_spec_migration` 只有 inventory/plan/inspect_repair/prepare_repair；prepare/inspect 只允许 candidate_preparing；Gate retry 不调用 prepare_repair。因此现有 WI 缺少受控恢复入口。
+- ERR-222 新增 `sf_v11_spec_migration(action=recover_repair_binding)`，只允许 authoritative `gates_failed`。它必须由最新 immutable failed Gate Attempt、精确 required Gate 集合、唯一 stale-binding failure、Candidate input snapshot、当前 Project Spec precondition、Candidate 中保存的 repair evidence/modules 联合授权。
+- 成功动作只原子更新 repair plan 的 `candidate_manifest_sha256`，不修改 Candidate/Project Spec/状态/Attempt，不自动执行 Gate。
+- V92 成功仅代表产品补丁本地验证完成、待单独 commit/push；Validation/WI-0004 在产品修复期间冻结。
+- 产品提交后由用户手工重启 daemon/OpenCode，随后才能对真实 WI-0004 执行一次 `recover_repair_binding`；先审计恢复结果，再允许 Candidate Gate retry 一次；Gate 后立即停止，不自动执行 User Decision。
+- 永久边界：`FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`；`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；`P0_OVERALL_COMPLETION_ALLOWED=NO`。
+<!-- SPECFORGE_ERR222_CONTROLLED_REPAIR_BINDING_RECOVERY_HANDOFF:END -->

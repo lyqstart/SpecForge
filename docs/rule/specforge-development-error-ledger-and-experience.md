@@ -4875,3 +4875,25 @@ actual_files
   - V89 第一次封包生成：外层 Python 与内层多行 payload 再次触发 ERR-207 同类嵌套三引号语法失败；ZIP 未生成、真实仓库未触达。复用 EXP-177，改为 runner + 独立 `patch_contract.json` payload。
 - `UNRECORDED_FAILURES=0`（截至 ERR-221 V89 修改前置对账）。
 <!-- SPECFORGE_ERR221_EXP186_REPAIR_FREEZE_BINDING:END -->
+
+<!-- SPECFORGE_ERR222_EXP187_CONTROLLED_REPAIR_BINDING_RECOVERY:START -->
+## ERR-222 / EXP-187 — 历史 repair binding 缺陷必须由 immutable failed Attempt 受控恢复
+- **ERR-222**：ERR-221 修复只保证后续 `candidate_preparing -> candidate_prepared` freeze 会同步 repair plan；已经在旧实现下进入 `gates_failed` 的 WI-0004 仍保留历史 stale `project_spec_repair_plan.candidate_manifest_sha256`。现有 `prepare_repair` 只允许 `candidate_preparing` 且拒绝覆盖现有 real Candidate/plan；Candidate Gate retry 只做状态恢复，不调用 repair producer，因此历史 WI 没有合法恢复入口。
+- **现场证据**：WI-0004 immutable `attempt-0002 source=gate_run summary=failed` 覆盖 10 个 required Candidate Gates，9 个 passed，`trace_gate=passed`，仅 `workflow_specific_gate=failed`，唯一 blocking issue 为 `project_spec_repair_plan candidate manifest hash is stale`；Attempt `input-snapshot.json` 已冻结 Candidate Manifest SHA。
+- **恢复原则**：不手改 WI、不放宽 Gate、不重建 Candidate、不修改 Project Spec、不新增状态边。扩展既有 `sf_v11_spec_migration`，新增 `action=recover_repair_binding`，且只允许 authoritative `gates_failed`。
+- **恢复授权证据必须全部满足**：
+  1. Work Item / Candidate / repair plan 均属于同一 `spec_migration_path` WI；
+  2. repair plan 当前确实 stale，且其 Project Spec precondition/version/evidence/modules 与当前冻结 Candidate 可相互推导一致；
+  3. 当前 Project Spec manifest 仍等于 repair plan / Candidate 的 precondition；
+  4. 最新 immutable Attempt 必须是 `gate_run + failed`，requested/current/summary Gate 集合精确等于当前 full spec_migration Candidate required Gates；
+  5. 除 `workflow_specific_gate` 外全部 required Gate 必须 passed；
+  6. `workflow_specific_gate` 必须且只能因精确字符串 `project_spec_repair_plan candidate manifest hash is stale` 失败；
+  7. Attempt `input-snapshot.json` 中 Candidate Manifest SHA 必须等于当前 Candidate bytes，证明 Candidate 自失败 Attempt 后未变化；
+  8. 写入前再次检查 repair plan / Candidate / Project Spec 三方 freshness，任一变化 Fail Closed。
+- **写入范围**：成功恢复只原子修改 `project_spec_repair_plan.candidate_manifest_sha256`，其余 plan 字段、Candidate、Project Spec、权威状态、Gate Attempt 均不修改。动作返回 failed Attempt ID、旧/新 binding 和 `state_advanced=false`；不会自动重跑 Gate。
+- **EXP-187 — 历史生命周期缺陷的补偿动作必须由 immutable execution evidence + 当前 freshness 双重授权**：不能因为“现在看起来能修”就刷新派生证据。必须证明失败执行当时的唯一原因、主体 artifact 未变化、当前上游真相仍满足原 precondition，并在真正写入前再次检查 freshness；补偿动作只修缺陷制造的最小派生字段，不推进 Workflow。
+- **V91 审计器纠正**：
+  - V91 自己猜 `events.jsonl` 字段得到 `WI0004_STATE=UNKNOWN`，而正式 `StateManager/readAuthoritativeState` 已证明状态为 `gates_failed`；复用 EXP-151，状态事实必须来自正式 authority reader。
+  - V91 通过仓库关键词 `reprepare` 在无关 `contract-authoring.ts` 产生“存在 repair refresh action”的假阳性；Producer 能力必须以目标 Tool action/schema/handler 调用链为证据，不能靠泛关键词，复用 EXP-181。
+- `UNRECORDED_FAILURES=0`（截至 ERR-222 V92 修改前置对账）。
+<!-- SPECFORGE_ERR222_EXP187_CONTROLLED_REPAIR_BINDING_RECOVERY:END -->

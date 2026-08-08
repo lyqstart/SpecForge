@@ -9,6 +9,7 @@ import {
   generateMigrationPlan,
   inspectProjectSpecRepair,
   prepareProjectSpecRepairCandidates,
+  recoverProjectSpecRepairBindingFromFailedGateAttempt,
   type ProjectSpecRepairPreparation,
   writeProjectSpecRepairInspection,
   writeMigrationPlan,
@@ -36,6 +37,38 @@ registerHandler('sf_v11_spec_migration', async (args, context, deps) => {
     const workItemDir = args['work_item_dir'] as string ||
       `${projectRoot}/.specforge/work-items/${workItemId}`;
 
+    if (action === 'recover_repair_binding') {
+      const authoritativeState = await readAuthoritativeState({
+        deps,
+        projectRoot,
+        workItemId,
+      });
+      if (authoritativeState.current_state !== 'gates_failed') {
+        return {
+          success: false,
+          error:
+            'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_REQUIRES_GATES_FAILED',
+          current_state: authoritativeState.current_state,
+          state_source: authoritativeState.source,
+        };
+      }
+      const recovered =
+        await recoverProjectSpecRepairBindingFromFailedGateAttempt({
+          projectRoot,
+          workItemId,
+          workItemDir,
+        });
+      return {
+        success: true,
+        work_item_id: workItemId,
+        action,
+        ...recovered,
+        current_state: authoritativeState.current_state,
+        state_source: authoritativeState.source,
+        next_legal_action:
+          'rerun required Candidate Gates once; do not run User Decision automatically',
+      };
+    }
     if (action === 'inspect_repair') {
       const authoritativeState = await readAuthoritativeState({
         deps,
@@ -136,7 +169,7 @@ registerHandler('sf_v11_spec_migration', async (args, context, deps) => {
 
     return {
       success: false,
-      error: `Unknown action: ${action}. Use 'inventory', 'plan', 'inspect_repair', or 'prepare_repair'.`,
+      error: `Unknown action: ${action}. Use 'inventory', 'plan', 'inspect_repair', 'prepare_repair', or 'recover_repair_binding'.`,
     };
   } catch (err: any) {
     return { success: false, error: err.message };

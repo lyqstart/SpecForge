@@ -20,6 +20,7 @@ import {
   normalizeModuleCodeReference,
   resolveSpecModuleIdentity,
 } from '@specforge/types';
+import { getRequiredGates } from './required-gates.js';
 
 // ── Types ──
 
@@ -518,6 +519,446 @@ export async function prepareProjectSpecRepairCandidates(input: {
     throw error;
   }
 }
+export interface ProjectSpecRepairBindingRecoveryResult {
+  repair_plan_path: string;
+  candidate_manifest_path: string;
+  failed_attempt_id: string;
+  previous_candidate_manifest_sha256: string;
+  recovered_candidate_manifest_sha256: string;
+  state_advanced: false;
+}
+
+const PROJECT_SPEC_REPAIR_STALE_BINDING_ISSUE =
+  'project_spec_repair_plan candidate manifest hash is stale';
+
+function sameStringSet(actual: unknown, expected: string[]): boolean {
+  if (!Array.isArray(actual) || actual.some(value => typeof value !== 'string')) {
+    return false;
+  }
+  const normalized = Array.from(new Set(actual as string[])).sort();
+  return (
+    normalized.length === expected.length &&
+    normalized.every((value, index) => value === expected[index])
+  );
+}
+
+function attemptSequence(name: string): number | null {
+  const match = /^attempt-(\d{4})$/.exec(name);
+  return match ? Number(match[1]) : null;
+}
+
+function stringArrayEqual(actual: unknown, expected: string[]): boolean {
+  return (
+    Array.isArray(actual) &&
+    actual.length === expected.length &&
+    actual.every((value, index) => value === expected[index])
+  );
+}
+
+function candidateModuleIds(candidateManifest: Record<string, unknown>): string[] {
+  const entries = Array.isArray(candidateManifest.entries)
+    ? candidateManifest.entries
+    : [];
+  return Array.from(
+    new Set(
+      entries
+        .map(entry =>
+          entry && typeof entry === 'object' && !Array.isArray(entry)
+            ? (entry as Record<string, unknown>).module_id
+            : null,
+        )
+        .filter((value): value is string => typeof value === 'string' && value.length > 0),
+    ),
+  ).sort();
+}
+
+async function latestImmutableGateAttempt(workItemDir: string): Promise<{
+  attemptId: string;
+  attemptPath: string;
+  result: Record<string, unknown>;
+}> {
+  const attemptsRoot = join(workItemDir, 'gate_attempts');
+  let entries;
+  try {
+    entries = await readdir(attemptsRoot, { withFileTypes: true });
+  } catch {
+    throw new Error('PROJECT_SPEC_REPAIR_BINDING_RECOVERY_REQUIRES_FAILED_GATE_ATTEMPT');
+  }
+  const attempts = entries
+    .filter(entry => entry.isDirectory() && attemptSequence(entry.name) !== null)
+    .map(entry => ({ name: entry.name, sequence: attemptSequence(entry.name)! }))
+    .sort((left, right) => left.sequence - right.sequence);
+  const latest = attempts.at(-1);
+  if (!latest) {
+    throw new Error('PROJECT_SPEC_REPAIR_BINDING_RECOVERY_REQUIRES_FAILED_GATE_ATTEMPT');
+  }
+  const attemptPath = join(attemptsRoot, latest.name);
+  let result: Record<string, unknown>;
+  try {
+    result = JSON.parse(
+      await readFile(join(attemptPath, 'attempt-result.json'), 'utf8'),
+    ) as Record<string, unknown>;
+  } catch {
+    throw new Error('PROJECT_SPEC_REPAIR_BINDING_RECOVERY_ATTEMPT_RESULT_INVALID');
+  }
+  return { attemptId: latest.name, attemptPath, result };
+}
+
+function resolveSnapshotInputPath(projectRoot: string, value: string): string {
+  return isAbsolute(value) ? resolve(value) : resolve(projectRoot, value);
+}
+
+export async function recoverProjectSpecRepairBindingFromFailedGateAttempt(input: {
+  projectRoot: string;
+  workItemId: string;
+  workItemDir: string;
+}): Promise<ProjectSpecRepairBindingRecoveryResult> {
+  const workItemPath = join(input.workItemDir, 'work_item.json');
+  const candidateManifestPath = join(input.workItemDir, 'candidate_manifest.json');
+  const repairPlanPath = join(input.workItemDir, 'project_spec_repair_plan.json');
+  const projectManifestPath = join(
+    input.projectRoot,
+    '.specforge',
+    'project',
+    'spec_manifest.json',
+  );
+
+  let workItem: Record<string, unknown>;
+  let candidateManifest: Record<string, unknown>;
+  let repairPlan: Record<string, unknown>;
+  let candidateManifestRaw: Buffer;
+  let repairPlanRaw: Buffer;
+  let projectManifestRaw: Buffer;
+  try {
+    workItem = JSON.parse(await readFile(workItemPath, 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    candidateManifestRaw = await readFile(candidateManifestPath);
+    candidateManifest = JSON.parse(
+      candidateManifestRaw.toString('utf8'),
+    ) as Record<string, unknown>;
+    repairPlanRaw = await readFile(repairPlanPath);
+    repairPlan = JSON.parse(repairPlanRaw.toString('utf8')) as Record<
+      string,
+      unknown
+    >;
+    projectManifestRaw = await readFile(projectManifestPath);
+  } catch (error) {
+    throw new Error(
+      `PROJECT_SPEC_REPAIR_BINDING_RECOVERY_ARTIFACT_INVALID: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+  }
+
+  if (
+    workItem.work_item_id !== input.workItemId ||
+    workItem.workflow_path !== 'spec_migration_path' ||
+    workItem.workflow_type !== 'spec_migration'
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_REQUIRES_SPEC_MIGRATION_PATH',
+    );
+  }
+  if (
+    candidateManifest.work_item_id !== input.workItemId ||
+    candidateManifest.workflow_path !== 'spec_migration_path'
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_CANDIDATE_IDENTITY_INVALID',
+    );
+  }
+  if (
+    repairPlan.action !== 'project_spec_repair' ||
+    repairPlan.work_item_id !== input.workItemId
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_PLAN_IDENTITY_INVALID',
+    );
+  }
+
+  const currentCandidateHash = sha256(candidateManifestRaw);
+  const previousBinding = repairPlan.candidate_manifest_sha256;
+  if (typeof previousBinding !== 'string') {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_PLAN_BINDING_INVALID',
+    );
+  }
+  if (previousBinding === currentCandidateHash) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_NOT_REQUIRED',
+    );
+  }
+
+  if (
+    repairPlan.manifest_sha256_before !==
+    candidateManifest.project_spec_precondition_sha256
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_PRECONDITION_MISMATCH',
+    );
+  }
+  const currentProjectManifestHash = sha256(projectManifestRaw);
+  if (currentProjectManifestHash !== repairPlan.manifest_sha256_before) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_PROJECT_SPEC_CHANGED',
+    );
+  }
+  if (
+    repairPlan.project_spec_version_before !== candidateManifest.base_spec_version
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_PROJECT_SPEC_VERSION_MISMATCH',
+    );
+  }
+
+  const candidateEvidencePaths = Array.isArray(
+    candidateManifest.repair_evidence_paths,
+  )
+    ? candidateManifest.repair_evidence_paths.filter(
+        (value): value is string => typeof value === 'string',
+      )
+    : [];
+  if (
+    candidateEvidencePaths.length === 0 ||
+    !stringArrayEqual(repairPlan.evidence_paths, candidateEvidencePaths)
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_EVIDENCE_MISMATCH',
+    );
+  }
+  for (const evidencePath of candidateEvidencePaths) {
+    resolveProjectSpecSource(input.projectRoot, evidencePath);
+  }
+
+  const expectedModules = candidateModuleIds(candidateManifest);
+  const planModules = Array.isArray(repairPlan.modules)
+    ? repairPlan.modules.filter(
+        (value): value is string => typeof value === 'string',
+      )
+    : [];
+  if (
+    expectedModules.length === 0 ||
+    !sameStringSet(planModules, expectedModules)
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_MODULES_MISMATCH',
+    );
+  }
+
+  const requiredGateIds = getRequiredGates(
+    'spec_migration_path',
+    'candidate',
+    'full',
+    'spec_migration',
+  )
+    .map(String)
+    .sort();
+
+  const latestAttempt = await latestImmutableGateAttempt(input.workItemDir);
+  const attemptResult = latestAttempt.result;
+  if (
+    attemptResult.work_item_id !== input.workItemId ||
+    attemptResult.source !== 'gate_run' ||
+    attemptResult.summary_status !== 'failed'
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_REQUIRES_FAILED_GATE_ATTEMPT',
+    );
+  }
+  for (const field of [
+    'requested_gate_ids',
+    'current_report_gate_ids',
+    'summary_report_gate_ids',
+  ] as const) {
+    if (!sameStringSet(attemptResult[field], requiredGateIds)) {
+      throw new Error(
+        `PROJECT_SPEC_REPAIR_BINDING_RECOVERY_ATTEMPT_GATE_SET_MISMATCH: ${field}`,
+      );
+    }
+  }
+
+  const reports = new Map<string, Record<string, unknown>>();
+  for (const gateId of requiredGateIds) {
+    let report: Record<string, unknown>;
+    try {
+      report = JSON.parse(
+        await readFile(
+          join(latestAttempt.attemptPath, 'gates', `${gateId}.json`),
+          'utf8',
+        ),
+      ) as Record<string, unknown>;
+    } catch {
+      throw new Error(
+        `PROJECT_SPEC_REPAIR_BINDING_RECOVERY_GATE_REPORT_INVALID: ${gateId}`,
+      );
+    }
+    if (
+      report.work_item_id !== input.workItemId ||
+      report.gate_id !== gateId
+    ) {
+      throw new Error(
+        `PROJECT_SPEC_REPAIR_BINDING_RECOVERY_GATE_REPORT_IDENTITY_INVALID: ${gateId}`,
+      );
+    }
+    reports.set(gateId, report);
+  }
+
+  const nonPassed = requiredGateIds.filter(
+    gateId => reports.get(gateId)?.status !== 'passed',
+  );
+  if (
+    nonPassed.length !== 1 ||
+    nonPassed[0] !== 'workflow_specific_gate'
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_ATTEMPT_NOT_EXCLUSIVELY_STALE_BINDING',
+    );
+  }
+  const workflowReport = reports.get('workflow_specific_gate')!;
+  if (workflowReport.status !== 'failed') {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_WORKFLOW_REPORT_INVALID',
+    );
+  }
+  const failedChecks = Array.isArray(workflowReport.checks)
+    ? workflowReport.checks.filter(
+        check =>
+          check &&
+          typeof check === 'object' &&
+          !Array.isArray(check) &&
+          (check as Record<string, unknown>).passed === false,
+      )
+    : [];
+  const blockingIssues = Array.isArray(workflowReport.blocking_issues)
+    ? workflowReport.blocking_issues
+    : [];
+  if (
+    failedChecks.length !== 1 ||
+    (failedChecks[0] as Record<string, unknown>).description !==
+      PROJECT_SPEC_REPAIR_STALE_BINDING_ISSUE ||
+    blockingIssues.length !== 1 ||
+    blockingIssues[0] !== PROJECT_SPEC_REPAIR_STALE_BINDING_ISSUE
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_WORKFLOW_FAILURE_NOT_EXACT',
+    );
+  }
+
+  const snapshotRef = attemptResult.input_snapshot;
+  if (typeof snapshotRef !== 'string' || snapshotRef.length === 0) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_INPUT_SNAPSHOT_MISSING',
+    );
+  }
+  const snapshotPath = resolve(latestAttempt.attemptPath, snapshotRef);
+  if (!isSubPath(snapshotPath, latestAttempt.attemptPath)) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_INPUT_SNAPSHOT_PATH_INVALID',
+    );
+  }
+  let snapshot: Record<string, unknown>;
+  try {
+    snapshot = JSON.parse(await readFile(snapshotPath, 'utf8')) as Record<
+      string,
+      unknown
+    >;
+  } catch {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_INPUT_SNAPSHOT_INVALID',
+    );
+  }
+  if (
+    snapshot.attempt_id !== latestAttempt.attemptId ||
+    snapshot.work_item_id !== input.workItemId ||
+    !Array.isArray(snapshot.inputs)
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_INPUT_SNAPSHOT_IDENTITY_INVALID',
+    );
+  }
+
+  const absoluteCandidatePath = resolve(candidateManifestPath);
+  const candidateSnapshots = snapshot.inputs.filter(entry => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+    const entryPath = (entry as Record<string, unknown>).path;
+    return (
+      typeof entryPath === 'string' &&
+      resolveSnapshotInputPath(input.projectRoot, entryPath) ===
+        absoluteCandidatePath
+    );
+  }) as Array<Record<string, unknown>>;
+  if (candidateSnapshots.length !== 1) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_CANDIDATE_SNAPSHOT_MISSING',
+    );
+  }
+  const candidateSnapshot = candidateSnapshots[0]!;
+  if (
+    candidateSnapshot.exists !== true ||
+    candidateSnapshot.kind !== 'file' ||
+    candidateSnapshot.sha256 !== currentCandidateHash.replace(/^sha256:/, '')
+  ) {
+    throw new Error(
+      'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_CANDIDATE_CHANGED_AFTER_ATTEMPT',
+    );
+  }
+
+  const initialRepairPlanHash = sha256(repairPlanRaw);
+  const initialProjectManifestHash = currentProjectManifestHash;
+  const temporaryPath = `${repairPlanPath}.recovery-${randomUUID()}`;
+  const updatedPlan = {
+    ...repairPlan,
+    candidate_manifest_sha256: currentCandidateHash,
+  };
+  try {
+    await writeFile(
+      temporaryPath,
+      `${JSON.stringify(updatedPlan, null, 2)}\n`,
+      'utf8',
+    );
+
+    const [
+      latestRepairPlanRaw,
+      latestCandidateRaw,
+      latestProjectManifestRaw,
+    ] = await Promise.all([
+      readFile(repairPlanPath),
+      readFile(candidateManifestPath),
+      readFile(projectManifestPath),
+    ]);
+    if (sha256(latestRepairPlanRaw) !== initialRepairPlanHash) {
+      throw new Error(
+        'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_PLAN_CHANGED_DURING_RECOVERY',
+      );
+    }
+    if (sha256(latestCandidateRaw) !== currentCandidateHash) {
+      throw new Error(
+        'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_CANDIDATE_CHANGED_DURING_RECOVERY',
+      );
+    }
+    if (sha256(latestProjectManifestRaw) !== initialProjectManifestHash) {
+      throw new Error(
+        'PROJECT_SPEC_REPAIR_BINDING_RECOVERY_PROJECT_SPEC_CHANGED_DURING_RECOVERY',
+      );
+    }
+    await rename(temporaryPath, repairPlanPath);
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
+
+  return {
+    repair_plan_path: repairPlanPath,
+    candidate_manifest_path: candidateManifestPath,
+    failed_attempt_id: latestAttempt.attemptId,
+    previous_candidate_manifest_sha256: previousBinding,
+    recovered_candidate_manifest_sha256: currentCandidateHash,
+    state_advanced: false,
+  };
+}
+
 // ── Classification ──
 
 function classifyFile(filename: string): MigrationInventory['legacyFiles'][number]['type'] {

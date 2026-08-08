@@ -3958,3 +3958,23 @@ V76 的 `kind:'trace'` TypeScript 失败属于 ERR-072 / EXP-052 重复实现错
 | User Decision | NO |
 | P0 overall | NO；WI-0001 first-gate machine report 永久缺失 |
 <!-- P0_WI0004_ERR221_REPAIR_FREEZE_BINDING:END -->
+
+<!-- P0_WI0004_ERR222_CONTROLLED_REPAIR_BINDING_RECOVERY:START -->
+## WI-0004 — ERR-222 historical repair binding controlled recovery
+| 项目 | 事实 |
+|---|---|
+| SpecForge baseline | `83d66358ac5b1f228e88f4d0ed1ca5a34f6907b9` |
+| WI-0004 state | `gates_failed` |
+| immutable failed Attempt | `attempt-0002 source=gate_run` |
+| Gate result | 9/10 passed；仅 workflow_specific_gate stale binding failed；trace_gate passed |
+| 历史 binding | plan `sha256:1ba8b34c...` vs frozen Candidate `sha256:e4f716bc...` |
+| 现有恢复缺口 | prepare_repair 不能在 gates_failed 执行；Gate retry 不调用 repair producer |
+| 产品修复 | `sf_v11_spec_migration(action=recover_repair_binding)` |
+| 授权证据 | failed Attempt + exact Gate set/result + Candidate input snapshot + current Project Spec/Candidate/plan semantic consistency |
+| 成功副作用 | 仅更新 repair plan `candidate_manifest_sha256` |
+| 状态推进 | NO |
+| Candidate / Project Spec 修改 | NO |
+| Gate 自动重跑 | NO |
+| User Decision | NO |
+| P0 overall | NO；WI-0001 first Candidate Gate machine report 永久不可恢复 |
+<!-- P0_WI0004_ERR222_CONTROLLED_REPAIR_BINDING_RECOVERY:END -->
