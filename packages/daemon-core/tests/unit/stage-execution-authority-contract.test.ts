@@ -18,6 +18,7 @@ const stageRuleIds = [
   'GOV-STAGE-TRUTH-001',
   'GOV-STAGE-BLOCKER-001',
   'GOV-STAGE-HANDOFF-001',
+  'GOV-STAGE-ENV-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -73,6 +74,9 @@ describe('Stage Execution Contract authority', () => {
       'NEXT_STAGE=',
       'NEXT_LEGAL_ACTION=',
       'STOP_CONDITION=',
+      'LOCAL_COMMAND_SHELL=',
+      'DOWNLOAD_PACKAGE_DIR=',
+      'LOCAL_PATH_QUOTING=',
       'PERMANENT_INSUFFICIENT_EVIDENCE=',
     ]) {
       expect(handoff, field).toContain(field);

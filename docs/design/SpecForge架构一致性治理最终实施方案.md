@@ -631,6 +631,24 @@ PERMANENT_INSUFFICIENT_EVIDENCE=
 
 冲突时以远程权威规则 + 当前持久化事实 + 最新用户授权为准，不得用模型记忆、旧 Prompt 或旧 handoff 覆盖当前事实。
 
+**GOV-STAGE-ENV-001：** 本地执行环境属于跨会话动态输入；通用读取和引用规则写入本权威文件，机器相关具体值只写入 `current-handoff.md`。
+
+`CURRENT EXECUTION STATE` 必须维护：
+
+```text
+LOCAL_COMMAND_SHELL=
+DOWNLOAD_PACKAGE_DIR=
+LOCAL_PATH_QUOTING=
+```
+
+固定规则：
+
+1. 生成用户本地一键命令前，必须读取上述字段，不得假设 `%USERPROFILE%\Downloads`、桌面、当前目录或其他默认下载位置；
+2. `LOCAL_COMMAND_SHELL=CMD` 时，只提供 Windows CMD 命令，不得改用 PowerShell；
+3. 任何来自 `DOWNLOAD_PACKAGE_DIR` 的 ZIP 路径、解压目录、脚本路径以及包含空格或非 ASCII 字符（包括中文）的本地路径参数，都必须使用完整双引号包裹；
+4. 一键命令必须使用 handoff 中当前 `DOWNLOAD_PACKAGE_DIR` 的实际值；用户后续修改该值时，只更新 handoff 动态状态，不把个人机器目录硬编码进本权威规则；
+5. 新会话恢复 Stage Input 时，必须把 `LOCAL_COMMAND_SHELL`、`DOWNLOAD_PACKAGE_DIR`、`LOCAL_PATH_QUOTING` 作为本地执行环境输入一起恢复并对账。
+
 ### 0.10 新会话固定提示词
 
 每次新会话至少使用以下提示词：
@@ -652,6 +670,7 @@ docs/design/SpecForge架构一致性治理最终实施方案.md
 读取权威文件后，再读取 docs/implementation/architecture-consistency/current-handoff.md 的唯一 CURRENT EXECUTION STATE 动态区；该文件不是并列权威。必须用当前持久化 Work Item 状态、immutable evidence 和最新用户 OPERATION_BOUNDARY 对账 handoff，冲突时以远程权威规则、当前持久化事实和最新用户授权为准。
 
 执行任何完整阶段前必须输出 Stage Input，至少明确 GLOBAL_GOAL、CURRENT_STAGE、STAGE_GOAL、SUCCESS_CRITERIA、EXPECTED_SIDE_EFFECTS、FORBIDDEN_SIDE_EFFECTS、STOP_CONDITION、BLOCKER、BACKLOG 和 NEXT_STAGE。完整阶段内部必须保留可诊断 Checkpoint；成功时输出固定 Stage Output；失败时输出 Failure Diagnostic，并区分 PRODUCT_DEFECT、GOVERNANCE_FAILURE、VALIDATION_HARNESS_DEFECT、ENVIRONMENT_FAILURE、AMBIGUOUS_SIDE_EFFECT。任何有副作用动作已经开始后，不得因为外围 runner/审计器失败而自动重试，必须先读取持久化证据判断实际效果。
+生成任何提供给用户执行的本地命令前，必须从 current-handoff 的 CURRENT EXECUTION STATE 读取 LOCAL_COMMAND_SHELL、DOWNLOAD_PACKAGE_DIR、LOCAL_PATH_QUOTING；不得假设默认下载目录。若 shell 为 CMD，则只输出 CMD；所有包含空格或非 ASCII 字符的路径参数必须完整使用双引号包裹。
 ```
 
 用户在上述固定提示词后追加本次具体任务、仓库地址、目标分支和已知基线。

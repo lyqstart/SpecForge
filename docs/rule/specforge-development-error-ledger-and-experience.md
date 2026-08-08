@@ -4912,3 +4912,17 @@ actual_files
 - **EXP-190**：打包前自检只允许验证真实交付不变量；同一 invariant 的正向/反向断言必须先做逻辑一致性检查。生成失败必须记录，但不得把未生成包当成用户侧失败。
 - `UNRECORDED_FAILURES=0`（截至 V98 框架固化前置对账）。
 <!-- SPECFORGE_ERR223_ERR225_STAGE_EXECUTION_CONTRACT:END -->
+
+<!-- SPECFORGE_ERR226_EXP191_STRUCTURAL_PATCH_ANCHOR:START -->
+## ERR-226 / EXP-191 — 权威文件修改必须使用稳定结构边界，禁止自然语言整段锚点
+- **ERR-226**：V101 在 `PATCH_PREFLIGHT` 失败，`authority rule count=0`。远程权威文件实际在 `GOV-STAGE-HANDOFF-001` 尾部与 `### 0.10 新会话固定提示词` 之间包含空行；V101 把自然语言句子、换行数量和章节标题组合成一个全文字符串锚点，因此即使语义与目标位置完全正确，也因空白格式差异无法匹配。
+- **分类**：`VALIDATION_HARNESS_DEFECT`。V101 在任何仓库写入前失败，`REQUEST_STARTED=NO`；Validation/WI-0004、Gate、User Decision、Merge 均未触碰。
+- **EXP-191**：
+  1. 权威文件 patch 必须优先使用稳定规则 ID、唯一章节标题、显式 START/END marker 或 parser 结构边界；
+  2. 禁止使用“自然语言全文 + 精确空白/换行”作为关键 patch 锚点；
+  3. 章节内内容修改必须先限定唯一章节范围，再在该范围内定位 code fence、规则 ID 或 marker；
+  4. 动态 handoff 只允许通过唯一 START/END marker 替换；
+  5. patch preflight 必须证明结构边界唯一，再允许写入。
+- **防复发**：V102 的 authority 使用唯一 `### 0.10 新会话固定提示词` 作为插入边界；提示词修改限定在 0.10 章节第一个 `text` code fence；handoff 只替换唯一 CURRENT EXECUTION STATE marker 区间。
+- `UNRECORDED_FAILURES=0`（截至 V102 前置对账）。
+<!-- SPECFORGE_ERR226_EXP191_STRUCTURAL_PATCH_ANCHOR:END -->
