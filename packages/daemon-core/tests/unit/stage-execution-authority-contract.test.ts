@@ -9,13 +9,15 @@ const handoffPath = resolve(repoRoot, 'docs/implementation/architecture-consiste
 
 function ruleSection(authority: string, ruleId: string): string {
   const marker = `**${ruleId}：**`;
-  const start = authority.indexOf(marker);
-  if (start < 0) throw new Error(`missing rule marker: ${marker}`);
+  const canonical = `\n${marker}`;
+  const newlineStart = authority.indexOf(canonical);
+  const start = newlineStart >= 0 ? newlineStart + 1 : (authority.startsWith(marker) ? 0 : -1);
+  if (start < 0) throw new Error(`missing canonical rule marker: ${marker}`);
   const tailStart = start + marker.length;
   const tail = authority.slice(tailStart);
   const candidates = [
     tail.search(/\n\*\*[A-Z][A-Z0-9-]+：\*\*/),
-    tail.search(/\n### 0\./),
+    tail.search(/\n## (?=\d+\.|附录 )/),
     tail.search(/\n<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->/),
   ].filter((value) => value >= 0);
   const end = candidates.length > 0 ? tailStart + Math.min(...candidates) : authority.length;
@@ -60,7 +62,7 @@ describe('Stage Execution Contract authority', () => {
   it('keeps canonical stage rule markers in the unique authority', async () => {
     const authority = await readFile(authorityPath, 'utf8');
     expect(authority).toContain('本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。');
-    expect(authority).toContain('### 0.9.2 完整阶段执行、失败诊断与跨会话一致性协议');
+    expect(authority).toContain('## 2. SpecForge 自身开发与执行治理协议');
 
     for (const ruleId of stageRuleIds) {
       const marker = `**${ruleId}：**`;
@@ -338,7 +340,17 @@ describe('Stage Execution Contract authority', () => {
     const authority = await readFile(authorityPath, 'utf8');
 
     const failureSection = ruleSection(authority, 'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001');
+    for (const token of [
+      'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001',
+      'ACQUIRE_LIVE_BRANCH_REF_ONLY',
+      'AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED',
+      'GOV-STAGE-ARTIFACT-VERIFY-001',
+      'GOV-STAGE-VALIDATOR-001',
+    ]) {
+      expect(failureSection, token).toContain(token);
+    }
 
+    const failureTemplateSection = ruleSection(authority, 'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001');
     for (const field of [
       'AUTHORITY_BOOTSTRAP_FAILURE_REASON=',
       'AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=',
@@ -351,10 +363,8 @@ describe('Stage Execution Contract authority', () => {
       'VALIDATION_EVIDENCE=',
       'ARTIFACT_ACCEPTED=YES|NO',
     ]) {
-      expect(failureSection, field).toContain(field);
+      expect(failureTemplateSection, field).toContain(field);
     }
-
-    expect(failureSection).toContain('ACQUIRE_LIVE_BRANCH_REF_ONLY');
 
     const promptSection = newSessionPrompt(authority);
     for (const field of [
@@ -366,7 +376,6 @@ describe('Stage Execution Contract authority', () => {
       expect(promptSection, field).toContain(field);
     }
   });
-
   it('enforces fixed bootstrap failure template and forbids raw command delivery', async () => {
     const authority = await readFile(authorityPath, 'utf8');
     const section = ruleSection(authority, 'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001');
@@ -517,7 +526,7 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
     }
   });
 
-it('enforces current-delivery references inside receipt control fields and bootstrap delivery templates', async () => {
+  it('enforces current-delivery references inside receipt control fields and bootstrap delivery templates', async () => {
     const authority = await readFile(authorityPath, 'utf8');
     const identity = ruleSection(authority, 'GOV-STAGE-DELIVERY-IDENTITY-001');
     const envelope = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
@@ -534,11 +543,49 @@ it('enforces current-delivery references inside receipt control fields and boots
       expect(identity, token).toContain(token);
     }
 
-    for (const text of [envelope, prompt]) {
-      expect(text).toContain('DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS|FAIL');
-      expect(text).toContain('DELIVERY_INTERNAL_REFERENCE_MISMATCHES=');
-      expect(text).toContain('GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE');
+    expect(prompt).toContain('DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS|FAIL');
+    expect(prompt).toContain('DELIVERY_INTERNAL_REFERENCE_MISMATCHES=');
+    expect(prompt).toContain('GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE');
+    expect(envelope).toContain('GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001');
+    expect(envelope).toContain('GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE');
+  });
+
+  it('keeps one numbered authority information architecture without legacy parallel numbering', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+
+    const expectedChapters = [
+      '## 1. 文档定位、权威边界与设计原则',
+      '## 2. SpecForge 自身开发与执行治理协议',
+      '## 3. SpecForge 目标治理架构',
+      '## 4. Requirement → Impact → Classification → Workflow',
+      '## 5. Candidate 与正式 Spec 生产',
+      '## 6. Contract 与 Trace',
+      '## 7. Gate 与 Fast Path 强制治理',
+      '## 8. Implementation → Verification → Release',
+      '## 9. 项目初始化、首次 WI 与后续 WI',
+      '## 10. SpecForge 产品实施路线',
+      '## 11. 实施影响范围',
+      '## 12. 验收与完成标准',
+      '## 附录 A. 新会话固定启动提示词',
+      '## 附录 B. Rule ID 索引',
+    ];
+
+    let cursor = -1;
+    for (const heading of expectedChapters) {
+      expect(authority.split(heading).length - 1, heading).toBe(1);
+      const next = authority.indexOf(heading);
+      expect(next).toBeGreaterThan(cursor);
+      cursor = next;
     }
+
+    expect(authority).not.toMatch(/^#{1,3}\s+[〇一二三四五六七八九十百]+、/m);
+    expect(authority).not.toMatch(/^#{1,3}\s+0\.\d+(?:\.\d+)*\s+/m);
+    expect(authority).not.toMatch(/^#{1,3}\s+[A-R]\.\s+/m);
+
+    expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->').length - 1).toBe(1);
+    expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->').length - 1).toBe(1);
+    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8');
+    expect(authority).toContain('RULE_ID_DEFINITION_SET_PRESERVED=YES');
   });
 
 });

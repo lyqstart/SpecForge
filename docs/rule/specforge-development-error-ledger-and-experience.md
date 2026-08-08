@@ -5305,3 +5305,82 @@ actual_files
   5. 验收必须检查 authority、prompt、handoff、consumer test 四个消费者全部出现新字段；
   6. commit 前运行完整 `stage-execution-authority-contract.test.ts`，任一失败继续 Fail Closed。
 <!-- SPECFORGE_ERR251_EXP217_COMPOSITE_MULTILINE_ANCHOR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR252_EXP218_AUTHORITY_DOCUMENT_STRUCTURE_AMBIGUITY:START -->
+## ERR-252 / EXP-218 — 权威方案章节编号混乱、治理域混排与重复定义
+
+- **用户现场**：唯一权威文件同时使用 `〇 / 0.x / 一～四十二 / Phase 1～12 / A～R` 多套编号；同一层级同时存在 `#`、`##`、`###`，无法稳定判断章节边界。
+- **一手证据**：产品架构、SpecForge 自身开发协议、跨会话 Stage/Bootstrap 协议、产品实施路线和验收场景混排在一个平面目录；Contract、首次 WI、Trace、Gate、实现到发布流程、最终原则和 Bootstrap/Receipt 模板存在重复或重叠。
+- **用户授权**：2026-08-08 明确批准删除/合并 D1-D8 重复副本。
+- **分类**：`GOVERNANCE_FAILURE / AUTHORITY_INFORMATION_ARCHITECTURE_DEFECT`。
+- **EXP-218**：
+  1. 权威文件固定为 `1-12` 正文章节 + `附录 A/B`；
+  2. 章节按业务流程组织，不按历史补丁产生顺序组织；
+  3. 稳定 Rule ID 是机器契约，章节号只用于阅读导航；
+  4. 同一规则只保留一个 canonical 定义位置；只有 pre-authority 固定 prompt 允许必要镜像；
+  5. Contract、Trace、Gate、Implementation→Release 必须按连续业务链编排；
+  6. 所有旧一级章节必须有迁移映射或用户批准删除依据；
+  7. 重构前后稳定 Rule ID 定义集合必须完全一致；
+  8. 测试消费者必须依赖 Rule ID / marker / schema，不得依赖旧章节号；
+  9. 后续新增章节必须进入现有 1-12 信息架构，禁止恢复中文大写序号、0.x 平行体系或未编号 Phase/A-R 一级结构。
+<!-- SPECFORGE_ERR252_EXP218_AUTHORITY_DOCUMENT_STRUCTURE_AMBIGUITY:END -->
+
+<!-- SPECFORGE_ERR253_EXP219_RULE_REFERENCE_MISCLASSIFIED_AS_DEFINITION:START -->
+## ERR-253 / EXP-219 — V124 把 Rule ID 检查清单引用误判成第二个正式定义
+
+- **现场**：V124 用户执行在 `RULE_ID_BASELINE` Fail Closed，`ERROR=duplicate rule definitions before restructure=['CON-PROM-001']`；`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`。
+- **一手事实**：`CON-PROM-001` 的正式定义是行首 `**CON-PROM-001：** Module Contract ...`；后续 `5. **CON-PROM-001：** 必须检查 ...` 是治理检查清单中的规则引用，不是第二个定义。
+- **分类**：`VALIDATION_HARNESS_DEFECT / RULE_ROLE_CLASSIFICATION_DEFECT`。
+- **EXP-219**：
+  1. Rule Definition 只认行首 canonical 声明 `^**RULE-ID：**`；
+  2. 编号列表、正文、代码块和索引中的 Rule ID 只能视为 Reference；
+  3. Rule Definition 集合审计与附录 Rule ID 索引必须共用同一语法分类；
+  4. 重构前后比较 canonical Definition 集合，不比较所有文本引用次数。
+<!-- SPECFORGE_ERR253_EXP219_RULE_REFERENCE_MISCLASSIFIED_AS_DEFINITION:END -->
+
+<!-- SPECFORGE_ERR254_EXP220_PROMPT_MARKER_SPLIT_BOUNDARY_DEFECT:START -->
+## ERR-254 / EXP-220 — 旧 0.10 标题拆分把 Prompt START/END marker 分到两个相邻片段
+
+- **发现方式**：V124 失败后对 exact `87458a35...` authority 进行无副作用离线完整重构模拟。
+- **事实**：`SPECFORGE_NEW_SESSION_PROMPT:START` 位于旧 `### 0.10` 标题之前，`END` 位于其正文之后；按 0.x 标题切分会把 START 留在 0.9 片段、END 留在 0.10 片段。若直接重建附录 A 并再加 marker，会产生重复 marker。
+- **分类**：`VALIDATION_HARNESS_DEFECT / STRUCTURAL_BOUNDARY_DEFECT`。
+- **EXP-220**：首次迁移时先从相邻切片中剥离旧 START/END，再用一个 canonical 附录 A 重建唯一 marker pair；验收必须 `START=1 && END=1`。
+<!-- SPECFORGE_ERR254_EXP220_PROMPT_MARKER_SPLIT_BOUNDARY_DEFECT:END -->
+
+<!-- SPECFORGE_ERR255_EXP221_MARKER_REFERENCE_MISCLASSIFIED_AS_CANONICAL_MARKER:START -->
+## ERR-255 / EXP-221 — 唯一权威 marker 的文本引用被误计为 canonical marker
+
+- **发现方式**：V124 失败后 exact authority 离线模拟。
+- **事实**：唯一权威句在旧文件中存在状态栏副本、canonical blockquote 和 Bootstrap 规则中的反引号引用；全文裸字符串计数不能区分 canonical marker 与说明性引用。
+- **分类**：`VALIDATION_HARNESS_DEFECT / MARKER_ROLE_CLASSIFICATION_DEFECT`。
+- **EXP-221**：唯一权威 marker 验收只认正式 canonical marker 行；状态栏重复副本按已批准去重合并，规则中的引用保留为 Reference，不进入 canonical marker 计数。
+<!-- SPECFORGE_ERR255_EXP221_MARKER_REFERENCE_MISCLASSIFIED_AS_CANONICAL_MARKER:END -->
+
+<!-- SPECFORGE_ERR256_EXP222_D7_CANONICAL_SCHEMA_TEST_CONSUMER_DRIFT:START -->
+## ERR-256 / EXP-222 — D7 已把 Bootstrap Failure schema 收敛到 FAIL-TEMPLATE，但旧测试仍绑定 FAIL-001
+
+- **现场**：V125 用户实际执行在 `STRUCTURAL_REGRESSION_TEST` Fail Closed；11 个测试中 10 个通过，仅 `enforces complete fail-closed bootstrap output and accepted live-ref evidence artifact` 失败；`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`。
+- **一手证据**：D7 重构后 `GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001` 明确只保留失败语义、访问边界和接受条件，并引用 `GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001` 作为唯一 canonical schema；旧测试仍要求 `AUTHORITY_BOOTSTRAP_FAILURE_REASON=`、Artifact schema 等字段直接存在于 `FAIL-001`。
+- **分类**：`VALIDATION_HARNESS_DEFECT / CANONICAL_SOURCE_CONSUMER_DRIFT`。
+- **根因**：D7 authority producer 已完成 canonical source 合并，但测试 consumer 没有同步从旧重复副本迁移到 canonical template。
+- **EXP-222**：
+  1. `FAIL-001` 只验证失败语义、访问边界、Fail Closed 与对 canonical template 的引用；
+  2. 失败机器字段、Artifact Acceptance 字段统一从 `FAIL-TEMPLATE-001` 验证；
+  3. 附录 A 继续验证 pre-authority 必需镜像；
+  4. 禁止为通过旧测试重新复制已经批准删除的 schema；
+  5. producer 去重时必须同步审计所有 consumer 的 canonical source 指向。
+<!-- SPECFORGE_ERR256_EXP222_D7_CANONICAL_SCHEMA_TEST_CONSUMER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR257_EXP223_EXACT_TEST_BODY_PATCH_ANCHOR_DEFECT:START -->
+## ERR-257 / EXP-223 — V126 用完整测试体 literal 作为 patch anchor，真实源码匹配数为 0
+
+- **现场**：V126 用户执行在 `PATCH_TEST` Fail Closed，标准回执为 `ERROR=D7 fail-closed consumer count=0`；`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`。
+- **一手证据**：当前测试消费者由命名测试 `enforces complete fail-closed bootstrap output and accepted live-ref evidence artifact` 承载；V126 patcher 仍要求其内部一整段多行 TypeScript 与生成器内 literal 完全一致。
+- **分类**：`VALIDATION_HARNESS_DEFECT / EXACT_TEST_BODY_PATCH_ANCHOR_DEFECT`。
+- **EXP-223**：
+  1. 测试迁移以稳定测试名称作为作用域边界，不以完整测试体 literal 作为 patch anchor；
+  2. 在命名测试作用域内整体替换 consumer contract，避免空行、缩进、字段排序造成假失败；
+  3. D7 的 `FAIL-001 / FAIL-TEMPLATE / Appendix A` 三方职责继续保持，不回退去重；
+  4. 同步把 Delivery Internal Reference consumer 改为命名测试作用域替换，避免下一处相同缺陷；
+  5. patch 后必须结构检查目标测试名各恰好一个，并运行完整 authority regression。
+<!-- SPECFORGE_ERR257_EXP223_EXACT_TEST_BODY_PATCH_ANCHOR_DEFECT:END -->
