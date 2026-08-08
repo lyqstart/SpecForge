@@ -205,6 +205,7 @@ describe('Stage Execution Contract authority', () => {
       'ARTIFACT_ACCEPTANCE_CONTRACT=',
       'VALIDATOR_CONTRACT=',
       'DELIVERY_IDENTITY_CONTRACT=',
+      'DELIVERY_INTERNAL_REFERENCE_CONTRACT=',
       'BOOTSTRAP_ENVELOPE_CONTRACT=',
       'BOOTSTRAP_EXECUTION_ORDER_CONTRACT=',
       'RECOVERY_ACCEPTANCE_CONTRACT=',
@@ -513,6 +514,30 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
       'BOOTSTRAP_UNAUTHORIZED_READ_DETECTED=YES|NO',
     ]) {
       expect(rule, token).toContain(token);
+    }
+  });
+
+it('enforces current-delivery references inside receipt control fields and bootstrap delivery templates', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const identity = ruleSection(authority, 'GOV-STAGE-DELIVERY-IDENTITY-001');
+    const envelope = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
+    const prompt = newSessionPrompt(authority);
+
+    for (const token of [
+      'DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS|FAIL',
+      'DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE|<field:token,...>',
+      'CURRENT_DELIVERY_REFERENCE_FIELDS=',
+      'VERSION_TOKEN_PATTERN=V[0-9]+',
+      'receipt_current_delivery_reference_fields',
+      'NEXT_LEGAL_ACTION',
+    ]) {
+      expect(identity, token).toContain(token);
+    }
+
+    for (const text of [envelope, prompt]) {
+      expect(text).toContain('DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS|FAIL');
+      expect(text).toContain('DELIVERY_INTERNAL_REFERENCE_MISMATCHES=');
+      expect(text).toContain('GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE');
     }
   });
 

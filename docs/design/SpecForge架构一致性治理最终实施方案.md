@@ -1169,6 +1169,36 @@ IDENTITY_BINDING_AUDIT=
 10. runner 启动后、执行任何仓库写入前必须完成 identity self-check。identity 失败时不得修改仓库。
 11. commit/push 后的最终 Stage Output / receipt Artifact Acceptance 必须同时验证 package、runner、validator、receipt emitter 身份属于同一 `DELIVERY_ID`。
 12. 该规则属于交付与证据治理，不改变任何业务 Workflow、Gate、Runtime、Work Item 状态机或 Project Contract。
+### Delivery Internal Reference Binding
+
+Delivery Identity 不只绑定 package / runner / validator / receipt emitter 的顶层身份，还必须约束标准执行回执内部所有“当前交付版本引用”，防止 `DELIVERY_ID=V121` 但 `NEXT_LEGAL_ACTION` 仍引用 `V120` 的证据漂移。
+
+正式字段：
+
+```text
+DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS|FAIL
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE|<field:token,...>
+CURRENT_DELIVERY_REFERENCE_FIELDS=
+VERSION_TOKEN_PATTERN=V[0-9]+
+```
+
+固定规则：
+
+13. `manifest.json` 的 identity object 必须声明 `receipt_current_delivery_reference_fields`，列出标准回执中语义属于“本次交付”的控制字段；至少覆盖 `CURRENT_STAGE`、`ACTION_NAME`、`NEXT_STAGE`、`NEXT_LEGAL_ACTION`。
+14. 对上述字段，任何匹配 `VERSION_TOKEN_PATTERN=V[0-9]+` 的版本 token 必须与根 `DELIVERY_ID` 完全相等；同一字段可以没有版本 token，但只要出现版本 token 就不得引用旧交付。
+15. `PACKAGE_NAME`、`RUNNER_ID`、`VALIDATOR_ID`、`RECEIPT_EMITTER_ID` 继续受现有 Delivery Identity 顶层绑定约束；内部引用审计不能替代 `IDENTITY_BINDING_AUDIT`。
+16. `NEXT_STAGE` / `NEXT_LEGAL_ACTION` 若要求用户携带、执行、验证或恢复某个版本化 receipt / ZIP / artifact，其版本必须来自当前 `DELIVERY_ID`，禁止独立硬编码上一版本号。
+17. 历史事实若确需引用旧版本，必须放在明确的 provenance/evidence 历史字段中，不得伪装成 `CURRENT_*`、`NEXT_*`、`ACTION_*` 等当前控制字段；历史证据不属于 `receipt_current_delivery_reference_fields`。
+18. `RESULT=SUCCESS` 时必须同时满足：
+```text
+IDENTITY_BINDING_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
+```
+任一不成立时属于 `VALIDATION_HARNESS_DEFECT / EVIDENCE_IDENTITY_DEFECT`，不得把回执视为完整成功证据。
+19. receipt emitter 必须在输出 SUCCESS 回执之前执行内部引用审计；不能先打印 SUCCESS 再事后发现旧版本引用。
+20. package verifier 必须独立检查 manifest 的 `receipt_current_delivery_reference_fields`、runner 的 receipt 构造来源以及用户可见成功回执控制字段；只验证顶层 `DELIVERY_ID` 不足以接受交付。
+21. 当前交付版本字符串应从 `identity.delivery_id` 派生；需要在 `NEXT_LEGAL_ACTION` 中引用当前 receipt 时必须动态构造，不得复制上一 runner 的 `Vxxx` 常量。
 **GOV-STAGE-BOOTSTRAP-ENVELOPE-001：** 新会话在读取 exact-commit authority 之前只能依赖用户提示词中的 Bootstrap Envelope；凡是会约束 pre-authority 阶段行为的稳定规则，都必须被该 Envelope 自包含携带，并由同一结构回归测试覆盖。禁止出现“authority 已新增规则，但固定启动提示词尚未携带”的协议断层。
 
 Bootstrap Envelope 至少覆盖以下五个子契约：
@@ -1239,6 +1269,8 @@ VALIDATOR_ID=
 RECEIPT_EMITTER_ID=
 IDENTITY_MANIFEST=manifest.json
 IDENTITY_BINDING_AUDIT=PASS|FAIL
+DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS|FAIL
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=
 
 STRUCTURE_VALIDATION=PASS|FAIL
 COMPLETENESS_VALIDATION=PASS|FAIL
@@ -1257,6 +1289,8 @@ ARTIFACT_ACCEPTED=YES|NO
 
 ```text
 IDENTITY_BINDING_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
 VALIDATOR_ACCEPTED=YES
 ARTIFACT_ACCEPTED=YES
 ```
@@ -1274,6 +1308,8 @@ VALIDATOR_ID=
 RECEIPT_EMITTER_ID=
 IDENTITY_MANIFEST=manifest.json
 IDENTITY_BINDING_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
 ACTION_TYPE=BOOTSTRAP_LIVE_REF_READ_ONLY
 REMOTE_URL=
 AUTHORITY_BRANCH=
@@ -1321,6 +1357,7 @@ GOV-STAGE-DELIVERY-001
 GOV-STAGE-ARTIFACT-VERIFY-001
 GOV-STAGE-VALIDATOR-001
 GOV-STAGE-DELIVERY-IDENTITY-001
+GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE
 GOV-STAGE-BOOTSTRAP-ENVELOPE-001
 ```
 
@@ -1626,6 +1663,8 @@ VALIDATOR_ID=
 RECEIPT_EMITTER_ID=
 IDENTITY_MANIFEST=manifest.json
 IDENTITY_BINDING_AUDIT=PASS|FAIL
+DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS|FAIL
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=
 STRUCTURE_VALIDATION=PASS|FAIL
 COMPLETENESS_VALIDATION=PASS|FAIL
 SEMANTIC_VALIDATION=PASS|FAIL
@@ -1654,6 +1693,8 @@ VALIDATOR_ID=
 RECEIPT_EMITTER_ID=
 IDENTITY_MANIFEST=manifest.json
 IDENTITY_BINDING_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS
+DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
 ACTION_TYPE=BOOTSTRAP_LIVE_REF_READ_ONLY
 REMOTE_URL=https://github.com/lyqstart/SpecForge.git
 AUTHORITY_BRANCH=main
@@ -1695,7 +1736,7 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
 ```
 
 任何以后新增会影响 exact authority 读取之前行为的规则，必须同时修改：
-`GOV-STAGE-BOOTSTRAP-ENVELOPE-001 + 本固定 prompt + Bootstrap Envelope consumer test`。
+`GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE + GOV-STAGE-BOOTSTRAP-ENVELOPE-001 + 本固定 prompt + Bootstrap Envelope consumer test`。
 <!-- SPECFORGE_NEW_SESSION_PROMPT:END -->
 <!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 

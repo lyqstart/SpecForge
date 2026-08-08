@@ -5273,3 +5273,35 @@ actual_files
 - **分类**：`VALIDATION_HARNESS_DEFECT / SCRIPT_DEFECT`。
 - **EXP-215**：复杂 runner 改写不再直接嵌套于可见执行块；先生成独立 builder 文件并执行 `py_compile`，再构建 ZIP；只有 builder、runner、validator 均解析通过和 ZIP reopen/hash 通过后才发布。
 <!-- SPECFORGE_ERR249_EXP215_V121_BUILDER_PARSE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR250_EXP216_RECEIPT_INTERNAL_DELIVERY_REFERENCE_DRIFT:START -->
+## ERR-250 / EXP-216 — V121 顶层 Delivery Identity 正确，但 NEXT_LEGAL_ACTION 残留 V120
+
+- **现场**：V121 标准成功回执中 `PACKAGE_NAME / DELIVERY_ID / RUNNER_ID / VALIDATOR_ID / RECEIPT_EMITTER_ID / IDENTITY_BINDING_AUDIT` 均为 V121 且 PASS，但 `NEXT_LEGAL_ACTION=RUN_FRESH_SESSION_WITH_COMPLETE_V120_RECEIPT_BEFORE_WI0004_USER_DECISION`。
+- **提交事实**：V121 代码、结构回归、TypeScript、daemon-core build、workspace build、`git diff --check`、commit/push 与 authority sync 均成功；远程最后确认提交为 `6d8fa7dfd2da3c6c1a23702b26c0f85c65710832`；WI-0004 仍为 `approval_required`，未执行生命周期动作。
+- **分类**：`VALIDATION_HARNESS_DEFECT / EVIDENCE_IDENTITY_DEFECT / RECEIPT_INTERNAL_REFERENCE_DRIFT`。
+- **根因**：`GOV-STAGE-DELIVERY-IDENTITY-001` 只绑定了 package、runner、validator、receipt emitter 的顶层身份；V121 runner 的 `NEXT_LEGAL_ACTION` 仍是从上一版本复制的独立硬编码字符串，现有 verifier 未扫描标准回执内部当前交付控制字段。
+- **EXP-216**：
+  1. manifest 增加 `receipt_current_delivery_reference_fields`；
+  2. SUCCESS receipt 输出前扫描这些字段中的 `V[0-9]+` token，必须全部等于当前 `DELIVERY_ID`；
+  3. 输出 `DELIVERY_INTERNAL_REFERENCE_AUDIT` 与 mismatch 明细；
+  4. `NEXT_LEGAL_ACTION` 等当前控制字段中的版本号必须从 `identity.delivery_id` 派生；
+  5. package verifier 独立验证 runner 构造来源并拒绝旧版本硬编码；
+  6. 由于 Delivery Identity 属于 pre-authority contract inventory，本次同步更新 Bootstrap Envelope、固定新会话 prompt 和 consumer regression。
+<!-- SPECFORGE_ERR250_EXP216_RECEIPT_INTERNAL_DELIVERY_REFERENCE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR251_EXP217_COMPOSITE_MULTILINE_ANCHOR_MISMATCH:START -->
+## ERR-251 / EXP-217 — V122 在 Envelope Artifact 子段使用复合多行锚点，实际作用域匹配数为 0
+
+- **现场**：V122 在 `BASELINE` 后执行 `PATCH_ENVELOPE_ARTIFACT` 失败，标准回执为 `ERROR=scoped anchor count=0`；`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`。
+- **一手代码事实**：V122 patcher 在 `GOV-STAGE-BOOTSTRAP-ENVELOPE-001` 到 `GOV-STAGE-RECOVERY-ACCEPT-001` 的大作用域中，以 `IDENTITY_BINDING_AUDIT=PASS|FAIL` 与后续 `STRUCTURE_VALIDATION=PASS|FAIL` 的复合连续多行文本作为唯一阻断锚点。
+- **分类**：`VALIDATION_HARNESS_DEFECT / STRUCTURAL_PATCH_ANCHOR_DEFECT`。
+- **根因**：patcher 虽限定了大 Rule 作用域，但仍把多个独立 schema 字段的排版连续性当作隐式契约；实际 authority 没有满足该 byte-contiguous 假设，因此结构合法但 patcher 误判。
+- **EXP-217**：
+  1. Bootstrap Envelope 修改必须继续缩小到 `### C / D / E` 等稳定子段；
+  2. Artifact / receipt 字段按单独 schema 行插入，不再使用跨字段复合多行 literal；
+  3. Prompt 修改使用 prompt START/END marker，再缩小到 Artifact Acceptance 或 evidence runner receipt 子段；
+  4. 每个子段先验证目标字段行唯一，再执行插入；
+  5. 验收必须检查 authority、prompt、handoff、consumer test 四个消费者全部出现新字段；
+  6. commit 前运行完整 `stage-execution-authority-contract.test.ts`，任一失败继续 Fail Closed。
+<!-- SPECFORGE_ERR251_EXP217_COMPOSITE_MULTILINE_ANCHOR_MISMATCH:END -->
