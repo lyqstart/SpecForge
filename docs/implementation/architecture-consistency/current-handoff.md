@@ -3962,3 +3962,15 @@ WI-0003 仍保持原 Candidate 状态。产品修复部署后必须先调查并�
 - WI-0004 在产品修复、提交和 daemon 重启前冻结于 `candidate_preparing`；现有 prepare_repair Candidate 保留，不运行 Gate。
 - ERR-219：V73 在 ChatGPT 交付前自检阶段要求 handoff payload 含英文稳定字面量 `formal Trace`，而生成 payload 使用中文表述，导致 ZIP 创建前假失败。真实仓库和 Validation 均未写入。`REPEATED_ERROR_CLASS=ERR-213`，复用 EXP-182。
 <!-- SPECFORGE_ERR218_ERR219_COMPATIBILITY_CONSUMER_PROOF:END -->
+<!-- SPECFORGE_ERR220_TRACE_PHASE_INFERENCE_HANDOFF:START -->
+## ERR-220 — WI-0004 Candidate Gate Trace-aware fallback
+- WI-0004 已完成 Candidate materialization，最终 manifest 含 REPORTING/CLI design、extension_registry、REPORTING module_contract 和 `trace_delta`；Candidate Gate 尚未运行。
+- 当前产品缺陷：Candidate Gate fallback 只识别 tasks / requirements / design；`spec_migration_path + design` profile 不含 `trace_gate`，而 full profile 包含。
+- 正确单一来源：Runtime 冻结的 `candidate_manifest`。Trace 治理责任必须由 `resolveFrozenManifestArtifacts(... artifactTypes=['trace_delta'])` 消费；禁止目录扫描把 Classification 排除的历史 trace 文件重新算入当前 Candidate。
+- `WorkItemSpecArtifactKind` 已正式包含 `trace_delta`，不存在 `trace` kind。V76 的 `kind:'trace'` 为 ERR-072 同类 TypeScript 契约失误，复用 EXP-052。
+- ERR-220 修复范围冻结为 Gate Runner、专用回归测试及本交接/错误台账/P0 closure 五个文件；不修改 types、Runtime、Workflow、required-gates、trace_gate、权威文件或 Validation/WI-0004。
+- V77 的用户执行命令未进入 Python，属于既有 ERR-014 同类交互式 CMD 控制流错误；V78 仅修正交付启动方式并把该重复错误写入台账，产品修复范围不扩大。
+- 修复后必须先证明默认 phase 自动为 full 且 required Gates 包含 `trace_gate`，再允许回到 WI-0004 做 Candidate Gate 前置审查。Candidate Gate 完成后停止，不自动执行 User Decision。
+- 永久边界不变：`FIRST_GATE_MACHINE_REPORT_RECOVERABLE=NO`；`INSUFFICIENT_EVIDENCE_FIRST_GATE_MACHINE_REPORT=YES`；`P0_OVERALL_COMPLETION_ALLOWED=NO`。
+- V79 commit/push 前置范围审计因再次对 porcelain 完整输出执行 `.strip()`，把 `docs/...` 错读为 `ocs/...` 后 Fail Closed；属于 ERR-133 / ERR-140 重复错误，复用 EXP-109 / EXP-116。V79 未暂存、未提交、未推送、未修改 WI-0004。V80 改用不依赖 porcelain 状态列的三路文件集合审计。
+<!-- SPECFORGE_ERR220_TRACE_PHASE_INFERENCE_HANDOFF:END -->

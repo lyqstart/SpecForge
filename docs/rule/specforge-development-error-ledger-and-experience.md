@@ -4843,3 +4843,14 @@ actual_files
 - **EXP-184 — 领域操作必须直接证明领域证据，不得用更宽泛 readiness 标志替代**：Contract consumer 判断必须直接枚举目标 Contract 的 formal Trace consumer edges，逐边证明 DD→Module owner 可解析，再检查跨 Module；无法解析的正式边必须 Fail Closed。全局 Architecture/Data readiness 只约束真正需要该全局模型的检查。
 - **ERR-219**：V73 交付前内容审计要求自身 payload 未稳定承诺的英文 needle，重复 ERR-213 类假失败。`REPEATED_ERROR_CLASS=ERR-213`，继续复用 **EXP-182**：内容审计只能检查 payload 实际生成并明确承诺的稳定标记。
 <!-- SPECFORGE_ERR218_ERR219_EXP184_DOMAIN_EVIDENCE:END -->
+<!-- SPECFORGE_ERR220_EXP185_TRACE_PHASE_INFERENCE:START -->
+## ERR-220 / EXP-185 — Candidate Gate fallback 必须消费冻结 Trace Candidate 责任
+- **ERR-220**：`sf-v11-gate-run.ts` 的 Candidate phase fallback 只检查 tasks / requirements / design，没有检查 Runtime 已冻结 `candidate_manifest` 中的 `trace_delta`。因此 `spec_migration_path` 的 `design + trace_delta` Candidate 会被默认推断为 `design`，而 design profile 不包含 `trace_gate`；真实 Trace Delta 存在时可能绕过 Trace Gate。
+- 架构事实：Runtime 在 `candidate_preparing -> candidate_prepared` 时把 `candidates/trace_delta.md` 物化为 manifest `type=trace_delta`；Gate 判断当前正式治理责任时已有 `resolveFrozenManifestArtifacts()`，该接口明确禁止重新扫描 Manifest 外历史文件。
+- 修复：Candidate Gate fallback 继续保持 tasks→full、requirements→requirements、design→design、unknown→full 的原语义；新增“冻结 manifest 存在 `trace_delta` → 至少 full”。Trace 判断只使用 `resolveFrozenManifestArtifacts({ artifactTypes: ['trace_delta'] })`，不扩展 `WorkItemSpecArtifactKind`，不修改 Runtime、Workflow、required-gates 或 trace_gate。
+- **V76 实现失误归类**：V76 曾把不存在的 `kind: 'trace'` 传给 `resolveWorkItemSpecArtifacts()`，被 TypeScript `TS2322` 拦截。该失误重复 **ERR-072** 的“定向测试通过但未遵守正式 TypeScript 契约”错误类，复用 **EXP-052**；不新增独立产品错误号。
+- **EXP-185 — Gate fallback 的治理责任必须来自冻结 Manifest，并单调提升严格度**：当 Runtime 已冻结的 Candidate Manifest 表明某项治理责任存在时，fallback 只能保持或提升所需 Gate profile，不能因为较低层 artifact 同时存在而降低严格度；Manifest 外历史 Candidate 不得参与该判断。正式 artifact kind 必须先从既有类型/Runtime producer 取证，禁止凭语义名称发明新 kind。
+- V77 交付器采用成功才保留补丁的事务式应用：定向回归、Candidate retry、Classification-driven Gate、Gate attempt history、TypeScript、daemon-core build、workspace build、`git diff --check` 和精确范围审计任一失败即恢复到原 HEAD 工作区内容。
+- **V77 交付命令重复错误记录**：用户首次执行 V77 CMD 后立即返回且无任何输出。复核确认 Python 入口只要被执行就会立即打印 `BUNDLE_INTEGRITY`；实际启动命令把 `if exist ... rmdir ...` 放在 `&&` 连锁中，首次目录不存在时后续 `mkdir -> tar -> python` 被控制流跳过。归入既有 **ERR-014**，复用 **EXP-007 / EXP-012**，不新增错误号。V78 改为 ZIP 自带顶层目录，交互式 CMD 仅执行 `tar -xf -> python`，不再使用条件删除/创建链。
+- **V79 提交器重复错误记录**：V79 对 `git status --porcelain=v1 -z` 的完整输出复用了会执行 `.strip()` 的通用读取函数，删除首条记录有语义的状态前导空格，随后按固定列截取路径时把 `docs/...` 错读为 `ocs/...`。该错误与 **ERR-133 / ERR-140** 完全同型，复用 **EXP-109 / EXP-116**，不新增错误号。V80 取消 porcelain 路径解析，范围审计分别使用 `git diff --name-only`、`git diff --cached --name-only`、`git ls-files --others --exclude-standard`。
+<!-- SPECFORGE_ERR220_EXP185_TRACE_PHASE_INFERENCE:END -->

@@ -18,7 +18,10 @@ import * as fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { workItemCandidateManifest, workItemRoot } from '@specforge/types/directory-layout';
-import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11';
+import {
+  resolveFrozenManifestArtifacts,
+  resolveWorkItemSpecArtifacts,
+} from '../lib/governance-invariants-v11';
 
 const VALID_GATE_IDS: readonly GateIdV11[] = [
   'entry_gate',
@@ -75,16 +78,21 @@ function normalizeCandidatePhase(value: unknown): CandidateGatePhaseV11 | null {
     : null;
 }
 
-async function inferCandidatePhase(
+export async function inferCandidatePhase(
   projectRoot: string,
   workItemId: string
 ): Promise<CandidateGatePhaseV11> {
-  const [tasks, requirements, design] = await Promise.all([
+  const [tasks, requirements, design, traceDelta] = await Promise.all([
     resolveWorkItemSpecArtifacts({ projectRoot, workItemId, kind: 'tasks' }),
     resolveWorkItemSpecArtifacts({ projectRoot, workItemId, kind: 'requirements' }),
     resolveWorkItemSpecArtifacts({ projectRoot, workItemId, kind: 'design' }),
+    resolveFrozenManifestArtifacts({
+      projectRoot,
+      workItemId,
+      artifactTypes: ['trace_delta'],
+    }),
   ]);
-  if (tasks.length > 0) return 'full';
+  if (tasks.length > 0 || traceDelta.length > 0) return 'full';
   if (requirements.length > 0) return 'requirements';
   if (design.length > 0) return 'design';
   return 'full';

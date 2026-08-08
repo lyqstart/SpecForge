@@ -3926,3 +3926,11 @@ ERR-218 产品修复后，应保留现有 WI-0004 prepare_repair Candidate，从
 ERR-219 仅为 V73 交付前自检假失败，未触及任何仓库。
 P0 overall completion 继续受 WI-0001 first-gate machine report 永久证据缺口约束。
 <!-- P0_WI0004_ERR218_ERR219_COMPATIBILITY_CONSUMER_PROOF:END -->
+<!-- P0_WI0004_ERR220_TRACE_PHASE_INFERENCE:START -->
+## WI-0004 Baseline Normalization — ERR-220 Candidate Gate Trace profile
+WI-0004 已停在 `candidate_prepared`，最终冻结 Candidate Manifest 含 `trace_delta`，但正式 Candidate Gate 尚未运行。源码取证确认 Gate Runner 的 fallback phase inference 只检查 tasks / requirements / design；对 `spec_migration_path`，design profile 不包含 `trace_gate`，full profile 才包含，因此在产品修复前禁止运行 WI-0004 Candidate Gate。
+
+ERR-220 修复保持既有架构：Runtime 继续负责冻结 manifest；Gate Runner 直接消费冻结 manifest 的 `trace_delta` 责任并把最低 fallback phase 提升为 full；不修改 Runtime state machine、Workflow、required-gates、trace_gate、Project Spec 或 WI-0004。Manifest 外历史 `trace_delta.md` 不得影响当前 phase。
+
+V76 的 `kind:'trace'` TypeScript 失败属于 ERR-072 / EXP-052 重复实现错误；正式 artifact kind 为 `trace_delta`。V77 首次交付命令因交互式 CMD 条件控制流未进入 Python，归入既有 ERR-014 / EXP-007 / EXP-012；真实产品补丁因此尚未执行。P0 overall completion 继续受 WI-0001 first-gate machine report 永久证据缺口约束。
+<!-- P0_WI0004_ERR220_TRACE_PHASE_INFERENCE:END -->
