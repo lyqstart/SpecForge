@@ -4897,3 +4897,18 @@ actual_files
   - V91 通过仓库关键词 `reprepare` 在无关 `contract-authoring.ts` 产生“存在 repair refresh action”的假阳性；Producer 能力必须以目标 Tool action/schema/handler 调用链为证据，不能靠泛关键词，复用 EXP-181。
 - `UNRECORDED_FAILURES=0`（截至 ERR-222 V92 修改前置对账）。
 <!-- SPECFORGE_ERR222_EXP187_CONTROLLED_REPAIR_BINDING_RECOVERY:END -->
+
+<!-- SPECFORGE_ERR223_ERR225_STAGE_EXECUTION_CONTRACT:START -->
+## ERR-223 / EXP-188 — 完整阶段必须有显式副作用契约和可定位 Checkpoint
+- **ERR-223**：V95 在正式 Candidate Gate retry 已发出、已收到响应并生成 immutable `attempt-0003/**` 后，外围审计仍要求 Validation Git untracked 集合前后完全相等，正常 Gate 证据被误判为 scope drift。
+- **EXP-188**：用户交互按完整阶段批处理，诊断证据按子步骤细分；动作前声明 Expected/Forbidden Side Effects；正式动作开始后先查持久化证据，禁止因外围 runner 失败直接重试。
+
+## ERR-224 / EXP-189 — 生成结构与结构审计必须使用同一规范表达
+- **ERR-224**：V96 生成的规则标题为 `**GOV-STAGE-001：完整阶段……**`，而审计器按现有权威规范检查 `**GOV-STAGE-001：**`，导致规则计数为 0。V96 已 `ROLLBACK_TO_HEAD=PASS`，未留下仓库改动。
+- **EXP-189**：生成结构、runtime audit、回归测试必须共享同一 canonical marker；ZIP 生成前必须先对 payload 本身运行同一份结构契约检查。
+
+## ERR-225 / EXP-190 — 打包前自检本身不得包含与目标契约矛盾的断言
+- **ERR-225**：第一次 V97 打包尝试在 ChatGPT 本地生成阶段加入了错误 sanity assertion：一边要求测试代码必须包含 canonical marker 模板，一边又断言该模板字符串不得出现，导致打包前自检自身失败；未生成可交付 ZIP，未触碰用户仓库。
+- **EXP-190**：打包前自检只允许验证真实交付不变量；同一 invariant 的正向/反向断言必须先做逻辑一致性检查。生成失败必须记录，但不得把未生成包当成用户侧失败。
+- `UNRECORDED_FAILURES=0`（截至 V98 框架固化前置对账）。
+<!-- SPECFORGE_ERR223_ERR225_STAGE_EXECUTION_CONTRACT:END -->

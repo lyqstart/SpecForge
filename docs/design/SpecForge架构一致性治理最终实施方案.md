@@ -382,12 +382,14 @@ git diff/status 结果：
 存在 INSUFFICIENT_EVIDENCE
 ```
 
-“每次完全做到”不依赖模型记忆，而由四个机制共同保证：
+“每次完全做到”不依赖模型记忆，而由以下机制共同保证：
 
 ```text
 用户提示词强制读取远程权威文件
 + 远程 commit SHA 固定本次规则版本
-+ 修改前/修改后固定输出结构
++ Stage Input / Checkpoint / Stage Output / Failure Diagnostic 固定执行契约
++ 当前持久化状态与 immutable evidence 作为运行事实
++ current-handoff 只保存当前动态交接并与持久化事实对账
 + Fail Closed 完成条件
 ```
 
@@ -416,6 +418,219 @@ git diff/status 结果：
 6. OpenCode 自身自动 Compaction 即使未显式调用 `sf_continuity`，重新加载后的 Orchestrator 也必须遵守同一优先级；不得读取旧 `prompts/*.txt` 或完整 Workflow Skill 来覆盖更窄的当前用户边界；
 7. 本规则只约束当前用户授权与执行连续性，不改变 Work Item 状态机、Gate 判定或业务 Contract 语义。
 
+### 0.9.2 完整阶段执行、失败诊断与跨会话一致性协议
+
+**GOV-STAGE-001：** 完整阶段是用户交互粒度，Checkpoint 是内部证据粒度。
+
+在不跨越用户授权、人工决策、daemon/OpenCode 手工生命周期或未知副作用边界的前提下，SpecForge 自身开发和真实项目验证优先“一轮推进一个完整阶段”。提高效率只能减少人工往返，不得减少证据、治理检查、测试、Fail Closed 或停止条件。
+
+固定原则：
+
+```text
+用户操作粒度 = 一个完整阶段
+内部证据粒度 = 一个可定位子步骤
+```
+
+**GOV-STAGE-INPUT-001：** 每个阶段执行前必须冻结 Stage Input。
+
+至少包含：
+
+```text
+GLOBAL_GOAL=
+CURRENT_STAGE=
+STAGE_GOAL=
+REMOTE_URL=
+TARGET_BRANCH=
+REMOTE_HEAD=
+AUTHORITY_PATH=
+AUTHORITY_COMMIT=
+CURRENT_AUTHORITATIVE_STATE=
+CURRENT_IMMUTABLE_EVIDENCE=
+OPERATION_BOUNDARY=
+SUCCESS_CRITERIA=
+EXPECTED_SIDE_EFFECTS=
+FORBIDDEN_SIDE_EFFECTS=
+STOP_CONDITION=
+BLOCKER=
+BACKLOG=
+NEXT_STAGE=
+```
+
+缺少 `SUCCESS_CRITERIA`、`EXPECTED_SIDE_EFFECTS`、`FORBIDDEN_SIDE_EFFECTS` 或 `STOP_CONDITION` 任一项时，不得执行有副作用动作。
+
+**GOV-STAGE-CHK-001：** 完整阶段内部必须形成可诊断 Checkpoint。
+
+至少记录：
+
+```text
+STEP_ID=
+STEP_NAME=
+INPUT_EVIDENCE=
+ACTION=
+OUTPUT_EVIDENCE=
+STATUS=PASS|FAIL|NOT_RUN
+STATE_BEFORE=
+STATE_AFTER=
+SIDE_EFFECT_STARTED=
+SIDE_EFFECT_CONFIRMED=
+ARTIFACTS_CREATED=
+ARTIFACTS_CHANGED=
+```
+
+阶段失败时必须能由 Checkpoint 唯一确定 `LAST_SUCCESSFUL_STEP` 与 `FIRST_FAILED_STEP`。
+
+**GOV-STAGE-OUTPUT-001：** 阶段成功必须输出固定 Stage Output。
+
+至少包含：
+
+```text
+RESULT=SUCCESS
+GLOBAL_GOAL=
+COMPLETED_STAGE=
+SUCCESS_CRITERIA_RESULT=
+AUTHORITATIVE_STATE_AFTER=
+EXPECTED_SIDE_EFFECTS_AUDIT=
+FORBIDDEN_SIDE_EFFECTS_AUDIT=
+IMMUTABLE_EVIDENCE_CREATED=
+IMMUTABLE_EVIDENCE_VERIFIED=
+ARCHITECTURE_RECONCILIATION=
+CONTRACT_RECONCILIATION=
+SCOPE_AUDIT=
+TEST_RESULT=
+BUILD_RESULT=
+STOP_CONDITION_REACHED=
+NEXT_STAGE=
+NEXT_LEGAL_ACTION=
+INSUFFICIENT_EVIDENCE=
+```
+
+不适用项必须显式写 `NOT_APPLICABLE`。
+
+**GOV-STAGE-DIAG-001：** 阶段失败必须输出标准 Failure Diagnostic。
+
+至少包含：
+
+```text
+RESULT=FAILED
+LAST_SUCCESSFUL_STEP=
+FIRST_FAILED_STEP=
+FAILURE_CLASS=
+ERROR_CODE=
+ERROR=
+STATE_BEFORE=
+STATE_AFTER=
+ACTION_TOOL=
+ACTION_NAME=
+ACTION_ARGS_HASH=
+REQUEST_STARTED=
+RESPONSE_RECEIVED=
+SIDE_EFFECTS_OBSERVED=
+ARTIFACTS_CREATED=
+ARTIFACTS_CHANGED=
+IMMUTABLE_EVIDENCE_ID=
+IMMUTABLE_EVIDENCE_STATUS=
+PRODUCER=
+CONSUMER=
+FAILED_INVARIANT=
+RETRY_SAFETY=
+RETRY_REASON=
+NEXT_LEGAL_ACTION=
+INSUFFICIENT_EVIDENCE=
+```
+
+`FAILURE_CLASS` 只允许：
+
+```text
+PRODUCT_DEFECT
+GOVERNANCE_FAILURE
+VALIDATION_HARNESS_DEFECT
+ENVIRONMENT_FAILURE
+AMBIGUOUS_SIDE_EFFECT
+```
+
+外围 runner 返回非零不得直接等价为产品失败。
+
+**GOV-STAGE-SIDEFX-001：** 阶段前定义 Expected / Forbidden Side Effects，阶段后按语义 delta 审计。
+
+动作后只判断实际 delta 是否落在 `EXPECTED_SIDE_EFFECTS`，以及是否触碰 `FORBIDDEN_SIDE_EFFECTS`；禁止机械要求整个文件集合、Git untracked 集合或 Runtime 目录与动作前完全相等。
+
+例如正式 Gate 运行预期会新增 immutable `gate_attempts/attempt-NNNN/**`，并可能更新 latest Gate compatibility view 和合法状态事件；这些必须在执行前声明为 Expected Side Effects，不能被验证器误判为范围漂移。
+
+**GOV-STAGE-RETRY-001：** 已开始的有副作用动作必须先证明实际效果，再决定是否重试。
+
+1. `REQUEST_STARTED=NO`：修复前置问题后可重新执行；
+2. `REQUEST_STARTED=YES` 且 `RESPONSE_RECEIVED=YES`：后续外围审计失败时，必须先读持久化状态与 immutable evidence，禁止直接重试；
+3. `REQUEST_STARTED=YES` 且 `RESPONSE_RECEIVED=NO`：标记 `AMBIGUOUS_SIDE_EFFECT`，先只读取证；证据不足时 `RETRY_SAFETY=NO`；
+4. Gate、User Decision、Merge、Code Permission、Verification、Close 不得由外围 runner 自动重试；
+5. 旧 immutable evidence 不得删除、覆盖或改写。
+
+**GOV-STAGE-TRUTH-001：** 验证器必须复用正式产品真相源，禁止近似判断替代。
+
+优先级：
+
+```text
+正式 StateManager / authority reader
+> immutable Gate Attempt / input snapshot / Formal Version 等持久化证据
+> 正式 parser / resolver / required-gates / reconciliation
+> 受控 Tool handler 返回
+> Git 精确结构化协议
+> 人工文本搜索或临时近似解析
+```
+
+禁止用泛关键词推断产品能力；禁止猜 `events.jsonl` 字段代替 StateManager；禁止自写与正式 Trace/Candidate/Contract parser 不同的近似语义；禁止把 compatibility latest view 当 immutable Attempt。
+
+**GOV-STAGE-BLOCKER-001：** 新问题必须先分类为 Blocker 或 Backlog。
+
+```text
+阻断当前 Stage Success Criteria
+→ BLOCKER
+→ 当前阶段处理或 Fail Closed
+
+不阻断当前 Stage Success Criteria
+→ BACKLOG
+→ 记录后继续当前阶段
+```
+
+新增问题改变 Architecture、Contract、Module、Producer/Consumer、Workflow/Gate/Runtime 或批准文件范围时，按 `GOV-SCOPE-001` 重新做影响分析；非 Blocker 不得无因果扩大任务。
+
+**GOV-STAGE-HANDOFF-001：** 稳定规则写入本权威文件；current-handoff 只保存一个当前执行动态状态区。
+
+`docs/implementation/architecture-consistency/current-handoff.md` 是非权威动态交接，不得形成第二套治理规则。唯一 `CURRENT EXECUTION STATE` 至少包含：
+
+```text
+GLOBAL_GOAL=
+CURRENT_STAGE=
+CURRENT_STAGE_STATUS=
+LAST_COMPLETED_STAGE=
+CURRENT_BLOCKER=
+REMOTE_HEAD_BASELINE=
+AUTHORITY_BASELINE_COMMIT=
+VALIDATION_PROJECT=
+CURRENT_WI=
+AUTHORITATIVE_WI_STATE=
+LATEST_IMMUTABLE_EVIDENCE=
+LATEST_PRODUCT_FIX=
+OPERATION_BOUNDARY=
+FORBIDDEN_ACTIONS=
+NEXT_STAGE=
+NEXT_LEGAL_ACTION=
+STOP_CONDITION=
+PERMANENT_INSUFFICIENT_EVIDENCE=
+```
+
+新会话固定恢复顺序：
+
+```text
+1. 从 GitHub 当前远程分支读取本权威文件并固定 remote HEAD
+2. 读取 current-handoff 唯一 CURRENT EXECUTION STATE
+3. 用当前持久化 Work Item 状态和 immutable evidence 对账 handoff
+4. 应用最新用户 OPERATION_BOUNDARY
+5. 输出本轮 Stage Input
+6. 前五步一致且证据充分后，才允许有副作用动作
+```
+
+冲突时以远程权威规则 + 当前持久化事实 + 最新用户授权为准，不得用模型记忆、旧 Prompt 或旧 handoff 覆盖当前事实。
+
 ### 0.10 新会话固定提示词
 
 每次新会话至少使用以下提示词：
@@ -433,6 +648,10 @@ docs/design/SpecForge架构一致性治理最终实施方案.md
 先调查远程仓库和当前代码事实，再输出治理前置结论。治理前置结论必须至少包括：任务目标、适用架构规则、受影响模块、Architecture、Data Model、Module Design、Project/Module Contract、生产者和消费者、Workflow/Gate/Runtime、允许修改文件、不允许修改范围、验证计划、是否需要修订权威文件和证据不足项。
 
 治理前置结论完成前不得修改代码。修改后必须完成架构对账、契约对账、实际范围审计、单元/回归测试、适用的属性/集成/端到端测试、TypeScript 检查、构建、git diff --check、git status，并同步唯一权威文件。任何必需证据不足时标记 INSUFFICIENT_EVIDENCE，不得猜测、提交、推送或宣布完成。
+
+读取权威文件后，再读取 docs/implementation/architecture-consistency/current-handoff.md 的唯一 CURRENT EXECUTION STATE 动态区；该文件不是并列权威。必须用当前持久化 Work Item 状态、immutable evidence 和最新用户 OPERATION_BOUNDARY 对账 handoff，冲突时以远程权威规则、当前持久化事实和最新用户授权为准。
+
+执行任何完整阶段前必须输出 Stage Input，至少明确 GLOBAL_GOAL、CURRENT_STAGE、STAGE_GOAL、SUCCESS_CRITERIA、EXPECTED_SIDE_EFFECTS、FORBIDDEN_SIDE_EFFECTS、STOP_CONDITION、BLOCKER、BACKLOG 和 NEXT_STAGE。完整阶段内部必须保留可诊断 Checkpoint；成功时输出固定 Stage Output；失败时输出 Failure Diagnostic，并区分 PRODUCT_DEFECT、GOVERNANCE_FAILURE、VALIDATION_HARNESS_DEFECT、ENVIRONMENT_FAILURE、AMBIGUOUS_SIDE_EFFECT。任何有副作用动作已经开始后，不得因为外围 runner/审计器失败而自动重试，必须先读取持久化证据判断实际效果。
 ```
 
 用户在上述固定提示词后追加本次具体任务、仓库地址、目标分支和已知基线。
