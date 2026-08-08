@@ -27,6 +27,7 @@ const stageRuleIds = [
   'GOV-STAGE-RECOVERY-ACCEPT-001',
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-001',
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001',
+  'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -175,6 +176,7 @@ describe('Stage Execution Contract authority', () => {
       'RECOVERY_ACCEPTANCE_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_FAILURE_CONTRACT=',
+      'AUTHORITY_BOOTSTRAP_FAILURE_TEMPLATE_CONTRACT=',
       'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);
@@ -334,6 +336,45 @@ describe('Stage Execution Contract authority', () => {
     ]) {
       expect(promptSection, field).toContain(field);
     }
+  });
+
+  it('enforces fixed bootstrap failure template and forbids raw command delivery', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const start = authority.indexOf('**GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001：**');
+    const end = authority.indexOf('### 0.4 SpecForge 自身开发：修改前治理', start);
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    const section = authority.slice(start, end);
+    for (const token of [
+      '===== BEGIN AUTHORITY BOOTSTRAP FAILURE ACCEPTANCE =====',
+      '===== END AUTHORITY BOOTSTRAP FAILURE ACCEPTANCE =====',
+      'BOOTSTRAP_FAILURE_DELIVERY_MODE=ONE_ACCEPTED_ZIP_PLUS_ONE_CMD',
+      'RAW_CMD_ALLOWED=NO',
+      '===== BEGIN BOOTSTRAP EVIDENCE ARTIFACT ACCEPTANCE =====',
+      'ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP',
+      'ARTIFACT_ACCEPTED=YES|NO',
+      'REPOSITORY_READS=NONE',
+      'REPOSITORY_WRITES=NONE',
+      'LIFECYCLE_ACTIONS=NONE',
+    ]) {
+      expect(section, token).toContain(token);
+    }
+    const promptStart = authority.indexOf('### 0.10 新会话固定提示词');
+    const prompt = authority.slice(promptStart);
+    for (const token of [
+      'AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES|NO',
+      'AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED=YES|NO|NOT_YET_GENERATED',
+      'ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP',
+      'RAW_CMD_ALLOWED=NO',
+      'ONE_ACCEPTED_ZIP_PLUS_ONE_CMD',
+      'ARTIFACT_ACCEPTED=YES|NO',
+      'REPOSITORY_READS=NONE',
+      'REPOSITORY_WRITES=NONE',
+      'LIFECYCLE_ACTIONS=NONE',
+    ]) {
+      expect(prompt, token).toContain(token);
+    }
+    expect(prompt).toContain('禁止直接给我 git ls-remote 裸 CMD');
   });
 
 });

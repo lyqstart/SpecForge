@@ -5104,3 +5104,36 @@ actual_files
   3. 任何用户侧实际修改 runner 必须把 `git ls-remote` 放在首次写入之前，并在 remote drift 或网络失败时零写入退出；
   4. exact-commit GitHub 内容可以证明“该 commit 的规则内容”，不能证明“该 commit 仍是当前 branch head”。
 <!-- SPECFORGE_ERR234_EXP200_ASSISTANT_LIVE_REF_ENVIRONMENT:END -->
+
+<!-- SPECFORGE_ERR235_EXP201_BOOTSTRAP_FAILURE_RAW_CMD:START -->
+## ERR-235 / EXP-201 — Bootstrap 失败路径仍被缩写，并直接发布裸 git ls-remote CMD
+
+- **现场**：V114 后真实新会话正确 Fail Closed 且未读取 handoff/WI，但仍省略完整失败字段并直接给出裸 `git ls-remote` CMD。
+- **影响**：用户未执行裸 CMD；没有仓库副作用，没有 WI-0004 生命周期动作。
+- **分类**：`GOVERNANCE_FAILURE / VALIDATION_HARNESS_GAP`。
+- **EXP-201**：固定失败模板；`RAW_CMD_ALLOWED=NO`；本地取证只能 `ONE_ACCEPTED_ZIP_PLUS_ONE_CMD`；ZIP 完整 Artifact Acceptance 必须先于 CMD。
+<!-- SPECFORGE_ERR235_EXP201_BOOTSTRAP_FAILURE_RAW_CMD:END -->
+
+<!-- SPECFORGE_ERR236_EXP202_ABBREVIATED_PROMPT_REGRESSION:START -->
+## ERR-236 / EXP-202 — V115 把固定模板再次缩写，被已有回归测试正确阻断
+
+- **现场**：V115 在 `STRUCTURAL_REGRESSION_TEST` 失败，`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`。
+- **根因**：V115 prompt 没有实际包含 V114 消费者测试要求的 `AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED`、`AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED`、`ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP` 等字段。
+- **分类**：`VALIDATION_HARNESS_DEFECT`。
+- **结论**：这是有效回归拦截，不是假失败；应修 prompt 生产者，不能删消费者断言。
+- **EXP-202**：固定模板必须逐字段真实存在；Authority rule 与 new-session prompt 按同一结构字段集合对账；定向测试必须在 commit 前阻断不完整 prompt。
+<!-- SPECFORGE_ERR236_EXP202_ABBREVIATED_PROMPT_REGRESSION:END -->
+
+<!-- SPECFORGE_ERR237_EXP203_NEGATIVE_NATURAL_LANGUAGE_SELF_CHECK:START -->
+## ERR-237 / EXP-203 — V116 首次生成自检用自然语言禁词造成假失败
+
+- **现场**：V116 首次生成在交付前自检阶段因 `assert "全部规定字段" not in new_prompt` 失败。prompt 中该词只用于说明“不得用该类缩写替代字段”，而必需结构字段实际上已经完整存在。
+- **影响**：生成工具执行失败发生在正式打包发布前；没有可交付 V116、没有用户执行、没有仓库副作用。
+- **分类**：`VALIDATION_HARNESS_DEFECT`。
+- **根因**：验证器再次使用自然语言词面负向搜索作为阻断条件，违反 `GOV-STAGE-VALIDATOR-001`。
+- **EXP-203**：
+  1. 模板完整性只验证正式结构字段集合和顺序/section，不验证自然语言禁词；
+  2. “禁止某种写法”的说明文字可以合法包含被禁止术语，不能因此判失败；
+  3. 不再使用全局 `not contains` 自然语言词面作为 blocking assertion；
+  4. 此类自检失败必须在发布前终止并记录，不能假设包已生成。
+<!-- SPECFORGE_ERR237_EXP203_NEGATIVE_NATURAL_LANGUAGE_SELF_CHECK:END -->
