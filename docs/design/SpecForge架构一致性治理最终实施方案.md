@@ -1121,6 +1121,54 @@ BLOCKING=YES|NO
 9. 验证器失败必须先分类 `VALIDATION_HARNESS_DEFECT`、`ENVIRONMENT_FAILURE`、产品/治理失败或 `AMBIGUOUS_SIDE_EFFECT`；外围验证器失败不得直接覆盖已存在的正式产品成功证据，也不得自动重试已经开始的有副作用动作。
 10. `VALIDATOR_ACCEPTED=YES` 只有在 Validator Contract 完整、Self Check 通过、全部阻断断言都有正式真相源且不存在必需证据不足时成立；否则验证器本身不得作为 Artifact Acceptance 的依据。
 
+**GOV-STAGE-DELIVERY-IDENTITY-001：** 每个 ZIP/CMD 交付必须有唯一 Delivery Identity，并把 package、runner、validator 与标准执行回执绑定到同一个不可混用的身份命名空间；禁止复制上一版本 runner 后遗留旧 `VALIDATOR_ID`、`RUNNER_ID` 或 receipt emitter 身份。
+
+每个交付的正式身份至少包含：
+
+```text
+DELIVERY_ID=
+PACKAGE_NAME=
+RUNNER_ID=
+VALIDATOR_ID=
+RECEIPT_EMITTER_ID=
+IDENTITY_MANIFEST=manifest.json
+IDENTITY_BINDING_AUDIT=PASS|FAIL
+```
+
+固定规则：
+
+1. `DELIVERY_ID` 是一次具体 ZIP/CMD 交付的唯一身份键。同一次交付的 package、runner、validator、receipt emitter 必须全部声明同一个 `DELIVERY_ID`。
+2. ZIP 交付必须在 `manifest.json` 中维护单一 identity object；至少包含：
+```text
+identity.delivery_id
+identity.package_name
+identity.runner.id
+identity.runner.delivery_id
+identity.runner.file
+identity.validator.id
+identity.validator.delivery_id
+identity.validator.file
+identity.receipt_emitter.id
+identity.receipt_emitter.delivery_id
+```
+3. `identity.runner.delivery_id`、`identity.validator.delivery_id`、`identity.receipt_emitter.delivery_id` 必须与根 `identity.delivery_id` 完全相等；任一不一致时 `IDENTITY_BINDING_AUDIT=FAIL`。
+4. `RUNNER_ID`、`VALIDATOR_ID`、`RECEIPT_EMITTER_ID` 必须由当前包的 identity manifest 读取；禁止在 receipt emitter 中另复制一个可独立漂移的版本化 ID 常量。
+5. 对版本化本地交付，`RUNNER_ID` 与 `VALIDATOR_ID` 必须属于当前 `DELIVERY_ID` 命名空间；例如 `DELIVERY_ID=V117` 时，版本化 ID 必须使用 `V117_` 前缀。上一交付身份不得出现在当前交付的正式身份字段。
+6. `PACKAGE_NAME` 必须与实际 ZIP 文件名一致；解压后的 bundle 目录、runner 文件名、validator 文件名必须与 identity manifest 声明一致。
+7. 标准执行回执在 `GOV-STAGE-RECEIPT-001` 最小字段基础上，还必须输出：
+```text
+DELIVERY_ID=
+RUNNER_ID=
+VALIDATOR_ID=
+RECEIPT_EMITTER_ID=
+IDENTITY_MANIFEST=
+IDENTITY_BINDING_AUDIT=
+```
+8. `RESULT=SUCCESS` 时必须 `IDENTITY_BINDING_AUDIT=PASS`；身份不一致属于 `VALIDATION_HARNESS_DEFECT`，不得把其回执作为完整 Artifact Acceptance 证据。
+9. package verifier 必须独立检查 manifest identity、实际 ZIP basename、bundle 路径、runner/validator 文件、命名空间和 receipt identity source；不能仅相信 runner 自己输出的 ID。
+10. runner 启动后、执行任何仓库写入前必须完成 identity self-check。identity 失败时不得修改仓库。
+11. commit/push 后的最终 Stage Output / receipt Artifact Acceptance 必须同时验证 package、runner、validator、receipt emitter 身份属于同一 `DELIVERY_ID`。
+12. 该规则属于交付与证据治理，不改变任何业务 Workflow、Gate、Runtime、Work Item 状态机或 Project Contract。
 **GOV-STAGE-RECOVERY-ACCEPT-001：** 新会话恢复必须形成可机器检查的 Recovery Acceptance；生成 `GOVERNANCE PRECONCLUSION + Stage Input` 不等于恢复完成。
 
 新会话的 `GOVERNANCE PRECONCLUSION` 至少包含：

@@ -24,6 +24,7 @@ const stageRuleIds = [
   'GOV-STAGE-RECEIPT-001',
   'GOV-STAGE-ARTIFACT-VERIFY-001',
   'GOV-STAGE-VALIDATOR-001',
+  'GOV-STAGE-DELIVERY-IDENTITY-001',
   'GOV-STAGE-RECOVERY-ACCEPT-001',
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-001',
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001',
@@ -119,6 +120,11 @@ describe('Stage Execution Contract authority', () => {
       'BASELINE_FRESHNESS=',
       'VALIDATOR_SELF_CHECK=',
       'VALIDATOR_ACCEPTED=',
+      'DELIVERY_ID=',
+      'RUNNER_ID=',
+      'RECEIPT_EMITTER_ID=',
+      'IDENTITY_MANIFEST=',
+      'IDENTITY_BINDING_AUDIT=',
       'ASSERTION_ID=',
       'ASSERTION_TYPE=',
       'BLOCKING=',
@@ -173,6 +179,7 @@ describe('Stage Execution Contract authority', () => {
       'FEEDBACK_CONTRACT=',
       'ARTIFACT_ACCEPTANCE_CONTRACT=',
       'VALIDATOR_CONTRACT=',
+      'DELIVERY_IDENTITY_CONTRACT=',
       'RECOVERY_ACCEPTANCE_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_FAILURE_CONTRACT=',
@@ -375,6 +382,31 @@ describe('Stage Execution Contract authority', () => {
       expect(prompt, token).toContain(token);
     }
     expect(prompt).toContain('禁止直接给我 git ls-remote 裸 CMD');
+  });
+
+  it('binds package runner validator and receipt emitter to one delivery identity', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const start = authority.indexOf('**GOV-STAGE-DELIVERY-IDENTITY-001：**');
+    const end = authority.indexOf('**GOV-STAGE-RECOVERY-ACCEPT-001：**', start);
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    const section = authority.slice(start, end);
+
+    for (const field of [
+      'DELIVERY_ID=',
+      'PACKAGE_NAME=',
+      'RUNNER_ID=',
+      'VALIDATOR_ID=',
+      'RECEIPT_EMITTER_ID=',
+      'IDENTITY_MANIFEST=manifest.json',
+      'IDENTITY_BINDING_AUDIT=PASS|FAIL',
+      'identity.delivery_id',
+      'identity.runner.delivery_id',
+      'identity.validator.delivery_id',
+      'identity.receipt_emitter.delivery_id',
+    ]) {
+      expect(section, field).toContain(field);
+    }
   });
 
 });

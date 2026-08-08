@@ -5137,3 +5137,27 @@ actual_files
   3. 不再使用全局 `not contains` 自然语言词面作为 blocking assertion；
   4. 此类自检失败必须在发布前终止并记录，不能假设包已生成。
 <!-- SPECFORGE_ERR237_EXP203_NEGATIVE_NATURAL_LANGUAGE_SELF_CHECK:END -->
+
+<!-- SPECFORGE_ERR238_EXP204_DELIVERY_IDENTITY_BINDING:START -->
+## ERR-238 / EXP-204 — V116 成功回执沿用 V115 Validator ID，交付身份未绑定
+
+- **现场**：用户执行 `SpecForge_Bootstrap_Failure_Template_No_Raw_CMD_V116.zip` 成功，commit/push、定向测试、TypeScript、daemon-core build、workspace build、`git diff --check` 和最终 worktree 均通过；但标准回执输出 `PACKAGE_NAME=...V116.zip` 与 `VALIDATOR_ID=V115_BOOTSTRAP_FAILURE_TEMPLATE_VALIDATOR`。
+- **副作用事实**：V116 已真实提交并推送 `c23b7c27fad68de09c493dbc3f057cd59b6dad67`；WI-0004 状态仍为 `approval_required`，未执行任何生命周期动作。
+- **分类**：`VALIDATION_HARNESS_DEFECT / EVIDENCE_IDENTITY_DEFECT`。
+- **根因**：receipt 中 `VALIDATOR_ID` 是从上一版 runner 遗留的独立硬编码常量；现有 Validator Contract 没有绑定 package / runner / validator / receipt emitter 的共同 delivery identity。
+- **EXP-204**：每个交付建立唯一 `DELIVERY_ID`；所有身份统一写入 `manifest.json`；runner receipt 从 manifest 读取；verifier 独立检查实际 ZIP/bundle/files/namespace；`RESULT=SUCCESS` 必须 `IDENTITY_BINDING_AUDIT=PASS`。
+<!-- SPECFORGE_ERR238_EXP204_DELIVERY_IDENTITY_BINDING:END -->
+
+<!-- SPECFORGE_ERR239_EXP205_GENERATOR_PARSE_PRECHECK:START -->
+## ERR-239 / EXP-205 — V117 首次构造器再次因嵌套三引号在生成前解析失败
+
+- **现场**：V117 首次交付构造代码在 Python 解析阶段因外层 runner 模板与内层测试模板使用冲突的三引号，触发 `IndentationError`；工具明确返回代码未成功执行。
+- **影响**：没有可交付 ZIP、没有用户执行、没有 SpecForge 仓库副作用。
+- **分类**：`VALIDATION_HARNESS_DEFECT / SCRIPT_DEFECT`；重复错误类为 ERR-232 / EXP-198。
+- **旧防护为何不足**：EXP-198 要求 runner/verifier 生成后 compile，但本次错误发生在生成器源代码本身被 Python 解析之前，原防护点晚于失败点。
+- **EXP-205**：
+  1. 嵌套源码模板必须使用不同字符串定界层级；
+  2. runner 与其内嵌测试模板不得使用同一种三引号边界；
+  3. 只有构造器成功执行、runner/verifier compile、ZIP reopen、manifest/hash 全部通过后才允许发布；
+  4. 生成器解析失败时保持同一未发布 Delivery ID，不把失败产物当成已经生成的版本。
+<!-- SPECFORGE_ERR239_EXP205_GENERATOR_PARSE_PRECHECK:END -->
