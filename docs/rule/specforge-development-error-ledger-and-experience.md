@@ -5509,3 +5509,168 @@ actual_files
   - `Git Merge` = 已通过 Close Gate 的工作分支合入目标 Git 分支。
 - **EXP-229**：正式生命周期禁止用裸 `Merge` 同时承载 Spec 生效和 Git 合并两种语义；规范、Phase 和 Acceptance 必须使用明确术语。
 <!-- SPECFORGE_ERR263_EXP229_MERGE_TERM_AMBIGUITY:END -->
+
+<!-- SPECFORGE_ERR264_EXP230_MULTI_CONSUMER_COUNT_ASSUMPTION:START -->
+## ERR-264 / EXP-230 — 验证器把多个合法消费者误当成“必须全文件唯一”
+- **日期与阶段**：2026-08-08，V133 authority final content closure。
+- **分类**：`VALIDATION_DEFECT / SCRIPT_DEFECT / STRUCTURAL_SCOPE_COUNT_ASSUMPTION`。
+- **现场表现**：V133 在 `PATCH_TEST` 报 `chapter11 heading consumer count=2`；同一旧标题和 D1-D14 scope 在测试文件中各有两个合法消费者。
+- **已执行与未执行**：补丁准备已完成；产品 commit/push 未执行。
+- **仓库变化**：失败关闭；后续只读取证证明无残留。
+- **根因**：验证器未先限定到稳定结构作用域，就用全文件 `count == 1` 作为阻断条件。
+- **影响**：合法的生产者—消费者闭包被误报为失败，导致重复生成修复包。
+- **正确做法**：先按 Rule ID / section / test block 枚举消费者；对允许多消费者的字段验证“批准消费者集合完整”，不得用全文件唯一计数替代结构闭包。
+- **新增类防护 / EXP-230**：任何“唯一性”断言必须先声明唯一性的结构作用域；同一正式字段可被多个合法消费者引用时，验证器必须验证消费者集合而不是字面出现次数。
+- **自动防护**：至少包含两个合法消费者的正例、缺失消费者反例和范围外消费者反例。
+- **状态**：`CLOSED`；后续 V138+ 已不再因该计数失败。
+<!-- SPECFORGE_ERR264_EXP230_MULTI_CONSUMER_COUNT_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR265_EXP231_OUTER_CMD_CONDITIONAL_CHAIN:START -->
+## ERR-265 / EXP-231 — 外层 CMD 把目录存在条件与后续启动链错误绑定
+- **日期与阶段**：2026-08-08，V134-V136 / V136 首次启动链。
+- **分类**：`SCRIPT_DEFECT / PROCESS_VIOLATION / CMD_CONTROL_FLOW_DEFECT`。
+- **现场表现**：使用 `if exist <dir> rmdir ... && mkdir ... && tar ... && call ...`；当目录不存在时，后续创建、解压和调用被整体跳过，出现无输出或未启动。
+- **已执行与未执行**：外层入口未稳定进入包内 runner；仓库写入未发生。
+- **仓库变化**：无。
+- **根因**：把“可选清理”写成后续必需启动链的条件分支。
+- **影响**：用户无法判断包是否真正执行，并重复运行。
+- **正确做法**：可选清理使用独立命令并吞掉“目录不存在”错误；`mkdir → extract → call` 必须无条件串联，入口每一步都有可观察输出。
+- **新增类防护 / EXP-231**：外层 CMD 的可选清理不得控制后续必需步骤；启动链必须对“目录存在/不存在”两个初始状态做真实解析器回归。
+- **自动防护**：覆盖目录不存在、目录已存在、ZIP缺失、入口缺失四种路径。
+- **状态**：`CLOSED`；后续 V137-V145 使用无条件清理/创建/解压链并可观察运行。
+<!-- SPECFORGE_ERR265_EXP231_OUTER_CMD_CONDITIONAL_CHAIN:END -->
+
+<!-- SPECFORGE_ERR266_EXP232_REQUIRED_RUNNER_ARGUMENT_OMITTED:START -->
+## ERR-266 / EXP-232 — 外层包装器调用内层 runner 时遗漏必需参数
+- **日期与阶段**：2026-08-08，V138。
+- **分类**：`SCRIPT_DEFECT / VALIDATION_DEFECT / RUNNER_ARGUMENT_CONTRACT_DEFECT`。
+- **现场表现**：V138 调用 V133 runner 只传 `<SpecForgeRepo>`，漏传 `<PackageSha256>`；内层 runner 输出 Usage 并以 rc=2 退出。
+- **已执行与未执行**：内层 runner 在参数校验阶段退出；产品写入、commit、push 均未执行。
+- **仓库变化**：无。
+- **根因**：包装器没有把被调用 runner 的 argv 契约作为正式接口做静态和行为验证。
+- **影响**：包装器自身失败被误归入后续产品修复链。
+- **正确做法**：从被调用入口的真实 Usage / parser 读取参数契约；封包前对最终 subprocess argv 做 AST 审计和行为模拟。
+- **新增类防护 / EXP-232**：嵌套 runner 的参数数量、顺序、身份哈希必须作为接口契约；任何包装层都必须对最终 argv 做机器审计。
+- **自动防护**：缺参、错序、错误 SHA、正确参数四个用例。
+- **状态**：`CLOSED`；V139+ 已按 `<SpecForgeRepo> <PackageSha256>` 调用。
+<!-- SPECFORGE_ERR266_EXP232_REQUIRED_RUNNER_ARGUMENT_OMITTED:END -->
+
+<!-- SPECFORGE_ERR267_EXP233_RULE_MARKER_EXACT_LINE_PARSER:START -->
+## ERR-267 / EXP-233 — Rule Section 解析器要求 Rule ID marker 独占整行
+- **日期与阶段**：2026-08-08，V139。
+- **分类**：`VALIDATION_DEFECT / STRUCTURAL_PARSER_DEFECT`。
+- **现场表现**：新增 `ruleSection()` 使用 `line === marker`；真实 authority 的 canonical Rule ID 与正文位于同一行，导致 9 个“Rule ID 不存在”测试失败。
+- **已执行与未执行**：候选内容临时写入后目标测试失败；内层 runner 回滚；commit/push 未执行。
+- **仓库变化**：失败后回滚。
+- **根因**：解析器根据理想化格式实现，没有用真实 authority 行结构做正例。
+- **影响**：合法 Rule ID 被解析为缺失。
+- **正确做法**：Rule 起点按非 fenced 行 `startsWith(canonical marker)` 识别，并使用真实 authority 样本做回归。
+- **新增类防护 / EXP-233**：结构解析器必须消费真实源格式；禁止把“marker 单独一行”这类展示习惯升级为隐式 schema。
+- **自动防护**：marker+正文同行、fenced fake marker、缺失 marker。
+- **状态**：`CLOSED`；后续执行已不再出现 exact-line 起点失败。
+<!-- SPECFORGE_ERR267_EXP233_RULE_MARKER_EXACT_LINE_PARSER:END -->
+
+<!-- SPECFORGE_ERR268_EXP234_PROMPT_BEFORE_AFTER_EQUALITY_GUARD:START -->
+## ERR-268 / EXP-234 — V133 验证器把合法固定 Prompt 原子更新误判为禁止变化
+- **日期与阶段**：2026-08-08，V141。
+- **分类**：`VALIDATION_DEFECT / SOURCE_TARGET_CONTRACT_CONFLATION`。
+- **现场表现**：`authority_audit` 先要求 `prompt_block(before) == prompt_block(after)`，随后又校验新的 `fixed_prompt_sha256`；任何合法 Prompt 更新都会先被旧相等断言阻断。
+- **已执行与未执行**：V141 在 `AUTHORITY_AUDIT` 失败；回滚确认；commit/push 未执行。
+- **仓库变化**：失败后回滚。
+- **根因**：把旧版本字节不变条件和目标版本正式哈希同时作为阻断真相。
+- **影响**：authority 允许的 `START/END` scope 原子同步不可达。
+- **正确做法**：保留目标 authority hash、目标 Prompt hash、Prompt marker 唯一性和消费者测试；删除“before 必须等于 after”的旧状态断言。
+- **新增类防护 / EXP-234**：当正式契约允许受控变更时，验证器必须用目标 schema/hash 验证结果，不得同时要求源字节保持不变。
+- **自动防护**：合法 Prompt 变更正例、未同步 hash 反例、marker 重复反例。
+- **状态**：`CLOSED`；V143 已越过该 Authority Audit。
+<!-- SPECFORGE_ERR268_EXP234_PROMPT_BEFORE_AFTER_EQUALITY_GUARD:END -->
+
+<!-- SPECFORGE_ERR269_EXP235_PREDELIVERY_BUILDER_FAILURE_CHAIN:START -->
+## ERR-269 / EXP-235 — 预交付生成器连续出现导入、语法和旧锚点失配
+- **日期与阶段**：2026-08-08 至 2026-08-09，V137/V141/V142/V143/V144/V146 封包期。
+- **分类**：`SCRIPT_DEFECT / VALIDATION_DEFECT / PREDELIVERY_BUILD_DEFECT`。
+- **现场表现**：已确认的预交付失败包括：V137 漏导入 `sys`；V141 旧文本锚点不存在；V142 生成代码字符串语法错误；V143 版本化 control anchor 替换顺序错误；V144 payload audit 锚点与最终源文本不一致；V146 首次构建把含 Windows 反斜杠路径的新 handoff 文本直接作为 `re.sub` replacement，触发 `bad escape`。
+- **已执行与未执行**：这些失败发生在最终 ZIP 接受前；对应失败构建未交付用户执行。
+- **仓库变化**：无。
+- **根因**：生成器继续对派生 runner / 文本做脆弱字符串变换，没有在每轮先解析最终源结构并验证 replacement 语义。
+- **影响**：增加无效封包轮次，并证明“compile/静态替换成功”不足以证明交付可运行。
+- **正确做法**：先读取当前最终源；优先 AST / 函数级结构修改；正则替换含任意用户文本时使用 callable replacement；最终 run.py 必须 importlib 加载并实际执行新增纯函数。
+- **新增类防护 / EXP-235**：派生交付版本不得通过“复制上一版 + 多层字符串 replace”持续演化；连续失败后必须重建生成模型，并用最终源 AST/结构边界生成；`re.sub` 的动态 replacement 默认使用 callable。
+- **自动防护**：最终源 AST、importlib、关键纯函数、manifest/ZIP reopen、零 pycache 全部通过后才允许发布。
+- **状态**：`FIXED_PENDING_VALIDATION`；本轮及后续交付必须继续证明该类防护有效。
+<!-- SPECFORGE_ERR269_EXP235_PREDELIVERY_BUILDER_FAILURE_CHAIN:END -->
+
+<!-- SPECFORGE_ERR270_EXP236_INTERNAL_SUBHEADING_FALSE_BOUNDARY:START -->
+## ERR-270 / EXP-236 — Rule Section 解析器把父 Rule 内部子标题误当成结束边界
+- **日期与阶段**：2026-08-08，V143。
+- **分类**：`VALIDATION_DEFECT / STRUCTURAL_PARSER_BOUNDARY_DEFECT`。
+- **现场表现**：目标测试 10 pass / 3 fail；Bootstrap Envelope 在内部 `2.11.x` 前被截断，Delivery Identity 在 `2.10.1` 前被截断。
+- **已执行与未执行**：候选写入、目标测试执行；失败后回滚；commit/push 未执行。
+- **仓库变化**：失败后回滚。
+- **根因**：解析器把任意内部 Markdown 子标题当作父 Rule 边界，没有按 authority 的 Rule Section 结构定义结束条件。
+- **影响**：父 Rule 的正式子契约被错误排除。
+- **正确做法**：内部 `####` 标题必须保留在父 Rule；边界只由正式下一 Rule ID、正式编号结构边界或 Prompt START 等 canonical boundary 决定。
+- **新增类防护 / EXP-236**：Rule parser 必须区分“父 Rule 内部导航标题”和“父 Rule 结束边界”，并使用真实 2.10/2.11 结构做正向回归。
+- **自动防护**：2.10.1、2.11.1-2.11.7 均必须仍属于父 Rule。
+- **状态**：`CLOSED`；V144 已使相关 3 个失败全部通过。
+<!-- SPECFORGE_ERR270_EXP236_INTERNAL_SUBHEADING_FALSE_BOUNDARY:END -->
+
+<!-- SPECFORGE_ERR271_EXP237_NUMBERED_HEADING_BOUNDARY_MISSING:START -->
+## ERR-271 / EXP-237 — Rule Section 解析器遗漏真实编号章节标题边界
+- **日期与阶段**：2026-08-08，V144。
+- **分类**：`VALIDATION_DEFECT / STRUCTURAL_PARSER_BOUNDARY_DEFECT`。
+- **现场表现**：目标测试 12 pass / 1 fail；synthetic Rule 在 fenced fake heading 后遇到真实 `### 3.1 real boundary` 时仍继续包含该标题及后文。
+- **已执行与未执行**：目标测试执行；失败后 `rollback_confirmed=YES`；commit/push 未执行。
+- **仓库变化**：失败后回滚，远程仍为 `main@faffc64ec2810167c0a9b1025edf2c602de811ac`。
+- **根因**：V144 全量 parser 只识别“下一个 Rule ID / `### 0.x` / Prompt START”，没有从正式 authority 信息架构抽象“任意非 fenced `### <number>.<number>` 章节标题都是 Rule section 边界”。
+- **影响**：Rule Section 可能跨入后续章节，导致消费者读取超出正式 Rule 作用域。
+- **正确做法**：从 authority 的正式编号标题语法定义边界：非 fenced、物理单行 `### [0-9]+(\.[0-9]+)+`；内部 `####` 子标题仍保留；fenced fake heading / fake Rule ID 必须忽略。
+- **新增类防护 / EXP-237**：结构 parser 的边界集合必须从正式文档语法一次性枚举，并建立正反例矩阵；禁止通过连续新增一个 if 条件追着失败修。
+- **自动防护**：至少覆盖 next Rule ID、`### 0.9`、`### 3.1`、内部 `#### 2.11.7`、fenced fake heading、Prompt START。
+- **状态**：`OPEN`；这是当前唯一 parser blocker。
+<!-- SPECFORGE_ERR271_EXP237_NUMBERED_HEADING_BOUNDARY_MISSING:END -->
+
+<!-- SPECFORGE_ERR272_EXP238_WEB_AUXILIARY_PROMOTED_TO_LIVE_HEAD:START -->
+## ERR-272 / EXP-238 — GitHub 网页辅助信息曾被错误表述为当前 live main
+- **日期与阶段**：2026-08-08，V144 后基线复核。
+- **分类**：`EVIDENCE_DEFECT / PROCESS_VIOLATION / REMOTE_REF_TRUTH_SOURCE_DEFECT`。
+- **现场表现**：GitHub 网页一度显示 `f400cda...`，被表述为“当前 main 已变化”；随后 V145 结构化 `git ls-remote` 明确证明 `refs/heads/main=faffc64ec2810167c0a9b1025edf2c602de811ac`。
+- **已执行与未执行**：发现冲突后停止产品修改并执行只读 live-ref 取证；仓库写入未发生。
+- **仓库变化**：无。
+- **根因**：把 `WEB_AUXILIARY / commit page` 临时提升为 live branch-ref 真相，违反 Authority Bootstrap truth-source 优先级。
+- **影响**：错误制造“远程谱系切换”判断并中断正常修复。
+- **正确做法**：当前 branch HEAD 只能由允许的 structured live-ref source 决定；网页只作辅助，永远不能覆盖更新的 `git ls-remote`。
+- **新增类防护 / EXP-238**：任何包含“当前 remote HEAD / main 已变化”的结论必须携带结构化 live-ref 证据；网页 commit/branch 页面只能标记 `WEB_AUXILIARY`。
+- **自动防护**：结构化 ref 与网页冲突时必须以结构化 ref 为准并记录冲突。
+- **状态**：`CLOSED`；V145 已取得单一合法 live ref。
+<!-- SPECFORGE_ERR272_EXP238_WEB_AUXILIARY_PROMOTED_TO_LIVE_HEAD:END -->
+
+<!-- SPECFORGE_ERR273_EXP239_MARKER_LITERAL_COUNT_VS_MARKDOWN_STRUCTURE:START -->
+## ERR-273 / EXP-239 — Authority marker 审计曾把内联代码引用计为第二个真实 marker
+- **日期与阶段**：2026-08-09，V145 后 Authority Bootstrap。
+- **分类**：`VALIDATION_DEFECT / EVIDENCE_DEFECT / MARKDOWN_STRUCTURE_DEFECT`。
+- **现场表现**：exact authority 中第 1.1 节存在一个 canonical blockquote marker；Bootstrap 规则正文还以内联代码引用同一字面量。曾按原始 substring count=2 误判“authority 自身违反唯一 marker”。
+- **已执行与未执行**：误判后未读取 WI/immutable evidence、未修改仓库；随后按结构化 Markdown 作用域复核。
+- **仓库变化**：无。
+- **根因**：把“字面量出现次数”当成“结构 marker 数量”，没有区分 blockquote 正式 marker 与 inline-code 规则说明。
+- **影响**：险些形成错误 Bootstrap Fail Closed 和无意义的重复 live-ref 取证。
+- **正确做法**：marker validator 必须按 Markdown token / canonical section 作用域识别正式 marker；规则说明、代码示例、inline code 引用不是 marker 实例。
+- **新增类防护 / EXP-239**：文档中的正式 marker、Rule ID、Schema 字段必须按结构 token 分类；原始 substring count 只能作辅助，不能单独阻断。
+- **自动防护**：一个 canonical marker + 任意 inline-code 引用仍 PASS；两个 canonical marker 才 FAIL。
+- **状态**：`CLOSED`；本轮 Bootstrap 已按结构作用域通过。
+<!-- SPECFORGE_ERR273_EXP239_MARKER_LITERAL_COUNT_VS_MARKDOWN_STRUCTURE:END -->
+
+<!-- SPECFORGE_ERR274_EXP240_HANDOFF_CONTRACT_FIELD_OMISSION:START -->
+## ERR-274 / EXP-240 — Handoff CURRENT EXECUTION STATE 重写遗漏既有强制字段
+- **日期与阶段**：2026-08-09，V146 failure-ledger backfill。
+- **分类**：`CONTRACT_CONSUMER_DEFECT / DOCUMENT_REWRITE_DEFECT / REGRESSION_FAILURE`。
+- **现场表现**：V146 只修改错误台账和 `current-handoff.md`，但目标测试 `keeps exactly one current execution state block in handoff` 失败；新状态块遗漏 `BOOTSTRAP_EXECUTION_ORDER_CONTRACT=`、`AUTHORITY_BOOTSTRAP_FAILURE_CONTRACT=`、`AUTHORITY_BOOTSTRAP_FAILURE_TEMPLATE_CONTRACT=`。
+- **已执行与未执行**：两个文档临时写入后运行目标测试；测试失败；runner 完整回滚；commit/push 未执行。
+- **仓库变化**：`ROLLBACK_CONFIRMED=YES`，本地/远程 HEAD 仍为 `faffc64ec2810167c0a9b1025edf2c602de811ac`，工作区恢复干净。
+- **根因**：重写动态 handoff 状态块时使用“新最小字段集合”替换旧状态块，没有先从既有消费者测试提取完整必需字段集合，也没有做“旧字段不丢失”差分审计。
+- **影响**：纯文档回填任务违反现有 handoff consumer contract，阻止错误台账闭包。
+- **正确做法**：动态状态块更新必须从当前远程基线块做字段级变更；未明确废止的既有契约字段全部保留；新增字段只能追加或更新，不得通过整体最小模板覆盖。
+- **新增类防护 / EXP-240**：任何 handoff/state machine block 重写前，必须建立 `BASELINE_REQUIRED_FIELDS` 与 `TARGET_REQUIRED_FIELDS`，并证明 `BASELINE_REQUIRED_FIELDS - TARGET_FIELDS = ∅`；消费者测试列出的字段集合是最低保留集合。
+- **自动防护**：至少验证 CURRENT EXECUTION STATE 唯一 START/END、既有必需字段全保留、动态字段更新正确、无重复 key、EOF newline 和 `git diff --check`。
+- **状态**：`CLOSED`；V147 已证明 handoff 基线必需字段全部保留，目标测试、TypeScript、daemon-core build、workspace build 和 `git diff --check` 全部通过。
+<!-- SPECFORGE_ERR274_EXP240_HANDOFF_CONTRACT_FIELD_OMISSION:END -->
