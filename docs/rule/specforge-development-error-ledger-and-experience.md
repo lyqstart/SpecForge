@@ -5408,3 +5408,26 @@ actual_files
   5. package validator 必须用正例和旧版本负例直接执行同一个 internal-reference audit 函数，证明审计器能拒绝 stale token；
   6. authority consumer regression 必须覆盖四个 current-delivery 字段，而不是只检查 `NEXT_LEGAL_ACTION`。
 <!-- SPECFORGE_ERR258_EXP224_FINAL_RENDERED_RECEIPT_REFERENCE_FALSE_PASS:END -->
+
+<!-- SPECFORGE_ERR259_EXP225_HISTORICAL_DELIVERY_TOKEN_IN_CURRENT_CONTROL_FIELD:START -->
+## ERR-259 / EXP-225 — 只读对账回执把历史 Delivery ID 写入当前控制字段
+
+- **现场**：V129 只读 Git 对账成功确认 `REMOTE_MAIN_HEAD=LOCAL_HEAD=42b5c748f2be2bbff140edfcc3fa164c2c64ba96`、父提交为 `2b82912925c62049ed8f968946fc284b94adfcd4`、HEAD 正好修改 3 个 V128 治理文件、worktree clean、authority 最后修改 commit 仍为 `2b829129...`；但 V129 回执自身 `DELIVERY_INTERNAL_REFERENCE_AUDIT=FAIL`。
+- **失败字段**：
+  - `ACTION_NAME=RECONCILE_V128_POST_PUSH_STATE_V129`
+  - `NEXT_LEGAL_ACTION=DESIGN_V129_EVIDENCE_REPAIR_AFTER_CONFIRMED_V128_COMMIT`
+- **权威冲突**：`GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE` 明确规定：历史版本引用必须放 provenance/evidence 字段；`CURRENT_* / ACTION_* / NEXT_*` 等当前控制字段只允许当前 Delivery ID。
+- **分类**：`VALIDATION_HARNESS_DEFECT / CURRENT_CONTROL_FIELD_PROVENANCE_LEAK`。
+- **事实对账**：
+  1. V128 仓库 side effect 已由 V129 只读结构化 Git 证据确认成功；
+  2. V128 commit=`42b5c748f2be2bbff140edfcc3fa164c2c64ba96`；
+  3. V128 authority 未修改，authority last-modifying commit=`2b82912925c62049ed8f968946fc284b94adfcd4`；
+  4. V129 没有仓库写操作；
+  5. V129 receipt 不能作为 Delivery Internal Reference Acceptance 成功证据。
+- **EXP-225**：
+  1. `CURRENT_STAGE / ACTION_NAME / NEXT_STAGE / NEXT_LEGAL_ACTION` 只描述当前交付控制流；需要版本时只能使用当前 `DELIVERY_ID`；
+  2. 历史 Delivery ID 必须放 `*_EVIDENCE / *_PROVENANCE / PRIOR_* / RECONCILED_*` 等非 current-control 字段；
+  3. receipt validator 正例必须证明当前控制字段只含当前 Delivery ID；
+  4. receipt validator 负例必须证明历史 token 即使语义上用于“描述被对账对象”也会被拒绝；
+  5. current-handoff 必须分别记录 current remote HEAD、authority file last-modifying commit 和历史 delivery evidence，禁止把三者混成一个 baseline。
+<!-- SPECFORGE_ERR259_EXP225_HISTORICAL_DELIVERY_TOKEN_IN_CURRENT_CONTROL_FIELD:END -->

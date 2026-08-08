@@ -552,6 +552,11 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
     expect(prompt).toContain('GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE');
     expect(envelope).toContain('GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001');
     expect(envelope).toContain('GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE');
+    expect(identity).toContain('历史事实若确需引用旧版本');
+    expect(identity).toContain('provenance/evidence');
+    expect(identity).toContain('CURRENT_*');
+    expect(identity).toContain('NEXT_*');
+    expect(identity).toContain('ACTION_*');
   });
 
   it('keeps one numbered authority information architecture without legacy parallel numbering', async () => {
