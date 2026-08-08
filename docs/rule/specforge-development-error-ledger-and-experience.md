@@ -5384,3 +5384,27 @@ actual_files
   4. 同步把 Delivery Internal Reference consumer 改为命名测试作用域替换，避免下一处相同缺陷；
   5. patch 后必须结构检查目标测试名各恰好一个，并运行完整 authority regression。
 <!-- SPECFORGE_ERR257_EXP223_EXACT_TEST_BODY_PATCH_ANCHOR_DEFECT:END -->
+
+<!-- SPECFORGE_ERR258_EXP224_FINAL_RENDERED_RECEIPT_REFERENCE_FALSE_PASS:START -->
+## ERR-258 / EXP-224 — V127 SUCCESS 回执内部版本审计报告 PASS，但最终 NEXT_STAGE 仍引用 V124
+
+- **现场**：V127 已成功提交并推送 authority 结构重构到 `2b82912925c62049ed8f968946fc284b94adfcd4`，测试、TypeScript、daemon-core build、workspace build、`git diff --check` 全部通过；但标准 SUCCESS 回执同时输出：
+  - `DELIVERY_ID=V127`
+  - `DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS`
+  - `DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE`
+  - `NEXT_STAGE=NEW_SESSION_V124_AUTHORITY_STRUCTURE_AND_BOOTSTRAP_E2E_VALIDATION`
+- **权威冲突**：`GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE` 已明确要求 `CURRENT_STAGE`、`ACTION_NAME`、`NEXT_STAGE`、`NEXT_LEGAL_ACTION` 中任何 `V[0-9]+` token 必须等于当前 `DELIVERY_ID`；SUCCESS 前必须检查最终用户可见回执值。
+- **分类**：`VALIDATION_HARNESS_DEFECT / EVIDENCE_IDENTITY_DEFECT / FINAL_RENDERED_RECEIPT_AUDIT_FALSE_PASS`。
+- **影响**：
+  1. V127 的仓库提交和结构重构事实有效；
+  2. V127 的 SUCCESS receipt 不能作为完整 Delivery Internal Reference Acceptance 证据；
+  3. WI-0004 状态未变化，仍停在 `approval_required`，不得因此进入 User Decision。
+- **根因**：V127 runner 的 `NEXT_STAGE` 仍从旧 runner 复制静态 `V124` 文本；同时 receipt emitter 直接打印预设的 `DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS`，没有在最终回执字典生成后对用户可见 current-delivery 控制字段重新扫描。
+- **EXP-224**：
+  1. receipt emitter 必须先构造最终回执键值，再执行内部引用审计，最后才允许打印 `RESULT=SUCCESS`；
+  2. `receipt_current_delivery_reference_fields` 至少覆盖 `CURRENT_STAGE`、`ACTION_NAME`、`NEXT_STAGE`、`NEXT_LEGAL_ACTION`；
+  3. 对上述字段扫描 `VERSION_TOKEN_PATTERN=V[0-9]+`，出现任何不等于当前 `DELIVERY_ID` 的 token 必须 Fail Closed；
+  4. `NEXT_STAGE`、`NEXT_LEGAL_ACTION` 中当前交付版本必须从 `identity.delivery_id` 动态派生，禁止复制旧 runner 常量；
+  5. package validator 必须用正例和旧版本负例直接执行同一个 internal-reference audit 函数，证明审计器能拒绝 stale token；
+  6. authority consumer regression 必须覆盖四个 current-delivery 字段，而不是只检查 `NEXT_LEGAL_ACTION`。
+<!-- SPECFORGE_ERR258_EXP224_FINAL_RENDERED_RECEIPT_REFERENCE_FALSE_PASS:END -->

@@ -538,7 +538,11 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
       'CURRENT_DELIVERY_REFERENCE_FIELDS=',
       'VERSION_TOKEN_PATTERN=V[0-9]+',
       'receipt_current_delivery_reference_fields',
+      'CURRENT_STAGE',
+      'ACTION_NAME',
+      'NEXT_STAGE',
       'NEXT_LEGAL_ACTION',
+      'RESULT=SUCCESS',
     ]) {
       expect(identity, token).toContain(token);
     }
