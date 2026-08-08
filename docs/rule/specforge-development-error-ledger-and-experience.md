@@ -4989,3 +4989,20 @@ actual_files
   6. 失败前若仓库已经存在上一阶段合法未提交成果，rollback 必须恢复到“本轮开始时的工作树”，不得误删上一阶段成果。
 - **防复发**：V110 对 `GOV-STAGE-ARTIFACT-VERIFY-001` 使用 Rule ID + 固定 Artifact Acceptance 字段 + handoff contract pointer + 回归测试四路结构证据，不再匹配自然语言原句；失败回滚使用本轮开始时的文件字节快照。
 <!-- SPECFORGE_ERR229_EXP194_STRUCTURAL_ARTIFACT_VALIDATION:END -->
+
+<!-- SPECFORGE_EXP195_VALIDATOR_CONTRACT_HARDENING:START -->
+## EXP-195 — 验证器设计契约：验证正式语义，不验证作者当时写出的字符串
+
+- **来源问题族**：ERR-226、ERR-227、ERR-228、ERR-229 均属于验证器/交付器把临时字符串、全文件唯一性假设、错误基线或自然语言原句当成正式契约而造成的假失败。
+- **统一结论**：验证器自身也是 artifact；必须先有 Validator Contract，再用正式 truth source 验收验证器，最后才允许该验证器阻断发布、执行、commit/push 或下一 Stage。
+- **稳定规则**：
+  1. 阻断断言必须结构化声明 `ASSERTION_ID / ASSERTION_TYPE / TRUTH_SOURCE / CONTRACT_SOURCE / BLOCKING`；
+  2. `NATURAL_LANGUAGE_AUX` 永远不能作为唯一阻断条件；
+  3. authority 用 Rule ID/section/schema，产品状态用 StateManager/immutable evidence/formal parser，Git 用结构化 refs/diff protocol；
+  4. 网页缓存、raw branch 缓存、历史 commit 页面和 commit 可访问性只能辅助，不得覆盖更新的结构化 branch-ref 证据；
+  5. 测试/文档修改先限定稳定结构作用域，再检查作用域内唯一性；
+  6. validator self-check 必须检查自己的阻断断言类型、truth source、contract source、baseline freshness 和 rollback 行为；
+  7. generator 与 validator 至少在一条关键证据链上独立，禁止同一份 expected string 自证；
+  8. 验证器失败先分类，不能直接覆盖正式产品成功证据或自动重试有副作用动作。
+- **防复发目标**：以后不再为“多一个反引号、换一句等价文案、字段合法重复、网页缓存滞后”等非语义变化制造假失败。
+<!-- SPECFORGE_EXP195_VALIDATOR_CONTRACT_HARDENING:END -->

@@ -837,6 +837,44 @@ ARTIFACT_ACCEPTED=YES|NO
 10. 阶段成功前必须汇总 `ARTIFACT_ACCEPTANCE_AUDIT=PASS_ALL_REQUIRED_ARTIFACTS_ACCEPTED`；任一必需成果未接受时 Stage 必须 Fail Closed。
 11. 新会话恢复后生成的 `GOVERNANCE PRECONCLUSION + STAGE INPUT` 必须先完成 Artifact Acceptance，才能执行 `NEXT_LEGAL_ACTION`。缺失 `GOV-STAGE-INPUT-001` 任一必填字段时必须先修正。
 
+**GOV-STAGE-VALIDATOR-001：** 验证器本身属于必须验收的治理成果；验证器只能验证正式事实与正式契约，禁止把自然语言原句、格式细节、缓存视图或生成器自造期望当作阻断性真相源。
+
+每个会阻断发布、执行、commit/push 或下一 Stage 的验证器必须先声明 Validator Contract：
+
+```text
+VALIDATOR_ID=
+VALIDATION_TARGET=
+CONTRACT_SOURCE=
+TRUTH_SOURCE=
+BASELINE_SOURCE=
+BASELINE_FRESHNESS=
+VALIDATOR_SELF_CHECK=
+VALIDATOR_ACCEPTED=YES|NO
+```
+
+每个阻断断言必须结构化声明：
+
+```text
+ASSERTION_ID=
+ASSERTION_TYPE=RULE_ID|SCHEMA|PARSER|STRUCTURED_STATE|IMMUTABLE_EVIDENCE|STRUCTURED_GIT|EXACT_HASH|NATURAL_LANGUAGE_AUX
+TRUTH_SOURCE=
+CONTRACT_SOURCE=
+BLOCKING=YES|NO
+```
+
+固定规则：
+
+1. `NATURAL_LANGUAGE_AUX` 只能 `BLOCKING=NO`。自然语言句子、空白、Markdown 标记、标题措辞和等价改写只能作为辅助证据，不能单独阻断任何有副作用动作。
+2. 只有当权威契约明确规定 byte-exact 内容时，才允许以 `EXACT_HASH` 或正式 schema/parser 作为阻断断言；不得把开发者临时写下的字符串升级为隐式契约。
+3. 规则存在性优先验证稳定 Rule ID 唯一性、正式 section、schema/parser 和结构字段；禁止用整句中文/英文正文是否逐字相等代替规则语义。
+4. Git branch HEAD、commit 文件集合、worktree 和 remote ref 必须由 Git 精确结构化协议验证。remote branch HEAD 优先使用执行环境中的 `git ls-remote <remote> refs/heads/<branch>`；网页缓存、历史 commit 列表、raw branch 缓存和“某 commit 可访问”只能辅助对账，不能覆盖更新的结构化 branch-ref 证据。
+5. 状态、Gate、Candidate、Trace、Contract、Formal Version 等产品事实继续严格遵守 `GOV-STAGE-TRUTH-001`；验证器不得复制一套近似 parser/resolver。
+6. 对测试或文档做结构修改时，锚点必须先限定到稳定结构作用域（Rule ID、section、schema key、代码符号或测试 block），再在作用域内检查唯一性；禁止因同一合法字段出现在多个消费者区块而做全文件 `count == 1` 假设。
+7. Validator Self Check 至少验证：runner/parser 可解析、所有 `BLOCKING=YES` 断言的 `ASSERTION_TYPE` 不是 `NATURAL_LANGUAGE_AUX`、每个阻断断言都有正式 `TRUTH_SOURCE` 与 `CONTRACT_SOURCE`、baseline 证据具有明确来源和 freshness、失败回滚不会删除阶段开始前已有合法成果。
+8. 关键成果的 generator 与 validator 必须在证据路径上相互独立：validator 不得只重新读取 generator 自己写出的 expected string 再证明该 expected string 存在；必须至少有一条来自正式 authority/schema/parser/state/immutable evidence/structured Git/consumer test 的独立证据。
+9. 验证器失败必须先分类 `VALIDATION_HARNESS_DEFECT`、`ENVIRONMENT_FAILURE`、产品/治理失败或 `AMBIGUOUS_SIDE_EFFECT`；外围验证器失败不得直接覆盖已存在的正式产品成功证据，也不得自动重试已经开始的有副作用动作。
+10. `VALIDATOR_ACCEPTED=YES` 只有在 Validator Contract 完整、Self Check 通过、全部阻断断言都有正式真相源且不存在必需证据不足时成立；否则验证器本身不得作为 Artifact Acceptance 的依据。
+
 ### 0.10 新会话固定提示词
 
 每次新会话使用以下固定短提示词：

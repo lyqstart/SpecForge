@@ -23,6 +23,7 @@ const stageRuleIds = [
   'GOV-STAGE-DELIVERY-001',
   'GOV-STAGE-RECEIPT-001',
   'GOV-STAGE-ARTIFACT-VERIFY-001',
+  'GOV-STAGE-VALIDATOR-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -93,6 +94,17 @@ describe('Stage Execution Contract authority', () => {
       'VALIDATION_EVIDENCE=',
       'ARTIFACT_ACCEPTED=',
       'ARTIFACT_ACCEPTANCE_AUDIT=',
+      'VALIDATOR_ID=',
+      'VALIDATION_TARGET=',
+      'CONTRACT_SOURCE=',
+      'TRUTH_SOURCE=',
+      'BASELINE_SOURCE=',
+      'BASELINE_FRESHNESS=',
+      'VALIDATOR_SELF_CHECK=',
+      'VALIDATOR_ACCEPTED=',
+      'ASSERTION_ID=',
+      'ASSERTION_TYPE=',
+      'BLOCKING=',
     ]) {
       expect(authority, field).toContain(field);
     }
@@ -132,6 +144,7 @@ describe('Stage Execution Contract authority', () => {
       'POWERSHELL_ALLOWED=',
       'FEEDBACK_CONTRACT=',
       'ARTIFACT_ACCEPTANCE_CONTRACT=',
+      'VALIDATOR_CONTRACT=',
       'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);
