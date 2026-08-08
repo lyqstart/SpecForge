@@ -22,6 +22,7 @@ const stageRuleIds = [
   'GOV-STAGE-BRANCH-001',
   'GOV-STAGE-DELIVERY-001',
   'GOV-STAGE-RECEIPT-001',
+  'GOV-STAGE-ARTIFACT-VERIFY-001',
 ];
 
 describe('Stage Execution Contract authority', () => {
@@ -65,6 +66,33 @@ describe('Stage Execution Contract authority', () => {
       'ERROR=',
       'POWERSHELL_ALLOWED=NO',
       'DELIVERY_FORMAT=ONE_COMPLETE_ZIP_PLUS_ONE_COPY_PASTE_CMD',
+      'REMOTE_URL=',
+      'TARGET_BRANCH=',
+      'REMOTE_HEAD=',
+      'AUTHORITY_PATH=',
+      'AUTHORITY_COMMIT=',
+      'CURRENT_AUTHORITATIVE_STATE=',
+      'CURRENT_IMMUTABLE_EVIDENCE=',
+      'OPERATION_BOUNDARY=',
+      'STOP_CONDITION=',
+      'BLOCKER=',
+      'BACKLOG=',
+      'NEXT_STAGE=',
+      'ARTIFACT_ID=',
+      'ARTIFACT_TYPE=',
+      'ARTIFACT_CONTRACT=',
+      'GENERATOR=',
+      'VALIDATOR=',
+      'STRUCTURE_VALIDATION=',
+      'COMPLETENESS_VALIDATION=',
+      'SEMANTIC_VALIDATION=',
+      'REFERENCE_VALIDATION=',
+      'SCOPE_VALIDATION=',
+      'EXECUTABILITY_VALIDATION=',
+      'CONSUMER_VALIDATION=',
+      'VALIDATION_EVIDENCE=',
+      'ARTIFACT_ACCEPTED=',
+      'ARTIFACT_ACCEPTANCE_AUDIT=',
     ]) {
       expect(authority, field).toContain(field);
     }
@@ -103,6 +131,7 @@ describe('Stage Execution Contract authority', () => {
       'DELIVERY_FORMAT=',
       'POWERSHELL_ALLOWED=',
       'FEEDBACK_CONTRACT=',
+      'ARTIFACT_ACCEPTANCE_CONTRACT=',
       'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);

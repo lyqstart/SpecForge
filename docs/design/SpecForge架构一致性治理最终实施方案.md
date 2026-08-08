@@ -496,6 +496,7 @@ IMMUTABLE_EVIDENCE_VERIFIED=
 ARCHITECTURE_RECONCILIATION=
 CONTRACT_RECONCILIATION=
 SCOPE_AUDIT=
+ARTIFACT_ACCEPTANCE_AUDIT=
 TEST_RESULT=
 BUILD_RESULT=
 STOP_CONDITION_REACHED=
@@ -745,6 +746,7 @@ RESPONSE_RECEIVED=
 
 EXPECTED_SIDE_EFFECTS_AUDIT=
 FORBIDDEN_SIDE_EFFECTS_AUDIT=
+ARTIFACT_ACCEPTANCE_AUDIT=
 
 NEXT_STAGE=
 NEXT_LEGAL_ACTION=
@@ -763,6 +765,77 @@ INSUFFICIENT_EVIDENCE=
 6. `PACKAGE_NAME` 与 `PACKAGE_SHA256` 只用于识别上一轮实际执行包；不能代替远程 commit、branch ref 或持久化治理证据。
 7. 新会话从上一轮完整回执恢复 `WORK_BRANCH_AFTER` 和最后已知 HEAD/状态，再重新读取当前远程/本地 refs；两者冲突时必须先报告并 Fail Closed。
 8. 如果上一轮回执与当前持久化事实冲突，按 `GOV-CONT-001`、`GOV-STAGE-TRUTH-001` 处理，不得用旧会话记忆覆盖当前事实。
+
+**GOV-STAGE-ARTIFACT-VERIFY-001：** 任何阶段成果都必须在生成后执行独立后验验收；“生成成功”不等于“成果有效”。
+
+固定流程：
+
+```text
+GENERATE
+→ VERIFY
+→ ACCEPT
+→ PUBLISH / EXECUTE / COMMIT / PUSH / CONSUME
+```
+
+禁止：
+
+```text
+GENERATE
+→ 直接认为正确
+→ 进入下一阶段
+```
+
+“成果”至少包括：
+
+```text
+GOVERNANCE PRECONCLUSION
+Stage Input
+Checkpoint
+Stage Output
+Failure Diagnostic
+current-handoff CURRENT EXECUTION STATE
+标准执行回执
+ZIP
+CMD
+runner / script
+代码补丁
+文档补丁
+测试 / 类型检查 / 构建 / 审计证据
+commit / push / merge plan 等交付结果
+```
+
+每个被生成或修改、且将被用户、脚本或下一阶段消费的成果，必须形成 Artifact Acceptance Checkpoint：
+
+```text
+ARTIFACT_ID=
+ARTIFACT_TYPE=
+ARTIFACT_CONTRACT=
+GENERATOR=
+VALIDATOR=
+STRUCTURE_VALIDATION=PASS|FAIL|NOT_APPLICABLE
+COMPLETENESS_VALIDATION=PASS|FAIL|NOT_APPLICABLE
+SEMANTIC_VALIDATION=PASS|FAIL|NOT_APPLICABLE
+REFERENCE_VALIDATION=PASS|FAIL|NOT_APPLICABLE
+SCOPE_VALIDATION=PASS|FAIL|NOT_APPLICABLE
+EXECUTABILITY_VALIDATION=PASS|FAIL|NOT_APPLICABLE
+CONSUMER_VALIDATION=PASS|FAIL|NOT_APPLICABLE
+VALIDATION_EVIDENCE=
+ARTIFACT_ACCEPTED=YES|NO
+```
+
+固定规则：
+
+1. `ARTIFACT_ACCEPTED=YES` 只允许在全部适用维度均为 `PASS` 且不存在该成果所需 `INSUFFICIENT_EVIDENCE` 时成立；`NOT_APPLICABLE` 必须有事实理由。
+2. `ARTIFACT_ACCEPTED != YES` 时，该成果不得交付用户执行、不得执行、不得 commit/push、不得写入 handoff 作为已确认事实，也不得作为下一 Stage 输入。
+3. `GOVERNANCE PRECONCLUSION` 与 `Stage Input` 本身都是成果。任何有副作用动作前必须逐字段检查治理前置结论和 `GOV-STAGE-INPUT-001` 全部必填字段；字段在前文其他章节出现过不能替代 Stage Input 自身完整性。
+4. Stage Output、Failure Diagnostic、标准执行回执和 handoff 在被下一会话或下一阶段消费前，必须验证结构完整、字段齐全、语义自洽，以及 branch / HEAD / state / immutable evidence 引用与当前事实一致。
+5. ZIP + CMD 交付必须验证 ZIP 文件集合、manifest/hash、runner 可解析性、CMD 引用的 ZIP/runner/参数、`DOWNLOAD_PACKAGE_DIR` 和 quoting 契约；只证明“ZIP 能打开”或“runner 能编译”不足以接受整个交付成果。
+6. 代码/文档补丁的 Artifact Acceptance 必须复用 `GOV-POST-001` 的架构、契约、范围、测试、类型检查、构建、`git diff --check`、`git status` 等全部适用证据；不得另造较弱标准。
+7. commit/push 成果必须验证实际 commit 文件集合、branch ref、remote HEAD、authority commit（适用时）和 worktree 状态；命令返回 0 本身不足以接受成果。
+8. 能使用正式 schema/parser/resolver/test/结构化 Git 协议时，验证器必须复用正式真相源。关键成果不得只由生成器内部同一份期望字符串自证正确；生成器自检只能作为补充证据。
+9. Artifact Acceptance Checkpoint 是 Stage Checkpoint 的一种，不建立新的业务 Workflow/Gate/治理层；验收记录由当前 Stage Output / Failure Diagnostic 与 side-effect audit 封口，不递归创建无限验证链。
+10. 阶段成功前必须汇总 `ARTIFACT_ACCEPTANCE_AUDIT=PASS_ALL_REQUIRED_ARTIFACTS_ACCEPTED`；任一必需成果未接受时 Stage 必须 Fail Closed。
+11. 新会话恢复后生成的 `GOVERNANCE PRECONCLUSION + STAGE INPUT` 必须先完成 Artifact Acceptance，才能执行 `NEXT_LEGAL_ACTION`。缺失 `GOV-STAGE-INPUT-001` 任一必填字段时必须先修正。
 
 ### 0.10 新会话固定提示词
 

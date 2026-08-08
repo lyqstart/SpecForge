@@ -4941,3 +4941,51 @@ actual_files
 - **防复发**：V105 对结构测试分别限定 authority `it(...)` 与 handoff `it(...)` 块后再修改各自字段数组，并把失败诊断统一放入标准反馈边界。
 - `UNRECORDED_FAILURES=0`（截至 V105 前置对账）。
 <!-- SPECFORGE_ERR227_EXP192_SCOPED_TEST_PATCH:END -->
+
+<!-- SPECFORGE_ERR228_EXP193_ARTIFACT_ACCEPTANCE:START -->
+## ERR-228 / EXP-193 — 交付基线与所有生成成果必须经过独立后验验收
+
+- **ERR-228**：V107 在用户机器 `BASELINE` Fail Closed。V107 错误期待 `main=b78766e9c7c17ba51231f292431a73874b500c62`；用户实际执行时结构化 Git 证据明确为：
+  - local `main=6552c0648317d57195a75aa2b3ce3819962355a4`
+  - remote `main=6552c0648317d57195a75aa2b3ce3819962355a4`
+  - authority commit=`6552c0648317d57195a75aa2b3ce3819962355a4`
+  - worktree=`CLEAN`
+  - `REQUEST_STARTED=NO`
+  - `FILES_CHANGED=NONE_AFTER_ROLLBACK`
+- **分类**：`VALIDATION_HARNESS_DEFECT / BASELINE_EVIDENCE_PRIORITY_DEFECT`。
+- **根因**：交付器生成前虽然读取了外部远程页面，但没有把“交付基线本身”作为成果做后验验收，并错误地让缓存/历史远程视图覆盖了上一轮最新、精确、结构化 `git ls-remote` 执行回执；违反既有 `EXP-171 — branch HEAD 以 branch ref 为准` 的证据优先级。
+- **影响**：V107 未写任何仓库文件、未修改 WI-0004、未执行任何生命周期动作；失败仅造成一次无效交付。
+
+### EXP-193 — 所有成果统一执行 Generate → Verify → Accept → Consume
+1. 包基线、Stage Input、ZIP、CMD、回执、handoff、代码/文档补丁、测试证据、commit/push 结果都属于 artifact。
+2. 生成 artifact 后必须依据其正式 contract 独立验证结构、完整性、语义、引用、范围、可执行性和消费者可用性。
+3. `ARTIFACT_ACCEPTED != YES` 时不得交付、执行、提交、推送或进入下一阶段。
+4. remote branch HEAD 的验收优先使用最新结构化 branch-ref 证据；缓存网页、历史 commit 页面和“commit 可访问”不能覆盖更新的 `git ls-remote` 事实。
+5. 新会话生成 `GOVERNANCE PRECONCLUSION + STAGE INPUT` 后必须逐字段验收，不能因为前文出现过同名事实就省略 Stage Input 必填字段。
+6. 关键成果的 validator 应尽量独立于 generator；生成器自己的字符串检查只能作为补充证据。
+<!-- SPECFORGE_ERR228_EXP193_ARTIFACT_ACCEPTANCE:END -->
+
+<!-- SPECFORGE_ERR229_EXP194_STRUCTURAL_ARTIFACT_VALIDATION:START -->
+## ERR-229 / EXP-194 — Artifact Acceptance 不得依赖自然语言原句匹配
+
+- **ERR-229**：V109 在 `CONTENT_PREFLIGHT` 失败，错误为 `authority marker missing=Stage Input 本身都是成果`。V108 已通过本地完整验证，实际权威规则存在 `GOV-STAGE-ARTIFACT-VERIFY-001`，并以带 Markdown 代码格式的 `Stage Input` 表述同一要求；V109 却把去掉格式标记后的自然语言片段当成必须逐字匹配的契约，因此错误阻断 commit/push。
+- **现场证据**：
+  - `RESULT=FAILED`
+  - `FIRST_FAILED_STEP=CONTENT_PREFLIGHT`
+  - `REQUEST_STARTED=NO`
+  - `COMMIT_SHA=NONE`
+  - `PUSH_SUCCEEDED=NO`
+  - `WORK_HEAD_BEFORE/AFTER=6552c0648317d57195a75aa2b3ce3819962355a4`
+  - `REMOTE_WORK_HEAD_BEFORE/AFTER=6552c0648317d57195a75aa2b3ce3819962355a4`
+  - `STATE_BEFORE/AFTER=approval_required`
+- **分类**：`VALIDATION_HARNESS_DEFECT`。
+- **根因**：Artifact Acceptance verifier 自身仍使用自然语言句子作为契约锚点，没有复用稳定 Rule ID、结构字段和回归测试；与 `GOV-STAGE-ARTIFACT-VERIFY-001` 的设计目标相违背。
+- **EXP-194**：
+  1. 验收权威规则是否存在时，优先检查稳定 Rule ID 唯一性；
+  2. 验收结构时检查固定字段、schema、parser 或结构回归测试；
+  3. 自然语言正文只可作为补充证据，不得作为 commit/push、Gate 或其他有副作用动作的唯一前置条件；
+  4. Markdown 引号、反引号、空白和等价措辞变化不得造成假失败；
+  5. 验收器本身也是 artifact，其 contract 必须接受独立结构检查；
+  6. 失败前若仓库已经存在上一阶段合法未提交成果，rollback 必须恢复到“本轮开始时的工作树”，不得误删上一阶段成果。
+- **防复发**：V110 对 `GOV-STAGE-ARTIFACT-VERIFY-001` 使用 Rule ID + 固定 Artifact Acceptance 字段 + handoff contract pointer + 回归测试四路结构证据，不再匹配自然语言原句；失败回滚使用本轮开始时的文件字节快照。
+<!-- SPECFORGE_ERR229_EXP194_STRUCTURAL_ARTIFACT_VALIDATION:END -->
