@@ -7,6 +7,30 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..')
 const authorityPath = resolve(repoRoot, 'docs/design/SpecForge架构一致性治理最终实施方案.md');
 const handoffPath = resolve(repoRoot, 'docs/implementation/architecture-consistency/current-handoff.md');
 
+function ruleSection(authority: string, ruleId: string): string {
+  const marker = `**${ruleId}：**`;
+  const start = authority.indexOf(marker);
+  if (start < 0) throw new Error(`missing rule marker: ${marker}`);
+  const tailStart = start + marker.length;
+  const tail = authority.slice(tailStart);
+  const candidates = [
+    tail.search(/\n\*\*[A-Z][A-Z0-9-]+：\*\*/),
+    tail.search(/\n### 0\./),
+    tail.search(/\n<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->/),
+  ].filter((value) => value >= 0);
+  const end = candidates.length > 0 ? tailStart + Math.min(...candidates) : authority.length;
+  return authority.slice(start, end);
+}
+
+function newSessionPrompt(authority: string): string {
+  const startMarker = '<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->';
+  const endMarker = '<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->';
+  const start = authority.indexOf(startMarker);
+  const end = authority.indexOf(endMarker, start + startMarker.length);
+  if (start < 0 || end <= start) throw new Error('invalid new-session prompt markers');
+  return authority.slice(start, end + endMarker.length);
+}
+
 const stageRuleIds = [
   'GOV-STAGE-001',
   'GOV-STAGE-INPUT-001',
@@ -25,6 +49,7 @@ const stageRuleIds = [
   'GOV-STAGE-ARTIFACT-VERIFY-001',
   'GOV-STAGE-VALIDATOR-001',
   'GOV-STAGE-DELIVERY-IDENTITY-001',
+  'GOV-STAGE-BOOTSTRAP-ENVELOPE-001',
   'GOV-STAGE-RECOVERY-ACCEPT-001',
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-001',
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001',
@@ -180,6 +205,7 @@ describe('Stage Execution Contract authority', () => {
       'ARTIFACT_ACCEPTANCE_CONTRACT=',
       'VALIDATOR_CONTRACT=',
       'DELIVERY_IDENTITY_CONTRACT=',
+      'BOOTSTRAP_ENVELOPE_CONTRACT=',
       'RECOVERY_ACCEPTANCE_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_FAILURE_CONTRACT=',
@@ -234,11 +260,7 @@ describe('Stage Execution Contract authority', () => {
     expect(requiredBlock).not.toContain('TARGET_BRANCH=');
     expect(requiredBlock).not.toContain('REMOTE_HEAD=');
 
-    const recoveryStart = authority.indexOf('**GOV-STAGE-RECOVERY-ACCEPT-001：**');
-    const recoveryEnd = authority.indexOf('### 0.10 新会话固定提示词', recoveryStart);
-    expect(recoveryStart).toBeGreaterThanOrEqual(0);
-    expect(recoveryEnd).toBeGreaterThan(recoveryStart);
-    const recoverySection = authority.slice(recoveryStart, recoveryEnd);
+    const recoverySection = ruleSection(authority, 'GOV-STAGE-RECOVERY-ACCEPT-001');
 
     for (const field of [
       'RECOVERY_PRECONCLUSION_FIELDS_AUDIT=',
@@ -264,11 +286,7 @@ describe('Stage Execution Contract authority', () => {
   it('enforces live-ref-first authority bootstrap before new-session recovery', async () => {
     const authority = await readFile(authorityPath, 'utf8');
 
-    const bootstrapStart = authority.indexOf('**GOV-STAGE-AUTHORITY-BOOTSTRAP-001：**');
-    const bootstrapEnd = authority.indexOf('### 0.4 SpecForge 自身开发：修改前治理', bootstrapStart);
-    expect(bootstrapStart).toBeGreaterThanOrEqual(0);
-    expect(bootstrapEnd).toBeGreaterThan(bootstrapStart);
-    const bootstrapSection = authority.slice(bootstrapStart, bootstrapEnd);
+    const bootstrapSection = ruleSection(authority, 'GOV-STAGE-AUTHORITY-BOOTSTRAP-001');
 
     for (const field of [
       'AUTHORITY_BOOTSTRAP_REMOTE_URL=',
@@ -298,22 +316,17 @@ describe('Stage Execution Contract authority', () => {
       expect(bootstrapSection, source).toContain(source);
     }
 
-    const promptStart = authority.indexOf('### 0.10 新会话固定提示词');
-    expect(promptStart).toBeGreaterThanOrEqual(0);
-    const promptSection = authority.slice(promptStart);
+    const promptSection = newSessionPrompt(authority);
     expect(promptSection).toContain('AUTHORITY_BOOTSTRAP_ACCEPTED!=YES');
     expect(promptSection).toContain('raw/main');
-    expect(promptSection).toContain('MISSING_LAST_EXECUTION_RECEIPT');
+    expect(promptSection).toContain('LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID|PRESENT_INVALID|NONE_ALLOWED|MISSING_REQUIRED');
+    expect(promptSection).toContain('LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE');
   });
 
   it('enforces complete fail-closed bootstrap output and accepted live-ref evidence artifact', async () => {
     const authority = await readFile(authorityPath, 'utf8');
 
-    const failureStart = authority.indexOf('**GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001：**');
-    const failureEnd = authority.indexOf('### 0.4 SpecForge 自身开发：修改前治理', failureStart);
-    expect(failureStart).toBeGreaterThanOrEqual(0);
-    expect(failureEnd).toBeGreaterThan(failureStart);
-    const failureSection = authority.slice(failureStart, failureEnd);
+    const failureSection = ruleSection(authority, 'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001');
 
     for (const field of [
       'AUTHORITY_BOOTSTRAP_FAILURE_REASON=',
@@ -332,9 +345,7 @@ describe('Stage Execution Contract authority', () => {
 
     expect(failureSection).toContain('ACQUIRE_LIVE_BRANCH_REF_ONLY');
 
-    const promptStart = authority.indexOf('### 0.10 新会话固定提示词');
-    expect(promptStart).toBeGreaterThanOrEqual(0);
-    const promptSection = authority.slice(promptStart);
+    const promptSection = newSessionPrompt(authority);
     for (const field of [
       'AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED',
       'AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT',
@@ -347,11 +358,7 @@ describe('Stage Execution Contract authority', () => {
 
   it('enforces fixed bootstrap failure template and forbids raw command delivery', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    const start = authority.indexOf('**GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001：**');
-    const end = authority.indexOf('### 0.4 SpecForge 自身开发：修改前治理', start);
-    expect(start).toBeGreaterThanOrEqual(0);
-    expect(end).toBeGreaterThan(start);
-    const section = authority.slice(start, end);
+    const section = ruleSection(authority, 'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001');
     for (const token of [
       '===== BEGIN AUTHORITY BOOTSTRAP FAILURE ACCEPTANCE =====',
       '===== END AUTHORITY BOOTSTRAP FAILURE ACCEPTANCE =====',
@@ -366,8 +373,7 @@ describe('Stage Execution Contract authority', () => {
     ]) {
       expect(section, token).toContain(token);
     }
-    const promptStart = authority.indexOf('### 0.10 新会话固定提示词');
-    const prompt = authority.slice(promptStart);
+    const prompt = newSessionPrompt(authority);
     for (const token of [
       'AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES|NO',
       'AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED=YES|NO|NOT_YET_GENERATED',
@@ -381,16 +387,11 @@ describe('Stage Execution Contract authority', () => {
     ]) {
       expect(prompt, token).toContain(token);
     }
-    expect(prompt).toContain('禁止直接给我 git ls-remote 裸 CMD');
   });
 
   it('binds package runner validator and receipt emitter to one delivery identity', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    const start = authority.indexOf('**GOV-STAGE-DELIVERY-IDENTITY-001：**');
-    const end = authority.indexOf('**GOV-STAGE-RECOVERY-ACCEPT-001：**', start);
-    expect(start).toBeGreaterThanOrEqual(0);
-    expect(end).toBeGreaterThan(start);
-    const section = authority.slice(start, end);
+    const section = ruleSection(authority, 'GOV-STAGE-DELIVERY-IDENTITY-001');
 
     for (const field of [
       'DELIVERY_ID=',
@@ -409,4 +410,55 @@ describe('Stage Execution Contract authority', () => {
     }
   });
 
+  it('keeps the pre-authority bootstrap envelope self-contained and structurally scoped', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const rule = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
+    const prompt = newSessionPrompt(authority);
+
+    for (const token of [
+      'LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID|PRESENT_INVALID|NONE_ALLOWED|MISSING_REQUIRED',
+      'LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE',
+      'AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES|NO',
+      'BOOTSTRAP_FAILURE_DELIVERY_MODE=ONE_ACCEPTED_ZIP_PLUS_ONE_CMD',
+      'RAW_CMD_ALLOWED=NO',
+      'ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP',
+      'GOV-STAGE-DELIVERY-IDENTITY-001',
+      'DELIVERY_ID=',
+      'PACKAGE_NAME=',
+      'RUNNER_ID=',
+      'VALIDATOR_ID=',
+      'RECEIPT_EMITTER_ID=',
+      'IDENTITY_MANIFEST=manifest.json',
+      'IDENTITY_BINDING_AUDIT=PASS|FAIL',
+      'REPOSITORY_READS=NONE',
+      'REPOSITORY_WRITES=NONE',
+      'LIFECYCLE_ACTIONS=NONE',
+      'BOOTSTRAP_COORDINATES_CONTRACT=PASS|FAIL',
+      'BOOTSTRAP_RECEIPT_CONSUMPTION_CONTRACT=PASS|FAIL',
+      'BOOTSTRAP_FAILURE_CONTRACT=PASS|FAIL',
+      'BOOTSTRAP_EVIDENCE_DELIVERY_CONTRACT=PASS|FAIL',
+      'BOOTSTRAP_SUCCESS_TRANSITION_CONTRACT=PASS|FAIL',
+      'BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO',
+      'RECOVERY_ACCEPTED=YES',
+    ]) {
+      expect(prompt, token).toContain(token);
+    }
+
+    for (const ruleId of [
+      'GOV-STAGE-AUTHORITY-BOOTSTRAP-001',
+      'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001',
+      'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001',
+      'GOV-STAGE-DELIVERY-001',
+      'GOV-STAGE-ARTIFACT-VERIFY-001',
+      'GOV-STAGE-VALIDATOR-001',
+      'GOV-STAGE-DELIVERY-IDENTITY-001',
+      'GOV-STAGE-BOOTSTRAP-ENVELOPE-001',
+    ]) {
+      expect(rule, ruleId).toContain(ruleId);
+    }
+
+    expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->').length - 1).toBe(1);
+    expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->').length - 1).toBe(1);
+    expect(authority).toContain('**GOV-STAGE-RECOVERY-ACCEPT-001：**');
+  });
 });

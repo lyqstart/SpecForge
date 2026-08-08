@@ -5161,3 +5161,79 @@ actual_files
   3. 只有构造器成功执行、runner/verifier compile、ZIP reopen、manifest/hash 全部通过后才允许发布；
   4. 生成器解析失败时保持同一未发布 Delivery ID，不把失败产物当成已经生成的版本。
 <!-- SPECFORGE_ERR239_EXP205_GENERATOR_PARSE_PRECHECK:END -->
+
+<!-- SPECFORGE_ERR240_EXP206_PREAUTHORITY_ENVELOPE_GAP:START -->
+## ERR-240 / EXP-206 — V117 Delivery Identity 已落库，但未进入 pre-authority 固定启动契约
+
+- **现场**：V117 成功提交 `GOV-STAGE-DELIVERY-IDENTITY-001` 后进行真实新会话验证。新会话正确执行完整 Bootstrap Failure Acceptance、禁止裸 CMD、未读取 handoff，并在 Artifact Acceptance 后生成 Bootstrap live-ref evidence ZIP；但该 evidence ZIP 的 Acceptance 没有 `DELIVERY_ID / RUNNER_ID / RECEIPT_EMITTER_ID / IDENTITY_MANIFEST / IDENTITY_BINDING_AUDIT`。
+- **已确认根因**：`GOV-STAGE-DELIVERY-IDENTITY-001` 位于 exact-commit authority 中，而 `### 0.10 新会话固定提示词` 仍只携带 V116 的 Failure / Artifact 最小模板。Bootstrap 失败时尚不能读取 exact authority，因此新会话无法在 pre-authority 阶段获知 V117 新增身份契约。
+- **附带证据**：新会话还输出 `MISSING_LAST_EXECUTION_RECEIPT`，但固定启动协议没有独立 `LAST_EXECUTION_RECEIPT_STATUS / CONSUMPTION_AUDIT`，无法机器区分“确实缺失、存在但无效、明确 NONE、已完整消费”。
+- **分类**：`GOVERNANCE_FAILURE / PREAUTHORITY_CONTRACT_GAP`。
+- **影响**：用户未执行该 Bootstrap evidence ZIP；没有仓库副作用，没有 WI-0004 生命周期动作。
+- **EXP-206**：
+  1. 建立单一 `GOV-STAGE-BOOTSTRAP-ENVELOPE-001`，集中承载所有 pre-authority 行为；
+  2. Delivery Identity、Artifact Acceptance、Validator、receipt presence/consumption、failure、success transition 必须全部进入固定 prompt；
+  3. 新增任何 pre-authority 规则时必须原子更新 authority inventory、fixed prompt、consumer test；
+  4. Bootstrap evidence ZIP 的 Artifact Contract 必须显式包含 `GOV-STAGE-DELIVERY-IDENTITY-001`；
+  5. Receipt 使用四态 `PRESENT_VALID / PRESENT_INVALID / NONE_ALLOWED / MISSING_REQUIRED`，禁止仅凭自然语言推断；
+  6. consumer test 必须检查 prompt section 内真实字段，不能因为字段在 authority 其他章节存在就放行。
+<!-- SPECFORGE_ERR240_EXP206_PREAUTHORITY_ENVELOPE_GAP:END -->
+
+<!-- SPECFORGE_ERR241_EXP207_PROMPT_ANCHOR_SCOPE_COLLISION:START -->
+## ERR-241 / EXP-207 — V118 全局 prompt 标题锚点误命中 Envelope 正文并删除 Recovery Rule
+
+- **现场**：V118 在 `STRUCTURAL_REGRESSION_TEST` 失败，`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`。
+- **复现根因**：V118 先插入 Bootstrap Envelope；Envelope 正文自身包含 `### 0.10 新会话固定提示词`。随后 runner 用全文件 `indexOf(SESSION_HEADING)` 定位旧 prompt，命中新插入正文，并从该位置替换到 protocol END，导致真正 `GOV-STAGE-RECOVERY-ACCEPT-001` 被删除。
+- **附带缺陷**：旧回归仍含“固定下一个 Rule=Recovery”和自然语言原句的阻断断言。
+- **影响**：commit/push 前 Fail Closed；远程仍为 `df7cd285fa233426560b1202e2c9eb432ea80dab`。
+- **分类**：`VALIDATION_HARNESS_DEFECT / STRUCTURAL_PATCH_SCOPE_DEFECT`。
+- **EXP-207**：首次 marker 迁移先替换旧 prompt 再插新规则；prompt 永久使用 START/END marker；Rule section 使用 Rule ID parser；自然语言原句不作 blocker；交付前对 exact authority 快照模拟 patch 并验证 Recovery Rule 保留。
+<!-- SPECFORGE_ERR241_EXP207_PROMPT_ANCHOR_SCOPE_COLLISION:END -->
+
+<!-- SPECFORGE_ERR242_EXP208_NESTED_SOURCE_DELIMITER_REPEAT:START -->
+## ERR-242 / EXP-208 — V119 第一次预交付生成再次发生嵌套源码字符串定界冲突
+
+- **现场**：V119 第一次生成代码在 Python 解析阶段报 `SyntaxError: invalid character '：'`；外层 runner source 已被内层三引号提前终止。
+- **影响**：工具明确表示代码未成功执行；没有 V119 可交付 ZIP，没有用户执行，没有仓库副作用。
+- **分类**：`VALIDATION_HARNESS_DEFECT / SCRIPT_DEFECT`，属于 ERR-232 / ERR-239 同类重复错误。
+- **EXP-208**：生成 runner 时不再把内嵌 TypeScript source 直接嵌套在 runner Python source；所有测试替换片段移入结构化 `payload.json`。
+<!-- SPECFORGE_ERR242_EXP208_NESTED_SOURCE_DELIMITER_REPEAT:END -->
+
+<!-- SPECFORGE_ERR243_EXP209_NESTED_SOURCE_DELIMITER_SECOND_RETRY:START -->
+## ERR-243 / EXP-209 — V119 第二次预交付生成仍存在另一组三引号冲突
+
+- **现场**：第二次生成改了外层字符串定界，但 runner 内部用于 test replacement 的三引号仍与外层 source 冲突，Python 再次在生成前报 `SyntaxError`。
+- **影响**：同样没有可交付 ZIP、用户执行或仓库副作用。
+- **分类**：`VALIDATION_HARNESS_DEFECT / SCRIPT_DEFECT`。
+- **旧防护失效原因**：只调整外层 delimiter，没有消除 runner 中“源码包含源码”的设计。
+- **EXP-209**：V119 改为数据驱动 patch：全部 TypeScript helper / replacement / extra test 存入 `payload.json`，runner 只执行结构化替换；runner source 内不再存在嵌套多行源码字符串。
+<!-- SPECFORGE_ERR243_EXP209_NESTED_SOURCE_DELIMITER_SECOND_RETRY:END -->
+
+<!-- SPECFORGE_ERR244_EXP210_UNIQUE_MARKER_SELF_DUPLICATION:START -->
+## ERR-244 / EXP-210 — V119 pre-delivery 模拟发现 prompt marker 契约自我复制
+
+- **现场**：exact `df7cd285...` authority 模拟 patch 后，完整 prompt START/END comment marker 计数大于 1。
+- **根因**：Envelope 规则正文原样复制了完整 marker，同时契约又要求完整 marker 在 authority 中唯一。
+- **影响**：失败发生在 ZIP 构建前 snapshot simulation；没有交付包、用户执行或仓库副作用。
+- **分类**：`VALIDATION_HARNESS_DEFECT / CONTRACT_SELF_REFERENCE_DEFECT`。
+- **EXP-210**：完整唯一 marker 字面值只允许出现在真实结构边界；规则正文只引用 marker 逻辑 ID；交付前验证最终 authority exact marker count。
+<!-- SPECFORGE_ERR244_EXP210_UNIQUE_MARKER_SELF_DUPLICATION:END -->
+
+<!-- SPECFORGE_ERR245_EXP211_PAYLOAD_PATCH_PRECONDITION_MISMATCH:START -->
+## ERR-245 / EXP-211 — V119 payload 修正脚本对旧文本形态做了错误前提假设
+
+- **现场**：用于修正 Envelope marker 文本的预处理脚本因 `assert old in payload` 失败退出。
+- **根因**：脚本使用了与实际 V118 payload 不完全一致的自然语言旧片段作为阻断锚点。
+- **影响**：没有生成新 artifact、没有仓库副作用。
+- **分类**：`VALIDATION_HARNESS_DEFECT / PATCH_PRECONDITION_DEFECT`。
+- **EXP-211**：修改生成 payload 前先读取实际当前内容；结构 patch 使用稳定 section/marker 范围，不凭记忆构造旧自然语言全文。
+<!-- SPECFORGE_ERR245_EXP211_PAYLOAD_PATCH_PRECONDITION_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR246_EXP212_ASSISTANT_SPREADSHEET_WARMUP_STDERR:START -->
+## ERR-246 / EXP-212 — 助手侧 Python 启动附带 spreadsheet runtime warmup stderr
+
+- **现场**：V119 package verifier 本体返回 `returncode=0` 且完整输出 `VALIDATOR_ACCEPTED=YES / ARTIFACT_ACCEPTED=YES`；同一次 Python 进程启动 stderr 额外出现 `Spreadsheet runtime warmup failed during python startup`，底层错误为 `hydrateCrdtFromProto requires an empty collaborative document`。
+- **影响**：该错误来自助手执行环境的通用 artifact/spreadsheet warmup，不属于 SpecForge runner/verifier 逻辑；V119 verifier 主流程没有失败，ZIP/hash/compile 验收结果不受影响。
+- **分类**：`ENVIRONMENT_FAILURE / NON_BLOCKING_TOOL_WARMUP`。
+- **EXP-212**：助手侧工具运行时附加 warmup stderr 必须与目标 verifier 的 exit code、stdout contract 和 artifact evidence 分离判断；只记录为环境异常，不伪装成 SpecForge 产品缺陷；若目标进程 exit code 非零或验证字段不完整，则仍按正式失败处理。
+<!-- SPECFORGE_ERR246_EXP212_ASSISTANT_SPREADSHEET_WARMUP_STDERR:END -->

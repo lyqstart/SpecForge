@@ -318,7 +318,7 @@ AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES|NO
 ===== BEGIN BOOTSTRAP EVIDENCE ARTIFACT ACCEPTANCE =====
 ARTIFACT_ID=
 ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP
-ARTIFACT_CONTRACT=GOV-STAGE-DELIVERY-001+GOV-STAGE-ARTIFACT-VERIFY-001+GOV-STAGE-VALIDATOR-001
+ARTIFACT_CONTRACT=GOV-STAGE-DELIVERY-001+GOV-STAGE-ARTIFACT-VERIFY-001+GOV-STAGE-VALIDATOR-001+GOV-STAGE-DELIVERY-IDENTITY-001
 STRUCTURE_VALIDATION=PASS|FAIL
 COMPLETENESS_VALIDATION=PASS|FAIL
 SEMANTIC_VALIDATION=PASS|FAIL
@@ -1169,6 +1169,184 @@ IDENTITY_BINDING_AUDIT=
 10. runner 启动后、执行任何仓库写入前必须完成 identity self-check。identity 失败时不得修改仓库。
 11. commit/push 后的最终 Stage Output / receipt Artifact Acceptance 必须同时验证 package、runner、validator、receipt emitter 身份属于同一 `DELIVERY_ID`。
 12. 该规则属于交付与证据治理，不改变任何业务 Workflow、Gate、Runtime、Work Item 状态机或 Project Contract。
+**GOV-STAGE-BOOTSTRAP-ENVELOPE-001：** 新会话在读取 exact-commit authority 之前只能依赖用户提示词中的 Bootstrap Envelope；凡是会约束 pre-authority 阶段行为的稳定规则，都必须被该 Envelope 自包含携带，并由同一结构回归测试覆盖。禁止出现“authority 已新增规则，但固定启动提示词尚未携带”的协议断层。
+
+Bootstrap Envelope 至少覆盖以下五个子契约：
+
+```text
+BOOTSTRAP_ENVELOPE_VERSION=
+BOOTSTRAP_COORDINATES_CONTRACT=PASS|FAIL
+BOOTSTRAP_RECEIPT_CONSUMPTION_CONTRACT=PASS|FAIL
+BOOTSTRAP_FAILURE_CONTRACT=PASS|FAIL
+BOOTSTRAP_EVIDENCE_DELIVERY_CONTRACT=PASS|FAIL
+BOOTSTRAP_SUCCESS_TRANSITION_CONTRACT=PASS|FAIL
+BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
+```
+
+### A. Receipt Presence / Consumption
+
+上一轮回执必须先在用户提示词内完成存在性分类：
+
+```text
+LAST_EXECUTION_RECEIPT_STATUS=
+PRESENT_VALID
+| PRESENT_INVALID
+| NONE_ALLOWED
+| MISSING_REQUIRED
+
+LAST_EXECUTION_RECEIPT_PACKAGE_NAME=
+LAST_EXECUTION_RECEIPT_DELIVERY_ID=
+LAST_EXECUTION_RECEIPT_VALIDATOR_ID=
+LAST_EXECUTION_RECEIPT_IDENTITY_BINDING_AUDIT=
+LAST_EXECUTION_RECEIPT_RESULT=
+LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE
+```
+
+规则：
+
+1. 用户提示词包含完整 `BEGIN/END FEEDBACK TO CHATGPT` 回执且结构、身份字段可解析时，必须 `LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID`，不得同时声称 `MISSING_LAST_EXECUTION_RECEIPT`。
+2. 用户明确说明上一轮没有 ZIP+CMD 时才允许 `NONE_ALLOWED`。
+3. 上一轮按连续上下文应有 ZIP+CMD、但提示词没有完整回执时，必须 `MISSING_REQUIRED` 并 Fail Closed。
+4. 回执存在但缺必填字段、身份不一致或结构损坏时使用 `PRESENT_INVALID`。
+5. `LAST_COMPLETE_RECEIPT` 只提供 last-confirmed continuity，不替代 live branch ref。
+
+### B. Bootstrap Failure
+
+失败路径继续完整遵守：
+
+```text
+GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001
+GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001
+RAW_CMD_ALLOWED=NO
+BOOTSTRAP_FAILURE_DELIVERY_MODE=ONE_ACCEPTED_ZIP_PLUS_ONE_CMD
+```
+
+失败阶段不得读取 handoff / Work Item / immutable evidence / Stage Input / Recovery。
+
+### C. Bootstrap Evidence Delivery Identity
+
+任何 `BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP` 在发布前必须同时满足 Artifact Acceptance 和 Delivery Identity：
+
+```text
+ARTIFACT_ID=
+ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP
+ARTIFACT_CONTRACT=GOV-STAGE-DELIVERY-001+GOV-STAGE-ARTIFACT-VERIFY-001+GOV-STAGE-VALIDATOR-001+GOV-STAGE-DELIVERY-IDENTITY-001
+
+DELIVERY_ID=
+PACKAGE_NAME=
+RUNNER_ID=
+VALIDATOR_ID=
+RECEIPT_EMITTER_ID=
+IDENTITY_MANIFEST=manifest.json
+IDENTITY_BINDING_AUDIT=PASS|FAIL
+
+STRUCTURE_VALIDATION=PASS|FAIL
+COMPLETENESS_VALIDATION=PASS|FAIL
+SEMANTIC_VALIDATION=PASS|FAIL
+REFERENCE_VALIDATION=PASS|FAIL
+SCOPE_VALIDATION=PASS|FAIL
+EXECUTABILITY_VALIDATION=PASS|FAIL
+CONSUMER_VALIDATION=PASS|FAIL
+VALIDATION_EVIDENCE=
+VALIDATOR_SELF_CHECK=PASS|FAIL
+VALIDATOR_ACCEPTED=YES|NO
+ARTIFACT_ACCEPTED=YES|NO
+```
+
+只有：
+
+```text
+IDENTITY_BINDING_AUDIT=PASS
+VALIDATOR_ACCEPTED=YES
+ARTIFACT_ACCEPTED=YES
+```
+
+全部成立后，才允许发布一个 ZIP + 一个 CMD。
+
+只读取证 runner 的正式回执必须包含：
+
+```text
+===== BEGIN FEEDBACK TO CHATGPT =====
+PACKAGE_NAME=
+DELIVERY_ID=
+RUNNER_ID=
+VALIDATOR_ID=
+RECEIPT_EMITTER_ID=
+IDENTITY_MANIFEST=manifest.json
+IDENTITY_BINDING_AUDIT=PASS
+ACTION_TYPE=BOOTSTRAP_LIVE_REF_READ_ONLY
+REMOTE_URL=
+AUTHORITY_BRANCH=
+LS_REMOTE_EXIT_CODE=
+LS_REMOTE_STDOUT=
+LIVE_REF_SHA=
+REPOSITORY_READS=NONE
+REPOSITORY_WRITES=NONE
+LIFECYCLE_ACTIONS=NONE
+===== END FEEDBACK TO CHATGPT =====
+```
+
+evidence runner 不接收 SpecForge/Validation 仓库路径，不读取项目文件。
+
+### D. Bootstrap Success
+
+取得允许的 live ref 后必须重新开始本回合 Authority Bootstrap，并输出完整：
+
+```text
+AUTHORITY_BOOTSTRAP_REMOTE_URL=
+AUTHORITY_BOOTSTRAP_BRANCH=
+AUTHORITY_BOOTSTRAP_PATH=
+AUTHORITY_HEAD_SOURCE=
+AUTHORITY_HEAD=
+AUTHORITY_EXACT_CONTENT_REF=
+AUTHORITY_UNIQUE_MARKER_AUDIT=
+AUTHORITY_BOOTSTRAP_EVIDENCE=
+AUTHORITY_BOOTSTRAP_EVIDENCE_FRESHNESS=
+AUTHORITY_BOOTSTRAP_VALIDATOR_ID=
+AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=
+AUTHORITY_BOOTSTRAP_ACCEPTED=
+```
+
+只有 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES` 后才允许读取 exact-commit authority 之后的 handoff、持久化 Work Item / immutable evidence，并进入 PRECONCLUSION → canonical Stage Input → Recovery Acceptance。
+
+### E. Coverage Closure
+
+以下属于 pre-authority contract inventory：
+
+```text
+GOV-STAGE-AUTHORITY-BOOTSTRAP-001
+GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001
+GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001
+GOV-STAGE-DELIVERY-001
+GOV-STAGE-ARTIFACT-VERIFY-001
+GOV-STAGE-VALIDATOR-001
+GOV-STAGE-DELIVERY-IDENTITY-001
+GOV-STAGE-BOOTSTRAP-ENVELOPE-001
+```
+
+固定规则：
+
+1. 任何以后新增或修改的规则，只要改变 live-ref 取得、receipt 消费、Bootstrap failure、Bootstrap evidence ZIP、Delivery Identity、pre-authority Artifact Acceptance 或进入 Recovery 的条件，就必须在同一修改中更新：
+   - 本 inventory；
+   - `### 0.10 新会话固定提示词`；
+   - `stage-execution-authority-contract.test.ts` 的 Bootstrap Envelope consumer test。
+2. 三者必须在同一提交内原子变化；任一缺失，`BOOTSTRAP_ENVELOPE_ACCEPTED=NO`。
+3. Bootstrap Envelope consumer test 必须直接检查固定提示词中真实结构字段，不允许只检查 authority 其他章节“曾经出现过同名字段”。
+4. `BOOTSTRAP_ENVELOPE_ACCEPTED=YES` 是启动协议完整性，不替代 Authority Bootstrap Acceptance、Artifact Acceptance 或 Recovery Acceptance。
+5. 当前 Envelope 若发现 receipt / identity / failure / success 任一子契约未覆盖，必须先修 Envelope，不得继续 WI 生命周期动作。
+
+### F. Stable Prompt / Rule Section Scope
+
+固定新会话 prompt 使用两个唯一 marker ID：`SPECFORGE_NEW_SESSION_PROMPT:START` 与 `SPECFORGE_NEW_SESSION_PROMPT:END`；完整 HTML comment marker 只允许在实际 prompt 边界各出现一次。
+
+固定规则：
+
+1. 首次建立 marker 时，必须先在旧 authority 上替换原 `### 0.10 新会话固定提示词` section，再插入可能复用该标题文字的新规则。
+2. marker 建立后，所有 prompt 修改只能在 START/END marker scope 内执行；禁止全文件按自然语言标题寻找 prompt。
+3. Rule section 验证必须以 `**<RULE_ID>：**` 为起点，以“下一个 Rule ID / 下一个 `### 0.*` 结构标题 / prompt START marker”中的最早结构边界为终点。
+4. 禁止硬编码“某 Rule 的下一个 Rule 一定是 Recovery”。
+5. 自然语言原句不得作为 blocking assertion；必须使用 Rule ID、schema 字段、parser 或结构 marker。
+6. pre-authority rule inventory、固定 prompt、Bootstrap Envelope consumer test 必须原子更新。
 **GOV-STAGE-RECOVERY-ACCEPT-001：** 新会话恢复必须形成可机器检查的 Recovery Acceptance；生成 `GOVERNANCE PRECONCLUSION + Stage Input` 不等于恢复完成。
 
 新会话的 `GOVERNANCE PRECONCLUSION` 至少包含：
@@ -1243,27 +1421,64 @@ RECOVERY_ACCEPTED=YES|NO
 11. `RECOVERY_ACCEPTED != YES` 时必须 Fail Closed：不得生成供用户执行的下一 ZIP+CMD，不得执行有副作用动作，不得进入下一 Stage；只能修正恢复成果或执行为取得缺失事实所必需的、已经被接受的只读取证。
 12. `RECOVERY_ACCEPTED=YES` 后，后续 ZIP/CMD、runner、代码/文档补丁、执行回执仍分别遵守 `GOV-STAGE-ARTIFACT-VERIFY-001`；Recovery Acceptance 不替代后续 Artifact Acceptance。
 
+<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->
 ### 0.10 新会话固定提示词
 
-每次新会话使用以下固定短提示词。它直接携带 Bootstrap 成功/失败的最小硬约束，不依赖先读到 `raw/main`：
+下面整段是唯一固定启动提示词。不要删字段，不要把模板缩写成说明文字：
 
 ```text
 继续 SpecForge。
+
+BOOTSTRAP_ENVELOPE_VERSION=1
 
 BOOTSTRAP COORDINATES：
 REMOTE_URL=https://github.com/lyqstart/SpecForge.git
 AUTHORITY_BRANCH=main
 AUTHORITY_PATH=docs/design/SpecForge架构一致性治理最终实施方案.md
 
-第一步只做 Authority Bootstrap：
-1. 不得使用 GitHub branch HTML、raw/main、搜索结果、compare 页面或“commit 可访问”确定当前 HEAD。
-2. 必须先用 live structured branch-ref evidence 确定 AUTHORITY_HEAD：
-   STRUCTURED_GIT_LS_REMOTE / GITHUB_REF_API_LIVE / USER_BOOTSTRAP_GIT_LS_REMOTE。
-3. 固定 AUTHORITY_HEAD 后，只读取：
+上一轮 CMD 完整执行回执：
+【必须粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；上一轮明确没有 ZIP+CMD 时写 NONE】
+
+第一步只能执行 Bootstrap Envelope + Authority Bootstrap。
+
+一、先审计上一轮回执：
+LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID|PRESENT_INVALID|NONE_ALLOWED|MISSING_REQUIRED
+LAST_EXECUTION_RECEIPT_PACKAGE_NAME=
+LAST_EXECUTION_RECEIPT_DELIVERY_ID=
+LAST_EXECUTION_RECEIPT_VALIDATOR_ID=
+LAST_EXECUTION_RECEIPT_IDENTITY_BINDING_AUDIT=
+LAST_EXECUTION_RECEIPT_RESULT=
+LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE
+
+规则：
+- 有完整标准回执且可解析：PRESENT_VALID。
+- 明确上一轮没有 ZIP+CMD：NONE_ALLOWED。
+- 应有回执但未粘贴：MISSING_REQUIRED。
+- 有回执但结构/身份字段损坏：PRESENT_INVALID。
+- PRESENT_VALID 时禁止同时写 MISSING_LAST_EXECUTION_RECEIPT。
+- MISSING_REQUIRED 或 PRESENT_INVALID 时 Fail Closed。
+
+二、Authority Bootstrap：
+1. 不得用 GitHub branch HTML、raw/main、搜索、compare 或 commit 可访问性确定当前 HEAD。
+2. AUTHORITY_HEAD_SOURCE 只能是：
+   STRUCTURED_GIT_LS_REMOTE | GITHUB_REF_API_LIVE | USER_BOOTSTRAP_GIT_LS_REMOTE。
+3. 固定 live AUTHORITY_HEAD 后，只读取：
    https://raw.githubusercontent.com/lyqstart/SpecForge/<AUTHORITY_HEAD>/docs/design/SpecForge架构一致性治理最终实施方案.md
-4. Bootstrap 成功必须输出 GOV-STAGE-AUTHORITY-BOOTSTRAP-001 的完整 Authority Bootstrap Acceptance。
-5. Bootstrap 失败必须完整执行 GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001 和 GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001。
-6. Bootstrap 失败回复必须逐字段输出下面固定块，不得缩写字段：
+4. Bootstrap 成功必须完整输出：
+AUTHORITY_BOOTSTRAP_REMOTE_URL=
+AUTHORITY_BOOTSTRAP_BRANCH=
+AUTHORITY_BOOTSTRAP_PATH=
+AUTHORITY_HEAD_SOURCE=
+AUTHORITY_HEAD=
+AUTHORITY_EXACT_CONTENT_REF=
+AUTHORITY_UNIQUE_MARKER_AUDIT=PASS|FAIL
+AUTHORITY_BOOTSTRAP_EVIDENCE=
+AUTHORITY_BOOTSTRAP_EVIDENCE_FRESHNESS=
+AUTHORITY_BOOTSTRAP_VALIDATOR_ID=
+AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES|NO
+AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO
+
+三、拿不到 live ref 时，必须完整输出：
 
 ===== BEGIN AUTHORITY BOOTSTRAP FAILURE ACCEPTANCE =====
 AUTHORITY_BOOTSTRAP_REMOTE_URL=
@@ -1289,21 +1504,28 @@ AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED=YES|NO|NOT_YET_GENERATED
 AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=YES|NO
 ===== END AUTHORITY BOOTSTRAP FAILURE ACCEPTANCE =====
 
-7. AUTHORITY_BOOTSTRAP_ACCEPTED!=YES 时：
-   - 不得读取 current-handoff、Work Item、immutable evidence、Stage Input、Recovery 或 WI 生命周期事实；
-   - AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT 必须能证明 PASS_NO_HANDOFF_OR_RECOVERY_READ；
-   - 唯一下一动作 ACQUIRE_LIVE_BRANCH_REF_ONLY。
-8. RAW_CMD_ALLOWED=NO。禁止直接给我 git ls-remote 裸 CMD。
-9. 如果需要我本地取得 live ref：
-   - BOOTSTRAP_FAILURE_DELIVERY_MODE=ONE_ACCEPTED_ZIP_PLUS_ONE_CMD；
-   - 只能生成 BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP；
-   - ZIP runner 只能执行 git ls-remote，不得接收/读取 SpecForge 仓库；
-   - 必须先逐字段输出下面 Artifact Acceptance：
+AUTHORITY_BOOTSTRAP_ACCEPTED!=YES 时：
+- 不读 current-handoff；
+- 不读 Work Item / immutable evidence；
+- 不输出 WI 当前状态；
+- 不进入 PRECONCLUSION / Stage Input / Recovery；
+- 不给裸 git ls-remote CMD；
+- 唯一下一动作 ACQUIRE_LIVE_BRANCH_REF_ONLY。
+
+四、如需我本地取 live ref，只能生成一个 BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP。
+发布 ZIP 前必须完整输出：
 
 ===== BEGIN BOOTSTRAP EVIDENCE ARTIFACT ACCEPTANCE =====
 ARTIFACT_ID=
 ARTIFACT_TYPE=BOOTSTRAP_LIVE_REF_EVIDENCE_ZIP
-ARTIFACT_CONTRACT=GOV-STAGE-DELIVERY-001+GOV-STAGE-ARTIFACT-VERIFY-001+GOV-STAGE-VALIDATOR-001
+ARTIFACT_CONTRACT=GOV-STAGE-DELIVERY-001+GOV-STAGE-ARTIFACT-VERIFY-001+GOV-STAGE-VALIDATOR-001+GOV-STAGE-DELIVERY-IDENTITY-001
+DELIVERY_ID=
+PACKAGE_NAME=
+RUNNER_ID=
+VALIDATOR_ID=
+RECEIPT_EMITTER_ID=
+IDENTITY_MANIFEST=manifest.json
+IDENTITY_BINDING_AUDIT=PASS|FAIL
 STRUCTURE_VALIDATION=PASS|FAIL
 COMPLETENESS_VALIDATION=PASS|FAIL
 SEMANTIC_VALIDATION=PASS|FAIL
@@ -1312,20 +1534,31 @@ SCOPE_VALIDATION=PASS|FAIL
 EXECUTABILITY_VALIDATION=PASS|FAIL
 CONSUMER_VALIDATION=PASS|FAIL
 VALIDATION_EVIDENCE=
-VALIDATOR_ID=
 VALIDATOR_SELF_CHECK=PASS|FAIL
 VALIDATOR_ACCEPTED=YES|NO
 ARTIFACT_ACCEPTED=YES|NO
 ===== END BOOTSTRAP EVIDENCE ARTIFACT ACCEPTANCE =====
 
-   - 只有 VALIDATOR_ACCEPTED=YES 且 ARTIFACT_ACCEPTED=YES 后，才允许把 AUTHORITY_BOOTSTRAP_EVIDENCE_ARTIFACT_ACCEPTED 更新为 YES，并把 AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED 更新为 YES；
-   - 只有上述两个 Acceptance 都已完成后，才允许显示下载链接和一条 CMD；
-   - CMD 必须位于 ARTIFACT_ACCEPTED=YES 之后。
-10. 只读取证 runner 的结构化回执必须逐字段包含：
+只有 IDENTITY_BINDING_AUDIT=PASS、VALIDATOR_ACCEPTED=YES、ARTIFACT_ACCEPTED=YES 后，才能显示一个 ZIP 下载链接和一条 CMD。
+
+这个 evidence ZIP 的 runner：
+- 只能执行 git ls-remote https://github.com/lyqstart/SpecForge.git refs/heads/main；
+- 不接收 SpecForge/Validation 仓库路径；
+- 不读取任何项目文件；
+- 不执行任何生命周期动作；
+- 回执必须完整包含：
+
 ===== BEGIN FEEDBACK TO CHATGPT =====
+PACKAGE_NAME=
+DELIVERY_ID=
+RUNNER_ID=
+VALIDATOR_ID=
+RECEIPT_EMITTER_ID=
+IDENTITY_MANIFEST=manifest.json
+IDENTITY_BINDING_AUDIT=PASS
 ACTION_TYPE=BOOTSTRAP_LIVE_REF_READ_ONLY
-REMOTE_URL=
-AUTHORITY_BRANCH=
+REMOTE_URL=https://github.com/lyqstart/SpecForge.git
+AUTHORITY_BRANCH=main
 LS_REMOTE_EXIT_CODE=
 LS_REMOTE_STDOUT=
 LIVE_REF_SHA=
@@ -1333,30 +1566,32 @@ REPOSITORY_READS=NONE
 REPOSITORY_WRITES=NONE
 LIFECYCLE_ACTIONS=NONE
 ===== END FEEDBACK TO CHATGPT =====
-11. 如果上一轮存在 ZIP+CMD，下面必须粘贴完整标准执行回执；上一轮确实没有 ZIP+CMD 时写 NONE。缺失应有回执必须标记 MISSING_LAST_EXECUTION_RECEIPT。
 
-Authority Bootstrap 成功后，再严格执行 exact-commit authority：
+五、Bootstrap Envelope 自检：
+BOOTSTRAP_COORDINATES_CONTRACT=PASS|FAIL
+BOOTSTRAP_RECEIPT_CONSUMPTION_CONTRACT=PASS|FAIL
+BOOTSTRAP_FAILURE_CONTRACT=PASS|FAIL
+BOOTSTRAP_EVIDENCE_DELIVERY_CONTRACT=PASS|FAIL
+BOOTSTRAP_SUCCESS_TRANSITION_CONTRACT=PASS|FAIL
+BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
+
+只有 Envelope 子契约全部 PASS，才允许把 BOOTSTRAP_ENVELOPE_ACCEPTED 写 YES。
+
+六、AUTHORITY_BOOTSTRAP_ACCEPTED=YES 后：
+- 读取 exact-commit authority；
 - 读取 current-handoff；
-- 重新读取当前 WORK_BRANCH 的本地/远程 HEAD、worktree；
+- 恢复 WORK_BRANCH / WORK_HEAD / REMOTE_WORK_HEAD / WORKTREE_STATUS；
 - 用持久化 Work Item / immutable evidence 对账 handoff；
 - 输出完整 GOVERNANCE PRECONCLUSION；
 - 输出 canonical Stage Input；
-- 按 GOV-STAGE-RECOVERY-ACCEPT-001 输出 Recovery Acceptance；
-- 只有 RECOVERY_ACCEPTED=YES 才允许执行被接受的 NEXT_LEGAL_ACTION；
-- 不依赖旧会话记忆，不自动重试已经开始的有副作用动作。
-
-上一轮 CMD 完整执行回执：
-【粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；上一轮确实没有 ZIP+CMD 时写 NONE】
+- 输出 GOV-STAGE-RECOVERY-ACCEPT-001 Recovery Acceptance；
+- RECOVERY_ACCEPTED=YES 后才允许执行 NEXT_LEGAL_ACTION；
+- 不自动重试已经开始的副作用动作。
 ```
 
-固定跨会话规则：
-
-1. 新会话成功路径：live ref → exact authority → Bootstrap Acceptance → PRECONCLUSION → Stage Input → Recovery Acceptance。
-2. 失败路径：完整 Bootstrap Failure Acceptance → 生成只读 ZIP → 完整 Artifact Acceptance → 更新 Failure Accepted → ZIP+CMD → 用户返回 live ref → 重新 Bootstrap。
-3. Bootstrap 失败时绝不读取 handoff。
-4. Bootstrap 失败时绝不发布裸 `git ls-remote` CMD。
-5. Bootstrap evidence ZIP 是唯一允许的本地取证交付形式，并且必须先验收后发布。
-6. 固定提示词中的 Failure Acceptance 与 Artifact Acceptance 必须逐字段完整保留。
+任何以后新增会影响 exact authority 读取之前行为的规则，必须同时修改：
+`GOV-STAGE-BOOTSTRAP-ENVELOPE-001 + 本固定提示词 + Bootstrap Envelope consumer test`。
+<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->
 <!-- SPECFORGE_AUTHORITY_PROTOCOL:END -->
 
 ---
