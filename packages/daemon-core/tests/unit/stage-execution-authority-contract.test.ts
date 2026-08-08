@@ -206,6 +206,7 @@ describe('Stage Execution Contract authority', () => {
       'VALIDATOR_CONTRACT=',
       'DELIVERY_IDENTITY_CONTRACT=',
       'BOOTSTRAP_ENVELOPE_CONTRACT=',
+      'BOOTSTRAP_EXECUTION_ORDER_CONTRACT=',
       'RECOVERY_ACCEPTANCE_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_CONTRACT=',
       'AUTHORITY_BOOTSTRAP_FAILURE_CONTRACT=',
@@ -317,7 +318,16 @@ describe('Stage Execution Contract authority', () => {
     }
 
     const promptSection = newSessionPrompt(authority);
-    expect(promptSection).toContain('AUTHORITY_BOOTSTRAP_ACCEPTED!=YES');
+    for (const token of [
+      'AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO',
+      'BOOTSTRAP_EXECUTION_PHASE=AUTHORITY_EXACT_READ',
+      'BOOTSTRAP_EXECUTION_PHASE=RECOVERY',
+    ]) {
+      expect(promptSection, token).toContain(token);
+    }
+    expect(promptSection.indexOf('BOOTSTRAP_EXECUTION_PHASE=AUTHORITY_EXACT_READ')).toBeLessThan(
+      promptSection.indexOf('BOOTSTRAP_EXECUTION_PHASE=RECOVERY'),
+    );
     expect(promptSection).toContain('raw/main');
     expect(promptSection).toContain('LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID|PRESENT_INVALID|NONE_ALLOWED|MISSING_REQUIRED');
     expect(promptSection).toContain('LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE');
@@ -461,4 +471,49 @@ describe('Stage Execution Contract authority', () => {
     expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->').length - 1).toBe(1);
     expect(authority).toContain('**GOV-STAGE-RECOVERY-ACCEPT-001：**');
   });
+it('enforces receipt-first pre-tool guard and ordered bootstrap execution before recovery reads', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const rule = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
+    const prompt = newSessionPrompt(authority);
+
+    for (const token of [
+      '===== BEGIN BOOTSTRAP ENVELOPE PRETOOL GUARD =====',
+      'BOOTSTRAP_EXECUTION_PHASE=RECEIPT_AUDIT',
+      'BOOTSTRAP_ALLOWED_TOOL_CLASS=NONE',
+      'BOOTSTRAP_PRETOOL_GUARD_ACCEPTED=YES|NO',
+      'BOOTSTRAP_EXECUTION_PHASE=LIVE_REF_RESOLUTION',
+      'BOOTSTRAP_ALLOWED_TOOL_CLASS=LIVE_REF_ONLY',
+      'BOOTSTRAP_EXECUTION_PHASE=AUTHORITY_EXACT_READ',
+      'BOOTSTRAP_ALLOWED_TOOL_CLASS=EXACT_AUTHORITY_ONLY',
+      'BOOTSTRAP_UNAUTHORIZED_READ_DETECTED=YES|NO',
+      'BOOTSTRAP_EXECUTION_ORDER_AUDIT=PASS|FAIL',
+      '===== BEGIN BOOTSTRAP ENVELOPE SELF CHECK =====',
+      '===== END BOOTSTRAP ENVELOPE SELF CHECK =====',
+      'BOOTSTRAP_EXECUTION_PHASE=RECOVERY',
+      'BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY',
+    ]) {
+      expect(prompt, token).toContain(token);
+    }
+
+    const receiptIndex = prompt.indexOf('BOOTSTRAP_EXECUTION_PHASE=RECEIPT_AUDIT');
+    const liveRefIndex = prompt.indexOf('STRUCTURED_GIT_LS_REMOTE');
+    const exactAuthorityIndex = prompt.indexOf('BOOTSTRAP_EXECUTION_PHASE=AUTHORITY_EXACT_READ');
+    const recoveryIndex = prompt.indexOf('BOOTSTRAP_EXECUTION_PHASE=RECOVERY');
+    const selfCheckIndex = prompt.indexOf('===== BEGIN BOOTSTRAP ENVELOPE SELF CHECK =====');
+
+    expect(receiptIndex).toBeGreaterThanOrEqual(0);
+    expect(liveRefIndex).toBeGreaterThan(receiptIndex);
+    expect(exactAuthorityIndex).toBeGreaterThan(liveRefIndex);
+    expect(selfCheckIndex).toBeGreaterThan(exactAuthorityIndex);
+    expect(recoveryIndex).toBeGreaterThan(selfCheckIndex);
+
+    for (const token of [
+      'BOOTSTRAP_PRETOOL_GUARD_ACCEPTED=YES|NO',
+      'BOOTSTRAP_EXECUTION_ORDER_AUDIT=PASS|FAIL',
+      'BOOTSTRAP_UNAUTHORIZED_READ_DETECTED=YES|NO',
+    ]) {
+      expect(rule, token).toContain(token);
+    }
+  });
+
 });

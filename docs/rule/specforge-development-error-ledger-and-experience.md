@@ -5237,3 +5237,39 @@ actual_files
 - **分类**：`ENVIRONMENT_FAILURE / NON_BLOCKING_TOOL_WARMUP`。
 - **EXP-212**：助手侧工具运行时附加 warmup stderr 必须与目标 verifier 的 exit code、stdout contract 和 artifact evidence 分离判断；只记录为环境异常，不伪装成 SpecForge 产品缺陷；若目标进程 exit code 非零或验证字段不完整，则仍按正式失败处理。
 <!-- SPECFORGE_ERR246_EXP212_ASSISTANT_SPREADSHEET_WARMUP_STDERR:END -->
+
+<!-- SPECFORGE_ERR247_EXP213_BOOTSTRAP_EXECUTION_ORDER_GAP:START -->
+## ERR-247 / EXP-213 — V119 规则完整，但真实新会话仍先读 handoff、后补 Bootstrap Fail Closed
+
+- **现场**：V119 成功后进行真实全新会话启动验证。新会话最终正确识别 `git ls-remote` DNS 失败、拒绝 branch HTML/raw-main 作为 live HEAD、承认自己在 Bootstrap 接受前已经读取 `current-handoff`，并正确输出 `AUTHORITY_BOOTSTRAP_PHASE_ACCESS_AUDIT=FAIL`、`AUTHORITY_BOOTSTRAP_FAILURE_ACCEPTED=NO`、没有发布 evidence ZIP。
+- **缺陷**：该回复没有先输出 `LAST_EXECUTION_RECEIPT_*` 审计字段，也没有输出完整 Bootstrap Envelope Self Check；更关键的是，它在识别新约束之前已经读取 handoff。
+- **Receipt 事实边界**：回复声称用户未携带上一轮完整 receipt；当前对话未包含用户实际粘贴到新会话的完整启动 prompt，因此该声称本身不作为本 ERR 的根因证据。
+- **分类**：`GOVERNANCE_FAILURE / PREAUTHORITY_EXECUTION_ORDER_GAP`。
+- **根因**：V119 固定 prompt 已列出 Receipt Audit、live-ref、Failure/Success 和 Envelope Self Check，但没有把“Receipt Audit 必须成为任何工具调用前的第一状态”和“允许工具类别随阶段切换”定义为结构化状态机；模型仍可以先读取，再在后面补做失败判断。
+- **EXP-213**：
+  1. Bootstrap 增加 `RECEIPT_AUDIT → PRETOOL_GUARD → LIVE_REF_ONLY → EXACT_AUTHORITY_ONLY → FAILURE/SUCCESS → SELF_CHECK → RECOVERY` 固定状态机；
+  2. `MISSING_REQUIRED/PRESENT_INVALID` 在工具调用前直接停止，不执行 live ref；
+  3. 每个阶段输出 `BOOTSTRAP_ALLOWED_TOOL_CLASS`；
+  4. 任一越权读取永久使本回合 `BOOTSTRAP_EXECUTION_ORDER_AUDIT=FAIL`，禁止用后补字段恢复；
+  5. 每个 Bootstrap 回合结束必须输出完整 Envelope Self Check；
+  6. consumer test 同时验证字段存在与文本顺序：Receipt/Pre-tool Guard 必须位于 live-ref 和 Recovery 之前。
+<!-- SPECFORGE_ERR247_EXP213_BOOTSTRAP_EXECUTION_ORDER_GAP:END -->
+
+<!-- SPECFORGE_ERR248_EXP214_STALE_BOOTSTRAP_PROMPT_WORDING_ASSERTION:START -->
+## ERR-248 / EXP-214 — V120 新顺序状态机通过，但旧 prompt 自然语言断言阻断发布
+
+- **现场**：V120 在 commit/push 前执行 `stage-execution-authority-contract.test.ts`，9 个测试中 8 个通过，仅 `enforces live-ref-first authority bootstrap before new-session recovery` 失败；`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`。
+- **一手证据**：旧测试仍要求固定 prompt 字面 `AUTHORITY_BOOTSTRAP_ACCEPTED!=YES`；V120 prompt 已改为结构状态 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO`，并以 `BOOTSTRAP_EXECUTION_PHASE=AUTHORITY_EXACT_READ` → `BOOTSTRAP_EXECUTION_PHASE=RECOVERY` 表达同一且更严格的约束。
+- **分类**：`VALIDATION_HARNESS_DEFECT / STALE_NATURAL_LANGUAGE_ASSERTION`。
+- **权威冲突**：`GOV-STAGE-VALIDATOR-001` 禁止自然语言原句、格式细节作为 blocking truth；`GOV-STAGE-BOOTSTRAP-ENVELOPE-001` 要求使用 Rule ID、schema 字段、parser 或结构 marker。
+- **EXP-214**：删除固定措辞 blocking assertion；改验 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO`、`AUTHORITY_EXACT_READ`、`RECOVERY` 结构状态及顺序；保持 V120 已通过的 ordered execution 回归不变。
+<!-- SPECFORGE_ERR248_EXP214_STALE_BOOTSTRAP_PROMPT_WORDING_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR249_EXP215_V121_BUILDER_PARSE_FAILURE:START -->
+## ERR-249 / EXP-215 — V121 首次交付构造器语法失败，未形成可交付产物
+
+- **现场**：第一次生成 V121 时，交付构造 Python 在解析阶段报 `SyntaxError: '(' was never closed`。
+- **影响**：工具明确返回代码未成功执行；没有 V121 ZIP、没有用户执行、没有 SpecForge 仓库副作用。
+- **分类**：`VALIDATION_HARNESS_DEFECT / SCRIPT_DEFECT`。
+- **EXP-215**：复杂 runner 改写不再直接嵌套于可见执行块；先生成独立 builder 文件并执行 `py_compile`，再构建 ZIP；只有 builder、runner、validator 均解析通过和 ZIP reopen/hash 通过后才发布。
+<!-- SPECFORGE_ERR249_EXP215_V121_BUILDER_PARSE_FAILURE:END -->
