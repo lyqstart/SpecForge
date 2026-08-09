@@ -281,6 +281,36 @@ describe('sf_close_gate handler', () => {
     expect(wi.allowed_write_files).toEqual([]);
   });
 
+  it('preserves never-enabled code-permission facts for spec_migration close', async () => {
+    const workItemId = 'wi-spec-migration-permission-na';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const wiPath = path.join(wiDir, 'work_item.json');
+    const before = JSON.parse(await fs.readFile(wiPath, 'utf-8'));
+    before.workflow_type = 'spec_migration';
+    before.workflow_path = 'spec_migration_path';
+    before.code_change_allowed = false;
+    before.code_permission_revoked = false;
+    delete before.code_permission_revoked_at;
+    before.allowed_write_files = [];
+    delete before.allowed_write_files_snapshot;
+    await fs.writeFile(wiPath, JSON.stringify(before, null, 2) + '\n', 'utf-8');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any
+    );
+
+    const persisted = JSON.parse(await fs.readFile(wiPath, 'utf-8'));
+    expect((result as any).code_permission_revoked).toBe(false);
+    expect(persisted.code_change_allowed).toBe(false);
+    expect(persisted.code_permission_revoked).toBe(false);
+    expect(persisted.code_permission_revoked_at).toBeUndefined();
+    expect(persisted.allowed_write_files).toEqual([]);
+    expect(persisted.allowed_write_files_snapshot).toBeUndefined();
+  });
+
   it('should fail close when semantic closure is missing', async () => {
     const workItemId = 'wi-missing-semantic';
     await createMinimalWorkItem(tmpDir, workItemId, { includeSemanticClosure: false });

@@ -6804,3 +6804,36 @@ actual_files
 - **影响**：无用户仓库、Validation、生命周期副作用。
 - **状态**：`CLOSED_PREDELIVERY`。
 <!-- SPECFORGE_ERR362_V184_PACKAGE_NESTED_QUOTE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR363_ASSISTANT_GIT_LS_REMOTE_DNS_RECURRENCE:START -->
+## ERR-363 / EXP-072 — V186 前调查阶段 assistant-side git ls-remote DNS 失败复发
+- **日期与阶段**：2026-08-09，V184 用户级升级并由用户手工重启 daemon/OpenCode 后的 WI-0004 no-code Verification 前置调查。
+- **事实**：assistant container 的 `git ls-remote https://github.com/lyqstart/SpecForge.git refs/heads/main` 再次因 DNS 解析失败而不能作为 live branch-ref 证据；该失败发生在 assistant 环境，没有访问或修改用户仓库、Validation，也没有执行任何生命周期动作。
+- **影响**：只影响 assistant-side Git 网络路径；不改变 V184 已确认的用户仓库和部署事实。
+- **正确方法**：调查使用 Web exact-commit source；任何真实写入包仍在用户机器写入前执行结构化 `git ls-remote` 并 Fail Closed。
+- **防护**：复用 `EXP-072`、`EXP-007`；不把 assistant DNS 故障升级成产品缺陷。
+- **状态**：`CLOSED_METHOD_CHANGED_WEB_PLUS_RUNTIME_LIVE_REF_GUARD`。
+<!-- SPECFORGE_ERR363_ASSISTANT_GIT_LS_REMOTE_DNS_RECURRENCE:END -->
+
+<!-- SPECFORGE_ERR364_UNNECESSARY_BOOTSTRAP_EVIDENCE_ROUNDTRIP:START -->
+## ERR-364 / EXP-012 — SFV185 纯 live-ref 取证交付造成不必要往返
+- **日期与阶段**：2026-08-09，V184 后继续 WI-0004。
+- **事实**：assistant 曾生成 SFV185 纯 `git ls-remote` 取证包；用户明确说明该 ZIP/CMD **没有下载、没有执行**，并要求 assistant 直接使用 Web 访问 GitHub。
+- **已执行与未执行**：SFV185 未在用户机器运行，因此没有仓库读取、写入、Validation 访问或生命周期动作。
+- **根因**：把 assistant-side 网络限制转嫁为用户执行步骤，违反当前“能由 assistant Web 完成的调查不制造额外用户往返”的效率目标。
+- **正确方法**：assistant 调查优先 Web；需要真实副作用的交付包自身在任何写入前再执行 live `git ls-remote`，不再单独制造纯取证轮次。
+- **防护**：复用 `EXP-012`、`EXP-007`；后续纯调查不交付 ZIP。
+- **状态**：`CLOSED_USER_DID_NOT_EXECUTE_METHOD_CHANGED`。
+<!-- SPECFORGE_ERR364_UNNECESSARY_BOOTSTRAP_EVIDENCE_ROUNDTRIP:END -->
+
+<!-- SPECFORGE_ERR365_SPEC_MIGRATION_CLOSE_PERMISSION_FACT_CONSUMER_GAP:START -->
+## ERR-365 / EXP-044 — V182 漏掉正式 sf_close_gate handler 的 spec_migration Permission 事实消费者
+- **日期与阶段**：2026-08-09，WI-0004 no-code Verification/Close 前置消费者复核。
+- **一手源码事实**：当前 `sf-v11-close-gate.ts` 仅把 `contract_change` 识别为“Permission 从未适用”分支；`spec_migration` 会落入普通分支，调用 `syncPermissionFacts()`，该函数通过 `applyRevokedPermissionFacts()` 写回 `work_item.json`，并把 `result.code_permission_revoked=true`。
+- **权威冲突**：`GOV-SPEC-MIGRATION-NO-CODE-001` 已规定 `spec_migration` 的 Code Permission = NOT_APPLICABLE，必须证明从未启用，不得伪造 Permission 事实。
+- **影响**：缺陷在 WI-0004 Close **执行前**发现；WI-0004 仍为 `post_merge_verified`，没有执行 Verification/Close，没有产生错误的 revoked 事实。
+- **根因**：V182 对齐了 Close Gate 核心判定，但遗漏了正式 Close handler 的 pre-close Permission 事实同步消费者。
+- **正确方法**：正式 handler 同时识别 `contract_change` 与 `spec_migration` 的 never-enabled 分支；对 spec_migration 若检测到 active Permission 或非空允许文件必须 Fail Closed，否则不调用 revoke/sync，不写 revoked 事实，并保持 `code_permission_revoked=false`。
+- **防护**：新增 handler 集成回归测试，直接运行 `sf_close_gate` 并证明 spec_migration 的 never-enabled Permission 字段不被改写；复用 `EXP-044`、`EXP-085`、`EXP-188`。
+- **状态**：`CLOSED_BY_V186_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR365_SPEC_MIGRATION_CLOSE_PERMISSION_FACT_CONSUMER_GAP:END -->

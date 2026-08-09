@@ -3990,3 +3990,29 @@ V182 不新增 Workflow、Gate、Agent 或平行关闭流程；按 `GOV-SPEC-MIG
 
 本 P0 主线继续保持 `IN_PROGRESS`，直到 WI-0004 在升级后的真实用户级运行环境中完成 no-code Verification / Formal Version / Close 的完整 E2E。WI-0001 首次 Candidate Gate 不可恢复机器证据缺口继续作为永久 `INSUFFICIENT_EVIDENCE`，不因本修复改写。
 <!-- SPECFORGE_V182_SPEC_MIGRATION_NO_CODE_CONTRACT_FIX:END -->
+
+<!-- SPECFORGE_V186_SPEC_MIGRATION_CLOSE_PERMISSION_FACT_FIX:START -->
+## V186 — spec_migration Close Permission 事实消费者补闭环（2026-08-09）
+
+WI-0004 在 `post_merge_verified` 且用户级 V182 runtime 已升级、daemon/OpenCode 已由用户手工重启后，Close 前消费者复核发现：
+
+```text
+GOV-SPEC-MIGRATION-NO-CODE-001
+要求 Code Permission = NOT_APPLICABLE / never enabled
+↓
+close-gate.ts 核心已经支持 no-code
+↓
+但正式 sf_close_gate handler 仍把 spec_migration 落入普通 Permission revoke/sync 分支
+↓
+可能把“从未发放”错误记录成“已撤销”
+```
+
+V186 只修该正式消费者，不改变 Authority、不新增 Workflow/Gate/Agent、不触碰 Validation：
+- `spec_migration` / `spec_migration_path` 与 `contract_change` 一样，Close 前必须证明 Permission 从未启用；
+- 若发现 active Permission 或非空 `allowed_write_files`，Fail Closed；
+- 正常 no-code 情况不调用 revoke/sync，不制造 `code_permission_revoked=true` 或 revocation timestamp；
+- 普通实现型 Workflow 的既有 revoke 行为保持不变；
+- 新增 handler 集成回归测试证明以上行为。
+
+本 P0 继续 `IN_PROGRESS`。只有升级后的 handler 被 daemon 重新加载，WI-0004 再真实完成 no-code Audit → Verification → Semantic Closure → Verification/Formal Version → Close，才可继续评估 P0 主线闭环；WI-0001 永久 `INSUFFICIENT_EVIDENCE` 边界保持不变。
+<!-- SPECFORGE_V186_SPEC_MIGRATION_CLOSE_PERMISSION_FACT_FIX:END -->

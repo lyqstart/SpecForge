@@ -830,15 +830,21 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     const contractWorkflow =
       workItem.workflow_type === "contract_change" ||
       workItem.workflow_path === "contract_change_path";
+    const specMigrationWorkflow =
+      workItem.workflow_type === "spec_migration" ||
+      workItem.workflow_path === "spec_migration_path";
     const permState = await checkCodePermission(workItemDir);
     const allowedWriteFilesSnapshot = permState.allowed_write_files;
-    if (contractWorkflow) {
+    if (contractWorkflow || specMigrationWorkflow) {
       if (permState.code_change_allowed || permState.allowed_write_files.length > 0) {
         return {
           ...result,
-          error: "CONTRACT_CHANGE_CODE_PERMISSION_MUST_NEVER_BE_ENABLED",
+          error: specMigrationWorkflow
+            ? "SPEC_MIGRATION_CODE_PERMISSION_MUST_NEVER_BE_ENABLED"
+            : "CONTRACT_CHANGE_CODE_PERMISSION_MUST_NEVER_BE_ENABLED",
         };
       }
+      result.code_permission_revoked = false;
     } else {
       if (permState.code_change_allowed || permState.allowed_write_files.length > 0) {
         await revokeCodePermission(workItemDir);
