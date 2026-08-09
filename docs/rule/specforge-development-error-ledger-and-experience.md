@@ -6272,3 +6272,54 @@ actual_files
 - **自动防护**：V165 最终 validator 使用 raw template；先对 patch 真实 bytes 做单 LF/CRLF/trailing whitespace 检查，再 ZIP reopen、extract、实际执行 validator；不再经 f-string 二次转义该逻辑。
 - **状态**：`CLOSED_PREDELIVERY`。
 <!-- SPECFORGE_ERR315_EXP242_V165_VALIDATOR_NEWLINE_ESCAPE:END -->
+<!-- SPECFORGE_ERR316_EXP188_V166_OBSERVABILITY_SCOPE_FALSE_POSITIVE:START -->
+## ERR-316 / EXP-188 — V166 Atomic Spec Merge 已执行成功状态迁移，但外围写入范围审计遗漏 daemon observability 正常副作用
+- **日期与阶段**：2026-08-09，SFV166 WI-0004 Atomic Spec Merge 用户真实执行后的 post-action audit。
+- **分类**：`VALIDATION_DEFECT / EXPECTED_SIDE_EFFECT_MODEL_INCOMPLETE / POST_ACTION_FALSE_NEGATIVE / REPEATED_CLASS_EXP188`。
+- **现场事实**：V166 packaged validator 通过；runner 只调用一次 `sf_v11_merge`，`REQUEST_STARTED=YES`、`RESPONSE_RECEIVED=YES`、`TOOL_INVOCATION_COUNT=1`，随后持久化状态已经是 `STATE_AFTER=merged`。Candidate/Gate/User Decision 保护审计为 `PASS_NO_CANDIDATE_GATE_USER_DECISION_MUTATION`，没有自动重试，也没有 Code Permission/Implementation/Verification/Close。
+- **外围失败**：post-action `WRITE_SCOPE_EXPANSION` 仅多出 `.specforge/logs/observability/dispatcher.jsonl`、`.specforge/logs/observability/index.jsonl` 和 3 个 `.specforge/logs/observability/payloads/by-sha256/...json`。
+- **源码一手证据**：当前 daemon observability 配置支持 `enabled + replay + capture_payload + payload_storage=file`；`recordDaemonObservation()` 固定以 `<project>/.specforge/logs/observability` 为根目录，`dispatcher` 分类写 `dispatcher.jsonl`，每条记录同时追加 `index.jsonl`，payload 在 file 模式下写入 `payloads/by-sha256/<prefix>/<sha>.json`。
+- **根因**：V166 `ALLOWED_CHANGED` 只建模 Atomic Spec Merge 的业务/治理持久化输出，没有把 daemon HTTP/tool dispatcher 的横切 observability producer 纳入 Expected Side Effects；因此正确的审计日志被错误判成越界写入。
+- **影响**：不能把 V166 整体解释成“Merge 没成功”。正式 Merge 动作已经发生且状态到 `merged`；但 V166 在假失败点提前停止，尚未完成 PSV-0004、merge_report、精确三段 merge transition、正式 Spec 语义的后半段审计。
+- **正确做法**：有副作用动作一旦已经收到成功响应或持久化事实证明动作发生，必须先固化 `action_status=PERFORMED`，再独立判定 post-action verification；外围 verification 失败不得回写动作未执行。Expected Side Effects 必须同时包含目标 Tool 写入和 daemon 横切 observability 写入。
+- **对应 EXP 类规则**：复用 `EXP-085`、`EXP-188`、`EXP-007`、`EXP-102`。
+- **自动防护**：后续禁止重跑 `sf_v11_merge`；先执行完全只读 post-merge reconciliation，验证当前 `merged`、PSV-0004、merge_report、正式 Spec、状态事件和 observability 记录。未来有 daemon Tool 的写入范围审计必须把 observability 作为独立 `EXPECTED_CROSS_CUTTING_SIDE_EFFECTS` 集合，不得混入业务正式目标集合，也不得把它当 scope violation。
+- **状态**：`CLOSED_ROOT_CAUSE_CONFIRMED_POST_ACTION_RECONCILIATION_REQUIRED`。
+<!-- SPECFORGE_ERR316_EXP188_V166_OBSERVABILITY_SCOPE_FALSE_POSITIVE:END -->
+<!-- SPECFORGE_ERR317_EXP072_V167_CONTAINER_GIT_CLONE_DNS:START -->
+## ERR-317 / EXP-072 — V167 调查时 assistant container 的 GitHub DNS 再次不可用
+- **日期与阶段**：2026-08-09，V166 failure reconciliation 的远程源码只读调查。
+- **分类**：`ENVIRONMENT_FAILURE / REMOTE_FETCH_CHANNEL_FAILURE / REPEATED_CLASS_EXP072`。
+- **现场表现**：assistant container 执行 `git clone https://github.com/lyqstart/SpecForge.git` 返回 `Could not resolve host: github.com`。
+- **已执行与未执行**：没有据此判断 GitHub 或仓库不可用；继续使用当前用户回执中的结构化 `git ls-remote` live HEAD、GitHub exact-commit 页面和 exact-commit raw 文件完成调查；没有用户仓库副作用。
+- **根因**：assistant container 的 DNS/网络通道不可用；不是 SpecForge 产品、用户网络或 GitHub 仓库事实。
+- **影响**：仅该单一取证通道失败。
+- **正确做法**：按固定 commit 的官方 GitHub web/raw 回退；必须区分“容器网络失败”和“远程仓库事实”。
+- **对应 EXP 类规则**：复用 `EXP-072`、`EXP-007`。
+- **自动防护**：远程调查保持 `live ref evidence + exact commit source` 双层模型；container Git/DNS 失败后直接使用已允许的官方 exact-commit web/raw，不重复把同一不可用通道当唯一证据源。
+- **状态**：`CLOSED_OFFICIAL_SOURCE_FALLBACK_USED`。
+<!-- SPECFORGE_ERR317_EXP072_V167_CONTAINER_GIT_CLONE_DNS:END -->
+<!-- SPECFORGE_ERR318_EXP007_V167_WEB_REF_API_OPEN_PROTOCOL:START -->
+## ERR-318 / EXP-007 — V167 首次直接打开 GitHub Ref API 被 web 工具安全前置条件阻断
+- **日期与阶段**：2026-08-09，V166 failure reconciliation 的 Authority live-ref 辅助调查。
+- **分类**：`INVESTIGATION_TOOL_FAILURE / TOOL_PROTOCOL_PRECONDITION / NO_REPOSITORY_SIDE_EFFECT`。
+- **现场表现**：web 工具直接 `open` GitHub Ref API URL 返回“URL not safe to open；只能打开先前搜索结果或用户已提供的 exact URL”。随后未把该失败当作 remote HEAD 证据，改用用户 V166 runner 已完成的结构化 `git ls-remote` 作为 live-ref 事实，并从 exact commit GitHub 页面读取 Authority。
+- **根因**：调用方式没有先满足 web 工具自身的 URL provenance/safety precondition；不是 GitHub API、SpecForge 或用户环境失败。
+- **影响**：第一次辅助 web 调用无结果，不影响已经存在的结构化 live-ref evidence。
+- **正确做法**：证据工具本身也属于正式接口；使用 direct URL 前先建立工具允许的来源链，且不得把工具安全阻断解释成目标资源不存在。
+- **对应 EXP 类规则**：复用 `EXP-007`、`EXP-001`。
+- **自动防护**：live-ref 继续优先消费用户 runner 的 `git ls-remote`；web 只做 exact-commit 内容辅助读取，必须通过已打开 repo/commit 链路或合法 exact URL provenance。
+- **状态**：`CLOSED_TOOL_PROTOCOL_CORRECTED`。
+<!-- SPECFORGE_ERR318_EXP007_V167_WEB_REF_API_OPEN_PROTOCOL:END -->
+<!-- SPECFORGE_ERR319_EXP072_V167_CONTAINER_DOWNLOAD_VIEW_PRECONDITION:START -->
+## ERR-319 / EXP-072 — V167 首次 container.download 因“URL 尚未在会话中查看”前置条件失败
+- **日期与阶段**：2026-08-09，V166 failure ledger/handoff exact-source 下载。
+- **分类**：`INVESTIGATION_TOOL_FAILURE / SOURCE_RETRIEVAL_PRECONDITION / NO_REPOSITORY_SIDE_EFFECT`。
+- **现场表现**：对 exact commit raw ledger URL 的第一次 `container.download` 返回 `download failed because url not viewed in conversation before`。随后先用 web 打开相同 exact-commit raw URL，再下载成功；handoff 同样按该合法顺序取得。
+- **根因**：没有先满足下载工具要求的“会话中已查看 URL”安全前置条件。
+- **影响**：仅第一次助手侧下载调用失败；没有用户仓库写入，也没有降低 exact source 的可信度。
+- **正确做法**：跨工具下载必须按 `web exact source view → container.download same URL → local hash/parse` 顺序执行；工具协议失败单独记账，不得伪装成仓库内容问题。
+- **对应 EXP 类规则**：复用 `EXP-072`、`EXP-007`。
+- **自动防护**：后续 exact GitHub raw 下载先完成 web provenance，再使用同一 URL；下载成功后以本地完整字节作为 patch 生产输入。
+- **状态**：`CLOSED_TOOL_PROTOCOL_CORRECTED`。
+<!-- SPECFORGE_ERR319_EXP072_V167_CONTAINER_DOWNLOAD_VIEW_PRECONDITION:END -->
