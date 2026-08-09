@@ -6467,3 +6467,63 @@ actual_files
 - **自动防护**：后续非 spreadsheet ZIP 构建 harness 固定显式导入 `sys`，并按 `build -> ZIP reopen -> extract -> packaged validator actual execution -> no pycache -> final SHA256` 顺序完成；任一步失败均不得发布。
 - **状态**：`CLOSED_PREDELIVERY`。
 <!-- SPECFORGE_ERR330_EXP078_V173_BUILD_HARNESS_SYS_IMPORT:END -->
+<!-- SPECFORGE_ERR331_EXP085_V173_COMMIT_FACT_LOST_AFTER_CONTROL_FLOW_FAILURE:START -->
+## ERR-331 / EXP-085 — V173 已真实生成本地 commit，但后续控制流异常把 commit 事实错误报告为 NONE
+- **日期与阶段**：2026-08-09，SFV173 用户真实执行与 V175 本地/远程谱系只读取证。
+- **分类**：`RUNNER_CONTROL_FLOW_DEFECT / SIDE_EFFECT_FACT_LOST / COMMIT_REPORTING_MISMATCH`。
+- **现场事实**：V173 回执报告 `COMMIT_SHA=NONE`、`PUSH_RESULT=NOT_SUCCESS`、远程仍为 `21c26543...`；V175 随后通过 Git 对象和谱系证明本地 `main=01df5e2...`，其父提交正是远程 `21c26543...`，且 commit subject 为 `docs(governance): record V173 preflight acceptance failure`。因此 V173 的 commit 动作实际上已经成功，只有 push 未发生。
+- **根因**：V173 runner 把多条语句压在 `if cp.returncode:` 同一物理行；`committed=True / applied=False / pp=git push(...)` 被 Python 解析为仅在 commit 失败分支内执行。commit 成功时这些语句被跳过，随后读取未赋值的 `pp` 触发 `UnboundLocalError`，同时 commit 成功事实未被立即固化。
+- **影响**：本地比远程领先 1 个合法治理 commit；V173 回执中的 commit 动作字段不可信，但该 commit 的 Git 对象和父子谱系是正式事实。不能 reset 或重做 V173 commit。
+- **正确做法**：commit 返回 0 后必须立即、独立地固化 `COMMIT_ACTION=PERFORMED` 和 SHA；push 必须位于独立控制流块。后续异常只能改变 verification/push 状态，不能把已发生 commit 回写为 NONE。
+- **对应 EXP 类规则**：复用 `EXP-085`、`EXP-012`、`EXP-078`。
+- **自动防护**：V176 在写入前验证 `01df5e2...^ == 21c26543...`、local-only commit count=1、两文件 blob 与 V175 证据一致；commit 成功后立即记录动作事实，再进入 push。
+- **状态**：`CLOSED_ROOT_CAUSE_CONFIRMED_LOCAL_COMMIT_PRESERVED`。
+<!-- SPECFORGE_ERR331_EXP085_V173_COMMIT_FACT_LOST_AFTER_CONTROL_FLOW_FAILURE:END -->
+<!-- SPECFORGE_ERR332_EXP065_V174_STALE_NATURAL_LANGUAGE_ANCHOR:START -->
+## ERR-332 / EXP-065 — V174 首次构建按记忆中的 handoff 自然语言整句定位导致 Fail Closed
+- **日期与阶段**：2026-08-09，V174 治理回填包首次 assistant-side 构建。
+- **分类**：`PATCH_GENERATOR_DEFECT / STALE_NATURAL_LANGUAGE_ANCHOR / PREDELIVERY_FAILURE`。
+- **现场事实**：生成器使用记忆中的 handoff 自然语言整句作为替换锚点；当前远程 handoff 实际句子不完全相同，锚点数量不满足 1，构建主动 Fail Closed。没有生成可交付包，没有用户仓库写入或生命周期动作。
+- **根因**：违反 EXP-065，修改前没有只依赖当前文件的稳定结构字段，而把历史记忆中的自然语言句子当成接口。
+- **影响**：只增加一次助手侧构建失败，不改变本地 `01df5e2...` 或远程 `21c26543...`。
+- **正确做法**：current-handoff 只更新 `CURRENT EXECUTION STATE` 内的固定机器字段；自然语言正文不作为修改锚点。
+- **对应 EXP 类规则**：复用 `EXP-065`、`EXP-063`、`EXP-007`。
+- **自动防护**：V176 使用 exact START/END marker + `KEY=` 单字段 cardinality=1 更新函数，并用缺字段/重复字段 fixture Fail Closed。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR332_EXP065_V174_STALE_NATURAL_LANGUAGE_ANCHOR:END -->
+<!-- SPECFORGE_ERR333_EXP085_V174_STALE_LOCAL_BASELINE_AFTER_HIDDEN_COMMIT:START -->
+## ERR-333 / EXP-085 — V174 用户执行因未对账 V173 已发生本地 commit 而使用过期本地基线
+- **日期与阶段**：2026-08-09，SFV174 用户真实执行。
+- **分类**：`RECOVERY_BASELINE_DEFECT / PRIOR_SIDE_EFFECT_NOT_RECONCILED / FAIL_CLOSED`。
+- **现场事实**：V174 预期本地 HEAD=`21c26543...`，实际本地 HEAD=`01df5e2...`，因此在任何 patch/test/commit/push 前以 `baseline mismatch` 停止；V175 随后证明 `01df5e2...` 是 V173 真实 commit，父提交为远程 `21c26543...`，远程没有分叉，本地仅领先 1 个 commit。
+- **根因**：V173 回执错误地把已发生 commit 表述为 NONE；V174 直接消费该错误动作字段，没有先用 Git 对象重新核验上一轮可能的 side effect。
+- **影响**：V174 没有写入；但本地/远程进入“本地领先 1 commit”的恢复状态，后续不能按 local==remote 前提继续。
+- **正确做法**：上一轮在 commit/push 附近失败时，下一轮必须先读取 branch/head/parent/rev-list/diff；已确认的合法本地 commit必须保留，通过 fast-forward recovery 同步，不得 reset/rebuild。
+- **对应 EXP 类规则**：复用 `EXP-085`、`EXP-007`，并落实 `GOV-STAGE-RETRY-001`。
+- **自动防护**：V176 将 remote HEAD、local HEAD、parent、local-only count、exact two blob IDs 全部作为写入前硬前置；任何漂移立即 Fail Closed。
+- **状态**：`CLOSED_ROOT_CAUSE_CONFIRMED_RECOVERY_IN_PROGRESS`。
+<!-- SPECFORGE_ERR333_EXP085_V174_STALE_LOCAL_BASELINE_AFTER_HIDDEN_COMMIT:END -->
+<!-- SPECFORGE_ERR334_EXP078_V176_GENERATOR_NESTED_TRIPLE_QUOTE_SYNTAX:START -->
+## ERR-334 / EXP-078 — V176 首次 assistant-side 生成器因嵌套三引号产生 Python SyntaxError
+- **日期与阶段**：2026-08-09，V176 本地 commit 精确内容只读取证包预交付生成。
+- **分类**：`PACKAGE_GENERATOR_DEFECT / PYTHON_SYNTAX_ERROR / PREDELIVERY_FAILURE`。
+- **现场事实**：生成器在一个三引号 Python source 字符串内部再次嵌入同型三引号 fixture，宿主 Python 在构建阶段直接报 `SyntaxError: invalid syntax`；工具明确返回“代码未成功执行，不得假定任何文件或副作用已创建”。
+- **根因**：多层源码生成没有使用安全的字符串边界，且生成器自身没有在写 ZIP 前先完成宿主脚本编译。
+- **影响**：失败只发生在 assistant-side 构建环境；没有可交付 V176、没有用户仓库访问、没有生命周期动作。
+- **正确做法**：复杂 fixture 使用不同引号层级或外部结构，先执行宿主 generator compile，再执行生成后 validator/runner compile 和 consumer fixture。
+- **对应 EXP 类规则**：复用 `EXP-078`、`EXP-012`。
+- **自动防护**：后续改为直接逐文件生成 runner/validator/manifest，避免 Python 生成 Python 的嵌套字符串；最终 ZIP 重开并实际运行 validator。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR334_EXP078_V176_GENERATOR_NESTED_TRIPLE_QUOTE_SYNTAX:END -->
+<!-- SPECFORGE_ERR335_EXP008_V176_REPEATED_NESTED_GENERATOR_FAILURE:START -->
+## ERR-335 / EXP-008 — V176 第二次构建仍沿用嵌套源码生成路线，再次发生同类 SyntaxError
+- **日期与阶段**：2026-08-09，V176 recovery sync 包第二次 assistant-side 构建。
+- **分类**：`PROCESS_VIOLATION / REPEATED_GENERATOR_DEFECT / SAME_METHOD_RETRY`。
+- **现场事实**：ERR-334 已明确指出嵌套三引号是根因，但第二次构建仍采用“宿主 Python 三引号内嵌 runner 三引号”的同一路线，再次在中文 ERR block 起点处报 Python `SyntaxError`。没有 ZIP、没有用户仓库访问、没有生命周期动作。
+- **根因**：同类失败后没有立即改变交付模型，违反 EXP-008/EXP-019 的失败分类与方法切换要求。
+- **影响**：再次增加助手侧预交付失败，但用户本地/远程状态未因此变化。
+- **正确做法**：停止嵌套源码生成。直接把 runner、validator、manifest、错误块分别作为独立文件生成；错误块由 runner 读取，不再嵌入多层 Python 字符串。
+- **对应 EXP 类规则**：复用 `EXP-008`、`EXP-019`、`EXP-078`。
+- **自动防护**：当前 V176 已切换为独立文件交付模型；validator 实际 import runner 并执行结构化 handoff patch fixture，最终 ZIP 重新打开验收。
+- **状态**：`CLOSED_METHOD_CHANGED`。
+<!-- SPECFORGE_ERR335_EXP008_V176_REPEATED_NESTED_GENERATOR_FAILURE:END -->
