@@ -6772,3 +6772,35 @@ actual_files
 - **防护**：复用 `EXP-080`、`EXP-078`；最终 V182 只有通过二次 import + 零 pycache + ZIP reopen 后才允许交付。
 - **状态**：`CLOSED_BY_ACCEPTANCE_HARNESS_FIX`。
 <!-- SPECFORGE_ERR358_V182_ARTIFACT_ACCEPTANCE_PYCACHE_SELF_FAILURE:END -->
+
+<!-- SPECFORGE_ERR359_V183_GUESSED_USERLEVEL_PATH_404:START -->
+## ERR-359 / EXP-007 — V183 调查期间猜测用户级安装文档路径导致 404
+- **事实**：assistant-side 曾猜测不存在的用户级 README/package 路径；后续通过当前仓库树、根 README 与正式 installer 定位真实入口。
+- **影响**：仅调查路径；用户仓库、Validation、daemon、OpenCode 无副作用。
+- **正确方法**：先读取 exact-commit 目录结构，再读取真实 installer/README。
+- **状态**：`CLOSED_BY_EXACT_SOURCE_DISCOVERY`。
+<!-- SPECFORGE_ERR359_V183_GUESSED_USERLEVEL_PATH_404:END -->
+
+<!-- SPECFORGE_ERR360_V183_GITHUB_TREE_PROVENANCE_REJECTION:START -->
+## ERR-360 / EXP-072 — V183 调查期间 GitHub tree API provenance 前置拒绝
+- **事实**：assistant-side direct tree API 路径被工具前置拒绝；后续使用 exact-commit page/raw source 完成取证。
+- **影响**：仅工具路径；无用户环境副作用。
+- **状态**：`CLOSED_TOOLING_FALLBACK`。
+<!-- SPECFORGE_ERR360_V183_GITHUB_TREE_PROVENANCE_REJECTION:END -->
+
+<!-- SPECFORGE_ERR361_V183_DUPLICATE_AUTHORITY_MARKER:START -->
+## ERR-361 / EXP-244 — V183 正确发现唯一权威标识在 Authority 中重复出现
+- **一手证据**：V183 在任何写入和安装器动作前以 `AUTHORITY_MARKER_INVALID` Fail Closed；commit/push/upgrade 均未执行，worktree CLEAN。
+- **当前事实**：1.1 声明块包含正式 marker；Bootstrap 规则第 5 条又复制同一句 marker，导致字面量出现两次，而规则要求仅出现一次。
+- **正确方法**：保留 1.1 唯一正式 marker；规则正文仅引用 1.1，不再次复制 marker 全文；修复后重新 live-ref + exact authority Bootstrap。
+- **状态**：`CLOSED_BY_V184_AUTHORITY_INTEGRITY_REPAIR_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR361_V183_DUPLICATE_AUTHORITY_MARKER:END -->
+
+<!-- SPECFORGE_ERR362_V184_PACKAGE_NESTED_QUOTE_FAILURE:START -->
+## ERR-362 / EXP-242 — V184 首次预交付装配发生嵌套三引号语法错误
+- **事实**：错误发生在 assistant-side ZIP 生成前；系统明确未创建文件或副作用。
+- **根因**：外层 Python 生成器与 validator fixture 复用了同类三引号边界。
+- **正确方法**：改用独立文件装配；runner/validator 作为独立源文件写入 ZIP，不再嵌套源代码字符串。
+- **影响**：无用户仓库、Validation、生命周期副作用。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR362_V184_PACKAGE_NESTED_QUOTE_FAILURE:END -->
