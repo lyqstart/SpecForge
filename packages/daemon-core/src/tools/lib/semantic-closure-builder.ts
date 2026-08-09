@@ -54,6 +54,9 @@ function isRecord(value: unknown): value is Record<string, any> {
 function isSemanticManifestCandidate(value: unknown): value is SemanticClosureManifest {
   if (!isRecord(value)) return false;
   return (
+    value.closure_profile === 'spec_migration' ||
+    value.workflow_type === 'spec_migration' ||
+    isRecord(value.spec_migration) ||
     value.closure_profile === 'investigation' ||
     value.workflow_type === 'investigation' ||
     Array.isArray(value.investigation_questions) ||

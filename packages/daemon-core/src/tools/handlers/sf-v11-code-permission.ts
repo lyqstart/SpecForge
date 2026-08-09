@@ -226,6 +226,20 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
       retry_allowed: false,
     };
   }
+  if (
+    action !== 'check' &&
+    action !== 'query' &&
+    (workItem?.workflow_type === 'spec_migration' ||
+      workItem?.workflow_path === 'spec_migration_path')
+  ) {
+    return {
+      success: false,
+      error: 'CODE_PERMISSION_NOT_APPLICABLE_FOR_SPEC_MIGRATION',
+      code_permission_not_applicable: true,
+      policy_violation: true,
+      retry_allowed: false,
+    };
+  }
 
   if (action !== 'check' && action !== 'query') {
     const hardStopGuard = guardHardStop(projectRoot, workItemId, 'sf_v11_code_permission');

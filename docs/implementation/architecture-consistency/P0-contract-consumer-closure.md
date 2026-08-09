@@ -3978,3 +3978,15 @@ V76 的 `kind:'trace'` TypeScript 失败属于 ERR-072 / EXP-052 重复实现错
 | User Decision | NO |
 | P0 overall | NO；WI-0001 first Candidate Gate machine report 永久不可恢复 |
 <!-- P0_WI0004_ERR222_CONTROLLED_REPAIR_BINDING_RECOVERY:END -->
+
+<!-- SPECFORGE_V182_SPEC_MIGRATION_NO_CODE_CONTRACT_FIX:START -->
+## V182 — spec_migration no-code 生命周期消费者闭环（2026-08-09）
+
+WI-0004 在真实 `Post-Spec-Merge Gate` 通过后保持 `post_merge_verified`。V180 在任何 Code Permission 动作前以 `TASKS_MD_MISSING_CANDIDATE_AND_LEGACY` Fail Closed，证明现有产品存在跨消费者契约缺口：Spec Migration Skill 已规定 spec-only，而通用 Runtime 消费者仍假设 Task → Code Permission → Implementation。
+
+V182 不新增 Workflow、Gate、Agent 或平行关闭流程；按 `GOV-SPEC-MIGRATION-NO-CODE-001` 对齐 Authority → Skill → Semantic Closure Builder/Validator → Code Permission → Changed Files Audit → Formal Version → Close。
+
+本次只修 SpecForge 产品；Validation 项目保持冻结在 `post_merge_verified`，不执行 WI-0004 生命周期动作，也不伪造 `tasks.md`、权限范围、文件系统 baseline 或业务代码。
+
+本 P0 主线继续保持 `IN_PROGRESS`，直到 WI-0004 在升级后的真实用户级运行环境中完成 no-code Verification / Formal Version / Close 的完整 E2E。WI-0001 首次 Candidate Gate 不可恢复机器证据缺口继续作为永久 `INSUFFICIENT_EVIDENCE`，不因本修复改写。
+<!-- SPECFORGE_V182_SPEC_MIGRATION_NO_CODE_CONTRACT_FIX:END -->

@@ -1556,8 +1556,8 @@ User Need
 → User Decision
 → Atomic Spec Merge
 → Post-Spec-Merge Gate
-→ Code Permission
-→ Implementation
+→ Code Permission（适用时）
+→ Implementation（适用时）
 → Actual Scope Audit
 → Verification
 → Formal Version Gate
@@ -1565,6 +1565,34 @@ User Need
 → Git Merge
 ```
 <!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:END -->
+
+**GOV-SPEC-MIGRATION-NO-CODE-001：** `workflow_type=spec_migration` 且 `workflow_path=spec_migration_path` 是同一 Canonical Product Lifecycle 内的 **spec-only / no-code 适用性分支**，不是第二套 Workflow、Gate 或关闭流程。
+
+固定规则：
+
+```text
+Atomic Spec Merge = REQUIRED
+Post-Spec-Merge Gate = REQUIRED
+Code Permission = NOT_APPLICABLE
+Implementation = NOT_APPLICABLE
+Actual Scope Audit = REQUIRED(mode=no_code_change)
+Verification = REQUIRED
+Semantic Closure = REQUIRED(profile=spec_migration)
+Verification Gate = REQUIRED
+Formal Version Gate = REQUIRED
+Close Gate = REQUIRED
+```
+
+该分支必须满足：
+
+1. Candidate / Atomic Spec Merge 只迁移正式 Project Spec / Module Spec / Contract / Trace，不产生业务 Task 或业务代码实现；
+2. Post-Spec-Merge Gate 已通过后，允许由正式状态工具从 `post_merge_verified` 进入 `verification_running`，不得经过 `implementation_ready` / `implementation_running` / `implementation_done`；
+3. `sf_v11_code_permission` 对 release / enable / extend / append 必须返回 `CODE_PERMISSION_NOT_APPLICABLE_FOR_SPEC_MIGRATION`，不得创建 HardStop、不得发放权限、不得推进 implementation state；
+4. `sf_changed_files_audit(mode=no_code_change)` 必须证明 Code Permission 从未启用、业务/项目代码实际修改为零、未解决 blocked write 为零；
+5. 不得为了满足通用实现链而伪造 `tasks.md`、`allowed_write_files`、`governance_scope.json`、`filesystem_baseline.json` 或业务代码；
+6. Semantic Closure 必须使用 `closure_profile=spec_migration` / `workflow_type=spec_migration`，证明 PSV、Atomic Spec Merge、Post-Spec-Merge Gate、Trace/Contract、no-code Actual Scope Audit 与 Verification 的真实闭环；不得伪造 `OUT -> REQ -> DD -> TASK -> EV` 实现链；
+7. Formal Version Gate 与 Close Gate 仍是必需步骤；对本分支，Code Permission 的合法状态是 `NOT_APPLICABLE`，并以 no-code audit + never-enabled daemon facts 证明；
+8. Trace Delta 在迁移涉及 Trace 时仍为必需正式证据。
 
 Trace 贯穿 Requirement、Architecture、Data Model、Module Design、Contract、Task、Implementation 和 Verification。
 
@@ -2881,6 +2909,8 @@ tasks.md
 
 自动形成。
 
+`GOV-SPEC-MIGRATION-NO-CODE-001` 是本节的正式适用性例外：`spec_migration/spec_migration_path` 不进入业务实现阶段，因此不得生成或伪造 `tasks.md` / `allowed_write_files` / `governance_scope.json` / `filesystem_baseline.json`，也不得发放 Code Permission。
+
 ### 8.2 Code Permission 发放以后范围冻结
 
 Executor 不允许自行扩大治理范围。
@@ -3115,7 +3145,7 @@ Fast Path 的 Merge 正确为 N/A
 
 Post-Spec-Merge Gate 通过
 
-Code Permission 合法
+Code Permission 合法；`GOV-SPEC-MIGRATION-NO-CODE-001` 分支必须证明 Code Permission = NOT_APPLICABLE 且从未启用
 
 Changed Files Audit 通过
 
@@ -3149,7 +3179,7 @@ Close Gate 不再重复做正式版本资格判断。
 
 formal_version_gate = passed
 
-Code Permission 已撤销
+Code Permission 已撤销；或 `GOV-SPEC-MIGRATION-NO-CODE-001` 分支已证明 Code Permission = NOT_APPLICABLE 且从未启用
 
 没有未解决 Hard Stop
 
@@ -3244,8 +3274,8 @@ Required Candidate Gates
 → User Decision
 → Atomic Spec Merge
 → Post-Spec-Merge Gate
-→ Code Permission
-→ Implementation
+→ Code Permission（适用时）
+→ Implementation（适用时）
 → Actual Scope Audit
 → Verification
 → Formal Version Gate
@@ -4002,6 +4032,7 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
 | `GOV-REMOTE-001` | 2.1 新会话的远程权威入口 |
 | `GOV-ROLE-001` | 1.3 文件作用范围与两种开发模式 |
 | `GOV-SCOPE-001` | 2.4 实施过程中的范围冻结 |
+| `GOV-SPEC-MIGRATION-NO-CODE-001` | 3.1 Canonical Product Lifecycle / 8.1 Code Permission |
 | `GOV-SELF-001` | 1.3.1 模式 A：SpecForge 自身开发 |
 | `GOV-STAGE-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-ARTIFACT-VERIFY-001` | 2.9 Truth Source、Artifact Acceptance 与 Validator |

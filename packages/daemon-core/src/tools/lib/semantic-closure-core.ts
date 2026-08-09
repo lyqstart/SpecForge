@@ -70,6 +70,15 @@ export interface SemanticFinding {
   root_cause_status?: string;
 }
 
+export interface SemanticSpecMigrationClosure {
+  project_spec_version?: string;
+  atomic_spec_merge_status?: string;
+  post_merge_gate_status?: string;
+  changed_files_audit_status?: string;
+  verification_status?: string;
+  trace_contract_status?: string;
+}
+
 export interface SemanticProjectIntegration {
   required?: boolean;
   status?: string;
@@ -99,6 +108,7 @@ export interface SemanticClosureManifest {
   evidence?: SemanticEvidence[];
   investigation_questions?: SemanticInvestigationQuestion[];
   findings?: SemanticFinding[];
+  spec_migration?: SemanticSpecMigrationClosure;
   project_integration?: SemanticProjectIntegration;
   provenance?: SemanticClosureProvenance;
 }
@@ -511,6 +521,105 @@ function validateInvestigationSemanticClosure(
   return buildResult(checks);
 }
 
+function validateSpecMigrationSemanticClosure(
+  manifest: SemanticClosureManifest
+): SemanticClosureValidationResult {
+  const checks: SemanticClosureCheck[] = [];
+  const evidence = asArray(manifest.evidence);
+  const migration = manifest.spec_migration;
+  const profileValid =
+    normalize(manifest.closure_profile) === 'spec_migration' &&
+    normalize(manifest.workflow_type) === 'spec_migration';
+  checks.push({
+    check_id: 'spec_migration_profile_identity',
+    description: 'Spec Migration semantic closure declares the canonical spec_migration profile',
+    passed: profileValid,
+    severity: profileValid ? undefined : 'error',
+  });
+  const noFabricatedImplementationChain =
+    asArray(manifest.outcomes).length === 0 &&
+    asArray(manifest.requirements).length === 0 &&
+    asArray(manifest.design_decisions).length === 0 &&
+    asArray(manifest.tasks).length === 0;
+  checks.push({
+    check_id: 'spec_migration_no_fabricated_implementation_chain',
+    description: 'Spec Migration semantic closure does not fabricate OUT/REQ/DD/TASK implementation entities',
+    passed: noFabricatedImplementationChain,
+    severity: noFabricatedImplementationChain ? undefined : 'error',
+  });
+  checks.push({
+    check_id: 'spec_migration_has_evidence',
+    description: 'Spec Migration semantic closure has explicit evidence',
+    passed: evidence.length > 0,
+    severity: evidence.length > 0 ? undefined : 'error',
+  });
+  const duplicateEvidenceIds = duplicateIds(evidence);
+  checks.push({
+    check_id: 'spec_migration_unique_evidence_ids',
+    description: 'Spec Migration semantic evidence ids are unique',
+    passed: duplicateEvidenceIds.length === 0,
+    severity: duplicateEvidenceIds.length === 0 ? undefined : 'error',
+    details: duplicateEvidenceIds,
+  });
+  const strongPassedEvidence = evidence.filter(item => isPassedEvidence(item) && !isWeakEvidence(item));
+  checks.push({
+    check_id: 'spec_migration_has_strong_passed_evidence',
+    description: 'Spec Migration has passed non-weak behavioral evidence',
+    passed: strongPassedEvidence.length > 0,
+    severity: strongPassedEvidence.length > 0 ? undefined : 'error',
+  });
+  const terminalBadEvidence = evidence.filter(isTerminalBadEvidence).map(item => item.id);
+  checks.push({
+    check_id: 'spec_migration_no_terminal_bad_evidence',
+    description: 'Spec Migration has no failed, blocked, unknown, or pending terminal evidence',
+    passed: terminalBadEvidence.length === 0,
+    severity: terminalBadEvidence.length === 0 ? undefined : 'error',
+    details: terminalBadEvidence,
+  });
+  const integrationStatus = normalize(manifest.project_integration?.status);
+  checks.push({
+    check_id: 'spec_migration_project_integration_merged',
+    description: 'Spec Migration Project Spec integration is merged',
+    passed: integrationStatus === 'merged',
+    severity: integrationStatus === 'merged' ? undefined : 'error',
+    details: integrationStatus ? [integrationStatus] : ['missing'],
+  });
+  const psv = String(migration?.project_spec_version ?? '').trim();
+  const psvValid = /^PSV-\d+$/.test(psv);
+  checks.push({
+    check_id: 'spec_migration_project_spec_version',
+    description: 'Spec Migration declares a canonical Project Spec Version',
+    passed: psvValid,
+    severity: psvValid ? undefined : 'error',
+    details: psv ? [psv] : ['missing'],
+  });
+  const mergeStatus = normalize(migration?.atomic_spec_merge_status);
+  const mergePassed = PASS_STATUSES.has(mergeStatus) || mergeStatus === 'merged';
+  checks.push({
+    check_id: 'spec_migration_atomic_spec_merge_passed',
+    description: 'Atomic Spec Merge succeeded',
+    passed: mergePassed,
+    severity: mergePassed ? undefined : 'error',
+  });
+  for (const [checkId, description, raw] of [
+    ['spec_migration_post_merge_gate_passed', 'Post-Spec-Merge Gate passed', migration?.post_merge_gate_status],
+    ['spec_migration_changed_files_audit_passed', 'No-code Changed Files Audit passed', migration?.changed_files_audit_status],
+    ['spec_migration_verification_passed', 'Verification passed', migration?.verification_status],
+    ['spec_migration_trace_contract_passed', 'Trace and Contract reconciliation passed', migration?.trace_contract_status],
+  ] as Array<[string, string, string | undefined]>) {
+    const status = normalize(raw);
+    const passed = PASS_STATUSES.has(status);
+    checks.push({
+      check_id: checkId,
+      description,
+      passed,
+      severity: passed ? undefined : 'error',
+      details: status ? [status] : ['missing'],
+    });
+  }
+  return buildResult(checks);
+}
+
 export function validateSemanticClosure(manifest: unknown): SemanticClosureValidationResult {
   const checks: SemanticClosureCheck[] = [];
 
@@ -530,6 +639,12 @@ export function validateSemanticClosure(manifest: unknown): SemanticClosureValid
   }
 
   const typedManifest = manifest as SemanticClosureManifest;
+  if (
+    normalize(typedManifest.closure_profile) === 'spec_migration' ||
+    normalize(typedManifest.workflow_type) === 'spec_migration'
+  ) {
+    return validateSpecMigrationSemanticClosure(typedManifest);
+  }
   if (
     normalize(typedManifest.closure_profile) === 'investigation' ||
     normalize(typedManifest.workflow_type) === 'investigation'

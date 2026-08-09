@@ -191,8 +191,13 @@ export function closeSpecArtifactRequirements(
   const investigationWorkflow = workflowType === 'investigation';
   const contractWorkflow =
     workflowType === 'contract_change' || workflowPath === 'contract_change_path';
+  const specMigrationWorkflow =
+    workflowType === 'spec_migration' || workflowPath === 'spec_migration_path';
   if (investigationWorkflow || contractWorkflow) {
     return { tasks: false, traceDelta: false };
+  }
+  if (specMigrationWorkflow) {
+    return { tasks: false, traceDelta: true };
   }
   return {
     tasks: true,
@@ -215,12 +220,14 @@ function isNoCodeWorkflow(wi: Record<string, unknown> | null): boolean {
     'no_code_change',
     'read_only_review',
     'contract_change',
+    'spec_migration',
   ]);
 
   return (
     allowed.has(workflowType) ||
     allowed.has(intent) ||
     workflowPath === 'contract_change_path' ||
+    workflowPath === 'spec_migration_path' ||
     workflowPath === 'investigation_path' ||
     workflowPath === 'review_path'
   );
@@ -277,7 +284,8 @@ function isNoCodeAuditAccepted(
 
 function semanticClosureChecks(
   manifest: SemanticClosureManifest | null,
-  investigationWorkflow: boolean
+  investigationWorkflow: boolean,
+  specMigrationWorkflow: boolean
 ): GateReportCheck[] {
   if (!manifest) {
     return [
@@ -297,7 +305,9 @@ function semanticClosureChecks(
       description: validation.passed
         ? investigationWorkflow
           ? 'Semantic closure proves QUESTION -> PLAN -> FINDING -> EVIDENCE -> VERIFICATION'
-          : 'Semantic closure proves OUT -> REQ -> DD -> TASK -> EV'
+          : specMigrationWorkflow
+            ? 'Semantic closure proves spec_migration Project Spec / Trace / Contract / no-code Verification closure'
+            : 'Semantic closure proves OUT -> REQ -> DD -> TASK -> EV'
         : `Semantic closure failed: ${validation.errors.map(issue => issue.check_id).join(', ')}`,
       passed: validation.passed,
       severity: validation.passed ? undefined : 'error',
@@ -328,6 +338,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const contractWorkflow =
     workflowType === 'contract_change' ||
     workflowPath === 'contract_change_path';
+  const specMigrationWorkflow =
+    workflowType === 'spec_migration' ||
+    workflowPath === 'spec_migration_path';
   const specArtifactRequirements = closeSpecArtifactRequirements(workflowPath, workflowType);
   const taskArtifacts = specArtifactRequirements.tasks
     ? await resolveWorkItemSpecArtifacts({
@@ -419,14 +432,15 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     readJson<Record<string, unknown>>(path.join(ctx.workItemDir, 'trigger_result.json')),
   ]);
   const formalVersionRequired =
-    !investigationWorkflow &&
-    !rollbackWorkflow &&
-    (formalVersionReport !== null ||
-      governanceScope?.active === true ||
-      gitContext?.git_enabled === true ||
-      (triggerResult?.impact_scope !== null &&
-        typeof triggerResult?.impact_scope === 'object' &&
-        !Array.isArray(triggerResult?.impact_scope)));
+    specMigrationWorkflow ||
+    (!investigationWorkflow &&
+      !rollbackWorkflow &&
+      (formalVersionReport !== null ||
+        governanceScope?.active === true ||
+        gitContext?.git_enabled === true ||
+        (triggerResult?.impact_scope !== null &&
+          typeof triggerResult?.impact_scope === 'object' &&
+          !Array.isArray(triggerResult?.impact_scope))));
   checks.push({
     check_id: 'close_formal_version_gate',
     description: formalVersionRequired
@@ -548,7 +562,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     checks.push({
       check_id: 'close_code_permission_revoked',
       description: noCodeAuditAccepted
-        ? 'code_permission was never enabled for no-code investigation/review WI (§12 no-code exception)'
+        ? 'code_permission was never enabled for the applicable no-code workflow (§12 no-code exception)'
         : 'code_permission is revoked by daemon fact source (§12)',
       passed: permissionCheckPassed,
       severity: permissionCheckPassed ? undefined : 'error',
@@ -669,7 +683,7 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
     const semanticManifest = await readJson<SemanticClosureManifest>(
       path.join(ctx.workItemDir, '.semantic_closure.json')
     );
-    checks.push(...semanticClosureChecks(semanticManifest, investigationWorkflow));
+    checks.push(...semanticClosureChecks(semanticManifest, investigationWorkflow, specMigrationWorkflow));
     const provenanceValidation = await validateSemanticClosureProvenance(
       ctx.workItemDir,
       semanticManifest

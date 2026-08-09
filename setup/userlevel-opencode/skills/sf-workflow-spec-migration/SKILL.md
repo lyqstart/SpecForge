@@ -53,13 +53,17 @@ The legacy mainline states `development`, `review`, `implementation`, `done`, `c
 
 ### 6. Code permission and executor boundary
 
-- Spec Migration is spec-only. It must NOT call or release `sf_code_permission` and must NOT enter implementation states.
-- Because no business code is written, `sf_changed_files_audit` is not applicable to implementation and must not be used to fabricate an implementation result; any no-code audit evidence must still show `unresolved_blocked_write_attempts=0`.
-- No business code is written; only `.specforge/project/**` module truth-source files are updated through the governed merge.
+- Spec Migration is spec-only. `Code Permission = NOT_APPLICABLE`; it must NOT call or release `sf_code_permission` and must NOT enter `implementation_ready`, `implementation_running`, or `implementation_done`.
+- Do not fabricate `tasks.md`, `allowed_write_files`, `governance_scope.json`, `filesystem_baseline.json`, or business-code changes to satisfy an implementation-only consumer.
+- After the required Post-Spec-Merge Gate passes, use the formal state transition capability to advance `post_merge_verified -> verification_running` for this no-code branch.
+- Run `sf_changed_files_audit` with `mode="no_code_change"` and require PASS: Code Permission was never enabled, business/project-code changes are zero, and `unresolved_blocked_write_attempts=0`.
+- No business code is written; `.specforge/project/**` truth-source changes are produced only by governed Atomic Spec Merge.
 
 ### 7. Verification and close gate
 
-- Verification must produce required evidence before close.
+- Verification must prove the merged Project Spec Version, approved Candidate -> formal Spec result, Trace/Contract reconciliation, Post-Spec-Merge Gate, no-code Changed Files Audit, and required behavioral evidence.
+- Produce `.semantic_closure.json` only through `sf_semantic_closure_run` with `closure_profile="spec_migration"` and `workflow_type="spec_migration"`; the profile must not fabricate OUT/REQ/DD/TASK implementation entities.
+- Verification Gate, Formal Version Gate, and Close Gate remain required.
 - `sf_close_gate` may close only from authoritative `verification_done`.
 - If authoritative state is not `verification_done`, `sf_close_gate` must fail fast with `AUTHORITATIVE_STATE_MISMATCH`.
 - `closed` must be written only by `close_gate`.

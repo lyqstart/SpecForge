@@ -182,6 +182,14 @@ function normalizeArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return unique(value.map(item => String(item ?? '').trim()).filter(Boolean));
 }
+export function isSpecMigrationNoCodeWorkflow(
+  workflowType: unknown,
+  workflowPath: unknown,
+): boolean {
+  const type = String(workflowType ?? '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+  const route = String(workflowPath ?? '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+  return type === 'spec_migration' || route === 'spec_migration_path';
+}
 
 export function normalizeImpactScope(value: unknown): ImpactScope {
   const scope = value && typeof value === 'object' ? (value as any) : {};
@@ -1776,6 +1784,11 @@ export async function verifyProjectGovernanceAfterImplementation(input: {
   workItemDir: string;
   workItemId: string;
 }): Promise<GovernanceCheckResult> {
+  const workItem = await readJson(path.join(input.workItemDir, 'work_item.json'));
+  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow(
+    workItem?.workflow_type,
+    workItem?.workflow_path,
+  );
   const consistency = await checkProjectGovernanceConsistency(input);
   const contracts = await checkProjectGovernanceContracts(input);
   const trace = await checkProjectGovernanceTrace(input);
@@ -1807,11 +1820,16 @@ export async function verifyProjectGovernanceAfterImplementation(input: {
     addCheck(
       checks,
       'project_spec_version_frozen',
-      'Project Spec version did not change after Code Permission was issued',
-      Boolean(frozenScope) &&
-        String(frozenScope?.project_spec_version ?? '') ===
-          String(formalManifest?.project_spec_version ?? ''),
-      `permission=${String(frozenScope?.project_spec_version ?? 'missing')}; current=${String(formalManifest?.project_spec_version ?? 'missing')}`,
+      specMigrationNoCode
+        ? 'Project Spec version is governed by Atomic Spec Merge; Code Permission is not applicable to spec_migration'
+        : 'Project Spec version did not change after Code Permission was issued',
+      specMigrationNoCode ||
+        (Boolean(frozenScope) &&
+          String(frozenScope?.project_spec_version ?? '') ===
+            String(formalManifest?.project_spec_version ?? '')),
+      specMigrationNoCode
+        ? `code_permission=not_applicable; current=${String(formalManifest?.project_spec_version ?? 'missing')}`
+        : `permission=${String(frozenScope?.project_spec_version ?? 'missing')}; current=${String(formalManifest?.project_spec_version ?? 'missing')}`,
     );
   }
 
@@ -2079,6 +2097,7 @@ export async function checkFormalVersionEligibility(input: {
 }): Promise<GovernanceCheckResult> {
   const checks: GovernanceCheck[] = [];
   const inputFiles: string[] = [];
+  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow('', input.workflowPath);
 
   const readGate = async (gateId: string) => {
     const gatePath = path.join(input.workItemDir, 'gates', `${gateId}.json`);
@@ -2125,6 +2144,7 @@ export async function checkFormalVersionEligibility(input: {
   const governanceScope = await readJson(path.join(input.workItemDir, 'governance_scope.json'));
   const gitRequired =
     actualScope.active &&
+    !specMigrationNoCode &&
     input.workflowPath !== 'contract_change_path' &&
     input.workflowPath !== 'rollback_path';
   const expectedImplementation =
@@ -2283,10 +2303,14 @@ export async function checkFormalVersionEligibility(input: {
     addCheck(
       checks,
       'formal_governance_scope_frozen',
-      input.workflowPath === 'contract_change_path' || input.workflowPath === 'rollback_path'
+      specMigrationNoCode ||
+      input.workflowPath === 'contract_change_path' ||
+      input.workflowPath === 'rollback_path'
         ? 'Frozen governance scope is not applicable to this no-code formal workflow'
         : 'Implementation has a frozen governance scope',
-      input.workflowPath === 'contract_change_path' || input.workflowPath === 'rollback_path'
+      specMigrationNoCode ||
+      input.workflowPath === 'contract_change_path' ||
+      input.workflowPath === 'rollback_path'
         ? true
         : Boolean(frozenScope?.active),
     );

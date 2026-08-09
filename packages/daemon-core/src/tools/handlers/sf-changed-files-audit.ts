@@ -89,7 +89,7 @@ function workflowValue(...values: unknown[]): string {
   );
 }
 
-function isNoCodeWorkflow(wiJson: any, triggerResult?: any): boolean {
+export function isNoCodeWorkflow(wiJson: any, triggerResult?: any): boolean {
   const workflowType = workflowValue(wiJson?.workflow_type, triggerResult?.workflow_type);
   const workflowPath = workflowValue(wiJson?.workflow_path, triggerResult?.workflow_path);
   const intent = workflowValue(wiJson?.intent, triggerResult?.intent, triggerResult?.change_type);
@@ -103,6 +103,7 @@ function isNoCodeWorkflow(wiJson: any, triggerResult?: any): boolean {
     'no_code_change',
     'read_only_review',
     'contract_change',
+    'spec_migration',
   ]);
 
   if (allowedTypes.has(workflowType)) return true;
@@ -112,6 +113,7 @@ function isNoCodeWorkflow(wiJson: any, triggerResult?: any): boolean {
   // because normal feature/bugfix Work Items also use it.
   return (
     workflowPath === 'contract_change_path' ||
+    workflowPath === 'spec_migration_path' ||
     workflowPath === 'investigation_path' ||
     workflowPath === 'review_path'
   );
@@ -660,7 +662,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
         'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.\nCannot audit without prior permission grant.',
       hard_stop: true,
       remediation:
-        'For investigation/no-code review Work Items, call sf_changed_files_audit with mode="no_code_change". ' +
+        'For investigation/review/spec_migration no-code Work Items, call sf_changed_files_audit with mode="no_code_change". ' +
         'For implementation Work Items, enable sf_code_permission before code changes.',
     };
   }

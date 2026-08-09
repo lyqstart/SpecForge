@@ -6611,3 +6611,164 @@ actual_files
 - **自动防护**：V179 validator 删除 endpoint literal 全局 cardinality，改为 `invoke_gate` call-site cardinality + payload tool/type 检查；保留 `/api/v1/admin/stop` 禁止检查。
 - **状态**：`CLOSED_PREDELIVERY_CALL_SITE_AUDIT`。
 <!-- SPECFORGE_ERR342_EXP244_V179_ENDPOINT_LITERAL_CARDINALITY_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR343_V180_PREDELIVERY_REPRESENTATION_FAILURE:START -->
+## ERR-343 / EXP-242 — V180 首次预交付构建发生表示层嵌套错误
+- **日期与阶段**：2026-08-09，V180 Code Permission 批处理包预交付构建。
+- **事实**：失败发生在 ZIP 交付前，未运行到用户机器，未访问 Validation，未执行 Code Permission。
+- **分类**：`VALIDATION_HARNESS_DEFECT / REPRESENTATION_ESCAPE`。
+- **根因**：生成脚本把多层 Python/JSON/字符串字面量嵌套在同一表示层，导致引号边界错误。
+- **影响**：只影响一次 assistant-side 预交付构建。
+- **正确做法**：复杂 runner / patch source 使用独立包内文件和结构化数据，不在外层字符串中继续嵌套源代码。
+- **防护**：复用 `EXP-242`、`EXP-078`。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR343_V180_PREDELIVERY_REPRESENTATION_FAILURE:END -->
+
+<!-- SPECFORGE_ERR344_V180_SPEC_MIGRATION_TASKS_PRECONDITION_PRODUCT_DEFECT:START -->
+## ERR-344 / EXP-044 — V180 暴露 spec_migration 与通用 Task/Code Permission/Implementation 契约冲突
+- **日期与阶段**：2026-08-09，WI-0004 `post_merge_verified` 后 Code Permission applicability review。
+- **一手证据**：V180 `STEP-002` 以 `TASKS_MD_MISSING_CANDIDATE_AND_LEGACY` Fail Closed；`REQUEST_STARTED=NO`、`TOOL_INVOCATION_COUNT=0`、`CODE_PERMISSION_ACTION=NONE`、`VALIDATION_REPO_WRITES=NONE_BEFORE_ACTION`、远程 HEAD 未变化。
+- **分类**：`PRODUCT_DEFECT / LIFECYCLE_CONTRACT_CONSUMER_MISMATCH`。
+- **根因**：Spec Migration Skill 已规定 spec-only、不得发 Code Permission、不得进入 implementation states；但通用 Code Permission、Changed Files Audit、Semantic Closure、Formal Version、Close 消费者未完整建模 `spec_migration` no-code 分支。
+- **影响**：阻断 WI-0004 从 `post_merge_verified` 合法进入 no-code Verification；没有产生产品副作用。
+- **正确做法**：新增唯一权威规则 `GOV-SPEC-MIGRATION-NO-CODE-001`，同步 Authority → Skill → Semantic Closure Builder/Validator → Code Permission → Changed Files Audit → Formal Version → Close；禁止伪造 Task/权限/业务代码。
+- **防护**：`EXP-044` 生产者消费者同步；新增 `spec-migration-no-code-lifecycle.test.ts`。
+- **状态**：`CLOSED_BY_V181_PRODUCT_FIX_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR344_V180_SPEC_MIGRATION_TASKS_PRECONDITION_PRODUCT_DEFECT:END -->
+
+<!-- SPECFORGE_ERR345_ASSISTANT_GITHUB_DNS_RECURRENCE:START -->
+## ERR-345 / EXP-072 — V181 调查期间 assistant container GitHub DNS 解析失败复发
+- **日期与阶段**：2026-08-09，V181 产品修复调查。
+- **事实**：assistant container 的 GitHub DNS 失败；用户 V180 回执已确认 live main=`31171f051a079affb9adc5e12a8c93ab27526e4e`。
+- **影响**：不属于 SpecForge 产品或用户环境；不产生仓库副作用。
+- **正确做法**：用户 runner 在任何写入前重新 `git ls-remote`；web exact-commit raw 只作辅助调查证据。
+- **防护**：复用 `EXP-072`、`EXP-007`。
+- **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE`。
+<!-- SPECFORGE_ERR345_ASSISTANT_GITHUB_DNS_RECURRENCE:END -->
+
+<!-- SPECFORGE_ERR346_WEB_CONTENTS_API_PROVENANCE_REJECTION:START -->
+## ERR-346 / EXP-007 — V181 调查期间 GitHub contents API exact URL 被工具 provenance/safety 前置拒绝
+- **日期与阶段**：2026-08-09，V181 exact-commit 源码取证。
+- **分类**：`TOOLING_FAILURE / WEB_PROVENANCE_PRECONDITION`。
+- **影响**：仅影响 assistant-side 取证路径；用户仓库无副作用。
+- **正确做法**：改用可追溯的 exact-commit raw GitHub source，不把 API 失败解释成产品缺陷。
+- **防护**：复用 `EXP-007`、`EXP-072`。
+- **状态**：`CLOSED_TOOLING_FALLBACK`。
+<!-- SPECFORGE_ERR346_WEB_CONTENTS_API_PROVENANCE_REJECTION:END -->
+
+<!-- SPECFORGE_ERR347_GUESSED_RAW_SOURCE_PATH_404:START -->
+## ERR-347 / EXP-007 — V181 调查期间猜测不存在源码路径导致 raw 404
+- **日期与阶段**：2026-08-09，V181 producer/consumer 调查。
+- **分类**：`INVESTIGATION_DEFECT / SOURCE_PATH_GUESS`。
+- **事实**：猜测不存在的源码路径后，改由正式 import/目录关系定位真实 `semantic-closure-builder.ts` 等生产者。
+- **影响**：只增加一次调查失败，不影响用户仓库。
+- **正确做法**：先从已知 import / exact source 发现真实路径，再读取目标文件。
+- **防护**：复用 `EXP-007`。
+- **状态**：`CLOSED_BY_SOURCE_DISCOVERY`。
+<!-- SPECFORGE_ERR347_GUESSED_RAW_SOURCE_PATH_404:END -->
+
+<!-- SPECFORGE_ERR348_CONTAINER_DOWNLOAD_CONTENT_TYPE_REJECTION:START -->
+## ERR-348 / EXP-072 — V181 调查期间 container.download 拒绝 TypeScript raw content-type
+- **日期与阶段**：2026-08-09，V181 exact source 下载尝试。
+- **分类**：`TOOLING_FAILURE / CONTENT_TYPE_POLICY`。
+- **影响**：仅影响 assistant-side 下载方式；不影响产品事实。
+- **正确做法**：以 web exact-commit raw 取证，用户 runner 从本地 exact Git baseline 变换并验证。
+- **防护**：复用 `EXP-072`、`EXP-007`。
+- **状态**：`CLOSED_TOOLING_FALLBACK`。
+<!-- SPECFORGE_ERR348_CONTAINER_DOWNLOAD_CONTENT_TYPE_REJECTION:END -->
+
+<!-- SPECFORGE_ERR349_V181_NESTED_GENERATOR_SYNTAX_FAILURE:START -->
+## ERR-349 / EXP-242 — V181 首次生成器因外层三引号与内嵌 Markdown/源码冲突而 SyntaxError
+- **日期与阶段**：2026-08-09，V181 产品修复 ZIP 交付前生成阶段。
+- **事实**：Python 生成器在解释阶段报 `SyntaxError`；系统明确指出不得假设任何文件、变量或副作用已创建；未访问用户仓库、未执行任何生命周期动作。
+- **分类**：`PREDELIVERY_BUILD_FAILURE / REPRESENTATION_ESCAPE / REPEATED_CLASS_EXP242`。
+- **根因**：继续把包含三引号/Markdown fenced block 的包内源码嵌入另一层 Python 三引号生成器，表示层没有物理隔离。
+- **影响**：只阻断一次 assistant-side 预交付构建。
+- **正确做法**：包内 `transforms.py`、runner、validator、测试文件分别作为独立文件生成，再由 ZIP 装配；禁止多层源码字符串生成器。
+- **防护**：复用 `EXP-242`、`EXP-008`、`EXP-078`；V181 改用独立文件装配。
+- **状态**：`CLOSED_PREDELIVERY_METHOD_CHANGED`。
+<!-- SPECFORGE_ERR349_V181_NESTED_GENERATOR_SYNTAX_FAILURE:END -->
+
+<!-- SPECFORGE_ERR350_V181_SKILL_SECTION_ANCHOR_CARDINALITY:START -->
+## ERR-350 / EXP-065 — V181 用户执行时 Skill 整段自然语言锚点无法命中
+- **日期与阶段**：2026-08-09，V181 spec_migration no-code 产品修复预变换阶段。
+- **一手证据**：用户回执 `ERROR=RuntimeError: ANCHOR_CARDINALITY:skill.sections:expected=1:actual=0`；`PRODUCT_COMMIT_ACTION=NONE`、`PRODUCT_PUSH_ACTION=NONE`、`VALIDATION_REPO_ACCESS=NONE`、全部 WI 生命周期动作为 NONE。
+- **分类**：`PATCH_DEFECT / NATURAL_LANGUAGE_ANCHOR / PREWRITE_FAIL_CLOSED`。
+- **根因**：Skill 真实章节标题与条目之间存在空行，而 V181 用整段自然语言精确字符串作为唯一锚点；语义一致但表示层不一致。
+- **影响**：产品修复未开始写入，远程 main 仍为 `31171f051a079affb9adc5e12a8c93ab27526e4e`。
+- **正确做法**：按唯一章节标题 `### 6. Code permission and executor boundary` 到 `### 8. Required behavior on uncertainty` 的结构边界替换，只约束章节顺序与唯一性，不绑定章节内部空行。
+- **防护**：V182 validator 加入含真实空行结构的 Skill fixture；复用 `EXP-065`、`EXP-007`、`EXP-244`。
+- **状态**：`CLOSED_BY_V182_SECTION_BOUNDARY_TRANSFORM`。
+<!-- SPECFORGE_ERR350_V181_SKILL_SECTION_ANCHOR_CARDINALITY:END -->
+
+<!-- SPECFORGE_ERR351_V182_ASSISTANT_GITHUB_DNS_RECURRENCE:START -->
+## ERR-351 / EXP-072 — V182 调查时 assistant container GitHub DNS 失败复发
+- **事实**：assistant container `git ls-remote` 返回 `Could not resolve host: github.com`；用户 V181 回执已结构化确认远程 main=`31171f051a079affb9adc5e12a8c93ab27526e4e`。
+- **影响**：仅 assistant 环境；用户仓库无副作用。
+- **正确做法**：V182 runner 在用户机器任何写入前重新执行 live `git ls-remote`。
+- **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE`。
+<!-- SPECFORGE_ERR351_V182_ASSISTANT_GITHUB_DNS_RECURRENCE:END -->
+
+<!-- SPECFORGE_ERR352_V182_WEB_TOOL_INVOCATION_SCHEMA_MISMATCH:START -->
+## ERR-352 / EXP-007 — V182 调查期间 web 工具调用形态与当前暴露 schema 不匹配
+- **事实**：参数化调用与空调用均在工具解析阶段被拒绝；没有形成远程事实读取，也没有产品副作用。
+- **分类**：`TOOLING_FAILURE / INVOCATION_SCHEMA_MISMATCH`。
+- **正确做法**：不把失败调用作为证据，改用 exact-commit text/plain 权威/Skill/handoff/ledger 取证。
+- **状态**：`CLOSED_TOOLING_FALLBACK`。
+<!-- SPECFORGE_ERR352_V182_WEB_TOOL_INVOCATION_SCHEMA_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR353_V182_TYPESCRIPT_DOWNLOAD_CONTENT_TYPE_REJECTION:START -->
+## ERR-353 / EXP-072 — V182 exact TypeScript raw 下载再次被 content-type 策略拒绝
+- **事实**：目标 HTTP 200/text/plain，但工具派生为 `application/javascript` 后拒绝保存；未获得本地文件。
+- **影响**：仅 assistant source retrieval；V181 用户执行在 Skill transformer 处失败，证明排序在 Skill 之前的 Runtime transformer 已在真实当前源码上完成内存预检。
+- **正确做法**：复用 V181 用户执行顺序证据；V182 仅改变实际失败的 Skill transformer。
+- **状态**：`CLOSED_BY_EXISTING_RUNTIME_PREFLIGHT_EVIDENCE`。
+<!-- SPECFORGE_ERR353_V182_TYPESCRIPT_DOWNLOAD_CONTENT_TYPE_REJECTION:END -->
+
+<!-- SPECFORGE_ERR354_V182_RAW_URLLIB_DNS_RECURRENCE:START -->
+## ERR-354 / EXP-072 — V182 assistant Python urllib raw source读取 DNS 失败复发
+- **事实**：`URLError(gaierror(... Temporary failure in name resolution))`；未产生文件或用户副作用。
+- **正确做法**：停止重复使用同一 DNS 失败路径，转用已成功的 exact-commit text/plain 下载与用户 runner 一手执行证据。
+- **状态**：`CLOSED_METHOD_CHANGED`。
+<!-- SPECFORGE_ERR354_V182_RAW_URLLIB_DNS_RECURRENCE:END -->
+
+<!-- SPECFORGE_ERR355_V182_DOWNLOAD_PROVENANCE_PRECONDITION_SEQUENCE:START -->
+## ERR-355 / EXP-007 — V182 多个替代下载 URL 被 provenance/view 前置条件统一拒绝
+- **事实**：GitHub contents API、codeload/archive、r.jina 代理及 P0 raw 下载尝试因 URL-view/provenance 前置约束被拒绝；均发生于 assistant 调查环境。
+- **影响**：没有用户仓库、副作用或生命周期动作。
+- **正确做法**：停止扩大替代下载尝试；最终真相由 V182 用户 runner 的 live ref、本地 exact baseline、测试与构建决定。
+- **状态**：`CLOSED_METHOD_CHANGED`。
+<!-- SPECFORGE_ERR355_V182_DOWNLOAD_PROVENANCE_PRECONDITION_SEQUENCE:END -->
+
+<!-- SPECFORGE_ERR356_V182_GENERATOR_EXTRA_ERR_BLOCK_ESCAPE_FAILURE:START -->
+## ERR-356 / EXP-242 — V182 首次组装 extra error block 时再次出现多层三引号转义 SyntaxError
+- **日期与阶段**：2026-08-09，V182 交付前 ZIP 生成。
+- **事实**：`transforms.py` 被生成成 `EXTRA_ERR_BLOCK = r\'\'\'`，Python 编译立即失败；未生成用户可执行包、未访问用户仓库、未执行生命周期动作。
+- **分类**：`PREDELIVERY_BUILD_FAILURE / REPRESENTATION_ESCAPE / REPEATED_CLASS_EXP242`。
+- **根因**：生成器仍尝试手工转义包内三引号边界。
+- **正确做法**：V182 最终生成器使用 Python `repr()` 把错误台账块编码为单一字符串字面量，不再人工拼接三引号。
+- **防护**：独立 `py_compile` + exact authority/Skill/ledger/handoff transform fixtures + ZIP reopen。
+- **状态**：`CLOSED_METHOD_CHANGED`。
+<!-- SPECFORGE_ERR356_V182_GENERATOR_EXTRA_ERR_BLOCK_ESCAPE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR357_V182_HANDOFF_GLOBAL_FIELD_CARDINALITY_PREFLIGHT:START -->
+## ERR-357 / EXP-065 — V182 exact handoff fixture 暴露全文件同名字段 cardinality 假设
+- **日期与阶段**：2026-08-09，V182 交付前 exact current-handoff transform fixture。
+- **事实**：当前 handoff 历史正文中存在 4 个 `PRIOR_FAILURE_RECONCILIATION=`，而 V181/V182 初始 transformer 对全文件要求唯一，fixture 报 `HANDOFF_FIELD_CARDINALITY:PRIOR_FAILURE_RECONCILIATION:expected=1:actual=4`；未生成交付包、未访问用户仓库。
+- **分类**：`PATCH_DEFECT / HISTORICAL_FIELD_COLLISION / PREDELIVERY_FAIL_CLOSED`。
+- **根因**：没有使用 handoff 已存在的 `SPECFORGE_CURRENT_EXECUTION_STATE:START/END` 结构边界。
+- **正确做法**：仅在 CURRENT EXECUTION STATE 块内更新固定 machine fields，并保持块外历史字段字节语义不变。
+- **防护**：V182 validator 增加块外重复字段 + 块内唯一字段 fixture，要求只更新当前块。
+- **状态**：`CLOSED_BY_CURRENT_EXECUTION_STATE_SCOPED_PATCH`。
+<!-- SPECFORGE_ERR357_V182_HANDOFF_GLOBAL_FIELD_CARDINALITY_PREFLIGHT:END -->
+
+<!-- SPECFORGE_ERR358_V182_ARTIFACT_ACCEPTANCE_PYCACHE_SELF_FAILURE:START -->
+## ERR-358 / EXP-080 — V182 最终 Artifact Acceptance 的 runner import 自身生成 pycache 导致零缓存断言失败
+- **日期与阶段**：2026-08-09，V182 最终 ZIP 独立验收。
+- **事实**：package validator 已 PASS；随后验收进程 import runner 时未设置 `sys.dont_write_bytecode=True`，临时解压目录生成 `__pycache__`，最终 `PACKAGE_PYCACHE_AUDIT` 断言失败；该 ZIP 未交付用户、未访问用户仓库。
+- **分类**：`ARTIFACT_ACCEPTANCE_HARNESS_DEFECT / PYCACHE_SELF_GENERATION`。
+- **根因**：验收器检查“零 pycache”之前自身执行了会生成 bytecode 的 import。
+- **正确做法**：二次 import 前设置 `sys.dont_write_bytecode=True`，验收结束后再次检查 ZIP member 与解压目录均无 `__pycache__/*.pyc`。
+- **防护**：复用 `EXP-080`、`EXP-078`；最终 V182 只有通过二次 import + 零 pycache + ZIP reopen 后才允许交付。
+- **状态**：`CLOSED_BY_ACCEPTANCE_HARNESS_FIX`。
+<!-- SPECFORGE_ERR358_V182_ARTIFACT_ACCEPTANCE_PYCACHE_SELF_FAILURE:END -->
