@@ -6131,3 +6131,116 @@ actual_files
 - **自动防护**：V158 后续 manifest 检查全部从 `json.loads` 后的实际 keys 驱动；独立 validator 直接读取 `m['target_hashes']` 并与 runner map 对账。
 - **状态**：`CLOSED_DIAGNOSTIC_ONLY_NO_PRODUCT_SIDE_EFFECT`。
 <!-- SPECFORGE_ERR305_EXP063_MANIFEST_DIAGNOSTIC_KEY_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR306_EXP001_V160_REPO_IDENTITY_FALSE_NEGATIVE:START -->
+## ERR-306 / EXP-001 — V160 用 `.git` 路径存在性代替 Git 自身仓库身份判断，真实 Validation 仓库被误判
+- **日期与阶段**：2026-08-09，SFV160 WI-0004 只读恢复用户执行。
+- **分类**：`VALIDATION_DEFECT / REPOSITORY_IDENTITY_DEFECT / FALSE_NEGATIVE`。
+- **现场表现**：V160 在 `D:\\code\\temp\\SpecForge-P0-Validation` 返回 `validation repo is not a git repository`；后续 V161/V162 在同一路径使用 `git rev-parse --show-toplevel` 证明该目录是有效 Git 仓库根，branch=`main`、HEAD=`793f3b1814f17e75f6e6356ab8213197c41c6fad`。
+- **已执行与未执行**：V160 在仓库身份判断处 Fail Closed；没有仓库写入、没有 WI 生命周期动作。
+- **根因**：验证器把文件系统层的 `.git` 路径检查作为 Git 仓库身份真相源；该判断不具备 Git 自身对 worktree / gitdir / toplevel 的完整语义。V160 现场为什么该路径检查返回否的更底层环境原因不再推测，但“仓库身份判断器选错真相源”已经由后续 `git rev-parse` 证据确认。
+- **影响**：真实仓库被假阴性阻断，无法进入后续只读恢复。
+- **正确做法**：仓库身份固定由 `git rev-parse --show-toplevel` + exact expected path 比较确定；`.git` 目录/文件存在性只能做辅助信息，不得单独决定仓库有效性。
+- **对应 EXP 类规则**：复用 `EXP-001 / EXP-007`。
+- **自动防护**：诊断/执行 runner 的 repository binding 必须调用 Git 自身；fixture 至少覆盖普通仓库与 worktree/gitdir 表示，禁止仅 `Path('.git').exists()` 判定身份。
+- **状态**：`CLOSED_BY_V162_EXACT_REPO_BINDING`。
+<!-- SPECFORGE_ERR306_EXP001_V160_REPO_IDENTITY_FALSE_NEGATIVE:END -->
+
+<!-- SPECFORGE_ERR307_EXP019_V161_OVERBROAD_REPO_LOCATOR:START -->
+## ERR-307 / EXP-019 — V161 用“存在 WI-0004”识别 Validation 仓库，WorkDesk 被错误纳入候选
+- **日期与阶段**：2026-08-09，SFV161 Validation repository locator 用户执行。
+- **分类**：`EVIDENCE_DEFECT / LOCATOR_SCOPE_DEFECT / AMBIGUOUS_MATCH`。
+- **现场表现**：V161 同时识别 `SpecForge-P0-Validation` 与 `WorkDesk` 为“包含 WI-0004 的 Git 仓库”，输出 `MATCHED_VALIDATION_REPO_COUNT=2`、`LOCATOR_RECONCILIATION=AMBIGUOUS_MULTIPLE_MATCHES`；但任务目标本来已有固定 Validation 路径。
+- **已执行与未执行**：V161 只读取证，结果为成功但定位结论不唯一；没有仓库写入和生命周期动作。
+- **根因**：locator 把“存在同名 Work Item”当成项目身份条件，忽略了已知 Validation 路径、项目角色和 exact toplevel 绑定，扩大了候选集合。
+- **影响**：引入与任务无关的 WorkDesk 读取，并阻断唯一定位。
+- **正确做法**：已有 exact project coordinate 时直接绑定并验证；只有 coordinate 缺失时才允许 discovery，且 discovery 必须用项目身份字段而不是 Work Item ID 单条件匹配。
+- **对应 EXP 类规则**：复用 `EXP-019 / EXP-001 / EXP-007`。
+- **自动防护**：V162 起固定 `D:\\code\\temp\\SpecForge-P0-Validation` + `git rev-parse --show-toplevel`；明确 `OTHER_REPOSITORY_READS=NONE`。
+- **状态**：`CLOSED_BY_V162_EXACT_REPO_BINDING`。
+<!-- SPECFORGE_ERR307_EXP019_V161_OVERBROAD_REPO_LOCATOR:END -->
+
+<!-- SPECFORGE_ERR308_EXP044_V163_VALIDATOR_ENDPOINT_LITERAL:START -->
+## ERR-308 / EXP-044 — V163 首次预交付 validator 对 HTTP endpoint 使用了错误的字面量形式
+- **日期与阶段**：2026-08-09，SFV163 User Decision 包第一次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / STATIC_CONSUMER_LITERAL_MISMATCH / PREDELIVERY_FAILURE`。
+- **现场表现**：runner 通过字符串拼接构造 `base+"/api/v1/tool/invoke"`，validator 却要求源码必须包含带引号整体字面量 `"/api/v1/tool/invoke"`，导致 `AssertionError: missing "/api/v1/tool/invoke"`。
+- **已执行与未执行**：失败包未发布；修改 validator 为检查稳定 endpoint token 后重新封包并通过独立 validator。
+- **仓库变化**：无用户仓库变化；未执行 User Decision。
+- **根因**：validator 校验的是源码书写形式，而不是 runner 的稳定行为契约，生产者与消费者的 token 表示没有先对账。
+- **影响**：正确 runner 被静态假阴性阻断一次。
+- **正确做法**：静态 validator 只检查不会随等价代码写法变化的契约 token；涉及运行行为时优先执行 fixture，而不是锁定源代码拼接样式。
+- **对应 EXP 类规则**：复用 `EXP-044 / EXP-078`。
+- **自动防护**：最终 V163 validator 使用 endpoint substring + exact tool/action tokens，并实际重新执行 packaged validator 后才发布。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR308_EXP044_V163_VALIDATOR_ENDPOINT_LITERAL:END -->
+
+<!-- SPECFORGE_ERR309_EXP212_ASSISTANT_ARTIFACT_WARMUP_TIMEOUT:START -->
+## ERR-309 / EXP-212 — V163 首次预交付 Python 启动附带 artifact/spreadsheet warmup timeout
+- **日期与阶段**：2026-08-09，SFV163 第一次预交付生成器进程启动。
+- **分类**：`ENVIRONMENT_ERROR / ASSISTANT_RUNTIME_WARMUP_FAILURE`。
+- **现场表现**：Python 启动 stderr 出现 `Spreadsheet runtime warmup failed during python startup`，底层为 artifact tool daemon socket timeout；同一进程随后继续执行到 V163 validator 自身的独立失败。
+- **已执行与未执行**：该 warmup 不访问 SpecForge/Validation 仓库，不属于 V163 runner 业务逻辑；最终 V163 由后续独立进程重新生成和验证。
+- **根因**：助手执行环境的通用 artifact/spreadsheet runtime warmup 未在启动窗口内建立 socket；不是 SpecForge 产品缺陷。
+- **影响**：增加预交付噪声，但不能作为 SpecForge 验证结论。
+- **正确做法**：把助手通用 warmup stderr 与目标 validator exit code / stdout contract 分离；只在目标验证链自身失败时阻断 Artifact Acceptance。
+- **对应 EXP 类规则**：复用 `EXP-212`。
+- **自动防护**：最终 Artifact Acceptance 以独立 packaged validator、ZIP reopen 和目标字段为准；环境 warmup 单独记账，不混入产品根因。
+- **状态**：`CLOSED_ENVIRONMENT_ONLY`。
+<!-- SPECFORGE_ERR309_EXP212_ASSISTANT_ARTIFACT_WARMUP_TIMEOUT:END -->
+
+<!-- SPECFORGE_ERR310_EXP002_V163_DAEMON_UNREACHABLE:START -->
+## ERR-310 / EXP-002 — V163 首次用户执行时 daemon 未运行，User Decision 在连接前 Fail Closed
+- **日期与阶段**：2026-08-09，SFV163 WI-0004 User Decision 首次用户执行。
+- **分类**：`ENVIRONMENT_ERROR / RUNTIME_PRECONDITION_NOT_MET`。
+- **现场表现**：runner 读取 canonical handshake 后请求 daemon，Windows 返回 `WinError 10061` 目标计算机主动拒绝连接；结果 `RESULT=FAILED`，`MERGE/CODE_PERMISSION/IMPLEMENTATION/VERIFICATION/CLOSE=NONE`。
+- **已执行与未执行**：没有记录 User Decision，没有修改 Candidate/Gate/Project Spec；用户按既定人工生命周期边界手工启动 daemon 后重跑同一 accepted V163，第二次成功把 WI-0004 从 `approval_required` 推进到 `approved`。
+- **根因**：运行 User Decision 前 daemon 运行时前置条件不成立；runner 正确没有自动启动 daemon。
+- **影响**：User Decision 延后一轮，但没有产生半状态或越界副作用。
+- **正确做法**：有副作用 daemon Tool 包必须先 health-check；daemon 不在线时 Fail Closed，并只提示用户手工启动，禁止脚本自动启动/重启。
+- **对应 EXP 类规则**：复用 `EXP-002 / EXP-018`。
+- **自动防护**：V163 已具备 handshake + `/api/v1/healthz` + HTTP fail-closed；失败回执明确所有后续生命周期动作为 NONE。
+- **状态**：`CLOSED_REAL_RERUN_SUCCESS`；后续 V163 真实回执证明 `STATE_AFTER=approved`。
+<!-- SPECFORGE_ERR310_EXP002_V163_DAEMON_UNREACHABLE:END -->
+
+<!-- SPECFORGE_ERR311_EXP098_V164_EOF_BLANK_LINE:START -->
+## ERR-311 / EXP-098 — V164 目标 ledger 首次预交付检查再次出现额外 EOF 空白行
+- **日期与阶段**：2026-08-09，V164 两文件治理回填包预交付文本卫生检查。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / TEXT_HYGIENE_DEFECT / REPEATED_CLASS_EXP098`。
+- **现场表现**：`specforge-development-error-ledger-and-experience.md` 目标字节以两个 LF 结束，预交付断言 `single terminal LF` 正确失败；handoff 同期满足单 LF。
+- **已执行与未执行**：失败发生在 ZIP 生成和用户交付之前；没有访问或修改用户本地仓库，没有生命周期动作。
+- **根因**：追加 ERR-306..310 时，生成器先 `rstrip`，随后追加块自身带尾部换行，又在最终写入再补一个换行，重复了既有 EOF 空白行类错误。
+- **影响**：只影响预交付文本卫生，不改变 ERR-306..310 的事实和两文件范围。
+- **正确做法**：所有目标文本在 Manifest/hash 冻结前统一执行 `rstrip('\\n') + '\\n'`，再逐行检查 trailing whitespace，并以最终字节生成 patch/hash。
+- **对应 EXP 类规则**：复用 `EXP-098`。
+- **自动防护**：V164 最终生成前对两个 patch 文档执行 `CRLF=0`、`TRAILING_WS=0`、`EOF_SINGLE_LF=PASS`，ZIP reopen 后再次按相同规则验证。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR311_EXP098_V164_EOF_BLANK_LINE:END -->
+
+<!-- SPECFORGE_ERR312_EXP212_VISIBLE_PYTHON_TMP_PERMISSION:START -->
+## ERR-312 / EXP-212 — V164 预交付误用可见 Python 环境修改容器 `/tmp` 构建文件导致 PermissionError
+- **日期与阶段**：2026-08-09，V164 ERR-311 回填后的预交付处理。
+- **分类**：`ENVIRONMENT_ERROR / TOOL_RUNTIME_BOUNDARY_DEFECT / PREPROCESSING_FAILURE`。
+- **现场表现**：可见 Python 运行环境尝试写 `/tmp/v164-ledger-target.md` 时返回 `PermissionError: [Errno 13] Permission denied`；系统明确该次执行未成功，不得假定任何输出或副作用成立。
+- **已执行与未执行**：没有用户仓库访问、写入或生命周期动作；失败后返回与构建文件同一容器环境处理。
+- **根因**：把两个隔离工具运行时的文件系统权限/挂载边界当成共享可写目录，违反“环境边界就是正式接口”。
+- **影响**：只增加一次助手侧预处理失败，没有改变目标文件范围或用户现场。
+- **正确做法**：修改容器创建的构建文件继续使用同一 container runtime；`python_user_visible` 只用于最终用户可见文件生成/展示，不跨运行时假定 `/tmp` 可写共享。
+- **对应 EXP 类规则**：复用 `EXP-002 / EXP-212`。
+- **自动防护**：构建中间态固定在单一 runtime；跨工具只通过明确的 `/mnt/data` 最终 Artifact 交接，任何跨 runtime 写失败单独记账并重建目标证据。
+- **状态**：`CLOSED_ENVIRONMENT_ONLY`。
+<!-- SPECFORGE_ERR312_EXP212_VISIBLE_PYTHON_TMP_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR313_EXP080_V164_VALIDATOR_PYCACHE:START -->
+## ERR-313 / EXP-080 — V164 validator 自检把 `.pyc` 写回待封包目录
+- **日期与阶段**：2026-08-09，V164 第一次 ZIP 生成前独立 validator 执行。
+- **分类**：`VALIDATION_DEFECT / PACKAGING_HYGIENE_DEFECT / REPEATED_CLASS_EXP080`。
+- **现场表现**：validator 主检查全部 PASS，但其 `py_compile.compile()` 未指定独立 `cfile`，在 `scripts/__pycache__` 生成字节码；ZIP reopen 的 `PACKAGE_PYCACHE_AUDIT` 正确失败。
+- **已执行与未执行**：失败 ZIP 未发布；没有用户仓库访问、写入或生命周期动作。
+- **根因**：重复 ERR-297 / EXP-080：验证器自身产生了待验收 Artifact 输入污染，外层 `PYTHONDONTWRITEBYTECODE` 不能阻止显式 `py_compile` 写文件。
+- **影响**：第一次 V164 构建不能成为 accepted Artifact。
+- **正确做法**：`py_compile` 必须把 `cfile` 指向独立 tempfile；validator 执行后再次审计 build tree 与最终 ZIP 均无 `__pycache__` / `*.pyc`。
+- **对应 EXP 类规则**：复用 `EXP-080`。
+- **自动防护**：V164 validator 使用临时编译输出；每次 validator 执行后执行 package pycache zero audit；ZIP extract 后再次 validator re-execution 并再次审计。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR313_EXP080_V164_VALIDATOR_PYCACHE:END -->
