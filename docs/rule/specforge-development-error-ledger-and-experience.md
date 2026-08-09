@@ -6453,3 +6453,17 @@ actual_files
 - **自动防护**：后续 SpecForge ZIP 生成优先使用普通 container/file 构建与独立 Python validator；仅在任务确实需要可视化 Python/Spreadsheet 时使用会 warmup spreadsheet 的通道。
 - **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE_BUILD_CHANNEL_CHANGED`。
 <!-- SPECFORGE_ERR329_EXP072_V172_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:END -->
+<!-- SPECFORGE_ERR330_EXP078_V173_BUILD_HARNESS_SYS_IMPORT:START -->
+## ERR-330 / EXP-078 — V173 只读 reconciliation 包最终 Artifact Acceptance harness 使用 `sys.executable` 但漏导入 `sys`
+- **日期与阶段**：2026-08-09，V173 WI-0004 post-merge read-only reconciliation 包预交付最终 Artifact Acceptance。
+- **分类**：`SCRIPT_DEFECT / PREDELIVERY_ACCEPTANCE_HARNESS_DEFECT / PYTHON_IMPORT_DEFECT / REPEATED_CLASS_ERR293_EXP078`。
+- **现场表现**：V173 ZIP 已生成后，独立解压并准备实际执行 packaged validator 时，assistant build harness 在 `subprocess.run([sys.executable, ...])` 处报 `NameError: name 'sys' is not defined`；因此最终 Artifact Acceptance 未成立，失败版 V173 未交付用户。
+- **已执行与未执行**：失败发生在助手侧最终验收 harness；未在用户机器运行，未访问或修改 `D:\code\temp\SpecForge-P0-Validation`，未调用 daemon API，未执行 Merge/Gate/User Decision/Code Permission/Implementation/Verification/Close。
+- **仓库变化**：无用户仓库变化。
+- **根因**：build harness 新脚本遗漏 `import sys`，重复历史 ERR-293；虽然 packaged runner/validator 内容已生成，但验收 harness 自身运行路径未先通过最小 import/runtime smoke test。
+- **影响**：该次 V173 Artifact 不能发布；不改变 WI-0004=`merged`、V166 Merge 只执行一次、Merge 禁止重跑的事实。
+- **正确做法**：复用 ERR-293 的固定防护：验收 harness 自身必须先可执行，再实际运行最终 ZIP 内 validator；语法检查、ZIP reopen 或已有 ZIP 字节不能替代完整 Artifact Acceptance。
+- **对应 EXP 类规则**：复用 `EXP-078`、`EXP-007`。
+- **自动防护**：后续非 spreadsheet ZIP 构建 harness 固定显式导入 `sys`，并按 `build -> ZIP reopen -> extract -> packaged validator actual execution -> no pycache -> final SHA256` 顺序完成；任一步失败均不得发布。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR330_EXP078_V173_BUILD_HARNESS_SYS_IMPORT:END -->
