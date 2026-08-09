@@ -408,6 +408,58 @@ Runtime 负责把结构化 Verification JSON 渲染为 Markdown，并保留机�
 
 ---
 
+## spec_migration 专用 Required Output（强制 workflow-specific 分支）
+
+当 `workflow_type=spec_migration` / `workflow_path=spec_migration_path` 时，本节**替代**
+下方通用实现型 `semantic_closure` 示例。不得把通用 OUT → REQ → DD → TASK 链套到迁移工作流。
+
+必须返回：
+```json
+{
+  "semantic_closure": {
+    "schema_version": "1.0",
+    "closure_profile": "spec_migration",
+    "workflow_type": "spec_migration",
+    "work_item_id": "<WI-ID>",
+    "outcomes": [],
+    "requirements": [],
+    "design_decisions": [],
+    "tasks": [],
+    "evidence": [
+      {
+        "id": "EV-...",
+        "status": "passed",
+        "level": "L3 | L4 | L5",
+        "evidence_type": "behavioral | integration | e2e",
+        "supports": ["<真实 governance claim target>"]
+      }
+    ],
+    "project_integration": {
+      "required": true,
+      "status": "merged"
+    },
+    "spec_migration": {
+      "project_spec_version": "PSV-...",
+      "atomic_spec_merge_status": "success | passed | merged",
+      "post_merge_gate_status": "passed",
+      "changed_files_audit_status": "passed",
+      "verification_status": "passed",
+      "trace_contract_status": "passed"
+    }
+  }
+}
+```
+
+Evidence 同步契约：
+1. 先根据实际验证结果冻结**一份最终 evidence set**；
+2. `evidence_manifest.entries` 与 `semantic_closure.evidence` 中相同 `id` 的
+   `id/status/level/evidence_type/supports` 五个字段必须逐条完全一致；
+3. spec_migration 的 `supports` 使用实际治理 claim target，不得为了满足通用模板伪造
+   `OUT-*` / `REQ-*` / `TASK-*`；
+4. 写入 `evidence_manifest` 后，在返回最终 Verification JSON 前重新核对上述五字段；
+5. 任一不一致时 `conclusion` 不得为 `pass`，不得把不一致留给 Verification Gate 才发现。
+
+---
 # Required Output
 
 向 Orchestrator 返回**验证 JSON 对象**：

@@ -4034,3 +4034,27 @@ V188 仍只修 SpecForge 产品；Validation/WI-0004 完全冻结。V188 成功�
 
 P0 主线继续 `IN_PROGRESS`；WI-0001 首次 Candidate Gate 永久机器证据缺口继续标记 `INSUFFICIENT_EVIDENCE`。
 <!-- SPECFORGE_V188_VERIFICATION_FORMAL_GATE_RUNNER_FIX:END -->
+
+<!-- SPECFORGE_V190_WI0004_VERIFICATION_RECOVERY_FIX:START -->
+## V190 — WI-0004 实测 Verification producer-consumer + passed Attempt recovery 闭环（2026-08-09）
+
+真实 WI-0004 no-code Verification 暴露四个相互关联的产品消费者缺口：
+1. sf-verifier 未强制 spec_migration 专用 Semantic Closure 输出；
+2. evidence_manifest 与 semantic_closure supports 可漂移；
+3. state coordinator 缺少 spec_migration canonical no-code Verification transition；
+4. Gate Runner 的 historical Attempt reconciliation 只能修 Candidate，不能复用已通过 Verification Attempt。
+
+不可变业务证据：
+- no-code Changed Files Audit PASS；
+-最终 semantic closure valid/provenance valid；
+- attempt-0005 为真实 evidence supports mismatch 失败；
+- attempt-0006 的 verification_gate + formal_version_gate 均 PASSED；
+- attempt-0006 只在 state auto-advance 阶段失败；
+- WI-0004 权威状态仍 post_merge_verified；
+- Close / Git Governance 未执行。
+
+V190 只修现有消费者和恢复路径，不新增 Workflow/Gate/Agent/治理层，不修改 Authority，不访问 Validation。
+修复后恢复动作必须优先：
+`sf_gate_run(reconcile_attempt_id="attempt-0006")`
+而不是重新运行 Verification Gate。只有 freshness / latest-view / passed-owned-gates 全部满足时才允许状态推进。
+<!-- SPECFORGE_V190_WI0004_VERIFICATION_RECOVERY_FIX:END -->

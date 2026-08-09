@@ -66,26 +66,67 @@ async function ensureFileExists(filePath: string, description: string): Promise<
   catch { throw new Error(`${description} missing: ${path.basename(filePath)}`); }
 }
 
+export function isCanonicalNoCodeVerificationCandidateManifest(input: {
+  manifest: Record<string, unknown>;
+  workItemId: string;
+  workflowType: string;
+}): boolean {
+  const manifest = input.manifest;
+  const integrationEffect = manifest.project_integration_effect;
+  const entries = manifest.entries;
+  if (input.workflowType === 'investigation') {
+    return manifest.workflow_type === 'investigation' &&
+      manifest.no_project_spec_change === true &&
+      typeof integrationEffect === 'string' &&
+      integrationEffect.trim().toLowerCase() === 'evidence_only' &&
+      manifest.merge_required === false &&
+      manifest.merge_applicable === false &&
+      Array.isArray(entries) &&
+      entries.length === 0;
+  }
+  if (input.workflowType === 'contract_change') {
+    return manifest.workflow_type === 'contract_change' &&
+      manifest.workflow_path === 'contract_change_path' &&
+      manifest.merge_required === true &&
+      Array.isArray(entries) &&
+      entries.length > 0 &&
+      entries.every(entry => entry && typeof entry === 'object' &&
+        String((entry as Record<string, unknown>).target_path ?? '').replace(/\\/g, '/')
+          .endsWith('.specforge/project/extension_registry.json'));
+  }
+  if (input.workflowType === 'spec_migration') {
+    return manifest.schema_version === '1.1' &&
+      manifest.work_item_id === input.workItemId &&
+      manifest.workflow_path === 'spec_migration_path' &&
+      manifest.merge_required === true &&
+      Array.isArray(entries) &&
+      entries.length > 0 &&
+      entries.every(entry => {
+        if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+        const record = entry as Record<string, unknown>;
+        const candidatePath = String(record.candidate_path ?? '').replace(/\\/g, '/');
+        const targetPath = String(record.target_path ?? '').replace(/\\/g, '/');
+        return record.operation === 'replace' &&
+          candidatePath.startsWith('candidates/project/modules/') &&
+          targetPath.startsWith('.specforge/project/modules/');
+      });
+  }
+  return false;
+}
 async function assertNoCodeVerificationTransition(input: TransitionWithEvidenceInput): Promise<void> {
   if (input.fromState !== 'post_merge_verified' || input.toState !== 'verification_running') return;
-  if (!['investigation', 'contract_change'].includes(input.workflowType)) {
-    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: post_merge_verified → verification_running is reserved for workflow_type=investigation or contract_change');
+  if (!['investigation', 'contract_change', 'spec_migration'].includes(input.workflowType)) {
+    throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: post_merge_verified → verification_running is reserved for no-code verification workflows');
   }
   const manifestPath = path.join(input.workItemDir, 'candidate_manifest.json');
   let manifest: Record<string, unknown>;
   try { manifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8')) as Record<string, unknown>; }
-  catch { throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: Investigation verification requires valid candidate_manifest.json'); }
-  const integrationEffect = manifest.project_integration_effect;
-  const entries = manifest.entries;
-  const canonical = input.workflowType === 'investigation'
-    ? manifest.workflow_type === 'investigation' && manifest.no_project_spec_change === true &&
-      typeof integrationEffect === 'string' && integrationEffect.trim().toLowerCase() === 'evidence_only' &&
-      manifest.merge_required === false && manifest.merge_applicable === false && Array.isArray(entries) && entries.length === 0
-    : manifest.workflow_type === 'contract_change' && manifest.workflow_path === 'contract_change_path' &&
-      manifest.merge_required === true && Array.isArray(entries) && entries.length > 0 &&
-      entries.every(entry => entry && typeof entry === 'object' &&
-        String((entry as Record<string, unknown>).target_path ?? '').replace(/\\/g, '/').endsWith('.specforge/project/extension_registry.json'));
-  if (!canonical) {
+  catch { throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: no-code verification requires valid candidate_manifest.json'); }
+  if (!isCanonicalNoCodeVerificationCandidateManifest({
+    manifest,
+    workItemId: input.workItemId,
+    workflowType: input.workflowType,
+  })) {
     throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: no-code verification requires a canonical workflow-specific candidate manifest');
   }
 }

@@ -707,6 +707,36 @@ async function autoAdvanceStateAfterGateRun(input: {
   return autoAdvanceCandidateState(input);
 }
 
+
+export function reconciliationModeForState(
+  currentState: string | null,
+  workflowType?: string,
+): 'candidate' | 'verification' | null {
+  if (
+    currentState &&
+    ['gates_failed', 'candidate_preparing', 'candidate_prepared', 'gates_running'].includes(
+      currentState,
+    )
+  ) {
+    return 'candidate';
+  }
+  if (isVerificationRecoverableState(currentState, workflowType)) {
+    return 'verification';
+  }
+  return null;
+}
+
+async function autoAdvanceReconciledState(
+  input: Parameters<typeof autoAdvanceCandidateState>[0] & {
+    reconciliationPhase: 'candidate' | 'verification';
+  },
+): Promise<any> {
+  if (input.reconciliationPhase === 'verification') {
+    return autoAdvanceVerificationState(input);
+  }
+  return autoAdvanceCandidateState(input);
+}
+
 function normalizeReconcileAttemptId(value: unknown): string | null {
   if (value === undefined || value === null || String(value).trim() === '') return null;
   const normalized = String(value).trim();
@@ -743,6 +773,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   workflowPath: string;
   workflowType: string;
   candidatePhase: CandidateGatePhaseV11;
+  reconciliationKind?: 'candidate' | 'verification';
   attemptId: string;
 }): Promise<{
   attempt_id: string;
@@ -814,27 +845,46 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     reports.push(report);
   }
 
-  const coverage = candidateGateSetCoversRequiredGates({
-    workflowPath: input.workflowPath,
-    candidatePhase: input.candidatePhase,
-    workflowType: input.workflowType,
-    reports,
-  });
-  if (!coverage.ok) {
-    throw new Error(
-      `RECONCILE_CANDIDATE_GATE_COVERAGE_INVALID: ${coverage.reason}: ${JSON.stringify(
-        coverage.details,
-      )}`
-    );
-  }
-  if (coverage.failedRequiredGateIds.length > 0) {
-    throw new Error(
-      `RECONCILE_CANDIDATE_GATE_NOT_PASSED: ${coverage.failedRequiredGateIds.join(',')}`
-    );
+  const reconciliationKind = input.reconciliationKind ?? 'candidate';
+  let requiredGateIds: GateIdV11[];
+  if (reconciliationKind === 'verification') {
+    const eligibility = evaluateVerificationGateAutoAdvanceEligibility({
+      reports,
+      summaryStatus: 'passed',
+    });
+    if (!eligibility.allowed) {
+      throw new Error(
+        `RECONCILE_VERIFICATION_GATE_COVERAGE_INVALID: ${eligibility.reason}: ${JSON.stringify({
+          failed_gate_ids: eligibility.failed_gate_ids,
+          missing_gate_ids: eligibility.missing_gate_ids,
+        })}`
+      );
+    }
+    requiredGateIds = ['verification_gate', 'formal_version_gate'];
+  } else {
+    const coverage = candidateGateSetCoversRequiredGates({
+      workflowPath: input.workflowPath,
+      candidatePhase: input.candidatePhase,
+      workflowType: input.workflowType,
+      reports,
+    });
+    if (!coverage.ok) {
+      throw new Error(
+        `RECONCILE_CANDIDATE_GATE_COVERAGE_INVALID: ${coverage.reason}: ${JSON.stringify(
+          coverage.details,
+        )}`
+      );
+    }
+    if (coverage.failedRequiredGateIds.length > 0) {
+      throw new Error(
+        `RECONCILE_CANDIDATE_GATE_NOT_PASSED: ${coverage.failedRequiredGateIds.join(',')}`
+      );
+    }
+    requiredGateIds = coverage.requiredGateIds;
   }
 
   const reportById = new Map(reports.map(report => [report.gate_id, report]));
-  for (const gateId of coverage.requiredGateIds) {
+  for (const gateId of requiredGateIds) {
     const report = reportById.get(gateId);
     if (!report || report.status !== 'passed') {
       throw new Error(
@@ -991,7 +1041,7 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     attempt_path: attemptPath,
     summary_status: 'passed',
     reports,
-    required_gate_ids: coverage.requiredGateIds,
+    required_gate_ids: requiredGateIds,
     latest_view_matches: true,
     input_freshness_check: 'pass',
     freshness_mode: freshnessMode,
@@ -1057,14 +1107,10 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
           'RECONCILE_ATTEMPT_ARGUMENT_CONFLICT: reconcile_attempt_id cannot be combined with gate_ids or gate_type'
         );
       }
-      if (
-        !currentState ||
-        !['gates_failed', 'candidate_preparing', 'candidate_prepared', 'gates_running'].includes(
-          currentState,
-        )
-      ) {
+      const reconciliationPhase = reconciliationModeForState(currentState, workflowType);
+      if (!reconciliationPhase) {
         throw new Error(
-          `RECONCILE_STATE_NOT_ALLOWED: expected Candidate retry state, got ${currentState ?? 'null'}`
+          `RECONCILE_STATE_NOT_ALLOWED: expected Candidate retry or Verification recoverable state, got ${currentState ?? 'null'}`
         );
       }
 
@@ -1075,10 +1121,12 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
         workflowPath,
         workflowType,
         candidatePhase,
+        reconciliationKind: reconciliationPhase,
         attemptId: reconcileAttemptId,
       });
 
-      const stateAutoAdvance = await autoAdvanceCandidateState({
+      const stateAutoAdvance = await autoAdvanceReconciledState({
+        reconciliationPhase,
         deps,
         context,
         projectRoot,
@@ -1100,6 +1148,7 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
         workflow_type: workflowType,
         authoritative_state_before_reconciliation: currentState,
         reconciliation_mode: true,
+        reconciliation_phase: reconciliationPhase,
         reconciled_attempt_id: reconciliation.attempt_id,
         reconciled_attempt_path: path
           .relative(projectRoot, reconciliation.attempt_path)

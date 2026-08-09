@@ -6944,3 +6944,46 @@ actual_files
 - **防护**：复用 `EXP-244`、`EXP-063`；内部 validator 与外部 Artifact Acceptance 使用相同 code/payload domain separation。
 - **状态**：`CLOSED_PREDELIVERY_EXECUTABLE_DOMAIN_ONLY`。
 <!-- SPECFORGE_ERR377_V188_ANTI_REGRESSION_SCANNED_HISTORY_PAYLOAD:END -->
+
+<!-- SPECFORGE_ERR378_ERR383_WI0004_VERIFICATION_RECOVERY:START -->
+## ERR-378 / EXP-242 — V189 CMD clipboard pipeline produced garbled Chinese
+- **事实**：`type OPEN_CODE_PROMPT.txt | clip` 与后续 `cmd /u ... | clip` 在用户 Windows CMD 环境中均产生中文乱码。V189 ZIP 本身通过验收；乱码发生在用户侧剪贴板传输层。
+- **影响**：没有仓库写入、没有 WI 生命周期动作；只阻断提示词可靠传递。
+- **根因**：把 UTF-8 文件经过 CMD code page / pipe 转换后送入 Windows clipboard，表示层编码不稳定。
+- **正确方法**：Unicode 文本不得再通过 CMD 文本管道传剪贴板；使用显式 Win32 `CF_UNICODETEXT` 或避免剪贴板传输。
+- **状态**：`CLOSED_METHOD_CHANGED`。
+
+## ERR-379 / EXP-242 — 首个 Win32 Unicode clipboard Python 命令发生 64-bit 指针截断
+- **事实**：首次 `ctypes.windll.kernel32.GlobalLock` 调用未声明 `restype=c_void_p`，用户执行时报 `OSError: access violation writing 0x0000000000000000`。
+- **影响**：没有仓库/WI副作用。
+- **根因**：64-bit Windows 指针返回值按 ctypes 默认整数类型解释。
+- **正确方法**：显式声明 `GlobalAlloc/GlobalLock/GlobalUnlock/SetClipboardData` 的 argtypes/restype；不再使用未声明指针签名的单行 WinAPI。
+- **状态**：`CLOSED_FIXED_COMMAND`。
+
+## ERR-380 / EXP-044 — sf-verifier 对 spec_migration 首次生成普通实现链式 Semantic Closure
+- **事实**：WI-0004 实际 Verification 中，sf-verifier 首次返回普通 OUT/REQ/DD/TASK Semantic Closure；`sf_semantic_closure_run` 按 `spec_migration` profile 正确拒绝，指出迁移工作流不得伪造实现链。
+- **影响**：第一次 semantic closure 失败；未推进状态。
+- **根因**：`sf-verifier.md` Required Output 只有通用实现型 JSON 示例，没有把 `spec_migration` 的专用输出结构设为 workflow-specific 强制分支；Spec Migration Skill 也没有列出六个专用状态字段。
+- **正确方法**：Agent/Skill 明确：spec_migration 的 outcomes/requirements/design_decisions/tasks 必须为空；必须返回 `closure_profile=spec_migration`、`workflow_type=spec_migration` 和六个 `spec_migration` 状态字段。
+- **状态**：`CLOSED_BY_V190_PENDING_EXECUTION`。
+
+## ERR-381 / EXP-044 — sf-verifier 的 evidence_manifest supports 与 semantic_closure evidence supports 漂移
+- **事实**：attempt-0005 的 `verification_gate` 因 `verification_claims_match_evidence_manifest` 失败；evidence_manifest 仍指向旧 OUT/REQ 实体，而 semantic closure 已改为 spec_migration 治理 claim targets。重新调度 verifier 同步 supports 并刷新 provenance 后问题消失。
+- **影响**：attempt-0005 是真实失败 Attempt，必须永久保留；没有状态推进。
+- **根因**：Agent 文档虽要求同 ID 对账，但没有规定 spec_migration 必须从同一最终 evidence set 同步生成 manifest 与 semantic closure，也没有禁止迁移 profile 使用旧通用实体 supports。
+- **正确方法**：对 spec_migration 固定 `id/status/level/evidence_type/supports` 五字段逐条一致；先冻结最终 evidence set，再写 manifest/report；任何不一致 conclusion 不得为 pass。
+- **状态**：`CLOSED_BY_V190_PENDING_EXECUTION`。
+
+## ERR-382 / EXP-044 — state coordinator 漏掉 spec_migration no-code Verification canonical branch
+- **事实**：attempt-0006 的 `verification_gate` 与 `formal_version_gate` 均 passed，但 Gate Runner 在 `post_merge_verified -> verification_running` 抛出 reserved-for-investigation-or-contract_change。当前 `state-coordinator-v11.ts` 允许列表漏 `spec_migration`，且后续 canonical manifest 判定只有 investigation / contract_change 两支；简单加 allowlist 仍会把 spec_migration 错当 contract_change。
+- **影响**：attempt-0006 Gate 结果有效并已落盘，但权威状态仍 `post_merge_verified`，Close/Git 未执行。
+- **正确方法**：加入独立 spec_migration canonical candidate manifest 分支，严格匹配实际 producer：schema 1.1、当前 WI、spec_migration_path、merge_required=true、非空 replace entries、canonical candidate/target module paths。
+- **状态**：`CLOSED_BY_V190_PENDING_EXECUTION`。
+
+## ERR-383 / EXP-085 — passed Verification Attempt 无历史状态对账入口
+- **事实**：当前 `sf_v11_gate_run(reconcile_attempt_id=...)` 只接受 Candidate retry states，并只执行 Candidate coverage/auto-advance；不能复用已经 passed 的 attempt-0006 修复 state-auto-advance-only 失败。
+- **权威要求**：`GATE-ATTEMPT-RECONCILE-001` 要求“已有有效 passed Attempt，不得为了修状态而重复 Gate；先证明 Attempt/输入未变化，再由 gate_runner 做历史 Attempt 状态对账”。
+- **影响**：若不修，将被迫创建多余 attempt-0007，破坏不可变 Attempt 语义和失败恢复效率。
+- **正确方法**：扩展现有 reconciliation：Verification recoverable state 下复用 latest passed Gate Attempt；要求 Verification+Formal Version coverage、latest views 一致、input snapshot freshness PASS；`gate_run_action=NOT_PERFORMED`、`new_gate_attempt_created=false`，然后只执行现有 Verification state auto-advance。
+- **状态**：`CLOSED_BY_V190_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR378_ERR383_WI0004_VERIFICATION_RECOVERY:END -->

@@ -14,6 +14,9 @@ import {
   normalizeGateIds,
 } from '../../src/tools/handlers/sf-v11-gate-run.js';
 import { getRequiredGates } from '../../src/tools/lib/required-gates.js';
+import { isCanonicalNoCodeVerificationCandidateManifest } from '../../src/tools/lib/state-coordinator-v11.js';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 function validSpecMigrationManifest(): any {
   return {
@@ -95,6 +98,66 @@ describe('spec_migration no-code lifecycle contract', () => {
       failed_gate_ids: [],
       missing_gate_ids: [],
     });
+  });
+
+  test('accepts the canonical candidate manifest produced by spec_migration and rejects contract-shape drift', () => {
+    const manifest = {
+      schema_version: '1.1',
+      work_item_id: 'WI-0004',
+      workflow_path: 'spec_migration_path',
+      base_spec_version: 'PSV-0003',
+      project_spec_precondition_sha256: 'a'.repeat(64),
+      repair_evidence_paths: ['.specforge/project/architecture.md'],
+      merge_required: true,
+      entries: [
+        {
+          type: 'module_definition',
+          module_id: 'REPORTING',
+          candidate_path: 'candidates/project/modules/REPORTING/module.candidate.json',
+          target_path: '.specforge/project/modules/REPORTING/module.json',
+          operation: 'replace',
+        },
+      ],
+    };
+    expect(
+      isCanonicalNoCodeVerificationCandidateManifest({
+        manifest,
+        workItemId: 'WI-0004',
+        workflowType: 'spec_migration',
+      }),
+    ).toBe(true);
+    expect(
+      isCanonicalNoCodeVerificationCandidateManifest({
+        manifest: { ...manifest, workflow_path: 'contract_change_path' },
+        workItemId: 'WI-0004',
+        workflowType: 'spec_migration',
+      }),
+    ).toBe(false);
+  });
+
+  test('pins sf-verifier and spec-migration Skill to the no-code evidence/output contract', async () => {
+    const repoRoot = join(import.meta.dirname, '../../../..');
+    const verifier = await readFile(
+      join(repoRoot, 'setup/userlevel-opencode/agents/sf-verifier.md'),
+      'utf-8',
+    );
+    const skill = await readFile(
+      join(repoRoot, 'setup/userlevel-opencode/skills/sf-workflow-spec-migration/SKILL.md'),
+      'utf-8',
+    );
+    for (const token of [
+      'spec_migration 专用 Required Output',
+      '"outcomes": []',
+      '"requirements": []',
+      '"design_decisions": []',
+      '"tasks": []',
+      'id/status/level/evidence_type/supports',
+    ]) {
+      expect(verifier).toContain(token);
+    }
+    expect(skill).toContain('sf_gate_run(gate_type="verification")');
+    expect(skill).toContain('sf_gate_run(reconcile_attempt_id="<latest-passed-attempt>")');
+    expect(skill).toContain('id/status/level/evidence_type/supports');
   });
 
   test('validates typed spec_migration semantic closure without fabricated Task chain', () => {

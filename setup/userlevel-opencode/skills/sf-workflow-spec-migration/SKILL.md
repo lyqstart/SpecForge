@@ -175,9 +175,11 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 ### 阶段 6：验证与关闭
 
-1. 调度 `sf-verifier` 验证合并后的正式 Project Spec 一致（模块注册表非空且规范、模块文件齐备），受控写入 `verification_report` 与 `evidence_manifest`，返回 typed `semantic_closure`。
-2. `sf_semantic_closure_run(semantic_closure=<原样对象>)` → `sf_gate_run(verification_gate)` → `sf_close_gate`；闭包无效时不得运行 Gate。
-3. 全程不启用/不撤销 code_permission（本工作流从未启用）。
+1. 调度 `sf-verifier` 验证合并后的正式 Project Spec 一致（模块注册表非空且规范、模块文件齐备），受控写入 `verification_report` 与 `evidence_manifest`。对 `spec_migration`，verifier 返回的 typed `semantic_closure` 必须固定为 `closure_profile="spec_migration"`、`workflow_type="spec_migration"`，且 `outcomes/requirements/design_decisions/tasks` 全为空；顶层 `spec_migration` 必须包含 `project_spec_version`、`atomic_spec_merge_status`、`post_merge_gate_status`、`changed_files_audit_status`、`verification_status`、`trace_contract_status` 六个字段。
+2. verifier 必须从同一最终 evidence set 同步生成 `evidence_manifest.entries` 与 `semantic_closure.evidence`；同 ID 的 `id/status/level/evidence_type/supports` 必须逐条一致。不得留下旧的 OUT/REQ/TASK supports；不一致时 Verification 不得声明 PASS。
+3. `sf_semantic_closure_run(semantic_closure=<verifier 原样对象>)` 成功后，调用 `sf_gate_run(gate_type="verification")`；该 stage alias 必须同时执行 Verification Gate + Formal Version Gate。不得只调用单独 `verification_gate`。
+4. 如果最新 Gate Attempt 自身已 `passed`、但仅因 Runtime state auto-advance 缺陷而失败关闭，修复/重载 Runtime 后不得创建重复 Gate Attempt；先证明该 Attempt 是 latest、latest Gate views 未变化且 input snapshot freshness PASS，再调用 `sf_gate_run(reconcile_attempt_id="<latest-passed-attempt>")` 只做历史 Attempt 状态对账。
+5. 只有权威状态为 `verification_done` 后才调用 `sf_close_gate`。全程不启用/不撤销 code_permission（本工作流从未启用）。
 
 ## v1.1 治理硬约束（本工作流特有）
 
