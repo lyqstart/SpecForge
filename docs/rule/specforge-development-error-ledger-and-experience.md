@@ -2867,6 +2867,8 @@ V编号、commit SHA、证据包路径和时间戳只记录在哪次执行取得
 □ 所有生成文本文件以一个且仅一个LF结束；封包前和补丁应用后已完成字节级EOF检查
 □ Markdown标题正则只使用水平空白；已验证不会跨行吞掉首条正文
 □ 固定文本测试只断言正式生产者状态和字段；不存在旧状态或未写入概括
+□ 固定机器模板已从 canonical block 原样取得并只填写 value slot；字段名、字段顺序、Marker、cardinality 和枚举未由模型重建，exact-schema validator 已通过
+□ Bootstrap 每次工具调用只消费当前 BOOTSTRAP_ALLOWED_TOOL_CLASS 对应资源；未把当前阶段与下一阶段资源并行或同批读取
 □ 含反斜杠序列的固定文本测试已区分源文本字面量与运行时控制字符；非ASCII文本优先使用普通字符串双重转义
 □ 非ASCII tagged template已在目标Bun/Node转换链验证运行时实际值；未经验证不得使用String.raw
 □ 脚本 stdout/stderr、编码和失败恢复已设计
@@ -5891,3 +5893,241 @@ actual_files
 - **自动防护**：V154 将 V152 test block 限定到唯一 CURRENT EXECUTION STATE，并用结构正则验证动态字段；保留 D1-D19、`UNRECORDED_FAILURES=0`、ERR-284 ledger 结构等稳定回归，同时禁止自然语言说明成为 blocking assertion。
 - **状态**：`CLOSED`；V154 目标测试、TypeScript、daemon-core build、workspace build、范围审计和 push 全部通过后成立。
 <!-- SPECFORGE_ERR289_EXP255_DYNAMIC_STAGE_HARDCODED_TEST_CONSUMER:END -->
+<!-- SPECFORGE_ERR290_EXP256_HISTORICAL_EVIDENCE_GAP:START -->
+## ERR-290 / EXP-256 — V155 已保留错误编号但原始失败事实不可恢复
+- **日期与阶段**：2026-08-09，V155 后续恢复与 V157 修改前对账。
+- **分类**：`HISTORICAL_EVIDENCE_GAP / PERMANENT_INSUFFICIENT_EVIDENCE / LEDGER_BACKFILL_DEBT`。
+- **现场表现**：V155 标准回执明确包含 `PREDELIVERY_ARTIFACT_DEFECTS=ERR-290_PENDING_LEDGER_BACKFILL,ERR-291_PENDING_LEDGER_BACKFILL`，但现有远程台账、current-handoff、可检索历史回执和当前用户提供的 V155 回执均没有 ERR-290 的原始失败步骤、错误消息或根因正文。
+- **已执行与未执行**：已重新检索当前远程台账、handoff、会话历史和可用历史文件；没有找到足以证明具体失败事实的一手证据；未根据编号或后续状态反推原始错误。
+- **仓库变化**：发现与追证阶段没有用户仓库写入；本条由 V158 作为错误台账债务补录。
+- **根因**：`INSUFFICIENT_EVIDENCE`；只能证明“ERR-290 曾被保留为待补录 ID”，不能证明具体缺陷内容或原因。
+- **影响**：若强行补写具体根因会制造伪历史证据；若永远保持“未记录错误”又会无因果阻塞后续已独立取证的产品修复。
+- **正确做法**：保留 ERR-290 独立编号并明确历史事实不可恢复；未知字段必须保持 `INSUFFICIENT_EVIDENCE`，不得把当前目标状态或相邻错误当作历史真相；在当前任务拥有独立最新基线和完整证据时，本历史 evidence gap 不得无限阻塞无因果的隔离修复。
+- **新增类防护 / EXP-256**：历史错误编号已被正式回执保留但原始事实永久不可恢复时，必须建立 `HISTORICAL_EVIDENCE_GAP` 条目，记录“已知事实 / 未知事实 / 检索范围 / 不允许推断”；该条目关闭的是 ledger-debt，不是假装缺陷根因已证明。与当前任务无因果关系且当前基线独立确认时，按 `EXP-033 / EXP-051 / EXP-088` 继续当前隔离修复。
+- **自动防护**：台账 consumer 必须允许 `ROOT_CAUSE=INSUFFICIENT_EVIDENCE` 类历史条目；禁止要求用当前文件内容合成不可恢复历史；`UNRECORDED_FAILURES=0` 只表示所有已知错误编号均已有诚实条目，不表示所有历史根因都已恢复。
+- **状态**：`CLOSED_AS_HISTORICAL_EVIDENCE_GAP`；V157 只关闭台账遗漏，不声明 ERR-290 原始缺陷已被重建或修复。
+<!-- SPECFORGE_ERR290_EXP256_HISTORICAL_EVIDENCE_GAP:END -->
+
+<!-- SPECFORGE_ERR291_EXP256_HISTORICAL_EVIDENCE_GAP:START -->
+## ERR-291 / EXP-256 — V155 第二个保留错误编号的原始失败事实不可恢复
+- **日期与阶段**：2026-08-09，V155 后续恢复与 V157 修改前对账。
+- **分类**：`HISTORICAL_EVIDENCE_GAP / PERMANENT_INSUFFICIENT_EVIDENCE / LEDGER_BACKFILL_DEBT`。
+- **现场表现**：V155 标准回执与 ERR-290 同时明确保留 `ERR-291_PENDING_LEDGER_BACKFILL`，但没有携带 ERR-291 的原始错误信息、失败步骤、受影响 Artifact 或根因；后续可用证据也未恢复这些事实。
+- **已执行与未执行**：已执行与 ERR-290 相同的历史证据检索；没有取得足以区分 ERR-291 具体失败类别的一手证据；未把 ERR-290、ERR-292 或其他相邻编号事实复制到本条。
+- **仓库变化**：追证阶段无用户仓库写入；本条由 V158 补录。
+- **根因**：`INSUFFICIENT_EVIDENCE`。
+- **影响**：同 ERR-290；缺少根因证据不能变成猜测，也不应永久阻断与其无因果关系且已独立验证的当前修复。
+- **正确做法**：按 EXP-256 保留未知事实和证据缺口；未来若出现原始不可变证据，只允许追加 reconciliation，不得覆盖本条历史审计轨迹。
+- **对应 EXP 类规则**：`EXP-256`，并复用 `EXP-033 / EXP-051 / EXP-088`。
+- **自动防护**：与 ERR-290 共用 historical evidence-gap parser / checklist；保留独立 ERR ID，禁止按编号邻接关系推断语义。
+- **状态**：`CLOSED_AS_HISTORICAL_EVIDENCE_GAP`；只关闭 ledger-debt。
+<!-- SPECFORGE_ERR291_EXP256_HISTORICAL_EVIDENCE_GAP:END -->
+
+<!-- SPECFORGE_ERR292_EXP012_CMD_IF_CHAIN_DEFECT:START -->
+## ERR-292 / EXP-012 — SFV156 首条 CMD 在临时目录不存在时提前终止
+- **日期与阶段**：2026-08-09，SFV156 Bootstrap live-ref evidence 用户执行。
+- **分类**：`DELIVERY_DEFECT / CMD_CONTROL_FLOW_DEFECT / USER_OPERATION_DEFECT`。
+- **现场表现**：用户执行首条 SFV156 CMD 后命令直接返回，`D:\code\temp\SFV156` 没有被创建，runner 没有执行。
+- **已执行与未执行**：该命令使用 `if exist "...SFV156" rmdir ... && mkdir ... && ...`；目录原本不存在时 IF body 未执行，后续 `&&` 链没有进入 `mkdir`；修正命令改为无条件 cleanup 后再 `mkdir`，随后用户成功取得 V156 标准回执。
+- **仓库变化**：未修改 SpecForge / Validation 仓库；失败发生在仓库外临时解压入口。
+- **根因**：把“可选清理旧目录”和“必须创建新目录”错误绑定到同一 IF/`&&` 成功链，使首次运行与重复运行的控制流不同。
+- **影响**：一个本应一键执行的已验收 ZIP 因包外 CMD 入口缺陷没有启动，增加用户手工诊断轮次。
+- **正确做法**：外层 CMD 的幂等 cleanup 与后续必需动作分离；临时目录“存在”和“不存在”两个 fixture 都必须进入相同 mkdir / extract / runner 路径。
+- **对应 EXP 类规则**：复用 `EXP-012` 用户操作复杂度与命令交付防护。
+- **自动防护**：交付 validator 对 `TEMP_DIR_EXISTS=YES|NO` 两种状态执行控制流 fixture；`RUN.cmd`/一键 CMD 必须在两种状态都出现 runner 启动标记。
+- **状态**：`CLOSED`；修正 CMD 已由用户真实执行并产生 `SFV156 RUNNER END RC=0`。
+<!-- SPECFORGE_ERR292_EXP012_CMD_IF_CHAIN_DEFECT:END -->
+
+<!-- SPECFORGE_ERR293_EXP078_PYTHON_SELF_CHECK_IMPORT_DEFECT:START -->
+## ERR-293 / EXP-078 — SFV156 首次预交付自检引用 `sys.executable` 但未导入 `sys`
+- **日期与阶段**：2026-08-09，SFV156 第一次预交付 Artifact Acceptance。
+- **分类**：`SCRIPT_DEFECT / PREDELIVERY_VALIDATOR_DEFECT / PYTHON_IMPORT_DEFECT`。
+- **现场表现**：生成 ZIP 后执行 packaged validator 自检阶段报 `NameError: name 'sys' is not defined`，失败点是调用 `sys.executable`。
+- **已执行与未执行**：失败构建没有作为 accepted Artifact 发布；修复为导入 `sys` 后重新生成 ZIP，validator self-check、consumer E2E、ZIP reopen/hash 全部通过，再由用户真实运行成功。
+- **仓库变化**：无用户仓库写入；错误发生在助手预交付构建环境。
+- **根因**：预交付验证脚本实际执行路径使用了 `sys`，但生成器自身 imports 不完整；仅阅读脚本文本不足以发现该运行时 NameError。
+- **影响**：第一次构建不能形成可接受 V156 Artifact。
+- **正确做法**：封包前必须实际执行 verifier / runner 的纯函数或 fixture 路径；Python 生成器除语法检查外必须覆盖 import/runtime path。
+- **对应 EXP 类规则**：复用 `EXP-078`（编译/解析不替代实际执行）和 packaging self-test 规则。
+- **自动防护**：`py_compile` + validator actual execution + consumer E2E + final ZIP reopen/hash；任何阶段失败均不得发布失败构建。
+- **状态**：`CLOSED`；最终 SFV156 SHA256 `4CB67744236306A75F135F6C3C9593764F59C1A4A94126F86ACA5E4BEA36081C` 已通过用户真实执行。
+<!-- SPECFORGE_ERR293_EXP078_PYTHON_SELF_CHECK_IMPORT_DEFECT:END -->
+
+<!-- SPECFORGE_ERR294_EXP257_CANONICAL_TEMPLATE_RECONSTRUCTION:START -->
+## ERR-294 / EXP-257 — 固定 Bootstrap 机器模板被按语义重新生成而不是按 canonical block 填空
+- **日期与阶段**：2026-08-09，SFV156 后的新会话 Bootstrap 连续恢复轮次。
+- **分类**：`GOVERNANCE_PROTOCOL_DEFECT / CONTRACT_CONSUMER_DEFECT / CANONICAL_TEMPLATE_RECONSTRUCTION_DEFECT`。
+- **现场表现**：同一个 Pre-tool Guard 连续出现自行组织的 `AUTHORITY_*` / `BOOTSTRAP_RECEIPT_*` 字段、非 canonical 字段集合和非法枚举 `LAST_EXECUTION_RECEIPT_STATUS=PRESENT_COMPLETE`；用户因此多次重复粘贴同一 V156 回执。
+- **已执行与未执行**：每次发现错误后均 Fail Closed，没有执行 WI-0004 生命周期动作；但现有 authority/test 只强调固定字段存在和阶段顺序，没有建立“原样取得模板、只填写 value slot、exact-schema mutation matrix”的独立硬契约。
+- **仓库变化**：这些失败轮次没有 SpecForge 仓库写入。
+- **根因**：固定机器模板仍被当成“理解规则后可等价生成”的文本，而不是执行 schema；consumer test 主要验证关键 token 和顺序，不能阻止字段别名、换序、extra/missing field 或非法 enum。
+- **影响**：执行者即使理解业务含义，也能生成不属于正式契约的机器输出；重复 Fail Closed 和用户回执重贴成为结构性风险。
+- **正确做法**：新增 `GOV-STAGE-TEMPLATE-001`，机器字段固定为 `CANONICAL_TEMPLATE_EXECUTION_MODE=FILL_ONLY`；模板从 canonical block 原样取得，marker / field / order / cardinality / enum 全冻结，只允许填写 `=` 右侧 value slot；消费前执行 exact-schema validator。
+- **新增类防护 / EXP-257**：固定机器模板必须按“canonical source → frozen structure → value-slot fill → exact-schema validation → consume”状态机执行；禁止模型根据自然语言、记忆、同义词或历史输出重建 schema。
+- **自动防护**：Bootstrap consumer regression 必须包含合法填充值 PASS，以及字段 alias、missing、extra、reorder、`PRESENT_COMPLETE`、marker mutation 全部 FAIL；authority canonical block 与 Appendix A canonical block 必须逐字结构一致。
+- **状态**：`CLOSED`；V158 runner 只有在目标测试、TypeScript、daemon-core build、workspace build、diff/status 和 authority/prompt/test 同步审计全部通过时才保留本目标文件，任一失败均回滚。
+<!-- SPECFORGE_ERR294_EXP257_CANONICAL_TEMPLATE_RECONSTRUCTION:END -->
+
+<!-- SPECFORGE_ERR295_EXP258_BOOTSTRAP_CROSS_PHASE_BATCH_READ:START -->
+## ERR-295 / EXP-258 — Bootstrap 把 exact authority 与下一阶段 handoff 放入同一批量工具读取
+- **日期与阶段**：2026-08-09，SFV156 receipt 已通过后的 Authority Bootstrap / Recovery 恢复。
+- **分类**：`GOVERNANCE_PROTOCOL_DEFECT / EXECUTION_ORDER_DEFECT / CROSS_PHASE_BATCH_READ_DEFECT`。
+- **现场表现**：一次工具请求同时包含 exact authority 与 `current-handoff.md`；虽然 authority 是当前阶段合法资源，但 handoff 必须等 Authority Bootstrap Success Acceptance 和 Envelope Self Check 之后才能进入 Recovery，因此整次调用形成 unauthorized cross-phase read。
+- **已执行与未执行**：发现后本回合 Fail Closed，没有继续 WI-0004 生命周期；后续回合改为串行读取才成功 Bootstrap。
+- **仓库变化**：错误轮次无仓库写入。
+- **根因**：现有 ordered Bootstrap 定义了阶段和允许资源，但没有显式机器字段禁止“同一工具调用把当前阶段与下一阶段资源批量/并行读取”；执行优化把两个阶段合并。
+- **影响**：工具调用层可以绕过文本层的阶段顺序，即使结果随后按顺序处理，也已经提前访问了下一阶段事实。
+- **正确做法**：新增 `BOOTSTRAP_TOOL_PHASE_EXECUTION_MODE=SERIAL_ONE_PHASE_PER_TOOL_CALL` 与 `BOOTSTRAP_CROSS_PHASE_BATCH_READ_ALLOWED=NO`；每次工具调用只允许当前 `BOOTSTRAP_ALLOWED_TOOL_CLASS` 的资源。
+- **新增类防护 / EXP-258**：协议状态机不仅约束输出顺序，也必须约束 tool-call resource set；跨阶段 batch/read-ahead 一律等价 unauthorized read，同回合不能补字段修复成功。
+- **自动防护**：Authority 与 Appendix A 同步上述机器 token；consumer test 要求二者同时存在，并保留 exact authority → success acceptance → self-check → Recovery 的阶段顺序断言。
+- **状态**：`CLOSED`；V157 runner 只有在全部工程验证通过时才保留本目标文件，任一失败均回滚。
+<!-- SPECFORGE_ERR295_EXP258_BOOTSTRAP_CROSS_PHASE_BATCH_READ:END -->
+
+<!-- SPECFORGE_ERR296_EXP250_V157_RULE_ID_CONSUMER_COUNT:START -->
+## ERR-296 / EXP-250 — V157 预交付 validator 沿用新增回归消费者之前的 Rule ID 计数
+- **日期与阶段**：2026-08-09，V157 第一次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / CONSUMER_COUNT_PHASE_DEFECT / REPEATED_CLASS_EXP250`。
+- **现场表现**：V157 TypeScript 补丁同时把 `GOV-STAGE-TEMPLATE-001` 加入 `stageRuleIds`，并在新回归测试中通过 `ruleSection(authority, 'GOV-STAGE-TEMPLATE-001')` 消费该 Rule；预交付 validator 的 synthetic fixture 却要求整个补丁结果中该字符串只能出现 1 次，因此把两个合法消费者误判为失败。
+- **已执行与未执行**：错误发生在 SFV157 ZIP 发布前的独立 validator；失败包未向用户交付，用户 SpecForge 仓库未读取/修改；未执行任何 WI-0004 生命周期动作。
+- **仓库变化**：无用户仓库变化。
+- **根因**：validator 使用“修改前只有一个新增消费者”的全局计数假设，没有按新增 producer/consumer 的最终结构分别验证，重复了 ERR-284 / EXP-250 类问题。
+- **影响**：正确的 Rule ID 导航消费者 + 专用 regression consumer 被 cardinality 假断言阻断。
+- **正确做法**：分别验证 `stageRuleIds` 中新增 Rule ID 恰好一次、新 regression test 的 `ruleSection` 消费恰好一次，并对 synthetic fixture 的最终总数按两个已知结构消费者验收；不得用修改前全局计数限制修改后合法消费者总数。
+- **对应 EXP 类规则**：复用 `EXP-250`。
+- **自动防护**：V157 validator fixture 预期该 quoted Rule ID 出现 2 次，并继续分别验证 test title 唯一、stage rule insertion 唯一；最终用户仓库仍由真实目标测试与 TypeScript 检查验收。
+- **状态**：`CLOSED`；最终 V157 Artifact Acceptance 只有在修正后的 validator 实际重跑通过后成立。
+<!-- SPECFORGE_ERR296_EXP250_V157_RULE_ID_CONSUMER_COUNT:END -->
+
+<!-- SPECFORGE_ERR297_EXP080_V157_VALIDATOR_PYCACHE:START -->
+## ERR-297 / EXP-080 — V157 预交付 validator 导入 runner 时在包目录生成 `__pycache__`
+- **日期与阶段**：2026-08-09，V157 第二次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / PACKAGING_HYGIENE_DEFECT / REPEATED_CLASS_EXP080`。
+- **现场表现**：validator 首次静态验收已 PASS，但其 `importlib` fixture 导入 `runner.py` 在待封包目录生成 `__pycache__/runner.cpython-313.pyc`；随后 ZIP 重开后重新执行 validator 时，成员集合比 manifest 多出该 pyc，因 `file set mismatch` 正确失败。
+- **已执行与未执行**：失败发生在最终 ZIP 发布前；失败 ZIP 未向用户交付，用户 SpecForge 仓库未读取/修改；未执行任何生命周期动作。
+- **仓库变化**：无用户仓库变化。
+- **根因**：预交付 validator 自身执行了 Python module import，但没有在该进程内设置 `sys.dont_write_bytecode=True`；验证动作污染了待验收 Artifact 输入目录。
+- **影响**：若只验证首次 file set 而不在 validator 执行后再次重开 ZIP，会把验证器自身生成物带入最终交付。
+- **正确做法**：validator 进程从入口即禁用字节码；编译测试只把 pyc 输出到独立 tempfile；封包前再次证明包目录不存在 `__pycache__` / `*.pyc`，ZIP 重开后从提取目录再次执行 validator。
+- **对应 EXP 类规则**：复用 `EXP-080`。
+- **自动防护**：`PYTHONDONTWRITEBYTECODE` / `sys.dont_write_bytecode=True`、包目录 pycache/pyc zero audit、final ZIP exact member set、ZIP extract 后 validator re-execution。
+- **状态**：`CLOSED`；最终 V157 Artifact Acceptance 只有在上述四项均 PASS 后成立。
+<!-- SPECFORGE_ERR297_EXP080_V157_VALIDATOR_PYCACHE:END -->
+
+<!-- SPECFORGE_ERR298_EXP069_V157_GENERATED_TEST_NEWLINE_ESCAPE:START -->
+## ERR-298 / EXP-069 — V157 exact-schema 回归把真实换行生成成字面量 `\\n`
+- **日期与阶段**：2026-08-09，用户执行 SFV157 后的 `TARGET_TEST`。
+- **分类**：`VALIDATION_HARNESS_DEFECT / GENERATED_TEST_ESCAPE_DEFECT / SOURCE_RUNTIME_BYTE_MISMATCH`。
+- **现场表现**：`stage-execution-authority-contract.test.ts` 新增用例 15 PASS / 1 FAIL；`extractGuard(...)` 从 Authority 得到真实多行 canonical block，而生成的 `canonicalDefinition` 在运行时由字面量反斜杠-n 连接，`toBe` 精确比较失败。
+- **一手证据**：用户 V157 完整回执显示失败行 686；随后对最终 accepted V157 ZIP 内 `runner.py` 的 `TEST_BLOCK` 运行时值检查，确认生成到 TypeScript 源中的 join/replace/split 分隔符被多转义一层。
+- **已执行与未执行**：V157 runner 已自动恢复批准的 4 个文件；未 commit、未 push、未触发 WI-0004 生命周期。
+- **根因**：Python 生成器字符串 → TypeScript 源文本 → JavaScript 运行时字符存在两层转义；V157 validator 只验证补丁结构和 test block 插入，没有验证最终 TypeScript 字符串在 Node/Bun 运行时是否成为真实 LF，违反 EXP-069 的“源文本/运行时字符/目标字节三方对账”。
+- **影响**：正确的 Authority canonical block 被错误测试消费者假阴性阻断，无法完成 FILL_ONLY 治理修复。
+- **正确做法**：V158 的 `TEST_BLOCK` 使用 Python raw string 直接保存 TypeScript 源；TypeScript 使用 `join('\\n')`/`split('\\n')`/`replace(/\\r\\n/g,'\\n')` 的单层源码转义，使 JavaScript 运行时得到真实 LF；封包 validator 额外执行 Node runtime fixture 验证字符码和行数。
+- **对应 EXP 类规则**：复用 `EXP-069`，并复用 `EXP-007 / EXP-078` 的验证器实执行要求。
+- **自动防护**：Package validator 必须证明 `runner.TEST_BLOCK` 中不存在双层 TypeScript newline escape，并用 Node 实际执行 separator fixture：真实 LF PASS、字面量 `\\n` 不得与 canonical multiline block 等价。
+- **机器对账**：`CANONICAL_TEMPLATE_RUNTIME_NEWLINE=LF`；`CANONICAL_TEMPLATE_LITERAL_BACKSLASH_N_ALLOWED=NO`。
+- **状态**：`CLOSED_BY_V158_PENDING_USER_EXECUTION`；只有 V158 用户侧目标测试与全部工程验证 PASS 后才成为最终闭合事实。
+<!-- SPECFORGE_ERR298_EXP069_V157_GENERATED_TEST_NEWLINE_ESCAPE:END -->
+
+<!-- SPECFORGE_ERR299_EXP257_BOOTSTRAP_END_MARKER_REWRITE_REPEAT:START -->
+## ERR-299 / EXP-257 — V157 失败后助手再次重写 canonical Guard END marker
+- **日期与阶段**：2026-08-09，V157 失败回执后的下一轮 Bootstrap。
+- **分类**：`GOVERNANCE_PROTOCOL_DEFECT / REPEATED_CANONICAL_TEMPLATE_RECONSTRUCTION_DEFECT`。
+- **现场表现**：Pre-tool Guard 的结束 marker 被输出为 `===== END BOOTSTRAP ENVELOPE PRETOOL_GUARD =====`，而 canonical marker 是 `===== END BOOTSTRAP ENVELOPE PRETOOL GUARD =====`。
+- **已执行与未执行**：该回合未继续生成 V158，要求用户重新携带有效 receipt 后重新 Bootstrap；没有仓库写入或 WI 生命周期动作。
+- **根因**：同 ERR-294；固定模板仍被输出路径自由重建，marker 没有直接从 canonical block 复制填值。
+- **影响**：即使字段值正确，marker 变异仍使机器 schema 不合法，形成重复 Fail Closed。
+- **正确做法**：继续执行 EXP-257：marker、字段名、顺序、cardinality 均不可生成，只能从 canonical block 原样取得；V158 consumer 保留 marker mutation 负向用例。
+- **对应 EXP 类规则**：复用 `EXP-257`。
+- **自动防护**：exact-schema validator 对 BEGIN/END marker 做 byte-exact 检查，`PRETOOL_GUARD` 变体必须 FAIL。
+- **状态**：`CLOSED_BY_V158_PROTOCOL_ENFORCEMENT_PENDING_USER_EXECUTION`。
+<!-- SPECFORGE_ERR299_EXP257_BOOTSTRAP_END_MARKER_REWRITE_REPEAT:END -->
+
+<!-- SPECFORGE_ERR300_EXP072_CONTAINER_DNS_REMOTE_FETCH:START -->
+## ERR-300 / EXP-072 — V158 调查阶段容器 raw GitHub DNS 解析失败
+- **日期与阶段**：2026-08-09，V158 修改前精确源码取证。
+- **分类**：`ENVIRONMENT_FAILURE / REMOTE_FETCH_CHANNEL_FAILURE`。
+- **现场表现**：容器 `curl` 获取 `raw.githubusercontent.com` 返回 `Could not resolve host`；该失败不是仓库内容证据。
+- **已执行与未执行**：没有据此判定 GitHub 不可访问；继续使用已经 Bootstrap 固定的 exact commit 官方 web raw 入口和 V157 accepted ZIP 内已冻结的 exact-source-derived 完整目标文档；没有用户仓库写入。
+- **根因**：当前 assistant container DNS/网络通道不可用；不是 SpecForge 产品缺陷。
+- **影响**：单一容器下载通道不能作为远程源码唯一证据源。
+- **正确做法**：按 EXP-072 使用同一 exact commit 的官方 web/raw 入口回退，并将环境失败与仓库事实分离。
+- **对应 EXP 类规则**：复用 `EXP-072`。
+- **自动防护**：远程调查必须记录 live ref + exact commit source；单一下载通道失败不得降低已确认 structured/web exact evidence。
+- **状态**：`CLOSED_ENVIRONMENT_FALLBACK_USED`。
+<!-- SPECFORGE_ERR300_EXP072_CONTAINER_DNS_REMOTE_FETCH:END -->
+
+<!-- SPECFORGE_ERR301_EXP259_BUN_DIFF_DECORATION_MISDIAGNOSIS:START -->
+## ERR-301 / EXP-259 — 把 Bun diff 的 Received 装饰符误诊为 Authority Markdown 字节
+- **日期与阶段**：2026-08-09，V157 用户失败回执首次分析。
+- **分类**：`EVIDENCE_INTERPRETATION_DEFECT / TEST_OUTPUT_DECORATION_MISREAD / ROOT_CAUSE_MISDIAGNOSIS`。
+- **现场表现**：首次分析把 Bun `expect(received).toBe(expected)` diff 中每行前的 `*` 解释为 Authority 模板实际存在 Markdown `* ` 前缀，并计划按“raw/fenced block 去前缀”修复；随后检查 V157 patch Authority 原始字节发现 canonical block 没有这些星号，真正差异来自换行转义。
+- **已执行与未执行**：错误诊断尚未形成 V158 仓库补丁；在修改前通过 V157 package 原始 `TEST_BLOCK` 和 Authority 字节复核纠正。
+- **根因**：把测试框架的人机显示装饰当成被测 source bytes，没有先对照生成后测试源码和实际 runtime 字符。
+- **影响**：若按初始诊断修改，会对正确 Authority 文本做无因果变更，同时遗漏真正的生成器转义缺陷。
+- **正确做法**：测试失败根因必须按“原始测试源码/生成后源码 → runtime value → 被测文件字节 → framework diff”顺序取证；diff UI 的 `+/-/*` 等显示符号默认不是 source bytes，除非原始文件独立证明存在。
+- **新增类防护 / EXP-259**：测试框架 diff、pretty printer、日志前缀和 UI 标记只能作为定位线索；任何准备进入根因和写范围的字符必须由原始 source/runtime bytes 独立确认。无法确认时标记 `INSUFFICIENT_EVIDENCE`，不得据显示装饰修改生产者。
+- **自动防护**：V158 predelivery validator 直接检查 V157/V158 generated test source 的 newline escape；根因说明不得使用 Bun diff 装饰符作为 Authority byte evidence。
+- **状态**：`CLOSED_BEFORE_PATCH_BY_SOURCE_RUNTIME_RECONCILIATION`。
+<!-- SPECFORGE_ERR301_EXP259_BUN_DIFF_DECORATION_MISDIAGNOSIS:END -->
+
+<!-- SPECFORGE_ERR302_EXP260_TARGET_HASH_DOMAIN_MISMATCH:START -->
+## ERR-302 / EXP-260 — V158 预交付 validator 与 runner 使用了不同的 target hash 语义域
+- **日期与阶段**：2026-08-09，V158 预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / PRODUCER_CONSUMER_CONTRACT_MISMATCH / HASH_DOMAIN_MISMATCH`。
+- **现场表现**：V158 manifest 的 `target_hashes` 由规范化文本（UTF-8、LF、单个末尾换行）计算；runner 也按同一规范化文本复核目标文件，但独立 validator 却直接对 ZIP 内 patch 原始字节计算 SHA256，导致 ledger target hash mismatch，失败包没有发布。
+- **已执行与未执行**：错误发生在用户交付前；没有读取、修改或执行用户 SpecForge/WI-0004；已停止发布并重新执行影响分析。
+- **仓库变化**：无用户仓库变化；仅助手预交付构建目录存在失败中间产物。
+- **根因**：`target_hashes` 没有显式声明 hash domain，producer、runner consumer、validator consumer 各自实现了“目标内容 hash”，其中 validator 使用 raw bytes，runner 使用 canonical text，形成同名字段的语义分叉。
+- **影响**：即使目标文档语义完全一致，只因包内尾部空行/本地 CRLF 差异也会让 validator 与 runner 对同一 target hash 得出不同结论；独立验证器会假阴性阻断交付。
+- **正确做法**：定义 `ARTIFACT_TARGET_HASH_DOMAIN=NORMALIZED_UTF8_LF_SINGLE_TERMINAL_LF`；manifest producer、packaged validator 和 runner 三方统一调用等价 canonical-text hash；ZIP 自身完整性继续使用独立 raw-byte/package SHA256，不混用两种 hash 语义。
+- **新增类防护 / EXP-260**：任何跨 producer/consumer 的 hash 字段必须显式声明 hash domain（raw bytes、canonical text、Git blob 等）；同名 hash 的所有消费者必须通过共同 fixture 证明 domain 一致，禁止“都叫 SHA256”就默认等价。
+- **自动防护**：V158 validator 先按 canonical-text hash 验证所有 `target_hashes`，再导入 runner 证明 `runner.TARGET_HASHES == manifest.target_hashes`；Authority consumer test 检查固定 hash-domain token；包 SHA256 仍单独按 ZIP raw bytes 计算。
+- **机器对账**：`ARTIFACT_TARGET_HASH_DOMAIN=NORMALIZED_UTF8_LF_SINGLE_TERMINAL_LF`；`ARTIFACT_TARGET_HASH_PRODUCER_CONSUMER_DOMAIN_MATCH_REQUIRED=YES`。
+- **状态**：`CLOSED_BY_V158_PREDELIVERY_FIX_PENDING_USER_EXECUTION`；只有 V158 独立 validator、真实用户仓库目标测试和完整工程验证全部 PASS 后最终闭合。
+<!-- SPECFORGE_ERR302_EXP260_TARGET_HASH_DOMAIN_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR303_EXP044_LEDGER_MACHINE_TOKEN_SYNC:START -->
+## ERR-303 / EXP-044 — V158 validator 要求三方机器 token 同步但 ledger 目标缺少字面量 token
+- **日期与阶段**：2026-08-09，ERR-302 修复后的 V158 第二次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / EVIDENCE_SYNC_DEFECT / PRODUCER_CONSUMER_MATRIX_INCOMPLETE`。
+- **现场表现**：独立 validator 校验 `CANONICAL_TEMPLATE_RUNTIME_NEWLINE=LF` / `CANONICAL_TEMPLATE_LITERAL_BACKSLASH_N_ALLOWED=NO` 必须同时存在于 Authority、error ledger、current-handoff；Authority 与 handoff 已有，但 ledger 只用自然语言描述 newline 规则，没有机器 token，validator 正确 Fail Closed。
+- **已执行与未执行**：失败发生在发布 V158 前；没有发布 ZIP、没有访问或修改用户仓库、没有 WI-0004 生命周期动作。
+- **仓库变化**：无用户仓库变化；仅助手预交付构建目标继续修订。
+- **根因**：V158 设计时把“ledger 应记录 ERR-298 根因”与“validator 把 ledger 当机器 token 同步消费者”分开处理，没有在生成目标 ledger 后按 producer/consumer matrix 逐 surface 复核 literal token。
+- **影响**：规则语义已写入，但机器消费者无法证明 ledger 与 Authority/handoff 使用完全相同的 canonical newline 契约。
+- **正确做法**：ERR-298 条目显式加入两个机器 token；构建完成后对 Authority / ledger / handoff 三方执行同一 token matrix，再运行独立 validator。
+- **对应 EXP 类规则**：复用 `EXP-044` producer/consumer 同步治理；不得以自然语言“意思相同”替代机器 token 消费。
+- **自动防护**：V158 validator 保持三方 literal token 检查；后续新增跨文档机器字段时，在修改前列出 producer/consumer surface，目标生成后逐 surface 校验再封包。
+- **状态**：`CLOSED_BY_V158_PREDELIVERY_FIX_PENDING_USER_EXECUTION`。
+<!-- SPECFORGE_ERR303_EXP044_LEDGER_MACHINE_TOKEN_SYNC:END -->
+
+<!-- SPECFORGE_ERR304_EXP044_SECOND_HASH_TOKEN_SYNC:START -->
+## ERR-304 / EXP-044 — V158 第二个 hash-domain token 未进入 ledger consumer surface
+- **日期与阶段**：2026-08-09，ERR-303 修复后的 V158 第三次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / EVIDENCE_SYNC_DEFECT / REPEATED_CLASS_EXP044`。
+- **现场表现**：validator 的跨文档矩阵要求 `ARTIFACT_TARGET_HASH_DOMAIN=NORMALIZED_UTF8_LF_SINGLE_TERMINAL_LF` 与 `ARTIFACT_TARGET_HASH_PRODUCER_CONSUMER_DOMAIN_MATCH_REQUIRED=YES` 均存在于 Authority、ledger、handoff；前一轮只补了 newline machine token，没有把第二个 hash-domain token 作为 ledger 字面量补齐，validator 再次 Fail Closed。
+- **已执行与未执行**：失败仍发生在 V158 发布前；没有发布失败 ZIP、没有用户仓库写入、没有 WI-0004 生命周期动作。
+- **仓库变化**：无用户仓库变化。
+- **根因**：修复 ERR-302 后仍按单个报错 token 局部修补，没有在重新执行 validator 前先展开其完整 producer/consumer token matrix，重复 EXP-044 的“消费者集合未一次性对齐”错误。
+- **影响**：形成可以预先静态发现的串行假失败，浪费预交付迭代轮次。
+- **正确做法**：ERR-302 条目同时落入两个 hash-domain machine token；重新运行 validator 前，先静态枚举 validator 所有跨 Authority/ledger/handoff 的 token 断言并一次性证明全矩阵 PASS。
+- **对应 EXP 类规则**：复用 `EXP-044`；新增错误不扩展产品文件范围。
+- **自动防护**：预交付脚本在 validator actual execution 前运行 `CONSUMER_TOKEN_MATRIX_PREFLIGHT`，任何跨 surface token 缺失先在同一构建阶段全部列出，不再逐个试错。
+- **状态**：`CLOSED_BY_V158_PREDELIVERY_FIX_PENDING_USER_EXECUTION`。
+<!-- SPECFORGE_ERR304_EXP044_SECOND_HASH_TOKEN_SYNC:END -->
+
+<!-- SPECFORGE_ERR305_EXP063_MANIFEST_DIAGNOSTIC_KEY_MISMATCH:START -->
+## ERR-305 / EXP-063 — V158 ERR-302 排查命令误用 manifest 键名导致 KeyError
+- **日期与阶段**：2026-08-09，V158 预交付 ERR-302 根因调查。
+- **分类**：`DIAGNOSTIC_TOOL_DEFECT / SCHEMA_KEY_MISMATCH / PREPROCESSING_FAILURE`。
+- **现场表现**：首次对 `/tmp/v158build/manifest.json` 做 target hash 对账时，诊断命令读取不存在的 `target_sha256`，实际 schema 字段为 `target_hashes`，Python 抛出 `KeyError: 'target_sha256'`。
+- **已执行与未执行**：该命令只读取助手临时构建目录；失败后先打印 manifest keys/schema，再使用真实 `target_hashes` 继续取证；没有用户仓库访问、写入或生命周期动作。
+- **仓库变化**：无用户仓库变化。
+- **根因**：诊断脚本没有先读取 manifest schema，凭记忆猜字段名，重复“消费者先假定 schema 再读取”的工具类错误。
+- **影响**：只增加一次本地诊断失败，没有改变 ERR-302 的事实、文件范围或最终目标内容。
+- **正确做法**：对结构化 artifact 做临时诊断时，先枚举/解析 schema keys，再读取具体字段；正式 validator 必须由 manifest 实际结构驱动，不允许猜键名。
+- **对应 EXP 类规则**：复用 `EXP-063`，结构化证据先解析再消费。
+- **自动防护**：V158 后续 manifest 检查全部从 `json.loads` 后的实际 keys 驱动；独立 validator 直接读取 `m['target_hashes']` 并与 runner map 对账。
+- **状态**：`CLOSED_DIAGNOSTIC_ONLY_NO_PRODUCT_SIDE_EFFECT`。
+<!-- SPECFORGE_ERR305_EXP063_MANIFEST_DIAGNOSTIC_KEY_MISMATCH:END -->

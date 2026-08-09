@@ -86,6 +86,7 @@ const stageRuleIds = [
   'GOV-STAGE-HANDOFF-001',
   'GOV-STAGE-ENV-001',
   'GOV-STAGE-BRANCH-001',
+  'GOV-STAGE-TEMPLATE-001',
   'GOV-STAGE-DELIVERY-001',
   'GOV-STAGE-RECEIPT-001',
   'GOV-STAGE-ARTIFACT-VERIFY-001',
@@ -625,6 +626,140 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
     ]) {
       expect(rule, token).toContain(token);
     }
+  });
+
+  it('enforces canonical machine templates as fill-only exact schemas and serial bootstrap phases', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const templateRule = ruleSection(authority, 'GOV-STAGE-TEMPLATE-001');
+    const bootstrapRule = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
+    const artifactVerifyRule = ruleSection(authority, 'GOV-STAGE-ARTIFACT-VERIFY-001');
+    const prompt = newSessionPrompt(authority);
+
+    for (const token of [
+      'CANONICAL_TEMPLATE_EXECUTION_MODE=FILL_ONLY',
+      'CANONICAL_TEMPLATE_SOURCE=APPENDIX_A_EMBEDDED_CANONICAL_BLOCK|EXACT_AUTHORITY_MARKER_SCOPED_BLOCK',
+      'CANONICAL_TEMPLATE_STRUCTURE_MUTATION_ALLOWED=NO',
+      'CANONICAL_TEMPLATE_VALUE_SLOT_MUTATION_ALLOWED=YES',
+      'CANONICAL_TEMPLATE_FIELD_NAME_MUTATION_ALLOWED=NO',
+      'CANONICAL_TEMPLATE_FIELD_ORDER_MUTATION_ALLOWED=NO',
+      'CANONICAL_TEMPLATE_MARKER_MUTATION_ALLOWED=NO',
+      'CANONICAL_TEMPLATE_ENUM_VALUE_SOURCE=DECLARED_SCHEMA_ONLY',
+      'CANONICAL_TEMPLATE_RUNTIME_NEWLINE=LF',
+      'CANONICAL_TEMPLATE_LITERAL_BACKSLASH_N_ALLOWED=NO',
+      'CANONICAL_TEMPLATE_VALIDATION_REQUIRED=YES',
+      'CANONICAL_TEMPLATE_VALIDATION_RESULT=PASS|FAIL',
+    ]) {
+      expect(templateRule, token).toContain(token);
+      expect(prompt, token).toContain(token);
+    }
+    for (const token of [
+      'CANONICAL_TEMPLATE_EXECUTION_MODE=FILL_ONLY',
+      'BOOTSTRAP_TOOL_PHASE_EXECUTION_MODE=SERIAL_ONE_PHASE_PER_TOOL_CALL',
+      'BOOTSTRAP_CROSS_PHASE_BATCH_READ_ALLOWED=NO',
+    ]) {
+      expect(bootstrapRule, token).toContain(token);
+      expect(prompt, token).toContain(token);
+    }
+    expect(artifactVerifyRule).toContain('ARTIFACT_TARGET_HASH_DOMAIN=NORMALIZED_UTF8_LF_SINGLE_TERMINAL_LF');
+    expect(artifactVerifyRule).toContain('ARTIFACT_TARGET_HASH_PRODUCER_CONSUMER_DOMAIN_MATCH_REQUIRED=YES');
+
+    const begin = '===== BEGIN BOOTSTRAP ENVELOPE PRETOOL GUARD =====';
+    const end = '===== END BOOTSTRAP ENVELOPE PRETOOL GUARD =====';
+    const canonicalDefinition = [
+      begin,
+      'BOOTSTRAP_EXECUTION_PHASE=RECEIPT_AUDIT',
+      'BOOTSTRAP_ALLOWED_TOOL_CLASS=NONE',
+      'LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID|PRESENT_INVALID|NONE_ALLOWED|MISSING_REQUIRED',
+      'LAST_EXECUTION_RECEIPT_PACKAGE_NAME=',
+      'LAST_EXECUTION_RECEIPT_DELIVERY_ID=',
+      'LAST_EXECUTION_RECEIPT_VALIDATOR_ID=',
+      'LAST_EXECUTION_RECEIPT_IDENTITY_BINDING_AUDIT=',
+      'LAST_EXECUTION_RECEIPT_RESULT=',
+      'LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS|FAIL|NOT_APPLICABLE',
+      'BOOTSTRAP_RECEIPT_CONSUMPTION_CONTRACT=PASS|FAIL',
+      'BOOTSTRAP_UNAUTHORIZED_READ_DETECTED=NO',
+      'BOOTSTRAP_EXECUTION_ORDER_AUDIT=PASS|FAIL',
+      'BOOTSTRAP_PRETOOL_GUARD_ACCEPTED=YES|NO',
+      end,
+    ].join('\n');
+    const extractGuard = (content: string): string => {
+      const start = content.indexOf(begin);
+      const finish = content.indexOf(end, start + begin.length);
+      if (start < 0 || finish < 0) throw new Error('canonical pre-tool guard missing');
+      return content.slice(start, finish + end.length).replace(/\r\n/g, '\n');
+    };
+    expect(extractGuard(bootstrapRule)).toBe(canonicalDefinition);
+    expect(extractGuard(prompt)).toBe(canonicalDefinition);
+
+    const schema: Array<{ key: string; values: string[] | null }> = [
+      { key: 'BOOTSTRAP_EXECUTION_PHASE', values: ['RECEIPT_AUDIT'] },
+      { key: 'BOOTSTRAP_ALLOWED_TOOL_CLASS', values: ['NONE'] },
+      { key: 'LAST_EXECUTION_RECEIPT_STATUS', values: ['PRESENT_VALID', 'PRESENT_INVALID', 'NONE_ALLOWED', 'MISSING_REQUIRED'] },
+      { key: 'LAST_EXECUTION_RECEIPT_PACKAGE_NAME', values: null },
+      { key: 'LAST_EXECUTION_RECEIPT_DELIVERY_ID', values: null },
+      { key: 'LAST_EXECUTION_RECEIPT_VALIDATOR_ID', values: null },
+      { key: 'LAST_EXECUTION_RECEIPT_IDENTITY_BINDING_AUDIT', values: null },
+      { key: 'LAST_EXECUTION_RECEIPT_RESULT', values: null },
+      { key: 'LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT', values: ['PASS', 'FAIL', 'NOT_APPLICABLE'] },
+      { key: 'BOOTSTRAP_RECEIPT_CONSUMPTION_CONTRACT', values: ['PASS', 'FAIL'] },
+      { key: 'BOOTSTRAP_UNAUTHORIZED_READ_DETECTED', values: ['NO'] },
+      { key: 'BOOTSTRAP_EXECUTION_ORDER_AUDIT', values: ['PASS', 'FAIL'] },
+      { key: 'BOOTSTRAP_PRETOOL_GUARD_ACCEPTED', values: ['YES', 'NO'] },
+    ];
+    const validateFilledGuard = (content: string): boolean => {
+      const lines = content.replace(/\r\n/g, '\n').split('\n');
+      if (lines.length !== schema.length + 2 || lines[0] !== begin || lines[lines.length - 1] !== end) return false;
+      const body = lines.slice(1, -1);
+      for (let index = 0; index < schema.length; index += 1) {
+        const line = body[index];
+        const equals = line.indexOf('=');
+        if (equals <= 0) return false;
+        const key = line.slice(0, equals);
+        const value = line.slice(equals + 1);
+        const expected = schema[index];
+        if (key !== expected.key) return false;
+        if (expected.values === null) {
+          if (value.length === 0) return false;
+        } else if (!expected.values.includes(value)) {
+          return false;
+        }
+      }
+      return true;
+    };
+    const validGuard = [
+      begin,
+      'BOOTSTRAP_EXECUTION_PHASE=RECEIPT_AUDIT',
+      'BOOTSTRAP_ALLOWED_TOOL_CLASS=NONE',
+      'LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID',
+      'LAST_EXECUTION_RECEIPT_PACKAGE_NAME=SFV156.zip',
+      'LAST_EXECUTION_RECEIPT_DELIVERY_ID=V156',
+      'LAST_EXECUTION_RECEIPT_VALIDATOR_ID=V156_BOOTSTRAP_LIVE_REF_EVIDENCE_VALIDATOR',
+      'LAST_EXECUTION_RECEIPT_IDENTITY_BINDING_AUDIT=PASS',
+      'LAST_EXECUTION_RECEIPT_RESULT=SUCCESS',
+      'LAST_EXECUTION_RECEIPT_CONSUMPTION_AUDIT=PASS',
+      'BOOTSTRAP_RECEIPT_CONSUMPTION_CONTRACT=PASS',
+      'BOOTSTRAP_UNAUTHORIZED_READ_DETECTED=NO',
+      'BOOTSTRAP_EXECUTION_ORDER_AUDIT=PASS',
+      'BOOTSTRAP_PRETOOL_GUARD_ACCEPTED=YES',
+      end,
+    ].join('\n');
+    expect(validateFilledGuard(validGuard)).toBe(true);
+    expect(validateFilledGuard(validGuard.replace(/\n/g, '\\n'))).toBe(false);
+
+    const missing = validGuard.split('\n').filter(line => !line.startsWith('LAST_EXECUTION_RECEIPT_PACKAGE_NAME=')).join('\n');
+    const extra = validGuard.replace(end, `EXTRA_FIELD=NO\n${end}`);
+    const reorderedLines = validGuard.split('\n');
+    [reorderedLines[4], reorderedLines[5]] = [reorderedLines[5], reorderedLines[4]];
+    const mutations = [
+      validGuard.replace('LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID', 'LAST_RECEIPT_STATUS=PRESENT_VALID'),
+      missing,
+      extra,
+      reorderedLines.join('\n'),
+      validGuard.replace('LAST_EXECUTION_RECEIPT_STATUS=PRESENT_VALID', 'LAST_EXECUTION_RECEIPT_STATUS=PRESENT_COMPLETE'),
+      validGuard.replace(begin, '===== BEGIN BOOTSTRAP ENVELOPE PRETOOL GUARD V2 ====='),
+      validGuard.replace(end, '===== END BOOTSTRAP ENVELOPE PRETOOL_GUARD ====='),
+    ];
+    for (const mutation of mutations) expect(validateFilledGuard(mutation)).toBe(false);
   });
 
   it('enforces current-delivery references inside receipt control fields and bootstrap delivery templates', async () => {

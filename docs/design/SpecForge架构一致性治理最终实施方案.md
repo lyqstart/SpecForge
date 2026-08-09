@@ -859,6 +859,36 @@ WORKTREE_STATUS=
 11. 未取得当前真实工作分支证据时，只允许只读调查并标记 `INSUFFICIENT_EVIDENCE`，不得猜测分支后继续写入。
 12. 历史字段 `TARGET_BRANCH` 可以保留在旧证据中；新的 Stage Input、Stage Output、Failure Diagnostic 与标准执行回执必须优先使用本规则的 `AUTHORITY_BRANCH` / `WORK_BRANCH` 分离模型。
 
+**GOV-STAGE-TEMPLATE-001：** 固定机器模板是可执行 schema，不是供模型重新组织的自然语言说明；所有 canonical 机器模板必须按 `FILL_ONLY` 模式执行。
+
+正式机器 schema：
+
+```text
+CANONICAL_TEMPLATE_EXECUTION_MODE=FILL_ONLY
+CANONICAL_TEMPLATE_SOURCE=APPENDIX_A_EMBEDDED_CANONICAL_BLOCK|EXACT_AUTHORITY_MARKER_SCOPED_BLOCK
+CANONICAL_TEMPLATE_STRUCTURE_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_VALUE_SLOT_MUTATION_ALLOWED=YES
+CANONICAL_TEMPLATE_FIELD_NAME_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_FIELD_ORDER_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_MARKER_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_ENUM_VALUE_SOURCE=DECLARED_SCHEMA_ONLY
+CANONICAL_TEMPLATE_RUNTIME_NEWLINE=LF
+CANONICAL_TEMPLATE_LITERAL_BACKSLASH_N_ALLOWED=NO
+CANONICAL_TEMPLATE_VALIDATION_REQUIRED=YES
+CANONICAL_TEMPLATE_VALIDATION_RESULT=PASS|FAIL
+```
+
+固定规则：
+
+1. canonical 机器模板必须从正式 canonical block 原样取得；禁止根据自然语言规则、历史记忆、字段语义、同义词或上一轮输出重新构造 schema。
+2. 模板结构冻结范围包括 `BEGIN/END` marker、字段名、字段顺序、字段数量和声明枚举；执行者只允许填写 `=` 右侧 value slot。
+3. 枚举 value 只能来自模板或正式 schema 已声明集合；`PRESENT_COMPLETE` 等未声明别名即使语义近似也必须失败。
+4. pre-authority 模板只能从附录 A 已嵌入的 canonical block 取得；exact authority 成功读取后，后续模板只能从当前 `AUTHORITY_HEAD` 对应 exact-commit authority 的稳定 Rule ID / marker scope 取得。
+5. 模板被下一阶段、工具或用户消费前必须执行 exact-schema validation；至少验证 marker、字段集合、字段顺序、cardinality 和 enum。别名、缺字段、多字段、换序、非法枚举或 marker 变化均为 `CANONICAL_TEMPLATE_VALIDATION_RESULT=FAIL`。
+6. validator 必须用 canonical schema 验证实际填充值，不得再通过“关键 token 大致存在”替代 exact schema 校验。
+7. 本规则是 SpecForge 自身开发与执行治理协议，不新增业务 Workflow、Gate、Runtime 或 Work Item 状态。
+8. 任何生成器产生 canonical consumer 测试时，必须把“生成器源文本转义 → TypeScript/JavaScript 源文本 → 运行时字符 → Authority 真实字节”作为同一验证链；`CANONICAL_TEMPLATE_RUNTIME_NEWLINE=LF` 表示 multiline canonical block 使用真实 LF，字面量反斜杠-n 不得冒充换行。
+
 ### 2.9 Truth Source、Artifact Acceptance 与 Validator
 
 本节只定义“事实从哪里来、成果如何验收、验证器如何自证”，不定义 Delivery 或 Bootstrap 状态机。
@@ -879,6 +909,15 @@ WORKTREE_STATUS=
 禁止用泛关键词推断产品能力；禁止猜 `events.jsonl` 字段代替 StateManager；禁止自写与正式 Trace/Candidate/Contract parser 不同的近似语义；禁止把 compatibility latest view 当 immutable Attempt。
 
 **GOV-STAGE-ARTIFACT-VERIFY-001：** 任何阶段成果都必须在生成后执行独立后验验收；“生成成功”不等于“成果有效”。
+
+跨 producer / validator / runner 的目标内容哈希必须显式声明并共享同一语义域：
+
+```text
+ARTIFACT_TARGET_HASH_DOMAIN=NORMALIZED_UTF8_LF_SINGLE_TERMINAL_LF
+ARTIFACT_TARGET_HASH_PRODUCER_CONSUMER_DOMAIN_MATCH_REQUIRED=YES
+```
+
+其中 `target_hashes` 只用于证明文本目标内容；其 canonical hash 输入固定为 UTF-8、CRLF 先规范化为 LF、去除所有末尾换行后补回且仅补回一个 LF。ZIP/package 自身 SHA256 仍按 raw bytes 独立计算，不得与 target content hash 混用。
 
 固定流程：
 
@@ -1268,6 +1307,7 @@ GOV-STAGE-ARTIFACT-VERIFY-001
 GOV-STAGE-VALIDATOR-001
 GOV-STAGE-DELIVERY-IDENTITY-001
 GOV-STAGE-DELIVERY-IDENTITY-001#INTERNAL_REFERENCE
+GOV-STAGE-TEMPLATE-001
 GOV-STAGE-BOOTSTRAP-ENVELOPE-001
 ```
 
@@ -1392,6 +1432,25 @@ BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
    - live-ref source 出现在 handoff / Recovery transition 之前；
    - Envelope Self Check 在本回合结束条件中不可省略。
 11. 该顺序契约只治理新会话 Bootstrap 执行，不改变业务 Workflow、Gate、Runtime 或 WI 状态机。
+
+#### 2.11.8 Canonical Template / Serial Tool Phase Execution
+
+Bootstrap 的固定模板执行和工具访问必须同时满足 `GOV-STAGE-TEMPLATE-001` 与本节串行阶段约束：
+
+```text
+CANONICAL_TEMPLATE_EXECUTION_MODE=FILL_ONLY
+BOOTSTRAP_TOOL_PHASE_EXECUTION_MODE=SERIAL_ONE_PHASE_PER_TOOL_CALL
+BOOTSTRAP_CROSS_PHASE_BATCH_READ_ALLOWED=NO
+```
+
+固定规则：
+
+1. Pre-tool Guard、Bootstrap Failure Acceptance、Bootstrap Evidence Artifact Acceptance、Authority Bootstrap Success Acceptance、Envelope Self Check 都必须从 canonical block 原样取得后只填写 value slot；禁止模型重新生成字段集合、顺序、marker 或枚举。
+2. 每次工具调用只能消费当前 `BOOTSTRAP_ALLOWED_TOOL_CLASS` 对应的一个 Bootstrap 阶段资源类别；禁止把当前阶段资源和下一阶段资源放入同一并行/批量工具调用。
+3. `AUTHORITY_EXACT_READ` 工具调用只能读取当前 live `AUTHORITY_HEAD` 的 exact authority；`current-handoff`、Work Item、immutable evidence 必须等 Authority Bootstrap Success Acceptance 与 Bootstrap Envelope Self Check 均完成后，在后续 `RECOVERY` 工具调用中单独读取。
+4. 即使一个批量工具调用中的第一项读取合法，只要同一调用还包含下一阶段资源，也视为 cross-phase unauthorized read：`BOOTSTRAP_UNAUTHORIZED_READ_DETECTED=YES`、`BOOTSTRAP_EXECUTION_ORDER_AUDIT=FAIL`，同回合不得补字段修复为成功。
+5. Bootstrap Envelope consumer test 必须覆盖 canonical Guard 的 exact schema 正例，以及字段别名、缺字段、多字段、换序、非法枚举、marker 改写反例；正例的 multiline separator 必须在 JavaScript 运行时为真实 LF，字面量反斜杠-n 必须作为不等价输入；同时检查 `SERIAL_ONE_PHASE_PER_TOOL_CALL` 和 `BOOTSTRAP_CROSS_PHASE_BATCH_READ_ALLOWED=NO` 已同步进入附录 A。
+6. 本节只收紧执行协议，不改变业务 Workflow、Gate、Runtime 或 WI 状态机。
 
 ### 2.12 Recovery Acceptance
 
@@ -3713,6 +3772,25 @@ AUTHORITY_PATH=docs/design/SpecForge架构一致性治理最终实施方案.md
 上一轮 CMD 完整执行回执：
 【必须粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；上一轮明确没有 ZIP+CMD 时写 NONE】
 
+固定机器模板执行契约（本段是 pre-authority contract source，不是 Pre-tool Guard 的额外输出字段）：
+CANONICAL_TEMPLATE_EXECUTION_MODE=FILL_ONLY
+CANONICAL_TEMPLATE_SOURCE=APPENDIX_A_EMBEDDED_CANONICAL_BLOCK|EXACT_AUTHORITY_MARKER_SCOPED_BLOCK
+CANONICAL_TEMPLATE_STRUCTURE_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_VALUE_SLOT_MUTATION_ALLOWED=YES
+CANONICAL_TEMPLATE_FIELD_NAME_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_FIELD_ORDER_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_MARKER_MUTATION_ALLOWED=NO
+CANONICAL_TEMPLATE_ENUM_VALUE_SOURCE=DECLARED_SCHEMA_ONLY
+CANONICAL_TEMPLATE_RUNTIME_NEWLINE=LF
+CANONICAL_TEMPLATE_LITERAL_BACKSLASH_N_ALLOWED=NO
+CANONICAL_TEMPLATE_VALIDATION_REQUIRED=YES
+CANONICAL_TEMPLATE_VALIDATION_RESULT=PASS|FAIL
+BOOTSTRAP_TOOL_PHASE_EXECUTION_MODE=SERIAL_ONE_PHASE_PER_TOOL_CALL
+BOOTSTRAP_CROSS_PHASE_BATCH_READ_ALLOWED=NO
+
+固定机器模板必须从本提示词中的 canonical block 原样取得并只填写 `=` 右侧 value slot；禁止根据自然语言、记忆、同义词或上一轮输出重建字段、顺序、marker、cardinality 或枚举。每个模板在被消费前必须做 exact-schema validation；字段别名、缺失、额外、换序、非法枚举或 marker 改写均为 FAIL。
+每次 Bootstrap 工具调用只能消费当前 `BOOTSTRAP_ALLOWED_TOOL_CLASS` 的一个阶段资源类别；禁止把 exact authority 与 current-handoff / WI / immutable evidence 等下一阶段资源放入同一批量或并行工具调用。
+
 第一动作必须是下面的 Pre-tool Guard。完成它之前禁止调用任何工具、禁止读取任何仓库或 handoff：
 
 ===== BEGIN BOOTSTRAP ENVELOPE PRETOOL GUARD =====
@@ -3940,6 +4018,7 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
 | `GOV-STAGE-ENV-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-HANDOFF-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-INPUT-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-TEMPLATE-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-OUTPUT-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-RECEIPT-001` | 2.10 Delivery、Receipt 与 Delivery Identity |
 | `GOV-STAGE-RECOVERY-ACCEPT-001` | 2.12 Recovery Acceptance |
