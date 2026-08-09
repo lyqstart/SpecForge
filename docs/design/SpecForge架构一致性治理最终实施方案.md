@@ -270,8 +270,7 @@ AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO
 4. 固定 `AUTHORITY_HEAD` 后，authority 正文必须从 exact commit 引用读取：
    `https://raw.githubusercontent.com/lyqstart/SpecForge/<AUTHORITY_HEAD>/docs/design/SpecForge架构一致性治理最终实施方案.md`。
    禁止先读取 `.../main/...` 再从正文或网页推断 HEAD。
-5. exact commit authority 必须包含且只包含一个唯一权威标记：
-   `本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。`
+5. exact commit authority 必须包含且只包含一个唯一权威标记；该标记正文以 1.1 的权威声明块为唯一规范，任何规则说明、模板或示例均不得再次复制标记全文。
    唯一标记验证失败时 `AUTHORITY_BOOTSTRAP_ACCEPTED=NO`。
 6. `AUTHORITY_COMMIT` 与 `AUTHORITY_HEAD` 是不同事实：`AUTHORITY_HEAD` 是 authority branch 当前 ref；`AUTHORITY_COMMIT` 是 authority 文件最近一次变更 commit。只有当结构化 Git / commit-path evidence 证明二者相同时才能写成相等，禁止因为 authority 内容来自 exact HEAD 就自动推断二者相同。
 7. 如果当前会话工具无法取得 live Git ref，必须 `AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 并 Fail Closed；不得退回网页缓存继续 Recovery。唯一允许的下一动作是取得 branch ref 的只读 Bootstrap Evidence。
