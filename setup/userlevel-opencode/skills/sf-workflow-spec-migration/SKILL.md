@@ -135,6 +135,8 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 1. 在首个正式 migration artifact 前调用 `sf_git_preflight`。若项目是 Git worktree 且当前 WI 没有 `git_context.json`，调用 `sf_git_branch_plan` 生成语义分支候选，向用户展示 recommended branch 并取得新的明确分支名确认。
 2. 用户确认后调用 `sf_git_branch_create(confirmed=true)` 建立 WI branch；不得在默认分支继续正式 migration delivery。
 3. 历史已经 `closed` 且缺少 `git_context.json` 的 `spec_migration` 不得普通补分支；只允许 `sf_git_branch_create(recovery_mode="closed_spec_migration", reconcile_attempt_id="<latest-passed-verification-attempt>", require_clean=false, confirmed=true)`。该工具必须先用 Formal Version Attempt input snapshot 证明当前 Project Spec Git diff 未漂移。
+4. `sf_git_branch_create` 对已 `closed` 的 `spec_migration` 必须显式使用 `recovery_mode="closed_spec_migration"`；普通 `branch_create` 必须被 Tool Fail Closed。
+5. 若历史恢复中分支已经由同一 WI 创建但 `git_delivery_recovery.json` 尚未生成，禁止 checkpoint，也禁止删除/重建分支。应使用同一个用户已确认分支名再次调用 `sf_git_branch_create(recovery_mode="closed_spec_migration", reconcile_attempt_id="<latest-passed-verification-attempt>", require_clean=false, confirmed=true)`；Tool 只有在当前分支、`git_context`、base commit、HEAD 全部严格一致且 HEAD 尚未前进时，才允许幂等补写 recovery evidence。
 
 ### 阶段 1：intake（迁移诉求受理）
 

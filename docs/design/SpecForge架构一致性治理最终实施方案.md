@@ -1600,6 +1600,9 @@ Close Gate = REQUIRED
 14. 历史恢复例外：若 `spec_migration` 已经 `closed`、Formal Version/Close 均 passed、但因旧产品缺陷没有 `git_context.json`，只允许 `sf_git_branch_create(recovery_mode="closed_spec_migration")` 恢复 Git delivery。该动作必须取得新的语义分支名用户确认，并在 branch side effect 前证明：指定 passed Verification Attempt 是 latest、其 `input-snapshot.json` 对当前全部 `.specforge/project/**` Git diff 文件均存在同路径同 SHA256 证据；无法证明时 Fail Closed，不得重跑 Gate 代替。
 15. closed-spec-migration Git recovery 只允许写 `git_context.json` 与 `git_delivery_recovery.json`；随后通过正式 `sf_git_checkpoint_commit` 精确提交当前 WI 的 `.specforge/project/**` diff 与 `.specforge/work-items/<CURRENT_WI>/**` 治理 evidence，不得提交其他 Work Item evidence。
 16. Git Merge Plan / Run / Post-Merge Verify 的 worktree cleanliness 对当前 WI 只允许忽略其他 Work Item 的 `.specforge/work-items/<OTHER_WI>/**` governance artifacts；任何 `.specforge/project/**`、当前 WI、源码/配置或其他路径的 dirty 状态仍必须阻断。被忽略路径必须显式返回用于审计。
+17. `sf_git_branch_create` 必须自行强制 closed `spec_migration` recovery contract，不能依赖 Agent/调用者自觉传参：当 Work Item 已 `closed` 且 workflow 为 `spec_migration/spec_migration_path` 时，未显式传 `recovery_mode=closed_spec_migration` 必须 Fail Closed，禁止落入普通 branch-create 路径。
+18. closed-spec-migration recovery 允许一次**部分 side-effect 幂等续接**：若用户确认的目标分支已经由同一 WI 创建、当前正位于该分支、`git_context.json` 的 `work_item_id/branch_name/base_branch/base_commit` 与请求完全一致、当前 HEAD 仍严格等于 `base_commit`、且尚无 checkpoint commit，则允许在不再次创建/切换分支的情况下执行同一 latest passed Verification Attempt + Project Spec SHA 校验并补写 `git_delivery_recovery.json`。任何 context/branch/HEAD 不一致都必须 Fail Closed。
+19. 上述幂等续接不得修改 `git_context.json`、不得生成第二个分支、不得推进 Work Item 状态、不得重跑 Gate/Close；成功返回必须显式声明 `branch_created=false`、`git_context_reused=true`、`recovery_validation=passed` 和 `recovery_evidence_path`。
 
 Trace 贯穿 Requirement、Architecture、Data Model、Module Design、Contract、Task、Implementation 和 Verification。
 

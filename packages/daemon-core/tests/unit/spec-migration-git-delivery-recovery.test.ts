@@ -10,6 +10,8 @@ import {
   captureSpecMigrationProjectSpecGitDiff,
   assertSpecMigrationProjectSpecGitDiffUnchanged,
   verifyLegacyClosedSpecMigrationGitDeliveryRecovery,
+  isClosedSpecMigrationGitRecoveryRequired,
+  assertClosedSpecMigrationExistingBranchRecoveryContext,
 } from '../../src/tools/lib/project-governance-v2.js';
 import { worktreeStatusForWorkItemMerge } from '../../src/tools/lib/git-governance-stage2.js';
 
@@ -255,4 +257,75 @@ describe('spec_migration Git delivery recovery', () => {
       await captureSpecMigrationProjectSpecGitDiff(root, baseCommit);
     expect(second).toEqual(first);
   });
+
+  it('requires recovery mode for a closed spec_migration branch create', () => {
+    expect(
+      isClosedSpecMigrationGitRecoveryRequired({
+        currentState: 'closed',
+        workflowType: 'spec_migration',
+        workflowPath: 'spec_migration_path',
+      }),
+    ).toBe(true);
+    expect(
+      isClosedSpecMigrationGitRecoveryRequired({
+        currentState: 'verification_done',
+        workflowType: 'spec_migration',
+        workflowPath: 'spec_migration_path',
+      }),
+    ).toBe(false);
+  });
+
+  it('accepts only an exact existing-branch context whose HEAD is still the base commit', () => {
+    const gitContext = {
+      git_enabled: true,
+      work_item_id: 'WI-0004',
+      branch_name: 'feature/spec-migration-reporting-cli-wi-0004',
+      base_branch: 'main',
+      base_commit: '793f3b1814f17e75f6e6356ab8213197c41c6fad',
+    };
+    expect(
+      assertClosedSpecMigrationExistingBranchRecoveryContext({
+        workItemId: 'WI-0004',
+        requestedBranchName:
+          'feature/spec-migration-reporting-cli-wi-0004',
+        requestedBaseBranch: 'main',
+        currentBranch:
+          'feature/spec-migration-reporting-cli-wi-0004',
+        headCommit:
+          '793f3b1814f17e75f6e6356ab8213197c41c6fad',
+        gitContext,
+      }),
+    ).toBe('793f3b1814f17e75f6e6356ab8213197c41c6fad');
+
+    expect(() =>
+      assertClosedSpecMigrationExistingBranchRecoveryContext({
+        workItemId: 'WI-0004',
+        requestedBranchName:
+          'feature/spec-migration-reporting-cli-wi-0004',
+        requestedBaseBranch: 'main',
+        currentBranch:
+          'feature/spec-migration-reporting-cli-wi-0004',
+        headCommit: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        gitContext,
+      }),
+    ).toThrow('SPEC_MIGRATION_GIT_RECOVERY_HEAD_MUST_EQUAL_BASE');
+  });
+
+  it('pins the branch handler to fail closed without recovery mode and to reuse exact partial recovery state', async () => {
+    const source = await fs.readFile(
+      path.join(
+        process.cwd(),
+        'packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts',
+      ),
+      'utf-8',
+    );
+    expect(source).toContain('SPEC_MIGRATION_GIT_RECOVERY_MODE_REQUIRED');
+    expect(source).toContain(
+      'assertClosedSpecMigrationExistingBranchRecoveryContext',
+    );
+    expect(source).toContain('existing_branch_and_git_context_reused');
+    expect(source).toContain('branch_created: false');
+    expect(source).toContain('git_context_reused: true');
+  });
+
 });

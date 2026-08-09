@@ -7056,3 +7056,27 @@ actual_files
 - **正确方法**：用 web exact-commit 原始源码完成结构核对；用户 runner 写入前再次 `git ls-remote` + 对本地 exact baseline 做全量 in-memory transform，任何 anchor 不成立则零写入 Fail Closed。
 - **状态**：`CLOSED_EXTERNAL_TOOL_ENVIRONMENT`。
 <!-- SPECFORGE_ERR390_ERR396_SPEC_MIGRATION_GIT_DELIVERY:END -->
+
+<!-- SPECFORGE_ERR397_ERR400_CLOSED_SPEC_MIGRATION_BRANCH_RECOVERY_ENFORCEMENT:START -->
+## ERR-397 / EXP-015 — 分支恢复执行遗漏 V196 明确要求的 recovery 参数
+- **事实**：用户明确确认 `feature/spec-migration-reporting-cli-wi-0004` 后，OpenCode 实际调用 `sf_git_branch_create` 只传 `work_item_id/branch_name/confirmed/base_branch/require_clean=false`，没有传 `recovery_mode=closed_spec_migration` 和 `reconcile_attempt_id=attempt-0006`。
+- **结果**：分支创建成功、`git_context.json` 已写，当前分支切换成功；HEAD 仍等于 base commit，checkpoint/merge plan/merge 均未执行。
+- **状态**：`CLOSED_BY_V199_PENDING_EXECUTION`。
+
+## ERR-398 / EXP-044 — sf_git_branch_create 没有把 closed spec_migration recovery 约束下沉为 Tool 强制
+- **事实**：V196 handler 只有 `recoveryMode` 非空时才读取 closed state、latest passed Attempt 和 Project Spec SHA；若调用者漏传 recovery_mode，会直接进入普通 `createBranch()`。
+- **根因**：稳定 Authority Rule 14 被实现成调用者约定，而不是 Tool enforcement。
+- **正确方法**：Tool 必须读取 authoritative state + work_item workflow；closed spec_migration 未显式 recovery mode 时直接 Fail Closed。
+- **状态**：`CLOSED_BY_V199_PENDING_EXECUTION`。
+
+## ERR-399 / EXP-188 — closed spec_migration branch recovery 缺少部分 side-effect 幂等续接
+- **事实**：ERR-397 后已经存在正确用户确认的 branch 和 git_context，但 recovery evidence 尚未生成；删除/重建分支会制造额外 Git side effect，而继续 checkpoint 又会绕过 Formal Version recovery proof。
+- **正确方法**：若当前 branch、git_context、base branch/base commit 与请求严格一致且 HEAD 仍等于 base commit，则允许同一个正式 branch tool 在 `closed_spec_migration` 模式下不再创建分支，只执行 latest passed Attempt + Project Spec SHA 验证并补写 `git_delivery_recovery.json`。
+- **状态**：`CLOSED_BY_V199_PENDING_EXECUTION`。
+
+## ERR-400 / EXP-244 — V198 in-memory contract 错把实现错误码当作 Authority 必须文本
+- **事实**：V198 STEP-001 live ref / local / Authority baseline 全 PASS，随后在任何写入前失败：`IN_MEMORY_CONTRACT_MISSING:docs/design/SpecForge架构一致性治理最终实施方案.md:SPEC_MIGRATION_GIT_RECOVERY_MODE_REQUIRED`。远程仍 `104a767b...`，Commit/Git/Validation/WI lifecycle 均无副作用。
+- **根因**：V198 对 Authority 的验证要求出现 TypeScript Runtime 错误码；但 Authority 只应保存稳定业务/治理契约，不应绑定某个实现错误字符串。
+- **正确方法**：Authority 验证只检查稳定语义：closed spec_migration 必须显式 recovery mode、普通 branch-create Fail Closed、部分 side-effect 幂等续接；实现错误码只在 Runtime/Test 消费者检查。
+- **状态**：`CLOSED_BY_V199_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR397_ERR400_CLOSED_SPEC_MIGRATION_BRANCH_RECOVERY_ENFORCEMENT:END -->

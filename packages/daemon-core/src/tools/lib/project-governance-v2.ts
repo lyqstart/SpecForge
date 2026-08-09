@@ -2143,6 +2143,52 @@ export async function captureSpecMigrationProjectSpecGitDiff(
   };
 }
 
+export function isClosedSpecMigrationGitRecoveryRequired(input: {
+  currentState: unknown;
+  workflowType: unknown;
+  workflowPath: unknown;
+}): boolean {
+  return (
+    String(input.currentState ?? '').trim() === 'closed' &&
+    isSpecMigrationNoCodeWorkflow(input.workflowType, input.workflowPath)
+  );
+}
+
+export function assertClosedSpecMigrationExistingBranchRecoveryContext(input: {
+  workItemId: string;
+  requestedBranchName: string;
+  requestedBaseBranch: string;
+  currentBranch: string | null;
+  headCommit: string | null;
+  gitContext: any;
+}): string {
+  const context = input.gitContext;
+  if (!context || typeof context !== 'object') {
+    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_GIT_CONTEXT_REQUIRED');
+  }
+  const baseCommit = String(context.base_commit ?? '').trim();
+  if (
+    context.git_enabled !== true ||
+    String(context.work_item_id ?? '') !== input.workItemId ||
+    String(context.branch_name ?? '') !== input.requestedBranchName ||
+    String(context.base_branch ?? '') !== input.requestedBaseBranch ||
+    !baseCommit
+  ) {
+    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_GIT_CONTEXT_MISMATCH');
+  }
+  if (input.currentBranch !== input.requestedBranchName) {
+    throw new Error(
+      `SPEC_MIGRATION_GIT_RECOVERY_EXISTING_BRANCH_REQUIRED: current=${input.currentBranch ?? 'missing'} requested=${input.requestedBranchName}`,
+    );
+  }
+  if (input.headCommit !== baseCommit) {
+    throw new Error(
+      `SPEC_MIGRATION_GIT_RECOVERY_HEAD_MUST_EQUAL_BASE: head=${input.headCommit ?? 'missing'} base=${baseCommit}`,
+    );
+  }
+  return baseCommit;
+}
+
 export async function verifyLegacyClosedSpecMigrationGitDeliveryRecovery(input: {
   projectRoot: string;
   workItemId: string;

@@ -4090,3 +4090,20 @@ V196 固定：
 6. current WI / Project Spec / source/config dirty 继续阻断；
 7. 当前 WI-0004 不由 V196 runner 操作。产品部署后先 `sf_git_branch_plan`，停在分支名用户确认边界。
 <!-- SPECFORGE_V196_SPEC_MIGRATION_GIT_DELIVERY:END -->
+
+<!-- SPECFORGE_V199_CLOSED_SPEC_MIGRATION_BRANCH_RECOVERY_ENFORCEMENT:START -->
+## V199 — closed spec_migration branch recovery enforcement + partial-side-effect resume
+
+V197 后用户已确认语义分支，但实际 branch-create 遗漏 recovery 参数，产生 branch + git_context 而没有 recovery evidence。V198 的产品设计方向保持不变，但其 in-memory validator 错误要求 Authority 出现 Runtime 错误码，因此零写入 Fail Closed。
+
+V199：
+1. Authority 只增加稳定治理语义，不绑定实现错误码；
+2. Tool 强制 closed spec_migration 必须走 `closed_spec_migration` recovery；
+3. 已经创建但未 checkpoint 的同一 branch/context 支持幂等续接；
+4. current branch、git_context、base commit、HEAD 必须严格一致，且 HEAD 仍等于 base commit；
+5. 续接只补做 latest passed attempt + Project Spec SHA proof，并写 `git_delivery_recovery.json`；
+6. 不重建分支、不改 git_context、不推进 WI、不重跑 Gate/Close；
+7. Runtime 错误码只由 TypeScript/Test 验证，不作为 Authority 文本契约。
+
+V199 runner 不访问 Validation、不执行 branch/checkpoint/merge/WI lifecycle。
+<!-- SPECFORGE_V199_CLOSED_SPEC_MIGRATION_BRANCH_RECOVERY_ENFORCEMENT:END -->
