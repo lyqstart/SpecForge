@@ -5861,3 +5861,33 @@ actual_files
 - **自动防护**：ERR-284 section 必须以真实物理行存在；escaped-newline 版本必须 FAIL。
 - **状态**：`CLOSED`；V152 将 ERR-284 还原为正常 Markdown 行结构，并新增 ledger section 结构回归。
 <!-- SPECFORGE_ERR287_EXP253_LEDGER_LITERAL_ESCAPED_NEWLINE_STRUCTURE:END -->
+
+<!-- SPECFORGE_ERR288_EXP254_POST_PUSH_HANDOFF_SELF_STALENESS:START -->
+## ERR-288 / EXP-254 — V152 成功 push 后 committed handoff 仍把已完成的 remote sync 写成当前 blocker
+- **日期与阶段**：2026-08-09，V152 成功回执后的远程重读。
+- **分类**：`HANDOFF_CONSISTENCY_DEFECT / POST_PUSH_STATE_DEFECT / SELF_REFERENTIAL_DYNAMIC_FACT_DEFECT`。
+- **现场表现**：V152 已 `PUSH_SUCCEEDED=YES`，远程 HEAD 与 Authority commit 均为 `19289ed3d717216b98a63c7bcda45983185ef5b2`；但同一 commit 中的 `current-handoff.md` 仍写 `CURRENT_STAGE_STATUS=FINAL_CONTENT_CLOSURE_REMOTE_SYNC_TARGET`、`CURRENT_BLOCKER=V152_REMOTE_SYNC_REQUIRED`，说明段仍把“V152 提交推送”描述为未来动作。
+- **已执行与未执行**：V152 的 4 文件 commit/push、回归测试、TypeScript、daemon-core build、workspace build、`git diff --check` 均已成功；WI-0004 生命周期未执行。
+- **仓库变化**：V152 已成功成为远程 `main`；本缺陷只涉及提交后 handoff 动态事实，不影响 V133 Authority 内容本身。
+- **根因**：提交前 handoff target 被设计成“当前交付正在等待自己完成”的 pre-push 状态；提交成功后该文本立即失效。与此同时 `LATEST_REPOSITORY_COMMIT` 这类字段若试图在同一 commit 中保存自身 commit SHA，也存在不可满足的自引用问题。
+- **影响**：新会话只读 handoff 时会把已完成 Stage 错判为仍受 V152 remote sync 阻断，延迟或错误恢复下一阶段。
+- **正确做法**：提交中的 handoff 必须描述“该提交成功后仍成立的 next-stage state”；自身 Git HEAD 不作为 handoff 自引用字段保存，当前远程 HEAD 必须由 structured live Git ref / receipt 取得；handoff 只保存进入 Stage 的 `REMOTE_HEAD_BASELINE` 和非自引用的连续性事实。
+- **新增类防护 / EXP-254**：任何 commit/push delivery 在提交前必须执行 `POST_COMMIT_STATE_SEMANTIC_SIMULATION`：假设 push 已成功，逐项检查 `CURRENT_STAGE_STATUS / CURRENT_BLOCKER / NEXT_STAGE / NEXT_LEGAL_ACTION / explanatory bullets` 是否仍为真；禁止 committed handoff 以“等待本提交 push”作为当前 blocker。
+- **自动防护**：V153 validator 必须拒绝 `CURRENT_BLOCKER=V152_REMOTE_SYNC_REQUIRED`、`CURRENT_STAGE_STATUS=FINAL_CONTENT_CLOSURE_REMOTE_SYNC_TARGET` 和未来式 V152 push 说明，并要求 next stage 为 WI-0004 只读恢复对账。
+- **状态**：`CLOSED`；V153 把 handoff 写为 V133 remote sync 已完成后的稳定 next-stage state，并保留所有 WI-0004 lifecycle 禁止边界。
+<!-- SPECFORGE_ERR288_EXP254_POST_PUSH_HANDOFF_SELF_STALENESS:END -->
+
+<!-- SPECFORGE_ERR289_EXP255_DYNAMIC_STAGE_HARDCODED_TEST_CONSUMER:START -->
+## ERR-289 / EXP-255 — V152 回归测试把 handoff 动态 CURRENT_STAGE 固定成 V152 阶段值
+- **日期与阶段**：2026-08-09，V153。
+- **分类**：`VALIDATION_DEFECT / CONTRACT_CONSUMER_DEFECT / DYNAMIC_FACT_HARDCODE_DEFECT`。
+- **现场表现**：V153 正确把 `CURRENT_STAGE` 推进为 `WI0004_READ_ONLY_RECOVERY_RECONCILIATION_PENDING`，但 V152 新增的 authority contract test 仍 blocking 要求 `CURRENT_STAGE=SPECFORGE_SELF_DEVELOPMENT_V133_FINAL_AUTHORITY_CONTENT_REMOTE_SYNC`，导致 14 PASS / 1 FAIL。
+- **已执行与未执行**：V153 已完成本地文档写入并运行工程验证；目标测试失败后 runner 完整回滚，`COMMIT_SHA=NONE`、`PUSH_SUCCEEDED=NO`，WI-0004 / daemon / OpenCode 生命周期动作均为 NONE。
+- **仓库变化**：`ROLLBACK_CONFIRMED=YES`；本地/远程保持 `19289ed3d717216b98a63c7bcda45983185ef5b2`。
+- **根因**：测试把 `GOV-STAGE-HANDOFF-001` 明确定义为动态状态的 `CURRENT_STAGE` 具体值，当成了跨 Stage 永久稳定契约；这同时违反 `EXP-003`“状态快照不是不变量”和 `EXP-022`“测试夹具必须消费权威模型”。
+- **影响**：任何合法的下一 Stage 推进都会被旧测试误报为治理回归，形成测试对 handoff 状态机的反向冻结。
+- **正确做法**：authority contract test 只验证 CURRENT EXECUTION STATE 唯一结构、必需机器字段存在、稳定 authority 镜像字段值和禁止状态；`CURRENT_STAGE / CURRENT_STAGE_STATUS / CURRENT_BLOCKER / NEXT_STAGE / NEXT_LEGAL_ACTION` 等动态字段只验证结构存在和非空，不锁死某一轮 delivery 的具体值。
+- **新增类防护 / EXP-255**：测试消费者必须先区分 `STABLE_CONTRACT_FIELD` 与 `DYNAMIC_STAGE_FACT`；动态字段的具体值只允许由当前 Stage runner/receipt 做当轮验收，不得进入长期仓库回归作为固定字面量。
+- **自动防护**：V154 将 V152 test block 限定到唯一 CURRENT EXECUTION STATE，并用结构正则验证动态字段；保留 D1-D19、`UNRECORDED_FAILURES=0`、ERR-284 ledger 结构等稳定回归，同时禁止自然语言说明成为 blocking assertion。
+- **状态**：`CLOSED`；V154 目标测试、TypeScript、daemon-core build、workspace build、范围审计和 push 全部通过后成立。
+<!-- SPECFORGE_ERR289_EXP255_DYNAMIC_STAGE_HARDCODED_TEST_CONSUMER:END -->

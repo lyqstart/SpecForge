@@ -869,11 +869,33 @@ it('keeps D9-D14 authority content architecture canonical and non-overlapping', 
       'utf8',
     );
 
-    expect(handoff).toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D19');
-    expect(handoff).toContain('CURRENT_STAGE=SPECFORGE_SELF_DEVELOPMENT_V133_FINAL_AUTHORITY_CONTENT_REMOTE_SYNC');
-    expect(handoff).toContain('UNRECORDED_FAILURES=0');
-    expect(handoff).not.toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D14');
-    expect(handoff).not.toContain('当前唯一产品 blocker 仍是 ERR-271');
+    const stateStartMarker = '<!-- SPECFORGE_CURRENT_EXECUTION_STATE:START -->';
+    const stateEndMarker = '<!-- SPECFORGE_CURRENT_EXECUTION_STATE:END -->';
+    const stateStart = handoff.indexOf(stateStartMarker);
+    const stateEnd = handoff.indexOf(stateEndMarker, stateStart + stateStartMarker.length);
+    expect(stateStart).toBeGreaterThanOrEqual(0);
+    expect(stateEnd).toBeGreaterThan(stateStart);
+    expect(handoff.indexOf(stateStartMarker, stateStart + stateStartMarker.length)).toBe(-1);
+    expect(handoff.indexOf(stateEndMarker, stateEnd + stateEndMarker.length)).toBe(-1);
+
+    const currentState = handoff.slice(stateStart, stateEnd + stateEndMarker.length);
+    expect(currentState).toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D19');
+    expect(currentState).toContain('UNRECORDED_FAILURES=0');
+    expect(currentState).not.toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D14');
+    expect(currentState).not.toContain('\nCURRENT_BLOCKER=ERR-271');
+
+    for (const key of [
+      'CURRENT_STAGE',
+      'CURRENT_STAGE_STATUS',
+      'CURRENT_BLOCKER',
+      'OPERATION_BOUNDARY',
+      'FORBIDDEN_ACTIONS',
+      'NEXT_STAGE',
+      'NEXT_LEGAL_ACTION',
+      'STOP_CONDITION',
+    ]) {
+      expect(currentState, key).toMatch(new RegExp(`\\n${key}=[^\\n]+\\n`));
+    }
 
     const err284Start = '<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:START -->';
     const err284End = '<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:END -->';
@@ -889,6 +911,8 @@ it('keeps D9-D14 authority content architecture canonical and non-overlapping', 
     for (const token of [
       '## ERR-286 / EXP-252',
       '## ERR-287 / EXP-253',
+      '## ERR-288 / EXP-254',
+      '## ERR-289 / EXP-255',
     ]) {
       expect(ledger, token).toContain(token);
     }
