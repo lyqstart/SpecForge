@@ -6837,3 +6837,110 @@ actual_files
 - **防护**：新增 handler 集成回归测试，直接运行 `sf_close_gate` 并证明 spec_migration 的 never-enabled Permission 字段不被改写；复用 `EXP-044`、`EXP-085`、`EXP-188`。
 - **状态**：`CLOSED_BY_V186_PENDING_EXECUTION`。
 <!-- SPECFORGE_ERR365_SPEC_MIGRATION_CLOSE_PERMISSION_FACT_CONSUMER_GAP:END -->
+
+<!-- SPECFORGE_ERR366_VERIFICATION_FORMAL_GATE_RUNNER_CONSUMER_GAP:START -->
+## ERR-366 / EXP-044 — Verification Gate Runner 无法形成自身要求的 Formal Version 闭环，且遗漏 spec_migration no-code 状态入口
+- **日期与阶段**：2026-08-09，V186 成功并由用户手工重启 daemon 后，WI-0004 no-code Verification 执行前生产者/消费者复核。
+- **一手源码事实**：
+  1. `gate-runner-v11.ts` 已正式注册 `formal_version_gate`；
+  2. `sf-v11-gate-run.ts::evaluateVerificationGateAutoAdvanceEligibility()` 明确要求 `verification_gate` 与 `formal_version_gate` 都存在且通过；
+  3. 但 `VALID_GATE_IDS` / `POST_CANDIDATE_GATES` 漏掉 `formal_version_gate`；
+  4. `verification` stage alias 只加入 `verification_gate`；
+  5. `required-gates.ts` 的 `post_implementation` 也只返回 `verification_gate`，`spec_migration_path` 的 legacy all 同样漏掉 Formal Version；
+  6. Verification 自动推进允许 `investigation@post_merge_verified`，却漏掉权威已定义的 `spec_migration@post_merge_verified`。
+- **权威冲突**：`GOV-SPEC-MIGRATION-NO-CODE-001` 明确规定 `Verification Gate = REQUIRED`、`Formal Version Gate = REQUIRED`，且 spec_migration 不经过 Implementation；Formal Version Gate 固定处于 Verification Gate 与 Close Gate 之间。
+- **影响**：缺陷在 WI-0004 Verification 生命周期动作前发现；没有创建新的 verification attempt，没有状态迁移，没有 Validation 写入。
+- **根因**：Formal Version Gate 的核心生产者已实现，但 handler allowlist、阶段映射、all-gates 映射和 no-code 状态推进消费者没有同步更新。
+- **正确方法**：把 Formal Version Gate 纳入 handler 允许集合和 post-candidate 集合；`verification` alias 必须消费 `post_implementation` required gates（Verification + Formal Version）；`spec_migration_path` all-gates 必须包含 Formal Version；Verification 状态恢复判定必须允许 `spec_migration@post_merge_verified`，并且仍只在两个 owned Gate 与 summary 全部通过时推进。
+- **防护**：在 `spec-migration-no-code-lifecycle.test.ts` 增加 Gate Runner 映射、默认 alias、recoverable-state、双 Gate eligibility 的行为回归；复用 `EXP-044`、`EXP-085`、`EXP-188`、`EXP-244`。
+- **状态**：`CLOSED_BY_V187_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR366_VERIFICATION_FORMAL_GATE_RUNNER_CONSUMER_GAP:END -->\n\n<!-- SPECFORGE_ERR367_V187_VALIDATOR_LEXICAL_TOOL_FALSE_POSITIVE:START -->\n## ERR-367 / EXP-244 — V187 首次预交付 validator 把错误台账中的 Tool 名称误判成真实生命周期调用\n- **日期与阶段**：2026-08-09，V187 交付前 Artifact Acceptance。\n- **事实**：最终 ZIP 尚未交付用户；validator 因 runner 内嵌 ERR-366 说明文字包含 `sf_v11_gate_run` 字符串而报 forbidden。没有访问用户仓库、Validation，没有执行任何 WI 生命周期动作。\n- **分类**：`VALIDATION_DEFECT / LEXICAL_FALSE_POSITIVE`。\n- **根因**：validator 对整份 runner 源码做 Tool 名称词法黑名单，没有区分历史/说明文本与真实调用点。\n- **正确方法**：按 AST / subprocess 调用点审计执行能力；Tool 名称可以作为历史证据或补丁目标文本存在，不能仅凭字符串出现判定执行。\n- **防护**：复用 `EXP-244`；V187 validator 改为行为/调用点审计。\n- **状态**：`CLOSED_PREDELIVERY_METHOD_CHANGED`。\n<!-- SPECFORGE_ERR367_V187_VALIDATOR_LEXICAL_TOOL_FALSE_POSITIVE:END -->\n\n<!-- SPECFORGE_ERR368_V187_SPREADSHEET_WARMUP_RECURRENCE:START -->\n## ERR-368 / EXP-072 — V187 非表格 ZIP 构建再次被可见 Python spreadsheet warmup timeout 干扰\n- **日期与阶段**：2026-08-09，V187 交付前构建。\n- **事实**：`python_user_visible` 启动时 artifact spreadsheet runtime warmup timeout；该任务不是 spreadsheet。失败发生在 assistant 环境，用户未收到/执行失败包。\n- **分类**：`TOOLING_FAILURE / IRRELEVANT_RUNTIME_WARMUP`。\n- **影响**：只影响 assistant-side 构建通道；无用户仓库或生命周期副作用。\n- **正确方法**：非 spreadsheet ZIP 改用普通 container/Python 文件通道，最终独立执行包内 validator、ZIP reopen、pycache=0。\n- **防护**：复用 `EXP-072`、`EXP-080`。\n- **状态**：`CLOSED_PREDELIVERY_CHANNEL_CHANGED`。\n<!-- SPECFORGE_ERR368_V187_SPREADSHEET_WARMUP_RECURRENCE:END -->\n\n<!-- SPECFORGE_ERR369_V187_AMBIGUOUS_HANDLER_LIST_ANCHOR:START -->\n## ERR-369 / EXP-063 — V187 首版 handler 列表补丁使用重复局部锚点\n- **日期与阶段**：2026-08-09，V187 第二层预交付 Artifact Acceptance。\n- **事实**：validator 行为 fixture 发现 `verification_gate -> close_gate` 局部文本同时存在于 `VALID_GATE_IDS` 与 `POST_CANDIDATE_GATES`；原 transform 要求该局部锚点全文件唯一，因此真实用户运行也会在任何写入前失败。失败包未交付，未访问用户仓库/Validation，未执行 WI 生命周期。\n- **分类**：`SCRIPT_DEFECT / AMBIGUOUS_PATCH_ANCHOR`。\n- **根因**：补丁虽然基于当前源码，但仍选择了跨两个相邻数据结构重复的短文本片段，而不是各自完整声明块。\n- **正确方法**：分别以 `const VALID_GATE_IDS...` 完整数组声明和 `const POST_CANDIDATE_GATES...` 完整 Set 声明作为唯一受控锚点；fixture 必须覆盖两个结构同时存在的真实形态。\n- **防护**：复用 `EXP-063`、`EXP-065`、`EXP-078`；V187 最终 transform 对两个完整结构分别做 cardinality=1。\n- **状态**：`CLOSED_PREDELIVERY_STRUCTURED_ANCHOR`。\n<!-- SPECFORGE_ERR369_V187_AMBIGUOUS_HANDLER_LIST_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR370_V187_FORMAL_GATE_CARDINALITY_FALSE_POSITIVE:START -->
+## ERR-370 / EXP-244 — V187 用户执行前置预检用 formal_version_gate 词法出现次数代替 wiring 行为判断
+- **日期与阶段**：2026-08-09，V187 `STEP-002` 内存产品契约预检。
+- **一手执行事实**：用户回执证明 `STEP-001` live ref / Authority / clean baseline 全部 PASS；随后在任何仓库写入前以 `RuntimeError: FORMAL_GATE_NOT_WIRED` Fail Closed。`COMMIT_ACTION=NONE`、`PUSH_ACTION=NONE`、远程仍为 `006568860370cbe60252ff7d30b2ae1c1d55dc15`、`VALIDATION_REPO_ACCESS=NONE`、所有 WI 生命周期动作均为 NONE。
+- **根因**：V187 transform 已把 `formal_version_gate` 正确加入 `VALID_GATE_IDS` 与 `POST_CANDIDATE_GATES`，并通过 `getRequiredGates(...post_implementation...)` 间接加入 verification alias；但 runner 又要求变换后源码中带逗号形式的 `'formal_version_gate',` 至少出现 3 次。真实正确结构只有两个这种列表元素，自动推进中的 required gate 数组使用不同标点形态。该词法 cardinality 与产品行为没有等价关系。
+- **分类**：`VALIDATION_DEFECT / LEXICAL_CARDINALITY_FALSE_POSITIVE / PREWRITE_FAILURE`。
+- **影响**：阻断 V187 产品修复，没有修改 SpecForge/Validation，没有产生 Gate/Verification/Close 半执行状态。
+- **正确方法**：禁止用 token 全局出现次数证明 producer/consumer wiring；分别验证完整 `VALID_GATE_IDS`、完整 `POST_CANDIDATE_GATES`、verification alias 的 `getRequiredGates(post_implementation)` 调用结构和 recoverable-state 函数，再由真实 Bun 回归测试验证运行行为。
+- **防护**：复用 `EXP-244`、`EXP-063`、`EXP-078`。
+- **状态**：`CLOSED_BY_V188_METHOD_CHANGED_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR370_V187_FORMAL_GATE_CARDINALITY_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR371_V188_VALIDATOR_QUOTING_PREDELIVERY:START -->
+## ERR-371 / EXP-242 — V188 首次预交付 validator 回归断言发生嵌套引号转义错误
+- **日期与阶段**：2026-08-09，V188 Artifact 构建与独立验收前。
+- **事实**：assistant-side builder 在向 validator 注入“禁止旧 token-cardinality 断言”的字符串时，内外引号层级冲突，生成 validator `SyntaxError`。失败发生在最终 ZIP Artifact Acceptance 前；没有向用户交付失败产物，没有访问用户 SpecForge/Validation，也没有执行生命周期动作。
+- **分类**：`PACKAGE_GENERATOR_DEFECT / REPRESENTATION_ESCAPE / PREDELIVERY_FAILURE`。
+- **根因**：生成器字符串中再次嵌套含多层引号的源码表达式，重复表示层冲突模式。
+- **正确方法**：不复刻复杂源码表达式；validator 只禁止旧错误标识 `FORMAL_GATE_NOT_WIRED`，并要求新的完整结构检查标识存在。
+- **防护**：复用 `EXP-242`、`EXP-078`。
+- **状态**：`CLOSED_PREDELIVERY_METHOD_CHANGED`。
+<!-- SPECFORGE_ERR371_V188_VALIDATOR_QUOTING_PREDELIVERY:END -->
+
+<!-- SPECFORGE_ERR372_V188_BUILDER_PATCH_REPEATED_REPRESENTATION_FAILURE:START -->
+## ERR-372 / EXP-008 — V188 修 builder 时再次使用嵌套源码字符串导致同类表示层失败
+- **日期与阶段**：2026-08-09，ERR-371 后的 V188 预交付修复。
+- **事实**：assistant-side 尝试修改 `/tmp/build_v188.py` 时又在 Python 字符串中嵌套三引号源码，补丁脚本自身 `SyntaxError`，随后旧 builder 仍报告原 validator SyntaxError。全部发生在 assistant 环境、最终 Artifact Acceptance 前；用户仓库/Validation/生命周期均无副作用。
+- **分类**：`REPEATED_PACKAGE_GENERATOR_DEFECT / REPRESENTATION_ESCAPE / PREDELIVERY_FAILURE`。
+- **根因**：在 ERR-371 后仍沿用“生成器修改生成器”的相同表示层方法，旧防护没有真正改变构建策略。
+- **正确方法**：按 `EXP-008` 改变方法：直接解开已验收 V187 包为普通文件，直接编辑 runner/validator/manifest/README，再执行独立 validator 和 ZIP reopen；不再生成或补丁生成器源码。
+- **防护**：复用 `EXP-008`、`EXP-242`、`EXP-078`、`EXP-080`。
+- **状态**：`CLOSED_PREDELIVERY_METHOD_CHANGED_TO_DIRECT_FILE_EDIT`。
+<!-- SPECFORGE_ERR372_V188_BUILDER_PATCH_REPEATED_REPRESENTATION_FAILURE:END -->
+
+<!-- SPECFORGE_ERR373_V188_DIRECT_EDIT_REPLACEMENT_ORDER_DEPENDENCY:START -->
+## ERR-373 / EXP-063 — V188 直接编辑脚本的连续替换顺序互相消耗旧锚点
+- **日期与阶段**：2026-08-09，V188 改用直接文件编辑后的预交付装配。
+- **事实**：assistant-side 直接编辑脚本先全局替换 handoff 中 `YES_LATEST_WITH_ERR369`，随后又要求 receipt 中包含更长的旧字符串 `"EXPERIENCE_FILE_READ":"YES_LATEST_WITH_ERR369"`，导致 `missing replace target`。脚本在写回 `/tmp/v188` 文件前停止；没有生成新的 accepted ZIP，没有访问用户仓库/Validation，没有生命周期动作。
+- **分类**：`PACKAGE_ASSEMBLY_DEFECT / ORDER_DEPENDENT_TEXT_REPLACEMENT / PREDELIVERY_FAILURE`。
+- **根因**：同一旧 token 同时属于两个不同结构字段，却使用有顺序依赖的全局替换序列。
+- **正确方法**：从原始 V187 包重新解压；对 handoff transform 行和 receipt 字段分别使用完整字段锚点；每个锚点先验证 cardinality，再独立替换，禁止前一替换改变后一锚点。
+- **防护**：复用 `EXP-063`、`EXP-065`、`EXP-078`。
+- **状态**：`CLOSED_PREDELIVERY_STRUCTURED_FIELD_EDIT`。
+<!-- SPECFORGE_ERR373_V188_DIRECT_EDIT_REPLACEMENT_ORDER_DEPENDENCY:END -->
+
+<!-- SPECFORGE_ERR374_V188_FIELD_SEARCH_MATCHED_EMBEDDED_LEDGER_PAYLOAD:START -->
+## ERR-374 / EXP-063 — V188 结构化字段替换仍在整份 runner 中匹配到 ERR_BLOCK 内嵌历史文本
+- **日期与阶段**：2026-08-09，V188 直接文件编辑装配。
+- **事实**：装配脚本尝试把 receipt 的 `EXPERIENCE_FILE_READ=YES_LATEST_WITH_ERR369` 改为最新值时，cardinality=2；第二处来自 runner 顶层 `ERR_BLOCK` 字符串内嵌的历史/错误说明，而不是第二个可执行字段。脚本在写回目标文件前停止；用户仓库/Validation/生命周期均无副作用。
+- **分类**：`PACKAGE_ASSEMBLY_DEFECT / EMBEDDED_PAYLOAD_FALSE_MATCH / PREDELIVERY_FAILURE`。
+- **根因**：虽然从“全局短 token”收敛到“完整字段”，仍未隔离可执行 Python 代码与顶层内嵌 Markdown payload 两个表示域。
+- **正确方法**：替换可执行字段时按源码行处理，并明确排除 `ERR_BLOCK = ...`、`P0_BLOCK = ...` 顶层 payload 赋值行；payload 本身只通过 AST assignment span 独立替换。
+- **防护**：复用 `EXP-063`、`EXP-244`。
+- **状态**：`CLOSED_PREDELIVERY_CODE_PAYLOAD_DOMAINS_SEPARATED`。
+<!-- SPECFORGE_ERR374_V188_FIELD_SEARCH_MATCHED_EMBEDDED_LEDGER_PAYLOAD:END -->
+
+<!-- SPECFORGE_ERR375_V188_SHELL_CONTINUED_AFTER_ASSEMBLY_FAILURE:START -->
+## ERR-375 / EXP-085 — V188 装配失败后 shell 未 fail-fast，继续验证并重打包了原始 V187 内容
+- **日期与阶段**：2026-08-09，ERR-374 同次 assistant-side 预交付命令。
+- **事实**：第一段 assembly Python 已失败，但外层 shell 未启用 fail-fast，后续仍执行 `/tmp/v188_clean/scripts/validate.py`；由于文件尚未写回，该 validator 仍是 V187 并输出 `VALIDATOR_ID=V187...`。随后脚本把该原始内容压成临时 `/mnt/data/SFV188.zip` 并仅做 ZIP 结构/hash 检查，产生一个文件名与内部 delivery identity 不一致的临时包。该临时包**未向用户发布**，后续必须覆盖销毁。
+- **分类**：`PACKAGE_ASSEMBLY_CONTROL_FLOW_DEFECT / IDENTITY_BINDING_FAILURE / PREDELIVERY_FAILURE`。
+- **根因**：外层多阶段装配没有 fail-fast；最终 wrapper acceptance 没有重新绑定 ZIP basename ↔ manifest delivery_id ↔ runner_id ↔ validator_id。
+- **正确方法**：装配使用 `set -e`；最终 ZIP 重新解压后运行内部 V188 validator，并由外部 acceptance 再独立解析 manifest 与 runner/validator 常量，要求全部 V188 身份一致后才能 `ARTIFACT_ACCEPTED=YES`。
+- **防护**：复用 `EXP-085`、`EXP-188`、`EXP-244`；旧临时 SFV188 必须被最终 accepted ZIP 覆盖。
+- **状态**：`CLOSED_PREDELIVERY_FAIL_FAST_AND_IDENTITY_REBIND_REQUIRED`。
+<!-- SPECFORGE_ERR375_V188_SHELL_CONTINUED_AFTER_ASSEMBLY_FAILURE:END -->
+
+<!-- SPECFORGE_ERR376_V188_LEDGER_GUARD_ADJACENCY_ASSUMPTION:START -->
+## ERR-376 / EXP-065 — V188 装配器错误假设 ERR ledger guard 与 transformed block 相邻
+- **日期与阶段**：2026-08-09，V188 最终直接文件装配。
+- **事实**：装配器先把原单行 `ERR366_ALREADY_PRESENT` guard 改成循环头，再试图通过“循环头紧邻 `transformed={`”组合锚点补循环体；真实 V187 源码中间还有 `TEST_ALREADY_PRESENT` 检查，因此组合锚点 cardinality=0。外层已启用 `set -e`，后续 validator/ZIP 步骤没有执行。
+- **分类**：`PACKAGE_ASSEMBLY_DEFECT / STALE_ADJACENCY_ASSUMPTION / PREDELIVERY_FAILURE`。
+- **根因**：没有以真实局部源码边界为单位完成单步替换，而是假设两个独立语句相邻。
+- **正确方法**：直接把原始单行 ledger guard 一次替换成完整 `for err_id ...` 多行循环；不引用后续语句，不依赖相邻结构。
+- **防护**：复用 `EXP-065`、`EXP-063`、`EXP-078`。
+- **状态**：`CLOSED_PREDELIVERY_SINGLE_ANCHOR_FULL_REPLACEMENT`。
+<!-- SPECFORGE_ERR376_V188_LEDGER_GUARD_ADJACENCY_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR377_V188_ANTI_REGRESSION_SCANNED_HISTORY_PAYLOAD:START -->
+## ERR-377 / EXP-244 — V188 最终 anti-regression 扫描把 ERR-370 历史说明中的旧错误码当成可执行逻辑
+- **日期与阶段**：2026-08-09，V188 最终 source validation。
+- **事实**：V188 已成功替换可执行 `FORMAL_GATE_NOT_WIRED` 词法预检，但 `ERR_BLOCK` 中 ERR-370 的一手事实必须保留该旧错误码。最终 source validation 对整份 runner 做字符串搜索，因此再次误报。`set -e` 已阻止后续打包；用户仓库/Validation/生命周期无副作用。
+- **分类**：`VALIDATION_DEFECT / HISTORY_PAYLOAD_LEXICAL_FALSE_POSITIVE / PREDELIVERY_FAILURE`。
+- **根因**：anti-regression 没有区分可执行代码域和必须保真的历史证据 payload 域。
+- **正确方法**：解析/过滤 runner 顶层 `ERR_BLOCK = ...`、`P0_BLOCK = ...` 赋值行后，只对剩余 executable source 搜索旧错误逻辑；历史 payload 允许并必须保留旧错误码。
+- **防护**：复用 `EXP-244`、`EXP-063`；内部 validator 与外部 Artifact Acceptance 使用相同 code/payload domain separation。
+- **状态**：`CLOSED_PREDELIVERY_EXECUTABLE_DOMAIN_ONLY`。
+<!-- SPECFORGE_ERR377_V188_ANTI_REGRESSION_SCANNED_HISTORY_PAYLOAD:END -->

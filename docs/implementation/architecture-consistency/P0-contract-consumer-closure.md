@@ -4016,3 +4016,21 @@ V186 只修该正式消费者，不改变 Authority、不新增 Workflow/Gate/Ag
 
 本 P0 继续 `IN_PROGRESS`。只有升级后的 handler 被 daemon 重新加载，WI-0004 再真实完成 no-code Audit → Verification → Semantic Closure → Verification/Formal Version → Close，才可继续评估 P0 主线闭环；WI-0001 永久 `INSUFFICIENT_EVIDENCE` 边界保持不变。
 <!-- SPECFORGE_V186_SPEC_MIGRATION_CLOSE_PERMISSION_FACT_FIX:END -->
+
+<!-- SPECFORGE_V188_VERIFICATION_FORMAL_GATE_RUNNER_FIX:START -->
+## V188 — Verification / Formal Version Gate Runner 消费者闭环（V187 prewrite false-positive 修正版，2026-08-09）
+
+产品缺口本身与 V187 调查结论不变：正式 Formal Version Gate 已存在，Verification 自动推进也要求 Verification + Formal Version 两个 Gate 都通过，但正式 Gate Runner 的 allowlist、verification alias、required-gates 和 spec_migration no-code 状态入口没有完整同步。
+
+V187 没有修改仓库；它在写入前被错误的 token cardinality 预检 `FORMAL_GATE_NOT_WIRED` 阻断。V188 保持同一批准范围和同一产品修复，只改变验收方法：
+- `formal_version_gate` 进入 `VALID_GATE_IDS` 与 `POST_CANDIDATE_GATES`；
+- Verification alias 通过 `getRequiredGates(..., 'post_implementation', ...)` 得到 `verification_gate + formal_version_gate`；
+- `spec_migration_path` 的 all-gates 包含 Formal Version；
+- `spec_migration@post_merge_verified` 成为 no-code Verification 合法恢复入口；
+- 仍只有 Verification + Formal Version + summary 全部通过时才推进到 `verification_done`；
+- 预检按完整代码结构验证，最终行为由真实 Bun 回归测试验证，不再按 token 全局出现次数推断 wiring。
+
+V188 仍只修 SpecForge 产品；Validation/WI-0004 完全冻结。V188 成功后需用户手工重启 daemon；OpenCode 无需重启。随后才允许真实 WI-0004 no-code Verification 批处理。
+
+P0 主线继续 `IN_PROGRESS`；WI-0001 首次 Candidate Gate 永久机器证据缺口继续标记 `INSUFFICIENT_EVIDENCE`。
+<!-- SPECFORGE_V188_VERIFICATION_FORMAL_GATE_RUNNER_FIX:END -->

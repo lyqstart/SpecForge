@@ -52,8 +52,9 @@ function getLegacyAllGates(workflowPath: string, workflowType?: string): GateIdV
     case 'requirement_change_path':
     case 'design_change_path':
     case 'architecture_change_path':
-    case 'spec_migration_path':
       return [...fullSpecCandidateGates, 'merge_ready_gate', 'post_merge_gate', 'verification_gate', 'close_gate'];
+    case 'spec_migration_path':
+      return [...fullSpecCandidateGates, 'merge_ready_gate', 'post_merge_gate', 'verification_gate', 'formal_version_gate', 'close_gate'];
     case 'task_change_path':
       return [...getCandidateGates(workflowPath, 'full'), 'merge_ready_gate', 'post_merge_gate', 'verification_gate', 'close_gate'];
     case 'code_only_fast_path':
@@ -74,7 +75,7 @@ export function getRequiredGates(
   switch (phase) {
     case 'candidate': return dedupe(getCandidateGates(workflowPath, candidatePhase, workflowType));
     case 'merge': return ['merge_ready_gate', 'post_merge_gate'];
-    case 'post_implementation': return ['verification_gate'];
+    case 'post_implementation': return ['verification_gate', 'formal_version_gate'];
     case 'close': return ['close_gate'];
     case 'all':
     default: return dedupe(getLegacyAllGates(workflowPath, workflowType));

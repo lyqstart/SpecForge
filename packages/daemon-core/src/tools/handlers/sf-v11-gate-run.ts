@@ -38,6 +38,7 @@ const VALID_GATE_IDS: readonly GateIdV11[] = [
   'merge_ready_gate',
   'post_merge_gate',
   'verification_gate',
+  'formal_version_gate',
   'close_gate',
 ] as const;
 
@@ -45,6 +46,7 @@ const POST_CANDIDATE_GATES = new Set<GateIdV11>([
   'merge_ready_gate',
   'post_merge_gate',
   'verification_gate',
+  'formal_version_gate',
   'close_gate',
 ]);
 
@@ -227,12 +229,12 @@ export function evaluateVerificationGateAutoAdvanceEligibility(input: {
   };
 }
 
-function defaultGateAliasForState(currentState: string | null, workflowType?: string): string {
+export function defaultGateAliasForState(currentState: string | null, workflowType?: string): string {
   if (currentState === 'merged') return 'post_merge';
   if (
     currentState === 'implementation_done' ||
     currentState === 'verification_running' ||
-    (['investigation', 'contract_change'].includes(String(workflowType)) &&
+    (['investigation', 'contract_change', 'spec_migration'].includes(String(workflowType)) &&
       currentState === 'post_merge_verified')
   ) {
     return 'verification';
@@ -240,7 +242,7 @@ function defaultGateAliasForState(currentState: string | null, workflowType?: st
   return 'candidate';
 }
 
-function normalizeGateIds(
+export function normalizeGateIds(
   input: unknown,
   gateType: unknown,
   workflowPath: string,
@@ -301,7 +303,9 @@ function normalizeGateIds(
         break;
       case 'verification':
         aliasesUsed.push(raw);
-        gateIds.push('verification_gate');
+        gateIds.push(
+          ...getRequiredGates(workflowPath, 'post_implementation', 'full', workflowType)
+        );
         break;
       case 'close':
         aliasesUsed.push(raw);
@@ -595,6 +599,18 @@ async function autoAdvancePostMergeState(input: {
   };
 }
 
+export function isVerificationRecoverableState(
+  currentState: string | null,
+  workflowType?: string,
+): boolean {
+  return (
+    currentState === 'implementation_done' ||
+    currentState === 'verification_running' ||
+    (['investigation', 'spec_migration'].includes(String(workflowType)) &&
+      currentState === 'post_merge_verified')
+  );
+}
+
 async function autoAdvanceVerificationState(input: {
   deps: any;
   context: any;
@@ -620,11 +636,7 @@ async function autoAdvanceVerificationState(input: {
       summary_status: input.summaryStatus,
     };
   }
-  if (
-    input.currentState !== 'implementation_done' &&
-    input.currentState !== 'verification_running' &&
-    !(input.workflowType === 'investigation' && input.currentState === 'post_merge_verified')
-  ) {
+  if (!isVerificationRecoverableState(input.currentState, input.workflowType)) {
     return {
       attempted: false,
       reason: 'current_state_not_verification_recoverable',

@@ -7,6 +7,13 @@ import {
 import { closeSpecArtifactRequirements } from '../../src/tools/lib/close-gate.js';
 import { isSpecMigrationNoCodeWorkflow } from '../../src/tools/lib/project-governance-v2.js';
 import { isNoCodeWorkflow as changedFilesNoCodeWorkflow } from '../../src/tools/handlers/sf-changed-files-audit.js';
+import {
+  defaultGateAliasForState,
+  evaluateVerificationGateAutoAdvanceEligibility,
+  isVerificationRecoverableState,
+  normalizeGateIds,
+} from '../../src/tools/handlers/sf-v11-gate-run.js';
+import { getRequiredGates } from '../../src/tools/lib/required-gates.js';
 
 function validSpecMigrationManifest(): any {
   return {
@@ -51,6 +58,42 @@ describe('spec_migration no-code lifecycle contract', () => {
     expect(closeSpecArtifactRequirements('spec_migration_path', 'spec_migration')).toEqual({
       tasks: false,
       traceDelta: true,
+    });
+  });
+
+  test('routes spec_migration verification through Verification + Formal Version and permits no-code state recovery', () => {
+    expect(defaultGateAliasForState('post_merge_verified', 'spec_migration')).toBe('verification');
+    expect(
+      getRequiredGates('spec_migration_path', 'post_implementation', 'full', 'spec_migration'),
+    ).toEqual(['verification_gate', 'formal_version_gate']);
+    expect(
+      getRequiredGates('spec_migration_path', 'all', 'full', 'spec_migration'),
+    ).toContain('formal_version_gate');
+    expect(
+      normalizeGateIds(
+        undefined,
+        'verification',
+        'spec_migration_path',
+        'post_merge_verified',
+        'full',
+        'spec_migration',
+      ).gateIds,
+    ).toEqual(['verification_gate', 'formal_version_gate']);
+    expect(isVerificationRecoverableState('post_merge_verified', 'spec_migration')).toBe(true);
+    expect(isVerificationRecoverableState('post_merge_verified', 'architecture_change')).toBe(false);
+    expect(
+      evaluateVerificationGateAutoAdvanceEligibility({
+        reports: [
+          { gate_id: 'verification_gate', status: 'passed' },
+          { gate_id: 'formal_version_gate', status: 'passed' },
+        ],
+        summaryStatus: 'passed',
+      }),
+    ).toEqual({
+      allowed: true,
+      reason: 'verification_and_formal_version_gates_passed',
+      failed_gate_ids: [],
+      missing_gate_ids: [],
     });
   });
 
