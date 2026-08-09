@@ -6244,3 +6244,31 @@ actual_files
 - **自动防护**：V164 validator 使用临时编译输出；每次 validator 执行后执行 package pycache zero audit；ZIP extract 后再次 validator re-execution 并再次审计。
 - **状态**：`CLOSED_PREDELIVERY`。
 <!-- SPECFORGE_ERR313_EXP080_V164_VALIDATOR_PYCACHE:END -->
+<!-- SPECFORGE_ERR314_EXP244_V165_VALIDATOR_IMPLEMENTATION_TOKEN:START -->
+## ERR-314 / EXP-244 — V165 Atomic Spec Merge 包预交付 validator 把运行时拼接错误码误当成源码必须出现的字面量
+- **日期与阶段**：2026-08-09，V165 Atomic Spec Merge 包第一次预交付独立 validator。
+- **分类**：`VALIDATION_DEFECT / IMPLEMENTATION_DETAIL_ASSERTION_DEFECT / PREDELIVERY_FALSE_NEGATIVE / REPEATED_CLASS_EXP244`。
+- **现场表现**：runner 的 Project Spec manifest 哈希漂移路径通过结构化 label 形成稳定运行时错误；validator 却要求完整动态错误字符串必须直接出现在 runner 源码，导致正确 fail-closed 行为被静态假阴性阻断。
+- **已执行与未执行**：失败发生在 ZIP Artifact Acceptance 之前；失败包未向用户交付；没有访问、修改用户 SpecForge/Validation 仓库，没有执行 `sf_v11_merge` 或任何其他生命周期动作。
+- **仓库变化**：无用户仓库变化。
+- **根因**：validator 再次把实现书写形式当成正式行为契约，没有通过 fixture 验证真实行为。
+- **影响**：只阻断一次预交付构建，不改变 WI-0004 已批准状态、Candidate/Gate/User Decision、Project Spec 或远程仓库。
+- **正确做法**：静态 validator 只验证稳定 handler、endpoint、状态边界和禁止动作 token；动态错误语义使用行为 fixture 验证。
+- **对应 EXP 类规则**：复用 `EXP-244`，并复用 `EXP-078`。
+- **自动防护**：后续 Atomic Spec Merge 包不再要求动态错误码完整源码字面量；改为验证固定 precondition hash、比较逻辑、exact `sf_v11_merge` payload 和无副作用 fixture。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR314_EXP244_V165_VALIDATOR_IMPLEMENTATION_TOKEN:END -->
+<!-- SPECFORGE_ERR315_EXP242_V165_VALIDATOR_NEWLINE_ESCAPE:START -->
+## ERR-315 / EXP-242 — V165 ERR-314 回填包 validator 的换行检查被宿主 Python 转义层写成字面量反斜杠 n
+- **日期与阶段**：2026-08-09，V165 ERR-314 治理回填包第一次预交付独立 validator。
+- **分类**：`VALIDATION_DEFECT / REPRESENTATION_ESCAPE_MISMATCH / PREDELIVERY_FALSE_NEGATIVE / REPEATED_CLASS_EXP242`。
+- **现场表现**：目标 ledger/handoff 已按 UTF-8 + LF + 单个最终 LF 生成；生成 validator 源码时却把 `b'\n'` 的运行语义错误写成检测字面量 `\\n`，因此 `terminal LF` 断言对正确目标文件假失败。
+- **已执行与未执行**：失败发生在 ZIP Artifact Acceptance 之前；失败包未向用户交付；没有访问或修改用户仓库，没有执行任何 WI-0004 生命周期动作。
+- **仓库变化**：无用户仓库变化。
+- **根因**：再次混淆“生成器宿主 Python 字符串”“生成出的 Python 源码”“运行时 bytes”三层表示，重复 ERR-276 / EXP-242。
+- **影响**：只阻断一次预交付治理回填包，不改变 ERR-314 事实或当前 WI-0004 approved 状态。
+- **正确做法**：生成脚本使用 raw source template，使目标 validator 源码直接包含单层 `\n`/`\r\n` 转义；成包后必须实际运行最终 validator，而不是只看生成器字符串。
+- **对应 EXP 类规则**：复用 `EXP-242`。
+- **自动防护**：V165 最终 validator 使用 raw template；先对 patch 真实 bytes 做单 LF/CRLF/trailing whitespace 检查，再 ZIP reopen、extract、实际执行 validator；不再经 f-string 二次转义该逻辑。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR315_EXP242_V165_VALIDATOR_NEWLINE_ESCAPE:END -->
