@@ -6388,3 +6388,16 @@ actual_files
 - **自动防护**：固定跨工具流程为 `web.open(final raw URL) -> verify content_type=text/plain -> container.download(exact same URL) -> local hash/parse`；任何一步失败单独记账并停止该通道。
 - **状态**：`CLOSED_EXACT_RAW_PROVENANCE_USED`。
 <!-- SPECFORGE_ERR324_EXP072_V169_CONTAINER_DOWNLOAD_PROVENANCE:END -->
+<!-- SPECFORGE_ERR325_EXP244_V170_READONLY_PATH_OPEN_FALSE_POSITIVE:START -->
+## ERR-325 / EXP-244 — V170 只读 post-merge reconciliation 包 validator 把 `Path.open("rb")` 哈希读取误判为文件写能力
+- **日期与阶段**：2026-08-09，V170 WI-0004 post-merge read-only reconciliation 包第一次预交付独立 validator。
+- **分类**：`VALIDATION_DEFECT / READ_ONLY_CAPABILITY_AUDIT_FALSE_POSITIVE / PREDELIVERY_FALSE_NEGATIVE / REPEATED_CLASS_EXP244`。
+- **现场表现**：`diagnose.py` 的 `sha_file()` 使用 `with p.open("rb")` 只读计算 SHA256；validator 的 AST 审计却把所有名为 `open` 的方法调用统一列入 mutation primitive，因而报 `filesystem mutation capability open` 并阻断 Artifact Acceptance。
+- **已执行与未执行**：失败发生在交付前；失败版 V170 未交付用户、未在用户机器运行、未访问或修改 Validation 仓库、未调用 daemon API、未执行 Merge/Gate/User Decision/Code Permission/Implementation/Verification/Close。
+- **根因**：能力审计只识别方法名，没有识别文件打开 mode；把 `rb/r/rt` 读取模式与 `w/a/x/+` 等可写模式混为一类，重复 EXP-244“实现表象冒充行为契约”的错误。
+- **影响**：只阻断一次 assistant-side 预交付构建；不改变 V166 已执行一次 Atomic Spec Merge、WI-0004=`merged`、Merge 禁止重跑和 post-merge reconciliation 尚待完成的事实。
+- **正确做法**：AST 文件能力审计必须区分读取与写入语义。`Path.open()` / built-in `open()` 只有 mode 含 `w`、`a`、`x` 或 `+` 时才属于写能力；`r/rb/rt` 必须允许。显式 `write_text/write_bytes/unlink/rename/mkdir/...` 仍直接阻断。
+- **对应 EXP 类规则**：复用 `EXP-244`、`EXP-007`、`EXP-085`、`EXP-188`。
+- **自动防护**：下一只读包 validator 使用 mode-aware AST 规则，并用正反 fixture 同时证明 `open("rb")` 被接受、`open("wb")`/`write_text()` 被拒绝；生命周期 Tool 名只允许作为历史证据值，不以 token presence 推断调用能力。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR325_EXP244_V170_READONLY_PATH_OPEN_FALSE_POSITIVE:END -->
