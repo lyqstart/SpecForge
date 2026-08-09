@@ -6527,3 +6527,39 @@ actual_files
 - **自动防护**：当前 V176 已切换为独立文件交付模型；validator 实际 import runner 并执行结构化 handoff patch fixture，最终 ZIP 重新打开验收。
 - **状态**：`CLOSED_METHOD_CHANGED`。
 <!-- SPECFORGE_ERR335_EXP008_V176_REPEATED_NESTED_GENERATOR_FAILURE:END -->
+<!-- SPECFORGE_ERR336_EXP244_V177_HASH_CARDINALITY_FALSE_POSITIVE:START -->
+## ERR-336 / EXP-244 — V177 把合法双份 Gate Summary 同哈希误判为 frozen evidence 冲突
+- **日期与阶段**：2026-08-09，V177 WI-0004 post-merge read-only reconciliation 用户执行。
+- **分类**：`VALIDATION_HARNESS_DEFECT / HASH_CARDINALITY_FALSE_POSITIVE / USER_EXECUTION_FAIL_CLOSED`。
+- **现场事实**：V177 只读 runner 对 Gate Summary 采用“按 SHA256 全 WI 搜索且命中数必须等于 1”的断言。实际同一合法 Gate Summary 同时存在于 `.specforge/work-items/WI-0004/gate_summary.md` 与 immutable `.specforge/work-items/WI-0004/gate_attempts/attempt-0003/gate_summary.md`，二者 SHA256 均为 `EFC0FCD720A87451DEA0555E260296B22970F093B7C64B99C49C07E943053191`。因此 runner 报 `HASH_EVIDENCE_CARDINALITY ... count=2` 并 Fail Closed。
+- **副作用事实**：V177 回执证明 `READ_ONLY_GIT_SNAPSHOT_MATCH=YES`、`REPOSITORY_WRITES=NONE_BY_RUNNER`、`LIFECYCLE_ACTIONS=NONE`、`ATOMIC_SPEC_MERGE_RERUN=NONE_FORBIDDEN`；该失败不改变 WI-0004=`merged` 和 V166 Merge 只执行一次的事实。
+- **根因**：validator/runner 使用内容哈希全局唯一性代替正式路径角色。Gate latest compatibility view 与 immutable attempt evidence 合法共存，同一内容哈希出现多次不等于证据冲突。该错误违反 `GOV-STAGE-VALIDATOR-001` 对稳定结构作用域和正式 truth source 的要求。
+- **正确做法**：按正式路径角色直接核验：`WI-0004/gate_summary.md` 是 latest compatibility view；`WI-0004/gate_attempts/attempt-0003/gate_summary.md` 是 immutable attempt snapshot。允许二者内容相同并分别核验 expected SHA；禁止再用 WI 全树 `hash count == 1` 作为阻断条件。
+- **对应 EXP 类规则**：复用 `EXP-244`、`EXP-007`、`EXP-085`、`EXP-188`。
+- **自动防护**：后续 reconciliation runner 固定 exact path evidence map；validator fixture 必须证明“两个正式不同角色路径内容相同”被接受，而未知第三路径同哈希不参与正式证据解析。
+- **状态**：`CLOSED_BY_V178_EXACT_PATH_ROLE_MODEL`。
+<!-- SPECFORGE_ERR336_EXP244_V177_HASH_CARDINALITY_FALSE_POSITIVE:END -->
+<!-- SPECFORGE_ERR337_EXP007_CURRENT_WEB_REF_API_PROVENANCE_RECURRENCE:START -->
+## ERR-337 / EXP-007 — 当前调查再次直接 open GitHub Ref API，触发 web provenance/safety 前置失败
+- **日期与阶段**：2026-08-09，V178 前置调查。
+- **分类**：`ASSISTANT_TOOLING_FAILURE / WEB_PROVENANCE_PRECONDITION / REPEATED_CLASS_ERR318`。
+- **现场事实**：为取得 live `main` ref，assistant 直接对 GitHub Ref API URL 执行 web open；工具返回该 URL 尚未由允许来源建立安全 provenance，拒绝打开。没有用户仓库访问、没有 SpecForge/Validation 写入、没有生命周期动作。
+- **根因**：重复使用已知会被 web 安全前置阻断的直接 API open 路线，没有先建立该 URL 的可跟随 provenance。
+- **影响**：只影响 assistant-side live-ref 取证通道；未改变远程仓库或 WI-0004 状态。
+- **正确做法**：有副作用动作前由用户本地 packaged runner 使用结构化 `git ls-remote` 固定 live ref；assistant web 仅使用已通过 exact commit 固定的 raw 内容做辅助读取，不把失败 API open 当当前 ref 真相源。
+- **对应 EXP 类规则**：复用 `EXP-007`、`EXP-008`、`EXP-072`。
+- **自动防护**：V178 第一 checkpoint 在任何写入前执行 `git ls-remote <REMOTE> refs/heads/main` 并要求等于 accepted base；不再依赖 assistant web API open。
+- **状态**：`CLOSED_METHOD_CHANGED_TO_RUNTIME_STRUCTURED_LS_REMOTE`。
+<!-- SPECFORGE_ERR337_EXP007_CURRENT_WEB_REF_API_PROVENANCE_RECURRENCE:END -->
+<!-- SPECFORGE_ERR338_EXP072_CURRENT_CONTAINER_GITHUB_DNS_RECURRENCE:START -->
+## ERR-338 / EXP-072 — 当前 assistant container `git ls-remote` 再次因 GitHub DNS 解析失败
+- **日期与阶段**：2026-08-09，V178 前置调查。
+- **分类**：`ENVIRONMENT_FAILURE / ASSISTANT_CONTAINER_GITHUB_DNS / REPEATED_CLASS_ERR317`。
+- **现场事实**：assistant container 执行只读 `git ls-remote https://github.com/lyqstart/SpecForge.git refs/heads/main`，返回 `Could not resolve host: github.com`。没有用户仓库访问、没有任何仓库写入或生命周期动作。
+- **根因**：assistant container 当前 DNS/网络环境无法解析 GitHub；属于既有环境类故障，不是 SpecForge 产品缺陷。
+- **影响**：assistant 不能用自身 container 提升当前 live ref；不影响用户本地可用 Git 网络证据。
+- **正确做法**：沿用 `GOV-STAGE-AUTHORITY-BOOTSTRAP-001`，在用户执行包内先用结构化 `git ls-remote` 取得 live ref，再允许后续写入；失败则零写入 Fail Closed。
+- **对应 EXP 类规则**：复用 `EXP-072`、`EXP-007`。
+- **自动防护**：V178 把 live-ref bootstrap 作为 STEP-001，且写入 checkpoint 必须显式依赖 STEP-001=PASS。
+- **状态**：`CLOSED_BY_USER_RUNTIME_LIVE_REF_CHECKPOINT`。
+<!-- SPECFORGE_ERR338_EXP072_CURRENT_CONTAINER_GITHUB_DNS_RECURRENCE:END -->
