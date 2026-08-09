@@ -5597,7 +5597,7 @@ actual_files
 - **正确做法**：先读取当前最终源；优先 AST / 函数级结构修改；正则替换含任意用户文本时使用 callable replacement；最终 run.py 必须 importlib 加载并实际执行新增纯函数。
 - **新增类防护 / EXP-235**：派生交付版本不得通过“复制上一版 + 多层字符串 replace”持续演化；连续失败后必须重建生成模型，并用最终源 AST/结构边界生成；`re.sub` 的动态 replacement 默认使用 callable。
 - **自动防护**：最终源 AST、importlib、关键纯函数、manifest/ZIP reopen、零 pycache 全部通过后才允许发布。
-- **状态**：`FIXED_PENDING_VALIDATION`；本轮及后续交付必须继续证明该类防护有效。
+- **状态**：`CLOSED`；V150 从当前 remote source facts 重新构建，不复用 V133/V14x 派生 runner 链；最终 Python AST/import、纯函数模拟、TypeScript 行为运行、manifest/hash、ZIP reopen 与零 pycache 均作为发布前硬验收。
 <!-- SPECFORGE_ERR269_EXP235_PREDELIVERY_BUILDER_FAILURE_CHAIN:END -->
 
 <!-- SPECFORGE_ERR270_EXP236_INTERNAL_SUBHEADING_FALSE_BOUNDARY:START -->
@@ -5627,7 +5627,7 @@ actual_files
 - **正确做法**：从 authority 的正式编号标题语法定义边界：非 fenced、物理单行 `### [0-9]+(\.[0-9]+)+`；内部 `####` 子标题仍保留；fenced fake heading / fake Rule ID 必须忽略。
 - **新增类防护 / EXP-237**：结构 parser 的边界集合必须从正式文档语法一次性枚举，并建立正反例矩阵；禁止通过连续新增一个 if 条件追着失败修。
 - **自动防护**：至少覆盖 next Rule ID、`### 0.9`、`### 3.1`、内部 `#### 2.11.7`、fenced fake heading、Prompt START。
-- **状态**：`OPEN_BLOCKED_BY_ERR-275`；其“任意编号 `###` 标题作为边界”的建议尚未成为唯一权威规则，必须先完成 Authority / consumer 契约对账。
+- **状态**：`CLOSED`；V150 先把一般编号 `##` / `###` 与既有 `## 附录` 边界写入唯一权威 `RULE_SECTION_BOUNDARY_CONTRACT=V2`，再同步 consumer parser 与边界矩阵回归；内部 `####` 和 fenced fake heading 保持非边界。
 <!-- SPECFORGE_ERR271_EXP237_NUMBERED_HEADING_BOUNDARY_MISSING:END -->
 
 <!-- SPECFORGE_ERR272_EXP238_WEB_AUXILIARY_PROMOTED_TO_LIVE_HEAD:START -->
@@ -5687,5 +5687,71 @@ actual_files
 - **正确做法**：Fail Closed；先登记本冲突并恢复 `UNRECORDED_FAILURES=0`，重新读取最新经验；随后单独执行 Authority + consumer 影响分析。若正式决定把边界扩展为一般编号 `###` 结构标题，必须先修订唯一权威，再原子同步 consumer test；若不修 authority，则必须撤回 ERR-271 的扩展建议。
 - **新增类防护 / EXP-241**：任何错误台账、handoff、失败诊断中的“正确做法”在进入实现前，都必须与当前唯一权威 Rule ID 做 CONTRACT_RECONCILIATION；非权威材料不能直接成为新行为契约。发现冲突必须先重新前置分析，禁止以“修测试”为由跳过 authority 修订。
 - **自动防护**：产品修改前输出 `AUTHORITY_RULE_TEXT / PROPOSED_REMEDIATION / CONTRACT_RECONCILIATION=PASS|CONFLICT`；CONFLICT 时允许范围只能是缺陷登记与后续重新前置分析，不允许直接修改 consumer。
-- **状态**：`OPEN`；下一 Stage 必须先重新读取远程 authority / ledger / handoff，再决定正式 Authority + consumer 原子修订范围。
+- **正式决策**：采用 Authority-first 修订；唯一权威把 Rule Section 边界统一为“下一非 fenced Rule ID / 下一非 fenced 正式编号 `##` 或 `###` 标题 / 下一非 fenced `## 附录` 标题 / Prompt START”，consumer test 同提交同步；固定 prompt 与 inventory 因 pre-authority 行为字段未变化而保持字节不变。
+- **状态**：`CLOSED`；V150 仅在 Authority + consumer contract 对账、边界矩阵、目标回归、TypeScript、daemon-core build、workspace build、范围审计和远程同步全部通过时才允许提交。
 <!-- SPECFORGE_ERR275_EXP241_NONAUTH_REMEDIATION_CONFLICTS_AUTHORITY:END -->
+
+<!-- SPECFORGE_ERR276_EXP242_REGEX_ESCAPE_REPRESENTATION_MISMATCH:START -->
+## ERR-276 / EXP-242 — 预交付 validator 的 regex 转义表示与目标文件真实字节不一致
+- **日期与阶段**：2026-08-09，V150 第一次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / SCRIPT_DEFECT / REPRESENTATION_ESCAPE_MISMATCH`。
+- **现场表现**：authority target 正确写入单反斜杠 regex schema；validator 却按双反斜杠字面匹配，产生 `authority V2 token missing` 假失败。
+- **已执行与未执行**：失败发生在最终 ZIP 接受前；未向用户发布，未读取或修改用户 SpecForge 仓库。
+- **仓库变化**：无。
+- **根因**：生成目标与 validator 对同一 regex schema 使用了不同宿主语言转义层。
+- **正确做法**：canonical schema 使用 raw literal或解析后的语义值比较，禁止额外叠加宿主语言转义。
+- **新增类防护 / EXP-242**：生成器与 validator 必须共用 canonical schema，最终 target 必须做真实文件 round-trip。
+- **状态**：`CLOSED`；V150 最终构建使用 raw canonical token，并通过 target-content simulation。
+<!-- SPECFORGE_ERR276_EXP242_REGEX_ESCAPE_REPRESENTATION_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR277_EXP243_NATURAL_LANGUAGE_ALIAS_ASSERTION:START -->
+## ERR-277 / EXP-243 — 预交付 validator 使用改写后的自然语言别名作为 blocking assertion
+- **日期与阶段**：2026-08-09，V150 第二次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / NATURAL_LANGUAGE_ASSERTION_DEFECT / REPEATED_CLASS_EXP235`。
+- **现场表现**：台账实际标题使用中文“预交付 validator…”，validator 却查找自行改写的英文别名，导致合法 ERR-276 记录被误判缺失。
+- **已执行与未执行**：失败发生在最终 ZIP 接受前；未向用户发布，未修改用户仓库。
+- **仓库变化**：无。
+- **根因**：validator 没有消费稳定 ERR/EXP ID 或结构 marker，而是消费了自己改写的自然语言。
+- **正确做法**：台账验证只使用 ERR/EXP ID、结构 marker、机器字段和状态；自然语言只作为说明。
+- **新增类防护 / EXP-243**：错误台账 consumer 必须按结构 ID 解析，禁止翻译、摘要或同义改写成为阻断条件。
+- **状态**：`CLOSED`；V150 最终 validator 只检查 ERR/EXP 结构 ID 与状态。
+<!-- SPECFORGE_ERR277_EXP243_NATURAL_LANGUAGE_ALIAS_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR278_EXP244_LOCAL_VARIABLE_NAME_ASSERTION:START -->
+## ERR-278 / EXP-244 — 预交付 validator 把局部变量名当成正式 parser 契约
+- **日期与阶段**：2026-08-09，V150 第三次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / IMPLEMENTATION_DETAIL_ASSERTION_DEFECT / REPEATED_CLASS_EXP235`。
+- **现场表现**：目标 helper 为 CRLF 兼容使用 `logicalLine.startsWith(marker)`；validator 却硬编码要求 `line.startsWith(marker)`，产生假失败。
+- **已执行与未执行**：失败发生在最终 ZIP 接受前；未向用户发布，未修改用户仓库。
+- **仓库变化**：无。
+- **根因**：validator 验证局部变量命名而不是正式 V2 schema 与行为结果。
+- **正确做法**：validator 只验证正式 schema、边界 regex、矩阵用例和真实运行结果；局部变量名、重构细节不得成为 blocking assertion。
+- **新增类防护 / EXP-244**：consumer validator 必须区分 contract token 与 implementation detail；行为等价重构不得因变量名变化失败。
+- **状态**：`CLOSED`；V150 最终 validator 不检查 helper 局部变量名。
+<!-- SPECFORGE_ERR278_EXP244_LOCAL_VARIABLE_NAME_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR279_EXP245_TRAILING_DOT_NUMBERED_HEADING_GAP:START -->
+## ERR-279 / EXP-245 — V2 编号标题 regex 首版遗漏章号末尾句点
+- **日期与阶段**：2026-08-09，V150 最终重建前结构审计。
+- **分类**：`DESIGN_DEFECT / STRUCTURAL_GRAMMAR_DEFECT`。
+- **现场表现**：首版候选 regex 可识别 `### 3.1`，但不能识别现有文档常见的 `## 4.`；而边界矩阵已包含 `## 4. real numbered chapter boundary`。
+- **已执行与未执行**：在最终 ZIP 接受前发现；未运行用户仓库。
+- **仓库变化**：无。
+- **根因**：只建模点分子章节，没有建模章号后的可选终止句点。
+- **正确做法**：正式编号标题 regex 使用 `^#{2,3}\s+[0-9]+(?:\.[0-9]+)*(?:\.)?\s+`，同时覆盖 `3.1` 与 `4.`。
+- **新增类防护 / EXP-245**：结构 grammar 必须覆盖 authority 中真实 heading 样本，而不是只覆盖 synthetic 子章节。
+- **状态**：`CLOSED`；V150 V2 schema 和矩阵包含 `## 4.` 正例。
+<!-- SPECFORGE_ERR279_EXP245_TRAILING_DOT_NUMBERED_HEADING_GAP:END -->
+
+<!-- SPECFORGE_ERR280_EXP246_APPENDIX_BOUNDARY_REGRESSION:START -->
+## ERR-280 / EXP-246 — V2 首版候选边界集合遗漏既有 Appendix heading 行为
+- **日期与阶段**：2026-08-09，V150 最终重建前 producer-consumer 对账。
+- **分类**：`CONTRACT_REGRESSION_DEFECT / STRUCTURAL_BOUNDARY_OMISSION`。
+- **现场表现**：现有 consumer helper 已把 `## 附录 ...` 作为 Rule Section 边界；V2 首版只保留 Rule ID、编号 `##/###` 与 Prompt START，会无意丢失既有 Appendix boundary。
+- **已执行与未执行**：在最终 ZIP 接受前发现；未运行用户仓库。
+- **仓库变化**：无。
+- **根因**：新契约只围绕 ERR-271 的编号标题问题建模，没有先做旧 consumer 全行为集合的保留审计。
+- **正确做法**：V2 显式加入 `NEXT_NON_FENCED_APPENDIX_HEADING_L2` 和 `RULE_SECTION_APPENDIX_HEADING_PATTERN=^##\s+附录(?:\s+|$)`。
+- **新增类防护 / EXP-246**：契约升级必须验证“新增能力 + 既有能力保留”两类矩阵；修复不得静默缩小旧 consumer 已支持的合法结构边界。
+- **状态**：`CLOSED`；V150 authority、helper 和矩阵均显式覆盖 Appendix boundary。
+<!-- SPECFORGE_ERR280_EXP246_APPENDIX_BOUNDARY_REGRESSION:END -->

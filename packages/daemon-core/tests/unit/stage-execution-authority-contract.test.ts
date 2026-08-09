@@ -9,21 +9,61 @@ const handoffPath = resolve(repoRoot, 'docs/implementation/architecture-consiste
 
 function ruleSection(authority: string, ruleId: string): string {
   const marker = `**${ruleId}：**`;
-  const canonical = `\n${marker}`;
-  const newlineStart = authority.indexOf(canonical);
-  const start = newlineStart >= 0 ? newlineStart + 1 : (authority.startsWith(marker) ? 0 : -1);
-  if (start < 0) throw new Error(`missing canonical rule marker: ${marker}`);
-  const tailStart = start + marker.length;
-  const tail = authority.slice(tailStart);
-  const candidates = [
-    tail.search(/\n\*\*[A-Z][A-Z0-9-]+：\*\*/),
-    tail.search(/\n## (?=\d+\.|附录 )/),
-    tail.search(/\n<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->/),
-  ].filter((value) => value >= 0);
-  const end = candidates.length > 0 ? tailStart + Math.min(...candidates) : authority.length;
+  const lines = authority.split('\n');
+  let offset = 0;
+  let inFence = false;
+  let start = -1;
+  let startLine = -1;
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const logicalLine = line.endsWith('\r') ? line.slice(0, -1) : line;
+    if (/^\s*```/.test(logicalLine)) {
+      inFence = !inFence;
+    } else if (!inFence && logicalLine.startsWith(marker)) {
+      start = offset;
+      startLine = index;
+      break;
+    }
+    offset += line.length + 1;
+  }
+
+  if (start < 0 || startLine < 0) {
+    throw new Error(`missing canonical rule marker: ${marker}`);
+  }
+
+  let end = authority.length;
+  let scanOffset = start + lines[startLine].length + 1;
+  inFence = false;
+
+  for (let index = startLine + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    const logicalLine = line.endsWith('\r') ? line.slice(0, -1) : line;
+
+    if (/^\s*```/.test(logicalLine)) {
+      inFence = !inFence;
+      scanOffset += line.length + 1;
+      continue;
+    }
+
+    if (
+      !inFence &&
+      (
+        /^\*\*[A-Z][A-Z0-9-]+：\*\*/.test(logicalLine) ||
+        /^#{2,3}\s+[0-9]+(?:\.[0-9]+)*(?:\.)?\s+/.test(logicalLine) ||
+        /^##\s+附录(?:\s+|$)/.test(logicalLine) ||
+        logicalLine === '<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->'
+      )
+    ) {
+      end = scanOffset;
+      break;
+    }
+
+    scanOffset += line.length + 1;
+  }
+
   return authority.slice(start, end);
 }
-
 function newSessionPrompt(authority: string): string {
   const startMarker = '<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->';
   const endMarker = '<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->';
@@ -219,6 +259,64 @@ describe('Stage Execution Contract authority', () => {
       expect(handoff, field).toContain(field);
     }
   });
+
+  it('keeps Rule section parsing aligned with the V2 structural boundary matrix', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const envelope = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
+    for (const token of [
+      'RULE_SECTION_BOUNDARY_CONTRACT=V2',
+      'RULE_SECTION_START=NON_FENCED_CANONICAL_RULE_ID_LINE',
+      'RULE_SECTION_END=NEXT_NON_FENCED_RULE_ID|NEXT_NON_FENCED_NUMBERED_SECTION_HEADING_L2_L3|NEXT_NON_FENCED_APPENDIX_HEADING_L2|PROMPT_START',
+      'RULE_SECTION_INTERNAL_SUBHEADING_LEVEL_MIN=4',
+      'RULE_SECTION_FENCED_CONTENT=IGNORE',
+      'RULE_SECTION_PROMPT_SYNC=ONLY_IF_PREAUTHORITY_BEHAVIOR_FIELDS_CHANGE',
+    ]) {
+      expect(envelope, token).toContain(token);
+    }
+
+    const internalAndFenced = [
+      '**GOV-TEST-001：** parent rule',
+      'parent-value',
+      '#### 2.11.7 internal subheading',
+      'internal-value',
+      '```text',
+      '**GOV-FAKE-001：** fenced fake rule',
+      '### 9.9 fenced fake heading',
+      '## 附录 Z. fenced fake appendix',
+      '```',
+      '### 3.1 real numbered boundary',
+      'outside-value',
+    ].join('\n');
+    const internalSection = ruleSection(internalAndFenced, 'GOV-TEST-001');
+    expect(internalSection).toContain('#### 2.11.7 internal subheading');
+    expect(internalSection).toContain('internal-value');
+    expect(internalSection).toContain('**GOV-FAKE-001：** fenced fake rule');
+    expect(internalSection).toContain('### 9.9 fenced fake heading');
+    expect(internalSection).toContain('## 附录 Z. fenced fake appendix');
+    expect(internalSection).not.toContain('### 3.1 real numbered boundary');
+    expect(internalSection).not.toContain('outside-value');
+
+    for (const boundary of [
+      '**GOV-TEST-002：** next rule',
+      '### 0.9 numbered compatibility boundary',
+      '### 3.1 real numbered subsection boundary',
+      '## 4. real numbered chapter boundary',
+      '## 附录 A. real appendix boundary',
+      '<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->',
+    ]) {
+      const sample = [
+        '**GOV-TEST-001：** parent rule',
+        'kept-value',
+        boundary,
+        'outside-value',
+      ].join('\n');
+      const section = ruleSection(sample, 'GOV-TEST-001');
+      expect(section, boundary).toContain('kept-value');
+      expect(section, boundary).not.toContain(boundary);
+      expect(section, boundary).not.toContain('outside-value');
+    }
+  });
+
   it('enforces canonical Stage Input and new-session Recovery Acceptance structurally', async () => {
     const authority = await readFile(authorityPath, 'utf8');
 

@@ -1289,10 +1289,24 @@ GOV-STAGE-BOOTSTRAP-ENVELOPE-001
 
 1. 首次建立 marker 时，必须先在旧 authority 上替换原 `附录 A. 新会话固定启动提示词` section，再插入可能复用该标题文字的新规则。
 2. marker 建立后，所有 prompt 修改只能在 START/END marker scope 内执行；禁止全文件按自然语言标题寻找 prompt。
-3. Rule section 验证必须以 `**<RULE_ID>：**` 为起点，以“下一个 Rule ID / 下一个 `### 0.*` 结构标题 / prompt START marker”中的最早结构边界为终点。
+3. Rule section 验证必须按 `RULE_SECTION_BOUNDARY_CONTRACT=V2` 解析：起点是非 fenced 的 canonical Rule ID 物理行；终点是“下一个非 fenced Rule ID / 下一个非 fenced 正式编号 `##` 或 `###` 结构标题 / 下一个非 fenced `## 附录 ...` 标题 / prompt START marker”中的最早结构边界。`####` 及更深层内部子标题继续属于父 Rule；fenced fake Rule ID / heading 必须忽略。
+
+正式机器 schema：
+
+```text
+RULE_SECTION_BOUNDARY_CONTRACT=V2
+RULE_SECTION_START=NON_FENCED_CANONICAL_RULE_ID_LINE
+RULE_SECTION_END=NEXT_NON_FENCED_RULE_ID|NEXT_NON_FENCED_NUMBERED_SECTION_HEADING_L2_L3|NEXT_NON_FENCED_APPENDIX_HEADING_L2|PROMPT_START
+RULE_SECTION_NUMBERED_HEADING_PATTERN=^#{2,3}\s+[0-9]+(?:\.[0-9]+)*(?:\.)?\s+
+RULE_SECTION_APPENDIX_HEADING_PATTERN=^##\s+附录(?:\s+|$)
+RULE_SECTION_INTERNAL_SUBHEADING_LEVEL_MIN=4
+RULE_SECTION_FENCED_CONTENT=IGNORE
+RULE_SECTION_PROMPT_SYNC=ONLY_IF_PREAUTHORITY_BEHAVIOR_FIELDS_CHANGE
+```
 4. 禁止硬编码“某 Rule 的下一个 Rule 一定是 Recovery”。
 5. 自然语言原句不得作为 blocking assertion；必须使用 Rule ID、schema 字段、parser 或结构 marker。
-6. pre-authority rule inventory、固定 prompt、Bootstrap Envelope consumer test 必须原子更新。
+6. pre-authority rule inventory、固定 prompt、Bootstrap Envelope consumer test 在其任一真实 pre-authority 行为字段发生变化时必须原子更新。
+7. `RULE_SECTION_BOUNDARY_CONTRACT` 只定义 authority validation / consumer parser 的结构作用域；若该 parser 契约变化不改变任何 pre-authority 行为字段，则必须原子同步 authority + consumer test，但不得为了形式改写固定 prompt 或 pre-authority inventory。
 #### 2.11.7 Ordered Bootstrap Execution / Pre-tool Guard
 
 Bootstrap Envelope 不只定义“必须有哪些字段”，还必须定义这些字段在任何工具读取之前的执行顺序。固定状态机：
