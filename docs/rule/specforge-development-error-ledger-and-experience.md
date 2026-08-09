@@ -6563,3 +6563,51 @@ actual_files
 - **自动防护**：V178 把 live-ref bootstrap 作为 STEP-001，且写入 checkpoint 必须显式依赖 STEP-001=PASS。
 - **状态**：`CLOSED_BY_USER_RUNTIME_LIVE_REF_CHECKPOINT`。
 <!-- SPECFORGE_ERR338_EXP072_CURRENT_CONTAINER_GITHUB_DNS_RECURRENCE:END -->
+<!-- SPECFORGE_ERR339_EXP007_V179_GITHUB_REF_API_INTERNAL_RECURRENCE:START -->
+## ERR-339 / EXP-007 — V179 前置调查 GitHub Ref API 再次返回内部错误
+- **日期与阶段**：2026-08-09，V179 Post-Spec-Merge Gate 前置调查。
+- **分类**：`ASSISTANT_TOOLING_FAILURE / WEB_REF_API_INTERNAL_ERROR / REPEATED_CLASS_ERR337`。
+- **现场事实**：assistant 调查当前 live `main` 时，GitHub Ref API web 路线返回 `Internal Error`；未访问用户本地 SpecForge/Validation 仓库，未修改任何仓库文件，未调用 Gate/User Decision/Merge/Code Permission/Implementation/Verification/Close。
+- **根因**：assistant web Ref API 路线在当前工具环境不稳定；该路线不能承担有副作用动作前的 live ref 真相源职责。
+- **影响**：只影响 assistant-side live-ref 取证；不改变 V178 已确认的 WI-0004=`merged`、PSV-0004 或任何业务项目证据。
+- **正确做法**：有副作用动作前由 packaged runner 执行结构化 `git ls-remote <REMOTE> refs/heads/main`，且必须在文档写入和 Gate 请求前通过；assistant exact-commit raw 只用于源码/权威内容调查。
+- **对应 EXP 类规则**：复用 `EXP-007`、`EXP-008`、`EXP-072`。
+- **自动防护**：V179 STEP-001 固定 runtime `git ls-remote`；任何 remote drift/网络失败均在所有写入与 Gate 动作前 Fail Closed。
+- **状态**：`CLOSED_BY_V179_RUNTIME_LIVE_REF_CHECKPOINT`。
+<!-- SPECFORGE_ERR339_EXP007_V179_GITHUB_REF_API_INTERNAL_RECURRENCE:END -->
+<!-- SPECFORGE_ERR340_EXP078_V179_PACKAGE_ASSEMBLY_ORDER:START -->
+## ERR-340 / EXP-078 — V179 预交付 validator 在 README 装配前执行导致 package member set 失败
+- **日期与阶段**：2026-08-09，V179 Post-Spec-Merge Gate batch 包预交付独立验收。
+- **分类**：`PACKAGE_ASSEMBLY_DEFECT / VALIDATOR_ORDERING / PREDELIVERY_FAILURE`。
+- **现场事实**：assistant 已生成 manifest、patch、runner、validator 后立即执行 validator，但 `README.txt` 尚未创建；validator 按完整 package member contract 正确报告缺少 README。该失败发生在最终 ZIP 生成前，未向用户交付，未访问用户 SpecForge/Validation 仓库，未调用任何生命周期动作。
+- **根因**：Artifact Assembly 与 Artifact Acceptance 顺序错误；把“validator 已存在”误当成“package 已完整装配”。
+- **影响**：只阻断一次 assistant-side V179 构建，不改变远程 `main`、WI-0004=`merged`、PSV-0004 或 daemon 状态。
+- **正确做法**：固定执行 `assemble all declared members -> member-set audit -> compile/import -> packaged validator actual execution -> ZIP build -> ZIP reopen/extract -> packaged validator second execution -> final SHA256`；任何成员未装配完成时禁止开始 Acceptance。
+- **对应 EXP 类规则**：复用 `EXP-078`、`EXP-007`、`EXP-080`。
+- **自动防护**：V179 最终构建先写 README，再执行 validator；最终 ZIP 解压后再次运行同一 validator，并检查 pycache=0 与 exact member set。
+- **状态**：`CLOSED_PREDELIVERY_ASSEMBLY_ORDER_FIXED`。
+<!-- SPECFORGE_ERR340_EXP078_V179_PACKAGE_ASSEMBLY_ORDER:END -->
+<!-- SPECFORGE_ERR341_EXP244_V179_REPLACE_FALSE_POSITIVE:START -->
+## ERR-341 / EXP-244 — V179 预交付 validator 再次把普通字符串 replace() 误判为文件替换写操作
+- **日期与阶段**：2026-08-09，V179 完整 package member 装配后的预交付 validator。
+- **分类**：`VALIDATION_HARNESS_DEFECT / METHOD_NAME_FALSE_POSITIVE / REPEATED_CLASS_ERR328_EXP244`。
+- **现场事实**：完整成员已装配后 validator 遍历 runner AST，将方法名 `replace` 纳入 filesystem mutator 集合；runner 中存在普通字符串规范化 `replace()`，validator 因接收表达式形态未落入其脆弱白名单而报 `filesystem mutator: replace`。失败发生在 ZIP 交付前，未访问用户仓库，未调用 Gate 或其他生命周期动作。
+- **根因**：重复 ERR-328：用方法名词法匹配代替对象类型/真实调用能力分析。
+- **影响**：仅阻断 assistant-side Artifact Acceptance；不改变任何远程/本地项目事实。
+- **正确做法**：validator 不再把通用 `replace()` 方法名作为文件写能力；真正仓库写入由明确 `Path.write_text/write_bytes`、受控 Git mutator、HTTP lifecycle payload 和实际作用对象审计。禁止以同名字符串方法阻断。
+- **对应 EXP 类规则**：复用 `EXP-244`、`EXP-007`、`EXP-008`。
+- **自动防护**：V179 validator 从 filesystem mutator lexical set 删除 `replace`，保留明确删除/重命名类 primitive，并通过最终 packaged validator 实际执行确认。
+- **状态**：`CLOSED_PREDELIVERY_METHOD_NAME_RULE_REMOVED`。
+<!-- SPECFORGE_ERR341_EXP244_V179_REPLACE_FALSE_POSITIVE:END -->
+<!-- SPECFORGE_ERR342_EXP244_V179_ENDPOINT_LITERAL_CARDINALITY_FALSE_POSITIVE:START -->
+## ERR-342 / EXP-244 — V179 validator 把执行日志中的 endpoint 文本也计入 HTTP 调用次数
+- **日期与阶段**：2026-08-09，V179 预交付 validator 在修复 ERR-341 后继续执行。
+- **分类**：`VALIDATION_HARNESS_DEFECT / TOKEN_CARDINALITY_FALSE_POSITIVE / PREDELIVERY_FAILURE`。
+- **现场事实**：runner 中 `/api/v1/tool/invoke` 出现两次：一次是真实 HTTP URL，另一次只是 STEP-005 checkpoint 的人类可读 `ACTION` 文本；validator 通过字符串常量出现次数要求等于 1，报 `tool invoke endpoint cardinality=2`。失败发生在交付前，无用户仓库或生命周期副作用。
+- **根因**：再次用文本出现次数代替调用点语义分析，属于 EXP-244 同类错误。
+- **影响**：只阻断预交付 Acceptance，不改变项目状态。
+- **正确做法**：按 AST 函数作用域验证 `invoke_gate()` 中只有一个 `http_json()` POST 调用，并验证其 canonical payload；日志、回执字段和说明文字不得计为网络调用。
+- **对应 EXP 类规则**：复用 `EXP-244`、`EXP-007`、`EXP-008`。
+- **自动防护**：V179 validator 删除 endpoint literal 全局 cardinality，改为 `invoke_gate` call-site cardinality + payload tool/type 检查；保留 `/api/v1/admin/stop` 禁止检查。
+- **状态**：`CLOSED_PREDELIVERY_CALL_SITE_AUDIT`。
+<!-- SPECFORGE_ERR342_EXP244_V179_ENDPOINT_LITERAL_CARDINALITY_FALSE_POSITIVE:END -->
