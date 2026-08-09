@@ -6349,3 +6349,42 @@ actual_files
 - **自动防护**：每次 artifact 调用区分 `WARMUP_DIAGNOSTIC` 与 `TASK_EXECUTION_RESULT`；warmup 复发继续显式记账，不覆盖真正的 package validator 根因。
 - **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE`。
 <!-- SPECFORGE_ERR321_EXP072_V168_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:END -->
+<!-- SPECFORGE_ERR322_EXP007_V169_GUESSED_SOURCE_PATH_404:START -->
+## ERR-322 / EXP-007 — V169 调查阶段猜测 `sf_v11_merge` 源码路径导致 GitHub exact-commit 404
+- **日期与阶段**：2026-08-09，WI-0004 post-merge read-only reconciliation 前的源码调查。
+- **分类**：`EVIDENCE_DEFECT / INVESTIGATION_TOOL_FAILURE / GUESSED_SOURCE_PATH`。
+- **现场表现**：assistant 直接猜测 `packages/daemon-core/src/tools/sf_v11_merge.ts` 并访问 exact commit URL，GitHub 返回 404；该路径没有由仓库目录或搜索证据先确认。
+- **已执行与未执行**：没有据此判断 Merge 实现不存在；没有访问或修改用户 Validation 仓库，没有调用 daemon Tool，没有执行任何 WI 生命周期动作。
+- **根因**：违反“先冻结真实源码路径再读取”的证据规则，把名称推断当成仓库结构事实。
+- **影响**：仅一次助手侧取证失败；不改变 V166 已执行一次 Merge、WI-0004=`merged` 和禁止重跑 Merge 的事实。
+- **正确做法**：源码路径必须先通过 exact-commit 目录、仓库搜索或已有一手调用证据确认，再读取具体文件；404 只能证明该猜测路径不存在，不能证明能力不存在。
+- **对应 EXP 类规则**：复用 `EXP-007`、`EXP-046`。
+- **自动防护**：后续源码调查禁止按函数/Tool 名直接拼接文件路径；先取得仓库实际路径，再读取 exact-commit 内容。只读 post-merge reconciliation 本身不依赖该猜测路径。
+- **状态**：`CLOSED_SOURCE_PATH_GUESS_REJECTED`。
+<!-- SPECFORGE_ERR322_EXP007_V169_GUESSED_SOURCE_PATH_404:END -->
+<!-- SPECFORGE_ERR323_EXP007_V169_GITHUB_LINK_ID_GUESS:START -->
+## ERR-323 / EXP-007 — V169 调查阶段复用错误 GitHub link id，第一次未取得 current-handoff raw 内容
+- **日期与阶段**：2026-08-09，V169 错误回填前的 exact-source 取证。
+- **分类**：`EVIDENCE_DEFECT / INVESTIGATION_NAVIGATION_FAILURE / TOOL_LINK_ID_ASSUMPTION`。
+- **现场表现**：assistant 假设不同 GitHub 页面上的 `id=74` 都代表 Raw，点击 current-handoff 页面时实际进入 `architecture-consistency` 目录，而不是 raw handoff。
+- **已执行与未执行**：未把目录页当成 handoff 内容；随后从目录中确认 `current-handoff.md` 实际文件链接，再进入文件页并使用其真实 Raw link。没有用户仓库副作用和生命周期动作。
+- **根因**：把网页工具的页面内 link id 当成跨页面稳定接口；link id 实际只对当前页面结构有效。
+- **影响**：只增加一次助手侧导航失败，不影响最终 exact-commit handoff 取证。
+- **正确做法**：每次 click 必须消费当前页面返回的实际 link 列表，不跨页面复用 link id 语义；目标类型不匹配时立即停止，不把错误页面提升为证据。
+- **对应 EXP 类规则**：复用 `EXP-007`。
+- **自动防护**：GitHub raw 取证优先先打开 exact file page，再读取该页明确标记的 Raw link；不得按历史页面 id 猜测。
+- **状态**：`CLOSED_NAVIGATION_CORRECTED`。
+<!-- SPECFORGE_ERR323_EXP007_V169_GITHUB_LINK_ID_GUESS:END -->
+<!-- SPECFORGE_ERR324_EXP072_V169_CONTAINER_DOWNLOAD_PROVENANCE:START -->
+## ERR-324 / EXP-072 — V169 第一次 `container.download` 仍未满足 exact raw URL 的“已查看”来源前置条件
+- **日期与阶段**：2026-08-09，V169 错误台账 exact-source 下载。
+- **分类**：`INVESTIGATION_TOOL_FAILURE / SOURCE_RETRIEVAL_PRECONDITION / REPEATED_CLASS_EXP072`。
+- **现场表现**：虽然此前通过 GitHub Raw link 发生重定向，第一次直接下载 `raw.githubusercontent.com/.../ledger...` 仍返回 `url not viewed in conversation before`；说明工具要求的是 exact raw URL 本身先被显式 web.open，而不是仅有重定向来源。
+- **已执行与未执行**：失败后没有继续猜测；先显式 web.open exact raw ledger/handoff URL，再用同一 URL 下载，两个文件均成功取得。没有用户仓库写入或 WI 生命周期动作。
+- **根因**：对跨工具 URL provenance 契约理解仍不完整，重复 ERR-319 类前置条件失败。
+- **影响**：只影响第一次助手侧下载；最终 patch 输入来自同一 current exact commit 的成功 raw 下载。
+- **正确做法**：`container.download` 前必须对“完全相同的最终 URL”执行成功的 web.open；重定向来源或相邻页面不视为满足前置条件。
+- **对应 EXP 类规则**：复用 `EXP-072`、`EXP-007`。
+- **自动防护**：固定跨工具流程为 `web.open(final raw URL) -> verify content_type=text/plain -> container.download(exact same URL) -> local hash/parse`；任何一步失败单独记账并停止该通道。
+- **状态**：`CLOSED_EXACT_RAW_PROVENANCE_USED`。
+<!-- SPECFORGE_ERR324_EXP072_V169_CONTAINER_DOWNLOAD_PROVENANCE:END -->
