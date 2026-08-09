@@ -6401,3 +6401,29 @@ actual_files
 - **自动防护**：下一只读包 validator 使用 mode-aware AST 规则，并用正反 fixture 同时证明 `open("rb")` 被接受、`open("wb")`/`write_text()` 被拒绝；生命周期 Tool 名只允许作为历史证据值，不以 token presence 推断调用能力。
 - **状态**：`CLOSED_PREDELIVERY`。
 <!-- SPECFORGE_ERR325_EXP244_V170_READONLY_PATH_OPEN_FALSE_POSITIVE:END -->
+<!-- SPECFORGE_ERR326_EXP244_V171_DYNAMIC_GIT_SUBCOMMAND_FALSE_POSITIVE:START -->
+## ERR-326 / EXP-244 — V171 只读 reconciliation 包 validator 把通用 Git helper 定义误判成动态 Git 写入
+- **日期与阶段**：2026-08-09，V171 WI-0004 post-merge read-only reconciliation 包第一次预交付独立 validator。
+- **分类**：`VALIDATION_DEFECT / CALL_GRAPH_FALSE_POSITIVE / PREDELIVERY_FALSE_NEGATIVE / REPEATED_CLASS_EXP244`。
+- **现场表现**：`diagnose.py` 定义通用只读 helper `git(repo,*args)`，实际所有调用点只使用 `ls-remote / rev-parse / branch / status / remote`；validator 却遍历 AST 时把 helper 函数定义内部的 `git(repo,*args)` 形态也按“动态 git subcommand”处理，导致 Artifact Acceptance 报 `dynamic git subcommand`。
+- **已执行与未执行**：失败发生在交付前；失败版 V171 未交付、未在用户机器运行、未访问或修改 Validation 仓库、未调用 daemon API、未执行任何 WI-0004 生命周期动作。
+- **根因**：validator 没有区分“helper 定义内部转发参数”与“业务代码实际调用 helper 的 call site”；再次把实现结构当成副作用能力证据。
+- **影响**：只阻断一次 assistant-side 预交付构建；不改变 WI-0004=`merged`、V166 Merge 只执行一次、Merge 禁止重跑的事实。
+- **正确做法**：Git 能力审计应检查业务 call site 的实际常量子命令，helper 定义本身不作为一次 Git 调用；同时禁止源码直接调用 `subprocess.run(["git", ...])` 绕过受审 helper。
+- **对应 EXP 类规则**：复用 `EXP-244`、`EXP-007`、`EXP-085`、`EXP-188`。
+- **自动防护**：下一只读包 validator 只审计位于 `git()` / `git_ok()` helper 定义之外的 call site；所有实际 call site 必须是固定 read-only 子命令集合。再加入正反 fixture：允许 `git_ok(repo,"status",...)`，拒绝 `git_ok(repo,"add",...)`。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR326_EXP244_V171_DYNAMIC_GIT_SUBCOMMAND_FALSE_POSITIVE:END -->
+<!-- SPECFORGE_ERR327_EXP072_V171_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:START -->
+## ERR-327 / EXP-072 — V171 assistant artifact 运行环境再次出现 spreadsheet runtime warmup timeout
+- **日期与阶段**：2026-08-09，V171 预交付 Python artifact 生成。
+- **分类**：`ENVIRONMENT_FAILURE / ASSISTANT_ARTIFACT_RUNTIME_WARMUP / REPEATED_CLASS_ERR309_ERR321_EXP072`。
+- **现场表现**：`python_user_visible` 启动阶段再次出现 `Spreadsheet runtime warmup failed ... TimeoutError`；Python 主任务随后继续执行，并真正由 ERR-326 的 validator 假阳性阻断。
+- **已执行与未执行**：warmup 属 assistant artifact 工具内部环境，不属于用户 SpecForge、Validation、daemon 或 Bun；没有用户仓库副作用，没有生命周期动作。
+- **根因**：artifact_tool spreadsheet RPC daemon 启动超时，和本任务无 spreadsheet 依赖的业务逻辑无关。
+- **影响**：产生额外环境噪声；本轮包构建的阻断根因仍单独归入 ERR-326。
+- **正确做法**：持续区分 `WARMUP_DIAGNOSTIC` 与 `TASK_EXECUTION_RESULT`；若 Python 主执行继续，则以最终 package validator 结果为任务成败依据。
+- **对应 EXP 类规则**：复用 `EXP-072`、`EXP-007`。
+- **自动防护**：artifact 生成回执继续单独标记 warmup 复发；不得把它混入 SpecForge 产品缺陷，也不得覆盖真正的 package validator 根因。
+- **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE`。
+<!-- SPECFORGE_ERR327_EXP072_V171_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:END -->
