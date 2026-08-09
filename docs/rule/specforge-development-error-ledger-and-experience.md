@@ -6427,3 +6427,29 @@ actual_files
 - **自动防护**：artifact 生成回执继续单独标记 warmup 复发；不得把它混入 SpecForge 产品缺陷，也不得覆盖真正的 package validator 根因。
 - **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE`。
 <!-- SPECFORGE_ERR327_EXP072_V171_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:END -->
+<!-- SPECFORGE_ERR328_EXP244_V172_STRING_REPLACE_FALSE_POSITIVE:START -->
+## ERR-328 / EXP-244 — V172 只读 reconciliation 包 validator 把字符串 replace() 误判为文件替换写操作
+- **日期与阶段**：2026-08-09，V172 WI-0004 post-merge read-only reconciliation 包第一次预交付独立 validator。
+- **分类**：`VALIDATION_DEFECT / METHOD_NAME_FALSE_POSITIVE / PREDELIVERY_FALSE_NEGATIVE / REPEATED_CLASS_EXP244`。
+- **现场表现**：`diagnose.py` 只使用字符串 `.replace("\r\n","\n")`、路径字符串 slash normalization 等纯内存转换；validator 却把所有 AttributeCall 名称 `replace` 统一列为文件系统 mutator，导致 Artifact Acceptance 报 `filesystem mutator replace`。
+- **已执行与未执行**：失败发生在交付前；失败版 V172 未交付、未在用户机器运行、未访问或修改 Validation 仓库、未调用 daemon API、未执行任何 WI-0004 生命周期动作。
+- **根因**：validator 只按方法名判断副作用，没有区分字符串 `str.replace()` 与 `Path.replace()` 的接收对象类型；再次把实现表象当成写能力证据。
+- **影响**：只阻断一次 assistant-side 预交付构建；不改变 WI-0004=`merged`、V166 Merge 只执行一次、Merge 禁止重跑的事实。
+- **正确做法**：只读能力审计不得把通用方法名 `replace` 直接列为全局文件 mutator；应显式封禁已知 Path/OS 写 API，并对实际 subprocess/Git call site 做白名单审计。字符串纯函数转换允许存在。
+- **对应 EXP 类规则**：复用 `EXP-244`、`EXP-007`、`EXP-085`、`EXP-188`。
+- **自动防护**：后续只读包 validator 删除全局 `replace` 方法名封禁；只封禁 `write_text/write_bytes/unlink/rmdir/rename/mkdir/touch/chmod/truncate/symlink_to/hardlink_to` 等明确文件写 API，并用正反 fixture 验证字符串 replace 允许、Path 写 API 阻断。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR328_EXP244_V172_STRING_REPLACE_FALSE_POSITIVE:END -->
+<!-- SPECFORGE_ERR329_EXP072_V172_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:START -->
+## ERR-329 / EXP-072 — V172 assistant artifact 运行环境再次出现 spreadsheet runtime warmup timeout
+- **日期与阶段**：2026-08-09，V172 预交付 Python artifact 生成。
+- **分类**：`ENVIRONMENT_FAILURE / ASSISTANT_ARTIFACT_RUNTIME_WARMUP / REPEATED_CLASS_ERR309_ERR321_ERR327_EXP072`。
+- **现场表现**：`python_user_visible` 启动阶段再次出现 `Spreadsheet runtime warmup failed ... TimeoutError`；Python 主任务随后继续执行，并真正由 ERR-328 的 validator 假阳性阻断。
+- **已执行与未执行**：warmup 属 assistant artifact 工具内部环境，不属于用户 SpecForge、Validation、daemon 或 Bun；没有用户仓库副作用，没有生命周期动作。
+- **根因**：artifact_tool spreadsheet RPC daemon 启动超时，本任务不使用 spreadsheet。
+- **影响**：产生额外环境噪声；本轮真正 package 构建阻断根因仍单独归入 ERR-328。
+- **正确做法**：继续区分 `WARMUP_DIAGNOSTIC` 与 `TASK_EXECUTION_RESULT`；对于非 spreadsheet ZIP 生成，改用不触发 spreadsheet runtime 的普通文件构建通道，避免重复制造无关 warmup 失败。
+- **对应 EXP 类规则**：复用 `EXP-072`、`EXP-007`。
+- **自动防护**：后续 SpecForge ZIP 生成优先使用普通 container/file 构建与独立 Python validator；仅在任务确实需要可视化 Python/Spreadsheet 时使用会 warmup spreadsheet 的通道。
+- **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE_BUILD_CHANNEL_CHANGED`。
+<!-- SPECFORGE_ERR329_EXP072_V172_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:END -->
