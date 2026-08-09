@@ -6323,3 +6323,29 @@ actual_files
 - **自动防护**：后续 exact GitHub raw 下载先完成 web provenance，再使用同一 URL；下载成功后以本地完整字节作为 patch 生产输入。
 - **状态**：`CLOSED_TOOL_PROTOCOL_CORRECTED`。
 <!-- SPECFORGE_ERR319_EXP072_V167_CONTAINER_DOWNLOAD_VIEW_PRECONDITION:END -->
+<!-- SPECFORGE_ERR320_EXP244_V168_READONLY_VALIDATOR_TOKEN_FALSE_POSITIVE:START -->
+## ERR-320 / EXP-244 — V168 只读 post-merge reconciliation 包预交付 validator 把“核验 sf_v11_merge 事件来源”误判成“会调用 Merge”
+- **日期与阶段**：2026-08-09，V168 WI-0004 post-merge read-only reconciliation 包第一次预交付独立 validator。
+- **分类**：`VALIDATION_DEFECT / IMPLEMENTATION_TOKEN_FALSE_POSITIVE / PREDELIVERY_FALSE_NEGATIVE / REPEATED_CLASS_EXP244`。
+- **现场表现**：只读 `diagnose.py` 必须检查历史状态事件 `transition_context.source == "sf_v11_merge"`，并在结果中明确 `ATOMIC_SPEC_MERGE_RERUN=NONE_FORBIDDEN`；validator 却用源码全文字符串搜索，把出现 `sf_v11_merge` 直接当成生命周期调用，导致包在 Artifact Acceptance 阶段失败。
+- **已执行与未执行**：失败发生在用户交付前；未生成可交付 V168；没有读取或写入用户 Validation 仓库，没有发出 daemon HTTP 请求，没有调用 Merge/Gate/User Decision/Code Permission/Implementation/Verification/Close。
+- **根因**：再次把“源码中用于历史证据比较的字符串”与“可执行调用行为”混为一谈，重复 ERR-314 / EXP-244。
+- **影响**：只阻断一次 assistant-side 预交付构建；不改变 V166 已执行一次 Merge、WI-0004=`merged`、V167 禁止 Merge 重跑的事实。
+- **正确做法**：只读诊断包 validator 必须从 AST/import/call graph 和允许的网络模块判断副作用能力；允许脚本把生命周期 Tool 名称作为历史数据值进行比较或打印。禁止通过全文 token presence 判断“发生调用”。
+- **对应 EXP 类规则**：复用 `EXP-244`、`EXP-188`、`EXP-085`。
+- **自动防护**：下一版只读包 validator 检查：无 `urllib/http` 导入、无 daemon `/api/v1/tool/invoke` endpoint、无文件写 API、无 mutating Git 命令；同时用 fixture 证明 `sf_v11_merge` 只作为历史 event source 被消费，不作为函数/Tool invocation。
+- **状态**：`CLOSED_PREDELIVERY`。
+<!-- SPECFORGE_ERR320_EXP244_V168_READONLY_VALIDATOR_TOKEN_FALSE_POSITIVE:END -->
+<!-- SPECFORGE_ERR321_EXP072_V168_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:START -->
+## ERR-321 / EXP-072 — V168 assistant artifact 运行环境再次出现 spreadsheet runtime warmup timeout
+- **日期与阶段**：2026-08-09，V168 预交付 Python artifact 生成调用。
+- **分类**：`ENVIRONMENT_FAILURE / ASSISTANT_ARTIFACT_RUNTIME_WARMUP / REPEATED_CLASS_ERR309_EXP072`。
+- **现场表现**：`python_user_visible` 启动时再次输出 `Spreadsheet runtime warmup failed ... TimeoutError`。同一调用随后实际进入 V168 validator，最终阻断原因是 ERR-320 的 validator 假阳性，而不是 warmup。
+- **已执行与未执行**：该 warmup 属 assistant artifact 工具内部环境，不是用户 SpecForge、Validation、daemon 或 Bun 环境；没有用户仓库副作用，也没有生命周期动作。
+- **根因**：artifact_tool spreadsheet RPC daemon 启动超时；与本任务不使用 spreadsheet 的业务逻辑无关，复发既有 ERR-309 类环境故障。
+- **影响**：产生额外噪声和失败信号；本次真正的包构建失败仍由 ERR-320 单独归因。
+- **正确做法**：不把 spreadsheet warmup 失败归因到 SpecForge；只要 Python 主执行已继续，就独立判断实际 artifact validator 结果；若 Python 主执行未继续，则按环境失败关闭本轮。
+- **对应 EXP 类规则**：复用 `EXP-072`、`EXP-007`。
+- **自动防护**：每次 artifact 调用区分 `WARMUP_DIAGNOSTIC` 与 `TASK_EXECUTION_RESULT`；warmup 复发继续显式记账，不覆盖真正的 package validator 根因。
+- **状态**：`CLOSED_KNOWN_ENVIRONMENT_RECURRENCE`。
+<!-- SPECFORGE_ERR321_EXP072_V168_ARTIFACT_WARMUP_TIMEOUT_RECURRENCE:END -->
