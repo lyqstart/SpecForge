@@ -102,6 +102,36 @@ function uniqueStrings(values: string[]): string[] {
   return Array.from(new Set(values.filter(Boolean)));
 }
 
+export function worktreeStatusForWorkItemMerge(
+  statusEntries: Array<{ path: string }>,
+  workItemId: string,
+): {
+  blocking: Array<{ path: string }>;
+  ignored_unrelated_work_item_files: string[];
+} {
+  const workItemsPrefix = `${SPEC_DIR_NAME}/work-items/`;
+  const currentPrefix = `${workItemsPrefix}${workItemId}/`;
+  const blocking: Array<{ path: string }> = [];
+  const ignored: string[] = [];
+
+  for (const entry of statusEntries) {
+    const normalized = normalizeRelativePath(entry.path);
+    if (
+      normalized.startsWith(workItemsPrefix) &&
+      !normalized.startsWith(currentPrefix)
+    ) {
+      ignored.push(normalized);
+      continue;
+    }
+    blocking.push(entry);
+  }
+
+  return {
+    blocking,
+    ignored_unrelated_work_item_files: Array.from(new Set(ignored)).sort(),
+  };
+}
+
 export async function gitMergePlan(input: {
   projectRoot: string;
   workItemId: string;
@@ -122,7 +152,13 @@ export async function gitMergePlan(input: {
       `WORK_ITEM_BRANCH_REQUIRED_BEFORE_MERGE_PLAN: current=${pf.current_branch ?? 'missing'}, expected=${context.branch_name}`,
     );
   }
-  if (!pf.worktree_clean) blockingIssues.push('WORKTREE_NOT_CLEAN_BEFORE_MERGE');
+  const scopedWorktree = worktreeStatusForWorkItemMerge(
+    pf.status_entries,
+    input.workItemId,
+  );
+  if (scopedWorktree.blocking.length > 0) {
+    blockingIssues.push('WORKTREE_NOT_CLEAN_BEFORE_MERGE');
+  }
   if (changedFiles.length === 0) blockingIssues.push('NO_WORK_ITEM_DIFF_TO_MERGE');
   try {
     await assertFormalVersionSnapshotForGitMerge(input.projectRoot, input.workItemId);
@@ -139,7 +175,9 @@ export async function gitMergePlan(input: {
     base_commit: context.base_commit,
     current_branch: pf.current_branch,
     authoritative_state: input.authoritativeState ?? null,
-    worktree_clean: pf.worktree_clean,
+    worktree_clean: scopedWorktree.blocking.length === 0,
+    ignored_unrelated_work_item_files:
+      scopedWorktree.ignored_unrelated_work_item_files,
     changed_files: changedFiles,
     blocking_issues: dedupedIssues,
     can_merge: dedupedIssues.length === 0,
@@ -174,7 +212,13 @@ export async function gitMergeRun(input: {
       `WORK_ITEM_BRANCH_REQUIRED_BEFORE_GIT_MERGE: current=${pf.current_branch ?? 'missing'}, expected=${context.branch_name}`,
     );
   }
-  if (!pf.worktree_clean) throw new Error('WORKTREE_NOT_CLEAN_BEFORE_MERGE');
+  const scopedWorktree = worktreeStatusForWorkItemMerge(
+    pf.status_entries,
+    input.workItemId,
+  );
+  if (scopedWorktree.blocking.length > 0) {
+    throw new Error('WORKTREE_NOT_CLEAN_BEFORE_MERGE');
+  }
 
   await assertFormalVersionSnapshotForGitMerge(input.projectRoot, input.workItemId);
   const featureHead = await getHeadCommit(input.projectRoot);
@@ -210,6 +254,8 @@ export async function gitMergeRun(input: {
     target_branch: defaultBranch,
     target_head: headCommit,
     pull_performed: pullPerformed,
+    ignored_unrelated_work_item_files:
+      scopedWorktree.ignored_unrelated_work_item_files,
     remote_name: remote ?? null,
     repository_delivery_state:
       result.code === 0 ? 'git_merged_pending_post_merge_verify' : 'git_merge_failed',
@@ -236,7 +282,13 @@ export async function gitPostMergeVerify(input: {
       `POST_MERGE_TARGET_BRANCH_REQUIRED: current=${pf.current_branch ?? 'missing'}, expected=${context.base_branch}`,
     );
   }
-  if (!pf.worktree_clean) throw new Error('POST_MERGE_WORKTREE_NOT_CLEAN');
+  const scopedWorktree = worktreeStatusForWorkItemMerge(
+    pf.status_entries,
+    input.workItemId,
+  );
+  if (scopedWorktree.blocking.length > 0) {
+    throw new Error('POST_MERGE_WORKTREE_NOT_CLEAN');
+  }
   const headCommit = await getHeadCommit(input.projectRoot);
   if (!headCommit) throw new Error('POST_MERGE_HEAD_NOT_FOUND');
 
@@ -269,6 +321,8 @@ export async function gitPostMergeVerify(input: {
     merged_branch: context.branch_name,
     head_commit: headCommit,
     worktree_clean: true,
+    ignored_unrelated_work_item_files:
+      scopedWorktree.ignored_unrelated_work_item_files,
     work_item_branch_is_ancestor: true,
     merge_commit: true,
     formal_version: formalVersion,

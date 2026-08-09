@@ -7019,3 +7019,40 @@ actual_files
 - **正确方法**：V193 对 Authority 使用稳定 Rule ID section boundary：从 `GATE-ATTEMPT-RECONCILE-001` 起点替换到下一稳定 Rule `GATE-ATTEMPT-INPUT-SNAPSHOT-001` 起点；spec_migration 只在稳定规则 8 后插入 9/10。Runtime/Test 同样用结构边界，不再依赖整段复制正文。
 - **状态**：`CLOSED_BY_V193_PENDING_EXECUTION`。
 <!-- SPECFORGE_ERR384_ERR389_V191_V192_RECONCILIATION_FIX:END -->
+
+<!-- SPECFORGE_ERR390_ERR396_SPEC_MIGRATION_GIT_DELIVERY:START -->
+## ERR-390 / EXP-044 — spec_migration 可治理 closed 但缺少可满足 Git Merge 的正式 branch/context delivery path
+- **事实**：V194 成功复用 attempt-0006 到 `verification_done`，Close Gate 32/32 PASS，authoritative state=`closed`；随后 `sf_git_checkpoint_commit(dry_run=true)` 在默认分支 `main` 返回 `MAIN_WRITE_GUARD_BLOCKED`。WI-0004 无 `git_context.json`，Formal Version snapshot 的 `branch_name/base_commit/implementation_commit` 为空，`sf_git_merge_plan` 未调用。
+- **状态**：`CLOSED_BY_V196_PENDING_EXECUTION`。
+
+## ERR-391 / EXP-044 — no-code Formal Version 缺少 Project Spec Git diff 漂移保护
+- **事实**：现有 Git Merge Guard 只在 `implementation_commit` 或 `base_commit` 已存在时校验 Formal Version Git binding；WI-0004 两者为空。
+- **正确方法**：为 spec_migration 单独冻结 `.specforge/project/**` diff fingerprint；legacy closed recovery 用 passed Verification Attempt input snapshot 证明当前 Project Spec 未漂移。
+- **状态**：`CLOSED_BY_V196_PENDING_EXECUTION`。
+
+## ERR-392 / EXP-188 — unrelated WI governance artifacts 会阻断当前 WI Git delivery
+- **事实**：Validation worktree 含 unrelated WI-0003 governance artifacts；全 worktree clean 规则会迫使提交或删除无关 WI。
+- **正确方法**：只忽略 `.specforge/work-items/<OTHER_WI>/**`；当前 WI、Project Spec、源码/配置和其他 dirty path 继续 hard block。
+- **状态**：`CLOSED_BY_V196_PENDING_EXECUTION`。
+
+## ERR-393 / EXP-078 — V195 首次预交付 runner 存在 Python 缩进错误
+- **事实**：V195 首次组装在交付前 Python compile 阶段报 `IndentationError`；未交付、无用户环境副作用。
+- **状态**：`CLOSED_PREDELIVERY`。
+
+## ERR-394 / EXP-007 — V195 Artifact Validator 只验证合成 fixture，未覆盖真实源码锚点
+- **事实**：后续 V195 包通过自身 validator，但 validator 没有证明 runner 中全部源码 anchor 在当前 exact commit 上真实存在。
+- **影响**：Artifact Acceptance 对“可应用性”的证据不足。
+- **状态**：`CLOSED_BY_V196_STRUCTURAL_PREFLIGHT`。
+
+## ERR-395 / EXP-063 — 用户执行 V195 在任何写入前命中不存在的 pg.postmerge_guard anchor
+- **事实**：V195 STEP-001 PASS 后失败：`ANCHOR_CARDINALITY:pg.postmerge_guard:expected=1 actual=0`；`COMMIT_SHA=NONE`、远程仍 `dca59ad3...`、Validation/WI/Git lifecycle=NONE。
+- **根因**：把 pre-merge 与 post-merge Formal Version 逻辑想象成一个不存在的源码块。
+- **正确方法**：V196 分别对真实函数 `assertFormalVersionSnapshotForGitMerge()` 与 `verifyFormalVersionSnapshotAfterGitMerge()` 使用已核实结构锚点。
+- **状态**：`CLOSED_BY_V196_PENDING_EXECUTION`。
+
+## ERR-396 / EXP-072 — assistant 隔离容器无法 clone GitHub exact commit
+- **事实**：为提高 V196 预交付真实性，尝试在隔离容器 clone GitHub；容器返回 `Could not resolve host: github.com`。
+- **影响**：不是 SpecForge 产品失败，不接触用户环境。
+- **正确方法**：用 web exact-commit 原始源码完成结构核对；用户 runner 写入前再次 `git ls-remote` + 对本地 exact baseline 做全量 in-memory transform，任何 anchor 不成立则零写入 Fail Closed。
+- **状态**：`CLOSED_EXTERNAL_TOOL_ENVIRONMENT`。
+<!-- SPECFORGE_ERR390_ERR396_SPEC_MIGRATION_GIT_DELIVERY:END -->

@@ -1594,6 +1594,12 @@ Close Gate = REQUIRED
 8. Trace Delta 在迁移涉及 Trace 时仍为必需正式证据。
 9. `spec_migration` 的 no-code Verification 状态推进必须消费**最终冻结且已通过 Candidate / Atomic Spec Merge / Post-Spec-Merge Gate 的 Candidate manifest**；不得把某一个早期 producer（例如 `prepare_repair`）的局部输出形状误当成最终 manifest 的唯一合法形状。最终 manifest 可以在同一原子 Candidate 中同时包含 Project / Module Spec、Project / Module Contract、Design 与 Trace 条目。
 10. `post_merge_verified -> verification_running` 的 workflow-specific transition guard 对 `spec_migration` 只允许验证稳定身份与通用 canonical 边界：正确 `work_item_id` / `workflow_path`、`merge_required=true`、非空 entries、每个 entry 使用 `operation=replace`、`candidate_path` 位于 `candidates/**`、`target_path` 位于 `.specforge/project/**` 且不得路径逃逸；不得要求全部条目都位于 `project/modules/**`。
+11. Git Merge 对 `spec_migration` 仍为 REQUIRED；“no-code”只表示没有业务 Implementation，不表示 `.specforge/project/**` 的 Atomic Spec Merge 结果可以绕过 Git delivery。
+12. 对 Git-enabled 项目，`spec_migration` 必须在正式 Candidate/Atomic Spec Merge 交付前建立 Work Item Git context / 工作分支；Formal Version Gate 前必须通过正式 Git checkpoint 把本 WI 的 Project Spec diff 和当前治理 evidence 提交到该工作分支，禁止在默认分支直接 checkpoint。
+13. Formal Version 对 `spec_migration` 必须冻结 Project Spec Git diff fingerprint：以 `git_context.base_commit` 为基线，只对 `.specforge/project/**` 的 diff 文件集合与内容做稳定 fingerprint。Close 之后允许新增同 WI 治理 evidence，但任何 `.specforge/project/**` 内容漂移都必须阻断 Git Merge。
+14. 历史恢复例外：若 `spec_migration` 已经 `closed`、Formal Version/Close 均 passed、但因旧产品缺陷没有 `git_context.json`，只允许 `sf_git_branch_create(recovery_mode="closed_spec_migration")` 恢复 Git delivery。该动作必须取得新的语义分支名用户确认，并在 branch side effect 前证明：指定 passed Verification Attempt 是 latest、其 `input-snapshot.json` 对当前全部 `.specforge/project/**` Git diff 文件均存在同路径同 SHA256 证据；无法证明时 Fail Closed，不得重跑 Gate 代替。
+15. closed-spec-migration Git recovery 只允许写 `git_context.json` 与 `git_delivery_recovery.json`；随后通过正式 `sf_git_checkpoint_commit` 精确提交当前 WI 的 `.specforge/project/**` diff 与 `.specforge/work-items/<CURRENT_WI>/**` 治理 evidence，不得提交其他 Work Item evidence。
+16. Git Merge Plan / Run / Post-Merge Verify 的 worktree cleanliness 对当前 WI 只允许忽略其他 Work Item 的 `.specforge/work-items/<OTHER_WI>/**` governance artifacts；任何 `.specforge/project/**`、当前 WI、源码/配置或其他路径的 dirty 状态仍必须阻断。被忽略路径必须显式返回用于审计。
 
 Trace 贯穿 Requirement、Architecture、Data Model、Module Design、Contract、Task、Implementation 和 Verification。
 

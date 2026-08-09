@@ -2089,6 +2089,169 @@ async function gitDiffFingerprint(projectRoot: string, baseCommit: string): Prom
   }
 }
 
+export interface SpecMigrationProjectSpecGitSnapshot {
+  base_commit: string;
+  project_spec_files: string[];
+  project_spec_git_diff_fingerprint: string;
+}
+
+function isUnrelatedWorkItemGovernancePath(relativePath: string, workItemId: string): boolean {
+  const normalized = slash(relativePath);
+  const prefix = `${SPEC_DIR}/work-items/`;
+  const current = `${prefix}${workItemId}/`;
+  return normalized.startsWith(prefix) && !normalized.startsWith(current);
+}
+
+async function gitProjectSpecDiffFiles(projectRoot: string, baseCommit: string): Promise<string[]> {
+  if (!baseCommit) return [];
+  const [tracked, untracked] = await Promise.all([
+    gitLines(projectRoot, ['diff', '--name-only', baseCommit, '--', `${SPEC_DIR}/project`]),
+    gitLines(projectRoot, ['ls-files', '--others', '--exclude-standard', '--', `${SPEC_DIR}/project`]),
+  ]);
+  return unique(
+    [...tracked, ...untracked]
+      .map(slash)
+      .filter(value => value.startsWith(`${SPEC_DIR}/project/`)),
+  );
+}
+
+async function fingerprintRepositoryFiles(projectRoot: string, files: string[]): Promise<string> {
+  const facts: string[] = [];
+  for (const relativePath of unique(files.map(slash))) {
+    try {
+      const content = await fs.readFile(path.resolve(projectRoot, relativePath));
+      facts.push(
+        `${relativePath}\0file\0${createHash('sha256').update(content).digest('hex')}`,
+      );
+    } catch {
+      facts.push(`${relativePath}\0deleted`);
+    }
+  }
+  return digest(facts.join('\n'));
+}
+
+export async function captureSpecMigrationProjectSpecGitDiff(
+  projectRoot: string,
+  baseCommit: string,
+): Promise<SpecMigrationProjectSpecGitSnapshot> {
+  const projectSpecFiles = await gitProjectSpecDiffFiles(projectRoot, baseCommit);
+  return {
+    base_commit: baseCommit,
+    project_spec_files: projectSpecFiles,
+    project_spec_git_diff_fingerprint:
+      await fingerprintRepositoryFiles(projectRoot, projectSpecFiles),
+  };
+}
+
+export async function verifyLegacyClosedSpecMigrationGitDeliveryRecovery(input: {
+  projectRoot: string;
+  workItemId: string;
+  attemptId: string;
+  baseCommit: string;
+}): Promise<SpecMigrationProjectSpecGitSnapshot & { attempt_id: string }> {
+  const attemptsDir = path.join(
+    input.projectRoot,
+    SPEC_DIR,
+    'work-items',
+    input.workItemId,
+    'gate_attempts',
+  );
+  const attemptNames = (await fs.readdir(attemptsDir, { withFileTypes: true }))
+    .filter(entry => entry.isDirectory() && /^attempt-\d{4}$/.test(entry.name))
+    .map(entry => entry.name)
+    .sort((a, b) => Number(a.slice(8)) - Number(b.slice(8)));
+  const latestAttempt = attemptNames.at(-1) ?? '';
+  if (latestAttempt !== input.attemptId) {
+    throw new Error(
+      `SPEC_MIGRATION_GIT_RECOVERY_LATEST_ATTEMPT_REQUIRED: latest=${latestAttempt || 'missing'} requested=${input.attemptId}`,
+    );
+  }
+
+  const attemptDir = path.join(attemptsDir, input.attemptId);
+  const attemptResult = await readJson(path.join(attemptDir, 'attempt-result.json'));
+  if (
+    attemptResult?.source !== 'gate_run' ||
+    attemptResult?.summary_status !== 'passed'
+  ) {
+    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_PASSED_GATE_ATTEMPT_REQUIRED');
+  }
+  const requestedGateIds = normalizeArray(attemptResult?.requested_gate_ids);
+  for (const required of ['verification_gate', 'formal_version_gate']) {
+    if (!requestedGateIds.includes(required)) {
+      throw new Error(`SPEC_MIGRATION_GIT_RECOVERY_REQUIRED_GATE_MISSING: ${required}`);
+    }
+  }
+
+  const inputSnapshot = await readJson(path.join(attemptDir, 'input-snapshot.json'));
+  if (
+    inputSnapshot?.schema_version !== '1.0' ||
+    inputSnapshot?.work_item_id !== input.workItemId ||
+    inputSnapshot?.attempt_id !== input.attemptId ||
+    !Array.isArray(inputSnapshot?.inputs)
+  ) {
+    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_INPUT_SNAPSHOT_INVALID');
+  }
+
+  const current = await captureSpecMigrationProjectSpecGitDiff(
+    input.projectRoot,
+    input.baseCommit,
+  );
+  if (current.project_spec_files.length === 0) {
+    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_PROJECT_SPEC_DIFF_REQUIRED');
+  }
+
+  const byPath = new Map<string, any>();
+  for (const raw of inputSnapshot.inputs) {
+    if (!raw || typeof raw !== 'object') continue;
+    const record = raw as Record<string, unknown>;
+    const rawPath = String(record.path ?? '');
+    const relativePath = slash(
+      path.isAbsolute(rawPath)
+        ? path.relative(input.projectRoot, rawPath)
+        : rawPath,
+    );
+    byPath.set(relativePath, record);
+  }
+
+  for (const relativePath of current.project_spec_files) {
+    const record = byPath.get(relativePath);
+    if (!record || record.exists !== true || record.kind !== 'file') {
+      throw new Error(
+        `SPEC_MIGRATION_GIT_RECOVERY_FORMAL_INPUT_MISSING: ${relativePath}`,
+      );
+    }
+    const expected = String(record.sha256 ?? '').toLowerCase();
+    const content = await fs.readFile(path.resolve(input.projectRoot, relativePath));
+    const actual = createHash('sha256').update(content).digest('hex');
+    if (!/^[0-9a-f]{64}$/.test(expected) || expected !== actual) {
+      throw new Error(
+        `SPEC_MIGRATION_GIT_RECOVERY_FORMAL_INPUT_CHANGED: ${relativePath}`,
+      );
+    }
+  }
+
+  return { ...current, attempt_id: input.attemptId };
+}
+
+export async function assertSpecMigrationProjectSpecGitDiffUnchanged(input: {
+  projectRoot: string;
+  baseCommit: string;
+  expectedFingerprint: string;
+}): Promise<void> {
+  if (!input.baseCommit || !input.expectedFingerprint) {
+    throw new Error('SPEC_MIGRATION_FORMAL_PROJECT_SPEC_GIT_BINDING_REQUIRED');
+  }
+  const current = await captureSpecMigrationProjectSpecGitDiff(
+    input.projectRoot,
+    input.baseCommit,
+  );
+  if (
+    current.project_spec_git_diff_fingerprint !== input.expectedFingerprint
+  ) {
+    throw new Error('SPEC_MIGRATION_FORMAL_PROJECT_SPEC_GIT_DIFF_CHANGED');
+  }
+}
+
 export async function checkFormalVersionEligibility(input: {
   projectRoot: string;
   workItemDir: string;
@@ -2142,11 +2305,14 @@ export async function checkFormalVersionEligibility(input: {
   const gitContextPath = path.join(input.workItemDir, 'git_context.json');
   const gitContext = await readJson(gitContextPath);
   const governanceScope = await readJson(path.join(input.workItemDir, 'governance_scope.json'));
+  const specMigrationGitRequired =
+    specMigrationNoCode && Boolean(await gitHead(input.projectRoot));
   const gitRequired =
-    actualScope.active &&
-    !specMigrationNoCode &&
-    input.workflowPath !== 'contract_change_path' &&
-    input.workflowPath !== 'rollback_path';
+    specMigrationGitRequired ||
+    (actualScope.active &&
+      !specMigrationNoCode &&
+      input.workflowPath !== 'contract_change_path' &&
+      input.workflowPath !== 'rollback_path');
   const expectedImplementation =
     gitRequired &&
     normalizeArray(governanceScope?.allowed_write_files).some(
@@ -2158,6 +2324,25 @@ export async function checkFormalVersionEligibility(input: {
     implementationFiles: actualScope.actual_files,
   });
   inputFiles.push(gitContextPath);
+  const specMigrationProjectSpecGit =
+    specMigrationNoCode && gitBinding.enabled && gitBinding.base_commit
+      ? await captureSpecMigrationProjectSpecGitDiff(
+          input.projectRoot,
+          gitBinding.base_commit,
+        )
+      : null;
+  if (specMigrationNoCode) {
+    addCheck(
+      checks,
+      'formal_spec_migration_project_spec_git_diff',
+      'Spec Migration Project Spec diff is committed/bound to the WI Git base',
+      Boolean(
+        specMigrationProjectSpecGit &&
+        specMigrationProjectSpecGit.project_spec_files.length > 0
+      ),
+      `files=${specMigrationProjectSpecGit?.project_spec_files.join(',') || 'none'}`,
+    );
+  }
   addCheck(
     checks,
     'formal_git_context',
@@ -2339,6 +2524,8 @@ export async function checkFormalVersionEligibility(input: {
       diff_fingerprint: baseCommit
         ? await gitDiffFingerprint(input.projectRoot, baseCommit)
         : '',
+      spec_migration_project_spec_git_diff_fingerprint:
+        specMigrationProjectSpecGit?.project_spec_git_diff_fingerprint ?? '',
       created_at: new Date().toISOString(),
     };
     const snapshotPath = path.join(input.workItemDir, 'formal_version_snapshot.json');
@@ -2373,6 +2560,32 @@ export async function assertFormalVersionSnapshotForGitMerge(
     throw new Error('FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE');
   }
 
+  const candidateManifest = await readJson(
+    path.join(workItemDir, 'candidate_manifest.json'),
+  );
+  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow(
+    candidateManifest?.workflow_type,
+    candidateManifest?.workflow_path,
+  );
+  if (specMigrationNoCode) {
+    const recovery = await readJson(
+      path.join(workItemDir, 'git_delivery_recovery.json'),
+    );
+    const baseCommit = String(
+      snapshot.base_commit ?? recovery?.base_commit ?? '',
+    );
+    const expectedFingerprint = String(
+      snapshot.spec_migration_project_spec_git_diff_fingerprint ??
+      recovery?.project_spec_git_diff_fingerprint ??
+      '',
+    );
+    await assertSpecMigrationProjectSpecGitDiffUnchanged({
+      projectRoot,
+      baseCommit,
+      expectedFingerprint,
+    });
+  }
+
   if (snapshot.implementation_commit) {
     const [currentHead, currentBranch, trackedWorktreeFiles, untrackedFiles] =
       await Promise.all([
@@ -2381,8 +2594,17 @@ export async function assertFormalVersionSnapshotForGitMerge(
         gitLines(projectRoot, ['diff', '--name-only', 'HEAD', '--']),
         gitLines(projectRoot, ['ls-files', '--others', '--exclude-standard']),
       ]);
-    if (unique([...trackedWorktreeFiles, ...untrackedFiles]).length > 0) {
-      throw new Error('FORMAL_VERSION_WORKTREE_NOT_CLEAN_BEFORE_GIT_MERGE');
+    const formalWorktreeFiles = unique([
+      ...trackedWorktreeFiles,
+      ...untrackedFiles,
+    ]).filter(
+      relativePath =>
+        !isUnrelatedWorkItemGovernancePath(relativePath, workItemId),
+    );
+    if (formalWorktreeFiles.length > 0) {
+      throw new Error(
+        'FORMAL_VERSION_WORKTREE_NOT_CLEAN_BEFORE_GIT_MERGE',
+      );
     }
     if (snapshot.branch_name && currentBranch !== snapshot.branch_name) {
       throw new Error('FORMAL_VERSION_BRANCH_CHANGED_AFTER_GATE');
@@ -2462,6 +2684,32 @@ export async function verifyFormalVersionSnapshotAfterGitMerge(
   if (!snapshot || typeof snapshot !== 'object') {
     throw new Error('POST_MERGE_VERIFY_REQUIRES_FORMAL_VERSION_SNAPSHOT');
   }
+  const candidateManifest = await readJson(
+    path.join(workItemDir, 'candidate_manifest.json'),
+  );
+  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow(
+    candidateManifest?.workflow_type,
+    candidateManifest?.workflow_path,
+  );
+  if (specMigrationNoCode) {
+    const recovery = await readJson(
+      path.join(workItemDir, 'git_delivery_recovery.json'),
+    );
+    const baseCommit = String(
+      snapshot.base_commit ?? recovery?.base_commit ?? '',
+    );
+    const expectedFingerprint = String(
+      snapshot.spec_migration_project_spec_git_diff_fingerprint ??
+      recovery?.project_spec_git_diff_fingerprint ??
+      '',
+    );
+    await assertSpecMigrationProjectSpecGitDiffUnchanged({
+      projectRoot,
+      baseCommit,
+      expectedFingerprint,
+    });
+  }
+
   if (!targetHead) {
     throw new Error('POST_MERGE_VERIFY_TARGET_HEAD_REQUIRED');
   }

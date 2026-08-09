@@ -4075,3 +4075,18 @@ V193 保持相同业务范围：
 不访问 Validation，不执行 WI 生命周期，不修改 attempt-0006，不创建 attempt-0007。
 成功后只需用户手工重启 daemon；OpenCode 不需要重启。下一次继续 reconciliation attempt-0006。
 <!-- SPECFORGE_V193_V191_V192_RECONCILIATION_FIX:END -->
+
+<!-- SPECFORGE_V196_SPEC_MIGRATION_GIT_DELIVERY:START -->
+## V196 — spec_migration Formal Version → Git delivery closure
+
+V194 已完成 WI-0004 治理关闭；V195 在产品写入前因错误源码锚点 Fail Closed。
+
+V196 固定：
+1. Authority-first 定义 spec_migration Git branch/checkpoint/Formal Version/Git Merge 契约；
+2. future spec_migration 在 Git-enabled 项目中必须有 WI Git context，并冻结 `.specforge/project/**` diff fingerprint；
+3. legacy closed spec_migration 只允许 `closed_spec_migration` branch recovery；
+4. recovery 必须消费 latest passed Verification Attempt，并逐个 SHA256 证明当前 Project Spec diff 与该 Attempt input snapshot 一致；
+5. Merge Plan/Run/Post-Merge 只忽略其他 WI governance paths；
+6. current WI / Project Spec / source/config dirty 继续阻断；
+7. 当前 WI-0004 不由 V196 runner 操作。产品部署后先 `sf_git_branch_plan`，停在分支名用户确认边界。
+<!-- SPECFORGE_V196_SPEC_MIGRATION_GIT_DELIVERY:END -->

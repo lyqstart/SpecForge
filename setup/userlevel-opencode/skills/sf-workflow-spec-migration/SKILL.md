@@ -131,6 +131,11 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 ## 各阶段执行协议
 
+### Git-enabled 项目交付前置
+1. 在首个正式 migration artifact 前调用 `sf_git_preflight`。若项目是 Git worktree 且当前 WI 没有 `git_context.json`，调用 `sf_git_branch_plan` 生成语义分支候选，向用户展示 recommended branch 并取得新的明确分支名确认。
+2. 用户确认后调用 `sf_git_branch_create(confirmed=true)` 建立 WI branch；不得在默认分支继续正式 migration delivery。
+3. 历史已经 `closed` 且缺少 `git_context.json` 的 `spec_migration` 不得普通补分支；只允许 `sf_git_branch_create(recovery_mode="closed_spec_migration", reconcile_attempt_id="<latest-passed-verification-attempt>", require_clean=false, confirmed=true)`。该工具必须先用 Formal Version Attempt input snapshot 证明当前 Project Spec Git diff 未漂移。
+
 ### 阶段 1：intake（迁移诉求受理）
 
 1. 调用 `sf_state_read` 确认没有重复的迁移 Work Item；已有活动迁移 WI 优先恢复。
@@ -177,9 +182,10 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 
 1. 调度 `sf-verifier` 验证合并后的正式 Project Spec 一致（模块注册表非空且规范、模块文件齐备），受控写入 `verification_report` 与 `evidence_manifest`。对 `spec_migration`，verifier 返回的 typed `semantic_closure` 必须固定为 `closure_profile="spec_migration"`、`workflow_type="spec_migration"`，且 `outcomes/requirements/design_decisions/tasks` 全为空；顶层 `spec_migration` 必须包含 `project_spec_version`、`atomic_spec_merge_status`、`post_merge_gate_status`、`changed_files_audit_status`、`verification_status`、`trace_contract_status` 六个字段。
 2. verifier 必须从同一最终 evidence set 同步生成 `evidence_manifest.entries` 与 `semantic_closure.evidence`；同 ID 的 `id/status/level/evidence_type/supports` 必须逐条一致。不得留下旧的 OUT/REQ/TASK supports；不一致时 Verification 不得声明 PASS。
-3. `sf_semantic_closure_run(semantic_closure=<verifier 原样对象>)` 成功后，调用 `sf_gate_run(gate_type="verification")`；该 stage alias 必须同时执行 Verification Gate + Formal Version Gate。不得只调用单独 `verification_gate`。
+3. `sf_semantic_closure_run(semantic_closure=<verifier 原样对象>)` 成功后，若 Git-enabled，先用 `sf_git_checkpoint_commit` 精确 checkpoint 当前 WI 的 `.specforge/project/**` diff 与 `.specforge/work-items/<WI>/**` 治理 evidence，确保 WI branch 上 Project Spec 已 committed；然后调用 `sf_gate_run(gate_type="verification")`；该 stage alias 必须同时执行 Verification Gate + Formal Version Gate。不得只调用单独 `verification_gate`。
 4. 如果最新 Gate Attempt 自身已 `passed`、但仅因 Runtime state auto-advance 缺陷而失败关闭，修复/重载 Runtime 后不得创建重复 Gate Attempt；先证明该 Attempt 是 latest、latest Gate views 未变化且 input snapshot freshness PASS，再调用 `sf_gate_run(reconcile_attempt_id="<latest-passed-attempt>")` 只做历史 Attempt 状态对账。
 5. 只有权威状态为 `verification_done` 后才调用 `sf_close_gate`。全程不启用/不撤销 code_permission（本工作流从未启用）。
+6. Close 后，Git-enabled 项目必须再次使用 `sf_git_checkpoint_commit` 精确 checkpoint Close/最终治理 evidence；随后调用 `sf_git_merge_plan`。在 `sf_git_merge_run` 前必须停止等待新的用户明确 Merge 确认，禁止 raw Git。
 
 ## v1.1 治理硬约束（本工作流特有）
 
