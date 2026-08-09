@@ -7080,3 +7080,114 @@ actual_files
 - **正确方法**：Authority 验证只检查稳定语义：closed spec_migration 必须显式 recovery mode、普通 branch-create Fail Closed、部分 side-effect 幂等续接；实现错误码只在 Runtime/Test 消费者检查。
 - **状态**：`CLOSED_BY_V199_PENDING_EXECUTION`。
 <!-- SPECFORGE_ERR397_ERR400_CLOSED_SPEC_MIGRATION_BRANCH_RECOVERY_ENFORCEMENT:END -->
+
+<!-- SPECFORGE_ERR401_ERR411_BOOTSTRAP_DELIVERY_HARDENING:START -->
+## ERR-401 / EXP-072 + EXP-213 + EXP-238 — 新会话 live-ref 来源失败后越级使用 Web 辅助并提前读取 Recovery 信息
+- **时间**：2026-08-10
+- **阶段**：V199 后全新会话 Authority Bootstrap。
+- **事实**：上一轮 V199 标准回执先按 canonical receipt schema 判定为 `PRESENT_VALID`；随后助手执行环境中的 `git ls-remote https://github.com/lyqstart/SpecForge.git refs/heads/main` 因 `Could not resolve host: github.com` 失败。
+- **错误动作**：live ref 尚未固定时，助手改用普通 Web / GitHub 页面辅助路径继续调查，并在 Bootstrap 成功前提前接触 `current-handoff` 恢复信息，违反 Receipt Audit → live ref → exact authority → Recovery 的串行状态机。
+- **影响**：该会话 Bootstrap 证据链失效并 Fail Closed；没有仓库写入，没有 SpecForge / Validation 生命周期动作。
+- **根因**：已批准 live-ref 来源虽已列出，但没有固定机器可执行的“来源失败 → 仅进入下一个批准来源”的有序降级契约；模型在来源失败后仍存在临场 Web 兜底空间。
+- **修复**：V210 将 `GITHUB_REF_API_LIVE → STRUCTURED_GIT_LS_REMOTE → USER_BOOTSTRAP_GIT_LS_REMOTE` 固化为有序批准来源；固定 GitHub Ref API URL；任一来源 DNS / transport / API / tool 失败只允许进入下一批准来源；`WEB_AUXILIARY` 永远不得成为 live-ref fallback。
+- **自动防护**：`stage-execution-authority-contract.test.ts` 同时消费 Authority Bootstrap、Bootstrap Envelope 和附录 A 固定启动提示词中的机器字段；任一消费者缺失即测试失败。
+- **状态**：CLOSED_BY_V210_AUTHORITY_CONTRACT_AND_CONSUMER_TEST。
+
+## ERR-402 / EXP-231 + EXP-012 — SFV200-SFV203 外层 CMD 再次因 `if exist ... &&` 条件链导致 runner 零输出
+- **时间**：2026-08-10
+- **阶段**：Bootstrap live-ref 用户本机只读取证。
+- **事实**：SFV200、SFV201、SFV202 以及 SFV203 首次外层 CMD 均无任何 runner 输出；最终将清理动作改为独立条件后，SFV203 成功输出 `LOCAL_HEAD=4930d2442c3f215ed274e76f6837240b3588a275`，并由 `git ls-remote` 返回同一 `refs/heads/main` SHA。
+- **根因**：外层命令使用 `if exist "<bundle>" rmdir ... && mkdir ... && extract ... && runner ...`；当 bundle 目录原本不存在时，可选 `if exist` 条件为假，使后续必需 `&&` 启动链被跳过。该缺陷此前已由 ERR-265、ERR-292 记录，但只停留在经验台账，没有升级成唯一权威文件的 Delivery / Artifact Acceptance 硬契约。
+- **影响**：前三轮 runner 实际未启动，没有仓库写入，没有生命周期动作；产生多轮无效往返，并一度被错误归因到 Python/BAT/GitHub 网络。
+- **修复**：V210 固化 `OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS`、`OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO`；可选清理不得控制 extract / runner；版本化 ZIP 自带唯一顶层目录，外层 CMD 只做 `extract → runner`。
+- **自动防护**：发布前必须验证 `TEMP_DIR_ABSENT`、`TEMP_DIR_PRESENT`、`ZIP_MISSING`、`RUNNER_ENTRY_MISSING` 四个 fixture；前两者必须到达 runner，后两者必须产生可见失败。
+- **状态**：CLOSED_BY_V210_AUTHORITY_CONTRACT_AND_CONSUMER_TEST。
+
+## ERR-403 / EXP-012 + EXP-231 — V204 Delivery Identity validator 用独立 `Vxxx` 正则误判 `SFV204`
+- **时间**：2026-08-10
+- **阶段**：V204 package Artifact Acceptance，任何仓库写入之前。
+- **事实**：V204 outer CMD 正确引用 `SFV204.zip` 与 `SFV204\\run_sfv204.cmd`，但 validator 使用 `\\bV[0-9]+\\b` 扫描 outer CMD；由于 `V204` 嵌入 `SFV204` 中，word-boundary 规则不匹配，得到 `outer command delivery token mismatch: []`，导致 `VALIDATOR_ACCEPTED=NO`、`ARTIFACT_ACCEPTED=NO`。
+- **影响**：V204 未进入仓库写入、测试、commit 或 push；SpecForge 仓库保持 V204 前状态。
+- **根因**：Delivery Identity contract 规定了当前 `DELIVERY_ID` 命名空间，但 package validator 没有按 manifest 派生的精确 bundle 名 `SF${DELIVERY_ID}` 比较，而错误使用通用 token 扫描替代结构化身份绑定。
+- **修复**：V206 新增 `BUNDLE_DIR_ID_SCHEMA=SF${DELIVERY_ID}` 与 `BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME`；validator 直接计算 `expected_bundle = "SF" + delivery_id` 并对 `SFV[0-9]+` bundle token 做精确集合比较，不再要求 outer CMD 出现独立裸 `Vxxx` token。
+- **自动防护**：Authority、Bootstrap Envelope、附录 A 固定 Prompt 和 consumer test 同步消费 bundle identity schema；package validator 在任何仓库写入前完成 exact bundle identity self-check。
+- **状态**：CLOSED_BY_V210_EXACT_BUNDLE_IDENTITY_CONTRACT_AND_VALIDATOR。
+
+## ERR-404 / EXP-012 — V205 ZIP 未位于固定下载目录，外层 tar 在 runner 启动前失败
+- **时间**：2026-08-10
+- **阶段**：V205 用户本地交付启动。
+- **事实**：两次执行精确命令均返回 `tar: Error opening archive: Failed to open 'D:\900 - 临时\我的电脑\下载\Compressed\SFV205.zip'`；没有出现 V205 runner entry。
+- **影响**：runner 未启动、仓库无写入、无 SpecForge 生命周期动作。
+- **根因边界**：一手证据只能证明固定路径下当时不存在精确文件名；不能据此猜测浏览器实际保存名或用户下载行为。
+- **处理**：保留精确固定 ZIP 文件名契约；ZIP 缺失必须可见失败，不允许 runner 继续。
+- **状态**：CLOSED_OPERATIONAL_FAILURE_RECORDED_V206。
+
+## ERR-405 / EXP-012 + EXP-231 — 临时“自动发现最新 SFV205*.zip” CMD 引入嵌套引号缺陷并再次零输出
+- **时间**：2026-08-10
+- **阶段**：V205 ZIP 路径失败后的临时恢复命令。
+- **事实**：为自动发现 `SFV205*.zip` 临时生成了嵌套 `cmd.exe /c` + `for /f` + delayed expansion 命令；用户执行后没有任何业务输出。
+- **影响**：没有 runner 启动证据、没有仓库写入证据；增加一次无效往返。
+- **根因**：为“智能找文件”扩大了外层 CMD 语法复杂度，重新引入 quoting / parsing 风险，违反“越简单越稳定”的稳定原则。
+- **修复**：V210 固化 `OUTER_CMD_DYNAMIC_ZIP_DISCOVERY_ALLOWED=NO`；外层命令只使用当前 Delivery Identity 的精确 ZIP 名，不再通过嵌套 shell、复杂变量或 wildcard 自动发现下载文件。
+- **自动防护**：authority/Bootstrap Envelope/附录 A consumer test 同步要求该 token；package validator 拒绝含动态 ZIP discovery 的 outer CMD。
+- **状态**：CLOSED_BY_V210_SIMPLE_LINEAR_OUTER_CMD_CONTRACT。
+
+## ERR-406 / EXP-012 + EXP-231 — V205 Windows 测试执行器触发 WinError 193
+- **时间**：2026-08-10
+- **阶段**：V205 `STEP-003_TEST_TYPESCRIPT_BUILD`。
+- **事实**：V205 已完成 package Artifact Acceptance、preflight、4 文件内存补丁和语义验证；进入测试阶段后立即返回 `OSError: [WinError 193] %1 不是有效的 Win32 应用程序。`，随后 `ROLLBACK_BEFORE_COMMIT=ATTEMPTED` 且 `ROLLBACK_RESIDUAL_STATUS=CLEAN`。
+- **证据边界**：V205 没有打印 `where bun` 全部结果和实际 direct-exec 目标，所以不能事实性断言是哪一个 bun 路径触发 WinError 193。
+- **根因**：runner 仍允许在 `where bun` 返回项不以 `.cmd/.bat` 结尾时直接 `subprocess.run([resolved_path,...])`；这种路径分类不足以证明目标是可直接启动的 PE executable，且失败证据不足。
+- **修复**：V206 删除基于 suffix 的 direct-exec 分支；Windows 上统一通过 `cmd.exe` 执行审计 wrapper，wrapper 先 `where bun`、再 `call bun ...`，由 CMD 解析 `.exe/.cmd/.bat`；只有未来有结构化 PE 校验时才允许 direct exec。
+- **自动防护**：固化 `WINDOWS_SCRIPT_SHIM_LAUNCH_MODE=CMD_CALL_BY_COMMAND_NAME`、`WINDOWS_CLI_DIRECT_EXEC_REQUIRES=VERIFIED_PE_EXECUTABLE`、`WINDOWS_CLI_RESOLUTION_EVIDENCE_REQUIRED=YES`；V206 package validator 静态拒绝旧 direct-exec 代码路径。
+- **状态**：CLOSED_BY_V210_WINDOWS_CLI_SHIM_LAUNCH_CONTRACT_AND_RUNNER_FIX。
+
+## ERR-407 / EXP-012 + EXP-231 — V206 validator 读取错误 manifest 字段路径导致 pre-write KeyError
+- **时间**：2026-08-10
+- **阶段**：V206 Package Artifact Acceptance。
+- **一手事实**：V206 validator 已输出 `WINDOWS_CLI_SHIM_STATIC_AUDIT=PASS_CMD_CALL_BY_COMMAND_NAME_NO_DIRECT_RESOLVED_PATH`，随后返回 `ERROR=KeyError: 'runner_entry'`；没有出现 `SFV206 RUNNER START`，因此仓库没有写入。
+- **根因**：V206 manifest 的 `runner_entry` 位于顶层，但 validator fixture 错误读取为 `identity.runner_entry`；同时没有在业务消费前执行 manifest schema validation。
+- **修复**：V210 固化 `DELIVERY_MANIFEST_SCHEMA_VALIDATION_REQUIRED=YES`、`DELIVERY_MANIFEST_RUNNER_ENTRY_PATH=runner_entry`、`DELIVERY_MANIFEST_IDENTITY_PATH=identity`；validator 在任何业务字段使用前先验证 required field 与类型，然后只使用校验后的顶层 `runner_entry`。
+- **自动防护**：V207 package validator 必须先输出 `MANIFEST_SCHEMA_VALIDATION=PASS`；包生成阶段直接解析 manifest 并验证 `runner_entry` 顶层路径，禁止以源码自搜索替代结构验证。
+- **状态**：CLOSED_BY_V210_MANIFEST_SCHEMA_CONTRACT_AND_VALIDATOR_FIX。
+
+## ERR-408 / EXP-012 + EXP-231 — V207 Bootstrap order consumer 用 provider token 首次出现位置误判 phase 顺序
+- **时间**：2026-08-10
+- **阶段**：V207 `STEP-003_TEST_TYPESCRIPT_BUILD` / `stage-execution-authority-contract.test.ts`。
+- **一手事实**：17 个 authority contract tests 中 16 PASS、1 FAIL；失败断言把 `prompt.indexOf('STRUCTURED_GIT_LS_REMOTE')` 当成 LIVE_REF phase 起点。V207 新增有序来源声明后，`STRUCTURED_GIT_LS_REMOTE` 合法地提前出现在 pre-authority 配置区，导致 `Received: 1443` 小于 Receipt phase 的 `2812`。
+- **权威事实**：真正的 Bootstrap phase 顺序由 `BOOTSTRAP_EXECUTION_PHASE=RECEIPT_AUDIT → LIVE_REF_RESOLUTION → AUTHORITY_EXACT_READ → SELF CHECK → RECOVERY` 定义；provider 名称可在配置声明中提前出现。
+- **根因**：测试消费者用“provider 字符串首次出现位置”替代稳定 phase marker，错误地把 declaration 当 execution；属于 consumer oracle 选择错误，不是新 fallback 语义冲突。
+- **修复**：V210 固化 `BOOTSTRAP_DECLARATION_IS_EXECUTION=NO`；顺序测试改为比较 `BOOTSTRAP_EXECUTION_PHASE=LIVE_REF_RESOLUTION` marker，不再使用 `STRUCTURED_GIT_LS_REMOTE` 的首次出现位置判断执行时序。
+- **自动防护**：新 hardening consumer 同时要求 authority/Bootstrap Envelope/附录 A 都包含 declaration-vs-execution token；原 ordered bootstrap test 只消费 phase markers。
+- **状态**：CLOSED_BY_V210_PHASE_MARKER_ORDER_CONSUMER_FIX。
+
+## ERR-409 / EXP-063 + EXP-007 + EXP-231 — V208 用日志重建整段测试源码作为 replace anchor，真实 exact-commit 源码 cardinality=0
+- **时间**：2026-08-10
+- **阶段**：V208 `STEP-002_PATCH_AND_SEMANTIC_VALIDATION`。
+- **一手事实**：V208 Package Artifact Acceptance 全部 PASS，runner preflight 也证明本地/远程 `main` 与 `BASE_HEAD=4930d2442c3f215ed274e76f6837240b3588a275` 一致且 worktree CLEAN；随后首次源码补丁立即失败：`bootstrap execution order uses phase marker not provider token: expected exactly one anchor, found 0`。回滚后 `WORKTREE=CLEAN`，无 commit/push。
+- **真实源码证据**：exact-commit `stage-execution-authority-contract.test.ts` 的相关逻辑只需要修改 3 个独立语句：`const liveRefIndex = ...STRUCTURED_GIT_LS_REMOTE`、`expect(liveRefIndex)...`、`expect(exactAuthorityIndex)...liveRefIndex`。
+- **根因**：V208 的预发布 patch simulation 没有消费真实完整测试源码，而是根据 V207 失败日志重建了一整段“代表性 snippet”；该 synthetic snippet 自己能匹配，因此 Artifact Acceptance 假 PASS，但真实文件并不存在完全相同的整段字符串。
+- **修复**：V209 删除整段 reconstructed anchor，改为 3 个来自 exact-commit 真实源码的最小 exact anchor；每个 anchor 写入前必须在真实目标文件上 `cardinality == 1`。
+- **权威防护**：固化 `SOURCE_PATCH_ANCHOR_SOURCE=EXACT_COMMIT_CONTENT_ONLY`、`SOURCE_PATCH_LOG_RECONSTRUCTED_BLOCK_ALLOWED=NO`、`SOURCE_PATCH_MINIMAL_EXACT_OR_STRUCTURAL_SCOPE_REQUIRED=YES`、`SOURCE_PATCH_ANCHOR_CARDINALITY_PREWRITE_REQUIRED=YES`、`ARTIFACT_TARGET_APPLICABILITY_PREFLIGHT_REQUIRED=YES`。
+- **Artifact 防护**：V209 package validator 在 `ARTIFACT_ACCEPTED=YES` 前只读检查真实 SpecForge repo：local/remote HEAD、worktree、4 个目标文件以及所有 Authority/Handoff/Test patch anchors 的真实 cardinality；任一不满足直接拒绝包，不进入写入 runner。
+- **状态**：CLOSED_BY_V210_EXACT_SOURCE_PATCH_APPLICABILITY_CONTRACT。
+
+## ERR-410 / EXP-012 + EXP-231 — V209 错误台账追加器在 EOF 生成额外空白行，`git diff --check` 阻断
+- **时间**：2026-08-10
+- **阶段**：V209 `STEP-004_POST_VALIDATION_RECONCILIATION`。
+- **一手事实**：V209 真实目标 anchor applicability 全部 PASS；目标 authority test `17 pass / 0 fail / 733 expect()`；daemon-core TypeScript PASS；workspace deterministic build PASS。随后 `git diff --check` 返回 `docs/rule/specforge-development-error-ledger-and-experience.md:7175: new blank line at EOF.`，runner 回滚后 `WORKTREE=CLEAN`，无 commit/push。
+- **根因**：ledger 生成路径将已 `rstrip()` 的原文与一个自身带前后换行的 append block 再拼接终止换行，最终生成多余 EOF 空白行；包级验收只验证结构/anchor，没有模拟最终文本 EOF 规范。
+- **修复**：V210 ledger 写入改为 `base.rstrip("\\r\\n") + "\\n\\n" + append.strip("\\r\\n") + "\\n"`，强制且仅保留一个 terminal LF；固化 `TEXT_FILE_EOF_POLICY=SINGLE_FINAL_NEWLINE`。
+- **提前阻断**：V210 在源码 patch + semantic validation 后、运行昂贵测试前先执行一次 `git diff --check`；固化 `SOURCE_PATCH_PRETEST_GIT_DIFF_CHECK_REQUIRED=YES`。测试/构建结束后仍再次执行 `git diff --check`，不降低最终验证。
+- **Artifact 防护**：V210 package validator 在内存中模拟 ledger 最终文本并验证 `endswith("\\n") && !endswith("\\n\\n")`；真实 runner 仍以 Git 自身 `git diff --check` 为最终真相源。
+- **状态**：CLOSED_BY_V210_SINGLE_TERMINAL_LF_AND_PRETEST_DIFF_CHECK。
+
+## ERR-411 / EXP-012 + EXP-231 — V209 FAILED receipt 把已 PASS 的测试/类型/构建状态错误重置为 NOT_COMPLETED
+- **时间**：2026-08-10
+- **阶段**：V209 Failure Diagnostic / standard receipt。
+- **一手事实**：V209 stdout/stderr 明确证明目标 authority test、daemon-core TypeScript 和 workspace build 全部 RC=0；`LAST_SUCCESSFUL_STEP=STEP-003_TEST_TYPESCRIPT_BUILD`。但标准回执同时输出 `TARGET_TEST_RESULT=NOT_COMPLETED`、`TYPESCRIPT_CHECK=NOT_COMPLETED`、`BUILD_RESULT=NOT_COMPLETED`。
+- **根因**：receipt emitter 以最终 `RESULT == SUCCESS` 作为所有扩展验证字段的唯一开关，而不是从已完成 checkpoint 状态生成，因此后续步骤失败时丢失此前 PASS 事实。
+- **修复**：V210 receipt emitter 为目标测试、TypeScript、workspace build、pre/post `git diff --check` 分别维护 checkpoint 状态；每个动作完成后立即写入状态，最终 FAILED 只影响未执行/失败项，不重置此前 PASS。
+- **权威防护**：固化 `RECEIPT_CHECKPOINT_FACT_PRESERVATION_REQUIRED=YES` 和 `RECEIPT_FAILED_RESULT_RESETS_PRIOR_PASS=NO`；`GOV-STAGE-RECEIPT-001` 明确 FAILED receipt 必须保留已完成 checkpoint 的真实 PASS/FAIL。
+- **状态**：CLOSED_BY_V210_CHECKPOINT_DERIVED_RECEIPT_STATUS.
+<!-- SPECFORGE_ERR401_ERR411_BOOTSTRAP_DELIVERY_HARDENING:END -->

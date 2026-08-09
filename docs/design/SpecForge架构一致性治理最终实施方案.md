@@ -231,6 +231,12 @@ AUTHORITY_HEAD_SOURCE=
 STRUCTURED_GIT_LS_REMOTE
 | GITHUB_REF_API_LIVE
 | USER_BOOTSTRAP_GIT_LS_REMOTE
+
+AUTHORITY_REF_API_URL=https://api.github.com/repos/lyqstart/SpecForge/git/ref/heads/main
+LIVE_REF_RESOLUTION_POLICY=ORDERED_APPROVED_SOURCE_FALLBACK
+LIVE_REF_RESOLUTION_ORDER=GITHUB_REF_API_LIVE>STRUCTURED_GIT_LS_REMOTE>USER_BOOTSTRAP_GIT_LS_REMOTE
+LIVE_REF_SOURCE_FAILURE_FALLBACK=NEXT_APPROVED_SOURCE_ONLY
+LIVE_REF_WEB_AUXILIARY_FALLBACK_ALLOWED=NO
 ```
 
 以下只能作为辅助或 last-known 线索，不能单独把当前 `AUTHORITY_HEAD` 提升为 confirmed：
@@ -279,6 +285,12 @@ AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO
 10. Authority Bootstrap Validator 必须遵守 `GOV-STAGE-VALIDATOR-001`。阻断依据必须是 structured ref、exact commit content、稳定 marker/schema；网页抓取时间、搜索排序和自然语言摘要不得作为阻断性真相源。
 11. 只有 `AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES`、`AUTHORITY_UNIQUE_MARKER_AUDIT=PASS` 且 `AUTHORITY_HEAD_SOURCE` 属于允许的 live source 时，才能 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES`。
 12. `AUTHORITY_BOOTSTRAP_ACCEPTED != YES` 时，不得输出“已按当前远程 authority 完成恢复”、不得把 handoff 状态提升为 authoritative fact、不得进入常规 Recovery Acceptance；只能取得缺失的 live branch-ref evidence。
+13. live ref 必须按 `LIVE_REF_RESOLUTION_ORDER` 顺序尝试；任一批准来源首次成功并返回唯一 `refs/heads/main` SHA 后立即固定 `AUTHORITY_HEAD`，不得继续尝试其他来源并用后来的结果覆盖。
+14. 某一批准来源发生 DNS、transport、API、tool 或执行环境失败时，只允许按 `LIVE_REF_SOURCE_FAILURE_FALLBACK=NEXT_APPROVED_SOURCE_ONLY` 进入下一个批准来源；该失败来源不得产生 `AUTHORITY_HEAD`。
+15. `GITHUB_REF_API_LIVE` 必须使用 Bootstrap Coordinates 明示的 `AUTHORITY_REF_API_URL`；禁止通过搜索结果、branch HTML 或猜测 URL 间接构造 live ref。
+16. `USER_BOOTSTRAP_GIT_LS_REMOTE` 继续受 Bootstrap Evidence Artifact Acceptance 约束；用户本机只读取 `refs/heads/main`，不得把该降级路径扩大为仓库恢复或生命周期动作。
+17. 三个批准来源全部不可用时必须 Fail Closed；`WEB_AUXILIARY` 及其 branch/raw/search/compare/commit 视图永远不是 live-ref fallback。
+18. `BOOTSTRAP_DECLARATION_IS_EXECUTION=NO`：pre-authority 配置、允许来源列表、fallback 顺序或 URL 声明中出现某个 provider/token，不代表对应 Bootstrap phase 已经执行；执行顺序只能由 `BOOTSTRAP_EXECUTION_PHASE=*` phase marker 与对应阶段实际工具证据判定。
 
 **GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001：** Authority Bootstrap 失败路径本身也是必须验收的治理成果；`AUTHORITY_BOOTSTRAP_ACCEPTED=NO` 不等于可以省略 Bootstrap 字段、读取 handoff 或直接交付未经 Artifact Acceptance 的取证包。
 
@@ -914,6 +926,8 @@ CANONICAL_TEMPLATE_VALIDATION_RESULT=PASS|FAIL
 ```text
 ARTIFACT_TARGET_HASH_DOMAIN=NORMALIZED_UTF8_LF_SINGLE_TERMINAL_LF
 ARTIFACT_TARGET_HASH_PRODUCER_CONSUMER_DOMAIN_MATCH_REQUIRED=YES
+TEXT_FILE_EOF_POLICY=SINGLE_FINAL_NEWLINE
+SOURCE_PATCH_PRETEST_GIT_DIFF_CHECK_REQUIRED=YES
 ```
 
 其中 `target_hashes` 只用于证明文本目标内容；其 canonical hash 输入固定为 UTF-8、CRLF 先规范化为 LF、去除所有末尾换行后补回且仅补回一个 LF。ZIP/package 自身 SHA256 仍按 raw bytes 独立计算，不得与 target content hash 混用。
@@ -986,6 +1000,7 @@ ARTIFACT_ACCEPTED=YES|NO
 9. Artifact Acceptance Checkpoint 是 Stage Checkpoint 的一种，不建立新的业务 Workflow/Gate/治理层；验收记录由当前 Stage Output / Failure Diagnostic 与 side-effect audit 封口，不递归创建无限验证链。
 10. 阶段成功前必须汇总 `ARTIFACT_ACCEPTANCE_AUDIT=PASS_ALL_REQUIRED_ARTIFACTS_ACCEPTED`；任一必需成果未接受时 Stage 必须 Fail Closed。
 11. 新会话恢复后生成的 `GOVERNANCE PRECONCLUSION + STAGE INPUT` 必须先完成 Artifact Acceptance，才能执行 `NEXT_LEGAL_ACTION`。缺失 `GOV-STAGE-INPUT-001` 任一必填字段时必须先修正。
+12. ZIP + CMD 的 `EXECUTABILITY_VALIDATION` / `CONSUMER_VALIDATION` 必须覆盖 `TEMP_DIR_ABSENT`、`TEMP_DIR_PRESENT`、`ZIP_MISSING`、`RUNNER_ENTRY_MISSING` 四个 fixture；前两者都必须证明必需 runner 路径可达，后两者必须产生可见失败且不得静默跳过。缺任一适用 fixture 证据时 `ARTIFACT_ACCEPTED=NO`。
 
 **GOV-STAGE-VALIDATOR-001：** 验证器本身属于必须验收的治理成果；验证器只能验证正式事实与正式契约，禁止把自然语言原句、格式细节、缓存视图或生成器自造期望当作阻断性真相源。
 
@@ -1012,6 +1027,16 @@ CONTRACT_SOURCE=
 BLOCKING=YES|NO
 ```
 
+源码补丁锚点固定契约：
+
+```text
+SOURCE_PATCH_ANCHOR_SOURCE=EXACT_COMMIT_CONTENT_ONLY
+SOURCE_PATCH_LOG_RECONSTRUCTED_BLOCK_ALLOWED=NO
+SOURCE_PATCH_MINIMAL_EXACT_OR_STRUCTURAL_SCOPE_REQUIRED=YES
+SOURCE_PATCH_ANCHOR_CARDINALITY_PREWRITE_REQUIRED=YES
+ARTIFACT_TARGET_APPLICABILITY_PREFLIGHT_REQUIRED=YES
+```
+
 固定规则：
 
 1. `NATURAL_LANGUAGE_AUX` 只能 `BLOCKING=NO`。自然语言句子、空白、Markdown 标记、标题措辞和等价改写只能作为辅助证据，不能单独阻断任何有副作用动作。
@@ -1019,7 +1044,7 @@ BLOCKING=YES|NO
 3. 规则存在性优先验证稳定 Rule ID 唯一性、正式 section、schema/parser 和结构字段；禁止用整句中文/英文正文是否逐字相等代替规则语义。
 4. Git branch HEAD、commit 文件集合、worktree 和 remote ref 必须由 Git 精确结构化协议验证。remote branch HEAD 优先使用执行环境中的 `git ls-remote <remote> refs/heads/<branch>`；网页缓存、历史 commit 列表、raw branch 缓存和“某 commit 可访问”只能辅助对账，不能覆盖更新的结构化 branch-ref 证据。
 5. 状态、Gate、Candidate、Trace、Contract、Formal Version 等产品事实继续严格遵守 `GOV-STAGE-TRUTH-001`；验证器不得复制一套近似 parser/resolver。
-6. 对测试或文档做结构修改时，锚点必须先限定到稳定结构作用域（Rule ID、section、schema key、代码符号或测试 block），再在作用域内检查唯一性；禁止因同一合法字段出现在多个消费者区块而做全文件 `count == 1` 假设。
+6. 对测试或文档做结构修改时，锚点必须先限定到稳定结构作用域（Rule ID、section、schema key、代码符号或测试 block），再在作用域内检查唯一性；禁止因同一合法字段出现在多个消费者区块而做全文件 `count == 1` 假设。 源码/文档 patch anchor 必须来自当前 `AUTHORITY_HEAD` / `WORK_HEAD` 对应 exact commit 的真实目标内容；禁止根据测试日志、异常片段、聊天文本或模型重建整段源码后作为 replace anchor。优先使用稳定 section/code symbol boundary 或最小 exact token，并在任何写入前对真实目标文件执行 cardinality preflight。
 7. Validator Self Check 至少验证：runner/parser 可解析、所有 `BLOCKING=YES` 断言的 `ASSERTION_TYPE` 不是 `NATURAL_LANGUAGE_AUX`、每个阻断断言都有正式 `TRUTH_SOURCE` 与 `CONTRACT_SOURCE`、baseline 证据具有明确来源和 freshness、失败回滚不会删除阶段开始前已有合法成果。
 8. 关键成果的 generator 与 validator 必须在证据路径上相互独立：validator 不得只重新读取 generator 自己写出的 expected string 再证明该 expected string 存在；必须至少有一条来自正式 authority/schema/parser/state/immutable evidence/structured Git/consumer test 的独立证据。
 9. 验证器失败必须先分类 `VALIDATION_HARNESS_DEFECT`、`ENVIRONMENT_FAILURE`、产品/治理失败或 `AMBIGUOUS_SIDE_EFFECT`；外围验证器失败不得直接覆盖已存在的正式产品成功证据，也不得自动重试已经开始的有副作用动作。
@@ -1037,6 +1062,22 @@ BLOCKING=YES|NO
 DELIVERY_FORMAT=ONE_COMPLETE_ZIP_PLUS_ONE_COPY_PASTE_CMD
 LOCAL_COMMAND_SHELL=CMD
 POWERSHELL_ALLOWED=NO
+OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS
+OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO
+OUTER_CMD_OPTIONAL_CLEANUP_GATES_REQUIRED_STEPS_ALLOWED=NO
+OUTER_CMD_TEMP_DIR_ABSENT_FIXTURE_REQUIRED=YES
+OUTER_CMD_TEMP_DIR_PRESENT_FIXTURE_REQUIRED=YES
+OUTER_CMD_ZIP_MISSING_FIXTURE_REQUIRED=YES
+OUTER_CMD_RUNNER_ENTRY_MISSING_FIXTURE_REQUIRED=YES
+BUNDLE_DIR_ID_SCHEMA=SF${DELIVERY_ID}
+BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME
+OUTER_CMD_DYNAMIC_ZIP_DISCOVERY_ALLOWED=NO
+WINDOWS_SCRIPT_SHIM_LAUNCH_MODE=CMD_CALL_BY_COMMAND_NAME
+WINDOWS_CLI_DIRECT_EXEC_REQUIRES=VERIFIED_PE_EXECUTABLE
+WINDOWS_CLI_RESOLUTION_EVIDENCE_REQUIRED=YES
+DELIVERY_MANIFEST_SCHEMA_VALIDATION_REQUIRED=YES
+DELIVERY_MANIFEST_RUNNER_ENTRY_PATH=runner_entry
+DELIVERY_MANIFEST_IDENTITY_PATH=identity
 ```
 
 固定规则：
@@ -1048,6 +1089,16 @@ POWERSHELL_ALLOWED=NO
 5. ZIP 交付前必须执行 runner 语法检查、ZIP reopen、文件清单和包内文件 SHA256 对账。
 6. 用户约定：旧会话只要已经收到 ZIP + CMD，就一定先执行该 CMD，再开启新会话；框架不维护“已下发但尚未执行”的 Pending Operation 状态。
 7. 新会话只需要固定启动提示词 + 上一轮完整标准执行回执，不需要复制旧 ZIP 内容、旧 CMD 内容或旧聊天历史。
+8. 外层一键 CMD 的必需启动步骤必须满足 `OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS`；可选清理动作不得成为创建/解压/runner 调用等必需步骤的前置条件。
+9. 禁止 `if exist <dir> rmdir ... && mkdir ... && extract ... && runner ...` 及任何等价的 inline conditional main-flow；`OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO`。版本化交付优先让 ZIP 自带当前 `DELIVERY_ID` 唯一顶层目录，外层 CMD 只做 `extract → runner`。
+10. 如果确需清理旧内容，清理必须放入 ZIP 内可审计 runner，并在 runner 自身验证后执行；不得用外层可选 `if exist` 控制后续必需启动链。
+11. 发布前必须分别验证临时目录“原先不存在”和“原先已存在”两种场景都能到达 runner；同时验证 ZIP 缺失、runner entry 缺失会产生可见失败而不是零输出。
+12. 上述 fixture 任一未通过时，该 ZIP+CMD `ARTIFACT_ACCEPTED=NO`，不得交付用户执行。
+13. 外层 CMD 必须引用当前 Delivery Identity 的精确 ZIP 文件名；`OUTER_CMD_DYNAMIC_ZIP_DISCOVERY_ALLOWED=NO`。禁止为寻找 `SFVxxx*.zip` 临时引入嵌套 `cmd /c`、延迟变量展开或复杂 `for /f` 自动发现链。
+14. Windows runner 从 Python 启动 `bun`、`npm`、`npx`、`pnpm` 等可能解析为 `.cmd/.bat` shim 的 CLI 时，默认必须使用 `WINDOWS_SCRIPT_SHIM_LAUNCH_MODE=CMD_CALL_BY_COMMAND_NAME`，即通过 `cmd.exe` + `call <command-name>` 运行；禁止仅因 `where` 返回某个路径就直接交给 `subprocess` 当 Win32 可执行文件启动。
+15. 只有结构化检查已经证明目标文件是可直接启动的 PE `.exe` 时才允许 direct exec；任何 CLI 启动失败必须输出 `where <command>` 全部结果、实际调用模式、exit code、stdout、stderr，不得只留下 `WinError 193` 等无调用目标证据的异常。
+16. Delivery validator 在读取 manifest 任一业务字段前必须先执行 canonical schema validation；`DELIVERY_MANIFEST_SCHEMA_VALIDATION_REQUIRED=YES`。`runner_entry` 是 manifest 顶层字段，canonical 路径固定为 `DELIVERY_MANIFEST_RUNNER_ENTRY_PATH=runner_entry`；Delivery Identity 固定在 `DELIVERY_MANIFEST_IDENTITY_PATH=identity`。禁止把顶层字段按猜测嵌入 `identity` 或其他对象读取。
+17. manifest consumer 必须使用显式 required-field/type check；缺字段或类型错误时输出结构化 `MANIFEST_SCHEMA_VALIDATION=FAIL`，不得让 `KeyError` / `TypeError` 成为首次 schema 证据。
 
 **GOV-STAGE-RECEIPT-001：** 每个 ZIP/CMD 执行必须输出统一、可跨会话解释的标准执行回执；SUCCESS 与 FAILED 使用同一字段模型。
 
@@ -1114,12 +1165,17 @@ INSUFFICIENT_EVIDENCE=
 ===== END FEEDBACK TO CHATGPT =====
 ```
 
+```text
+RECEIPT_CHECKPOINT_FACT_PRESERVATION_REQUIRED=YES
+RECEIPT_FAILED_RESULT_RESETS_PRIOR_PASS=NO
+```
+
 固定规则：
 
 1. 上述字段全部必须位于 BEGIN/END 回执边界内部；不得把 `FAILURE_CLASS`、`ERROR_CODE`、`ERROR` 等关键失败信息打印在 END 之后。
 2. 所有字段都必须出现；不适用时显式写 `NOT_APPLICABLE`，未知且必须知道时写 `INSUFFICIENT_EVIDENCE`，不得省略后让新会话猜测。
 3. `RESULT=SUCCESS` 必须能回答：本轮目标是什么、实际动作是什么、在哪个工作分支执行、状态和文件发生了什么、下一合法阶段是什么。
-4. `RESULT=FAILED` 必须结合 `LAST_SUCCESSFUL_STEP`、`FIRST_FAILED_STEP`、`FAILURE_CLASS`、`ERROR_CODE`、`ERROR`、`REQUEST_STARTED`、`RESPONSE_RECEIVED`、分支/HEAD、状态和副作用判断实际执行效果；不得把 runner 的 FAILED 直接解释为正式动作未执行。
+4. `RESULT=FAILED` 必须结合 `LAST_SUCCESSFUL_STEP`、`FIRST_FAILED_STEP`、`FAILURE_CLASS`、`ERROR_CODE`、`ERROR`、`REQUEST_STARTED`、`RESPONSE_RECEIVED`、分支/HEAD、状态和副作用判断实际执行效果；不得把 runner 的 FAILED 直接解释为正式动作未执行。 对扩展回执中的测试、TypeScript、构建、`git diff --check`、scope audit 等 checkpoint 状态，已经实际完成的 `PASS` / `FAIL` 必须原样保留；只有从未执行的检查才允许写 `NOT_COMPLETED` / `NOT_RUN`，禁止因为最终 `RESULT=FAILED` 把此前已完成的 `PASS` 重置为 `NOT_COMPLETED`。
 5. 有副作用动作已经开始时，新会话必须先用持久化状态和 immutable evidence 对账，再决定下一动作；禁止仅依据 `RESULT=FAILED` 重试。
 6. `PACKAGE_NAME` 与 `PACKAGE_SHA256` 只用于识别上一轮实际执行包；不能代替远程 commit、branch ref 或持久化治理证据。
 7. 新会话从上一轮完整回执恢复 `WORK_BRANCH_AFTER` 和最后已知 HEAD/状态，再重新读取当前远程/本地 refs；两者冲突时必须先报告并 Fail Closed。
@@ -1195,6 +1251,9 @@ DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
 19. receipt emitter 必须在输出 SUCCESS 回执之前执行内部引用审计；不能先打印 SUCCESS 再事后发现旧版本引用。
 20. package verifier 必须独立检查 manifest 的 `receipt_current_delivery_reference_fields`、runner 的 receipt 构造来源以及用户可见成功回执控制字段；只验证顶层 `DELIVERY_ID` 不足以接受交付。
 21. 当前交付版本字符串应从 `identity.delivery_id` 派生；需要在 `NEXT_LEGAL_ACTION` 中引用当前 receipt 时必须动态构造，不得复制上一 runner 的 `Vxxx` 常量。
+22. Bootstrap evidence outer CMD 中的版本化 bundle 目录、runner entry 和 artifact token 必须从当前 `identity.delivery_id` 派生；发现其他 `Vxxx` token 时 `DELIVERY_INTERNAL_REFERENCE_AUDIT=FAIL`。该检查必须与 `OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS` 的控制流验证同时完成。
+23. 版本化 bundle 目录身份必须按 manifest 派生的精确值 `SF${DELIVERY_ID}` 比较；validator 必须计算 expected bundle name 并与实际 ZIP 顶层目录 / outer CMD bundle 引用做精确绑定。禁止用 `\bV[0-9]+\b` 或其他“独立裸 Vxxx token”扫描替代 bundle identity 判定，因为 `Vxxx` 合法嵌入 `SFVxxx`。
+24. `BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME`；任何 package validator 若把当前合法 `SF${DELIVERY_ID}` 误判为缺失，属于 `VALIDATION_HARNESS_DEFECT`，不得进入仓库写入。
 
 ### 2.11 Bootstrap Envelope
 
@@ -1212,6 +1271,30 @@ BOOTSTRAP_FAILURE_CONTRACT=PASS|FAIL
 BOOTSTRAP_EVIDENCE_DELIVERY_CONTRACT=PASS|FAIL
 BOOTSTRAP_SUCCESS_TRANSITION_CONTRACT=PASS|FAIL
 BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
+
+BOOTSTRAP_ENVELOPE_VERSION=3
+AUTHORITY_REF_API_URL=https://api.github.com/repos/lyqstart/SpecForge/git/ref/heads/main
+LIVE_REF_RESOLUTION_POLICY=ORDERED_APPROVED_SOURCE_FALLBACK
+LIVE_REF_RESOLUTION_ORDER=GITHUB_REF_API_LIVE>STRUCTURED_GIT_LS_REMOTE>USER_BOOTSTRAP_GIT_LS_REMOTE
+LIVE_REF_SOURCE_FAILURE_FALLBACK=NEXT_APPROVED_SOURCE_ONLY
+LIVE_REF_WEB_AUXILIARY_FALLBACK_ALLOWED=NO
+BOOTSTRAP_DECLARATION_IS_EXECUTION=NO
+OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS
+OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO
+OUTER_CMD_OPTIONAL_CLEANUP_GATES_REQUIRED_STEPS_ALLOWED=NO
+OUTER_CMD_TEMP_DIR_ABSENT_FIXTURE_REQUIRED=YES
+OUTER_CMD_TEMP_DIR_PRESENT_FIXTURE_REQUIRED=YES
+OUTER_CMD_ZIP_MISSING_FIXTURE_REQUIRED=YES
+OUTER_CMD_RUNNER_ENTRY_MISSING_FIXTURE_REQUIRED=YES
+BUNDLE_DIR_ID_SCHEMA=SF${DELIVERY_ID}
+BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME
+OUTER_CMD_DYNAMIC_ZIP_DISCOVERY_ALLOWED=NO
+WINDOWS_SCRIPT_SHIM_LAUNCH_MODE=CMD_CALL_BY_COMMAND_NAME
+WINDOWS_CLI_DIRECT_EXEC_REQUIRES=VERIFIED_PE_EXECUTABLE
+WINDOWS_CLI_RESOLUTION_EVIDENCE_REQUIRED=YES
+DELIVERY_MANIFEST_SCHEMA_VALIDATION_REQUIRED=YES
+DELIVERY_MANIFEST_RUNNER_ENTRY_PATH=runner_entry
+DELIVERY_MANIFEST_IDENTITY_PATH=identity
 ```
 
 #### 2.11.1 Receipt Presence / Consumption
@@ -1268,6 +1351,9 @@ DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS
 DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
 VALIDATOR_ACCEPTED=YES
 ARTIFACT_ACCEPTED=YES
+OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS
+OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO
+OUTER_CMD_OPTIONAL_CLEANUP_GATES_REQUIRED_STEPS_ALLOWED=NO
 ```
 
 只有以上全部成立后，才允许发布一个 ZIP + 一个 CMD。evidence runner 不接收 SpecForge / Validation 仓库路径，不读取项目文件，不执行生命周期动作。
@@ -3802,12 +3888,13 @@ SpecForge 架构一致性治理能力只有同时满足以下条件，才能宣�
 ```text
 继续 SpecForge。
 
-BOOTSTRAP_ENVELOPE_VERSION=2
+BOOTSTRAP_ENVELOPE_VERSION=3
 
 BOOTSTRAP COORDINATES：
 REMOTE_URL=https://github.com/lyqstart/SpecForge.git
 AUTHORITY_BRANCH=main
 AUTHORITY_PATH=docs/design/SpecForge架构一致性治理最终实施方案.md
+AUTHORITY_REF_API_URL=https://api.github.com/repos/lyqstart/SpecForge/git/ref/heads/main
 
 上一轮 CMD 完整执行回执：
 【必须粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；上一轮明确没有 ZIP+CMD 时写 NONE】
@@ -3827,6 +3914,27 @@ CANONICAL_TEMPLATE_VALIDATION_REQUIRED=YES
 CANONICAL_TEMPLATE_VALIDATION_RESULT=PASS|FAIL
 BOOTSTRAP_TOOL_PHASE_EXECUTION_MODE=SERIAL_ONE_PHASE_PER_TOOL_CALL
 BOOTSTRAP_CROSS_PHASE_BATCH_READ_ALLOWED=NO
+LIVE_REF_RESOLUTION_POLICY=ORDERED_APPROVED_SOURCE_FALLBACK
+LIVE_REF_RESOLUTION_ORDER=GITHUB_REF_API_LIVE>STRUCTURED_GIT_LS_REMOTE>USER_BOOTSTRAP_GIT_LS_REMOTE
+LIVE_REF_SOURCE_FAILURE_FALLBACK=NEXT_APPROVED_SOURCE_ONLY
+LIVE_REF_WEB_AUXILIARY_FALLBACK_ALLOWED=NO
+BOOTSTRAP_DECLARATION_IS_EXECUTION=NO
+OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS
+OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO
+OUTER_CMD_OPTIONAL_CLEANUP_GATES_REQUIRED_STEPS_ALLOWED=NO
+OUTER_CMD_TEMP_DIR_ABSENT_FIXTURE_REQUIRED=YES
+OUTER_CMD_TEMP_DIR_PRESENT_FIXTURE_REQUIRED=YES
+OUTER_CMD_ZIP_MISSING_FIXTURE_REQUIRED=YES
+OUTER_CMD_RUNNER_ENTRY_MISSING_FIXTURE_REQUIRED=YES
+BUNDLE_DIR_ID_SCHEMA=SF${DELIVERY_ID}
+BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME
+OUTER_CMD_DYNAMIC_ZIP_DISCOVERY_ALLOWED=NO
+WINDOWS_SCRIPT_SHIM_LAUNCH_MODE=CMD_CALL_BY_COMMAND_NAME
+WINDOWS_CLI_DIRECT_EXEC_REQUIRES=VERIFIED_PE_EXECUTABLE
+WINDOWS_CLI_RESOLUTION_EVIDENCE_REQUIRED=YES
+DELIVERY_MANIFEST_SCHEMA_VALIDATION_REQUIRED=YES
+DELIVERY_MANIFEST_RUNNER_ENTRY_PATH=runner_entry
+DELIVERY_MANIFEST_IDENTITY_PATH=identity
 
 固定机器模板必须从本提示词中的 canonical block 原样取得并只填写 `=` 右侧 value slot；禁止根据自然语言、记忆、同义词或上一轮输出重建字段、顺序、marker、cardinality 或枚举。每个模板在被消费前必须做 exact-schema validation；字段别名、缺失、额外、换序、非法枚举或 marker 改写均为 FAIL。
 每次 Bootstrap 工具调用只能消费当前 `BOOTSTRAP_ALLOWED_TOOL_CLASS` 的一个阶段资源类别；禁止把 exact authority 与 current-handoff / WI / immutable evidence 等下一阶段资源放入同一批量或并行工具调用。
@@ -3864,6 +3972,16 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=LIVE_REF_ONLY
 
 live ref 真相源只能是：
 STRUCTURED_GIT_LS_REMOTE | GITHUB_REF_API_LIVE | USER_BOOTSTRAP_GIT_LS_REMOTE
+
+固定降级顺序必须是：
+GITHUB_REF_API_LIVE → STRUCTURED_GIT_LS_REMOTE → USER_BOOTSTRAP_GIT_LS_REMOTE
+
+- `GITHUB_REF_API_LIVE` 只能使用本提示词 Coordinates 中的 `AUTHORITY_REF_API_URL`。
+- 任一来源发生 DNS / transport / API / tool 错误，只允许进入下一个批准来源；失败来源不得产生 AUTHORITY_HEAD。
+- 任一批准来源首次成功返回唯一 `refs/heads/main` SHA 后立即固定 AUTHORITY_HEAD，不得继续用后续来源覆盖。
+- 三个批准来源全部失败才 Fail Closed。
+- `WEB_AUXILIARY`、GitHub branch HTML、raw/main、搜索、compare、commit 可访问性永远不是 live-ref fallback。
+- 本提示词前部声明 provider、fallback 顺序或 URL 只是在声明允许配置；`BOOTSTRAP_DECLARATION_IS_EXECUTION=NO`。只有进入 `BOOTSTRAP_EXECUTION_PHASE=LIVE_REF_RESOLUTION` 并取得对应工具证据，才算执行 live-ref phase。
 
 此阶段禁止读取 current-handoff、Work Item、immutable evidence、Stage Input、Recovery。
 禁止用 GitHub branch HTML、raw/main、搜索、compare 或 commit 可访问性确定当前 HEAD。
@@ -3948,6 +4066,18 @@ VALIDATOR_SELF_CHECK=PASS|FAIL
 VALIDATOR_ACCEPTED=YES|NO
 ARTIFACT_ACCEPTED=YES|NO
 ===== END BOOTSTRAP EVIDENCE ARTIFACT ACCEPTANCE =====
+
+Bootstrap evidence ZIP + CMD 发布前还必须满足：
+- 外层 CMD 采用线性必需步骤，不允许 `if exist ... &&` 或任何可选条件控制 extract / runner 调用。
+- ZIP 自带当前 `DELIVERY_ID` 唯一顶层 bundle 目录；外层 CMD 优先只执行 `extract → runner`。
+- 必须验证 TEMP_DIR_ABSENT 与 TEMP_DIR_PRESENT 两种场景均到达 runner。
+- 必须验证 ZIP_MISSING 与 RUNNER_ENTRY_MISSING 两种场景产生可见失败，不得零输出。
+- bundle 目录必须按 `SF${DELIVERY_ID}` 计算 expected bundle name 并做精确匹配；不得用独立裸 `Vxxx` 正则判断 `SFVxxx`。
+- bundle 目录、runner entry、artifact token 中的版本化身份必须来自当前 Delivery Identity。
+- 外层 CMD 只引用当前 Delivery Identity 的精确 ZIP 文件名；禁止动态扫描 `SFVxxx*.zip`、嵌套 `cmd /c` 或复杂变量展开来猜下载文件。
+- Windows runner 调用可能由 `.cmd/.bat` shim 提供的 CLI 时，默认通过 `cmd.exe` + `call <command-name>`；只有已结构化证明为 PE `.exe` 才允许 direct exec。
+- CLI 启动前必须保留 `where <command>` 解析证据；失败必须回传调用模式、exit code、stdout、stderr。
+- validator 使用 manifest 前必须先校验 canonical schema；`runner_entry` 只能从 manifest 顶层读取，Delivery Identity 只能从 `identity` 读取；缺字段必须结构化失败，不允许以 `KeyError` 作为 schema 校验。
 
 只有 IDENTITY_BINDING_AUDIT=PASS、VALIDATOR_ACCEPTED=YES、ARTIFACT_ACCEPTED=YES 后，才能显示一个 ZIP 下载链接和一条 CMD。
 

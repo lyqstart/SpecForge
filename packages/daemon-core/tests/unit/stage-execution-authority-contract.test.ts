@@ -438,6 +438,81 @@ describe('Stage Execution Contract authority', () => {
     expect(bootstrapSection).toContain('`AUTHORITY_COMMIT` 是 authority 文件最近一次变更 commit');
   });
 
+
+  it('hardens bootstrap, delivery, exact-source applicability, whitespace preflight, and receipt checkpoint truth', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const bootstrap = ruleSection(authority, 'GOV-STAGE-AUTHORITY-BOOTSTRAP-001');
+    const delivery = ruleSection(authority, 'GOV-STAGE-DELIVERY-001');
+    const artifact = ruleSection(authority, 'GOV-STAGE-ARTIFACT-VERIFY-001');
+    const identity = ruleSection(authority, 'GOV-STAGE-DELIVERY-IDENTITY-001');
+    const envelope = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
+    const receipt = ruleSection(authority, 'GOV-STAGE-RECEIPT-001');
+    const validatorRule = ruleSection(authority, 'GOV-STAGE-VALIDATOR-001');
+    const prompt = newSessionPrompt(authority);
+
+    for (const token of [
+      'AUTHORITY_REF_API_URL=https://api.github.com/repos/lyqstart/SpecForge/git/ref/heads/main',
+      'LIVE_REF_RESOLUTION_POLICY=ORDERED_APPROVED_SOURCE_FALLBACK',
+      'LIVE_REF_RESOLUTION_ORDER=GITHUB_REF_API_LIVE>STRUCTURED_GIT_LS_REMOTE>USER_BOOTSTRAP_GIT_LS_REMOTE',
+      'LIVE_REF_SOURCE_FAILURE_FALLBACK=NEXT_APPROVED_SOURCE_ONLY',
+      'LIVE_REF_WEB_AUXILIARY_FALLBACK_ALLOWED=NO',
+      'BOOTSTRAP_DECLARATION_IS_EXECUTION=NO',
+    ]) {
+      expect(bootstrap, token).toContain(token);
+      expect(envelope, token).toContain(token);
+      expect(prompt, token).toContain(token);
+    }
+
+    for (const token of [
+      'OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS',
+      'OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO',
+      'OUTER_CMD_OPTIONAL_CLEANUP_GATES_REQUIRED_STEPS_ALLOWED=NO',
+      'OUTER_CMD_TEMP_DIR_ABSENT_FIXTURE_REQUIRED=YES',
+      'OUTER_CMD_TEMP_DIR_PRESENT_FIXTURE_REQUIRED=YES',
+      'OUTER_CMD_ZIP_MISSING_FIXTURE_REQUIRED=YES',
+      'OUTER_CMD_RUNNER_ENTRY_MISSING_FIXTURE_REQUIRED=YES',
+      'BUNDLE_DIR_ID_SCHEMA=SF${DELIVERY_ID}',
+      'BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME',
+      'OUTER_CMD_DYNAMIC_ZIP_DISCOVERY_ALLOWED=NO',
+      'WINDOWS_SCRIPT_SHIM_LAUNCH_MODE=CMD_CALL_BY_COMMAND_NAME',
+      'WINDOWS_CLI_DIRECT_EXEC_REQUIRES=VERIFIED_PE_EXECUTABLE',
+      'WINDOWS_CLI_RESOLUTION_EVIDENCE_REQUIRED=YES',
+      'DELIVERY_MANIFEST_SCHEMA_VALIDATION_REQUIRED=YES',
+      'DELIVERY_MANIFEST_RUNNER_ENTRY_PATH=runner_entry',
+      'DELIVERY_MANIFEST_IDENTITY_PATH=identity',
+    ]) {
+      expect(delivery, token).toContain(token);
+      expect(envelope, token).toContain(token);
+      expect(prompt, token).toContain(token);
+    }
+
+    for (const token of [
+      'SOURCE_PATCH_ANCHOR_SOURCE=EXACT_COMMIT_CONTENT_ONLY',
+      'SOURCE_PATCH_LOG_RECONSTRUCTED_BLOCK_ALLOWED=NO',
+      'SOURCE_PATCH_MINIMAL_EXACT_OR_STRUCTURAL_SCOPE_REQUIRED=YES',
+      'SOURCE_PATCH_ANCHOR_CARDINALITY_PREWRITE_REQUIRED=YES',
+      'ARTIFACT_TARGET_APPLICABILITY_PREFLIGHT_REQUIRED=YES',
+    ]) {
+      expect(validatorRule, token).toContain(token);
+    }
+
+    expect(artifact).toContain('TEXT_FILE_EOF_POLICY=SINGLE_FINAL_NEWLINE');
+    expect(artifact).toContain('SOURCE_PATCH_PRETEST_GIT_DIFF_CHECK_REQUIRED=YES');
+    expect(receipt).toContain('RECEIPT_CHECKPOINT_FACT_PRESERVATION_REQUIRED=YES');
+    expect(receipt).toContain('RECEIPT_FAILED_RESULT_RESETS_PRIOR_PASS=NO');
+
+    expect(artifact).toContain('TEMP_DIR_ABSENT');
+    expect(artifact).toContain('TEMP_DIR_PRESENT');
+    expect(artifact).toContain('ZIP_MISSING');
+    expect(artifact).toContain('RUNNER_ENTRY_MISSING');
+    expect(identity).toContain('OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS');
+    expect(identity).toContain('SF${DELIVERY_ID}');
+    expect(identity).toContain('EXACT_EXPECTED_BUNDLE_NAME');
+    expect(identity).toContain('identity.delivery_id');
+    expect(envelope).toContain('BOOTSTRAP_ENVELOPE_VERSION=3');
+    expect(prompt).toContain('BOOTSTRAP_ENVELOPE_VERSION=3');
+  });
+
   it('enforces complete fail-closed bootstrap output and accepted live-ref evidence artifact', async () => {
     const authority = await readFile(authorityPath, 'utf8');
 
@@ -608,14 +683,14 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
     }
 
     const receiptIndex = prompt.indexOf('BOOTSTRAP_EXECUTION_PHASE=RECEIPT_AUDIT');
-    const liveRefIndex = prompt.indexOf('STRUCTURED_GIT_LS_REMOTE');
+    const liveRefPhaseIndex = prompt.indexOf('BOOTSTRAP_EXECUTION_PHASE=LIVE_REF_RESOLUTION');
     const exactAuthorityIndex = prompt.indexOf('BOOTSTRAP_EXECUTION_PHASE=AUTHORITY_EXACT_READ');
     const recoveryIndex = prompt.indexOf('BOOTSTRAP_EXECUTION_PHASE=RECOVERY');
     const selfCheckIndex = prompt.indexOf('===== BEGIN BOOTSTRAP ENVELOPE SELF CHECK =====');
 
     expect(receiptIndex).toBeGreaterThanOrEqual(0);
-    expect(liveRefIndex).toBeGreaterThan(receiptIndex);
-    expect(exactAuthorityIndex).toBeGreaterThan(liveRefIndex);
+    expect(liveRefPhaseIndex).toBeGreaterThan(receiptIndex);
+    expect(exactAuthorityIndex).toBeGreaterThan(liveRefPhaseIndex);
     expect(selfCheckIndex).toBeGreaterThan(exactAuthorityIndex);
     expect(recoveryIndex).toBeGreaterThan(selfCheckIndex);
 
