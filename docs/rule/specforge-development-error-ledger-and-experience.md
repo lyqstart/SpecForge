@@ -6987,3 +6987,35 @@ actual_files
 - **正确方法**：扩展现有 reconciliation：Verification recoverable state 下复用 latest passed Gate Attempt；要求 Verification+Formal Version coverage、latest views 一致、input snapshot freshness PASS；`gate_run_action=NOT_PERFORMED`、`new_gate_attempt_created=false`，然后只执行现有 Verification state auto-advance。
 - **状态**：`CLOSED_BY_V190_PENDING_EXECUTION`。
 <!-- SPECFORGE_ERR378_ERR383_WI0004_VERIFICATION_RECOVERY:END -->
+
+<!-- SPECFORGE_ERR384_ERR389_V191_V192_RECONCILIATION_FIX:START -->
+## ERR-384 / EXP-044 — V190 spec_migration transition guard 错把 final frozen Candidate 限定为 module-only
+- **事实**：V191 `sf_gate_run(reconcile_attempt_id=attempt-0006)` Fail Closed，exact error=`STATE_COORDINATOR_TRANSITION_FAILED: no-code verification requires a canonical workflow-specific candidate manifest`；状态保持 `post_merge_verified`，attempt-0007 不存在，Gate 未重跑，Close/Git 未执行。
+- **历史一手证据**：WI-0004 `candidate_manifest.json` SHA256=`E4F716BCB03AD370754D8CF299D115FD1FCE5D69C363FAAEC0B7DBA1C036C125`，`schema_version=1.1`，`project_spec_precondition_sha256=sha256:44ff476f...`，最终 5 个 entries 覆盖 REPORTING/CLI Design、Project extension_registry、REPORTING Module Contract、Trace Delta。
+- **根因**：V190 把 module producer 子集误当最终 frozen manifest 的唯一合法 shape。
+- **状态**：`CLOSED_BY_V193_PENDING_EXECUTION`。
+
+## ERR-385 / EXP-007 — V190 回归测试未使用已有 exact WI-0004 frozen manifest
+- **事实**：V190 测试只造单一 module entry；既有只读证据已经保存真实 mixed-scope manifest。
+- **正确方法**：回归 fixture 固定使用真实 5-entry shape、真实 precondition 格式，并保留 identity/path-escape 负例。
+- **状态**：`CLOSED_BY_V193_PENDING_EXECUTION`。
+
+## ERR-386 / EXP-044 — V190 扩展 Verification reconciliation 未先修订唯一 Authority
+- **事实**：V190 Runtime 已支持 Verification reconciliation，但当时 Authority `GATE-ATTEMPT-RECONCILE-001` 仍是 Candidate-only。
+- **正确方法**：先修 Authority，正式定义 Candidate / Verification reconciliation，再对齐现有 Runtime。
+- **状态**：`CLOSED_BY_V193_PENDING_EXECUTION`。
+
+## ERR-387 / EXP-244 — V192 首次预交付 validator 混淆 executable code 与历史 payload
+- **事实**：V192 首次构建的 validator 在 runner 全文搜索 `sf_gate_run(`，命中历史说明字符串；失败发生在交付前，没有用户仓库副作用。
+- **状态**：`CLOSED_PREDELIVERY`。
+
+## ERR-388 / EXP-072 — V192 首次构建时 assistant spreadsheet runtime warmup 外部异常
+- **事实**：非 spreadsheet ZIP 构建的 Python 环境附带 spreadsheet warmup 异常；与 SpecForge 产品无关。
+- **状态**：`CLOSED_EXTERNAL_TOOL_ENVIRONMENT`。
+
+## ERR-389 / EXP-063 — V192 用户执行前置 Authority 整段全文锚点 actual=0
+- **事实**：用户执行 V192 后，STEP-001 live ref / Authority baseline PASS，随后在任何仓库写入前失败：`ANCHOR_CARDINALITY:authority.reconcile:expected=1 actual=0`。`PRODUCT_COMMIT=NONE`、`PUSH_COUNT=0`、Validation/WI lifecycle=NONE。
+- **根因**：V192 仍使用整段 Authority 正文作为 replace anchor；当前真实 `GATE-ATTEMPT-RECONCILE-001` 与装配器内复制文本存在细节差异，导致 cardinality=0。
+- **正确方法**：V193 对 Authority 使用稳定 Rule ID section boundary：从 `GATE-ATTEMPT-RECONCILE-001` 起点替换到下一稳定 Rule `GATE-ATTEMPT-INPUT-SNAPSHOT-001` 起点；spec_migration 只在稳定规则 8 后插入 9/10。Runtime/Test 同样用结构边界，不再依赖整段复制正文。
+- **状态**：`CLOSED_BY_V193_PENDING_EXECUTION`。
+<!-- SPECFORGE_ERR384_ERR389_V191_V192_RECONCILIATION_FIX:END -->

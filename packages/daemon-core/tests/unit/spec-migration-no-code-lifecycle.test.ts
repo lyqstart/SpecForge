@@ -100,24 +100,66 @@ describe('spec_migration no-code lifecycle contract', () => {
     });
   });
 
-  test('accepts the canonical candidate manifest produced by spec_migration and rejects contract-shape drift', () => {
+  test('accepts the exact frozen mixed-scope WI-0004 spec_migration Candidate and rejects identity/path drift', () => {
     const manifest = {
       schema_version: '1.1',
       work_item_id: 'WI-0004',
       workflow_path: 'spec_migration_path',
       base_spec_version: 'PSV-0003',
-      project_spec_precondition_sha256: 'a'.repeat(64),
-      repair_evidence_paths: ['.specforge/project/architecture.md'],
+      project_spec_precondition_sha256:
+        'sha256:44ff476f4d111f9e9c7c92c56e8627a05278c9a55b6c56ebb840319327ec25fc',
+      repair_evidence_paths: [
+        '.specforge/project/architecture.md',
+        '.specforge/project/modules/REPORTING/design.md',
+        '.specforge/project/modules/CLI/design.md',
+      ],
       merge_required: true,
       entries: [
         {
-          type: 'module_definition',
-          module_id: 'REPORTING',
-          candidate_path: 'candidates/project/modules/REPORTING/module.candidate.json',
-          target_path: '.specforge/project/modules/REPORTING/module.json',
+          candidate_path: 'candidates/project/modules/REPORTING/design.candidate.md',
+          target_path: '.specforge/project/modules/REPORTING/design.md',
           operation: 'replace',
+          type: 'design',
+          module_id: 'REPORTING',
+          inferred: false,
+          normalized: true,
+        },
+        {
+          candidate_path: 'candidates/project/modules/CLI/design.candidate.md',
+          target_path: '.specforge/project/modules/CLI/design.md',
+          operation: 'replace',
+          type: 'design',
+          module_id: 'CLI',
+          inferred: false,
+          normalized: true,
+        },
+        {
+          candidate_path: 'candidates/project/extension_registry.json',
+          target_path: '.specforge/project/extension_registry.json',
+          operation: 'replace',
+          type: 'extension_registry',
+          inferred: false,
+          normalized: true,
+        },
+        {
+          candidate_path: 'candidates/project/modules/REPORTING/contracts.candidate.json',
+          target_path: '.specforge/project/modules/REPORTING/contracts.json',
+          operation: 'replace',
+          type: 'module_contract',
+          module_id: 'REPORTING',
+          inferred: false,
+          normalized: true,
+        },
+        {
+          candidate_path: 'candidates/trace_delta.md',
+          target_path: '.specforge/project/trace_matrix.md',
+          type: 'trace_delta',
+          operation: 'replace',
+          inferred: true,
+          normalized: true,
         },
       ],
+      workflow_type: 'spec_migration',
     };
     expect(
       isCanonicalNoCodeVerificationCandidateManifest({
@@ -133,8 +175,23 @@ describe('spec_migration no-code lifecycle contract', () => {
         workflowType: 'spec_migration',
       }),
     ).toBe(false);
+    expect(
+      isCanonicalNoCodeVerificationCandidateManifest({
+        manifest: {
+          ...manifest,
+          entries: [
+            ...manifest.entries.slice(0, -1),
+            {
+              ...manifest.entries.at(-1),
+              target_path: '.specforge/project/../outside.md',
+            },
+          ],
+        },
+        workItemId: 'WI-0004',
+        workflowType: 'spec_migration',
+      }),
+    ).toBe(false);
   });
-
   test('pins sf-verifier and spec-migration Skill to the no-code evidence/output contract', async () => {
     const repoRoot = join(import.meta.dirname, '../../../..');
     const verifier = await readFile(
@@ -145,6 +202,13 @@ describe('spec_migration no-code lifecycle contract', () => {
       join(repoRoot, 'setup/userlevel-opencode/skills/sf-workflow-spec-migration/SKILL.md'),
       'utf-8',
     );
+    const authority = await readFile(
+      join(repoRoot, 'docs/design/SpecForge架构一致性治理最终实施方案.md'),
+      'utf-8',
+    );
+    expect(authority).toContain('Verification reconciliation');
+    expect(authority).toContain('最终冻结且已通过 Candidate / Atomic Spec Merge / Post-Spec-Merge Gate 的 Candidate manifest');
+    expect(authority).toContain('reconciliation_phase=candidate|verification');
     for (const token of [
       'spec_migration 专用 Required Output',
       '"outcomes": []',

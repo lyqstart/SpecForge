@@ -1592,6 +1592,8 @@ Close Gate = REQUIRED
 6. Semantic Closure 必须使用 `closure_profile=spec_migration` / `workflow_type=spec_migration`，证明 PSV、Atomic Spec Merge、Post-Spec-Merge Gate、Trace/Contract、no-code Actual Scope Audit 与 Verification 的真实闭环；不得伪造 `OUT -> REQ -> DD -> TASK -> EV` 实现链；
 7. Formal Version Gate 与 Close Gate 仍是必需步骤；对本分支，Code Permission 的合法状态是 `NOT_APPLICABLE`，并以 no-code audit + never-enabled daemon facts 证明；
 8. Trace Delta 在迁移涉及 Trace 时仍为必需正式证据。
+9. `spec_migration` 的 no-code Verification 状态推进必须消费**最终冻结且已通过 Candidate / Atomic Spec Merge / Post-Spec-Merge Gate 的 Candidate manifest**；不得把某一个早期 producer（例如 `prepare_repair`）的局部输出形状误当成最终 manifest 的唯一合法形状。最终 manifest 可以在同一原子 Candidate 中同时包含 Project / Module Spec、Project / Module Contract、Design 与 Trace 条目。
+10. `post_merge_verified -> verification_running` 的 workflow-specific transition guard 对 `spec_migration` 只允许验证稳定身份与通用 canonical 边界：正确 `work_item_id` / `workflow_path`、`merge_required=true`、非空 entries、每个 entry 使用 `operation=replace`、`candidate_path` 位于 `candidates/**`、`target_path` 位于 `.specforge/project/**` 且不得路径逃逸；不得要求全部条目都位于 `project/modules/**`。
 
 Trace 贯穿 Requirement、Architecture、Data Model、Module Design、Contract、Task、Implementation 和 Verification。
 
@@ -2735,21 +2737,21 @@ Hard
 5. 每次重跑继续创建新的不可变 Gate Attempt，状态恢复不得覆盖旧 Attempt；
 6. 已有修复前生成的有效 passed Attempt 时，不得为修复状态展示而重复 Gate；必须先只读证明 Candidate 与 Attempt 未变化，再沿合法状态边做证据驱动的状态权威恢复。
 
-**GATE-ATTEMPT-RECONCILE-001：** 已经存在不可变 Candidate Gate Attempt、但因 Runtime 缺陷导致 Work Item 权威状态未完成 seal 时，只允许由 `gate_runner` 执行“历史 Attempt 状态对账”，不得通过重新运行 Gate 修复状态展示。
+**GATE-ATTEMPT-RECONCILE-001：** 已经存在不可变且有效的 passed Gate Attempt、但因 Runtime 缺陷导致 Work Item 权威状态未完成当前阶段 seal 时，只允许由 `gate_runner` 执行“历史 Attempt 状态对账”，不得为了修复状态展示重新运行已经通过的 Gate。本能力复用同一个 Gate Runner，适用于 **Candidate reconciliation** 与 **Verification reconciliation**，不是新的 Gate 或 Workflow。
 
 固定规则：
-
 1. 对账入口必须显式指定 `reconcile_attempt_id=attempt-NNNN`，并与普通 `gate_ids/gate_type` 互斥；
-2. 对账模式不得调用 `runRequiredGates`，不得创建新的 `gate_attempts/attempt-NNNN`；
-3. 只能消费 `source=gate_run`、`summary_status=passed` 的最新 Attempt；
-4. 该 Attempt 必须覆盖当前 Workflow/Candidate Phase 的全部 required Candidate Gates，且每个 required Gate 必须严格 `status=passed`；
-5. 固定 `gates/*.json` 与 `gate_summary.md` latest compatibility view 必须与指定 Attempt 字节一致；
-6. 指定 Attempt 的全部 required Gate `input_files` 必须仍存在，且文件修改时间不得晚于 Attempt 完成时间；无法证明未发生 Candidate/Gate 输入漂移时 Fail Closed；
-7. 当前状态只允许处于 Candidate retry 边界：`gates_failed / candidate_preparing / candidate_prepared / gates_running`；
-8. 状态恢复继续使用 `GATE-RETRY-STATE-001` 的合法状态链；最终 `gates_running → approval_required` seal 必须由 `gate_runner` actor 执行；
-9. `sf-orchestrator`、人工状态工具或其他 actor 不得代替 `gate_runner` 完成该 seal；
-10. 返回结果必须显式包含 `reconciliation_mode=true`、`gate_run_action=NOT_PERFORMED`、`new_gate_attempt_created=false` 和被消费的 `reconciled_attempt_id`。
-
+2. 对账模式不得调用 `runRequiredGates`，不得创建新的 `gate_attempts/attempt-NNNN`，不得修改被消费 Attempt；
+3. 只能消费 `source=gate_run`、`summary_status=passed` 的**最新** Attempt；
+4. Candidate reconciliation 必须覆盖当前 Workflow/Candidate Phase 的全部 required Candidate Gates，且每个 required Gate 必须严格 `status=passed`；
+5. Verification reconciliation 必须覆盖当前 Workflow 要求的全部 Verification 阶段 Gate；当前统一 Verification 阶段至少要求 `verification_gate=passed` 与 `formal_version_gate=passed`，不得以 reconciliation 省略 Formal Version Gate；
+6. 固定 `gates/*.json` 与 `gate_summary.md` latest compatibility view 必须与指定 Attempt 字节一致；
+7. freshness 必须使用 `GATE-ATTEMPT-INPUT-SNAPSHOT-001` 的 `input-snapshot.json` 比较当前存在状态、类型和 hash；无法证明 Gate 输入未漂移时 Fail Closed；
+8. Candidate reconciliation 的当前状态只允许 `gates_failed / candidate_preparing / candidate_prepared / gates_running`，并继续使用 `GATE-RETRY-STATE-001` 的合法状态链，最终 seal 到 `approval_required`；
+9. Verification reconciliation 的当前状态只允许处于该 Workflow 的 Verification 可恢复边界；实现型分支可从 `implementation_done / verification_running` 恢复，`GOV-SPEC-MIGRATION-NO-CODE-001` 分支允许从 `post_merge_verified / verification_running` 恢复，并且只沿既有合法状态边推进到 `verification_done`；
+10. 对 `spec_migration`，Verification reconciliation 从 `post_merge_verified` 恢复时固定沿 `post_merge_verified -> verification_running -> verification_done`；该恢复不得重新执行 Verification Gate / Formal Version Gate，也不得创建新 Attempt；
+11. Candidate 或 Verification 的最终状态 seal 都必须由 `gate_runner` actor 执行；`sf-orchestrator`、人工状态工具或其他 actor 不得代替；
+12. 返回结果必须显式包含 `reconciliation_mode=true`、`reconciliation_phase=candidate|verification`、`gate_run_action=NOT_PERFORMED`、`new_gate_attempt_created=false` 和被消费的 `reconciled_attempt_id`。
 **GATE-ATTEMPT-INPUT-SNAPSHOT-001：** Gate Attempt 的 `input_files` 只表示 Gate 声明/探测过的输入路径集合，不等价于“这些路径当时都存在”，也不是可用于历史 freshness 判断的内容快照。每个新的正式 Gate Attempt 必须额外冻结输入状态。
 
 固定规则：

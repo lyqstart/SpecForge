@@ -95,9 +95,24 @@ export function isCanonicalNoCodeVerificationCandidateManifest(input: {
           .endsWith('.specforge/project/extension_registry.json'));
   }
   if (input.workflowType === 'spec_migration') {
+    const baseSpecVersion = manifest.base_spec_version;
+    const precondition = manifest.project_spec_precondition_sha256;
+    const repairEvidencePaths = manifest.repair_evidence_paths;
     return manifest.schema_version === '1.1' &&
       manifest.work_item_id === input.workItemId &&
+      manifest.workflow_type === 'spec_migration' &&
       manifest.workflow_path === 'spec_migration_path' &&
+      typeof baseSpecVersion === 'string' &&
+      /^PSV-[0-9]{4,}$/.test(baseSpecVersion) &&
+      typeof precondition === 'string' &&
+      /^sha256:[0-9a-f]{64}$/i.test(precondition) &&
+      Array.isArray(repairEvidencePaths) &&
+      repairEvidencePaths.length > 0 &&
+      repairEvidencePaths.every(value =>
+        typeof value === 'string' &&
+        value.startsWith('.specforge/project/') &&
+        !value.split('/').includes('..')
+      ) &&
       manifest.merge_required === true &&
       Array.isArray(entries) &&
       entries.length > 0 &&
@@ -107,8 +122,10 @@ export function isCanonicalNoCodeVerificationCandidateManifest(input: {
         const candidatePath = String(record.candidate_path ?? '').replace(/\\/g, '/');
         const targetPath = String(record.target_path ?? '').replace(/\\/g, '/');
         return record.operation === 'replace' &&
-          candidatePath.startsWith('candidates/project/modules/') &&
-          targetPath.startsWith('.specforge/project/modules/');
+          candidatePath.startsWith('candidates/') &&
+          !candidatePath.split('/').includes('..') &&
+          targetPath.startsWith('.specforge/project/') &&
+          !targetPath.split('/').includes('..');
       });
   }
   return false;

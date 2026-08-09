@@ -4058,3 +4058,20 @@ V190 只修现有消费者和恢复路径，不新增 Workflow/Gate/Agent/治理
 `sf_gate_run(reconcile_attempt_id="attempt-0006")`
 而不是重新运行 Verification Gate。只有 freshness / latest-view / passed-owned-gates 全部满足时才允许状态推进。
 <!-- SPECFORGE_V190_WI0004_VERIFICATION_RECOVERY_FIX:END -->
+
+<!-- SPECFORGE_V193_V191_V192_RECONCILIATION_FIX:START -->
+## V193 — WI-0004 final manifest + Verification reconciliation Authority correction（2026-08-09）
+
+V191 证明 V190 的 module-only transition predicate 与真实 WI-0004 frozen Candidate 不一致；V192 又因 Authority 整段全文锚点在写入前 Fail Closed。
+
+V193 保持相同业务范围：
+1. Authority-first：正式定义 Candidate / Verification historical Attempt reconciliation；
+2. spec_migration no-code transition guard 消费最终 frozen Candidate，而不是某个早期 producer 子集；
+3. Runtime 接受已通过 Candidate Gate 的 mixed-scope `candidates/** -> .specforge/project/**` replace manifest；
+4. regression fixture 使用 WI-0004 exact 5-entry structure 和真实 `sha256:` precondition 格式；
+5. Authority/Runtime/Test transform 全部改为稳定 section boundary；
+6. 补录 ERR-384..ERR-389。
+
+不访问 Validation，不执行 WI 生命周期，不修改 attempt-0006，不创建 attempt-0007。
+成功后只需用户手工重启 daemon；OpenCode 不需要重启。下一次继续 reconciliation attempt-0006。
+<!-- SPECFORGE_V193_V191_V192_RECONCILIATION_FIX:END -->
