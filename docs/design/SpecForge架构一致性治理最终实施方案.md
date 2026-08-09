@@ -129,8 +129,9 @@ Runtime 状态约束
 固定说明：
 
 ```text
-APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14
+APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14,D15,D16,D17,D18,D19
 RULE_ID_DEFINITION_SET_PRESERVED=YES
+D15_D19_FINAL_CONTENT_CLOSURE=DEDUP_SCOPE|IMPLEMENTATION_MAPPING|POST_SPEC_MERGE_TERM|PROJECT_CONTRACT_PRODUCER|ATOMIC_SPEC_MERGE_PRODUCER
 章节号 = 人工阅读导航
 Rule ID = 机器稳定契约
 ```
@@ -1495,7 +1496,7 @@ User Need
 → Required Candidate Gates
 → User Decision
 → Atomic Spec Merge
-→ Post-Merge Gate
+→ Post-Spec-Merge Gate
 → Code Permission
 → Implementation
 → Actual Scope Audit
@@ -2041,6 +2042,17 @@ sf-design
 受控 Project Contract writer
 → Project Contract Candidate
 
+Project Contract Candidate 的正式 producer binding 固定为：
+
+```text
+PROJECT_CONTRACT_CANDIDATE_PUBLIC_TOOL=sf_contract_register
+PROJECT_CONTRACT_CANDIDATE_CORE_PRODUCER=packages/daemon-core/src/tools/lib/contract-authoring.ts::authorContractCandidate()
+PROJECT_CONTRACT_CANDIDATE_WRITE_SCOPE=WORK_ITEM_CANDIDATE_ONLY
+PROJECT_CONTRACT_FORMAL_TRUTH_WRITE=NO
+```
+
+`sf_contract_register` 是公开 Tool/handler 名称；真实 Candidate authoring 由 `authorContractCandidate()` 承担。它只能产生或维护当前 Work Item 的 Project Contract Candidate，并登记对应 Candidate manifest；正式 Project Contract 只能通过批准后的 Atomic Spec Merge 生效。
+
 sf-task-planner
 → tasks.md
 → Requirement / Task Trace
@@ -2087,6 +2099,17 @@ Project Spec Version +1
 ```
 
 Architecture、Data Model 等同一 Atomic Spec Merge 中的正式对象必须原子生效，禁止部分生效。
+
+Atomic Spec Merge 的正式 producer binding 固定为：
+
+```text
+ATOMIC_SPEC_MERGE_PUBLIC_HANDLER=sf_v11_merge
+ATOMIC_SPEC_MERGE_CORE_PRODUCER=packages/daemon-core/src/tools/lib/merge-runner-v11.ts::executeMerge()
+ATOMIC_SPEC_MERGE_SEMANTIC_SCOPE=PROJECT_SPEC_ACTIVATION
+GIT_MERGE_SEMANTIC_SCOPE=SEPARATE
+```
+
+`sf_v11_merge` 是公开 Merge Runner handler；其 Spec 合并业务动作由 `executeMerge()` 承担。该 producer 只属于 Atomic Spec Merge，不得与第 8.9 节的 Git Merge 混用。
 
 ### 5.4 requirements_index 和 design_index
 
@@ -3031,7 +3054,7 @@ User Decision 与批准的 Candidate 一致
 
 Fast Path 的 Merge 正确为 N/A
 
-Post-Merge Gate 通过
+Post-Spec-Merge Gate 通过
 
 Code Permission 合法
 
@@ -3161,7 +3184,7 @@ Requirement
 Required Candidate Gates
 → User Decision
 → Atomic Spec Merge
-→ Post-Merge Gate
+→ Post-Spec-Merge Gate
 → Code Permission
 → Implementation
 → Actual Scope Audit
@@ -3176,7 +3199,7 @@ Required Candidate Gates
 ```text
 Atomic Spec Merge 成功
 +
-全部 required Gate / Post-Merge Gate 满足
+全部 required Gate / Post-Spec-Merge Gate 满足
 → 正式治理 Spec 生效
 ```
 
@@ -3501,7 +3524,7 @@ Formal Version 正负例、dirty worktree 回归、Close/Git Merge 集成测试
 **Required Tests**
 
 全量回归、TypeScript、相关/全仓 build、真实环境验收、发布前 E2E
-## 11. 实施影响范围
+## 11. Implementation Mapping
 
 ### 11.1 Implementation Mapping 边界
 

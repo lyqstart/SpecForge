@@ -5755,3 +5755,109 @@ actual_files
 - **新增类防护 / EXP-246**：契约升级必须验证“新增能力 + 既有能力保留”两类矩阵；修复不得静默缩小旧 consumer 已支持的合法结构边界。
 - **状态**：`CLOSED`；V150 authority、helper 和矩阵均显式覆盖 Appendix boundary。
 <!-- SPECFORGE_ERR280_EXP246_APPENDIX_BOUNDARY_REGRESSION:END -->
+
+<!-- SPECFORGE_ERR281_EXP247_GENERATOR_FSTRING_BRACE_DEFECT:START -->
+## ERR-281 / EXP-247 — V151 预交付生成器把 TypeScript 花括号直接嵌入 Python f-string
+- **日期与阶段**：2026-08-09，V151 第一次预交付 Artifact Acceptance。
+- **分类**：`SCRIPT_DEFECT / PREDELIVERY_BUILD_DEFECT / HOST_LANGUAGE_TEMPLATE_ESCAPE_DEFECT`。
+- **现场表现**：生成 `patch_test.py` 时，TypeScript 片段中的 `}` 被 Python f-string 当成格式语法，构建阶段直接报 `SyntaxError: f-string: single '}' is not allowed`。
+- **已执行与未执行**：错误发生在最终 ZIP 生成之前；失败构建未交付用户执行，未读取或修改用户 SpecForge 仓库。
+- **仓库变化**：无。
+- **根因**：跨语言代码生成把目标语言源码直接放入宿主语言 f-string，没有建立语言边界和转义策略。
+- **影响**：V151 第一次构建无法形成可验收 Artifact。
+- **正确做法**：跨语言模板使用独立 canonical 常量并通过 `repr`/JSON 序列化或文件模板注入；禁止把包含 `{}` 的目标语言源码直接嵌入宿主 f-string。
+- **新增类防护 / EXP-247**：跨语言生成器必须对最终 Python AST、生成函数实际执行、目标 TypeScript 片段编译和 ZIP reopen 分别验收；宿主模板不得隐式解释目标语言语法。
+- **自动防护**：包含 TypeScript object/block 花括号的完整回归、Python AST parse、patch function execution、TypeScript fixture compile。
+- **状态**：`CLOSED`；V151 最终构建改为 canonical 常量 + `repr` 注入，并通过完整预交付验收。
+<!-- SPECFORGE_ERR281_EXP247_GENERATOR_FSTRING_BRACE_DEFECT:END -->
+
+<!-- SPECFORGE_ERR282_EXP248_PREFIX_SUBSTRING_ASSERTION_DEFECT:START -->
+## ERR-282 / EXP-248 — V151 预交付 validator 把新值包含旧值前缀误判为旧值残留
+- **日期与阶段**：2026-08-09，V151 第二次预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / STRUCTURAL_ASSERTION_DEFECT / PREFIX_SUBSTRING_FALSE_POSITIVE`。
+- **现场表现**：D1–D19 新字段值天然以完整 D1–D14 字符串为前缀；patch validator 在正确替换后仍执行 `OLD_SCOPE in out`，因此把合法 D1–D19 误判为 D1–D14 仍残留。
+- **已执行与未执行**：失败发生在最终 ZIP 接受前；未向用户发布该构建，未读取或修改用户 SpecForge 仓库。
+- **仓库变化**：无。
+- **根因**：验证器把“旧完整字段值仍存在”错误实现成“旧字符片段是否为任意新值子串”，没有按字段边界验证。
+- **影响**：正确的 D1–D19 consumer 更新被假失败阻断。
+- **正确做法**：验证完整机器字段值或带引号/行边界的 canonical token；当新值合法扩展旧值时禁止使用裸 substring negative assertion。
+- **新增类防护 / EXP-248**：凡 schema/value 存在前缀扩展关系，validator 必须使用结构边界、解析值或 exact token；不得以 `old in new` 作为残留判断。
+- **自动防护**：D1–D14 → D1–D19 前缀扩展正例、旧完整字段值独立残留反例、consumer count 回归。
+- **状态**：`CLOSED`；V151 最终 patch validator 改为带引号的完整 consumer token 验证，并通过 patch function 实际执行。
+<!-- SPECFORGE_ERR282_EXP248_PREFIX_SUBSTRING_ASSERTION_DEFECT:END -->
+
+<!-- SPECFORGE_ERR283_EXP249_FIX_SCRIPT_QUOTING_DEFECT:START -->
+## ERR-283 / EXP-249 — V151 预交付修复脚本自身的 Python 引号转义再次失败
+- **日期与阶段**：2026-08-09，V151 第三次预交付 Artifact Acceptance。
+- **分类**：`SCRIPT_DEFECT / PREDELIVERY_BUILD_DEFECT / HOST_LANGUAGE_QUOTING_DEFECT`。
+- **现场表现**：为修复 ERR-282 构造 Python replacement 字符串时再次叠加反斜杠和单双引号，导致修复脚本本身报 `SyntaxError: unexpected character after line continuation character`。
+- **已执行与未执行**：失败发生在任何目标文件修改和最终 ZIP 生成之前；未向用户发布，未读取或修改用户 SpecForge 仓库。
+- **仓库变化**：无。
+- **根因**：在交互生成器中继续用嵌套转义字符串修补跨语言模板，重复触发 EXP-247 同类风险。
+- **影响**：再次增加无效预交付轮次。
+- **正确做法**：停止叠加转义；使用独立脚本文件和 triple-quoted exact block 修改，先 `ast.parse` 再执行；最终仍需 patch function 行为模拟和 TypeScript fixture compile。
+- **新增类防护 / EXP-249**：对修复生成器本身也执行“源文件落盘 → AST parse → 执行”顺序；不得在尚未 parse 的交互表达式中构造复杂跨语言 quoting。
+- **自动防护**：最终 `patch_test.py` AST、实际 patch function、最终 TS fixture、manifest/ZIP reopen 全部通过。
+- **状态**：`CLOSED`；V151 最终构建改用独立 Python 文件进行结构化修改，并通过全部预交付验收。
+<!-- SPECFORGE_ERR283_EXP249_FIX_SCRIPT_QUOTING_DEFECT:END -->
+
+<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:START -->
+## ERR-284 / EXP-250 — V151 验证器在新增回归消费者后仍使用修改前消费者数量
+- **日期与阶段**：2026-08-09，V151 第三轮预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / CONSUMER_COUNT_PHASE_DEFECT / STRUCTURAL_ASSERTION_DEFECT`。
+- **现场表现**：两个旧 D1-D14 consumer 正确替换为 D1-D19 后，V151 又新增一个 D15-D19 source-bound 回归测试；该测试本身也是新的合法 consumer。验证器却在插入新测试后仍要求全文件 `NEW_SCOPE` 恰好出现 2 次，因此把第 3 个合法 consumer 误判为失败；Chapter 11 新标题和 Post-Spec-Merge 新术语存在同类风险。
+- **已执行与未执行**：失败发生在最终 ZIP 接受前；未向用户交付，未读取或修改用户 SpecForge 仓库。
+- **仓库变化**：无。
+- **根因**：验证器把“旧消费者替换完成”的阶段性计数与“最终文件全部消费者”的计数混为一体，没有区分 replacement validation 与 new regression consumer insertion。
+- **影响**：正确的 producer/consumer 增量被全文件固定计数假失败阻断。
+- **正确做法**：先在插入新回归测试之前验证既有消费者的替换数量和旧 token 清除；随后插入新回归测试，只验证该测试结构 marker 唯一，不再用修改前计数限制最终消费者总数。
+- **新增类防护 / EXP-250**：consumer-count validator 必须声明计数所处阶段和结构作用域；新增合法 consumer 后不得继续沿用变更前的全文件 cardinality。
+- **自动防护**：两个旧 consumer → 两个新 consumer的 replacement 阶段 PASS；再新增一个回归 consumer 后最终总数可为 3 且仍 PASS；旧 consumer 独立残留必须 FAIL。
+- **状态**：`CLOSED`；V151 最终 validator 改为“先替换验收、后插入测试”，并通过 patch function 实际执行。
+<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:END -->
+
+
+<!-- SPECFORGE_ERR285_EXP251_NEGATIVE_ASSERTION_TOKEN_FALSE_POSITIVE:START -->
+## ERR-285 / EXP-251 — V151 后验验收把回归测试中的旧 token 负向断言误判为旧消费者残留
+- **日期与阶段**：2026-08-09，V151 第四轮预交付 Artifact Acceptance。
+- **分类**：`VALIDATION_DEFECT / NEGATIVE_ASSERTION_CLASSIFICATION_DEFECT / STRUCTURAL_CONSUMER_SCOPE_DEFECT`。
+- **现场表现**：新增 D15-D19 回归测试必须显式写出 `expect(authority).not.toContain('## 11. 实施影响范围')` 和 `expect(authority).not.toContain('Post-Merge Gate')`；独立验收与 packaged validator 却用“最终测试文件不得出现旧 token”判断，因而把合法负向断言误判为旧 consumer 残留。
+- **已执行与未执行**：失败发生在最终 ZIP 接受前；未向用户交付，未读取或修改用户 SpecForge 仓库。
+- **仓库变化**：无。
+- **根因**：validator 只按 token 字面存在性分类 consumer，没有区分“生产/正向消费旧语义”和“回归测试明确拒绝旧语义”的负向 assertion。
+- **影响**：用于防止旧语义回归的正确测试反而被验收器阻断。
+- **正确做法**：旧 consumer 残留必须按已知结构位置或 AST/语义模式识别；`not.toContain(oldToken)` 属于允许的负向回归 consumer，不能计为正式旧语义残留。
+- **新增类防护 / EXP-251**：consumer audit 必须区分 positive consumer、negative regression assertion 和文档说明引用；只有正式 producer/positive consumer 残留才阻断。
+- **自动防护**：旧 expectedChapters/旧 lifecycle 正向 consumer 必须消失；final regression test 中旧 token 的 `not.toContain` 必须允许且保持。
+- **状态**：`CLOSED`；V151 最终 validator 改为检查已知旧正向 consumer 结构，不再全文件禁止旧 token 字面出现。
+<!-- SPECFORGE_ERR285_EXP251_NEGATIVE_ASSERTION_TOKEN_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR286_EXP252_HANDOFF_STALE_FINAL_CLOSURE_FACTS:START -->
+## ERR-286 / EXP-252 — V151 handoff 保留了与最终 Authority 闭包冲突的旧当前事实
+- **日期与阶段**：2026-08-09，V151 成功回执后的提交前对账。
+- **分类**：`HANDOFF_CONSISTENCY_DEFECT / CONTRACT_CONSUMER_DEFECT / STALE_CURRENT_FACT`。
+- **现场表现**：V151 已把 authority 的去重范围闭合为 D1-D19、ERR-271 已关闭，但 V151 handoff 机器字段仍写 `AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D14`，说明段仍写“ERR-271 是当前唯一 blocker”。
+- **已执行与未执行**：V151 仅完成本地验证，尚未 commit/push；发现后停止直接提交。
+- **仓库变化**：用户本地仍只有 V151 冻结 4 文件的已验证脏状态；远程仍为 `b24e959bb34dc868c84cbd777767670b09fa45d4`。
+- **根因**：V151 只更新了 handoff 的 Stage 动态字段，没有把本次 authority 正式变更对应的 current-fact consumer 一并纳入一致性检查。
+- **影响**：若直接提交，handoff 会在同一 commit 中与唯一权威产生 D1-D14/D1-D19 和 ERR-271 状态冲突。
+- **正确做法**：提交前执行 Authority→handoff current-fact 对账；所有直接镜像 authority 当前语义的 handoff 字段必须与目标 authority 一致，历史说明不得继续描述已关闭 blocker 为当前事实。
+- **新增类防护 / EXP-252**：Authority 内容变更若存在 handoff current-fact consumer，必须把该 consumer 纳入原子修改/回归矩阵；不能只验证 handoff 必需字段“存在”。
+- **自动防护**：验证 `AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D19`，并拒绝 handoff current block/说明段继续宣称 ERR-271 为当前 blocker。
+- **状态**：`CLOSED`；V152 更新机器字段和说明段，并新增 authority-handoff 对账回归。
+<!-- SPECFORGE_ERR286_EXP252_HANDOFF_STALE_FINAL_CLOSURE_FACTS:END -->
+
+<!-- SPECFORGE_ERR287_EXP253_LEDGER_LITERAL_ESCAPED_NEWLINE_STRUCTURE:START -->
+## ERR-287 / EXP-253 — V151 错误台账 ERR-284 段落被写成字面量 `\n` 而非 Markdown 换行
+- **日期与阶段**：2026-08-09，V151 成功回执后的提交前结构审计。
+- **分类**：`ARTIFACT_STRUCTURE_DEFECT / LEDGER_SERIALIZATION_DEFECT / VALIDATOR_COVERAGE_GAP`。
+- **现场表现**：ERR-284 / EXP-250 的 START、标题、正文和 END 之间含字面量 `\n` 转义序列，整个段落没有形成正常 Markdown 物理行；V151 validator 只按 ERR ID 子串存在性判断，未识别结构损坏。
+- **已执行与未执行**：缺陷在 commit/push 前发现；未把损坏台账写入远程。
+- **仓库变化**：远程无变化；本地仍处于 V151 冻结范围。
+- **根因**：预交付生成器把已转义文本再次当普通文本写入，validator 没有验证 ledger section 的 START/heading/END 物理行结构。
+- **影响**：错误台账虽然能被字符串搜索命中，但不再是可靠、可解析的结构化 Markdown 证据。
+- **正确做法**：错误台账 section 必须验证真实换行和结构边界；禁止以 ID 子串存在替代 section parser 验证。
+- **新增类防护 / EXP-253**：每个新增/修改 ERR section 至少验证 START marker、下一物理行标题、END marker 和 section 内不得出现用于编码结构的字面量 `\n`。
+- **自动防护**：ERR-284 section 必须以真实物理行存在；escaped-newline 版本必须 FAIL。
+- **状态**：`CLOSED`；V152 将 ERR-284 还原为正常 Markdown 行结构，并新增 ledger section 结构回归。
+<!-- SPECFORGE_ERR287_EXP253_LEDGER_LITERAL_ESCAPED_NEWLINE_STRUCTURE:END -->

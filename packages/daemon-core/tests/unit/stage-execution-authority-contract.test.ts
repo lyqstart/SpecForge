@@ -674,7 +674,7 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
       '## 8. Implementation → Verification → Release',
       '## 9. 项目初始化、首次 WI 与后续 WI',
       '## 10. SpecForge 产品实施路线',
-      '## 11. 实施影响范围',
+      '## 11. Implementation Mapping',
       '## 12. 验收矩阵与完成标准',
       '## 附录 A. 新会话固定启动提示词',
       '## 附录 B. Rule ID 索引',
@@ -694,7 +694,7 @@ it('enforces receipt-first pre-tool guard and ordered bootstrap execution before
 
     expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:START -->').length - 1).toBe(1);
     expect(authority.split('<!-- SPECFORGE_NEW_SESSION_PROMPT:END -->').length - 1).toBe(1);
-    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14');
+    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14,D15,D16,D17,D18,D19');
     expect(authority).toContain('RULE_ID_DEFINITION_SET_PRESERVED=YES');
   });
 
@@ -730,7 +730,7 @@ it('keeps D9-D14 authority content architecture canonical and non-overlapping', 
       'Required Candidate Gates',
       'User Decision',
       'Atomic Spec Merge',
-      'Post-Merge Gate',
+      'Post-Spec-Merge Gate',
       'Code Permission',
       'Implementation',
       'Actual Scope Audit',
@@ -763,7 +763,7 @@ it('keeps D9-D14 authority content architecture canonical and non-overlapping', 
       const startToken = `### 10.${phase} `;
       const start = authority.indexOf(startToken);
       expect(start, startToken).toBeGreaterThanOrEqual(0);
-      const next = phase < 13 ? authority.indexOf(`### 10.${phase + 1} `, start) : authority.indexOf('## 11. 实施影响范围', start);
+      const next = phase < 13 ? authority.indexOf(`### 10.${phase + 1} `, start) : authority.indexOf('## 11. Implementation Mapping', start);
       expect(next, startToken).toBeGreaterThan(start);
       const section = authority.slice(start, next);
       for (const label of [
@@ -789,7 +789,110 @@ it('keeps D9-D14 authority content architecture canonical and non-overlapping', 
     expect(authority).toContain('REASON=<为什么不适用>');
     expect(authority).toContain('EVIDENCE=<支持该结论的事实来源>');
 
-    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14');
+    expect(authority).toContain('APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14,D15,D16,D17,D18,D19');
   });
+
+
+  it('keeps final D15-D19 authority semantics stable and source-bound', async () => {
+    const authority = await readFile(authorityPath, 'utf8');
+    const contractHandler = await readFile(
+      resolve(repoRoot, 'packages/daemon-core/src/tools/handlers/sf-contract-register.ts'),
+      'utf8',
+    );
+    const contractProducer = await readFile(
+      resolve(repoRoot, 'packages/daemon-core/src/tools/lib/contract-authoring.ts'),
+      'utf8',
+    );
+    const mergeHandler = await readFile(
+      resolve(repoRoot, 'packages/daemon-core/src/tools/handlers/sf-v11-merge.ts'),
+      'utf8',
+    );
+    const mergeProducer = await readFile(
+      resolve(repoRoot, 'packages/daemon-core/src/tools/lib/merge-runner-v11.ts'),
+      'utf8',
+    );
+
+    expect(authority).toContain(
+      'APPROVED_DEDUP_SCOPE=D1,D2,D3,D4,D5,D6,D7,D8,D9,D10,D11,D12,D13,D14,D15,D16,D17,D18,D19',
+    );
+    expect(authority).toContain(
+      'D15_D19_FINAL_CONTENT_CLOSURE=DEDUP_SCOPE|IMPLEMENTATION_MAPPING|POST_SPEC_MERGE_TERM|PROJECT_CONTRACT_PRODUCER|ATOMIC_SPEC_MERGE_PRODUCER',
+    );
+
+    expect(authority).toContain('## 11. Implementation Mapping');
+    expect(authority).not.toContain('## 11. 实施影响范围');
+    expect(authority).toContain('IMPLEMENTATION_MAPPING_ONLY=YES');
+    expect(authority).toContain('TASK_WRITE_SCOPE_AUTHORITY=NO');
+
+    expect(authority).toContain('Post-Spec-Merge Gate');
+    expect(authority).not.toContain('Post-Merge Gate');
+    const lifecycleStart = authority.indexOf('<!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:START -->');
+    const lifecycleEnd = authority.indexOf('<!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:END -->');
+    expect(lifecycleStart).toBeGreaterThanOrEqual(0);
+    expect(lifecycleEnd).toBeGreaterThan(lifecycleStart);
+    const lifecycle = authority.slice(lifecycleStart, lifecycleEnd);
+    expect(lifecycle).toContain('Atomic Spec Merge');
+    expect(lifecycle).toContain('Post-Spec-Merge Gate');
+    expect(lifecycle).toContain('Git Merge');
+
+    for (const token of [
+      'PROJECT_CONTRACT_CANDIDATE_PUBLIC_TOOL=sf_contract_register',
+      'PROJECT_CONTRACT_CANDIDATE_CORE_PRODUCER=packages/daemon-core/src/tools/lib/contract-authoring.ts::authorContractCandidate()',
+      'PROJECT_CONTRACT_CANDIDATE_WRITE_SCOPE=WORK_ITEM_CANDIDATE_ONLY',
+      'PROJECT_CONTRACT_FORMAL_TRUTH_WRITE=NO',
+    ]) {
+      expect(authority, token).toContain(token);
+    }
+    expect(contractHandler).toContain("registerHandler('sf_contract_register'");
+    expect(contractHandler).toContain('authorContractCandidate({');
+    expect(contractProducer).toContain('export async function authorContractCandidate');
+
+    for (const token of [
+      'ATOMIC_SPEC_MERGE_PUBLIC_HANDLER=sf_v11_merge',
+      'ATOMIC_SPEC_MERGE_CORE_PRODUCER=packages/daemon-core/src/tools/lib/merge-runner-v11.ts::executeMerge()',
+      'ATOMIC_SPEC_MERGE_SEMANTIC_SCOPE=PROJECT_SPEC_ACTIVATION',
+      'GIT_MERGE_SEMANTIC_SCOPE=SEPARATE',
+    ]) {
+      expect(authority, token).toContain(token);
+    }
+    expect(mergeHandler).toContain("registerHandler('sf_v11_merge'");
+    expect(mergeHandler).toContain('const result = await executeMerge({');
+    expect(mergeProducer).toContain('export async function executeMerge');
+  });
+
+
+
+  it('keeps V133 final closure handoff and error ledger structurally reconciled', async () => {
+    const handoff = await readFile(handoffPath, 'utf8');
+    const ledger = await readFile(
+      resolve(repoRoot, 'docs/rule/specforge-development-error-ledger-and-experience.md'),
+      'utf8',
+    );
+
+    expect(handoff).toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D19');
+    expect(handoff).toContain('CURRENT_STAGE=SPECFORGE_SELF_DEVELOPMENT_V133_FINAL_AUTHORITY_CONTENT_REMOTE_SYNC');
+    expect(handoff).toContain('UNRECORDED_FAILURES=0');
+    expect(handoff).not.toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D14');
+    expect(handoff).not.toContain('当前唯一产品 blocker 仍是 ERR-271');
+
+    const err284Start = '<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:START -->';
+    const err284End = '<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:END -->';
+    const start = ledger.indexOf(err284Start);
+    const end = ledger.indexOf(err284End, start + err284Start.length);
+    expect(start).toBeGreaterThanOrEqual(0);
+    expect(end).toBeGreaterThan(start);
+    const err284 = ledger.slice(start, end + err284End.length);
+    expect(err284).toContain('\n## ERR-284 / EXP-250');
+    expect(err284).not.toContain('\\n## ERR-284 / EXP-250');
+    expect(err284).not.toContain('\\n<!-- SPECFORGE_ERR284');
+
+    for (const token of [
+      '## ERR-286 / EXP-252',
+      '## ERR-287 / EXP-253',
+    ]) {
+      expect(ledger, token).toContain(token);
+    }
+  });
+
 
 });
