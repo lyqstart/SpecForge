@@ -7215,3 +7215,30 @@ actual_files
 - **状态**：CLOSED_BY_V215_USERLEVEL_TOOL_RECOVERY_ARGUMENT_SCHEMA_ALIGNMENT。
 
 <!-- SPECFORGE_ERR412_ERR413_RECOVERY_WRAPPER_SCHEMA_ALIGNMENT:END -->
+
+<!-- SPECFORGE_ERR414_ERR416_RECOVERY_STATE_SIDE_EFFECT_SERIES:START -->
+
+## ERR-414 / EXP-007 + EXP-012 + EXP-231 — V217 closed-spec-migration Recovery 的状态读取额外重写 `runtime/state.json`
+- **时间**：2026-08-10。
+- **一手事实**：V217 正式 `sf_git_branch_create(recovery_mode=closed_spec_migration,reconcile_attempt_id=attempt-0006)` 返回 `success=true`、`branch_created=false`、`git_context_reused=true`、`recovery_validation=passed`，创建 `.specforge/work-items/WI-0004/git_delivery_recovery.json`，SHA256=`3B0B6D545C11F337C4586A97551633EA06026F7D69CE5D30372574CD83A92474`。V217 post-audit 随后发现 `.specforge/runtime/state.json` 内容发生变化，Fail Closed；未执行 checkpoint、Git Merge、Gate 或 Close。
+- **源码根因**：`sf-git-branch-create.ts` 使用 `readAuthoritativeState()`；该读取链调用 `StateManager.rebuildFromEventsFile()`，后者执行 `rebuildState()` 后无条件 `persistState()`，导致单纯读取产生 projection write。
+- **修复**：仅在 `sf_git_branch_create` handler 内改成 `rebuildState()` + `getState()`；WAL 仍为状态真相源，但读取不再持久化 projection。StateManager 公共 API 和其他消费者不改。
+- **重试边界**：V217 Recovery 已生成有效 recovery evidence，禁止重跑。
+- **状态**：CLOSED_BY_V220_NONPERSISTING_HANDLER_READ_AND_EXACT_PROJECTION_COMPENSATION。
+
+## ERR-415 / EXP-007 + EXP-012 + EXP-231 + EXP-244 — V218 错把 `runtime/state.json` 假设为 HEAD 跟踪文件
+- **时间**：2026-08-10。
+- **一手事实**：V218 在所有产品写入前执行 `git show HEAD:.specforge/runtime/state.json`，Git 返回该文件存在于工作区但不存在于 HEAD。V218 随即回滚，SpecForge worktree CLEAN，无 commit/push、无 Validation 写入、无生命周期动作。
+- **根因**：未先证明 trackedness 就使用 `git show HEAD:path`。
+- **防护**：任何 Git blob/path 对账前先使用 `git ls-files --error-unmatch` 证明 trackedness；未跟踪 runtime projection 使用已保存 SHA256/结构化证据，不伪造 Git baseline。
+- **状态**：CLOSED_BY_V220_TRACKEDNESS_PREFLIGHT.
+
+## ERR-416 / EXP-007 + EXP-012 + EXP-231 — V219 把 V217 后 `stateVersion` 错误硬编码为 569
+- **时间**：2026-08-10。
+- **一手事实**：V219 首先成功证明 daemon 已停止、`runtime/state.json` 为 untracked；随后读到 `VALIDATION_STATE_VERSION_AFTER_V217=570`，而 runner 硬编码要求 569，因此在任何修改前 Fail Closed，SpecForge worktree 仍 CLEAN，V217 recovery evidence hash 不变。
+- **根因**：把运行时 projection version 当作稳定业务事实。daemon 正常停止/落盘也可能推进 projection version，因此不能用“必须等于动作后某个数字”判断 V217 的副作用。
+- **修复**：V220 不要求当前 version 是 569/570/任何指定值。它只定位唯一 `stateVersion` 字段，把该字段候选恢复为 V217 前已知值 568，并要求候选**整文件 SHA256**精确等于 V212/V217 前基线 `964F6DA998243281217C32DFF3CDB5F094804A37C4E67135D3AF318DBC96DD89`。不满足即禁止写入。
+- **效率规则**：已知源码路径定向读取；禁止无界 `rglob`；不跨人工 daemon/OpenCode 生命周期边界时，调查→修复→验证→提交→安装→补偿→handoff 一轮完成。
+- **状态**：CLOSED_BY_V220_SHA256_PREIMAGE_COMPENSATION_GUARD.
+
+<!-- SPECFORGE_ERR414_ERR416_RECOVERY_STATE_SIDE_EFFECT_SERIES:END -->

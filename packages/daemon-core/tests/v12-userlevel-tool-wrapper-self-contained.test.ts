@@ -40,3 +40,22 @@ describe("sf_git_branch_create recovery argument contract", () => {
     expect(handler).toContain("git_delivery_recovery.json");
   });
 });
+
+describe("sf_git_branch_create recovery state-read side-effect contract", () => {
+  it("rebuilds authoritative state in memory without persisting state.json", () => {
+    const handler = read("packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts");
+    const stateManager = read("packages/daemon-core/src/state/StateManager.ts");
+
+    expect(handler).toContain("readAuthoritativeStateWithoutProjectionWrite");
+    expect(handler).toContain("projectSm.rebuildState()");
+    expect(handler).toContain("projectSm.getState(input.workItemId)");
+    expect(handler).not.toContain("readAuthoritativeState({ deps, projectRoot, workItemId })");
+    expect(handler).not.toContain("projectSm.rebuildFromEventsFile");
+    expect(handler).not.toContain("persistState");
+
+    expect(stateManager).toContain("async rebuildState()");
+    expect(stateManager).toContain("async rebuildFromEventsFile()");
+    expect(stateManager).toContain("await this.rebuildState()");
+    expect(stateManager).toContain("await this.persistState()");
+  });
+});
