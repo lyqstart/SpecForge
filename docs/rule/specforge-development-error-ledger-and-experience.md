@@ -7348,3 +7348,329 @@ actual_files
 - **状态**：CLOSED_BY_V240_AUTHORITY_AND_FROZEN_CONTRACT_CONSUMER_CLOSURE。
 
 <!-- SPECFORGE_ERR417_ERR436_VALIDATOR_GOVERNANCE_CLOSURE:END -->
+
+# V251 — ERR-437～ERR-471 历史失败回填
+
+> ERR-417 产品修改前的强制历史失败对账。写入前必须由结构化 parser 证明远程/本地基线仍以 ERR-436 为最新正式错误条目。
+
+<!-- SPECFORGE_ERR437_ERR471_PRE_ERR417_PRODUCT_FIX_BACKFILL:START -->
+
+## ERR-437 — Authority Bootstrap 来源顺序执行错误
+
+- **状态**：`CLOSED`
+- **一手事实**：此前 Authority Bootstrap 未严格按 GITHUB_REF_API_LIVE → STRUCTURED_GIT_LS_REMOTE → USER_BOOTSTRAP_GIT_LS_REMOTE 的规定顺序执行。
+- **根因**：Bootstrap 来源顺序属于治理入口契约，不能因为已有旧 HEAD 或某个来源更方便就跳级。
+- **正确做法 / 修复**：后续每轮把三层来源顺序固化为串行 Fail Closed；只有上一级明确失败后才进入下一级。
+- **类防护**：`EXP-113,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-438 — V242 patch anchor 绑定 Unicode 视觉分隔线导致 cardinality=0
+
+- **状态**：`CLOSED`
+- **一手事实**：V242 对 StateManager 的 exact patch anchor 把 Unicode 视觉分隔线纳入锚点，实际源码视觉相似但字符不一致，导致匹配数为 0。
+- **根因**：视觉字符不应作为结构性代码补丁的稳定定位依据。
+- **正确做法 / 修复**：源码补丁只锚定稳定符号、函数签名和 AST/语义边界，并在修改前验证唯一 cardinality。
+- **类防护**：`EXP-115,EXP-152,EXP-153`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-439 — V243 recovery regression 使用错误 cwd
+
+- **状态**：`CLOSED`
+- **一手事实**：packages/daemon-core/tests/unit/spec-migration-git-delivery-recovery.test.ts 共 7 个测试，6 PASS、1 FAIL；失败路径重复为 packages/daemon-core/packages/daemon-core/...。
+- **根因**：测试用 process.cwd() 拼仓库根相对路径，但 V243 从 packages/daemon-core 作为 cwd 执行，调用入口与测试路径假设不一致。
+- **正确做法 / 修复**：产品断言不变；正式修复测试 harness 的源码定位，并同时验证 package cwd 与 repo root 两种入口。
+- **类防护**：`EXP-117,EXP-137,EXP-138`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-440 — V244 Windows executable 调用触发 WinError 2
+
+- **状态**：`CLOSED`
+- **一手事实**：V244 USER_BOOTSTRAP 已取得 live HEAD 并读取 exact authority，但后续只读取证阶段抛出 [WinError 2] 系统找不到指定的文件。
+- **根因**：Windows 下把命令/脚本当原生 executable 直接交给 subprocess，未统一经过适用的 CMD shim。
+- **正确做法 / 修复**：Windows npm/bun/cmd 脚本统一使用 cmd.exe /d /s /c + call 的桥接文件；Git 等真实 exe 保持结构化 argv。
+- **类防护**：`EXP-002,EXP-100,EXP-119`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-441 — V245 生成器嵌套三引号触发 SyntaxError
+
+- **状态**：`CLOSED`
+- **一手事实**：V245 预发布 runner 生成阶段因外层生成器与内层源码同时使用三引号，导致 Python SyntaxError；未生成可执行 ZIP，未触碰仓库。
+- **根因**：大型脚本生成器把多层源码内嵌在同一字符串，容易出现引号层级污染。
+- **正确做法 / 修复**：runner、payload、测试源码分文件生成；生成后对每个脚本独立 compile/parse 再打包。
+- **类防护**：`EXP-156,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-442 — V245 Artifact validator 对 PowerShell 禁止声明产生假阳性
+
+- **状态**：`CLOSED`
+- **一手事实**：预发布 validator 因文本中存在 POWERSHELL_ALLOWED=NO 而判定执行了 PowerShell。
+- **根因**：把禁词存在性误当成执行行为，没有区分声明文本与实际 execution primitive。
+- **正确做法 / 修复**：只审计 .cmd/.py 等真实执行路径和 subprocess primitive；文档/回执/错误台账中的说明文字不作为执行证据。
+- **类防护**：`EXP-076,EXP-195`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-443 — V245 Recovery probe 双重引号导致脚本文件找不到
+
+- **状态**：`CLOSED`
+- **一手事实**：用户执行 V245 后 Recovery Acceptance 失败：bun 收到双重引用的 recovery_probe.ts 路径，报 File not found。
+- **根因**：Python 拼接 cmd.exe /c 命令字符串时再次为已加引号的路径加引号，形成 Windows 双重引用。
+- **正确做法 / 修复**：改为独立 .cmd bridge，在 bridge 内引用环境变量路径；Python 仅调用 cmd.exe /d /s /c call <bridge>。
+- **类防护**：`EXP-093,EXP-119`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-444 — V246 草稿 Recovery Acceptance 缺少 canonical 六项审计
+
+- **状态**：`CLOSED`
+- **一手事实**：V246 预发布草稿的 Recovery Acceptance 回执没有完整覆盖当前权威要求的 Recovery audit 字段；草稿未发布。
+- **根因**：沿用旧版恢复回执结构，没有先对照最新 authority 的 GOV-STAGE-RECOVERY-ACCEPT-001。
+- **正确做法 / 修复**：Recovery 包必须先生成 Governance Preconclusion + Stage Input，再输出字段完整的六项审计和独立 validator acceptance。
+- **类防护**：`EXP-077,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-445 — spec-migration recovery test 的正式 package cwd 契约不一致
+
+- **状态**：`IDENTIFIED`
+- **一手事实**：daemon-core 正式 test script 为 vitest run；该 recovery test 用 process.cwd() 作为仓库根，导致从 package 正式入口执行时路径错误。
+- **根因**：测试 harness 把调用者 cwd 当稳定仓库根，违反 package 级测试入口的路径独立性。
+- **正确做法 / 修复**：仅修改测试 harness：基于测试文件自身 import.meta.url/fileURLToPath 解析 package/source 路径；保留 7 个业务断言并验证两种 cwd。
+- **类防护**：`EXP-117,EXP-137,EXP-138`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-446 — V246 Artifact validator 再次扫描说明文字导致 PowerShell 假阳性
+
+- **状态**：`CLOSED`
+- **一手事实**：预发布 V246 validator 扫描 error ledger 文本中的 powershell.exe / Start-Process 描述，再次误判为执行 primitive。
+- **根因**：静态审计范围扩大到非执行 payload，重复了 ERR-442 的分类错误。
+- **正确做法 / 修复**：执行行为审计严格限制到 runner/CMD/validator 等可执行文件；payload 只做内容完整性与引用审计。
+- **类防护**：`EXP-076,EXP-195`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-447 — V246 预发布 Delivery Contract 漂移
+
+- **状态**：`CLOSED`
+- **一手事实**：V246 草稿仍沿用旧 manifest/外层命令结构，与当前 authority 要求的单一 identity 对象、runner_entry、线性 extract→runner 和标准回执不一致。
+- **根因**：交付模板未从当前 exact authority 重建，复用了历史结构。
+- **正确做法 / 修复**：每个新 delivery 先从当前 GOV-STAGE-DELIVERY/IDENTITY/RECEIPT 规则生成 manifest 和入口，再做独立 Artifact Acceptance。
+- **类防护**：`EXP-133,EXP-134,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-448 — V246 ZIP 增量更新导致旧成员污染
+
+- **状态**：`CLOSED`
+- **一手事实**：重建 /mnt/data/SFV246.zip 时对旧同名 ZIP 做增量更新，旧草稿根文件与新 SFV246/ bundle 同时存在；该包未发布。
+- **根因**：ZIP rebuild 未先删除目标文件，破坏了唯一 bundle 结构。
+- **正确做法 / 修复**：每次打包前删除旧 ZIP，再从空目标创建；验收 exact member set 和单一顶层 bundle。
+- **类防护**：`EXP-080,EXP-083,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-449 — V246 草稿在 Recovery 未接受时携带产品修改
+
+- **状态**：`CLOSED`
+- **一手事实**：预发布集成 V246 曾计划同时携带 Recovery 与 ERR-417 产品修改；发现 Recovery_ACCEPTED=NO 后废弃，最终 V246 改为纯 live-ref 取证。
+- **根因**：把恢复成果与有副作用产品修改混在同一尚未获得 Recovery Acceptance 的 delivery。
+- **正确做法 / 修复**：Recovery 未接受时只允许恢复/只读取证；Recovery Accepted 后再进入产品阶段。
+- **类防护**：`EXP-158,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-450 — Bootstrap exact authority 阶段夹带 handoff/error ledger 读取
+
+- **状态**：`CLOSED`
+- **一手事实**：一次 post-V246 Bootstrap 在同一工具调用中读取 exact authority、current-handoff 和 error ledger，并缺少正确阶段 Guard；随后 Fail Closed。
+- **根因**：Authority exact-read 阶段没有保持单阶段读取边界。
+- **正确做法 / 修复**：Bootstrap 严格串行：Receipt Audit/Guard → live ref → exact authority only → success/self-check → Recovery。
+- **类防护**：`EXP-113,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-451 — Bootstrap 未先完成 canonical Receipt Audit
+
+- **状态**：`CLOSED`
+- **一手事实**：下一次 Bootstrap 尝试直接进入 Guard，没有先按 canonical contract 消费上一份 live-ref receipt；该轮 Fail Closed。
+- **根因**：恢复了内容事实但没有先完成结构化回执消费契约。
+- **正确做法 / 修复**：新回合第一步固定为 Receipt Audit，并把消费状态写入 canonical pretool guard。
+- **类防护**：`EXP-193,EXP-195`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-452 — Bootstrap Guard 自行改写 canonical 字段 schema
+
+- **状态**：`CLOSED`
+- **一手事实**：随后一次尝试自行重新组织 BOOTSTRAP ENVELOPE PRETOOL GUARD 字段，而不是按 authority 固定模板原字段/原顺序填值；该轮 Fail Closed。
+- **根因**：把固定治理协议当成可自由表述的说明文本。
+- **正确做法 / 修复**：固定治理 block 只允许填值，不重命名字段、不改顺序、不合并语义。
+- **类防护**：`EXP-193,EXP-195`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-453 — V248 前置 GITHUB_REF_API_LIVE 被浏览环境 URL 安全限制阻断
+
+- **状态**：`CLOSED`
+- **一手事实**：V248 前置 Bootstrap 中，ChatGPT web 对 GitHub API live-ref URL 的直接打开被 URL safety 限制阻断，未取得 live HEAD。
+- **根因**：外部工具环境限制，不是 GitHub 仓库状态失败。
+- **正确做法 / 修复**：记录第一级失败证据后按 authority 顺序进入第二级；不得把旧 HEAD 当 live 事实。
+- **类防护**：`EXP-007,EXP-113`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-454 — V248 前置 STRUCTURED_GIT_LS_REMOTE 因 ChatGPT 环境 DNS 失败
+
+- **状态**：`CLOSED`
+- **一手事实**：第二级结构化 git ls-remote 在 ChatGPT 执行环境无法解析 github.com，因此未取得 live HEAD。
+- **根因**：执行环境网络/DNS 不可用。
+- **正确做法 / 修复**：按规定进入 USER_BOOTSTRAP_GIT_LS_REMOTE；V248 用户本机回执成功固定 live HEAD。
+- **类防护**：`EXP-082,EXP-113`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-455 — V248 首次 Artifact Acceptance 发现 __pycache__ 污染
+
+- **状态**：`CLOSED`
+- **一手事实**：V248 第一版 ZIP 在预发布独立验收时发现 py_compile 生成的 __pycache__ 被打包；该版本未发布。
+- **根因**：验证动作自身生成副产物后没有在打包成员审计前清理。
+- **正确做法 / 修复**：脚本语法检查使用不落盘 compile/AST；打包前清除缓存并拒绝 pyc/__pycache__ 成员。
+- **类防护**：`EXP-080,EXP-083`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-456 — authority path-commit GitHub API URL 被浏览环境安全限制阻断
+
+- **状态**：`CLOSED`
+- **一手事实**：本轮调查 authority 文件最近 commit 时，GitHub path-commit API URL 被 web 工具安全限制拒绝。
+- **根因**：浏览工具 URL 策略限制，不能作为仓库事实来源。
+- **正确做法 / 修复**：使用已结构化确认且 HEAD 未变化的 authority commit 证据，并在用户本地 runner 通过 git log -1 HEAD -- <authority path> 再验证。
+- **类防护**：`EXP-007,EXP-113`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-457 — codeload archive 下载因 URL 访问控制被拒绝
+
+- **状态**：`CLOSED`
+- **一手事实**：尝试 container.download GitHub codeload exact archive 时，工具因 URL 访问控制拒绝。
+- **根因**：工具访问控制限制，不是源码不存在。
+- **正确做法 / 修复**：不把该下载路径作为必须证据；改用 exact raw web 文件与随后用户本地 Git 结构化读取。
+- **类防护**：`EXP-007,EXP-121`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-458 — codeload archive web open 被 URL 安全策略拒绝
+
+- **状态**：`CLOSED`
+- **一手事实**：尝试通过 web 打开 codeload exact archive URL 仍被安全策略拒绝。
+- **根因**：工具访问策略限制。
+- **正确做法 / 修复**：停止重复尝试该来源，使用已允许的 exact raw source 和本地 Git prewrite consumer audit。
+- **类防护**：`EXP-007,EXP-121`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-459 — GitHub repository code search 返回 HTTP 429
+
+- **状态**：`CLOSED`
+- **一手事实**：本轮消费者调查尝试 GitHub repository code search 时返回 HTTP 429，无法作为完整 consumer inventory。
+- **根因**：公共搜索接口限流，召回不可保证。
+- **正确做法 / 修复**：最终 consumer inventory 必须在后续用户本地 runner 使用 git grep/结构化 Git 读取完成；网页搜索只作辅助。
+- **类防护**：`EXP-007,EXP-121`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-460 — container.download raw TypeScript 因内容类型限制被拒绝
+
+- **状态**：`CLOSED`
+- **一手事实**：尝试把 raw.githubusercontent.com 的 TypeScript 直接下载到 container 时，download 工具拒绝 application/javascript 内容类型。
+- **根因**：工具下载类型白名单限制。
+- **正确做法 / 修复**：源码调查改用 web exact raw；需要本地文件时由用户 runner 从已检出的 exact commit 读取。
+- **类防护**：`EXP-002,EXP-007`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-461 — container curl raw.githubusercontent 因 DNS 失败
+
+- **状态**：`CLOSED`
+- **一手事实**：随后在 container 中用 curl 获取 raw.githubusercontent.com 失败，DNS 无法解析。
+- **根因**：当前 container 网络/DNS 不可用。
+- **正确做法 / 修复**：停止依赖 container 网络；以 web exact raw + 用户本地 Git 为正式证据链。
+- **类防护**：`EXP-002,EXP-113`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-462 — V244 首次 Artifact Acceptance 失败的具体断言未保留
+
+- **状态**：`CLOSED`
+- **一手事实**：V244 生成后第一次静态 Artifact Acceptance 被判定未通过，但当时只保留了“静态约束检查未全通过”的结论，没有把具体失败断言写入最终可追溯证据。
+- **根因**：失败成果虽未发布，但诊断证据粒度不足，降低了重复错误审计能力。
+- **正确做法 / 修复**：以后所有 pre-release Artifact Acceptance 失败也记录失败 assertion/fixture/文件；不得只记录笼统失败结论。
+- **类防护**：`EXP-120,EXP-123,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-463 — 识别未回填错误后仍继续了 ERR-417 产品调查/设计
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：本轮 Recovery 已确认远程 ledger 只到 ERR-436 后，仍继续完成了 ERR-417 源码调查、影响分析和产品 Stage Input，尚未产生仓库写入或产品 ZIP。
+- **根因**：没有在发现 UNRECORDED_FAILURES 后立即把“先回填、再重读经验”作为唯一后续动作。
+- **正确做法 / 修复**：立即冻结产品阶段；V249 改为 ledger-only reconciliation delivery。只有该回填 commit/push 成功并重新 Bootstrap 后才允许生成 ERR-417 产品修改包。
+- **类防护**：`EXP-001,EXP-015,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-464 — V249 预发布生成器遗漏 sha256_file helper
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：V249 第一次本地生成尝试在构造 manifest 文件哈希时抛出 NameError: sha256_file is not defined；工具明确返回生成未成功，不得假设任何 ZIP/文件成果。
+- **根因**：生成器引用了 runner 内部同名能力，但没有在外层 artifact generator 自身定义该 helper。
+- **正确做法 / 修复**：从零重建 V249；外层生成器先定义并单测 hash helper，再生成 manifest；失败产物不复用。
+- **类防护**：`EXP-156,EXP-193`
+- **范围影响**：不据本条失败扩大 ERR-417 产品架构/契约/模块范围；任何新增影响仍需重新执行影响分析。
+
+## ERR-465 — V249 Artifact Acceptance 发现 authority unique marker 文本错误
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：V249 第一份已生成但尚未发布的 ZIP 在独立 Artifact Acceptance 中检查 exact authority 时发现，runner 搜索的唯一权威标记写成“架构一致性治理和契约治理”，而 exact authority 实际为“架构一致性治理（包括契约治理）的唯一当前权威源。”；若发布会在任何仓库写入前错误 Fail Closed。
+- **根因**：runner 的 marker expected 不是从当前 exact authority 稳定 marker 逐字绑定，而是人工改写了同义句。
+- **正确做法 / 修复**：使用 exact authority 当前唯一 marker；独立 Artifact Acceptance 必须在交付前以 exact authority 内容验证 marker cardinality=1。
+- **类防护**：`EXP-115,EXP-193,EXP-195`
+- **范围影响**：不扩大 ERR-417 产品范围；该缺陷只影响 V249 前置 ledger delivery harness。
+
+## ERR-466 — V249 预发布 Validation snapshot 使用 git write-tree 违反只读边界
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：V249 独立 Artifact Acceptance 审查 runner 时发现，Validation repository snapshot 函数调用 `git write-tree`；即使 worktree/index 不变，该命令也可能向 Git object database 写入 tree object，因此不能作为“Validation repository 只读”证据。
+- **根因**：把“不会修改 tracked worktree”错误等同于“不会产生任何 repository write”。
+- **正确做法 / 修复**：复用 V247 已接受的只读 snapshot：`git branch --show-current` + `git rev-parse HEAD` + `git status --porcelain=v1 -z` 的原始字节 SHA256；前后结构化快照必须完全一致。
+- **类防护**：`EXP-007,EXP-012,EXP-193`
+- **范围影响**：不扩大 ERR-417 产品范围；只修 V249 delivery harness 的 Validation read-only audit。
+
+## ERR-467 — V249 A010 把 parser 布尔证据误标为 EXACT_HASH
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：独立 Artifact Acceptance 发现 V249 frozen validator contract 的 A010 实际证据是“postwrite ledger 是否保持 prewrite 原始 bytes 前缀”的布尔值，但 ASSERTION_TYPE 被写成 `EXACT_HASH`。
+- **根因**：把“byte-exact 语义”与“证据值本身是 hash”混淆。
+- **正确做法 / 修复**：A010 改为 `PARSER`；实际 hash/byte 比较在独立 parser 中完成，validator 只机械比较 parser 的布尔结构化结果。
+- **类防护**：`EXP-076,EXP-193,EXP-195`
+- **范围影响**：仅修 V249 validator harness，不扩大产品范围。
+
+## ERR-468 — V249 identity receipt 未绑定 identity self-check 真结果
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：独立 Artifact Acceptance 发现 runner 在 receipt 中以 `manifest` 是否已加载决定 `IDENTITY_BINDING_AUDIT=PASS`；若 manifest 已解析但 identity 字段/hash 校验失败，失败回执仍可能错误显示 PASS。
+- **根因**：把“manifest 可读取”当成“identity binding 已验收”。
+- **正确做法 / 修复**：增加独立 `identity_binding_audit` 状态，只能在完整 identity self-check 全部通过后置为 PASS；失败回执保留真实 FAIL。
+- **类防护**：`EXP-120,EXP-123,EXP-193`
+- **范围影响**：仅修 V249 receipt emitter，不扩大产品范围。
+
+## ERR-469 — V249 internal reference audit 未实际执行
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：独立 Artifact Acceptance 发现 runner 的 `DELIVERY_INTERNAL_REFERENCE_AUDIT` 也是仅按 manifest 是否存在直接输出 PASS，没有机械扫描 manifest 声明的 CURRENT_STAGE/ACTION_NAME/NEXT_STAGE/NEXT_LEGAL_ACTION 中的 Vxxx token。
+- **根因**：只输出治理字段，没有实现对应审计行为。
+- **正确做法 / 修复**：按 manifest `receipt_current_delivery_reference_fields` 逐字段执行 `V[0-9]+` token 审计；出现非当前 delivery token 即 FAIL，并输出具体 mismatch。
+- **类防护**：`EXP-120,EXP-123,EXP-193`
+- **范围影响**：仅修 V249 receipt internal reference validator，不扩大产品范围。
+
+
+## ERR-470 — V249 再次使用 Windows 默认 GBK 解码 UTF-8 子进程输出
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：用户执行 V249 时，Python `subprocess` reader thread 抛出 `UnicodeDecodeError: 'gbk' codec can't decode byte 0x80 in position 20`；随后 V249 在 `PREWRITE_FACT_COLLECTION` 失败，任何 ledger 写入、commit、push 均未发生，SpecForge 最终工作树保持 CLEAN。
+- **根因**：V249 runner 的通用 `run()` / `cmd_call()` 仍使用 `capture_output=True, text=True`，让 Python 3.13 按 Windows 默认代码页解码工具输出，重复了既有 ERR-015 / EXP-002 已明确禁止的隐式编码边界。
+- **旧防护为何失效**：V249 虽把 `EXP-002` 列入适用经验，但 Artifact Acceptance 没有机械拒绝 runner 中的 `text=True` / `universal_newlines=True`，因此“已读经验”没有落实成可执行防护。
+- **正确做法 / 修复**：V251 所有 subprocess 一律捕获 bytes；统一通过 `UTF-8-SIG → UTF-8 → GB18030 → replacement fallback` 解码，结构化 Git status `-z` 直接保留 raw bytes；Artifact Acceptance 增加静态禁用 `text=True` 与多编码纯函数正反例。
+- **类防护**：`EXP-002,EXP-007,EXP-015,EXP-078,EXP-092`
+- **范围影响**：只修 failure-ledger delivery harness；不扩大 ERR-417 产品架构、契约、模块或消费者范围。
+
+## ERR-471 — V249 解码线程失败后继续对 `None` stdout 调用 `.strip()`
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：同一次 V249 用户执行在 reader thread 解码异常后，主线程继续进入 `gout()`，因 `CompletedProcess.stdout` 为 `None` 而触发 `AttributeError: 'NoneType' object has no attribute 'strip'`；标准回执记录 `RESULT=FAILED`、`FIRST_FAILED_STEP=PREWRITE_FACT_COLLECTION`、`PRIMARY_COMMIT=NONE`、`PRIMARY_PUSH=NOT_COMPLETED`。
+- **根因**：runner 把 `subprocess` 文本读取线程成功视为隐含前置条件，没有把 stdout/stderr 的“总是明确 bytes→string”作为统一返回契约；第一故障被第二故障覆盖，降低诊断质量。
+- **旧防护为何失效**：V249 的错误格式化局部使用 `(cp.stdout or '')`，但 `gout()` 仍直接 `cp.stdout.strip()`，防护没有收口到唯一 subprocess adapter。
+- **正确做法 / 修复**：V251 只保留一个 bytes subprocess adapter，返回对象中的 `stdout/stderr` 永远是字符串且同时保留 `stdout_bytes/stderr_bytes`；所有 `gout()`、validator 日志和错误格式化统一消费该 adapter。Artifact Acceptance 直接执行解码 helper 的 UTF-8、GB18030、非法字节 fallback 夹具并断言不返回 `None`。
+- **类防护**：`EXP-002,EXP-004,EXP-007,EXP-015,EXP-078`
+- **范围影响**：只修 failure-ledger delivery harness；不扩大 ERR-417 产品架构、契约、模块或消费者范围。
+
+<!-- SPECFORGE_ERR437_ERR471_PRE_ERR417_PRODUCT_FIX_BACKFILL:END -->
