@@ -7674,3 +7674,51 @@ actual_files
 - **范围影响**：只修 failure-ledger delivery harness；不扩大 ERR-417 产品架构、契约、模块或消费者范围。
 
 <!-- SPECFORGE_ERR437_ERR471_PRE_ERR417_PRODUCT_FIX_BACKFILL:END -->
+
+# V255 — ERR-472～ERR-475 历史失败回填
+
+> ERR-417 产品修改前的强制失败对账。本包只回填 V253 前后未落库的交付生成/验收/身份失败，不携带 ERR-417 产品源码或测试修改。
+
+<!-- SPECFORGE_ERR472_ERR475_PRE_ERR417_PRODUCT_FIX_BACKFILL:START -->
+
+## ERR-472 — V253 预发布产品包生成器嵌套三引号触发 SyntaxError
+
+- **状态**：`CLOSED`
+- **一手事实**：在 V252 Authority Bootstrap、Recovery 和 ERR-417 影响分析完成后，V253 产品交付包的本地预发布生成器在构造 runner 源码时触发 Python `SyntaxError`；失败发生在 ZIP 生成前，没有向用户发布 V253 ZIP，也没有读取或修改用户本地 SpecForge / Validation / WorkDesk 仓库，没有 commit、push 或 SpecForge 生命周期动作。
+- **根因**：外层 Python 生成器用三引号承载大段 runner 源码，runner 内部又包含同类三引号字符串，导致源码分隔符在生成器解析阶段提前闭合；这是 ERR-441 同类错误再次发生。
+- **旧防护为何未生效**：ERR-441 的防护集中在“生成后的 runner / payload 分文件并做 compile/parse”，但这次失败发生在**生成器自身被 Python 解析时**，尚未产生可供后验 compile 的 runner，因此后验验证无法覆盖生成器源文件本身。
+- **正确做法 / 修复**：禁止再次用同一层大型三引号字符串嵌套生成 runner；后续改为从已验收模板做机械变换、独立文件写入，或使用不会与内容冲突的外部模板；生成器自身必须先通过解析/执行，再对最终 runner 独立 compile/parse，最后才允许打 ZIP。
+- **类防护**：`EXP-156,EXP-193`
+- **范围影响**：仅影响 ChatGPT 交付生成 harness；不扩大 ERR-417 的 Project Architecture、Project Data Model、Module Design、Project Contract、Module Contract、生产者/消费者、Workflow/Gate/Runtime 或产品修改范围。
+
+## ERR-473 — V253 Artifact Acceptance 把文件 encoding 参数误判为 subprocess 文本解码
+
+- **状态**：`CLOSED`
+- **一手事实**：V253 第一次独立 Artifact Acceptance 在未发布 ZIP 上失败。runner 的 `subprocess.run` 实际使用 `capture_output=True` 捕获 bytes，并通过显式 `decode_bytes()` 执行 UTF-8/GB18030 解码；失败断言却扫描整个 runner 的 `encoding=` 关键词，把 `Path.read_text()` / `Path.write_text()` 的正常 UTF-8 文件编码参数误判为 subprocess 文本解码配置。该版本未发布、未执行用户仓库。
+- **根因**：Artifact validator 使用源码关键词存在性代替对 `subprocess.run` 调用参数的语义审计，重复了 ERR-442/ERR-446 的“说明/非目标语义被误当执行事实”类错误。
+- **旧防护为何未生效**：既有防护已经要求 PowerShell/执行 primitive 审计只看真实执行路径，但本次 subprocess 编码审计仍使用全文件文本匹配，没有把同一原则落实到 Python AST 调用级检查。
+- **正确做法 / 修复**：Artifact Acceptance 改为解析 Python AST，只检查 `subprocess.run` 调用是否出现 `text` / `universal_newlines` / `encoding` / `errors` 等文本解码参数，并验证 stdout/stderr 经过明确 bytes decoder；文件 I/O 的 `encoding="utf-8"` 不参与 subprocess 解码判断。
+- **类防护**：`EXP-076,EXP-195`
+- **范围影响**：仅影响 ChatGPT Artifact Acceptance harness；不扩大 ERR-417 产品架构、契约、生产者/消费者或 7 文件产品修改范围。
+
+## ERR-474 — V253 manifest 与 runner 的 runner_entry 身份绑定残留旧版本
+
+- **状态**：`FIX_IMPLEMENTED`
+- **一手事实**：用户执行 V253 时，最终 ZIP 的 `manifest.json` 声明 `runner_entry=run_sfv253.cmd`，但 `scripts/runner.py` 的 identity self-check 仍硬编码比较 `run_sfv251.cmd`；标准回执记录 `IDENTITY_BINDING_AUDIT=FAIL`、`FIRST_FAILED_STEP=IDENTITY_SELF_CHECK`、`ERROR=RuntimeError: runner_entry mismatch`。失败发生在任何仓库写入、commit、push 前，SpecForge worktree 最终 CLEAN，Validation 与 SpecForge 生命周期均未执行。
+- **根因**：V253 从旧 ledger delivery 模板派生时，只更新了 manifest 和大部分交付身份，没有把 runner 内的 `runner_entry` 期望值纳入同一身份生产源；预发布 Artifact Acceptance 又只验证 manifest/hash/静态引用，没有实际执行最终 bundle 的 identity self-check，因此漏过版本残留。该错误属于 ERR-447/ERR-468/ERR-469 同类的 Delivery Identity / Internal Reference 漂移。
+- **旧防护为何未生效**：已有 identity manifest、hash 和 internal reference audit，但没有把“最终 runner 对最终 manifest 实际执行 self_identity()”作为发布前必过断言；静态检查也没有机械扫描 `run_sfvNNN.cmd` 版本引用与当前 delivery 的一致性。
+- **正确做法 / 修复**：V255 不继续修 V253 runner，而是从真实成功的 V251 ledger runner 重新机械派生；单一 delivery identity 同时生成 manifest、runner_entry、CMD 入口和 runner 自检期望。最终 ZIP 发布前必须在构建目录和重新解压目录各实际执行一次 `self_identity()`；并扫描所有可执行文件中的 `run_sfv\d+\.cmd` / `V\d+` 当前交付引用，发现非当前 delivery 立即 Fail Closed。
+- **类防护**：`EXP-004,EXP-007,EXP-015,EXP-077,EXP-120,EXP-123,EXP-193,EXP-195`
+- **范围影响**：仅影响 ChatGPT delivery identity harness；不扩大 ERR-417 的 Project Architecture、Project Data Model、Module Design、Project Contract、Module Contract、生产者/消费者、Workflow/Gate/Runtime 或冻结产品修改范围。
+
+## ERR-475 — V255 模板派生遗漏小写 run_sfv251.cmd 版本引用
+
+- **状态**：`CLOSED`
+- **一手事实**：V255 第一次预发布构建从真实成功的 V251 ledger runner 机械派生时，独立 Artifact Acceptance 扫描 `scripts/runner.py`，发现仍存在 `run_sfv251.cmd`；失败发生在最终 ZIP 创建前，未发布给用户，未读取或修改用户 SpecForge / Validation / WorkDesk 仓库。
+- **根因**：模板变换只覆盖 `SFV251` / `V251` 大写身份 token，没有把小写文件名 token `run_sfv251.cmd` 纳入同一变换集合；说明即使采用已成功模板，只要存在第二份硬编码 runner_entry，仍会产生身份漂移。
+- **旧防护为何未生效 / 本次防护结果**：ERR-474 新增的“扫描可执行文件 runner_entry 引用”已经生效，因此错误在发布前被拦截；但根因仍证明运行时不应维护第二份版本化 runner_entry 期望。
+- **正确做法 / 修复**：V255 runtime identity 改为从 manifest 的 `delivery_id` 机械派生 expected entry（`V255 -> run_sfv255.cmd`），并验证 manifest `runner_entry` 指向 bundle 内真实存在文件；bundle 名同样从 delivery_id 派生。Artifact Acceptance 继续在构建目录和最终 ZIP 重新解压目录各执行一次 `self_identity()`，并扫描可执行文件中的旧 runner_entry。
+- **类防护**：`EXP-004,EXP-007,EXP-015,EXP-077,EXP-120,EXP-123,EXP-193,EXP-195`
+- **范围影响**：仍仅影响 ChatGPT delivery identity harness；ERR-417 产品范围不扩大。
+
+<!-- SPECFORGE_ERR472_ERR475_PRE_ERR417_PRODUCT_FIX_BACKFILL:END -->
