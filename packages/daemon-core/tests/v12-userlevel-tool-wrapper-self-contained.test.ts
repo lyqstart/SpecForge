@@ -22,3 +22,21 @@ describe("v1.2 userlevel tool wrappers are self-contained", () => {
   });
 
 });
+
+describe("sf_git_branch_create recovery argument contract", () => {
+  it("keeps userlevel wrapper arguments aligned with daemon recovery consumer", () => {
+    const wrapper = read("setup/userlevel-opencode/tools/sf_git_branch_create.ts");
+    const handler = read("packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts");
+
+    for (const arg of ["recovery_mode", "reconcile_attempt_id"]) {
+      expect(wrapper).toContain(`${arg}: tool.schema.string().optional()`);
+      expect(handler).toContain(`args['${arg}']`);
+    }
+
+    expect(wrapper).toContain("closed_spec_migration");
+    expect(handler).toContain("SPEC_MIGRATION_GIT_RECOVERY_MODE_REQUIRED");
+    expect(handler).toContain("SPEC_MIGRATION_GIT_RECOVERY_ATTEMPT_REQUIRED");
+    expect(handler).toContain("existing_branch_and_git_context_reused");
+    expect(handler).toContain("git_delivery_recovery.json");
+  });
+});

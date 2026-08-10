@@ -11,6 +11,8 @@ export default tool({
     confirmed: tool.schema.boolean().describe("必须为 true，表示用户已确认 branch_name"),
     base_branch: tool.schema.string().optional().describe("基线分支，默认 main"),
     require_clean: tool.schema.boolean().optional().describe("是否要求工作区干净，默认 true"),
+  recovery_mode: tool.schema.string().optional().describe("closed spec migration Git delivery 恢复模式；当前支持 closed_spec_migration"),
+  reconcile_attempt_id: tool.schema.string().optional().describe("closed spec migration Git delivery 恢复时必须指定并重新校验的 Gate Attempt ID，例如 attempt-0006"),
   },
   async execute(args, context) {
     const result = await daemon.invokeTool(TOOL_NAME, args, {

@@ -7191,3 +7191,27 @@ actual_files
 - **权威防护**：固化 `RECEIPT_CHECKPOINT_FACT_PRESERVATION_REQUIRED=YES` 和 `RECEIPT_FAILED_RESULT_RESETS_PRIOR_PASS=NO`；`GOV-STAGE-RECEIPT-001` 明确 FAILED receipt 必须保留已完成 checkpoint 的真实 PASS/FAIL。
 - **状态**：CLOSED_BY_V210_CHECKPOINT_DERIVED_RECEIPT_STATUS.
 <!-- SPECFORGE_ERR401_ERR411_BOOTSTRAP_DELIVERY_HARDENING:END -->
+
+<!-- SPECFORGE_ERR412_ERR413_RECOVERY_WRAPPER_SCHEMA_ALIGNMENT:START -->
+
+## ERR-412 / EXP-012 + EXP-231 — V214 无界 `Path.rglob("*")` 递归导致只读取证脚本卡住
+- **时间**：2026-08-10
+- **阶段**：V214 `RECOVERY TOOL DISCOVERY`。
+- **一手事实**：V214 Artifact Acceptance PASS，SpecForge `HEAD=91b63289a0c4b148c5d5a7d045787985cb024bd4` 且 CLEAN，Validation branch/head 也匹配；随后 runner 在 `relevant_files(SPEC)` 的 `for p in root.rglob("*")` / `p.is_file()` 长时间遍历，用户通过 `Ctrl+C` 终止，Python 抛出 `KeyboardInterrupt`。没有仓库写入、Git mutation、daemon Tool 调用或生命周期动作。
+- **根因**：实现把“跳过大目录”的过滤放在 `rglob("*")` 之后；`rglob` 已经递归进入目录树，过滤不能阻止遍历本身。
+- **正确做法**：已知 Tool/handler 路径优先定向读取；未知引用用 Git tracked-file / `git grep` 或显式边界目录搜索，禁止为了少量符号取证全盘递归整个仓库或用户级数据根。
+- **机器防护**：V215 不再复用 V214 discovery runner；直接以 exact-commit 一手源码固定 producer/consumer 文件，并在产品回归测试中验证参数契约。
+- **状态**：CLOSED_BY_V215_TARGETED_SOURCE_EVIDENCE_AND_PRODUCT_FIX。
+
+## ERR-413 / EXP-007 + EXP-012 + EXP-231 — `sf_git_branch_create` userlevel wrapper 未暴露 daemon recovery 必需参数
+- **时间**：2026-08-10
+- **阶段**：WI-0004 closed-spec-migration existing-branch recovery。
+- **一手事实**：`setup/userlevel-opencode/tools/sf_git_branch_create.ts` 公开 schema 只有 `work_item_id / branch_name / confirmed / base_branch / require_clean`；同一 `main@91b63289...` 的 daemon handler 已读取 `args['recovery_mode']` 和 `args['reconcile_attempt_id']`。closed spec migration 时 handler 强制 `recovery_mode=closed_spec_migration`，并强制提供 attempt ID。
+- **业务影响**：权威允许的 closed-spec-migration Git delivery recovery 在 daemon 内已经实现，但 OpenCode 正式 Tool 参数层无法表达必需参数，因此正常 Tool 调用无法到达该恢复路径，直接阻断 WI-0004 recovery。
+- **根因**：Tool 参数生产者和 daemon 参数消费者在后续 recovery 能力演进时没有原子同步，且既有 wrapper self-contained 测试只检查 import 边界，没有检查参数 schema ↔ handler 消费契约。
+- **修复**：V215 在 userlevel wrapper 增加可选 `recovery_mode` 与 `reconcile_attempt_id`，保持普通 branch-create 调用兼容；daemon handler 不改。
+- **回归防护**：`v12-userlevel-tool-wrapper-self-contained.test.ts` 新增 producer/consumer contract test，同时检查 wrapper 两个参数、handler 两个参数消费、mode/attempt 强制错误、existing branch reuse 与 recovery evidence 文件。
+- **兼容性**：兼容新增。普通 `sf_git_branch_create` 不传新参数时行为不变；closed spec migration 仍由 daemon fail-closed 强制 recovery mode 和 attempt。
+- **状态**：CLOSED_BY_V215_USERLEVEL_TOOL_RECOVERY_ARGUMENT_SCHEMA_ALIGNMENT。
+
+<!-- SPECFORGE_ERR412_ERR413_RECOVERY_WRAPPER_SCHEMA_ALIGNMENT:END -->
