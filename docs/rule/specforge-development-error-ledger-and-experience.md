@@ -7242,3 +7242,109 @@ actual_files
 - **状态**：CLOSED_BY_V220_SHA256_PREIMAGE_COMPENSATION_GUARD.
 
 <!-- SPECFORGE_ERR414_ERR416_RECOVERY_STATE_SIDE_EFFECT_SERIES:END -->
+
+<!-- SPECFORGE_ERR417_ERR436_VALIDATOR_GOVERNANCE_CLOSURE:START -->
+
+## ERR-417 — 公共 authoritative state read 仍通过持久化 wrapper 读取
+- **一手事实**：V221 checkpoint 成功后的源码审计确认公共 `readAuthoritativeState()` 仍调用会持久化 projection 的 `rebuildFromEventsFile()` 路径。
+- **状态**：OPEN_PRODUCT_FIX_PENDING_AFTER_VALIDATOR_GOVERNANCE_CLOSURE。
+
+## ERR-418 — V222 把诊断字段消费错误升级为阻断条件
+- **分类**：`VALIDATION_DEFECT`。
+- **状态**：CLOSED_BY_V238_FROZEN_VALIDATION_CONTRACT。
+
+## ERR-419 — V223 使用脆弱 multiline regex 删除源码 helper
+- **分类**：`SCRIPT_DEFECT`。
+- **状态**：CLOSED_BY_EXACT_SYMBOL_BOUNDARY_PATCHING。
+
+## ERR-420 — V223 rollback 混合 tracked 与不存在 pathspec
+- **分类**：`SCRIPT_DEFECT`。
+- **状态**：CLOSED_BY_TRACKED_RESTORE_AND_NEW_FILE_DELETE_SEPARATION。
+
+## ERR-421 — V224 partial recovery 只接受一种瞬时 dirty 状态
+- **分类**：`SCRIPT_DEFECT / EVIDENCE_DEFECT`。
+- **状态**：CLOSED_BY_IDEMPOTENT_CLEAN_OR_KNOWN_PARTIAL_RECOVERY。
+
+## ERR-422 — V224 receipt 把 daemon 状态写死
+- **分类**：`EVIDENCE_DEFECT`。
+- **状态**：CLOSED_BY_RUNTIME_OBSERVED_STATUS_RECEIPT。
+
+## ERR-423 — V225 scope audit 使用 tracked-only Git 视图
+- **分类**：`VALIDATION_DEFECT`。
+- **状态**：CLOSED_BY_PORCELAIN_UNTRACKED_SCOPE_TRUTH。
+
+## ERR-424 — V226/V227 测试 runner 与 baseline 接受条件被 validator 临时创造
+- **分类**：`VALIDATION_DEFECT`。
+- **一手事实**：V227 canonical package-script Vitest 在 clean baseline 上得到 159 个失败；该事实本身不能被临时升级为“当前修改必须先让历史 baseline 全绿”。
+- **状态**：CLOSED_BY_EXPLICIT_COMPARATOR_AND_BASELINE_MODE。
+
+## ERR-425 — Validator Contract 缺少执行前冻结、hash、EXPECTED、COMPARATOR 与 BASELINE_MODE
+- **分类**：`DESIGN_ERROR / VALIDATION_DEFECT`。
+- **状态**：CLOSED_BY_V238_VALIDATOR_CONTRACT_GOVERNANCE。
+
+## ERR-426 — V228 Python validator kernel import 产生 pyc 仓库副作用
+- **分类**：`SCRIPT_DEFECT`。
+- **状态**：CLOSED_BY_TYPESCRIPT_BUN_DEVELOPMENT_KERNEL。
+
+## ERR-427 — V229 runner 临时拼 TypeScript compiler options
+- **分类**：`VALIDATION_DEFECT`。
+- **状态**：CLOSED_BY_VERSIONED_PACKAGE_SCRIPT_AND_TSCONFIG。
+
+## ERR-428 — V230 专用 validator tsconfig 使用与 kernel 不匹配的 ambient type environment
+- **分类**：`VALIDATION_DEFECT`。
+- **修复**：专用 tsconfig 显式使用仓库已声明 `@types/node` 对应的 `types=["node"]`，不修改根 tsconfig。
+- **状态**：CLOSED_BY_V238_DECLARED_NODE_TYPE_ENVIRONMENT。
+
+## ERR-429 — V231 Artifact Validator 残留 V230 当前交付身份
+- **分类**：`DELIVERY_SCRIPT_DEFECT`。
+- **一手事实**：用户执行 V231 时 validator 打印 V230 banner 并尝试打开 `run_sfv230.ts`，runner 未启动，正式仓库无写入。
+- **状态**：CLOSED_BY_MANIFEST_DERIVED_DELIVERY_IDENTITY。
+
+## ERR-430 — V231 A005 frozen expected 与 runner evidence producer 的 ERR 集合不一致
+- **分类**：`VALIDATION_DEFECT`。
+- **状态**：CLOSED_BY_ASSERTION_PRODUCER_CONSUMER_MATRIX_AUDIT。
+
+## ERR-431 — V231 A007 CONTRACT_SOURCE 残留 VC-V230-001
+- **分类**：`VALIDATION_DEFECT`。
+- **状态**：CLOSED_BY_CURRENT_VALIDATION_CONTRACT_SOURCE_BINDING。
+
+## ERR-432 — V233 versioned typecheck 被 TypeScript 6.0 TS5101 阻断
+- **分类**：`VALIDATION_DEFECT / TOOLCHAIN_COMPATIBILITY`。
+- **一手事实**：V237 在与 V233 候选一致的临时 clone 中通过 Windows CMD shim 只运行一次 `bun run typecheck:validator-contract`，`TYPECHECK_PROCESS_STATUS=2`、`SPAWN_ERROR=NONE`，唯一诊断为 `TS5101`：继承的 root `baseUrl` 在 TypeScript 6.0 已弃用，并明确要求 `ignoreDeprecations="6.0"`。
+- **仓库事实**：root `tsconfig.json` 包含 `baseUrl="."`；root `package.json` 声明 `typescript ^6.0.3`。
+- **修复**：仅在专用 `scripts/tsconfig.validation-contract.json` 中版本化 `ignoreDeprecations="6.0"`；不修改 root tsconfig，不在 runner 临时注入 compiler flag。
+- **状态**：CLOSED_BY_V238_VERSIONED_TS6_DEPRECATION_COMPATIBILITY。
+
+## ERR-433 — V234 用 CMD `mklink /J` 创建诊断 junction 时参数语法失败
+- **分类**：`ENVIRONMENT_ERROR / SCRIPT_DEFECT`。
+- **一手事实**：V234 在 typecheck 前失败，`TYPECHECK_INVOCATION_COUNT=0`；SpecForge/Validation 前后均 unchanged。
+- **修复**：V235 改为运行时 `fs.symlinkSync(...,"junction")`，创建与清理均通过。
+- **状态**：CLOSED_BY_FS_SYMLINKSYNC_JUNCTION。
+
+## ERR-434 — V235 直接 spawn `bun` 重复违反既有 ERR-024 Windows npm shim 规则
+- **分类**：`REPEATED_ERROR / ENVIRONMENT_ERROR / SCRIPT_DEFECT`。
+- **一手事实**：V235 `TYPECHECK_EXIT_CODE=1` 且 stdout/stderr 均为空；V236 同环境直接 `bun --version` 也是 rc=1 无输出，而本地 `tsc.cmd --version` 正常返回 `Version 6.0.3`；V237 改用 `cmd.exe /d /s /c "call bun ..."` 后 `bun --version` 正常返回 `1.3.11` 并获得真实 TS5101。
+- **历史规则**：ERR-024 已明确规定 Windows npm `.cmd` shim 必须通过 `cmd.exe /d /s /c` 调用。
+- **修复**：V238 runner 的 Bun package script、Vitest、typecheck、build 全部统一通过 Windows CMD `call bun ...` 执行；捕获 process status/signal/spawn error，启动失败不得伪装成工具验证失败。
+- **状态**：CLOSED_BY_V238_WINDOWS_NPM_SHIM_EXECUTION_CONTRACT。
+
+
+## ERR-435 — V238 外层一键 CMD 把 mandatory execution chain 放入 optional IF 控制流
+- **分类**：`DELIVERY_SCRIPT_DEFECT / VALIDATION_HARNESS_DEFECT`。
+- **一手事实**：用户执行 V238 一键 CMD 后立即返回 `D:\code\temp>`，没有出现 `===== SFV238 RUNNER ENTRY =====`。独立 reopen `SFV238.zip` 证明 `run_sfv238.cmd` 存在、CRLF 正常、第一条显式输出即该 RUNNER ENTRY。
+- **根因**：V238 外层命令使用 `if exist "SFV238" rmdir ... && tar ... && call ...`，把仅在目录存在时才需要的 optional cleanup 与必须执行的 extract/runner 串在同一条件控制流中；首次运行目标目录不存在时允许后续主链静默不执行。
+- **修复**：V239 使用新的唯一 Delivery 目录且首次执行不做 optional cleanup，外层命令固定为线性 `cd -> tar -xf -> call runner`。
+- **长期规则**：ZIP/CMD consumer acceptance 必须覆盖“首次执行、目标目录不存在”路径，并证明 optional cleanup 不支配 mandatory extract/runner；mandatory execution chain 必须独立于 optional cleanup 条件。
+- **状态**：CLOSED_BY_V239_LINEAR_FIRST_RUN_DELIVERY_COMMAND。
+
+
+## ERR-436 — V239 authority producer 与正式测试消费者的 Validator Kernel type-environment 契约不一致
+- **分类**：`VALIDATION_HARNESS_DEFECT / CONTRACT_PRODUCER_CONSUMER_MISMATCH`。
+- **一手事实**：V239 targeted Vitest 正常启动并运行 8 个测试，其中 kernel 行为 7 个全部 PASS；唯一失败为 repository contract 测试要求 authority `GOV-STAGE-VALIDATOR-001` 包含 `VALIDATOR_KERNEL_TYPE_ENVIRONMENT=NODE`。同一测试还要求 `TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES`。
+- **生产者事实**：V239 `patchAuthority()` 生成的 Validator execution-boundary block 已包含 versioned toolchain、Windows shim 和 deprecation policy，但没有生成上述两个 type-environment 字段。
+- **冻结合同缺口**：V239 A006 authority semantic audit 也没有检查上述两个正式测试消费者字段，所以 frozen contract 没有在 targeted Vitest 前捕获 producer/consumer 不一致。
+- **影响**：阻断 Validator Governance Closure；不影响 ERR-417 产品代码，不产生 commit/push；V239 回滚后 SpecForge worktree CLEAN，Validation repository 无写入。
+- **修复**：V240 同步修改 authority producer 与 A006 semantic audit：新增 `VALIDATOR_KERNEL_TYPE_ENVIRONMENT=NODE` 和 `TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES`；测试消费者保持不削弱。并新增稳定规则：Validator Kernel ambient type environment 只能来自版本化专用 tsconfig 与仓库声明依赖，禁止宿主机全局 ambient type 或 runner 临时注入。
+- **状态**：CLOSED_BY_V240_AUTHORITY_AND_FROZEN_CONTRACT_CONSUMER_CLOSURE。
+
+<!-- SPECFORGE_ERR417_ERR436_VALIDATOR_GOVERNANCE_CLOSURE:END -->

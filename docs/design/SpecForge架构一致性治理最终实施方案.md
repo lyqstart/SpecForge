@@ -1009,10 +1009,16 @@ ARTIFACT_ACCEPTED=YES|NO
 ```text
 VALIDATOR_ID=
 VALIDATION_TARGET=
+VALIDATION_CONTRACT_ID=
+VALIDATION_CONTRACT_FROZEN=YES|NO
+VALIDATION_CONTRACT_HASH=
 CONTRACT_SOURCE=
 TRUTH_SOURCE=
 BASELINE_SOURCE=
 BASELINE_FRESHNESS=
+CANONICAL_LOCAL_DELIVERY_VALIDATOR_KERNEL=scripts/validation-contract-kernel.ts
+CANONICAL_LOCAL_DELIVERY_VALIDATOR_TYPECHECK=bun run typecheck:validator-contract
+VALIDATION_RESULT=PASS|FAIL|INSUFFICIENT_EVIDENCE|VALIDATION_HARNESS_DEFECT
 VALIDATOR_SELF_CHECK=
 VALIDATOR_ACCEPTED=YES|NO
 ```
@@ -1024,7 +1030,31 @@ ASSERTION_ID=
 ASSERTION_TYPE=RULE_ID|SCHEMA|PARSER|STRUCTURED_STATE|IMMUTABLE_EVIDENCE|STRUCTURED_GIT|EXACT_HASH|NATURAL_LANGUAGE_AUX
 TRUTH_SOURCE=
 CONTRACT_SOURCE=
+EXPECTED=
+COMPARATOR=EQUALS|NOT_EQUALS|SET_EQUALS|SUBSET|ZERO|NO_NEW_FAILURES|HASH_EQUALS|EXIT_CODE_EQUALS
+BASELINE_MODE=ABSOLUTE|DELTA|NOT_APPLICABLE
 BLOCKING=YES|NO
+```
+
+Validator Contract 执行边界固定契约：
+
+```text
+VALIDATION_CONTRACT_FREEZE_REQUIRED=YES
+RUNTIME_BLOCKING_ASSERTION_CREATION_ALLOWED=NO
+RUNTIME_BLOCKING_ASSERTION_MUTATION_ALLOWED=NO
+DECLARED_BLOCKING_ASSERTIONS=
+EXECUTED_BLOCKING_ASSERTIONS=
+EXTRA_BLOCKING_ASSERTIONS=0
+MISSING_BLOCKING_ASSERTIONS=0
+VALIDATION_CONTRACT_GAP=YES|NO
+LOCAL_DELIVERY_VALIDATOR_KERNEL_REQUIRED=YES
+PRODUCT_RUNTIME_VALIDATOR_KERNEL_MIGRATION_REQUIRED=NO
+RUNTIME_COMPILER_OPTION_SYNTHESIS_ALLOWED=NO
+VERSIONED_VALIDATOR_TOOLCHAIN_CONTRACT_REQUIRED=YES
+WINDOWS_NPM_SHIM_EXECUTION=CMD_CALL_REQUIRED
+VERSIONED_TOOLCHAIN_DEPRECATION_POLICY_REQUIRED=YES
+VALIDATOR_KERNEL_TYPE_ENVIRONMENT=NODE
+TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES
 ```
 
 源码补丁锚点固定契约：
@@ -1049,6 +1079,19 @@ ARTIFACT_TARGET_APPLICABILITY_PREFLIGHT_REQUIRED=YES
 8. 关键成果的 generator 与 validator 必须在证据路径上相互独立：validator 不得只重新读取 generator 自己写出的 expected string 再证明该 expected string 存在；必须至少有一条来自正式 authority/schema/parser/state/immutable evidence/structured Git/consumer test 的独立证据。
 9. 验证器失败必须先分类 `VALIDATION_HARNESS_DEFECT`、`ENVIRONMENT_FAILURE`、产品/治理失败或 `AMBIGUOUS_SIDE_EFFECT`；外围验证器失败不得直接覆盖已存在的正式产品成功证据，也不得自动重试已经开始的有副作用动作。
 10. `VALIDATOR_ACCEPTED=YES` 只有在 Validator Contract 完整、Self Check 通过、全部阻断断言都有正式真相源且不存在必需证据不足时成立；否则验证器本身不得作为 Artifact Acceptance 的依据。
+11. Validator Contract 必须在阻断性目标执行或证据采集前冻结并计算 `VALIDATION_CONTRACT_HASH`；运行中禁止隐式增加、删除或改写通过条件。
+12. `RUNTIME_BLOCKING_ASSERTION_CREATION_ALLOWED=NO`、`RUNTIME_BLOCKING_ASSERTION_MUTATION_ALLOWED=NO`。冻结后合同 hash 变化、运行时新增 assertion 或额外 assertion evidence 属于 `VALIDATION_HARNESS_DEFECT`。
+13. 每个阻断断言的 `EXPECTED`、`COMPARATOR`、`BASELINE_MODE` 都属于冻结合同。Validator 只能按已冻结 comparator 对正式 truth source 做机械比较，不拥有新的设计权或运行时加码权。
+14. `BASELINE_MODE=ABSOLUTE` 验证当前 actual；`BASELINE_MODE=DELTA` 只验证合同声明的变化量。`NO_NEW_FAILURES` 必须使用 `DELTA`，只允许以 `post_failures - baseline_failures` 的新增集合判定本轮回归。
+15. 运行时发现合同外事实时必须输出 `VALIDATION_CONTRACT_GAP=YES`。若该事实阻断当前 Stage Success Criteria，则返回 `INSUFFICIENT_EVIDENCE` 或 `VALIDATION_HARNESS_DEFECT` 并回到治理阶段重新冻结合同；不得临时升级为新的产品 FAIL 条件。
+16. SpecForge 自身本地 Vxxx ZIP/CMD validator 必须复用 `CANONICAL_LOCAL_DELIVERY_VALIDATOR_KERNEL` 的冻结/hash/assertion-count/comparator 语义；本规则不要求一次性迁移完成后产品 Runtime 内已有 validator/Gate，`PRODUCT_RUNTIME_VALIDATOR_KERNEL_MIGRATION_REQUIRED=NO`。
+17. Validator Self Check 必须证明 `DECLARED_BLOCKING_ASSERTIONS == EXECUTED_BLOCKING_ASSERTIONS`、`EXTRA_BLOCKING_ASSERTIONS=0`、`MISSING_BLOCKING_ASSERTIONS=0`；任一不成立时 `VALIDATOR_ACCEPTED=NO`。
+18. `VALIDATOR_ACCEPTED` 与 `VALIDATION_RESULT` 必须分离：正确 validator 可以证明目标 FAIL；目标失败不等于 validator harness 失败。
+19. Validator 的 TypeScript/test/build/lint truth source 必须来自仓库版本化 package script / tsconfig / 正式工具配置；`RUNTIME_COMPILER_OPTION_SYNTHESIS_ALLOWED=NO`。Runner 不得临时拼接另一套 compiler options。
+20. 本地 Validator Kernel 的正式 TypeScript 检查入口固定为 `CANONICAL_LOCAL_DELIVERY_VALIDATOR_TYPECHECK`；编译语义由版本化 `scripts/tsconfig.validation-contract.json` 与根 `tsconfig.json` 共同定义。
+21. Windows 上通过 npm shim 提供的 Bun/npm 脚本入口必须遵守 `WINDOWS_NPM_SHIM_EXECUTION=CMD_CALL_REQUIRED`，由 `cmd.exe /d /s /c` 与 `call` 执行。进程 spawn error、signal 或 launcher failure 属于环境/执行器证据，禁止伪装成 TypeScript/test/build 的产品失败。
+22. 工具链弃用兼容参数必须由版本化 tsconfig/package 配置声明，`VERSIONED_TOOLCHAIN_DEPRECATION_POLICY_REQUIRED=YES`；禁止在 runner 临时注入。具体兼容值必须与仓库已声明工具版本和真实 diagnostic 对账，并随工具升级正常修订。
+23. 本地 Validator Kernel 的 ambient type environment 固定声明为 `VALIDATOR_KERNEL_TYPE_ENVIRONMENT=NODE`；其正式来源固定为 `TYPE_ENVIRONMENT_SOURCE=VERSIONED_TSCONFIG_AND_DECLARED_DEPENDENCIES`。类型环境必须由版本化专用 tsconfig 与仓库声明依赖共同决定，禁止依赖宿主机全局 ambient types 或 runner 临时注入。
 
 ### 2.10 Delivery、Receipt 与 Delivery Identity
 
