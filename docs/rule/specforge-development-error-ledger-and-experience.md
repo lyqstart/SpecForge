@@ -7247,7 +7247,7 @@ actual_files
 
 ## ERR-417 — 公共 authoritative state read 仍通过持久化 wrapper 读取
 - **一手事实**：V221 checkpoint 成功后的源码审计确认公共 `readAuthoritativeState()` 仍调用会持久化 projection 的 `rebuildFromEventsFile()` 路径。
-- **状态**：OPEN_PRODUCT_FIX_PENDING_AFTER_VALIDATOR_GOVERNANCE_CLOSURE。
+- **状态**：PRODUCT_FIX_COMMITTED_RUNTIME_ACCEPTANCE_PENDING。
 
 ## ERR-418 — V222 把诊断字段消费错误升级为阻断条件
 - **分类**：`VALIDATION_DEFECT`。
@@ -7770,3 +7770,18 @@ actual_files
 - **类防护**：`EXP-007,EXP-080,EXP-120,EXP-123,EXP-193,EXP-195`
 - **范围影响**：仅影响 delivery runner 自检控制流；ERR-417 产品范围不变。
 <!-- SPECFORGE_ERR476_ERR479_PRE_ERR417_PRODUCT_FIX_BACKFILL:END -->
+# V262 — ERR-480 post-ERR417 live runtime acceptance harness recovery
+
+<!-- SPECFORGE_ERR480_RUNTIME_BUN_SHIM_RECOVERY:START -->
+## ERR-480 — V260 live runtime acceptance 再次由 Python 直接 spawn `bun` 导致 WinError 2
+- **状态**：`FIX_IMPLEMENTED_PENDING_V262_LIVE_RUNTIME_ACCEPTANCE`
+- **分类**：`REPEATED_ERROR / VALIDATION_HARNESS_DEFECT / WINDOWS_PROCESS_BOUNDARY_DEFECT`
+- **时间**：2026-08-10。
+- **一手事实**：V260 已完成 exact authority、local/remote HEAD、handoff、三个仓库只读快照、daemon handshake 和 `/api/v1/healthz`；daemon `status=ok`、PID/port 已取得。随后在 `RUNTIME_FIXTURE_CREATE` 阶段抛出 `FileNotFoundError: [WinError 2]`。回执确认三个仓库 unchanged、无 repository write、无 SpecForge lifecycle action，ERR-417 产品代码没有被判定失败。
+- **根因**：V260 runner 使用 `subprocess.run(["bun", "run", ...], shell=False)` 直接启动 Bun，重复违反 ERR-024、ERR-434、ERR-440 和 EXP-100/EXP-119 已固化的 Windows npm/Bun shim 边界。
+- **旧防护为何未生效**：V260 Artifact Acceptance 只检查了 fixture cwd 与仓库写入边界，没有把“禁止 Python 直接 spawn bun”作为真实 execution primitive 阻断项，因此历史规则没有落实到该新 runner。
+- **正确做法 / 修复**：V262 使用静态 ASCII `.cmd` bridge；bridge 内 `call bun --version` 后再 `call bun run ...`，Python 只通过 `%COMSPEC% /d /s /c call <bridge>` 启动。最终 Artifact Acceptance 机械拒绝 runner 中 `subprocess` 直接执行 `bun`。
+- **运行验证**：`PENDING_V262_LIVE_RUNTIME_ACCEPTANCE`
+- **类防护**：`EXP-002,EXP-007,EXP-100,EXP-119,EXP-135,EXP-193,EXP-195`
+- **范围影响**：只影响 ChatGPT runtime acceptance harness；ERR-417 产品架构、契约和已经提交的 7 文件产品范围不扩大。
+<!-- SPECFORGE_ERR480_RUNTIME_BUN_SHIM_RECOVERY:END -->
