@@ -259,6 +259,11 @@ export class StateManager {
     return this.wal;
   }
 
+  /** Number of WAL events replayed by the most recent rebuildState() call. */
+  getLastReplayedEventCount(): number {
+    return this._lastReplayedEventCount;
+  }
+
   // ═══════════════════════════════════════════════════
   //  Rebuild
   // ═══════════════════════════════════════════════════
@@ -270,7 +275,7 @@ export class StateManager {
    * source of truth. The ProjectState is derived from events, never
    * edited directly.
    * 
-   * After rebuild, state.json is updated to match.
+   * rebuildState() updates in-memory state only; persistence is explicit.
    */
   async rebuildState(): Promise<ProjectState> {
     const { events } = await this.wal.readAllEvents();

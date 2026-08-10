@@ -5,7 +5,7 @@ import { registerHandler } from '../ToolDispatcher';
  *
  * State authority rule:
  * - read from project-level StateManager only;
- * - rebuild StateManager from events.jsonl before reading when supported;
+ * - rebuild StateManager in memory from events.jsonl before reading when supported;
  * - do not read work_item.json.status or runtime/state.json directly.
  */
 registerHandler('sf_state_read', async (args, context, deps) => {
@@ -26,16 +26,16 @@ registerHandler('sf_state_read', async (args, context, deps) => {
   }
 
   const sm = await deps.projectManager.getProjectStateManager(projectPath);
-
-  // Derive the authority flag from whether an event log actually existed and
-  // was replayed — NOT from the mere capability to rebuild. `rebuildFromEventsFile()`
-  // returns `{ replayed, eventCount }`; `replayed` is false when no event log existed.
+  // Nominal reads rebuild the in-memory authority from WAL only. Projection
+  // persistence remains the responsibility of explicit checkpoint/recovery paths.
   let rebuilt_from_events = false;
-  if (typeof sm.rebuildFromEventsFile === 'function') {
-    const rebuildResult = await sm.rebuildFromEventsFile();
-    rebuilt_from_events = rebuildResult?.replayed ?? false;
+  if (typeof sm.rebuildState === 'function') {
+    await sm.rebuildState();
+    const eventCount = typeof sm.getLastReplayedEventCount === 'function'
+      ? sm.getLastReplayedEventCount()
+      : 0;
+    rebuilt_from_events = Number.isFinite(eventCount) && eventCount > 0;
   }
-
   if (workItemId === 'all') {
     const all = await sm.getAllStates();
     return { success: true, rebuilt_from_events, work_items: all ?? {} };

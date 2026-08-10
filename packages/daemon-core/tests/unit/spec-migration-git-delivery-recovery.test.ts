@@ -4,6 +4,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
+import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 
 import {
@@ -313,9 +314,8 @@ describe('spec_migration Git delivery recovery', () => {
 
   it('pins the branch handler to fail closed without recovery mode and to reuse exact partial recovery state', async () => {
     const source = await fs.readFile(
-      path.join(
-        process.cwd(),
-        'packages/daemon-core/src/tools/handlers/sf-git-branch-create.ts',
+      fileURLToPath(
+        new URL('../../src/tools/handlers/sf-git-branch-create.ts', import.meta.url),
       ),
       'utf-8',
     );

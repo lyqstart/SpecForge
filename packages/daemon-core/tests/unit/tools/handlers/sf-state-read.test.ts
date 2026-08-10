@@ -61,7 +61,7 @@ describe("sf_state_read - P10 rebuilt_from_events reflects reality", () => {
    * NOTE: we intentionally do NOT call sm.initialize() — WAL.initialize() would
    * create an empty events.jsonl as a side effect, which would blur the "no
    * event log existed" premise. We only pre-create the runtime directory so the
-   * handler's rebuildFromEventsFile()→persistState() can write state.json.
+   * the read path must not create or rewrite state.json.
    */
   function makeDeps() {
     const resolver = new PersonalPathResolver();
@@ -98,6 +98,8 @@ describe("sf_state_read - P10 rebuilt_from_events reflects reality", () => {
 
     // No events.jsonl was ever created, confirming no event log existed.
     await expect(fs.access(eventsPath)).rejects.toBeTruthy();
+    // A nominal authoritative read must not create the state.json projection either.
+    await expect(fs.access(statePath)).rejects.toBeTruthy();
 
     // …therefore the authority flag MUST reflect reality. On UNFIXED code this
     // is `true` (derived from `typeof sm.rebuildFromEventsFile === 'function'`),

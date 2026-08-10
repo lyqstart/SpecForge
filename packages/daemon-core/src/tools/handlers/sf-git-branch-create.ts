@@ -9,6 +9,7 @@ import {
   isClosedSpecMigrationGitRecoveryRequired,
   verifyLegacyClosedSpecMigrationGitDeliveryRecovery,
 } from '../lib/project-governance-v2.js';
+import { readAuthoritativeState } from '../lib/state-coordinator-v11';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
@@ -18,35 +19,6 @@ async function readJson(filePath: string): Promise<any | null> {
   } catch {
     return null;
   }
-}
-
-async function readAuthoritativeStateWithoutProjectionWrite(input: {
-  deps: any;
-  projectRoot: string;
-  workItemId: string;
-}): Promise<{ current_state: string | null }> {
-  const projectManager = input.deps?.projectManager;
-  if (!projectManager?.getProjectStateManager) {
-    return { current_state: null };
-  }
-
-  const projectSm = await projectManager.getProjectStateManager(
-    input.projectRoot,
-  );
-  if (typeof projectSm?.rebuildState === 'function') {
-    await projectSm.rebuildState();
-  }
-  if (typeof projectSm?.getState !== 'function') {
-    return { current_state: null };
-  }
-
-  const state = projectSm.getState(input.workItemId);
-  return {
-    current_state:
-      state && typeof state.current_state === 'string'
-        ? state.current_state
-        : null,
-  };
 }
 
 registerHandler('sf_git_branch_create', async (args, context, deps) => {
@@ -80,7 +52,7 @@ registerHandler('sf_git_branch_create', async (args, context, deps) => {
       workItemId,
     );
     const [state, workItem] = await Promise.all([
-      readAuthoritativeStateWithoutProjectionWrite({ deps, projectRoot, workItemId }),
+      readAuthoritativeState({ deps, projectRoot, workItemId }),
       readJson(path.join(workItemDir, 'work_item.json')),
     ]);
     const closedSpecMigration = isClosedSpecMigrationGitRecoveryRequired({

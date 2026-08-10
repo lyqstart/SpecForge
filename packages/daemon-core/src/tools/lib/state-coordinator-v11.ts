@@ -246,9 +246,12 @@ export async function readAuthoritativeState(input: { deps: any; projectRoot: st
   if (!projectManager?.getProjectStateManager) return { current_state: null, source: 'missing', rebuilt_from_events: false };
   const projectSm = await projectManager.getProjectStateManager(input.projectRoot);
   let rebuilt = false;
-  if (typeof projectSm?.rebuildFromEventsFile === 'function') {
-    const rebuildResult = await projectSm.rebuildFromEventsFile();
-    rebuilt = rebuildResult?.replayed ?? false;
+  if (typeof projectSm?.rebuildState === 'function') {
+    await projectSm.rebuildState();
+    const eventCount = typeof projectSm?.getLastReplayedEventCount === 'function'
+      ? projectSm.getLastReplayedEventCount()
+      : 0;
+    rebuilt = Number.isFinite(eventCount) && eventCount > 0;
   }
   if (typeof projectSm?.getState === 'function') {
     const state = normalizeState(await projectSm.getState(input.workItemId));
@@ -256,7 +259,6 @@ export async function readAuthoritativeState(input: { deps: any; projectRoot: st
   }
   return { current_state: null, source: 'missing', rebuilt_from_events: rebuilt };
 }
-
 export async function transitionWithEvidence(input: TransitionWithEvidenceInput): Promise<TransitionWithEvidenceResult> {
   if (!input.deps?.projectManager) throw new Error('STATE_COORDINATOR_TRANSITION_FAILED: ProjectManager not available');
   await validateTransitionRequest(input);
