@@ -7722,3 +7722,51 @@ actual_files
 - **范围影响**：仍仅影响 ChatGPT delivery identity harness；ERR-417 产品范围不扩大。
 
 <!-- SPECFORGE_ERR472_ERR475_PRE_ERR417_PRODUCT_FIX_BACKFILL:END -->
+
+# V259 — ERR-476～ERR-479 pre-ERR417 closure backfill
+
+> 先落盘 V257/V258/V259 新失败并重读经验，再在同一 delivery 中进入 ERR-417 产品 closure。
+
+<!-- SPECFORGE_ERR476_ERR479_PRE_ERR417_PRODUCT_FIX_BACKFILL:START -->
+## ERR-476 — V257 patch preflight 与实际 state-read test patch 使用了不同 anchor
+
+- **状态**：`FIX_IMPLEMENTED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / PRODUCT_PATCH_DEFECT`
+- **一手事实**：V257 `PREWRITE_VALIDATOR=PASS` 且 `PATCH_ANCHOR_PREFLIGHT=PASS`，但进入 `PRODUCT_PATCH` 后立即失败：`state-read test comment: expected cardinality 1, got 0`；回执同时确认 `PRODUCT_PATCH=NOT_RUN`、本地/远程 HEAD 未变化、worktree CLEAN、无 commit/push。
+- **根因**：preflight 检查的是不含缩进的自然语言短语，真正 patch 却消费了带缩进的另一条 exact string；预检与实际消费者不是同一 locator。同时把测试注释自然语言错误提升为 blocking anchor。
+- **旧防护为何未生效**：已有结构化 patch/cardinality 规则，但 V257 未机械证明 preflight 与 apply 共用同一结构 locator。
+- **正确做法 / 修复**：V259 以稳定函数/测试 block 为定位边界；同一 locator 同时供 preflight 和 apply 使用。自然语言注释只允许非阻断辅助更新。
+- **类防护**：`EXP-007,EXP-076,EXP-080,EXP-120,EXP-123,EXP-193,EXP-195`
+- **范围影响**：不扩大 ERR-417 架构、契约或模块范围。
+
+## ERR-477 — V258 首次预发布 ZIP 含额外顶层目录 member
+
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT`
+- **一手事实**：V258 第一份预发布 ZIP 在独立 Artifact Acceptance 中出现额外 `SFV258/` 目录 member，与冻结 exact member set 不一致；该版本未发布、未执行、未访问或修改用户仓库。随后从零重建，最终 V258 通过并成功执行。
+- **根因**：ZIP producer 把目录 entry 与文件 entry 一起写入，而 validator 的 exact member contract 只允许显式文件集合。
+- **正确做法 / 修复**：ZIP 从空目标开始，仅按 manifest 显式写 file members；最终 ZIP 重开并核对 exact member set。
+- **类防护**：`EXP-080,EXP-083,EXP-120,EXP-123,EXP-193,EXP-195`
+- **范围影响**：仅影响 delivery packaging，不扩大 ERR-417 产品范围。
+
+## ERR-478 — V259 草稿生成器把代码片段中的换行错误物化为 Python 字符串换行导致 SyntaxError
+
+- **状态**：`FIX_IMPLEMENTED`
+- **分类**：`VALIDATION_HARNESS_DEFECT`
+- **一手事实**：V259 首次草稿在发布前 `python -m py_compile` 失败，生成的 runner 出现 `SyntaxError: unterminated string literal`；该 ZIP 未被接受、未交付、未执行，用户仓库零访问零写入。
+- **根因**：再次通过嵌套 Python 字符串生成 Python patch 代码，结构 locator 中的 `\\n` 在外层生成阶段被错误物化为真实换行，重现了历史嵌套代码生成/转义类失败。
+- **旧防护为何未生效**：虽然已有 py_compile 后验检查，它只能阻断坏成果，不能阻止不安全的嵌套代码生成方式本身被再次采用。
+- **正确做法 / 修复**：最终 V259 不再通过嵌套生成器拼装 runner；delivery 直接由独立 `common.py / ledger_stage.py / product_stage.py / runner.py` 源文件组成，并在 manifest/hash/ZIP 前逐文件 py_compile。
+- **类防护**：`EXP-007,EXP-080,EXP-120,EXP-123,EXP-193,EXP-195`
+- **范围影响**：仅影响 ChatGPT delivery producer；ERR-417 产品设计和冻结 7 文件范围不变。
+
+## ERR-479 — V259 identity self-check 模式打印 PASS 后仍由统一失败状态返回 rc=1
+
+- **状态**：`FIX_IMPLEMENTED`
+- **分类**：`VALIDATION_HARNESS_DEFECT`
+- **一手事实**：最终 V259 构建目录执行 `python scripts/runner.py --self-identity` 时完成全部 identity/hash 检查并输出 `IDENTITY_SELF_CHECK=PASS`，但进程仍返回 1；该成果尚未生成最终 ZIP、未交付、未执行用户仓库动作。
+- **根因**：identity-only 分支从 `main()` 返回后，模块级统一 `sys.exit(0 if S["result"] == "SUCCESS" else 1)` 仍读取默认失败状态；自检控制流和正式执行结果状态被错误耦合。
+- **正确做法 / 修复**：`--self-identity` 使用独立成功退出路径；Artifact Acceptance 同时验证自检输出和进程 rc=0，不能只看 PASS 文本。
+- **类防护**：`EXP-007,EXP-080,EXP-120,EXP-123,EXP-193,EXP-195`
+- **范围影响**：仅影响 delivery runner 自检控制流；ERR-417 产品范围不变。
+<!-- SPECFORGE_ERR476_ERR479_PRE_ERR417_PRODUCT_FIX_BACKFILL:END -->
