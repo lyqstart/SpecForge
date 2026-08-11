@@ -7785,3 +7785,149 @@ actual_files
 - **类防护**：`EXP-002,EXP-007,EXP-100,EXP-119,EXP-135,EXP-193,EXP-195`
 - **范围影响**：只影响 ChatGPT runtime acceptance harness；ERR-417 产品架构、契约和已经提交的 7 文件产品范围不扩大。
 <!-- SPECFORGE_ERR480_RUNTIME_BUN_SHIM_RECOVERY:END -->
+<!-- SPECFORGE_ERR481_ERR492_POST_REINSTALL_RECOVERY_BACKFILL:START -->
+# 2026-08-11～2026-08-12 — ERR-481～ERR-492 post-reinstall recovery harness backfill
+
+## ERR-481 — V260 封包前 validator 用泛关键词 `candidate` 误拒绝只读 live-ref runner
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **阶段**：OS 重装后的 Authority Bootstrap 交付生成。
+- **一手事实**：V260 首次 Artifact Acceptance 中 `SEMANTIC_VALIDATION=FAIL`、`SCOPE_VALIDATION=FAIL`，唯一命中为 `FORBIDDEN candidate`；runner 实际只执行 `git ls-remote`，该失败发生在 ZIP 发布前，用户仓库零访问、零写入。
+- **根因**：validator 对完整脚本文本做泛关键词扫描，把 receipt/说明语境中的普通文本误当成 SpecForge Candidate 生命周期调用。
+- **影响**：合法只读取证包被假阻断；没有产品、仓库或用户环境副作用。
+- **正确做法 / 修复**：改为命令语义级审计，只阻断真实可执行生命周期 primitive；修正后的 V260 validator self-check、scope、semantic、consumer 全部 PASS 后才交付。
+- **新增防护 / 回归**：validator self-check 注入真实 forbidden command，证明语义阻断有效；合法文本不再由泛关键词阻断。
+- **类防护**：`EXP-007,EXP-025,EXP-044,EXP-060`
+- **范围影响**：仅 ChatGPT delivery validator；SpecForge 产品范围不变。
+
+## ERR-482 — 首轮恢复 CMD 继续假定旧 `D:\code\temp` 存在，导致解压入口直接失败
+- **状态**：`CLOSED`
+- **分类**：`ENVIRONMENT_ERROR / SCRIPT_DEFECT`
+- **阶段**：OS 重装后的本地恢复入口。
+- **一手事实**：用户执行首轮 V260 CMD 时返回“系统找不到指定的路径”；随后用户确认新 clone 仓库为 `D:\code\SpecForge`，旧 `D:\code\temp` 不存在。
+- **根因**：把重装前机器路径当作跨会话稳定事实，没有先把本地路径作为当前环境输入恢复。
+- **影响**：包内 runner 未启动，仓库未修改；增加一次无效用户操作。
+- **正确做法 / 修复**：本地仓库固定为当前事实 `D:\code\SpecForge`；交付 ZIP 下载目录为 `C:\Users\lyq\Downloads\Compressed`，解压/运行根目录为 `C:\Users\lyq\Downloads\Compressed\specforge`；机器具体值只进入 `current-handoff.md`。
+- **新增防护 / 回归**：后续交付外层 CMD 不再在 `D:\code` 创建交付目录，Package/Runner 的路径契约由 manifest 和 Artifact Acceptance 校验。
+- **类防护**：`EXP-001,EXP-002,EXP-012,EXP-013,EXP-060,EXP-064`
+- **范围影响**：仅本地执行环境与 delivery 边界。
+
+## ERR-483 — V261 回执中文 authority 路径发生 mojibake
+- **状态**：`CLOSED`
+- **分类**：`ENVIRONMENT_ERROR / EVIDENCE_DEFECT / SCRIPT_DEFECT`
+- **阶段**：post-reinstall read-only recovery。
+- **一手事实**：V261 回执中的 `AUTHORITY_PATH` 显示为乱码，而同一仓库 exact commit 文件名和后续 V262 UTF-8 回执均正常。
+- **根因**：Windows CMD 输出边界未显式建立 UTF-8 code page / Unicode 输出契约。
+- **影响**：Git HEAD、branch、worktree 等结构化事实仍有效，但中文路径展示证据不可直接复用。
+- **正确做法 / 修复**：V262 起 runner 先 `chcp 65001`，所有后续中文回执按 UTF-8 输出；路径真相继续绑定 exact Git 文件而非乱码展示层。
+- **新增防护 / 回归**：后续 package validator 检查 UTF-8 runner 内容；用户侧真实回执已证明中文路径正常。
+- **类防护**：`EXP-002,EXP-007,EXP-092`
+- **范围影响**：仅证据展示/编码边界。
+
+## ERR-484 — V264 封包前 validator 把 `opencode` 配置文本误判为 OpenCode 启动命令
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **阶段**：用户级安装只读审计包生成。
+- **一手事实**：V264 首次 Artifact Acceptance 唯一失败为 `FORBIDDEN:opencode `；runner 只读取 `%USERPROFILE%\.config\opencode` 和 `where opencode`，没有执行 OpenCode。
+- **根因**：静态审计对完整文本做普通子串匹配，没有区分变量、路径、receipt 字段与可执行命令。
+- **影响**：合法只读包在发布前假失败；用户仓库和环境无副作用。
+- **正确做法 / 修复**：validator 改为逐命令行、按命令前缀和语义 primitive 审计；修正后的 V264 全部 Artifact Acceptance PASS。
+- **新增防护 / 回归**：validator self-check 注入真实 `opencode .` 命令并要求被拒绝。
+- **类防护**：`EXP-007,EXP-025,EXP-044,EXP-046,EXP-060`
+- **范围影响**：仅 delivery validator。
+
+## ERR-485 — V265 在 fresh clone 未恢复 workspace 依赖前直接运行用户级安装器
+- **状态**：`CLOSED`
+- **分类**：`ENVIRONMENT_ERROR / VALIDATION_HARNESS_DEFECT`
+- **阶段**：用户级 SpecForge 安装恢复。
+- **一手事实**：V265 运行 `bun scripts\sf-installer.ts install` 时报告 `Cannot find module '@specforge/types/directory-layout'`；`INSTALL_EXIT_CODE=1`，仓库 HEAD 未变、worktree CLEAN、用户级安装未发生。
+- **根因**：恢复顺序错误，把“源码已 clone”误当成“monorepo workspace 依赖已就绪”，缺少 fresh-clone dependency bootstrap。
+- **影响**：安装器未启动有效安装；没有 tracked repo write，也没有 SpecForge lifecycle side effect。
+- **正确做法 / 修复**：先按锁文件执行 `bun install --frozen-lockfile`，再验证真实 workspace/installer load；V266 dependency install 成功，V269 真实 workspace 证据和 V270 正式安装随后通过。
+- **新增防护 / 回归**：恢复阶段显式区分 source clone、workspace dependencies、user-level installation 三层状态。
+- **类防护**：`EXP-002,EXP-008,EXP-011,EXP-052,EXP-060`
+- **范围影响**：仅重装环境恢复顺序。
+
+## ERR-486 — V266 从仓库根目录探测 `@specforge/types`，使用了错误消费者上下文
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **阶段**：workspace dependency + user-level install restore。
+- **一手事实**：`bun install --frozen-lockfile` 成功且 worktree CLEAN，但 V266 `WORKSPACE_IMPORT_EXIT_CODE=1`；V269 随后证明 `packages\version-unification\node_modules\@specforge\types` 是指向 `packages\types` 的真实 symlink，`bun pm ls --all` 也列出两个 workspace package，正式 installer `--help` exit 0。
+- **根因**：synthetic probe 从根 package 直接导入一个根 package 未声明的依赖，把不真实的消费上下文当成产品入口。
+- **影响**：合法安装被假阻断，没有执行 installer。
+- **正确做法 / 修复**：消费者验证必须在真实声明依赖的 package 或正式 installer 入口执行；不再让根目录 synthetic probe 决定安装合法性。
+- **新增防护 / 回归**：V269 同时读取真实 symlink、`bun pm ls --all` 和正式 `sf-installer.ts --help`。
+- **类防护**：`EXP-007,EXP-025,EXP-044,EXP-046,EXP-052,EXP-060`
+- **范围影响**：仅验证 harness。
+
+## ERR-487 — V266 `certutil` 哈希解析把算法标题 `SHA256` 当成 lockfile digest
+- **状态**：`CLOSED`
+- **分类**：`EVIDENCE_DEFECT / SCRIPT_DEFECT`
+- **阶段**：workspace dependency restore evidence。
+- **一手事实**：V266 回执同时输出 `BUN_LOCK_PRE_SHA256=SHA256` 和 `BUN_LOCK_POST_SHA256=SHA256`，不是合法 64 位十六进制摘要。
+- **根因**：`certutil` 展示文本解析器依赖英文/本地化标题过滤，未按摘要格式验证解析结果。
+- **影响**：该哈希字段不能证明 lockfile 前后字节一致；但 Git worktree CLEAN 与 `git diff --check=0` 独立证明 tracked 文件未变化。
+- **正确做法 / 修复**：机器摘要必须验证 `[0-9A-Fa-f]{64}`；重要不变量用 Git structured evidence 交叉验证，不把展示文本首 token 当 digest。
+- **新增防护 / 回归**：后续包不再依赖该 `certutil` 文本解析作为阻断事实。
+- **类防护**：`EXP-007,EXP-039,EXP-060`
+- **范围影响**：仅 evidence parser。
+
+## ERR-488 — V267 synthetic “真实消费者”探针再次以自造 marker 阻断正式 installer
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **阶段**：consumer-context user-level install restore。
+- **一手事实**：V267 `REAL_CONSUMER_IMPORT_PROBE` exit 非零且 error 为空，安装未开始；V269 随后用 Windows CMD `call bun` 证明 workspace layout、真实 package 依赖和正式 `sf-installer.ts --help` 全部可用。
+- **根因**：继续让 synthetic import + 自造 stdout marker 代替正式产品入口，并叠加跨 Windows shell 引号/执行边界。
+- **影响**：用户级安装再次被假阻断，仓库仍 CLEAN。
+- **正确做法 / 修复**：正式 installer load (`sf-installer.ts --help`) 是安装入口最接近的只读消费证据；synthetic probe 只能辅助，不能比正式入口更强地阻断。
+- **新增防护 / 回归**：V269 采用独立 CMD 语义执行并输出实际 installer help，V270 真实 install/verify/version 全部通过。
+- **类防护**：`EXP-002,EXP-007,EXP-019,EXP-025,EXP-044,EXP-093`
+- **范围影响**：仅 validation harness。
+
+## ERR-489 — V268 首次封包生成器自身出现 Python `SyntaxError`
+- **状态**：`CLOSED`
+- **分类**：`SCRIPT_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **阶段**：V268 read-only diagnosis artifact producer。
+- **一手事实**：V268 首次本地生成尝试在 Python producer 解析阶段因非法条件表达式触发 `SyntaxError`；未形成可接受 ZIP，未交付用户，未访问用户仓库。
+- **根因**：Artifact producer 的最终脚本在执行前缺少自身语法级预检，重复了“生成器也是待验证程序”的历史类别。
+- **影响**：仅 ChatGPT 交付生成过程被中断，无产品或用户环境副作用。
+- **正确做法 / 修复**：修正 producer 后重新从头生成；最终 V268 package 通过 validator self-check、runner syntax、ZIP reopen 和 post-build verify 后才发布。
+- **新增防护 / 回归**：所有最终 artifact 都要求 producer/runner 可解析、validator self-check 与成包后重开核验。
+- **类防护**：`EXP-007,EXP-015,EXP-019,EXP-060,EXP-078,EXP-080`
+- **范围影响**：仅 ChatGPT artifact producer。
+
+## ERR-490 — V268 在 Windows 上直接 `spawnSync` 无扩展名 Bun shim，再次触发 ENOENT
+- **状态**：`CLOSED`
+- **分类**：`REPEATED_ERROR / VALIDATION_HARNESS_DEFECT / ENVIRONMENT_ERROR`
+- **阶段**：Windows Bun workspace read-only diagnosis。
+- **一手事实**：V268 `where bun` 返回 `C:\Users\lyq\AppData\Roaming\npm\bun` 与 `bun.cmd`，runner 却取第一项交给 Node `spawnSync`，结果 `ENOENT`；仓库和用户级目录均未写入。V269 改用 Windows CMD `call bun ...` 后 `BUN_VERSION=1.3.14`、workspace layout、正式 installer `--help` 全部成功。
+- **根因**：重复违反 ERR-480 已记录的 Windows Bun shim 进程边界；Artifact Acceptance 没有阻断 Node 直接执行 extensionless shim。
+- **旧防护为何未生效**：V268 producer 虽已知道 Windows shim 风险，仍把 `where bun` 第一行当成可直接 spawn 的可执行文件，说明经验规则没有落实为执行 primitive 审计。
+- **影响**：V268 只读诊断假失败；没有产品、仓库或生命周期副作用。
+- **正确做法 / 修复**：Windows npm/Bun shim 必须经 `%COMSPEC%` / CMD `call` 执行，或明确选择真实 `.exe`；V269 用 CMD bridge 完成真实环境验证。
+- **新增防护 / 回归**：V269 真实 Windows 回执证明 `call bun --version`、`bun pm ls`、installer help 全部通过；后续 runner 不再从 `where bun` 第一行直接 spawn。
+- **类防护**：`EXP-002,EXP-007,EXP-019,EXP-060,EXP-093`；并复用 ERR-480 已固化的 Windows process-boundary 防护。
+- **范围影响**：仅 validation harness；SpecForge 产品代码未判定失败。
+## ERR-491 — V271 封包 validator 对成员列表做排序后实际值与未排序期望值直接比较，产生结构假失败
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **阶段**：post-reinstall handoff reconciliation Artifact Acceptance。
+- **一手事实**：V271 在发布前得到 `STRUCTURE_VALIDATION=FAIL`、`CONSUMER_VALIDATION=FAIL`，同时 `ZIP_REOPEN=PASS`、runner syntax、目标文件 hash、外层 CMD 审计均 PASS；该 ZIP 未发布给用户、未访问用户仓库。
+- **根因**：validator 先对 ZIP 实际成员执行 `sorted()`，却与一个未按同一规则排序的 `EXPECTED` 列表直接比较；集合完全相同但顺序不同仍被判失败。
+- **影响**：合法 Artifact 被假阻断；没有用户、仓库、产品或生命周期副作用。
+- **正确做法 / 修复**：结构验证必须在同一语义域比较：双方统一排序或直接做精确集合比较，同时继续单独验证成员 cardinality、路径和 hash。
+- **新增防护 / 回归**：V272 validator 对 actual/expected 使用同一排序规则；self-check 仍通过注入真实 forbidden Git primitive 证明阻断能力。
+- **类防护**：`EXP-007,EXP-015,EXP-019,EXP-060,EXP-077,EXP-080`
+- **范围影响**：仅 ChatGPT Artifact validator；两份目标文档设计范围不扩大。
+## ERR-492 — 用户 Git 同步一键 CMD 使用过度复杂的内联条件链，命令提前终止且未产生 commit/push
+- **状态**：`CLOSED`
+- **分类**：`SCRIPT_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **阶段**：V272 文档治理结果通过后的用户 Git 同步。
+- **一手事实**：用户回执显示本地 `REMOTE=e5283f468a0aba77c8349be9b0e8f640cc6a8e12`、`LOCAL=e5283f468a0aba77c8349be9b0e8f640cc6a8e12`，但没有任何 `git commit`、`git push` 或最终 `RESULT=SUCCESS` 输出，命令直接返回 `D:\code>`；因此 Git 同步未形成可接受完成证据。
+- **根因**：交付命令把 `cmd /v:on /c`、多个 `for /f`、`&&`、`||`、括号条件和重定向压入同一条交互式 CMD，控制流依赖过度复杂，未采用已验证的线性执行模板。
+- **影响**：V272 两个文档仍待 Git 同步；没有证据表明发生 commit 或 push，不能宣布远程同步完成。
+- **正确做法 / 修复**：不再用复杂 inline guard chain 承担 Git 同步；先由受控 runner 完成范围/HEAD/测试审计，用户 Git 同步只执行线性 `git add exact-files → git diff --cached --check → git commit → git push → HEAD/remote/status receipt`，push 自身负责拒绝 non-fast-forward。
+- **新增防护 / 回归**：后续用户一键 Git 同步禁止嵌套 `cmd /v:on /c` 条件链；复杂判断放入已验收 runner，用户操作命令保持线性且可观察。
+- **类防护**：`EXP-001,EXP-002,EXP-013,EXP-019,EXP-020,EXP-060,EXP-093`
+- **范围影响**：仅 delivery/Git sync harness；SpecForge 产品源码、架构和契约不变。
+<!-- SPECFORGE_ERR481_ERR492_POST_REINSTALL_RECOVERY_BACKFILL:END -->
