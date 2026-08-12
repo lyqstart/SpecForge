@@ -54,6 +54,8 @@ const CLASSIFICATION_BOOLEAN_FIELDS = [
   'module_boundary_changed',
   'api_contract_changed',
   'architecture_changed',
+  'data_model_changed',
+  'module_contract_changed',
 ] as const;
 
 /**

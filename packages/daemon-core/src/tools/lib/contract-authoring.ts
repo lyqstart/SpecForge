@@ -176,6 +176,27 @@ export async function authorContractCandidate(params: {
     if (!field) return { success: false, error: `invalid contract kind: ${kind}` };
     if (!id) return { success: false, error: 'contract entry requires "id"' };
     if (!owner) return { success: false, error: 'contract entry requires "owner_module"' };
+    if (
+      action !== 'repair_relocate_to_module' &&
+      Object.prototype.hasOwnProperty.call(entry, 'source_refs')
+    ) {
+      if (!Array.isArray((entry as any).source_refs)) {
+        return { success: false, error: 'Project Contract source_refs must be an array when present' };
+      }
+      const projectSourceRefs = (entry as any).source_refs
+        .map((value: unknown) => String(value ?? '').trim())
+        .filter(Boolean);
+      if (
+        projectSourceRefs.some(
+          (sourceRef: string) => !/^(?:ARCH|DATA)-[A-Z][A-Z0-9]{1,11}-[0-9]{3}$/.test(sourceRef),
+        )
+      ) {
+        return {
+          success: false,
+          error: 'Project Contract source_refs must contain only ARCH-/DATA- IDs',
+        };
+      }
+    }
     if (kind === 'shared_enum') {
       const valueType = (entry as any).value_type;
       const values = (entry as any).values;

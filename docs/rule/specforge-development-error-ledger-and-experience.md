@@ -7971,3 +7971,57 @@ actual_files
 - **类防护**：`EXP-007,EXP-019,EXP-060,EXP-170,EXP-177,EXP-182`
 - **范围影响**：仅 Artifact validator；产品、用户仓库、InventoryFlow、daemon、OpenCode 无副作用。
 <!-- SPECFORGE_ERR495_V278_VALIDATOR_BUN_LITERAL_FALSE_NEGATIVE:END -->
+
+<!-- SPECFORGE_ERR496_ERR499_PHASE11_FIRST_WI_PRODUCT_FIX:START -->
+# 2026-08-12 — Phase 11 首个 WI 审批前独立审计：ERR-496～ERR-499
+
+## ERR-496 — trigger_result Schema 遗漏正式 Classification 字段导致 Data Model / Module Contract 未进入最终 Merge Set
+- **状态**：`FIX_IMPLEMENTED_PENDING_REAL_WI_RETEST`
+- **分类**：`PRODUCT_DEFECT / CONTRACT_CONSUMER_GAP`
+- **一手事实**：InventoryFlow `WI-0001` 的 `trigger_result.json` 使用 `data_semantics_changed=true` 和非正式字段 `interface_contract_changed=true`，缺少权威 4.4 明确要求的 `data_model_changed`、`module_contract_changed`；`artifact-schema-validation.ts` 的 `CLASSIFICATION_BOOLEAN_FIELDS` 同样遗漏这两个正式字段，因此该 trigger 被接受。Runtime manifest materializer 正确只消费正式字段，最终 manifest 排除了已存在的 Data Model 和 Module Contract Candidate，而 Candidate Gate attempt-0006 仍报告 10/10 passed。
+- **根因**：trigger_result Schema 消费者没有与唯一权威 Classification 字段集合保持原子一致。
+- **影响**：首个 WI 可能在缺少必须合并的 Project Data Model / Module Contract 时错误进入 `approval_required`。
+- **正确做法 / 修复**：Schema 强制要求 `data_model_changed` 与 `module_contract_changed` 为 boolean；Runtime materializer继续只消费正式字段，不引入 alias。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-044,EXP-060`
+- **验证**：新增 Phase 11 首 WI 回归，覆盖完整正式字段、缺失 data_model_changed、使用 interface_contract_changed 但缺失 module_contract_changed 三种情况。
+
+## ERR-497 — Project Contract Candidate writer 接受 DD 来源的 Module Contract 内容进入 extension_registry
+- **状态**：`FIX_IMPLEMENTED_PENDING_REAL_WI_RETEST`
+- **分类**：`PRODUCT_DEFECT / CONTRACT_BOUNDARY_DEFECT`
+- **一手事实**：InventoryFlow `WI-0001` 为修复 Gate 时通过 `sf_contract_register(action=add)` 将 `CORE-INV-*` / `CORE-PI-*` 写入 `candidates/project/extension_registry.json`。这些契约来源于 CORE Module Design，属于 Module Contract；权威 `CON-MOD-001` 要求其正式位置为 `modules/CORE/contracts.json`，`CON-REF-001` 要求 Module Contract source_refs 为 `DD-*`，而 Project Contract source_refs 必须为 `ARCH-*` / `DATA-*`。
+- **根因**：普通 Project Contract add/update producer 对已提供的 `source_refs` 未验证 Project Contract provenance，DD 来源条目可越过 producer 边界。
+- **影响**：Project / Module Contract 两级存储边界可被错误 authoring 污染。
+- **正确做法 / 修复**：Project Contract writer 对存在的 `source_refs` 只接受 ARCH-/DATA- ID；`repair_relocate_to_module` 保持独立 Module Contract 恢复语义。
+- **类防护**：`EXP-001,EXP-007,EXP-020,EXP-044,EXP-060`
+- **验证**：新增 DD-sourced 条目必须在写 Candidate 前失败关闭的回归。
+
+## ERR-498 — Module contracts 配置对象被 `String()` 转为 `[object Object]` 并进入 Gate input snapshot
+- **状态**：`FIX_IMPLEMENTED_PENDING_REAL_WI_RETEST`
+- **分类**：`PRODUCT_DEFECT / EVIDENCE_INPUT_PATH_DEFECT`
+- **一手事实**：InventoryFlow attempt-0006 的 Contract Integrity Gate input evidence 出现 `D:\code\InventoryFlow\[object Object]`。源码 `loadProjectModel()` 对 `raw.contracts ?? moduleDefinition?.contracts` 直接 `String()`；而同函数后续 `contractsDeclared` 已明确只把 string 视为合法路径声明。
+- **根因**：模块契约元数据对象与路径字符串未在 input path producer 处区分。
+- **影响**：错误路径会进入 Gate inputFiles，并继续影响 input snapshot、hash、freshness 和 historical reconciliation 证据。
+- **正确做法 / 修复**：只接受非空 string contracts path；对象或缺省值统一回落 canonical `<moduleRoot>/contracts.json`。
+- **类防护**：`EXP-007,EXP-019,EXP-044,EXP-060`
+- **验证**：新增纯函数回归覆盖 raw string、module-definition string、object fallback。
+
+## ERR-499 — OpenCode Windows 辅助 Glob/Grep/Skill 加载路径缺少 Microsoft.PowerShell.Archive
+- **状态**：`IDENTIFIED_ENVIRONMENT_BACKLOG`
+- **分类**：`ENVIRONMENT_FAILURE`
+- **一手事实**：InventoryFlow Stage A 多次出现 `Expand-Archive` / `Microsoft.PowerShell.Archive` 无法加载；OpenCode 改用 Read 后仍完成 WI-0001 Candidate 与 Gate，daemon 与 SpecForge lifecycle Tool 正常工作。
+- **根因**：当前 Windows/OpenCode 辅助文件检索或 Skill 加载环境依赖不可用的 PowerShell Archive 模块。
+- **影响**：降低 Agent 文件读取效率；现有证据不支持把它归因于本轮 SpecForge governance runtime 产品缺陷，也未改变 attempt-0006 Gate 结果。
+- **正确做法 / 处置**：本轮作为环境 backlog 保存；Phase 11 主线使用可用的 Read / 正式 Tool，不扩大当前产品修复范围。
+- **类防护**：`EXP-002,EXP-007,EXP-019,EXP-093`
+- **范围影响**：不修改 PowerShell、OpenCode 或用户系统配置。
+<!-- SPECFORGE_ERR496_ERR499_PHASE11_FIRST_WI_PRODUCT_FIX:END -->
+
+## ERR-500 — ChatGPT 交付生成环境自动 Spreadsheet Runtime warmup 超时
+- **状态**：`CLOSED_ENVIRONMENT`
+- **分类**：`ENVIRONMENT_FAILURE / ARTIFACT_GENERATION_ENVIRONMENT`
+- **一手事实**：V281 未发布包在 ChatGPT 侧完成 validator self-check、runner syntax、ZIP reopen 和 Post Build Verify 时，`python_user_visible` 启动钩子额外尝试预热与本任务无关的 Spreadsheet Runtime，并报告 `TimeoutError: Timed out waiting for artifact tool daemon socket`；同一执行随后继续完成 V281 ZIP 生成且产品包全部独立验收项 PASS。V281 尚未向用户发布，用户仓库零访问。
+- **根因**：通用 Python 用户可见执行环境自动加载了与软件 ZIP 构建无关的 Spreadsheet Runtime warmup。
+- **影响**：只产生 ChatGPT 工具环境噪声；不影响 SpecForge 产品补丁、ZIP 字节、用户环境或 Phase 11 现场。
+- **正确做法 / 修复**：最终 V282 改用不触发 Spreadsheet Runtime 的 container 文件操作重新封包和验收；软件交付生成不依赖 spreadsheet runtime。
+- **类防护**：`EXP-002,EXP-007,EXP-019,EXP-060,EXP-193,EXP-195`
+- **范围影响**：不扩大冻结的 6 个 SpecForge 修改文件。

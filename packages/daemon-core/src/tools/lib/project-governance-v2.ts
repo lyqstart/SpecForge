@@ -141,6 +141,18 @@ function slash(value: string): string {
 function absolute(projectRoot: string, value: string): string {
   return path.isAbsolute(value) ? path.resolve(value) : path.resolve(projectRoot, value);
 }
+export function resolveModuleContractsPathValue(
+  rawContracts: unknown,
+  moduleDefinitionContracts: unknown,
+  moduleRoot: string,
+): string {
+  for (const candidate of [rawContracts, moduleDefinitionContracts]) {
+    if (typeof candidate === 'string' && candidate.trim().length > 0) {
+      return candidate.trim();
+    }
+  }
+  return `${moduleRoot}/contracts.json`;
+}
 
 async function readText(filePath: string): Promise<string> {
   try {
@@ -490,9 +502,12 @@ async function loadProjectModel(
       ? await reader.json(moduleFilePath)
       : await readJson(moduleFilePath);
     const designPath = absolute(projectRoot, String(raw.design ?? `${moduleRoot}/design.md`));
-    const configuredContracts =
-      raw.contracts ?? moduleDefinition?.contracts ?? `${moduleRoot}/contracts.json`;
-    const contractsPath = absolute(projectRoot, String(configuredContracts));
+    const configuredContracts = resolveModuleContractsPathValue(
+      raw.contracts,
+      moduleDefinition?.contracts,
+      moduleRoot,
+    );
+    const contractsPath = absolute(projectRoot, configuredContracts);
     const tracePath = absolute(projectRoot, String(raw.trace ?? `${moduleRoot}/trace.md`));
     const designText = useCandidateProjection
       ? await reader.text(designPath)
