@@ -7931,3 +7931,43 @@ actual_files
 - **类防护**：`EXP-001,EXP-002,EXP-013,EXP-019,EXP-020,EXP-060,EXP-093`
 - **范围影响**：仅 delivery/Git sync harness；SpecForge 产品源码、架构和契约不变。
 <!-- SPECFORGE_ERR481_ERR492_POST_REINSTALL_RECOVERY_BACKFILL:END -->
+
+<!-- SPECFORGE_ERR493_GIT_SYNC_SILENT_GUARD_FAILURE:START -->
+## ERR-493 — V277 handoff Git 同步命令再次使用静默 `findstr` 守卫导致整条 `&&` 链提前终止
+- **状态**：`CLOSED`
+- **分类**：`SCRIPT_DEFECT / VALIDATION_HARNESS_DEFECT / REPEATED_ERROR`
+- **阶段**：V277 handoff 文档验证通过后的用户 Git 同步。
+- **一手事实**：用户执行命令后控制台没有任何 commit、push、HEAD 或最终状态输出，直接返回提示符。随后独立只读命令证明 `LOCAL_HEAD=REMOTE_MAIN=853ddf4c16fe7bd0e16824e74d6d27fd87806e99`，branch=`main`，工作区只有 `docs/implementation/architecture-consistency/current-handoff.md` 一个未暂存修改；因此前一条命令没有完成 `git add`、commit 或 push。
+- **精确失败守卫**：`INSUFFICIENT_EVIDENCE`。原命令把两个 `findstr ... >nul` 守卫串入 `&&`，并把守卫输出丢弃；该次回执无法证明具体哪一个守卫返回非零。
+- **根因**：ERR-492 已规定用户 Git 同步必须保持线性可观察，但本次命令又把“远程 HEAD 等值检查”和“本地 HEAD 等值检查”编码成静默 `findstr` exit-code 守卫；任一守卫非零都会让后续 `git add/commit/push` 无诊断地停止。
+- **旧防护为何未生效**：ERR-492 的“线性 Git 同步”规则只被人工记住，没有进入本次用户命令发布前的机器审计；因此虽然没有恢复 `cmd /v`/`for`/`if`，仍重新引入了同类的隐式控制流。
+- **影响**：仅阻断 V277 动态 handoff 的 Git 同步；SpecForge 产品源码、架构、Contract、Runtime、InventoryFlow、daemon 和 OpenCode 均未被该失败修改。
+- **正确做法 / 修复**：复杂守卫全部留在已验收 runner；runner 成功后，用户 Git 同步固定为纯线性 `git add exact-files → git diff --cached --check → git commit → git push → git rev-parse HEAD → git ls-remote → git status --short`。禁止加入 `findstr`、`>nul`、`if`、`for`、`||`、嵌套 `cmd`。
+- **新增机器防护**：Artifact Acceptance 审计最终建议 Git 同步模板，只允许线性 primitives；runner 自身完成 local/remote HEAD 与精确源范围守卫。
+- **类防护**：`EXP-001,EXP-002,EXP-013,EXP-019,EXP-020,EXP-060,EXP-093`
+- **范围影响**：仅 development error ledger、current-handoff 与 Git sync delivery harness；权威文件无需修订。
+<!-- SPECFORGE_ERR493_GIT_SYNC_SILENT_GUARD_FAILURE:END -->
+
+<!-- SPECFORGE_ERR494_V278_HANDOFF_GLOBAL_REPLACEMENT_CARDINALITY:START -->
+## ERR-494 — V278 首次封包生成器对整个 handoff 做全局固定文本替换，因历史同名状态字段出现 6 次而在交付前停止
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SCRIPT_DEFECT`
+- **一手事实**：首次 V278 producer 更新 handoff 时，`REPEATED_ERROR_CHECK=PASS` 全文件命中 6 次，抛出 `RuntimeError`；该次 Python 未成功执行，ZIP 未生成、未交付、用户仓库未触达。
+- **根因**：把动态 `SPECFORGE_CURRENT_EXECUTION_STATE` 字段更新实现为整个历史 handoff 的全局字符串替换；历史段落也含同名字段。
+- **正确做法 / 修复**：只以唯一 `SPECFORGE_CURRENT_EXECUTION_STATE:START/END` 结构边界截取当前状态块，并仅在该块内部按 `KEY=` 行更新。
+- **新增防护 / 回归**：后续 producer/validator 都验证当前状态块唯一和目标 key 块内唯一；复用 `EXP-169,EXP-177`。
+- **类防护**：`EXP-007,EXP-019,EXP-020,EXP-060,EXP-169,EXP-177`
+- **范围影响**：仅 ChatGPT Artifact producer。
+<!-- SPECFORGE_ERR494_V278_HANDOFF_GLOBAL_REPLACEMENT_CARDINALITY:END -->
+
+<!-- SPECFORGE_ERR495_V278_VALIDATOR_BUN_LITERAL_FALSE_NEGATIVE:START -->
+## ERR-495 — V278 Artifact validator 把 Bun 执行 helper 与命令参数错误要求为拼接后的完整源码字面量
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`VALIDATION_DEFECT / PACKAGE_PREFLIGHT_DEFECT`
+- **一手事实**：第二次 V278 已生成 ZIP，runner `node --check=PASS`、ZIP reopen、外层 CMD 审计全部 PASS，但 Artifact Acceptance 的 `COMPLETENESS_VALIDATION=FAIL`；四个唯一缺失项都是 `RUNNER:call bun ...`。实际 runner 使用 `bun(command)` helper，helper 通过 `%COMSPEC% /d /s /c` 执行 `"call "+command`，四条 Bun 命令分别作为 helper 参数存在。`VALIDATOR_ACCEPTED=NO`、`ARTIFACT_ACCEPTED=NO`，因此包未交付用户。
+- **根因**：validator 把“真实执行语义”错误绑定为“helper 展开后的完整源码字面量必须连续出现”，没有按 producer/helper/consumer 分层验证。
+- **正确做法 / 修复**：分别验证 `bun()` helper 的 `%COMSPEC% + call` 执行契约，以及 targeted test、typecheck、renderer、workspace build 四个命令参数；不要求两层源码在文本中预先拼接。
+- **新增防护 / 回归**：最终 validator self-check 改为破坏 helper 的 `call` 语义并必须被拒绝，同时合法 helper+参数组合必须通过。
+- **类防护**：`EXP-007,EXP-019,EXP-060,EXP-170,EXP-177,EXP-182`
+- **范围影响**：仅 Artifact validator；产品、用户仓库、InventoryFlow、daemon、OpenCode 无副作用。
+<!-- SPECFORGE_ERR495_V278_VALIDATOR_BUN_LITERAL_FALSE_NEGATIVE:END -->
