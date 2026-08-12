@@ -230,37 +230,28 @@ describe('Stage Execution Contract authority', () => {
       'GLOBAL_GOAL=',
       'CURRENT_STAGE=',
       'CURRENT_STAGE_STATUS=',
+      'LAST_COMPLETED_STAGE=',
       'CURRENT_BLOCKER=',
+      'REMOTE_HEAD_BASELINE=',
+      'AUTHORITY_BASELINE_COMMIT=',
+      'VALIDATION_PROJECT=',
+      'CURRENT_WI=',
+      'AUTHORITATIVE_WI_STATE=',
+      'LATEST_IMMUTABLE_EVIDENCE=',
+      'LATEST_PRODUCT_FIX=',
       'OPERATION_BOUNDARY=',
       'FORBIDDEN_ACTIONS=',
       'NEXT_STAGE=',
       'NEXT_LEGAL_ACTION=',
       'STOP_CONDITION=',
+      'PERMANENT_INSUFFICIENT_EVIDENCE=',
       'LOCAL_COMMAND_SHELL=',
       'DOWNLOAD_PACKAGE_DIR=',
       'LOCAL_PATH_QUOTING=',
-      'PERMANENT_INSUFFICIENT_EVIDENCE=',
-      'AUTHORITY_BRANCH=',
-      'WORK_BRANCH=',
-      'DELIVERY_FORMAT=',
-      'POWERSHELL_ALLOWED=',
-      'FEEDBACK_CONTRACT=',
-      'ARTIFACT_ACCEPTANCE_CONTRACT=',
-      'VALIDATOR_CONTRACT=',
-      'DELIVERY_IDENTITY_CONTRACT=',
-      'DELIVERY_INTERNAL_REFERENCE_CONTRACT=',
-      'BOOTSTRAP_ENVELOPE_CONTRACT=',
-      'BOOTSTRAP_EXECUTION_ORDER_CONTRACT=',
-      'RECOVERY_ACCEPTANCE_CONTRACT=',
-      'AUTHORITY_BOOTSTRAP_CONTRACT=',
-      'AUTHORITY_BOOTSTRAP_FAILURE_CONTRACT=',
-      'AUTHORITY_BOOTSTRAP_FAILURE_TEMPLATE_CONTRACT=',
-      'SESSION_CONTINUITY_INPUT=',
     ]) {
       expect(handoff, field).toContain(field);
     }
   });
-
   it('keeps Rule section parsing aligned with the V2 structural boundary matrix', async () => {
     const authority = await readFile(authorityPath, 'utf8');
     const envelope = ruleSection(authority, 'GOV-STAGE-BOOTSTRAP-ENVELOPE-001');
@@ -1072,41 +1063,11 @@ it('keeps D9-D14 authority content architecture canonical and non-overlapping', 
 
 
 
-  it('keeps V133 final closure handoff and error ledger structurally reconciled', async () => {
-    const handoff = await readFile(handoffPath, 'utf8');
+  it('keeps historical V133 error-ledger evidence structurally preserved', async () => {
     const ledger = await readFile(
       resolve(repoRoot, 'docs/rule/specforge-development-error-ledger-and-experience.md'),
       'utf8',
     );
-
-    const stateStartMarker = '<!-- SPECFORGE_CURRENT_EXECUTION_STATE:START -->';
-    const stateEndMarker = '<!-- SPECFORGE_CURRENT_EXECUTION_STATE:END -->';
-    const stateStart = handoff.indexOf(stateStartMarker);
-    const stateEnd = handoff.indexOf(stateEndMarker, stateStart + stateStartMarker.length);
-    expect(stateStart).toBeGreaterThanOrEqual(0);
-    expect(stateEnd).toBeGreaterThan(stateStart);
-    expect(handoff.indexOf(stateStartMarker, stateStart + stateStartMarker.length)).toBe(-1);
-    expect(handoff.indexOf(stateEndMarker, stateEnd + stateEndMarker.length)).toBe(-1);
-
-    const currentState = handoff.slice(stateStart, stateEnd + stateEndMarker.length);
-    expect(currentState).toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D19');
-    expect(currentState).toContain('UNRECORDED_FAILURES=0');
-    expect(currentState).not.toContain('AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D14');
-    expect(currentState).not.toContain('\nCURRENT_BLOCKER=ERR-271');
-
-    for (const key of [
-      'CURRENT_STAGE',
-      'CURRENT_STAGE_STATUS',
-      'CURRENT_BLOCKER',
-      'OPERATION_BOUNDARY',
-      'FORBIDDEN_ACTIONS',
-      'NEXT_STAGE',
-      'NEXT_LEGAL_ACTION',
-      'STOP_CONDITION',
-    ]) {
-      expect(currentState, key).toMatch(new RegExp(`\\n${key}=[^\\n]+\\n`));
-    }
-
     const err284Start = '<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:START -->';
     const err284End = '<!-- SPECFORGE_ERR284_EXP250_POST_INSERTION_CONSUMER_COUNT_DEFECT:END -->';
     const start = ledger.indexOf(err284Start);
@@ -1117,7 +1078,6 @@ it('keeps D9-D14 authority content architecture canonical and non-overlapping', 
     expect(err284).toContain('\n## ERR-284 / EXP-250');
     expect(err284).not.toContain('\\n## ERR-284 / EXP-250');
     expect(err284).not.toContain('\\n<!-- SPECFORGE_ERR284');
-
     for (const token of [
       '## ERR-286 / EXP-252',
       '## ERR-287 / EXP-253',

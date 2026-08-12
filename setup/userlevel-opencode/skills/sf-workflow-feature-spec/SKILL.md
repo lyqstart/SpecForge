@@ -155,6 +155,41 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 | approval_required | — | — | — |
 <!-- AUTO-GENERATED:END:phase-table -->
 
+<!-- SPECFORGE_PHASE11_CURRENT_AUTHORITY_ALIGNMENT:START -->
+## 当前权威对齐：Impact Scope / Candidate Manifest / Gate Retry
+
+本节优先于本文件中历史 V4/V7 的 manifest 示例与旧字段说明；与 Runtime 返回冲突时以当前 Runtime 和唯一权威为准。
+
+### Impact Scope 固定结构
+
+`trigger_result.json -> impact_scope` 只按当前权威写正式字段：
+
+```text
+affected_modules
+architecture_refs
+data_model_refs
+design_refs
+project_contract_refs
+module_contract_refs
+planned_code_paths
+```
+
+使用 `affected_modules`，不使用 `modules`、`declared_modules` 或 `effective_modules` 代替该正式字段。Agent 提出初始范围，Runtime 再根据正式 Spec、Trace 与 code_paths 补全可确定关系；无法唯一确定时进入 blocked。
+
+### Candidate Manifest 所有权
+
+```text
+Runtime -> candidate_manifest.json
+Orchestrator -> 组织专业 Candidate、执行 candidate_preparing -> candidate_prepared、读取并验收 Runtime 最终物化结果
+```
+
+Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、`target_path`、required candidate types 或规范化算法。`data_model_changed=true`、`module_contract_changed=true` 等正式 Classification 必须由 Runtime 消费并决定完整 merge set。
+
+### Gate 修复次数
+
+一次 Gate Attempt 失败后，只允许基于其 immutable blocking issues 做一轮责任 Agent 修复并产生下一 Attempt；下一 Attempt 仍失败时停止并报告 blocker，交回产品/用户诊断，不连续试错。
+<!-- SPECFORGE_PHASE11_CURRENT_AUTHORITY_ALIGNMENT:END -->
+
 ## 各阶段执行协议
 
 ### 阶段 1：created → intake_ready（需求收集）
@@ -244,27 +279,17 @@ created → intake_ready → impact_analyzing → impact_analyzed → workflow_s
 3. 等待子 Agent 完成，确认 `candidates/tasks.md` 已生成
 4. 调用 `sf_doc_lint`（work_item_id, doc_type="tasks"）检查文档结构
 
-#### Step 4.5：生成 candidate_manifest.json
+#### Step 4.5：由 Runtime 物化 candidate_manifest.json
 
-Orchestrator 在所有 Candidate 文件生成完毕后，生成 `candidate_manifest.json`：
+所有专业 Candidate 完成后，Orchestrator 直接调用正式 `sf_state_transition(candidate_preparing → candidate_prepared)`；该封口转换由 Runtime 根据正式 Classification、实际 Candidate 和规范路径最终物化 `candidate_manifest.json`。
 
-```json
-{
-  "work_item_id": "<id>",
-  "candidates": [
-    { "type": "requirements", "path": "candidates/requirements.md", "lint_passed": true },
-    { "type": "design", "path": "candidates/design.md", "lint_passed": true },
-    { "type": "tasks", "path": "candidates/tasks.md", "lint_passed": true }
-  ],
-  "prepared_at": "<ISO timestamp>"
-}
-```
+Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required candidate types、candidate_path、target_path 与实际 Candidate 一致；不得手工创建或覆盖 manifest。
 
 #### Step 4.6：流转到 candidate_prepared
 
-调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="candidate_prepared"，evidence="all candidates generated, candidate_manifest.json created"）
+调用 `sf_state_transition`（from_state="candidate_preparing"，to_state="candidate_prepared"，evidence="professional candidates complete; Runtime materializes candidate_manifest"）。
 
-**产物：** `candidates/requirements.md`、`candidates/design.md`、`candidates/tasks.md`、`candidate_manifest.json`
+**产物：** 专业 Candidate + Runtime 物化的 `candidate_manifest.json`
 
 ### 阶段 5：candidate_prepared → gates_running（统一门禁执行）
 
@@ -533,9 +558,9 @@ Preflight 必须确认：
 2. design candidate 已存在
 3. tasks candidate 已存在
 4. trace_delta.md 已存在
-5. candidate_manifest.json 已生成
-6. candidate_manifest.json 中包含 requirements / design / tasks / trace_delta 四类条目
-7. manifest 中每个 path 都是实际存在文件
+5. candidate_manifest.json 已由 Runtime 在 `candidate_preparing → candidate_prepared` 封口转换中物化
+6. Runtime 根据正式 Classification 与实际 Candidate 纳入全部 required candidate types；Agent 不维护固定四类清单
+7. Orchestrator 只读验收 manifest 中每个 candidate_path / target_path 与实际 Candidate 一致
 ```
 
 ## 二、禁止旧行为
@@ -559,33 +584,14 @@ requirements candidate：sf-requirements
 design candidate：sf-design
 tasks candidate：sf-task-planner
 trace_delta.md：sf-task-planner
-candidate_manifest.json：sf-orchestrator
+candidate_manifest.json：Runtime（`candidate_preparing → candidate_prepared` 最终物化）
 ```
 
 如果 `trace_delta.md` 缺失，Orchestrator 必须重新调度 `sf-task-planner`，不能自行补写。
 
-## 四、manifest 最小结构
+## 四、manifest 只读验收（Runtime-owned）
 
-manifest 必须包含 4 类 Candidate：
-
-```json
-{
-  "work_item_id": "WI-XXXX",
-  "workflow_path": "requirement_change_path",
-  "candidates": [
-    { "type": "requirements", "path": "<actual requirements path>", "lint_passed": true },
-    { "type": "design", "path": "<actual design path>", "lint_passed": true },
-    { "type": "tasks", "path": "<actual tasks path>", "lint_passed": true },
-    { "type": "trace_delta", "path": "<actual trace_delta path>", "lint_passed": true }
-  ],
-  "candidate_completeness": {
-    "requirements": true,
-    "design": true,
-    "tasks": true,
-    "trace_delta": true
-  }
-}
-```
+Orchestrator 不定义固定 manifest schema 子集，不手工维护 candidate entries。封口转换成功后只读 Runtime 最终结果，并确认正式 Classification 要求的 Candidate 均在 merge set；例如 `data_model_changed=true` 必须包含 Data Model，`module_contract_changed=true` 必须包含 Module Contract。
 
 ## 五、失败处理
 

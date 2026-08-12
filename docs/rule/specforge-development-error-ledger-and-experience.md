@@ -8025,3 +8025,136 @@ actual_files
 - **正确做法 / 修复**：最终 V282 改用不触发 Spreadsheet Runtime 的 container 文件操作重新封包和验收；软件交付生成不依赖 spreadsheet runtime。
 - **类防护**：`EXP-002,EXP-007,EXP-019,EXP-060,EXP-193,EXP-195`
 - **范围影响**：不扩大冻结的 6 个 SpecForge 修改文件。
+
+<!-- SPECFORGE_ERR501_ERR504_AGENT_SESSION_AND_PHASE11_GUIDANCE:START -->
+## ERR-501 — V283 Artifact validator 把稳定规则正文中的 “OpenCode” 词误判为生命周期动作
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`VALIDATION_HARNESS_DEFECT`
+- **一手事实**：V283 只准备修改唯一权威与回归测试，Artifact validator 因 runner 中包含将写入权威的用户可见规则文本而命中 `FORBIDDEN:opencode`，`VALIDATOR_ACCEPTED=NO`、`ARTIFACT_ACCEPTED=NO`，包未交付用户。
+- **根因**：validator 对整段 runner 文本做词法禁词扫描，没有区分“数据/文档内容”和“可执行生命周期 primitive”。
+- **修复**：V285 validator/runner 只审计实际执行 primitive；文档中出现 OpenCode/WorkBuddy 术语不等价于生命周期动作。
+- **范围影响**：交付 harness；用户仓库无副作用。
+
+## ERR-502 — V284 用工作区原始字节 SHA 比较远程 authority 内容导致合法 Git checkout 被拒绝
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / CROSS_PLATFORM_TEXT_NORMALIZATION`
+- **一手事实**：V284 在 `AUTHORITY_SOURCE_HASH` 失败；本地工作区 authority SHA256=`725117...`，V284 远程 exact-commit 内容 SHA256=`709491...`；同一回执同时证明 local HEAD=remote main=`ee3f659...`、worktree CLEAN，失败发生前零文件修改。
+- **根因**：交付 harness 把 working-copy 原始字节与远程下载字节绑定为身份契约；该契约跨 Git 文本 checkout/换行规范化不稳定。
+- **修复**：V285 使用 live remote HEAD + local HEAD + clean worktree + `git rev-parse HEAD:<path>` blob identity/结构语义作为 source guard，不再比较 working-copy raw SHA256。
+- **范围影响**：交付 harness；SpecForge 产品逻辑无变化。
+
+## ERR-503 — V284 失败回执在 ledger 写入前错误声明 BACKFILLED_ERROR_IDS=ERR-501
+- **状态**：`CLOSED`
+- **分类**：`RECEIPT_DEFECT / VALIDATION_HARNESS_DEFECT`
+- **一手事实**：V284 `LAST_SUCCESSFUL_STEP=SOURCE_SCOPE_GUARD`、`FIRST_FAILED_STEP=AUTHORITY_SOURCE_HASH`、`FILES_CHANGED=CLEAN`，但回执固定输出 `BACKFILLED_ERROR_IDS=ERR-501`；远程当前 ledger 检查确认不存在 ERR-501。
+- **根因**：receipt 将计划 backfill ID 作为无条件常量输出，没有绑定实际成功 checkpoint。
+- **修复**：V285 只有完成 ledger 写入并重读确认后才输出实际 `BACKFILLED_ERROR_IDS`；失败前保持 `NONE`。
+- **范围影响**：receipt correctness。
+
+## ERR-504 — Phase 11 Agent 指引与当前 Authority/Runtime 不一致导致 WI-0001 连续错误修复 Gate
+- **状态**：`FIX_IMPLEMENTED_PENDING_REAL_WI_RETEST`
+- **分类**：`PRODUCT_GUIDANCE_DEFECT`
+- **一手事实**：WI-0001 在 V282 Runtime 修复后已得到 9-entry 完整 manifest、正确 Data Model/Module Contract merge set 和契约存储边界；OpenCode 随后 attempt-0007..0014 多轮修复，最终停在 `gates_failed`、attempt-0014=`8/10`。OpenCode 先后使用 `impact_scope.modules`、`declared_modules`，而 authority 4.1 与 Runtime `normalizeImpactScope()` 的正式字段是 `affected_modules`；同时曾把 `DATA-* -> ARCH-* constrained_by` 和 `Contract -> source_ref enforces` 当作非法关系删除，而 authority/Trace model 明确定义这些关系。
+- **生产者/消费者根因**：`sf-workflow-feature-spec/SKILL.md` 仍含 Orchestrator 手工生成 `candidate_manifest.json` 的历史规则且缺少 Impact Scope 固定结构；`sf-orchestrator.md` 只说 Impact Scope 原则但未列固定字段；`sf-task-planner.md` 只列 relation 类型与 DD→Contract consumer，未列完整 DATA/DD/Contract 关系语义。Runtime/Gate 消费者当前实现与 authority 一致。
+- **影响**：真实 Phase 11 首 WI 被 Agent 指引误导，产生不必要 Gate Attempts，并把候选输入错误诊断为 Runtime defect。
+- **修复**：V285 对齐三个用户级指引：固定 `affected_modules` 等七个 Impact Scope 字段；明确 Runtime 独占 candidate manifest 最终物化；明确 DATA/DD/Contract Trace 关系语义；Gate 失败只允许一轮责任 Agent 修复，下一 Attempt 仍失败即 blocked。
+- **验证**：新增 `phase11-agent-guidance-contract.test.ts`，机器锁定 authority session-mode contract、Impact Scope、Runtime manifest ownership 和 Trace relation semantics。
+- **范围影响**：Agent/Skill 指引与稳定 Stage contract；不修改 Runtime/Gate 实现。
+<!-- SPECFORGE_ERR501_ERR504_AGENT_SESSION_AND_PHASE11_GUIDANCE:END -->
+## ERR-505 — V285 Artifact validator 的 Python 路径字面量把 `\t` 解析为 tab，误报 runner 缺少 Bun 验证命令
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`VALIDATION_HARNESS_DEFECT / STRING_LITERAL_ESCAPE_DEFECT`
+- **一手事实**：V285 prepublish `NODE_RUNNER_SYNTAX=PASS`、ZIP reopen 和外层 CMD 审计均 PASS，但 validator 报 `COMPLETENESS_VALIDATION=FAIL`，唯一缺失项为 targeted test、render-workflow-docs、build-workspace 三个 runner command token；检查生成文件确认 runner 中三条命令真实存在。V285 `VALIDATOR_ACCEPTED=NO`、`ARTIFACT_ACCEPTED=NO`，未交付用户。
+- **根因**：validator 的 Python 普通字符串用 Windows 反斜杠拼接命令 token，其中 `\tests`/`\tools` 等序列进入 Python escape 解析，语义 token 与 runner 源码字节不一致。
+- **修复**：V286 validator 改为验证稳定命令名/参数片段，不再把 Windows 路径反斜杠编码成脆弱 exact literal；self-check 继续破坏真实语义并验证拒绝。
+- **范围影响**：Artifact validator；SpecForge 产品和用户仓库零副作用。
+## ERR-506 — V286 validator self-check 破坏非唯一 token，坏包仍被主校验接受
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`VALIDATION_HARNESS_DEFECT / SELF_CHECK_DEFECT`
+- **一手事实**：V286 正常包全部结构/内容/语义/范围/消费者检查 PASS，但 `VALIDATOR_SELF_CHECK=FAIL`，因此 `VALIDATOR_ACCEPTED=NO`、`ARTIFACT_ACCEPTED=NO`，未交付用户。self-check 只替换 Orchestrator 中第一个 `affected_modules`，而同文件仍有其他合法 `affected_modules`，坏包没有破坏 validator 要求的唯一语义条件。
+- **根因**：negative self-check 选用了非唯一高频 token，未证明目标断言真的被破坏。
+- **修复**：V287 self-check 改为破坏唯一的 Orchestrator 禁止 alias 句，且同步更新 target hash，使拒绝只能来自语义 consumer validation。
+- **范围影响**：Artifact validator；产品与用户仓库零副作用。
+## ERR-507 — V287 producer 单行 `if` suite 误把 handoff 更新语句放入异常分支，目标 handoff 未前移
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`PACKAGE_PRODUCER_DEFECT / CONTROL_FLOW_DEFECT`
+- **一手事实**：V287 validator self-check 已 PASS，主体语义检查仅失败 `HANDOFF:LATEST_DEVELOPMENT_FAILURE=ERR-506`；检查 producer 发现 `if old not in h: raise ...; h=h.replace(...); tgt[hrel]=h` 写在同一 Python simple-suite，条件为 false 时 replace/赋值同样不执行。V287 `VALIDATOR_ACCEPTED=NO`、`ARTIFACT_ACCEPTED=NO`，未交付用户。
+- **根因**：producer 用分号压缩条件控制流，导致本应无条件执行的状态更新被纳入异常分支。
+- **修复**：V288 将 guard、replace、target assignment 分成独立语句并在封包前显式断言 handoff latest failure/backfill。
+- **范围影响**：Artifact producer；产品与用户仓库零副作用。
+
+<!-- SPECFORGE_ERR508_ERR512_AGENT_GUIDANCE_RECOVERY_HARNESS:START -->
+## ERR-508 — 远程基线 Stage authority 回归测试要求 handoff 携带已不属于当前权威契约的历史字段
+- **状态**：`CLOSED`
+- **分类**：`TEST_CONTRACT_DEFECT / GOVERNANCE_TEST_DRIFT`
+- **一手事实**：远程 `main@ee3f659a3e665da4a9b26439a60c0f5f111b4ebf` 的 `stage-execution-authority-contract.test.ts` 要求 handoff 存在 `FEEDBACK_CONTRACT` 等 11 个历史字段；同一 HEAD 的 `current-handoff.md` 不包含这些字段。唯一权威 `GOV-STAGE-HANDOFF-001` 只定义当前动态状态字段，`GOV-STAGE-ENV-001` 另要求 `LOCAL_COMMAND_SHELL / DOWNLOAD_PACKAGE_DIR / LOCAL_PATH_QUOTING`。
+- **根因**：Stage authority consumer test 在 handoff schema 已收敛后仍保存旧字段断言。
+- **影响**：V288 新增的 Agent guidance 专项测试全部通过，但被既有过期测试阻断。
+- **正确做法 / 修复**：Stage handoff 回归只锁定 `GOV-STAGE-HANDOFF-001 + GOV-STAGE-ENV-001` 的当前 canonical 字段。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-044,EXP-060`
+
+## ERR-509 — V288 缺少写入前 targeted baseline test，导致基线测试漂移在 7 文件写入后才暴露
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / BASELINE_GUARD_DEFECT`
+- **一手事实**：V288 已完成精确 7 文件 controlled write 后才运行 targeted tests；新增 `phase11-agent-guidance-contract.test.ts` 全部 PASS，失败只来自 ERR-508 的既有 Stage authority test。
+- **根因**：V288 首次写入前没有执行后续会作为阻断条件的既有 targeted baseline test，也没有用 HEAD immutable evidence 预先证明该测试的基线状态。
+- **影响**：7 个正确目标文件留在本地 dirty worktree；无 commit/push、无 InventoryFlow 写入。
+- **正确做法 / 修复**：恢复轮先证明 V288 精确 side effects，再用 Git HEAD 三源语义证据确认基线漂移，然后追加 Stage test 修复。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-510 — V289 使用非 `-z` 的 Git 路径输出审计中文 authority 路径，Git quotePath 转义导致合法 scope 被误判
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / CROSS_PLATFORM_GIT_PATH_PARSING`
+- **一手事实**：V289 回执中 authority 路径被 Git 输出为带双引号的八进制转义字节序列；其 `worktree()` 仅按换行拆分并替换反斜杠，无法与真实 UTF-8 仓库路径相等。V289 在首次写入前失败。
+- **根因**：scope consumer 把 Git 人类显示格式当成机器路径协议。
+- **影响**：只产生 false-negative scope audit；V289 无新增仓库副作用。
+- **正确做法 / 修复**：机器路径读取统一使用 `git ... -z` NUL 分隔输出，直接解析真实路径，不依赖 `core.quotePath`。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-511 — V289 把 V288 明确新增的回归测试误要求为 `untracked=0`
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / EXPECTED_SIDE_EFFECT_MODEL_DEFECT`
+- **一手事实**：V288 accepted scope 明确包含新文件 `packages/daemon-core/tests/unit/phase11-agent-guidance-contract.test.ts`；用户 commit 前该文件属于 untracked。V289 虽把该路径放入 expected dirty files，却同时要求 untracked 集合为空。
+- **根因**：side-effect audit 只冻结总路径集合，没有分别冻结 tracked-modified / staged / untracked Git 状态。
+- **影响**：即使 ERR-510 修复，V289 仍会错误阻断。
+- **正确做法 / 修复**：恢复审计分别要求 V288 为 6 tracked modified、0 staged、1 指定 untracked；最终为 7 tracked modified、0 staged、1 指定 untracked。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-512 — ChatGPT 侧 V290 Artifact producer 试图联网下载已知 HEAD 源文件，DNS 失败导致生成器在产物建立前停止
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`ENVIRONMENT_FAILURE / PACKAGE_PRODUCER_DEPENDENCY_DEFECT`
+- **一手事实**：V290 producer 在 ChatGPT `python_user_visible` 中调用 `urllib.request.urlopen(raw.githubusercontent.com/...)`，发生 `Temporary failure in name resolution`；工具明确返回 Python 未成功执行，不存在可假定的输出文件或副作用。
+- **根因**：Artifact producer 不必要地再次依赖外网读取一个已经可以由用户本地 `git show HEAD:<path>` 提供不可变来源的文件。
+- **影响**：只影响 ChatGPT 侧 V290 生成；用户仓库零访问、零写入。
+- **正确做法 / 修复**：V291 package 不含联网依赖；runner 在已确认 `HEAD=ee3f659...` 后用 `git show HEAD:<stage-test>` 证明 ERR-508，并对用户本地 Stage test 做结构化唯一行修复。
+- **类防护**：`EXP-002,EXP-007,EXP-019,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR508_ERR512_AGENT_GUIDANCE_RECOVERY_HARNESS:END -->
+
+## ERR-513 — V291 prepublish 再次触发已知 Spreadsheet Runtime warmup 超时，旧 ERR-500 防护未被执行方式强制
+- **状态**：`CLOSED_PREFLIGHT`
+- **分类**：`ENVIRONMENT_FAILURE / REPEATED_ERROR / ARTIFACT_GENERATION_HARNESS`
+- **一手事实**：V291 的 validator、Node syntax、ZIP reopen、outer CMD、no-network dependency 和 `POST_BUILD_VERIFY` 全部 PASS；同一 `python_user_visible` 进程启动阶段再次打印 Spreadsheet Runtime daemon socket timeout。该 warmup 与 ZIP 软件交付无关，且未改变 V291 文件字节或验收结果。
+- **旧防护为何未生效**：ERR-500 已规定软件 ZIP 生成使用不触发 Spreadsheet Runtime 的 container 文件操作，但 V291 producer 仍使用了 `python_user_visible`，因此相同环境噪声再次出现。
+- **影响**：只影响 ChatGPT Artifact 生成环境日志；用户仓库零访问，V291 未交付执行。
+- **正确做法 / 修复**：V292 完整复制 V291 已验收语义内容，在 container 中重新生成 manifest/identity/ZIP 并执行 validator、Node syntax、ZIP reopen、outer CMD 验收；不经过 Spreadsheet Runtime warmup。
+- **类防护**：`EXP-002,EXP-007,EXP-019,EXP-060,EXP-193,EXP-195`
+
+<!-- SPECFORGE_ERR514_ERR515_STAGE_TEST_RECOVERY:START -->
+## ERR-514 — V292 只删除第一组过期 handoff 字段，却遗漏同一 Stage 测试中的 V133 历史动态状态断言
+- **状态**：`CLOSED`
+- **分类**：`TEST_CONTRACT_DEFECT / INCOMPLETE_CONSUMER_RECONCILIATION / REPEATED_CLASS_ERR508`
+- **一手事实**：V292 的 `phase11-agent-guidance-contract.test.ts` 4/4 PASS；`stage-execution-authority-contract.test.ts` 前 15 个用例 PASS，最终 `keeps V133 final closure handoff and error ledger structurally reconciled` 因要求当前 handoff 含 `AUTHORITY_APPROVED_DEDUP_SCOPE=D1_D19` 失败。远程唯一权威把 dedup scope 固定为 authority 自身稳定说明 `APPROVED_DEDUP_SCOPE=D1,...,D19`，而 `GOV-STAGE-HANDOFF-001` 明确 current-handoff 只保存当前动态状态，不要求 `AUTHORITY_APPROVED_DEDUP_SCOPE`。
+- **根因**：ERR-508 修复只移除了同一测试文件第一处 11 个历史 handoff 字段，没有对整个 Stage test 做完整生产者/消费者扫描；后面的 V133 历史测试仍把旧 Stage 的动态值当成当前永久 handoff schema。
+- **影响**：V292 在精确 8 文件范围内完成写入后 targeted tests 失败；无 commit/push、无 InventoryFlow 写入、无生命周期动作。
+- **正确做法 / 修复**：一次性重构 Stage handoff tests：当前 handoff 只断言 `GOV-STAGE-HANDOFF-001 + GOV-STAGE-ENV-001` 的 canonical 字段；V133 历史 ledger evidence 独立只检查 error ledger，不再检查当前 handoff 的历史动态值。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-044,EXP-060,EXP-093`
+
+## ERR-515 — V292 把 ERR-513 ledger backfill 序列化为字面量 `\\n`，破坏错误台账行结构
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / LEDGER_SERIALIZATION_DEFECT`
+- **一手事实**：V292 packaged target 的 ledger 尾部在 `ERR-508...ERR-512` block 之后以字面量 `\\n\\n## ERR-513 ... \\n` 保存 ERR-513；因此 ERR-513 文本可被 substring 搜索命中，但并不是正常 Markdown 行结构。
+- **根因**：V292 复制 V291 语义内容时把一个已转义的多行字符串再次作为普通文本写入，没有在 Artifact Acceptance 中验证 ledger 新 ERR block 的真实换行结构。
+- **影响**：错误台账的人类可读结构和按行消费者不一致；V292 receipt 中 `FAILURE_LEDGER_REREAD` 只验证 ERR ID substring，因此未发现该问题。
+- **正确做法 / 修复**：把 ERR-513 tail 恢复成真实换行，并在 V293 validator/runner 中要求 `ERR-513/514/515` 均以真实 `\n## ERR-...` 行起始存在且相关区段不含字面量 escaped line separators。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093,EXP-193`
+<!-- SPECFORGE_ERR514_ERR515_STAGE_TEST_RECOVERY:END -->

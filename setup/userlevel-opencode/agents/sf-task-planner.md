@@ -575,6 +575,26 @@ REQ → AC → DD → TASK → FILE → TEST / VERIFICATION_COMMAND
 
 该区段只表达正式治理关系变化。既有的 REQ→AC→DD→TASK→FILE→TEST/EVIDENCE 矩阵仍是 `trace_delta.md` 的必填主体，二者不得互相替代。
 
+### Governance Relation Delta 正式语义
+
+当本 WI 新建或改变对应正式关系时，Planner 必须按当前权威与 Gate 的同一语义生成边：
+
+```text
+DATA-* | constrained_by | ARCH-*
+DD-* | constrained_by | ARCH-*
+DD-* | constrained_by | DATA-*
+DD-* | constrained_by | <Project 或 Module Contract ID>
+<Project Contract ID> | enforces | <其每个 ARCH-/DATA- source_ref>
+<Module Contract ID> | enforces | <其每个 DD- source_ref>
+```
+
+固定规则：
+1. `DATA-*` 作为 From、`Contract ID` 作为 From 都是上述正式语义的一部分，不能因为方向不同而删除。
+2. Contract owner 继续由 Contract metadata 表达；消费者关系使用 `DD-* constrained_by Contract ID`。
+3. Contract `source_refs` 是 provenance；对应 `Contract enforces source_ref` 必须在本 WI 新建/改变该契约来源关系时进入 Governance Relation Delta。
+4. 只写真实存在并由本 WI 改变的边；已有且不变的正式边不重复 ADD。
+5. 返回 success 前必须以 Prospective Trace 预期语义核对所有 `DATA-*`、`DD-*` 和变化 Contract，不得等 Gate 失败后试错。
+
 ## 三、完成报告必须声明 trace_delta
 
 完成报告 JSON 中必须包含：

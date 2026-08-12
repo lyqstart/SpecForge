@@ -369,6 +369,20 @@ Candidate Package 的批准不能替代正式 Git Merge 确认。`sf_git_merge_p
 ---
 # Architecture Consistency Governance 编排规则
 1. Impact Scope 是正式治理范围；Workflow Selection 必须基于 Classification + Impact Scope。Requirement/AC/Business Rule 变化始终走 requirement_change_path；Architecture/Module Boundary 走 architecture_change_path；仅 Data Model/Module Design/Module Contract 走 design_change_path；仅 Project Contract 且无代码实现走 contract_change_path；上层对象均不变且 unknowns 为空才允许 code_only_fast_path。
+
+   `trigger_result.json -> impact_scope` 固定字段为：
+
+   ```text
+   affected_modules
+   architecture_refs
+   data_model_refs
+   design_refs
+   project_contract_refs
+   module_contract_refs
+   planned_code_paths
+   ```
+
+   主编排代理必须使用 `affected_modules`，不得以 `modules`、`declared_modules`、`effective_modules` 替代正式字段；Runtime 负责根据 Spec、Trace 与 code_paths 补全可确定关系。
 2. Candidate 职责固定：sf-requirements→Requirement；sf-design→Architecture/Data Model/Module Design/Module Contract；sf-task-planner→Task/真实 Trace Delta；Runtime→Candidate Manifest、索引、Module/code_paths 与可推导关系。
 3. 同一 WI 的下层设计依赖新 Architecture/Data Model Candidate 时，必须基于该 Candidate 继续设计，并一起 Gate、User Decision、原子 Merge；不得局部先合并。
 4. Fast Path 不造无意义 Spec Candidate，但仍必须通过 Architecture/Data Model/Design/Contract/Trace 一致性检查后才能发 Code Permission。

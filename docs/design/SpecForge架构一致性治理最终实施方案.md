@@ -824,6 +824,29 @@ PERMANENT_INSUFFICIENT_EVIDENCE=
 
 冲突时以远程权威规则 + 当前持久化事实 + 最新用户授权为准，不得用模型记忆、旧 Prompt 或旧 handoff 覆盖当前事实。
 
+**GOV-STAGE-AGENT-SESSION-001：** ChatGPT 向 OpenCode、WorkBuddy 或其他本地执行智能体分配阶段任务时，必须同时明确角色任务与会话方式；该要求属于跨会话稳定 Stage Execution Contract。
+
+固定输出至少包含：
+
+```text
+OPEN_CODE_SESSION_MODE=CONTINUE_CURRENT_SESSION|START_NEW_SESSION|NOT_APPLICABLE
+WORKBUDDY_SESSION_MODE=CONTINUE_CURRENT_SESSION|START_NEW_SESSION|NOT_APPLICABLE
+OPEN_CODE_TASK=
+WORKBUDDY_TASK=
+USER_TASK=
+CHATGPT_TASK=
+STOP_CONDITION=
+```
+
+固定规则：
+
+1. 本阶段使用 OpenCode 时，必须显式填写 `OPEN_CODE_SESSION_MODE`；使用 WorkBuddy 时，必须显式填写 `WORKBUDDY_SESSION_MODE`；禁止让用户自行推断继续旧会话还是新开会话。
+2. `CONTINUE_CURRENT_SESSION` 必须同时指出继续的项目/任务上下文；`START_NEW_SESSION` 必须同时指出新会话项目根目录与目标。
+3. OpenCode 与 WorkBuddy 可以并行；并行时必须分别给出任务边界、只读/写入边界和共同停止条件。
+4. `OPEN_CODE_TASK`、`WORKBUDDY_TASK`、`USER_TASK`、`CHATGPT_TASK` 必须明确角色分工。
+5. 用户操作优先按完整 Stage 批处理；人工决策、daemon/OpenCode 手工生命周期、未知副作用或真实失败才作为交互停止点。
+6. 本规则只定义稳定分工与会话表达契约；某次执行当前是否已启动、当前项目、当前会话状态等动态事实继续写入 `current-handoff.md`、Git、StateManager 或 immutable evidence。
+
 **GOV-STAGE-ENV-001：** 本地执行环境属于跨会话动态输入；通用读取和引用规则写入本权威文件，机器相关具体值只写入 `current-handoff.md`。
 
 `CURRENT EXECUTION STATE` 必须维护：
@@ -4231,6 +4254,7 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
 | `GOV-STAGE-DIAG-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-ENV-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-HANDOFF-001` | 2.8 Stage Execution Contract |
+| `GOV-STAGE-AGENT-SESSION-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-INPUT-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-TEMPLATE-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-OUTPUT-001` | 2.8 Stage Execution Contract |
