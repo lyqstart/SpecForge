@@ -8158,3 +8158,118 @@ actual_files
 - **正确做法 / 修复**：把 ERR-513 tail 恢复成真实换行，并在 V293 validator/runner 中要求 `ERR-513/514/515` 均以真实 `\n## ERR-...` 行起始存在且相关区段不含字面量 escaped line separators。
 - **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093,EXP-193`
 <!-- SPECFORGE_ERR514_ERR515_STAGE_TEST_RECOVERY:END -->
+
+<!-- SPECFORGE_ERR516_ERR518_PHASE11_TASK_SCOPE_GATE:START -->
+## ERR-516 — Candidate Gate 未消费 Task allowed_write_files，导致实现文件可越过 Approved Impact Scope 和 Module code_paths
+- **状态**：`FIX_IMPLEMENTED_PENDING_USER_APPLY`
+- **分类**：`PRODUCT_DEFECT / CANDIDATE_SCOPE_CONSUMER_GAP`
+- **阶段**：Phase 11 InventoryFlow 首个真实 WI，Post-Spec-Merge Gate 后、Code Permission 前。
+- **一手事实**：WI-0001 attempt-0016 Candidate Gate 10/10 PASS、attempt-0017 Post-Spec-Merge Gate PASS；随后 Implementation 前三方对账证明 `tasks.md` 的 TASK-WI-0001-001 要求写 `package.json`、`tsconfig.json`，但两文件均不在已批准 `impact_scope.planned_code_paths`，也不在 CORE `code_paths`。Code Permission 尚未发放，业务代码零写入。
+- **根因**：`checkProjectGovernanceConsistency()` 只验证 `planned_code_paths -> Module -> affected_modules`，没有消费 `tasks.md -> allowed_write_files`；因此 Task 生产者可以引入 Approved Impact Scope 之外的新实现路径，而 Candidate spec_consistency_gate 不会阻断。
+- **影响**：用户可批准并 Atomic Spec Merge 一个 Task 写入范围与已批准治理范围不一致的 Candidate，缺陷直到 Code Permission/Implementation 前才暴露，违反“Task 必须依据已批准 Impact Scope”和 Fail Closed。
+- **正确做法 / 修复**：扩展现有 spec_consistency consumer：逐 Task 解析 `allowed_write_files`；每个路径必须属于 `impact_scope.planned_code_paths`；除已批准 cross-module test harness 例外外必须唯一映射 Module，owner 必须位于 `affected_modules`。Task 允许把 Impact Scope精确化为子集，但不得扩大。
+- **机器防护**：新增 `project-governance-task-scope.test.ts`，覆盖超 Impact Scope、0 Module owner、合法子集及 cross-module test 例外；Agent guidance contract 同步锁定 Planner 规则。
+- **类防护**：`EXP-001,EXP-004,EXP-006,EXP-010,EXP-011,EXP-015,EXP-017,EXP-036,EXP-087`
+
+## ERR-517 — 当前 SpecForge 自身开发 Bootstrap 的前两级 live-ref provider 在 ChatGPT 环境不可用
+- **状态**：`CLOSED_BY_APPROVED_FALLBACK`
+- **分类**：`ENVIRONMENT_FAILURE / AUTHORITY_BOOTSTRAP_PROVIDER_FAILURE`
+- **一手事实**：本轮 `GITHUB_REF_API_LIVE` 访问在 Web 工具层被拒绝；随后 `STRUCTURED_GIT_LS_REMOTE` 在容器内因 `Could not resolve host: github.com` 失败。按唯一权威规定的顺序进入 `USER_BOOTSTRAP_GIT_LS_REMOTE`，使用本会话用户此前返回的唯一 `refs/heads/main=464395bd2856aebec354c64dae1f0c8a465c0c18` 证据；用户此后未执行新的 SpecForge push，且 exact commit authority 可读取并通过唯一标记检查。
+- **根因**：ChatGPT 执行环境的 API URL/tool 安全边界与 DNS，不是 Git 仓库状态错误。
+- **影响**：前两级 live-ref 取证不可用；不影响按已批准第三顺位来源完成本轮 Bootstrap。
+- **正确做法 / 修复**：严格按 `GITHUB_REF_API_LIVE > STRUCTURED_GIT_LS_REMOTE > USER_BOOTSTRAP_GIT_LS_REMOTE` 顺序降级；不得用 branch HTML/search/raw-main 替代 live ref。
+- **类防护**：`EXP-002,EXP-007,EXP-072,EXP-082`
+
+## ERR-518 — Implementation 前置提示把 Task 精确化错误要求为与 Impact Scope/code_paths 三方集合完全相等
+- **状态**：`CLOSED_RULE_CORRECTION`
+- **分类**：`ASSISTANT_GOVERNANCE_INTERPRETATION_ERROR / OVERCONSTRAINT`
+- **一手事实**：上一轮提示要求 `tasks.md allowed_write_files` 并集与 `impact_scope.planned_code_paths`、Module `code_paths` 精确相等。唯一权威实际定义为 Impact Scope 经 Atomic Spec Merge 和 Task 精确化形成最终 Code Permission，并要求 Actual Scope 为 Approved Scope 子集；因此 Task 可以收窄 Approved Scope。InventoryFlow 中 `data/inventory.json` 只在较宽 Approved Scope/code_paths 而未被 Task 直接写入，本身不能据此判为 Candidate 违规。
+- **根因**：把“Task 精确化”误解释为集合相等，而不是“不允许扩大、允许收窄”的子集关系。
+- **影响**：OpenCode 的停止结论中混入一个过严条件；但真实 blocker `package.json`/`tsconfig.json` 超出 Approved Scope 且 0 Module owner 独立成立，因此没有造成越权写入。
+- **正确做法 / 修复**：机器契约固定为 `Task allowed_write_files ⊆ impact_scope.planned_code_paths`；每个非例外 Task 写路径仍必须唯一 Module 归属且 owner 受影响。不得反向要求 Approved Scope 中每个路径都必须由 Task 直接写入。
+- **类防护**：`EXP-001,EXP-004,EXP-017,EXP-036,EXP-087`
+<!-- SPECFORGE_ERR516_ERR518_PHASE11_TASK_SCOPE_GATE:END -->
+
+<!-- SPECFORGE_ERR519_V294_PREPUBLISH_VALIDATOR_FALSE_NEGATIVE:START -->
+## ERR-519 — V294 发布前 Validator 对 current-handoff 和结构化 Git 调用使用错误的文本断言，导致合法 Artifact 被拒绝
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`VALIDATION_HARNESS_DEFECT / ARTIFACT_ACCEPTANCE_FALSE_NEGATIVE`
+- **阶段**：V294 Phase 11 Task Scope Gate Fix 发布前 Artifact Acceptance。
+- **一手事实**：V294 产物结构、Identity、Scope 和 Node runner syntax 均通过；Validator 最终返回 `HANDOFF_UNRECORDED_FAILURES=0` 与 `RUNNER_git diff` 两项失败，因此 `VALIDATOR_ACCEPTED=NO / ARTIFACT_ACCEPTED=NO`，该包未交付用户。第一项来自 Validator 在整个 handoff 历史文档中全局要求 `UNRECORDED_FAILURES=0` 恰好一次，而 current execution state 之外还存在历史文本；第二项来自 Validator 搜索 shell 风格字面量 `git diff`，而 runner 使用结构化 `spawnSync` Git 参数调用。
+- **根因**：发布前 Consumer 没有把动态 current-state block 与历史 handoff 内容分层，也没有按 runner 的真实结构化调用接口做断言。
+- **影响**：仅造成 ChatGPT 侧发布前 false-negative；用户仓库、InventoryFlow、daemon、OpenCode 均无任何副作用。
+- **正确做法 / 修复**：V295 Validator 只在 `SPECFORGE_CURRENT_EXECUTION_STATE` 唯一块内检查动态字段，并检查结构化 Git argv token；保留 validator self-check mutation。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR519_V294_PREPUBLISH_VALIDATOR_FALSE_NEGATIVE:END -->
+
+<!-- SPECFORGE_ERR520_V295_EXACT_TEXT_PATCH_CARDINALITY:START -->
+## ERR-520 — V295 产品修复 runner 仍依赖整段函数 exact-text 定位，合法 HEAD 上 helper 匹配 cardinality=0
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / BRITTLE_PATCH_LOCALIZATION`
+- **阶段**：V295 Phase 11 Task Scope Candidate Gate Product Fix。
+- **一手事实**：用户回执证明 `main@464395bd2856aebec354c64dae1f0c8a465c0c18`、远程 main 与本地 HEAD 一致，`PREWRITE_BASELINE_TESTS=PASS`，随后 `CONTROLLED_WRITE` 在 `helper cardinality=0` 停止；`FILES_CHANGED=CLEAN`。同一 exact commit 源码中 `readApprovedTaskFiles` 函数符号真实存在。V295 runner 用整段函数正文作为 `helper_anchor.txt` 并执行 exact substring cardinality 检查。
+- **根因**：交付 harness 违反稳定补丁定位原则，把可变函数完整文本当作修改定位契约；符号存在并不保证整段字节/文本模板匹配。当前证据不足以把 mismatch 归因到某一种具体字符、空白或换行差异，因此不作该层猜测。
+- **影响**：V295 在任何仓库文件写入之前失败；SpecForge、InventoryFlow、daemon、OpenCode 均无副作用。
+- **正确做法 / 修复**：V296 使用 TypeScript AST / 稳定符号边界定位：按 import module specifier、`readApprovedTaskFiles` FunctionDeclaration、`checkProjectGovernanceConsistency` 内 `impactScope.planned_code_paths` ForOfStatement 查找并验证 cardinality；全部变换先在内存完成并重新解析，再一次写入源码。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR520_V295_EXACT_TEXT_PATCH_CARDINALITY:END -->
+
+<!-- SPECFORGE_ERR521_V296_PREPUBLISH_VALIDATOR_MANIFEST_INDIRECTION:START -->
+## ERR-521 — V296 发布前 Validator 要求 runner 源码直接包含 Manifest 中的结构定位值，合法 AST Artifact 被误拒
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`VALIDATION_HARNESS_DEFECT / ARTIFACT_ACCEPTANCE_FALSE_NEGATIVE`
+- **阶段**：V296 Phase 11 Task Scope Gate AST Recovery 发布前 Artifact Acceptance。
+- **一手事实**：V296 `VALIDATOR_SELF_CHECK=PASS`、Node runner syntax 和 ZIP reopen 均 PASS；Validator 仅报告 `AST_RUNNER:impactScope.planned_code_paths`、`AST_RUNNER:readApprovedTaskFiles`、`AST_RUNNER:checkProjectGovernanceConsistency` 三项缺失，因此 `VALIDATOR_ACCEPTED=NO / ARTIFACT_ACCEPTED=NO`，未交付用户。runner 实际通过 `manifest.json.structural_patch_contract` 读取这三个值，而不是把值硬编码在 runner 源码。
+- **根因**：Artifact consumer 把“结构定位契约由 Manifest 提供”误当成“runner 必须重复硬编码同一字符串”，验证对象层级错误。
+- **影响**：仅 ChatGPT 侧发布前 false-negative；用户仓库、InventoryFlow、daemon、OpenCode 零副作用。
+- **正确做法 / 修复**：V297 Validator 分层验证：Manifest 必须精确保存三个稳定结构定位值；runner 必须消费 `m.structural_patch_contract` 并使用 TypeScript AST API。Self-check 直接破坏 Manifest 中唯一结构契约值，证明 consumer 能拒绝坏包。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR521_V296_PREPUBLISH_VALIDATOR_MANIFEST_INDIRECTION:END -->
+
+<!-- SPECFORGE_ERR522_V297_CHATGPT_SPREADSHEET_WARMUP_RECURRENCE:START -->
+## ERR-522 — V297 发布前 Python 环境再次触发无关 Spreadsheet Runtime warmup 超时
+- **状态**：`CLOSED_ENVIRONMENT`
+- **分类**：`ENVIRONMENT_FAILURE / ARTIFACT_GENERATION_ENVIRONMENT / REPEATED_ERROR`
+- **阶段**：V297 Artifact Acceptance 后、用户发布前。
+- **一手事实**：V297 Validator、Node runner syntax、ZIP reopen 与 `POST_BUILD_VERIFY=PASS` 已全部成功；同一 ChatGPT Python 工具执行尾部再次报告 `Spreadsheet runtime warmup failed` / `TimeoutError: Timed out waiting for artifact tool daemon socket`。该 warmup 与 SpecForge ZIP 构建无关，且发生于用户发布前，用户仓库零访问。
+- **旧防护为何失效**：ERR-500 已规定软件交付生成不依赖 Spreadsheet Runtime，但本轮仍使用会自动加载该 warmup hook 的 Python 工具完成最终封包，因此环境噪声再次出现；防护没有落实到最终 producer 运行环境选择。
+- **影响**：不改变 V297 ZIP 已通过的结构、语义或产品补丁；但按失败台账规则，在补录前不能声明 `UNRECORDED_FAILURES=0` 并发布。
+- **正确做法 / 修复**：最终 V298 改由 container producer 重新封包与独立校验，不使用会触发 Spreadsheet Runtime warmup 的 Python 工具路径；同时把本次复发补入 ledger/handoff。
+- **类防护**：`EXP-002,EXP-007,EXP-019,EXP-060,EXP-093,EXP-193,EXP-195`
+<!-- SPECFORGE_ERR522_V297_CHATGPT_SPREADSHEET_WARMUP_RECURRENCE:END -->
+
+<!-- SPECFORGE_ERR523_ERR524_V298_AST_PREFLIGHT_RECOVERY:START -->
+## ERR-523 — V298 AST DFS helper 把递归返回数组传回 `ts.forEachChild`，触发 short-circuit，目标 ForOf 节点未被遍历
+- **状态**：`CLOSED`
+- **分类**：`VALIDATION_HARNESS_DEFECT / AST_TRAVERSAL_DEFECT / BRITTLE_PATCH_LOCALIZATION`
+- **阶段**：V298 Phase 11 Task Scope Candidate Gate Product Fix。
+- **一手事实**：用户回执证明本地 `main`、远程 `main` 与权威 HEAD 均为 `464395bd2856aebec354c64dae1f0c8a465c0c18`，`PREWRITE_BASELINE_TESTS=PASS`；随后 `AST_STRUCTURAL_PATCH_PREFLIGHT` 在 `planned for-of cardinality=0` 停止，`FILES_CHANGED=CLEAN`。对 V298 runner 的同一 `descendants()` 实现做最小 TypeScript AST fixture 复现：`ts.forEachChild(node, c => descendants(...))` 的 callback 返回递归函数的 `out` 数组（truthy），`forEachChild` 因而在首个 truthy child 结果后停止继续兄弟节点遍历；位于后续语句中的目标节点不会被访问。
+- **根因**：AST DFS callback 错误返回递归结果，违反 `forEachChild` 的 visitor short-circuit 语义；这才是 V298 `cardinality=0` 的直接根因。V298 同时还用 `getText()` 做 expression 精确相等，虽然不是此次 0-cardinality 的已证实直接原因，也不符合稳定符号边界原则。
+- **影响**：V298 在任何仓库写入前失败；SpecForge、InventoryFlow、daemon、OpenCode 均无副作用。
+- **正确做法 / 修复**：V300 的 DFS callback 使用 block body 且不返回递归结果，完整遍历全部 child；修改插入点改为 `VariableStatement + Identifier(classification)` 唯一边界，不再使用 `getText()` expression 匹配。runner 在读取真实源码前先对内置 TypeScript AST fixture 运行同一 transform，证明跨 sibling traversal 和 identifier boundary 均有效。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-524 — V298 失败回执把已执行且失败的 AST preflight 错报为 `NOT_RUN`
+- **状态**：`CLOSED`
+- **分类**：`RECEIPT_DEFECT / CHECKPOINT_STATE_REPORTING_DEFECT`
+- **阶段**：V298 failure receipt。
+- **一手事实**：同一回执同时输出 `FIRST_FAILED_STEP=AST_STRUCTURAL_PATCH_PREFLIGHT`、`ERROR_CODE=AST_PATCH_PREFLIGHT_FAILED`，却又输出 `AST_STRUCTURAL_PATCH_PREFLIGHT=NOT_RUN`。错误栈明确来自 `structuralTransform()` 内的 planned for-of cardinality 检查，因此该阶段真实状态是“已执行并失败”。
+- **根因**：runner 仅在 transform 完整成功后把 `astPreflight` 从默认 `NOT_RUN` 改为 `PASS`；catch/fail 路径没有先写 `FAIL`，导致 receipt checkpoint 状态与失败步骤矛盾。
+- **影响**：不影响仓库副作用事实（仍为 CLEAN），但降低 failure receipt 的机器真实性。
+- **正确做法 / 修复**：V300 在进入 AST transform 前标记 `RUNNING`，成功写 `PASS`，catch 时先写 `FAIL` 再记录失败；validator 锁定失败状态赋值。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR523_ERR524_V298_AST_PREFLIGHT_RECOVERY:END -->
+
+
+
+<!-- SPECFORGE_ERR525_V299_PREPUBLISH_AST_FIXTURE:START -->
+## ERR-525 — V299 发布前 synthetic AST fixture 发现 V298 的 traversal short-circuit 缺陷仍被复制
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`PACKAGE_PRODUCER_DEFECT / VALIDATION_HARNESS_DEFECT / SELF_TEST_COVERAGE_GAP`
+- **阶段**：V299 Artifact Acceptance 后、用户发布前的独立 structural fixture 验证。
+- **一手事实**：V299 ZIP 的静态 validator、Node syntax、ZIP reopen 与 hash 检查已通过；随后用当前环境 TypeScript `5.8.3` 对 V299 runner 采用的 `descendants()` 最小 AST fixture 做独立验证，`classification` VariableStatement boundary 得到 `0`，并抛出读取不存在 boundary 的 TypeError。进一步枚举 AST 证明该 VariableStatement 实际存在，`ts.isVariableStatement=true`；缺失来自 traversal callback 的 truthy return short-circuit。V299 未向用户发布，用户仓库零访问。
+- **根因**：V299 只更换了目标 predicate，却复制了 V298 有缺陷的 DFS helper；Artifact validator 只检查“使用 AST API”，没有执行 traversal 行为 fixture。
+- **影响**：阻止了一个仍会在真实用户源码上失败的包被发布；用户环境无副作用。
+- **正确做法 / 修复**：V300 修正 DFS callback，并把 synthetic structural transform fixture 加入 runner prewrite checkpoint；Artifact Acceptance 同时要求 fixture 契约存在，从“静态出现 AST API”提升为“同一 transform 可穿过 sibling 语句找到目标 Identifier”。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR525_V299_PREPUBLISH_AST_FIXTURE:END -->

@@ -45,6 +45,16 @@ describe('Phase 11 agent guidance authority contract', () => {
     ]) expect(planner, token).toContain(token);
   });
 
+  it('locks task planner write scope to approved Impact Scope and Module ownership', async () => {
+    const planner = await readFile(plannerPath, 'utf8');
+    for (const token of [
+      'allowed_write_files ⊆ impact_scope.planned_code_paths',
+      'Task 可以收窄 Impact Scope，但不得扩大',
+      'SCOPE_EXPANSION_REQUIRED',
+      '0 个 Module 或多个 Module',
+      'affected_modules',
+    ]) expect(planner, token).toContain(token);
+  });
   it('locks orchestrator to affected_modules instead of invented aliases', async () => {
     const orchestrator = await readFile(orchestratorPath, 'utf8');
     for (const token of [

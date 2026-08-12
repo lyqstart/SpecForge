@@ -32,6 +32,11 @@ import {
   workItemTasks,
   workItemTraceDelta,
 } from '@specforge/types/directory-layout';
+import {
+  extractFieldSection,
+  parseStringList,
+  parseTaskSections,
+} from './sf_markdown_verification_parser.js';
 
 const execFileAsync = promisify(execFile);
 const SPEC_DIR = '.specforge';
@@ -246,6 +251,26 @@ async function readApprovedTaskFiles(workItemDir: string): Promise<Set<string>> 
     }
   }
   return approved;
+}
+
+async function readTaskWriteScopes(workItemDir: string): Promise<Array<{
+  task_id: string;
+  allowed_write_files: string[];
+}>> {
+  const projectRoot = path.resolve(workItemDir, '..', '..', '..');
+  const workItemId = path.basename(workItemDir);
+  const artifact = await readFirstExistingText([
+    workItemCandidateTasks(projectRoot, workItemId),
+    workItemTasks(projectRoot, workItemId),
+  ]);
+  if (!artifact) return [];
+  return parseTaskSections(artifact.content).map(section => {
+    const allowedSection = extractFieldSection(section.content, 'allowed_write_files');
+    const allowedWriteFiles = allowedSection
+      ? unique(parseStringList(allowedSection).map(value => slash(value)))
+      : [];
+    return { task_id: section.taskId, allowed_write_files: allowedWriteFiles };
+  });
 }
 
 function isApprovedMergedArchitectureScope(
@@ -976,7 +1001,49 @@ export async function checkProjectGovernanceConsistency(input: {
       }
     }
 
-    const classification = trigger?.classification ?? {};
+        const taskWriteScopes = await readTaskWriteScopes(input.workItemDir);
+    for (const taskScope of taskWriteScopes) {
+      addCheck(
+        checks,
+        `task_allowed_write_files_${digest(taskScope.task_id).slice(0, 8)}`,
+        `Task ${taskScope.task_id} declares allowed_write_files`,
+        taskScope.allowed_write_files.length > 0,
+      );
+      for (const taskPath of taskScope.allowed_write_files) {
+        const checkKey = digest(`${taskScope.task_id}:${taskPath}`).slice(0, 8);
+        const approvedByImpact = impactScope.planned_code_paths.includes(taskPath);
+        addCheck(
+          checks,
+          `task_write_impact_${checkKey}`,
+          `Task ${taskScope.task_id} write path is inside approved Impact Scope: ${taskPath}`,
+          approvedByImpact,
+          `planned=${approvedByImpact}`,
+        );
+        const owners = resolveModuleOwnershipFromManifest(model.manifest, taskPath);
+        const approvedCrossModuleTestHarness =
+          owners.length === 0 && isCrossModuleTestHarnessPath(taskPath) && approvedByImpact;
+        addCheck(
+          checks,
+          `task_write_owner_${checkKey}`,
+          `Task ${taskScope.task_id} write path maps to exactly one Module or approved cross-module test harness: ${taskPath}`,
+          owners.length === 1 || approvedCrossModuleTestHarness,
+          [
+            `owners=${owners.join(',') || 'none'}`,
+            `approved_cross_module_test_harness=${approvedCrossModuleTestHarness}`,
+          ].join('; '),
+        );
+        if (owners.length === 1) {
+          addCheck(
+            checks,
+            `task_write_scope_${checkKey}`,
+            `Task ${taskScope.task_id} write path owner is declared affected: ${taskPath}`,
+            impactScope.affected_modules.includes(owners[0]),
+            `owner=${owners[0]}`,
+          );
+        }
+      }
+    }
+const classification = trigger?.classification ?? {};
     const candidate = (await prospectiveReader(input.projectRoot, input.workItemDir)).candidate;
     if (classification.architecture_changed === true) {
       addCheck(

@@ -441,6 +441,9 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 2. **路径相对于项目根**：路径不以 `/` 开头，相对于 Git 仓库根目录
 3. **禁止范围蔓延**：如果一个 task 修改了不在 allowed_write_files 中的文件，verifier 会标记为越界
 4. **task 间不重叠**：并行执行的 task 的 allowed_write_files 不允许有交集
+5. **不得扩大已批准 Impact Scope**：每个 `allowed_write_files` 路径都必须已存在于当前 `impact_scope.planned_code_paths`；Task 可以收窄 Impact Scope，但不得扩大。需要新增路径时返回 `SCOPE_EXPANSION_REQUIRED`，不得先写入 Task 再等待 Code Permission 放行。
+6. **必须满足 Module 归属**：除 Runtime 明确支持且已进入 Approved Impact Scope 的 cross-module test harness 例外外，每个 Task 写入路径必须通过正式 `code_paths` 唯一映射到一个受影响 Module；0 个 Module 或多个 Module 都必须 BLOCK。
+7. **提交前机器对账**：Task Planner 返回 success 前必须检查 `allowed_write_files ⊆ impact_scope.planned_code_paths`，并确认每个非例外路径的唯一 Module owner 已包含在 `affected_modules`。
 
 ### 常见错误
 
