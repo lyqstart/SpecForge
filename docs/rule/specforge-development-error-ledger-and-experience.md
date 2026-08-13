@@ -8736,6 +8736,7 @@ actual_files
 - **根因**：`sf-design` 没有 Module Definition Candidate canonical producer contract；`sf_artifact_write` 虽统一调用 `validateArtifactJson`，但该 dispatcher 没有 `module.candidate.json` validator；`schema_gate` 只验证 work_item/trigger/candidate_manifest，未验证冻结 Module Definition Candidate。因此第二套 grouped schema 被写入并进入 Gate，project-governance 按 canonical array 消费时得到空 ownership。
 - **修复边界**：新增 Module Definition Candidate validator，要求 canonical `module_code` 与路径一致且 `code_paths` 为扁平 `string[]`；writer 通过既有 dispatcher 自动执行；schema_gate 对冻结 Module Definition JSON 执行同一 validator；sf-design 明确唯一 producer contract。不得让 consumer 兼容 grouped object 第二套 schema。
 - **Fresh-04 恢复**：产品修复及用户级 sf-design 升级后，保留 attempt-0005 immutable；合法恢复到 candidate_preparing，由 owning sf-design 通过 `sf_artifact_write` 把现有 30 条路径重写为一个 flat array，再重新物化并只运行一次新 Candidate Gate Attempt。
+- **隔离验证产品提交**：PRODUCT_COMMIT_SHA=8d00948dee0c1260631360f3384b369da0afc556
 - **类防护**：`EXP-001,EXP-004,EXP-005,EXP-007,EXP-010,EXP-011,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-094`
 
 ### ERR-574：SFV341 产品修复、验证或 Git 同步运行失败
