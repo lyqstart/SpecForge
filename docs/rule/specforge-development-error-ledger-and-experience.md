@@ -8570,3 +8570,16 @@ actual_files
 - **正确做法 / 修复**：后续本地交付需要 Git 时，先发现/固定 `git.exe`（优先 `C:\Program Files\Git\cmd\git.exe`，再受控 fallback），再执行 Git；禁止把 PATH 可用性当作隐含前提。
 - **类防护**：`EXP-001,EXP-002,EXP-007,EXP-011,EXP-019,EXP-020,EXP-060,EXP-093`
 <!-- SPECFORGE_ERR554_V311_GIT_EXECUTABLE_PATH:END -->
+
+<!-- SPECFORGE_ERR555_V316_DIRECT_BUN_SPAWN_REPEAT:START -->
+## ERR-555 — SFV316 再次直接 `spawnSync("bun")`，重复违反既有 Windows Bun/npm shim 执行契约
+- **状态**：`CLOSED_BY_V318_CMD_CALL_BUN_BRIDGE_AND_USERLEVEL_ACCEPTANCE`
+- **分类**：`REPEATED_ERROR / DELIVERY_HARNESS_DEFECT / WINDOWS_EXECUTABLE_BOUNDARY`
+- **阶段**：V316 用户级 OpenCode 升级前置检查。
+- **一手事实**：用户回执为 `RESULT=FAILED`、`FAILED_STAGE=USERLEVEL_PREFLIGHT`、`ERROR=INSTALLER_VERSION_FAILED:`，并明确 `REPOSITORY_WRITES=NONE`、`LIFECYCLE_ACTIONS=NONE`、`DAEMON_ACTION=NONE`、`OPENCODE_ACTION=NONE`。V316 package-local `deploy.mjs` 的执行函数为 `spawnSync("bun", args, ...)`，并把 `r.status === null` 映射为 `999`，但没有把 `r.error` 纳入回执，因此子进程启动失败时 stdout/stderr 为空。当前 installer 源码明确支持 `--version`，且 `showVersion` 在无 subcommand 时直接返回，不是 CLI 参数缺陷。
+- **重复错误证据**：ERR-024 已规定 Windows npm shim 不得按 Unix executable 模型直接启动；ERR-434 已记录“stdout/stderr 为空”的同类直接 spawn Bun 失败并固定 `cmd.exe + call bun`；ERR-440、ERR-480 再次固化 Windows Bun/npm/cmd script 必须经静态 CMD bridge。
+- **根因**：V316 Artifact Acceptance 没有机械阻断 package-local JavaScript 的 `spawnSync("bun")`，导致已经关闭过多次的 Windows executable/shim 错误再次进入用户现场；同时没有传播 `spawnSync.error`，使失败证据退化为 `INSTALLER_VERSION_FAILED:` 空错误。
+- **影响**：installer 未进入 `upgrade`，用户级文件未被本轮修改；SpecForge 仓库未写入，daemon/OpenCode/Fresh-02 lifecycle 均未触发。
+- **修复**：V318 删除所有 package-local 直接 spawn Bun；静态 `installer_bridge.cmd` 在真实 CMD 语义下按顺序 `call bun scripts\sf-installer.ts --version` → `upgrade` → `verify`。用户侧三阶段均返回 0，installer verify PASS，且已部署 `agents/sf-task-planner.md`、`agents/sf-design.md` 与仓库源文件 SHA-256 完全一致。
+- **类防护**：`EXP-002,EXP-007,EXP-060,EXP-100,EXP-119,EXP-135,EXP-193,EXP-195`
+<!-- SPECFORGE_ERR555_V316_DIRECT_BUN_SPAWN_REPEAT:END -->
