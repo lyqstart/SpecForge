@@ -331,6 +331,30 @@ function candidateAbsolute(projectRoot: string, workItemDir: string, candidatePa
     : absolute(workItemDir, normalized);
 }
 
+function canonicalProspectiveTargetKey(projectRoot: string, value: string): string {
+  if (!value) return '';
+  return slash(absolute(projectRoot, value)).toLowerCase();
+}
+function frozenModuleDefinitionCandidateEntry(
+  projectRoot: string,
+  candidateManifest: any,
+  moduleCode: string,
+  moduleFilePath: string,
+): any | null {
+  const expectedTarget = canonicalProspectiveTargetKey(projectRoot, moduleFilePath);
+  const matches = (Array.isArray(candidateManifest?.entries) ? candidateManifest.entries : [])
+    .filter((entry: any) =>
+      String(entry?.type ?? '') === 'module_definition' &&
+      String(entry?.module_id ?? '').trim().toUpperCase() === moduleCode &&
+      String(entry?.operation ?? 'replace') !== 'delete' &&
+      canonicalProspectiveTargetKey(projectRoot, String(entry?.target_path ?? '')) === expectedTarget
+    );
+  if (matches.length > 1) {
+    throw new Error(`PROSPECTIVE_MODULE_DEFINITION_CANDIDATE_AMBIGUOUS:${moduleCode}`);
+  }
+  return matches[0] ?? null;
+}
+
 async function prospectiveReader(projectRoot: string, workItemDir: string) {
   const manifestPath = path.join(workItemDir, 'candidate_manifest.json');
   const candidate = await readJson(manifestPath);
@@ -365,7 +389,7 @@ async function prospectiveReader(projectRoot: string, workItemDir: string) {
     }
   }
 
-  return { candidate, text, json, targets: new Set(targetMap.keys()) };
+  return { candidate, text, json, targets: new Set(targetMap.keys()), workItemDir };
 }
 
 function flattenContracts(registry: any, moduleInternal: boolean): ContractEntry[] {
@@ -415,25 +439,36 @@ async function prospectiveModuleEntries(
 
   if (!prospective) return Array.from(entries.values());
 
-  for (const target of reader.targets) {
+  const frozenEntries = Array.isArray(reader.candidate?.entries) ? reader.candidate.entries : [];
+  for (const frozenEntry of frozenEntries) {
+    const target = slash(String(frozenEntry?.target_path ?? ''));
     const match = /^\.specforge\/project\/modules\/([^/]+)\/module\.json$/i.exec(target);
     if (!match?.[1]) continue;
-    const moduleCode = match[1].toUpperCase();
-    const modulePath = absolute(projectRoot, target);
-    const definition = await reader.json(modulePath);
+    const targetModuleCode = match[1].toUpperCase();
+    const explicitType = String(frozenEntry?.type ?? '').trim();
+    const explicitModuleId = String(frozenEntry?.module_id ?? '').trim().toUpperCase();
+    if (explicitType && explicitType !== 'module_definition') continue;
+    if (explicitModuleId && explicitModuleId !== targetModuleCode) continue;
+    if (String(frozenEntry?.operation ?? 'replace') === 'delete') continue;
+    if (!frozenEntry?.candidate_path) continue;
+    const candidatePath = candidateAbsolute(
+      projectRoot,
+      reader.workItemDir,
+      String(frozenEntry.candidate_path),
+    );
+    const definition = await readJson(candidatePath);
     const identity = resolveSpecModuleIdentity(definition);
-    if (!identity.valid || identity.moduleCode !== moduleCode) continue;
-    const existing = entries.get(moduleCode) ?? {};
+    if (!identity.valid || identity.moduleCode !== targetModuleCode) continue;
+    const existing = entries.get(targetModuleCode) ?? {};
     entries.set(
-      moduleCode,
-      canonicalModuleEntry(moduleCode, {
+      targetModuleCode,
+      canonicalModuleEntry(targetModuleCode, {
         ...existing,
         ...definition,
-        module_code: moduleCode,
+        module_code: targetModuleCode,
       }),
     );
   }
-
   return Array.from(entries.values());
 }
 
@@ -513,8 +548,19 @@ async function loadProjectModel(
       projectRoot,
       String(raw.module_file ?? `${moduleRoot}/module.json`),
     );
-    const moduleDefinition = useCandidateProjection
-      ? await reader.json(moduleFilePath)
+    const moduleCandidateEntry = useCandidateProjection
+      ? frozenModuleDefinitionCandidateEntry(
+          projectRoot,
+          reader.candidate,
+          moduleCode,
+          moduleFilePath,
+        )
+      : null;
+    const moduleCandidatePath = moduleCandidateEntry?.candidate_path
+      ? candidateAbsolute(projectRoot, workItemDir, String(moduleCandidateEntry.candidate_path))
+      : '';
+    const moduleDefinition = moduleCandidateEntry
+      ? await readJson(moduleCandidatePath)
       : await readJson(moduleFilePath);
     const designPath = absolute(projectRoot, String(raw.design ?? `${moduleRoot}/design.md`));
     const configuredContracts = resolveModuleContractsPathValue(
@@ -578,7 +624,13 @@ async function loadProjectModel(
       design_text: designText,
       contract_entries: internalContracts,
     });
-    inputFiles.push(moduleFilePath, designPath, contractsPath, tracePath);
+    inputFiles.push(
+      moduleFilePath,
+      ...(moduleCandidatePath ? [moduleCandidatePath] : []),
+      designPath,
+      contractsPath,
+      tracePath,
+    );
   }
 
   let traceDeltaOperations: GovernanceTraceDeltaOperation[] = [];

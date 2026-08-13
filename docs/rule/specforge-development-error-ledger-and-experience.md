@@ -8692,3 +8692,38 @@ actual_files
 - **真实项目证据**：`D:\code\InventoryFlow-Phase11-Fresh-04`，WI-0001，immutable attempt-0003，state=gates_failed。产品修复期间 Fresh-04 冻结，修复部署后恢复同一 WI 重跑一次 Candidate Gate。
 - **隔离验证产品提交**：PRODUCT_COMMIT_SHA=2e76f3f732c2e0107d9cdafce96574721b7a91dd
 - **类防护**：`EXP-001,EXP-004,EXP-006,EXP-007,EXP-008,EXP-010,EXP-011,EXP-013,EXP-014,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-072,EXP-077,EXP-094`
+
+### ERR-569：冻结 module_definition 已存在但 prospective Project Governance 未可靠绑定实际 Candidate source
+- **分类**：`PRODUCT_DEFECT / GATE_INPUT_PROJECTION_DEFECT / EVIDENCE_DEFECT`
+- **状态**：`ISOLATED_VALIDATED_PENDING_REAL_FRESH04_ACCEPTANCE`
+- **一手事实**：Fresh-04 WI-0001 在 ERR-568 materializer 修复后，candidate_manifest 已从 6 entries 变为 7 entries，并包含 `type=module_definition,module_id=CORE`；但 attempt-0004 仍为 9/10 PASS，唯一失败 spec_consistency_gate，52 个 code_paths/owner 检查继续报告 owners=none。Gate input snapshot 未包含实际 `module.candidate.json`。
+- **源码事实**：`project-governance-v2.ts` 已有 prospectiveReader，但 Module Definition 在 loadProjectModel 中仍主要通过 target-path projection 间接读取；`inputFiles` 对 Module 只登记正式 `module.json` target，不登记实际 Candidate source。
+- **根因边界**：ERR-568 已关闭 Candidate materialization 缺口；ERR-569 只处理 frozen Manifest → prospective Module model 的 consumer/source binding 与 immutable input evidence，不修改 Candidate materializer、不改变 Gate profile/严重度/通过标准。
+- **修复**：按冻结 Manifest 的 `type=module_definition + module_id + canonical target_path` 显式且唯一绑定 Module Candidate；实际 Candidate JSON 作为 prospective moduleDefinition 读取源；Candidate source 同时进入 `inputFiles`，供 Gate report / immutable snapshot 留存。错误 module_id 不绑定；malformed Candidate 不回退成“有 code_paths”的正式事实，继续 Fail Closed。
+- **真实项目证据**：`D:\code\InventoryFlow-Phase11-Fresh-04`，WI-0001，attempt-0004 immutable，state=gates_failed。产品修复期间 Fresh-04 不继续 lifecycle。
+- **类防护**：`EXP-001,EXP-004,EXP-005,EXP-006,EXP-007,EXP-008,EXP-010,EXP-011,EXP-013,EXP-014,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-072,EXP-077,EXP-094`
+
+### ERR-570：SFV334 产品修复、验证或 Git 同步运行失败
+- **分类**：`PRODUCT_DEVELOPMENT_FAILURE / DELIVERY_RUNTIME_FAILURE`
+- **状态**：`CLOSED_BY_SFV338_ENGINEERING_VALIDATION`
+- **阶段**：ENGINEERING_VALIDATION
+- **一手事实**：FRESH04_PROSPECTIVE_CONSUMER_REGRESSION_FAILED
+- **根因**：`V334_IDENTITY_FILTER_BYPASSED_BY_GENERIC_TARGET_PATH_FALLBACK`
+- **V336_ROOT_CAUSE_EVIDENCE**：Fresh-04 consumer 新测试 2 PASS / 1 FAIL；exact identity 正例 PASS，malformed Candidate fail-closed PASS，仅 wrong module_id 负例失败。Received code_paths 为 Candidate 完整 10 项，证明 identity miss 后旧 `reader.json(moduleFilePath)` 又按 target_path 把 Candidate 读回；现有 Project Governance 5/5 回归全部 PASS。
+- **影响**：ERR-569 产品范围不扩大；Fresh-04 保持 gates_failed/attempt-0004 冻结；未运行 SpecForge 自身 lifecycle。
+
+### ERR-571：SFV335 诊断 harness 使用 Bun 不支持的 reporter
+- **分类**：`DIAGNOSTIC_HARNESS_DEFECT / DELIVERY_DEFECT`
+- **状态**：`RECONCILED_BY_SFV336`
+- **一手事实**：SFV335 返回 `unsupported reporter format 'verbose'. Available options: 'junit', 'dots'`；仓库写入 NONE，lifecycle NONE，commit/push NONE。
+- **修复**：SFV336 去掉 reporter 参数并分别运行测试，取得真实 assertion；Fresh-04 新测试 2 PASS / 1 FAIL，现有 Project Governance 5 PASS / 0 FAIL。
+- **类防护**：`EXP-001,EXP-006,EXP-007,EXP-008,EXP-013,EXP-019`
+
+### ERR-572：SFV337 恢复、验证或 Git 同步运行失败
+- **分类**：`PRODUCT_DEVELOPMENT_FAILURE / RECOVERY_RUNTIME_FAILURE`
+- **状态**：`CLOSED_BY_SFV338_ENGINEERING_VALIDATION`
+- **阶段**：ENGINEERING_VALIDATION
+- **一手事实**：FRESH04_PROSPECTIVE_CONSUMER_REGRESSION_FAILED
+- **根因**：`PROSPECTIVE_MODULE_ENTRIES_GENERIC_TARGET_LOOP_BYPASSES_FROZEN_MODULE_ID`
+- **V337_ROOT_CAUSE_EVIDENCE**：V337 删除 loadProjectModel 中 generic moduleDefinition fallback 后，Fresh-04 新测试仍为 2 PASS / 1 FAIL，wrong module_id 仍收到 Candidate 完整 code_paths。源码对账证明更上游 `prospectiveModuleEntries()` 遍历 `reader.targets`，仅由 target_path 推导 Module，再通过 `reader.json(modulePath)` 读取 Candidate，完全未检查 frozen entry.module_id；Candidate code_paths 因此提前进入 effectiveModuleEntries.raw 和 effectiveManifest。
+- **影响**：ERR-569 范围不扩大；Fresh-04 保持 gates_failed/attempt-0004；未运行 SpecForge 自身 lifecycle。
