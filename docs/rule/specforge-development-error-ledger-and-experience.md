@@ -8583,3 +8583,15 @@ actual_files
 - **修复**：V318 删除所有 package-local 直接 spawn Bun；静态 `installer_bridge.cmd` 在真实 CMD 语义下按顺序 `call bun scripts\sf-installer.ts --version` → `upgrade` → `verify`。用户侧三阶段均返回 0，installer verify PASS，且已部署 `agents/sf-task-planner.md`、`agents/sf-design.md` 与仓库源文件 SHA-256 完全一致。
 - **类防护**：`EXP-002,EXP-007,EXP-060,EXP-100,EXP-119,EXP-135,EXP-193,EXP-195`
 <!-- SPECFORGE_ERR555_V316_DIRECT_BUN_SPAWN_REPEAT:END -->
+
+<!-- SPECFORGE_ERR556_V321_PREPUBLISH_VALIDATOR_FALSE_NEGATIVE:START -->
+## ERR-556 — V321 预发布 Artifact Acceptance 用错误的源码字符串断言假拒绝合法运行态 handoff 包
+- **状态**：`CLOSED_PREPUBLISH_BY_V322_STRUCTURAL_VALIDATOR_FIX`
+- **分类**：`VALIDATION_DEFECT / VALIDATION_HARNESS_DEFECT / PREPUBLISH_FALSE_NEGATIVE`
+- **阶段**：V321 daemon runtime handoff synchronization Artifact Acceptance。
+- **一手事实**：V321 在发布给用户前完成 JS 语法、scope、Authority、marker、runtime-state 等检查，但 Artifact Acceptance 的 `opencode_not_false_pass` 检查自身失败；失败包未交付用户、未读取或写入用户 SpecForge 仓库。随后检查最终 `apply.mjs` 确认其真实代码已包含 `replaceKey(block,"DAEMON_PID","29828")`、`replaceKey(block,"DAEMON_PORT","26168")` 以及 OpenCode pending 防假声明逻辑。
+- **根因**：预发布验收器再次用作者临时写出的源码子字符串作为断言，而不是执行/解析正式 transform 语义；与 ERR-491、EXP-194、EXP-195 已固化的“验证结构语义，不验证作者字符串”原则相同。
+- **影响**：仅 ChatGPT delivery Artifact 被假拒绝；用户仓库、用户级目录、daemon、OpenCode、Fresh-02 均无任何副作用。
+- **修复**：V322 把 handoff 变换抽成纯 `transformHandoff()`，Artifact Acceptance 直接对 exact 当前 handoff 输入执行该 transform，并验证输出状态；不再用源码字面字符串证明 patch 存在。
+- **类防护**：`EXP-007,EXP-015,EXP-019,EXP-060,EXP-077,EXP-080,EXP-194,EXP-195`
+<!-- SPECFORGE_ERR556_V321_PREPUBLISH_VALIDATOR_FALSE_NEGATIVE:END -->
