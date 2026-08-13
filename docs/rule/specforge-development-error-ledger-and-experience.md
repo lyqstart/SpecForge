@@ -8273,3 +8273,109 @@ actual_files
 - **正确做法 / 修复**：V300 修正 DFS callback，并把 synthetic structural transform fixture 加入 runner prewrite checkpoint；Artifact Acceptance 同时要求 fixture 契约存在，从“静态出现 AST API”提升为“同一 transform 可穿过 sibling 语句找到目标 Identifier”。
 - **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
 <!-- SPECFORGE_ERR525_V299_PREPUBLISH_AST_FIXTURE:END -->
+
+
+<!-- SPECFORGE_ERR526_ERR527_CLOSED_LOOP_GOVERNANCE_UPGRADE:START -->
+## ERR-526 — SFV301 首次 Artifact Acceptance 把合法只读 Bootstrap 包误判为失败
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`VALIDATION_HARNESS_DEFECT / ARTIFACT_ACCEPTANCE_FALSE_NEGATIVE`
+- **阶段**：SFV301 Authority Bootstrap evidence ZIP 发布前独立 Artifact Acceptance。
+- **一手事实**：SFV301 第一次生成后输出 `ARTIFACT_ACCEPTANCE=FAIL`，未作为最终交付；随后只修正 Artifact validator 的检查模型，重新封包后 `ARTIFACT_ACCEPTANCE=PASS`，最终用户执行的 SFV301 成功取得 `USER_BOOTSTRAP_GIT_LS_REMOTE`、exact authority、local/remote consistency 等 Bootstrap 证据。第一次失败没有访问或修改用户仓库。
+- **根因**：Artifact Acceptance 把构建中间文件集合/简单字符串 token 审计当作最终包契约，校验对象层级不正确，产生 false-negative；没有先以最终 ZIP 重开后的成员、hash 和语义命令集合为真相源。
+- **正确做法 / 修复**：Artifact Acceptance 必须在 acceptance 文件写入并完成最终 ZIP 后重新打开 ZIP，校验最终成员集合、Manifest/patch hash、允许命令语义和 producer-consumer contract；禁止用自引用的中间目录文件数量或粗糙 substring 代替最终包检查。
+- **类防护**：`EXP-004,EXP-007,EXP-011,EXP-015,EXP-019,EXP-020,EXP-060`
+
+## ERR-527 — SFV301 第一条用户外层 CMD 违反既有线性入口契约，用户执行后 runner 未进入
+- **状态**：`CLOSED`
+- **分类**：`SCRIPT_DEFECT / PROCESS_VIOLATION / OUTER_CMD_CONTROL_FLOW`
+- **阶段**：SFV301 用户本地执行入口。
+- **一手事实**：第一条交付 CMD 使用 inline `if` 控制临时目录删除/创建，用户反馈“命令运行后没有被执行”；改成不含 inline `if`、不含 `&&` 的线性 `&` 链后，用户返回了从 `===== SFV301 RUNNER START =====` 到结束的完整成功回执。现有 Authority 固定契约已经要求 `OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS`、`OUTER_CMD_INLINE_IF_CHAIN_ALLOWED=NO`。
+- **根因**：交付命令没有执行已经存在的 Authority 外层 CMD 防护，而不是产品代码问题。当前证据不足以唯一证明第一次 CMD 在 `cmd.exe` 内的具体截断语法节点，因此不对该更细层原因作猜测。
+- **正确做法 / 修复**：用户外层一键 CMD 只采用线性必需步骤；临时目录清理失败不得通过 inline `if` 或 `&&` 截断 extract/runner；Artifact Acceptance 必须静态拒绝 outer CMD 中的 inline `if` 和 `&&`，并验证 temp-dir absent/present 均到达 runner。
+- **类防护**：`EXP-004,EXP-007,EXP-011,EXP-015,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR526_ERR527_CLOSED_LOOP_GOVERNANCE_UPGRADE:END -->
+
+<!-- SPECFORGE_ERR528_V303_PREPUBLISH_GIT_PORCELAIN_PARSING:START -->
+## ERR-528 — V303 发布前 Validator 对 `git status --porcelain -z` 先做展示层 trim，可能破坏首个状态记录
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`VALIDATION_HARNESS_DEFECT / MACHINE_PROTOCOL_PARSING_DEFECT / REPEATED_CLASS_ERR058`
+- **阶段**：V303 Closed-loop Governance Authority Upgrade 发布前 Artifact Acceptance。
+- **一手事实**：V303 尚未封成最终交付 ZIP 时独立审查发现，`validate.py` 的通用 Git helper 对 stdout 先执行 `.strip()`，随后才把 `git status --porcelain=v1 -z` 作为 NUL 协议解析。Porcelain v1 的 tracked modified 状态可由前导空格组成，展示层 trim 会改变第一条记录的机器字节；该版本未交付用户、未访问用户仓库。
+- **根因**：验证器把人类展示文本规范化复用于机器协议输出，违反已存在的“机器结构化输出必须先按协议解析”防护。
+- **正确做法 / 修复**：V303 最终 validator 对 Git porcelain 使用 raw bytes `stdout.split(b'\\0')` 解析，不进行 trim；人类文本命令与机器协议命令使用不同读取函数。Artifact Acceptance 静态检查禁止 porcelain consumer 路径出现 `.strip()`。
+- **类防护**：`EXP-004,EXP-007,EXP-011,EXP-015,EXP-019,EXP-020,EXP-039,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR528_V303_PREPUBLISH_GIT_PORCELAIN_PARSING:END -->
+
+<!-- SPECFORGE_ERR529_ERR530_V303_ARTIFACT_ACCEPTANCE:START -->
+## ERR-529 — V303 发布前 `git diff --check` 发现错误台账目标文件尾部多一个空行
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`PACKAGE_PRODUCER_DEFECT / TEXT_EOF_POLICY_DEFECT`
+- **阶段**：V303 最终 ZIP 封包前 synthetic Git Artifact Acceptance。
+- **一手事实**：独立临时 Git fixture 对 V303 精确 4 文件目标执行 `git diff --check`，返回 `specforge-development-error-ledger-and-experience.md:8308: new blank line at EOF`；最终 ZIP 尚未生成，用户仓库零访问、零写入。
+- **根因**：ledger producer 在已带末尾换行的新增 block 后再次追加一个换行，违反 `TEXT_FILE_EOF_POLICY=SINGLE_FINAL_NEWLINE`。
+- **正确做法 / 修复**：所有目标文本最终统一 `rstrip("\\r\\n") + "\\n"`；最终 ZIP 前必须在临时 Git fixture 同时执行 unstaged/staged `git diff --check`，任何 whitespace failure 阻断发布。
+- **类防护**：`EXP-004,EXP-007,EXP-011,EXP-015,EXP-019,EXP-020,EXP-060`
+
+## ERR-530 — V303 Artifact Acceptance 用非 `-z` 的 `git diff --name-only` 审计中文路径，重复触发 Git quotePath false-negative
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`VALIDATION_HARNESS_DEFECT / CROSS_PLATFORM_GIT_PATH_PARSING / REPEATED_CLASS_ERR510`
+- **阶段**：V303 最终 ZIP 封包前 synthetic scope audit。
+- **一手事实**：同一次临时 Git fixture 的 raw porcelain `-z` 审计已经正确得到精确 4 文件；但随后 `git diff --cached --name-only` 把中文 authority 路径输出成带引号的八进制转义形式，文本比较误报 scope 不相等。最终 ZIP 尚未生成，用户仓库零访问、零写入。
+- **根因**：Artifact Acceptance 的第二个 scope consumer 没有复用已知机器路径协议，重复使用 Git 人类展示格式，属于 ERR-510 同类复发。
+- **正确做法 / 修复**：机器路径集合审计统一使用 `-z` + raw bytes + UTF-8 解码；禁止以默认 quotePath 的人类 `--name-only` 文本作为 scope 真相源。
+- **类防护**：`EXP-004,EXP-007,EXP-011,EXP-015,EXP-019,EXP-020,EXP-039,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR529_ERR530_V303_ARTIFACT_ACCEPTANCE:END -->
+
+<!-- SPECFORGE_ERR531_V303_USER_PREWRITE_FAILURE:START -->
+## ERR-531 — V303 用户执行停在 APPLY_PREWRITE_OR_CONTROLLED_WRITE，且最终回执丢失具体子错误
+- **状态**：`CLOSED_BY_V304_DELIVERY_HARDENING`
+- **分类**：`VALIDATION_HARNESS_DEFECT / BASELINE_GUARD_PORTABILITY / FAILURE_DIAGNOSTIC_LOSS`
+- **阶段**：V303 Closed-loop Governance Authority Upgrade 用户本地执行。
+- **一手事实**：用户返回的标准回执只有 `RESULT=FAILED`、`FAILED_STAGE=APPLY_PREWRITE_OR_CONTROLLED_WRITE`、`LIFECYCLE_ACTIONS=NONE`、`COMMIT_PUSH=NONE`；没有返回 `apply.py` 在该阶段输出的具体 `ERROR=`，因此 V303 的唯一实际触发条件不能从现有用户回执确定。对已交付 V303 runner 的复核确认：prewrite 在 `git status=CLEAN`、固定 HEAD 和 live remote HEAD 之外，还把 Windows 工作区文件原始字节 SHA256 与交付 producer 保存的基线字节 SHA256 直接比较；该比较会把 Git text conversion / checkout line-ending 表示差异引入 Authority 基线判定，即使 Git 语义工作树为 CLEAN 也可能产生环境相关 false-negative。V303 顶层失败回执又没有携带子错误，造成诊断证据丢失。
+- **根因边界**：`V303_EXACT_TRIGGER=INSUFFICIENT_EVIDENCE`；不得把本次实际触发条件未经证据直接归因于 CRLF/LF。已经确定的是 V303 存在两项独立交付缺陷：基线 guard 对工作区原始字节表示敏感；顶层 receipt 不传播子错误。
+- **影响**：本次没有 SpecForge 生命周期、commit 或 push；用户回执没有证明任何仓库文件成功写入。V304 必须在首次写入前重新要求 local HEAD、live remote HEAD、clean worktree 和 exact authority object；不得依赖工作区原始字节等同于 Git commit blob。
+- **正确做法 / 修复**：V304 以固定 `HEAD` + live `refs/heads/main` + raw porcelain clean + `git show HEAD:<authority>` / `git cat-file` exact object 作为基线；现有 tracked 文件的事实来自固定 commit object，不再比较 checkout 原始字节 SHA。所有 apply failure 同时写入 package-local result file，顶层标准回执必须直接返回 `ERROR=<exact child error>`；若 Python 在生成 result 前崩溃，则回执返回明确的 `APPLY_PROCESS_FAILED_WITHOUT_RESULT`。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-011,EXP-015,EXP-019,EXP-020,EXP-039,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR531_V303_USER_PREWRITE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR532_ERR533_V304_PREPUBLISH_ACCEPTANCE_FIXTURE:START -->
+## ERR-532 — V304 发布前 Artifact Acceptance 对 package-local error result 的源码断言过度依赖字面量表示
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`VALIDATION_HARNESS_DEFECT / ARTIFACT_ACCEPTANCE_FALSE_NEGATIVE`
+- **阶段**：V304 用户发布前独立 Artifact Acceptance。
+- **一手事实**：V304 `apply.py` 已明确通过 f-string 写入 `APPLY_ERROR=<error>`，`RUN.cmd` 也明确把该值回显到标准失败回执；但第一版 Artifact Acceptance 搜索错误的源码字面量形式，导致 `exact_error_result_file=FAIL`。该包未交付用户、未访问用户仓库。
+- **根因**：验收器再次把实现语义错误绑定到一种源码字面量拼写，而不是验证 producer 输出字段与 receipt consumer 的结构关系。
+- **正确做法 / 修复**：Artifact Acceptance 分别验证 `apply.py` 包含 `APPLY_ERROR=` result producer、`RUN.cmd` 消费 `APPLY_ERROR` 并输出 `ERROR=!APPLY_ERROR!`；禁止要求与 Python f-string 内部表示完全相同的伪 anchor。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-533 — V304 首次 line-ending portability synthetic fixture 未真正形成 CLEAN + checkout/blob 字节差异
+- **状态**：`CLOSED_PREPUBLISH`
+- **分类**：`VALIDATION_HARNESS_DEFECT / SYNTHETIC_FIXTURE_DEFECT`
+- **阶段**：V304 用户发布前独立 Artifact Acceptance。
+- **一手事实**：第一版 synthetic fixture 先以 LF 提交文件，之后才新增 `eol=crlf` 属性并 checkout；在当前 Linux Git 环境中该步骤没有产生预期 CRLF 工作区表示，因此 portability proof 失败。该失败只发生于 ChatGPT 临时 fixture，用户仓库零访问。
+- **根因**：fixture 的属性建立顺序不能保证形成目标状态，测试前置条件本身没有被结构化证明。
+- **正确做法 / 修复**：在首次 `git add/commit` 前先写入 `.gitattributes: a.txt text eol=crlf`，再用 CRLF 创建工作区文件；验收必须同时证明 `git status --porcelain -z` 为空、工作区 bytes 含 CRLF、`git show HEAD:a.txt` 为 LF，且两者字节不相等，然后才能证明“Git CLEAN 不等于 checkout bytes 等于 commit blob bytes”。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-011,EXP-019,EXP-020,EXP-039,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR532_ERR533_V304_PREPUBLISH_ACCEPTANCE_FIXTURE:END -->
+
+<!-- SPECFORGE_ERR534_ERR535_V305_BUN_RECOVERY:START -->
+## ERR-534 — V304 用户执行的 apply 子进程未进入脚本入口，交付包错误依赖未经当前环境确认的 Python Runtime
+- **状态**：`CLOSED_BY_V305_BUN_RECOVERY`
+- **分类**：`DELIVERY_HARNESS_DEFECT / UNVERIFIED_RUNTIME_DEPENDENCY / FAILURE_DIAGNOSTIC_BOUNDARY`
+- **阶段**：V304 Closed-loop Governance Authority Upgrade 用户本地执行。
+- **一手事实**：用户标准回执为 `RESULT=FAILED`、`FAILED_STAGE=APPLY_PREWRITE_OR_CONTROLLED_WRITE`、`ERROR=APPLY_PROCESS_FAILED_WITHOUT_RESULT`、`LIFECYCLE_ACTIONS=NONE`、`COMMIT_PUSH=NONE`。V304 `apply.py` 的第一项业务动作是在进入 `main()` 后立即创建 package-local `apply-result.env`；最终该 result 不存在，因此可以确认 Python apply 脚本没有进入该入口。当前证据不能进一步证明是“解释器未安装”“PATH 未配置”或其他具体 OS 启动错误，故下层原因保持 `INSUFFICIENT_EVIDENCE`。
+- **根因**：交付 harness 在系统重装后的当前环境中没有先验证 Python Runtime，却把 `python apply.py / validate.py` 作为强制执行前提；这违反“只依赖已恢复并有当前证据的执行环境”原则。SFV301 已有当前用户一手证据 `BUN_VERSION=1.3.14`，因此 V305 改为只使用已确认 Bun Runtime。
+- **影响**：V304 没有 SpecForge lifecycle、commit 或 push；由于 apply 入口未执行，V304 的 controlled write 没有开始。
+- **正确做法 / 修复**：V305 的 apply、finalize、validator 全部使用 Bun `.mjs`；runner 在任何写入前先执行 Bun runtime preflight。失败回执继续通过 package-local result 协议传播准确阶段错误；如果 Bun 本身无法启动则直接输出 `BUN_RUNTIME_UNAVAILABLE_OR_LAUNCH_FAILED`。
+- **类防护**：`EXP-001,EXP-002,EXP-007,EXP-011,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-535 — V304 目标 handoff 在工程验证之前就声明“APPLIED_VALIDATED_PENDING_GIT_SYNC”
+- **状态**：`CLOSED_PREPUBLISH_BY_V305_STAGE_SPLIT`
+- **分类**：`DELIVERY_HARNESS_DEFECT / STAGE_STATE_PREMATURE_COMMITMENT / HANDOFF_TRUTHFULNESS`
+- **阶段**：V304 用户失败后的交付包复核。
+- **一手事实**：V304 `apply.py` 在 `CONTROLLED_WRITE` 阶段一次写入全部 4 个目标文件，其中 `current-handoff.md` 目标状态已经是 `CLOSED_LOOP_GOVERNANCE_AUTHORITY_UPGRADE_APPLIED_VALIDATED_PENDING_GIT_SYNC`；但 `run_checks.cmd` 和 post-change validator 都在 apply 之后才执行。因此如果未来 apply 成功而工程检查失败，handoff 会在失败工作树中提前声明“VALIDATED”。V304 本次实际没有进入 apply，所以该错误未在用户仓库形成副作用。
+- **根因**：动态状态文件的 producer 与 stage checkpoint 没有按执行顺序分层，最终状态被当作普通 patch 文件过早物化。
+- **影响**：属于潜在状态真实性缺陷；没有改变本次 V304 用户仓库事实。
+- **正确做法 / 修复**：V305 首阶段只写 Authority、错误台账、永久回归测试 3 个文件；完成 targeted tests、Authority regression、TypeScript、daemon-core build、workflow doc contract、全仓 build 和 `git diff --check` 后，单独执行 finalize，仅此时写入最终 `current-handoff.md`。finalize 前必须审计工作树恰好只有批准的 3 个 pre-finalize 文件；finalize 后 validator 再要求精确 4 文件。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR534_ERR535_V305_BUN_RECOVERY:END -->

@@ -432,7 +432,11 @@ LIFECYCLE_ACTIONS=NONE
 
 ```text
 任务目标：
+最终治理目标（必须可逐项判定 PASS / FAIL）：
 当前事实和一手证据：
+当前确认根因：
+完整 producer-consumer 链：
+canonical semantic source / Contract / Schema：
 适用架构规则 ID：
 受影响模块：
 受影响 Project Architecture：
@@ -442,6 +446,9 @@ LIFECYCLE_ACTIONS=NONE
 受影响 Module Contract：
 受影响生产者和消费者：
 受影响 Workflow / Gate / Runtime：
+各治理要求的具体实现落点（代码 / Schema / Parser / Agent guidance / Template / Doc / Test）：
+各治理目标的验证方法：
+修改后反向验收矩阵：
 允许修改文件：
 明确不允许修改范围：
 需要新增或修改的测试：
@@ -461,6 +468,42 @@ LIFECYCLE_ACTIONS=NONE
 未确定修改范围
 未确定验证计划
 ```
+
+**GOV-CLOSELOOP-001：** SpecForge 自身任何调查、设计和产品修改都必须建立可执行、可验证的闭环修改契约。禁止把“找到报错位置”“写出原则”“代码已经修改”或“普通测试通过”单独视为治理完成。
+
+固定闭环链路：
+
+```text
+业务 / 治理目标
+→ 当前事实和一手证据
+→ 当前确认根因
+→ canonical semantic source / Contract / Schema
+→ Producer
+→ Parser / Normalizer
+→ direct Consumer
+→ Gate / Runtime enforcement
+→ downstream Consumer
+→ 具体代码 / Schema / Agent guidance / Template / Doc 落点
+→ Tests / Evidence
+→ Post-change reverse acceptance
+```
+
+强制规则：
+
+1. 每个最终治理目标必须有稳定 `GOAL_ID`、明确保证项和可判定的成功标准；不能只写“修复某问题”或抽象原则。
+2. 修改前必须枚举完整 producer-consumer 链；涉及 Contract / Schema / semantic model 时，必须同时调查全部 Producer、Parser / Normalizer、direct Consumer、Gate / Runtime enforcement、downstream Consumer，以及适用的 Agent guidance、Template、Doc、Test 和部署副本。链路任一层事实不足都属于 `INSUFFICIENT_EVIDENCE`。
+3. 同一业务语义只能存在一个 canonical semantic source。Markdown、JSON 展示格式、正则、提示词或阶段局部结构不得演化为第二套平行语义；所有消费者必须收敛到同一个正式模型或其唯一受控 Normalizer。
+4. 每一条治理要求必须映射到实际实现载体：代码、Schema、Parser / Normalizer、Agent guidance、Template、Doc、Test 中所有适用项。只修改文字而遗漏代码消费者、只修改代码而保留错误 guidance、或只修改 Gate 而遗漏 downstream Consumer，均视为闭环不完整。
+5. 禁止只修最终报错点。必须根据已证实根因修复整条受影响链；只有一手证据证明根因确实局限在报错层时，才允许局部修复。
+6. 测试必须直接证明治理目标，而不是只证明程序可运行。适用时至少覆盖真实 Producer 原始输出回归、合法正向 PASS、非法负向 Fail Closed、边界条件，以及 direct/downstream Consumer 对同一 canonical semantic source 的一致消费。
+7. 修改前必须输出并冻结闭环矩阵；至少包含：
+
+```text
+GOAL_ID | GUARANTEE | CANONICAL_SOURCE | PRODUCERS | NORMALIZERS | DIRECT_CONSUMERS | ENFORCEMENT | DOWNSTREAM_CONSUMERS | IMPLEMENTATION_LOCATIONS | TEST_EVIDENCE | POST_ACCEPTANCE
+```
+
+8. 任何新增 Producer、Parser / Normalizer、Consumer、Contract、Schema、Gate / Runtime、guidance、Template、Test 或文件影响，都必须按 `GOV-SCOPE-001` 停止扩大范围，重新执行 `GOV-PRE-001 + GOV-CLOSELOOP-001` 后再冻结范围。
+9. 修改完成后必须按 `GOV-POST-001` 使用修改前批准的 `GOAL_ID` 逐项反向验收；存在平行语义、遗漏消费者、未落实文字/代码契约、未覆盖真实 Producer 输出或任何 `FAIL / INSUFFICIENT_EVIDENCE` 时，`MODIFICATION_COMPLETE=NO`。
 
 ### 2.3 架构变化必须在同一任务/WI闭环
 
@@ -496,7 +539,7 @@ LIFECYCLE_ACTIONS=NONE
 不把测试兼容逻辑误写成生产规则
 ```
 
-发现新的架构、契约、模块、消费者或文件影响时，必须停止扩大修改，重新执行治理前置分析并更新允许范围。
+发现新的架构、契约、模块、Producer、Parser / Normalizer、direct Consumer、downstream Consumer、Gate / Runtime、Agent guidance、Template、Test 或文件影响时，必须立即停止扩大修改；禁止“顺手”纳入。必须重新执行 `GOV-PRE-001 + GOV-CLOSELOOP-001`，更新完整 producer-consumer 链和闭环矩阵，再重新冻结允许范围后才能继续。
 
 ### 2.5 修改后治理闭环
 
@@ -529,6 +572,33 @@ git diff --check
 git status --short
 ```
 
+除上述检查外，必须执行 `POST_CHANGE_GOAL_RECONCILIATION`：按照修改前 `GOV-PRE-001 + GOV-CLOSELOOP-001` 批准的每一个 `GOAL_ID` 逐项反向验收：
+
+```text
+GOAL_ID=
+GOAL_GUARANTEE=
+CANONICAL_SEMANTIC_SOURCE_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+PRODUCER_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+PARSER_NORMALIZER_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+DIRECT_CONSUMER_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+GATE_RUNTIME_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+DOWNSTREAM_CONSUMER_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+GUIDANCE_TEMPLATE_DOC_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+REAL_PRODUCER_REGRESSION=PASS|FAIL|NOT_APPLICABLE|INSUFFICIENT_EVIDENCE
+POSITIVE_NEGATIVE_TEST_EVIDENCE=PASS|FAIL|INSUFFICIENT_EVIDENCE
+PARALLEL_SEMANTIC_SOURCE_AUDIT=PASS|FAIL|INSUFFICIENT_EVIDENCE
+APPROVED_SCOPE_RECONCILIATION=PASS|FAIL|INSUFFICIENT_EVIDENCE
+POST_ACCEPTANCE=PASS|FAIL|INSUFFICIENT_EVIDENCE
+```
+
+只有所有批准 `GOAL_ID` 的 `POST_ACCEPTANCE=PASS`，且不存在遗漏链路、第二套平行语义、未落实的代码/文字契约或 `INSUFFICIENT_EVIDENCE` 时，才允许：
+
+```text
+MODIFICATION_COMPLETE=YES
+```
+
+普通单元测试、构建、类型检查或 `git diff --check` 全部通过，只能证明对应工程检查通过，不能替代治理目标反向验收。
+
 工程验证不是治理的全部内容。完整闭环是：
 
 ```text
@@ -543,6 +613,9 @@ git status --short
 
 ```text
 实际修改：
+治理目标反向验收：
+canonical semantic source 对账：
+producer / normalizer / consumer 闭环对账：
 架构一致性结论：
 契约一致性结论：
 实际范围审计：
@@ -4191,14 +4264,26 @@ BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
 只有 AUTHORITY_BOOTSTRAP_ACCEPTED=YES 后才能：
 BOOTSTRAP_EXECUTION_PHASE=RECOVERY
 BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
+GOVERNANCE_PRECONCLUSION_CLOSED_LOOP_REQUIRED=YES
+GOVERNANCE_CLOSED_LOOP_RULE=GOV-CLOSELOOP-001
+GOVERNANCE_CLOSED_LOOP_CHAIN=GOAL>FACTS>ROOT_CAUSE>CANONICAL_SOURCE>PRODUCER>NORMALIZER>DIRECT_CONSUMER>GATE_RUNTIME>DOWNSTREAM_CONSUMER>IMPLEMENTATION_LOCATIONS>TESTS>POST_ACCEPTANCE
+GOVERNANCE_PARALLEL_SEMANTIC_SOURCE_ALLOWED=NO
+GOVERNANCE_REQUIREMENT_TO_IMPLEMENTATION_MAPPING_REQUIRED=YES
+GOVERNANCE_WRITE_SCOPE_FREEZE_REQUIRED=YES
+REAL_PRODUCER_REGRESSION_WHEN_APPLICABLE=REQUIRED
+POST_CHANGE_GOAL_RECONCILIATION_REQUIRED=YES
+ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 并按顺序：
 - 读取 current-handoff；
 - 恢复 WORK_BRANCH / WORK_HEAD / REMOTE_WORK_HEAD / WORKTREE_STATUS；
 - 用持久化 Work Item / immutable evidence 对账 handoff；
-- 输出完整 GOVERNANCE PRECONCLUSION；
+- 对 SpecForge 自身调查、设计或修改执行 `GOV-PRE-001 + GOV-CLOSELOOP-001 + GOV-SCOPE-001`；
+- 输出完整 GOVERNANCE PRECONCLUSION，并建立目标到实现再到验证的闭环矩阵；
 - 输出 canonical Stage Input；
 - 输出 GOV-STAGE-RECOVERY-ACCEPT-001 Recovery Acceptance；
 - RECOVERY_ACCEPTED=YES 后才允许执行 NEXT_LEGAL_ACTION；
+- 修改实施前必须证明 `GOV-PRE-001 + GOV-CLOSELOOP-001 + GOV-SCOPE-001` 已闭环并冻结范围；任一链路或实现落点不足时不得写入；
+- 修改完成后必须执行 `GOV-POST-001 + GOV-EVID-001`，按修改前 GOAL_ID 逐项反向验收；普通测试通过不得替代该验收；
 - 不自动重试已经开始的副作用动作。
 ```
 
@@ -4230,6 +4315,7 @@ BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
 | `GATE-RETRY-STATE-001` | 7.4 Gate 的硬阻断与产品完成边界 |
 | `GOV-AUTH-001` | 1.2 唯一权威源 |
 | `GOV-CONT-001` | 2.7 Continuity 与当前用户授权边界 |
+| `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
 | `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |
 | `GOV-MODE-001` | 1.3.1 模式 A：SpecForge 自身开发 |
