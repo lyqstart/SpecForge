@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { checkProjectGovernanceConsistency } from './project-governance-v2.js';
+import { checkProjectGovernanceConsistency, freezeGovernanceScopeForCodePermission } from './project-governance-v2.js';
 
 const roots: string[] = [];
 
@@ -87,15 +87,17 @@ async function createFixture(plannedCodePaths: string[], taskFiles: string[]): P
       planned_code_paths: plannedCodePaths,
     },
   });
-  const renderedFiles = taskFiles.map(file => `  - \`${file}\``).join('\n');
   await writeText(
     path.join(workItemDir, 'candidates', 'tasks.md'),
     [
       '# Tasks',
       '',
       '### TASK-WI-0001-001 scope fixture',
-      '- **allowed_write_files**:',
-      renderedFiles,
+      '- **refs**: [REQ-CORE-001, DD-CORE-001]',
+      `- **allowed_write_files**: [${taskFiles.join(', ')}]`,
+      '- **verification_commands**:',
+      '  - unit:',
+      '    - `bun test`',
       '',
     ].join('\n'),
   );
@@ -142,4 +144,24 @@ describe('Candidate Task write scope consistency', () => {
     expect(taskChecks.length).toBeGreaterThan(0);
     expect(taskChecks.every(check => check.passed), JSON.stringify(taskChecks, null, 2)).toBe(true);
   });
+
+  test('Code Permission reuses the same canonical Task write scope semantic source', async () => {
+    const { projectRoot, workItemDir } = await createFixture(
+      ['src/inside.ts', 'tests/cross.test.ts'],
+      ['src/inside.ts', 'tests/cross.test.ts'],
+    );
+    const result = await freezeGovernanceScopeForCodePermission({
+      projectRoot,
+      workItemDir,
+      workItemId: 'WI-0001',
+      allowedWriteFiles: [{ path: 'tests/cross.test.ts', operation: 'modify' }],
+    });
+    const ownerCheck = result.checks.find(check =>
+      check.description ===
+        'Allowed write file maps to exactly one Module or an approved cross-module test harness: tests/cross.test.ts'
+    );
+    expect(ownerCheck?.passed).toBe(true);
+    expect(ownerCheck?.details).toContain('approved_cross_module_test_harness=true');
+  });
+
 });

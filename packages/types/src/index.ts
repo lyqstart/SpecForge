@@ -81,11 +81,13 @@ export { ACTOR_ROLES, type ActorRole } from "./actor-roles.js";
 // ---- Cross-module contract model ----
 export {
   ContractRegistrySchema,
+  ModuleContractFileSchema,
   SharedEnumContractSchema,
   InvariantContractSchema,
   PublicInterfaceContractSchema,
   ExtensionPointContractSchema,
   type ContractRegistry,
+  type ModuleContractFile,
   type SharedEnumContract,
   type InvariantContract,
   type PublicInterfaceContract,
@@ -97,6 +99,8 @@ export {
   TASK_ARTIFACT_CONTRACT_VERSION,
   TASK_VERIFICATION_TYPES,
   TaskArtifactReferenceSchema,
+  TaskAllowedWriteFileSchema,
+  TaskAllowedWriteFilesSchema,
   TaskArtifactIdSchema,
   TaskVerificationCommandsSchema,
   TaskArtifactItemSchema,

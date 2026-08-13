@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { validateTriggerResultJson } from '../../src/tools/lib/artifact-schema-validation';
+import { validateArtifactJson, validateTriggerResultJson } from '../../src/tools/lib/artifact-schema-validation';
 import { authorContractCandidate } from '../../src/tools/lib/contract-authoring';
 import { resolveModuleContractsPathValue } from '../../src/tools/lib/project-governance-v2';
 
@@ -107,4 +107,66 @@ describe('Phase 11 first-WI governance regression', () => {
       await fs.rm(projectRoot, { recursive: true, force: true });
     }
   });
+
+  it('enforces canonical Module Contract Candidate schema before controlled write', () => {
+    const filename = 'candidates/project/modules/CORE/contracts.candidate.json';
+    const canonical = {
+      schema_version: '1.0',
+      owner_module: 'CORE',
+      contracts: {
+        shared_enums: [],
+        invariants: [{
+          id: 'MC-INV-001',
+          rule: 'available must never be negative',
+          scope: 'module',
+          owner_module: 'CORE',
+          source_refs: ['DD-CORE-001'],
+          enforcement: 'runtime',
+        }],
+        public_interfaces: [],
+        extension_points: [],
+      },
+    };
+    const valid = validateArtifactJson(
+      filename,
+      JSON.stringify(canonical),
+      'WI-0001',
+      'requirement_change_path',
+    );
+    expect(valid?.valid, valid?.errors.join('; ')).toBe(true);
+
+    const freshLikeCustomShape = {
+      owner_module: 'CORE',
+      invariants: [{ id: 'MC-INV-001' }],
+      internal_interfaces: [],
+      boundary_constraints: [],
+    };
+    const invalid = validateArtifactJson(
+      filename,
+      JSON.stringify(freshLikeCustomShape),
+      'WI-0001',
+      'requirement_change_path',
+    );
+    expect(invalid?.valid).toBe(false);
+    expect(invalid?.errors.join('; ')).toContain('MODULE_CONTRACT_SCHEMA_INVALID');
+
+    const extraTopLevel = validateArtifactJson(
+      filename,
+      JSON.stringify({ ...canonical, assumptions: [] }),
+      'WI-0001',
+      'requirement_change_path',
+    );
+    expect(extraTopLevel?.valid).toBe(false);
+    expect(extraTopLevel?.errors.join('; ')).toContain('top-level keys must be exactly');
+
+    const wrongOwner = validateArtifactJson(
+      filename,
+      JSON.stringify({ ...canonical, owner_module: 'OTHER' }),
+      'WI-0001',
+      'requirement_change_path',
+    );
+    expect(wrongOwner?.valid).toBe(false);
+    expect(wrongOwner?.errors.join('; ')).toContain('MODULE_CONTRACT_OWNER_MISMATCH');
+  });
+
 });

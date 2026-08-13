@@ -77,6 +77,44 @@ export const TaskArtifactIdSchema = z
     },
   );
 
+
+export const TaskAllowedWriteFileSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .superRefine((value, ctx) => {
+    const normalized = value.replace(/\\/g, "/");
+    if (/^(?:\/|[A-Za-z]:\/)/.test(normalized)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "allowed_write_files paths must be repository-relative",
+      });
+    }
+    if (normalized.includes("*") || normalized.includes("?")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "allowed_write_files paths must be concrete files without wildcards",
+      });
+    }
+    if (
+      normalized.endsWith("/") ||
+      normalized.split("/").some((segment) => segment === ".." || segment.length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "allowed_write_files paths must identify concrete files inside the repository",
+      });
+    }
+  });
+
+export const TaskAllowedWriteFilesSchema = z
+  .array(TaskAllowedWriteFileSchema)
+  .refine(
+    (values) =>
+      new Set(values.map((value) => value.replace(/\\/g, "/"))).size === values.length,
+    { message: "allowed_write_files must not contain duplicate paths" },
+  );
+
 const VerificationCommandEntrySchema = z.union([
   z.string().trim().min(1),
   z.array(z.string().trim().min(1)).min(1),
@@ -99,6 +137,7 @@ export const TaskArtifactItemSchema = z
   .object({
     task_id: TaskArtifactIdSchema,
     refs: z.array(TaskArtifactReferenceSchema).min(1),
+    allowed_write_files: TaskAllowedWriteFilesSchema.default([]),
     verification_commands: TaskVerificationCommandsSchema,
   })
   .superRefine((task, ctx) => {

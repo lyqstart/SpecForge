@@ -632,13 +632,13 @@ constrained_by: <约束来源>
 5. **必须计算 hash** — 用于后续一致性校验。
 6. **只有经过 Gate、User Decision、Merge Runner 才能进入正式规格**。
 
-**Candidate Manifest**（§8.3）：每个 Candidate 必须在 `candidate_manifest.json` 中登记，包含 `candidate_path`、`target_path`、`operation`、`candidate_hash` 等字段。
+**Candidate Manifest**（§8.3）：Candidate 必须进入 Runtime 的 manifest 投影，但 `candidate_manifest.json` 只能由 Runtime 在 Candidate 封口边界根据实际受控写入产物物化；设计 Agent 不得写入、补写、登记或猜测 Manifest 条目。
 
 **设计 Agent 的职责**：
 
 - 生成完整候选文件到 `candidates/` 目录。
 - 确保 Candidate 内容与 design_delta.md 中的设计决策一致。
-- 在 `candidate_manifest.json` 中正确登记 Candidate 条目。
+- 返回本轮实际生成的 Candidate 路径供 Runtime 封口；不得直接写入或登记 `candidate_manifest.json`。
 
 ---
 
@@ -734,6 +734,41 @@ constrained_by: <约束来源>
 10. `requirements_index.md`、`design_index.md` 等可由 Runtime 从正式数据推导的索引不得由本 Agent凭空重复维护。
 
 ---
+## Module Contract Candidate Canonical Producer Contract
+
+当 Impact Scope 要求新增或修改 Module Contract 时，`sf-design` 必须生产 Runtime 唯一接受的
+`ModuleContractFileSchema`，并通过
+`sf_artifact_write(file_type=candidate_module_contract, module_id=<MODULE>)`
+写入 `candidates/project/modules/<MODULE>/contracts.candidate.json`。
+
+唯一 canonical 顶层结构：
+
+```json
+{
+  "schema_version": "1.0",
+  "owner_module": "<MODULE>",
+  "contracts": {
+    "shared_enums": [],
+    "invariants": [],
+    "public_interfaces": [],
+    "extension_points": []
+  }
+}
+```
+
+固定映射规则：
+
+1. Module 内部需要机器强制的业务/边界约束进入 `contracts.invariants`，不得另造顶层 `boundary_constraints`。
+2. Module 暴露或内部共同约束的接口契约使用 `contracts.public_interfaces`；真正的扩展点使用 `contracts.extension_points`，不得另造顶层 `internal_interfaces`。
+3. 每个 Module Contract entry 的 `owner_module` 必须与文件路径中的 `<MODULE>` 一致；`source_refs` 只能来自该 Module 的 `DD-*`，需要机器强制时必须给出可执行 `enforcement`。
+4. `assumptions`、`out_of_scope`、说明性边界文本继续属于 Design Candidate，不得作为 `contracts.candidate.json` 的第二套顶层 schema。
+5. Contract 消费关系只写入 Prospective Trace；不得在 Module Contract JSON 中建立 `consumer_relations` 或 consumers 第二真相源。
+6. Project Contract 继续由 Project Contract canonical registry/受控 Contract Tool 管理，不得把 `PC-*` 定义复制进 Module Contract Candidate。
+7. `candidate_manifest.json` 继续由 Runtime 独占物化；本 Agent 只生产受控 Candidate，不写 Manifest。
+
+任何无法映射到 `shared_enums / invariants / public_interfaces / extension_points` 的所谓 Module Contract
+都必须返回 blocked 并报告 contract/schema 产品缺口，不得自定义 JSON 结构，也不得要求 Runtime 放宽 schema。
+
 # Contract 消费者与 Trace 唯一真相源
 
 1. Contract 消费者只能通过正式关系 `DD-* constrained_by Contract-ID` 声明；不得用正文标记、Contract 内的 consumers 数组或 Module 内的消费者清单建立第二真相源。

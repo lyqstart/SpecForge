@@ -7,6 +7,7 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..')
 const authorityPath = resolve(repoRoot, 'docs/design/SpecForge架构一致性治理最终实施方案.md');
 const featureSkillPath = resolve(repoRoot, 'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
 const plannerPath = resolve(repoRoot, 'setup/userlevel-opencode/agents/sf-task-planner.md');
+const designPath = resolve(repoRoot, 'setup/userlevel-opencode/agents/sf-design.md');
 const orchestratorPath = resolve(repoRoot, 'setup/userlevel-opencode/agents/sf-orchestrator.md');
 
 describe('Phase 11 agent guidance authority contract', () => {
@@ -51,10 +52,32 @@ describe('Phase 11 agent guidance authority contract', () => {
       'allowed_write_files ⊆ impact_scope.planned_code_paths',
       'Task 可以收窄 Impact Scope，但不得扩大',
       'SCOPE_EXPANSION_REQUIRED',
-      '0 个 Module 或多个 Module',
-      'affected_modules',
+      '0 个 Module 或多个 Module',      'affected_modules',
+      'task-document/v1',
+      '- **allowed_write_files**: [<repo-relative-file-1>, <repo-relative-file-2>]',
+      '多行反引号列表仅用于 legacy 只读兼容',
     ]) expect(planner, token).toContain(token);
   });
+  it('locks sf-design to the canonical Module Contract Candidate producer contract', async () => {
+    const design = await readFile(designPath, 'utf8');
+    for (const token of [
+      'ModuleContractFileSchema',
+      'sf_artifact_write(file_type=candidate_module_contract, module_id=<MODULE>)',
+      '"schema_version": "1.0"',
+      '"owner_module": "<MODULE>"',
+      '"contracts": {',
+      '"shared_enums": []',
+      '"invariants": []',
+      '"public_interfaces": []',
+      '"extension_points": []',
+      'candidate_manifest.json',
+      'Runtime 独占物化',
+    ]) expect(design, token).toContain(token);
+    expect(design).not.toContain('- 在 `candidate_manifest.json` 中正确登记 Candidate 条目。');
+    expect(design).toContain('不得另造顶层 `internal_interfaces`');
+    expect(design).toContain('不得另造顶层 `boundary_constraints`');
+  });
+
   it('locks orchestrator to affected_modules instead of invented aliases', async () => {
     const orchestrator = await readFile(orchestratorPath, 'utf8');
     for (const token of [

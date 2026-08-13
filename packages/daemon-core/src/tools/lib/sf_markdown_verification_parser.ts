@@ -37,6 +37,7 @@ export interface TaskArtifactContractValidation {
   tasks: Array<{
     task_id: string
     refs: string[]
+    allowed_write_files: string[]
     verification_commands: TypedVerificationCommands
   }>
   issues: TaskArtifactContractIssue[]
@@ -124,6 +125,37 @@ export function parseRefsFields(content: string): string[] {
  * Legacy localized headings remain readable for recovery, but cannot satisfy
  * the semantic artifact contract because they have no stable task ID.
  */
+
+/**
+ * Parse task-document/v1 allowed_write_files.
+ *
+ * New producers render one inline bracket list. Historical multiline backtick
+ * lists remain read-only compatibility. Both normalize to the same
+ * repository-relative semantic paths.
+ */
+export function parseTaskAllowedWriteFiles(taskContent: string): string[] {
+  const section = extractFieldSection(taskContent, "allowed_write_files")
+  if (!section) return []
+
+  const inline = /^\s*\[([^\]]*)\]\s*$/.exec(section.trim())
+  const rawValues = inline
+    ? inline[1].split(/[,，]/)
+    : parseStringList(section)
+
+  const normalized = rawValues
+    .map((value) =>
+      value
+        .trim()
+        .replace(/^['"`]|['"`]$/g, "")
+        .replace(/\\/g, "/")
+        .replace(/^\.\//, "")
+        .replace(/\/+/g, "/")
+    )
+    .filter(Boolean)
+
+  return [...new Set(normalized)]
+}
+
 export function parseTaskSections(content: string): TaskSection[] {
   const sections: TaskSection[] = []
   const lines = content.split(/\r?\n/)
@@ -163,7 +195,7 @@ export function parseTaskSections(content: string): TaskSection[] {
  */
 export function validateTaskArtifactContract(
   content: string,
-  options: { allowLegacyCommands?: boolean; allowLegacyIds?: boolean } = {}
+  options: { allowLegacyCommands?: boolean; allowLegacyIds?: boolean; requireAllowedWriteFiles?: boolean } = {}
 ): TaskArtifactContractValidation {
   const sections = parseTaskSections(content)
   const issues: TaskArtifactContractIssue[] = []
@@ -179,6 +211,16 @@ export function validateTaskArtifactContract(
 
   for (const section of sections) {
     const verification = parseTaskVerification(section.content)
+    const allowedWriteFiles = parseTaskAllowedWriteFiles(section.content)
+    if (options.requireAllowedWriteFiles && allowedWriteFiles.length === 0) {
+      issues.push({
+        severity: "error",
+        code: "ALLOWED_WRITE_FILES_MISSING",
+        task_id: section.taskId,
+        path: "allowed_write_files",
+        message: `${section.taskId} must declare at least one concrete allowed_write_files path`,
+      })
+    }
 
     if (isLegacyTaskArtifactId(section.taskId)) {
       issues.push({
@@ -237,6 +279,7 @@ export function validateTaskArtifactContract(
     tasks.push({
       task_id: section.taskId,
       refs: verification.refs ?? [],
+      allowed_write_files: allowedWriteFiles,
       verification_commands: verification.typedCommands ?? {},
     })
   }

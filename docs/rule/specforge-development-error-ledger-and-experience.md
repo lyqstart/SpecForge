@@ -8379,3 +8379,194 @@ actual_files
 - **正确做法 / 修复**：V305 首阶段只写 Authority、错误台账、永久回归测试 3 个文件；完成 targeted tests、Authority regression、TypeScript、daemon-core build、workflow doc contract、全仓 build 和 `git diff --check` 后，单独执行 finalize，仅此时写入最终 `current-handoff.md`。finalize 前必须审计工作树恰好只有批准的 3 个 pre-finalize 文件；finalize 后 validator 再要求精确 4 文件。
 - **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
 <!-- SPECFORGE_ERR534_ERR535_V305_BUN_RECOVERY:END -->
+
+<!-- SPECFORGE_ERR536_ERR550_PHASE11_PRODUCER_CONSUMER_CONTRACT_FIX:START -->
+## ERR-536 — Task allowed_write_files Producer、task-document/v1、Candidate Gate 与 Code Permission 使用分裂的写范围契约
+- **状态**：`CLOSED_BY_V308_VALIDATED`
+- **分类**：`PRODUCT_DEFECT / PRODUCER_CONSUMER_CONTRACT_SPLIT / TASK_SCOPE`
+- **阶段**：Phase 11 Fresh-02 attempt-0003 根因调查与 V306 只读取证。
+- **一手事实**：Fresh-02 15 个真实 Task 全部使用 `- **allowed_write_files**: [a, b]`；V306 对 15/15 得到 `runtime_parser_values=[]`，Gate 因而 15/15 `task_allowed_write_files_*` 失败。源码同时确认 `task-document/v1` 未声明该字段，Candidate Gate 与 Code Permission 使用不同文本协议。
+- **根因**：Task 写范围没有进入 canonical semantic model；Producer、Markdown normalization、Candidate Gate 和 downstream Code Permission 未消费同一正式语义源。
+- **修复**：V308 将 `allowed_write_files` 纳入 task-document/v1 语义模型；真实 Planner 内联格式与 legacy 多行只读格式归一为同一字段；Task Producer 写入与治理链使用 strict 模式；Candidate Gate 与 Code Permission 统一消费 semantic tasks。
+- **防护**：真实 Producer 格式、legacy 读兼容、missing strict BLOCK、非法路径 BLOCK、subset/out-of-scope/owner、Code Permission downstream consumer 回归。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-537 — sf-design Module Contract Candidate Producer 与 Runtime ModuleContractFileSchema 不一致
+- **状态**：`CLOSED_BY_V308_VALIDATED`
+- **分类**：`PRODUCT_DEFECT / PRODUCER_SCHEMA_MISMATCH / MODULE_CONTRACT`
+- **阶段**：Phase 11 Fresh-02 attempt-0003 根因调查与 V306 只读取证。
+- **一手事实**：Fresh-02 contracts.candidate.json 有 owner_module 与 MC 业务语义，但缺 `schema_version="1.0"` 和 canonical `contracts` registry；module_contract_core_candidate_integrity 失败，MC IDs 未注册，44 条 MC Trace dangling 均为连锁结果。Project Contract PC-HTTP-INVENTORY-API 的 schema、owner、source、consumer 和 Trace 均 PASS。
+- **根因**：Runtime 已有唯一 ModuleContractFileSchema，但 sf-design 未得到唯一 canonical Candidate JSON 契约；受控 JSON writer 没有在落盘前执行该 Candidate schema。
+- **修复**：V308 不放宽 Runtime；sf-design 固定 canonical Module Contract Candidate 与受控 writer；validateArtifactJson 在 candidate path 上执行 strict canonical top-level/registry shape、ModuleContractFileSchema 和 owner/path 一致性校验；修正过期 Candidate Manifest ownership 指导。
+- **防护**：canonical PASS、Fresh-02-like custom JSON BLOCK、extra-key BLOCK、owner mismatch BLOCK、Agent guidance contract、Contract/Trace regression。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-538 — V307 Artifact Acceptance 对 canonical BASE_HEAD 消费者执行错误的字面量重复检查
+- **状态**：`CLOSED_PREPUBLISH_BY_V307_ACCEPTANCE_FIX`
+- **分类**：`DELIVERY_HARNESS_DEFECT / ARTIFACT_ACCEPTANCE_FALSE_NEGATIVE`
+- **阶段**：V307 发布前 Artifact Acceptance。
+- **一手事实**：synthetic transform selftest PASS；验收错误要求 apply/validate 各自重复硬编码 SHA，而它们实际从唯一 BASE_HEAD 常量导入。
+- **根因**：验收实现细节替代语义契约。
+- **修复**：改为验证唯一 canonical BASE_HEAD 定义和消费者真实引用。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-539 — V307 Artifact Acceptance 对 validate.mjs 的 BASE_HEAD 使用次数施加无语义依据阈值
+- **状态**：`CLOSED_PREPUBLISH_BY_V307_ACCEPTANCE_SEMANTIC_FIX`
+- **分类**：`DELIVERY_HARNESS_DEFECT / ARTIFACT_ACCEPTANCE_FALSE_NEGATIVE`
+- **阶段**：V307 第二次发布前 Artifact Acceptance。
+- **一手事实**：validate.mjs 已导入并真实使用 BASE_HEAD，但验收要求字符串出现至少 3 次，实际是导入 + 一次语义使用。
+- **根因**：字符串出现次数替代结构/语义连线验证。
+- **修复**：只验证 import 与 import 外语义引用。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+## ERR-540 — V307 用户执行在写入前被 project-governance 跨函数大正则错误阻断
+- **状态**：`CLOSED_BY_V308_STRUCTURAL_TRANSFORM_FIX`
+- **分类**：`DELIVERY_HARNESS_DEFECT / FRAGILE_STRUCTURAL_PATCH / PREWRITE_CARDINALITY`
+- **阶段**：V307 用户本地执行。
+- **一手事实**：用户回执 `RESULT=FAILED`、`FAILED_STAGE=BASELINE_OR_CONTROLLED_APPLY`、`ERROR=APPLY_FAILED:project governance task reader replacement: expected cardinality 1, got 0`、`LIFECYCLE_ACTIONS=NONE`、`COMMIT_PUSH=NONE`。错误发生于所有 transform 的内存阶段，尚未进入 CONTROLLED_WRITE。
+- **当前源码事实**：6119ccf 中 readApprovedTaskFiles、readTaskWriteScopes、isApprovedMergedArchitectureScope 三个稳定函数签名唯一存在且有序。
+- **根因**：交付 harness 用跨两个函数正文的大 regex 代替稳定符号边界。
+- **修复**：V308 只用三个唯一函数签名做有序结构切片，所有目标先在内存 transform/postValidate 成功后才允许首次写入。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+
+## ERR-541 — V308 第一次封包仍用过窄整段文字 anchor 插入 ERR-540
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_MARKER_BOUNDARY_FIX`
+- **分类**：`DELIVERY_HARNESS_DEFECT / FRAGILE_TEXT_ANCHOR / PREPUBLISH`
+- **阶段**：V308 第一次封包。
+- **一手事实**：生成器返回 `RuntimeError: ERR-540 ledger anchor missing`；没有成功生成可交付包、未访问用户仓库。
+- **根因**：错误台账插入仍绑定相邻可变正文。
+- **修复**：后续不再依赖该正文 anchor，并最终取消 template-literal ledger patch 模型。
+- **类防护**：`EXP-001,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+
+## ERR-542 — V308 第二次封包把 Markdown 反引号直接放入 JS template literal 导致语法失败
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_TEMPLATE_ESCAPE_FIX`
+- **分类**：`DELIVERY_HARNESS_DEFECT / TEMPLATE_LITERAL_ESCAPE / PREPUBLISH`
+- **阶段**：V308 第二次发布前验收。
+- **一手事实**：Node syntax check 在 ERR-540 状态行返回 SyntaxError；Artifact Acceptance FAIL，未交付用户。
+- **根因**：把 Markdown ledger prose 与 JS template literal 语法耦合。
+- **修复**：最终 V308 整体替换 transformErrorLedger，ledger 正文由 JSON 编码的普通 JS 字符串承载，不使用 template literal。
+- **类防护**：`EXP-001,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+
+## ERR-543 — V308 第二次 Artifact Acceptance 把 ERR-540 历史证据误判为旧补丁代码残留
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_FUNCTION_BODY_AUDIT`
+- **分类**：`VALIDATION_HARNESS_DEFECT / FALSE_POSITIVE / EVIDENCE_TEXT_VS_CODE`
+- **阶段**：V308 第二次发布前验收。
+- **一手事实**：v307_fragile_regex_removed 检查扫描整个 patches.mjs，命中 ERR-540 必须保留的历史错误短语，而不是 transformProjectGovernance 实现。
+- **根因**：验收器没有区分可执行补丁实现与历史证据正文。
+- **修复**：最终验收只提取 transformProjectGovernance 函数体做残留检查。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+
+## ERR-544 — V308 第二次 Artifact Acceptance 的写前顺序检查命中 postValidate 函数定义
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_EXECUTION_STATEMENT_AUDIT`
+- **分类**：`VALIDATION_HARNESS_DEFECT / CONTROL_FLOW_ASSERTION`
+- **阶段**：V308 第二次发布前验收。
+- **一手事实**：验收使用 postValidate 字符串第一次出现位置，命中函数定义而不是真正执行调用。
+- **根因**：控制流验收绑定符号出现而非明确执行语句。
+- **修复**：从 STRUCTURAL_PREWRITE_TRANSFORM 阶段之后查找精确 `postValidate(transformed);` 调用，并证明它早于 CONTROLLED_WRITE。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+
+## ERR-545 — V308 第三次发布前修补仍沿用 template-literal 路线并破坏模板起始符
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_TEMPLATE_MODEL_RESET`
+- **分类**：`DELIVERY_HARNESS_DEFECT / REPEATED_PATCH_MODEL_FAILURE / PREPUBLISH`
+- **阶段**：V308 第三次发布前验收。
+- **一手事实**：Node syntax check 返回 `const block = \`` 处 `SyntaxError: Invalid or unexpected token`；Artifact Acceptance FAIL，未交付用户。
+- **根因**：连续修补同一 template-literal 逃逸问题，没有及时更换问题模型。
+- **修复**：最终 V308 从干净 V307 基线重建，transformErrorLedger 全部改为 JSON 编码普通字符串；不再修补失败中间包。
+- **类防护**：`EXP-001,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+## ERR-546 — V308 clean-draft selftest 发现 transformArtifactWrite 把字符串传给只接受 RegExp 的 replaceOnce
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_ARTIFACT_WRITE_TRANSFORM_TYPE_FIX`
+- **分类**：`DELIVERY_HARNESS_DEFECT / TRANSFORM_API_TYPE_MISMATCH / PREPUBLISH`
+- **阶段**：V308 从干净 V307 基线重建后的首轮 synthetic/exact-source-like transform selftest。
+- **一手事实**：所有 `.mjs` Node syntax check PASS；执行 `node scripts/selftest.mjs` 时在 `transformArtifactWrite` 返回 `TypeError: Cannot read properties of undefined (reading 'includes')`，调用栈指向 `countMatches(regex.flags)`。该 transform 的两处 `replaceOnce` 错误传入普通字符串而不是 RegExp。未生成用户可执行成果、未访问用户仓库。
+- **根因**：新增 Producer 边界 transform 没有遵守既有 helper `replaceOnce(text, regex, ...)` 的参数契约；语法检查无法发现运行期参数类型错误。
+- **修复**：两处定位改成明确 RegExp；保留 selftest 实际执行 transform，而不是只做 `node --check`。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+## ERR-547 — V308 扩展全 Transform selftest 时把可执行 JS 模板字面量反引号错误写成转义序列
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_SELFTEST_SOURCE_FIX`
+- **分类**：`DELIVERY_HARNESS_DEFECT / SELFTEST_GENERATION_SYNTAX / PREPUBLISH`
+- **阶段**：V308 clean-draft 扩展全 Transform selftest。
+- **一手事实**：在此前 synthetic transform selftest 已 PASS 后，扩展 selftest 覆盖剩余 test/ledger/handoff transforms；随后 `node --check scripts/selftest.mjs` 在 ledger assertion 处对源码中的 `\`` 返回 `SyntaxError: Invalid or unexpected token`。该错误只存在于 ChatGPT 私有 clean draft，未生成用户可执行成果、未访问或修改用户仓库。
+- **根因**：生成 selftest 可执行 JavaScript 时，把“嵌套字符串需要转义”的思路错误应用到了 JavaScript 源码自身，导致本应作为模板字面量分隔符的 backtick 被写成反斜杠 + backtick。
+- **正确做法 / 修复**：可执行 selftest assertion 使用正常 JavaScript template literal；先 `node --check`，再执行整个 selftest，继续覆盖 ledger/handoff 真实 transform。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+
+## ERR-548 — V308 发布前范围审计一度把 gitignored types dist 构建产物误判为 tracked 修改范围
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_GITIGNORE_SCOPE_RECONCILIATION`
+- **分类**：`VALIDATION_HARNESS_DEFECT / SCOPE_FALSE_POSITIVE / IGNORED_BUILD_OUTPUT`
+- **阶段**：V308 最终 Artifact Acceptance 前的构建产物范围复核。
+- **一手事实**：`packages/types/package.json` 的 build 为 `tsc`，`tsconfig.json` 使用 `outDir=dist`；初步分析据此把 `dist/index.*` 与 `dist/task-artifact-contract.*` 当成需要扩大 Git 修改范围的文件。随后读取 exact `6119ccf` `.gitignore`，确认根级规则 `dist/` 全局忽略这些构建输出；固定 commit 上对应 raw dist 文件也不存在，V306 local source index 中出现的 dist 仅是本地 ignored 构建产物。
+- **根因**：范围审计只依据构建会生成文件，没有先完成 `tracked / ignored / generated` 三态判定。
+- **影响**：只造成发布前范围分析假阳性；没有修改 package scope、没有生成用户可执行副作用、没有访问或修改用户仓库。
+- **正确做法 / 修复**：最终 V308 保持 14 个 tracked repository files；构建后仍以 `git status --porcelain -z` 为实际范围真相源。以后任何 generated output 进入批准范围前，必须先用 Git tracking/ignore 事实确认其是否属于 tracked change。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-087,EXP-093`
+
+## ERR-549 — V308 补录 ERR-548 后 selftest 仍断言旧的 LATEST_DEVELOPMENT_FAILURE=ERR-547
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_SELFTEST_EXPECTATION_SYNC`
+- **分类**：`VALIDATION_HARNESS_DEFECT / STALE_TEST_EXPECTATION / PREPUBLISH`
+- **阶段**：V308 最终 clean draft 补录 gitignore 范围误判后的 transform selftest。
+- **一手事实**：全部 `.mjs` `node --check` PASS；`node scripts/selftest.mjs` 在 `handoff latest failure mismatch` 失败。`finalizeHandoff` 已按最新台账把 `LATEST_DEVELOPMENT_FAILURE` 更新到 ERR-548，而 selftest 第 309 行仍硬编码期望 ERR-547。该失败只存在于私有 clean draft，未生成用户交付、未访问用户仓库。
+- **根因**：新增台账项时更新了生产者 `finalizeHandoff`，但漏同步其直接测试消费者。
+- **正确做法 / 修复**：按 GOV-CLOSELOOP-001 同步更新 handoff transform selftest 的 latest failure 与 ledger tail 断言，并把本条 ERR-549 一并纳入最终 ledger；随后从 syntax → selftest → Artifact Acceptance 全量重跑。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-087,EXP-093`
+
+## ERR-550 — V308 最终 Artifact Acceptance 扫描 patches.mjs 模板源码时把转义形式误当最终 sf-design 文本
+- **状态**：`CLOSED_PREPUBLISH_BY_V308_TRANSFORM_OUTPUT_AUDIT`
+- **分类**：`VALIDATION_HARNESS_DEFECT / FALSE_NEGATIVE / TEMPLATE_SOURCE_VS_TRANSFORM_OUTPUT`
+- **阶段**：V308 最终独立 Artifact Acceptance。
+- **一手事实**：47 个独立检查中仅 `design_canonical_guidance` 失败；Transform selftest PASS，exact `6119ccf` 的 sf-design 三个目标锚点均存在。失败检查直接扫描 `patches.mjs` 模板源码，要求出现未转义 Markdown 片段，而模板源码合法地以 `\`` 形式转义嵌套 backtick。
+- **根因**：验收对象选错层级：应验证 `transformDesignAgent` 的输出语义，却验证了生成器源代码的字符转义表现。
+- **正确做法 / 修复**：最终 Artifact Acceptance 以实际执行 transform selftest/输出 token 为准；源码层只检查结构边界和无危险操作，不再要求模板内部的 Markdown 字符采用最终文件的字面形态。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-015,EXP-019,EXP-020,EXP-060,EXP-063,EXP-093`
+
+<!-- SPECFORGE_ERR536_ERR550_PHASE11_PRODUCER_CONSUMER_CONTRACT_FIX:END -->
+
+<!-- SPECFORGE_ERR551_V308_RUNTIME_FAILURE:START -->
+## ERR-551 — V308 Post-change Validator 错把整份历史 handoff 当作 current-state block 做唯一性检查
+- **状态**：`CLOSED_BY_V309_MARKER_SCOPED_REPLAY`
+- **分类**：`VALIDATION_HARNESS_DEFECT / FALSE_NEGATIVE / HANDOFF_MARKER_SCOPE`
+- **阶段**：`POST_CHANGE_VALIDATOR`
+- **一手事实**：V309 只读重放确认：当前 Git 变更路径精确 14 个；`V308_INTENDED_OUTPUT_REPLAY=PASS`；原 V308 validator 76 项检查中只有 `HANDOFF_UNRECORDED_FAILURE_CARDINALITY` 失败。固定 `6119ccf8f9e27ace6b4f7e211fc0fb761f976c56` 的 `current-handoff.md` 历史正文天然包含多处 `UNRECORDED_FAILURES=0`，而唯一 `SPECFORGE_CURRENT_EXECUTION_STATE` 块内只有 1 条。
+- **根因**：V308 package-local validator 对整个 `current-handoff.md` 执行 `^UNRECORDED_FAILURES=0$` 全文 cardinality=1，而不是先提取唯一 current-state marker block 后再验证块内唯一性；历史证据正文被错误当作当前状态键。
+- **影响**：产品 12 个实现/Agent/测试文件与 V308 预期完全一致；handoff 生成结果也正确；失败仅为最终 validator 假阴性。无 lifecycle、commit、push。
+- **正确做法 / 修复**：后验 validator 必须先验证 `SPECFORGE_CURRENT_EXECUTION_STATE:START/END` 各唯一，再只在该块内验证状态键 cardinality；整份历史 handoff 出现同名示例或历史证据不构成失败。V310 用 marker-scoped validator 重验，并保持产品实现不变。
+- **回归 / 机器防护**：V310 明确断言“整份文档 `UNRECORDED_FAILURES=0` 可多于 1，但 current-state block 必须恰好 1”；同时逐文件证明其余 12 个产品目标仍与 V308 exact transform 输出一致。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-087,EXP-093`
+<!-- SPECFORGE_ERR551_V308_RUNTIME_FAILURE:END -->
+
+<!-- SPECFORGE_ERR552_V310_PREMODIFICATION_MISDIAGNOSIS:START -->
+## ERR-552 — V309 后首次分析在检查 marker scope 前误把 validator 失败归因于 current-state 重复键
+- **状态**：`CLOSED_PREMODIFICATION_BY_V310_MARKER_SCOPE_CORRECTION`
+- **分类**：`ASSISTANT_ANALYSIS_DEFECT / PREMATURE_ROOT_CAUSE / HANDOFF_SCOPE`
+- **阶段**：V309 回执后的 V310 治理前置分析。
+- **一手事实**：首次分析依据 `HANDOFF_UNRECORDED_FAILURE_CARDINALITY` 直接表述为“current-handoff 里 `UNRECORDED_FAILURES=0` 出现两次”。随后读取 exact `6119ccf...` handoff 及唯一 current-state marker，确认历史正文存在多处同名文本，而 current-state block 内仅 1 条；在任何 V310 仓库写入前已纠正。
+- **根因**：先解释 validator 结果，后检查 validator 的数据选择边界；没有先区分“历史文档全文”与“当前状态块”这两个不同治理对象。
+- **影响**：只造成一次错误解释；没有用户仓库写入、没有产品范围变化、没有 lifecycle。
+- **正确做法 / 修复**：以后凡是状态文档具有唯一 marker block，cardinality/状态断言必须先明确作用域；不得从全文匹配失败直接推导 current-state 内容错误。
+- **回归 / 机器防护**：V310 validator 同时输出 whole-document count 与 current-state count，并仅以后者作为阻断条件。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-087,EXP-093`
+<!-- SPECFORGE_ERR552_V310_PREMODIFICATION_MISDIAGNOSIS:END -->
+
+<!-- SPECFORGE_ERR553_V310_RUNTIME_FAILURE:START -->
+## ERR-553 — V310 package-local validator 在 Windows 上错误使用 URL pathname 形成 `C:\C:\...` 非法包路径
+- **状态**：`CLOSED_BY_V313_WINDOWS_FILE_URL_DIAGNOSIS`
+- **分类**：`DELIVERY_HARNESS_DEFECT / WINDOWS_FILE_URL_PATH / VALIDATOR_STARTUP`
+- **阶段**：`POST_CHANGE_VALIDATOR`
+- **一手事实**：V313 只读诊断确认 `PRE_ERR553_LEDGER_EQUALS_V310_TARGET=YES`、`CURRENT_HANDOFF_EQUALS_V310_TARGET=YES`、`V310_LOGICAL_VALIDATOR_REPLAY_CHECK_COUNT=33`、`V310_LOGICAL_VALIDATOR_REPLAY_FAILURE_COUNT=0`。同一用户 Windows/Bun 环境中，V310 使用的 `new URL(import.meta.url).pathname` 产生 `/C:/...`，再经 `path.resolve` 形成 `C:\C:\Users\...`；对应 manifest 路径不存在。`fileURLToPath(import.meta.url)` 产生正确 `C:\Users\...` 路径，manifest 存在。
+- **根因**：V310 `validate.mjs` 与 `apply.mjs` 使用了两套 file-URL→Windows-path 契约；validator 没有复用已验证的 `fileURLToPath(import.meta.url)`，因此在读取 package-local manifest 前即异常退出，外层只能收到通用 `POST_CHANGE_MARKER_SCOPED_VALIDATOR_FAILED`。
+- **影响**：V310 的 14 文件工作区、两个产品目标、错误台账目标和 handoff 目标均正确；V313 重放 33/33 逻辑 validator 条件 PASS。无 lifecycle、commit、push。
+- **正确做法 / 修复**：V314 的 package-local apply/validate 均统一使用 `fileURLToPath(import.meta.url)`；validator 在启动第一步即创建 `validate-result.env`，失败时向 runner 传播精确错误，禁止再次丢失首个 validator 错误。
+- **回归 / 机器防护**：V314 prepublish Artifact Acceptance 禁止 validator 出现 `new URL(import.meta.url).pathname`，要求 `fileURLToPath`；用户侧最终 validator 再验证 14 文件 exact scope、12 个 V308 产品输出、marker-scoped handoff、ERR-553/ERR-554、`git diff --check` 和 Authority 未修改。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-011,EXP-019,EXP-020,EXP-060,EXP-087,EXP-093`
+<!-- SPECFORGE_ERR553_V310_RUNTIME_FAILURE:END -->
+
+<!-- SPECFORGE_ERR554_V311_GIT_EXECUTABLE_PATH:START -->
+## ERR-554 — V311 Bootstrap 取证包依赖 PATH 中的裸 `git`，用户 CMD 环境返回 9009
+- **状态**：`CLOSED_BY_V312_EXPLICIT_GIT_EXECUTABLE_DISCOVERY`
+- **分类**：`DELIVERY_HARNESS_DEFECT / ENVIRONMENT_EXECUTABLE_DISCOVERY / BOOTSTRAP`
+- **阶段**：V310 失败后的 Authority Bootstrap live-ref evidence。
+- **一手事实**：V311 用户回执 `GIT_LS_REMOTE_EXIT_CODE=9009`、`AUTHORITY_HEAD=INSUFFICIENT_EVIDENCE`、`RESULT=FAILED_READ_ONLY_BOOTSTRAP`，且 `REPOSITORY_READS=NONE`、`REPOSITORY_WRITES=NONE`、`LIFECYCLE_ACTIONS=NONE`。V312 随后定位 `GIT_EXE=C:\Program Files\Git\cmd\git.exe`，得到 `git version 2.55.0.windows.3`，并成功返回 live `refs/heads/main=6119ccf8f9e27ace6b4f7e211fc0fb761f976c56`。
+- **根因**：V311 把“Git 已安装”错误等同于“当前 CMD 的 PATH 可解析裸 `git`”；系统重装后的可执行文件发现契约未被复用。
+- **影响**：仅 Bootstrap 只读取证失败，无仓库读写、无 lifecycle；V312 已恢复 live-ref evidence。
+- **正确做法 / 修复**：后续本地交付需要 Git 时，先发现/固定 `git.exe`（优先 `C:\Program Files\Git\cmd\git.exe`，再受控 fallback），再执行 Git；禁止把 PATH 可用性当作隐含前提。
+- **类防护**：`EXP-001,EXP-002,EXP-007,EXP-011,EXP-019,EXP-020,EXP-060,EXP-093`
+<!-- SPECFORGE_ERR554_V311_GIT_EXECUTABLE_PATH:END -->

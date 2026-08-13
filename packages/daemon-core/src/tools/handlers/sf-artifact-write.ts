@@ -1153,7 +1153,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
     );
   }
   if (targetFilename.replace(/\\/g, '/').endsWith('/tasks.md') || targetFilename === 'tasks.md') {
-    const validation = validateTaskArtifactContract(content);
+    const validation = validateTaskArtifactContract(content, { requireAllowedWriteFiles: true });
     if (!validation.valid) {
       return {
         success: false,
@@ -1165,7 +1165,7 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
         validation_warnings: validation.issues.filter(issue => issue.severity === 'warning'),
         message:
           `Artifact "${targetFilename}" failed task-document/v1 validation and was NOT written to disk. ` +
-          'Use canonical IDs, refs, and typed verification_commands, then retry.',
+          'Use canonical IDs, refs, allowed_write_files, and typed verification_commands, then retry.',
       };
     }
   }

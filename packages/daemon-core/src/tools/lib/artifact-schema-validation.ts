@@ -16,6 +16,8 @@
 // Types
 // ---------------------------------------------------------------------------
 
+import { ModuleContractFileSchema } from '@specforge/types';
+
 export interface SchemaValidationResult {
   valid: boolean;
   errors: string[];
@@ -425,6 +427,79 @@ if (Object.prototype.hasOwnProperty.call(parsed, 'contract_promotions')) {
  * Validate evidence/evidence_manifest.json content.
  * Must be legal JSON with work_item_id and entries array.
  */
+
+/**
+ * Validate a Module Contract Candidate against the one canonical Runtime schema.
+ * Candidate writing is stricter than legacy reading: no extra top-level or
+ * registry keys are accepted, and the path Module must equal owner_module.
+ */
+export function validateModuleContractCandidateJson(
+  content: string,
+  expectedOwnerModule: string
+): SchemaValidationResult {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { valid: false, errors: ['MODULE_CONTRACT_SCHEMA_INVALID: <root>: must be an object'] };
+  }
+
+  const record = parsed as Record<string, unknown>;
+  const topKeys = Object.keys(record).sort();
+  const expectedTopKeys = ['contracts', 'owner_module', 'schema_version'];
+  if (JSON.stringify(topKeys) !== JSON.stringify(expectedTopKeys)) {
+    return {
+      valid: false,
+      errors: [
+        `MODULE_CONTRACT_SCHEMA_INVALID: <root>: top-level keys must be exactly ${expectedTopKeys.join(', ')}`,
+      ],
+    };
+  }
+
+  const contracts = record.contracts;
+  if (!contracts || typeof contracts !== 'object' || Array.isArray(contracts)) {
+    return { valid: false, errors: ['MODULE_CONTRACT_SCHEMA_INVALID: contracts: required object'] };
+  }
+  const registryKeys = Object.keys(contracts as Record<string, unknown>).sort();
+  const expectedRegistryKeys = ['extension_points', 'invariants', 'public_interfaces', 'shared_enums'];
+  if (JSON.stringify(registryKeys) !== JSON.stringify(expectedRegistryKeys)) {
+    return {
+      valid: false,
+      errors: [
+        `MODULE_CONTRACT_SCHEMA_INVALID: contracts: keys must be exactly ${expectedRegistryKeys.join(', ')}`,
+      ],
+    };
+  }
+
+  const schema = ModuleContractFileSchema.safeParse(parsed);
+  if (!schema.success) {
+    return {
+      valid: false,
+      errors: schema.error.issues.map(
+        issue =>
+          `MODULE_CONTRACT_SCHEMA_INVALID: ${issue.path.join('.') || '<root>'}: ${issue.message}`
+      ),
+    };
+  }
+
+  const expected = expectedOwnerModule.trim().toUpperCase();
+  const actual = schema.data.owner_module.trim().toUpperCase();
+  if (actual !== expected) {
+    return {
+      valid: false,
+      errors: [
+        `MODULE_CONTRACT_OWNER_MISMATCH: candidate path owner=${expected}; owner_module=${actual}`,
+      ],
+    };
+  }
+
+  return { valid: true, errors: [] };
+}
+
 export function validateEvidenceManifestJson(
   content: string,
   expectedWorkItemId: string
@@ -467,6 +542,12 @@ export function validateArtifactJson(
   workItemId: string,
   workflowPath?: string
 ): SchemaValidationResult | null {
+  const normalizedFilename = filename.replace(/\\/g, '/');
+  const moduleContractCandidate = /(?:^|\/)candidates\/project\/modules\/([^/]+)\/contracts\.candidate\.json$/i.exec(normalizedFilename);
+  if (moduleContractCandidate?.[1]) {
+    return validateModuleContractCandidateJson(content, moduleContractCandidate[1]);
+  }
+
   switch (filename) {
     case 'work_item.json':
       return validateWorkItemJson(content, workItemId);

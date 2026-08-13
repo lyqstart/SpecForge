@@ -349,7 +349,7 @@ task 不依赖其他未完成的 task（除非通过 dependencies 字段显式�
 
 - **依赖**: 无
 - **refs**: [DD-WEB-001, REQ-WEB-001]
-- files: [server.mjs]
+- **allowed_write_files**: [server.mjs]
 - **verification_commands**:
   - unit:
     - `node --test test/server.test.mjs`
@@ -444,6 +444,20 @@ Task Planner 在提交 tasks.md 前，必须对每个 task 逐一检查：
 5. **不得扩大已批准 Impact Scope**：每个 `allowed_write_files` 路径都必须已存在于当前 `impact_scope.planned_code_paths`；Task 可以收窄 Impact Scope，但不得扩大。需要新增路径时返回 `SCOPE_EXPANSION_REQUIRED`，不得先写入 Task 再等待 Code Permission 放行。
 6. **必须满足 Module 归属**：除 Runtime 明确支持且已进入 Approved Impact Scope 的 cross-module test harness 例外外，每个 Task 写入路径必须通过正式 `code_paths` 唯一映射到一个受影响 Module；0 个 Module 或多个 Module 都必须 BLOCK。
 7. **提交前机器对账**：Task Planner 返回 success 前必须检查 `allowed_write_files ⊆ impact_scope.planned_code_paths`，并确认每个非例外路径的唯一 Module owner 已包含在 `affected_modules`。
+
+### task-document/v1 canonical allowed_write_files 渲染
+
+新生成的 `tasks.md` 必须把 `context_block.where.allowed_write_files` 的语义映射为
+`task-document/v1` 的唯一新产物渲染：
+
+```markdown
+- **allowed_write_files**: [<repo-relative-file-1>, <repo-relative-file-2>]
+```
+
+- 方括号内只能列仓库根相对的具体文件路径，不得使用目录、绝对路径、`..`、`*` 或 `?`。
+- 多行反引号列表仅用于 legacy 只读兼容；Task Planner **不得**继续生成该旧渲染。
+- Runtime 会先把展示层 Markdown 归一化为 `task-document/v1` 语义模型；Candidate Gate 与 Code Permission 必须消费同一份 `allowed_write_files` 语义，不得另造 `files` 字段或第二套解析规则。
+- 提交前必须以真实输出再次验证 `allowed_write_files ⊆ impact_scope.planned_code_paths` 和唯一 Module owner。
 
 ### 常见错误
 

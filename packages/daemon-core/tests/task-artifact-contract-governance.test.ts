@@ -9,6 +9,7 @@ import {
 } from '@specforge/types';
 import {
   parseRefsFields,
+  parseTaskAllowedWriteFiles,
   parseTaskVerification,
   validateTaskArtifactContract,
 } from '../src/tools/lib/sf_markdown_verification_parser';
@@ -37,7 +38,7 @@ function canonicalTask(refsField = '- **refs**: [DD-AUTH-001, REQ-AUTH-001]'): s
   return `### TASK-WI-0001-001 Implement authentication
 
 ${refsField}
-- files: [src/auth.ts]
+- **allowed_write_files**: [src/auth.ts]
 - **verification_commands**:
   - unit:
     - \`node --test tests/auth.test.mjs\`
@@ -57,10 +58,67 @@ describe('task-document/v1 producer and consumer governance', () => {
     expect(parseRefsFields(canonicalTask())).toEqual(['DD-AUTH-001', 'REQ-AUTH-001']);
   });
 
+  it('normalizes real Planner inline allowed_write_files and legacy multiline compatibility', () => {
+    const inline = canonicalTask().replace(
+      '- **allowed_write_files**: [src/auth.ts]',
+      '- **allowed_write_files**: [src/auth.ts, tests/auth.test.ts]'
+    );
+    expect(parseTaskAllowedWriteFiles(inline)).toEqual([
+      'src/auth.ts',
+      'tests/auth.test.ts',
+    ]);
+    const legacy = inline.replace(
+      '- **allowed_write_files**: [src/auth.ts, tests/auth.test.ts]',
+      '- **allowed_write_files**:\n  - `src/auth.ts`\n  - `tests/auth.test.ts`'
+    );
+    expect(parseTaskAllowedWriteFiles(legacy)).toEqual([
+      'src/auth.ts',
+      'tests/auth.test.ts',
+    ]);
+    expect(
+      validateTaskArtifactContract(inline, { requireAllowedWriteFiles: true }).valid
+    ).toBe(true);
+    expect(
+      validateTaskArtifactContract(legacy, { requireAllowedWriteFiles: true }).valid
+    ).toBe(true);
+  });
+
+  it('keeps missing write scope readable only outside strict Producer/governance mode', () => {
+    const missing = canonicalTask().replace(
+      '- **allowed_write_files**: [src/auth.ts]\n',
+      ''
+    );
+    expect(validateTaskArtifactContract(missing).valid).toBe(true);
+    const strict = validateTaskArtifactContract(missing, {
+      requireAllowedWriteFiles: true,
+    });
+    expect(strict.valid).toBe(false);
+    expect(strict.issues.some(issue => issue.code === 'ALLOWED_WRITE_FILES_MISSING')).toBe(true);
+  });
+
+  it('rejects non-concrete allowed_write_files at the task-document/v1 semantic boundary', () => {
+    for (const invalidPath of ['src/**', 'tests/', '/absolute.ts', '../escape.ts']) {
+      const result = validateTaskArtifactContract(
+        canonicalTask().replace('src/auth.ts', invalidPath),
+        { requireAllowedWriteFiles: true }
+      );
+      expect(result.valid, invalidPath).toBe(false);
+      expect(
+        result.issues.some(
+          issue =>
+            issue.code === 'TASK_CONTRACT_SCHEMA_INVALID' &&
+            String(issue.path ?? '').includes('allowed_write_files')
+        ),
+        invalidPath
+      ).toBe(true);
+    }
+  });
+
   it('validates the semantic contract and makes legacy aliases read-only', () => {
     const valid = validateTaskArtifactContract(canonicalTask());
     expect(valid.valid).toBe(true);
     expect(valid.contract_version).toBe(TASK_ARTIFACT_CONTRACT_VERSION);
+    expect(valid.tasks[0]?.allowed_write_files).toEqual(['src/auth.ts']);
     expect(
       TaskArtifactDocumentSchema.safeParse({
         contract_version: valid.contract_version,
@@ -109,7 +167,7 @@ describe('task-document/v1 producer and consumer governance', () => {
     );
     const example = /✅ 正确格式：\s*```markdown\s*([\s\S]*?)```/.exec(planner)?.[1];
     expect(example).toBeDefined();
-    const validation = validateTaskArtifactContract(example!);
+    const validation = validateTaskArtifactContract(example!, { requireAllowedWriteFiles: true });
     expect(validation.issues).toEqual([]);
     expect(validation.valid).toBe(true);
   });

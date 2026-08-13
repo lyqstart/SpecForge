@@ -32,11 +32,7 @@ import {
   workItemTasks,
   workItemTraceDelta,
 } from '@specforge/types/directory-layout';
-import {
-  extractFieldSection,
-  parseStringList,
-  parseTaskSections,
-} from './sf_markdown_verification_parser.js';
+import { validateTaskArtifactContract } from './sf_markdown_verification_parser.js';
 
 const execFileAsync = promisify(execFile);
 const SPEC_DIR = '.specforge';
@@ -234,23 +230,15 @@ function isCrossModuleTestHarnessPath(value: string): boolean {
   );
 }
 
-async function readApprovedTaskFiles(workItemDir: string): Promise<Set<string>> {
-  const approved = new Set<string>();
-  const projectRoot = path.resolve(workItemDir, '..', '..', '..');
-  const workItemId = path.basename(workItemDir);
-  const artifact = await readFirstExistingText([
-    workItemCandidateTasks(projectRoot, workItemId),
-    workItemTasks(projectRoot, workItemId),
-  ]);
-  if (!artifact) return approved;
-
-  for (const match of artifact.content.matchAll(/\*\*files\*\*\s*:\s*\[([^\]]*)\]/gi)) {
-    for (const raw of match[1].split(',')) {
-      const candidate = slash(raw.replace(/[`'"]/g, '').trim());
-      if (candidate) approved.add(candidate);
-    }
-  }
-  return approved;
+export function parseTaskWriteScopesForGovernance(content: string): Array<{
+  task_id: string;
+  allowed_write_files: string[];
+}> {
+  const semantic = validateTaskArtifactContract(content, { requireAllowedWriteFiles: true });
+  return semantic.tasks.map(task => ({
+    task_id: task.task_id,
+    allowed_write_files: unique(task.allowed_write_files.map(value => slash(value))),
+  }));
 }
 
 async function readTaskWriteScopes(workItemDir: string): Promise<Array<{
@@ -264,13 +252,15 @@ async function readTaskWriteScopes(workItemDir: string): Promise<Array<{
     workItemTasks(projectRoot, workItemId),
   ]);
   if (!artifact) return [];
-  return parseTaskSections(artifact.content).map(section => {
-    const allowedSection = extractFieldSection(section.content, 'allowed_write_files');
-    const allowedWriteFiles = allowedSection
-      ? unique(parseStringList(allowedSection).map(value => slash(value)))
-      : [];
-    return { task_id: section.taskId, allowed_write_files: allowedWriteFiles };
-  });
+  return parseTaskWriteScopesForGovernance(artifact.content);
+}
+
+async function readApprovedTaskFiles(workItemDir: string): Promise<Set<string>> {
+  const approved = new Set<string>();
+  for (const task of await readTaskWriteScopes(workItemDir)) {
+    for (const candidate of task.allowed_write_files) approved.add(candidate);
+  }
+  return approved;
 }
 
 function isApprovedMergedArchitectureScope(
