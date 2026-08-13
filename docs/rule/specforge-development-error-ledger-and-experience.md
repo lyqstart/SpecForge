@@ -8690,4 +8690,5 @@ actual_files
 - **权威约束**：新项目首个正式 WI 必须在同一个 Candidate 范围建立 `Module / code_paths`；不允许为了形式制造无变化 Candidate。
 - **修复边界**：只修改 Candidate materialization。已有 Module 的 candidate code_paths 与正式 code_paths 不同时纳入 `module_definition`；目标 module.json 不存在时 fail-safe 纳入；code_paths 相同则继续 ignored；code_paths-only bootstrap 不新增 `module_trace` 要求。现有 prospective Project Governance / spec_consistency consumer 不修改。
 - **真实项目证据**：`D:\code\InventoryFlow-Phase11-Fresh-04`，WI-0001，immutable attempt-0003，state=gates_failed。产品修复期间 Fresh-04 冻结，修复部署后恢复同一 WI 重跑一次 Candidate Gate。
+- **隔离验证产品提交**：PRODUCT_COMMIT_SHA=2e76f3f732c2e0107d9cdafce96574721b7a91dd
 - **类防护**：`EXP-001,EXP-004,EXP-006,EXP-007,EXP-008,EXP-010,EXP-011,EXP-013,EXP-014,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-072,EXP-077,EXP-094`
