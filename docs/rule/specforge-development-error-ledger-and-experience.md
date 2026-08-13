@@ -8598,7 +8598,7 @@ actual_files
 
 ### ERR-557：Candidate Manifest workflow_path 的生产、Gate 与 User Decision 规范来源不一致
 - **分类**：`PRODUCT_DEFECT / CONTRACT_GOVERNANCE_DEFECT`
-- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **状态**：`CLOSED_BY_SFV332_VALIDATION_AND_GIT_SYNC`
 - **一手事实**：Fresh-03 candidate_manifest.workflow_path=unknown 时 Candidate Gates 可通过，但 User Decision 以 workflow path 非法阻断。
 - **根因**：Candidate materialization、artifact normalization 和 schema validation 没有共同消费 trigger_result.workflow_path。
 - **修复**：trigger_result.workflow_path 成为 freeze/materialization canonical source；unknown/missing 仅允许作为 freeze 前 transient placeholder；冲突合法值 fail closed；Candidate schema 校验 manifest 自身值并与 canonical 值一致。
@@ -8607,7 +8607,7 @@ actual_files
 
 ### ERR-558：受控 Git Governance 元数据被 Changed Files Audit 误判为非法 Project Spec 写入
 - **分类**：`PRODUCT_DEFECT / GOVERNANCE_BOUNDARY_DEFECT`
-- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **状态**：`CLOSED_BY_SFV332_VALIDATION_AND_GIT_SYNC`
 - **一手事实**：Fresh-03 中 sf_git_project_adopt 合法生成 git_policy.json、git_ignore_decisions.json、git_adoption_report.md 后，Changed Files Audit 返回 spec_write_by_non_merge_runner。
 - **根因**：Audit 只按 .specforge/project 路径判定，没有消费 Git Governance 受控生产者事实。
 - **修复**：受控 Git Governance 生产者记录 producer + exact path + SHA-256 runtime provenance；Audit 仅信任当前 hash 仍匹配的 metadata，后续篡改自动失效并继续 BLOCK。
@@ -8657,7 +8657,7 @@ actual_files
 
 ### ERR-565：SFV330 对新增目标文件执行 HEAD 内容比较导致目标生成阶段失败
 - **分类**：`SCRIPT_DEFECT / DELIVERY_RUNTIME_FAILURE`
-- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **状态**：`CLOSED_BY_SFV332_VALIDATION_AND_GIT_SYNC`
 - **一手事实**：用户执行 SFV330 时已通过 clean exact HEAD 前置，随后在第一次写入前返回 HEAD_READ_FAILED，目标为新文件 git-governance-write-provenance.ts。
 - **根因**：目标完整性循环先计算 target 与 head(rel) 是否相等，再在循环体内判断该路径是否为新增文件；因此新增文件在进入豁免判断前已经调用 git show HEAD:path 并失败。
 - **影响**：SFV330 没有产生仓库写入；SpecForge 工作区继续 CLEAN；Fresh-03 继续冻结。
@@ -8666,7 +8666,7 @@ actual_files
 
 ### ERR-566：SFV331 运行时产品修复、验证或 Git 同步失败
 - **分类**：`PRODUCT_DEVELOPMENT_FAILURE / DELIVERY_RUNTIME_FAILURE`
-- **状态**：`RECONCILED_BY_SFV332`
+- **状态**：`CLOSED_BY_SFV332_VALIDATION_AND_GIT_SYNC`
 - **阶段**：ENGINEERING_VALIDATION
 - **一手事实**：SFV331 exact error：GIT_DIFF_CHECK_FAILED
 - **根因**：`INSUFFICIENT_EVIDENCE`
@@ -8675,7 +8675,7 @@ actual_files
 
 ### ERR-567：V331 工程验证在 git diff --check 阶段失败
 - **分类**：`ENGINEERING_VALIDATION_FAILURE / DELIVERY_RECOVERY`
-- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **状态**：`CLOSED_BY_SFV332_VALIDATION_AND_GIT_SYNC`
 - **一手事实**：V331 标准回执为 FAILED_STAGE=ENGINEERING_VALIDATION，ERROR=GIT_DIFF_CHECK_FAILED；V332 在同一 10 文件 dirty 现场重新执行 git diff --check。
 - **V332 exact diagnostics**：NONE_REPRODUCED_ON_V332_RECOVERY
 - **恢复边界**：只允许修复 approved 10 文件内的 trailing whitespace、space-before-tab 或 new blank line at EOF；任何其他 diff-check 类型或额外文件均 Fail Closed。
