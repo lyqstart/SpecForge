@@ -8701,6 +8701,7 @@ actual_files
 - **根因边界**：ERR-568 已关闭 Candidate materialization 缺口；ERR-569 只处理 frozen Manifest → prospective Module model 的 consumer/source binding 与 immutable input evidence，不修改 Candidate materializer、不改变 Gate profile/严重度/通过标准。
 - **修复**：按冻结 Manifest 的 `type=module_definition + module_id + canonical target_path` 显式且唯一绑定 Module Candidate；实际 Candidate JSON 作为 prospective moduleDefinition 读取源；Candidate source 同时进入 `inputFiles`，供 Gate report / immutable snapshot 留存。错误 module_id 不绑定；malformed Candidate 不回退成“有 code_paths”的正式事实，继续 Fail Closed。
 - **真实项目证据**：`D:\code\InventoryFlow-Phase11-Fresh-04`，WI-0001，attempt-0004 immutable，state=gates_failed。产品修复期间 Fresh-04 不继续 lifecycle。
+- **隔离验证产品提交**：PRODUCT_COMMIT_SHA=1646ffa1af0634422a63043be633ab1d1bcca75b
 - **类防护**：`EXP-001,EXP-004,EXP-005,EXP-006,EXP-007,EXP-008,EXP-010,EXP-011,EXP-013,EXP-014,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-072,EXP-077,EXP-094`
 
 ### ERR-570：SFV334 产品修复、验证或 Git 同步运行失败
