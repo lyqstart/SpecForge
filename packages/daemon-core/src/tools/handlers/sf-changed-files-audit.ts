@@ -29,6 +29,7 @@ import {
   type HardStopResolutionLogEntry,
 } from '../lib/hard-stop-resolution-log';
 import { readWriteGuardAuthorizations } from '../lib/write-guard-authorization-log';
+import { readTrustedGitGovernanceProjectWrites } from '../lib/git-governance-write-provenance';
 import {
   SPEC_DIR_NAME,
   workItemCandidateManifest,
@@ -723,7 +724,13 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   const remoteOpsFiles = changedFiles.filter(file => isRemoteOpsAuditPath(file.path));
   const projectChangedFiles = changedFiles.filter(file => !isRemoteOpsAuditPath(file.path));
 
-  const auditResult = runChangedFilesAudit(projectChangedFiles, allowedWriteFiles, 'agent');
+  const trustedGitGovernanceWrites = readTrustedGitGovernanceProjectWrites(projectRoot);
+  const auditResult = runChangedFilesAudit(
+    projectChangedFiles,
+    allowedWriteFiles,
+    'agent',
+    trustedGitGovernanceWrites,
+  );
   const evidenceAvailable = dataSource !== 'none';
   const blockedWriteClassifications = classifyBlockedWriteAttempts(
     blockedWrites,

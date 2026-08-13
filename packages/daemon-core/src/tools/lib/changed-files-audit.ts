@@ -22,6 +22,7 @@ export interface ChangedFilesAuditEntry {
   is_side_effect: boolean;
   actor?: string;
   ignored_runtime_path?: boolean;
+  trusted_control_plane_write?: boolean;
 }
 
 export interface ChangedFilesAuditResult {
@@ -34,6 +35,7 @@ export interface ChangedFilesAuditResult {
   violations: string[];
   entries: ChangedFilesAuditEntry[];
   ignored_runtime_files?: number;
+  trusted_control_plane_files?: number;
 }
 
 function isProtectedSpecWrite(normalizedPath: string): boolean {
@@ -79,10 +81,15 @@ export function runChangedFilesAudit(
   changedFiles: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>,
   allowedWriteFiles: Array<{ path: string; operation: string }>,
   actor?: string,
+  trustedControlPlaneWrites: Array<{ path: string; producer: string }> = [],
 ): ChangedFilesAuditResult {
   const entries: ChangedFilesAuditEntry[] = [];
   const violations: string[] = [];
   let ignoredRuntimeFiles = 0;
+  let trustedControlPlaneFiles = 0;
+  const normalizedTrustedControlPlaneWrites = (trustedControlPlaneWrites ?? [])
+    .filter(entry => typeof entry?.path === 'string' && entry.path.length > 0)
+    .map(entry => ({ path: entry.path, producer: String(entry.producer ?? 'controlled_runtime') }));
 
   const normalizedAllowed = (allowedWriteFiles ?? [])
     .filter((f) => typeof f?.path === 'string' && f.path.length > 0)
@@ -105,6 +112,22 @@ export function runChangedFilesAudit(
       continue;
     }
 
+    const trustedControlPlaneWrite = normalizedTrustedControlPlaneWrites.find(entry =>
+      pathMatchesForAudit(normalized, entry.path)
+    );
+    if (trustedControlPlaneWrite) {
+      trustedControlPlaneFiles += 1;
+      entries.push({
+        path: normalized,
+        operation: file.operation,
+        in_allowed_write_files: true,
+        is_spec_write: false,
+        is_side_effect: false,
+        actor: trustedControlPlaneWrite.producer,
+        trusted_control_plane_write: true,
+      });
+      continue;
+    }
     const inScope = normalizedAllowed.some((allowed) => {
       return (
         pathMatchesForAudit(normalized, allowed.path) &&
@@ -140,12 +163,15 @@ export function runChangedFilesAudit(
   return {
     passed: violations.length === 0,
     total_files: (changedFiles ?? []).length,
-    in_scope: entries.filter((e) => e.in_allowed_write_files && !e.ignored_runtime_path).length,
+    in_scope: entries.filter(
+      (e) => e.in_allowed_write_files && !e.ignored_runtime_path && !e.trusted_control_plane_write
+    ).length,
     out_of_scope: entries.filter((e) => !e.in_allowed_write_files && !e.is_spec_write).length,
     spec_writes: entries.filter((e) => e.is_spec_write).length,
     side_effects: entries.filter((e) => e.is_side_effect).length,
     violations,
     entries,
     ignored_runtime_files: ignoredRuntimeFiles,
+    trusted_control_plane_files: trustedControlPlaneFiles,
   };
 }

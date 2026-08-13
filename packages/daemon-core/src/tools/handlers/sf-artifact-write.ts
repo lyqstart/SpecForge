@@ -19,6 +19,7 @@ import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 import {
   validateArtifactJson,
   findForbiddenWorkItemDecisionFields,
+  resolveCanonicalCandidateWorkflowPath,
 } from '../lib/artifact-schema-validation';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import {
@@ -813,7 +814,11 @@ function normalizeCoreJsonArtifact(
       );
     }
     validateCandidateManifestModuleOwnership(canonicalParsed, baseDir, workItemId);
-    const normalizedWorkflowPath = canonicalParsed.workflow_path ?? workflowPath;
+    const triggerForManifest = readJsonIfExists(path.join(wiDir, 'trigger_result.json'));
+    const normalizedWorkflowPath = resolveCanonicalCandidateWorkflowPath(
+      canonicalParsed.workflow_path,
+      triggerForManifest?.workflow_path
+    );
     const evidenceOnly = isEvidenceOnlyNoProjectSpecChange(canonicalParsed);
     if (evidenceOnly || normalizedWorkflowPath === 'code_only_fast_path') {
       const normalized: Record<string, unknown> = {

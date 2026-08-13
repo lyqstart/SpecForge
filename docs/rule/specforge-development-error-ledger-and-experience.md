@@ -8595,3 +8595,89 @@ actual_files
 - **修复**：V322 把 handoff 变换抽成纯 `transformHandoff()`，Artifact Acceptance 直接对 exact 当前 handoff 输入执行该 transform，并验证输出状态；不再用源码字面字符串证明 patch 存在。
 - **类防护**：`EXP-007,EXP-015,EXP-019,EXP-060,EXP-077,EXP-080,EXP-194,EXP-195`
 <!-- SPECFORGE_ERR556_V321_PREPUBLISH_VALIDATOR_FALSE_NEGATIVE:END -->
+
+### ERR-557：Candidate Manifest workflow_path 的生产、Gate 与 User Decision 规范来源不一致
+- **分类**：`PRODUCT_DEFECT / CONTRACT_GOVERNANCE_DEFECT`
+- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **一手事实**：Fresh-03 candidate_manifest.workflow_path=unknown 时 Candidate Gates 可通过，但 User Decision 以 workflow path 非法阻断。
+- **根因**：Candidate materialization、artifact normalization 和 schema validation 没有共同消费 trigger_result.workflow_path。
+- **修复**：trigger_result.workflow_path 成为 freeze/materialization canonical source；unknown/missing 仅允许作为 freeze 前 transient placeholder；冲突合法值 fail closed；Candidate schema 校验 manifest 自身值并与 canonical 值一致。
+- **影响**：Candidate Runtime / Candidate Gate / User Decision。
+- **类防护**：`EXP-001,EXP-004,EXP-005,EXP-011,EXP-017,EXP-019`
+
+### ERR-558：受控 Git Governance 元数据被 Changed Files Audit 误判为非法 Project Spec 写入
+- **分类**：`PRODUCT_DEFECT / GOVERNANCE_BOUNDARY_DEFECT`
+- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **一手事实**：Fresh-03 中 sf_git_project_adopt 合法生成 git_policy.json、git_ignore_decisions.json、git_adoption_report.md 后，Changed Files Audit 返回 spec_write_by_non_merge_runner。
+- **根因**：Audit 只按 .specforge/project 路径判定，没有消费 Git Governance 受控生产者事实。
+- **修复**：受控 Git Governance 生产者记录 producer + exact path + SHA-256 runtime provenance；Audit 仅信任当前 hash 仍匹配的 metadata，后续篡改自动失效并继续 BLOCK。
+- **影响**：Changed Files Audit / Verification / Formal Version。
+- **类防护**：`EXP-001,EXP-004,EXP-005,EXP-011,EXP-017,EXP-019,EXP-020`
+
+### ERR-559：SFV324 使用非唯一补丁锚点
+- **分类**：`SCRIPT_DEFECT / DELIVERY_DEFECT`
+- **状态**：`RECONCILED_BY_SFV331`
+- **事实**：sf-changed-files-audit.ts 同一报告片段出现两次，V324 报 ANCHOR_NOT_UNIQUE。
+- **修复**：SFV330 不使用多行文本锚点，改用符号/单行结构基数定位。
+- **类防护**：`EXP-006,EXP-007,EXP-013,EXP-019,EXP-195`
+
+### ERR-560：SFV325 预发布验收变量遮蔽造成假失败
+- **分类**：`VALIDATION_DEFECT / DELIVERY_DEFECT`
+- **状态**：`RECONCILED_BY_SFV331`
+- **事实**：最终 CMD 包含 call bun，但 acceptance 变量被同名字典覆盖。
+- **类防护**：`EXP-007,EXP-019,EXP-060,EXP-080,EXP-194,EXP-195`
+
+### ERR-561：SFV326 预发布静态断言误检
+- **分类**：`VALIDATION_DEFECT / DELIVERY_DEFECT`
+- **状态**：`RECONCILED_BY_SFV331`
+- **事实**：对转义源码和历史说明全文搜索造成假失败。
+- **类防护**：`EXP-007,EXP-019,EXP-060,EXP-080,EXP-194,EXP-195`
+
+### ERR-562：SFV327 预发布说明文字破坏 JavaScript template literal
+- **分类**：`SCRIPT_DEFECT / DELIVERY_DEFECT`
+- **状态**：`RECONCILED_BY_SFV331`
+- **事实**：node --check 返回 SyntaxError，包未交付。
+- **类防护**：`EXP-007,EXP-008,EXP-019,EXP-060,EXP-080,EXP-195`
+
+### ERR-563：SFV328 错把推断的半补丁当成当前本地事实
+- **分类**：`RECOVERY_DEFECT / EVIDENCE_DEFECT`
+- **状态**：`RECONCILED_BY_SFV331`
+- **一手事实**：用户执行 SFV328 时 changed scope 实测为空，V328 因强制要求六文件半补丁失败。
+- **修复**：恢复现场只以当前 git status + exact HEAD 为准。
+- **类防护**：`EXP-001,EXP-004,EXP-006,EXP-007,EXP-009,EXP-013,EXP-019`
+
+### ERR-564：SFV329 在 clean exact HEAD 上仍使用过期源码锚点
+- **分类**：`SCRIPT_DEFECT / EVIDENCE_DEFECT`
+- **状态**：`FIX_IMPLEMENTED_PENDING_SFV331_VALIDATION`
+- **一手事实**：SFV329 先证明 branch/main、local/live HEAD=4128f54 且 worktree CLEAN，随后在第一次写入前报 ANCHOR_NOT_FOUND:schema_resolver。
+- **根因**：补丁生成仍依赖作者拼出的相邻源码文本，而不是当前源码的真实符号/单行结构。
+- **影响**：SFV329 未产生仓库写入；Fresh-03 继续冻结。
+- **修复**：SFV330 从 git show HEAD:path 读取每个现有文件基线，使用符号与单行结构基数生成全部 target；全部 target 在内存生成成功后才第一次写入。
+- **类防护**：`EXP-001,EXP-006,EXP-007,EXP-008,EXP-013,EXP-019,EXP-195`
+
+### ERR-565：SFV330 对新增目标文件执行 HEAD 内容比较导致目标生成阶段失败
+- **分类**：`SCRIPT_DEFECT / DELIVERY_RUNTIME_FAILURE`
+- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **一手事实**：用户执行 SFV330 时已通过 clean exact HEAD 前置，随后在第一次写入前返回 HEAD_READ_FAILED，目标为新文件 git-governance-write-provenance.ts。
+- **根因**：目标完整性循环先计算 target 与 head(rel) 是否相等，再在循环体内判断该路径是否为新增文件；因此新增文件在进入豁免判断前已经调用 git show HEAD:path 并失败。
+- **影响**：SFV330 没有产生仓库写入；SpecForge 工作区继续 CLEAN；Fresh-03 继续冻结。
+- **修复**：SFV331 对新增 provenance/test 两个路径只检查 target 非空且 HEAD 中不存在；仅对既有八个目标执行 target 与 HEAD 内容不相等校验。
+- **类防护**：`EXP-001,EXP-006,EXP-007,EXP-008,EXP-013,EXP-019`
+
+### ERR-566：SFV331 运行时产品修复、验证或 Git 同步失败
+- **分类**：`PRODUCT_DEVELOPMENT_FAILURE / DELIVERY_RUNTIME_FAILURE`
+- **状态**：`RECONCILED_BY_SFV332`
+- **阶段**：ENGINEERING_VALIDATION
+- **一手事实**：SFV331 exact error：GIT_DIFF_CHECK_FAILED
+- **根因**：`INSUFFICIENT_EVIDENCE`
+- **影响**：Fresh-03 保持冻结；未运行 SpecForge 自身 lifecycle。
+- **正确做法**：下一轮只恢复 SFV331 当前 Git/文件现场，不扩大产品范围。
+
+### ERR-567：V331 工程验证在 git diff --check 阶段失败
+- **分类**：`ENGINEERING_VALIDATION_FAILURE / DELIVERY_RECOVERY`
+- **状态**：`VALIDATED_BY_SFV332_PENDING_GIT_SYNC`
+- **一手事实**：V331 标准回执为 FAILED_STAGE=ENGINEERING_VALIDATION，ERROR=GIT_DIFF_CHECK_FAILED；V332 在同一 10 文件 dirty 现场重新执行 git diff --check。
+- **V332 exact diagnostics**：NONE_REPRODUCED_ON_V332_RECOVERY
+- **恢复边界**：只允许修复 approved 10 文件内的 trailing whitespace、space-before-tab 或 new blank line at EOF；任何其他 diff-check 类型或额外文件均 Fail Closed。
+- **影响**：不改变 ERR-557 / ERR-558 产品修复语义与范围；Fresh-03 保持冻结。
+- **下一验证**：重新执行 targeted regression、治理回归、TypeScript、daemon-core build、workflow docs、validator contract、full workspace build、scope audit。

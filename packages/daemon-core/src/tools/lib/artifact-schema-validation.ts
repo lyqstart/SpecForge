@@ -43,6 +43,31 @@ export const VALID_WORKFLOW_PATHS = [
 
 export type ValidWorkflowPath = (typeof VALID_WORKFLOW_PATHS)[number];
 
+export function resolveCanonicalCandidateWorkflowPath(
+  manifestWorkflowPath: unknown,
+  canonicalWorkflowPath: unknown
+): ValidWorkflowPath {
+  const canonical = String(canonicalWorkflowPath ?? '').trim();
+  if (!VALID_WORKFLOW_PATHS.includes(canonical as ValidWorkflowPath)) {
+    throw new Error(
+      `CANDIDATE_MANIFEST_CANONICAL_WORKFLOW_PATH_INVALID: "${canonical || 'missing'}"`
+    );
+  }
+  const manifestValue = String(manifestWorkflowPath ?? '').trim();
+  if (!manifestValue || manifestValue === 'unknown') {
+    return canonical as ValidWorkflowPath;
+  }
+  if (!VALID_WORKFLOW_PATHS.includes(manifestValue as ValidWorkflowPath)) {
+    throw new Error(`CANDIDATE_MANIFEST_WORKFLOW_PATH_INVALID: "${manifestValue}"`);
+  }
+  if (manifestValue !== canonical) {
+    throw new Error(
+      `CANDIDATE_MANIFEST_WORKFLOW_PATH_CONFLICT: manifest=${manifestValue}; canonical=${canonical}`
+    );
+  }
+  return canonical as ValidWorkflowPath;
+}
+
 export const VALID_CANDIDATE_PHASES = ['design', 'requirements', 'tasks', 'full'] as const;
 export type ValidCandidatePhase = (typeof VALID_CANDIDATE_PHASES)[number];
 
@@ -274,6 +299,18 @@ export function validateCandidateManifestJson(
       );
     }
 
+    if (!parsed.workflow_path) {
+      errors.push('MISSING_FIELD: workflow_path is required');
+    } else if (!VALID_WORKFLOW_PATHS.includes(parsed.workflow_path as ValidWorkflowPath)) {
+      errors.push(
+        `INVALID_WORKFLOW_PATH: "${parsed.workflow_path}" is not a valid candidate_manifest workflow_path. ` +
+          `Valid values: ${VALID_WORKFLOW_PATHS.join(', ')}`
+      );
+    } else if (workflowPath && parsed.workflow_path !== workflowPath) {
+      errors.push(
+        `WORKFLOW_PATH_MISMATCH: candidate_manifest.workflow_path="${parsed.workflow_path}" does not match canonical workflow_path="${workflowPath}"`
+      );
+    }
     if (
       parsed.candidate_phase !== undefined &&
       !VALID_CANDIDATE_PHASES.includes(parsed.candidate_phase as ValidCandidatePhase)
@@ -287,7 +324,7 @@ export function validateCandidateManifestJson(
     if (!Array.isArray(parsed.entries)) {
       errors.push('MISSING_FIELD: entries must be an array');
     } else {
-      const effectiveWorkflowPath = workflowPath ?? parsed.workflow_path;
+      const effectiveWorkflowPath = parsed.workflow_path;
 if (Object.prototype.hasOwnProperty.call(parsed, 'contract_promotions')) {
   if (!Array.isArray(parsed.contract_promotions)) {
     errors.push('CONTRACT_PROMOTIONS_MUST_BE_ARRAY: contract_promotions must be an array');

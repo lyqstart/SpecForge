@@ -26,6 +26,7 @@ import { guardHardStop } from "../lib/hard-stop-latch";
 import { readAuthoritativeState, transitionWithEvidence } from "../lib/state-coordinator-v11";
 import { parseChangedFilesAuditPass } from "../lib/write-guard-runtime-v12";
 import { materializeCandidateManifestEntries } from "../lib/governance-invariants-v11";
+import { resolveCanonicalCandidateWorkflowPath } from "../lib/artifact-schema-validation";
 import {
   initializeClosureFiles,
   readAuthoritativeProjectSpecVersion,
@@ -320,16 +321,24 @@ async function materializeCandidateManifestBeforePreparedTransition(
     );
   }
 
+  const canonicalWorkflowPath = resolveCanonicalCandidateWorkflowPath(
+    manifest.workflow_path,
+    trigger.workflow_path,
+  );
+  const manifestForMaterialization = {
+    ...manifest,
+    workflow_path: canonicalWorkflowPath,
+  };
   const materialized = materializeCandidateManifestEntries(
-    manifest,
+    manifestForMaterialization,
     workItemDir,
     trigger.classification,
   );
   const normalized = {
-    ...manifest,
+    ...manifestForMaterialization,
     schema_version: manifest.schema_version ?? "1.1",
     work_item_id: workItemId,
-    workflow_path: manifest.workflow_path ?? trigger.workflow_path,
+    workflow_path: canonicalWorkflowPath,
     workflow_type: manifest.workflow_type ?? trigger.workflow_type,
     entries: materialized.entries,
   };

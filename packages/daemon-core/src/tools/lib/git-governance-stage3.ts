@@ -6,6 +6,7 @@ import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { analyzeIgnore, getCurrentBranch, getHeadCommit, normalizeRelativePath, preflight } from './git-governance-core';
+import { recordGitGovernanceProjectWrites } from './git-governance-write-provenance';
 
 const execFileAsync = promisify(execFile);
 
@@ -126,6 +127,11 @@ export async function gitProjectAdopt(input: { projectRoot: string; defaultBranc
     reportPath = normalizeRelativePath(path.relative(input.projectRoot, outPath));
   }
 
+  recordGitGovernanceProjectWrites(input.projectRoot, 'sf_git_project_adopt', [
+    normalizeRelativePath(path.relative(input.projectRoot, policyPath)),
+    normalizeRelativePath(path.relative(input.projectRoot, decisionsPath)),
+    ...(reportPath ? [reportPath] : []),
+  ]);
   return { ...report, report_path: reportPath };
 }
 
@@ -203,7 +209,11 @@ export async function gitIgnoreDecisionRecord(input: { projectRoot: string; deci
   }
   const next = { schema_version: 'git_ignore_decisions.v1', updated_at: new Date().toISOString(), decisions: Array.from(byPath.values()).sort((a, b) => String(a.path).localeCompare(String(b.path))) };
   await writeJson(decisionsPath, next);
-  return { success: true, decisions_path: normalizeRelativePath(path.relative(input.projectRoot, decisionsPath)), decision_count: next.decisions.length, decisions: next.decisions };
+  const decisionsRelativePath = normalizeRelativePath(path.relative(input.projectRoot, decisionsPath));
+  recordGitGovernanceProjectWrites(input.projectRoot, 'sf_git_ignore_decision_record', [
+    decisionsRelativePath,
+  ]);
+  return { success: true, decisions_path: decisionsRelativePath, decision_count: next.decisions.length, decisions: next.decisions };
 }
 
 export async function gitRemoteProbe(input: { projectRoot: string; remoteName?: string }) {
