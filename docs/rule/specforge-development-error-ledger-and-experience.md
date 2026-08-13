@@ -8681,3 +8681,13 @@ actual_files
 - **恢复边界**：只允许修复 approved 10 文件内的 trailing whitespace、space-before-tab 或 new blank line at EOF；任何其他 diff-check 类型或额外文件均 Fail Closed。
 - **影响**：不改变 ERR-557 / ERR-558 产品修复语义与范围；Fresh-03 保持冻结。
 - **下一验证**：重新执行 targeted regression、治理回归、TypeScript、daemon-core build、workflow docs、validator contract、full workspace build、scope audit。
+
+### ERR-568：首次建立 Module code_paths 时 module_definition 被 Candidate Runtime 错误忽略
+- **分类**：`PRODUCT_DEFECT / CANDIDATE_GOVERNANCE_DEFECT`
+- **状态**：`ISOLATED_VALIDATED`
+- **一手事实**：Fresh-04 WI-0001 attempt-0003 为 9/10 Required Gates PASS；唯一失败 `spec_consistency_gate` 共 52 个 blocking issues。候选 `module.candidate.json` 已包含完整 code_paths，但冻结 Candidate Manifest 不含 `module_definition`；正式 CORE module.json 尚无 code_paths。
+- **根因**：Runtime 当前把 `module_definition` 是否纳入冻结 Manifest 仅绑定 `classification.module_boundary_changed=true`。Fresh-04 的 CORE 已由项目初始化存在，因此 boundary=false，但首个 WI 必须首次建立 code_paths；Candidate 被 ignored 后 prospective Gate 只能看到无 code_paths 的正式 module.json，形成 Gate → Merge → Gate 循环依赖。
+- **权威约束**：新项目首个正式 WI 必须在同一个 Candidate 范围建立 `Module / code_paths`；不允许为了形式制造无变化 Candidate。
+- **修复边界**：只修改 Candidate materialization。已有 Module 的 candidate code_paths 与正式 code_paths 不同时纳入 `module_definition`；目标 module.json 不存在时 fail-safe 纳入；code_paths 相同则继续 ignored；code_paths-only bootstrap 不新增 `module_trace` 要求。现有 prospective Project Governance / spec_consistency consumer 不修改。
+- **真实项目证据**：`D:\code\InventoryFlow-Phase11-Fresh-04`，WI-0001，immutable attempt-0003，state=gates_failed。产品修复期间 Fresh-04 冻结，修复部署后恢复同一 WI 重跑一次 Candidate Gate。
+- **类防护**：`EXP-001,EXP-004,EXP-006,EXP-007,EXP-008,EXP-010,EXP-011,EXP-013,EXP-014,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-072,EXP-077,EXP-094`

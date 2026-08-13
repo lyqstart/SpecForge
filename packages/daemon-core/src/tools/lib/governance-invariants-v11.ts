@@ -562,6 +562,44 @@ function listCanonicalCandidateFiles(workItemDir: string): Array<{
  * actual Classification. Unrelated files remain historical WI evidence and are
  * deliberately excluded from the merge list.
  */
+function normalizeModuleCodePathsForMaterialization(value: unknown): string[] | null {
+  if (!Array.isArray(value)) return null;
+  return value
+    .map(item => normalizeSlash(String(item ?? '').trim()))
+    .filter(Boolean)
+    .sort((left, right) => left.localeCompare(right));
+}
+function moduleDefinitionCandidateHasGovernedCodePathDelta(
+  workItemDir: string,
+  entry: { candidate_path: string; target_path: string; type: string; module_id?: string }
+): boolean {
+  if (entry.type !== 'module_definition') return false;
+  const candidatePath = path.join(workItemDir, normalizeSlash(entry.candidate_path));
+  let candidate: any;
+  try {
+    candidate = JSON.parse(fsSync.readFileSync(candidatePath, 'utf-8'));
+  } catch {
+    // A malformed Module Candidate must stay in the governed Candidate set
+    // so the normal schema/Gate boundary can fail closed instead of ignoring it.
+    return true;
+  }
+  const projectRoot = path.resolve(workItemDir, '..', '..', '..');
+  const targetPath = path.resolve(projectRoot, normalizeSlash(entry.target_path));
+  if (!fsSync.existsSync(targetPath)) return true;
+  if (!Object.prototype.hasOwnProperty.call(candidate, 'code_paths')) return false;
+  const candidateCodePaths = normalizeModuleCodePathsForMaterialization(candidate.code_paths);
+  if (!candidateCodePaths) return true;
+  let formal: any;
+  try {
+    formal = JSON.parse(fsSync.readFileSync(targetPath, 'utf-8'));
+  } catch {
+    return true;
+  }
+  const formalCodePaths = normalizeModuleCodePathsForMaterialization(formal?.code_paths ?? []);
+  if (!formalCodePaths) return true;
+  return JSON.stringify(candidateCodePaths) !== JSON.stringify(formalCodePaths);
+}
+
 export function materializeCandidateManifestEntries(
   manifest: any,
   workItemDir: string,
@@ -616,12 +654,21 @@ export function materializeCandidateManifestEntries(
   const dataModelRequired = classification.data_model_changed === true;
   const designRequired = classification.design_changed === true;
   const moduleContractRequired = classification.module_contract_changed === true;
-  const moduleDefinitionRequired = classification.module_boundary_changed === true;
+  const moduleBoundaryChanged = classification.module_boundary_changed === true;
+  const governedModuleDefinitionCandidates = new Set(
+    discovered
+      .filter(entry =>
+        moduleDefinitionCandidateHasGovernedCodePathDelta(workItemDir, entry)
+      )
+      .map(entry => normalizeSlash(entry.candidate_path).toLowerCase())
+  );
+  const moduleDefinitionRequired =
+    moduleBoundaryChanged || governedModuleDefinitionCandidates.size > 0;
   // A governed new module is incomplete without its canonical Requirements and
   // module Trace views, even when the business Requirement itself did not change.
   const requirementsRequired =
-    classificationRequiresRequirementsCandidate(classification) || moduleDefinitionRequired;
-  const moduleTraceRequired = moduleDefinitionRequired;
+    classificationRequiresRequirementsCandidate(classification) || moduleBoundaryChanged;
+  const moduleTraceRequired = moduleBoundaryChanged;
   const projectContractChanged =
     classification.project_contract_changed === true ||
     classification.api_contract_changed === true ||
@@ -675,6 +722,10 @@ export function materializeCandidateManifestEntries(
       module_id: entry.module_id ?? discoveredEntry?.module_id,
     };
     const effectiveType = String(effectiveEntry.type ?? '').trim();
+    if (effectiveType === 'module_definition' && !moduleBoundaryChanged) {
+      const candidateKey = normalizeSlash(effectiveEntry.candidate_path).toLowerCase();
+      if (!governedModuleDefinitionCandidates.has(candidateKey)) continue;
+    }
     if (knownMaterializedTypes.has(effectiveType) && !includeType(effectiveType)) {
       continue;
     }
@@ -682,7 +733,12 @@ export function materializeCandidateManifestEntries(
   }
 
   const includeDiscovered = (entry: (typeof discovered)[number]): boolean =>
-    includeType(entry.type);
+    includeType(entry.type) &&
+    (entry.type !== 'module_definition' ||
+      moduleBoundaryChanged ||
+      governedModuleDefinitionCandidates.has(
+        normalizeSlash(entry.candidate_path).toLowerCase()
+      ));
 
   for (const entry of discovered) {
     if (!includeDiscovered(entry)) continue;
@@ -709,7 +765,7 @@ export function materializeCandidateManifestEntries(
   requireType(requirementsRequired, 'requirements', 'Requirement Classification changed');
   requireType(designRequired, 'design', 'design_changed=true');
   requireType(moduleContractRequired, 'module_contract', 'module_contract_changed=true');
-  requireType(moduleDefinitionRequired, 'module_definition', 'module_boundary_changed=true');
+  requireType(moduleDefinitionRequired, 'module_definition', 'module boundary changed or governed code_paths changed');
   requireType(moduleTraceRequired, 'module_trace', 'module_boundary_changed=true');
   requireType(
     projectContractChanged,
