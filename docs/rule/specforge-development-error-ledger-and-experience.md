@@ -8728,3 +8728,28 @@ actual_files
 - **根因**：`PROSPECTIVE_MODULE_ENTRIES_GENERIC_TARGET_LOOP_BYPASSES_FROZEN_MODULE_ID`
 - **V337_ROOT_CAUSE_EVIDENCE**：V337 删除 loadProjectModel 中 generic moduleDefinition fallback 后，Fresh-04 新测试仍为 2 PASS / 1 FAIL，wrong module_id 仍收到 Candidate 完整 code_paths。源码对账证明更上游 `prospectiveModuleEntries()` 遍历 `reader.targets`，仅由 target_path 推导 Module，再通过 `reader.json(modulePath)` 读取 Candidate，完全未检查 frozen entry.module_id；Candidate code_paths 因此提前进入 effectiveModuleEntries.raw 和 effectiveManifest。
 - **影响**：ERR-569 范围不扩大；Fresh-04 保持 gates_failed/attempt-0004；未运行 SpecForge 自身 lifecycle。
+
+### ERR-573：Module Definition Candidate 缺少 canonical code_paths 生产/写入/Schema Gate 契约
+- **分类**：`PRODUCT_DEFECT / CONTRACT_ENFORCEMENT_DEFECT / PRODUCER_DEFECT`
+- **状态**：`ISOLATED_VALIDATED_PENDING_FRESH04_CANDIDATE_REPAIR`
+- **一手事实**：Fresh-04 `module.candidate.json` SHA256=d8b739e0fb2421fdfe92af06ca1f65032b46f4f3ab37cc93834934f14fc3c4af，`code_paths` 为对象 `{production[16],config[4],test[10]}`，合计 30 个路径；Authority 和 `canonicalProjectSpecModuleEntry(... code_paths?: string[])` 的正式语义均为单一扁平路径列表。
+- **根因**：`sf-design` 没有 Module Definition Candidate canonical producer contract；`sf_artifact_write` 虽统一调用 `validateArtifactJson`，但该 dispatcher 没有 `module.candidate.json` validator；`schema_gate` 只验证 work_item/trigger/candidate_manifest，未验证冻结 Module Definition Candidate。因此第二套 grouped schema 被写入并进入 Gate，project-governance 按 canonical array 消费时得到空 ownership。
+- **修复边界**：新增 Module Definition Candidate validator，要求 canonical `module_code` 与路径一致且 `code_paths` 为扁平 `string[]`；writer 通过既有 dispatcher 自动执行；schema_gate 对冻结 Module Definition JSON 执行同一 validator；sf-design 明确唯一 producer contract。不得让 consumer 兼容 grouped object 第二套 schema。
+- **Fresh-04 恢复**：产品修复及用户级 sf-design 升级后，保留 attempt-0005 immutable；合法恢复到 candidate_preparing，由 owning sf-design 通过 `sf_artifact_write` 把现有 30 条路径重写为一个 flat array，再重新物化并只运行一次新 Candidate Gate Attempt。
+- **类防护**：`EXP-001,EXP-004,EXP-005,EXP-007,EXP-010,EXP-011,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-094`
+
+### ERR-574：SFV341 产品修复、验证或 Git 同步运行失败
+- **分类**：`PRODUCT_DEVELOPMENT_FAILURE / DELIVERY_RUNTIME_FAILURE`
+- **状态**：`CLOSED_BY_SFV342_ENGINEERING_VALIDATION`
+- **阶段**：ENGINEERING_VALIDATION
+- **一手事实**：MODULE_DEFINITION_CANONICAL_CONTRACT_TEST_FAILED
+- **根因**：`SFV341_TRANSFORM_OVER_ESCAPED_TYPESCRIPT_REGEX_LITERAL`\n- **V342_ROOT_CAUSE_EVIDENCE**：V341 生成的 Module Definition dispatcher 在 TypeScript 源码中使用了双反斜杠形式，Bun parser 报 `Expected ";" but found ")"` 与 `Unexpected escaped backslash`。同文件既有 `contracts.candidate.json` dispatcher 使用正确单反斜杠 regex literal；V342 从该稳定相邻源码结构派生正确 `module.candidate.json` dispatcher，避免再次手写 escape。
+- **影响**：ERR-573 范围不扩大；Fresh-04 保持 gates_failed/attempt-0005；未运行 SpecForge 自身 lifecycle。
+
+### ERR-575：SFV342 恢复、验证或 Git 同步失败
+- **分类**：`PRODUCT_DEVELOPMENT_FAILURE / RECOVERY_RUNTIME_FAILURE`
+- **状态**：`CLOSED_BY_SFV343_FINAL_VALIDATION`
+- **阶段**：FINAL_VALIDATION
+- **一手事实**：FINAL_VALIDATION_FAILED
+- **根因**：`FINAL_VALIDATOR_DEPENDED_ON_EPHEMERAL_CURRENT_STAGE_STATUS`\n- **V343_ROOT_CAUSE_EVIDENCE**：SFV342 的产品测试、TypeScript、daemon-core build、全仓 build、git diff --check 和首次 post-change validator 均已 PASS；`finalize_precommit` 随后合法更新 `CURRENT_STAGE_STATUS`，第二次 final validator 却仍要求旧临时字符串 `ERR574_REGEX_ESCAPE_ROOT_CAUSE_EXACT` 存在，因此报 `HANDOFF_ERR574_MISSING`。产品代码没有失败，失败属于 validator 使用可变 stage 字段作为持久事实锚点。\n- **修复**：ERR-574/ERR-575 根因改写为 handoff execution-state block 中稳定的 `FRESH04_ERR574` / `FRESH04_ERR575` 事实行；final validator 只验证稳定事实、产品结构、范围和 Authority，不再验证会被 precommit finalization 正常覆盖的 `CURRENT_STAGE_STATUS`。
+- **影响**：ERR-573 范围不扩大；Fresh-04 保持 gates_failed/attempt-0005；未运行 SpecForge 自身 lifecycle。

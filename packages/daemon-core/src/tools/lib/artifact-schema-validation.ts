@@ -16,7 +16,7 @@
 // Types
 // ---------------------------------------------------------------------------
 
-import { ModuleContractFileSchema } from '@specforge/types';
+import { ModuleContractFileSchema, resolveSpecModuleIdentity } from '@specforge/types';
 
 export interface SchemaValidationResult {
   valid: boolean;
@@ -465,6 +465,60 @@ if (Object.prototype.hasOwnProperty.call(parsed, 'contract_promotions')) {
  * Must be legal JSON with work_item_id and entries array.
  */
 
+export function validateModuleDefinitionCandidateJson(
+  content: string,
+  expectedModuleCode: string
+): SchemaValidationResult {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
+  }
+  if (!isPlainObject(parsed)) {
+    return { valid: false, errors: ['MODULE_DEFINITION_SCHEMA_INVALID: <root>: must be an object'] };
+  }
+  const errors: string[] = [];
+  const expected = String(expectedModuleCode ?? '').trim().toUpperCase();
+  const identity = resolveSpecModuleIdentity(parsed);
+  const declaredModuleCode =
+    typeof parsed.module_code === 'string' ? parsed.module_code.trim().toUpperCase() : '';
+  if (!identity.valid || !identity.moduleCode) {
+    errors.push(
+      `MODULE_DEFINITION_IDENTITY_INVALID: ${identity.errors.join('; ') || 'module_code is required'}`
+    );
+  } else if (identity.moduleCode !== expected) {
+    errors.push(
+      `MODULE_DEFINITION_MODULE_MISMATCH: candidate path module=${expected}; module_code=${identity.moduleCode}`
+    );
+  }
+  if (!declaredModuleCode || declaredModuleCode !== expected) {
+    errors.push(
+      `MODULE_DEFINITION_CANONICAL_MODULE_CODE_REQUIRED: module_code must be exactly ${expected}`
+    );
+  }
+  if (!Array.isArray(parsed.code_paths)) {
+    errors.push(
+      'MODULE_DEFINITION_CODE_PATHS_MUST_BE_ARRAY: code_paths must be one flat string[]; grouped production/config/test objects are not canonical'
+    );
+  } else {
+    const normalized: string[] = [];
+    for (const [index, value] of parsed.code_paths.entries()) {
+      if (typeof value !== 'string' || !value.trim()) {
+        errors.push(
+          `MODULE_DEFINITION_CODE_PATH_INVALID: code_paths[${index}] must be a non-empty string`
+        );
+        continue;
+      }
+      normalized.push(value.trim());
+    }
+    if (new Set(normalized).size !== normalized.length) {
+      errors.push('MODULE_DEFINITION_CODE_PATHS_DUPLICATE: code_paths must not contain duplicates');
+    }
+  }
+  return { valid: errors.length === 0, errors };
+}
+
 /**
  * Validate a Module Contract Candidate against the one canonical Runtime schema.
  * Candidate writing is stricter than legacy reading: no extra top-level or
@@ -580,6 +634,10 @@ export function validateArtifactJson(
   workflowPath?: string
 ): SchemaValidationResult | null {
   const normalizedFilename = filename.replace(/\\/g, '/');
+  const moduleDefinitionCandidate = /(?:^|\/)candidates\/project\/modules\/([^/]+)\/module\.candidate\.json$/i.exec(normalizedFilename);
+  if (moduleDefinitionCandidate?.[1]) {
+    return validateModuleDefinitionCandidateJson(content, moduleDefinitionCandidate[1]);
+  }
   const moduleContractCandidate = /(?:^|\/)candidates\/project\/modules\/([^/]+)\/contracts\.candidate\.json$/i.exec(normalizedFilename);
   if (moduleContractCandidate?.[1]) {
     return validateModuleContractCandidateJson(content, moduleContractCandidate[1]);

@@ -734,6 +734,36 @@ constrained_by: <约束来源>
 10. `requirements_index.md`、`design_index.md` 等可由 Runtime 从正式数据推导的索引不得由本 Agent凭空重复维护。
 
 ---
+## Module Definition Candidate Canonical Producer Contract
+
+当 Impact Scope 要求首次建立或修改 Module / code_paths 时，`sf-design` 必须通过
+`sf_artifact_write(file_type=candidate_module_definition, module_id=<MODULE>)`
+写入 `candidates/project/modules/<MODULE>/module.candidate.json`。
+
+`code_paths` 的唯一 canonical JSON 形态是一个**扁平字符串数组 `string[]`**：
+
+```json
+{
+  "schema_version": "1.0",
+  "module_code": "<MODULE>",
+  "status": "active",
+  "code_paths": [
+    "src/domain/**",
+    "src/service/**",
+    "test/**",
+    "package.json"
+  ]
+}
+```
+
+固定规则：
+1. `module_code` 必须与 `module_id=<MODULE>` 和目标路径中的 Module 完全一致。
+2. `code_paths` 可以使用精确文件或合法 glob，但每一项必须是非空字符串。
+3. **不得**把 `code_paths` 写成 `{ production: [...], config: [...], test: [...] }` 或任何其他分组对象。
+4. production/config/test 等分类只属于设计说明；如果需要保留分类语义，写入 Design Candidate 正文，不得建立第二套 Module Schema。
+5. 无法表达 canonical `string[]` 时必须返回 blocked 并报告产品/契约缺口，不得要求 Runtime 或 consumer 兼容另一种结构。
+6. `candidate_manifest.json` 仍由 Runtime 独占物化；本 Agent 不得手工补写 Manifest。
+
 ## Module Contract Candidate Canonical Producer Contract
 
 当 Impact Scope 要求新增或修改 Module Contract 时，`sf-design` 必须生产 Runtime 唯一接受的

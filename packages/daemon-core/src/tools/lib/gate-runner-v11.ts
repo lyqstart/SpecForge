@@ -51,6 +51,7 @@ import {
 } from '@specforge/types';
 import {
   validateCandidateManifestJson,
+  validateModuleDefinitionCandidateJson,
   validateTriggerResultJson,
   validateWorkItemJson,
 } from './artifact-schema-validation.js';
@@ -896,11 +897,59 @@ registerGate('path_policy_gate', 'hard_gate', true, async ctx => {
   return makeReport(ctx.workItemId, 'path_policy_gate', 'hard_gate', true, checks);
 });
 
+export async function validateFrozenModuleDefinitionCandidateSchemasForGate(
+  ctx: GateContext
+): Promise<{ checks: GateReportCheck[]; inputFiles: string[] }> {
+  const checks: GateReportCheck[] = [];
+  const inputFiles: string[] = [];
+  try {
+    const manifest = JSON.parse(
+      await fs.readFile(workItemCandidateManifest(ctx.projectRoot, ctx.workItemId), 'utf-8')
+    );
+    const entries = Array.isArray(manifest?.entries) ? manifest.entries : [];
+    for (const [index, entry] of entries.entries()) {
+      const candidatePath = normalizeSlash(String(entry?.candidate_path ?? entry?.path ?? ''));
+      const match =
+        /(?:^|\/)candidates\/project\/modules\/([^/]+)\/module\.candidate\.json$/i.exec(
+          candidatePath
+        );
+      if (!match?.[1] || candidatePath.includes('..')) continue;
+      const candidateFile = path.resolve(ctx.workItemDir, candidatePath);
+      inputFiles.push(candidateFile);
+      try {
+        const content = await fs.readFile(candidateFile, 'utf-8');
+        const validation = validateModuleDefinitionCandidateJson(content, match[1]);
+        checks.push({
+          check_id: `schema_module_definition_${index}_${match[1].toUpperCase()}`,
+          description:
+            `Module Definition Candidate ${match[1].toUpperCase()} satisfies canonical module_code + flat code_paths string[] schema`,
+          passed: validation.valid,
+          severity: validation.valid ? undefined : 'error',
+          details: validation.errors.join('; '),
+        });
+      } catch (error) {
+        checks.push({
+          check_id: `schema_module_definition_${index}_${match[1].toUpperCase()}`,
+          description:
+            `Module Definition Candidate ${match[1].toUpperCase()} satisfies canonical module_code + flat code_paths string[] schema`,
+          passed: false,
+          severity: 'error',
+          details: (error as Error).message,
+        });
+      }
+    }
+  } catch {
+    // candidate_manifest_gate owns manifest availability/parse failures.
+  }
+  return { checks, inputFiles };
+}
+
 /**
  * §9.2 schema_gate — JSON schema 校验
  */
 registerGate('schema_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
+  const inputFiles: string[] = [];
   const files = [
     {
       name: 'work_item.json',
@@ -921,6 +970,7 @@ registerGate('schema_gate', 'hard_gate', true, async ctx => {
   ];
 
   for (const file of files) {
+    inputFiles.push(file.path);
     try {
       const content = await fs.readFile(file.path, 'utf-8');
       const validation = file.validate(content);
@@ -936,7 +986,18 @@ registerGate('schema_gate', 'hard_gate', true, async ctx => {
     }
   }
 
-  return makeReport(ctx.workItemId, 'schema_gate', 'hard_gate', true, checks);
+  const moduleDefinitionSchemas =
+    await validateFrozenModuleDefinitionCandidateSchemasForGate(ctx);
+  checks.push(...moduleDefinitionSchemas.checks);
+  inputFiles.push(...moduleDefinitionSchemas.inputFiles);
+  return makeReport(
+    ctx.workItemId,
+    'schema_gate',
+    'hard_gate',
+    true,
+    checks,
+    Array.from(new Set(inputFiles))
+  );
 });
 
 /**
