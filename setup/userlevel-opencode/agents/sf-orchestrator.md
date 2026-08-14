@@ -383,6 +383,22 @@ Candidate Package 的批准不能替代正式 Git Merge 确认。`sf_git_merge_p
    ```
 
    主编排代理必须使用 `affected_modules`，不得以 `modules`、`declared_modules`、`effective_modules` 替代正式字段；Runtime 负责根据 Spec、Trace 与 code_paths 补全可确定关系。
+### Impact Scope Field-Kind Producer Contract
+
+`trigger_result.json -> impact_scope` 的字段角色是正式数据契约，不得把“相关对象”混写成另一类 ID：
+
+1. `affected_modules` 只放 Module code，例如 `CORE`。
+2. `architecture_refs` 只放真实 Architecture ID。
+3. `data_model_refs` 只放真实 Data Model ID。
+4. `design_refs` 只放真实 Module Design ID。
+5. `project_contract_refs` 只放真实 Project Contract ID。
+6. `module_contract_refs` 只放真实 Module Contract ID；**禁止**用 Module code（例如 `CORE`）当作 Contract 占位。
+7. `planned_code_paths` 只放计划代码路径。
+8. 同一个 `affected_modules` 值不得同时出现在任何 `*_refs` 字段；如果只有 Module 范围已经确定，就只写 `affected_modules`，不得发明 Contract ID。
+9. Contract ID 必须来自当前正式/Prospective Contract 与 Trace 一手证据；无法确定时保留缺口并停止，不得用 Module code、目录名或自然语言占位。
+10. `trigger_result.json` 必须通过 `sf_artifact_write(file_type=trigger_result)` 受控写入；writer/schema 拒绝字段角色冲突时不得手工修改或绕过。
+11. Runtime 仍负责依据正式 Spec、Trace、code_paths 补全机器可确定关系；Agent 不得替代 Runtime 维护可推导索引。
+
 2. Candidate 职责固定：sf-requirements→Requirement；sf-design→Architecture/Data Model/Module Design/Module Contract；sf-task-planner→Task/真实 Trace Delta；Runtime→Candidate Manifest、索引、Module/code_paths 与可推导关系。
 3. 同一 WI 的下层设计依赖新 Architecture/Data Model Candidate 时，必须基于该 Candidate 继续设计，并一起 Gate、User Decision、原子 Merge；不得局部先合并。
 4. Fast Path 不造无意义 Spec Candidate，但仍必须通过 Architecture/Data Model/Design/Contract/Trace 一致性检查后才能发 Code Permission。

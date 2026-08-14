@@ -17,6 +17,11 @@
 // ---------------------------------------------------------------------------
 
 import { ModuleContractFileSchema, resolveSpecModuleIdentity } from '@specforge/types';
+import {
+  normalizeImpactScope,
+  validateImpactScopeFieldKinds,
+  type ImpactScope,
+} from './impact-analysis.js';
 
 export interface SchemaValidationResult {
   valid: boolean;
@@ -208,7 +213,6 @@ export function validateTriggerResultJson(
   } catch (e) {
     return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
   }
-
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
     errors.push('INVALID_STRUCTURE: must be a JSON object');
   } else {
@@ -219,7 +223,6 @@ export function validateTriggerResultJson(
         `WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`
       );
     }
-
     if (!parsed.workflow_path) {
       errors.push('MISSING_FIELD: workflow_path is required');
     } else if (!VALID_WORKFLOW_PATHS.includes(parsed.workflow_path as ValidWorkflowPath)) {
@@ -228,13 +231,11 @@ export function validateTriggerResultJson(
           `Valid values: ${VALID_WORKFLOW_PATHS.join(', ')}`
       );
     }
-
     if (Object.prototype.hasOwnProperty.call(parsed, 'unknowns')) {
       errors.push(
         'TOP_LEVEL_UNKNOWNS_FORBIDDEN: trigger_result.json must keep unknowns only at classification.unknowns'
       );
     }
-
     if (!isPlainObject(parsed.classification)) {
       errors.push('INVALID_CLASSIFICATION: classification must be a JSON object');
     } else {
@@ -253,6 +254,43 @@ export function validateTriggerResultJson(
         errors.push(
           'INVALID_CLASSIFICATION_FIELD: classification.contract_registry_only must be boolean when present'
         );
+      }
+    }
+
+    if (!isPlainObject(parsed.impact_scope)) {
+      errors.push('INVALID_IMPACT_SCOPE: impact_scope must be a JSON object');
+    } else {
+      const requiredFields = [
+        'affected_modules',
+        'architecture_refs',
+        'data_model_refs',
+        'design_refs',
+        'project_contract_refs',
+        'module_contract_refs',
+        'planned_code_paths',
+      ] as const;
+      let arraysValid = true;
+      for (const field of requiredFields) {
+        const value = parsed.impact_scope[field];
+        if (!Array.isArray(value)) {
+          arraysValid = false;
+          errors.push(`INVALID_IMPACT_SCOPE_FIELD: impact_scope.${field} must be an array`);
+          continue;
+        }
+        for (const [index, item] of value.entries()) {
+          if (typeof item !== 'string' || !item.trim()) {
+            arraysValid = false;
+            errors.push(
+              `INVALID_IMPACT_SCOPE_ITEM: impact_scope.${field}[${index}] must be a non-empty string`
+            );
+          }
+        }
+      }
+      if (arraysValid) {
+        const normalized = normalizeImpactScope(
+          parsed.impact_scope as Partial<ImpactScope>
+        );
+        errors.push(...validateImpactScopeFieldKinds(normalized));
       }
     }
   }

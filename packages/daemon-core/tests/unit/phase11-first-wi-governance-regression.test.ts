@@ -27,6 +27,15 @@ function trigger(classification: Record<string, unknown>) {
     work_item_id: 'WI-0001',
     workflow_path: 'requirement_change_path',
     classification,
+    impact_scope: {
+      affected_modules: [],
+      architecture_refs: [],
+      data_model_refs: [],
+      design_refs: [],
+      project_contract_refs: [],
+      module_contract_refs: [],
+      planned_code_paths: [],
+    },
   });
 }
 

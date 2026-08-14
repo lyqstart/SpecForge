@@ -43,6 +43,42 @@ export function normalizeImpactScope(value?: Partial<ImpactScope> | null): Impac
   };
 }
 
+export const IMPACT_SCOPE_REFERENCE_FIELDS = [
+  'architecture_refs',
+  'data_model_refs',
+  'design_refs',
+  'project_contract_refs',
+  'module_contract_refs',
+] as const;
+
+export type ImpactScopeReferenceField = (typeof IMPACT_SCOPE_REFERENCE_FIELDS)[number];
+
+export function validateImpactScopeFieldKinds(scope: ImpactScope): string[] {
+  const errors: string[] = [];
+  const moduleCodes = new Set(
+    scope.affected_modules.map(value => String(value ?? '').trim().toUpperCase()).filter(Boolean)
+  );
+  for (const field of IMPACT_SCOPE_REFERENCE_FIELDS) {
+    for (const value of scope[field]) {
+      const normalized = String(value ?? '').trim();
+      if (!normalized) continue;
+      if (moduleCodes.has(normalized.toUpperCase())) {
+        errors.push(
+          `IMPACT_SCOPE_MODULE_CODE_USED_AS_REFERENCE: impact_scope.${field} contains Module code "${normalized}". Module codes belong only in affected_modules; *_refs require formal governance IDs.`
+        );
+      }
+    }
+  }
+  return errors;
+}
+
+export function assertImpactScopeFieldKinds(scope: ImpactScope): void {
+  const errors = validateImpactScopeFieldKinds(scope);
+  if (errors.length > 0) {
+    throw new Error(`IMPACT_SCOPE_FIELD_KIND_INVALID: ${errors.join('; ')}`);
+  }
+}
+
 export function selectWorkflowPath(classification: ChangeClassification): WorkflowPath {
   const contractRegistryOnly =
     classification.contract_registry_only === true &&
@@ -126,13 +162,15 @@ export function generateTriggerResult(
   matchResults: TriggerResult['match_results'],
   impactScope?: Partial<ImpactScope> | null,
 ): TriggerResult {
+  const normalizedImpactScope = normalizeImpactScope(impactScope);
+  assertImpactScopeFieldKinds(normalizedImpactScope);
   return {
     schema_version: '1.0',
     work_item_id: workItemId,
     workflow_path: selectWorkflowPath(classification),
     classification,
     match_results: matchResults,
-    impact_scope: normalizeImpactScope(impactScope),
+    impact_scope: normalizedImpactScope,
     selected_at: new Date().toISOString(),
   };
 }

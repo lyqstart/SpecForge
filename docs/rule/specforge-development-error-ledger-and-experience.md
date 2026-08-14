@@ -8695,13 +8695,14 @@ actual_files
 
 ### ERR-569：冻结 module_definition 已存在但 prospective Project Governance 未可靠绑定实际 Candidate source
 - **分类**：`PRODUCT_DEFECT / GATE_INPUT_PROJECTION_DEFECT / EVIDENCE_DEFECT`
-- **状态**：`ISOLATED_VALIDATED_PENDING_REAL_FRESH04_ACCEPTANCE`
+- **状态**：`REAL_PROJECT_VALIDATED`
 - **一手事实**：Fresh-04 WI-0001 在 ERR-568 materializer 修复后，candidate_manifest 已从 6 entries 变为 7 entries，并包含 `type=module_definition,module_id=CORE`；但 attempt-0004 仍为 9/10 PASS，唯一失败 spec_consistency_gate，52 个 code_paths/owner 检查继续报告 owners=none。Gate input snapshot 未包含实际 `module.candidate.json`。
 - **源码事实**：`project-governance-v2.ts` 已有 prospectiveReader，但 Module Definition 在 loadProjectModel 中仍主要通过 target-path projection 间接读取；`inputFiles` 对 Module 只登记正式 `module.json` target，不登记实际 Candidate source。
 - **根因边界**：ERR-568 已关闭 Candidate materialization 缺口；ERR-569 只处理 frozen Manifest → prospective Module model 的 consumer/source binding 与 immutable input evidence，不修改 Candidate materializer、不改变 Gate profile/严重度/通过标准。
 - **修复**：按冻结 Manifest 的 `type=module_definition + module_id + canonical target_path` 显式且唯一绑定 Module Candidate；实际 Candidate JSON 作为 prospective moduleDefinition 读取源；Candidate source 同时进入 `inputFiles`，供 Gate report / immutable snapshot 留存。错误 module_id 不绑定；malformed Candidate 不回退成“有 code_paths”的正式事实，继续 Fail Closed。
 - **真实项目证据**：`D:\code\InventoryFlow-Phase11-Fresh-04`，WI-0001，attempt-0004 immutable，state=gates_failed。产品修复期间 Fresh-04 不继续 lifecycle。
 - **隔离验证产品提交**：PRODUCT_COMMIT_SHA=1646ffa1af0634422a63043be633ab1d1bcca75b
+- **真实项目验收**：Fresh-04 attempt-0006 已证明实际 `module.candidate.json` 进入 immutable Gate input，`module_CORE_code_paths=PASS`，30/30 planned code owners 均为 CORE，全部 task write ownership PASS；剩余 `impact_ref_CORE` 属于独立 ERR-576。
 - **类防护**：`EXP-001,EXP-004,EXP-005,EXP-006,EXP-007,EXP-008,EXP-010,EXP-011,EXP-013,EXP-014,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-072,EXP-077,EXP-094`
 
 ### ERR-570：SFV334 产品修复、验证或 Git 同步运行失败
@@ -8731,12 +8732,13 @@ actual_files
 
 ### ERR-573：Module Definition Candidate 缺少 canonical code_paths 生产/写入/Schema Gate 契约
 - **分类**：`PRODUCT_DEFECT / CONTRACT_ENFORCEMENT_DEFECT / PRODUCER_DEFECT`
-- **状态**：`ISOLATED_VALIDATED_PENDING_FRESH04_CANDIDATE_REPAIR`
+- **状态**：`REAL_PROJECT_VALIDATED`
 - **一手事实**：Fresh-04 `module.candidate.json` SHA256=d8b739e0fb2421fdfe92af06ca1f65032b46f4f3ab37cc93834934f14fc3c4af，`code_paths` 为对象 `{production[16],config[4],test[10]}`，合计 30 个路径；Authority 和 `canonicalProjectSpecModuleEntry(... code_paths?: string[])` 的正式语义均为单一扁平路径列表。
 - **根因**：`sf-design` 没有 Module Definition Candidate canonical producer contract；`sf_artifact_write` 虽统一调用 `validateArtifactJson`，但该 dispatcher 没有 `module.candidate.json` validator；`schema_gate` 只验证 work_item/trigger/candidate_manifest，未验证冻结 Module Definition Candidate。因此第二套 grouped schema 被写入并进入 Gate，project-governance 按 canonical array 消费时得到空 ownership。
 - **修复边界**：新增 Module Definition Candidate validator，要求 canonical `module_code` 与路径一致且 `code_paths` 为扁平 `string[]`；writer 通过既有 dispatcher 自动执行；schema_gate 对冻结 Module Definition JSON 执行同一 validator；sf-design 明确唯一 producer contract。不得让 consumer 兼容 grouped object 第二套 schema。
 - **Fresh-04 恢复**：产品修复及用户级 sf-design 升级后，保留 attempt-0005 immutable；合法恢复到 candidate_preparing，由 owning sf-design 通过 `sf_artifact_write` 把现有 30 条路径重写为一个 flat array，再重新物化并只运行一次新 Candidate Gate Attempt。
 - **隔离验证产品提交**：PRODUCT_COMMIT_SHA=8d00948dee0c1260631360f3384b369da0afc556
+- **真实项目验收**：Fresh-04 通过升级后的 `sf-design + sf_artifact_write` 将原 30 条 grouped code_paths 合法重写为 flat string[]；attempt-0006 的 schema_gate、module_CORE_code_paths、全部 planned/task ownership 均 PASS。新 Candidate SHA256=d03c73f590f2cdfb9ee672b2b4e37f32036f748fea46330441243c1598d668f1。
 - **类防护**：`EXP-001,EXP-004,EXP-005,EXP-007,EXP-010,EXP-011,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-094`
 
 ### ERR-574：SFV341 产品修复、验证或 Git 同步运行失败
@@ -8754,3 +8756,29 @@ actual_files
 - **一手事实**：FINAL_VALIDATION_FAILED
 - **根因**：`FINAL_VALIDATOR_DEPENDED_ON_EPHEMERAL_CURRENT_STAGE_STATUS`\n- **V343_ROOT_CAUSE_EVIDENCE**：SFV342 的产品测试、TypeScript、daemon-core build、全仓 build、git diff --check 和首次 post-change validator 均已 PASS；`finalize_precommit` 随后合法更新 `CURRENT_STAGE_STATUS`，第二次 final validator 却仍要求旧临时字符串 `ERR574_REGEX_ESCAPE_ROOT_CAUSE_EXACT` 存在，因此报 `HANDOFF_ERR574_MISSING`。产品代码没有失败，失败属于 validator 使用可变 stage 字段作为持久事实锚点。\n- **修复**：ERR-574/ERR-575 根因改写为 handoff execution-state block 中稳定的 `FRESH04_ERR574` / `FRESH04_ERR575` 事实行；final validator 只验证稳定事实、产品结构、范围和 Authority，不再验证会被 precommit finalization 正常覆盖的 `CURRENT_STAGE_STATUS`。
 - **影响**：ERR-573 范围不扩大；Fresh-04 保持 gates_failed/attempt-0005；未运行 SpecForge 自身 lifecycle。
+
+### ERR-577：SFV345 产品修复、验证或 Git 同步失败
+- **分类**：`PRODUCT_DEVELOPMENT_FAILURE / DELIVERY_RUNTIME_FAILURE`
+- **状态**：`CLOSED_BY_SFV346_DELIVERY_RECOVERY`
+- **阶段**：AUTHORITY_BOOTSTRAP_OR_PRODUCT_APPLY
+- **一手事实**：SEE_EXACT_OUTPUT_ABOVE
+- **根因**：`INSUFFICIENT_EVIDENCE`
+- **影响**：ERR-576 范围不扩大；Fresh-04 保持 gates_failed/attempt-0006；未运行 SpecForge 自身 lifecycle。
+
+### ERR-576：Impact Scope 把 Module code 写入 module_contract_refs，字段角色契约未在生产/写入边界失败关闭
+- **分类**：`PRODUCT_DEFECT / CONTRACT_ENFORCEMENT_DEFECT / PRODUCER_DEFECT`
+- **状态**：`ISOLATED_VALIDATED_PENDING_FRESH04_TRIGGER_REPAIR`
+- **一手事实**：Fresh-04 WI-0001 attempt-0006 为 9/10 Required Gates PASS，仅 `spec_consistency_gate` 的 `impact_ref_CORE` 失败；同一 attempt 中 `schema_gate`、`module_CORE_code_paths`、30/30 planned owners 和全部 task write owners 均 PASS。Trigger Result 的 `affected_modules=["CORE"]` 合法，但同时存在 `module_contract_refs=["CORE"]`。
+- **当前确认根因**：`CORE` 是 Module code，不是正式 Contract ID。当前 `normalizeImpactScope` 只做字符串数组规范化，`validateTriggerResultJson` 未验证固定 Impact Scope 字段及字段角色，`sf-orchestrator` 也未明确禁止用 Module code 充当 Contract ref，因此非法字段角色可以受控落盘，直到 `spec_consistency_gate` 的正式 ID 检查才失败。
+- **Gate 判定**：`impact_ref_CORE` 是正确 Fail Closed，不修改 `project-governance-v2`、`allIds()`、Gate profile、严重度或通过标准。
+- **修复边界**：Impact Scope machine contract 新增字段角色校验；Trigger Result 生成和 schema/writer 边界拒绝 affected Module code 出现在任何 `*_refs`；固定七字段必须是非空字符串数组项；`sf-orchestrator` 明确 affected_modules 与正式 ref ID 的唯一生产语义。Runtime 仍负责机器可推导关系，不新增 Workflow/Gate/Agent/治理层。
+- **Fresh-04 恢复**：产品提交和用户级 `sf-orchestrator` 升级后，同一个 WI-0001 从 `gates_failed → candidate_preparing`；主编排代理读取真实 Module Contract/Trace 一手证据，用 `sf_artifact_write(file_type=trigger_result)` 受控修正 Trigger Result，禁止手工编辑。只把真实 Contract ID 写入 `module_contract_refs`；若没有可证明的 Contract ID，则不得用 `CORE` 占位。随后重新物化并只运行一次新 Candidate Gate Attempt。
+- **类防护**：`EXP-001,EXP-004,EXP-005,EXP-007,EXP-010,EXP-011,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-094`
+
+### ERR-578：SFV346 恢复、验证或 Git 同步失败
+- **分类**：`PRODUCT_DEVELOPMENT_FAILURE / RECOVERY_RUNTIME_FAILURE`
+- **状态**：`CLOSED_BY_SFV347_ENGINEERING_VALIDATION`
+- **阶段**：ENGINEERING_VALIDATION
+- **一手事实**：PHASE11_GOVERNANCE_REGRESSION_FAILED
+- **根因**：`STALE_PHASE11_TEST_FIXTURE_OMITS_AUTHORITATIVE_IMPACT_SCOPE`\n- **V347_ROOT_CAUSE_EVIDENCE**：Authority 第 4.1 节固定 `trigger_result.json -> impact_scope` 并固定七字段；正式 `generateTriggerResult()` 始终输出 `impact_scope: normalizeImpactScope(...)`。失败测试 `phase11-first-wi-governance-regression.test.ts` 的本地 `trigger()` helper 仍只生成 schema_version/work_item_id/workflow_path/classification，因此它是过时测试夹具，不是合法兼容格式。V347 保持严格 Schema，给旧 fixture 增加 canonical 七字段空 Impact Scope，并新增“完全缺失 impact_scope 必须失败”的反向回归。
+- **影响**：ERR-576 产品范围不扩大；Fresh-04 保持 gates_failed/attempt-0006；未运行 SpecForge 自身 lifecycle。
