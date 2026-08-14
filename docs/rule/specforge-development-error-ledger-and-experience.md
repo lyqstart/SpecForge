@@ -8998,3 +8998,52 @@ actual_files
 - **影响**：验证子进程已经推进到最终动态文档同步，但最终 validator 回执未可靠返回给 ChatGPT，因此不能仅凭 SFV364 主日志宣布最终验收闭环。
 - **修复**：SFV366 全链使用 `python -X utf8`；Runner/验证器 stdout 显式 `reconfigure(encoding="utf-8", errors="backslashreplace")`，并重新执行最终工程验证与 canonical validation-contract-kernel 验收。
 - **类防护**：`GOV-STAGE-OUTPUT-001,GOV-STAGE-RECEIPT-001,GOV-STAGE-VALIDATOR-001,GOV-STAGE-DIAG-001,EXP-001,EXP-007,EXP-019`
+
+### ERR-601：Fresh-04 Close 重试前发现未解除 daemon-token 保护 HardStop
+- **分类**：`OPERATOR_ERROR / PROTECTED_RUNTIME_READ / REPEATED_HARDSTOP_PATTERN`
+- **状态**：`CLOSED_BY_FORMAL_HARDSTOP_RESOLUTION`
+- **阶段**：PHASE11_FRESH04_CLOSE_RETRY_PRECHECK
+- **一手事实**：Close 重试前只读恢复发现 `HS-1786696279395 / SPEC_FORGE_DAEMON_TOKEN_ACCESS_FORBIDDEN` 仍为 active；它来自上一会话诊断时尝试读取 daemon-token 保护路径。Runtime 正确阻断；本轮用 `sf_hard_stop_resolve` 以 `prohibited_action_replaced / abandon / retry_original_action=false` 正式解除，并用 `sf_doctor` 替代 token 读取完成健康检查。
+- **根因**：`REPEATED_AGENT_ATTEMPT_TO_READ_PROTECTED_DAEMON_TOKEN_PATH`
+- **影响**：在解除前，非 read/debug 工具均被合法锁存；未造成业务文件写入或权限扩大。
+- **正确做法**：daemon 健康只通过 `sf_doctor`；不得读取 daemon token。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-093`
+
+### ERR-602：94786f8 部署后 Fresh-04 Close 重试仍被两个新证据问题阻断
+- **分类**：`REAL_PROJECT_VALIDATION / PRODUCT_DEFECT_DISCOVERY`
+- **状态**：`ROOT_CAUSE_CLOSED_BY_SFV369_PRODUCT_FIX_PENDING_FRESH04_RECOVERY`
+- **阶段**：PHASE11_FRESH04_CLOSE_RETRY
+- **一手事实**：`sf_close_gate` 恰好执行一次后，先前 `close_workflow_path_valid` 与 Git-governance trusted-control-plane 误判均已消失；新 blocking issues 为 `close_changed_files_audit_passed` 和 `close_semantic_closure_provenance_current`。Fresh-04 保持 `verification_done`，未执行 Git Merge、未修改业务代码。
+- **根因**：前者由 ERR-603/ERR-604 的 Project Spec 初始化破坏导致；后者由上游 `changed_files_audit.md` 在真实变化后重生成触发，是正确 provenance 失效。
+- **影响**：上一轮 Close 修复已被真实项目验证有效，但 Phase11 仍不能关闭。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-093`
+
+### ERR-603：ensureProjectInit 覆盖非空已治理 CORE/module.json 为 50 字节 bootstrap 模板
+- **分类**：`PRODUCT_DEFECT / PROJECT_SPEC_PRODUCER_VIOLATION / BOOTSTRAP_OVERWRITE`
+- **状态**：`CLOSED_BY_SFV369_ENGINEERING_VALIDATION`
+- **阶段**：PHASE11_FRESH04_POST_MERGE_RUNTIME
+- **一手事实**：SFV368 证明 Fresh-04 `filesystem_baseline.json`、Candidate、Git adoption commit `3026ad5`、implementation commit `0528292` 中 `CORE/module.json` SHA256 均为 `d03c73f5...`、6178 字节；当前文件却为 SHA256 `0266a1de...`、50 字节，JSON 仅 `{module_code:"CORE",status:"active"}`，与 `SYSTEM_FILE_CONTENT['project/modules/CORE/module.json']` 模板完全同形。write_guard_log 对该目标无写入记录。
+- **根因**：`ensureProjectInit` 把 `project/modules/CORE/module.json` 注册为 `system_file`，但非空系统文件保护名单遗漏该正式 Project Spec 文件，因此项目注册/同步时允许模板覆盖 Merge Runner 产物。
+- **影响**：Atomic Spec Merge 的正式 Module 定义被 bootstrap 静默破坏，Changed Files Audit 正确识别为 post-baseline modify。
+- **修复**：把非空 `project/modules/CORE/module.json` 纳入 bootstrap 只创建缺失、不覆盖已有内容的保护名单。
+- **类防护**：`GOV-CLOSELOOP-001,GOV-CONTRACT-001,GOV-SCOPE-001,EXP-001,EXP-004,EXP-007,EXP-019`
+
+### ERR-604：module-registry normalization 把合法 governed CORE entry 误判为非 canonical 并剥离 contracts/code_paths
+- **分类**：`PRODUCT_DEFECT / PROJECT_SPEC_CONSUMER_DRIFT / DESTRUCTIVE_NORMALIZATION`
+- **状态**：`CLOSED_BY_SFV369_ENGINEERING_VALIDATION`
+- **阶段**：PHASE11_FRESH04_POST_MERGE_RUNTIME
+- **一手事实**：SFV368 baseline/Git commit 中 `spec_manifest.json` 为 2669 字节，PSV-0002 CORE registry entry 含正式 `contracts` 与 30 个 `code_paths`；当前变成 1453 字节，保留 PSV-0002/merge metadata 但 CORE entry 被压缩为最小路径字段。源码对每个 entry 使用 `JSON.stringify(entry) === JSON.stringify(canonicalProjectSpecModuleEntry(code))` 的 exact equality；而正式类型函数明确支持 `include_governance:true` 生成 `contracts + code_paths` 的 governed canonical shape。
+- **根因**：`MODULE_REGISTRY_NORMALIZER_ACCEPTED_ONLY_BASE_CANONICAL_AND_REJECTED_GOVERNED_CANONICAL`
+- **影响**：初始化消费者把合法 Merge Runner 产物降级，丢失 Module Contract 路径与代码归属信息。
+- **修复**：normalizer 同时承认 base canonical 与由正式 helper 生成的 governed canonical；其他任意额外/legacy 形态仍按原规则 normalize/fail closed。
+- **类防护**：`GOV-CLOSELOOP-001,GOV-CONTRACT-001,GOV-SCOPE-001,EXP-001,EXP-004,EXP-007,EXP-019`
+
+### ERR-605：Fresh-04 Semantic Closure 在 Project Spec 破坏和审计重生成后正确报告 stale
+- **分类**：`DOWNSTREAM_SYMPTOM / PROVENANCE_INVALIDATION`
+- **状态**：`PENDING_POST_PRODUCT_FIX_FRESH04_CONTROLLED_RECOVERY_AND_REVERIFICATION`
+- **阶段**：PHASE11_FRESH04_CLOSE_RETRY
+- **一手事实**：Semantic Closure provenance 正式绑定 `changed_files_audit.md`；本轮 Close 因 ERR-603/ERR-604 发现真实 post-baseline Project Spec 变化并重生成失败审计，因此 `SEMANTIC_CLOSURE_INPUT_STALE` 是正确阻断，不是 provenance 算法缺陷。
+- **根因**：`DOWNSTREAM_OF_PROJECT_SPEC_CORRUPTION_AND_AUDIT_REGENERATION`
+- **影响**：产品修复部署后，Fresh-04 仍需先恢复被产品破坏的两份正式 Project Spec，再按正式验证路径重新定稿 changed-files audit、重建 semantic closure、重跑 verification gate，之后才能再次 Close。
+- **修复**：本轮不修改 Semantic Closure；保持 fail-closed 证据绑定。
+- **类防护**：`GOV-EVID-001,GOV-POST-001,EXP-001,EXP-007,EXP-019`

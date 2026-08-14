@@ -58,6 +58,51 @@ describe('ensureProjectInit module-registry normalization', () => {
     expect(manifest.modules).toEqual([canonicalProjectSpecModuleEntry('CORE')]);
   });
 
+  it('preserves a governed CORE module definition and governed registry entry across repeated init', async () => {
+    await ensureProjectInit(projectRoot, 'governed-core-fixture');
+
+    const governedModule = {
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0002',
+      module_code: 'CORE',
+      status: 'active',
+      code_paths: ['src/index.ts', 'src/service/InventoryService.ts'],
+    };
+    await writeFile(
+      coreModuleJsonPath(),
+      JSON.stringify(governedModule, null, 2) + '\n',
+      'utf8'
+    );
+
+    const beforeManifest = await readManifest();
+    const governedEntry = canonicalProjectSpecModuleEntry('CORE', {
+      include_governance: true,
+      code_paths: governedModule.code_paths,
+    });
+    await writeManifest({
+      ...beforeManifest,
+      project_spec_version: 'PSV-0002',
+      modules: [governedEntry],
+    });
+
+    const moduleBytesBefore = await readFile(coreModuleJsonPath(), 'utf8');
+    const manifestBytesBefore = await readFile(manifestPath(), 'utf8');
+
+    const first = await ensureProjectInit(projectRoot, 'governed-core-fixture');
+    expect(first.success).toBe(true);
+    expect(first.moduleRegistry.status).toBe('unchanged');
+    expect(first.normalized).toEqual([]);
+    expect(await readFile(coreModuleJsonPath(), 'utf8')).toBe(moduleBytesBefore);
+    expect(await readFile(manifestPath(), 'utf8')).toBe(manifestBytesBefore);
+
+    const second = await ensureProjectInit(projectRoot, 'governed-core-fixture');
+    expect(second.success).toBe(true);
+    expect(second.moduleRegistry.status).toBe('unchanged');
+    expect(second.normalized).toEqual([]);
+    expect(await readFile(coreModuleJsonPath(), 'utf8')).toBe(moduleBytesBefore);
+    expect(await readFile(manifestPath(), 'utf8')).toBe(manifestBytesBefore);
+  });
+
   it('normalizes an existing empty registry to canonical CORE without bumping the version', async () => {
     await ensureProjectInit(projectRoot, 'legacy-fixture');
     const before = await readManifest();
@@ -164,11 +209,16 @@ describe('ensureProjectInit module-registry normalization', () => {
 
 describe('ensureProjectInit module-registry normalization — properties', () => {
   const canonicalCore = canonicalProjectSpecModuleEntry('CORE');
+  const governedCanonicalCore = canonicalProjectSpecModuleEntry('CORE', {
+    include_governance: true,
+    code_paths: ['src/index.ts', 'src/service/InventoryService.ts'],
+  });
   const canonicalAuth = canonicalProjectSpecModuleEntry('AUTH');
 
   const moduleStateArb = fc.constantFrom(
     'empty',
     'canonical_core',
+    'governed_core',
     'legacy_core',
     'invalid_entry',
     'canonical_multi'
@@ -180,6 +230,8 @@ describe('ensureProjectInit module-registry normalization — properties', () =>
         return [];
       case 'canonical_core':
         return [canonicalCore];
+      case 'governed_core':
+        return [governedCanonicalCore];
       case 'legacy_core':
         return [{ name: 'CORE', path: 'project/modules/core' }];
       case 'invalid_entry':

@@ -208,6 +208,27 @@ function normalizeLayoutPath(value: string): string {
   return value.replace(/\\/g, '/');
 }
 
+function isCanonicalProjectSpecModuleEntry(entry: unknown, moduleCode: string): boolean {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+  const baseCanonical = canonicalProjectSpecModuleEntry(moduleCode);
+  if (JSON.stringify(entry) === JSON.stringify(baseCanonical)) return true;
+
+  const record = entry as Record<string, unknown>;
+  const hasGovernanceShape =
+    Object.prototype.hasOwnProperty.call(record, 'contracts') ||
+    Object.prototype.hasOwnProperty.call(record, 'code_paths');
+  if (!hasGovernanceShape) return false;
+
+  const codePaths = Array.isArray(record.code_paths)
+    ? record.code_paths.map(value => String(value ?? ''))
+    : [];
+  const governedCanonical = canonicalProjectSpecModuleEntry(moduleCode, {
+    include_governance: true,
+    code_paths: codePaths,
+  });
+  return JSON.stringify(entry) === JSON.stringify(governedCanonical);
+}
+
 /**
  * Ensure root .specforge/manifest.json explicitly.
  *
@@ -407,6 +428,7 @@ export async function ensureProjectInit(
               (normalizedRel === 'manifest.json' ||
                 normalizedRel === 'config/observability.json' ||
                 normalizedRel === 'project/spec_manifest.json' ||
+                normalizedRel === 'project/modules/CORE/module.json' ||
                 normalizedRel === 'project/extension_registry.json' ||
                 normalizedRel === '.gitignore') &&
               existing.trim()
@@ -536,8 +558,7 @@ async function normalizeModuleRegistry(projectRoot: string, result: InitResult):
         allCanonical = false;
         break;
       }
-      const canonical = canonicalProjectSpecModuleEntry(identity.moduleCode);
-      if (JSON.stringify(entry) !== JSON.stringify(canonical)) {
+      if (!isCanonicalProjectSpecModuleEntry(entry, identity.moduleCode)) {
         allCanonical = false;
         break;
       }
