@@ -8773,6 +8773,7 @@ actual_files
 - **Gate 判定**：`impact_ref_CORE` 是正确 Fail Closed，不修改 `project-governance-v2`、`allIds()`、Gate profile、严重度或通过标准。
 - **修复边界**：Impact Scope machine contract 新增字段角色校验；Trigger Result 生成和 schema/writer 边界拒绝 affected Module code 出现在任何 `*_refs`；固定七字段必须是非空字符串数组项；`sf-orchestrator` 明确 affected_modules 与正式 ref ID 的唯一生产语义。Runtime 仍负责机器可推导关系，不新增 Workflow/Gate/Agent/治理层。
 - **Fresh-04 恢复**：产品提交和用户级 `sf-orchestrator` 升级后，同一个 WI-0001 从 `gates_failed → candidate_preparing`；主编排代理读取真实 Module Contract/Trace 一手证据，用 `sf_artifact_write(file_type=trigger_result)` 受控修正 Trigger Result，禁止手工编辑。只把真实 Contract ID 写入 `module_contract_refs`；若没有可证明的 Contract ID，则不得用 `CORE` 占位。随后重新物化并只运行一次新 Candidate Gate Attempt。
+- **隔离验证产品提交**：PRODUCT_COMMIT_SHA=a5542fa210de07c6af6fa98df82d0caecb6d6475
 - **类防护**：`EXP-001,EXP-004,EXP-005,EXP-007,EXP-010,EXP-011,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-094`
 
 ### ERR-578：SFV346 恢复、验证或 Git 同步失败
