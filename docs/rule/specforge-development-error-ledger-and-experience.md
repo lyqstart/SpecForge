@@ -8767,13 +8767,14 @@ actual_files
 
 ### ERR-576：Impact Scope 把 Module code 写入 module_contract_refs，字段角色契约未在生产/写入边界失败关闭
 - **分类**：`PRODUCT_DEFECT / CONTRACT_ENFORCEMENT_DEFECT / PRODUCER_DEFECT`
-- **状态**：`ISOLATED_VALIDATED_PENDING_FRESH04_TRIGGER_REPAIR`
+- **状态**：`REAL_PROJECT_VALIDATED`
 - **一手事实**：Fresh-04 WI-0001 attempt-0006 为 9/10 Required Gates PASS，仅 `spec_consistency_gate` 的 `impact_ref_CORE` 失败；同一 attempt 中 `schema_gate`、`module_CORE_code_paths`、30/30 planned owners 和全部 task write owners 均 PASS。Trigger Result 的 `affected_modules=["CORE"]` 合法，但同时存在 `module_contract_refs=["CORE"]`。
 - **当前确认根因**：`CORE` 是 Module code，不是正式 Contract ID。当前 `normalizeImpactScope` 只做字符串数组规范化，`validateTriggerResultJson` 未验证固定 Impact Scope 字段及字段角色，`sf-orchestrator` 也未明确禁止用 Module code 充当 Contract ref，因此非法字段角色可以受控落盘，直到 `spec_consistency_gate` 的正式 ID 检查才失败。
 - **Gate 判定**：`impact_ref_CORE` 是正确 Fail Closed，不修改 `project-governance-v2`、`allIds()`、Gate profile、严重度或通过标准。
 - **修复边界**：Impact Scope machine contract 新增字段角色校验；Trigger Result 生成和 schema/writer 边界拒绝 affected Module code 出现在任何 `*_refs`；固定七字段必须是非空字符串数组项；`sf-orchestrator` 明确 affected_modules 与正式 ref ID 的唯一生产语义。Runtime 仍负责机器可推导关系，不新增 Workflow/Gate/Agent/治理层。
 - **Fresh-04 恢复**：产品提交和用户级 `sf-orchestrator` 升级后，同一个 WI-0001 从 `gates_failed → candidate_preparing`；主编排代理读取真实 Module Contract/Trace 一手证据，用 `sf_artifact_write(file_type=trigger_result)` 受控修正 Trigger Result，禁止手工编辑。只把真实 Contract ID 写入 `module_contract_refs`；若没有可证明的 Contract ID，则不得用 `CORE` 占位。随后重新物化并只运行一次新 Candidate Gate Attempt。
 - **隔离验证产品提交**：PRODUCT_COMMIT_SHA=a5542fa210de07c6af6fa98df82d0caecb6d6475
+- **真实项目验收**：Fresh-04 WI-0001 在 SFV348 用户级 sf-orchestrator 升级和 daemon 人工重启后，基于正式/Prospective Contract 与 Trace 一手证据将 `module_contract_refs` 受控修正为 `INV-CORE-001, INV-CORE-002, INV-CORE-003, INV-CORE-004, PI-CORE-001, MovementType`；`affected_modules=["CORE"]` 保持不变。Candidate 重新物化后仅运行一次新 Candidate Gate，immutable `attempt-0007` 为 10/10 Required Gates PASS、0 blocking issues，`spec_consistency_gate` / `contract_integrity_gate` / `trace_gate` 全部 PASS，状态由 Gate Runner 合法进入 `approval_required`；未产生 attempt-0008，未执行 User Decision / Atomic Spec Merge / Code Permission / Implementation / Close。
 - **类防护**：`EXP-001,EXP-004,EXP-005,EXP-007,EXP-010,EXP-011,EXP-015,EXP-017,EXP-019,EXP-020,EXP-022,EXP-094`
 
 ### ERR-578：SFV346 恢复、验证或 Git 同步失败
@@ -8783,3 +8784,129 @@ actual_files
 - **一手事实**：PHASE11_GOVERNANCE_REGRESSION_FAILED
 - **根因**：`STALE_PHASE11_TEST_FIXTURE_OMITS_AUTHORITATIVE_IMPACT_SCOPE`\n- **V347_ROOT_CAUSE_EVIDENCE**：Authority 第 4.1 节固定 `trigger_result.json -> impact_scope` 并固定七字段；正式 `generateTriggerResult()` 始终输出 `impact_scope: normalizeImpactScope(...)`。失败测试 `phase11-first-wi-governance-regression.test.ts` 的本地 `trigger()` helper 仍只生成 schema_version/work_item_id/workflow_path/classification，因此它是过时测试夹具，不是合法兼容格式。V347 保持严格 Schema，给旧 fixture 增加 canonical 七字段空 Impact Scope，并新增“完全缺失 impact_scope 必须失败”的反向回归。
 - **影响**：ERR-576 产品范围不扩大；Fresh-04 保持 gates_failed/attempt-0006；未运行 SpecForge 自身 lifecycle。
+### ERR-579：Authority Bootstrap 失败后错误发布裸 git ls-remote 命令
+- **分类**：`GOVERNANCE_FAILURE / DELIVERY_PROTOCOL_VIOLATION`
+- **状态**：`CLOSED_BY_SFV349_CORRECTIVE_BOOTSTRAP`
+- **阶段**：AUTHORITY_BOOTSTRAP
+- **一手事实**：live ref 无法由 ChatGPT 当前工具取得后，上一回合直接向用户发布裸 `git ls-remote https://github.com/lyqstart/SpecForge.git refs/heads/main` CMD；这违反 `GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001` 的 `RAW_CMD_ALLOWED=NO` 与 `ONE_ACCEPTED_ZIP_PLUS_ONE_CMD`。
+- **根因**：`BOOTSTRAP_FAILURE_DELIVERY_BYPASSED_ACCEPTED_ARTIFACT_PATH`
+- **修复**：作废裸命令证据；生成并验收 SFV349 Bootstrap live-ref evidence ZIP。用户返回结构化回执：LS_REMOTE_EXIT_CODE=0，LIVE_REF_SHA=eaf1d93232f5ae3df5ceaf8b54e60758d1939f52，REPOSITORY_READS=NONE，REPOSITORY_WRITES=NONE，LIFECYCLE_ACTIONS=NONE；随后重新从 exact-commit Authority 开始 Bootstrap。
+- **影响**：没有 SpecForge/Fresh-04 仓库写入，没有生命周期动作；最终 Authority Bootstrap 不依赖违规裸命令证据。
+- **类防护**：`GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-001,GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001,GOV-STAGE-ARTIFACT-VERIFY-001,GOV-STAGE-VALIDATOR-001`
+### ERR-580：Fresh-04 Trigger Result 写入后的临时正则验证产生假失败
+- **分类**：`VALIDATION_HARNESS_DEFECT`
+- **状态**：`CLOSED_IN_SAME_FRESH04_SESSION_BEFORE_GATE_RUN`
+- **阶段**：FRESH04_TRIGGER_RESULT_POST_WRITE_VALIDATION
+- **一手事实**：OpenCode 在受控写入 trigger_result 后第一次 `sf_batch_verify` 对 planned_code_paths 使用了不适配含子目录路径的正则并出现假失败；随后改用正确验证规则，9 项独立验证全部 PASS，之后才重新物化 Candidate 并运行本轮唯一一次 Candidate Gate。
+- **根因**：`AD_HOC_REGEX_EXPECTATION_DID_NOT_MATCH_CANONICAL_PATH_STRING_SHAPE`
+- **修复**：不改变 Trigger Result、Contract、Gate 或 Runtime；使用与实际 JSON 路径字符串结构一致的验证规则重新验证，确认 30 条 planned_code_paths 与其他 Impact Scope 字段均保持正确。
+- **影响**：未增加 Gate Attempt，未扩大业务范围，未触发 User Decision/Merge/Code Permission/Implementation/Close；attempt-0007 仍是本轮唯一 Candidate Gate run，并最终 10/10 PASS。
+- **类防护**：`EXP-001,EXP-007,EXP-019,GOV-STAGE-TRUTH-001,GOV-STAGE-VALIDATOR-001`
+### ERR-581：SFV350 预发布 Consumer fixture 错把 Linux tar 当作 Windows ZIP 解压器
+- **分类**：`VALIDATION_HARNESS_DEFECT / PREPUBLISH_DELIVERY_VALIDATION_DEFECT`
+- **状态**：`CLOSED_BY_SFV352_PREPUBLISH_DELIVERY_RECOVERY`
+- **阶段**：ARTIFACT_ACCEPTANCE_PREPUBLISH
+- **一手事实**：SFV350 在独立后验验收的 TEMP_DIR_ABSENT Consumer fixture 中调用当前 Linux 执行环境的 `tar -xf` 解压 ZIP，返回 exit 2；该工具执行因此失败，SFV350 未通过验收、未向用户发布、未在用户环境执行。
+- **根因**：`PREPUBLISH_FIXTURE_ASSUMED_WINDOWS_TAR_ZIP_SUPPORT_ON_LINUX_HOST`
+- **修复**：SFV352 将用户 CMD 与预发布 Consumer fixtures 统一改为 Python 标准库 `python -m zipfile -e`；重新验证 TEMP_DIR_ABSENT、TEMP_DIR_PRESENT、ZIP_MISSING、RUNNER_ENTRY_MISSING 四种消费路径后才允许发布。
+- **影响**：没有目标仓库写入，没有 Fresh-04 写入，没有生命周期动作，没有 commit/push。
+- **类防护**：`GOV-STAGE-ARTIFACT-VERIFY-001,GOV-STAGE-VALIDATOR-001,GOV-STAGE-DELIVERY-001,GOV-STAGE-DELIVERY-IDENTITY-001`
+### ERR-582：SFV351 预发布验收遗漏 canonical Delivery Identity schema 与 Windows Bun shim 契约
+- **分类**：`VALIDATION_HARNESS_DEFECT / EVIDENCE_IDENTITY_DEFECT`
+- **状态**：`CLOSED_BY_SFV352_PREPUBLISH_DELIVERY_RECOVERY`
+- **阶段**：ARTIFACT_ACCEPTANCE_PREPUBLISH
+- **一手事实**：SFV351 完成初步 ZIP/Consumer fixture 验收后，在发布 CMD 前按当前 Authority 做反向审计，发现 manifest identity 使用了非 canonical 扁平字段，未满足 `identity.runner/validator/receipt_emitter` 嵌套绑定；runner 还使用 Python subprocess 直接启动 `bun`，未满足 Windows `CMD_CALL_BY_COMMAND_NAME`。
+- **根因**：`PREPUBLISH_ACCEPTANCE_OMITTED_CURRENT_DELIVERY_IDENTITY_SCHEMA_AND_WINDOWS_SHIM_CONTRACT`
+- **修复**：作废 SFV351，不发布执行 CMD。SFV352 使用 canonical nested identity，manifest 显式 required-field/type schema validation，receipt identity 全部从 manifest 读取；Windows Bun 调用统一经 `cmd.exe /d /s /c call bun ...`，失败时输出 `where bun` 与实际调用模式；同时补齐 Stage Checkpoint、Stage Output 和 Failure Diagnostic 字段。
+- **影响**：SFV351 未在用户环境执行，没有目标仓库写入，没有 Fresh-04 写入，没有生命周期动作，没有 commit/push。
+- **类防护**：`GOV-STAGE-DELIVERY-001,GOV-STAGE-DELIVERY-IDENTITY-001,GOV-STAGE-RECEIPT-001,GOV-STAGE-CHK-001,GOV-STAGE-OUTPUT-001,GOV-STAGE-DIAG-001,GOV-STAGE-VALIDATOR-001`
+
+### ERR-583：SFV352 工程验证阶段输出处理器对 None 调用 strip
+- **分类**：`VALIDATION_HARNESS_DEFECT / POST_SIDE_EFFECT_VALIDATION_FAILURE`
+- **状态**：`CLOSED_BY_SFV356_ENGINEERING_VALIDATION_RECOVERY`
+- **阶段**：ENGINEERING_VALIDATION
+- **一手事实**：SFV352 已完成两份批准治理文档写入、`POST_PATCH_SEMANTIC_SCOPE` 和 `git diff --check` 后，在 `FULL_WORKSPACE_TEST` 启动路径中，runner 的 `run_bun` 对 `p.stdout.strip()` 调用时 `p.stdout=None`，抛出 `AttributeError: 'NoneType' object has no attribute 'strip'`。回执确认 `REQUEST_STARTED=YES`、`RESPONSE_RECEIVED=YES`、`REPOSITORY_WRITES=EXACT_2_APPROVED_DOCUMENT_FILES`，Fresh-04 writes/lifecycle/commit/push 均为 NONE。
+- **根因**：`WINDOWS_SUBPROCESS_OUTPUT_HANDLER_ASSUMED_NON_NULL_STDOUT`
+- **修复**：后续 runner 使用 bytes 模式捕获 stdout/stderr，并统一执行 UTF-8 解码与空值安全处理；SFV355 已只读确认 SFV352 两文件副作用真实持久化、范围严格为两文件、Authority 未修改。SFV356 在 Recovery Validator 通过后仅补录 ERR-583~ERR-586，并从 Engineering Validation 继续。
+- **影响**：SFV352 两文件状态同步真实持久化，但该轮工程验证未完成；无产品代码变化，无 Fresh-04/SpecForge 生命周期。
+- **类防护**：`GOV-STAGE-RETRY-001,GOV-STAGE-TRUTH-001,GOV-STAGE-DIAG-001,GOV-STAGE-VALIDATOR-001`
+
+### ERR-584：SFV353 把历史 V352 标识误判为当前 Delivery Identity 漂移
+- **分类**：`VALIDATION_HARNESS_DEFECT / DELIVERY_IDENTITY_FALSE_POSITIVE`
+- **状态**：`CLOSED_BY_SFV356_RECOVERY_IDENTITY_AUDIT_FIX`
+- **阶段**：PARTIAL_SIDE_EFFECT_READ_ONLY_RECONCILIATION
+- **一手事实**：SFV353 在 manifest schema/identity 校验后、任何目标治理文档读取或写入前，把 `CURRENT_STAGE`、`ACTION_NAME`、`NEXT_STAGE` 中用于描述被恢复历史对象的 `V352` 当作当前 delivery identity，报告 `DELIVERY_INTERNAL_REFERENCE_MISMATCH`。回执确认 `REQUEST_STARTED=NO`、`RESPONSE_RECEIVED=NO`、`REPOSITORY_WRITES=NONE`、Fresh-04 writes/lifecycle/commit/push 均为 NONE。
+- **根因**：`CURRENT_DELIVERY_REFERENCE_AUDIT_DID_NOT_DISTINGUISH_HISTORICAL_SUBJECT_IDENTIFIER_FROM_CURRENT_DELIVERY_IDENTITY`
+- **修复**：当前 delivery identity 只由 canonical manifest nested identity、bundle/package、runner、validator、receipt emitter 绑定判断；历史 delivery ID 允许存在于错误事实与恢复证据中，不参与当前 identity 判定。
+- **影响**：SFV353 没有目标仓库副作用。
+- **类防护**：`GOV-STAGE-DELIVERY-IDENTITY-001,GOV-STAGE-RECEIPT-001,GOV-STAGE-TRUTH-001,GOV-STAGE-VALIDATOR-001`
+
+### ERR-585：SFV354 用 Windows 本地代码页解码 UTF-8 Authority 导致 Bootstrap 假失败
+- **分类**：`VALIDATION_HARNESS_DEFECT / AUTHORITY_BOOTSTRAP_DECODE_FAILURE`
+- **状态**：`CLOSED_BY_SFV355_UTF8_BOOTSTRAP_RECOVERY`
+- **阶段**：AUTHORITY_BOOTSTRAP
+- **一手事实**：SFV354 第一项实际远程操作 `GITHUB_REF_API_LIVE=PASS`，取得 live main `eaf1d93232f5ae3df5ceaf8b54e60758d1939f52`；随后 `git show` 本身返回 `AUTHORITY_EXACT_CONTENT_EXIT_CODE=0`，但 Python subprocess reader 以 Windows GBK 解码 UTF-8 Authority 时抛出 `UnicodeDecodeError`，导致 `AUTHORITY_BOOTSTRAP_ACCEPTED=NO`。本轮 `REQUEST_STARTED=NO`、`REPOSITORY_WRITES=NONE`。
+- **根因**：`WINDOWS_SUBPROCESS_TEXT_MODE_DEPENDED_ON_LOCAL_GBK_FOR_UTF8_REPOSITORY_CONTENT`
+- **修复**：SFV355 改为 raw exact-commit HTTP bytes + UTF-8 strict 解码，并成功得到 `AUTHORITY_BOOTSTRAP_ACCEPTED=YES`、唯一 Authority marker PASS、Authority commit=`6119ccf8f9e27ace6b4f7e211fc0fb761f976c56`。
+- **影响**：SFV354 没有新增仓库写入或生命周期副作用。
+- **类防护**：`GOV-STAGE-AUTHORITY-BOOTSTRAP-001,GOV-STAGE-TRUTH-001,GOV-STAGE-DIAG-001`
+
+### ERR-586：SFV355 把 JSON Evidence 作为 cmd.exe 参数传给 Validator 导致转义破坏
+- **分类**：`VALIDATION_HARNESS_DEFECT / VALIDATOR_EVIDENCE_TRANSPORT_FAILURE`
+- **状态**：`CLOSED_BY_SFV356_STDIN_EVIDENCE_TRANSPORT`
+- **阶段**：READ_ONLY_PERSISTED_STATE_RECONCILIATION
+- **一手事实**：SFV355 已成功完成 Authority Bootstrap、Authority commit 校验、SFV352 持久化两文件确认、exact two-file scope、staged/untracked empty、`git diff --check=PASS`、Authority unmodified；最后调用 canonical validator 时，把 JSON evidence 作为 Windows `cmd.exe` 命令行参数传递，Bun 侧 `JSON.parse` 收到被转义破坏的字符串并报 `SyntaxError: JSON Parse error: Unrecognized token '\'`。
+- **根因**：`STRUCTURED_VALIDATOR_EVIDENCE_WAS_TRANSPORTED_THROUGH_WINDOWS_COMMAND_LINE_QUOTING`
+- **修复**：SFV356 将 validator evidence 改为 UTF-8 JSON bytes 通过 stdin 传输，命令行只传固定 mode/repo/package/contract 参数；Recovery Validator 必须在任何新增仓库写入前 14/14 PASS。
+- **影响**：SFV355 为只读阶段，`REPOSITORY_WRITES=NONE`、Fresh-04 writes/lifecycle/commit/push 均为 NONE；其一手结构化事实已经证明 SFV352 两文件持久化状态存在，但直到 SFV356 Recovery Validator PASS 前不允许继续写入。
+- **类防护**：`GOV-STAGE-VALIDATOR-001,GOV-STAGE-TRUTH-001,GOV-STAGE-RETRY-001,GOV-STAGE-DIAG-001`
+
+### ERR-587：文档状态同步错误使用全仓测试，触发无关失败与 tracked report 副作用
+- **分类**：`VALIDATION_HARNESS_DEFECT / VALIDATION_SCOPE_DEFECT / TEST_SIDE_EFFECT_DEFECT`
+- **状态**：`CLOSED_BY_SFV358_TARGETED_VALIDATION_AND_REPORT_CLEANUP`
+- **阶段**：SFV356_ENGINEERING_VALIDATION
+- **一手事实**：第一次 SFV356 在仅修改动态治理文档的状态同步阶段执行 `bun run test`，进入全仓测试并出现与本次文档状态同步无关的 daemon/observability 等测试失败；同时工作树新增 3 个 tracked delta：`packages/observability/test-data/north-star-reports/validation-report.json|md|txt`。远程 exact HEAD 的 `packages/observability/tests/north-star-validation.test.ts` 明确写出 `validation-report.txt/json/md`，并在 `afterEach` 把 reports 复制到 `test-data/north-star-reports`。
+- **根因**：`DOC_ONLY_STATE_SYNC_USED_BROAD_WORKSPACE_TEST_WITH_TRACKED_REPORT_SIDE_EFFECTS`
+- **修复**：SFV358 在任何治理文档新增写入前验证 3 个 report 的正式 producer，并将其精确恢复到 HEAD；本轮只执行与治理文档直接相关的 Stage Execution Authority Contract 定向回归、validator TypeScript、daemon-core build、full workspace build 和 Git 范围检查。
+- **影响**：3 个 report 不属于产品修改，不进入最终提交；最终持久修改仍严格为两份治理文档。
+- **类防护**：`GOV-SCOPE-001,GOV-STAGE-SIDEFX-001,GOV-STAGE-RETRY-001,GOV-POST-001`
+
+### ERR-588：用户可执行 CMD 示例包含不可执行占位符并出现不稳定串联
+- **分类**：`GOVERNANCE_FAILURE / DELIVERY_INSTRUCTION_DEFECT`
+- **状态**：`CLOSED_BY_SFV358_EXACT_LOGGING_CMD_DISCIPLINE`
+- **阶段**：LOCAL_DELIVERY_INSTRUCTION
+- **一手事实**：状态同步推进中曾有一行 CMD 串联未按预期执行；随后为了演示日志重定向又给出含字面量 `...\runner.py` 的示例，用户执行得到 `python: can't open file ... [Errno 2] No such file or directory`。
+- **根因**：`USER_EXECUTABLE_COMMAND_CONTAINED_PLACEHOLDER_OR_FRAGILE_CONTROL_FLOW`
+- **修复**：用户可执行命令统一使用完整真实路径和线性多行 CMD，runner 完整输出固定重定向到 `C:\Users\lyq\Downloads\Compressed\SFVxxx.log.txt`。
+- **影响**：该命令错误没有产生 SpecForge/Fresh-04 仓库写入或生命周期动作。
+- **类防护**：`GOV-STAGE-DELIVERY-001,GOV-STAGE-ARTIFACT-VERIFY-001,GOV-STAGE-DIAG-001`
+
+### ERR-589：已有副作用后给出互相冲突的 V356 重跑指令
+- **分类**：`GOVERNANCE_FAILURE / RETRY_INSTRUCTION_CONFLICT`
+- **状态**：`CLOSED_BY_SFV358_PERSISTED_STATE_RECONCILIATION`
+- **阶段**：SFV356_POST_FAILURE_RECOVERY
+- **一手事实**：第一次 SFV356 已运行全仓测试并留下 3 个 tracked report delta 后，后续回复先给出可执行的 V356 runner 命令，又在同一回复末尾要求“不要再次执行 V356”；随后实际 V356 重跑看到 5 个 dirty 文件并在 `RECOVERY_SCOPE` Fail Closed。
+- **根因**：`POST_SIDE_EFFECT_RETRY_GUIDANCE_WAS_NOT_SINGLE_VALUED`
+- **修复**：SFV358 以当前结构化 Git 状态和正式 producer source 建立唯一恢复基线；旧 V356 不再重跑。
+- **影响**：第二次 V356 `REQUEST_STARTED=NO`、`RESPONSE_RECEIVED=NO`、`REPOSITORY_WRITES=NONE`，没有新增 Fresh-04/生命周期/commit/push 副作用。
+- **类防护**：`GOV-STAGE-RETRY-001,GOV-STAGE-TRUTH-001,GOV-STAGE-DIAG-001`
+
+### ERR-590：V356 重跑的 Recovery Scope 未纳入已存在的测试副作用
+- **分类**：`VALIDATION_HARNESS_DEFECT / RECOVERY_BASELINE_SCOPE_DEFECT`
+- **状态**：`CLOSED_BY_SFV358_FIVE_FILE_RECOVERY_BASELINE`
+- **阶段**：SFV356_RECOVERY_EVIDENCE
+- **一手事实**：第二次 V356 的 `DIFF_PATHS` 与 `STATUS_PATHS` 精确显示 5 个 dirty tracked 文件：两份治理文档 + 3 个 north-star validation report；staged/untracked 为空。V356 Recovery contract 仍要求 exact-two-file dirty，因此以 `ERROR_CODE=RECOVERY_SCOPE` 正确 Fail Closed，且 `REQUEST_STARTED=NO`、`REPOSITORY_WRITES=NONE`。
+- **根因**：`RECOVERY_CONTRACT_BASELINE_DID_NOT_INCLUDE_ALREADY_PERSISTED_TEST_ARTIFACT_SIDE_EFFECTS`
+- **修复**：SFV358 Recovery contract 明确接受五文件输入基线，并要求 producer relationship 在任何 cleanup/write 前通过固定阻断断言。
+- **影响**：V356 重跑本身没有新增副作用；Fail Closed 行为正确。
+- **类防护**：`GOV-STAGE-RETRY-001,GOV-STAGE-TRUTH-001,GOV-SCOPE-001,GOV-STAGE-VALIDATOR-001`
+
+### ERR-591：V357 预发布静态顺序验收误匹配回执字段名
+- **分类**：`VALIDATION_HARNESS_DEFECT / PREPUBLISH_STATIC_AUDIT_FALSE_POSITIVE`
+- **状态**：`CLOSED_BY_SFV358_COMMAND_ANCHOR_PREPUBLISH_AUDIT`
+- **阶段**：ARTIFACT_ACCEPTANCE_PREPUBLISH
+- **一手事实**：V357 包生成后的独立预发布验收用字符串 `TARGETED_GOVERNANCE_TEST` 检查执行顺序，但该字符串先出现在 runner 的默认回执字段初始化中，因此静态 assertion 失败。V357 未通过 Artifact Acceptance、未向用户发布、未在用户环境执行。
+- **根因**：`PREPUBLISH_ORDER_AUDIT_MATCHED_FIELD_NAME_INSTEAD_OF_EXECUTABLE_COMMAND_ANCHOR`
+- **修复**：V358 的独立验收使用实际执行锚点 `bun(["test","packages/daemon-core/tests/unit/stage-execution-authority-contract.test.ts"]` 判断顺序，并继续验证 Recovery Validator 必须早于 transient cleanup 和治理文档写入。
+- **影响**：V357 没有用户仓库、Fresh-04、生命周期、commit/push 副作用。
+- **类防护**：`GOV-STAGE-ARTIFACT-VERIFY-001,GOV-STAGE-VALIDATOR-001,GOV-STAGE-DIAG-001`
