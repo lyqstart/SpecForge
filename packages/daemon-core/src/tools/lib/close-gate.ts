@@ -545,11 +545,13 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
       'contract_change_path',
       'rollback_path',
     ];
+    const workflowPathValid = validPaths.includes(workflowPath);
     checks.push({
       check_id: 'close_workflow_path_valid',
       description: 'workflow_path is valid (§6.4)',
-      passed: validPaths.includes(wi.workflow_path as string),
-      severity: validPaths.includes(wi.workflow_path as string) ? undefined : 'error',
+      passed: workflowPathValid,
+      severity: workflowPathValid ? undefined : 'error',
+      details: `effective_workflow_path=${workflowPath || '(none)'}; work_item.workflow_path=${normalizeWorkflowValue(wi.workflow_path) || '(none)'}; ctx.workflow_path=${normalizeWorkflowValue(ctx.workflowPath) || '(none)'}`,
     });
 
     const allowedWriteFiles = normalizeAllowedFiles((wi as any).allowed_write_files);

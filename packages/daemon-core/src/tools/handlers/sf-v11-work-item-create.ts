@@ -130,7 +130,10 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
     await initializeClosureFiles(wiDir, workItemId, workflowPath, baseSpecVersion);
 
     // 5. Update status to intake_ready
-    await updateWorkItemStatus(wiDir, 'intake_ready');
+    await updateWorkItemStatus(wiDir, 'intake_ready', {
+      workflow_path: workflowPath,
+      workflow_type: workflowType,
+    });
 
     // 6. Persist to StateManager
     const projectPath = (context?.directory as string) || (context?.worktree as string) || '';

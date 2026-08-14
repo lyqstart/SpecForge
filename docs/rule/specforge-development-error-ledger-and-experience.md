@@ -8910,3 +8910,91 @@ actual_files
 - **修复**：V358 的独立验收使用实际执行锚点 `bun(["test","packages/daemon-core/tests/unit/stage-execution-authority-contract.test.ts"]` 判断顺序，并继续验证 Recovery Validator 必须早于 transient cleanup 和治理文档写入。
 - **影响**：V357 没有用户仓库、Fresh-04、生命周期、commit/push 副作用。
 - **类防护**：`GOV-STAGE-ARTIFACT-VERIFY-001,GOV-STAGE-VALIDATOR-001,GOV-STAGE-DIAG-001`
+
+### ERR-592：Fresh-04 Close Gate 重审计丢失官方 Git Governance trusted provenance
+- **分类**：`PRODUCT_DEFECT / CLOSE_GATE_CONSUMER_DRIFT / TRUSTED_PROVENANCE_DROP`
+- **状态**：`CLOSED_BY_SFV364_ENGINEERING_VALIDATION`
+- **阶段**：PHASE11_FRESH04_CLOSE
+- **一手事实**：Fresh-04 在 `verification_done` 执行 Close 时，Changed Files Audit 把 `.specforge/project/git_policy.json`、`git_adoption_report.md`、`git_ignore_decisions.json` 判为 `spec_write_by_non_merge_runner`。远程 `main@4e1b0621...` 的普通 `sf_changed_files_audit` 会读取 `readTrustedGitGovernanceProjectWrites(projectRoot)` 并作为第四参数传给 `runChangedFilesAudit`；`sf-v11-close-gate.ts` 的初始审计和 refresh 审计均未传该 provenance。
+- **根因**：`CLOSE_GATE_REAUDIT_DROPPED_CANONICAL_TRUSTED_GIT_GOVERNANCE_PROVENANCE`
+- **影响**：官方 `sf_git_project_adopt` / `sf_git_ignore_decision_record` 产生且哈希仍匹配的控制面元数据在 Close 被误判为未授权 Project Spec 写入，阻断正确业务项目关闭。
+- **修复**：Close 初始审计和 operation-normalization refresh 审计统一读取并消费 `readTrustedGitGovernanceProjectWrites(projectRoot)`，与正式 `sf_changed_files_audit` 使用同一可信来源。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-060,EXP-093`
+
+### ERR-593：Fresh-04 Semantic Closure stale 是 ERR-592 的链式症状，不是独立 provenance 算法缺陷
+- **分类**：`DOWNSTREAM_SYMPTOM / PROVENANCE_INVALIDATION`
+- **状态**：`CLOSED_AS_DOWNSTREAM_SYMPTOM_BY_SFV364_ENGINEERING_VALIDATION`
+- **阶段**：PHASE11_FRESH04_CLOSE
+- **一手事实**：Semantic Closure provenance 正式绑定 `changed_files_audit.md`。Close 已存在“已有通过报告且重审仍通过时不重写”的时序防护；但 ERR-592 使重审结果变为失败，Close 必须持久化新的失败 audit，随后 provenance 正确报告 `SEMANTIC_CLOSURE_INPUT_STALE`。
+- **根因**：`DOWNSTREAM_OF_ERR592_FAILED_AUDIT_REWRITE`
+- **影响**：若把该症状误当独立根因修改 semantic-closure provenance，会削弱真实证据绑定。
+- **修复**：不修改 Semantic Closure 实现；修复 ERR-592 后依靠原有 passed-report preservation 逻辑保持 provenance current。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-093`
+
+### ERR-594：Work Item workflow_path 生产者未落盘，Close 又直接消费 raw work_item 字段
+- **分类**：`PRODUCT_DEFECT / PRODUCER_CONSUMER_DRIFT / WORKFLOW_METADATA`
+- **状态**：`CLOSED_BY_SFV364_ENGINEERING_VALIDATION`
+- **阶段**：PHASE11_FRESH04_CLOSE
+- **一手事实**：`createWorkItem()` 初始创建 `work_item.json.workflow_path=null`；`sf-v11-work-item-create.ts` 已计算并写入 `trigger_result.json.workflow_path`，也把同值写入 StateManager transition context，但 `updateWorkItemStatus(wiDir,'intake_ready')` 未把 workflow metadata 回写到 work_item。`runCloseGate` 已计算 effective workflow，却在 `close_workflow_path_valid` 继续直接检查 `wi.workflow_path`；Close handler 同样继续把 raw field 传给 Candidate 校验和最终推进。
+- **根因**：`WORK_ITEM_WORKFLOW_METADATA_PRODUCER_GAP_PLUS_CLOSE_RAW_FIELD_CONSUMER`
+- **影响**：合法的 `requirement_change_path` 已被 Trigger/User Decision/前序 Gate 使用并验证，Close 仍可能因 raw metadata 为 null 假失败。
+- **修复**：Work Item 创建时持久化 `workflow_path/workflow_type`；Close handler 从 work_item 或已校验 trigger_result 解析 effective workflow 并贯穿 Candidate 校验、Close Gate 和最终推进；Close check 使用 effective workflow 并输出诊断来源。
+- **类防护**：`EXP-001,EXP-004,EXP-007,EXP-019,EXP-020,EXP-093`
+
+### ERR-595：Fresh-04 Close 诊断再次使用 sf_safe_bash 读取 .specforge 元数据
+- **分类**：`OPERATOR_ERROR / REPEATED_HARDSTOP_PATTERN`
+- **状态**：`CLOSED_BY_WRITE_GUARD_AND_CONTROLLED_RECOVERY`
+- **阶段**：PHASE11_FRESH04_CLOSE_DIAGNOSIS
+- **一手事实**：OpenCode 为比较治理证据元数据调用 `sf_safe_bash`，触发 `HS-1786695983963 / SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN`。WriteGuard 在命令执行前阻断；HardStop 以 `prohibited_action_replaced`、`retry_original_action=false` 解除，改用 Read/Grep/Glob；没有业务写入。
+- **根因**：`READ_ONLY_DIAGNOSIS_SELECTED_SHELL_TOOL_FOR_PROTECTED_SPECFORGE_RUNTIME_PATH`
+- **防护失效原因**：前两次同类事件的替代规则没有阻止编排代理再次选择 shell 读取受保护路径。
+- **正确做法**：`.specforge/**` 诊断读取只使用正式 Read/Grep/Glob/SpecForge read/debug 工具。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-020,EXP-093`
+
+### ERR-596：SFV360 预处理环境无法直接 materialize GitHub TypeScript 源文件
+- **分类**：`DELIVERY_ENVIRONMENT_DEFECT / PREPUBLISH_SOURCE_MATERIALIZATION`
+- **状态**：`CLOSED_PREPUBLISH_BY_EXACT_WEB_SOURCE_PLUS_LOCAL_HEAD_GUARD`
+- **阶段**：SFV360_PREPUBLISH
+- **一手事实**：ChatGPT 容器直接 clone GitHub 时 DNS 失败；raw TypeScript 下载又因容器下载内容策略无法落盘。用户仓库未被访问或修改。
+- **根因**：`CHATGPT_CONTAINER_NETWORK_AND_DOWNLOAD_CONTENT_POLICY_BLOCKED_DIRECT_TYPESCRIPT_MATERIALIZATION`
+- **修复**：调查以 exact-commit Web 原始源码为事实源；交付脚本在用户本地首次写入前强制 live remote/local HEAD、main、clean worktree、Authority marker 与所有源码锚点 cardinality。
+- **类防护**：`EXP-001,EXP-007,EXP-019,EXP-060,EXP-193,EXP-195`
+
+### ERR-597：SFV360 预发布包生成器因嵌套源字符串产生 Python IndentationError
+- **分类**：`DELIVERY_HARNESS_DEFECT / PREPUBLISH_GENERATOR_SYNTAX`
+- **状态**：`CLOSED_PREPUBLISH_BY_SFV361_DATA_DRIVEN_TRANSFORM_GENERATOR`
+- **阶段**：SFV360_PREPUBLISH_ARTIFACT_GENERATION
+- **一手事实**：第一次 SFV360 包生成调用在 Python 解析阶段报 `IndentationError: unindent does not match any outer indentation level`，工具明确返回代码未成功执行。没有可接受 SFV360 artifact，没有用户仓库/Fresh-04/生命周期/commit/push 副作用。
+- **根因**：`NESTED_EMBEDDED_SOURCE_STRING_BROKE_PREPUBLISH_GENERATOR_PYTHON_SYNTAX`
+- **修复**：废弃 V360；SFV361 把源码 old/new 变换作为 JSON 数据，由通用 apply.py 执行 cardinality=1 的结构变换；所有脚本在发布前执行 `ast.parse`/Node syntax/Manifest/ZIP/consumer fixture 独立验收。
+- **类防护**：`GOV-STAGE-ARTIFACT-VERIFY-001,GOV-STAGE-DIAG-001,EXP-001,EXP-007,EXP-019`
+
+### ERR-598：SFV361 对 current-handoff 使用全文件唯一键定位导致合法重复字段 Fail Closed
+- **分类**：`DELIVERY_HARNESS_DEFECT / HANDOFF_SECTION_SCOPE`
+- **状态**：`CLOSED_BY_SFV364_SECTION_SCOPED_HANDOFF_VALIDATION`
+- **阶段**：SFV361_CONTROLLED_APPLY
+- **一手事实**：用户执行 SFV361 后，Apply 返回 `HANDOFF_KEY_CARDINALITY EXPERIENCE_FILE_READ: actual=3`，并明确回执 `FRESH04_WRITES=NONE`、`LIFECYCLE_ACTIONS=NONE`、`COMMIT_PUSH=NONE`。远程 handoff 中 `EXPERIENCE_FILE_READ=` 合法存在于规则说明、失败模板和 CURRENT EXECUTION STATE 三个不同语义区段。
+- **根因**：`WHOLE_FILE_KEY_CARDINALITY_USED_FOR_SECTION_SCOPED_DYNAMIC_HANDOFF_FIELD`
+- **影响**：正确的产品修复在首次仓库写入前被交付脚本阻断。
+- **修复**：SFV364 只在 `<!-- SPECFORGE_CURRENT_EXECUTION_STATE:START -->` 与 `<!-- SPECFORGE_CURRENT_EXECUTION_STATE:END -->` 唯一区段内更新动态键、错误状态和 failure ledger backfill；区段外同名字段保持不变。
+- **类防护**：`GOV-STAGE-HANDOFF-001,GOV-STAGE-VALIDATOR-001,GOV-STAGE-DIAG-001,EXP-001,EXP-007,EXP-019`
+
+### ERR-599：未发布 SFV363 预验收导入最终包内 apply.py 生成未声明 __pycache__
+- **分类**：`DELIVERY_HARNESS_DEFECT / PREPUBLISH_SELF_TEST_SIDE_EFFECT`
+- **状态**：`CLOSED_PREPUBLISH_BY_SFV364_EXTERNAL_FIXTURE_NO_BUNDLE_IMPORT`
+- **阶段**：SFV363_PREPUBLISH_ARTIFACT_ACCEPTANCE
+- **一手事实**：未发布的 SFV363 在预验收 section-locator fixture 中直接 import 最终 bundle 内 `scripts/apply.py`，Python 自动生成 `scripts/__pycache__/apply...pyc`，导致 ZIP exact member set 后验验收失败。该失败只发生在 ChatGPT `/mnt/data` 交付生成区；未访问或修改用户 SpecForge 仓库、Fresh-04、生命周期或 Git。
+- **根因**：`PREPUBLISH_SELF_TEST_IMPORTED_FINAL_BUNDLE_AND_CREATED_UNDECLARED_ARTIFACT`
+- **影响**：SFV363 未达到 Artifact Acceptance，因此未发布、未执行。
+- **修复**：废弃 SFV363；SFV364 的 locator fixture 把 `apply.py` 复制到外部临时目录后再 import，最终 bundle 从不被 import；ZIP 前后强制 zero `__pycache__`/`.pyc` 与 exact member set。
+- **类防护**：`GOV-STAGE-ARTIFACT-VERIFY-001,GOV-STAGE-DIAG-001,EXP-001,EXP-007,EXP-019`
+
+### ERR-600：SFV364 Runner 回显验证子进程输出时触发 Windows GBK UnicodeEncodeError
+- **分类**：`DELIVERY_HARNESS_DEFECT / OUTPUT_ENCODING`
+- **状态**：`CLOSED_BY_SFV366_UTF8_FINAL_VALIDATION`
+- **阶段**：SFV364_POST_APPLY_VALIDATION_RECEIPT
+- **一手事实**：SFV364 `APPLY=SUCCESS`，已写入 exact 6 个批准 SpecForge 文件；Runner 随后在 `run_child()` 对验证子进程 UTF-8 解码结果执行 `print(out.rstrip())` 时，Windows stdout 使用 GBK，遇到 `U+FFFD` 触发 `UnicodeEncodeError`。SFV365 只读恢复进一步确认：远程/本地 HEAD 均仍为 `4e1b0621...`，exact 6 dirty、产品修复 wiring PASS、handoff 已进入 `SFV364_ENGINEERING_VALIDATION_PASS`、Authority/Semantic Closure diff empty、`git diff --check=0`。
+- **根因**：`RUNNER_STDOUT_ENCODING_INHERITED_WINDOWS_GBK_WHILE_CHILD_OUTPUT_WAS_UTF8_REPLACEMENT_DECODED`
+- **影响**：验证子进程已经推进到最终动态文档同步，但最终 validator 回执未可靠返回给 ChatGPT，因此不能仅凭 SFV364 主日志宣布最终验收闭环。
+- **修复**：SFV366 全链使用 `python -X utf8`；Runner/验证器 stdout 显式 `reconfigure(encoding="utf-8", errors="backslashreplace")`，并重新执行最终工程验证与 canonical validation-contract-kernel 验收。
+- **类防护**：`GOV-STAGE-OUTPUT-001,GOV-STAGE-RECEIPT-001,GOV-STAGE-VALIDATOR-001,GOV-STAGE-DIAG-001,EXP-001,EXP-007,EXP-019`

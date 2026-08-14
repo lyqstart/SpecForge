@@ -16,6 +16,7 @@ import {
   runChangedFilesAudit,
   type ChangedFilesAuditResult,
 } from "../lib/changed-files-audit.js";
+import { readTrustedGitGovernanceProjectWrites } from "../lib/git-governance-write-provenance.js";
 import {
   applyRevokedPermissionFacts,
   revokeCodePermission,
@@ -507,7 +508,13 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
     trustedAllowedWrites,
   );
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
-  const auditResult = runChangedFilesAudit(actualFiles, allowedWriteFilesForAudit, "agent");
+  const trustedGitGovernanceWrites = readTrustedGitGovernanceProjectWrites(projectRoot);
+  const auditResult = runChangedFilesAudit(
+    actualFiles,
+    allowedWriteFilesForAudit,
+    "agent",
+    trustedGitGovernanceWrites,
+  );
 
   const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
   const auditDataSource =
@@ -728,6 +735,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     result.authoritative_state_used = true; result.closed_from_state = effectiveState; if (effectiveState === "closed") { return { ...result, success: true, state_advanced: false, state_auto_advance: { attempted: true, advanced: false, reason: "already_closed", current_state: "closed" }, }; } if (effectiveState !== "verification_done") { return { ...result, error: `AUTHORITATIVE_STATE_MISMATCH: close_gate requires authoritative current_state=verification_done, current='${effectiveState || "N/A"}'`, state_auto_advance: { attempted: false, reason: "current_state_not_verification_done", current_state: effectiveState || "N/A", expected_state: "verification_done" }, }; }
 
     const triggerResultPath = path.join(workItemDir, "trigger_result.json");
+    let triggerResult: Record<string, any>;
     try {
       const trContent = await fs.readFile(triggerResultPath, "utf-8");
       const trValidation = validateTriggerResultJson(trContent, workItemId);
@@ -737,9 +745,16 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
           error: `trigger_result.json schema validation failed: ${trValidation.errors.join("; ")}`,
         };
       }
+      triggerResult = JSON.parse(trContent);
     } catch {
       return { ...result, error: "trigger_result.json not found — required for close_gate" };
     }
+    const effectiveWorkflowPath =
+      String(workItem.workflow_path ?? "").trim() ||
+      String(triggerResult.workflow_path ?? "").trim();
+    const effectiveWorkflowType =
+      String(workItem.workflow_type ?? "").trim() ||
+      String(triggerResult.workflow_type ?? "").trim();
 
     const candidateManifestPath = path.join(workItemDir, "candidate_manifest.json");
     let candidateManifest: any;
@@ -748,7 +763,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       const cmValidation = validateCandidateManifestJson(
         cmContent,
         workItemId,
-        workItem.workflow_path as string,
+        effectiveWorkflowPath,
       );
       if (!cmValidation.valid) {
         return {
@@ -828,11 +843,11 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     }
 
     const contractWorkflow =
-      workItem.workflow_type === "contract_change" ||
-      workItem.workflow_path === "contract_change_path";
+      effectiveWorkflowType === "contract_change" ||
+      effectiveWorkflowPath === "contract_change_path";
     const specMigrationWorkflow =
-      workItem.workflow_type === "spec_migration" ||
-      workItem.workflow_path === "spec_migration_path";
+      effectiveWorkflowType === "spec_migration" ||
+      effectiveWorkflowPath === "spec_migration_path";
     const permState = await checkCodePermission(workItemDir);
     const allowedWriteFilesSnapshot = permState.allowed_write_files;
     if (contractWorkflow || specMigrationWorkflow) {
@@ -881,10 +896,13 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         (updatedWi.allowed_write_files_snapshot as Array<{ path: string; operation: string }>) ??
         allowedWriteFilesSnapshot.map((f) => ({ path: f.path, operation: f.operation }));
 
+      const trustedGitGovernanceWrites =
+        readTrustedGitGovernanceProjectWrites(projectRoot);
       const auditResult = runChangedFilesAudit(
         changedFiles,
         allowedWriteFilesForAudit,
         "agent",
+        trustedGitGovernanceWrites,
       );
       result.changed_files_audit = auditResult;
       await fs.writeFile(
@@ -933,7 +951,13 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     );
     if (finalAuditRefresh) result.changed_files_audit = finalAuditRefresh;
 
-    const closeGateResult = await runCloseGate({ workItemId, workItemDir, projectRoot });
+    const closeGateResult = await runCloseGate({
+      workItemId,
+      workItemDir,
+      projectRoot,
+      workflowPath: effectiveWorkflowPath,
+      workflowType: effectiveWorkflowType,
+    });
     result.close_gate = closeGateResult;
 
     const gatesDir = path.join(workItemDir, "gates");
@@ -969,8 +993,8 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       projectRoot,
       workItemId,
       workItemDir,
-      workflowPath: workItem.workflow_path,
-      workflowType: workItem.workflow_type,
+      workflowPath: effectiveWorkflowPath,
+      workflowType: effectiveWorkflowType,
     });
 
     result.state_auto_advance = stateAutoAdvance;
