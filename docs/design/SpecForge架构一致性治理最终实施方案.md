@@ -1829,6 +1829,21 @@ Close Gate = REQUIRED
 18. closed-spec-migration recovery 允许一次**部分 side-effect 幂等续接**：若用户确认的目标分支已经由同一 WI 创建、当前正位于该分支、`git_context.json` 的 `work_item_id/branch_name/base_branch/base_commit` 与请求完全一致、当前 HEAD 仍严格等于 `base_commit`、且尚无 checkpoint commit，则允许在不再次创建/切换分支的情况下执行同一 latest passed Verification Attempt + Project Spec SHA 校验并补写 `git_delivery_recovery.json`。任何 context/branch/HEAD 不一致都必须 Fail Closed。
 19. 上述幂等续接不得修改 `git_context.json`、不得生成第二个分支、不得推进 Work Item 状态、不得重跑 Gate/Close；成功返回必须显式声明 `branch_created=false`、`git_context_reused=true`、`recovery_validation=passed` 和 `recovery_evidence_path`。
 
+**GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001：** `spec_migration_path` 的 Project Spec repair 默认仍只能从当前 `.specforge/project/**` 读取 source。只有为了恢复已经被产品缺陷破坏、且历史正式内容仍被 immutable Gate Attempt 证明的 Project Spec 时，才允许把历史 Work Item 的 `candidates/**` 作为 repair source；该例外不得形成直接 Project Spec 写入或第二套恢复流程。
+
+固定规则：
+1. 历史 source 只允许位于 `.specforge/work-items/<SOURCE_WI>/candidates/**`，调用方必须显式提供 `source_work_item_id + gate_attempt_id`；普通 `.specforge/project/**` source 不受本例外影响。
+2. `gate_attempt_id` 必须属于 `SOURCE_WI`，且其 `attempt-result.json` 必须满足 `source=gate_run`、`summary_status=passed`、`input_snapshot=input-snapshot.json`；Attempt / Snapshot 缺失或身份不一致必须 Fail Closed。
+3. 历史 `candidate_manifest.json`、`user_decision.json`、`merge_report.md` 与被引用 Candidate source 的当前字节，必须分别与该 Attempt 的 `input-snapshot.json` 中同路径 `sha256 + size` 完全一致；任一漂移必须 Fail Closed。
+4. 历史 User Decision 必须为真实已批准决策，并且其 `manifest_hash` 必须严格绑定当前历史 `candidate_manifest.json` 字节；历史 Candidate Manifest 的 `work_item_id` 必须等于 `SOURCE_WI`。
+5. 被引用 Candidate source 必须在历史 Candidate Manifest 中存在唯一条目，且其 `candidate_path` 必须映射到本次 repair 正在恢复的同一正式 `target_path`，`operation=replace`；禁止把一个历史 Candidate 借用到不同正式目标。
+6. 同一个 immutable `input-snapshot.json` 必须同时证明：历史 Candidate source 与其正式 `target_path` 在该 passed Attempt 时均存在为普通文件，且二者 `sha256` 完全相等；只有这样才能把该 Candidate 认定为已经 Atomic Spec Merge 生效过的正式内容来源。
+7. 历史 `merge_report.md` 必须仍由 Snapshot 绑定且明确 `Status: success`；无法证明 Atomic Spec Merge 成功时不得使用历史 source。
+8. repair preparation 只能把已验证 source 复制成**新的 repair WI Candidate**。之后仍必须走该新 WI 的 Required Candidate Gates → User Decision → Atomic Spec Merge → Post-Spec-Merge → no-code Verification → Formal Version Gate → Close → Git Merge；不得直接覆盖 `.specforge/project/**`。
+9. 新 repair WI 的 Atomic Spec Merge 继续由现有 Merge Runner 按当前 Project Spec Version 签发下一 PSV；`spec_manifest.json` 必须由 Merge Runner 根据新 repair Candidate 与当前仍有效的 Project Spec sibling facts 重新生成，历史 source 的旧 PSV/hash 只证明内容来源，不允许回滚版本或把历史 manifest 字节原样覆盖回来。
+10. immutable source binding 必须进入 `project_spec_repair_plan.json` 作为审计证据；历史 Work Item、Gate Attempt、Snapshot、Candidate Manifest、User Decision、Merge Report 与历史 Candidate 均保持不可变。
+11. 本规则只扩展 `spec_migration` 已有 repair source contract，不新增 Workflow、Gate、Agent、状态边、Code Permission 或 Merge Runner。
+
 Trace 贯穿 Requirement、Architecture、Data Model、Module Design、Contract、Task、Implementation 和 Verification。
 
 术语固定：
@@ -4325,6 +4340,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-ROLE-001` | 1.3 文件作用范围与两种开发模式 |
 | `GOV-SCOPE-001` | 2.4 实施过程中的范围冻结 |
 | `GOV-SPEC-MIGRATION-NO-CODE-001` | 3.1 Canonical Product Lifecycle / 8.1 Code Permission |
+| `GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001` | 3.1 Canonical Product Lifecycle |
 | `GOV-SELF-001` | 1.3.1 模式 A：SpecForge 自身开发 |
 | `GOV-STAGE-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-ARTIFACT-VERIFY-001` | 2.9 Truth Source、Artifact Acceptance 与 Validator |

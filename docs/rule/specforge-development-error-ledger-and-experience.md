@@ -9047,3 +9047,96 @@ actual_files
 - **影响**：产品修复部署后，Fresh-04 仍需先恢复被产品破坏的两份正式 Project Spec，再按正式验证路径重新定稿 changed-files audit、重建 semantic closure、重跑 verification gate，之后才能再次 Close。
 - **修复**：本轮不修改 Semantic Closure；保持 fail-closed 证据绑定。
 - **类防护**：`GOV-EVID-001,GOV-POST-001,EXP-001,EXP-007,EXP-019`
+
+### ERR-606：SFV371 首次执行时 ZIP 未保存到固定下载目录
+- **分类**：`DELIVERY_EXECUTION / MISSING_LOCAL_PACKAGE`
+- **状态**：`CLOSED_BY_SUCCESSFUL_SFV371_RERUN`
+- **阶段**：FRESH04_IMMUTABLE_REPAIR_EVIDENCE_FORENSICS
+- **一手事实**：首次执行 `python -m zipfile -e SFV371_Fresh04_Immutable_Repair_Evidence_Schema.zip` 时返回 `FileNotFoundError`，失败发生在解压前；未读取或修改 SpecForge/Fresh-04 仓库，未触发生命周期动作。重新下载同一已验收 ZIP 后 SFV371 成功完成只读取证。
+- **根因**：`DELIVERY_ZIP_NOT_PRESENT_IN_FIXED_DOWNLOAD_DIRECTORY`
+- **影响**：仅本地交付启动失败，无仓库副作用。
+- **类防护**：执行命令继续保留固定 ZIP 名，并在必要时先检查文件存在。
+
+### ERR-607：Project Spec repair 无法消费由 immutable Gate Attempt 证明的历史 WI Candidate source
+- **分类**：`PRODUCT_DEFECT / RECOVERY_CONTRACT_GAP / PROJECT_SPEC_REPAIR_SOURCE`
+- **状态**：`CLOSED_BY_SFV381_FINAL_ENGINEERING_VALIDATION_PENDING_FRESH04_RECOVERY`
+- **阶段**：PHASE11_FRESH04_PROJECT_SPEC_CONTROLLED_RECOVERY
+- **一手事实**：SFV371 证明 Fresh-04 `attempt-0010/input-snapshot.json` 同时冻结正式 `CORE/module.json`、历史 `module.candidate.json`、`candidate_manifest.json`、`user_decision.json`、`merge_report.md`，且 Candidate 与当时正式 target SHA256 完全相等；当前 `prepareProjectSpecRepairCandidates` 的 `resolveProjectSpecSource()` 只接受 `.specforge/project/**`，因此合法 immutable recovery source 无法进入正式 repair Candidate。
+- **根因**：`PROJECT_SPEC_REPAIR_SOURCE_CONTRACT_EXCLUDED_IMMUTABLE_HISTORICAL_WI_CANDIDATE`
+- **影响**：产品已修复初始化破坏生产者，但真实项目无法通过正式 `spec_migration` repair 流程恢复被产品缺陷破坏的 Project Spec，只能停在 `verification_done`。
+- **修复**：新增 `GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001`；历史 source 仅允许从显式 SOURCE_WI 的 `candidates/**` 读取，并严格绑定 passed immutable Gate Attempt、Snapshot、Candidate Manifest、User Decision、Merge Report、source Candidate 与同一正式 target hash；修复后仍进入新的 repair WI Candidate/Gate/User Decision/Atomic Spec Merge，不直接写 Project Spec。
+- **类防护**：`GOV-AUTH-001,GOV-CLOSELOOP-001,GOV-CONTRACT-001,GOV-EVID-001,GATE-ATTEMPT-INPUT-SNAPSHOT-001`
+
+### ERR-608：SFV372 使用脆弱 Authority 整段正文锚点导致 prewrite 失败
+- **分类**：`DELIVERY_HARNESS / FRAGILE_AUTHORITY_ANCHOR / PREWRITE_FAIL`
+- **状态**：`CLOSED_PREPUBLISH_BY_SFV373_STRUCTURE_SCOPED_AUTHORITY_ANCHOR`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV372 在任何仓库写入前返回 `AUTHORITY_RULE_ANCHOR`；Fresh-04 writes、生命周期、commit/push 均为 NONE。当前 exact Authority 证明 `GOV-SPEC-MIGRATION-NO-CODE-001` 的规则 19 与 `Trace 贯穿 Requirement...` 分属稳定同一 section，但 V372 把整段正文文本作为唯一 replace anchor。
+- **根因**：`WHOLE_PARAGRAPH_AUTHORITY_ANCHOR_RECONSTRUCTED_IN_DELIVERY_INSTEAD_OF_SECTION_SCOPED_SYMBOL_BOUNDARY`
+- **影响**：仅交付 harness prewrite 失败，无产品或 Fresh-04 副作用。
+- **修复**：SFV373 改为在 `GOV-SPEC-MIGRATION-NO-CODE-001` section 内，以 Rule ID 起点 + `Trace 贯穿...` section boundary 定位插入，并用附录 B 的唯一 Rule ID 行做索引插入；不再依赖整段正文精确重建。
+- **类防护**：`GOV-STAGE-CHK-001,GOV-STAGE-VALIDATOR-001,EXP-001,EXP-004,EXP-007,EXP-019`
+
+### ERR-609：V373 immutable repair 实现漏掉 ProjectSpecRepairPreparation 的 binding 字段声明
+- **分类**：`PRODUCT_IMPLEMENTATION / TYPE_CONTRACT_DECLARATION_GAP`
+- **状态**：`CLOSED_BY_SFV381_FINAL_ENGINEERING_VALIDATION`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV374 对当前 dirty 5 文件逐项诊断，9 个结构检查中仅 `source_interface_present=false`；Authority rule、passed Gate Attempt 绑定、Candidate/target/hash 绑定、repair plan、正向与篡改负向回归均已存在。源码已定义 `ProjectSpecRepairImmutableSourceBinding` 并消费 `input.preparation.immutable_source_binding`，但 `ProjectSpecRepairPreparation` 未声明该字段。
+- **根因**：`PROJECT_SPEC_REPAIR_PREPARATION_INTERFACE_MISSING_IMMUTABLE_SOURCE_BINDING_PROPERTY`
+- **影响**：契约实现未闭合，工程验证正确阻断；Fresh-04 未被访问或修改。
+- **修复**：在唯一 `ProjectSpecRepairPreparation` TypeScript interface 的结构边界内增加 `immutable_source_binding?: ProjectSpecRepairImmutableSourceBinding;`，不改变 Authority、Workflow、Gate、State Machine、Merge Runner、Close 或 Semantic Closure。
+- **类防护**：`GOV-CONTRACT-001,GOV-CLOSELOOP-001,GOV-POST-001`
+
+### ERR-610：SFV375 再次使用正文正则锚点定位接口导致 prewrite 失败
+- **分类**：`DELIVERY_HARNESS / FRAGILE_SOURCE_ANCHOR / PREWRITE_FAIL`
+- **状态**：`CLOSED_BY_SFV376_SYMBOL_SCOPED_STRUCTURE_RECOVERY`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV375 在任何写入前返回 `PREPARATION_INTERFACE_STABLE_ANCHOR=0`；回执明确 `FRESH04_ACCESS=NONE`、`FRESH04_WRITES=NONE`、`LIFECYCLE_ACTIONS=NONE`、`COMMIT_PUSH=NONE`。
+- **根因**：`DELIVERY_RECONSTRUCTED_INTERFACE_BODY_REGEX_INSTEAD_OF_LOCATING_TYPESCRIPT_SYMBOL_BOUNDARY`
+- **影响**：仅交付恢复脚本失败，无仓库新增副作用，V373 dirty 5 文件保持原状。
+- **修复**：SFV376 只以唯一 TypeScript symbol `export interface ProjectSpecRepairPreparation` 定位，使用花括号结构扫描找到 interface closing brace 后插入字段；不匹配接口正文、不使用整段文本或正则内容锚点。
+- **类防护**：`GOV-STAGE-CHK-001,EXP-001,EXP-004,EXP-007,EXP-019`
+
+### ERR-611：governed-entry 测试夹具缺少正式 Project Spec Version 来源
+- **分类**：`TEST_CONSUMER_DRIFT / STALE_FIXTURE`
+- **状态**：`CLOSED_BY_SFV381_FINAL_ENGINEERING_VALIDATION`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV376 的 immutable repair 新增/相关测试全部通过；4 个失败 case 均来自 `spec-migration-governed-entry.test.ts`。远程 `c577ead...` 一手源码证明，create transition 调用 `ensureWorkItemJsonOnCreate()`，其第一步读取 `.specforge/project/spec_manifest.json` 的 `project_spec_version`；当前测试公共 `beforeEach` 只创建 `.specforge/manifest.json`。
+- **根因**：`TEST_FIXTURE_PRE_DATES_AUTHORITATIVE_PROJECT_SPEC_VERSION_REQUIREMENT`
+- **修复**：仅在公共 fixture 增加最小正式 `.specforge/project/spec_manifest.json`，写入 `project_spec_version=PSV-0001`。
+
+### ERR-612：SFV377 prewrite 因引号字面量误判真实测试源码
+- **分类**：`DELIVERY_HARNESS / FALSE_NEGATIVE_PRECHECK`
+- **状态**：`CLOSED_BY_SFV379_BYTE_POSITION_RECOVERY`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV377 返回 `BASELINE_FIXTURE_MANIFEST_NOT_FOUND` 且发生在写入前；远程真实源码明确存在 `.specforge/manifest.json`。
+- **根因**：`PRECHECK_MATCHED_QUOTE_STYLE_INSTEAD_OF_SOURCE_STRUCTURE`
+- **修复**：取消正文/引号风格存在性判断。
+
+### ERR-613：SFV378 prewrite 错误要求 beforeEach 闭合花括号独占一行
+- **分类**：`DELIVERY_HARNESS / FALSE_LAYOUT_ASSUMPTION`
+- **状态**：`CLOSED_BY_SFV379_BYTE_POSITION_RECOVERY`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV378 返回 `BEFOREEACH_CLOSE_NOT_LINE_SCOPED` 且发生在写入前；远程真实源码第 53 行为 `});`，回调闭合 `}` 与 `);` 同行。
+- **根因**：`PATCHER_ASSUMED_FORMATTING_LAYOUT_NOT_TYPESCRIPT_STRUCTURE`
+- **修复**：以唯一 `beforeEach(async () => {` 和花括号扫描得到的实际 closing-brace 字符位置直接插入，不再要求任何换行布局。
+
+### ERR-614：SFV379 的 callback scanner 从 marker 后寻找下一个花括号，误把对象字面量当作 beforeEach 回调起点
+- **分类**：`DELIVERY_HARNESS / STRUCTURAL_SCANNER_BUG / TEST_FILE_CORRUPTION`
+- **状态**：`CLOSED_BY_SFV381_FINAL_ENGINEERING_VALIDATION`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV379 apply 成功后，目标测试第 52 行变为 `{ recursive: true   await mkdir(...)`，Bun 报 `Expected "}" but found "await"`、`Expected ")" but found "mkdir"`、`Unexpected }`。日志同时确认 repair 相关测试继续通过，Fresh-04 未访问、生命周期未执行。远程 HEAD 原文证明 `beforeEach(async () => {` 的 marker 自身已经包含 callback opening brace。
+- **根因**：`CALLBACK_SCANNER_STARTED_AT_NEXT_BRACE_AFTER_MARKER_INSTEAD_OF_MARKER_OWN_OPENING_BRACE`
+- **影响**：仅 `spec-migration-governed-entry.test.ts` 当前工作树副本被交付脚本写坏；HEAD/remote 未变，产品 Runtime、Authority、Fresh-04 均未被新增修改。
+- **修复**：SFV380 不修补损坏文件；直接以 `git show HEAD:packages/daemon-core/tests/spec-migration-governed-entry.test.ts` 为唯一干净源，callback opening brace 固定为 marker 自身最后一个 `{`，扫描到配对 `}` 后构造新 fixture 候选，完成结构自检后整体覆盖当前损坏测试文件。
+- **类防护**：`GOV-STAGE-CHK-001,GOV-STAGE-RECOVERY-ACCEPT-001,EXP-001,EXP-004,EXP-007,EXP-019`
+
+### ERR-615：SFV380 最终状态收口写死了 ERR-607 的错误历史状态文本
+- **分类**：`DELIVERY_HARNESS / STATE_FINALIZATION_PRECONDITION_DRIFT`
+- **状态**：`CLOSED_BY_SFV381_STATE_FINALIZATION`
+- **阶段**：SPECFORGE_IMMUTABLE_PROJECT_SPEC_REPAIR_SOURCE_CONTRACT
+- **一手事实**：SFV380 已完成 16/16 targeted tests、daemon-core build、validator TypeScript、full workspace build、git diff --check、forbidden scope audit 和 entry-test fixture-only diff；随后仅在 ledger promotion 阶段返回 `LEDGER_STATUS_ERR-607`。回查 V373 交付源确认 ERR-607 实际初始状态为 `FIX_IMPLEMENTED_PENDING_SFV372_VALIDATION`，而 V380 validator 错误要求 `FIX_IMPLEMENTED_PENDING_SFV373_VALIDATION`。
+- **根因**：`FINALIZATION_SCRIPT_HARDCODED_RECONSTRUCTED_PRIOR_STATUS_INSTEAD_OF_READING_SECTION_CURRENT_STATUS`
+- **影响**：产品代码、测试、Authority 和 Fresh-04 未新增失败；仅动态状态文档尚未提升到最终 validated/pending deploy。
+- **修复**：SFV381 通过 ERR section 定位唯一 `状态` 行，校验其当前值属于明确允许的历史 pending 状态集合后再提升；不再依赖单个重建旧状态字符串。重新执行完整工程验证后同步 handoff/ledger。
+- **类防护**：`GOV-STAGE-RECOVERY-ACCEPT-001,GOV-STAGE-TRUTH-001,GOV-STAGE-HANDOFF-001,GOV-EVID-001`

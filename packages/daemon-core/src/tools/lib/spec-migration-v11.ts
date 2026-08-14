@@ -103,11 +103,18 @@ export interface ProjectSpecRepairModuleMapping {
   module_definition_source?: string;
 }
 
-export interface ProjectSpecRepairPreparation {
-  expected_manifest_sha256: string;
+
+
+export interface ProjectSpecRepairImmutableSourceBinding {
+  source_work_item_id: string;
+  gate_attempt_id: string;
+}
+
+export interface ProjectSpecRepairPreparation {  expected_manifest_sha256: string;
   expected_project_spec_version: string;
   evidence_paths: string[];
   modules: ProjectSpecRepairModuleMapping[];
+  immutable_source_binding?: ProjectSpecRepairImmutableSourceBinding;
 }
 
 function sha256(content: Buffer | string): string {
@@ -219,6 +226,271 @@ function resolveProjectSpecSource(projectRoot: string, value: string): string {
   if (!existsSync(absolute)) throw new Error(`Repair source does not exist: ${value}`);
   return absolute;
 }
+
+interface ProjectSpecRepairImmutableSourceContext {
+  binding: ProjectSpecRepairImmutableSourceBinding;
+  sourceWorkItemDir: string;
+  candidateManifest: Record<string, unknown>;
+  snapshotInputs: Array<Record<string, unknown>>;
+}
+
+function normalizeSha256Hex(value: string): string {
+  return value.toLowerCase().replace(/^sha256:/, '');
+}
+
+function snapshotPathKey(projectRoot: string, value: string): string {
+  const absolute = isAbsolute(value) ? resolve(value) : resolve(projectRoot, value);
+  return toPosix(absolute);
+}
+
+function snapshotInputForPath(
+  projectRoot: string,
+  snapshotInputs: Array<Record<string, unknown>>,
+  absolutePath: string,
+): Record<string, unknown> {
+  const expected = snapshotPathKey(projectRoot, absolutePath);
+  const matches = snapshotInputs.filter(entry => {
+    const value = typeof entry.path === 'string' ? entry.path : '';
+    return snapshotPathKey(projectRoot, value) === expected;
+  });
+  if (matches.length !== 1) {
+    throw new Error(`PROJECT_SPEC_REPAIR_IMMUTABLE_SNAPSHOT_PATH_BINDING_INVALID: ${absolutePath}`);
+  }
+  const match = matches[0];
+  if (
+    match.exists !== true ||
+    match.kind !== 'file' ||
+    typeof match.sha256 !== 'string' ||
+    typeof match.size !== 'number'
+  ) {
+    throw new Error(`PROJECT_SPEC_REPAIR_IMMUTABLE_SNAPSHOT_FILE_INVALID: ${absolutePath}`);
+  }
+  return match;
+}
+
+async function assertSnapshotBoundCurrentFile(input: {
+  projectRoot: string;
+  snapshotInputs: Array<Record<string, unknown>>;
+  absolutePath: string;
+  label: string;
+}): Promise<{ raw: Buffer; snapshot: Record<string, unknown> }> {
+  const snapshot = snapshotInputForPath(
+    input.projectRoot,
+    input.snapshotInputs,
+    input.absolutePath,
+  );
+  let raw: Buffer;
+  try {
+    raw = await readFile(input.absolutePath);
+  } catch {
+    throw new Error(`PROJECT_SPEC_REPAIR_IMMUTABLE_SOURCE_MISSING: ${input.label}`);
+  }
+  const currentHash = createHash('sha256').update(raw).digest('hex');
+  const expectedHash = normalizeSha256Hex(String(snapshot.sha256));
+  if (currentHash !== expectedHash || raw.length !== snapshot.size) {
+    throw new Error(`PROJECT_SPEC_REPAIR_IMMUTABLE_SOURCE_HASH_MISMATCH: ${input.label}`);
+  }
+  return { raw, snapshot };
+}
+
+async function loadProjectSpecRepairImmutableSourceContext(
+  projectRoot: string,
+  binding: ProjectSpecRepairImmutableSourceBinding,
+): Promise<ProjectSpecRepairImmutableSourceContext> {
+  if (!/^WI-[0-9]{4,}$/.test(binding.source_work_item_id)) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_SOURCE_WORK_ITEM_ID_INVALID');
+  }
+  if (!/^attempt-[0-9]{4}$/.test(binding.gate_attempt_id)) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_GATE_ATTEMPT_ID_INVALID');
+  }
+
+  const workItemsRoot = resolve(projectRoot, '.specforge', 'work-items');
+  const sourceWorkItemDir = resolve(workItemsRoot, binding.source_work_item_id);
+  if (!isSubPath(sourceWorkItemDir, workItemsRoot)) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_SOURCE_WORK_ITEM_ESCAPES_ROOT');
+  }
+  const attemptDir = resolve(
+    sourceWorkItemDir,
+    'gate_attempts',
+    binding.gate_attempt_id,
+  );
+  const attemptsRoot = resolve(sourceWorkItemDir, 'gate_attempts');
+  if (!isSubPath(attemptDir, attemptsRoot)) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_ATTEMPT_ESCAPES_ROOT');
+  }
+
+  let attemptResult: Record<string, unknown>;
+  let inputSnapshot: Record<string, unknown>;
+  try {
+    attemptResult = JSON.parse(
+      await readFile(join(attemptDir, 'attempt-result.json'), 'utf8'),
+    ) as Record<string, unknown>;
+    inputSnapshot = JSON.parse(
+      await readFile(join(attemptDir, 'input-snapshot.json'), 'utf8'),
+    ) as Record<string, unknown>;
+  } catch {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_GATE_ATTEMPT_INVALID');
+  }
+  if (
+    attemptResult.attempt_id !== binding.gate_attempt_id ||
+    attemptResult.work_item_id !== binding.source_work_item_id ||
+    attemptResult.source !== 'gate_run' ||
+    attemptResult.summary_status !== 'passed' ||
+    attemptResult.input_snapshot !== 'input-snapshot.json'
+  ) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_GATE_ATTEMPT_NOT_PASSED');
+  }
+  if (
+    inputSnapshot.attempt_id !== binding.gate_attempt_id ||
+    inputSnapshot.work_item_id !== binding.source_work_item_id ||
+    !Array.isArray(inputSnapshot.inputs)
+  ) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_INPUT_SNAPSHOT_INVALID');
+  }
+  const snapshotInputs = inputSnapshot.inputs.filter(
+    (value): value is Record<string, unknown> =>
+      Boolean(value) && typeof value === 'object' && !Array.isArray(value),
+  );
+
+  const candidateManifestPath = join(sourceWorkItemDir, 'candidate_manifest.json');
+  const userDecisionPath = join(sourceWorkItemDir, 'user_decision.json');
+  const mergeReportPath = join(sourceWorkItemDir, 'merge_report.md');
+
+  const candidateManifestBound = await assertSnapshotBoundCurrentFile({
+    projectRoot,
+    snapshotInputs,
+    absolutePath: candidateManifestPath,
+    label: 'candidate_manifest.json',
+  });
+  const userDecisionBound = await assertSnapshotBoundCurrentFile({
+    projectRoot,
+    snapshotInputs,
+    absolutePath: userDecisionPath,
+    label: 'user_decision.json',
+  });
+  const mergeReportBound = await assertSnapshotBoundCurrentFile({
+    projectRoot,
+    snapshotInputs,
+    absolutePath: mergeReportPath,
+    label: 'merge_report.md',
+  });
+
+  let candidateManifest: Record<string, unknown>;
+  let userDecision: Record<string, unknown>;
+  try {
+    candidateManifest = JSON.parse(
+      candidateManifestBound.raw.toString('utf8'),
+    ) as Record<string, unknown>;
+    userDecision = JSON.parse(
+      userDecisionBound.raw.toString('utf8'),
+    ) as Record<string, unknown>;
+  } catch {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_BINDING_ARTIFACT_INVALID');
+  }
+  if (
+    candidateManifest.work_item_id !== binding.source_work_item_id ||
+    !Array.isArray(candidateManifest.entries)
+  ) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_CANDIDATE_MANIFEST_INVALID');
+  }
+  if (
+    userDecision.work_item_id !== binding.source_work_item_id ||
+    userDecision.decision_status !== 'approved' ||
+    userDecision.decision_type !== 'user_approved' ||
+    userDecision.decided_by !== 'user'
+  ) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_USER_DECISION_NOT_APPROVED');
+  }
+  if (userDecision.manifest_hash !== sha256(candidateManifestBound.raw)) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_USER_DECISION_MANIFEST_BINDING_INVALID');
+  }
+  if (!/^Status:\s*success\s*$/m.test(mergeReportBound.raw.toString('utf8'))) {
+    throw new Error('PROJECT_SPEC_REPAIR_IMMUTABLE_ATOMIC_SPEC_MERGE_NOT_SUCCESS');
+  }
+
+  return {
+    binding,
+    sourceWorkItemDir,
+    candidateManifest,
+    snapshotInputs,
+  };
+}
+
+async function resolveProjectSpecRepairSource(input: {
+  projectRoot: string;
+  value: string;
+  expectedTargetPath: string;
+  immutableContext: ProjectSpecRepairImmutableSourceContext | null;
+}): Promise<string> {
+  const normalized = toPosix(input.value).replace(/^\.\//, '');
+  if (normalized.startsWith('.specforge/project/')) {
+    return resolveProjectSpecSource(input.projectRoot, normalized);
+  }
+  if (!input.immutableContext) {
+    throw new Error(`Repair source must be under .specforge/project/**: ${input.value}`);
+  }
+
+  const sourcePrefix =
+    `.specforge/work-items/${input.immutableContext.binding.source_work_item_id}/candidates/`;
+  if (!normalized.startsWith(sourcePrefix)) {
+    throw new Error(`PROJECT_SPEC_REPAIR_IMMUTABLE_SOURCE_PATH_INVALID: ${input.value}`);
+  }
+  const absolute = resolve(input.projectRoot, normalized);
+  const sourceCandidatesRoot = resolve(
+    input.immutableContext.sourceWorkItemDir,
+    'candidates',
+  );
+  if (!isSubPath(absolute, sourceCandidatesRoot)) {
+    throw new Error(`PROJECT_SPEC_REPAIR_IMMUTABLE_SOURCE_ESCAPES_CANDIDATES: ${input.value}`);
+  }
+
+  const relativeCandidatePath = toPosix(
+    relative(input.immutableContext.sourceWorkItemDir, absolute),
+  );
+  const entries = input.immutableContext.candidateManifest.entries as unknown[];
+  const matchingEntries = entries.filter(entry => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+    const record = entry as Record<string, unknown>;
+    return (
+      toPosix(String(record.candidate_path ?? '')).replace(/^\.\//, '') ===
+        relativeCandidatePath &&
+      toPosix(String(record.target_path ?? '')).replace(/^\.\//, '') ===
+        input.expectedTargetPath &&
+      record.operation === 'replace'
+    );
+  });
+  if (matchingEntries.length !== 1) {
+    throw new Error(
+      `PROJECT_SPEC_REPAIR_IMMUTABLE_CANDIDATE_TARGET_BINDING_INVALID: ${input.value}`,
+    );
+  }
+
+  const candidateBound = await assertSnapshotBoundCurrentFile({
+    projectRoot: input.projectRoot,
+    snapshotInputs: input.immutableContext.snapshotInputs,
+    absolutePath: absolute,
+    label: relativeCandidatePath,
+  });
+  const formalTargetPath = resolve(input.projectRoot, input.expectedTargetPath);
+  const formalTargetSnapshot = snapshotInputForPath(
+    input.projectRoot,
+    input.immutableContext.snapshotInputs,
+    formalTargetPath,
+  );
+  const candidateSnapshotHash = normalizeSha256Hex(
+    String(candidateBound.snapshot.sha256),
+  );
+  const formalTargetSnapshotHash = normalizeSha256Hex(
+    String(formalTargetSnapshot.sha256),
+  );
+  if (candidateSnapshotHash !== formalTargetSnapshotHash) {
+    throw new Error(
+      `PROJECT_SPEC_REPAIR_IMMUTABLE_SOURCE_NOT_FORMER_FORMAL_CONTENT: ${input.value}`,
+    );
+  }
+  return absolute;
+}
+
 
 interface RuntimeEmptyCandidateScaffold {
   candidateRootExists: boolean;
@@ -347,6 +619,12 @@ export async function prepareProjectSpecRepairCandidates(input: {
   for (const evidencePath of input.preparation.evidence_paths) {
     resolveProjectSpecSource(input.projectRoot, evidencePath);
   }
+  const immutableSourceContext = input.preparation.immutable_source_binding
+    ? await loadProjectSpecRepairImmutableSourceContext(
+        input.projectRoot,
+        input.preparation.immutable_source_binding,
+      )
+    : null;
   const manifestPath = join(input.projectRoot, '.specforge', 'project', 'spec_manifest.json');
   const manifestRaw = await readFile(manifestPath);
   const currentManifestHash = sha256(manifestRaw);
@@ -396,7 +674,12 @@ export async function prepareProjectSpecRepairCandidates(input: {
       const definitionTarget = join(targetDirectory, 'module.candidate.json');
 
       if (mapping.module_definition_source) {
-        const source = resolveProjectSpecSource(input.projectRoot, mapping.module_definition_source);
+        const source = await resolveProjectSpecRepairSource({
+          projectRoot: input.projectRoot,
+          value: mapping.module_definition_source,
+          expectedTargetPath: `.specforge/project/modules/${moduleCode}/module.json`,
+          immutableContext: immutableSourceContext,
+        });
         const definition = JSON.parse(await readFile(source, 'utf8')) as unknown;
         const identity = resolveSpecModuleIdentity(definition);
         if (!identity.valid || identity.moduleCode !== moduleCode) {
@@ -417,9 +700,14 @@ export async function prepareProjectSpecRepairCandidates(input: {
         ['module_trace', 'trace.candidate.md', 'trace.md', mapping.trace_source],
       ] as const;
 
-      for (const [, candidateFilename, , sourcePath] of sources) {
+      for (const [, candidateFilename, targetFilename, sourcePath] of sources) {
         await copyFile(
-          resolveProjectSpecSource(input.projectRoot, sourcePath),
+          await resolveProjectSpecRepairSource({
+            projectRoot: input.projectRoot,
+            value: sourcePath,
+            expectedTargetPath: `.specforge/project/modules/${moduleCode}/${targetFilename}`,
+            immutableContext: immutableSourceContext,
+          }),
           join(targetDirectory, candidateFilename),
         );
       }
@@ -462,6 +750,9 @@ export async function prepareProjectSpecRepairCandidates(input: {
       project_spec_version_before: input.preparation.expected_project_spec_version,
       modules: Array.from(moduleCodes),
       evidence_paths: input.preparation.evidence_paths,
+      ...(input.preparation.immutable_source_binding
+        ? { immutable_source_binding: input.preparation.immutable_source_binding }
+        : {}),
       candidate_manifest_sha256: sha256(candidateManifestContent),
       prepared_at: new Date().toISOString(),
     };

@@ -55,6 +55,12 @@ beforeEach(async () => {
     JSON.stringify({ schema_version: '6.0', project_name: 'entry-fixture' }, null, 2),
     'utf8'
   );
+  await mkdir(path.join(projectRoot, '.specforge', 'project'), { recursive: true });
+  await writeFile(
+    path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'),
+    JSON.stringify({ schema_version: '1.0', project_spec_version: 'PSV-0001', modules: [] }, null, 2),
+    'utf8'
+  );
 });
 
 afterEach(async () => {
