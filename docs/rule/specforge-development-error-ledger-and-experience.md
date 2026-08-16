@@ -9262,3 +9262,31 @@ actual_files
 - **范围决定**：本轮只登记，不修改 Path Resolver；修复 ERR-628 必须另行执行影响分析并冻结新范围。
 - **当前影响**：不影响 ERR-622 的 spec_migration Close provenance 修复归因，不阻塞 Fresh-04 WI-0002 的恢复/Close。
 - **类防护**：发现独立模块既有缺陷时不得借当前任务扩大代码范围；先保留确定性证据，再单独治理。
+
+### ERR-629：Atomic Spec Merge 的 `spec_manifest.json` 合法簿记写入缺少可供 Changed Files Audit 验证的生产者归属
+- **分类**：`PRODUCT_GOVERNANCE_DEFECT / PRODUCER_CONSUMER_PROVENANCE_GAP / ACTUAL_SCOPE_AUDIT`
+- **状态**：`FIX_IMPLEMENTED_PENDING_SFV400_VALIDATION`
+- **阶段**：PHASE11_FRESH04_WI0001_REVERIFICATION
+- **一手事实**：Fresh-04 `WI-0001` 在 ERR-622 修复并由 `WI-0002` 合法推进 Project Spec 至 PSV-0003 后执行 reverification。`sf_changed_files_audit` 仍唯一失败 `spec_write_by_non_merge_runner: .specforge/project/spec_manifest.json (actor: agent)`；`WI-0002 merge_report.md` 明确 `Status: success`、`Spec Manifest Updated: true`、`Project Spec Version: PSV-0003`，而 `merge-runner-v11.ts::executeMerge()` 源码确实直接写入 `spec_manifest.json`。现有 `git_governance_controlled_writes.json` 只允许 Git adoption 的三个 metadata 文件，不能表示 Atomic Spec Merge。
+- **根因**：`ATOMIC_SPEC_MERGE_IMPLICIT_SPEC_MANIFEST_WRITE_HAS_NO_HASH_CURRENT_PRODUCER_PROVENANCE_CONSUMED_BY_CHANGED_FILES_AUDIT`
+- **架构结论**：问题不在 Changed Files Audit 的“非 Merge Runner Spec 写入必须阻断”判罚，而在正式 Merge Producer 没有把自己的隐式 Project Spec 写入输出为可验证 provenance，导致消费者只能回退为全局 `actor=agent`。
+- **修复**：新增 `atomic_spec_merge_controlled_writes.v1` 结构化 Runtime provenance；成功 Atomic Spec Merge 记录当前仍存在的 `.specforge/project/**` 输出，包括隐式 `spec_manifest.json`，绑定 `work_item_id + PSV + path + sha256 + producer=sf_v11_merge`。Audit 只消费当前 hash 完全匹配的记录。对升级前项目，仅允许对 `spec_manifest.json` 做严格 legacy reconstruction，必须同时匹配 last_merged WI、PSV、成功 merge report、User Decision、Candidate manifest 和完整 merged target 集。
+- **负例约束**：provenance hash 漂移、非 `.specforge/project/**` 路径、legacy User Decision 非 approved/waived、PSV/target/WI 任一不匹配均不得放行。
+- **真实项目边界**：Fresh-04 `WI-0001` 保持 `implementation_ready`，在产品修复、部署完成前不继续 Semantic Closure / Verification / Close。
+- **类防护**：任何 Runtime/Runner 对正式治理对象的隐式写入，只要后续 Gate/Audit 需要区分 producer，就必须在写入事务中同时产生结构化、可校验、hash-current 的 provenance；禁止让消费者通过“路径看起来合理”或全局 actor 猜测归属。
+
+### ERR-630：V400 首次助手侧打包使用已关闭 ZIP 句柄，未生成交付物
+- **分类**：`DELIVERY_HARNESS_DEFECT / CLOSED_RESOURCE_HANDLE`
+- **状态**：`CLOSED_BY_V400_REGENERATED_PACKAGE_AFTER_EXTRACT_FIRST`
+- **一手事实**：首次生成 V400 时，Python 在构建 base source map 阶段抛出 `ValueError: Attempt to use ZIP archive that was already closed`；失败发生在任何用户可执行 ZIP 生成之前，没有仓库读写副作用。
+- **根因**：`SOURCE_READER_CLOSURE_REFERENCED_ZIPFILE_AFTER_CONTEXT_MANAGER_EXIT`
+- **修复**：先完整解压 V399 evidence 到独立临时目录，再从普通文件系统读取 exact source；打包完成后重新打开 ZIP 做结构校验。
+- **类防护**：交付生成器不得把已关闭 archive/file handle 封装进后续回调；跨阶段复用内容必须先物化到持久字节或文件路径。
+
+### ERR-631：V400 错误台账 payload 文件末尾多余空行导致 `git diff --check` 阻断
+- **分类**：`DELIVERY_CONTENT_FORMAT_DEFECT / GIT_DIFF_CHECK`
+- **状态**：`CLOSED_BY_V401_LEDGER_EOF_FINALIZATION`
+- **一手事实**：V400 targeted tests、validator TypeScript、daemon-core build、full workspace build 全部 PASS；随后 `git diff --check` 唯一实质失败为 `docs/rule/specforge-development-error-ledger-and-experience.md: new blank line at EOF`。LF→CRLF 内容均为 Git warning，不是 diff error。
+- **根因**：`GENERATED_LEDGER_PAYLOAD_APPENDED_AN_EXTRA_TRAILING_BLANK_LINE`
+- **修复**：V401 仅在既有批准范围内规范 handoff/ledger 结尾，并重新执行完整工程验证、Authority 对账和 exact 8-file scope 审计。
+- **类防护**：生成 Markdown payload 后必须在打包前执行“单一终止换行”检查；`git diff --check` 的 stderr warning 与实际 whitespace error 必须分开判读。

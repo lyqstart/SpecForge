@@ -9,6 +9,8 @@ import {
 } from '../src/tools/lib/spec-migration-v11';
 import { runGate } from '../src/tools/lib/gate-runner-v11';
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+import { readTrustedAtomicSpecMergeProjectWrites } from '../src/tools/lib/atomic-spec-merge-write-provenance';
+import { runChangedFilesAudit } from '../src/tools/lib/changed-files-audit';
 import { checkProjectGovernanceConsistency } from '../src/tools/lib/project-governance-v2';
 
 async function writeJson(target: string, value: unknown): Promise<void> {
@@ -519,6 +521,31 @@ describe('spec_migration_path Project Spec repair', () => {
     });
     expect(mergeResult.success).toBe(true);
     expect(mergeResult.project_spec_version).toBe('PSV-0003');
+
+    const mergeProvenance = readTrustedAtomicSpecMergeProjectWrites(fixture.projectRoot);
+    expect(mergeProvenance).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: '.specforge/project/spec_manifest.json',
+          producer: 'sf_v11_merge',
+          work_item_id: fixture.workItemId,
+          project_spec_version: 'PSV-0003',
+        }),
+        expect.objectContaining({
+          path: '.specforge/project/modules/CORE/module.json',
+          producer: 'sf_v11_merge',
+          work_item_id: fixture.workItemId,
+          project_spec_version: 'PSV-0003',
+        }),
+      ]),
+    );
+    const specManifestAudit = runChangedFilesAudit(
+      [{ path: '.specforge/project/spec_manifest.json', operation: 'modify' }],
+      [],
+      'agent',
+      mergeProvenance,
+    );
+    expect(specManifestAudit.passed, specManifestAudit.violations.join('; ')).toBe(true);
 
     const repairedManifest = JSON.parse(
       await readFile(join(fixture.projectRoot, '.specforge', 'project', 'spec_manifest.json'), 'utf8'),

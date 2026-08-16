@@ -2453,6 +2453,8 @@ GIT_MERGE_SEMANTIC_SCOPE=SEPARATE
 
 `sf_v11_merge` 是公开 Merge Runner handler；其 Spec 合并业务动作由 `executeMerge()` 承担。该 producer 只属于 Atomic Spec Merge，不得与第 8.9 节的 Git Merge 混用。
 
+**GOV-ATOMIC-MERGE-PROVENANCE-001：** Atomic Spec Merge 的所有正式 Project Spec 写入必须具有可由后续 Actual Scope Audit 验证的 producer provenance。`executeMerge()` 成功完成事务后，必须为当前仍存在的 `.specforge/project/**` 写入记录 `work_item_id + project_spec_version + path + sha256 + producer=sf_v11_merge`；其中 `spec_manifest.json` 的版本推进、`last_merged_*` 簿记和 Module registry 重建属于 Merge Runner 的正式隐式写入，不能因为它不来自 Candidate target 就回退归因为 `agent`。Changed Files Audit 必须只信任**当前文件 hash 与结构化 provenance 完全一致**的记录，hash 漂移继续 Fail Closed。旧项目缺少该结构化记录时，只允许一个兼容 Normalizer 对 `spec_manifest.json` 做 legacy reconstruction，并且必须同时匹配当前 `last_merged_work_item`、Project Spec Version、成功 `merge_report.md`、批准/豁免的 User Decision、同 WI Candidate manifest 与完整 `last_merged_targets`；任一条件不满足不得放行。该兼容路径不得扩展成通用 Spec 白名单，也不得把真实非 Merge Runner 写入降级为 warning。
+
 ### 5.4 requirements_index 和 design_index
 
 它们是索引，不是独立设计真相源。
@@ -4336,6 +4338,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-AUTH-001` | 1.2 唯一权威源 |
 | `GOV-CONT-001` | 2.7 Continuity 与当前用户授权边界 |
 | `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |
+| `GOV-ATOMIC-MERGE-PROVENANCE-001` | 5.3 Candidate 与 Atomic Spec Merge：Merge Runner 写入归属证据 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
 | `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |
 | `GOV-MODE-001` | 1.3.1 模式 A：SpecForge 自身开发 |

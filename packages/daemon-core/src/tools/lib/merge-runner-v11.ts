@@ -36,6 +36,7 @@ import {
   renderGovernanceTraceDocument,
   type GovernanceTraceEdge,
 } from './governance-trace-model.js';
+import { recordAtomicSpecMergeProjectWrites } from './atomic-spec-merge-write-provenance.js';
 
 export interface MergeInput {
   projectRoot: string;
@@ -1037,6 +1038,20 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
         JSON.stringify(specManifest, null, 2) + '\n',
         'utf-8',
       );
+    }
+
+    if (result.spec_manifest_updated) {
+      recordAtomicSpecMergeProjectWrites({
+        projectRoot: input.projectRoot,
+        workItemId: input.workItemId,
+        projectSpecVersion: result.project_spec_version,
+        relativePaths: [
+          '.specforge/project/spec_manifest.json',
+          ...result.merged_files
+            .filter(entry => entry.status === 'success' && entry.operation !== 'delete')
+            .map(entry => entry.target_path),
+        ],
+      });
     }
   } catch (error) {
     const rollbackErrors = await restoreSnapshots(snapshots);
