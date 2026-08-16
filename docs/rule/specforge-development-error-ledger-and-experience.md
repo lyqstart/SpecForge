@@ -9322,7 +9322,7 @@ actual_files
 
 ### ERR-635：Close Gate 内部 Changed Files Audit 未消费 Atomic Spec Merge provenance，导致与公开审计 verdict 分叉
 - **分类**：`PRODUCT_GOVERNANCE_DEFECT / PRODUCER_CONSUMER_PARITY / CLOSE_GATE`
-- **状态**：`FIX_IMPLEMENTED_PENDING_SFV406_VALIDATION`
+- **状态**：`REAL_PROJECT_VALIDATED_BY_FRESH04_CLOSE_33_OF_33`
 - **阶段**：PHASE11_FRESH04_WI0001_CLOSE
 - **一手事实**：ERR-632 部署后，Fresh-04 `WI-0001` verification attempt-0013 已通过 Verification Gate + Formal Version Gate，0 blocker / 0 warning，并合法进入 `verification_done`。随后 `sf_close_gate` 失败 2 项：`close_changed_files_audit_passed` 与其级联的 `close_semantic_closure_provenance_current`。Close 内部重写的 audit 把 `.specforge/project/spec_manifest.json` 再次归因为 `actor=agent`。
 - **源码证据**：公开 `sf_changed_files_audit` 调用 `runChangedFilesAudit()` 时传入 `readTrustedGitGovernanceProjectWrites(projectRoot) + readTrustedAtomicSpecMergeProjectWrites(projectRoot)`；`sf-v11-close-gate.ts` 的初次内部 audit 和 `refreshChangedFilesAuditAfterOperationNormalization()` 两个重审计点都只传入 `readTrustedGitGovernanceProjectWrites(projectRoot)`。
@@ -9333,6 +9333,10 @@ actual_files
 - **副作用闭环**：Close Gate 仍必须重算 audit；修复后只有当重算 verdict 与合法 producer evidence 一致为 PASS 时才保留既有 PASS `changed_files_audit.md`，从而不因 timestamp renderer 无意义破坏 Semantic Closure provenance。真正的新 FAIL 仍必须落盘并阻断 Close。
 - **真实项目边界**：Fresh-04 `WI-0001=verification_done`；verification attempt-0013 与 Formal Version Gate 已 PASS。产品修复部署后先重跑公开 changed-files audit 恢复 PASS、重建 Semantic Closure，再重跑 Close。
 - **类防护**：任何 Gate/Runtime 内部复算正式治理结论时必须调用与公开工具相同的 canonical input resolver；禁止复制一份“近似相同”的 producer 列表。
+
+- **真实项目最终验证（2026-08-16）**：产品修复部署 commit `20284d28737139170f8c59577f6caefefab82f8c` 后，Fresh-04 `WI-0001` 先恢复 `changed_files_audit=PASS`，再按官方 `SEMANTIC_CLOSURE_INPUTS_FROZEN` recovery 重建 current Semantic Closure，verification attempt-0014 通过 Verification Gate + Formal Version Gate，随后 Close Gate 33/33 全部通过并进入 `closed`。
+- **Close parity 证据**：Close 内部 re-audit 对 `.specforge/project/spec_manifest.json` 归因为 `sf_v11_merge:legacy_reconstructed` trusted control-plane write；`close_changed_files_audit_passed`、`close_semantic_closure_provenance_current`、`close_formal_version_gate`、`close_semantic_closure_valid`、`close_no_write_guard_violations` 全部 passed。
+- **Phase 11 最终证据**：`WI-0001=closed`、`WI-0002=closed`、Project Spec=`PSV-0003`、blocking=0、warnings=0、hard stop=0、unresolved Write Guard=0；Fresh-04 本地 Git 正式交付完成，`repository_delivery_complete=true`、`repository_delivery_state=closed_and_git_merged`、main merge commit=`0138c4a05a800b713f02abad4f7ec63d7080db79`，implementation fingerprint 对 `0528292f` 全部通过。
 
 ### ERR-636：V406 Close 回归测试夹具仍使用旧 Trigger Contract，导致测试在进入 ERR-635 逻辑前失败
 - **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / REGRESSION_HARNESS`
@@ -9369,3 +9373,14 @@ actual_files
 - **修复**：成功用例继续断言 `candidates/tasks.md` 为权威输入；改为断言不存在 `close_artifact_trace_delta_authoritative`，且 `input_files` 不包含 `candidates/trace_delta.md`。
 - **影响范围**：不新增文件。仍为 V408 已批准 exact-9；ERR-635 产品代码、Authority 规则、producer resolver、Close 判罚算法全部不变。
 - **类防护**：测试必须断言 workflow 当前真实适用产物，而不是因为 fixture 磁盘上存在某文件就强迫 Runtime 把它当成必需治理输入。
+
+### Phase 11 Fresh-04 最终真实项目验收完成（2026-08-16）
+- **状态**：`COMPLETE`
+- **范围**：真实全新独立项目 `InventoryFlow-Phase11-Fresh-04`。
+- **治理闭环**：`WI-0001 feature_spec=closed`（Close 33/33），`WI-0002 spec_migration=closed`（Close 30/30）。
+- **正式规格**：Project Spec=`PSV-0003`。
+- **关键产品缺陷真实验收**：ERR-629、ERR-632、ERR-635 均已在 Fresh-04 正式生命周期中验证关闭。
+- **Git 交付闭环**：WI-0001 feature 分支经用户明确确认后 `--no-ff` 合并到 Fresh-04 本地 `main`；merge commit=`0138c4a05a800b713f02abad4f7ec63d7080db79`；`sf_git_post_merge_verify` 返回 `repository_delivery_complete=true`。
+- **Formal Version**：implementation commit=`0528292f`，ancestor/tree/file-set/base-diff 指纹全部通过。
+- **最终运行状态**：blocking=0、warnings=0、hard stop=0、unresolved Write Guard=0、非授权生命周期穿越=NONE。
+- **下一阶段**：按唯一 Authority 第 10.13 节进入 Phase 12 Hard Enforcement 发布边界，只读审计三个核心 Gate hard 注册、Workflow/Fast Path 覆盖、Runtime 阻断和最终发布回归。
