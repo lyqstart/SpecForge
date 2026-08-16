@@ -15,6 +15,8 @@ import {
 } from '../../src/tools/handlers/sf-v11-gate-run.js';
 import { getRequiredGates } from '../../src/tools/lib/required-gates.js';
 import { isCanonicalNoCodeVerificationCandidateManifest } from '../../src/tools/lib/state-coordinator-v11.js';
+import { isValidV11TransitionForWorkflow } from '../../src/tools/lib/state-machine-v11.js';
+import { specMigrationCandidateRequiresTraceDelta } from '../../src/tools/lib/spec-migration-trace-contract.js';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -58,7 +60,45 @@ describe('spec_migration no-code lifecycle contract', () => {
         workflow_path: 'spec_migration_path',
       }),
     ).toBe(true);
-    expect(closeSpecArtifactRequirements('spec_migration_path', 'spec_migration')).toEqual({
+    const noTraceCandidateManifest = {
+      entries: [
+        {
+          type: 'module_definition',
+          candidate_path: 'candidates/project/modules/CORE/module.candidate.json',
+          target_path: '.specforge/project/modules/CORE/module.json',
+          operation: 'replace',
+        },
+      ],
+    };
+    expect(specMigrationCandidateRequiresTraceDelta(noTraceCandidateManifest)).toBe(false);
+    expect(
+      closeSpecArtifactRequirements('spec_migration_path', 'spec_migration', {
+        specMigrationTraceDeltaRequired:
+          specMigrationCandidateRequiresTraceDelta(noTraceCandidateManifest),
+      }),
+    ).toEqual({
+      tasks: false,
+      traceDelta: false,
+    });
+
+    const traceCandidateManifest = {
+      entries: [
+        ...noTraceCandidateManifest.entries,
+        {
+          type: 'module_trace',
+          candidate_path: 'candidates/project/modules/CORE/trace.candidate.md',
+          target_path: '.specforge/project/modules/CORE/trace.md',
+          operation: 'replace',
+        },
+      ],
+    };
+    expect(specMigrationCandidateRequiresTraceDelta(traceCandidateManifest)).toBe(true);
+    expect(
+      closeSpecArtifactRequirements('spec_migration_path', 'spec_migration', {
+        specMigrationTraceDeltaRequired:
+          specMigrationCandidateRequiresTraceDelta(traceCandidateManifest),
+      }),
+    ).toEqual({
       tasks: false,
       traceDelta: true,
     });
@@ -84,6 +124,20 @@ describe('spec_migration no-code lifecycle contract', () => {
     ).toEqual(['verification_gate', 'formal_version_gate']);
     expect(isVerificationRecoverableState('post_merge_verified', 'spec_migration')).toBe(true);
     expect(isVerificationRecoverableState('post_merge_verified', 'architecture_change')).toBe(false);
+    expect(
+      isValidV11TransitionForWorkflow(
+        'verification_done',
+        'post_merge_verified',
+        'spec_migration',
+      ),
+    ).toBe(true);
+    expect(
+      isValidV11TransitionForWorkflow(
+        'verification_done',
+        'post_merge_verified',
+        'architecture_change',
+      ),
+    ).toBe(false);
     expect(
       evaluateVerificationGateAutoAdvanceEligibility({
         reports: [

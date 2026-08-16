@@ -42,6 +42,7 @@ import {
   workItemIntake,
   workItemJson,
   workItemTriggerResult,
+  isWorkItemSpecArtifactPlaceholder,
 } from '@specforge/types/directory-layout';
 import {
   ContractRegistrySchema,
@@ -71,6 +72,7 @@ import {
   checkFormalVersionEligibility,
   inspectProjectGovernanceContractConsumers,
 } from './project-governance-v2.js';
+import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
 
 function projectSpecRepairPlanPath(workItemDir: string): string {
   return path.join(workItemDir, 'project_spec_repair_plan.json');
@@ -452,6 +454,42 @@ registerGate('required_files_gate', 'hard_gate', true, async ctx => {
       description: 'Project Spec repair plan exists for spec_migration_path',
       passed: true,
     });
+
+    const candidateManifestPath = workItemCandidateManifest(ctx.projectRoot, ctx.workItemId);
+    let candidateManifest: Record<string, unknown> | null = null;
+    try {
+      candidateManifest = JSON.parse(
+        await fs.readFile(candidateManifestPath, 'utf8'),
+      ) as Record<string, unknown>;
+      inputFiles.push(candidateManifestPath);
+    } catch {
+      candidateManifest = null;
+    }
+
+    if (specMigrationCandidateRequiresTraceDelta(candidateManifest)) {
+      const traceDeltaPath = path.join(ctx.workItemDir, 'candidates', 'trace_delta.md');
+      inputFiles.push(traceDeltaPath);
+      let traceDeltaContent = '';
+      try {
+        traceDeltaContent = await fs.readFile(traceDeltaPath, 'utf8');
+      } catch {
+        traceDeltaContent = '';
+      }
+      const authoritativeTraceDelta =
+        traceDeltaContent.trim().length > 0 &&
+        !isWorkItemSpecArtifactPlaceholder('trace_delta', traceDeltaContent);
+      checks.push({
+        check_id: 'project_spec_repair_trace_delta_authoritative',
+        description:
+          'Trace-changing Project Spec repair has an authoritative candidates/trace_delta.md before Gate/Verification',
+        passed: authoritativeTraceDelta,
+        severity: authoritativeTraceDelta ? undefined : 'error',
+        details: authoritativeTraceDelta
+          ? path.relative(ctx.projectRoot, traceDeltaPath).replace(/\\/g, '/')
+          : 'candidate_manifest migrates Trace but candidates/trace_delta.md is missing, empty, or a lifecycle placeholder',
+      });
+    }
+
     return makeReport(ctx.workItemId, 'required_files_gate', 'hard_gate', true, checks, inputFiles);
   }
 

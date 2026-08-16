@@ -9200,3 +9200,63 @@ actual_files
 - **修复**：V389 仅匹配完整旧值 `EXPERIENCE_FILE_READ=YES_LATEST_WITH_ERR617`，不再按全文件通用前缀定位。
 - **验证**：生成阶段直接对 V385 保存的真实 handoff 执行同一精确定位规则，确认目标旧值唯一且另外两处同名前缀不受影响。
 - **类防护**：更新 handoff 重复字段时必须使用“完整旧值 + cardinality=1”或明确 section 范围，不得把重复前缀当作全文件唯一键。
+
+### ERR-622：spec_migration Close 对 Trace Delta 适用性与 Verification 冻结恢复契约不一致，形成 provenance 死锁
+- **分类**：`PRODUCT_DEFECT / SPEC_MIGRATION / CLOSE_PROVENANCE_RECOVERY`
+- **状态**：`FIX_VALIDATED_PENDING_COMMIT_PUSH_DEPLOYMENT`
+- **阶段**：PHASE11_FRESH04_WI0002_CLOSE
+- **一手事实**：Fresh-04 `WI-0002` 已完成 Atomic Spec Merge（PSV-0003）、post-merge Gate、Verification evidence、Semantic Closure 与 Verification/Formal Version Gate；首次 Close 29/30，仅因 `candidates/trace_delta.md` 缺失失败。补齐真实零 ADD/REMOVE 的 Trace Delta 后，第二次 Close 仍 29/30，唯一阻断变为 `SEMANTIC_CLOSURE_INPUT_STALE: candidates/trace_delta.md now exists but was not part of the closure provenance`。当前 `sf_semantic_closure_run` 在 `verification_done` 冻结输入并只提示恢复到 `implementation_ready`，但 `GOV-SPEC-MIGRATION-NO-CODE-001` 明确禁止 `spec_migration` 进入 implementation 状态，形成无合法恢复路径。
+- **根因**：`SPEC_MIGRATION_TRACE_DELTA_REQUIREMENT_WAS_WORKFLOW_WIDE_IN_CLOSE_BUT_NOT_SCOPE_DRIVEN_OR_ENFORCED_BEFORE_VERIFICATION_AND_NO_NO_CODE_STALE_PROVENANCE_RECOVERY_EDGE_EXISTED`
+- **修复**：建立唯一 Trace 适用性语义源，依据冻结 Candidate manifest 是否真实迁移 `project_trace/module_trace/trace.md/trace_matrix.md` 决定 Trace Delta 是否必需；Trace-changing repair 在 Candidate `required_files_gate` 前置 Fail Closed，非 Trace migration 不再仅因 workflow 类型强制零变化 Trace Delta。新增受限 `spec_migration` no-code recovery：仅在已有 Semantic Closure 的 provenance 错误全部为 `SEMANTIC_CLOSURE_INPUT_STALE` 且 frozen Candidate manifest 仍 canonical 时，允许 `verification_done -> post_merge_verified`，随后必须 force 重建 closure 并重跑 Verification + Formal Version。
+- **Authority**：修订 `GOV-SPEC-MIGRATION-NO-CODE-001`，把 Trace Delta scope、Candidate 前置、stale provenance no-code recovery 与重验顺序写入唯一权威。
+- **验证计划**：Project Spec repair trace-required 前置正/负回归；Trace scope shared-contract 单测；spec_migration `verification_done -> post_merge_verified` current-provenance 拒绝 + stale-provenance 允许；Semantic Closure workflow-aware recovery 指引；Close scope 回归；TypeScript、daemon-core build、full workspace build、`git diff --check`、exact 14-file scope 与 Authority sync。
+- **验证**：V396 change-specific regression PASS；Close baseline 8 个稳定失败身份无新增；V395 full daemon-core A/B 唯一 current-only 身份为 Path Resolver fast-check，V396 用固定反例 `C:\\projects\\.. ` 证明 baseline/current 行为与源码/测试哈希完全一致，归因为既有随机暴露而非本次 14-file 回归；validator TypeScript、daemon-core build、full workspace build、`git diff --check`、Authority sync、exact 14-file scope 全部 PASS。
+- **类防护**：`GOV-CLOSELOOP-001,GOV-CONTRACT-001,GOV-SCOPE-001,GOV-POST-001,GOV-EVID-001,GOV-SPEC-MIGRATION-NO-CODE-001`
+
+### ERR-623：SFV392 使用 Git 可读路径解析中文 Authority，误判 exact scope
+- **分类**：`VALIDATION_HARNESS_DEFECT / GIT_PATH_QUOTING`
+- **状态**：`CLOSED_BY_V396_MACHINE_READABLE_SCOPE`
+- **一手事实**：SFV392 的 POSTWRITE_SCOPE_MISMATCH 唯一异常路径是中文 Authority 被 Git C-style 转义后的字符串；14 个冻结 payload 已实际写入。
+- **根因**：`HUMAN_READABLE_GIT_PATH_WAS_USED_AS_CANONICAL_SCOPE_KEY`
+- **修复**：后续验证统一使用 NUL-delimited machine-readable path。
+- **类防护**：非 ASCII Git 路径范围审计必须使用 `-z` 机器输出。
+
+### ERR-624：SFV393 把 Git stderr 的 CRLF warning 混入 NUL-delimited stdout
+- **分类**：`VALIDATION_HARNESS_DEFECT / STDERR_STDOUT_CONTAMINATION`
+- **状态**：`CLOSED_BY_V396_STDOUT_ONLY_SCOPE`
+- **一手事实**：SFV393 的 PREVALIDATION_SCOPE_MISMATCH 中出现 `warning: in the working copy...` 文本，该文本来自 stderr，不是仓库路径。
+- **根因**：`STRUCTURED_STDOUT_AND_DIAGNOSTIC_STDERR_WERE_MERGED_BEFORE_PARSING`
+- **修复**：结构化 Git 调用独立捕获 stdout/stderr，只解析 stdout bytes。
+- **类防护**：结构化数据通道与诊断通道必须分离。
+
+### ERR-625：SFV394 新增 trace_delta 回归夹具未满足 required_files_gate 的既有基础文件契约
+- **分类**：`VALIDATION_TEST_FIXTURE_DEFECT`
+- **状态**：`CLOSED_BY_V395_COMPLETE_REQUIRED_FILES_FIXTURE`
+- **一手事实**：新增测试在补入 `candidates/trace_delta.md` 后仍收到 required_files_gate=failed；该 fixture 未创建 intake/change_classification/impact_analysis/trigger_result，而这些文件在 V392 前即属于 required_files_gate 基础要求。
+- **根因**：`CHANGE_SPECIFIC_FIXTURE_DID_NOT_SATISFY_PRE_EXISTING_GATE_PRECONDITIONS`
+- **修复**：V395 仅在已批准的 project-spec-repair 测试文件中补齐合法基础产物，再验证 trace_delta 缺失/存在的单一增量语义。
+- **类防护**：新增 Gate 回归必须先满足所有既有前置，只让被测条件成为唯一变量。
+
+### ERR-626：SFV394 把已知 baseline 失败的 sf-v11-close-gate.test.ts 当作绝对零失败目标
+- **分类**：`VALIDATION_HARNESS_DEFECT / BASELINE_DIFFERENTIAL`
+- **状态**：`CLOSED_BY_V395_BASELINE_DIFFERENTIAL_VALIDATION`
+- **一手事实**：V383 baseline 与 current 对该文件均存在完全相同的 8 个稳定失败身份；SFV394 又得到同一组 8 个 Close 失败，却把整组命令统一判为 TARGETED_REGRESSION_FAILED。
+- **根因**：`KNOWN_BASELINE_FAILURES_WERE_EVALUATED_AS_ABSOLUTE_ZERO_FAILURE_REQUIREMENT`
+- **修复**：V395/V396 对 change-specific 测试要求全绿；对历史失败文件使用稳定 failure identity 集合差分。
+- **类防护**：历史非零测试必须用稳定失败身份做同环境差分，不能用绝对 exit code 归因新回归。
+
+### ERR-627：V395 用一次随机 A/B 的集合差把 Path Resolver fast-check 随机暴露误判为当前新增回归
+- **分类**：`VALIDATION_HARNESS_DEFECT / STOCHASTIC_PROPERTY_TEST_ATTRIBUTION`
+- **状态**：`CLOSED_BY_V396_DETERMINISTIC_ATTRIBUTION`
+- **一手事实**：V395 baseline/current 稳定失败总数均为 188；唯一 current-only 身份为 `path-resolver.property.test.ts` 的 PersonalPathResolver fast-check，current seed=56094876，反例=`C:\projects\.. `。同一测试在 V383 已以 seed=837926229 暴露完全相同反例。
+- **根因**：`SINGLE_RANDOM_SEED_FAILURE_SET_DIFFERENCE_WAS_TREATED_AS_CAUSAL_REGRESSION`
+- **修复**：V396 固定该反例并在同 HEAD baseline/current 中运行；同时要求 Path Resolver 源码和属性测试哈希相同。仅当两边行为完全一致时，才把该随机身份归为既有随机暴露。
+- **类防护**：随机属性测试的 A/B 归因必须固定 seed/反例或重复采样；单次随机集合差只能作为调查触发器，不能单独宣布因果回归。
+
+### ERR-628：PersonalPathResolver 对 Windows 尾部空格的 `.. ` 路径段存在既有属性缺陷
+- **分类**：`PREEXISTING_PRODUCT_DEFECT / PATH_INVARIANT / OUT_OF_SCOPE_DISCOVERY`
+- **状态**：`OPEN_SEPARATE_GOVERNANCE_NOT_BLOCKING_ERR622`
+- **一手事实**：固定输入 `C:\projects\.. ` 在 HEAD `4d5c24bb...` 的 baseline/current 均得到相同行为，并违反 CP-1 的“返回路径不得包含 `..`”属性；该源码和测试均不在 ERR-622 的 14-file 修改范围。
+- **范围决定**：本轮只登记，不修改 Path Resolver；修复 ERR-628 必须另行执行影响分析并冻结新范围。
+- **当前影响**：不影响 ERR-622 的 spec_migration Close provenance 修复归因，不阻塞 Fresh-04 WI-0002 的恢复/Close。
+- **类防护**：发现独立模块既有缺陷时不得借当前任务扩大代码范围；先保留确定性证据，再单独治理。

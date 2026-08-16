@@ -4,7 +4,7 @@ import { registerHandler } from "../ToolDispatcher";
 import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
 import { join } from "node:path";
 import {
-  isValidV11Transition,
+  isValidV11TransitionForWorkflow,
   isForbiddenTransition,
   WI_STATUSES_V11,
   checkCloseGateEvidenceRequirements,
@@ -471,6 +471,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   }
 
   const resolvedWorkflowType = resolvedWorkflow.workflowType;
+  const effectiveWorkflowType =
+    resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change";
   const useV11 =
     (args["use_v11_state_machine"] as boolean) ||
     !!inheritedWorkflowPath ||
@@ -500,7 +502,10 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       };
     }
 
-    if (fromState !== "" && !isValidV11Transition(fromState, toState)) {
+    if (
+      fromState !== "" &&
+      !isValidV11TransitionForWorkflow(fromState, toState, effectiveWorkflowType)
+    ) {
       return {
         success: false,
         error: `Invalid v1.1 transition: ${fromState} → ${toState}`,
@@ -707,7 +712,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       };
     }
   }
-  const finalWorkflowType = resolvedWorkflowType || existingWorkflowFacts.workflowType || "quick_change";
+  const finalWorkflowType = effectiveWorkflowType;
 
   let transitionResult;
   try {

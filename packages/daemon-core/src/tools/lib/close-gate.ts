@@ -34,6 +34,7 @@ import { validateSemanticClosure, type SemanticClosureManifest } from './semanti
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
+import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
 
 export interface CloseGateResult {
   report: GateReportV11;
@@ -187,6 +188,7 @@ export interface CloseSpecArtifactRequirements {
 export function closeSpecArtifactRequirements(
   workflowPath: string,
   workflowType: string,
+  options?: { specMigrationTraceDeltaRequired?: boolean },
 ): CloseSpecArtifactRequirements {
   const investigationWorkflow = workflowType === 'investigation';
   const contractWorkflow =
@@ -197,7 +199,10 @@ export function closeSpecArtifactRequirements(
     return { tasks: false, traceDelta: false };
   }
   if (specMigrationWorkflow) {
-    return { tasks: false, traceDelta: true };
+    return {
+      tasks: false,
+      traceDelta: options?.specMigrationTraceDeltaRequired ?? true,
+    };
   }
   return {
     tasks: true,
@@ -341,7 +346,23 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   const specMigrationWorkflow =
     workflowType === 'spec_migration' ||
     workflowPath === 'spec_migration_path';
-  const specArtifactRequirements = closeSpecArtifactRequirements(workflowPath, workflowType);
+  const candidateManifest = await readJson<Record<string, unknown>>(
+    path.join(ctx.workItemDir, 'candidate_manifest.json'),
+  );
+  const specArtifactRequirements = closeSpecArtifactRequirements(
+    workflowPath,
+    workflowType,
+    {
+      // Fail closed when the manifest is unavailable. A valid frozen manifest is
+      // independently required by the governance chain, and Close must not infer
+      // "no Trace change" from missing evidence.
+      specMigrationTraceDeltaRequired: specMigrationWorkflow
+        ? candidateManifest
+          ? specMigrationCandidateRequiresTraceDelta(candidateManifest)
+          : true
+        : undefined,
+    },
+  );
   const taskArtifacts = specArtifactRequirements.tasks
     ? await resolveWorkItemSpecArtifacts({
         projectRoot: ctx.projectRoot,

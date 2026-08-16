@@ -279,7 +279,19 @@ describe('sf_semantic_closure_run handler', () => {
 
   it('refuses to regenerate closure after verification inputs are frozen', async () => {
     const workItemId = 'WI-9105';
-    await createWorkItem(tmpDir, workItemId, '# Trace\nNo chain.');
+    const wiDir = await createWorkItem(tmpDir, workItemId, '# Trace\nNo chain.');
+    await fs.writeFile(
+      path.join(wiDir, 'work_item.json'),
+      JSON.stringify(
+        {
+          work_item_id: workItemId,
+          workflow_type: 'spec_migration',
+          workflow_path: 'spec_migration_path',
+        },
+        null,
+        2,
+      ) + '\n',
+    );
     const deps = {
       projectManager: {
         getProjectStateManager: async () => ({
@@ -300,6 +312,8 @@ describe('sf_semantic_closure_run handler', () => {
 
     expect((result as any).success).toBe(false);
     expect((result as any).error).toBe('SEMANTIC_CLOSURE_INPUTS_FROZEN');
+    expect((result as any).recovery).toContain('post_merge_verified');
+    expect((result as any).recovery).not.toContain('implementation_ready');
 
     const inferredResult = await getHandler('sf_v11_semantic_closure_run')!(
       { work_item_id: workItemId },
@@ -308,6 +322,7 @@ describe('sf_semantic_closure_run handler', () => {
     );
     expect((inferredResult as any).success).toBe(false);
     expect((inferredResult as any).error).toBe('SEMANTIC_CLOSURE_INPUTS_FROZEN');
+    expect((inferredResult as any).recovery).toContain('post_merge_verified');
     await expect(
       fs.access(path.join(tmpDir, '.specforge', 'work-items', workItemId, '.semantic_closure.json'))
     ).rejects.toThrow();

@@ -20,6 +20,7 @@ import "../../src/tools/handlers/sf-state-transition";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
+import { captureSemanticClosureProvenance } from "../../src/tools/lib/semantic-closure-provenance";
 
 /**
  * Build a deps object whose ProjectManager returns a StateManager with a
@@ -324,6 +325,142 @@ describe("sf_state_transition - StateManager authority and transition contract",
     expect(result.success).toBe(false);
     expect(result.code).toBe("IMPLEMENTATION_AUDIT_NOT_PASSED");
     expect(smTransition).not.toHaveBeenCalled();
+  });
+});
+
+// =========================================================================
+// spec_migration verification recovery: verification_done -> post_merge_verified
+// =========================================================================
+
+describe("sf_state_transition - spec_migration verification recovery", () => {
+  let tempDir: string;
+  let handler: (...args: any[]) => Promise<any>;
+
+  beforeAll(() => {
+    handler = getHandler("sf_state_transition")!;
+    expect(handler).toBeDefined();
+  });
+
+  beforeEach(async () => {
+    tempDir = path.join(
+      os.tmpdir(),
+      `sf-st-spec-recovery-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    );
+    await fs.mkdir(tempDir, { recursive: true });
+    await writeManifest(tempDir, "PSV-0003");
+  });
+
+  afterEach(async () => {
+    await fs.rm(tempDir, { recursive: true, force: true });
+  });
+
+  async function writeSpecMigrationRecoveryFixture(workItemId: string): Promise<string> {
+    const wiDir = wiDirFor(tempDir, workItemId);
+    await fs.mkdir(path.join(wiDir, "candidates", "project", "modules", "CORE"), {
+      recursive: true,
+    });
+    await fs.writeFile(
+      path.join(wiDir, "work_item.json"),
+      JSON.stringify(
+        {
+          work_item_id: workItemId,
+          status: "verification_done",
+          workflow_type: "spec_migration",
+          workflow_path: "spec_migration_path",
+        },
+        null,
+        2,
+      ) + "\n",
+    );
+    await fs.writeFile(
+      path.join(wiDir, "candidate_manifest.json"),
+      JSON.stringify(
+        {
+          schema_version: "1.1",
+          work_item_id: workItemId,
+          workflow_type: "spec_migration",
+          workflow_path: "spec_migration_path",
+          base_spec_version: "PSV-0002",
+          project_spec_precondition_sha256: `sha256:${"a".repeat(64)}`,
+          repair_evidence_paths: [".specforge/project/architecture.md"],
+          merge_required: true,
+          entries: [
+            {
+              type: "module_definition",
+              candidate_path: "candidates/project/modules/CORE/module.candidate.json",
+              target_path: ".specforge/project/modules/CORE/module.json",
+              operation: "replace",
+            },
+          ],
+        },
+        null,
+        2,
+      ) + "\n",
+    );
+
+    const closure: any = {
+      schema_version: "1.0",
+      work_item_id: workItemId,
+      outcomes: [],
+      requirements: [],
+      design_decisions: [],
+      tasks: [],
+      evidence: [],
+      project_integration: { status: "merged" },
+    };
+    closure.provenance = await captureSemanticClosureProvenance({
+      workItemDir: wiDir,
+      source: "test",
+      manifest: closure,
+    });
+    await fs.writeFile(
+      path.join(wiDir, ".semantic_closure.json"),
+      JSON.stringify(closure, null, 2) + "\n",
+    );
+    return wiDir;
+  }
+
+  it("allows only stale-provenance spec_migration recovery and rejects recovery while provenance is current", async () => {
+    const workItemId = "WI-9010";
+    const wiDir = await writeSpecMigrationRecoveryFixture(workItemId);
+    const { deps, smTransition } = makeStateManagerDeps({ currentState: "verification_done" });
+
+    const currentResult = await handler(
+      {
+        work_item_id: workItemId,
+        from_state: "verification_done",
+        to_state: "post_merge_verified",
+        workflow_type: "spec_migration",
+        workflow_path: "spec_migration_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+    expect(currentResult.success).toBe(false);
+    expect(currentResult.error).toContain("provenance is current");
+    expect(smTransition).not.toHaveBeenCalled();
+
+    await fs.writeFile(
+      path.join(wiDir, "candidates", "trace_delta.md"),
+      "# Trace Delta\n\nADD_EDGES=0\nREMOVE_EDGES=0\n",
+    );
+
+    const staleResult = await handler(
+      {
+        work_item_id: workItemId,
+        from_state: "verification_done",
+        to_state: "post_merge_verified",
+        workflow_type: "spec_migration",
+        workflow_path: "spec_migration_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+    expect(staleResult.success).toBe(true);
+    expect(smTransition).toHaveBeenCalledTimes(1);
+    expect(smTransition.mock.calls[0]?.[1]).toBe("verification_done");
+    expect(smTransition.mock.calls[0]?.[2]).toBe("post_merge_verified");
+    expect(smTransition.mock.calls[0]?.[4]).toBe("spec_migration");
   });
 });
 

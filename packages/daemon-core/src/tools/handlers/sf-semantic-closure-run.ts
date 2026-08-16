@@ -147,6 +147,12 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
     projectRoot,
     workItemId,
   });
+  const workItem = await readJsonIfExists<Record<string, any>>(
+    path.join(workItemDir, 'work_item.json')
+  );
+  const workflowType = String(workItem?.workflow_type ?? '');
+  const frozenRecoveryTarget =
+    workflowType === 'spec_migration' ? 'post_merge_verified' : 'implementation_ready';
   const inputsFrozen = ['verification_done', 'closed', 'rejected', 'superseded'].includes(
     String(authoritativeState.current_state ?? '')
   );
@@ -159,7 +165,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       semantic_closure_valid: false,
       retry_allowed: false,
       recovery:
-        'Recover the Work Item from verification_done to implementation_ready, update verification artifacts, regenerate semantic closure, then rerun verification_gate.',
+        `Recover the Work Item from verification_done to ${frozenRecoveryTarget}, update governed verification artifacts, regenerate semantic closure with force=true, then rerun verification_gate.`,
     };
   }
 
@@ -179,7 +185,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       validation_errors: verificationContract.errors,
       verification_report_path: rel(projectRoot, verificationReportPath),
       recovery: inputsFrozen
-        ? `Recover the Work Item to implementation_ready, have sf-verifier rewrite verification_report with the complete ${VERIFICATION_REPORT_CONTRACT_ID} contract, then regenerate semantic closure.`
+        ? `Recover the Work Item to ${frozenRecoveryTarget}, have sf-verifier rewrite verification_report with the complete ${VERIFICATION_REPORT_CONTRACT_ID} contract, then regenerate semantic closure.`
         : `Have sf-verifier rewrite verification_report with the complete ${VERIFICATION_REPORT_CONTRACT_ID} contract, then call sf_semantic_closure_run again.`,
     };
   }
@@ -221,7 +227,7 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
         next_action: closureValid
           ? 'Run verification_gate.'
           : inputsFrozen
-            ? 'Recover to implementation_ready, then regenerate semantic closure with force=true.'
+            ? `Recover to ${frozenRecoveryTarget}, then regenerate semantic closure with force=true.`
             : 'Regenerate semantic closure with force=true after correcting its inputs.',
       };
     }
@@ -236,13 +242,10 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       semantic_closure_valid: false,
       retry_allowed: false,
       recovery:
-        'No existing semantic closure is available to validate. Recover the Work Item to implementation_ready, regenerate semantic closure, then rerun verification_gate.',
+        `No existing semantic closure is available to validate. Recover the Work Item to ${frozenRecoveryTarget}, regenerate semantic closure, then rerun verification_gate.`,
     };
   }
 
-  const workItem = await readJsonIfExists<Record<string, any>>(
-    path.join(workItemDir, 'work_item.json')
-  );
   if (!workItem) {
     return {
       success: false,

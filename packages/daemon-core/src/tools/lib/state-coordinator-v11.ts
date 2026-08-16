@@ -11,11 +11,12 @@ import * as path from 'node:path';
 import {
   WI_STATUSES_V11,
   isForbiddenTransition,
-  isValidV11Transition,
+  isValidV11TransitionForWorkflow,
   checkStateEvidenceRequirement,
 } from './state-machine-v11';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { validateSemanticClosureProvenance } from './semantic-closure-provenance';
 
 export type AuthoritativeStateRead = {
   current_state: string | null;
@@ -148,6 +149,64 @@ async function assertNoCodeVerificationTransition(input: TransitionWithEvidenceI
   }
 }
 
+async function assertSpecMigrationVerificationRecoveryTransition(
+  input: TransitionWithEvidenceInput,
+): Promise<void> {
+  if (input.fromState !== 'verification_done' || input.toState !== 'post_merge_verified') return;
+  if (input.workflowType !== 'spec_migration') {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: verification_done → post_merge_verified is reserved for workflow_type=spec_migration',
+    );
+  }
+
+  const manifestPath = path.join(input.workItemDir, 'candidate_manifest.json');
+  let manifest: Record<string, unknown>;
+  try {
+    manifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8')) as Record<string, unknown>;
+  } catch {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: spec_migration verification recovery requires valid candidate_manifest.json',
+    );
+  }
+  if (!isCanonicalNoCodeVerificationCandidateManifest({
+    manifest,
+    workItemId: input.workItemId,
+    workflowType: input.workflowType,
+  })) {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: spec_migration verification recovery requires the frozen canonical candidate manifest',
+    );
+  }
+
+  const closurePath = path.join(input.workItemDir, '.semantic_closure.json');
+  let closure: Record<string, unknown> | null = null;
+  try {
+    closure = JSON.parse(await fs.readFile(closurePath, 'utf-8')) as Record<string, unknown>;
+  } catch {
+    closure = null;
+  }
+  if (!closure) {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: spec_migration verification recovery requires an existing semantic closure',
+    );
+  }
+
+  const provenance = await validateSemanticClosureProvenance(input.workItemDir, closure as any);
+  if (provenance.passed) {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: spec_migration verification recovery is not allowed while semantic closure provenance is current',
+    );
+  }
+  if (
+    provenance.errors.length === 0 ||
+    provenance.errors.some(error => !error.startsWith('SEMANTIC_CLOSURE_INPUT_STALE:'))
+  ) {
+    throw new Error(
+      'STATE_COORDINATOR_TRANSITION_FAILED: spec_migration verification recovery only accepts stale governed input provenance',
+    );
+  }
+}
+
 async function assertFormalVersionBeforeClose(input: TransitionWithEvidenceInput): Promise<void> {
   if (input.fromState !== 'verification_done' || input.toState !== 'closed') return;
 
@@ -209,7 +268,10 @@ async function validateTransitionRequest(input: TransitionWithEvidenceInput): Pr
   if (input.fromState !== '' && isForbiddenTransition(input.fromState, input.toState)) {
     throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: forbidden transition ${input.fromState} → ${input.toState}`);
   }
-  if (input.fromState !== '' && !isValidV11Transition(input.fromState, input.toState)) {
+  if (
+    input.fromState !== '' &&
+    !isValidV11TransitionForWorkflow(input.fromState, input.toState, input.workflowType)
+  ) {
     throw new Error(`STATE_COORDINATOR_TRANSITION_FAILED: invalid transition ${input.fromState} → ${input.toState}`);
   }
   if (input.fromState === 'intake_ready' && input.toState === 'candidate_preparing' && input.workflowType !== 'contract_change') {
@@ -224,6 +286,7 @@ async function validateTransitionRequest(input: TransitionWithEvidenceInput): Pr
   }
 
   await assertNoCodeVerificationTransition(input);
+  await assertSpecMigrationVerificationRecoveryTransition(input);
   await assertFormalVersionBeforeClose(input);
 
   if (input.fromState !== '' && isSealTransition(input.fromState, input.toState)) {

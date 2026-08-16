@@ -1829,6 +1829,11 @@ Close Gate = REQUIRED
 18. closed-spec-migration recovery 允许一次**部分 side-effect 幂等续接**：若用户确认的目标分支已经由同一 WI 创建、当前正位于该分支、`git_context.json` 的 `work_item_id/branch_name/base_branch/base_commit` 与请求完全一致、当前 HEAD 仍严格等于 `base_commit`、且尚无 checkpoint commit，则允许在不再次创建/切换分支的情况下执行同一 latest passed Verification Attempt + Project Spec SHA 校验并补写 `git_delivery_recovery.json`。任何 context/branch/HEAD 不一致都必须 Fail Closed。
 19. 上述幂等续接不得修改 `git_context.json`、不得生成第二个分支、不得推进 Work Item 状态、不得重跑 Gate/Close；成功返回必须显式声明 `branch_created=false`、`git_context_reused=true`、`recovery_validation=passed` 和 `recovery_evidence_path`。
 
+20. `Trace Delta` 的适用性必须由**最终冻结 Candidate 的真实迁移范围**决定：只有 Candidate manifest 含 `project_trace` / `module_trace`，或正式目标为 `trace.md` / `trace_matrix.md` 时，`candidates/trace_delta.md` 才是必需正式证据。若 Trace 在本次迁移中未变化，Candidate Gate / Semantic Closure / Close Gate 不得仅因 `workflow_type=spec_migration` 强制制造零变化 `trace_delta`。
+21. 对确实涉及 Trace 的 `spec_migration`，`required_files_gate` 必须在 Candidate Gate 阶段就要求非空权威 `candidates/trace_delta.md`，不得允许缺失该后续 Verification/Close 必需输入的 Candidate 继续进入 User Decision、Atomic Spec Merge 或 Verification。
+22. 若 `spec_migration` 已到 `verification_done`，之后某个受治理 Verification 输入发生合法新增/变化并使既有 Semantic Closure provenance 仅出现 `SEMANTIC_CLOSURE_INPUT_STALE`，允许通过**唯一 no-code 恢复边** `verification_done -> post_merge_verified` 解冻并重建验证闭包。该边不得供其他 workflow 使用，不得经过 `implementation_ready / implementation_running / implementation_done`，并且必须由状态权威证明：workflow 为 `spec_migration`、冻结 Candidate manifest 仍满足 canonical no-code contract、既有 Semantic Closure 存在、provenance 当前确实 stale；provenance 仍 current、payload 损坏、closure 缺失或存在其他错误时必须 Fail Closed。
+23. 上述恢复完成后，必须重新生成 Semantic Closure（`force=true`），再沿既有 `post_merge_verified -> verification_running -> verification_done` 执行新的 Verification Gate + Formal Version Gate；因为输入已发生变化，不得用历史 Attempt reconciliation 代替重验。只有新的 closure provenance 与 Verification/Formal Version 都 current 且通过，Close Gate 才允许继续。
+
 **GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001：** `spec_migration_path` 的 Project Spec repair 默认仍只能从当前 `.specforge/project/**` 读取 source。只有为了恢复已经被产品缺陷破坏、且历史正式内容仍被 immutable Gate Attempt 证明的 Project Spec 时，才允许把历史 Work Item 的 `candidates/**` 作为 repair source；该例外不得形成直接 Project Spec 写入或第二套恢复流程。
 
 固定规则：

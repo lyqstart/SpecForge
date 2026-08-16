@@ -342,6 +342,42 @@ describe('spec_migration_path Project Spec repair', () => {
       )
     ).toMatchObject({ module_code: 'CORE', status: 'active' });
 
+    // required_files_gate still requires the normal Work Item base artifacts.
+    // This fixture is specifically testing the additional trace_delta condition,
+    // so keep the pre-existing base-file contract satisfied.
+    await writeFile(join(workItemDir, 'intake.md'), '# Intake\nProject Spec repair fixture.\n', 'utf8');
+    await writeFile(
+      join(workItemDir, 'change_classification.md'),
+      '# Change Classification\nworkflow_type=spec_migration\n',
+      'utf8',
+    );
+    await writeFile(
+      join(workItemDir, 'impact_analysis.md'),
+      '# Impact Analysis\nAffected module: CORE\n',
+      'utf8',
+    );
+    await writeJson(join(workItemDir, 'trigger_result.json'), {
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      workflow_type: 'spec_migration',
+      workflow_path: 'spec_migration_path',
+      classification: {
+        architecture_changed: false,
+        data_model_changed: false,
+        design_changed: false,
+        module_contract_changed: false,
+      },
+      impact_scope: {
+        affected_modules: ['CORE'],
+        architecture_refs: [],
+        data_model_refs: [],
+        design_refs: [],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        planned_code_paths: [],
+      },
+    });
+
     const gateContext = {
       projectRoot,
       workItemId,
@@ -350,6 +386,28 @@ describe('spec_migration_path Project Spec repair', () => {
       workflowType: 'spec_migration',
       candidatePhase: 'full' as const,
     };
+
+    const missingTraceDeltaReport = await runGate('required_files_gate', gateContext);
+    expect(missingTraceDeltaReport.status).toBe('failed');
+    expect(
+      missingTraceDeltaReport.checks.find(
+        check => check.check_id === 'project_spec_repair_trace_delta_authoritative',
+      ),
+    ).toMatchObject({ passed: false, severity: 'error' });
+
+    await writeFile(
+      join(workItemDir, 'candidates', 'trace_delta.md'),
+      '# Trace Delta\n\nADD_EDGES=0\nREMOVE_EDGES=0\n',
+      'utf8',
+    );
+    const traceDeltaReadyReport = await runGate('required_files_gate', gateContext);
+    expect(traceDeltaReadyReport.status).toBe('passed');
+    expect(
+      traceDeltaReadyReport.checks.find(
+        check => check.check_id === 'project_spec_repair_trace_delta_authoritative',
+      ),
+    ).toMatchObject({ passed: true });
+
     for (const gateId of [
       'candidate_manifest_gate',
       'trace_gate',

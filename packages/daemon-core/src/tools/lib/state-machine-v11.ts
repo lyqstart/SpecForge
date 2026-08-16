@@ -94,6 +94,28 @@ export function isValidV11Transition(from: string, to: string): boolean {
   return targets.includes(to);
 }
 
+/**
+ * Workflow-aware verification recovery.
+ *
+ * The common lifecycle table remains unchanged. spec_migration is the no-code
+ * exception: stale governed Verification input may recover from
+ * verification_done to post_merge_verified, then reuse the existing
+ * post_merge_verified -> verification_running -> verification_done path.
+ * state-coordinator-v11 supplies the fail-closed provenance guard.
+ */
+export function isValidV11TransitionForWorkflow(
+  from: string,
+  to: string,
+  workflowType?: string,
+): boolean {
+  if (isValidV11Transition(from, to)) return true;
+  return (
+    workflowType === 'spec_migration' &&
+    from === 'verification_done' &&
+    to === 'post_merge_verified'
+  );
+}
+
 // ---------------------------------------------------------------------------
 // §5.4 恢复机制
 // ---------------------------------------------------------------------------
