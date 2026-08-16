@@ -29,6 +29,8 @@ function completeClassification(overrides: Record<string, unknown> = {}): Record
     module_boundary_changed: false,
     api_contract_changed: false,
     architecture_changed: true,
+    data_model_changed: false,
+    module_contract_changed: false,
     unknowns: [
       'Bun runtime support for request-scoped async context is not yet verified',
       'Compatibility requirements for setCurrentTenant/getCurrentTenant are unresolved',
@@ -161,6 +163,15 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
         workflow_type: 'feature_spec_design_first',
         workflow_path: 'design_change_path',
         classification: completeClassification(),
+        impact_scope: {
+          affected_modules: ['CORE'],
+          architecture_refs: [],
+          data_model_refs: [],
+          design_refs: [],
+          project_contract_refs: [],
+          module_contract_refs: [],
+          planned_code_paths: [],
+        },
       },
       null,
       2
@@ -410,7 +421,7 @@ describe('Design Governance live closure', () => {
 
     const required = getRequiredGates('design_change_path', 'candidate', 'design');
     expect(required).toContain('workflow_specific_gate');
-    expect(required).not.toContain('trace_gate');
+    expect(required).toContain('trace_gate');
 
     const state = mockDeps();
     const handler = getHandler('sf_v11_gate_run');
@@ -424,12 +435,29 @@ describe('Design Governance live closure', () => {
     expect((result as any).success).toBe(true);
     expect((result as any).summary_status).toBe('passed');
     expect((result as any).candidate_phase).toBe('design');
-    expect((result as any).normalized_gate_ids).not.toContain('trace_gate');
+    expect((result as any).normalized_gate_ids).toContain('trace_gate');
+    expect((result as any).reports).toContainEqual(
+      expect.objectContaining({
+        gate_id: 'trace_gate',
+        status: 'passed',
+        blocking_issues: 0,
+        warnings: 0,
+      })
+    );
     expect((result as any).reports).toContainEqual(
       expect.objectContaining({ gate_id: 'workflow_specific_gate', status: 'passed' })
     );
     expect(state.getState()).toBe('approval_required');
     expect(state.transitions).toEqual([{ from: 'gates_running', to: 'approval_required' }]);
+
+    const traceReport = JSON.parse(
+      await readFile(
+        path.join(workItemRoot(projectRoot, workItemId), 'gates', 'trace_gate.json'),
+        'utf8'
+      )
+    );
+    expect(traceReport.gate_type).toBe('hard_gate');
+    expect(traceReport.status).toBe('passed');
 
     const workflowReport = JSON.parse(
       await readFile(

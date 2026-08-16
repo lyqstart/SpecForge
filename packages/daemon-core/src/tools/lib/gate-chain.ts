@@ -398,16 +398,15 @@ function combineWithGovernance(
   gateId: GateIdV11,
   base: GateReportV11,
   governance: GovernanceCheckResult,
-  options: { replaceBase?: boolean; forceHardWhenActive?: boolean } = {},
+  options: { replaceBase?: boolean } = {},
 ): GateReportV11 {
   if (!governance.active && !options.replaceBase) return base;
   const baseChecks: GateReportCheck[] = options.replaceBase ? [] : base.checks;
   const checks: GateReportCheck[] = [...baseChecks, ...governance.checks];
-  const gateType: GateStrictness = governance.active && options.forceHardWhenActive !== false ? 'hard_gate' : base.gate_type;
   return makeReport(
     ctx.workItemId,
     gateId,
-    gateType,
+    base.gate_type,
     true,
     checks,
     Array.from(new Set([...base.input_files, ...governance.inputFiles])),
@@ -416,18 +415,18 @@ function combineWithGovernance(
 async function applyGovernanceOverlay(gateId: GateIdV11, base: GateReportV11, ctx: GateContext): Promise<GateReportV11> {
   const input = { projectRoot: ctx.projectRoot, workItemDir: ctx.workItemDir, workItemId: ctx.workItemId };
   if (gateId === 'spec_consistency_gate') {
-    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceConsistency(input), { forceHardWhenActive: true });
+    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceConsistency(input));
   }
   if (gateId === 'contract_integrity_gate') {
-    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceContracts(input), { forceHardWhenActive: true });
+    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceContracts(input));
   }
   if (gateId === 'trace_gate') {
     // Governance trace is semantic. Absence of a trace_delta is valid when no
     // formal relation changed, so the old existence/non-empty trace check is replaced.
-    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceTrace(input), { replaceBase: true, forceHardWhenActive: true });
+    return combineWithGovernance(ctx, gateId, base, await checkProjectGovernanceTrace(input), { replaceBase: true });
   }
   if (gateId === 'verification_gate') {
-    return combineWithGovernance(ctx, gateId, base, await verifyProjectGovernanceAfterImplementation(input), { forceHardWhenActive: true });
+    return combineWithGovernance(ctx, gateId, base, await verifyProjectGovernanceAfterImplementation(input));
   }
   if (gateId === 'close_gate') {
     // close-gate.ts owns workflow-specific Close applicability because the

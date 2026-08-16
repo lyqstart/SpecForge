@@ -11,7 +11,7 @@ function dedupe(items: GateIdV11[]): GateIdV11[] { return Array.from(new Set(ite
 const commonCandidateGates: GateIdV11[] = ['entry_gate', 'workflow_selection_gate', 'schema_gate'];
 const designCandidateGates: GateIdV11[] = [
   ...commonCandidateGates, 'required_files_gate', 'candidate_manifest_gate', 'path_policy_gate',
-  'spec_consistency_gate', 'contract_integrity_gate', 'workflow_specific_gate',
+  'spec_consistency_gate', 'contract_integrity_gate', 'trace_gate', 'workflow_specific_gate',
 ];
 const fullSpecCandidateGates: GateIdV11[] = [...designCandidateGates, 'trace_gate'];
 const investigationCandidateGates: GateIdV11[] = [
@@ -19,7 +19,7 @@ const investigationCandidateGates: GateIdV11[] = [
 ];
 const contractCandidateGates: GateIdV11[] = [
   ...commonCandidateGates, 'required_files_gate', 'candidate_manifest_gate', 'path_policy_gate',
-  'spec_consistency_gate', 'contract_integrity_gate',
+  'spec_consistency_gate', 'contract_integrity_gate', 'trace_gate',
 ];
 
 function getCandidateGates(workflowPath: string, candidatePhase: CandidateGatePhaseV11, workflowType?: string): GateIdV11[] {
@@ -82,9 +82,8 @@ export function getRequiredGates(
   }
 }
 
-export function getGateStrictness(gateId: GateIdV11, _workflowPath: string): 'hard' | 'soft' {
-  // Compatibility migration: project-governance-v2 upgrades these to hard only
-  // after the formal Project Spec has Architecture/Data/Module ownership ready.
-  const softGates: GateIdV11[] = ['spec_consistency_gate', 'trace_gate'];
-  return softGates.includes(gateId) ? 'soft' : 'hard';
+export function getGateStrictness(_gateId: GateIdV11, _workflowPath: string): 'hard' | 'soft' {
+  // Phase 12 final enforcement: Gate strictness no longer changes by project,
+  // Work Item, Project Spec readiness, or runtime activation state.
+  return 'hard';
 }

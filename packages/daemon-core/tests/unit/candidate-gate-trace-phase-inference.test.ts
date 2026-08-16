@@ -175,10 +175,10 @@ describe('ERR-220 Candidate Gate trace-aware phase inference', () => {
     );
   });
 
-  it('pins the phase profiles used by the WI-0004 reproduction', () => {
+  it('pins Phase 12 core-gate coverage across design and full Candidate phases', () => {
     expect(
       getRequiredGates('spec_migration_path', 'candidate', 'design', 'spec_migration'),
-    ).not.toContain('trace_gate');
+    ).toContain('trace_gate');
     expect(
       getRequiredGates('spec_migration_path', 'candidate', 'full', 'spec_migration'),
     ).toContain('trace_gate');

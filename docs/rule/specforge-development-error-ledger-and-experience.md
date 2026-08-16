@@ -9384,3 +9384,74 @@ actual_files
 - **Formal Version**：implementation commit=`0528292f`，ancestor/tree/file-set/base-diff 指纹全部通过。
 - **最终运行状态**：blocking=0、warnings=0、hard stop=0、unresolved Write Guard=0、非授权生命周期穿越=NONE。
 - **下一阶段**：按唯一 Authority 第 10.13 节进入 Phase 12 Hard Enforcement 发布边界，只读审计三个核心 Gate hard 注册、Workflow/Fast Path 覆盖、Runtime 阻断和最终发布回归。
+
+### ERR-640：V412 Phase 12 只读审计脚本人为限制最多 120 个匹配文件
+- **分类**：`DELIVERY_HARNESS_DEFECT / EVIDENCE_CAPTURE`
+- **状态**：`CLOSED_BY_V413_FULL_CAPTURE`
+- **一手事实**：V412 因 runner 自设 `PHASE12_MATCHED_FILE_SET_TOO_LARGE` 主动退出；未写 SpecForge 仓库、未访问 Fresh-04、未执行生命周期动作，因此不是产品缺陷。
+- **修复**：V413 删除 120 文件人为边界并完整采集 180 个相关源码/测试文件；remote/local=`c15e92ab749ae2a11461dc1435d9a29bde88b775`，worktree clean。
+- **类防护**：只读影响分析不得用未经 Authority/仓库规模证据支持的低固定阈值截断真实生产者/消费者集合。
+
+### ERR-641：Phase 12 最终三个核心 Gate 尚未全部固定 Hard，且 required-gates / Runtime 仍保留迁移期语义
+- **分类**：`PRODUCT_GOVERNANCE_FINALIZATION / GATE_ENFORCEMENT`
+- **状态**：`FIX_VALIDATED_PENDING_COMMIT_PUSH_DEPLOYMENT_AND_PHASE11_EQUIVALENT_E2E`
+- **权威规则**：`GATE-HARD-001`、`GATE-FINAL-001`、`PHASE-LIFE-001`。
+- **V413 一手事实**：
+  1. `gate-runner-v11.ts` 中 `spec_consistency_gate` 与 `trace_gate` 仍注册为 `soft_gate`；`contract_integrity_gate` 已为 `hard_gate`。
+  2. `required-gates.ts::getGateStrictness()` 仍把 spec consistency / trace 返回 soft。
+  3. `gate-chain.ts` 仍依据 `governance.active` + `forceHardWhenActive` 动态升级 severity，违反业务项目运行时不得切换治理强度。
+  4. `contract_change_path` 与 design/requirements Candidate profile 未完整要求 `trace_gate`；Fast Path 已正确包含三个核心 Gate。
+  5. 现有 Runtime 已把 required Gate 的 failed summary 收口到 `gates_failed`，后续审批、Merge、Code Permission 继续消费该正式状态链。
+- **闭环修复**：
+  - 三个核心 Gate 永久注册 hard；
+  - Authority 11.9 的八类治理 Workflow/Fast Path 在适用 Candidate Phase 全部包含三个核心 Gate；
+  - 删除 `forceHardWhenActive`，governance overlay 只改变检查内容，不改变 severity；
+  - `contract_change` 无关系变化时由 trace Gate 验证“无关系变化”，不制造无意义 Trace Delta；有关系变化时继续消费现有 governed Trace artifact，缺失即 Fail Closed；
+  - 普通回归固定 severity、Workflow 覆盖和 failed required Gate → `gates_failed`。
+- **范围**：V414 exact 8；Authority 不改，Contract authoring 不改，Fresh-04 不访问，SpecForge 自身生命周期不运行。
+- **后续验收**：核心 Gate severity / 调用覆盖发生变化，因此 `PHASE-LIFE-001` 要求部署后执行 Phase 11 等价真实项目 E2E；工程测试不能替代真实验收。
+
+### ERR-642：V414 Design Governance 真实 Gate 测试仍固化“design phase 不运行 trace_gate”的 Phase 11 迁移期语义
+- **分类**：`TEST_CONTRACT_DRIFT / PHASE12_HARD_ENFORCEMENT`
+- **状态**：`CLOSED_BY_V415_DESIGN_TRACE_TEST_CONTRACT_SYNC`
+- **V414 一手事实**：targeted tests 49 PASS / 1 FAIL；Phase 12 新增的 hard severity、八类 Workflow 覆盖、动态 severity switch 移除、failed required Gate → `gates_failed` 五项回归全部通过。唯一失败位于 `design-governance-live-closure.test.ts`，仍断言 `design_change_path` 的 required / normalized Gate 集合不包含 `trace_gate`。
+- **根因**：`DESIGN_LIVE_CLOSURE_TEST_RETAINED_PHASE11_TRACE_GATE_EXEMPTION_AFTER_PHASE12_REQUIRED_GATE_FINALIZATION`
+- **契约事实**：Phase 12 按 `GATE-HARD-001` / `GATE-FINAL-001` 固定三个核心 Gate 为 Hard；Authority 11.9 的 Design Workflow 不再豁免 Trace Gate。Project Governance trace overlay 已明确采用语义 Trace 检查；当无正式关系变化时不要求为了形式制造无意义 `trace_delta`。
+- **范围重开**：V414 exact-8 未包含该测试消费者。发现后停止扩大旧范围，V415 重新批准 exact-9：V414 8 文件 + `packages/daemon-core/tests/design-governance-live-closure.test.ts`。
+- **修复**：该真实 Design Gate 测试改为要求 required / normalized Gate 集包含 `trace_gate`，并要求实际 `trace_gate` 报告 `gate_type=hard_gate,status=passed`；其余产品文件保持 V414 payload 不变。
+- **后验验证**：V415 必须重新跑 targeted tests、全仓 `bun test`、validator TypeScript、daemon-core build、全仓 build、`git diff --check`、Authority unchanged 和 exact-9 scope audit。
+
+### ERR-643：Design Governance live closure fixture 的 trigger_result 缺少当前正式 Impact Scope
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / TRIGGER_SCHEMA`
+- **状态**：`CLOSED_BY_V418_DESIGN_TRIGGER_IMPACT_SCOPE_SYNC`
+- **V417 一手证据**：直接调用真实 `sf_v11_gate_run` 后，`spec_consistency_gate=passed/hard_gate`、`contract_integrity_gate=passed/hard_gate`、`trace_gate=passed/hard_gate`；唯一失败为 `schema_gate`，check=`schema_trigger_result_json`，details=`INVALID_IMPACT_SCOPE: impact_scope must be a JSON object`。
+- **根因**：`design-governance-live-closure.test.ts::writeBaseWorkItem()` 仍写旧版 `trigger_result.json`，只有 classification，没有当前必需的 machine-readable `impact_scope`。
+- **修复**：fixture 增加合法 `impact_scope`：`affected_modules=['CORE']`；architecture/data/design/project-contract/module-contract refs 全为空；`planned_code_paths=[]`。这与 Design-only fixture 的真实影响一致，不制造无事实依据的引用或代码路径。
+- **产品语义**：V415 Phase 12 产品改动保持不变；三个核心 Gate 的真实 handler 证据已经证明均为 Hard 且通过；无需 Trace Delta producer。
+- **范围**：exact-9 不变；Authority 不改；不访问 Fresh-04；不运行 SpecForge 自身生命周期。
+
+### ERR-644：V416 Design Gate 诊断脚本走错 Bun 测试执行路径，未取得目标 Gate fixture
+- **分类**：`DELIVERY_HARNESS_DEFECT / DIAGNOSTIC_EXECUTION`
+- **状态**：`CLOSED_BY_V417_DIRECT_HANDLER_DIAGNOSTIC`
+- **一手事实**：V416 返回 `NO_PRESERVED_FIXTURE_WITH_GATE_REPORTS`；后验检查其输出确认 `bun --preload ... test ...` 被 workspace 脚本解析为全 workspace test，而不是直接执行 daemon-core 目标单测，因此没有产生预期目标 fixture。
+- **修复**：V417 不再依赖 Vitest 临时目录劫持，直接构造 OS-temp 项目并调用同一个 `sf_v11_gate_run` handler，成功取得真实 Gate reports，且 `REPOSITORY_SIDE_EFFECT_AUDIT=PASS_NONE`。
+- **类防护**：诊断目标为 handler 行为时优先直接调用 handler；不得依赖 workspace test script 参数透传和清理行为来取得治理证据。
+
+### ERR-645：V418 只同步 impact_scope，Design live fixture 的 Classification 仍缺两个当前必填字段
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / TRIGGER_CLASSIFICATION_SCHEMA`
+- **状态**：`CLOSED_BY_V419_DESIGN_CLASSIFICATION_CONTRACT_SYNC`
+- **一手事实**：V418 已确认 `DESIGN_TRIGGER_SCHEMA_CONTRACT=PASS_IMPACT_SCOPE_CURRENT`，但真实 Design Gate 集成测试仍 `summary_status=failed`。当前 `artifact-schema-validation.ts` 的 `CLASSIFICATION_BOOLEAN_FIELDS` 明确包含 11 个字段；V418 `completeClassification()` 只有 9 个，缺 `data_model_changed` 与 `module_contract_changed`。
+- **交叉证据**：V417 直接 handler fixture 同时包含 `impact_scope`、`data_model_changed=false`、`module_contract_changed=false`，其 `schema_gate` 未进入失败集合，三个 Phase 12 核心 Gate 全部 `passed/hard_gate`。因此 V418 仍失败的剩余 Trigger Schema 差异就是这两个必填布尔字段。
+- **修复**：仅在 `design-governance-live-closure.test.ts::completeClassification()` 增加 `data_model_changed:false`、`module_contract_changed:false`。不改变生产 Trigger Schema、不改变 Gate 行为、不改变 Workflow。
+- **范围**：V419 继续 exact-9，不新增文件；Authority 不改；Fresh-04 不访问；SpecForge 自身生命周期不运行。
+- **验证**：targeted tests 通过后必须继续执行全仓 `bun test`，再执行 validator TypeScript、daemon-core build、全仓 build、`git diff --check`、Authority unchanged、exact-9 scope audit。
+
+### ERR-646：Design live test 把 `sf_v11_gate_run` 精简 reports 摘要误当成完整 Gate Report
+- **分类**：`TEST_CONTRACT_DRIFT / HANDLER_RESPONSE_VS_PERSISTED_GATE_ARTIFACT`
+- **状态**：`CLOSED_BY_V420_HANDLER_SUMMARY_VS_GATE_ARTIFACT_CONTRACT_SYNC`
+- **V419 一手事实**：真实 Design Gate 已 `summary_status=passed`，`normalized_gate_ids` 包含 `trace_gate`，返回摘要中的 `trace_gate.status=passed`；唯一测试失败是期望 `(result as any).reports[*].gate_type='hard_gate'`，而实际摘要对象只有 `gate_id/status/blocking_issues/warnings`。
+- **源码契约**：`sf-v11-gate-run.ts` 返回 `reports: reports.map(...)`，明确只投影 `gate_id`、`status`、`blocking_issues.length`、`warnings.length`；完整 `GateReportV11` 由 Gate Runner 持久化到 `gates/<gate_id>.json`，其中包含 `gate_type`。
+- **修复**：测试对 handler 返回值只断言 `trace_gate` 摘要 `status=passed,blocking_issues=0,warnings=0`；另读取 `gates/trace_gate.json` 断言 `gate_type=hard_gate,status=passed`。
+- **产品语义**：不修改 handler 返回结构，不复制完整 Gate 报告到摘要，不修改 Gate/Workflow/Runtime；V415 产品改动保持不变。
+- **范围**：V420 继续 exact-9；Authority 不改；Fresh-04 不访问；SpecForge 自身生命周期不运行。
+- **验证**：targeted tests、全仓 `bun test`、validator TypeScript、daemon-core build、全仓 build、`git diff --check`、Authority unchanged、exact-9 scope audit。

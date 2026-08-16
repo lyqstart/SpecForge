@@ -1485,7 +1485,7 @@ const CONTRACT_KIND_TO_FIELD: Record<string, keyof ContractRegistry> = {
   extension_point: 'extension_points',
 };
 
-registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
+registerGate('spec_consistency_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
   const registry = readContractsRegistry(ctx.projectRoot);
 
@@ -1497,7 +1497,7 @@ registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
         'No cross-module contracts registered in extension_registry.json; consistency check skipped (brownfield-safe)',
       passed: true,
     });
-    return makeReport(ctx.workItemId, 'spec_consistency_gate', 'soft_gate', true, checks);
+    return makeReport(ctx.workItemId, 'spec_consistency_gate', 'hard_gate', true, checks);
   }
 
   const designArtifacts = await resolveWorkItemSpecArtifacts({
@@ -1521,7 +1521,7 @@ registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
       description: 'Design declares no [contract:...] references; nothing to reconcile',
       passed: true,
     });
-    return makeReport(ctx.workItemId, 'spec_consistency_gate', 'soft_gate', true, checks);
+    return makeReport(ctx.workItemId, 'spec_consistency_gate', 'hard_gate', true, checks);
   }
 
   for (let i = 0; i < references.length; i++) {
@@ -1560,7 +1560,7 @@ registerGate('spec_consistency_gate', 'soft_gate', true, async ctx => {
   return makeReport(
     ctx.workItemId,
     'spec_consistency_gate',
-    'soft_gate',
+    'hard_gate',
     true,
     checks,
     designArtifacts.map(a => a.path)
@@ -1588,9 +1588,9 @@ registerGate('contract_integrity_gate', 'hard_gate', true, async ctx => {
 });
 
 /**
- * §9.2 trace_gate — Trace 闭环检查（弱实现）
+ * §9.2 trace_gate — Trace 闭环检查（最终 Hard Enforcement）
  */
-registerGate('trace_gate', 'soft_gate', true, async ctx => {
+registerGate('trace_gate', 'hard_gate', true, async ctx => {
   if (await isProjectSpecRepairWorkItem(ctx)) {
     const manifestPath = workItemCandidateManifest(ctx.projectRoot, ctx.workItemId);
     const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8')) as Record<string, unknown>;
@@ -1627,7 +1627,7 @@ registerGate('trace_gate', 'soft_gate', true, async ctx => {
     return makeReport(
       ctx.workItemId,
       'trace_gate',
-      'soft_gate',
+      'hard_gate',
       true,
       checks,
       traceEntries.map((entry: any) => path.join(ctx.workItemDir, entry.candidate_path))
@@ -1654,7 +1654,7 @@ registerGate('trace_gate', 'soft_gate', true, async ctx => {
   return makeReport(
     ctx.workItemId,
     'trace_gate',
-    'soft_gate',
+    'hard_gate',
     true,
     checks,
     artifacts.map(artifact => artifact.path)

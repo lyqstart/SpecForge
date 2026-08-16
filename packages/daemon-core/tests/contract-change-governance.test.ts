@@ -32,7 +32,7 @@ describe('contract_change lightweight governance', () => {
     );
   });
 
-  it('retains the full merge/approval gates while exempting trace and workflow-specific specs', () => {
+  it('retains the full merge/approval gates while requiring all three core governance gates', () => {
     const gates = getRequiredGates('contract_change_path', 'candidate', 'full', 'contract_change');
     expect(gates).toContain('required_files_gate');
     expect(gates).toContain('candidate_manifest_gate');
@@ -40,7 +40,7 @@ describe('contract_change lightweight governance', () => {
     expect(gates).toContain('schema_gate');
     expect(gates).toContain('spec_consistency_gate');
     expect(gates).toContain('contract_integrity_gate');
-    expect(gates).not.toContain('trace_gate');
+    expect(gates).toContain('trace_gate');
     expect(gates).not.toContain('workflow_specific_gate');
   });
 
