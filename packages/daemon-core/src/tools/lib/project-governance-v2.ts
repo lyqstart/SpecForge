@@ -599,11 +599,25 @@ async function loadProjectModel(
       Array.isArray(raw.code_paths) || Array.isArray(moduleDefinition?.code_paths);
     const codePaths = normalizeArray(moduleDefinition?.code_paths ?? raw.code_paths);
     const contractsTarget = slash(path.relative(projectRoot, contractsPath));
+    // Candidate Gate evaluates the Project Spec that Atomic Spec Merge would
+    // canonically materialize. A module_definition Candidate causes the Merge
+    // Runner to rebuild contracts/code_paths when governance is ready, even when
+    // an unchanged contracts.json was materialized away as a no-op Candidate.
+    const prospectiveGovernanceOnlyDefault =
+      moduleCode === String(manifest?.default_module ?? '').trim().toUpperCase() &&
+      Array.isArray(moduleDefinition?.code_paths) &&
+      codePaths.length === 0;
+    const prospectiveCanonicalContractsDeclared =
+      useCandidateProjection &&
+      Boolean(moduleCandidateEntry) &&
+      (codePaths.length > 0 || prospectiveGovernanceOnlyDefault) &&
+      moduleContractJson !== null;
     const contractsDeclared =
       (typeof raw.contracts === 'string' && String(raw.contracts).trim().length > 0) ||
       (typeof moduleDefinition?.contracts === 'string' &&
         String(moduleDefinition.contracts).trim().length > 0) ||
-      (useCandidateProjection && reader.targets.has(contractsTarget));
+      (useCandidateProjection && reader.targets.has(contractsTarget)) ||
+      prospectiveCanonicalContractsDeclared;
     const moduleTraceText = await readText(tracePath);
     const moduleTraceParse = parseGovernanceTrace(moduleTraceText, tracePath);
 

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -9,6 +9,7 @@ import {
 } from '../src/tools/lib/spec-migration-v11';
 import { runGate } from '../src/tools/lib/gate-runner-v11';
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
+import { checkProjectGovernanceConsistency } from '../src/tools/lib/project-governance-v2';
 
 async function writeJson(target: string, value: unknown): Promise<void> {
   await mkdir(dirname(target), { recursive: true });
@@ -68,7 +69,12 @@ async function createImmutableRepairFixture(): Promise<{
   });
   await writeFile(
     join(projectRoot, '.specforge', 'project', 'architecture.md'),
-    '# Architecture\n',
+    '# Architecture\n\nARCH-CORE-001\n',
+    'utf8',
+  );
+  await writeFile(
+    join(projectRoot, '.specforge', 'project', 'data_model.md'),
+    '# Data Model\n\nDATA_MODEL_NOT_APPLICABLE\n',
     'utf8',
   );
   await mkdir(join(projectRoot, '.specforge', 'project', 'modules', 'CORE'), { recursive: true });
@@ -79,7 +85,7 @@ async function createImmutableRepairFixture(): Promise<{
   );
   await writeFile(
     join(projectRoot, '.specforge', 'project', 'modules', 'CORE', 'design.md'),
-    '# Design\n',
+    '# Design\n\nDD-CORE-001\n',
     'utf8',
   );
   await writeFile(
@@ -110,6 +116,27 @@ async function createImmutableRepairFixture(): Promise<{
     workflow_path: 'spec_migration_path',
     workflow_type: 'spec_migration',
     status: 'candidate_preparing',
+  });
+  await writeJson(join(workItemDir, 'trigger_result.json'), {
+    schema_version: '1.0',
+    work_item_id: workItemId,
+    workflow_type: 'spec_migration',
+    workflow_path: 'spec_migration_path',
+    classification: {
+      architecture_changed: false,
+      data_model_changed: false,
+      design_changed: false,
+      module_contract_changed: false,
+    },
+    impact_scope: {
+      affected_modules: ['CORE'],
+      architecture_refs: [],
+      data_model_refs: [],
+      design_refs: [],
+      project_contract_refs: [],
+      module_contract_refs: [],
+      planned_code_paths: [],
+    },
   });
 
   const sourceCandidatePath = join(
@@ -396,6 +423,21 @@ describe('spec_migration_path Project Spec repair', () => {
       source_work_item_id: 'WI-0001',
       gate_attempt_id: 'attempt-0010',
     });
+    const prospectiveConsistency = await checkProjectGovernanceConsistency({
+      projectRoot: fixture.projectRoot,
+      workItemDir: fixture.workItemDir,
+      workItemId: fixture.workItemId,
+    });
+    expect(prospectiveConsistency.active).toBe(true);
+    expect(
+      prospectiveConsistency.checks.find(check => check.check_id === 'module_CORE_code_paths'),
+    ).toMatchObject({ passed: true });
+    expect(
+      prospectiveConsistency.checks.find(check => check.check_id === 'module_CORE_contracts_path'),
+    ).toMatchObject({ passed: true });
+    expect(
+      prospectiveConsistency.checks.filter(check => !check.passed),
+    ).toEqual([]);
 
     await writeJson(join(fixture.workItemDir, 'user_decision.json'), {
       work_item_id: fixture.workItemId,
@@ -430,6 +472,31 @@ describe('spec_migration_path Project Spec repair', () => {
         code_paths: ['src/index.ts'],
       }),
     );
+  });
+
+  it('fails closed when a repair module Candidate has no contracts.json to canonically register', async () => {
+    const fixture = await createImmutableRepairFixture();
+    await prepareProjectSpecRepairCandidates({
+      projectRoot: fixture.projectRoot,
+      workItemId: fixture.workItemId,
+      workItemDir: fixture.workItemDir,
+      preparation: fixture.preparation,
+    });
+    await rm(
+      join(fixture.projectRoot, '.specforge', 'project', 'modules', 'CORE', 'contracts.json'),
+    );
+    const prospectiveConsistency = await checkProjectGovernanceConsistency({
+      projectRoot: fixture.projectRoot,
+      workItemDir: fixture.workItemDir,
+      workItemId: fixture.workItemId,
+    });
+    expect(
+      prospectiveConsistency.checks.find(check => check.check_id === 'module_CORE_code_paths'),
+    ).toMatchObject({ passed: true });
+    expect(
+      prospectiveConsistency.checks.find(check => check.check_id === 'module_CORE_contracts_path'),
+    ).toMatchObject({ passed: false });
+    expect(prospectiveConsistency.passed).toBe(false);
   });
 
   it('fails closed when historical Candidate bytes drift after the immutable Gate Attempt', async () => {

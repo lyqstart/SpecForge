@@ -9140,3 +9140,63 @@ actual_files
 - **影响**：产品代码、测试、Authority 和 Fresh-04 未新增失败；仅动态状态文档尚未提升到最终 validated/pending deploy。
 - **修复**：SFV381 通过 ERR section 定位唯一 `状态` 行，校验其当前值属于明确允许的历史 pending 状态集合后再提升；不再依赖单个重建旧状态字符串。重新执行完整工程验证后同步 handoff/ledger。
 - **类防护**：`GOV-STAGE-RECOVERY-ACCEPT-001,GOV-STAGE-TRUTH-001,GOV-STAGE-HANDOFF-001,GOV-EVID-001`
+### ERR-616：Project Spec repair 的 Prospective Gate 未投影 Atomic Spec Merge 会重建的 contracts registry 声明
+- **分类**：`PRODUCT_DEFECT / GATE_PROSPECTIVE_MODEL / PROJECT_SPEC_REPAIR`
+- **状态**：`FIX_VALIDATED_PENDING_COMMIT_PUSH_DEPLOYMENT`
+- **阶段**：PHASE11_FRESH04_PROJECT_SPEC_REPAIR_CANDIDATE_GATE
+- **一手事实**：Fresh-04 新 repair WI `WI-0002` 已按 `spec_migration_path` 完成 immutable repair Candidate，历史 CORE module source 与新 Candidate SHA256 均为 `d03c73f590f2cdfb9ee672b2b4e37f32036f748fea46330441243c1598d668f1`；Candidate Gate `attempt-0002` 9 个 required Gates 中 8 PASS，仅 `spec_consistency_gate` 的 `module_CORE_contracts_path` FAIL。当前 `contracts.json` 存在且未改变；`project-governance-v2.ts` 已从 module Candidate 投影 `code_paths`，却只有 raw manifest、module definition 自带 `contracts` 或 contracts Candidate target 时才把 `contracts_declared=true`。`merge-runner-v11.ts::registerMergedProjectModules()` 则会在 module merge 后，只要 code_paths/governance-only-default 满足且 `contracts.json` 存在，就规范重建 registry 的 `contracts + code_paths`。
+- **根因**：`PROSPECTIVE_PROJECT_MODEL_DID_NOT_MIRROR_CANONICAL_MODULE_REGISTRY_RECONSTRUCTION_FOR_EXISTING_CONTRACTS_FILE`
+- **影响**：合法 repair Candidate 被它要修复的旧 manifest 缺陷本身阻断，形成 Candidate Gate → Atomic Spec Merge 的时序悖论；Fresh-04 保持 `WI-0002=gates_failed`，未执行 User Decision 或 Atomic Spec Merge。
+- **修复**：仅修正 Project Governance Prospective Module 投影：当且仅当当前处于 Candidate projection、该 Module 确有 module_definition Candidate、合并后的 code_paths/governance-only-default 满足且 Prospective `contracts.json` 可读取时，把 canonical `contracts` registry 路径视为 Prospective declared。继续保留现有 raw/module-definition/contracts-target 三种声明来源。没有 module Candidate、没有 contracts 文件或其他不满足 canonical governance-ready 条件时仍 Fail Closed。
+- **验证**：immutable repair 正向回归在 Atomic Merge 前直接运行 `checkProjectGovernanceConsistency()`，要求 `module_CORE_code_paths` 与 `module_CORE_contracts_path` 均 PASS，并继续证明 merge 后 manifest 真实含 `contracts + code_paths`；新增缺失 `contracts.json` 负向回归，要求同一 contracts-path check FAIL。
+- **Authority**：不新增架构/契约决策；实现对齐现有 Prospective Gate 语义和现有 Atomic Spec Merge canonical registry producer，唯一 Authority 保持不修改。
+- **类防护**：`GOV-CLOSELOOP-001,GOV-CONTRACT-001,GOV-POST-001,GOV-EVID-001,GOV-SCOPE-001,GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001`
+
+### ERR-617：SFV382 将全 daemon-core 历史/环境失败直接作为本次产品修改阻断，缺少同环境基线差分
+- **分类**：`VALIDATION_HARNESS_DEFECT / BASELINE_DIFFERENTIAL_MISSING`
+- **状态**：`CLOSED_BY_V386_HERMETIC_AB_DIFFERENTIAL`
+- **阶段**：SPECFORGE_PROJECT_SPEC_REPAIR_PROSPECTIVE_GATE_FIX_VALIDATION
+- **一手事实**：SFV382 的 5 个目标回归文件 33/33 PASS，新增 repair 正向/负向回归均 PASS；随后全 daemon-core suite 为 1466 PASS / 193 FAIL / 2 ERROR。失败集合包含 `Another Daemon instance is already running`、历史 Candidate/State/Close/Session/WAL 等与 ERR-616 修改范围无关的测试。SFV382 在没有 exact HEAD 同环境基线结果时把外围 full-suite 非零直接判为本次产品修改失败。
+- **根因**：`FULL_SUITE_NONZERO_WAS_TREATED_AS_CHANGE_REGRESSION_WITHOUT_SAME_ENVIRONMENT_HEAD_BASELINE_DIFFERENTIAL`
+- **修复**：SFV383 在仓库外临时 clone exact HEAD `3b926883...`，运行同一 daemon-core full suite，再运行当前修改树同一 suite；以 `current failing test identities - baseline failing test identities` 作为新增回归判定。只要本次产生任何新增失败仍阻断；仅 HEAD 本身同样失败的历史/环境项不归因于 ERR-616。
+- **验证**：继续要求 ERR-616 目标测试全 PASS、daemon-core build、validator TypeScript、full workspace build、git diff --check、Authority unmodified、exact 4-file scope，以及 30 项最终 validator。
+- **Authority**：不修订；这是验证证据归因修复，不改变产品架构或契约。
+- **类防护**：`GOV-STAGE-DIAG-001,GOV-STAGE-TRUTH-001,GOV-POST-001,GOV-EVID-001,GOV-STAGE-RECOVERY-ACCEPT-001`
+
+### ERR-618：SFV383 failure identity parser 把 Bun 汇总重复清单和运行耗时纳入失败身份
+- **分类**：`VALIDATION_HARNESS_DEFECT / FAILURE_IDENTITY_NORMALIZATION`
+- **状态**：`CLOSED_BY_V386_HERMETIC_AB_REPLACEMENT`
+- **阶段**：SPECFORGE_PROJECT_SPEC_REPAIR_PROSPECTIVE_GATE_FIX_VALIDATION
+- **一手事实**：SFV383 报告 `CURRENT_FAILURE_IDENTITIES=386`、`NEW_FAILURE_IDENTITIES=384`，而同一 current suite 自身仅报告 193 个 failed tests；失败身份包含 `[x.xxms]` 运行耗时，并把 Bun 末尾 `N tests failed:` 汇总清单再次计入。
+- **根因**：`FAILURE_IDENTITY_INCLUDED_VOLATILE_DURATION_AND_DUPLICATED_BUN_AGGREGATE_SUMMARY`
+- **修复**：V386 使用同环境 fresh baseline/current，并把稳定失败身份定义为 `test_file + full_test_name`；去除运行耗时，在 Bun aggregate summary 前停止解析，并单独保留 test-file 级 unhandled error 身份。
+- **验证**：V386 得到 `BASELINE_STABLE_FAILURE_IDENTITIES=188`、`CURRENT_STABLE_FAILURE_IDENTITIES=187`、`NEW_FAILURE_IDENTITIES=0`。
+- **类防护**：复用既有 semantic failure identity 规则，不允许时长、汇总重复行进入比较键。
+
+### ERR-619：SFV385 Windows CMD validator 调用产生双引号路径，导致验证器未启动
+- **分类**：`VALIDATION_HARNESS_DEFECT / WINDOWS_CMD_QUOTING`
+- **状态**：`CLOSED_BY_V387_DIRECT_PYTHON_VALIDATION`
+- **阶段**：SPECFORGE_PROJECT_SPEC_REPAIR_LOCAL_RECOVERY
+- **一手事实**：SFV385 只读取证已经确认 local/remote HEAD、exact 4 dirty、Authority clean、`git diff --check` 等事实；其 validator 结果为 `File not found ""C:\Users\lyq\Downloads\Compressed\specforge\SFV385\validator.ts""`。
+- **根因**：`CMD_S_C_NESTED_QUOTING_DOUBLE_QUOTED_VALIDATOR_PATH`
+- **修复**：V387 不再通过嵌套 CMD 字符串调用内部 validator，改用当前 Python 进程直接执行固定验证逻辑。
+- **类防护**：Windows 路径参数使用参数数组，不把已引用路径再次嵌入 `cmd /s /c` 字符串。
+
+### ERR-620：SFV386 产品验证 29/30 通过后，Windows node_modules 临时目录清理报 WinError 145
+- **分类**：`VALIDATION_HARNESS_DEFECT / TEMP_CLEANUP`
+- **状态**：`CLOSED_BY_V387_ROBUST_TEMP_CLEANUP`
+- **阶段**：SPECFORGE_PROJECT_SPEC_REPAIR_HERMETIC_AB_VALIDATION
+- **一手事实**：SFV386 已确认 `NEW_FAILURE_IDENTITIES=0`、33/33 targeted PASS、daemon-core build PASS、validator TypeScript PASS、baseline/current full workspace build PASS、exact 4 scope PASS、架构/契约/生产者消费者对账 PASS；唯一失败为删除 `SFV386-hermetic\baseline\node_modules\...` 时 `WinError 145: 目录不是空的`。
+- **根因**：`WINDOWS_DEEP_NODE_MODULES_TEMP_TREE_CLEANUP_WAS_NOT_RETRY_AND_LONG_PATH_RESILIENT`
+- **修复**：V387 对既有 V386 evidence 做只读验收后，使用重试、属性清理和 Windows extended-length path 清理该临时目录，并要求目录最终不存在。
+- **类防护**：包含 node_modules 的验证临时树必须使用可重试、长路径兼容的清理策略；清理失败只阻断 artifact closure，不改写已经独立成立的产品测试事实。
+
+### ERR-621：SFV388 把 handoff 中非唯一字段前缀当成唯一定位键
+- **分类**：`VALIDATION_HARNESS_DEFECT / FIELD_CARDINALITY_MATCH`
+- **状态**：`CLOSED_BY_V389_EXACT_VALUE_FIELD_MATCH`
+- **阶段**：SPECFORGE_PROJECT_SPEC_REPAIR_FINAL_CLOSURE
+- **一手事实**：SFV388 已通过 V386 evidence 验收、`NEW_FAILURE_IDENTITIES=0`、33/33 targeted、daemon-core build、validator TypeScript 和 full workspace build；在状态文档收口前因为 `EXPERIENCE_FILE_READ=` 在 handoff 中存在 3 处而报 `cardinality=3`，随后自动回滚状态文档写入。
+- **根因**：`DUPLICATE_FIELD_PREFIX_WAS_USED_AS_GLOBAL_UNIQUE_UPDATE_LOCATOR`
+- **修复**：V389 仅匹配完整旧值 `EXPERIENCE_FILE_READ=YES_LATEST_WITH_ERR617`，不再按全文件通用前缀定位。
+- **验证**：生成阶段直接对 V385 保存的真实 handoff 执行同一精确定位规则，确认目标旧值唯一且另外两处同名前缀不受影响。
+- **类防护**：更新 handoff 重复字段时必须使用“完整旧值 + cardinality=1”或明确 section 范围，不得把重复前缀当作全文件唯一键。
