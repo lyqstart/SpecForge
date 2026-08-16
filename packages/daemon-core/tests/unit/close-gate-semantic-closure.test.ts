@@ -126,6 +126,10 @@ async function createCloseReadyWorkItem(tmpDir: string, workItemId: string): Pro
     '# Gate Summary\n\n- Overall Status: passed\n'
   );
   await fs.writeFile(
+    path.join(wiDir, 'gates', 'formal_version_gate.json'),
+    JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }) + '\n'
+  );
+  await fs.writeFile(
     path.join(wiDir, 'verification_report.md'),
     '# Verification Report\n\nEvidence EV-1 passed.\n'
   );
@@ -195,11 +199,12 @@ describe('runCloseGate semantic closure hard gate', () => {
     expect(
       result.report.checks.find(
         check => check.check_id === 'close_artifact_trace_delta_authoritative',
-      )?.details,
-    ).toContain('candidates/trace_delta.md');
+      ),
+    ).toBeUndefined();
     expect(result.report.input_files).toEqual(
-      expect.arrayContaining(['candidates/tasks.md', 'candidates/trace_delta.md']),
+      expect.arrayContaining(['candidates/tasks.md']),
     );
+    expect(result.report.input_files).not.toContain('candidates/trace_delta.md');
   });
 
   it('fails closed when .semantic_closure.json is missing', async () => {

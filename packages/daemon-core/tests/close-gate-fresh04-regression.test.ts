@@ -10,6 +10,8 @@ import {
   readTrustedGitGovernanceProjectWrites,
   recordGitGovernanceProjectWrites,
 } from '../src/tools/lib/git-governance-write-provenance.js';
+import { recordAtomicSpecMergeProjectWrites } from '../src/tools/lib/atomic-spec-merge-write-provenance.js';
+import { readTrustedChangedFilesAuditControlPlaneWrites } from '../src/tools/lib/changed-files-audit-trusted-writes.js';
 
 describe('Fresh-04 Close Gate regressions', () => {
   let projectRoot: string;
@@ -56,6 +58,63 @@ describe('Fresh-04 Close Gate regressions', () => {
     expect(result.trusted_control_plane_files).toBe(3);
   });
 
+  it('uses one canonical trusted-write resolver for Git and Atomic Spec Merge provenance', async () => {
+    const projectDir = path.join(projectRoot, '.specforge', 'project');
+    await mkdir(projectDir, { recursive: true });
+    await writeFile(
+      path.join(projectDir, 'git_policy.json'),
+      '{"schema_version":"git_governance.v1"}\n',
+      'utf-8',
+    );
+    await writeFile(
+      path.join(projectDir, 'spec_manifest.json'),
+      JSON.stringify({
+        project_spec_version: 'PSV-0003',
+        last_merged_work_item: 'WI-0002',
+        last_merged_targets: [],
+      }) + '\n',
+      'utf-8',
+    );
+
+    recordGitGovernanceProjectWrites(
+      projectRoot,
+      'sf_git_project_adopt',
+      ['.specforge/project/git_policy.json'],
+    );
+    recordAtomicSpecMergeProjectWrites({
+      projectRoot,
+      workItemId: 'WI-0002',
+      projectSpecVersion: 'PSV-0003',
+      relativePaths: ['.specforge/project/spec_manifest.json'],
+    });
+
+    const trusted = readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
+    expect(trusted).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: '.specforge/project/git_policy.json',
+          producer: 'sf_git_project_adopt',
+        }),
+        expect.objectContaining({
+          path: '.specforge/project/spec_manifest.json',
+          producer: 'sf_v11_merge',
+        }),
+      ]),
+    );
+
+    const result = runChangedFilesAudit(
+      [
+        { path: '.specforge/project/git_policy.json', operation: 'modify' as const },
+        { path: '.specforge/project/spec_manifest.json', operation: 'modify' as const },
+      ],
+      [],
+      'agent',
+      trusted,
+    );
+    expect(result.passed, result.violations.join('; ')).toBe(true);
+    expect(result.trusted_control_plane_files).toBe(2);
+  });
+
   it('uses GateContext workflow_path fallback when work_item metadata is absent', async () => {
     await writeFile(
       path.join(workItemDir, 'work_item.json'),
@@ -86,17 +145,28 @@ describe('Fresh-04 Close Gate regressions', () => {
     expect(check?.details).toContain('work_item.workflow_path=(none)');
   });
 
-  it('wires Close re-audits to canonical Git-governance provenance', async () => {
+  it('wires public and Close re-audits to one canonical producer resolver', async () => {
     const here = path.dirname(fileURLToPath(import.meta.url));
-    const source = await readFile(
+    const closeSource = await readFile(
       path.join(here, '../src/tools/handlers/sf-v11-close-gate.ts'),
       'utf-8',
     );
+    const publicSource = await readFile(
+      path.join(here, '../src/tools/handlers/sf-changed-files-audit.ts'),
+      'utf-8',
+    );
 
-    expect(source.match(/readTrustedGitGovernanceProjectWrites\(projectRoot\)/g)?.length).toBe(2);
-    expect(source.match(/trustedGitGovernanceWrites,/g)?.length).toBeGreaterThanOrEqual(2);
-    expect(source).toContain('workflowPath: effectiveWorkflowPath');
-    expect(source).toContain('workflowType: effectiveWorkflowType');
+    expect(
+      closeSource.match(/readTrustedChangedFilesAuditControlPlaneWrites\(projectRoot\)/g)?.length,
+    ).toBe(2);
+    expect(
+      publicSource.match(/readTrustedChangedFilesAuditControlPlaneWrites\(projectRoot\)/g)?.length,
+    ).toBe(1);
+    expect(closeSource).not.toContain('readTrustedGitGovernanceProjectWrites');
+    expect(publicSource).not.toContain('readTrustedGitGovernanceProjectWrites');
+    expect(publicSource).not.toContain('readTrustedAtomicSpecMergeProjectWrites');
+    expect(closeSource).toContain('workflowPath: effectiveWorkflowPath');
+    expect(closeSource).toContain('workflowType: effectiveWorkflowType');
   });
 
   it('persists selected workflow metadata during Work Item creation', async () => {

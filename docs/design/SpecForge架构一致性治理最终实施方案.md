@@ -2455,6 +2455,9 @@ GIT_MERGE_SEMANTIC_SCOPE=SEPARATE
 
 **GOV-ATOMIC-MERGE-PROVENANCE-001：** Atomic Spec Merge 的所有正式 Project Spec 写入必须具有可由后续 Actual Scope Audit 验证的 producer provenance。`executeMerge()` 成功完成事务后，必须为当前仍存在的 `.specforge/project/**` 写入记录 `work_item_id + project_spec_version + path + sha256 + producer=sf_v11_merge`；其中 `spec_manifest.json` 的版本推进、`last_merged_*` 簿记和 Module registry 重建属于 Merge Runner 的正式隐式写入，不能因为它不来自 Candidate target 就回退归因为 `agent`。Changed Files Audit 必须只信任**当前文件 hash 与结构化 provenance 完全一致**的记录，hash 漂移继续 Fail Closed。旧项目缺少该结构化记录时，只允许一个兼容 Normalizer 对 `spec_manifest.json` 做 legacy reconstruction，并且必须同时匹配当前 `last_merged_work_item`、Project Spec Version、成功 `merge_report.md`、批准/豁免的 User Decision、同 WI Candidate manifest 与完整 `last_merged_targets`；任一条件不满足不得放行。该兼容路径不得扩展成通用 Spec 白名单，也不得把真实非 Merge Runner 写入降级为 warning。
 
+
+**GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001：** Changed Files Audit 的 producer provenance 解析必须只有一个正式 Runtime 入口，公开 `sf_changed_files_audit`、Close Gate 初次审计、Close Gate 在 filesystem operation normalization 后的重审计以及其他后续消费者必须调用同一个 canonical resolver；不得由各 Handler 自行选择 Git governance、Atomic Spec Merge 或其他 producer 子集。canonical resolver 只负责聚合各正式 provenance reader 已经验证为可信的当前记录；每个底层 reader 的 schema、producer 身份、当前文件 hash、legacy reconstruction 和 Fail Closed 规则保持各自正式契约。任何一个审计入口缺少某类合法 producer provenance、导致同一事实在 Verification 与 Close 得到不同 verdict，属于治理契约错误，不得通过放宽 `spec_write_by_non_merge_runner`、路径白名单或跳过 Close 重审计修复。
+
 ### 5.4 requirements_index 和 design_index
 
 它们是索引，不是独立设计真相源。
@@ -4343,6 +4346,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-CONT-001` | 2.7 Continuity 与当前用户授权边界 |
 | `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |
 | `GOV-ATOMIC-MERGE-PROVENANCE-001` | 5.3 Candidate 与 Atomic Spec Merge：Merge Runner 写入归属证据 |
+| `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` | 5.3 / Actual Scope Audit / Close Gate：所有审计入口共享 producer provenance resolver |
 | `GOV-REVERIFICATION-MERGE-HISTORY-001` | 8.6 Verification：历史已合并 WI 在后续 Project Spec 推进后的恢复重验 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
 | `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |

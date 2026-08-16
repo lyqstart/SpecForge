@@ -161,7 +161,18 @@ async function createMinimalWorkItem(
         module_boundary_changed: false,
         api_contract_changed: false,
         architecture_changed: false,
+        data_model_changed: false,
+        module_contract_changed: false,
         unknowns: [],
+      },
+      impact_scope: {
+        affected_modules: [],
+        architecture_refs: [],
+        data_model_refs: [],
+        design_refs: [],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        planned_code_paths: ['src/main.ts'],
       },
     }) + '\n'
   );
@@ -181,6 +192,10 @@ async function createMinimalWorkItem(
   await fs.writeFile(
     path.join(wiDir, 'gate_summary.md'),
     '# Gate Summary\n\n- Overall Status: passed\n'
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'gates', 'formal_version_gate.json'),
+    JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }) + '\n'
   );
   await fs.writeFile(
     path.join(wiDir, 'verification_report.md'),

@@ -9319,3 +9319,53 @@ actual_files
 - **根因**：`AWAITED_RETURN_TYPE_USED_THE_GENERIC_READDIR_OVERLOAD_WITHOUT_BINDING_WITH_FILE_TYPES_STRING_DIRENT`
 - **修复**：V404 将该局部变量显式声明为 `import('node:fs').Dirent<string>[]`；不改变 ERR-632 的业务判定、版本链算法、Trace 语义或文件范围。
 - **类防护**：Node 重载 API 的返回类型不得用未绑定参数的 `ReturnType` 代替真实调用签名；实现完成必须以 package TypeScript build 为最终类型证据。
+
+### ERR-635：Close Gate 内部 Changed Files Audit 未消费 Atomic Spec Merge provenance，导致与公开审计 verdict 分叉
+- **分类**：`PRODUCT_GOVERNANCE_DEFECT / PRODUCER_CONSUMER_PARITY / CLOSE_GATE`
+- **状态**：`FIX_IMPLEMENTED_PENDING_SFV406_VALIDATION`
+- **阶段**：PHASE11_FRESH04_WI0001_CLOSE
+- **一手事实**：ERR-632 部署后，Fresh-04 `WI-0001` verification attempt-0013 已通过 Verification Gate + Formal Version Gate，0 blocker / 0 warning，并合法进入 `verification_done`。随后 `sf_close_gate` 失败 2 项：`close_changed_files_audit_passed` 与其级联的 `close_semantic_closure_provenance_current`。Close 内部重写的 audit 把 `.specforge/project/spec_manifest.json` 再次归因为 `actor=agent`。
+- **源码证据**：公开 `sf_changed_files_audit` 调用 `runChangedFilesAudit()` 时传入 `readTrustedGitGovernanceProjectWrites(projectRoot) + readTrustedAtomicSpecMergeProjectWrites(projectRoot)`；`sf-v11-close-gate.ts` 的初次内部 audit 和 `refreshChangedFilesAuditAfterOperationNormalization()` 两个重审计点都只传入 `readTrustedGitGovernanceProjectWrites(projectRoot)`。
+- **根因**：`CHANGED_FILES_AUDIT_TRUSTED_PRODUCER_RESOLUTION_WAS_DUPLICATED_ACROSS_HANDLERS_AND_CLOSE_CONSUMED_ONLY_A_SUBSET`
+- **架构结论**：Changed Files Audit 的判罚算法没有问题；错误发生在其 trusted producer 输入被不同消费者自行拼装。Actual Scope Audit 的 producer provenance resolver 必须是唯一语义源。
+- **修复**：新增 `changed-files-audit-trusted-writes.ts::readTrustedChangedFilesAuditControlPlaneWrites()`，统一聚合当前可信 Git governance provenance 与 Atomic Spec Merge provenance；公开 `sf_changed_files_audit`、Close Gate 初次 audit、Close operation-normalization re-audit 全部改为调用该 resolver。
+- **Fail Closed**：共享 resolver 不自行放宽任何 producer；Git 与 Atomic Spec Merge 底层 reader 继续各自执行 schema、producer、当前 hash 和 legacy reconstruction 校验。hash stale、身份不合法或 legacy 证据不足仍不进入 trusted set。
+- **副作用闭环**：Close Gate 仍必须重算 audit；修复后只有当重算 verdict 与合法 producer evidence 一致为 PASS 时才保留既有 PASS `changed_files_audit.md`，从而不因 timestamp renderer 无意义破坏 Semantic Closure provenance。真正的新 FAIL 仍必须落盘并阻断 Close。
+- **真实项目边界**：Fresh-04 `WI-0001=verification_done`；verification attempt-0013 与 Formal Version Gate 已 PASS。产品修复部署后先重跑公开 changed-files audit 恢复 PASS、重建 Semantic Closure，再重跑 Close。
+- **类防护**：任何 Gate/Runtime 内部复算正式治理结论时必须调用与公开工具相同的 canonical input resolver；禁止复制一份“近似相同”的 producer 列表。
+
+### ERR-636：V406 Close 回归测试夹具仍使用旧 Trigger Contract，导致测试在进入 ERR-635 逻辑前失败
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / REGRESSION_HARNESS`
+- **状态**：`CLOSED_BY_V407_TRIGGER_FIXTURE_CONTRACT_SYNC`
+- **一手事实**：V406 targeted tests 共 62 项，53 PASS / 9 FAIL。9 个失败全部先于 Close 审计逻辑发生，统一报 `trigger_result.json schema validation failed`：缺少 `classification.data_model_changed`、`classification.module_contract_changed` 和对象型 `impact_scope`。对应共用 fixture 位于 `packages/daemon-core/tests/unit/sf-v11-close-gate.test.ts::createMinimalWorkItem()`。
+- **根因**：`CLOSE_HANDLER_TEST_FIXTURE_PREDATED_CURRENT_TRIGGER_RESULT_CLASSIFICATION_AND_IMPACT_SCOPE_CONTRACT`
+- **影响分析重开**：该测试文件不在 V406 原 exact-7 修改范围。发现后停止扩大原范围，重新批准 exact-8：原 7 文件 + 该 Close 回归测试；ERR-635 产品语义和 Authority 规则不变。
+- **修复**：fixture 补齐 `data_model_changed=false`、`module_contract_changed=false` 和正式 `impact_scope` 对象；保持 code-only 场景语义不变。
+- **类防护**：任何跨阶段 Handler 集成测试的生命周期 fixture 必须跟随正式 Trigger Contract；测试若在目标逻辑之前被 Schema 拦截，必须先判定 fixture drift，不得误归因给本次产品修改。
+
+### ERR-637：V407 剩余 Close 测试夹具缺少当前 Formal Version Gate 前置证据
+- **分类**：`TEST_FIXTURE_CONTRACT_DRIFT / CLOSE_GATE_PREREQUISITE`
+- **状态**：`CLOSED_BY_V408_FORMAL_VERSION_FIXTURE_SYNC`
+- **一手事实**：V407 将 targeted tests 从 9 fail 降至 3 fail。3 个失败均进入 Close Gate 后只因 `close_formal_version_gate` 为 `status=missing` 阻断；Changed Files Audit 已 PASS，ERR-635 的 canonical provenance resolver 未出现失败。受影响 fixture 分别为 `sf-v11-close-gate.test.ts::createMinimalWorkItem()` 和 `close-gate-semantic-closure.test.ts::createCloseReadyWorkItem()`。
+- **影响分析重开**：第二个测试文件不在 V407 exact-8 范围。发现后停止沿用旧范围，重新批准 exact-9：V407 8 文件 + `close-gate-semantic-closure.test.ts`。ERR-635 产品代码、Authority 规则和判罚算法保持不变。
+- **根因**：`CLOSE_READY_TEST_FIXTURES_PREDATED_MANDATORY_FORMAL_VERSION_GATE_BEFORE_CLOSE`
+- **修复**：两个 Close-ready 共用 fixture 默认写入 `gates/formal_version_gate.json`，`gate_id=formal_version_gate,status=passed`；显式测试 Formal Version 失败的用例仍在自身 case 内覆盖成 failed。
+- **类防护**：Close-ready / success-path fixture 必须完整满足当前 Close 前置；负例只覆盖本 case 的目标失败条件，避免无关旧前置抢先阻断。
+
+### ERR-638：V408 首次助手侧 ZIP 后验结构校验发现生成目录混入 Python 缓存
+- **分类**：`DELIVERY_HARNESS_DEFECT / ARTIFACT_PACKAGING`
+- **状态**：`CLOSED_BY_V408_EXPLICIT_ZIP_MEMBER_REGENERATION`
+- **一手事实**：首次生成 V408 时，产品/测试 runner 尚未交付用户；助手侧 ZIP 后验断言要求仅含 manifest+runner，但递归打包目录同时包含 Python 缓存文件，导致 artifact generation 失败。
+- **根因**：`ARTIFACT_PACKAGER_USED_DIRECTORY_RECURSION_WITHOUT_EXPLICIT_MEMBER_ALLOWLIST`
+- **修复**：重生成 V408 时 ZIP 只显式写入 `SFV408/manifest.json` 和 `SFV408/runner.py`，并重新打开 ZIP 验证 exact member set。
+- **类防护**：小型 runner delivery 必须显式列出 ZIP members；不得用构建目录递归结果作为交付边界。
+
+### ERR-639：code_only_fast_path Close 成功测试仍要求 Trace Delta，和当前正式 Close Contract 不一致
+- **分类**：`TEST_EXPECTATION_DRIFT / CLOSE_GATE / CODE_ONLY_FAST_PATH`
+- **状态**：`CLOSED_BY_V409_CODE_ONLY_TRACE_EXPECTATION_SYNC`
+- **一手事实**：V408 targeted tests 为 61 PASS / 1 FAIL。唯一失败位于 `close-gate-semantic-closure.test.ts` 成功用例：`close_artifact_trace_delta_authoritative` check 不存在，因此 `.details` 为 undefined；同一用例仍要求 `input_files` 包含 `candidates/trace_delta.md`。
+- **正式契约事实**：`close-gate.ts::closeSpecArtifactRequirements()` 对 `code_only_fast_path` 固定返回 `tasks=true, traceDelta=false`。该 workflow 定义为上层正式 Spec 不变，因此 Close 不要求 Trace Delta；存在历史/多余 trace_delta 文件也不得把它升级成必需 Close 输入。
+- **根因**：`SEMANTIC_CLOSURE_SUCCESS_TEST_RETAINED_PREVIOUS_TRACE_DELTA_REQUIREMENT_AFTER_CODE_ONLY_CLOSE_CONTRACT_WAS_NARROWED`
+- **修复**：成功用例继续断言 `candidates/tasks.md` 为权威输入；改为断言不存在 `close_artifact_trace_delta_authoritative`，且 `input_files` 不包含 `candidates/trace_delta.md`。
+- **影响范围**：不新增文件。仍为 V408 已批准 exact-9；ERR-635 产品代码、Authority 规则、producer resolver、Close 判罚算法全部不变。
+- **类防护**：测试必须断言 workflow 当前真实适用产物，而不是因为 fixture 磁盘上存在某文件就强迫 Runtime 把它当成必需治理输入。

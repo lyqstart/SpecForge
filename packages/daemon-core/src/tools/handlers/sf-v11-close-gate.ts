@@ -16,7 +16,7 @@ import {
   runChangedFilesAudit,
   type ChangedFilesAuditResult,
 } from "../lib/changed-files-audit.js";
-import { readTrustedGitGovernanceProjectWrites } from "../lib/git-governance-write-provenance.js";
+import { readTrustedChangedFilesAuditControlPlaneWrites } from "../lib/changed-files-audit-trusted-writes.js";
 import {
   applyRevokedPermissionFacts,
   revokeCodePermission,
@@ -508,12 +508,13 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
     trustedAllowedWrites,
   );
   const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
-  const trustedGitGovernanceWrites = readTrustedGitGovernanceProjectWrites(projectRoot);
+  const trustedControlPlaneWrites =
+    readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
   const auditResult = runChangedFilesAudit(
     actualFiles,
     allowedWriteFilesForAudit,
     "agent",
-    trustedGitGovernanceWrites,
+    trustedControlPlaneWrites,
   );
 
   const changedFilesPath = path.join(workItemDir, "changed_files_audit.md");
@@ -896,13 +897,13 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         (updatedWi.allowed_write_files_snapshot as Array<{ path: string; operation: string }>) ??
         allowedWriteFilesSnapshot.map((f) => ({ path: f.path, operation: f.operation }));
 
-      const trustedGitGovernanceWrites =
-        readTrustedGitGovernanceProjectWrites(projectRoot);
+      const trustedControlPlaneWrites =
+        readTrustedChangedFilesAuditControlPlaneWrites(projectRoot);
       const auditResult = runChangedFilesAudit(
         changedFiles,
         allowedWriteFilesForAudit,
         "agent",
-        trustedGitGovernanceWrites,
+        trustedControlPlaneWrites,
       );
       result.changed_files_audit = auditResult;
       await fs.writeFile(
