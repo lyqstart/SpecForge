@@ -9290,3 +9290,32 @@ actual_files
 - **根因**：`GENERATED_LEDGER_PAYLOAD_APPENDED_AN_EXTRA_TRAILING_BLANK_LINE`
 - **修复**：V401 仅在既有批准范围内规范 handoff/ledger 结尾，并重新执行完整工程验证、Authority 对账和 exact 8-file scope 审计。
 - **类防护**：生成 Markdown payload 后必须在打包前执行“单一终止换行”检查；`git diff --check` 的 stderr warning 与实际 whitespace error 必须分开判读。
+
+### ERR-632：历史已合并 WI 在后续 Project Spec 推进后 reverification，被重新按“未合并 Candidate”投影并误阻断
+- **分类**：`PRODUCT_GOVERNANCE_DEFECT / REVERIFICATION / MERGE_HISTORY_SEMANTICS`
+- **状态**：`FIX_IMPLEMENTED_PENDING_SFV403_VALIDATION`
+- **阶段**：PHASE11_FRESH04_WI0001_REVERIFICATION
+- **一手事实**：ERR-629 部署后，Fresh-04 `WI-0001` 的 `sf_changed_files_audit` 已真实 PASS（violations=[]），Semantic Closure 也重建为 valid/current；随后 verification attempt-0011 失败 127 blockers。约 123 项为同一 41 条历史 Trace ADD 在 governance/contract/trace 三层重复报 `TRACE_DELTA_ADD_EXISTING_EDGE`，另有 `project_spec_version_frozen`：Code Permission 快照 PSV-0002、当前正式版本 PSV-0003。
+- **根因 1**：`project-governance-v2::loadProjectModel()` 仅以 `spec_manifest.last_merged_work_item === current WI` 判断 `alreadyMerged`。`WI-0001` 曾成功 Merge 到 PSV-0002，但之后 `WI-0002` 合法 Merge 到 PSV-0003，使 latest pointer 变成 WI-0002；reverification 因此错误重新启用 Candidate projection，把 WI-0001 已应用的 trace_delta 再应用一次。
+- **根因 2**：`project_spec_version_frozen` 只接受 Code Permission 快照版本与当前版本字面相等，没有区分“实现期间非法 Spec 漂移”和“本 WI 之后由其他正式 Atomic Spec Merge 连续推进的 Project Spec”。
+- **架构结论**：`last_merged_work_item` 是“最新 Merge 指针”，不是“历史 WI 是否完成过 Merge”的真相源。历史 Merge 必须由该 WI 自己的 Candidate/User Decision/Merge Report 证明；后续 Project Spec 版本变化必须由连续、唯一、成功的 Atomic Spec Merge 版本链证明。
+- **修复**：新增历史 Merge evidence resolver。已成功 Merge 的 WI 在 reverification 时直接消费当前正式 Project Spec/Contract/Trace，不再重放历史 Candidate Delta。Code Permission 快照 PSV 与当前 PSV 不同，仅在从快照 PSV 到当前 PSV 的每一步都有唯一合法 `base_spec_version -> merged Project Spec Version` 证据，且链尾 WI 与当前 `last_merged_work_item` 一致时通过。
+- **Fail Closed**：merge_required 非 true、User Decision 非 approved/waived、Merge 非 success、Spec Manifest 未更新、无 success target、版本非连续 +1、版本链缺失/分叉或链尾身份不匹配，均不得认定为历史合法 Merge。
+- **真实项目边界**：Fresh-04 `WI-0001` 保持 `implementation_ready`；已完成的 audit PASS 与 current Semantic Closure 保留，产品修复部署前不得继续 Verification/Close。
+- **类防护**：任何“当前最新指针”都不得替代历史事件事实；恢复重验必须基于不可混淆的历史 producer evidence，并验证当前正式状态，而不是重新执行已经生效过的 Candidate 语义。
+
+### ERR-633：V403 首次生成器错误地从 captured_hashes 读取 Authority 基线哈希
+- **分类**：`DELIVERY_HARNESS_DEFECT / EVIDENCE_KEY_SELECTION`
+- **状态**：`CLOSED_BY_V403_AUTHORITY_BASE_HASH_FIX`
+- **一手事实**：首次生成 V403 时，助手侧 Python 在构建 manifest 的 `base_hashes` 阶段抛出 `KeyError: docs/design/SpecForge架构一致性治理最终实施方案.md`；V402 evidence 把 Authority 单独存为 `authority.md/authority_sha256`，不在 `captured_hashes` 中。失败发生在交付 ZIP 生成前。
+- **根因**：`AUTHORITY_BASE_HASH_WAS_READ_FROM_CAPTURED_SOURCE_HASH_MAP_INSTEAD_OF_DEDICATED_AUTHORITY_SHA256`
+- **修复**：V403 重生成时 Authority 基线改用 V402 `summary.authority_sha256`，其余源码仍用 exact commit captured hashes。
+- **类防护**：证据包中单独身份对象与普通 captured files 必须分别绑定各自 manifest 字段，禁止假定都位于同一个 hash map。
+
+### ERR-634：V403 merge-history helper 的 `readdir` Dirent 类型声明错误导致 daemon-core TypeScript build 阻断
+- **分类**：`IMPLEMENTATION_TYPE_DEFECT / TYPESCRIPT / DELIVERY_VALIDATION`
+- **状态**：`CLOSED_BY_V404_DIRENT_TYPESCRIPT_FIX`
+- **一手事实**：V403 targeted tests 与 validator TypeScript 均 PASS；daemon-core `tsc` 在 `project-governance-v2.ts` 新增 merge-history helper 处报 4 个类型错误，均来自 `fs.readdir(..., { withFileTypes: true })` 返回的 `Dirent<string>[]` 被错误声明成 Buffer 泛型 Dirent。
+- **根因**：`AWAITED_RETURN_TYPE_USED_THE_GENERIC_READDIR_OVERLOAD_WITHOUT_BINDING_WITH_FILE_TYPES_STRING_DIRENT`
+- **修复**：V404 将该局部变量显式声明为 `import('node:fs').Dirent<string>[]`；不改变 ERR-632 的业务判定、版本链算法、Trace 语义或文件范围。
+- **类防护**：Node 重载 API 的返回类型不得用未绑定参数的 `ReturnType` 代替真实调用签名；实现完成必须以 package TypeScript build 为最终类型证据。

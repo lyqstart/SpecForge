@@ -3357,6 +3357,10 @@ verification_gate
 
 `verification_gate` 只有在验证、证据和 Semantic Closure 全部满足后才能进入 `verification_done`。
 
+**GOV-REVERIFICATION-MERGE-HISTORY-001：** 对已经完成过 Atomic Spec Merge 的历史 Work Item，后续其他 Work Item 合法推进 Project Spec 后再执行 reverification 时，Verification 的 Project Governance 必须区分“历史已合并事实”和“当前最新 Merge 指针”。当前 WI 是否已 Merge 不能只依据 `spec_manifest.last_merged_work_item`；必须由当前 WI 自己的 `candidate_manifest.json + user_decision.json + merge_report.md` 证明：`merge_required=true`、User Decision 为 approved/waived、Merge `Status: success`、`Spec Manifest Updated: true`、存在成功 merged target，且 `base_spec_version -> Project Spec Version` 为连续一次版本推进。该历史 Merge 已成立时，reverification 必须直接验证**当前正式 Project Spec / Contract / Trace**，不得再次把该 WI 的历史 Candidate / `trace_delta.md` 投影到已经包含其效果的正式对象上。
+
+Code Permission 冻结的 `project_spec_version` 与当前 Project Spec 不相等时不得直接豁免。只有 Runtime 能从冻结版本开始，按每个成功 Atomic Spec Merge 的 `candidate_manifest.base_spec_version -> merge_report Project Spec Version` 构造**唯一连续版本链**，且链尾 Work Item 与当前 `spec_manifest.last_merged_work_item` 完全一致时，才可认定版本变化来自后续合法治理并继续 reverification；链缺失、分叉、版本不连续、User Decision 非 approved/waived、Merge 失败或链尾身份不一致必须 Fail Closed。该规则不跳过当前 Spec/Contract/Trace/Audit/Verification/Formal Version 检查，也不得修改历史 Candidate 来迁就当前正式状态。
+
 ### 8.7 Formal Version Gate
 
 这是本次唯一新增的 Gate：
@@ -4339,6 +4343,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-CONT-001` | 2.7 Continuity 与当前用户授权边界 |
 | `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |
 | `GOV-ATOMIC-MERGE-PROVENANCE-001` | 5.3 Candidate 与 Atomic Spec Merge：Merge Runner 写入归属证据 |
+| `GOV-REVERIFICATION-MERGE-HISTORY-001` | 8.6 Verification：历史已合并 WI 在后续 Project Spec 推进后的恢复重验 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
 | `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |
 | `GOV-MODE-001` | 1.3.1 模式 A：SpecForge 自身开发 |

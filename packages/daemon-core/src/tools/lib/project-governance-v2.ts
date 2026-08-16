@@ -78,6 +78,21 @@ export interface GovernanceScopeSnapshot {
   frozen_at: string;
 }
 
+export interface ProjectSpecMergeHistoryEvidence {
+  work_item_id: string;
+  base_spec_version: string;
+  project_spec_version: string;
+  merge_report_path: string;
+}
+
+export interface ProjectSpecMergeChainEvidence {
+  passed: boolean;
+  from_version: string;
+  to_version: string;
+  work_items: string[];
+  reason: string;
+}
+
 type ContractEntry = {
   id: string;
   owner_module: string;
@@ -183,6 +198,160 @@ async function readJson(filePath: string): Promise<any | null> {
   } catch {
     return null;
   }
+}
+
+const PROJECT_SPEC_VERSION_RE = /^PSV-(\d+)$/;
+
+function projectSpecVersionNumber(value: unknown): number | null {
+  const match = String(value ?? '').match(PROJECT_SPEC_VERSION_RE);
+  if (!match) return null;
+  const parsed = Number(match[1]);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
+function mergeReportField(report: string, label: string): string {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(
+    report.match(new RegExp(`^-\\s*${escaped}:\\s*(\\S+)\\s*$`, 'im'))?.[1] ?? '',
+  ).trim();
+}
+
+function successfulMergeRowCount(report: string): number {
+  return report
+    .split(/\r?\n/)
+    .filter(line => /^\|\s*success\s*\|/i.test(line))
+    .length;
+}
+
+export async function readSuccessfulProjectSpecMergeHistoryEvidence(input: {
+  projectRoot: string;
+  workItemDir: string;
+  workItemId: string;
+}): Promise<ProjectSpecMergeHistoryEvidence | null> {
+  const candidate = await readJson(path.join(input.workItemDir, 'candidate_manifest.json'));
+  const decision = await readJson(path.join(input.workItemDir, 'user_decision.json'));
+  const reportPath = path.join(input.workItemDir, 'merge_report.md');
+  const report = await readText(reportPath);
+
+  const baseVersion = String(candidate?.base_spec_version ?? '');
+  const resultVersion = mergeReportField(report, 'Project Spec Version');
+  const baseNumber = projectSpecVersionNumber(baseVersion);
+  const resultNumber = projectSpecVersionNumber(resultVersion);
+
+  if (String(candidate?.work_item_id ?? '') !== input.workItemId) return null;
+  if (candidate?.merge_required !== true) return null;
+  if (String(decision?.work_item_id ?? '') !== input.workItemId) return null;
+  if (!['approved', 'waived'].includes(String(decision?.decision_status ?? ''))) return null;
+  if (!new RegExp(`^Work Item:\\s*${input.workItemId}\\s*$`, 'im').test(report)) return null;
+  if (!/^Status:\s*success\s*$/im.test(report)) return null;
+  if (!/^- Spec Manifest Updated:\s*true\s*$/im.test(report)) return null;
+  if (successfulMergeRowCount(report) <= 0) return null;
+  if (baseNumber === null || resultNumber === null || resultNumber !== baseNumber + 1) return null;
+
+  return {
+    work_item_id: input.workItemId,
+    base_spec_version: baseVersion,
+    project_spec_version: resultVersion,
+    merge_report_path: reportPath,
+  };
+}
+
+async function listProjectSpecMergeHistoryEvidence(
+  projectRoot: string,
+): Promise<ProjectSpecMergeHistoryEvidence[]> {
+  const root = path.join(projectRoot, SPEC_DIR, 'work-items');
+  let entries: Array<import('node:fs').Dirent<string>>;
+  try {
+    entries = await fs.readdir(root, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const evidence: ProjectSpecMergeHistoryEvidence[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !/^WI-\d+$/i.test(entry.name)) continue;
+    const workItemDir = path.join(root, entry.name);
+    const item = await readSuccessfulProjectSpecMergeHistoryEvidence({
+      projectRoot,
+      workItemDir,
+      workItemId: entry.name,
+    });
+    if (item) evidence.push(item);
+  }
+
+  return evidence.sort((left, right) => {
+    const l = projectSpecVersionNumber(left.base_spec_version) ?? Number.MAX_SAFE_INTEGER;
+    const r = projectSpecVersionNumber(right.base_spec_version) ?? Number.MAX_SAFE_INTEGER;
+    return l - r || left.work_item_id.localeCompare(right.work_item_id);
+  });
+}
+
+export async function proveProjectSpecVersionAdvancedBySuccessfulMerges(input: {
+  projectRoot: string;
+  fromVersion: string;
+  toVersion: string;
+  finalLastMergedWorkItem: string;
+}): Promise<ProjectSpecMergeChainEvidence> {
+  const from = projectSpecVersionNumber(input.fromVersion);
+  const to = projectSpecVersionNumber(input.toVersion);
+  if (from === null || to === null || to <= from) {
+    return {
+      passed: false,
+      from_version: input.fromVersion,
+      to_version: input.toVersion,
+      work_items: [],
+      reason: 'invalid_or_non_advancing_version_range',
+    };
+  }
+
+  const evidence = await listProjectSpecMergeHistoryEvidence(input.projectRoot);
+  const byBase = new Map<number, ProjectSpecMergeHistoryEvidence[]>();
+  for (const item of evidence) {
+    const base = projectSpecVersionNumber(item.base_spec_version);
+    const result = projectSpecVersionNumber(item.project_spec_version);
+    if (base === null || result !== base + 1) continue;
+    const list = byBase.get(base) ?? [];
+    list.push(item);
+    byBase.set(base, list);
+  }
+
+  const chain: ProjectSpecMergeHistoryEvidence[] = [];
+  for (let version = from; version < to; version += 1) {
+    const candidates = byBase.get(version) ?? [];
+    if (candidates.length !== 1) {
+      return {
+        passed: false,
+        from_version: input.fromVersion,
+        to_version: input.toVersion,
+        work_items: chain.map(item => item.work_item_id),
+        reason: `merge_chain_cardinality_${version}=${candidates.length}`,
+      };
+    }
+    chain.push(candidates[0]);
+  }
+
+  const final = chain[chain.length - 1];
+  if (
+    !final ||
+    final.work_item_id !== input.finalLastMergedWorkItem ||
+    final.project_spec_version !== input.toVersion
+  ) {
+    return {
+      passed: false,
+      from_version: input.fromVersion,
+      to_version: input.toVersion,
+      work_items: chain.map(item => item.work_item_id),
+      reason: 'final_merge_does_not_match_current_spec_manifest',
+    };
+  }
+
+  return {
+    passed: true,
+    from_version: input.fromVersion,
+    to_version: input.toVersion,
+    work_items: chain.map(item => item.work_item_id),
+    reason: 'current_project_spec_version_is_proven_by_successful_atomic_spec_merge_chain',
+  };
 }
 
 function digest(value: unknown): string {
@@ -481,7 +650,12 @@ async function loadProjectModel(
   const reader = await prospectiveReader(projectRoot, workItemDir);
   const manifestPath = path.join(projectRoot, SPEC_DIR, 'project', 'spec_manifest.json');
   const formalManifest = await readJson(manifestPath);
-  const alreadyMerged = String(formalManifest?.last_merged_work_item ?? '') === workItemId;
+  const historicalMerge = await readSuccessfulProjectSpecMergeHistoryEvidence({
+    projectRoot,
+    workItemDir,
+    workItemId,
+  });
+  const alreadyMerged = historicalMerge !== null;
   const useCandidateProjection = prospective && !alreadyMerged;
   const manifest = useCandidateProjection ? await reader.json(manifestPath) : formalManifest;
   const project = manifest?.project ?? {};
@@ -1955,19 +2129,33 @@ export async function verifyProjectGovernanceAfterImplementation(input: {
   const formalManifestPath = path.join(input.projectRoot, SPEC_DIR, 'project', 'spec_manifest.json');
   const formalManifest = await readJson(formalManifestPath);
   if (consistency.active) {
+    const permissionVersion = String(frozenScope?.project_spec_version ?? '');
+    const currentVersion = String(formalManifest?.project_spec_version ?? '');
+    const exactVersionMatch = Boolean(frozenScope) && permissionVersion === currentVersion;
+    const laterMergeChain =
+      !specMigrationNoCode && Boolean(frozenScope) && permissionVersion !== currentVersion
+        ? await proveProjectSpecVersionAdvancedBySuccessfulMerges({
+            projectRoot: input.projectRoot,
+            fromVersion: permissionVersion,
+            toVersion: currentVersion,
+            finalLastMergedWorkItem: String(formalManifest?.last_merged_work_item ?? ''),
+          })
+        : null;
+
     addCheck(
       checks,
       'project_spec_version_frozen',
       specMigrationNoCode
         ? 'Project Spec version is governed by Atomic Spec Merge; Code Permission is not applicable to spec_migration'
-        : 'Project Spec version did not change after Code Permission was issued',
-      specMigrationNoCode ||
-        (Boolean(frozenScope) &&
-          String(frozenScope?.project_spec_version ?? '') ===
-            String(formalManifest?.project_spec_version ?? '')),
+        : 'Project Spec version equals the Code Permission snapshot or every later version is proven by a successful Atomic Spec Merge chain',
+      specMigrationNoCode || exactVersionMatch || laterMergeChain?.passed === true,
       specMigrationNoCode
-        ? `code_permission=not_applicable; current=${String(formalManifest?.project_spec_version ?? 'missing')}`
-        : `permission=${String(frozenScope?.project_spec_version ?? 'missing')}; current=${String(formalManifest?.project_spec_version ?? 'missing')}`,
+        ? `code_permission=not_applicable; current=${currentVersion || 'missing'}`
+        : [
+            `permission=${permissionVersion || 'missing'}`,
+            `current=${currentVersion || 'missing'}`,
+            `later_merge_chain=${laterMergeChain?.passed === true ? laterMergeChain.work_items.join('->') || 'none' : laterMergeChain?.reason ?? 'not_needed'}`,
+          ].join('; '),
     );
   }
 
