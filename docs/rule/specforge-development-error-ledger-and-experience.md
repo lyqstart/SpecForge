@@ -9203,7 +9203,7 @@ actual_files
 
 ### ERR-622：spec_migration Close 对 Trace Delta 适用性与 Verification 冻结恢复契约不一致，形成 provenance 死锁
 - **分类**：`PRODUCT_DEFECT / SPEC_MIGRATION / CLOSE_PROVENANCE_RECOVERY`
-- **状态**：`FIX_VALIDATED_PENDING_COMMIT_PUSH_DEPLOYMENT`
+- **状态**：`REAL_PROJECT_VALIDATED_BY_FRESH04_WI0002_CLOSED`
 - **阶段**：PHASE11_FRESH04_WI0002_CLOSE
 - **一手事实**：Fresh-04 `WI-0002` 已完成 Atomic Spec Merge（PSV-0003）、post-merge Gate、Verification evidence、Semantic Closure 与 Verification/Formal Version Gate；首次 Close 29/30，仅因 `candidates/trace_delta.md` 缺失失败。补齐真实零 ADD/REMOVE 的 Trace Delta 后，第二次 Close 仍 29/30，唯一阻断变为 `SEMANTIC_CLOSURE_INPUT_STALE: candidates/trace_delta.md now exists but was not part of the closure provenance`。当前 `sf_semantic_closure_run` 在 `verification_done` 冻结输入并只提示恢复到 `implementation_ready`，但 `GOV-SPEC-MIGRATION-NO-CODE-001` 明确禁止 `spec_migration` 进入 implementation 状态，形成无合法恢复路径。
 - **根因**：`SPEC_MIGRATION_TRACE_DELTA_REQUIREMENT_WAS_WORKFLOW_WIDE_IN_CLOSE_BUT_NOT_SCOPE_DRIVEN_OR_ENFORCED_BEFORE_VERIFICATION_AND_NO_NO_CODE_STALE_PROVENANCE_RECOVERY_EDGE_EXISTED`
@@ -9211,6 +9211,8 @@ actual_files
 - **Authority**：修订 `GOV-SPEC-MIGRATION-NO-CODE-001`，把 Trace Delta scope、Candidate 前置、stale provenance no-code recovery 与重验顺序写入唯一权威。
 - **验证计划**：Project Spec repair trace-required 前置正/负回归；Trace scope shared-contract 单测；spec_migration `verification_done -> post_merge_verified` current-provenance 拒绝 + stale-provenance 允许；Semantic Closure workflow-aware recovery 指引；Close scope 回归；TypeScript、daemon-core build、full workspace build、`git diff --check`、exact 14-file scope 与 Authority sync。
 - **验证**：V396 change-specific regression PASS；Close baseline 8 个稳定失败身份无新增；V395 full daemon-core A/B 唯一 current-only 身份为 Path Resolver fast-check，V396 用固定反例 `C:\\projects\\.. ` 证明 baseline/current 行为与源码/测试哈希完全一致，归因为既有随机暴露而非本次 14-file 回归；validator TypeScript、daemon-core build、full workspace build、`git diff --check`、Authority sync、exact 14-file scope 全部 PASS。
+- **真实项目验证**：产品 commit `ffc35f52f9ed4e3be2f61d621dc9f3694d3e860f` 已 push 到 `main`，用户级 `upgrade --force` 与 `verify` 通过（119 files）；Fresh-04 `WI-0002` 在新版恢复契约下合法执行 `verification_done -> post_merge_verified`，重建 Semantic Closure 后 provenance 纳入 `candidates/trace_delta.md`，verification attempt-0007 的 Verification Gate + Formal Version Gate 均 PASS，随后 Close 30/30 PASS，最终权威状态 `closed`，全程无 `implementation_*` 状态穿越、无 blocker/warning/hard stop。
+- **最终结论**：`ERR-622=REAL_PROJECT_VALIDATED`。该结论仅关闭 ERR-622；Phase 11 仍需继续 Fresh-04 `WI-0001` reverification / Close retry，ERR-628 继续保持独立治理范围。
 - **类防护**：`GOV-CLOSELOOP-001,GOV-CONTRACT-001,GOV-SCOPE-001,GOV-POST-001,GOV-EVID-001,GOV-SPEC-MIGRATION-NO-CODE-001`
 
 ### ERR-623：SFV392 使用 Git 可读路径解析中文 Authority，误判 exact scope
