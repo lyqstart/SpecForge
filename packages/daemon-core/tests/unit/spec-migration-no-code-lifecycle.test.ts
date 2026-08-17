@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, test } from 'vitest';
 import { validateSemanticClosure } from '../../src/tools/lib/semantic-closure-core.js';
 import {
   buildSemanticClosureFromArtifacts,

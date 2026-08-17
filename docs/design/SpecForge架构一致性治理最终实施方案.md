@@ -2458,6 +2458,8 @@ GIT_MERGE_SEMANTIC_SCOPE=SEPARATE
 
 **GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001：** Changed Files Audit 的 producer provenance 解析必须只有一个正式 Runtime 入口，公开 `sf_changed_files_audit`、Close Gate 初次审计、Close Gate 在 filesystem operation normalization 后的重审计以及其他后续消费者必须调用同一个 canonical resolver；不得由各 Handler 自行选择 Git governance、Atomic Spec Merge 或其他 producer 子集。canonical resolver 只负责聚合各正式 provenance reader 已经验证为可信的当前记录；每个底层 reader 的 schema、producer 身份、当前文件 hash、legacy reconstruction 和 Fail Closed 规则保持各自正式契约。任何一个审计入口缺少某类合法 producer provenance、导致同一事实在 Verification 与 Close 得到不同 verdict，属于治理契约错误，不得通过放宽 `spec_write_by_non_merge_runner`、路径白名单或跳过 Close 重审计修复。
 
+**GOV-KNOWLEDGE-GRAPH-PROVENANCE-001：** `.specforge/knowledge/graph.json` 是 Knowledge Graph Runtime 从正式 Spec / Work Item 工件派生并由 `sf_knowledge_graph_core` 写入的治理控制面文件，不属于业务 Implementation Actual Scope。`loadGraphStore()` 首次创建和 `saveGraphStore()` 每次成功替换 `graph.json` 后，必须同步写入结构化 Runtime provenance，至少绑定 `schema_version + path=.specforge/knowledge/graph.json + producer=sf_knowledge_graph_core + sha256 + recorded_at`。Changed Files Audit 的 canonical resolver 只能在 provenance schema、唯一允许 producer、精确目标 path 与当前 `graph.json` 文件 hash 全部匹配时把该文件认定为 trusted control-plane write；provenance 缺失、格式错误、producer/path 不匹配、文件不存在或 hash 漂移时必须 Fail Closed。禁止把 `.specforge/knowledge/**` 目录整体加入白名单，禁止仅凭 actor/路径放行，也禁止为旧 `graph.json` 无证据重建可信 provenance。Gate `syncFromSpec`、Knowledge Graph CRUD 和首次空图创建必须复用同一写入 primitive/provenance 契约；公开 Changed Files Audit 与 Close Gate 重审计继续按 `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` 使用同一 canonical resolver。
+
 ### 5.4 requirements_index 和 design_index
 
 它们是索引，不是独立设计真相源。
@@ -4362,6 +4364,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |
 | `GOV-ATOMIC-MERGE-PROVENANCE-001` | 5.3 Candidate 与 Atomic Spec Merge：Merge Runner 写入归属证据 |
 | `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` | 5.3 / Actual Scope Audit / Close Gate：所有审计入口共享 producer provenance resolver |
+| `GOV-KNOWLEDGE-GRAPH-PROVENANCE-001` | 5.3 / Actual Scope Audit：Knowledge Graph Runtime `graph.json` 写入必须使用结构化 provenance 与当前 hash 验证，禁止目录白名单 |
 | `GOV-REVERIFICATION-MERGE-HISTORY-001` | 8.6 Verification：历史已合并 WI 在后续 Project Spec 推进后的恢复重验 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
 | `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |

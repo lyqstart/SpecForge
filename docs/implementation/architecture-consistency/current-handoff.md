@@ -4216,3 +4216,34 @@ ERR647_REGULAR_REPO_BEHAVIOR=UNCHANGED
 ERR647_STATUS=FIX_VALIDATED_PENDING_COMMIT_PUSH_DEPLOYMENT_AND_FRESH05_RESUME
 SCOPE=EXACT_5
 ```
+
+<!-- SPECFORGE_ERR648_KG_PROVENANCE_FIX -->
+## 2026-08-17 ERR-648 / Phase 12 Knowledge Graph audit provenance
+
+- Product baseline / remote main: `2ab1ca2de205216b6af86963a77d5ef0380e81af`.
+- Fresh-05 real-project blocker: Changed Files Audit rejected Runtime-owned `.specforge/knowledge/graph.json` as `out_of_scope` after Gate `syncFromSpec` writes.
+- Root cause: canonical Changed Files Audit provenance resolver covered Git governance and Atomic Spec Merge, but Knowledge Graph writes had no structured provenance producer.
+- Product repair: every `sf_knowledge_graph_core` create/save of `graph.json` records exact-path/current-SHA provenance; canonical resolver consumes it; missing/stale/tampered provenance remains Fail Closed; no `.specforge/knowledge/**` whitelist.
+- Scope: exact 7 SpecForge files; no Workflow/Gate severity/state-machine change and no Fresh-05 write.
+- Validation required before delivery: positive trusted Runtime write, missing-provenance negative, hash-drift negative, unrelated knowledge-path negative, daemon full regression, validator-contract TypeScript check, daemon build, workspace build, `git diff --check`, exact-scope audit and Authority sync.
+- Status: `ERR648_FIX_IMPLEMENTED_PENDING_ENGINEERING_VALIDATION_COMMIT_DEPLOYMENT_FRESH05_RESUME`.
+
+<!-- SPECFORGE_ERR649_TEST_RUNNER_CONSISTENCY_FIX -->
+## 2026-08-17 ERR-649 / Phase 12 full-regression runner consistency
+
+- Remote/main baseline: `2ab1ca2de205216b6af86963a77d5ef0380e81af`.
+- Discovery: daemon-core canonical package test script is `vitest run` and `vitest.config.ts` includes `tests/**/*.test.ts`, but three committed test files import `bun:test`, so the canonical Vitest suite cannot collect them; `tests/property/property-2.test.ts` also uses `../src/...` while sibling property tests correctly use `../../src/...`.
+- Repair scope: only the four affected test files plus this handoff/error-ledger record. No package script, Vitest config, production source, Architecture/Data/Design/Contract, Workflow/Gate/Runtime/state-machine change.
+- ERR-648 exact-7 product patch remains frozen and is neither reverted nor expanded.
+- Required validation: four repaired tests + ERR-648 targeted test, canonical daemon-core regression, TypeScript, daemon build, workspace build, `git diff --check`, exact total worktree scope.
+- Status: `ERR649_STRUCTURAL_TEST_RUNNER_FIX_APPLIED_PENDING_ENGINEERING_VALIDATION`; Phase 12 release remains blocked until canonical full regression is green or remaining failures are separately governed.
+
+
+<!-- SPECFORGE_ERR649_TEST_CONTRACT_CLOSURE -->
+## 2026-08-17 ERR-649 test-contract closure follow-up
+
+- SFV431 made the four previously uncollectable tests executable under the canonical Vitest runner.
+- Real targeted execution then exposed two stale test-contract classes inside the same already-approved test files: `property-2.test.ts` supplied partial EventBus observability hooks although the current hook contract requires `onPublish/onSubscribe/onUnsubscribe`; `v11-hard-stop-artifact-closure.test.ts` used a pre-current trigger_result fixture without `data_model_changed`, `module_contract_changed`, or required `impact_scope`.
+- Repair remains test-only: complete the two partial hooks with no-op subscribe/unsubscribe callbacks, and update the positive trigger_result fixture to the current validator schema. Production EventBus, artifact validator, Runtime, Gate, Workflow, Architecture/Data/Design/Contract remain unchanged.
+- Dirty-file scope remains exactly 11; no new path is added beyond the combined ERR-648 + ERR-649 worktree.
+- Validation policy: targeted closure first; canonical daemon-core regression always runs to a structured JSON summary even if other baseline failures remain, so remaining failures can be governed in one batch rather than one-at-a-time.

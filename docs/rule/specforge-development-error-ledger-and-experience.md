@@ -9477,3 +9477,37 @@ actual_files
 - **测试**：新增真实临时 Git 仓库回归，覆盖 unborn `.specforge/**` 正例、范围外 dirty 负例、staged `.specforge` 负例、普通仓库 dirty 仍阻断、默认分支 checkpoint 仍阻断。
 - **范围**：Authority、`git-governance-core.ts`、新回归测试、current-handoff、错误台账，共 exact-5；不修改 handler/schema/workflow/gate/state machine，不访问 Fresh-05，不运行 SpecForge 自身生命周期。
 - **真实验收**：工程验证通过后提交/部署；重启 OpenCode/daemon；返回原 Fresh-05 WI-0001，从已确认分支名 `feature/work-item-wi-0001` 继续 `sf_git_branch_create → sf_code_permission enable`，不得重做已经通过的 Candidate/Post-Merge Gate。
+
+<!-- SPECFORGE_ERR648_KG_PROVENANCE_FIX -->
+## ERR-648 — Knowledge Graph Runtime 写入缺少 Changed Files Audit provenance
+
+- **发现阶段**：Phase 12 Fresh-05 WI-0001，Implementation 15/15 完成且正式验证命令 `node --test "test/**/*.test.ts"` 为 104/104 后，Changed Files Audit 唯一失败项为 `out_of_scope: .specforge/knowledge/graph.json`。
+- **事实链**：Gate 会调用 Knowledge Graph `syncFromSpec()`；`sf_knowledge_graph_core` 的 `loadGraphStore()` / `saveGraphStore()` 会真实创建或替换 `.specforge/knowledge/graph.json`；原 canonical audit resolver 只聚合 Git governance 与 Atomic Spec Merge provenance，因此 Runtime 自己的 KG 写入没有可验证 producer 归属。
+- **根因**：合法 Runtime producer 缺少结构化 provenance，而不是业务 Implementation 越权；直接把 `.specforge/knowledge/**` 加入 allowlist 会反向放行人工/Agent 篡改，违反 Changed Files Audit Fail Closed 与 provenance parity。
+- **修复**：新增 `knowledge_graph_controlled_writes.v1`，只绑定精确 `graph.json`、`producer=sf_knowledge_graph_core`、当前 SHA-256 与时间戳；KG 首次创建及每次原子保存后记录；canonical resolver 聚合该 reader。缺失、malformed、stale/hash drift、其他 knowledge 文件一律不 trusted。
+- **架构/契约**：Project Architecture=YES；Project Contract=YES；Project Data Model=NO；Module Design=NO；Module Contract=NO；Workflow/Gate/state machine=NO。
+- **Authority**：新增 `GOV-KNOWLEDGE-GRAPH-PROVENANCE-001`，并与 `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` 对齐。
+- **验证要求**：合法 KG provenance PASS；无 provenance FAIL；hash 漂移 FAIL；`.specforge/knowledge/evil.json` FAIL；canonical resolver PASS；全 daemon regression / TypeScript / daemon build / workspace build / diff / scope / Authority sync 全部 PASS。
+- **Fresh-05 恢复约束**：部署新 Runtime 后必须执行一次合法 KG sync 重新生成当前 `graph.json` provenance，再重跑 Changed Files Audit；禁止删除 `graph.json`、手工补 provenance 或篡改 baseline。
+- **状态**：`FIX_IMPLEMENTED_PENDING_ENGINEERING_VALIDATION_COMMIT_DEPLOYMENT_AND_REAL_PROJECT_RESUME`。
+
+<!-- SPECFORGE_ERR649_TEST_RUNNER_CONSISTENCY_FIX -->
+## ERR-649 — daemon-core 正式 Vitest 回归入口与测试文件运行器/相对路径不一致
+
+- **发现阶段**：ERR-648 工程验证期间对远程 `main` exact HEAD `2ab1ca2de205216b6af86963a77d5ef0380e81af` 做 canonical daemon-core 回归。
+- **一手事实**：`packages/daemon-core/package.json` 的正式 `test` 为 `vitest run`；`vitest.config.ts` 收集 `tests/**/*.test.ts`。但 `spec-migration-no-code-lifecycle.test.ts`、`spec-migration-runtime-scaffold.test.ts`、`v11-hard-stop-artifact-closure.test.ts` 仍从 `bun:test` 导入，导致 Vitest collection 失败；`tests/property/property-2.test.ts` 从 `tests/property/` 使用 `../src/...`，而同目录其他 property tests 使用可解析的 `../../src/...`。
+- **根因**：测试实现没有与仓库正式 Vitest runner 契约保持一致；另有一个确定的相对路径层级错误。
+- **修复**：三个测试只把 test API import 从 `bun:test` 对齐到 `vitest`；property-2 的两个生产源码 import 改为 `../../src/...`。不改测试语义、不改 runner/config、不改生产代码。
+- **架构/契约影响**：Project Architecture=NONE；Project Data Model=NONE；Module Design=NONE；Project Contract=NONE；Module Contract=NONE；Workflow/Gate/Runtime=NONE。
+- **范围关系**：ERR-648 已有 7 个未提交文件保持冻结；ERR-649 新增 4 个测试文件，因此两项修复合并后的工作树唯一文件数应为 11。
+- **发布边界**：Phase 12 Authority 要求全量回归。四个结构缺陷修复通过不等于全量回归完成；若 canonical daemon-core regression 仍红，必须把剩余失败作为新的真实基线问题继续治理，禁止把它们归因给 ERR-648/ERR-649 或直接忽略。
+- **状态**：`FIX_APPLIED_PENDING_TARGETED_AND_FULL_REGRESSION_VALIDATION`。
+
+
+<!-- SPECFORGE_ERR649_TEST_CONTRACT_CLOSURE -->
+### ERR-649 follow-up — 可收集后暴露的旧测试契约漂移
+
+- **EventBus 测试 fixture**：正式 `ObservabilityHook` 当前要求三个回调；旧 property-2 的两个测试 hook 只提供 `onPublish`。Vitest 真正执行 `subscribe()` 后触发 `hook.onSubscribe is not a function`。修复只补空操作 `onSubscribe/onUnsubscribe`，不改变 EventBus 产品行为。
+- **trigger_result 测试 fixture**：当前 validator 固定要求 classification 的 `data_model_changed`、`module_contract_changed` 以及结构化 `impact_scope`；旧 v11 positive fixture 仍是更早 schema。修复只同步测试 fixture。
+- **范围**：不新增文件；combined worktree 继续严格 11 个 dirty paths。
+- **状态**：`TEST_CONTRACT_FIX_APPLIED_PENDING_TARGETED_AND_COMPLETE_REGRESSION_INVENTORY`。

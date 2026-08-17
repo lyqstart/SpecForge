@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { EventBus } from '../src/event-bus/EventBus';
-import { Event } from '../src/types';
+import { EventBus } from '../../src/event-bus/EventBus';
+import { Event } from '../../src/types';
 
 /**
  * Test strategy for Property 2:
@@ -39,6 +39,8 @@ describe('Property 2: Event Bus Traversal', () => {
         onPublish: (event) => {
           publishedEvents.push(event);
         },
+        onSubscribe: () => {},
+        onUnsubscribe: () => {},
       });
     });
 
@@ -198,6 +200,8 @@ describe('Property 2: Event Bus Traversal', () => {
         onPublish: (event) => {
           crossLayerEvents.push(event);
         },
+        onSubscribe: () => {},
+        onUnsubscribe: () => {},
       });
       
       // Pattern 1: HTTP Server notifies Session Registry of new session

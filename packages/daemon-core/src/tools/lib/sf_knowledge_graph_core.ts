@@ -16,6 +16,7 @@ import {
 } from "@specforge/types/directory-layout"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
 import { parseRefsFields } from "./sf_markdown_verification_parser"
+import { recordKnowledgeGraphProjectWrite } from "./knowledge-graph-write-provenance"
 
 // ============================================================
 // Types
@@ -227,6 +228,7 @@ export async function loadGraphStore(baseDir: string): Promise<KGOperationResult
         // Create the directory and file
         await mkdir(dirname(graphPath), { recursive: true })
         await writeFile(graphPath, JSON.stringify(emptyStore, null, 2), "utf-8")
+        recordKnowledgeGraphProjectWrite(baseDir)
         return { success: true, store: emptyStore }
       }
       return { success: false, error: "Knowledge Graph is disabled and graph.json does not exist" }
@@ -257,6 +259,7 @@ export async function saveGraphStore(store: GraphStore, baseDir: string): Promis
   try {
     await writeFile(tempPath, JSON.stringify(store, null, 2), "utf-8")
     await rename(tempPath, graphPath)
+    recordKnowledgeGraphProjectWrite(baseDir)
   } finally {
     await releaseLock(lockPath)
   }

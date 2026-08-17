@@ -6,10 +6,15 @@ import {
   readTrustedAtomicSpecMergeProjectWrites,
   type TrustedAtomicSpecMergeWrite,
 } from './atomic-spec-merge-write-provenance';
+import {
+  readTrustedKnowledgeGraphProjectWrites,
+  type TrustedKnowledgeGraphWrite,
+} from './knowledge-graph-write-provenance';
 
 export type TrustedChangedFilesAuditControlPlaneWrite =
   | TrustedGitGovernanceWrite
-  | TrustedAtomicSpecMergeWrite;
+  | TrustedAtomicSpecMergeWrite
+  | TrustedKnowledgeGraphWrite;
 
 /**
  * Canonical producer resolver for every Changed Files Audit entry point.
@@ -25,5 +30,6 @@ export function readTrustedChangedFilesAuditControlPlaneWrites(
   return [
     ...readTrustedGitGovernanceProjectWrites(projectRoot),
     ...readTrustedAtomicSpecMergeProjectWrites(projectRoot),
+    ...readTrustedKnowledgeGraphProjectWrites(projectRoot),
   ];
 }

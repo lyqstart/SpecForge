@@ -7,7 +7,7 @@
  * 7.3 changed_files_audit prerequisite tests
  * 7.4 WI artifact bash/write blocking tests
  */
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { tmpdir } from 'node:os';
@@ -41,6 +41,8 @@ function validClassification(): Record<string, unknown> {
     module_boundary_changed: false,
     api_contract_changed: false,
     architecture_changed: false,
+    data_model_changed: false,
+    module_contract_changed: false,
     unknowns: [],
   };
 }
@@ -234,6 +236,15 @@ describe('7.2 artifact writer schema validation', () => {
           work_item_id: 'WI-0001',
           workflow_path: wp,
           classification: validClassification(),
+          impact_scope: {
+            affected_modules: [],
+            architecture_refs: [],
+            data_model_refs: [],
+            design_refs: [],
+            project_contract_refs: [],
+            module_contract_refs: [],
+            planned_code_paths: [],
+          },
         });
         const result = validateTriggerResultJson(content, 'WI-0001');
         expect(result.valid).toBe(true);
