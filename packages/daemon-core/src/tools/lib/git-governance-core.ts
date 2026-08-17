@@ -69,6 +69,9 @@ export interface BranchCreateResult {
   base_commit: string;
   git_context_path: string;
   message: string;
+  bootstrap_mode?: 'unborn_default_branch_empty_commit';
+  bootstrap_commit_created?: boolean;
+  bootstrap_commit?: string;
 }
 
 export interface CheckpointCommitResult {
@@ -372,13 +375,60 @@ export async function createBranch(input: { projectRoot: string; workItemId: str
   const requireClean = input.requireClean !== false;
   const pf = await preflight(projectRoot, baseBranch);
   if (!pf.inside_work_tree) throw new Error('NOT_A_GIT_WORK_TREE');
-  if (requireClean && !pf.worktree_clean) throw new Error('WORKTREE_NOT_CLEAN_BEFORE_BRANCH_CREATE');
-  if (await branchExists(projectRoot, input.branchName)) throw new Error(`BRANCH_ALREADY_EXISTS: ${input.branchName}`);
+
+  const unbornDefaultBranch =
+    pf.current_branch === baseBranch && pf.head_commit === null;
+
+  if (unbornDefaultBranch) {
+    const invalidBootstrapEntries = pf.status_entries.filter(
+      (entry) =>
+        entry.kind !== 'untracked' ||
+        !normalizeRelativePath(entry.path).startsWith(`${SPEC_DIR_NAME}/`),
+    );
+    if (invalidBootstrapEntries.length > 0) {
+      throw new Error(
+        `UNBORN_DEFAULT_BRANCH_BOOTSTRAP_SCOPE_VIOLATION: ${invalidBootstrapEntries
+          .map((entry) => entry.path)
+          .sort()
+          .join(',')}`,
+      );
+    }
+  } else if (requireClean && !pf.worktree_clean) {
+    throw new Error('WORKTREE_NOT_CLEAN_BEFORE_BRANCH_CREATE');
+  }
+
+  if (await branchExists(projectRoot, input.branchName)) {
+    throw new Error(`BRANCH_ALREADY_EXISTS: ${input.branchName}`);
+  }
+
   if (pf.current_branch !== baseBranch) {
     await runGit(projectRoot, ['switch', baseBranch]);
   }
-  const baseCommit = await getHeadCommit(projectRoot);
-  if (!baseCommit) throw new Error('BASE_COMMIT_NOT_FOUND');
+
+  let baseCommit = await getHeadCommit(projectRoot);
+  let bootstrapCommitCreated = false;
+  if (!baseCommit) {
+    if (!unbornDefaultBranch) throw new Error('BASE_COMMIT_NOT_FOUND');
+
+    const bootstrapResult = await runGit(
+      projectRoot,
+      ['commit', '--allow-empty', '-m', 'chore: initialize SpecForge git baseline'],
+      true,
+    );
+    if (bootstrapResult.code !== 0) {
+      throw new Error(
+        `UNBORN_DEFAULT_BRANCH_BOOTSTRAP_COMMIT_FAILED: ${
+          bootstrapResult.stderr || bootstrapResult.stdout || 'git commit failed'
+        }`,
+      );
+    }
+    baseCommit = await getHeadCommit(projectRoot);
+    if (!baseCommit) {
+      throw new Error('UNBORN_DEFAULT_BRANCH_BOOTSTRAP_COMMIT_NOT_FOUND');
+    }
+    bootstrapCommitCreated = true;
+  }
+
   await runGit(projectRoot, ['switch', '-c', input.branchName]);
   const wiDir = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', input.workItemId);
   await fs.mkdir(wiDir, { recursive: true });
@@ -405,6 +455,13 @@ export async function createBranch(input: { projectRoot: string; workItemId: str
     base_commit: baseCommit,
     git_context_path: normalizeRelativePath(path.relative(projectRoot, contextPath)),
     message: 'branch_created_and_git_context_written',
+    ...(bootstrapCommitCreated
+      ? {
+          bootstrap_mode: 'unborn_default_branch_empty_commit' as const,
+          bootstrap_commit_created: true,
+          bootstrap_commit: baseCommit,
+        }
+      : {}),
   };
 }
 

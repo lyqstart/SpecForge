@@ -9455,3 +9455,25 @@ actual_files
 - **产品语义**：不修改 handler 返回结构，不复制完整 Gate 报告到摘要，不修改 Gate/Workflow/Runtime；V415 产品改动保持不变。
 - **范围**：V420 继续 exact-9；Authority 不改；Fresh-04 不访问；SpecForge 自身生命周期不运行。
 - **验证**：targeted tests、全仓 `bun test`、validator TypeScript、daemon-core build、全仓 build、`git diff --check`、Authority unchanged、exact-9 scope audit。
+
+### ERR-647：全新 Git 仓库首个代码型 WI 在 unborn main 上形成 branch-create / checkpoint 治理死锁
+- **分类**：`PRODUCT_GOVERNANCE_GAP / NEW_PROJECT_GIT_BOOTSTRAP`
+- **状态**：`FIX_VALIDATED_PENDING_COMMIT_PUSH_DEPLOYMENT_AND_FRESH05_RESUME`
+- **Fresh-05 一手事实**：
+  1. 全新项目 `InventoryFlow-Phase11-Fresh-05` 的 WI-0001 已完成 Candidate Gate attempt-0005（10/10 passed；三个核心 Gate 从真实首个 WI 即为 `hard_gate`）和 Post-Spec-Merge Gate attempt-0006（passed），权威状态为 `post_merge_verified`。
+  2. `sf_code_permission enable` 在默认分支 `main` 被 `MAIN_WRITE_GUARD_BLOCKED` 正确阻断；Hard Stop 已通过正式恢复协议解除，未释放任何代码写权限。
+  3. 用户确认分支计划 `feature/work-item-wi-0001` 后，`sf_git_branch_create` 返回 `WORKTREE_NOT_CLEAN_BEFORE_BRANCH_CREATE`。当前 dirty 内容来自首个 WI 已生成但尚未 Git checkpoint 的 `.specforge/**` 正式治理对象和证据。
+  4. 仓库 `main` 为 unborn、无任何 commit。即使人为清掉 dirty，当前 `createBranch()` 下一步仍会因 `getHeadCommit()==null` 返回 `BASE_COMMIT_NOT_FOUND`。
+  5. 当前 `checkpointCommit()` 明确禁止默认分支，因此合法工具链没有办法先在 main 建立 base commit；这形成 `main 无 commit → 无法建 WI branch → main 禁止 checkpoint → 永远无法离开 main` 的闭环死锁。
+- **Canonical Rule**：新增 Authority `GOV-GIT-UNBORN-BOOTSTRAP-001`。
+- **修复设计**：
+  - `sf_git_branch_create/createBranch` 仅在 `current_branch==default_branch && HEAD absent` 的 unborn 特例下允许 bootstrap；
+  - 允许 dirty 的范围严格限定为 `kind=untracked` 且路径全部位于 `.specforge/**`；任何 staged 或范围外路径 Fail Closed；
+  - Runtime 在默认分支创建一个**空 commit**，不 stage、不提交任何文件；该 commit 只物化 Git base；
+  - 随即从该 commit 创建用户确认的 WI branch，并把空 commit 写入 `git_context.base_commit`；
+  - `.specforge/**` 仍保持未提交并进入 WI branch，后续正式 checkpoint 因而仍捕获本 WI 的 Project Spec / governance evidence / implementation 全量 diff；
+  - 普通已有 HEAD 的仓库 clean-worktree 要求、默认分支 checkpoint 禁令、Formal Version 和 Git Merge 契约全部保持不变。
+- **producer-consumer 闭环**：`sf_git_branch_create` → `createBranch` → empty bootstrap base commit → `git_context.base_commit` → Code Permission → Changed Files Audit / `diffFromBase` → Formal Version snapshot → Git Merge / Post-Merge Verify。
+- **测试**：新增真实临时 Git 仓库回归，覆盖 unborn `.specforge/**` 正例、范围外 dirty 负例、staged `.specforge` 负例、普通仓库 dirty 仍阻断、默认分支 checkpoint 仍阻断。
+- **范围**：Authority、`git-governance-core.ts`、新回归测试、current-handoff、错误台账，共 exact-5；不修改 handler/schema/workflow/gate/state machine，不访问 Fresh-05，不运行 SpecForge 自身生命周期。
+- **真实验收**：工程验证通过后提交/部署；重启 OpenCode/daemon；返回原 Fresh-05 WI-0001，从已确认分支名 `feature/work-item-wi-0001` 继续 `sf_git_branch_create → sf_code_permission enable`，不得重做已经通过的 Candidate/Post-Merge Gate。

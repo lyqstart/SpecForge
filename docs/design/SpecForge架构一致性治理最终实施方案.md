@@ -3561,6 +3561,21 @@ Atomic Spec Merge 成功
 从第一个 WI 开始，三个核心 Gate 就必须按最终产品规则全部 Hard；第一个 WI 完成后不发生 Gate 严格度切换。后续 WI 必须消费已经生效的正式 Architecture、Data Model、Module Design、Contract 和 Trace，并按同一套 Hard Gate 继续治理。
 
 首次治理统一规则：不增加 Project Spec Readiness Gate；Architecture / Data Model / Module Design / Contract 必须在同一个正式 WI 内闭环，不拆分第二个架构 WI。
+
+**GOV-GIT-UNBORN-BOOTSTRAP-001：** 对 Git-enabled 的全新项目，如果首个代码型 WI 在建立 Work Item 工作分支时默认分支仍为 unborn（Git work tree 已存在、当前分支名等于默认分支、但 `HEAD` 尚无 commit），`sf_git_branch_create` 必须在既有 Git Governance 能力内执行一次受控 bootstrap，不得要求用户用治理外 Git 命令制造首个 commit。
+
+固定规则：
+
+1. 该能力只允许由 `sf_git_branch_create` 在用户已经明确确认语义化 Work Item 分支名后触发；不新增 Tool、Workflow、Gate、Agent 或状态边。
+2. 触发条件必须同时满足：当前分支严格等于默认分支、`HEAD` 不存在、目标 Work Item 分支不存在。任何已有 `HEAD` 的普通仓库继续执行原有 branch-create 契约。
+3. unborn bootstrap 前允许工作树不干净的唯一原因，是 SpecForge 初始化和首个 WI 治理已产生**未跟踪的** `.specforge/**` 文件。所有 status entry 必须同时满足 `kind=untracked` 且路径位于 `.specforge/**`；存在 staged 文件、业务文件、配置文件或任何 `.specforge/**` 之外的 dirty path 时必须 Fail Closed。
+4. Runtime 必须在默认分支创建且只创建一个**空 bootstrap commit**，不得 stage、提交、删除、改写任何 Project Spec、Work Item evidence、业务代码或其他文件。该 commit 只用于把 unborn 默认分支物化为可引用的 Git base，不属于 WI checkpoint。
+5. 空 bootstrap commit 创建后必须立即从该 commit 创建用户确认的 Work Item 分支，并把该 commit 写入 `git_context.base_commit`。原有 `.specforge/**` dirty 内容必须保持未提交并随工作树进入 Work Item 分支。
+6. 后续 `sf_git_checkpoint_commit` 仍只能在 Work Item 分支执行，并必须把本 WI 的正式 Project Spec diff、治理 evidence 和实现 diff 按现有规则提交；因此 Formal Version / Changed Files Audit / Git Merge 继续以 `git_context.base_commit` 为共同基线，不丢失首个 WI 的治理变更。
+7. 默认分支上的普通 checkpoint 仍严格禁止；本规则不允许把任意 main 写入包装成 bootstrap，也不放宽已有仓库的 clean-worktree 要求。
+8. `sf_git_branch_create` 成功结果必须在该特例发生时显式返回 bootstrap mode、bootstrap commit 和 `bootstrap_commit_created=true`，供后续真实项目验收与审计使用。
+9. Work Item 分支与默认分支共享上述空 bootstrap commit 作为共同祖先；后续 Git Merge / Post-Merge Verify 继续使用既有正式流程，不允许 unrelated-history 特例。
+
 ### 9.3 后续需求时怎么做
 
 每次设计仍然先消费现有正式设计。
@@ -4350,6 +4365,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-REVERIFICATION-MERGE-HISTORY-001` | 8.6 Verification：历史已合并 WI 在后续 Project Spec 推进后的恢复重验 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
 | `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |
+| `GOV-GIT-UNBORN-BOOTSTRAP-001` | 9.2 新项目首次治理自举 |
 | `GOV-MODE-001` | 1.3.1 模式 A：SpecForge 自身开发 |
 | `GOV-POST-001` | 2.5 修改后治理闭环 |
 | `GOV-PRE-001` | 2.2 SpecForge 自身开发：修改前治理 |
