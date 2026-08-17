@@ -9511,3 +9511,103 @@ actual_files
 - **trigger_result 测试 fixture**：当前 validator 固定要求 classification 的 `data_model_changed`、`module_contract_changed` 以及结构化 `impact_scope`；旧 v11 positive fixture 仍是更早 schema。修复只同步测试 fixture。
 - **范围**：不新增文件；combined worktree 继续严格 11 个 dirty paths。
 - **状态**：`TEST_CONTRACT_FIX_APPLIED_PENDING_TARGETED_AND_COMPLETE_REGRESSION_INVENTORY`。
+
+<!-- SPECFORGE_ERR650_BOOTSTRAP_PROTOCOL_RECURRENCE:START -->
+## ERR-650 — 新会话 Authority Bootstrap 失败路径重复越权读取 Recovery，并直接交付裸 `git ls-remote` CMD
+
+- **日期与阶段**：2026-08-17，新会话 Authority Bootstrap / Recovery 恢复阶段。
+- **分类**：`PROCESS_VIOLATION / GOVERNANCE_FAILURE / REPEATED_ERROR_CLASS`。
+- **现场事实**：本会话在 live Authority Bootstrap 尚未成功接受时，先读取了 Recovery / `current-handoff` 相关内容；随后又直接向用户发布裸 `git ls-remote origin refs/heads/main` CMD。用户执行后返回只读 branch-ref 证据；没有 SpecForge 仓库写入、没有 Work Item / Gate / Runtime 生命周期动作。
+- **重复错误归类**：`REPEATED_ERROR_CLASS=ERR-233,ERR-235,ERR-247`；对应既有防护为 `EXP-199,EXP-201,EXP-213`。
+- **根因**：既有 Authority / EXP 已正确，但本会话执行层没有在首次工具调用前机械落实 `RECEIPT_AUDIT → PRETOOL_GUARD → LIVE_REF_ONLY → EXACT_AUTHORITY_ONLY → RECOVERY`；把只读 `git ls-remote` 错误当成可绕过 Bootstrap Failure Delivery Contract 的普通诊断命令，并在后验发现越权后继续沿用了该回合取得的 Recovery 上下文。
+- **影响**：证据取得方式违反治理协议，导致该回合 Bootstrap / Recovery 证据链不合规；命令本身只读，当前没有证据表明造成仓库、daemon、OpenCode 或 Fresh-05 状态变化。
+- **正确做法**：Bootstrap 未接受时不得读取 handoff / WI / immutable evidence；需用户本地取得 live ref 时，先完整 Bootstrap Failure Acceptance，再 `ONE_ACCEPTED_ZIP_PLUS_ONE_CMD`，禁止裸 CMD。用户返回结构化 live ref 后重新 Bootstrap，不复用失败回合越权 Recovery 读取。
+- **防复发措施**：复用 `EXP-199 / EXP-201 / EXP-213`；`BOOTSTRAP_EXECUTION_ORDER_AUDIT=PASS` 与 `RAW_CMD_ALLOWED=NO` 作为 Recovery 读取和用户命令发布前 pre-action checklist。
+- **当前状态**：`RECORDED_REPEATED_BOOTSTRAP_PROTOCOL_VIOLATION_NO_REPOSITORY_SIDE_EFFECT`。
+<!-- SPECFORGE_ERR650_BOOTSTRAP_PROTOCOL_RECURRENCE:END -->
+
+<!-- SPECFORGE_ERR651_V439_GENERATOR_NESTED_TRIPLE_QUOTE:START -->
+## ERR-651 — V439 预交付包生成器再次触发 ERR-207 类嵌套三引号 SyntaxError
+
+- **日期与阶段**：2026-08-17，Phase 12 动态状态同步 V439 Artifact 预生成。
+- **分类**：`SCRIPT_DEFECT / PACKAGE_PREFLIGHT_DEFECT / REPEATED_ERROR_CLASS`。
+- **现场事实**：第一次 V439 外层 Python 生成器把 runner 源码与 ERR-650 / 状态同步长 Markdown payload 共同嵌入多层 triple-quoted literal；外层字符串被内层 literal 提前终止，Python 在 Markdown 中文正文处报 SyntaxError。`ZIP_GENERATED=NO`、`USER_REPO_TOUCHED=NO`、`DELIVERED_TO_USER=NO`。
+- **重复错误归类**：`REPEATED_ERROR_CLASS=ERR-207`；`APPLICABLE_EXPERIENCE=EXP-177`。历史 ERR-212 等同类复发进一步证明不能把长 payload 与执行器源码再次嵌套到同一解释器字符串边界。
+- **根因**：违反 `EXP-177`，重新让代码生成器同时承载执行器源码与长 payload，形成多层 quoting / parser 边界。
+- **影响**：仅助手侧预交付构建失败；没有用户仓库、Git、daemon、OpenCode、Fresh-05 副作用。
+- **正确做法**：runner 与长文本 payload 物理分离；payload 放独立 UTF-8 结构化文件，runner 只读取结构化 payload；封包前 `py_compile` runner / validator，随后 ZIP reopen + manifest/hash/file-set 验证。
+- **防复发措施**：复用 `EXP-177`；本轮重建不得再以内嵌 triple quote 承载 Markdown payload。
+- **当前状态**：`CLOSED_PREFLIGHT_RETRY_REQUIRES_PAYLOAD_SEPARATION`。
+<!-- SPECFORGE_ERR651_V439_GENERATOR_NESTED_TRIPLE_QUOTE:END -->
+
+<!-- SPECFORGE_ERR652_V439_PY_LAUNCHER_ASSUMPTION:START -->
+## ERR-652 — V439 交付命令错误假设 Windows 环境存在 `py` launcher
+
+- **日期与阶段**：2026-08-17，Phase 12 动态状态同步 V439 用户侧启动阶段。
+- **分类**：`ENVIRONMENT_ERROR / DELIVERY_LAUNCHER_DEFECT / REPEATED_ERROR_CLASS`。
+- **现场事实**：用户已成功解压 `SpecForge_Status_Sync_V439.zip`，随后执行命令中的 `py -3 -B ...\runner.py`；Windows CMD 返回 `'py' 不是内部或外部命令，也不是可运行的程序或批处理文件`。由于解释器启动失败，V439 runner 未进入 `main()`，没有读取或写入 SpecForge 仓库。
+- **重复错误归类**：属于既有 `ERR-011 / ERR-012 / ERR-013` 所覆盖的 Windows CMD / 解释器环境假设类；对应防护复用 `EXP-002 / EXP-012 / EXP-019`。
+- **根因**：交付前验证只覆盖了 runner / validator 源码与 ZIP 结构，没有把用户机器上“`py` launcher 是否存在”作为启动链前置事实；交付命令把未确认的解释器别名写成唯一入口。
+- **影响**：V439 用户侧启动失败，但失败发生在包内程序执行之前；`USER_REPO_TOUCHED=NO`、`COMMIT_CREATED=NO`、`PUSH_PERFORMED=NO`，Fresh-05 与 SpecForge 生命周期均未访问。
+- **正确做法**：交付入口不得依赖未确认的 `py` / `python` 别名；本轮改为包内 `RUN.cmd` 解析已确认存在的 Bun，并由 Bun 执行 `runner.js`；runner 内部再使用 `process.execPath` 启动独立 validator，消除第二解释器发现问题。
+- **防复发措施**：复用 `EXP-002 / EXP-012 / EXP-019`；Artifact Acceptance 新增 launcher dependency audit，确保用户命令只依赖 Windows 内置 `tar/cmd` 与已确认 Bun，且包内无 Python 运行时依赖。
+- **当前状态**：`RECORDED_V439_PY_LAUNCHER_ASSUMPTION_NO_REPOSITORY_SIDE_EFFECT`。
+<!-- SPECFORGE_ERR652_V439_PY_LAUNCHER_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR653_GIT_PORCELAIN_LEADING_SPACE_TRIM:START -->
+## ERR-653 — V440 隔离 E2E 发现 `git status --porcelain` 前导状态空格被 `trim/strip` 破坏
+
+- **日期与阶段**：2026-08-17，Phase 12 动态状态同步 V440 Artifact 隔离 E2E 验收。
+- **分类**：`VALIDATION_HARNESS_DEFECT / SCRIPT_DEFECT / PREDELIVERY_BLOCKER`。
+- **现场事实**：V440 未向用户发布。在隔离 mock Git 仓库中，写前基线为 clean；exact-2 文档写入后 fake `git status --porcelain` 正确输出 ` M docs/...`。runner / validator 的通用子进程封装对 stdout 使用 `.trim()`，移除了首行前导空格，路径解析 `line.slice(3)` 因此把首个 `docs/...` 错解析为 `ocs/...`；validator Fail Closed，runner 随即 `ROLLBACK_PERFORMED=YES`，mock worktree 恢复 clean。
+- **历史关联**：V439 Python runner 的 `stdout.strip()` 也具有同类潜在风险，但 V439 因 ERR-652 在解释器启动前即失败，未进入该路径；因此用户仓库没有受到该潜在缺陷影响。
+- **根因**：把“普通命令输出清理”与 Git porcelain 机器协议混为一谈；porcelain 的前两列状态字符及其空格本身属于协议数据，不能做 leading-whitespace trim。
+- **影响**：仅助手侧 V440 隔离验收失败，V440 未发布；mock 写入已回滚。用户 SpecForge 仓库未被 V440 接触。
+- **正确做法**：子进程 stdout 只 chomp 尾部 CR/LF，保留全部前导字符；`git status --porcelain=v1` 按固定 XY+space 三列之后解析路径。
+- **防复发措施**：复用 `EXP-007 / EXP-011 / EXP-019`；Artifact Acceptance 必须加入 porcelain whitespace regression，至少覆盖 clean、` M`、`M `、`??` 与 exact-2 changed-path 解析；成功路径与 validator-fail rollback 路径都必须隔离执行。
+- **当前状态**：`CLOSED_PREDELIVERY_PORCELAIN_WHITESPACE_REGRESSION_ADDED`。
+<!-- SPECFORGE_ERR653_GIT_PORCELAIN_LEADING_SPACE_TRIM:END -->
+
+<!-- SPECFORGE_ERR647_ERR649_FINAL_RESULT_RECONCILIATION:START -->
+## 2026-08-17 — ERR-647 / ERR-648 / ERR-649 最终验证与 Fresh-05 真实项目结果对账
+
+> 本段是发生于原错误条目之后取得的一手最终事实。遵守本台账“只追加、不抹除”原则：上方错误发生当时的 pending 状态保留为历史记录，本段追加最终状态，不回写历史使错误“看起来没有发生”。
+
+- **SFV438 最终工程验证**：`BASELINE_REPEATABILITY=PASS`、`POST_REPEATABILITY=PASS`、`FILE_DISCOVERY_PARITY=PASS`、`ASSERTION_DELTA_SCOPE=PASS`、`RESOLVED_FAILURE_SCOPE=PASS`、`NEW_FAILURE_COUNT=0`、`TARGETED_ERR648_ERR649=PASS`；Validator Contract TypeScript、daemon-core build、full workspace build、`git diff --check`、exact-11 实际范围审计、Architecture / Contract / producer-consumer reconciliation 全部通过，`RESULT=SUCCESS`。
+- **SpecForge 产品交付**：最终产品提交 `d1a6cd3cbe3b67be9aa71c172fdeb1c132d03f47` 已推送 `main`；用户级 `upgrade --force` 完成，installer verify 报告 119 个文件完整并 `PASS`。
+- **ERR-647 最终状态**：unborn Git bootstrap 修复已完成工程验证、部署，并在 Fresh-05 后续真实首个 WI 流程中得到验证。`ERR647_STATUS=FIX_VALIDATED_AND_REAL_PROJECT_VALIDATED`。
+- **ERR-648 最终状态**：Knowledge Graph structured provenance 已通过 SFV438 DELTA 验证；部署后 Fresh-05 `sf_knowledge_graph sync_from_spec` 写出 `knowledge_graph_controlled_writes.v1`，`producer=sf_knowledge_graph_core` 且记录 SHA-256 与当前 `.specforge/knowledge/graph.json` 完全一致；随后 Changed Files Audit `passed=true,total_files=29,in_scope=24,out_of_scope=0,violations=[],side_effects=0`。`ERR648_STATUS=FIX_VALIDATED_FINAL_DELTA_AND_FRESH05_REAL_VALIDATED`。
+- **ERR-649 最终状态**：旧回归测试 runner / fixture / schema contract 漂移修复已通过 SFV438 targeted + full DELTA 验证，`NEW_FAILURE_COUNT=0`。`ERR649_STATUS=FIX_VALIDATED_FINAL_DELTA`。
+- **Fresh-05 最终 Verification**：104 / 104 tests、31 / 31 EARS Acceptance Criteria、22 / 22 EVREQ 全部通过；Semantic Closure `semantic_closure_valid=true`、`provenance_valid=true`；Verification Gate attempt-0015、Formal Version Gate 均通过。
+- **Fresh-05 最终 Close / Git delivery**：Code Permission 已 revoke；Close Gate 33 / 33 passed、0 blocking、0 warnings；`AUTHORITATIVE_STATE=closed`；最终 Git Merge 与 Post-Merge Verify 均通过；`main=44095cb117c276c9cbd0328353e2c9ab98017e2e`、`worktree_clean=true`、`repository_delivery_complete=true`、`repository_delivery_state=closed_and_git_merged`。
+- **阶段结论**：Fresh-05 已完整证明 Requirement → Architecture → Data Model → Design → Contract → Candidate → User Decision → Atomic Spec Merge → Code Permission → Implementation → Scope Audit → Verification → Semantic Closure → Formal Version → Close → Git Merge → Post-Merge Verify 的等价真实项目 E2E，故 `PHASE11_REAL_PROJECT_E2E_STATUS=COMPLETE`。
+- **下一正式阶段**：按当前 Authority 进入 `Phase 12：最终 Hard Enforcement 固化与发布边界`。本次仅同步动态治理事实，不修改 Authority、产品源码、Runtime、Workflow、Gate 或测试。
+<!-- SPECFORGE_ERR647_ERR649_FINAL_RESULT_RECONCILIATION:END -->
+
+<!-- SPECFORGE_ERR654_V442_VALIDATOR_CONTRACT_DRIFT:START -->
+## ERR-654 — V442 Git Finalization validator 重建了 V441 不存在的 `NEXT_OFFICIAL_PHASE` 固定文本契约
+
+- **日期与阶段**：2026-08-17，Phase 12 动态状态同步完成后的 Git Finalization V442。
+- **分类**：`VALIDATION_HARNESS_DEFECT / EVIDENCE_CONTRACT_DRIFT / REPEATED_ERROR_CLASS`。
+- **现场事实**：V441 已成功写入并验证 `CURRENT_STAGE=PHASE12_FINAL_HARD_ENFORCEMENT_RELEASE_BOUNDARY` 与 `NEXT_STAGE=PHASE12_RELEASE_BOUNDARY_VALIDATION`；V442 runner 在 commit 前另行要求 handoff 包含 `NEXT_OFFICIAL_PHASE=PHASE12_FINAL_HARD_ENFORCEMENT_RELEASE_BOUNDARY`。该字段只存在于 V441 receipt 的阶段概括，不属于 V441 handoff producer contract，因此 V442 Fail Closed。`COMMIT_CREATED=NO`、`PUSH_PERFORMED=NO`。
+- **重复错误归类**：属于“validator / fixed-text consumer 与正式 producer contract 漂移”类；复用 `EXP-007 / EXP-011 / EXP-019` 及修改前清单中“固定文本测试只断言正式生产者状态和字段”的防护。
+- **根因**：V442 validator 没有直接消费 V441 `patch_contract.json` / validator 中已经冻结的 handoff 字段集合，而是从 receipt 的自然语言/控制字段重新推导出一个新的固定文本 token，把“执行回执字段”错误提升成“handoff 生产者字段”。
+- **影响**：仅 Git Finalization 被阻断；失败发生在 `git add`、commit、push 之前。用户仓库仍只有 V441 已验证的 exact-2 未提交文档修改，Authority 未改，远程 main 未被 V442 修改。
+- **正确做法**：consumer validator 必须绑定正式 producer contract；V443 继续验证 V441 的 `CURRENT_STAGE`、`NEXT_STAGE`、Phase 11/ERR 状态和 marker，不再要求未由 producer 写入的 `NEXT_OFFICIAL_PHASE`。
+- **防复发措施**：后续 finalization validator 从上一阶段 canonical patch contract / validator requirement set 派生，不从 receipt 概括字段或自然语言重新发明固定文本；新增固定字段前必须先证明其 producer、contract、consumer 同步。
+- **当前状态**：`CLOSED_VALIDATOR_CONTRACT_ALIGNED_TO_V441_PRODUCER_NO_GIT_SIDE_EFFECT`。
+<!-- SPECFORGE_ERR654_V442_VALIDATOR_CONTRACT_DRIFT:END -->
+
+<!-- SPECFORGE_ERR655_GITHUB_CONNECTOR_LIVE_REF_TIMEOUT:START -->
+## ERR-655 — V442 失败后助手侧 GitHub connector live-ref 辅助反查发生 ReadTimeout
+
+- **日期与阶段**：2026-08-17，V442 失败归因后的只读远程辅助核验。
+- **分类**：`ENVIRONMENT_FAILURE / NON_BLOCKING_TOOL_READ_TIMEOUT`。
+- **现场事实**：助手侧 GitHub connector 请求 `refs/heads/main` 时返回 `ReadTimeout`。该调用只读且没有仓库副作用；同一时点用户 V442 标准回执已给出 `REMOTE_HEAD_BEFORE=d1a6cd3cbe3b67be9aa71c172fdeb1c132d03f47`、`LOCAL_REMOTE_CONSISTENCY_BEFORE=PASS`，V442 又明确 `COMMIT_CREATED=NO / PUSH_PERFORMED=NO`。
+- **历史归类**：复用 `ERR-246 / EXP-212` 的工具运行时环境异常边界：助手侧工具失败与目标产品、用户侧 Git 证据分离判断，不伪装成 SpecForge 产品缺陷。
+- **根因**：外部 connector 读取超时，非 SpecForge Runtime / Gate / Workflow / Git repository 缺陷。
+- **影响**：仅助手侧辅助远程反查不可用；不改变 V442 用户侧 live-ref 一手回执。V443 首次写入前仍必须在用户环境重新执行 `git ls-remote`，因此不能把本条超时作为跳过 live-ref 的理由。
+- **正确做法**：记录环境失败并停止依赖该次 connector 结果；用户侧 runner 在写前重新取得 live branch ref，远程漂移或网络失败即零写入 Fail Closed。
+- **防复发措施**：复用 `EXP-212`；辅助 connector 只作附加证据，最终用户侧写入 runner 必须自行完成 live-ref preflight。
+- **当前状态**：`RECORDED_NON_BLOCKING_CONNECTOR_TIMEOUT_USER_SIDE_LIVE_REF_RECHECK_REQUIRED`。
+<!-- SPECFORGE_ERR655_GITHUB_CONNECTOR_LIVE_REF_TIMEOUT:END -->
