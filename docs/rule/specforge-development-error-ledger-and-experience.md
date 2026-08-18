@@ -10049,3 +10049,35 @@ ERR672_FIX=REUSE_KNOWN_GOOD_SFV463_VALIDATOR_CHANGED_PATH_STRUCTURE
 ERR672_STATUS=CLOSED
 ```
 <!-- SPECFORGE_ERR672_SFV465_REPEATED_GENERATED_VALIDATOR_SYNTAX_ERROR:END -->
+
+<!-- SPECFORGE_ERR673_SFV468_UNGROUNDED_CURRENT_STATE_ASSERTION:START -->
+## ERR-673 — SFV468 A1/A2 preflight 把 receipt 字段误提升为 current-handoff 当前状态必填键
+
+- **日期与阶段**：2026-08-18，Phase 12 Release Boundary A1/A2 Engineering Baseline（SFV468）首次用户执行。
+- **分类**：`VALIDATOR_DEFECT / UNGROUNDED_CURRENT_STATE_ASSERTION / SOURCE_CONTRACT_FALSE_NEGATIVE`。
+- **现场事实**：SFV468 回执为 `RESULT=FAILED`、`SOURCE_CONTRACT=FAIL`、`PREFLIGHT_PROBLEM_COUNT=1`、`STOP_REASON=PREFLIGHT_FAILED`。A1/A2 全部任务均为 `NOT_EXECUTED`；Local/Remote HEAD 均为 `1724cb877333198b10b53b54c8d67da2cf4f147e`，worktree before/final 均 clean，runner 报 `REPOSITORY_WRITE=NONE_BY_RUNNER`。冻结 contract 正确把后续 27 个未执行断言报告为 `MISSING_BLOCKING_EVIDENCE`，因此这 27 项不是测试失败。
+- **精确根因证据**：SFV468 的聚合 `P17_GOVERNANCE_STATE` 要求 current-state block 内存在 `UNRECORDED_FAILURES=0`。固定 `main@1724cb...` 的真实 `current-handoff.md` blob `2d7edd1db784341c429a36ec6fe4d80046e97ce1` 当前状态块包含 Phase12、ERR-656～ERR-672、daemon、NEXT_STAGE 等正式键，但没有 `UNRECORDED_FAILURES`。该字段来自执行 receipt / 过程治理反馈，不是 handoff current-state schema 的既有 producer。
+- **已执行与未执行**：仅执行 SFV468 package integrity、contract freeze 和 preflight source evidence；A1/A2 的 TypeScript、targeted test、full regression、build 均未开始。没有 product code、governance file、Git index、commit、push、Fresh05、daemon 或 OpenCode 写动作。
+- **仓库副作用**：无。SFV468 结束时 local/remote 仍为 `1724cb...` 且 worktree clean。
+- **根因**：validator 设计时把上一轮 receipt 中的 `UNRECORDED_FAILURES=0` 当作 current-handoff 当前状态块的正式 truth source，未先从固定 handoff blob 枚举实际 producer keys；聚合 P17 只返回 PASS/FAIL，回执也未输出具体 preflight problem ID，降低了首轮可诊断性。
+- **影响**：Phase12 release validation 被假阴性阻断，但没有任何产品测试失败证据，也没有触发 `PHASE-LIFE-001` 的 gate severity/block/call-scope/bypass 产品变化。
+- **正确做法**：current-handoff 断言只能消费固定 HEAD/current-state marker block 中真实存在的键；receipt-only 字段不能被提升为 handoff schema。下一版 A1/A2 把治理状态聚合检查拆成逐字段 blocking assertions，并在 preflight receipt 输出精确失败 assertion ID。
+- **防复发措施**：复用 `EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-213`，并复用历史 marker-scope / truth-source 类经验；新增 `CURRENT_STATE_ASSERTION_KEYS_FROM_PINNED_BLOB_ONLY=YES`、`RECEIPT_FIELD_PROMOTION_TO_HANDOFF_SCHEMA=FORBIDDEN`、`PREFLIGHT_ASSERTION_ID_REPORTING=REQUIRED`。
+- **关闭证据**：本记录只在 corrected reconciliation package 以固定 blob 证明 `UNRECORDED_FAILURES` 在 prewrite current-state 中确实不存在、ERR-673 写入后 postwrite validator PASS、且 corrected A1/A2 package selftest 证明不再要求该键后关闭。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR673_CLASSIFICATION=VALIDATOR_DEFECT
+ERR673_PRODUCT_DEFECT=NO
+ERR673_A1_EXECUTION=NOT_EXECUTED
+ERR673_A2_EXECUTION=NOT_EXECUTED
+ERR673_REPOSITORY_SIDE_EFFECT=NONE
+ERR673_SOURCE_HEAD=1724cb877333198b10b53b54c8d67da2cf4f147e
+ERR673_HANDOFF_BLOB=2d7edd1db784341c429a36ec6fe4d80046e97ce1
+ERR673_FAILED_ASSERTION=P17_GOVERNANCE_STATE
+ERR673_FALSE_REQUIREMENT=UNRECORDED_FAILURES_IN_CURRENT_STATE_BLOCK
+ERR673_ROOT_CAUSE=RECEIPT_FIELD_PROMOTED_TO_HANDOFF_CURRENT_STATE_SCHEMA_WITHOUT_PRODUCER_EVIDENCE
+ERR673_FIX=PINNED_BLOB_CURRENT_STATE_KEYS_PLUS_DECOMPOSED_PREFLIGHT_ASSERTIONS
+ERR673_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR673_SFV468_UNGROUNDED_CURRENT_STATE_ASSERTION:END -->
