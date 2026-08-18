@@ -10328,3 +10328,98 @@ ERR684_FIX=SEMANTIC_MANIFEST_FIELD_VALIDATION_PLUS_INIT_SMOKE_NO_IDENTIFIER_NAME
 ERR684_STATUS=CLOSED_PREDELIVERY_SELFTEST_STATIC_ANCHOR_FALSE_POSITIVE
 ```
 <!-- SPECFORGE_ERR684_SFV477_MANIFEST_IDENTITY_STATIC_ANCHOR_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR685_SFV480_SELFTEST_SUBSTRING_FALSE_POSITIVE:START -->
+## ERR-685 — SFV480 预交付 selftest 用子串禁词误伤正确的 sandboxEvidence.S18 赋值
+
+- **日期与阶段**：2026-08-19，ERR-678～ERR-680 isolated scoped repair（SFV480）assistant-side pre-delivery selftest。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_STATIC_SUBSTRING_FALSE_POSITIVE / REPEATED_CLASS_ERR684`。
+- **现场事实**：SFV480 未交付、未运行；package selftest 失败于 `NO_ASSIGNMENT_TYPO_EXPECTED`。没有用户执行、仓库写入、Git、Fresh05、daemon 或 OpenCode 副作用。
+- **精确根因**：selftest 以 `runner.includes("S18=changed(repo)")===false` 作为负向源码检查；正确执行代码 `sandboxEvidence.S18=changed(repo)` 天然包含该子串，因此形成假阴性。下一行本来已经有对正确完整语义绑定的正向检查。
+- **影响**：仅废弃 SFV480 草稿并增加一次助手侧预交付失败；SpecForge canonical 仍保持 `main@32d372a9902b4f072ad89e4dee197559b505dadc` clean。
+- **正确做法**：删除宽泛 negative substring check，只保留完整结构的正向语义检查；若必须做负向检查，必须匹配完整语法边界而非任意子串。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-216`；重复 ERR-684 类，新增 `SELFTEST_POSITIVE_SEMANTIC_BINDING_PREFERRED=YES`、`NEGATIVE_SUBSTRING_CHECK_FOR_IDENTIFIER_SUFFIX=FORBIDDEN`。
+- **当前状态**：corrected 后续包以完整正向结构断言和 init smoke 验证后关闭。
+```text
+ERR685_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR685_PRODUCT_DEFECT=NO
+ERR685_REPEATED_CLASS=ERR684
+ERR685_USER_DELIVERY=NONE
+ERR685_REPOSITORY_SIDE_EFFECT=NONE
+ERR685_FAILED_DRAFT=SFV480
+ERR685_ROOT_CAUSE=NEGATIVE_SUBSTRING_CHECK_MATCHED_VALID_QUALIFIED_ASSIGNMENT_SANDBOXEVIDENCE_S18
+ERR685_FIX=REMOVE_BROAD_NEGATIVE_SUBSTRING_CHECK_KEEP_EXACT_POSITIVE_SEMANTIC_BINDING_ASSERTION
+ERR685_STATUS=CLOSED_PREDELIVERY_SELFTEST_SUBSTRING_FALSE_POSITIVE_REPEATED_ERR684
+```
+<!-- SPECFORGE_ERR685_SFV480_SELFTEST_SUBSTRING_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR686_SFV482_GENERATOR_STATIC_ANCHOR_CARDINALITY_FALSE_POSITIVE:START -->
+## ERR-686 — SFV482 生成器把合法出现两次的 init-smoke guard 错当成唯一静态锚点
+
+- **日期与阶段**：2026-08-19，ERR-685 Git finalizer（SFV482）assistant-side artifact generation。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / GENERATOR_STATIC_ANCHOR_CARDINALITY_FALSE_POSITIVE / SOURCE_TRANSFORM_ASSUMPTION_DEFECT`。
+- **现场事实**：SFV482 未交付、未运行；助手侧 generator 在把已验证 SFV479 状态机变换为 SFV482 时，要求 `process.env.SFV479_INIT_SMOKE_ONLY` 源码片段只出现一次，实际源码合法出现两次（init smoke branch 与 finally artifact-suppression guard），因此在任何用户执行前失败。
+- **根因**：生成器把可合法重复的源码 token 当作唯一锚点，并用 `count == 1` 作为变换前提；这不是语义契约，只是脆弱的文本变换假设。
+- **影响**：仅废弃 SFV482 草稿；没有用户执行、仓库写入、Git/Fresh05/daemon/OpenCode 副作用。SFV481 成功后的 exact-2 dirty governance state 保持不变。
+- **正确做法**：对确实需要全局替换的标识符使用显式 `replaceAll`，并以变换后“旧 token=0、新 token=预期语义位置均存在”的结构检查验证；唯一锚点只允许用于被证明 cardinality=1 的结构片段。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-216`；新增 `GLOBAL_IDENTIFIER_RENAME_USES_REPLACE_ALL=YES`、`UNIQUE_ANCHOR_REQUIRES_PROVEN_CARDINALITY=YES`。
+- **当前状态**：后续 corrected finalizer 采用全局标识符替换 + 语义后验检查后关闭。
+```text
+ERR686_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR686_PRODUCT_DEFECT=NO
+ERR686_USER_DELIVERY=NONE
+ERR686_REPOSITORY_SIDE_EFFECT=NONE
+ERR686_FAILED_DRAFT=SFV482
+ERR686_ROOT_CAUSE=GENERATOR_REQUIRED_UNIQUE_CARDINALITY_FOR_TOKEN_VALIDLY_PRESENT_IN_INIT_BRANCH_AND_FINALLY_GUARD
+ERR686_FIX=GLOBAL_IDENTIFIER_REPLACE_ALL_PLUS_POST_TRANSFORM_SEMANTIC_CHECKS
+ERR686_STATUS=CLOSED_PREDELIVERY_GENERATOR_STATIC_ANCHOR_CARDINALITY_FALSE_POSITIVE
+```
+<!-- SPECFORGE_ERR686_SFV482_GENERATOR_STATIC_ANCHOR_CARDINALITY_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR687_SFV484_GENERATOR_STATIC_BLOCK_BOUNDARY_FALSE_ASSUMPTION:START -->
+## ERR-687 — SFV484 生成器假定 governance 函数块后紧跟 hashDomainFixture，实际函数顺序不同
+
+- **日期与阶段**：2026-08-19，ERR-685/ERR-686 Git finalizer（SFV484）assistant-side artifact generation。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / GENERATOR_STATIC_BLOCK_BOUNDARY_FALSE_ASSUMPTION / REPEATED_CLASS_ERR686`。
+- **现场事实**：SFV484 未交付、未运行。生成器在替换 `governanceState/ledgerRecords` 函数块时，以 `\nfunction hashDomainFixture()` 作为结束锚点；实际 user-validated SFV479 runner 中 `hashDomainFixture()` 位于更前面，`ledgerRecords()` 后紧接 `exactCommitHashes()`，因此生成器在用户执行前失败。
+- **根因**：生成器把未经验证的函数相对顺序当成源码结构契约，仍属于 ERR-686 的静态文本变换假设缺陷。
+- **影响**：仅废弃 SFV484 草稿；没有用户执行、仓库写入、Git/Fresh05/daemon/OpenCode 副作用。SFV483 成功后的 dirty exact-2 governance state 保持不变。
+- **正确做法**：在任何结构替换前先读取并验证真实函数边界；优先使用已验证的精确起止函数名，或进行最小局部替换。禁止假定无关函数的相对顺序。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-216`；新增 `STATIC_BLOCK_BOUNDARY_MUST_BE_SOURCE_VERIFIED=YES`、`UNRELATED_FUNCTION_ORDER_NOT_CONTRACT=YES`。
+- **当前状态**：后续 corrected finalizer 将使用已读取确认的真实边界 `function governanceState` → `function exactCommitHashes`，并做变换后结构检查。
+```text
+ERR687_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR687_PRODUCT_DEFECT=NO
+ERR687_REPEATED_CLASS=ERR686
+ERR687_USER_DELIVERY=NONE
+ERR687_REPOSITORY_SIDE_EFFECT=NONE
+ERR687_FAILED_DRAFT=SFV484
+ERR687_ROOT_CAUSE=GENERATOR_ASSUMED_NONEXISTENT_FUNCTION_ORDER_BOUNDARY_AFTER_LEDGER_RECORDS
+ERR687_FIX=SOURCE_VERIFIED_BLOCK_BOUNDARY_PLUS_POST_TRANSFORM_STRUCTURE_CHECK
+ERR687_STATUS=CLOSED_PREDELIVERY_GENERATOR_STATIC_BLOCK_BOUNDARY_FALSE_ASSUMPTION_REPEATED_ERR686
+```
+<!-- SPECFORGE_ERR687_SFV484_GENERATOR_STATIC_BLOCK_BOUNDARY_FALSE_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR688_SFV486_SELFTEST_WHITESPACE_SENSITIVE_STATIC_MATCH:START -->
+## ERR-688 — SFV486 finalizer selftest 用空格敏感源码子串寻找 git add，形成假阴性
+
+- **日期与阶段**：2026-08-19，ERR-685～ERR-687 Git finalizer（SFV486）assistant-side pre-delivery selftest。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_WHITESPACE_SENSITIVE_STATIC_MATCH / REPEATED_CLASS_ERR684_ERR685`。
+- **现场事实**：SFV486 未交付、未运行。其 runner 已成功生成并通过 `node --check`，但 package selftest 在 `CONTRACTS_BEFORE_ADD` 失败。没有用户执行、仓库写入、Git/Fresh05/daemon/OpenCode 副作用。
+- **精确根因**：selftest 用 `runner.indexOf("git(repo, ['add'")` 查找 staging 调用，而 user-validated SFV479 状态机实际源码是 `git(repo,['add',...])`，仅格式空格不同；因此返回 `-1` 并把正确 contract-before-add 顺序误判为失败。
+- **影响**：仅废弃 SFV486 草稿；SFV485 成功后的 dirty exact-2 governance state 保持不变。
+- **正确做法**：源码结构自测不得把可变空白当作契约。顺序验证应使用 whitespace-tolerant 结构正则或语义 AST/明确 marker，并验证匹配唯一且 `contract freeze index < add index`。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-216`；新增 `SOURCE_SELFTEST_WHITESPACE_INSENSITIVE=YES`、`FORMATTING_NOT_CONTRACT=YES`。
+- **当前状态**：后续 corrected finalizer 使用 whitespace-tolerant semantic pattern 后关闭。
+```text
+ERR688_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR688_PRODUCT_DEFECT=NO
+ERR688_REPEATED_CLASS=ERR684_ERR685
+ERR688_USER_DELIVERY=NONE
+ERR688_REPOSITORY_SIDE_EFFECT=NONE
+ERR688_FAILED_DRAFT=SFV486
+ERR688_ROOT_CAUSE=SELFTEST_EXPECTED_GIT_ADD_SOURCE_FORMAT_WITH_SPACE_WHILE_VALIDATED_RUNNER_OMITS_SPACE
+ERR688_FIX=WHITESPACE_TOLERANT_STRUCTURE_MATCH_PLUS_ORDER_ASSERTION
+ERR688_STATUS=CLOSED_PREDELIVERY_SELFTEST_WHITESPACE_SENSITIVE_STATIC_MATCH_REPEATED_ERR684
+```
+<!-- SPECFORGE_ERR688_SFV486_SELFTEST_WHITESPACE_SENSITIVE_STATIC_MATCH:END -->
