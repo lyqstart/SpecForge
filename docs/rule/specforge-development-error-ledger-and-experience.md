@@ -9611,3 +9611,255 @@ actual_files
 - **防复发措施**：复用 `EXP-212`；辅助 connector 只作附加证据，最终用户侧写入 runner 必须自行完成 live-ref preflight。
 - **当前状态**：`RECORDED_NON_BLOCKING_CONNECTOR_TIMEOUT_USER_SIDE_LIVE_REF_RECHECK_REQUIRED`。
 <!-- SPECFORGE_ERR655_GITHUB_CONNECTOR_LIVE_REF_TIMEOUT:END -->
+
+<!-- SPECFORGE_ERR656_ASSISTANT_READ_TOOL_FAILURES:START -->
+## ERR-656 — Phase 12 恢复调查中的助手侧只读工具能力 / 资源句柄失败
+
+- **日期与阶段**：2026-08-18，Phase 12 Release Boundary Recovery / 只读调查与 ERR-656/ERR-657 状态补录准备。
+- **分类**：`ENVIRONMENT_FAILURE / NON_BLOCKING_ASSISTANT_READ_TOOL_CAPABILITY_FAILURE / SAME_CLASS_AS_ERR655`。
+- **现场事实**：Authority Bootstrap 已通过并固定 exact remote HEAD 后，助手侧只读辅助调查出现多种工具边界失败：canonical Git ref URL 在通用 connector fetch 中不被支持、先前工具 response-resource 句柄后续不可读、sandbox Git DNS 无法解析 github.com、raw GitHub web/cache 辅助读取不可用；本轮准备补录时，container download 又因“URL 尚未成功 view”前置条件拒绝，随后 raw exact URL 的 web open 返回 cache miss。所有这些失败都发生在助手侧只读取证路径。正式 live main、exact Authority、handoff、error ledger 与源码事实仍由批准的 GitHub structured branch/commit/file connector 取得。
+- **根因**：外部 connector / response-resource / sandbox network / raw-web cache 的能力边界与瞬时可用性，不属于 SpecForge Runtime、Gate、Workflow、产品 Git repository 或业务项目缺陷。
+- **影响**：没有用户 SpecForge 仓库写入，没有 daemon / OpenCode 生命周期动作，没有 Fresh-05 访问或生命周期动作，也没有 commit / push；不改变 Phase 11 / Fresh-05 完成事实，不构成 Phase 12 产品 blocker。
+- **正确做法**：助手工具失败与 SpecForge 产品事实分离；失败入口不得产生产品 FAIL 结论。继续使用 Authority 批准的 structured truth source；不可读的旧 response handle 重新从 exact repository ref 获取；任何用户侧首次写入 runner 仍必须独立执行 live `git ls-remote`、local HEAD、clean worktree、source blob 与 Authority blob 精确校验，失败即零写入 Fail Closed。
+- **防复发措施**：复用 `EXP-001 / EXP-007 / EXP-008 / EXP-015 / EXP-019 / EXP-020 / EXP-212 / EXP-213`；助手辅助入口只作附加证据，不能覆盖正式 Git / exact commit truth source；同类 read-tool failure 统一登记而不扩张产品修复范围。
+- **当前状态**：`RECORDED_NON_BLOCKING_ASSISTANT_READ_TOOL_FAILURES_NO_REPOSITORY_SIDE_EFFECT`。
+
+```text
+ERR656_CLASSIFICATION=ENVIRONMENT_FAILURE
+ERR656_PRODUCT_DEFECT=NO
+ERR656_REPOSITORY_SIDE_EFFECT=NONE
+ERR656_DAEMON_ACTION=NONE
+ERR656_OPENCODE_ACTION=NONE
+ERR656_FRESH05_ACTION=NONE
+ERR656_STATUS=RECORDED_NON_BLOCKING_ASSISTANT_READ_TOOL_FAILURES_NO_REPOSITORY_SIDE_EFFECT
+```
+<!-- SPECFORGE_ERR656_ASSISTANT_READ_TOOL_FAILURES:END -->
+
+<!-- SPECFORGE_ERR657_SFV445_RUN_CMD_RELATIVE_PATH_DUPLICATION:START -->
+## ERR-657 — SFV445 RUN.cmd 相对调用后重复解析 %~dp0，导致 bundle 目录重复拼接
+
+- **日期与阶段**：2026-08-18，Phase 12 Release Boundary 前的 ERR-656 状态补录交付。
+- **分类**：`DELIVERY_HARNESS_DEFECT / WINDOWS_CMD_RELATIVE_INVOCATION_PATH_RESOLUTION`。
+- **现场事实**：用户从 `C:\Users\lyq\Downloads\Compressed` 执行 `call "SpecForge_ERR656_Status_Reconciliation_SFV445\RUN.cmd"`。RUN.cmd 已输出 `SFV445_RUN_CMD_STARTED=YES` 和真实 Bun 路径，但 Bun 随后报告 runner 路径为 `...\SpecForge_ERR656_Status_Reconciliation_SFV445\SpecForge_ERR656_Status_Reconciliation_SFV445\scripts\runner.mjs`，并以 exit code 1 停止。SFV445 runner 没有启动。
+- **根因**：SFV445 的 RUN.cmd 以相对路径被 `call` 后，先执行 `cd /d "%~dp0"`，随后再次使用 `%~dp0scripts\runner.mjs`。第二次参数路径展开受已经变化的当前目录影响，导致同一 bundle 目录片段重复。启动脚本没有在改变 cwd 之前把脚本自身 fully-qualified path 冻结为一次性根目录事实。
+- **影响**：错误发生在 runner 启动前；没有读取或修改 `D:\code\SpecForge`，没有 staging / commit / push，没有 daemon / OpenCode / Fresh-05 动作。用户此前 V444 完整回执仍独立证明 `d29f4859...` 已提交、推送且工作区 clean。
+- **正确做法**：RUN.cmd 在任何 `cd` 前只读取一次 `%~f0` fully-qualified script path，并由该冻结值派生 `BUNDLE_ROOT`；切换 cwd 后只使用冻结的绝对根或 bundle 内相对 runner 路径，不再次根据 `%0` / `%~dp0` 计算脚本目录。启动前验证 runner 文件存在，并把冻结根传给 runner；runner/validator 再与自身实际 bundle root 对账。
+- **防复发措施**：复用 `EXP-002 / EXP-007 / EXP-012 / EXP-015 / EXP-019 / EXP-020` 以及既有 ERR-292 包外 CMD 启动链防护；corrected delivery package selftest 固定验证 `%~f0` 在 `cd` 前捕获、RUN.cmd 不再出现 `%~dp0`、runner path 由冻结 `BUNDLE_ROOT` 生成；真实 runner 启动后必须输出 `LAUNCHER_ROOT_BINDING=PASS` 才允许任何仓库写入。
+- **关闭证据**：本 ERR 记录只能在 corrected delivery runner 已由新 RUN.cmd 成功启动并证明 frozen absolute bundle root 与实际 runner bundle root 一致后写入，因此该写入本身构成真实 Windows CMD 路径修复复验。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR657_CLASSIFICATION=DELIVERY_HARNESS_DEFECT
+ERR657_PRODUCT_DEFECT=NO
+ERR657_REPOSITORY_SIDE_EFFECT=NONE
+ERR657_V445_RUNNER_STARTED=NO
+ERR657_FIX=FULLY_QUALIFIED_SCRIPT_PATH_CAPTURED_BEFORE_CWD_CHANGE
+ERR657_CLOSURE_EVIDENCE=CORRECTED_RUN_CMD_RUNNER_STARTED_WITH_LAUNCHER_ROOT_BINDING_PASS
+ERR657_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR657_SFV445_RUN_CMD_RELATIVE_PATH_DUPLICATION:END -->
+
+<!-- SPECFORGE_ERR658_SFV446_VALIDATOR_TARGET_DOUBLE_REWRITE:START -->
+## ERR-658 — SFV446 预交付生成器对 Validator validation_target 发生重复字符串重写
+
+- **日期与阶段**：2026-08-18，SFV446 Artifact Acceptance / 交付前独立审计。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / VALIDATOR_IDENTITY_METADATA_DRIFT`。
+- **现场事实**：SFV446 尚未交付用户。独立封包审计对最终 runner 执行结构检索时发现 Validator Contract 的 `validation_target` 为 `ERR-656/ERR-657/ERR-657 exact-2 governance status reconciliation`，ERR-657 被重复一次。runner/validator 语法和其他 selftest 已通过，但该 metadata 与本轮真实目标不一致，因此 Artifact Acceptance 被主动阻断。
+- **根因**：V445→V446 生成器先把旧 `ERR-656 exact-2...` 替换为 `ERR-656/ERR-657...`，随后又对 `validation_target: 'ERR-656` 前缀执行第二次独立替换，两个重叠文本转换共同生成重复 ERR-657。生成器没有把 Validator Contract identity/target 作为单一 frozen value，也没有在成包后做 exact-value 断言。
+- **影响**：V446 没有发布给用户，没有用户仓库写入、staging、commit、push、daemon/OpenCode/Fresh-05 动作；不改变 ERR-657 用户现场归因，也不影响 V444 完整成功回执。
+- **正确做法**：Validator Contract 的 `validator_id / validation_target / validation_contract_id` 由一个 manifest identity/contract block 产生；runner 构造前后只消费该单一值，不再通过重叠自然语言 replace 叠加。最终 Artifact Acceptance 必须断言 exact validation_target 只出现一次且与 manifest 相同。
+- **防复发措施**：复用 `EXP-007 / EXP-015 / EXP-019 / EXP-020` 与 `GOV-STAGE-DELIVERY-IDENTITY-001 / GOV-STAGE-VALIDATOR-001`；SFV447 selftest 与独立 ZIP verifier 同时检查 Validator Contract target exact-value、唯一性和 manifest binding。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR658_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR658_PRODUCT_DEFECT=NO
+ERR658_USER_DELIVERY=NONE
+ERR658_REPOSITORY_SIDE_EFFECT=NONE
+ERR658_ROOT_CAUSE=OVERLAPPING_GENERATOR_REWRITES_MUTATED_VALIDATION_TARGET_TWICE
+ERR658_FIX=VALIDATION_TARGET_SINGLE_FROZEN_VALUE_PLUS_EXACT_POSTBUILD_ASSERTION
+ERR658_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR658_SFV446_VALIDATOR_TARGET_DOUBLE_REWRITE:END -->
+
+<!-- SPECFORGE_ERR659_SFV447_INTERNAL_DELIVERY_REFERENCE_DRIFT:START -->
+## ERR-659 — SFV447 预交付审计发现 ERR-657 当前交付关闭证据残留上一版本引用
+
+- **日期与阶段**：2026-08-18，SFV447 Artifact Acceptance / 交付前独立审计。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / EVIDENCE_IDENTITY_DEFECT / RECEIPT_INTERNAL_REFERENCE_DRIFT / REPEATED_CLASS_ERR250_EXP216`。
+- **现场事实**：SFV447 尚未交付用户。独立审计发现 ledger 生成块中的 ERR-657 仍写 `ERR657_CLOSURE_EVIDENCE=SFV446_RUNNER_STARTED_WITH_LAUNCHER_ROOT_BINDING_PASS`，而当前 SFV447 runner 的 Validator Contract 已期待 `SFV447...`。若执行，post-write validator 会失败并回滚，因此 Artifact Acceptance 主动阻断。
+- **根因**：交付版本号同时硬编码在 ledger 生成文本和 runner expected contract 中；V446→V447 的版本替换只覆盖 runner/validator/README/RUN.cmd，没有把 lib 中“当前交付控制字段”纳入同一 Delivery Identity 派生域。这与 ERR-250 / EXP-216 的 receipt internal delivery reference drift 同类。
+- **影响**：SFV447 未交付用户，没有用户仓库写入、staging、commit、push、daemon/OpenCode/Fresh-05 动作；不改变 ERR-657 的真实用户现场。
+- **正确做法**：ERR-657 的关闭证据改用版本无关的稳定事实 `CORRECTED_RUN_CMD_RUNNER_STARTED_WITH_LAUNCHER_ROOT_BINDING_PASS`；V 编号只保留在历史证据字段/叙述中。当前交付 identity 只由 manifest/runner/validator 的正式 identity 字段派生并交叉验证。
+- **防复发措施**：复用 `EXP-216` 以及 `EXP-007 / EXP-015 / EXP-019 / EXP-020`；Artifact Acceptance 增加 current-delivery internal-reference scan，禁止状态/关闭条件依赖复制式 V 编号；稳定生命周期状态继续与 V 编号分离。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR659_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR659_PRODUCT_DEFECT=NO
+ERR659_USER_DELIVERY=NONE
+ERR659_REPOSITORY_SIDE_EFFECT=NONE
+ERR659_REPEATED_CLASS=ERR250_EXP216
+ERR659_FIX=VERSION_INDEPENDENT_ERR657_CLOSURE_EVIDENCE_PLUS_DELIVERY_IDENTITY_SCAN
+ERR659_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR659_SFV447_INTERNAL_DELIVERY_REFERENCE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR660_SFV449_HASH_CONSUMER_TRIM_DOMAIN_DRIFT:START -->
+## ERR-660 — SFV449 预交付 finalizer 的 staged / commit target hash consumer 错用了 trim 标量读取器
+
+- **日期与阶段**：2026-08-18，SFV449 Git Finalization Artifact Acceptance / 最终 producer-consumer 对账。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / VALIDATOR_HASH_CONSUMER_DOMAIN_DRIFT / REPEATED_CLASS_ERR654`。
+- **现场事实**：SFV449 从未交付用户。其 target hash producer 使用完整 `git show HEAD:<path>` 文本再进入 `NORMALIZED_UTF8_LF_SINGLE_TERMINAL_LF`；但 staged / commit validator 的文件内容 consumer 复用了会执行 `.trim()` 的标量 Git helper。最终预交付 producer-consumer 对账发现 hash domain 前存在额外裁剪，因此主动阻断 SFV449。
+- **已执行与未执行**：SFV449 仅存在于助手侧未交付 Artifact Acceptance；没有用户执行，没有 git add / commit / push，没有 daemon / OpenCode / Fresh-05 动作。
+- **仓库副作用**：无。
+- **根因**：把 Git 标量读取器与文件内容读取器混用；标量字段可以 trim，但文件内容 hash 必须保留完整 stdout 直到 canonical normalization。
+- **影响**：该 finalizer 的 staged / commit hash 证据不满足 Authority 的 producer-consumer domain match，不能发布。
+- **正确做法**：严格拆分 scalar Git 与 raw-content Git；working tree / index / commit 文件内容统一进入同一个 `sha256NormalizedText`，禁止事先 trim。
+- **防复发措施**：复用 ERR-654 与 `EXP-004 / EXP-007 / EXP-008 / EXP-015 / EXP-019 / EXP-020`；交付自检必须用前导空格、行尾空格、多终止换行 fixture 证明 raw consumer 与 producer 一致且 trim consumer 不一致。
+- **关闭证据**：本记录只在 corrected reconciliation runner 已实际执行 raw-content adversarial hash-domain fixture 且正式 prewrite/postwrite validator 都消费同一 normalized hash helper 后写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR660_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR660_PRODUCT_DEFECT=NO
+ERR660_USER_DELIVERY=NONE
+ERR660_REPOSITORY_SIDE_EFFECT=NONE
+ERR660_REPEATED_CLASS=ERR654_TARGET_HASH_PRODUCER_CONSUMER_ALIGNMENT
+ERR660_ROOT_CAUSE=SCALAR_GIT_TRIM_HELPER_REUSED_FOR_FILE_CONTENT_HASHING
+ERR660_FIX=SEPARATE_RAW_CONTENT_GIT_READER_AND_HASH_DOMAIN_FIXTURES
+ERR660_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR660_SFV449_HASH_CONSUMER_TRIM_DOMAIN_DRIFT:END -->
+
+<!-- SPECFORGE_ERR661_SFV450_FAILURE_TRANSACTION_BOUNDARY_DEFECT:START -->
+## ERR-661 — SFV450 未交付草稿的两文件写事务边界未覆盖 write，失败诊断又被 finally 覆盖
+
+- **日期与阶段**：2026-08-18，SFV450 Artifact Acceptance / failure-path transaction 审计。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / FAILURE_ATOMICITY_AND_EVIDENCE_FINALIZATION_DEFECT`。
+- **现场事实**：SFV450 从未交付用户。失败路径审计发现两次文件写入位于 rollback try 外；若第一文件已写、第二文件失败，理论上可能留下半写状态。同时 failure log 的 error stack 可能被 finally 的普通日志再次覆盖。
+- **已执行与未执行**：SFV450 未发布、未在用户机器执行，没有用户仓库写入、staging、commit、push、daemon/OpenCode/Fresh-05 动作。
+- **仓库副作用**：无。
+- **根因**：transaction try 只覆盖写后验证而未覆盖全部 writes；诊断日志又存在多个最终写入点。
+- **影响**：极端 I/O 失败时无法保证 exact-2 写原子性，并可能丢失失败证据。
+- **正确做法**：先读取两份原始 Buffer，在一个 transaction try 内完成全部 writes + validator；任一异常恢复两份原始字节并校验 rollback hash。失败日志只在单一 finalize 路径写一次。
+- **防复发措施**：复用 `EXP-006 / EXP-007 / EXP-010 / EXP-013 / EXP-015 / EXP-019 / EXP-020`；实际 runner 与 selftest 共用 transactional two-file helper，并注入“第二文件写前失败”验证两文件 byte-exact rollback。
+- **关闭证据**：本记录只在 corrected reconciliation 的 injected second-write failure selftest PASS，且真实写路径调用同一个 transactional helper 后写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR661_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR661_PRODUCT_DEFECT=NO
+ERR661_USER_DELIVERY=NONE
+ERR661_REPOSITORY_SIDE_EFFECT=NONE
+ERR661_ROOT_CAUSE=WRITE_TRANSACTION_TRY_BOUNDARY_EXCLUDED_FILE_WRITES_AND_FAILURE_LOG_WAS_OVERWRITTEN
+ERR661_FIX=TRANSACTIONAL_TWO_FILE_APPLY_WITH_INJECTED_FAILURE_SELFTEST_AND_SINGLE_FAILURE_LOG_FINALIZATION
+ERR661_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR661_SFV450_FAILURE_TRANSACTION_BOUNDARY_DEFECT:END -->
+
+<!-- SPECFORGE_ERR662_SFV451_GLOBAL_URL_SHADOWING_INIT_FAILURE:START -->
+## ERR-662 — SFV451 runner 顶层常量 URL 覆盖全局 URL 构造器，模块初始化即失败
+
+- **日期与阶段**：2026-08-18，ERR-660 / ERR-661 状态补录交付的用户真实执行。
+- **分类**：`SCRIPT_DEFECT / DELIVERY_RUNNER_INITIALIZATION_DEFECT / GLOBAL_BUILTIN_SHADOWING`。
+- **现场事实**：用户执行 SFV451 后，RUN.cmd 已成功输出 runner 启动标记、bundle root 和 Bun 路径；Bun 在加载 `scripts/runner.mjs` 时立即抛出 `TypeError: "https://github.com/lyqstart/SpecForge.git" is not a constructor`，定位到 `new URL('..', import.meta.url)`。同一顶层作用域此前把远端地址声明为字符串常量 `URL`，覆盖了全局 `URL` 构造器。
+- **已执行与未执行**：异常发生在模块顶层初始化、`main()` 进入之前；package integrity、Git preflight、validator、仓库写入、staging、commit、push 均未执行，也没有 daemon / OpenCode / Fresh-05 动作。
+- **仓库副作用**：无；用户仓库继续保持 SFV448 成功后留下的 exact-2 governance dirty 状态，ERR-660 / ERR-661 尚未由 SFV451 写入。
+- **根因**：远端 URL 标量使用了与平台全局构造器相同的标识符；预交付测试覆盖了语法、纯函数、transaction 和 RUN.cmd，但没有实际执行 runner 的模块初始化路径，因此未捕获 lexical shadowing。
+- **影响**：SFV451 无法进入任何正式 validator 或写入步骤，用户多经历一轮失败交付；不影响 V444 / SFV448 已确认事实。
+- **正确做法**：远端地址统一命名 `REMOTE_URL`；bundle root 直接由 `fileURLToPath(import.meta.url) -> dirname -> dirname` 得到，不依赖可被 shadow 的全局构造器。交付前必须在隔离 bundle 副本中实际启动 runner，至少越过 package integrity 与 launcher-root binding 后才接受 Artifact。
+- **防复发措施**：复用 `EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-078`（实际执行路径不能由语法检查替代）；新增 static forbidden-identifier scan（禁止 runner 顶层 `URL` 标量）和 isolated runner-initialization smoke fixture。
+- **关闭证据**：本记录只在 corrected RUN.cmd 已真实启动 corrected runner、输出 `LAUNCHER_ROOT_BINDING=PASS`，且正式 prewrite/postwrite validator 全部 PASS 后写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR662_CLASSIFICATION=SCRIPT_DEFECT
+ERR662_PRODUCT_DEFECT=NO
+ERR662_REPOSITORY_SIDE_EFFECT=NONE
+ERR662_RUNNER_MAIN_ENTERED=NO
+ERR662_ROOT_CAUSE=REMOTE_URL_CONSTANT_SHADOWED_GLOBAL_URL_CONSTRUCTOR
+ERR662_FIX=REMOTE_URL_IDENTIFIER_PLUS_CONSTRUCTOR_FREE_BUNDLE_ROOT_DERIVATION_PLUS_RUNNER_INIT_SMOKE
+ERR662_REPEATED_PREVENTION_CLASS=ERR293_EXP078_ACTUAL_EXECUTION_REQUIRED
+ERR662_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR662_SFV451_GLOBAL_URL_SHADOWING_INIT_FAILURE:END -->
+
+<!-- SPECFORGE_ERR663_SFV452_CMD_CRLF_PRODUCER_DRIFT:START -->
+## ERR-663 — SFV452 未交付草稿的 RUN.cmd 生成器没有显式生产 CRLF
+
+- **日期与阶段**：2026-08-18，SFV452 Artifact Acceptance / Windows CMD 字节级验收。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / WINDOWS_CMD_LINE_ENDING_PRODUCER_DRIFT`。
+- **现场事实**：SFV452 从未交付用户。runner/selftest、transaction fixture 和 isolated runner-initialization smoke 均已通过；随后最终 CMD 字节验收要求 `RUN.cmd` 只使用 CRLF，却发现生成器的多行字符串实际按 LF 写出，因此 Artifact Acceptance 主动阻断。
+- **已执行与未执行**：失败仅发生在助手侧封包环境；SFV452 ZIP 没有发布给用户，没有用户仓库写入、staging、commit、push、daemon/OpenCode/Fresh-05 动作。
+- **仓库副作用**：无。
+- **根因**：把“生成器源码中的多行文本外观”误当成 Windows 文件字节契约；没有让 producer 显式以 CRLF 连接每一行。
+- **影响**：即使 cmd.exe 往往可读取 LF-only batch，Authority 的 Windows-native artifact contract 不能依赖这种容忍度，因此该草稿不能验收。
+- **正确做法**：RUN.cmd producer 由行数组通过显式 `CRLF.join` 生成，并在最终 ZIP reopen 后直接检查 entry bytes：必须存在 CRLF，移除所有 CRLF 后不得残留裸 LF。
+- **防复发措施**：复用 `EXP-002 / EXP-007 / EXP-012 / EXP-015 / EXP-019 / EXP-020`；CMD 的编码、CRLF、禁用 PowerShell/Python、启动根绑定都作为最终 ZIP consumer fixture，不再从生成器源码推断。
+- **关闭证据**：本记录只在 corrected package 的 source RUN.cmd 与 final ZIP entry 都通过 byte-exact CRLF consumer check 后写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR663_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR663_PRODUCT_DEFECT=NO
+ERR663_USER_DELIVERY=NONE
+ERR663_REPOSITORY_SIDE_EFFECT=NONE
+ERR663_ROOT_CAUSE=MULTILINE_SOURCE_LITERAL_DID_NOT_EXPLICITLY_PRODUCE_WINDOWS_CRLF_BYTES
+ERR663_FIX=EXPLICIT_CRLF_JOIN_PLUS_FINAL_ZIP_ENTRY_BYTE_CHECK
+ERR663_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR663_SFV452_CMD_CRLF_PRODUCER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR664_SFV454_MODULE_IMPORT_REFERENCE_DRIFT:START -->
+## ERR-664 — SFV454 未交付 finalizer 重命名依赖模块但未同步内部 import
+
+- **日期与阶段**：2026-08-18，Phase 12 Git Finalization Artifact Acceptance / packaged selftest。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / MODULE_IMPORT_REFERENCE_DRIFT / REPEATED_CLASS_ERR659_EXP216`。
+- **现场事实**：SFV454 从未交付用户。构建时把 SFV453 的 `sfv448-target-contract.mjs` 复制为 `target-contract.mjs`，但复用的 `governance-contract.mjs` 内部仍 import `./sfv448-target-contract.mjs`；Node packaged selftest 因 `ERR_MODULE_NOT_FOUND` 主动阻断交付。
+- **已执行与未执行**：只执行了助手侧 Node 语法/selftest；没有用户执行，没有 SpecForge 仓库写入、git add、commit、push，没有 daemon/OpenCode/Fresh-05 动作。
+- **仓库副作用**：无。
+- **根因**：复制模块时改变了文件名，却没有把“模块文件名 + 内部 import specifier”当作一个不可分割的 producer-consumer contract；属于交付内部引用漂移复发。
+- **影响**：如果没有 packaged actual execution，自检之外的静态浏览可能漏掉该问题，runner 在加载依赖时即失败。
+- **正确做法**：复用已验收模块时保持 canonical 文件名不变；若确需重命名，必须解析并验证全部相对 import specifier；最终 ZIP 必须 actual module-load/selftest 后才能发布。
+- **防复发措施**：复用 ERR-659 / ERR-250 / EXP-216 与 `EXP-007 / EXP-015 / EXP-019 / EXP-020`；新增 exact internal-import target existence fixture，禁止“复制后顺手改名”。
+- **关闭证据**：本记录只在 corrected reconciliation package 保留 canonical `sfv448-target-contract.mjs` 文件名、internal import target existence selftest PASS、runner initialization smoke PASS 后写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR664_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR664_PRODUCT_DEFECT=NO
+ERR664_USER_DELIVERY=NONE
+ERR664_REPOSITORY_SIDE_EFFECT=NONE
+ERR664_ROOT_CAUSE=DEPENDENCY_FILE_RENAMED_WITHOUT_SYNCHRONIZING_INTERNAL_RELATIVE_IMPORT
+ERR664_REPEATED_CLASS=ERR659_ERR250_EXP216_INTERNAL_REFERENCE_DRIFT
+ERR664_FIX=PRESERVE_CANONICAL_MODULE_FILENAME_PLUS_INTERNAL_IMPORT_TARGET_EXISTENCE_SELFTEST
+ERR664_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR664_SFV454_MODULE_IMPORT_REFERENCE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR665_SFV454_SMOKE_RUNTIME_ARTIFACT_CONTAMINATION:START -->
+## ERR-665 — 未交付 finalizer 的 module-init smoke 在待封包目录预生成 runner-details.log
+
+- **日期与阶段**：2026-08-18，Phase 12 Git Finalization Artifact Acceptance / failure-path 与 final ZIP cleanliness 审计。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_RUNTIME_ARTIFACT_CONTAMINATION / ARTIFACT_ACCEPTANCE_DEFECT`。
+- **现场事实**：SFV454 从未交付用户。修复 ERR-664 的内部模块引用后继续审计同一 finalizer 草稿，发现 build 流程在待封包 ROOT 上直接执行 runner module-init smoke；runner 的 `finally` 会写 `runner-details.log`。该文件不是源 Artifact 成员，而是运行时证据，因此 smoke 自己会污染随后 ZIP 的输入目录，并最终违反“不得预烘焙 runtime evidence”的 Artifact Acceptance 条件。
+- **已执行与未执行**：该问题只在助手侧未交付 finalizer 审计中发现；没有用户执行，没有 SpecForge 仓库写入、git add、commit、push，没有 daemon/OpenCode/Fresh-05 动作。
+- **仓库副作用**：无。
+- **根因**：把“实际执行 packaged runner smoke”直接作用在最终待封包目录，没有把 selftest 的运行时输出与 source Artifact 输入隔离；同时 manifest 生成与 smoke 执行的顺序允许运行时文件在 manifest 之后出现。
+- **影响**：即使功能 smoke PASS，最终 ZIP 仍可能携带上一次自检生成的日志/contract/hash 文件，造成 producer 与最终交付成员集合不一致，因此该 finalizer 不能发布。
+- **正确做法**：所有会写 runtime evidence 的 module-init / runner smoke 必须在最终 source bundle 的隔离复制目录执行并销毁；随后重新扫描 source bundle，明确断言 `runner-details.log / runtime-target-hashes.json / validation-contracts.json` 均不存在；最终 ZIP reopen 再做同一 consumer 断言。
+- **防复发措施**：复用 `EXP-006 / EXP-007 / EXP-013 / EXP-015 / EXP-019 / EXP-020` 以及“不把验证器自身副作用混入交付物”的 Artifact Acceptance 规则；新增 isolated-smoke-copy fixture + source/ZIP 双层 NO_RUNTIME_ARTIFACTS_PREBAKED 检查。
+- **关闭证据**：本记录只在 corrected reconciliation package 的 module-init smoke 已在隔离复制目录 PASS，source bundle 与 final ZIP 均证明无预烘焙 runtime evidence 后写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR665_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR665_PRODUCT_DEFECT=NO
+ERR665_USER_DELIVERY=NONE
+ERR665_REPOSITORY_SIDE_EFFECT=NONE
+ERR665_ROOT_CAUSE=MODULE_INIT_SMOKE_EXECUTED_IN_FINAL_SOURCE_BUNDLE_AND_WROTE_RUNTIME_EVIDENCE
+ERR665_FIX=ISOLATED_SMOKE_COPY_PLUS_SOURCE_AND_FINAL_ZIP_NO_RUNTIME_ARTIFACT_ASSERTIONS
+ERR665_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR665_SFV454_SMOKE_RUNTIME_ARTIFACT_CONTAMINATION:END -->
