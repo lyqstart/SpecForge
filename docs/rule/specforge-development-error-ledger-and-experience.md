@@ -9863,3 +9863,189 @@ ERR665_FIX=ISOLATED_SMOKE_COPY_PLUS_SOURCE_AND_FINAL_ZIP_NO_RUNTIME_ARTIFACT_ASS
 ERR665_STATUS=CLOSED
 ```
 <!-- SPECFORGE_ERR665_SFV454_SMOKE_RUNTIME_ARTIFACT_CONTAMINATION:END -->
+
+<!-- SPECFORGE_ERR666_SFV458_SELFTEST_STATIC_ANCHOR_AMBIGUITY:START -->
+## ERR-666 — 未交付 Phase12 A1/A2 baseline 自检把 assertion 构造循环误识别为 execution 循环
+
+- **日期与阶段**：2026-08-18，Phase 12 Release Boundary A1/A2 Engineering Baseline / SFV458 Artifact Acceptance。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_STATIC_ANCHOR_AMBIGUITY / FALSE_POSITIVE_VALIDATION_HARNESS_DEFECT`。
+- **现场事实**：SFV458 尚未交付用户。其 runner 先构造 A1/A2 blocking assertions，随后调用 canonical `freezeValidationContract(...)`，再进入真正的 A1/A2 command execution。预交付 selftest 用 `runner.indexOf("for (const round of ['A1', 'A2'])")` 判断 freeze 是否早于 rounds，但 runner 中 assertion-construction 也使用了同形循环，因此 selftest 命中了更早的构造循环并报 `CONTRACT_NOT_FROZEN_BEFORE_ROUNDS`。该失败由助手侧 artifact build selftest 发现并阻断发布。
+- **已执行与未执行**：只执行了助手侧 package syntax/selftest；A1/A2 产品测试没有在用户机器执行，SFV458 没有交付；没有 SpecForge 仓库写入、git add、commit、push，没有 daemon/OpenCode/Fresh-05 动作。
+- **仓库副作用**：无。
+- **根因**：静态 validator 使用非唯一自然文本片段作为 execution-phase anchor；同一个 loop literal 同时存在于 contract declaration 与 execution 两个语义阶段，selftest 没有绑定显式机器 marker / 独立函数边界，造成 false positive。
+- **影响**：只导致未交付 Artifact Acceptance 失败和一次额外治理补录；不构成 Phase12 产品失败，不改变 Phase11/Fresh05 完成证据，也没有产生 baseline 测试结论。
+- **正确做法**：contract declaration 与 execution phase 使用不同机器可识别结构；静态检查只绑定唯一的 `SFV_PHASE12_EXECUTION_ROUNDS_START` marker / execution function，不再搜索可重复自然代码片段。selftest 必须包含“前面存在同形 assertion loop、freeze 在中间、真正 execution marker 在后”的正例，并包含 marker 缺失/换序的 fail-closed mutation fixture。
+- **防复发措施**：复用 `EXP-007 / EXP-008 / EXP-015 / EXP-019 / EXP-020` 与“验证器必须独立验证、自然文本不能替代机器契约”的 validator 规则；所有阶段顺序静态断言必须绑定 unique machine marker，且 producer 与 selftest consumer 对同一 marker 做 cardinality=1 检查。
+- **关闭证据**：本记录只在 corrected delivery selftest 已用 unique machine marker 对“同形前置 loop + frozen contract + execution marker”fixture 取得 positive PASS，并对 marker missing / marker-before-freeze mutation 取得 fail-closed PASS 后写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR666_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR666_PRODUCT_DEFECT=NO
+ERR666_USER_DELIVERY=NONE
+ERR666_REPOSITORY_SIDE_EFFECT=NONE
+ERR666_ROOT_CAUSE=NON_UNIQUE_STATIC_LOOP_LITERAL_USED_AS_EXECUTION_PHASE_ANCHOR
+ERR666_FIX=UNIQUE_MACHINE_EXECUTION_MARKER_PLUS_CARDINALITY_AND_MUTATION_SELFTEST
+ERR666_CLOSURE_EVIDENCE=UNIQUE_EXECUTION_MARKER_POSITIVE_AND_MUTATION_FIXTURES_PASS
+ERR666_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR666_SFV458_SELFTEST_STATIC_ANCHOR_AMBIGUITY:END -->
+
+<!-- SPECFORGE_ERR667_SFV459_OUTER_CMD_INLINE_IF_BINDING:START -->
+## ERR-667 — SFV459 包外一键 CMD 把可选 cleanup 与必需 extract / runner 启动绑定到同一 inline IF 控制流
+
+- **日期与阶段**：2026-08-18，Phase 12 Release Boundary 前 ERR-666 治理状态补录交付。
+- **分类**：`DELIVERY_HARNESS_DEFECT / WINDOWS_CMD_INLINE_IF_CONTROL_FLOW_BINDING / REPEATED_CLASS_ERR292_EXP012`。
+- **现场事实**：用户在交互式 Windows CMD 执行助手提供的单行命令：`cd /d ... & if exist "SpecForge_ERR666_Status_Reconciliation_SFV459" rmdir /s /q ... & tar -xf ... & call ...\RUN.cmd`。命令随后直接返回提示符，没有出现 `SFV459_RUN_CMD_STARTED=YES`、bundle root、Bun 路径或任何 package receipt。该观测证明本次实际调用中包内 RUN.cmd 未被启动，必需的 extract / call 路径没有进入可观察执行链。
+- **已执行与未执行**：只执行了包外交互式 CMD；SFV459 runner 未启动，没有进入其 source preflight、validator、两文件写入或 rollback；没有 git add/commit/push，没有 daemon/OpenCode/Fresh05 动作。
+- **仓库副作用**：无 SpecForge 仓库副作用。远端 main 随后仍由 live GitHub branch ref 核验为 `c6b98415d81dec0e3356e994b796abddd2e5f3e0`。
+- **根因**：交付命令再次把“目录存在时才需要执行的可选 cleanup”与后续“无条件必须执行的 extract + call”放在同一条 inline IF 物理控制流中，依赖交互式 cmd.exe 对复合命令的解析/绑定。目录不存在时，本次现场没有进入后续必需动作。这与 ERR-292 的首跑/重复运行控制流不一致属于同类复发。
+- **影响**：ERR-666 没有落库，Phase12 A1/A2 仍未开始；没有产品失败结论，也没有业务项目或运行时状态变化。用户额外承担一次无输出执行轮次。
+- **正确做法**：包外 one-liner 不再使用 inline `if exist` 做 cleanup。使用无条件幂等 cleanup `rmdir /s /q <unique-bundle-dir> 2>nul`，然后以独立线性 `&` 顺序执行 `tar -xf <zip>` 与 `call <bundle>\RUN.cmd`；真正的失败关闭、source contract 和 repository write guard 留在包内 RUN/runner/validator。用户可复制命令必须由 package 内 canonical command 文件产生并在发布回复中逐字复用。
+- **防复发措施**：复用 `EXP-002 / EXP-007 / EXP-012 / EXP-015 / EXP-019 / EXP-020` 与 ERR-292；Artifact Acceptance 对 canonical user command 固定执行 static contract：`INLINE_IF_ALLOWED=NO`、`AND_AND_ALLOWED=NO`、无条件 cleanup → extract → call 顺序唯一，并验证 TEMP_DIR_ABSENT / TEMP_DIR_PRESENT 两种文件系统 fixture 的解压目标结构相同。包内 RUN.cmd 仍必须在解释器前输出 startup marker。
+- **关闭证据**：本记录只在 corrected package 的 canonical command contract/selftest 已证明无 inline IF、无 `&&`、无条件 cleanup/extract/call 顺序正确，且 corrected package 真实执行进入 RUN.cmd 并输出 startup marker 后写入；因此本次 ERR-667 写入本身同时提供真实启动链关闭证据。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR667_CLASSIFICATION=DELIVERY_HARNESS_DEFECT
+ERR667_PRODUCT_DEFECT=NO
+ERR667_REPOSITORY_SIDE_EFFECT=NONE
+ERR667_SFV459_RUNNER_STARTED=NO
+ERR667_REPEATED_CLASS=ERR292_EXP012
+ERR667_FIX=UNCONDITIONAL_CLEANUP_THEN_LINEAR_EXTRACT_AND_CALL_PLUS_CANONICAL_COMMAND_CONTRACT
+ERR667_CLOSURE_EVIDENCE=CORRECTED_PACKAGE_RUN_CMD_STARTUP_MARKER_OBSERVED_AND_CANONICAL_COMMAND_SELFTEST_PASS
+ERR667_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR667_SFV459_OUTER_CMD_INLINE_IF_BINDING:END -->
+
+<!-- SPECFORGE_ERR668_SFV460_RECEIPT_PACKAGE_NAME_DRIFT:START -->
+## ERR-668 — SFV460 正式 receipt 的 PACKAGE_NAME 与 manifest / 实际 ZIP 名称不一致
+
+- **日期与阶段**：2026-08-18，Phase 12 Release Boundary 前 ERR-666 / ERR-667 治理状态同步完成后的 receipt 审计。
+- **分类**：`DELIVERY_IDENTITY_DEFECT / RECEIPT_PACKAGE_NAME_DRIFT / REPEATED_CLASS_ERR250_EXP216_ERR659`。
+- **现场事实**：用户真实执行 SFV460 后取得 `RESULT=SUCCESS`，ERR-666/667、Validator、TypeScript、experience gate 全部 PASS；但正式反馈块中的 `PACKAGE_NAME` 为 `SpecForge_ERR666_Status_Reconciliation_SFV460.zip`。实际交付 ZIP、bundle、manifest identity、RUN.cmd 与 canonical delivery command 均为 `SpecForge_ERR666_ERR667_Status_Reconciliation_SFV460.zip`。最终 ZIP 只读审计进一步确认，runner success/failure receipt producer 单独硬编码了旧包名。
+- **已执行与未执行**：SFV460 已完成 exact-2 治理写入与 postwrite validation；没有 git add/commit/push，没有产品代码修改，没有 Fresh05、daemon 或 OpenCode 动作。
+- **仓库副作用**：只有 SFV460 预期的两个治理文档 dirty；本错误没有新增路径。
+- **根因**：manifest/RUN/canonical command 已更新到双 ERR 包名，但 runner receipt producer 仍保留上一版单 ERR-666 字面量；Artifact Acceptance 没把正式 receipt producer 纳入 Delivery Identity exact binding。
+- **影响**：治理内容与 validator PASS 有效，但 receipt artifact identity 不可信；不是 SpecForge 产品缺陷。
+- **正确做法**：`PACKAGE_NAME` 由 manifest identity 单一生产；runner success/failure receipt 只消费已验证 manifest identity。
+- **防复发措施**：复用 `EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-216`、ERR-250、ERR-659；最终 ZIP 要求 `PACKAGE_NAME == manifest.identity.package_name == actual ZIP filename`，并扫描 success/failure receipt producer。
+- **关闭证据**：corrected package success/failure receipt 都从 manifest identity 取值，selftest/ZIP reopen identity audit PASS，并由真实 success receipt再次证明。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR668_CLASSIFICATION=DELIVERY_IDENTITY_DEFECT
+ERR668_PRODUCT_DEFECT=NO
+ERR668_REPOSITORY_SIDE_EFFECT=EXACT_2_GOVERNANCE_DOCS_ALREADY_DIRTY_FROM_SFV460
+ERR668_REPEATED_CLASS=ERR250_EXP216_ERR659
+ERR668_ROOT_CAUSE=RUNNER_RECEIPT_PACKAGE_NAME_LITERAL_NOT_BOUND_TO_MANIFEST_IDENTITY
+ERR668_FIX=MANIFEST_IDENTITY_SINGLE_PRODUCER_PLUS_SUCCESS_FAILURE_RECEIPT_EXACT_BINDING
+ERR668_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR668_SFV460_RECEIPT_PACKAGE_NAME_DRIFT:END -->
+
+<!-- SPECFORGE_ERR669_SFV461_GENERATED_VALIDATOR_SYNTAX_ERROR:START -->
+## ERR-669 — SFV461 未交付 reconciliation 草稿的 generated validator 存在 JavaScript 括号配对 SyntaxError
+
+- **日期与阶段**：2026-08-18，ERR-668 治理补录包 SFV461 Artifact Acceptance。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / GENERATED_VALIDATOR_SYNTAX_ERROR / PREDELIVERY_FAILURE`。
+- **现场事实**：SFV461 尚未交付用户。助手侧构建在逐文件 `node --check` 时，`scripts/validator.mjs` 的 `changed()` 因数组/Set 表达式括号配对错误报 `SyntaxError: Unexpected token ';'`；构建工具明确返回本次生成未成功，不能把草稿产物视为有效。
+- **已执行与未执行**：只进入助手侧 package generation 与 syntax check；没有用户侧 runner、SpecForge 仓库读写、git add/commit/push、Fresh05、daemon/OpenCode 动作。
+- **仓库副作用**：无用户仓库副作用。
+- **根因**：长行手工生成的 JavaScript 集合表达式丢失结构闭合边界；producer 没采用可读分步变量降低生成错误概率。
+- **影响**：SFV461 作废，ERR-668 未落库；不构成 Phase12 产品失败。
+- **正确做法**：复杂 path-set consumer 拆为 tracked、untracked、union 三步；lib/runner/validator/selftest 全部先独立 syntax check，全部 PASS 后才运行 selftest/module-init/ZIP acceptance。
+- **防复发措施**：复用 `EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-078`；固定 `ALL_GENERATED_JS_SYNTAX_CHECK_REQUIRED=YES`。
+- **关闭证据**：corrected package 的全部 JavaScript 模块 `node --check` PASS，selftest 和 isolated module-init smoke PASS 后才允许写入。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR669_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR669_PRODUCT_DEFECT=NO
+ERR669_USER_DELIVERY=NONE
+ERR669_REPOSITORY_SIDE_EFFECT=NONE
+ERR669_ROOT_CAUSE=GENERATED_VALIDATOR_NESTED_SET_EXPRESSION_BRACKET_MISMATCH
+ERR669_FIX=READABLE_TRACKED_UNTRACKED_UNION_PLUS_ALL_GENERATED_JS_SYNTAX_GATE
+ERR669_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR669_SFV461_GENERATED_VALIDATOR_SYNTAX_ERROR:END -->
+
+<!-- SPECFORGE_ERR670_SFV462_REGEX_REPLACEMENT_ESCAPE_ERROR:START -->
+## ERR-670 — SFV462 未交付构建器用 Python re.sub replacement 改写旧 lib 时触发 bad escape
+
+- **日期与阶段**：2026-08-18，ERR-668/669 reconciliation package SFV462 Artifact Assembly。
+- **分类**：`PACKAGE_GENERATOR_DEFECT / REGEX_REPLACEMENT_ESCAPE_ERROR / PREDELIVERY_FAILURE`。
+- **现场事实**：SFV462 尚未交付用户。助手侧 Python 构建器尝试用 `re.sub(..., replacement, ...)` 把 SFV460 的 current-delivery helper 改成通用 helper；replacement 中包含 JavaScript regex 的 `\s`，Python replacement parser 将其解释为非法 replacement escape 并报 `PatternError: bad escape \\s`。工具明确说明本次 Python 执行未成功，不得假定草稿产物存在。
+- **已执行与未执行**：仅助手侧 Artifact Assembly；没有用户 runner、用户仓库访问、git add/commit/push、Fresh05、daemon/OpenCode 动作。
+- **仓库副作用**：无用户仓库副作用。
+- **根因**：在已经验证过的旧 producer 上继续做正则源码重写，把 Python replacement 语义与目标 JavaScript regex 语义叠加；这是不必要的跨语言转义面。
+- **影响**：SFV462 作废，ERR-668/669 仍未落库；不构成 SpecForge 产品失败。
+- **正确做法**：停止正则改写已验收 producer。SFV460 的 ERR-666/667 target producer 以 byte-exact 独立模块复用并锁定 SHA256；新 ERR producer 放在单独 extension module，通过 import 组合，不再修改旧源码。
+- **防复发措施**：复用 `EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-078` 与“同类失败后改变方法”规则；新增 `ACCEPTED_PRODUCER_IMMUTABLE_REUSE=YES`，Artifact Acceptance 先核对旧 producer SHA，再检查新 extension。
+- **关闭证据**：corrected package 中历史 SFV460 producer SHA 与已验收字节完全一致，新 extension 独立通过 syntax/selftest/module-init/ZIP acceptance，构建过程不使用 re.sub 改写旧 producer。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR670_CLASSIFICATION=PACKAGE_GENERATOR_DEFECT
+ERR670_PRODUCT_DEFECT=NO
+ERR670_USER_DELIVERY=NONE
+ERR670_REPOSITORY_SIDE_EFFECT=NONE
+ERR670_ROOT_CAUSE=CROSS_LANGUAGE_REGEX_REPLACEMENT_ESCAPE_COLLISION
+ERR670_FIX=IMMUTABLE_ACCEPTED_SFV460_PRODUCER_PLUS_SEPARATE_EXTENSION_MODULE
+ERR670_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR670_SFV462_REGEX_REPLACEMENT_ESCAPE_ERROR:END -->
+
+<!-- SPECFORGE_ERR671_SFV464_INIT_SMOKE_FINALIZER_ARTIFACT_CONTAMINATION:START -->
+## ERR-671 — SFV464 未交付 finalizer 的 init-smoke 返回后仍由 finally 写 runner-details.log
+
+- **日期与阶段**：2026-08-18，Phase 12 Release Boundary 状态同步 finalizer SFV464 Artifact Acceptance。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_RUNTIME_ARTIFACT_CONTAMINATION / REPEATED_CLASS_ERR665`。
+- **现场事实**：SFV464 尚未交付用户。隔离副本以 `SFV464_INIT_SMOKE_ONLY=1` 启动时已输出 package integrity 与 `RUNNER_MODULE_INITIALIZATION=PASS` 并从 main 返回，但顶层 `finally` 仍无条件写入 `runner-details.log`；Artifact Acceptance 比较 smoke 副本时发现该新增 runtime artifact，因此主动阻断交付。
+- **已执行与未执行**：只执行助手侧 package build、syntax/selftest 与隔离 module-init smoke；没有用户侧 SFV464 执行，没有用户仓库读写，没有 git add/commit/push，没有 Fresh05、daemon 或 OpenCode 动作。
+- **仓库副作用**：无用户仓库副作用；用户仓库仍保持 SFV463 成功后的 exact-2 dirty governance 状态。
+- **根因**：正常执行诊断日志的 finalization 被放到无条件顶层 finally，没有把 init-smoke 定义为严格零 runtime artifact 的独立模式；重复了 ERR-665 已识别的 selftest/smoke artifact contamination 类问题。
+- **影响**：SFV464 作废，不构成 SpecForge 产品缺陷，也不改变 Phase11/Fresh05 或 Phase12 产品事实。
+- **正确做法**：init-smoke 必须在任何 runtime evidence producer 之前返回；smoke 后比较隔离 bundle 完整 member set，要求 byte-for-byte 无新增文件。
+- **防复发措施**：复用 `EXP-006 / EXP-007 / EXP-013 / EXP-015 / EXP-019 / EXP-020` 与 ERR-665；固定 `INIT_SMOKE_CREATED_FILES=NONE`，不再只检查少数已知 runtime 文件名。
+- **关闭证据**：corrected package 的 init-smoke 使用已成功执行的 SFV463 runner 结构，smoke 前后 exact member set 不变后才允许写入本记录。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR671_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR671_PRODUCT_DEFECT=NO
+ERR671_USER_DELIVERY=NONE
+ERR671_REPOSITORY_SIDE_EFFECT=NONE
+ERR671_REPEATED_CLASS=ERR665
+ERR671_ROOT_CAUSE=UNCONDITIONAL_FINALLY_LOG_WRITER_EXECUTED_AFTER_INIT_SMOKE_RETURN
+ERR671_FIX=STRICT_ZERO_ARTIFACT_INIT_SMOKE_PLUS_MEMBER_SET_DIFF_ASSERTION
+ERR671_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR671_SFV464_INIT_SMOKE_FINALIZER_ARTIFACT_CONTAMINATION:END -->
+
+<!-- SPECFORGE_ERR672_SFV465_REPEATED_GENERATED_VALIDATOR_SYNTAX_ERROR:START -->
+## ERR-672 — SFV465 未交付 validator 再次使用单行嵌套 Set 表达式并重复触发 SyntaxError
+
+- **日期与阶段**：2026-08-18，ERR-671 reconciliation package SFV465 Artifact Acceptance。
+- **分类**：`PROCESS_VIOLATION / PACKAGE_PREFLIGHT_DEFECT / REPEATED_GENERATED_VALIDATOR_SYNTAX_ERROR / SAME_CLASS_ERR669`。
+- **现场事实**：ERR-669 已明确要求 changed-path consumer 拆为 `tracked / untracked / union` 三步；但 SFV465 草稿 validator 又写成单行嵌套 `return [...new Set([...tracked,...untracked])].sort()` 形式，`node --check` 再次报告 `SyntaxError: Unexpected token ';'`。SFV465 未交付用户。
+- **已执行与未执行**：只执行助手侧构建与 generated JavaScript syntax gate；没有用户 runner、用户仓库访问、git add/commit/push、Fresh05、daemon/OpenCode 动作。
+- **仓库副作用**：无用户仓库副作用；ERR-671 也尚未落库。
+- **根因**：同类失败后没有真正改变 validator 构造方法，违反 ERR-669 的具体修复要求以及 EXP-019 的“重复同一路线必须改变问题模型/方法”。
+- **影响**：SFV465 作废，增加一次预交付失败；不构成 SpecForge 产品缺陷。
+- **正确做法**：停止重新手写 changed()；直接复用已经在用户真实 Windows/Bun 执行通过的 SFV463 validator 结构，保留其三步 `tracked / untracked / union` 实现，只扩展 ERR-671/672 状态消费者。
+- **防复发措施**：复用 `EXP-007 / EXP-008 / EXP-015 / EXP-019 / EXP-020 / EXP-078`；固定 `KNOWN_GOOD_VALIDATOR_STRUCTURE_REUSE=YES`，并要求生成后 validator SHA/结构审计证明 changed() 与 SFV463 已验证结构一致。
+- **关闭证据**：corrected package 的 validator 以 SFV463 validator 为基底，changed() 三步结构保持不变，全部 generated JS `node --check`、selftest、isolated init-smoke 和 ZIP reopen acceptance 全部 PASS 后才写入本记录。
+- **当前状态**：`CLOSED`。
+
+```text
+ERR672_CLASSIFICATION=PROCESS_VIOLATION_PACKAGE_PREFLIGHT_DEFECT
+ERR672_PRODUCT_DEFECT=NO
+ERR672_USER_DELIVERY=NONE
+ERR672_REPOSITORY_SIDE_EFFECT=NONE
+ERR672_REPEATED_CLASS=ERR669
+ERR672_ROOT_CAUSE=FAILED_TO_CHANGE_VALIDATOR_CONSTRUCTION_METHOD_AFTER_ERR669
+ERR672_FIX=REUSE_KNOWN_GOOD_SFV463_VALIDATOR_CHANGED_PATH_STRUCTURE
+ERR672_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR672_SFV465_REPEATED_GENERATED_VALIDATOR_SYNTAX_ERROR:END -->
