@@ -20,14 +20,13 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { NssmServiceManager } from "../../src/service-manager/nssm-service-manager.js";
 import type { ServiceInstallSpec } from "../../src/types/service-install-spec.js";
 
-// Mock child_process.spawn
-const mockSpawn = vi.fn();
-vi.mock("node:child_process", () => ({
-  spawn: mockSpawn,
+// Vitest hoists vi.mock factories, so referenced mocks must be created with vi.hoisted.
+const { mockSpawn, mockAccess } = vi.hoisted(() => ({
+  mockSpawn: vi.fn(),
+  mockAccess: vi.fn(),
 }));
 
-// Mock fs/promises
-const mockAccess = vi.fn();
+vi.mock("node:child_process", () => ({ spawn: mockSpawn }));
 vi.mock("node:fs/promises", () => ({
   access: mockAccess,
   mkdir: vi.fn(),

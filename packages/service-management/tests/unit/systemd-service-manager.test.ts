@@ -21,19 +21,17 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { SystemdServiceManager } from "../../src/service-manager/systemd-service-manager.js";
 import type { ServiceInstallSpec } from "../../src/types/service-install-spec.js";
 
-// Mock child_process.spawn
-const mockSpawn = vi.fn();
-vi.mock("node:child_process", () => ({
-  spawn: mockSpawn,
+// Vitest hoists vi.mock factories, so referenced mocks must be created with vi.hoisted.
+const { mockSpawn, mockAccess, mockWriteFile, mockRename, mockUnlink, mockMkdir } = vi.hoisted(() => ({
+  mockSpawn: vi.fn(),
+  mockAccess: vi.fn(),
+  mockWriteFile: vi.fn(),
+  mockRename: vi.fn(),
+  mockUnlink: vi.fn(),
+  mockMkdir: vi.fn(),
 }));
 
-// Mock fs/promises
-const mockAccess = vi.fn();
-const mockWriteFile = vi.fn();
-const mockRename = vi.fn();
-const mockUnlink = vi.fn();
-const mockMkdir = vi.fn();
-
+vi.mock("node:child_process", () => ({ spawn: mockSpawn }));
 vi.mock("node:fs/promises", () => ({
   access: mockAccess,
   writeFile: mockWriteFile,

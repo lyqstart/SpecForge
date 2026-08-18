@@ -18,27 +18,37 @@ import { SystemdServiceManager } from "../../src/service-manager/systemd-service
 import { NssmServiceManager } from "../../src/service-manager/nssm-service-manager.js";
 import type { EnvironmentPrecheck } from "../../src/types/environment-precheck.js";
 
-// Mock child_process.spawn
-const mockSpawn = vi.fn();
-vi.mock("node:child_process", () => ({
-  spawn: mockSpawn,
+// Vitest hoists vi.mock factories, so referenced mocks must be created with vi.hoisted.
+const {
+  mockSpawn,
+  mockPlatform,
+  mockAccess,
+  mockWriteFile,
+  mockRename,
+  mockUnlink,
+  mockMkdir,
+  mockReadFile,
+} = vi.hoisted(() => ({
+  mockSpawn: vi.fn(),
+  mockPlatform: vi.fn(),
+  mockAccess: vi.fn(),
+  mockWriteFile: vi.fn(),
+  mockRename: vi.fn(),
+  mockUnlink: vi.fn(),
+  mockMkdir: vi.fn(),
+  mockReadFile: vi.fn(),
 }));
 
-// Mock os.platform
-const mockPlatform = vi.fn();
-vi.mock("node:os", () => ({
-  platform: mockPlatform,
-  userInfo: vi.fn(() => ({ username: "testuser" })),
-}));
-
-// Mock fs/promises
-const mockAccess = vi.fn();
-const mockWriteFile = vi.fn();
-const mockRename = vi.fn();
-const mockUnlink = vi.fn();
-const mockMkdir = vi.fn();
-const mockReadFile = vi.fn();
-
+vi.mock("node:child_process", () => ({ spawn: mockSpawn }));
+vi.mock("node:os", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:os")>();
+  return {
+    ...actual,
+    platform: mockPlatform,
+    homedir: vi.fn(() => "C:\\Users\\test"),
+    userInfo: vi.fn(() => ({ username: "testuser" })),
+  };
+});
 vi.mock("node:fs/promises", () => ({
   access: mockAccess,
   writeFile: mockWriteFile,

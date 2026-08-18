@@ -10182,14 +10182,17 @@ ERR677_STATUS=CLOSED_FAILURE_INVENTORY_COUNTS_RETRACTED
 - **影响**：Phase12 targeted hard-enforcement test 不能作为 release evidence；这不是三项 core gate 产品行为已经失败的证据。
 - **正确做法**：测试路径改为标准 `fileURLToPath(import.meta.url)` 派生目录，并在实际 canonical Vitest runtime 验证。
 - **防复发措施**：`EXP-002 / EXP-007 / EXP-011 / EXP-078`；新增 cross-runtime test-path helper contract。
-- **当前状态**：OPEN，需后续产品测试修复包处理；本轮不修改测试。
+- **当前状态**：CLOSED。SFV491 在 disposable local clone 中通过 Phase12 targeted test；canonical 仅写入同一 sandbox-validated target bytes。
 ```text
 ERR678_CLASSIFICATION=TEST_DEFECT
 ERR678_PRODUCT_DEFECT=NO_CONFIRMED_PRODUCT_BEHAVIOR_DEFECT
 ERR678_FAILED_TESTS=2
 ERR678_ROOT_CAUSE=IMPORT_META_DIR_UNDEFINED_IN_ACTUAL_VITEST_EXECUTION_PATH
 ERR678_FIX=FILE_URL_TO_PATH_IMPORT_META_URL_TEST_DIRECTORY_RESOLUTION
-ERR678_STATUS=OPEN_PHASE12_TEST_PORTABILITY_REPAIR_REQUIRED
+ERR678_REPAIR_VALIDATION=SFV491_DISPOSABLE_CLONE_PHASE12_TARGETED_TEST_PASS
+ERR678_REPAIR_SCOPE=packages/daemon-core/tests/unit/phase12-hard-enforcement.test.ts
+ERR678_CANONICAL_TEST_EXECUTION=NONE_TARGET_BYTES_VALIDATED_IN_DISPOSABLE_CLONE
+ERR678_STATUS=CLOSED_PHASE12_TEST_PORTABILITY_REPAIRED_SFV491
 ```
 <!-- SPECFORGE_ERR678_PHASE12_TEST_IMPORT_META_DIR_PORTABILITY:END -->
 
@@ -10203,14 +10206,17 @@ ERR678_STATUS=OPEN_PHASE12_TEST_PORTABILITY_REPAIR_REQUIRED
 - **影响**：这 5 条属于 regression-test contract 落后，不能据此宣布 SessionRegistry 产品行为回归；daemon-core 其余大量失败仍需独立聚类。
 - **正确做法**：后续测试修复应先建立/注册 session，再验证 lazy alias 与重复事件；删除旧 auto-create 预期。
 - **防复发措施**：`EXP-004 / EXP-007 / EXP-008 / EXP-011 / EXP-078`；producer/consumer/test contract 一致性检查。
-- **当前状态**：OPEN，后续测试修复包处理。
+- **当前状态**：CLOSED。SFV491 将测试对齐为 registerPluginSession → OpenCode event 契约，并在 disposable local clone 中通过 session.test.ts。
 ```text
 ERR679_CLASSIFICATION=TEST_CONTRACT_DRIFT
 ERR679_PRODUCT_DEFECT=NO_CONFIRMED_PRODUCT_BEHAVIOR_DEFECT
 ERR679_KNOWN_FAILED_TEST_COUNT=5
 ERR679_ROOT_CAUSE=TESTS_EXPECT_LEGACY_SESSION_CREATED_AUTOCREATE_WHILE_IMPLEMENTATION_REQUIRES_PRIOR_REGISTER
 ERR679_FIX=ALIGN_SESSION_TEST_FIXTURES_TO_REGISTER_THEN_EVENT_CONTRACT
-ERR679_STATUS=OPEN_SESSION_TEST_CONTRACT_REPAIR_REQUIRED
+ERR679_REPAIR_VALIDATION=SFV491_DISPOSABLE_CLONE_SESSION_TEST_PASS
+ERR679_REPAIR_SCOPE=packages/daemon-core/tests/unit/session.test.ts
+ERR679_CANONICAL_TEST_EXECUTION=NONE_TARGET_BYTES_VALIDATED_IN_DISPOSABLE_CLONE
+ERR679_STATUS=CLOSED_SESSION_TEST_CONTRACT_REPAIRED_SFV491
 ```
 <!-- SPECFORGE_ERR679_SESSION_TEST_CONTRACT_DRIFT:END -->
 
@@ -10224,14 +10230,18 @@ ERR679_STATUS=OPEN_SESSION_TEST_CONTRACT_REPAIR_REQUIRED
 - **影响**：对应 suite 在 collect/mock 初始化阶段失败，不是 service manager 产品实现运行失败。
 - **正确做法**：使用 `vi.hoisted` 或 factory 内安全创建并显式暴露 mock，保证 hoist 语义正确。
 - **防复发措施**：`EXP-002 / EXP-007 / EXP-011 / EXP-078`；新增 hoisted-mock test fixture。
-- **当前状态**：OPEN，后续测试修复包处理。
+- **当前状态**：CLOSED。SFV491 同时修复 vi.mock TDZ 与 node:os mock surface，并在 disposable local clone 中通过 precheck/systemd/nssm 三文件 targeted test。
 ```text
 ERR680_CLASSIFICATION=TEST_DEFECT
 ERR680_PRODUCT_DEFECT=NO_CONFIRMED_PRODUCT_BEHAVIOR_DEFECT
 ERR680_AFFECTED_TEST_FILES=3
 ERR680_ROOT_CAUSE=VI_MOCK_HOISTED_BEFORE_TOP_LEVEL_MOCKSPAWN_INITIALIZATION
 ERR680_FIX=VI_HOISTED_OR_FACTORY_SAFE_MOCK_CONSTRUCTION
-ERR680_STATUS=OPEN_SERVICE_MANAGEMENT_VITEST_MOCK_REPAIR_REQUIRED
+ERR680_REPAIR_VALIDATION=SFV491_DISPOSABLE_CLONE_SERVICE_MANAGEMENT_TARGETED_TESTS_PASS
+ERR680_REPAIR_SCOPE=precheck.test.ts,systemd-service-manager.test.ts,nssm-service-manager.test.ts
+ERR680_REPAIR_COMPLETENESS=VI_HOISTED_PLUS_ACTUAL_NODE_OS_SURFACE_WITH_DETERMINISTIC_OVERRIDES
+ERR680_CANONICAL_TEST_EXECUTION=NONE_TARGET_BYTES_VALIDATED_IN_DISPOSABLE_CLONE
+ERR680_STATUS=CLOSED_SERVICE_MANAGEMENT_VITEST_MOCK_REPAIRED_SFV491
 ```
 <!-- SPECFORGE_ERR680_SERVICE_MANAGEMENT_VITEST_HOIST_TDZ:END -->
 
@@ -10241,7 +10251,7 @@ ERR680_STATUS=OPEN_SERVICE_MANAGEMENT_VITEST_MOCK_REPAIR_REQUIRED
 - **日期与阶段**：2026-08-19，SFV471 A1 full regression。
 - **分类**：`HISTORICAL_DEBT / RELEASE_VALIDATION_BLOCKER / FULL_REGRESSION_BASELINE_NOT_GREEN / ROOT_CAUSE_CLUSTERING_INCOMPLETE`。
 - **可信一手证据**：daemon-core 原生 Vitest summary 为 `Test Files 45 failed | 157 passed (202)`、`Tests 193 failed | 1616 passed (1809)`。workspace full test 还显示多个 package/suite 的原生红灯，包括 service-management、daemon-core、observability、distribution、permission 等；SFV473 自制 failed-file totals 因 ERR-677 已撤回。
-- **已知子类**：ERR-678（Phase12 test path portability）、ERR-679（session test contract drift）、ERR-680（service-management vi.mock TDZ）已能直接归因；它们只解释一部分失败。
+- **已知子类**：ERR-678/679/680 已由 SFV491 在 disposable local clone 中完成 targeted repair validation；ERR-689/690 记录并关闭本轮 test-repair/harness 缺陷。以上关闭不替代其余 full regression 聚类。
 - **未解决范围**：其余失败包含历史 contract drift、环境依赖、测试隔离、路径/runtime、真实实现断言差异等多种信号，当前不能统一归类为产品缺陷或测试缺陷。
 - **影响**：Phase12 要求 full regression 的 release boundary 当前不能通过；不得进入最终 release completion/real-installed-environment acceptance 的完成声明。
 - **正确做法**：先在 disposable isolated worktree 上建立可重复 A1/A2 baseline，使用 test runner 原生结果逐 package/failed-file 聚类，再按每个根因冻结修复范围；历史失败与本轮新增失败继续按 DELTA 分离，但 release zero-required 项必须最终归零。
@@ -10256,6 +10266,9 @@ ERR681_DAEMON_NATIVE_PASSED_TESTS=1616
 ERR681_CUSTOM_SFV473_FILE_COUNTS_TRUSTED=NO
 ERR681_ROOT_CAUSE=FULL_REGRESSION_BASELINE_CONTAINS_MULTIPLE_UNCLUSTERED_FAILURE_CLASSES
 ERR681_FIX=ISOLATED_REPEATABLE_BASELINE_PLUS_NATIVE_RESULT_CLUSTERING_THEN_SCOPED_REPAIRS
+ERR681_KNOWN_REPAIRS=ERR678_ERR679_ERR680_CLOSED_SFV491
+ERR681_SFV489_FOLLOWUP=ERR689_ERR690_CLOSED_SFV491
+ERR681_FULL_REGRESSION_RERUN=NOT_PERFORMED_IN_SFV491
 ERR681_STATUS=OPEN_PHASE12_FULL_REGRESSION_BASELINE_BLOCKER
 ```
 <!-- SPECFORGE_ERR681_PHASE12_FULL_REGRESSION_BASELINE_RED:END -->
@@ -10423,3 +10436,82 @@ ERR688_FIX=WHITESPACE_TOLERANT_STRUCTURE_MATCH_PLUS_ORDER_ASSERTION
 ERR688_STATUS=CLOSED_PREDELIVERY_SELFTEST_WHITESPACE_SENSITIVE_STATIC_MATCH_REPEATED_ERR684
 ```
 <!-- SPECFORGE_ERR688_SFV486_SELFTEST_WHITESPACE_SENSITIVE_STATIC_MATCH:END -->
+
+<!-- SPECFORGE_ERR689_SFV489_INCOMPLETE_NODE_OS_MOCK_SURFACE:START -->
+## ERR-689 — SFV489 service-management 修复只消除 vi.mock TDZ，但 node:os mock 缺少 homedir
+
+- **日期与阶段**：2026-08-19，SFV489 disposable-clone scoped repair。
+- **分类**：`TEST_REPAIR_DEFECT / INCOMPLETE_MODULE_MOCK_SURFACE / SECONDARY_CLEANUP_FAILURE`。
+- **现场事实**：SFV489 sandbox 中 Phase12 targeted test 与 session.test.ts 均退出0；service-management 三文件 targeted test 退出1，其中 precheck.test.ts 4项失败。首要错误是 Vitest 报 node:os mock 未导出 homedir；随后 Windows manager 构造失败，afterEach 再出现 undefined.dispose 二次错误。canonical repository 未写入。
+- **根因**：SFV489 只把顶层 mock 移入 vi.hoisted，仍以不完整对象替代整个 node:os 模块；NssmServiceManager 的默认 serviceDir 调用 resolveSpecForgeUserRoot()，其正式消费者会调用 os.homedir()。
+- **影响**：ERR-680 的 TDZ 修复方向正确但不完整；不能把 service-management targeted validation 宣告通过。ERR-678/679 的 sandbox 通过证据仍有效，但 canonical 尚未写入。
+- **正确做法**：node:os mock 保留 actual module surface，并只覆盖 platform/homedir/userInfo；homedir 使用确定性测试值。constructor 成功后 cleanup dispose 才是有效二次验证。
+- **防复发措施**：EXP-004 / EXP-007 / EXP-008 / EXP-011 / EXP-015 / EXP-016 / EXP-022；module mock 必须覆盖真实/传递消费者，targeted test 验证完整 surface。
+- **当前状态**：CLOSED。SFV491 使用 actual node:os surface + deterministic overrides，并通过 service-management 三文件 targeted test。
+```text
+ERR689_CLASSIFICATION=TEST_REPAIR_DEFECT
+ERR689_PRODUCT_DEFECT=NO
+ERR689_SOURCE_DELIVERY=SFV489
+ERR689_S11_EXIT=1
+ERR689_S11_LOG_SHA256=52B8F7F15D8E176685F01A7CDB652B037C486D74A9E7D9460F561B5D57D4ED9F
+ERR689_ROOT_CAUSE=NODE_OS_MOCK_REPLACED_WHOLE_MODULE_WITHOUT_HOMEDIR_REQUIRED_BY_TRANSITIVE_USER_LEVEL_PATH_CONSUMER
+ERR689_SECONDARY_FAILURE=WINDOWS_MANAGER_CONSTRUCTOR_THROW_LEFT_MANAGER_UNDEFINED_THEN_AFTEREACH_DISPOSE_FAILED
+ERR689_FIX=IMPORT_ORIGINAL_NODE_OS_SURFACE_PLUS_DETERMINISTIC_PLATFORM_HOMEDIR_USERINFO_OVERRIDES
+ERR689_REPAIR_VALIDATION=SFV491_SERVICE_MANAGEMENT_TARGETED_TESTS_PASS
+ERR689_CANONICAL_TEST_EXECUTION=NONE_TARGET_BYTES_VALIDATED_IN_DISPOSABLE_CLONE
+ERR689_STATUS=CLOSED_SERVICE_MANAGEMENT_NODE_OS_MOCK_SURFACE_REPAIRED_SFV491
+```
+<!-- SPECFORGE_ERR689_SFV489_INCOMPLETE_NODE_OS_MOCK_SURFACE:END -->
+
+<!-- SPECFORGE_ERR690_SFV489_INVALID_STANDALONE_WORKSPACE_BUILD_PRECONDITION:START -->
+## ERR-690 — SFV489 在 fresh disposable clone 中跳过声明生产者构建，直接 standalone build service-management/daemon-core
+
+- **日期与阶段**：2026-08-19，SFV489 disposable-clone scoped repair。
+- **分类**：`VALIDATION_HARNESS_DEFECT / INVALID_STANDALONE_WORKSPACE_BUILD_PRECONDITION / REPEATED_CLASS_ERR124_EXP101`。
+- **现场事实**：bun install --frozen-lockfile 成功；daemon-core standalone build 退出2，缺 permission-engine/workflow-runtime/service-management/observability 声明；service-management standalone build 退出2，@specforge/types/user-level-paths 类型入口无法解析。canonical repository 未写入。
+- **根因**：fresh workspace install 只建立 workspace 链接，不生成各内部包 dist 声明。仓库正式 scripts/build-workspace.ts 明确按 types → ... → service-management → ... → permission-engine → ... → workflow-runtime → ... → daemon-core 的确定性顺序构建；SFV489 跳过该生产者链直接执行两个消费者 build。
+- **影响**：S12/S13 不能作为产品源码回归证据；它们是验证顺序错误造成的假阻断。
+- **重复错误对账**：与历史 ERR-124 / EXP-101 同类。旧防护要求 workspace 声明生产者先构建；SFV489 runner 没有把该规则机器化到新 disposable-clone 路线，因此重复发生。
+- **正确做法**：targeted tests 后先运行仓库正式 scripts/build-workspace.ts；成功后再复核 daemon-core build 与 service-management build；每个 build 后重算 tracked/untracked 修改集合。
+- **防复发措施**：EXP-007 / EXP-008 / EXP-011 / EXP-015 / EXP-019 / EXP-020 / EXP-101 / EXP-102；runner contract 固定 task ordering。
+- **当前状态**：CLOSED。SFV491 按 targeted tests → deterministic workspace build → daemon-core/service-management build recheck 顺序验证通过。
+```text
+ERR690_CLASSIFICATION=VALIDATION_HARNESS_DEFECT
+ERR690_PRODUCT_DEFECT=NO
+ERR690_REPEATED_CLASS=ERR124_EXP101
+ERR690_SOURCE_DELIVERY=SFV489
+ERR690_DAEMON_BUILD_EXIT=2
+ERR690_DAEMON_BUILD_LOG_SHA256=7BC479440CF0AD6067B1D2D3CF6A24830AA354017A125D855FCBF41250905353
+ERR690_SERVICE_BUILD_EXIT=2
+ERR690_SERVICE_BUILD_LOG_SHA256=17DB762D3D34FF3A50652DCF1A173A09015776054EC1BA61D64307F2C7F5B8FB
+ERR690_ROOT_CAUSE=FRESH_WORKSPACE_CONSUMER_BUILDS_RAN_BEFORE_DETERMINISTIC_INTERNAL_DECLARATION_PRODUCER_BUILD_ORDER
+ERR690_FIX=TARGETED_TESTS_THEN_BUILD_WORKSPACE_TS_THEN_TARGET_PACKAGE_BUILD_RECHECKS
+ERR690_REPAIR_VALIDATION=SFV491_ORDERED_WORKSPACE_AND_TARGET_PACKAGE_BUILDS_PASS
+ERR690_MACHINE_PREVENTION=SANDBOX_CONTRACT_REQUIRES_WORKSPACE_BUILD_BEFORE_STANDALONE_PACKAGE_BUILD_RECHECKS
+ERR690_STATUS=CLOSED_DISPOSABLE_CLONE_BUILD_ORDER_HARNESS_REPAIRED_SFV491
+```
+<!-- SPECFORGE_ERR690_SFV489_INVALID_STANDALONE_WORKSPACE_BUILD_PRECONDITION:END -->
+
+<!-- SPECFORGE_ERR691_SFV492_SELFTEST_ROLLBACK_STATIC_MATCH_FALSE_POSITIVE:START -->
+## ERR-691 — SFV492 selftest 对合法三元表达式回滚赋值做脆弱静态字符串匹配
+
+- **日期与阶段**：2026-08-19，SFV491 exact-seven Git finalizer（SFV492）assistant-side pre-delivery selftest。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_STATIC_MATCH_FALSE_POSITIVE / REPEATED_CLASS_ERR684_ERR685_ERR688`。
+- **现场事实**：SFV492 未交付、未运行；selftest 在检查 pre-commit unstage rollback 时要求源码包含字面 `stageState='ROLLED_BACK_TO_DIRTY_EXACT_7'`，而真实 runner 采用合法三元表达式 `stageState=reset.code===0?'ROLLED_BACK_TO_DIRTY_EXACT_7':...`，因此在用户执行前假阴性失败。SpecForge canonical 未被 SFV492 触碰。
+- **根因**：selftest 再次把局部源码拼写/空白/表达式形式当成语义契约，而不是验证“存在 exact-seven reset 动作 + 存在 rollback 状态值”两个独立事实。
+- **影响**：仅废弃 SFV492 草稿；SFV491 成功后的 exact-seven dirty canonical target 保持不变。
+- **正确做法**：语义防护拆成独立正向事实：存在 `git reset HEAD -- <exact paths>`，且存在 `ROLLED_BACK_TO_DIRTY_EXACT_7` 状态；不得要求某种赋值语法形状。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-025`；新增 `SELFTEST_SEMANTIC_FACTS_SEPARATE_FROM_SOURCE_SPELLING=YES`。
+- **当前状态**：CLOSED。SFV493 将 ERR-691 补录与 exact-seven Git finalization 合并为同一事务，不增加治理-only 用户步骤。
+```text
+ERR691_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR691_PRODUCT_DEFECT=NO
+ERR691_REPEATED_CLASS=ERR684_ERR685_ERR688
+ERR691_FAILED_DRAFT=SFV492
+ERR691_USER_DELIVERY=NONE
+ERR691_REPOSITORY_SIDE_EFFECT=NONE
+ERR691_ROOT_CAUSE=SELFTEST_REQUIRED_ONE_ASSIGNMENT_SOURCE_SPELLING_INSTEAD_OF_TWO_SEMANTIC_ROLLBACK_FACTS
+ERR691_FIX=SEPARATE_POSITIVE_CHECK_FOR_EXACT_SEVEN_RESET_AND_ROLLBACK_STATE_VALUE
+ERR691_STATUS=CLOSED_PREDELIVERY_SELFTEST_ROLLBACK_STATIC_MATCH_FALSE_POSITIVE_REPEATED_ERR688
+```
+<!-- SPECFORGE_ERR691_SFV492_SELFTEST_ROLLBACK_STATIC_MATCH_FALSE_POSITIVE:END -->

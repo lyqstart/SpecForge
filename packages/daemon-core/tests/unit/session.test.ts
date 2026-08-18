@@ -154,16 +154,19 @@ describe('SessionRegistry', () => {
       registry.start();
 
       try {
-        // First event: session.created with OpenCode sessionID
+        const identity = await registry.registerPluginSession('proj-1', '/path/to/project');
+        expect(identity).toBeDefined();
+
+        // session.created establishes the lazy OpenCode alias for the pre-registered daemon session.
         await registry.handleOpenCodeEvent('session.created', {
           sessionID: 'oc-session-123',
           projectPath: '/path/to/project',
         });
 
-        // Verify alias_bound WAL event was written
         const { events } = await wal.readAllEvents();
         const aliasEvents = events.filter(e => e.action === 'session.alias_bound');
         expect(aliasEvents.length).toBe(1);
+        expect(aliasEvents[0]!.payload.sessionId).toBe(identity.sessionId);
         expect(aliasEvents[0]!.payload.opencodeSessionId).toBe('oc-session-123');
         expect(aliasEvents[0]!.category).toBe('session');
       } finally {
@@ -186,25 +189,23 @@ describe('SessionRegistry', () => {
       registry.start();
 
       try {
-        // First event: establishes alias
+        const identity = await registry.registerPluginSession('proj-1', '/path/to/project');
+
         await registry.handleOpenCodeEvent('session.created', {
           sessionID: 'oc-session-123',
           projectPath: '/path/to/project',
         });
 
-        // Activate the session for idle event
-        const pending = registry.getPendingSessions();
-        const sessionId = pending[0]!.sessionId;
-        await registry.activate(sessionId, '');
+        await registry.activate(identity.sessionId, '');
 
-        // Second event: same OpenCode sessionID → should NOT write alias_bound again
         await registry.handleOpenCodeEvent('session.idle', {
           sessionID: 'oc-session-123',
         });
 
         const { events } = await wal.readAllEvents();
         const aliasEvents = events.filter(e => e.action === 'session.alias_bound');
-        expect(aliasEvents.length).toBe(1); // Only one alias_bound from first event
+        expect(aliasEvents.length).toBe(1);
+        expect(aliasEvents[0]!.payload.sessionId).toBe(identity.sessionId);
       } finally {
         registry.stop();
         bus.stop();
@@ -390,42 +391,38 @@ describe('SessionRegistry', () => {
   });
 
   describe('handleOpenCodeEvent', () => {
-    it('should handle session.created by registering a plugin session', async () => {
+    it('should handle session.created for a pre-registered plugin session', async () => {
+      const identity = await sessionRegistry.registerPluginSession('proj-1', '/path/to/project');
+
       await sessionRegistry.handleOpenCodeEvent('session.created', {
         sessionID: 'oc-session-123',
         projectPath: '/path/to/project',
       });
-      
-      // A pending session should be created (with a daemon-generated ID)
+
       const pending = sessionRegistry.getPendingSessions();
       expect(pending.length).toBe(1);
+      expect(pending[0]?.sessionId).toBe(identity.sessionId);
       expect(pending[0]?.agentRole).toBe('plugin');
-      
-      // Project binding should be recorded
-      const boundPath = sessionRegistry.getProjectPath(pending[0]?.sessionId ?? '');
-      expect(boundPath).toBe('/path/to/project');
+      expect(sessionRegistry.getProjectPath(identity.sessionId)).toBe('/path/to/project');
     });
 
     it('should not duplicate session.created for same sessionId', async () => {
+      const identity = await sessionRegistry.registerPluginSession('proj-1', '/path/to/project');
+
       await sessionRegistry.handleOpenCodeEvent('session.created', {
         sessionID: 'oc-session-123',
         projectPath: '/path/to/project',
       });
-      
-      const firstCount = sessionRegistry.getPendingSessions().length;
-      
-      // Second call with same sessionID should be skipped (hasSession check)
+      expect(sessionRegistry.getPendingSessions().length).toBe(1);
+
       await sessionRegistry.handleOpenCodeEvent('session.created', {
         sessionID: 'oc-session-123',
         projectPath: '/path/to/project',
       });
-      
-      const secondCount = sessionRegistry.getPendingSessions().length;
-      // Since hasSession uses the data.sessionID (not daemon sessionId),
-      // a second call creates a new daemon session too... 
-      // But the registerPluginSession idempotent check is by projectPath, 
-      // so the second call should find the existing binding and return it.
-      expect(secondCount).toBe(1);
+
+      const pending = sessionRegistry.getPendingSessions();
+      expect(pending.length).toBe(1);
+      expect(pending[0]?.sessionId).toBe(identity.sessionId);
     });
 
     it('should handle session.idle by touching the session', async () => {
@@ -480,14 +477,13 @@ describe('SessionRegistry', () => {
       ).resolves.toBeUndefined();
     });
 
-    it('should create a session for session.created with projectPath even without explicit sessionID', async () => {
+    it('should not auto-create session.created when the project was not registered first', async () => {
       await sessionRegistry.handleOpenCodeEvent('session.created', {
         projectPath: '/path/to/project',
       });
-      
-      // A pending session should be created
+
       const pending = sessionRegistry.getPendingSessions();
-      expect(pending.length).toBe(1);
+      expect(pending.length).toBe(0);
     });
 
     it('should do nothing for session.idle with non-existent session', async () => {

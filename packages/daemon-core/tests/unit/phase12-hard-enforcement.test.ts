@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import * as path from 'node:path';
 
 import { computeGateSummaryStatus } from '../../src/tools/lib/gate-chain';
 import { getGateStrictness, getRequiredGates } from '../../src/tools/lib/required-gates';
+
+const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 const CORE_GATES = [
   'spec_consistency_gate',
@@ -45,7 +48,7 @@ describe('Phase 12 final hard enforcement', () => {
   });
 
   it('pins source registration to hard and removes runtime severity switching', () => {
-    const libRoot = path.resolve(import.meta.dir, '../../src/tools/lib');
+    const libRoot = path.resolve(TEST_DIR, '../../src/tools/lib');
     const gateRunner = readFileSync(path.join(libRoot, 'gate-runner-v11.ts'), 'utf-8');
     const gateChain = readFileSync(path.join(libRoot, 'gate-chain.ts'), 'utf-8');
 
@@ -74,7 +77,7 @@ describe('Phase 12 final hard enforcement', () => {
 
   it('pins candidate state sealing so a non-passing Gate Summary cannot reach approval_required', () => {
     const handlerPath = path.resolve(
-      import.meta.dir,
+      TEST_DIR,
       '../../src/tools/handlers/sf-v11-gate-run.ts',
     );
     const handler = readFileSync(handlerPath, 'utf-8');
