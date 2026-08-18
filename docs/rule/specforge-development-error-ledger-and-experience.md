@@ -10081,3 +10081,250 @@ ERR673_FIX=PINNED_BLOB_CURRENT_STATE_KEYS_PLUS_DECOMPOSED_PREFLIGHT_ASSERTIONS
 ERR673_STATUS=CLOSED
 ```
 <!-- SPECFORGE_ERR673_SFV468_UNGROUNDED_CURRENT_STATE_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR674_SFV471_UNISOLATED_CANONICAL_WORKTREE_VALIDATION:START -->
+## ERR-674 — Release baseline 在 canonical worktree 直接运行完整测试，未隔离子进程副作用
+
+- **日期与阶段**：2026-08-19，Phase 12 Release Boundary corrected A1/A2 首次真实执行。
+- **分类**：`VALIDATION_DEFECT / DELIVERY_VALIDATION_HARNESS_DEFECT / UNISOLATED_CANONICAL_WORKTREE_EXECUTION`。
+- **现场事实**：A1 前 local/remote HEAD 均为 `d8e26a934e35a42ce4688e65951a188aa8d7185d` 且 worktree clean；A1 后 HEAD 未变，但 worktree 出现恰好 3 个 tracked 修改：`packages/observability/test-data/north-star-reports/validation-report.{json,md,txt}`。无 staged、commit、push、Fresh05、daemon/OpenCode 生命周期动作。
+- **根因证据**：`packages/observability/tests/north-star-validation.test.ts` 的 `afterEach` 明确把动态报告复制到 tracked 的 `test-data/north-star-reports`。SFV471 把完整 test/build 直接运行在 canonical `D:\code\SpecForge`，却仅以 runner 自身不直接写仓库来声明 `REPOSITORY_WRITE=NONE_BY_RUNNER`，遗漏 child process side effects。
+- **影响**：A1 自己制造 dirty tree，使 release baseline 的 clean-worktree assertion 失败，并触发 A2 停止；canonical 开发现场被验证任务污染，但没有提交产品变化。
+- **正确做法**：所有可能写文件的 release validation round 必须在独立、可丢弃的隔离工作树/副本运行；canonical worktree 只做 source pin、最终只读对账和必要的治理写入。
+- **防复发措施**：`EXP-006 / EXP-007 / EXP-008 / EXP-013 / EXP-015 / EXP-019 / EXP-078`；新增 `CHILD_PROCESS_SIDE_EFFECTS_ARE_REPOSITORY_WRITES=YES`、`RELEASE_TESTS_REQUIRE_ISOLATED_WORKTREE=YES`、A1/A2 各自独立 sandbox。
+- **当前状态**：已记录；本轮只恢复 3 个已证明为测试生成物的 tracked 报告。下一次 release baseline 前必须先实现隔离执行。
+```text
+ERR674_CLASSIFICATION=VALIDATION_HARNESS_DEFECT
+ERR674_PRODUCT_DEFECT=NO
+ERR674_SOURCE_HEAD=d8e26a934e35a42ce4688e65951a188aa8d7185d
+ERR674_REPOSITORY_SIDE_EFFECT=DIRTY_EXACT_3_TRACKED_NORTH_STAR_REPORTS
+ERR674_COMMIT_SIDE_EFFECT=NONE
+ERR674_ROOT_CAUSE=CHILD_TEST_SIDE_EFFECTS_EXECUTED_IN_CANONICAL_WORKTREE_WITHOUT_ISOLATION
+ERR674_FIX=RECOVER_EXACT_3_REPORTS_AND_REQUIRE_DISPOSABLE_ISOLATED_RELEASE_VALIDATION_WORKTREES
+ERR674_STATUS=RECORDED_SIDE_EFFECT_RECOVERED_ISOLATION_REQUIRED
+```
+<!-- SPECFORGE_ERR674_SFV471_UNISOLATED_CANONICAL_WORKTREE_VALIDATION:END -->
+
+<!-- SPECFORGE_ERR675_SFV471_UNREACHABLE_FROZEN_A2_ASSERTIONS:START -->
+## ERR-675 — Validator 冻结 A2 blocking assertions 后又用 fail-early 控制流使其不可达
+
+- **日期与阶段**：2026-08-19，Phase 12 Release Boundary corrected A1/A2。
+- **分类**：`VALIDATION_DEFECT / VALIDATOR_EXECUTION_MODEL_DEFECT / DECLARED_BLOCKING_ASSERTIONS_UNREACHABLE`。
+- **现场事实**：SFV471 contract 冻结 77 个 blocking assertions；A1 检测到 state drift 后停止，A2 未执行，最终报告 14 个 `MISSING_BLOCKING_EVIDENCE`、`VALIDATION_RESULT=INSUFFICIENT_EVIDENCE`。
+- **根因**：完整 contract 将 A2 证据声明为必达 blocking evidence，但实际控制流允许 A1 后 `break`，导致 contract 可达性与执行图不一致。
+- **影响**：A1 的真实失败被二次 validator 故障覆盖；`MISSING_BLOCKING_EVIDENCE` 不能作为 A1 测试根因。
+- **正确做法**：A1/A2 使用独立 disposable sandbox，使两轮均可安全完成并产生所有预先声明的 blocking evidence；不得在冻结必达 assertion 后设计使其不可达的正常控制分支。
+- **防复发措施**：`EXP-007 / EXP-008 / EXP-015 / EXP-019 / EXP-020 / EXP-078`；新增 contract-control-flow reachability selftest。
+- **当前状态**：已记录；下一版 release validator 必须重构执行模型后才能再次运行。
+```text
+ERR675_CLASSIFICATION=VALIDATOR_EXECUTION_MODEL_DEFECT
+ERR675_PRODUCT_DEFECT=NO
+ERR675_DECLARED_BLOCKING_ASSERTIONS=77
+ERR675_MISSING_A2_BLOCKING_ASSERTIONS=14
+ERR675_ROOT_CAUSE=FROZEN_REQUIRED_A2_EVIDENCE_BECAME_UNREACHABLE_AFTER_A1_FAIL_EARLY_BREAK
+ERR675_FIX=INDEPENDENT_ISOLATED_A1_A2_EXECUTION_WITH_ALL_DECLARED_EVIDENCE_REACHABLE
+ERR675_STATUS=RECORDED_VALIDATOR_EXECUTION_MODEL_REDESIGN_REQUIRED
+```
+<!-- SPECFORGE_ERR675_SFV471_UNREACHABLE_FROZEN_A2_ASSERTIONS:END -->
+
+<!-- SPECFORGE_ERR676_SFV473_REPEATED_PORCELAIN_TRIM:START -->
+## ERR-676 — SFV473 重复 ERR-653：对 Git porcelain stdout 使用 trim，破坏首列状态语义
+
+- **日期与阶段**：2026-08-19，SFV471 failure inventory 只读取证（SFV473）。
+- **分类**：`PROCESS_VIOLATION / EVIDENCE_DEFECT / REPEATED_CLASS_ERR653 / STRUCTURED_GIT_OUTPUT_TRIM`。
+- **现场事实**：SFV473 回执把第一条路径输出为 `ackages/observability/...`，并误报 `STAGED_PATHS_PRESENT`、`UNSTAGED_SET_MISMATCH`；但前后 Git fingerprint 完全一致，说明诊断未改变现场。
+- **精确根因**：SFV473 的通用 `scalar()` 对 `git status --porcelain=v1` stdout 执行 `.trim()`，首行原本有语义的前导空格被删除，随后 `slice(0,2)` / `slice(3)` 发生列错位。这与已关闭 ERR-653 完全同类。
+- **影响**：只读取证包自身 `RESULT=FAILED`，且路径/ staged/unstaged 分类不可信；没有仓库副作用。
+- **正确做法**：structured Git stdout 必须使用 raw consumer；只在真正 scalar 命令上 trim。porcelain parser 必须用 `" M path"`、`"?? path"`、多行首行空格 fixture。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020`；重复类升级为 `RAW_STRUCTURED_GIT_CONSUMER_REQUIRED=YES`，禁止把 scalar helper 复用于 structured output。
+- **当前状态**：本包已采用 raw porcelain consumer，并以首行前导空格 fixture 做机器防复发。
+```text
+ERR676_CLASSIFICATION=PROCESS_VIOLATION_EVIDENCE_DEFECT
+ERR676_PRODUCT_DEFECT=NO
+ERR676_REPEATED_CLASS=ERR653
+ERR676_REPOSITORY_SIDE_EFFECT=NONE
+ERR676_ROOT_CAUSE=GIT_PORCELAIN_STDOUT_TRIMMED_BEFORE_COLUMN_PARSE
+ERR676_FIX=RAW_PORCELAIN_CONSUMER_PLUS_LEADING_SPACE_FIXTURES
+ERR676_STATUS=CLOSED_REPEATED_ERR653_RAW_PORCELAIN_CONSUMER_REQUIRED
+```
+<!-- SPECFORGE_ERR676_SFV473_REPEATED_PORCELAIN_TRIM:END -->
+
+<!-- SPECFORGE_ERR677_SFV473_FAILURE_INVENTORY_SEMANTIC_CONFLATION:START -->
+## ERR-677 — SFV473 把 FAIL test-case 行误计为 failed file，full inventory 统计语义失真
+
+- **日期与阶段**：2026-08-19，SFV473。
+- **分类**：`EVIDENCE_DEFECT / FAILURE_INVENTORY_PARSER_SEMANTIC_CONFLATION`。
+- **现场事实**：同一 daemon log 的原生 Vitest summary 明确为 `Test Files 45 failed | 157 passed (202)`、`Tests 193 failed | 1616 passed (1809)`，而 SFV473 自制 parser 却输出 `DAEMON_FAILED_FILE_COUNT=193`。workspace 又输出 `WORKSPACE_FAILED_FILE_COUNT=536`，明显把 package/test-case 行混入 failed-file 集合。
+- **根因**：parser 对任何包含 `FAIL` 的行执行宽泛正则并把 `FAIL <file> > <case>` 整段当文件；同时 receipt 只输出前 80 项，却称为 full inventory。
+- **影响**：SFV473 的自制 failed-file/count 字段全部撤回，不得作为 blocking truth；原始日志、native summary、明确 error headline 与前后 SHA preservation 仍可作为证据。
+- **正确做法**：发布级失败清单必须优先消费 test runner 原生结构/summary；若必须解析文本，parser 需有语法级 fixture 与已知日志 golden test，并区分 file header、test case、error headline。
+- **防复发措施**：`EXP-007 / EXP-008 / EXP-015 / EXP-019 / EXP-020`；新增 `CUSTOM_FAILURE_COUNTS_NON_BLOCKING_UNTIL_GOLDEN_VALIDATED=YES`。
+- **当前状态**：已关闭该错误统计路径；后续不再使用 SFV473 自制 file counts。
+```text
+ERR677_CLASSIFICATION=EVIDENCE_DEFECT
+ERR677_PRODUCT_DEFECT=NO
+ERR677_REPOSITORY_SIDE_EFFECT=NONE
+ERR677_INVALID_FIELDS=DAEMON_FAILED_FILE_COUNT,WORKSPACE_FAILED_FILE_COUNT,FAILED_FILES_DERIVED_BY_BROAD_FAIL_REGEX
+ERR677_TRUSTED_EVIDENCE=NATIVE_TEST_SUMMARIES,RAW_LOGS,ERROR_HEADLINES,LOG_SHA_PRESERVATION
+ERR677_ROOT_CAUSE=BROAD_FAIL_REGEX_CONFLATED_TEST_CASES_WITH_FAILED_FILES
+ERR677_FIX=RETRACT_CUSTOM_COUNTS_AND_REQUIRE_NATIVE_OR_GOLDEN_VALIDATED_FAILURE_INVENTORY
+ERR677_STATUS=CLOSED_FAILURE_INVENTORY_COUNTS_RETRACTED
+```
+<!-- SPECFORGE_ERR677_SFV473_FAILURE_INVENTORY_SEMANTIC_CONFLATION:END -->
+
+<!-- SPECFORGE_ERR678_PHASE12_TEST_IMPORT_META_DIR_PORTABILITY:START -->
+## ERR-678 — Phase12 hard-enforcement targeted test 使用 import.meta.dir，真实 Vitest 执行路径为 undefined
+
+- **日期与阶段**：2026-08-19，SFV471 A1 targeted Phase12 test。
+- **分类**：`TEST_DEFECT / RUNTIME_PORTABILITY / TEST_PATH_RESOLUTION_DEFECT`。
+- **现场事实**：5 个 targeted tests 中 2 个失败，错误均为 `TypeError: The "paths[0]" argument must be of type string. Received undefined`；两条失败正是需要 `path.resolve(import.meta.dir,...)` 读取源码的测试。
+- **代码证据**：`phase12-hard-enforcement.test.ts` 对 gate-runner/gate-chain 与 sf-v11-gate-run 的路径都直接使用 `import.meta.dir`。
+- **影响**：Phase12 targeted hard-enforcement test 不能作为 release evidence；这不是三项 core gate 产品行为已经失败的证据。
+- **正确做法**：测试路径改为标准 `fileURLToPath(import.meta.url)` 派生目录，并在实际 canonical Vitest runtime 验证。
+- **防复发措施**：`EXP-002 / EXP-007 / EXP-011 / EXP-078`；新增 cross-runtime test-path helper contract。
+- **当前状态**：OPEN，需后续产品测试修复包处理；本轮不修改测试。
+```text
+ERR678_CLASSIFICATION=TEST_DEFECT
+ERR678_PRODUCT_DEFECT=NO_CONFIRMED_PRODUCT_BEHAVIOR_DEFECT
+ERR678_FAILED_TESTS=2
+ERR678_ROOT_CAUSE=IMPORT_META_DIR_UNDEFINED_IN_ACTUAL_VITEST_EXECUTION_PATH
+ERR678_FIX=FILE_URL_TO_PATH_IMPORT_META_URL_TEST_DIRECTORY_RESOLUTION
+ERR678_STATUS=OPEN_PHASE12_TEST_PORTABILITY_REPAIR_REQUIRED
+```
+<!-- SPECFORGE_ERR678_PHASE12_TEST_IMPORT_META_DIR_PORTABILITY:END -->
+
+<!-- SPECFORGE_ERR679_SESSION_TEST_CONTRACT_DRIFT:START -->
+## ERR-679 — SessionRegistry 测试仍期待 session.created 自动建 session，与当前实现契约漂移
+
+- **日期与阶段**：2026-08-19，SFV471 daemon-core full test。
+- **分类**：`TEST_DEFECT / TEST_CONTRACT_DRIFT / LEGACY_SESSION_CREATED_AUTOCREATE_EXPECTATION`。
+- **现场事实**：`tests/unit/session.test.ts` 有 5 条失败集中在 alias/session.created 行为；典型错误包括 alias event 数为 0、pending session 不存在、读取 `sessionId` 为 undefined。
+- **实现证据**：当前 `SessionRegistry.handleOpenCodeEvent` 明确写明 `session.created` 在无现有 mapping 时“不再 auto-create sessions；Project must be registered via ingest/register first”，随后直接 return。
+- **影响**：这 5 条属于 regression-test contract 落后，不能据此宣布 SessionRegistry 产品行为回归；daemon-core 其余大量失败仍需独立聚类。
+- **正确做法**：后续测试修复应先建立/注册 session，再验证 lazy alias 与重复事件；删除旧 auto-create 预期。
+- **防复发措施**：`EXP-004 / EXP-007 / EXP-008 / EXP-011 / EXP-078`；producer/consumer/test contract 一致性检查。
+- **当前状态**：OPEN，后续测试修复包处理。
+```text
+ERR679_CLASSIFICATION=TEST_CONTRACT_DRIFT
+ERR679_PRODUCT_DEFECT=NO_CONFIRMED_PRODUCT_BEHAVIOR_DEFECT
+ERR679_KNOWN_FAILED_TEST_COUNT=5
+ERR679_ROOT_CAUSE=TESTS_EXPECT_LEGACY_SESSION_CREATED_AUTOCREATE_WHILE_IMPLEMENTATION_REQUIRES_PRIOR_REGISTER
+ERR679_FIX=ALIGN_SESSION_TEST_FIXTURES_TO_REGISTER_THEN_EVENT_CONTRACT
+ERR679_STATUS=OPEN_SESSION_TEST_CONTRACT_REPAIR_REQUIRED
+```
+<!-- SPECFORGE_ERR679_SESSION_TEST_CONTRACT_DRIFT:END -->
+
+<!-- SPECFORGE_ERR680_SERVICE_MANAGEMENT_VITEST_HOIST_TDZ:START -->
+## ERR-680 — service-management 三个测试文件在 hoisted vi.mock factory 引用顶层 const mockSpawn
+
+- **日期与阶段**：2026-08-19，SFV471 workspace full test。
+- **分类**：`TEST_DEFECT / VITEST_MOCK_HOIST_TDZ`。
+- **现场事实**：workspace log 原生错误为 `[vitest] There was an error when mocking a module`，cause 为 `ReferenceError: Cannot access 'mockSpawn' before initialization`；涉及 `nssm-service-manager.test.ts`、`precheck.test.ts`、`systemd-service-manager.test.ts`。
+- **代码证据**：三个文件都在模块顶层定义 `const mockSpawn = vi.fn()`，随后 `vi.mock("node:child_process", () => ({ spawn: mockSpawn }))`。Vitest 会 hoist `vi.mock`，形成 TDZ。
+- **影响**：对应 suite 在 collect/mock 初始化阶段失败，不是 service manager 产品实现运行失败。
+- **正确做法**：使用 `vi.hoisted` 或 factory 内安全创建并显式暴露 mock，保证 hoist 语义正确。
+- **防复发措施**：`EXP-002 / EXP-007 / EXP-011 / EXP-078`；新增 hoisted-mock test fixture。
+- **当前状态**：OPEN，后续测试修复包处理。
+```text
+ERR680_CLASSIFICATION=TEST_DEFECT
+ERR680_PRODUCT_DEFECT=NO_CONFIRMED_PRODUCT_BEHAVIOR_DEFECT
+ERR680_AFFECTED_TEST_FILES=3
+ERR680_ROOT_CAUSE=VI_MOCK_HOISTED_BEFORE_TOP_LEVEL_MOCKSPAWN_INITIALIZATION
+ERR680_FIX=VI_HOISTED_OR_FACTORY_SAFE_MOCK_CONSTRUCTION
+ERR680_STATUS=OPEN_SERVICE_MANAGEMENT_VITEST_MOCK_REPAIR_REQUIRED
+```
+<!-- SPECFORGE_ERR680_SERVICE_MANAGEMENT_VITEST_HOIST_TDZ:END -->
+
+<!-- SPECFORGE_ERR681_PHASE12_FULL_REGRESSION_BASELINE_RED:START -->
+## ERR-681 — Phase12 release boundary 首次完整回归证据显示 canonical baseline 大面积为红
+
+- **日期与阶段**：2026-08-19，SFV471 A1 full regression。
+- **分类**：`HISTORICAL_DEBT / RELEASE_VALIDATION_BLOCKER / FULL_REGRESSION_BASELINE_NOT_GREEN / ROOT_CAUSE_CLUSTERING_INCOMPLETE`。
+- **可信一手证据**：daemon-core 原生 Vitest summary 为 `Test Files 45 failed | 157 passed (202)`、`Tests 193 failed | 1616 passed (1809)`。workspace full test 还显示多个 package/suite 的原生红灯，包括 service-management、daemon-core、observability、distribution、permission 等；SFV473 自制 failed-file totals 因 ERR-677 已撤回。
+- **已知子类**：ERR-678（Phase12 test path portability）、ERR-679（session test contract drift）、ERR-680（service-management vi.mock TDZ）已能直接归因；它们只解释一部分失败。
+- **未解决范围**：其余失败包含历史 contract drift、环境依赖、测试隔离、路径/runtime、真实实现断言差异等多种信号，当前不能统一归类为产品缺陷或测试缺陷。
+- **影响**：Phase12 要求 full regression 的 release boundary 当前不能通过；不得进入最终 release completion/real-installed-environment acceptance 的完成声明。
+- **正确做法**：先在 disposable isolated worktree 上建立可重复 A1/A2 baseline，使用 test runner 原生结果逐 package/failed-file 聚类，再按每个根因冻结修复范围；历史失败与本轮新增失败继续按 DELTA 分离，但 release zero-required 项必须最终归零。
+- **防复发措施**：`EXP-007 / EXP-008 / EXP-019 / EXP-020 / EXP-078`；禁止在 canonical worktree 上用一次全仓输出直接做产品归因。
+- **当前状态**：OPEN / BLOCKING。
+```text
+ERR681_CLASSIFICATION=HISTORICAL_DEBT_RELEASE_VALIDATION_BLOCKER
+ERR681_PRODUCT_DEFECT=INSUFFICIENT_EVIDENCE
+ERR681_DAEMON_NATIVE_FAILED_FILES=45
+ERR681_DAEMON_NATIVE_FAILED_TESTS=193
+ERR681_DAEMON_NATIVE_PASSED_TESTS=1616
+ERR681_CUSTOM_SFV473_FILE_COUNTS_TRUSTED=NO
+ERR681_ROOT_CAUSE=FULL_REGRESSION_BASELINE_CONTAINS_MULTIPLE_UNCLUSTERED_FAILURE_CLASSES
+ERR681_FIX=ISOLATED_REPEATABLE_BASELINE_PLUS_NATIVE_RESULT_CLUSTERING_THEN_SCOPED_REPAIRS
+ERR681_STATUS=OPEN_PHASE12_FULL_REGRESSION_BASELINE_BLOCKER
+```
+<!-- SPECFORGE_ERR681_PHASE12_FULL_REGRESSION_BASELINE_RED:END -->
+
+<!-- SPECFORGE_ERR682_SFV474_SELFTEST_NARRATIVE_ACTIVE_CONTRACT_CONFLATION:START -->
+## ERR-682 — SFV474 预交付 selftest 把“被撤回字段的历史叙述”误判成 active contract 重声明
+
+- **日期与阶段**：2026-08-19，SFV474 assistant-side package preflight。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_NEGATIVE_TEXT_MATCH_FALSE_POSITIVE / EVIDENCE_NARRATIVE_ACTIVE_CONTRACT_CONFLATION`。
+- **现场事实**：SFV474 未交付用户；package selftest 在助手侧失败于 `ERR677_MUST_NOT_REASSERT_INVALID_COUNT`。没有用户执行、仓库写入、Git、Fresh05、daemon 或 OpenCode 动作。
+- **精确根因**：ERR-677 正文为了说明“为什么撤回 SFV473 的 custom count”，必须引用历史字符串 `DAEMON_FAILED_FILE_COUNT=193`；SFV474 selftest 却用全文 `includes()` 禁止该字符串出现，把 evidence narrative 与 active structured contract 混为一谈。
+- **影响**：SFV474 作废，增加一次预交付失败；不构成 SpecForge 产品缺陷，也没有用户仓库副作用。
+- **正确做法**：negative selftest 只能检查 active structured fields / machine contract，不得禁止错误记录正文引用历史坏值。允许 narrative 引用，但禁止新增 `ERR677_DAEMON_FAILED_FILE_COUNT=...` 等 active structured field。
+- **防复发措施**：`EXP-007 / EXP-008 / EXP-015 / EXP-019 / EXP-020 / EXP-213`；新增 `NARRATIVE_EVIDENCE_AND_ACTIVE_CONTRACT_SEPARATED=YES`、结构化行级检查替代全文禁词。
+- **当前状态**：corrected package 以 line-level active-field grammar 检查后关闭。
+```text
+ERR682_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR682_PRODUCT_DEFECT=NO
+ERR682_USER_DELIVERY=NONE
+ERR682_REPOSITORY_SIDE_EFFECT=NONE
+ERR682_FAILED_DRAFT=SFV474
+ERR682_ROOT_CAUSE=SELFTEST_FULLTEXT_NEGATIVE_MATCH_CONFLATED_RETRACTED_VALUE_NARRATIVE_WITH_ACTIVE_STRUCTURED_FIELD
+ERR682_FIX=LINE_LEVEL_ACTIVE_CONTRACT_CHECK_ALLOWING_HISTORICAL_NARRATIVE_REFERENCE
+ERR682_STATUS=CLOSED_PREDELIVERY_SELFTEST_NARRATIVE_ACTIVE_CONTRACT_SEPARATION
+```
+<!-- SPECFORGE_ERR682_SFV474_SELFTEST_NARRATIVE_ACTIVE_CONTRACT_CONFLATION:END -->
+
+<!-- SPECFORGE_ERR683_SFV475_GENERATED_JS_TEMPLATE_LITERAL_ESCAPE_FAILURE:START -->
+## ERR-683 — SFV475 预交付生成 ERR-682 JS 常量时未转义 Markdown 反引号
+
+- **日期与阶段**：2026-08-19，SFV475 assistant-side package syntax preflight。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / GENERATED_JS_SYNTAX_ERROR / TEMPLATE_LITERAL_ESCAPE_FAILURE`。
+- **现场事实**：SFV475 未交付用户；`node --check scripts/lib.mjs` 在 ERR-682 Markdown 分类行附近报 `SyntaxError: Unexpected identifier 'PACKAGE_PREFLIGHT_DEFECT'`。没有用户执行、仓库写入、Git、Fresh05、daemon 或 OpenCode 动作。
+- **精确根因**：生成器把包含 Markdown inline backticks / fenced code backticks 的 ERR-682 文本直接嵌入 JavaScript template literal，没有对内层反引号做 producer-side escaping，提前终止字符串。
+- **影响**：SFV475 作废，增加一次预交付失败；不构成 SpecForge 产品缺陷。
+- **正确做法**：文本 producer 在进入 JS template literal 前必须统一 escape backslash/backtick/interpolation token，或使用 JSON string serialization；所有 generated JS 必须在任何 selftest/module smoke 前先通过 syntax gate。
+- **防复发措施**：`EXP-002 / EXP-007 / EXP-015 / EXP-019 / EXP-020`；新增 `GENERATED_TEXT_SERIALIZATION=JSON_OR_ESCAPED_TEMPLATE` 与 Markdown-backtick positive fixture。
+- **当前状态**：corrected package 对新增 ledger blocks 做 template-literal escape，并要求全部 generated JS `node --check` 后关闭。
+```text
+ERR683_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT_GENERATED_JS_SYNTAX_ERROR
+ERR683_PRODUCT_DEFECT=NO
+ERR683_USER_DELIVERY=NONE
+ERR683_REPOSITORY_SIDE_EFFECT=NONE
+ERR683_FAILED_DRAFT=SFV475
+ERR683_ROOT_CAUSE=UNESCAPED_MARKDOWN_BACKTICKS_EMBEDDED_IN_GENERATED_JAVASCRIPT_TEMPLATE_LITERAL
+ERR683_FIX=PRODUCER_SIDE_TEMPLATE_LITERAL_ESCAPE_PLUS_GENERATED_JS_SYNTAX_GATE
+ERR683_STATUS=CLOSED_PREDELIVERY_GENERATED_JS_TEMPLATE_ESCAPE_GUARD
+```
+<!-- SPECFORGE_ERR683_SFV475_GENERATED_JS_TEMPLATE_LITERAL_ESCAPE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR684_SFV477_MANIFEST_IDENTITY_STATIC_ANCHOR_FALSE_POSITIVE:START -->
+## ERR-684 — SFV477 预交付 selftest 用错误静态字面量判断 manifest identity binding
+
+- **日期与阶段**：2026-08-19，ERR-674～ERR-683 Git finalizer（SFV477）assistant-side pre-delivery selftest。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / SELFTEST_STATIC_ANCHOR_FALSE_POSITIVE / MANIFEST_IDENTITY_BINDING_CHECK_DEFECT`。
+- **现场事实**：SFV477 未交付、未运行。其 package selftest 失败于 `MANIFEST_IDENTITY_BINDING`；runner 实际通过 `const m=JSON.parse(...)` 后检查 `m.identity.delivery_id` 并将 `m.identity.package_name` 绑定到 receipt identity，但 selftest 错误要求源码出现字面量 `manifest.identity.delivery_id`。
+- **根因**：selftest 将变量名/源码拼写当作语义契约，静态 anchor 与实际变量别名不一致，形成假阴性。
+- **影响**：仅增加一次助手侧预交付失败；没有用户执行、仓库写入、Git/Fresh05/daemon/OpenCode 副作用。SFV476 成功后的 exact-2 dirty governance state 保持为下一步输入。
+- **正确做法**：identity selftest 应验证 manifest 实际字段、runner 初始化 smoke 与 receipt package-name binding，不应依赖局部变量名。静态检查只验证结构性不可变项，不验证可自由重命名的 identifier。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-216`；新增 `SELFTEST_SEMANTIC_IDENTITY_CHECK=MANIFEST_LOAD_PLUS_INIT_SMOKE`、`LOCAL_IDENTIFIER_NAME_NOT_CONTRACT=YES`。
+- **当前状态**：corrected package 使用语义 manifest 校验与 init smoke 后关闭。
+```text
+ERR684_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR684_PRODUCT_DEFECT=NO
+ERR684_USER_DELIVERY=NONE
+ERR684_REPOSITORY_SIDE_EFFECT=NONE
+ERR684_FAILED_DRAFT=SFV477
+ERR684_ROOT_CAUSE=SELFTEST_REQUIRED_WRONG_SOURCE_LITERAL_MANIFEST_IDENTITY_DELIVERY_ID_INSTEAD_OF_SEMANTIC_MANIFEST_BINDING
+ERR684_FIX=SEMANTIC_MANIFEST_FIELD_VALIDATION_PLUS_INIT_SMOKE_NO_IDENTIFIER_NAME_CONTRACT
+ERR684_STATUS=CLOSED_PREDELIVERY_SELFTEST_STATIC_ANCHOR_FALSE_POSITIVE
+```
+<!-- SPECFORGE_ERR684_SFV477_MANIFEST_IDENTITY_STATIC_ANCHOR_FALSE_POSITIVE:END -->
