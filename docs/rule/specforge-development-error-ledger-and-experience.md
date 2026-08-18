@@ -10515,3 +10515,56 @@ ERR691_FIX=SEPARATE_POSITIVE_CHECK_FOR_EXACT_SEVEN_RESET_AND_ROLLBACK_STATE_VALU
 ERR691_STATUS=CLOSED_PREDELIVERY_SELFTEST_ROLLBACK_STATIC_MATCH_FALSE_POSITIVE_REPEATED_ERR688
 ```
 <!-- SPECFORGE_ERR691_SFV492_SELFTEST_ROLLBACK_STATIC_MATCH_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR692_SFV494_DIAGNOSTIC_PARSER_ANSI_NORMALIZATION_DEFECT:START -->
+## ERR-692 — SFV494 诊断解析器 ANSI 归一化正则未稳定处理 Vitest CSI 控制码
+
+- **日期与阶段**：2026-08-19，ERR-681 isolated repeatable full-regression clustering（SFV494）assistant-side pre-delivery parser golden selftest。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / DIAGNOSTIC_PARSER_ANSI_NORMALIZATION_DEFECT / EVIDENCE_TOOL_DEFECT`。
+- **现场事实**：SFV494 未交付、未运行；交付前 golden fixture 将同一 Vitest 失败日志分别以 ANSI 与非 ANSI 形式输入解析器，failure-signature 结果不一致，因此在任何用户执行前 fail-closed。canonical repository 未被 SFV494 触碰。
+- **根因**：首版 ANSI 清理表达式不能稳定覆盖 Vitest 使用的 CSI SGR 颜色序列，导致颜色字节残留进入诊断 signature。
+- **影响**：仅废弃 SFV494 草稿；没有用户执行、仓库写入、Git/Fresh05/daemon/OpenCode 副作用。不能用该草稿解析器做 A1/A2 repeatability 比较。
+- **正确做法**：采用覆盖标准 ESC/CSI 控制序列的归一化表达式，并以 ANSI/非 ANSI golden fixtures 强制验证 failure signatures 与 native summary 等价；解析器只产生诊断 signature，不产生自定义 failed-test count。
+- **防复发措施**：`EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-025`；证据解析器必须先过等价 golden fixture 才能进入 blocking diagnostic execution。
+- **当前状态**：CLOSED。SFV495 artifact pre-delivery selftest 已验证修正后的 ANSI normalizer；SFV495 后续因独立的 ERR-693 source pinning defect 在用户环境 prewrite fail-closed，因此没有执行 A1/A2。
+```text
+ERR692_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR692_PRODUCT_DEFECT=NO
+ERR692_FAILED_DRAFT=SFV494
+ERR692_USER_DELIVERY=NONE
+ERR692_REPOSITORY_SIDE_EFFECT=NONE
+ERR692_ROOT_CAUSE=ANSI_NORMALIZER_DID_NOT_STABLY_REMOVE_VITEST_CSI_SGR_CONTROL_SEQUENCES
+ERR692_FIX=STANDARD_ESC_CSI_NORMALIZER_PLUS_ANSI_NONANSI_GOLDEN_EQUIVALENCE_FIXTURE
+ERR692_CUSTOM_FAILED_TEST_COUNTS=FORBIDDEN
+ERR692_STATUS=CLOSED_PREDELIVERY_DIAGNOSTIC_PARSER_ANSI_NORMALIZATION_REPAIRED_SFV495
+```
+<!-- SPECFORGE_ERR692_SFV494_DIAGNOSTIC_PARSER_ANSI_NORMALIZATION_DEFECT:END -->
+
+<!-- SPECFORGE_ERR693_SFV495_SOURCE_BLOB_PINNING_DEFECT:START -->
+## ERR-693 — SFV495 把 current-handoff 的 source blob 固定成错误 SHA，导致用户执行在 prewrite SOURCE_CONTRACT_MISMATCH fail-closed
+
+- **日期与阶段**：2026-08-19，ERR-692 reconciliation + ERR-681 isolated repeatable full-regression clustering（SFV495）用户执行 prewrite source contract。
+- **分类**：`PACKAGE_PREFLIGHT_DEFECT / EVIDENCE_DEFECT / SOURCE_BLOB_PINNING_DEFECT`。
+- **现场事实**：SFV495 已交付并由用户执行；package integrity PASS 后在 `SOURCE_CONTRACT_MISMATCH` 停止。没有出现 ERR-692 reconciliation PASS，也没有进入 A1/A2。用户回执明确 commit/push/Fresh05/daemon/OpenCode 均未执行。
+- **独立远端复核**：`main@257e1b5ffb9d2f2c0b7124833b17e5b886769e69` 的 `current-handoff.md` Git blob 实际为 `7354de564321deca347c0a640ecd39aee7817523`；SFV495 runner 错误固定为 `7354e05e6dd70fe71916ca47efe9942736518603`。同一 HEAD 的 ledger blob `fe612eb75483493e41b080b9c9aaa1559d1871da` 固定正确。
+- **根因**：构包时把 assistant-side scratch/source metadata 中的错误 handoff SHA 当成 live GitHub truth，没有在 final artifact acceptance 前对每个 pinned source path 重新做逐文件 remote blob metadata 对账。
+- **影响**：SFV495 被废弃；canonical repository 在任何治理写入、测试、build、clone 前保持原状态。ERR-681 未获得新的 full-regression 证据。
+- **正确做法**：每个交付包的 source blob pin 必须来自同一 remote HEAD 的逐路径 fresh metadata；manifest/runner pins 生成后必须再次与 remote file metadata 对账，禁止从旧 summary、人工转抄或邻近版本推导。
+- **防复发措施**：`EXP-001 / EXP-007 / EXP-015 / EXP-019 / EXP-020 / EXP-213`；新增 `FINAL_SOURCE_PIN_REMOTE_RECONCILIATION=MANDATORY`，并将 handoff/ledger/Authority/kernel 的 path→blob 映射作为 final acceptance 的独立证据。
+- **当前状态**：CLOSED。SFV496 使用 freshly re-fetched remote blob `7354de564321deca347c0a640ecd39aee7817523` 并只执行 ERR-692/ERR-693 exact-two governance reconciliation。
+```text
+ERR693_CLASSIFICATION=PACKAGE_PREFLIGHT_DEFECT
+ERR693_PRODUCT_DEFECT=NO
+ERR693_FAILED_DELIVERY=SFV495
+ERR693_USER_DELIVERY=YES
+ERR693_USER_EXECUTION=YES
+ERR693_FAILURE_POINT=PREWRITE_SOURCE_CONTRACT
+ERR693_REPOSITORY_SIDE_EFFECT=NONE
+ERR693_A1_A2_ACTION=NONE
+ERR693_WRONG_HANDOFF_BLOB=7354e05e6dd70fe71916ca47efe9942736518603
+ERR693_CORRECT_HANDOFF_BLOB=7354de564321deca347c0a640ecd39aee7817523
+ERR693_ROOT_CAUSE=PINNED_SOURCE_METADATA_NOT_RECONCILED_PATH_BY_PATH_AGAINST_LIVE_REMOTE_HEAD
+ERR693_FIX=FRESH_REMOTE_PER_PATH_BLOB_RECONCILIATION_BEFORE_FINAL_ARTIFACT_ACCEPTANCE
+ERR693_STATUS=CLOSED_SFV495_SOURCE_BLOB_PINNING_DEFECT_REPAIRED_SFV496
+```
+<!-- SPECFORGE_ERR693_SFV495_SOURCE_BLOB_PINNING_DEFECT:END -->
