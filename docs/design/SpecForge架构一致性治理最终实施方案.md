@@ -113,7 +113,7 @@ Runtime 状态约束
 |---|---|
 | 文档身份、权威边界、开发模式、设计原则 | 第 1 章 |
 | SpecForge 自身开发、Stage、Bootstrap、交付、Recovery | 第 2 章 |
-| 完成后的产品治理对象、Canonical Product Lifecycle 与总体架构 | 第 3 章 |
+| 完成后的产品治理对象、Canonical Product Lifecycle、spec_migration no-code 分支（3.6）与总体架构 | 第 3 章 |
 | Requirement / Impact / Classification / Workflow | 第 4 章 |
 | Candidate 与正式 Spec 生产 | 第 5 章 |
 | Contract / Trace | 第 6 章 |
@@ -378,7 +378,6 @@ SCOPE_VALIDATION=PASS|FAIL
 EXECUTABILITY_VALIDATION=PASS|FAIL
 CONSUMER_VALIDATION=PASS|FAIL
 VALIDATION_EVIDENCE=
-VALIDATOR_ID=
 VALIDATOR_SELF_CHECK=PASS|FAIL
 VALIDATOR_ACCEPTED=YES|NO
 ARTIFACT_ACCEPTED=YES|NO
@@ -1352,7 +1351,7 @@ identity.receipt_emitter.delivery_id
 ```
 3. `identity.runner.delivery_id`、`identity.validator.delivery_id`、`identity.receipt_emitter.delivery_id` 必须与根 `identity.delivery_id` 完全相等；任一不一致时 `IDENTITY_BINDING_AUDIT=FAIL`。
 4. `RUNNER_ID`、`VALIDATOR_ID`、`RECEIPT_EMITTER_ID` 必须由当前包的 identity manifest 读取；禁止在 receipt emitter 中另复制一个可独立漂移的版本化 ID 常量。
-5. 对版本化本地交付，`RUNNER_ID` 与 `VALIDATOR_ID` 必须属于当前 `DELIVERY_ID` 命名空间；例如 `DELIVERY_ID=V117` 时，版本化 ID 必须使用 `V117_` 前缀。上一交付身份不得出现在当前交付的正式身份字段。
+5. 对版本化本地交付，`RUNNER_ID` 与 `VALIDATOR_ID` 必须属于当前 `DELIVERY_ID` 命名空间；版本化 ID 必须以“当前 `DELIVERY_ID` 值 + 下划线”为前缀。上一交付身份不得出现在当前交付的正式身份字段。
 6. `PACKAGE_NAME` 必须与实际 ZIP 文件名一致；解压后的 bundle 目录、runner 文件名、validator 文件名必须与 identity manifest 声明一致。
 7. 标准执行回执的字段集合以 `GOV-STAGE-RECEIPT-001` 固定最小回执为唯一 canonical output schema；本规则不再重复列字段，只约束这些身份字段必须全部来自同一个 `manifest.json` identity object。
 8. `RESULT=SUCCESS` 时必须 `IDENTITY_BINDING_AUDIT=PASS`；身份不一致属于 `VALIDATION_HARNESS_DEFECT`，不得把其回执作为完整 Artifact Acceptance 证据。
@@ -1362,7 +1361,7 @@ identity.receipt_emitter.delivery_id
 12. 该规则属于交付与证据治理，不改变任何业务 Workflow、Gate、Runtime、Work Item 状态机或 Project Contract。
 #### 2.10.1 Delivery Internal Reference Binding
 
-Delivery Identity 不只绑定 package / runner / validator / receipt emitter 的顶层身份，还必须约束标准执行回执内部所有“当前交付版本引用”，防止 `DELIVERY_ID=V121` 但 `NEXT_LEGAL_ACTION` 仍引用 `V120` 的证据漂移。
+Delivery Identity 不只绑定 package / runner / validator / receipt emitter 的顶层身份，还必须约束标准执行回执内部所有“当前交付版本引用”，防止回执控制字段仍引用任一历史交付版本的证据漂移。
 
 正式字段：
 
@@ -1375,24 +1374,24 @@ VERSION_TOKEN_PATTERN=V[0-9]+
 
 固定规则：
 
-13. `manifest.json` 的 identity object 必须声明 `receipt_current_delivery_reference_fields`，列出标准回执中语义属于“本次交付”的控制字段；至少覆盖 `CURRENT_STAGE`、`ACTION_NAME`、`NEXT_STAGE`、`NEXT_LEGAL_ACTION`。
-14. 对上述字段，任何匹配 `VERSION_TOKEN_PATTERN=V[0-9]+` 的版本 token 必须与根 `DELIVERY_ID` 完全相等；同一字段可以没有版本 token，但只要出现版本 token 就不得引用旧交付。
-15. `PACKAGE_NAME`、`RUNNER_ID`、`VALIDATOR_ID`、`RECEIPT_EMITTER_ID` 继续受现有 Delivery Identity 顶层绑定约束；内部引用审计不能替代 `IDENTITY_BINDING_AUDIT`。
-16. `NEXT_STAGE` / `NEXT_LEGAL_ACTION` 若要求用户携带、执行、验证或恢复某个版本化 receipt / ZIP / artifact，其版本必须来自当前 `DELIVERY_ID`，禁止独立硬编码上一版本号。
-17. 历史事实若确需引用旧版本，必须放在明确的 provenance/evidence 历史字段中，不得伪装成 `CURRENT_*`、`NEXT_*`、`ACTION_*` 等当前控制字段；历史证据不属于 `receipt_current_delivery_reference_fields`。
-18. `RESULT=SUCCESS` 时必须同时满足：
+1. `manifest.json` 的 identity object 必须声明 `receipt_current_delivery_reference_fields`，列出标准回执中语义属于“本次交付”的控制字段；至少覆盖 `CURRENT_STAGE`、`ACTION_NAME`、`NEXT_STAGE`、`NEXT_LEGAL_ACTION`。
+2. 对上述字段，任何匹配 `VERSION_TOKEN_PATTERN=V[0-9]+` 的版本 token 必须与根 `DELIVERY_ID` 完全相等；同一字段可以没有版本 token，但只要出现版本 token 就不得引用旧交付。
+3. `PACKAGE_NAME`、`RUNNER_ID`、`VALIDATOR_ID`、`RECEIPT_EMITTER_ID` 继续受现有 Delivery Identity 顶层绑定约束；内部引用审计不能替代 `IDENTITY_BINDING_AUDIT`。
+4. `NEXT_STAGE` / `NEXT_LEGAL_ACTION` 若要求用户携带、执行、验证或恢复某个版本化 receipt / ZIP / artifact，其版本必须来自当前 `DELIVERY_ID`，禁止独立硬编码上一版本号。
+5. 历史事实若确需引用旧版本，必须放在明确的 provenance/evidence 历史字段中，不得伪装成 `CURRENT_*`、`NEXT_*`、`ACTION_*` 等当前控制字段；历史证据不属于 `receipt_current_delivery_reference_fields`。
+6. `RESULT=SUCCESS` 时必须同时满足：
 ```text
 IDENTITY_BINDING_AUDIT=PASS
 DELIVERY_INTERNAL_REFERENCE_AUDIT=PASS
 DELIVERY_INTERNAL_REFERENCE_MISMATCHES=NONE
 ```
 任一不成立时属于 `VALIDATION_HARNESS_DEFECT / EVIDENCE_IDENTITY_DEFECT`，不得把回执视为完整成功证据。
-19. receipt emitter 必须在输出 SUCCESS 回执之前执行内部引用审计；不能先打印 SUCCESS 再事后发现旧版本引用。
-20. package verifier 必须独立检查 manifest 的 `receipt_current_delivery_reference_fields`、runner 的 receipt 构造来源以及用户可见成功回执控制字段；只验证顶层 `DELIVERY_ID` 不足以接受交付。
-21. 当前交付版本字符串应从 `identity.delivery_id` 派生；需要在 `NEXT_LEGAL_ACTION` 中引用当前 receipt 时必须动态构造，不得复制上一 runner 的 `Vxxx` 常量。
-22. Bootstrap evidence outer CMD 中的版本化 bundle 目录、runner entry 和 artifact token 必须从当前 `identity.delivery_id` 派生；发现其他 `Vxxx` token 时 `DELIVERY_INTERNAL_REFERENCE_AUDIT=FAIL`。该检查必须与 `OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS` 的控制流验证同时完成。
-23. 版本化 bundle 目录身份必须按 manifest 派生的精确值 `SF${DELIVERY_ID}` 比较；validator 必须计算 expected bundle name 并与实际 ZIP 顶层目录 / outer CMD bundle 引用做精确绑定。禁止用 `\bV[0-9]+\b` 或其他“独立裸 Vxxx token”扫描替代 bundle identity 判定，因为 `Vxxx` 合法嵌入 `SFVxxx`。
-24. `BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME`；任何 package validator 若把当前合法 `SF${DELIVERY_ID}` 误判为缺失，属于 `VALIDATION_HARNESS_DEFECT`，不得进入仓库写入。
+7. receipt emitter 必须在输出 SUCCESS 回执之前执行内部引用审计；不能先打印 SUCCESS 再事后发现旧版本引用。
+8. package verifier 必须独立检查 manifest 的 `receipt_current_delivery_reference_fields`、runner 的 receipt 构造来源以及用户可见成功回执控制字段；只验证顶层 `DELIVERY_ID` 不足以接受交付。
+9. 当前交付版本字符串应从 `identity.delivery_id` 派生；需要在 `NEXT_LEGAL_ACTION` 中引用当前 receipt 时必须动态构造，不得复制上一 runner 的版本化常量。
+10. Bootstrap evidence outer CMD 中的版本化 bundle 目录、runner entry 和 artifact token 必须从当前 `identity.delivery_id` 派生；发现其他 `Vxxx` token 时 `DELIVERY_INTERNAL_REFERENCE_AUDIT=FAIL`。该检查必须与 `OUTER_CMD_CONTROL_FLOW=LINEAR_REQUIRED_STEPS` 的控制流验证同时完成。
+11. 版本化 bundle 目录身份必须按 manifest 派生的精确值 `SF${DELIVERY_ID}` 比较；validator 必须计算 expected bundle name 并与实际 ZIP 顶层目录 / outer CMD bundle 引用做精确绑定。禁止用 `\bV[0-9]+\b` 或其他“独立裸 Vxxx token”扫描替代 bundle identity 判定，因为 `Vxxx` 合法嵌入 `SFVxxx`。
+12. `BUNDLE_IDENTITY_MATCH_MODE=EXACT_EXPECTED_BUNDLE_NAME`；任何 package validator 若把当前合法 `SF${DELIVERY_ID}` 误判为缺失，属于 `VALIDATION_HARNESS_DEFECT`，不得进入仓库写入。
 
 ### 2.11 Bootstrap Envelope
 
@@ -1410,7 +1409,11 @@ BOOTSTRAP_FAILURE_CONTRACT=PASS|FAIL
 BOOTSTRAP_EVIDENCE_DELIVERY_CONTRACT=PASS|FAIL
 BOOTSTRAP_SUCCESS_TRANSITION_CONTRACT=PASS|FAIL
 BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
+```
 
+Envelope 常量值契约（对 2.10、2.11.3、2.11.7 中同名常量为同一份定义的有意复制，修改任一处必须按 2.11.5 原子同步）：
+
+```text
 BOOTSTRAP_ENVELOPE_VERSION=3
 AUTHORITY_REF_API_URL=https://api.github.com/repos/lyqstart/SpecForge/git/ref/heads/main
 LIVE_REF_RESOLUTION_POLICY=ORDERED_APPROVED_SOURCE_FALLBACK
@@ -1790,64 +1793,7 @@ User Need
 ```
 <!-- SPECFORGE_CANONICAL_PRODUCT_LIFECYCLE:END -->
 
-**GOV-SPEC-MIGRATION-NO-CODE-001：** `workflow_type=spec_migration` 且 `workflow_path=spec_migration_path` 是同一 Canonical Product Lifecycle 内的 **spec-only / no-code 适用性分支**，不是第二套 Workflow、Gate 或关闭流程。
-
-固定规则：
-
-```text
-Atomic Spec Merge = REQUIRED
-Post-Spec-Merge Gate = REQUIRED
-Code Permission = NOT_APPLICABLE
-Implementation = NOT_APPLICABLE
-Actual Scope Audit = REQUIRED(mode=no_code_change)
-Verification = REQUIRED
-Semantic Closure = REQUIRED(profile=spec_migration)
-Verification Gate = REQUIRED
-Formal Version Gate = REQUIRED
-Close Gate = REQUIRED
-```
-
-该分支必须满足：
-
-1. Candidate / Atomic Spec Merge 只迁移正式 Project Spec / Module Spec / Contract / Trace，不产生业务 Task 或业务代码实现；
-2. Post-Spec-Merge Gate 已通过后，允许由正式状态工具从 `post_merge_verified` 进入 `verification_running`，不得经过 `implementation_ready` / `implementation_running` / `implementation_done`；
-3. `sf_v11_code_permission` 对 release / enable / extend / append 必须返回 `CODE_PERMISSION_NOT_APPLICABLE_FOR_SPEC_MIGRATION`，不得创建 HardStop、不得发放权限、不得推进 implementation state；
-4. `sf_changed_files_audit(mode=no_code_change)` 必须证明 Code Permission 从未启用、业务/项目代码实际修改为零、未解决 blocked write 为零；
-5. 不得为了满足通用实现链而伪造 `tasks.md`、`allowed_write_files`、`governance_scope.json`、`filesystem_baseline.json` 或业务代码；
-6. Semantic Closure 必须使用 `closure_profile=spec_migration` / `workflow_type=spec_migration`，证明 PSV、Atomic Spec Merge、Post-Spec-Merge Gate、Trace/Contract、no-code Actual Scope Audit 与 Verification 的真实闭环；不得伪造 `OUT -> REQ -> DD -> TASK -> EV` 实现链；
-7. Formal Version Gate 与 Close Gate 仍是必需步骤；对本分支，Code Permission 的合法状态是 `NOT_APPLICABLE`，并以 no-code audit + never-enabled daemon facts 证明；
-8. Trace Delta 在迁移涉及 Trace 时仍为必需正式证据。
-9. `spec_migration` 的 no-code Verification 状态推进必须消费**最终冻结且已通过 Candidate / Atomic Spec Merge / Post-Spec-Merge Gate 的 Candidate manifest**；不得把某一个早期 producer（例如 `prepare_repair`）的局部输出形状误当成最终 manifest 的唯一合法形状。最终 manifest 可以在同一原子 Candidate 中同时包含 Project / Module Spec、Project / Module Contract、Design 与 Trace 条目。
-10. `post_merge_verified -> verification_running` 的 workflow-specific transition guard 对 `spec_migration` 只允许验证稳定身份与通用 canonical 边界：正确 `work_item_id` / `workflow_path`、`merge_required=true`、非空 entries、每个 entry 使用 `operation=replace`、`candidate_path` 位于 `candidates/**`、`target_path` 位于 `.specforge/project/**` 且不得路径逃逸；不得要求全部条目都位于 `project/modules/**`。
-11. Git Merge 对 `spec_migration` 仍为 REQUIRED；“no-code”只表示没有业务 Implementation，不表示 `.specforge/project/**` 的 Atomic Spec Merge 结果可以绕过 Git delivery。
-12. 对 Git-enabled 项目，`spec_migration` 必须在正式 Candidate/Atomic Spec Merge 交付前建立 Work Item Git context / 工作分支；Formal Version Gate 前必须通过正式 Git checkpoint 把本 WI 的 Project Spec diff 和当前治理 evidence 提交到该工作分支，禁止在默认分支直接 checkpoint。
-13. Formal Version 对 `spec_migration` 必须冻结 Project Spec Git diff fingerprint：以 `git_context.base_commit` 为基线，只对 `.specforge/project/**` 的 diff 文件集合与内容做稳定 fingerprint。Close 之后允许新增同 WI 治理 evidence，但任何 `.specforge/project/**` 内容漂移都必须阻断 Git Merge。
-14. 历史恢复例外：若 `spec_migration` 已经 `closed`、Formal Version/Close 均 passed、但因旧产品缺陷没有 `git_context.json`，只允许 `sf_git_branch_create(recovery_mode="closed_spec_migration")` 恢复 Git delivery。该动作必须取得新的语义分支名用户确认，并在 branch side effect 前证明：指定 passed Verification Attempt 是 latest、其 `input-snapshot.json` 对当前全部 `.specforge/project/**` Git diff 文件均存在同路径同 SHA256 证据；无法证明时 Fail Closed，不得重跑 Gate 代替。
-15. closed-spec-migration Git recovery 只允许写 `git_context.json` 与 `git_delivery_recovery.json`；随后通过正式 `sf_git_checkpoint_commit` 精确提交当前 WI 的 `.specforge/project/**` diff 与 `.specforge/work-items/<CURRENT_WI>/**` 治理 evidence，不得提交其他 Work Item evidence。
-16. Git Merge Plan / Run / Post-Merge Verify 的 worktree cleanliness 对当前 WI 只允许忽略其他 Work Item 的 `.specforge/work-items/<OTHER_WI>/**` governance artifacts；任何 `.specforge/project/**`、当前 WI、源码/配置或其他路径的 dirty 状态仍必须阻断。被忽略路径必须显式返回用于审计。
-17. `sf_git_branch_create` 必须自行强制 closed `spec_migration` recovery contract，不能依赖 Agent/调用者自觉传参：当 Work Item 已 `closed` 且 workflow 为 `spec_migration/spec_migration_path` 时，未显式传 `recovery_mode=closed_spec_migration` 必须 Fail Closed，禁止落入普通 branch-create 路径。
-18. closed-spec-migration recovery 允许一次**部分 side-effect 幂等续接**：若用户确认的目标分支已经由同一 WI 创建、当前正位于该分支、`git_context.json` 的 `work_item_id/branch_name/base_branch/base_commit` 与请求完全一致、当前 HEAD 仍严格等于 `base_commit`、且尚无 checkpoint commit，则允许在不再次创建/切换分支的情况下执行同一 latest passed Verification Attempt + Project Spec SHA 校验并补写 `git_delivery_recovery.json`。任何 context/branch/HEAD 不一致都必须 Fail Closed。
-19. 上述幂等续接不得修改 `git_context.json`、不得生成第二个分支、不得推进 Work Item 状态、不得重跑 Gate/Close；成功返回必须显式声明 `branch_created=false`、`git_context_reused=true`、`recovery_validation=passed` 和 `recovery_evidence_path`。
-
-20. `Trace Delta` 的适用性必须由**最终冻结 Candidate 的真实迁移范围**决定：只有 Candidate manifest 含 `project_trace` / `module_trace`，或正式目标为 `trace.md` / `trace_matrix.md` 时，`candidates/trace_delta.md` 才是必需正式证据。若 Trace 在本次迁移中未变化，Candidate Gate / Semantic Closure / Close Gate 不得仅因 `workflow_type=spec_migration` 强制制造零变化 `trace_delta`。
-21. 对确实涉及 Trace 的 `spec_migration`，`required_files_gate` 必须在 Candidate Gate 阶段就要求非空权威 `candidates/trace_delta.md`，不得允许缺失该后续 Verification/Close 必需输入的 Candidate 继续进入 User Decision、Atomic Spec Merge 或 Verification。
-22. 若 `spec_migration` 已到 `verification_done`，之后某个受治理 Verification 输入发生合法新增/变化并使既有 Semantic Closure provenance 仅出现 `SEMANTIC_CLOSURE_INPUT_STALE`，允许通过**唯一 no-code 恢复边** `verification_done -> post_merge_verified` 解冻并重建验证闭包。该边不得供其他 workflow 使用，不得经过 `implementation_ready / implementation_running / implementation_done`，并且必须由状态权威证明：workflow 为 `spec_migration`、冻结 Candidate manifest 仍满足 canonical no-code contract、既有 Semantic Closure 存在、provenance 当前确实 stale；provenance 仍 current、payload 损坏、closure 缺失或存在其他错误时必须 Fail Closed。
-23. 上述恢复完成后，必须重新生成 Semantic Closure（`force=true`），再沿既有 `post_merge_verified -> verification_running -> verification_done` 执行新的 Verification Gate + Formal Version Gate；因为输入已发生变化，不得用历史 Attempt reconciliation 代替重验。只有新的 closure provenance 与 Verification/Formal Version 都 current 且通过，Close Gate 才允许继续。
-
-**GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001：** `spec_migration_path` 的 Project Spec repair 默认仍只能从当前 `.specforge/project/**` 读取 source。只有为了恢复已经被产品缺陷破坏、且历史正式内容仍被 immutable Gate Attempt 证明的 Project Spec 时，才允许把历史 Work Item 的 `candidates/**` 作为 repair source；该例外不得形成直接 Project Spec 写入或第二套恢复流程。
-
-固定规则：
-1. 历史 source 只允许位于 `.specforge/work-items/<SOURCE_WI>/candidates/**`，调用方必须显式提供 `source_work_item_id + gate_attempt_id`；普通 `.specforge/project/**` source 不受本例外影响。
-2. `gate_attempt_id` 必须属于 `SOURCE_WI`，且其 `attempt-result.json` 必须满足 `source=gate_run`、`summary_status=passed`、`input_snapshot=input-snapshot.json`；Attempt / Snapshot 缺失或身份不一致必须 Fail Closed。
-3. 历史 `candidate_manifest.json`、`user_decision.json`、`merge_report.md` 与被引用 Candidate source 的当前字节，必须分别与该 Attempt 的 `input-snapshot.json` 中同路径 `sha256 + size` 完全一致；任一漂移必须 Fail Closed。
-4. 历史 User Decision 必须为真实已批准决策，并且其 `manifest_hash` 必须严格绑定当前历史 `candidate_manifest.json` 字节；历史 Candidate Manifest 的 `work_item_id` 必须等于 `SOURCE_WI`。
-5. 被引用 Candidate source 必须在历史 Candidate Manifest 中存在唯一条目，且其 `candidate_path` 必须映射到本次 repair 正在恢复的同一正式 `target_path`，`operation=replace`；禁止把一个历史 Candidate 借用到不同正式目标。
-6. 同一个 immutable `input-snapshot.json` 必须同时证明：历史 Candidate source 与其正式 `target_path` 在该 passed Attempt 时均存在为普通文件，且二者 `sha256` 完全相等；只有这样才能把该 Candidate 认定为已经 Atomic Spec Merge 生效过的正式内容来源。
-7. 历史 `merge_report.md` 必须仍由 Snapshot 绑定且明确 `Status: success`；无法证明 Atomic Spec Merge 成功时不得使用历史 source。
-8. repair preparation 只能把已验证 source 复制成**新的 repair WI Candidate**。之后仍必须走该新 WI 的 Required Candidate Gates → User Decision → Atomic Spec Merge → Post-Spec-Merge → no-code Verification → Formal Version Gate → Close → Git Merge；不得直接覆盖 `.specforge/project/**`。
-9. 新 repair WI 的 Atomic Spec Merge 继续由现有 Merge Runner 按当前 Project Spec Version 签发下一 PSV；`spec_manifest.json` 必须由 Merge Runner 根据新 repair Candidate 与当前仍有效的 Project Spec sibling facts 重新生成，历史 source 的旧 PSV/hash 只证明内容来源，不允许回滚版本或把历史 manifest 字节原样覆盖回来。
-10. immutable source binding 必须进入 `project_spec_repair_plan.json` 作为审计证据；历史 Work Item、Gate Attempt、Snapshot、Candidate Manifest、User Decision、Merge Report 与历史 Candidate 均保持不可变。
-11. 本规则只扩展 `spec_migration` 已有 repair source contract，不新增 Workflow、Gate、Agent、状态边、Code Permission 或 Merge Runner。
+spec-only / no-code 适用性分支（`spec_migration`）的完整分支契约见 `GOV-SPEC-MIGRATION-NO-CODE-001`（3.6）。
 
 Trace 贯穿 Requirement、Architecture、Data Model、Module Design、Contract、Task、Implementation 和 Verification。
 
@@ -2093,6 +2039,70 @@ BLOCK
 核心原则：
 
 > **一个正式对象如果没有明确的生产者和后续消费者，就不应该成为治理对象。**
+
+### 3.6 spec_migration no-code 分支契约
+
+本节是 `spec_migration` spec-only / no-code 分支（含 Git 交付、恢复与 repair source）的唯一规范位置；3.1 Canonical Product Lifecycle 主线不受本节影响，本节只是该主线在无代码实现场景下的适用性分支契约。
+
+**GOV-SPEC-MIGRATION-NO-CODE-001：** `workflow_type=spec_migration` 且 `workflow_path=spec_migration_path` 是同一 Canonical Product Lifecycle 内的 **spec-only / no-code 适用性分支**，不是第二套 Workflow、Gate 或关闭流程。
+
+固定规则：
+
+```text
+Atomic Spec Merge = REQUIRED
+Post-Spec-Merge Gate = REQUIRED
+Code Permission = NOT_APPLICABLE
+Implementation = NOT_APPLICABLE
+Actual Scope Audit = REQUIRED(mode=no_code_change)
+Verification = REQUIRED
+Semantic Closure = REQUIRED(profile=spec_migration)
+Verification Gate = REQUIRED
+Formal Version Gate = REQUIRED
+Close Gate = REQUIRED
+```
+
+该分支必须满足：
+
+1. Candidate / Atomic Spec Merge 只迁移正式 Project Spec / Module Spec / Contract / Trace，不产生业务 Task 或业务代码实现；
+2. Post-Spec-Merge Gate 已通过后，允许由正式状态工具从 `post_merge_verified` 进入 `verification_running`，不得经过 `implementation_ready` / `implementation_running` / `implementation_done`；
+3. `sf_v11_code_permission` 对 release / enable / extend / append 必须返回 `CODE_PERMISSION_NOT_APPLICABLE_FOR_SPEC_MIGRATION`，不得创建 HardStop、不得发放权限、不得推进 implementation state；
+4. `sf_changed_files_audit(mode=no_code_change)` 必须证明 Code Permission 从未启用、业务/项目代码实际修改为零、未解决 blocked write 为零；
+5. 不得为了满足通用实现链而伪造 `tasks.md`、`allowed_write_files`、`governance_scope.json`、`filesystem_baseline.json` 或业务代码；
+6. Semantic Closure 必须使用 `closure_profile=spec_migration` / `workflow_type=spec_migration`，证明 PSV、Atomic Spec Merge、Post-Spec-Merge Gate、Trace/Contract、no-code Actual Scope Audit 与 Verification 的真实闭环；不得伪造 `OUT -> REQ -> DD -> TASK -> EV` 实现链；
+7. Formal Version Gate 与 Close Gate 仍是必需步骤；对本分支，Code Permission 的合法状态是 `NOT_APPLICABLE`，并以 no-code audit + never-enabled daemon facts 证明；
+8. Trace Delta 在迁移涉及 Trace 时仍为必需正式证据。
+9. `spec_migration` 的 no-code Verification 状态推进必须消费**最终冻结且已通过 Candidate / Atomic Spec Merge / Post-Spec-Merge Gate 的 Candidate manifest**；不得把某一个早期 producer（例如 `prepare_repair`）的局部输出形状误当成最终 manifest 的唯一合法形状。最终 manifest 可以在同一原子 Candidate 中同时包含 Project / Module Spec、Project / Module Contract、Design 与 Trace 条目。
+10. `post_merge_verified -> verification_running` 的 workflow-specific transition guard 对 `spec_migration` 只允许验证稳定身份与通用 canonical 边界：正确 `work_item_id` / `workflow_path`、`merge_required=true`、非空 entries、每个 entry 使用 `operation=replace`、`candidate_path` 位于 `candidates/**`、`target_path` 位于 `.specforge/project/**` 且不得路径逃逸；不得要求全部条目都位于 `project/modules/**`。
+11. Git Merge 对 `spec_migration` 仍为 REQUIRED；“no-code”只表示没有业务 Implementation，不表示 `.specforge/project/**` 的 Atomic Spec Merge 结果可以绕过 Git delivery。
+12. 对 Git-enabled 项目，`spec_migration` 必须在正式 Candidate/Atomic Spec Merge 交付前建立 Work Item Git context / 工作分支；Formal Version Gate 前必须通过正式 Git checkpoint 把本 WI 的 Project Spec diff 和当前治理 evidence 提交到该工作分支，禁止在默认分支直接 checkpoint。
+13. Formal Version 对 `spec_migration` 必须冻结 Project Spec Git diff fingerprint：以 `git_context.base_commit` 为基线，只对 `.specforge/project/**` 的 diff 文件集合与内容做稳定 fingerprint。Close 之后允许新增同 WI 治理 evidence，但任何 `.specforge/project/**` 内容漂移都必须阻断 Git Merge。
+14. 历史恢复例外：若 `spec_migration` 已经 `closed`、Formal Version/Close 均 passed、但因旧产品缺陷没有 `git_context.json`，只允许 `sf_git_branch_create(recovery_mode="closed_spec_migration")` 恢复 Git delivery。该动作必须取得新的语义分支名用户确认，并在 branch side effect 前证明：指定 passed Verification Attempt 是 latest、其 `input-snapshot.json` 对当前全部 `.specforge/project/**` Git diff 文件均存在同路径同 SHA256 证据；无法证明时 Fail Closed，不得重跑 Gate 代替。
+15. closed-spec-migration Git recovery 只允许写 `git_context.json` 与 `git_delivery_recovery.json`；随后通过正式 `sf_git_checkpoint_commit` 精确提交当前 WI 的 `.specforge/project/**` diff 与 `.specforge/work-items/<CURRENT_WI>/**` 治理 evidence，不得提交其他 Work Item evidence。
+16. Git Merge Plan / Run / Post-Merge Verify 的 worktree cleanliness 对当前 WI 只允许忽略其他 Work Item 的 `.specforge/work-items/<OTHER_WI>/**` governance artifacts；任何 `.specforge/project/**`、当前 WI、源码/配置或其他路径的 dirty 状态仍必须阻断。被忽略路径必须显式返回用于审计。
+17. `sf_git_branch_create` 必须自行强制 closed `spec_migration` recovery contract，不能依赖 Agent/调用者自觉传参：当 Work Item 已 `closed` 且 workflow 为 `spec_migration/spec_migration_path` 时，未显式传 `recovery_mode=closed_spec_migration` 必须 Fail Closed，禁止落入普通 branch-create 路径。
+18. closed-spec-migration recovery 允许一次**部分 side-effect 幂等续接**：若用户确认的目标分支已经由同一 WI 创建、当前正位于该分支、`git_context.json` 的 `work_item_id/branch_name/base_branch/base_commit` 与请求完全一致、当前 HEAD 仍严格等于 `base_commit`、且尚无 checkpoint commit，则允许在不再次创建/切换分支的情况下执行同一 latest passed Verification Attempt + Project Spec SHA 校验并补写 `git_delivery_recovery.json`。任何 context/branch/HEAD 不一致都必须 Fail Closed。
+19. 上述幂等续接不得修改 `git_context.json`、不得生成第二个分支、不得推进 Work Item 状态、不得重跑 Gate/Close；成功返回必须显式声明 `branch_created=false`、`git_context_reused=true`、`recovery_validation=passed` 和 `recovery_evidence_path`。
+
+20. `Trace Delta` 的适用性必须由**最终冻结 Candidate 的真实迁移范围**决定：只有 Candidate manifest 含 `project_trace` / `module_trace`，或正式目标为 `trace.md` / `trace_matrix.md` 时，`candidates/trace_delta.md` 才是必需正式证据。若 Trace 在本次迁移中未变化，Candidate Gate / Semantic Closure / Close Gate 不得仅因 `workflow_type=spec_migration` 强制制造零变化 `trace_delta`。
+21. 对确实涉及 Trace 的 `spec_migration`，`required_files_gate` 必须在 Candidate Gate 阶段就要求非空权威 `candidates/trace_delta.md`，不得允许缺失该后续 Verification/Close 必需输入的 Candidate 继续进入 User Decision、Atomic Spec Merge 或 Verification。
+22. 若 `spec_migration` 已到 `verification_done`，之后某个受治理 Verification 输入发生合法新增/变化并使既有 Semantic Closure provenance 仅出现 `SEMANTIC_CLOSURE_INPUT_STALE`，允许通过**唯一 no-code 恢复边** `verification_done -> post_merge_verified` 解冻并重建验证闭包。该边不得供其他 workflow 使用，不得经过 `implementation_ready / implementation_running / implementation_done`，并且必须由状态权威证明：workflow 为 `spec_migration`、冻结 Candidate manifest 仍满足 canonical no-code contract、既有 Semantic Closure 存在、provenance 当前确实 stale；provenance 仍 current、payload 损坏、closure 缺失或存在其他错误时必须 Fail Closed。
+23. 上述恢复完成后，必须重新生成 Semantic Closure（`force=true`），再沿既有 `post_merge_verified -> verification_running -> verification_done` 执行新的 Verification Gate + Formal Version Gate；因为输入已发生变化，不得用历史 Attempt reconciliation 代替重验。只有新的 closure provenance 与 Verification/Formal Version 都 current 且通过，Close Gate 才允许继续。
+
+**GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001：** `spec_migration_path` 的 Project Spec repair 默认仍只能从当前 `.specforge/project/**` 读取 source。只有为了恢复已经被产品缺陷破坏、且历史正式内容仍被 immutable Gate Attempt 证明的 Project Spec 时，才允许把历史 Work Item 的 `candidates/**` 作为 repair source；该例外不得形成直接 Project Spec 写入或第二套恢复流程。
+
+固定规则：
+1. 历史 source 只允许位于 `.specforge/work-items/<SOURCE_WI>/candidates/**`，调用方必须显式提供 `source_work_item_id + gate_attempt_id`；普通 `.specforge/project/**` source 不受本例外影响。
+2. `gate_attempt_id` 必须属于 `SOURCE_WI`，且其 `attempt-result.json` 必须满足 `source=gate_run`、`summary_status=passed`、`input_snapshot=input-snapshot.json`；Attempt / Snapshot 缺失或身份不一致必须 Fail Closed。
+3. 历史 `candidate_manifest.json`、`user_decision.json`、`merge_report.md` 与被引用 Candidate source 的当前字节，必须分别与该 Attempt 的 `input-snapshot.json` 中同路径 `sha256 + size` 完全一致；任一漂移必须 Fail Closed。
+4. 历史 User Decision 必须为真实已批准决策，并且其 `manifest_hash` 必须严格绑定当前历史 `candidate_manifest.json` 字节；历史 Candidate Manifest 的 `work_item_id` 必须等于 `SOURCE_WI`。
+5. 被引用 Candidate source 必须在历史 Candidate Manifest 中存在唯一条目，且其 `candidate_path` 必须映射到本次 repair 正在恢复的同一正式 `target_path`，`operation=replace`；禁止把一个历史 Candidate 借用到不同正式目标。
+6. 同一个 immutable `input-snapshot.json` 必须同时证明：历史 Candidate source 与其正式 `target_path` 在该 passed Attempt 时均存在为普通文件，且二者 `sha256` 完全相等；只有这样才能把该 Candidate 认定为已经 Atomic Spec Merge 生效过的正式内容来源。
+7. 历史 `merge_report.md` 必须仍由 Snapshot 绑定且明确 `Status: success`；无法证明 Atomic Spec Merge 成功时不得使用历史 source。
+8. repair preparation 只能把已验证 source 复制成**新的 repair WI Candidate**。之后仍必须走该新 WI 的 Required Candidate Gates → User Decision → Atomic Spec Merge → Post-Spec-Merge → no-code Verification → Formal Version Gate → Close → Git Merge；不得直接覆盖 `.specforge/project/**`。
+9. 新 repair WI 的 Atomic Spec Merge 继续由现有 Merge Runner 按当前 Project Spec Version 签发下一 PSV；`spec_manifest.json` 必须由 Merge Runner 根据新 repair Candidate 与当前仍有效的 Project Spec sibling facts 重新生成，历史 source 的旧 PSV/hash 只证明内容来源，不允许回滚版本或把历史 manifest 字节原样覆盖回来。
+10. immutable source binding 必须进入 `project_spec_repair_plan.json` 作为审计证据；历史 Work Item、Gate Attempt、Snapshot、Candidate Manifest、User Decision、Merge Report 与历史 Candidate 均保持不可变。
+11. 本规则只扩展 `spec_migration` 已有 repair source contract，不新增 Workflow、Gate、Agent、状态边、Code Permission 或 Merge Runner。
+
 
 ## 4. Requirement → Impact → Classification → Workflow
 
@@ -2453,12 +2463,7 @@ GIT_MERGE_SEMANTIC_SCOPE=SEPARATE
 
 `sf_v11_merge` 是公开 Merge Runner handler；其 Spec 合并业务动作由 `executeMerge()` 承担。该 producer 只属于 Atomic Spec Merge，不得与第 8.9 节的 Git Merge 混用。
 
-**GOV-ATOMIC-MERGE-PROVENANCE-001：** Atomic Spec Merge 的所有正式 Project Spec 写入必须具有可由后续 Actual Scope Audit 验证的 producer provenance。`executeMerge()` 成功完成事务后，必须为当前仍存在的 `.specforge/project/**` 写入记录 `work_item_id + project_spec_version + path + sha256 + producer=sf_v11_merge`；其中 `spec_manifest.json` 的版本推进、`last_merged_*` 簿记和 Module registry 重建属于 Merge Runner 的正式隐式写入，不能因为它不来自 Candidate target 就回退归因为 `agent`。Changed Files Audit 必须只信任**当前文件 hash 与结构化 provenance 完全一致**的记录，hash 漂移继续 Fail Closed。旧项目缺少该结构化记录时，只允许一个兼容 Normalizer 对 `spec_manifest.json` 做 legacy reconstruction，并且必须同时匹配当前 `last_merged_work_item`、Project Spec Version、成功 `merge_report.md`、批准/豁免的 User Decision、同 WI Candidate manifest 与完整 `last_merged_targets`；任一条件不满足不得放行。该兼容路径不得扩展成通用 Spec 白名单，也不得把真实非 Merge Runner 写入降级为 warning。
-
-
-**GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001：** Changed Files Audit 的 producer provenance 解析必须只有一个正式 Runtime 入口，公开 `sf_changed_files_audit`、Close Gate 初次审计、Close Gate 在 filesystem operation normalization 后的重审计以及其他后续消费者必须调用同一个 canonical resolver；不得由各 Handler 自行选择 Git governance、Atomic Spec Merge 或其他 producer 子集。canonical resolver 只负责聚合各正式 provenance reader 已经验证为可信的当前记录；每个底层 reader 的 schema、producer 身份、当前文件 hash、legacy reconstruction 和 Fail Closed 规则保持各自正式契约。任何一个审计入口缺少某类合法 producer provenance、导致同一事实在 Verification 与 Close 得到不同 verdict，属于治理契约错误，不得通过放宽 `spec_write_by_non_merge_runner`、路径白名单或跳过 Close 重审计修复。
-
-**GOV-KNOWLEDGE-GRAPH-PROVENANCE-001：** `.specforge/knowledge/graph.json` 是 Knowledge Graph Runtime 从正式 Spec / Work Item 工件派生并由 `sf_knowledge_graph_core` 写入的治理控制面文件，不属于业务 Implementation Actual Scope。`loadGraphStore()` 首次创建和 `saveGraphStore()` 每次成功替换 `graph.json` 后，必须同步写入结构化 Runtime provenance，至少绑定 `schema_version + path=.specforge/knowledge/graph.json + producer=sf_knowledge_graph_core + sha256 + recorded_at`。Changed Files Audit 的 canonical resolver 只能在 provenance schema、唯一允许 producer、精确目标 path 与当前 `graph.json` 文件 hash 全部匹配时把该文件认定为 trusted control-plane write；provenance 缺失、格式错误、producer/path 不匹配、文件不存在或 hash 漂移时必须 Fail Closed。禁止把 `.specforge/knowledge/**` 目录整体加入白名单，禁止仅凭 actor/路径放行，也禁止为旧 `graph.json` 无证据重建可信 provenance。Gate `syncFromSpec`、Knowledge Graph CRUD 和首次空图创建必须复用同一写入 primitive/provenance 契约；公开 Changed Files Audit 与 Close Gate 重审计继续按 `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` 使用同一 canonical resolver。
+正式写入的 producer provenance 治理规则（`GOV-ATOMIC-MERGE-PROVENANCE-001`、`GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001`、`GOV-KNOWLEDGE-GRAPH-PROVENANCE-001`）统一定义在 8.5 Actual Scope Audit。
 
 ### 5.4 requirements_index 和 design_index
 
@@ -3010,7 +3015,7 @@ Hard
 7. freshness 必须使用 `GATE-ATTEMPT-INPUT-SNAPSHOT-001` 的 `input-snapshot.json` 比较当前存在状态、类型和 hash；无法证明 Gate 输入未漂移时 Fail Closed；
 8. Candidate reconciliation 的当前状态只允许 `gates_failed / candidate_preparing / candidate_prepared / gates_running`，并继续使用 `GATE-RETRY-STATE-001` 的合法状态链，最终 seal 到 `approval_required`；
 9. Verification reconciliation 的当前状态只允许处于该 Workflow 的 Verification 可恢复边界；实现型分支可从 `implementation_done / verification_running` 恢复，`GOV-SPEC-MIGRATION-NO-CODE-001` 分支允许从 `post_merge_verified / verification_running` 恢复，并且只沿既有合法状态边推进到 `verification_done`；
-10. 对 `spec_migration`，Verification reconciliation 从 `post_merge_verified` 恢复时固定沿 `post_merge_verified -> verification_running -> verification_done`；该恢复不得重新执行 Verification Gate / Formal Version Gate，也不得创建新 Attempt；
+10. 对 `spec_migration`，Verification reconciliation 从 `post_merge_verified` 恢复时固定沿 `post_merge_verified -> verification_running -> verification_done`；该恢复不得重新执行 Verification Gate / Formal Version Gate，也不得创建新 Attempt。前提是既有 passed Attempt 的输入未漂移；当受治理 Verification 输入已发生合法变化、Semantic Closure provenance 出现 `SEMANTIC_CLOSURE_INPUT_STALE` 时，不适用本条 reconciliation 路径，必须改按 `GOV-SPEC-MIGRATION-NO-CODE-001` 规则 22—23 的解冻重验路径执行；
 11. Candidate 或 Verification 的最终状态 seal 都必须由 `gate_runner` actor 执行；`sf-orchestrator`、人工状态工具或其他 actor 不得代替；
 12. 返回结果必须显式包含 `reconciliation_mode=true`、`reconciliation_phase=candidate|verification`、`gate_run_action=NOT_PERFORMED`、`new_gate_attempt_created=false` 和被消费的 `reconciled_attempt_id`。
 **GATE-ATTEMPT-INPUT-SNAPSHOT-001：** Gate Attempt 的 `input_files` 只表示 Gate 声明/探测过的输入路径集合，不等价于“这些路径当时都存在”，也不是可用于历史 freshness 判断的内容快照。每个新的正式 Gate Attempt 必须额外冻结输入状态。
@@ -3322,6 +3327,13 @@ Approved Governance Scope
 ```text
 Changed Files Audit = FAILED
 ```
+
+**GOV-ATOMIC-MERGE-PROVENANCE-001：** Atomic Spec Merge 的所有正式 Project Spec 写入必须具有可由后续 Actual Scope Audit 验证的 producer provenance。`executeMerge()` 成功完成事务后，必须为当前仍存在的 `.specforge/project/**` 写入记录 `work_item_id + project_spec_version + path + sha256 + producer=sf_v11_merge`；其中 `spec_manifest.json` 的版本推进、`last_merged_*` 簿记和 Module registry 重建属于 Merge Runner 的正式隐式写入，不能因为它不来自 Candidate target 就回退归因为 `agent`。Changed Files Audit 必须只信任**当前文件 hash 与结构化 provenance 完全一致**的记录，hash 漂移继续 Fail Closed。旧项目缺少该结构化记录时，只允许一个兼容 Normalizer 对 `spec_manifest.json` 做 legacy reconstruction，并且必须同时匹配当前 `last_merged_work_item`、Project Spec Version、成功 `merge_report.md`、批准/豁免的 User Decision、同 WI Candidate manifest 与完整 `last_merged_targets`；任一条件不满足不得放行。该兼容路径不得扩展成通用 Spec 白名单，也不得把真实非 Merge Runner 写入降级为 warning。
+
+
+**GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001：** Changed Files Audit 的 producer provenance 解析必须只有一个正式 Runtime 入口，公开 `sf_changed_files_audit`、Close Gate 初次审计、Close Gate 在 filesystem operation normalization 后的重审计以及其他后续消费者必须调用同一个 canonical resolver；不得由各 Handler 自行选择 Git governance、Atomic Spec Merge 或其他 producer 子集。canonical resolver 只负责聚合各正式 provenance reader 已经验证为可信的当前记录；每个底层 reader 的 schema、producer 身份、当前文件 hash、legacy reconstruction 和 Fail Closed 规则保持各自正式契约。任何一个审计入口缺少某类合法 producer provenance、导致同一事实在 Verification 与 Close 得到不同 verdict，属于治理契约错误，不得通过放宽 `spec_write_by_non_merge_runner`、路径白名单或跳过 Close 重审计修复。
+
+**GOV-KNOWLEDGE-GRAPH-PROVENANCE-001：** `.specforge/knowledge/graph.json` 是 Knowledge Graph Runtime 从正式 Spec / Work Item 工件派生并由 `sf_knowledge_graph_core` 写入的治理控制面文件，不属于业务 Implementation Actual Scope。`loadGraphStore()` 首次创建和 `saveGraphStore()` 每次成功替换 `graph.json` 后，必须同步写入结构化 Runtime provenance，至少绑定 `schema_version + path=.specforge/knowledge/graph.json + producer=sf_knowledge_graph_core + sha256 + recorded_at`。Changed Files Audit 的 canonical resolver 只能在 provenance schema、唯一允许 producer、精确目标 path 与当前 `graph.json` 文件 hash 全部匹配时把该文件认定为 trusted control-plane write；provenance 缺失、格式错误、producer/path 不匹配、文件不存在或 hash 漂移时必须 Fail Closed。禁止把 `.specforge/knowledge/**` 目录整体加入白名单，禁止仅凭 actor/路径放行，也禁止为旧 `graph.json` 无证据重建可信 provenance。Gate `syncFromSpec`、Knowledge Graph CRUD 和首次空图创建必须复用同一写入 primitive/provenance 契约；公开 Changed Files Audit 与 Close Gate 重审计继续按 `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` 使用同一 canonical resolver。
 
 ### 8.6 Verification
 
@@ -4068,12 +4080,18 @@ SpecForge 架构一致性治理能力只有同时满足以下条件，才能宣�
 
 ## 附录 A. 新会话固定启动提示词
 
-下面整段是唯一固定启动提示词。必须逐阶段执行，禁止先调用工具再补审计：
+本附录是唯一固定启动提示词的权威来源。使用方式与分段导航：
+
+- **新会话启动**：将下面 `SPECFORGE_NEW_SESSION_PROMPT_BLOCK:START` 至 `END` 标记之间的完整文本，原样粘贴给 AI（ChatGPT）作为新会话的第一条消息。该块为 FILL_ONLY canonical 模板，除标注的待填字段（上一轮回执）外禁止修改任何字段、顺序、marker 或枚举。
+- **块结构**：A.1 Bootstrap 坐标与上一轮回执 → A.2 固定契约常量 → A.3 Pre-tool Guard（第一动作） → A.4 live ref 解析与 exact authority 读取 → A.5 Bootstrap 失败路径与 evidence 交付 → A.6 Envelope Self Check → A.7 Recovery 阶段动作序列。
 
 ```text
+===== BEGIN SPECFORGE_NEW_SESSION_PROMPT_BLOCK =====
 继续 SpecForge。
 
 BOOTSTRAP_ENVELOPE_VERSION=3
+
+[A.1 Bootstrap 坐标与上一轮回执]
 
 BOOTSTRAP COORDINATES：
 REMOTE_URL=https://github.com/lyqstart/SpecForge.git
@@ -4085,6 +4103,9 @@ AUTHORITY_REF_API_URL=https://api.github.com/repos/lyqstart/SpecForge/git/ref/he
 【必须粘贴从 ===== BEGIN FEEDBACK TO CHATGPT ===== 到 ===== END FEEDBACK TO CHATGPT ===== 的完整内容；上一轮明确没有 ZIP+CMD 时写 NONE】
 
 固定机器模板执行契约（本段是 pre-authority contract source，不是 Pre-tool Guard 的额外输出字段）：
+
+[A.2 固定契约常量]
+
 CANONICAL_TEMPLATE_EXECUTION_MODE=FILL_ONLY
 CANONICAL_TEMPLATE_SOURCE=APPENDIX_A_EMBEDDED_CANONICAL_BLOCK|EXACT_AUTHORITY_MARKER_SCOPED_BLOCK
 CANONICAL_TEMPLATE_STRUCTURE_MUTATION_ALLOWED=NO
@@ -4126,6 +4147,8 @@ DELIVERY_MANIFEST_IDENTITY_PATH=identity
 
 第一动作必须是下面的 Pre-tool Guard。完成它之前禁止调用任何工具、禁止读取任何仓库或 handoff：
 
+[A.3 Pre-tool Guard — 第一动作]
+
 ===== BEGIN BOOTSTRAP ENVELOPE PRETOOL GUARD =====
 BOOTSTRAP_EXECUTION_PHASE=RECEIPT_AUDIT
 BOOTSTRAP_ALLOWED_TOOL_CLASS=NONE
@@ -4151,6 +4174,8 @@ Receipt 规则：
 - MISSING_REQUIRED / PRESENT_INVALID：立即停止；BOOTSTRAP_ALLOWED_TOOL_CLASS=NONE；不得执行 live-ref；只要求用户补回执。
 
 只有 PRETOOL_GUARD_ACCEPTED=YES 后才能进入：
+
+[A.4 live ref 解析与 exact authority 读取]
 
 BOOTSTRAP_EXECUTION_PHASE=LIVE_REF_RESOLUTION
 BOOTSTRAP_ALLOWED_TOOL_CLASS=LIVE_REF_ONLY
@@ -4193,6 +4218,8 @@ AUTHORITY_BOOTSTRAP_VALIDATOR_ACCEPTED=YES|NO
 AUTHORITY_BOOTSTRAP_ACCEPTED=YES|NO
 
 拿不到 live ref 时必须完整输出：
+
+[A.5 Bootstrap 失败路径与 evidence 交付]
 
 ===== BEGIN AUTHORITY BOOTSTRAP FAILURE ACCEPTANCE =====
 AUTHORITY_BOOTSTRAP_REMOTE_URL=
@@ -4294,6 +4321,8 @@ LIFECYCLE_ACTIONS=NONE
 
 每个 Bootstrap 回合结束前都必须输出：
 
+[A.6 Envelope Self Check]
+
 ===== BEGIN BOOTSTRAP ENVELOPE SELF CHECK =====
 BOOTSTRAP_COORDINATES_CONTRACT=PASS|FAIL
 BOOTSTRAP_RECEIPT_CONSUMPTION_CONTRACT=PASS|FAIL
@@ -4310,6 +4339,9 @@ BOOTSTRAP_ENVELOPE_ACCEPTED=YES|NO
 只有 AUTHORITY_BOOTSTRAP_ACCEPTED=YES 后才能：
 BOOTSTRAP_EXECUTION_PHASE=RECOVERY
 BOOTSTRAP_ALLOWED_TOOL_CLASS=RECOVERY
+
+[A.7 Recovery 阶段动作序列]
+
 GOVERNANCE_PRECONCLUSION_CLOSED_LOOP_REQUIRED=YES
 GOVERNANCE_CLOSED_LOOP_RULE=GOV-CLOSELOOP-001
 GOVERNANCE_CLOSED_LOOP_CHAIN=GOAL>FACTS>ROOT_CAUSE>CANONICAL_SOURCE>PRODUCER>NORMALIZER>DIRECT_CONSUMER>GATE_RUNTIME>DOWNSTREAM_CONSUMER>IMPLEMENTATION_LOCATIONS>TESTS>POST_ACCEPTANCE
@@ -4331,6 +4363,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 - 修改实施前必须证明 `GOV-PRE-001 + GOV-CLOSELOOP-001 + GOV-SCOPE-001` 已闭环并冻结范围；任一链路或实现落点不足时不得写入；
 - 修改完成后必须执行 `GOV-POST-001 + GOV-EVID-001`，按修改前 GOAL_ID 逐项反向验收；普通测试通过不得替代该验收；
 - 不自动重试已经开始的副作用动作。
+===== END SPECFORGE_NEW_SESSION_PROMPT_BLOCK =====
 ```
 
 任何以后新增会影响 exact authority 读取之前行为的规则，必须同时修改：
@@ -4344,13 +4377,20 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 |---|---|
 | `ARCH-WI-001` | 2.3 架构变化必须在同一任务/WI闭环 |
 | `CON-CODE-CONS-001` | 6.1 两级契约模型 |
+| `CON-COMPAT-001` | 6.1 两级契约模型（检查清单 4） |
+| `CON-CONS-001` | 6.1 两级契约模型（检查清单 3） |
 | `CON-CONS-DELTA-001` | 6.1 两级契约模型 |
 | `CON-CONS-DELTA-CANON-001` | 6.1 两级契约模型 |
 | `CON-CONS-SOURCE-001` | 6.1 两级契约模型 |
+| `CON-ENFORCE-001` | 6.1 两级契约模型（检查清单 6） |
 | `CON-MOD-001` | 6.1 两级契约模型 |
 | `CON-MODEL-001` | 6.1 两级契约模型 |
+| `CON-OWN-001` | 6.1 两级契约模型（检查清单 1；别名 CON-OWNER-001） |
 | `CON-PROJ-001` | 6.1 两级契约模型 |
 | `CON-PROM-001` | 6.1 两级契约模型 |
+| `CON-REF-001` | 6.1 两级契约模型（检查清单 2；别名 CON-SOURCE-001） |
+| `CON-REVIEW-001` | 6.1 两级契约模型（检查清单 8） |
+| `CON-TEST-001` | 6.1 两级契约模型（检查清单 7） |
 | `GATE-ATTEMPT-001` | 7.4.1 Gate Attempt 证据不可变性 |
 | `GATE-ATTEMPT-INPUT-SNAPSHOT-001` | 7.4 Gate 的硬阻断与产品完成边界 |
 | `GATE-ATTEMPT-RECONCILE-001` | 7.4 Gate 的硬阻断与产品完成边界 |
@@ -4362,9 +4402,9 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-AUTH-001` | 1.2 唯一权威源 |
 | `GOV-CONT-001` | 2.7 Continuity 与当前用户授权边界 |
 | `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |
-| `GOV-ATOMIC-MERGE-PROVENANCE-001` | 5.3 Candidate 与 Atomic Spec Merge：Merge Runner 写入归属证据 |
-| `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` | 5.3 / Actual Scope Audit / Close Gate：所有审计入口共享 producer provenance resolver |
-| `GOV-KNOWLEDGE-GRAPH-PROVENANCE-001` | 5.3 / Actual Scope Audit：Knowledge Graph Runtime `graph.json` 写入必须使用结构化 provenance 与当前 hash 验证，禁止目录白名单 |
+| `GOV-ATOMIC-MERGE-PROVENANCE-001` | 8.5 Actual Scope Audit：Merge Runner 写入归属证据 |
+| `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` | 8.5 Actual Scope Audit / Close Gate：所有审计入口共享 producer provenance resolver |
+| `GOV-KNOWLEDGE-GRAPH-PROVENANCE-001` | 8.5 Actual Scope Audit：Knowledge Graph Runtime `graph.json` 写入必须使用结构化 provenance 与当前 hash 验证，禁止目录白名单 |
 | `GOV-REVERIFICATION-MERGE-HISTORY-001` | 8.6 Verification：历史已合并 WI 在后续 Project Spec 推进后的恢复重验 |
 | `GOV-CONTRACT-001` | 6.1 两级契约模型 |
 | `GOV-EVID-001` | 2.6 Fail Closed 与证据不足 |
@@ -4375,8 +4415,8 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GOV-REMOTE-001` | 2.1 新会话的远程权威入口 |
 | `GOV-ROLE-001` | 1.3 文件作用范围与两种开发模式 |
 | `GOV-SCOPE-001` | 2.4 实施过程中的范围冻结 |
-| `GOV-SPEC-MIGRATION-NO-CODE-001` | 3.1 Canonical Product Lifecycle / 8.1 Code Permission |
-| `GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001` | 3.1 Canonical Product Lifecycle |
+| `GOV-SPEC-MIGRATION-NO-CODE-001` | 3.6 spec_migration no-code 分支契约 / 8.1 Code Permission |
+| `GOV-SPEC-MIGRATION-IMMUTABLE-REPAIR-SOURCE-001` | 3.6 spec_migration no-code 分支契约 |
 | `GOV-SELF-001` | 1.3.1 模式 A：SpecForge 自身开发 |
 | `GOV-STAGE-001` | 2.8 Stage Execution Contract |
 | `GOV-STAGE-ARTIFACT-VERIFY-001` | 2.9 Truth Source、Artifact Acceptance 与 Validator |
