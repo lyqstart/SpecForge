@@ -115,7 +115,7 @@ MVP 阶段用户项目的治理权威目录为：
 | `.specforge/work-items/` | 每次变更事务；其中 `StateManager/events.jsonl` 为状态权威，Candidate 为待合并内容，其余为过程或证据产物 | 局部是 |
 | `.specforge/runtime/` | 临时状态、缓存、索引、日志 | 否 |
 
-当前 Runtime 为兼容初始化和可观测性，允许 `sf_project_init` 创建或维护 `.specforge/manifest.json`、`.specforge/config/**`、`.specforge/specs/**`、`.specforge/knowledge/**` 等兼容文件。它们不是正式项目规格或状态权威；除 `sf_project_init` 和明确注册的 Runtime 维护逻辑外，Agent、Workflow Skill 和普通写入工具不得把这些兼容路径作为新治理流程的写入目标。正式项目规格仍只进入 `.specforge/project/**`，工作项事务只进入 `.specforge/work-items/**`，运行投影和日志只进入 `.specforge/runtime/**`。
+当前 Runtime 只接受 V6 当前项目布局：正式项目规格进入 `.specforge/project/**`，工作项事务进入 `.specforge/work-items/**`，运行投影和日志进入 `.specforge/runtime/**`。`.specforge/manifest.json`、`.specforge/specs/**` 等旧项目路径不得由 `sf_project_init` 或其他 Runtime、Agent、Workflow Skill、普通写入工具创建、读取、迁移或继续维护；`.specforge/config/**` 与 `.specforge/knowledge/**` 仅可按当前 V6 目录合同由明确 owner 使用，不能作为旧路径兼容入口。
 
 MVP 阶段禁止创建新的平行治理目录：
 

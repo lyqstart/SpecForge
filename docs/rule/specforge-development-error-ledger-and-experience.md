@@ -23504,3 +23504,234 @@ PUSH_DEPLOY=NONE
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR681_C2_LOCAL_IMPLEMENTATION_COMMIT:END -->
+
+<!-- SPECFORGE_ERR1275_HANDOFF_CURRENT_STATE_INSERTED_BEFORE_EOF:START -->
+### ERR-1275：提交收口状态写入 handoff 中段，EOF 仍暴露旧 Step 8 状态
+
+- **分类**：`GOVERNANCE_DOCUMENT_ORDER / NON_UNIQUE_PATCH_ANCHOR`。
+- **事实证据**：提交后从 `current-handoff.md` 文件尾恢复状态时，EOF 仍为 `ERR681_C2_STEP8...`、HEAD `45a0cfee...` 和旧 next action；检索证明新的 Step 9/commit 块位于约 9074–9143 行，后面仍有历史追加块。原因是补丁锚定了重复的 `NEXT_LEGAL_ACTION` 区块而非真实 EOF。
+- **影响**：Git 提交、代码、测试、release precheck 和进度文件未受影响，但依赖 EOF 获取最新交接的人或工具会读到过期状态。
+- **正确做法**：不删除或移动历史块；在真实 EOF 追加带唯一 marker 的 canonical current state，并通过文件尾读取验证。今后 handoff 追加必须先读取 EOF 精确尾块，不得假定历史按时间排序。
+- **状态**：`CLOSED`。canonical marker 已唯一存在于真实 EOF，尾部读取直接返回当前本地提交状态；历史块未删除或移动。
+
+```text
+ERR1275_STATUS=CLOSED_CANONICAL_CURRENT_STATE_AT_TRUE_EOF
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CLASS=ERR-911;ERR-1233
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1275_HANDOFF_CURRENT_STATE_INSERTED_BEFORE_EOF:END -->
+
+<!-- SPECFORGE_ERR1276_HANDOFF_EOF_FIX_REUSED_DUPLICATE_TAIL_SENTENCE:START -->
+### ERR-1276：ERR-1275 首次修复再次复用了非唯一尾句
+
+- **分类**：`REPEATED_GOVERNANCE_PATCH_ERROR / NON_UNIQUE_ANCHOR`。
+- **事实证据**：首次修复使用重复的 `NEXT_LEGAL_ACTION=REUSE_DAEMON...` 尾句作为锚点；补丁成功后 canonical marker 位于约 9071 行，而真实 EOF 仍在 9380 行后，尾部读取继续返回旧状态。
+- **正确做法**：删除本次尚未提交的错误中段插入；改用只出现一次的完整最终区块标题作为 EOF 追加锚点，并以实际文件尾读取为验收。
+- **状态**：`CLOSED`。错误中段插入已在提交前撤销，唯一最终区块标题锚定的 canonical marker 已通过 EOF 读取验证。
+
+```text
+ERR1276_STATUS=CLOSED_UNIQUE_FINAL_SECTION_TITLE_AND_EOF_VERIFIED
+ERR1276_REPEATED_ERROR_CLASS=ERR-1275;ERR-911;ERR-1233
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1276_HANDOFF_EOF_FIX_REUSED_DUPLICATE_TAIL_SENTENCE:END -->
+
+<!-- SPECFORGE_ERR1277_HANDOFF_FIX_PATCH_ASSUMED_WRONG_FOLLOWING_HEADING:START -->
+### ERR-1277：组合修复补丁假定了 canonical 块后的错误标题
+
+- **分类**：`PATCH_PREFLIGHT_FAILURE / STALE_CONTEXT / ZERO_WRITE`。
+- **事实证据**：试图同时删除中段块并在 EOF 追加时，补丁假定其后是 `ERR681 / Step 8 Scope Gate...`，真实下一标题为“当前发布收敛 Step 8 最终交接”；`apply_patch` 校验失败并原子拒绝，两个目标文件均无该次部分写入。
+- **正确做法**：把错误块删除、EOF 追加和 ledger 状态关闭拆成独立窄补丁；每一步读取精确上下文并验证 marker 数量与 EOF。
+- **状态**：`CLOSED`。失败补丁零写入，已切换为独立窄补丁路径。
+
+```text
+ERR1277_STATUS=CLOSED_ZERO_WRITE_SPLIT_NARROW_PATCHES
+PARTIAL_WRITE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1277_HANDOFF_FIX_PATCH_ASSUMED_WRONG_FOLLOWING_HEADING:END -->
+
+<!-- SPECFORGE_ERR1278_VITEST_CMD_ENTRY_ABSENT:START -->
+### ERR-1278：Windows 回归基线误用不存在的 `vitest.cmd` 入口
+
+- **分类**：`TEST_COMMAND_ERROR / EXECUTABLE_PRECONDITION`。
+- **事实证据**：在仓库根执行 `.\\node_modules\\.bin\\vitest.cmd run ...`，PowerShell 返回该命令不存在；未启动任何测试，未产生产品失败证据。
+- **影响**：本次尝试不能作为 ERR-1186 或 ERR-1234 的修改前基线；产品文件、测试文件和运行状态均未改变。
+- **正确做法**：先核对 workspace 实际测试入口，再使用已存在的 `.\\node_modules\\.bin\\vitest.exe` 执行相同目标集，并单独记录结果。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。失败已分类为零产品执行的命令错误，后续改用已验证入口。
+
+```text
+ERR1278_STATUS=CLOSED_REAL_VITEST_ENTRY_SELECTED
+FAILED_ENTRY=node_modules/.bin/vitest.cmd
+PRODUCT_TESTS_STARTED=NO
+PRODUCT_CHANGE=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1278_VITEST_CMD_ENTRY_ABSENT:END -->
+
+<!-- SPECFORGE_ERR1279_LEDGER_APPEND_STALE_MARKER:START -->
+### ERR-1279：登记 ERR-1278 时使用了错误的 ERR-1277 结束标记
+
+- **分类**：`PATCH_PREFLIGHT_FAILURE / STALE_MARKER / ZERO_WRITE`。
+- **事实证据**：首次追加补丁查找 `SPECFORGE_ERR1277_HANDOFF_FINAL_ANCHOR_CONTEXT_MISMATCH:END`，实际标记为 `SPECFORGE_ERR1277_HANDOFF_FIX_PATCH_ASSUMED_WRONG_FOLLOWING_HEADING:END`；`apply_patch` 校验失败并零写入。
+- **正确做法**：读取账本真实 EOF，使用完整且唯一的实际 marker 追加 ERR-1278 与本记录，并复核尾部。
+- **状态**：`CLOSED`。已使用真实 EOF marker 完成追加，未发生部分写入。
+
+```text
+ERR1279_STATUS=CLOSED_TRUE_EOF_MARKER_USED
+PARTIAL_WRITE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1279_LEDGER_APPEND_STALE_MARKER:END -->
+
+<!-- SPECFORGE_ERR1280_RECORDED_VITEST_EXE_ENTRY_ABSENT:START -->
+### ERR-1280：旧会话记录的 workspace `vitest.exe` 在当前依赖布局中不存在
+
+- **分类**：`TEST_ENVIRONMENT_DRIFT / EXECUTABLE_PRECONDITION`。
+- **事实证据**：改用先前回归记录中的 `.\\node_modules\\.bin\\vitest.exe` 后，PowerShell 同样返回命令不存在；测试仍未启动。
+- **影响**：尚未取得本轮修改前的新鲜基线，但既有 ERR-1186/ERR-1234 结构化回归证据未被推翻；无产品写入。
+- **正确做法**：只读枚举 workspace 依赖目录与已配置 bundled runtime，确认真实 Vitest/Bun 入口后再运行，不继续试猜文件名。
+- **状态**：`OPEN_ENVIRONMENT_ENTRY_DISCOVERY`。
+
+```text
+ERR1280_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_ENTRIES_CONFIRMED
+PRODUCT_TESTS_STARTED=NO
+PRODUCT_CHANGE=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1280_RECORDED_VITEST_EXE_ENTRY_ABSENT:END -->
+
+<!-- SPECFORGE_ERR1281_FUSED_STANDARD_LEGACY_ASSERTION_STALE:START -->
+### ERR-1281：治理闭合测试仍要求 fused standard 保留“兼容初始化”旧措辞
+
+- **分类**：`TEST_CONTRACT_DRIFT / LEGACY_BOUNDARY_CONFLICT`。
+- **事实证据**：移除 fused standard 对 `.specforge/manifest.json` 的兼容维护许可后，ERR-1186 原续接断言已通过；同一测试随后仅因仍要求字符串“当前 Runtime 为兼容初始化和可观测性”失败。该字符串与 V6 REQ-2/18/26/31、ADR-013 和当前 Orchestrator 明确禁止旧根 manifest 的合同冲突。
+- **正确做法**：保留测试对标准—Orchestrator 一致性的约束，但把旧兼容措辞断言替换为当前 V6 布局和禁止旧根 manifest 的正向/反向断言；不得恢复旧产品兼容。
+- **状态**：`OPEN_TARGETED_TEST_ALIGNMENT`。
+
+```text
+ERR1281_STATUS=CLOSED_CURRENT_V6_BOUNDARY_ASSERTED
+PRODUCT_LEGACY_BEHAVIOR_TO_RESTORE=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1281_FUSED_STANDARD_LEGACY_ASSERTION_STALE:END -->
+
+<!-- SPECFORGE_ERR1282_WORKFLOW_SCHEMA_UNION_REACHED_GATE_SERIALIZER:START -->
+### ERR-1282：WorkflowDefinition 通用 schema union 扩散到独立 Gate serializer 合同
+
+- **分类**：`CHANGE_SCOPE_EXPANSION / TYPE_CONTRACT_COLLISION`。
+- **事实证据**：把 `types.ts` 中 Workflow、StateMachine、State 和 Gate definition 的 schema literal 全部扩为 `1.0 | 2.0` 后，typecheck 在 `CompositeGateSerializer.ts` 两处失败，因为其持久化合同仍明确只接受 `1.0`。
+- **影响**：该类型扩展把当前发布 Workflow 文件版本裁决不必要地扩大到独立 Gate serializer；继续放宽 serializer 缺少权威依据。
+- **正确做法**：撤回这组通用类型扩展；以 requirements/design + Daemon 当前发布入口对 release-owned `feature_spec@2.0` 做运行时精确约束，通用 Loader 继续通过运行时 validator 表达其解析集合。
+- **状态**：`OPEN_REVERT_OVERBROAD_TYPE_CHANGE`。
+
+```text
+ERR1282_STATUS=CLOSED_OVERBROAD_TYPE_CHANGE_REVERTED
+TYPECHECK_FAILURES=2
+CURRENT_FEATURE_SPEC_RUNTIME_GUARD=IMPLEMENTED_SEPARATELY
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1282_WORKFLOW_SCHEMA_UNION_REACHED_GATE_SERIALIZER:END -->
+
+<!-- SPECFORGE_ERR1283_RELEASE_MANIFEST_CANDIDATE_ID_OMITTED:START -->
+### ERR-1283：重建 release manifest 时遗漏强制 candidate ID
+
+- **分类**：`RELEASE_COMMAND_ERROR / REQUIRED_ARGUMENT_PRECONDITION`。
+- **事实证据**：直接执行 `scripts/build-release-manifest.ts` 返回 `RELEASE_CANDIDATE_ID_REQUIRED`；producer 在生成 manifest 前失败，未形成发布内容判断。
+- **正确做法**：按当前 `main` HEAD 与未提交治理批次生成可追溯的 working-tree candidate ID，使用 `--candidate-id` 明确传入后重跑。
+- **状态**：`CLOSED`。manifest 已使用显式 candidate ID 成功重建。
+
+```text
+ERR1283_STATUS=CLOSED_MANIFEST_REBUILT_WITH_EXPLICIT_CANDIDATE_ID
+MANIFEST_PRODUCTION_STARTED=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1283_RELEASE_MANIFEST_CANDIDATE_ID_OMITTED:END -->
+
+<!-- SPECFORGE_ERR1284_PRECHECK_CANDIDATE_ARGUMENT_INTERFACE_ASSUMED:START -->
+### ERR-1284：误设 release precheck 与 manifest producer 使用相同 candidate 参数接口
+
+- **分类**：`RELEASE_COMMAND_ERROR / INTERFACE_ASSUMPTION`。
+- **事实证据**：向 `run-current-release-precheck.ts` 传入 `--candidate-id` 后仍返回 `CURRENT_RELEASE_PRECHECK_CANDIDATE_ID_REQUIRED`；说明 precheck 不消费该 CLI 参数。
+- **正确做法**：读取 precheck 入口确认其真实输入方式，使用同一 candidate ID 按声明接口重跑，不修改验证逻辑规避前置条件。
+- **状态**：`CLOSED`。已按入口声明改用 `--candidate-id=<value>` 并通过正式 precheck。
+
+```text
+ERR1284_STATUS=CLOSED_EQUALS_FORM_CANDIDATE_ARGUMENT_USED
+PRECHECK_EXECUTION=REJECTED_AT_INPUT_BOUNDARY
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1284_PRECHECK_CANDIDATE_ARGUMENT_INTERFACE_ASSUMED:END -->
+
+<!-- SPECFORGE_ERR1285_RELEASE_CANDIDATE_ID_GRAMMAR_VIOLATION:START -->
+### ERR-1285：发布候选 ID 未遵循冻结的 `step` 命名语法
+
+- **分类**：`RELEASE_EVIDENCE_IDENTITY_ERROR / CONTRACT_PRECONDITION`。
+- **事实证据**：首轮根全量回归仅 `@specforge/scope-gate` 失败；3 个 current-repository 集成测试均报告候选 ID `main-6f07d744-working-tree-four-document-governance` 不匹配冻结合同 `^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$`。同轮 `@specforge/workflow-runtime` 1590/1590、`@specforge/cli` 1027/1027、`@specforge/daemon-core` 1687/1687 通过。
+- **直接证明**：本次红灯是发布证据身份前置条件错误，不是产品实现失败；同一原因影响 manifest runtime、installer consumption 与 formal precheck 三个消费者。
+- **正确做法**：不放宽测试或候选 ID 合同；使用语义等价且合法的 `main-6f07d744-working-tree-step10governance` 重建 manifest，重跑正式 precheck、Scope Gate 和根全量回归。
+- **状态**：`CLOSED`。合法候选已重建，正式 precheck、Scope Gate 与根全量回归全部通过。
+
+```text
+ERR1285_STATUS=CLOSED_LEGAL_ID_RELEASE_EVIDENCE_VERIFIED
+FAILED_PACKAGE=@specforge/scope-gate
+FAILED_TEST_FILES=3
+PRODUCT_FAILURE=NO
+REPEATED_ERROR_CLASS=ERR-1035
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1285_RELEASE_CANDIDATE_ID_GRAMMAR_VIOLATION:END -->
+
+<!-- SPECFORGE_ERR681_C2_FOUR_DOCUMENT_AND_FULL_REGRESSION_CLOSURE:START -->
+### ERR-681 C2、ERR-1186、ERR-1234：四文档权威冲突与可信全量回归关闭
+
+- **权威裁决**：V6 `requirements.md` 定义当前产品范围与验收，V6 `design.md` 定义实现架构；架构一致性治理最终实施方案只定义治理执行机制；ADR-013 记录已经接受的“当前发布、不支持旧项目兼容”决策。ADR-013 与本次裁决一致，无需重复修改。
+- **ERR-1186 关闭证据**：fused standard 已禁止旧根 manifest；Orchestrator 与治理总方案统一声明 `resume_check`、`resume_plan` 是 Continuity Snapshot 内容而非假定存在的独立工具。目标治理回归及 daemon-core 全包通过。
+- **ERR-1234 关闭证据**：V6 requirements/design 已把唯一当前 `feature_spec` 固定为 `WorkflowDefinitionFile.schema_version="2.0"`；Daemon 当前发布入口对 manifest-covered workflow 强制精确 2.0，其他版本失败关闭；通用 Loader 的解析集合不构成旧项目或自定义 workflow 支持。workflow-runtime 全包通过。
+- **可信回归证据**：合法候选 `main-6f07d744-working-tree-step10governance` 的 manifest producer complete；正式 precheck `passed=true` 且 producer、inventory、authority、missing、unexpected、dependency、incomplete evidence 全为空；Scope Gate 24 files / 114 tests、workflow-runtime 74 / 1590、CLI 51 / 1027 全部通过；根 16-workspace 确定性串行回归 exit 0。补入 schema 1.0 反向用例后，daemon-core 最终全包为 186 files / 1688 tests 全部通过。
+- **结论**：ERR-681 Phase12 C2 regression baseline blocker 的当前发布修复范围已形成零失败、可追溯的发布证明；ERR-681 父项关闭。其他历史 ledger 待办不再被混入 ERR-681 的回归结论，需按各自责任层独立处理。
+
+```text
+ERR1186_STATUS=CLOSED_AUTHORITY_AND_CONTINUITY_CONTRACT_ALIGNED
+ERR1234_STATUS=CLOSED_CURRENT_FEATURE_SPEC_2_0_BOUNDARY_ENFORCED
+ERR681_STATUS=CLOSED_PHASE12_C2_TRUSTWORTHY_REGRESSION_AND_RELEASE_PROOF
+ERR681_C2_STATUS=CLOSED
+RELEASE_CANDIDATE_ID=main-6f07d744-working-tree-step10governance
+CURRENT_RELEASE_PRECHECK=PASS_ZERO_ERRORS
+SCOPE_GATE=24_FILES_114_PASS
+WORKFLOW_RUNTIME=74_FILES_1590_PASS
+CLI=51_FILES_1027_PASS
+DAEMON_CORE=186_FILES_1688_PASS_AFTER_NEGATIVE_SCHEMA_CASE
+ROOT_WORKSPACE_REGRESSION=PASS_EXIT_0
+ROOT_BUILD=PASS_16_PACKAGES
+ADR013_CHANGE=NOT_REQUIRED_ALREADY_ALIGNED
+LEGACY_COMPATIBILITY_RESTORED=NO
+PUSH_DEPLOY=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR681_C2_FOUR_DOCUMENT_AND_FULL_REGRESSION_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1286_GIT_RESTORE_SANDBOX_INDEX_LOCK:START -->
+### ERR-1286：撤回无语义 EOF 差异时 Git 索引锁受沙箱权限拒绝
+
+- **分类**：`GIT_TOOL_ENVIRONMENT / SANDBOX_INDEX_WRITE_PERMISSION`。
+- **事实证据**：对本轮已确认仅增加末尾换行的 `packages/workflow-runtime/src/types.ts` 执行精确 `git restore -- <path>`，Git 在创建 `.git/index.lock` 前返回 permission denied；恢复未执行，其他路径未受影响。
+- **正确做法**：不使用文本写入重造历史字节；在已授权 Git 写权限下仅对该精确路径执行 restore，并复核其从 diff 中消失。
+- **状态**：`CLOSED`。精确路径 restore 已完成，复核该文件无剩余 diff。
+
+```text
+ERR1286_STATUS=CLOSED_EXACT_PATH_RESTORED
+TARGET_PATH=packages/workflow-runtime/src/types.ts
+TARGET_DIFF=EOF_NEWLINE_ONLY
+RESTORE_EXECUTED=YES
+OTHER_PATH_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1286_GIT_RESTORE_SANDBOX_INDEX_LOCK:END -->

@@ -991,7 +991,7 @@ interface WorkItemState {
 
 ```ts
 interface WorkflowDefinitionFile {
-  schema_version: "1.0";
+  schema_version: "2.0";
   id: string;
   displayName: string;
   intent: string;
@@ -999,6 +999,8 @@ interface WorkflowDefinitionFile {
   artifacts: Array<{ path: string; required: boolean }>;
 }
 ```
+
+当前发布只部署和加载 release manifest 覆盖的 `configs/workflows/builtin/feature_spec.json`，其根定义、`stateMachine`、各 state 与 gate 均使用 `schema_version: "2.0"`。Daemon 的当前发布入口必须拒绝其他 WorkflowDefinition 版本；通用 Loader 对同一产品线早期 schema 的解析能力不改变正式 artifact 的唯一版本，也不得形成旧项目或用户自定义 workflow 的运行入口。
 
 ### 5. UserMessage & ModelCapabilities（REQ-14）
 

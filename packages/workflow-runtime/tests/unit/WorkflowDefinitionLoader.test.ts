@@ -293,7 +293,7 @@ artifacts: []
     });
 
     it('should detect unsupported schema_version', () => {
-      const def = { ...validDefinition, schema_version: '2.0' as unknown as '1.0' };
+      const def = { ...validDefinition, schema_version: '3.0' as unknown as '1.0' };
       const result = loader.validate(def);
       expect(result.valid).toBe(false);
       expect(result.errors.some(e => e.field === 'schema_version')).toBe(true);

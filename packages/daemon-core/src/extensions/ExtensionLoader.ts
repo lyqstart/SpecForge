@@ -17,6 +17,7 @@ import { EventBus } from '../event-bus/EventBus';
 import { Event } from '../types';
 
 const CURRENT_WORKFLOW_FILE = 'feature_spec.json';
+const CURRENT_WORKFLOW_SCHEMA_VERSION = '2.0';
 const CURRENT_WORKFLOW_ID = 'feature_spec';
 
 /**
@@ -310,6 +311,11 @@ export class ExtensionLoader {
       if (definition.id !== CURRENT_WORKFLOW_ID) {
         throw new Error(
           `Current workflow id mismatch: expected ${CURRENT_WORKFLOW_ID}, received ${definition.id}`,
+        );
+      }
+      if (String(definition.schema_version) !== CURRENT_WORKFLOW_SCHEMA_VERSION) {
+        throw new Error(
+          `Current workflow schema mismatch: expected ${CURRENT_WORKFLOW_SCHEMA_VERSION}, received ${definition.schema_version}`,
         );
       }
       if (this.workflowEngine) {

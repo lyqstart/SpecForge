@@ -1,11 +1,20 @@
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ExtensionLoader } from '../../src/extensions/ExtensionLoader';
+
+const pathFixture = vi.hoisted(() => ({ userRoot: '' }));
+
+vi.mock('@specforge/types/user-level-paths', () => ({
+  resolveSpecForgeUserPath: (...segments: string[]) =>
+    [pathFixture.userRoot, ...segments].filter(Boolean).join('/'),
+}));
 
 const packageRoot = resolve(__dirname, '../..');
 const repositoryRoot = resolve(packageRoot, '../..');
+const temporaryRoots: string[] = [];
 
 function read(path: string): string {
   return readFileSync(resolve(packageRoot, path), 'utf8');
@@ -16,6 +25,13 @@ function readRepository(path: string): string {
 }
 
 describe('current release extension boundary', () => {
+  afterEach(() => {
+    pathFixture.userRoot = '';
+    for (const root of temporaryRoots.splice(0)) {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('does not retain the removed runtime PluginLoader branch in the Daemon', () => {
     const loader = read('src/extensions/ExtensionLoader.ts');
     const daemon = read('src/daemon/Daemon.ts');
@@ -59,10 +75,10 @@ describe('current release extension boundary', () => {
   });
 
   it('registers exactly the current feature_spec definition at the Daemon runtime boundary', async () => {
-    const registered: Array<{ id: string }> = [];
+    const registered: Array<{ id: string; schema_version: string }> = [];
     const loader = new ExtensionLoader();
     loader.setWorkflowEngine({
-      registerDefinition(definition: { id: string }) {
+      registerDefinition(definition: { id: string; schema_version: string }) {
         registered.push(definition);
       },
     });
@@ -72,5 +88,31 @@ describe('current release extension boundary', () => {
     expect(result.loaded).toBe(true);
     expect(result.count).toBe(1);
     expect(registered.map((definition) => definition.id)).toEqual(['feature_spec']);
+    expect(registered.map((definition) => definition.schema_version)).toEqual(['2.0']);
+  });
+
+  it('fails closed when the current release artifact uses another workflow schema version', async () => {
+    const userRoot = mkdtempSync(resolve(tmpdir(), 'specforge-current-workflow-schema-'));
+    temporaryRoots.push(userRoot);
+    pathFixture.userRoot = userRoot;
+    const workflowDirectory = resolve(userRoot, 'workflows', 'builtin');
+    mkdirSync(workflowDirectory, { recursive: true });
+    const definition = JSON.parse(
+      readRepository('configs/workflows/builtin/feature_spec.json'),
+    ) as Record<string, unknown>;
+    definition.schema_version = '1.0';
+    writeFileSync(
+      resolve(workflowDirectory, 'feature_spec.json'),
+      JSON.stringify(definition),
+      'utf8',
+    );
+
+    const loader = new ExtensionLoader();
+    const result = await loader.loadByType('workflow');
+
+    expect(result.loaded).toBe(false);
+    expect(result.error?.message).toContain(
+      'Current workflow schema mismatch: expected 2.0, received 1.0',
+    );
   });
 });

@@ -703,6 +703,7 @@ git diff/status 结果：
 5. `architecture_change` 属于代码型 Workflow，Continuity Snapshot 必须像其他代码型 Workflow 一样保留文件状态和验证结果；
 6. OpenCode 自身自动 Compaction 即使未显式调用 `sf_continuity`，重新加载后的 Orchestrator 也必须遵守同一优先级；不得读取旧 `prompts/*.txt` 或完整 Workflow Skill 来覆盖更窄的当前用户边界；
 7. 本规则只约束当前用户授权与执行连续性，不改变 Work Item 状态机、Gate 判定或业务 Contract 语义。
+8. `resume_check` 和 `resume_plan` 是 Continuity Snapshot 中的检查结果与恢复计划内容，不是可假定存在的独立 Tool；缺少受控快照能力时必须按第 3 条只读取证并 Fail Closed，不得由 Agent 自行补写快照或模拟恢复工具。
 
 ### 2.8 Stage Execution Contract
 

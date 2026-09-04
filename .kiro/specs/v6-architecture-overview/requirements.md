@@ -456,6 +456,7 @@ EMPTY_WAL_PERSISTENCE=FORBIDDEN
 2. THE `stateMachine` 字段 SHALL 包含 `initial` 与 `states`；每个状态至少包含 `agent`、`gate`、`skills` 字段。
 3. THE Requirements_Document SHALL 允许用户定义新状态机、新转换规则、挂载自定义 Gate、指定 Agent、加载自定义 Skill。
 4. THE Requirements_Document SHALL 声明 V6.0 只包含"内置 feature_spec workflow"；Workflow 数据驱动扩展（用户自定义 workflow 文件加载）属于 V6.1（P1）。
+5. THE Current_Release SHALL 把内置 `feature_spec` 的 `WorkflowDefinitionFile.schema_version = "2.0"` 作为当前发布格式；Daemon 正式入口只加载 release manifest 覆盖的该文件并对其他版本失败关闭。通用解析器对当前产品线早期 schema 的识别不得被解释为旧项目兼容、用户自定义 workflow 启用或当前发布 artifact 的版本放宽。
 
 ### Requirement 24: Gate 扩展与组合
 

@@ -176,7 +176,9 @@ describe('Orchestrator governance execution closure', () => {
     expect(standard).not.toContain('"status": "created"');
     expect(orchestrator).not.toContain('sf_continuity');
     expect(standard).toContain('`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容');
-    expect(standard).toContain('当前 Runtime 为兼容初始化和可观测性');
+    expect(standard).toContain('当前 Runtime 只接受 V6 当前项目布局');
+    expect(standard).toContain('`.specforge/manifest.json`');
+    expect(standard).not.toContain('允许 `sf_project_init` 创建或维护 `.specforge/manifest.json`');
   });
 
   it('requires professional agents to hand HardStop evidence back to the Orchestrator', () => {
