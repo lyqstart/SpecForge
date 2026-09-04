@@ -23735,3 +23735,39 @@ OTHER_PATH_IMPACT=NONE
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1286_GIT_RESTORE_SANDBOX_INDEX_LOCK:END -->
+
+<!-- SPECFORGE_ERR681_C2_LOCAL_CLOSURE_COMMIT:START -->
+### ERR-681 C2：最终权威与可信回归修复已形成可追溯本地提交
+
+- **事实证据**：提交前 staged audit 为 12 个计划内路径、0 个 tracked 未暂存路径、0 个冲突，`git diff --cached --check` 通过；历史备份未进入索引。Git 创建提交 `668e59e`，消息符合 `type(scope): description`。
+- **边界**：该提交关闭 ERR-681 C2、ERR-1186 与 ERR-1234，不代表远程推送或用户级部署；其余独立历史 ledger 待办不因本提交自动关闭。
+
+```text
+ERR681_C2_COMMIT=668e59e
+ERR681_C2_COMMIT_MESSAGE=fix(governance):_close_ERR681_regression_authority_conflicts
+STAGED_PATHS=12
+TRACKED_UNSTAGED_PATHS=0
+UNMERGED_PATHS=0
+EXCLUDED_UNTRACKED_BACKUP=1
+PLAN_STATUS=CLOSED_STEPS_0_THROUGH_9_COMPLETE
+PUSH_DEPLOY=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR681_C2_LOCAL_CLOSURE_COMMIT:END -->
+
+<!-- SPECFORGE_ERR1287_COMPOUND_GIT_ADD_SANDBOX_PERMISSION:START -->
+### ERR-1287：治理记录暂存把 Git 写操作与只读审计组合后未匹配权限
+
+- **分类**：`GIT_TOOL_ENVIRONMENT / COMMAND_COMPOSITION_PERMISSION`。
+- **事实证据**：将精确 `git add`、cached diff audit 与 status 放入同一 shell 调用时，Git 在创建 `.git/index.lock` 前返回 permission denied；status 证明 3 个治理文件仍未暂存，未发生部分写入。
+- **正确做法**：把精确 `git add` 作为独立写操作执行；成功后再用独立只读命令审计 staged diff，不改变目标文件集合。
+- **状态**：`CLOSED`。独立精确 `git add` 已成功，随后分离执行 staged audit。
+
+```text
+ERR1287_STATUS=CLOSED_SPLIT_EXACT_GIT_ADD_SUCCEEDED
+TARGET_PATHS=3_GOVERNANCE_RECORD_FILES
+PARTIAL_STAGE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1287_COMPOUND_GIT_ADD_SANDBOX_PERMISSION:END -->
