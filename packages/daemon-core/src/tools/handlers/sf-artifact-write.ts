@@ -48,6 +48,10 @@ import {
   resolveSystemGovernanceRequirement,
 } from '../lib/sf_design_governance_policy';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import {
+  evidenceManifestSchemaBlockCode,
+  precheckEvidenceManifestSchema,
+} from '../lib/evidence-manifest.js';
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
   'intake.md',
@@ -881,7 +885,7 @@ function normalizeCoreJsonArtifact(
           : [];
     const normalized = {
       ...parsed,
-      schema_version: parsed.schema_version ?? '1.1',
+      schema_version: parsed.schema_version ?? '1.0',
       work_item_id: parsed.work_item_id ?? workItemId,
       entries,
     };
@@ -1228,6 +1232,21 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
         message:
           `Design artifact must declare one allowed analysis_scope: ${allowedScopes.join(', ')}. ` +
           'Overall governance design remains system_governance; explicit non-default module projections use solution_design. The artifact was NOT written.',
+      };
+    }
+  }
+  if (targetFilename === 'evidence_manifest.json') {
+    const schemaPrecheck = await precheckEvidenceManifestSchema(
+      workItemRoot(baseDir, workItemId),
+      workItemId,
+    );
+    const schemaBlockCode = evidenceManifestSchemaBlockCode(schemaPrecheck);
+    if (schemaBlockCode) {
+      return {
+        success: false,
+        error: `EVIDENCE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}`,
+        hard_stop: true,
+        retry_allowed: false,
       };
     }
   }

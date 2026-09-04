@@ -18,6 +18,10 @@ import {
   validateVerificationReportContract,
   extractStructuredVerificationReport,
 } from '../lib/verification-report-contract';
+import {
+  evidenceManifestSchemaBlockCode,
+  precheckEvidenceManifestSchema,
+} from '../lib/evidence-manifest';
 
 registerHandler('sf_v11_verification', async (args, context, _deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
@@ -89,16 +93,24 @@ registerHandler('sf_v11_verification', async (args, context, _deps) => {
     if (action === 'validate_evidence_manifest') {
       const manifest = args['manifest'];
       if (!manifest) {
+        const schemaPrecheck = await precheckEvidenceManifestSchema(wiDir, workItemId);
+        const schemaBlockCode = evidenceManifestSchemaBlockCode(schemaPrecheck);
+        if (schemaBlockCode) {
+          return {
+            success: false,
+            error: `EVIDENCE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}`,
+          };
+        }
         try {
           const raw = await readFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), 'utf-8');
           const parsed = JSON.parse(raw);
-          const result = validateEvidenceManifest(parsed);
+          const result = validateEvidenceManifest(parsed, workItemId);
           return { success: true, action, ...result };
         } catch {
           return { success: false, error: 'evidence_manifest.json not found and no manifest provided' };
         }
       }
-      const result = validateEvidenceManifest(manifest);
+      const result = validateEvidenceManifest(manifest, workItemId);
       return { success: true, action, ...result };
     }
 

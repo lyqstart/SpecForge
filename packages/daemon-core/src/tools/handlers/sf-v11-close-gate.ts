@@ -47,6 +47,10 @@ import {
   writeWorkItemMetadata,
 } from "../lib/work-item-metadata.js";
 import {
+  evidenceManifestSchemaBlockCode,
+  precheckEvidenceManifestSchema,
+} from "../lib/evidence-manifest.js";
+import {
   assertFormalVersionSnapshotForGitMerge,
   auditActualGovernanceScope,
   inspectFormalGitBinding,
@@ -724,6 +728,18 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         workItemDir,
         workItem,
       });
+    }
+
+    const evidenceSchemaPrecheck = await precheckEvidenceManifestSchema(
+      workItemDir,
+      workItemId,
+    );
+    const evidenceSchemaBlockCode = evidenceManifestSchemaBlockCode(evidenceSchemaPrecheck);
+    if (evidenceSchemaBlockCode) {
+      return {
+        ...result,
+        error: `EVIDENCE_MANIFEST_SCHEMA_BLOCKED: ${evidenceSchemaBlockCode}`,
+      };
     }
 
     const authoritativeState = await readAuthoritativeState({

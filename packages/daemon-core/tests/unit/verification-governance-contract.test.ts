@@ -96,12 +96,16 @@ describe('verification governance contract', () => {
       path.join(workItemDir, 'evidence', 'evidence_manifest.json'),
       JSON.stringify(
         {
+          schema_version: '1.0',
+          work_item_id: workItemId,
           entries: [
             {
+              evidence_id: 'EV-1',
               id: 'EV-1',
               status: 'passed',
               level: 'L5',
               type: 'behavioral_e2e',
+              path: 'evidence/e2e.txt',
               supports: ['OUT-1', 'REQ-1', 'DD-1', 'TASK-1'],
             },
           ],
@@ -257,6 +261,25 @@ describe('verification governance contract', () => {
         check => check.check_id === 'verification_semantic_closure_provenance_current'
       )?.passed
     ).toBe(true);
+  });
+
+  it('makes verification_gate fail closed on an unknown Evidence Manifest schema', async () => {
+    const evidencePath = path.join(workItemDir, 'evidence', 'evidence_manifest.json');
+    const original = await fs.readFile(evidencePath, 'utf8');
+    await fs.writeFile(evidencePath, original.replace('"1.0"', '"1.1"'), 'utf8');
+
+    const report = await runGate('verification_gate', {
+      workItemId,
+      workItemDir,
+      projectRoot,
+      workflowType: 'quick_change',
+      workflowPath: 'code_only_fast_path',
+    });
+
+    expect(report.status).toBe('failed');
+    expect(
+      report.checks.find(check => check.check_id === 'evidence_manifest_schema_current'),
+    ).toMatchObject({ passed: false, details: 'CHAIN_GAP' });
   });
 
   it('makes the active verification gate fail when semantic closure is missing', async () => {

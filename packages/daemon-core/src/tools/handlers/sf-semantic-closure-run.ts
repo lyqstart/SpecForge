@@ -31,6 +31,10 @@ import {
 import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11.js';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import {
+  evidenceManifestSchemaBlockCode,
+  precheckEvidenceManifestSchema,
+} from '../lib/evidence-manifest.js';
 
 async function readTextIfExists(filePath: string): Promise<string | undefined> {
   try {
@@ -151,6 +155,18 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       success: false,
       work_item_id: workItemId,
       error: error instanceof Error ? error.message : String(error),
+    };
+  }
+
+  const evidenceSchemaPrecheck = await precheckEvidenceManifestSchema(workItemDir, workItemId);
+  const evidenceSchemaBlockCode = evidenceManifestSchemaBlockCode(evidenceSchemaPrecheck);
+  if (evidenceSchemaBlockCode) {
+    return {
+      success: false,
+      work_item_id: workItemId,
+      error: `EVIDENCE_MANIFEST_SCHEMA_BLOCKED: ${evidenceSchemaBlockCode}`,
+      semantic_closure_valid: false,
+      retry_allowed: false,
     };
   }
 

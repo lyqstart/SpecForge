@@ -10,6 +10,10 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import type { GateReportCheck } from './gate-report.js';
 import {
+  evidenceManifestSchemaBlockCode,
+  precheckEvidenceManifestSchema,
+} from './evidence-manifest.js';
+import {
   validateSemanticClosure,
   type SemanticClosureManifest,
   type SemanticEvidence,
@@ -194,6 +198,7 @@ function reportEvidenceAlignment(
 
 export async function evaluateVerificationGovernanceContract(input: {
   workItemDir: string;
+  workItemId?: string;
   workflowType?: string;
 }): Promise<{ checks: GateReportCheck[]; inputFiles: string[] }> {
   const reportPath = path.join(input.workItemDir, 'verification_report.md');
@@ -202,7 +207,15 @@ export async function evaluateVerificationGovernanceContract(input: {
   const closurePath = path.join(input.workItemDir, '.semantic_closure.json');
   const reportText = await readText(reportPath);
   const structuredReport = reportText ? extractStructuredVerificationReport(reportText) : null;
-  const evidenceManifest = await readJson<Record<string, any>>(evidencePath);
+  const evidenceWorkItemId = input.workItemId ?? path.basename(input.workItemDir);
+  const evidenceSchemaPrecheck = await precheckEvidenceManifestSchema(
+    input.workItemDir,
+    evidenceWorkItemId,
+  );
+  const evidenceSchemaBlockCode = evidenceManifestSchemaBlockCode(evidenceSchemaPrecheck);
+  const evidenceManifest = evidenceSchemaBlockCode
+    ? null
+    : await readJson<Record<string, any>>(evidencePath);
   const auditText = await readText(auditPath);
   const contractWorkflow = input.workflowType === 'contract_change';
   const semanticManifest = contractWorkflow
@@ -210,6 +223,13 @@ export async function evaluateVerificationGovernanceContract(input: {
     : await readJson<SemanticClosureManifest>(closurePath);
 
   const checks: GateReportCheck[] = [];
+  checks.push({
+    check_id: 'evidence_manifest_schema_current',
+    description: 'evidence_manifest uses the current owner schema',
+    passed: evidenceSchemaBlockCode === undefined,
+    severity: evidenceSchemaBlockCode === undefined ? undefined : 'error',
+    details: evidenceSchemaBlockCode,
+  });
   const reportContract = validateVerificationReportContract(structuredReport);
   const conclusion = normalize(structuredReport?.conclusion);
   checks.push({

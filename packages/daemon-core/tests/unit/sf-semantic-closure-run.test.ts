@@ -69,7 +69,18 @@ async function createWorkItem(
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
     JSON.stringify(
-      { entries: [{ id: 'EV-1', status: 'passed', level: 'L5', type: 'behavioral_e2e' }] },
+      {
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        entries: [{
+          evidence_id: 'EV-1',
+          id: 'EV-1',
+          status: 'passed',
+          level: 'L5',
+          type: 'behavioral_e2e',
+          path: 'evidence/e2e.txt',
+        }],
+      },
       null,
       2
     ) + '\n'
@@ -209,12 +220,16 @@ describe('sf_semantic_closure_run handler', () => {
       path.join(wiDir, 'evidence', 'evidence_manifest.json'),
       JSON.stringify(
         {
+          schema_version: '1.0',
+          work_item_id: workItemId,
           entries: [
             {
+              evidence_id: 'EV-1',
               id: 'EV-1',
               status: 'passed',
               level: 'L5',
               type: 'behavioral_e2e',
+              path: 'evidence/e2e.txt',
               supports: ['OUT-1', 'REQ-1', 'DD-1', 'TASK-1'],
             },
           ],
@@ -280,6 +295,30 @@ describe('sf_semantic_closure_run handler', () => {
     );
     await expect(fs.access(path.join(wiDir, '.semantic_closure.json'))).rejects.toThrow();
     await expect(fs.access(path.join(wiDir, 'semantic_closure_report.md'))).rejects.toThrow();
+  });
+
+  it('rejects an unknown Evidence Manifest schema before writing closure artifacts', async () => {
+    const workItemId = 'WI-9107';
+    const wiDir = await createWorkItem(
+      tmpDir,
+      workItemId,
+      '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1',
+    );
+    const manifestPath = path.join(wiDir, 'evidence', 'evidence_manifest.json');
+    const original = (await fs.readFile(manifestPath, 'utf8')).replace('"1.0"', '"1.1"');
+    await fs.writeFile(manifestPath, original, 'utf8');
+
+    const result = await getHandler('sf_v11_semantic_closure_run')!(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      {} as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    await expect(fs.access(path.join(wiDir, '.semantic_closure.json'))).rejects.toThrow();
+    await expect(fs.access(path.join(wiDir, 'semantic_closure_report.md'))).rejects.toThrow();
+    await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(original);
   });
 
   it('refuses to regenerate closure after verification inputs are frozen', async () => {

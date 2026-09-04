@@ -453,3 +453,37 @@ ROOT_REGRESSION=PASS_16_WORKSPACES_EXIT_0
 ERR1013_PARENT_STATUS=OPEN
 NEXT_OWNER_FAMILY=HETEROGENEOUS_GOVERNANCE_EVIDENCE
 ```
+
+### Evidence Manifest owner — exact contract and public-boundary closure
+
+`evidence/evidence_manifest.json` is owned by the daemon Verifier/Evidence
+Manifest subsystem, not by a directory-global schema convention. Its current
+schema is `1.0`; the owner validator requires Work Item identity plus non-empty
+`evidence_id`, `type`, and `path` for every entry. Descriptive/hash/timestamp
+fields remain optional, while the active Verification Gate may use business
+evidence types such as `behavioral_e2e`.
+
+The optional per-Work-Item descriptor has no invented transition. Existing
+unknown schema files therefore fail `CHAIN_GAP` without mutation. Every current
+public file boundary now uses that owner contract before processing or
+overwriting persistent bytes. Missing manifests remain governed by the
+existing lifecycle-specific required/optional rules.
+
+```text
+OWNER_FAMILY=EVIDENCE_MANIFEST
+OWNER_FAMILY_STATUS=CLOSED_VALIDATED_AT_DAEMON_PACKAGE_LEVEL
+SCHEMA_AUTHORITY=@specforge/daemon-core/evidence-manifest
+CURRENT_SCHEMA=1.0
+DESCRIPTOR_PATH=evidence/evidence_manifest.json
+DESCRIPTOR_REQUIRED=false
+MIGRATION_TRANSITIONS=NONE
+PUBLIC_WRITERS=SF_ARTIFACT_WRITE;SF_V11_VERIFICATION_CREATE_EVIDENCE_MANIFEST
+PUBLIC_READERS=SF_V11_VERIFICATION_VALIDATE_EVIDENCE_MANIFEST;SF_SEMANTIC_CLOSURE_RUN;VERIFICATION_GATE;SF_CLOSE_GATE
+ALL_PUBLIC_BOUNDARIES=EXACT_VALIDATED_AND_DESCRIPTOR_PRECHECKED
+UNKNOWN_SCHEMA_BEHAVIOR=CHAIN_GAP_FAIL_CLOSED_NO_MUTATION
+TARGET_REGRESSION=4_FILES_44_PASS
+DAEMON_CORE_REGRESSION=188_FILES_1702_PASS
+ERR1328_STATUS=CLOSED
+ERR1013_PARENT_STATUS=OPEN
+NEXT_OWNER_FAMILY=NEXT_HETEROGENEOUS_GOVERNANCE_EVIDENCE_OWNER
+```

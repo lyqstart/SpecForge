@@ -379,8 +379,16 @@ describe('7.2 artifact writer schema validation', () => {
 
     it('accepts valid evidence_manifest.json', () => {
       const content = JSON.stringify({
+        schema_version: '1.0',
         work_item_id: 'WI-0001',
-        entries: [{ type: 'test_output', path: 'evidence/test.log' }],
+        entries: [{
+          evidence_id: 'EV-0001',
+          type: 'test_output',
+          path: 'evidence/test.log',
+          description: 'Current targeted regression output',
+          hash: 'sha256:abc123',
+          created_at: '2026-09-04T00:00:00.000Z',
+        }],
       });
       const result = validateEvidenceManifestJson(content, 'WI-0001');
       expect(result.valid).toBe(true);

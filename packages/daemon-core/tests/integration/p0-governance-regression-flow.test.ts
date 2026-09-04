@@ -334,11 +334,15 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     work_item_id: workItemId,
     entries: [
       {
+        evidence_id: 'EV-1',
         id: 'EV-1',
-        type: 'test',
+        type: 'test_output',
         evidence_type: 'behavioral_e2e',
         level: 'L5',
         path: 'verification_report.md',
+        description: 'Current P0 behavioral E2E evidence',
+        hash: 'sha256:fixture',
+        created_at: '2026-09-04T00:00:00.000Z',
         status: 'passed',
         supports: ['OUT-1', 'REQ-001', 'DD-1', 'TASK-001'],
       },

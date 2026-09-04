@@ -24575,3 +24575,306 @@ NEXT_LEGAL_ACTION=RECONSTRUCT_HETEROGENEOUS_GOVERNANCE_EVIDENCE_OWNER_FAMILY
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1013_WORK_ITEM_METADATA_LOCAL_COMMIT:END -->
+
+<!-- SPECFORGE_ERR1326_GOVERNANCE_EVIDENCE_COMBINED_REGEX_EMPTY:START -->
+### ERR-1326：治理 evidence 首轮组合正则返回空结果
+
+- **分类**：`EVIDENCE_COLLECTION_ERROR / OVERCONSTRAINED_COMBINED_REGEX`。
+- **事实证据**：对十个候选 owner 文件组合检索 schema、扩展名与写入调用，`rg` exit 1 且无输出；该结果与已知生产产物存在事实不一致，不能用于“不存在 writer”的结论。
+- **处置**：放弃组合正则；逐 owner 读取路径常量、export、write 调用与 schema 字段，再以消费者反向检索交叉验证。
+- **状态**：`CLOSED`。未据此推进实现或归属结论。
+
+```text
+ERR1326_STATUS=CLOSED_NO_CONCLUSION_FROM_EMPTY_SEARCH
+PRODUCT_CODE_IMPACT=NONE
+NEXT_COLLECTION_METHOD=ONE_OWNER_FILE_PER_EVIDENCE_CLASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1326_GOVERNANCE_EVIDENCE_COMBINED_REGEX_EMPTY:END -->
+
+<!-- SPECFORGE_ERR1327_POWERSHELL_IMPORT_SEARCH_QUOTING:START -->
+### ERR-1327：User Decision import 检索被 PowerShell 引号解析阻断
+
+- **分类**：`EVIDENCE_COLLECTION_COMMAND_ERROR / POWERSHELL_QUOTING`。
+- **事实证据**：带嵌套单双引号和 alternation 的 `rg` 命令在 PowerShell parser 阶段报 `Missing property name after reference operator`；命令未执行。
+- **处置**：改用字面关键词 `user-decision` 检索，再读取明确文件；不使用复杂 shell 转义拼接证据命令。
+- **状态**：`CLOSED`。
+
+```text
+ERR1327_STATUS=CLOSED_LITERAL_SEARCH_USED
+FILES_READ_BY_FAILED_COMMAND=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1327_POWERSHELL_IMPORT_SEARCH_QUOTING:END -->
+
+<!-- SPECFORGE_ERR1328_EVIDENCE_MANIFEST_CONTRACT_CONFLICT:START -->
+### ERR-1328：Evidence Manifest 专用合同、通用 validator 与 Artifact Writer schema 冲突
+
+- **分类**：`CONTRACT_CONFLICT / RUNTIME_DEFECT / ERR1013_GOVERNANCE_EVIDENCE_OWNER`。
+- **一手事实**：`evidence-manifest.ts` 的类型、validator 与 `writeEvidenceManifestTemplate()` 均要求 `schema_version='1.0'`；`artifact-schema-validation.ts::validateEvidenceManifestJson()` 不校验 schema，Artifact Writer 对缺省 schema 写入 `1.1`。
+- **权威判断**：V6 Design 规定版本判断来自文件 owner 的 per-file contract，不允许全局或目录猜测；因此 Evidence Manifest 专用合同/Verifier 是该文件 authoritative source，Artifact Writer 的 1.1 缺省和弱 validator 是偏离点。
+- **影响**：当前受控写入可以生成被专用 Verifier 拒绝的 evidence manifest；在 descriptor 登记前必须先统一当前合同，旧/未知 schema 不兼容迁移并应 `CHAIN_GAP` 失败关闭。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1328_STATUS=CLOSED_OWNER_CONTRACT_AND_ALL_PUBLIC_BOUNDARIES_CONVERGED
+AUTHORITY=EVIDENCE_MANIFEST_OWNER_CONTRACT_SCHEMA_1_0
+WRITER_CURRENT_DEFAULT=1.1_CONFLICT
+GENERIC_VALIDATOR_SCHEMA_CHECK=MISSING
+LEGACY_COMPATIBILITY_REQUIRED=NO
+NEXT_LEGAL_ACTION=CONTINUE_NEXT_HETEROGENEOUS_GOVERNANCE_EVIDENCE_OWNER
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1328_EVIDENCE_MANIFEST_CONTRACT_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1329_EVIDENCE_MANIFEST_OWNER_EXPECTED_RED:START -->
+### ERR-1329：Evidence Manifest owner descriptor 定向测试预期红灯
+
+- **分类**：`EXPECTED_RED / ERR1328_CAPABILITY_GAP`。
+- **事实证据**：1 file / 3 tests 全部实际执行并失败；错误仅为 `validateCurrentEvidenceManifestJson is not a function` 与 `createEvidenceManifestSchemaDescriptor is not a function`。
+- **结论**：失败精确证明专用 exact validator 尚未进入通用写入边界，且 per-file descriptor 尚不存在；没有出现额外根因。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1329_STATUS=CLOSED_EXPECTED_RED_MATCHED_PLAN
+TARGET_RESULT=FAIL_3_PASS_0
+UNEXPECTED_FAILURES=0
+TEST_CONTRACT_RELAXED=NO
+NEXT_LEGAL_ACTION=IMPLEMENT_OWNER_VALIDATOR_DESCRIPTOR_AND_WRITER_SCHEMA_CONVERGENCE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1329_EVIDENCE_MANIFEST_OWNER_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1330_EVIDENCE_MANIFEST_VALID_FIXTURE_DRIFT:START -->
+### ERR-1330：Artifact schema 单测把不满足 owner 合同的 Evidence Manifest 称为 valid
+
+- **分类**：`CURRENT_TEST_FIXTURE_DRIFT / EXACT_SCHEMA_CONVERGENCE`。
+- **事实证据**：owner 新测试 3/3 通过；相邻 artifact closure 55 项中仅 `accepts valid evidence_manifest.json` 失败，其夹具无 `schema_version`，entry 也缺 `evidence_id/description/hash/created_at`。
+- **必要性判断**：该测试验证当前 Artifact Writer 的合法输入边界，必须保留；按 schema 1.0 owner 合同补齐夹具，维持 `valid=true` 断言，不删除、不跳过、不放宽 validator。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1330_STATUS=CLOSED_CURRENT_SCHEMA_FIXTURE_TARGET_60_PASS
+OWNER_TARGET=PASS_3
+ADJACENT_RESULT=FAIL_1_PASS_54
+TEST_REMOVAL_OR_SKIP=FORBIDDEN
+PRODUCT_VALIDATOR_RELAXATION=FORBIDDEN
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1330_EVIDENCE_MANIFEST_VALID_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1331_EVIDENCE_WRITER_OVERWRITES_CHAIN_GAP:START -->
+### ERR-1331：Artifact Writer 未在覆盖 Evidence Manifest 前执行 descriptor precheck
+
+- **分类**：`RUNTIME_DEFECT / MIGRATION_CHAIN_GAP_OVERWRITE`。
+- **事实证据**：扩展 owner 测试 5 项中 4 pass；Writer 生成 schema 1.0 已通过，但预置 schema 1.1 后写入 current 内容仍返回 success 并覆盖原文件。
+- **修复边界**：在 Evidence Manifest 第一次持久化前执行其 optional descriptor；missing_optional 与 current 可继续，blocked/migration_required 返回稳定 schema blocked 错误，保持原字节。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1331_STATUS=CLOSED_WRITER_PRECHECK_TARGET_60_PASS
+TARGET_RESULT=FAIL_1_PASS_4
+UNKNOWN_SCHEMA_OVERWRITTEN=NO_AFTER_FIX
+MIGRATION_TRANSITION_AVAILABLE=NO
+NEXT_LEGAL_ACTION=PRECHECK_DESCRIPTOR_BEFORE_NORMALIZE_AND_WRITE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1331_EVIDENCE_WRITER_OVERWRITES_CHAIN_GAP:END -->
+
+<!-- SPECFORGE_ERR1332_CLOSE_REGRESSION_EVIDENCE_FIXTURE_DRIFT:START -->
+### ERR-1332：Close/P0 回归共享 Evidence Manifest 夹具绕过现役 Verifier 合同
+
+- **分类**：`CURRENT_TEST_FIXTURE_DRIFT / CROSS_CONSUMER_CONTRACT_CONVERGENCE`。
+- **事实证据**：7 files / 116 tests 中 19 fail、97 pass；全部失败在 Close 目标断言前由 Evidence Manifest 拒绝。失败集中于 3 个共享 fixture：缺 schema，或使用 `id/type=test|test_log|behavioral_e2e` 且缺专用合同字段。
+- **必要性判断**：这些测试覆盖当前 Close、审计和 P0 全链，必须保留；同一 manifest 若由现役 `sf_v11_verification` 验证也会失败，因此不能继续作为合法当前夹具。
+- **处置**：只把 3 个共享 fixture 对齐 schema 1.0 `EvidenceManifest`，保留下游业务断言和原有扩展证据字段；不逐条改 19 个断言。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1332_STATUS=CLOSED_3_SHARED_FIXTURES_116_PASS
+TARGET_RESULT=FAIL_19_PASS_97
+FAILURE_FILES=3
+TESTS_REMOVED_OR_SKIPPED=0
+DOWNSTREAM_ASSERTIONS_CHANGED=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1332_CLOSE_REGRESSION_EVIDENCE_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1333_EVIDENCE_ENTRY_CONTRACT_OVERSTRENGTHENED:START -->
+### ERR-1333：Evidence entry exact validator 错把非强制描述字段提升为必填
+
+- **分类**：`IMPLEMENTATION_SCOPE_ERROR / CONTRACT_OVERSTRENGTHENING`。
+- **事实证据**：daemon-core 全包 188 files / 1696 tests 中仅 3 fail、1693 pass；其中 `§13 should validate evidence manifest` 是 Verifier 自身合同测试，合法输入包含 schema 1.0、WI、evidence_id/type/path，但不含 description/hash/created_at。
+- **权威修正**：现役专用 validator 历史行为要求 evidence_id/type/path，hash 仅建议；V6 未声明其余字段必填。TypeScript interface 中 description/hash/created_at 与运行时合同冲突，应改为可选，而不是修改 Verifier 合同测试。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1333_STATUS=CLOSED_RUNTIME_FIELDS_RESTORED_DAEMON_1696_PASS
+DAEMON_RESULT=FAIL_3_PASS_1693
+REQUIRED_ENTRY_FIELDS=EVIDENCE_ID;TYPE;PATH
+OPTIONAL_ENTRY_FIELDS=DESCRIPTION;HASH;CREATED_AT
+FAILED_TESTS_TO_MODIFY=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1333_EVIDENCE_ENTRY_CONTRACT_OVERSTRENGTHENED:END -->
+
+<!-- SPECFORGE_ERR1334_TWO_E2E_EVIDENCE_IDENTITY_FIXTURES:START -->
+### ERR-1334：两个当前 E2E Evidence Manifest 仍缺 schema/entry identity
+
+- **分类**：`CURRENT_TEST_FIXTURE_DRIFT / VERIFIER_CONTRACT_BYPASS`。
+- **事实证据**：纠正 ERR-1333 后 4 files / 35 tests 中 2 fail、33 pass；错误只剩 `schema_version must be 1.0` 与 `entries[0].evidence_id is required`，对应 HTTP round-trip 和 daemon-level Close E2E。
+- **处置**：补齐两个 E2E 输入的 schema 1.0 与 evidence_id，保留原生命周期、HTTP、Close 与状态推进断言。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1334_STATUS=CLOSED_2_E2E_FIXTURES_35_PASS
+TARGET_RESULT=FAIL_2_PASS_33
+TEST_REMOVAL_OR_SKIP=FORBIDDEN
+PRODUCT_VALIDATOR_CHANGE=NONE_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1334_TWO_E2E_EVIDENCE_IDENTITY_FIXTURES:END -->
+
+<!-- SPECFORGE_ERR1335_VERIFIER_EVIDENCE_SCHEMA_BOUNDARY_EXPECTED_RED:START -->
+### ERR-1335：Verifier 的 Evidence Manifest 读写入口未执行 owner schema precheck
+
+- **分类**：`EXPECTED_RED / RUNTIME_DEFECT / ERR1328_OWNER_BOUNDARY_GAP`。
+- **事实证据**：owner 定向测试 1 file / 7 tests 中 2 fail、5 pass；预置 schema 1.1 后，`create_evidence_manifest` 仍返回 success 并覆盖文件，`validate_evidence_manifest` 也返回 success。失败均精确命中新增边界断言。
+- **修复边界**：由 Evidence Manifest owner 提供共享 descriptor precheck；Verifier 的持久化读取和模板覆盖在访问文件前调用，`missing_optional/current` 保持现有行为，`blocked/migration_required` 返回稳定 `EVIDENCE_MANIFEST_SCHEMA_BLOCKED`，不修改原字节。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1335_STATUS=CLOSED_VERIFIER_READ_WRITE_PRECHECK_7_PASS
+TARGET_RESULT=FAIL_2_PASS_5
+UNKNOWN_SCHEMA_TEMPLATE_OVERWRITE=NO_AFTER_FIX
+UNKNOWN_SCHEMA_READ_ACCEPTED=NO_AFTER_FIX
+TEST_CONTRACT_RELAXED=NO
+NEXT_LEGAL_ACTION=IMPLEMENT_SHARED_OWNER_PRECHECK_AND_CONNECT_VERIFIER
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1335_VERIFIER_EVIDENCE_SCHEMA_BOUNDARY_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1336_EVIDENCE_TYPE_ENUM_OVERSTRENGTHENED:START -->
+### ERR-1336：Evidence `type` 被错误收紧为封闭枚举
+
+- **分类**：`IMPLEMENTATION_SCOPE_ERROR / ACTIVE_BUSINESS_CONTRACT_CONFLICT`。
+- **事实证据**：原专用运行时 validator 只要求 `type` 非空；现役 verification governance 数据流使用 `behavioral_e2e` 等业务证据类型，并以该值和 Semantic Closure 交叉核验。TypeScript 接口中的窄联合并未被原 validator 强制。
+- **处置**：以实际运行时合同和现役 Gate 数据流为权威，把 `type` 恢复为非空字符串；不修改 Verification Gate 业务夹具，不引入旧项目兼容分支。
+- **状态**：`CLOSED`。
+
+```text
+ERR1336_STATUS=CLOSED_RUNTIME_CONTRACT_RESTORED
+AUTHORITATIVE_EVIDENCE=ORIGINAL_VALIDATOR_AND_ACTIVE_VERIFICATION_GATE_DATA_FLOW
+TYPE_REQUIREMENT=NONEMPTY_STRING
+LEGACY_COMPATIBILITY_BRANCH=NONE
+TEST_CONTRACT_RELAXED=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1336_EVIDENCE_TYPE_ENUM_OVERSTRENGTHENED:END -->
+
+<!-- SPECFORGE_ERR1337_SEMANTIC_CLOSURE_EVIDENCE_SCHEMA_EXPECTED_RED:START -->
+### ERR-1337：Semantic Closure 读取未知 Evidence Manifest schema 的预期红灯
+
+- **分类**：`EXPECTED_RED / RUNTIME_DEFECT / ERR1328_OWNER_BOUNDARY_GAP`。
+- **事实证据**：`sf-semantic-closure-run` 定向 1 file / 7 tests 中 1 fail、6 pass；schema 1.1 清单仍被读取并生成成功闭环，精确证明该公共消费者尚未接 owner precheck。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1337_STATUS=CLOSED_EXPECTED_RED_MATCHED_PLAN
+TARGET_RESULT=FAIL_1_PASS_6
+UNEXPECTED_FAILURES=0
+NEXT_LEGAL_ACTION=CONNECT_SEMANTIC_CLOSURE_OWNER_PRECHECK_BEFORE_ANY_OUTPUT_WRITE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1337_SEMANTIC_CLOSURE_EVIDENCE_SCHEMA_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1338_VERIFICATION_GATE_EVIDENCE_SCHEMA_EXPECTED_RED:START -->
+### ERR-1338：Verification Gate 缺少 Evidence Manifest owner schema 检查
+
+- **分类**：`EXPECTED_RED / GATE_CONTRACT_GAP / ERR1328_OWNER_BOUNDARY_GAP`。
+- **事实证据**：verification governance 定向 1 file / 11 tests 中 1 fail、10 pass；schema 1.1 可因其他一致性检查失败，但 Gate 报告中不存在 `evidence_manifest_schema_current`，无法证明 Gate 在使用清单前执行了 owner schema 判定。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1338_STATUS=CLOSED_EXPECTED_RED_MATCHED_PLAN
+TARGET_RESULT=FAIL_1_PASS_10
+MISSING_CHECK=evidence_manifest_schema_current
+NEXT_LEGAL_ACTION=ADD_OWNER_PRECHECK_TO_SHARED_VERIFICATION_GOVERNANCE_CONTRACT
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1338_VERIFICATION_GATE_EVIDENCE_SCHEMA_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1339_CLOSE_GATE_SCHEMA_CLASSIFICATION_EXPECTED_RED:START -->
+### ERR-1339：Close Gate 拒绝未知 schema 但未走 owner descriptor 分类
+
+- **分类**：`EXPECTED_RED / PARTIAL_SUPPORT / ERR1328_OWNER_BOUNDARY_GAP`。
+- **事实证据**：Close Gate 定向 1 file / 18 tests 中 1 fail、17 pass；schema 1.1 已被 exact validator 拒绝且文件未改，但错误仅为字段校验失败，不是 owner descriptor 的 `CHAIN_GAP`，无法进入统一迁移治理语义。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1339_STATUS=CLOSED_EXPECTED_RED_MATCHED_PLAN
+TARGET_RESULT=FAIL_1_PASS_17
+FAIL_CLOSED_ALREADY=YES
+OWNER_DESCRIPTOR_CLASSIFICATION=MISSING
+NEXT_LEGAL_ACTION=PRECHECK_OWNER_SCHEMA_BEFORE_CLOSE_ARTIFACT_PROCESSING
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1339_CLOSE_GATE_SCHEMA_CLASSIFICATION_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1328_EVIDENCE_MANIFEST_OWNER_CLOSURE:START -->
+### ERR-1328：Evidence Manifest owner 家族闭环验证
+
+- **实现结果**：schema 1.0 专用合同成为通用 validator、descriptor 和所有当前公共读写边界的单一来源；未知 1.1 无迁移链，统一 `CHAIN_GAP` fail closed。
+- **公共边界**：Artifact Writer、Verifier 持久化校验、Verifier 模板创建、Semantic Closure、Verification Gate、Close Gate。
+- **回归证据**：owner/四边界 4 files / 44 tests pass；daemon-core 188 files / 1702 tests pass。没有测试删除、跳过或产品合同放宽。
+- **状态**：`CLOSED`。ERR-1013 父项仍开放，继续其他治理 evidence 与 observability owner。
+
+```text
+ERR1328_STATUS=CLOSED
+OWNER_FAMILY=EVIDENCE_MANIFEST
+CURRENT_SCHEMA=1.0
+MIGRATION_TRANSITIONS=NONE
+UNKNOWN_SCHEMA_BEHAVIOR=CHAIN_GAP_FAIL_CLOSED_NO_MUTATION
+PUBLIC_BOUNDARIES=ARTIFACT_WRITER;VERIFIER_READ;VERIFIER_TEMPLATE_WRITE;SEMANTIC_CLOSURE;VERIFICATION_GATE;CLOSE_GATE
+TARGET_REGRESSION=4_FILES_44_PASS
+DAEMON_CORE_REGRESSION=188_FILES_1702_PASS
+ERR1013_STATUS=OPEN_OTHER_GOVERNANCE_EVIDENCE_AND_OBSERVABILITY_OWNERS_REMAIN
+NEXT_LEGAL_ACTION=RECONSTRUCT_NEXT_HETEROGENEOUS_GOVERNANCE_EVIDENCE_OWNER
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1328_EVIDENCE_MANIFEST_OWNER_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1340_ROOT_TASK_INVOKED_WITH_NODE:START -->
+### ERR-1340：根任务被错误地直接用 Node 启动
+
+- **分类**：`TOOL_INVOCATION_ERROR / ROOT_TASK_RUNNER_GUARD`。
+- **事实证据**：`node scripts/run-root-task.mjs build` exit 1，唯一错误为 `ROOT_TASK_REQUIRES_BUN: invoke with bun run`；构建未开始。
+- **处置**：遵循项目根任务合同，改用已验证的 Bun 运行时执行 `bun run build`；不得把本次结果计为产品构建失败。
+- **状态**：`CLOSED`。
+
+```text
+ERR1340_STATUS=CLOSED_CORRECT_RUNNER_SELECTED
+PRODUCT_BUILD_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+NEXT_LEGAL_ACTION=RUN_ROOT_BUILD_WITH_BUN
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1340_ROOT_TASK_INVOKED_WITH_NODE:END -->
+
+<!-- SPECFORGE_ERR1341_SUPPLIED_EVIDENCE_WORK_ITEM_ID_EXPECTED_RED:START -->
+### ERR-1341：Verifier 未对调用参数中的 Evidence Manifest 执行 Work Item 身份绑定
+
+- **分类**：`EXPECTED_RED / CONTRACT_VALIDATION_GAP / ERR1328_OWNER_BOUNDARY`。
+- **事实证据**：owner 定向 1 file / 8 tests 中 1 fail、7 pass；请求 `WI-0007` 时传入声明 `WI-DIFFERENT` 的结构合法清单，Verifier 返回 `valid=true`。
+- **修复边界**：owner validator 接受可选 expected Work Item ID；Verifier 对持久化内容和直接参数均传入请求 ID，不改变 handler 的 `success + valid/errors` 验证响应合同。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1341_STATUS=CLOSED_VERIFIER_IDENTITY_BINDING_8_PASS
+TARGET_RESULT=FAIL_1_PASS_7
+UNEXPECTED_FAILURES=0
+NEXT_LEGAL_ACTION=BIND_VERIFIER_VALIDATION_TO_REQUEST_WORK_ITEM_ID
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1341_SUPPLIED_EVIDENCE_WORK_ITEM_ID_EXPECTED_RED:END -->

@@ -29,6 +29,7 @@ import {
   validateImpactScopeFieldKinds,
   type ImpactScope,
 } from './impact-analysis.js';
+import { validateCurrentEvidenceManifestJson } from './evidence-manifest.js';
 
 export interface SchemaValidationResult {
   valid: boolean;
@@ -571,32 +572,8 @@ export function validateEvidenceManifestJson(
   content: string,
   expectedWorkItemId: string
 ): SchemaValidationResult {
-  const errors: string[] = [];
-
-  let parsed: any;
-  try {
-    parsed = JSON.parse(content);
-  } catch (e) {
-    return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
-  }
-
-  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-    errors.push('INVALID_STRUCTURE: must be a JSON object');
-  } else {
-    if (!parsed.work_item_id) {
-      errors.push('MISSING_FIELD: work_item_id is required');
-    } else if (parsed.work_item_id !== expectedWorkItemId) {
-      errors.push(
-        `WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`
-      );
-    }
-
-    if (!Array.isArray(parsed.entries)) {
-      errors.push('MISSING_FIELD: entries must be an array');
-    }
-  }
-
-  return { valid: errors.length === 0, errors };
+  const result = validateCurrentEvidenceManifestJson(content, expectedWorkItemId);
+  return { valid: result.valid, errors: result.errors };
 }
 
 /**

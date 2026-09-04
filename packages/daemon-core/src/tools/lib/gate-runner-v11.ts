@@ -1148,6 +1148,7 @@ registerGate('verification_gate', 'hard_gate', true, async ctx => {
 
   const verificationContract = await evaluateVerificationGovernanceContract({
     workItemDir: ctx.workItemDir,
+    workItemId: ctx.workItemId,
     workflowType: ctx.workflowType,
   });
   checks.push(...verificationContract.checks);

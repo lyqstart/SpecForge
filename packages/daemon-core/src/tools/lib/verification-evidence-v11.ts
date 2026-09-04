@@ -30,7 +30,11 @@ export { runCloseGate } from './close-gate.js'
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { TraceEntry, TraceDelta, TraceValidationResult } from './evidence.js';
-import type { EvidenceManifest } from './evidence-manifest.js';
+import {
+  evidenceManifestSchemaBlockCode,
+  precheckEvidenceManifestSchema,
+  type EvidenceManifest,
+} from './evidence-manifest.js';
 
 // Re-export types locally so existing consumers see no breakage
 // (already covered by `export *` above, but kept for documentation clarity)
@@ -170,6 +174,11 @@ export async function writeEvidenceManifestTemplate(
   wiDir: string,
   workItemId: string,
 ): Promise<string> {
+  const schemaPrecheck = await precheckEvidenceManifestSchema(wiDir, workItemId);
+  const schemaBlockCode = evidenceManifestSchemaBlockCode(schemaPrecheck);
+  if (schemaBlockCode) {
+    throw new Error(`EVIDENCE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}`);
+  }
   const manifest: EvidenceManifest = {
     schema_version: '1.0',
     work_item_id: workItemId,

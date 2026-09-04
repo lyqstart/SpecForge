@@ -268,7 +268,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (2 entries, 1 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |');
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
-    await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [{ id: 'EV-1', type: 'log', path: 'test.log', status: 'passed' }] }));
+    await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', id: 'EV-1', type: 'log', path: 'test.log', status: 'passed' }] }));
     await fs.writeFile(path.join(wiDir, 'user_decision.json'), JSON.stringify({ work_item_id: workItemId, decision_status: 'approved' }));
     const _closure = {
       schema_version: '1.0',

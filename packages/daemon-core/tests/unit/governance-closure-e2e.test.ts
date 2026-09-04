@@ -113,7 +113,18 @@ async function createFullWorkItem(
   if (!skip.has('evidence/evidence_manifest.json'))
     await fs.writeFile(
       path.join(wiDir, 'evidence', 'evidence_manifest.json'),
-      JSON.stringify({ work_item_id: workItemId, entries: [{ type: 'test_log', path: 'evidence/test.log', timestamp: new Date().toISOString() }] }),
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        entries: [{
+          evidence_id: 'EV-0001',
+          type: 'test_output',
+          path: 'evidence/test.log',
+          description: 'Current close-gate regression evidence',
+          hash: 'sha256:fixture',
+          created_at: new Date().toISOString(),
+        }],
+      }),
     );
   if (!skip.has('user_decision.json'))
     await fs.writeFile(

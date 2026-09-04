@@ -216,8 +216,17 @@ async function createMinimalWorkItem(
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
     JSON.stringify({
+      schema_version: '1.0',
       work_item_id: workItemId,
-      entries: [{ id: 'EV-1', type: 'behavioral_e2e', status: 'passed' }],
+      entries: [{
+        evidence_id: 'EV-1',
+        type: 'test_output',
+        path: 'verification_report.md',
+        description: 'Current close-gate behavioral E2E evidence',
+        hash: 'sha256:fixture',
+        created_at: new Date().toISOString(),
+        status: 'passed',
+      }],
     }) + '\n'
   );
   await fs.writeFile(
@@ -341,6 +350,27 @@ describe('sf_close_gate handler', () => {
     );
     expect((result as any).success).toBe(false);
     expect((result as any).error).toContain('close_file__semantic_closure_json');
+  });
+
+  it('rejects an unknown Evidence Manifest schema before Close mutations', async () => {
+    const workItemId = 'wi-evidence-schema-gap';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const manifestPath = path.join(wiDir, 'evidence', 'evidence_manifest.json');
+    const original = await fs.readFile(manifestPath, 'utf8');
+    await fs.writeFile(manifestPath, original.replace('"1.0"', '"1.1"'), 'utf8');
+    const workItemPath = path.join(wiDir, 'work_item.json');
+    const workItemBefore = await fs.readFile(workItemPath, 'utf8');
+
+    const result = await getHandler('sf_close_gate')!(
+      { work_item_id: workItemId },
+      { directory: tmpDir },
+      createMockDeps() as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    await expect(fs.readFile(manifestPath, 'utf8')).resolves.toContain('"1.1"');
+    await expect(fs.readFile(workItemPath, 'utf8')).resolves.toBe(workItemBefore);
   });
 
   it('should write close_gate evidence on success', async () => {
