@@ -11,7 +11,6 @@
 | `.specforge/` | 项目级 SpecForge 数据目录（SPEC_DIR_NAME 常量） |
 | `.specforge/specs/` | Work Item 规格目录 |
 | `.specforge/config/` | 项目配置目录 |
-| `.specforge/knowledge/` | 知识图谱目录 |
 | `.specforge/runtime/` | 运行时状态目录（gitignored） |
 | `.specforge/archive/` | Agent Run 归档目录（gitignored） |
 | `.specforge/sessions/` | 会话归档目录（gitignored） |
@@ -95,8 +94,6 @@
 | `project-rules.md` | 项目规则 |
 | `prod-environment.md` | 生产环境配置 |
 | `project.json` | 项目配置 |
-| `risk_policy.json` | 风险策略 |
-| `skill_fragments.json` | Skill Fragment 配置 |
 
 > **注意**：开发环境配置已从项目级 `dev-environment.md` 迁移至用户级
 > `~/.config/opencode/sf-user/host-profile.json`，由 `sf_project_init` 工具在启动时自动扫描生成。

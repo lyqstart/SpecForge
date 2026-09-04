@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { WorkflowEngine, WorkflowEvent } from '../../src/engine/WorkflowEngine.js';
+import { WorkflowEngine, WorkflowEvent } from '../../src/WorkflowEngine.js';
 import { WorkflowDefinition, SimpleGateDefinition } from '../../src/types.js';
 
 describe('WorkflowEngine', () => {

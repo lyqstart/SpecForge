@@ -5,7 +5,6 @@ import {
   SPEC_USER_DIR_NAME,
   LAYOUT,
   legacyPaths,
-  legacyUserLayoutReadOnly,
   resolveProjectPath,
   projectSpecManifest,
   projectExtensionRegistry,
@@ -34,6 +33,8 @@ describe('SpecForge v1.1 directory layout contract', () => {
 
   it('declares the v1.1 project and work item layout keys', () => {
     expect(LAYOUT).toHaveProperty('project');
+    expect(LAYOUT).toHaveProperty('config');
+    expect(LAYOUT).toHaveProperty('configFiles');
     expect(LAYOUT).toHaveProperty('projectFiles');
     expect(LAYOUT).toHaveProperty('workItems');
     expect(LAYOUT).toHaveProperty('runtime');
@@ -44,18 +45,14 @@ describe('SpecForge v1.1 directory layout contract', () => {
     expect((LAYOUT as any).projectFiles.extensionRegistry).toBe('project/extension_registry.json');
   });
 
-  it('keeps old project paths only under legacyPaths', () => {
-    expect(legacyPaths.specsReadOnly).toBe('specs');
+  it('classifies current config separately from old project paths', () => {
+    expect(LAYOUT.config).toBe('config');
+    expect(LAYOUT.configFiles.project).toBe('config/project.json');
     expect(legacyPaths.manifest).toBe('manifest.json');
-    expect(legacyPaths.config).toBe('config');
+    expect(Object.prototype.hasOwnProperty.call(legacyPaths, 'config')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(legacyPaths, 'configFiles')).toBe(false);
     expect(Object.prototype.hasOwnProperty.call(LAYOUT, 'specs')).toBe(false);
     expect(Object.prototype.hasOwnProperty.call(LAYOUT, 'manifest')).toBe(false);
-  });
-
-  it('keeps old user-level ~/.specforge paths read-only under legacyUserLayoutReadOnly', () => {
-    expect(legacyUserLayoutReadOnly.runtimeHandshake).toBe('runtime/handshake.json');
-    expect(legacyUserLayoutReadOnly.runtimeState).toBe('runtime/state.json');
-    expect(legacyUserLayoutReadOnly.hostProfile).toBe('host-profile.json');
   });
 
   it('resolves v1.1 project-level paths through the canonical Path Service', () => {

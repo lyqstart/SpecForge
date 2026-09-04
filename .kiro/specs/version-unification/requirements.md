@@ -1,5 +1,20 @@
 # Requirements Document
 
+## Current Release Alignment
+
+本 spec 是 `CURRENT_RELEASE_SUPPORTING`。当前规范只覆盖代码版本真相，以及当前 build / installer manifest 的版本一致性；旧 manifest 检测、双写、三周期兼容、启动 in-place 转换、`.legacy.bak` 和旧格式迁移命令属于 `LEGACY_ONLY`，不得进入当前构建、安装、运行或发布回归。
+
+```text
+PROJECT_SCHEMA_MIGRATION_OWNER=@specforge/migration
+PROJECT_AGGREGATE_DATA_SCHEMA_VERSION=UNSUPPORTED
+PROJECT_SPEC_MANIFEST_OWNER=DAEMON_PROJECT_SPEC_SUBSYSTEM
+PROJECT_SPEC_MANIFEST_PATH=.specforge/project/spec_manifest.json
+OLD_PROJECT_MANIFEST_PATH=.specforge/manifest.json
+OLD_PROJECT_MANIFEST_DISPOSITION=LEGACY_ONLY_REMOVE_FROM_CURRENT_BUILD
+```
+
+本节是本 module spec 的当前发布优先解释。本文后续关于三字段 `Project_Manifest`、`data_schema_version`、`ProjectManifestWriter`、本 package `MigrationRunner`、项目 manifest 缺失自动 bootstrap 和 read-only degraded migration mode 的要求均已被 V6 REQ-18.9—11 取代，只作为待删除实现的来源追溯，不得作为当前代码、测试、构建、部署或发布回归依据。当前项目 schema 只由各持久化文件自己的 `schema_version` 表达，并由 `@specforge/migration` 协调。
+
 ## Introduction
 
 SpecForge 当前在 user-level manifest、project-level manifest、shared 配置层、CLI 与 plugin 之间散落了至少 7 个版本字段（`shared_version`、`schema_version`、`runtime_schema_version`、`required_shared_version_range`、用户级 `code_version`、项目级 `code_version` 等），相互含义重叠且类型耦合错误。leidian 项目最近因为项目级 manifest 写着 `required_shared_version_range: ">=3.5.0 <6.0.0"`，而用户级 manifest 写着 `shared_version: "6.0.0-dev"`，触发了启动期 range 比对失败，导致整个项目集体降级到 read-only 模式，用户无法继续推进任务。
@@ -10,9 +25,9 @@ SpecForge 当前在 user-level manifest、project-level manifest、shared 配置
 - 启动期兼容性检查不再用 range 表达式，改为基于 `data_schema_version` 与 `min_supported_data_schema` 的单向数值比较
 - 跨 schema 升级由 migration 链按需顺序运行，每步幂等且原子
 - 字段的修改时机、修改主体、修改方式由 CI 强制执行，违反规则的 PR 自动 reject
-- 老格式 manifest 在 3 个 release 周期内被自动 in-place 升级，迁移路径对最终用户透明
+- 未知或旧格式 manifest 失败关闭，不由当前产品读取、转换或写回
 
-预期结果：升级 SpecForge 版本不再产生跨用户/跨项目的版本字段冲突，新人贡献者无法在不写 migration 的情况下改 schema，老项目升级路径可预测、可回放、可测试。
+预期结果：当前 manifest 只有一套字段与版本真相；当前 schema 链的升级可预测、可回放、可测试；旧项目不进入当前运行路径。
 
 ## Glossary
 
@@ -25,10 +40,10 @@ SpecForge 当前在 user-level manifest、project-level manifest、shared 配置
 - **Migration_Chain**: 由若干个版本间 migration 脚本组成的有序集合，第 N 个脚本负责把 schema 版本 N-1 的项目数据升级到 schema 版本 N。
 - **Migration_Script**: Migration_Chain 中的单个脚本，输入是符合某 schema 版本 v(N-1) 的 Project_Manifest 与项目数据，输出是符合 schema 版本 v(N) 的同一组数据。
 - **Read_Only_Degraded_Mode**: SpecForge_System 的一种受限运行模式，在该模式下用户可以查看现有项目数据但 SpecForge_System 拒绝任何写操作。
-- **Manifest_Migrator**: 负责识别并自动 in-place 升级老格式 manifest 的内部组件。
+- **Manifest_Migrator**: `LEGACY_ONLY` 历史组件；当前产品不得构建、加载或调用。
 - **CI_Version_Guard**: 在 CI 流水线中运行的版本字段静态检查器，检测违反字段修改规则的代码改动。
 - **Doctor_Command**: `bun scripts/sf-installer.ts doctor` 命令，向用户展示 SpecForge_System 当前安装与运行状态。
-- **Migrate_Manifest_Command**: `bun scripts/sf-installer.ts migrate-manifest` 命令，把任意老格式 manifest in-place 升级到当前格式。
+- **Migrate_Manifest_Command**: `LEGACY_ONLY` 历史命令；当前 installer 不得暴露。
 - **Release_Cycle**: 一次 SpecForge npm 发布周期，从一个稳定版本号发布到下一个稳定版本号发布之间的全部时间。
 - **Deprecation_Period**: 老字段从被标记为 deprecated 到被自动移除的过渡区间，跨度为 3 个连续 Release_Cycle。
 
@@ -150,29 +165,29 @@ SpecForge 当前在 user-level manifest、project-level manifest、shared 配置
 4. WHEN the SpecForge_System runs the Migration_Chain successfully, THE SpecForge_System SHALL print a single line summarizing the source schema version, the target schema version, and the elapsed wall-clock duration in milliseconds.
 5. WHEN the SpecForge_System enters Read_Only_Degraded_Mode, THE SpecForge_System SHALL print an error message that contains the observed `data_schema_version`, the highest schema version supported by the running code, and an actionable suggestion to upgrade the SpecForge_System code.
 
-### Requirement 11: 老格式兼容期与 in-place 升级
+### Requirement 11: 旧格式失败关闭
 
-**User Story:** 作为升级 SpecForge 的现有用户，我希望老格式的 manifest 在 3 个 release 周期内被自动迁移到新格式，这样我不需要手动改任何文件。
-
-#### Acceptance Criteria
-
-1. WHEN the SpecForge_System starts and reads a User_Manifest or Project_Manifest that contains any legacy field listed in Requirement 1 criterion 5 or Requirement 2 criterion 4, THE Manifest_Migrator SHALL identify the manifest as a legacy manifest.
-2. WHILE the running code is published in the first Release_Cycle of the Deprecation_Period, THE Manifest_Migrator SHALL write both the new fields and the legacy fields to every manifest write, and IF the new fields cannot be written successfully, THEN THE Manifest_Migrator SHALL abort the write and roll back the manifest file to its previous state.
-3. WHILE the running code is published in the second Release_Cycle of the Deprecation_Period, THE Manifest_Migrator SHALL read legacy fields when present, write new fields on every manifest write, and emit a single deprecation warning per process invocation that names the legacy fields detected.
-4. WHILE the running code is published in the third Release_Cycle of the Deprecation_Period, THE Manifest_Migrator SHALL convert any detected legacy manifest to the new format in-place at startup and SHALL stop reading or writing legacy fields after the conversion.
-5. WHEN the Manifest_Migrator performs an in-place conversion under criterion 4, THE Manifest_Migrator SHALL preserve the original manifest as a sibling backup file with the suffix `.legacy.bak` before overwriting the active manifest.
-
-### Requirement 12: 一键迁移命令
-
-**User Story:** 作为升级 SpecForge 的现有用户，我希望有一条独立命令可以把任意老 manifest 显式升级到当前格式，这样我可以在 release notes 之外主动驱动迁移。
+**User Story:** 作为当前发布维护者，我希望旧 manifest 不进入 Runtime，这样当前版本不会通过猜测或双写形成第二套版本真相。
 
 #### Acceptance Criteria
 
-1. THE SpecForge_System SHALL expose Migrate_Manifest_Command as `bun scripts/sf-installer.ts migrate-manifest`.
-2. WHEN the user invokes Migrate_Manifest_Command on a manifest that already conforms to the current format, THE SpecForge_System SHALL leave the manifest file byte-identical and exit with status code 0.
-3. WHEN the user invokes Migrate_Manifest_Command on a legacy manifest, THE SpecForge_System SHALL convert the manifest to the current format, set the `format` metadata field of the converted manifest to the constant value `CURRENT`, preserve the original manifest as a sibling backup file with the suffix `.legacy.bak`, and exit with status code 0.
-4. IF the conversion performed by Migrate_Manifest_Command raises an error, THEN THE SpecForge_System SHALL leave the active manifest file byte-identical to its state before the command ran, write a diagnostic log entry to `<manifest-dir>/migrate-error.log`, and exit with a non-zero status code.
-5. THE SpecForge_System SHALL allow Migrate_Manifest_Command to be invoked any number of times consecutively on the same manifest without producing differences in the active manifest content beyond the first successful conversion.
+1. WHEN a manifest contains any legacy field listed in Requirement 1 criterion 5 or Requirement 2 criterion 4, THE SpecForge_System SHALL reject it before project data is read.
+2. THE SpecForge_System SHALL NOT dual-write, fall back to, infer from or silently remove legacy fields.
+3. THE current build, installer and release manifest SHALL NOT contain `Manifest_Migrator`, legacy adapters or automatic in-place conversion entry points.
+4. The rejection SHALL identify the unsupported format without modifying the input file.
+5. Historical tests and implementation for three-cycle compatibility SHALL be excluded from the current release regression baseline, while their Git/ERR evidence remains auditable.
+
+### Requirement 12: 当前 installer 不暴露旧格式迁移命令
+
+**User Story:** 作为当前发布维护者，我希望安装器只处理当前产品工件，这样旧格式转换不会被误认为受支持能力。
+
+#### Acceptance Criteria
+
+1. THE current installer SHALL NOT expose `migrate-manifest` or an equivalent legacy conversion command.
+2. THE release manifest SHALL fail validation if it contains a legacy conversion command, adapter or backup-on-conversion asset.
+3. Current-format validation and supported current-schema migration remain available through their canonical paths and SHALL NOT call legacy conversion code.
+4. Requests for old-format conversion SHALL fail without modifying the supplied file.
+5. Any future external one-time conversion utility requires a new product decision and is not part of this spec.
 
 ### Requirement 13: Migration 失败的兜底
 

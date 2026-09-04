@@ -1,5 +1,17 @@
 # Requirements Document: Migration Subsystem
 
+## Current Release Alignment
+
+The stable target is `CURRENT_RELEASE_SUPPORTING`, but the package remains `BUILT_NOT_ENABLED` until Daemon startup and installer upgrade consume it. All requirements below apply only to explicitly declared versions inside the supported current-product schema chain. V5/legacy layouts, unknown schemas, old path discovery, format guessing, compatibility write and implicit cleanup are excluded and must fail closed without modifying input.
+
+```text
+MIGRATION_SCRIPT_TRUST=RELEASE_MANIFEST_HASH_BOUND
+MIGRATION_FAILURE_POLICY=FAIL_CLOSED
+MIGRATION_PRECHECK_WRITE=FORBIDDEN
+MIGRATION_CHAIN_GAP=FAIL_CLOSED
+SCHEMA_VERSION_AUTHORITY=PER_FILE_CONTRACT
+```
+
 ## Introduction
 
 This specification defines the **Migration Subsystem** module for SpecForge V6. The Migration Subsystem handles schema versioning, automatic migration scripts, and recovery repair logic to ensure data consistency across SpecForge version upgrades and system crashes.
@@ -34,9 +46,13 @@ This specification inherits and must implement the following **Correctness Prope
 2. WHEN Daemon starts and `code_schema_version > file_schema_version`, THE Migration_Subsystem SHALL automatically run migration scripts.
 3. WHEN Daemon starts and `file_schema_version == code_schema_version`, THE Daemon SHALL start normally without upgrade prompts.
 4. IF `file_schema_version > code_schema_version`, THEN THE Daemon SHALL first show upgrade prompt (explaining SpecForge needs upgrade), then refuse to start; refusal triggers only when strictly greater.
-5. THE Migration_Subsystem SHALL look for version-to-version migration scripts in `~/.specforge/migrations/` (e.g., `v1.0-to-v1.1.ts`).
+5. THE Migration_Subsystem SHALL select version-to-version migration assets only from the formal release manifest and SHALL verify each asset's size and SHA-256 before execution. The installer MAY place those assets in `~/.specforge/migrations/`, but unregistered, user-added, ambiguous, or hash-mismatched files in that directory SHALL NOT execute.
 6. WHEN migration script executes, THE Migration_Subsystem SHALL backup current file to `~/.specforge/backups/<timestamp>/` before migration.
 7. THE Migration_Subsystem SHALL NOT implement V5→V6 data migration tool in V6.0 (per REQ-26 "not doing" list).
+8. EACH persistent-file owner SHALL provide a descriptor containing its path selector, exact current schema id, validator, and explicit directed migration transitions. THE Migration_Subsystem SHALL NOT infer one global schema version, apply generic semantic-version ordering across file families, or treat distinct strings as aliases.
+9. BEFORE a complete and continuous trusted chain is selected, detection and precheck SHALL be read-only and SHALL NOT create migration, backup, or other directories.
+10. IF no complete trusted chain exists, or a chain contains a gap or ambiguity, THE Migration_Subsystem SHALL fail closed and block Daemon startup or installer upgrade commit.
+11. IF backup, migration, validation, restore, or audit recording fails, THE Migration_Subsystem SHALL roll back where possible and block Daemon startup or installer upgrade commit; warning-and-continue is forbidden.
 
 ### Requirement 2: Recovery Repair Rules Implementation
 

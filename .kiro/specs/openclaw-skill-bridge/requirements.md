@@ -1,5 +1,9 @@
 # Requirements Document
 
+## 当前发布对齐
+
+本 spec 是 `CURRENT_RELEASE_SUPPORTING` 外部客户端边界；是否进入当前安装集合由最终部署/消费者矩阵决定。当前发布只接受与 Daemon 声明的当前 API/schema 契约，不承担旧 Daemon、旧 Skill 配置或旧 IM 协议兼容；不支持的版本必须失败关闭且不得直连 OpenCode 降级。
+
 ## Introduction
 
 本 spec（**OpenClaw Skill Bridge**）定义 OpenClaw Skill 端的具体实现规范，作为 **OpenClaw Skill ↔ Daemon ↔ OpenCode** 三层架构中的客户端层（即 Skill 层）。它基于现有 `openclaw-integration` spec 定义的 HTTP API 契约，实现 OpenClaw 平台用户通过 IM 指令进行软件开发的完整流程。
@@ -384,21 +388,15 @@
    - 错误追踪
    - 配置验证
 
-### Requirement 10: 向后兼容和升级
+### Requirement 10: 当前 API 版本与升级安全
 
-**User Story:** 作为系统维护者，我希望 OpenClaw Skill 支持平滑升级，并与不同版本的 Daemon 保持兼容。
+**User Story:** 作为系统维护者，我希望 OpenClaw Skill 与当前 Daemon API 精确对齐，并在不匹配时安全失败。
 
 #### Acceptance Criteria
 
-1. THE OpenClaw_Skill SHALL 支持 API 版本协商：
-   - 检测 Daemon API 版本
-   - 使用兼容的 API 端点
-   - 优雅降级不支持的功能
+1. THE OpenClaw_Skill SHALL 检测 Daemon API 版本并只接受当前发布声明的版本；不匹配时返回明确错误，不得猜测端点或降级到旧协议。
 
-2. THE 配置文件 SHALL 支持版本迁移：
-   - 自动检测配置文件版本
-   - 执行必要的配置迁移
-   - 备份原始配置文件
+2. THE 配置文件 SHALL 只接受当前 schema；未知或旧配置必须保持原字节不变并失败关闭。
 
 3. THE 升级过程 SHALL 包括：
    - 数据备份
@@ -407,7 +405,7 @@
    - 健康检查
    - 回滚机制（如升级失败）
 
-4. THE OpenClaw_Skill SHALL 维护向后兼容性至少 2 个主版本。
+4. THE OpenClaw_Skill SHALL NOT 承诺旧 Daemon/Skill 主版本兼容；支持范围只能由当前 V6 权威显式声明。
 
 ### Requirement 11: OpenCode 进程启动责任边界
 

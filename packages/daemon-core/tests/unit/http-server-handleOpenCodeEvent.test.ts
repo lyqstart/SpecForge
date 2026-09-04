@@ -8,7 +8,7 @@
  * Fix: merge sessionId into payload as fallback: `{ ...payload, sessionId: payload.sessionId ?? sessionId }`
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { HTTPServer, HTTPServerDeps } from '../../src/http/HTTPServer';
 import { EventBus } from '../../src/event-bus/EventBus';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
@@ -26,7 +26,7 @@ beforeAll(async () => {
     path.join(os.tmpdir(), 'specforge-http-event-test-config-')
   );
   process.env.OPENCODE_CONFIG_DIR = testOpenCodeConfigDir;
-  await fs.mkdir(path.join(testOpenCodeConfigDir, 'sf-user', 'runtime'), { recursive: true });
+  await fs.mkdir(path.join(testOpenCodeConfigDir, '.specforge', 'runtime'), { recursive: true });
 });
 
 afterAll(async () => {
@@ -84,6 +84,9 @@ describe('HTTPServer.handleOpenCodeEvent — sessionId merge into payload', () =
 
   beforeEach(async () => {
     config = new DaemonConfig();
+    vi.spyOn(config, 'getHandshakeFile').mockReturnValue(
+      path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'daemon.sock.json'),
+    );
     eventBus = new EventBus();
     handshakeManager = new HandshakeManager(config);
     token = handshakeManager.generateToken();
@@ -115,7 +118,7 @@ describe('HTTPServer.handleOpenCodeEvent — sessionId merge into payload', () =
 
   it('isolates handshake writes from the active user-level daemon runtime', () => {
     expect(config.getHandshakeFile()).toBe(
-      path.join(testOpenCodeConfigDir, 'sf-user', 'runtime', 'handshake.json')
+      path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'daemon.sock.json')
     );
   });
 

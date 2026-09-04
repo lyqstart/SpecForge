@@ -19,7 +19,6 @@
 | 需求文档 | `.specforge/work-items/{work_item_id}/candidates/requirements.md` | 需求 |
 | 设计文档 | `.specforge/work-items/{work_item_id}/candidates/design.md` | 设计 |
 | 任务文档 | `.specforge/work-items/{work_item_id}/candidates/tasks.md` | 任务 |
-| Knowledge Graph | `.specforge/knowledge/graph.json` | 关系追溯 |
 | 运行痕迹 | `.specforge/logs/trace.jsonl` | 完整 trace |
 | Gate 日志 | `.specforge/logs/gate.log` | Gate 调用记录 |
 

@@ -51,7 +51,7 @@ const FILE_NAME_TO_RESOURCE_TYPE: ReadonlyMap<string, ResourceType> = new Map([
  * 也可以归入对应资源类型。
  */
 const DIR_SEGMENT_TO_RESOURCE_TYPE: ReadonlyMap<string, ResourceType> = new Map([
-  // .specforge/specs/WI-XXX/ 下的 spec 文件
+  // Project module 与 Work Item Candidate 下的 spec 文件
   // 不匹配——由文件名匹配覆盖
 
   // gates/ 目录下的文件
@@ -84,7 +84,7 @@ function extractBasename(filePath: string): string {
  *
  * 用法：
  * ```ts
- * const resourceType = ProtectedFileMatcher.match('.specforge/specs/WI-001/requirements.md');
+ * const resourceType = ProtectedFileMatcher.match('.specforge/project/modules/CORE/requirements.md');
  * // => 'spec_file'
  *
  * const unknown = ProtectedFileMatcher.match('src/index.ts');
@@ -124,8 +124,8 @@ export const ProtectedFileMatcher = {
     }
 
     // 策略 2：目录片段匹配（保守）
-    // 例如 .specforge/specs/WI-001/gates/xxx.md → gate_file
-    // 例如 .specforge/specs/WI-001/evidence/xxx.md → evidence_file
+    // 例如 .specforge/work-items/WI-0001/gates/xxx.md → gate_file
+    // 例如 .specforge/work-items/WI-0001/evidence/xxx.md → evidence_file
     const segments = normalized.split('/');
     for (let i = segments.length - 2; i >= 0; i--) {
       const segment = segments[i];

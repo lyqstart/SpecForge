@@ -8,7 +8,6 @@
 
 import { readFile } from 'node:fs/promises';
 import {
-  legacyWorkItemSpecArtifact,
   workItemTriggerResult,
 } from '@specforge/types/directory-layout';
 
@@ -124,10 +123,7 @@ export async function resolveSystemGovernanceRequirement(
   workItemId: string,
   baseDir: string
 ): Promise<SystemGovernanceRequirement> {
-  const candidatePaths = [
-    workItemTriggerResult(baseDir, workItemId),
-    legacyWorkItemSpecArtifact(baseDir, workItemId, 'trigger_result.json'),
-  ];
+  const candidatePaths = [workItemTriggerResult(baseDir, workItemId)];
 
   for (const candidatePath of candidatePaths) {
     try {

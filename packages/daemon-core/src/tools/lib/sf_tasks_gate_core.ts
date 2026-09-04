@@ -13,9 +13,7 @@ import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
 import type { GateResult } from './sf_gate_types';
 import { getTaskSections } from './sf_doc_lint_core';
-import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
-import type { SyncSummary } from './sf_knowledge_graph_core';
 import {
   parseTaskVerification,
   validateTaskArtifactContract,
@@ -457,22 +455,11 @@ export async function checkTasksGate(workItemId: string, baseDir: string): Promi
       };
     }
 
-    let kgSync: SyncSummary | null = null;
-    try {
-      if (await isKGEnabled(baseDir)) {
-        const kgResult = await syncFromSpec(workItemId, baseDir, 'tasks');
-        if (kgResult.success && kgResult.summary) kgSync = kgResult.summary;
-        else if (kgResult.error) warnings.push(`KG sync warning: ${kgResult.error}`);
-      }
-    } catch (err) {
-      warnings.push(`KG sync failed: ${(err as Error).message}`);
-    }
     return {
       status: 'pass',
       blocking_issues: [],
       warnings,
       next_action: 'continue',
-      kg_sync: kgSync,
       details: buildDetails(),
     };
   } catch (err) {

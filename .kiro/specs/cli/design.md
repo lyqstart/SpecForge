@@ -1,5 +1,12 @@
 # Design Document: CLI
 
+## Current Release Alignment
+
+- **Parent authority**: V6 `requirements.md` / `design.md`, especially REQ-11, REQ-25, REQ-31 and design 0.3—0.7.
+- **Classification / status**: `CURRENT_RELEASE_CORE`; source is active, while stable release still requires the CLI artifact and Daemon HTTP/SSE path to be proven from a clean install.
+- **Current scope**: human/JSON command client only; it does not own project state, workflow state, permission truth, or a second Scope Gate registry.
+- **Dependency direction**: CLI may consume neutral contracts, configuration and service-management, and must call Daemon for business operations.
+
 ## Overview
 
 This design document defines the architecture and implementation approach for the **Command Line Interface (CLI)** module of SpecForge V6. The CLI serves as the primary user-facing interface to the Daemon, supporting both interactive human usage and machine-friendly automation.

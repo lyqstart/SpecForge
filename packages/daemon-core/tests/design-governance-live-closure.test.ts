@@ -16,7 +16,6 @@ import '../src/tools/handlers/sf-changed-files-audit.js';
 import { getHandler } from '../src/tools/ToolDispatcher.js';
 import { getRequiredGates } from '../src/tools/lib/required-gates.js';
 import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
-import { buildContext } from '../src/tools/lib/sf_context_build_core.js';
 
 function completeClassification(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
@@ -283,11 +282,6 @@ describe('Design Governance live closure', () => {
   it('derives analysis_scope before authoring and rejects a mismatched design before write', async () => {
     const workItemId = 'WI-0001';
     await writeBaseWorkItem(projectRoot, workItemId);
-
-    const context = await buildContext(workItemId, undefined, 'design', false, projectRoot);
-    expect(context.task_context.context).toContain(
-      'required_analysis_scope: system_governance'
-    );
 
     const handler = getHandler('sf_artifact_write');
     const result = (await handler!(

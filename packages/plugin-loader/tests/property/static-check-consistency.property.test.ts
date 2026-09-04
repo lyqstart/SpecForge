@@ -278,7 +278,7 @@ describe('Property PL-2: 静态检查一致性 PBT', () => {
       // 生成包含多个禁止 API 的源码
       let source = '// Plugin with multiple forbidden APIs\n';
       for (const api of apis) {
-        source += generateSourceWithApi(api) + '\n';
+        source += `{\n${generateSourceWithApi(api)}\n}\n`;
       }
 
       // 创建分析器（无权限）
@@ -319,7 +319,7 @@ describe('Property PL-2: 静态检查一致性 PBT', () => {
       // 生成包含多个禁止 API 的源码
       let source = '// Plugin with multiple APIs\n';
       for (const api of apis) {
-        source += generateSourceWithApi(api) + '\n';
+        source += `{\n${generateSourceWithApi(api)}\n}\n`;
       }
 
       // 创建分析器（部分权限）
@@ -386,11 +386,8 @@ describe('Property PL-2: 静态检查一致性 PBT', () => {
       // 分析源码
       const result = analyzer.analyzeFile(source, 'test-plugin.js');
 
-      // 如果没有违规，跳过这个 API（可能 AST 解析失败）
-      if (result.violations.length === 0) {
-        console.warn(`No violations detected for ${apiName}, skipping...`);
-        continue;
-      }
+      expect(result.success).toBe(true);
+      expect(result.violations.length, `${apiName} should produce a violation`).toBeGreaterThan(0);
 
       // 验证每个违规包含所有必要字段
       for (const violation of result.violations) {

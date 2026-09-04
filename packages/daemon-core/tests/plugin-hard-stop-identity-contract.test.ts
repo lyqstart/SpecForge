@@ -19,29 +19,21 @@ const resolverToolPath = resolve(
 )
 
 describe("user-level plugin HardStop identity contract", () => {
-  it("preserves the daemon-owned latch before considering a generated ID", () => {
+  it("keeps HardStop persistence entirely outside the thin plugin", () => {
     const source = readFileSync(pluginPath, "utf-8")
-    const start = source.indexOf("function persistHardStop")
-    const end = source.indexOf("function maybePersistHardStopFromGuardResult", start)
-    const body = source.slice(start, end)
 
-    const existingRead = body.indexOf(
-      "const existing = readHardStopRecord(projectDir, resolvedWorkItemId)",
-    )
-    const generatedId = body.indexOf("hard_stop_id: `HS-${Date.now()}`")
-
-    expect(existingRead).toBeGreaterThanOrEqual(0)
-    expect(generatedId).toBeGreaterThan(existingRead)
-    expect(body).toContain("if (existing) return existing")
+    expect(source).toContain("Business state, WriteGuard decisions and filesystem tools remain Daemon-owned.")
+    expect(source).not.toContain("function persistHardStop")
+    expect(source).not.toContain("readHardStopRecord")
+    expect(source).not.toContain("hard_stop_id")
   })
 
-  it("propagates the structured daemon record through both plugin guard paths", () => {
+  it("does not expose plugin guard paths that project HardStop records", () => {
     const source = readFileSync(pluginPath, "utf-8")
 
-    expect(source).toContain("authoritativeRecord?.hard_stop_id")
-    expect(source).toContain("...authoritativeRecord")
-    expect(source).toContain("result.hard_stop_record")
-    expect(source).toContain("toolOutput.hard_stop_record")
+    expect(source).not.toContain("hard_stop_record")
+    expect(source).not.toContain("maybePersistHardStopFromGuardResult")
+    expect(source).not.toContain("bashGuard")
   })
 
   it("documents work_item_id-only authoritative latch resolution", () => {

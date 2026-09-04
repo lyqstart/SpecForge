@@ -1,7 +1,7 @@
 /**
  * SpecForge Installer Reconcile — 共享原子写入工具
  *
- * 供 Manifest、Executor、OpenCode Merge、RuntimeManifest 共用。
+ * 供 Manifest、Executor、OpenCode Merge 共用。
  * 使用 temp file + SHA-256 验证 + rename 模式确保写入原子性。
  *
  * Requirements: 4.1, 4.2, 4.6, 5.6, 12.5

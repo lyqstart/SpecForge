@@ -39,6 +39,7 @@ describe('ProgressIndicatorFactory', () => {
 describe('Spinner', () => {
   let originalStdoutWrite: typeof process.stdout.write;
   let stdoutOutput: string[] = [];
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     originalStdoutWrite = process.stdout.write;
@@ -47,12 +48,14 @@ describe('Spinner', () => {
       stdoutOutput.push(chunk.toString());
       return true;
     }) as any;
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
 
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     process.stdout.write = originalStdoutWrite;
+    consoleLogSpy.mockRestore();
     vi.useRealTimers();
   });
 
@@ -84,7 +87,7 @@ describe('Spinner', () => {
     stdoutOutput.length = 0; // Clear output
     spinner.succeed('Success!');
     
-    expect(stdoutOutput.some(output => output.includes('✓ Success!'))).toBe(true);
+    expect(consoleLogSpy).toHaveBeenCalledWith('✓ Success!');
   });
 
   it('should fail with message', () => {
@@ -94,7 +97,7 @@ describe('Spinner', () => {
     stdoutOutput.length = 0; // Clear output
     spinner.fail('Failed!');
     
-    expect(stdoutOutput.some(output => output.includes('✗ Failed!'))).toBe(true);
+    expect(consoleLogSpy).toHaveBeenCalledWith('✗ Failed!');
   });
 
   it('should stop without message', () => {
@@ -112,6 +115,7 @@ describe('Spinner', () => {
 describe('ProgressBar', () => {
   let originalStdoutWrite: typeof process.stdout.write;
   let stdoutOutput: string[] = [];
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     originalStdoutWrite = process.stdout.write;
@@ -120,10 +124,12 @@ describe('ProgressBar', () => {
       stdoutOutput.push(chunk.toString());
       return true;
     }) as any;
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
     process.stdout.write = originalStdoutWrite;
+    consoleLogSpy.mockRestore();
   });
 
   it('should create progress bar with default options', () => {
@@ -150,8 +156,8 @@ describe('ProgressBar', () => {
     progressBar.update(5, 'Halfway there');
     
     expect(stdoutOutput.length).toBeGreaterThan(0);
-    expect(stdoutOutput[0]).toContain('Halfway there');
-    expect(stdoutOutput[0]).toContain('50%');
+    expect(stdoutOutput.some(output => output.includes('Halfway there'))).toBe(true);
+    expect(stdoutOutput.some(output => output.includes('50%'))).toBe(true);
   });
 
   it('should succeed with message', () => {
@@ -161,7 +167,7 @@ describe('ProgressBar', () => {
     stdoutOutput.length = 0; // Clear output
     progressBar.succeed('Completed!');
     
-    expect(stdoutOutput.some(output => output.includes('✓ Completed!'))).toBe(true);
+    expect(consoleLogSpy).toHaveBeenCalledWith('✓ Completed!');
   });
 
   it('should fail with message', () => {
@@ -171,7 +177,7 @@ describe('ProgressBar', () => {
     stdoutOutput.length = 0; // Clear output
     progressBar.fail('Failed!');
     
-    expect(stdoutOutput.some(output => output.includes('✗ Failed!'))).toBe(true);
+    expect(consoleLogSpy).toHaveBeenCalledWith('✗ Failed!');
   });
 });
 

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import {
   resolveUserLevelDirectory,
+  resolveSpecForgeInstallRoot,
   posixToNative,
   nativeToPosix,
   normalizeLongPathForWindows,
@@ -13,6 +14,27 @@ import * as path from "node:path"
 import * as os from "node:os"
 
 describe("paths module", () => {
+  describe("resolveSpecForgeInstallRoot", () => {
+    const originalEnv = process.env
+
+    beforeEach(() => {
+      process.env = { ...originalEnv }
+    })
+
+    afterEach(() => {
+      process.env = originalEnv
+    })
+
+    it("uses ~/.specforge for the current release", () => {
+      process.env.OPENCODE_CONFIG_DIR = "/custom/opencode/dir"
+      process.env.XDG_CONFIG_HOME = "/custom/xdg"
+
+      expect(resolveSpecForgeInstallRoot()).toBe(
+        path.join(os.homedir(), ".specforge")
+      )
+    })
+  })
+
   describe("resolveUserLevelDirectory", () => {
     const originalEnv = process.env
 

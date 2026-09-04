@@ -23,38 +23,22 @@ import { StateManager } from '../../src/state/StateManager';
 import { Event } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as os from 'node:os';
+import { PersonalPathResolver } from '../../src/daemon/path-resolver';
 
 describe('Property 6: Idempotent Recovery', () => {
   let testProjectPath: string;
   let stateManager: StateManager;
-  const testProjectHash = 'testproj';
+  let testRoot: string;
 
-  beforeEach(() => {
-    testProjectPath = 'test-project-path';
-    stateManager = new StateManager(testProjectPath);
+  beforeEach(async () => {
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-property-6-'));
+    testProjectPath = path.join(testRoot, 'project');
+    stateManager = new StateManager(new PersonalPathResolver(), testProjectPath);
   });
 
   afterEach(async () => {
-    // Cleanup test files
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const eventsPath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-      : '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
-
-    try {
-      if (eventsPath) await fs.unlink(eventsPath);
-    } catch (error) {
-      // File might not exist
-    }
-
-    try {
-      if (statePath) await fs.unlink(statePath);
-    } catch (error) {
-      // File might not exist
-    }
+    await fs.rm(testRoot, { recursive: true, force: true });
   });
 
   /**
@@ -155,31 +139,20 @@ describe('Property 6: Idempotent Recovery', () => {
   it('should validate idempotent recovery from events.jsonl file', async () => {
     await stateManager.initialize();
 
-    // Clear existing events from previous tests
-    const eventsPath = stateManager['wal']['eventsPath'] as string;
-    await fs.writeFile(eventsPath, '');
-
-    // Generate and write events to WAL
-    const events = fc.sample(
+    // Generate payloads and create complete current Runtime Events through the WAL owner.
+    const payloads = fc.sample(
       fc.array(
-        fc.object({
-          eventId: fc.string(),
-          ts: fc.integer({ min: 0, max: 1000000 }),
-          projectId: fc.constant(testProjectPath),
-          action: fc.constant('test.event'),
-          payload: fc.record({
-            key: fc.string(),
-            value: fc.integer({ min: 0, max: 100 }),
-          }),
-          metadata: fc.object({
-            schemaVersion: fc.constant('1.0'),
-            source: fc.constant('daemon'),
-          }),
+        fc.record({
+          key: fc.string(),
+          value: fc.integer({ min: 0, max: 100 }),
         }),
         { minLength: 3, maxLength: 10 }
       ),
       1
-    )[0] as Event[];
+    )[0];
+    const events = payloads.map(payload =>
+      stateManager.getWal().createEvent(testProjectPath, 'system', 'test.event', payload)
+    );
 
     // Write events to WAL
     for (const event of events) {
@@ -187,7 +160,9 @@ describe('Property 6: Idempotent Recovery', () => {
     }
 
     // Rebuild from events file multiple times
-    await Promise.all(Array.from({ length: 3 }).map(() => stateManager.rebuildFromEventsFile()));
+    await stateManager.rebuildFromEventsFile();
+    await stateManager.rebuildFromEventsFile();
+    await stateManager.rebuildFromEventsFile();
 
     // Read state after rebuild
     const state1 = await stateManager.getCurrentState();
@@ -214,7 +189,7 @@ describe('Property 6: Idempotent Recovery', () => {
    */
   it('should validate idempotent recovery with various event sequences', async () => {
     // Create a fresh StateManager for this test to avoid initialization issues
-    const freshManager = new StateManager(testProjectPath);
+    const freshManager = new StateManager(new PersonalPathResolver(), testProjectPath);
     await freshManager.initialize();
 
     // Pre-generate event arrays for testing to avoid async property test issues
@@ -266,7 +241,7 @@ describe('Property 6: Idempotent Recovery', () => {
    */
   it('should validate idempotent recovery preserves event order', async () => {
     // Create a fresh StateManager for this test to avoid initialization issues
-    const freshManager = new StateManager(testProjectPath);
+    const freshManager = new StateManager(new PersonalPathResolver(), testProjectPath);
     await freshManager.initialize();
 
     // Pre-generate event arrays for testing to avoid async property test issues

@@ -99,19 +99,6 @@ export function addHelpCommands(yargsInstance: Argv): Argv {
         }
       }
       
-      if (argv.version) {
-        if (modeSwitch.isJson()) {
-          console.log(JSON.stringify({
-            appName: 'SpecForge',
-            version: '0.1.0',
-            cliVersion: '0.1.0',
-          }, null, 2));
-        } else {
-          console.log('SpecForge CLI v0.1.0');
-        }
-        process.exit(0);
-      }
-      
       return undefined;
     }, true)
     .fail((msg, err, yargs) => {

@@ -150,103 +150,28 @@ describe('HardRuleEvaluator', () => {
   });
 
   describe('Rule Evaluation', () => {
-    it('should deny gate bypass attempts', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-001' },
-        'gate.bypass',
-        { type: 'gate', id: 'main-gate' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-001');
-    });
+    const cases = [
+      { name: 'unknown actor', actor: { id: '' }, action: 'file.read', resource: { type: 'file', path: '/tmp/a' }, expected: 'hard-001' },
+      { name: 'non-orchestrator state transition', actor: { id: 'sf-reviewer' }, action: 'sf_state_transition', resource: { type: 'workflow' }, expected: 'hard-002' },
+      { name: 'sub-agent dispatch', actor: { id: 'sf-reviewer' }, action: 'agent.dispatch', resource: { type: 'agent' }, expected: 'hard-003' },
+      { name: 'gate bypass', actor: { id: 'agent-004' }, action: 'gate.bypass', resource: { type: 'gate' }, expected: 'hard-004' },
+      { name: 'verification forgery', actor: { id: 'agent-005' }, action: 'verification.forge', resource: { type: 'verification' }, expected: 'hard-005' },
+      { name: 'unauthorized resource access', actor: { id: 'agent-006' }, action: 'config.read', resource: { type: 'system.config' }, expected: 'hard-006' },
+      { name: 'core system file modification', actor: { id: 'agent-007' }, action: 'file.write', resource: { type: 'file', path: '/etc/hosts' }, expected: 'hard-007' },
+      { name: 'sensitive information leak', actor: { id: 'agent-008' }, action: 'data.export', resource: { type: 'user.data' }, expected: 'hard-008' },
+      { name: 'agent impersonation', actor: { id: 'agent-009' }, action: 'agent.impersonate', resource: { type: 'agent' }, expected: 'hard-009' },
+    ] as const;
 
-    it('should deny verification forgery attempts', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-002' },
-        'verification.forge',
-        { type: 'verification', id: 'verify-001' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-002');
-    });
+    for (const testCase of cases) {
+      it(`should deny current hard-rule case: ${testCase.name}`, () => {
+        const result = evaluator.evaluate(testCase.actor, testCase.action, testCase.resource);
+        expect(result.allowed).toBe(false);
+        expect(result.matchedRule?.id).toBe(testCase.expected);
+      });
+    }
 
-    it('should deny unauthorized resource access', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-003' },
-        'config.read',
-        { type: 'system.config', path: '/etc/passwd' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-003');
-    });
-
-    it('should deny core system file modification', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-004' },
-        'file.write',
-        { type: 'file', path: '/etc/hosts' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-004');
-    });
-
-    it('should deny arbitrary code execution', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-005' },
-        'code.execute',
-        { type: 'script', path: '/tmp/malicious.js' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-005');
-    });
-
-    it('should deny sensitive information leakage', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-006' },
-        'data.export',
-        { type: 'user.data', id: 'user-sensitive' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-006');
-    });
-
-    it('should deny agent impersonation', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-007' },
-        'agent.impersonate',
-        { type: 'agent', id: 'other-agent' },
-        { impersonatedAgent: 'other-agent' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-007');
-    });
-
-    it('should deny system operation disruption', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-008' },
-        'system.shutdown',
-        { type: 'system', id: 'main-daemon' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-008');
-    });
-
-    it('should deny data integrity violation', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-009' },
-        'data.corrupt',
-        { type: 'database', id: 'main-db' }
-      );
-      expect(result.allowed).toBe(false);
-      expect(result.matchedRule?.id).toBe('hard-009');
-    });
-
-    it('should allow non-violating actions', () => {
-      const result = evaluator.evaluate(
-        { id: 'agent-010' },
-        'file.read',
-        { type: 'file', path: '/tmp/readme.txt' }
-      );
+    it('should allow an authenticated non-conflicting action', () => {
+      const result = evaluator.evaluate({ id: 'agent-safe' }, 'file.read', { type: 'file', path: '/tmp/safe.txt' });
       expect(result.allowed).toBe(true);
       expect(result.matchedRule).toBeUndefined();
     });
@@ -262,7 +187,9 @@ describe('HardRuleEvaluator', () => {
       };
       const conflicts = evaluator.detectConflicts(config);
       expect(conflicts.length).toBeGreaterThan(0);
-      expect(conflicts[0].rule.id).toBe('hard-001');
+      const conflictIds = conflicts.map(conflict => conflict.rule.id);
+      expect(conflictIds).toContain('hard-004');
+      expect(conflictIds).toContain('hard-005');
     });
 
     it('should return empty array for non-conflicting configuration', () => {

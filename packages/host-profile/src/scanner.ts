@@ -168,11 +168,28 @@ export function isCacheFresh(profile: HostProfile): boolean {
   return ageMs < PROFILE_TTL_MS;
 }
 
+/**
+ * Resolve the optional display username without making host-profile collection
+ * a process-wide failure point. Authorization never depends on this value.
+ */
+export function resolveHostUsername(): string {
+  try {
+    const username = os.userInfo().username.trim();
+    if (username) return username;
+  } catch {
+    // Some constrained Windows hosts can fail uv_os_get_passwd. Fall through
+    // to the process environment instead of breaking governed tool startup.
+  }
+
+  const fallback = String(process.env.USERNAME ?? process.env.USER ?? '').trim();
+  return fallback || 'unknown';
+}
+
 /** 构造用户信息 */
 async function buildUserInfo(): Promise<UserInfo> {
   const platform = os.platform();
   const homeDir = os.homedir();
-  const username = os.userInfo().username;
+  const username = resolveHostUsername();
   let shellHistoryFile: string | null = null;
 
   if (platform === 'win32') {

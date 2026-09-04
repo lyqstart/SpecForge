@@ -1,5 +1,7 @@
 # Implementation Plan: V6.0 Distribution（W4）
 
+> **当前状态：** 历史实施清单。P1/P2 flag 默认 false 的任务/断言已被当前 requirements/design 的 artifact exclusion 合同取代；不得据此生成 flag 配置或恢复旧测试期望。Step 6 将按 release-set、clean build、installer 与 manifest 一致性调整实现任务。
+
 ## Overview
 
 按 design.md 的 "Components and Interfaces / Data Models / Testing Strategy" 三大节，把 distribution 模块拆成 9 个 Phase 共 13 个顶层任务。所有源码落在 `packages/cli/src/distribution/`、`packages/cli/src/commands/init/`、`packages/cli/src/utils/`、`scripts/`、`.github/workflows/`，spec 目录只放文档。包管理器统一用 bun，所有 JSON/YAML 持久化文件带 `schema_version: "1.0"`，所有持有异步资源的类（LockManager、SmokeTestRunner）实现 Disposable + 自检 API + CARU 四阶段，测试 `afterEach` 必须断言 `getActive*Count() === 0`。

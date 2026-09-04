@@ -42,9 +42,13 @@ function makeHandshakeJson(port = 3000, token = "test-token"): string {
     pid: 12345,
     port,
     token,
+    bound_to: "127.0.0.1",
     startedAt: Date.now(),
     version: "6.0.0",
     serviceMode: false,
+    artifact_contract_versions: {
+      task_document: "1.0",
+    },
   });
 }
 
@@ -203,6 +207,18 @@ describe("ReconnectingDaemonClient", () => {
       await client.postEvent("test-session", "test", {});
 
       expect(client.getActiveBackoffTimerCount()).toBe(0);
+    });
+
+    it("当前契约字段缺失时不连接 daemon", async () => {
+      client = makeClient({ initialDelayMs: 0, maxCumulativeBackoffMs: 0 });
+      const invalid = JSON.parse(makeHandshakeJson()) as Record<string, unknown>;
+      delete invalid.bound_to;
+      mockReadFile.mockResolvedValue(JSON.stringify(invalid) as any);
+
+      const result = await client.postEvent("test-session", "test", {});
+
+      expect(result).toEqual({ ok: false, dropped: true, reason: "degraded" });
+      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 

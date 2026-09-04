@@ -61,7 +61,7 @@ export const SENSITIVE_FIELDS = [
 export const CONFIG_FILE_NAMES = {
   builtin: 'builtin.json',
   user: 'config.json',
-  project: '.specforge.json',
+  project: 'project.json',
 } as const
 
 /**

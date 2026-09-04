@@ -8,7 +8,7 @@ import { ConfigLayer, ConfigLayerType, MergedConfig } from './types'
 import { CONFIG_SCHEMA_VERSION, DEFAULT_CONFIG, SENSITIVE_FIELDS } from './constants'
 import { logger } from './logger'
 import { mergeConfigLayers } from './config-merge'
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout'
+import { LAYOUT, SPEC_DIR_NAME } from '@specforge/types/directory-layout'
 import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths'
 
 /**
@@ -72,8 +72,10 @@ export async function loadBuiltinConfig(): Promise<ConfigLayer> {
 /**
  * Load user-level configuration from <OpenCode config>/sf-user/config/
  */
-export async function loadUserConfig(): Promise<ConfigLayer> {
-  const configPath = path.join(resolveSpecForgeUserRoot(), 'config', 'config.json')
+export async function loadUserConfig(
+  userRoot: string = resolveSpecForgeUserRoot(),
+): Promise<ConfigLayer> {
+  const configPath = path.join(userRoot, 'config', 'config.json')
   logger.debug('Loading user-level configuration', { configPath })
 
   const data = await loadConfigFile(configPath)
@@ -87,7 +89,7 @@ export async function loadUserConfig(): Promise<ConfigLayer> {
  * If it fails to load, error immediately without falling back to user-level or builtin.
  */
 export async function loadProjectConfig(projectPath: string): Promise<ConfigLayer> {
-  const configPath = path.join(projectPath, SPEC_DIR_NAME, 'config', '.specforge.json')
+  const configPath = path.join(projectPath, SPEC_DIR_NAME, LAYOUT.configFiles.project)
   logger.debug('Loading project-level configuration', { configPath, projectPath })
 
   let data: Record<string, unknown>
@@ -100,12 +102,12 @@ export async function loadProjectConfig(projectPath: string): Promise<ConfigLaye
       logger.error('Project-level configuration file not found', { 
         configPath, 
         projectPath,
-        hint: 'Project-level configuration is mandatory. Create .specforge/config/.specforge.json or disable project-level config if not needed.'
+        hint: 'Project-level configuration is mandatory. Create .specforge/config/project.json or ensure project initialization completed.'
       })
       throw new Error(
         `Project-level configuration file not found: ${configPath}. ` +
         `Project-level configuration is mandatory for this project. ` +
-        `Create .specforge/config/.specforge.json or ensure project path is correct.`
+        `Create .specforge/config/project.json or ensure project path is correct.`
       )
     }
     // For other errors (parse errors, permissions, etc.), also throw with context

@@ -17,14 +17,11 @@ import * as path from 'path';
 import * as os from 'os';
 import { StateManager } from '../../src/state/StateManager';
 import { WAL } from '../../src/wal/WAL';
-import { Daemon } from '../../src/daemon/Daemon';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
 import { IPathResolver } from '../../src/daemon/path-resolver';
-
-const VALID_STATES = [
-  'intake', 'requirements', 'design', 'tasks',
-  'development', 'review', 'verification', 'completed',
-];
+import { ALL_STATES } from '../../src/tools/lib/state_machine';
+import { HTTPServer } from '../../src/http/HTTPServer';
+import { EventBus } from '../../src/event-bus/EventBus';
 
 function makeTmpDir(): string {
   return fsSync.mkdtempSync(path.join(os.tmpdir(), 'specforge-e1-pbt-'));
@@ -34,7 +31,7 @@ function uniqueProject(name: string): string {
   return `e1-pbt-${name}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-const validStateArb = fc.constantFrom(...VALID_STATES);
+const validStateArb = fc.constantFrom(...ALL_STATES);
 
 /**
  * Test path resolver that isolates all file I/O under a temp directory.
@@ -132,9 +129,9 @@ describe('E1 PBT State', () => {
       const sm = new StateManager(pathResolver, projectPath);
       await sm.initialize();
 
-      await sm.transition('WI-IDEM', '', 'intake', 'system');
-      await sm.transition('WI-IDEM', 'intake', 'requirements', 'system');
-      await sm.transition('WI-IDEM', 'requirements', 'design', 'system');
+      await sm.transition('WI-IDEM', '', 'intake_ready', 'system');
+      await sm.transition('WI-IDEM', 'intake_ready', 'impact_analyzing', 'system');
+      await sm.transition('WI-IDEM', 'impact_analyzing', 'impact_analyzed', 'system');
 
       const state1 = await sm.getCurrentState();
       const state2 = await sm.getCurrentState();
@@ -148,8 +145,8 @@ describe('E1 PBT State', () => {
 
       const sm1 = new StateManager(pathResolver, projectPath);
       await sm1.initialize();
-      await sm1.transition('WI-R1', '', 'intake', 'system');
-      await sm1.transition('WI-R1', 'intake', 'requirements', 'system');
+      await sm1.transition('WI-R1', '', 'intake_ready', 'system');
+      await sm1.transition('WI-R1', 'intake_ready', 'impact_analyzing', 'system');
 
       const state1 = await sm1.getCurrentState();
 
@@ -158,7 +155,7 @@ describe('E1 PBT State', () => {
       const state2 = await sm2.getCurrentState();
 
       expect(state2.workItems).toHaveLength(state1.workItems.length);
-      expect(state2.workItems[0]!.current_state).toBe('requirements');
+      expect(state2.workItems[0]!.current_state).toBe('impact_analyzing');
       expect(state2.workItems[0]!.work_item_id).toBe('WI-R1');
     });
 
@@ -213,7 +210,7 @@ describe('E1 PBT State', () => {
   describe('PBT-ST-03: Invalid state rejection', () => {
     it('should reject any transition to an invalid state name', async () => {
       const invalidStateArb = fc.string({ minLength: 1, maxLength: 30 }).filter(
-        (s) => !VALID_STATES.includes(s),
+        (s) => !(ALL_STATES as readonly string[]).includes(s),
       );
 
       await fc.assert(
@@ -233,27 +230,19 @@ describe('E1 PBT State', () => {
 });
 
 describe('E1 PBT HTTP Auth', () => {
-  let daemon: Daemon;
-  let config: DaemonConfig;
+  let server: HTTPServer;
   let port: number;
   let token: string;
 
   beforeEach(async () => {
-    daemon = new Daemon();
-    config = new DaemonConfig();
-    await daemon.start();
-
-    const handshakePath = config.getHandshakeFile();
-    const content = await fs.readFile(handshakePath, 'utf-8');
-    const handshake = JSON.parse(content);
-    port = handshake.port as number;
-    token = handshake.token as string;
+    server = new HTTPServer(new DaemonConfig([]), new EventBus());
+    token = `pbt-auth-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    server.setToken(token);
+    ({ port } = await server.start());
   }, 30000);
 
   afterEach(async () => {
-    if (daemon.isDaemonRunning()) {
-      await daemon.stop();
-    }
+    await server.stop();
   }, 15000);
 
   const protectedPaths = [

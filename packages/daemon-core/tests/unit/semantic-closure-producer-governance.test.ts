@@ -57,6 +57,20 @@ describe('semantic closure producer governance', () => {
 
   beforeEach(async () => {
     projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-producer-governance-'));
+    const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+    await fs.mkdir(wiDir, { recursive: true });
+    await fs.writeFile(
+      path.join(wiDir, 'work_item.json'),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+        code_change_allowed: false,
+        allowed_write_files: [],
+        code_permission_revoked: true,
+      }, null, 2) + '\n',
+    );
   });
 
   afterEach(async () => {

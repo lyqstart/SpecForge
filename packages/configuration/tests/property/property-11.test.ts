@@ -210,7 +210,7 @@ describe('Property 11: Configuration Merge Determinism', () => {
       fc.property(
         fc.tuple(
           // Generate layers with unique types to avoid same-type conflicts
-          fc.array(
+          fc.uniqueArray(
             fc.record({
               type: fc.constantFrom<'builtin' | 'user' | 'project' | 'runtime'>(
                 'builtin',
@@ -221,7 +221,7 @@ describe('Property 11: Configuration Merge Determinism', () => {
               timestamp: fc.constant(0),
               data: configDataGen,
             }),
-            { minLength: 1, maxLength: 4, uniqueItems: true }, // Ensure unique types
+            { minLength: 1, maxLength: 4, selector: (layer) => layer.type }, // Ensure unique layer types
           ),
           fc.integer({ min: 0, max: 100 }),
         ),

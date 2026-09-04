@@ -1,13 +1,12 @@
 /**
  * scripts/ci/version-guard.ts — CI Version Guard main entry.
  *
- * Orchestrates four PR-diff rules (R5/R6/R7/R8) that enforce how version
- * fields are allowed to change in the SpecForge repo. Each rule lives in
+ * Orchestrates the current code-version PR-diff rule. Each rule lives in
  * `scripts/ci/version-guard/*-rule.ts` and is fed a small
  * `VersionGuardContext` exposing diff and bounded file reads.
  *
  * Contract (design.md §"CI Version Guard" + Requirements 9.1-9.4):
- *   - Run all four rules concurrently with `Promise.all`, collecting
+ *   - Run all configured rules concurrently with `Promise.all`, collecting
  *     violations from each. A failure in one rule does NOT cancel the
  *     others — we want the most complete report we can produce.
  *   - A 30 s hard wall-clock budget (R9.4) wraps the whole run via
@@ -43,9 +42,6 @@ import {
   type FileHunks,
 } from './version-guard/diff-scanner';
 import { codeVersionRule } from './version-guard/code-version-rule';
-import { minSchemaRule } from './version-guard/min-schema-rule';
-import { dataSchemaWriteRule } from './version-guard/data-schema-write-rule';
-import { schemaIntroductionRule } from './version-guard/schema-introduction-rule';
 import type {
   VersionGuardRule,
   VersionGuardContext,
@@ -71,7 +67,7 @@ export interface RunVersionGuardOptions {
   /** Override for testability. Defaults to `DEFAULT_HARD_TIMEOUT_MS`. */
   readonly hardTimeoutMs?: number;
   /**
-   * Override the rule set. Defaults to the four production rules.
+   * Override the rule set. Defaults to the current production rules.
    * Tests use this to inject fast / slow / throwing rules.
    */
   readonly rules?: ReadonlyArray<VersionGuardRule>;
@@ -99,9 +95,6 @@ export interface RunVersionGuardResult {
 
 const DEFAULT_RULES: ReadonlyArray<VersionGuardRule> = [
   codeVersionRule,
-  minSchemaRule,
-  dataSchemaWriteRule,
-  schemaIntroductionRule,
 ];
 
 /**

@@ -91,6 +91,49 @@ describe('Candidate / approval / state governance', () => {
   });
 
   it('denies controlled Candidate writes from the authoritative approved state', async () => {
+    await writeJson(
+      path.join(projectRoot, '.specforge', 'work-items', 'WI-9900', 'work_item.json'),
+      {
+        schema_version: '1.1',
+        work_item_id: 'WI-9900',
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+      },
+    );
+    await writeJson(
+      path.join(projectRoot, '.specforge', 'work-items', 'WI-9900', 'trigger_result.json'),
+      {
+        schema_version: '1.1',
+        work_item_id: 'WI-9900',
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+        status: 'triggered',
+        triggered: true,
+        classification: {
+          requirement_changed: true,
+          acceptance_criteria_changed: false,
+          business_rule_changed: false,
+          user_visible_behavior_changed: false,
+          data_semantics_changed: false,
+          design_changed: false,
+          module_boundary_changed: false,
+          api_contract_changed: false,
+          architecture_changed: false,
+          data_model_changed: false,
+          module_contract_changed: false,
+          unknowns: [],
+        },
+        impact_scope: {
+          modules: [],
+          contracts: [],
+          workflows: [],
+          data_models: [],
+          files: [],
+          tests: [],
+          docs: [],
+        },
+      },
+    );
     const result = await invoke('sf_artifact_write', {
       work_item_id: 'WI-9900',
       file_type: 'candidate_manifest',
@@ -111,6 +154,7 @@ describe('Candidate / approval / state governance', () => {
     const workItemId = 'WI-9901';
     const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
     await writeJson(path.join(workItemDir, 'work_item.json'), {
+      schema_version: '1.1',
       work_item_id: workItemId,
       workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
@@ -181,6 +225,15 @@ describe('Candidate / approval / state governance', () => {
   });
 
   it('rejects generic approved to blocked transition', async () => {
+    await writeJson(
+      path.join(projectRoot, '.specforge', 'work-items', 'WI-9902', 'work_item.json'),
+      {
+        schema_version: '1.1',
+        work_item_id: 'WI-9902',
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+      },
+    );
     const result = await invoke('sf_state_transition', {
       work_item_id: 'WI-9902',
       from_state: 'approved',
@@ -197,6 +250,7 @@ describe('Candidate / approval / state governance', () => {
     const workItemId = 'WI-9904';
     const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
     await writeJson(path.join(workItemDir, 'work_item.json'), {
+      schema_version: '1.1',
       work_item_id: workItemId,
       workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',

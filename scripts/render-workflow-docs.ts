@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 
 interface WorkflowStateDef {
   agent: string;
@@ -19,39 +20,16 @@ interface WorkflowDefinition {
 }
 
 const WORKFLOW_DIR = 'configs/workflows/builtin';
+const CURRENT_WORKFLOW_ID = 'feature_spec';
 
-const WORKFLOW_ORDER = [
-  'feature_spec', 'bugfix_spec', 'feature_spec_design_first',
-  'quick_change', 'change_request', 'refactor', 'ops_task', 'investigation',
-  'spec_migration', 'architecture_change', 'contract_change',
-];
+const WORKFLOW_ORDER = [CURRENT_WORKFLOW_ID];
 
 const DISPLAY_NAMES: Record<string, string> = {
   feature_spec: 'Feature Spec',
-  bugfix_spec: 'Bugfix Spec',
-  feature_spec_design_first: 'Design-First',
-  quick_change: 'Quick Change',
-  change_request: 'Change Request',
-  refactor: 'Refactor',
-  ops_task: 'Ops Task',
-  investigation: 'Investigation',
-  spec_migration: 'Spec Migration',
-  architecture_change: 'Architecture Change',
-  contract_change: 'Contract Change',
 };
 
 const SKILL_FILES: { relPath: string; workflowId: string }[] = [
   { relPath: 'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md', workflowId: 'feature_spec' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md', workflowId: 'feature_spec_design_first' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-bugfix-spec/SKILL.md', workflowId: 'bugfix_spec' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md', workflowId: 'quick_change' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-change-request/SKILL.md', workflowId: 'change_request' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-refactor/SKILL.md', workflowId: 'refactor' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-ops-task/SKILL.md', workflowId: 'ops_task' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-investigation/SKILL.md', workflowId: 'investigation' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-spec-migration/SKILL.md', workflowId: 'spec_migration' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md', workflowId: 'architecture_change' },
-  { relPath: 'setup/userlevel-opencode/skills/sf-workflow-contract-change/SKILL.md', workflowId: 'contract_change' },
 ];
 
 const ORCHESTRATOR_PATH = 'setup/userlevel-opencode/agents/sf-orchestrator.md';
@@ -63,18 +41,20 @@ const NULL_PRODUCES_DISPLAY: Record<string, string> = {
   research: '调查数据/中间产物',
 };
 
-function loadWorkflows(dir: string): Map<string, WorkflowDefinition> {
-  const map = new Map<string, WorkflowDefinition>();
-  if (!fs.existsSync(dir)) return map;
-  for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json'))) {
-    try {
-      const def: WorkflowDefinition = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf-8'));
-      map.set(def.id, def);
-    } catch (e) {
-      console.error(`Failed to load ${f}:`, e);
-    }
+function loadCurrentWorkflow(dir: string): Map<string, WorkflowDefinition> {
+  const workflowPath = path.join(dir, `${CURRENT_WORKFLOW_ID}.json`);
+  if (!fs.existsSync(workflowPath)) {
+    throw new Error(`Current workflow definition is missing: ${workflowPath}`);
   }
-  return map;
+
+  const definition: WorkflowDefinition = JSON.parse(fs.readFileSync(workflowPath, 'utf-8'));
+  if (definition.id !== CURRENT_WORKFLOW_ID) {
+    throw new Error(
+      `Current workflow id mismatch: expected ${CURRENT_WORKFLOW_ID}, received ${definition.id}`,
+    );
+  }
+
+  return new Map([[CURRENT_WORKFLOW_ID, definition]]);
 }
 
 function buildStateSequence(def: WorkflowDefinition): string[] {
@@ -263,15 +243,11 @@ function processFile(
 
 function main(): void {
   const checkOnly = process.argv.slice(2).includes('--check');
-  const root = path.resolve(__dirname, '..');
-  const wfs = loadWorkflows(path.join(root, WORKFLOW_DIR));
+  const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
+  const root = path.resolve(scriptDirectory, '..');
+  const wfs = loadCurrentWorkflow(path.join(root, WORKFLOW_DIR));
 
-  if (wfs.size === 0) {
-    console.error('No workflow definitions found.');
-    process.exit(1);
-  }
-
-  console.log(`Loaded ${wfs.size} workflow definitions.\n`);
+  console.log(`Loaded ${wfs.size} current workflow definition.\n`);
   if (checkOnly) {
     console.log('Checking markdown files match JSON definitions...\n');
   } else {

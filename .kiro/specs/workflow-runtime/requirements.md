@@ -1,10 +1,14 @@
 # Requirements Document
 
+## 当前发布对齐
+
+`workflow-runtime` 是 `CURRENT_RELEASE_CORE`，但当前 stable artifact 只加载 `feature_spec` 并承载其基础状态/Gate 编排。compositeGate、并行组合和其他 workflow 定义属于 `BUILT_NOT_ENABLED`；除非先由 V6 requirements/design 提升范围，否则不得进入 exports、build、loader、installer 或 runtime。
+
 ## Introduction
 
-本 spec 承接 V6 架构概览 spec（v6-architecture-overview）中的 Property 29（compositeGate 语义），专门实现 workflow runtime 的核心能力。
+本 spec 描述 workflow runtime 的基础能力，并保留 Property 29（compositeGate）未来设计记录；当前发布只启用 `feature_spec` 所需的基础执行与 Gate 调度。
 
-**scopeTag: p0（基础）/ p1（组合）**
+**scopeTag: p0（当前基础）/ p1（组合，当前 artifact 排除）**
 - p0：基础 workflow runtime 能力，包括状态机执行、Gate 基础执行、事件流转
 - p1：组合能力，包括 compositeGate 语义、并行执行、失败策略
 

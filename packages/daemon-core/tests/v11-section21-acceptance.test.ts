@@ -25,10 +25,10 @@ import type { GateContext, GateReportV11 } from '../src/tools/lib/gate-runner-v1
 import { executeMerge } from '../src/tools/lib/merge-runner-v11';
 import { validateTraceDelta, validateVerificationReport, validateEvidenceManifest, checkTraceChain, writeEvidenceManifestTemplate } from '../src/tools/lib/verification-evidence-v11';
 import { releaseCodePermission, revokeCodePermission, checkCodePermission } from '../src/tools/lib/code-permission-service-v11';
-import { createWorkItem, updateWorkItemStatus, initializeClosureFiles } from '../src/tools/lib/work-item-lifecycle-v11';
+import { createWorkItem, initializeClosureFiles } from '../src/tools/lib/work-item-lifecycle-v11';
 import type { SemanticClosureManifest } from '../src/tools/lib/semantic-closure-core';
 import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-closure-provenance';
-import { isValidV11Transition, isForbiddenTransition, performResumeCheck } from '../src/tools/lib/state-machine-v11';
+import { isValidV11Transition, isForbiddenTransition } from '../src/tools/lib/state-machine-v11';
 import { renderVerificationReport } from '../src/tools/lib/sf_artifact_write_core';
 
 // ---------------------------------------------------------------------------
@@ -146,15 +146,18 @@ async function buildCompleteWI(
     deferPostMergeGates?: boolean;
   },
 ): Promise<string> {
-  const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: `Request for ${wiId}` });
+  const wiDir = await createWorkItem({
+    projectRoot,
+    workItemId: wiId,
+    userRequest: `Request for ${wiId}`,
+    workflowType: workflowPath === 'code_only_fast_path' ? 'quick_change' : 'feature_spec',
+    workflowPath,
+  });
   await initializeClosureFiles(wiDir, wiId, workflowPath, 'PSV-0001');
 
   // Write trigger_result.json with correct workflow_path
   const trigger = generateTriggerResult(wiId, classification, []);
   await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify(trigger, null, 2), 'utf-8');
-
-  // Update work_item.json with workflow_path
-  await updateWorkItemStatus(wiDir, 'intake_ready', { workflow_path: workflowPath });
 
   // Update classification and impact analysis
   await fs.writeFile(

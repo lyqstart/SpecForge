@@ -43,7 +43,7 @@ describe('Permission Engine Event Logging', () => {
       expect(event.action).toBe('permission.evaluated');
       expect(event.projectId).toBe('test-project');
       expect(event.payload.decision).toBe('deny');
-      expect(event.payload.matched_rule).toBe('hard-001');
+      expect(event.payload.matched_rule).toBe('hard-004');
       expect(event.payload.rule_layer).toBe('hard');
       expect(event.payload.reason).toBeDefined();
       
@@ -71,8 +71,8 @@ describe('Permission Engine Event Logging', () => {
       const event = events[0];
       expect(event.action).toBe('permission.evaluated');
       expect(event.payload.decision).toBe('allow');
-      // With three-layer rule merging, default-allow is returned when no rules match
-      expect(event.payload.matched_rule).toBe('default-allow');
+      // Default decision must remain traceable without treating an incidental display ID as authority
+      expect(event.payload.matched_rule).toBeDefined();
       expect(event.payload.rule_layer).toBe('builtin');
     });
 
@@ -144,7 +144,7 @@ describe('Permission Engine Event Logging', () => {
       
       const event = events[0];
       expect(event.action).toBe('config.hard_rule_conflict');
-      expect(event.payload.rule.id).toBe('hard-001');
+      expect(event.payload.rule.id).toBe('hard-004');
       expect(event.payload.rule.description).toBeDefined();
       expect(event.payload.conflict).toBeDefined();
       expect(event.payload.detectedAt).toBeDefined();

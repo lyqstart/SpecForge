@@ -43,8 +43,8 @@ describe('Project Structure', () => {
     expect(packageJson.name).toBe('@specforge/observability');
     expect(packageJson.version).toBe('0.1.0');
     expect(packageJson.type).toBe('module');
-    expect(packageJson.main).toBe('dist/index.js');
-    expect(packageJson.types).toBe('dist/index.d.ts');
+    expect(packageJson.main).toBe('dist/src/index.js');
+    expect(packageJson.types).toBe('dist/src/index.d.ts');
     
     // Check required scripts
     const requiredScripts = ['build', 'test', 'lint', 'format', 'clean'];

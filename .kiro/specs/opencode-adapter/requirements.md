@@ -1,5 +1,9 @@
 # Requirements Document: OpenCode Adapter
 
+## Current Release Alignment
+
+The stable target is `CURRENT_RELEASE_CORE`, but the package remains `BUILT_NOT_ENABLED` until Daemon consumes it and clean install/runtime validation passes. Compatibility means only the explicitly declared current OpenCode major-version range; it does not authorize legacy project/plugin protocols or fallback adapters.
+
 ## Introduction
 
 This specification defines the **OpenCode Adapter** module for SpecForge V6. The OpenCode Adapter is the LLM Kernel adapter layer that isolates OpenCode-specific concepts and behaviors, providing a clean abstraction interface to the Daemon Core while absorbing OpenCode version changes.
@@ -118,7 +122,7 @@ This specification must implement the following property-based tests correspondi
 
 ### Compatibility Tests
 
-1. Backward compatibility with previous OpenCode versions (within range)
+1. Compatibility across OpenCode versions inside the explicitly supported current major-version range
 2. Forward compatibility testing with OpenCode beta/pre-release versions
 3. Migration scenarios between OpenCode major versions
 4. Mixed-version environments (multiple OpenCode installations)

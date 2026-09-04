@@ -59,7 +59,10 @@ describe('formal version Git closure regressions', () => {
     await fs.writeFile(
       path.join(workItemDir, 'work_item.json'),
       JSON.stringify({
+        schema_version: '1.1',
         work_item_id: 'WI-0002',
+        workflow_type: 'quick_change',
+        workflow_path: 'code_only_fast_path',
         code_permission_revoked: true,
         allowed_write_files_snapshot: [{ path: 'src/main.ts', operation: 'create' }],
       }),
@@ -241,14 +244,6 @@ describe('formal version Git closure regressions', () => {
     const repositoryRoot = path.resolve(__dirname, '..', '..', '..', '..');
     const instructionFiles = [
       path.join(repositoryRoot, 'setup', 'userlevel-opencode', 'agents', 'sf-orchestrator.md'),
-      path.join(
-        repositoryRoot,
-        'setup',
-        'userlevel-opencode',
-        'skills',
-        'sf-workflow-architecture-change',
-        'SKILL.md',
-      ),
     ];
 
     for (const instructionFile of instructionFiles) {

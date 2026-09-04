@@ -30,6 +30,7 @@ describe('HandshakeManager ownership-safe cleanup', () => {
       pid: 123,
       port: 456,
       token: 'foreign',
+      bound_to: '127.0.0.1',
       startedAt: 1,
       version: 'test',
       serviceMode: false,
@@ -51,6 +52,14 @@ describe('HandshakeManager ownership-safe cleanup', () => {
     await expect(fs.access(handshakePath)).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
+  it('writes the V6 current local bind address required by CLI consumers', async () => {
+    const manager = new HandshakeManager(config);
+    await manager.writeHandshake(123, 456, 'owned');
+
+    const handshake = JSON.parse(await fs.readFile(handshakePath, 'utf-8'));
+    expect(handshake.bound_to).toBe('127.0.0.1');
+  });
+
   it('preserves a handshake replaced by another daemon after this manager wrote', async () => {
     const manager = new HandshakeManager(config);
     await manager.writeHandshake(123, 456, 'owned');
@@ -59,6 +68,7 @@ describe('HandshakeManager ownership-safe cleanup', () => {
       pid: 999,
       port: 777,
       token: 'replacement',
+      bound_to: '127.0.0.1',
       startedAt: Date.now() + 1,
       version: 'test',
       serviceMode: false,

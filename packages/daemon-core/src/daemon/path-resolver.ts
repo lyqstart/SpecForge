@@ -8,6 +8,7 @@ import * as path from 'path';
 import { SPEC_DIR_NAME, resolveProjectPath } from '@specforge/types/directory-layout';
 import {
   resolveOpenCodeConfigRoot,
+  resolveSpecForgeHandshakePath,
   resolveSpecForgeUserPath,
 } from '@specforge/types/user-level-paths';
 
@@ -143,7 +144,7 @@ export class PersonalPathResolver implements IPathResolver {
   }
 
   resolveHandshakePath(): string {
-    return path.join(this.resolveDaemonRuntimeDir(), 'handshake.json');
+    return resolveSpecForgeHandshakePath();
   }
 
   resolveDaemonJsonPath(): string {
@@ -201,7 +202,7 @@ export class EnterprisePathResolver implements IPathResolver {
   }
 
   resolveHandshakePath(): string {
-    return path.join(this.resolveDaemonRuntimeDir(), 'handshake.json');
+    return resolveSpecForgeHandshakePath();
   }
 
   resolveDaemonJsonPath(): string {

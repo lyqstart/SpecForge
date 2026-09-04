@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 function locateRepoRoot(): string {
@@ -39,15 +40,11 @@ describe('ERR-125—ERR-126 build output and generated workflow documentation go
     expect(p0).toContain('V75_WI0001_ACTION=NONE');
   });
 
-  it('keeps the architecture-change generated blocks synchronized with workflow JSON', () => {
-    const skill = read('setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md');
+  it('keeps only the current feature-spec generated block synchronized with its workflow JSON', () => {
+    const skill = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
 
-    expect(skill).toContain(
-      '| candidate_preparing | sf-design | — | tasks.md,trace_delta.md,candidate_manifest.json |'
-    );
-    expect(skill).not.toContain(
-      '| candidate_preparing | sf-design + sf-task-planner + Runtime |'
-    );
+    expect(skill).toContain('<!-- AUTO-GENERATED:START:phase-table -->');
+    expect(skill).toContain('<!-- AUTO-GENERATED:END:phase-table -->');
 
     const result = spawnSync(
       process.execPath,
@@ -60,6 +57,37 @@ describe('ERR-125—ERR-126 build output and generated workflow documentation go
     );
 
     expect(result.status, `${result.stdout}\n${result.stderr}`).toBe(0);
+    expect(result.stdout).toContain('Loaded 1 current workflow definition.');
     expect(`${result.stdout}\n${result.stderr}`).not.toContain('MISMATCH:');
+  });
+
+  it('runs every root task through the Bun executable that invoked the package script', async () => {
+    const packageJson = JSON.parse(read('package.json'));
+
+    expect(packageJson.scripts.test).toBe('node scripts/run-root-task.mjs test');
+    expect(packageJson.scripts.build).toBe('node scripts/run-root-task.mjs build');
+    expect(packageJson.scripts.lint).toBe('node scripts/run-root-task.mjs lint');
+    expect(packageJson.scripts['render-workflows']).toBe(
+      'node scripts/run-root-task.mjs render-workflows',
+    );
+    expect(packageJson.scripts['check-workflows']).toBe(
+      'node scripts/run-root-task.mjs check-workflows',
+    );
+
+    const runnerUrl = pathToFileURL(path.join(repoRoot, 'scripts', 'run-root-task.mjs')).href;
+    const runner = await import(runnerUrl);
+    expect(runner.resolveInvokingBun({ npm_execpath: 'C:\\tools\\bun.exe' })).toBe(
+      'C:\\tools\\bun.exe',
+    );
+    expect(() => runner.resolveInvokingBun({ npm_execpath: 'C:\\tools\\npm.cmd' })).toThrow(
+      'ROOT_TASK_REQUIRES_BUN',
+    );
+    expect(runner.rootTaskSteps('build')).toEqual([
+      ['scripts/render-workflow-docs.ts'],
+      ['scripts/build-workspace.ts'],
+    ]);
+    expect(runner.rootTaskSteps('test')).toEqual([
+      ['scripts/test-workspace.ts'],
+    ]);
   });
 });

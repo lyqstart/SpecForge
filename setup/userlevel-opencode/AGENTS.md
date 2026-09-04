@@ -144,7 +144,6 @@ Project runtime data is stored in `specforge/`:
 - `specforge/config/` — Project configuration
 - `specforge/logs/` — Execution logs and traces
 - `specforge/sessions/` — Session archives
-- `specforge/knowledge/` — Knowledge graph data
 
 <!-- BEGIN: directory-layout -->
 > ⚠️ 本文档由 `scripts/render-layout.ts` 从 `packages/types/src/directory-layout.ts` 自动生成。
@@ -166,8 +165,6 @@ SPEC_DIR_NAME = '.specforge'
 | config | `config` | 项目配置目录（committed）— `<root>/.specforge/config/` |
 | specs | `work-items` | Work Item 规格目录（committed）— `<root>/.specforge/work-items/` |
 | specsReadme | `work-items/README.md` | work-items 目录的 README（committed）— `<root>/.specforge/work-items/README.md` |
-| knowledge | `knowledge` | Knowledge 目录（committed）— `<root>/.specforge/knowledge/` |
-| knowledgeGraph | `knowledge/graph.json` | Knowledge Graph 数据（committed）— `<root>/.specforge/knowledge/graph.json` |
 
 ### configFiles 分组
 
@@ -176,8 +173,6 @@ SPEC_DIR_NAME = '.specforge'
 | configFiles.projectRules | `config/project-rules.md` | — |
 | configFiles.prodEnv | `config/prod-environment.md` | — |
 | configFiles.project | `config/project.json` | — |
-| configFiles.riskPolicy | `config/risk_policy.json` | — |
-| configFiles.skillFragments | `config/skill_fragments.json` | — |
 
 ### gitignored 区（运行时数据）
 

@@ -2,20 +2,50 @@
   "name": "@specforge/types",
   "version": "0.1.0",
   "description": "Shared TypeScript types for SpecForge V6 modules",
-  "main": "src/index.ts",
+  "type": "module",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./directory-layout": "./src/directory-layout.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./directory-layout": {
+      "types": "./dist/directory-layout.d.ts",
+      "import": "./dist/directory-layout.js",
+      "require": "./dist/directory-layout.js"
+    },
     "./user-level-paths": {
       "types": "./dist/user-level-paths.d.ts",
-      "default": "./src/user-level-paths.ts"
+      "import": "./dist/user-level-paths.js",
+      "require": "./dist/user-level-paths.js"
     },
-    "./actor-roles": "./src/actor-roles.ts",
-    "./constants": "./src/constants.ts",
-    "./principal": "./src/principal.ts",
-    "./permissions": "./src/permissions.ts",
-    "./seal-transitions": "./src/seal-transitions.ts"
+    "./actor-roles": {
+      "types": "./dist/actor-roles.d.ts",
+      "import": "./dist/actor-roles.js",
+      "require": "./dist/actor-roles.js"
+    },
+    "./constants": {
+      "types": "./dist/constants.d.ts",
+      "import": "./dist/constants.js",
+      "require": "./dist/constants.js"
+    },
+    "./principal": {
+      "types": "./dist/principal.d.ts",
+      "import": "./dist/principal.js",
+      "require": "./dist/principal.js"
+    },
+    "./permissions": {
+      "types": "./dist/permissions.d.ts",
+      "import": "./dist/permissions.js",
+      "require": "./dist/permissions.js"
+    },
+    "./seal-transitions": {
+      "types": "./dist/seal-transitions.d.ts",
+      "import": "./dist/seal-transitions.js",
+      "require": "./dist/seal-transitions.js"
+    }
   },
   "scripts": {
     "build": "tsc",

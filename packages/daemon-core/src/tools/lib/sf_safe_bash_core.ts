@@ -16,6 +16,7 @@ import * as path from "node:path"
 import * as fs from "node:fs/promises"
 import { existsSync } from "node:fs"
 import { SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import { resolveHostUsername } from "@specforge/host-profile"
 import {
   resolveSpecForgeUserPath,
   resolveSpecForgeUserRoot,
@@ -83,7 +84,7 @@ function buildDefaultProfile(): HostProfile {
       supports_glob_in_shell: !isWin,
       ci_mode: false,
     },
-    user: { username: os.userInfo().username, home_dir: os.homedir(), shell_history_file: null },
+    user: { username: resolveHostUsername(), home_dir: os.homedir(), shell_history_file: null },
     specforge: {
       install_root: resolveSpecForgeUserRoot(),
       logs_dir: resolveSpecForgeUserPath("logs"),

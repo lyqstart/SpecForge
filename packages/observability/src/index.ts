@@ -13,6 +13,13 @@ export { QueryAPI } from './query-api/index.js';
 export { AnalystEngine } from './analyst-engine/index.js';
 export { ModeSwitch, filterByMode, configureMode, getEffectiveMode, resetModeConfig, processPayloadByMode } from './mode-switch/index.js';
 export type { ObservabilityMode } from './mode-switch/index.js';
+export {
+  OBSERVABILITY_CONFIG_SCHEMA_VERSION,
+  OBSERVABILITY_CONFIG_SCHEMA_DESCRIPTOR,
+  parseObservabilityConfigDocument,
+  serializeObservabilityConfigDocument,
+} from './config-contract.js';
+export type { ObservabilityConfigDocument } from './config-contract.js';
 export { SfAnalyst, createSfAnalyst } from './sf-analyst/index.js';
 export type { 
   SfAnalystConfig, 

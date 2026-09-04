@@ -277,7 +277,11 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     await fs.writeFile(path.join(wiDir, 'gates', 'post_merge_gate.json'), JSON.stringify({ status: 'passed' }));
     // post_merge_verified → implementation_ready (CRITICAL)
     await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- Task 1');
-    await fs.writeFile(path.join(wiDir, 'work_item.json'), JSON.stringify({ allowed_write_files: ['src/a.ts'] }));
+    await fs.writeFile(path.join(wiDir, 'work_item.json'), JSON.stringify({
+      schema_version: '1.1',
+      work_item_id: inst.id,
+      allowed_write_files: ['src/a.ts'],
+    }));
     await fs.writeFile(path.join(wiDir, 'gates', 'code_permission_release_gate.json'), JSON.stringify({ status: 'passed' }));
     // verification_running → verification_done (CRITICAL)
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Report\nAll pass.');
@@ -468,6 +472,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
           workItemId: 'WI-001',
           fromState: 'gates_running',
           toState: 'approval_required',
+          actor: 'gate_runner',
           workItemDir: wi999Dir,
         })
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|mismatched.*workItemDir/i);
@@ -505,6 +510,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
         workItemId: 'WI-001',
         fromState: 'gates_running',
         toState: 'approval_required',
+        actor: 'gate_runner',
         workItemDir: wi001Dir,
       });
 
@@ -539,6 +545,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
           workItemId: 'WI-001',
           fromState: 'gates_running',
           toState: 'approval_required',
+          actor: 'gate_runner',
           workItemDir: mismatchDir,
         })
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|cross-WI evidence pollution/i);
@@ -569,6 +576,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
           workItemId: 'WI-001',
           fromState: 'gates_running',
           toState: 'approval_required',
+          actor: 'gate_runner',
           workItemDir: relDir,
         })
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|cross-WI evidence pollution/i);
@@ -605,6 +613,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
           workItemId: 'WI-001',
           fromState: 'gates_running',
           toState: 'approval_required',
+          actor: 'gate_runner',
           workItemDir: traversalPath,
         })
       ).rejects.toThrow(/workItemDir.*does not match.*instanceId|cross-WI evidence pollution/i);
@@ -636,6 +645,7 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
         workItemId: 'WI-001',
         fromState: 'gates_running',
         toState: 'approval_required',
+        actor: 'gate_runner',
         workItemDir: wi001Dir,
       });
 

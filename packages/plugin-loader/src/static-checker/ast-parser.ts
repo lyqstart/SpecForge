@@ -55,7 +55,7 @@ class LRUCache<K, V> {
     // 如果缓存已满，删除最老的项
     if (this.cache.size >= this.maxSize) {
       const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
+      if (firstKey !== undefined) this.cache.delete(firstKey);
     }
     
     this.cache.set(key, value);
@@ -330,9 +330,9 @@ export class AstParser {
         const importDecl = node as TSESTree.ImportDeclaration;
         const moduleName = importDecl.source.value;
         const identifiers = importDecl.specifiers
-          .map((spec) => {
+          .map((spec: TSESTree.Node) => {
             if (spec.type === 'ImportSpecifier') {
-              return spec.imported.name;
+              return (spec as TSESTree.Node & { imported: { name: string } }).imported.name;
             } else if (spec.type === 'ImportDefaultSpecifier') {
               return 'default';
             } else if (spec.type === 'ImportNamespaceSpecifier') {
@@ -340,7 +340,7 @@ export class AstParser {
             }
             return null;
           })
-          .filter((id): id is string => id !== null);
+          .filter((id: string | null): id is string => id !== null);
 
         imports.push({
           moduleName,
@@ -404,7 +404,20 @@ export class AstParser {
     const seen = new Set<string>();
 
     this.traverseAst(ast, (node) => {
-      if (node.type === 'Identifier') {
+      if (node.type === 'MemberExpression') {
+        const memberName = this.getMemberExpressionName(node as TSESTree.MemberExpression);
+        const key = `${memberName}:${node.loc?.start.line}:${node.loc?.start.column}`;
+
+        if (memberName && !seen.has(key)) {
+          seen.add(key);
+          variables.push({
+            name: memberName,
+            line: node.loc?.start.line ?? 0,
+            column: node.loc?.start.column ?? 0,
+            node,
+          });
+        }
+      } else if (node.type === 'Identifier') {
         const ident = node as TSESTree.Identifier;
         const key = `${ident.name}:${ident.loc?.start.line}:${ident.loc?.start.column}`;
 
@@ -423,6 +436,27 @@ export class AstParser {
     return variables;
   }
 
+  private getMemberExpressionName(memberExpression: TSESTree.MemberExpression): string | null {
+    const parts: string[] = [];
+    let current: TSESTree.Node = memberExpression;
+
+    while (current.type === 'MemberExpression') {
+      const member = current as TSESTree.MemberExpression;
+      if (member.computed || member.property.type !== 'Identifier') {
+        return null;
+      }
+      parts.unshift(member.property.name);
+      current = member.object;
+    }
+
+    if (current.type !== 'Identifier') {
+      return null;
+    }
+
+    parts.unshift((current as TSESTree.Identifier).name);
+    return parts.join('.');
+  }
+
   /**
    * 获取函数调用表达式的名称
    *
@@ -437,21 +471,7 @@ export class AstParser {
     }
 
     if (callee.type === 'MemberExpression') {
-      const parts: string[] = [];
-      let current: TSESTree.Node = callee;
-
-      while (current.type === 'MemberExpression') {
-        const memberExpr = current as TSESTree.MemberExpression;
-        if (memberExpr.property.type === 'Identifier') {
-          parts.unshift(memberExpr.property.name);
-        }
-        current = memberExpr.object;
-      }
-
-      if (current.type === 'Identifier') {
-        parts.unshift(current.name);
-        return parts.join('.');
-      }
+      return this.getMemberExpressionName(callee as TSESTree.MemberExpression);
     }
 
     return null;

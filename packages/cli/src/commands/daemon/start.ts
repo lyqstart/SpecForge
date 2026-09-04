@@ -15,7 +15,7 @@ import {
   NssmServiceManager,
 } from '@specforge/service-management';
 import type { ServiceManager } from '@specforge/service-management';
-import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
+import { resolveSpecForgeHandshakePath, resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { ModeSwitch } from '../../mode-switch';
 import { toCliError } from '../../errors';
 import {
@@ -30,7 +30,7 @@ function getBinDir(): string {
 
 /** Canonical daemon handshake file path. */
 function getHandshakePath(): string {
-  return resolveSpecForgeUserPath('runtime', 'handshake.json');
+  return resolveSpecForgeHandshakePath();
 }
 /**
  * Create service manager based on platform

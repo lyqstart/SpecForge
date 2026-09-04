@@ -269,8 +269,23 @@ describe('RecoverySubsystem', () => {
       rebuildState: mockRebuildState,
       persistStateFromExternal: mockPersist,
     } as unknown as StateManager;
+    const mockAppendEvent = vi.fn().mockResolvedValue(undefined);
+    const repairEvent = {
+      schema_version: '1.0' as const,
+      eventId: 'repair-event-1',
+      ts: 1234,
+      monotonicSeq: 1,
+      projectId: testProjectPath,
+      actor: 'recovery-subsystem',
+      category: 'system',
+      action: 'recovery.repaired',
+      payload: { issueType: 'state_mismatch', description: 'test' },
+      metadata: { schemaVersion: '1.0', source: 'daemon' as const },
+    };
     const fakeWal = {
       readAllEvents: vi.fn().mockResolvedValue({ events: [] }),
+      createEvent: vi.fn().mockReturnValue(repairEvent),
+      appendEvent: mockAppendEvent,
     } as unknown as WAL;
 
     const daemonSubsystem = new RecoverySubsystem(
@@ -297,6 +312,8 @@ describe('RecoverySubsystem', () => {
       issues: [{ type: 'state_mismatch', description: 'test', affectedEventId: 'ev-1', affectedProjectPath: testProjectPath }],
     });
 
+    expect(mockAppendEvent).toHaveBeenCalledOnce();
+    expect(mockAppendEvent).toHaveBeenCalledWith(repairEvent);
     // persistStateFromExternal should have been called exactly once with a state containing our projectPath
     expect(mockPersist).toHaveBeenCalledTimes(1);
     const calledState = mockPersist.mock.calls[0][0];

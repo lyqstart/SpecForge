@@ -285,12 +285,11 @@ export async function resolveWorkItemSpecArtifacts(input: {
     }
   }
 
-  // Canonical Candidate files are authoritative. Compatibility files are used
-  // only when no canonical artifact of the requested kind exists.
+  // Canonical Candidate files are the only current-release authority.
   const canonicalRoot =
     path.resolve(workItemCandidatesRoot(input.projectRoot, input.workItemId)) + path.sep;
   const canonical = resolved.filter(artifact => artifact.path.startsWith(canonicalRoot));
-  return canonical.length > 0 ? canonical : resolved.slice(0, 1);
+  return canonical;
 }
 
 export async function computeFileHash(filePath: string): Promise<string> {

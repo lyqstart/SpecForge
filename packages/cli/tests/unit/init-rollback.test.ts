@@ -15,6 +15,16 @@ import * as fs from "node:fs/promises";
 import { emitError, ERROR_CODE_TO_EXIT_CODE } from "../../src/distribution/error-payload.js";
 import type { ErrorCode } from "../../src/distribution/types.js";
 
+vi.mock("node:fs/promises", () => ({
+  access: vi.fn(),
+  mkdir: vi.fn(),
+  rm: vi.fn(),
+  writeFile: vi.fn(),
+  rename: vi.fn(),
+  unlink: vi.fn(),
+  readFile: vi.fn(),
+}));
+
 // 导入 filesystemAdapter 以使用其 rollback 功能
 import { filesystemAdapter } from "../../src/utils/filesystem-adapter.js";
 
@@ -28,6 +38,13 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(fs.access).mockRejectedValue(new Error("ENOENT"));
+    vi.mocked(fs.mkdir).mockResolvedValue(undefined);
+    vi.mocked(fs.rm).mockResolvedValue(undefined);
+    vi.mocked(fs.writeFile).mockResolvedValue(undefined);
+    vi.mocked(fs.rename).mockResolvedValue(undefined);
+    vi.mocked(fs.unlink).mockResolvedValue(undefined);
+    vi.mocked(fs.readFile).mockResolvedValue("{}");
     stderrOutput = [];
     stdoutOutput = [];
     exitCode = null;
@@ -90,9 +107,9 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
       const createdSet = new Set<string>();
       
       // Mock fs.access 为失败（目录不存在）
-      vi.spyOn(fs, "access").mockRejectedValue(new Error("ENOENT"));
+      vi.mocked(fs.access).mockRejectedValue(new Error("ENOENT"));
       // Mock fs.mkdir 为成功
-      vi.spyOn(fs, "mkdir").mockResolvedValue(undefined);
+      vi.mocked(fs.mkdir).mockResolvedValue(undefined);
       
       await filesystemAdapter.mkdirTracked("/tmp/test/newdir", createdSet);
       
@@ -103,9 +120,9 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
       const createdSet = new Set<string>();
       
       // Mock fs.access 为成功（目录存在）
-      vi.spyOn(fs, "access").mockResolvedValue(undefined);
+      vi.mocked(fs.access).mockResolvedValue(undefined);
       // 不应该调用 mkdir
-      const mkdirSpy = vi.spyOn(fs, "mkdir");
+      const mkdirSpy = vi.mocked(fs.mkdir);
       
       await filesystemAdapter.mkdirTracked("/tmp/test/existing", createdSet);
       
@@ -117,9 +134,9 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
       const createdSet = new Set<string>();
       
       // Mock fs.access 为失败（目录不存在）
-      vi.spyOn(fs, "access").mockRejectedValue(new Error("ENOENT"));
+      vi.mocked(fs.access).mockRejectedValue(new Error("ENOENT"));
       // Mock fs.mkdir 抛出权限错误
-      const mkdirSpy = vi.spyOn(fs, "mkdir").mockImplementation(() => {
+      const mkdirSpy = vi.mocked(fs.mkdir).mockImplementation(() => {
         const error = new Error("EACCES: permission denied") as Error & { code: string };
         error.code = "EACCES";
         throw error;
@@ -209,7 +226,7 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
       const createdSet = new Set<string>();
       
       // Mock fs: mkdir 成功创建第一个目录，第二个目录失败
-      const mkdirSpy = vi.spyOn(fs, "mkdir").mockImplementation(async (path: string) => {
+      const mkdirSpy = vi.mocked(fs.mkdir).mockImplementation(async (path) => {
         if (path.includes("protected")) {
           const error = new Error("EACCES: permission denied") as Error & { code: string };
           error.code = "EACCES";
@@ -218,8 +235,8 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
         return undefined;
       });
       
-      vi.spyOn(fs, "access").mockRejectedValue(new Error("ENOENT"));
-      const rmSpy = vi.spyOn(fs, "rm").mockResolvedValue(undefined);
+      vi.mocked(fs.access).mockRejectedValue(new Error("ENOENT"));
+      const rmSpy = vi.mocked(fs.rm).mockResolvedValue(undefined);
       
       // 步骤 1: 成功创建目录
       await filesystemAdapter.mkdirTracked("/tmp/specforge/step1", createdSet);
@@ -247,7 +264,7 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
     it("多步创建后失败，rollback 逆序删除所有成功创建的路径", async () => {
       const createdSet = new Set<string>();
       
-      const mkdirSpy = vi.spyOn(fs, "mkdir").mockImplementation(async (path: string) => {
+      const mkdirSpy = vi.mocked(fs.mkdir).mockImplementation(async (path) => {
         if (path.includes("step2")) {
           const error = new Error("EACCES: permission denied") as Error & { code: string };
           error.code = "EACCES";
@@ -256,8 +273,8 @@ describe("init-rollback: EACCES 错误回滚测试（REQ-3.8, REQ-4.10）", () =
         return undefined;
       });
       
-      vi.spyOn(fs, "access").mockRejectedValue(new Error("ENOENT"));
-      const rmSpy = vi.spyOn(fs, "rm").mockResolvedValue(undefined);
+      vi.mocked(fs.access).mockRejectedValue(new Error("ENOENT"));
+      const rmSpy = vi.mocked(fs.rm).mockResolvedValue(undefined);
       
       // 步骤 1: 创建 step1
       await filesystemAdapter.mkdirTracked("/tmp/specforge/step1", createdSet);

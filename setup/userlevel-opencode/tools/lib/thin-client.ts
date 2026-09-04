@@ -23,8 +23,9 @@ interface HandshakeFile {
   pid: number;
   port: number;
   token: string;
+  bound_to: '127.0.0.1' | '0.0.0.0';
   startedAt: number;
-  schemaVersion: string;
+  schema_version: "1.0";
   artifact_contract_versions: {
     task_document: string;
   };
@@ -37,42 +38,35 @@ interface DaemonResponse<T = unknown> {
 }
 
 function readHandshake(): HandshakeFile {
-  const home = os.homedir();
-
-  let configRoot: string;
-  const configDir = process.env.OPENCODE_CONFIG_DIR;
-  if (configDir && configDir.trim() !== "") {
-    configRoot = path.resolve(path.normalize(configDir));
-  } else {
-    const xdg = process.env.XDG_CONFIG_HOME;
-    if (xdg && xdg.trim() !== "") {
-      configRoot = path.join(xdg, "opencode");
-    } else {
-      configRoot = path.join(home, ".config", "opencode");
-    }
+  const handshakePath = path.join(os.homedir(), ".specforge", "runtime", "daemon.sock.json");
+  if (!fs.existsSync(handshakePath)) {
+    throw new Error("Daemon handshake file not found. Is the SpecForge daemon running?");
   }
 
-  const paths = [path.join(configRoot, "sf-user", "runtime", "handshake.json")];
-
-  for (const p of paths) {
-    if (fs.existsSync(p)) {
-      const content = fs.readFileSync(p, "utf-8");
-      const handshake = JSON.parse(content) as HandshakeFile;
-      if (
-        handshake.artifact_contract_versions?.task_document !==
-        EXPECTED_TASK_CONTRACT_VERSION
-      ) {
-        throw new Error(
-          `Daemon task artifact contract mismatch: expected ${EXPECTED_TASK_CONTRACT_VERSION}, ` +
-          `received ${handshake.artifact_contract_versions?.task_document ?? "missing"}. ` +
-          "Reinstall the user-level bundle and restart the daemon before running governed tools.",
-        );
-      }
-      return handshake;
-    }
+  const content = fs.readFileSync(handshakePath, "utf-8");
+  const handshake = JSON.parse(content) as HandshakeFile;
+  if (
+    handshake.schema_version !== "1.0" ||
+    !Number.isInteger(handshake.port) ||
+    handshake.port < 1 ||
+    handshake.port > 65535 ||
+    typeof handshake.token !== "string" ||
+    handshake.token.length === 0 ||
+    !["127.0.0.1", "0.0.0.0"].includes(handshake.bound_to)
+  ) {
+    throw new Error("Daemon handshake contract invalid. Restart the SpecForge daemon.");
   }
-
-  throw new Error("Daemon handshake file not found. Is the SpecForge daemon running?");
+  if (
+    handshake.artifact_contract_versions?.task_document !==
+    EXPECTED_TASK_CONTRACT_VERSION
+  ) {
+    throw new Error(
+      `Daemon task artifact contract mismatch: expected ${EXPECTED_TASK_CONTRACT_VERSION}, ` +
+      `received ${handshake.artifact_contract_versions?.task_document ?? "missing"}. ` +
+      "Reinstall the user-level bundle and restart the daemon before running governed tools.",
+    );
+  }
+  return handshake;
 }
 
 function isConnectionError(err: Error): boolean {
@@ -107,7 +101,8 @@ export class DaemonClient {
 
   reload(): void {
     const hs = readHandshake();
-    this.baseUrl = `http://127.0.0.1:${hs.port}`;
+    const host = hs.bound_to === "0.0.0.0" ? "127.0.0.1" : hs.bound_to;
+    this.baseUrl = `http://${host}:${hs.port}`;
     this.token = hs.token;
   }
 

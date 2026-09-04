@@ -33,20 +33,13 @@ describe('v1.1 Tool Registry', () => {
     });
   }
 
-  it('sf_v11_gate_run (internal name) must also be registered', () => {
-    expect(getHandler('sf_v11_gate_run')).toBeDefined();
-  });
-
-  it('sf_v11_code_permission (internal name) must also be registered', () => {
-    expect(getHandler('sf_v11_code_permission')).toBeDefined();
-  });
-
-  it('sf_v11_decision (internal name) must also be registered', () => {
-    expect(getHandler('sf_v11_decision')).toBeDefined();
-  });
-
-  it('sf_v11_merge (internal name) must also be registered', () => {
-    expect(getHandler('sf_v11_merge')).toBeDefined();
+  it('legacy versioned names must not remain callable', () => {
+    expect([
+      'sf_v11_gate_run',
+      'sf_v11_code_permission',
+      'sf_v11_decision',
+      'sf_v11_merge',
+    ].filter((name) => getHandler(name) !== undefined)).toEqual([]);
   });
 });
 
@@ -61,9 +54,7 @@ describe('WriteGuard Tool Classification', () => {
     'sf_gate_run', 'sf_user_decision_record', 'sf_merge_run',
     'sf_code_permission', 'sf_changed_files_audit', 'sf_close_gate',
     'sf_state_read', 'sf_state_transition', 'sf_doc_lint',
-    'sf_trace_matrix', 'sf_context_build', 'sf_cost_report',
-    'sf_doctor', 'sf_continuity', 'sf_knowledge_base',
-    'sf_knowledge_graph', 'sf_knowledge_query', 'sf_batch_verify',
+    'sf_trace_matrix', 'sf_doctor', 'sf_knowledge_base', 'sf_batch_verify',
   ]);
 
   const SHELL_TOOLS = new Set([
@@ -211,9 +202,9 @@ describe('Bash Write Detection', () => {
 
 
 describe('Work Item ID Validation', () => {
-  it('WI-001 is valid', () => {
-    expect(isValidWorkItemId('WI-001')).toBe(true);
-    expect(validateWorkItemId('WI-001')).toBeNull();
+  it('WI-001 is INVALID under v1.1 contract', () => {
+    expect(isValidWorkItemId('WI-001')).toBe(false);
+    expect(validateWorkItemId('WI-001')).not.toBeNull();
   });
 
   it('WI-0001 is valid', () => {
@@ -221,9 +212,9 @@ describe('Work Item ID Validation', () => {
     expect(validateWorkItemId('WI-0001')).toBeNull();
   });
 
-  it('WI-20260612-0001 is valid', () => {
-    expect(isValidWorkItemId('WI-20260612-0001')).toBe(true);
-    expect(validateWorkItemId('WI-20260612-0001')).toBeNull();
+  it('WI-20260612-0001 is INVALID under v1.1 contract', () => {
+    expect(isValidWorkItemId('WI-20260612-0001')).toBe(false);
+    expect(validateWorkItemId('WI-20260612-0001')).not.toBeNull();
   });
 
   it('blue-h1-hello-world is INVALID', () => {

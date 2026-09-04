@@ -1,0 +1,26 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "types": [
+      "node"
+    ],
+    "ignoreDeprecations": "6.0"
+  },
+  "include": [
+    "./lib/release-owner-snapshot-producers.ts",
+    "./lib/release-manifest-producer.ts",
+    "./lib/release-runtime-artifact-producer.ts",
+    "./lib/current-release-precheck.ts",
+    "./build-release-runtime-artifacts.ts",
+    "./build-release-manifest.ts",
+    "./run-current-release-precheck.ts"
+  ],
+  "exclude": [
+    "../node_modules",
+    "../dist"
+  ]
+}

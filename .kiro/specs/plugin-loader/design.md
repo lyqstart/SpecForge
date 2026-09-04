@@ -1,5 +1,12 @@
 # Design Document
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-17、REQ-25、REQ-31 与 V6-ADR-013。
+- **分类/状态**：stable 目标是 `CURRENT_RELEASE_SUPPORTING`；在 Daemon Extension boundary 完成生产接入前仍为 `BUILT_NOT_ENABLED`。
+- **当前范围**：仅插件 manifest 静态检查和权限声明验证。
+- **排除**：运行时沙箱、动态/热加载、资源配额和 P2 扩展不得进入当前 exports、build、registry、installer 或 runtime，也不得由 feature flag 开启。
+
 ## Overview
 
 ### 本文档的性质

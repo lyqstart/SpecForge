@@ -14,7 +14,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
 
-import { createWorkItem, initializeClosureFiles, updateWorkItemStatus } from '../src/tools/lib/work-item-lifecycle-v11';
+import { createWorkItem, initializeClosureFiles } from '../src/tools/lib/work-item-lifecycle-v11';
 import { selectWorkflowPath, generateTriggerResult } from '../src/tools/lib/workflow-path-selector-v11';
 import { isValidV11Transition } from '../src/tools/lib/state-machine-v11';
 import { checkWrite, performChangedFilesAudit } from '../src/tools/lib/write-guard-v11';
@@ -50,7 +50,13 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
     const wiId = 'WI-0001';
 
     // Step 1: Create WI (§4)
-    const wiDir = await createWorkItem({ projectRoot, workItemId: wiId, userRequest: 'Add archived status to orders' });
+    const wiDir = await createWorkItem({
+      projectRoot,
+      workItemId: wiId,
+      userRequest: 'Add archived status to orders',
+      workflowType: 'feature_spec',
+      workflowPath: 'requirement_change_path',
+    });
     expect(wiDir).toBeDefined();
 
     // Step 2: Initialize closure files (§4)
@@ -59,15 +65,10 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
     // Verify required files created
     const wiJson = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
     expect(wiJson.work_item_id).toBe(wiId);
-    // workflow_path is set later after classification; initially null
-    expect(wiJson.status).toBe('created');
+    expect(wiJson).not.toHaveProperty('status');
+    expect(wiJson.workflow_path).toBe('requirement_change_path');
 
-    // Step 3: Update status to intake_ready
-    await updateWorkItemStatus(wiDir, 'intake_ready');
-    const updated = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
-    expect(updated.status).toBe('intake_ready');
-
-    // Step 4: Workflow path selection (§6)
+    // Step 3: Workflow path selection (§6)
     const selectedPath = selectWorkflowPath({
       requirement_changed: true,
       design_changed: false,
@@ -330,12 +331,12 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
 
     // work_item.json is metadata; authoritative governance state lives in StateManager/events.
     const finalWi = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
-    expect(finalWi.status).toBe('intake_ready');
+    expect(finalWi).not.toHaveProperty('status');
   });
 });
 
 describe('§16 Rollback', () => {
-  it('should generate rollback plan and mark original as superseded', async () => {
+  it('should generate rollback plan and record supersession metadata', async () => {
     const originalWiId = 'WI-0010';
     const rollbackWiId = 'WI-0011';
 
@@ -375,7 +376,8 @@ describe('§16 Rollback', () => {
     });
     expect(delta.traceImpact).toBe('modified');
 
-    // Mark original as superseded
+    // Record the supersession relationship. The handler owns the authoritative
+    // StateManager transition; this library function never writes lifecycle state.
     const result = await markOriginalSuperseded({
       originalWiDir: originalDir,
       originalWorkItemId: originalWiId,
@@ -384,9 +386,9 @@ describe('§16 Rollback', () => {
     expect(result.status).toBe('superseded');
     expect(result.supersededByWorkItemId).toBe(rollbackWiId);
 
-    // Verify original WI marked
+    // Verify relationship metadata without a shadow lifecycle status.
     const wi = JSON.parse(await fs.readFile(path.join(originalDir, 'work_item.json'), 'utf-8'));
-    expect(wi.status).toBe('superseded');
+    expect(wi).not.toHaveProperty('status');
     expect(wi.superseded_by).toBe(rollbackWiId);
   });
 });

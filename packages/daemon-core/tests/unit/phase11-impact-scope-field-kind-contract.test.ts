@@ -123,7 +123,7 @@ describe('Phase 11 Impact Scope field-kind contract', () => {
 
   test('sf-orchestrator documents the same field-kind producer contract', async () => {
     const content = await fs.readFile(
-      path.resolve(process.cwd(), 'setup/userlevel-opencode/agents/sf-orchestrator.md'),
+      path.resolve(__dirname, '../../../../setup/userlevel-opencode/agents/sf-orchestrator.md'),
       'utf-8',
     );
     expect(content).toContain('### Impact Scope Field-Kind Producer Contract');

@@ -172,6 +172,11 @@ export function resolveUserLevelDirectory(): string {
   return pathModule.join(osModule.homedir(), '.config', 'opencode');
 }
 
+/** Current SpecForge user-level install and runtime root. */
+export function resolveSpecForgeInstallRoot(): string {
+  return pathModule.join(osModule.homedir(), '.specforge');
+}
+
 /**
  * Convert a POSIX-style relative path (forward slashes) to the native
  * path separator for the current OS.
@@ -192,7 +197,7 @@ export function toPosix(nativePath: string): string {
 export const SPEC_DIR_NAME = ".specforge" as const;
 
 /** SpecForge 当前用户级安装目录名 */
-export const SPEC_USER_DIR_NAME = "sf-user" as const;
+export const SPEC_USER_DIR_NAME = ".specforge" as const;
 
 /**
  * SpecForge 当前用户级安装根目录。
@@ -200,5 +205,5 @@ export const SPEC_USER_DIR_NAME = "sf-user" as const;
  * it must never redirect current writes or executable loading.
  */
 export function resolveSpecForgeHome(): string {
-  return pathModule.join(resolveUserLevelDirectory(), SPEC_USER_DIR_NAME);
+  return resolveSpecForgeInstallRoot();
 }

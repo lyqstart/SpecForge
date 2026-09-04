@@ -23,6 +23,7 @@ import { mkdtemp, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import * as fc from 'fast-check';
+import { DaemonWalFixtureEventLogger } from '../helpers/current-daemon-wal.js';
 
 // Unique identifier to separate test runs
 const TEST_RUN_ID = Math.random().toString(36).substring(7);
@@ -105,7 +106,7 @@ describe('Property 10: Permission Decision Traceability', () => {
 
   beforeEach(async () => {
     tempDir = await mkdtemp(join(tmpdir(), 'permission-traceability-test-'));
-    eventLogger = new EventLogger(tempDir);
+    eventLogger = new DaemonWalFixtureEventLogger(tempDir);
     await eventLogger.initialize();
     
     const casDir = join(tempDir, 'cas');

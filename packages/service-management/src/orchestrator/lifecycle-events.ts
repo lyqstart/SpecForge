@@ -26,8 +26,8 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createServiceError } from '../errors/service-error.js';
-import type { HandshakeFile } from '../types/handshake.js';
-import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { parseHandshakeFile, type HandshakeFile } from '../types/handshake.js';
+import { resolveSpecForgeHandshakePath } from '@specforge/types/user-level-paths';
 
 /**
  * Supported service lifecycle event actions
@@ -74,7 +74,7 @@ export interface ServiceLifecycleEvent {
  * Options for lifecycle event emitter
  */
 export interface LifecycleEventEmitterOptions {
-  /** Handshake file path. Defaults to <OpenCode config>/sf-user/runtime/handshake.json */
+  /** Handshake file path. Defaults to ~/.specforge/runtime/daemon.sock.json */
   handshakePath?: string;
   /** HTTP request timeout in milliseconds */
   requestTimeoutMs?: number;
@@ -84,7 +84,7 @@ export interface LifecycleEventEmitterOptions {
  * Default options
  */
 const DEFAULT_OPTIONS: Required<LifecycleEventEmitterOptions> = {
-  handshakePath: path.join(resolveSpecForgeUserRoot(), 'runtime', 'handshake.json'),
+  handshakePath: resolveSpecForgeHandshakePath(),
   requestTimeoutMs: 5000,
 };
 
@@ -238,17 +238,7 @@ export class ServiceLifecycleEventEmitter implements Disposable {
   private async readHandshake(): Promise<HandshakeFile> {
     try {
       const content = await fs.readFile(this.handshakePath, 'utf-8');
-      const handshake = JSON.parse(content) as HandshakeFile;
-
-      if (!handshake.port || !handshake.token) {
-        throw createServiceError('SVC_HEALTH_CHECK_FAILED', {
-          serviceName: 'specforge-daemon',
-          operation: 'readHandshake',
-          details: { handshakePath: this.handshakePath },
-        });
-      }
-
-      return handshake;
+      return parseHandshakeFile(JSON.parse(content));
     } catch (error) {
       if (isServiceError(error)) {
         throw error;

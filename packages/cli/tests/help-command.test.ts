@@ -31,6 +31,7 @@ describe('Help Command Integration', () => {
   describe('Help Command', () => {
     it('should show general help when no command specified', async () => {
       const parser = yargs(['help'])
+        .version(false)
         .options({
           json: { type: 'boolean', default: false },
         })
@@ -50,6 +51,7 @@ describe('Help Command Integration', () => {
 
     it('should show command-specific help', async () => {
       const parser = yargs(['help', 'daemon'])
+        .version(false)
         .options({
           json: { type: 'boolean', default: false },
         })
@@ -65,6 +67,7 @@ describe('Help Command Integration', () => {
 
     it('should handle --help flag for specific command', async () => {
       const parser = yargs(['daemon', '--help'])
+        .version(false)
         .options({
           json: { type: 'boolean', default: false },
           help: { type: 'boolean', default: true },
@@ -79,23 +82,9 @@ describe('Help Command Integration', () => {
       expect(mockProcessExit).toHaveBeenCalledWith(0);
     });
 
-    it('should handle --version flag', async () => {
-      const parser = yargs(['--version'])
-        .options({
-          json: { type: 'boolean', default: false },
-          version: { type: 'boolean', default: true },
-        });
-
-      addHelpCommands(parser);
-
-      await parser.parse();
-      
-      // Should have called process.exit(0)
-      expect(mockProcessExit).toHaveBeenCalledWith(0);
-    });
-
     it('should handle JSON mode with --json flag', async () => {
       const parser = yargs(['--help', '--json'])
+        .version(false)
         .options({
           json: { type: 'boolean', default: true },
           help: { type: 'boolean', default: true },
@@ -112,9 +101,11 @@ describe('Help Command Integration', () => {
   describe('Error Handling', () => {
     it('should handle unknown commands with suggestions', async () => {
       const parser = yargs(['unknown-command'])
+        .version(false)
         .options({
           json: { type: 'boolean', default: false },
         })
+        .strictCommands()
         .fail((msg, err) => {
           expect(msg).toBeDefined();
           // The fail handler should call our suggestion logic
@@ -130,6 +121,7 @@ describe('Help Command Integration', () => {
 
     it('should handle validation errors', async () => {
       const parser = yargs(['daemon']) // Missing subcommand
+        .version(false)
         .options({
           json: { type: 'boolean', default: false },
         })

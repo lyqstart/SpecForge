@@ -14,8 +14,13 @@ import * as fs from 'node:fs/promises';
 import * as fsSync from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { ToolDispatcher, type ToolDeps } from '../../src/tools/ToolDispatcher';
+import { renderVerificationReport } from '../../src/tools/lib/sf_artifact_write_core';
 import '../../src/tools/index';
+
+const execFileAsync = promisify(execFile);
 
 type WorkflowPath = 'requirement_change_path' | 'code_only_fast_path';
 
@@ -29,6 +34,10 @@ const DEFAULT_WORKFLOW_PATH: WorkflowPath = 'requirement_change_path';
 
 let projectRoot: string;
 let dispatcher: ToolDispatcher;
+
+async function git(args: string[]): Promise<void> {
+  await execFileAsync('git', args, { cwd: projectRoot });
+}
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
@@ -170,6 +179,8 @@ function makeDeps(): ToolDeps {
     },
     projectManager: {
       getProjectStateManager: async () => ({
+        rebuildFromEventsFile: async () => {},
+        getState: async () => readJsonIfExists(runtimeStatePath()),
         transition: async (
           workItemId: string,
           fromState: string,
@@ -214,12 +225,19 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   await writeJson(path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), {
     schema_version: '1.0',
     project_spec_version: 'PSV-0000',
+    project_name: 'p0-governance-fixture',
+    project: {
+      requirements_index: '.specforge/project/requirements_index.md',
+    },
   });
+  await writeText(
+    path.join(projectRoot, '.specforge', 'project', 'requirements_index.md'),
+    '# Existing Requirements\n'
+  );
 
   await writeJson(path.join(dir, 'work_item.json'), {
-    schema_version: '1.0',
+    schema_version: '1.1',
     work_item_id: workItemId,
-    status: state,
     workflow_path: workflowPath,
     workflow_type: workflowPath === 'code_only_fast_path' ? 'quick_change' : 'feature_spec',
     code_change_allowed: false,
@@ -230,9 +248,32 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   });
 
   await writeJson(path.join(dir, 'trigger_result.json'), {
-    schema_version: '1.0',
+    schema_version: '1.1',
     work_item_id: workItemId,
     workflow_path: workflowPath,
+    classification: {
+      requirement_changed: true,
+      acceptance_criteria_changed: true,
+      business_rule_changed: true,
+      user_visible_behavior_changed: true,
+      data_semantics_changed: false,
+      design_changed: false,
+      module_boundary_changed: false,
+      api_contract_changed: false,
+      architecture_changed: false,
+      data_model_changed: false,
+      module_contract_changed: false,
+      unknowns: [],
+    },
+    impact_scope: {
+      affected_modules: [],
+      architecture_refs: [],
+      data_model_refs: [],
+      design_refs: [],
+      project_contract_refs: [],
+      module_contract_refs: [],
+      planned_code_paths: [],
+    },
   });
 
   await writeText(path.join(dir, 'intake.md'), '# Intake\nAdd a governed feature.\n');
@@ -244,11 +285,40 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   await writeText(path.join(dir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n');
   await writeText(path.join(dir, 'gate_summary.md'), makeGateSummary(workItemId, gateSummaryStatus));
 
-  await writeText(path.join(dir, 'candidates', 'requirements.md'), '# Requirements\n\nREQ-001 governed feature requirement.\n');
+  await writeText(
+    path.join(dir, 'candidates', 'requirements.md'),
+    [
+      '# Requirements',
+      '',
+      '## User Story',
+      '',
+      '作为项目维护者，我希望受治理的功能变更经过完整审批，以便发布结果可追溯。',
+      '',
+      '### REQ-001 Governed feature approval',
+      '',
+      '#### Acceptance Criteria',
+      '',
+      '1. WHEN a governed feature is approved, THE SYSTEM SHALL preserve the approval evidence.',
+      '',
+      '## Glossary',
+      '',
+      '- Governed feature: a change processed through the SpecForge governance lifecycle.',
+      '',
+    ].join('\n')
+  );
+  await writeText(
+    path.join(dir, 'candidates', 'tasks.md'),
+    '# Tasks\n\n- [x] TASK-001: Implement the governed feature.\n'
+  );
+  await writeText(
+    path.join(dir, 'candidates', 'trace_delta.md'),
+    '# Trace Delta\n\nOUT-1 -> REQ-001 -> DD-1 -> TASK-001 -> EV-1\n'
+  );
   await writeJson(path.join(dir, 'candidate_manifest.json'), {
-    schema_version: '1.0',
+    schema_version: '1.1',
     work_item_id: workItemId,
     workflow_path: workflowPath,
+    candidate_phase: 'requirements',
     entries: [
       {
         candidate_path: 'candidates/requirements.md',
@@ -264,9 +334,13 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     work_item_id: workItemId,
     entries: [
       {
+        id: 'EV-1',
         type: 'test',
+        evidence_type: 'behavioral_e2e',
+        level: 'L5',
         path: 'verification_report.md',
         status: 'passed',
+        supports: ['OUT-1', 'REQ-001', 'DD-1', 'TASK-001'],
       },
     ],
   });
@@ -283,6 +357,7 @@ async function approveFixture(workItemId: string): Promise<any> {
     decision_type: 'user_approved',
     decision_scope: 'full',
     base_spec_version: 'PSV-0000',
+    user_response_quote: '同意',
   });
 }
 
@@ -292,7 +367,7 @@ async function approveAndMergeFixture(workItemId: string): Promise<void> {
   expect(approval.success).toBe(true);
 
   const merge = await invoke('sf_merge_run', { work_item_id: workItemId });
-  expect(merge.success).toBe(true);
+  expect(merge.success, JSON.stringify(merge, null, 2)).toBe(true);
   expect(merge.status).toBe('success');
 
   const mergeReport = await fs.readFile(path.join(wiDir(workItemId), 'merge_report.md'), 'utf-8');
@@ -303,6 +378,13 @@ async function approveAndMergeFixture(workItemId: string): Promise<void> {
 describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
   beforeEach(async () => {
     projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-p0-governance-'));
+    await git(['init', '-b', 'main']);
+    await git(['config', 'user.name', 'SpecForge Test']);
+    await git(['config', 'user.email', 'specforge-test@example.invalid']);
+    await writeText(path.join(projectRoot, 'README.md'), '# P0 governance test\n');
+    await git(['add', '--', 'README.md']);
+    await git(['commit', '-m', 'test: establish P0 governance baseline']);
+    await git(['switch', '-c', 'feature/p0-governance']);
     dispatcher = new ToolDispatcher(makeDeps());
   });
 
@@ -360,7 +442,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     expect(runtime.status).toBe('approved');
 
     const workItem = await readJson(path.join(wiDir(workItemId), 'work_item.json'));
-    expect(workItem.status).toBe('approved');
+    expect(workItem).not.toHaveProperty('status');
   });
 
   it('auto-advances gates_running to approval_required after all required gates pass', async () => {
@@ -373,7 +455,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.summary_status).toBe('passed');
+    expect(result.summary_status, JSON.stringify(result, null, 2)).toBe('passed');
     expect(result.state_auto_advance?.advanced).toBe(true);
     expect(result.state_auto_advance?.from_state).toBe('gates_running');
     expect(result.state_auto_advance?.to_state).toBe('approval_required');
@@ -383,7 +465,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     expect(runtime.workItems[0].current_state).toBe('approval_required');
 
     const workItem = await readJson(path.join(wiDir(workItemId), 'work_item.json'));
-    expect(workItem.status).toBe('approval_required');
+    expect(workItem).not.toHaveProperty('status');
   });
 
   it('rejects code_permission enable before successful merge for spec-changing workflows', async () => {
@@ -484,18 +566,74 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     await writeJson(manifestPath, manifest);
     await writeText(path.join(dir, 'gate_summary.md'), makeGateSummary(workItemId, 'passed') + '\nPost-merge close attempt regenerated this summary.\n');
 
-    await setRuntimeState(workItemId, 'verification_done', DEFAULT_WORKFLOW_PATH);
+    await setRuntimeState(workItemId, 'implementation_done', DEFAULT_WORKFLOW_PATH);
     const workItemPath = path.join(dir, 'work_item.json');
     const workItem = await readJson<Record<string, any>>(workItemPath);
-    workItem.status = 'verification_done';
     workItem.code_change_allowed = false;
     workItem.allowed_write_files = [];
     workItem.code_permission_revoked = true;
     await writeJson(workItemPath, workItem);
 
+    const structuredVerification = renderVerificationReport(
+      JSON.stringify({
+        conclusion: 'pass',
+        test_matrix: {
+          L1_unit: 'pass',
+          L2_integration: 'pass',
+          L3_pbt: 'not_applicable',
+          L4_e2e: 'pass',
+          L5_smoke: 'pass',
+          L6_regression: 'pass',
+          L7_performance: 'not_applicable',
+          L8_security: 'not_applicable',
+          L9_compatibility: 'not_applicable',
+          L10_uat: 'not_applicable',
+        },
+        verification_commands: [
+          { command: 'p0-governance-regression', status: 'pass', output_summary: 'passed' },
+        ],
+        acceptance_criteria: [
+          { req_id: 'REQ-001', name: 'governed lifecycle', status: 'pass', evidence: 'EV-1' },
+        ],
+        e2e_tests: [{ name: 'P0 lifecycle', status: 'pass', evidence: 'EV-1' }],
+        side_effects: 'none',
+        summary: 'P0 lifecycle verification passed.',
+        semantic_closure: {},
+      })
+    );
+    expect(structuredVerification).toBeDefined();
+    await writeText(path.join(dir, 'verification_report.md'), structuredVerification!);
+
+    const semanticResult = await invoke('sf_semantic_closure_run', {
+      work_item_id: workItemId,
+      force: true,
+    });
+    expect(semanticResult.success, JSON.stringify(semanticResult, null, 2)).toBe(true);
+
+    const formalResult = await invoke('sf_gate_run', {
+      work_item_id: workItemId,
+      gate_ids: ['verification_gate', 'formal_version_gate'],
+    });
+    const verificationGateReport = await readJsonIfExists(
+      path.join(dir, 'gates', 'verification_gate.json')
+    );
+    const formalVersionGateReport = await readJsonIfExists(
+      path.join(dir, 'gates', 'formal_version_gate.json')
+    );
+    const postMergeGateEvidence = JSON.stringify(
+      { formalResult, verificationGateReport, formalVersionGateReport },
+      null,
+      2
+    );
+    expect(formalResult.success, JSON.stringify(formalResult, null, 2)).toBe(true);
+    expect(
+      formalResult.reports?.find((report: any) => report.gate_id === 'formal_version_gate')?.status,
+      postMergeGateEvidence
+    ).toBe('passed');
+
     const closeResult = await invoke('sf_close_gate', { work_item_id: workItemId });
 
-    expect(closeResult.success).toBe(true);
+    expect(closeResult.success, JSON.stringify(closeResult, null, 2)).toBe(true);
     expect(closeResult.state_advanced).toBe(true);
     expect(closeResult.close_gate?.allChecksPassed).toBe(true);
 
@@ -505,7 +643,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     expect(finalRuntime.workItems[0].status).toBe('closed');
 
     const finalWorkItem = await readJson(path.join(dir, 'work_item.json'));
-    expect(finalWorkItem.status).toBe('closed');
+    expect(finalWorkItem).not.toHaveProperty('status');
     expect(finalWorkItem.code_change_allowed).toBe(false);
     expect(finalWorkItem.allowed_write_files).toEqual([]);
 

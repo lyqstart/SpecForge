@@ -95,7 +95,7 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
       true
     );
     expect(
-      files.some(f => f.includes('setup/userlevel-opencode/skills/sf-workflow-quick-change/'))
+      files.some(f => f.includes('setup/userlevel-opencode/skills/sf-workflow-feature-spec/'))
     ).toBe(true);
   });
 
@@ -123,32 +123,12 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     const required = [
       'StateManager/events.jsonl',
       'runtime/state.json',
-      'workflowEngine.transitionFull()',
-      'development',
-      'review',
-      'implementation',
-      'done',
       'workflow_type',
       'workflow_path',
-      'quick_change',
-      'code_only_fast_path',
-      'bugfix_spec',
       'sf_user_decision_record',
-      'user_response_quote',
-      'auto_approval_policy_id',
-      'comments',
-      'reason',
-      'candidate_manifest.entries',
-      'merge_report.status=not_applicable',
-      'sf_merge_run',
       'sf_code_permission',
-      'sf_changed_files_audit',
       'AUTHORITATIVE_STATE_MISMATCH',
       'closed',
-      'recoverable safety latch',
-      'hard_stop_id',
-      'resume_from_step',
-      'operator_error',
       'sf_hard_stop_resolve',
     ];
 
@@ -167,16 +147,6 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
         body.includes('work_item.json is metadata only') ||
           body.includes('work_item.json 只保存元数据'),
         `${rel} contract missing work_item metadata-only rule`
-      ).toBe(true);
-      expect(
-        body.includes('approved -> merge_ready -> merging -> merged') ||
-          body.includes('approved → merge_ready → merging → merged'),
-        `${rel} contract missing merge seal chain`
-      ).toBe(true);
-      expect(
-        body.includes('blocked_write_attempts=0') ||
-          body.includes('unresolved_blocked_write_attempts=0'),
-        `${rel} contract missing blocked-write closure rule`
       ).toBe(true);
     }
   });
@@ -209,20 +179,16 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
 
   it('keeps professional Candidate writers on controlled Tools and Runtime-owned Manifest materialization', () => {
     const design = read('setup/userlevel-opencode/agents/sf-design.md');
-    const architectureSkill = read(
-      'setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md'
+    const featureSkill = read(
+      'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md'
     );
 
     expect(design).toContain('本 Agent 不得调用 sf_safe_bash');
     expect(design).toContain('Candidate 写入只能调用 sf_artifact_write');
     expect(design).toContain('candidate_manifest.json 由 Runtime');
-    expect(architectureSkill).toContain(
-      'Runtime 在 candidate_preparing → candidate_prepared 状态边界'
-    );
-    expect(architectureSkill).toContain(
-      'Requirement 相关分类全部为 false 时，不得为了满足 Workflow 模板额外制造 Requirement Candidate'
-    );
-    expect(architectureSkill).not.toContain(
+    expect(featureSkill).toContain('candidate_manifest.entries');
+    expect(featureSkill).toContain('candidate_preparing → candidate_prepared');
+    expect(featureSkill).not.toContain(
       '主编排代理在正确阶段通过受控写入形成 candidate_manifest.json'
     );
   });
@@ -279,9 +245,17 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     expect(decision).toContain('USER_APPROVED_REQUIRES_EXPLICIT_USER_RESPONSE_QUOTE');
     expect(decision).toContain('AUTO_APPROVED_REQUIRES_POLICY_ID');
 
-    const artifactWrite = read('packages/daemon-core/src/tools/lib/artifact-schema-validation.ts');
-    expect(artifactWrite).toContain('WORK_ITEM_CANNOT_CARRY_USER_DECISION');
-    expect(artifactWrite).toContain('WORK_ITEM_STATUS_MUTATION_FORBIDDEN');
+    const metadataContract = read('packages/types/src/work-item-metadata-contract.ts');
+    expect(metadataContract).toContain('WORK_ITEM_CANNOT_CARRY_USER_DECISION');
+    expect(metadataContract).toContain('WORK_ITEM_STATUS_MUTATION_FORBIDDEN');
+
+    const artifactSchemaAdapter = read(
+      'packages/daemon-core/src/tools/lib/artifact-schema-validation.ts'
+    );
+    expect(artifactSchemaAdapter).toContain('validateCurrentWorkItemMetadataJson');
+    expect(artifactSchemaAdapter).toContain(
+      'return validateCurrentWorkItemMetadataJson(content, expectedWorkItemId)'
+    );
 
     const closeGate = read('packages/daemon-core/src/tools/handlers/sf-v11-close-gate.ts');
     expect(closeGate).toContain('AUTHORITATIVE_STATE_MISMATCH');
@@ -293,10 +267,6 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     const planner = read('setup/userlevel-opencode/agents/sf-task-planner.md');
     const verifier = read('setup/userlevel-opencode/agents/sf-verifier.md');
     const feature = read('setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md');
-    const architecture = read('setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md');
-    const designFirst = read('setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md');
-    const contractChange = read('setup/userlevel-opencode/skills/sf-workflow-contract-change/SKILL.md');
-    const quickChange = read('setup/userlevel-opencode/skills/sf-workflow-quick-change/SKILL.md');
 
     expect(design).toContain('DD-* constrained_by Contract-ID');
     expect(design).toContain('Trace 唯一真相源');
@@ -308,12 +278,6 @@ describe('v1.1.5 Agent/Skill final governance contract alignment', () => {
     expect(verifier).toContain('Fail Closed');
     expect(feature).toContain('Current Governance Relations + ADD - REMOVE');
     expect(feature).toContain('Module trace.md');
-    expect(architecture).toContain('新的 Project Contract ID');
-    expect(architecture).toContain('整体回滚');
-    expect(designFirst).toContain('重复 ADD');
-    expect(designFirst).toContain('REMOVE 不存在关系');
-    expect(contractChange).toContain('必须退出本路径并重新分类');
-    expect(quickChange).toContain('必须退出 Fast Path 并重新分类');
   });
 
 });

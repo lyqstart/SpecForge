@@ -151,18 +151,16 @@ intake 阶段不是只记录用户一句话，而是为后续 requirements / des
 ## A1 检测与版本验证
 
 ```
-检测 .specforge/ 目录：
-  不存在 → 创建目录
-  存在 → 读取 manifest.json 中的 schema_version
-         < v6.0 → 停止，提示用户：
-                  "当前项目使用的是旧版 SpecForge 配置（v{version}），
-                   与 V6.0 不兼容。请先运行迁移工具或手动清理 .specforge/ 目录后重试。"
-         ≥ v6.0 → 继续
+检测 .specforge/project/spec_manifest.json：
+  不存在 → 停止并调用 sf_project_init 建立当前项目骨架
+  存在 → 继续
+  仅存在旧根级 manifest 或旧 .specforge/specs/** → 返回 UNSUPPORTED_CURRENT_RELEASE_PROJECT，
+      不兼容读取、不自动迁移、不要求用户手动改写真相源
 ```
 
 > **注意**：主机环境扫描（原 A2 步骤）已迁移到 `sf_project_init` 工具。
 > 在 OpenCode 启动时自动执行，无需在 intake 阶段处理。
-> 扫描结果存储在 `<OpenCode config>/sf-user/host-profile.json`（用户级，非项目级）。
+> 扫描结果存储在 `~/.specforge/host-profile.json`（用户级，非项目级）。
 
 ---
 

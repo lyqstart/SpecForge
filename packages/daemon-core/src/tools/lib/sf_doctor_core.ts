@@ -1,65 +1,20 @@
 /**
  * sf_doctor 核心逻辑 — 用户级安装检查
  *
- * V3.4.0 新增：checkUserLevelInstallation()
- * 检查用户级安装的健康状态，包括：
+ * 检查当前发布安装与项目布局的健康状态，包括：
  * 1. 用户级目录关键文件存在性
  * 2. 项目运行时关键文件存在性
- * 3. 混合模式检测（同时存在项目级和用户级 Agent 文件）
- * 4. 版本兼容性检查
+ * 3. 当前项目初始化完整性
  */
 
 import { existsSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
-import { LAYOUT, SPEC_DIR_NAME, legacyPaths } from "@specforge/types/directory-layout"
-import { resolveOpenCodeConfigRoot, resolveSpecForgeManifestPath, resolveSpecForgeUserPath } from "@specforge/types/user-level-paths"
+import { LAYOUT, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
+import { resolveSpecForgeUserRoot } from "@specforge/types/user-level-paths"
 import { logErrorToFile } from "./utils"
 
-// ── 内联 resolveUserLevelDirectory（原 scripts/lib/paths.ts）──
 function resolveUserLevelDirectory(): string {
-  return resolveOpenCodeConfigRoot()
-}
-
-// ── 内联 CompatibilityResult + assertCompatibility（原 scripts/lib/compatibility.ts）──
-interface CompatibilityResult {
-  compatible: boolean
-  installMode: "user_level" | "project_level"
-  sharedVersion?: string
-  requiredRange?: string
-  error?: string
-}
-
-function assertCompatibility(baseDir: string): CompatibilityResult {
-  const projectManifestPath = join(baseDir, SPEC_DIR_NAME, legacyPaths.manifest)
-  if (!existsSync(projectManifestPath)) {
-    return { compatible: true, installMode: "project_level" }
-  }
-  let projectManifest: Record<string, unknown>
-  try {
-    projectManifest = JSON.parse(readFileSync(projectManifestPath, "utf-8"))
-  } catch {
-    return { compatible: false, installMode: "user_level", error: "项目 specforge/manifest.json 存在但 JSON 解析失败" }
-  }
-  const installMode = (projectManifest.install_mode as string) || "project_level"
-  if (installMode === "project_level") {
-    return { compatible: true, installMode: "project_level" }
-  }
-  const userManifestPath = resolveSpecForgeManifestPath()
-  if (!existsSync(userManifestPath)) {
-    return { compatible: false, installMode: "user_level", error: "共享组件未安装：用户级 specforge-manifest.json 不存在" }
-  }
-  let userManifest: Record<string, unknown>
-  try {
-    userManifest = JSON.parse(readFileSync(userManifestPath, "utf-8"))
-  } catch {
-    return { compatible: false, installMode: "user_level", error: "用户级 specforge-manifest.json 解析失败" }
-  }
-  const sharedVersion = userManifest.shared_version as string | undefined
-  const requiredRange = projectManifest.required_shared_version_range as string | undefined
-  if (!sharedVersion) {
-    return { compatible: false, installMode: "user_level", error: "用户级 manifest 缺少 shared_version 字段" }
-  }
-  return { compatible: true, installMode: "user_level", sharedVersion, requiredRange }
+  return resolveSpecForgeUserRoot()
 }
 
 // ============================================================
@@ -83,15 +38,18 @@ export interface UserLevelDoctorReport {
 
 /** User-level directory key files to verify */
 const USER_LEVEL_KEY_FILES = [
-  "opencode.json",
+  process.platform === "win32" ? "bin/specforge.exe" : "bin/specforge",
+  process.platform === "win32" ? "bin/specforged.exe" : "bin/specforged",
+  "specforge-manifest.json",
   "agents/sf-orchestrator.md",
-  "tools/sf_state_read.ts",
+  "integrations/opencode/sf_specforge.ts",
 ]
 
 /** Project runtime key files to verify */
 const PROJECT_RUNTIME_KEY_FILES = [
+  join(SPEC_DIR_NAME, "project", "spec_manifest.json"),
   join(SPEC_DIR_NAME, LAYOUT.runtimeFiles.state),
-  join(SPEC_DIR_NAME, legacyPaths.configFiles.project),
+  join(".opencode", "plugins", "sf_specforge.ts"),
 ]
 
 // ============================================================
@@ -104,14 +62,17 @@ const PROJECT_RUNTIME_KEY_FILES = [
  * @param baseDir - 项目根目录
  * @returns 检查报告
  */
-export async function checkUserLevelInstallation(baseDir: string): Promise<UserLevelDoctorReport> {
+export async function checkUserLevelInstallation(
+  baseDir: string,
+  userRoot?: string,
+): Promise<UserLevelDoctorReport> {
   try {
     const checks: DoctorCheckItem[] = []
 
     // --- 1. 用户级目录关键文件检查 ---
     let userLevelDir: string
     try {
-      userLevelDir = resolveUserLevelDirectory()
+      userLevelDir = userRoot ?? resolveUserLevelDirectory()
     } catch {
       checks.push({
         name: "用户级目录解析",
@@ -156,59 +117,8 @@ export async function checkUserLevelInstallation(baseDir: string): Promise<UserL
       }
     }
 
-    // --- 3. 混合模式检测 ---
-    const projectLevelAgent = join(baseDir, ".opencode", "agents", "sf-orchestrator.md")
-    const userLevelAgent = join(userLevelDir, "agents", "sf-orchestrator.md")
-
-    if (existsSync(projectLevelAgent) && existsSync(userLevelAgent)) {
-      checks.push({
-        name: "混合模式检测",
-        status: "warning",
-        detail:
-          "同时存在项目级和用户级 sf-orchestrator.md，可能导致配置冲突。" +
-          "建议删除项目级 .opencode/agents/sf-orchestrator.md 或使用 --project-level 模式。",
-      })
-    } else {
-      checks.push({
-        name: "混合模式检测",
-        status: "ok",
-        detail: "未检测到混合模式冲突",
-      })
-    }
-
-    // --- 4. 版本兼容性检查 ---
-    let compatResult: CompatibilityResult
-    try {
-      compatResult = assertCompatibility(baseDir)
-    } catch {
-      checks.push({
-        name: "版本兼容性",
-        status: "error",
-        detail: "兼容性检查执行失败",
-      })
-      return { checks, overall: deriveOverall(checks) }
-    }
-
-    if (compatResult.compatible) {
-      const detail =
-        compatResult.installMode === "user_level"
-          ? `兼容（共享版本 ${compatResult.sharedVersion}，要求 ${compatResult.requiredRange}）`
-          : `兼容（${compatResult.installMode} 模式，跳过用户级检查）`
-      checks.push({
-        name: "版本兼容性",
-        status: "ok",
-        detail,
-      })
-    } else {
-      checks.push({
-        name: "版本兼容性",
-        status: "error",
-        detail: compatResult.error || "版本不兼容",
-      })
-    }
-
-    // --- 5. 初始化完整性检查 ---
-    const initChecks = checkInitializationCompleteness(baseDir)
+    // --- 3. 初始化完整性检查 ---
+    const initChecks = checkInitializationCompleteness(baseDir, userLevelDir)
     checks.push(...initChecks)
 
     return { checks, overall: deriveOverall(checks) }
@@ -222,27 +132,28 @@ export async function checkUserLevelInstallation(baseDir: string): Promise<UserL
  * 检查项目初始化完整性
  *
  * 检查：
- * 1. manifest.json — 项目注册标识
- * 2. host-profile.json — 主机环境配置（<OpenCode config>/sf-user/host-profile.json）
+ * 1. project/spec_manifest.json — 当前 Project Spec 权威
+ * 2. host-profile.json — 主机环境配置（~/.specforge/host-profile.json）
  * 3. prod-environment.md — 生产环境配置
  * 4. project-rules.md — 项目规则
  */
 function checkInitializationCompleteness(
-  baseDir: string
+  baseDir: string,
+  userLevelDir: string,
 ): Array<{ name: string; status: "ok" | "warning" | "error"; detail: string }> {
   const specDir = join(baseDir, SPEC_DIR_NAME)
   const checks: Array<{ name: string; status: "ok" | "warning" | "error"; detail: string }> = []
 
-  // manifest.json
-  const manifestPath = join(specDir, legacyPaths.manifest)
+  // Current Project Spec manifest.
+  const manifestPath = join(specDir, "project", "spec_manifest.json")
   if (existsSync(manifestPath)) {
-    checks.push({ name: "初始化: manifest.json", status: "ok", detail: "项目注册标识存在" })
+    checks.push({ name: "初始化: spec_manifest.json", status: "ok", detail: "当前 Project Spec 权威存在" })
   } else {
-    checks.push({ name: "初始化: manifest.json", status: "error", detail: "项目未初始化（manifest.json 不存在）" })
+    checks.push({ name: "初始化: spec_manifest.json", status: "error", detail: "项目未初始化（project/spec_manifest.json 不存在）" })
   }
 
-  // host-profile.json（用户级：<OpenCode config>/sf-user/host-profile.json）
-  const hostProfilePath = resolveSpecForgeUserPath('host-profile.json')
+  // host-profile.json（用户级：~/.specforge/host-profile.json）
+  const hostProfilePath = join(userLevelDir, 'host-profile.json')
   if (existsSync(hostProfilePath)) {
     // 检查新鲜度（30 天）。优先使用档案自身的 scanned_at，
     // 与 @specforge/host-profile 的缓存判定保持一致；旧档案缺少该字段时回退到文件时间。
@@ -264,7 +175,7 @@ function checkInitializationCompleteness(
   }
 
   // prod-environment.md
-  const prodEnvPath = join(specDir, legacyPaths.configFiles.prodEnv)
+  const prodEnvPath = join(specDir, LAYOUT.configFiles.prodEnv)
   if (existsSync(prodEnvPath)) {
     checks.push({ name: "初始化: prod-environment.md", status: "ok", detail: "生产环境配置存在" })
   } else {
@@ -272,7 +183,7 @@ function checkInitializationCompleteness(
   }
 
   // project-rules.md
-  const rulesPath = join(specDir, legacyPaths.configFiles.projectRules)
+  const rulesPath = join(specDir, LAYOUT.configFiles.projectRules)
   if (existsSync(rulesPath)) {
     checks.push({ name: "初始化: project-rules.md", status: "ok", detail: "项目规则存在" })
   } else {

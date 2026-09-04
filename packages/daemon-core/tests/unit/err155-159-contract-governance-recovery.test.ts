@@ -39,7 +39,7 @@ const liveRegistry = {
         owner_module: 'workflow',
         value_type: 'string',
         values: ['created', 'gates_failed'],
-        source_refs: ['ARCH-001'],
+        source_refs: ['ARCH-WF-001'],
         enforcement: 'gate',
       },
       {
@@ -47,7 +47,7 @@ const liveRegistry = {
         owner_module: 'workflow',
         value_type: 'string',
         values: ['a'],
-        source_refs: ['ARCH-001'],
+        source_refs: ['ARCH-WF-001'],
         enforcement: 'gate',
       },
     ],
@@ -81,7 +81,7 @@ describe('ERR-155 controlled Project Contract update', () => {
       },
     });
 
-    expect(result.success).toBe(true);
+    expect(result.success, result.error).toBe(true);
     expect(result.action).toBe('update');
     expect(await fs.readFile(livePath, 'utf-8')).toBe(before);
     const candidate = result.registry_after as typeof liveRegistry;
@@ -208,7 +208,7 @@ describe('ERR-157 and ERR-158 installed-source contracts', () => {
         'utf-8',
       ),
     ]);
-    expect(handler).toContain("'add', 'update', 'reset'");
-    expect(userTool).toContain('["add", "update", "reset"]');
+    expect(handler).toContain("['add', 'update', 'promote', 'repair_relocate_to_module', 'reset']");
+    expect(userTool).toContain('["add", "update", "promote", "repair_relocate_to_module", "reset"]');
   });
 });

@@ -16,7 +16,6 @@ export {
   SPEC_USER_DIR_NAME,
   LAYOUT,
   legacyPaths,
-  legacyUserLayoutReadOnly,
   type LayoutKey,
   // 路径构造函数
   resolveProjectPath,
@@ -58,7 +57,6 @@ export {
   workItemCandidateDesign,
   workItemCandidateTasks,
   workItemCandidateTraceDelta,
-  legacyWorkItemSpecArtifact,
   workItemSpecArtifactReadCandidates,
   type WorkItemSpecArtifactKind,
   workItemGatesRoot,
@@ -72,7 +70,6 @@ export {
   validatePathPolicy,
   isProjectSpecPath,
   isWorkItemPath,
-  isLegacySpecPath,
 } from "./directory-layout.js";
 
 // ---- Actor Roles — 统一角色枚举 ----
@@ -149,6 +146,14 @@ export {
 } from "./project-spec-module.js";
 
 // ---- Work Item 核心类型（§4-§13）----
+export {
+  WORK_ITEM_METADATA_SCHEMA_VERSION,
+  FORBIDDEN_WORK_ITEM_DECISION_FIELDS,
+  findForbiddenWorkItemDecisionFields,
+  validateCurrentWorkItemMetadataJson,
+  type WorkItemMetadataValidationResult,
+} from "./work-item-metadata-contract.js";
+
 export {
   // §5 状态机
   WI_STATUSES,

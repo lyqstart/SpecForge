@@ -119,9 +119,8 @@ describe('Fresh-04 Close Gate regressions', () => {
     await writeFile(
       path.join(workItemDir, 'work_item.json'),
       JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-TEST',
-        status: 'verification_done',
         workflow_type: null,
         workflow_path: null,
         allowed_write_files: [],
@@ -176,8 +175,9 @@ describe('Fresh-04 Close Gate regressions', () => {
       'utf-8',
     );
 
-    expect(source).toContain("await updateWorkItemStatus(wiDir, 'intake_ready', {");
+    expect(source).not.toContain('updateWorkItemStatus');
+    expect(source).toContain('workflowPath,');
+    expect(source).toContain('workflowType,');
     expect(source).toContain('workflow_path: workflowPath');
-    expect(source).toContain('workflow_type: workflowType');
   });
 });

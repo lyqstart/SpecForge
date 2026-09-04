@@ -16,7 +16,14 @@
 // Types
 // ---------------------------------------------------------------------------
 
-import { ModuleContractFileSchema, resolveSpecModuleIdentity } from '@specforge/types';
+import {
+  FORBIDDEN_WORK_ITEM_DECISION_FIELDS as SHARED_FORBIDDEN_WORK_ITEM_DECISION_FIELDS,
+  ModuleContractFileSchema,
+  WORK_ITEM_METADATA_SCHEMA_VERSION as SHARED_WORK_ITEM_METADATA_SCHEMA_VERSION,
+  findForbiddenWorkItemDecisionFields as findSharedForbiddenWorkItemDecisionFields,
+  resolveSpecModuleIdentity,
+  validateCurrentWorkItemMetadataJson,
+} from '@specforge/types';
 import {
   normalizeImpactScope,
   validateImpactScopeFieldKinds,
@@ -94,53 +101,21 @@ const CLASSIFICATION_BOOLEAN_FIELDS = [
  * work_item.json is WI metadata only.
  * It must never carry approval/user-decision fields.
  */
-export const FORBIDDEN_WORK_ITEM_DECISION_FIELDS = [
-  'decision_status',
-  'decision_type',
-  'user_response_quote',
-  'auto_approval_policy_id',
-  'approved',
-  'approval',
-  'approval_status',
-  'user_decision',
-  'user_decision_id',
-  'decision_id',
-  'decided_by',
-  'decision_scope',
-  'waivers',
-] as const;
+export const FORBIDDEN_WORK_ITEM_DECISION_FIELDS = SHARED_FORBIDDEN_WORK_ITEM_DECISION_FIELDS;
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 export function findForbiddenWorkItemDecisionFields(value: unknown, prefix = ''): string[] {
-  if (Array.isArray(value)) {
-    return value.flatMap((item, index) =>
-      findForbiddenWorkItemDecisionFields(item, `${prefix}[${index}]`)
-    );
-  }
-
-  if (!isPlainObject(value)) return [];
-
-  const forbidden = new Set<string>(FORBIDDEN_WORK_ITEM_DECISION_FIELDS as readonly string[]);
-  const hits: string[] = [];
-
-  for (const [key, child] of Object.entries(value)) {
-    const path = prefix ? `${prefix}.${key}` : key;
-    if (forbidden.has(key)) {
-      hits.push(path);
-      continue;
-    }
-    hits.push(...findForbiddenWorkItemDecisionFields(child, path));
-  }
-
-  return hits;
+  return findSharedForbiddenWorkItemDecisionFields(value, prefix);
 }
 
 // ---------------------------------------------------------------------------
 // Validators
 // ---------------------------------------------------------------------------
+
+export const WORK_ITEM_METADATA_SCHEMA_VERSION = SHARED_WORK_ITEM_METADATA_SCHEMA_VERSION;
 
 /**
  * Validate work_item.json content.
@@ -150,51 +125,7 @@ export function validateWorkItemJson(
   content: string,
   expectedWorkItemId: string
 ): SchemaValidationResult {
-  const errors: string[] = [];
-
-  let parsed: any;
-  try {
-    parsed = JSON.parse(content);
-  } catch (e) {
-    return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
-  }
-
-  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-    errors.push('INVALID_STRUCTURE: must be a JSON object');
-  } else {
-    if (!parsed.work_item_id) {
-      errors.push('MISSING_FIELD: work_item_id is required');
-    } else if (parsed.work_item_id !== expectedWorkItemId) {
-      errors.push(
-        `WORK_ITEM_ID_MISMATCH: expected "${expectedWorkItemId}", got "${parsed.work_item_id}"`
-      );
-    }
-
-    if (!parsed.schema_version) {
-      errors.push('MISSING_FIELD: schema_version is required');
-    }
-
-    if (Object.prototype.hasOwnProperty.call(parsed, 'status')) {
-      errors.push(
-        'WORK_ITEM_STATUS_FORBIDDEN: work_item.json is metadata only; authoritative state belongs to StateManager/events.jsonl'
-      );
-    }
-
-    if (parsed.work_item_status_mutation_forbidden) {
-      errors.push(
-        `WORK_ITEM_STATUS_MUTATION_FORBIDDEN: work_item.json status must not be used as a state synchronization channel: ${parsed.work_item_status_mutation_forbidden}`
-      );
-    }
-
-    const forbiddenDecisionFields = findForbiddenWorkItemDecisionFields(parsed);
-    if (forbiddenDecisionFields.length > 0) {
-      errors.push(
-        `WORK_ITEM_CANNOT_CARRY_USER_DECISION: forbidden fields in work_item.json: ${forbiddenDecisionFields.join(', ')}`
-      );
-    }
-  }
-
-  return { valid: errors.length === 0, errors };
+  return validateCurrentWorkItemMetadataJson(content, expectedWorkItemId);
 }
 
 /**
@@ -519,8 +450,10 @@ export function validateModuleDefinitionCandidateJson(
   const errors: string[] = [];
   const expected = String(expectedModuleCode ?? '').trim().toUpperCase();
   const identity = resolveSpecModuleIdentity(parsed);
-  const declaredModuleCode =
-    typeof parsed.module_code === 'string' ? parsed.module_code.trim().toUpperCase() : '';
+  const declaredModuleCode = typeof parsed.module_code === 'string' ? parsed.module_code : '';
+  if (parsed.schema_version !== '1.0') {
+    errors.push('MODULE_DEFINITION_SCHEMA_VERSION_REQUIRED: schema_version must be exactly 1.0');
+  }
   if (!identity.valid || !identity.moduleCode) {
     errors.push(
       `MODULE_DEFINITION_IDENTITY_INVALID: ${identity.errors.join('; ') || 'module_code is required'}`
@@ -533,6 +466,11 @@ export function validateModuleDefinitionCandidateJson(
   if (!declaredModuleCode || declaredModuleCode !== expected) {
     errors.push(
       `MODULE_DEFINITION_CANONICAL_MODULE_CODE_REQUIRED: module_code must be exactly ${expected}`
+    );
+  }
+  if (identity.legacy) {
+    errors.push(
+      'MODULE_DEFINITION_LEGACY_IDENTITY_FORBIDDEN: only exact canonical module_code is allowed'
     );
   }
   if (!Array.isArray(parsed.code_paths)) {

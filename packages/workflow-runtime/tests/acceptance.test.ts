@@ -166,15 +166,15 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             requirements: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate1', name: 'Gate 1' } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate1', name: 'Gate 1', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
               skills: [],
-              next: 'design',
+              next: { pass: 'design', fail: 'requirements' },
             },
             design: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate2', name: 'Gate 2' } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate2', name: 'Gate 2', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
               skills: [],
-              next: 'tasks',
+              next: { pass: 'tasks', fail: 'design' },
             },
             tasks: {
               agent: 'agent',
@@ -249,9 +249,9 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             start: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate', name: 'Gate' } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate', name: 'Gate', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
               skills: [],
-              next: 'end',
+              next: { pass: 'end', fail: 'start' },
             },
             end: {
               agent: 'agent',
@@ -487,9 +487,9 @@ describe('Acceptance Tests - Task 5.1', () => {
           states: {
             state1: {
               agent: 'agent',
-              gate: { type: 'simple', id: 'gate1', name: 'Gate 1' } as SimpleGateDefinition,
+              gate: { type: 'simple', id: 'gate1', name: 'Gate 1', checkFn: async () => ({ passed: true }) } as SimpleGateDefinition,
               skills: [],
-              next: 'state2',
+              next: { pass: 'state2', fail: 'state1' },
             },
             state2: {
               agent: 'agent',

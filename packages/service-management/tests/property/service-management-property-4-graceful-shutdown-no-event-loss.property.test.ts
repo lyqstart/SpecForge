@@ -36,12 +36,9 @@ import {
   createGracefulShutdownHandler,
 } from '../../src/shutdown/graceful-shutdown-handler.js';
 
-// Helper: advance fake timers and flush microtasks
-async function advanceTimers(): Promise<void> {
-  // Use vi.runAllTimers() to advance all pending fake timers synchronously,
-  // then yield to allow microtasks (Promise callbacks) to run.
-  vi.runAllTimers();
-  // Yield to microtask queue
+// Helper: flush promise microtasks without advancing production watchdog timers.
+async function flushShutdownMicrotasks(): Promise<void> {
+  await Promise.resolve();
   await Promise.resolve();
   await Promise.resolve();
 }
@@ -259,7 +256,7 @@ describe(
 
               // Advance fake timers to allow shutdown tasks to complete
               // (tasks are synchronous in our fake, but we need to flush microtasks)
-              await advanceTimers();
+              await flushShutdownMicrotasks();
 
               // Wait for shutdown to complete
               await shutdownPromise;
@@ -304,7 +301,7 @@ describe(
 
               // No events injected
               const shutdownPromise = handler.trigger('SIGTERM');
-              await advanceTimers();
+              await flushShutdownMicrotasks();
               await shutdownPromise;
 
               // Store should be empty
@@ -352,7 +349,7 @@ describe(
               }
 
               const shutdownPromise = handler.trigger('SIGTERM');
-              await advanceTimers();
+              await flushShutdownMicrotasks();
               await shutdownPromise;
 
               const persistedEvents = store.readPersistedEvents();
@@ -412,7 +409,7 @@ describe(
               const p1 = handler.trigger('SIGTERM');
               const p2 = handler.trigger('SIGTERM'); // should be no-op
 
-              await advanceTimers();
+              await flushShutdownMicrotasks();
               await Promise.all([p1, p2]);
 
               const persistedEvents = store.readPersistedEvents();
@@ -475,7 +472,7 @@ describe(
 
               // Trigger shutdown
               const shutdownPromise = handler.trigger('SIGTERM');
-              await advanceTimers();
+              await flushShutdownMicrotasks();
               await shutdownPromise;
 
               // After shutdown: events are persisted, pending buffer is empty
@@ -525,7 +522,7 @@ describe(
 
               // Trigger shutdown
               const shutdownPromise = handler.trigger('SIGTERM');
-              await advanceTimers();
+              await flushShutdownMicrotasks();
               await shutdownPromise;
 
               const persistedIds = new Set(

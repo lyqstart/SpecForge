@@ -1,5 +1,7 @@
 # Implementation Plan: SpecForge v1.1 Compliance Remediation
 
+> **Current status:** `HISTORICAL_EVIDENCE_ONLY`. This checklist records the completed V1.1 remediation lineage and is not a current implementation queue. Tasks that read or migrate `.specforge/specs/**` are `LEGACY_ONLY`; current work must be derived from V6 authority and the architecture-consistency governance plan.
+
 ## Overview
 
 This implementation plan migrates SpecForge from an "Agent workflow framework" to an "unavoidable spec-driven Runtime" compliant with SpecForge v1.1 + Patch 1 standards. The migration is organized into 5 implementation rounds, each building upon the previous round's foundation:

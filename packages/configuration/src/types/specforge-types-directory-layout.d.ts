@@ -3,7 +3,6 @@ declare module '@specforge/types/directory-layout' {
   export const SPEC_USER_DIR_NAME: string;
   export const LAYOUT: any;
   export const legacyPaths: any;
-  export const legacyUserLayoutReadOnly: any;
   export type LayoutKey = string;
 
   export function resolveProjectPath(projectRoot: string, key: any, ...subpath: string[]): string;
@@ -42,5 +41,4 @@ declare module '@specforge/types/directory-layout' {
   export function validatePathPolicy(inputPath: string): { valid: boolean; violations: string[] };
   export function isProjectSpecPath(inputPath: string): boolean;
   export function isWorkItemPath(inputPath: string): boolean;
-  export function isLegacySpecPath(inputPath: string): boolean;
 }

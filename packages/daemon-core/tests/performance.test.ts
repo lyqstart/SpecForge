@@ -10,11 +10,15 @@
  * Requirements: 5.7 threshold 5
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { Daemon } from '../src/daemon/Daemon';
 import { EventBus } from '../src/event-bus/EventBus';
 import { SessionRegistry } from '../src/session/SessionRegistry';
 import { StateManager } from '../src/state/StateManager';
+import { CurrentTestDaemonConfig } from './helpers/current-daemon-test-config';
 
 // Performance thresholds from Requirements 5.7 threshold 5
 const STARTUP_TIME_THRESHOLD_MS = 3000; // 3 seconds
@@ -22,11 +26,29 @@ const EVENT_WRITE_LATENCY_THRESHOLD_MS = 5; // 5 ms per event
 const CONCURRENT_SESSIONS_TARGET = 100; // Support 100+ simultaneous sessions
 const MEMORY_USAGE_THRESHOLD_MB = 200; // Memory should stay under 200MB
 
+let testRoot: string;
+let testConfig: CurrentTestDaemonConfig;
+let daemonSequence = 0;
+
+function createTestDaemon(): Daemon {
+  daemonSequence += 1;
+  return new Daemon(new CurrentTestDaemonConfig(join(testRoot, `daemon-${daemonSequence}`)));
+}
+
+beforeAll(() => {
+  testRoot = mkdtempSync(join(tmpdir(), 'specforge-performance-'));
+  testConfig = new CurrentTestDaemonConfig(testRoot);
+});
+
+afterAll(() => {
+  rmSync(testRoot, { recursive: true, force: true });
+});
+
 describe('Daemon Performance Tests', () => {
   let daemon: Daemon;
 
   beforeEach(() => {
-    daemon = new Daemon();
+    daemon = createTestDaemon();
   });
 
   afterEach(async () => {
@@ -57,7 +79,7 @@ describe('Daemon Performance Tests', () => {
       
       for (let i = 0; i < 5; i++) {
         // Create fresh daemon instance for each test
-        const freshDaemon = new Daemon();
+        const freshDaemon = createTestDaemon();
         
         const startTime = Date.now();
         await freshDaemon.start();
@@ -198,13 +220,13 @@ describe('Concurrent Session Support Tests', () => {
 
     // Create multiple sessions
     for (let i = 0; i < numSessions; i++) {
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-executor',
         'task-executor',
         `work-item-${i}`,
         `spawn-intent-${i}`
       );
-      sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
+      await sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
       sessions.push(identity.sessionId);
     }
 
@@ -221,14 +243,14 @@ describe('Concurrent Session Support Tests', () => {
     const createStartTime = Date.now();
 
     for (let i = 0; i < numIterations; i++) {
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-executor',
         'task-executor',
         `work-item-${i}`,
         `spawn-intent-${i}`
       );
-      sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
-      sessionRegistry.terminate(identity.sessionId);
+      await sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
+      await sessionRegistry.terminate(identity.sessionId);
     }
 
     const createEndTime = Date.now();
@@ -246,13 +268,13 @@ describe('Concurrent Session Support Tests', () => {
     
     // Create sessions
     for (let i = 0; i < numSessions; i++) {
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-executor',
         'task-executor',
         `work-item-${i}`,
         `spawn-intent-${i}`
       );
-      sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
+      await sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
     }
 
     // Measure lookup performance
@@ -280,7 +302,7 @@ describe('Memory Usage Tests', () => {
   let daemon: Daemon;
 
   beforeEach(() => {
-    daemon = new Daemon();
+    daemon = createTestDaemon();
   });
 
   afterEach(async () => {
@@ -311,13 +333,13 @@ describe('Memory Usage Tests', () => {
 
     // Create many sessions
     for (let i = 0; i < 100; i++) {
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-executor',
         'task-executor',
         `work-item-${i}`,
         `spawn-intent-${i}`
       );
-      sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
+      await sessionRegistry.activate(identity.sessionId, `spawn-intent-${i}`);
     }
 
     // Publish many events
@@ -362,7 +384,7 @@ describe('Memory Usage Tests', () => {
     const memorySnapshots: number[] = [];
 
     for (let i = 0; i < 5; i++) {
-      const testDaemon = new Daemon();
+      const testDaemon = createTestDaemon();
       await testDaemon.start();
       
       // Force GC
@@ -396,7 +418,10 @@ describe('Memory Usage Tests', () => {
 
 describe('State Manager Performance Tests', () => {
   it('should rebuild state efficiently from many events', async () => {
-    const stateManager = new StateManager(`perf-test-${Date.now()}`);
+    const stateManager = new StateManager(
+      testConfig.getPathResolver(),
+      join(testRoot, `perf-test-${Date.now()}`),
+    );
     await stateManager.initialize();
 
     // Create many events
@@ -430,7 +455,7 @@ describe('End-to-End Performance Tests', () => {
   let daemon: Daemon;
 
   beforeEach(() => {
-    daemon = new Daemon();
+    daemon = createTestDaemon();
   });
 
   afterEach(async () => {
@@ -450,13 +475,13 @@ describe('End-to-End Performance Tests', () => {
     // Simulate realistic workload:
     // 1. Create 50 sessions
     for (let i = 0; i < 50; i++) {
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-orchestrator',
         'requirements-phase-executor',
         `work-item-${i}`,
         `spawn-${i}`
       );
-      sessionRegistry.activate(identity.sessionId, `spawn-${i}`);
+      await sessionRegistry.activate(identity.sessionId, `spawn-${i}`);
     }
 
     // 2. Each session does 10 operations

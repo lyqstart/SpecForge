@@ -3,26 +3,7 @@ import * as path from 'node:path';
 export const SPEC_DIR_NAME = '.specforge' as const;
 export const SPEC_USER_DIR_NAME = '.specforge' as const;
 
-export const legacyPaths = {
-  specsReadOnly: 'specs',
-  manifest: 'manifest.json',
-  config: 'config',
-  configFiles: {
-    projectRules: 'config/project-rules.md',
-    prodEnv: 'config/prod-environment.md',
-    project: 'config/project.json',
-    riskPolicy: 'config/risk_policy.json',
-    skillFragments: 'config/skill_fragments.json',
-  },
-  knowledge: 'knowledge',
-  knowledgeGraph: 'knowledge/graph.json',
-} as const;
-
 export const LAYOUT = {
-  // CLI legacy compatibility: older CLI doctor/startup paths still read .specforge/manifest.json.
-  // New project spec truth source remains project/spec_manifest.json.
-  manifest: legacyPaths.manifest,
-
   project: 'project',
   projectFiles: {
     specManifest: 'project/spec_manifest.json',
@@ -70,19 +51,6 @@ export const LAYOUT = {
 } as const;
 
 export type LayoutKey = keyof typeof LAYOUT;
-
-export const legacyUserLayoutReadOnly = {
-  runtime: 'runtime',
-  runtimeHandshake: 'runtime/handshake.json',
-  runtimeState: 'runtime/state.json',
-  runtimeEvents: 'runtime/events.jsonl',
-  runtimeDaemonLock: 'runtime/daemon.lock',
-  hostProfile: 'host-profile.json',
-  logs: 'logs',
-  projects: 'projects',
-  templates: 'templates',
-  backups: 'backups',
-} as const;
 
 export function resolveProjectPath(projectRoot: string, key: LayoutKey, ...subpath: string[]): string {
   const value = LAYOUT[key];
@@ -221,8 +189,4 @@ export function isProjectSpecPath(inputPath: string): boolean {
 
 export function isWorkItemPath(inputPath: string): boolean {
   return inputPath.replace(/\\/g, '/').startsWith('.specforge/work-items/');
-}
-
-export function isLegacySpecPath(inputPath: string): boolean {
-  return inputPath.replace(/\\/g, '/').startsWith('.specforge/specs/');
 }

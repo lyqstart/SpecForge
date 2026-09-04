@@ -29,6 +29,7 @@ describe('Project Spec governed module admission', () => {
     await writeJson(
       join(workItemDir, 'candidates', 'project', 'modules', 'TODOS', 'module.candidate.json'),
       {
+        schema_version: '1.0',
         module_code: 'TODOS',
         status: 'active',
         code_paths: ['packages/todos/src/**'],

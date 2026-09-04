@@ -34,9 +34,9 @@
 
 ### Property 15: Scope Boundary Property
 
-*For all* REQ-25 中标记为 P1 / P2 的能力 c，c 不得在 V6.0 发版分支中默认启用（可存在死代码或 feature flag，但默认关闭）。
+*For all* REQ-25 中标记为 P1 / P2 的能力 c，c 不得出现在 V6.0 正式 exports、clean build、动态 registry、安装资产、release manifest 或运行入口中；默认关闭、死代码或 feature flag 不能满足该属性。
 
-**本 spec 的承接面**：`specforge init` 生成的默认配置必须使所有 P1 / P2 feature flag 的初始值为 `false`/未启用；安装后首次启动健康检查必须能 enumerate 所有 P1/P2 标志的当前值并断言其为关闭状态。
+**本 spec 的承接面**：发布与安装清单必须证明 P1/P2 代码、配置 key、registry 项和资产均不存在；`specforge init` 不得生成用于启用它们的配置入口。
 
 **Validates: Requirements 4.6, 6.4**
 
@@ -167,7 +167,7 @@
 本 spec 必须实现以下 PBT，文件路径放在 `packages/cli/tests/property/`（因为 `specforge init` 由 `@specforge/cli` 实现，分发逻辑物理上落在 cli 包内）：
 
 1. **Property 14 子条件 PBT**：`distribution-property-14-baseline-equality.property.test.ts`，对随机生成的 `SCHEMA_VERSION_BASELINE` 和初始 `~/.specforge/.installation.json` 内容，验证 `installation.json#schema_version === SCHEMA_VERSION_BASELINE`。`Derived-From: v6-architecture-overview Property 14`，迭代 ≥ 100。
-2. **Property 15 PBT**：`distribution-property-15-scope-default-off.property.test.ts`，对随机生成的 P1/P2 feature flag 名称集合，验证 `specforge init` 写入的默认 `config.yaml` 中所有 P1/P2 标志均为 `false` 或未列出。`Derived-From: v6-architecture-overview Property 15`，迭代 ≥ 100。
+2. **Property 15 PBT**：对随机选择的 excluded capability 和 artifact surface，验证其一旦出现在 exports、clean build、registry、installer 或 manifest 中就阻断发布，并验证 `config.yaml` 不含可启用该能力的 key。`Derived-From: v6-architecture-overview Property 15`，迭代 ≥ 100。旧 `distribution-property-15-scope-default-off.property.test.ts` 是待 Step 6 调整的漂移消费者，不能作为当前合同证据。
 3. **Init 幂等性 PBT**：`distribution-init-idempotent.property.test.ts`，对随机的预存在 `~/.specforge/` 状态（部分子目录已存在 / `.installation.json` 已存在 / 用户已写入自定义文件），验证 `specforge init` 不修改任何用户文件、`existingDirs` 字段准确反映现状。这是 R3 AC-3、AC-4 与 R7 AC-2 的合成属性。
 
 ### Unit Tests

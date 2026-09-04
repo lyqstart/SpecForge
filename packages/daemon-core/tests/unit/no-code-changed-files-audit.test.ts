@@ -22,7 +22,6 @@ async function createNoCodeWorkItem(projectRoot: string, workItemId = 'WI-0001')
       {
         schema_version: '1.1',
         work_item_id: workItemId,
-        status: 'implementation_running',
         workflow_type: 'investigation',
         workflow_path: 'requirement_change_path',
         code_change_allowed: false,
@@ -37,6 +36,17 @@ async function createNoCodeWorkItem(projectRoot: string, workItemId = 'WI-0001')
     JSON.stringify({ work_item_id: workItemId, workflow_type: 'investigation', workflow_path: 'requirement_change_path' }) + '\n',
   );
   return wiDir;
+}
+
+function currentStateDeps(): any {
+  return {
+    projectManager: {
+      getProjectStateManager: async () => ({
+        rebuildFromEventsFile: async () => ({ replayed: false }),
+        getState: async () => ({ current_state: 'implementation_running' }),
+      }),
+    },
+  };
 }
 
 describe('sf_changed_files_audit no_code_change mode', () => {
@@ -57,7 +67,7 @@ describe('sf_changed_files_audit no_code_change mode', () => {
     const result = await handler(
       { work_item_id: 'WI-0001', mode: 'no_code_change', command: 'investigation review with no business writes' },
       { directory: tmpDir },
-      {} as any,
+      currentStateDeps(),
     );
 
     expect((result as any).success).toBe(true);
@@ -96,7 +106,7 @@ describe('sf_changed_files_audit no_code_change mode', () => {
     const result = await handler(
       { work_item_id: 'WI-0001', mode: 'no_code_change' },
       { directory: tmpDir },
-      {} as any,
+      currentStateDeps(),
     );
 
     expect((result as any).success).toBe(true);
@@ -116,7 +126,7 @@ describe('sf_changed_files_audit no_code_change mode', () => {
     const result = await handler(
       { work_item_id: 'WI-0001', mode: 'no_code_change' },
       { directory: tmpDir },
-      {} as any,
+      currentStateDeps(),
     );
 
     expect((result as any).success).toBe(true);

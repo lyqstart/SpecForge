@@ -1,4 +1,4 @@
-import { access, mkdir, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { access, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { registerHandler } from "../ToolDispatcher";
 import { SPEC_DIR_NAME } from "@specforge/types/directory-layout";
@@ -19,42 +19,15 @@ import {
 import { isSealTransition, getSealTransition } from "@specforge/types/seal-transitions";
 import {
   validateWorkItemId,
-  parseWorkItemSequence,
-  formatWorkItemId,
 } from "../lib/work-item-id-validator";
 import { guardHardStop } from "../lib/hard-stop-latch";
 import { readAuthoritativeState, transitionWithEvidence } from "../lib/state-coordinator-v11";
 import { parseChangedFilesAuditPass } from "../lib/write-guard-runtime-v12";
 import { materializeCandidateManifestEntries } from "../lib/governance-invariants-v11";
-import { resolveCanonicalCandidateWorkflowPath } from "../lib/artifact-schema-validation";
 import {
-  initializeClosureFiles,
-  readAuthoritativeProjectSpecVersion,
-} from "../lib/work-item-lifecycle-v11";
-
-/**
- * Allocate next WI-NNNN from existing .specforge/work-items directories.
- *
- * This is intentionally daemon-side so the Agent does not invent WI IDs.
- */
-async function allocateNextWorkItemId(projectRoot: string): Promise<string> {
-  const wiRoot = join(projectRoot, SPEC_DIR_NAME, "work-items");
-  await mkdir(wiRoot, { recursive: true });
-
-  let max = 0;
-  try {
-    const entries = await readdir(wiRoot, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      const seq = parseWorkItemSequence(entry.name);
-      if (seq !== null && seq > max) max = seq;
-    }
-  } catch {
-    max = 0;
-  }
-
-  return formatWorkItemId(max + 1);
-}
+  resolveCanonicalCandidateWorkflowPath,
+} from "../lib/artifact-schema-validation";
+import { readWorkItemMetadata, type WorkItemMetadata } from "../lib/work-item-metadata.js";
 
 async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
   try {
@@ -67,13 +40,13 @@ async function readJsonIfExists(filePath: string): Promise<Record<string, any> |
 async function readExistingWorkflowFacts(
   projectRoot: string,
   workItemId: string,
+  metadata: WorkItemMetadata,
 ): Promise<{ workflowType?: string; workflowPath?: string }> {
   const wiDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
   const candidates = [
     join(wiDir, "trigger_result.json"),
     join(wiDir, "candidate_manifest.json"),
     join(projectRoot, SPEC_DIR_NAME, "runtime", "state.json"),
-    join(wiDir, "work_item.json"),
   ];
 
   for (const filePath of candidates) {
@@ -100,7 +73,10 @@ async function readExistingWorkflowFacts(
     }
   }
 
-  return {};
+  return {
+    workflowType: typeof metadata.workflow_type === "string" ? metadata.workflow_type : undefined,
+    workflowPath: typeof metadata.workflow_path === "string" ? metadata.workflow_path : undefined,
+  };
 }
 
 function isKnownWorkflowType(value: string | undefined): value is WorkflowType {
@@ -162,48 +138,6 @@ function resolveWorkflowTypeForTransition(input: {
 
   return {};
 }
-
-async function ensureWorkItemJsonOnCreate(
-  projectRoot: string,
-  workItemId: string,
-  workflowType: string | undefined,
-  workflowPath: string | undefined,
-): Promise<{ path: string; created: boolean }> {
-  const baseSpecVersion = await readAuthoritativeProjectSpecVersion(projectRoot);
-  const wiDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
-  await mkdir(wiDir, { recursive: true });
-  const workItemJsonPath = join(wiDir, "work_item.json");
-  const existing = await readJsonIfExists(workItemJsonPath);
-  if (existing) {
-    // Even when work_item.json already exists, ensure non-Candidate lifecycle
-    // files are present. Candidate tasks/trace artifacts are never synthesized.
-    await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null, baseSpecVersion);
-    return { path: workItemJsonPath, created: false };
-  }
-
-  const now = new Date().toISOString();
-  const workItem = {
-    schema_version: "1.1",
-    work_item_id: workItemId,
-    workflow_type: workflowType ?? "quick_change",
-    workflow_path: workflowPath,
-    title: `Work Item ${workItemId}`,
-    description: "Auto-created by sf_state_transition during Work Item creation.",
-    created_at: now,
-    updated_at: now,
-    code_change_allowed: false,
-    code_permission_revoked: false,
-  };
-
-  await writeFile(workItemJsonPath, JSON.stringify(workItem, null, 2) + "\n", "utf-8");
-
-  // Initialize non-Candidate lifecycle files. tasks.md and trace_delta.md are
-  // authored only at their canonical candidates/ paths.
-  await initializeClosureFiles(wiDir, workItemId, workflowPath ?? null, baseSpecVersion);
-
-  return { path: workItemJsonPath, created: true };
-}
-
 
 function sha256CandidateFreezeContent(content: string | Buffer): string {
   return `sha256:${createHash("sha256").update(content).digest("hex")}`;
@@ -378,8 +312,8 @@ async function restoreCandidateManifest(
  * v1.1 state transition handler.
  *
  * V12:
- * - Work Item creation must use from_state="" and to_state="created".
- * - work_item_id may be omitted only on create; daemon allocates WI-NNNN.
+ * - Work Item creation is owned exclusively by sf_work_item_create.
+ * - This handler only advances an already-created, schema-current Work Item.
  * - legacy target state "intake" is rejected with a retryable protocol error.
  * - workflow_path is a coarse route; compatible workflow_type is preserved.
  */
@@ -406,14 +340,20 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   }
 
   const isCreateTransition = fromState === "" && toState === "created";
-  if ((!workItemId || workItemId.trim() === "") && isCreateTransition) {
-    workItemId = await allocateNextWorkItemId(baseDir);
+  if (isCreateTransition) {
+    return {
+      success: false,
+      error: "WORK_ITEM_CREATE_TOOL_REQUIRED: use sf_work_item_create with the original user_request",
+      code: "WORK_ITEM_CREATE_TOOL_REQUIRED",
+      retry_allowed: true,
+      remediation: "Call sf_work_item_create; sf_state_transition only advances an existing Work Item.",
+    };
   }
 
   if (!workItemId) {
     return {
       success: false,
-      error: "work_item_id required. For create transition, omit work_item_id to let daemon allocate WI-NNNN.",
+      error: "work_item_id required for state transition",
       code: "WORK_ITEM_ID_REQUIRED",
       retry_allowed: true,
     };
@@ -422,7 +362,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   if (workItemId.trim() === "") {
     return {
       success: false,
-      error: "work_item_id must not be an empty string. For create transition, omit work_item_id entirely.",
+      error: "work_item_id must not be an empty string",
       code: "EMPTY_WORK_ITEM_ID_FORBIDDEN",
       retry_allowed: true,
     };
@@ -437,7 +377,15 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       hard_stop: false,
       retry_allowed: true,
       remediation:
-        "Use WI-NNNN, for example WI-0001. For a new Work Item, omit work_item_id and call sf_state_transition with from_state='' and to_state='created' so daemon allocates it.",
+        "Use an existing WI-NNNN. Create new Work Items with sf_work_item_create.",
+    };
+  }
+
+  const projectPath = (context?.directory as string) || (context?.worktree as string) || "";
+  if (!projectPath) {
+    return {
+      success: false,
+      error: "projectPath required - provide context.directory or context.worktree",
     };
   }
 
@@ -451,9 +399,22 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
     };
   }
 
+  const wiDir = join(baseDir, SPEC_DIR_NAME, "work-items", workItemId);
+  let metadata: WorkItemMetadata;
+  try {
+    metadata = await readWorkItemMetadata(wiDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      code: "WORK_ITEM_METADATA_PRECHECK_FAILED",
+      hard_stop: true,
+    };
+  }
+
   const rawWorkflowPath = args["workflow_path"] as string | undefined;
   const rawWorkflowType = args["workflow_type"] as string | undefined;
-  const existingWorkflowFacts = !isCreateTransition ? await readExistingWorkflowFacts(baseDir, workItemId) : {};
+  const existingWorkflowFacts = await readExistingWorkflowFacts(baseDir, workItemId, metadata);
   const inheritedWorkflowPath = rawWorkflowPath ?? existingWorkflowFacts.workflowPath;
 
   const resolvedWorkflow = resolveWorkflowTypeForTransition({
@@ -558,53 +519,36 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
   }
 
   if (fromState === "") {
-    const manifestPath = join(baseDir, SPEC_DIR_NAME, "manifest.json");
+    const retiredRootManifestPath = join(baseDir, SPEC_DIR_NAME, "manifest.json");
+    try {
+      await access(retiredRootManifestPath);
+      return {
+        success: false,
+        error: "UNSUPPORTED_PROJECT_LAYOUT",
+        hint: `检测到已退出支持的 ${SPEC_DIR_NAME}/manifest.json；当前发布只接受 ${SPEC_DIR_NAME}/project/spec_manifest.json`,
+        recovery_action: "reinitialize_current_project",
+      };
+    } catch {
+      // Expected for a current project.
+    }
+
+    const manifestPath = join(
+      baseDir,
+      SPEC_DIR_NAME,
+      "project",
+      "spec_manifest.json",
+    );
     try {
       await access(manifestPath);
     } catch {
       return {
         success: false,
         error: "PROJECT_NOT_INITIALIZED",
-        hint: `项目尚未初始化，请在项目根目录运行 SpecForge 初始化流程以创建 ${SPEC_DIR_NAME}/manifest.json`,
+        hint: `项目尚未初始化，请在项目根目录运行 SpecForge 初始化流程以创建 ${SPEC_DIR_NAME}/project/spec_manifest.json`,
         recovery_action: "execute_startup_flow",
       };
     }
 
-    if (toState === "created") {
-      try {
-        await ensureWorkItemJsonOnCreate(
-          baseDir,
-          workItemId,
-          resolvedWorkflowType,
-          inheritedWorkflowPath,
-        );
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        const projectSpecVersionUnavailable = message.startsWith(
-          "PROJECT_SPEC_VERSION_UNAVAILABLE:",
-        );
-        return {
-          success: false,
-          error: message,
-          code: projectSpecVersionUnavailable
-            ? "PROJECT_SPEC_VERSION_UNAVAILABLE"
-            : "WORK_ITEM_INITIALIZATION_FAILED",
-          hard_stop: true,
-          retry_allowed: false,
-          remediation: projectSpecVersionUnavailable
-            ? "Repair .specforge/project/spec_manifest.json before creating a Work Item."
-            : "Inspect Work Item initialization evidence and retry only after the root cause is fixed.",
-        };
-      }
-    }
-  }
-
-  const projectPath = (context?.directory as string) || (context?.worktree as string) || "";
-  if (!projectPath) {
-    return {
-      success: false,
-      error: "projectPath required - provide context.directory or context.worktree",
-    };
   }
 
   if (!deps.projectManager) {

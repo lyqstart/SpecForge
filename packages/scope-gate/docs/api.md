@@ -1,4 +1,6 @@
-# API Documentation
+# API Documentation (Historical)
+
+> **历史资料，不是当前 API 权威。** 本文记录已退出当前发布的 runtime scope/feature-flag 模型。当前公开 API 以 `src/index.ts` 和包 README 的 release/build validator 边界为准。
 
 This document provides comprehensive API reference for the `@specforge/scope-gate` module.
 

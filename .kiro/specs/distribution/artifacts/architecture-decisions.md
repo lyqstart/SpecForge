@@ -1,5 +1,7 @@
 # Architecture Decision Records (ADR)
 
+> **当前治理状态：** 本文件是 Distribution 模块的历史决策记录。与当前 V6 requirements/design 冲突的决定（尤其 ADR-DIST-005 “P1/P2 默认关闭/flag 列表”）已被 artifact-exclusion 合同取代，不得作为当前实现或测试依据。
+
 本文档记录 Distribution 模块的关键架构决策，每个 ADR 遵循标准格式：Status / Context / Decision / Consequences。
 
 ## 追溯 Requirements

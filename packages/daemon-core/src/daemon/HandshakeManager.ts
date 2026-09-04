@@ -1,7 +1,7 @@
 /**
  * Handshake file management
  * 
- * Manages the handshake.json file that contains connection
+ * Manages the daemon.sock.json file that contains connection
  * information for clients to discover and authenticate with the Daemon.
  * Implements single instance enforcement using file locking.
  */
@@ -141,6 +141,7 @@ export class HandshakeManager {
       pid,
       port,
       token,
+      bound_to: '127.0.0.1',
       startedAt: Date.now(),
       version: this.config.getDaemonVersion(),
       serviceMode: this.config.isServiceMode(),

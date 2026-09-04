@@ -39,5 +39,9 @@
   "dependencies": {
     "@specforge/observability": "workspace:*"
   },
+  "specforgeRelease": {
+    "packageExportIds": ["multimodal:text-input", "multimodal:nontext-rejection"],
+    "cleanBuildIds": ["multimodal:text-input", "multimodal:nontext-rejection"]
+  },
   "schema_version": "1.0"
 }

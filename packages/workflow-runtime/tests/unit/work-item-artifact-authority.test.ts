@@ -13,7 +13,11 @@ async function makeWorkItem(): Promise<string> {
   await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
   await fs.writeFile(
     path.join(wiDir, 'work_item.json'),
-    JSON.stringify({ allowed_write_files: ['src/index.ts'] }),
+    JSON.stringify({
+      schema_version: '1.1',
+      work_item_id: 'WI-0001',
+      allowed_write_files: [{ path: 'src/index.ts', operation: 'modify' }],
+    }),
   );
   await fs.writeFile(
     path.join(wiDir, 'gates', 'code_permission_release_gate.json'),

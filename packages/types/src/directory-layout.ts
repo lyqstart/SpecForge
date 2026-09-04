@@ -12,7 +12,8 @@
  * - `LAYOUT` 字典中的值是相对于 `<projectRoot>/.specforge/` 的子路径。
  * - 项目级正式规格真相源位于 `.specforge/project/`（§2.1）。
  * - Work Item 事务目录位于 `.specforge/work-items/`（§4.2）。
- * - 旧路径通过 `legacyPaths` 对象保留，仅供 legacy read-only（§1.7）。
+ * - 当前项目配置位于 `.specforge/config/`。
+ * - 尚未完成移除的旧路径通过 `legacyPaths` 对象隔离，仅供 legacy read-only（§1.7）。
  * - 通过 Path Service 系列函数对外提供路径生成能力。
  * - 通过 Path Policy 函数提供路径合法性校验（§1.6）。
  */
@@ -39,15 +40,29 @@ export const SPEC_DIR_NAME = ".specforge" as const;
  * `.specforge/` 目录下各子路径的权威字典（v1.1 标准）。
  *
  * 顶层分区：
+ * - **config**：当前项目配置（committed）
+ * - **knowledge**：当前项目 Knowledge foundation（committed）
  * - **project**：项目级正式规格真相源（§2.1）（committed）
  * - **workItems**：Work Item 事务目录（§4.2）（committed）
  * - **runtime**：运行时数据（gitignored），下设 wal / state / checkpoints / logs
  *
- * 已移除的顶层分区迁移到 `legacyPaths`：
- * - manifest、config、specs、knowledge 等
- * - runtime 下的 archive / sessions / cas 等归档子目录
+ * 尚未完成移除的旧路径隔离到 `legacyPaths`，不得作为当前写入目标。
  */
 export const LAYOUT = {
+  // ---- committed 区：当前项目配置 ----
+  /** 项目配置目录 — `<root>/.specforge/config/` */
+  config: "config",
+
+  /** 当前项目配置文件的"分组键空间" */
+  configFiles: {
+    /** `<root>/.specforge/config/project-rules.md` */
+    projectRules: "config/project-rules.md",
+    /** `<root>/.specforge/config/prod-environment.md` */
+    prodEnv: "config/prod-environment.md",
+    /** `<root>/.specforge/config/project.json` */
+    project: "config/project.json",
+  },
+
   // ---- committed 区：项目级正式规格真相源（§2.1）----
   /** 项目级正式规格目录 — `<root>/.specforge/project/` */
   project: "project",
@@ -192,29 +207,8 @@ export type LayoutKey = keyof typeof LAYOUT;
  * 仅供 legacy readers 读取，新代码不得使用这些路径进行写入。
  */
 export const legacyPaths = {
-  /** 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` */
-  specsReadOnly: "specs",
   /** 旧根级 manifest — `<root>/.specforge/manifest.json` */
   manifest: "manifest.json",
-  /** 旧配置目录 — `<root>/.specforge/config/` */
-  config: "config",
-  /** 旧配置文件的"分组键空间"（kept for legacy readers） */
-  configFiles: {
-    /** `<root>/.specforge/config/project-rules.md` */
-    projectRules: "config/project-rules.md",
-    /** `<root>/.specforge/config/prod-environment.md` */
-    prodEnv: "config/prod-environment.md",
-    /** `<root>/.specforge/config/project.json` */
-    project: "config/project.json",
-    /** `<root>/.specforge/config/risk_policy.json` */
-    riskPolicy: "config/risk_policy.json",
-    /** `<root>/.specforge/config/skill_fragments.json` */
-    skillFragments: "config/skill_fragments.json",
-  },
-  /** 旧知识目录 — `<root>/.specforge/knowledge/` */
-  knowledge: "knowledge",
-  /** 旧知识图谱 — `<root>/.specforge/knowledge/graph.json` */
-  knowledgeGraph: "knowledge/graph.json",
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -644,24 +638,6 @@ export function workItemCandidateTraceDelta(
   );
 }
 
-/**
- * 旧 `.specforge/specs/<WI>/...` 路径，仅供只读兼容回退。
- * 新代码不得向该路径写入。
- */
-export function legacyWorkItemSpecArtifact(
-  projectRoot: string,
-  workItemId: string,
-  fileName: string,
-): string {
-  return path.join(
-    projectRoot,
-    SPEC_DIR_NAME,
-    legacyPaths.specsReadOnly,
-    workItemId,
-    fileName,
-  );
-}
-
 export type WorkItemSpecArtifactKind =
   | "requirements"
   | "design"
@@ -682,27 +658,19 @@ export function isWorkItemSpecArtifactPlaceholder(
   if (!normalized) return true;
 
   if (kind === "tasks") {
-    return (
-      normalized.includes("> TODO: 由 Agent 填充") ||
-      normalized.includes("Closure-skeleton marker restored by sf_work_item_repair_closure")
-    );
+    return normalized.includes("> TODO: 由 Agent 填充");
   }
 
   if (kind === "trace_delta") {
-    return (
-      normalized.includes("Reason: Not yet analyzed") ||
-      normalized.includes("Closure-skeleton marker restored by sf_work_item_repair_closure")
-    );
+    return normalized.includes("Reason: Not yet analyzed");
   }
 
   return normalized.includes("> TODO: 由 Agent 填充");
 }
 
 /**
- * 返回规格类 Work Item 产物的只读解析顺序。
- *
- * 顺序固定为：Candidate 权威路径 → Work Item 顶层兼容路径 → legacy specs 只读路径。
- * 调用方只能按此列表读取；新写入必须使用对应 Candidate 路径函数。
+ * 返回规格类 Work Item 产物的当前发布权威读取路径。
+ * 当前发布不读取 Work Item 顶层兼容文件或旧 `.specforge/specs/` 项目数据。
  */
 export function workItemSpecArtifactReadCandidates(
   projectRoot: string,
@@ -712,29 +680,13 @@ export function workItemSpecArtifactReadCandidates(
 ): string[] {
   switch (kind) {
     case "requirements":
-      return [
-        workItemCandidateRequirements(projectRoot, workItemId, moduleName),
-        workItemRequirements(projectRoot, workItemId),
-        legacyWorkItemSpecArtifact(projectRoot, workItemId, "requirements.md"),
-      ];
+      return [workItemCandidateRequirements(projectRoot, workItemId, moduleName)];
     case "design":
-      return [
-        workItemCandidateDesign(projectRoot, workItemId, moduleName),
-        workItemDesign(projectRoot, workItemId),
-        legacyWorkItemSpecArtifact(projectRoot, workItemId, "design.md"),
-      ];
+      return [workItemCandidateDesign(projectRoot, workItemId, moduleName)];
     case "tasks":
-      return [
-        workItemCandidateTasks(projectRoot, workItemId),
-        workItemTasks(projectRoot, workItemId),
-        legacyWorkItemSpecArtifact(projectRoot, workItemId, "tasks.md"),
-      ];
+      return [workItemCandidateTasks(projectRoot, workItemId)];
     case "trace_delta":
-      return [
-        workItemCandidateTraceDelta(projectRoot, workItemId),
-        workItemTraceDelta(projectRoot, workItemId),
-        legacyWorkItemSpecArtifact(projectRoot, workItemId, "trace_delta.md"),
-      ];
+      return [workItemCandidateTraceDelta(projectRoot, workItemId)];
   }
 }
 
@@ -901,17 +853,6 @@ export function isWorkItemPath(inputPath: string): boolean {
   return normalized.startsWith(".specforge/work-items/");
 }
 
-/**
- * 判断路径是否属于旧 specs 区域（.specforge/specs/）。
- *
- * @deprecated Use packages/workflow-runtime/src/v11/runtime/PathPolicy.ts for permission checks.
- * This function only checks path classification, not permissions.
- */
-export function isLegacySpecPath(inputPath: string): boolean {
-  const normalized = inputPath.replace(/\\/g, "/");
-  return normalized.startsWith(".specforge/specs/");
-}
-
 // ---------------------------------------------------------------------------
 // SPEC_USER_DIR_NAME — 用户主目录下 SpecForge 目录的权威名称
 // ---------------------------------------------------------------------------
@@ -920,37 +861,3 @@ export function isLegacySpecPath(inputPath: string): boolean {
  * SpecForge 用户级数据目录名。
  */
 export const SPEC_USER_DIR_NAME = ".specforge" as const;
-
-// ---------------------------------------------------------------------------
-// legacyUserLayoutReadOnly — 用户级路径（deprecated）
-// ---------------------------------------------------------------------------
-
-/**
- * @deprecated User-level layout is legacy. New code must not write to ~/.specforge/ by default.
- * Only legacy readers may access these paths.
- *
- * `~/.specforge/` 目录下各子路径的只读字典（用户级）。
- * 新代码不得使用此对象。使用 `legacyUserLayoutReadOnly` 仅用于向后兼容读取。
- */
-export const legacyUserLayoutReadOnly = {
-  /** 运行时状态目录 — `~/.specforge/runtime/` */
-  runtime: "runtime",
-  /** 握手文件 — `~/.specforge/runtime/handshake.json` */
-  runtimeHandshake: "runtime/handshake.json",
-  /** 持久化状态 — `~/.specforge/runtime/state.json` */
-  runtimeState: "runtime/state.json",
-  /** 事件日志 — `~/.specforge/runtime/events.jsonl` */
-  runtimeEvents: "runtime/events.jsonl",
-  /** Daemon 锁文件 — `~/.specforge/runtime/daemon.lock` */
-  runtimeDaemonLock: "runtime/daemon.lock",
-  /** 主机配置文件 — `~/.specforge/host-profile.json` */
-  hostProfile: "host-profile.json",
-  /** 日志目录 — `~/.specforge/logs/` */
-  logs: "logs",
-  /** 项目目录 — `~/.specforge/projects/` */
-  projects: "projects",
-  /** 模板目录 — `~/.specforge/templates/` */
-  templates: "templates",
-  /** 备份目录 — `~/.specforge/backups/` */
-  backups: "backups",
-} as const;

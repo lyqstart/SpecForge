@@ -209,7 +209,7 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(mockDispatcher.calls.length).toBeGreaterThanOrEqual(1);
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_work_item_create');
+    expect(lastCall.tool).toBe('sf_work_item_create');
     expect(lastCall.args.workItemId).toBe('WI-E2E-001');
   });
 
@@ -225,7 +225,7 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_gate_run');
+    expect(lastCall.tool).toBe('sf_gate_run');
     expect(lastCall.args.gateIds).toEqual(['requirements_gate', 'design_gate']);
   });
 
@@ -239,7 +239,7 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_merge');
+    expect(lastCall.tool).toBe('sf_merge_run');
   });
 
   it('4. POST /api/v1/v11/decision — should dispatch decision recording', async () => {
@@ -255,7 +255,7 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_decision');
+    expect(lastCall.tool).toBe('sf_user_decision_record');
     expect(lastCall.args.decision).toBe('approved');
   });
 
@@ -273,7 +273,7 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_code_permission');
+    expect(lastCall.tool).toBe('sf_code_permission');
     expect(lastCall.args.action).toBe('release');
   });
 
@@ -301,19 +301,16 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
   });
 
-  it('6. POST /api/v1/v11/spec-migration — should dispatch spec migration', async () => {
+  it('6. POST /api/v1/v11/spec-migration — current release rejects legacy migration', async () => {
     const payload = {
       projectRoot: tempDir,
       dryRun: true,
     };
     const res = await postJson(port, token, '/api/v1/v11/spec-migration', payload);
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json).toMatchObject({ success: true, dispatched: true });
-
-    const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_spec_migration');
-    expect(lastCall.args.dryRun).toBe(true);
+    expect(res.statusCode).toBe(404);
+    expect(res.json).toMatchObject({ success: false });
+    expect(mockDispatcher.calls.some((call) => call.tool === 'sf_v11_spec_migration')).toBe(false);
   });
 
   it('7. POST /api/v1/v11/rollback — should dispatch rollback', async () => {
@@ -328,7 +325,7 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_rollback');
+    expect(lastCall.tool).toBe('sf_rollback');
     expect(lastCall.args.targetState).toBe('intake_ready');
   });
 
@@ -349,7 +346,7 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_handoff');
+    expect(lastCall.tool).toBe('sf_handoff');
     expect(lastCall.args.fromAgent).toBe('sf-executor');
   });
 
@@ -382,20 +379,15 @@ describe('v1.1 API E2E HTTP tests', () => {
     expect(res.json).toMatchObject({ success: true, dispatched: true });
 
     const lastCall = mockDispatcher.calls[mockDispatcher.calls.length - 1]!;
-    expect(lastCall.tool).toBe('sf_v11_verification');
+    expect(lastCall.tool).toBe('sf_verification');
   });
 
-  it('11. POST /api/v1/v11/state-machine/validate — prefix fallback route', async () => {
-    // This route is not registered as an exact route; falls through to prefix handler.
-    // The prefix route for /api/v1/v11/ returns a generic "registered" response.
+  it('11. POST /api/v1/v11/state-machine/validate — rejects unknown legacy route', async () => {
     const payload = { from: 'intake', to: 'requirements' };
     const res = await postJson(port, token, '/api/v1/v11/state-machine/validate', payload);
 
-    expect(res.statusCode).toBe(200);
-    expect(res.json).toMatchObject({ success: true });
-    // The prefix fallback returns { data: { message: 'API endpoint ... is registered', ... } }
-    const data = (res.json as any).data;
-    expect(data.message).toContain('registered');
+    expect(res.statusCode).toBe(404);
+    expect(res.json).toMatchObject({ success: false });
   });
 
   // ── Error handling ──
@@ -449,7 +441,7 @@ describe('v1.1 API E2E HTTP tests', () => {
       });
       expect(createRes.statusCode).toBe(200);
       expect(createRes.json).toMatchObject({ success: true });
-      const createCall = mockDispatcher.calls.find(c => c.tool === 'sf_v11_work_item_create' && c.args.workItemId === wiId);
+      const createCall = mockDispatcher.calls.find(c => c.tool === 'sf_work_item_create' && c.args.workItemId === wiId);
       expect(createCall).toBeDefined();
 
       // 2. Run gates
@@ -459,7 +451,7 @@ describe('v1.1 API E2E HTTP tests', () => {
         strictness: 'normal',
       });
       expect(gateRes.statusCode).toBe(200);
-      const gateCall = mockDispatcher.calls.find(c => c.tool === 'sf_v11_gate_run' && c.args.gateIds?.includes('requirements_gate'));
+      const gateCall = mockDispatcher.calls.find(c => c.tool === 'sf_gate_run' && c.args.gateIds?.includes('requirements_gate'));
       expect(gateCall).toBeDefined();
 
       // 3. Record user decision
@@ -470,7 +462,7 @@ describe('v1.1 API E2E HTTP tests', () => {
         reason: 'All requirements met',
       });
       expect(decisionRes.statusCode).toBe(200);
-      const decisionCall = mockDispatcher.calls.find(c => c.tool === 'sf_v11_decision' && c.args.decision === 'approved');
+      const decisionCall = mockDispatcher.calls.find(c => c.tool === 'sf_user_decision_record' && c.args.decision === 'approved');
       expect(decisionCall).toBeDefined();
 
       // 4. Merge
@@ -569,7 +561,6 @@ describe('v1.1 API E2E HTTP tests', () => {
         '/api/v1/v11/merge',
         '/api/v1/v11/decision',
         '/api/v1/v11/code-permission',
-        '/api/v1/v11/spec-migration',
         '/api/v1/v11/rollback',
         '/api/v1/v11/handoff',
         '/api/v1/v11/extension',

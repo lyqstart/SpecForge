@@ -24,6 +24,7 @@ import {
 } from './WorkflowErrorHandling.js';
 import { CRITICAL_STATES } from '@specforge/types/constants';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
+import { validateCurrentWorkItemMetadataJson } from '@specforge/types';
 
 export type EventHandler = (event: WorkflowEvent) => void | Promise<void>;
 
@@ -577,12 +578,20 @@ export class WorkflowEngine {
     const fullPath = path.join(workItemDir, 'work_item.json');
     try {
       const content = await fs.readFile(fullPath, 'utf-8');
+      const workItemId = path.basename(path.resolve(workItemDir));
+      const validation = validateCurrentWorkItemMetadataJson(content, workItemId);
+      if (!validation.valid) {
+        throw new Error(`WORK_ITEM_METADATA_INVALID: ${workItemId}: ${validation.errors.join('; ')}`);
+      }
       const wi = JSON.parse(content);
       if (!Array.isArray(wi.allowed_write_files) || wi.allowed_write_files.length === 0) {
         throw new Error('work_item.json allowed_write_files is empty or missing');
       }
     } catch (err) {
-      if (err instanceof Error && err.message.includes('allowed_write_files')) throw err;
+      if (
+        err instanceof Error &&
+        (err.message.includes('allowed_write_files') || err.message.startsWith('WORK_ITEM_METADATA_INVALID:'))
+      ) throw err;
       throw new Error('Transition evidence prerequisite missing: work_item.json allowed_write_files');
     }
   }

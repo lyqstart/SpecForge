@@ -2,9 +2,9 @@
  * Tests for JobWaiter (`--wait` flag support, Task 5.2).
  *
  * 覆盖：
- *  - 成功终止态（succeeded）
+ *  - 成功终止态（completed）
  *  - 失败终止态（failed）
- *  - 中止终止态（aborted）
+ *  - 取消终止态（cancelled）
  *  - 非终止态被忽略
  *  - 超时（fake timer）
  *  - 外部 AbortSignal（含提前 abort 与等待中 abort）
@@ -137,7 +137,7 @@ describe('JobWaiter', () => {
   });
 
   describe('waitForTerminal — happy paths', () => {
-    it('resolves with succeeded result when emit terminal event', async () => {
+    it('resolves with completed result when emit terminal event', async () => {
       const mock = createMockSource();
       const waiter = new JobWaiter(mock.source);
 
@@ -146,13 +146,13 @@ describe('JobWaiter', () => {
       await Promise.resolve();
       mock.emit({
         jobId: 'job-1',
-        status: 'succeeded',
+        status: 'completed',
         result: { ok: true },
         updatedAt: 1000,
       });
 
       const result = await promise;
-      expect(result.status).toBe('succeeded');
+      expect(result.status).toBe('completed');
       expect(result.result).toEqual({ ok: true });
       expect(mock.unsubscribeCalls).toBe(1);
     });
@@ -176,16 +176,16 @@ describe('JobWaiter', () => {
       expect(mock.unsubscribeCalls).toBe(1);
     });
 
-    it('resolves with aborted status', async () => {
+    it('resolves with cancelled status', async () => {
       const mock = createMockSource();
       const waiter = new JobWaiter(mock.source);
 
       const promise = waiter.waitForTerminal('job-3', { timeoutMs: 5000 });
       await Promise.resolve();
-      mock.emit({ jobId: 'job-3', status: 'aborted', updatedAt: 3000 });
+      mock.emit({ jobId: 'job-3', status: 'cancelled', updatedAt: 3000 });
 
       const result = await promise;
-      expect(result.status).toBe('aborted');
+      expect(result.status).toBe('cancelled');
       expect(mock.unsubscribeCalls).toBe(1);
     });
 
@@ -206,10 +206,10 @@ describe('JobWaiter', () => {
       expect(mock.activeListenerCount()).toBe(1);
 
       // 终止态到达
-      mock.emit({ jobId: 'job-4', status: 'succeeded', updatedAt: 4 });
+      mock.emit({ jobId: 'job-4', status: 'completed', updatedAt: 4 });
 
       const result = await promise;
-      expect(result.status).toBe('succeeded');
+      expect(result.status).toBe('completed');
       expect(mock.unsubscribeCalls).toBe(1);
       expect(mock.activeListenerCount()).toBe(0);
     });
@@ -222,11 +222,11 @@ describe('JobWaiter', () => {
       await Promise.resolve();
 
       // 串扰事件
-      mock.emit({ jobId: 'other', status: 'succeeded', updatedAt: 1 });
+      mock.emit({ jobId: 'other', status: 'completed', updatedAt: 1 });
       await advanceTime(100);
 
       // promise 仍未 settle
-      mock.emit({ jobId: 'job-5', status: 'succeeded', updatedAt: 2 });
+      mock.emit({ jobId: 'job-5', status: 'completed', updatedAt: 2 });
       const result = await promise;
       expect(result.jobId).toBe('job-5');
     });
@@ -372,7 +372,7 @@ describe('JobWaiter', () => {
       const mock = createMockSource();
       mock.setSnapshot({
         jobId: 'job-snap',
-        status: 'succeeded',
+        status: 'completed',
         result: { fast: true },
         updatedAt: 0,
       });
@@ -382,7 +382,7 @@ describe('JobWaiter', () => {
         timeoutMs: 5000,
       });
 
-      expect(result.status).toBe('succeeded');
+      expect(result.status).toBe('completed');
       expect(result.result).toEqual({ fast: true });
       expect(mock.unsubscribeCalls).toBe(1);
     });
@@ -405,9 +405,9 @@ describe('JobWaiter', () => {
       await advanceTime(1000);
       expect(mock.activeListenerCount()).toBe(1);
 
-      mock.emit({ jobId: 'job-snap2', status: 'succeeded', updatedAt: 1 });
+      mock.emit({ jobId: 'job-snap2', status: 'completed', updatedAt: 1 });
       const result = await promise;
-      expect(result.status).toBe('succeeded');
+      expect(result.status).toBe('completed');
     });
   });
 
@@ -441,9 +441,9 @@ describe('JobWaiter', () => {
 
       const promise = waiter.waitForTerminal('job-f', { timeoutMs: 1000 });
       await Promise.resolve();
-      mock.emit({ jobId: 'job-f', status: 'succeeded', updatedAt: 1 });
+      mock.emit({ jobId: 'job-f', status: 'completed', updatedAt: 1 });
       const result = await promise;
-      expect(result.status).toBe('succeeded');
+      expect(result.status).toBe('completed');
     });
   });
 });

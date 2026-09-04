@@ -7,7 +7,7 @@
  *   bun run scripts/render-layout.ts --dry-run         # 只输出到 stdout，不写文件
  *
  * 功能：
- *   1. 读取 packages/types/src/directory-layout.ts 的 LAYOUT / legacyPaths / legacyUserLayoutReadOnly / SPEC_DIR_NAME
+ *   1. 读取 packages/types/src/directory-layout.ts 的 LAYOUT / SPEC_DIR_NAME
  *   2. 生成 docs/conventions/directory-layout.md（v1.1 标准）
  *   3. 更新目标文件中 <!-- BEGIN: directory-layout --> ... <!-- END: directory-layout --> 之间的内容
  */
@@ -36,8 +36,6 @@ interface LayoutConst {
 async function loadLayoutConstants(projectRoot: string): Promise<{
   SPEC_DIR_NAME: string;
   LAYOUT: LayoutConst;
-  legacyPaths: LayoutConst;
-  legacyUserLayoutReadOnly: LayoutConst;
 }> {
   const layoutPath = path.join(
     projectRoot,
@@ -54,8 +52,6 @@ async function loadLayoutConstants(projectRoot: string): Promise<{
   return {
     SPEC_DIR_NAME: mod.SPEC_DIR_NAME as string,
     LAYOUT: mod.LAYOUT as LayoutConst,
-    legacyPaths: mod.legacyPaths as LayoutConst,
-    legacyUserLayoutReadOnly: mod.legacyUserLayoutReadOnly as LayoutConst,
   };
 }
 
@@ -105,9 +101,11 @@ function extractCommentForKey(
 
   const scopedSource = source.substring(searchStart, searchEnd);
 
-  // 先找 key 出现的位置（在限定范围内）
+  // 只匹配常量对象的直属属性（源码约定为两个空格缩进），避免与嵌套同名 key 冲突。
+  const escapedKey = targetKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const keyPattern = new RegExp(
-    `\\b${targetKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*:\\s*`,
+    `^ {2}${escapedKey}\\s*:\\s*`,
+    'm',
   );
   const keyMatch = keyPattern.exec(scopedSource);
   if (!keyMatch) return '';
@@ -155,10 +153,12 @@ function makeNestedTableRows(
   nested: LayoutEntry,
 ): string {
   return Object.entries(nested)
-    .map(
-      ([key, value]) =>
-        `| ${parentKey}.${key} | \`${value}\` | — |`,
-    )
+    .flatMap(([key, value]) => {
+      const qualifiedKey = `${parentKey}.${key}`;
+      return typeof value === 'string'
+        ? [`| ${qualifiedKey} | \`${value}\` | — |`]
+        : [makeNestedTableRows(qualifiedKey, value)];
+    })
     .join('\n');
 }
 
@@ -166,8 +166,6 @@ function makeNestedTableRows(
 function generateMarkdown(
   SPEC_DIR_NAME: string,
   LAYOUT: LayoutConst,
-  legacyPaths: LayoutConst,
-  legacyUserLayoutReadOnly: LayoutConst,
   sourceContent: string,
 ): string {
   // ---- v1.1 Active Paths ----
@@ -192,6 +190,12 @@ function generateMarkdown(
     ? `\n### projectFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('projectFiles', projectFiles)}\n`
     : '';
 
+  const configFiles = LAYOUT.configFiles as LayoutEntry | undefined;
+  const configFilesSection = configFiles
+    ? `\n### configFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('configFiles', configFiles)}\n`
+    : '';
+
+
   const workItemFiles = LAYOUT.workItemFiles as LayoutEntry | undefined;
   const workItemFilesSection = workItemFiles
     ? `\n### workItemFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('workItemFiles', workItemFiles)}\n`
@@ -201,41 +205,6 @@ function generateMarkdown(
   const runtimeFilesSection = runtimeFiles
     ? `\n### runtimeFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('runtimeFiles', runtimeFiles)}\n`
     : '';
-
-  // ---- Legacy Paths (read-only / deprecated) ----
-
-  const legacyStringEntries = Object.entries(legacyPaths)
-    .filter(([, v]) => typeof v === 'string')
-    .map(([k, v]) => {
-      const lpStart = sourceContent.indexOf('export const legacyPaths = {');
-      const lpNext = sourceContent.indexOf('export const', lpStart + 1);
-      const lpEnd = lpNext === -1 ? sourceContent.length : lpNext;
-      return {
-        key: k,
-        value: v as string,
-        comment: extractCommentForKey(sourceContent, k, lpStart, lpEnd),
-      };
-    });
-
-  const legacyConfigFiles = legacyPaths.configFiles as LayoutEntry | undefined;
-  const legacyConfigFilesSection = legacyConfigFiles
-    ? `\n#### legacyPaths.configFiles 分组\n\n| Key | 路径 | 说明 |\n|-----|------|------|\n${makeNestedTableRows('configFiles', legacyConfigFiles)}\n`
-    : '';
-
-  // ---- Legacy User Paths (read-only / deprecated) ----
-
-  const legacyUserEntries = Object.entries(legacyUserLayoutReadOnly)
-    .filter(([, v]) => typeof v === 'string')
-    .map(([k, v]) => {
-      const luStart = sourceContent.indexOf('export const legacyUserLayoutReadOnly = {');
-      const luNext = sourceContent.indexOf('export const', luStart + 1);
-      const luEnd = luNext === -1 ? sourceContent.length : luNext;
-      return {
-        key: k,
-        value: v as string,
-        comment: extractCommentForKey(sourceContent, k, luStart, luEnd),
-      };
-    });
 
   return `# SpecForge 目录布局（v1.1）
 
@@ -255,28 +224,13 @@ SPEC_DIR_NAME = '${SPEC_DIR_NAME}'
 | Key | 路径 | 说明 |
 |-----|------|------|
 ${makeTableRows(activeEntries.filter(e => e.key !== 'runtime'))}
-${projectFilesSection}${workItemFilesSection}
+${configFilesSection}${projectFilesSection}${workItemFilesSection}
 ### gitignored 区（运行时数据）
 
 | Key | 路径 | 说明 |
 |-----|------|------|
 | runtime | \`runtime\` | 运行时状态目录（gitignored）— \`<root>/.specforge/runtime/\` |
 ${runtimeFilesSection}
-## Legacy Paths (read-only / deprecated)
-
-> ⚠️ 以下路径已从 LAYOUT 移除，仅供 legacy readers 读取，新代码不得使用这些路径进行写入。
-
-### 项目级 Legacy Paths
-
-| Key | 路径 | 说明 |
-|-----|------|------|
-${makeTableRows(legacyStringEntries)}
-${legacyConfigFilesSection}
-### 用户级 Legacy Paths (~/${SPEC_DIR_NAME}/)
-
-| Key | 路径 | 说明 |
-|-----|------|------|
-${makeTableRows(legacyUserEntries)}
 
 ---
 `;
@@ -336,15 +290,13 @@ async function main(): Promise<void> {
   const sourceContent = fs.readFileSync(sourcePath, 'utf-8');
 
   // 加载常量（v1.1）
-  const { SPEC_DIR_NAME, LAYOUT, legacyPaths, legacyUserLayoutReadOnly } =
+  const { SPEC_DIR_NAME, LAYOUT } =
     await loadLayoutConstants(projectRoot);
 
   // 生成 markdown
   const markdown = generateMarkdown(
     SPEC_DIR_NAME,
     LAYOUT,
-    legacyPaths,
-    legacyUserLayoutReadOnly,
     sourceContent,
   );
 

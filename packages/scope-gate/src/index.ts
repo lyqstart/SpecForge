@@ -1,121 +1,73 @@
 /**
- * @specforge/scope-gate - Scope Gate module for SpecForge V6
- * 
- * This module enforces P0/P1/P2 scope boundaries as defined in REQ-25
- * of the parent V6 architecture specification.
+ * @specforge/scope-gate
+ *
+ * Current-release build and release-evidence validation only. This package is
+ * not a business-runtime scope registry and does not expose runtime feature
+ * flags for capabilities outside the V6.0 release boundary.
  */
 
-// Export all types
+export { ReleaseSetValidator } from './release-set-validator';
 export type {
-  ScopeTag,
-  CapabilityDefinition,
-  ScopeContext,
-  AvailabilityResult,
-  ScopeError,
-  ValidationResult,
-  ScopeViolationAttempt,
-  FeatureFlagChange,
-  ScopeConfiguration,
-  EnvironmentDefaults,
-  SourceLocation,
-  ScopeValidationCode,
-  AgentIdentity,
-  ScopeEvent,
-  ScopeEventQuery,
-  CheckResult
-} from './types';
+  ReleaseClassification,
+  ArtifactSurface,
+  ApprovedReleaseItem,
+  ArtifactItem,
+  ArtifactInventory,
+  ScopeVerdict,
+} from './release-set-validator';
 
-// Export error classes (including ScopeError base class)
-export { 
-  ScopeBoundaryViolationError,
-  CapabilityUnavailableError,
-  DependencyError,
-  ConfigurationError
-} from './types';
-
-// Export REQ-25 Parser and Loader
-export { Req25Parser } from './req25-parser';
-export type { Req25Data } from './req25-parser';
-export { Req25Loader, createReq25Loader, loadAndRegisterCapabilities, loadAndRegisterCapabilitiesSync } from './req25-loader';
-export type { 
-  LoadResult, 
-  ChangeDetectionResult, 
-  DetailedChangeDetection,
-  CapabilityChangeInfo,
-  ChangeCallback,
-  WatcherOptions,
-  ActiveChangeDetector,
-  ArtifactValidationResult
-} from './req25-loader';
-
-// Export implementations
-export { ScopeRegistry } from './scope-registry';
-export { RuntimeScopeChecker } from './runtime-checker';
-export { ScopeValidator } from './scope-validator';
-export { AuditLogger } from './audit-logger';
-export { OptimizedAuditLogger, createOptimizedAuditLogger } from './audit-logger-optimized';
-export type { OptimizedAuditLoggerConfig } from './audit-logger-optimized';
-export { ScopeTagValidator } from './scope-tag-validator';
-export type { 
-  SpecConfig, 
-  SpecValidationResult, 
-  ScopeTagValidationReport,
-  // Violation detection types (Task 9.3)
-  ViolationType,
-  ViolationSeverity,
-  Violation,
-  ViolationReport
-} from './scope-tag-validator';
-
-// Export configuration loader
-export { ScopeConfigurationLoader, createDefaultConfigLoader, loadConfigFromFile, createConfigLoader } from './scope-configuration';
-
-// Export Cache Module
-export { LRUCache, scopeAvailabilityCacheKey, featureFlagCacheKey, capabilityCacheKey } from './cache';
-export type { CacheOptions, CacheStats } from './cache';
-
-// Export Feature Flag Manager
-export { FeatureFlagManager, createFeatureFlagManager } from './feature-flag-manager';
-export type { FeatureFlag, FeatureFlagChangeLog, FeatureFlagManagerOptions } from './feature-flag-manager';
-
-// Export PBT Generators
 export {
-  generators,
-  createCapabilityArb,
-  createContextArb,
-  createV60ContextArb,
-  createCapabilityIdArb,
-  createScopeTagArb,
-  createEdgeCaseStringArb,
-  createEdgeCaseCapabilityArb,
-  createEdgeCaseContextArb,
-  createInvalidCapabilityIdArb,
-  createInvalidScopeTagArb,
-  createInvalidReleaseBranchArb,
-  createInvalidEnvironmentArb,
-  createInvalidFeatureFlagArb,
-  createMixedCapabilityIdArb,
-  createMixedScopeTagArb,
-  createMixedContextArb,
-  createMixedCapabilityArb,
-  createFeatureFlagChangeArb,
-  createViolationAttemptArb,
-  createCyclicDependencyArb,
-  createP0DependsOnP1P2Arb,
-  createSelfDependencyArb,
-  createCapabilityArrayArb,
-  createV60ViolationScenarioArb,
-  createEnabledScenarioArb,
-  createDependencyScenarioArb,
-  filterValid,
-  mapValid,
-  weightedMix
-} from './generators';
+  normalizeArtifactInventory,
+  normalizeReleaseAuthority,
+} from './release-evidence-normalizer';
 export type {
-  CapabilityArb,
-  ContextArb,
-  ScopeTagArb,
-  CapabilityIdArb,
-  FeatureFlagChangeArb,
-  ViolationAttemptArb
-} from './generators';
+  ArtifactInventoryDocument,
+  NormalizedArtifactInventory,
+  NormalizedReleaseAuthority,
+  ReleaseAuthorityDocument,
+  ReleaseAuthorityRole,
+  ReleaseAuthoritySource,
+} from './release-evidence-normalizer';
+
+export { projectReleaseAuthority } from './release-authority-projection';
+export type {
+  AuthoritySourceBytes,
+  ReleaseAuthorityProjectionInput,
+  ReleaseAuthorityProjectionResult,
+} from './release-authority-projection';
+
+export { buildReleaseArtifactInventory } from './release-artifact-inventory-builder';
+export type {
+  ArtifactSurfaceReport,
+  ReleaseArtifactInventoryBuildResult,
+} from './release-artifact-inventory-builder';
+
+export {
+  produceCleanBuildSurfaceReport,
+  producePackageExportSurfaceReport,
+} from './node-release-surface-producers';
+export type {
+  NodeReleaseSurfaceProducerOptions,
+  SurfaceReportProductionResult,
+} from './node-release-surface-producers';
+
+export { buildReleaseOwnerSnapshot } from './release-owner-snapshot';
+export type {
+  OwnerReleaseSnapshotReport,
+  OwnerSnapshotItem,
+  OwnerSnapshotSource,
+  ReleaseOwnerId,
+  ReleaseOwnerSnapshotBuildResult,
+  ReleaseOwnerSnapshotDocument,
+} from './release-owner-snapshot';
+
+export { produceOwnerSnapshotSurfaceReports } from './owner-snapshot-surface-producers';
+export type {
+  OwnerSnapshotSurfaceProductionResult,
+} from './owner-snapshot-surface-producers';
+
+export { runScopeReleasePrecheck } from './scope-release-precheck';
+export type {
+  ScopeReleaseErrorCode,
+  ScopeReleasePrecheckResult,
+} from './scope-release-precheck';

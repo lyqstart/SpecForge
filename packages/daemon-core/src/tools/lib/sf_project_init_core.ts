@@ -1,26 +1,73 @@
 /**
- * sf_project_init_core.ts — project bootstrap repair (Patch A.1)
+ * sf_project_init_core.ts — current project bootstrap
  *
- * Fixes the bootstrap deadlock observed after Patch A:
- * - sf_project_init created .specforge/project/spec_manifest.json but root
- *   .specforge/manifest.json was missing in the runtime artifact.
- * - sf_state_transition requires .specforge/manifest.json when creating a WI.
- * - OBS-FULL Layer 1 requires project-local .specforge/config/observability.json.
- *
- * This implementation explicitly ensures critical bootstrap files before and
- * after layout traversal, independent of LAYOUT drift.
+ * Creates the authoritative .specforge/project/spec_manifest.json layout and
+ * current project support files. Retired root manifests are not created or
+ * repaired by the current release.
  */
 
-import { mkdir, writeFile, access, readFile, readdir } from 'node:fs/promises';
+import { mkdir, writeFile, access, readFile, readdir, rename, unlink } from 'node:fs/promises';
 import { join, extname, dirname } from 'node:path';
 import { existsSync, statSync } from 'node:fs';
-import { LAYOUT, SPEC_DIR_NAME, legacyPaths } from '@specforge/types/directory-layout';
+import { LAYOUT, SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import {
   canonicalProjectSpecModuleEntry,
   normalizeModuleCodeReference,
   resolveSpecModuleIdentity,
 } from '@specforge/types';
 import { scanHostProfile, PROFILE_TTL_MS, getHostProfilePath } from '@specforge/host-profile';
+import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { serializeObservabilityConfigDocument } from '@specforge/observability';
+
+export interface ProjectThinPluginDeploymentResult {
+  status: 'installed' | 'updated' | 'unchanged';
+  targetPath: string;
+}
+
+/**
+ * Deploy the installer-owned Thin Plugin source into the only current OpenCode
+ * runtime boundary: <project>/.opencode/plugins/sf_specforge.ts.
+ *
+ * The source is validated before any project path is created. This keeps a
+ * missing or incomplete installation fail-closed and prevents a partial
+ * project integration directory from being mistaken for a valid deployment.
+ */
+export async function ensureProjectThinPlugin(
+  projectRoot: string,
+  userRoot: string = resolveSpecForgeUserRoot(),
+): Promise<ProjectThinPluginDeploymentResult> {
+  const sourcePath = join(userRoot, 'integrations', 'opencode', 'sf_specforge.ts');
+  let source: string;
+  try {
+    source = await readFile(sourcePath, 'utf8');
+  } catch {
+    throw new Error(`SPECFORGE_THIN_PLUGIN_SOURCE_MISSING: ${sourcePath}`);
+  }
+  if (!source.trim()) {
+    throw new Error(`SPECFORGE_THIN_PLUGIN_SOURCE_EMPTY: ${sourcePath}`);
+  }
+
+  const targetPath = join(projectRoot, '.opencode', 'plugins', 'sf_specforge.ts');
+  let existed = false;
+  try {
+    const current = await readFile(targetPath, 'utf8');
+    existed = true;
+    if (current === source) return { status: 'unchanged', targetPath };
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
+
+  await mkdir(dirname(targetPath), { recursive: true });
+  const tempPath = `${targetPath}.tmp.${process.pid}.${Date.now()}`;
+  try {
+    await writeFile(tempPath, source, 'utf8');
+    await rename(tempPath, targetPath);
+  } catch (error) {
+    await unlink(tempPath).catch(() => undefined);
+    throw error;
+  }
+  return { status: existed ? 'updated' : 'installed', targetPath };
+}
 
 export interface InitEntry {
   /** Relative path from project root, including .specforge */
@@ -59,72 +106,16 @@ export interface InitResult {
   moduleRegistry: ModuleRegistryNormalization;
 }
 
+export interface ProjectInitOptions {
+  ensureHostProfile?: () => Promise<void>;
+}
+
 type SystemTemplate = (projectName: string, now: string) => string;
 
 const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
-  'manifest.json': (name, now) =>
-    JSON.stringify(
-      {
-        schema_version: '6.0',
-        project_name: name,
-        created_at: now,
-      },
-      null,
-      2
-    ) + '\n',
-
   'config/project.json': () => JSON.stringify({ schema_version: '1.0' }, null, 2) + '\n',
 
-  'config/risk_policy.json': () =>
-    JSON.stringify({ schema_version: '1.0', rules: [] }, null, 2) + '\n',
-
-  'config/skill_fragments.json': () =>
-    JSON.stringify({ schema_version: '1.0', fragments: {} }, null, 2) + '\n',
-
-  'config/observability.json': () =>
-    JSON.stringify(
-      {
-        enabled: true,
-        level: 'replay',
-        capture_plugin_events: true,
-        capture_tool_calls: true,
-        capture_tool_context: true,
-        capture_raw_context: true,
-        capture_daemon_rpc: true,
-        capture_handler_io: true,
-        capture_state_snapshots: true,
-        capture_artifact_io: true,
-        capture_gate_inputs: true,
-        capture_hardstop: true,
-        capture_payload: true,
-        redact_secrets: true,
-        max_inline_payload_bytes: 0,
-        payload_storage: 'file',
-        capture_raw_context_full: false,
-        capture_raw_context_summary: true,
-        record_event_payload: false,
-        ignored_events: [
-          'message.part.updated',
-          'message.updated',
-          'session.updated',
-          'session.status',
-          'session.diff',
-        ],
-        summary_events: [
-          'message.part.delta',
-          'experimental.chat.messages.transform',
-          'experimental.chat.system.transform',
-          'chat.params',
-          'chat.headers',
-        ],
-      },
-      null,
-      2
-    ) + '\n',
-
-  'knowledge/graph.json': () => JSON.stringify({ nodes: [], edges: [] }, null, 2) + '\n',
-
-  'specs/README.md': () => '# Specs\n\nWork Item 规格文档目录。\n',
+  'config/observability.json': () => serializeObservabilityConfigDocument('standard'),
 
   'project/spec_manifest.json': name =>
     JSON.stringify(
@@ -183,7 +174,7 @@ const SYSTEM_FILE_CONTENT: Record<string, SystemTemplate> = {
     ) + '\n',
 
   'project/modules/CORE/module.json': () =>
-    JSON.stringify({ module_code: 'CORE', status: 'active' }, null, 2) + '\n',
+    JSON.stringify({ schema_version: '1.0', module_code: 'CORE', status: 'active' }, null, 2) + '\n',
 
   '.gitignore': () => 'runtime/\nlogs/\nsessions/\narchive/\ncas/\n',
 };
@@ -229,50 +220,8 @@ function isCanonicalProjectSpecModuleEntry(entry: unknown, moduleCode: string): 
   return JSON.stringify(entry) === JSON.stringify(governedCanonical);
 }
 
-/**
- * Ensure root .specforge/manifest.json explicitly.
- *
- * This is intentionally independent of LAYOUT. If directory-layout.ts drifts,
- * project bootstrap must still satisfy sf_state_transition's guard.
- */
-async function ensureRootManifest(
-  projectRoot: string,
-  projectName: string,
-  now: string,
-  result: InitResult
-): Promise<void> {
-  const manifestRel = join(SPEC_DIR_NAME, 'manifest.json');
-  const manifestPath = join(projectRoot, manifestRel);
-  const content = SYSTEM_FILE_CONTENT['manifest.json'](projectName, now);
-
-  await mkdir(dirname(manifestPath), { recursive: true });
-
-  const exists = await fileExists(manifestPath);
-  if (!exists) {
-    await writeFile(manifestPath, content, 'utf-8');
-    if (!result.created.includes(manifestRel)) result.created.push(manifestRel);
-    return;
-  }
-
-  try {
-    const existing = await readFile(manifestPath, 'utf-8');
-    if (!existing.trim()) {
-      await writeFile(manifestPath, content, 'utf-8');
-      if (!result.created.includes(manifestRel)) result.created.push(manifestRel);
-    } else if (!result.existed.includes(manifestRel)) {
-      result.existed.push(manifestRel);
-    }
-  } catch {
-    await writeFile(manifestPath, content, 'utf-8');
-    if (!result.created.includes(manifestRel)) result.created.push(manifestRel);
-  }
-}
-
 function buildManifest(): InitEntry[] {
   const entries: InitEntry[] = [];
-
-  // Root manifest is critical and must always be present, regardless of LAYOUT.
-  entries.push({ path: join(SPEC_DIR_NAME, 'manifest.json'), type: 'system_file' });
 
   // Observability config is project-local and must be visibly present after sf_project_init.
   // If missing, OBS is off by design, so project initialization must deploy it.
@@ -289,7 +238,11 @@ function buildManifest(): InitEntry[] {
   }
 
   for (const [key, value] of Object.entries(LAYOUT as Record<string, unknown>)) {
-    if (key === 'configFiles' || key === 'projectFiles' || key === 'workItemFiles') continue;
+    if (
+      key === 'configFiles' ||
+      key === 'projectFiles' ||
+      key === 'workItemFiles'
+    ) continue;
 
     if (typeof value === 'string') {
       const normalized = normalizeLayoutPath(value);
@@ -303,7 +256,7 @@ function buildManifest(): InitEntry[] {
     }
   }
 
-  for (const subValue of Object.values(legacyPaths.configFiles ?? {})) {
+  for (const subValue of Object.values(LAYOUT.configFiles)) {
     if (typeof subValue === 'string') {
       const entry = makeFileEntry(normalizeLayoutPath(subValue));
       if (entry) entries.push(entry);
@@ -325,7 +278,7 @@ function buildManifest(): InitEntry[] {
 
   entries.push({ path: join(SPEC_DIR_NAME, '.gitignore'), type: 'system_file' });
 
-  // Dedupe by path; root manifest may appear from both explicit entry and LAYOUT.
+  // Dedupe by path because explicit current entries may also appear in LAYOUT.
   const seen = new Set<string>();
   return entries.filter(entry => {
     const key = entry.path.replace(/\\/g, '/');
@@ -356,7 +309,8 @@ function makeFileEntry(relativePath: string): InitEntry | null {
 
 export async function ensureProjectInit(
   projectRoot: string,
-  projectName?: string
+  projectName?: string,
+  options: ProjectInitOptions = {},
 ): Promise<InitResult> {
   const result: InitResult = {
     success: true,
@@ -370,13 +324,6 @@ export async function ensureProjectInit(
 
   const name = projectName || projectRoot.split(/[/\\]/).pop() || 'untitled';
   const now = new Date().toISOString();
-
-  try {
-    await ensureRootManifest(projectRoot, name, now, result);
-  } catch (err: any) {
-    result.errors.push(`${SPEC_DIR_NAME}/manifest.json: ${err.message}`);
-    result.success = false;
-  }
 
   const manifest = buildManifest();
 
@@ -415,7 +362,6 @@ export async function ensureProjectInit(
         if (exists) {
           try {
             const existing = await readFile(fullPath, 'utf-8');
-            // Do not overwrite a non-empty root manifest if it already exists.
             // Do not overwrite a non-empty observability config because it is user/project policy.
             // Do not overwrite a non-empty extension_registry.json: it is a governed
             // project-spec truth source (namespaces + cross-module contracts) written
@@ -425,8 +371,7 @@ export async function ensureProjectInit(
             // Do not overwrite a non-empty .gitignore. Bootstrap owns only its initial
             // creation; ProjectManager exclusively maintains the managed block.
             if (
-              (normalizedRel === 'manifest.json' ||
-                normalizedRel === 'config/observability.json' ||
+              (normalizedRel === 'config/observability.json' ||
                 normalizedRel === 'project/spec_manifest.json' ||
                 normalizedRel === 'project/modules/CORE/module.json' ||
                 normalizedRel === 'project/extension_registry.json' ||
@@ -473,16 +418,8 @@ export async function ensureProjectInit(
     }
   }
 
-  // Re-check critical root manifest after layout traversal.
   try {
-    await ensureRootManifest(projectRoot, name, now, result);
-  } catch (err: any) {
-    result.errors.push(`${SPEC_DIR_NAME}/manifest.json: ${err.message}`);
-    result.success = false;
-  }
-
-  try {
-    await ensureHostProfile();
+    await (options.ensureHostProfile ?? ensureHostProfile)();
   } catch (err: any) {
     result.errors.push(`host-profile: ${err.message}`);
     result.success = false;

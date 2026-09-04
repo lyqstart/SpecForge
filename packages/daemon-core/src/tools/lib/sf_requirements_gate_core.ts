@@ -9,19 +9,16 @@
 
 import { readFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
-import { legacyWorkItemSpecArtifact, workItemRoot } from '@specforge/types/directory-layout';
+import { workItemRoot } from '@specforge/types/directory-layout';
 import { resolveWorkItemSpecArtifacts } from './governance-invariants-v11';
-import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { parseAllVerificationStrategies } from './sf_verification_types';
 import { buildTolerantHeaderRegex } from './sf_section_matcher';
 import { resolveRequirementsPath, checkEarsCompliance } from './sf_ears_parser';
 import { FILE_SIZE_LIMIT } from './sf_ears_types';
-import type { SyncSummary } from './sf_knowledge_graph_core';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
 
-// 向后兼容 re-export：现有消费方可继续从此文件导入
-export type { GateResult, SyncSummary } from './sf_gate_types';
+export type { GateResult } from './sf_gate_types';
 export type { GateModeSpec } from './sf_gate_types';
 
 /**
@@ -391,12 +388,11 @@ export async function checkRequirementsGate(
       };
     }
 
-    // mode 产物仍使用既有 Work Item 路径；旧 specs 路径仅作只读兼容回退。
+    // mode 产物只读取当前 Work Item 路径；当前发布不读取旧 specs 项目数据。
     let resolvedDocument: { content: string; path: string } | null;
     try {
       resolvedDocument = await readFirstAvailable([
         join(workItemRoot(baseDir, workItemId), spec.targetFile),
-        legacyWorkItemSpecArtifact(baseDir, workItemId, spec.targetFile),
       ]);
     } catch (err: unknown) {
       return {
@@ -519,23 +515,11 @@ async function existingRequirementsGateCheck(
     };
   }
 
-  let kgSync: SyncSummary | null = null;
-  try {
-    if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, 'requirements');
-      if (kgResult.success && kgResult.summary) kgSync = kgResult.summary;
-      else if (kgResult.error) warnings.push(`KG sync warning: ${kgResult.error}`);
-    }
-  } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`);
-  }
-
   return {
     status: 'pass',
     blocking_issues: [],
     warnings,
     next_action: 'continue',
-    kg_sync: kgSync,
     details: { requirements_candidate_paths: artifacts.map(artifact => artifact.path) },
   };
 }
@@ -594,7 +578,7 @@ export async function checkBugfixGate(workItemId: string, baseDir: string): Prom
     // V3.4.0: 版本兼容性检查（动态导入，失败时静默跳过）
     await tryCheckCompatibility(baseDir, 'sf_requirements_gate_core');
 
-    const docPath = legacyWorkItemSpecArtifact(baseDir, workItemId, 'bugfix.md');
+    const docPath = join(workItemRoot(baseDir, workItemId), 'bugfix.md');
 
     // 1. 读取 bugfix.md
     let content: string;
@@ -650,27 +634,11 @@ export async function checkBugfixGate(workItemId: string, baseDir: string): Prom
       };
     }
 
-    // ★ V4.0: KG sync on pass
-    let kgSync: SyncSummary | null = null;
-    try {
-      if (await isKGEnabled(baseDir)) {
-        const kgResult = await syncFromSpec(workItemId, baseDir, 'requirements');
-        if (kgResult.success && kgResult.summary) {
-          kgSync = kgResult.summary;
-        } else if (kgResult.error) {
-          warnings.push(`KG sync warning: ${kgResult.error}`);
-        }
-      }
-    } catch (err) {
-      warnings.push(`KG sync failed: ${(err as Error).message}`);
-    }
-
     return {
       status: 'pass',
       blocking_issues: [],
       warnings,
       next_action: 'continue',
-      kg_sync: kgSync,
     };
   } catch (err) {
     await logErrorToFile(baseDir, 'sf_requirements_gate_core', 'checkBugfixGate', err);

@@ -23,7 +23,6 @@ import {
   isValidV11Transition,
   WI_STATUSES_V11,
   isAuthorizedAdvancementSubject,
-  performResumeCheck,
 } from '../src/tools/lib/state-machine-v11';
 
 import {
@@ -41,7 +40,6 @@ import {
 import {
   createWorkItem,
   initializeClosureFiles,
-  updateWorkItemStatus,
 } from '../src/tools/lib/work-item-lifecycle-v11';
 
 // ---------------------------------------------------------------------------
@@ -286,7 +284,8 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
     const wiContent = await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8');
     const wi = JSON.parse(wiContent);
     expect(wi.work_item_id).toBe('WI-0001');
-    expect(wi.status).toBe('created');
+    expect(wi.schema_version).toBe('1.1');
+    expect(wi).not.toHaveProperty('status');
     expect(wi.code_change_allowed).toBe(false);
 
     // 验证 intake.md
@@ -326,66 +325,19 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
     expect(mergeReport).toContain('not_applicable');
   });
 
-  it('updates work item status', async () => {
+  it('keeps lifecycle status out of work item metadata', async () => {
     const wiDir = await createWorkItem({
       projectRoot: tmpDir,
       workItemId: 'WI-0003',
-      userRequest: 'Test status update',
+      userRequest: 'Test metadata-only Work Item creation',
+      workflowType: 'feature_spec',
+      workflowPath: 'requirement_change_path',
     });
-
-    await updateWorkItemStatus(wiDir, 'intake_ready');
 
     const wiContent = await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8');
     const wi = JSON.parse(wiContent);
-    expect(wi.status).toBe('intake_ready');
-  });
-});
-
-// ---------------------------------------------------------------------------
-// §5.4 Resume Check
-// ---------------------------------------------------------------------------
-
-describe('v1.1 Resume Check（§5.4）', () => {
-  it('detects missing files', async () => {
-    const wiDir = await createWorkItem({
-      projectRoot: tmpDir,
-      workItemId: 'WI-0004',
-      userRequest: 'Test resume',
-    });
-
-    const result = await performResumeCheck(wiDir);
-    expect(result.requiredFilesExist).toBe(false);
-    expect(result.missingFiles.length).toBeGreaterThan(0);
-  });
-
-  it('passes when all required files exist', async () => {
-    const wiDir = await createWorkItem({
-      projectRoot: tmpDir,
-      workItemId: 'WI-0005',
-      userRequest: 'Test resume complete',
-    });
-
-    await initializeClosureFiles(wiDir, 'WI-0005', 'code_only_fast_path', 'PSV-0001');
-    await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
-    await fs.writeFile(
-      path.join(wiDir, 'candidates', 'tasks.md'),
-      '# Tasks\n\n### TASK-WI-0005-001\n',
-    );
-    await fs.writeFile(
-      path.join(wiDir, 'candidates', 'trace_delta.md'),
-      '# Trace Delta\n\nTrace Impact: none\n\nAuthored analysis.\n',
-    );
-    await fs.writeFile(
-      path.join(wiDir, 'verification_report.md'),
-      '# Verification Report\n\nVerified.\n',
-    );
-    await fs.writeFile(
-      path.join(wiDir, 'evidence', 'evidence_manifest.json'),
-      JSON.stringify({ entries: [{ id: 'EV-1', status: 'passed' }] }),
-    );
-
-    const result = await performResumeCheck(wiDir);
-    expect(result.requiredFilesExist).toBe(true);
-    expect(result.missingFiles).toEqual([]);
+    expect(wi).not.toHaveProperty('status');
+    expect(wi.workflow_type).toBe('feature_spec');
+    expect(wi.workflow_path).toBe('requirement_change_path');
   });
 });

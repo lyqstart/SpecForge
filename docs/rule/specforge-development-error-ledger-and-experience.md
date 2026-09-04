@@ -13166,3 +13166,10325 @@ CLASSIFICATION=NOT_REPRODUCED_IN_CURRENT_MAIN
 STATUS=CLOSED_AS_NOT_REPRODUCED
 `
 <!-- SPECFORGE_ERR875_TARGETED_ISOLATION_RESULT:END -->
+
+<!-- SPECFORGE_ERR876_878_PRIOR_FAILURE_BACKFILL:START -->
+### ERR-876：现有未提交测试修改包含尾随空格，导致 `git diff --check` 失败
+
+- **分类**：`VALIDATION_DEFECT / HISTORICAL_DEBT`
+- **事实证据**：在 `main@45a0cfee54306a3f29a8ca06dfa827b385b25e50` 的既有 19 个 tracked 修改上执行 `git diff --check`，报告 `packages/permission-engine/tests/property/permission-decision-traceability-property-10.test.ts:296: trailing whitespace`。
+- **根因**：前序定向修复保留了测试逻辑，但没有在形成当前工作区后完成或消费最终 `git diff --check` 结果，格式失败也未及时进入错误账本。
+- **影响**：当前差异不能通过提交前 Git 质量门禁；在修复并复验前不得提交，也不得把该测试修改宣布为完成。
+- **正确做法**：在保留已验证测试语义的前提下删除该行尾随空格；随后独立运行该回归、相关包测试和 `git diff --check`，并把结果与完整 19 文件范围重新对账。
+- **类防护**：`EXP-008`、`EXP-011`、`EXP-015`、`EXP-016`、`EXP-032`、`EXP-045`。
+- **机器防护**：提交前固定执行 `git diff --check`；任何输出均阻断提交和完成声明。
+- **状态**：`CLOSED`。
+
+### ERR-877：PowerShell 依赖检索命令的正则引号构造错误
+
+- **分类**：`SCRIPT_DEFECT / EVIDENCE_DEFECT`
+- **事实证据**：只读依赖审计命令把含双引号和分组的正则嵌入 PowerShell 双引号上下文，PowerShell 将正则片段中的 `migration` 解释为命令并返回 `The term 'migration' is not recognized`；命令未完成依赖审计。
+- **根因**：没有先固定 PowerShell、外部程序和正则三层解析边界，把复杂正则直接嵌入可插值字符串。
+- **影响**：该次只读查询结果无效；没有文件、Git 索引、进程或产品状态变化。
+- **正确做法**：依赖审计改用简单字面量模式、分项查询或已验证的结构化 Manifest 解析；命令失败结果不得作为“没有依赖”的证据。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-012`、`EXP-019`。
+- **机器防护**：复杂 PowerShell 正则先在最小只读输入上验证最终 argv/匹配语义；正式审计使用第二种独立证据交叉验证。
+- **状态**：`CLOSED`；失败已分类且确认零写入，正式依赖审计尚未完成。
+
+### ERR-878：对超长追加型账本使用 `Get-Content -Tail` 未产生可消费输出
+
+- **分类**：`EVIDENCE_DEFECT / SCRIPT_DEFECT`
+- **事实证据**：对当前错误账本执行 `Get-Content -Tail 120` 用时约 30 秒但没有返回可消费正文；随后使用带唯一 Marker 的 `rg -n` 在 0.8 秒内确认 ERR-875 末尾锚点位于 13154—13168 行。
+- **根因**：错误账本包含大型、超长行的追加证据，通用文本尾读不是本次“定位唯一结构化 Marker”任务的合适取证方法。
+- **影响**：首次尾部取证无效，但没有文件、Git 索引、进程或产品状态变化；独立 Marker 查询恢复了可复核证据。
+- **正确做法**：对追加型大型账本优先按唯一 Marker、ERR ID 或结构化边界做有界检索；只有确需正文时再按已确认行号分段读取。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-039`。
+- **机器防护**：账本取证命令必须限定唯一 Marker 和最大输出；空输出不得解释为目标不存在。
+- **状态**：`CLOSED`；已用独立有界证据确认目标锚点且零写入失败未遗留状态。
+
+```text
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-876,ERR-877,ERR-878
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR876_878_PRIOR_FAILURE_BACKFILL:END -->
+
+<!-- SPECFORGE_ERR879_BUN_ENTRY_RESOLUTION_FAILURE:START -->
+### ERR-879：未预检当前 PowerShell 的 Bun 入口，定向测试在启动前失败
+
+- **分类**：`ENVIRONMENT_ERROR / VALIDATION_DEFECT / PROCESS_VIOLATION`
+- **事实证据**：在 `packages/permission-engine` 执行四个精确定向测试文件时，PowerShell 返回 `The term 'bun' is not recognized`；测试运行器没有启动，没有产生产品测试结果。
+- **根因**：本轮虽已读取 `EXP-002`、`EXP-052` 和历史 `ERR-024`，但测试命令前没有执行实际 Shell 的 Bun 入口解析，仍按 PATH 中必然存在 `bun` 的假设直接调用，已有类防护没有落实到命令前置检查。
+- **影响**：Permission 核心修复当前仍是 `INSUFFICIENT_EVIDENCE`，不能把该命令失败记为测试失败或测试通过；没有文件、Git 索引、产品进程或外部状态变化。
+- **正确做法**：停止直接重试；先通过只读命令解析当前环境真实 Bun 可执行入口或仓库配置的运行时，再使用同一入口执行精确定向测试，并把入口解析证据与测试结果分开记录。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-052`、`EXP-060`；重复错误关联 `ERR-024`。
+- **机器防护**：任何 Bun 测试、构建或脚本执行前必须先记录 `BUN_ENTRY`、解析方法和存在性；入口不可解析时 Fail Closed，不得发出测试结论。
+- **状态**：`IDENTIFIED`。
+
+```text
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-879
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CLASS=ERR-024
+PRIOR_DEFENSE_FAILURE=COMMAND_PRECHECK_NOT_EXECUTED
+```
+<!-- SPECFORGE_ERR879_BUN_ENTRY_RESOLUTION_FAILURE:END -->
+
+<!-- SPECFORGE_ERR879_PACKAGE_LOCAL_VALIDATION_RESULT:START -->
+### ERR-879 后续：仓库内正式包测试入口已验证，Bun 环境缺口仍保留
+
+- **事实证据**：`Get-Command bun`、`where.exe bun` 与三个常见安装路径均未找到 Bun；仓库各受影响包存在由其 `package.json#scripts.test` 指向的本地 `vitest.exe`，因此使用该明确入口完成原定包级测试。Permission 4 文件 59 tests、Service Management 1 文件 6 tests、Configuration 2 文件 34 tests、Observability 1 文件 9 tests 均通过。
+- **结论边界**：包级 Vitest 结果可信；不能据此声称根级 Bun 脚本、`bun:test` 测试或 ERR-681 全量回归可执行。Bun 未安装/未入 PATH 仍是后续根级回归的环境前置缺口。
+
+```text
+ERR879_PACKAGE_LOCAL_TEST_ENTRY=PACKAGE_NODE_MODULES_VITEST_EXE
+ERR879_PACKAGE_LOCAL_VALIDATION=PASS
+ERR879_BUN_ENTRY=NOT_FOUND
+ERR879_ROOT_BUN_WORKFLOW_STATUS=BLOCKED_BY_ENVIRONMENT_PREREQUISITE
+ERR879_STATUS=PARTIALLY_RESOLVED_PACKAGE_LOCAL_VALIDATION_ONLY
+```
+<!-- SPECFORGE_ERR879_PACKAGE_LOCAL_VALIDATION_RESULT:END -->
+
+<!-- SPECFORGE_ERR880_VALIDATED_PATCH_HISTORY_MISCLASSIFICATION:START -->
+### ERR-880：未先对账对应 ERR 条目，误撤已验证的四项 edge 修复
+
+- **分类**：`PROCESS_VIOLATION / EVIDENCE_CLASSIFICATION_DEFECT / VALIDATED_PATCH_HISTORY_IGNORED`
+- **事实证据**：本轮初次审计 19 项未提交修改时，把 path-resolver、migration 与两个 plugin-loader 测试修复按代码表象判为应撤回；随后精确读取账本确认 ERR-723、ERR-725、ERR-726、ERR-731 已记录根因、两 fresh-root 候选验证及 canonical post-verify，原判断与治理历史事实冲突。
+- **根因**：虽然先读了总体 handoff 和错误账本，但在逐文件去留决定前没有按文件反查对应 ERR 条目，把“模块未来可能退出”和“当前已验证修复是否真实”混为一层判断。
+- **影响**：四项测试修复曾在当前工作区被短暂撤回；未提交、未暂存、未推送。现已恢复同义修复，路径 8 tests、静态检查 14 tests、插件注册表 20 tests、版本比较 10 tests 全部通过。
+- **正确做法**：对任何既有 dirty path 做删除/撤回判断前，必须先完成 `path → ERR → candidate evidence → canonical result` 对账；未来产品范围退出只能在权威范围同步后另行删除模块，不能反向改写历史修复真实性。
+- **类防护**：`EXP-002`、`EXP-010`、`EXP-015`、`EXP-060`、`EXP-074`。
+- **状态**：`CLOSED`。
+
+```text
+ERR880_RESTORED_ERROR_IDS=ERR-723,ERR-725,ERR-726,ERR-731
+ERR880_RESTORED_FILE_COUNT=4
+ERR880_POST_RESTORE_TEST_FILES=4
+ERR880_POST_RESTORE_TESTS=52
+ERR880_STATUS=CLOSED
+```
+<!-- SPECFORGE_ERR880_VALIDATED_PATCH_HISTORY_MISCLASSIFICATION:END -->
+
+<!-- SPECFORGE_ERR881_WORK_ITEM_ID_CONSUMER_CONFLICT:START -->
+### ERR-881：三个现役入口仍接受已废止 Work Item ID 格式
+
+- **分类**：`PRODUCT_CONTRACT_CONFLICT / LEGACY_COMPATIBILITY_BRANCH / SINGLE_SOURCE_VIOLATION`
+- **事实证据**：`@specforge/types` 与 Daemon 主校验器均规定唯一格式 `WI-NNNN`；HardStop latch、Safe Bash 和用户级 OpenCode 插件仍使用 `^WI-(\\d{3,4}|\\d{8}-\\d{4})$`，允许 `WI-001` 与 `WI-YYYYMMDD-NNNN`。用户已明确当前产品不保留旧项目兼容分支。
+- **根因**：Work Item ID 合同演进时只更新了共享类型和主要 Handler，三个治理入口保留局部兼容正则，未建立共享定义到不可导入部署投影的消费者一致性测试。
+- **影响**：同一 Work Item 在不同入口可能获得不同合法性结论，HardStop、Write Guard 与插件活动 WI 识别可能接受主 Runtime 拒绝的 ID。
+- **修复**：Daemon 校验器委托 `@specforge/types` 共享规则；HardStop 与 Safe Bash 委托 Daemon 校验器；用户级插件保留不可导入场景所需的部署投影，并新增独立合同测试锁定其与共享正则一致、拒绝两类旧格式。
+- **验证**：5 个相关测试文件 55 tests 通过；`@specforge/types` 与 `@specforge/daemon-core` TypeScript build 均通过。
+- **类防护**：`EXP-010`、`EXP-015`、`EXP-031`、`EXP-032`、`EXP-045`、`EXP-087`。
+- **状态**：`ISOLATED_VALIDATED`；ERR-681 根级全量回归尚未执行。
+
+```text
+ERR881_CAPABILITY=RUNTIME_DEFECT_REPAIRED
+ERR881_LEGACY_COMPATIBILITY=REMOVED_FROM_ACTIVE_CONSUMERS
+ERR881_TARGETED_TEST_FILES=5
+ERR881_TARGETED_TESTS=55
+ERR881_AFFECTED_BUILDS=@specforge/types,@specforge/daemon-core
+ERR881_STATUS=ISOLATED_VALIDATED
+```
+<!-- SPECFORGE_ERR881_WORK_ITEM_ID_CONSUMER_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR882_LEDGER_TAIL_COMMAND_REPEAT:START -->
+### ERR-882：再次使用已知无效的 Get-Content -Tail 读取超大账本
+
+- **分类**：`PROCESS_VIOLATION / REPEATED_COMMAND_ERROR / LEDGER_READ_STRATEGY_DEFECT`
+- **事实证据**：准备补录 ERR-880/881 时再次执行 `Get-Content ... -Tail 180`，命令等待约 10.5 秒后没有返回可用正文；与本轮已补录 ERR-878 属于同一命令类。
+- **根因**：没有把 ERR-878 的替代策略落实为本轮后续命令约束，仍复用了已证明不适合该文件的尾读方式。
+- **影响**：没有文件或外部状态变化，但产生一次重复无效取证；本轮已立即切换为 `rg` 定位 marker + 有界行号数组读取。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`；重复错误关联 `ERR-878`。
+- **机器防护**：本任务后续禁止对该账本使用 `Get-Content -Tail`；必须通过 marker 行号和有界区间读取。
+- **状态**：`CLOSED`。
+
+```text
+ERR882_REPEATED_ERROR_CLASS=ERR-878
+ERR882_REPLACEMENT=RG_MARKER_PLUS_BOUNDED_LINE_RANGE
+ERR882_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-880,ERR-881,ERR-882
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR882_LEDGER_TAIL_COMMAND_REPEAT:END -->
+
+<!-- SPECFORGE_ERR876_RESOLUTION_RESULT:START -->
+### ERR-876 后续：尾随空格已修复并通过范围门禁
+
+```text
+ERR876_FIX=REMOVE_TRAILING_WHITESPACE_WITHOUT_CHANGING_TEST_SEMANTICS
+ERR876_PERMISSION_TARGETED_TEST_FILES=4
+ERR876_PERMISSION_TARGETED_TESTS=59
+ERR876_GIT_DIFF_CHECK=PASS
+ERR876_STATUS=ISOLATED_VALIDATED
+```
+
+Permission 相关四个精确定向文件共 59 tests 通过，当前完整 tracked diff 的 `git diff --check` 无错误；尚未执行 ERR-681 根级全量回归，因此本状态不提升为 Phase12 完成。
+<!-- SPECFORGE_ERR876_RESOLUTION_RESULT:END -->
+
+<!-- SPECFORGE_ERR883_ERR879_LIFECYCLE_STATUS_SCOPE_CONFLATION:START -->
+### ERR-883：ERR-879 后续记录混淆局部验证结果与错误生命周期状态
+
+- **分类**：`GOVERNANCE_DOCUMENT_DEFECT / STATUS_SCOPE_CONFLATION / PROCESS_VIOLATION`
+- **事实证据**：ERR-879 后续块把 `PARTIALLY_RESOLVED_PACKAGE_LOCAL_VALIDATION_ONLY` 写入 `ERR879_STATUS`；该值不属于 `EXP-094` 规定的稳定生命周期枚举。包级 Vitest 已通过与根级 Bun 工作流仍被环境阻断是两个不同作用域的事实，不能合并为新的生命周期状态。
+- **根因**：记录验证边界时没有把父错误生命周期、局部验证子任务和环境阻断分别建模，使用描述性汇总词替代正式状态。
+- **影响**：如果该值继续进入 handoff 或固定文本消费者，会制造第二套状态词汇并使 ERR-879 当前状态不可稳定解析；未影响产品代码、测试结果、Git 索引或外部状态。
+- **正确做法**：保留历史错误字节，追加稳定纠正：ERR-879 继续为 `IDENTIFIED`；包级验证单独记为 `ISOLATED_VALIDATED`；Bun 入口缺失单独记为 blocker。
+- **类防护**：`EXP-049`、`EXP-058`、`EXP-086`、`EXP-087`、`EXP-094`。
+- **机器防护**：后续 handoff 与状态对账必须分别使用 `ERR879_STATUS`、`ERR879_PACKAGE_LOCAL_VALIDATION_STATUS` 和 `ERR879_BLOCKER`，并拒绝 `PARTIALLY_RESOLVED_*` 作为当前生命周期值。
+- **状态**：`CLOSED`。
+
+```text
+ERR879_STATUS=IDENTIFIED
+ERR879_PACKAGE_LOCAL_VALIDATION_STATUS=ISOLATED_VALIDATED
+ERR879_BLOCKER=BUN_ENTRY_NOT_FOUND
+ERR883_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-883
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR883_ERR879_LIFECYCLE_STATUS_SCOPE_CONFLATION:END -->
+
+<!-- SPECFORGE_ERR884_VALIDATION_ENTRY_WORKDIR_DOUBLE_PREFIX:START -->
+### ERR-884：定向验证命令把仓库根相对入口与包工作目录重复拼接
+
+- **分类**：`VALIDATION_HARNESS_DEFECT / COMMAND_PATH_CONTEXT_ERROR / PROCESS_VIOLATION`
+- **事实证据**：命令工作目录已设置为 `packages/daemon-core`，但仍调用 `packages/daemon-core/node_modules/.bin/vitest.exe`；PowerShell 报告该入口无法识别，Vitest 未启动。
+- **根因**：构造命令时没有把 `workdir` 与可执行文件路径视为同一个解析合同，复用了仓库根视角的相对路径。
+- **影响**：没有产品测试结果，不能记为测试失败或通过；没有仓库文件、Git 索引、进程或外部状态副作用。
+- **正确做法**：停止直接重试；补录后重新读取经验门禁；在包工作目录中使用 `node_modules/.bin/vitest.exe`，并先以 `Test-Path -LiteralPath` 验证入口。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-060`。
+- **机器防护**：每条带显式工作目录的验证命令必须在执行前记录解析后的入口路径并验证存在；禁止同时使用仓库根前缀与包级 workdir。
+- **状态**：`CLOSED`。
+
+```text
+ERR884_COMMAND_STARTED=YES
+ERR884_TEST_RUNNER_STARTED=NO
+ERR884_REPOSITORY_SIDE_EFFECT=NONE
+ERR884_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-884
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR884_VALIDATION_ENTRY_WORKDIR_DOUBLE_PREFIX:END -->
+
+<!-- SPECFORGE_ERR885_RENDER_WORKFLOW_DOCS_ESM_DIRNAME_FAILURE:START -->
+### ERR-885：文档消费者回归暴露 render-workflow-docs 在 Node 24 ESM 下使用 __dirname
+
+- **分类**：`VALIDATION_HARNESS_DEFECT / ENVIRONMENT_BOUNDARY / PRODUCT_DEFECT_UNDETERMINED`
+- **事实证据**：8 个 handoff 相关测试文件共 43 tests 执行后 42 pass、1 fail；失败位于 `specforge-development-err125.test.ts` 的生成文档同步用例。子进程以 Node.js v24.19.0 加载 `scripts/render-workflow-docs.ts`，在第 266 行因 ES Module 作用域不存在 `__dirname` 退出 1。该文件的 handoff 历史记录断言已通过。
+- **根因边界**：直接失败点已确认是生成器 CLI 的 ESM 入口兼容性；该脚本和失败用例均未被本轮修改。尚未完成独立 HEAD A/B，因此产品缺陷归属保持 `UNDETERMINED`，不得归因于 current-handoff 状态同步。
+- **影响**：handoff 固定文本消费者已验证通过，但包含无关生成器执行的整个测试文件不能报告全绿；根级 ERR-681 回归状态不变。
+- **正确做法**：不修改测试掩盖失败；把生成器 ESM 入口作为独立待分类项，后续在相同 Node/命令下执行 HEAD A/B 或按 ERR-681 分类顺序处理。本轮仅运行精确 handoff 消费者断言并保留完整失败证据。
+- **类防护**：`EXP-002`、`EXP-008`、`EXP-009`、`EXP-010`、`EXP-011`、`EXP-016`、`EXP-074`、`EXP-090`。
+- **机器防护**：CLI 生成器必须同时通过直接执行与无副作用 ES Module 导入；环境版本、执行入口和失败用例必须独立记录。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR885_NODE_VERSION=v24.19.0
+ERR885_TEST_FILES=8
+ERR885_TESTS_PASS=42
+ERR885_TESTS_FAIL=1
+ERR885_HANDOFF_ASSERTIONS=PASS
+ERR885_PRODUCT_ATTRIBUTION=INSUFFICIENT_EVIDENCE_PENDING_AB
+ERR885_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-885
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR885_RENDER_WORKFLOW_DOCS_ESM_DIRNAME_FAILURE:END -->
+
+<!-- SPECFORGE_ERR886_UNVERIFIED_IMMUTABLE_EVIDENCE_REFERENCE:START -->
+### ERR-886：current-handoff 把仅存在于动态文档的 SFV539 记录标为 immutable evidence
+
+- **分类**：`EVIDENCE_INTEGRITY_DEFECT / GOVERNANCE_DOCUMENT_DEFECT / PROCESS_VIOLATION`
+- **事实证据**：全仓排除 current-handoff 与错误账本后检索 `SFV539` 和 `ERR875_TARGETED_ISOLATION` 均无命中；现有证据只能证明动态交接和账本记录了该结果，不能证明存在独立不可变证据产物。
+- **根因**：更新唯一当前状态块时，把“最新已记录验证结果”与“可定位的 immutable evidence”合并为同一字段，没有先完成证据路径存在性检查。
+- **影响**：若不纠正，会夸大 ERR-875 证据强度并违反证据可追溯原则；不影响已运行测试、产品代码、Git 索引或外部状态。
+- **正确做法**：`LATEST_IMMUTABLE_EVIDENCE` 设为 `INSUFFICIENT_EVIDENCE`；另设 `LATEST_RECORDED_EVIDENCE=SFV539_ERR875_TARGETED_ISOLATION_RESULT_IN_HANDOFF_AND_LEDGER`，明确证据等级。
+- **类防护**：`EXP-001`、`EXP-005`、`EXP-007`、`EXP-017`、`EXP-032`、`EXP-044`、`EXP-060`。
+- **机器防护**：任何 immutable evidence 字段在写入前必须解析到仓库内不可变产物路径或外部可复核标识；仅有动态文档命中时必须填 `INSUFFICIENT_EVIDENCE`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR886_SEARCH_SCOPE=REPOSITORY_EXCLUDING_HANDOFF_AND_LEDGER
+ERR886_INDEPENDENT_IMMUTABLE_EVIDENCE_MATCHES=0
+ERR886_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-886
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR886_UNVERIFIED_IMMUTABLE_EVIDENCE_REFERENCE:END -->
+
+<!-- SPECFORGE_ERR886_RESOLUTION_RESULT:START -->
+### ERR-886 后续：immutable evidence 与动态记录证据已分离
+
+```text
+ERR886_HANDOFF_LATEST_IMMUTABLE_EVIDENCE=INSUFFICIENT_EVIDENCE
+ERR886_HANDOFF_LATEST_RECORDED_EVIDENCE=SFV539_ERR875_TARGETED_ISOLATION_RESULT_IN_HANDOFF_AND_LEDGER
+ERR886_STATUS=CLOSED
+```
+
+current-handoff 不再把动态文档记录冒充独立不可变证据；ERR-875 的历史记录保留，证据强度边界已显式表达。
+<!-- SPECFORGE_ERR886_RESOLUTION_RESULT:END -->
+
+<!-- SPECFORGE_ERR879_VERIFIED_BUN_RUNTIME_RESULT:START -->
+### ERR-879 后续：当前会话已取得并验证正式 Bun 根级入口
+
+```text
+ERR879_BUN_SOURCE=OFFICIAL_GITHUB_LATEST_WINDOWS_X64_RELEASE
+ERR879_BUN_INSTALL_SCOPE=SYSTEM_TEMP_ONLY_NO_PATH_CHANGE_NO_GLOBAL_INSTALL
+ERR879_BUN_VERSION=1.4.0
+ERR879_BUN_REVISION=1.4.0+34cbb9a40
+ERR879_REPOSITORY_SIDE_EFFECT=NONE
+ERR879_RUNTIME_PERSISTENCE=CURRENT_SESSION_TEMP_PATH_ONLY
+ERR879_STATUS=ISOLATED_VALIDATED
+```
+
+仓库未声明固定 Bun 版本，CI 使用 `latest`；当前会话可通过已验证绝对路径执行正式 Bun 命令。该结果只解除运行时入口缺口，不代表 ERR-681 或 Phase 12 回归通过。
+<!-- SPECFORGE_ERR879_VERIFIED_BUN_RUNTIME_RESULT:END -->
+
+<!-- SPECFORGE_ERR796_C2_TARGETED_CLASSIFICATION:START -->
+### ERR-796 后续：C2 定向复现归类为状态机测试消费者漂移
+
+- **事实证据**：使用官方 Bun `1.4.0+34cbb9a40` 执行 `@specforge/daemon-core::tests/unit/state-concurrency.test.ts`，9 tests 中 5 fail、4 pass；5 项均在并发/版本锁断言前因测试调用 `to_state=intake/design` 或 `from_state=intake/requirements` 被 StateManager 拒绝。
+- **权威对账**：`packages/daemon-core/src/tools/lib/state_machine.ts`、`packages/types/src/work-item-types.ts`、共享常量及架构文档一致规定当前状态链以 `created → intake_ready → impact_analyzing...` 开始，不包含 `intake`、`requirements`、`design`。StateManager 从共同状态源读取合法状态并正确失败关闭。
+- **分类结论**：`TEST_CONSUMER_DRIFT`；现有产品状态机行为与当前正式契约一致，禁止恢复废止状态或添加兼容分支。
+- **修复范围**：只同步 `state-concurrency.test.ts` 中用于进入被测版本锁路径的状态夹具；并发、磁盘覆写、重建重试、版本单调性和外部状态同步断言保持不变。
+- **类防护**：`EXP-004`、`EXP-010`、`EXP-011`、`EXP-016`、`EXP-022`、`EXP-049`、`EXP-074`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR796_TARGETED_TEST_FILES=1
+ERR796_TARGETED_TESTS_PASS=4
+ERR796_TARGETED_TESTS_FAIL=5
+ERR796_FIRST_DEVIATION=TEST_FIXTURE_OBSOLETE_STATE_NAMES
+ERR796_PRODUCT_STATE_MACHINE=SUPPORTED
+ERR796_CLASSIFICATION=TEST_CONSUMER_DRIFT
+ERR796_LEGACY_COMPATIBILITY_ACTION=FORBIDDEN
+ERR796_STATUS=IDENTIFIED
+ERR681_STATUS=IDENTIFIED
+PHASE12_STATUS=IDENTIFIED
+```
+<!-- SPECFORGE_ERR796_C2_TARGETED_CLASSIFICATION:END -->
+
+<!-- SPECFORGE_ERR887_STATEMANAGER_TEST_EXTERNAL_USER_WRITE_DENIED:START -->
+### ERR-887：相邻 StateManager 回归在受限工作区写入用户目录被拒绝
+
+- **分类**：`VALIDATION_ENVIRONMENT_BOUNDARY / TEST_ISOLATION_DEFECT / EXTERNAL_USER_WRITE_DENIED`
+- **事实证据**：使用官方 Bun `1.4.0+34cbb9a40` 同时执行 `src/state/StateManager.test.ts` 与 `tests/unit/state-concurrency.test.ts`；C2 文件 9 tests 全部通过，StateManager 文件 7 tests 中 5 项因尝试在 `C:\Users\lyq\.config\opencode\sf-user\projects\56dec0de` 创建目录或打开 `events.jsonl` 被当前 workspace-write 环境以 `EPERM` 拒绝，另 2 项通过。总计 16 tests 中 11 pass、5 fail。
+- **根因边界**：直接失败点已确认是相邻测试使用真实用户级路径，而当前验证环境只允许写仓库工作区；该测试和路径生产实现均未被本轮 C2 补丁修改。尚未核对测试路径注入合同，因此产品归属保持 `INSUFFICIENT_EVIDENCE`。
+- **影响**：不能把相邻 StateManager 文件报告为通过，也不能据此否定 C2 同文件的 9/9 结果；没有用户目录或仓库外写入成功，没有 Git 索引、提交或远程副作用。
+- **正确做法**：不得直接提升权限或重复执行；先读取测试与 PersonalPathResolver 的真实路径合同，优先使用正式可注入的临时目录完成无用户现场污染的 A/B 验证。若现有测试没有合法隔离入口，再单独归类测试缺陷。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-009`、`EXP-011`、`EXP-060`、`EXP-074`。
+- **机器防护**：执行可能实例化 PersonalPathResolver 的测试前，必须先解析目标写入根并证明其位于允许的临时或工作区路径；路径不受控时 fail closed，不启动写入测试。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR887_BUN_VERSION=1.4.0+34cbb9a40
+ERR887_TEST_FILES=2
+ERR887_TESTS_PASS=11
+ERR887_TESTS_FAIL=5
+ERR887_C2_TEST_FILE_STATUS=ISOLATED_VALIDATED
+ERR887_EXTERNAL_WRITE_SUCCEEDED=NO
+ERR887_PRODUCT_ATTRIBUTION=INSUFFICIENT_EVIDENCE
+ERR887_STATUS=IDENTIFIED
+```
+<!-- SPECFORGE_ERR887_STATEMANAGER_TEST_EXTERNAL_USER_WRITE_DENIED:END -->
+
+<!-- SPECFORGE_ERR888_LEDGER_TAIL_COMMAND_REPEAT:START -->
+### ERR-888：第三次违反账本有界读取约束并使用 Get-Content -Tail
+
+- **分类**：`PROCESS_VIOLATION / REPEATED_COMMAND_ERROR / LEDGER_READ_STRATEGY_DEFECT`
+- **事实证据**：为取得最新条目格式再次执行 `Get-Content ... -Tail 220`；命令本次返回正文，但明确违反 ERR-882 已建立的“后续禁止 Tail、只允许 marker 加有界行号读取”机器防护。
+- **根因**：当前任务压缩摘要已明确保留该禁令，但构造取证命令时没有把历史命令禁令加入执行前检查。
+- **影响**：没有文件、Git 索引或外部状态变化，但构成与 ERR-878、ERR-882 同类的第三次过程错误。
+- **正确做法**：此后账本定位只使用 `rg -n` 查 marker，再用已知行号的数组切片读取；不得再以“本次可能能返回”为理由使用 Tail。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`；重复错误关联 `ERR-878`、`ERR-882`。
+- **状态**：`CLOSED`。
+
+```text
+ERR888_REPEATED_ERROR_CLASS=ERR-878,ERR-882
+ERR888_REPLACEMENT=RG_MARKER_PLUS_BOUNDED_LINE_RANGE
+ERR888_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-887,ERR-888
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR888_LEDGER_TAIL_COMMAND_REPEAT:END -->
+
+<!-- SPECFORGE_ERR796_C2_TARGETED_VALIDATION_RESULT:START -->
+### ERR-796 后续：C2 状态夹具同步已完成隔离验证
+
+```text
+ERR796_FIX=REPLACE_OBSOLETE_INTake_REQUIREMENTS_DESIGN_TRANSITION_FIXTURES_WITH_CREATED_INTAKE_READY
+ERR796_PRODUCTION_CODE_CHANGED=NO
+ERR796_LEGACY_STATE_SUPPORT_ADDED=NO
+ERR796_TARGETED_TEST_FILES=1
+ERR796_TARGETED_TESTS_PASS=9
+ERR796_TARGETED_TESTS_FAIL=0
+ERR796_DAEMON_CORE_BUILD=PASS
+ERR796_STATUS=ISOLATED_VALIDATED
+ERR681_STATUS=IDENTIFIED
+PHASE12_STATUS=IDENTIFIED
+```
+
+同一 Bun `1.4.0+34cbb9a40`、同一测试文件复跑由补丁前 4 pass/5 fail 变为补丁后 9 pass/0 fail；并发版本锁、磁盘版本冲突、WAL 重建重试、状态版本单调性及外部状态同步断言均保留。`@specforge/daemon-core` 的 `tsc` 构建通过。该结果只关闭 ERR-796 的隔离修复，不代表 ERR-681 根级全量回归或 Phase 12 完成。
+<!-- SPECFORGE_ERR796_C2_TARGETED_VALIDATION_RESULT:END -->
+
+<!-- SPECFORGE_ERR887_CLASSIFICATION_RESULT:START -->
+### ERR-887 后续：相邻 StateManager 文件确认为测试隔离与状态消费者漂移
+
+```text
+ERR887_PATH_CONTRACT=OPENCODE_CONFIG_DIR_SUPPORTED_BY_USER_LEVEL_PATH_PRODUCER
+ERR887_EXISTING_ISOLATED_CONSUMERS=CONFIRMED
+ERR887_TEST_PATH_INJECTION=ABSENT
+ERR887_TEST_CLEANUP_TARGET=OBSOLETE_NON_PRODUCER_PATH
+ERR887_ADDITIONAL_OBSOLETE_STATE=intake
+ERR887_CLASSIFICATION=TEST_CONSUMER_DRIFT
+ERR887_STATUS=IDENTIFIED
+```
+
+生产路径实现和仓库现役测试共同证明 `OPENCODE_CONFIG_DIR` 是正式隔离入口；`StateManager.test.ts` 未设置该入口，并在 `afterEach` 清理与当前生产者不一致的 `~/.specforge/projects/...`。同文件另有 `to_state=intake` 的废止状态消费者。该文件未被本轮 C2 补丁修改，当前不通过不能归因于 ERR-796；后续必须作为独立测试消费者修复，不得通过提升权限或恢复旧状态处理。
+<!-- SPECFORGE_ERR887_CLASSIFICATION_RESULT:END -->
+
+<!-- SPECFORGE_ERR889_ERR796_RESULT_TOKEN_CASE_TYPO:START -->
+### ERR-889：ERR-796 结果字段中的废止状态列表存在大小写拼写错误
+
+- **分类**：`GOVERNANCE_DOCUMENT_DEFECT / EVIDENCE_TOKEN_TYPO / PROCESS_VIOLATION`
+- **事实证据**：追加 ERR-796 隔离验证结果时，把修复摘要中的 `INTAKE` 写成 `INTake`；该字段不是生命周期状态，但会降低机器读取与人工审计的一致性。
+- **根因**：写入前只核对了验证数字和生命周期，没有对机器字段 value token 执行精确大小写复核。
+- **影响**：不影响产品代码、测试、构建或 ERR-796 的验证事实；账本为追加式历史，原字节保留，由后续纠正字段覆盖当前解释。
+- **正确做法**：追加规范化纠正字段，不回写或删除原历史；以后机器字段写入前按 token 集合逐字符复核。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-015`、`EXP-025`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR796_FIX_CORRECTED=REPLACE_OBSOLETE_INTAKE_REQUIREMENTS_DESIGN_TRANSITION_FIXTURES_WITH_CREATED_INTAKE_READY
+ERR889_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-889
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR889_ERR796_RESULT_TOKEN_CASE_TYPO:END -->
+
+<!-- SPECFORGE_ERR890_RG_WINDOWS_PATH_GLOB_LITERAL:START -->
+### ERR-890：Windows 下把路径通配符作为 rg 位置参数导致 ADR 格式检索失败
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / WINDOWS_PATH_GLOB_ERROR / PROCESS_VIOLATION`
+- **事实证据**：执行 `rg ... docs/adr/*.md` 时，Windows `rg` 将带星号的路径作为无效字面路径处理，返回 `os error 123`；同一命令中此前的专题重复性检索无命中，ADR 格式检索未完成。
+- **根因**：沿用 shell 自动展开路径 glob 的假设，没有按 Windows PowerShell 与 ripgrep 的真实接口使用 `-g` 文件过滤器。
+- **影响**：没有仓库文件、Git 索引或外部状态变化；只缺少一次 ADR 格式清单输出，不能据此继续声称格式已完整盘点。
+- **正确做法**：在目录位置参数后使用 `-g '*.md'`，或先用 `rg --files` 取得精确路径；补录并复读门禁后方可重新取证。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR890_COMMAND_STARTED=YES
+ERR890_REPOSITORY_SIDE_EFFECT=NONE
+ERR890_REPLACEMENT=RG_DIRECTORY_PLUS_G_FILTER
+ERR890_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-890
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR890_RG_WINDOWS_PATH_GLOB_LITERAL:END -->
+
+<!-- SPECFORGE_ERR891_NEW_GOVERNANCE_DOC_DOUBLE_EOF_LF:START -->
+### ERR-891：三份新治理文档首轮验证发现双 EOF LF
+
+- **分类**：`GOVERNANCE_DOCUMENT_FORMAT_DEFECT / EOF_CONTRACT_VIOLATION / PREFLIGHT_FAILURE`
+- **事实证据**：字节级检查 `ADR-013`、专题实施方案和专题进度文件均满足 `EOF_LF=True`，同时 `DOUBLE_EOF_LF=True`；这表示文件末尾存在额外空行，不满足 EXP-059 的单一 EOF LF 合同。
+- **根因**：首次 `apply_patch` 新建文件时正文末尾保留了一个空白行，没有在写入后先执行字节级 EOF 预检再进入结构验证。
+- **影响**：三份新文件尚未暂存、提交、推送或部署；内容结构、职责字段、引用和无尾随空格检查通过，但 Step 0 不能提升为隔离验证通过。
+- **正确做法**：保留首轮失败证据；补录并复读经验门禁后，以精确补丁删除每个文件的最后一个空白行，再重复字节级、结构和 Git diff 检查。
+- **类防护**：`EXP-007`、`EXP-011`、`EXP-015`、`EXP-045`、`EXP-059`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR891_AFFECTED_FILE_COUNT=3
+ERR891_EOF_LF_COUNT=3
+ERR891_DOUBLE_EOF_LF_COUNT=3
+ERR891_STAGED=NO
+ERR891_COMMITTED=NO
+ERR891_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-891
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR891_NEW_GOVERNANCE_DOC_DOUBLE_EOF_LF:END -->
+
+<!-- SPECFORGE_ERR891_RESOLUTION_RESULT:START -->
+### ERR-891 后续：三份新治理文档已满足单一 EOF LF 合同
+
+```text
+ERR891_FIX=REMOVE_FINAL_BLANK_LINE_FROM_EXACT_THREE_NEW_DOCUMENTS
+ERR891_EOF_LF_COUNT=3
+ERR891_DOUBLE_EOF_LF_COUNT=0
+ERR891_TRAILING_WHITESPACE_MATCHES=0
+ERR891_STATUS=CLOSED
+```
+
+三份文件的字节级检查均为 `EOF_LF=True`、`DOUBLE_EOF_LF=False`；正文职责、状态和路径引用未因格式修复改变。
+<!-- SPECFORGE_ERR891_RESOLUTION_RESULT:END -->
+
+<!-- SPECFORGE_ERR892_POWERSHELL_INTERPOLATION_COLON_PARSE_FAILURE:START -->
+### ERR-892：package 清单命令中的 PowerShell 变量后冒号触发解析失败
+
+- **分类**：`EVIDENCE_COMMAND_DEFECT / POWERSHELL_INTERPOLATION_BOUNDARY / REPEATED_COMMAND_CLASS`
+- **事实证据**：只读 package 清单命令在解析 `"$section:$($_.Name)"` 时返回 `Variable reference is not valid`；命令未进入 JSON 清单遍历，没有产生架构结论。
+- **根因**：字符串构造没有使用 `${section}` 或格式化运算符隔离变量名与冒号，重复违反了已由 ERR-877 记录的 PowerShell／外部命令／字符串解析边界纪律。
+- **影响**：没有仓库文件、Git 索引、产品进程或外部状态变化；本次 package 清单结果无效，不能解释为没有依赖。
+- **正确做法**：补录并复读最新版经验门禁；后续结构化输出使用 `-f` 格式运算符或对象序列化，避免变量名后的歧义标点，并用 package manifest 与源码 import 两类证据交叉验证。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-060`；重复错误关联 `ERR-877`。
+- **状态**：`CLOSED`；解析失败已分类且确认零写入，尚未重新取得 package 依赖证据。
+
+```text
+ERR892_COMMAND_STARTED=NO_PARSE_FAILURE
+ERR892_REPOSITORY_SIDE_EFFECT=NONE
+ERR892_REPEATED_ERROR_CLASS=ERR-877
+ERR892_REPLACEMENT=POWERSHELL_FORMAT_OPERATOR_OR_OBJECT_SERIALIZATION
+ERR892_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-892
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR892_POWERSHELL_INTERPOLATION_COLON_PARSE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR893_ASSUMED_SERVICE_ORCHESTRATOR_PATH_MISSING:START -->
+### ERR-893：架构取证按记忆请求了不存在的 service orchestrator 文件
+
+- **分类**：`EVIDENCE_COMMAND_DEFECT / PATH_ASSUMPTION / PROCESS_VIOLATION`
+- **事实证据**：并行读取入口文件时，`Get-Content` 请求 `packages/service-management/src/orchestrator/lifecycle-orchestrator.ts`，PowerShell 返回路径不存在；同批其他读取成功，但该目标没有产生任何正文证据。
+- **根因**：没有先用 `rg --files` 固定 orchestrator 目录的真实文件集合，依据类名推断了文件名，违反“先读取当前结构再构造目标路径”的门禁。
+- **影响**：没有仓库文件、Git 索引、产品进程或外部状态变化；ServiceLifecycleOrchestrator 的实现入口仍需重新取证。
+- **正确做法**：补录并复读最新版经验门禁；先枚举精确目录文件，再从 export/import 关系定位实现文件，缺失读取不得当作模块不存在。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-060`、`EXP-065`。
+- **状态**：`CLOSED`；无效路径已分类且确认零写入，真实文件尚未读取。
+
+```text
+ERR893_REPOSITORY_SIDE_EFFECT=NONE
+ERR893_INVALID_PATH=packages/service-management/src/orchestrator/lifecycle-orchestrator.ts
+ERR893_REPLACEMENT=RG_FILES_THEN_EXPORT_IMPORT_TRACE
+ERR893_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-893
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR893_ASSUMED_SERVICE_ORCHESTRATOR_PATH_MISSING:END -->
+
+<!-- SPECFORGE_ERR894_POWERSHELL_FOREACH_PIPE_PARSE_FAILURE:START -->
+### ERR-894：package 字段表命令把 foreach 块直接接入管道导致解析失败
+
+- **分类**：`EVIDENCE_COMMAND_DEFECT / POWERSHELL_PIPELINE_BOUNDARY / REPEATED_COMMAND_CLASS`
+- **事实证据**：package type/main/bin 字段查询在 `foreach (...) { ... } | Format-Table` 处返回 `An empty pipe element is not allowed`；该子命令未执行，另外两个并行只读查询成功。
+- **根因**：再次用未经最小验证的复合 PowerShell 语法生成展示表，没有先把结果收集到显式数组；属于 ERR-877/ERR-892 同类环境边界错误。
+- **影响**：没有仓库文件、Git 索引、产品进程或外部状态变化；package type 字段证据仍未取得。
+- **正确做法**：补录并复读门禁；使用 `$rows=@()` 收集对象后再单独格式化，或直接逐行输出，不再拼接复合管道语法。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-060`；重复错误关联 `ERR-877`、`ERR-892`。
+- **状态**：`CLOSED`；解析失败已分类且确认零写入。
+
+```text
+ERR894_COMMAND_STARTED=NO_PARSE_FAILURE
+ERR894_REPOSITORY_SIDE_EFFECT=NONE
+ERR894_REPEATED_ERROR_CLASS=ERR-877,ERR-892
+ERR894_REPLACEMENT=EXPLICIT_ARRAY_COLLECTION_THEN_OUTPUT
+ERR894_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-894
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR894_POWERSHELL_FOREACH_PIPE_PARSE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR895_USERLEVEL_DEPLOYMENT_READ_DENIED:START -->
+### ERR-895：用户级 OpenCode 部署根只读取证被沙箱拒绝
+
+- **分类**：`VALIDATION_ENVIRONMENT_BOUNDARY / DEPLOYMENT_EVIDENCE_UNAVAILABLE / ACCESS_DENIED`
+- **事实证据**：当前路径权威解析为 `C:\Users\lyq\.config\opencode`；只读 `Test-Path -LiteralPath` 返回 `Access to the path ... is denied`。随后显示的 `EXISTS=False` 是异常后的 PowerShell 表达式结果，不能作为目录不存在证据。
+- **根因边界**：工作区写权限不包含用户配置根，当前会话尚未获得对该目录的仓库外只读权限；不是产品代码结论。
+- **影响**：源码安装清单可以审计，但实际用户级 manifest、部署文件集合与 daemon 二进制现场仍为 `INSUFFICIENT_EVIDENCE`；不得据此声称未安装或删除任何模块。
+- **正确做法**：补录并复读门禁后，仅请求对精确用户配置根的只读枚举与 manifest 读取；不安装、不修改、不启动进程。若权限未获批，Step 1 保留部署现场证据缺口并 fail closed 于删除判断。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-018`、`EXP-038`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR895_TARGET=C:\Users\lyq\.config\opencode
+ERR895_READ_ACTION=DENIED
+ERR895_EXISTENCE_CONCLUSION=INSUFFICIENT_EVIDENCE
+ERR895_REPOSITORY_SIDE_EFFECT=NONE
+ERR895_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-895
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR895_USERLEVEL_DEPLOYMENT_READ_DENIED:END -->
+
+<!-- SPECFORGE_ERR896_PROCESS_SNAPSHOT_ACCESS_DENIED:START -->
+### ERR-896：当前 daemon 状态的 WMI 进程快照被沙箱拒绝
+
+- **分类**：`VALIDATION_ENVIRONMENT_BOUNDARY / PROCESS_EVIDENCE_UNAVAILABLE / ACCESS_DENIED`
+- **事实证据**：`Get-CimInstance Win32_Process -ErrorAction Stop` 在产生快照前返回“拒绝访问”；没有可解析的进程集合。
+- **根因边界**：当前沙箱不允许 WMI 进程查询；不是 daemon 存在或不存在的证据。
+- **影响**：用户级部署中没有 daemon 二进制与 handshake 已确认，但仍不能排除从仓库或其他路径手工启动的 daemon；当前进程状态保持 `INSUFFICIENT_EVIDENCE`。
+- **正确做法**：补录并复读门禁；请求一次只读进程快照权限，查询成功后只输出相关 PID、进程名和分类，不暴露无关完整命令行。查询仍失败则保持证据不足。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-018`、`EXP-038`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR896_PROCESS_QUERY_SUCCESS=NO
+ERR896_PROCESS_CONCLUSION=INSUFFICIENT_EVIDENCE
+ERR896_REPOSITORY_SIDE_EFFECT=NONE
+ERR896_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-896
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR896_PROCESS_SNAPSHOT_ACCESS_DENIED:END -->
+
+<!-- SPECFORGE_ERR897_PROCESS_SNAPSHOT_OBSERVER_FALSE_POSITIVE:START -->
+### ERR-897：进程筛选把取证 PowerShell 自身误判为 daemon 候选
+
+- **分类**：`EVIDENCE_CLASSIFIER_DEFECT / OBSERVER_EFFECT / FALSE_POSITIVE`
+- **事实证据**：提升权限后的 WMI 快照成功返回 340 个进程；宽泛条件 `CommandLine -match 'SpecForge|specforged|sf-user'` 只命中执行本查询的 `pwsh.exe`（PID 11036），因为查询命令文本本身包含这些字符串。
+- **根因**：筛选条件没有排除当前/父取证进程，也没有把 daemon 判定绑定到精确可执行名或明确的 daemon-core 启动参数。
+- **影响**：该次 `RELEVANT_PROCESS_COUNT=1` 是观察者假阳性，不能证明 daemon 运行；没有仓库文件、Git 索引、产品进程或外部状态变化。
+- **正确做法**：补录并复读门禁；从已成功的完整 WMI 协议重新查询，排除当前 PowerShell 及其命令行，只接受 `specforged(.exe)`、或 `node/bun` 且参数明确指向 `packages/daemon-core/dist/index.js`/`@specforge/daemon-core` 的记录。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-038`、`EXP-060`。
+- **状态**：`CLOSED`；假阳性已识别，daemon 当前状态仍待精确查询。
+
+```text
+ERR897_PROCESS_SNAPSHOT_SUCCESS=YES
+ERR897_FALSE_POSITIVE_PID=11036
+ERR897_FALSE_POSITIVE_PROCESS=pwsh.exe
+ERR897_DAEMON_CONCLUSION=INSUFFICIENT_EVIDENCE
+ERR897_REPOSITORY_SIDE_EFFECT=NONE
+ERR897_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-897
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR897_PROCESS_SNAPSHOT_OBSERVER_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR895_RESOLUTION_RESULT:START -->
+### ERR-895 后续：精确用户级部署根只读取证已完成
+
+```text
+ERR895_READ_ACTION=SUCCEEDED_WITH_APPROVED_READ_ONLY_SCOPE
+ERR895_MANIFEST_FILE_COUNT=119
+ERR895_MANIFEST_INTEGRITY=119_PRESENT_SIZE_HASH_MATCH
+ERR895_DAEMON_BINARY=ABSENT
+ERR895_HANDSHAKE=ABSENT
+ERR895_REPOSITORY_SIDE_EFFECT=NONE
+ERR895_STATUS=CLOSED
+```
+
+经批准的精确只读检查确认：`C:\Users\lyq\.config\opencode\specforge-manifest.json` 存在，清单管理的 119 个文件均存在且大小、哈希匹配；`sf-user/bin` 为空，未发现 `specforged.exe` 或 `specforged`，也未发现 `sf-user/runtime/handshake.json`。该结论只描述取证时点的实际部署现场，不替代源码架构判断。
+<!-- SPECFORGE_ERR895_RESOLUTION_RESULT:END -->
+
+<!-- SPECFORGE_ERR896_ERR897_RESOLUTION_RESULT:START -->
+### ERR-896 / ERR-897 后续：精确进程快照已排除观察者假阳性
+
+```text
+ERR896_PROCESS_QUERY_SUCCESS=YES
+ERR896_PROCESS_SNAPSHOT_COUNT=341
+ERR896_SPECFORGE_DAEMON_PROCESS_COUNT=0
+ERR896_OPENCODE_PROCESS_COUNT=0
+ERR896_REPOSITORY_SIDE_EFFECT=NONE
+ERR896_STATUS=CLOSED
+ERR897_PRECISE_REQUERY=PASS
+ERR897_STATUS=CLOSED
+```
+
+精确复查仅接受 `specforged(.exe)`，或命令行明确指向 `daemon-core` 启动入口的 `node` / `bun` 进程，并排除取证 PowerShell 自身。取证时点没有匹配的 SpecForge daemon，也没有 `opencode.exe` 进程；该快照不证明其他时间点从未运行过 daemon。
+<!-- SPECFORGE_ERR896_ERR897_RESOLUTION_RESULT:END -->
+
+<!-- SPECFORGE_ERR898_UNBOUNDED_ARCHITECTURE_EVIDENCE_OUTPUT:START -->
+### ERR-898：状态权威文件批量读取超过取证输出预算
+
+- **分类**：`EVIDENCE_COMMAND_DEFECT / UNBOUNDED_OUTPUT / REPEATED_EVIDENCE_CLASS`
+- **事实证据**：一次性读取 `ProjectManager.ts`、`StateManager.ts`、`WAL.ts`、`ProjectSpecStore.ts`、`ProjectContext.ts` 与 `HandshakeManager.ts` 时，工具返回输出超过上下文限制并截断；模型没有收到完整文件正文，不能把该输出作为完整架构证据。
+- **根因**：没有先以符号和路径模式定位责任段，再按文件分段读取；重复了 ERR-878 已记录的“证据输出预算不足”问题类别。
+- **影响**：没有仓库文件、Git 索引、产品进程或外部状态变化；状态权威结论仍需通过可复核的定向读取取得。
+- **正确做法**：补录并复读最新版经验门禁；先用 `rg -n` 固定关键符号、持久化路径与写入点，再读取有限上下文，结论引用精确文件和职责。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-060`；重复错误关联 `ERR-878`。
+- **状态**：`CLOSED`；无效批量输出已隔离，后续仅允许定向分段取证。
+
+```text
+ERR898_OUTPUT_COMPLETE=NO
+ERR898_REPOSITORY_SIDE_EFFECT=NONE
+ERR898_REPEATED_ERROR_CLASS=ERR-878
+ERR898_REPLACEMENT=SYMBOL_MAP_THEN_BOUNDED_READ
+ERR898_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-898
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR898_UNBOUNDED_ARCHITECTURE_EVIDENCE_OUTPUT:END -->
+
+<!-- SPECFORGE_ERR899_REPEATED_PATH_ASSUMPTION_AND_UNBOUNDED_RG:START -->
+### ERR-899：状态权威重取证重复使用推测路径并扩大了检索输出
+
+- **分类**：`EVIDENCE_COMMAND_DEFECT / PATH_ASSUMPTION / UNBOUNDED_OUTPUT / REPEATED_ERROR`
+- **事实证据**：ERR-898 后的重取证仍请求了不存在的 `src/core/ProjectManager.ts`、`src/state/WAL.ts`、`src/core/ProjectContext.ts`、`src/core/HandshakeManager.ts`；同时对整个 `daemon-core/src` 执行过宽的写入关键词检索，结果再次被截断。
+- **根因**：虽然已声明“符号定位后分段读取”，实际命令仍混入了未由 `rg --files` 固定的路径，并把精确文件检查与全目录产物检索合并；重复违反 ERR-893 与 ERR-898 的防护动作。
+- **影响**：存在路径返回错误，整体输出不完整；其中 `StateManager.ts`、`ProjectSpecStore.ts` 和 `scope-gate-bridge.ts` 的可见片段可以作为局部线索，但不能据此宣称已完成状态权威闭环。没有仓库文件、Git 索引、产品进程或外部状态变化。
+- **正确做法**：先单独运行 `rg --files packages/daemon-core/src` 并按文件名筛选，固定真实路径后每次只读取一个职责面的有限符号；产物写入者按精确文件名分别检索，不再合并全目录宽关键词。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-060`、`EXP-065`；重复错误关联 `ERR-893`、`ERR-898`。
+- **状态**：`CLOSED`；无效命令边界已隔离，后续禁止继续使用推测路径。
+
+```text
+ERR899_INVALID_PATH_COUNT=4
+ERR899_OUTPUT_COMPLETE=NO
+ERR899_REPOSITORY_SIDE_EFFECT=NONE
+ERR899_REPEATED_ERROR_CLASS=ERR-893,ERR-898
+ERR899_REPLACEMENT=RG_FILES_EXACT_PATHS_THEN_ONE_RESPONSIBILITY_PER_QUERY
+ERR899_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-899
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR899_REPEATED_PATH_ASSUMPTION_AND_UNBOUNDED_RG:END -->
+
+<!-- SPECFORGE_ERR900_REPEATED_PACKAGE_WORKDIR_DOUBLE_PREFIX:START -->
+### ERR-900：handoff 定向测试预检重复使用 package workdir 双前缀
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / COMMAND_PATH_CONTEXT_ERROR / REPEATED_ERROR`
+- **事实证据**：命令工作目录已经是 `packages/daemon-core`，却以 `packages/daemon-core/node_modules/.bin/vitest.exe` 做存在性检查，返回 `TEST_ENTRY_EXISTS=False`；测试运行器没有启动。
+- **根因**：没有把 ERR-884 的 package workdir 防护落实到本次测试命令模板，重复使用仓库根相对入口。
+- **影响**：没有产品测试结果，不能记录为测试失败或通过；没有仓库文件、Git 索引、产品进程或外部状态变化。
+- **正确做法**：补录并复读最新版经验门禁；在 package workdir 仅允许检查和执行 `node_modules/.bin/vitest.exe`，先固定解析后的绝对路径，再运行单个测试文件。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-060`；重复错误关联 `ERR-884`。
+- **状态**：`CLOSED`；错误入口没有启动运行器，后续使用 package-relative 精确入口。
+
+```text
+ERR900_TEST_ENTRY_EXISTS=NO_DUE_TO_DOUBLE_PREFIX
+ERR900_TEST_RUNNER_STARTED=NO
+ERR900_REPOSITORY_SIDE_EFFECT=NONE
+ERR900_REPEATED_ERROR_CLASS=ERR-884
+ERR900_REPLACEMENT=PACKAGE_RELATIVE_ENTRY_WITH_RESOLVED_ABSOLUTE_PRECHECK
+ERR900_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-900
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR900_REPEATED_PACKAGE_WORKDIR_DOUBLE_PREFIX:END -->
+
+<!-- SPECFORGE_ERR901_VITEST_ENTRY_WORKDIR_MISMATCH:START -->
+### ERR-901：最终复跑使用 package Vitest 入口但工作目录仍为仓库根
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / RUNNER_CONFIG_SCOPE_MISMATCH / REPEATED_PATH_CONTEXT_ERROR`
+- **事实证据**：已解析到 `packages/daemon-core/node_modules/.bin/vitest.exe`，但从仓库根执行后 Vitest 加载 `D:\code\SpecForge\vitest.config.ts`，因根依赖上下文缺少 `vitest/config` 在 Startup 阶段退出；测试文件没有执行。
+- **根因**：只固定了 runner 绝对路径，没有把 runner、config 发现和 workdir 作为同一执行合同；属于 ERR-884/ERR-900 的相邻重复错误。
+- **影响**：该命令没有产生测试通过或失败结论；之前在 `packages/daemon-core` workdir 的同一测试文件 17/17 通过仍是有效独立证据。没有仓库文件、Git 索引、产品进程或外部状态变化。
+- **正确做法**：补录并复读最新版经验门禁；最终复跑必须同时固定 package runner 与 `packages/daemon-core` workdir，不再从仓库根调用 package runner。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-052`、`EXP-060`；重复错误关联 `ERR-884`、`ERR-900`。
+- **状态**：`CLOSED`；Startup 失败已隔离，测试未启动。
+
+```text
+ERR901_RUNNER_RESOLVED=YES
+ERR901_WORKDIR=REPOSITORY_ROOT_INVALID_FOR_PACKAGE_RUNNER
+ERR901_TEST_RUNNER_STARTED=NO_CONFIG_STARTUP_FAILURE
+ERR901_REPOSITORY_SIDE_EFFECT=NONE
+ERR901_REPEATED_ERROR_CLASS=ERR-884,ERR-900
+ERR901_REPLACEMENT=PACKAGE_RUNNER_PLUS_PACKAGE_WORKDIR_ATOMIC_EXECUTION_CONTRACT
+ERR901_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-901
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR901_VITEST_ENTRY_WORKDIR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR902_V6_REQUIREMENTS_PARENT_SPEC_VALIDATION_FAILURE:START -->
+### ERR-902：V6 requirements 范围对齐验证暴露 HEAD 内既有无效 parent-spec 产物
+
+- **分类**：`BASELINE_FIXTURE_DEFECT / INVALID_GOVERNANCE_ARTIFACT / NON_CAUSAL_TO_REQUIREMENTS_CHANGE`
+- **事实证据**：在 `packages/scope-gate` 的正式 package Vitest 入口运行 4 个直接消费 V6 requirements 的测试文件，共 97 tests；96 pass、1 fail。失败为 `tests/integration/parent-spec-integration.test.ts > Parent spec validation > should detect valid parent spec path`，`validationResult.isValid` 实际为 `false`、期望为 `true`。
+- **根因证据**：生产校验器 `Req25Loader.validateParentSpecArtifacts` 只在父路径或 `requirements.md` 缺失，以及 `artifacts/correctness-property-allocation.json` JSON 解析失败时产生 error；当前父路径和 `requirements.md` 均存在，但该 JSON 文件只有 14 字节，内容为 `{ invalid json`。`git show HEAD:.kiro/specs/v6-architecture-overview/artifacts/correctness-property-allocation.json` 返回相同内容，且该文件工作树无修改，因此失败在本轮 requirements 变更前已存在。requirements 的 HEAD A/B 不会改变校验器读取的独立 JSON 产物，因果已由生产调用链和 HEAD 对象直接排除。
+- **影响**：该单项失败不得归因于本次 V6 requirements 范围对齐；REQ-25 的加载、P0/P1/P2 解析和其余 96 项验证均通过。ERR-902 不阻断 Step 2 的需求内部一致性验收，但该无效治理产物仍不得被当作有效发布证据；requirements 修改尚未提交、推送或部署，没有产品进程或用户级部署变化。
+- **正确做法**：保留失败证据并将无效 JSON 归入后续治理产物/消费者收敛范围；在其权威来源、生成责任和真实消费者完成确认前，不直接把占位内容改成看似有效的 JSON，也不修改测试掩盖失败。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-009`、`EXP-011`、`EXP-016`、`EXP-022`、`EXP-025`、`EXP-044`、`EXP-057`、`EXP-060`、`EXP-074`。
+- **状态**：`ISOLATED_VALIDATED`；对 Step 2 非阻断，产物修复仍未实施。
+
+```text
+ERR902_TEST_FILES=4
+ERR902_TESTS_PASS=96
+ERR902_TESTS_FAIL=1
+ERR902_FAILED_TEST=parent-spec-integration::should_detect_valid_parent_spec_path
+ERR902_REQ25_PARSE_STATUS=PASS
+ERR902_VALIDATION_ERROR=FAILED_TO_PARSE_CORRECTNESS_PROPERTY_ALLOCATION_JSON
+ERR902_ARTIFACT_BYTES_AT_WORKTREE_AND_HEAD=SAME_14_BYTE_INVALID_JSON
+ERR902_REQUIREMENTS_CHANGE_CAUSALITY=EXCLUDED_BY_VALIDATOR_CALL_CHAIN_AND_HEAD_OBJECT
+ERR902_PRODUCT_ATTRIBUTION=BASELINE_GOVERNANCE_ARTIFACT_DEFECT
+ERR902_REPOSITORY_SIDE_EFFECT=REQUIREMENTS_WORKTREE_CHANGE_ONLY
+ERR902_STEP_2_BLOCKING=NO
+ERR902_STATUS=ISOLATED_VALIDATED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-902
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR902_V6_REQUIREMENTS_PARENT_SPEC_VALIDATION_FAILURE:END -->
+
+<!-- SPECFORGE_ERR903_WINDOWS_RG_PACKAGE_GLOB_ARGUMENT:START -->
+### ERR-903：Windows `rg` 取证命令误用路径通配参数
+
+- **分类**：`VALIDATION_HARNESS_DEFECT / WINDOWS_PATH_GLOB_ARGUMENT_MISMATCH / NO_REPOSITORY_SIDE_EFFECT`
+- **事实证据**：为定位 V6 requirements 的直接消费者，命令把 `packages/*/package.json` 作为位置参数传给 Windows `rg`；`rg` 返回“文件名、目录名或卷标语法不正确 (os error 123)”。同一命令的其他目录搜索仍返回结果。
+- **根因**：把 shell 风格路径 glob 当作 Windows 下由 `rg` 统一展开的路径参数，未使用 `--glob` 文件筛选契约。
+- **影响**：只影响该次 package manifest 搜索的完整性；没有文件、Git、进程或部署副作用，不构成 SpecForge 产品失败。
+- **正确做法**：以真实目录 `packages` 为搜索根，并通过 `--glob '*/package.json'` 或先使用 `rg --files` 生成可验证文件集；后续结论不得引用本次报错遗漏的 package manifest 范围。
+- **状态**：`CLOSED_BY_CORRECTED_RG_GLOB_USAGE`。
+
+```text
+ERR903_CLASSIFICATION=VALIDATION_HARNESS_DEFECT/WINDOWS_PATH_GLOB_ARGUMENT_MISMATCH
+ERR903_PRODUCT_DEFECT=NO
+ERR903_REPOSITORY_SIDE_EFFECT=NONE
+ERR903_REPLACEMENT=RG_REAL_DIRECTORY_ROOT_PLUS_GLOB_FILTER
+ERR903_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-903
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR903_WINDOWS_RG_PACKAGE_GLOB_ARGUMENT:END -->
+
+<!-- SPECFORGE_ERR904_POWERSHELL_BUN_ENTRY_UNAVAILABLE:START -->
+### ERR-904：PowerShell 当前会话无法解析 Bun 文档 lint 入口
+
+- **分类**：`ENVIRONMENT_ENTRY_FAILURE / POWERSHELL_BUN_COMMAND_UNAVAILABLE / PRODUCT_LOGIC_NOT_STARTED`
+- **事实证据**：尝试以 `bun -e` 直接导入 `sf_doc_lint_core.ts` 时，PowerShell 返回 “The term 'bun' is not recognized”；命令在 TypeScript 模块加载前失败，没有产生 lint 结果。
+- **根因边界**：现有证据只证明当前 PowerShell 命令解析环境没有可调用的 `bun`；不能据此证明 Bun 未安装，也不能归因于 requirements 或 `sf_doc_lint_core`。
+- **影响**：该次文档 lint 未执行；没有仓库、Git、进程或部署副作用，不构成 SpecForge 产品失败。
+- **正确做法**：不重复调用不可解析入口；改用仓库内可验证的 Node/Vitest/编译产物入口，或先以所属命令解释器完成 Bun 真实版本 probe 后再调用。验证结果必须区分“入口未启动”和“lint 已运行失败”。
+- **状态**：`CLOSED`。
+
+```text
+ERR904_CLASSIFICATION=ENVIRONMENT_ENTRY_FAILURE/POWERSHELL_BUN_COMMAND_UNAVAILABLE
+ERR904_PRODUCT_LOGIC_STARTED=NO
+ERR904_PRODUCT_DEFECT=NO
+ERR904_REPOSITORY_SIDE_EFFECT=NONE
+ERR904_REPLACEMENT=REPOSITORY_RESOLVABLE_NODE_OR_VITEST_ENTRY
+ERR904_CLOSURE=SWITCHED_TO_REPOSITORY_RESOLVABLE_VALIDATION_ENTRY
+ERR904_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-904
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR904_POWERSHELL_BUN_ENTRY_UNAVAILABLE:END -->
+
+<!-- SPECFORGE_ERR905_V6_DOC_LINT_PATH_CONTRACT_GAP:START -->
+### ERR-905：V6 顶层验证声明 doc lint，但正式 lint 入口不解析 `.kiro` V6 权威路径
+
+- **分类**：`VALIDATION_CHAIN_GAP / PATH_CONTRACT_MISMATCH / PREEXISTING_ARCHITECTURE_CONSUMER_DEFECT`
+- **事实证据**：使用仓库内 esbuild 进行内存编译后，Node 已实际调用 `sf_doc_lint_core.lintDocument('v6-architecture-overview', 'requirements', repoRoot)`；返回 `status=fail`、`File not found: requirements.md`。源码调用链为 `lintDocument → resolveWorkItemSpecArtifacts`，只按 Work Item/Candidate/legacy artifact 读取候选，不把 `.kiro/specs/v6-architecture-overview/requirements.md` 作为该调用的输入。同时 `scripts/sf_v6_arch_check.ts` 的 `runDocLint` 明确固定返回 success，并注释“暂时跳过这个检查”。
+- **根因边界**：V6 requirements 文件真实存在，scope-gate 可从正式 `.kiro` 路径加载并完成 REQ-25 解析；因此该失败只证明 V6 顶层文档验证链没有接通真实权威路径，不证明 requirements 内容不合格。此缺口存在于本轮 requirements 修改之前。
+- **影响**：不能把 `sf_v6_arch_check` 当前的 doc-lint success 当作可信发布证据，也不能用本次 `File not found` 否定 Step 2 内容。该验证链修复属于后续 Step 6 的代码/验证器消费者收敛；本轮不修改代码抢跑。
+- **正确做法**：Step 3–5 先冻结权威与模块范围；Step 6 为 V6 architecture authority 建立显式、无 legacy fallback 的 doc-lint 输入合同，并让顶层 V6 checker 调用真实结果。修复前保持 fail-closed 记录，不伪造 lint pass。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR905_CLASSIFICATION=VALIDATION_CHAIN_GAP/PATH_CONTRACT_MISMATCH
+ERR905_V6_REQUIREMENTS_EXISTS=YES
+ERR905_DOC_LINT_PRODUCT_ENTRY_STARTED=YES
+ERR905_DOC_LINT_RESULT=FILE_NOT_FOUND_BY_WORK_ITEM_RESOLVER
+ERR905_V6_TOP_LEVEL_DOC_LINT=STUBBED_SUCCESS
+ERR905_REQUIREMENTS_CONTENT_ATTRIBUTION=NO
+ERR905_TARGET_STEP=STEP_6_CODE_TEST_INSTALL_SCRIPT_CONVERGENCE
+ERR905_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-905
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR905_V6_DOC_LINT_PATH_CONTRACT_GAP:END -->
+
+<!-- SPECFORGE_ERR906_SCOPE_GATE_FEATURE_FLAG_AUTHORITY_DRIFT:START -->
+### ERR-906：scope-gate 仍允许 V6.0 用 feature flag 启用 P1/P2，与当前发布权威冲突
+
+- **分类**：`RUNTIME_DEFECT / TEST_CONSUMER_DRIFT / CURRENT_RELEASE_SCOPE_CONTRACT_CONFLICT`
+- **权威与事实证据**：V6 `requirements.md` 的 REQ-25.4、REQ-25.6、REQ-25.7、Property 15 和 REQ-31 已明确：P1/P2 在 V6.0 不得进入正式构建、部署或运行时，built-not-enabled 只能在收敛期暂存且 stable 前必须启用或退出。现有 `packages/scope-gate/tests/property-15-scope-boundary.property.test.ts` 明确断言 P1/P2 “can only be enabled through explicit feature flags”，并包含 V6.0 下设置 specific flag 或 `enable_all_p1p2` 后可用的正向测试；`tests/e2e/v6-release-simulation.test.ts` 也断言 feature flag 可在 V6.0 启用 P1/P2。
+- **首次偏离与责任层**：当前首次偏离位于 `Scope Gate Runtime / Test Consumer`；requirements 是产品范围权威，现有 feature-flag 行为和测试不得反向覆盖它。design.md 尚未完成 Step 3 同步，因此最终代码闭包需等待设计冻结。
+- **影响**：现有 Property 15 测试即使通过，也只能证明旧“默认关闭但可开启”模型，不能作为当前 V6.0 发布边界证据。Step 2 只修改产品权威，不提前修改代码或测试；该冲突进入 Step 5 模块/修改矩阵和 Step 6 实现收敛。
+- **正确做法**：Step 3 在 design.md 冻结 V6.0 不可启用边界与未来版本启用入口；Step 6 从 RuntimeScopeChecker、ScopeRegistry、feature flag manager、CLI/distribution 和全部 Property 15/e2e 消费者形成闭包。不得删除断言掩盖生产缺陷，也不得保留隐式兼容开关。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR906_CLASSIFICATION=RUNTIME_DEFECT/TEST_CONSUMER_DRIFT/CURRENT_RELEASE_SCOPE_CONTRACT_CONFLICT
+ERR906_AUTHORITATIVE_SOURCE=.kiro/specs/v6-architecture-overview/requirements.md
+ERR906_FIRST_DEVIATION_LAYER=SCOPE_GATE_RUNTIME_AND_TEST_CONSUMERS
+ERR906_CURRENT_V6_0_P1_P2_FEATURE_FLAG_ENABLEMENT=FORBIDDEN_BY_CURRENT_REQUIREMENTS
+ERR906_TARGET_STEPS=STEP_3_DESIGN;STEP_5_DISPOSITION_MATRIX;STEP_6_IMPLEMENTATION_CONVERGENCE
+ERR906_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-906
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR906_SCOPE_GATE_FEATURE_FLAG_AUTHORITY_DRIFT:END -->
+
+<!-- SPECFORGE_ERR907_LEDGER_STATUS_PATCH_STALE_ANCHOR:START -->
+### ERR-907：错误账本状态枚举修正补丁使用了不精确锚点
+
+- **分类**：`PATCH_PREFLIGHT_FAILURE / STALE_TEXT_ANCHOR / ZERO_WRITE`
+- **事实证据**：尝试把 ERR-902、ERR-904 的状态表述收敛到 EXP-094 稳定生命周期时，`apply_patch` 报告无法找到预期的 `ISOLATED_VALIDATED_NONBLOCKING_FOR_STEP_2` 正文行并拒绝整个 patch。
+- **根因**：补丁同时依赖多个记忆中的正文/机器字段，没有先从当前账本读取每个精确锚点，违反 EXP-065。
+- **影响**：`apply_patch` 原子失败，没有部分写入；只延迟状态枚举收敛，不构成产品失败。
+- **正确做法**：先读取 ERR-902 与 ERR-904 当前精确区块，再用各自真实、唯一锚点做窄补丁；补丁后检索所有新增 ERR 状态是否属于 EXP-094 生命周期集合。
+- **状态**：`CLOSED`。
+
+```text
+ERR907_CLASSIFICATION=PATCH_PREFLIGHT_FAILURE/STALE_TEXT_ANCHOR/ZERO_WRITE
+ERR907_PRODUCT_DEFECT=NO
+ERR907_REPOSITORY_SIDE_EFFECT=NONE
+ERR907_REPLACEMENT=READ_EXACT_CURRENT_BLOCKS_THEN_NARROW_PATCH
+ERR907_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-907
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR907_LEDGER_STATUS_PATCH_STALE_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR908_BROAD_STATUS_ANCHOR_MUTATED_PRIOR_ERR:START -->
+### ERR-908：过宽状态行锚点误改 ERR-876 正文
+
+- **分类**：`PATCH_DEFECT / NON_UNIQUE_ANCHOR / GOVERNANCE_HISTORY_MUTATION`
+- **事实证据**：修正 ERR-902 正文状态时，补丁仅以通用行 `- **状态**：IDENTIFIED` 为锚点；`apply_patch` 成功后，检索发现新文本位于 ERR-876 的第 13180 行，而 ERR-902 正文仍为 `IDENTIFIED`。ERR-902/ERR-904 机器字段已按目标修改。
+- **根因**：虽然 ERR-907 已要求使用精确区块，后续补丁仍没有把标题或唯一 Marker 纳入正文状态 hunk，重复违反 EXP-063/EXP-065。
+- **影响**：ERR-876 的历史正文状态被错误改写；未影响产品代码、测试、Git 索引或部署。该错误必须在继续进度对账前恢复，不能用后续状态合理化历史改写。
+- **正确做法**：依据同文件 ERR-876 后续 resolution 的 `ERR876_STATUS=ISOLATED_VALIDATED` 证明原条目应保留修复前 `IDENTIFIED`，恢复该正文；随后使用 ERR-902 唯一标题和相邻类防护行构成上下文补丁。补丁后精确检索两个区块。
+- **状态**：`CLOSED`。
+
+```text
+ERR908_CLASSIFICATION=PATCH_DEFECT/NON_UNIQUE_ANCHOR/GOVERNANCE_HISTORY_MUTATION
+ERR908_PRODUCT_DEFECT=NO
+ERR908_REPOSITORY_SIDE_EFFECT=LEDGER_TEXT_ONLY
+ERR908_RESTORATION_TARGET=ERR-876_ORIGINAL_IDENTIFIED_STATUS
+ERR908_REPLACEMENT=UNIQUE_ERR_BLOCK_CONTEXT_PATCH
+ERR908_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-908
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR908_BROAD_STATUS_ANCHOR_MUTATED_PRIOR_ERR:END -->
+
+<!-- SPECFORGE_ERR909_HISTORICAL_COUNTEREXAMPLE_TRAILING_SPACE:START -->
+### ERR-909：全文件尾随空格检查命中 HEAD 历史反例字节
+
+- **分类**：`VALIDATION_SCOPE_DEFECT / HISTORICAL_EVIDENCE_FALSE_POSITIVE / NON_CAUSAL_TO_CURRENT_DIFF`
+- **事实证据**：最终只读字节检查在错误账本第 11038 行发现 1 个尾随空格，文本为 `ERR723_SFV508_COUNTEREXAMPLE=C:\projects\.. `；`git show HEAD:docs/rule/specforge-development-error-ledger-and-experience.md` 返回相同尾随空格，而 `git diff --check` 没有报告新增 whitespace error，只输出 Git 换行策略警告。
+- **根因**：验证摘要把“当前新增文本无尾随空格”错误扩大为“追加型历史账本全文件无尾随空格”，没有先排除 HEAD 中作为 ERR-723 counterexample 值保留的历史字节。
+- **影响**：不构成本轮新增格式缺陷，也不得为了全文件指标改写历史反例；requirements、进度和 handoff 当前新增文本仍无尾随空格，完整 diff 通过 `git diff --check`。
+- **正确做法**：当前变更的格式门禁以 `git diff --check` 和新增行审计为准；全文件扫描必须把 HEAD 同字节作为历史基线分类，不得把不可变历史证据自动清理。进度摘要明确把 UTF-8/EOF/无尾随空格范围限定为 V6 requirements。
+- **状态**：`CLOSED`。
+
+```text
+ERR909_CLASSIFICATION=VALIDATION_SCOPE_DEFECT/HISTORICAL_EVIDENCE_FALSE_POSITIVE
+ERR909_PRODUCT_DEFECT=NO
+ERR909_HEAD_SAME_BYTES=YES
+ERR909_CURRENT_DIFF_WHITESPACE_ERROR=NO
+ERR909_HISTORICAL_EVIDENCE_MUTATION=NONE
+ERR909_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-909
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR909_HISTORICAL_COUNTEREXAMPLE_TRAILING_SPACE:END -->
+
+<!-- SPECFORGE_ERR910_V6_WORK_ITEM_PATH_AUTHORITY_DRIFT:START -->
+### ERR-910：V6 requirements 的 Work Item 路径仍指向旧 `specs/{WI}`，与真实治理 Runtime 冲突
+
+- **分类**：`AUTHORITATIVE_REQUIREMENTS_DRIFT / ACTUAL_ARCHITECTURE_PATH_CONFLICT / STEP_2_OMISSION`
+- **权威与事实证据**：Step 3 对齐设计时，`.kiro/specs/v6-architecture-overview/requirements.md` 的 Glossary 和 REQ-10 仍把 Work Item 写为 `.kiro/specs/{WI}` 或 `<project>/.specforge/specs/{WI}`；同一轮已固化的实际架构清单及 daemon-core 生产治理链证明当前 Runtime 的 Work Item 权威为 `<project>/.specforge/work-items/<WI>/work_item.json`，Candidate、Gate、Decision、Merge、Verification 和 Close 产物也位于该 Work Item 根下。V6 design 旧 Data Model 同样使用 `specs/{WI}`。
+- **首次偏离与责任层**：首次偏离位于 `V6 Requirements / Directory Contract`。requirements 是上游产品权威，但用户已批准“从当前真实架构继续、不重新设计、无旧项目兼容”，因此不能让旧文档路径反向要求 Runtime 回退；应回补 Step 2 权威遗漏，再同步 design。
+- **影响**：若不修复，会同时形成两个 Work Item 根、破坏单一事实来源，并使 installer、path service、Gate 和治理产物消费者无法冻结唯一集合。已完成的 design 草案不得在该冲突未处理时宣称 Step 3 通过。
+- **正确做法**：窄修 requirements Glossary、REQ-10 目录布局和直接路径描述，统一为 `.specforge/work-items/<WI>`；同步 design Directory/Data Model/状态权威；保留 `.kiro/specs/**` 仅作为仓库内产品规格权威，不把它当成业务项目 Runtime Work Item 根。随后运行 requirements/design 直接消费者与静态路径冲突检查。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-016`、`EXP-017`、`EXP-025`、`EXP-026`、`EXP-040`、`EXP-043`、`EXP-044`、`EXP-045`、`EXP-046`、`EXP-058`、`EXP-059`、`EXP-063`、`EXP-065`、`EXP-074`、`EXP-086`、`EXP-087`、`EXP-094`。
+- **状态**：`ISOLATED_VALIDATED`；requirements Glossary/REQ-10 与 design Directory/Data Model/状态权威已统一到 `.specforge/work-items/<WI>`，静态路径合同通过，REQ-25 直接消费者 134 tests 与 handoff authority 17 tests 通过；实现消费者逐项收敛仍属于 Step 5/6。
+
+```text
+ERR910_AUTHORITATIVE_SOURCE=.kiro/specs/v6-architecture-overview/requirements.md
+ERR910_ACTUAL_RUNTIME_WORK_ITEM_ROOT=<project>/.specforge/work-items/<WI>
+ERR910_STALE_REQUIREMENTS_ROOT=<project>/.specforge/specs/{WI-XXX}
+ERR910_FIRST_DEVIATION_LAYER=V6_REQUIREMENTS_DIRECTORY_CONTRACT
+ERR910_TARGET_STEPS=STEP_2_BACKFILL;STEP_3_DESIGN_ALIGNMENT;STEP_5_CONSUMER_MATRIX;STEP_6_IMPLEMENTATION_CONVERGENCE
+ERR910_REQUIREMENTS_DESIGN_ALIGNMENT=PASS
+ERR910_STATIC_PATH_CONTRACT=PASS
+ERR910_REQUIREMENTS_DIRECT_CONSUMER_TESTS=134_PASS
+ERR910_HANDOFF_AUTHORITY_TESTS=17_PASS
+ERR910_STATUS=ISOLATED_VALIDATED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-910
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR910_V6_WORK_ITEM_PATH_AUTHORITY_DRIFT:END -->
+
+<!-- SPECFORGE_ERR911_HANDOFF_STEP3_PATCH_STALE_ANCHOR:START -->
+### ERR-911：Step 3 handoff 状态补丁引用不存在的 `ERR906_STATUS` 锚点
+
+- **分类**：`PATCH_PREFLIGHT_FAILURE / STALE_ASSUMED_ANCHOR / ZERO_WRITE / REPEATED_ERROR`
+- **事实证据**：更新 `current-handoff.md` 的多 hunk 补丁在验证阶段报告找不到 `ERR906_STATUS=IDENTIFIED`，`apply_patch` 原子失败；handoff 没有部分修改。
+- **根因**：虽然已读取 CURRENT EXECUTION STATE 区块，仍把错误账本中的机器字段误认为 handoff 已存在字段，没有先对每个目标锚点执行精确检索；重复 ERR-907 的 stale anchor 类错误。
+- **影响**：仅延迟 Step 3 状态同步；V6 requirements/design、进度文件和错误账本既有修改不受影响，无 Git 索引、产品进程或部署副作用。
+- **正确做法**：重新读取 handoff 当前精确区块；把已有字段更新与新字段插入拆为使用真实唯一上下文的窄补丁；补丁后逐字段检索并运行 authority consumer test。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-063`、`EXP-065`、`EXP-074`、`EXP-094`；重复错误关联 `ERR-907`。
+- **状态**：`CLOSED`；失败补丁零写入，替代路径为精确当前区块补丁。
+
+```text
+ERR911_PATCH_TARGET=docs/implementation/architecture-consistency/current-handoff.md
+ERR911_MISSING_ANCHOR=ERR906_STATUS=IDENTIFIED
+ERR911_PATCH_APPLIED=NO
+ERR911_PARTIAL_WRITE=NO
+ERR911_REPEATED_ERROR_CLASS=ERR-907
+ERR911_REPLACEMENT=READ_EXACT_CURRENT_BLOCK_THEN_NARROW_PATCH
+ERR911_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-911
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR911_HANDOFF_STEP3_PATCH_STALE_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR912_STEP4_POWERSHELL_BUN_ENTRY_UNAVAILABLE:START -->
+### ERR-912：Step 4 Scope Gate 回归再次使用当前 PowerShell 不可解析的 `bun` 入口
+
+- **分类**：`ENVIRONMENT_ENTRY_FAILURE / POWERSHELL_BUN_COMMAND_UNAVAILABLE / PRODUCT_LOGIC_NOT_STARTED / REPEATED_ERROR`
+- **事实证据**：执行 `bun test packages/scope-gate/tests` 时，PowerShell 返回 “The term 'bun' is not recognized”；测试 runner 和产品逻辑均未启动，没有产生测试 verdict。
+- **根因边界**：当前会话 PATH 没有可解析的 `bun` 命令；该失败与 Step 4 文档内容没有因果关系，也不能证明 Bun 未安装。重复错误关联 `ERR-904`，说明本轮验证前没有复用已知的可解析运行时入口。
+- **影响**：仅该次回归未执行；没有产品、Git 索引、进程或部署副作用。
+- **正确做法**：通过工作区依赖运行时清单获取 Bun 绝对路径，先执行版本 probe，再用同一绝对入口运行原测试集合；不得再次依赖当前 PowerShell PATH。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-063`、`EXP-074`、`EXP-094`；重复错误关联 `ERR-904`。
+- **状态**：`CLOSED`；已定位临时目录中的 Bun 1.4.0 绝对入口，真实 test runner 成功启动并完成 Scope Gate 全包测试。
+
+```text
+ERR912_FAILED_COMMAND=bun test packages/scope-gate/tests
+ERR912_PRODUCT_LOGIC_STARTED=NO
+ERR912_PRODUCT_DEFECT=NO
+ERR912_REPOSITORY_SIDE_EFFECT=NONE
+ERR912_REPEATED_ERROR_CLASS=ERR-904
+ERR912_REPLACEMENT=WORKSPACE_BUN_ABSOLUTE_PATH
+ERR912_BUN_ABSOLUTE_ENTRY_VERSION=1.4.0
+ERR912_PRODUCT_TEST_RUNNER_STARTED=YES
+ERR912_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-912
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR912_STEP4_POWERSHELL_BUN_ENTRY_UNAVAILABLE:END -->
+
+<!-- SPECFORGE_ERR913_SCOPE_GATE_AGGREGATE_SUITE_MULTICAUSAL_FAILURE:START -->
+### ERR-913：Step 4 Scope Gate 全包回归暴露多原因聚合失败，不能归因于单一文档变更
+
+- **分类**：`REGRESSION_AGGREGATE_FAILURE / MULTIPLE_INDEPENDENT_CAUSES / PREEXISTING_RUNTIME_AND_TEST_CONSUMER_DRIFT`
+- **事实证据**：使用 Bun 1.4.0 绝对入口真实执行 `test packages/scope-gate/tests`，结果为 `915 pass / 72 fail / 3 errors`（38 files，987 tests）。失败集合包括：`OptimizedAuditLogger` 大量 5 秒超时/未处理断言；CLI 子进程测试依赖裸 `bun`；Scope Tag、parent-spec 与 feature-flag 测试仍消费旧合同；`parent-spec-integration` 另有一个“valid parent spec path”断言失败。
+- **根因边界**：一次聚合运行已直接证明失败不是单一断言。当前证据不足以把 72 项分别归因；其中 feature-flag 消费者已由 ERR-906 证明与当前 V6 权威冲突，裸 Bun 子进程属于 ERR-912 同类环境入口，AuditLogger 超时及剩余失败需要 Step 6/7 逐簇隔离。不得把整个结果归因于 Step 4 文档，也不得把 915 个旧合同通过项当作当前发布证明。
+- **影响**：Scope Gate 全包回归当前不可信且不能作为 stable gate；Step 4 只能用静态合同和直接文档消费者做隔离验证。产品代码、测试、Git 索引和部署未因本次运行改变。
+- **正确做法**：先运行只读取 V6 authority/module spec 的最小直接消费者集合；Step 5 冻结 Scope Gate 去留/职责，Step 6 按 AuditLogger、Bun 子进程、旧 feature-flag/Scope Tag、parent-spec validator 等独立簇修复；每簇验证后再重跑全包。禁止提高超时、删除失败测试或恢复旧 feature flag 合同来制造全绿。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-017`、`EXP-025`、`EXP-026`、`EXP-033`、`EXP-043`、`EXP-058`、`EXP-059`、`EXP-060`、`EXP-074`、`EXP-086`、`EXP-087`、`EXP-094`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR913_COMMAND=BUN_1.4.0_ABSOLUTE_ENTRY test packages/scope-gate/tests
+ERR913_RESULT=915_PASS_72_FAIL_3_ERRORS_38_FILES_987_TESTS
+ERR913_FAILURE_CAUSALITY=MULTIPLE_INDEPENDENT_CLUSTERS
+ERR913_FEATURE_FLAG_CONSUMER_LINK=ERR-906
+ERR913_BARE_BUN_SUBPROCESS_LINK=ERR-912
+ERR913_STEP4_DOCUMENT_CAUSALITY=NOT_PROVEN
+ERR913_PRODUCT_SIDE_EFFECT=NONE
+ERR913_TARGET_STEPS=STEP_5_DISPOSITION_MATRIX;STEP_6_IMPLEMENTATION_CONVERGENCE;STEP_7_LAYERED_VALIDATION
+ERR913_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-913
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR913_SCOPE_GATE_AGGREGATE_SUITE_MULTICAUSAL_FAILURE:END -->
+
+<!-- SPECFORGE_ERR914_GOVERNANCE_AUTHORITY_STABLE_MARKER_DRIFT:START -->
+### ERR-914：Step 4 权威边界澄清改写了治理文档稳定机器 marker
+
+- **分类**：`DOCUMENT_CONTRACT_DRIFT / STABLE_AUTHORITY_MARKER_MUTATION / DIRECT_CONSUMER_FAILURE`
+- **事实证据**：`stage-execution-authority-contract.test.ts` 运行结果 `16 pass / 1 fail`；失败断言要求治理权威包含精确稳定句“本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。”，Step 4 把该句改为含“子系统”字样，导致 marker 不再匹配。其余 16 项 authority/handoff 结构测试通过。
+- **根因**：为了澄清本治理文件与 V6 产品 requirements/design 的上下游关系，错误地改写了已有稳定 marker，而不是在 marker 后追加范围解释。原 marker 的主语本来已限定为“架构一致性治理（包括契约治理）”，无需改变字节就能保留子系统语义。
+- **影响**：机器权威识别合同失败；新增 V6 上游链、治理分类和产品范围决定本身未被该失败否定。没有产品代码、测试、Git 索引或部署副作用。
+- **正确做法**：恢复稳定 marker 原字节，在相邻新增句中继续明确“V6 requirements/design 是产品范围/架构上游，本文件不能反向扩大产品范围”；不得修改测试期待来掩盖 marker 漂移。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-017`、`EXP-025`、`EXP-026`、`EXP-063`、`EXP-065`、`EXP-074`、`EXP-086`、`EXP-087`、`EXP-094`。
+- **状态**：`CLOSED`；稳定 marker 原字节已恢复，相邻 V6 产品权威边界说明保留，同一测试 `17 pass / 0 fail`。
+
+```text
+ERR914_TEST=packages/daemon-core/tests/unit/stage-execution-authority-contract.test.ts
+ERR914_RESULT=16_PASS_1_FAIL
+ERR914_FIRST_DEVIATION=GOVERNANCE_AUTHORITY_STABLE_MARKER_TEXT
+ERR914_PRODUCT_BOUNDARY_CLARIFICATION=KEEP_IN_ADJACENT_TEXT
+ERR914_TEST_EXPECTATION_CHANGE=FORBIDDEN
+ERR914_STABLE_MARKER_RESTORED=YES
+ERR914_PRODUCT_BOUNDARY_CLARIFICATION_PRESERVED=YES
+ERR914_RETEST=17_PASS_0_FAIL
+ERR914_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-914
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR914_GOVERNANCE_AUTHORITY_STABLE_MARKER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR915_SCOPE_GATE_TEST_LOG_REPOSITORY_SIDE_EFFECT:START -->
+### ERR-915：Scope Gate 回归向 tracked `tests/test-logs/events.jsonl` 追加测试事件
+
+- **分类**：`TEST_ISOLATION_DEFECT / TRACKED_LOG_SIDE_EFFECT / RECOVERABLE_EXACT_DELTA`
+- **事实证据**：最终 `git status` 首次出现 `M tests/test-logs/events.jsonl`；测试前基线状态中该文件未修改。`git diff --numstat` 为 `6 insertions / 0 deletions`，六条均为本轮时间 `2026-08-26` 的 Scope Gate 测试事件；当前 hash `f0aac98...`，HEAD blob `33a770e...`。
+- **根因边界**：Scope Gate 集成/审计测试使用了仓库 tracked 日志路径而非临时隔离目录，且 teardown 未恢复。该副作用来自测试运行，不是产品文档修改，也不属于用户既有 dirty patch。
+- **影响**：仓库工作区被追加六条非产品事件；Git 索引、产品进程和部署未改变。若不恢复会污染本轮 diff 与后续回归事实。
+- **正确做法**：只移除 diff 已证明由本轮测试追加的六条精确 JSONL 行，恢复 blob 到 HEAD hash；不回滚任何其他 dirty 文件。Step 6/7 修复测试，使每个日志写入使用唯一临时目录并在结束后断言仓库 tracked 状态不变。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-020`、`EXP-025`、`EXP-033`、`EXP-043`、`EXP-059`、`EXP-060`、`EXP-074`、`EXP-086`、`EXP-087`、`EXP-094`。
+- **状态**：`CLOSED`；六条本轮追加事件已精确移除，当前 hash 与 HEAD blob 均为 `33a770e216424d843a79913ca6572fa6049e44e6`，文件退出 dirty 集合。
+
+```text
+ERR915_FILE=tests/test-logs/events.jsonl
+ERR915_PRETEST_DIRTY=NO
+ERR915_DIFF=6_INSERTIONS_0_DELETIONS
+ERR915_HEAD_BLOB=33a770e216424d843a79913ca6572fa6049e44e6
+ERR915_TEST_BLOB=f0aac98f432179f1130dfe57f8b54cca38a42ac3
+ERR915_RESTORE_SCOPE=EXACT_SIX_APPENDED_LINES_ONLY
+ERR915_TARGET_STEPS=IMMEDIATE_WORKTREE_RECOVERY;STEP_6_TEST_CONSUMER_FIX
+ERR915_RESTORED_BLOB=33a770e216424d843a79913ca6572fa6049e44e6
+ERR915_HEAD_BLOB_MATCH=PASS
+ERR915_FILE_DIRTY_AFTER_RECOVERY=NO
+ERR915_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-915
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR915_SCOPE_GATE_TEST_LOG_REPOSITORY_SIDE_EFFECT:END -->
+
+<!-- SPECFORGE_ERR916_ORIGINAL_19_CURRENT_PATH_COUNT_CONFLATION:START -->
+### ERR-916：把 `ORIGINAL_19` 历史批次标识误当成当前精确产品路径数量
+
+- **分类**：`GOVERNANCE_EVIDENCE_IDENTITY_DEFECT / HISTORICAL_BATCH_AND_CURRENT_DIFF_CONFLATION`
+- **事实证据**：SFV529 历史 handoff 记录 `SUCCESS_FINAL_MODIFIED_PATH_COUNT=19`，其语义是当时“15 个 stable-core 路径 + 4 个 edge 路径”的批次结果；当前 Phase12 `ROOT_RESULTS_JSON` 在 `main@45a0cfee54306a3f29a8ca06dfa827b385b25e50` 下可解析的 `trackedState.modified` 数组只有 18 个产品/测试路径。后续 ERR-881 和 ERR-796/C2 又被明确记录为不属于原批次的独立修复。现有治理文本仍反复用“原 19 项修改”指代当前 dirty 产品路径，两个时间点和两个集合被混用。
+- **根因**：历史批次名称没有和当前可重放 path manifest 分开；Step 1–4 沿用口头计数，但未验证当前机器证据能否逐项重建同一个 19-path 数组。
+- **影响**：若继续按口头计数强行生成 19 个当前产品文件，会伪造缺失路径，或错误把 ERR-881/ERR-796 后续修复倒灌进原批次；不会改变历史修复真实性，但会破坏 Step 5 删除/保留决策的可追溯性。
+- **正确做法**：保留 `ORIGINAL_19` 作为不可改写的历史批次标识；当前决策使用 Phase12 机器快照中的 18 个可复核产品/测试路径，并把第 19 项明确记为“历史批次口径治理纠正”，不得虚构文件。后续报告同时给出历史 batch count 和当前 path count。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-017`、`EXP-020`、`EXP-025`、`EXP-033`、`EXP-040`、`EXP-043`、`EXP-060`、`EXP-074`、`EXP-086`、`EXP-087`、`EXP-094`。
+- **状态**：`CLOSED`；Step 5 矩阵、专题进度和 current handoff 已分离两种口径，没有改写历史 SFV529 记录。
+
+```text
+ERR916_HISTORICAL_BATCH_ID=ORIGINAL_19
+ERR916_HISTORICAL_SFV529_PATH_COUNT=19
+ERR916_CURRENT_PHASE12_REPLAYABLE_PRODUCT_TEST_PATH_COUNT=18
+ERR916_LATER_INDEPENDENT_PATCHES=ERR881;ERR796_C2
+ERR916_RESOLUTION=KEEP_HISTORICAL_BATCH_LABEL_AND_USE_EXACT_CURRENT_PATH_MANIFEST
+ERR916_PRODUCT_CODE_CHANGE=NONE
+ERR916_HISTORICAL_EVIDENCE_MUTATION=NONE
+ERR916_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-916
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR916_ORIGINAL_19_CURRENT_PATH_COUNT_CONFLATION:END -->
+
+<!-- SPECFORGE_ERR917_PACKAGE_WORKDIR_ROOT_RELATIVE_HASH_PATH:START -->
+### ERR-917：在 package 工作目录中把仓库根相对测试日志路径传给 Git hash 命令
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / WORKDIR_RELATIVE_PATH_DUPLICATION / REPEATED_PROCESS_ERROR`
+- **事实证据**：Step 5 最终验证在 `packages/daemon-core` 工作目录成功完成 17 个 handoff authority tests 和 `git diff --check` 后，继续执行 `git hash-object tests/test-logs/events.jsonl`；Git 将其解析为 `packages/daemon-core/tests/test-logs/events.jsonl` 并返回不存在。随后同一命令中的 `git rev-parse HEAD:tests/test-logs/events.jsonl` 成功，因为该参数是 Git tree path，不是工作树文件路径。
+- **根因**：同一命令混用了 package-local 测试工作目录与 repository-root working-tree path，重复违反 ERR-884、ERR-900、ERR-901 已记录的 workdir/路径前缀门禁。
+- **影响**：只有测试日志 working-tree hash 的首次只读核验未执行；产品测试已经通过，文件、Git 索引、进程和部署均未改变。
+- **正确做法**：从仓库根重新执行 working-tree hash、HEAD blob hash、精确 status 和 `git diff --check`；后续每个命令在发出前同时声明 `COMMAND_WORKDIR` 与 `PATH_BASIS`。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-060`；重复错误关联 `ERR-884`、`ERR-900`、`ERR-901`。
+- **状态**：`CLOSED`；仓库根复核确认 working-tree hash 与 HEAD blob 均为 `33a770e216424d843a79913ca6572fa6049e44e6`，精确 status 无输出，`git diff --check` 通过。
+
+```text
+ERR917_FAILED_WORKDIR=packages/daemon-core
+ERR917_FAILED_WORKTREE_PATH=tests/test-logs/events.jsonl
+ERR917_RESOLVED_WORKDIR=REPOSITORY_ROOT
+ERR917_PATH_BASIS=REPOSITORY_ROOT_WORKING_TREE
+ERR917_WORKTREE_HASH=33a770e216424d843a79913ca6572fa6049e44e6
+ERR917_HEAD_BLOB=33a770e216424d843a79913ca6572fa6049e44e6
+ERR917_FILE_DIRTY=NO
+ERR917_REPOSITORY_SIDE_EFFECT=NONE
+ERR917_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-917
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR917_PACKAGE_WORKDIR_ROOT_RELATIVE_HASH_PATH:END -->
+
+<!-- SPECFORGE_ERR918_BUN_NOT_ON_CURRENT_POWERSHELL_PATH:START -->
+### ERR-918：在未确认当前 PowerShell PATH 的情况下直接调用 `bun`
+
+- **分类**：`ENVIRONMENT_ERROR / VALIDATION_COMMAND_DEFECT`
+- **事实证据**：Step 6B 新增 authority/inventory 合同测试后，在 `packages/scope-gate` 执行 `bun test ./tests/release-evidence-normalizer.test.ts`；PowerShell 在测试框架启动前返回 “The term 'bun' is not recognized”。只读检查确认当前会话的 `Get-Command bun`、`where.exe bun` 和常见用户级 Bun 目录均没有可执行文件；package-local `node_modules/.bin/vitest.exe` 存在。
+- **根因**：沿用了前一验证会话可直接调用 Bun 的环境假设，没有先核对新会话的实际可执行入口，重复违反工具入口和同构环境前置检查。
+- **影响**：测试框架未启动，不能作为产品 RED 或测试结果；文件系统除预期新增测试文件外没有副作用，没有启动构建、部署、Git 暂存、提交或推送。
+- **正确做法**：本批测试改用已确认存在的 package-local `vitest.exe`，构建改用已确认存在的 package-local `tsc.exe`；正式 Bun-only 回归保留到 Bun 入口重新可用后执行，不把 Vitest 结果冒充 Bun 全量结果。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-060`；关联 `ERR-024`、`ERR-026`、`ERR-884`、`ERR-900`、`ERR-901`、`ERR-917`。
+- **状态**：`CLOSED_PREFLIGHT`；失败已分类，替代入口是仓库内已安装且可复核的相同测试框架，不改变产品代码。
+
+```text
+ERR918_FAILED_COMMAND=bun test ./tests/release-evidence-normalizer.test.ts
+ERR918_FAILED_WORKDIR=packages/scope-gate
+ERR918_TEST_FRAMEWORK_STARTED=NO
+ERR918_PRODUCT_TEST_RESULT=NOT_PRODUCED
+ERR918_CONFIRMED_TEST_ENTRY=packages/scope-gate/node_modules/.bin/vitest.exe
+ERR918_CONFIRMED_BUILD_ENTRY=packages/scope-gate/node_modules/.bin/tsc.exe
+ERR918_REPOSITORY_SIDE_EFFECT=EXPECTED_NEW_TEST_FILE_ONLY
+ERR918_STATUS=CLOSED_PREFLIGHT
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-918
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR918_BUN_NOT_ON_CURRENT_POWERSHELL_PATH:END -->
+
+<!-- SPECFORGE_ERR919_READDIR_OVERLOAD_RETURN_TYPE_INFERENCE:START -->
+### ERR-919：用 `ReturnType<typeof readdir>` 推断重载 API，错误落入 Buffer 版 `Dirent`
+
+- **分类**：`PRODUCT_DEFECT / TYPESCRIPT_CONTRACT_DEFECT / VALIDATION_SEQUENCE_FINDING`
+- **事实证据**：Step 6C2 新增 package-export/clean-build surface producer 后，6 个 producer 测试和 10 个 authority projection 测试全部通过；紧随其后的 Scope Gate `tsc --noEmit` 在 `node-release-surface-producers.ts` 报 TS2322、TS2339、TS2345。声明 `Awaited<ReturnType<typeof readdir>>` 没有保留 `{ withFileTypes: true }` 的字符串重载，类型系统将 `entry.name` 解释为 `NonSharedBuffer`。
+- **根因**：对具有多重 encoding overload 的 Node API 使用通用 `ReturnType`，把调用点已经明确的字符串目录项契约重新扩大成不确定重载联合；定向运行测试只证明当前运行值是字符串，不能替代 TypeScript 接口闭包。
+- **影响**：新增 producer 源码无法通过 package 类型检查，尚未进入 build、formal precheck、提交、推送或部署；运行测试结果有效但不足以宣布实现通过。
+- **正确做法**：从 `node:fs` 显式导入 `Dirent`，把目录项声明为 `Dirent<string>[]`；保持测试→类型检查顺序并复跑同一集合。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-044`、`EXP-091`。
+- **状态**：`IDENTIFIED`；待显式类型修复和同一验证集合复跑后关闭。
+
+```text
+ERR919_TEST_RESULT_BEFORE_TYPECHECK=16_PASS
+ERR919_TYPECHECK=FAILED_TS2322_TS2339_TS2345
+ERR919_FAILED_FILE=packages/scope-gate/src/node-release-surface-producers.ts
+ERR919_ROOT_CAUSE=READDIR_OVERLOAD_RETURN_TYPE_INFERENCE_SELECTED_BUFFER_DIRENT_CONTRACT
+ERR919_REPOSITORY_SIDE_EFFECT=NONE_BEYOND_EXPECTED_SOURCE_TEST_AND_GOVERNANCE_EDITS
+ERR919_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-919
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR919_READDIR_OVERLOAD_RETURN_TYPE_INFERENCE:END -->
+
+<!-- SPECFORGE_ERR919_CLOSURE:START -->
+#### ERR-919 关闭证据（2026-08-27）
+
+- **修复证据**：`node-release-surface-producers.ts` 现从 `node:fs` 显式导入 `Dirent`，目录项变量声明为 `Dirent<string>[]`；业务枚举、排序、哈希和 fail-closed 规则未改变。
+- **同组回归**：`node-release-surface-producers.test.ts`、`release-authority-projection.test.ts`、`current-release-authority-projection.integration.test.ts` 共 `16/16` 通过。
+- **类型闭包**：`packages/scope-gate/node_modules/.bin/tsc.exe --project tsconfig.json --noEmit` 通过。
+- **结论**：原始失败记录保留，类型契约缺陷已修复并完成同组验证，ERR-919 关闭。
+
+```text
+ERR919_FIX=EXPLICIT_DIRENT_STRING_ARRAY
+ERR919_REPEAT_TEST_RESULT=16_PASS
+ERR919_REPEAT_TYPECHECK=PASS
+ERR919_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-919
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR919_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR920_AUDIT_TARGET_AND_MARKER_COUNT_COMMAND_DEFECT:START -->
+### ERR-920：收口审计引用不存在的测试日志路径，且标记计数聚合未产生数值
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / EVIDENCE_TARGET_ASSUMPTION`
+- **事实证据**：Step 6C2A 收口命令中的 `git hash-object packages/scope-gate/test_output.log` 与 `git rev-parse HEAD:packages/scope-gate/test_output.log` 均因该路径不存在而失败；同一命令用 `Measure-Object -Property Count -Sum` 聚合 `rg --count-matches` 文本行，六个 marker 结果均为空，未形成有效唯一性证据。
+- **根因**：沿用上一阶段“tracked test log”概念但没有先从当前 Git tree 解析实际路径；同时把文本输出错误当成具有数值 `Count` 属性的对象。
+- **影响**：产品源码、测试、文档均没有由该只读审计命令产生额外副作用；此前 52 个 Scope Gate 测试、类型检查和 17 个 handoff 测试结果不受影响；marker 唯一性和真实日志 HEAD blob 一致性仍待正确命令复核。
+- **正确做法**：先用 `git ls-tree -r --name-only HEAD` 解析真实测试日志路径；对每个 marker 直接统计 `rg -F -o` 输出行数，并要求精确等于 1；随后分别比较工作树与 HEAD blob hash。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-060`、`EXP-091`。
+- **状态**：`IDENTIFIED`；待正确审计命令形成完整证据后关闭。
+
+```text
+ERR920_FAILED_TEST_LOG_TARGET=packages/scope-gate/test_output.log
+ERR920_MARKER_COUNT_RESULT=EMPTY_INVALID_EVIDENCE
+ERR920_PRODUCT_TEST_RESULTS_AFFECTED=NO
+ERR920_REPOSITORY_SIDE_EFFECT=NONE
+ERR920_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-920
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR920_AUDIT_TARGET_AND_MARKER_COUNT_COMMAND_DEFECT:END -->
+
+<!-- SPECFORGE_ERR920_CLOSURE:START -->
+#### ERR-920 关闭证据（2026-08-27）
+
+- **目标解析**：从 `HEAD` Git tree 只读检索确认本阶段所引用的受跟踪日志为 `tests/test-logs/events.jsonl`。
+- **日志完整性**：工作树与 `HEAD:tests/test-logs/events.jsonl` 的 blob hash 均为 `33a770e216424d843a79913ca6572fa6049e44e6`。
+- **标记唯一性**：authority START/END 在 Step 5 权威矩阵内分别精确出现 1 次；Step 6C2A handoff、ERR-919 和 ERR-920 标记在各自治理范围内分别精确出现 1 次。
+- **结论**：验证目标和计数方法已经纠正，缺失的收口证据已形成；ERR-920 关闭。
+
+```text
+ERR920_TRACKED_TEST_LOG=tests/test-logs/events.jsonl
+ERR920_TEST_LOG_HEAD_BLOB_MATCH=PASS_33a770e216424d843a79913ca6572fa6049e44e6
+ERR920_AUTHORITY_MARKER_COUNT=START_1_END_1_IN_AUTHORITATIVE_MATRIX
+ERR920_GOVERNANCE_MARKER_COUNT=PASS_EXACTLY_ONE_PER_MARKER_IN_OWNING_SCOPE
+ERR920_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-920
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR920_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR921_POWERSHELL_INLINE_REGEX_QUOTING:START -->
+### ERR-921：把含双引号的多层正则直接嵌入 PowerShell 命令字符串，导致取证命令解析失败
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / POWERSHELL_QUOTING_ERROR`
+- **事实证据**：Step 6C2B 只读 registry 计数命令在 PowerShell parser 阶段返回 `Missing ')' in method call`；失败点是 `[regex]::Matches(...)` 内嵌的双引号路径表达式。
+- **根因**：在已经由工具参数和 PowerShell 双引号共同解析的命令中继续嵌入带转义双引号的复杂正则，没有先拆分为简单命令，违反 Windows shell 引号前置检查。
+- **影响**：命令在 parser 阶段终止，未读取出 registry 计数、未启动测试、未修改产品或 Git 状态；本次输出不得作为架构证据。
+- **正确做法**：将 handler、workflow、installer 各类条目和 enumeration API 检查拆成简单 `rg`/PowerShell 语句，避免跨层字符串转义；完成后逐项给出原始计数。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-060`。
+- **状态**：`IDENTIFIED`；待拆分命令成功形成同一取证集合后关闭。
+
+```text
+ERR921_FAILURE_STAGE=POWERSHELL_PARSER
+ERR921_EVIDENCE_PRODUCED=NO
+ERR921_REPOSITORY_SIDE_EFFECT=NONE
+ERR921_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-921
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR921_POWERSHELL_INLINE_REGEX_QUOTING:END -->
+
+<!-- SPECFORGE_ERR921_CLOSURE:START -->
+#### ERR-921 关闭证据（2026-08-27）
+
+- **修正方式**：已把 handler、workflow、installer 分类计数和 owner enumeration API 检查拆为简单命令，不再使用多层内嵌正则。
+- **成功取证**：55 个唯一 handler literal、11 个 builtin workflow；installer registry 为 13 Agent、21 Skill、54 Tool、29 Tool-lib、1 Plugin、1 Config；`ToolDispatcher.listRegisteredTools()`、`WorkflowLoader.loadBuiltinWorkflows()` 和 `SHARED_COMPONENT_REGISTRY` export 均已定位到真实 owner 源。
+- **结论**：同一取证目标已经通过可复核命令完成，ERR-921 关闭；原 parser 失败记录保留。
+
+```text
+ERR921_RETRY_EVIDENCE=HANDLERS_55;WORKFLOWS_11;INSTALLER_AGENT_13_SKILL_21_TOOL_54_TOOL_LIB_29_PLUGIN_1_CONFIG_1
+ERR921_OWNER_ENUMERATION_SOURCES=TOOL_DISPATCHER_LIST_REGISTERED_TOOLS;WORKFLOW_LOADER_LOAD_BUILTIN_WORKFLOWS;SHARED_COMPONENT_REGISTRY_EXPORT
+ERR921_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-921
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR921_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR922_PACKAGE_LOCAL_VITEST_STARTED_FROM_REPOSITORY_ROOT:START -->
+### ERR-922：使用 package-local Vitest 时仍从仓库根启动，错误加载根级测试配置
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / WORKDIR_CONTRACT_VIOLATION`
+- **事实证据**：Step 6C2B 最终 handoff 复跑使用 `packages/daemon-core/node_modules/.bin/vitest.exe`，但工作目录是仓库根；Vitest 因而加载 `D:\code\SpecForge\vitest.config.ts`，在 startup 阶段报 `Cannot find module 'vitest/config'`。
+- **根因**：只复用了已确认的可执行路径，没有同时复用该验证入口已经证明必要的 package workdir；重复违反 package-local 命令的入口/工作目录二元合同。
+- **影响**：测试框架未进入 test collection，没有产生产品测试结果；命令只在此前预期的 handoff 换行归一化后启动，失败本身没有额外仓库副作用。
+- **正确做法**：以 `packages/daemon-core` 为工作目录执行 `node_modules/.bin/vitest.exe run tests/unit/stage-execution-authority-contract.test.ts`，通过后再独立执行根级只读 diff/Git 审计。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-060`、`EXP-091`；关联 `ERR-917`、`ERR-918`。
+- **状态**：`IDENTIFIED`；待正确 workdir 同组复跑后关闭。
+
+```text
+ERR922_FAILED_ENTRY=packages/daemon-core/node_modules/.bin/vitest.exe
+ERR922_FAILED_WORKDIR=REPOSITORY_ROOT
+ERR922_TEST_FRAMEWORK_COLLECTED_TESTS=NO
+ERR922_PRODUCT_TEST_RESULT=NOT_PRODUCED
+ERR922_REPOSITORY_SIDE_EFFECT=NONE_BEYOND_PRECEDING_EXPECTED_HANDOFF_FORMAT_NORMALIZATION
+ERR922_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-922
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR922_PACKAGE_LOCAL_VITEST_STARTED_FROM_REPOSITORY_ROOT:END -->
+
+<!-- SPECFORGE_ERR922_CLOSURE:START -->
+#### ERR-922 关闭证据（2026-08-27）
+
+- **正确复跑**：在 `packages/daemon-core` 工作目录执行 package-local Vitest，`stage-execution-authority-contract.test.ts` 共 `17/17` 通过。
+- **结论**：失败被证明仅由错误 workdir 触发；正确入口/工作目录合同已复用，ERR-922 关闭。
+
+```text
+ERR922_REPEAT_WORKDIR=packages/daemon-core
+ERR922_REPEAT_TEST_RESULT=17_PASS
+ERR922_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-922
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR922_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR923_ADHOC_ROOT_PRODUCER_TSC_EXPANDED_DAEMON_GRAPH:START -->
+### ERR-923：用临时单文件 tsc 参数检查 root producer，扩大到 Daemon 全调用图并偏离 package 编译合同
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / TYPESCRIPT_TOPOLOGY_MISMATCH`
+- **事实证据**：owner producer 的 5 个真实/表面测试及 Scope Gate 正式 `tsc --project tsconfig.json --noEmit` 均通过；随后从仓库根以临时 `--target/--module/--moduleResolution` 参数直接编译 `scripts/lib/release-owner-snapshot-producers.ts`，TypeScript 跟随其 Daemon import 展开全部 handler，在既有 `sf-v11-decision.ts`、`sf-v11-gate-run.ts`、`sf_ears_parser.ts`、`sf_requirements_gate_core.ts` 报 9 个联合类型属性错误。
+- **根因**：为检查 root producer 临时拼装编译选项，没有复用各 package 正式 tsconfig 和 monorepo 拓扑；该命令同时检查了超出目标文件的 Daemon 源图，无法区分 producer 缺陷、编译选项漂移和既有 package 缺陷。
+- **影响**：只读类型检查，无仓库副作用；5 个运行测试和 Scope Gate 正式类型检查结果仍有效，但 root producer 的正式类型闭包尚待建立。
+- **正确做法**：先运行 Daemon、Workflow 各自正式 package typecheck作对照；为 root producer增加专用 tsconfig，只检查 producer合同并通过已验证的 owner边界消费，不再用临时参数替代正式拓扑。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-009`、`EXP-011`、`EXP-016`、`EXP-044`、`EXP-060`、`EXP-091`。
+- **状态**：`IDENTIFIED`；待正式 package 对照和专用 producer typecheck通过后关闭。
+
+```text
+ERR923_TARGET_TESTS=5_PASS
+ERR923_SCOPE_GATE_FORMAL_TYPECHECK=PASS
+ERR923_ADHOC_TSC_RESULT=9_ERRORS_OUTSIDE_TARGET_FILE_IN_DAEMON_GRAPH
+ERR923_REPOSITORY_SIDE_EFFECT=NONE
+ERR923_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-923
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR923_ADHOC_ROOT_PRODUCER_TSC_EXPANDED_DAEMON_GRAPH:END -->
+
+<!-- SPECFORGE_ERR923_CLOSURE:START -->
+#### ERR-923 关闭证据（2026-08-27）
+
+- **A/B 对照**：Daemon 正式 package typecheck 通过；Workflow Runtime 正式 package typecheck 通过；临时命令补回正式 `strict` 合同后 producer 及展开图通过。
+- **类防护**：新增 `scripts/tsconfig.release-owner-snapshot.json` 和根脚本 `typecheck:release-owner-snapshot`，固定 root producer 的正式类型检查拓扑。
+- **正式验证**：`node_modules/.bin/tsc.exe --noEmit -p scripts/tsconfig.release-owner-snapshot.json` 通过。
+- **结论**：9 个错误由临时编译合同偏离触发，目标 producer 没有对应类型缺陷；ERR-923 关闭。
+
+```text
+ERR923_DAEMON_FORMAL_TYPECHECK=PASS
+ERR923_WORKFLOW_FORMAL_TYPECHECK=PASS
+ERR923_STRICT_CONTROL=PASS
+ERR923_DEDICATED_TYPECHECK=PASS
+ERR923_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-923
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR923_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR924_ROOT_VITEST_SHIM_ASSUMED_PRESENT:START -->
+### ERR-924：假设仓库根存在 Vitest shim，导致目标 RED 测试未启动
+
+- **分类**：`VALIDATION_COMMAND_DEFECT / EXECUTABLE_PATH_ASSUMPTION`
+- **事实证据**：执行 `node_modules/.bin/vitest.cmd run ...` 时 PowerShell 报该路径不是可识别的命令；仓库根 `node_modules/.bin` 没有 Vitest shim，测试框架未启动。
+- **根因**：没有先复用各 package 已验证的本地 Vitest 入口，错误假设根依赖目录包含测试可执行文件。
+- **影响**：没有收集或执行产品测试，也没有仓库副作用；该结果不是产品失败。
+- **正确做法**：先定位 package-local Vitest executable，再从对应 package workdir 分别运行 Daemon 与 Workflow Runtime 测试。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-060`、`EXP-091`。
+- **状态**：`IDENTIFIED`；待两个目标测试用正确入口完成预期 RED 后关闭。
+
+```text
+ERR924_FAILED_ENTRY=node_modules/.bin/vitest.cmd
+ERR924_TEST_FRAMEWORK_COLLECTED_TESTS=NO
+ERR924_PRODUCT_TEST_RESULT=NOT_PRODUCED
+ERR924_REPOSITORY_SIDE_EFFECT=NONE
+ERR924_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-924
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR924_ROOT_VITEST_SHIM_ASSUMED_PRESENT:END -->
+
+<!-- SPECFORGE_ERR924_CLOSURE:START -->
+#### ERR-924 关闭证据（2026-08-27）
+
+- **正确复跑**：分别从 `packages/daemon-core` 与 `packages/workflow-runtime` 工作目录使用各自 `node_modules/.bin/vitest.exe`。
+- **结果**：Daemon 目标测试 `3/3` 形成预期 RED，直接证明当前公开注册名、旧内部名和未启用工具的差异；Workflow 目标测试 `1/1` 形成预期 RED，直接证明 builtin loader 当前加载 11 个而非唯一 `feature_spec`。
+- **结论**：测试入口合同恢复，ERR-924 关闭；上述 RED 是本轮待修复的产品证据，不登记为命令错误。
+
+```text
+ERR924_DAEMON_TARGET_RED=3_EXPECTED_FAILURES
+ERR924_WORKFLOW_TARGET_RED=1_EXPECTED_FAILURE
+ERR924_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-924
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR924_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR925_REMOVED_ROUTE_RETAINED_IN_503_ENDPOINT_SET:START -->
+### ERR-925：删除 legacy spec-migration route 后，503 场景仍把它当成已注册 endpoint
+
+- **分类**：`REGRESSION_TEST_CONTRACT_DRIFT`
+- **事实证据**：Daemon 定向组 `63/64` 通过；唯一失败为无 ToolDispatcher 场景遍历 endpoint 集合时，`/api/v1/v11/spec-migration` 实际按当前合同返回 404，旧断言仍要求已注册 route 的 503。
+- **根因**：产品测试中已新增 legacy route 的 404 断言，但遗漏从“已注册 endpoints 的无 dispatcher 行为”集合移除同一路径。
+- **影响**：产品 route 行为符合当前无旧项目兼容边界；测试集合内部自相矛盾，未证明新的产品缺陷。
+- **正确做法**：从 503 endpoint 集合移除 spec-migration，保留前面的显式 404/不 dispatch 断言并复跑整组。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR925_TARGET_RESULT=63_PASS_1_FAIL
+ERR925_FAILURE=LEGACY_SPEC_MIGRATION_EXPECTED_503_ACTUAL_404
+ERR925_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-925
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR925_REMOVED_ROUTE_RETAINED_IN_503_ENDPOINT_SET:END -->
+
+<!-- SPECFORGE_ERR925_CLOSURE:START -->
+#### ERR-925 关闭证据（2026-08-27）
+
+- **修正**：503 endpoint 集合只保留当前已注册 route；legacy spec-migration 继续由独立用例证明 404 且不 dispatch。
+- **复跑**：Daemon 当前 registry、原 registry/writeguard 和 HTTP E2E 共 `64/64` 通过。
+
+```text
+ERR925_REPEAT_RESULT=64_PASS
+ERR925_LEGACY_ROUTE_REJECTION=PASS
+ERR925_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-925
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR925_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR926_NEW_ANALYST_PROMPT_MISSING_INSTALLED_GOVERNANCE_CONTRACT:START -->
+### ERR-926：新增 sf-analyst 安装提示缺少强制治理合同块
+
+- **分类**：`DEPLOYMENT_CONTRACT_OMISSION`
+- **事实证据**：handoff authority `17/17` 通过；安装一致性测试 `7/8` 中唯一失败指出 `setup/userlevel-opencode/agents/sf-analyst.md` 缺少 `SPECFORGE_V11_FINAL_GOVERNANCE_CONTRACT` marker、状态权威和 Close Gate 规则。
+- **根因**：创建第十个 Agent 时只落实了角色权限与业务边界，没有复用 installer 对所有 Agent/SpecForge Skill 的公共治理合同要求。
+- **影响**：安装后的 sf-analyst 虽为只读角色，但缺少与其他 Agent 一致的状态权威、审批、权限和关闭规则；不能宣称 roster 部署一致。
+- **正确做法**：在角色正文前补齐同一强制治理合同块，保留只读职责，再复跑安装一致性与 handoff 测试。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR926_HANDOFF_TESTS=17_PASS
+ERR926_INSTALL_CONSISTENCY=7_PASS_1_FAIL
+ERR926_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-926
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR926_NEW_ANALYST_PROMPT_MISSING_INSTALLED_GOVERNANCE_CONTRACT:END -->
+
+<!-- SPECFORGE_ERR926_CLOSURE:START -->
+#### ERR-926 关闭证据（2026-08-27）
+
+- **修正**：sf-analyst 提示已补入状态权威、审批、代码权限、Close Gate、HardStop 与证据不足处理合同，并继续保持只读业务边界。
+- **复跑**：handoff authority 与安装部署一致性合计 `25/25` 通过。
+
+```text
+ERR926_REPEAT_RESULT=25_PASS
+ERR926_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-926
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR926_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR927_REPEATED_BUN_PATH_ASSUMPTION_AFTER_ERR918:START -->
+### ERR-927：ERR-918 已证明当前 PATH 无 Bun 后，再次直接调用 `bun`
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_DEFECT / EXPERIENCE_GATE_BREACH`
+- **事实证据**：同一只读命令前半段源码搜索成功，随后 `bun --version` 被 PowerShell 拒绝为不可识别命令；ERR-918 已记录并关闭同类 PATH 前提错误。
+- **根因**：进入下一 artifact producer 调查时没有复用 ERR-918 的环境结论，违反重复错误检查承诺。
+- **影响**：没有启动 Bun、构建或产品测试，没有仓库副作用；源码搜索证据仍有效。
+- **正确做法**：只读定位并验证 Bun 绝对路径；后续所有 Bun 构建/测试命令固定使用该入口，不再依赖 PATH。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-060`、`EXP-063`、`EXP-091`；关联 `ERR-918`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR927_PREVIOUS_SAME_CLASS=ERR-918
+ERR927_FAILED_ENTRY=bun
+ERR927_PRODUCT_TEST_RESULT=NOT_PRODUCED
+ERR927_REPOSITORY_SIDE_EFFECT=NONE
+ERR927_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-927
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR927_REPEATED_BUN_PATH_ASSUMPTION_AFTER_ERR918:END -->
+
+<!-- SPECFORGE_ERR927_CLOSURE:START -->
+#### ERR-927 关闭证据（2026-08-27）
+
+- **恢复**：复用 ERR-912 留下的 workspace temp runtime，定位并以绝对路径执行 Bun。
+- **验证**：绝对入口返回版本 `1.4.0`；后续 Bun-only 命令固定使用该路径。
+
+```text
+ERR927_CONFIRMED_BUN_ENTRY=C:/Users/lyq/AppData/Local/Temp/specforge-bun-b8df248d3b794d98a3d00305bf5ae295/bun-windows-x64/bun.exe
+ERR927_BUN_VERSION=1.4.0
+ERR927_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-927
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR927_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR928_WINDOWS_RG_DIRECTORY_GLOB:START -->
+### ERR-928：在 PowerShell 中把目录通配直接传给 rg
+
+- **分类**：`VALIDATION_COMMAND_TOPOLOGY_DEFECT`
+- **事实证据**：`rg -l ... packages/*/tests scripts/tests` 在 Windows 返回 `os error 123`，因为该目录通配没有由 PowerShell 展开为有效路径。
+- **根因**：复核治理文档消费者时沿用了类 Unix 的目录参数写法，没有从仓库根目录直接检索并用 `--glob` 约束集合。
+- **影响**：该 rg 检索没有执行，未产生产品测试结果或仓库副作用；同一命令中的 `git diff --check` 独立执行并通过。
+- **正确做法**：从仓库根目录运行 rg，以 `packages scripts` 作为真实目录参数，必要时使用 `--glob '*test.ts'` 约束文件集合。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-060`、`EXP-063`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR928_FAILED_ENTRY=RG_WINDOWS_DIRECTORY_GLOB
+ERR928_PRODUCT_TEST_RESULT=NOT_PRODUCED
+ERR928_REPOSITORY_SIDE_EFFECT=NONE
+ERR928_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-928
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR928_WINDOWS_RG_DIRECTORY_GLOB:END -->
+
+<!-- SPECFORGE_ERR928_CLOSURE:START -->
+#### ERR-928 关闭证据（2026-08-27）
+
+- **恢复**：改为从仓库根目录检索 `packages` 和 `scripts` 真实目录，并以 glob 约束测试文件。
+- **验证**：命令成功返回 current-handoff / 专题进度文件的实际测试消费者清单。
+
+```text
+ERR928_RECOVERY=REPOSITORY_ROOT_RG_WITH_REAL_DIRECTORIES_AND_FILE_GLOB
+ERR928_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-928
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR928_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR929_REMOVED_WORKFLOW_DOC_RENDERER_CONSUMER:START -->
+### ERR-929：已退出 workflow 的文档渲染消费者仍在当前回归中
+
+- **分类**：`CURRENT_RELEASE_CONTRACT_CONFLICT / VALIDATION_SCRIPT_RUNTIME_DEFECT`
+- **事实证据**：治理消费者定向回归为 `42 pass / 1 fail`；失败测试 `specforge-development-err125.test.ts` 仍要求 `sf-workflow-architecture-change` 与 `architecture_change` JSON 同步，并调用 `scripts/render-workflow-docs.ts --check`。脚本在当前 Node 24 ESM 入口先因 `__dirname is not defined` 退出；其静态配置仍枚举 `architecture_change`、`spec_migration` 等已由 Step 5 矩阵判定 `REMOVE` 的 workflow。
+- **权威对照**：`current-release-module-and-change-disposition-matrix.md` 明确规定十个旧 workflow 退出当前 loader、installer、manifest 和当前回归，仅保留当前 `feature_spec`。
+- **首次偏离与责任层**：`Build / Validation Script` 仍消费已退出 workflow；对应测试仍把历史同步合同当作当前正向合同。
+- **影响**：handoff/经验门禁相关 `42` 个测试已通过，但根 build/lint 的 workflow docs 前置脚本仍不能作为当前发布可信证据；不得把本次结果写成 43/43。
+- **修复方向**：按 Step 5 权威把 renderer、root build/lint 入口和测试消费者收敛到唯一当前 workflow；保留 ERR-125/126 历史账本断言，不通过删断言掩盖真实 build 入口问题。
+- **状态**：`OPEN_CURRENT_RELEASE_CONSUMER_CONVERGENCE_REQUIRED`。
+
+```text
+ERR929_VALIDATION_RESULT=42_PASS_1_FAIL
+ERR929_FAILED_TEST=packages/daemon-core/tests/unit/specforge-development-err125.test.ts
+ERR929_FIRST_RUNTIME_ERROR=NODE24_ESM_DIRNAME_UNDEFINED
+ERR929_AUTHORITY_CONFLICT=REMOVED_WORKFLOW_STILL_CONSUMED_BY_RENDERER_AND_TEST
+ERR929_PRODUCT_CODE_SIDE_EFFECT=NONE
+ERR929_STATUS=OPEN_CURRENT_RELEASE_CONSUMER_CONVERGENCE_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-929
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR929_REMOVED_WORKFLOW_DOC_RENDERER_CONSUMER:END -->
+
+<!-- SPECFORGE_ERR930_RELEASE_MANIFEST_FIXTURE_INCOMPLETE_PACKAGE:START -->
+### ERR-930：release manifest 测试夹具创建了无 manifest 的 package 目录
+
+- **分类**：`TEST_FIXTURE_TOPOLOGY_DEFECT`
+- **事实证据**：Step 6C5 GREEN 首次复跑为 `8 pass / 2 fail`；两项失败均为 `release_manifest:source_missing:packages/daemon-core/package.json`。夹具为 handshake producer 创建了 `packages/daemon-core/src/**`，但只为 `packages/core` 建立 package manifest 与 dist。
+- **根因**：测试夹具同时模拟 package 枚举面和 handshake owner 时，没有保持真实 `packages/<name>/package.json + dist main/types` 拓扑。
+- **影响**：producer 正确失败关闭；不应修改产品逻辑去忽略 package 目录。owner snapshot 相关 `6` 项测试继续通过，无仓库运行态副作用。
+- **正确做法**：补齐夹具内 daemon-core package manifest、main/types 构建文件，并把它纳入确定性 manifest 期望集合，然后复跑。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR930_FIRST_GREEN_RESULT=8_PASS_2_FAIL
+ERR930_PRODUCT_BEHAVIOR=FAIL_CLOSED_CORRECT
+ERR930_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-930
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR930_RELEASE_MANIFEST_FIXTURE_INCOMPLETE_PACKAGE:END -->
+
+<!-- SPECFORGE_ERR930_CLOSURE:START -->
+#### ERR-930 关闭证据（2026-08-27）
+
+- **修正**：测试夹具补齐 `@specforge/daemon-core` package manifest 及 dist main/types，并将该真实 package 纳入确定性期望。
+- **复跑**：release manifest/runtime entry、owner producer 与真实 owner snapshot 合计 `10/10` 通过。
+
+```text
+ERR930_REPEAT_RESULT=10_PASS
+ERR930_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-930
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR930_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR931_REAL_RELEASE_MANIFEST_PACKAGE_BUILD_DRIFT:START -->
+### ERR-931：真实 release manifest 被三个 package 构建差异阻断
+
+- **分类**：`CURRENT_RELEASE_PACKAGE_BUILD_SURFACE_DRIFT`
+- **事实证据**：真实 `build-release-manifest.ts` 使用 Bun 1.4.0 在当前工作树失败关闭：`@specforge/host-profile` 与 `@specforge/types` 的 package main/exports 仍指向 `src/**`；`@specforge/plugin-loader` 声明 `dist/index.d.ts`，现场只有 `dist/index.js`。
+- **权威对照**：V6 design 与 Step 5 矩阵把三个 package 均列为 `CURRENT_RELEASE_SUPPORTING / KEEP`，并要求 package、clean build、manifest 集合一致；源码入口和缺失声明产物不能作为 stable artifact。
+- **首次偏离与责任层**：`Package Export / Build`。host-profile/types manifest 没有消费已有 dist main/types；plugin-loader build 命令没有实际产出其声明的类型文件。
+- **影响**：release manifest document 被标记 incomplete，runtime-entry producer继承 `manifest_incomplete`；没有伪造完整报告、没有安装或部署。生成的 incomplete manifest 位于已忽略 build output 路径。
+- **修复方向**：测试先固定真实仓库 package-export/clean-build 合同；将 host-profile/types exports 指向真实 dist，将 plugin-loader build 收敛到可产出 JS+d.ts 的声明路径，重建后再生成 manifest。
+- **状态**：`OPEN_PACKAGE_BUILD_CONVERGENCE_REQUIRED`。
+
+```text
+ERR931_REAL_MANIFEST_RESULT=FAIL_CLOSED
+ERR931_DRIFT=HOST_PROFILE_SOURCE_EXPORT;TYPES_SOURCE_EXPORT;PLUGIN_LOADER_DECLARATION_MISSING
+ERR931_INSTALL_DEPLOY_SIDE_EFFECT=NONE
+ERR931_STATUS=OPEN_PACKAGE_BUILD_CONVERGENCE_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-931
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR931_REAL_RELEASE_MANIFEST_PACKAGE_BUILD_DRIFT:END -->
+
+<!-- SPECFORGE_ERR932_TYPES_PACKAGE_JSON_TRAILING_COMMA:START -->
+### ERR-932：types exports 收敛补丁留下 JSON 尾逗号
+
+- **分类**：`PATCH_SYNTAX_DEFECT_CAUGHT_PREFLIGHT`
+- **事实证据**：修改后、构建前的文件复核显示 `packages/types/package.json` 的最后一个 exports entry 后仍有尾逗号。
+- **影响**：尚未运行 JSON 消费者、构建或测试；没有生成错误产品结果或部署副作用。
+- **修正**：在执行命令前删除尾逗号，并以 JSON parse、三个 package 定向构建及真实 release surface 测试共同验证。
+- **状态**：`FIX_IMPLEMENTED_PENDING_VALIDATION`。
+
+```text
+ERR932_DETECTED_BEFORE_EXECUTION=YES
+ERR932_RUNTIME_SIDE_EFFECT=NONE
+ERR932_STATUS=FIX_IMPLEMENTED_PENDING_VALIDATION
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-932
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR932_TYPES_PACKAGE_JSON_TRAILING_COMMA:END -->
+
+<!-- SPECFORGE_ERR933_REPEATED_VALIDATION_WORKDIR_MISMATCH:START -->
+### ERR-933：再次混用 package 工作目录与仓库根相对路径
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_DEFECT / EXPERIENCE_GATE_BREACH`
+- **事实证据**：命令工作目录为 `packages/types`，JSON parse 前置却使用 `packages/types/package.json` 等仓库根相对路径，三次 `Get-Content` 均报 path missing；PowerShell 非终止错误后继续执行 `tsc`，最终 exit 0。
+- **关联历史**：ERR-922 已记录 package-local workdir 与路径拓扑错误，本次属于重复错误。
+- **影响**：三项 JSON parse 未执行；types 的 `tsc` 构建独立通过。不得把整条命令记为验证通过，无部署或安装副作用。
+- **正确做法**：所有 JSON parse 和 package build 均从仓库根运行，Bun 通过 `--cwd <package>` 指定 package；分别核对每个结果。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR933_PREVIOUS_SAME_CLASS=ERR-922
+ERR933_JSON_PARSE=NOT_EXECUTED_PATH_MISSING
+ERR933_TYPES_BUILD=PASS_INDEPENDENT_SUBCOMMAND
+ERR933_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-933
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR933_REPEATED_VALIDATION_WORKDIR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR934_BUN_CWD_HELP_FALSE_SUCCESS:START -->
+### ERR-934：Bun --cwd 参数顺序错误返回帮助与退出码 0
+
+- **分类**：`VALIDATION_COMMAND_FALSE_SUCCESS_RISK`
+- **事实证据**：host-profile 与 plugin-loader 两条 `bun --cwd <package> run build` 均输出完整 usage 和 package scripts，wall time 约 0.2 秒且 exit 0，没有输出脚本命令或 tsc 结果。
+- **根因**：未核对 Bun 1.4 的参数解析顺序，把 CLI 帮助退出码 0误当作可用于 package build 的入口。
+- **影响**：两个 package 构建均未执行，不能形成构建证据；没有文件删除、安装或部署副作用。
+- **正确做法**：由命令执行工具设置 package 的真实 workdir，在该目录仅执行已验证的绝对 Bun `run build`，并检查脚本输出及声明文件存在性。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR934_HOST_PROFILE_BUILD=NOT_EXECUTED_HELP_ONLY
+ERR934_PLUGIN_LOADER_BUILD=NOT_EXECUTED_HELP_ONLY
+ERR934_EXIT_CODE_TRUSTED=NO
+ERR934_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-934
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR934_BUN_CWD_HELP_FALSE_SUCCESS:END -->
+
+<!-- SPECFORGE_ERR935_PLUGIN_LOADER_FULL_P2_BUILD_CONFLICT:START -->
+### ERR-935：plugin-loader 全源码构建仍包含已批准退出的 P2 子系统
+
+- **分类**：`CURRENT_RELEASE_BUILT_NOT_ENABLED_SUBSET_BUILD_CONFLICT`
+- **事实证据**：将 plugin-loader build 从未产出声明文件的 Bun bundle 改为全源码 tsc 后，真实构建失败；错误集中于 daemon-init、hot-reload、runtime loader、sandbox/IPC、resource monitor、重复 event exports 等 P2 运行时子系统，同时包含 static-checker 少量严格类型问题。
+- **权威对照**：V6 design 与 Step 5 矩阵只允许 plugin manifest 静态检查/权限声明 P0 checker；PluginRegistry、运行时加载、热加载、sandbox/IPC 明确退出当前 artifact。
+- **首次偏离与责任层**：`Package Build / Export Boundary` 仍把整个历史 `src/index.ts` 作为唯一入口，没有形成获准 P0 子集 artifact。
+- **影响**：plugin-loader 新构建未成功，缺失 `dist/index.d.ts` 仍阻断 release manifest；host-profile 构建独立通过。没有安装或部署。
+- **修复方向**：先核对真实 P0 checker 实现和生产消费者，建立只导出 P0 静态检查/manifest 合同的 current-release entry；不修复或重新启用 P2 loader/sandbox 代码。
+- **状态**：`OPEN_P0_SUBSET_BUILD_CONVERGENCE_REQUIRED`。
+
+```text
+ERR935_PLUGIN_LOADER_BUILD=FAIL
+ERR935_P2_REPAIR_AUTHORIZED=NO
+ERR935_CURRENT_RELEASE_TARGET=P0_STATIC_CHECKER_AND_PERMISSION_DECLARATION_ONLY
+ERR935_STATUS=OPEN_P0_SUBSET_BUILD_CONVERGENCE_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-935
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR935_PLUGIN_LOADER_FULL_P2_BUILD_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR936_PLUGIN_LOADER_P0_SLICE_TYPE_BOUNDARIES:START -->
+### ERR-936：plugin-loader P0 slice 首次构建存在 8 个局部类型边界错误
+
+- **分类**：`CURRENT_RELEASE_P0_BUILD_CONTRACT_DEFECT`
+- **事实证据**：新 current-release entry 将构建集合收敛到 P0 后，tsc 只剩 8 项：入口误导出两个不存在的 helper；LRU 空 key、AST spec/id/current narrowing、批量文件索引共 6 项 strict/noUnchecked 边界。
+- **影响**：P0 artifact 尚未生成；错误集合不再包含 daemon-init/hot-reload/sandbox/IPC 等 P2 模块，证明 build scope 收敛有效。
+- **修复方向**：删除虚构 helper export，并为 P0 实现补齐空集合保护与 AST/数组索引类型收窄；不降低 tsconfig strict 规则。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR936_P0_BUILD_ERRORS=8
+ERR936_P2_ERRORS_IN_CURRENT_SLICE=0
+ERR936_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-936
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR936_PLUGIN_LOADER_P0_SLICE_TYPE_BOUNDARIES:END -->
+
+<!-- SPECFORGE_ERR937_PLUGIN_LOADER_IMPORT_SPECIFIER_NARROWING:START -->
+### ERR-937：P0 AST ImportSpecifier 自定义声明缺少 imported 字段收窄
+
+- **分类**：`CURRENT_RELEASE_P0_TYPE_DECLARATION_DEFECT`
+- **事实证据**：ERR-936 修正后 P0 tsc 从 8 项降至 1 项：`ast-parser.ts` 的 `ImportSpecifier` 分支访问 `spec.imported`，而项目内最小 `@typescript-eslint/types` 声明只把 specifier 表示为 `BaseNode`。
+- **影响**：P0 artifact 仍未生成；其余 ERR-936 边界已通过编译检查。
+- **修正方向**：在已由 `spec.type === 'ImportSpecifier'` 保护的分支内收窄 imported name 结构，不放宽 strict 或使用全局 any。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR937_P0_BUILD_ERRORS=1
+ERR937_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-937
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR937_PLUGIN_LOADER_IMPORT_SPECIFIER_NARROWING:END -->
+
+<!-- SPECFORGE_ERR938_POWERSHELL_RG_REGEX_QUOTING:START -->
+### ERR-938：PowerShell 中的 rg 正则引号未形成合法表达式
+
+- **分类**：`VALIDATION_COMMAND_QUOTING_DEFECT`
+- **事实证据**：为检索 setup TypeScript 是否依赖 zod，命令中的字符类和单双引号经过 PowerShell 参数解析后成为未闭合字符类；`rg` 返回 `regex parse error: unclosed character class`。
+- **影响**：该只读检索未执行，没有产品测试结果、文件系统写入、安装或部署副作用。
+- **正确做法**：当前问题只需确认固定依赖字面，改用 `rg -F` 分别检索单引号和双引号形式；不再通过跨 Shell 复杂正则组合引号。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR938_FAILED_ENTRY=RG_REGEX_THROUGH_POWERSHELL_QUOTING
+ERR938_PRODUCT_TEST_RESULT=NOT_PRODUCED
+ERR938_REPOSITORY_SIDE_EFFECT=NONE
+ERR938_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-938
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR938_POWERSHELL_RG_REGEX_QUOTING:END -->
+
+<!-- SPECFORGE_ERR939_REPEATED_RG_FIXED_STRING_QUOTING:START -->
+### ERR-939：ERR-938 后仍用 rg 参数引号组合检索双引号字面
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_DEFECT / EXPERIENCE_GATE_BREACH`
+- **事实证据**：`rg -F` 检索双引号形式时，PowerShell 仍将参数拆错，`rg` 把 `zod\` 当作文件路径并返回 `os error 2`；并行的单引号固定字符串检索正常执行且以 exit 1 表示无命中。
+- **根因**：ERR-938 后只把正则改成 fixed string，但没有消除 PowerShell 到 rg 的引号传递边界。
+- **影响**：双引号形式检索未执行；单引号形式仅证明相应字面无命中。没有产品测试、仓库写入、安装或部署副作用。
+- **正确做法**：停止通过 rg 传递带引号的复合字面，改用 PowerShell 原生 `Select-String -SimpleMatch` 一次读取真实文件集合。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-019`、`EXP-020`；关联 `ERR-938`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR939_PREVIOUS_SAME_CLASS=ERR-938
+ERR939_FAILED_ENTRY=RG_FIXED_STRING_DOUBLE_QUOTE_THROUGH_POWERSHELL
+ERR939_SINGLE_QUOTE_SEARCH=EXECUTED_NO_MATCH
+ERR939_REPOSITORY_SIDE_EFFECT=NONE
+ERR939_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-939
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR939_REPEATED_RG_FIXED_STRING_QUOTING:END -->
+
+<!-- SPECFORGE_ERR940_REGISTRY_DEPLOYED_COPY_PATCH_ANCHOR_DRIFT:START -->
+### ERR-940：源码与部署注册表布局不同导致组合补丁整体拒绝
+
+- **分类**：`PATCH_ANCHOR_TOPOLOGY_DEFECT`
+- **事实证据**：同一补丁尝试同步 `scripts/lib/registry.ts` 与 `setup/userlevel-scripts-lib/registry.ts`；部署副本的 Plugin 注释带额外说明，预期锚点不存在，`apply_patch` 在验证阶段失败。后续只读检索确认两个文件均未出现拟新增路径。
+- **影响**：补丁原子拒绝，两个注册表均未被部分修改；没有构建、安装或部署副作用。
+- **正确做法**：读取两个真实文件的各自锚点，分别应用精确补丁，再用集合测试证明源码与部署投影一致。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-014`、`EXP-019`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR940_APPLY_PATCH_RESULT=ATOMIC_REJECT
+ERR940_PARTIAL_WRITE=NO
+ERR940_RECOVERY=SEPARATE_REAL_FILE_ANCHORS
+ERR940_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-940
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR940_REGISTRY_DEPLOYED_COPY_PATCH_ANCHOR_DRIFT:END -->
+
+<!-- SPECFORGE_ERR941_RUNTIME_COMPILE_WORKSPACE_SUBPATH_RESOLUTION:START -->
+### ERR-941：运行产物重建无法解析 types workspace 子路径 exports
+
+- **分类**：`CURRENT_RELEASE_RUNTIME_BUILD_DEPENDENCY_RESOLUTION_DEFECT`
+- **事实证据**：以已验证 Bun 1.4.0 绝对入口运行 `scripts/build-release-runtime-artifacts.ts`，CLI artifact 在编译阶段失败；`packages/configuration/dist/constants.js` 与 `config-loader.js` 无法解析 `@specforge/types/directory-layout`、`@specforge/types/user-level-paths`。
+- **阶段对照**：ERR-931 已把 `@specforge/types` 当前发布 exports 收敛到 dist；本次失败发生在 runtime artifact compiler 的 workspace package 解析边界，不能通过恢复 source export 绕过。
+- **影响**：producer 在 `runtime:specforge` 失败关闭，未生成本轮完整 runtime artifact 集；不得复用此前二进制哈希作为新源码的发布证据。没有安装、部署、提交或推送。
+- **正确做法**：核对 runtime producer 的真实编译 cwd/entry、workspace 链接和 types subpath export 目标；在正式构建入口建立可复核依赖解析，再重建两个二进制并烟雾验证。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-137`、`EXP-142`。
+- **状态**：`OPEN_RUNTIME_BUILD_RESOLUTION_REQUIRED`。
+
+```text
+ERR941_RUNTIME_BUILD=FAIL_CLOSED
+ERR941_FAILED_ARTIFACT=runtime:specforge
+ERR941_UNRESOLVED=@specforge/types/directory-layout;@specforge/types/user-level-paths
+ERR941_STALE_ARTIFACT_REUSE=FORBIDDEN
+ERR941_INSTALL_DEPLOY_SIDE_EFFECT=NONE
+ERR941_STATUS=OPEN_RUNTIME_BUILD_RESOLUTION_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-941
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR941_RUNTIME_COMPILE_WORKSPACE_SUBPATH_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR942_RUNTIME_VERSION_AUTHORITY_DRIFT:START -->
+### ERR-942：两个运行产物的版本输出与根版本权威不一致
+
+- **分类**：`CURRENT_RELEASE_RUNTIME_VERSION_DRIFT`
+- **事实证据**：ERR-941 修正后两个 Windows runtime artifacts 构建成功；实际执行 `specforge.exe --version` 输出 `SpecForge CLI v0.1.0`，`specforged.exe --version` 输出 `specforged 1.0.0`，而 release manifest producer 的唯一版本源 `package.json#version` 为 `6.0.0-dev`。
+- **权威对照**：V6 version-unification 与 release manifest 合同要求构建、运行入口和安装 manifest 版本一致；可执行不等于候选版本绑定正确。
+- **影响**：新二进制仅通过可执行烟雾，尚不能作为当前 release candidate 的最终 runtime evidence；当前哈希不得写入最终进度收口。
+- **正确做法**：测试先固定 CLI、Daemon 与 release manifest 消费根版本权威；移除入口独立版本字面，重建两个 artifact 并复跑版本烟雾和 hash-bound manifest。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-011`、`EXP-017`、`EXP-023`、`EXP-044`。
+- **状态**：`OPEN_RUNTIME_VERSION_CONVERGENCE_REQUIRED`。
+
+```text
+ERR942_ROOT_VERSION=6.0.0-dev
+ERR942_CLI_VERSION=0.1.0
+ERR942_DAEMON_VERSION=1.0.0
+ERR942_ARTIFACT_EXECUTION=PASS_VERSION_BINDING_FAIL
+ERR942_STATUS=OPEN_RUNTIME_VERSION_CONVERGENCE_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-942
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR942_RUNTIME_VERSION_AUTHORITY_DRIFT:END -->
+
+<!-- SPECFORGE_ERR943_DAEMON_VERSION_PACKAGE_DEPENDENCY_MISSING:START -->
+### ERR-943：specforged 消费版本权威后 daemon-core 缺少正式 package 依赖
+
+- **分类**：`PACKAGE_DEPENDENCY_CONTRACT_DEFECT`
+- **事实证据**：版本边界定向测试 `5/5` 与 `@specforge/version-unification` 构建通过；随后 daemon-core `tsc` 在 `src/specforged.ts` 报 TS2307，无法解析 `@specforge/version-unification`。
+- **根因**：运行入口已按 ERR-942 改为消费版本权威，但 daemon-core package manifest 尚未声明该 workspace 依赖。
+- **影响**：Daemon package 构建失败，新的 runtime binaries 尚未重建；没有安装、部署、提交或推送。
+- **正确做法**：在 daemon-core package 依赖中声明 `@specforge/version-unification: workspace:*`，保持公开 package 边界，再复跑 daemon build 与 runtime compile。
+- **类防护**：`EXP-004`、`EXP-011`、`EXP-017`、`EXP-031`、`EXP-137`、`EXP-142`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR943_VERSION_BOUNDARY_TESTS=5_PASS
+ERR943_VERSION_UNIFICATION_BUILD=PASS
+ERR943_DAEMON_BUILD=FAIL_TS2307
+ERR943_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-943
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR943_DAEMON_VERSION_PACKAGE_DEPENDENCY_MISSING:END -->
+
+<!-- SPECFORGE_ERR944_BUN_OFFLINE_INSTALL_TEMPDIR_EPERM:START -->
+### ERR-944：沙箱内 Bun 离线 workspace 链接刷新被 tempdir EPERM 阻断
+
+- **分类**：`ENVIRONMENT_PERMISSION_ERROR`
+- **事实证据**：daemon-core 声明新 workspace 依赖后，以已验证 Bun 绝对入口运行根目录 `install --offline`；Bun 在依赖处理前返回 `unable to write files to tempdir: EPERM`。
+- **影响**：workspace junction 尚未刷新，daemon build 未复跑；没有联网下载证据，未产生可采信安装结果、产品部署、提交或推送。
+- **正确做法**：保持 `--offline` 和同一 Bun 入口，在沙箱外重跑以允许其使用系统 tempdir；完成后核对 junction、lockfile diff 和 daemon build。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-137`、`EXP-142`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR944_COMMAND=BUN_INSTALL_OFFLINE
+ERR944_FAILURE=TEMPDIR_EPERM
+ERR944_DEPENDENCY_DOWNLOAD_AUTHORIZED=NO
+ERR944_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-944
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR944_BUN_OFFLINE_INSTALL_TEMPDIR_EPERM:END -->
+
+<!-- SPECFORGE_ERR945_MULTI_PACKAGE_METADATA_PATCH_ANCHOR_DRIFT:START -->
+### ERR-945：多个 package manifest 字段布局不同导致组合 metadata 补丁拒绝
+
+- **分类**：`PATCH_ANCHOR_TOPOLOGY_DEFECT`
+- **事实证据**：为六表面 producer ownership 增加 `specforgeRelease` metadata 的组合补丁，在 `packages/multimodal/package.json` 找不到预期 `schema_version` 锚点；`apply_patch` 验证失败。后续只读检索确认根及六个 package manifest 均未出现 `specforgeRelease`。
+- **影响**：补丁原子拒绝，无部分 metadata 写入；formal release precheck 仍保持已证实的 21 个 missingRequired，没有安装、部署、提交或推送。
+- **正确做法**：分别读取各 JSON 文件真实末尾结构，以每个文件的唯一闭合字段为锚点单独修改；随后逐文件 JSON parse 并由正式预检消费。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-014`、`EXP-019`；关联 `ERR-940`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR945_APPLY_PATCH_RESULT=ATOMIC_REJECT
+ERR945_PARTIAL_WRITE=NO
+ERR945_FORMAL_PRECHECK_BASELINE=21_MISSING_REQUIRED
+ERR945_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-945
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR945_MULTI_PACKAGE_METADATA_PATCH_ANCHOR_DRIFT:END -->
+
+<!-- SPECFORGE_ERR946_PROGRESS_STATUS_FILENAME_DRIFT:START -->
+### ERR-946：治理收口只读汇总引用了不存在的旧进度文件名
+
+- **分类**：`VALIDATION_COMMAND_PATH_DEFECT`
+- **事实证据**：治理收口汇总命令在成功输出 Git 状态、HEAD、分支及 error ledger 尾部后，尝试读取 `docs/implementation/architecture-consistency/current-architecture-convergence-progress.md`；该路径不存在，PowerShell 因 `ErrorActionPreference=Stop` 停止，后续 handoff 尾部未读取。
+- **影响**：仅有只读命令中止；没有产品测试结论、文件修改、安装、部署、提交或推送副作用。
+- **正确做法**：使用仓库实际进度文件 `current-release-boundary-and-module-convergence-progress.md`，分别读取 progress 与 handoff，避免一个错误路径遮蔽其余证据。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR946_GIT_STATUS_READ=PASS
+ERR946_LEDGER_TAIL_READ=PASS
+ERR946_PROGRESS_READ=FAIL_PATH_NOT_FOUND
+ERR946_REPOSITORY_SIDE_EFFECT=NONE
+ERR946_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-946
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR946_PROGRESS_STATUS_FILENAME_DRIFT:END -->
+
+<!-- SPECFORGE_ERR931_CLOSURE:START -->
+#### ERR-931 关闭证据（2026-08-29）
+
+- host-profile、types 与 plugin-loader 已分别从真实 package 工作目录完成正式构建；package export 与 clean-build producer 均消费实际 dist 产物。
+- 真实 release manifest、runtime-entry surface 及正式六表面预检通过，`missingRequired=[]`、`unexpectedExcluded=[]`。
+
+```text
+ERR931_PACKAGE_BUILDS=PASS
+ERR931_REAL_RELEASE_MANIFEST=COMPLETE_HASH_BOUND
+ERR931_FORMAL_PRECHECK=PASS_ZERO_DRIFT
+ERR931_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-931
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR931_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR932_CLOSURE:START -->
+#### ERR-932 关闭证据（2026-08-29）
+
+- `packages/types/package.json` 尾逗号已移除，相关 package manifest 均通过 JSON parse。
+- types 正式构建、subpath exports 消费与 runtime artifact 重建通过。
+
+```text
+ERR932_JSON_PARSE=PASS
+ERR932_TYPES_BUILD=PASS
+ERR932_RUNTIME_SUBPATH_CONSUMPTION=PASS
+ERR932_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-932
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR932_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR933_CLOSURE:START -->
+#### ERR-933 关闭证据（2026-08-29）
+
+- JSON parse 已从仓库根按真实路径复跑；package 构建改由执行工具设置各 package 工作目录。
+- 不再把部分子命令成功升级为整条组合命令成功。
+
+```text
+ERR933_JSON_PARSE=PASS_FROM_REPOSITORY_ROOT
+ERR933_PACKAGE_WORKDIR_TOPOLOGY=PASS
+ERR933_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-933
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR933_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR934_CLOSURE:START -->
+#### ERR-934 关闭证据（2026-08-29）
+
+- 已停止使用错误的 `bun --cwd` 入口，统一由工具设置 package 工作目录后执行绝对 Bun `run build`。
+- host-profile、plugin-loader、version-unification、daemon-core 与 scope-gate 的目标构建均真实执行并通过。
+
+```text
+ERR934_HELP_ONLY_RESULT_REUSED=NO
+ERR934_REAL_PACKAGE_BUILDS=PASS
+ERR934_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-934
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR934_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR935_CLOSURE:START -->
+#### ERR-935 关闭证据（2026-08-29）
+
+- plugin-loader 已建立只含当前 P0 manifest、权限声明和静态检查能力的 current-release entry；daemon 的 P2 runtime consumer 已退出当前调用链。
+- P0 正式构建通过，所选 manifest/permission/static-checker 回归 `244/244` 通过；未修复或启用 P2 loader、hot-reload、sandbox/IPC。
+
+```text
+ERR935_CURRENT_RELEASE_ENTRY=P0_ONLY
+ERR935_P2_RUNTIME_CONSUMER=REMOVED
+ERR935_P0_SELECTED_REGRESSION=244_PASS_0_FAIL
+ERR935_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-935
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR935_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR936_CLOSURE:START -->
+#### ERR-936 关闭证据（2026-08-29）
+
+- P0 slice 的空集合、AST narrowing 与数组索引边界已在 strict/noUnchecked 合同内修正，没有降低 TypeScript 规则。
+- plugin-loader P0 构建及 `244/244` 所选回归通过。
+
+```text
+ERR936_STRICT_RULES_LOWERED=NO
+ERR936_P0_BUILD=PASS
+ERR936_SELECTED_REGRESSION=244_PASS_0_FAIL
+ERR936_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-936
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR936_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR937_CLOSURE:START -->
+#### ERR-937 关闭证据（2026-08-29）
+
+- `ImportSpecifier` 已在受保护分支内进行局部结构收窄，未引入全局 any 或放宽 strict。
+- plugin-loader P0 正式构建和静态检查回归通过。
+
+```text
+ERR937_IMPORT_SPECIFIER_NARROWING=PASS
+ERR937_P0_BUILD=PASS
+ERR937_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-937
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR937_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR938_CLOSURE:START -->
+#### ERR-938 关闭证据（2026-08-29）
+
+- 已改用 PowerShell 原生文件枚举与 `Select-String -SimpleMatch` 检查 setup TypeScript，命令成功且无 zod import 命中。
+- installer 已移除不再需要的 zod 安装路径，并通过安装边界测试。
+
+```text
+ERR938_RECOVERY=POWERSHELL_NATIVE_SIMPLE_MATCH
+ERR938_ZOD_IMPORT_MATCHES=0
+ERR938_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-938
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR938_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR939_CLOSURE:START -->
+#### ERR-939 关闭证据（2026-08-29）
+
+- 重复的跨 Shell 引号路径已完全停止使用；原生 `Select-String -SimpleMatch` 一次覆盖真实 `.ts` 文件集合并成功返回零命中。
+
+```text
+ERR939_REPEATED_RG_QUOTING_REUSED=NO
+ERR939_NATIVE_SEARCH=PASS_ZERO_MATCH
+ERR939_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-939
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR939_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR940_CLOSURE:START -->
+#### ERR-940 关闭证据（2026-08-29）
+
+- 源码注册表与部署副本已按各自真实锚点分别修改，并由 release install set/实际隔离安装验证集合一致。
+- 实际隔离安装 `114` 个 manifest 文件，存在性、大小和 SHA-256 共 `345` 项断言通过。
+
+```text
+ERR940_SEPARATE_ANCHORS=PASS
+ERR940_ISOLATED_INSTALL=1_PASS_345_EXPECT
+ERR940_INSTALLED_FILES=114
+ERR940_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-940
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR940_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR941_CLOSURE:START -->
+#### ERR-941 关闭证据（2026-08-29）
+
+- `@specforge/types` root 与 subpath exports 已增加 CJS `require` 条件并保持 dist 单一发布目标。
+- CLI 与 Daemon 两个 Windows runtime artifacts 均已从当前源码重建并成功执行版本烟雾。
+
+```text
+ERR941_TYPES_SUBPATH_REQUIRE_EXPORTS=PASS
+ERR941_SPECFORGE_RUNTIME_BUILD=PASS
+ERR941_SPECFORGED_RUNTIME_BUILD=PASS
+ERR941_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-941
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR941_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR942_CLOSURE:START -->
+#### ERR-942 关闭证据（2026-08-29）
+
+- CLI 与 Daemon runtime entry 已统一消费构建时注入的根 `package.json#version` 权威，入口独立版本字面已删除。
+- 重建后 `specforge.exe --version` 与 `specforged.exe --version` 均报告 `6.0.0-dev`；release manifest version 同为 `6.0.0-dev`。
+
+```text
+ERR942_ROOT_VERSION=6.0.0-dev
+ERR942_CLI_VERSION=6.0.0-dev
+ERR942_DAEMON_VERSION=6.0.0-dev
+ERR942_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-942
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR942_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR943_CLOSURE:START -->
+#### ERR-943 关闭证据（2026-08-29）
+
+- daemon-core 已正式声明 `@specforge/version-unification: workspace:*`，workspace 链接存在。
+- version-unification 与 daemon-core 正式构建、runtime version 定向测试 `5/5` 通过。
+
+```text
+ERR943_PACKAGE_DEPENDENCY=DECLARED
+ERR943_DAEMON_BUILD=PASS
+ERR943_VERSION_BOUNDARY_TESTS=5_PASS
+ERR943_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-943
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR943_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR944_CLOSURE:START -->
+#### ERR-944 关闭证据（2026-08-29）
+
+- 保持同一绝对 Bun 入口与 `--offline`，在允许系统 tempdir 的执行边界复跑成功：`Checked 567 installs across 636 packages (no changes)`，lockfile 保存。
+- daemon-core 的 version-unification workspace junction 可解析，daemon 正式构建通过；没有以联网下载作为修复前提。
+
+```text
+ERR944_OFFLINE_INSTALL=PASS
+ERR944_WORKSPACE_LINK=PASS
+ERR944_DAEMON_BUILD=PASS
+ERR944_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-944
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR944_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR945_CLOSURE:START -->
+#### ERR-945 关闭证据（2026-08-29）
+
+- 根及六个 package manifest 已按各自真实 JSON 结构分别加入 producer ownership metadata，并全部通过 JSON parse。
+- 正式 release precheck 已消费 metadata，六表面结果为零缺失、零意外、零无效依赖、零不完整证据。
+
+```text
+ERR945_JSON_PARSE=PASS
+ERR945_FORMAL_PRECHECK=PASS
+ERR945_MISSING_REQUIRED=0
+ERR945_UNEXPECTED_EXCLUDED=0
+ERR945_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-945
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR945_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR946_CLOSURE:START -->
+#### ERR-946 关闭证据（2026-08-29）
+
+- 已使用实际进度文件 `current-release-boundary-and-module-convergence-progress.md` 与 `current-handoff.md` 分别读取成功。
+- 本错误只影响一次只读汇总，不影响 Step 6C5 产品验证。
+
+```text
+ERR946_ACTUAL_PROGRESS_PATH_READ=PASS
+ERR946_HANDOFF_READ=PASS
+ERR946_PRODUCT_EVIDENCE_IMPACT=NONE
+ERR946_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-946
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR946_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR947_WORKFLOW_CONFIG_PATH_ASSUMPTION:START -->
+### ERR-947：ERR-929 取证假设了不存在的 setup workflow config 路径
+
+- **分类**：`VALIDATION_COMMAND_PATH_DEFECT`
+- **事实证据**：并行只读取证中，Skill 目录枚举成功；随后 `Get-ChildItem setup/userlevel-opencode/config/workflows` 因路径不存在失败。renderer 源码已明确真实定义目录为 `configs/workflows/builtin`。
+- **影响**：仅该目录枚举未执行；renderer、目标测试和消费者检索均已独立返回，没有文件修改、测试结果、安装或部署副作用。
+- **正确做法**：以真实 renderer owner 常量与仓库目录为依据，读取 `configs/workflows/builtin`，不再推断 setup 内存在第二套 config 路径。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR947_SKILL_DIRECTORY_ENUMERATION=PASS
+ERR947_ASSUMED_CONFIG_PATH=NOT_FOUND
+ERR947_REAL_CONFIG_PATH=configs/workflows/builtin
+ERR947_REPOSITORY_SIDE_EFFECT=NONE
+ERR947_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-947
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR947_WORKFLOW_CONFIG_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR948_BUN_ROOT_SCRIPT_SANDBOX_OPERATION_NOT_PERMITTED:START -->
+### ERR-948：沙箱内 Bun 根脚本启动被 Operation not permitted 拒绝
+
+- **分类**：`ENVIRONMENT_PERMISSION_ERROR`
+- **事实证据**：使用已验证的 Bun 1.4.0 绝对入口在仓库根执行 `run check-workflows`，Bun 在脚本启动阶段输出 `Operation not permitted` 并以 1 退出；后续根 build 因 fail-fast 未执行。同一 renderer 经 Node 24 目标测试已成功执行。
+- **影响**：未产生 workflow check 或 root build 结果；没有已知生成文件、安装、部署、提交或推送副作用。
+- **正确做法**：保持相同 Bun 绝对入口和正式 package script，在允许其运行所需进程/temp 边界的沙箱外复跑；完成后审计构建前后 Git 集合。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-137`、`EXP-142`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR948_BUN_ENTRY=ABSOLUTE_BUN_1.4.0
+ERR948_CHECK_WORKFLOWS=NOT_EXECUTED_SCRIPT_START_DENIED
+ERR948_ROOT_BUILD=NOT_EXECUTED_FAIL_FAST
+ERR948_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-948
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR948_BUN_ROOT_SCRIPT_SANDBOX_OPERATION_NOT_PERMITTED:END -->
+
+<!-- SPECFORGE_ERR949_NESTED_BUN_SANDBOX_EXECUTION_DENIED:START -->
+### ERR-949：沙箱拒绝启动根构建报告的用户级 Bun 路径
+
+- **分类**：`ENVIRONMENT_PERMISSION_ERROR / VALIDATION_INCOMPLETE`
+- **事实证据**：双 Bun 来源核对中，已验证临时绝对入口返回 `1.4.0`；随后启动 `C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe --version` 时被沙箱拒绝访问，PowerShell fail-fast，两个文件的 SHA-256/长度核对未执行。
+- **影响**：用户级 Bun 的版本和字节等价性尚未证明；不得据此把根 build 缺失最终标记升级为通过。没有仓库写入、安装、部署、提交或推送副作用。
+- **正确做法**：在沙箱外执行只读版本与文件哈希核对，再以已确认入口直接运行 workspace builder 并取得结构化退出码和最终完成标记。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-137`、`EXP-142`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR949_VERIFIED_BUN_VERSION=1.4.0
+ERR949_NESTED_BUN_VERSION=INSUFFICIENT_EVIDENCE
+ERR949_HASH_COMPARISON=NOT_EXECUTED_FAIL_FAST
+ERR949_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-949
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR949_NESTED_BUN_SANDBOX_EXECUTION_DENIED:END -->
+
+<!-- SPECFORGE_ERR950_ROOT_BUILD_NESTED_BUN_VERSION_DRIFT:START -->
+### ERR-950：根 build 的嵌套 naked bun 漂移到用户级 Bun 1.3.14
+
+- **分类**：`BUILD_RUNTIME_PROVENANCE_DRIFT / FORMAL_BUILD_EVIDENCE_INVALID`
+- **事实证据**：正式外层入口为绝对 Bun `1.4.0`；`scripts/build-workspace.ts` 在根 build 输出实际 `process.execPath=C:/Users/lyq/AppData/Roaming/npm/node_modules/bun/bin/bun.exe`。沙箱外核对该入口版本为 `1.3.14`，与外层文件 SHA-256 不同。构建输出到 daemon-core 后缺少 `OK @specforge/daemon-core` 和最终 complete 标记。
+- **首次偏离与责任层**：根 `package.json` build/lint/render/check scripts 再次通过 PATH 执行裸 `bun`，没有复用发起 package script 的同一运行时。
+- **影响**：renderer check 可由独立 Node 24 测试采信；本次根 build 不得作为 Bun 1.4.0 当前候选的完整正式构建证据。构建生成 dist，Git 审计未发现新增 tracked 变更。
+- **修复方向**：测试先固定根任务只能使用发起 `bun run` 的 `npm_execpath`；由 Node orchestrator 以该绝对入口依次执行 renderer/workspace build/lint，不再从 PATH 解析嵌套 Bun。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-011`、`EXP-017`、`EXP-137`、`EXP-142`、`EXP-193`。
+- **状态**：`OPEN_ROOT_TASK_RUNTIME_CONVERGENCE_REQUIRED`。
+
+```text
+ERR950_OUTER_BUN_VERSION=1.4.0
+ERR950_NESTED_BUN_VERSION=1.3.14
+ERR950_BINARY_HASH_EQUAL=NO
+ERR950_ROOT_BUILD_EVIDENCE=INVALID_INCOMPLETE_AND_RUNTIME_DRIFT
+ERR950_TRACKED_BUILD_SIDE_EFFECT=NONE_NEW
+ERR950_STATUS=OPEN_ROOT_TASK_RUNTIME_CONVERGENCE_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-950
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR950_ROOT_BUILD_NESTED_BUN_VERSION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR951_REMOVED_WORKFLOW_REMAINING_CONSUMER_CLOSURE:START -->
+### ERR-951：十个已退出 workflow 仍有 orchestrator、v1.1 definitions 与测试消费者
+
+- **分类**：`CURRENT_RELEASE_CONSUMER_CLOSURE_INCOMPLETE / ARCHITECTURE_DRIFT`
+- **事实证据**：删除前精确消费者审计确认：`sf-orchestrator.md` 仍把十个退出 workflow 映射到旧 Skill，并把 `spec_migration`/`architecture_change` 描述为现行路径；`packages/workflow-runtime/src/workflows/v11-definitions.ts` 仍引用多个旧 Skill；daemon-core 多组测试直接读取旧 Skill/JSON；v1.1 stable RC smoke 仍要求旧部署文件。
+- **权威对照**：Step 5 矩阵规定当前只保留 `feature_spec`，十个旧 workflow/Skill 从 Agent 路由、loader、tests、installer/manifest 同步退出；历史治理文字保留但不作为现行合同。
+- **影响**：不能安全物理删除十个 JSON/Skill；ERR-929 renderer/root build 消费者已收敛，但 workflow 删除闭包尚未完成。未执行删除、安装、部署、提交或推送。
+- **下一步**：先核对 `v11-definitions.ts` 的真实 import/export/Runtime 调用和各测试归属；现役 Agent 路由收敛到唯一 `feature_spec`，历史测试改为历史证据断言或退出当前回归，最后再删除源文件并跑反向排除测试。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-011`、`EXP-013`、`EXP-017`、`EXP-023`、`EXP-044`、`EXP-144`、`EXP-193`。
+- **状态**：`OPEN_CONSUMER_CLASSIFICATION_AND_REMOVAL_REQUIRED`。
+
+```text
+ERR951_RENDERER_CONSUMER=CONVERGED_TO_FEATURE_SPEC_ONLY
+ERR951_ROOT_BUILD=PASS_BUN_1.4.0
+ERR951_ORCHESTRATOR_OLD_ROUTES=PRESENT
+ERR951_V11_DEFINITION_OLD_SKILLS=PRESENT
+ERR951_DIRECT_TEST_CONSUMERS=PRESENT
+ERR951_PHYSICAL_DELETION=NOT_PERFORMED_FAIL_CLOSED
+ERR951_STATUS=OPEN_CONSUMER_CLASSIFICATION_AND_REMOVAL_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-951
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR951_REMOVED_WORKFLOW_REMAINING_CONSUMER_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR952_REPEATED_POWERSHELL_RG_IMPORT_QUOTING:START -->
+### ERR-952：ERR-938/939 后再次用 PowerShell→rg 复杂引号检索 import
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_DEFECT / EXPERIENCE_GATE_BREACH`
+- **事实证据**：组合命令第一段对 v1.1 export 符号的生产消费者检索无输出；第二段使用包含单双引号字符类的 rg 正则，被解析为未闭合字符类并返回 `regex parse error`。
+- **关联历史**：ERR-938、ERR-939 已明确禁止在当前 PowerShell 边界继续传递此类 rg 引号组合。
+- **影响**：workflow-runtime import 检索未执行；第一段只能作为“指定符号未发现外部生产消费者”的独立结果，整条命令不得标记通过。没有仓库写入、安装、部署、提交或推送副作用。
+- **正确做法**：改用 `Get-ChildItem` 获取真实 TypeScript 文件集合，并用 `Select-String -SimpleMatch` 分别检索固定 import 字面。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-019`、`EXP-020`；关联 `ERR-938`、`ERR-939`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR952_PREVIOUS_SAME_CLASS=ERR-938;ERR-939
+ERR952_SYMBOL_CONSUMER_SEARCH=EXECUTED_NO_MATCH
+ERR952_IMPORT_SEARCH=NOT_EXECUTED_REGEX_PARSE_ERROR
+ERR952_REPOSITORY_SIDE_EFFECT=NONE
+ERR952_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-952
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR952_REPEATED_POWERSHELL_RG_IMPORT_QUOTING:END -->
+
+<!-- SPECFORGE_ERR929_CLOSURE:START -->
+#### ERR-929 关闭证据（2026-08-29）
+
+- renderer 已只读取 `configs/workflows/builtin/feature_spec.json`，只生成当前 `sf-workflow-feature-spec` 区段，并使用 ESM-safe script root。
+- ERR-125/126 历史账本断言继续保留；当前合同测试、Daemon extension 边界测试共 `6/6` 通过。
+- 根 check-workflows 与 16-package root build 均由同一 Bun 1.4.0 完成并返回最终 complete/exit 0。
+
+```text
+ERR929_RENDERER_CURRENT_WORKFLOW_COUNT=1
+ERR929_HISTORICAL_LEDGER_ASSERTIONS=PRESERVED
+ERR929_TARGET_TESTS=6_PASS_0_FAIL
+ERR929_ROOT_CHECK_WORKFLOWS=PASS
+ERR929_ROOT_BUILD=PASS_16_PACKAGES_BUN_1.4.0
+ERR929_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-929
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR929_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR947_CLOSURE:START -->
+#### ERR-947 关闭证据（2026-08-29）
+
+- 已按 renderer owner 常量读取真实 `configs/workflows/builtin`，确认 11 个现场 JSON 及唯一当前 `feature_spec.json`。
+- 后续 Daemon runtime loader 已收敛为对该当前文件的精确加载，不创建 setup 内第二套 config 路径。
+
+```text
+ERR947_REAL_CONFIG_PATH_READ=PASS
+ERR947_SECOND_CONFIG_AUTHORITY_CREATED=NO
+ERR947_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-947
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR947_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR948_CLOSURE:START -->
+#### ERR-948 关闭证据（2026-08-29）
+
+- 保持同一绝对 Bun 1.4.0 与正式 root scripts，在允许进程/temp 执行的沙箱外复跑成功。
+- check-workflows 与 root build 均返回 exit 0，Git 审计未发现新的 tracked build 生成物。
+
+```text
+ERR948_CHECK_WORKFLOWS=PASS_OUTSIDE_SANDBOX
+ERR948_ROOT_BUILD=PASS_OUTSIDE_SANDBOX
+ERR948_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-948
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR948_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR949_CLOSURE:START -->
+#### ERR-949 关闭证据（2026-08-29）
+
+- 沙箱外只读核对完成：临时绝对 Bun 为 `1.4.0`，用户级 Bun 为 `1.3.14`，两者 SHA-256 不同。
+- 该证据直接触发 ERR-950 的根任务来源修复；未再把失败组合命令当作成功。
+
+```text
+ERR949_VERIFIED_BUN_VERSION=1.4.0
+ERR949_NESTED_BUN_VERSION=1.3.14
+ERR949_BINARY_HASH_EQUAL=NO
+ERR949_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-949
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR949_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR950_CLOSURE:START -->
+#### ERR-950 关闭证据（2026-08-29）
+
+- 根 build/lint/render/check 已统一经 `scripts/run-root-task.mjs` 读取 `npm_execpath`，拒绝非 Bun 调用并以参数数组执行，不再从 PATH 解析嵌套 Bun。
+- 合同测试 `3/3` 通过；正式 root build 明确打印同一绝对 Bun `1.4.0`，16 个 package 全部 OK，最终 complete/exit 0。
+
+```text
+ERR950_ROOT_TASK_CONTRACT_TESTS=3_PASS
+ERR950_INVOKING_BUN_REUSED=YES
+ERR950_ROOT_BUILD=PASS_16_PACKAGES
+ERR950_FINAL_COMPLETE_MARKER=PASS
+ERR950_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-950
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR950_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR952_CLOSURE:START -->
+#### ERR-952 关闭证据（2026-08-29）
+
+- 已停止使用复杂 rg import 正则，改由真实 TypeScript 文件枚举与 `Select-String -SimpleMatch` 完成检索。
+- 结果确认 Daemon 生产入口只导入公开 `WorkflowEngine`/`WorkflowDefinitionLoader`；v1.1 definition/factory 符号无外部生产消费者，随后公共导出和两个孤立源文件已移除，workflow-runtime 构建通过。
+
+```text
+ERR952_NATIVE_IMPORT_SEARCH=PASS
+ERR952_EXTERNAL_V11_SYMBOL_CONSUMERS=0
+ERR952_WORKFLOW_RUNTIME_BUILD_AFTER_REMOVAL=PASS
+ERR952_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-952
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR952_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR953_WORKFLOW_CONSUMER_SELECTED_REGRESSION_FAILURES:START -->
+### ERR-953：旧 workflow 消费者收敛后的三文件定向回归出现 8 项失败
+
+- **分类**：`REGRESSION_CONSUMER_DRIFT / TEST_ISOLATION_UNDETERMINED`
+- **事实证据**：三文件定向回归共 `31 pass / 8 fail`。formal-version 与 post-close 各一项失败，原因是把旧 architecture Skill 替换为 feature Skill 后仍要求后者复制 `sf_git_checkpoint_commit`/Git merge 合同；真实当前 owner `sf-orchestrator.md` 已包含这些合同。design-governance-orchestrator 另有 6 项 `ensureProjectInit(...).success=false`，同文件路由静态测试已通过，输出未给出初始化失败代码。
+- **归属判断**：前 2 项为测试 owner 边界漂移，不能把旧 Skill 的重复文字复制进 feature Skill；后 6 项为 `INSUFFICIENT_EVIDENCE`，需单文件复跑排除并发/共享 fixture 影响后再判断。
+- **影响**：不能把该三文件回归记为通过；没有产品安装、部署、提交或推送。三项纯 legacy 测试和 v1.1 smoke 已按矩阵删除，不因本结果恢复。
+- **正确做法**：Git 闭环断言只指向 orchestrator owner；design-governance-orchestrator 单文件复跑并采集失败返回，若通过则归类测试并发隔离，若仍失败再定位产品初始化入口。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-023`、`EXP-144`、`EXP-193`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR953_SELECTED_RESULT=31_PASS_8_FAIL
+ERR953_GIT_CONTRACT_TEST_OWNER_DRIFT=2
+ERR953_PROJECT_INIT_FAILURES=6_INSUFFICIENT_EVIDENCE
+ERR953_PRODUCT_FIX_FROM_UNCLASSIFIED_FAILURE=FORBIDDEN
+ERR953_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-953
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR953_WORKFLOW_CONSUMER_SELECTED_REGRESSION_FAILURES:END -->
+
+<!-- SPECFORGE_ERR954_HOST_PROFILE_UV_GET_PASSWD_ENOMEM:START -->
+### ERR-954：项目初始化回归被 host-profile 的 uv_os_get_passwd ENOMEM 阻断
+
+- **分类**：`ENVIRONMENT_RUNTIME_ERROR / HOST_PROFILE_COLLECTION_FAILURE`
+- **事实证据**：design-governance-orchestrator 单文件、单用例复跑稳定返回 `success=false`；补充原始结果显示 20 个项目骨架文件已创建、CORE registry 为 `unchanged`，唯一 error 为 `host-profile: A system error occurred: uv_os_get_passwd returned ENOMEM (not enough memory)`。
+- **因果边界**：失败发生在 host-profile 宿主信息采集，与本轮 workflow route/renderer/Skill 文本修改无直接因果；初始化按现有合同正确 fail closed，不能修改产品去吞掉错误。
+- **影响**：该测试的业务断言未到达；同文件 6 个依赖初始化的用例受同一前置失败影响。没有产品安装、部署、提交或推送。
+- **正确做法**：保持测试与产品 fail-closed 合同，在沙箱外单文件复跑；若通过则归类沙箱宿主 API 限制，若仍失败再读取 host-profile 实现与系统资源证据。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-137`、`EXP-142`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR954_PROJECT_SKELETON_CREATED=20_FILES
+ERR954_MODULE_REGISTRY=UNCHANGED_CORE
+ERR954_HOST_PROFILE_ERROR=UV_OS_GET_PASSWD_ENOMEM
+ERR954_PRODUCT_ROUTE_CAUSALITY=NOT_SUPPORTED
+ERR954_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-954
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR954_HOST_PROFILE_UV_GET_PASSWD_ENOMEM:END -->
+
+<!-- SPECFORGE_ERR955_MIXED_GOVERNANCE_TEST_OWNER_DRIFT:START -->
+### ERR-955：两份混合治理测试仍把旧 owner 合同强加给当前 Skill/Analyst
+
+- **分类**：`REGRESSION_TEST_OWNER_BOUNDARY_DRIFT / TEST_EDIT_OMISSION`
+- **事实证据**：design-governance 与 agent-skill 两文件定向回归为 `10 pass / 4 fail`：两项要求 feature Skill 复制标准/sf-design 的 `Design-Only` 与 module placeholder 文字；一项要求有限只读 `sf-analyst` 包含完整可写 Agent 的 `workflowEngine.transitionFull()` 等合同；一项因删除 `quickChange` 变量后漏删末尾断言而抛 `ReferenceError`。
+- **权威对照**：当前 feature Skill 负责统一流程；Design Governance 方法属于标准、sf-design 与 orchestrator；sf-analyst 按 Step 5 为有限只读骨架，不拥有状态推进/写入合同；quick-change 已退出当前发布。
+- **影响**：不能将两文件记为通过；不应通过复制旧文字扩大当前 Skill/Analyst 职责。没有产品安装、部署、提交或推送。
+- **正确做法**：测试按真实 owner 分层断言；全体 Agent/Skill 只要求共同最小安全合同，角色专属合同由各自测试验证；删除遗漏的旧变量断言。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-007`、`EXP-011`、`EXP-013`、`EXP-023`、`EXP-044`、`EXP-144`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR955_SELECTED_RESULT=10_PASS_4_FAIL
+ERR955_DESIGN_OWNER_DRIFT=2
+ERR955_ANALYST_ROLE_OVERREACH=1
+ERR955_REMOVED_VARIABLE_ASSERTION=1
+ERR955_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-955
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR955_MIXED_GOVERNANCE_TEST_OWNER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR956_POST_DELETE_COMBINED_WORKDIR_MISMATCH:START -->
+### ERR-956：删除后清单枚举再次混用 package 工作目录与仓库根路径
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_DEFECT / EXPERIENCE_GATE_BREACH`
+- **事实证据**：组合验证工作目录为 `packages/daemon-core`，第一条命令却读取仓库根相对 `configs/workflows/builtin`，路径解析为 `packages/daemon-core/configs/...` 并失败；`ErrorActionPreference=Stop` 使后续 Skill 枚举和六文件 Vitest 均未执行。
+- **关联历史**：ERR-922、ERR-933 已记录相同 package workdir/仓库根路径拓扑错误。
+- **影响**：物理删除已在前一独立 apply_patch 完成；本命令没有产生删除后清单或测试结果，没有安装、部署、提交或推送。
+- **正确做法**：仓库清单从仓库根单独执行；Vitest 从 daemon-core package 工作目录单独执行，禁止在同一命令混用两套相对根。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`；关联 `ERR-922`、`ERR-933`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR956_PREVIOUS_SAME_CLASS=ERR-922;ERR-933
+ERR956_POST_DELETE_INVENTORY=NOT_EXECUTED_PATH_MISMATCH
+ERR956_POST_DELETE_TESTS=NOT_EXECUTED_FAIL_FAST
+ERR956_DELETE_ROLLBACK=NOT_REQUIRED
+ERR956_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-956
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR956_POST_DELETE_COMBINED_WORKDIR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR957_RELEASE_MANIFEST_CANDIDATE_ID_OMITTED:START -->
+### ERR-957：删除后重建 release manifest 时漏传必需 candidate id
+
+- **分类**：`VALIDATION_COMMAND_REQUIRED_ARGUMENT_OMISSION`
+- **事实证据**：绝对 Bun 1.4.0 执行 `scripts/build-release-manifest.ts` 时未传 `--candidate-id`，producer 以 `RELEASE_CANDIDATE_ID_REQUIRED` 失败关闭并 exit 1；PowerShell fail-fast，后续正式预检未执行。
+- **影响**：没有生成本轮可采信 manifest/precheck 结果；既有 runtime artifacts 已独立重建成功，不受影响。没有安装、部署、提交或推送。
+- **正确做法**：对 manifest producer 与 formal precheck 使用同一个明确的不可变 candidate id，分别检查退出码和结构化结果。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-017`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR957_RELEASE_MANIFEST=FAIL_CLOSED_REQUIRED_ARGUMENT
+ERR957_FORMAL_PRECHECK=NOT_EXECUTED_FAIL_FAST
+ERR957_RUNTIME_REBUILD=PASS_INDEPENDENT
+ERR957_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-957
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR957_RELEASE_MANIFEST_CANDIDATE_ID_OMITTED:END -->
+
+<!-- SPECFORGE_ERR951_CLOSURE:START -->
+#### ERR-951 关闭证据（2026-08-29）
+
+- 当前 Daemon loader 已只精确加载 `feature_spec.json`，orchestrator 只保留 `feature_spec -> sf-workflow-feature-spec` 路由；旧 workflow 不再有现行入口。
+- workflow-runtime 的旧 v1.1 definitions/factory、十个旧 workflow JSON、十个旧 Skill 文件、三份纯旧流程测试和旧 stable-RC smoke 已按当前发布边界物理退出。
+- 精确消费者复核为 0；删除后定向回归 `59/59` 通过，Bun 1.4.0 根构建 16 个 package 全部通过，正式六面预检无漂移。
+
+```text
+ERR951_CURRENT_WORKFLOW_COUNT=1
+ERR951_ORCHESTRATOR_OLD_ROUTES=0
+ERR951_V11_DEFINITION_OLD_SKILLS=0
+ERR951_DIRECT_OLD_PATH_CONSUMERS=0
+ERR951_REMOVED_WORKFLOW_JSON=10
+ERR951_REMOVED_WORKFLOW_SKILLS=10
+ERR951_POST_DELETE_TARGET_TESTS=59_PASS_0_FAIL
+ERR951_ROOT_BUILD=PASS_16_PACKAGES_BUN_1.4.0
+ERR951_FORMAL_PRECHECK=PASS_ZERO_DRIFT
+ERR951_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-951
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR951_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR953_CLOSURE:START -->
+#### ERR-953 关闭证据（2026-08-29）
+
+- Git 闭环断言已回归真实 owner `sf-orchestrator`，未把 orchestrator 合同复制进当前 feature Skill。
+- formal-version/post-close 两文件 `22/22` 通过；design-governance-orchestrator 在允许宿主 API 的环境单文件 `17/17` 通过，原 8 项失败均已按 owner 与环境证据分类关闭。
+
+```text
+ERR953_GIT_OWNER_TESTS=22_PASS_0_FAIL
+ERR953_ORCHESTRATOR_TESTS=17_PASS_0_FAIL
+ERR953_PRODUCT_CONTRACT_WEAKENED=NO
+ERR953_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-953
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR953_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR954_CLOSURE:START -->
+#### ERR-954 关闭证据（2026-08-29）
+
+- 相同 design-governance-orchestrator 单文件在允许 `uv_os_get_passwd` 的沙箱外环境复跑 `17/17` 通过，未再出现 `ENOMEM`。
+- 产品 host-profile fail-closed 行为未被放宽；证据支持该失败属于受限宿主环境，不支持 workflow 收敛导致产品缺陷的判断。
+
+```text
+ERR954_OUTSIDE_SANDBOX_TESTS=17_PASS_0_FAIL
+ERR954_HOST_PROFILE_ERROR_REPRODUCED=NO
+ERR954_PRODUCT_FAIL_CLOSED_CONTRACT_CHANGED=NO
+ERR954_STATUS=CLOSED_ENVIRONMENT_LIMITATION
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-954
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR954_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR955_CLOSURE:START -->
+#### ERR-955 关闭证据（2026-08-29）
+
+- 两份混合治理测试已按真实 owner 分层：Design Governance 由标准/sf-design/orchestrator 验证，有限只读 sf-analyst 不再被强加写入与状态推进合同，遗漏的旧变量断言已移除。
+- 两文件定向回归 `14/14` 通过，没有扩大现行 Agent/Skill 职责。
+
+```text
+ERR955_MIXED_GOVERNANCE_TESTS=14_PASS_0_FAIL
+ERR955_OWNER_BOUNDARY_ALIGNED=YES
+ERR955_ANALYST_ROLE_EXPANDED=NO
+ERR955_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-955
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR955_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR956_CLOSURE:START -->
+#### ERR-956 关闭证据（2026-08-29）
+
+- 仓库清单与 package 测试已拆分到各自真实工作目录执行；当前 workflow JSON 清单只含 `feature_spec.json`。
+- 删除后六文件定向回归 `42/42` 通过；未回滚已验证删除，也未再混用相对根。
+
+```text
+ERR956_CURRENT_WORKFLOW_JSON_FILES=1
+ERR956_POST_DELETE_TESTS=42_PASS_0_FAIL
+ERR956_WORKDIRS_SPLIT=YES
+ERR956_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-956
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR956_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR957_CLOSURE:START -->
+#### ERR-957 关闭证据（2026-08-29）
+
+- manifest producer 与 formal precheck 已统一使用不可变候选 ID `main-45a0cfee-working-tree-step6d2`。
+- release manifest 成功生成 114 个安装文件；正式预检 `passed=true`，producer/inventory errors 及四类 scope drift 全部为 0。
+
+```text
+ERR957_CANDIDATE_ID=main-45a0cfee-working-tree-step6d2
+ERR957_RELEASE_MANIFEST_INSTALL_FILES=114
+ERR957_PRODUCER_ERRORS=0
+ERR957_INVENTORY_ERRORS=0
+ERR957_MISSING_REQUIRED=0
+ERR957_UNEXPECTED_EXCLUDED=0
+ERR957_INVALID_DEPENDENCIES=0
+ERR957_INCOMPLETE_EVIDENCE=0
+ERR957_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-957
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR957_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR958_CURRENT_USER_ROOT_OPEN_CODE_DRIFT:START -->
+### ERR-958：当前用户级安装与 Runtime 根仍错误绑定 OpenCode `sf-user`
+
+- **分类**：`CURRENT_RELEASE_INSTALL_TOPOLOGY_DRIFT / AUTHORITY_CONSUMER_CONFLICT`
+- **事实证据**：V6 requirements REQ-10.1、design 0.7/Directory Layout 和 ADR-013 规定当前用户级根为 `~/.specforge/`，OpenCode 侧只保留项目 Thin Plugin。真实 `packages/types/src/user-level-paths.ts` 却把 `resolveSpecForgeUserRoot()` 定义为 `<OpenCode config>/sf-user`，`resolveSpecForgeManifestPath()` 定义在 OpenCode config 根；Daemon、CLI、service-management、configuration、host-profile、migration 和 installer/tests 均直接消费该路径。`scripts/tests/installer-no-legacy-write.test.ts` 还把权威 `~/.specforge/` 反向断言为 legacy。
+- **首次偏离与责任层**：共享路径 Contract（`@specforge/types/user-level-paths`）与 installer registry/target-root；下游 package 字符串与测试属于消费者漂移。Step 6C5 六面预检证明了 release 文件集合、hash 和依赖一致，但其 targetPath 合同未验证 V6 用户根语义，因此不能证明安装拓扑已对齐。
+- **影响**：当前候选仍可能把 Daemon binary、handshake、config、migration/backup 和用户资产安装/写入 OpenCode 配置树；ERR-681 不能关闭，Step 7/8 不得开始。没有用户级部署、提交或推送。
+- **正确做法**：测试先固定 `resolveSpecForgeUserRoot() -> ~/.specforge`、当前 manifest 位于该根、OpenCode config root 仅用于 Thin Plugin；然后按 types → installer target root/registry → Daemon/CLI/service/migration consumers → deployment tests 的 owner 顺序分批收敛。旧目录扫描、迁移和 cleanup 必须删除，未知旧布局失败关闭。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-011`、`EXP-013`、`EXP-017`、`EXP-023`、`EXP-044`、`EXP-144`、`EXP-193`。
+- **状态**：`OPEN_SHARED_PATH_CONTRACT_AND_INSTALL_TARGET_CONVERGENCE_REQUIRED`。
+
+```text
+ERR958_AUTHORITY_USER_ROOT=~/.specforge
+ERR958_ACTUAL_SHARED_USER_ROOT=<OpenCode-config>/sf-user
+ERR958_ACTUAL_MANIFEST_ROOT=<OpenCode-config>
+ERR958_DOWNSTREAM_CONSUMERS=DAEMON;CLI;SERVICE_MANAGEMENT;CONFIGURATION;HOST_PROFILE;MIGRATION;INSTALLER;TESTS
+ERR958_FORMAL_PRECHECK_SEMANTIC_TARGET_ROOT_COVERAGE=ABSENT
+ERR958_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+ERR958_STATUS=OPEN_SHARED_PATH_CONTRACT_AND_INSTALL_TARGET_CONVERGENCE_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-958
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR958_CURRENT_USER_ROOT_OPEN_CODE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR959_ROOT_VITEST_ENTRY_ABSENT:START -->
+### ERR-959：共享路径 RED 验证误用不存在的仓库根 Vitest 入口
+
+- **分类**：`VALIDATION_ENTRY_TOPOLOGY_ERROR / TEST_NOT_EXECUTED`
+- **事实证据**：从仓库根执行 `.\node_modules\.bin\vitest.exe`，PowerShell 返回“not recognized”；进程 exit 1，五个目标测试文件均未启动。
+- **根因**：未先核对当前 monorepo 的真实 test runner 安装位置，把 daemon-core 曾使用的 package-local Vitest 经验错误推广为根入口。
+- **影响**：尚无可采信的 test-first RED；没有产品文件运行副作用、安装、部署、提交或推送。
+- **正确做法**：先只读枚举各目标 package 的 `node_modules/.bin/vitest*` 和 package scripts，再从各 package 工作目录分别运行测试；禁止继续猜测根入口。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR959_ROOT_VITEST_ENTRY=ABSENT
+ERR959_TARGET_TESTS=NOT_EXECUTED
+ERR959_REPOSITORY_SIDE_EFFECT=NONE
+ERR959_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-959
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR959_ROOT_VITEST_ENTRY_ABSENT:END -->
+
+<!-- SPECFORGE_ERR960_SHARED_TYPES_DIST_STALE_AFTER_SOURCE_FIX:START -->
+### ERR-960：共享路径 source 修复后消费者测试仍解析旧 types dist
+
+- **分类**：`BUILD_ARTIFACT_STALENESS / VALIDATION_ORDER_ERROR`
+- **事实证据**：修改 `packages/types/src/user-level-paths.ts` 后原样复跑四 package 路径测试，仍为同一 `7 pass / 8 fail`，received 值逐字保持 `<OpenCode-config>/sf-user`。各测试通过包名 `@specforge/types/user-level-paths` 导入，package exports 指向 `dist/user-level-paths.js`；本轮尚未重建 types dist。
+- **根因**：共享 package 消费者验证前漏掉 owner build，测试没有消费刚修改的 source 字节。
+- **影响**：不能据此判定 source 修复失败或通过；没有用户级安装、部署、提交或推送。
+- **正确做法**：用已验证绝对 Bun 1.4.0 在 types package 工作目录执行 build，核对 dist 已含 `~/.specforge` owner 语义，再复跑完全相同的消费者测试。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-137`、`EXP-142`、`EXP-193`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR960_SOURCE_FIX_PRESENT=YES
+ERR960_CONSUMER_IMPORT_TARGET=packages/types/dist/user-level-paths.js
+ERR960_TYPES_BUILD_BEFORE_FIRST_GREEN_ATTEMPT=NO
+ERR960_SELECTED_RESULT=7_PASS_8_FAIL_STALE_DIST
+ERR960_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-960
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR960_SHARED_TYPES_DIST_STALE_AFTER_SOURCE_FIX:END -->
+
+<!-- SPECFORGE_ERR961_TYPES_BUILD_COMMAND_MIXED_REPOSITORY_PATH:START -->
+### ERR-961：types package 构建命令再次混入仓库根相对账本路径
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_DEFECT / WORKDIR_TOPOLOGY_ERROR`
+- **事实证据**：命令工作目录为 `packages/types`，首段却读取 `docs/rule/...`，PowerShell 报路径不存在；因未设置 fail-fast，后续绝对 Bun 1.4.0 `run build` 仍成功，dist 核对显示 `.specforge` 新语义。
+- **关联历史**：ERR-922、ERR-933、ERR-956 已记录同类 package workdir/仓库根相对路径混用；本次防护再次失效。
+- **影响**：types build 和 dist 字节证据可独立采信，但整条组合命令不得整体标记通过；消费者测试尚未复跑。没有安装、部署、提交或推送。
+- **正确做法**：账本复读只从仓库根独立执行；package build/test 只在 package 工作目录执行，不再把治理读取和 package 验证拼进同一命令。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`；关联 `ERR-922`、`ERR-933`、`ERR-956`。
+- **状态**：`IDENTIFIED_REPEATED_ERROR`。
+
+```text
+ERR961_PREVIOUS_SAME_CLASS=ERR-922;ERR-933;ERR-956
+ERR961_LEDGER_READ=FAILED_WRONG_RELATIVE_ROOT
+ERR961_TYPES_BUILD=PASS_BUN_1.4.0_INDEPENDENT
+ERR961_DIST_CURRENT_USER_ROOT=.specforge
+ERR961_CONSUMER_TESTS=NOT_YET_RERUN
+ERR961_STATUS=IDENTIFIED_REPEATED_ERROR
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-961
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR961_TYPES_BUILD_COMMAND_MIXED_REPOSITORY_PATH:END -->
+
+<!-- SPECFORGE_ERR959_961_CLOSURE:START -->
+#### ERR-959、ERR-960、ERR-961 关闭证据（2026-08-29）
+
+- 各目标 package 的真实 Vitest 入口已只读枚举并从各自工作目录执行；不存在的仓库根入口不再使用。
+- `@specforge/types` 已由绝对 Bun 1.4.0 重建，dist 核对含 `~/.specforge` 且不含 `sf-user` owner 语义。
+- 同一四 package 路径边界回归由 `7 pass / 8 fail` 转为 `15/15` 通过；账本读取与 package 命令已拆分执行。
+
+```text
+ERR959_PACKAGE_LOCAL_TEST_ENTRIES=VERIFIED
+ERR959_STATUS=CLOSED
+ERR960_TYPES_BUILD=PASS_BUN_1.4.0
+ERR960_SELECTED_RESULT=15_PASS_0_FAIL
+ERR960_STATUS=CLOSED
+ERR961_REPOSITORY_AND_PACKAGE_WORKDIR_COMMANDS_SPLIT=YES
+ERR961_SELECTED_RESULT=15_PASS_0_FAIL
+ERR961_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-959,ERR-960,ERR-961
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR959_961_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR962_POWERSHELL_PARAMETER_PASSED_TO_RG:START -->
+### ERR-962：测试入口审计把 PowerShell 参数传给 rg
+
+- **分类**：`VALIDATION_COMMAND_COMPOSITION_ERROR / TEST_ENTRY_UNDETERMINED`
+- **事实证据**：组合命令第二段为 `rg ... -ErrorAction SilentlyContinue`，rg 将 `-E` 解析为 encoding 参数并返回 `unknown encoding: rrorAction`。第一段无输出，不能证明 tests/scripts 下没有 Vitest。
+- **影响**：根级 installer 测试入口仍未确定；没有文件写入、测试执行、安装、部署、提交或推送。
+- **正确做法**：文件存在性只用 PowerShell `Get-ChildItem -ErrorAction`；文本搜索只给 rg 自身参数，两条命令分开执行。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR962_TEST_ENTRY_ENUMERATION=INSUFFICIENT_EVIDENCE
+ERR962_RG_ERROR=UNKNOWN_ENCODING_RRORACTION
+ERR962_REPOSITORY_SIDE_EFFECT=NONE
+ERR962_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-962
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR962_POWERSHELL_PARAMETER_PASSED_TO_RG:END -->
+
+<!-- SPECFORGE_ERR963_PACKAGE_VITEST_ROOT_CONFIG_RESOLUTION_FAILURE:START -->
+### ERR-963：借用 CLI Vitest 从仓库根启动时无法解析根 config 依赖
+
+- **分类**：`VALIDATION_RUNNER_CONTEXT_ERROR / TEST_NOT_COLLECTED`
+- **事实证据**：仓库根执行 `packages/cli/node_modules/.bin/vitest.exe`，runner 加载根 `vitest.config.ts` 时返回 `Cannot find module 'vitest/config'`；两个 installer 测试均未收集。
+- **根因**：可执行文件来源与 config/module resolution root 分离；存在 package-local runner 不代表它能在缺少根 node_modules 链接的仓库根解析根配置。
+- **影响**：尚无安装器合同 RED；没有产品执行、安装、部署、提交或推送。
+- **正确做法**：从 runner 所属 CLI package 工作目录执行，并显式传入目标文件；若 package root 限制阻断，改把合同测试放入该 package 的测试根并直接读取 installer owner，不再借用根配置。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR963_ROOT_CONFIG_LOAD=FAILED_MODULE_NOT_FOUND_VITEST_CONFIG
+ERR963_INSTALLER_TESTS=NOT_COLLECTED
+ERR963_REPOSITORY_SIDE_EFFECT=NONE
+ERR963_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-963
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR963_PACKAGE_VITEST_ROOT_CONFIG_RESOLUTION_FAILURE:END -->
+
+<!-- SPECFORGE_ERR964_CLI_VITEST_EXTERNAL_TEST_FILTER_EXCLUDED:START -->
+### ERR-964：CLI Vitest 按 package include 排除仓库外 installer 测试
+
+- **分类**：`VALIDATION_RUNNER_SCOPE_ERROR / TEST_NOT_COLLECTED`
+- **事实证据**：从 `packages/cli` 运行 package-local Vitest 并显式传入 `../../tests/...` 与 `../../scripts/tests/...`，runner 显示 include 仅为 `tests/**/*.test.ts`，返回 `No test files found`、exit 1。
+- **影响**：安装器合同 RED 仍未取得；没有产品执行、安装、部署、提交或推送。
+- **正确做法**：把当前发布 installer-root 合同放在 CLI package 的真实测试根中，由该测试直接导入 installer path owner；停止跨 package root 传外部测试路径。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-017`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR964_CLI_VITEST_INCLUDE=tests/**/*.test.ts
+ERR964_EXTERNAL_TESTS_COLLECTED=0
+ERR964_REPOSITORY_SIDE_EFFECT=NONE
+ERR964_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-964
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR964_CLI_VITEST_EXTERNAL_TEST_FILTER_EXCLUDED:END -->
+
+<!-- SPECFORGE_ERR962_964_CLOSURE:START -->
+#### ERR-962、ERR-963、ERR-964 关闭证据（2026-08-29）
+
+- PowerShell 文件枚举和 rg 文本搜索已拆分；真实 runner scope 已确认。
+- 当前 installer-root 合同已移入 CLI package 的真实测试根，直接读取 installer/registry owner，不再跨 root 借用 config。
+- 合同从预期 `3 fail` 转为通过；与 CLI user-root 合并回归 `5/5` 通过。
+
+```text
+ERR962_COMMAND_BOUNDARIES_SPLIT=YES
+ERR962_STATUS=CLOSED
+ERR963_ROOT_CONFIG_BYPASS_USED=NO
+ERR963_STATUS=CLOSED
+ERR964_CURRENT_INSTALLER_ROOT_TESTS=3_PASS_0_FAIL
+ERR964_COMBINED_CLI_PATH_TESTS=5_PASS_0_FAIL
+ERR964_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-962,ERR-963,ERR-964
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR962_964_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR965_NONEXISTENT_SEARCH_ROOT:START -->
+### ERR-965：Thin Plugin 归属取证包含不存在的 package 测试目录
+
+- **分类**：`EVIDENCE_SEARCH_SCOPE_ERROR / COMPOSITE_COMMAND_NOT_FULLY_PASSING`
+- **事实证据**：归属检索把 `packages/host-profile/tests` 作为搜索根传给 `rg`，但该目录不存在；`rg` 返回 `os error 2`。同一组合命令中的文件读取与其他搜索产生了输出，但整条命令不能标记为完整通过。
+- **影响**：尚未据此修改 Thin Plugin 或项目初始化实现；没有安装、部署、提交或推送。
+- **正确做法**：先用 `rg --files` 或 `Test-Path` 固化真实目录，再只对存在的源码与测试根执行搜索；把文件读取和可选目录检索拆分。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR965_MISSING_SEARCH_ROOT=packages/host-profile/tests
+ERR965_COMPOSITE_COMMAND_FULL_PASS=NO
+ERR965_PRODUCT_FILES_CHANGED_FROM_FAILED_COMMAND=NO
+ERR965_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-965
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR965_NONEXISTENT_SEARCH_ROOT:END -->
+
+<!-- SPECFORGE_ERR965_CLOSURE:START -->
+#### ERR-965 关闭证据（2026-08-29）
+
+- 已先枚举 `packages/host-profile` 的真实目录，确认只有 `src`、没有 `tests`。
+- 后续检索只使用已确认存在的 `packages/daemon-core/src`、`packages/daemon-core/tests` 和 `packages/host-profile/src`；返回成功并定位到 `ensureProjectInit` 的真实 HTTP 入口与测试消费者。
+
+```text
+ERR965_SEARCH_ROOTS_ENUMERATED=YES
+ERR965_MISSING_OPTIONAL_ROOT_REUSED=NO
+ERR965_CORRECTED_SEARCH=PASS
+ERR965_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-965
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR965_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR966_RELEASE_MANIFEST_EXPECTED_ORDER_DRIFT:START -->
+### ERR-966：发布清单新路径期望数组未保持生产者确定性排序
+
+- **分类**：`TEST_FIXTURE_ORDERING_ERROR / MIXED_RED_RESULT`
+- **事实证据**：三文件 test-first 运行共 `6 pass / 4 fail`。其中 Thin Plugin 的 2 个失败是预期的旧 `sf-user` 产品 RED；另 2 个 release-manifest 失败的 received 集合与 expected 集合完全相同，仅顺序为生产者字典序 `AGENTS.md, bin/*, lib/*, plugins/*, workflows/*`，而新夹具误把 `plugins/*` 放在 `bin/*` 前。
+- **影响**：这两个排序失败不能归因于发布清单实现；尚未修改产品实现、安装、部署、提交或推送。
+- **正确做法**：按生产者已验证的确定性排序修正 expected 数组；先单独确认 release-manifest 测试恢复通过，再实现 Thin Plugin 当前根修复并复跑同一三文件集合。
+- **类防护**：`EXP-008`、`EXP-011`、`EXP-016`、`EXP-022`、`EXP-044`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR966_SELECTED_RESULT=6_PASS_4_FAIL
+ERR966_EXPECTED_PRODUCT_RED=2
+ERR966_FIXTURE_ORDER_FAILURES=2
+ERR966_MANIFEST_SET_DRIFT=NO
+ERR966_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-966
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR966_RELEASE_MANIFEST_EXPECTED_ORDER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR967_WINDOWS_RG_WILDCARD_ROOT_INVALID:START -->
+### ERR-967：握手路径消费者检索误把 Windows wildcard 当作 rg 搜索根
+
+- **分类**：`EVIDENCE_SEARCH_COMMAND_ERROR / PLATFORM_PATH_EXPANSION_ASSUMPTION`
+- **事实证据**：命令把 `packages/*/tests` 与 `packages/*/src` 直接作为 `rg` 搜索根；PowerShell 未按预期展开，Windows 返回 `os error 123`。显式文件搜索仍产生输出，但 package 全量消费者范围未被证明完整。
+- **影响**：尚未修改握手文件名或消费者；没有安装、部署、提交或推送。
+- **正确做法**：搜索已确认存在的 `packages` 根，并使用 `--glob '**/src/**' --glob '**/tests/**'` 限定范围；不得依赖 shell wildcard 展开搜索根。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR967_INVALID_SEARCH_ROOTS=packages/*/tests;packages/*/src
+ERR967_PACKAGE_CONSUMER_SEARCH_COMPLETE=NO
+ERR967_PRODUCT_FILES_CHANGED_FROM_FAILED_COMMAND=NO
+ERR967_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-967
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR967_WINDOWS_RG_WILDCARD_ROOT_INVALID:END -->
+
+<!-- SPECFORGE_ERR968_MULTI_FILE_PATCH_CONTEXT_MISMATCH:START -->
+### ERR-968：握手路径多文件补丁被诊断字符串上下文差异整体拒绝
+
+- **分类**：`PATCH_CONTEXT_VERIFICATION_ERROR / NO_WRITE_APPLIED`
+- **事实证据**：包含测试期望与 CLI 诊断文本的多文件 `apply_patch` 在 `packages/cli/src/errors.ts` 找不到预期行，返回 verification failed；补丁整体未应用。
+- **影响**：该批测试与诊断文本尚未更新；先前已成功的 owner/source 修改不受影响。没有安装、部署、提交或推送。
+- **正确做法**：先读取 `errors.ts` 精确上下文；将测试期望与诊断文本拆成独立小补丁，每个补丁后核对 diff。
+- **类防护**：`EXP-011`、`EXP-014`、`EXP-019`、`EXP-020`、`EXP-026`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR968_FAILED_CONTEXT=packages/cli/src/errors.ts
+ERR968_PATCH_APPLIED=NO
+ERR968_PREVIOUS_SUCCESSFUL_EDITS_AFFECTED=NO
+ERR968_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-968
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR968_MULTI_FILE_PATCH_CONTEXT_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR969_SERVICE_HEALTHCHECK_IMPORT_CLOSURE_MISSED:START -->
+### ERR-969：Service healthcheck 握手 helper 替换误删仍被日志目录消费的 root import
+
+- **分类**：`IMPORT_CONSUMER_CLOSURE_ERROR / TEST_COLLECTION_FAILURE`
+- **事实证据**：并行定向回归中 CLI `53/53`、Daemon `76/76` 通过；service-management 在收集 `user-level-path-boundary.test.ts` 时抛出 `ReferenceError: resolveSpecForgeUserRoot is not defined`。`healthcheck.ts` 的握手默认值已改用 `resolveSpecForgeHandshakePath`，但同文件 `DEFAULT_LOG_DIR` 仍调用 `resolveSpecForgeUserRoot`。
+- **影响**：service-management 目标测试未执行，不能宣称该 package 通过；没有安装、部署、提交或推送。
+- **正确做法**：保留 handshake helper 与 user-root helper 的双 import，核对 lifecycle-events 是否存在同类消费，再复跑原 service-management 测试及 package build。
+- **类防护**：`EXP-004`、`EXP-011`、`EXP-015`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR969_CLI_TESTS=53_PASS_0_FAIL
+ERR969_DAEMON_TESTS=76_PASS_0_FAIL
+ERR969_SERVICE_TESTS=NOT_COLLECTED
+ERR969_MISSING_IDENTIFIER=resolveSpecForgeUserRoot
+ERR969_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-969
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR969_SERVICE_HEALTHCHECK_IMPORT_CLOSURE_MISSED:END -->
+
+<!-- SPECFORGE_ERR970_CLI_DAEMON_STATUS_IMPORT_CLOSURE_MISSED:START -->
+### ERR-970：CLI daemon status 握手 helper 替换误删仍被 binary 路径消费的 user-path import
+
+- **分类**：`IMPORT_CONSUMER_CLOSURE_ERROR / PACKAGE_BUILD_FAILURE`
+- **事实证据**：service-management `5/5` 与 build 通过、daemon-core build 通过；CLI `tsc` 在 `src/commands/daemon/status.ts(28,10)` 返回 TS2552，指出 `resolveSpecForgeUserPath` 未定义。该文件除握手 helper 外仍用 user-path helper 解析当前 binary 路径。
+- **影响**：CLI build 未通过，当前批次不能扩大验证；没有安装、部署、提交或推送。
+- **正确做法**：补回 `resolveSpecForgeUserPath` 与 `resolveSpecForgeHandshakePath` 双 import，并搜索本批修改文件的全部 imported identifier consumers 后复跑 CLI build。
+- **类防护**：`EXP-004`、`EXP-011`、`EXP-015`、`EXP-019`、`EXP-020`；关联 `ERR-969`。
+- **状态**：`IDENTIFIED_REPEATED_ERROR`。
+
+```text
+ERR970_PREVIOUS_SAME_CLASS=ERR-969
+ERR970_SERVICE_TESTS=5_PASS_0_FAIL
+ERR970_SERVICE_BUILD=PASS
+ERR970_DAEMON_BUILD=PASS
+ERR970_CLI_BUILD=FAIL_TS2552
+ERR970_STATUS=IDENTIFIED_REPEATED_ERROR
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-970
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR970_CLI_DAEMON_STATUS_IMPORT_CLOSURE_MISSED:END -->
+
+<!-- SPECFORGE_ERR966_970_CLOSURE:START -->
+#### ERR-966、ERR-967、ERR-968、ERR-969、ERR-970 关闭证据（2026-08-29）
+
+- release-manifest 期望已恢复生产者字典序；与 Thin Plugin 两个合同合并复跑 `10/10` 通过。
+- package 搜索已改为真实 `packages` 根加 glob，完整定位当前 handshake consumers；失败的多文件补丁已拆分并逐项核对。
+- service-management 原测试 `5/5` 与 build 通过；CLI 原路径/Auth/installer 测试 `53/53` 通过且 build 通过；daemon-core 路径/config 测试 `76/76` 与 build 通过。
+- 两处遗漏 import 均已改为保留同文件真实需要的双 helper import，没有通过删除消费者或放松测试规避。
+
+```text
+ERR966_SCOPE_GATE_TESTS=10_PASS_0_FAIL
+ERR966_STATUS=CLOSED
+ERR967_CORRECTED_SEARCH=PASS
+ERR967_STATUS=CLOSED
+ERR968_SPLIT_PATCHES_APPLIED_AND_DIFF_VERIFIED=YES
+ERR968_STATUS=CLOSED
+ERR969_SERVICE_TESTS=5_PASS_0_FAIL
+ERR969_SERVICE_BUILD=PASS
+ERR969_STATUS=CLOSED
+ERR970_CLI_TESTS=53_PASS_0_FAIL
+ERR970_CLI_BUILD=PASS
+ERR970_DAEMON_TESTS=76_PASS_0_FAIL
+ERR970_DAEMON_BUILD=PASS
+ERR970_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-966,ERR-967,ERR-968,ERR-969,ERR-970
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR966_970_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR972_COMPOSITE_RECOVERY_COMMAND_EMPTY_OUTPUT:START -->
+### ERR-972：Step 6D3B 组合恢复命令静默返回空输出
+
+- **分类**：`EVIDENCE_COMMAND_OUTPUT_INVALID / RECOVERY_EVIDENCE_NOT_ACQUIRED`
+- **事实证据**：同时请求账本尾部、Git 状态、package 元数据和复杂引号消费者搜索的 PowerShell 命令返回空输出；预期至少应包含账本文本与 HEAD，因此该结果不可解析、不可采信。
+- **影响**：尚未修改 version-unification 产品文件；没有测试、安装、部署、提交或推送。
+- **正确做法**：账本/Git、package 文件读取、`rg` 消费者搜索分成独立命令；消费者模式使用 PowerShell 安全的简单 pattern，不再把多层单双引号拼入同一恢复命令。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`、`EXP-039`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR972_EXPECTED_OUTPUT=LEDGER_TAIL;GIT_STATUS;HEAD;PACKAGE_METADATA;CONSUMER_MATCHES
+ERR972_ACTUAL_OUTPUT=EMPTY
+ERR972_PRODUCT_FILES_CHANGED=NO
+ERR972_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-972
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR972_COMPOSITE_RECOVERY_COMMAND_EMPTY_OUTPUT:END -->
+
+<!-- SPECFORGE_ERR972_CLOSURE:START -->
+#### ERR-972 关闭证据（2026-08-29）
+
+- 账本/Git、package 元数据和消费者搜索已拆分为三条命令，均返回可解析输出。
+- 当前仍为 `main@45a0cfee54306a3f29a8ca06dfa827b385b25e50`；version-unification legacy API 没有包外生产消费者，只有包内 legacy tests、公开导出和旧测试注释。
+
+```text
+ERR972_SPLIT_RECOVERY_COMMANDS=3_PASS
+ERR972_HEAD=45a0cfee54306a3f29a8ca06dfa827b385b25e50
+ERR972_EXTERNAL_PRODUCTION_LEGACY_API_CONSUMERS=0
+ERR972_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-972
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR972_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR973_EMPTY_DIRECTORY_OVERCONSTRAINED_TEST:START -->
+### ERR-973：no-legacy 合同把空目录存在误判为构建面残留
+
+- **分类**：`TEST_ASSERTION_SEMANTIC_OVERCONSTRAINT / FILE_SET_ALREADY_REMOVED`
+- **事实证据**：删除 5 个 legacy source 和纯 legacy tests 后，定向集合 `17 pass / 1 fail` 且 `tsc` 通过；唯一失败是 `access(src/legacy)` 成功。`rg` 只命中合同测试自身，`rg --files` 未列出任何 legacy source，说明残留只是 apply_patch 后的空工作区目录，不属于 Git、TypeScript include 或发布文件集合。
+- **影响**：不能把该失败归因于 legacy 代码仍被构建；当前合同尚未全绿。没有安装、部署、提交或推送。
+- **正确做法**：合同允许目录不存在或为空，但继续要求 legacy 文件集合为 0、index 无导出、manifest types 无旧字段常量；不得为了通过测试执行非必要目录删除。
+- **类防护**：`EXP-003`、`EXP-007`、`EXP-011`、`EXP-016`、`EXP-025`、`EXP-044`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR973_TARGET_TESTS=17_PASS_1_FAIL
+ERR973_VERSION_UNIFICATION_BUILD=PASS
+ERR973_LEGACY_SOURCE_FILES=0
+ERR973_RESIDUAL=EMPTY_DIRECTORY_ONLY
+ERR973_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-973
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR973_EMPTY_DIRECTORY_OVERCONSTRAINED_TEST:END -->
+
+<!-- SPECFORGE_ERR974_VERSION_UNIFICATION_FULL_SUITE_BASELINE_FAILURES:START -->
+### ERR-974：version-unification 包全量暴露 22 个非 legacy-delete 定向基线失败
+
+- **分类**：`FULL_REGRESSION_BASELINE_FAILURE / ATTRIBUTION_SEPARATED_FROM_CURRENT_DELETION`
+- **事实证据**：legacy 删除合同与保留的 current manifest 属性测试 `18/18` 通过，`tsc` 通过；随后包全量为 `212 pass / 22 fail / 1 skip`，另有 4 个 unhandled rejection。失败包括 Vitest 4 已移除旧 `it(name, fn, options)` 签名、ESM namespace 不可 spy、既有测试重复 import，以及 current migration runner/path/timestamp 断言失败。失败文件均未 import `src/legacy/**` 或被删除 API。
+- **影响**：不能宣称 version-unification full regression 通过；ERR-681 仍开放。当前 legacy source/export/test 删除的隔离归因不受这些独立失败推翻，但不得进入正式发布证明。
+- **正确做法**：先固化本次删除的 build、无消费者与定向合同；把全量失败按 runner/test-fixture/current-migration-product 分组，在 ERR681 后续分层基线中逐类 A/B 归因，禁止为 legacy 删除顺手改测试或 migration 实现。
+- **类防护**：`EXP-008`、`EXP-009`、`EXP-010`、`EXP-011`、`EXP-016`、`EXP-019`、`EXP-020`。
+- **状态**：`OPEN_ERR681_BASELINE_ATTRIBUTION_REQUIRED`。
+
+```text
+ERR974_TARGET_CURRENT_TESTS=18_PASS_0_FAIL
+ERR974_PACKAGE_BUILD=PASS
+ERR974_FULL_SUITE=212_PASS_22_FAIL_1_SKIP
+ERR974_UNHANDLED_REJECTIONS=4
+ERR974_FAILED_FILES_IMPORT_DELETED_LEGACY_API=NO
+ERR974_STATUS=OPEN_ERR681_BASELINE_ATTRIBUTION_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-974
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR974_VERSION_UNIFICATION_FULL_SUITE_BASELINE_FAILURES:END -->
+
+<!-- SPECFORGE_ERR973_CLOSURE:START -->
+#### ERR-973 关闭证据（2026-08-29）
+
+- no-legacy 合同已改为验证 Git/构建相关的文件集合为空，允许工作区存在不被跟踪的空目录。
+- 同一合同与两个保留 current manifest 属性文件合并复跑 `18/18` 通过，version-unification build 通过。
+
+```text
+ERR973_LEGACY_SOURCE_FILES=0
+ERR973_TARGET_TESTS=18_PASS_0_FAIL
+ERR973_VERSION_UNIFICATION_BUILD=PASS
+ERR973_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-973
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR973_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR971_CLI_INIT_ENTRY_PATH_ASSUMED:START -->
+### ERR-971：Thin Plugin 部署归属取证假定了不存在的 CLI init 单文件入口
+
+- **分类**：`ACTUAL_ENTRY_DISCOVERY_ERROR / READ_COMMAND_PARTIAL_FAILURE`
+- **事实证据**：读取 `packages/cli/src/commands/init.ts` 返回 path not found；同次 `rg` 证明真实入口是 `packages/cli/src/commands/init/index.ts`，并由 `cli.ts` import。
+- **影响**：尚未据此决定或修改 Thin Plugin 项目部署 owner；没有安装、部署、提交或推送。
+- **正确做法**：先由 `rg --files packages/cli/src/commands` 固化真实入口，再读取 `commands/init/index.ts` 与 Daemon `/api/v1/project/ensure` handler，按真实调用链确定 owner。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR971_ASSUMED_ENTRY=packages/cli/src/commands/init.ts
+ERR971_ACTUAL_ENTRY=packages/cli/src/commands/init/index.ts
+ERR971_OWNER_DECISION_MADE=NO
+ERR971_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-971
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR971_CLI_INIT_ENTRY_PATH_ASSUMED:END -->
+
+<!-- SPECFORGE_ERR971_CLOSURE:START -->
+#### ERR-971 关闭证据（2026-08-29）
+
+- 已用 `rg --files` 枚举 CLI init 的真实四文件目录并完整读取 `commands/init/index.ts`。
+- 已同时读取 Daemon `/api/v1/project/ensure` 入口：当前 CLI init 实际是旧 distribution wizard，而项目骨架的真实 owner 是 Daemon `ensureProjectInit`；Thin Plugin 项目部署应作为该 owner 的独立受控子能力接入，不能塞回用户级安装根。
+
+```text
+ERR971_REAL_CLI_INIT_ENTRY_READ=YES
+ERR971_DAEMON_PROJECT_ENSURE_ENTRY_READ=YES
+ERR971_ACTUAL_OWNER_CLASSIFICATION=DAEMON_PROJECT_INIT_CORE
+ERR971_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-971
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR971_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR975_BINARY_RUNNER_READ_AS_TEXT:START -->
+### ERR-975：测试运行器取证误把 Windows 可执行文件作为文本读取
+
+- **分类**：`EVIDENCE_COMMAND_SCOPE_ERROR / BINARY_OUTPUT_TRUNCATION`
+- **事实证据**：为核对根 Vitest 配置和可用 runner 的组合命令，在已枚举到 `.exe` 后继续对该路径执行 `Get-Content`，输出 PE 二进制字节并触发界面截断。
+- **影响**：该命令的 runner 正文输出不可采信；配置文件文本已独立显示。命令没有修改产品文件，没有安装、部署、提交或推送。
+- **正确做法**：可执行文件只枚举精确路径、版本或直接执行；文本读取仅针对已确认的文本配置。配置读取与 runner 执行拆成独立命令。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR975_BINARY_PATH=node_modules/.bun/vitest@4.1.5+75e786b18f3b3967/node_modules/.bin/vitest.exe
+ERR975_BINARY_TEXT_OUTPUT=INVALID_TRUNCATED
+ERR975_REPOSITORY_SIDE_EFFECT=NONE
+ERR975_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-975
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR975_BINARY_RUNNER_READ_AS_TEXT:END -->
+
+<!-- SPECFORGE_ERR975_CLOSURE:START -->
+#### ERR-975 关闭证据（2026-08-29）
+
+- 已把配置文本读取、runner 路径枚举和 runner 执行拆开；后续没有再读取 `.exe` 正文。
+- 使用已确认的 CLI Vitest 入口，以仓库根和 CLI 配置显式运行根测试，`state_pending_deletes.test.ts` 为 `14/14` 通过。
+
+```text
+ERR975_BINARY_TEXT_READ_REPEATED=NO
+ERR975_CORRECTED_RUNNER=packages/cli/node_modules/.bin/vitest.exe
+ERR975_CORRECTED_ROOT_TESTS=14_PASS_0_FAIL
+ERR975_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-975
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR975_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR976_COMPOSITE_TEST_SESSION_ID_NOT_CAPTURED:START -->
+### ERR-976：布局消费者组合回归超出等待窗口且未保留测试会话 ID
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / INCOMPLETE_TEST_RESULT`
+- **事实证据**：七文件 Daemon 回归运行超过 30 秒；工具返回阶段性输出和 `EXIT_CODE=undefined`，调用脚本只打印 output/exit code，没有打印可能存在的 session ID，因此无法继续读取最终汇总。
+- **影响**：已显示的逐测试失败可作为消费者漂移线索，但整组通过/失败数量及退出状态不可作为最终证据。测试没有执行安装、部署、提交或推送。
+- **正确做法**：将 Project Init、State Transition、Doctor 分成可在窗口内完成的短组；长命令必须原样保留并打印 session ID，随后通过同一 session 继续等待。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-016`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR976_TEST_FILES_REQUESTED=7
+ERR976_EXIT_CODE=UNAVAILABLE
+ERR976_SESSION_ID=NOT_CAPTURED
+ERR976_PARTIAL_OUTPUT_ONLY=YES
+ERR976_REPOSITORY_SIDE_EFFECT=NO_PRODUCT_WRITE
+ERR976_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-976
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR976_COMPOSITE_TEST_SESSION_ID_NOT_CAPTURED:END -->
+
+<!-- SPECFORGE_ERR977_PROJECT_INIT_CURRENT_REGRESSION_FAILURES:START -->
+### ERR-977：当前 Project Init 扩大回归出现两个初始化失败和一个属性超时
+
+- **分类**：`PRODUCT_OR_PROJECTION_DEFECT_UNDER_INVESTIGATION / VALIDATION_TIMEOUT`
+- **事实证据**：拆分后的三文件 Project Init 回归完成，结果 `14 pass / 3 fail`。fresh project 与 governed CORE 用例均得到 `InitResult.success=false`；module-registry 属性测试超过 10 秒。其余 7 个 registry 场景、6 个 init 场景和 2 个 Thin Plugin 场景通过。
+- **影响**：不能声明 Project Init 子批通过；Daemon build 与先前 54 个布局/Doctor/State Transition 测试结果不受覆盖。没有安装、部署、提交或推送。
+- **正确做法**：先输出单次 current init 的结构化 `errors`，沿 `LAYOUT → buildManifest → SYSTEM_FILE_CONTENT` 投影定位首次偏离；超时单独判断是否由真实 host scan 重复执行造成，不通过放宽断言掩盖产品失败。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-020`、`EXP-022`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR977_PROJECT_INIT_REGRESSION=14_PASS_3_FAIL
+ERR977_FRESH_CURRENT_FAILURES=2
+ERR977_PROPERTY_TIMEOUTS=1
+ERR977_PRODUCT_ROOT_CAUSE=INSUFFICIENT_EVIDENCE
+ERR977_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-977
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR977_PROJECT_INIT_CURRENT_REGRESSION_FAILURES:END -->
+
+<!-- SPECFORGE_ERR976_977_CLOSURE:START -->
+#### ERR-976、ERR-977 关闭证据（2026-08-30）
+
+- 原组合回归已拆成短组；较慢 Project Init 组保留 session ID 并从同一会话取得最终结果。
+- 单次 current init 证明两个 `success=false` 都来自测试触发真实 `~/.specforge` Host Profile 写入；增加显式依赖注入后，生产默认不变，测试不再写真实用户根。
+- module-registry 原失败集合从 `6 pass / 3 fail` 转为 `9/9` 通过，属性用例从超时降至约 1.6 秒。
+
+```text
+ERR976_SPLIT_TEST_ORCHESTRATION=PASS
+ERR976_LONG_SESSION_CAPTURED=YES
+ERR976_STATUS=CLOSED
+ERR977_ROOT_CAUSE=TEST_TRIGGERED_REAL_USER_ROOT_HOST_PROFILE_WRITE
+ERR977_CURRENT_INIT_EVIDENCE=SPEC_MANIFEST_CREATED;HOST_PROFILE_EPERM_ONLY
+ERR977_MODULE_REGISTRY_TESTS=9_PASS_0_FAIL
+ERR977_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-976,ERR-977
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR976_977_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR978_NEW_PROJECT_BOOTSTRAP_WORKFLOW_PATH_BASELINE:START -->
+### ERR-978：new-project governance bootstrap 使用 `workflow_path="missing"` 被当前 Candidate 合同拒绝
+
+- **分类**：`REGRESSION_BASELINE_FAILURE / ATTRIBUTION_REQUIRED`
+- **事实证据**：布局消费者组合回归的阶段性输出中，`new-project-governance-bootstrap.test.ts` 唯一用例返回 `CANDIDATE_MANIFEST_CANONICAL_WORKFLOW_PATH_INVALID: "missing"`。该失败发生在 Candidate 规范化，未显示到本轮 ProjectManager、Doctor 或 root-manifest 删除路径的调用边。
+- **影响**：该测试不能计入当前通过集合；ERR-681 全量基线仍开放。没有安装、部署、提交或推送。
+- **正确做法**：独立运行该文件，核对 fixture workflow producer 与当前 `feature_spec` 唯一 workflow 权威；按 A/B 归因后同步消费者或记录产品缺陷，禁止恢复旧 workflow path。
+- **类防护**：`EXP-008`、`EXP-009`、`EXP-010`、`EXP-011`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-020`、`EXP-022`。
+- **状态**：`OPEN_ERR681_BASELINE_ATTRIBUTION_REQUIRED`。
+
+```text
+ERR978_TEST_FILE=packages/daemon-core/src/tools/lib/new-project-governance-bootstrap.test.ts
+ERR978_OBSERVED_ERROR=CANDIDATE_MANIFEST_CANONICAL_WORKFLOW_PATH_INVALID_MISSING
+ERR978_LAYOUT_CALL_EDGE=NOT_OBSERVED
+ERR978_STATUS=OPEN_ERR681_BASELINE_ATTRIBUTION_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-978
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR978_NEW_PROJECT_BOOTSTRAP_WORKFLOW_PATH_BASELINE:END -->
+
+<!-- SPECFORGE_ERR979_CLI_CONVERGENCE_PATCH_ANCHOR_MISMATCH:START -->
+### ERR-979：CLI 收敛组合补丁使用了与真实源码不一致的注释锚点
+
+- **分类**：`SCRIPT_DEFECT / PATCH_ANCHOR_MISMATCH`
+- **事实证据**：用于同时修改 CLI 目录布局、启动兼容检查和 Doctor 的组合 `apply_patch`，在 `packages/cli/src/cli.ts` 的 startup mode 注释处找不到预期文本，补丁被拒绝。随后 `git diff -- <三个目标文件>` 证明没有形成该组合补丁的产品变更；显示的 CLI diff 是进入本步骤前已保留的握手路径修改。
+- **影响**：当前发布 RED 合同仍保持 RED，产品实现尚未开始收敛；没有安装、部署、暂存、提交或推送。
+- **正确做法**：按真实源码读取精确区段，把目录布局、CLI 启动路径和 Doctor 拆成独立小补丁；每个补丁后立即核对 diff，不继续依赖推测注释锚点。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR979_FAILED_OPERATION=COMPOSITE_APPLY_PATCH
+ERR979_FAILED_TARGET=packages/cli/src/cli.ts
+ERR979_CAUSE=COMMENT_ANCHOR_MISMATCH
+ERR979_PARTIAL_PRODUCT_CHANGE=NO
+ERR979_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-979
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR979_CLI_CONVERGENCE_PATCH_ANCHOR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR980_CLI_AUDIT_WRONG_WORKDIR_PATH:START -->
+### ERR-980：CLI 静态审计在 package 工作目录中使用了仓库根相对路径
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR`
+- **事实证据**：组合命令的工作目录为 `packages/cli`，却执行 `rg ... packages/cli/src`，因此 `rg` 返回路径不存在；同一命令后半段的精确 Vitest 仍完成并得到 `2/2` 通过，PowerShell 最终退出码被最后一个命令覆盖为 0。
+- **影响**：当前发布合同的测试结果有效，但该次静态消费者审计无效，不能据此宣称消费者为零。没有安装、部署、暂存、提交或推送。
+- **正确做法**：静态审计从仓库根单独执行；测试从 package 根单独执行。不得用无 fail-fast 的组合命令最终退出码代表所有前置命令成功。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR980_INVALID_AUDIT=rg packages/cli/src FROM packages/cli
+ERR980_VALID_TEST_RESULT=2_PASS_0_FAIL
+ERR980_STATIC_CONSUMER_RESULT=INVALID_NOT_CAPTURED
+ERR980_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-980
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR980_CLI_AUDIT_WRONG_WORKDIR_PATH:END -->
+
+<!-- SPECFORGE_ERR981_CROSS_PLATFORM_OLD_HANDSHAKE_ASSERTION:START -->
+### ERR-981：CLI 跨平台回归仍有一个旧 `handshake.json` 文件名断言
+
+- **分类**：`REGRESSION_CONSUMER_DRIFT / VALIDATION_BASELINE_FAILURE`
+- **事实证据**：CLI 三文件定向回归为 `49 pass / 1 fail`；唯一失败位于 `tests/cross-platform.test.ts`，仍断言 handshake 路径以 `handshake.json` 结尾，而当前共享路径权威和生产实现使用 `~/.specforge/runtime/daemon.sock.json`。
+- **影响**：不能宣称该三文件组合全绿；property 与 lock-manager 文件已分别通过。失败是测试消费者漂移，未显示产品调用边缺陷。
+- **正确做法**：把唯一旧文件名断言同步为 `daemon.sock.json`，复跑同一三文件集合；不得恢复旧握手文件名。
+- **类防护**：`EXP-004`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-016`、`EXP-017`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR981_REGRESSION=49_PASS_1_FAIL
+ERR981_FAILED_FILE=packages/cli/tests/cross-platform.test.ts
+ERR981_OLD_ASSERTION=handshake.json
+ERR981_CURRENT_AUTHORITY=daemon.sock.json
+ERR981_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-981
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR981_CROSS_PLATFORM_OLD_HANDSHAKE_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR979_980_981_CLOSURE:START -->
+#### ERR-979、ERR-980、ERR-981 关闭证据（2026-08-30）
+
+- CLI 修改已按精确源码区段拆分完成，未再次发生补丁锚点失败。
+- 静态消费者审计已从仓库根独立执行；当前合同与 package 测试均从 CLI package 根独立执行。
+- 旧 handshake 文件名断言已同步为当前 `daemon.sock.json`，原三文件回归由 `49/50` 转为 `50/50` 通过。
+
+```text
+ERR979_CORRECTED_PATCH_STRATEGY=SMALL_EXACT_SOURCE_SEGMENTS
+ERR979_STATUS=CLOSED
+ERR980_CORRECTED_AUDIT_WORKDIR=REPOSITORY_ROOT
+ERR980_CURRENT_CONTRACT_TESTS=2_PASS_0_FAIL
+ERR980_STATUS=CLOSED
+ERR981_CURRENT_HANDSHAKE_ASSERTION=daemon.sock.json
+ERR981_CORRECTED_REGRESSION=50_PASS_0_FAIL
+ERR981_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-979,ERR-980,ERR-981
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR979_980_981_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR982_TYPES_LOCAL_VITEST_RUNNER_MISSING:START -->
+### ERR-982：错误假设 types package 存在本地 Vitest 可执行入口
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / RUNNER_LOCATION_ASSUMPTION`
+- **事实证据**：在 `packages/types` 工作目录执行 `.\node_modules\.bin\vitest.exe`，PowerShell 返回命令不存在，测试未启动。
+- **影响**：没有取得 RED/GREEN 结果；没有产品文件、安装、部署、暂存、提交或推送副作用。
+- **正确做法**：先枚举已确认的 workspace runner；使用存在的 CLI Vitest 入口并显式传入 types 测试文件与适用配置，不再假定每个 package 都有本地 `.bin`。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR982_FAILED_WORKDIR=packages/types
+ERR982_MISSING_RUNNER=.\\node_modules\\.bin\\vitest.exe
+ERR982_TEST_STARTED=NO
+ERR982_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-982
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR982_TYPES_LOCAL_VITEST_RUNNER_MISSING:END -->
+
+<!-- SPECFORGE_ERR983_ROOT_CONFIG_VITEST_MODULE_RESOLUTION_FAILURE:START -->
+### ERR-983：CLI Vitest runner 从仓库根启动时无法解析根配置的 `vitest/config`
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / RUNNER_CONFIG_DEPENDENCY_DOMAIN_MISMATCH`
+- **事实证据**：从仓库根执行 `packages/cli/node_modules/.bin/vitest.exe` 后，runner 加载根 `vitest.config.ts`，报 `Cannot find module 'vitest/config'`，测试未启动。
+- **影响**：仍未取得 types 当前合同 RED/GREEN；没有产品、安装、部署或 Git 状态副作用。
+- **正确做法**：runner、配置和工作目录保持在同一 package 依赖域；从 `packages/cli` 根运行外部精确测试路径，或显式使用可解析的 CLI 配置，不再混合根配置与 package runner。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR983_RUNNER=packages/cli/node_modules/.bin/vitest.exe
+ERR983_WORKDIR=REPOSITORY_ROOT
+ERR983_CONFIG=vitest.config.ts
+ERR983_ERROR=CANNOT_FIND_MODULE_VITEST_CONFIG
+ERR983_TEST_STARTED=NO
+ERR983_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-983
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR983_ROOT_CONFIG_VITEST_MODULE_RESOLUTION_FAILURE:END -->
+
+<!-- SPECFORGE_ERR984_CLI_VITEST_ROOT_EXCLUDES_TYPES_TEST:START -->
+### ERR-984：CLI Vitest 配置的 root/include 排除了 types package 测试
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / TEST_ROOT_SCOPE_MISMATCH`
+- **事实证据**：从 `packages/cli` 运行 `../types/tests/current-release-directory-layout.test.ts`，Vitest 显示 root 为 `packages/cli`、include 为 `tests/**/*.test.ts`，最终 `No test files found`；测试未启动。
+- **影响**：types 当前合同仍无执行结果；无产品或环境副作用。
+- **正确做法**：保留可解析的 CLI runner/config，同时显式把 Vitest root 指向 `packages/types`，确保 include 与测试文件处于同一 root。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR984_RUNNER_ROOT=packages/cli
+ERR984_REQUESTED_TEST=packages/types/tests/current-release-directory-layout.test.ts
+ERR984_RESULT=NO_TEST_FILES_FOUND
+ERR984_TEST_STARTED=NO
+ERR984_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-984
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR984_CLI_VITEST_ROOT_EXCLUDES_TYPES_TEST:END -->
+
+<!-- SPECFORGE_ERR985_VITEST_ROOT_UPWARD_CONFIG_DISCOVERY_FAILURE:START -->
+### ERR-985：显式 types root 后 Vitest 仍向上发现不可解析的仓库根配置
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / CONFIG_DISCOVERY_MISMATCH`
+- **事实证据**：从 CLI runner 执行 `--root ../types` 后，Vitest 仍加载 `D:/code/SpecForge/vitest.config.ts` 并再次报 `Cannot find module 'vitest/config'`；测试未启动。
+- **影响**：没有 RED/GREEN 证据，也没有产品或环境副作用。
+- **正确做法**：停止继续组合 runner/root/config 参数；把独立 current-release 合同放入已有稳定 CLI 测试 root，但直接导入并审计 types 源码，以相同验证对象取得可复核结果。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`、`EXP-026`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR985_EXPLICIT_ROOT=packages/types
+ERR985_DISCOVERED_CONFIG=REPOSITORY_ROOT_VITEST_CONFIG
+ERR985_ERROR=CANNOT_FIND_MODULE_VITEST_CONFIG
+ERR985_TEST_STARTED=NO
+ERR985_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-985
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR985_VITEST_ROOT_UPWARD_CONFIG_DISCOVERY_FAILURE:END -->
+
+<!-- SPECFORGE_ERR986_DAEMON_TEST_STALE_TYPES_BUILD:START -->
+### ERR-986：daemon 定向回归在共享 types 构建产物更新前启动
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / STALE_WORKSPACE_BUILD_ARTIFACT`
+- **事实证据**：共享源码合同已以 `3/3` 通过，随后 daemon 四文件回归出现 `20 fail` 和一个 suite 装载失败；所有堆栈均指向 `LAYOUT.configFiles` 为 `undefined`。daemon 通过 workspace package 解析 `@specforge/types` 构建产物，而该产物尚未在新增 `LAYOUT.configFiles` 后重建。
+- **影响**：该次 daemon 回归无效，不能据此判断业务行为；没有安装、部署、暂存、提交或推送。源码合同结果仍有效。
+- **正确做法**：先构建共享 `packages/types`，确认其导出产物包含当前配置布局，再原样复跑 daemon 四文件回归；不得增加空值回退或恢复 legacy 常量来掩盖构建顺序错误。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR986_INVALID_REGRESSION=DAEMON_4_FILES_0_PASS_20_FAIL_1_SUITE_LOAD_FAILURE
+ERR986_SHARED_SOURCE_CONTRACT=3_PASS_0_FAIL
+ERR986_CAUSE=PACKAGES_TYPES_BUILD_ARTIFACT_NOT_REBUILT
+ERR986_PRODUCT_BEHAVIOR_CONCLUSION=NOT_ESTABLISHED
+ERR986_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-986
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR986_DAEMON_TEST_STALE_TYPES_BUILD:END -->
+
+<!-- SPECFORGE_ERR987_RENDER_LAYOUT_KEY_COLLISION_AND_NESTED_OBJECT:START -->
+### ERR-987：目录布局生成器错误解析同名嵌套 key 且不能递归渲染嵌套分组
+
+- **分类**：`DOCUMENT_GENERATOR_DEFECT / SOURCE_SCOPE_AMBIGUITY`
+- **事实证据**：`scripts/render-layout.ts --dry-run` 退出码为 0，但把顶层 `LAYOUT.project` 的说明渲染为嵌套 `configFiles.project` 的路径说明，并把 `workItemFiles.candidateFiles` 渲染为 `[object Object]`。源码显示注释提取正则未限制属性缩进层级，嵌套表格函数直接把对象字符串化。
+- **影响**：生成器当前可执行但输出不可信；尚未写入或覆盖 `docs/conventions/directory-layout.md`。
+- **正确做法**：把顶层注释匹配限定到 LAYOUT 对象的直属属性层级，并递归展开嵌套布局对象；以 dry-run 证明 `project` 说明和 candidate 子项均正确后才能生成文档。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`、`EXP-022`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR987_DRY_RUN_EXIT=0
+ERR987_WRONG_PROJECT_COMMENT=config/project.json
+ERR987_WRONG_NESTED_RENDER=[object Object]
+ERR987_DOCUMENT_WRITE=NO
+ERR987_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-987
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR987_RENDER_LAYOUT_KEY_COLLISION_AND_NESTED_OBJECT:END -->
+
+<!-- SPECFORGE_ERR982_987_CLOSURE:START -->
+#### ERR-982～ERR-987 关闭证据（2026-08-30）
+
+- 独立 current-release 共享布局合同已迁入稳定 CLI test root，并取得 `3 pass / 0 fail`，关闭 ERR-982～ERR-985 的 runner/root/config 编排问题。
+- `packages/types` 重建后，同一 daemon 四文件回归由 stale-build 失败恢复为 `24 pass / 0 fail`，关闭 ERR-986；未加入兼容回退。
+- 布局生成器已限制直属属性作用域并递归展开嵌套对象；第二次 dry-run 正确输出顶层 `project` 说明和 `workItemFiles.candidateFiles.*`，正式生成命令成功更新目录布局文档和 README marker，关闭 ERR-987。
+
+```text
+ERR982_STABLE_TEST_ROOT=packages/cli/tests
+ERR983_CONFIG_DOMAIN=packages/cli
+ERR984_CURRENT_CONTRACT=3_PASS_0_FAIL
+ERR985_CURRENT_CONTRACT=3_PASS_0_FAIL
+ERR982_STATUS=CLOSED
+ERR983_STATUS=CLOSED
+ERR984_STATUS=CLOSED
+ERR985_STATUS=CLOSED
+ERR986_CORRECTED_REGRESSION=24_PASS_0_FAIL
+ERR986_TYPES_BUILD=PASS
+ERR986_STATUS=CLOSED
+ERR987_SECOND_DRY_RUN=PASS_CORRECT_PROJECT_COMMENT_AND_RECURSIVE_CANDIDATE_FILES
+ERR987_DOCUMENT_GENERATION=PASS
+ERR987_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-982,ERR-983,ERR-984,ERR-985,ERR-986,ERR-987
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR982_987_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR988_WINDOWS_RG_DIRECTORY_GLOB:START -->
+### ERR-988：Windows 下把 package 目录通配符作为 rg 路径参数
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / PLATFORM_PATH_GLOB_MISMATCH`
+- **事实证据**：只读消费者审计执行 `rg ... packages/*/src ...`，Windows 返回“文件名、目录名或卷标语法不正确”；scripts 部分输出不代表 packages 扫描完成。
+- **影响**：该次消费者审计无效；无文件、运行环境或 Git 副作用。
+- **正确做法**：把 `packages` 作为确定目录参数，并用 `--glob '*/src/**'` 或结果后置筛选限定范围；重新取得完整清单。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR988_INVALID_PATH_ARGUMENT=packages/*/src
+ERR988_COMPLETE_PACKAGE_SCAN=NO
+ERR988_SIDE_EFFECT=NONE
+ERR988_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-988
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR988_WINDOWS_RG_DIRECTORY_GLOB:END -->
+
+<!-- SPECFORGE_ERR989_POWERSHELL_RG_PATTERN_QUOTING:START -->
+### ERR-989：version-unification import-edge 审计的 rg 正则触发 PowerShell 引号解析失败
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / SHELL_QUOTING`
+- **事实证据**：并行只读取证的第一组命令在包含单双引号混合的正则处触发 `ParserError: Missing property name after reference operator`，退出码 1；另外两组取证正常完成。
+- **影响**：version-unification 生产 import-edge 尚无完整证据，暂不能决定 migration runner/context 的处置；无写入副作用。
+- **正确做法**：拆分为不含嵌套引号的精确符号扫描，分别查找 `MigrationRunner`、`MigrationScriptContext`、`migration/runner`、`migration/context`。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR989_FAILED_AUDIT=VERSION_UNIFICATION_IMPORT_EDGE
+ERR989_OTHER_PARALLEL_AUDITS=VALID
+ERR989_SIDE_EFFECT=NONE
+ERR989_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-989
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR989_POWERSHELL_RG_PATTERN_QUOTING:END -->
+
+<!-- SPECFORGE_ERR990_REPEATED_POWERSHELL_RG_QUOTING:START -->
+### ERR-990：module-spec/export 联合扫描重复使用了会破坏 PowerShell 解析的引号正则
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_ERROR / SHELL_QUOTING`
+- **事实证据**：version-unification 两组并行详情取证中，文件清单组成功；联合扫描再次在 `from \"./migration` 模式处触发同类 `ParserError`，退出码 1。
+- **影响**：迁移源文件和专属测试清单有效，但 module spec 对迁移能力的归类尚未取证；无写入副作用。
+- **正确做法**：停止使用 import 语句引号正则，分别只按符号名和 `migration/` 纯文本扫描；把本次重复纳入经验规则，后续 PowerShell `rg` 模式不得混用未转义单双引号。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR990_VALID_FILE_INVENTORY=5_SOURCE_7_DEDICATED_TEST_FILES
+ERR990_INVALID_COMBINED_SCAN=MODULE_SPEC_AND_EXPORT
+ERR990_REPEAT_OF=ERR-989
+ERR990_SIDE_EFFECT=NONE
+ERR990_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-990
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR990_REPEATED_POWERSHELL_RG_QUOTING:END -->
+
+<!-- SPECFORGE_ERR991_REMOVED_WORKFLOW_DIRECTORY_TEST_DISCOVERY:START -->
+### ERR-991：Work Item 权威测试仍枚举已退出 workflow 目录并打开已删除 SKILL.md
+
+- **分类**：`REGRESSION_CONSUMER_DRIFT / REMOVED_RELEASE_SURFACE_DISCOVERY`
+- **事实证据**：daemon 三文件回归为 `11 pass / 1 fail`；唯一失败位于 `work-item-artifact-authority-contract.test.ts`，它枚举所有 `sf-workflow-*` 目录后无条件读取 `SKILL.md`，而 Step 6D2 已合法删除 `sf-workflow-architecture-change/SKILL.md` 等十个非当前 workflow 文件。
+- **影响**：Candidate 路径与设计治理测试均通过；当前 workflow 文档断言尚未完成，不能宣称三文件全绿。
+- **正确做法**：测试直接绑定当前发布唯一 `sf-workflow-feature-spec/SKILL.md`，不得恢复或跳过式兼容已退出 workflow；复跑相同三文件集合。
+- **类防护**：`EXP-004`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-016`、`EXP-017`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR991_REGRESSION=11_PASS_1_FAIL
+ERR991_FAILED_CONSUMER=work-item-artifact-authority-contract.test.ts
+ERR991_STALE_DISCOVERY=ALL_SF_WORKFLOW_DIRECTORIES
+ERR991_CURRENT_WORKFLOW_SKILL=sf-workflow-feature-spec/SKILL.md
+ERR991_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-991
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR991_REMOVED_WORKFLOW_DIRECTORY_TEST_DISCOVERY:END -->
+
+<!-- SPECFORGE_ERR988_991_CLOSURE:START -->
+#### ERR-988～ERR-991 关闭证据（2026-08-30）
+
+- 消费者审计已改用确定目录参数和无引号歧义的符号扫描，完整识别 types/daemon、version-unification、scripts、agent/skill 消费者，关闭 ERR-988～ERR-990。
+- Work Item 权威测试已绑定当前唯一 `sf-workflow-feature-spec/SKILL.md`；原三文件回归由 `11/12` 恢复为 `12/12`，未恢复任何旧 workflow，关闭 ERR-991。
+
+```text
+ERR988_CORRECTED_PACKAGE_SCAN=COMPLETE
+ERR988_STATUS=CLOSED
+ERR989_VERSION_IMPORT_EDGE_SCAN=COMPLETE_NO_EXTERNAL_PRODUCTION_CALLER
+ERR989_STATUS=CLOSED
+ERR990_MODULE_SPEC_SCAN=COMPLETE_CURRENT_SCHEMA_MIGRATION_REQUIRED
+ERR990_STATUS=CLOSED
+ERR991_CORRECTED_REGRESSION=12_PASS_0_FAIL
+ERR991_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-988,ERR-989,ERR-990,ERR-991
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR988_991_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR974_CURRENT_MIGRATION_CONTRACT_CONFLICT_UPDATE:START -->
+#### ERR-974 补充归因：当前 schema migration 与 Project Spec manifest 契约冲突（2026-08-30）
+
+- **CONFIRMED**：V6/module requirements 明确要求保留受支持的当前 schema migration，并禁止旧格式自动转换；因此不能把整个 migration 子系统当作 legacy 删除。
+- **CONFIRMED**：`migration/runner.ts` 与 `migration/context.ts` 当前读取旧根级 `.specforge/manifest.json`；`bootstrap/project-missing.ts` 还写入非当前 `specforge/manifest.json`。
+- **CONFIRMED**：version-unification 的 `ProjectManifest` 只定义 `data_schema_version / initialized_at / updated_at`，而 daemon 当前项目权威是 `.specforge/project/spec_manifest.json`，承担项目规格与模块清单；直接换路径会让两种 schema 争用同一文件。
+- **结论**：`CONTRACT_CONFLICT`。需要先由 V6 requirements/design 明确“数据 schema version 属于 Project Spec manifest 的字段还是独立当前 manifest”，再统一 writer/reader/bootstrap/migration/daemon；现有证据不授权选择其一。
+
+```text
+ERR974_CAPABILITY_REQUIREMENT=CURRENT_SCHEMA_MIGRATION_MUST_REMAIN
+ERR974_OLD_PATH_CONSUMERS=migration/runner.ts;migration/context.ts;bootstrap/project-missing.ts
+ERR974_DAEMON_PROJECT_AUTHORITY=.specforge/project/spec_manifest.json
+ERR974_VERSION_PROJECT_MANIFEST_SCHEMA=data_schema_version;initialized_at;updated_at
+ERR974_VERDICT=CONTRACT_CONFLICT
+ERR974_NEXT_REQUIRED_ACTION=RESOLVE_MANIFEST_OWNERSHIP_IN_V6_REQUIREMENTS_AND_DESIGN_BEFORE_IMPLEMENTATION
+ERR974_STATUS=OPEN_ERR681_ARCHITECTURE_DECISION_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-974
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR974_CURRENT_MIGRATION_CONTRACT_CONFLICT_UPDATE:END -->
+
+<!-- SPECFORGE_ERR992_CLI_CWD_CONTRACT_RUN_WITH_ROOT_BUN:START -->
+### ERR-992：依赖 CLI package cwd 的静态合同被错误交给仓库根 Bun runner
+
+- **分类**：`VALIDATION_COMMAND_ORCHESTRATION_ERROR / RUNNER_WORKDIR_DOMAIN_MISMATCH`
+- **事实证据**：组合 Bun 测试中 root installer 合同 `2/2` 通过；`packages/cli/tests/current-release-installer-root.test.ts` 的 3 个失败均把 `repositoryRoot` 解析成 `D:\`，随后读取 `D:\scripts/...` 失败。该文件原设计从 `packages/cli` cwd 由 CLI Vitest 运行。
+- **影响**：root installer 结果有效，CLI 三项结果无效；无产品、安装、部署或 Git 副作用。
+- **正确做法**：CLI 合同从 `packages/cli` 使用本地 Vitest 运行；不同 runner/workdir 域的测试不得再合并。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR992_VALID_ROOT_INSTALLER_TESTS=2_PASS_0_FAIL
+ERR992_INVALID_CLI_TESTS=0_PASS_3_FAIL_WRONG_PROCESS_CWD
+ERR992_PRODUCT_FAILURE=NO
+ERR992_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-992
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR992_CLI_CWD_CONTRACT_RUN_WITH_ROOT_BUN:END -->
+
+<!-- SPECFORGE_ERR992_CLOSURE:START -->
+#### ERR-992 关闭证据（2026-08-30）
+
+- `current-release-installer-root.test.ts` 已从 `packages/cli` 使用本地 Vitest 复跑为 `5/5` 通过。
+- 与共享布局合同合并复跑为 `11/11`；没有修改测试的 repository-root 算法或产品路径。
+
+```text
+ERR992_CORRECT_RUNNER=packages/cli/node_modules/.bin/vitest.exe
+ERR992_CORRECT_WORKDIR=packages/cli
+ERR992_CORRECTED_TESTS=5_PASS_0_FAIL
+ERR992_COMBINED_CLI_CONTRACTS=11_PASS_0_FAIL
+ERR992_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-992
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR992_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR958_CLOSURE:START -->
+#### ERR-958 关闭证据（2026-08-30）
+
+- 当前用户根、握手、Thin Plugin、CLI、installer manifest、共享 config、Candidate 读取、agent/skill、atomic backup、旧 cleanup/render 脚本和 current layout 文档消费者已分批收敛并通过定向回归。
+- 最终生产静态审计只剩 `version-unification/src/migration/{runner,context}.ts` 使用 `legacyPaths.manifest`；该问题已以独立 `ERR-974 CONTRACT_CONFLICT` 承接，不能继续作为泛化 legacy-consumer 阻断重复追踪。
+- Workflow Runtime 中 `.specforge/specs/**` 的识别仅用于 fail-closed 拒绝旧路径，已确认不是兼容读取，合法保留。
+
+```text
+ERR958_CURRENT_USER_AND_PROJECT_BOUNDARY=CONVERGED
+ERR958_OLD_PROJECT_SPEC_READ=REMOVED
+ERR958_INSTALLER_CROSS_ROOT_FALLBACK=REMOVED
+ERR958_OLD_CLEANUP_AND_RENDER_SCRIPTS=REMOVED
+ERR958_CURRENT_LAYOUT_DOCUMENT_LEGACY_SECTION=REMOVED
+ERR958_REMAINING_PRODUCTION_LEGACY_PATH_CALLERS=VERSION_UNIFICATION_RUNNER_AND_CONTEXT_ONLY
+ERR958_REMAINING_CALLERS_TRACKED_BY=ERR-974
+ERR958_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-958
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR958_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR993_PROJECT_INIT_SPECS_WRITE_AND_KNOWLEDGE_MISCLASSIFICATION:START -->
+### ERR-993：project init 保留旧 specs 写入模板且活跃 Knowledge 路径被错误归入 legacy
+
+- **分类**：`ARCHITECTURE_CLASSIFICATION_DEFECT / INCOMPLETE_LEGACY_CONSUMER_AUDIT`
+- **事实证据**：ERR-974 manifest 取证直接读到 `sf_project_init_core.ts` 的 `SYSTEM_FILE_CONTENT['specs/README.md']` 与 `SYSTEM_FILE_CONTENT['knowledge/graph.json']`；后续核对 `buildManifest()` 证明旧 specs 模板当前没有被加入初始化清单，因此它是残留写入能力而非已证明的实际写入。`sf_knowledge_graph_core.ts` 的活跃 `GRAPH_RELATIVE_PATH` 使用 `.specforge/knowledge/graph.json`。V6 design 把基础 Knowledge 能力保留在当前发布，而共享 `directory-layout.ts` 却把 knowledge/knowledgeGraph 放在 `legacyPaths`。
+- **影响**：ERR-958 的“只剩 version-unification legacy caller”审计范围不完整，必须恢复开放；旧 specs 写入模板仍不应存在，当前 Knowledge 路径也没有正确的共享权威归属。尚未修改产品实现。
+- **正确做法**：先以 RED 合同证明 init 不得声明或写入 `specs/README.md`，并把活跃 Knowledge root/graph 提升到 `LAYOUT` 后同步 project init 与 Knowledge Graph 消费者；完成定向测试和构建后再重新审计 ERR-958。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-020`、`EXP-022`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR993_OLD_PROJECT_WRITE_TEMPLATE=sf_project_init_core.ts::specs/README.md
+ERR993_OLD_PROJECT_WRITE_OBSERVED=NO_BUILD_MANIFEST_ROUTE
+ERR993_ACTIVE_KNOWLEDGE_PRODUCERS=sf_project_init_core.ts;sf_knowledge_graph_core.ts
+ERR993_SHARED_CLASSIFICATION=legacyPaths.knowledge;legacyPaths.knowledgeGraph
+ERR993_V6_RELEASE_CLASSIFICATION=CURRENT_KNOWLEDGE_FOUNDATION
+ERR958_STATUS=REOPENED_INCOMPLETE_CONSUMER_AUDIT
+ERR993_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-958,ERR-993
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR993_PROJECT_INIT_SPECS_WRITE_AND_KNOWLEDGE_MISCLASSIFICATION:END -->
+
+<!-- SPECFORGE_ERR994_REPEATED_WINDOWS_RG_PATH_GLOB:START -->
+### ERR-994：current-release 测试扫描再次把 Windows 路径通配符作为 rg 目录参数
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_ERROR / PLATFORM_PATH_GLOB_MISMATCH`
+- **事实证据**：三段只读命令中的第三段使用 `packages/daemon-core/tests/unit/current-release*` 作为路径参数，Windows 返回路径语法错误；前两段文件读取正常完成。
+- **影响**：第三段跨测试静态引用扫描无效；current-release tool registry 与 extension boundary 文件内容已有效读取，无写入副作用。
+- **正确做法**：停止在路径参数中使用 `*`；以确定目录 `packages/daemon-core/tests/unit` 配合 `--glob 'current-release*.test.ts'`，或直接修改已读取的精确测试文件。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR994_INVALID_PATH_ARGUMENT=packages/daemon-core/tests/unit/current-release*
+ERR994_VALID_PRIOR_EVIDENCE=TOOL_REGISTRY_AND_EXTENSION_BOUNDARY_FILES_READ
+ERR994_SIDE_EFFECT=NONE
+ERR994_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-994
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR994_REPEATED_WINDOWS_RG_PATH_GLOB:END -->
+
+<!-- SPECFORGE_ERR993_994_CLOSURE:START -->
+#### ERR-993、ERR-994 关闭证据（2026-08-30）
+
+- Knowledge foundation 已从 `legacyPaths` 提升到 `LAYOUT.knowledge/knowledgeFiles.graph`；project init 与 Knowledge Graph 使用同一共享权威，旧 `specs/README.md` 模板删除。合同 `7/7`、daemon 定向回归 `24/24`、types/daemon 构建通过。
+- current-release 测试扫描改用精确文件，不再重复 Windows 路径通配符；旧 Project Spec migration tool 按权威矩阵物理退出，tool registry + HTTP 回归 `25/25`、daemon 构建通过。
+
+```text
+ERR993_KNOWLEDGE_AUTHORITY=LAYOUT.knowledge;LAYOUT.knowledgeFiles.graph
+ERR993_OLD_SPECS_TEMPLATE=REMOVED
+ERR993_TESTS=CLI_7_PASS;DAEMON_24_PASS
+ERR993_BUILDS=TYPES_PASS;DAEMON_CORE_PASS
+ERR993_STATUS=CLOSED
+ERR994_CORRECTED_TEST_TARGET=packages/daemon-core/tests/unit/current-release-tool-registry.test.ts
+ERR994_OLD_TOOL_SOURCE_FILES_REMOVED=3
+ERR994_OLD_TOOL_TEST_FILES_REMOVED=5
+ERR994_TOOL_HTTP_TESTS=25_PASS_0_FAIL
+ERR994_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-993,ERR-994
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR993_994_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR995_BUN_TEMPDIR_SANDBOX_EPERM:START -->
+### ERR-995：共享布局 RED 验证被 Bun 临时目录沙箱权限阻断
+
+- **分类**：`VALIDATION_ENVIRONMENT_ERROR / SANDBOX_TEMPDIR_PERMISSION`
+- **事实证据**：仓库根执行绝对 Bun 的 Vitest 命令，在测试收集前返回 `bun is unable to write files to tempdir: EPERM`；没有产生产品测试结果。
+- **影响**：Step 6D3B-3F 的 RED 尚未成立；没有产品、部署或 Git 写入副作用，只有预期的测试合同编辑已完成。
+- **正确做法**：使用同一确定 Bun/Vitest 命令在受控扩展权限下重跑；必须先取得针对旧路径构造器的真实失败，再实施删除。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR995_COMMAND=ABSOLUTE_BUN_X_VITEST_CURRENT_RELEASE_SHARED_LAYOUT
+ERR995_FAILURE_STAGE=BEFORE_TEST_COLLECTION
+ERR995_PRODUCT_FAILURE=NO
+ERR995_SIDE_EFFECT=TEST_CONTRACT_EDIT_ONLY
+ERR995_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-995
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR995_BUN_TEMPDIR_SANDBOX_EPERM:END -->
+
+<!-- SPECFORGE_ERR958_995_FINAL_CLOSURE:START -->
+#### ERR-958、ERR-995 最终关闭证据（2026-08-30）
+
+- 新增 current-release 合同先以 `1 failed / 7 passed` 证明旧路径生成器确实存在；随后删除无调用方的 Daemon `path-service.ts`，移除 Workflow Runtime `legacySpecsDir()`，并把 ProtectedFileMatcher 的示例与测试切换到当前 Project / Work Item 路径。
+- 共享布局合同 `8/8`、Workflow Runtime 路径与权限定向回归 `149/149` 通过；Workflow Runtime 与 Daemon Core 构建均通过。
+- 生产代码静态复核不再发现 `.specforge/specs` 路径构造器。剩余引用仅为 PathService/PathPolicy/safe-bash 的 fail-closed 拒绝判断，以及共享布局中的禁止读取说明；历史文档按 disposition matrix 的 `HISTORICAL_ONLY` 边界保留。
+- ERR-995 的同一测试命令在受控权限下成功完成收集并取得真实 RED，实施后再转绿，故环境阻断已解除。
+
+```text
+ERR958_UNUSED_DAEMON_OLD_PATH_SERVICE=REMOVED
+ERR958_WORKFLOW_RUNTIME_OLD_PATH_CONSTRUCTOR=REMOVED
+ERR958_FAIL_CLOSED_OLD_PATH_REJECTION=PRESERVED
+ERR958_CURRENT_PATH_EXAMPLES=PROJECT_MODULES_AND_WORK_ITEMS
+ERR958_TARGET_TESTS=CLI_8_PASS;WORKFLOW_RUNTIME_149_PASS
+ERR958_BUILDS=WORKFLOW_RUNTIME_PASS;DAEMON_CORE_PASS
+ERR958_PRODUCTION_OLD_PATH_CONSTRUCTORS=ZERO
+ERR958_STATUS=CLOSED
+ERR995_CORRECTED_RED=CLI_7_PASS_1_EXPECTED_FAIL
+ERR995_GREEN=CLI_8_PASS_0_FAIL
+ERR995_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-958,ERR-995
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR958_995_FINAL_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR996_POWERSHELL_QUOTE_MIXED_RG_PATTERN:START -->
+### ERR-996：ERR974 消费者扫描再次使用 PowerShell 混合引号正则
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_ERROR / POWERSHELL_QUOTING`
+- **事实证据**：组合只读命令中的 `rg` pattern 同时含单引号、双引号与字符类，PowerShell 在解析阶段返回 `Missing type name after '['`；命令体未执行。
+- **影响**：本轮 migration/version-unification 文件读取与消费者扫描均无有效输出；没有产品、部署或 Git 副作用。
+- **正确做法**：文件读取与消费者扫描分开执行；消费者扫描仅使用 `rg -F` 固定字符串，不再构造混合引号正则。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR996_FAILURE_STAGE=POWERSHELL_PARSE_BEFORE_EXECUTION
+ERR996_VALID_OUTPUT=NONE
+ERR996_SIDE_EFFECT=NONE
+ERR996_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-996
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR996_POWERSHELL_QUOTE_MIXED_RG_PATTERN:END -->
+
+<!-- SPECFORGE_ERR996_CLOSURE_AND_ERR974_AUTHORITY_RESOLUTION:START -->
+#### ERR-996 关闭与 ERR-974 权威层解决证据（2026-08-30）
+
+- 消费者扫描已改为固定字符串并成功证明：`@specforge/migration` 没有生产调用者；`@specforge/version-unification` 的生产消费者只使用 `getCodeVersion()`，CLI doctor 直接读取当前 `.specforge/project/spec_manifest.json.schema_version`。
+- V6 requirements/design 已明确 `NO_PROJECT_AGGREGATE_SCHEMA_MANIFEST`：每个持久化文件自己的 `schema_version` 是唯一格式版本权威；Project Spec manifest 不得被三字段聚合 manifest 替换；`.specforge/manifest.json` 是不受支持旧路径。
+- version-unification requirements/design 已同步声明项目 schema migration 唯一归属 `@specforge/migration`，其自身三字段 ProjectManifest、bootstrap 和 MigrationRunner 为待删除实现。
+- 权威静态合同先得到 `1 failed / 1 passed`，同步后为 `2/2` 通过。ERR-974 的 contract conflict 已解除，但实现删除与 `@specforge/migration` 后续接入尚未完成，因此父错误保持开放并转入 implementation convergence。
+
+```text
+ERR996_CORRECTED_SCAN=FIXED_STRING_ONLY
+ERR996_STATUS=CLOSED
+ERR974_SCHEMA_VERSION_AUTHORITY=PER_PERSISTED_FILE_SCHEMA_VERSION
+ERR974_PROJECT_SPEC_MANIFEST=.specforge/project/spec_manifest.json
+ERR974_PROJECT_AGGREGATE_MANIFEST=UNSUPPORTED
+ERR974_OLD_PROJECT_MANIFEST=.specforge/manifest.json_LEGACY_ONLY
+ERR974_CURRENT_MIGRATION_OWNER=@specforge/migration
+ERR974_VERSION_UNIFICATION_DUPLICATE_SUBSYSTEM=REMOVE
+ERR974_AUTHORITY_TEST=2_PASS_0_FAIL
+ERR974_STATUS=OPEN_IMPLEMENTATION_CONVERGENCE_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-974,ERR-996
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR996_CLOSURE_AND_ERR974_AUTHORITY_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR997_REPEATED_POWERSHELL_MIXED_QUOTE_IMPORT_SCAN:START -->
+### ERR-997：version-unification 测试归属扫描再次使用混合引号 import 正则
+
+- **分类**：`REPEATED_VALIDATION_COMMAND_ERROR / POWERSHELL_QUOTING`
+- **事实证据**：组合命令前两段固定字符串扫描有效；第三段 import 正则在 PowerShell 层被拆解并报 `The term 'from' is not recognized`，第三段无有效结果。
+- **影响**：已确认只有 property-20 测试直接包含 `getCodeVersion`；其余测试的 import 归属仍待有效扫描。没有产品、部署或 Git 副作用。
+- **正确做法**：停止在 PowerShell command string 中使用任何混合引号 import 正则；只使用多个 `rg -F` 单字面量扫描。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR997_VALID_PRIOR_SCAN=getCodeVersion_TEST_CONSUMER_PROPERTY20_ONLY
+ERR997_INVALID_SCAN=IMPORT_OWNERSHIP_REGEX
+ERR997_SIDE_EFFECT=NONE
+ERR997_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-997
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR997_REPEATED_POWERSHELL_MIXED_QUOTE_IMPORT_SCAN:END -->
+
+<!-- SPECFORGE_ERR998_OVERSIZED_APPLY_PATCH_HUNG:START -->
+### ERR-998：重复子系统大批量删除补丁长时间无输出并被终止
+
+- **分类**：`PATCH_ORCHESTRATION_ERROR / OVERSIZED_APPLY_PATCH`
+- **事实证据**：单个 apply_patch 同时包含 49 个文件删除、index 大段重写和多个 CI 文件编辑，连续多次等待仍无输出；为避免无限挂起已终止工具进程。
+- **影响**：补丁是否部分生效尚未核对，当前处于 `UNKNOWN_PARTIAL_APPLICATION`；没有部署、提交或推送动作。
+- **正确做法**：先只读核对精确文件状态；之后把删除、index/package 编辑、CI 编辑拆成小批次 apply_patch，每批完成后立即验证。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR998_PATCH_SCOPE=49_DELETE_FILES_PLUS_LARGE_INDEX_REWRITE_PLUS_CI_EDITS
+ERR998_TERMINATED=YES
+ERR998_APPLICATION_STATE=UNKNOWN_PARTIAL_APPLICATION
+ERR998_DEPLOY_COMMIT_PUSH=NONE
+ERR998_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=REQUIRED_AFTER_STATE_AUDIT
+BACKFILLED_ERROR_IDS=ERR-998
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR998_OVERSIZED_APPLY_PATCH_HUNG:END -->
+
+<!-- SPECFORGE_ERR999_BUN_LOCKFILE_TEMPDIR_EPERM:START -->
+### ERR-999：offline lockfile-only 更新被 Bun 临时目录权限阻断
+
+- **分类**：`VALIDATION_ENVIRONMENT_ERROR / SANDBOX_TEMPDIR_PERMISSION`
+- **事实证据**：仓库根执行绝对 Bun `install --lockfile-only --offline`，在依赖解析前返回 `bun is unable to write files to tempdir: EPERM`。
+- **影响**：package.json 已移除无用依赖，但 bun.lock 尚未由本命令同步；没有联网、安装或部署副作用。
+- **正确做法**：在受控扩展权限下重跑同一 offline lockfile-only 命令，并核对只发生预期 lockfile 更新。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR999_COMMAND=BUN_INSTALL_LOCKFILE_ONLY_OFFLINE
+ERR999_FAILURE_STAGE=BEFORE_DEPENDENCY_RESOLUTION
+ERR999_NETWORK=NONE
+ERR999_LOCKFILE_UPDATED=NO
+ERR999_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-999
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR999_BUN_LOCKFILE_TEMPDIR_EPERM:END -->
+
+<!-- SPECFORGE_ERR1000_RELEASE_AUTHORITY_TABLE_COLUMN_ASSERTION:START -->
+### ERR-1000：两张职责表被错误使用同一列结构字面量断言
+
+- **分类**：`TEST_DESIGN_ERROR / TABLE_SCHEMA_MISMATCH`
+- **事实证据**：V6 design 表结构为 `Package | stable 归属 | 唯一职责 | ...`，disposition matrix 为 `Package | 当前职责 | 决策 | ...`；新增测试循环用同一 `Package | 唯一职责` 字面量匹配两者，导致 V6 design 断言失败。输出正文直接证明实际职责文本已存在。
+- **影响**：边界测试结果为 `1 passed / 1 failed`，version-unification build 仍通过；没有产品、部署或 Git 副作用。
+- **正确做法**：分别按两张权威表的真实列结构断言，不修改产品职责或降低断言内容。
+- **类防护**：`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1000_V6_TABLE_COLUMNS=PACKAGE;STABLE_CLASSIFICATION;RESPONSIBILITY;CONSUMERS;ACTION
+ERR1000_MATRIX_TABLE_COLUMNS=PACKAGE;RESPONSIBILITY;DECISION;ACTION
+ERR1000_PRODUCT_FAILURE=NO
+ERR1000_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1000
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1000_RELEASE_AUTHORITY_TABLE_COLUMN_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR974_997_998_999_1000_CLOSURE:START -->
+#### ERR-974、ERR-997、ERR-998、ERR-999、ERR-1000 关闭证据（2026-08-30）
+
+- V6 requirements/design、version-unification module specs、disposition matrix 与实际架构清单已对齐：每文件 `schema_version` 是格式权威，Project Spec manifest 保持 `.specforge/project/spec_manifest.json`，不存在项目级聚合 `data_schema_version` manifest；当前 schema migration 唯一 owner 为 `@specforge/migration`。
+- `@specforge/version-unification` 已收敛为唯一生产职责 `getCodeVersion()`；删除无生产调用的 bootstrap、compat、degraded-mode、manifest、migration 和 integer schema constants 共 18 个源码文件，以及对应 25 个 package tests。
+- CI Version Guard 删除只保护错误聚合 schema 模型的 3 个 rules 与 3 个 tests；默认规则只保留当前代码版本单一来源检查。package 无用 `@specforge/types`/`fast-check` 依赖与 bun.lock 已同步移除。
+- 超大补丁终止后的审计证明 49 个文件删除和 index 重写已完整落地，剩余 package/CI 编辑以小批次补齐；不存在损坏或未知半应用状态。
+- 验证：authority/current boundary `2/2`，version-unification build 通过，CI version guard `31/31`，CLI version/doctor `21/21`，Daemon specforged entry `3/3`。最终静态扫描无生产 `data_schema_version`、ProjectManifestWriter 或 version-unification MigrationRunner。
+- ERR-999 离线 lockfile-only 在受控权限下成功；ERR-1000 按两张表真实列结构分别断言后转绿。
+
+```text
+ERR974_AUTHORITY=PER_FILE_SCHEMA_VERSION
+ERR974_PROJECT_SPEC_MANIFEST=.specforge/project/spec_manifest.json
+ERR974_PROJECT_AGGREGATE_SCHEMA_MANIFEST=UNSUPPORTED
+ERR974_CURRENT_MIGRATION_OWNER=@specforge/migration
+ERR974_VERSION_UNIFICATION_PUBLIC_API=getCodeVersion_ONLY
+ERR974_REMOVED_SOURCE_FILES=18
+ERR974_REMOVED_PACKAGE_TEST_FILES=25
+ERR974_REMOVED_CI_RULE_AND_TEST_FILES=6
+ERR974_TARGET_TESTS=BOUNDARY_2_PASS;CI_31_PASS;CLI_21_PASS;DAEMON_3_PASS
+ERR974_BUILD=VERSION_UNIFICATION_PASS
+ERR974_PRODUCTION_DUPLICATE_SCHEMA_SURFACE=ZERO
+ERR974_STATUS=CLOSED
+ERR997_STATUS=CLOSED_FIXED_STRING_IMPORT_SCAN
+ERR998_STATUS=CLOSED_PARTIAL_APPLICATION_RECONCILED
+ERR999_STATUS=CLOSED_OFFLINE_LOCKFILE_SAVED
+ERR1000_STATUS=CLOSED_TABLE_SPECIFIC_ASSERTIONS_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-974,ERR-997,ERR-998,ERR-999,ERR-1000
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR974_997_998_999_1000_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1001_MIGRATION_UNTRUSTED_DISCOVERY_AND_FAIL_OPEN:START -->
+### ERR-1001：Migration built-not-enabled 实现包含任意脚本发现、版本漂移与失败放行
+
+- **分类**：`RUNTIME_DEFECT / TRUST_BOUNDARY_GAP / FAIL_OPEN_MIGRATION`
+- **事实证据**：`checkAndMigrateOnStartup()` 在检测前调用 `ensureMigrationDirectories()` 写用户根；`runStartupMigrations()` 从 `~/.specforge/migrations` 动态 `discoverMigrationScripts()`，无 release manifest/hash allowlist；无脚本时返回 `success:true`；默认 `blockOnMigrationFailure=false`，失败分支返回 `success:true`。`DEFAULT_SCHEMA_VERSION='1.0.0'` 与当前持久化文件 `schema_version='1.0'` 不一致。内置 `v1.0.0-to-v1.1.0.ts` 正文自称 sample/example，并对任意对象执行 `config→configuration` 与 timestamp/metadata 写入，没有当前 schema 变更 ADR 或真实 consumer。
+- **影响**：`@specforge/migration` 不能合法接入 Daemon startup 或 installer upgrade；直接接入会引入用户根副作用、未授权代码执行、伪成功升级与未知数据变换。
+- **权威对照**：V6 REQ-18/REQ-26 与 design 要求只处理明确登记的当前产品 schema 链、未知/旧格式失败关闭、迁移失败回滚并拒绝启动；现实现不满足。
+- **正确做法**：先在 V6 与 migration module spec 固化 release-manifest/hash-bound script trust、无完整链 fail closed、失败阻断和无预检写入；再测试先行删除 sample/任意发现入口并建立显式当前链 registry，最后才接 Daemon/installer。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-020`、`EXP-022`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1001_CAPABILITY=PARTIALLY_SUPPORTED_RUNTIME_DEFECT
+ERR1001_UNCONDITIONAL_USER_ROOT_WRITE=YES
+ERR1001_SCRIPT_TRUST=UNBOUNDED_FILESYSTEM_DISCOVERY
+ERR1001_NO_SCRIPT_RESULT=SUCCESS
+ERR1001_MIGRATION_FAILURE_DEFAULT=NON_BLOCKING_SUCCESS
+ERR1001_CODE_SCHEMA_VERSION=1.0.0
+ERR1001_CURRENT_FILE_SCHEMA_VERSION=1.0
+ERR1001_BUILTIN_MIGRATION=UNAPPROVED_SAMPLE
+ERR1001_PRODUCTION_CONSUMERS=ZERO
+ERR1001_STATUS=OPEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1001
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1001_MIGRATION_UNTRUSTED_DISCOVERY_AND_FAIL_OPEN:END -->
+
+<!-- SPECFORGE_ERR1002_MIGRATION_FAIL_OPEN_TEST_CONTRACTS:START -->
+### ERR-1002：Migration 全包回归仍断言 fail-open 与已删除配置入口
+
+- **分类**：`REGRESSION_TEST_AUTHORITY_CONFLICT / REMOVED_SURFACE_REFERENCE`
+- **事实证据**：实现边界测试 `3/3` 与 package build 已通过；全包回归 `422 passed / 6 failed / 1 failed suite`。5 个 daemon-startup 断言分别要求缺失/空 schema 成功、`autoMigrate=false` 绕过升级、默认允许关闭 downgrade、预检创建用户 migration/backup 目录；1 个 E2E 在没有可信链时仍要求成功。`user-level-path-boundary.test.ts` 仍 import 已退出当前 surface 的 `migration-config`。
+- **影响**：当前实现没有被证明存在新缺陷；旧测试合同与已更新的 V6/migration authority 冲突，migration 全包尚未 GREEN。无部署、提交或推送副作用。
+- **正确做法**：保留仍验证当前备份、检测、恢复和单调性的测试；删除仅验证已退出配置 surface 的测试；把 startup/E2E 断言改为 unknown schema、链缺口、downgrade bypass 均 fail closed，并重跑全包。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1002_BASELINE=422_PASS;6_FAIL;1_FAILED_SUITE
+ERR1002_PRODUCT_DEFECT_PROVEN=NO
+ERR1002_AUTHORITY_CONFLICT=FAIL_OPEN_TEST_EXPECTATIONS
+ERR1002_REMOVED_SURFACE=migration-config
+ERR1002_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1002
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1002_MIGRATION_FAIL_OPEN_TEST_CONTRACTS:END -->
+
+<!-- SPECFORGE_ERR1003_MIGRATION_STALE_DIST_AFTER_TSC:START -->
+### ERR-1003：Migration `tsc` build 未清理已删除源码的陈旧 dist 产物
+
+- **分类**：`BUILD_ARTIFACT_DEFECT / STALE_OUTPUT`
+- **事实证据**：源码扫描已无 `discoverMigrationScripts`，但执行当前 `bun run build` 后，`packages/migration/dist/apply.*`、`dist/discovery.*`、`dist/migration-config.*` 与 `dist/migrations/v1.0.0-to-v1.1.0.*` 仍存在；dist 固定字符串扫描仍命中动态发现函数。
+- **影响**：package 编译退出码为 0 不能证明实际产物已退出不可信迁移面；若直接打包 dist，已删除能力仍可能进入 release artifact。没有部署、提交或推送副作用。
+- **正确做法**：把 package build 改为精确清理自身 `dist` 后再 `tsc`，增加 dist 无陈旧 surface 的回归断言，并以 clean build 后的目录和字符串扫描作为关闭证据。
+- **类防护**：`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-032`、`EXP-044`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1003_SOURCE_UNSAFE_DISCOVERY=ZERO
+ERR1003_DIST_UNSAFE_DISCOVERY=PRESENT
+ERR1003_BUILD_EXIT=PASS_BUT_ARTIFACT_STALE
+ERR1003_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1003
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1003_MIGRATION_STALE_DIST_AFTER_TSC:END -->
+
+<!-- SPECFORGE_ERR1004_NESTED_BUN_CLEAN_OPERATION_NOT_PERMITTED:START -->
+### ERR-1004：Migration clean build 使用嵌套 `bun run clean` 被拒绝
+
+- **分类**：`BUILD_SCRIPT_ORCHESTRATION_ERROR / NESTED_RUNTIME`
+- **事实证据**：将 build 临时改为 `bun run clean && tsc` 后，绝对 Bun 执行立即返回 `bun: Operation not permitted`，退出码 1；命令未进入 clean 脚本，陈旧 dist 仍在。
+- **影响**：ERR-1003 尚未修复，clean build 未成立；没有源码、部署、提交或推送副作用。
+- **正确做法**：不嵌套启动 Bun，直接在当前 Bun package script 中执行精确 `rm -rf dist && tsc`，再验证删除目标仅为 `packages/migration/dist` 且 clean artifact 无旧 surface。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1004_COMMAND=bun_run_clean_AND_tsc
+ERR1004_EXIT=1_OPERATION_NOT_PERMITTED
+ERR1004_DIST_DELETED=NO
+ERR1004_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1004
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1004_NESTED_BUN_CLEAN_OPERATION_NOT_PERMITTED:END -->
+
+<!-- SPECFORGE_ERR1001_1002_1003_1004_CLOSURE:START -->
+#### ERR-1001、ERR-1002、ERR-1003、ERR-1004 关闭证据（2026-08-31）
+
+- 四份 authority 已统一声明 release-manifest/hash-bound 脚本信任、迁移失败和链缺口 fail closed、预检禁止写入、当前 schema 使用 `MAJOR.MINOR`。
+- 删除两套任意文件系统发现实现、未批准 sample/template migration、可关闭安全门的 migration-config surface 及其专属测试；startup 默认版本改为 `1.0`，unknown schema、downgrade 和无可信链升级均阻止启动。
+- 旧 fail-open 测试合同已按 authority 改为 fail-closed；保留并通过备份、回滚、恢复、检测、schema 校验和单调性测试。
+- package build 改为精确 `rm -rf dist && tsc`。预期 stale-dist RED 为 `3 pass / 1 fail`；clean build 后源码与 dist 均无 `discoverMigrationScripts` 或 `v1.0.0-to-v1.1.0`，全包 `431/431` 通过。
+- 本关闭仅证明 migration package 自身的当前基线安全边界；Daemon startup 与 installer upgrade 尚未消费，package 仍为 `BUILT_NOT_ENABLED`，不得据此宣称发布闭环完成。
+
+```text
+ERR1001_AUTHORITY_TEST=4_PASS_0_FAIL
+ERR1001_DEFAULT_SCHEMA_VERSION=1.0
+ERR1001_UNTRUSTED_DISCOVERY_SOURCE_DIST=ZERO
+ERR1001_UNAPPROVED_SAMPLE_SOURCE_DIST=ZERO
+ERR1001_UNKNOWN_DOWNGRADE_CHAIN_GAP=FAIL_CLOSED
+ERR1001_STATUS=CLOSED_PACKAGE_BOUNDARY_CONVERGED
+ERR1002_BASELINE_AFTER_REPAIR=431_PASS_0_FAIL
+ERR1002_STATUS=CLOSED_TEST_CONTRACTS_ALIGNED
+ERR1003_EXPECTED_RED=3_PASS_1_FAIL
+ERR1003_CLEAN_BUILD=PASS
+ERR1003_STALE_DIST_SURFACE=ZERO
+ERR1003_STATUS=CLOSED
+ERR1004_BUILD_SCRIPT=rm_-rf_dist_AND_tsc
+ERR1004_STATUS=CLOSED_NO_NESTED_BUN
+MIGRATION_PACKAGE_RELEASE_STATUS=BUILT_NOT_ENABLED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1001,ERR-1002,ERR-1003,ERR-1004
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1001_1002_1003_1004_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1005_GLOBAL_SCHEMA_VERSION_ASSUMPTION_CONFLICT:START -->
+### ERR-1005：Migration 接入重建发现全局 schema 版本与固定目录假设不成立
+
+- **分类**：`CONTRACT_CONFLICT / ACTUAL_ARCHITECTURE_MISMATCH / TEST_DESIGN_ERROR`
+- **事实证据**：Daemon 进程启动时没有 project path，实际项目接入点为 `ProjectManager.registerProject(projectPath)`；当前持久化文件分布在 `.specforge/project/**`、`.specforge/work-items/**`、`.specforge/runtime/**` 与用户级 runtime。生产写入/常量直接证明 schema 标识至少包含 `1.0`、`1.1`、`1.2`、`1.4`、`1.2.8`、`1.3.0` 和 `git_*.v1`。Migration 当前 API 却用单个 `codeSchemaVersion` 扫描同一目录下固定 `events.jsonl/state.json/config.json`，新增 authority test 还错误要求所有文件 `MAJOR.MINOR`。
+- **影响**：不能把 migration 直接接到 Daemon process start 或 `ProjectManager.registerProject()`；否则会找错文件、误判合法版本或遗漏实际持久化文件。ERR-1001 的任意脚本执行与 fail-open 缺陷已独立关闭，但 package 仍不能启用。
+- **权威结论**：每个持久化文件族必须由 owner 提供精确 path selector、current schema id、validator 与显式有向 migration transitions；不得使用一个全局 schema version、通用 semver 比较或目录猜测替代。Daemon 在 project registration 的首次写入前执行 project-owned descriptors；installer 只负责 release-bound migration assets 与用户级文件升级事务。
+- **正确做法**：先修正四份 authority 中错误的全局格式断言；再建立最小 per-file schema descriptor registry，并先覆盖当前 project registration 会读取/写入的权威文件集合。未登记持久化文件不得被 migration 猜测处理。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-032`、`EXP-033`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1005_DAEMON_PROCESS_START_HAS_PROJECT_PATH=NO
+ERR1005_PROJECT_ENTRY=ProjectManager.registerProject
+ERR1005_SCHEMA_IDS=1.0;1.1;1.2;1.4;1.2.8;1.3.0;git_*.v1
+ERR1005_GLOBAL_SCHEMA_VERSION=UNSUPPORTED
+ERR1005_FIXED_ROOT_FILE_SCAN=ACTUAL_LAYOUT_MISMATCH
+ERR1005_REQUIRED_MODEL=PER_FILE_SCHEMA_DESCRIPTOR_AND_EXPLICIT_TRANSITIONS
+ERR1005_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1005
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1005_GLOBAL_SCHEMA_VERSION_ASSUMPTION_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1006_WRONG_CWD_AUTHORITY_MARKER_SCAN:START -->
+### ERR-1006：authority marker 扫描在 package cwd 使用仓库相对路径
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WRONG_WORKING_DIRECTORY`
+- **事实证据**：组合命令 cwd 为 `packages/migration`，却扫描 `.kiro/specs`、`docs/implementation`、`packages/migration/tests`，三项均报路径不存在；同命令的 boundary test 独立有效并为 `4/4` 通过。
+- **影响**：marker 残留扫描无有效结果；无产品、文件、部署、提交或推送副作用。
+- **正确做法**：从仓库根用固定字符串重跑同一扫描并单独核对结果。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1006_INVALID_SCAN=OLD_GLOBAL_SCHEMA_MARKER
+ERR1006_VALID_TEST=BOUNDARY_4_PASS
+ERR1006_SIDE_EFFECT=NONE
+ERR1006_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1006
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1006_WRONG_CWD_AUTHORITY_MARKER_SCAN:END -->
+
+<!-- SPECFORGE_ERR1006_CLOSURE:START -->
+#### ERR-1006 关闭证据（2026-08-31）
+
+- 从仓库根重跑固定字符串扫描，旧 `CURRENT_SCHEMA_VERSION_FORMAT=MAJOR.MINOR` 仅命中进度文件中的上一阶段记录，四份 current authority 均已包含 `SCHEMA_VERSION_AUTHORITY=PER_FILE_CONTRACT`；进度记录同步修正后旧 current marker 为零。
+- Boundary authority test 保持 `4/4` 通过。ERR-1005 保持开放，等待 per-file descriptor registry 实现。
+
+```text
+ERR1006_CORRECTED_SCAN=REPOSITORY_ROOT_FIXED_STRING
+ERR1006_AUTHORITY_MARKERS=4_FILES_ALIGNED
+ERR1006_STATUS=CLOSED
+ERR1005_STATUS=OPEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1005,ERR-1006
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1006_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1007_ROOT_CWD_BUN_TEMPDIR_EPERM:START -->
+### ERR-1007：仓库根复核 migration boundary 时 Bun tempdir EPERM
+
+- **分类**：`VALIDATION_ENVIRONMENT_ERROR / SANDBOX_TEMPDIR_PERMISSION`
+- **事实证据**：组合复核从仓库根执行绝对 Bun `x vitest run packages/migration/tests/...` 前即返回 `bun is unable to write files to tempdir: EPERM`；同命令前后的旧 marker 扫描、Git diff/status/HEAD 子命令独立有效。
+- **影响**：本次 boundary test 无结果；此前 package cwd 的 `4/4` 仍是最近有效结果。无产品、部署、提交或推送副作用。
+- **正确做法**：从已验证的 `packages/migration` cwd 重跑同一测试；不得把本次环境失败计为产品失败或通过。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1007_TEST_RESULT=NONE
+ERR1007_VALID_OTHER_CHECKS=OLD_MARKER_ZERO;DIFF_CHECK_WARNINGS_ONLY;HEAD_MATCH
+ERR1007_SIDE_EFFECT=NONE
+ERR1007_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1007
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1007_ROOT_CWD_BUN_TEMPDIR_EPERM:END -->
+
+<!-- SPECFORGE_ERR1007_CLOSURE:START -->
+#### ERR-1007 关闭证据（2026-08-31）
+
+- 从 `packages/migration` cwd 重跑完全相同的 current-release boundary test，结果 `4/4` 通过。
+
+```text
+ERR1007_CORRECTED_TEST=4_PASS_0_FAIL
+ERR1007_STATUS=CLOSED
+ERR1005_STATUS=OPEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1007
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1007_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1008_SCHEMA_REGISTRY_REPLACEALL_TARGET_LIB:START -->
+### ERR-1008：Schema descriptor registry 使用 tsconfig target 不支持的 `replaceAll`
+
+- **分类**：`IMPLEMENTATION_COMPATIBILITY_ERROR / TYPESCRIPT_TARGET`
+- **事实证据**：registry 行为测试 `4/4` 通过；clean build 在 `schema-descriptor-registry.ts:90` 报 TS2550，当前 TypeScript lib 不包含 `String.replaceAll`。
+- **影响**：新 registry 尚不能进入 package build；测试转绿不能作为编译通过证据。clean build 已清理 dist 后失败，没有部署、提交或推送副作用。
+- **正确做法**：使用兼容当前 target 的全局正则替换，不提高 tsconfig target，不改变路径规范化语义；重跑 clean build 与全包。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1008_TEST=4_PASS
+ERR1008_BUILD=TS2550_REPLACEALL_UNSUPPORTED
+ERR1008_DIST_STATE=CLEANED_THEN_BUILD_FAILED
+ERR1008_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1008
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1008_SCHEMA_REGISTRY_REPLACEALL_TARGET_LIB:END -->
+
+<!-- SPECFORGE_ERR1009_DAEMON_MIGRATION_WORKSPACE_LINK_MISSING:START -->
+### ERR-1009：Daemon 新增 migration 依赖后 workspace link 尚未同步
+
+- **分类**：`DEPENDENCY_GRAPH_STATE_ERROR / WORKSPACE_LINK_MISSING`
+- **事实证据**：ProjectManager RED 落地后，Vitest 报无法解析 `@specforge/migration`；daemon build 报 TS2307，并由缺失类型衍生两个 implicit-any。daemon package.json 已声明 workspace dependency，但当前安装图/lockfile 尚未同步。
+- **影响**：Daemon 接入测试与 build 均无有效产品结果；migration package 自身仍为 `435/435` 与 clean build PASS。无联网、部署、提交或推送副作用。
+- **正确做法**：使用绝对 Bun 离线同步 lockfile/workspace links，核对 daemon importer 仅新增 `@specforge/migration`，再重跑 RED/GREEN 验证。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1009_DAEMON_PACKAGE_DECLARATION=PRESENT
+ERR1009_WORKSPACE_RESOLUTION=MISSING
+ERR1009_TEST_RESULT=NONE_IMPORT_FAILURE
+ERR1009_BUILD_RESULT=NONE_IMPORT_FAILURE
+ERR1009_NETWORK=NONE
+ERR1009_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1009
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1009_DAEMON_MIGRATION_WORKSPACE_LINK_MISSING:END -->
+
+<!-- SPECFORGE_ERR1010_BUN_OFFLINE_INSTALL_TEMPDIR_EPERM:START -->
+### ERR-1010：离线 workspace install 被 Bun tempdir EPERM 阻断
+
+- **分类**：`VALIDATION_ENVIRONMENT_ERROR / SANDBOX_TEMPDIR_PERMISSION`
+- **事实证据**：仓库根执行绝对 Bun `install --offline`，在依赖解析前返回 `bun is unable to write files to tempdir: EPERM`。
+- **影响**：workspace link 与 lockfile 尚未同步；没有联网、安装、部署、提交或推送副作用。
+- **正确做法**：在受控扩展权限下重跑完全相同的离线命令，随后核对 lockfile 与依赖解析结果。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1010_COMMAND=BUN_INSTALL_OFFLINE
+ERR1010_FAILURE_STAGE=BEFORE_DEPENDENCY_RESOLUTION
+ERR1010_NETWORK=NONE
+ERR1010_WORKSPACE_LINK_UPDATED=NO
+ERR1010_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1010
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1010_BUN_OFFLINE_INSTALL_TEMPDIR_EPERM:END -->
+
+<!-- SPECFORGE_ERR1011_FS_PROMISES_MOCK_MODULE_ID_MISMATCH:START -->
+### ERR-1011：Schema registry 与 ProjectManager 测试使用不同 fs/promises 模块 ID
+
+- **分类**：`TEST_INTEGRATION_ERROR / MODULE_ID_MISMATCH`
+- **事实证据**：离线 workspace link 同步后 daemon build PASS；ProjectManager 测试 `5 passed / 7 failed`，失败均为 registry 返回 `FILE_REQUIRED`。ProjectManager 和测试 mock 使用 `fs/promises`，registry 使用 `node:fs/promises`，Vitest 未把两者视为同一 mock target，因而访问了真实测试占位路径。
+- **影响**：新 unknown-schema RED/GREEN 及既有 ProjectManager 回归尚未得到有效结果；产品路径校验逻辑未证明失败。无部署、提交或推送副作用。
+- **正确做法**：registry 使用仓库该调用链一致的 `fs/promises` 模块 ID，不修改 fail-closed 逻辑；重跑 targeted test、daemon build 和相关真实文件集成测试。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1011_DAEMON_BUILD=PASS
+ERR1011_PROJECT_MANAGER_TEST=5_PASS_7_FAIL
+ERR1011_ROOT_CAUSE=fs/promises_VS_node:fs/promises_MOCK_ID
+ERR1011_PRODUCT_DEFECT_PROVEN=NO
+ERR1011_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1011
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1011_FS_PROMISES_MOCK_MODULE_ID_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1012_EXTERNALIZED_WORKSPACE_MOCK_BOUNDARY_AND_INCOMPLETE_FIXTURE:START -->
+### ERR-1012：Daemon 单元测试无法 mock 外部化 migration 读取且集成 fixture 不完整
+
+- **分类**：`TEST_ARCHITECTURE_ERROR / DEPENDENCY_BOUNDARY / INVALID_FIXTURE`
+- **事实证据**：将 registry 统一为 `fs/promises` 并 clean build dist 后，ProjectManager 单元失败仍为 `FILE_REQUIRED`，证明 Vitest 外部化 workspace package 后本地 fs mock 不跨 package 生效，推翻 ERR-1011 的充分根因判断。真实文件边界测试到达 registry，但 fixture 只有 `schema_version/project_spec_version`，缺少初始化器生成的 project_name/default_module/modules/project，返回 `VALIDATION_FAILED`。
+- **影响**：生产 precheck 路径仍未完成 Daemon 回归证明；不能通过放宽 validator 或访问真实占位路径解决。
+- **正确做法**：ProjectManager 以默认真实实现 + 可注入 precheck function 建立清晰依赖边界；单元测试注入确定结果验证调用顺序/失败前无写入，真实文件测试使用项目初始化器契约的完整 manifest 验证默认生产实现。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1012_ERR1011_ROOT_CAUSE_CORRECTION=WORKSPACE_PACKAGE_EXTERNALIZATION
+ERR1012_UNIT_TEST_IO=SHALL_NOT_TOUCH_REAL_PLACEHOLDER_PATH
+ERR1012_REAL_FIXTURE=INCOMPLETE_AGAINST_PROJECT_INITIALIZER
+ERR1012_VALIDATOR_RELAXATION=FORBIDDEN
+ERR1012_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1012
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1012_EXTERNALIZED_WORKSPACE_MOCK_BOUNDARY_AND_INCOMPLETE_FIXTURE:END -->
+
+<!-- SPECFORGE_ERR1013_PER_FILE_DESCRIPTOR_COVERAGE_INCOMPLETE:START -->
+### ERR-1013：Per-file schema registry 仅覆盖首个 Project Spec owner
+
+- **分类**：`CAPABILITY_GAP / INCOMPLETE_OWNER_COVERAGE`
+- **事实证据**：全局 startup API 与固定 `events/state/config` 扫描已退出；`precheckSchemaDescriptors()` 已实现并由 `ProjectManager.registerProject()` 在首次写入前消费。当前 production descriptor 只有 `.specforge/project/spec_manifest.json@1.0`；代码扫描已确认 config、runtime、Work Item、governance evidence、observability 与用户级文件还有多个独立 schema owner/ID。
+- **影响**：ERR-1005 的架构表达冲突已解决，但 migration 尚不能宣称覆盖所有当前持久化文件，也尚未接入 installer upgrade transaction。
+- **正确做法**：按实际入口和 owner 分批登记 descriptor；每批先固化 path/current validator/transition authority，再接首次读写入口。不得建立全局版本、扫描整个项目猜测文件族或把首个 descriptor 冒充完整覆盖。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-022`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1013_IMPLEMENTED_OWNER=PROJECT_SPEC_MANIFEST
+ERR1013_REMAINING_OWNERS=CONFIG;RUNTIME;WORK_ITEM;GOVERNANCE_EVIDENCE;OBSERVABILITY;USER_LEVEL
+ERR1013_INSTALLER_TRANSACTION=NOT_CONNECTED
+ERR1013_STATUS=OPEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1013
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1013_PER_FILE_DESCRIPTOR_COVERAGE_INCOMPLETE:END -->
+
+<!-- SPECFORGE_ERR1005_1008_1009_1010_1011_1012_CLOSURE:START -->
+#### ERR-1005、ERR-1008、ERR-1009、ERR-1010、ERR-1011、ERR-1012 关闭证据（2026-08-31）
+
+- 新增 per-file descriptor registry：精确 schema ID、有向 transition、root 内路径、current validator、JSON/JSONL 一致性与只读 precheck；不调用通用 semver 或动态脚本发现。
+- 删除全局 `checkAndMigrateOnStartup(codeSchemaVersion)`、固定目录扫描入口及专属测试；clean dist 无 `daemon-startup-integration.js`。
+- Daemon package 正式依赖 migration；`ProjectManager.registerProject()` 在 runtime mkdir 前检查 Project Spec manifest descriptor，unknown/gapped schema 失败关闭。
+- workspace dependency 通过离线 install 同步；migration 与 Daemon 均 build PASS。测试：migration `405/405`，Daemon project/init/process-entry targeted `25/25`。
+- ERR-1011 的初始 module-ID 解释由 ERR-1012 修正为 workspace package externalization；最终以默认真实实现 + 可注入 precheck dependency 分离单元和真实文件集成测试，未放宽 validator。
+
+```text
+ERR1005_GLOBAL_SCHEMA_API=REMOVED
+ERR1005_FIXED_DIRECTORY_SCAN=REMOVED
+ERR1005_PER_FILE_REGISTRY=IMPLEMENTED
+ERR1005_FIRST_PRODUCTION_CONSUMER=ProjectManager.registerProject
+ERR1005_STATUS=CLOSED_ARCHITECTURE_CONFLICT_RESOLVED
+ERR1008_STATUS=CLOSED_TARGET_COMPATIBLE_PATH_NORMALIZATION
+ERR1009_STATUS=CLOSED_WORKSPACE_DEPENDENCY_RESOLVED
+ERR1010_STATUS=CLOSED_OFFLINE_INSTALL_SUCCEEDED
+ERR1011_STATUS=CLOSED_SUPERSEDED_BY_CORRECTED_ERR1012_DIAGNOSIS
+ERR1012_STATUS=CLOSED_DEPENDENCY_INJECTION_AND_REAL_FIXTURE_VALIDATED
+ERR1013_STATUS=OPEN_REMAINING_OWNER_COVERAGE
+MIGRATION_TESTS=405_PASS_0_FAIL
+DAEMON_TARGET_TESTS=25_PASS_0_FAIL
+PACKAGE_BUILDS=MIGRATION_PASS;DAEMON_CORE_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1005,ERR-1008,ERR-1009,ERR-1010,ERR-1011,ERR-1012,ERR-1013
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1005_1008_1009_1010_1011_1012_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1015_DOCUMENTATION_PATCH_ANCHOR_MISMATCH:START -->
+### ERR-1015：持久化 owner 治理文档批量补丁锚点不匹配
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：新增 owner inventory 文件成功后，尝试同时更新实际架构清单、进度、handoff 与 ledger；`apply_patch` 在实际架构清单的 Migration 表行找不到预期完整文本，整批补丁验证失败。
+- **影响**：该批补丁没有写入；owner inventory 新文件仍保留，其他治理文件尚未同步。没有代码、测试、Git、部署副作用。
+- **正确做法**：先读取实际相邻文本，改用稳定的小范围锚点拆分补丁；完成后逐文件固定字符串核验，禁止假定表格原文。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1015_PATCH_RESULT=NO_WRITE
+ERR1015_OWNER_INVENTORY_FILE=PRESENT_FROM_PRIOR_SUCCESSFUL_PATCH
+ERR1015_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1015
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1015_DOCUMENTATION_PATCH_ANCHOR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1014_PERSISTENT_OWNER_CONTRACT_CONFLICTS:START -->
+### ERR-1014：Runtime、Project Config 与 Project Registry 的持久化合同不一致
+
+- **分类**：`CONTRACT_CONFLICT / PERSISTENT_FILE_OWNER`
+- **事实证据**：V6 design 的权威 `ProjectState` 要求根字段 `schema_version=1.0`，当前 `StateManager` 写出 `schemaVersion=1.0` 且结构不同；V6 Event 要求完整统一字段，当前 `Event` 类型仍把 schema、序列、project、actor/category 等关键字段设为可选并保留旧 metadata，`WAL.readAllEvents()` 对损坏行跳过、对读取失败返回空。项目初始化器创建 `.specforge/config/project.json`，而 `@specforge/configuration.loadProjectConfig()` 强制读取 `.specforge/config/.specforge.json`。项目初始化/治理生产链创建 `extension_registry.json@1.0`，但仅有测试构造消费者的 `ProjectSpecStore` 会创建另一种 `extension_registry.json@1.2`。
+- **影响**：不能为 Runtime、Config 或 Project Registry 注册一个声称“current”的 descriptor；这样做会把冲突实现误认证为权威格式。ERR-1013 继续开放，installer transaction 也不能据此执行迁移。
+- **权威判定**：Runtime 以 V6 requirements/design 为 authoritative source；实际代码证明当前偏差。Config 的两个文件名在 V6 overview 中没有唯一裁决，证据不足以任选其一。Project Registry 以 V6 的 Project Spec/controlled merge 责任归属为上位权威，但必须先依据真实生产 caller 裁决 `ProjectSpecStore` 是否启用并统一唯一 shape。
+- **正确做法**：先在 V6 权威中补齐 Config 与 Project Registry 的唯一合同；Runtime 按已明确的 V6 模型测试先行收敛写入/读取，取消旧字段兼容和损坏输入 fail-open；每个 owner 收敛后再在首次读写前注册 descriptor。禁止在 registry 中接受 camel-case schema、双文件名或双 registry shape 作为兼容别名。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1014_RUNTIME_AUTHORITY=V6_REQUIREMENTS_AND_DESIGN
+ERR1014_STATE_ACTUAL=schemaVersion_1.0_NONAUTHORITATIVE_SHAPE
+ERR1014_EVENT_ACTUAL=OPTIONAL_UNIFIED_FIELDS_AND_LEGACY_METADATA
+ERR1014_WAL_FAILURE_POLICY=SKIP_OR_EMPTY_FAIL_OPEN
+ERR1014_CONFIG_CONFLICT=config/project.json_VS_config/.specforge.json
+ERR1014_PROJECT_REGISTRY_CONFLICT=ACTIVE_1.0_VS_NON_PRODUCTION_1.2_INITIALIZER
+ERR1014_DESCRIPTOR_REGISTRATION=BLOCKED
+ERR1014_STATUS=OPEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1014
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1014_PERSISTENT_OWNER_CONTRACT_CONFLICTS:END -->
+
+<!-- SPECFORGE_ERR1015_CLOSURE:START -->
+#### ERR-1015 关闭证据（2026-08-31）
+
+- 已读取实际架构清单、进度、handoff 与 ledger 的真实相邻文本；治理同步改为逐文件稳定锚点补丁并全部成功。
+- 固定字符串核验确认 owner inventory 链接、Step 6D3B-3I-D 进度块、最新 handoff 状态与 ERR-1014 均存在；未改产品代码。
+
+```text
+ERR1015_REPAIR=SPLIT_PATCHES_WITH_VERIFIED_CONTEXT
+ERR1015_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1014,ERR-1015
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1015_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1016_TRAILING_WHITESPACE_CHECK_REGEX:START -->
+### ERR-1016：PowerShell 尾随空白核验正则误把字母 t 当作 Tab
+
+- **分类**：`VALIDATION_COMMAND_ERROR / FALSE_POSITIVE`
+- **事实证据**：检查表达式 `[ `t]+$` 在传入命令后匹配普通字母 `t`，新 inventory 的代码块 `text` 等正常行被计为尾随空白；同期 `git diff --check` 没有空白错误。
+- **影响**：仅产生错误的诊断计数，没有文件、产品、Git 或部署副作用。
+- **修复与防护**：改用显式 `\x20` 与 `\t` 范围 `[\x20\\t]+$` 重跑；不得用易受 shell/PowerShell 转义影响的反引号 Tab 表达式。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED_AND_CORRECTED_PENDING_RERUN`。
+
+```text
+ERR1016_PRODUCT_FAILURE=NO
+ERR1016_FILE_WRITE_FROM_BAD_CHECK=NO
+ERR1016_STATUS=IDENTIFIED_AND_CORRECTED_PENDING_RERUN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1016
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1016_TRAILING_WHITESPACE_CHECK_REGEX:END -->
+
+<!-- SPECFORGE_ERR1016_CLOSURE:START -->
+#### ERR-1016 关闭证据（2026-08-31）
+
+- 使用 `[\x20\\t]+$` 复核：本步新增 inventory、实际架构清单、进度与 handoff 均为 `0`；ledger 唯一命中是历史 ERR-723 的带尾空格反例证据行，不是本步引入。
+
+```text
+ERR1016_CORRECTED_CHECK=PASS
+ERR1016_CURRENT_STEP_TRAILING_WHITESPACE=ZERO
+ERR1016_PREEXISTING_LEDGER_COUNTEREXAMPLE=ERR723_LINE_PRESERVED
+ERR1016_STATUS=CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1016
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1016_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1017_CROSS_FILE_AUTHORITY_PATCH_ANCHOR:START -->
+### ERR-1017：跨权威文件批量补丁把 Configuration 条款误作 V6 requirements 锚点
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：权威 RED 成功后，四文件批量补丁在 V6 requirements 中查找仅存在于 Configuration requirements 的四层配置验收条款，`apply_patch` 验证失败。
+- **影响**：整批权威补丁未写入；预期 RED 测试仍为 `3 pass / 1 fail`，没有产品、Git、部署副作用。
+- **正确做法**：四个权威文件按真实相邻文本分别补丁并逐文件核验；禁止在多文件 patch 中复用未核对的跨文件锚点。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1017_PATCH_RESULT=NO_WRITE
+ERR1017_EXPECTED_RED=3_PASS_1_FAIL
+ERR1017_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1017
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1017_CROSS_FILE_AUTHORITY_PATCH_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR1018_CONFIGURATION_TEST_IMPORT_TIME_USER_ROOT:START -->
+### ERR-1018：Configuration loader 测试在导入后设置用户根环境变量
+
+- **分类**：`TEST_ISOLATION_ERROR / IMPORT_TIME_ENVIRONMENT`
+- **事实证据**：项目配置权威 RED 为 `13 pass / 5 fail`；其中 4 项直接证明实现仍读 `.specforge.json`，符合预期。额外 `loadUserConfig` 失败路径为真实 `C:\\Users\\lyq\\.specforge\\config\\config.json`，而测试在静态导入 `config-loader` 后才于 `beforeEach` 设置 `OPENCODE_CONFIG_DIR`，导入期用户根已固定。
+- **影响**：该 1 项不能归因于项目配置产品修改，也不能用来判断用户级配置行为；没有外部写入、Git 或部署副作用。
+- **正确做法**：项目配置合同先按共享 layout 修复；用户级测试必须在模块加载前设置环境或注入路径依赖，禁止访问真实用户目录。随后重跑 target/full package 分离产品结果与测试隔离结果。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1018_EXPECTED_PROJECT_CONFIG_REDS=4
+ERR1018_UNRELATED_USER_CONFIG_FAILURE=1
+ERR1018_REAL_USER_PATH_READ_ATTEMPT=YES_READ_ONLY
+ERR1018_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1018
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1018_CONFIGURATION_TEST_IMPORT_TIME_USER_ROOT:END -->
+
+<!-- SPECFORGE_ERR1019_CONFIGURATION_STATIC_SCAN_WRONG_CWD:START -->
+### ERR-1019：Configuration 静态残留扫描在 package cwd 使用仓库根相对路径
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WRONG_WORKING_DIRECTORY`
+- **事实证据**：组合验证在 `packages/configuration` cwd 执行 `rg packages/configuration .kiro/...`，三个输入均报路径不存在；同一命令后续 Vitest `189/189` 与 `tsc` 均成功、进程退出码为 0。
+- **影响**：测试与构建证据有效，但 `.specforge.json` 静态残留结论尚未取得；没有产品、Git 或部署副作用。
+- **正确做法**：从仓库根使用相同 fixed-string 扫描，单独记录结果；package test/build 继续在 package cwd 执行。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1019_STATIC_SCAN=INVALID_WRONG_CWD
+ERR1019_CONFIGURATION_TESTS=189_PASS_0_FAIL
+ERR1019_CONFIGURATION_BUILD=PASS
+ERR1019_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1019
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1019_CONFIGURATION_STATIC_SCAN_WRONG_CWD:END -->
+
+<!-- SPECFORGE_ERR1017_1018_1019_CLOSURE:START -->
+#### ERR-1017、ERR-1018、ERR-1019 关闭证据（2026-08-31）
+
+- 四份权威文件使用逐文件真实锚点完成合同冻结，authority regression 从 `3 pass / 1 fail` 转为 `4/4`。
+- Configuration loader 只从共享 `LAYOUT.configFiles.project` 读取 `.specforge/config/project.json`；`.specforge.json` 只保留拒绝回归。用户级 loader 增加默认真实 root + 可注入 root，测试不再触达真实用户目录。
+- Configuration owner 导出 `project-config@1.0` descriptor；Daemon 在 Runtime 创建前同时检查 Project Spec 与 Project Config。真实文件边界 RED 从 `4 pass / 1 fail` 转为 targeted `23/23`。
+- Configuration 全包 `191/191`、Configuration 与 daemon-core build 均通过；仓库根静态扫描确认 `.specforge.json` 仅存在于权威拒绝说明和负向测试。
+
+```text
+ERR1017_STATUS=CLOSED_AUTHORITY_PATCHED_AND_4_PASS
+ERR1018_STATUS=CLOSED_USER_ROOT_DEPENDENCY_INJECTED_AND_TEST_ISOLATED
+ERR1019_STATUS=CLOSED_ROOT_CWD_STATIC_SCAN_COMPLETED
+PROJECT_CONFIG_DESCRIPTOR=CONNECTED
+REGISTERED_DESCRIPTORS=2
+CONFIGURATION_TESTS=191_PASS_0_FAIL
+DAEMON_TARGET_TESTS=23_PASS_0_FAIL
+PACKAGE_BUILDS=CONFIGURATION_PASS;DAEMON_CORE_PASS
+ERR1014_STATUS=OPEN_CONFIG_PORTION_RESOLVED_PROJECT_REGISTRY_AND_RUNTIME_REMAIN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1017,ERR-1018,ERR-1019
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1017_1018_1019_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1020_V12_INSTALLER_REGISTRY_ASSERTION:START -->
+### ERR-1020：Project Registry 收敛组合回归暴露 Write Guard 包装器未进入安装注册表
+
+- **分类**：`REGRESSION_BASELINE_FAILURE / INSTALLER_REGISTRY_DRIFT`
+- **事实证据**：Project Registry 收敛后的四文件组合回归为 `32 pass / 1 fail`；失败仅位于既有 `v12-integration-rc.test.ts`，仓库存在 `setup/userlevel-opencode/tools/sf_write_guard_preflight.ts`，但 `scripts/lib/registry.ts` 不含 `tools/sf_write_guard_preflight.ts`。本步新增的 Project Registry 缺失门禁与重复 Store 移除边界均已通过。
+- **影响**：不能宣称 v1.2 integration RC 全绿，也不能删除该断言掩盖安装器与源树漂移；没有安装、部署或 Git 副作用。
+- **正确做法**：先完成本步 Project Registry 专属验证并保留失败证据；随后依据当前发布工具清单权威判断该包装器应进入安装注册表还是退出当前发布面，再测试先行修复。不得把 ERR-1020 错归因于 Project Registry 删除。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`CLOSED`。Rollback handler 已从 StateManager 读取并推进 `superseded`，metadata 仅记录 supersede 关系；直接 metadata/E2E 回归与 daemon-core 构建通过。
+
+```text
+ERR1020_COMBINED_RESULT=32_PASS_1_FAIL
+ERR1020_FAILED_ASSERTION=INSTALLER_REGISTRY_MISSING_SF_WRITE_GUARD_PREFLIGHT
+ERR1020_PROJECT_REGISTRY_BOUNDARIES=PASS
+ERR1020_STATUS=OPEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1020
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1020_V12_INSTALLER_REGISTRY_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR1014_PROJECT_REGISTRY_PROGRESS:START -->
+#### ERR-1014 Project Registry 子项关闭证据（2026-08-31）
+
+- 无生产构造调用者的 `ProjectSpecStore` 及其冲突的 Registry 1.2 writer 已从源文件、公共导出、专属测试和专属发布脚本中移除。
+- 当前 `extension_registry.json@1.0` 已注册为第三个 owner descriptor；缺失 Registry 会在 Runtime 创建前 fail closed。
+- Project Registry 专属回归 `28/28`、daemon-core build 通过。ERR-1014 仍保持 OPEN，仅剩 Runtime schema/WAL 实现冲突。
+
+```text
+ERR1014_CONFIG_PORTION=CLOSED
+ERR1014_PROJECT_REGISTRY_PORTION=CLOSED
+ERR1014_RUNTIME_PORTION=OPEN
+REGISTERED_DESCRIPTORS=3
+PROJECT_REGISTRY_TARGET_TESTS=28_PASS_0_FAIL
+DAEMON_CORE_BUILD=PASS
+ERR1014_STATUS=OPEN_RUNTIME_ONLY
+PRIOR_FAILURE_RECONCILIATION=PASS
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1014_PROJECT_REGISTRY_PROGRESS:END -->
+
+<!-- SPECFORGE_ERR1021_RUNTIME_TYPES_WRONG_PATH:START -->
+### ERR-1021：Runtime 取证命令假设不存在的拆分类型文件
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WRONG_SOURCE_PATH`
+- **事实证据**：Runtime 只读重建命令尝试读取 `packages/daemon-core/src/types/state.ts` 与 `event.ts`，PowerShell 报两文件不存在；实际类型入口为 `packages/daemon-core/src/types.ts`。同一命令中的 `WAL.ts`、生产调用链和权威文档读取仍成功。
+- **影响**：两项类型证据未取得；没有产品、测试、Git 或部署写入副作用。
+- **正确做法**：使用 `rg --files packages/daemon-core/src` 确认真实路径后读取 `src/types.ts`，再形成 Runtime 修复结论。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1021_BAD_PATHS=src/types/state.ts;src/types/event.ts
+ERR1021_FILE_WRITES_FROM_BAD_COMMAND=NONE
+ERR1021_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1021
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1021_RUNTIME_TYPES_WRONG_PATH:END -->
+
+<!-- SPECFORGE_ERR1022_WAL_SOURCE_SHADOWED_BY_TRACKED_BUILD_ARTIFACT:START -->
+### ERR-1022：受版本控制的同目录 WAL.js 遮蔽 WAL.ts 修复
+
+- **分类**：`SOURCE_AUTHORITY_CONFLICT / TEST_RESOLUTION_DRIFT`
+- **事实证据**：Runtime RED 在 descriptor、空/损坏文件前置门禁四项转绿后，直接 `WAL.readAllEvents()` 仍输出旧的“Skipping corrupted line”，且新项目仍生成空 WAL。`git ls-files` 证明 `src/wal/WAL.js`、`.d.ts` 及 map 与 `WAL.ts` 同时受版本控制；Vitest 的无扩展 import 解析到旧 `.js`。package build 的权威产物目录是 `dist/`，这些同目录产物不是当前构建输出。
+- **影响**：两项 WAL 行为仍由旧副本执行，不能将该次 `4 pass / 2 fail` 用作 TypeScript 实现判断；没有 Runtime、Git 或部署副作用。
+- **正确做法**：删除 `src/wal` 中受跟踪的派生 `.js/.d.ts/*.map`，保留 `WAL.ts` 为源码单一事实来源并从 `dist/` 发布；重跑同一测试确认解析到 TypeScript 实现。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1022_EXPECTED_RED_AFTER_FIRST_IMPLEMENTATION=4_PASS_2_FAIL
+ERR1022_SHADOW_FILES=WAL.js;WAL.js.map;WAL.d.ts;WAL.d.ts.map
+ERR1022_RELEASE_BUILD_OUTPUT=dist
+ERR1022_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1022
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1022_WAL_SOURCE_SHADOWED_BY_TRACKED_BUILD_ARTIFACT:END -->
+
+<!-- SPECFORGE_ERR1023_RUNTIME_IMPACT_REGRESSION_ATTRIBUTION:START -->
+### ERR-1023：Runtime 影响面回归混合权威冲突与既有测试基础设施缺陷
+
+- **分类**：`REGRESSION_BASELINE_ATTRIBUTION / TEST_ISOLATION_AND_STALE_MOCK`
+- **事实证据**：State/WAL/并发/恢复八文件回归为 `65 pass / 16 fail`。其中 6 项直接对应已冻结的新合同：4 项期待跳过损坏 WAL、1 项 WAL fixture 缺少 `schema_version`、1 项期待接受旧 checkpoint。另 5 项来自 `src/state/StateManager.test.ts` 写真实 `C:\Users\lyq\.specforge` 被拒绝，5 项来自 `property-20.test.ts` 的伪 PathResolver 缺少 `resolveEventsPath`。
+- **影响**：Runtime 专属边界 `6/6` 有效，但不能宣称影响面回归完成；没有真实用户目录写入成功，没有 Git 或部署副作用。
+- **正确做法**：把 6 项合同冲突改为明确的 current-schema/fail-closed 断言；把真实用户路径测试隔离到临时目录并补全 property resolver。不得通过恢复损坏容忍或旧 schema 兼容使测试变绿。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1023_IMPACT_RESULT=65_PASS_16_FAIL
+ERR1023_AUTHORITY_CONFLICT_TESTS=6
+ERR1023_REAL_USER_PATH_TEST_FAILURES=5
+ERR1023_STALE_PATH_RESOLVER_FAILURES=5
+ERR1023_REAL_USER_WRITE_SUCCEEDED=NO
+ERR1023_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1023
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1023_RUNTIME_IMPACT_REGRESSION_ATTRIBUTION:END -->
+
+<!-- SPECFORGE_ERR1024_RUNTIME_TEST_SYNC_PATCH_STALE_ANCHOR:START -->
+### ERR-1024：Runtime 测试同步批量补丁复用已变化的 WAL 锚点
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：跨 6 文件补丁首先查找 `if (!content) return ...`，但当前 `WAL.ts` 已在上一实现补丁中改为 `if (!content) throw new Error('WAL_EMPTY_INPUT')`；`apply_patch` 报 expected lines not found。
+- **影响**：整批补丁原子失败，没有测试或产品文件写入；ERR-1023 的 `65 pass / 16 fail` 归因保持不变。
+- **正确做法**：按当前文件内容拆分产品、单元测试与 property 测试补丁，逐项核验后再回归。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1024_PATCH_RESULT=NO_WRITE
+ERR1024_STALE_ANCHOR=WAL_EMPTY_CONTENT_OLD_RETURN
+ERR1024_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1024
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1024_RUNTIME_TEST_SYNC_PATCH_STALE_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR1024_CORRECTION:START -->
+#### ERR-1024 事实更正（2026-08-31）
+
+- 后续逐文件扫描确认失败的多文件 `apply_patch` 不是整批原子回滚：`state.test.ts` 的 current WAL fixture 已加入 `schema_version`、`monotonicSeq` 与 `actor`，而后续测试文件 hunk 未应用。
+- 因此原记录中的 `PATCH_RESULT=NO_WRITE` 作废；实际结果是 `PARTIAL_WRITE_VERIFIED`。已写 hunk 本身符合权威合同，保留并纳入后续验证。
+
+```text
+ERR1024_ORIGINAL_PATCH_RESULT_RECORD=SUPERSEDED
+ERR1024_ACTUAL_PATCH_RESULT=PARTIAL_WRITE_VERIFIED
+ERR1024_APPLIED_HUNK=STATE_TEST_CURRENT_WAL_FIXTURE
+ERR1024_REMAINING_HUNKS=NOT_ASSUMED_APPLIED_RESCAN_REQUIRED
+ERR1024_STATUS=IDENTIFIED_CORRECTED_PENDING_RERUN
+PRIOR_FAILURE_RECONCILIATION=PASS
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1024_CORRECTION:END -->
+
+<!-- SPECFORGE_ERR1025_RUNTIME_RECOVERY_REGRESSION_REMAINDER:START -->
+### ERR-1025：Runtime 回归剩余陈旧状态 fixture 与 Recovery 审计事件未落 WAL
+
+- **分类**：`REGRESSION_BASELINE_DEFECT / RUNTIME_RECOVERY_AUDIT_GAP`
+- **事实证据**：完成 fail-closed 合同测试同步与临时目录隔离后，六文件回归为 `63 pass / 3 fail`。`StateManager.test.ts` 仍使用不在 current state authority 中的 `intake`。Property 20 的两项测试中，`repairResult.repairEvents` 已含 `recovery.repaired`，但磁盘 `events.jsonl` 仅含原事件，直接文件断言失败。
+- **影响**：State/WAL/schema 专属测试已通过，但 Recovery repair 尚未证明满足“修复后写 recovery.repaired”权威不变式；没有外部目录、Git 或部署副作用。
+- **正确做法**：把陈旧 fixture 更新为 current 初始状态；核对 `RecoverySubsystem.repairInconsistency()` 的事件创建、WAL owner 与 append/fsync 路径，若确认为未落盘则修复产品并保留文件级断言。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1025_REGRESSION_RESULT=63_PASS_3_FAIL
+ERR1025_STALE_STATE_FIXTURE=intake
+ERR1025_RECOVERY_EVENTS_RETURNED=YES
+ERR1025_RECOVERY_EVENTS_PERSISTED=NO
+ERR1025_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1025
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1025_RUNTIME_RECOVERY_REGRESSION_REMAINDER:END -->
+
+<!-- SPECFORGE_ERR1026_RECOVERY_WAL_MOCK_MISSING_CREATE_EVENT:START -->
+### ERR-1026：Recovery 扩展回归的 WAL mock 缺少 current owner API
+
+- **分类**：`TEST_DOUBLE_DRIFT / INCOMPLETE_WAL_MOCK`
+- **事实证据**：九文件扩展回归为 `86 pass / 1 fail` 且 daemon-core `tsc` 通过；唯一失败位于 `RecoverySubsystem.test.ts` 的注入 WAL mock，`repairInconsistency()` 调用真实 WAL 合同的 `createEvent` 时 mock 报 `is not a function`。
+- **影响**：不能取得该注入分支的完整回归证明；产品构建及其他 Runtime/Recovery 测试有效，没有 Git 或部署副作用。
+- **正确做法**：为测试 double 补齐 `createEvent`，并断言 repair event 经 `appendEvent` 后才调用 checkpoint persistence；不得在产品中为不完整 mock 添加旁路。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1026_EXTENDED_RESULT=86_PASS_1_FAIL
+ERR1026_DAEMON_BUILD=PASS
+ERR1026_MISSING_MOCK_METHOD=WAL.createEvent
+ERR1026_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1026
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1026_RECOVERY_WAL_MOCK_MISSING_CREATE_EVENT:END -->
+
+<!-- SPECFORGE_ERR1027_CURRENT_EVENT_FIXTURE_PATCH_CONTEXT:START -->
+### ERR-1027：Current Event fixture 多文件补丁的内联调用锚点不匹配
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：为四个测试文件统一 current event helper 的补丁在 `state.test.ts` 查找相邻 `}); await stateManager.appendEvent({` 失败；真实文件在两个调用间包含独立代码/注释。
+- **影响**：补丁结果不能假定原子回滚，必须逐文件扫描确认；此前写时门禁 RED `6 pass / 1 fail`、GREEN `7/7` 及影响回归 `75 pass / 13 expected fixture fail` 保持有效。
+- **正确做法**：逐文件增加 helper，再按 `rg` 列出的具体调用点分别包装，逐文件复核语法。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1027_PATCH_RESULT=UNKNOWN_UNTIL_RESCAN
+ERR1027_EXPECTED_FIXTURE_FAILURES=13
+ERR1027_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1027
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1027_CURRENT_EVENT_FIXTURE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1014_ERR1021_1027_CLOSURE:START -->
+#### ERR-1014、ERR-1021～ERR-1027 关闭证据（2026-08-31）
+
+- Runtime checkpoint 与 WAL 以 optional `1.0` descriptors 接入 `StateManager.initialize()`；现存空、损坏、不可读、未知 schema 或 validator 不通过的文件均在覆盖写前阻断。
+- checkpoint 与 Recovery 直接写入共享 `schema_version` serializer；WAL 初始化不生成空文件，append 前复用 owner validator。
+- `recovery.repaired` 通过同一 WAL append+fsync 后再重建 checkpoint，Property 20 的 120 组迭代通过。
+- 受跟踪且遮蔽 TypeScript 的 `src/wal/WAL.js/.d.ts/*.map` 已删除；测试真实执行 `WAL.ts`。
+- 真实用户目录测试已隔离，stale resolver/state/mock/fixture 已按 current contract 修正；失败补丁的 partial-write 事实已复核并完成逐文件验证。
+- Runtime/State/WAL/Recovery 九文件回归 `88/88`，daemon-core build 通过。
+
+```text
+ERR1014_STATUS=CLOSED_CONFIG_PROJECT_REGISTRY_AND_RUNTIME_RESOLVED
+ERR1021_STATUS=CLOSED_REAL_TYPES_PATH_VERIFIED
+ERR1022_STATUS=CLOSED_SHADOW_ARTIFACTS_REMOVED
+ERR1023_STATUS=CLOSED_AUTHORITY_TESTS_AND_ISOLATION_REPAIRED
+ERR1024_STATUS=CLOSED_PARTIAL_PATCH_RECONCILED_AND_RERUN
+ERR1025_STATUS=CLOSED_RECOVERY_AUDIT_PERSISTED_AND_CURRENT_STATE_FIXTURE
+ERR1026_STATUS=CLOSED_WAL_MOCK_CONTRACT_COMPLETE
+ERR1027_STATUS=CLOSED_PER_FILE_FIXTURE_PATCHED_AND_VERIFIED
+REGISTERED_DESCRIPTORS=5
+RUNTIME_RECOVERY_TESTS=88_PASS_0_FAIL
+PROPERTY20_ITERATIONS=120
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1014,ERR-1021,ERR-1022,ERR-1023,ERR-1024,ERR-1025,ERR-1026,ERR-1027
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1014_ERR1021_1027_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1028_RUNTIME_GOVERNANCE_SCAN_WRONG_CWD:START -->
+### ERR-1028：Runtime 最终治理 marker 扫描在 package cwd 使用仓库根路径
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WRONG_WORKING_DIRECTORY`
+- **事实证据**：最终组合命令在 `packages/daemon-core` cwd 完成 `tsc`、`git diff --check` 与 WAL 遮蔽文件不存在检查，但随后 `rg docs/...` 三个路径报不存在。
+- **影响**：构建、diff check 与文件不存在证据有效；治理 marker 和本步 diff stat 尚未取得，没有产品、Git 或部署副作用。
+- **正确做法**：从 `D:\code\SpecForge` 根目录单独重跑 marker、diff stat、branch/HEAD/status 核验。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1028_DAEMON_BUILD=PASS
+ERR1028_GIT_DIFF_CHECK=PASS
+ERR1028_WAL_SHADOW_FILES_ABSENT=YES
+ERR1028_GOVERNANCE_SCAN=INVALID_WRONG_CWD
+ERR1028_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1028
+UNRECORDED_FAILURES=0
+```
+
+#### ERR-1028 关闭证据（2026-08-31）
+
+- 已从仓库根目录重新扫描 progress、handoff 与 error ledger，`REGISTERED_DESCRIPTORS=5`、Step F phase、Runtime 回归结果及 ERR-1014 关闭标记均可定位。
+- 同次复核确认分支为 `main`、HEAD 为 `45a0cfee54306a3f29a8ca06dfa827b385b25e50`、既有 dirty worktree 保留；`git diff --check` 通过，仅有换行转换提示。
+
+```text
+ERR1028_GOVERNANCE_SCAN=PASS_FROM_REPOSITORY_ROOT
+ERR1028_BRANCH=main
+ERR1028_HEAD=45a0cfee54306a3f29a8ca06dfa827b385b25e50
+ERR1028_WORKTREE_ENTRIES=431_PRESERVED
+ERR1028_GIT_DIFF_CHECK=PASS
+ERR1028_STATUS=CLOSED_WRONG_CWD_COMMAND_CORRECTED_AND_VERIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1028_RUNTIME_GOVERNANCE_SCAN_WRONG_CWD:END -->
+
+<!-- SPECFORGE_ERR1029_OBSERVABILITY_MULTI_FILE_PATCH_CONTEXT:START -->
+### ERR-1029：Observability 合同首个多文件补丁的 import 锚点不匹配
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：补丁预期 `sf_project_init_core.ts` 单独导入 `SPEC_DIR_NAME`，真实文件为 `LAYOUT, SPEC_DIR_NAME` 联合导入；`apply_patch` 在验证阶段失败。
+- **影响**：目标合同、初始化器和模板均未被该补丁写入；测试先行 RED 证据仍有效，没有 Git、部署或运行时副作用。
+- **正确做法**：先核对 partial-write 状态，再使用真实联合 import 锚点并将合同、初始化器、模板拆分为小补丁逐项验证。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1029_PATCH_RESULT=REJECTED_BEFORE_WRITE
+ERR1029_PARTIAL_WRITE_CHECK=PASS_NO_TARGET_WRITES
+ERR1029_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1029
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1029_OBSERVABILITY_MULTI_FILE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1030_OBSERVABILITY_DESCRIPTOR_PATCH_SYNTAX:START -->
+### ERR-1030：Observability descriptor 补丁包含无上下文空 hunk
+
+- **分类**：`TOOL_EXECUTION_ERROR / INVALID_PATCH_SYNTAX`
+- **事实证据**：多文件 descriptor 补丁在第二个 update 段使用无行上下文的 `@@`，`apply_patch` 报 `Unexpected line found in update hunk` 并在验证阶段终止。
+- **影响**：descriptor、package dependency 和 Project registration 均未由该补丁写入；descriptor RED `2 pass / 1 fail` 保持有效，没有 Git 或部署副作用。
+- **正确做法**：每个文件使用带真实相邻行的独立 hunk，不在多文件补丁中使用空 `@@`。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1030_PATCH_RESULT=REJECTED_BEFORE_WRITE
+ERR1030_DESCRIPTOR_RED=2_PASS_1_FAIL_EXPECTED
+ERR1030_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1030
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1030_OBSERVABILITY_DESCRIPTOR_PATCH_SYNTAX:END -->
+
+<!-- SPECFORGE_ERR1031_OBSERVABILITY_MIGRATION_WORKSPACE_LINK:START -->
+### ERR-1031：Observability 新增 Migration 类型依赖后 workspace link 未物化
+
+- **分类**：`DEPENDENCY_STATE_ERROR / WORKSPACE_LINK_STALE`
+- **事实证据**：`packages/observability/package.json` 已声明 `@specforge/migration: workspace:*`，但随后的 package build 报 `TS2307 Cannot find module '@specforge/migration'`；当前 node_modules 链接仍是修改前状态。
+- **影响**：Observability build 证据无效，descriptor GREEN 尚未取得；源码补丁保留，没有运行时、Git 提交或部署副作用。
+- **正确做法**：从仓库根执行 Bun offline install 刷新 workspace link 与 lockfile，再重跑 owner build 和同一 descriptor 测试；不得通过相对源码导入旁路 package 边界。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1031_OBSERVABILITY_BUILD=FAIL_TS2307_MIGRATION_LINK_MISSING
+ERR1031_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1031
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1031_OBSERVABILITY_MIGRATION_WORKSPACE_LINK:END -->
+
+<!-- SPECFORGE_ERR1032_OBSERVABILITY_EXPANDED_REGRESSION_ATTRIBUTION:START -->
+### ERR-1032：Observability 扩展回归混合了一个过时断言与两个无关既存 blocker
+
+- **分类**：`REGRESSION_ATTRIBUTION / STALE_AUTHORITY_ASSERTION_AND_PREEXISTING_FAILURES`
+- **事实证据**：四文件回归为 `20 pass / 3 fail`。`v11-install-deployment-consistency` 的 Observability 用例仍要求旧 `schema_version=1.1` 与 `enabled=true`；同文件 installer 字符串断言要求源码含 `setup`，而当前实现由 verified release manifest 驱动；`v12-userlevel-tool-wrapper-self-contained` 要求 branch recovery 使用无 projection write reader，真实 handler 仍调用 `readAuthoritativeState`。
+- **影响**：Observability 项目初始化、三表面合同和 9 个 module registry 测试已通过；全组不能作为 GREEN。后两个失败与本次文件/调用链无关，不得夹带修复或修改测试隐藏。
+- **正确做法**：仅把 Observability 模板断言对齐当前 V6 权威 `1.0 + mode=standard`；分别保留 installer registry/manifest 与 branch recovery blocker，随后用不含无关失败的定向集合验证本步。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1032_EXPANDED_RESULT=20_PASS_3_FAIL
+ERR1032_OBSERVABILITY_STALE_TESTS=1
+ERR1032_UNRELATED_EXISTING_FAILURES=2
+ERR1032_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1032
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1032_OBSERVABILITY_EXPANDED_REGRESSION_ATTRIBUTION:END -->
+
+<!-- SPECFORGE_ERR1033_OBSERVABILITY_GOVERNANCE_PATCH_CONTEXT:START -->
+### ERR-1033：Observability 治理同步补丁引用了不存在的 inventory 段落
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：治理多文件补丁尝试在 Project Registry 小节后匹配 `reset it — otherwise...`，真实 inventory 没有该段文字；`apply_patch` 验证失败。复核显示 migration design 仍是旧 Connected owners，inventory 仍为 5 descriptors，证明目标治理文件未被部分写入。
+- **影响**：产品、测试和 build 证据保持有效；治理同步尚未完成，没有 Git 或部署副作用。
+- **正确做法**：依据真实小节末尾 `fail closed without creating Runtime state.` 插入新小节，并把四个治理文件拆分更新。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1033_PATCH_RESULT=REJECTED_BEFORE_WRITE
+ERR1033_PARTIAL_WRITE_CHECK=PASS_NO_GOVERNANCE_TARGET_WRITES
+ERR1033_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1033
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1033_OBSERVABILITY_GOVERNANCE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1029_1033_OBSERVABILITY_CLOSURE:START -->
+#### ERR-1029～ERR-1033 关闭证据（2026-08-31）
+
+- 首个补丁的 context mismatch 与后续 invalid hunk 均已确认无 partial write，并以真实锚点、小补丁完成。
+- Bun offline install 已物化新增的 `@specforge/migration` workspace link 并更新 lockfile；Observability build 随后通过。
+- 旧 `1.1 + enabled` 测试断言已按 Observability V6 权威更新；项目初始化、三表面合同、strict parser、mode 行为和 Runtime 前阻断共 21 个定向测试通过。
+- 扩展组另外两个失败已证明与本次 Observability 文件和调用链无关：installer 字符串断言继续归 ERR-1020 / installer drift，branch recovery side-effect 是既有 Phase12 baseline；两者未被修改或隐藏。
+- Migration/V6 design、owner inventory、actual architecture、progress 与 handoff 已同步为六个 descriptors；`git diff --check` 通过，仅有换行提示。
+
+```text
+ERR1029_STATUS=CLOSED_REAL_IMPORT_ANCHOR_PATCHED
+ERR1030_STATUS=CLOSED_VALID_HUNKS_APPLIED
+ERR1031_STATUS=CLOSED_OFFLINE_WORKSPACE_LINK_REFRESHED_BUILD_PASS
+ERR1032_STATUS=CLOSED_ATTRIBUTION_COMPLETE_STALE_OBSERVABILITY_ASSERTION_REPAIRED
+ERR1033_STATUS=CLOSED_GOVERNANCE_PATCH_SPLIT_AND_VERIFIED
+REGISTERED_DESCRIPTORS=6
+OBSERVABILITY_POLICY_TARGET_TESTS=21_PASS_0_FAIL
+OBSERVABILITY_BUILD=PASS
+DAEMON_CORE_BUILD=PASS
+UNRELATED_FAILURES_MODIFIED=NO
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1029,ERR-1030,ERR-1031,ERR-1032,ERR-1033
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1029_1033_OBSERVABILITY_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1034_TYPES_VITEST_TEMPDIR_EPERM:START -->
+### ERR-1034：Types 组合验证中的 `bun x vitest` 无法写临时目录
+
+- **分类**：`TEST_RUNNER_ENVIRONMENT_ERROR / TEMPDIR_EPERM`
+- **事实证据**：组合命令先输出 `$ tsc` 且无 TypeScript 错误，随后 `bun x vitest run tests/directory-layout.test.ts` 报 `bun is unable to write files to tempdir: EPERM`，整条命令 exit 1。
+- **影响**：Types build 可单独视为通过，但 directory-layout 测试尚未执行；Risk Policy 源码修改保留，没有 Git 或部署副作用。
+- **正确做法**：使用仓库已安装的本地 Vitest 可执行文件重跑目标测试，并分别保存 build/test 结果；不得把组合命令的部分成功冒充完整 GREEN。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1034_TYPES_BUILD=PASS
+ERR1034_TYPES_TEST=NOT_RUN_TEMPDIR_EPERM
+ERR1034_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1034
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1034_TYPES_VITEST_TEMPDIR_EPERM:END -->
+
+<!-- SPECFORGE_ERR1035_CROSS_PACKAGE_VITEST_CONFIG_RESOLUTION:START -->
+### ERR-1035：跨 package 借用 Vitest runner 错误加载根配置
+
+- **分类**：`TEST_RUNNER_ENVIRONMENT_ERROR / CONFIG_RESOLUTION`
+- **事实证据**：从 `packages/types` 调用 daemon-core 的 `vitest.exe` 时，runner 加载 `D:\code\SpecForge\vitest.config.ts`，随后因该上下文无法解析 `vitest/config` 启动失败；没有执行测试断言。
+- **影响**：Types target test 仍未取得，先前 Types `tsc` build 与 Risk boundary RED 不变；无产品、Git 或部署副作用。
+- **正确做法**：不跨 package 借用 runner。用 daemon-core 自有 runner 执行当前 Risk boundary（真实消费 `@specforge/types` 构建产物），Types package 保留独立 `tsc` build，并在可用 runner 恢复前不声称 Types 单测已运行。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1035_TEST_ASSERTIONS_EXECUTED=NO
+ERR1035_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1035
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1035_CROSS_PACKAGE_VITEST_CONFIG_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR1036_RISK_POLICY_SCAN_WRONG_CWD:START -->
+### ERR-1036：Risk Policy 残留扫描从 daemon package cwd 使用仓库根路径
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WRONG_WORKING_DIRECTORY`
+- **事实证据**：组合命令中 daemon-core `tsc` 通过；随后从 `packages/daemon-core` 对 `src tests setup scripts` 扫描，`setup/scripts` 并不存在于该 cwd，stderr 被重定向后组合 exit 1。
+- **影响**：Daemon build 有效；仓库范围生产残留扫描无效，尚不能据此宣称 owner 已物理退出。没有产品、Git 或部署副作用。
+- **正确做法**：从 `D:\code\SpecForge` 根目录对 packages/setup/scripts/templates 扫描，并明确区分 negative regression 与生产引用。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1036_DAEMON_BUILD=PASS
+ERR1036_REPOSITORY_SCAN=INVALID_WRONG_CWD
+ERR1036_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1036
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1036_RISK_POLICY_SCAN_WRONG_CWD:END -->
+
+<!-- SPECFORGE_ERR1034_1036_RISK_POLICY_CLOSURE:START -->
+#### ERR-1034～ERR-1036 关闭证据（2026-08-31）
+
+- Types package 没有 Vitest devDependency/test script，因此不再把跨 package runner 作为合法验证入口；Types `tsc` build 单独通过。
+- daemon-core 自有 runner 真实消费重建后的 `@specforge/types` 产物，Risk boundary、Observability bootstrap、current project boundary 与 module registry 共 22 个测试通过。
+- daemon-core build 通过；仓库根残留扫描确认 production packages/setup/scripts/templates 不再包含 Risk Policy，仅保留 negative assertions。
+- 旧根 `plugin_startup.test.ts` 的 import target 已不存在，且只验证 V3.5、无点号 `specforge/` 与旧 manifest，已按 ADR-013 删除；历史治理记录保留。
+- `git diff --check` 通过，仅有换行转换提示。
+
+```text
+ERR1034_STATUS=CLOSED_TYPES_BUILD_AND_REAL_CONSUMER_TEST_PASS
+ERR1035_STATUS=CLOSED_CROSS_PACKAGE_RUNNER_ABANDONED_VALID_ENTRY_USED
+ERR1036_STATUS=CLOSED_REPOSITORY_ROOT_SCAN_PASS
+RISK_POLICY_TARGET_TESTS=22_PASS_0_FAIL
+TYPES_BUILD=PASS
+DAEMON_CORE_BUILD=PASS
+RISK_POLICY_PRODUCTION_REFERENCES=ZERO
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1034,ERR-1035,ERR-1036
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1034_1036_RISK_POLICY_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1037_MODULE_EXPANDED_REGRESSION_ATTRIBUTION:START -->
+### ERR-1037：Module Identity 扩展回归包含 Candidate manifest 既有前置失败
+
+- **分类**：`REGRESSION_ATTRIBUTION / PREEXISTING_CANDIDATE_NORMALIZATION_FAILURE`
+- **事实证据**：Module Identity 五文件扩展回归为 `34 pass / 1 fail`；失败用例 `new-project-governance-bootstrap` 在 `ARTIFACT_NORMALIZATION_FAILED: CANDIDATE_MANIFEST_CANONICAL_WORKFLOW_PATH_INVALID: "missing"` 处停止。失败发生在 Candidate manifest 写入/规范化阶段，早于本轮 ProjectManager 动态 module descriptor 注册门禁；该测试文件本轮无修改。
+- **影响**：Module Identity 新增 5 个目标测试、current project layout、ProjectManager 和 module registry normalization 均通过；这组扩展回归尚不能整体记为 GREEN。无 Git、部署或 Runtime 真相源副作用。
+- **正确做法**：单独复核 Candidate fixture 与当前 Candidate manifest 权威契约，确认是既有 ERR681 Phase12 baseline 还是本轮初始化模板关联；不得修改产品契约或放宽校验来迎合旧 fixture。本轮 Module Identity 继续使用直接调用链定向集合，并保留该失败的独立归属。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1037_EXPANDED_RESULT=34_PASS_1_FAIL
+ERR1037_FAILURE_STAGE=CANDIDATE_MANIFEST_NORMALIZATION_BEFORE_PROJECT_REGISTRATION
+ERR1037_MODULE_TARGETS=PASS
+ERR1037_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1037
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1037_MODULE_EXPANDED_REGRESSION_ATTRIBUTION:END -->
+
+<!-- SPECFORGE_ERR1038_MODULE_CONTRACT_TEST_CWD:START -->
+### ERR-1038：Module Definition producer contract 测试从 package cwd 错解仓库路径
+
+- **分类**：`TEST_INFRASTRUCTURE_ERROR / WRONG_REPOSITORY_ROOT_RESOLUTION`
+- **事实证据**：五文件定向回归为 `42 pass / 1 fail`；唯一失败尝试读取 `D:\code\SpecForge\packages\daemon-core\setup\userlevel-opencode\agents\sf-design.md`，而真实仓库文件位于 `D:\code\SpecForge\setup\...`。同文件使用 `path.resolve(process.cwd(), 'setup/...')`，从合法 package 测试入口执行时必然错解。
+- **影响**：Module schema、ProjectManager、layout、init normalization 的产品断言均通过；producer 文档断言未执行。无产品 Runtime、Git 或部署副作用。
+- **正确做法**：测试从 daemon-core package cwd 显式解析 `../..` 仓库根，再读取 setup owner；重跑完全相同的定向集合，不改变产品契约来掩盖路径问题。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1038_TARGET_RESULT=42_PASS_1_FAIL
+ERR1038_PRODUCT_ASSERTIONS=PASS
+ERR1038_FAILED_ASSERTION_EXECUTED=NO_ENOENT
+ERR1038_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1038
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1038_MODULE_CONTRACT_TEST_CWD:END -->
+
+<!-- SPECFORGE_ERR1039_MODULE_MERGE_CONSUMER_REGRESSION:START -->
+### ERR-1039：Module schema 收紧后的新增模块 Merge 消费者回归失败
+
+- **分类**：`REGRESSION_ATTRIBUTION / CURRENT_CONTRACT_FIXTURE_OR_CONSUMER_GAP`
+- **事实证据**：Gate/Merge 五文件扩展回归为 `14 pass / 1 fail`；唯一失败是 `v12-merge-runner-module-registry-hotfix` 期望完整模块 bundle 合并成功，但 `result.success=false`。失败位于本轮刚加强的 Module Definition Candidate → Merge 直接消费路径，当前输出尚未显示 `result.errors`。
+- **影响**：其余 Gate、ownership、contract consumer 与 first-WI 14 项通过；新增模块正式生产闭环尚未取得 GREEN。无 Git、部署或外部 Runtime 副作用。
+- **正确做法**：读取失败 fixture 与 Merge 返回错误；若 fixture 缺少当前权威已要求的 `schema_version=1.0`，只同步 fixture；若合法候选仍失败，则修复真实 consumer。不得把成功断言改成失败断言掩盖闭环。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1039_EXPANDED_RESULT=14_PASS_1_FAIL
+ERR1039_FAILURE_PATH=MODULE_DEFINITION_CANDIDATE_TO_MERGE
+ERR1039_ROOT_CAUSE=UNDER_INVESTIGATION
+ERR1039_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1039
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1039_MODULE_MERGE_CONSUMER_REGRESSION:END -->
+
+<!-- SPECFORGE_ERR1037_1039_MODULE_IDENTITY_CLOSURE:START -->
+#### ERR-1037～ERR-1039 关闭证据（2026-08-31）
+
+- ERR-1037 的 Candidate 规范化失败由旧 fixture 缺少权威 `trigger_result.workflow_path` 导致；补齐当前输入后已越过 Writer 与本轮 Module schema，剩余失败准确落在既有 Project Trace 两项缺口，转归仍开放的 ERR-978 / ERR-681 Phase12 baseline，不属于本步产品回归。
+- ERR-1038 已把 producer contract 测试从 daemon-core package cwd 显式解析仓库根；同一五文件 Module 注册/producer 集合 `43 pass / 0 fail`。
+- ERR-1039 已确认新增模块 fixture 缺少 sf-design 当前 producer 合同明确要求的 `schema_version=1.0`；补齐后真实 Candidate → Gate → Merge 五文件 `15 pass / 0 fail`，成功写入正式模块并更新 registry。
+- Daemon Core build 通过；动态 descriptors 从已验证 manifest 枚举，缺失、无版本、旧身份、身份错配、重复或非 canonical 路径均在 Runtime 创建前失败且不改写输入。
+
+```text
+ERR1037_STATUS=CLOSED_ATTRIBUTED_TO_ERR978_PROJECT_TRACE_BASELINE
+ERR1038_STATUS=CLOSED_REPOSITORY_ROOT_RESOLUTION_FIXED_43_PASS
+ERR1039_STATUS=CLOSED_CURRENT_SCHEMA_FIXTURE_ALIGNED_REAL_MERGE_15_PASS
+MODULE_IDENTITY_DIRECT_TESTS=58_PASS_0_FAIL
+DAEMON_CORE_BUILD=PASS
+STATIC_REGISTERED_DESCRIPTORS=6
+DYNAMIC_DESCRIPTOR_FAMILIES=1
+EFFECTIVE_PROJECT_DESCRIPTOR_COUNT=6+PROJECT_MODULE_COUNT
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1037,ERR-1038,ERR-1039
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1037_1039_MODULE_IDENTITY_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1040_SETUP_GATE_KG_PATCH_CONTEXT:START -->
+### ERR-1040：setup Gate Knowledge Graph 退出补丁错误假设 daemon 镜像同形
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：组合 `apply_patch` 在 `setup/userlevel-opencode/tools/lib/sf_verification_gate_core.ts` 的 `tryKGSync` 尾部找不到预期上下文并整体拒绝；setup Gate 文件与 daemon owner 存在格式和实现差异。
+- **影响**：setup 目标文件未发生部分写入；daemon Gate 已完成的独立补丁保留。无 Git、部署或 Runtime 副作用。
+- **正确做法**：逐一读取 setup requirements/design/tasks/verification Gate 的真实 KG 段落，按文件拆分补丁并在删除 KG core 前执行残留扫描；不得把 setup 视作可盲拷贝镜像。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1040_PATCH_RESULT=REJECTED_BEFORE_WRITE
+ERR1040_SETUP_PARTIAL_WRITE=NO
+ERR1040_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1040
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1040_SETUP_GATE_KG_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1041_P1_OWNER_EXIT_PATCH_CONTEXT:START -->
+### ERR-1041：P1 owner 退出组合补丁错误假设 bootstrap 模板相邻
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：registry/layout/bootstrap/audit 组合补丁在 `sf_project_init_core.ts` 中无法匹配相邻的 `skill_fragments` 与 `knowledge/graph` 模板；真实文件两者不相邻，`apply_patch` 整体拒绝。
+- **影响**：该组合中的 registry、layout、bootstrap、audit 文件均未写入；此前 Gate 去 KG 补丁保留。无 Git、部署或 Runtime 副作用。
+- **正确做法**：按真实独立锚点拆成 registry、layout、各 bootstrap template/iteration、audit producer 小补丁并逐项扫描。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1041_PATCH_RESULT=REJECTED_BEFORE_WRITE
+ERR1041_PARTIAL_WRITE=NO
+ERR1041_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1041
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1041_P1_OWNER_EXIT_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1042_GATE_SYNCSUMMARY_RESIDUAL_IMPORT:START -->
+### ERR-1042：Knowledge Graph 退出后 Requirements Gate 残留 SyncSummary import
+
+- **分类**：`BUILD_ERROR / REMOVED_TYPE_RESIDUAL_IMPORT`
+- **事实证据**：daemon-core `tsc` 报 `sf_requirements_gate_core.ts(22,27): TS2305 Module './sf_gate_types' has no exported member 'SyncSummary'`；`sf_gate_types` 已正确移除只服务 KG 的类型，consumer import 未同步删除。
+- **影响**：物理退出目标测试 5/5 已通过，但 daemon build 尚未通过；没有 Git、部署或 Runtime 副作用。
+- **正确做法**：删除残留 import，扫描 daemon/setup production 的 `SyncSummary`、`kg_sync` 与 KG core import 后重建；不得恢复已退出类型。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1042_DAEMON_BUILD=FAIL_TS2305
+ERR1042_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1042
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1042_GATE_SYNCSUMMARY_RESIDUAL_IMPORT:END -->
+
+<!-- SPECFORGE_ERR1043_ARCHITECTURE_SOURCE_ASSERTION_DRIFT:START -->
+### ERR-1043：P1 扩展回归暴露两个既有 Architecture 源码字符串断言漂移
+
+- **分类**：`REGRESSION_ATTRIBUTION / STALE_SOURCE_TEXT_ASSERTIONS`
+- **事实证据**：七文件扩展回归 `126 pass / 2 fail`，均位于 `architecture-governance-v7-regression.test.ts`。第一项仍要求旧 `runAndWrite('formal_version_gate', ctx)`，真实当前调用带 Gate Attempt 第三参数；第二项要求旧 Contract not-applicable 文案，当前实现使用 `No Project Contract candidate; Project Contract registry delta check is not applicable`。
+- **影响**：P1 physical exit、HardStop、Artifact authority、Task/Design governance 的 126 项通过；两个断言未涉及本轮删除文件或行为。无 Git、部署或 Runtime 副作用。
+- **正确做法**：只把源码审计断言对齐当前已验证调用签名与真实文案，并重跑相同集合；不修改 Gate/Contract 产品行为迎合测试。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1043_EXPANDED_RESULT=126_PASS_2_FAIL
+ERR1043_PRODUCT_FAILURES=ZERO_PROVEN
+ERR1043_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1043
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1043_ARCHITECTURE_SOURCE_ASSERTION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1044_P1_BROAD_SCAN_OUTPUT_TRUNCATION:START -->
+### ERR-1044：P1 人类语言残留宽泛扫描输出被截断
+
+- **分类**：`VALIDATION_EVIDENCE_ERROR / OUTPUT_TRUNCATION`
+- **事实证据**：对 `packages/daemon-core/src`、`setup/userlevel-opencode`、`scripts` 等范围执行 `Knowledge Graph|KnowledgeGraph|知识图谱|KG sync|KG 同步` 宽泛扫描时，返回内容超过会话输出上限并被截断；命令执行本身没有产品写入，但输出不能证明扫描范围完整，也不能用于最终残留归属。
+- **影响**：此前精确工具 ID、路径和类型残留扫描以及定向测试仍有效；仅宽泛人类语言引用的最终分类证据无效。无 Git、部署或 Runtime 真相源副作用。
+- **正确做法**：先按 production owner 分域执行文件名/计数扫描，再对有限命中文件逐一读取和分类；保留当前边界的负向说明，移除会把已退出能力描述为现行依赖的正向说明。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1044_BROAD_SCAN_RESULT=INVALID_OUTPUT_TRUNCATED
+ERR1044_PRODUCT_WRITE_SIDE_EFFECT=NO
+ERR1044_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1044
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1044_P1_BROAD_SCAN_OUTPUT_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1045_OWNER_INVENTORY_PATH_ASSUMPTION:START -->
+### ERR-1045：收口取证错误假设 owner inventory 文件名
+
+- **分类**：`VALIDATION_COMMAND_ERROR / UNVERIFIED_PATH_ASSUMPTION`
+- **事实证据**：组合只读读取中，`current-release-actual-architecture-inventory.md` 与 `current-release-owner-inventory.md` 均返回 `Cannot find path`；前一阶段实际使用的持久化 owner 清单文件名是 `current-release-persistent-file-owner-inventory.md`，且架构清单名称尚未通过 `rg --files` 核验。
+- **影响**：已存在的 disposition matrix、progress 与 handoff 内容成功读取；两个不存在路径没有产生文件或项目状态副作用，对应 inventory 尚未形成有效读取证据。
+- **正确做法**：先用 `rg --files docs/implementation/architecture-consistency` 枚举真实文件，再读取已核验路径；不得由相似命名推断治理文件存在。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1045_INVALID_PATHS=2
+ERR1045_FILE_WRITE_SIDE_EFFECT=NO
+ERR1045_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1045
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1045_OWNER_INVENTORY_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1046_CONTINUATION_GIT_PREFLIGHT_NOT_REFRESHED:START -->
+### ERR-1046：续接回合在首个文档写入前未刷新 Git preflight
+
+- **分类**：`PROCESS_GATE_ERROR / GIT_PREFLIGHT_ORDER`
+- **事实证据**：续接上下文保留了上一逻辑阶段的 `main`、HEAD 与 dirty worktree 证据，但本次“继续”后的首个账本写入前没有重新执行 `git status` / `git rev-parse`。用户明确要求任何修改先确认当前分支、HEAD 与未提交修改。
+- **影响**：本轮已发生的写入仅限错误账本、P1 退出文案与回归断言；没有 stage、commit、push、deploy。当前 Git 身份尚需立即只读复核，复核前不得继续产品或治理文件写入。
+- **正确做法**：立即执行 `git status --short --branch`、`git rev-parse HEAD`、`git rev-parse --abbrev-ref HEAD`；只有与既有 handoff 一致后才能继续，并在本步关闭记录中保留结果。
+- **类防护**：`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-016`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1046_PREFLIGHT_BEFORE_FIRST_WRITE=NO
+ERR1046_STAGE_COMMIT_PUSH_DEPLOY=NONE
+ERR1046_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1046
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1046_CONTINUATION_GIT_PREFLIGHT_NOT_REFRESHED:END -->
+
+<!-- SPECFORGE_ERR1040_1046_P1_OWNER_EXIT_CLOSURE:START -->
+#### ERR-1040～ERR-1046 关闭证据（2026-08-31）
+
+- setup Gate 与 bootstrap/registry/layout 补丁均按真实文件锚点拆分完成；五项 P1 handler/core/wrapper、Gate sync、layout/bootstrap 和 installer registry 残留已退出。
+- 删除 `SyncSummary` 残留后 daemon-core build 通过；两个既有 Architecture 源码断言已对齐当前真实调用与文案，同一七文件扩展回归 `128 pass / 0 fail`。
+- 宽泛 KG 扫描已改为 production owner 分域扫描：精确工具 ID、持久化路径、`knowledgeFiles`、`kg_sync` 与 `SyncSummary` 命中为零；仅保留两处明确禁止模拟/旁路已退出能力的负向 Agent 边界。
+- 经 `rg --files` 核验并读取真实 `current-release-persistent-file-owner-inventory.md` 与 `current-release-actual-architecture-and-module-inventory.md`，不存在路径不再使用。
+- Git preflight 已补做并确认 `main`、HEAD 与 origin/main 均为 `45a0cfee54306a3f29a8ca06dfa827b385b25e50`，既有 dirty patch set 保留，无 stage、commit、push 或 deploy。
+- CLI current layout `8 pass / 0 fail`；daemon-core 与 types build 均通过。
+
+```text
+ERR1040_STATUS=CLOSED_SPLIT_SETUP_GATE_PATCH_VERIFIED
+ERR1041_STATUS=CLOSED_SPLIT_OWNER_EXIT_PATCH_VERIFIED
+ERR1042_STATUS=CLOSED_RESIDUAL_IMPORT_REMOVED_DAEMON_BUILD_PASS
+ERR1043_STATUS=CLOSED_CURRENT_SOURCE_ASSERTIONS_128_PASS
+ERR1044_STATUS=CLOSED_SCOPED_PRODUCTION_SCAN_COMPLETE
+ERR1045_STATUS=CLOSED_REAL_INVENTORY_PATHS_ENUMERATED_AND_READ
+ERR1046_STATUS=CLOSED_GIT_PREFLIGHT_CONFIRMED_NO_EXTERNAL_STATE_CHANGE
+P1_OWNER_EXIT_DAEMON_TESTS=128_PASS_0_FAIL
+P1_OWNER_EXIT_CLI_LAYOUT_TESTS=8_PASS_0_FAIL
+P1_OWNER_EXIT_DAEMON_BUILD=PASS
+P1_OWNER_EXIT_TYPES_BUILD=PASS
+P1_EXACT_PRODUCTION_REFERENCES=ZERO
+P1_NEGATIVE_BOUNDARY_REFERENCES=2_INTENTIONAL
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1040,ERR-1041,ERR-1042,ERR-1043,ERR-1044,ERR-1045,ERR-1046
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1040_1046_P1_OWNER_EXIT_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1047_INSTALLER_HISTORY_SEARCH_TRUNCATION:START -->
+### ERR-1047：Installer 历史跨四份长治理文件检索再次被截断
+
+- **分类**：`VALIDATION_EVIDENCE_ERROR / OUTPUT_TRUNCATION`
+- **事实证据**：对 ledger、plan、progress、handoff 同时检索 ERR-1020 与 installer transaction，返回 551 行且被输出上限截断。ERR-1020 原始账本段落成功出现在未截断部分，但其他文件的完整上下文不能由该输出证明。
+- **影响**：ERR-1020 的原始事实（`sf_write_guard_preflight` 源文件存在而 installer registry 缺项）可用；installer 架构与计划上下文仍需逐文件定点读取。无文件、Git、部署或 Runtime 副作用。
+- **正确做法**：按 ERR marker 精确读取 ledger 小区间，并分别读取 plan 的 installer step、registry producer、manifest consumer 与相关测试；不再跨多份长治理文件执行宽泛上下文检索。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1047_SEARCH_RESULT=PARTIAL_OUTPUT_TRUNCATED
+ERR1047_ERR1020_ORIGINAL_BLOCK=AVAILABLE
+ERR1047_PRODUCT_WRITE_SIDE_EFFECT=NO
+ERR1047_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1047
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1047_INSTALLER_HISTORY_SEARCH_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1048_WRITE_GUARD_PHYSICAL_EXIT_EXPECTED_RED:START -->
+### ERR-1048：Write Guard Preflight 物理退出合同按计划变红
+
+- **分类**：`EXPECTED_TEST_FIRST_FAILURE / BUILT_NOT_ENABLED_PHYSICAL_EXIT`
+- **事实证据**：新增 current-release 反向合同后，目标文件 `6 tests` 为 `5 pass / 1 fail`；首个失败准确指出 `packages/daemon-core/src/tools/lib/write-guard-preflight-v12.ts` 仍存在。此前同测试已证明该名称未注册进当前 ToolDispatcher。
+- **影响**：验证了 ERR-1020 不是应把 wrapper 加回 installer registry，而是 `BUILT_NOT_ENABLED` owner 闭包尚未物理退出。测试没有 Git、部署或 Runtime 副作用。
+- **正确做法**：按 disposition matrix 同步删除无生产调用的 Daemon lib/public export、user-level wrapper、专属测试和专属 RC slice；把组合 RC 与当前脚本改为验证不存在，不删除其他仍现役的 Gate/permission 行为。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1048_TARGET_RESULT=5_PASS_1_EXPECTED_FAIL
+ERR1048_FIRST_RESIDUAL=packages/daemon-core/src/tools/lib/write-guard-preflight-v12.ts
+ERR1048_TOOL_DISPATCHER_REGISTRATION=ABSENT
+ERR1048_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1048
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1048_WRITE_GUARD_PHYSICAL_EXIT_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1049_WRAPPER_EXPANDED_REGRESSION_LEGACY_RECOVERY_DRIFT:START -->
+### ERR-1049：Write Guard 扩展回归暴露旧 Spec Migration branch recovery 源码断言漂移
+
+- **分类**：`REGRESSION_ATTRIBUTION / LEGACY_RECOVERY_TEST_DRIFT`
+- **事实证据**：Write Guard 三文件组合回归为 `11 pass / 1 fail`；current registry 6 项与 v12 integration RC 4 项全部通过。唯一失败位于 `v12-userlevel-tool-wrapper-self-contained.test.ts` 的另一个 describe，仍要求 `sf-git-branch-create` 包含 `readAuthoritativeStateWithoutProjectionWrite`、`projectSm.rebuildState()` 等旧 Spec Migration recovery 实现；真实 handler 当前调用 `readAuthoritativeState(...)`，失败断言与已退出的 Write Guard 文件无调用关系。
+- **影响**：ERR-1020 / Write Guard 物理退出目标已通过，daemon-core build 也通过；wrapper 文件的旧 recovery 子项尚不能记为 GREEN。无 Git、部署或 Runtime 副作用。
+- **正确做法**：先保留独立失败归属，不为 Write Guard 修复改动 branch recovery 产品行为。后续按 ADR-013 与 migration disposition 判断整套 closed Spec Migration recovery 是否应退出；若退出，应删除完整生产/测试闭包，而不是更新旧实现字符串断言。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1049_EXPANDED_RESULT=11_PASS_1_FAIL
+ERR1049_WRITE_GUARD_TARGETS=PASS
+ERR1049_FAILURE_OWNER=CLOSED_SPEC_MIGRATION_BRANCH_RECOVERY
+ERR1049_DAEMON_BUILD=PASS
+ERR1049_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1049
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1049_WRAPPER_EXPANDED_REGRESSION_LEGACY_RECOVERY_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1050_RELEASE_INSTALL_SET_STALE_AFTER_OWNER_EXIT:START -->
+### ERR-1050：Installer manifest consumption 暴露 release install set 仍绑定旧候选与已删除 P1 cores
+
+- **分类**：`EXPECTED_INTEGRATION_BLOCKER / RELEASE_ARTIFACT_DRIFT`
+- **事实证据**：Scope Gate installer 两文件为 `2 pass / 1 fail`。边界单测通过；真实仓库消费失败明确列出 candidate id 从 `step6c5` 漂移到当前 `step6d2`、23 个已修改资产 hash mismatch，以及五个已物理退出 P1 core 仍被旧 release install set 要求。失败发生在真实安装前的 release set 校验。
+- **影响**：证明 installer transaction 正确 fail closed，没有把旧 manifest 安装到隔离 root；ERR-1013 installer transaction 尚未闭环。Daemon current/RC 10 项和 CLI installer root 5 项通过，无部署到真实用户目录。
+- **正确做法**：从 `SHARED_COMPONENT_REGISTRY` 真实 current source assets 重新生成 owner-bound release snapshot/manifest，使用当前 candidate id，并验证被删除 P1 entries 不再出现；不得手工修改 hash、降低 source-missing 校验或恢复已退出 cores。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1050_SCOPE_GATE_RESULT=2_PASS_1_FAIL
+ERR1050_FAILURE_STAGE=RELEASE_INSTALL_SET_PRE_INSTALL_VALIDATION
+ERR1050_STALE_P1_SOURCE_MISSING=5
+ERR1050_REAL_USERLEVEL_INSTALL=NOT_RUN
+ERR1050_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1050
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1050_RELEASE_INSTALL_SET_STALE_AFTER_OWNER_EXIT:END -->
+
+<!-- SPECFORGE_ERR1051_CONCURRENT_BUN_TEMPDIR_EPERM:START -->
+### ERR-1051：并行 Bun 定向验证发生 tempdir EPERM
+
+- **分类**：`TEST_INFRASTRUCTURE_ERROR / CONCURRENT_TEMPDIR_PERMISSION`
+- **事实证据**：四组并行验证中，scripts package 的 `installer-no-legacy-write.test.ts` 未进入 Vitest，Bun 返回 `unable to write files to tempdir: EPERM`；同批另外三个 Bun 进程均成功启动，且 daemon/CLI 测试完成。
+- **影响**：scripts installer-no-legacy 测试没有执行，不能记录结果；没有产品、Git、安装或部署副作用。
+- **正确做法**：在其他 Bun 进程结束后从 scripts package cwd 单独重跑同一测试；若仍 EPERM，再核验 TEMP 目录权限并申请必要执行权限，不修改产品测试绕过环境错误。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1051_TEST_ASSERTIONS_EXECUTED=NO
+ERR1051_FAILURE=TEMP_DIR_EPERM
+ERR1051_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1051
+UNRECORDED_FAILURES=0
+```
+
+单进程、相同 package cwd 重跑仍在 Vitest 启动前返回同一 `tempdir: EPERM`，因此已排除“仅由并行 Bun 竞争造成”的初始假设；下一步需要以相同命令申请受限环境外执行，验证是否为 sandbox/temp ACL。
+
+```text
+ERR1051_SERIAL_RERUN=FAIL_SAME_EPERM
+ERR1051_CONCURRENCY_ONLY_HYPOTHESIS=REJECTED
+ERR1051_NEXT=RETRY_SAME_COMMAND_WITH_ESCALATED_EXECUTION
+```
+<!-- SPECFORGE_ERR1051_CONCURRENT_BUN_TEMPDIR_EPERM:END -->
+
+<!-- SPECFORGE_ERR1052_SCRIPTS_VITEST_FILTER_CWD_AND_DEPENDENCY_SIDE_EFFECT:START -->
+### ERR-1052：scripts Vitest 从 package cwd 使用了仓库相对 include/filter
+
+- **分类**：`TEST_COMMAND_ERROR / VITEST_ROOT_MISMATCH`
+- **事实证据**：受限环境外重跑已越过 EPERM，但 Vitest v4.1.11 报 `No test files found`；filter 为 `tests/installer-no-legacy-write.test.ts`，配置 include 却是 `scripts/tests/**/*.test.ts`，说明该测试入口以仓库根为 Vitest root，不应从 scripts package cwd 执行。命令还输出 `Resolving dependencies`、`Saved lockfile`，需复核是否产生新的 lock/node_modules 状态。
+- **影响**：测试断言仍未执行；ERR-1051 的 temp ACL 归因得到支持，但 scripts 测试结果未知。没有真实安装/部署；潜在依赖物化副作用必须在下一写操作前用 Git status 与文件枚举核验。
+- **正确做法**：先核验工作树中新副作用，再从仓库根使用现有 scripts Vitest config/根脚本执行精确测试。不得继续从 package cwd 猜测 filter，也不得把“无测试文件”记为通过。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1052_TEST_ASSERTIONS_EXECUTED=NO
+ERR1052_VITEST_VERSION=4.1.11
+ERR1052_FAILURE=ROOT_FILTER_MISMATCH
+ERR1052_DEPENDENCY_SIDE_EFFECT_AUDIT=REQUIRED
+ERR1052_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1052
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1052_SCRIPTS_VITEST_FILTER_CWD_AND_DEPENDENCY_SIDE_EFFECT:END -->
+
+<!-- SPECFORGE_ERR1053_WINDOWS_RG_LITERAL_GLOB_ERROR:START -->
+### ERR-1053：Windows rg 把未展开的 `vitest.config.*` 当作非法路径
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WINDOWS_PATH_GLOB`
+- **事实证据**：从仓库根执行配置定位时，把 `vitest.config.*` 作为位置参数传给 rg；PowerShell 未展开该 glob，rg 返回 Windows `os error 123`。同一输出仍定位到 `scripts/vitest.config.js`，其中 include 为 `scripts/tests/**/*.test.ts`。
+- **影响**：根 Vitest 入口尚未执行；没有文件、Git、安装或部署副作用。
+- **正确做法**：直接读取已定位的 `scripts/vitest.config.js`，从仓库根用 `--config scripts/vitest.config.js` 和仓库相对 filter 执行，不再把 shell glob 当路径参数。
+- **类防护**：`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1053_COMMAND_RESULT=PARTIAL_PATH_ERROR
+ERR1053_CONFIG_LOCATED=scripts/vitest.config.js
+ERR1053_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1053
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1053_WINDOWS_RG_LITERAL_GLOB_ERROR:END -->
+
+<!-- SPECFORGE_ERR1054_ROOT_VITEST_BINARY_PATH_ASSUMPTION:START -->
+### ERR-1054：未核验 root Vitest Windows shim 路径即执行
+
+- **分类**：`TEST_COMMAND_ERROR / UNVERIFIED_RUNNER_PATH`
+- **事实证据**：尝试避免 Bun dependency resolution 时直接调用 `.\node_modules\.bin\vitest.exe`，PowerShell 报该路径不存在/不可执行；调用前没有先枚举 `.bin` 的真实 shim 名称。
+- **影响**：测试未启动，无文件、Git、安装或部署副作用。
+- **正确做法**：先只读检查 root `node_modules/.bin` 的 Vitest shim 和 workspace package manager 状态；若没有本地 runner，则使用已批准的绝对 Bun 从仓库根加 `--config` 执行并明确控制依赖副作用。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1054_TEST_ASSERTIONS_EXECUTED=NO
+ERR1054_RUNNER_PATH=.\\node_modules\\.bin\\vitest.exe
+ERR1054_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1054
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1054_ROOT_VITEST_BINARY_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1055_THIN_PLUGIN_COMPACTION_BRIDGE_STALE_TESTS:START -->
+### ERR-1055：Installer 扩展回归仍要求 Thin Plugin 承担 compaction checkpoint
+
+- **分类**：`REGRESSION_ATTRIBUTION / STALE_EXCLUDED_THIN_PLUGIN_CAPABILITY`
+- **事实证据**：scripts 五文件扩展回归中 installer deploy 18 项、no-legacy 2 项、plugin client path 6 项、agent prune 5 项通过；`opencode-plugin-compaction-bridge.test.ts` 为 `1 pass / 5 fail`，五个失败均要求当前 Thin Plugin 包含 pre-compaction hook、本地 durable bridge、timeout/registration 逻辑。真实 Plugin 明确只负责 event reporting、daemon start、degradation/recovery display，业务状态与持久化留在 Daemon。
+- **影响**：installer transaction、109 文件隔离安装与 current Thin Plugin 边界没有产品失败；该旧 compaction 测试集合与冻结 release disposition 冲突。无真实用户目录部署。
+- **正确做法**：依据 current matrix 的 Thin Plugin 三项 required surface，确认 compaction bridge 没有当前 owner/contract 后删除专属旧测试；不得把本地持久化重新塞回 Thin Plugin 迎合测试。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1055_SCRIPTS_NON_COMPACTION_TESTS=31_PASS
+ERR1055_COMPACTION_RESULT=1_PASS_5_FAIL
+ERR1055_CURRENT_THIN_PLUGIN_SURFACES=DAEMON_START;EVENT_REPORTING;RECOVERY_DISPLAY
+ERR1055_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1055
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1055_THIN_PLUGIN_COMPACTION_BRIDGE_STALE_TESTS:END -->
+
+<!-- SPECFORGE_ERR1056_INSTALLER_SOURCE_TEXT_ASSERTION_DRIFT:START -->
+### ERR-1056：旧 deployment consistency 测试仍要求 installer 直接包含 setup 路径字符串
+
+- **分类**：`REGRESSION_ATTRIBUTION / STALE_INSTALLER_IMPLEMENTATION_ASSERTION`
+- **事实证据**：daemon installer/current registry/v12 RC 三文件为 `17 pass / 1 fail`；唯一失败位于 `v11-install-deployment-consistency.test.ts`，要求 `scripts/sf-installer.ts` 直接包含 `setup`、`userlevel-opencode`、`plugins` 字符串。当前 installer 已通过 `loadVerifiedReleaseInstallSet()` 消费 hash-bound release manifest，不再由 installer 源码硬编码 source tree 路径；同批 current registry 与 v12 RC 通过。
+- **影响**：该源码字符串断言不能验证现行安装架构；真实隔离安装和 manifest consumption 已另有绿色行为证据。无真实部署副作用。
+- **正确做法**：只把该断言改为验证 installer 调用 `requireVerifiedInstallSet` / `loadVerifiedReleaseInstallSet` 并使用 manifest `sourcePath/targetPath`；不把旧硬编码路径恢复到产品实现。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1056_EXPANDED_RESULT=17_PASS_1_FAIL
+ERR1056_FAILURE=OLD_DIRECT_SETUP_PATH_SOURCE_ASSERTION
+ERR1056_REAL_INSTALLER_MANIFEST_CONSUMPTION=PASS_SEPARATE_TEST
+ERR1056_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1056
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1056_INSTALLER_SOURCE_TEXT_ASSERTION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1057_COMPACTION_BOUNDARY_PREMATURE_ATTRIBUTION_CORRECTION:START -->
+### ERR-1057：过早把 compaction bridge 回归判定为已退出能力
+
+- **分类**：`EVIDENCE_INTERPRETATION_ERROR / PREMATURE_DISPOSITION`
+- **事实证据**：ERR-1055 初始解释只读取 current matrix 的 Thin Plugin 三个逻辑表面，便把 compaction 专属测试归为 stale。后续源码核验发现 Daemon `HTTPServer` 仍处理 `session.compacting` 并调用 RecoverySubsystem，V6 progress 历史现场也记录 Thin Plugin 曾注册 `experimental.session.compacting`；当前 Plugin 只有通用 event hook。顶层 requirements/design 未在本次定向搜索中直接裁决 special hook 是否属于 current `event-reporting/recovery-display`。
+- **影响**：不能删除 `opencode-plugin-compaction-bridge.test.ts`，也不能声称五个失败与当前产品无关。ERR-1055 更正为 `CONTRACT_CONFLICT / INSUFFICIENT_EVIDENCE` 并保持开放；installer manifest 物理一致性证据仍有效，但完整 runtime 回归不是 GREEN。
+- **正确做法**：保留测试与 Daemon consumer，后续按 authority order 读取 Thin Plugin/Recovery 的 requirements、design 和 current matrix 映射，判断是 Plugin Runtime defect 还是 Daemon orphan consumer；在裁决前不增删 capability。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1055_STATUS=OPEN_CONTRACT_CONFLICT_INSUFFICIENT_EVIDENCE
+ERR1057_PREMATURE_TEST_DELETION=NOT_PERFORMED
+ERR1057_DAEMON_COMPACTION_CONSUMER=CONFIRMED
+ERR1057_PLUGIN_SPECIAL_HOOK=ABSENT
+ERR1057_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1057
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1057_COMPACTION_BOUNDARY_PREMATURE_ATTRIBUTION_CORRECTION:END -->
+
+<!-- SPECFORGE_ERR1020_1047_1056_INSTALLER_TRANSACTION_CLOSURE:START -->
+#### ERR-1020、ERR-1047～ERR-1048、ERR-1050～ERR-1054、ERR-1056 关闭证据（2026-08-31）
+
+- Current disposition 已证明 `sf_write_guard_preflight` 必须退出而不是重新进入 installer registry；Daemon orphan lib/public export、user-level wrapper、两个专属测试和四个旧 V1.2 执行脚本已退出，current registry + v12 RC `10 pass / 0 fail`。
+- Release runtime producer 重建 `specforge.exe` 与 `specforged.exe`；release manifest producer 从当前 `SHARED_COMPONENT_REGISTRY` 和真实 source assets 生成候选 `main-45a0cfee-working-tree-step6d3`，报告 `complete=true`。
+- 新 manifest 包含 109 个 install files，已退出的五项 P1 能力与 `sf_write_guard_preflight` 条目均为零。Scope Gate formal release precheck 跨 package/build/registry/installer/manifest/runtime 六表面通过。
+- 隔离临时 `.specforge` root 真实安装 109 个文件并逐文件核验 manifest hash/size；Scope Gate installer/manifest 5 项、CLI installer root 5 项、scripts installer/no-legacy 20 项、Daemon install/current registry/RC 18 项通过。未写入真实用户级目录。
+- scripts Vitest 的 EPERM、root/filter mismatch、Windows glob 与 runner path 误用均已通过已核验 runner 和正确 config 收敛；没有新增 tracked path，原有 `bun.lock` / package modifications 保持在既有 dirty set 中。
+- ERR-1056 旧直接路径源码断言已改为验证现行 hash-bound manifest 消费路径，同组 18 项通过。
+- Compaction bridge 五项失败独立保留为 ERR-1055 / ERR-1057；旧 Spec Migration recovery 字符串断言独立保留为 ERR-1049，均不冒充 installer transaction 通过。
+
+```text
+ERR1020_STATUS=CLOSED_WRITE_GUARD_PREFLIGHT_REMOVED_NOT_REGISTERED
+ERR1047_STATUS=CLOSED_TARGETED_INSTALLER_EVIDENCE_READ
+ERR1048_STATUS=CLOSED_PHYSICAL_EXIT_CONTRACT_6_PASS
+ERR1050_STATUS=CLOSED_MANIFEST_REGENERATED_ISOLATED_INSTALL_PASS
+ERR1051_STATUS=CLOSED_SANDBOX_TEMP_ERROR_BYPASSED_WITH_VERIFIED_LOCAL_RUNNER
+ERR1052_STATUS=CLOSED_CORRECT_ROOT_AND_CONFIG_USED_ASSERTIONS_EXECUTED
+ERR1053_STATUS=CLOSED_LITERAL_CONFIG_PATH_USED
+ERR1054_STATUS=CLOSED_RUNNER_PATH_ENUMERATED_BEFORE_USE
+ERR1056_STATUS=CLOSED_CURRENT_MANIFEST_CONSUMER_ASSERTION_18_PASS
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d3
+RELEASE_INSTALL_FILES=109
+REMOVED_INSTALL_ENTRIES=ZERO
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+ISOLATED_REAL_INSTALL=109_FILES_HASH_AND_SIZE_VERIFIED
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+ERR1049_STATUS=OPEN_LEGACY_SPEC_MIGRATION_RECOVERY_DISPOSITION
+ERR1055_STATUS=OPEN_COMPACTION_BOUNDARY_CONTRACT_CONFLICT
+ERR1057_STATUS=OPEN_AUTHORITY_RECONSTRUCTION_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1020,ERR-1047,ERR-1048,ERR-1050,ERR-1051,ERR-1052,ERR-1053,ERR-1054,ERR-1056
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1020_1047_1056_INSTALLER_TRANSACTION_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1058_HTTP_TEST_REAL_USER_HANDSHAKE_DIRECTORY:START -->
+### ERR-1058：Compaction 扩展回归中的 HTTP 单测写入真实用户 handshake 目录失败
+
+- **分类**：`REGRESSION_ATTRIBUTION / TEST_USER_DIRECTORY_ISOLATION`
+- **事实证据**：Daemon HTTP + ingest property 两文件为 `5 pass / 36 fail`；property 的 5 项（含 `session.compacting` 非阻塞路径）全部通过。HTTP 文件 36 项全部在各自行为断言前以同一 `ENOENT` 失败：`HandshakeManager.writeHandshake()` 尝试写 `C:\Users\lyq\.specforge\runtime\daemon.sock.json`，测试未创建/注入隔离 runtime 目录。失败与本轮 Plugin 文件无调用链，属于仍开放 ERR-887 的同类用户目录隔离缺陷。
+- **影响**：Compaction Plugin 专属 6 项、Scope Gate Thin Plugin 3 项与 Daemon build 通过；HTTP 端完整回归不能记为 GREEN。没有创建真实 handshake，也没有启动 Daemon 或部署用户级文件。
+- **正确做法**：保留失败并转归 ERR-887；后续从 HTTP test 注入的临时 user root 或 HandshakeManager 配置边界修复隔离，不创建真实用户目录来迎合测试，也不修改 compaction 产品行为。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-033`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1058_EXPANDED_RESULT=5_PASS_36_FAIL
+ERR1058_INGEST_PROPERTY=5_PASS
+ERR1058_HTTP_FAILURE_SIGNATURE=ENOENT_REAL_USER_HANDSHAKE_PARENT_MISSING
+ERR1058_ATTRIBUTION=ERR887_TEST_USER_DIRECTORY_ISOLATION
+ERR1058_REAL_HANDSHAKE_CREATED=NO
+ERR1058_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1058
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1058_HTTP_TEST_REAL_USER_HANDSHAKE_DIRECTORY:END -->
+
+<!-- SPECFORGE_ERR1055_1057_COMPACTION_BRIDGE_CLOSURE:START -->
+#### ERR-1055 / ERR-1057 Compaction bridge 关闭证据（2026-08-31）
+
+- Accepted ADR-012 是该链路的直接权威：Plugin 必须桥接官方 `experimental.session.compacting`，checkpoint 前重新注册项目，使用 Daemon session identity，等待有界确认，记录诊断且不得阻断 OpenCode compaction。
+- Daemon 当前 `HTTPServer` 与 `RecoverySubsystem` 是现役消费者/owner；因此初始“删除 stale test”的解释已撤回，测试未删除。
+- 当前 Thin Plugin 已恢复最小传输闭环：不保存业务状态、不执行 Write Guard；诊断位置按后续 current user-root 权威收敛为 `~/.specforge/runtime/compaction-bridge.jsonl`，不恢复旧 OpenCode `sf-user` runtime root。
+- Compaction 专属 `6 pass / 0 fail`、Scope Gate Thin Plugin `3 pass / 0 fail`、ingest nonblocking `5 pass / 0 fail`、Daemon build 通过；current release manifest 重建为 candidate `step6d4`，六表面 formal precheck 与 109 文件隔离安装再次通过。
+- HTTP unit 36 项统一 handshake parent ENOENT 已转归 ERR-1058 / ERR-887，不属于本桥接产品路径，未通过创建真实用户目录隐藏。
+
+```text
+ERR1055_STATUS=CLOSED_ADR012_REQUIRED_BRIDGE_RESTORED
+ERR1057_STATUS=CLOSED_PREMATURE_ATTRIBUTION_CORRECTED_WITH_AUTHORITY
+COMPACTION_PLUGIN_TESTS=6_PASS_0_FAIL
+THIN_PLUGIN_SCOPE_TESTS=3_PASS_0_FAIL
+INGEST_NONBLOCKING_TESTS=5_PASS_0_FAIL
+DAEMON_CORE_BUILD=PASS
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d4
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+ISOLATED_INSTALL_FILES=109_VERIFIED
+ERR1058_STATUS=OPEN_ATTRIBUTED_TO_ERR887
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1055,ERR-1057
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1055_1057_COMPACTION_BRIDGE_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1059_INSTALLER_INVENTORY_CANDIDATE_PATCH_CONTEXT:START -->
+### ERR-1059：Owner inventory candidate ID 更新补丁上下文不匹配
+
+- **分类**：`TOOL_EXECUTION_ERROR / PATCH_CONTEXT_MISMATCH`
+- **事实证据**：尝试把 inventory 中 candidate `step6d3` 更新为 `step6d4` 时，`apply_patch` 找不到预期整行并在写入前拒绝；可能因 Markdown 自动换行位置与补丁假设不同。
+- **影响**：目标 inventory 未发生本次部分写入；其他已完成代码、测试与 ledger 记录不受影响。
+- **正确做法**：先精确定位 candidate ID 所在行，再用最小 token 替换；不得假设段落换行。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1059_PATCH_RESULT=REJECTED_BEFORE_WRITE
+ERR1059_PARTIAL_WRITE=NO
+ERR1059_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1059
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1059_INSTALLER_INVENTORY_CANDIDATE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1059_CLOSURE:START -->
+#### ERR-1059 关闭证据（2026-08-31）
+
+精确定位实际换行后，仅替换 candidate token，owner inventory 已对齐 `main-45a0cfee-working-tree-step6d4`；没有改动段落的架构语义。
+
+```text
+ERR1059_STATUS=CLOSED_EXACT_LINE_PATCHED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1059
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1059_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1060_CLOSED_SPEC_MIGRATION_RECOVERY_EXPECTED_RED:START -->
+### ERR-1060：Closed Spec Migration Git recovery 退出合同按计划变红
+
+- **分类**：`EXPECTED_TEST_FIRST_FAILURE / LEGACY_RECOVERY_PHYSICAL_EXIT`
+- **事实证据**：current-release 物理退出合同为 `6 pass / 1 fail`；首个失败准确命中 `sf-git-branch-create.ts`，其中仍包含 recovery mode、旧 workflow 判断、专属 Gate proof、`git_delivery_recovery.json` 写入和复用分支逻辑。ToolDispatcher/current P1/Write Guard 其他六项继续通过。
+- **影响**：证明 ERR-1049 是当前通用 Git Tool 中真实可达的 legacy compatibility branch，而非单纯 stale test。测试没有 Git、部署或 Runtime 真相源副作用。
+- **正确做法**：保留通用 branch create 的 work item、语义分支确认、clean-tree 与 git_context 行为；删除只服务已退出 spec_migration 的 wrapper args、handler branch、project-governance helper/consumer 与旧源码断言。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1060_TARGET_RESULT=6_PASS_1_EXPECTED_FAIL
+ERR1060_FIRST_RESIDUAL=sf-git-branch-create.ts
+ERR1060_CURRENT_GENERIC_BRANCH_CREATE=PRESERVE
+ERR1060_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1060
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1060_CLOSED_SPEC_MIGRATION_RECOVERY_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1061_BROAD_RECOVERY_SCAN_TRUNCATED:START -->
+### ERR-1061：Closed Spec Migration recovery 组合取证输出被截断
+
+- **分类**：`TOOL_EXECUTION_ERROR / BROAD_SCAN_OUTPUT_TRUNCATED`
+- **事实证据**：把完整 `git status` 与五个文件的上下文搜索合并为一次命令，返回 `Warning: truncated output`（原始 15,342 tokens / 817 lines）；因此该输出不能证明搜索范围完整。
+- **影响**：只读取证不完整；没有文件写入，不能据此删除任何逻辑。
+- **正确做法**：保留 Git preflight 的独立结论，随后按文件和精确行段分批读取完整源码，再实施最小删除。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1061_GIT_BRANCH=main
+ERR1061_HEAD=45a0cfee54306a3f29a8ca06dfa827b385b25e50
+ERR1061_SCAN_COMPLETE=NO
+ERR1061_WRITE_SIDE_EFFECT=NO
+ERR1061_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1061
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1061_BROAD_RECOVERY_SCAN_TRUNCATED:END -->
+
+<!-- SPECFORGE_ERR1049_ERR1060_ERR1061_CLOSURE:START -->
+#### ERR-1049 / ERR-1060 / ERR-1061 关闭证据（2026-08-31）
+
+- 发布边界矩阵是当前直接权威：`spec_migration` workflow 为 `REMOVE`，不支持恢复旧 workflow 活动状态；通用 Git Tool 中的 closed Spec Migration recovery 因而是 legacy compatibility，不是当前能力。
+- `sf_git_branch_create` 已恢复为唯一通用职责：确认语义分支名后创建分支并写 `git_context`，默认要求干净工作区；wrapper 不再暴露恢复参数。
+- Project Governance 已移除三个旧 recovery helper，以及 merge 前/后对 `git_delivery_recovery.json` 的兼容读取；专属于该恢复合同的旧源码断言测试已退出。
+- 精确目标生产搜索为零；current-release registry `7 pass`、unborn Git bootstrap `5 pass`、Daemon build、六表面 formal precheck、109 文件隔离安装均通过。
+
+```text
+ERR1049_STATUS=CLOSED_LEGACY_SPEC_MIGRATION_BRANCH_RECOVERY_REMOVED
+ERR1060_STATUS=CLOSED_EXPECTED_RED_TO_7_PASS
+ERR1061_STATUS=CLOSED_PRECISE_SEGMENTED_EVIDENCE_COMPLETED
+TARGETED_PRODUCTION_RECOVERY_REFERENCES=0
+CURRENT_RELEASE_REGISTRY_TESTS=7_PASS_0_FAIL
+GENERIC_GIT_BOOTSTRAP_TESTS=5_PASS_0_FAIL
+DAEMON_CORE_BUILD=PASS
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d5
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+ISOLATED_INSTALL_FILES=109_VERIFIED
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1049,ERR-1060,ERR-1061
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1049_ERR1060_ERR1061_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1062_WINDOWS_RG_GLOB_REPEATED:START -->
+### ERR-1062：Windows `rg` 再次把 `**` 当作路径参数
+
+- **分类**：`TOOL_EXECUTION_ERROR / REPEATED_CLASS_ERR1053`
+- **事实证据**：命令 `rg ... packages/**/tests --glob '*.test.ts'` 在 Windows 返回 `os error 123`；与 ERR-1053 相同，PowerShell 没有把该路径展开，`rg` 将其作为非法 Windows 路径。
+- **影响**：仅第二段辅助测试搜索失败；`user-level-paths.ts` 已完整读取，没有写入副作用，也不影响已确认的 HTTP handshake 根因。
+- **正确做法**：从 `packages` 目录根执行搜索并仅使用 `--glob` 过滤；不得再次在位置参数中使用 `**`。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1062_REPEATED_CLASS=ERR-1053
+ERR1062_WRITE_SIDE_EFFECT=NO
+ERR1062_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1062
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1062_WINDOWS_RG_GLOB_REPEATED:END -->
+
+<!-- SPECFORGE_ERR1063_BROAD_ERR887_HISTORY_SCAN_TRUNCATED:START -->
+### ERR-1063：ERR-887 跨治理文件历史搜索输出被截断
+
+- **分类**：`TOOL_EXECUTION_ERROR / BROAD_HISTORY_SCAN_OUTPUT_TRUNCATED`
+- **事实证据**：同时搜索 ledger、progress、handoff 的 ERR-887 上下文返回 `Warning: truncated output`；历史重复状态行过多，输出未到达原始定义。
+- **影响**：不能用该输出决定 ERR-887 是否关闭；HTTP `36 pass` 的独立测试证据不受影响，没有写入副作用。
+- **正确做法**：只在错误账本内用标题/marker 精确定位原始 ERR-887 区块，再读取有限行段。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1063_HISTORY_SCAN_COMPLETE=NO
+ERR1063_HTTP_TARGET_RESULT=36_PASS_0_FAIL
+ERR1063_WRITE_SIDE_EFFECT=NO
+ERR1063_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1063
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1063_BROAD_ERR887_HISTORY_SCAN_TRUNCATED:END -->
+
+<!-- SPECFORGE_ERR1058_ERR1062_ERR1063_CLOSURE:START -->
+#### ERR-1058 / ERR-1062 / ERR-1063 关闭证据（2026-08-31）
+
+- HTTP test 的唯一失败前置已修复：测试为每个 `DaemonConfig` mock 当前 handshake 路径到同一个临时根，并创建 `.specforge/runtime`；产品的 `~/.specforge` 权威与 `HandshakeManager` 行为未修改。
+- HTTP unit 从统一 ENOENT 的 36 fail 恢复为 `36 pass / 0 fail`；输出逐项证明 handshake 只在临时目录写入并清理。
+- Windows `rg` 搜索已改为目录根加 `--glob`；ERR-887 历史已用 ledger marker 加有限行段完整读取。ERR-887 原始 StateManager 测试隔离项仍开放，不能因 HTTP 子项通过而关闭。
+
+```text
+ERR1058_STATUS=CLOSED_HTTP_TEST_HANDSHAKE_ROOT_ISOLATED
+ERR1062_STATUS=CLOSED_SEARCH_PATTERN_CORRECTED
+ERR1063_STATUS=CLOSED_LEDGER_MARKER_AND_BOUNDED_RANGE_READ
+HTTP_UNIT_TESTS=36_PASS_0_FAIL
+HTTP_PRODUCT_CODE_CHANGED=NO
+REAL_USER_ROOT_WRITE=NO
+ERR887_STATUS=OPEN_ORIGINAL_STATEMANAGER_TEST_ISOLATION_REMAINS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1058,ERR-1062,ERR-1063
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1058_ERR1062_ERR1063_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR887_CLOSURE:START -->
+#### ERR-887 关闭证据（2026-08-31）
+
+- 原始 `StateManager.test.ts` 已从 Enterprise 用户目录消费者改为临时项目根上的现役 Personal project-local runtime；cleanup 精确删除该临时根。
+- 并发测试继续使用实现 `IPathResolver` 的 `TestPathResolver`，全部落入临时目录；两个文件中的旧 `intake`、非当前 workflow 和非当前阶段夹具已对齐 `feature_spec` 当前生命周期。
+- 两文件从 ERR-887 初始 `11 pass / 5 fail` 恢复为 `16 pass / 0 fail`；目标旧消费者搜索为零，Daemon build 通过，没有用户目录写入。
+
+```text
+ERR887_STATUS=CLOSED_TEST_PATH_AND_CURRENT_LIFECYCLE_CONSUMERS_ALIGNED
+STATEMANAGER_TESTS=7_PASS_0_FAIL
+STATE_CONCURRENCY_TESTS=9_PASS_0_FAIL
+ERR887_LEGACY_TEST_CONSUMER_REFERENCES=0
+DAEMON_CORE_BUILD=PASS
+REAL_USER_ROOT_WRITE=NO
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-887
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR887_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1064_USERLEVEL_OWNER_SCAN_TRUNCATED:START -->
+### ERR-1064：用户级 persistent owner 全仓组合搜索输出被截断
+
+- **分类**：`TOOL_EXECUTION_ERROR / BROAD_OWNER_SCAN_OUTPUT_TRUNCATED`
+- **事实证据**：一次搜索同时覆盖 scripts、CLI、Daemon、service-management 与 setup lib 的多类写入词，返回 `Warning: truncated output`（16,187 tokens / 609 lines）。
+- **影响**：只能证明存在多个异构 owner，不能证明 owner 枚举完整；不得据此注册 descriptor 或关闭 ERR-1013，没有写入副作用。
+- **正确做法**：按 handshake、installer metadata/journal/backup、observability、Work Item authority、governance evidence 六个 owner 族分别读取明确生产入口和消费者。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1064_OWNER_SCAN_COMPLETE=NO
+ERR1064_DESCRIPTOR_CHANGE_AUTHORIZED=NO
+ERR1064_WRITE_SIDE_EFFECT=NO
+ERR1064_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1064
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1064_USERLEVEL_OWNER_SCAN_TRUNCATED:END -->
+
+<!-- SPECFORGE_ERR1065_HANDSHAKE_WRITER_CONSUMER_DRIFT:START -->
+### ERR-1065：Handshake writer 缺少 V6/CLI 必填 `bound_to`
+
+- **分类**：`CONTRACT_CONFLICT / USER_LEVEL_HANDSHAKE_OWNER`
+- **事实证据**：V6 design 的 `HandshakeFile@1.0` 明确包含 `bound_to: "127.0.0.1" | "0.0.0.0"`；CLI `AuthManager` 对其做必填校验且 `DaemonClient` 用它选择 host；Daemon `HandshakeManager.writeHandshake()` 当前不写该字段。当前 HTTP server 只监听本机，因此当前合法值可由一手运行配置确定为 `127.0.0.1`。
+- **影响**：Daemon 真实产生的 handshake 无法通过 CLI 自己的当前合同，不能登记为已对齐 descriptor，也不能声称 start→handshake→client 闭环。
+- **正确做法**：先增加 current-release writer/consumer 合同回归，再让 Daemon writer 与共享 handshake 类型写出 `bound_to='127.0.0.1'`；保留已有且被 task-artifact 客户端消费的扩展字段，不恢复旧文件名或路径。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1065_AUTHORITY=V6_DESIGN_HANDSHAKE_FILE_1_0
+ERR1065_WRITER=DAEMON_HANDSHAKE_MANAGER
+ERR1065_CURRENT_CONSUMER=CLI_AUTH_MANAGER_AND_DAEMON_CLIENT
+ERR1065_MISSING_FIELD=bound_to
+ERR1065_CURRENT_BIND=127.0.0.1
+ERR1065_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1065
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1065_HANDSHAKE_WRITER_CONSUMER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1066_HANDSHAKE_CONSUMER_SCAN_TRUNCATED:START -->
+### ERR-1066：Handshake 扩展字段消费者搜索关键词过宽导致截断
+
+- **分类**：`TOOL_EXECUTION_ERROR / BROAD_CONSUMER_SCAN_OUTPUT_TRUNCATED`
+- **事实证据**：搜索同时包含通用字段名 `startedAt`，返回 `Warning: truncated output`（17,256 tokens / 908 lines）；结果混入大量无关计时字段。
+- **影响**：不能证明扩展字段消费者枚举完整；但 V6、Daemon writer、CLI `bound_to` 必填消费者的独立窄证据完整，没有写入副作用。
+- **正确做法**：后续只搜索唯一字段 `artifact_contract_versions` 或精确 handshake 文件，不再用通用时间字段做全仓组合搜索。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1066_CONSUMER_SCAN_COMPLETE=NO
+ERR1066_BOUND_TO_EVIDENCE_COMPLETE=YES
+ERR1066_WRITE_SIDE_EFFECT=NO
+ERR1066_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1066
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1066_HANDSHAKE_CONSUMER_SCAN_TRUNCATED:END -->
+
+<!-- SPECFORGE_ERR1067_HANDSHAKE_BOUND_TO_EXPECTED_RED:START -->
+### ERR-1067：Handshake `bound_to` 合同按计划变红
+
+- **分类**：`EXPECTED_TEST_FIRST_FAILURE / HANDSHAKE_WRITER_CONTRACT`
+- **事实证据**：ownership-safe handshake 回归为 `3 pass / 1 fail`；唯一失败断言期望 `bound_to='127.0.0.1'`，实际为 `undefined`，其他 ownership cleanup 行为全部通过。
+- **影响**：直接复现 ERR-1065 writer/consumer 漂移；测试只写临时目录，无用户目录、Git 或部署副作用。
+- **正确做法**：在 Daemon `HandshakeFile` 与 writer 中增加当前本机绑定字段，并同步现役 service/plugin handshake 类型；不得修改测试期望或给 CLI 加缺省值隐藏缺字段。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1067_TARGET_RESULT=3_PASS_1_EXPECTED_FAIL
+ERR1067_EXPECTED=bound_to_127.0.0.1
+ERR1067_ACTUAL=undefined
+ERR1067_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1067
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1067_HANDSHAKE_BOUND_TO_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1068_HANDSHAKE_TYPE_FIXTURE_MISSED:START -->
+### ERR-1068：Daemon HandshakeFile 类型夹具漏同步 `bound_to`
+
+- **分类**：`TEST_FIXTURE_DRIFT / IMPACT_SCOPE_MISS`
+- **事实证据**：Handshake 行为测试 `4 pass`、CLI Auth `48 pass`、service-management build 通过；Daemon `tsc` 唯一失败为 `src/types.test.ts(59,11) TS2741`，构造的 `HandshakeFile` 缺少新必填 `bound_to`。
+- **影响**：产品 writer 已对齐，但 Daemon build 尚不能报告通过；没有运行期、用户目录、Git 或部署副作用。
+- **正确做法**：同步该 current schema 类型夹具为 `bound_to='127.0.0.1'`，复跑类型测试与 Daemon build；不得把生产字段改回 optional。
+- **类防护**：`EXP-001`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1068_HANDSHAKE_BEHAVIOR_TESTS=4_PASS_0_FAIL
+ERR1068_CLI_AUTH_TESTS=48_PASS_0_FAIL
+ERR1068_SERVICE_MANAGEMENT_BUILD=PASS
+ERR1068_DAEMON_BUILD=FAIL_TS2741_ONE_FIXTURE
+ERR1068_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1068
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1068_HANDSHAKE_TYPE_FIXTURE_MISSED:END -->
+
+<!-- SPECFORGE_ERR1069_RELEASE_MANIFEST_STDOUT_TRUNCATED:START -->
+### ERR-1069：Step6d6 release manifest 生成器 stdout 被截断
+
+- **分类**：`TOOL_EXECUTION_ERROR / OUTPUT_BUDGET_TRUNCATED`
+- **事实证据**：manifest producer exit 0 并写出 candidate `main-45a0cfee-working-tree-step6d6`，但 6,781-token / 691-line stdout 因输出预算返回 `Warning: truncated output`。
+- **影响**：不能从终端文本确认完整 item 集；磁盘 manifest 是否完整必须独立解析并由 formal precheck 验证。生成文件已存在，没有部署到用户目录。
+- **正确做法**：读取 manifest 的 candidate、complete、files 数量及 handshake hash 等有限摘要，再执行六表面 formal precheck 和隔离安装；不再输出全部 items。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1069_PRODUCER_EXIT=0
+ERR1069_STDOUT_COMPLETE=NO
+ERR1069_DISK_MANIFEST_VERIFIED=NOT_YET
+ERR1069_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1069
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1069_RELEASE_MANIFEST_STDOUT_TRUNCATED:END -->
+
+<!-- SPECFORGE_ERR1070_RELEASE_MANIFEST_SHAPE_ASSUMPTION:START -->
+### ERR-1070：Step6d6 manifest 摘要使用了错误字段路径
+
+- **分类**：`EVIDENCE_INTERPRETATION_ERROR / MANIFEST_SHAPE_ASSUMPTION`
+- **事实证据**：未先读取顶层结构就查询 `$m.installSet.files` 与 `runtime:handshake` artifact，输出 `installFiles=0`、`handshakeHash` 为空；candidate/complete 和 `runtime:specforged` hash 可读，证明文件不是空 manifest。
+- **影响**：`0` 不是合法安装文件数证据，不能用于发布判断；没有文件写入或部署副作用。
+- **正确做法**：先列举 manifest 顶层键与数组键，按真实 schema 读取安装文件统计；最终以 formal precheck 和隔离安装为准。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1070_INSTALL_FILES_ZERO_IS_VALID_EVIDENCE=NO
+ERR1070_MANIFEST_EMPTY=NO
+ERR1070_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1070
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1070_RELEASE_MANIFEST_SHAPE_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1071_INSTALLED_THIN_CLIENT_LEGACY_HANDSHAKE_PATH:START -->
+### ERR-1071：已安装 Tool thin client 仍读取旧 `sf-user/runtime/handshake.json`
+
+- **分类**：`RUNTIME_DEFECT / INSTALLED_CLIENT_HANDSHAKE_PATH_DRIFT / TEST_CONSUMER_DRIFT`
+- **事实证据**：当前 V6 与 `HandshakeManager` 唯一路径为 `~/.specforge/runtime/daemon.sock.json`；release install set 中 Tool wrappers 导入 `setup/userlevel-opencode/tools/lib/thin-client.ts`，该文件只搜索 `<OpenCode config>/sf-user/runtime/handshake.json`。`v11-install-deployment-consistency.test.ts` 仍正向断言旧 `sf-user` handshake 路径。
+- **影响**：hash/size 安装事务可通过，但安装后的受控 Tool 无法发现当前 Daemon；不能据此宣称真实 runtime handshake 闭环。属于 ERR-1013 用户级 owner split 的首个可达消费者缺陷。
+- **正确做法**：thin client 只读取 `~/.specforge/runtime/daemon.sock.json`，同步当前 `schema_version/bound_to` 类型和必要验证；测试改为拒绝旧路径并断言唯一当前路径。禁止双路径兼容或缺字段默认值。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-016`、`EXP-017`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1071_AUTHORITY_PATH=~/.specforge/runtime/daemon.sock.json
+ERR1071_WRITER_PATH=CURRENT
+ERR1071_INSTALLED_THIN_CLIENT_PATH=LEGACY_SF_USER
+ERR1071_TEST_CONSUMER=STALE_POSITIVE_LEGACY_ASSERTION
+ERR1071_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1071
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1071_INSTALLED_THIN_CLIENT_LEGACY_HANDSHAKE_PATH:END -->
+
+<!-- SPECFORGE_ERR1072_INSTALLED_THIN_CLIENT_PATH_EXPECTED_RED:START -->
+### ERR-1072：Installed thin client 当前 handshake 路径合同按计划变红
+
+- **分类**：`EXPECTED_TEST_FIRST_FAILURE / CURRENT_HANDSHAKE_PATH`
+- **事实证据**：安装部署一致性回归为 `7 pass / 1 fail`；唯一失败表明 thin client 不含 `~/.specforge/runtime/daemon.sock.json`，收到源码明确只含旧 `sf-user/runtime/handshake.json`。
+- **影响**：精确复现 ERR-1071；只读源码测试，无文件系统或部署副作用。
+- **正确做法**：修改现役 thin client 的单一路径、字段类型和验证，再复跑同一合同；不得修改 expected current path 或增加旧路径 fallback。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1072_TARGET_RESULT=7_PASS_1_EXPECTED_FAIL
+ERR1072_FAILURE=INSTALLED_THIN_CLIENT_CURRENT_HANDSHAKE_PATH_ABSENT
+ERR1072_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1072
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1072_INSTALLED_THIN_CLIENT_PATH_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1073_HANDSHAKE_PATH_TEST_CONSUMER_DRIFT:START -->
+### ERR-1073：相邻 handshake 测试仍把旧 `sf-user` 路径当作权威
+
+- **分类**：`TEST_CONSUMER_DRIFT / USER_ROOT_ISOLATION_DEFECT`
+- **事实证据**：`scripts/tests/daemon-handshake-path.test.ts` 的文件说明和全部正向断言要求 OpenCode `sf-user/runtime/handshake.json`；`http-server-handleOpenCodeEvent.test.ts` 只隔离 `OPENCODE_CONFIG_DIR` 并断言相同旧路径。当前 V6/共享 path producer 明确唯一使用 `~/.specforge/runtime/daemon.sock.json`。
+- **影响**：前者会把正确产品实现判错，后者可能在回归中触碰真实用户根；不能通过恢复旧路径满足测试。
+- **正确做法**：路径治理测试改为断言 Personal/Enterprise 同一当前路径且不受 OpenCode config env 影响；HTTP 测试 mock `DaemonConfig.getHandshakeFile()` 到临时 runtime 并断言临时路径。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-043`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1073_PRODUCT_PATH=~/.specforge/runtime/daemon.sock.json
+ERR1073_STALE_TEST_FILES=2
+ERR1073_LEGACY_COMPATIBILITY_ACTION=FORBIDDEN
+ERR1073_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1073
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1073_HANDSHAKE_PATH_TEST_CONSUMER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1064_TO_ERR1073_HANDSHAKE_SLICE_CLOSURE:START -->
+#### ERR-1064～ERR-1073 Handshake owner slice 关闭证据（2026-09-01）
+
+- V6 handshake authority、Daemon writer、CLI 和安装后的 Tool thin client 已对齐唯一 `~/.specforge/runtime/daemon.sock.json@1.0`；当前 loopback writer 明确写 `bound_to=127.0.0.1`，thin client 严格验证 schema、port、token、bind 与 task-artifact contract。
+- 旧 `sf-user/runtime/handshake.json` 不作为 fallback；两份正向旧路径测试已改为当前路径治理与临时根隔离。
+- 验证：Handshake/Daemon types `10 pass`，CLI Auth `48 pass`，安装一致性 + HTTP event `14 pass`，scripts path governance `3 pass`，Daemon/service-management build 通过。
+- Candidate `step6d7` 的 release/runtime surface 完整，六表面 formal precheck 与 109 文件隔离安装通过；未部署真实用户目录。
+- ERR-1013 仍开放：service-management reader 的完整字段 validator、installer metadata/journal/backup、Work Item 与 governance evidence owner 尚未逐项收敛。
+
+```text
+ERR1064_STATUS=CLOSED_OWNER_SCAN_REPLACED_BY_BOUNDED_FAMILY_SLICES
+ERR1065_STATUS=CLOSED_DAEMON_WRITER_BOUND_TO_ALIGNED
+ERR1066_STATUS=CLOSED_UNIQUE_FIELD_CONSUMER_SCAN_COMPLETED
+ERR1067_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+ERR1068_STATUS=CLOSED_MISSED_TYPE_FIXTURE_ALIGNED
+ERR1069_STATUS=CLOSED_DISK_MANIFEST_AND_FORMAL_PRECHECK_VERIFIED
+ERR1070_STATUS=CLOSED_REAL_MANIFEST_KEYS_PARSED_86_ARTIFACTS_109_INSTALL_FILES
+ERR1071_STATUS=CLOSED_INSTALLED_THIN_CLIENT_CURRENT_PATH_AND_VALIDATOR
+ERR1072_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+ERR1073_STATUS=CLOSED_STALE_PATH_TESTS_ALIGNED_AND_ISOLATED
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d7
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+ISOLATED_INSTALL_FILES=109_VERIFIED
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+ERR1013_STATUS=OPEN_REMAINING_EXACT_OWNER_FAMILIES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1064,ERR-1065,ERR-1066,ERR-1067,ERR-1068,ERR-1069,ERR-1070,ERR-1071,ERR-1072,ERR-1073
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1064_TO_ERR1073_HANDSHAKE_SLICE_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1074_UNBOUNDED_GATE_OUTPUT_TRUNCATION:START -->
+### ERR-1074：经验门禁与宽范围 Git 状态合并输出导致结果被截断
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNBOUNDED_OUTPUT`
+- **事实证据**：本轮首次门禁命令虽然完整读取经验文件，但把摘要与 516 项工作区状态放在同一输出中，工具返回 `Output exceeded the available model context and was truncated`，关键门禁摘要不可复核。
+- **影响**：不能以该次输出宣告新一轮门禁完成；若直接继续，会破坏经验前置门禁的可追溯性。
+- **正确做法**：经验文件完整读取只输出长度、行数、哈希与章节标记；第三、四部分按精确行界分段读取；Git 状态单独输出 HEAD、分支、远程 HEAD、总数和受限样本。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1074_STATUS=CLOSED_BOUNDED_GATE_AND_GIT_EVIDENCE_RECOVERED
+EXPERIENCE_FILE_READ=YES
+APPLICABLE_EXPERIENCE_RULES=EXP-001,EXP-004,EXP-007,EXP-008,EXP-010,EXP-015,EXP-016,EXP-017,EXP-020,EXP-032,EXP-033,EXP-043,EXP-044,EXP-052,EXP-060
+REPEATED_ERROR_CHECK=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1074
+UNRECORDED_FAILURES=0
+BASELINE_BRANCH=main
+BASELINE_HEAD=45a0cfee54306a3f29a8ca06dfa827b385b25e50
+BASELINE_ORIGIN_MAIN=45a0cfee54306a3f29a8ca06dfa827b385b25e50
+WORKTREE_DIRTY_ENTRIES=516_PRESERVED
+```
+<!-- SPECFORGE_ERR1074_UNBOUNDED_GATE_OUTPUT_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1075_MULTI_FILE_SOURCE_OUTPUT_TRUNCATION:START -->
+### ERR-1075：多个完整源码文件合并取证再次导致输出截断
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNBOUNDED_OUTPUT_REPEAT`
+- **事实证据**：G-D2 消费者盘点命令同时输出四个源码文件和检索结果，返回 `Warning: truncated output`，原始输出约 15602 tokens、1662 行。
+- **影响**：中间文件内容不完整，不能据此冻结调用闭包或开始实现；这是 ERR-1074 同类错误的再次发生。
+- **正确做法**：源码取证限定为单文件目标函数或 `rg` 命中上下文，每次设置明确的行窗口和输出预算；文件清单与正文分离。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1075_STATUS=CLOSED_SOURCE_READING_SPLIT_TO_SINGLE_FILE_BOUNDED_WINDOWS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1075
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1075_MULTI_FILE_SOURCE_OUTPUT_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1076_WINDOWS_RG_GLOB_REPEAT:START -->
+### ERR-1076：再次把 Windows 通配符路径直接传给 `rg`
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / WINDOWS_GLOB_MISUSE_REPEAT`
+- **事实证据**：命令 `rg ... packages/service-management/tests/unit/*.test.ts` 返回 OS error 123；PowerShell/Windows 未把该通配路径展开为文件集合。
+- **影响**：测试消费者扫描未完成，不能把命令前半部分成功误报为完整闭包。
+- **正确做法**：把目录作为 `rg` 路径参数，并使用 `-g '*.test.ts'` 限定文件；不得再次传递含 `*` 的 Windows 路径。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1076_STATUS=CLOSED_DIRECTORY_PLUS_RG_G_FILTER_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1076
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1076_WINDOWS_RG_GLOB_REPEAT:END -->
+
+<!-- SPECFORGE_ERR1077_SERVICE_HANDSHAKE_VALIDATOR_EXPECTED_RED:START -->
+### ERR-1077：service-management 缺少共享 HandshakeFile 运行时校验器
+
+- **分类**：`EXPECTED_RED / RUNTIME_CONTRACT_VALIDATION_MISSING`
+- **事实证据**：独立回归 `handshake-validator.test.ts` 在完整当前握手正例上失败，错误为 `parseHandshakeFile is not a function`；三个生产消费者当前均直接 `JSON.parse` 后类型断言。
+- **影响**：TypeScript 类型没有运行时保护，畸形或不完整握手可能进入 HTTP 连接、健康检查和生命周期事件链。
+- **正确做法**：在 HandshakeFile 类型责任层提供唯一运行时 parser，并由 reconnecting client、health checker、lifecycle emitter 共同消费；不得建立兼容旧格式分支。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-022`、`EXP-031`、`EXP-044`、`EXP-052`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1077_EXPECTED_RED=1_FAILED_10_PASS
+ERR1077_FAILURE=parseHandshakeFile_is_not_a_function
+ERR1077_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1077
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1077_SERVICE_HANDSHAKE_VALIDATOR_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1078_SERVICE_PACKAGE_USERINFO_ENOMEM:START -->
+### ERR-1078：service-management 包级回归在 `os.userInfo()` 上出现 8 个 ENOMEM
+
+- **分类**：`REGRESSION_ATTRIBUTION_PENDING / ENVIRONMENT_OR_FIXTURE_FAILURE`
+- **事实证据**：完整包测试共 270 项，262 pass、8 fail；失败仅来自 `nssm-service-manager.test.ts` 5 项和 `systemd-service-manager.test.ts` 3 项，堆栈均为 `uv_os_get_passwd returned ENOMEM`，位置是两份 precheck 的 `os.userInfo().username`。
+- **影响**：G-D2 定向测试虽已通过，但包级回归尚不能宣告绿色；也不能在未归因前修改产品或测试。
+- **正确做法**：执行 Bun/Node 最小 `os.userInfo()` 探针、分别单文件复跑，并对照本轮握手变更集；必要时再做同环境基线归因。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-009`、`EXP-011`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-052`、`EXP-057`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1078_PACKAGE_RESULT=262_PASS_8_FAIL
+ERR1078_FAILED_FILES=nssm-service-manager.test.ts,systemd-service-manager.test.ts
+ERR1078_FAILURE=uv_os_get_passwd_ENOMEM
+ERR1078_STATUS=IDENTIFIED_ATTRIBUTION_PENDING
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1078
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1078_SERVICE_PACKAGE_USERINFO_ENOMEM:END -->
+
+<!-- SPECFORGE_ERR1079_BUN_ZOD_NAMED_IMPORT_FAILURE:START -->
+### ERR-1079：共享握手校验器的 Zod named import 在 Bun 运行时为 undefined
+
+- **分类**：`PATCH_INTRODUCED_RUNTIME_COMPATIBILITY_FAILURE`
+- **事实证据**：Bun 直接启动完整 service-management Vitest 时，4 个 suite 在加载 `handshake.ts` 时失败，错误为 `undefined is not an object (evaluating 'z.object')`；编译与经 Node shim 启动的定向测试此前通过。
+- **影响**：新增 validator 在项目正式 Bun 运行边界不可用，当前补丁不能交付。
+- **正确做法**：核对仓库实际 Zod 导入惯例，改用 Bun 与 TypeScript 均验证的模块导入形式，并复跑定向、完整包和 build。
+- **类防护**：`EXP-002`、`EXP-004`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-019`、`EXP-052`、`EXP-055`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1079_BUN_FULL_SUITE=4_FAILED_SUITES_203_PASS
+ERR1079_FAILURE=z_named_import_undefined
+ERR1079_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1079
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1079_BUN_ZOD_NAMED_IMPORT_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1080_POWERSHELL_RG_QUOTE_FAILURE:START -->
+### ERR-1080：PowerShell 中组合 Zod import 检索正则转义失败
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / SHELL_QUOTING`
+- **事实证据**：组合单双引号的 `rg` 表达式被解析为未闭合字符类并退出；同一命令后的 Bun namespace import 最小探针成功。
+- **影响**：仓库惯例扫描未完成，但未修改产品文件；不能把最小探针代替完整消费者检索。
+- **正确做法**：拆成简单固定字符串 `rg -F` 检索，避免在 PowerShell 命令字符串中嵌套复杂正则引号。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1080_STATUS=CLOSED_COMPLEX_REGEX_REPLACED_BY_FIXED_STRING_SCANS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1080
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1080_POWERSHELL_RG_QUOTE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1081_VERBOSE_FULL_SUITE_OUTPUT_TRUNCATION:START -->
+### ERR-1081：service-management 完整回归的属性测试 stdout 导致证据输出截断
+
+- **分类**：`VALIDATION_EVIDENCE_DEFECT / VERBOSE_TEST_OUTPUT`
+- **事实证据**：Bun 完整回归退出 0，末尾显示 16 files、270 tests 全通过且随后 `tsc` 通过，但属性测试反复输出资源释放日志，使总输出约 165302 tokens 并触发通道截断。
+- **影响**：执行结果为绿色，但原始证据不可完整审阅，不能直接作为最终回归证据。
+- **正确做法**：以同一 Bun、同一完整测试集合使用 `--silent --reporter=dot` 重跑并保存精简完整摘要；长日志不与 build 合并输出。
+- **类防护**：`EXP-007`、`EXP-015`、`EXP-019`、`EXP-032`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1081_INITIAL_RESULT=16_FILES_270_TESTS_PASS_BUILD_PASS
+ERR1081_EVIDENCE=TRUNCATED_BY_VERBOSE_STDOUT
+ERR1081_STATUS=IDENTIFIED_CONCISE_RERUN_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1081
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1081_VERBOSE_FULL_SUITE_OUTPUT_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1082_CROSS_PACKAGE_VITEST_RUNNER_MISAPPLICATION:START -->
+### ERR-1082：把 service-management 的 Bun Vitest 启动方式错误推广到相邻包
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / RUNNER_BOUNDARY_MISAPPLICATION`
+- **事实证据**：daemon-core 在收集阶段因既有 Zod named import under Bun 失败；CLI Vitest 1.6.1/tinypool 在收集前因 Bun worker channel 缺少 `unref()` 失败，均未执行目标测试。
+- **影响**：相邻回归尚无结果；不能把 runner 兼容失败解释为产品回归。
+- **正确做法**：测试启动方式按包和实际工具链固定：service-management 为解决已证实 Node 24 `userInfo` 环境缺陷使用 Bun 直接运行；daemon-core 与 CLI 使用此前已验证的 `bun x vitest`。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-052`、`EXP-055`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1082_PRODUCT_TESTS_EXECUTED=0_IN_FAILED_ATTEMPT
+ERR1082_STATUS=CLOSED_PACKAGE_SPECIFIC_RUNNERS_RESTORED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1082
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1082_CROSS_PACKAGE_VITEST_RUNNER_MISAPPLICATION:END -->
+
+<!-- SPECFORGE_ERR1083_INSTALLER_OWNER_SCAN_OUTPUT_TRUNCATION:START -->
+### ERR-1083：安装器 metadata owner 扫描再次混合跨仓命中与完整 helper 输出
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNBOUNDED_OUTPUT_REPEAT`
+- **事实证据**：安装器 owner 命令输出约 11644 tokens、730 行并被截断；扫描混入历史 migration、setup 副本和其他 package backup，同时输出两个完整 helper。
+- **影响**：可见命中只能作为线索，不能据此完成当前 release 的精确 owner 分类。
+- **正确做法**：先由 release manifest 与 import graph限定当前入口为 `scripts/sf-installer.ts` 和其 `scripts/lib` 直接依赖；再按 `install.json`、journal、lock、backup 四个 owner 单独读取目标定义与消费者。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-032`、`EXP-040`、`EXP-046`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1083_STATUS=CLOSED_CURRENT_RELEASE_REACHABILITY_AND_OWNER_WINDOWS_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1083
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1083_INSTALLER_OWNER_SCAN_OUTPUT_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1084_MULTI_FILE_DOC_PATCH_CONTEXT_MISMATCH:START -->
+### ERR-1084：多文件治理文档补丁因 owner inventory 换行上下文不匹配而整体失败
+
+- **分类**：`DOCUMENTATION_PATCH_DEFECT / CONTEXT_MISMATCH`
+- **事实证据**：`apply_patch` 报告无法找到包含 candidate 句子的预期行；该句在实际文件中跨物理行，整批补丁未应用。
+- **影响**：G-D2 产品与验证已完成，但 error closure、owner inventory、progress 和 handoff 尚未同步；不能宣告状态对账完成。
+- **正确做法**：重新读取精确目标段，按文件和稳定表格行/状态 marker 拆分补丁；每个补丁后立即检索验证。
+- **类防护**：`EXP-007`、`EXP-015`、`EXP-019`、`EXP-032`、`EXP-033`、`EXP-043`、`EXP-045`、`EXP-060`、`EXP-063`、`EXP-065`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1084_PARTIAL_WRITE=NO
+ERR1084_STATUS=CLOSED_SPLIT_EXACT_CONTEXT_PATCH_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1084
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1084_MULTI_FILE_DOC_PATCH_CONTEXT_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1077_TO_ERR1081_SERVICE_HANDSHAKE_CLOSURE:START -->
+#### ERR-1077～ERR-1081 Service handshake validator 关闭证据（2026-09-01）
+
+- `HandshakeFile@1.0` 的 service-management 类型责任层现在提供唯一运行时 parser；reconnecting client、health checker、lifecycle emitter 三个生产消费者均通过该 parser，缺字段或畸形值在 HTTP 前失败关闭。
+- 独立 validator/consumer/reconnecting 回归 62 pass；service-management 完整包使用 Bun 实际运行边界 16 files、270 pass；service-management build 与 root deterministic build 通过；Daemon handshake 10 pass、CLI Auth 48 pass。
+- Node 24 `os.userInfo()` ENOMEM 已由 Node/Bun 最小探针和同文件 runner 对照归为环境启动差异；未修改 NSSM/systemd 产品或测试。Zod Bun import 失败通过移除新增运行时依赖、改为无依赖 parser 解决。
+- Candidate `main-45a0cfee-working-tree-step6d8` 的六表面 formal precheck 与 109 文件隔离安装通过；未部署真实用户目录。
+
+```text
+ERR1077_STATUS=CLOSED_SHARED_RUNTIME_PARSER_CONSUMED_BY_ALL_THREE_SERVICE_READERS
+ERR1078_STATUS=CLOSED_ENVIRONMENT_RUNNER_ATTRIBUTED_NODE24_USERINFO_ENOMEM_BUN_FULL_SUITE_PASS
+ERR1079_STATUS=CLOSED_RUNTIME_DEPENDENCY_REMOVED_MANUAL_CURRENT_CONTRACT_PARSER_PASS
+ERR1080_STATUS=CLOSED_FIXED_STRING_SCAN_USED
+ERR1081_STATUS=CLOSED_CONCISE_FULL_SUITE_EVIDENCE_16_FILES_270_TESTS_PASS
+SERVICE_HANDSHAKE_TARGET_TESTS=62_PASS
+SERVICE_MANAGEMENT_FULL_TESTS=270_PASS
+DAEMON_HANDSHAKE_TESTS=10_PASS
+CLI_AUTH_TESTS=48_PASS
+ROOT_BUILD=PASS
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d8
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+ISOLATED_INSTALL_FILES=109_VERIFIED
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+ERR1013_STATUS=OPEN_INSTALLER_METADATA_WORK_ITEM_GOVERNANCE_AND_OBSERVABILITY_OWNER_FAMILIES_REMAIN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1077,ERR-1078,ERR-1079,ERR-1080,ERR-1081
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1077_TO_ERR1081_SERVICE_HANDSHAKE_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1085_UNUSED_INSTALL_JSON_EXPECTED_RED:START -->
+### ERR-1085：当前 installer 仍写入无人消费的 `install.json` 重复投影
+
+- **分类**：`EXPECTED_RED / BUILT_NOT_ENABLED_DUPLICATE_PROJECTION`
+- **事实证据**：隔离安装回归读取到实际 `install.json@1.0` 而非 ENOENT；源码边界回归命中 `path.join(userLevelDir, "install.json")`。当前 version/verify/install authority 均消费 `specforge-manifest.json`，未发现 `install.json` 生产读取者。
+- **影响**：同一安装身份和版本事实被双写，形成无用途的第二投影及未来漂移面。
+- **正确做法**：在 ADR-013 无旧兼容边界下删除 install、upgrade 的写入和 uninstall 的删除分支；保留唯一 `specforge-manifest.json`，以隔离真实安装和静态生产面回归共同证明。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-031`、`EXP-044`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1085_EXPECTED_RED=2_FAIL_1_PASS
+ERR1085_CURRENT_READERS=ZERO
+ERR1085_AUTHORITATIVE_INSTALL_IDENTITY=specforge-manifest.json
+ERR1085_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1085
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1085_UNUSED_INSTALL_JSON_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1085_UNUSED_INSTALL_JSON_CLOSURE:START -->
+#### ERR-1085 `install.json` 重复投影关闭证据（2026-09-01）
+
+- 当前 installer 的 install/upgrade 不再写 `install.json`，uninstall 不再维护该无人消费文件；安装身份、版本、文件 hash/size 只由 `specforge-manifest.json` 提供。
+- 预期红灯 2 fail/1 pass 已转为 3/3 pass；Scope Gate release/installer 10 pass、Daemon installer/registry 15 pass、CLI installer-root 5 pass。
+- Candidate `main-45a0cfee-working-tree-step6d9` 六表面 formal precheck 与 109 文件隔离安装通过；隔离根确认无 `install.json`，未部署真实用户目录。
+
+```text
+ERR1085_STATUS=CLOSED_DUPLICATE_INSTALL_JSON_PROJECTION_REMOVED
+AUTHORITATIVE_INSTALL_IDENTITY=specforge-manifest.json
+INSTALL_JSON_CURRENT_PRODUCTION_REFERENCES=0
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d9
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+ISOLATED_INSTALL_FILES=109_VERIFIED
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+ERR1013_STATUS=OPEN_UPGRADE_JOURNAL_LOCK_BACKUP_AND_REMAINING_GOVERNANCE_OWNER_FAMILIES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1085
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1085_UNUSED_INSTALL_JSON_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1086_BROAD_JOURNAL_AUTHORITY_SEARCH_TRUNCATION:START -->
+### ERR-1086：journal 权威检索误纳入大型历史设计备份导致输出截断
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / AUTHORITY_SCOPE_TOO_BROAD`
+- **事实证据**：跨 `.kiro/specs docs/design docs/adr` 的 journal/rollback 搜索输出约 12918 tokens、335 行并被截断，主要噪声来自架构实施方案历史备份和无关治理回滚内容。
+- **影响**：不能用不完整命中决定 installer journal schema 或恢复语义。
+- **正确做法**：当前契约只读取 V6 requirements/design、ADR-010、ADR-013、current release owner inventory、当前 installer 入口和直接测试；历史备份不作为当前 authority consumer。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-040`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1086_STATUS=CLOSED_CURRENT_AUTHORITY_ALLOWLIST_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1086
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1086_BROAD_JOURNAL_AUTHORITY_SEARCH_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1087_EXPERIENCE_FULL_BODY_OUTPUT_TRUNCATION_REPEAT:START -->
+### ERR-1087：再次把完整超大经验台账正文直接回传导致门禁输出截断
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNBOUNDED_OUTPUT_REPEAT`。
+- **事实证据**：本轮首次命令以 `Get-Content -Raw` 回传约 2.8M 字符经验文件，工具报告原始输出约 823957 tokens 并截断；该输出不能证明第三、四部分已完整进入可审查上下文。
+- **影响**：首次门禁无效，产品修改必须暂停；若继续会重复 ERR-1074 的证据缺陷。
+- **正确做法**：经验文件只用原始读取取得长度和章节边界，第三、四部分按精确行区间、每次不超过 220 行分别回传；Git 摘要保持独立、定界输出。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1087_STATUS=CLOSED_BOUNDED_SECTION_READS_COMPLETED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1087
+UNRECORDED_FAILURES=0
+EXPERIENCE_FILE_READ=YES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1087_EXPERIENCE_FULL_BODY_OUTPUT_TRUNCATION_REPEAT:END -->
+
+<!-- SPECFORGE_ERR1088_ADR010_FILENAME_ASSUMPTION:START -->
+### ERR-1088：权威读取沿用不存在的 ADR-010 文件名
+
+- **分类**：`EVIDENCE_DEFECT / PATH_ASSUMPTION`。
+- **事实证据**：读取 `docs/adr/ADR-010-user-level-installation-manifest.md` 返回 ENOENT；仓库文件清单确认真实路径为 `docs/adr/ADR-010-installer-manifest-canonical-location.md`。
+- **影响**：首次 authority allowlist 未完整读取 ADR-010，不能据此冻结升级日志契约。
+- **正确做法**：所有权威路径先由 `rg --files` 取得真实文件名，再读取目标文件；不得根据标题含义或历史记忆构造路径。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`、`EXP-065`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1088_STATUS=CLOSED_REAL_ADR_PATH_DISCOVERED_FROM_REPOSITORY
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1088
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1088_ADR010_FILENAME_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1089_UPGRADE_JOURNAL_TRANSACTION_EXPECTED_RED:START -->
+### ERR-1089：当前安装器缺少独立升级日志事务责任层
+
+- **分类**：`EXPECTED_RED / RUNTIME_TRANSACTION_CONTRACT_MISSING`。
+- **事实证据**：独立回归 `current-upgrade-journal-transaction.test.ts` 收集阶段唯一失败为无法加载 `scripts/lib/upgrade-journal`；当前 `sf-installer.ts` 仍内联无 schema、非 write-ahead 的 journal 与不完整回滚。
+- **影响**：当前升级发生进程中断时，新增文件、已删除孤儿和未落盘 mutation 无法形成可信恢复闭环。
+- **正确做法**：建立安装器当前升级专属 helper，提供 `schema_version=1.0` parser、原子 write-ahead mutation、逆序 replace/add/remove 回滚和未完成事务恢复；由 `cmdUpgrade()` 唯一消费。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-010`、`EXP-013`、`EXP-015`、`EXP-017`、`EXP-024`、`EXP-031`、`EXP-044`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1089_EXPECTED_RED=1_FAILED_SUITE_0_TESTS_EXECUTED
+ERR1089_FAILURE=upgrade-journal_module_missing
+ERR1089_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1089
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1089_UPGRADE_JOURNAL_TRANSACTION_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1090_INSTALLER_SOURCE_ASSERTION_VERBOSE_DIFF:START -->
+### ERR-1090：安装器生产接线红灯打印整份源码 diff
+
+- **分类**：`VALIDATION_EVIDENCE_DEFECT / VERBOSE_ASSERTION_OUTPUT`。
+- **事实证据**：`toContain` 失败将完整 `sf-installer.ts` 作为 Received 输出；真实结果为 7 项中 1 fail、6 pass，但日志被整份安装器正文淹没。
+- **影响**：红灯语义仍有效，但输出不可快速审查，也会增加后续截断风险。
+- **正确做法**：大文件静态边界断言先计算 `source.includes(expected)` 布尔值，再对布尔值断言；失败只报告缺失条件，不回显整份源码。
+- **类防护**：`EXP-007`、`EXP-010`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1090_INITIAL_RESULT=1_FAIL_6_PASS
+ERR1090_STATUS=IDENTIFIED_ASSERTION_OUTPUT_REPAIR_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1090
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1090_INSTALLER_SOURCE_ASSERTION_VERBOSE_DIFF:END -->
+
+<!-- SPECFORGE_ERR1091_RECONCILE_JOURNAL_OWNER_CONFLICT_EXPECTED_RED:START -->
+### ERR-1091：Reconcile 仍把当前升级事务日志当作旧遗留文件删除
+
+- **分类**：`EXPECTED_RED / PERSISTENT_FILE_OWNER_CONFLICT`。
+- **事实证据**：独立负向回归 8 项中 1 fail、7 pass；`scripts/lib/generated_files.ts` 同时包含 `upgrade_journal.json` 和 `UPGRADE_JOURNAL_FILENAME`，并由 Reconcile 清理路径消费。
+- **影响**：Reconcile 可能删除 installer 的活动恢复权威或失败诊断证据，破坏单一 owner 与 crash recovery。
+- **正确做法**：从 Reconcile generated-files 清单中移除 upgrade journal；journal 的创建、验证、恢复、提交与诊断保留全部归当前 installer transaction owner。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-031`、`EXP-044`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1091_EXPECTED_RED=1_FAIL_7_PASS
+ERR1091_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1091
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1091_RECONCILE_JOURNAL_OWNER_CONFLICT_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1092_COMBINED_GOVERNANCE_READ_TRUNCATION:START -->
+### ERR-1092：合并读取 progress、handoff、inventory 与 ledger 再次导致输出截断
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNBOUNDED_OUTPUT_REPEAT`。
+- **事实证据**：合并命令原始输出约 29977 tokens、1988 行并被截断；progress 的全历史状态块占据主要输出。
+- **影响**：不能据此精确更新最新状态块；若继续使用可见片段，可能误改历史记录或遗漏当前 marker。
+- **正确做法**：每份治理文档独立读取；progress/handoff 只以最后一个精确标题及其固定行窗为目标，inventory 只读目标表格行，ledger 只追加新 closure block。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-043`、`EXP-060`、`EXP-065`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1092_STATUS=CLOSED_SINGLE_DOCUMENT_BOUNDED_WINDOWS_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1092
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1092_COMBINED_GOVERNANCE_READ_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1089_TO_ERR1092_UPGRADE_JOURNAL_CLOSURE:START -->
+#### ERR-1089～ERR-1092 Upgrade journal transaction 关闭证据（2026-09-01）
+
+- 当前 installer 通过 `scripts/lib/upgrade-journal.ts` 唯一拥有 `upgrade_journal.json@1.0`；严格 parser、原子 write-ahead mutation、逆序 replace/add/remove 回滚、未完成事务恢复和成功清理已接入 `cmdUpgrade()`。
+- User Manifest 也进入同一事务；新增文件失败时删除，既有替换和被删除孤儿从绑定 backup 恢复。Reconcile 已退出 journal 生命周期，不再删除活动恢复权威或诊断证据。
+- 独立 journal 回归 8 pass；隔离真实 install、success upgrade、forced-failure rollback 3 pass；Scope Gate installer/release 19 pass、Daemon 12 pass、CLI 13 pass；16-package root build 与 step6d10 formal precheck 通过。
+- 109-file immutable install set 未因 transient journal 增长；真实用户级部署未执行。ERR-1013 仍开放，后续精确收敛 installer lock、backup 和其余 owner families。
+
+```text
+ERR1089_STATUS=CLOSED_CURRENT_SCHEMA_AND_TRANSACTION_HELPER_ENABLED
+ERR1090_STATUS=CLOSED_BOOLEAN_STATIC_ASSERTIONS_USE_BOUNDED_OUTPUT
+ERR1091_STATUS=CLOSED_RECONCILE_JOURNAL_DELETE_REMOVED
+ERR1092_STATUS=CLOSED_SINGLE_DOCUMENT_BOUNDED_WINDOWS_USED
+UPGRADE_JOURNAL_SCHEMA_VERSION=1.0
+UPGRADE_JOURNAL_TARGET_TESTS=8_PASS
+ISOLATED_INSTALL_UPGRADE_ROLLBACK_TESTS=3_PASS
+SCOPE_GATE_INSTALLER_RELEASE_TESTS=20_PASS
+DAEMON_INSTALLER_DEPLOYMENT_TESTS=12_PASS
+DAEMON_GOVERNANCE_DOCUMENT_CONSUMER_TESTS=44_PASS
+CLI_CURRENT_ROOT_LAYOUT_TESTS=13_PASS
+ROOT_BUILD=PASS_16_PACKAGES
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d10
+RELEASE_INSTALL_FILES=109
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+ERR1013_STATUS=OPEN_INSTALLER_LOCK_BACKUP_AND_REMAINING_OWNER_FAMILIES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1089,ERR-1090,ERR-1091,ERR-1092
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1089_TO_ERR1092_UPGRADE_JOURNAL_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1093_ROLLED_BACK_JOURNAL_RETRY_DEADLOCK:START -->
+### ERR-1093：已回滚 journal 在每次升级重试时永久阻断
+
+- **分类**：`EXPECTED_RED / RECOVERY_LIFECYCLE_DEADLOCK`。
+- **事实证据**：独立回归 8 项中 1 fail、7 pass；中断事务第一次恢复为 `rolled_back` 后，第二次 `recoverInterruptedUpgrade()` 实际返回 `already_rolled_back` 且文件仍存在，而期望是清理已解决终态。
+- **影响**：用户无法从合法完成的回滚继续升级，只能手工删除恢复权威，违反可恢复和受控 owner 边界。
+- **正确做法**：第一次发现 `in_progress/failed` 必须回滚并停止本次升级；下一次读取已验证的 `rolled_back` 终态时由 journal owner 删除 transient 文件并允许当前重试继续。畸形或未完成输入仍失败关闭。
+- **类防护**：`EXP-004`、`EXP-006`、`EXP-010`、`EXP-013`、`EXP-015`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1093_EXPECTED_RED=1_FAIL_7_PASS
+ERR1093_ACTUAL=already_rolled_back_JOURNAL_RETAINED
+ERR1093_EXPECTED=cleared_rolled_back_JOURNAL_REMOVED
+ERR1093_STATUS=IDENTIFIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1093
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1093_ROLLED_BACK_JOURNAL_RETRY_DEADLOCK:END -->
+
+<!-- SPECFORGE_ERR1093_ROLLED_BACK_JOURNAL_RETRY_CLOSURE:START -->
+#### ERR-1093 rolled-back journal 重试关闭证据（2026-09-01）
+
+- 第一次读取 `in_progress/failed` journal 仍执行完整回滚并停止本次 upgrade；下一次重试读取经过验证的 `rolled_back` 终态后，由同一 owner 删除 transient journal 并继续升级。
+- 独立 recovery 回归证明第二次读取返回 `cleared_rolled_back` 且文件消失；真实 installer 故障链证明用户字节恢复、阻断原因解除后同一根目录可再次 upgrade 成功，无需手工修改恢复权威。
+
+```text
+ERR1093_STATUS=CLOSED_VALIDATED_TERMINAL_CLEARED_AND_RETRY_CONTINUES
+UPGRADE_JOURNAL_TARGET_TESTS=8_PASS
+ISOLATED_FAILURE_ROLLBACK_AND_RETRY=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1093
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1093_ROLLED_BACK_JOURNAL_RETRY_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1094_POWERSHELL_TRAILING_WHITESPACE_REGEX_FALSE_POSITIVE:START -->
+### ERR-1094：PowerShell 尾随空白检查把字母 `t` 误作制表符
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / REGEX_ESCAPE_FALSE_POSITIVE`。
+- **事实证据**：单引号正则 `'[ `t]+$'` 不展开 PowerShell 制表符转义，字符类实际包含空格、反引号和字母 `t`；因此新 helper 被误报 4 行、ledger 被误报 2633 行，而 `git diff --check` 退出 0。
+- **影响**：该 trailing-whitespace 计数不可作为格式结论，必须废弃并重跑。
+- **正确做法**：跨 PowerShell/.NET regex 边界使用明确 `[ \x09]+$`，并保留 `git diff --check` 作为独立交叉证据。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1094_STATUS=CLOSED_EXPLICIT_HEX_TAB_REGEX_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1094
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1094_POWERSHELL_TRAILING_WHITESPACE_REGEX_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR1095_RG_GLOB_AFTER_END_OF_OPTIONS:START -->
+### ERR-1095：`rg -g` 被放在 `--` 后导致消费者扫描不完整
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / ARGUMENT_ORDER`。
+- **事实证据**：命令把 `-- scripts -g '*.ts'` 传给 `rg`，返回 `-g` 路径不存在及 Windows error 123；只有命令中其他固定检索产生了部分命中。
+- **影响**：不能用该次结果宣告 installer lock 的 import/call consumer 闭包完整。
+- **正确做法**：所有选项必须位于 `--` 前，使用 `rg -n -g '*.ts' <pattern> -- scripts`；import、call、test 三类消费者分别定界扫描。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1095_STATUS=CLOSED_RG_OPTIONS_BEFORE_END_OF_OPTIONS_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1095
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1095_RG_GLOB_AFTER_END_OF_OPTIONS:END -->
+
+<!-- SPECFORGE_ERR1096_INSTALLER_LOCK_OWNER_EXPECTED_RED:START -->
+### ERR-1096：当前 installer lock 缺少唯一版本化 owner 合同
+
+- **分类**：`EXPECTED_RED / LOCK_OWNER_CONTRACT_CONFLICT`。
+- **事实证据**：独立 `current-installer-lock-owner.test.ts` 共 6 fail；Reconcile 仍导入第二 `lock.ts`，`parseInstallLock` 不存在，活动实现不返回 handle、不消费测试 options、同机活 PID stale 规则无法验证，畸形锁被删除后成功接管。
+- **影响**：同一 `.specforge.lock` 存在两个实现与不一致 API，磁盘字段没有 current schema，模块级 lock id 使所有权不可局部绑定，损坏输入可能被当作可删除 stale 状态。
+- **正确做法**：保留 `install_lock.ts` 为唯一 owner，提供 `schema_version=1.0` parser、独立 handle、原子 heartbeat、PID/hostname stale 判断和畸形 fail-closed；installer/Reconcile 共同消费并删除第二实现。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-010`、`EXP-013`、`EXP-015`、`EXP-017`、`EXP-031`、`EXP-044`、`EXP-060`。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1096_EXPECTED_RED=6_FAIL_0_PASS
+ERR1096_STATUS=CLOSED_SINGLE_CURRENT_LOCK_OWNER_ENABLED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1096
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1096_INSTALLER_LOCK_OWNER_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1097_LOCK_EXPECTED_RED_FIXED_TIMEOUT:START -->
+### ERR-1097：lock 红灯把未来 options 传给旧 API 导致两项固定超时
+
+- **分类**：`VALIDATION_DEFECT / EXPECTED_RED_TIMEOUT`。
+- **事实证据**：旧 `acquireInstallLock()` 静默忽略第三参数，两项 stale 测试继续使用 30 秒产品默认值并分别触发 Vitest 10 秒超时；整份红灯耗时约 20 秒。
+- **影响**：产品缺口仍成立，但红灯不够快速、独立、可重复。
+- **正确做法**：实现后的 current API 必须正式声明 options 并由毫秒级定向测试证明；不得再次用会被旧签名静默忽略的未来参数制造长等待红灯。
+- **类防护**：`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-019`、`EXP-055`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1097_STATUS=CLOSED_NO_LONG_TIMEOUT_RERUN_BEFORE_IMPLEMENTATION
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1097
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1097_LOCK_EXPECTED_RED_FIXED_TIMEOUT:END -->
+
+<!-- SPECFORGE_ERR1098_TYPESCRIPT_EXPLICIT_FILES_REQUIRE_IGNORE_CONFIG:START -->
+### ERR-1098：TypeScript 显式文件检查未声明 `--ignoreConfig`
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / TYPESCRIPT_CLI_CONTRACT`。
+- **事实证据**：目标 `tsc --noEmit <files>` 在执行源码诊断前返回 TS5112：存在 tsconfig 时显式文件列表必须使用 `--ignoreConfig`。
+- **影响**：本次命令没有产生 lock/reconcile 类型结论，不能误报产品编译失败。
+- **正确做法**：对无专用 tsconfig 的精确脚本闭包使用当前 TypeScript 支持的 `--ignoreConfig`，并显式声明 target/module/moduleResolution/types；随后仍执行根正式构建。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-015`、`EXP-019`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1098_STATUS=CLOSED_TARGET_TSC_REQUIRES_IGNORE_CONFIG
+PRODUCT_DIAGNOSTICS_EXECUTED=0_IN_FAILED_ATTEMPT
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1098
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1098_TYPESCRIPT_EXPLICIT_FILES_REQUIRE_IGNORE_CONFIG:END -->
+
+<!-- SPECFORGE_ERR1099_RECONCILE_SCAFFOLD_TYPE_BASELINE:START -->
+### ERR-1099：Reconcile 未启用骨架的完整 import graph 存在多组既有类型债务
+
+- **分类**：`HISTORICAL_DEBT / BUILT_NOT_ENABLED_TYPE_BASELINE`。
+- **事实证据**：显式脚本 TypeScript 检查展开 `reconcile.ts` 后，scripts 与 setup 镜像共同报告 ExecutionResult 字段缺失、planner summary/diagnostics 不一致、executor 类型/路径导出缺失、state 可选值和 Bun global types 等多组错误；没有诊断指向新增 InstallLockInfo schema、handle API 或 installer 调用。
+- **影响**：Reconcile 不能被描述为当前可发布能力，也不能用其全量历史债务阻断现役 installer lock 的隔离验证；本 lock 子步骤不得扩张为整个 Reconcile 重写。
+- **正确做法**：现役 `sf-installer.ts → install_lock.ts` 使用 Bun types 单独编译；Reconcile 只验证唯一 lock import 和第二实现删除。其完整去留按 ADR-013 的 built-not-enabled 模块处置另行闭环。
+- **类防护**：`EXP-001`、`EXP-008`、`EXP-009`、`EXP-011`、`EXP-015`、`EXP-016`、`EXP-019`、`EXP-052`、`EXP-060`。
+- **状态**：`IDENTIFIED_BASELINE_CLASSIFIED`。
+
+```text
+ERR1099_STATUS=OPEN_BUILT_NOT_ENABLED_RECONCILE_DISPOSITION_REQUIRED
+LOCK_PATCH_ATTRIBUTED_TYPE_ERRORS=0
+CURRENT_INSTALLER_TARGET_TYPECHECK=REQUIRED_SEPARATELY_WITH_BUN_TYPES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1099
+UNRECORDED_FAILURES=0
+```
+<!-- SPECFORGE_ERR1099_RECONCILE_SCAFFOLD_TYPE_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1100_EXPERIENCE_FULL_OUTPUT_TRUNCATION_REPEAT:START -->
+### ERR-1100：经验台账完整正文再次被无界回传并截断
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNBOUNDED_OUTPUT_REPEAT`。
+- **事实证据**：本轮门禁命令把约 2.8M 字符经验台账与 Git 状态一起回传，工具明确报告原始输出约 836544 tokens 且被截断；该次输出不能证明文件已完整进入可审查上下文。
+- **影响**：该次门禁证据无效，必须暂停产品验证；仓库产品文件未因此改变。
+- **正确做法**：保留文件长度与章节边界证据，按有界区间读取必读经验章节；Git 摘要与经验读取分离。不得再回传完整超大正文。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1100_STATUS=CLOSED_BOUNDED_GATE_READ_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1100
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1100_EXPERIENCE_FULL_OUTPUT_TRUNCATION_REPEAT:END -->
+
+<!-- SPECFORGE_ERR1101_BUN_TYPE_LIBRARY_UNAVAILABLE:START -->
+### ERR-1101：现役安装器显式类型检查引用了工作区不存在的 `bun` 类型库
+
+- **分类**：`VALIDATION_ENVIRONMENT_DEFECT / TYPE_LIBRARY_UNAVAILABLE`。
+- **事实证据**：`tsc --ignoreConfig ... --types node,bun scripts/sf-installer.ts scripts/lib/install_lock.ts` 在源码诊断前返回 TS2688：Cannot find type definition file for `bun`。
+- **影响**：该次执行没有产生产品类型结论，不能把环境准备缺口归因为 lock 补丁错误。
+- **正确做法**：先核对目标文件是否消费 Bun global；若不消费，只使用已安装的 Node types 做精确边界检查，并继续以 Bun Vitest 与正式根构建验证真实运行器边界。不得为一次检查临时引入未冻结依赖。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-011`、`EXP-015`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1101_STATUS=CLOSED_TARGET_FILES_REQUIRE_NO_BUN_GLOBAL_TYPES
+PRODUCT_DIAGNOSTICS_EXECUTED=0_IN_FAILED_ATTEMPT
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1101
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1101_BUN_TYPE_LIBRARY_UNAVAILABLE:END -->
+
+<!-- SPECFORGE_ERR1102_INSTALLER_GRAPH_TYPECHECK_BASELINE:START -->
+### ERR-1102：误判现役安装器不消费 Bun global，精确检查展开既有脚本类型债务
+
+- **分类**：`VALIDATION_ASSUMPTION_DEFECT / ACTIVE_SCRIPT_TYPE_BASELINE`。
+- **事实证据**：源码检索直接命中 `sf-installer.ts` 的 `Bun.main/import.meta.path`；仅使用 Node types 的检查进一步命中 `discovery.ts` 的 Bun global，以及 `manifest.ts` 的 ManagedComponentType/ExecutionResult 既有诊断。没有诊断指向新增 lock schema、parser、handle 或 owner 调用。
+- **影响**：该次入口图检查无法作为 lock 补丁的独立类型结论，也不能把现有脚本图债务静默归零。
+- **正确做法**：新增 `install_lock.ts` 使用可用 Node types 独立检查；现役入口继续由 Bun 下的独立 lock/installer 集成回归与正式根构建验证。完整 scripts type baseline 另行归属，禁止在 lock 子步骤临时加依赖或扩张修复范围。
+- **类防护**：`EXP-001`、`EXP-002`、`EXP-007`、`EXP-008`、`EXP-009`、`EXP-011`、`EXP-015`、`EXP-016`、`EXP-052`、`EXP-060`。
+- **状态**：`IDENTIFIED_BASELINE_CLASSIFIED`。
+
+```text
+ERR1102_STATUS=OPEN_ACTIVE_INSTALLER_SCRIPT_TYPE_BASELINE_DISPOSITION_REQUIRED
+LOCK_PATCH_ATTRIBUTED_TYPE_ERRORS=0
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1102
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1102_INSTALLER_GRAPH_TYPECHECK_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1103_RELEASE_MANIFEST_OUTPUT_SHAPE_ASSUMPTION:START -->
+### ERR-1103：发布清单生成输出被按错误 JSON 形状压缩解析
+
+- **分类**：`VALIDATION_EVIDENCE_DEFECT / OUTPUT_SCHEMA_ASSUMPTION`。
+- **事实证据**：`build-release-manifest.ts` 退出 0，但临时 PowerShell 摘要对顶层读取 `candidate_id/install_files/runtime_entrypoints/validators`，结果打印空 ID 与三个计数 1；该形状不符合生成器正式输出或落盘 manifest schema。
+- **影响**：生成动作已发生且不可误报为未执行，但该摘要不能证明候选 ID、发布 ID或 109-file 集合。
+- **正确做法**：不重复生成；直接定位生成器声明的正式落盘路径，读取真实 JSON 根键和生产者 schema，再按实际字段生成有界摘要并运行正式 precheck。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-015`、`EXP-017`、`EXP-044`、`EXP-084`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1103_STATUS=CLOSED_FORMAL_MANIFEST_SCHEMA_MUST_BE_READ_FROM_ARTIFACT
+MANIFEST_GENERATION_ACTION=PERFORMED
+MANIFEST_OUTPUT_SUMMARY=INVALID_NOT_PRODUCT_FAILURE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1103
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1103_RELEASE_MANIFEST_OUTPUT_SHAPE_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1104_RG_EXCLUDE_EXPRESSION_AS_PATH:START -->
+### ERR-1104：把 ripgrep 排除表达式作为 Windows 路径参数传入
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / ARGUMENT_ORDER_REPEAT`。
+- **事实证据**：候选检索把 `:(exclude)docs/...` 放在 `--` 后，ripgrep 返回 Windows error 123；命令虽有其他命中，但检索范围不完整。
+- **影响**：该次输出不能证明 step6d11 正式产物不存在或位置完整。
+- **正确做法**：使用位于 `--` 前的 `-g '!docs/rule/...'` glob 排除，或只扫描生成器声明的精确路径；不得混用 Git pathspec 与 ripgrep 路径参数。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-015`、`EXP-019`、`EXP-020`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1104_STATUS=CLOSED_RG_GLOB_EXCLUSION_REQUIRED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1104
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1104_RG_EXCLUDE_EXPRESSION_AS_PATH:END -->
+
+<!-- SPECFORGE_ERR1095_TO_ERR1104_INSTALLER_LOCK_CLOSURE:START -->
+#### ERR-1095～ERR-1104 Installer lock owner 关闭证据（2026-09-01）
+
+- `scripts/lib/install_lock.ts` 已成为 `.specforge.lock@1.0` 唯一实现；installer 三个命令与 Reconcile 投影消费同一 contract，两个 `lock.ts` 重复实现已移除。
+- 独立回归证明严格 parser、互斥、handle-local release、过期 handle 不删除替代 owner、同机活 PID 不误回收、死亡 PID 可回收和畸形输入不删除；新增 helper 的精确 TypeScript 检查通过。
+- Scope Gate installer/release 27 pass、Daemon installer 12 pass、CLI current-root/layout 53 pass、16-package root build 通过；ERR-1105 修复后的不可变 candidate `main-45a0cfee-working-tree-step6d12` 包含 85 个发布产物与 109 个安装文件，六表面 formal precheck 通过。
+- ERR-1099 与 ERR-1102 分别保留 Reconcile built-not-enabled 去留和 active scripts 既有类型 baseline，不在本锁子步骤扩大修复。真实用户级部署、提交和推送均未执行。
+
+```text
+ERR1095_STATUS=CLOSED_RG_ARGUMENT_ORDER_CORRECTED
+ERR1096_STATUS=CLOSED_SINGLE_CURRENT_LOCK_OWNER_ENABLED
+ERR1097_STATUS=CLOSED_FAST_CURRENT_OPTIONS_TESTS_USED
+ERR1098_STATUS=CLOSED_IGNORE_CONFIG_USED
+ERR1100_STATUS=CLOSED_BOUNDED_GATE_READ_USED
+ERR1101_STATUS=CLOSED_NO_UNFROZEN_TYPE_DEPENDENCY_ADDED
+ERR1103_STATUS=CLOSED_FORMAL_MANIFEST_ARTIFACT_SCHEMA_VERIFIED
+ERR1104_STATUS=CLOSED_RG_GLOB_EXCLUSION_RULE_RECORDED
+ERR1099_STATUS=OPEN_BUILT_NOT_ENABLED_RECONCILE_DISPOSITION_REQUIRED
+ERR1102_STATUS=OPEN_ACTIVE_INSTALLER_SCRIPT_TYPE_BASELINE_DISPOSITION_REQUIRED
+INSTALLER_LOCK_TARGET_TESTS=7_PASS
+SCOPE_GATE_INSTALLER_RELEASE_TESTS=27_PASS
+DAEMON_INSTALLER_DEPLOYMENT_TESTS=12_PASS
+CLI_CURRENT_ROOT_LAYOUT_TESTS=53_PASS
+ROOT_BUILD=PASS_16_PACKAGES_BUN_1_4_0
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d12
+RELEASE_ARTIFACTS=85
+RELEASE_INSTALL_FILES=109
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+COMMIT_PUSH_DEPLOY=NONE
+ERR1013_STATUS=OPEN_INSTALLER_BACKUP_AND_REMAINING_OWNER_FAMILIES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1095,ERR-1096,ERR-1097,ERR-1098,ERR-1100,ERR-1101,ERR-1103,ERR-1104
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1095_TO_ERR1104_INSTALLER_LOCK_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1105_INSTALL_LOCK_HEARTBEAT_RELEASE_RACE:START -->
+### ERR-1105：installer lock 心跳与 release 并发产生未处理异步写失败
+
+- **分类**：`RUNTIME_DEFECT / ASYNC_OWNERSHIP_RACE`。
+- **事实证据**：Scope Gate 7 文件的 27 项断言全部通过，但 Vitest 捕获 1 个 unhandled rejection 并退出 1；栈直接指向 `install_lock.ts` 的 interval heartbeat 调用 `atomicWriteFile()`，Windows rename 返回 EPERM。最近相关测试在 handle release 后结束。
+- **影响**：仅 `clearInterval()` 不能等待已经开始的 heartbeat；释放和后续 owner 写入可与旧心跳竞争，而且 rejected async interval callback 没有受控消费者。G-D3C 不能关闭。
+- **正确做法**：心跳 owner 必须暴露可等待的 stop；release 先阻止新 tick 并等待在途 tick 收口，再校验磁盘 owner 后 unlink。心跳失败必须被 controller 捕获并使 handle 无效，禁止产生未处理 Promise。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-013`、`EXP-015`、`EXP-031`、`EXP-051`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1105_STATUS=CLOSED_HEARTBEAT_STOP_AWAITS_INFLIGHT_WRITE
+FAILING_RUN=27_ASSERTIONS_PASS_1_UNHANDLED_REJECTION_EXIT_1
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1105
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1105_INSTALL_LOCK_HEARTBEAT_RELEASE_RACE:END -->
+
+<!-- SPECFORGE_ERR1105_INSTALL_LOCK_HEARTBEAT_RELEASE_RACE_CLOSURE:START -->
+#### ERR-1105 installer lock 心跳释放竞态关闭证据（2026-09-01）
+
+- heartbeat controller 现在捕获内部失败、停止后续 tick，并暴露可等待的在途写；handle `release()` 先停止并等待 heartbeat，再校验 lock id、PID 与 hostname 后删除自己的锁。
+- 过期 handle 不删除替代 owner 的独立回归通过；目标锁 7 pass，完整 Scope Gate installer/release 27 pass 且无 unhandled errors。
+- helper TypeScript、Daemon 12、CLI 53、16-package root build 均通过；修复后的 candidate `main-45a0cfee-working-tree-step6d12` 为 85 artifacts / 109 install files，formal precheck passed。
+
+```text
+ERR1105_STATUS=CLOSED_HEARTBEAT_STOP_AWAITS_INFLIGHT_WRITE
+INSTALLER_LOCK_TARGET_TESTS=7_PASS_NO_UNHANDLED_ERRORS
+SCOPE_GATE_INSTALLER_RELEASE_TESTS=27_PASS_NO_UNHANDLED_ERRORS
+TARGET_TYPESCRIPT=PASS
+DAEMON_INSTALLER_DEPLOYMENT_TESTS=12_PASS
+CLI_CURRENT_ROOT_LAYOUT_TESTS=53_PASS
+ROOT_BUILD=PASS_16_PACKAGES_BUN_1_4_0
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d12
+RELEASE_ARTIFACTS=85
+RELEASE_INSTALL_FILES=109
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+COMMIT_PUSH_DEPLOY=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1105
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1105_INSTALL_LOCK_HEARTBEAT_RELEASE_RACE_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1106_INSTALLER_BACKUP_AUTHORITY_AND_LIFECYCLE_CONFLICT:START -->
+### ERR-1106：installer backup 路径、完整性和生命周期未形成当前事务闭环
+
+- **分类**：`CONTRACT_CONFLICT / RECOVERY_EVIDENCE_LIFECYCLE_DEFECT`。
+- **事实证据**：V6 requirements/design 规定用户级正式备份根为 `~/.specforge/backups/`，而现役 installer 调用通用 `backupFile()` 写入 `.backup/*.bak.<秒级时间戳>`；journal 只记录 `backup_path`，不记录备份内容哈希；`commitUpgradeJournal()`、success recovery 与 rolled-back retry 均只删除 journal，不清理事务备份。
+- **影响**：当前写入偏离正式目录；备份可能同秒覆盖、无法证明未损坏，也无法按事务精确清理，成功升级和已解决回滚会永久累积恢复文件。
+- **正确做法**：由 current upgrade journal owner 创建 `backups/<transaction-session>/` 内的原子、hash-bound 备份；mutation 绑定该事务目录及备份 SHA-256；回滚在改动任何目标前验证全部备份；成功提交清理事务目录，失败/首次回滚保留证据，下一次读取已验证 rolled_back 终态时清理。不得读取或迁移旧 `.backup`。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-006`、`EXP-010`、`EXP-013`、`EXP-015`、`EXP-017`、`EXP-023`、`EXP-024`、`EXP-031`、`EXP-044`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1106_STATUS=CLOSED_CURRENT_TRANSACTION_BACKUP_OWNER_ENABLED
+AUTHORITATIVE_BACKUP_ROOT=backups/
+LEGACY_DOT_BACKUP_COMPATIBILITY=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1106
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1106_INSTALLER_BACKUP_AUTHORITY_AND_LIFECYCLE_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1107_INSTALLER_BACKUP_LIFECYCLE_EXPECTED_RED:START -->
+### ERR-1107：current installer backup 事务绑定与清理契约独立红灯
+
+- **分类**：`EXPECTED_RED / BACKUP_TRANSACTION_OWNER_MISSING`。
+- **事实证据**：`current-installer-backup-lifecycle.test.ts` 独立执行 6 fail / 0 pass；失败分别证明 installer 未消费 `createUpgradeBackup`、parser 接受旧 `.backup`、journal owner API 不存在、备份哈希预检缺失、成功清理缺失、rolled-back 重试清理缺失。
+- **影响**：ERR-1106 的六项缺口已可独立重复，未实现前不得宣告 G-D3D 完成。
+- **正确做法**：在 `upgrade-journal.ts` 建立 transaction-scoped backup API 和生命周期；installer 全部 replace/manifest/remove 备份改为消费该 API；保持首次失败/回滚证据，只有 success 或下一次已解决重试精确清理所属 session。
+- **类防护**：`EXP-004`、`EXP-006`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-017`、`EXP-031`、`EXP-044`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1107_EXPECTED_RED=6_FAIL_0_PASS
+ERR1107_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1107
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1107_INSTALLER_BACKUP_LIFECYCLE_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1106_TO_ERR1107_INSTALLER_BACKUP_CLOSURE:START -->
+#### ERR-1106～ERR-1107 Installer backup lifecycle 关闭证据（2026-09-02）
+
+- 当前 installer 已停止消费通用 `.backup` helper；`scripts/lib/upgrade-journal.ts` 唯一创建并管理 `backups/<timestamp>-<transaction-id>/<target-path-sha256>.bak`。
+- 每个既有目标 mutation 必须同时绑定精确事务路径和 backup SHA-256；rollback 在改变任何目标前读取并验证全部备份。损坏备份失败关闭且目标字节不变。
+- success 精确清理本事务 session；首次失败/rolled_back 保留证据，下一次验证终态后清理 session 与 journal；无关 session 保留。没有旧 `.backup` 读取或迁移。
+- 独立红灯 6 fail 已转为 6 pass；journal 8、Scope Gate installer/release 33、Daemon 12、CLI 53、16-package root build 通过。Candidate `main-45a0cfee-working-tree-step6d13` 为 85 artifacts / 109 install files，formal precheck passed。
+
+```text
+ERR1106_STATUS=CLOSED_CURRENT_TRANSACTION_BACKUP_OWNER_ENABLED
+ERR1107_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+INSTALLER_BACKUP_TARGET_TESTS=6_PASS
+UPGRADE_JOURNAL_TARGET_TESTS=8_PASS
+SCOPE_GATE_INSTALLER_RELEASE_TESTS=33_PASS
+DAEMON_INSTALLER_DEPLOYMENT_TESTS=12_PASS
+CLI_CURRENT_ROOT_LAYOUT_TESTS=53_PASS
+TARGET_TYPESCRIPT=PASS
+ROOT_BUILD=PASS_16_PACKAGES_BUN_1_4_0
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step6d13
+RELEASE_ARTIFACTS=85
+RELEASE_INSTALL_FILES=109
+SIX_SURFACE_FORMAL_PRECHECK=PASS
+REAL_USERLEVEL_DEPLOYMENT=NOT_PERFORMED
+COMMIT_PUSH_DEPLOY=NONE
+ERR1013_STATUS=OPEN_WORK_ITEM_GOVERNANCE_AND_OBSERVABILITY_OWNER_FAMILIES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1106,ERR-1107
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1106_TO_ERR1107_INSTALLER_BACKUP_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1108_WORK_ITEM_AUTHORITY_SCAN_ARGUMENT_ORDER:START -->
+### ERR-1108：Work Item 权威检索的 glob 参数位于 `--` 之后，扫描结果不具备完整性
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / ARGUMENT_ORDER_REPEAT`。
+- **事实证据**：针对 `.kiro/specs` 与 `docs/rule` 的 `rg` 命令把 `-g '*.md'` 放在 `--` 之后；`rg` 将其解释为路径，输出 `-g` 不存在及 Windows error 123，并因命中错误账本的大量历史文本而截断。
+- **影响**：该次输出不能证明 Work Item 权威契约的完整范围，也不得作为 G-D4 架构结论或修改依据。
+- **正确做法**：所有选项必须置于 `--` 之前；按权威文件和精确目录执行有界检索，排除错误账本/历史噪声，并直接读取命中上下文。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1108_STATUS=CLOSED_INVALID_SCAN_REJECTED_AND_CORRECTED
+INVALID_SCAN_USED_AS_EVIDENCE=NO
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1108
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1108_WORK_ITEM_AUTHORITY_SCAN_ARGUMENT_ORDER:END -->
+
+<!-- SPECFORGE_ERR1109_WORK_ITEM_REGRESSION_PATH_NOT_FOUND:START -->
+### ERR-1109：Work Item 回归文件使用了未经验证的仓库相对路径
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNVERIFIED_TEST_PATH`。
+- **事实证据**：有界 `rg` 同时读取 `tests/close-gate-fresh04-regression.test.ts` 时返回 `os error 2`；该路径在当前仓库不存在，其他已存在目标仍产生了有效输出。
+- **影响**：缺失文件的预期内容未被核验，不能据此判断回归测试需要如何调整；本次命令也不能作为该目标集合全部成功读取的证明。
+- **正确做法**：先用 `rg --files` 按文件名定位实际路径，再读取精确上下文；保留其他明确存在文件的直接证据。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1109_STATUS=CLOSED_MISSING_PATH_REJECTED_AND_DISCOVERY_REQUIRED
+MISSING_FILE_INFERENCES=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1109
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1109_WORK_ITEM_REGRESSION_PATH_NOT_FOUND:END -->
+
+<!-- SPECFORGE_ERR1110_WORK_ITEM_TEST_BUN_TEMPDIR_EPERM:START -->
+### ERR-1110：Work Item 独立测试首次执行被 Bun tempdir 权限拒绝
+
+- **分类**：`VALIDATION_ENVIRONMENT_DEFECT / BUN_TEMPDIR_EPERM`。
+- **事实证据**：执行 `bun x vitest run packages/daemon-core/tests/unit/current-work-item-metadata-owner.test.ts` 在测试收集前退出 1，唯一输出为 `bun is unable to write files to tempdir: EPERM`。
+- **影响**：该次运行没有执行任何产品断言，既不能作为预期红灯，也不能评价实现正确性。
+- **正确做法**：禁用 Bun transpiler cache，并在需要时使用已批准的同一 Bun/Vitest 执行边界重跑；仅采纳明确的测试收集与断言结果。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-046`、`EXP-060`。
+- **状态**：`OPEN`，等待有效重跑关闭。
+
+```text
+ERR1110_STATUS=CLOSED_WORKSPACE_RUNNER_EXECUTED_ASSERTIONS
+PRODUCT_ASSERTIONS_EXECUTED=0
+WORKSPACE_TEMP_RETRY=SAME_EPERM_BEFORE_TEST_COLLECTION
+NEXT_RETRY=APPROVED_OUTSIDE_SANDBOX_SAME_BUN_VITEST_COMMAND
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1110
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1110_WORK_ITEM_TEST_BUN_TEMPDIR_EPERM:END -->
+
+<!-- SPECFORGE_ERR1111_WORK_ITEM_TEST_RUNNER_PATH_ASSUMPTION:START -->
+### ERR-1111：Work Item 独立测试重跑假设了不存在的 `vitest.exe`
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / UNVERIFIED_RUNNER_PATH`。
+- **事实证据**：PowerShell 执行 `.\\node_modules\\.bin\\vitest.exe` 立即返回“not recognized”；未进入 Vitest。
+- **影响**：该次重跑仍未执行产品断言，不能关闭 ERR-1110，也不是产品红灯。
+- **正确做法**：先只读枚举仓库现有 Vitest shim，再使用真实入口；不得按其他环境的扩展名猜测。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1111_STATUS=CLOSED_RUNNER_PATH_MUST_BE_DISCOVERED
+PRODUCT_ASSERTIONS_EXECUTED=0
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1111
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1111_WORK_ITEM_TEST_RUNNER_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1112_WORK_ITEM_TEST_RUNNER_DISCOVERY_PARTIAL_FAILURE:START -->
+### ERR-1112：Vitest runner 发现命令包含不存在的 package 路径
+
+- **分类**：`VALIDATION_TOOLING_DEFECT / PARTIAL_DISCOVERY_FAILURE`。
+- **事实证据**：`node_modules/.bin` 未发现 `vitest*`，同一命令随后读取 `node_modules/vitest` 返回路径不存在；命令输出只证明根 `node_modules` 没有这两个预期入口。
+- **影响**：不能继续猜测本地 runner 路径，也不能把该结果解释为项目没有 Vitest 依赖。
+- **正确做法**：沿用仓库已验证的 Bun package resolution，但把 `TEMP/TMP` 精确指向工作区可写临时目录并禁用 transpiler cache。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-046`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1112_STATUS=CLOSED_LOCAL_SHIM_ABSENT_USE_VERIFIED_BUN_RESOLUTION
+PRODUCT_ASSERTIONS_EXECUTED=0
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1112
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1112_WORK_ITEM_TEST_RUNNER_DISCOVERY_PARTIAL_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1113_BUNX_ISOLATED_TEMP_LOST_WORKSPACE_RESOLUTION:START -->
+### ERR-1113：沙箱外 Bunx 使用隔离 TEMP 后解析到临时 Vitest，丢失工作区依赖图
+
+- **分类**：`VALIDATION_ENVIRONMENT_DEFECT / PACKAGE_RESOLUTION_DRIFT`。
+- **事实证据**：Bunx 在 `.tmp/bun/bunx-...-vitest@latest` 解析 138 项并写 lockfile，随后加载仓库 `vitest.config.ts` 时无法解析工作区依赖 `vitest/config`；Vitest 未收集测试。
+- **影响**：该运行使用的不是已锁定工作区测试执行图，不能作为产品红灯；ERR-1110 仍未关闭。运行还可能触碰现有 dirty `bun.lock`，必须在后续 diff 中核对，不得覆盖用户既有变更。
+- **正确做法**：恢复/使用仓库锁定依赖的本地 Bun install 图，再通过 `bun run` 或已解析的 package binary 执行；禁止让 `bunx ...@latest` 替代工作区依赖。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-046`、`EXP-060`。
+- **状态**：`OPEN`，等待锁定依赖图恢复并验证。
+
+```text
+ERR1113_STATUS=CLOSED_OFFLINE_WORKSPACE_INSTALL_RESTORED_LOCKED_GRAPH
+TESTS_COLLECTED=0
+ERR1110_STATUS=OPEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1113
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1113_BUNX_ISOLATED_TEMP_LOST_WORKSPACE_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR1114_WORK_ITEM_METADATA_OWNER_CONTRACT_CONFLICT:START -->
+### ERR-1114：当前 Work Item 创建器写入旧 schema、影子状态并可覆盖既有 Work Item
+
+- **分类**：`CONTRACT_CONFLICT / RUNTIME_DEFECT / AUTHORITY_BYPASS`。
+- **事实证据**：`createWorkItem()` 写 `schema_version=1.0` 与 `status=created`；`sf_v11_work_item_create` 再通过 `updateWorkItemStatus()` 把文件状态改为 `intake_ready`。同仓库 `validateWorkItemJson()` 明确禁止任何 `status`，`sf-artifact-write` 与 `sf-state-transition` 的当前生产者均写 schema 1.1；StateManager/WAL 是唯一状态权威。第二次调用 `createWorkItem()` 会成功覆盖同 ID 的 intake 和元数据。
+- **影响**：合法生产入口创建的文件会被自己的 Gate validator 拒绝；状态存在未经过 WAL 的第二真相；重复请求可破坏既有 Work Item 历史。
+- **正确做法**：当前元数据 owner 统一为 schema 1.1、禁止 `status`、创建时一次写入 workflow metadata；生命周期只调用 StateManager。创建目录必须独占，既有 WI fail closed。删除 `updateWorkItemStatus` 当前导出和调用，不保留旧项目兼容旁路。
+- **权威澄清**：V6 的 Work Item 根目录承载治理事实，但生命周期状态唯一权威是 `events.jsonl`；`work_item.json` 仅为 Runtime-owned 元数据投影，不是状态镜像。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1114_STATUS=CLOSED_CURRENT_METADATA_OWNER_CONVERGED
+CAPABILITY_ASSESSMENT=CONTRACT_CONFLICT_AND_RUNTIME_DEFECT
+FIRST_DEVIATION=WORK_ITEM_METADATA_CREATE_OWNER
+LEGACY_COMPATIBILITY=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1114
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1114_WORK_ITEM_METADATA_OWNER_CONTRACT_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1115_WORK_ITEM_METADATA_OWNER_EXPECTED_RED:START -->
+### ERR-1115：当前 Work Item 元数据 owner 独立契约红灯
+
+- **分类**：`EXPECTED_RED / WORK_ITEM_METADATA_OWNER_DRIFT`。
+- **事实证据**：`current-work-item-metadata-owner.test.ts` 独立执行 4 fail / 0 pass：validator 接受非当前 schema 1.0；创建产物实际 schema 为 1.0；handler 产物仍含 `status=intake_ready`；重复创建 promise 成功而非以 `WORK_ITEM_ALREADY_EXISTS` 拒绝。
+- **影响**：ERR-1114 的三个当前生产缺口已可独立重放，未转绿前不得关闭 Work Item metadata owner 子步骤。
+- **正确做法**：只修生产 owner 和已确认漂移的直接消费者测试；保持 validator 的 metadata-only 边界和 StateManager transition 断言。
+- **类防护**：`EXP-004`、`EXP-006`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1115_EXPECTED_RED=4_FAIL_0_PASS
+ERR1115_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1115
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1115_WORK_ITEM_METADATA_OWNER_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1116_LEGACY_WORK_ITEM_STATUS_RESUME_READER:START -->
+### ERR-1116：公共 Runtime 表面仍导出读取 `work_item.json.status` 的旧 Resume Check
+
+- **分类**：`BUILT_NOT_ENABLED / AUTHORITY_CONFLICT / LEGACY_STATUS_READER`。
+- **事实证据**：`performResumeCheck()` 从 `work_item.json.status` 推断回滚与终态，只有测试和 package public export 消费；没有现役 handler 调用。独立边界测试执行 5 项时唯一失败为模块仍具有 `performResumeCheck`，其他四项 metadata owner 契约已通过。
+- **影响**：即使写旁路已删除，公共 API 仍鼓励从非权威元数据恢复生命周期，与 StateManager/WAL 唯一权威冲突。
+- **正确做法**：当前发布无旧项目兼容，删除该未启用 reader、结果类型、文件清单和 public export；删除肯定旧行为的测试，保留明确的负向边界测试。真实恢复继续由 StateManager/WAL 和各 Gate 的 artifact validator 负责。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1116_EXPECTED_RED=1_FAIL_4_PASS
+ERR1116_STATUS=CLOSED_LEGACY_STATUS_READER_REMOVED
+PRODUCTION_CALLERS=0
+LEGACY_COMPATIBILITY=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1116
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1116_LEGACY_WORK_ITEM_STATUS_RESUME_READER:END -->
+
+<!-- SPECFORGE_ERR1117_WORK_ITEM_CURRENT_SCHEMA_TEST_FIXTURE_DRIFT:START -->
+### ERR-1117：HardStop 合法 Work Item metadata fixture 仍使用非当前 schema 1.0
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_SCHEMA_FIXTURE`。
+- **事实证据**：8 文件回归中 135 项执行，`v11-hard-stop-artifact-closure.test.ts` 唯一失败断言的合法 metadata fixture 使用 `schema_version=1.0`；当前 validator 按独立红灯契约要求 1.1。其余该文件 54 项通过。
+- **影响**：测试仍肯定已退出的 schema，不能作为放宽生产 validator 的理由。
+- **正确做法**：只把“合法当前 metadata”fixture 更新为 1.1；保留 1.0 rejection 的独立负向测试。
+- **类防护**：`EXP-004`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1117_STATUS=CLOSED_CURRENT_SCHEMA_FIXTURE_ALIGNED
+REGRESSION_RESULT=1_FAIL_54_PASS_IN_TARGET_FILE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1117
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1117_WORK_ITEM_CURRENT_SCHEMA_TEST_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1118_GOVERNANCE_HTTP_PERMISSION_RELEASE_FAILURE:START -->
+### ERR-1118：Governance HTTP E2E 的 code-permission release 返回失败但当前输出缺少原因
+
+- **分类**：`REGRESSION_FAILURE / INSUFFICIENT_EVIDENCE`。
+- **事实证据**：同一 8 文件回归中 `v11-governance-http-e2e.test.ts:162` 的 `permResult.json.success` 为 false；测试输出未打印 response error/data，尚不能证明与 schema/status 修改的因果关系。
+- **影响**：该 E2E 不得被直接修改或归类为 fixture drift；Work Item metadata 子步骤不能宣告完整回归通过。
+- **正确做法**：读取 permission handler 的权威状态来源与前置条件，并用现有响应对象/精确单测取得失败 code；根据证据区分测试 mock 漂移、产品缺陷或既有基线。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1118_STATUS=CLOSED_TEST_USED_NON_PUBLIC_INTERNAL_TOOL_NAME
+FAILED_ASSERTION=HTTP_PERMISSION_RELEASE_SUCCESS_FALSE
+ROOT_CAUSE=INSUFFICIENT_EVIDENCE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1118
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1118_GOVERNANCE_HTTP_PERMISSION_RELEASE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1119_CODE_PERMISSION_SYNTHESIZES_UNKNOWN_WORK_ITEM:START -->
+### ERR-1119：Code Permission 可绕过 Work Item owner 合成未知 Work Item
+
+- **分类**：`RUNTIME_DEFECT / ARTIFACT_OWNER_BYPASS`。
+- **事实证据**：`sf-v11-code-permission` 在 `work_item.json` 不存在时自行创建 schema 1.0、`status=implementation_running` 的文件；独立 metadata owner 契约 6 项中唯一失败显示对未知 `WI-0004` 的 permission release 返回 success，并留下合成目录。
+- **影响**：非创建 owner 可凭一个 permission 请求制造 Work Item、写影子状态并绕过 intake/创建审计；这同时违反单一 owner、schema 1.1 和 WAL 状态权威。
+- **正确做法**：permission 的非查询动作必须先要求合法既有 metadata；缺失时返回 `WORK_ITEM_NOT_FOUND` 且零写入。删除 fallback creator，不保留旧项目兼容。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1119_EXPECTED_RED=1_FAIL_5_PASS
+ERR1119_STATUS=CLOSED_PERMISSION_REQUIRES_EXISTING_WORK_ITEM
+LEGACY_COMPATIBILITY=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1119
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1119_CODE_PERMISSION_SYNTHESIZES_UNKNOWN_WORK_ITEM:END -->
+
+<!-- SPECFORGE_ERR1120_GOVERNANCE_HTTP_CLOSE_DATA_FAILURE:START -->
+### ERR-1120：Governance HTTP E2E 到达 Close 后内部结果失败但输出缺少原因
+
+- **分类**：`REGRESSION_FAILURE / INSUFFICIENT_EVIDENCE`。
+- **事实证据**：修正 public tool 名称后 9 文件回归 140 pass / 1 fail；HTTP envelope `closeResult.json.success=true`，但 `closeResult.json.data.success=false`，当前断言未输出 data error/checks。
+- **影响**：证明 permission 阶段已恢复，但不能判断 Close 失败是当前 metadata schema 收紧、旧 fixture 不完整还是既有基线问题。
+- **正确做法**：把完整 Close response 绑定到失败断言并精确重跑单文件，再按实际 error/check 定责；不得猜测修改 Gate。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1120_STATUS=CLOSED_CANONICAL_TRIGGER_AND_CLOSE_FIXTURE_ALIGNED
+REGRESSION_RESULT=1_FAIL_140_PASS
+ROOT_CAUSE=MISSING_CURRENT_CLASSIFICATION_FIELDS_AND_IMPACT_SCOPE
+SECOND_DIAGNOSTIC=IMPACT_SCOPE_OBJECT_PRESENT_BUT_SEVEN_REQUIRED_ARRAYS_MISSING
+FIX_PATH=USE_CANONICAL_GENERATE_TRIGGER_RESULT_PRODUCER_INSTEAD_OF_HANDWRITTEN_JSON
+THIRD_DIAGNOSTIC=CANONICAL_TRIGGER_PASSED_CLOSE_NOW_BLOCKS_ROOT_TASKS_AND_MISSING_FORMAL_VERSION_GATE
+REMAINING_FIXTURE_DRIFT=AUTHORITATIVE_CANDIDATES_TASKS_AND_FORMAL_VERSION_GATE_EVIDENCE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1120
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1120_GOVERNANCE_HTTP_CLOSE_DATA_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1121_HTTP_E2E_TRIGGER_FIXTURE_PATCH_CONTEXT_MISMATCH:START -->
+### ERR-1121：HTTP E2E trigger fixture 修复补丁使用了未核验的 import 上下文
+
+- **分类**：`EDIT_TOOLING_DEFECT / PATCH_CONTEXT_MISMATCH`。
+- **事实证据**：组合 `apply_patch` 因找不到预期的 `captureSemanticClosureProvenance` import 行整体失败，未修改任何目标。
+- **影响**：ERR-1120 的第二诊断尚未写入账本，测试 fixture 也未改变；不得假定部分补丁已应用。
+- **正确做法**：先读取文件真实 import 与 fixture 上下文，再拆分为精确补丁。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1121_STATUS=CLOSED_FAILED_PATCH_APPLIED_NOTHING
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1121
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1121_HTTP_E2E_TRIGGER_FIXTURE_PATCH_CONTEXT_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1122_DAEMON_CORE_FULL_BASELINE_MIXED_FAILURES:START -->
+### ERR-1122：daemon-core 全量回归仍含 30 文件 / 153 项混合基线失败
+
+- **分类**：`REGRESSION_BASELINE / MIXED_ATTRIBUTION_REQUIRED`。
+- **事实证据**：完整 `@specforge/daemon-core test` 执行 195 files：146 pass / 49 fail；1770 tests：1519 pass / 234 fail / 17 skipped，退出 1。失败样本包括缺真实用户级 daemon handshake、缺用户级 orchestrator、薄插件旧治理逻辑期待、host-profile `ENOMEM`、HTTP timeout、Candidate/Formal Gate 旧 fixture、新项目治理断言等；本轮 D4A 精确 9 文件 141 项此前全部通过。
+- **影响**：全量仍不是可信绿灯，但也不能把 234 项整体归因于 Work Item metadata 修复或批量修改测试。该结果属于 ERR-681 父基线的待归因集合。
+- **正确做法**：保留完整汇总；按“修改文件/直接调用链/错误消息”做因果分桶。只处理 D4A 直接失败，其余保持既有 open blocker，不旁路 live 依赖、不降低 Gate。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-044`、`EXP-046`、`EXP-060`。
+- **状态**：`CLOSED_NONDEFERRED`。2026-09-03 rerun 4 为 186 files：185 pass / 1 fail；1687 tests：1686 pass / 1 fail。唯一失败由已明确延期的 ERR-1186 独立持有；ERR-1122 的非延期混合基线已全部归因、修复或按当前发布必要性合法移出可执行面。
+
+```text
+ERR1122_STATUS=CLOSED_NONDEFERRED_ONLY_ERR1186_DEFERRED_RED_REMAINS
+DAEMON_CORE_FILES=146_PASS_49_FAIL_195_TOTAL
+DAEMON_CORE_TESTS=1519_PASS_234_FAIL_17_SKIP_1770_TOTAL
+CURRENT_DAEMON_CORE_FILES=148_PASS_44_FAIL_192_TOTAL
+CURRENT_DAEMON_CORE_TESTS=1539_PASS_205_FAIL_17_SKIP_1761_TOTAL
+CURRENT_DELTA=5_FEWER_FAILED_FILES;29_FEWER_FAILED_TESTS;20_MORE_PASSED_TESTS
+LATEST_DAEMON_CORE_FILES=161_PASS_30_FAIL_191_TOTAL
+LATEST_DAEMON_CORE_TESTS=1583_PASS_153_FAIL_17_SKIP_1753_TOTAL
+LATEST_DELTA_FROM_PRIOR_VERBOSE_BASELINE=14_FEWER_FAILED_FILES;52_FEWER_FAILED_TESTS;44_MORE_PASSED_TESTS
+LATEST_MACHINE_READABLE_EVIDENCE=.tmp/daemon-core-full-step8-rerun2.json
+FINAL_DAEMON_CORE_FILES=185_PASS_1_FAIL_186_TOTAL
+FINAL_DAEMON_CORE_TESTS=1686_PASS_1_FAIL_1687_TOTAL
+FINAL_MACHINE_READABLE_EVIDENCE=.tmp/daemon-core-full-step8-rerun4.json
+SOLE_REMAINING_FAILURE_OWNER=ERR-1186_DEFERRED_GOVERNANCE_AUTHORITY_CONFLICT
+D4A_DIRECT_REGRESSION=141_PASS_0_FAIL
+WHOLE_FAILURE_SET_ATTRIBUTED_TO_D4A=NO
+D4A_NAMED_FULL_SUITE_FAILURE_PROBE=DESIGN_ORCHESTRATOR_METADATA_TEST_FAILS_AT_ENSURE_PROJECT_INIT_BEFORE_WORK_ITEM_CREATION
+D4A_NAMED_FAILURE_CAUSALITY=EXCLUDED_BEFORE_CHANGED_CALL_CHAIN
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1122
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1122_DAEMON_CORE_FULL_BASELINE_MIXED_FAILURES:END -->
+
+<!-- SPECFORGE_ERR1114_TO_ERR1120_WORK_ITEM_METADATA_OWNER_CLOSURE:START -->
+#### ERR-1114～ERR-1120 Work Item metadata owner 关闭证据（2026-09-02）
+
+- `work_item.json` 当前 schema 固定为 1.1，只承载身份、workflow 与 permission metadata；validator 拒绝非当前 schema、任何 lifecycle status 和 decision 字段。
+- `sf_v11_work_item_create` 在分配目录前完成 workflow 解析，以独占目录创建 metadata；重复 WI fail closed。生命周期只通过 StateManager/WAL 推进。
+- filesystem `updateWorkItemStatus` 与读取 `work_item.json.status` 的未启用 Resume Check 已从实现、public export 和肯定旧行为的测试中移除。
+- Code Permission 不再合成未知 Work Item；缺 metadata 返回 `WORK_ITEM_NOT_FOUND` 且零写入。
+- 独立红灯 4 fail 与后续 owner-bypass 红灯 1 fail 均已转绿；9 文件直接回归 141 pass；daemon-core build 与 16-package root build 通过。
+- daemon-core 全量 1519 pass / 234 fail / 17 skip 的混合基线单列 ERR-1122，不能宣称全量绿灯，也未整体归因本轮。
+
+```text
+ERR1114_STATUS=CLOSED_CURRENT_METADATA_OWNER_CONVERGED
+ERR1115_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+ERR1116_STATUS=CLOSED_LEGACY_STATUS_READER_REMOVED
+ERR1117_STATUS=CLOSED_CURRENT_SCHEMA_FIXTURE_ALIGNED
+ERR1118_STATUS=CLOSED_PUBLIC_TOOL_NAME_ALIGNED
+ERR1119_STATUS=CLOSED_PERMISSION_REQUIRES_EXISTING_WORK_ITEM
+ERR1120_STATUS=CLOSED_CANONICAL_TRIGGER_AND_CLOSE_FIXTURE_ALIGNED
+WORK_ITEM_METADATA_SCHEMA=1.1
+WORK_ITEM_METADATA_STATUS_FIELD=FORBIDDEN
+LIFECYCLE_STATE_AUTHORITY=STATE_MANAGER_WAL_ONLY
+DIRECT_REGRESSION=9_FILES_141_PASS
+DAEMON_CORE_BUILD=PASS
+ROOT_BUILD=PASS_16_PACKAGES_BUN_1_4_0
+DAEMON_CORE_FULL_BASELINE=1519_PASS_234_FAIL_17_SKIP
+ERR1122_STATUS=OPEN_MIXED_BASELINE_ATTRIBUTION
+COMMIT_PUSH_DEPLOY=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1108,ERR-1109,ERR-1110,ERR-1111,ERR-1112,ERR-1113,ERR-1114,ERR-1115,ERR-1116,ERR-1117,ERR-1118,ERR-1119,ERR-1120,ERR-1121,ERR-1122
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1114_TO_ERR1120_WORK_ITEM_METADATA_OWNER_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1123_ROLLBACK_SUPERSEDE_STATUS_BYPASS:START -->
+### ERR-1123：Rollback supersede 仍直接读写 `work_item.json.status`
+
+- **分类**：`RUNTIME_DEFECT / STATE_AUTHORITY_BYPASS / ROLLBACK_OWNER`。
+- **事实证据**：`markOriginalSuperseded()` 从 metadata 读取 `wi.status` 判断 closed，随后写 `wi.status='superseded'`；生产 `sf-v11-rollback` supersede action 直接调用该函数，未读取或推进 StateManager/WAL。
+- **影响**：Rollback 可形成第二生命周期真相，绕过状态机、WAL、evidence 与并发控制；schema 1.1 validator 会拒绝其产物。
+- **正确做法**：metadata 仅记录 `superseded_by/superseded_at` 关系并通过当前 schema 校验；handler 从 StateManager 读取当前状态，通过 state coordinator 以 evidence 推进到 `superseded`。已 closed 判断也必须基于权威状态。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Close 首次读、permission facts 同步和 audit 后续读已统一使用 current metadata reader/writer；owner 9/9、Close 17/17、D4B 158/158 与 daemon-core 构建通过。
+
+```text
+ERR1123_STATUS=CLOSED_STATE_MANAGER_AUTHORITATIVE_METADATA_RELATION_ONLY
+ERR1123_EXPECTED_RED=1_FAIL_6_PASS
+ERR1123_CLOSURE_TESTS=INCLUDED_IN_D4B_157_PASS
+DAEMON_CORE_BUILD=PASS
+CAPABILITY_ASSESSMENT=RUNTIME_DEFECT
+FIRST_DEVIATION=ROLLBACK_SUPERSEDE_HANDLER
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1123
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1123_ROLLBACK_SUPERSEDE_STATUS_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1124_ROLLBACK_REFACTOR_PATCH_CONTEXT_MISMATCH:START -->
+### ERR-1124：Rollback owner 重构补丁假设了错误的 import 上下文
+
+- **分类**：`EDIT_TOOLING_DEFECT / PATCH_CONTEXT_MISMATCH`。
+- **事实证据**：组合补丁在 `rollback-runner-v11.ts` 查找假设的 import block 失败，`apply_patch` 整体未应用。
+- **影响**：metadata helper、rollback lib 和 handler 均仍保持补丁前状态；不得继续按已修改推理。
+- **正确做法**：读取三个文件的真实顶部与目标块，拆分补丁并逐项验证。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。
+
+```text
+ERR1124_STATUS=CLOSED_FAILED_PATCH_APPLIED_NOTHING
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1124
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1124_ROLLBACK_REFACTOR_PATCH_CONTEXT_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1125_ROLLBACK_METADATA_TYPE_NARROWING:START -->
+### ERR-1125：Rollback StateManager 修复通过行为测试但 metadata 字段未完成类型收窄
+
+- **分类**：`BUILD_FAILURE / TYPESCRIPT_UNKNOWN_NARROWING`。
+- **事实证据**：目标行为测试 2 文件 16 pass；随后 daemon-core `tsc` 在 `sf-v11-rollback.ts:113` 报 `{}` 不能赋给 string，在 `rollback-runner-v11.ts:216` 报 unknown 不能赋给 string。
+- **影响**：实现尚不能进入构建表面，ERR-1123 不得关闭。
+- **正确做法**：把 context actor 与生成的 `superseded_at` 显式规范化为 string，并让 metadata result 使用局部强类型时间戳；不得使用 `as any` 掩盖。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。消费点已完成运行时 string 收窄，目标回归与 daemon-core 构建通过。
+
+```text
+ERR1125_STATUS=CLOSED_TARGETED_TYPE_NARROWING_VERIFIED
+TARGET_TESTS=16_PASS
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1125
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1125_ROLLBACK_METADATA_TYPE_NARROWING:END -->
+
+<!-- SPECFORGE_ERR1126_CODE_PERMISSION_ACCEPTS_NONCURRENT_METADATA:START -->
+### ERR-1126：Code Permission 接受并重写非当前 Work Item metadata
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / PERMISSION_OWNER`。
+- **事实证据**：独立 metadata owner 测试 8 项中唯一失败：预置 schema 1.0 的 `WI-0007/work_item.json` 后执行 permission release，实际返回 success=true，而契约要求 fail closed 且原字节不变。
+- **影响**：permission writer 可把非当前 schema 当成合法输入继续生成 governance scope 和权限事实，绕过 D4A validator；这会使 descriptor 注册成为虚假声明。
+- **正确做法**：所有 permission metadata 读取和写回必须消费统一 `readWorkItemMetadata/writeWorkItemMetadata`；缺失可按查询语义返回默认值，但存在且无效必须抛错，禁止静默修写。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Permission owner 已统一使用 current metadata reader/writer，非 1.1 schema 测试按预期 fail closed 且 8 项 owner 测试通过。
+
+```text
+ERR1126_EXPECTED_RED=1_FAIL_7_PASS
+ERR1126_STATUS=CLOSED_PERMISSION_METADATA_PRECHECK_CONNECTED
+OWNER_TESTS=8_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1126
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1126_CODE_PERMISSION_ACCEPTS_NONCURRENT_METADATA:END -->
+
+<!-- SPECFORGE_ERR1127_PERMISSION_METADATA_UNKNOWN_FIELD_NARROWING:START -->
+### ERR-1127：Permission metadata 接入统一 reader 后可选字段未完成运行时收窄
+
+- **分类**：`BUILD_FAILURE / TYPESCRIPT_UNKNOWN_NARROWING`。
+- **事实证据**：ERR-1126 红灯已转为 8 pass；daemon-core `tsc` 随后在 `allowed_write_files_history` 三处与 `code_change_allowed` 一处报告 unknown 不能按 array/boolean 使用。
+- **影响**：schema 边界已生效，但 permission writer 尚未形成可构建的类型安全消费路径。
+- **正确做法**：在消费点用 `Array.isArray` 构造局部历史数组，以 `=== true` 读取 boolean，并用现有 permission entry normalizer 产生强类型返回；不扩大 metadata 基础类型来伪装未验证字段。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。Permission 可选字段已在消费点完成 array/boolean 运行时收窄，owner 回归与 daemon-core 构建通过。
+
+```text
+ERR1127_STATUS=CLOSED_RUNTIME_NARROWING_VERIFIED
+TARGET_TESTS=8_PASS
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1127
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1127_PERMISSION_METADATA_UNKNOWN_FIELD_NARROWING:END -->
+
+<!-- SPECFORGE_ERR1128_CLOSE_TEST_METADATA_FIXTURE_DRIFT:START -->
+### ERR-1128：Close 单测仍构造无当前 schema/身份或含 status 的 Work Item metadata
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_METADATA_FIXTURE`。
+- **事实证据**：Permission 扩大回归 198 项中 183 pass / 15 fail；`sf-v11-close-gate.test.ts` 8 项直接失败均显示 `WORK_ITEM_METADATA_INVALID`，包括缺 schema 1.1、缺 work_item_id、携带 forbidden status，失败发生在预期 Close 行为之前。
+- **影响**：这些测试不能继续验证 Close 的 revoke/audit/formal gate/diagnostic 行为，但不能通过放宽 production reader 修复。
+- **正确做法**：收敛该测试的共享 metadata fixture 为 schema 1.1、正确 work_item_id、无 status；独立无效 schema 红灯继续保留。
+- **类防护**：`EXP-004`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。共享与独立 Close metadata 夹具已对齐 schema 1.1、正确 work_item_id、无 status；Close 单测 17/17 通过。
+
+```text
+ERR1128_STATUS=CLOSED_CLOSE_CURRENT_METADATA_FIXTURES_ALIGNED
+CLOSE_TESTS=17_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1128
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1128_CLOSE_TEST_METADATA_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1129_P0_FLOW_EARLIER_GOVERNANCE_BASELINE_FAILURES:START -->
+### ERR-1129：P0 regression flow 在 Permission metadata 之前的 Decision/Gate 前置条件失败
+
+- **分类**：`REGRESSION_BASELINE / CAUSALITY_EXCLUDED_FROM_D4B_PERMISSION`。
+- **事实证据**：同一扩大回归中 `p0-governance-regression-flow.test.ts` 7 fail / 1 pass；首个失败分别是缺显式 user response quote、Gate summary failed、approval helper 返回 false，调用 permission 的案例也在 `approveAndMergeFixture` 先失败。该文件的“merge 前拒绝 permission”测试通过。
+- **影响**：这 7 项仍属于 ERR-681 混合基线，但没有证据表明由 schema precheck 引起；本轮不得顺带修改 Decision/Gate。
+- **正确做法**：保留原始失败并在相应 owner 阶段归因；D4B 只统计其 permission 直接断言，不把整文件当绿灯。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。按当前 Decision、Gate、Candidate、Verification、Formal Version 与 Close 权威合同重建 P0 夹具后 8/8 通过；其中发现的产品错误优先级缺陷已由 ERR-1174 独立修复并验证。
+
+```text
+ERR1129_STATUS=CLOSED_CURRENT_P0_FLOW_GREEN
+P0_FLOW_HISTORICAL=1_PASS_7_FAIL
+P0_FLOW_CURRENT=8_PASS
+D4B_PERMISSION_CAUSALITY=EXCLUDED_BEFORE_PERMISSION_CALL
+PRODUCT_DEFECT_SPLIT=ERR-1174_CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1129
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1129_P0_FLOW_EARLIER_GOVERNANCE_BASELINE_FAILURES:END -->
+
+<!-- SPECFORGE_ERR1130_CLOSE_TEST_AUTHORITATIVE_TASKS_FIXTURE_DRIFT:START -->
+### ERR-1130：Close 单测未构造 Candidate 权威 tasks 产物
+
+- **分类**：`TEST_CONSUMER_DRIFT / AUTHORITATIVE_ARTIFACT_FIXTURE`。
+- **事实证据**：ERR-1128 metadata 夹具校正后，`sf-v11-close-gate.test.ts` 从 8 fail 收敛为 2 fail / 15 pass；剩余两项的唯一阻断检查均为 `close_artifact_tasks_authoritative`，详情为 `expected=candidates/tasks.md; reason=authoritative artifact not found`。共享夹具同时创建了 `candidate_manifest.json` 和旧位置 `tasks.md`，却未创建 Candidate 权威位置。
+- **影响**：成功 Close 与 audit 重算测试在进入目标断言前被当前权威产物门禁阻断；该失败与 Work Item metadata schema 无关。
+- **正确做法**：测试夹具既然声明 Candidate manifest，就同步构造 `candidates/tasks.md`；不得恢复 legacy fallback 或放宽 Close Gate。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-044`、`EXP-060`。
+- **状态**：`CLOSED`。共享夹具已补齐 `candidates/tasks.md`，未放宽 Close Gate；Close 单测 17/17 通过。
+
+```text
+ERR1130_STATUS=CLOSED_CANDIDATE_TASKS_FIXTURE_ALIGNED
+CLOSE_TESTS=17_PASS
+D4B_DIRECT_REGRESSION=9_FILES_157_PASS
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1130
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1130_CLOSE_TEST_AUTHORITATIVE_TASKS_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1131_CLOSE_OWNER_GUESSED_SOURCE_PATH:START -->
+### ERR-1131：Close owner 取证命令包含不存在的猜测源码路径
+
+- **分类**：`INVESTIGATION_COMMAND_DEFECT / PATH_ASSUMPTION`。
+- **事实证据**：组合 `rg` 命令读取 `packages/daemon-core/src/tools/lib/close-gate-v11.ts` 时返回 OS error 2；真实 handler import 指向 `lib/close-gate.js`，说明猜测路径不存在。
+- **影响**：组合输出虽包含 handler 内容，但不能把缺失文件部分当作已检查证据。
+- **正确做法**：先用 `rg --files` 确认真实 Close 文件，再只读取存在的路径。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。失败只读命令未改变仓库，已停止使用猜测路径。
+
+```text
+ERR1131_STATUS=CLOSED_NO_STATE_CHANGE_REDISCOVER_PATHS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1131
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1131_CLOSE_OWNER_GUESSED_SOURCE_PATH:END -->
+
+<!-- SPECFORGE_ERR1132_CLOSE_METADATA_FIRST_READ_BYPASS:START -->
+### ERR-1132：Close handler 首次读取绕过 current Work Item metadata precheck
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / CLOSE_OWNER`。
+- **事实证据**：新增 owner 红灯以 schema 1.0 的 `WI-0008/work_item.json` 调用 `sf_close_gate`；实际未报告 metadata 无效，而继续到后续阶段并返回 `trigger_result.json not found`。目标测试为 1 fail / 8 pass，原 metadata 字节保持不变。
+- **影响**：Close 的行为可由非当前或带 shadow status 的 descriptor 驱动；其 `syncPermissionFacts` 还会用 raw read/write 重写同一文件，违反 descriptor 注册前不得存在未校验 consumer 的要求。
+- **正确做法**：首次读必须调用统一 `readWorkItemMetadata` 并保留具体错误；权限事实同步及 audit 后续读使用统一 reader/writer，禁止 compatibility raw rewrite。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。V6 authority、公开 create owner、state-transition、正式 orchestrator/skill 与直接回归已收敛为单一创建路径；12 文件 223/223 与 daemon-core build 通过。
+
+```text
+ERR1132_EXPECTED_RED=1_FAIL_8_PASS
+ERR1132_STATUS=CLOSED_CLOSE_METADATA_PRECHECK_CONNECTED
+FIRST_DEVIATION=CLOSE_HANDLER_FIRST_METADATA_READ
+CLOSURE_TESTS=OWNER_9_PASS;CLOSE_17_PASS;D4B_9_FILES_158_PASS
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1132
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1132_CLOSE_METADATA_FIRST_READ_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1133_WORK_ITEM_CREATE_ENTRY_SEARCH_MISSING_REPO_OPENCODE:START -->
+### ERR-1133：创建入口取证命令包含不存在的仓库 `.opencode` 路径
+
+- **分类**：`INVESTIGATION_COMMAND_DEFECT / PATH_ASSUMPTION`。
+- **事实证据**：对 `packages setup scripts .opencode` 的组合 `rg` 返回 `.opencode: OS error 2`；当前仓库的正式模板位于 `setup/userlevel-opencode`。
+- **影响**：首次组合检索不能证明 `.opencode` 消费面；必须以存在的正式部署模板重新检索。
+- **正确做法**：只对 `packages/setup/scripts` 与清单确认存在的路径取证。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。只读命令未改变现场，已使用真实路径重取证。
+
+```text
+ERR1133_STATUS=CLOSED_NO_STATE_CHANGE_REAL_PATHS_REQUERIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1133
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1133_WORK_ITEM_CREATE_ENTRY_SEARCH_MISSING_REPO_OPENCODE:END -->
+
+<!-- SPECFORGE_ERR1134_WORK_ITEM_CREATE_ENTRY_GUESSED_DEFINITIONS_PATH:START -->
+### ERR-1134：创建入口取证命令猜测了不存在的 tools/definitions 目录
+
+- **分类**：`INVESTIGATION_COMMAND_DEFECT / PATH_ASSUMPTION`。
+- **事实证据**：组合检索 `packages/daemon-core/src/tools/definitions` 返回 OS error 2；真实公开别名位于 `src/tools/index.ts`，HTTP 入口位于 `src/http/HTTPServer.ts`。
+- **影响**：不存在的定义目录没有被检查；可用结论仅来自同一输出中真实存在的 index/HTTP/handler 文件。
+- **正确做法**：使用 `rg --files` 和真实 import/alias/HTTP 调用链，不再猜测定义目录。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。失败为只读且无状态变化，真实调用链已重新定位。
+
+```text
+ERR1134_STATUS=CLOSED_NO_STATE_CHANGE_REAL_ENTRY_CHAIN_CONFIRMED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1134
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1134_WORK_ITEM_CREATE_ENTRY_GUESSED_DEFINITIONS_PATH:END -->
+
+<!-- SPECFORGE_ERR1135_DUPLICATE_CURRENT_WORK_ITEM_CREATE_OWNERS:START -->
+### ERR-1135：当前发布同时暴露两套 Work Item 创建 owner
+
+- **分类**：`CONTRACT_CONFLICT / DUPLICATE_OWNER / CURRENT_PRODUCTION_ENTRY`。
+- **事实证据**：`tools/index.ts` 把公开 `sf_work_item_create` 绑定到 `sf_v11_work_item_create`，HTTP `/work-item/create` 也 dispatch 该公开工具；同时正式部署的 orchestrator/feature-spec skill 要求 `sf_state_transition("" -> "created")` 创建，后者独立分配 WI ID、递归创建目录并 raw 写 `work_item.json`。两条路径都在当前构建、部署与测试中启用。
+- **影响**：Work Item identity、原始用户请求、初始 lifecycle state、目录独占分配和 metadata schema 有两个 owner；D4A 的唯一 producer 声明不成立，动态 descriptor 不得注册。
+- **权威判断**：V6 requirements/design 的唯一 owner、Daemon SSoT 与禁止 non-owner synthesis 高于部署 skill 和当前 handler。专用公开 `sf_work_item_create` 能接收并保存原始 user request，`sf_state_transition` 应只推进已存在 WI 的状态。
+- **正确做法**：先在 V6 requirements/design 明确唯一公开创建入口和初始状态契约；再测试先移除 state-transition 的 allocation/metadata producer，更新正式 orchestrator/skill 调用，保留 state-transition 作为现有 WI 的受控状态推进器。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Artifact Writer 已在 ID/HardStop 后、任何 artifact inference/read/write 前调用统一 current metadata reader；owner 12/12、直接 Artifact 回归 89/89 与 daemon-core build 均通过。
+
+```text
+ERR1135_STATUS=CLOSED_SINGLE_CREATE_OWNER_CONVERGED
+CAPABILITY_ASSESSMENT=CONTRACT_CONFLICT
+AUTHORITATIVE_SOURCE=V6_REQUIREMENTS_AND_DESIGN
+CURRENT_DUPLICATE_ENTRIES=SF_WORK_ITEM_CREATE;SF_STATE_TRANSITION_EMPTY_TO_CREATED
+ERR1135_EXPECTED_RED=1_FAIL_9_PASS
+RED_ACTUAL=SF_STATE_TRANSITION_RETURNED_SUCCESS_AND_CREATED_WI_DIRECTORY
+CURRENT_CREATE_ENTRY=SF_WORK_ITEM_CREATE
+STATE_TRANSITION_CREATE_BEHAVIOR=REJECT_ZERO_WRITE
+CLOSURE_REGRESSION=12_FILES_223_PASS
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1135
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1135_DUPLICATE_CURRENT_WORK_ITEM_CREATE_OWNERS:END -->
+
+<!-- SPECFORGE_ERR1136_STATE_TRANSITION_TEST_OLD_CREATE_AND_METADATA_FIXTURES:START -->
+### ERR-1136：State transition 测试仍依赖第二创建 owner 与无 schema metadata
+
+- **分类**：`TEST_CONSUMER_DRIFT / OLD_CREATE_CONTRACT / CURRENT_METADATA_FIXTURE`。
+- **事实证据**：唯一创建 owner 实现后，4 个直接测试文件共 46 项为 25 pass / 21 fail。5 项直接期待 `sf_state_transition("" -> "created")` 成功或执行项目创建 guard；其余目标 transition 测试多数未创建 `work_item.json`，或写入无 schema/含 status 的旧 fixture，因 `WORK_ITEM_NOT_FOUND` / `WORK_ITEM_METADATA_INVALID` 在目标断言前失败。专用 create handler 的 2 项与 metadata owner 的 10 项通过。
+- **影响**：旧测试不能验证现行 state transition 的状态机、seal、audit、candidate freeze 行为，但不得通过恢复第二 producer 或绕过 metadata precheck 修复。
+- **正确做法**：删除/改写仅属于旧创建协议的断言；其余测试统一构造 schema 1.1、正确 work_item_id、无 status 的已存在 Work Item，再验证各自目标行为。Project Spec 创建绑定归专用 create handler 测试。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-044`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。纯旧 create 测试已删除或迁移，现役 transition fixtures 已对齐 schema 1.1；创建/transition 直接回归 3 文件 41/41，通过扩大回归。
+
+```text
+ERR1136_STATUS=CLOSED_STATE_TRANSITION_CURRENT_CONTRACT_TESTS_ALIGNED
+DIRECT_TESTS=41_PASS
+PRODUCT_PRECHECK=WORKING_AS_AUTHORIZED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1136
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1136_STATE_TRANSITION_TEST_OLD_CREATE_AND_METADATA_FIXTURES:END -->
+
+<!-- SPECFORGE_ERR1137_CREATE_OWNER_EXPANDED_MIXED_REGRESSION:START -->
+### ERR-1137：唯一创建 owner 扩大回归包含直接旧消费者与既有混合基线
+
+- **分类**：`REGRESSION_BASELINE / MIXED_ATTRIBUTION / LEGACY_TEST_CONSUMER`。
+- **事实证据**：3 个扩大测试文件 63 项为 20 pass / 43 fail，daemon-core build PASS。`existing-project-startup.integration` 11 fail 明确依赖退休根 `manifest.json`、state-transition create 和 `workflowEngine.transitionFull`；`governance-closure-e2e` 25 fail 多数首先偏离于无 schema/含 status metadata；`design-governance-orchestrator-closure` 7 fail 中包含旧 root manifest 文本、旧 create 调用、未定义测试变量以及宿主 `uv_os_get_passwd ENOMEM`。
+- **影响**：不能把 43 项整体归因于产品回归，也不能把无关环境/旧文档失败纳入 D4B 绿灯。
+- **正确做法**：删除纯 legacy integration 文件；修正 current metadata 与 create-entry 直接消费者；其余既有设计/环境失败保持独立归因，并以直接绿色集合验证本修复。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-044`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。直接消费者、host-profile test injection、current metadata 与无 legacy 清洗预期均已收敛；orchestrator 目标现 16/17，通过项不再混合失败，唯一文档契约冲突已拆分为 ERR-1186。
+
+```text
+ERR1137_STATUS=CLOSED_DIRECT_CONSUMERS_CONVERGED_REMAINDER_SPLIT_ERR1186
+EXPANDED_REGRESSION=20_PASS_43_FAIL
+DAEMON_CORE_BUILD=PASS
+DIRECT_LEGACY_FILE=EXISTING_PROJECT_STARTUP_INTEGRATION
+UNRELATED_ENV_FAILURE=UV_OS_GET_PASSWD_ENOMEM
+CURRENT_ORCHESTRATOR_RESULT=16_PASS_1_FAIL_ERR1186
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1137
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1137_CREATE_OWNER_EXPANDED_MIXED_REGRESSION:END -->
+
+<!-- SPECFORGE_ERR1138_GOVERNANCE_CLOSURE_TRIGGER_AND_ID_FIXTURE_DRIFT:START -->
+### ERR-1138：Governance closure 测试通过 metadata precheck 后暴露 trigger 与 WI ID 漂移
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_TRIGGER_SCHEMA / CURRENT_WI_ID`。
+- **事实证据**：共享 metadata 修正后该文件从 25 fail 收敛为 20 fail / 14 pass；Close 类失败的首个共同错误为缺 `classification.data_model_changed`、`classification.module_contract_changed` 与 `impact_scope`，4 个 seal/forbidden 测试使用非 `WI-NNNN` ID 而未进入目标断言。
+- **影响**：测试仍无法到达 Close/audit/seal 目标行为；不能放宽生产 schema 或 ID validator。
+- **正确做法**：共享 trigger fixture 补齐当前 classification 与 impact_scope；seal 测试使用合法唯一 WI ID。
+- **类防护**：`EXP-004`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。共享 trigger 与 WI fixtures 已对齐当前 schema/ID，目标 seal/Close/audit 断言进入预期层并通过。
+
+```text
+ERR1138_STATUS=CLOSED_TRIGGER_AND_ID_FIXTURES_ALIGNED
+GOVERNANCE_CLOSURE=33_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1138
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1138_GOVERNANCE_CLOSURE_TRIGGER_AND_ID_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1139_GOVERNANCE_CLOSURE_TASKS_FORMAL_GATE_AND_TRACE_DRIFT:START -->
+### ERR-1139：Governance closure 夹具缺 Candidate tasks/Formal Gate 且保留旧 trace 断言
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_CLOSE_AUTHORITY`。
+- **事实证据**：trigger 与 WI fixture 对齐后该文件收敛为 29 pass / 5 fail；成功类与 weak-audit 类均被 `close_artifact_tasks_authoritative` 和 `close_formal_version_gate` 阻断。单独“缺 trace_delta”案例也首先因这两个当前门禁失败，而当前 Close 输入/semantic closure 合同不再把根级 trace_delta 作为独立必需文件。
+- **影响**：成功 Close 测试未构造当前权威输入；旧 trace 断言会要求恢复已退出的直接文件门禁。
+- **正确做法**：共享夹具创建 `candidates/tasks.md` 与 passed formal gate；删除旧的根级 trace 独立阻断断言，保留 semantic closure/provenance 测试。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-044`、`EXP-060`。
+- **状态**：`CLOSED`。共享夹具已补 Candidate tasks 与 Formal Gate，旧根级 trace 独立门禁断言退出；governance closure 33/33 通过。
+
+```text
+ERR1139_STATUS=CLOSED_CURRENT_CLOSE_AUTHORITY_FIXTURE_ALIGNED
+GOVERNANCE_CLOSURE=33_PASS
+CLOSURE_REGRESSION=12_FILES_223_PASS
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1139
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1139_GOVERNANCE_CLOSURE_TASKS_FORMAL_GATE_AND_TRACE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1140_ARTIFACT_WRITE_METADATA_FIRST_READ_BYPASS:START -->
+### ERR-1140：Artifact Writer 在无效 Work Item metadata 上继续生成治理产物
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / ARTIFACT_OWNER`。
+- **事实证据**：owner 红灯为 schema 1.0 的 `WI-0010` 调用 `sf_artifact_write(file_type=intake)`；实际 `success=true` 并写入 intake，而预期在首次 metadata 读取前报告 `WORK_ITEM_METADATA_INVALID` 且零写入。目标结果 1 fail / 11 pass。
+- **影响**：Artifact Writer 的 workflow/module/normalization raw readers 可消费非当前 descriptor，并在其目录下生成看似受治理的 artifact。
+- **正确做法**：ID 与 HardStop 检查后、任何 artifact inference/read/write 前调用统一 current metadata reader；不存在或无效必须返回具体错误且保持所有文件不变。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Gate handler 已在 ID/目录检查后、workflow inference 与任何 Gate attempt 写入前调用统一 current metadata reader；owner 13/13、Gate 直接回归 186/186 与 daemon-core build 均通过。
+
+```text
+ERR1140_EXPECTED_RED=1_FAIL_11_PASS
+ERR1140_STATUS=CLOSED_ARTIFACT_WRITER_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=12_PASS
+DIRECT_ARTIFACT_REGRESSION=8_FILES_89_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=BEFORE_ARTIFACT_TYPE_INFERENCE_AND_WRITE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1140
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1140_ARTIFACT_WRITE_METADATA_FIRST_READ_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1141_ARTIFACT_PRECHECK_WIDIR_REDECLARATION:START -->
+### ERR-1141：Artifact metadata precheck 局部变量与后段 wiDir 重名
+
+- **分类**：`BUILD_FAILURE / LOCAL_SYMBOL_REDECLARATION`。
+- **事实证据**：目标测试在收集阶段由 esbuild 报 `sf-artifact-write.ts:1265 The symbol "wiDir" has already been declared`，没有执行任何测试。
+- **影响**：ERR-1140 实现尚未进入行为验证，不能关闭。
+- **正确做法**：将前检局部目录变量改为明确的 `metadataWorkItemDir`，保留后段现有 `wiDir` 作用域与逻辑。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。前检局部变量已改为 `metadataWorkItemDir`；目标测试完成收集并通过，daemon-core build 通过。
+
+```text
+ERR1141_STATUS=CLOSED_PRECHECK_LOCAL_RENAMED
+TARGET_TESTS=12_PASS
+DAEMON_CORE_BUILD=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1141
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1141_ARTIFACT_PRECHECK_WIDIR_REDECLARATION:END -->
+
+<!-- SPECFORGE_ERR1142_ARTIFACT_EXPANDED_FIXTURE_AND_PATH_BASELINE:START -->
+### ERR-1142：Artifact 扩大回归混有缺 WI fixture 与独立 cwd 路径失败
+
+- **分类**：`TEST_CONSUMER_DRIFT / MIXED_ATTRIBUTION`。
+- **事实证据**：8 文件 133 项为 128 pass / 5 fail。Candidate frozen、generic approval transition、invalid task contract、investigation artifact 四项首先返回 `WORK_ITEM_NOT_FOUND` 或 metadata precheck；`phase11-impact-scope-field-kind-contract` 独立失败于把 package cwd 拼成不存在的 `packages/daemon-core/setup/...`。
+- **影响**：前四项尚未验证目标 artifact/state 行为；第五项不能归因于 ERR-1140。
+- **正确做法**：只给四个直接消费者构造 schema 1.1 current WI；cwd 路径问题保留独立基线归因，不纳入 Artifact Writer 绿灯。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。package-cwd 已改为基于测试文件定位仓库 owner；目标文件 7/7，组合目标集除独立 ERR-1186 外为 23 pass。
+
+```text
+ERR1142_STATUS=CLOSED_REPOSITORY_OWNER_PATH_RESOLVED_FROM_TEST_FILE
+DIRECT_FIXTURE_ALIGNMENT=CLOSED
+DIRECT_ARTIFACT_REGRESSION=8_FILES_89_PASS
+EXPANDED_REGRESSION_ORIGINAL=128_PASS_5_FAIL
+UNRELATED_PATH_FAILURE=PHASE11_ORCHESTRATOR_DOC_CWD
+CURRENT_TARGET_RESULT=6_PASS_1_FAIL_SAME_PACKAGE_CWD_PATH
+FINAL_TARGET_RESULT=7_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1142
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1142_ARTIFACT_EXPANDED_FIXTURE_AND_PATH_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1143_CANDIDATE_FREEZE_TEST_NORMALIZATION_FIXTURE_DRIFT:START -->
+### ERR-1143：Candidate frozen 测试在 normalization 前置失败
+
+- **分类**：`TEST_CONSUMER_DRIFT / CANDIDATE_NORMALIZATION_FIXTURE`。
+- **事实证据**：三个直接 Artifact 消费文件收敛为 16 pass / 1 fail；剩余 frozen-state 测试实际返回 `ARTIFACT_NORMALIZATION_FAILED: CANDIDATE_MANIFEST_CANONICAL_WORKFLOW_PATH_INVALID: "missing"`，尚未进入预期 `CANDIDATE_FROZEN`。
+- **影响**：不能用不完整 Candidate 输入证明 approved 状态冻结行为。
+- **正确做法**：补齐当前 trigger/workflow Candidate normalization 前置，保持 production 先规范化、再检查冻结状态的现有顺序。
+- **类防护**：`EXP-004`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。测试已补 current `trigger_result.json` 作为规范 workflow path 权威；目标文件 6/6、Artifact Writer 直接回归 89/89 通过，并准确返回 `CANDIDATE_FROZEN`。
+
+```text
+ERR1143_STATUS=CLOSED_CANDIDATE_NORMALIZATION_FIXTURE_ALIGNED
+TARGET_TESTS=6_PASS
+DIRECT_ARTIFACT_TESTS=8_FILES_89_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1143
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1143_CANDIDATE_FREEZE_TEST_NORMALIZATION_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1144_GATE_RUN_METADATA_FIRST_READ_BYPASS:START -->
+### ERR-1144：Gate Runner 在非当前 Work Item metadata 上启动 Gate
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / GATE_OWNER`。
+- **事实证据**：owner 红灯以 schema 1.0 的 `WI-0011` 请求 `sf_v11_gate_run(entry_gate)`；实际 `success=true`，目标测试 1 fail / 12 pass。入口 `readWorkflowFacts()` 在统一校验前直接把 `work_item.json` 当作 workflow fallback，下游 entry/schema Gate 仅做局部检查。
+- **影响**：非当前 metadata 可以驱动 workflow inference、生成 Gate attempt/evidence，并形成看似受治理的结果。
+- **正确做法**：在 Gate handler 完成 ID/目录检查后、调用 `readWorkflowFacts()` 或创建任何 Gate 产物前，使用统一 current metadata reader；无效或缺失时返回具体错误并零写入。子 Gate 保留其内容级检查，不重复承担 owner 前检。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Changed-files Audit 已在 permission facts、HardStop 与 audit 判断前使用统一 current metadata reader；owner 14/14、直接回归 77/77 与 daemon-core build 均通过。
+
+```text
+ERR1144_EXPECTED_RED=1_FAIL_12_PASS
+ERR1144_STATUS=CLOSED_GATE_RUNNER_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=13_PASS
+DIRECT_GATE_REGRESSION=9_FILES_186_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=BEFORE_READ_WORKFLOW_FACTS_AND_GATE_ATTEMPT_WRITE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1144
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1144_GATE_RUN_METADATA_FIRST_READ_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1145_CHANGED_FILES_AUDIT_METADATA_FIRST_READ_BYPASS:START -->
+### ERR-1145：Changed-files Audit 用非当前 metadata 继续业务判断
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / AUDIT_OWNER`。
+- **事实证据**：owner 红灯以 schema 1.0 的 `WI-0012` 调用 `sf_changed_files_audit`；实际没有返回 `WORK_ITEM_METADATA_INVALID`，而是继续解释 permission facts 并返回 `CODE_PERMISSION_NOT_ENABLED`。目标测试 1 fail / 13 pass。
+- **影响**：非当前 metadata 可参与审计、权限和 HardStop 判断；解析异常还会被误报为文件不存在并写入错误 HardStop。
+- **正确做法**：在 Audit handler 完成 ID/动作检查后、读取任何 permission facts 或写 HardStop/audit 前，调用统一 current metadata reader；缺失与无效错误必须保持原义且零写入。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Decision handler 已在任何 State/Gate/workflow 读取前使用统一 current metadata reader；owner 15/15、Decision 直接回归 35/35 与 daemon-core build 均通过。
+
+```text
+ERR1145_EXPECTED_RED=1_FAIL_13_PASS
+ERR1145_STATUS=CLOSED_CHANGED_FILES_AUDIT_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=14_PASS
+DIRECT_AUDIT_REGRESSION=5_FILES_77_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=BEFORE_PERMISSION_FACTS_AND_HARD_STOP_DECISION
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1145
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1145_CHANGED_FILES_AUDIT_METADATA_FIRST_READ_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1146_CHANGED_FILES_AUDIT_EXPANDED_FIXTURE_AND_BASELINE:START -->
+### ERR-1146：Changed-files Audit 扩大回归混有旧 WI 夹具与独立治理基线
+
+- **分类**：`TEST_CONSUMER_DRIFT / MIXED_ATTRIBUTION`。
+- **事实证据**：5 文件 80 项为 70 pass / 10 fail。三个 no-code audit 与一个 formal audit 用无 schema/非当前 `work_item.json`，在新增 owner 前检处返回失败；另六项来自 orchestrator 旧 manifest 文本、未定义变量与 Windows `uv_os_get_passwd ENOMEM`，与 Audit metadata 前检无直接因果。
+- **影响**：四个直接测试尚未到达目标 audit 业务断言；独立六项不能归因给 ERR-1145。
+- **正确做法**：只给四个直接 Audit 消费者补 exact schema 1.1/current workflow metadata；独立设计/环境失败保持既有基线归因并排除。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。direct Audit fixtures 维持 77/77；orchestrator 环境、变量和 consumer fixture 已收敛，唯一剩余文档冲突拆分为 ERR-1186。
+
+```text
+ERR1146_STATUS=CLOSED_UNRELATED_BASELINE_RECONCILED_REMAINDER_SPLIT_ERR1186
+DIRECT_FIXTURE_ALIGNMENT=CLOSED
+DIRECT_AUDIT_REGRESSION=5_FILES_77_PASS
+EXPANDED_REGRESSION=70_PASS_10_FAIL
+DIRECT_FIXTURE_FAILURES=4
+UNRELATED_BASELINE_FAILURES=6
+CURRENT_ORCHESTRATOR_RESULT=11_PASS_6_FAIL
+CURRENT_COMMON_FIXTURE_FAILURE=HOST_PROFILE_WRITES_REAL_USER_ROOT_EPERRM
+CURRENT_ORCHESTRATOR_RESULT_FINAL=16_PASS_1_FAIL_ERR1186
+CURRENT_ORCHESTRATOR_RESULT=11_PASS_6_FAIL
+CURRENT_COMMON_FIXTURE_FAILURE=HOST_PROFILE_WRITES_REAL_USER_ROOT_EPERRM
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1146
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1146_CHANGED_FILES_AUDIT_EXPANDED_FIXTURE_AND_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1147_USER_DECISION_METADATA_FIRST_READ_BYPASS:START -->
+### ERR-1147：User Decision Recorder 用非当前 metadata 进入治理前置判断
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / DECISION_OWNER`。
+- **事实证据**：owner 红灯以 schema 1.0 的 `WI-0013` 记录 rejected 决策；实际返回 `USER_DECISION_GOVERNANCE_REJECTED`，没有报告 metadata schema 错误。目标测试 1 fail / 14 pass。
+- **影响**：非当前 metadata 可参与 workflow 与 decision governance 判断，根因被下游通用拒绝掩盖。
+- **正确做法**：在 Decision handler 完成 ID 检查后、读取 State/Gate/workflow 或写入 decision/invalidation 前，调用统一 current metadata reader；失败保持具体错误且零写入。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Merge handler 已在 `executeMerge()` 前使用统一 current metadata reader；owner 16/16、直接 Merge 回归 59/59 与 daemon-core build 均通过。
+
+```text
+ERR1147_EXPECTED_RED=1_FAIL_14_PASS
+ERR1147_STATUS=CLOSED_USER_DECISION_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=15_PASS
+DIRECT_DECISION_REGRESSION=3_FILES_35_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=BEFORE_STATE_GATE_AND_WORKFLOW_PRECONDITIONS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1147
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1147_USER_DECISION_METADATA_FIRST_READ_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1148_USER_DECISION_EXPANDED_CURRENT_WI_FIXTURE_DRIFT:START -->
+### ERR-1148：User Decision 扩大回归仍使用 schema 1.0 与影子 status 夹具
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_WORK_ITEM_METADATA`。
+- **事实证据**：4 文件 43 项为 35 pass / 8 fail。Candidate invalidation 夹具缺 schema；P0 共享 fixture 写 `schema_version=1.0` 与 `status`。八项均在 Decision/Gate current metadata 前检处失败，尚未到达各自目标断言。
+- **影响**：不能据此判断 Decision 业务行为或 ERR-1129 P0 后续基线；恢复旧 schema/status 会重新引入双状态权威。
+- **正确做法**：共享 fixture 使用 exact schema 1.1、移除 status，继续由测试 StateManager 提供每个场景的权威状态；重跑后再对剩余失败独立归因。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Candidate 与 P0 共享 fixture 已对齐 schema 1.1、移除影子 status；Candidate/Decision 直接回归通过。P0 剩余 7 项已恢复为 ERR-1129 的业务门禁范围，不归入本错误。
+
+```text
+ERR1148_STATUS=CLOSED_CURRENT_WI_FIXTURES_ALIGNED
+DIRECT_DECISION_REGRESSION=3_FILES_35_PASS
+P0_BASELINE=1_PASS_7_FAIL_OPEN_AS_ERR1129
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1148
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1148_USER_DECISION_EXPANDED_CURRENT_WI_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1149_MERGE_RUNNER_METADATA_PRECHECK_BYPASS:START -->
+### ERR-1149：Merge Runner 在 metadata 校验前执行合并预检
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / MERGE_OWNER`。
+- **事实证据**：owner 红灯以 schema 1.0 的 `WI-0014` 调用 `sf_v11_merge`；实际先返回 Merge preflight 失败结构且 `error` 为空，没有报告 metadata schema 错误。目标测试 1 fail / 15 pass。
+- **影响**：非当前 metadata 对应目录可进入 merge business action，并可能生成合并证据或更改 Project Spec 后才读取 workflow facts。
+- **正确做法**：在 Merge handler 完成 ID/目录定位后、调用 `executeMerge()` 前使用统一 current metadata reader；失败零 merge write。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Semantic Closure 已在 State/verification input 读取前使用统一 current metadata reader；owner 17/17、直接回归 28/28 与 daemon-core build 均通过。
+
+```text
+ERR1149_EXPECTED_RED=1_FAIL_15_PASS
+ERR1149_STATUS=CLOSED_MERGE_RUNNER_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=16_PASS
+DIRECT_MERGE_REGRESSION=3_FILES_59_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=BEFORE_EXECUTE_MERGE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1149
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1149_MERGE_RUNNER_METADATA_PRECHECK_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1150_SEMANTIC_CLOSURE_METADATA_PRECHECK_BYPASS:START -->
+### ERR-1150：Semantic Closure 在 metadata 校验前读取状态与验证输入
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / SEMANTIC_CLOSURE_OWNER`。
+- **事实证据**：owner 红灯以 schema 1.0 的 `WI-0015` 调用 `sf_v11_semantic_closure_run`；实际返回 `VERIFICATION_INPUT_CONTRACT_INVALID`，没有报告 metadata schema 错误。目标测试 1 fail / 16 pass。
+- **影响**：根因被 verification contract 掩盖，且在部分路径可先写 semantic closure report。
+- **正确做法**：在入口解析 Work Item ID/目录后、读取 StateManager、verification report 或写 closure/report 前使用统一 current metadata reader。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。测试命令已改为 parser 已验证的 `Set-Content -Path ... -Value ...`，并显式断言提取到 write target；可信产品红灯已建立为 ERR-1153。
+
+```text
+ERR1150_EXPECTED_RED=1_FAIL_16_PASS
+ERR1150_STATUS=CLOSED_SEMANTIC_CLOSURE_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=17_PASS
+DIRECT_SEMANTIC_CLOSURE_REGRESSION=3_FILES_28_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=BEFORE_STATE_AND_VERIFICATION_INPUT_READS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1150
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1150_SEMANTIC_CLOSURE_METADATA_PRECHECK_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1151_SEMANTIC_CLOSURE_CURRENT_WI_FIXTURE_DRIFT:START -->
+### ERR-1151：Semantic Closure 直接测试的 Work Item fixture 缺 current schema
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_WORK_ITEM_METADATA`。
+- **事实证据**：3 文件 28 项为 22 pass / 6 fail；`sf-semantic-closure-run.test.ts` 六项均首先返回 `WORK_ITEM_METADATA_INVALID ... MISSING_FIELD: schema_version is required`。
+- **影响**：六项未到达 closure build/preserve/verification/frozen 目标断言。
+- **正确做法**：共享 Work Item fixture 补 exact schema 1.1；不放宽生产 reader 或更改 closure 业务期望。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。共享 Work Item fixture 已补 schema 1.1/current workflow identity；六个 closure 目标断言全部恢复，3 文件 28/28 通过。
+
+```text
+ERR1151_STATUS=CLOSED_SEMANTIC_CLOSURE_CURRENT_WI_FIXTURE_ALIGNED
+DIRECT_SEMANTIC_CLOSURE_REGRESSION=3_FILES_28_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1151
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1151_SEMANTIC_CLOSURE_CURRENT_WI_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1152_SAFE_BASH_OWNER_RED_COMMAND_NOT_PARSED:START -->
+### ERR-1152：Safe Bash owner 红灯命令未被 write-target parser 识别
+
+- **分类**：`TEST_DESIGN_ERROR / COMMAND_FIXTURE`。
+- **事实证据**：批量 owner 测试使用 `Set-Content src/current.ts value`；direct runtime guard 返回 `checked=false`，handler 进入真实 shell profile 构建并触发 Windows `uv_os_get_passwd ENOMEM`。目标文件 17 pass / 2 fail。
+- **影响**：本次结果没有证明 metadata guard 行为；不得据此修改生产前检或把 ENOMEM 归因于 metadata。
+- **正确做法**：从现有 shell-target parser 测试中选择已验证可识别的写命令，先证明 `extractShellWriteTargets` 非空，再重跑 owner 红灯。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。共享 metadata owner 已增加同步 reader；Safe Bash 在 authorization/HardStop 前异步前检，runtime guard 同步前检且无效 metadata 零日志、零 HardStop。Owner 19/19、HardStop scope 2/2、stable 目标 2/2、daemon-core build 通过。
+
+```text
+ERR1152_STATUS=CLOSED_PARSER_PROVEN_COMMAND_FIXTURE
+OWNER_REGRESSION=17_PASS_2_FAIL_EXPECTED_PRODUCT_RED
+PRODUCT_BYPASS_EVIDENCE=ESTABLISHED_AS_ERR1153
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1152
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1152_SAFE_BASH_OWNER_RED_COMMAND_NOT_PARSED:END -->
+
+<!-- SPECFORGE_ERR1153_SAFE_BASH_WRITE_GUARD_METADATA_PRECHECK_BYPASS:START -->
+### ERR-1153：Safe Bash 与 Runtime Write Guard 直接消费非当前 metadata
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / SAFE_BASH_WRITE_GUARD_OWNER`。
+- **事实证据**：parser-proven 写命令下，owner 矩阵 17 pass / 2 fail。Safe Bash 返回 runtime state/allowed-files violations 并进入 HardStop/log 路径；direct runtime guard 返回 `file+operation not in allowed_write_files`，两者均未报告 schema 1.0 metadata 错误。
+- **影响**：非当前 permission facts 可影响 WI 选择、authorization bypass、Write Guard 判定，并产生错误 HardStop/日志；授权匹配路径甚至可能在 schema 校验前执行 shell。
+- **正确做法**：统一 metadata owner 增加同步 reader；Safe Bash 在选择 WI 后、HardStop/authorization/runtime guard 前异步前检；runtime guard 自身同步前检并在无效 metadata 时零日志、零 HardStop。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。共享 metadata owner 已增加同步 reader；Safe Bash 在 authorization/HardStop 前异步前检，runtime guard 同步前检且无效 metadata 零日志、零 HardStop。Owner 19/19、HardStop scope 2/2、stable 目标 2/2、daemon-core build 通过。
+
+```text
+ERR1153_EXPECTED_RED=2_FAIL_17_PASS
+ERR1153_STATUS=CLOSED_SAFE_BASH_AND_RUNTIME_GUARD_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=19_PASS
+HARD_STOP_SCOPE_REGRESSION=2_PASS
+STABLE_TARGET_REGRESSION=2_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=BEFORE_HARD_STOP_AUTHORIZATION_AND_WRITE_GUARD_FACTS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1153
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1153_SAFE_BASH_WRITE_GUARD_METADATA_PRECHECK_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1154_SAFE_BASH_WRITE_GUARD_EXPANDED_MIXED_BASELINE:START -->
+### ERR-1154：Safe Bash/Write Guard 扩大回归混有 current WI fixture、旧 thick-plugin 断言与 Windows 环境失败
+
+- **分类**：`TEST_CONSUMER_DRIFT / MIXED_ATTRIBUTION`。
+- **事实证据**：5 文件 47 项为 39 pass / 8 fail。唯一直接产品 fixture 仍写 schema 1.0/status；四项断言 user-level thin plugin 仍拥有 WI-ID/Native WriteGuard/报告路径策略，而当前 V6 thin plugin 明确只负责事件与连接；另四项无写命令进入 safe-bash profile 时触发 `uv_os_get_passwd ENOMEM`。
+- **影响**：直接 write-guard allow-path 尚未验证；其余七项不能归因于 ERR-1153，也不能通过恢复 thick-plugin 架构解决。
+- **正确做法**：只对齐 stable allow-path 的 schema 1.1 metadata 与 runtime state；thin-plugin 旧断言和 ENOMEM 保持独立基线，留待对应治理/环境批次。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。thin-plugin 旧职责断言已改为当前负向边界并通过；稳定的 `uv_os_get_passwd ENOMEM` 已由 ERR-1181 在共享 host-profile owner 提供 username fallback 后闭合。
+
+```text
+ERR1154_STATUS=CLOSED_THIN_PLUGIN_BOUNDARY_AND_HOST_PROFILE_RESILIENCE
+DIRECT_FIXTURE_ALIGNMENT=CLOSED
+DIRECT_TARGET_REGRESSION=2_PASS
+EXPANDED_REGRESSION=39_PASS_8_FAIL
+DIRECT_FIXTURE_FAILURES=1
+THIN_PLUGIN_OLD_ASSERTIONS=3_PLUS_1_WI_ID
+WINDOWS_ENOMEM_FAILURES=4
+CURRENT_THIN_PLUGIN_BOUNDARY_REGRESSION=6_FILES_19_PASS
+CURRENT_THIN_PLUGIN_OLD_ASSERTIONS=CLOSED_NO_LEGACY_COMPATIBILITY
+CURRENT_SAFE_BASH_REGRESSION=16_PASS
+HOST_PROFILE_FALLBACK_TEST=2_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1154
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1154_SAFE_BASH_WRITE_GUARD_EXPANDED_MIXED_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1155_HTTP_WRITE_GUARD_OWNER_TEST_DEPENDENCY_SHAPE:START -->
+### ERR-1155：HTTP WriteGuard owner 红灯未按真实 HTTPServer 依赖形态装配
+
+- **分类**：`TEST_DESIGN_ERROR / DEPENDENCY_FIXTURE`。
+- **事实证据**：owner 测试得到 `hasActiveWI=false` 但 `metadata_error=undefined`；这与当前 raw parser 应投影活动 WI 的代码路径不一致，说明测试传入的 `projectManager` 未进入 HTTPServer 实际 deps，而非 schema 已被拒绝。目标文件 19 pass / 1 fail。
+- **影响**：尚不能把结果作为 HTTP metadata bypass 的可信证据。
+- **正确做法**：读取 HTTPServer 构造器与现有 HTTP 测试的完整 deps 形态，复用真实 config/eventBus/stateManager/wal/projectManager 装配后重跑。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。测试已按 `HTTPServerDeps` 的真实形态补齐 `config/eventBus/stateManager/wal/projectManager`；重跑后稳定进入产品路径，并以 `hasActiveWI=true` 建立 ERR-1156 的可信产品红灯。
+
+```text
+ERR1155_STATUS=CLOSED_HTTP_SERVER_TEST_DEPENDENCY_SHAPE_ALIGNED
+OWNER_REGRESSION=19_PASS_1_FAIL_EXPECTED_PRODUCT_RED
+HTTP_BYPASS_EVIDENCE=ESTABLISHED_AS_ERR1156
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1155
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1155_HTTP_WRITE_GUARD_OWNER_TEST_DEPENDENCY_SHAPE:END -->
+
+<!-- SPECFORGE_ERR1156_HTTP_WRITE_GUARD_METADATA_PRECHECK_BYPASS:START -->
+### ERR-1156：HTTP WriteGuard 将非当前 metadata 投影为活动 Work Item
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / HTTP_WRITE_GUARD_OWNER`。
+- **事实证据**：真实 `HTTPServerDeps` 装配下，StateManager 对目录 `WI-0018` 返回 `implementation_running`，对应 `work_item.json` 为 schema 1.0；`loadWriteGuardContext` 实际返回 `hasActiveWI=true`，目标文件 19 pass / 1 fail。
+- **影响**：HTTP write-guard check/bash 可消费过期授权字段；changed-files-audit 也会以未校验的 allowed-write-files 或空集合继续审计，而不是对无效活动 metadata 明确 fail closed。
+- **正确做法**：先按目录 ID 查询 StateManager 权威生命周期；仅对非终态目录调用统一 current metadata reader。若活动 metadata 无效，返回显式诊断且不得投影 Work Item，并让 check/bash/audit 三个入口在任何守卫判定、日志或审计前拒绝。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。HTTP 上下文先按目录 ID 读取 StateManager 权威状态，仅对活动项使用统一 schema 1.1 reader；无效 metadata 不再投影 Work Item，check/bash/audit 均在判定、日志或审计前明确拒绝。Owner 21/21、HTTP E2E 1/1、daemon-core build 通过。
+
+```text
+ERR1156_EXPECTED_RED=1_FAIL_19_PASS
+ERR1156_STATUS=CLOSED_HTTP_WRITE_GUARD_METADATA_PRECHECK_CONNECTED
+OWNER_REGRESSION=21_PASS
+HTTP_GOVERNANCE_E2E=1_PASS
+DAEMON_CORE_BUILD=PASS
+FIRST_DEVIATION=RAW_METADATA_PARSE_AFTER_AUTHORITATIVE_ACTIVE_STATE_LOOKUP
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1156
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1156_HTTP_WRITE_GUARD_METADATA_PRECHECK_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1157_ERROR_LEDGER_NON_UNIQUE_PATCH_CONTEXT:START -->
+### ERR-1157：错误账本状态更新使用非唯一上下文而误命中 ERR-1153
+
+- **分类**：`DOCUMENTATION_GOVERNANCE_ERROR / NON_UNIQUE_PATCH_CONTEXT`。
+- **事实证据**：关闭 ERR-1155 的补丁以通用的 `状态=OPEN` 行作为上下文，实际把 ERR-1153 的已关闭说明替换成 HTTP 测试说明，而 ERR-1155 的说明仍显示 OPEN；机器字段未错位，产品代码和测试未受影响。
+- **影响**：ERR-1153 的人类可读事实与其机器状态短暂冲突，ERR-1155 的人类可读状态与机器状态短暂冲突。
+- **正确做法**：使用 ERR Marker 邻域和完整唯一状态文本修正两项；后续账本补丁必须以 ERR ID/Marker 或唯一正文定位，并在写后用 `rg -A/-B` 复核命中项。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-011`、`EXP-015`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。ERR-1153 原说明与 ERR-1155 关闭说明已恢复到各自 Marker 内，并已做有界复核。
+
+```text
+ERR1157_STATUS=CLOSED_LEDGER_MARKER_SCOPED_REPAIR
+PRODUCT_OR_TEST_IMPACT=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1157
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1157_ERROR_LEDGER_NON_UNIQUE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1158_HTTP_GOVERNANCE_E2E_CODE_PERMISSION_FAILURE:START -->
+### ERR-1158：HTTP 治理 E2E 在进入 WriteGuard 前的 code_permission 步骤失败
+
+- **分类**：`REGRESSION_FAILURE / ATTRIBUTION_PENDING`。
+- **事实证据**：owner + HTTP E2E 两文件 22 项为 21 pass / 1 fail；owner 的 context/check/bash/audit 全通过，E2E 在第 164 行断言 `permResult.json.data.success === true` 时实际为 false，尚未执行 WriteGuard check。
+- **影响**：ERR-1156 的入口级闭环已有单测证明，但既有 HTTP 全生命周期回归尚未提供传输级绿灯；该失败不能在未查看实际 response 与 permission 前置条件前归因于本次修复。
+- **正确做法**：读取 code-permission handler 当前契约、E2E fixture 与响应；必要时增加只读诊断输出或运行更小的既有测试，区分产品回归、current metadata fixture 漂移与历史基线。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED_TEST_ISOLATION`。失败确认为临时目录受仓库 `main` 祖先 Git 上下文影响；E2E 已在独立临时 Git 仓库建立 baseline 后切换语义分支，未削弱 main 写保护，重跑 1/1 通过。
+
+```text
+ERR1158_STATUS=CLOSED_HTTP_E2E_GIT_BRANCH_ISOLATED
+INITIAL_OWNER_AND_HTTP_E2E=21_PASS_1_FAIL
+FINAL_OWNER_AND_HTTP_E2E=22_PASS
+ROOT_CAUSE=TEMP_DIRECTORY_INHERITED_PARENT_REPOSITORY_MAIN_BRANCH
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1158
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1158_HTTP_GOVERNANCE_E2E_CODE_PERMISSION_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1159_DUPLICATE_WORKFLOW_ENGINE_OWNER:START -->
+### ERR-1159：workflow-runtime 构建并导出两个不同的 WorkflowEngine 实现
+
+- **分类**：`ARCHITECTURE_DEFECT / DUPLICATE_OWNER / RELEASE_SURFACE`。
+- **事实证据**：daemon、包根入口、event integration 与 AgentWorkflowEngine 使用 `src/WorkflowEngine.ts`；`src/engine/WorkflowEngine.ts` 仅由 `engine/index` 和两组直接源码测试引用。Owner 红灯比较两个入口的构造器，结果 1 fail / 0 pass，证明它们不是同一实现。
+- **影响**：同一包构建发布两个同名但能力不同的 WorkflowEngine；内部导入路径决定运行语义，违反单一事实来源并使 metadata evidence guard 存在双实现。
+- **正确做法**：保留实际 daemon/public runtime 所用的根实现；删除 `src/engine/WorkflowEngine.ts`，让 `engine/index` 转发根权威实现，并把直接测试转向唯一所有者。当前发布边界不保留旧源码路径兼容实现。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。弱副本已删除，engine/root 两个入口投影同一构造器；原 unit/performance 已转向唯一所有者并通过，types/workflow-runtime/daemon-core 构建全部通过。
+
+```text
+ERR1159_EXPECTED_RED=1_FAIL
+ERR1159_STATUS=CLOSED_SINGLE_WORKFLOW_ENGINE_OWNER
+CANONICAL_OWNER=PACKAGES_WORKFLOW_RUNTIME_SRC_WORKFLOWENGINE_TS
+SECONDARY_OWNER=PACKAGES_WORKFLOW_RUNTIME_SRC_ENGINE_WORKFLOWENGINE_TS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1159
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1159_DUPLICATE_WORKFLOW_ENGINE_OWNER:END -->
+
+<!-- SPECFORGE_ERR1160_WORKFLOW_PERFORMANCE_GATE_FIXTURE_DRIFT:START -->
+### ERR-1160：Workflow performance 测试依赖弱副本对未执行 Gate 的宽松行为
+
+- **分类**：`TEST_CONSUMER_DRIFT / GATE_FIXTURE`。
+- **事实证据**：删除重复引擎并把测试转向权威实现后，owner 1 pass、unit 21 pass；performance 13 项为 10 pass / 3 fail。三项均以 `Gate gate1 result: passed=false, status=blocked — gate result is unconsumed` 失败。
+- **影响**：三项性能/事件顺序断言未到达计时目标；不能通过恢复弱引擎或放宽权威 Gate fail-closed 语义解决。
+- **正确做法**：核对三项只测试执行性能和事件顺序后，为它们注入确定性通过的 Gate handler/runner，使测试前置条件合法；产品引擎保持 blocked Gate 不得沿 string next 继续。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。三项性能/事件用例已显式配置确定性通过的 Gate check；performance 13/13，Workflow 集中回归 146/146 通过，产品 Gate 语义未改。
+
+```text
+ERR1160_STATUS=CLOSED_WORKFLOW_PERFORMANCE_GATE_FIXTURE_ALIGNED
+OWNER_AND_UNIT=22_PASS
+PERFORMANCE=10_PASS_3_FAIL
+PRODUCT_GATE_SEMANTICS=UNCHANGED_FAIL_CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1160
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1160_WORKFLOW_PERFORMANCE_GATE_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1161_WORKFLOW_ENGINE_EVENT_HANDLER_REEXPORT:START -->
+### ERR-1161：删除重复引擎时把 EventHandler 类型转发到错误模块
+
+- **分类**：`BUILD_FAILURE / EXPORT_MAPPING_ERROR`。
+- **事实证据**：workflow-runtime `tsc` 报 `src/engine/index.ts(8,15): Module ../types.js has no exported member EventHandler`，daemon build 因前置失败未执行。
+- **影响**：当前 workflow-runtime 构建产物尚不可生成；运行时实现与测试行为未受影响。
+- **正确做法**：`WorkflowEvent` 与 `EventHandler` 均从唯一权威 `../WorkflowEngine.js` 做 type re-export；重新执行两包构建与定向回归。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。两个类型均已从权威引擎转发，types/workflow-runtime/daemon-core 顺序构建通过。
+
+```text
+ERR1161_STATUS=CLOSED_EVENT_HANDLER_REEXPORT_REPAIRED
+WORKFLOW_RUNTIME_BUILD=FAIL_1_TYPESCRIPT_ERROR
+DAEMON_CORE_BUILD=NOT_RUN_FAIL_CLOSED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1161
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1161_WORKFLOW_ENGINE_EVENT_HANDLER_REEXPORT:END -->
+
+<!-- SPECFORGE_ERR1162_WORKFLOW_ENGINE_METADATA_PRECHECK_BYPASS:START -->
+### ERR-1162：权威 WorkflowEngine 在 permission evidence 前直接消费非当前 metadata
+
+- **分类**：`RUNTIME_DEFECT / CONTRACT_CONFLICT / SCHEMA_PRECHECK_BYPASS`。
+- **事实证据**：owner 测试为 `implementation_ready` 准备合法 tasks/gate，但 `work_item.json` 使用 schema 1.0 且含非空 allowed-write-files；`enforceTransitionEvidencePublic` 实际 resolve，目标文件 1 pass / 1 fail。同时 `@specforge/types.WorkItemJsonSchema` 仍声明 schema 1.0 + status，而 daemon current validator 要求 schema 1.1 + metadata-only。
+- **影响**：唯一生产 WorkflowEngine 可消费过期 permission facts；共享 types 与 daemon current contract 冲突，若在引擎局部补版本判断会形成第三个真相源。
+- **正确做法**：在 `@specforge/types` 建立 current metadata contract/validator；更新旧 `WorkItemJsonSchema` 到 metadata-only 1.1；daemon validator 委托共享契约；WorkflowEngine 在 allowed-write-files 前使用同一 validator。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。共享 types 已成为 schema/version/metadata-only validator 真相源；daemon validator 委托共享契约，WorkflowEngine 在 permission facts 前调用同一契约。Workflow 146/146、daemon metadata/schema 78/78、三包构建通过。
+
+```text
+ERR1162_EXPECTED_RED=1_FAIL_1_PASS
+ERR1162_STATUS=CLOSED_SHARED_CURRENT_METADATA_CONTRACT_AND_ENGINE_PRECHECK
+CONTRACT_CONFLICT=TYPES_SCHEMA_1_0_STATUS_VS_DAEMON_SCHEMA_1_1_METADATA_ONLY
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1162
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1162_WORKFLOW_ENGINE_METADATA_PRECHECK_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1163_WORKFLOW_EVIDENCE_CURRENT_METADATA_FIXTURE_DRIFT:START -->
+### ERR-1163：Workflow evidence 测试 fixture 缺 current metadata identity/schema
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_WORK_ITEM_METADATA`。
+- **事实证据**：types build 通过且 Workflow owner 2/2 通过后，artifact-authority + evidence-guard + owner 112 项为 104 pass / 8 fail；八项均首先报告 `WORK_ITEM_METADATA_INVALID ... MISSING_FIELD: work_item_id/schema_version`，fixture 只写 allowed-write-files。
+- **影响**：两项 Candidate authority 成功断言和六项 code-permission gate 精确断言未到达各自目标；没有证据支持放宽共享 validator。
+- **正确做法**：共享 fixture 使用目录 basename 作为 `work_item_id`，补 schema 1.1，并保留原 allowed-write-files/gate/tasks 条件；重跑原断言。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。相关 fixture 已使用 schema 1.1、目录 ID 和结构化 allowed-write-files；原 112 项全部通过。
+
+```text
+ERR1163_STATUS=CLOSED_WORKFLOW_EVIDENCE_CURRENT_METADATA_FIXTURES_ALIGNED
+WORKFLOW_TARGET_REGRESSION=104_PASS_8_FAIL
+PRODUCT_OWNER_TEST=2_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1163
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1163_WORKFLOW_EVIDENCE_CURRENT_METADATA_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1164_REMAINING_METADATA_READER_QUERY_QUOTING:START -->
+### ERR-1164：剩余 metadata reader 查询混合 PowerShell 与复杂正则引号导致解析失败
+
+- **分类**：`EVIDENCE_COMMAND_ERROR / QUOTING`。
+- **事实证据**：将含单引号、双引号、转义括号和 alternation 的正则嵌入 PowerShell command 后，ParserError 报 `Unexpected token ')'`；`rg` 未启动。
+- **影响**：该次穷尽清单没有证据产出；无文件、Git 索引或产品状态变化。
+- **正确做法**：拆成文件级字面量查询和简单读取 API 查询，分别执行并人工按文件交叉；不得把失败解释为没有剩余消费者。
+- **类防护**：`EXP-002`、`EXP-007`、`EXP-008`、`EXP-012`、`EXP-019`、`EXP-060`。
+- **状态**：`CLOSED_ZERO_WRITE_RETRY_WITH_SIMPLE_QUERIES`。
+
+```text
+ERR1164_STATUS=CLOSED_QUERY_SPLIT_REQUIRED
+QUERY_EXECUTED=NO
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1164
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1164_REMAINING_METADATA_READER_QUERY_QUOTING:END -->
+
+<!-- SPECFORGE_ERR1165_CODE_PERMISSION_FIRST_READ_METADATA_BYPASS:START -->
+### ERR-1165：Code Permission 在统一 metadata reader 前解释 workflow policy
+
+- **分类**：`RUNTIME_DEFECT / SCHEMA_PRECHECK_BYPASS / CODE_PERMISSION_OWNER`。
+- **事实证据**：schema 1.0 的 `WI-0007` 声明 contract_change；owner 测试预期 metadata invalid，实际先返回 `CODE_PERMISSION_NOT_APPLICABLE_FOR_CONTRACT_CHANGE`，目标文件 20 pass / 1 fail。
+- **影响**：非当前 workflow facts 可在 schema 校验前决定 contract/spec-migration policy；此前 quick_change 测试只证明下游 service 最终拒绝，未证明首读前检，治理记录高估了闭环强度。
+- **正确做法**：Work Item ID 校验后立即使用统一 current reader；缺失/无效 metadata 在 HardStop、workflow policy、merge prerequisite 和 permission writes 前返回；后续逻辑复用已验证对象。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。统一 reader 已提升到第一个 metadata read；contract_change 红灯转绿，Code Permission/HardStop/HTTP 定向回归 79/79 通过。
+
+```text
+ERR1165_EXPECTED_RED=1_FAIL_20_PASS
+ERR1165_STATUS=CLOSED_CODE_PERMISSION_FIRST_READ_PRECHECK
+DIRECT_REGRESSION=4_FILES_79_PASS
+FIRST_DEVIATION=WORKFLOW_POLICY_BEFORE_CURRENT_METADATA_VALIDATION
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1165
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1165_CODE_PERMISSION_FIRST_READ_METADATA_BYPASS:END -->
+
+<!-- SPECFORGE_ERR1166_LEGACY_REPAIR_CLOSURE_RELEASE_SURFACE:START -->
+### ERR-1166：当前发布仍注册和安装 legacy Work Item repair compatibility audit
+
+- **分类**：`ARCHITECTURE_DEFECT / LEGACY_COMPATIBILITY_SURFACE / RELEASE_BOUNDARY`。
+- **事实证据**：删除型 registry/authority 红灯 13 项为 10 pass / 3 fail；`sf_work_item_repair_closure` 仍在 daemon 注册，生产 handler 与 user-level wrapper 仍物理存在，types 仍识别其 closure-skeleton marker。Handler 明示自己只接受 Candidate 或 authored legacy root fallback，不修复、不推进状态。
+- **影响**：当前 release 暴露一个与 ADR-013/用户决策冲突的旧根文件兼容入口；它重复 Candidate/Gate/Verification 的当前检查并保留错误的 legacy root 语义。
+- **正确做法**：从 daemon、installer registry 和 user-level wrapper 物理删除；删除仅测试该旧工具的单测与 marker 识别；disposition matrix 从 KEEP 移到 REMOVE，历史设计记录保留。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。handler、daemon import、installer registry、user-level wrapper、专属旧测试和 marker 均已删除；disposition matrix 已归入 LEGACY_ONLY/REMOVE。Registry/authority/owner 34/34，types/daemon build 通过。
+
+```text
+ERR1166_EXPECTED_RED=3_FAIL_10_PASS
+ERR1166_STATUS=CLOSED_LEGACY_REPAIR_CLOSURE_SURFACE_REMOVED
+DIRECT_REGRESSION=3_FILES_34_PASS
+TYPES_DAEMON_BUILD=PASS
+CURRENT_REPLACEMENT=CANDIDATE_FIRST_RESOLUTION_AND_EXISTING_GATES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1166
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1166_LEGACY_REPAIR_CLOSURE_RELEASE_SURFACE:END -->
+
+<!-- SPECFORGE_ERR1167_BUN_TMPDIR_EPERM_STEP7:START -->
+### ERR-1167：Step 7 并行定向回归未显式设置 Bun 专用临时目录
+
+- **分类**：`TEST_ENVIRONMENT / WINDOWS_TEMP_PERMISSION`。
+- **事实证据**：daemon 与 workflow 两个并行 Vitest 命令均在测试收集前退出，输出相同的 `EPERM accessing temporary directory. Please set $BUN_TMPDIR or $BUN_INSTALL`；没有测试用例运行。
+- **影响**：本次命令没有产生产品通过/失败证据；无产品代码、测试合同或 Git 状态变化。
+- **正确做法**：首次重跑已在确认仓库目录存在后显式设置 `BUN_TMPDIR`，但仍得到相同的测试前 `EPERM`；因此不再重复 `bun x` 路径，改用仓库已安装的 Vitest 可执行文件，避开 Bun 临时安装层。不得把环境启动失败归因给产品。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。改用 package-local Vitest 真实入口后 daemon 92/92、workflow 146/146 通过，证明此前失败限于 `bun x` 临时执行层。
+
+```text
+ERR1167_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_ENTRY_CONFIRMED
+FAILED_COMMAND_GROUPS=DAEMON_TARGET;WORKFLOW_TARGET
+FAILED_ATTEMPTS=2
+SUCCESSFUL_RETRY=DAEMON_6_FILES_92_PASS;WORKFLOW_5_FILES_146_PASS
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1167
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1167_BUN_TMPDIR_EPERM_STEP7:END -->
+
+<!-- SPECFORGE_ERR1168_LOCAL_VITEST_EXE_ASSUMPTION:START -->
+### ERR-1168：假设仓库存在 Windows `node_modules/.bin/vitest.exe`
+
+- **分类**：`EVIDENCE_COMMAND_ERROR / DEPENDENCY_ENTRYPOINT_ASSUMPTION`。
+- **事实证据**：只读 `Get-Item` 返回路径不存在；未启动测试、未下载依赖。
+- **影响**：没有产品通过/失败证据，也没有产品或依赖状态变化。
+- **正确做法**：先通过 `rg --files`/`Test-Path` 定位现有 Vitest package entry，再使用现有入口；不得继续猜测二进制名称。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-060`。
+- **状态**：`CLOSED_ZERO_WRITE_ENTRYPOINT_DISCOVERY_REQUIRED`。
+
+```text
+ERR1168_STATUS=CLOSED_LOCAL_EXE_NOT_PRESENT
+TEST_CASES_EXECUTED=0
+DEPENDENCY_INSTALL_ACTION=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1168
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1168_LOCAL_VITEST_EXE_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1169_DIRECT_VITEST_CACHE_CONFIG_RESOLUTION:START -->
+### ERR-1169：直接执行 Bun cache 中 Vitest 无法解析根配置依赖
+
+- **分类**：`TEST_ENVIRONMENT / PACKAGE_RESOLUTION_ENTRYPOINT`。
+- **事实证据**：3.2.4 与 1.6.1 的现有 `vitest.mjs` 均已启动并读取根 `vitest.config.ts`，随后在测试收集前报告 `Cannot find module 'vitest/config'`；根 `node_modules` 没有 Vitest package link。
+- **影响**：测试仍未收集，没有产品失败证据；无依赖安装或产品写入。
+- **正确做法**：只读确认 daemon-core/workflow-runtime 的 package-local Vitest 链接与 package script，从所属 package 解析入口执行；不得修改配置或制造根链接来掩盖依赖布局。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED_DIRECT_CACHE_ENTRY_NOT_VALID_AT_ROOT`。
+
+```text
+ERR1169_STATUS=CLOSED_TESTS_NOT_COLLECTED
+FAILED_COMMAND_GROUPS=DAEMON_TARGET;WORKFLOW_TARGET
+TEST_CASES_EXECUTED=0
+PRODUCT_FAILURE_EVIDENCE=NONE
+DEPENDENCY_INSTALL_ACTION=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1169
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1169_DIRECT_VITEST_CACHE_CONFIG_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR1170_READ_CONFIRMED_MISSING_HOST_PROFILE_CONFIG:START -->
+### ERR-1170：确认 host-profile Vitest config 不存在后仍执行读取
+
+- **分类**：`EVIDENCE_COMMAND_ERROR / READ_PRECONDITION`。
+- **事实证据**：同一只读命令先输出 `packages/host-profile/vitest.config.ts=False`，随后 `Get-Content` 对该路径报不存在。
+- **影响**：仅产生多余错误输出；没有测试、产品或依赖状态变化。
+- **正确做法**：后续读取以 `Test-Path` 结果为前置条件，仅选择已经确认存在的 version-unification config/package-local Vitest 入口。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-060`。
+- **状态**：`CLOSED_ZERO_WRITE_PRECONDITION_ENFORCED`。
+
+```text
+ERR1170_STATUS=CLOSED_MISSING_FILE_NOT_READ_AGAIN
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1170
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1170_READ_CONFIRMED_MISSING_HOST_PROFILE_CONFIG:END -->
+
+<!-- SPECFORGE_ERR1171_WRONG_VITEST_INCLUDE_FOR_SCRIPT_TESTS:START -->
+### ERR-1171：借用 version-unification Vitest config 过滤掉 scripts tests
+
+- **分类**：`TEST_ENVIRONMENT / TEST_SELECTION_CONFIG`。
+- **事实证据**：Vitest 4.1.5 正常启动，但输出 `No test files found`；filter 是两个 `scripts/tests/*.test.ts`，config include 为 `tests/**/*.test.ts`，执行数为零。
+- **影响**：没有脚本测试通过/失败证据；无产品、测试合同或依赖写入。
+- **正确做法**：查找仓库已有的 scripts/root 测试配置或正式入口；不得为执行方便修改/放宽不属于 scripts 的 package 配置。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED_WRONG_CONFIG_NOT_REUSED`。
+
+```text
+ERR1171_STATUS=CLOSED_ZERO_TESTS_EXECUTED
+VITEST_STARTED=YES
+TEST_CASES_EXECUTED=0
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1171
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1171_WRONG_VITEST_INCLUDE_FOR_SCRIPT_TESTS:END -->
+
+<!-- SPECFORGE_ERR1172_AGENT_SKILL_TEST_METADATA_OWNER_DRIFT:START -->
+### ERR-1172：Agent/Skill 合同测试仍把 daemon adapter 当作 metadata 错误文案 owner
+
+- **分类**：`TEST_CONSUMER_DRIFT / SINGLE_SOURCE_OWNERSHIP`。
+- **事实证据**：daemon/OpenCode 边界 3 文件 39 项为 38 pass / 1 fail；失败仅断言 `artifact-schema-validation.ts` 物理包含 `WORK_ITEM_CANNOT_CARRY_USER_DECISION`。D4B 已验证该文件委托 `@specforge/types.validateCurrentWorkItemMetadataJson`，共享 owner 才持有 current metadata 错误合同。
+- **影响**：测试要求复制权威字符串，与共享合同单一事实来源冲突；HTTP daemon 与 V1.1 E2E 本身全部通过。
+- **正确做法**：测试分别断言 types owner 包含 decision/status 禁止合同、daemon adapter 导入并委托共享 validator；不得把错误字符串复制回 adapter 以迎合旧断言。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。测试现分别验证 types 权威错误合同与 daemon delegation；原边界集 39/39 通过。
+
+```text
+ERR1172_STATUS=CLOSED_TEST_ALIGNED_TO_SHARED_METADATA_OWNER
+BOUNDARY_REGRESSION=39_PASS
+HTTP_DAEMON_E2E=21_PASS
+V11_E2E=9_PASS
+FIRST_DEVIATION=TEST_ASSERTS_DELEGATING_ADAPTER_OWNS_SHARED_ERROR_STRINGS
+PRODUCT_RUNTIME_FAILURE_EVIDENCE=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1172
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1172_AGENT_SKILL_TEST_METADATA_OWNER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1173_P0_BASELINE_MAIN_GUARD_AND_DECISION_DRIFT:START -->
+### ERR-1173：P0 基线从 1/7 变为 0/8，混入 main guard 与 Decision 输入漂移
+
+- **分类**：`REGRESSION_BASELINE / MIXED_ATTRIBUTION_UPDATE`。
+- **事实证据**：Step 8 单文件复跑为 0 pass / 8 fail。前两项首先返回 `USER_APPROVED_REQUIRES_EXPLICIT_USER_RESPONSE_QUOTE`；三项在共享 approval helper 失败；Gate 自动推进仍返回 summary failed；历史唯一通过的 merge 前 permission 拒绝现首先返回 `MAIN_WRITE_GUARD_BLOCKED`。
+- **影响**：ERR-1129 的历史 1/7 计数已不再代表当前执行现场；无法把八项统一归为一个产品根因，也不能把 main branch guard 的更早拒绝误判为 permission 语义回归。
+- **正确做法**：分别对照 User Decision 显式答复合同、Gate 结果权威和 Main Write Guard/Git 隔离要求；先修复测试输入/环境归属，再对仍存在的产品失败独立编号和修复。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。夹具现按合法顺序执行 semantic closure → verification gate → formal version gate → Close，不再手工提前宣告 `verification_done`；P0 当前基线 8/8 通过。
+
+```text
+ERR1173_STATUS=CLOSED_CURRENT_AUTHORITY_P0_FLOW_GREEN
+P0_FLOW_INITIAL=0_PASS_8_FAIL
+P0_FLOW_AFTER_CURRENT_FIXTURE_ALIGNMENT=4_PASS_4_FAIL
+P0_FLOW_AFTER_GATE_AND_MERGE_FIXTURE_ALIGNMENT=6_PASS_2_FAIL
+EXPLICIT_USER_RESPONSE_FIRST_FAILURES=2
+APPROVAL_HELPER_DEPENDENT_FAILURES=3
+GATE_SUMMARY_FAILURES=1
+MAIN_WRITE_GUARD_EARLY_FAILURES=1
+REMAINING_DEPENDENCY_CHAIN=1_CLOSE_AFTER_APPROVE_AND_MERGE
+ALIGNED_FIXTURES=EXPLICIT_USER_RESPONSE;ISOLATED_FEATURE_GIT_ROOT;NO_WORK_ITEM_SHADOW_STATUS
+MERGE_HELPER_ROOT_CAUSE=CANDIDATE_TARGET_NOT_DECLARED_BY_SPEC_MANIFEST
+GATE_STATE_EVIDENCE=AUTHORITATIVE_STATE_BEFORE_GATE_NULL
+GATE_FAILURES=SCHEMA_GATE;REQUIRED_FILES_GATE;CANDIDATE_MANIFEST_GATE;WORKFLOW_SPECIFIC_GATE
+GATE_AND_MERGE_STATUS=CLOSED_BY_CURRENT_FIXTURE_ALIGNMENT
+REMAINING_FAILURES=DECISION_INVALIDATION_ERROR_PRIORITY;CLOSE_GATE_UNEXPANDED_RESULT
+DECISION_INVALIDATION_STATUS=CLOSED_AS_ERR1174
+CLOSE_FIRST_TOOL_CHAIN_RESULT=VERIFICATION_GATE_FAILED;FORMAL_VERSION_GATE_FAILED
+CLOSE_GATE_ROOT_CAUSE=SEMANTIC_CLOSURE_TOOL_CALLED_AFTER_VERIFICATION_AND_FORMAL_GATES
+CLOSE_NEXT_ORDER=SEMANTIC_CLOSURE_THEN_VERIFICATION_THEN_FORMAL_VERSION_THEN_CLOSE
+CLOSE_SECOND_TOOL_CHAIN_RESULT=SEMANTIC_CLOSURE_INPUTS_FROZEN_AT_VERIFICATION_DONE
+FINAL_TOOL_CHAIN_RESULT=SEMANTIC_CLOSURE_PASS;VERIFICATION_GATE_PASS;FORMAL_VERSION_GATE_PASS;CLOSE_PASS
+P0_FLOW_FINAL=8_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1173
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1173_P0_BASELINE_MAIN_GUARD_AND_DECISION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1174_DECISION_INVALIDATION_MERGE_GUARD_UNREACHABLE:START -->
+### ERR-1174：Decision invalidation 的 merge-success 永久禁令位于状态门禁之后而不可达
+
+- **分类**：`RUNTIME_DEFECT / DECISION_GUARD_ORDER`。
+- **事实证据**：P0 已完成成功 merge 后请求 invalidate，实际先返回 `USER_DECISION_INVALIDATION_REQUIRES_APPROVED_STATE`；源码先要求 state=approved，随后才读取成功 merge report。成功 merge 的权威状态已是 merged，因此专用 `USER_DECISION_INVALIDATE_FORBIDDEN_AFTER_MERGE_SUCCESS` 分支不可达。
+- **影响**：写入仍被拒绝，但错误归属和恢复指导错误，调用方无法区分“尚未处于可失效状态”与“merge 后永久禁止、必须创建新 Work Item”。
+- **正确做法**：current metadata 前检后先检查不可逆 merge success；命中即返回永久禁止，再对未 merge 场景要求 approved 状态；不改变任何允许写入条件。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-044`、`EXP-049`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。merge guard 已前置；P0 目标 1/1、Candidate approval/invalidation owner 2/2 通过。
+
+```text
+ERR1174_STATUS=CLOSED_MERGE_SUCCESS_GUARD_PRECEDES_APPROVED_STATE_GUARD
+EXPECTED_RED=USER_DECISION_INVALIDATION_REQUIRES_APPROVED_STATE_AFTER_SUCCESSFUL_MERGE
+TARGET_REGRESSION=P0_1_PASS;CANDIDATE_OWNER_2_PASS
+WRITE_PERMISSION_CHANGE=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1174
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1174_DECISION_INVALIDATION_MERGE_GUARD_UNREACHABLE:END -->
+
+<!-- SPECFORGE_ERR1175_FINAL_GOVERNANCE_TEST_METADATA_OWNER_DRIFT:START -->
+### ERR-1175：Final governance 回归仍要求 daemon adapter 复制 metadata 错误合同
+
+- **分类**：`TEST_CONSUMER_DRIFT / SINGLE_SOURCE_OWNERSHIP`。
+- **事实证据**：Decision/P0 邻近回归 5 文件 89 项为 88 pass / 1 fail；唯一失败要求 `artifact-schema-validation.ts` 包含 `WORK_ITEM_CANNOT_CARRY_USER_DECISION`，与 ERR-1172 相同。共享错误合同实际由 `packages/types/src/work-item-metadata-contract.ts` 持有，daemon adapter 委托统一 validator。
+- **影响**：旧测试鼓励复制错误字符串，违反 D4B 已确立的单一事实来源；其余 runtime/owner 回归和 daemon build 均通过。
+- **正确做法**：与已修复的 Agent/Skill 合同测试一致，分别验证 types owner 的 decision/status 禁令和 daemon adapter 的 validator delegation。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Final governance 测试现验证 types 共享 owner 持有错误合同、daemon adapter 委托共享 validator；完整五文件扩展回归 89/89 通过。
+
+```text
+ERR1175_STATUS=CLOSED_TEST_ALIGNED_TO_SHARED_METADATA_OWNER
+EXPANDED_REGRESSION=88_PASS_1_FAIL
+EXPANDED_REGRESSION_FINAL=5_FILES_89_PASS
+DAEMON_CORE_BUILD=PASS
+PRODUCT_RUNTIME_FAILURE_EVIDENCE=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1175
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1175_FINAL_GOVERNANCE_TEST_METADATA_OWNER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1176_EXPLICIT_VITEST_PATHS_SILENTLY_OMITTED:START -->
+### ERR-1176：两个错误的显式 Vitest 路径被静默忽略，形成不完整成功结果
+
+- **分类**：`TEST_EXECUTION / SELECTION_COMPLETENESS`。
+- **事实证据**：扩展回归命令请求 5 个文件，但其中 `tests/integration/candidate-approval-flow.test.ts` 与 `tests/v11-tool-registry-writeguard.test.ts` 不存在；Vitest 仍以 exit 0 完成，仅报告 3 files / 43 tests。仓库真实路径分别为 `tests/candidate-approval-state-governance.test.ts` 与 `tests/unit/v11-tool-registry-writeguard.test.ts`。
+- **影响**：43/43 只能证明实际收集的三个文件，不能作为计划中的五文件扩展回归证据；没有产品、依赖或治理状态写入。
+- **正确做法**：以 `rg --files` 固化真实测试路径后重跑五文件集合，并以实际 `Test Files` 和 `Tests` 计数核验选择完整性。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。使用已确认的五个真实路径重跑，实际收集 5/5 文件、89/89 项通过。
+
+```text
+ERR1176_STATUS=CLOSED_COMPLETE_SELECTION_VERIFIED
+REQUESTED_FILES=5
+EXISTING_REQUESTED_FILES=3
+ACTUAL_RESULT=3_FILES_43_PASS
+FINAL_RESULT=5_FILES_89_PASS
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1176
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1176_EXPLICIT_VITEST_PATHS_SILENTLY_OMITTED:END -->
+
+<!-- SPECFORGE_ERR1177_DAEMON_TSC_CMD_ENTRY_ASSUMPTION:START -->
+### ERR-1177：错误假设 daemon-core 提供 Windows `tsc.cmd` 入口
+
+- **分类**：`TEST_ENVIRONMENT / PACKAGE_BINARY_ENTRYPOINT`。
+- **事实证据**：PowerShell 执行 `.\\node_modules\\.bin\\tsc.cmd -p tsconfig.json --noEmit` 时报告命令不存在，编译未启动；实际 package-local bin 为 `tsc.exe`/`tsc.bunx`。
+- **影响**：没有构建通过或失败证据；没有产品文件、依赖或编译产物写入。
+- **正确做法**：使用已枚举确认存在的 `.\\node_modules\\.bin\\tsc.exe --noEmit`，并保留 package tsconfig 作为配置权威。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。确认的 package-local `tsc.exe -p tsconfig.json --noEmit` exit 0。
+
+```text
+ERR1177_STATUS=CLOSED_DAEMON_TYPECHECK_PASS
+FAILED_ENTRY=PACKAGE_LOCAL_TSC_CMD
+CONFIRMED_ENTRY=PACKAGE_LOCAL_TSC_EXE
+FINAL_RESULT=PASS
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1177
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1177_DAEMON_TSC_CMD_ENTRY_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1178_WINDOWS_RG_GLOB_PATH_NOT_EXPANDED:START -->
+### ERR-1178：Windows PowerShell 未展开传给 `rg` 的 Markdown 路径 glob
+
+- **分类**：`EVIDENCE_COMMAND_ERROR / PLATFORM_GLOB_ASSUMPTION`。
+- **事实证据**：`rg ... docs/implementation/architecture-consistency/*.md` 报 Windows OS error 123；同一命令中对明确 ledger 路径的 ERR-1122 检索已成功。
+- **影响**：实施目录的 Step 8 交叉检索没有执行，ERR-1122 ledger 原始证据读取不受影响；无写入副作用。
+- **正确做法**：直接把目录交给 `rg` 并用 `-g '*.md'` 过滤，不依赖 shell glob 展开。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。目录加 `-g '*.md'` 的检索成功返回 Step 8、ERR-1122 及历史 handoff 证据。
+
+```text
+ERR1178_STATUS=CLOSED_DIRECTORY_FILTER_QUERY_EXECUTED
+SUCCESSFUL_EVIDENCE=ERR1122_LEDGER_BLOCK
+FAILED_EVIDENCE=IMPLEMENTATION_STEP8_CROSS_SEARCH
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1178
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1178_WINDOWS_RG_GLOB_PATH_NOT_EXPANDED:END -->
+
+<!-- SPECFORGE_ERR1179_JSON_FAILURE_SUMMARY_ARRAY_SUBSTRING_ERROR:START -->
+### ERR-1179：JSON 回归摘要脚本把 failureMessages 数组当作字符串截取
+
+- **分类**：`EVIDENCE_PROCESSING_ERROR / POWERSHELL_SHAPE_ASSUMPTION`。
+- **事实证据**：Vitest JSON 报告已成功生成且总数读取成功；随后 PowerShell 对部分 `failureMessages` 的 `System.Object[]` 调用 `Substring`，产生 `InvalidOperation`，详细文件表只部分输出。
+- **影响**：原始 JSON 证据完整保存在 `.tmp/daemon-core-full-step8.json`，总数可信；当前格式化的失败文件表不完整，不能用于最终分桶。
+- **正确做法**：先只提取 `testResults.name` 与 failed assertion count；若需首错，显式把第一条 message 转成单一字符串后再截断。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。shape-safe 摘要已完整列出 45 个 failed-status 文件（其中 2 文件为 suite/unhandled failure、0 个 failed assertion）及 206 个失败断言。
+
+```text
+ERR1179_STATUS=CLOSED_SHAPE_SAFE_SUMMARY_COMPLETE
+RAW_JSON_EVIDENCE=COMPLETE
+SUMMARY_COUNTS=READ_SUCCESSFULLY
+PRODUCT_FAILURE_EVIDENCE_CHANGE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1179
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1179_JSON_FAILURE_SUMMARY_ARRAY_SUBSTRING_ERROR:END -->
+
+<!-- SPECFORGE_ERR1180_TRANSACTION_TEST_AUDIT_VERDICT_OWNER_DRIFT:START -->
+### ERR-1180：Transaction closure 测试仍要求 runtime adapter 复制 audit verdict 文案
+
+- **分类**：`TEST_CONSUMER_DRIFT / SINGLE_SOURCE_OWNERSHIP`。
+- **事实证据**：ERR-1154 六文件目标回归 18 pass / 1 fail；唯一失败要求 `write-guard-runtime-v12.ts` 包含 `Blocked write attempts`。该 adapter 实际导入并委托 `parseChangedFilesAuditVerdictPass`，解析合同 owner 为 `changed-files-audit-verdict.ts`。
+- **影响**：薄插件边界修复本身均已通过；旧断言鼓励 adapter 复制 owner 文案，违反单一事实来源。
+- **正确做法**：测试在 audit verdict owner 验证 blocked-write 文案，在 runtime adapter 验证 import/return delegation。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。测试现分别验证 audit verdict owner 的 blocked-write 合同与 runtime adapter delegation；ERR-1154 六文件目标回归 19/19 通过。
+
+```text
+ERR1180_STATUS=CLOSED_TEST_ALIGNED_TO_AUDIT_VERDICT_OWNER
+TARGET_REGRESSION=18_PASS_1_FAIL
+TARGET_REGRESSION_FINAL=6_FILES_19_PASS
+PRODUCT_RUNTIME_FAILURE_EVIDENCE=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1180
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1180_TRANSACTION_TEST_AUDIT_VERDICT_OWNER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1181_SAFE_BASH_OPTIONAL_USERINFO_CRASH:START -->
+### ERR-1181：Safe Bash 因可选用户名采集失败而在治理检查前崩溃
+
+- **分类**：`RUNTIME_DEFECT / HOST_PROFILE_RESILIENCE`。
+- **事实证据**：`safe-bash-caller-role.test.ts` 隔离复跑仍为 12 pass / 4 fail；四项均在 `buildDefaultProfile()` 调用 `os.userInfo().username` 时抛出 `uv_os_get_passwd ENOMEM`，尚未进入目标 caller-role/WriteGuard 行为。
+- **影响**：环境身份信息采集故障可使受控 Safe Bash 整体不可用；这不是允许写入的旁路，但会把可恢复的观测信息故障升级为业务工具崩溃。
+- **正确做法**：核对 host-profile 权威后，仅为可选 username 解析提供显式、可测试的保守 fallback；不得放宽 authorization、WriteGuard、HardStop 或 command policy。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-030`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。username 解析与 fallback 已收敛至 `@specforge/host-profile.resolveHostUsername`，scanner 与 Safe Bash 共同消费；host-profile 2/2、Safe Bash 16/16、两包 typecheck 通过。
+
+```text
+ERR1181_STATUS=CLOSED_SHARED_HOST_USERNAME_FALLBACK
+ISOLATED_REGRESSION=12_PASS_4_FAIL
+FIRST_DEVIATION=SAFE_BASH_DEFAULT_PROFILE_USERINFO_COLLECTION
+WRITE_PERMISSION_BYPASS=NONE
+HOST_PROFILE_TEST=2_PASS
+SAFE_BASH_TARGET=16_PASS
+HOST_PROFILE_TYPECHECK=PASS
+DAEMON_CORE_TYPECHECK=PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1181
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1181_SAFE_BASH_OPTIONAL_USERINFO_CRASH:END -->
+
+<!-- SPECFORGE_ERR1182_HOST_PROFILE_TEST_DIRECTORY_ASSUMPTION:START -->
+### ERR-1182：host-profile 取证命令包含不存在的 tests 目录
+
+- **分类**：`EVIDENCE_COMMAND_ERROR / PATH_PRECONDITION`。
+- **事实证据**：源码与文档组合 `rg` 中包含 `packages/host-profile/tests`，该目录不存在并返回 OS error 2；`scanner.ts`、`types.ts` 与 daemon Safe Bash 的有效匹配仍已返回。
+- **影响**：不能据此判断 host-profile 没有测试，只能确认该猜测目录不存在；产品文件未修改。
+- **正确做法**：以 `rg --files packages/host-profile` 枚举真实布局，再选择现有测试位置或建立明确的 package-local 测试。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。`rg --files` 确认 package 当前仅有 `src/` 源码、无既有测试文件；本修复将在真实 `src/` 布局建立 package-local test。
+
+```text
+ERR1182_STATUS=CLOSED_REAL_PACKAGE_LAYOUT_ENUMERATED
+VALID_SOURCE_EVIDENCE=SCANNER_AND_SAFE_BASH_DUPLICATE_USERINFO_CALLS
+PRODUCT_CHANGE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1182
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1182_HOST_PROFILE_TEST_DIRECTORY_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1183_HOST_PROFILE_VITEST_ROOT_CONFIG_RESOLUTION:START -->
+### ERR-1183：host-profile test 脚本向上加载不可解析的根 Vitest 配置
+
+- **分类**：`TEST_INFRASTRUCTURE / PACKAGE_CONFIG_OWNERSHIP`。
+- **事实证据**：package-local Vitest 4.1.5 启动后读取仓库根 `vitest.config.ts`，随后报告无法解析 `vitest/config` 并在收集前退出；host-profile 当前没有 package-local config。
+- **影响**：新增 username fallback 测试未执行，没有产品失败证据。
+- **正确做法**：为声明独立 `test` script 的 host-profile 提供最小 package-local Vitest config，使配置依赖从该 package 解析；不修改根配置或制造依赖链接。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。host-profile 已有 package-local Vitest config，新增 scanner test 1 file / 2 tests 通过。
+
+```text
+ERR1183_STATUS=CLOSED_PACKAGE_LOCAL_TEST_CONFIG_ACTIVE
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1183
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1183_HOST_PROFILE_VITEST_ROOT_CONFIG_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR1184_DAEMON_CONSUMED_STALE_HOST_PROFILE_DIST:START -->
+### ERR-1184：daemon 目标回归在共享 owner 构建前消费旧 host-profile dist
+
+- **分类**：`TEST_EXECUTION / WORKSPACE_BUILD_ORDER`。
+- **事实证据**：Safe Bash 目标复跑 12 pass / 4 fail，四项统一为 `resolveHostUsername is not a function`；daemon 的 `@specforge/host-profile` package export 指向 `dist/index.js`，而新增源码导出尚未构建。
+- **影响**：证明执行顺序错误，不能判断 fallback 实现有效性；没有写权限或治理语义变化。
+- **正确做法**：先 typecheck/build host-profile 共享 owner，再执行 daemon consumer 目标回归与 daemon typecheck。
+- **类防护**：`EXP-001`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。先构建 host-profile dist 后 daemon consumer 目标回归 16/16 通过。
+
+```text
+ERR1184_STATUS=CLOSED_OWNER_BUILD_PRECEDES_CONSUMER_TEST
+TARGET_RESULT=12_PASS_4_FAIL
+FINAL_TARGET_RESULT=16_PASS
+PRODUCT_ROOT_CAUSE_NOT_PROVEN=YES
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1184
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1184_DAEMON_CONSUMED_STALE_HOST_PROFILE_DIST:END -->
+
+<!-- SPECFORGE_ERR1185_HOST_PROFILE_TSC_EXE_ENTRY_ASSUMPTION:START -->
+### ERR-1185：错误假设 host-profile 提供 package-local `tsc.exe`
+
+- **分类**：`TEST_ENVIRONMENT / PACKAGE_BINARY_ENTRYPOINT`。
+- **事实证据**：`.\\node_modules\\.bin\\tsc.exe -p tsconfig.json` 在 host-profile 目录报告命令不存在，编译未启动。
+- **影响**：没有构建结果或 dist 更新；新增 package 测试 2/2 通过不受影响。
+- **正确做法**：枚举 package/root 实际 bin 与 workspace script 解析结果，使用已确认存在的 TypeScript 入口。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。确认 root workspace `node_modules/.bin/tsc.exe` 存在并成功构建/typecheck host-profile。
+
+```text
+ERR1185_STATUS=CLOSED_WORKSPACE_TSC_ENTRY_CONFIRMED
+HOST_PROFILE_TEST=2_PASS
+HOST_PROFILE_BUILD=PASS
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1185
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1185_HOST_PROFILE_TSC_EXE_ENTRY_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1186_STANDARD_ORCHESTRATOR_LEGACY_CONTINUITY_CONFLICT:START -->
+### ERR-1186：fused standard 与 current orchestrator 对旧 manifest / continuity 能力互相冲突
+
+- **分类**：`CONTRACT_CONFLICT / GOVERNANCE_DOCUMENT_AUTHORITY`。
+- **事实证据**：current orchestrator 声明 `.specforge/project/spec_manifest.json` 是当前初始化与规格权威、不得读取或迁移旧根 manifest，且不声明假定存在的 `sf_continuity`/resume snapshot 能力；`docs/standards/fused_standard.md:118` 仍允许 `sf_project_init` 维护兼容 `.specforge/manifest.json`，`:553` 要求通过 `sf_continuity` 恢复。修复测试变量和其他夹具后，目标集 23 pass / 1 fail，唯一红灯即 orchestrator 缺少 standard 要求的 `resume_check/resume_plan` 快照合同。
+- **影响**：Standard 与 Agent 对当前发布边界、恢复入口及无 legacy compatibility 决策不一致；不能通过只改测试选择一方，也不能在用户已延后的四文件治理前顺手改权威文档。
+- **正确做法**：本批修复测试变量使冲突显式红灯；在用户允许的治理阶段，对 requirements/design/final-plan/ADR 与 fused standard/orchestrator 做统一权威裁决后同步修改。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`OPEN_DEFERRED_GOVERNANCE_AUTHORITY_ALIGNMENT`。
+
+```text
+ERR1186_STATUS=OPEN_CONTRACT_CONFLICT
+STANDARD_LEGACY_ROOT_MANIFEST=ALLOWED_FOR_COMPAT_INIT
+ORCHESTRATOR_LEGACY_ROOT_MANIFEST=FORBIDDEN
+STANDARD_CONTINUITY=SF_CONTINUITY_REQUIRED
+ORCHESTRATOR_CONTINUITY=NO_ASSUMED_TOOL
+PRODUCT_CHANGE=NONE
+TARGET_REGRESSION=23_PASS_1_FAIL_EXPECTED_CONTRACT_CONFLICT
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1186
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1186_STANDARD_ORCHESTRATOR_LEGACY_CONTINUITY_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1187_MULTI_FILE_PATCH_PARTIAL_APPLICATION:START -->
+### ERR-1187：多文件补丁报告 context mismatch 但前序文件已部分应用
+
+- **分类**：`EDIT_TOOLING_DEFECT / PARTIAL_APPLICATION_RECONCILIATION`。
+- **事实证据**：补丁工具报告在 phase11 测试找不到旧 `process.cwd()` 上下文；复核却确认该测试路径和 ledger 的 ERR-1142/1146/1186 前序 hunks 已写入，design test hunks 未写入，同时 ERR-1186 与一个状态行因后续尝试重复。
+- **影响**：不能依据失败返回假定整体零写入；账本出现临时重复，design test 仍是旧状态。
+- **正确做法**：以文件实际内容逐项核对，删除重复账本，只对未应用的 design test hunks 使用小补丁；完成后运行目标回归和 `git diff --check`。
+- **类防护**：`EXP-004`、`EXP-005`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-052`、`EXP-060`。
+- **状态**：`CLOSED`。重复账本已清理；phase11 路径 hunk 保留，design 未应用 hunks 已用小补丁逐项完成；目标集稳定为 23 pass / 1 个已登记 ERR-1186 红灯。
+
+```text
+ERR1187_STATUS=CLOSED_EXACT_FILE_STATE_RECONCILED
+PHASE11_PATH_HUNK=APPLIED
+LEDGER_HUNKS=APPLIED_WITH_DUPLICATES
+DESIGN_TEST_HUNKS=NOT_APPLIED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1187
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1187_MULTI_FILE_PATCH_PARTIAL_APPLICATION:END -->
+
+<!-- SPECFORGE_ERR1188_DAEMON_TEST_PATH_PREFIX_OMISSION:START -->
+### ERR-1188：回归取证命令遗漏 daemon-core package 路径前缀
+
+- **分类**：`EVIDENCE_COMMAND_ERROR / PATH_PRECONDITION`。
+- **事实证据**：首次检索使用 `tests/integration/...` 与 `tests/unit/...`，仓库根不存在这些路径并返回 OS error 2；`rg --files packages/daemon-core` 随后确认四个目标测试均位于 `packages/daemon-core/tests/**`。
+- **影响**：首次命令未读取目标测试，不能形成测试语义判断；产品与测试文件均未改变。
+- **正确做法**：先用 `rg --files` 固化真实路径，再读取 package 内文件并执行目标回归。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。目标文件真实路径已确认，后续取证使用 package 完整路径。
+
+```text
+ERR1188_STATUS=CLOSED_REAL_PACKAGE_PATHS_CONFIRMED
+PRODUCT_CHANGE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1188
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1188_DAEMON_TEST_PATH_PREFIX_OMISSION:END -->
+
+<!-- SPECFORGE_ERR1189_RETIRED_STATE_AND_CREATE_PROTOCOL_TEST_DRIFT:START -->
+### ERR-1189：WAL/StateManager 回归仍使用退役状态与旧创建协议
+
+- **分类**：`TEST_CONSUMER_DRIFT / NO_LEGACY_COMPATIBILITY`。
+- **事实证据**：`state_machine.ts` 将 `FINAL_STATES/ALL_STATES` 声明为运行状态唯一权威，明确排除 `intake / requirements_gate / development / review` 等旧状态；`sf_v11_work_item_create` 是 Work Item 创建 owner，并通过 StateManager/WAL 写入初始 `intake_ready`；三份 WAL/StateManager 测试仍使用 `intake / requirements / design / requirements_gate`。`transition-guard-idempotency.property.test.ts` 整体则要求旧 `.specforge/manifest.json` 决定 `sf_state_transition(from_state='')` 的创建行为，与当前专用创建 owner 和 `.specforge/project/spec_manifest.json` 边界冲突。
+- **影响**：全量回归把已退出发布边界的词汇和创建协议报告为产品失败；若为使测试通过而恢复旧路径，会破坏单一事实来源与用户确认的无旧项目兼容决策。
+- **正确做法**：保留仍有价值的 WAL 单写者、重建、恢复、幂等性测试，但统一消费 `ALL_STATES` 或当前状态；删除仅证明旧根 manifest/通用 transition 创建协议的 property suite；不改产品状态机或恢复 legacy reader。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-044`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。三份仍有业务价值的 WAL/StateManager 测试已对齐当前状态权威并与产品路径隔离；纯旧创建协议 property suite 已删除；目标回归 3 files / 35 tests 全绿。
+
+```text
+ERR1189_STATUS=CLOSED_CURRENT_STATE_TESTS_ALIGNED_LEGACY_CREATE_SUITE_REMOVED
+STATE_AUTHORITY=packages/daemon-core/src/tools/lib/state_machine.ts
+CREATE_OWNER=sf_v11_work_item_create
+LEGACY_COMPATIBILITY=OUT_OF_CURRENT_RELEASE_BOUNDARY
+PRODUCT_CHANGE_PLANNED=NONE
+TARGET_REGRESSION=3_FILES_35_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1189
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1189_RETIRED_STATE_AND_CREATE_PROTOCOL_TEST_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1190_ROOT_VITEST_BIN_DIRECTORY_TYPO:START -->
+### ERR-1190：目标回归命令误写 workspace 二进制目录
+
+- **分类**：`TEST_ENVIRONMENT / BINARY_ENTRYPOINT`。
+- **事实证据**：预检使用 `.node_modules/.bin`，PowerShell 返回路径不存在；前序构建证据使用的实际 workspace 目录为 `node_modules/.bin`。
+- **影响**：本次目标测试未启动，没有新增产品或测试失败结论；此前状态词扫描与 diff check 已完成。
+- **正确做法**：从真实 `node_modules/.bin` 枚举 Vitest 入口后执行目标集。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。路径拼写已纠正，后续只使用枚举确认的 workspace 入口。
+
+```text
+ERR1190_STATUS=CLOSED_WORKSPACE_BIN_PATH_CORRECTED
+TEST_STARTED=NO
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1190
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1190_ROOT_VITEST_BIN_DIRECTORY_TYPO:END -->
+
+<!-- SPECFORGE_ERR1191_CURRENT_RUNTIME_TEST_FIXTURE_AND_EXPECTATION_DRIFT:START -->
+### ERR-1191：当前状态对齐后暴露 Runtime 测试夹具与 fail-closed 预期漂移
+
+- **分类**：`TEST_FIXTURE_DRIFT / RUNTIME_FAIL_CLOSED_CONTRACT`。
+- **事实证据**：ERR-1189 首轮三文件回归为 29 pass / 6 fail：T2.2 仍保留五个旧状态期望；T4 两项注册未创建当前 `.specforge/project/spec_manifest.json`，被 `ProjectManager` 正确拒绝为 `PROJECT_NOT_INITIALIZED`；T5.2 仍期望损坏 WAL 被跳过，而 Runtime Schema 预检正确返回 `RUNTIME_SCHEMA_PRECHECK_BLOCKED:runtime-wal:FILE_PARSE_FAILED`；PBT HTTP 直接启动默认 daemon，尝试写真实用户目录并在隔离环境返回 EPERM；T1.3 假定初始化空 WAL 必然立即实体化 `events.jsonl`。
+- **影响**：六项均未证明当前产品行为错误；测试继续携带旧状态、旧恢复宽松策略、非隔离用户路径或无合同依据的空文件实体化假设。
+- **正确做法**：更新漏改状态序列；为 ProjectManager 测试建立最小当前 Project Spec 夹具；将损坏 WAL 测试改为验证 fail-closed 且原文件保留；让 HTTP 测试注入临时路径；T1.3 只验证路径不嵌套并在发生真实 transition 后验证文件位置。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。状态序列、当前 Project Spec 夹具、损坏 WAL fail-closed 断言、HTTP 隔离 server 与空 WAL 实体化时机均已对齐；目标回归 3 files / 35 tests 全绿。
+
+```text
+ERR1191_STATUS=CLOSED_CURRENT_FIXTURES_AND_FAIL_CLOSED_EXPECTATIONS
+TARGET_RESULT=3_FILES_29_PASS_6_FAIL
+PRODUCT_ROOT_CAUSE_PROVEN=NO
+RUNTIME_CORRUPTION_POLICY=FAIL_CLOSED
+REAL_USER_PATH_WRITE_ALLOWED_IN_TEST=NO
+FINAL_TARGET_RESULT=3_FILES_35_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1191
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1191_CURRENT_RUNTIME_TEST_FIXTURE_AND_EXPECTATION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1192_PERSONAL_ENTERPRISE_E2E_MULTI_GENERATION_DRIFT:START -->
+### ERR-1192：personal-mode E2E 混装当前能力与多代旧路径合同
+
+- **分类**：`TEST_CONSUMER_DRIFT / FILESYSTEM_ISOLATION / NO_LEGACY_COMPATIBILITY`。
+- **事实证据**：全量回归中该文件 17 项失败；源码仍实际启用 `PersonalPathResolver` 与 `EnterprisePathResolver`，但测试同时要求旧 `sf-user/projects`、旧 `intake/requirements/design` 状态、无 current Project Spec 即可注册，并让 enterprise WAL 与 daemon manifest 写入真实用户目录。当前 path owner 明确用户级根为 `~/.specforge`、OpenCode 配置为独立边界；状态 owner 为 `ALL_STATES`；ProjectManager 要求 `.specforge/project/spec_manifest.json`。
+- **影响**：有效的个人/企业存储隔离与 WAL/注册验证被旧兼容断言和非隔离写入污染；整体删除会丢失当前能力覆盖，恢复旧路径则违反发布边界。
+- **正确做法**：保留当前个人/企业 resolver、WAL、StateManager、ProjectManager 行为；对齐当前状态与用户级路径；为 enterprise/daemon manifest 写入使用测试 resolver；为注册建立 current Project Spec 夹具并隔离 schema precheck；移除 backward-compatibility 表述。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-017`、`EXP-020`、`EXP-031`、`EXP-044`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。当前个人/企业 resolver、WAL、StateManager 与 ProjectManager 覆盖均保留；旧合同和真实用户目录副作用已移除；隔离回归 34/34 通过。
+
+```text
+ERR1192_STATUS=CLOSED_CURRENT_MODE_E2E_ALIGNED
+FULL_BASELINE_FAILURES=17
+CURRENT_CAPABILITIES_TO_RETAIN=PERSONAL_PATH;ENTERPRISE_PATH;WAL;STATE_MANAGER;PROJECT_REGISTRATION
+LEGACY_CONTRACTS_TO_REMOVE=SF_USER_PATH;OLD_STATES;UNINITIALIZED_REGISTRATION;BACKWARD_COMPATIBILITY_LABEL
+REAL_USER_DIRECTORY_WRITES_IN_TEST=FORBIDDEN
+FINAL_TARGET_RESULT=34_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1192
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1192_PERSONAL_ENTERPRISE_E2E_MULTI_GENERATION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1193_TEST_RESOLVER_PREFIX_COLLISION_AND_LAZY_WAL_ASSUMPTION:START -->
+### ERR-1193：测试 resolver 路径键碰撞并重复假定空 WAL 立即实体化
+
+- **分类**：`TEST_IMPLEMENTATION_DEFECT / PERSISTENCE_TIMING_ASSUMPTION`。
+- **事实证据**：ERR-1192 首轮隔离回归由 17 fail 收敛为 31 pass / 3 fail；个人与企业各一项仅因 `WAL.initialize()` 后空 `events.jsonl` 不存在；第三项因测试 resolver 对完整路径 hex 仅取前 32 字符，两个同前缀项目生成相同目录。
+- **影响**：未证明产品路径或 WAL 持久化错误；测试键算法不能验证企业项目隔离，空 WAL 断言与已验证的首次事件惰性实体化合同冲突。
+- **正确做法**：测试在 append 首个当前事件后验证 WAL 文件位置；测试 resolver 使用完整路径 SHA-256 的稳定前缀生成项目键。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。测试 resolver 已使用 SHA-256 项目键，WAL 路径断言在首次事件后验证；隔离回归 34/34 通过。
+
+```text
+ERR1193_STATUS=CLOSED_SHA256_TEST_KEY_AND_FIRST_EVENT_MATERIALIZATION
+TARGET_RESULT=31_PASS_3_FAIL
+PRODUCT_ROOT_CAUSE_PROVEN=NO
+FINAL_TARGET_RESULT=34_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1193
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1193_TEST_RESOLVER_PREFIX_COLLISION_AND_LAZY_WAL_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1194_CLOSURE_TEST_METADATA_FIXTURE_DRIFT:START -->
+### ERR-1194：Closure 运行型测试在业务断言前被旧 Work Item metadata 夹具阻断
+
+- **分类**：`TEST_FIXTURE_DRIFT / WORK_ITEM_METADATA_SINGLE_SOURCE`。
+- **事实证据**：Step 8 全量中 semantic closure 五项返回 `WORK_ITEM_NOT_FOUND` 或缺预期字段；close gate extension 五个本应通过场景和 governance closure lifecycle 一项失败。测试源码显示 semantic suite 未创建 `work_item.json`；另外两套夹具仍把 `status` 写入 metadata，且缺当前 `schema_version=1.1/workflow_type`；metadata owner 明确禁止 status，生命周期只属于 StateManager/WAL。
+- **影响**：目标业务合同尚未执行，不能据此判断 verification renderer、extension request 或 close gate 产品逻辑错误。
+- **正确做法**：仅把三份测试夹具对齐 metadata-only 1.1 合同；通过 mock StateManager 表达生命周期，不把 status 写回文件；随后隔离复跑，再登记任何到达业务层后的真实失败。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。三份运行型测试已使用 metadata-only 1.1 夹具，semantic producer、extension request 与完整 closure 目标回归合计 35/35 通过。
+
+```text
+ERR1194_STATUS=CLOSED_CURRENT_CLOSURE_METADATA_FIXTURES
+METADATA_AUTHORITY=WORK_ITEM_METADATA_SCHEMA_1_1
+LIFECYCLE_AUTHORITY=STATE_MANAGER_WAL
+PRODUCT_ROOT_CAUSE_PROVEN=NO
+FINAL_TARGET_RESULT=3_FILES_35_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1194
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1194_CLOSURE_TEST_METADATA_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1195_CLOSE_GATE_FIXTURE_DOWNSTREAM_CHECK_FAILURE:START -->
+### ERR-1195：metadata 对齐后 Close Gate 夹具仍有下游检查失败但缺诊断输出
+
+- **分类**：`TEST_FIXTURE_ATTRIBUTION / INSUFFICIENT_DIAGNOSTICS`。
+- **事实证据**：三文件复跑 29 pass / 6 fail；semantic producer 6/6 已全绿；close-gate extension 的五个通过场景仍 `allChecksPassed=false`，governance lifecycle 仍 `success=false`。Vitest 仅显示布尔差异，未输出具体 failed check/result。
+- **影响**：可以确认首次 metadata 偏离已修复，但尚不能区分剩余为过期夹具还是产品 Close Gate 缺陷；证据强度为 `INSUFFICIENT_EVIDENCE`，不得直接修改产品。
+- **正确做法**：让失败断言携带 Close Gate failed checks/handler result 的结构化诊断，隔离复跑后再定位首次偏离。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-011`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。结构化诊断证明剩余失败为缺 `candidates/tasks.md` 与 `gates/formal_version_gate.json` 的旧夹具；补齐当前权威产物后 3 文件 35/35 通过，未修改产品 Close Gate。
+
+```text
+ERR1195_STATUS=CLOSED_DOWNSTREAM_FIXTURE_ATTRIBUTED_AND_ALIGNED
+TARGET_RESULT=3_FILES_29_PASS_6_FAIL
+SEMANTIC_PRODUCER=6_PASS
+CLOSE_GATE_EXTENSION=4_PASS_5_FAIL
+GOVERNANCE_CLOSURE_CORE=19_PASS_1_FAIL
+PRODUCT_ROOT_CAUSE=INSUFFICIENT_EVIDENCE
+FOLLOWUP_EVIDENCE=CLOSE_EXTENSION_MISSING_CANDIDATES_TASKS;LIFECYCLE_MISSING_CANDIDATES_TASKS_AND_FORMAL_VERSION_GATE
+FOLLOWUP_ATTRIBUTION=TEST_FIXTURE_DRIFT
+FINAL_TARGET_RESULT=3_FILES_35_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1195
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1195_CLOSE_GATE_FIXTURE_DOWNSTREAM_CHECK_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1196_STATIC_OWNER_ASSERTION_AND_CONTRACT_FIXTURE_DRIFT:START -->
+### ERR-1196：Close/Contract 测试按旧源码字符串与旧 action 子集判断当前 owner
+
+- **分类**：`TEST_CONSUMER_DRIFT / STATIC_ASSERTION_FRAGILITY`。
+- **事实证据**：`sf-v11-close-gate.ts` 仍导入并调用 `runCloseGate`，但调用已扩展 `workflowPath/workflowType` 且多行格式化；测试只接受旧单行三参数字符串。Contract handler、core action type 与 user-level schema 均支持 `add/update/promote/repair_relocate_to_module/reset`，测试仍要求旧三项字符串。另有 Contract update 运行测试 `success=false` 但原断言未输出 result.error。
+- **影响**：两个静态红灯不能证明 owner 断链；旧 action 子集会错误否定当前 Promotion/repair 能力。运行红灯证据尚不足。
+- **正确做法**：Close 测试验证 import 与包含当前五参数的 delegation 结构；Contract 测试验证五项 schema 全量一致；为运行断言携带 error 后复跑归因。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。Close Gate 测试改为验证当前 import/delegation 结构，Contract action 五项 schema 对齐；运行失败定位为非规范 `ARCH-001` 夹具并改用 `ARCH-WF-001`；2 文件 14/14 通过。
+
+```text
+ERR1196_STATUS=CLOSED_CURRENT_OWNER_AND_ACTION_SCHEMA_ALIGNED
+CLOSE_GATE_OWNER=RUN_CLOSE_GATE
+CONTRACT_ACTIONS=ADD;UPDATE;PROMOTE;REPAIR_RELOCATE_TO_MODULE;RESET
+RUNTIME_CONTRACT_FAILURE=INSUFFICIENT_EVIDENCE
+RUNTIME_FOLLOWUP_ERROR=PROJECT_CONTRACT_SOURCE_REFS_MUST_CONTAIN_ONLY_ARCH_OR_DATA_IDS
+RUNTIME_FOLLOWUP_ATTRIBUTION=TEST_FIXTURE_USES_NONCANONICAL_ARCH_001
+FINAL_TARGET_RESULT=2_FILES_14_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1196
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1196_STATIC_OWNER_ASSERTION_AND_CONTRACT_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1197_DIFF_CHECK_WRONG_WORKDIR_PATHSPEC:START -->
+### ERR-1197：定向 diff check 从 package cwd 使用仓库根相对 pathspec
+
+- **分类**：`VALIDATION_COMMAND_ERROR / PATHSPEC_SCOPE`。
+- **事实证据**：组合命令在 `packages/daemon-core` cwd 成功完成 TypeScript 检查，但随后给 `git diff --check --` 传入 `packages/daemon-core/...` 与 `docs/...` 的仓库根相对路径；Git 返回 0 且无输出，不能证明目标文件实际进入检查范围。
+- **影响**：daemon typecheck 证据有效；定向 diff check 证据撤回。文件内容未因命令改变。
+- **正确做法**：回到仓库根，对明确路径或整个 worktree 重新执行 `git diff --check`。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-010`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。无效证据已撤回，后续从仓库根重跑。
+
+```text
+ERR1197_STATUS=CLOSED_INVALID_DIFF_EVIDENCE_WITHDRAWN
+DAEMON_TYPECHECK=PASS_VALID
+FIRST_DIFF_CHECK=INVALID_PATHSPEC_SCOPE
+ROOT_SCOPED_DIFF_CHECK=PASS_EOL_WARNINGS_ONLY
+PRODUCT_CHANGE=NONE
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1197
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1197_DIFF_CHECK_WRONG_WORKDIR_PATHSPEC:END -->
+
+<!-- SPECFORGE_ERR1198_CURRENT_RELEASE_TEST_SURFACE_NOT_CLASSIFIED:START -->
+### ERR-1198：剩余 daemon-core 红灯混合当前合同、退役能力与无效现场测试
+
+- **分类**：`REGRESSION_SURFACE_GOVERNANCE / NO_LEGACY_COMPATIBILITY`。
+- **事实证据**：Step 8 第二次全量基线仍有 30 个 failed-status files；扣除已在 ERR-1192～ERR-1196 中修复的六个文件后，剩余集合同时包含当前 Daemon/HTTP/Session/WAL/Project 治理测试，也包含已被发布矩阵明确移除的 `investigation` workflow、ExtensionLoader 动态/占位加载，以及依赖本机已部署 daemon、硬编码项目路径和旧通用 transition 创建协议的现场测试。把这些文件视为同一类“历史测试都要修”会迫使当前实现恢复已退出发布边界的能力。
+- **影响**：全量回归的红灯数量不能直接等同于当前产品缺陷数量；在未分类前逐项修复会重复引入旧架构、增加真实用户目录副作用，并使 ERR-681 长期原地打转。
+- **正确做法**：先按当前发布权威把每个剩余 failed-status file 标为 `CURRENT_REQUIRED / CURRENT_INVARIANT / LEGACY_ONLY / INVALID_OR_DUPLICATE / DEFERRED_CONFLICT`；只修复前两类；从可执行测试面删除后两类但保留错误账本与历史治理记录；冲突类保持显式红灯/延期，不用测试改写权威。
+- **类防护**：`EXP-001`、`EXP-004`、`EXP-005`、`EXP-006`、`EXP-007`、`EXP-010`、`EXP-011`、`EXP-015`、`EXP-020`、`EXP-031`、`EXP-044`、`EXP-057`、`EXP-060`。
+- **状态**：`CLOSED`。24 文件已逐项固化判定；四个非当前自动测试已删除，历史治理证据零删除；对应当前 Extension、Project Layout 与 Daemon HTTP 边界回归 3 files / 32 tests 全绿。十九个当前文件进入后续分批修复，ERR-1186 冲突保持延期。
+
+```text
+ERR1198_STATUS=CLOSED_CLASSIFIED_AND_NONCURRENT_SURFACE_REMOVED
+BASELINE_SOURCE=.tmp/daemon-core-full-step8-rerun2.json
+BASELINE_FAILED_STATUS_FILES=30
+ALREADY_REPAIRED_FAILED_STATUS_FILES=6
+REMAINING_TO_CLASSIFY=24
+LEGACY_COMPATIBILITY=OUT_OF_CURRENT_RELEASE_BOUNDARY
+PRODUCT_CHANGE_AUTHORIZED=ONLY_AFTER_CURRENT_CLASSIFICATION_AND_TARGET_FAILURE_EVIDENCE
+CLASSIFICATION=12_CURRENT_REQUIRED;7_CURRENT_INVARIANT;2_LEGACY_ONLY;2_INVALID_OR_DUPLICATE;1_DEFERRED_CONFLICT
+REMOVED_EXECUTABLE_TESTS=4
+REMOVED_HISTORICAL_GOVERNANCE_RECORDS=0
+SUBSTITUTE_CURRENT_BOUNDARY_REGRESSION=3_FILES_32_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1198
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1198_CURRENT_RELEASE_TEST_SURFACE_NOT_CLASSIFIED:END -->
+
+<!-- SPECFORGE_ERR1199_MISSING_VITEST_EXE_ENTRYPOINT_REUSE:START -->
+### ERR-1199：目标回归复用了当前工作区不存在的 Vitest `.exe` 入口
+
+- **分类**：`VALIDATION_COMMAND_ERROR / BINARY_ENTRYPOINT`。
+- **事实证据**：命令 `.\\node_modules\\.bin\\vitest.exe run ...` 在启动测试前返回 “not recognized”；随后只读枚举 `node_modules/.bin` 仅发现 `tsc.bunx/tsc.exe`，没有任何 `vitest*` 入口。
+- **影响**：三个目标测试均未启动；不能形成通过或失败结论，也没有产品文件副作用。
+- **正确做法**：使用本仓库前序已验证的固定 Bun runtime 执行 `bun x vitest run`，不再猜测 workspace `.bin` 入口。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。无效证据已撤回，真实入口已通过只读枚举确认缺失，后续改用已验证 Bun runtime。
+
+```text
+ERR1199_STATUS=CLOSED_INVALID_TEST_ENTRYPOINT_WITHDRAWN
+TEST_STARTED=NO
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+REPEATED_ERROR_DETECTED=YES_ERR1190_CLASS
+CORRECTIVE_ACTION=USE_VERIFIED_BUN_X_VITEST_ENTRYPOINT
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1199
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS_WITH_NEW_LEDGER_ENTRY
+```
+<!-- SPECFORGE_ERR1199_MISSING_VITEST_EXE_ENTRYPOINT_REUSE:END -->
+
+<!-- SPECFORGE_ERR1200_BUN_DEFAULT_TEMP_PERMISSION:START -->
+### ERR-1200：Bun 目标回归首次调用被默认临时目录权限阻断
+
+- **分类**：`TEST_ENVIRONMENT / TEMP_DIRECTORY_ISOLATION`。
+- **事实证据**：已验证 Bun runtime 执行 `bun x vitest run` 后在测试启动前返回 `EPERM accessing temporary directory. Please set $BUN_TMPDIR or $BUN_INSTALL`。
+- **影响**：目标测试仍未启动；没有产品失败证据和产品文件副作用。
+- **正确做法**：沿用前序验证方式，将 `TEMP/TMP` 指向仓库内 `.tmp/bun`，并关闭 Bun transpiler cache 后重跑完全相同的目标集。
+- **类防护**：`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。`TEMP/TMP` 单独覆盖不足的结论保留；最终通过 package-local 已安装入口执行，不再依赖 Bun X 临时目录。
+
+```text
+ERR1200_STATUS=CLOSED_PACKAGE_LOCAL_ENTRYPOINT_BYPASSES_BUN_X_TEMP
+TEST_STARTED=NO
+PRODUCT_FAILURE_EVIDENCE=NONE
+SIDE_EFFECTS=NONE
+CORRECTIVE_ACTION=TEMP_AND_TMP_DOT_TMP_BUN;BUN_DISABLE_TRANSPILER_CACHE_1
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1200
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1200_BUN_DEFAULT_TEMP_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR1201_BUN_X_TEMP_OVERRIDE_INCOMPLETE:START -->
+### ERR-1201：`TEMP/TMP` 隔离未覆盖 Bun X 的临时目录 owner
+
+- **分类**：`TEST_ENVIRONMENT / TOOL_ENTRYPOINT_ATTRIBUTION`。
+- **事实证据**：设置 `TEMP=D:\\code\\SpecForge\\.tmp\\bun`、`TMP=...` 与 `BUN_DISABLE_TRANSPILER_CACHE=1` 后，`bun x vitest run` 仍在测试启动前返回同一 EPERM；因此 ERR-1200 所假定的变量边界不完整。
+- **影响**：目标测试仍未启动；产品结论继续为无证据。
+- **正确做法**：只读定位仓库已安装 Vitest 的实际 JS CLI 与 workspace 临时目录状态，直接通过固定 Bun runtime 执行该入口，避免 `bun x` 的包解析/临时目录阶段。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。只读取证发现 `packages/daemon-core/node_modules/.bin/vitest.exe`，package-local 入口成功运行目标集。
+
+```text
+ERR1201_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_EXE_CONFIRMED
+TEST_STARTED=NO
+PRODUCT_FAILURE_EVIDENCE=NONE
+ERR1200_CLOSURE_RECONCILED=REOPENED
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1201
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS_WITH_REOPENED_PRIOR_ENTRY
+```
+<!-- SPECFORGE_ERR1201_BUN_X_TEMP_OVERRIDE_INCOMPLETE:END -->
+
+<!-- SPECFORGE_ERR1202_DIRECT_VITEST_ROOT_CONFIG_RESOLUTION:START -->
+### ERR-1202：直接 Vitest CLI 在根配置解析阶段缺失根级 `vitest/config` 链接
+
+- **分类**：`TEST_ENVIRONMENT / WORKSPACE_DEPENDENCY_LINKAGE`。
+- **事实证据**：固定 Bun 直接执行已安装的 Vitest 3.2.4 `vitest.mjs` 后，不再出现临时目录 EPERM，但在加载 `D:\\code\\SpecForge\\vitest.config.ts` 时返回 `Cannot find module 'vitest/config'`；根 `node_modules` 没有 `vitest` 链接，而 `packages/daemon-core/package.json` 自身声明 Vitest 3.x。
+- **影响**：测试进程到达配置加载但尚未收集测试；没有产品失败证据。
+- **正确做法**：从 `packages/daemon-core` 的 package 依赖边界运行并核对本地配置/链接；禁止为验证临时修改 lockfile 或联网安装。
+- **类防护**：`EXP-004`、`EXP-007`、`EXP-008`、`EXP-019`、`EXP-031`、`EXP-060`。
+- **状态**：`CLOSED`。根级直接 CLI 路径撤回；从 daemon-core package 边界加载本地 config/依赖成功，3 files / 32 tests 通过。
+
+```text
+ERR1202_STATUS=CLOSED_PACKAGE_LOCAL_CONFIG_RESOLUTION
+TEST_COLLECTED=NO
+PRODUCT_FAILURE_EVIDENCE=NONE
+LOCKFILE_OR_INSTALL_CHANGE_ALLOWED=NO
+TARGET_REGRESSION=3_FILES_32_PASS
+PRIOR_FAILURE_RECONCILIATION=PASS
+BACKFILLED_ERROR_IDS=ERR-1202
+UNRECORDED_FAILURES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1202_DIRECT_VITEST_ROOT_CONFIG_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR1203_PRODUCTION_RECOVERY_HANDSHAKE_FIXTURE_SCHEMA_DRIFT:START -->
+### ERR-1203：生产恢复 E2E 手写 handshake 不满足当前 1.0 合同
+
+- **分类**：`TEST_FIXTURE_DRIFT / HANDSHAKE_SINGLE_SOURCE`。
+- **事实证据**：两个失败场景写入的对象仅有 `port/token/pid/startedAt`；当前 `parseHandshakeFile` 还强制要求 `schema_version/bound_to/version/serviceMode/artifact_contract_versions.task_document`，因此客户端在发 HTTP 前按设计 fail closed 为 handshake not found。
+- **影响**：当前 HTTP/Write Guard 业务断言尚未执行；没有产品缺陷证据。
+- **正确做法**：让 E2E fixture 构造完整当前 HandshakeFile 1.0，不放宽 parser、不恢复旧 schema。
+- **状态**：`CLOSED`。完整 HandshakeFile 1.0 夹具已使生产恢复 E2E 6/6 通过。
+
+```text
+ERR1203_STATUS=CLOSED_CURRENT_HANDSHAKE_FIXTURE
+PRODUCT_CHANGE_PLANNED=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1203_PRODUCTION_RECOVERY_HANDSHAKE_FIXTURE_SCHEMA_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1204_SESSION_TERMINATE_ASYNC_ASSERTION_DRIFT:START -->
+### ERR-1204：SessionRegistry 单测把异步 terminate 返回值当作同步值
+
+- **分类**：`TEST_CONSUMER_DRIFT / ASYNC_CONTRACT`。
+- **事实证据**：`SessionRegistry.terminate` 明确返回 `Promise<AgentIdentity|null>`；唯一失败测试没有 `async/await`，实际比较的是 `Promise {}` 与 null；同文件其他 terminate 场景已正确 await。
+- **影响**：未证明 Session lifecycle 产品错误。
+- **正确做法**：仅修复测试异步调用方式。
+- **状态**：`CLOSED`。异步断言已对齐，SessionRegistry 13/13 通过。
+
+```text
+ERR1204_STATUS=CLOSED_AWAIT_CURRENT_TERMINATE_CONTRACT
+PRODUCT_CHANGE_PLANNED=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1204_SESSION_TERMINATE_ASYNC_ASSERTION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1205_DAEMON_CONFIG_NOT_INJECTABLE_FOR_CURRENT_TESTS:START -->
+### ERR-1205：Daemon 当前测试无法注入现有路径配置并写向真实用户根
+
+- **分类**：`RUNTIME_TESTABILITY_DEFECT / FILESYSTEM_ISOLATION`。
+- **事实证据**：`Daemon` 构造器无参数并内部固定 `new DaemonConfig()`；`OPENCODE_CONFIG_DIR` 只控制 OpenCode 集成根，不控制当前 `~/.specforge` runtime owner；两个启动测试因此在 `HandshakeManager.enforceSingleInstance` 尝试创建 `C:\\Users\\lyq\\.specforge` 并被拒绝。多个当前性能/API/生命周期测试同样直接 `new Daemon()`。
+- **影响**：当前 Daemon 启动行为无法在隔离文件系统中可靠验证；修改用户环境变量不能合法替代当前路径 owner。
+- **正确做法**：允许构造器可选注入现有 `DaemonConfig`，默认仍创建相同生产配置；测试提供实现现有 `IPathResolver` 的临时根，不新增配置权威或生产路径。
+- **状态**：`CLOSED`。Daemon 可选注入现有配置且默认生产行为不变；隔离启动/广播测试 3/3 通过。
+
+```text
+ERR1205_STATUS=CLOSED_OPTIONAL_EXISTING_DAEMON_CONFIG_INJECTION
+DEFAULT_PRODUCTION_BEHAVIOR_CHANGE=NONE
+REAL_USER_PATH_TEST_WRITES=FORBIDDEN
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1205_DAEMON_CONFIG_NOT_INJECTABLE_FOR_CURRENT_TESTS:END -->
+
+<!-- SPECFORGE_ERR1206_GREENFIELD_GOVERNANCE_FIXTURE_AUTHORITY_DRIFT:START -->
+### ERR-1206：greenfield 治理测试未把关系和任务写入当前权威载体
+
+- **分类**：`TEST_FIXTURE_DRIFT / GOVERNANCE_SINGLE_SOURCE`。
+- **事实证据**：bootstrap 测试把 `MCON-CORE-001 enforces DD-CORE-001` 只写入 Module trace projection，而当前 Trace 检查消费 Project `trace_matrix.md`；Code Permission 测试的 `candidates/tasks.md` 没有规范 `TASK-...` 段和 `allowed_write_files` 字段，`readApprovedTaskFiles` 因而不能批准 ownerless cross-module test harness。相邻 `project-governance-task-scope.test.ts` 给出了当前规范夹具且相关测试通过。
+- **影响**：两个失败是当前单一事实来源之前的旧夹具，不能据此放宽治理检查。
+- **正确做法**：把 contract relation 写入 Project Trace 权威；用 task-document/v1 结构表达候选任务许可。
+- **状态**：`CLOSED`。Project Trace 与 task-document/v1 夹具已对齐；原两个首次偏离均通过，后续 metadata 失败另记 ERR-1207。
+
+```text
+ERR1206_STATUS=CLOSED_PROJECT_TRACE_AND_TASK_DOCUMENT_FIXTURES
+PRODUCT_CHANGE_PLANNED=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1206_GREENFIELD_GOVERNANCE_FIXTURE_AUTHORITY_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1207_GREENFIELD_WORK_ITEM_METADATA_FIXTURE_DRIFT:START -->
+### ERR-1207：greenfield Code Permission 在持久化阶段遇到旧 Work Item metadata 夹具
+
+- **分类**：`TEST_FIXTURE_DRIFT / WORK_ITEM_METADATA_SINGLE_SOURCE`。
+- **事实证据**：ERR-1206 对齐后首个 freeze 断言通过；测试随后调用 `persistGovernanceScope`，当前 metadata precheck 返回 `WORK_ITEM_METADATA_INVALID: WI-0002: MISSING_FIELD: schema_version is required`。夹具只有 `work_item_id/code_change_allowed/allowed_write_files`，没有当前 metadata-only 1.1 必填字段。
+- **影响**：证明跨模块 test harness 当前判定已恢复；剩余失败发生在持久化前置合同，未证明产品缺陷。
+- **正确做法**：把测试的 `work_item.json` 对齐当前 metadata 1.1，生命周期字段仍由 StateManager/WAL 持有。
+- **状态**：`CLOSED`。metadata-only 1.1 夹具已对齐，第一批目标回归 6 files / 35 tests 全绿。
+
+```text
+ERR1207_STATUS=CLOSED_WORK_ITEM_METADATA_1_1_FIXTURE
+PRODUCT_CHANGE_PLANNED=NONE
+PRIOR_TARGET=6_FILES_34_PASS_1_FAIL
+FINAL_TARGET=6_FILES_35_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1207_GREENFIELD_WORK_ITEM_METADATA_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1208_REMAINING_DAEMON_TESTS_REAL_USER_RUNTIME:START -->
+### ERR-1208：剩余当前 Daemon 测试仍写真实用户 runtime
+
+- **分类**：`TEST_FILESYSTEM_ISOLATION / CURRENT_DAEMON_CONFIG`。
+- **事实证据**：13 文件结构化目标回归中，performance 5 项、api-endpoints 13 项、daemon-integration 4 项、daemon-lifecycle 6 项均在创建 `C:\\Users\\lyq\\.specforge` 时失败；这些测试仍直接 `new Daemon()`，未使用 ERR-1205 建立的可选现有配置注入口。
+- **正确做法**：用共享的当前 `IPathResolver/DaemonConfig` 临时根夹具注入相关测试，不修改生产默认路径。
+- **状态**：`CLOSED`。剩余 Daemon 测试已注入当前临时配置，performance 11/11、API 13/13、daemon-integration 22/22、daemon-lifecycle 6/6 通过，真实用户 runtime 写入已移除。
+```text
+ERR1208_STATUS=CLOSED_CURRENT_CONFIG_INJECTION_REUSED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1208_REMAINING_DAEMON_TESTS_REAL_USER_RUNTIME:END -->
+
+<!-- SPECFORGE_ERR1209_V11_HTTP_HANDSHAKE_FIXTURE_SCHEMA_DRIFT:START -->
+### ERR-1209：V11/HTTP 测试的 handshake 夹具仍不是当前 1.0 合同
+
+- **分类**：`TEST_FIXTURE_DRIFT / HANDSHAKE_SINGLE_SOURCE`。
+- **事实证据**：v11-full 9 项、v11-production 14 项和 HTTPServer 6 项以 handshake not found、读取真实默认 handshake 或期望旧路径失败；结构化输出与 ERR-1203 同类。
+- **正确做法**：复用当前 HandshakeFile 1.0 builder 和显式临时 handshake path，不放宽 parser。
+- **状态**：`CLOSED`。当前 HandshakeFile 1.0 builder 已覆盖真实客户端测试；HTTPServer 使用显式临时 handshake path，相关当前生产链路组合回归全绿。
+```text
+ERR1209_STATUS=CLOSED_CURRENT_HANDSHAKE_TEST_SURFACES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1209_V11_HTTP_HANDSHAKE_FIXTURE_SCHEMA_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1210_INCOMPLETE_CURRENT_PATH_RESOLVER_MOCKS:START -->
+### ERR-1210：Recovery/State 测试 resolver mock 缺当前 project-scoped 方法
+
+- **分类**：`TEST_DOUBLE_DRIFT / PATH_RESOLVER_CONTRACT`。
+- **事实证据**：performance 1 项、chaos-recovery 6 项、daemon-integration 5 项、property-6 5 项均报 `resolveEventsPath is not a function`，另有 daemon-integration 两项无法读取 resolver；当前 `StateManager` 对 project-scoped runtime 明确要求 `resolveEventsPath/resolveStatePath`。
+- **正确做法**：补全测试 double 的现有 `IPathResolver` 合同，不恢复 daemon-global project state。
+- **状态**：`CLOSED`。property-6、chaos-recovery、performance 和 daemon-integration 均已使用完整当前 resolver/构造合同。
+```text
+ERR1210_STATUS=CLOSED_ALL_IDENTIFIED_RESOLVER_CONSUMERS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1210_INCOMPLETE_CURRENT_PATH_RESOLVER_MOCKS:END -->
+
+<!-- SPECFORGE_ERR1211_SESSION_PROPERTY_ASYNC_CONSUMER_DRIFT:START -->
+### ERR-1211：Session property 测试仍按同步 API 消费当前异步生命周期
+
+- **分类**：`TEST_CONSUMER_DRIFT / ASYNC_CONTRACT`。
+- **事实证据**：property-5 五项和 register-idempotent 两项把 `registerPending/registerPluginSession/activate/terminate/touch` 的 Promise 当 identity；表现为 sessionId/status undefined 与空 session tree。当前 SessionRegistry 单测已经按异步合同 13/13 通过。
+- **正确做法**：property 改用 `fc.asyncProperty` 与 `await`，不把 Runtime API改回同步。
+- **状态**：`CLOSED`。三次 rebuild 已改为顺序重复执行；Property 6 5/5、整批 11 files / 67 tests 全绿。
+```text
+ERR1211_STATUS=CLOSED_SESSION_PROPERTIES_ASYNC_ALIGNED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1211_SESSION_PROPERTY_ASYNC_CONSUMER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1212_PROPERTY30_EMPTY_WAL_PRECREATION:START -->
+### ERR-1212：Property 30 预创建空 events.jsonl 与当前 WAL fail-closed 冲突
+
+- **分类**：`TEST_FIXTURE_DRIFT / WAL_FAIL_CLOSED`。
+- **事实证据**：八项均在 `WAL.initialize()` 报 `WAL_EMPTY_INPUT`；测试 setup 主动创建零字节 events 文件，而当前合同区分“不存在的新 WAL”与“存在但为空/损坏的证据”。
+- **正确做法**：新 WAL 夹具不预创建空文件；保留空文件 fail-closed 的独立负向覆盖。
+- **状态**：`CLOSED`。新 WAL 使用临时路径且不再预创建空文件，八项均越过初始化；后续结构化 action 漂移另记 ERR-1214。
+```text
+ERR1212_STATUS=CLOSED_NEW_WAL_FIXTURE_NO_EMPTY_PRECREATION
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1212_PROPERTY30_EMPTY_WAL_PRECREATION:END -->
+
+<!-- SPECFORGE_ERR1213_PROPERTY1_LOCAL_EVENT_SCHEMA_DRIFT:START -->
+### ERR-1213：Property 1 自建状态管理器生成非当前 Runtime Event
+
+- **分类**：`TEST_HARNESS_DRIFT / RUNTIME_EVENT_SCHEMA`。
+- **事实证据**：property-1 九项在 `WAL.appendEvent` 被 `WAL_EVENT_SCHEMA_INVALID` 拒绝，另三项是同文件 Session 异步消费漂移；当前 WAL 正确执行 schema fail-closed。
+- **正确做法**：测试 harness 使用 WAL/current event factory 或完整当前 Event 字段，并对齐 Session async 调用；不得放宽 WAL validator。
+- **状态**：`CLOSED`。Property 1 使用当前六参数 WAL event factory、临时 WAL 路径及异步 Session 合同，14/14 通过。
+```text
+ERR1213_STATUS=CLOSED_CURRENT_EVENT_AND_SESSION_HARNESS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1213_PROPERTY1_LOCAL_EVENT_SCHEMA_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1214_PROPERTY30_STRUCTURED_EVENT_ACTION_DRIFT:START -->
+### ERR-1214：Property 30 在初始化恢复后仍按旧字符串 action 构造持久化事件
+
+- **分类**：`TEST_CONSUMER_DRIFT / RUNTIME_EVENT_SCHEMA`。
+- **事实证据**：ERR-1212 修复后 Property 30 为 5 pass / 3 fail；序列化测试用 `toBe` 比较反序列化后的结构化 action 对象，两个持久化测试以旧三参数调用 `createEvent(projectId, 'test.event', payload)`，生成的 action 不满足当前 WAL event schema。
+- **正确做法**：使用当前 `createEvent(projectId, category, action, payload)` 签名和 deep equality，不放宽 schema。
+- **状态**：`CLOSED`。Property 30 当前事件工厂与深比较已验证通过。
+```text
+ERR1214_STATUS=CLOSED_PROPERTY30_CURRENT_EVENT_FACTORY
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1214_PROPERTY30_STRUCTURED_EVENT_ACTION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1215_RECOVERY_TEST_RETIRED_STATES_AND_MANUAL_EVENTS:START -->
+### ERR-1215：Recovery 测试越过 resolver 后暴露退役状态与手写旧事件
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_STATE_AND_EVENT_AUTHORITIES`。
+- **事实证据**：property-6 + chaos-recovery 重跑为 8 pass / 6 fail；Chaos 五项只因 `intake/requirements/design` 不在当前状态权威；Property 6 一项手写 Event 缺当前统一字段而被 WAL schema 拒绝。
+- **正确做法**：使用当前顺序 `intake_ready -> impact_analyzing -> impact_analyzed`；持久化事件由当前 WAL.createEvent 工厂生成。
+- **状态**：`CLOSED`。Chaos 使用当前状态序列，Property 6 使用 WAL event owner；2 files / 14 tests 全绿。
+```text
+ERR1215_STATUS=CLOSED_RECOVERY_STATE_AND_EVENT_FIXTURES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1215_RECOVERY_TEST_RETIRED_STATES_AND_MANUAL_EVENTS:END -->
+
+<!-- SPECFORGE_ERR1216_PROPERTY6_CONCURRENT_REBUILD_CHECKPOINT_COLLISION:START -->
+### ERR-1216：Property 6 用同一 StateManager 并发重建来验证顺序幂等性
+
+- **分类**：`TEST_SEMANTIC_DEFECT / UNSUPPORTED_CONCURRENT_WRITER`。
+- **事实证据**：单独两文件曾 14/14 通过，11 文件组合中唯一红灯位于 `Promise.all` 同时调用同一实例三次 `rebuildFromEventsFile()`，报 `RUNTIME_CHECKPOINT_READ_FAILED:Unexpected end of JSON input`；当前 WAL/StateManager 是单写者，幂等性定义是重复执行结果相同，不是同一 checkpoint 多写者并发。
+- **正确做法**：顺序执行三次 rebuild 并比较结果；并发控制由独立 state-concurrency 回归负责。
+- **状态**：`CLOSED`。顺序幂等重建已验证，组合回归通过。
+```text
+ERR1216_STATUS=CLOSED_SERIAL_IDEMPOTENCE_REBUILDS
+COMBINED_RESULT=11_FILES_10_PASS_1_FAIL;67_TESTS_66_PASS_1_FAIL
+TYPECHECK=PASS
+DIFF_CHECK=PASS_EOL_WARNINGS_ONLY
+FINAL_COMBINED_RESULT=11_FILES_67_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1216_PROPERTY6_CONCURRENT_REBUILD_CHECKPOINT_COLLISION:END -->
+
+<!-- SPECFORGE_ERR1217_CURRENT_TEST_CONFIG_RUNTIME_DIR_NOT_CREATED:START -->
+### ERR-1217：共享当前测试配置未为直接 HandshakeManager 消费者创建 runtime 目录
+
+- **分类**：`TEST_FIXTURE_DEFECT / FILESYSTEM_PRECONDITION`。
+- **事实证据**：HTTPServer CAS 五项已改用临时当前 handshake 路径，但在直接调用 `HandshakeManager.writeHandshake` 时均报该临时 `specforge-user/runtime/daemon.sock.json` 的 `ENOENT`；Daemon 启动路径会创建目录，直接 manager 测试 setup 没有执行该前置条件。
+- **正确做法**：CAS setup 在写 handshake 前创建共享配置解析出的 runtime 目录，不改变 HandshakeManager 的 owner 边界。
+- **状态**：`CLOSED`。HTTP CAS setup 已显式创建配置解析出的临时 runtime，HTTPServer 12/12 通过。
+
+```text
+ERR1217_STATUS=CLOSED_TEST_RUNTIME_PRECONDITION_CREATED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1217_CURRENT_TEST_CONFIG_RUNTIME_DIR_NOT_CREATED:END -->
+
+<!-- SPECFORGE_ERR1218_API_TRANSITION_CURRENT_CONTEXT_INCOMPLETE:START -->
+### ERR-1218：API transition 测试只替换目标状态但未提供当前迁移上下文
+
+- **分类**：`TEST_FIXTURE_DRIFT / STATE_MACHINE_CONTEXT`。
+- **事实证据**：当前目标状态改为 `intake_ready` 后请求已到达生产路由，但返回 HTTP 409；同文件 state/read 能成功，证明 Daemon/HTTP 隔离已恢复，剩余偏差位于迁移请求上下文。
+- **正确做法**：读取 409 的结构化错误与当前 transition 合同，补齐合法初始迁移所需字段；不得放宽状态机。
+- **状态**：`CLOSED`。测试使用当前初始迁移 `'' -> created`，API endpoints 13/13 通过。
+
+```text
+ERR1218_STATUS=CLOSED_CURRENT_INITIAL_TRANSITION
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1218_API_TRANSITION_CURRENT_CONTEXT_INCOMPLETE:END -->
+
+<!-- SPECFORGE_ERR1219_V11_FULL_WRITE_GUARD_CURRENT_AUTHORITY_FIXTURE_DRIFT:START -->
+### ERR-1219：v11-full 已进入生产 Write Guard 后暴露当前权威夹具漂移
+
+- **分类**：`TEST_FIXTURE_DRIFT / WRITE_GUARD_AUTHORITY`。
+- **事实证据**：当前 handshake 对齐后，生产路由 11 项中 6 项通过；其余 5 项均已获得业务响应，但允许写、越界原因和 changed-files audit 结果不符合旧 `work_item.json.status` 夹具预期。相对地，自建兼容服务器的 v11-production 23/23 通过，不能证明生产路由行为。
+- **正确做法**：核对 HTTPServer 的真实 Write Guard 上下文加载链、StateManager/WAL lifecycle 权威及 metadata-only Work Item 合同；按当前权威构造夹具，或在证据证明覆盖重复时重新分类测试。
+- **状态**：`CLOSED`。Work Item 使用 metadata-only 1.1，生命周期继续由 StateManager stub 提供，真实生产 HTTPServer 链路 11/11 通过。
+
+```text
+ERR1219_STATUS=CLOSED_METADATA_AND_STATE_AUTHORITIES_ALIGNED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1219_V11_FULL_WRITE_GUARD_CURRENT_AUTHORITY_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1220_SRC_TEST_IMPORTED_OUTSIDE_ROOTDIR_HELPER:START -->
+### ERR-1220：src 内 HTTP 测试导入 tests 辅助文件越过 TypeScript rootDir
+
+- **分类**：`TEST_STRUCTURE / TYPESCRIPT_ROOT_BOUNDARY`。
+- **事实证据**：目标修改后 daemon-core `tsc --noEmit` 唯一错误为 TS6059：`tests/helpers/current-daemon-test-config.ts` 不在 `rootDir=src`，由 `src/http/HTTPServer.test.ts` 跨目录导入触发。
+- **正确做法**：`tests/**` 继续复用共享夹具；src 内测试使用最小本地配置适配器。不得扩大 rootDir、不得把测试 helper 伪装为生产模块。
+- **状态**：`CLOSED`。src 内 HTTP 测试改用最小本地配置适配器，daemon-core typecheck 通过。
+
+```text
+ERR1220_STATUS=CLOSED_TEST_SUPPORT_WITHIN_TYPESCRIPT_BOUNDARY
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1220_SRC_TEST_IMPORTED_OUTSIDE_ROOTDIR_HELPER:END -->
+
+<!-- SPECFORGE_ERR1221_INDEPENDENT_DAEMON_SCENARIOS_SHARE_HANDSHAKE:START -->
+### ERR-1221：独立 Daemon 场景复用同一临时 handshake 造成单实例误碰撞
+
+- **分类**：`TEST_ISOLATION / DAEMON_INSTANCE_OWNERSHIP`。
+- **事实证据**：performance 与 daemon-integration 完成真实用户路径隔离后，7 项后续场景在 `enforceSingleInstance` 报同进程已有 Daemon；它们共享一个 file-level `CurrentTestDaemonConfig`，循环中的不同 Daemon 也复用同一 handshake owner。
+- **正确做法**：每个逻辑上独立的 Daemon 实例分配独立临时用户根；专门验证同一实例 duplicate start 的测试仍保持相同实例与路径。
+- **状态**：`CLOSED`。每个独立 Daemon 场景使用唯一临时 runtime，专门 duplicate-start 行为保持不变；相关 33/33 通过。
+
+```text
+ERR1221_STATUS=CLOSED_UNIQUE_TEST_DAEMON_RUNTIME_PER_SCENARIO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1221_INDEPENDENT_DAEMON_SCENARIOS_SHARE_HANDSHAKE:END -->
+
+<!-- SPECFORGE_ERR1222_PROJECT_MANAGER_TEST_OLD_CONSTRUCTOR:START -->
+### ERR-1222：ProjectManager 集成测试仍使用缺 resolver 的旧构造方式
+
+- **分类**：`TEST_CONSUMER_DRIFT / PATH_RESOLVER_CONTRACT`。
+- **事实证据**：daemon-integration 两项在 `getProjectContext` 读取 `resolveProjectRuntimeDir` 时 resolver 为 undefined；测试 setup 仍为 `new ProjectManager(eventBus)`，而生产 Daemon 已显式注入当前 resolver。
+- **正确做法**：测试复用当前临时配置的 `IPathResolver` 注入 ProjectManager，不恢复隐式默认路径。
+- **状态**：`CLOSED`。ProjectManager 已注入当前临时 resolver，daemon-integration 22/22 通过。
+
+```text
+ERR1222_STATUS=CLOSED_CURRENT_PROJECT_MANAGER_RESOLVER
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1222_PROJECT_MANAGER_TEST_OLD_CONSTRUCTOR:END -->
+
+<!-- SPECFORGE_ERR1223_PRODUCTION_NAMED_TEST_BYPASSES_PRODUCTION_SERVER:START -->
+### ERR-1223：名为 production 的 Write Guard 测试实际旁路生产 HTTPServer
+
+- **分类**：`INVALID_OR_DUPLICATE_TEST / FALSE_RELEASE_CONFIDENCE`。
+- **事实证据**：`v11-production-daemon-writeguard-e2e.test.ts` 自建 Node HTTP server、自行扫描 `work_item.json.status` 并直接调用 `checkWrite`；它的 23/23 通过只证明这套测试内实现自洽。当前生产调用链由 `v11-full-daemon-startup-writeguard-e2e.test.ts` 直接构造真实 `HTTPServer`，并在 metadata-only 1.1 + StateManager 状态权威下 11/11 通过。
+- **正确做法**：将前者从 `CURRENT_REQUIRED` 重分类为 `INVALID_OR_DUPLICATE` 并删除可执行测试；保留本 ERR 和分类历史，不恢复 metadata 生命周期兼容。
+- **状态**：`CLOSED`。
+
+```text
+ERR1223_STATUS=CLOSED_REMOVED_FALSE_PRODUCTION_TEST
+CURRENT_SUBSTITUTE=v11-full-daemon-startup-writeguard-e2e.test.ts_11_PASS
+HISTORICAL_GOVERNANCE_RECORDS_REMOVED=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1223_PRODUCTION_NAMED_TEST_BYPASSES_PRODUCTION_SERVER:END -->
+
+<!-- SPECFORGE_ERR1224_FULL_SUITE_PROPERTY_TIMEOUT_CAPACITY:START -->
+### ERR-1224：两个当前 property 在全量并发负载下命中测试时限而非业务断言
+
+- **分类**：`TEST_CAPACITY / FULL_SUITE_TIMEOUT`。
+- **事实证据**：全量 rerun 3 中 module-registry property 的失败 duration 为 `10019.8622ms`，精确命中默认 10s；Property 20 为 `30012.9119ms`，精确命中显式 30s。两者 failure 只有 Vitest `STACK_TRACE_ERROR`，没有 fast-check counterexample、产品异常或断言失败；其余测试分别 8/8 与 4/4 通过。
+- **正确做法**：保持 property 运行次数和业务断言不变，为两个 I/O 密集 property 设置能覆盖全量并发资源竞争的显式上限，再做双文件和全量重跑；若仍出现产品异常则另立 ERR，不得继续盲目放宽。
+- **状态**：`CLOSED`。显式 30s/60s 上限下双文件 14/14 通过；全量 rerun 4 两项均通过且仅剩 ERR-1186 红灯。
+
+```text
+ERR1224_STATUS=CLOSED_TARGET_AND_FULL_SUITE_PASS
+MODULE_REGISTRY_TIMEOUT_EVIDENCE=10019MS_DEFAULT_10000MS
+PROPERTY20_TIMEOUT_EVIDENCE=30012MS_EXPLICIT_30000MS
+ASSERTION_OR_PRODUCT_FAILURE=NONE_OBSERVED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1224_FULL_SUITE_PROPERTY_TIMEOUT_CAPACITY:END -->
+
+<!-- SPECFORGE_ERR1225_TIMEOUT_PATCH_MATCHED_WRONG_TEST:START -->
+### ERR-1225：module-registry timeout 补丁因上下文不足命中前一个测试
+
+- **分类**：`PATCH_TARGETING_ERROR / TEST_CONFIGURATION`。
+- **事实证据**：补丁后只读检查发现 `30000` 位于第 213 行普通缺失 CORE 定义测试，而目标 property 结尾仍为默认 timeout；测试尚未运行。
+- **正确做法**：立即撤销错误 timeout，并以 `fc.assert(... { numRuns: 25 })` 唯一上下文精确修改 property 结尾；修改后再次定位检查。
+- **状态**：`CLOSED`。
+
+```text
+ERR1225_STATUS=CLOSED_WRONG_LOCATION_REVERTED_BEFORE_TEST
+PRODUCT_SIDE_EFFECT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1225_TIMEOUT_PATCH_MATCHED_WRONG_TEST:END -->
+
+<!-- SPECFORGE_ERR1226_ROOT_WORKSPACE_TEST_SANDBOX_PROCESS_DENIED:START -->
+### ERR-1226：根级 workspace test 在 package 启动前被沙箱拒绝创建子进程
+
+- **分类**：`TEST_ENVIRONMENT / PROCESS_PERMISSION`。
+- **事实证据**：固定 Bun 1.4.0 执行根脚本 `bun run --filter './packages/*' test` 后立即返回 `bun: Operation not permitted`，没有 package 名、测试收集或断言输出；同一 runtime 的 root build 与 workflow check 已成功。
+- **正确做法**：保持命令、依赖和测试不变，在获批的非沙箱执行边界重跑；不得把未启动误报为产品红灯。
+- **状态**：`CLOSED`。获批后完全相同的根命令已在沙箱外启动所有 workspace 测试；后续混合产品/测试失败由 ERR-1227 持有。
+
+```text
+ERR1226_STATUS=CLOSED_IDENTICAL_ROOT_TEST_STARTED_OUTSIDE_SANDBOX
+TESTS_STARTED=NO
+PRODUCT_FAILURE_EVIDENCE=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1226_ROOT_WORKSPACE_TEST_SANDBOX_PROCESS_DENIED:END -->
+
+<!-- SPECFORGE_ERR1227_ROOT_WORKSPACE_FULL_BASELINE_MIXED_FAILURES:START -->
+### ERR-1227：根级全包回归暴露五个 package 的混合历史/当前/并发失败基线
+
+- **分类**：`ROOT_REGRESSION_BASELINE / MIXED_ATTRIBUTION_REQUIRED`。
+- **事实证据**：沙箱外固定 Bun 1.4.0 已实际启动所有 workspace 测试并最终 exit 1。daemon-core 仅保留 ERR-1186；CLI 汇总 14 failed files / 50 failed tests / 2 unhandled errors，Observability 18 / 128，Workflow Runtime 4 / 12 且 worker OOM，Scope Gate 12 / 51；Plugin Loader 还报告 9 个缺已删除模块的 failed suites、旧路径断言和多项 timeout。其他已观察完成的 package 正常退出 0。
+- **影响**：根级全量尚不可信；但并发根跑同时出现共享测试目录互删、精确 timeout、4GB heap OOM 与已退出模块引用，不能把全部失败归因于当前产品。
+- **正确做法**：对 CLI、Observability、Plugin Loader、Workflow Runtime、Scope Gate 分别运行隔离结构化基线；按当前发布矩阵重建真实入口与模块必要性，再分别修复当前失败、删除 legacy/invalid executable tests，并保留历史治理记录。
+- **状态**：`OPEN`。五包隔离基线已完成；Plugin Loader、Workflow Runtime 非延期表面、CLI 与 Observability 已收敛，仅 Scope Gate 仍待分类和修复。Workflow Runtime 仅保留 ERR-1234 延期权威冲突红灯。
+
+```text
+ERR1227_STATUS=OPEN_SCOPE_GATE_CURRENT_NECESSITY_CLASSIFICATION_AND_REPAIR
+ROOT_BUILD=PASS_16_PACKAGES
+ROOT_RELEASE_PRECHECK=PASS
+ROOT_TEST=FAIL_MIXED
+DAEMON_CORE_ROOT_RESULT=ONLY_ERR1186_DEFERRED_RED
+CLI_ROOT_RESULT=14_FAILED_FILES_50_FAILED_TESTS_2_UNHANDLED
+OBSERVABILITY_ROOT_RESULT=18_FAILED_FILES_128_FAILED_TESTS
+WORKFLOW_RUNTIME_ROOT_RESULT=4_FAILED_FILES_12_FAILED_TESTS_1_WORKER_OOM
+SCOPE_GATE_ROOT_RESULT=12_FAILED_FILES_51_FAILED_TESTS
+PLUGIN_LOADER_ROOT_RESULT=MIXED_MISSING_RETIRED_MODULES_OLD_PATHS_TIMEOUTS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1227_ROOT_WORKSPACE_FULL_BASELINE_MIXED_FAILURES:END -->
+
+<!-- SPECFORGE_ERR1228_FIVE_PACKAGE_ISOLATED_BASELINE:START -->
+### ERR-1228：五个非 Daemon 失败 package 的隔离基线与根级汇总不一致
+
+- **分类**：`REGRESSION_ATTRIBUTION / PACKAGE_ISOLATION`。
+- **事实证据**：同一工作树、package-local Vitest 隔离运行得到：CLI `921 pass / 40 fail`，Observability `347 / 111`，Plugin Loader `2002 / 24` 且 9 个 suite 收集失败，Workflow Runtime `1578 / 12` 且 worker 仍发生 4GB OOM，Scope Gate `1024 / 75`。它们与根级失败数不同，证明根级并发会改变结果，但隔离后仍存在包内真实失败。
+- **影响**：ERR-1227 不能通过统一增加 timeout 或一次性修改 runner 关闭；每个包必须按当前发布责任分别分类。
+- **正确做法**：以隔离 JSON 为归因基线；先处理发布边界最明确的 Plugin Loader，再依次处理 Workflow Runtime、CLI、Observability、Scope Gate；每包完成 current/legacy 分类和独立回归后才重新运行根级全包。
+- **状态**：`CLOSED`。五份隔离结构化证据已生成，后续具体缺陷由独立 ERR 持有。
+
+```text
+ERR1228_STATUS=CLOSED_FIVE_PACKAGE_ISOLATED_BASELINES_CAPTURED
+CLI=.tmp/cli-isolated-step8.json_921_PASS_40_FAIL
+OBSERVABILITY=.tmp/observability-isolated-step8.json_347_PASS_111_FAIL
+PLUGIN_LOADER=.tmp/plugin-loader-isolated-step8.json_2002_PASS_24_FAIL_9_COLLECTION_FAILURES
+WORKFLOW_RUNTIME=.tmp/workflow-runtime-isolated-step8.json_1578_PASS_12_FAIL_WORKER_OOM
+SCOPE_GATE=.tmp/scope-gate-isolated-step8.json_1024_PASS_75_FAIL
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1228_FIVE_PACKAGE_ISOLATED_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1229_PLUGIN_STATIC_ENV_ACCESS_UNDETECTED:START -->
+### ERR-1229：当前 P0 Plugin 静态检查声明 `process.env` 规则但 AST 未产生复合变量引用
+
+- **分类**：`RUNTIME_DEFECT / CURRENT_RELEASE_P0_STATIC_CHECK`。
+- **事实证据**：当前 release entry 导出 `StaticChecker`；默认规则包含 `PROCESS_ENV_ACCESS`、匹配类型 `variable_ref`、模式 `process.env`。但 `AstParser.extractVariables()` 只返回单个 `Identifier.name`，对 `process.env.API_TOKEN` 仅产生 `process`、`env`、`API_TOKEN`，因此现有属性测试打印 `No violations detected for process.env, skipping...`，隔离全包中随机只生成该 API 时出现 `expected 0 to be greater than 0`。
+- **影响**：插件可读取环境变量而当前 P0 静态检查不报告已声明的规则；这是当前产品缺陷，不能通过缩小生成器或跳过断言掩盖。
+- **正确做法**：先把现有属性测试改成对 `process.env` 强制断言并取得预期红灯，再让 AST 变量提取产生可匹配的复合成员名；随后运行 P0 静态检查定向回归、Plugin Loader 全包和 build。
+- **状态**：`CLOSED`。预期红灯精确证明 `process.env` 未被检测；AST 现产生非 computed 复合成员名，P0 定向回归 `4 files / 62 pass`，收敛后的当前 package 回归 `17 files / 335 pass`，Plugin Loader 与 daemon-core typecheck 均通过。
+
+```text
+ERR1229_STATUS=CLOSED_AST_MEMBER_REFERENCE_DETECTED
+AUTHORITY=PLUGIN_LOADER_CURRENT_RELEASE_P0_STATIC_CHECK
+PRODUCT_FILE=packages/plugin-loader/src/static-checker/ast-parser.ts
+REGRESSION_FILE=packages/plugin-loader/tests/property/static-check-consistency.property.test.ts
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1229_PLUGIN_STATIC_ENV_ACCESS_UNDETECTED:END -->
+
+<!-- SPECFORGE_ERR1230_PLUGIN_RETIRED_EXECUTABLE_TEST_SURFACE:START -->
+### ERR-1230：Plugin Loader 全包仍执行已退出发布边界的动态加载/热加载/Registry/Sandbox 测试
+
+- **分类**：`TEST_SURFACE_DEFECT / RETIRED_MODULE_EXECUTION`。
+- **事实证据**：发布矩阵与 `src/current-release.ts` 均限定当前 package 为 manifest、permission declaration 和 P0 static checker；隔离基线仍执行 Config hot reload、runtime PluginLoader、PluginRegistry、process manager、Schema migration registry、runtime error recovery 等测试，其中 9 个 suite 已引用不存在的旧路径，另有旧用户配置路径和 timeout 失败。
+- **影响**：即使修成绿色也只能证明已经退出的 P1/P2 运行时能力，会诱导恢复非当前架构；同时污染 ERR-681 的可信全量回归。
+- **正确做法**：删除 legacy/invalid 可执行测试，不删除历史治理记录；保留并修复 manifest、permission declaration、StaticChecker 及其内部依赖的当前测试。随后继续审计尚为绿色但仍命中退出模块的测试表面，不能把“目前通过”当成保留理由。
+- **状态**：`CLOSED`。失败和绿色的退出能力测试已一起从可执行表面删除；当前只执行 17 个 current-release 文件、335 项测试，全部通过。历史治理记录删除数为 0。
+
+```text
+ERR1230_STATUS=CLOSED_77_RETIRED_EXECUTABLE_TEST_FILES_REMOVED
+CURRENT_SURFACE=MANIFEST;PERMISSION_DECLARATION;P0_STATIC_CHECK
+LEGACY_RUNTIME_TO_RESTORE=NONE
+HISTORICAL_GOVERNANCE_RECORDS_TO_DELETE=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1230_PLUGIN_RETIRED_EXECUTABLE_TEST_SURFACE:END -->
+
+<!-- SPECFORGE_ERR1231_PLUGIN_RESULT_PARSE_WRONG_CWD:START -->
+### ERR-1231：Plugin Loader 结果解析与 typecheck 命令错误沿用了仓库根相对路径
+
+- **分类**：`VALIDATION_COMMAND / WORKDIR_MISMATCH`。
+- **事实证据**：命令在 `packages/plugin-loader` cwd 执行，却读取 `.tmp/...json` 并调用不存在的 package-local `tsc.cmd`；实际 JSON 位于仓库根 `.tmp`，该包本地只验证过 `vitest.exe` 入口。
+- **影响**：全包 Vitest 已 exit 0 且写出 JSON，但该次汇总和 typecheck 未执行；无产品或测试文件副作用。
+- **正确做法**：从 package cwd 使用 `../../.tmp/...json`，typecheck 使用 package 已声明的 `build` 脚本或经验证的根工具入口；不得把命令路径错误算作产品失败。
+- **状态**：`CLOSED`。后续命令已纠正工作目录边界。
+
+```text
+ERR1231_STATUS=CLOSED_VALIDATION_PATH_CORRECTED
+PRODUCT_FAILURE_EVIDENCE=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1231_PLUGIN_RESULT_PARSE_WRONG_CWD:END -->
+
+<!-- SPECFORGE_ERR1232_PLUGIN_CURRENT_ARTIFACT_STALE_SOURCE_DOC_TEST_SURFACE:START -->
+### ERR-1232：Plugin Loader 当前 artifact 已收敛，但源码、README 与绿色测试仍宣称退出能力可用
+
+- **分类**：`ARCHITECTURE_CONSISTENCY / STALE_NON_ARTIFACT_SURFACE`。
+- **事实证据**：`package.json` 的 main/types/exports 与 `tsconfig.release.json` 已唯一指向 `current-release`，其闭包只需要 manifest、permission declaration、StaticChecker/StaticAnalyzer/AST/rules/path checker/reporter；但旧 `src/index.ts`、README 和大量绿色测试仍公开或验证 runtime loader、discovery、registry、hot reload、sandbox/IPC、runtime grants、audit/recovery/tool integration。仓库外生产搜索未发现这些旧深层入口的现役调用者；daemon 仅保留一份未被源码引用的旧 ambient declaration。
+- **影响**：发布 artifact 本身未包含退出代码，但源码和回归面仍形成第二套“看似可用”的架构事实，后续维护者会继续修复非当前模块并使可信回归失真。
+- **正确做法**：按发布矩阵删除退出模块源码、其测试和运行示例，删除 daemon 未消费的旧 ambient declaration；README 改为只描述 P0 current-release API。保留 CHANGELOG 等历史说明，不改写历史治理记录。
+- **状态**：`CLOSED`。删除 30 个 Plugin Loader 退出模块源码、1 个 daemon 未消费 ambient declaration、77 个退出测试及 13 个旧运行示例/配置文档表面；README 已改为当前 P0 使用说明。保留源码闭包、17 文件/335 测试、Plugin Loader 和 daemon-core typecheck 均通过。
+
+```text
+ERR1232_STATUS=CLOSED_CURRENT_ARTIFACT_SOURCE_TEST_DOC_SURFACES_ALIGNED
+CURRENT_SOURCE_CLOSURE=CURRENT_RELEASE;MANIFEST;PERMISSION_DECLARATION;STATIC_ANALYZER;AST;RULES;PATH_CHECKER;REPORTER
+EXTERNAL_PRODUCTION_CALLERS_OF_RETIRED_SURFACE=NONE_FOUND_IN_SCANNED_REPOSITORY_PRODUCTION_PATHS
+HISTORICAL_GOVERNANCE_RECORDS_TO_DELETE=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1232_PLUGIN_CURRENT_ARTIFACT_STALE_SOURCE_DOC_TEST_SURFACE:END -->
+
+<!-- SPECFORGE_ERR1233_GENERIC_LEDGER_STATUS_PATCH_WRONG_OWNER:START -->
+### ERR-1233：通用 ledger 状态补丁误命中 ERR-1227 父项
+
+- **分类**：`GOVERNANCE_EDIT / INSUFFICIENT_PATCH_CONTEXT`。
+- **事实证据**：一次包含多个相同 `- **状态**：OPEN` hunk 的补丁把 ERR-1229 的关闭说明写入 ERR-1227；随后的逐 ERR 状态检查立即显示 ERR-1227 描述为 CLOSED、机器字段仍为 OPEN，形成自相矛盾。
+- **影响**：短暂污染错误账本的当前状态描述；没有产品、测试、Git、部署或历史记录删除副作用。
+- **正确做法**：状态修改必须携带该 ERR 的“正确做法”或标记行作为唯一上下文，并在补丁后逐块核对人类描述和机器字段。
+- **状态**：`CLOSED`。ERR-1227 已恢复为四包待处理的 OPEN，ERR-1229 单独保持 CLOSED。
+
+```text
+ERR1233_STATUS=CLOSED_OWNER_SPECIFIC_CONTEXT_RESTORED
+ERR1227_STATUS=OPEN_FOUR_PACKAGES_REMAIN
+ERR1229_STATUS=CLOSED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1233_GENERIC_LEDGER_STATUS_PATCH_WRONG_OWNER:END -->
+
+<!-- SPECFORGE_ERR1234_WORKFLOW_SCHEMA_AUTHORITY_CONFLICT:START -->
+### ERR-1234：V6 WorkflowDefinition `1.0` 权威与唯一现役 `feature_spec@2.0` 冲突
+
+- **分类**：`CONTRACT_CONFLICT / DEFERRED_GOVERNANCE`。
+- **事实证据**：V6 design 的 `WorkflowDefinitionFile` 固定 `schema_version: "1.0"`；唯一现役 `configs/workflows/builtin/feature_spec.json` 及其 state/gate 均为 `2.0`；`WorkflowDefinitionLoader` 同时接纳 1.0/2.0，而现有单测仍要求 2.0 被拒绝。
+- **影响**：无法在不决定权威版本的情况下合法修改 loader 或测试；任一方向都会与另一现役权威/产物冲突。
+- **正确做法**：保持该红灯显式，纳入用户已延期的四文档治理批次；先决定 V6 contract 版本，再同步 workflow、loader、types、测试、installer manifest。
+- **状态**：`OPEN_DEFERRED`。
+
+```text
+ERR1234_STATUS=OPEN_DEFERRED_WITH_FOUR_DOCUMENT_GOVERNANCE
+V6_DESIGN_SCHEMA=1.0
+CURRENT_FEATURE_SPEC_SCHEMA=2.0
+LOADER_ACCEPTS=1.0_AND_2.0
+TEST_EXPECTS_2.0_REJECTED=YES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1234_WORKFLOW_SCHEMA_AUTHORITY_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1235_WORKFLOW_CURRENT_FIXTURE_DRIFT:START -->
+### ERR-1235：Workflow 当前回归夹具仍使用未消费 Gate、旧 metadata 与缺失 seal actor
+
+- **分类**：`TEST_FIXTURE_DRIFT / CURRENT_RUNTIME_CONTRACT`。
+- **事实证据**：acceptance 三项给 Gate 配置 string `next` 且未提供 pass check，当前引擎按 fail-closed 报 unconsumed result；evidence guard 的 `work_item.json` 缺当前 `work_item_id/schema_version=1.1`；六个 cross-WI transition 未传 `gate_runner`，因此在 ownership guard 前先被 seal actor 合法拒绝。
+- **影响**：12 项中的 10 项未到达各自要验证的当前行为，不构成产品失败证据。
+- **正确做法**：Gate 夹具显式返回 passed 并使用 `{pass,fail}`；metadata 使用当前 shared contract；ownership 测试提供合法 seal actor，使断言到达 ownership 边界。不得移除产品 guard。
+- **状态**：`CLOSED`。三个定向文件 `63/63` 通过，全包相关路径亦通过；产品 Gate、metadata、seal actor 与 ownership guard 均未削弱。
+
+```text
+ERR1235_STATUS=CLOSED_CURRENT_FIXTURES_REACH_INTENDED_GUARDS
+PRODUCT_GUARDS_TO_WEAKEN=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1235_WORKFLOW_CURRENT_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1236_WORKFLOW_ESM_FS_SPY_INVALID:START -->
+### ERR-1236：Persistence 测试尝试 spy 不可重定义的 ESM `fs/promises.readFile`
+
+- **分类**：`TEST_HARNESS / ESM_NAMESPACE_IMMUTABLE`。
+- **事实证据**：隔离失败为 `Cannot redefine property: readFile`，发生在 `vi.spyOn(await import('fs/promises'), 'readFile')`，产品 `loadInstance()` 尚未执行错误恢复断言。
+- **影响**：当前持久化错误处理未被测试；不是产品行为失败。
+- **正确做法**：用隔离临时目录的真实文件系统状态制造 ENOENT，并断言 `loadInstance()` 返回 null；不修改产品代码、不 mock ESM namespace。
+- **状态**：`CLOSED`。测试改用隔离临时存储根的真实 ENOENT，验证 `loadInstance()` 返回 null；不再修改 ESM namespace。
+
+```text
+ERR1236_STATUS=CLOSED_REAL_TEMP_FS_FAILURE_VERIFIED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1236_WORKFLOW_ESM_FS_SPY_INVALID:END -->
+
+<!-- SPECFORGE_ERR1237_WORKFLOW_PACKAGE_WORKER_OOM:START -->
+### ERR-1237：Workflow Runtime 隔离全包 worker 仍达到 4GB heap 上限
+
+- **分类**：`REGRESSION_INFRASTRUCTURE / PACKAGE_INTERNAL_MEMORY_PRESSURE`。
+- **事实证据**：package-local Vitest 在约 42 秒触发 `Ineffective mark-compacts near heap limit`，JSON 同时记录 1590 tests 中 1578 pass / 12 fail；因此 OOM 不依赖根 workspace 并发。
+- **影响**：即使 12 个断言修复，全包仍可能不能稳定完成，ERR-681 尚不能取得可信证明。
+- **正确做法**：先修复/隔离已知断言，再用单 worker 或按测试目录分层复跑定位内存增长 owner；只有证明结果等价后才调整 package runner，不能简单提高 heap 掩盖泄漏。
+- **状态**：`CLOSED`。分层归因定位到 ERR-1238 的循环属性夹具；修复后 property `156/156`、全包 `1589/1590` 完成且无 worker OOM，唯一失败为延期 ERR-1234。
+
+```text
+ERR1237_STATUS=CLOSED_CYCLIC_PROPERTY_OWNER_REMOVED_NO_OOM
+HEAP_LIMIT_APPROX=4GB
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1237_WORKFLOW_PACKAGE_WORKER_OOM:END -->
+
+<!-- SPECFORGE_ERR1238_WORKFLOW_PROPERTY_GENERATOR_CYCLIC_GRAPH:START -->
+### ERR-1238：Event ordering 属性生成器把任意循环图误称为有效工作流并导致 4GB OOM
+
+- **分类**：`TEST_GENERATOR_DEFECT / NON_TERMINATING_FIXTURE`。
+- **事实证据**：Workflow Runtime property 分层后，`workflow-property-6.event-ordering.test.ts` 单文件在任何测试完成前独立耗尽约 4GB heap；其末项使用 `workflowDefinitionArb(2, 5)`，共享 `stateMachineArb()` 为每个状态从所有其他状态任意选择 `next`，可生成循环；测试随后把所有 Gate 强制为通过并调用无步数上限的 `execute()`。相邻 property 文件及该目录另一半均可完成，唯一 OOM owner 已收敛到该文件。
+- **影响**：测试夹具生成当前发布不使用、且不能终止的状态图，导致事件/history 无限增长；这既不能证明当前 `feature_spec` 的事件有序性，也会阻断全包回归。
+- **正确做法**：将宣称“valid”的共享状态机生成器约束为只指向后续状态或终止的有限前向图；保持 100 次随机事件有序性断言。不得提高 heap、吞掉 OOM，亦不得在没有产品契约依据时把循环工作流提升为当前能力。
+- **状态**：`CLOSED`。生成器现只允许指向后续状态或终止；event-ordering `16/16`、property `156/156`、全包完成且无 OOM。
+
+```text
+ERR1238_STATUS=CLOSED_FINITE_FORWARD_GRAPH_VALIDATED
+PRODUCT_RUNTIME_DEFECT_PROVEN=NO
+CURRENT_FEATURE_SPEC_CYCLIC=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1238_WORKFLOW_PROPERTY_GENERATOR_CYCLIC_GRAPH:END -->
+
+<!-- SPECFORGE_ERR1239_EVENT_ORDERING_FAILED_GATE_OLD_CONTINUE_EXPECTATION:START -->
+### ERR-1239：Event ordering 属性仍期望失败 Gate 通过 string `next` 继续执行
+
+- **分类**：`TEST_FIXTURE_DRIFT / FAIL_CLOSED_GATE_CONTRACT`。
+- **事实证据**：循环生成器修复后，event-ordering 单文件完成收集并得到 `15 pass / 1 fail`；唯一反例为 `[2,false]`，当前引擎明确报 `gate result is unconsumed (string next)`。同文件“failure ordering”场景已经通过捕获预期拒绝后检查既有事件来表达相同业务要求。
+- **影响**：旧夹具把 Gate 失败后的继续执行当成前提，与当前 fail-closed 契约冲突；事件有序性本身尚未发现失败。
+- **正确做法**：保持产品拒绝逻辑不变；在该属性中接纳失败 Gate 的预期拒绝，并继续验证拒绝发生前已发布事件非空且时间不倒退。
+- **状态**：`CLOSED`。测试保留失败 Gate 和产品拒绝，仅接纳预期 fail-closed 异常后验证已发布事件；单文件 `16/16` 通过。
+
+```text
+ERR1239_STATUS=CLOSED_EVENT_PROPERTY_ALIGNED_WITH_FAIL_CLOSED_GATE
+PRODUCT_GUARD_TO_WEAKEN=NONE
+RED_BASELINE=15_PASS_1_FAIL_COUNTEREXAMPLE_2_FALSE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1239_EVENT_ORDERING_FAILED_GATE_OLD_CONTINUE_EXPECTATION:END -->
+
+<!-- SPECFORGE_ERR1240_WORKFLOW_SOURCE_PREVIEW_WRONG_CWD:START -->
+### ERR-1240：Workflow 定向复跑命令的源码预览沿用了仓库根相对路径
+
+- **分类**：`VALIDATION_COMMAND / WORKDIR_MISMATCH`。
+- **事实证据**：命令 cwd 已是 `packages/workflow-runtime`，但前置 `Get-Content` 仍传 `packages/workflow-runtime/tests/...`，因此仅该只读预览报路径不存在；同一命令后续 package-local Vitest 正常 exit 0 并写出 JSON。
+- **影响**：源码预览未显示；测试、产品文件和结果文件均未受影响。
+- **正确做法**：package cwd 下预览使用 `tests/...`；结构化测试结果以 runner exit code 和 JSON 为准，不把辅助读取失败归因产品。
+- **状态**：`CLOSED`。
+
+```text
+ERR1240_STATUS=CLOSED_VALIDATION_CWD_CORRECTED
+PRODUCT_FAILURE_EVIDENCE=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1240_WORKFLOW_SOURCE_PREVIEW_WRONG_CWD:END -->
+
+<!-- SPECFORGE_ERR1241_CLI_CURRENT_SEVEN_FILE_BASELINE:START -->
+### ERR-1241：CLI 隔离 40 项失败全部集中在七个当前发布责任文件
+
+- **分类**：`REGRESSION_ATTRIBUTION / CURRENT_CLI_SURFACE`。
+- **事实证据**：CLI package 隔离基线与七文件单 worker 均为 `115 total / 75 pass / 40 fail`；失败文件分别属于 help/version、job wait、interactive progress、init resource check、init rollback、installation record、release smoke。
+- **正确做法**：七个文件全部先按当前责任归因，不因测试旧而整文件删除；仅删除或改写已由其他 owner 覆盖的无效用例，修复唯一被证实的产品首次偏离。
+- **状态**：`CLOSED`。七文件组合 `114/114` 通过，CLI 全包 `386/386 suites; 1038/1038 tests` 通过。
+
+```text
+ERR1241_STATUS=CLOSED_SEVEN_CURRENT_CLI_FILES_AND_FULL_SUITE_PASS
+LEGACY_ONLY_FAILED_FILES=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1241_CLI_CURRENT_SEVEN_FILE_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1242_CLI_IMMUTABLE_ESM_TEST_SPIES:START -->
+### ERR-1242：CLI resource/rollback 测试 spy 不可重定义的 Node ESM namespace
+
+- **分类**：`TEST_HARNESS / ESM_NAMESPACE_IMMUTABLE`。
+- **事实证据**：resource-check 19 项均在 `os.cpus/totalmem` 或 `fs.statfs` spy 阶段失败；rollback 5 项均在 `fs.access/mkdir` spy 阶段失败，产品断言尚未到达。
+- **正确做法**：通过显式依赖 seam 或可控 adapter instance 注入测试替身；默认生产依赖保持 Node API，不降低资源检查或回滚语义。
+- **状态**：`CLOSED`。Resource check 使用默认不变的系统依赖 seam，19/19 通过；rollback 使用 Vitest hoisted Node module mock，15/15 通过。
+
+```text
+ERR1242_STATUS=CLOSED_TEST_SEAMS_REACH_CURRENT_BEHAVIOR
+PRODUCT_FAILURE_PROVEN=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1242_CLI_IMMUTABLE_ESM_TEST_SPIES:END -->
+
+<!-- SPECFORGE_ERR1243_INSTALLATION_RECORD_BASELINE_NOT_ENFORCED:START -->
+### ERR-1243：Installation record 声明强制 baseline 但实际信任调用者 schema
+
+- **分类**：`PRODUCT_DEFECT / INSTALLATION_SCHEMA_AUTHORITY`。
+- **事实证据**：模块注释与测试均声明 `schema_version` 严格等于 `SchemaVersionManager.baseline`；传入 `99.99` 后落盘仍为 `99.99`，精确红灯为 `expected '99.99' to be '1.0'`。
+- **正确做法**：由 SchemaVersionManager 的当前 baseline 覆盖 record 输入；显式 baseline 参数只作为 manager 的受控构造输入，不允许 record 自行成为 schema 权威。
+- **状态**：`CLOSED`。落盘 schema 现唯一取自 SchemaVersionManager baseline；与 JobWaiter 组合定向回归 39/39 通过，CLI typecheck/build 通过。
+
+```text
+ERR1243_STATUS=CLOSED_SCHEMA_MANAGER_BASELINE_ENFORCED
+RED_BASELINE=EXPECTED_1_0_RECEIVED_99_99
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1243_INSTALLATION_RECORD_BASELINE_NOT_ENFORCED:END -->
+
+<!-- SPECFORGE_ERR1244_JOB_WAITER_OLD_TERMINAL_STATUS_FIXTURES:START -->
+### ERR-1244：JobWaiter 测试一边确认当前终态、一边用旧 `succeeded/aborted` 等待
+
+- **分类**：`TEST_FIXTURE_DRIFT / CLI_ASYNC_CONTRACT`。
+- **事实证据**：同文件先断言默认终态为 `completed/failed/blocked/cancelled` 且明确排除 `succeeded/aborted`，后续七项默认 waiter 却发送或快照旧终态，全部等待到 10 秒测试时限。
+- **正确做法**：默认 waiter 场景改用当前终态；仅自定义 terminalStates 的专门用例保留自定义值。
+- **状态**：`CLOSED`。默认 waiter 场景已对齐 `completed/cancelled`，自定义终态用例保持独立；无 10 秒串行超时。
+
+```text
+ERR1244_STATUS=CLOSED_DEFAULT_JOB_TERMINAL_FIXTURES_ALIGNED
+PRODUCT_FAILURE_PROVEN=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1244_JOB_WAITER_OLD_TERMINAL_STATUS_FIXTURES:END -->
+
+<!-- SPECFORGE_ERR1245_CLI_PROGRESS_OUTPUT_SINK_ASSERTION:START -->
+### ERR-1245：Progress 测试把清行片段当完整输出并监听错误 sink
+
+- **分类**：`TEST_ASSERTION_DEFECT / INTERACTIVE_OUTPUT`。
+- **事实证据**：Spinner/ProgressBar 完成消息使用 `console.log`，失败断言只捕获 `stdout.write`；ProgressBar update 先写清行再写新内容，测试只检查 `stdoutOutput[0]`。
+- **正确做法**：分别捕获 console 完成消息，并在全部 stdout 片段中检查 update 内容；不改变交互产品输出。
+- **状态**：`CLOSED`。完成消息与 stdout 更新分别按实际 sink 断言，相关组合回归通过。
+
+```text
+ERR1245_STATUS=CLOSED_ACTUAL_INTERACTIVE_OUTPUT_SINKS_ASSERTED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1245_CLI_PROGRESS_OUTPUT_SINK_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR1246_CLI_HELP_TEST_OWNER_AND_STRICTNESS_DRIFT:START -->
+### ERR-1246：Help 测试把顶层 version owner 归给 help middleware，unknown command 又未启用严格解析
+
+- **分类**：`INVALID_OR_DUPLICATE_TEST_CASE / COMMAND_OWNER_DRIFT`。
+- **事实证据**：`runCli()` 在 parseSync 后由 `runVersionCommand` 处理 `--version`，且已有独立 version command 测试；`addHelpCommands()` 只处理中间件 help。unknown-command 夹具未启用 strict command validation，因此不会进入 fail handler。
+- **正确做法**：删除重复且 owner 错误的 help-version 用例；unknown command 使用严格命令解析以真实到达 suggestion/fail 路径。
+- **状态**：`CLOSED`。删除 1 个已有专门 owner 覆盖的重复 version 用例；unknown command 通过 strictCommands 到达 fail/suggestion 路径。
+
+```text
+ERR1246_STATUS=CLOSED_HELP_TEST_REAL_OWNERS_ALIGNED
+PRODUCT_FAILURE_PROVEN=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1246_CLI_HELP_TEST_OWNER_AND_STRICTNESS_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1247_SMOKE_TEST_RESET_CLEARS_DEFAULT_PROCESS_MOCK:START -->
+### ERR-1247：Smoke 前序 resetAllMocks 清空后续 cleanup 所需 spawn 实现
+
+- **分类**：`TEST_LIFECYCLE / MOCK_RESET_CONTAMINATION`。
+- **事实证据**：smoke 文件各 describe 的 afterEach 反复 `resetAllMocks()`；Disposable 幂等场景未重新配置 spawn，而 `cleanup()` 必须执行受控卸载命令，第一次返回 false。
+- **正确做法**：该场景显式恢复成功 process mock，再验证连续 cleanup 均成功；不得让测试执行真实 npm uninstall。
+- **状态**：`CLOSED`。Disposable 场景逐测试恢复受控成功 process/fs mock，幂等 cleanup 通过且未执行真实卸载。
+
+```text
+ERR1247_STATUS=CLOSED_PROCESS_MOCK_RESTORED_PER_SCENARIO
+REAL_UNINSTALL_AUTHORIZED=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1247_SMOKE_TEST_RESET_CLEARS_DEFAULT_PROCESS_MOCK:END -->
+
+<!-- SPECFORGE_ERR1248_CLI_FULL_SUITE_FOUR_COLLECTION_FAILURES:START -->
+### ERR-1248：CLI 断言全绿后仍有四个测试文件未被 Vitest 收集
+
+- **分类**：`TEST_COLLECTION / RUNNER_AND_HOIST_CONTRACT`。
+- **事实证据**：CLI 单 worker 全包 JSON 为 `960 pass / 0 failed assertions`，但 `354/358 suites`；`errors.test.ts` 与受其影响的 `mode-switch.test.ts` 无法解析 `bun:test`，`DaemonClient.test.ts` 和 `commands/daemon.test.ts` 的 mock factory 分别报 hoisted module factory 与 initialization-before-access。
+- **影响**：四个当前 CLI 边界测试没有执行，不能据 960 个绿灯关闭 package。
+- **正确做法**：统一到 package 声明的 Vitest runner；hoisted mock 状态用 `vi.hoisted()` 或工厂内自足对象，确保四文件真实收集并执行，再重跑全包。
+- **状态**：`CLOSED`。两文件改用 Vitest，两个 mock 使用 `vi.hoisted()`；四文件 32/32 suites、78/78 tests 通过，全包亦全部收集。
+
+```text
+ERR1248_STATUS=CLOSED_FOUR_CLI_COLLECTION_FAILURES_REPAIRED
+CLI_ASSERTIONS=960_PASS_0_FAIL
+CLI_SUITES=354_PASS_4_FAIL
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1248_CLI_FULL_SUITE_FOUR_COLLECTION_FAILURES:END -->
+
+<!-- SPECFORGE_ERR1249_HELP_TEST_YARGS_VERSION_WARNING:START -->
+### ERR-1249：Help 测试未复现生产 yargs version 前置配置并持续输出 reserved-word 警告
+
+- **分类**：`TEST_HARNESS / NON_ISOMORPHIC_PARSER_SETUP`。
+- **事实证据**：CLI 全包 358 suites/1038 tests 全通过，但 help 测试重复输出 `"version" is a reserved word`；生产 `parseArgs()` 在添加 help commands 前已调用 `.version(false)`，测试裸 parser 未调用。
+- **正确做法**：help 集成测试在交给 `addHelpCommands()` 前同样关闭 yargs 内建 version；保持自定义顶层 version owner 不变。
+- **状态**：`CLOSED`。help 测试使用 `.version(false)` 复现生产前置配置，定向复跑不再出现 reserved-word 警告。
+
+```text
+ERR1249_STATUS=CLOSED_HELP_TEST_YARGS_PRECONFIG_ALIGNED
+PRODUCT_VERSION_HANDLER_CHANGE=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1249_HELP_TEST_YARGS_VERSION_WARNING:END -->
+
+<!-- SPECFORGE_ERR1250_OBSERVABILITY_ISOLATED_MIXED_OWNER_BASELINE:START -->
+### ERR-1250：Observability 隔离 111 项失败混合了当前查询能力与已退出 WAL 写 owner
+
+- **分类**：`REGRESSION_ATTRIBUTION / ARCHITECTURE_OWNER_DRIFT`。
+- **事实证据**：隔离基线 `458 total / 347 pass / 111 fail`，15 个失败文件；多数在调用 `EventLogger.append()` 后读取不到 WAL。V6 requirements/design 明确 Daemon `events.jsonl` 是权威且 Daemon 为唯一 owner，daemon wiring 回归也明确 `trackEvent()` 不直接写 WAL/state。
+- **正确做法**：删除仅验证 Observability 自己写/fsync/恢复 WAL 的旧 owner 测试；当前 Query/Analyst/trace 测试改为模拟 Daemon 先持久化有效 Event，再由 EventLogger 索引/查询。禁止恢复第二个 WAL writer。
+- **状态**：`CLOSED`。收敛后全包 `169/169 suites; 363/363 tests` 通过，typecheck/build 通过；没有恢复 Observability WAL writer。
+
+```text
+ERR1250_STATUS=CLOSED_DAEMON_WAL_CONSUMER_SURFACE_CONVERGED
+INITIAL=347_PASS_111_FAIL
+DAEMON_WAL_WRITER_TO_DUPLICATE=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1250_OBSERVABILITY_ISOLATED_MIXED_OWNER_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1251_OBSERVABILITY_RETIRED_WAL_WRITER_TESTS:START -->
+### ERR-1251：Observability crash/EventLogger 测试仍要求 package 自己写入和 fsync 权威 WAL
+
+- **分类**：`LEGACY_OR_WRONG_OWNER_TEST_SURFACE / WAL_AUTHORITY`。
+- **事实证据**：integration/unit crash recovery 与 unit EventLogger 文件反复断言 `append()` 创建、追加、fsync `events.jsonl` 并重建 state；当前代码将 append 标为 compatibility wrapper 且只委托 `trackEvent()`，Daemon wiring 测试要求无直接 WAL/state I/O。
+- **正确做法**：从 Observability 可执行回归删除错误 owner 测试，并新增/保留“空初始化不创建 WAL、track 不写 WAL、预置 WAL 可查询”的当前边界证明；Daemon crash/WAL 回归继续持有持久化责任。
+- **状态**：`CLOSED`。删除 4 个错误 WAL owner 测试文件，新增 3 项当前 owner 边界测试；历史治理记录删除数为 0。
+
+```text
+ERR1251_STATUS=CLOSED_RETIRED_WAL_WRITER_TESTS_REPLACED_WITH_CURRENT_BOUNDARY
+HISTORICAL_GOVERNANCE_RECORDS_TO_DELETE=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1251_OBSERVABILITY_RETIRED_WAL_WRITER_TESTS:END -->
+
+<!-- SPECFORGE_ERR1252_OBSERVABILITY_GATE_DECISION_ACTION_DRIFT:START -->
+### ERR-1252：Minimal mode 的 Gate 决策 action 在实现层分裂
+
+- **分类**：`PRODUCT_DEFECT / EVENT_CONTRACT_DRIFT`。
+- **事实证据**：V6 design 的流程与 observability 用户文档使用 `gate.passed/gate.failed`；EventBus 的 minimal 判定也接受 `.passed/.failed`；独立 ModeSwitch 却只列 `gate.checked`，导致 basic、unit 和 property mode tests 拒绝 Gate 决策。
+- **正确做法**：minimal action 集合接纳当前 Gate 决策动作 `gate.passed/gate.failed`，同时保留现役配置中的 `gate.checked`；随后运行 mode 三层回归。
+- **状态**：`CLOSED`。Gate、Permission、Workflow transition 决策 action 已统一；mode/owner 定向回归 51/51 通过。
+
+```text
+ERR1252_STATUS=CLOSED_MINIMAL_DECISION_ACTIONS_UNIFIED
+RED_FILES=BASIC;UNIT_MODE_SWITCH;PROPERTY_MODE_FILTERING
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1252_OBSERVABILITY_GATE_DECISION_ACTION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1253_NORTH_STAR_DUPLICATE_WRITES_REPOSITORY_REPORTS:START -->
+### ERR-1253：重复 North Star 报告测试共享仓库内固定目录并互相清理
+
+- **分类**：`INVALID_OR_DUPLICATE_TEST / REPOSITORY_SIDE_EFFECT`。
+- **事实证据**：root 与 integration 各有一套 North Star 场景；root 版本额外在 `packages/observability/test-data` 生成/备份报告，隔离全包出现 `ENOTEMPTY`，两套测试共享固定目录且职责重叠。
+- **正确做法**：删除 root 报告生成型可执行测试，保留 integration 当前场景并改用隔离临时目录/Daemon-owned WAL fixture；不删除历史治理记录。
+- **状态**：`CLOSED`。删除 1 个重复仓库写入型测试文件，保留 integration North Star 场景并通过当前 Daemon WAL fixture 验证。
+
+```text
+ERR1253_STATUS=CLOSED_DUPLICATE_REPOSITORY_WRITING_TEST_REMOVED
+HISTORICAL_GOVERNANCE_RECORDS_TO_DELETE=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1253_NORTH_STAR_DUPLICATE_WRITES_REPOSITORY_REPORTS:END -->
+
+<!-- SPECFORGE_ERR1254_OBSERVABILITY_CURRENT_CONSUMER_FIXTURES_SKIP_DAEMON_WAL:START -->
+### ERR-1254：当前 Query/Analyst/trace 测试未模拟 Daemon WAL 就直接调用兼容 append
+
+- **分类**：`TEST_FIXTURE_DRIFT / PRODUCER_CONSUMER_ORDER`。
+- **事实证据**：移除错误 owner 测试并修复 mode 后，全包降为 `316 pass / 47 fail`；其中 46 项分布在 multi-project、North Star、permission trace、serialization、QueryAPI、sf-analyst，均在 `EventLogger.append()` 后查询空结果。
+- **正确做法**：新增 test-only Daemon WAL fixture，严格执行“写入完整 events.jsonl Event → EventLogger.trackEvent/index → Query/Analyst”；产品 append/track 行为不回退。
+- **状态**：`CLOSED`。test-only Daemon WAL fixture 明确先持久化 Event 再 track/index；七文件由 47 项失败降至仅两项身份夹具失败，修正后全部通过。
+
+```text
+ERR1254_STATUS=CLOSED_CURRENT_CONSUMERS_USE_DAEMON_WAL_FIXTURE
+PRODUCT_SECOND_WAL_WRITER=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1254_OBSERVABILITY_CURRENT_CONSUMER_FIXTURES_SKIP_DAEMON_WAL:END -->
+
+<!-- SPECFORGE_ERR1255_OBSERVABILITY_PACKAGE_MAIN_TEST_STALE_PATH:START -->
+### ERR-1255：Observability package 结构测试仍断言旧 dist 根入口
+
+- **分类**：`TEST_ASSERTION_DRIFT / BUILD_ARTIFACT_PATH`。
+- **事实证据**：package.json 当前 `main=dist/src/index.js`、`types=dist/src/index.d.ts`，实际 tsconfig/build 与其他包消费该布局；测试唯一失败仍期待 `dist/index.js`。
+- **正确做法**：测试消费当前 package manifest/build 布局，不把旧路径恢复到产品。
+- **状态**：`CLOSED`。测试已对齐 `dist/src/index.js` 与 `dist/src/index.d.ts`，不恢复旧构建路径。
+
+```text
+ERR1255_STATUS=CLOSED_PACKAGE_STRUCTURE_TEST_ALIGNED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1255_OBSERVABILITY_PACKAGE_MAIN_TEST_STALE_PATH:END -->
+
+<!-- SPECFORGE_ERR1256_QUERY_API_TEST_OLD_ACTOR_IDENTITY:START -->
+### ERR-1256：QueryAPI 两项 actor filter 测试仍使用旧 `{id,name,type}` 身份
+
+- **分类**：`TEST_FIXTURE_DRIFT / AGENT_IDENTITY_CONTRACT`。
+- **事实证据**：Daemon WAL fixture 后七文件 `134/136`；仅 actor filter 两项返回未过滤集合。产品 EventFilter 与 AgentIdentity 当前按 `sessionId/agentRole`，测试却传 `actor.id` 并断言 `payload.actor.id`。
+- **正确做法**：夹具使用完整当前 AgentIdentity，并以 `sessionId` 过滤/断言；不向产品添加旧 id 兼容。
+- **状态**：`CLOSED`。夹具改用完整当前 AgentIdentity，以 sessionId 过滤；QueryAPI 定向和全包通过，未加入旧身份兼容。
+
+```text
+ERR1256_STATUS=CLOSED_QUERY_ACTOR_FIXTURES_CURRENT_IDENTITY
+LEGACY_ID_COMPATIBILITY_TO_ADD=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1256_QUERY_API_TEST_OLD_ACTOR_IDENTITY:END -->
+
+<!-- SPECFORGE_ERR1257_SCOPE_GATE_MIXED_ARCHITECTURE_BASELINE:START -->
+### ERR-1257：Scope Gate 隔离回归混合当前 release validator 与已退出 runtime scope 模型
+
+- **分类**：`REGRESSION_ATTRIBUTION / ARCHITECTURE_SURFACE_DRIFT`。
+- **事实证据**：隔离基线为 `1099 total / 1024 pass / 75 fail`；V6 design 与当前模块矩阵唯一启用职责是 requirements/design/matrix 对 release artifact/build/deploy/manifest 的发布前校验，但失败文件同时包含 audit logger、scope configuration、scope tag、parent spec 和旧 `scope-validate` CLI。
+- **正确做法**：先按正式生产调用与当前发布权威区分两类表面；当前 release validator 的失败按产品缺陷修复，已退出 runtime/P1/P2 feature-flag 表面从 exports、构建入口和可执行回归退出，不以修历史测试延续旧架构。
+- **状态**：`OPEN`。正在收敛 Scope Gate 最后一个 ERR-1227 包。
+
+```text
+ERR1257_STATUS=OPEN_SCOPE_GATE_CURRENT_RELEASE_SURFACE_CONVERGENCE
+INITIAL=1024_PASS_75_FAIL
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1257_SCOPE_GATE_MIXED_ARCHITECTURE_BASELINE:END -->
+
+<!-- SPECFORGE_ERR1258_SCOPE_GATE_RETIRED_RUNTIME_SCOPE_SURFACE:START -->
+### ERR-1258：Scope Gate 仍导出并测试旧 runtime scope、P1/P2 feature flag 与重复 CLI 真相
+
+- **分类**：`RETIRED_ARCHITECTURE_SURFACE / CURRENT_RELEASE_BOUNDARY`。
+- **事实证据**：`src/index.ts` 仍导出 Registry、RuntimeChecker、REQ-25 loader/parser、AuditLogger、ScopeTagValidator、ScopeConfiguration、FeatureFlagManager 与 generators，`bin/` 仍提供 capability/feature-flag/scope-context/scope-validate；而当前矩阵明确 `@specforge/scope-gate` “只作为 release/build gate，不进入业务 Runtime，不允许 P1/P2 feature flags”，并要求替换 CLI bridge。
+- **正确做法**：保留仅用于发布证据投影、artifact inventory、owner snapshot、surface producer、release-set validator 与 precheck 的实现；删除旧 runtime/feature-flag/CLI 可执行表面及其测试，历史治理材料保留并标记为历史事实。
+- **状态**：`OPEN`。待完成生产调用复核后实施最小完整收敛。
+
+```text
+ERR1258_STATUS=OPEN_RETIRED_RUNTIME_SCOPE_EXPORTS_AND_TESTS_PRESENT
+LEGACY_COMPATIBILITY_REQUIRED=NO
+HISTORICAL_GOVERNANCE_RECORDS_TO_DELETE=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1258_SCOPE_GATE_RETIRED_RUNTIME_SCOPE_SURFACE:END -->
+
+<!-- SPECFORGE_ERR1259_SCOPE_GATE_TEST_RUNNER_INVOCATION_ENVIRONMENT:START -->
+### ERR-1259：Scope Gate 定向验证先后命中不存在的本地 Vitest shim 与 Bun 临时目录权限
+
+- **分类**：`TEST_HARNESS / ENVIRONMENT`。
+- **事实证据**：仓库没有 `node_modules/.bin/vitest.cmd`，首次命令无法启动；改用已验证 Bun 后，未设置仓库内临时目录时返回 `EPERM accessing temporary directory`。两次均未执行测试断言。
+- **正确做法**：使用仓库既有 Bun runtime，并把 TEMP/TMP/BUN_TMPDIR 固定到 `D:\\code\\SpecForge\\.tmp\\bun` 后重跑；不得把 harness 启动失败当成产品失败。
+- **状态**：`OPEN`。等待使用已验证环境重跑。
+
+```text
+ERR1259_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_ENTRY_USED
+PRODUCT_FAILURE_PROVEN=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1259_SCOPE_GATE_TEST_RUNNER_INVOCATION_ENVIRONMENT:END -->
+
+<!-- SPECFORGE_ERR1260_CLEAN_BUILD_FIXTURE_MISSING_ROOT_MANIFEST:START -->
+### ERR-1260：Clean-build producer 当前测试夹具缺少其契约要求的 root package manifest
+
+- **分类**：`TEST_FIXTURE_DRIFT / FAIL_CLOSED_RELEASE_EVIDENCE`。
+- **事实证据**：package-local Vitest 成功执行后，`node-release-surface-producers` 为 `5 pass / 1 fail`；唯一错误是 `clean_build:root_package_json_invalid`。测试只创建 `packages/types/package.json` 与 dist 文件，没有创建 candidate root `package.json`；生产 producer 必须读取 root `specforgeRelease.cleanBuildFiles` 并在缺失/非法时失败关闭。
+- **正确做法**：为成功路径夹具补充最小合法 root package manifest，不放宽 producer 对 release artifact 根清单的 fail-closed 行为。
+- **状态**：`OPEN`。待修复夹具并定向复跑。
+
+```text
+ERR1260_STATUS=OPEN_ADD_VALID_ROOT_RELEASE_MANIFEST_FIXTURE
+PRODUCT_FAIL_CLOSED_BEHAVIOR_TO_RELAX=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1260_CLEAN_BUILD_FIXTURE_MISSING_ROOT_MANIFEST:END -->
+
+<!-- SPECFORGE_ERR1261_POWERSHELL_REGEX_PIPE_INTERPRETATION:START -->
+### ERR-1261：只读 import 搜索因 PowerShell 把正则 `|` 解释为管道而未执行
+
+- **分类**：`INVESTIGATION_COMMAND / SHELL_QUOTING`。
+- **事实证据**：双引号正则中的 alternation 被 PowerShell 解析，报 `audit-logger is not recognized`；后续改用单引号/更简单 literal 搜索完成生产调用核验。
+- **正确做法**：PowerShell 下对含 `|` 的 ripgrep 正则使用单引号，或拆成不会被 shell 解释的 literal 搜索。
+- **状态**：`CLOSED`。后续搜索确认正式生产调用仅指向 release validator 系列；旧 CLI bridge 仅被 CLI 自己使用。
+
+```text
+ERR1261_STATUS=CLOSED_SAFE_LITERAL_SEARCH_COMPLETED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1261_POWERSHELL_REGEX_PIPE_INTERPRETATION:END -->
+
+<!-- SPECFORGE_ERR1262_SCOPE_GATE_BUILD_LEAVES_RETIRED_DIST:START -->
+### ERR-1262：Scope Gate build 未清理 dist，已删除 runtime surface 仍留在发布产物目录
+
+- **分类**：`PRODUCT_BUILD_DEFECT / STALE_ARTIFACT`。
+- **重复错误检查**：与 ERR-1003 同类；源码退出后直接 `tsc` 不会删除旧 dist，不能形成可信 clean build。复用 EXP-047、EXP-052，不新增经验规则。
+- **事实证据**：删除旧源码后执行 `tsc -p tsconfig.json` 成功，但 `dist/src` 仍包含 audit logger、feature-flag-manager、runtime-checker、scope registry/tag/configuration 等旧 JS/d.ts；package `build` 当前仅执行 `tsc`。
+- **正确做法**：package 正式 build 必须先精确清理自身 `dist` 再编译；随后核对 dist 仅含九个当前 release validator 模块，并重跑 package build/tests。
+- **状态**：`OPEN`。
+
+```text
+ERR1262_STATUS=OPEN_SCOPE_GATE_CLEAN_BUILD_REQUIRED
+REPEATED_ERROR_CLASS=ERR-1003
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1262_SCOPE_GATE_BUILD_LEAVES_RETIRED_DIST:END -->
+
+<!-- SPECFORGE_ERR1263_POWERSHELL_REGEX_QUOTING_REPEATED:START -->
+### ERR-1263：ERR-1261 后再次用双引号执行含字符类的 PowerShell 搜索
+
+- **分类**：`REPEATED_INVESTIGATION_COMMAND_ERROR`。
+- **事实证据**：检查 zod import 时再次使用双引号复杂正则，PowerShell 返回 ParserError，命令未执行；随后改用 literal `rg -n zod` 成功。
+- **正确做法**：本阶段后续 PowerShell 搜索只使用单引号正则或 literal pattern，不再拼复杂双引号模式。
+- **状态**：`CLOSED`。未修改产品状态，所需证据已由 literal 搜索取得。
+
+```text
+ERR1263_STATUS=CLOSED_LITERAL_SEARCH_ONLY
+REPEATED_ERROR_CLASS=ERR-1261
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1263_POWERSHELL_REGEX_QUOTING_REPEATED:END -->
+
+<!-- SPECFORGE_ERR1264_PACKAGE_CWD_GOVERNANCE_PATH_LOOKUP:START -->
+### ERR-1264：在 CLI package cwd 汇总结果时使用了 root-relative governance 路径
+
+- **分类**：`INVESTIGATION_COMMAND / WORKING_DIRECTORY`。
+- **事实证据**：CLI 与 Scope Gate JSON 结果均成功解析，但同一命令尾部 `rg docs/...` 因 cwd 为 `packages/cli` 返回三项路径不存在；回到仓库根后检索成功。
+- **状态**：`CLOSED`。测试结果有效，治理检索已从正确根目录重跑；无产品副作用。
+
+```text
+ERR1264_STATUS=CLOSED_RERUN_FROM_REPOSITORY_ROOT
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1264_PACKAGE_CWD_GOVERNANCE_PATH_LOOKUP:END -->
+
+<!-- SPECFORGE_ERR1265_RELEASE_MANIFEST_CANDIDATE_ARGUMENT_SHAPE:START -->
+### ERR-1265：Release manifest builder 使用了不支持的 `--candidate-id=value` 形式
+
+- **分类**：`RELEASE_COMMAND_INVOCATION / ARGUMENT_CONTRACT`。
+- **事实证据**：runtime artifacts 已成功重建；随后 manifest builder 的 `option()` 只解析分离参数，传入等号形式后 fail closed 为 `RELEASE_CANDIDATE_ID_REQUIRED`，没有生成新 manifest。
+- **正确做法**：复用同一 candidate ID，以 `--candidate-id <value>` 分离参数重跑，不修改 builder 的参数或 fail-closed 行为。
+- **状态**：`OPEN`。
+
+```text
+ERR1265_STATUS=OPEN_RERUN_WITH_SEPARATE_CANDIDATE_ARGUMENT
+MANIFEST_GENERATED=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1265_RELEASE_MANIFEST_CANDIDATE_ARGUMENT_SHAPE:END -->
+
+<!-- SPECFORGE_ERR1266_RELEASE_CANDIDATE_ID_TEST_CONTRACT:START -->
+### ERR-1266：本轮 candidate ID 自定义连字符后缀不符合既有不可变 ID 合同
+
+- **分类**：`RELEASE_COMMAND_INVOCATION / CANDIDATE_ID_FORMAT`。
+- **事实证据**：manifest 与正式 precheck 均成功，但 Scope Gate 根并发测试唯一当前失败为 candidate ID `main-45a0cfee-working-tree-step8-scope` 不匹配 `^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$`。
+- **正确做法**：不放宽稳定 candidate ID 合同；使用同义且合法的 `main-45a0cfee-working-tree-step8scope` 重建 manifest 并复跑 precheck/Scope Gate。
+- **状态**：`OPEN`。
+
+```text
+ERR1266_STATUS=OPEN_REBUILD_WITH_CONTRACT_VALID_CANDIDATE_ID
+PRODUCT_ID_CONTRACT_TO_RELAX=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1266_RELEASE_CANDIDATE_ID_TEST_CONTRACT:END -->
+
+<!-- SPECFORGE_ERR1267_ROOT_TEST_PARALLEL_WORKSPACE_CONTENTION:START -->
+### ERR-1267：根 `test` 并发启动 16 个 package，使独立全绿测试在资源争用下产生伪回归
+
+- **分类**：`VALIDATION_GATE_DEFECT / NONDETERMINISTIC_PARALLEL_ORCHESTRATION`。
+- **事实证据**：根脚本 `bun run --filter './packages/*' test` 同时启动所有 package。独立全绿的 Observability 在根跑中出现 12 个 10 秒 timeout/性能阈值失败，Daemon 出现 property/git fixture timeout 与 EBUSY，Workflow recovery 出现并发下不稳定，Plugin Loader 退出 1；总耗时与单操作延迟放大约 6～10 倍。Scope Gate 另有 ERR-1266 独立格式问题。
+- **责任层**：`Validation Gate / Root Test Orchestrator`，不是这些 package 当前产品逻辑的共同失败。
+- **正确做法**：根测试与确定性 root build 一样按已冻结 package 顺序逐包执行，并保留任何 package 非零即整体非零；不得统一提高每个测试 timeout 或放宽性能阈值。随后以合法 candidate 重跑根级全量，期望仅保留 ERR-1186、ERR-1234 两项延期权威冲突。
+- **状态**：`OPEN`。
+
+```text
+ERR1267_STATUS=OPEN_SEQUENTIAL_DETERMINISTIC_WORKSPACE_TEST_RUNNER
+PACKAGE_TEST_THRESHOLDS_TO_RELAX=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1267_ROOT_TEST_PARALLEL_WORKSPACE_CONTENTION:END -->
+
+<!-- SPECFORGE_ERR1268_SEQUENTIAL_RUNNER_ASSUMES_EVERY_PACKAGE_HAS_TEST:START -->
+### ERR-1268：顺序根 runner 假设每个发布 package 都声明 test script
+
+- **分类**：`VALIDATION_RUNNER_DEFECT / PACKAGE_CAPABILITY_DISCOVERY`。
+- **事实证据**：首轮顺序根回归在 `@specforge/types` 返回 `Script not found "test"`；该 package 没有 test script，但 build 和由其他 package 持有的 types 合同测试存在。旧 workspace filter 会跳过无对应 script 的 package。
+- **正确做法**：runner 读取每个 package manifest；没有非空 test script 时显式报告 `SKIP ... no test script`，不把它伪造为测试失败。发布 build/precheck 仍必须覆盖该 package。
+- **状态**：`OPEN`。
+
+```text
+ERR1268_STATUS=OPEN_SKIP_ONLY_MANIFEST_CONFIRMED_NO_TEST_SCRIPT
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1268_SEQUENTIAL_RUNNER_ASSUMES_EVERY_PACKAGE_HAS_TEST:END -->
+
+<!-- SPECFORGE_ERR1269_PACKAGE_INTERNAL_WORKER_NONDETERMINISM:START -->
+### ERR-1269：workspace 顺序化后 package 内部多 worker 仍产生边缘 timeout
+
+- **分类**：`VALIDATION_GATE_DEFECT / PACKAGE_INTERNAL_CONCURRENCY`。
+- **事实证据**：首轮顺序执行消除了跨 package 并发，Observability 363/363、Scope Gate 114/114、CLI 1027/1027 转绿；Daemon 仍有 `sf-state-read-p15` 恰好 10 秒超时，而此前固定单 worker 全包为 1686/1687 且该项通过。输出显示 package 自身仍由 Vitest 默认多 worker 执行。
+- **正确做法**：可信根回归为每个 package 显式固定 `maxWorkers=1/minWorkers=1`，保留原测试 timeout 和断言；完整收集所有 package 后只接受可在同一确定 runner 下复现的红灯。
+- **状态**：`OPEN`。
+
+```text
+ERR1269_STATUS=OPEN_PIN_ONE_WORKER_PER_PACKAGE
+TEST_TIMEOUTS_TO_INCREASE=NO
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1269_PACKAGE_INTERNAL_WORKER_NONDETERMINISM:END -->
+
+<!-- SPECFORGE_ERR1270_VITEST_VERSION_WORKER_FLAG_MISMATCH:START -->
+### ERR-1270：确定性 runner 向 Vitest 4 传入了已不支持的 `--minWorkers`
+
+- **分类**：`VALIDATION_RUNNER_DEFECT / MULTI_VERSION_CLI_CONTRACT`。
+- **事实证据**：第二轮顺序根回归正确跳过 types，但 `@specforge/version-unification` 的 Vitest 4.1.5 返回 `Unknown option --minWorkers`；Vitest 1.x package 接受该参数并继续执行。仓库同时存在 Vitest 1/3/4。
+- **正确做法**：只使用各版本共同支持的 `--maxWorkers=1` 固定最大并发；单个 worker 时无需再设置最小值。终止该已知无效回归并从头重跑完整集合。
+- **状态**：`OPEN`。
+
+```text
+ERR1270_STATUS=OPEN_REMOVE_CROSS_VERSION_UNSUPPORTED_MIN_WORKERS_FLAG
+INVALID_ROOT_RUN_TERMINATED=YES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1270_VITEST_VERSION_WORKER_FLAG_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1271_VITEST1_MAX_WORKERS_REQUIRES_MIN_WORKERS:START -->
+### ERR-1271：只保留 `--maxWorkers=1` 又与 Vitest 1 默认 minThreads 冲突
+
+- **分类**：`VALIDATION_RUNNER_DEFECT / MULTI_VERSION_CLI_CONTRACT`。
+- **事实证据**：第三轮根回归中 Vitest 4 接受单独 maxWorkers，但 Configuration、Plugin Loader 等 Vitest 1.6.1 返回 `options.minThreads and options.maxThreads must not conflict`，未执行测试。
+- **正确做法**：从每个 package manifest 的 vitest 主版本选择共同语义的参数：Vitest 1 同时传 maxWorkers/minWorkers=1；Vitest 3/4 只传 maxWorkers=1。版本探测只影响 runner 参数，不改变测试断言。
+- **状态**：`OPEN`。
+
+```text
+ERR1271_STATUS=OPEN_VERSION_AWARE_SINGLE_WORKER_ARGUMENTS
+INVALID_ROOT_RUN_TERMINATED=YES
+REPEATED_ERROR_CLASS=ERR-1270
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1271_VITEST1_MAX_WORKERS_REQUIRES_MIN_WORKERS:END -->
+
+<!-- SPECFORGE_ERR1272_OBSERVABILITY_BINARY_PROPERTY_LOSSY_GENERATOR:START -->
+### ERR-1272：Observability 二进制内容属性测试在断言前发生有损字节转换
+
+- **分类**：`TEST_GENERATOR_DEFECT / PROPERTY_PRECONDITION`。
+- **事实证据**：确定性根回归中 Observability 为 `362/363`；唯一失败的 Property 9.3 生成任意整数数组，以 `n % 256` 后比较原数组是否不同，再转换为 `Uint8Array`。反例 `[143]` 与 `[-113]` 在转换后均为字节 `0x8f`，因此相同 SHA-256 引用是产品的正确行为，不构成哈希碰撞。
+- **正确做法**：直接生成合法 `0..255` 字节，且跳过条件比较实际二进制内容；保留 1000 次属性运行和“不同字节必须产生不同引用”的产品断言，不修改 CAS 产品实现。
+- **状态**：`OPEN`。先修正测试生成域，再执行该属性、Observability 全包和确定性根回归。
+
+```text
+ERR1272_STATUS=OPEN_REPAIR_BINARY_PROPERTY_GENERATOR_DOMAIN
+PRODUCT_CAS_CHANGE_REQUIRED=NO
+FAST_CHECK_SEED=343249743
+FAST_CHECK_PATH=101
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1272_OBSERVABILITY_BINARY_PROPERTY_LOSSY_GENERATOR:END -->
+
+<!-- SPECFORGE_ERR1273_PLUGIN_LOADER_RETIRED_EXAMPLE_TEST:START -->
+### ERR-1273：Plugin Loader 当前回归仍保留已退出示例插件的存在性测试
+
+- **分类**：`RETIRED_TEST_SURFACE / CURRENT_RELEASE_BOUNDARY`。
+- **事实证据**：确定性根回归和隔离复跑均为 `330 pass / 5 fail`，五项失败全部来自 `tests/example-plugin.test.ts` 对已删除 `examples/simple-example/plugin.json` 与 `index.js` 的存在性和内容断言。当前模块矩阵只保留 P0 清单静态检查与权限声明验证，明确移除 runtime registry、hot reload、sandbox/IPC 与 process manager；`tests/manifest.test.ts` 已独立覆盖当前 manifest 合同。
+- **正确做法**：删除该示例存在性测试，不恢复退出当前 artifact 的示例/运行时表面；随后以剩余 16 个当前测试文件验证 330 项当前职责。
+- **状态**：`OPEN`。
+
+```text
+ERR1273_STATUS=OPEN_REMOVE_RETIRED_EXAMPLE_EXISTENCE_TEST
+LEGACY_EXAMPLE_TO_RESTORE=NO
+CURRENT_MANIFEST_CONTRACT_TESTS_RETAINED=YES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1273_PLUGIN_LOADER_RETIRED_EXAMPLE_TEST:END -->
+
+<!-- SPECFORGE_ERR681_C2_STEP8_DETERMINISTIC_ROOT_CLOSURE:START -->
+### ERR-681 C2 Step 8：Scope Gate 与确定性根回归闭合记录
+
+- **事实证据**：最终根门禁以冻结 workspace 顺序逐包执行，并按 Vitest 主版本固定单 worker。Scope Gate `24 files / 114 pass`、Observability `22 / 363 pass`、Plugin Loader `16 / 330 pass`、CLI `51 / 1027 pass`；Workflow Runtime `1589/1590` 仅 ERR-1234，Daemon `1686/1687` 仅 ERR-1186。根退出码为 1 的完整失败集合精确等于这两个用户已延期的四文档治理冲突。
+- **发布证据**：候选 `main-45a0cfee-working-tree-step8root` 的 release manifest 已按最终模块矩阵重建；正式 precheck 通过，producer、inventory、authority、missing、unexpected、dependency 与 incomplete evidence 均为空。
+- **结论**：ERR-1227 的混合根基线及 Scope Gate/runner 子项已关闭；ERR-681 父项不因本记录自动关闭，后续只处理明确未完成的发布质量步骤与延期治理项。
+
+```text
+ERR906_STATUS=CLOSED_CURRENT_V6_RUNTIME_FEATURE_FLAGS_REMOVED
+ERR913_STATUS=CLOSED_SUPERSEDED_BY_CURRENT_SCOPE_GATE_114_PASS
+ERR1227_STATUS=CLOSED_DETERMINISTIC_ROOT_ONLY_DEFERRED_ERR1186_ERR1234
+ERR1257_STATUS=CLOSED_SCOPE_GATE_CURRENT_RELEASE_SURFACE_CONVERGED
+ERR1258_STATUS=CLOSED_RETIRED_RUNTIME_EXPORTS_TESTS_AND_CLI_REMOVED
+ERR1260_STATUS=CLOSED_VALID_ROOT_RELEASE_MANIFEST_FIXTURE_ADDED
+ERR1262_STATUS=CLOSED_SCOPE_GATE_CLEAN_BUILD_9_MODULES_ONLY
+ERR1265_STATUS=CLOSED_SEPARATE_CANDIDATE_ARGUMENT_USED
+ERR1266_STATUS=CLOSED_CONTRACT_VALID_CANDIDATE_ID_USED
+ERR1267_STATUS=CLOSED_SEQUENTIAL_DETERMINISTIC_WORKSPACE_RUNNER
+ERR1268_STATUS=CLOSED_NO_TEST_SCRIPT_EXPLICIT_SKIP
+ERR1269_STATUS=CLOSED_PACKAGE_INTERNAL_SINGLE_WORKER
+ERR1270_STATUS=CLOSED_VERSION_AWARE_WORKER_ARGUMENTS
+ERR1271_STATUS=CLOSED_VITEST1_MAX_AND_MIN_WORKERS_PINNED
+ERR1272_STATUS=CLOSED_OBSERVABILITY_363_PASS
+ERR1273_STATUS=CLOSED_PLUGIN_LOADER_CURRENT_330_PASS
+FINAL_ROOT_FAILED_PACKAGES=WORKFLOW_RUNTIME_ERR1234;DAEMON_CORE_ERR1186
+FINAL_ROOT_UNEXPECTED_FAILURES=0
+CURRENT_RELEASE_PRECHECK=PASS
+RELEASE_CANDIDATE_ID=main-45a0cfee-working-tree-step8root
+HISTORICAL_GOVERNANCE_RECORDS_REMOVED=0
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR681_C2_STEP8_DETERMINISTIC_ROOT_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1274_GIT_INDEX_SANDBOX_PERMISSION:START -->
+### ERR-1274：已授权提交的首次暂存无法创建 Git index lock
+
+- **分类**：`GIT_ENVIRONMENT / SANDBOX_PERMISSION`。
+- **事实证据**：提交前审计通过后执行 `git add -u`，Git 返回 `Unable to create .git/index.lock: Permission denied`，退出码 1；暂存动作未开始，工作树文件未因此改变。
+- **正确做法**：保留同一精确仓库和暂存范围，使用用户已明确授权的本地 Git 权限重试；不得修改 `.git` 权限、删除不明 lock 或绕过提交审计。
+- **状态**：`CLOSED`。在用户已授权的 Git 索引权限下以相同范围重试成功；未修改 `.git` 权限或删除 lock，随后分两步暂存 tracked 与正式新增文件，并保留未纳入方案的备份文件为未跟踪状态。
+
+```text
+ERR1274_STATUS=CLOSED_AUTHORIZED_GIT_INDEX_WRITE_SUCCEEDED
+FAILED_COMMAND=git_add_-u
+INITIAL_STAGED_SIDE_EFFECT=NONE
+RETRY_RESULT=SUCCESS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1274_GIT_INDEX_SANDBOX_PERMISSION:END -->

@@ -16,7 +16,7 @@ import { ModeSwitch, formatError } from '../mode-switch';
 import { toCliError, DaemonUnreachableError, InvalidInputError } from '../errors';
 import * as fs from 'fs';
 import * as path from 'path';
-import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
  * Runtime directory path under the canonical SpecForge user root
  */
@@ -29,7 +29,7 @@ function getRuntimeDir(): string {
  * Daemon handshake file path
  */
 function getHandshakePath(): string {
-  return path.join(getRuntimeDir(), 'handshake.json');
+  return resolveSpecForgeHandshakePath();
 }
 
 /**

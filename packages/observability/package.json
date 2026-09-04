@@ -33,6 +33,7 @@
   "author": "SpecForge Team",
   "license": "MIT",
   "dependencies": {
+    "@specforge/migration": "workspace:*",
     "@specforge/types": "workspace:*",
     "@specforge/daemon-core": "workspace:*",
     "@specforge/permission-engine": "workspace:*",

@@ -1,5 +1,9 @@
 # Requirements Document
 
+## 当前发布对齐
+
+stable 目标是 `CURRENT_RELEASE_SUPPORTING`，但在 Daemon Extension boundary 形成生产调用闭环前仍为 `BUILT_NOT_ENABLED`。当前 artifact 只允许插件 manifest 静态检查和权限声明验证。运行时沙箱、动态/热加载、资源配额以及 P2 接口不得进入当前 exports/build/registry/installer/runtime；旧插件兼容层属于 `LEGACY_ONLY`。
+
 ## Introduction
 
 本 spec 承接 V6 架构概览 spec（`v6-architecture-overview`）中的 **Property 28: Plugin Permission Gate**，实现插件加载器的静态权限检查（P0）与运行时沙箱（P2）能力。
@@ -138,15 +142,15 @@
 2. THE Plugin_Loader SHALL 支持并行加载多个插件。
 3. THE Plugin_Sandbox（P2）SHALL 的资源监控开销低于 5% CPU。
 
-### Requirement 10: 向后兼容
+### Requirement 10: 当前插件 manifest 严格边界
 
-**User Story:** 作为长期用户，我希望插件系统保持向后兼容，避免破坏现有插件。
+**User Story:** 作为当前发布维护者，我希望只校验明确支持的当前插件 manifest，这样旧协议不会进入运行时。
 
 #### Acceptance Criteria
 
-1. THE Plugin_Manifest 的 `schema_version` 字段 SHALL 支持自动迁移。
-2. WHEN `code_schema_version > file_schema_version`，THE Migration_Subsystem SHALL 自动运行迁移脚本。
-3. THE Plugin_Loader SHALL 对旧版本插件提供兼容层（如适用）。
+1. THE Plugin_Manifest 的 `schema_version` SHALL 属于 V6 权威明确支持的当前 schema 链。
+2. WHEN `code_schema_version > file_schema_version` 且版本属于受支持当前链，THE Migration_Subsystem MAY 在备份后执行明确的逐级迁移；其他格式必须失败关闭。
+3. THE Plugin_Loader SHALL NOT 读取、转换或提供旧版本插件兼容层。
 
 ## 与父 spec 的关联
 

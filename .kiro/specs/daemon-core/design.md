@@ -1,5 +1,12 @@
 # Design Document: Daemon Core
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-4—REQ-13, REQ-22—REQ-25, REQ-27, REQ-31 and design section 0.
+- **Classification / status**: `CURRENT_RELEASE_CORE`; source is active, but the stable target is not enabled until `daemon-core` produces and the installer deploys the real `specforged` artifact.
+- **Current scope**: sole Runtime authority for HTTP/SSE, project/session state, WAL, Tool dispatch and governance coordination.
+- **Dependency direction**: Daemon consumes capability packages; capability packages must not import Daemon implementation. Thin Plugin/CLI are clients, not shadow authorities.
+
 ## Overview
 
 This design document specifies the implementation of the **Daemon Core** module for SpecForge V6. The Daemon Core serves as the central process and **Single Source of Truth** for the entire V6 architecture.

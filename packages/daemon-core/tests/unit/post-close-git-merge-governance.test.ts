@@ -283,16 +283,15 @@ describe('post-close formal Git merge governance', () => {
     const read = async (relative: string) =>
       fs.readFile(path.join(repositoryRoot, relative), 'utf8');
 
-    const [orchestrator, skill, postMergeTool, handoff, experience, p0] = await Promise.all([
+    const [orchestrator, postMergeTool, handoff, experience, p0] = await Promise.all([
       read('setup/userlevel-opencode/agents/sf-orchestrator.md'),
-      read('setup/userlevel-opencode/skills/sf-workflow-architecture-change/SKILL.md'),
       read('setup/userlevel-opencode/tools/sf_git_post_merge_verify.ts'),
       read('docs/implementation/architecture-consistency/current-handoff.md'),
       read('docs/rule/specforge-development-error-ledger-and-experience.md'),
       read('docs/implementation/architecture-consistency/P0-contract-consumer-closure.md'),
     ]);
 
-    for (const content of [orchestrator, skill]) {
+    for (const content of [orchestrator]) {
       expect(content).toContain('sf_git_merge_plan');
       expect(content).toContain('sf_git_merge_run');
       expect(content).toContain('sf_git_post_merge_verify');

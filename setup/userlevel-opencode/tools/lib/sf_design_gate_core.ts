@@ -10,10 +10,8 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { GateResult, GateModeSpec } from "./sf_gate_types";
 import { parseSections } from "./sf_requirements_gate_core";
-import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core";
 import { tryCheckCompatibility, logErrorToFile } from "./utils";
 import { isValidVerificationType } from "./sf_verification_types";
-import type { SyncSummary } from "./sf_knowledge_graph_core";
 import { parseRefsFields } from "./sf_markdown_verification_parser";
 
 const SPEC_DIR_NAME = ".specforge";
@@ -760,13 +758,6 @@ export async function checkDesignGate(
 
     if (workflowType === "feature_spec_design_first") {
       const designFirstResult = checkDesignGateDesignFirst(content);
-      if (designFirstResult.status === "pass") {
-        designFirstResult.kg_sync = await syncDesignToKG(
-          workItemId,
-          baseDir,
-          designFirstResult.warnings,
-        );
-      }
       return designFirstResult;
     }
 
@@ -831,7 +822,6 @@ export async function checkDesignGate(
       blocking_issues: [],
       warnings,
       next_action: "continue",
-      kg_sync: await syncDesignToKG(workItemId, baseDir, warnings),
       details: {
         ...governanceResult.details,
         governance_requirement_reasons: governanceRequirement.reasons,
@@ -1114,25 +1104,4 @@ function failResult(blockingIssues: string[]): GateResult {
     warnings: [],
     next_action: "revise",
   };
-}
-
-async function syncDesignToKG(
-  workItemId: string,
-  baseDir: string,
-  warnings: string[],
-): Promise<SyncSummary | null> {
-  let kgSync: SyncSummary | null = null;
-  try {
-    if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, "design");
-      if (kgResult.success && kgResult.summary) {
-        kgSync = kgResult.summary;
-      } else if (kgResult.error) {
-        warnings.push(`KG sync warning: ${kgResult.error}`);
-      }
-    }
-  } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`);
-  }
-  return kgSync;
 }

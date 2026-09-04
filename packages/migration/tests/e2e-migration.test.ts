@@ -37,7 +37,6 @@ import {
   type BackupInfo,
   type BackupSession
 } from '../src/backup-manager'
-import { checkAndMigrateOnStartup, checkVersionDowngrade } from '../src/daemon-startup-integration'
 import type { MigrationContext, MigrationScript } from '../src/types'
 
 // ============================================================================
@@ -206,56 +205,6 @@ describe('End-to-End Version Upgrade Scenarios', () => {
     expect(comparison.comparison).toBe('file_newer')
     expect(comparison.needsDowngrade).toBe(true)
 
-    // Should block startup
-    const downgradeCheck = checkVersionDowngrade({
-      comparison: comparison.comparison,
-      needsDowngrade: comparison.needsDowngrade,
-      fileVersion: detection.schemaVersion
-    })
-
-    expect(downgradeCheck.blocked).toBe(true)
-    expect(downgradeCheck.message).toContain('Version downgrade')
-  })
-
-  /**
-   * Test: Migration directory exists and has proper structure
-   * 
-   * Requirements: REQ-1.5
-   */
-  it('should have proper migration directory structure', async () => {
-    const migrationsDir = join(testDir, '.specforge', 'migrations')
-    await mkdir(migrationsDir, { recursive: true })
-
-    // Verify directories exist
-    expect(existsSync(migrationsDir)).toBe(true)
-
-    const backupTestDir = join(testDir, '.specforge', 'backups')
-    await mkdir(backupTestDir, { recursive: true })
-    expect(existsSync(backupTestDir)).toBe(true)
-  })
-
-  /**
-   * Test: Startup migration check integration
-   * 
-   * Requirements: REQ-1.2, REQ-1.3, REQ-1.4
-   */
-  it('should perform startup migration check correctly', async () => {
-    const oldVersion = '0.8.0'
-    await createVersionedFile(testDir, 'state.json', oldVersion, {
-      phase: 'requirements'
-    })
-    await createVersionedFile(testDir, 'config.json', oldVersion, {})
-
-    const result = await checkAndMigrateOnStartup({
-      baseDir: testDir,
-      codeSchemaVersion: '1.0.0',
-      autoMigrate: false, // Just check, don't migrate
-      enableRepair: false
-    })
-
-    expect(result.success).toBe(true)
-    expect(result.versionComparison.comparison).toBe('code_newer')
-    expect(result.versionComparison.needsMigration).toBe(true)
   })
 })
 
@@ -716,31 +665,6 @@ describe('End-to-End Recovery Integration', () => {
 
   afterEach(async () => {
     await rm(testDir, { recursive: true, force: true }).catch(() => undefined)
-  })
-
-  /**
-   * Test: Startup repair check
-   * 
-   * Requirements: REQ-2.1, REQ-2.2
-   */
-  it('should check for repair needs on startup', async () => {
-    // Create consistent state
-    await createVersionedFile(testDir, 'state.json', '1.0.0', {
-      phase: 'design',
-      event_count: 1
-    })
-    await createVersionedEventsFile(testDir, 'events.jsonl', [
-      { event: 'session.started', schema_version: '1.0.0', ts: Date.now() }
-    ])
-
-    const result = await checkAndMigrateOnStartup({
-      baseDir: testDir,
-      codeSchemaVersion: '1.0.0',
-      autoMigrate: false,
-      enableRepair: true
-    })
-
-    expect(result.success).toBe(true)
   })
 
   /**

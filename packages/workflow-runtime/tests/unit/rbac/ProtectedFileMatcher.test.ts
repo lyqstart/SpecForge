@@ -7,71 +7,71 @@ import { ProtectedFileMatcher, matchProtectedFile } from '../../../src/rbac/Prot
 describe('ProtectedFileMatcher', () => {
   describe('spec_file', () => {
     it('should match requirements.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/requirements.md')).toBe('spec_file');
+      expect(ProtectedFileMatcher.match('.specforge/project/modules/CORE/requirements.md')).toBe('spec_file');
     });
 
     it('should match design.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/design.md')).toBe('spec_file');
+      expect(ProtectedFileMatcher.match('.specforge/project/modules/CORE/design.md')).toBe('spec_file');
     });
 
     it('should match tasks.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/tasks.md')).toBe('spec_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/candidates/tasks.md')).toBe('spec_file');
     });
 
     it('should match with Windows backslash paths', () => {
-      expect(ProtectedFileMatcher.match('.specforge\\specs\\WI-001\\requirements.md')).toBe('spec_file');
+      expect(ProtectedFileMatcher.match('.specforge\\project\\modules\\CORE\\requirements.md')).toBe('spec_file');
     });
 
     it('should match with absolute path prefix', () => {
-      expect(ProtectedFileMatcher.match('/home/user/project/.specforge/specs/WI-001/design.md')).toBe('spec_file');
+      expect(ProtectedFileMatcher.match('/home/user/project/.specforge/project/modules/CORE/design.md')).toBe('spec_file');
     });
   });
 
   describe('gate_file', () => {
     it('should match gate_summary.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/gate_summary.md')).toBe('gate_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/gate_summary.md')).toBe('gate_file');
     });
 
     it('should match gate_result.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/gate_result.md')).toBe('gate_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/gate_result.md')).toBe('gate_file');
     });
 
     it('should match files inside gates/ directory', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/gates/requirements_gate.md')).toBe('gate_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/gates/requirements_gate.md')).toBe('gate_file');
     });
   });
 
   describe('decision_file', () => {
     it('should match user_decision.json', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/user_decision.json')).toBe('decision_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/user_decision.json')).toBe('decision_file');
     });
   });
 
   describe('merge_file', () => {
     it('should match merge_report.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/merge_report.md')).toBe('merge_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/merge_report.md')).toBe('merge_file');
     });
   });
 
   describe('evidence_file', () => {
     it('should match verification_report.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/verification_report.md')).toBe('evidence_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/verification_report.md')).toBe('evidence_file');
     });
 
     it('should match changed_files_audit.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/changed_files_audit.md')).toBe('evidence_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/changed_files_audit.md')).toBe('evidence_file');
     });
 
     it('should match close_gate.md', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/close_gate.md')).toBe('evidence_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/close_gate.md')).toBe('evidence_file');
     });
 
     it('should match close_gate.json', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/close_gate.json')).toBe('evidence_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/close_gate.json')).toBe('evidence_file');
     });
 
     it('should match files inside evidence/ directory', () => {
-      expect(ProtectedFileMatcher.match('.specforge/specs/WI-001/evidence/some-report.md')).toBe('evidence_file');
+      expect(ProtectedFileMatcher.match('.specforge/work-items/WI-0001/evidence/some-report.md')).toBe('evidence_file');
     });
   });
 
@@ -103,26 +103,26 @@ describe('ProtectedFileMatcher', () => {
 
   describe('helper methods', () => {
     it('isSpecFile returns true for spec files', () => {
-      expect(ProtectedFileMatcher.isSpecFile('.specforge/specs/WI-001/requirements.md')).toBe(true);
+      expect(ProtectedFileMatcher.isSpecFile('.specforge/project/modules/CORE/requirements.md')).toBe(true);
       expect(ProtectedFileMatcher.isSpecFile('src/index.ts')).toBe(false);
     });
 
     it('isEvidenceFile returns true for evidence files', () => {
-      expect(ProtectedFileMatcher.isEvidenceFile('.specforge/specs/WI-001/evidence/report.md')).toBe(true);
+      expect(ProtectedFileMatcher.isEvidenceFile('.specforge/work-items/WI-0001/evidence/report.md')).toBe(true);
       expect(ProtectedFileMatcher.isEvidenceFile('src/index.ts')).toBe(false);
     });
 
     it('isProtected returns true for any protected file', () => {
-      expect(ProtectedFileMatcher.isProtected('.specforge/specs/WI-001/requirements.md')).toBe(true);
-      expect(ProtectedFileMatcher.isProtected('.specforge/specs/WI-001/gate_summary.md')).toBe(true);
-      expect(ProtectedFileMatcher.isProtected('.specforge/specs/WI-001/user_decision.json')).toBe(true);
+      expect(ProtectedFileMatcher.isProtected('.specforge/project/modules/CORE/requirements.md')).toBe(true);
+      expect(ProtectedFileMatcher.isProtected('.specforge/work-items/WI-0001/gate_summary.md')).toBe(true);
+      expect(ProtectedFileMatcher.isProtected('.specforge/work-items/WI-0001/user_decision.json')).toBe(true);
       expect(ProtectedFileMatcher.isProtected('src/index.ts')).toBe(false);
     });
   });
 
   describe('standalone function', () => {
     it('matchProtectedFile should work the same as ProtectedFileMatcher.match', () => {
-      expect(matchProtectedFile('.specforge/specs/WI-001/requirements.md')).toBe('spec_file');
+      expect(matchProtectedFile('.specforge/project/modules/CORE/requirements.md')).toBe('spec_file');
       expect(matchProtectedFile('src/index.ts')).toBeUndefined();
     });
   });

@@ -12,29 +12,21 @@ import { Event } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
 import * as path from 'path';
+import * as os from 'node:os';
 
 describe('Property 30: Event Schema Multi-sync Readiness', () => {
   let testProjectPath: string;
   let wal: WAL;
-  const testProjectHash = 'testproj';
+  let testRoot: string;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-property-30-'));
     testProjectPath = 'test-project-path';
-    wal = new WAL(testProjectPath);
+    wal = new WAL(path.join(testRoot, 'events.jsonl'));
   });
 
   afterEach(async () => {
-    // Cleanup test files
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const eventsPath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-      : '';
-
-    try {
-      if (eventsPath) await fs.unlink(eventsPath);
-    } catch (error) {
-      // File might not exist
-    }
+    await fs.rm(testRoot, { recursive: true, force: true });
   });
 
   /**
@@ -49,7 +41,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     const numEvents = 1000;
 
     for (let i = 0; i < numEvents; i++) {
-      const event = wal.createEvent(testProjectPath, 'test.event', { index: i });
+      const event = wal.createEvent(testProjectPath, 'system', 'test.event', { index: i });
       eventIds.add(event.eventId);
     }
 
@@ -68,7 +60,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     const numEvents = 100;
 
     for (let i = 0; i < numEvents; i++) {
-      const event = wal.createEvent(testProjectPath, 'test.event', { index: i });
+      const event = wal.createEvent(testProjectPath, 'system', 'test.event', { index: i });
       timestamps.push(event.ts);
     }
 
@@ -91,7 +83,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     for (const projectId of projectIds) {
       eventsByProject[projectId] = [];
       for (let i = 0; i < 10; i++) {
-        const event = wal.createEvent(projectId, 'test.event', { index: i });
+        const event = wal.createEvent(projectId, 'system', 'test.event', { index: i });
         eventsByProject[projectId].push(event);
       }
     }
@@ -119,7 +111,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
   it('should have forward-compatible schema structure', async () => {
     await wal.initialize();
 
-    const event = wal.createEvent(testProjectPath, 'test.event', { key: 'value' });
+    const event = wal.createEvent(testProjectPath, 'system', 'test.event', { key: 'value' });
 
     // Verify all required fields are present
     expect(event).toHaveProperty('eventId');
@@ -147,7 +139,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
   it('should support serialization/deserialization for multi-sync', async () => {
     await wal.initialize();
 
-    const originalEvent = wal.createEvent(testProjectPath, 'test.event', {
+    const originalEvent = wal.createEvent(testProjectPath, 'system', 'test.event', {
       key: 'value',
       nested: { a: 1, b: 'test' },
     });
@@ -180,7 +172,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     const uuidv7Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
     for (let i = 0; i < numEvents; i++) {
-      const event = wal.createEvent(testProjectPath, 'test.event', { index: i });
+      const event = wal.createEvent(testProjectPath, 'system', 'test.event', { index: i });
       expect(event.eventId).toMatch(uuidv7Regex);
     }
   });
@@ -198,7 +190,7 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
 
     const events: Event[] = [];
     for (let i = 0; i < 10; i++) {
-      const event = wal.createEvent(testProjectPath, `test.event.${i}`, { index: i });
+      const event = wal.createEvent(testProjectPath, 'system', `test.event.${i}`, { index: i });
       events.push(event);
     }
 
@@ -253,13 +245,13 @@ describe('Property 30: Event Schema Multi-sync Readiness', () => {
     // Create events for project A
     const eventsA: Event[] = [];
     for (let i = 0; i < 5; i++) {
-      eventsA.push(wal.createEvent(projectA, 'test.event', { project: 'A', index: i }));
+      eventsA.push(wal.createEvent(projectA, 'system', 'test.event', { project: 'A', index: i }));
     }
 
     // Create events for project B
     const eventsB: Event[] = [];
     for (let i = 0; i < 5; i++) {
-      eventsB.push(wal.createEvent(projectB, 'test.event', { project: 'B', index: i }));
+      eventsB.push(wal.createEvent(projectB, 'system', 'test.event', { project: 'B', index: i }));
     }
 
     // Append all events

@@ -192,17 +192,15 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 
 ## 各阶段执行协议
 
-### 阶段 1：created → intake_ready（需求收集）
+### 阶段 1：创建并进入 intake_ready（需求收集）
 
 **目标：** 收集用户的功能描述，生成 intake.md
 
 **执行步骤：**
 1. 调用 `sf_state_read` 确认当前无进行中的同名 Work Item
-2. 调用 `sf_state_transition`（from_state=""，to_state="created"）创建新 Work Item
-   - sf_state_transition 会自动创建 Spec 目录、spec.json 和 archive 目录（无需手动 mkdir）
-3. 与用户对话，收集功能描述的关键信息
-4. 调用 `sf_artifact_write`（work_item_id=<id>, file_type="intake", content=<整理后的信息>）写入 intake.md
-5. 调用 `sf_state_transition`（from_state="created"，to_state="intake_ready"，evidence="intake.md generated"）
+2. 与用户对话，确认原始请求和功能描述的关键信息
+3. 只调用 `sf_work_item_create`（user_request=<用户原始请求>, classification=<当前分类事实>）创建新 Work Item；通常省略 work_item_id，由该唯一 owner 分配
+4. 确认返回状态为 `intake_ready`，并只读核对 intake.md 已原样保存用户原始请求；不得再用 `sf_state_transition("" → "created")` 或手工补建目录/metadata
 
 **产物：** `intake.md`、`spec.json`（自动创建）
 
@@ -243,7 +241,7 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 
 #### Step 4.2：生成 Requirements
 
-1. **V4.0 新增：** 调用 `sf_context_build`（work_item_id=<id>, phase="requirements"）构建阶段上下文。如果返回非空上下文，注入到子 Agent 的调度 prompt 中作为跨 Work Item 参考。调用失败时继续执行。
+1. 读取当前 Work Item 的 intake、classification、impact analysis 与权威状态，作为 Requirements Agent 的受控上下文。
 2. **使用 `task` 工具调度子 Agent `sf-requirements`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - intake.md 的内容
@@ -254,7 +252,7 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 
 #### Step 4.3：生成 Design
 
-1. **V4.0 新增：** 调用 `sf_context_build`（work_item_id=<id>, phase="design"）构建阶段上下文。调用失败时继续执行。
+1. 读取当前 Work Item 的权威状态和已冻结上游 Candidate，构建设计阶段上下文。
 2. 读取 `trigger_result.json`、change classification、影响分析和 candidates/requirements.md，确定本次 Design Agent 分析范围：
    - 涉及新模块、模块边界、数据模型或数据语义、权限、状态机或状态权威、核心流程、跨模块协议、公共接口或架构变化时，设置 `analysis_scope: system_governance`；
    - 其余边界明确、现有架构可直接承载的功能，设置 `analysis_scope: solution_design`；
@@ -270,7 +268,7 @@ Orchestrator 不手工写 `candidate_manifest.json`，不猜 `candidate_path`、
 
 #### Step 4.4：生成 Tasks
 
-1. **V4.0 新增：** 调用 `sf_context_build`（work_item_id=<id>, phase="tasks"）构建阶段上下文。调用失败时继续执行。
+1. 读取当前 Work Item 的权威状态、Requirements Candidate 与 Design Candidate，构建任务阶段上下文。
 2. **使用 `task` 工具调度子 Agent `sf-task-planner`**，在 prompt 中包含：
    - work_item_id 和 spec_directory 路径
    - candidates/requirements.md 和 candidates/design.md 的内容或路径
@@ -413,14 +411,12 @@ Orchestrator 随后只读最终 `candidate_manifest.json`，确认 required cand
 ━━━━━━━━━━━━━━━━━━━━
 ```
 
-#### Step 4.5：构建 Task Context（V4.0 新增）
+#### Step 4.5：构建 Task Context
 
 对每个即将调度的 Task：
-1. 调用 `sf_context_build`（task_id=<task_id>, work_item_id=<id>, include_capabilities=true, task_description=<task 描述>）
-2. 如果返回非空 task_context.context → 注入到 sf-executor 的调度 prompt 中（位于任务描述之后）
-3. 如果返回非空 capabilities.recommended_fragments → 将推荐的 Skill Fragment 完整内容注入到调度 prompt 中，替代全量 Skill 加载
-4. 向用户报告 Context Builder 摘要（引用的 Graph 节点数、历史经验数、推荐 Fragment 数、预估 Token 量）
-5. 如果 sf_context_build 调用失败 → 回退到不注入额外上下文，记录警告
+1. 从冻结的 Task、Requirements、Design、Impact Scope 和权威状态提取该 Task 的必要上下文。
+2. 将可追溯的文件路径和必要内容注入 sf-executor prompt，不引入其他 Work Item 的推测性上下文。
+3. 无法形成充分上下文时返回 blocked 并说明缺失证据，不使用已退出的推荐 Fragment 或 Knowledge Graph 路径补足。
 
 #### Step 5：按 Execution_Plan 执行
 

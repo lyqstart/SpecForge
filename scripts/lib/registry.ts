@@ -2,10 +2,25 @@
  * SpecForge V3.5.0 — 共享组件注册表与 Agent 定义
  */
 import { existsSync, readFileSync } from "node:fs"
-import { join } from "node:path"
+import { basename, join } from "node:path"
 import type { AgentConfig, ComponentEntry } from "./types"
 
 export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
+  // Release runtime artifacts. Both source and target resolve to the same
+  // platform-specific executable name.
+  {
+    path: "bin/specforge",
+    type: "runtime",
+    sourcePath: "release/bin/specforge",
+    platformExecutable: true,
+  },
+  {
+    path: "bin/specforged",
+    type: "runtime",
+    sourcePath: "release/bin/specforged",
+    platformExecutable: true,
+  },
+
   // Agent 定义
   { path: "agents/sf-orchestrator.md", type: "agent" },
   { path: "agents/sf-requirements.md", type: "agent" },
@@ -16,10 +31,8 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "agents/sf-reviewer.md", type: "agent" },
   { path: "agents/sf-verifier.md", type: "agent" },
   { path: "agents/sf-knowledge.md", type: "agent" },
+  { path: "agents/sf-analyst.md", type: "agent" },
   { path: "agents/_AGENT_BASE.md", type: "agent" },
-  { path: "agents/sf-extension.md", type: "agent" },
-  { path: "agents/sf-evidence-collector.md", type: "agent" },
-  { path: "agents/sf-investigator.md", type: "agent" },
 
   // 全局规则
   { path: "AGENTS.md", type: "config" },
@@ -27,21 +40,16 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   // Custom Tools
   { path: "tools/sf_artifact_write.ts", type: "tool" },
   { path: "tools/sf_batch_verify.ts", type: "tool" },
-  { path: "tools/sf_context_build.ts", type: "tool" },
-  { path: "tools/sf_cost_report.ts", type: "tool" },
   { path: "tools/sf_design_gate.ts", type: "tool" },
   { path: "tools/sf_doc_lint.ts", type: "tool" },
   { path: "tools/sf_doctor.ts", type: "tool" },
   { path: "tools/sf_knowledge_base.ts", type: "tool" },
-  { path: "tools/sf_knowledge_graph.ts", type: "tool" },
-  { path: "tools/sf_knowledge_query.ts", type: "tool" },
   { path: "tools/sf_requirements_gate.ts", type: "tool" },
   { path: "tools/sf_state_read.ts", type: "tool" },
   { path: "tools/sf_state_transition.ts", type: "tool" },
   { path: "tools/sf_tasks_gate.ts", type: "tool" },
   { path: "tools/sf_trace_matrix.ts", type: "tool" },
   { path: "tools/sf_verification_gate.ts", type: "tool" },
-  { path: "tools/sf_continuity.ts", type: "tool" },
   { path: "tools/sf_safe_bash.ts", type: "tool" },
   { path: "tools/sf_project_init.ts", type: "tool" },
   { path: "tools/sf_semantic_closure_run.ts", type: "tool" },
@@ -54,10 +62,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_changed_files_audit.ts", type: "tool" },
   { path: "tools/sf_close_gate.ts", type: "tool" },
   { path: "tools/sf_hard_stop_resolve.ts", type: "tool" },
-  { path: "tools/sf_work_item_repair_closure.ts", type: "tool" },
   { path: "tools/sf_contract_register.ts", type: "tool" },
-  { path: "tools/sf_write_guard_preflight.ts", type: "tool" },
-  { path: "tools/sf_spec_migration.ts", type: "tool" },
 
   // Git Governance tools — stage 1
   { path: "tools/sf_git_preflight.ts", type: "tool" },
@@ -67,24 +72,18 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_git_checkpoint_commit.ts", type: "tool" },
 
   // Git Governance tools — stage 2
-  { path: "tools/sf_git_changed_files_audit.ts", type: "tool" },
   { path: "tools/sf_git_push_branch.ts", type: "tool" },
   { path: "tools/sf_git_merge_plan.ts", type: "tool" },
   { path: "tools/sf_git_merge_run.ts", type: "tool" },
   { path: "tools/sf_git_post_merge_verify.ts", type: "tool" },
 
   // Git Governance tools — stage 3
-  { path: "tools/sf_git_project_adopt.ts", type: "tool" },
   { path: "tools/sf_git_remote_config.ts", type: "tool" },
   { path: "tools/sf_git_auth_profile_config.ts", type: "tool" },
   { path: "tools/sf_git_ignore_decision_record.ts", type: "tool" },
   { path: "tools/sf_git_remote_probe.ts", type: "tool" },
 
   // Git Governance tools — stage 4
-  { path: "tools/sf_git_pr_plan.ts", type: "tool" },
-  { path: "tools/sf_git_worktree_plan.ts", type: "tool" },
-  { path: "tools/sf_git_worktree_create.ts", type: "tool" },
-  { path: "tools/sf_git_stacked_branch_plan.ts", type: "tool" },
   { path: "tools/sf_git_release_tag_plan.ts", type: "tool" },
   { path: "tools/sf_git_release_tag_create.ts", type: "tool" },
   { path: "tools/sf_git_agent_lock_acquire.ts", type: "tool" },
@@ -93,9 +92,6 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   // Tool 核心库
   { path: "tools/lib/sf_artifact_write_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_batch_verify_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_context_build_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_continuity_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_cost_report_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_design_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_doc_lint_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_doctor_core.ts", type: "tool_lib" },
@@ -103,8 +99,6 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/sf_ears_types.ts", type: "tool_lib" },
   { path: "tools/lib/sf_gate_types.ts", type: "tool_lib" },
   { path: "tools/lib/sf_knowledge_base_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_knowledge_graph_core.ts", type: "tool_lib" },
-  { path: "tools/lib/sf_knowledge_query_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_markdown_verification_parser.ts", type: "tool_lib" },
   { path: "tools/lib/sf_requirements_gate_core.ts", type: "tool_lib" },
   { path: "tools/lib/sf_tasks_gate_core.ts", type: "tool_lib" },
@@ -122,31 +116,104 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/lib/thin-client.ts", type: "tool_lib" },
 
   // Plugin
-  { path: "plugins/sf_specforge.ts", type: "plugin" },
+  {
+    path: "integrations/opencode/sf_specforge.ts",
+    type: "plugin",
+    sourcePath: "setup/userlevel-opencode/plugins/sf_specforge.ts",
+  },
+  {
+    path: "lib/sf_plugin_client.ts",
+    type: "tool_lib",
+    sourcePath: "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+  },
+
+  // Current release builtin workflow (single source remains configs/workflows/builtin)
+  {
+    path: "workflows/builtin/feature_spec.json",
+    type: "workflow",
+    sourcePath: "configs/workflows/builtin/feature_spec.json",
+  },
 
   // Skills
   { path: "skills/sf-workflow-feature-spec/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-bugfix-spec/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-design-first/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-quick-change/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-change-request/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-investigation/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-ops-task/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-refactor/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-spec-migration/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-architecture-change/SKILL.md", type: "skill" },
-  { path: "skills/sf-workflow-contract-change/SKILL.md", type: "skill" },
   { path: "skills/superpowers-brainstorming/SKILL.md", type: "skill" },
   { path: "skills/superpowers-code-review/SKILL.md", type: "skill" },
-  { path: "skills/superpowers-engineering-lessons/SKILL.md", type: "skill" },
   { path: "skills/superpowers-knowledge-extraction/SKILL.md", type: "skill" },
-  { path: "skills/superpowers-subagent-driven-development/SKILL.md", type: "skill" },
   { path: "skills/superpowers-systematic-debugging/SKILL.md", type: "skill" },
-  { path: "skills/superpowers-tdd/SKILL.md", type: "skill" },
   { path: "skills/superpowers-verification-before-completion/SKILL.md", type: "skill" },
   { path: "skills/superpowers-writing-plans/SKILL.md", type: "skill" },
   { path: "skills/sf-intake/SKILL.md", type: "skill" },
+
+  // Current project-rule templates consumed by sf-intake.
+  { path: "templates/README.md", type: "template", sourcePath: "setup/userlevel-templates/README.md" },
+  { path: "templates/dev-environment.md", type: "template", sourcePath: "setup/userlevel-templates/dev-environment.md" },
+  { path: "templates/prod-environment.md", type: "template", sourcePath: "setup/userlevel-templates/prod-environment.md" },
+  { path: "templates/project-rules/_BASE.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/_BASE.md" },
+  { path: "templates/project-rules/databases/mongodb.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mongodb.md" },
+  { path: "templates/project-rules/databases/mysql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mysql.md" },
+  { path: "templates/project-rules/databases/postgresql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/postgresql.md" },
+  { path: "templates/project-rules/databases/redis.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/redis.md" },
+  { path: "templates/project-rules/databases/sqlite.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/sqlite.md" },
+  { path: "templates/project-rules/frameworks/fastapi.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/fastapi.md" },
+  { path: "templates/project-rules/frameworks/react.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/react.md" },
+  { path: "templates/project-rules/frameworks/spring-boot.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/spring-boot.md" },
+  { path: "templates/project-rules/frameworks/vue.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/vue.md" },
+  { path: "templates/project-rules/infra/ci-github-actions.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/ci-github-actions.md" },
+  { path: "templates/project-rules/infra/docker.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/docker.md" },
+  { path: "templates/project-rules/languages/go.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/go.md" },
+  { path: "templates/project-rules/languages/java.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/java.md" },
+  { path: "templates/project-rules/languages/nodejs.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/nodejs.md" },
+  { path: "templates/project-rules/languages/python.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/python.md" },
 ]
+
+function withExecutableSuffix(value: string, platform: NodeJS.Platform): string {
+  return platform === "win32" ? `${value}.exe` : value
+}
+
+export function resolveRegistryEntryPath(
+  entry: ComponentEntry,
+  platform: NodeJS.Platform = process.platform
+): string {
+  return entry.platformExecutable ? withExecutableSuffix(entry.path, platform) : entry.path
+}
+
+export function resolveRegistrySourcePath(
+  entry: ComponentEntry,
+  platform: NodeJS.Platform = process.platform
+): string {
+  const sourcePath = entry.sourcePath ?? `setup/userlevel-opencode/${entry.path}`
+  return entry.platformExecutable ? withExecutableSuffix(sourcePath, platform) : sourcePath
+}
+
+/** Logical current-release ids represented by one installer registry entry. */
+export function resolveRegistryReleaseItemIds(
+  entry: ComponentEntry,
+  platform: NodeJS.Platform = process.platform
+): string[] {
+  const registryPath = resolveRegistryEntryPath(entry, platform).replaceAll("\\", "/")
+  if (entry.type === "agent") {
+    const name = basename(registryPath, ".md")
+    return [name === "_AGENT_BASE" ? "agent-template:_AGENT_BASE" : `agent:${name}`]
+  }
+  if (entry.type === "skill") return [`skill:${registryPath.split("/")[1] ?? ""}`]
+  if (entry.type === "tool") return [`tool:${basename(registryPath, ".ts")}`]
+  if (entry.type === "plugin") {
+    const pluginName = basename(registryPath, ".ts")
+    if (pluginName === "sf_specforge") {
+      return [
+        "plugin:sf_specforge",
+        "thin-plugin:daemon-start",
+        "thin-plugin:event-reporting",
+        "thin-plugin:recovery-display",
+      ]
+    }
+    return [`plugin:${pluginName}`]
+  }
+  if (entry.type === "workflow") return [`workflow:${basename(registryPath, ".json")}`]
+  if (entry.type === "runtime") return [`runtime:${basename(registryPath, ".exe")}`]
+  if (entry.type === "config") return ["runtime:current-config"]
+  return []
+}
 
 export const SPECFORGE_AGENT_DEFINITIONS: Record<string, AgentConfig> = {
   "sf-orchestrator": { mode: "primary", prompt: "{file:./agents/sf-orchestrator.md}", permission: { task: "allow", edit: "allow", bash: "allow", skill: "allow" } },
@@ -158,6 +225,7 @@ export const SPECFORGE_AGENT_DEFINITIONS: Record<string, AgentConfig> = {
   "sf-reviewer": { mode: "subagent", prompt: "{file:./agents/sf-reviewer.md}", permission: { task: "deny", edit: "deny", bash: "deny", skill: "allow" } },
   "sf-verifier": { mode: "subagent", prompt: "{file:./agents/sf-verifier.md}", permission: { task: "deny", edit: "deny", bash: "deny", skill: "allow" } },
   "sf-knowledge": { mode: "subagent", prompt: "{file:./agents/sf-knowledge.md}", permission: { task: "deny", edit: "ask", bash: "deny", skill: "allow" } },
+  "sf-analyst": { mode: "subagent", prompt: "{file:./agents/sf-analyst.md}", permission: { task: "deny", edit: "deny", bash: "deny", skill: "allow" } },
 }
 
 export function getAgentDefinitions(sourceDir?: string): Record<string, AgentConfig> {

@@ -13,8 +13,11 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as http from 'http';
 import * as fs from 'fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { Daemon } from '../../src/daemon/Daemon';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
+import { CurrentTestDaemonConfig } from '../helpers/current-daemon-test-config';
 
 function httpGet(url: string): Promise<{ statusCode: number; body: string }> {
   return new Promise((resolve, reject) => {
@@ -31,16 +34,19 @@ function httpGet(url: string): Promise<{ statusCode: number; body: string }> {
 describe('E1 Daemon Lifecycle', () => {
   let daemon: Daemon;
   let config: DaemonConfig;
+  let testRoot: string;
 
   beforeEach(async () => {
-    daemon = new Daemon();
-    config = new DaemonConfig();
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-daemon-lifecycle-'));
+    config = new CurrentTestDaemonConfig(testRoot);
+    daemon = new Daemon(config);
   }, 30000);
 
   afterEach(async () => {
     if (daemon.isDaemonRunning()) {
       await daemon.stop();
     }
+    await fs.rm(testRoot, { recursive: true, force: true });
   }, 15000);
 
   it('should start and stop daemon cleanly', async () => {
@@ -64,7 +70,7 @@ describe('E1 Daemon Lifecycle', () => {
     expect(handshake.port).toBeGreaterThan(0);
     expect(typeof handshake.token).toBe('string');
     expect(handshake.token.length).toBeGreaterThan(0);
-    expect(handshake.schemaVersion).toBe('1.0');
+    expect(handshake.schema_version).toBe('1.0');
 
     await daemon.stop();
   });

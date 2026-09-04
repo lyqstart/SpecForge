@@ -2,17 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  checkCloseGateWriteGuard,
-  sfWriteGuardPreflight,
-} from '../src/tools/lib/write-guard-preflight-v12';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..', '..', '..');
-
-function readRepoFile(relativePath: string): string {
-  return readFileSync(join(repoRoot, relativePath), 'utf8');
-}
 
 function expectRepoFile(relativePath: string): string {
   const full = join(repoRoot, relativePath);
@@ -21,59 +13,35 @@ function expectRepoFile(relativePath: string): string {
 }
 
 describe('v1.2 integration RC hardening', () => {
-  it('keeps the active v1.2 core slice source files present', () => {
-    const projectStore = expectRepoFile('packages/daemon-core/src/project/ProjectSpecStore.ts');
-    const writeGuard = expectRepoFile('packages/daemon-core/src/tools/lib/write-guard-preflight-v12.ts');
-
-    expect(projectStore).toContain('ProjectSpecStore');
-    expect(writeGuard).toContain('sfWriteGuardPreflight');
+  it('keeps the current control plane free of duplicate Project Registry and local write-guard owners', () => {
+    expect(existsSync(join(repoRoot, 'packages/daemon-core/src/project/ProjectSpecStore.ts'))).toBe(false);
+    expect(existsSync(join(repoRoot, 'packages/daemon-core/src/tools/lib/write-guard-preflight-v12.ts'))).toBe(false);
   });
 
-  it('keeps userlevel tool wrappers registered for installer deployment', () => {
+  it('keeps only current userlevel tool wrappers registered for installer deployment', () => {
     const registry = expectRepoFile('scripts/lib/registry.ts');
 
-    expect(registry).toContain('tools/sf_write_guard_preflight.ts');
+    expect(registry).not.toContain('tools/sf_write_guard_preflight.ts');
     expect(registry).toContain('tools/sf_contract_register.ts');
 
-    expectRepoFile('setup/userlevel-opencode/tools/sf_write_guard_preflight.ts');
+    expect(existsSync(join(repoRoot, 'setup/userlevel-opencode/tools/sf_write_guard_preflight.ts'))).toBe(false);
     expectRepoFile('setup/userlevel-opencode/tools/sf_contract_register.ts');
   });
 
-  it('keeps v1.2 design freeze and acceptance matrix aligned with implementation', () => {
+  it('preserves v1.2 design evidence while current disposition owns implementation scope', () => {
     const matrix = expectRepoFile('docs/design/specforge-v1.2-acceptance-matrix.md');
     const projectSpec = expectRepoFile('docs/design/specforge-v1.2-project-spec-architecture.md');
-    const writeGuard = expectRepoFile('docs/design/specforge-v1.2-write-guard-control-plane.md');
     const extension = expectRepoFile('docs/design/specforge-v1.2-extension-subflow-design.md');
+    const currentDisposition = expectRepoFile(
+      'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
+    );
 
     expect(matrix).toContain('PSA-P1');
     expect(matrix).toContain('WG-N3');
     expect(matrix).toContain('EXT-N2');
     expect(projectSpec).toContain('.specforge/project/**');
-    expect(writeGuard).toContain('sf_write_guard_preflight');
     expect(extension).toContain('extension_registry.json');
-  });
-
-  it('proves Write Guard blocks direct project spec writes and close after violations', () => {
-    const directProjectSpecWrite = sfWriteGuardPreflight({
-      work_item_id: 'WI-INTEGRATION',
-      tool_name: 'edit',
-      operation: 'modify',
-      current_state: 'implementation_running',
-      code_permission_enabled: true,
-      allowed_write_dirs: ['.specforge/project'],
-      target_paths: ['.specforge/project/requirements/requirements.md'],
-    });
-
-    expect(directProjectSpecWrite.allowed).toBe(false);
-    expect(directProjectSpecWrite.decision).toBe('DIRECT_PROJECT_SPEC_WRITE');
-
-    const close = checkCloseGateWriteGuard({
-      blocked_write_attempts: directProjectSpecWrite.blocked_write_attempts,
-      violations: directProjectSpecWrite.violations,
-    });
-
-    expect(close.allowed).toBe(false);
-    expect(close.decision).toBe('CLOSE_BLOCKED_BY_WRITE_GUARD');
+    expect(currentDisposition).toMatch(/sf_write_guard_preflight[^\n]*`REMOVE`/);
   });
 
   it('keeps the v1.2 slice reports present as release evidence', () => {

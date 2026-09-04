@@ -120,8 +120,8 @@ describe('SessionRegistry', () => {
     expect(registry.lookupBySessionId(activated!.sessionId)?.status).toBe('history');
   });
 
-  it('should not terminate non-existent session', () => {
-    const terminated = registry.terminate('non-existent');
+  it('should not terminate non-existent session', async () => {
+    const terminated = await registry.terminate('non-existent');
     expect(terminated).toBeNull();
   });
 

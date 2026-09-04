@@ -95,11 +95,29 @@ export interface HardRuleConflict {
  */
 export type RuleLayer = 'hard' | 'builtin' | 'user';
 
+export interface PermissionActorContext {
+  id?: string;
+  sessionId?: string;
+  agentRole?: string;
+  workflowRole?: string;
+  remoteIdentity?: string;
+  [key: string]: unknown;
+}
+
+export interface PermissionResourceContext {
+  type: string;
+  id?: string;
+  path?: string;
+  [key: string]: unknown;
+}
+
 export interface PermissionRequest {
   actor: string;
   action: string;
   resource: string;
   context?: Record<string, unknown>;
+  actorContext?: PermissionActorContext;
+  resourceContext?: PermissionResourceContext;
 }
 
 export interface PermissionDecision {
@@ -110,6 +128,9 @@ export interface PermissionDecision {
   matched_rule: string;
   rule_layer: "hard" | "builtin" | "user";
   reason: string;
+  context?: Record<string, unknown>;
+  actorContext?: PermissionActorContext;
+  resourceContext?: PermissionResourceContext;
 }
 
 // Export event types

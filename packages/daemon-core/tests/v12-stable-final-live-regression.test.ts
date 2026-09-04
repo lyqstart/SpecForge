@@ -18,15 +18,19 @@ function makeProject(): string {
     ],
   }, null, 2));
   fs.writeFileSync(path.join(root, '.specforge', 'work-items', 'WI-0001', 'work_item.json'), JSON.stringify({
+    schema_version: '1.1',
     work_item_id: 'WI-0001',
-    status: 'created',
+    workflow_type: 'feature_spec',
+    workflow_path: 'requirement_change_path',
     code_change_allowed: true,
     code_permission_revoked: false,
     allowed_write_files: [{ path: 'src/todos/stable-native-write-authorized.md', operation: 'create' }],
   }, null, 2));
   fs.writeFileSync(path.join(root, '.specforge', 'work-items', 'WI-0002', 'work_item.json'), JSON.stringify({
+    schema_version: '1.1',
     work_item_id: 'WI-0002',
-    status: 'created',
+    workflow_type: 'feature_spec',
+    workflow_path: 'requirement_change_path',
     code_change_allowed: true,
     code_permission_revoked: false,
     allowed_write_files: [{ path: 'src/todos/stable-wib-allowed.md', operation: 'create' }],
@@ -56,25 +60,23 @@ describe('v1.2 stable final live acceptance regressions', () => {
     const selected = findActiveWorkItemIdForWrite(root, {}, command);
     expect(selected).toBe('WI-0002');
   });
-  it('records blocked native writes against the owning WI before throwing', () => {
+  it('keeps native write logging and HardStop persistence out of the thin plugin', () => {
     const pluginPath = path.resolve(__dirname, '../../../setup/userlevel-opencode/plugins/sf_specforge.ts');
     const source = fs.readFileSync(pluginPath, 'utf-8');
 
-    expect(source).toContain('appendNativeBlockedWriteGuardLog');
-    expect(source).toContain('write_guard_log.jsonl');
-    expect(source).toContain('allowed: false');
-    expect(source).toContain('workItemId: activePermissionWorkItemId');
-    expect(source).toContain('target_not_in_allowed_write_files');
-    expect(source).toMatch(/appendNativeBlockedWriteGuardLog\([\s\S]*?maybePersistHardStopFromGuardResult/);
+    expect(source).toContain('Business state, WriteGuard decisions and filesystem tools remain Daemon-owned.');
+    expect(source).not.toContain('appendNativeBlockedWriteGuardLog');
+    expect(source).not.toContain('write_guard_log.jsonl');
+    expect(source).not.toContain('maybePersistHardStopFromGuardResult');
   });
 
-  it('allows report output content to mention protected paths while checking only real report targets', () => {
+  it('keeps report target policy out of the thin plugin', () => {
     const pluginPath = path.resolve(__dirname, '../../../setup/userlevel-opencode/plugins/sf_specforge.ts');
     const source = fs.readFileSync(pluginPath, 'utf-8');
 
-    expect(source).toContain('Report content is allowed to mention protected paths');
-    expect(source).toContain('.specforge/project/** because it is evidence text, not a write target');
-    expect(source).not.toContain('if (isProtectedSpecForgeNonReportPathText(text)) return false;');
+    expect(source).not.toContain('isSpecForgeReportsShellWriteAllowed');
+    expect(source).not.toContain('isProtectedSpecForgeNonReportPathText');
+    expect(source).not.toContain('project_spec_writes_require_merge_runner');
   });
 
 });

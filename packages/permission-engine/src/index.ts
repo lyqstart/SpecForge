@@ -125,12 +125,18 @@ export class PermissionEngine {
     resource: string | any,
     _context?: Record<string, any>
   ): Promise<boolean> {
-    const resourceStr = typeof resource === 'string' ? resource : (resource?.type || 'unknown');
+    const resourceContext = typeof resource === 'string'
+      ? { type: resource }
+      : { ...(resource || {}), type: resource?.type || 'unknown' };
+    const resourceStr = resourceContext.type;
     
     const request: PermissionRequest = {
       actor: userId,
       action,
-      resource: resourceStr
+      resource: resourceStr,
+      actorContext: { id: userId },
+      resourceContext,
+      context: _context
     };
     
     const decision = this.ruleMergingEngine.evaluate(request);
@@ -157,12 +163,18 @@ export class PermissionEngine {
     ruleLayer: 'hard' | 'builtin' | 'user';
     reason: string;
   }> {
-    const resourceStr = typeof resource === 'string' ? resource : (resource?.type || 'unknown');
+    const resourceContext = typeof resource === 'string'
+      ? { type: resource }
+      : { ...(resource || {}), type: resource?.type || 'unknown' };
+    const resourceStr = resourceContext.type;
     
     const request: PermissionRequest = {
       actor: userId,
       action,
-      resource: resourceStr
+      resource: resourceStr,
+      actorContext: { id: userId },
+      resourceContext,
+      context: _context
     };
     
     const decision = this.ruleMergingEngine.evaluate(request);

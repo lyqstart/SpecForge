@@ -3,7 +3,7 @@
  *
  * Shared types for CI Version Guard.
  *
- * - VersionGuardRule:    contract every rule (R5/R6/R7/R8) implements
+ * - VersionGuardRule:    contract every current version rule implements
  * - VersionGuardContext: services injected into rules (diff scanning,
  *                        bounded file reads)
  * - Violation:           rule-agnostic finding shape

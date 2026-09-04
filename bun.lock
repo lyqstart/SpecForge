@@ -30,7 +30,6 @@
       },
       "dependencies": {
         "@specforge/configuration": "workspace:*",
-        "@specforge/scope-gate": "workspace:*",
         "@specforge/service-management": "workspace:*",
         "@specforge/types": "workspace:*",
         "@specforge/version-unification": "workspace:*",
@@ -59,6 +58,7 @@
       "name": "@specforge/configuration",
       "version": "0.1.0",
       "dependencies": {
+        "@specforge/migration": "workspace:*",
         "@specforge/types": "workspace:*",
         "chokidar": "^3.5.3",
         "fast-check": "^3.13.0",
@@ -81,15 +81,20 @@
     "packages/daemon-core": {
       "name": "@specforge/daemon-core",
       "version": "1.0.0",
+      "bin": {
+        "specforged": "dist/specforged.js",
+      },
       "dependencies": {
+        "@specforge/configuration": "workspace:*",
         "@specforge/host-profile": "workspace:*",
+        "@specforge/migration": "workspace:*",
         "@specforge/observability": "workspace:*",
         "@specforge/opencode-adapter": "workspace:*",
         "@specforge/permission-engine": "workspace:*",
         "@specforge/plugin-loader": "workspace:*",
-        "@specforge/scope-gate": "workspace:*",
         "@specforge/service-management": "workspace:*",
         "@specforge/types": "workspace:*",
+        "@specforge/version-unification": "workspace:*",
         "@specforge/workflow-runtime": "workspace:*",
         "typescript": "^5.8.2",
         "uuid": "^11.1.0",
@@ -168,6 +173,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@specforge/daemon-core": "workspace:*",
+        "@specforge/migration": "workspace:*",
         "@specforge/permission-engine": "workspace:*",
         "@specforge/types": "workspace:*",
         "uuid": "^10.0.0",
@@ -339,11 +345,7 @@
     "packages/version-unification": {
       "name": "@specforge/version-unification",
       "version": "6.0.0-dev",
-      "dependencies": {
-        "@specforge/types": "workspace:*",
-      },
       "devDependencies": {
-        "fast-check": "^4.8.0",
         "vitest": "^4.1.5",
       },
     },

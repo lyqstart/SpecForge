@@ -14,6 +14,20 @@
 import * as os from 'node:os';
 import * as fs from 'node:fs/promises';
 
+export interface ResourceCheckSystem {
+  cpus(): os.CpuInfo[];
+  totalmem(): number;
+  statfs?: (targetPath: string) => Promise<{ bavail: number | bigint; bsize: number | bigint }>;
+}
+
+export const resourceCheckSystem: ResourceCheckSystem = {
+  cpus: () => os.cpus(),
+  totalmem: () => os.totalmem(),
+  statfs: typeof fs.statfs === 'function'
+    ? async (targetPath) => fs.statfs(targetPath)
+    : undefined,
+};
+
 /**
  * 运行资源检查，返回 warnings 数组。
  * 
@@ -25,12 +39,15 @@ import * as fs from 'node:fs/promises';
  * - 每个 warning 会同步打印到 stderr（使用 console.error）
  * - 检测阈值：CPU < 4 核心、内存 < 4 GiB、磁盘 < 40 GiB
  */
-export async function runResourceCheck(installRoot: string): Promise<string[]> {
+export async function runResourceCheck(
+  installRoot: string,
+  system: ResourceCheckSystem = resourceCheckSystem,
+): Promise<string[]> {
   const warnings: string[] = [];
 
   try {
     // 1. 检测 CPU 核心数
-    const cpuCount = os.cpus().length;
+    const cpuCount = system.cpus().length;
     if (cpuCount < 4) {
       const warning = `Warning: CPU cores (${cpuCount}) below recommended minimum (4)`;
       warnings.push(warning);
@@ -42,7 +59,7 @@ export async function runResourceCheck(installRoot: string): Promise<string[]> {
 
   try {
     // 2. 检测总内存
-    const totalMemBytes = os.totalmem();
+    const totalMemBytes = system.totalmem();
     const totalMemGB = totalMemBytes / (1024 ** 3);
     if (totalMemGB < 4) {
       const warning = `Warning: Total memory (${totalMemGB.toFixed(1)} GB) below recommended minimum (4 GB)`;
@@ -57,11 +74,11 @@ export async function runResourceCheck(installRoot: string): Promise<string[]> {
     // 3. 检测磁盘空闲空间
     // 使用 fs.statfs 获取文件系统统计信息（Node.js 19.6.0+）
     // 对于更早版本，statfs 可能不可用，此时静默跳过
-    if (typeof (fs as any).statfs === 'function') {
-      const stats = await (fs as any).statfs(installRoot);
+    if (typeof system.statfs === 'function') {
+      const stats = await system.statfs(installRoot);
       // stats.bavail: 可用块数（非特权用户）
       // stats.bsize: 块大小（字节）
-      const freeBytes = stats.bavail * stats.bsize;
+      const freeBytes = Number(stats.bavail) * Number(stats.bsize);
       const freeGB = freeBytes / (1024 ** 3);
       
       if (freeGB < 40) {

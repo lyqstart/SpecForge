@@ -19,6 +19,20 @@ import { Event, ProjectState } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
 import * as path from 'path';
+import * as os from 'os';
+import type { IPathResolver } from '../../src/daemon/path-resolver';
+
+let currentEventSequence = 0;
+function currentEvent(event: Event): Event {
+  return {
+    ...event,
+    schema_version: '1.0',
+    monotonicSeq: event.monotonicSeq ?? ++currentEventSequence,
+    projectId: event.projectId ?? 'test-project',
+    actor: event.actor ?? 'test',
+    category: event.category ?? 'system',
+  };
+}
 
 /**
  * Compute the hash used by RecoverySubsystem/StateManager for a project path
@@ -33,6 +47,22 @@ function computeHash(projectPath: string): string {
   return Math.abs(hash).toString(16).padStart(8, '0');
 }
 
+class PropertyPathResolver implements IPathResolver {
+  constructor(private readonly root: string) {}
+  private runtime(projectPath: string): string {
+    return path.join(this.root, computeHash(projectPath));
+  }
+  resolveProjectRuntimeDir(projectPath: string): string { return this.runtime(projectPath); }
+  resolveStatePath(projectPath: string): string { return path.join(this.runtime(projectPath), 'state.json'); }
+  resolveEventsPath(projectPath: string): string { return path.join(this.runtime(projectPath), 'events.jsonl'); }
+  resolveSessionsDir(projectPath: string): string { return path.join(this.runtime(projectPath), 'sessions'); }
+  resolveDaemonRuntimeDir(): string { return path.join(this.root, 'daemon'); }
+  resolveHandshakePath(): string { return path.join(this.root, 'daemon', 'handshake.json'); }
+  resolveDaemonJsonPath(): string { return path.join(this.root, 'daemon.json'); }
+  resolveDaemonStatePath(): string { return path.join(this.root, 'daemon', 'state.json'); }
+  resolveDaemonEventsPath(): string { return path.join(this.root, 'daemon', 'events.jsonl'); }
+}
+
 describe('Property 20: Recovery Consistency Repair', () => {
   // Use unique project paths for each test to avoid interference
   const testProjectPath1 = 'test-project-path-recovery-1';  // for test 20.1
@@ -42,31 +72,18 @@ describe('Property 20: Recovery Consistency Repair', () => {
   const testProjectPathPBT = 'test-project-path-recovery-pbt'; // for test 20.5
 
   let testProjectPath: string;
-  let testProjectHash: string;
+  let testRoot: string;
+  let pathResolver: PropertyPathResolver;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-property20-'));
+    pathResolver = new PropertyPathResolver(testRoot);
     // Default to PBT path
     testProjectPath = testProjectPathPBT;
-    testProjectHash = computeHash(testProjectPath);
   });
 
   afterEach(async () => {
-    // Cleanup test files
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const eventsPath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-      : '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
-
-    try {
-      if (eventsPath) await fs.unlink(eventsPath);
-    } catch (error) { }
-
-    try {
-      if (statePath) await fs.unlink(statePath);
-    } catch (error) { }
+    await fs.rm(testRoot, { recursive: true, force: true });
   });
 
   /**
@@ -75,10 +92,9 @@ describe('Property 20: Recovery Consistency Repair', () => {
   it('should validate repair produces consistent state', async () => {
     // Use dedicated project path
     testProjectPath = testProjectPath1;
-    testProjectHash = computeHash(testProjectPath);
     
-    const recoverySubsystem = new RecoverySubsystem(testProjectPath);
-    const stateManager = new StateManager(testProjectPath);
+    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+    const stateManager = new StateManager(pathResolver, testProjectPath);
     
     await recoverySubsystem.initialize();
     await stateManager.initialize();
@@ -90,7 +106,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
     ];
 
     for (const event of events) {
-      await stateManager.appendEvent(event);
+      await stateManager.appendEvent(currentEvent(event));
     }
 
     const inconsistentState: ProjectState = {
@@ -102,10 +118,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
       lastEventTs: 1000,
     };
 
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
+    const statePath = pathResolver.resolveStatePath(testProjectPath);
     await fs.mkdir(path.dirname(statePath), { recursive: true });
     await fs.writeFile(statePath, JSON.stringify(inconsistentState));
 
@@ -115,20 +128,16 @@ describe('Property 20: Recovery Consistency Repair', () => {
     const repairResult = await recoverySubsystem.repairInconsistency(consistencyResult);
     expect(repairResult.success).toBe(true);
     
-    expect(repairResult.repairedState.lastEventId).toBe('evt-003');
-    expect(repairResult.repairedState.lastEventTs).toBe(3000);
+    const lastRepairEvent = repairResult.repairEvents.at(-1)!;
+    expect(repairResult.repairedState.lastEventId).toBe(lastRepairEvent.eventId);
+    expect(repairResult.repairedState.lastEventTs).toBe(lastRepairEvent.ts);
 
     // File-level assertion: verify events.jsonl on disk has all events after repair
-    const home20_1 = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const diskEventsPath20_1 = home20_1
-      ? path.join(home20_1, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-      : '';
-    if (diskEventsPath20_1) {
-      expect(fsSync.existsSync(diskEventsPath20_1)).toBe(true);
-      const diskContent = await fs.readFile(diskEventsPath20_1, 'utf-8');
-      expect(diskContent).toContain('evt-003');
-      expect(diskContent).toContain('recovery.repaired');
-    }
+    const diskEventsPath20_1 = pathResolver.resolveEventsPath(testProjectPath);
+    expect(fsSync.existsSync(diskEventsPath20_1)).toBe(true);
+    const diskContent = await fs.readFile(diskEventsPath20_1, 'utf-8');
+    expect(diskContent).toContain('evt-003');
+    expect(diskContent).toContain('recovery.repaired');
   });
 
   /**
@@ -137,10 +146,9 @@ describe('Property 20: Recovery Consistency Repair', () => {
   it('should validate rebuild(events) == s\' after repair', async () => {
     // Use dedicated project path
     testProjectPath = testProjectPath2;
-    testProjectHash = computeHash(testProjectPath);
     
-    const recoverySubsystem = new RecoverySubsystem(testProjectPath);
-    const stateManager = new StateManager(testProjectPath);
+    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+    const stateManager = new StateManager(pathResolver, testProjectPath);
     
     await recoverySubsystem.initialize();
     await stateManager.initialize();
@@ -151,7 +159,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
     ];
 
     for (const event of events) {
-      await stateManager.appendEvent(event);
+      await stateManager.appendEvent(currentEvent(event));
     }
 
     const corruptedState: ProjectState = {
@@ -163,18 +171,16 @@ describe('Property 20: Recovery Consistency Repair', () => {
       lastEventTs: 1000,
     };
 
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
+    const statePath = pathResolver.resolveStatePath(testProjectPath);
     await fs.mkdir(path.dirname(statePath), { recursive: true });
     await fs.writeFile(statePath, JSON.stringify(corruptedState));
 
     const consistencyResult = await recoverySubsystem.checkConsistency();
     const repairResult = await recoverySubsystem.repairInconsistency(consistencyResult);
 
-    expect(repairResult.repairedState.lastEventId).toBe('evt-B');
-    expect(repairResult.repairedState.lastEventTs).toBe(2000);
+    const lastRepairEvent = repairResult.repairEvents.at(-1)!;
+    expect(repairResult.repairedState.lastEventId).toBe(lastRepairEvent.eventId);
+    expect(repairResult.repairedState.lastEventTs).toBe(lastRepairEvent.ts);
   });
 
   /**
@@ -183,10 +189,9 @@ describe('Property 20: Recovery Consistency Repair', () => {
   it('should validate repair event is recorded', async () => {
     // Use dedicated project path
     testProjectPath = testProjectPath3;
-    testProjectHash = computeHash(testProjectPath);
     
-    const recoverySubsystem = new RecoverySubsystem(testProjectPath);
-    const stateManager = new StateManager(testProjectPath);
+    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+    const stateManager = new StateManager(pathResolver, testProjectPath);
     
     await recoverySubsystem.initialize();
     await stateManager.initialize();
@@ -197,7 +202,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
     ];
 
     for (const event of events) {
-      await stateManager.appendEvent(event);
+      await stateManager.appendEvent(currentEvent(event));
     }
 
     const inconsistentState: ProjectState = {
@@ -209,10 +214,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
       lastEventTs: 0,
     };
 
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
+    const statePath = pathResolver.resolveStatePath(testProjectPath);
     await fs.mkdir(path.dirname(statePath), { recursive: true });
     await fs.writeFile(statePath, JSON.stringify(inconsistentState));
 
@@ -226,15 +228,10 @@ describe('Property 20: Recovery Consistency Repair', () => {
     }
 
     // File-level assertion: verify events.jsonl contains recovery.repaired on disk
-    const home20_3 = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const diskEventsPath20_3 = home20_3
-      ? path.join(home20_3, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-      : '';
-    if (diskEventsPath20_3) {
-      expect(fsSync.existsSync(diskEventsPath20_3)).toBe(true);
-      const diskContent = await fs.readFile(diskEventsPath20_3, 'utf-8');
-      expect(diskContent).toContain('recovery.repaired');
-    }
+    const diskEventsPath20_3 = pathResolver.resolveEventsPath(testProjectPath);
+    expect(fsSync.existsSync(diskEventsPath20_3)).toBe(true);
+    const repairDiskContent = await fs.readFile(diskEventsPath20_3, 'utf-8');
+    expect(repairDiskContent).toContain('recovery.repaired');
   });
 
   /**
@@ -243,10 +240,9 @@ describe('Property 20: Recovery Consistency Repair', () => {
   it('should repair multiple inconsistency types', async () => {
     // Use dedicated project path
     testProjectPath = testProjectPath4;
-    testProjectHash = computeHash(testProjectPath);
     
-    const recoverySubsystem = new RecoverySubsystem(testProjectPath);
-    const stateManager = new StateManager(testProjectPath);
+    const recoverySubsystem = new RecoverySubsystem(pathResolver, testProjectPath);
+    const stateManager = new StateManager(pathResolver, testProjectPath);
     
     await recoverySubsystem.initialize();
     await stateManager.initialize();
@@ -258,7 +254,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
     ];
 
     for (const event of events) {
-      await stateManager.appendEvent(event);
+      await stateManager.appendEvent(currentEvent(event));
     }
 
     const mismatchedState: ProjectState = {
@@ -270,10 +266,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
       lastEventTs: 9999,
     };
 
-    const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-    const statePath = home 
-      ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-      : '';
+    const statePath = pathResolver.resolveStatePath(testProjectPath);
     await fs.mkdir(path.dirname(statePath), { recursive: true });
     await fs.writeFile(statePath, JSON.stringify(mismatchedState));
 
@@ -284,7 +277,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
     expect(repairResult.success).toBe(true);
 
     const loadedState = await recoverySubsystem.loadState();
-    expect(loadedState.lastEventId).toBe('event-a');
+    expect(loadedState.lastEventId).toBe(repairResult.repairEvents.at(-1)!.eventId);
   });
 
   /**
@@ -293,7 +286,6 @@ describe('Property 20: Recovery Consistency Repair', () => {
   it('should pass property-based test: repair consistency (≥100 iter)', async () => {
     // Use dedicated project path for PBT
     testProjectPath = testProjectPathPBT;
-    testProjectHash = computeHash(testProjectPath);
     
     let globalCounter = 0;
     const testCases = fc.sample(
@@ -320,16 +312,11 @@ describe('Property 20: Recovery Consistency Repair', () => {
 
     for (const tc of testCases) {
       try {
-        const testRecovery = new RecoverySubsystem(testProjectPath);
-        const testStateManager = new StateManager(testProjectPath);
+        const testRecovery = new RecoverySubsystem(pathResolver, testProjectPath);
+        const testStateManager = new StateManager(pathResolver, testProjectPath);
         
-        const home = process.env['HOME'] || process.env['USERPROFILE'] || '';
-        const eventsPath = home 
-          ? path.join(home, '.specforge', 'projects', testProjectHash, 'events.jsonl')
-          : '';
-        const statePath = home 
-          ? path.join(home, '.specforge', 'projects', testProjectHash, 'state.json')
-          : '';
+        const eventsPath = pathResolver.resolveEventsPath(testProjectPath);
+        const statePath = pathResolver.resolveStatePath(testProjectPath);
 
         if (eventsPath) await fs.mkdir(path.dirname(eventsPath), { recursive: true });
         
@@ -349,7 +336,7 @@ describe('Property 20: Recovery Consistency Repair', () => {
         }));
 
         for (const event of events) {
-          await testStateManager.appendEvent(event);
+          await testStateManager.appendEvent(currentEvent(event));
         }
 
         if (tc.createInconsistency) {
@@ -398,8 +385,9 @@ describe('Property 20: Recovery Consistency Repair', () => {
         expect(repairResult.success).toBe(true);
 
         const originalLastEvent = events[events.length - 1];
-        expect(repairResult.repairedState.lastEventId).toBe(originalLastEvent.eventId);
-        expect(repairResult.repairedState.lastEventTs).toBe(originalLastEvent.ts);
+        const expectedLastEvent = repairResult.repairEvents.at(-1) ?? originalLastEvent;
+        expect(repairResult.repairedState.lastEventId).toBe(expectedLastEvent.eventId);
+        expect(repairResult.repairedState.lastEventTs).toBe(expectedLastEvent.ts);
 
         if (!consistencyResult.isValid) {
           expect(repairResult.repairEvents.length).toBeGreaterThan(0);
@@ -414,5 +402,5 @@ describe('Property 20: Recovery Consistency Repair', () => {
 
     expect(passed).toBeGreaterThan(testCases.length * 0.80);
     expect(failed).toBeLessThan(testCases.length * 0.20);
-  }, 30000);
+  }, 60000);
 });

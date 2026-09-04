@@ -29,26 +29,26 @@ const projectPathArb = fc.string({ minLength: 1, maxLength: 50 }).filter(
 );
 
 describe('CP-3: Register Idempotent (registerPluginSession)', () => {
-  it('should return same sessionId on repeated calls with same projectPath', () => {
+  it('should return same sessionId on repeated calls with same projectPath', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
 
-    fc.assert(
-      fc.property(projectIdArb, projectPathArb, (projectId, projectPath) => {
+    await fc.assert(
+      fc.asyncProperty(projectIdArb, projectPathArb, async (projectId, projectPath) => {
         // First call — creates a new session
-        const identity1 = registry.registerPluginSession(projectId, projectPath);
+        const identity1 = await registry.registerPluginSession(projectId, projectPath);
         expect(identity1).toBeDefined();
         expect(identity1.sessionId).toBeDefined();
         expect(typeof identity1.sessionId).toBe('string');
         expect(identity1.sessionId.length).toBeGreaterThan(0);
 
         // Second call with same projectPath — must return same sessionId
-        const identity2 = registry.registerPluginSession(projectId, projectPath);
+        const identity2 = await registry.registerPluginSession(projectId, projectPath);
         expect(identity2).toBeDefined();
         expect(identity2.sessionId).toBe(identity1.sessionId);
 
         // Third call — still same sessionId
-        const identity3 = registry.registerPluginSession(projectId, projectPath);
+        const identity3 = await registry.registerPluginSession(projectId, projectPath);
         expect(identity3.sessionId).toBe(identity1.sessionId);
 
         // Verify we can look up the session
@@ -60,23 +60,23 @@ describe('CP-3: Register Idempotent (registerPluginSession)', () => {
     );
   });
 
-  it('should create different sessionIds for different projectPaths', () => {
+  it('should create different sessionIds for different projectPaths', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
 
-    fc.assert(
-      fc.property(
+    await fc.assert(
+      fc.asyncProperty(
         projectIdArb,
         projectPathArb,
         fc.string({ minLength: 1, maxLength: 50 }).filter(
           (s) => s.trim().length > 0,
         ),
-        (projectId, path1, path2) => {
+        async (projectId, path1, path2) => {
           // Skip if paths happen to be equal (fast-check may generate same string)
           fc.pre(path1 !== path2);
 
-          const identity1 = registry.registerPluginSession(projectId, path1);
-          const identity2 = registry.registerPluginSession(projectId, path2);
+          const identity1 = await registry.registerPluginSession(projectId, path1);
+          const identity2 = await registry.registerPluginSession(projectId, path2);
 
           expect(identity1.sessionId).toBeDefined();
           expect(identity2.sessionId).toBeDefined();
@@ -87,15 +87,15 @@ describe('CP-3: Register Idempotent (registerPluginSession)', () => {
     );
   });
 
-  it('should not create duplicate entries in projectBindings', () => {
+  it('should not create duplicate entries in projectBindings', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
 
-    fc.assert(
-      fc.property(projectIdArb, projectPathArb, (projectId, projectPath) => {
+    await fc.assert(
+      fc.asyncProperty(projectIdArb, projectPathArb, async (projectId, projectPath) => {
         // Call multiple times with same projectPath
         for (let i = 0; i < 10; i++) {
-          registry.registerPluginSession(projectId, projectPath);
+          await registry.registerPluginSession(projectId, projectPath);
         }
 
         // Verify only ONE pending session exists (not 10)
@@ -109,13 +109,13 @@ describe('CP-3: Register Idempotent (registerPluginSession)', () => {
     );
   });
 
-  it('should return same sessionId even after session lookup and touch', () => {
+  it('should return same sessionId even after session lookup and touch', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
 
-    fc.assert(
-      fc.property(projectIdArb, projectPathArb, (projectId, projectPath) => {
-        const identity1 = registry.registerPluginSession(projectId, projectPath);
+    await fc.assert(
+      fc.asyncProperty(projectIdArb, projectPathArb, async (projectId, projectPath) => {
+        const identity1 = await registry.registerPluginSession(projectId, projectPath);
         const sessionId = identity1.sessionId;
 
         // Look up the session
@@ -124,19 +124,19 @@ describe('CP-3: Register Idempotent (registerPluginSession)', () => {
         expect(lookedUp?.sessionId).toBe(sessionId);
 
         // Register again — must return same sessionId
-        const identity2 = registry.registerPluginSession(projectId, projectPath);
+        const identity2 = await registry.registerPluginSession(projectId, projectPath);
         expect(identity2.sessionId).toBe(sessionId);
       }),
       { numRuns: 100 },
     );
   });
 
-  it('should be idempotent across interleaved different project registrations', () => {
+  it('should be idempotent across interleaved different project registrations', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
 
-    fc.assert(
-      fc.property(
+    await fc.assert(
+      fc.asyncProperty(
         fc.array(
           fc.record({
             projectId: projectIdArb,
@@ -144,7 +144,7 @@ describe('CP-3: Register Idempotent (registerPluginSession)', () => {
           }),
           { minLength: 1, maxLength: 10 },
         ),
-        (projects) => {
+        async (projects) => {
           // Deduplicate by projectPath
           const seen = new Map<string, string>(); // projectPath → sessionId
           const unique = new Map<string, { projectId: string; projectPath: string }>();
@@ -159,14 +159,14 @@ describe('CP-3: Register Idempotent (registerPluginSession)', () => {
 
           // Register each project, then register all again in reverse
           for (const p of uniqueProjects) {
-            const identity = registry.registerPluginSession(p.projectId, p.projectPath);
+            const identity = await registry.registerPluginSession(p.projectId, p.projectPath);
             seen.set(p.projectPath, identity.sessionId);
           }
 
           // Second pass (reverse order) — all must return same sessionIds
           for (let i = uniqueProjects.length - 1; i >= 0; i--) {
             const p = uniqueProjects[i]!;
-            const identity = registry.registerPluginSession(p.projectId, p.projectPath);
+            const identity = await registry.registerPluginSession(p.projectId, p.projectPath);
             expect(identity.sessionId).toBe(seen.get(p.projectPath));
           }
         },

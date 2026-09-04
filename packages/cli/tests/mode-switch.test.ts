@@ -10,7 +10,7 @@
  * Validates: Requirements 1.1, 1.2 (cli spec).
  */
 
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect } from 'vitest';
 import {
   ModeSwitch,
   detectMode,

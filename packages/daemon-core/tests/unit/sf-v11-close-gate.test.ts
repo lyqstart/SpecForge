@@ -119,7 +119,6 @@ async function createMinimalWorkItem(
   projectRoot: string,
   workItemId: string,
   opts?: {
-    status?: string;
     codeChangeAllowed?: boolean;
     allowedWriteFiles?: Array<{ path: string; operation: string }>;
     includeSemanticClosure?: boolean;
@@ -129,10 +128,11 @@ async function createMinimalWorkItem(
   await fs.mkdir(wiDir, { recursive: true });
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
 
   const workItem = {
+    schema_version: '1.1',
     work_item_id: workItemId,
-    status: opts?.status ?? 'verification_done',
     code_change_allowed: opts?.codeChangeAllowed ?? false,
     code_permission_revoked: !(opts?.codeChangeAllowed ?? false),
     allowed_write_files: opts?.allowedWriteFiles ?? [],
@@ -177,6 +177,10 @@ async function createMinimalWorkItem(
     }) + '\n'
   );
   await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] TASK-1 Done');
+  await fs.writeFile(
+    path.join(wiDir, 'candidates', 'tasks.md'),
+    '# Tasks\n- [x] TASK-1 Done',
+  );
   await fs.writeFile(
     path.join(wiDir, 'trace_delta.md'),
     '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1'
@@ -266,7 +270,7 @@ describe('sf_close_gate handler', () => {
 
   it('should reject when authoritative state is not verification_done', async () => {
     const workItemId = 'wi-wrong-state';
-    await createMinimalWorkItem(tmpDir, workItemId, { status: 'implementation_running' });
+    await createMinimalWorkItem(tmpDir, workItemId);
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
       { work_item_id: workItemId },
@@ -470,7 +474,7 @@ describe('sf_close_gate handler', () => {
 
   it('recovers a proven-invalid prior closure through a compensating state event', async () => {
     const workItemId = 'wi-invalid-close-recovery';
-    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, { status: 'closed' });
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
     await fs.writeFile(
       path.join(wiDir, 'gates', 'close_gate.json'),
       JSON.stringify({ gate_id: 'close_gate', status: 'passed' }),
@@ -526,7 +530,7 @@ describe('sf_close_gate handler', () => {
     const baseCommit = await git(tmpDir, ['rev-parse', 'HEAD']);
     await git(tmpDir, ['switch', '-c', featureBranch]);
 
-    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, { status: 'closed' });
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
     await fs.mkdir(path.join(tmpDir, 'src'), { recursive: true });
     await fs.writeFile(path.join(tmpDir, 'src', 'main.ts'), 'export const value = 1;\n');
     await fs.writeFile(
@@ -610,7 +614,7 @@ describe('sf_close_gate handler', () => {
 
   it('refuses invalid-closure recovery without explicit confirmation', async () => {
     const workItemId = 'wi-invalid-close-unconfirmed';
-    const wiDir = await createMinimalWorkItem(tmpDir, workItemId, { status: 'closed' });
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
     await fs.writeFile(
       path.join(wiDir, 'gates', 'close_gate.json'),
       JSON.stringify({ gate_id: 'close_gate', status: 'passed' }),
@@ -676,7 +680,8 @@ describe('sf_close_gate handler', () => {
     await fs.writeFile(
       path.join(workItemDir, 'work_item.json'),
       JSON.stringify({
-        id: 'wi-revoke-timestamp',
+        schema_version: '1.1',
+        work_item_id: 'wi-revoke-timestamp',
         code_change_allowed: true,
         code_permission_revoked: false,
         code_permission_revoked_at: '2000-01-01T00:00:00.000Z',

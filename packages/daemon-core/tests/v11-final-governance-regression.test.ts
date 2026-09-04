@@ -209,7 +209,7 @@ describe('v1.1.3 final governance regression coverage', () => {
     });
 
     it('artifact validation forbids work_item.json from carrying approval or state mutation authority', () => {
-      expectSourceContains('src/tools/lib/artifact-schema-validation.ts', [
+      expectSourceContains('../types/src/work-item-metadata-contract.ts', [
         'WORK_ITEM_CANNOT_CARRY_USER_DECISION',
         'WORK_ITEM_STATUS_MUTATION_FORBIDDEN',
         'decision_status',
@@ -221,6 +221,11 @@ describe('v1.1.3 final governance regression coverage', () => {
         'decided_by',
         'decision_scope',
         'waivers',
+      ]);
+
+      expectSourceContains('src/tools/lib/artifact-schema-validation.ts', [
+        'validateCurrentWorkItemMetadataJson',
+        'return validateCurrentWorkItemMetadataJson(content, expectedWorkItemId)',
       ]);
 
       expectSourceContains('src/tools/handlers/sf-artifact-write.ts', [

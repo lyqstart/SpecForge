@@ -1,12 +1,12 @@
 /**
- * Integration Tests — Personal Mode E2E + Enterprise Backward Compatibility
+ * Integration Tests — Current Personal and Enterprise Mode E2E
  *
  * Tests:
- * - CP-2: enterprise mode WAL writes under <OpenCode config>/sf-user/projects/<hash>/
+ * - CP-2: enterprise mode WAL is isolated from the project worktree
  * - Personal mode: WAL writes under project/.specforge/runtime/
  * - End-to-end: register → ingest event → subsystem routing → persistence
  * - .specforge/.gitignore SpecForge managed block
- * - daemon.json enterprise backward compatibility
+ * - daemon.json current project registration manifest
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -14,6 +14,7 @@ import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import { createHash } from 'node:crypto';
 import { PersonalPathResolver, EnterprisePathResolver, IPathResolver } from '../../src/daemon/path-resolver';
 import { WAL } from '../../src/wal/WAL';
 import { StateManager } from '../../src/state/StateManager';
@@ -45,6 +46,50 @@ async function fileExists(p: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+class TestPersonalPathResolver extends PersonalPathResolver {
+  constructor(private readonly testUserDir: string) {
+    super();
+  }
+
+  override resolveDaemonJsonPath(): string {
+    return path.join(this.testUserDir, 'opencode', 'daemon.json');
+  }
+}
+
+class TestEnterprisePathResolver extends EnterprisePathResolver {
+  constructor(private readonly testUserDir: string) {
+    super();
+  }
+
+  override resolveProjectRuntimeDir(projectPath: string): string {
+    const projectKey = createHash('sha256').update(path.resolve(projectPath)).digest('hex').slice(0, 16);
+    return path.join(this.testUserDir, 'projects', projectKey);
+  }
+
+  override resolveDaemonJsonPath(): string {
+    return path.join(this.testUserDir, 'opencode', 'daemon.json');
+  }
+}
+
+async function initializeCurrentProject(projectPath: string): Promise<void> {
+  const projectSpecDir = path.join(projectPath, '.specforge', 'project');
+  await fs.mkdir(projectSpecDir, { recursive: true });
+  await fs.writeFile(
+    path.join(projectSpecDir, 'spec_manifest.json'),
+    JSON.stringify({ schema_version: '1.0', project_id: path.basename(projectPath) }),
+    'utf-8',
+  );
+}
+
+function createTestProjectManager(eventBus: EventBus, resolver: IPathResolver): ProjectManager {
+  return new ProjectManager(
+    eventBus,
+    resolver,
+    undefined as any,
+    async () => ({ ok: true, needsMigration: false, checks: [] }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -80,7 +125,7 @@ describe('PersonalPathResolver — path resolution', () => {
     );
   });
 
-  it('should resolve daemon runtime dir under the canonical sf-user runtime', () => {
+  it('should resolve daemon runtime dir under the canonical SpecForge user runtime', () => {
     const dir = resolver.resolveDaemonRuntimeDir();
     expect(dir).toBe(resolveSpecForgeUserPath('runtime'));
   });
@@ -92,26 +137,26 @@ describe('PersonalPathResolver — path resolution', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 2. EnterprisePathResolver — path resolution (CP-2)
+// 2. EnterprisePathResolver — current path resolution (CP-2)
 // ---------------------------------------------------------------------------
 
 describe('EnterprisePathResolver — path resolution (CP-2)', () => {
   const resolver = new EnterprisePathResolver();
 
-  it('should resolve runtime dir under the canonical sf-user projects directory', () => {
+  it('should resolve runtime dir under the canonical SpecForge user projects directory', () => {
     const dir = resolver.resolveProjectRuntimeDir('/home/user/my-project');
     expect(dir).toContain(resolveSpecForgeUserPath('projects'));
     // Verify it's NOT inside the project directory
     expect(dir).not.toContain(path.join('/home/user/my-project', '.specforge', 'runtime'));
   });
 
-  it('should resolve WAL events path under the canonical sf-user projects directory', () => {
+  it('should resolve WAL events path under the canonical SpecForge user projects directory', () => {
     const eventsPath = resolver.resolveEventsPath('/home/user/my-project');
     expect(eventsPath).toContain(resolveSpecForgeUserPath('projects'));
     expect(eventsPath).toContain('events.jsonl');
   });
 
-  it('should resolve state path under the canonical sf-user projects directory', () => {
+  it('should resolve state path under the canonical SpecForge user projects directory', () => {
     const statePath = resolver.resolveStatePath('/home/user/my-project');
     expect(statePath).toContain(resolveSpecForgeUserPath('projects'));
     expect(statePath).toContain('state.json');
@@ -167,8 +212,13 @@ describe('Personal Mode E2E — WAL persistence', () => {
     await rmRF(tmpDir);
   });
 
-  it('should create events.jsonl inside project/.specforge/runtime/', async () => {
+  it('should materialize events.jsonl inside project runtime on first event', async () => {
     const eventsPath = resolver.resolveEventsPath(projectPath);
+    await wal.appendEvent(wal.createEvent('WI-PATH', 'state', 'state.transition', {
+      work_item_id: 'WI-PATH',
+      from_state: '',
+      to_state: 'intake_ready',
+    }));
     expect(await fileExists(eventsPath)).toBe(true);
     expect(eventsPath).toContain(path.join('.specforge', 'runtime', 'events.jsonl'));
   });
@@ -184,7 +234,7 @@ describe('Personal Mode E2E — WAL persistence', () => {
       'WI-001',
       'state',
       'state.transition',
-      { work_item_id: 'WI-001', from_state: '', to_state: 'intake' },
+      { work_item_id: 'WI-001', from_state: '', to_state: 'intake_ready' },
       'system',
     );
 
@@ -200,12 +250,12 @@ describe('Personal Mode E2E — WAL persistence', () => {
 
   it('should transition work item state end-to-end', async () => {
     // Register a new work item
-    await stateManager.transition('WI-001', '', 'intake', 'test-runner');
+    await stateManager.transition('WI-001', '', 'intake_ready', 'test-runner');
 
     // Verify in-memory state
     const state = stateManager.getState('WI-001');
     expect(state).not.toBeNull();
-    expect(state!.current_state).toBe('intake');
+    expect(state!.current_state).toBe('intake_ready');
     expect(state!.work_item_id).toBe('WI-001');
 
     // Verify WAL contains the event
@@ -221,30 +271,30 @@ describe('Personal Mode E2E — WAL persistence', () => {
   });
 
   it('should enforce optimistic locking — reject stale from_state', async () => {
-    await stateManager.transition('WI-001', '', 'intake');
+    await stateManager.transition('WI-001', '', 'intake_ready');
 
     // Trying to transition with wrong from_state should throw
     await expect(
-      stateManager.transition('WI-001', 'design', 'development')
+      stateManager.transition('WI-001', 'impact_analyzed', 'candidate_preparing')
     ).rejects.toThrow(/Optimistic lock failed/);
   });
 
   it('should handle multiple work items in personal mode', async () => {
-    await stateManager.transition('WI-001', '', 'intake');
-    await stateManager.transition('WI-002', '', 'requirements');
-    await stateManager.transition('WI-001', 'intake', 'requirements');
+    await stateManager.transition('WI-001', '', 'intake_ready');
+    await stateManager.transition('WI-002', '', 'intake_ready');
+    await stateManager.transition('WI-001', 'intake_ready', 'impact_analyzing');
 
     const wi1 = stateManager.getState('WI-001');
     const wi2 = stateManager.getState('WI-002');
 
-    expect(wi1!.current_state).toBe('requirements');
-    expect(wi2!.current_state).toBe('requirements');
+    expect(wi1!.current_state).toBe('impact_analyzing');
+    expect(wi2!.current_state).toBe('intake_ready');
   });
 
   it('should rebuild state from WAL after simulated restart', async () => {
     // Simulate work
-    await stateManager.transition('WI-001', '', 'intake');
-    await stateManager.transition('WI-001', 'intake', 'design');
+    await stateManager.transition('WI-001', '', 'intake_ready');
+    await stateManager.transition('WI-001', 'intake_ready', 'impact_analyzing');
 
     // Simulate restart: create a new StateManager that reads the same WAL
     const stateManager2 = new StateManager(resolver, projectPath);
@@ -252,16 +302,16 @@ describe('Personal Mode E2E — WAL persistence', () => {
 
     const state = stateManager2.getState('WI-001');
     expect(state).not.toBeNull();
-    expect(state!.current_state).toBe('design');
+    expect(state!.current_state).toBe('impact_analyzing');
     expect(state!.work_item_id).toBe('WI-001');
   });
 });
 
 // ---------------------------------------------------------------------------
-// 4. Enterprise Mode E2E — backward compatibility (CP-2)
+// 4. Enterprise Mode E2E — current isolated storage (CP-2)
 // ---------------------------------------------------------------------------
 
-describe('Enterprise Mode E2E — backward compatibility', () => {
+describe('Enterprise Mode E2E — current isolated storage', () => {
   let tmpDir: string;
   let projectPath: string;
   let resolver: EnterprisePathResolver;
@@ -271,7 +321,7 @@ describe('Enterprise Mode E2E — backward compatibility', () => {
   beforeEach(async () => {
     tmpDir = makeTmpDir();
     projectPath = path.join(tmpDir, 'enterprise-project');
-    resolver = new EnterprisePathResolver();
+    resolver = new TestEnterprisePathResolver(path.join(tmpDir, 'user-root'));
 
     const eventsPath = resolver.resolveEventsPath(projectPath);
     wal = new WAL(eventsPath);
@@ -285,18 +335,23 @@ describe('Enterprise Mode E2E — backward compatibility', () => {
     await rmRF(tmpDir);
   });
 
-  it('CP-2: should write WAL under the canonical sf-user projects directory', async () => {
+  it('CP-2: should write WAL outside the project under the isolated user projects directory', async () => {
     const eventsPath = resolver.resolveEventsPath(projectPath);
+    await wal.appendEvent(wal.createEvent('WI-PATH', 'state', 'state.transition', {
+      work_item_id: 'WI-PATH',
+      from_state: '',
+      to_state: 'intake_ready',
+    }));
     expect(await fileExists(eventsPath)).toBe(true);
-    expect(eventsPath).toContain(path.join('sf-user', 'projects'));
+    expect(eventsPath).toContain(path.join('user-root', 'projects'));
     expect(eventsPath).toContain('events.jsonl');
   });
 
-  it('CP-2: should write state.json under the canonical sf-user projects directory', async () => {
+  it('CP-2: should write state.json under the isolated user projects directory', async () => {
     const statePath = resolver.resolveStatePath(projectPath);
     // state.json exists after initialize
     expect(await fileExists(statePath)).toBe(true);
-    expect(statePath).toContain(path.join('sf-user', 'projects'));
+    expect(statePath).toContain(path.join('user-root', 'projects'));
     expect(statePath).toContain('state.json');
   });
 
@@ -305,7 +360,7 @@ describe('Enterprise Mode E2E — backward compatibility', () => {
       'WI-ENT-001',
       'state',
       'state.transition',
-      { work_item_id: 'WI-ENT-001', from_state: '', to_state: 'design' },
+      { work_item_id: 'WI-ENT-001', from_state: '', to_state: 'intake_ready' },
       'enterprise-bot',
     );
 
@@ -317,17 +372,17 @@ describe('Enterprise Mode E2E — backward compatibility', () => {
     expect(events[0]!.monotonicSeq).toBe(1);
   });
 
-  it('should work end-to-end in enterprise mode (behavior unchanged)', async () => {
+  it('should work end-to-end in current enterprise mode', async () => {
     // Register
-    await stateManager.transition('WI-ENT-001', '', 'intake');
+    await stateManager.transition('WI-ENT-001', '', 'intake_ready');
 
     // Transition through multiple stages
-    await stateManager.transition('WI-ENT-001', 'intake', 'requirements');
-    await stateManager.transition('WI-ENT-001', 'requirements', 'design');
+    await stateManager.transition('WI-ENT-001', 'intake_ready', 'impact_analyzing');
+    await stateManager.transition('WI-ENT-001', 'impact_analyzing', 'impact_analyzed');
 
     // Verify final state
     const state = stateManager.getState('WI-ENT-001');
-    expect(state!.current_state).toBe('design');
+    expect(state!.current_state).toBe('impact_analyzed');
 
     // Verify all events in WAL
     const { events } = await wal.readAllEvents();
@@ -368,9 +423,9 @@ describe('.specforge/.gitignore — SpecForge managed block', () => {
   beforeEach(() => {
     tmpDir = makeTmpDir();
     projectPath = path.join(tmpDir, 'gitignore-test');
-    resolver = new PersonalPathResolver();
+    resolver = new TestPersonalPathResolver(path.join(tmpDir, 'user-root'));
     eventBus = new EventBus();
-    projectManager = new ProjectManager(eventBus, resolver);
+    projectManager = createTestProjectManager(eventBus, resolver);
   });
 
   afterEach(async () => {
@@ -380,6 +435,7 @@ describe('.specforge/.gitignore — SpecForge managed block', () => {
   });
 
   it('should create .specforge/.gitignore with managed block on project registration', async () => {
+    await initializeCurrentProject(projectPath);
     // Register project triggers ensureGitignore
     const ctx = await projectManager.registerProject(projectPath);
     expect(ctx).toBeDefined();
@@ -397,6 +453,7 @@ describe('.specforge/.gitignore — SpecForge managed block', () => {
   });
 
   it('should not add managed block twice', async () => {
+    await initializeCurrentProject(projectPath);
     await projectManager.registerProject(projectPath);
     await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -417,7 +474,7 @@ describe('.specforge/.gitignore — SpecForge managed block', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 6. daemon.json — project manifest backward compatibility
+// 6. daemon.json — current project registration manifest
 // ---------------------------------------------------------------------------
 
 describe('daemon.json — project manifest', () => {
@@ -430,9 +487,9 @@ describe('daemon.json — project manifest', () => {
   beforeEach(() => {
     tmpDir = makeTmpDir();
     projectPath = path.join(tmpDir, 'manifest-test');
-    resolver = new PersonalPathResolver();
+    resolver = new TestPersonalPathResolver(path.join(tmpDir, 'user-root'));
     eventBus = new EventBus();
-    projectManager = new ProjectManager(eventBus, resolver);
+    projectManager = createTestProjectManager(eventBus, resolver);
   });
 
   afterEach(async () => {
@@ -479,6 +536,7 @@ describe('daemon.json — project manifest', () => {
   });
 
   it('should register project with unique projectId', async () => {
+    await initializeCurrentProject(projectPath);
     const ctx = await projectManager.registerProject(projectPath);
     expect(ctx.projectId).toBeDefined();
     expect(ctx.projectId.length).toBe(16); // sha256 hex substring(0, 16)
@@ -489,8 +547,10 @@ describe('daemon.json — project manifest', () => {
   });
 
   it('should list active projects', async () => {
+    await initializeCurrentProject(projectPath);
     await projectManager.registerProject(projectPath);
     const projB = path.join(tmpDir, 'project-b');
+    await initializeCurrentProject(projB);
     await projectManager.registerProject(projB);
 
     const active = projectManager.listActiveProjects();
@@ -521,7 +581,7 @@ describe('Cross-mode — file layout verification', () => {
     const wal = new WAL(eventsPath);
     await wal.initialize();
 
-    const event = wal.createEvent('WI-P', 'state', 'state.transition', { to: 'intake' });
+    const event = wal.createEvent('WI-P', 'state', 'state.transition', { to: 'intake_ready' });
     await wal.appendEvent(event);
 
     // Verify events.jsonl is inside the project directory tree
@@ -535,12 +595,12 @@ describe('Cross-mode — file layout verification', () => {
 
   it('should write enterprise mode WAL outside project directory', async () => {
     const projectPath = path.join(tmpDir, 'enterprise-proj');
-    const resolver = new EnterprisePathResolver();
+    const resolver = new TestEnterprisePathResolver(path.join(tmpDir, 'user-root'));
     const eventsPath = resolver.resolveEventsPath(projectPath);
     const wal = new WAL(eventsPath);
     await wal.initialize();
 
-    const event = wal.createEvent('WI-E', 'state', 'state.transition', { to: 'intake' });
+    const event = wal.createEvent('WI-E', 'state', 'state.transition', { to: 'intake_ready' });
     await wal.appendEvent(event);
 
     // Verify events.jsonl is NOT inside the project directory tree
@@ -554,7 +614,7 @@ describe('Cross-mode — file layout verification', () => {
   it('should correctly identify personal vs enterprise layout', async () => {
     const projectPath = path.join(tmpDir, 'test-proj');
     const personal = new PersonalPathResolver();
-    const enterprise = new EnterprisePathResolver();
+    const enterprise = new TestEnterprisePathResolver(path.join(tmpDir, 'user-root'));
 
     const personalRuntime = personal.resolveProjectRuntimeDir(projectPath);
     const enterpriseRuntime = enterprise.resolveProjectRuntimeDir(projectPath);
@@ -562,8 +622,8 @@ describe('Cross-mode — file layout verification', () => {
     // Personal: inside project
     expect(personalRuntime).toContain(projectPath);
 
-    // Enterprise: under <OpenCode config>/sf-user/projects/
-    expect(enterpriseRuntime).toContain(path.join('sf-user', 'projects'));
+    // Enterprise: under an isolated user-level projects root.
+    expect(enterpriseRuntime).toContain(path.join('user-root', 'projects'));
     expect(enterpriseRuntime).not.toContain(projectPath);
   });
 });

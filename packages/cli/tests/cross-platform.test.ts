@@ -32,7 +32,7 @@ describe('Cross-Platform Path Handling', () => {
   describe('path.sep awareness', () => {
     it('should use correct path separator for current platform', () => {
       // path.join automatically uses the correct separator
-      const testPath = path.join('home', 'user', 'sf-user', 'runtime');
+      const testPath = path.join('home', 'user', '.specforge', 'runtime');
       
       // On Windows, should contain \ separators (when normalized)
       // On Unix, should contain / separators
@@ -50,7 +50,7 @@ describe('Cross-Platform Path Handling', () => {
     });
 
     it('should handle nested path joins correctly', () => {
-      const base = 'sf-user';
+      const base = '.specforge';
       const subdirs = ['runtime', 'daemon', 'sessions'];
 
       let result = path.join('home', 'user', base);
@@ -59,7 +59,7 @@ describe('Cross-Platform Path Handling', () => {
       }
       
       // Should end with the expected path
-      expect(result).toMatch(/sf-user[\\/]runtime[\\/]daemon[\\/]sessions$/);
+      expect(result).toMatch(/\.specforge[\\/]runtime[\\/]daemon[\\/]sessions$/);
     });
   });
 
@@ -83,7 +83,7 @@ describe('Cross-Platform Path Handling', () => {
       expect(path.isAbsolute(handshakePath)).toBe(true);
       
       // Should correctly join all parts
-      const expectedParts = ['sf-user', 'runtime', 'handshake.json'];
+      const expectedParts = ['.specforge', 'runtime', 'daemon.sock.json'];
       for (const part of expectedParts) {
         expect(handshakePath).toContain(part);
       }
@@ -215,13 +215,13 @@ describe('Path Construction Edge Cases', () => {
     const homeDir = os.homedir();
     
     // Path with .. should be resolved
-    const normalized = path.normalize(path.join(homeDir, '.config', 'opencode', 'sf-user', '..', 'sf-user', 'runtime'));
+    const normalized = path.normalize(path.join(homeDir, '.specforge', 'temporary', '..', 'runtime'));
     
     // Should not contain ..
     expect(normalized).not.toContain('..');
     
     // Should be equivalent to direct path
-    const direct = path.join(homeDir, '.config', 'opencode', 'sf-user', 'runtime');
+    const direct = path.join(homeDir, '.specforge', 'runtime');
     expect(path.normalize(normalized)).toBe(path.normalize(direct));
   });
 
@@ -323,7 +323,7 @@ describe('Cross-Platform File Operations Simulation', () => {
     expect(path.isAbsolute(handshakePath)).toBe(true);
     
     // Should end with the correct filename
-    expect(handshakePath.endsWith('handshake.json')).toBe(true);
+    expect(handshakePath.endsWith('daemon.sock.json')).toBe(true);
   });
 
   it('should handle runtime directory path correctly', () => {

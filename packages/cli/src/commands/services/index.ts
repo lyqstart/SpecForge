@@ -44,7 +44,7 @@ import {
   createConfigAccess,
   ConfigAccess,
 } from '@specforge/configuration';
-import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
  * Get the binary directory path under the canonical SpecForge user root
  */
@@ -69,7 +69,7 @@ function getLogsDir(): string {
  * Daemon handshake file path
  */
 function getHandshakePath(): string {
-  return path.join(getRuntimeDir(), 'handshake.json');
+  return resolveSpecForgeHandshakePath();
 }
 
 /**

@@ -2,54 +2,62 @@
  * HTTP Server unit tests
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { HTTPServer, HTTPServerDeps, replaceDataWithCasRef } from './HTTPServer';
 import { EventBus } from '../event-bus/EventBus';
 import { DaemonConfig } from '../daemon/DaemonConfig';
+import type { IPathResolver } from '../daemon/path-resolver';
 import { HandshakeManager } from '../daemon/HandshakeManager';
 import * as http from 'http';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-const originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
-let testOpenCodeConfigDir: string;
+class HTTPTestDaemonConfig extends DaemonConfig {
+  private readonly resolver: IPathResolver;
 
-beforeAll(async () => {
-  testOpenCodeConfigDir = await fs.mkdtemp(
-    path.join(os.tmpdir(), 'specforge-http-server-test-config-')
-  );
-  process.env.OPENCODE_CONFIG_DIR = testOpenCodeConfigDir;
-  await fs.mkdir(path.join(testOpenCodeConfigDir, 'sf-user', 'runtime'), { recursive: true });
-});
-
-afterAll(async () => {
-  if (originalOpenCodeConfigDir === undefined) {
-    delete process.env.OPENCODE_CONFIG_DIR;
-  } else {
-    process.env.OPENCODE_CONFIG_DIR = originalOpenCodeConfigDir;
+  constructor(root: string) {
+    super([]);
+    const runtime = path.join(root, 'specforge-user', 'runtime');
+    this.resolver = {
+      resolveProjectRuntimeDir: (projectPath) => path.join(projectPath, '.specforge', 'runtime'),
+      resolveStatePath: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'state.json'),
+      resolveEventsPath: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'events.jsonl'),
+      resolveSessionsDir: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'sessions'),
+      resolveDaemonRuntimeDir: () => runtime,
+      resolveHandshakePath: () => path.join(runtime, 'daemon.sock.json'),
+      resolveDaemonJsonPath: () => path.join(root, 'opencode', 'daemon.json'),
+      resolveDaemonStatePath: () => path.join(runtime, 'state.json'),
+      resolveDaemonEventsPath: () => path.join(runtime, 'events.jsonl'),
+    };
   }
-  await fs.rm(testOpenCodeConfigDir, { recursive: true, force: true });
-});
+
+  override getPathResolver(): IPathResolver { return this.resolver; }
+  override getRuntimeDir(): string { return this.resolver.resolveDaemonRuntimeDir(); }
+  override getHandshakeFile(): string { return this.resolver.resolveHandshakePath(); }
+}
 
 describe('HTTPServer', () => {
   let server: HTTPServer;
   let eventBus: EventBus;
   let config: DaemonConfig;
+  let testRoot: string;
 
-  beforeEach(() => {
-    config = new DaemonConfig();
+  beforeEach(async () => {
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-http-server-'));
+    config = new HTTPTestDaemonConfig(testRoot);
     eventBus = new EventBus();
     server = new HTTPServer(config, eventBus);
   });
 
   afterEach(async () => {
     await server.stop();
+    await fs.rm(testRoot, { recursive: true, force: true });
   });
 
   it('isolates daemon configuration from the active user-level runtime', () => {
     expect(config.getHandshakeFile()).toBe(
-      path.join(testOpenCodeConfigDir, 'sf-user', 'runtime', 'handshake.json')
+      path.join(testRoot, 'specforge-user', 'runtime', 'daemon.sock.json')
     );
   });
 
@@ -82,12 +90,15 @@ describe('CAS compression for oversized payloads', () => {
   let eventBus: EventBus;
   let handshakeManager: HandshakeManager;
   let token: string;
+  let testRoot: string;
 
   beforeEach(async () => {
-    config = new DaemonConfig();
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-http-cas-'));
+    config = new HTTPTestDaemonConfig(testRoot);
     eventBus = new EventBus();
     handshakeManager = new HandshakeManager(config);
     token = handshakeManager.generateToken();
+    await fs.mkdir(config.getRuntimeDir(), { recursive: true });
     await handshakeManager.writeHandshake(process.pid, 0, token);
   });
 
@@ -96,6 +107,7 @@ describe('CAS compression for oversized payloads', () => {
       await server.stop();
     }
     await handshakeManager.cleanup();
+    await fs.rm(testRoot, { recursive: true, force: true });
   });
 
   it('should CAS-store oversized JSON body with data field and return 200 (not 413)', async () => {

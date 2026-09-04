@@ -13,6 +13,23 @@ import { HTTPServer, type HTTPServerDeps } from '../src/http/HTTPServer';
 import { EventBus } from '../src/event-bus/EventBus';
 import { DaemonConfig } from '../src/daemon/DaemonConfig';
 import { ReconnectingDaemonClient } from '../../service-management/src/plugin/reconnecting-daemon-client';
+import { TASK_ARTIFACT_CONTRACT_VERSION } from '@specforge/types';
+
+function handshake(port: number, token: string, pid: number = process.pid) {
+  return {
+    schema_version: '1.0' as const,
+    pid,
+    port,
+    token,
+    bound_to: '127.0.0.1' as const,
+    startedAt: Date.now(),
+    version: 'test',
+    serviceMode: false,
+    artifact_contract_versions: {
+      task_document: TASK_ARTIFACT_CONTRACT_VERSION,
+    },
+  };
+}
 
 describe('WI-2: Production Daemon Startup & Recovery E2E', () => {
   let tempDir: string;
@@ -38,7 +55,7 @@ describe('WI-2: Production Daemon Startup & Recovery E2E', () => {
     const result = await server.start();
     port = result.port;
     handshakePath = join(tempDir, 'handshake.json');
-    writeFileSync(handshakePath, JSON.stringify({ port, token, pid: process.pid, startedAt: Date.now() }));
+    writeFileSync(handshakePath, JSON.stringify(handshake(port, token)));
     client = new ReconnectingDaemonClient({ handshakePath, healthzUrl: 'http://127.0.0.1' });
   });
 
@@ -74,7 +91,7 @@ describe('WI-2: Production Daemon Startup & Recovery E2E', () => {
   describe('Fail-closed behavior', () => {
     it('daemon unreachable → checkWrite throws (fail closed)', async () => {
       const badHandshake = join(tempDir, 'bad.json');
-      writeFileSync(badHandshake, JSON.stringify({ port: port + 9999, token, pid: 1, startedAt: 1 }));
+      writeFileSync(badHandshake, JSON.stringify(handshake(port + 9999, token, 1)));
       const badClient = new ReconnectingDaemonClient({ handshakePath: badHandshake, healthzUrl: 'http://127.0.0.1' });
       try {
         await expect(badClient.checkWrite('src/x.ts', 'agent')).rejects.toThrow();
@@ -101,7 +118,7 @@ describe('WI-2: Production Daemon Startup & Recovery E2E', () => {
       server2.setToken('tok2');
       const { port: port2 } = await server2.start();
       const hs2 = join(tempDir, 'hs2.json');
-      writeFileSync(hs2, JSON.stringify({ port: port2, token: 'tok2', pid: 1, startedAt: 1 }));
+      writeFileSync(hs2, JSON.stringify(handshake(port2, 'tok2', 1)));
       const c2 = new ReconnectingDaemonClient({ handshakePath: hs2, healthzUrl: 'http://127.0.0.1' });
       
       // Works before stop

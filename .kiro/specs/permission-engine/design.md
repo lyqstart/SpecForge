@@ -1,5 +1,12 @@
 # Design Document: Permission Engine
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-7, REQ-22, REQ-24, REQ-27, REQ-31 and V6-ADR-003.
+- **Classification / status**: `CURRENT_RELEASE_CORE`; source is active and all write paths remain fail closed.
+- **Current scope**: permission decisions, WriteGuard preconditions, HardStop boundaries and traceable rejection; it does not own workflow state.
+- **Dependency direction**: Daemon and governed write handlers consume the engine through a neutral decision contract; configuration cannot weaken hard rules.
+
 ## Overview
 
 This design document specifies the implementation of the **Permission Engine** module for SpecForge V6. The Permission Engine is the central authorization component that enforces the three-layer permission model and ensures all permission decisions are traceable.

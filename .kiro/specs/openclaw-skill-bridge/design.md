@@ -1,5 +1,12 @@
 # Design Document - OpenClaw Skill Bridge
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-11.6、REQ-16、REQ-26、REQ-31 与 V6-ADR-012。
+- **分类/状态**：`CURRENT_RELEASE_SUPPORTING` 外部客户端；是否进入当前安装集合必须由 Step 5 消费者/部署证据冻结。
+- **当前范围**：无业务状态的 IM/Skill 客户端，只把请求送达 Daemon 并格式化返回。
+- **依赖方向**：Skill Bridge 只依赖 Daemon 公共协议；不得 spawn/直连 OpenCode、直接写 `.specforge` 或维护 shadow state。
+
 ## Overview
 
 OpenClaw Skill Bridge 是 **OpenClaw Skill ↔ Daemon ↔ OpenCode** 三层架构中的 **Skill 客户端层**。它部署在 OpenClaw 平台进程内,负责接收 IM 平台用户的自然语言指令、做意图解析与归属判定、把所有业务请求转译为对 SpecForge Daemon HTTP API 的调用,并处理 Daemon 反向推送的 Webhook 事件再回流给 IM 通道。**Skill 永不直连 OpenCode**——OpenCode 进程的所有生命周期(启动/拉起/健康/关闭)和 Session API 调用全部由 Daemon 独占管理。

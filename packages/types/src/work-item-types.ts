@@ -37,16 +37,15 @@ export const MATCH_RESULT_TYPES = [
 export type MatchResultType = (typeof MATCH_RESULT_TYPES)[number];
 
 export const WorkItemJsonSchema = z.object({
-  schema_version: z.literal("1.0"),
+  schema_version: z.literal("1.1"),
   work_item_id: z.string().regex(/^WI-[0-9]{4}$/, "Work Item ID must match WI-NNNN"),
-  status: z.enum(WI_STATUSES),
-  workflow_path: z.enum(WORKFLOW_PATHS).nullable(),
+  workflow_path: z.enum(WORKFLOW_PATHS).nullable().optional(),
   workflow_type: z.string().optional(),
-  code_change_allowed: z.boolean(),
-  allowed_write_files: z.array(z.object({ path: z.string(), operation: z.enum(["create", "modify", "delete"]) })),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-  created_by: z.literal("sf-orchestrator"),
+  code_change_allowed: z.boolean().optional(),
+  allowed_write_files: z.array(z.object({ path: z.string(), operation: z.enum(["create", "modify", "delete"]) })).optional(),
+  created_at: z.string().datetime().optional(),
+  updated_at: z.string().datetime().optional(),
+  created_by: z.string().optional(),
   required_files: z.array(z.string()).optional(),
   required_gates: z.array(z.string()).optional(),
   classification: z.string().optional(),
@@ -59,9 +58,8 @@ export const WorkItemJsonSchema = z.object({
   merge_status: z.enum(["pending", "not_applicable", "merged", "failed"]).optional(),
   verification_status: z.enum(["pending", "passed", "failed", "not_applicable"]).optional(),
   close_status: z.enum(["pending", "passed", "failed"]).optional(),
-  blocked_reason: z.string().optional(),
   superseded_by: z.string().optional(),
-});
+}).passthrough();
 export type WorkItemJson = z.infer<typeof WorkItemJsonSchema>;
 
 export const CandidateManifestEntrySchema = z.object({

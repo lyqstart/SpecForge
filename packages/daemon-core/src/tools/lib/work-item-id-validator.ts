@@ -13,7 +13,12 @@
  *   WI-20260614-0001
  *   blue-h1-hello-world
  */
-export const WI_ID_PATTERN = /^WI-\d{4}$/;
+import {
+  WI_ID_PATTERN as SHARED_WI_ID_PATTERN,
+  isValidWorkItemId as isSharedWorkItemId,
+} from '@specforge/types';
+
+export const WI_ID_PATTERN = SHARED_WI_ID_PATTERN;
 
 /**
  * Validate a work_item_id conforms to the v1.1 standard.
@@ -35,7 +40,7 @@ export function validateWorkItemId(workItemId: string): string | null {
  * Check if a work_item_id is valid v1.1 format.
  */
 export function isValidWorkItemId(workItemId: string): boolean {
-  return typeof workItemId === 'string' && WI_ID_PATTERN.test(workItemId);
+  return typeof workItemId === 'string' && isSharedWorkItemId(workItemId);
 }
 
 /**

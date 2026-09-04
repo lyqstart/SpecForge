@@ -131,16 +131,10 @@ function shouldRecord(
   force?: boolean,
 ): boolean {
   if (force) return true;
-  if (!config.enabled || config.level === "off") return false;
-  if (config.level === "error") return category === "error";
+  if (!config.enabled) return false;
   if (category === "event") return config.capture_plugin_events;
   if (category === "tool-call") return config.capture_tool_calls;
-  if (category === "rpc")
-    return (
-      config.capture_daemon_rpc ||
-      config.level === "full" ||
-      config.level === "replay"
-    );
+  if (category === "rpc") return config.capture_daemon_rpc;
   return true;
 }
 

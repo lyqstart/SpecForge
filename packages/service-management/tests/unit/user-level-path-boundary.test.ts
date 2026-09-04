@@ -1,4 +1,5 @@
 import * as path from 'node:path';
+import * as os from 'node:os';
 import { describe, expect, it } from 'vitest';
 import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 import { ServiceHealthChecker } from '../../src/orchestrator/healthcheck';
@@ -7,7 +8,11 @@ import { ReconnectingDaemonClient } from '../../src/plugin/reconnecting-daemon-c
 import { NssmServiceManager } from '../../src/service-manager/nssm-service-manager';
 
 describe('user-level path boundary', () => {
-  const expectedHandshake = path.join(resolveSpecForgeUserRoot(), 'runtime', 'handshake.json');
+  const expectedHandshake = path.join(resolveSpecForgeUserRoot(), 'runtime', 'daemon.sock.json');
+
+  it('uses the V6 current user root', () => {
+    expect(resolveSpecForgeUserRoot()).toBe(path.join(os.homedir(), '.specforge'));
+  });
 
   it('uses the canonical handshake for service health checks', () => {
     const checker = new ServiceHealthChecker();

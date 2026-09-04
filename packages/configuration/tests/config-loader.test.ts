@@ -10,7 +10,7 @@ const tempDir = path.join(tmpdir(), `specforge-test-${Date.now()}`)
 let originalOpenCodeConfigDir: string | undefined
 
 function projectConfigPath(): string {
-  return path.join(tempDir, '.specforge', 'config', '.specforge.json')
+  return path.join(tempDir, '.specforge', 'config', 'project.json')
 }
 
 beforeEach(async () => {
@@ -113,6 +113,27 @@ describe('config-loader', () => {
   })
 
   describe('loadProjectConfig', () => {
+    it('loads only the authoritative project.json path', async () => {
+      const testFile = projectConfigPath()
+      await mkdir(path.dirname(testFile), { recursive: true })
+      await fs.writeFile(testFile, JSON.stringify({ schema_version: '1.0', key: 'value' }))
+
+      const result = await loadProjectConfig(tempDir)
+
+      expect(result.path).toBe(testFile)
+      expect(result.data).toEqual({ schema_version: '1.0', key: 'value' })
+    })
+
+    it('does not accept .specforge.json as a compatibility alias', async () => {
+      const aliasPath = path.join(tempDir, '.specforge', 'config', '.specforge.json')
+      await mkdir(path.dirname(aliasPath), { recursive: true })
+      await fs.writeFile(aliasPath, JSON.stringify({ schema_version: '1.0' }))
+
+      await expect(loadProjectConfig(tempDir)).rejects.toThrow(
+        /Project-level configuration is mandatory/,
+      )
+    })
+
     it('should throw error for missing project config (no fallback)', async () => {
       await expect(loadProjectConfig(tempDir)).rejects.toThrow(
         /Project-level configuration is mandatory/
@@ -192,17 +213,13 @@ describe('loadProjectConfig with valid config', () => {
 })
 
 describe('loadUserConfig with valid config', () => {
-  it('should load user config from the canonical sf-user directory', async () => {
-    const testFile = path.join(
-      process.env.OPENCODE_CONFIG_DIR!,
-      'sf-user',
-      'config',
-      'config.json',
-    )
+  it('should load user config from the supplied canonical SpecForge user root', async () => {
+    const userRoot = path.join(tempDir, 'specforge-user-root')
+    const testFile = path.join(userRoot, 'config', 'config.json')
     await mkdir(path.dirname(testFile), { recursive: true })
     await fs.writeFile(testFile, JSON.stringify({ key: 'value' }))
 
-    const result = await loadUserConfig()
+    const result = await loadUserConfig(userRoot)
     expect(result.type).toBe('user')
     expect(result.path).toBe(testFile)
     expect(result.data).toEqual({ key: 'value' })

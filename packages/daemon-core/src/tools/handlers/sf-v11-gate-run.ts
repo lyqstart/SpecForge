@@ -22,6 +22,7 @@ import {
   resolveFrozenManifestArtifacts,
   resolveWorkItemSpecArtifacts,
 } from '../lib/governance-invariants-v11';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 
 const VALID_GATE_IDS: readonly GateIdV11[] = [
   'entry_gate',
@@ -1065,6 +1066,16 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
     await fs.access(workItemDir);
   } catch {
     return { success: false, error: `Work Item directory not found: ${workItemDir}` };
+  }
+
+  try {
+    await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      work_item_id: workItemId,
+    };
   }
 
   try {

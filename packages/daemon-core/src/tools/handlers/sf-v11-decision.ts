@@ -25,6 +25,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 
 type DecisionType = 'auto_approved' | 'user_approved' | 'waived' | 'rejected';
 
@@ -276,17 +277,17 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
   try {
-    if (action === 'invalidate') {
-      const authoritativeState = await readAuthoritativeState({ deps, projectRoot, workItemId });
-      if (authoritativeState.current_state !== 'approved') {
-        return {
-          success: false,
-          error: 'USER_DECISION_INVALIDATION_REQUIRES_APPROVED_STATE',
-          current_state: authoritativeState.current_state,
-          state_authority: authoritativeState.source,
-        };
-      }
+    await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      work_item_id: workItemId,
+    };
+  }
 
+  try {
+    if (action === 'invalidate') {
       const mergeGuard = await readMergeReportSuccess(workItemDir);
       if (mergeGuard.success) {
         return {
@@ -294,6 +295,16 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
           error: 'USER_DECISION_INVALIDATE_FORBIDDEN_AFTER_MERGE_SUCCESS',
           message: 'merge_report.md is already success; user_decision cannot be invalidated after successful merge. Start a new Work Item for further changes.',
           merge_report: mergeGuard,
+        };
+      }
+
+      const authoritativeState = await readAuthoritativeState({ deps, projectRoot, workItemId });
+      if (authoritativeState.current_state !== 'approved') {
+        return {
+          success: false,
+          error: 'USER_DECISION_INVALIDATION_REQUIRES_APPROVED_STATE',
+          current_state: authoritativeState.current_state,
+          state_authority: authoritativeState.source,
         };
       }
 

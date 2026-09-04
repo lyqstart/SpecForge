@@ -1,12 +1,19 @@
 # Design Document: Service Management
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-4、REQ-25、REQ-27、REQ-31 与 design 0.3—0.7。
+- **分类/状态**：`CURRENT_RELEASE_SUPPORTING`，属于 V6.0 stable 支撑能力；源码活跃，但目标 daemon binary 尚不存在，不能宣称服务闭环完成。
+- **当前范围**：对同一个 `specforged` artifact 和 OpenCode 服务执行安装、启动、停止、健康检查与优雅关闭。
+- **依赖方向**：CLI/installer/Daemon 消费服务能力；本模块不得生产第二个 Daemon 路径、状态权威或客户端专属生命周期。
+
 ## Overview
 
 **Service Management** 把 SpecForge daemon 和 opencode-server 从"由 OpenCode 插件按需 spawn 的短命进程"转成**操作系统管理的用户级长驻服务**，对齐 opencode 的 `opencode serve` 架构模型。多客户端（OpenCode TUI、CLI、Telegram bot、Web UI、远程脚本）通过 HTTP 直接连到这两个服务，互不依赖任何客户端的生命周期。
 
 **Parent Specification**：[v6-architecture-overview](../v6-architecture-overview/requirements.md)
-**Wave**：V6.1（在 self-healing 之后，但作为 V6.1 release 的关键架构修复优先推进）
-**Scope**：**P0** —— 解决一个阻塞 headless / 远程接入场景的关键架构问题（REQ-1.6 headless 模式、Telegram / OpenClaw / Web UI 全都受当前"daemon 30 秒空闲退出"问题影响）
+**Wave**：V6.0 stable 发布支撑（实现顺序不改变其当前发布归属）
+**Scope**：**P0 supporting** —— 负责唯一 `specforged` artifact 的用户级服务生命周期；Web UI 等未来客户端不因此进入当前范围
 
 ### 解决的问题
 

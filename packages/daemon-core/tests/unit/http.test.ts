@@ -16,13 +16,21 @@ import * as fs from 'fs/promises';
 const originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
 let testOpenCodeConfigDir: string;
 
+function createTestConfig(): DaemonConfig {
+  const config = new DaemonConfig();
+  vi.spyOn(config, 'getHandshakeFile').mockReturnValue(
+    path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'daemon.sock.json'),
+  );
+  return config;
+}
+
 beforeAll(async () => {
   testOpenCodeConfigDir = await fs.mkdtemp(
     path.join(os.tmpdir(), 'specforge-http-test-config-'),
   );
   process.env.OPENCODE_CONFIG_DIR = testOpenCodeConfigDir;
   await fs.mkdir(
-    path.join(testOpenCodeConfigDir, 'sf-user', 'runtime'),
+    path.join(testOpenCodeConfigDir, '.specforge', 'runtime'),
     { recursive: true },
   );
 });
@@ -44,7 +52,7 @@ describe('HTTPServer Authentication', () => {
   let token: string;
 
   beforeEach(async () => {
-    config = new DaemonConfig();
+    config = createTestConfig();
     eventBus = new EventBus();
     handshakeManager = new HandshakeManager(config);
     
@@ -208,7 +216,7 @@ describe('HTTPServer Register Endpoint', () => {
   let registeredSessions: Map<string, any>;
 
   beforeEach(async () => {
-    config = new DaemonConfig();
+    config = createTestConfig();
     eventBus = new EventBus();
     handshakeManager = new HandshakeManager(config);
     
@@ -422,7 +430,7 @@ describe('HTTPServer Ingest Event Endpoint', () => {
   let conversationsLogger: any;
 
   beforeEach(async () => {
-    config = new DaemonConfig();
+    config = createTestConfig();
     eventBus = new EventBus();
     handshakeManager = new HandshakeManager(config);
 
@@ -976,7 +984,7 @@ describe('HTTPServer WALWriteError fail-fast', () => {
   let token: string;
 
   beforeEach(async () => {
-    config = new DaemonConfig();
+    config = createTestConfig();
     eventBus = new EventBus();
     handshakeManager = new HandshakeManager(config);
     token = handshakeManager.generateToken();

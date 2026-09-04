@@ -26,7 +26,7 @@ Every downstream spec's `.config.kiro` file **MUST** contain a `scopeTag` field 
 
 1. **Scope Boundary Enforcement** (REQ-25.4): When a capability is explicitly listed as P1 or P2 in REQ-25, it **MUST NOT** be delivered in V6.0. The `scopeTag` enables static verification of this constraint.
 
-2. **Property 15: Scope Boundary**: For all capabilities marked as P1 or P2, in the V6.0 release branch, these capabilities **MUST be disabled by default** (may exist as dead code or behind feature flags, but user-visible behavior must be disabled). Runtime calls to these capabilities must return an "unavailable" error unless explicitly enabled via runtime feature flags.
+2. **Property 15: Scope Boundary**: For all capabilities marked as P1 or P2, these capabilities **MUST be absent** from V6.0 official exports, clean build, dynamic registries, installer assets, release manifest and runtime entry points. Dead code, default-off configuration and feature flags do not satisfy this property.
 
 3. **Consistency Requirement**: The `scopeTag` value must be consistent with the spec's declared capabilities relative to the REQ-25 lists.
 
@@ -67,7 +67,7 @@ Every downstream spec's `.config.kiro` file **MUST** contain a `scopeTag` field 
 1. **Presence Check**: Every downstream spec must have a `scopeTag` field in its `.config.kiro` file.
 2. **Value Validation**: The `scopeTag` value must be exactly one of: `"p0"`, `"p1"`, or `"p2"` (case-sensitive).
 3. **Scope Consistency**: The spec's implementation scope must match its declared `scopeTag` relative to REQ-25 lists.
-4. **V6.0 Release Constraint**: In the V6.0 release branch, specs with `scopeTag: "p1"` or `scopeTag: "p2"` must have their capabilities disabled by default (enforced by Property 15).
+4. **V6.0 Release Constraint**: Specs with `scopeTag: "p1"` or `scopeTag: "p2"` must be excluded from the official V6.0 artifact surfaces (enforced by Property 15); no runtime feature flag may promote them.
 
 ### 6. Tooling Support
 

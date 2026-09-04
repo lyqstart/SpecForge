@@ -189,6 +189,15 @@ export function resolveUserLevelDirectory(): string {
 }
 
 /**
+ * Resolve the current SpecForge user-level install and runtime root.
+ * OpenCode/XDG configuration overrides belong only to the OpenCode integration
+ * boundary and must not redirect SpecForge-owned state.
+ */
+export function resolveSpecForgeInstallRoot(): string {
+  return pathModule.join(osModule.homedir(), '.specforge');
+}
+
+/**
  * Convert a POSIX-style relative path (forward slashes) to the native
  * path separator for the current OS.
  */

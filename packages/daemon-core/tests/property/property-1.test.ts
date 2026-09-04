@@ -18,13 +18,15 @@
  * 4. Verify no state change can occur without corresponding event
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { EventBus } from '../../src/event-bus/EventBus';
 import { WAL } from '../../src/wal/WAL';
 import { SessionRegistry } from '../../src/session/SessionRegistry';
 import { Event } from '../../src/types';
 import * as fs from 'fs/promises';
 import * as fsSync from 'fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
 
 /**
  * Generate a valid UUID string for testing
@@ -51,6 +53,13 @@ type StateChangeOperation =
   | { type: 'permission.granted'; sessionId: string; resource: string }
   | { type: 'permission.denied'; sessionId: string; resource: string }
   | { type: 'config.changed'; projectId: string; key: string; value: unknown };
+
+function eventCategory(action: string): 'session' | 'permission' | 'workflow' | 'system' {
+  if (action.startsWith('session.')) return 'session';
+  if (action.startsWith('permission.')) return 'permission';
+  if (action.startsWith('project.') || action.startsWith('workitem.')) return 'workflow';
+  return 'system';
+}
 
 /**
  * Generate a random state change operation
@@ -238,7 +247,14 @@ class DaemonStateManager {
                       (payload as any).sessionId?.substring(0, 8) || 
                       'default-project';
     
-    const event = this.wal.createEvent(projectId, action, payload, 'daemon');
+    const event = this.wal.createEvent(
+      projectId,
+      eventCategory(action),
+      action,
+      payload,
+      'system',
+      'daemon',
+    );
     
     // Publish through EventBus (Property 2: all cross-layer communication through bus)
     this.eventBus.publish(event);
@@ -258,16 +274,22 @@ describe('Property 1: Single Source of Truth', () => {
   let eventBus: EventBus;
   let wal: WAL;
   let stateManager: DaemonStateManager;
-  const testProjectPath = '/test/project';
+  let testRoot: string;
 
   beforeEach(async () => {
     eventBus = new EventBus();
     eventBus.start();
     
-    wal = new WAL(testProjectPath);
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-property-1-'));
+    wal = new WAL(path.join(testRoot, 'events.jsonl'));
     await wal.initialize();
     
     stateManager = new DaemonStateManager(eventBus, wal);
+  });
+
+  afterEach(async () => {
+    eventBus.stop();
+    await fs.rm(testRoot, { recursive: true, force: true });
   });
 
   describe('Property 1.1: All state changes produce events', () => {
@@ -324,9 +346,11 @@ describe('Property 1: Single Source of Truth', () => {
         const operation = generateRandomOperation();
         const event = wal.createEvent(
           'test-project',
+          eventCategory(operation.type),
           operation.type,
-          {} as any,
-          'daemon'
+          {},
+          'system',
+          'daemon',
         );
         
         expect(event.eventId).toMatch(uuidv7Regex);
@@ -452,12 +476,11 @@ describe('Property 1: Single Source of Truth', () => {
       sessionRegistry.start();
       
       // Create an event that would trigger session registration
-      const event: Event = {
-        eventId: 'test-session-event',
-        ts: Date.now(),
-        projectId: 'test-project',
-        action: 'session.created',
-        payload: {
+      const event: Event = wal.createEvent(
+        'test-project',
+        'session',
+        'session.created',
+        {
           sessionId: '', // Will be generated
           spawnIntentId: 'spawn-123',
           agentRole: 'sf-orchestrator',
@@ -465,11 +488,9 @@ describe('Property 1: Single Source of Truth', () => {
           workItemId: 'workitem-123',
           parentSessionId: null,
         },
-        metadata: {
-          schemaVersion: '1.0',
-          source: 'daemon',
-        },
-      };
+        'system',
+        'daemon',
+      );
       
       // Publish through EventBus - this should trigger SessionRegistry
       eventBus.publish(event);
@@ -505,12 +526,12 @@ describe('Property 1: Single Source of Truth', () => {
      * Validates: Requirement 1.1
      * Session creation must produce event
      */
-    it('should produce event on session registration', () => {
+    it('should produce event on session registration', async () => {
       const sessionRegistry = new SessionRegistry(eventBus);
       sessionRegistry.start();
       
       // Register a pending session
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-orchestrator',
         'requirements-phase-executor',
         'workitem-123',
@@ -535,12 +556,12 @@ describe('Property 1: Single Source of Truth', () => {
      * Validates: Requirement 1.1
      * Session activation must produce event
      */
-    it('should produce event on session activation', () => {
+    it('should produce event on session activation', async () => {
       const sessionRegistry = new SessionRegistry(eventBus);
       sessionRegistry.start();
       
       // Register pending session
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-orchestrator',
         'requirements-phase-executor',
         'workitem-123',
@@ -549,7 +570,7 @@ describe('Property 1: Single Source of Truth', () => {
       );
       
       // Activate session
-      const activated = sessionRegistry.activate(identity.sessionId, identity.spawnIntentId);
+      const activated = await sessionRegistry.activate(identity.sessionId, identity.spawnIntentId);
       
       // Verify session was activated
       expect(activated).toBeDefined();
@@ -566,22 +587,22 @@ describe('Property 1: Single Source of Truth', () => {
      * Validates: Requirement 1.1
      * Session termination must produce event
      */
-    it('should produce event on session termination', () => {
+    it('should produce event on session termination', async () => {
       const sessionRegistry = new SessionRegistry(eventBus);
       sessionRegistry.start();
       
       // Register and activate session
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-orchestrator',
         'requirements-phase-executor',
         'workitem-123',
         'spawn-123',
         null
       );
-      sessionRegistry.activate(identity.sessionId, identity.spawnIntentId);
+      await sessionRegistry.activate(identity.sessionId, identity.spawnIntentId);
       
       // Terminate session
-      const terminated = sessionRegistry.terminate(identity.sessionId);
+      const terminated = await sessionRegistry.terminate(identity.sessionId);
       
       // Verify session was terminated
       expect(terminated).toBeDefined();

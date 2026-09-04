@@ -20,6 +20,7 @@ import {
   validateArtifactJson,
   findForbiddenWorkItemDecisionFields,
   resolveCanonicalCandidateWorkflowPath,
+  WORK_ITEM_METADATA_SCHEMA_VERSION,
 } from '../lib/artifact-schema-validation';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import {
@@ -46,6 +47,7 @@ import {
   readDeclaredDesignAnalysisScope,
   resolveSystemGovernanceRequirement,
 } from '../lib/sf_design_governance_policy';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
   'intake.md',
@@ -407,7 +409,8 @@ function normalizeWorkItemJsonArtifact(input: {
   const normalized = {
     ...existingMetadata,
     ...input.parsed,
-    schema_version: input.parsed.schema_version ?? existing.schema_version ?? '1.1',
+    schema_version:
+      input.parsed.schema_version ?? existing.schema_version ?? WORK_ITEM_METADATA_SCHEMA_VERSION,
     work_item_id: input.parsed.work_item_id ?? existing.work_item_id ?? input.workItemId,
     workflow_type:
       input.parsed.workflow_type ?? existing.workflow_type ?? input.workflowType ?? 'quick_change',
@@ -1005,6 +1008,18 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       error: guardResult.error,
       hard_stop: true,
       hard_stop_record: guardResult.hard_stop_record,
+    };
+  }
+
+  const metadataWorkItemDir = workItemRoot(baseDir, workItemId);
+  try {
+    await readWorkItemMetadata(metadataWorkItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      hard_stop: true,
+      retry_allowed: false,
     };
   }
 

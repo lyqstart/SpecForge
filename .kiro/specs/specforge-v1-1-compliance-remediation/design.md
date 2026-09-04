@@ -1,5 +1,12 @@
 # Technical Design Document
 
+## Current Release Governance Status
+
+- **Document classification**: `HISTORICAL_EVIDENCE_ONLY`. This document records the V1.1 remediation lineage; it is not a current module or product architecture authority.
+- **Current authority**: V6 `requirements.md` / `design.md` define product scope, while `docs/design/SpecForge架构一致性治理最终实施方案.md` defines current governance contracts.
+- **Preserved contribution**: the programmatic lifecycle, Candidate/Gate/Merge, WriteGuard and audit ideas are retained only where the current authorities explicitly adopt them.
+- **Legacy boundary**: `.specforge/specs/**` reading, legacy-path migration and backward-compatibility sections are `LEGACY_ONLY`; current Runtime must not read, migrate, import or write those paths.
+
 ## Introduction
 
 This document specifies the technical design for migrating SpecForge from an "Agent workflow framework" to an "unavoidable spec-driven Runtime" compliant with SpecForge v1.1 + Patch 1 standards. The migration addresses critical control gaps identified in the audit report, where system controls rely on Agent prompts rather than programmatic hard constraints.

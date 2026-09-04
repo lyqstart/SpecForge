@@ -38,8 +38,8 @@ export class Daemon {
   private workflowEngine: WorkflowEngine;
   private gracefulShutdownHandler: GracefulShutdownHandler;
 
-  constructor() {
-    this.config = new DaemonConfig();
+  constructor(config: DaemonConfig = new DaemonConfig()) {
+    this.config = config;
     this.eventBus = new EventBus();
     // Shared path resolver for all subsystems (TASK-8)
     const pathResolver = this.config.getPathResolver();
@@ -58,9 +58,6 @@ export class Daemon {
     
     this.extensionLoader = new ExtensionLoader({
       enabledExtensions: {
-        // Disable plugin loading — daemon does not have third-party daemon plugins.
-        // OpenCode plugins (sf_specforge.ts) are loaded by OpenCode runtime, not daemon.
-        plugin: false,
         skill: true,
         tool: true,
         workflow: true,

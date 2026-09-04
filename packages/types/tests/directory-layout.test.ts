@@ -61,12 +61,9 @@ describe('LAYOUT — top-level keys (committed area)', () => {
     expect(LAYOUT.specsReadme).toBe('specs/README.md');
   });
 
-  it('knowledge === "knowledge"', () => {
-    expect(LAYOUT.knowledge).toBe('knowledge');
-  });
-
-  it('knowledgeGraph === "knowledge/graph.json"', () => {
-    expect(LAYOUT.knowledgeGraph).toBe('knowledge/graph.json');
+  it('does not expose the P1 Knowledge Graph layout', () => {
+    expect('knowledge' in LAYOUT).toBe(false);
+    expect('knowledgeFiles' in LAYOUT).toBe(false);
   });
 });
 
@@ -146,12 +143,12 @@ describe('LAYOUT.configFiles — nested object keys', () => {
     expect(LAYOUT.configFiles.project).toBe('config/project.json');
   });
 
-  it('configFiles.riskPolicy === "config/risk_policy.json"', () => {
-    expect(LAYOUT.configFiles.riskPolicy).toBe('config/risk_policy.json');
+  it('does not expose an inert risk-policy configuration surface', () => {
+    expect('riskPolicy' in LAYOUT.configFiles).toBe(false);
   });
 
-  it('configFiles.skillFragments === "config/skill_fragments.json"', () => {
-    expect(LAYOUT.configFiles.skillFragments).toBe('config/skill_fragments.json');
+  it('does not expose the removed Context Builder fragment surface', () => {
+    expect('skillFragments' in LAYOUT.configFiles).toBe(false);
   });
 
   it('configFiles.projectRules can compose absolute path via path.join', () => {

@@ -31,6 +31,7 @@ import { createQueryAPI } from '../../src/query-api/index.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
+import { DaemonWalFixtureEventLogger } from '../helpers/current-daemon-wal.js';
 
 describe('North Star Goal Validation', () => {
   const testDataDir = path.join(process.cwd(), 'test-data', 'north-star-validation');
@@ -63,7 +64,7 @@ describe('North Star Goal Validation', () => {
     fs.mkdirSync(testDataDir, { recursive: true });
 
     // Create fresh instances
-    eventLogger = new EventLogger(testDataDir);
+    eventLogger = new DaemonWalFixtureEventLogger(testDataDir);
     await eventLogger.initialize();
 
     cas = new CAS(path.join(testDataDir, 'cas'));
@@ -581,7 +582,7 @@ describe('North Star Goal Validation', () => {
         }
         fs.mkdirSync(testDataDir, { recursive: true });
 
-        eventLogger = new EventLogger(testDataDir);
+        eventLogger = new DaemonWalFixtureEventLogger(testDataDir);
         await eventLogger.initialize();
 
         const queryAPI = createQueryAPI({

@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 dist/
+release/bin/
+release/release-manifest.json
 *.tsbuildinfo
 
 # SpecForge project runtime (Plugin auto-generated)

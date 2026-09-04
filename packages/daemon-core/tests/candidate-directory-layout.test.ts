@@ -7,11 +7,7 @@ import {
   workItemCandidateRequirements,
   workItemCandidateTasks,
   workItemCandidateTraceDelta,
-  workItemDesign,
-  workItemRequirements,
   workItemSpecArtifactReadCandidates,
-  workItemTasks,
-  workItemTraceDelta,
 } from '@specforge/types/directory-layout';
 
 const PROJECT_ROOT = path.join(path.sep, 'project');
@@ -53,30 +49,18 @@ describe('Candidate Path Service', () => {
     );
   });
 
-  it('orders reads as canonical Candidate, Work Item compatibility, then legacy specs', () => {
+  it('reads only canonical Candidate artifacts in the current release', () => {
     expect(
       workItemSpecArtifactReadCandidates(PROJECT_ROOT, WORK_ITEM_ID, 'requirements', 'AUTH')
-    ).toEqual([
-      workItemCandidateRequirements(PROJECT_ROOT, WORK_ITEM_ID, 'AUTH'),
-      workItemRequirements(PROJECT_ROOT, WORK_ITEM_ID),
-      expected('specs', WORK_ITEM_ID, 'requirements.md'),
-    ]);
+    ).toEqual([workItemCandidateRequirements(PROJECT_ROOT, WORK_ITEM_ID, 'AUTH')]);
     expect(
       workItemSpecArtifactReadCandidates(PROJECT_ROOT, WORK_ITEM_ID, 'design', 'AUTH')
-    ).toEqual([
-      workItemCandidateDesign(PROJECT_ROOT, WORK_ITEM_ID, 'AUTH'),
-      workItemDesign(PROJECT_ROOT, WORK_ITEM_ID),
-      expected('specs', WORK_ITEM_ID, 'design.md'),
-    ]);
+    ).toEqual([workItemCandidateDesign(PROJECT_ROOT, WORK_ITEM_ID, 'AUTH')]);
     expect(workItemSpecArtifactReadCandidates(PROJECT_ROOT, WORK_ITEM_ID, 'tasks')).toEqual([
       workItemCandidateTasks(PROJECT_ROOT, WORK_ITEM_ID),
-      workItemTasks(PROJECT_ROOT, WORK_ITEM_ID),
-      expected('specs', WORK_ITEM_ID, 'tasks.md'),
     ]);
     expect(workItemSpecArtifactReadCandidates(PROJECT_ROOT, WORK_ITEM_ID, 'trace_delta')).toEqual([
       workItemCandidateTraceDelta(PROJECT_ROOT, WORK_ITEM_ID),
-      workItemTraceDelta(PROJECT_ROOT, WORK_ITEM_ID),
-      expected('specs', WORK_ITEM_ID, 'trace_delta.md'),
     ]);
   });
 });

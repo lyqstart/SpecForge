@@ -113,6 +113,7 @@ export interface HandshakeFile {
   pid: number;
   port: number;
   token: string;
+  bound_to: '127.0.0.1' | '0.0.0.0';
   startedAt: number;
   version: string;
   serviceMode: boolean;

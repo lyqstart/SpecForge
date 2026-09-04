@@ -26,6 +26,7 @@ import {
 } from './governance-trace-model.js';
 import { getFactualChangedFiles } from './write-guard-log.js';
 import { computeFilesystemDiff, loadBaseline } from './filesystem-diff.js';
+import { readWorkItemMetadata, writeWorkItemMetadata } from './work-item-metadata.js';
 import {
   workItemCandidateTasks,
   workItemCandidateTraceDelta,
@@ -1893,20 +1894,17 @@ export async function persistGovernanceScope(
   const output = path.join(workItemDir, 'governance_scope.json');
   await fs.writeFile(output, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
 
-  const workItemPath = path.join(workItemDir, 'work_item.json');
-  const workItem = await readJson(workItemPath);
-  if (workItem) {
-    workItem.governance_scope = 'governance_scope.json';
-    workItem.affected_modules = snapshot.affected_modules;
-    workItem.architecture_refs = snapshot.architecture_refs;
-    workItem.data_model_refs = snapshot.data_model_refs;
-    workItem.design_refs = snapshot.design_refs;
-    workItem.project_contract_refs = snapshot.project_contract_refs;
-    workItem.module_contract_refs = snapshot.module_contract_refs;
-    workItem.project_spec_version_at_permission = snapshot.project_spec_version;
-    workItem.impact_scope_hash = snapshot.impact_scope_hash;
-    await fs.writeFile(workItemPath, `${JSON.stringify(workItem, null, 2)}\n`, 'utf8');
-  }
+  const workItem = await readWorkItemMetadata(workItemDir, snapshot.work_item_id);
+  workItem.governance_scope = 'governance_scope.json';
+  workItem.affected_modules = snapshot.affected_modules;
+  workItem.architecture_refs = snapshot.architecture_refs;
+  workItem.data_model_refs = snapshot.data_model_refs;
+  workItem.design_refs = snapshot.design_refs;
+  workItem.project_contract_refs = snapshot.project_contract_refs;
+  workItem.module_contract_refs = snapshot.module_contract_refs;
+  workItem.project_spec_version_at_permission = snapshot.project_spec_version;
+  workItem.impact_scope_hash = snapshot.impact_scope_hash;
+  await writeWorkItemMetadata(workItemDir, snapshot.work_item_id, workItem);
   return output;
 }
 
@@ -2469,142 +2467,6 @@ export async function captureSpecMigrationProjectSpecGitDiff(
   };
 }
 
-export function isClosedSpecMigrationGitRecoveryRequired(input: {
-  currentState: unknown;
-  workflowType: unknown;
-  workflowPath: unknown;
-}): boolean {
-  return (
-    String(input.currentState ?? '').trim() === 'closed' &&
-    isSpecMigrationNoCodeWorkflow(input.workflowType, input.workflowPath)
-  );
-}
-
-export function assertClosedSpecMigrationExistingBranchRecoveryContext(input: {
-  workItemId: string;
-  requestedBranchName: string;
-  requestedBaseBranch: string;
-  currentBranch: string | null;
-  headCommit: string | null;
-  gitContext: any;
-}): string {
-  const context = input.gitContext;
-  if (!context || typeof context !== 'object') {
-    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_GIT_CONTEXT_REQUIRED');
-  }
-  const baseCommit = String(context.base_commit ?? '').trim();
-  if (
-    context.git_enabled !== true ||
-    String(context.work_item_id ?? '') !== input.workItemId ||
-    String(context.branch_name ?? '') !== input.requestedBranchName ||
-    String(context.base_branch ?? '') !== input.requestedBaseBranch ||
-    !baseCommit
-  ) {
-    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_GIT_CONTEXT_MISMATCH');
-  }
-  if (input.currentBranch !== input.requestedBranchName) {
-    throw new Error(
-      `SPEC_MIGRATION_GIT_RECOVERY_EXISTING_BRANCH_REQUIRED: current=${input.currentBranch ?? 'missing'} requested=${input.requestedBranchName}`,
-    );
-  }
-  if (input.headCommit !== baseCommit) {
-    throw new Error(
-      `SPEC_MIGRATION_GIT_RECOVERY_HEAD_MUST_EQUAL_BASE: head=${input.headCommit ?? 'missing'} base=${baseCommit}`,
-    );
-  }
-  return baseCommit;
-}
-
-export async function verifyLegacyClosedSpecMigrationGitDeliveryRecovery(input: {
-  projectRoot: string;
-  workItemId: string;
-  attemptId: string;
-  baseCommit: string;
-}): Promise<SpecMigrationProjectSpecGitSnapshot & { attempt_id: string }> {
-  const attemptsDir = path.join(
-    input.projectRoot,
-    SPEC_DIR,
-    'work-items',
-    input.workItemId,
-    'gate_attempts',
-  );
-  const attemptNames = (await fs.readdir(attemptsDir, { withFileTypes: true }))
-    .filter(entry => entry.isDirectory() && /^attempt-\d{4}$/.test(entry.name))
-    .map(entry => entry.name)
-    .sort((a, b) => Number(a.slice(8)) - Number(b.slice(8)));
-  const latestAttempt = attemptNames.at(-1) ?? '';
-  if (latestAttempt !== input.attemptId) {
-    throw new Error(
-      `SPEC_MIGRATION_GIT_RECOVERY_LATEST_ATTEMPT_REQUIRED: latest=${latestAttempt || 'missing'} requested=${input.attemptId}`,
-    );
-  }
-
-  const attemptDir = path.join(attemptsDir, input.attemptId);
-  const attemptResult = await readJson(path.join(attemptDir, 'attempt-result.json'));
-  if (
-    attemptResult?.source !== 'gate_run' ||
-    attemptResult?.summary_status !== 'passed'
-  ) {
-    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_PASSED_GATE_ATTEMPT_REQUIRED');
-  }
-  const requestedGateIds = normalizeArray(attemptResult?.requested_gate_ids);
-  for (const required of ['verification_gate', 'formal_version_gate']) {
-    if (!requestedGateIds.includes(required)) {
-      throw new Error(`SPEC_MIGRATION_GIT_RECOVERY_REQUIRED_GATE_MISSING: ${required}`);
-    }
-  }
-
-  const inputSnapshot = await readJson(path.join(attemptDir, 'input-snapshot.json'));
-  if (
-    inputSnapshot?.schema_version !== '1.0' ||
-    inputSnapshot?.work_item_id !== input.workItemId ||
-    inputSnapshot?.attempt_id !== input.attemptId ||
-    !Array.isArray(inputSnapshot?.inputs)
-  ) {
-    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_INPUT_SNAPSHOT_INVALID');
-  }
-
-  const current = await captureSpecMigrationProjectSpecGitDiff(
-    input.projectRoot,
-    input.baseCommit,
-  );
-  if (current.project_spec_files.length === 0) {
-    throw new Error('SPEC_MIGRATION_GIT_RECOVERY_PROJECT_SPEC_DIFF_REQUIRED');
-  }
-
-  const byPath = new Map<string, any>();
-  for (const raw of inputSnapshot.inputs) {
-    if (!raw || typeof raw !== 'object') continue;
-    const record = raw as Record<string, unknown>;
-    const rawPath = String(record.path ?? '');
-    const relativePath = slash(
-      path.isAbsolute(rawPath)
-        ? path.relative(input.projectRoot, rawPath)
-        : rawPath,
-    );
-    byPath.set(relativePath, record);
-  }
-
-  for (const relativePath of current.project_spec_files) {
-    const record = byPath.get(relativePath);
-    if (!record || record.exists !== true || record.kind !== 'file') {
-      throw new Error(
-        `SPEC_MIGRATION_GIT_RECOVERY_FORMAL_INPUT_MISSING: ${relativePath}`,
-      );
-    }
-    const expected = String(record.sha256 ?? '').toLowerCase();
-    const content = await fs.readFile(path.resolve(input.projectRoot, relativePath));
-    const actual = createHash('sha256').update(content).digest('hex');
-    if (!/^[0-9a-f]{64}$/.test(expected) || expected !== actual) {
-      throw new Error(
-        `SPEC_MIGRATION_GIT_RECOVERY_FORMAL_INPUT_CHANGED: ${relativePath}`,
-      );
-    }
-  }
-
-  return { ...current, attempt_id: input.attemptId };
-}
-
 export async function assertSpecMigrationProjectSpecGitDiffUnchanged(input: {
   projectRoot: string;
   baseCommit: string;
@@ -2932,32 +2794,6 @@ export async function assertFormalVersionSnapshotForGitMerge(
     throw new Error('FORMAL_VERSION_SNAPSHOT_REQUIRED_BEFORE_GIT_MERGE');
   }
 
-  const candidateManifest = await readJson(
-    path.join(workItemDir, 'candidate_manifest.json'),
-  );
-  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow(
-    candidateManifest?.workflow_type,
-    candidateManifest?.workflow_path,
-  );
-  if (specMigrationNoCode) {
-    const recovery = await readJson(
-      path.join(workItemDir, 'git_delivery_recovery.json'),
-    );
-    const baseCommit = String(
-      snapshot.base_commit ?? recovery?.base_commit ?? '',
-    );
-    const expectedFingerprint = String(
-      snapshot.spec_migration_project_spec_git_diff_fingerprint ??
-      recovery?.project_spec_git_diff_fingerprint ??
-      '',
-    );
-    await assertSpecMigrationProjectSpecGitDiffUnchanged({
-      projectRoot,
-      baseCommit,
-      expectedFingerprint,
-    });
-  }
-
   if (snapshot.implementation_commit) {
     const [currentHead, currentBranch, trackedWorktreeFiles, untrackedFiles] =
       await Promise.all([
@@ -3056,32 +2892,6 @@ export async function verifyFormalVersionSnapshotAfterGitMerge(
   if (!snapshot || typeof snapshot !== 'object') {
     throw new Error('POST_MERGE_VERIFY_REQUIRES_FORMAL_VERSION_SNAPSHOT');
   }
-  const candidateManifest = await readJson(
-    path.join(workItemDir, 'candidate_manifest.json'),
-  );
-  const specMigrationNoCode = isSpecMigrationNoCodeWorkflow(
-    candidateManifest?.workflow_type,
-    candidateManifest?.workflow_path,
-  );
-  if (specMigrationNoCode) {
-    const recovery = await readJson(
-      path.join(workItemDir, 'git_delivery_recovery.json'),
-    );
-    const baseCommit = String(
-      snapshot.base_commit ?? recovery?.base_commit ?? '',
-    );
-    const expectedFingerprint = String(
-      snapshot.spec_migration_project_spec_git_diff_fingerprint ??
-      recovery?.project_spec_git_diff_fingerprint ??
-      '',
-    );
-    await assertSpecMigrationProjectSpecGitDiffUnchanged({
-      projectRoot,
-      baseCommit,
-      expectedFingerprint,
-    });
-  }
-
   if (!targetHead) {
     throw new Error('POST_MERGE_VERIFY_TARGET_HEAD_REQUIRED');
   }

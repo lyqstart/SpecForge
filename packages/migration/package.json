@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "watch": "tsc --watch",
     "clean": "rm -rf dist",
     "lint": "eslint src --ext .ts",
@@ -42,6 +42,10 @@
   "peerDependencies": {
     "@specforge/types": "workspace:*",
     "@specforge/configuration": "workspace:*"
+  },
+  "specforgeRelease": {
+    "packageExportIds": ["migration:current-schema"],
+    "cleanBuildIds": ["migration:current-schema"]
   },
   "schema_version": "1.0"
 }

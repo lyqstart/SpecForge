@@ -2,7 +2,7 @@
  * Installation Record - 安装记录的读写操作
  * 
  * 本模块实现 design.md 中定义的 InstallationRecord 持久化逻辑：
- * - writeInstallationRecord: 原子写入 <OpenCode config>/sf-user/.installation.json
+ * - writeInstallationRecord: 原子写入 ~/.specforge/.installation.json
  * - loadInstallationRecord: 读取并解析，返回封闭枚举结果
  * 
  * Requirements: 4.3, 4.5, 6.3
@@ -37,19 +37,19 @@ export type LoadInstallationRecordResult =
   | { kind: 'ok'; record: InstallationRecord };
 
 /**
- * 写入安装记录到 <OpenCode config>/sf-user/.installation.json
+ * 写入安装记录到 ~/.specforge/.installation.json
  * 
  * 约束：
  * - schema_version 字段严格等于 SchemaVersionManager.baseline
  * - installedAt 时间戳使用 ISO 8601 UTC 毫秒精度
  * - 使用 FilesystemAdapter.writeAtomic 保证原子性（tmp + rename）
  * 
- * @param root - 安装根目录（通常是 <OpenCode config>/sf-user/）
+ * @param root - 安装根目录（通常是 ~/.specforge/）
  * @param record - 安装记录对象
  * @throws 写入失败时抛错（由 FilesystemAdapter.writeAtomic 抛出）
  * 
  * @example
- * await writeInstallationRecord('<OpenCode config>/sf-user', {
+ * await writeInstallationRecord('~/.specforge', {
  *   schema_version: '1.0',
  *   installedAt: new Date().toISOString(),
  *   cliVersion: '6.0.0',
@@ -65,10 +65,10 @@ export async function writeInstallationRecord(
   // 构造 .installation.json 的完整路径
   const filePath = path.join(root, '.installation.json');
 
-  // 如果没有传入 baseline，使用传入 record 中的 schema_version
-  // 如果传入了 baseline用它覆盖（用于强制重写场景）
+  // SchemaVersionManager is the authority. The caller-provided record never
+  // selects the persisted schema version.
   const svm = new SchemaVersionManager(baseline);
-  const finalSchemaVersion = baseline ?? record.schema_version ?? svm.baseline;
+  const finalSchemaVersion = svm.baseline;
   
   const recordWithBaseline: InstallationRecord = {
     ...record,
@@ -89,7 +89,7 @@ export async function writeInstallationRecord(
 }
 
 /**
- * 加载安装记录从 <OpenCode config>/sf-user/.installation.json
+ * 加载安装记录从 ~/.specforge/.installation.json
  * 
  * 返回封闭枚举类型，明确区分各种失败情况：
  * - missing: 文件不存在
@@ -97,11 +97,11 @@ export async function writeInstallationRecord(
  * - missing_field: 缺少必需字段（schema_version, installedAt, cliVersion, platform, installSource）
  * - ok: 成功加载，包含完整的 InstallationRecord
  * 
- * @param root - 安装根目录（通常是 <OpenCode config>/sf-user/）
+ * @param root - 安装根目录（通常是 ~/.specforge/）
  * @returns LoadInstallationRecordResult 封闭枚举
  * 
  * @example
- * const result = await loadInstallationRecord('<OpenCode config>/sf-user');
+ * const result = await loadInstallationRecord('~/.specforge');
  * if (result.kind === 'ok') {
  *   console.log('Installed at:', result.record.installedAt);
  * } else if (result.kind === 'missing') {

@@ -48,7 +48,12 @@ async function createWorkItem(
   await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
   await fs.writeFile(
     path.join(wiDir, 'work_item.json'),
-    JSON.stringify({ work_item_id: workItemId, workflow_path: 'code_only_fast_path' }, null, 2) +
+    JSON.stringify({
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'quick_change',
+      workflow_path: 'code_only_fast_path',
+    }, null, 2) +
       '\n'
   );
   await fs.writeFile(
@@ -284,6 +289,7 @@ describe('sf_semantic_closure_run handler', () => {
       path.join(wiDir, 'work_item.json'),
       JSON.stringify(
         {
+          schema_version: '1.1',
           work_item_id: workItemId,
           workflow_type: 'spec_migration',
           workflow_path: 'spec_migration_path',

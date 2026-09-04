@@ -174,8 +174,7 @@ describe('v1.1.6 install/deployment consistency', () => {
     for (const candidate of candidates) {
       expect(exists(candidate), `missing observability template ${candidate}`).toBe(true);
       const parsed = JSON.parse(read(candidate));
-      expect(parsed.schema_version).toBe('1.1');
-      expect(parsed.enabled).toBe(true);
+      expect(parsed).toEqual({ schema_version: '1.0', mode: 'standard' });
     }
   });
 
@@ -185,33 +184,20 @@ describe('v1.1.6 install/deployment consistency', () => {
       expect(installer, `installer missing command ${word}`).toContain(word);
     }
 
-    expect(installer).toContain('setup');
-    expect(installer).toContain('userlevel-opencode');
-    expect(installer).toContain('plugins');
-    expect(installer).toContain('agents');
-    expect(installer).toContain('tools');
+    expect(installer).toContain('requireVerifiedInstallSet');
+    expect(installer).toContain('loadVerifiedReleaseInstallSet');
+    expect(installer).toContain('installSet.files');
+    expect(installer).toContain('entry.sourcePath');
+    expect(installer).toContain('entry.targetPath');
   });
 
-  it('keeps handshake path aligned to the userlevel sf-user runtime location', () => {
-    const sourceRoots = [
-      path.join(REPO_ROOT, 'packages'),
-      path.join(REPO_ROOT, 'setup'),
-      path.join(REPO_ROOT, 'scripts'),
-      path.join(REPO_ROOT, 'docs'),
-    ];
+  it('keeps installed tools on the current SpecForge handshake path only', () => {
+    const userlevelClient = read('setup/userlevel-opencode/tools/lib/thin-client.ts');
 
-    const sourceFiles = sourceRoots.flatMap(root =>
-      walkFiles(root, filePath => /\.(ts|md|json)$/.test(filePath))
-    );
-
-    const matches = sourceFiles
-      .map(filePath => ({ filePath, text: readFileSync(filePath, 'utf8') }))
-      .filter(({ text }) => text.includes('sf-user') && text.includes('handshake'));
-
-    expect(
-      matches.length,
-      'expected at least one source file to reference sf-user handshake runtime path'
-    ).toBeGreaterThan(0);
+    expect(userlevelClient).toContain('path.join(os.homedir(), ".specforge", "runtime", "daemon.sock.json")');
+    expect(userlevelClient).toContain('schema_version: "1.0"');
+    expect(userlevelClient).toContain("bound_to: '127.0.0.1' | '0.0.0.0'");
+    expect(userlevelClient).not.toContain('sf-user", "runtime", "handshake.json');
   });
 
   it('exposes and enforces artifact protocol versions across daemon and userlevel client', () => {

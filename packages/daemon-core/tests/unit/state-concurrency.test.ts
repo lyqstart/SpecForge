@@ -15,7 +15,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
 import { StateManager } from '../../src/state/StateManager';
-import { PersonalPathResolver, IPathResolver } from '../../src/daemon/path-resolver';
+import { IPathResolver } from '../../src/daemon/path-resolver';
 import type { ProjectState } from '../../src/types';
 
 // ────────────────────────────────────────────────────────────────────
@@ -100,11 +100,11 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
     const v0 = s1.stateVersion;
 
     // Each transition triggers writeStateFile → version++
-    await sm.transition('WI-A', '', 'intake', 'test');
+    await sm.transition('WI-A', '', 'created', 'test');
     const s2 = await sm.getCurrentState();
     expect(s2.stateVersion).toBeGreaterThanOrEqual(v0 + 1);
 
-    await sm.transition('WI-A', 'intake', 'requirements', 'test');
+    await sm.transition('WI-A', 'created', 'intake_ready', 'test');
     const s3 = await sm.getCurrentState();
     expect(s3.stateVersion).toBeGreaterThanOrEqual(s2.stateVersion + 1);
   });
@@ -113,7 +113,7 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
     const sm = new StateManager(resolver, 'test-proj');
     await sm.initialize();
 
-    await sm.transition('WI-X', '', 'intake', 'test');
+    await sm.transition('WI-X', '', 'created', 'test');
     const before = await sm.getCurrentState();
     expect(before.stateVersion).toBeGreaterThanOrEqual(1);
 
@@ -123,7 +123,7 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
     await fs.writeFile(statePath, JSON.stringify(forgedState, null, 2), 'utf-8');
 
     // Next transition should detect conflict (disk = 999 vs mem) → rebuild → retry → succeed
-    await sm.transition('WI-X', 'intake', 'requirements', 'test');
+    await sm.transition('WI-X', 'created', 'intake_ready', 'test');
     const after = await sm.getCurrentState();
     // After rebuild, _stateVersion was seeded from disk (999), then incremented (1000)
     expect(after.stateVersion).toBeGreaterThanOrEqual(1000);
@@ -133,7 +133,7 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
     const sm = new StateManager(resolver, 'test-proj');
     await sm.initialize();
 
-    await sm.transition('WI-Y', '', 'intake', 'test');
+    await sm.transition('WI-Y', '', 'created', 'test');
     const before = await sm.getCurrentState();
     expect(before.stateVersion).toBeGreaterThanOrEqual(1);
 
@@ -147,20 +147,20 @@ describe('StateManager concurrency — C2 / CP-2 version lock', () => {
     }
 
     // Transition should detect conflict, rebuild from WAL, and succeed on retry
-    await sm.transition('WI-Y', 'intake', 'requirements', 'test');
+    await sm.transition('WI-Y', 'created', 'intake_ready', 'test');
     const after = await sm.getCurrentState();
     // After rebuild+retry, stateVersion was seeded from disk (~10009) then incremented
     expect(after.stateVersion).toBeGreaterThanOrEqual(10010);
-    // WI-Y should still be in 'requirements' (the transition succeeded)
+    // WI-Y should still be in 'intake_ready' (the transition succeeded)
     const wi = after.workItems.find((w: any) => w.work_item_id === 'WI-Y')!;
-    expect(wi.current_state).toBe('requirements');
+    expect(wi.current_state).toBe('intake_ready');
   });
 
   it('CP-2: state.json on disk is consistent after transition', async () => {
     const sm = new StateManager(resolver, 'test-proj');
     await sm.initialize();
 
-    await sm.transition('WI-CONS', '', 'design', 'test');
+    await sm.transition('WI-CONS', '', 'created', 'test');
 
     const statePath = (sm as any).statePath as string;
     const raw = await fs.readFile(statePath, 'utf-8');
@@ -199,15 +199,15 @@ describe('StateManager — CP-3 persistStateFromExternal', () => {
       workItems: [
         {
           work_item_id: 'WI-EXT-1',
-          workflow_type: 'bugfix_spec',
-          current_state: 'completed',
+          workflow_type: 'feature_spec',
+          current_state: 'created',
           created_at: 1000,
           updated_at: 2000,
         },
         {
           work_item_id: 'WI-EXT-2',
           workflow_type: 'feature_spec',
-          current_state: 'design',
+          current_state: 'intake_ready',
           created_at: 3000,
           updated_at: 4000,
         },
@@ -223,8 +223,8 @@ describe('StateManager — CP-3 persistStateFromExternal', () => {
 
     // Verify individual items
     const wi1 = current.workItems.find((w: any) => w.work_item_id === 'WI-EXT-1')!;
-    expect(wi1.current_state).toBe('completed');
-    expect(wi1.workflow_type).toBe('bugfix_spec');
+    expect(wi1.current_state).toBe('created');
+    expect(wi1.workflow_type).toBe('feature_spec');
   });
 
   it('CP-3: should sync lastEventId and lastEventTs from external state', async () => {
@@ -249,7 +249,7 @@ describe('StateManager — CP-3 persistStateFromExternal', () => {
     await sm.initialize();
 
     // First, add an item via transition
-    await sm.transition('WI-OLD', '', 'intake', 'test');
+    await sm.transition('WI-OLD', '', 'created', 'test');
     let current = await sm.getCurrentState();
     expect(current.workItems.some((w: any) => w.work_item_id === 'WI-OLD')).toBe(true);
 
@@ -259,7 +259,7 @@ describe('StateManager — CP-3 persistStateFromExternal', () => {
         {
           work_item_id: 'WI-NEW',
           workflow_type: 'feature_spec',
-          current_state: 'requirements',
+          current_state: 'intake_ready',
           created_at: 5000,
           updated_at: 6000,
         },
@@ -282,8 +282,8 @@ describe('StateManager — CP-3 persistStateFromExternal', () => {
       workItems: [
         {
           work_item_id: 'WI-OCC',
-          workflow_type: 'refactor',
-          current_state: 'design',
+          workflow_type: 'feature_spec',
+          current_state: 'created',
           created_at: 100,
           updated_at: 200,
         },
@@ -309,7 +309,7 @@ describe('StateManager — CP-3 persistStateFromExternal', () => {
 // C2: Backward-compatible version (missing stateVersion → 0)
 // ═══════════════════════════════════════════════════════════════════
 
-describe('StateManager — C2 backward compatibility (missing stateVersion)', () => {
+describe('StateManager — current checkpoint contract', () => {
   let tempDir: string;
   let resolver: TestPathResolver;
 
@@ -325,8 +325,7 @@ describe('StateManager — C2 backward compatibility (missing stateVersion)', ()
     } catch { /* best-effort */ }
   });
 
-  it('C2: should treat missing stateVersion as 0 (backward compat)', async () => {
-    // Write a legacy state.json without stateVersion field
+  it('fails closed when checkpoint schema_version and stateVersion are missing', async () => {
     const statePath = resolver.resolveStatePath('test-proj');
     await fs.mkdir(path.dirname(statePath), { recursive: true });
     const legacyState = {
@@ -339,13 +338,11 @@ describe('StateManager — C2 backward compatibility (missing stateVersion)', ()
     };
     await fs.writeFile(statePath, JSON.stringify(legacyState, null, 2), 'utf-8');
 
+    const before = await fs.readFile(statePath, 'utf8');
     const sm = new StateManager(resolver, 'test-proj');
-    await sm.initialize();
-
-    const current = await sm.getCurrentState();
-    // After initialize, stateVersion should be seeded from disk (0) then
-    // incremented by the persistState call during initialize.
-    expect(typeof current.stateVersion).toBe('number');
-    expect(current.stateVersion).toBeGreaterThanOrEqual(0);
+    await expect(sm.initialize()).rejects.toThrow(
+      'RUNTIME_SCHEMA_PRECHECK_BLOCKED:runtime-checkpoint:SCHEMA_ID_MISSING',
+    );
+    expect(await fs.readFile(statePath, 'utf8')).toBe(before);
   });
 });

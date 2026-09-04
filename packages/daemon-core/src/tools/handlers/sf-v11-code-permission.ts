@@ -15,6 +15,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 
 async function readJsonIfExists(filePath: string): Promise<any | null> {
   try {
@@ -212,7 +213,17 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
   if (idError) return { success: false, error: idError };
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
-  const workItem = await readJsonIfExists(path.join(workItemDir, 'work_item.json'));
+  let workItem: Record<string, unknown>;
+  try {
+    workItem = await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+      hard_stop: false,
+      retry_allowed: true,
+    };
+  }
   if (
     action !== 'check' &&
     action !== 'query' &&
@@ -281,25 +292,6 @@ registerHandler('sf_v11_code_permission', async (args, context, deps) => {
             'Implementation write permission can only include business/code files.\n' +
             '.specforge governance artifacts must be written by controlled workflow tools, not executors.',
         };
-      }
-
-      await fs.mkdir(workItemDir, { recursive: true });
-      const wiJsonPath = path.join(workItemDir, 'work_item.json');
-      try {
-        await fs.access(wiJsonPath);
-      } catch {
-        const wiJson = {
-          schema_version: '1.0',
-          work_item_id: workItemId,
-          status: 'implementation_running',
-          workflow_path: 'code_only_fast_path',
-          code_change_allowed: false,
-          allowed_write_files: [],
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          created_by: 'sf-orchestrator',
-        };
-        await fs.writeFile(wiJsonPath, JSON.stringify(wiJson, null, 2) + '\n', 'utf-8');
       }
 
       const workflowFacts = await assertMergeSucceededBeforeCode(workItemDir);

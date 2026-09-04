@@ -59,7 +59,14 @@ describe('new project governance bootstrap', () => {
       schema_version: '1.1',
       work_item_id: WI,
       workflow_type: 'feature',
+      canonical_workflow_path: 'requirement_change_path',
+    });
+    await writeJson(path.join(workItemDir, 'trigger_result.json'), {
+      schema_version: '1.1',
+      work_item_id: WI,
+      workflow_type: 'feature',
       workflow_path: 'requirement_change_path',
+      status: 'triggered',
     });
 
     const writer = getHandler('sf_artifact_write');
@@ -95,6 +102,7 @@ describe('new project governance bootstrap', () => {
       'candidate_module_definition',
       JSON.stringify(
         {
+          schema_version: '1.0',
           module_code: 'CORE',
           status: 'active',
           code_paths: ['src/**'],
@@ -195,6 +203,17 @@ describe('new project governance bootstrap', () => {
     );
     await fs.writeFile(
       path.join(projectDir, 'modules', 'CORE', 'trace.md'),
+      [
+        '| From | Relation | To |',
+        '| --- | --- | --- |',
+        '| DD-CORE-001 | constrained_by | ARCH-CORE-001 |',
+        '| MCON-CORE-001 | enforces | DD-CORE-001 |',
+        '',
+      ].join('\n'),
+      'utf-8'
+    );
+    await fs.writeFile(
+      path.join(projectDir, 'trace_matrix.md'),
       [
         '| From | Relation | To |',
         '| --- | --- | --- |',

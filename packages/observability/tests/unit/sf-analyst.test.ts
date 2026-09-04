@@ -9,6 +9,7 @@ import { SfAnalyst, createSfAnalyst, type AnalysisRequest } from '@/sf-analyst/i
 import { EventLogger } from '@/event-logger/index.js';
 import { CAS } from '@/cas/index.js';
 import type { Event, TimeRange, NorthStarScenario, AnalysisResult } from '@/types';
+import { DaemonWalFixtureEventLogger } from '../helpers/current-daemon-wal.js';
 
 // Test utilities
 function createTestEvent(overrides: Partial<Event> = {}): Event {
@@ -41,7 +42,7 @@ describe('SfAnalyst', () => {
 
   beforeEach(async () => {
     // Create fresh instances with test directories
-    eventLogger = new EventLogger(`./test-data/observability-${Date.now()}`);
+    eventLogger = new DaemonWalFixtureEventLogger(`./test-data/observability-${Date.now()}`);
     cas = new CAS(`./test-data/cas-${Date.now()}`);
     
     await eventLogger.initialize();
@@ -446,7 +447,7 @@ describe('SfAnalyst Integration Requirements', () => {
   let sfAnalyst: SfAnalyst;
 
   beforeEach(async () => {
-    eventLogger = new EventLogger(`./test-data/observability-req-${Date.now()}`);
+    eventLogger = new DaemonWalFixtureEventLogger(`./test-data/observability-req-${Date.now()}`);
     cas = new CAS(`./test-data/cas-req-${Date.now()}`);
     
     await eventLogger.initialize();

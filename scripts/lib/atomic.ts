@@ -1,7 +1,7 @@
 /**
  * SpecForge Installer Reconcile — 共享原子写入工具
  *
- * 供 Manifest、Executor、OpenCode Merge、RuntimeManifest 共用。
+ * 供 Manifest、Executor、OpenCode Merge 共用。
  * 使用 temp file + SHA-256 验证 + rename 模式确保写入原子性。
  *
  * Requirements: 4.1, 4.2, 4.6, 5.6, 12.5
@@ -9,36 +9,8 @@
 
 import { writeFile, rename, unlink, mkdir, readFile } from "node:fs/promises"
 import { existsSync } from "node:fs"
-import { dirname, join, resolve } from "node:path"
-import { homedir } from "node:os"
+import { dirname, join } from "node:path"
 import * as crypto from "node:crypto"
-
-function getConfiguredUserLevelDirectory(): string {
-  const explicitConfigDir = process.env.OPENCODE_CONFIG_DIR?.trim()
-  if (explicitConfigDir) {
-    return resolve(explicitConfigDir)
-  }
-
-  const xdgConfigHome = process.env.XDG_CONFIG_HOME?.trim()
-  if (xdgConfigHome) {
-    return resolve(join(xdgConfigHome, "opencode"))
-  }
-
-  return resolve(join(homedir(), ".config", "opencode"))
-}
-
-function sameFilesystemPath(left: string, right: string): boolean {
-  const normalizedLeft = resolve(left)
-  const normalizedRight = resolve(right)
-
-  return process.platform === "win32"
-    ? normalizedLeft.toLowerCase() === normalizedRight.toLowerCase()
-    : normalizedLeft === normalizedRight
-}
-
-function mayReadHomeLegacyManifest(userLevelDir: string): boolean {
-  return sameFilesystemPath(userLevelDir, getConfiguredUserLevelDirectory())
-}
 
 export interface AtomicWriteOptions {
   expectedHash?: string
@@ -135,29 +107,13 @@ export async function atomicWriteFile(
 /**
  * 备份文件到 {userLevelDir}/.backup/。
  *
- * specforge-manifest.json 的正式位置就是 userLevelDir 根目录。
- * 只有正式文件不存在且 targetDir 确认是本机真实 OpenCode 用户目录时，
- * 才允许读取历史 ~/.specforge/specforge-manifest.json 作为迁移兼容来源。
+ * 只备份调用方明确指定的当前 userLevelDir 内文件，不跨根寻找兼容来源。
  */
 export async function backupFile(
   userLevelDir: string,
   relativePath: string
 ): Promise<string | null> {
-  let sourcePath = join(userLevelDir, relativePath)
-  if (relativePath === "specforge-manifest.json" && !existsSync(sourcePath)) {
-    const legacyHomeManifestPath = join(
-      homedir(),
-      ".specforge",
-      "specforge-manifest.json"
-    )
-
-    if (
-      mayReadHomeLegacyManifest(userLevelDir) &&
-      existsSync(legacyHomeManifestPath)
-    ) {
-      sourcePath = legacyHomeManifestPath
-    }
-  }
+  const sourcePath = join(userLevelDir, relativePath)
 
   if (!existsSync(sourcePath)) return null
 

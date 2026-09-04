@@ -7,6 +7,7 @@ import '../src/tools/handlers/sf-safe-bash.js';
 import '../src/tools/handlers/sf-hard-stop-resolve.js';
 import '../src/tools/handlers/sf-changed-files-audit.js';
 import '../src/tools/handlers/sf-state-transition.js';
+import '../src/tools/handlers/sf-v11-work-item-create.js';
 import '../src/tools/handlers/sf-artifact-write.js';
 import { getHandler, registerHandler, ToolDispatcher } from '../src/tools/ToolDispatcher.js';
 import { setHardStop } from '../src/tools/lib/hard-stop-latch.js';
@@ -21,6 +22,8 @@ function repoRoot(): string {
   if (existsSync(path.join(cwd, 'setup', 'userlevel-opencode', 'agents'))) return cwd;
   return path.resolve(cwd, '..', '..');
 }
+
+const initOptions = { ensureHostProfile: async () => undefined };
 
 async function writeJson(filePath: string, value: unknown): Promise<void> {
   await mkdir(path.dirname(filePath), { recursive: true });
@@ -109,9 +112,9 @@ describe('Orchestrator governance execution closure', () => {
 
     expect(contract).toContain('纯咨询、只读状态查询或 SpecForge 使用说明');
     expect(contract).toContain('不调用 `sf_project_init`、不创建业务工作项');
-    expect(contract).toContain('`.specforge/manifest.json` 是当前运行时要求的项目初始化标记');
+    expect(contract).not.toContain('`.specforge/manifest.json` 是当前运行时要求的项目初始化标记');
     expect(contract).toContain(
-      '`.specforge/project/spec_manifest.json` 是正式项目规格和模块归属清单'
+      '`.specforge/project/spec_manifest.json` 是当前项目初始化、正式项目规格和模块归属的权威清单'
     );
     expect(contract).toContain('已有活动工作项时优先恢复');
     expect(contract).toContain('存在多个活动工作项时，必须先明确当前目标对应的 `work_item_id`');
@@ -147,6 +150,10 @@ describe('Orchestrator governance execution closure', () => {
   });
 
   it('aligns the governing standard with the current state, consultation, and continuity contract', () => {
+    const orchestrator = readFileSync(
+      path.join(repoRoot(), 'setup', 'userlevel-opencode', 'agents', 'sf-orchestrator.md'),
+      'utf8'
+    ).replace(/\r\n/g, '\n');
     const standard = readFileSync(
       path.join(repoRoot(), 'docs', 'standards', 'fused_standard.md'),
       'utf8'
@@ -167,7 +174,7 @@ describe('Orchestrator governance execution closure', () => {
     expect(standard).toContain('`.specforge/runtime/state.json` 只是可重建投影缓存');
     expect(standard).toContain('`work_item.json` 只保存工作项身份、分类、范围和权限等元数据');
     expect(standard).not.toContain('"status": "created"');
-    expect(standard).toContain('中断恢复必须通过 `sf_continuity`');
+    expect(orchestrator).not.toContain('sf_continuity');
     expect(standard).toContain('`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容');
     expect(standard).toContain('当前 Runtime 为兼容初始化和可观测性');
   });
@@ -201,16 +208,6 @@ describe('Orchestrator governance execution closure', () => {
 
     const currentPairs = [
       ['feature_spec', 'requirement_change_path', 'sf-workflow-feature-spec'],
-      ['bugfix_spec', 'requirement_change_path', 'sf-workflow-bugfix-spec'],
-      ['change_request', 'requirement_change_path', 'sf-workflow-change-request'],
-      ['investigation', 'requirement_change_path', 'sf-workflow-investigation'],
-      ['feature_spec_design_first', 'design_change_path', 'sf-workflow-design-first'],
-      ['refactor', 'task_change_path', 'sf-workflow-refactor'],
-      ['ops_task', 'task_change_path', 'sf-workflow-ops-task'],
-      ['quick_change', 'code_only_fast_path', 'sf-workflow-quick-change'],
-      ['spec_migration', 'spec_migration_path', 'sf-workflow-spec-migration'],
-      ['architecture_change', 'architecture_change_path', 'sf-workflow-architecture-change'],
-      ['contract_change', 'contract_change_path', 'sf-workflow-contract-change'],
     ] as const;
 
     for (const [workflowType, workflowPath, skillName] of currentPairs) {
@@ -231,24 +228,15 @@ describe('Orchestrator governance execution closure', () => {
       ).toBe(true);
     }
 
-    expect(contract).not.toContain('| `bugfix_spec` | `task_change_path` |');
-    expect(contract).not.toContain('| `refactor` | `design_change_path` |');
-    for (const reservedPath of [
-      'rollback_path',
-    ]) {
-      expect(stateMachine).toContain(`"${reservedPath}"`);
-      expect(contract).toContain(reservedPath);
-    }
-    expect(contract).toContain('当前没有完整的用户级工作流身份和技能映射');
-    // Explicit governance-only workflows are registered identities.
-    expect(stateMachine).toContain('spec_migration: "spec_migration_path"');
-    expect(stateMachine).toContain('architecture_change: "architecture_change_path"');
-    expect(stateMachine).toContain('contract_change: "contract_change_path"');
+    expect(contract).toContain('UNSUPPORTED_CURRENT_RELEASE_WORKFLOW');
+    expect(contract).not.toContain('sf-workflow-architecture-change');
+    expect(contract).not.toContain('sf-workflow-spec-migration');
+    expect(contract).not.toContain('sf-workflow-contract-change');
   });
 
   it('declares core for a new project and idempotently normalizes an empty CORE registry without bumping the version', async () => {
-    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
-    expect(initialized.success).toBe(true);
+    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture', initOptions);
+    expect(initialized.success, JSON.stringify(initialized, null, 2)).toBe(true);
     // Fresh project is already canonical-healthy; normalization is a no-op.
     expect(initialized.moduleRegistry.status).toBe('unchanged');
 
@@ -271,7 +259,7 @@ describe('Orchestrator governance execution closure', () => {
     delete legacyManifest.default_module;
     await writeJson(manifestPath, legacyManifest);
 
-    const repaired = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    const repaired = await ensureProjectInit(projectRoot, 'orchestrator-fixture', initOptions);
     expect(repaired.success).toBe(true);
     expect(repaired.moduleRegistry.status).toBe('normalized');
     expect(repaired.moduleRegistry.moduleCodes).toEqual(['CORE']);
@@ -284,7 +272,7 @@ describe('Orchestrator governance execution closure', () => {
     expect(preserved.modules).toHaveLength(1);
 
     // Idempotent: running init again leaves the now-canonical registry alone.
-    const again = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    const again = await ensureProjectInit(projectRoot, 'orchestrator-fixture', initOptions);
     expect(again.moduleRegistry.status).toBe('unchanged');
     const stable = JSON.parse(await readFile(manifestPath, 'utf8'));
     expect(stable.modules).toEqual(preserved.modules);
@@ -369,15 +357,21 @@ describe('Orchestrator governance execution closure', () => {
   });
 
   it('keeps work_item.json metadata-only from creation through controlled rewrites', async () => {
-    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
-    expect(initialized.success).toBe(true);
+    await writeJson(path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), {
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      modules: [],
+    });
 
-    const created = (await getHandler('sf_state_transition')!(
+    const created = (await getHandler('sf_v11_work_item_create')!(
       {
-        from_state: '',
-        to_state: 'created',
-        workflow_type: 'feature_spec_design_first',
-        workflow_path: 'design_change_path',
+        user_request: 'Verify metadata remains owned and status-free.',
+        classification: {
+          requirement_changed: true,
+          design_changed: false,
+          architecture_changed: false,
+          unknowns: [],
+        },
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       transitionDeps()
@@ -395,8 +389,8 @@ describe('Orchestrator governance execution closure', () => {
     );
     const createdWorkItem = JSON.parse(await readFile(workItemPath, 'utf8'));
     expect(createdWorkItem.status).toBeUndefined();
-    expect(createdWorkItem.workflow_type).toBe('feature_spec_design_first');
-    expect(createdWorkItem.workflow_path).toBe('design_change_path');
+    expect(createdWorkItem.workflow_type).toBe('feature_spec');
+    expect(createdWorkItem.workflow_path).toBe('requirement_change_path');
 
     const rejected = (await getHandler('sf_artifact_write')!(
       {
@@ -439,10 +433,10 @@ describe('Orchestrator governance execution closure', () => {
       auditDeps('candidate_preparing')
     )) as any;
 
-    expect(cleaned.success).toBe(true);
-    const cleanedWorkItem = JSON.parse(await readFile(workItemPath, 'utf8'));
-    expect(cleanedWorkItem.status).toBeUndefined();
-    expect(cleanedWorkItem.title).toBe('Metadata rewrite');
+    expect(cleaned.success).toBe(false);
+    expect(cleaned.error).toContain('WORK_ITEM_METADATA_INVALID');
+    const unchangedInvalidWorkItem = JSON.parse(await readFile(workItemPath, 'utf8'));
+    expect(unchangedInvalidWorkItem.status).toBe('created');
   });
 
   it('stores trigger_result unknowns only at classification.unknowns and rejects conflicts', async () => {
@@ -451,8 +445,8 @@ describe('Orchestrator governance execution closure', () => {
     await writeJson(path.join(wiDir, 'work_item.json'), {
       schema_version: '1.1',
       work_item_id: workItemId,
-      workflow_type: 'feature_spec_design_first',
-      workflow_path: 'design_change_path',
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
     });
 
     const classification = {
@@ -465,6 +459,8 @@ describe('Orchestrator governance execution closure', () => {
       module_boundary_changed: false,
       api_contract_changed: true,
       architecture_changed: true,
+      data_model_changed: false,
+      module_contract_changed: false,
       unknowns: ['Runtime choice is not confirmed', 'Compatibility policy is not confirmed'],
     };
 
@@ -475,16 +471,25 @@ describe('Orchestrator governance execution closure', () => {
         content: JSON.stringify({
           schema_version: '1.1',
           work_item_id: workItemId,
-          workflow_type: 'feature_spec_design_first',
-          workflow_path: 'design_change_path',
+          workflow_type: 'feature_spec',
+          workflow_path: 'requirement_change_path',
           classification,
+          impact_scope: {
+            affected_modules: [],
+            architecture_refs: [],
+            data_model_refs: [],
+            design_refs: [],
+            project_contract_refs: [],
+            module_contract_refs: [],
+            planned_code_paths: [],
+          },
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       {} as any
     )) as any;
 
-    expect(written.success).toBe(true);
+    expect(written.success, JSON.stringify(written, null, 2)).toBe(true);
     const triggerPath = path.join(wiDir, 'trigger_result.json');
     const trigger = JSON.parse(await readFile(triggerPath, 'utf8'));
     expect(Object.prototype.hasOwnProperty.call(trigger, 'unknowns')).toBe(false);
@@ -499,10 +504,19 @@ describe('Orchestrator governance execution closure', () => {
         content: JSON.stringify({
           schema_version: '1.1',
           work_item_id: workItemId,
-          workflow_type: 'feature_spec_design_first',
-          workflow_path: 'design_change_path',
+          workflow_type: 'feature_spec',
+          workflow_path: 'requirement_change_path',
           unknowns: ['Legacy top-level unknown'],
           classification: legacyClassification,
+          impact_scope: {
+            affected_modules: [],
+            architecture_refs: [],
+            data_model_refs: [],
+            design_refs: [],
+            project_contract_refs: [],
+            module_contract_refs: [],
+            planned_code_paths: [],
+          },
         }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
@@ -521,12 +535,21 @@ describe('Orchestrator governance execution closure', () => {
         content: JSON.stringify({
           schema_version: '1.1',
           work_item_id: workItemId,
-          workflow_type: 'feature_spec_design_first',
-          workflow_path: 'design_change_path',
+          workflow_type: 'feature_spec',
+          workflow_path: 'requirement_change_path',
           unknowns: ['Top-level value'],
           classification: {
             ...classification,
             unknowns: ['Classification value'],
+          },
+          impact_scope: {
+            affected_modules: [],
+            architecture_refs: [],
+            data_model_refs: [],
+            design_refs: [],
+            project_contract_refs: [],
+            module_contract_refs: [],
+            planned_code_paths: [],
           },
         }),
       },
@@ -568,7 +591,7 @@ describe('Orchestrator governance execution closure', () => {
   });
 
   it('keeps evidence-only artifacts out of Project Spec merge and rejects undeclared targets', async () => {
-    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture', initOptions);
     expect(initialized.success).toBe(true);
 
     const workItemId = 'WI-0001';
@@ -576,7 +599,13 @@ describe('Orchestrator governance execution closure', () => {
     await writeJson(path.join(wiDir, 'work_item.json'), {
       schema_version: '1.1',
       work_item_id: workItemId,
-      workflow_type: 'bugfix_spec',
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
+    });
+    await writeJson(path.join(wiDir, 'trigger_result.json'), {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
     });
     await mkdir(path.join(wiDir, 'candidates', 'project', 'modules', 'core'), {
@@ -595,7 +624,7 @@ describe('Orchestrator governance execution closure', () => {
         content: JSON.stringify({
           schema_version: '1.1',
           work_item_id: workItemId,
-          workflow_type: 'bugfix_spec',
+          workflow_type: 'feature_spec',
           workflow_path: 'requirement_change_path',
           no_project_spec_change: true,
           project_integration_effect: 'evidence_only',
@@ -626,7 +655,7 @@ describe('Orchestrator governance execution closure', () => {
       auditDeps('candidate_preparing')
     )) as any;
 
-    expect(normalizedWrite.success).toBe(true);
+    expect(normalizedWrite.success, JSON.stringify(normalizedWrite, null, 2)).toBe(true);
     const manifestPath = path.join(wiDir, 'candidate_manifest.json');
     const normalizedManifest = JSON.parse(await readFile(manifestPath, 'utf8'));
     expect(normalizedManifest.no_project_spec_change).toBe(true);
@@ -684,7 +713,7 @@ describe('Orchestrator governance execution closure', () => {
     await writeJson(manifestPath, {
       schema_version: '1.1',
       work_item_id: workItemId,
-      workflow_type: 'bugfix_spec',
+      workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
       merge_required: true,
       entries: [
@@ -702,7 +731,7 @@ describe('Orchestrator governance execution closure', () => {
       workItemId,
       workItemDir: wiDir,
       workflowPath: 'requirement_change_path',
-      workflowType: 'bugfix_spec',
+      workflowType: 'feature_spec',
     } as any);
     expect(gateReport.status).toBe('failed');
     expect(gateReport.checks).toContainEqual(
@@ -714,16 +743,26 @@ describe('Orchestrator governance execution closure', () => {
   });
 
   it('enforces professional ownership for candidate requirements, design, tasks, and trace artifacts', async () => {
-    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
+    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture', initOptions);
     expect(initialized.success).toBe(true);
 
     const workItemId = 'WI-0001';
+    await writeJson(
+      path.join(projectRoot, '.specforge', 'work-items', workItemId, 'work_item.json'),
+      {
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+      }
+    );
     await writeJson(
       path.join(projectRoot, '.specforge', 'work-items', workItemId, 'trigger_result.json'),
       {
         schema_version: '1.1',
         work_item_id: workItemId,
-        workflow_path: 'task_change_path',
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
         classification: {
           requirement_changed: false,
           acceptance_criteria_changed: false,
@@ -734,8 +773,11 @@ describe('Orchestrator governance execution closure', () => {
           module_boundary_changed: false,
           api_contract_changed: false,
           architecture_changed: false,
+          data_model_changed: false,
+          module_contract_changed: false,
           unknowns: [],
         },
+        impact_scope: {},
       }
     );
     const validOwnedContent: Record<string, string> = {
@@ -749,6 +791,7 @@ describe('Orchestrator governance execution closure', () => {
       candidate_tasks: `### TASK-WI-0001-001 Core task
 
 - **refs**: [REQ-CORE-001, DD-CORE-001]
+- **allowed_write_files**: [src/core.ts]
 - **verification_commands**:
   - unit:
     - \`node --test tests/core.test.mjs\`
@@ -790,7 +833,7 @@ describe('Orchestrator governance execution closure', () => {
         auditDeps('candidate_preparing')
       )) as any;
 
-      expect(written.success).toBe(true);
+      expect(written.success, JSON.stringify(written, null, 2)).toBe(true);
       expect(existsSync(path.join(projectRoot, written.path))).toBe(true);
     }
 
@@ -823,36 +866,45 @@ describe('Orchestrator governance execution closure', () => {
     expect(inferredBypass.required_agent).toBe('sf-task-planner');
   });
 
-  it('requires a non-empty intake artifact before created can advance to intake_ready', async () => {
-    const initialized = await ensureProjectInit(projectRoot, 'orchestrator-fixture');
-    expect(initialized.success).toBe(true);
+  it('requires the create owner to persist a non-empty original request before intake_ready', async () => {
+    await writeJson(path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json'), {
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
+      modules: [],
+    });
 
     const deps = transitionDeps();
-    const created = (await getHandler('sf_state_transition')!(
+    const missingRequest = (await getHandler('sf_v11_work_item_create')!(
       {
-        from_state: '',
-        to_state: 'created',
-        workflow_type: 'bugfix_spec',
-        workflow_path: 'requirement_change_path',
+        classification: {
+          requirement_changed: true,
+          design_changed: false,
+          architecture_changed: false,
+          unknowns: [],
+        },
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      deps
+    )) as any;
+    expect(missingRequest.success).toBe(false);
+    expect(missingRequest.error).toBe('user_request is required');
+
+    const originalRequest = 'Fix formatLabel while preserving current behavior.';
+    const created = (await getHandler('sf_v11_work_item_create')!(
+      {
+        user_request: originalRequest,
+        classification: {
+          requirement_changed: true,
+          design_changed: false,
+          architecture_changed: false,
+          unknowns: [],
+        },
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       deps
     )) as any;
     expect(created.success).toBe(true);
-
-    const rejected = (await getHandler('sf_state_transition')!(
-      {
-        work_item_id: created.work_item_id,
-        from_state: 'created',
-        to_state: 'intake_ready',
-      },
-      { directory: projectRoot, agent: 'sf-orchestrator' },
-      deps
-    )) as any;
-    expect(rejected.success).toBe(false);
-    expect(rejected.error).toBe('STATE_PREREQUISITE_MISSING');
-    expect(rejected.code).toBe('INTAKE_ARTIFACT_REQUIRED');
-    expect(rejected.required_artifact).toBe('intake.md');
+    expect(created.status).toBe('intake_ready');
 
     const intakePath = path.join(
       projectRoot,
@@ -861,31 +913,8 @@ describe('Orchestrator governance execution closure', () => {
       created.work_item_id,
       'intake.md'
     );
-    await writeFile(intakePath, '   ');
-    const emptyRejected = (await getHandler('sf_state_transition')!(
-      {
-        work_item_id: created.work_item_id,
-        from_state: 'created',
-        to_state: 'intake_ready',
-      },
-      { directory: projectRoot, agent: 'sf-orchestrator' },
-      deps
-    )) as any;
-    expect(emptyRejected.success).toBe(false);
-    expect(emptyRejected.error).toBe('STATE_PREREQUISITE_MISSING');
-
-    await writeFile(intakePath, '# Intake\n\nOriginal User Request: fix formatLabel.');
-    const advanced = (await getHandler('sf_state_transition')!(
-      {
-        work_item_id: created.work_item_id,
-        from_state: 'created',
-        to_state: 'intake_ready',
-      },
-      { directory: projectRoot, agent: 'sf-orchestrator' },
-      deps
-    )) as any;
-    expect(advanced.success).toBe(true);
-    expect(advanced.transition_result.currentState).toBe('intake_ready');
+    expect((await readFile(intakePath, 'utf8')).trim()).not.toBe('');
+    expect(await readFile(intakePath, 'utf8')).toContain(originalRequest);
   });
 
   it('reserves HardStop resolution for sf-orchestrator at Dispatcher and Handler boundaries', async () => {
@@ -954,19 +983,19 @@ describe('Orchestrator governance execution closure', () => {
     await writeJson(path.join(wiDir, 'work_item.json'), {
       schema_version: '1.1',
       work_item_id: workItemId,
-      workflow_type: 'bugfix_spec',
+      workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
       code_change_allowed: false,
       allowed_write_files: [],
     });
     await writeJson(path.join(wiDir, 'trigger_result.json'), {
       work_item_id: workItemId,
-      workflow_type: 'bugfix_spec',
+      workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
     });
     await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
       work_item_id: workItemId,
-      workflow_type: 'bugfix_spec',
+      workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
       candidate_phase: 'tasks',
       no_project_spec_change: true,
@@ -1047,20 +1076,20 @@ describe('Orchestrator governance execution closure', () => {
     await writeJson(path.join(wiDir, 'work_item.json'), {
       schema_version: '1.1',
       work_item_id: workItemId,
-      workflow_type: 'feature_spec_design_first',
-      workflow_path: 'design_change_path',
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
       code_change_allowed: false,
       allowed_write_files: [],
     });
     await writeJson(path.join(wiDir, 'trigger_result.json'), {
       work_item_id: workItemId,
-      workflow_type: 'feature_spec_design_first',
-      workflow_path: 'design_change_path',
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
     });
     await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
       work_item_id: workItemId,
-      workflow_type: 'feature_spec_design_first',
-      workflow_path: 'design_change_path',
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
       candidate_phase: 'design',
       entries: [],
     });

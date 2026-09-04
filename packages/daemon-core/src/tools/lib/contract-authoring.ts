@@ -575,8 +575,7 @@ async function authorContractRepairRelocationCandidate(params: {
     return {
       success: false,
       error:
-        'Contract repair relocation requires an existing spec_migration Candidate; ' +
-        'run sf_spec_migration(action=prepare_repair) first',
+        'UNSUPPORTED_CURRENT_RELEASE_WORKFLOW: contract repair relocation requires the removed spec_migration workflow',
     };
   }
   const manifest = manifestRead.value;

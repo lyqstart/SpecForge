@@ -16,8 +16,8 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { HandshakeFile } from "../types/handshake.js";
-import { resolveSpecForgeUserRoot } from "@specforge/types/user-level-paths";
+import { parseHandshakeFile, type HandshakeFile } from "../types/handshake.js";
+import { resolveSpecForgeHandshakePath } from "@specforge/types/user-level-paths";
 
 /**
  * Result of a postEvent call
@@ -57,7 +57,7 @@ export interface ReconnectingDaemonClientOptions {
   backoffFactor?: number;
   /** Maximum cumulative backoff time in milliseconds (default: 60000) */
   maxCumulativeBackoffMs?: number;
-  /** Path to handshake.json (defaults to <OpenCode config>/sf-user/runtime/handshake.json) */
+  /** Path to daemon.sock.json (defaults to ~/.specforge/runtime/daemon.sock.json) */
   handshakePath?: string;
   /** Base URL for daemon health check endpoint */
   healthzUrl?: string;
@@ -70,7 +70,7 @@ const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
   initialDelayMs: 1000,
   backoffFactor: 2.0,
   maxCumulativeBackoffMs: 60000,
-  handshakePath: join(resolveSpecForgeUserRoot(), "runtime", "handshake.json"),
+  handshakePath: resolveSpecForgeHandshakePath(),
   healthzUrl: "http://127.0.0.1",
 };
 
@@ -80,7 +80,7 @@ const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
 async function readHandshake(path: string): Promise<HandshakeFile | null> {
   try {
     const content = await readFile(path, "utf-8");
-    return JSON.parse(content) as HandshakeFile;
+    return parseHandshakeFile(JSON.parse(content));
   } catch {
     return null;
   }

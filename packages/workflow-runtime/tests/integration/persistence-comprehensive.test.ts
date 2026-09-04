@@ -613,23 +613,16 @@ describe('Comprehensive Persistence Integration Tests', () => {
     });
 
     it('should handle file system errors gracefully', async () => {
-      // Mock file system error for a non-cached instance
-      const mockError = new Error('File system error');
-      const originalReadFile = (await import('fs/promises')).readFile;
-      const readFileSpy = vi.spyOn(await import('fs/promises'), 'readFile').mockRejectedValueOnce(mockError);
-
       const instance = createTestInstance({ id: 'error-instance' });
       await persistence.saveInstance(instance);
 
       // Clear cache to force file read
       persistence.clearCache();
+      await rm(storageDir, { recursive: true, force: true });
 
-      // Should handle error gracefully - return null when file read fails
+      // A missing persistence root is a real filesystem read failure.
       const loaded = await persistence.loadInstance('error-instance');
       expect(loaded).toBeNull();
-
-      // Restore original function
-      readFileSpy.mockRestore();
     });
 
     it('should handle concurrent access to same instance', async () => {

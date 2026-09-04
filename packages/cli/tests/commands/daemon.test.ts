@@ -10,20 +10,19 @@
  * Validates: Requirements 1.1, 1.2 (cli spec).
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'bun:test';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as path from 'path';
 import * as os from 'os';
 import { ModeSwitch } from '../../src/mode-switch';
 
+const { mockDaemonClientConstructor } = vi.hoisted(() => ({
+  mockDaemonClientConstructor: vi.fn(),
+}));
+
 // Mock the DaemonClient module
-vi.mock('../../src/http/DaemonClient', () => {
-  return {
-    DaemonClient: vi.fn().mockImplementation(() => ({
-      post: vi.fn(),
-      get: vi.fn(),
-    })),
-  };
-});
+vi.mock('../../src/http/DaemonClient', () => ({
+  DaemonClient: mockDaemonClientConstructor,
+}));
 
 import { DaemonClient } from '../../src/http/DaemonClient';
 import { addDaemonCommands } from '../../src/commands/daemon';

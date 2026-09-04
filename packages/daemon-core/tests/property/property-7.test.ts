@@ -75,9 +75,13 @@ describe('Property 7: WAL Ordering', () => {
 
     // Create and append an event
     const event: Event = {
+      schema_version: '1.0',
       eventId: 'test-event-1',
       ts: Date.now(),
+      monotonicSeq: 1,
       projectId: testProjectPath,
+      actor: 'test',
+      category: 'state',
       action: 'test.event',
       payload: { key: 'value' },
       metadata: {
@@ -113,31 +117,42 @@ describe('Property 7: WAL Ordering', () => {
     await wal.initialize();
     await stateManager.initialize();
 
-    // Clear existing events from previous tests
+    // Each test has an isolated Runtime root; initialize does not create an empty WAL.
     const eventsPath = wal.getEventsPath();
-    await fs.writeFile(eventsPath, '');
 
     const events: Event[] = [
       {
+        schema_version: '1.0',
         eventId: 'event-1',
         ts: Date.now(),
+        monotonicSeq: 1,
         projectId: testProjectPath,
+        actor: 'test',
+        category: 'state',
         action: 'test.event1',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'daemon' },
       },
       {
+        schema_version: '1.0',
         eventId: 'event-2',
         ts: Date.now() + 1,
+        monotonicSeq: 2,
         projectId: testProjectPath,
+        actor: 'test',
+        category: 'state',
         action: 'test.event2',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'daemon' },
       },
       {
+        schema_version: '1.0',
         eventId: 'event-3',
         ts: Date.now() + 2,
+        monotonicSeq: 3,
         projectId: testProjectPath,
+        actor: 'test',
+        category: 'state',
         action: 'test.event3',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'daemon' },
@@ -161,17 +176,25 @@ describe('Property 7: WAL Ordering', () => {
 
     const events: Event[] = [
       {
+        schema_version: '1.0',
         eventId: 'event-1',
         ts: 1000,
+        monotonicSeq: 1,
         projectId: testProjectPath,
+        actor: 'test',
+        category: 'state',
         action: 'test.event1',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'daemon' },
       },
       {
+        schema_version: '1.0',
         eventId: 'event-2',
         ts: 2000,
+        monotonicSeq: 2,
         projectId: testProjectPath,
+        actor: 'test',
+        category: 'state',
         action: 'test.event2',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'daemon' },

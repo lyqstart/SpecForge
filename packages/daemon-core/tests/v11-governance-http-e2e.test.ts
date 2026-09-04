@@ -10,19 +10,28 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import * as http from 'node:http';
+import { execFile } from 'node:child_process';
 import * as fs from 'node:fs/promises';
 import * as fsSync from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { promisify } from 'node:util';
 
 import { HTTPServer, HTTPServerDeps } from '../src/http/HTTPServer';
 import { EventBus } from '../src/event-bus/EventBus';
 import { DaemonConfig } from '../src/daemon/DaemonConfig';
 import { ToolDispatcher } from '../src/tools/ToolDispatcher';
 import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-closure-provenance.js';
+import { generateTriggerResult } from '../src/tools/lib/workflow-path-selector-v11';
 
 // Import ALL handler registrations (side-effects)
 import '../src/tools/index';
+
+const execFileAsync = promisify(execFile);
+
+async function git(cwd: string, args: string[]): Promise<void> {
+  await execFileAsync('git', args, { cwd });
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -76,6 +85,12 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       path.join(specDir, 'manifest.json'),
       JSON.stringify({ schema_version: '1.0', project_name: 'gov-e2e-test' }),
     );
+    await git(tempDir, ['init', '-b', 'main']);
+    await git(tempDir, ['config', 'user.name', 'SpecForge Test']);
+    await git(tempDir, ['config', 'user.email', 'specforge-test@example.invalid']);
+    await git(tempDir, ['add', '.specforge/manifest.json']);
+    await git(tempDir, ['commit', '-m', 'test: establish HTTP governance baseline']);
+    await git(tempDir, ['switch', '-c', 'feature/work-item-wi-0001']);
 
     // Create a real ToolDispatcher with real handlers
     let httpTestState = 'verification_done';
@@ -139,8 +154,8 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     // Pre-create WI directory with work_item.json (normally done by sf_v11_work_item_create)
     await fs.mkdir(wiDir, { recursive: true });
     await fs.writeFile(path.join(wiDir, 'work_item.json'), JSON.stringify({
+      schema_version: '1.1',
       work_item_id: workItemId,
-      status: 'implementation_ready',
       code_change_allowed: false,
       allowed_write_files: [],
       workflow_path: 'code_only_fast_path',
@@ -148,7 +163,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     }, null, 2) + '\n');
 
     const permResult = await httpPost(port, token, '/api/v1/tool/invoke', {
-      tool: 'sf_v11_code_permission',
+      tool: 'sf_code_permission',
       args: {
         work_item_id: workItemId,
         action: 'release',
@@ -159,8 +174,8 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       },
       context: { directory: tempDir },
     });
-    expect(permResult.json?.success).toBe(true);
-        expect(permResult.json?.data?.success).toBe(true);
+    expect(permResult.json?.success, JSON.stringify(permResult.json)).toBe(true);
+    expect(permResult.json?.data?.success, JSON.stringify(permResult.json)).toBe(true);
     expect(permResult.json?.data?.action).toBe('release');
 
     // Verify WI directory was created with work_item.json
@@ -220,14 +235,36 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     // Step 5: Generate evidence files for close_gate
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
+    await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
+    await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
     await fs.writeFile(path.join(wiDir, 'intake.md'), '# Intake');
     await fs.writeFile(path.join(wiDir, 'change_classification.md'), '# CC\ncode_only');
     await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA');
-    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), '{"work_item_id":"WI-0001","workflow_path":"code_only_fast_path","triggered":true,"classification":{"requirement_changed":false,"acceptance_criteria_changed":false,"business_rule_changed":false,"user_visible_behavior_changed":false,"data_semantics_changed":false,"design_changed":false,"module_boundary_changed":false,"api_contract_changed":false,"architecture_changed":false,"unknowns":[]}}');
-    await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
-    await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nNo spec impact');
+    await fs.writeFile(
+      path.join(wiDir, 'trigger_result.json'),
+      JSON.stringify(generateTriggerResult(workItemId, {
+        requirement_changed: false,
+        acceptance_criteria_changed: false,
+        business_rule_changed: false,
+        user_visible_behavior_changed: false,
+        data_semantics_changed: false,
+        design_changed: false,
+        module_boundary_changed: false,
+        api_contract_changed: false,
+        architecture_changed: false,
+        data_model_changed: false,
+        module_contract_changed: false,
+        unknowns: [],
+      }, []), null, 2) + '\n',
+    );
+    await fs.writeFile(path.join(wiDir, 'candidates', 'tasks.md'), '# Tasks\n- [x] Done');
+    await fs.writeFile(path.join(wiDir, 'candidates', 'trace_delta.md'), '# Trace\nNo spec impact');
     await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }));
     await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n- Overall Status: passed');
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }) + '\n',
+    );
     await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (2 entries, 1 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |');
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
@@ -246,12 +283,6 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     _closure.provenance = await captureSemanticClosureProvenance({ workItemDir: wiDir, source: 'test_fixture', manifest: _closure as any });
     await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(_closure, null, 2));
 
-    // Update work_item.json status to verification_done
-    const wiContent = JSON.parse(await fs.readFile(path.join(wiDir, 'work_item.json'), 'utf-8'));
-    wiContent.status = 'verification_done';
-    wiContent.workflow_path = 'code_only_fast_path';
-    await fs.writeFile(path.join(wiDir, 'work_item.json'), JSON.stringify(wiContent, null, 2) + '\n');
-
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // Step 6: Execute close_gate via HTTP (tool/invoke)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -261,7 +292,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       context: { directory: tempDir },
     });
     expect(closeResult.json?.success).toBe(true);
-                expect(closeResult.json?.data?.success).toBe(true);
+    expect(closeResult.json?.data?.success, JSON.stringify(closeResult.json)).toBe(true);
     expect(closeResult.json?.data?.state_advanced).toBe(true);
     expect(closeResult.json?.data?.code_permission_revoked).toBe(true);
 

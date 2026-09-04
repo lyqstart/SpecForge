@@ -13,22 +13,31 @@
 
 import * as fs from "node:fs"
 import * as path from "node:path"
-import * as os from "node:os"
 import * as crypto from "node:crypto"
 import { fileURLToPath } from "node:url"
 
 import { InstallerError, InstallerErrorCode, EXIT_CODES } from "./lib/errors"
-import { resolveUserLevelDirectory } from "./lib/paths"
-import { acquireInstallLock, releaseInstallLock } from "./lib/install_lock"
+import { resolveSpecForgeInstallRoot } from "./lib/paths"
+import { acquireInstallLock } from "./lib/install_lock"
 import { readUserManifest, writeUserManifest, buildUserManifest, getUserManifestPath } from "./lib/manifest"
 import { computeSHA256 } from "./lib/crypto"
-import { atomicWriteFile, backupFile } from "./lib/atomic"
-import { mergeOpenCodeJsonUserLevel } from "./lib/opencode_merge"
-import { SHARED_COMPONENT_REGISTRY, SPECFORGE_AGENT_DEFINITIONS, getAgentDefinitions } from "./lib/registry"
+import { getAgentDefinitions } from "./lib/registry"
+import {
+  loadVerifiedReleaseInstallSet,
+  type ReleaseInstallFile,
+} from "./lib/release-manifest-producer"
 import { posixToNative } from "./lib/paths"
-import type { CLIOptions, UserLevelManifest, FileEntry } from "./lib/types"
-import { runMigrateManifestCommand } from "../packages/version-unification/src/legacy/migrate-manifest-command"
-import { SPEC_DIR_NAME } from "../packages/types/src/directory-layout";
+import type { CLIOptions, UserLevelManifest } from "./lib/types"
+import {
+  beginUpgradeJournal,
+  commitUpgradeJournal,
+  createUpgradeBackup,
+  markUpgradeMutationApplied,
+  planUpgradeMutation,
+  recoverInterruptedUpgrade,
+  rollbackUpgradeJournal,
+  type UpgradeJournal,
+} from "./lib/upgrade-journal"
 
 // ============================================================================
 // 参数解析
@@ -104,58 +113,34 @@ SpecForge 安装器 V3.5 — 用户级共享组件管理
   bun scripts/sf-installer.ts <subcommand> [options]
 
 子命令:
-  install           部署共享组件到 ~/.config/opencode/
+  install           部署共享组件到 ~/.specforge/
   upgrade           原子升级共享组件
   verify            校验共享组件完整性（SHA-256）
   uninstall         卸载共享组件
-  migrate-manifest  把老格式 manifest in-place 升级到当前格式
 
 选项:
   --force     upgrade 时强制覆盖所有文件
   --version   显示已安装的 SpecForge 版本
-  --help, -h  显示此帮助信息（migrate-manifest 子命令亦支持）
+  --help, -h  显示此帮助信息
 
 示例:
   bun scripts/sf-installer.ts install
   bun scripts/sf-installer.ts upgrade --force
   bun scripts/sf-installer.ts verify
   bun scripts/sf-installer.ts uninstall
-  bun scripts/sf-installer.ts migrate-manifest --help
 `)
 }
 
 export function showVersion(userLevelDir: string): void {
   const manifestPath = getUserManifestPath(userLevelDir)
-  const sfUserLegacyManifestPath = path.join(
-    getSpecForgeUserDir(),
-    "specforge-manifest.json"
-  )
-  const homeLegacyManifestPath = path.join(
-    getLegacySpecForgeDir(),
-    "specforge-manifest.json"
-  )
-
-  const effectivePath = fs.existsSync(manifestPath)
-    ? manifestPath
-    : fs.existsSync(sfUserLegacyManifestPath)
-      ? sfUserLegacyManifestPath
-      : fs.existsSync(homeLegacyManifestPath)
-        ? homeLegacyManifestPath
-        : null
-
-  if (effectivePath) {
+  if (fs.existsSync(manifestPath)) {
     try {
-      const manifest = JSON.parse(fs.readFileSync(effectivePath, "utf-8"))
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"))
       console.log(`SpecForge v${manifest.shared_version}`)
       console.log(`安装时间: ${manifest.installed_at}`)
       console.log(`更新时间: ${manifest.updated_at}`)
       console.log(`已部署文件: ${Object.keys(manifest.files).length} 个`)
       console.log(`目录: ${userLevelDir}`)
-      if (effectivePath !== manifestPath) {
-        console.log(
-          `⚠️  Manifest found at legacy location. Run 'install' to migrate to ${manifestPath}`
-        )
-      }
     } catch {
       console.log("SpecForge Manifest 解析失败")
     }
@@ -169,61 +154,29 @@ export function showVersion(userLevelDir: string): void {
 // ============================================================================
 
 
-/**
- * 获取 SpecForge 用户级目录。
- * v1.1 标准: 基于 resolveUserLevelDirectory() + /sf-user
- * 遵循 XDG_CONFIG_HOME 规范：
- *   - 若 XDG_CONFIG_HOME 已设置: $XDG_CONFIG_HOME/opencode/sf-user
- *   - 否则: ~/.config/opencode/sf-user
- * Legacy ~/.specforge/ 仅保留只读迁移支持。
- */
-function getSpecForgeUserDir(): string {
-  return path.join(resolveUserLevelDirectory(), "sf-user")
-}
-
-/**
- * Legacy reader: read from ~/.specforge/ for migration purposes only.
- * NEVER write to this directory.
- */
-function getLegacySpecForgeDir(): string {
-  return path.join(os.homedir(), SPEC_DIR_NAME)
-}
-
-/** 部署 templates/ 目录到 sf-user/templates/ */
-async function deployTemplates(sourceDir: string): Promise<number> {
-  const templatesSource = path.join(sourceDir, "setup", "userlevel-templates")
-  const sfUserDir = getSpecForgeUserDir()
-  const templatesTarget = path.join(sfUserDir, "templates")
-
-  if (!fs.existsSync(templatesSource)) {
-    console.log("   ⚠️  templates/ 目录不存在，跳过模板部署")
-    return 0
-  }
-
-  let count = 0
-  function copyDir(src: string, dst: string): void {
-    if (!fs.existsSync(dst)) fs.mkdirSync(dst, { recursive: true })
-    for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-      const srcPath = path.join(src, entry.name)
-      const dstPath = path.join(dst, entry.name)
-      if (entry.isDirectory()) {
-        copyDir(srcPath, dstPath)
-      } else {
-        fs.copyFileSync(srcPath, dstPath)
-        count++
-      }
-    }
-  }
-
-  copyDir(templatesSource, templatesTarget)
-  console.log(`   ✅ 模板库已部署到 ${templatesTarget}（${count} 个文件）`)
-  return count
-}
-
 /** 获取源目录（sf-installer.ts 所在目录的父目录） */
 function getSourceDir(): string {
   const thisFile = fileURLToPath(import.meta.url)
   return path.resolve(path.dirname(thisFile), "..")
+}
+
+const CURRENT_RELEASE_ID = "specforge-v6-current"
+
+async function requireVerifiedInstallSet(sourceDir: string): Promise<{
+  version: string
+  files: readonly ReleaseInstallFile[]
+}> {
+  const result = await loadVerifiedReleaseInstallSet({
+    candidateRoot: sourceDir,
+    expectedReleaseId: CURRENT_RELEASE_ID,
+  })
+  if (!result.ok) {
+    throw new InstallerError(
+      InstallerErrorCode.E_SOURCE_MISSING,
+      `发布清单校验失败，安装器未写入任何文件: ${result.errors.join("; ")}`
+    )
+  }
+  return { version: result.version, files: result.files }
 }
 
 /** 显示成功摘要 */
@@ -239,27 +192,25 @@ function showSuccessSummary(fileCount: number, userLevelDir: string, action: "�
 // cmdInstall — 部署共享组件
 // ============================================================================
 
-export async function cmdInstall(opts: CLIOptions): Promise<void> {
-  const userLevelDir = resolveUserLevelDirectory()
+export async function cmdInstall(
+  opts: CLIOptions,
+  userLevelDir: string = resolveSpecForgeInstallRoot(),
+): Promise<void> {
   const sourceDir = getSourceDir()
+  const installSet = await requireVerifiedInstallSet(sourceDir)
 
   console.log("📦 正在安装 SpecForge 共享组件...")
   console.log(`   目标目录: ${userLevelDir}`)
   console.log("")
 
-  await acquireInstallLock(userLevelDir, "install")
+  const installLock = await acquireInstallLock(userLevelDir, "install")
   try {
-    // 部署所有 SHARED_COMPONENT_REGISTRY 文件（逐文件原子替换）
+    // 部署 release manifest 已验证的唯一物理安装集合（逐文件原子替换）
     let deployedCount = 0
-    const skippedFiles: string[] = []
-    for (const entry of SHARED_COMPONENT_REGISTRY) {
-      const sourcePath = path.join(sourceDir, "setup", "userlevel-opencode", entry.path)
-      const targetPath = path.join(userLevelDir, posixToNative(entry.path))
-
-      if (!fs.existsSync(sourcePath)) {
-        skippedFiles.push(entry.path)
-        continue
-      }
+    for (const entry of installSet.files) {
+      const registryPath = entry.targetPath
+      const sourcePath = path.join(sourceDir, ...entry.sourcePath.split("/"))
+      const targetPath = path.join(userLevelDir, posixToNative(entry.targetPath))
 
       // 确保目标目录存在
       const dir = path.dirname(targetPath)
@@ -268,7 +219,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       }
 
       // 计算源文件 SHA-256
-      const sourceHash = await computeSHA256(sourcePath)
+      const sourceHash = entry.sha256
 
       // 原子写入：写入临时文件 → 校验 SHA-256 → rename 替换
       const tmpPath = targetPath + `.tmp.${crypto.randomUUID().slice(0, 8)}`
@@ -281,7 +232,7 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
           fs.unlinkSync(tmpPath)
           throw new InstallerError(
             InstallerErrorCode.E_CHECKSUM_MISMATCH,
-            `文件 ${entry.path} 写入后校验失败（源: ${sourceHash.slice(0, 16)}..., 临时: ${tmpHash.slice(0, 16)}...）`
+            `文件 ${registryPath} 写入后校验失败（源: ${sourceHash.slice(0, 16)}..., 临时: ${tmpHash.slice(0, 16)}...）`
           )
         }
 
@@ -298,23 +249,8 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       deployedCount++
     }
 
-    // Bug fix: 源文件缺失时报错而非静默成功
-    if (skippedFiles.length > 0) {
-      console.warn(`⚠️  以下 ${skippedFiles.length} 个注册文件在源目录中不存在（已跳过）:`)
-      for (const f of skippedFiles) {
-        console.warn(`   - ${f}`)
-      }
-      console.warn(`   源目录: ${path.join(sourceDir, "setup", "userlevel-opencode")}`)
-      if (deployedCount === 0) {
-        throw new InstallerError(
-          InstallerErrorCode.E_SOURCE_MISSING,
-          `所有注册文件均不存在于源目录，安装中止。请检查源目录路径是否正确: ${sourceDir}`
-        )
-      }
-    }
-
-    // Bug fix: 清理目标目录中不在 registry 里的 sf_* / sf-* 残留文件
-    const orphanFiles = findOrphanSfFiles(userLevelDir)
+    // 清理不在当前 release manifest 安装集合里的 sf_* / sf-* 残留文件
+    const orphanFiles = findOrphanSfFiles(userLevelDir, installSet.files)
     if (orphanFiles.length > 0) {
       console.log(`🧹 清理 ${orphanFiles.length} 个旧版本残留文件:`)
       for (const orphan of orphanFiles) {
@@ -328,75 +264,20 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
       }
     }
 
-    // 部署 lib/ 依赖文件到 sf-user/lib/
-    // 合并两个源：userlevel-scripts-lib/（26 个 .ts）+ userlevel-opencode/scripts/lib/（sf_plugin_client.ts）
-    const sfUserDir = getSpecForgeUserDir()
-    const libTarget = path.join(sfUserDir, "lib")
-    if (!fs.existsSync(libTarget)) {
-      fs.mkdirSync(libTarget, { recursive: true })
-    }
-
-    // 源 1: setup/userlevel-scripts-lib/ → <OpenCode config>/sf-user/lib/
-    const scriptsLibSource = path.join(sourceDir, "setup", "userlevel-scripts-lib")
-    if (fs.existsSync(scriptsLibSource)) {
-      const scriptsLibFiles = fs.readdirSync(scriptsLibSource).filter((f) => f.endsWith(".ts"))
-      for (const file of scriptsLibFiles) {
-        fs.copyFileSync(
-          path.join(scriptsLibSource, file),
-          path.join(libTarget, file)
-        )
-      }
-      deployedCount += scriptsLibFiles.length
-    }
-
-    // 源 2: setup/userlevel-opencode/scripts/lib/ → <OpenCode config>/sf-user/lib/
-    const pluginScriptsLibSource = path.join(sourceDir, "setup", "userlevel-opencode", "scripts", "lib")
-    if (fs.existsSync(pluginScriptsLibSource)) {
-      const pluginScriptsLibFiles = fs.readdirSync(pluginScriptsLibSource).filter((f) => f.endsWith(".ts"))
-      for (const file of pluginScriptsLibFiles) {
-        fs.copyFileSync(
-          path.join(pluginScriptsLibSource, file),
-          path.join(libTarget, file)
-        )
-      }
-      deployedCount += pluginScriptsLibFiles.length
-    }
-
-    // 部署 scripts/package.json 并安装其依赖（zod 等）
-    // 必须做：scripts/lib/types.ts 顶部 `import { z } from 'zod'`，
-    //        没有这一步 .opencode/tools/lib/utils.ts 的 dynamic import 链会因
-    //        `Cannot find package 'zod'` 全部失败，所有 sf_*_core 工具集体降级。
-    deployedCount += deployScriptsPackageJson(sourceDir, userLevelDir)
-
-    // Merge_Write opencode.json（仅 sf-* agents）
     const sourceAgents = getAgentDefinitions(sourceDir)
-    const existingManifest = await readUserManifest(userLevelDir).catch(() => null)
-    await mergeOpenCodeJsonUserLevel(userLevelDir, sourceAgents, existingManifest, opts.force)
 
     // 构建并写入 User_Manifest
-    const manifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
+    const manifest = await buildUserManifest(
+      userLevelDir,
+      sourceAgents,
+      installSet.version,
+      installSet.files,
+    )
     await writeUserManifest(userLevelDir, manifest)
-
-    // 写入 install.json（安装元数据）
-    const installJson = {
-      schema_version: "1.0",
-      base_dir: getSpecForgeUserDir(),
-      shared_version: manifest.shared_version,
-      installed_at: manifest.installed_at,
-    }
-    const installJsonPath = path.join(getSpecForgeUserDir(), "install.json")
-    fs.writeFileSync(installJsonPath, JSON.stringify(installJson, null, 2) + "\n")
-    console.log(`   install.json 已写入: ${installJsonPath}`)
-
-    // 部署模板库到 <OpenCode config>/sf-user/templates/
-    const templateCount = await deployTemplates(sourceDir)
-    if (templateCount > 0) {
-      console.log(`   已部署模板: ${templateCount} 个文件`)
-    }
 
     showSuccessSummary(deployedCount, userLevelDir, "安装")
   } finally {
-    await releaseInstallLock(userLevelDir)
+    await installLock.release()
   }
 }
 
@@ -404,97 +285,70 @@ export async function cmdInstall(opts: CLIOptions): Promise<void> {
 // cmdUpgrade — 原子升级共享组件
 // ============================================================================
 
-/** Per-file entry in the upgrade journal */
-interface UpgradeJournalFileEntry {
-  path: string
-  status: "replaced" | "skipped"
-  backupPath?: string
-  newHash?: string
-  oldHash?: string
-}
-
-/** Top-level upgrade_journal.json structure */
-interface UpgradeJournal {
-  timestamp: string
-  from_version: string
-  to_version: string
-  files_updated: UpgradeJournalFileEntry[]
-  status: "in_progress" | "success" | "failed" | "rolled_back"
-}
-
-/** 从 package.json 读取源版本号 */
-function getSourceVersion(sourceDir: string): string {
-  const pkgPath = path.join(sourceDir, "package.json")
-  if (!fs.existsSync(pkgPath)) return "0.0.0"
-  try {
-    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"))
-    return pkg.version || "0.0.0"
-  } catch {
-    return "0.0.0"
-  }
-}
-
-export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
-  const userLevelDir = resolveUserLevelDirectory()
+export async function cmdUpgrade(
+  opts: CLIOptions,
+  userLevelDir: string = resolveSpecForgeInstallRoot(),
+): Promise<void> {
   const sourceDir = getSourceDir()
+  const installSet = await requireVerifiedInstallSet(sourceDir)
 
   console.log("🔄 正在升级 SpecForge 共享组件...")
   console.log(`   目标目录: ${userLevelDir}`)
   console.log("")
 
-  await acquireInstallLock(userLevelDir, "upgrade")
+  const installLock = await acquireInstallLock(userLevelDir, "upgrade")
+  let journal: UpgradeJournal | undefined
   try {
+    const recovery = await recoverInterruptedUpgrade(userLevelDir)
+    if (recovery === "rolled_back") {
+      throw new InstallerError(
+        InstallerErrorCode.E_INVALID_JSON,
+        "检测到上次升级未完成，已保持或完成回滚；请检查 upgrade_journal.json 后重新运行升级"
+      )
+    }
+
     // Step 1: 读取现有 Manifest
     const existingManifest = await readUserManifest(userLevelDir)
     const fromVersion = existingManifest?.shared_version || "0.0.0"
-    const toVersion = getSourceVersion(sourceDir)
+    const toVersion = installSet.version
 
-    // Step 2: 备份 User_Manifest 和 opencode.json
-    const manifestBackupPath = await backupFile(userLevelDir, "specforge-manifest.json")
-    const opencodeBackupPath = await backupFile(userLevelDir, "opencode.json")
-
-    // Step 3: Initialize upgrade journal
-    const journalPath = path.join(userLevelDir, "upgrade_journal.json")
-    const journal: UpgradeJournal = {
-      timestamp: new Date().toISOString(),
-      from_version: fromVersion,
-      to_version: toVersion,
-      files_updated: [],
-      status: "in_progress",
-    }
-    // Write initial journal (marks upgrade as in_progress for crash recovery)
-    fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
+    // Step 2: 初始化带独立 schema 的 write-ahead 升级事务日志。
+    journal = await beginUpgradeJournal(userLevelDir, fromVersion, toVersion)
 
     let upgradedCount = 0
     let skippedCount = 0
 
     // Step 4: Per-file atomic replacement
-    for (const entry of SHARED_COMPONENT_REGISTRY) {
-      const sourcePath = path.join(sourceDir, "setup", "userlevel-opencode", entry.path)
-      const targetPath = path.join(userLevelDir, posixToNative(entry.path))
-
-      if (!fs.existsSync(sourcePath)) {
-        journal.files_updated.push({ path: entry.path, status: "skipped" })
-        skippedCount++
-        continue
-      }
+    for (const entry of installSet.files) {
+      const registryPath = entry.targetPath
+      const sourcePath = path.join(sourceDir, ...entry.sourcePath.split("/"))
+      const targetPath = path.join(userLevelDir, posixToNative(entry.targetPath))
 
       // 计算源文件 SHA-256
-      const sourceHash = await computeSHA256(sourcePath)
+      const sourceHash = entry.sha256
 
       // 如果目标文件存在且 hash 相同（非 --force），跳过
-      const existingEntry = existingManifest?.files[entry.path]
+      const existingEntry = existingManifest?.files[registryPath]
       if (!opts.force && existingEntry && existingEntry.sha256 === sourceHash) {
-        journal.files_updated.push({ path: entry.path, status: "skipped", oldHash: existingEntry.sha256 })
         skippedCount++
         continue
       }
 
       // 备份现有文件
-      let fileBackupPath: string | undefined
-      if (fs.existsSync(targetPath)) {
-        fileBackupPath = (await backupFile(userLevelDir, entry.path)) || undefined
-      }
+      const existedBefore = fs.existsSync(targetPath)
+      const fileBackup = existedBefore
+        ? await createUpgradeBackup(userLevelDir, journal, registryPath)
+        : undefined
+
+      // 目标写入前先原子持久化恢复计划。
+      const mutationIndex = await planUpgradeMutation(userLevelDir, journal, {
+        path: registryPath,
+        operation: "replace",
+        existed_before: existedBefore,
+        ...(fileBackup ?? {}),
+        new_hash: sourceHash,
+        old_hash: existingEntry?.sha256,
+      })
 
       // 确保目标目录存在
       const dir = path.dirname(targetPath)
@@ -512,7 +366,7 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
           fs.unlinkSync(tmpPath)
           throw new InstallerError(
             InstallerErrorCode.E_CHECKSUM_MISMATCH,
-            `文件 ${entry.path} 写入后校验失败（源: ${sourceHash.slice(0, 16)}..., 临时: ${tmpHash.slice(0, 16)}...）`
+            `文件 ${registryPath} 写入后校验失败（源: ${sourceHash.slice(0, 16)}..., 临时: ${tmpHash.slice(0, 16)}...）`
           )
         }
         // 原子替换
@@ -523,185 +377,77 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
         throw err
       }
 
-      journal.files_updated.push({
-        path: entry.path,
-        status: "replaced",
-        backupPath: fileBackupPath,
-        newHash: sourceHash,
-        oldHash: existingEntry?.sha256,
-      })
+      await markUpgradeMutationApplied(userLevelDir, journal, mutationIndex)
       upgradedCount++
     }
 
-    // Step 5: 部署 lib/ 依赖文件到 sf-user/lib/
-    // 合并两个源：userlevel-scripts-lib/ + userlevel-opencode/scripts/lib/
-    const sfUserDirUpg = getSpecForgeUserDir()
-    const libTargetUpg = path.join(sfUserDirUpg, "lib")
-    if (!fs.existsSync(libTargetUpg)) {
-      fs.mkdirSync(libTargetUpg, { recursive: true })
-    }
-
-    const scriptsLibSourceUpg = path.join(sourceDir, "setup", "userlevel-scripts-lib")
-    if (fs.existsSync(scriptsLibSourceUpg)) {
-      const scriptsLibFilesUpg = fs.readdirSync(scriptsLibSourceUpg).filter((f) => f.endsWith(".ts"))
-      for (const file of scriptsLibFilesUpg) {
-        fs.copyFileSync(
-          path.join(scriptsLibSourceUpg, file),
-          path.join(libTargetUpg, file)
-        )
-      }
-      upgradedCount += scriptsLibFilesUpg.length
-    }
-
-    const pluginScriptsLibSourceUpg = path.join(sourceDir, "setup", "userlevel-opencode", "scripts", "lib")
-    if (fs.existsSync(pluginScriptsLibSourceUpg)) {
-      const pluginScriptsLibFilesUpg = fs.readdirSync(pluginScriptsLibSourceUpg).filter((f) => f.endsWith(".ts"))
-      for (const file of pluginScriptsLibFilesUpg) {
-        fs.copyFileSync(
-          path.join(pluginScriptsLibSourceUpg, file),
-          path.join(libTargetUpg, file)
-        )
-      }
-      upgradedCount += pluginScriptsLibFilesUpg.length
-    }
-
-    // Step 5.6: 部署 scripts/package.json 并安装其依赖（zod 等）
-    upgradedCount += deployScriptsPackageJson(sourceDir, userLevelDir)
-
-    // Step 6: 写入新 User_Manifest
+    // Step 5: 写入新 User_Manifest，并把 Manifest 本身纳入同一事务。
     const sourceAgents = getAgentDefinitions(sourceDir)
-    const newManifest = await buildUserManifest(userLevelDir, sourceAgents, sourceDir)
+    const newManifest = await buildUserManifest(
+      userLevelDir,
+      sourceAgents,
+      installSet.version,
+      installSet.files,
+    )
+    const manifestRelativePath = "specforge-manifest.json"
+    const manifestTarget = getUserManifestPath(userLevelDir)
+    const manifestExistedBefore = fs.existsSync(manifestTarget)
+    const manifestBackup = manifestExistedBefore
+      ? await createUpgradeBackup(userLevelDir, journal, manifestRelativePath)
+      : undefined
+    const manifestMutationIndex = await planUpgradeMutation(userLevelDir, journal, {
+      path: manifestRelativePath,
+      operation: "replace",
+      existed_before: manifestExistedBefore,
+      ...(manifestBackup ?? {}),
+    })
     await writeUserManifest(userLevelDir, newManifest)
+    await markUpgradeMutationApplied(userLevelDir, journal, manifestMutationIndex)
 
-    // 写入 install.json（安装元数据）
-    const installJsonUpg = {
-      schema_version: "1.0",
-      base_dir: getSpecForgeUserDir(),
-      shared_version: newManifest.shared_version,
-      installed_at: newManifest.installed_at,
-    }
-    const installJsonPathUpg = path.join(getSpecForgeUserDir(), "install.json")
-    fs.writeFileSync(installJsonPathUpg, JSON.stringify(installJsonUpg, null, 2) + "\n")
-    console.log(`   install.json 已写入: ${installJsonPathUpg}`)
-
-    // Step 7: Merge_Write opencode.json
-    await mergeOpenCodeJsonUserLevel(userLevelDir, sourceAgents, newManifest, opts.force)
-
-    // Step 8: 清理目标目录中不在 registry 里的 sf_* / sf-* 残留文件
-    const orphanFiles = findOrphanSfFiles(userLevelDir)
+    // Step 6: 清理目标目录中不在 registry 里的 sf_* / sf-* 残留文件。
+    const orphanFiles = findOrphanSfFiles(userLevelDir, installSet.files)
     if (orphanFiles.length > 0) {
       console.log(`🧹 清理 ${orphanFiles.length} 个旧版本残留文件:`)
       for (const orphan of orphanFiles) {
         const orphanPath = path.join(userLevelDir, posixToNative(orphan))
-        try {
-          fs.unlinkSync(orphanPath)
-          console.log(`   ✓ 已删除: ${orphan}`)
-          journal.files_updated.push({ path: orphan, status: "removed" as any })
-        } catch {
-          console.warn(`   ⚠ 无法删除: ${orphan}`)
-        }
+        const journalOrphanPath = orphan.split(path.sep).join("/")
+        const orphanBackup = await createUpgradeBackup(
+          userLevelDir,
+          journal,
+          journalOrphanPath,
+        )
+        const orphanMutationIndex = await planUpgradeMutation(userLevelDir, journal, {
+          path: journalOrphanPath,
+          operation: "remove",
+          existed_before: true,
+          ...orphanBackup,
+        })
+        fs.unlinkSync(orphanPath)
+        await markUpgradeMutationApplied(userLevelDir, journal, orphanMutationIndex)
+        console.log(`   ✓ 已删除: ${orphan}`)
       }
     }
 
-    // Step 9: Mark journal as success and clean up
-    journal.status = "success"
-    fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
-
-    // 成功后删除 journal（操作已完成，不再需要恢复信息）
-    if (fs.existsSync(journalPath)) {
-      fs.unlinkSync(journalPath)
-    }
-
-    // 清理旧版本遗留目录
-    const oldPathsUpg = [
-      path.resolve(userLevelDir, "..", "scripts"),          // ~/.config/scripts/
-      path.join(userLevelDir, "scripts"),                   // ~/.config/opencode/scripts/
-    ]
-
-    for (const oldPath of oldPathsUpg) {
-      if (fs.existsSync(oldPath)) {
-        try {
-          fs.rmSync(oldPath, { recursive: true, force: true })
-          console.log(`   ✓ 已清理旧路径: ${oldPath}`)
-        } catch {
-          console.warn(`   ⚠ 无法清理旧路径: ${oldPath}`)
-        }
-      }
-    }
+    // Step 7: 原子标记提交；若进程在随后删除前中断，下次恢复只清理 success journal。
+    await commitUpgradeJournal(userLevelDir, journal)
 
     console.log(`   已升级: ${upgradedCount} 个文件`)
     console.log(`   已跳过: ${skippedCount} 个文件（无变化）`)
-    // 部署模板库到 <OpenCode config>/sf-user/templates/
-    const templateCount = await deployTemplates(sourceDir)
-    if (templateCount > 0) {
-      console.log(`   已更新模板: ${templateCount} 个文件`)
-    }
-
     showSuccessSummary(upgradedCount, userLevelDir, "升级")
   } catch (err) {
-    // 失败时尝试回滚
-    const journalPath = path.join(userLevelDir, "upgrade_journal.json")
-    if (fs.existsSync(journalPath)) {
+    if (journal && journal.status !== "success" && journal.status !== "rolled_back") {
       try {
-        const journal: UpgradeJournal = JSON.parse(
-          fs.readFileSync(journalPath, "utf-8")
-        )
         console.warn("  ⚠️ 升级失败，尝试回滚...")
-
-        // 回滚已替换的文件
-        for (const entry of journal.files_updated) {
-          if (entry.status === "replaced" && entry.backupPath && fs.existsSync(entry.backupPath)) {
-            const targetPath = path.join(userLevelDir, posixToNative(entry.path))
-            fs.copyFileSync(entry.backupPath, targetPath)
-          }
-        }
-
-        // 回滚 User_Manifest（从备份恢复到 OpenCode 配置根目录）
-        const manifestBackup = path.join(userLevelDir, ".backup")
-        if (fs.existsSync(manifestBackup)) {
-          // Find the manifest backup (most recent specforge-manifest.json.bak.*)
-          const backupFiles = fs.readdirSync(manifestBackup)
-            .filter(f => f.startsWith("specforge-manifest.json.bak."))
-            .sort()
-          if (backupFiles.length > 0) {
-            const latestBackup = path.join(manifestBackup, backupFiles[backupFiles.length - 1])
-            const manifestTarget = getUserManifestPath(userLevelDir)
-            fs.copyFileSync(latestBackup, manifestTarget)
-          }
-        }
-
-        // 回滚 opencode.json（从备份恢复）
-        if (fs.existsSync(manifestBackup)) {
-          const backupFiles = fs.readdirSync(manifestBackup)
-            .filter(f => f.startsWith("opencode.json.bak."))
-            .sort()
-          if (backupFiles.length > 0) {
-            const latestBackup = path.join(manifestBackup, backupFiles[backupFiles.length - 1])
-            const opencodeTarget = path.join(userLevelDir, "opencode.json")
-            fs.copyFileSync(latestBackup, opencodeTarget)
-          }
-        }
-
-        // Update journal status to rolled_back (preserve for diagnostics)
-        journal.status = "rolled_back"
-        fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
-
+        await rollbackUpgradeJournal(userLevelDir, journal)
         console.warn("  ✅ 回滚完成")
-      } catch {
-        // Update journal status to failed if rollback itself fails
-        try {
-          const journal: UpgradeJournal = JSON.parse(
-            fs.readFileSync(journalPath, "utf-8")
-          )
-          journal.status = "failed"
-          fs.writeFileSync(journalPath, JSON.stringify(journal, null, 2))
-        } catch { /* best effort */ }
-        console.warn("  ⚠️ 回滚失败，请手动检查 .backup/ 目录和 upgrade_journal.json")
+      } catch (rollbackError) {
+        console.warn("  ⚠️ 回滚失败，请检查 backups/ 事务目录和 upgrade_journal.json")
+        throw rollbackError
       }
     }
     throw err
   } finally {
-    await releaseInstallLock(userLevelDir)
+    await installLock.release()
   }
 }
 
@@ -709,8 +455,9 @@ export async function cmdUpgrade(opts: CLIOptions): Promise<void> {
 // cmdVerify — SHA-256 校验
 // ============================================================================
 
-export async function cmdVerify(): Promise<void> {
-  const userLevelDir = resolveUserLevelDirectory()
+export async function cmdVerify(
+  userLevelDir: string = resolveSpecForgeInstallRoot(),
+): Promise<void> {
 
   console.log("🔍 正在校验 SpecForge 共享组件完整性...")
   console.log(`   目录: ${userLevelDir}`)
@@ -749,14 +496,15 @@ export async function cmdVerify(): Promise<void> {
 // cmdUninstall — 卸载共享组件
 // ============================================================================
 
-export async function cmdUninstall(): Promise<void> {
-  const userLevelDir = resolveUserLevelDirectory()
+export async function cmdUninstall(
+  userLevelDir: string = resolveSpecForgeInstallRoot(),
+): Promise<void> {
 
   console.log("🗑️ 正在卸载 SpecForge 共享组件...")
   console.log(`   目录: ${userLevelDir}`)
   console.log("")
 
-  await acquireInstallLock(userLevelDir, "uninstall")
+  const installLock = await acquireInstallLock(userLevelDir, "uninstall")
   try {
     // Step 1: 读取 User_Manifest
     const manifest = await readUserManifest(userLevelDir)
@@ -765,10 +513,7 @@ export async function cmdUninstall(): Promise<void> {
       return
     }
 
-    // Step 2: 备份 opencode.json（修改前必须备份）
-    await backupFile(userLevelDir, "opencode.json")
-
-    // Step 3: 删除 Manifest 中记录的文件
+    // Step 2: 删除 Manifest 中记录的文件
     let deletedCount = 0
     let missingCount = 0
     for (const relativePath of Object.keys(manifest.files)) {
@@ -781,7 +526,7 @@ export async function cmdUninstall(): Promise<void> {
       }
     }
 
-    // Step 4: 检查未在 Manifest 中记录的 sf-* 文件（仅警告，不删除）
+    // Step 3: 检查未在 Manifest 中记录的 sf-* 文件（仅警告，不删除）
     const warnFiles = findUnknownSfFiles(userLevelDir, manifest)
     if (warnFiles.length > 0) {
       console.log("")
@@ -791,51 +536,13 @@ export async function cmdUninstall(): Promise<void> {
       }
     }
 
-    // Step 5: 从 opencode.json 移除 sf-* agents（Merge_Write 反向操作）
-    await removeSfAgentsFromOpenCodeJson(userLevelDir)
-
-    // Step 6: 删除 User_Manifest（位于 OpenCode 用户配置根目录）
+    // Step 4: 删除当前用户级 User_Manifest
     const manifestPath = getUserManifestPath(userLevelDir)
     if (fs.existsSync(manifestPath)) {
       fs.unlinkSync(manifestPath)
     }
 
-    // 删除 install.json
-    const installJsonPath = path.join(getSpecForgeUserDir(), "install.json")
-    if (fs.existsSync(installJsonPath)) {
-      fs.unlinkSync(installJsonPath)
-    }
-
-    // Also clean up legacy location if it exists (migration cleanup)
-    const legacyDir = getLegacySpecForgeDir()
-    const legacyManifest = path.join(legacyDir, "specforge-manifest.json")
-    if (fs.existsSync(legacyManifest)) {
-      fs.unlinkSync(legacyManifest)
-    }
-    const legacyInstallJson = path.join(legacyDir, "install.json")
-    if (fs.existsSync(legacyInstallJson)) {
-      fs.unlinkSync(legacyInstallJson)
-    }
-
-    // Step 6.5: 清理旧版本遗留目录
-    // 旧版安装器将 scripts/lib 部署到以下位置，升级后需清理
-    const oldPaths = [
-      path.resolve(userLevelDir, "..", "scripts"),          // ~/.config/scripts/ (package.json + node_modules + 26 .ts)
-      path.join(userLevelDir, "scripts"),                   // ~/.config/opencode/scripts/ (sf_plugin_client.ts)
-    ]
-
-    for (const oldPath of oldPaths) {
-      if (fs.existsSync(oldPath)) {
-        try {
-          fs.rmSync(oldPath, { recursive: true, force: true })
-          console.log(`   ✓ 已清理旧路径: ${oldPath}`)
-        } catch {
-          console.warn(`   ⚠ 无法清理旧路径: ${oldPath}`)
-        }
-      }
-    }
-
-    // Step 7: 显示卸载摘要
+    // Step 5: 显示卸载摘要
     console.log("")
     console.log(`✅ 卸载完成`)
     console.log(`   已删除: ${deletedCount} 个文件`)
@@ -846,7 +553,7 @@ export async function cmdUninstall(): Promise<void> {
       console.log(`   未管理: ${warnFiles.length} 个 sf-* 文件（未删除，需手动处理）`)
     }
   } finally {
-    await releaseInstallLock(userLevelDir)
+    await installLock.release()
   }
 }
 
@@ -932,97 +639,16 @@ function findUnknownSfFiles(userLevelDir: string, manifest: UserLevelManifest): 
   return unknown
 }
 
-/**
- * 从 opencode.json 移除 sf-* agents（Merge_Write 反向操作）
- *
- * 行为：
- * - 删除 agent 对象中所有 sf-* 前缀的条目
- * - 保留所有非 sf-* 的 agent 条目和其他顶层键
- * - 即使 agent 对象变空，仍保留 $schema 和其他键
- */
-async function removeSfAgentsFromOpenCodeJson(userLevelDir: string): Promise<void> {
-  const configPath = path.join(userLevelDir, "opencode.json")
-  if (!fs.existsSync(configPath)) return
-
-  try {
-    const content = fs.readFileSync(configPath, "utf-8")
-    const config = JSON.parse(content)
-
-    // 移除 sf-* agent 条目
-    if (config.agent && typeof config.agent === "object") {
-      for (const name of Object.keys(config.agent)) {
-        if (name.startsWith("sf-")) {
-          delete config.agent[name]
-        }
-      }
-    }
-
-    // 原子写入更新后的配置
-    await atomicWriteFile(configPath, JSON.stringify(config, null, 2) + "\n")
-  } catch {
-    console.warn("  ⚠️ 无法更新 opencode.json")
-  }
-}
-
 // ============================================================================
-// deployScriptsPackageJson — 部署 scripts/package.json 并 bun install
+// findOrphanSfFiles — 查找目标目录中不在 release manifest 里的 sf_*/sf-* 残留文件
 // ============================================================================
-
-/**
- * 把仓库 scripts/package.json 复制到 <OpenCode config>/sf-user/package.json，
- * 并在该目录运行 `bun install`，确保 scripts/lib/types.ts 顶部的
- * `import { z } from 'zod'` 能解析到 <OpenCode config>/sf-user/node_modules/zod。
- *
- * 没有这一步，tools/lib/utils.ts 的 dynamic import
- *   import("<OpenCode config>/sf-user/lib/compatibility")
- * 会因 zod 找不到全部失败，所有 sf_*_core 工具集体降级。
- *
- * 返回部署的文件数（0 = 跳过，1 = 复制了 package.json）。
- */
-function deployScriptsPackageJson(sourceDir: string, _userLevelDir: string): number {
-  const sourcePkgPath = path.join(sourceDir, "scripts", "package.json")
-  if (!fs.existsSync(sourcePkgPath)) {
-    // 仓库没有 scripts/package.json，跳过（旧版本兼容）
-    return 0
-  }
-
-  const targetDir = getSpecForgeUserDir()
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true })
-  }
-
-  const targetPkgPath = path.join(targetDir, "package.json")
-  fs.copyFileSync(sourcePkgPath, targetPkgPath)
-
-  // 检查是否需要 bun install（node_modules/zod 不存在或 lockfile 不存在时）
-  const zodMarker = path.join(targetDir, "node_modules", "zod", "package.json")
-  const lockfilePath = path.join(targetDir, "bun.lock")
-  if (!fs.existsSync(zodMarker) || !fs.existsSync(lockfilePath)) {
-    console.log(`📦 安装 ${targetDir} 依赖（zod 等）...`)
-    try {
-      const { spawnSync } = require("node:child_process") as typeof import("node:child_process")
-      const result = spawnSync("bun", ["install"], {
-        cwd: targetDir,
-        stdio: "inherit",
-        shell: process.platform === "win32",
-      })
-      if (result.status !== 0) {
-        console.warn(`   ⚠ bun install 退出码 ${result.status}，请手动 cd ${targetDir} && bun install`)
-      }
-    } catch (err) {
-      console.warn(`   ⚠ 自动 bun install 失败: ${(err as Error).message}`)
-      console.warn(`   请手动执行: cd ${targetDir} && bun install`)
-    }
-  }
-
-  return 1
-}
-
-// ============================================================================
-// findOrphanSfFiles — 查找目标目录中不在 registry 里的 sf_*/sf-* 残留文件
-// ============================================================================
-function findOrphanSfFiles(userLevelDir: string): string[] {
-  const registryPaths = new Set(SHARED_COMPONENT_REGISTRY.map((e) => posixToNative(e.path)))
+function findOrphanSfFiles(
+  userLevelDir: string,
+  installFiles: readonly ReleaseInstallFile[],
+): string[] {
+  const registryPaths = new Set(
+    installFiles.map((entry) => posixToNative(entry.targetPath))
+  )
   const orphans: string[] = []
 
   const dirsToScan: Array<{ dir: string; prefix: string; pattern: RegExp }> = [
@@ -1055,23 +681,6 @@ function findOrphanSfFiles(userLevelDir: string): string[] {
 export async function main(): Promise<void> {
   const args = process.argv.slice(2)
 
-  // Early dispatch: `migrate-manifest` subcommand (Task 13.1 — registered;
-  // Task 13.2 will provide the real implementation). We branch before
-  // `parseArgs` because parseArgs both (a) has its own subcommand whitelist
-  // we don't want to extend and (b) treats `--help` as a global flag that
-  // prints the installer's top-level usage. The migrate-manifest command
-  // owns its own help text.
-  if (args[0] === "migrate-manifest") {
-    const subArgs = args.slice(1)
-    try {
-      const result = await runMigrateManifestCommand(subArgs)
-      process.exit(result.exitCode)
-    } catch (err) {
-      console.error(`❌ migrate-manifest 失败:`, err)
-      process.exit(1)
-    }
-  }
-
   let opts: CLIOptions
   try {
     opts = parseArgs(args)
@@ -1083,7 +692,7 @@ export async function main(): Promise<void> {
     throw err
   }
 
-  const userLevelDir = resolveUserLevelDirectory()
+  const userLevelDir = resolveSpecForgeInstallRoot()
 
   if (opts.showVersion) {
     showVersion(userLevelDir)

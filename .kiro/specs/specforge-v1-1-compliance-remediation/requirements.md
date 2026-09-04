@@ -1,5 +1,9 @@
 # Requirements Document
 
+## Current Release Governance Status
+
+本文档整体分类为 `HISTORICAL_EVIDENCE_ONLY`，记录 V1.1 整改来源，不再作为当前产品/模块权威。当前产品范围与架构以 V6 requirements/design 为准，当前治理合同以 `docs/design/SpecForge架构一致性治理最终实施方案.md` 为准。下文中 `.specforge/specs/**` 读取和迁移规则属于 `LEGACY_ONLY`，不得被当前 Runtime 实现或验证消费。
+
 ## Introduction
 
 SpecForge v1.1 标准合规整改项目旨在将当前的 SpecForge 系统从"Agent 工作流框架"迁移为"不可绕过的规格驱动 Runtime"。根据审计报告，当前系统的关键控制仍然依赖 Agent 提示词，而非程序硬约束。本整改项目将分 5 轮实施，逐步建立项目级规格真相源、事务型工作项、Candidate 合并机制、Write Guard 硬约束和 Extension Registry 子流程，确保系统符合 SpecForge v1.1 + Patch 1 标准。
@@ -24,7 +28,7 @@ SpecForge v1.1 标准合规整改项目旨在将当前的 SpecForge 系统从"Ag
 - **Close_Gate**: 关闭门禁，验证所有必要条件满足后才允许关闭工作项
 - **Extension_Registry**: 扩展注册表文件 `extension_registry.json`，项目级正式规格文件，定义所有可用的扩展类型
 - **Extension_Subflow**: 扩展子流程，当 Agent 需要使用未注册类型时触发的独立工作流
-- **Legacy_Specs**: 遗留规格，指旧版本 `.specforge/specs/**` 目录下的规格文件，只能读取不能写入
+- **Legacy_Specs**: 遗留规格，指旧版本 `.specforge/specs/**` 目录下的历史文件；当前 Runtime 既不读取也不写入
 - **Project_Spec_Manifest**: 项目规格清单文件 `spec_manifest.json`，位于 `.specforge/project/`，记录所有项目级正式规格文件路径
 
 ## Requirements
@@ -46,7 +50,7 @@ SpecForge v1.1 标准合规整改项目旨在将当前的 SpecForge 系统从"Ag
 9. THE Path_Policy SHALL 拒绝包含 Windows 反斜杠 `\` 的路径
 10. WHEN 引用项目规格文件时，THE Path_Policy SHALL 要求路径带 `.specforge/` 前缀
 11. WHEN 尝试写入 `.specforge/specs/**` 路径时，THE Runtime SHALL 阻止写入操作
-12. THE Runtime SHALL 允许读取 `.specforge/specs/**` 路径下的 Legacy_Specs
+12. THE current Runtime SHALL 拒绝读取 `.specforge/specs/**` 路径下的 Legacy_Specs；历史人工审计不构成 Runtime 读取能力
 13. WHEN 初始化新项目时，THE Runtime SHALL 创建 `.specforge/project/` 目录
 14. WHEN 初始化新项目时，THE Runtime SHALL 创建 `.specforge/work-items/` 目录
 15. WHEN 初始化新项目时，THE Runtime SHALL 创建 `.specforge/runtime/` 目录

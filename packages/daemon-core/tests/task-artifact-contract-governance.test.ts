@@ -13,11 +13,6 @@ import {
   parseTaskVerification,
   validateTaskArtifactContract,
 } from '../src/tools/lib/sf_markdown_verification_parser';
-import {
-  isValidNodeId,
-  loadGraphStore,
-  syncFromSpec,
-} from '../src/tools/lib/sf_knowledge_graph_core';
 import { getHandler } from '../src/tools/ToolDispatcher';
 import { crossValidateTask } from '../src/tools/lib/sf_tasks_gate_core';
 import '../src/tools/handlers/sf-artifact-write';
@@ -174,6 +169,17 @@ describe('task-document/v1 producer and consumer governance', () => {
 
   it('rejects an invalid task contract before creating a candidate file', async () => {
     const root = await tempProject();
+    const workItemDir = path.join(root, '.specforge', 'work-items', 'WI-0001');
+    await mkdir(workItemDir, { recursive: true });
+    await writeFile(
+      path.join(workItemDir, 'work_item.json'),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: 'WI-0001',
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+      }, null, 2) + '\n',
+    );
     const handler = getHandler('sf_artifact_write');
     expect(handler).toBeDefined();
 
@@ -201,46 +207,4 @@ describe('task-document/v1 producer and consumer governance', () => {
     ).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
-  it('feeds canonical bold refs consistently into Gate parsing and Knowledge Graph sync', async () => {
-    const root = await tempProject();
-    const specDir = path.join(root, '.specforge', 'specs', 'WI-0001');
-    const requirements =
-      '### REQ-AUTH-001 Authentication\n\n- verification_strategy: [unit, integration]\n';
-    const taskVerification = parseTaskVerification(canonicalTask());
-    const crossValidation = crossValidateTask(
-      'TASK-WI-0001-001',
-      taskVerification,
-      requirements,
-      '### DD-AUTH-001 Authentication design\n'
-    );
-    expect(crossValidation.blockingIssues).toEqual([]);
-
-    await mkdir(specDir, { recursive: true });
-    await writeFile(path.join(specDir, 'requirements.md'), requirements);
-    await writeFile(
-      path.join(specDir, 'design.md'),
-      '### DD-AUTH-001 Authentication design\n\n- **refs**: [REQ-AUTH-001]\n'
-    );
-    await writeFile(path.join(specDir, 'tasks.md'), canonicalTask());
-
-    const result = await syncFromSpec('WI-0001', root, 'verification');
-    expect(result.success).toBe(true);
-
-    const graph = await loadGraphStore(root);
-    expect(graph.success).toBe(true);
-    expect(
-      graph.store?.nodes.some(
-        node => node.type === 'requirement' && node.metadata?.req_id === 'REQ-AUTH-001'
-      )
-    ).toBe(true);
-    expect(
-      graph.store?.nodes.some(
-        node => node.type === 'task' && node.metadata?.task_id === 'TASK-WI-0001-001'
-      )
-    ).toBe(true);
-    expect(graph.store?.edges.some(edge => edge.type === 'traces_to')).toBe(true);
-    expect(graph.store?.edges.some(edge => edge.type === 'decomposes_to')).toBe(true);
-    expect(isValidNodeId('WI-0001:requirement:AUTH-001')).toBe(true);
-    expect(isValidNodeId('WI-0001:task:WI-0001-001')).toBe(true);
-  });
 });

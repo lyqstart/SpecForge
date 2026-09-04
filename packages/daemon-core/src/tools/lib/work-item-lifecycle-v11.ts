@@ -12,7 +12,8 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { CRITICAL_STATES } from '@specforge/types/constants';
+import { WORK_ITEM_METADATA_SCHEMA_VERSION } from './artifact-schema-validation';
+import { formatWorkItemId, parseWorkItemSequence } from './work-item-id-validator';
 
 // ---------------------------------------------------------------------------
 // Work Item 创建
@@ -23,6 +24,22 @@ export interface CreateWorkItemInput {
   workItemId: string;
   userRequest: string;
   createdBy?: string;
+  workflowType?: string;
+  workflowPath?: string | null;
+}
+
+/** Allocate the next current Work Item identity inside the single Daemon owner. */
+export async function allocateNextWorkItemId(projectRoot: string): Promise<string> {
+  const workItemsRoot = path.join(projectRoot, '.specforge', 'work-items');
+  await fs.mkdir(workItemsRoot, { recursive: true });
+
+  let maxSequence = 0;
+  for (const entry of await fs.readdir(workItemsRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const sequence = parseWorkItemSequence(entry.name);
+    if (sequence !== null && sequence > maxSequence) maxSequence = sequence;
+  }
+  return formatWorkItemId(maxSequence + 1);
 }
 
 /**
@@ -31,8 +48,17 @@ export interface CreateWorkItemInput {
 export async function createWorkItem(input: CreateWorkItemInput): Promise<string> {
   const wiDir = path.join(input.projectRoot, '.specforge', 'work-items', input.workItemId);
 
-  // 创建目录结构
-  await fs.mkdir(wiDir, { recursive: true });
+  // The Work Item root is allocated exactly once. Reusing recursive mkdir here
+  // would let a duplicate create overwrite governed metadata and intake history.
+  await fs.mkdir(path.dirname(wiDir), { recursive: true });
+  try {
+    await fs.mkdir(wiDir);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+      throw new Error(`WORK_ITEM_ALREADY_EXISTS: ${input.workItemId}`);
+    }
+    throw error;
+  }
   await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
@@ -41,10 +67,10 @@ export async function createWorkItem(input: CreateWorkItemInput): Promise<string
 
   // §4.4 work_item.json
   const workItemJson = {
-    schema_version: '1.0',
+    schema_version: WORK_ITEM_METADATA_SCHEMA_VERSION,
     work_item_id: input.workItemId,
-    status: 'created',
-    workflow_path: null,
+    workflow_type: input.workflowType ?? 'quick_change',
+    workflow_path: input.workflowPath ?? null,
     code_change_allowed: false,
     allowed_write_files: [],
     created_at: now,
@@ -206,44 +232,6 @@ export async function initializeClosureFiles(
     '',
   ].filter(Boolean).join('\n'));
 
-}
-
-/**
- * v1.1: States that MUST NOT be set via updateWorkItemStatus().
- * These require the authoritative state path: sf_state_transition -> StateManager.transition().
- *
- * Alias for the canonical CRITICAL_STATES set from @specforge/types.
- */
-const BLOCKED_STATUS_UPDATES: ReadonlySet<string> = CRITICAL_STATES;
-
-/**
- * 更新 work_item.json 中的状态。
- *
- * v1.1: Only allowed for initial/non-critical states (e.g. 'intake_ready', 'created').
- * Critical states MUST go through the full state machine path.
- */
-export async function updateWorkItemStatus(
-  workItemDir: string,
-  newStatus: string,
-  extra?: Record<string, unknown>,
-): Promise<void> {
-  // v1.1: Block critical states from being set via filesystem bypass
-  if (BLOCKED_STATUS_UPDATES.has(newStatus)) {
-    throw new Error(
-      `Cannot set status '${newStatus}' via updateWorkItemStatus() — ` +
-      `critical states must go through sf_state_transition and StateManager.transition()`
-    );
-  }
-
-  const wiPath = path.join(workItemDir, 'work_item.json');
-  const content = await fs.readFile(wiPath, 'utf-8');
-  const wi = JSON.parse(content);
-  wi.status = newStatus;
-  wi.updated_at = new Date().toISOString();
-  if (extra) {
-    Object.assign(wi, extra);
-  }
-  await fs.writeFile(wiPath, JSON.stringify(wi, null, 2) + '\n', 'utf-8');
 }
 
 // ---------------------------------------------------------------------------

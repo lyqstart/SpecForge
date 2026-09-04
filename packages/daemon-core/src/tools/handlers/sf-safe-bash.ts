@@ -9,16 +9,20 @@ import {
 } from '../lib/write-guard-runtime-v12';
 import { findMatchingWriteGuardAuthorization } from '../lib/write-guard-authorization-log';
 import { appendWriteGuardLog } from '../lib/write-guard-log';
+import { isValidWorkItemId as isCanonicalWorkItemId } from '../lib/work-item-id-validator';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import {
+  readWorkItemMetadata,
+  readWorkItemMetadataSync,
+} from '../lib/work-item-metadata.js';
 
 const VALID_ACTOR_ROLES: ReadonlySet<string> = new Set(Object.values(ACTOR_ROLES));
-const VALID_WI_ID = /^WI-(\d{3,4}|\d{8}-\d{4})$/;
 
 type ShellAccessKind = 'read' | 'write' | 'unknown';
 
 function isValidWorkItemId(value: unknown): value is string {
-  return typeof value === 'string' && VALID_WI_ID.test(value);
+  return typeof value === 'string' && isCanonicalWorkItemId(value);
 }
 
 function normalizeSlashes(value: string): string {
@@ -105,9 +109,11 @@ function appendGovernanceBlockedWrite(
 }
 
 function readWorkItem(projectRoot: string, workItemId: string): any | null {
-  return readJsonIfExists(
-    path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json')
-  );
+  try {
+    return readWorkItemMetadataSync(workItemRoot(projectRoot, workItemId), workItemId);
+  } catch {
+    return null;
+  }
 }
 
 function allowedWriteEntryMatches(
@@ -368,6 +374,19 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     command
   );
   if (activeWiId) {
+    try {
+      await readWorkItemMetadata(workItemRoot(baseDir, activeWiId), activeWiId);
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        work_item_id: activeWiId,
+        hard_stop: false,
+        policy_violation: true,
+        retry_allowed: false,
+      };
+    }
+
     const { blocked, record } = checkHardStop(baseDir, activeWiId);
     if (blocked) {
       return {

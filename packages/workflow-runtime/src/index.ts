@@ -158,20 +158,5 @@ export {
   type AgentWorkflowEngineConfig,
 } from './engine/AgentWorkflowEngine.js';
 
-// v1.1 Workflow Definitions & Engine Factory exports
-export {
-  V11_WORKFLOW_DEFINITIONS,
-  featureSpecDefinition,
-  changeRequestDefinition,
-  bugfixSpecDefinition,
-  opsTaskDefinition,
-  investigationDefinition,
-  quickChangeDefinition,
-  refactorDefinition,
-} from './workflows/v11-definitions.js';
-export {
-  createV11WorkflowEngine,
-} from './workflows/v11-engine-factory.js';
-
 // RBAC module exports (Phase 1)
 export * from './rbac/index.js';

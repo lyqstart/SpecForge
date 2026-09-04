@@ -8,12 +8,13 @@
  * 4. 必须经过 Gate、User Decision、Merge Runner。
  * 5. project_spec_version 必须递增（不得回退版本）。
  * 6. 必须修复 Trace。
- * 7. superseded WI 标记 status=superseded + superseded_by=<WI-ID>。
+ * 7. superseded 状态由 StateManager/WAL 推进；metadata 只记录 superseded_by。
  */
 
 import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
+import { readWorkItemMetadata, writeWorkItemMetadata } from './work-item-metadata';
 
 // ── Types ──
 
@@ -198,31 +199,22 @@ export async function markOriginalSuperseded(params: {
 }): Promise<SupersedeResult> {
   const { originalWiDir, originalWorkItemId, supersededByWorkItemId } = params;
 
-  const workItemJsonPath = join(originalWiDir, 'work_item.json');
-  if (!existsSync(workItemJsonPath)) {
-    throw new Error(`原 WI 没有 work_item.json: ${originalWiDir}`);
-  }
+  const wi = await readWorkItemMetadata(originalWiDir, originalWorkItemId);
 
-  const raw = await readFile(workItemJsonPath, 'utf-8');
-  const wi = JSON.parse(raw);
-
-  // 检查原 WI 是否已 closed
-  if (wi.status === 'closed') {
-    throw new Error(`原 WI ${originalWorkItemId} 已经 closed，不能 superseded。必须创建 repair WI。`);
-  }
-
-  // 标记为 superseded
-  wi.status = 'superseded';
+  // Lifecycle state has already advanced through StateManager. This file
+  // records only the durable relationship metadata.
+  const supersededAt = new Date().toISOString();
   wi.superseded_by = supersededByWorkItemId;
-  wi.superseded_at = new Date().toISOString();
+  wi.superseded_at = supersededAt;
+  wi.updated_at = supersededAt;
 
-  await writeFile(workItemJsonPath, JSON.stringify(wi, null, 2) + '\n', 'utf-8');
+  await writeWorkItemMetadata(originalWiDir, originalWorkItemId, wi);
 
   return {
     originalWorkItemId,
     supersededByWorkItemId,
     status: 'superseded',
-    supersededAt: wi.superseded_at,
+    supersededAt,
   };
 }
 

@@ -1,5 +1,7 @@
 # W3 集成测试任务清单
 
+> **当前状态：** 历史执行清单。所有 `[x]` 只证明当时任务执行过，不自动证明当前 V6 合同。Scope Gate 的“默认关闭/运行时拦截”任务已被 artifact-exclusion 合同取代，Step 6/7 必须调整测试后重新取证。
+
 ## Phase 1: feature_spec 端到端测试
 
 ### 1.1 编写 feature_spec 端到端测试
@@ -46,8 +48,8 @@
 
 ### 3.3 scope-gate 集成验证
 - [x] 创建 tests/integration/scope-gate-integration.test.ts
-- [x] 验证 P1/P2 能力默认关闭
-- [x] 验证 scope-gate 拦截未授权能力调用
+- [ ] 调整为验证 P1/P2 不存在于 exports/build/registry/installer/manifest
+- [ ] 验证 stale caller 返回 `CAPABILITY_UNAVAILABLE` 且实现未加载
 - [x] 验证 V6.0 分支 scope tag 正确
 
 ## Phase 4: OpenClaw 模拟集成

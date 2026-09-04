@@ -77,6 +77,21 @@ describe('Phase 11 Module Definition Candidate canonical contract', () => {
     expect(text).toContain('MODULE_DEFINITION_CODE_PATHS_DUPLICATE');
   });
 
+  test('rejects unversioned and legacy module identities', () => {
+    const result = validateModuleDefinitionCandidateJson(
+      JSON.stringify({
+        module_code: 'CORE',
+        module_id: 'CORE',
+        code_paths: ['src/**'],
+      }),
+      'CORE',
+    );
+    expect(result.valid).toBe(false);
+    const text = result.errors.join('\n');
+    expect(text).toContain('MODULE_DEFINITION_SCHEMA_VERSION_REQUIRED');
+    expect(text).toContain('MODULE_DEFINITION_LEGACY_IDENTITY_FORBIDDEN');
+  });
+
   test('schema gate helper validates frozen Module Definition candidates', async () => {
     const projectRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-module-schema-gate-'));
     roots.push(projectRoot);
@@ -115,8 +130,9 @@ describe('Phase 11 Module Definition Candidate canonical contract', () => {
   });
 
   test('sf-design producer contract fixes code_paths to one flat array', async () => {
+    const repositoryRoot = path.resolve(process.cwd(), '..', '..');
     const agentPath = path.resolve(
-      process.cwd(),
+      repositoryRoot,
       'setup/userlevel-opencode/agents/sf-design.md',
     );
     const content = await fs.readFile(agentPath, 'utf-8');

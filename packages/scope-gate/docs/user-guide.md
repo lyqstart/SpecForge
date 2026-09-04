@@ -1,4 +1,6 @@
-# Scope Gate User Guide
+# Scope Gate User Guide (Historical)
+
+> **历史资料，不是当前用户入口。** 下述 runtime scope/feature-flag 使用方式已退出当前发布；用户不应直接启用范围外能力，当前 Scope Gate 由正式发布预检消费。
 
 This guide provides practical examples and common use cases for the `@specforge/scope-gate` module. For detailed API reference, see [API Documentation](./api.md). For CLI tools, see [CLI Documentation](./cli.md).
 

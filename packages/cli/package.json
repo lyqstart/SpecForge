@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@specforge/configuration": "workspace:*",
-    "@specforge/scope-gate": "workspace:*",
     "@specforge/service-management": "workspace:*",
     "@specforge/types": "workspace:*",
     "@specforge/version-unification": "workspace:*",

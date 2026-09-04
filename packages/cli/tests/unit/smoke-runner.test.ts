@@ -459,6 +459,15 @@ describe("smoke-runner: getActiveStepCount() 自检 API", () => {
 });
 
 describe("smoke-runner: Disposable 接口", () => {
+  beforeEach(() => {
+    getSpawnMock().mockImplementation(() => createSuccessProcess() as any);
+    getFsRmMock().mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
+
   it("应该实现 Symbol.asyncDispose", async () => {
     const runner = new DefaultSmokeTestRunner();
 

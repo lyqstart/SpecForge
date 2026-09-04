@@ -1,0 +1,18 @@
+export const CURRENT_WORKSPACE_PACKAGES = Object.freeze([
+  'types',
+  'version-unification',
+  'configuration',
+  'service-management',
+  'host-profile',
+  'self-healing',
+  'multimodal',
+  'observability',
+  'permission-engine',
+  'opencode-adapter',
+  'migration',
+  'scope-gate',
+  'workflow-runtime',
+  'plugin-loader',
+  'cli',
+  'daemon-core',
+] as const);

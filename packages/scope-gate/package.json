@@ -1,13 +1,13 @@
 {
   "name": "@specforge/scope-gate",
   "version": "0.1.0",
-  "description": "Scope Gate module for SpecForge V6 - Enforces P0/P1/P2 scope boundaries",
+  "description": "Current-release evidence and artifact-set validator for SpecForge V6",
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "schema_version": "1.0",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "build:esbuild": "node esbuild.config.js",
     "build:all": "bun run build && bun run build:esbuild",
     "build:watch": "tsc --watch",
@@ -26,12 +26,9 @@
   },
   "keywords": [
     "specforge",
-    "scope",
-    "gate",
-    "boundary",
-    "p0",
-    "p1",
-    "p2",
+    "release",
+    "validation",
+    "artifacts",
     "v6",
     "architecture"
   ],
@@ -67,5 +64,9 @@
   "bugs": {
     "url": "https://github.com/specforge/specforge/issues"
   },
-  "homepage": "https://github.com/specforge/specforge#readme"
+  "homepage": "https://github.com/specforge/specforge#readme",
+  "specforgeRelease": {
+    "packageExportIds": ["scope-gate:release-validator"],
+    "cleanBuildIds": ["scope-gate:release-validator"]
+  }
 }

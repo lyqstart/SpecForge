@@ -37,6 +37,7 @@ import {
   type GovernanceTraceEdge,
 } from './governance-trace-model.js';
 import { recordAtomicSpecMergeProjectWrites } from './atomic-spec-merge-write-provenance.js';
+import { validateModuleDefinitionCandidateJson } from './artifact-schema-validation.js';
 
 export interface MergeInput {
   projectRoot: string;
@@ -399,10 +400,13 @@ async function validateGovernedNewModuleTargets(input: {
     let definition: any;
     try {
       definition = await readJsonFile(definitionPath);
-      const identity = resolveSpecModuleIdentity(definition);
-      if (!identity.valid || identity.moduleCode !== moduleCode) {
+      const validation = validateModuleDefinitionCandidateJson(
+        JSON.stringify(definition),
+        moduleCode,
+      );
+      if (!validation.valid) {
         errors.push(
-          `New module ${moduleCode} module.json must declare the same canonical module_code: ${identity.errors.join('; ') || String(identity.moduleCode)}`
+          `New module ${moduleCode} module.json must satisfy the current schema: ${validation.errors.join('; ')}`
         );
         continue;
       }

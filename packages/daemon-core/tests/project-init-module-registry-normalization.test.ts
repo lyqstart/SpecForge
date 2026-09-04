@@ -18,9 +18,15 @@ import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import * as fc from 'fast-check';
 import { canonicalProjectSpecModuleEntry } from '@specforge/types';
-import { ensureProjectInit } from '../src/tools/lib/sf_project_init_core.js';
+import { ensureProjectInit as ensureProjectInitProduction } from '../src/tools/lib/sf_project_init_core.js';
 
 let projectRoot: string;
+
+function ensureProjectInit(projectRoot: string, projectName?: string) {
+  return ensureProjectInitProduction(projectRoot, projectName, {
+    ensureHostProfile: async () => undefined,
+  });
+}
 
 function manifestPath(): string {
   return path.join(projectRoot, '.specforge', 'project', 'spec_manifest.json');
@@ -303,5 +309,5 @@ describe('ensureProjectInit module-registry normalization — properties', () =>
       }),
       { numRuns: 25 }
     );
-  });
+  }, 30000);
 });

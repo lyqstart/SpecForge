@@ -358,13 +358,13 @@ export class PolicyEnforcementPoint {
     }
 
     const pdpRequest: PermissionRequest = {
-      actor: context.actor.agentRole || context.actor.id || 'unknown',
+      actor: context.actor.id || context.actor.agentRole || 'unknown',
       action: context.action,
-      resource: context.resource.type || 'unknown'
+      resource: context.resource.type || 'unknown',
+      actorContext: context.actor,
+      resourceContext: { ...context.resource, type: context.resource.type || 'unknown' },
+      context: context.context
     };
-    if (context.context) {
-      pdpRequest.context = context.context as Record<string, unknown>;
-    }
 
     const decision = this.pdp.evaluate(pdpRequest);
 

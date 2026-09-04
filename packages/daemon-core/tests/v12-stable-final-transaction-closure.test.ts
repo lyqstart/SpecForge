@@ -88,7 +88,7 @@ describe("v1.2 stable final transaction closure", () => {
     expect(result.reason).toMatch(/changed_files_audit result is FAIL/i);
   });
 
-  it("keeps source-level transaction links present for native block -> log -> audit -> close", () => {
+  it("keeps write audit and close links daemon-owned instead of thin-plugin-owned", () => {
     const pluginSource = fs.readFileSync(
       path.resolve(__dirname, "../../../setup/userlevel-opencode/plugins/sf_specforge.ts"),
       "utf-8",
@@ -101,11 +101,15 @@ describe("v1.2 stable final transaction closure", () => {
       path.resolve(__dirname, "../src/tools/lib/write-guard-runtime-v12.ts"),
       "utf-8",
     );
+    const auditVerdictSource = fs.readFileSync(
+      path.resolve(__dirname, "../src/tools/lib/changed-files-audit-verdict.ts"),
+      "utf-8",
+    );
 
-    expect(pluginSource).toContain("appendNativeBlockedWriteGuardLog");
-    expect(pluginSource).toContain("write_guard_log.jsonl");
-    expect(pluginSource).toContain("allowed: false");
-    expect(pluginSource).toContain("target_not_in_allowed_write_files");
+    expect(pluginSource).toContain("Business state, WriteGuard decisions and filesystem tools remain Daemon-owned.");
+    expect(pluginSource).not.toContain("appendNativeBlockedWriteGuardLog");
+    expect(pluginSource).not.toContain("write_guard_log.jsonl");
+    expect(pluginSource).not.toContain("target_not_in_allowed_write_files");
 
     expect(auditHandlerSource).toContain("summarizeWriteGuardLog");
     expect(auditHandlerSource).toContain("blocked_write_attempts");
@@ -113,6 +117,8 @@ describe("v1.2 stable final transaction closure", () => {
     expect(auditHandlerSource).toContain("finalPassed");
 
     expect(runtimeGuardSource).toContain("parseChangedFilesAuditPass");
-    expect(runtimeGuardSource).toContain("Blocked write attempts");
+    expect(runtimeGuardSource).toContain("parseChangedFilesAuditVerdictPass");
+    expect(runtimeGuardSource).toContain("return parseChangedFilesAuditVerdictPass(auditText)");
+    expect(auditVerdictSource).toContain("Blocked write attempts");
   });
 });

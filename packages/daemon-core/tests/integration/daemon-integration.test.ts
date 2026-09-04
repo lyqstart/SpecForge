@@ -9,20 +9,42 @@
  * Requirements: 5.7
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { Daemon } from '../../src/daemon/Daemon';
 import { EventBus } from '../../src/event-bus/EventBus';
 import { SessionRegistry } from '../../src/session/SessionRegistry';
 import { ProjectManager } from '../../src/project/ProjectManager';
 import { StateManager } from '../../src/state/StateManager';
 import type { AgentIdentity } from '../../src/session/AgentIdentity';
+import { CurrentTestDaemonConfig } from '../helpers/current-daemon-test-config';
+
+let testRoot: string;
+let testConfig: CurrentTestDaemonConfig;
+let daemonSequence = 0;
+
+function createTestDaemon(): Daemon {
+  daemonSequence += 1;
+  return new Daemon(new CurrentTestDaemonConfig(join(testRoot, `daemon-${daemonSequence}`)));
+}
+
+beforeAll(() => {
+  testRoot = mkdtempSync(join(tmpdir(), 'specforge-daemon-integration-'));
+  testConfig = new CurrentTestDaemonConfig(testRoot);
+});
+
+afterAll(() => {
+  rmSync(testRoot, { recursive: true, force: true });
+});
 
 describe('Daemon Integration', () => {
   let daemon: Daemon;
 
   beforeEach(async () => {
     // Clean up any existing daemon state
-    daemon = new Daemon();
+    daemon = createTestDaemon();
   });
 
   afterEach(async () => {
@@ -154,9 +176,9 @@ describe('Session Registry Integration', () => {
     eventBus.stop();
   });
 
-  it('should register and activate session', () => {
+  it('should register and activate session', async () => {
     // Register pending session
-    const identity = sessionRegistry.registerPending(
+    const identity = await sessionRegistry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-item-1',
@@ -167,29 +189,29 @@ describe('Session Registry Integration', () => {
     expect(identity.sessionId).toBeDefined();
 
     // Activate session
-    const activated = sessionRegistry.activate(identity.sessionId, 'spawn-intent-1');
+    const activated = await sessionRegistry.activate(identity.sessionId, 'spawn-intent-1');
     expect(activated).not.toBeNull();
     expect(activated?.status).toBe('active');
   });
 
-  it('should terminate session and move to history', () => {
-    const identity = sessionRegistry.registerPending(
+  it('should terminate session and move to history', async () => {
+    const identity = await sessionRegistry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-item-1',
       'spawn-intent-1'
     );
 
-    sessionRegistry.activate(identity.sessionId, 'spawn-intent-1');
+    await sessionRegistry.activate(identity.sessionId, 'spawn-intent-1');
     
     // Terminate session
-    const terminated = sessionRegistry.terminate(identity.sessionId);
+    const terminated = await sessionRegistry.terminate(identity.sessionId);
     expect(terminated).not.toBeNull();
     expect(terminated?.status).toBe('history');
   });
 
-  it('should lookup session by sessionId across all states', () => {
-    const identity = sessionRegistry.registerPending(
+  it('should lookup session by sessionId across all states', async () => {
+    const identity = await sessionRegistry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-item-1',
@@ -201,35 +223,35 @@ describe('Session Registry Integration', () => {
     expect(found?.status).toBe('pending');
 
     // Activate and lookup in active
-    sessionRegistry.activate(identity.sessionId, 'spawn-intent-1');
+    await sessionRegistry.activate(identity.sessionId, 'spawn-intent-1');
     found = sessionRegistry.lookupBySessionId(identity.sessionId);
     expect(found?.status).toBe('active');
 
     // Terminate and lookup in history
-    sessionRegistry.terminate(identity.sessionId);
+    await sessionRegistry.terminate(identity.sessionId);
     found = sessionRegistry.lookupBySessionId(identity.sessionId);
     expect(found?.status).toBe('history');
   });
 
-  it('should handle parent-child session relationships', () => {
+  it('should handle parent-child session relationships', async () => {
     // Create parent session
-    const parent = sessionRegistry.registerPending(
+    const parent = await sessionRegistry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-item-1',
       'spawn-intent-parent'
     );
-    sessionRegistry.activate(parent.sessionId, 'spawn-intent-parent');
+    await sessionRegistry.activate(parent.sessionId, 'spawn-intent-parent');
 
     // Create child session
-    const child = sessionRegistry.registerPending(
+    const child = await sessionRegistry.registerPending(
       'sf-executor',
       'task-executor',
       'work-item-1',
       'spawn-intent-child',
       parent.sessionId
     );
-    sessionRegistry.activate(child.sessionId, 'spawn-intent-child');
+    await sessionRegistry.activate(child.sessionId, 'spawn-intent-child');
 
     // Get session tree
     const tree = sessionRegistry.getSessionTree('work-item-1');
@@ -244,7 +266,7 @@ describe('Project Manager Integration', () => {
 
   beforeEach(() => {
     eventBus = new EventBus();
-    projectManager = new ProjectManager(eventBus);
+    projectManager = new ProjectManager(eventBus, testConfig.getPathResolver());
     eventBus.start();
     projectManager.start();
   });
@@ -325,7 +347,10 @@ describe('State Manager Integration', () => {
 
   beforeEach(() => {
     // Use a unique project path to avoid file conflicts
-    stateManager = new StateManager(`test-project-${Date.now()}`);
+    stateManager = new StateManager(
+      testConfig.getPathResolver(),
+      join(testRoot, `test-project-${Date.now()}`),
+    );
   });
 
   afterEach(async () => {
@@ -379,7 +404,7 @@ describe('Multi-Client Scenarios', () => {
   let daemon: Daemon;
 
   beforeEach(() => {
-    daemon = new Daemon();
+    daemon = createTestDaemon();
   });
 
   afterEach(async () => {
@@ -397,22 +422,22 @@ describe('Multi-Client Scenarios', () => {
     sessionRegistry.start();
     
     // Register multiple sessions
-    const session1 = sessionRegistry.registerPending(
+    const session1 = await sessionRegistry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-item-1',
       'spawn-1'
     );
     
-    const session2 = sessionRegistry.registerPending(
+    const session2 = await sessionRegistry.registerPending(
       'sf-executor',
       'task-executor',
       'work-item-2',
       'spawn-2'
     );
     
-    sessionRegistry.activate(session1.sessionId, 'spawn-1');
-    sessionRegistry.activate(session2.sessionId, 'spawn-2');
+    await sessionRegistry.activate(session1.sessionId, 'spawn-1');
+    await sessionRegistry.activate(session2.sessionId, 'spawn-2');
     
     const activeSessions = sessionRegistry.getActiveSessions();
     expect(activeSessions.length).toBe(2);
@@ -431,16 +456,16 @@ describe('Multi-Client Scenarios', () => {
     
     // Rapidly create, activate, and terminate sessions
     for (let i = 0; i < 10; i++) {
-      const identity = sessionRegistry.registerPending(
+      const identity = await sessionRegistry.registerPending(
         'sf-executor',
         'task-executor',
         `work-item-${i}`,
         `spawn-${i}`
       );
-      sessionRegistry.activate(identity.sessionId, `spawn-${i}`);
+      await sessionRegistry.activate(identity.sessionId, `spawn-${i}`);
       
       // Terminate immediately
-      sessionRegistry.terminate(identity.sessionId);
+      await sessionRegistry.terminate(identity.sessionId);
     }
     
     const historySessions = sessionRegistry.getHistorySessions();
@@ -453,7 +478,10 @@ describe('Multi-Client Scenarios', () => {
 
 describe('Crash Recovery Simulation', () => {
   it('should reconstruct state from event history', async () => {
-    const stateManager = new StateManager('test-project-recovery');
+    const stateManager = new StateManager(
+      testConfig.getPathResolver(),
+      join(testRoot, 'test-project-recovery'),
+    );
     
     await stateManager.initialize();
     
@@ -493,7 +521,10 @@ describe('Crash Recovery Simulation', () => {
   });
 
   it('should handle state reconstruction with empty events', async () => {
-    const stateManager = new StateManager('test-project-empty');
+    const stateManager = new StateManager(
+      testConfig.getPathResolver(),
+      join(testRoot, 'test-project-empty'),
+    );
     
     await stateManager.initialize();
     

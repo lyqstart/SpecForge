@@ -93,16 +93,24 @@ async function createFixture(): Promise<{ projectRoot: string; workItemDir: stri
   await write(
     path.join(workItemDir, 'candidates', 'tasks.md'),
     [
-      '# Candidate Tasks',
+      '# Tasks',
       '',
-      '- **files**: [src/domain/types.ts, tests/workdesk.test.ts]',
+      '### TASK-WI-0002-001 implement domain and cross-module test',
+      '- **refs**: [DD-DOMAIN-001]',
+      '- **allowed_write_files**: [src/domain/types.ts, tests/workdesk.test.ts]',
+      '- **verification_commands**:',
+      '  - unit:',
+      '    - `bun test`',
       '',
     ].join('\n'),
   );
   await write(
     path.join(workItemDir, 'work_item.json'),
     JSON.stringify({
+      schema_version: '1.1',
       work_item_id: 'WI-0002',
+      workflow_type: 'feature_spec',
+      workflow_path: 'architecture_change_path',
       code_change_allowed: false,
       allowed_write_files: [],
     }),

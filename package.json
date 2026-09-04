@@ -6,14 +6,18 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun scripts/render-workflow-docs.ts && bun scripts/build-workspace.ts",
-    "test": "bun run --filter './packages/*' test",
-    "lint": "bun scripts/render-workflow-docs.ts --check && bun run --filter './packages/*' lint",
+    "build": "node scripts/run-root-task.mjs build",
+    "test": "node scripts/run-root-task.mjs test",
+    "lint": "node scripts/run-root-task.mjs lint",
     "clean": "bun run --filter './packages/*' clean",
-    "render-workflows": "bun scripts/render-workflow-docs.ts",
-    "check-workflows": "bun scripts/render-workflow-docs.ts --check",
+    "render-workflows": "node scripts/run-root-task.mjs render-workflows",
+    "check-workflows": "node scripts/run-root-task.mjs check-workflows",
     "lint:layout": "bun scripts/lint/check-hardcoded-paths.ts",
-    "typecheck:validator-contract": "tsc --noEmit -p scripts/tsconfig.validation-contract.json"
+    "typecheck:validator-contract": "tsc --noEmit -p scripts/tsconfig.validation-contract.json",
+    "typecheck:release-owner-snapshot": "tsc --noEmit -p scripts/tsconfig.release-owner-snapshot.json",
+    "build:release-runtimes": "bun scripts/build-release-runtime-artifacts.ts",
+    "build:release-manifest": "bun scripts/build-release-manifest.ts",
+    "precheck:release": "bun scripts/run-current-release-precheck.ts"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",
@@ -31,6 +35,15 @@
   },
   "dependencies": {
     "zod": "^4.4.3"
+  },
+  "specforgeRelease": {
+    "cleanBuildFiles": [
+      { "id": "runtime:specforge", "path": "release/bin/specforge.exe" },
+      { "id": "runtime:specforged", "path": "release/bin/specforged.exe" },
+      { "id": "plugin:sf_specforge", "path": "setup/userlevel-opencode/plugins/sf_specforge.ts" },
+      { "id": "release:installer", "path": "scripts/sf-installer.ts" },
+      { "id": "release:release-manifest", "path": "release/release-manifest.json" }
+    ]
   },
   "schema_version": "1.0"
 }

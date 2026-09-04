@@ -17,10 +17,3 @@ export type {
   ExtensionLoadResult,
   ExtensionLoaderConfig,
 } from './ExtensionLoader';
-
-// Re-export Plugin Loader types
-export type { 
-  PluginLoaderConfig, 
-  LoadResult, 
-  BatchLoadResult 
-} from '@specforge/plugin-loader';

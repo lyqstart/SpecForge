@@ -17,11 +17,19 @@ import type {
 } from "./types"
 import { toPosix } from "./paths"
 import { computeSHA256 } from "./crypto"
-import { inferComponentType } from "./legacy_manifest_adapter"
 import type { ValidatedManifest } from "./manifest"
 
-// Re-export inferComponentType under the old name for backward compatibility
-export { inferComponentType as inferComponentTypeFromPath } from "./legacy_manifest_adapter"
+export function inferComponentTypeFromPath(
+  relativePath: string
+): ManagedComponentType {
+  const normalized = relativePath.replace(/\\/g, "/")
+  if (normalized.startsWith("agents/")) return "agent"
+  if (normalized.startsWith("tools/lib/")) return "tool_lib"
+  if (normalized.startsWith("tools/")) return "tool"
+  if (normalized.startsWith("plugins/")) return "plugin"
+  if (normalized.startsWith("skills/")) return "skill"
+  return "tool"
+}
 
 // ============================================================
 // Types
@@ -246,7 +254,7 @@ export async function rehydratePendingDeletes(
       // manifestHash=undefined ensures Planner sees this as:
       //   sourceHash=undefined (not in DesiredState) + currentHash=exists + isManagedComponent=true
       //   which triggers R14.7: delete action
-      const componentType = inferComponentType(entry.relativePath)
+      const componentType = inferComponentTypeFromPath(entry.relativePath)
 
       activeEntries.push({
         relativePath: entry.relativePath,
@@ -332,7 +340,7 @@ export async function buildCurrentState(options: StateOptions): Promise<CurrentS
         relativePath,
         currentHash,
         manifestHash: undefined, // Not in Manifest
-        componentType: inferComponentType(relativePath),
+        componentType: inferComponentTypeFromPath(relativePath),
         size,
         existsOnDisk: true, // Found via filesystem scan, so it exists
       })

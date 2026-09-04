@@ -9,10 +9,10 @@
 import { join } from 'node:path';
 import { registerHandler } from '../ToolDispatcher';
 import {
+  allocateNextWorkItemId,
   createWorkItem,
   initializeClosureFiles,
   readAuthoritativeProjectSpecVersion,
-  updateWorkItemStatus,
 } from '../lib/work-item-lifecycle-v11';
 import { selectWorkflowPath, generateTriggerResult } from '../lib/workflow-path-selector-v11';
 import {
@@ -84,12 +84,14 @@ function inferWorkflowTypeFromClassification(classification: any, workflowPath: 
 
 registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
-  const workItemId = args['work_item_id'] as string;
+  let workItemId = args['work_item_id'] as string | undefined;
   const userRequest = args['user_request'] as string;
 
-  if (!workItemId || !userRequest) {
-    return { success: false, error: 'work_item_id and user_request are required' };
+  if (!userRequest) {
+    return { success: false, error: 'user_request is required' };
   }
+
+  workItemId = workItemId || await allocateNextWorkItemId(projectRoot);
 
   if (!/^WI-[0-9]{4}$/.test(workItemId)) {
     return { success: false, error: `Invalid work_item_id format: ${workItemId}. Must be WI-NNNN` };
@@ -101,22 +103,25 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
     // without leaving a partial Work Item behind.
     const baseSpecVersion = await readAuthoritativeProjectSpecVersion(projectRoot);
 
+    // Resolve workflow identity before allocating the Work Item root. Invalid
+    // classification must not leave a partial governed directory behind.
+    const classification = args['classification'] as any;
+    const workflowPath = classification ? selectWorkflowPath(classification) : null;
+    const workflowType = inferWorkflowTypeFromClassification(classification, workflowPath);
+
     // 1. Create WI directory
     const wiDir = await createWorkItem({
       projectRoot,
       workItemId,
       userRequest,
+      workflowType,
+      workflowPath,
     });
 
     // 2. Read classification if provided
-    const classification = args['classification'] as any;
-    let workflowPath: string | null = null;
     if (classification) {
-      workflowPath = selectWorkflowPath(classification);
-
       // 3. Generate trigger_result.json
       const triggerResult = generateTriggerResult(workItemId, classification, []);
-      const workflowType = inferWorkflowTypeFromClassification(classification, workflowPath);
       await fs.writeFile(
         join(wiDir, 'trigger_result.json'),
         JSON.stringify({ ...triggerResult, workflow_type: workflowType, workflow_path: workflowPath }, null, 2) + '\n',
@@ -124,18 +129,10 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
       );
     }
 
-    const workflowType = inferWorkflowTypeFromClassification(classification, workflowPath);
-
     // 4. Initialize closure files
     await initializeClosureFiles(wiDir, workItemId, workflowPath, baseSpecVersion);
 
-    // 5. Update status to intake_ready
-    await updateWorkItemStatus(wiDir, 'intake_ready', {
-      workflow_path: workflowPath,
-      workflow_type: workflowType,
-    });
-
-    // 6. Persist to StateManager
+    // 5. Persist lifecycle state only through StateManager/WAL.
     const projectPath = (context?.directory as string) || (context?.worktree as string) || '';
     if (projectPath && deps.projectManager) {
       const sm = await deps.projectManager.getProjectStateManager(projectPath);

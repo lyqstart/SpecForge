@@ -8,7 +8,7 @@
  * 功能：
  * - 读取 CLI 版本（package.json#version）
  * - 读取 schema_version baseline（SchemaVersionManager.baseline）
- * - 读取磁盘安装记录（<OpenCode config>/sf-user/.installation.json#schema_version，可能不存在/损坏）
+ * - 读取磁盘安装记录（~/.specforge/.installation.json#schema_version，可能不存在/损坏）
  * - JSON 模式：输出 VersionInfoPayload 单行 JSON
  * - 非 JSON 模式：输出 <cliVersion>\n<schema_version>
  */
@@ -28,7 +28,7 @@ export interface VersionCommandOptions {
 }
 
 /**
- * 读取 <OpenCode config>/sf-user/.installation.json 的 schema_version 字段
+ * 读取 ~/.specforge/.installation.json 的 schema_version 字段
  * 
  * 处理三种失败情况：
  * - missing: 文件不存在

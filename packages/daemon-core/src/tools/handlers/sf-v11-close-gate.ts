@@ -43,6 +43,10 @@ import {
   transitionWithEvidence,
 } from "../lib/state-coordinator-v11.js";
 import {
+  readWorkItemMetadata,
+  writeWorkItemMetadata,
+} from "../lib/work-item-metadata.js";
+import {
   assertFormalVersionSnapshotForGitMerge,
   auditActualGovernanceScope,
   inspectFormalGitBinding,
@@ -464,7 +468,6 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   projectRoot: string,
   workItemDir: string,
   workItemId: string,
-  workItemJsonPath: string,
   fallbackAllowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
   filesystemDiff?: FilesystemDiffResult | null,
   preserveExistingPassedReport = false,
@@ -484,12 +487,7 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
         }));
   if (actualFiles.length === 0) return null;
 
-  let updatedWi: Record<string, any> = {};
-  try {
-    updatedWi = JSON.parse(await fs.readFile(workItemJsonPath, "utf-8"));
-  } catch {
-    updatedWi = {};
-  }
+  const updatedWi = await readWorkItemMetadata(workItemDir, workItemId);
 
   const snapshot =
     Array.isArray(updatedWi.allowed_write_files_snapshot) &&
@@ -541,16 +539,15 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
 }
 
 async function syncPermissionFacts(
-  workItemJsonPath: string,
+  workItemDir: string,
+  workItemId: string,
   allowedWriteFilesSnapshot: Array<{ path: string; operation: string }>,
 ): Promise<Record<string, any>> {
-  const workItem = await readJsonFile(workItemJsonPath);
+  const workItem = await readWorkItemMetadata(workItemDir, workItemId);
   applyRevokedPermissionFacts(workItem, allowedWriteFilesSnapshot, {
     recordRevocationEvent: false,
   });
-
-  // Compatibility only: do not change workItem.status here.
-  await fs.writeFile(workItemJsonPath, JSON.stringify(workItem, null, 2) + "\n", "utf-8");
+  await writeWorkItemMetadata(workItemDir, workItemId, workItem);
   return workItem;
 }
 function workflowTypeFromPath(workflowPath: string | undefined): string {
@@ -707,12 +704,14 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
   }
 
   try {
-    const workItemJsonPath = path.join(workItemDir, "work_item.json");
     let workItem: Record<string, any>;
     try {
-      workItem = await readJsonFile(workItemJsonPath);
-    } catch {
-      return { ...result, error: `work_item.json not found at ${workItemJsonPath}` };
+      workItem = await readWorkItemMetadata(workItemDir, workItemId);
+    } catch (error) {
+      return {
+        ...result,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
 
     if (String(args["action"] ?? "close") === "recover_invalid_closure") {
@@ -865,7 +864,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       if (permState.code_change_allowed || permState.allowed_write_files.length > 0) {
         await revokeCodePermission(workItemDir);
       }
-      workItem = await syncPermissionFacts(workItemJsonPath, allowedWriteFilesSnapshot);
+      workItem = await syncPermissionFacts(workItemDir, workItemId, allowedWriteFilesSnapshot);
       result.code_permission_revoked = true;
     }
 
@@ -879,7 +878,7 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     }
 
     if (!auditAlreadyExists) {
-      const updatedWi = await readJsonFile(workItemJsonPath);
+      const updatedWi = await readWorkItemMetadata(workItemDir, workItemId);
       const factualFiles = getFactualChangedFiles(workItemDir);
       const writeGuardSummary = summarizeWriteGuardLog(workItemDir);
       let changedFiles: Array<{ path: string; operation: "create" | "modify" | "delete" }>;
@@ -928,7 +927,6 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
         projectRoot,
         workItemDir,
         workItemId,
-        workItemJsonPath,
         allowedWriteFilesSnapshot,
         fullDiff,
         auditAlreadyExists,
@@ -945,7 +943,6 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       projectRoot,
       workItemDir,
       workItemId,
-      workItemJsonPath,
       allowedWriteFilesSnapshot,
       filesystemDiff,
       auditAlreadyExists,

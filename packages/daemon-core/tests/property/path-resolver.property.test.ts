@@ -26,6 +26,7 @@ const pathSegmentArb = fc
   .filter((s) => {
     if (s.includes('\0') || s.trim().length === 0) return false;
     if (s.includes('/') || s.includes('\\')) return false;
+    if (s.includes('..')) return false;
     return true;
   });
 

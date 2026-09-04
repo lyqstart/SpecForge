@@ -32,12 +32,11 @@ describe('WAL', () => {
   });
 
   describe('initialize', () => {
-    it('should initialize and create events.jsonl', async () => {
+    it('should initialize without persisting an empty events.jsonl', async () => {
       await wal.initialize();
       
       const eventsPath = wal.getEventsPath();
-      // Check file exists - might be in temp dir
-      expect(eventsPath).toBeDefined();
+      await expect(fs.access(eventsPath)).rejects.toMatchObject({ code: 'ENOENT' });
     });
   });
 
@@ -249,21 +248,19 @@ describe('WAL', () => {
     });
   });
 
-  describe('readAllEvents — corrupted line tolerance', () => {
+  describe('readAllEvents — fail-closed input policy', () => {
     it('should return empty events and corruptedLines for non-existent file', async () => {
       const result = await wal.readAllEvents();
       expect(result.events).toEqual([]);
       expect(result.corruptedLines).toEqual([]);
     });
 
-    it('should return empty events and corruptedLines for empty file', async () => {
-      await wal.initialize();
-      const result = await wal.readAllEvents();
-      expect(result.events).toEqual([]);
-      expect(result.corruptedLines).toEqual([]);
+    it('should reject an existing empty file', async () => {
+      await fs.writeFile(wal.getEventsPath(), '');
+      await expect(wal.readAllEvents()).rejects.toThrow('WAL_EMPTY_INPUT');
     });
 
-    it('should parse valid events and skip corrupted lines', async () => {
+    it('should reject a corrupted line even when other events are valid', async () => {
       await wal.initialize();
       const e1 = wal.createEvent('p1', 'state', 'state.transition', { from: 'a', to: 'b' });
       await wal.appendEvent(e1);
@@ -275,15 +272,9 @@ describe('WAL', () => {
       const e2 = wal.createEvent('p1', 'state', 'state.transition', { from: 'b', to: 'c' });
       await wal.appendEvent(e2);
 
-      const result = await wal.readAllEvents();
-      expect(result.events).toHaveLength(2);
-      expect(result.events[0]!.eventId).toBe(e1.eventId);
-      expect(result.events[1]!.eventId).toBe(e2.eventId);
-
-      expect(result.corruptedLines).toHaveLength(1);
-      expect(result.corruptedLines[0]!.lineNumber).toBe(2);
-      expect(result.corruptedLines[0]!.content).toBe('THIS IS NOT JSON');
-      expect(result.corruptedLines[0]!.error).toBeDefined();
+      await expect(wal.readAllEvents()).rejects.toThrow(
+        'WAL_CORRUPT_INPUT:line=2:content=THIS IS NOT JSON',
+      );
     });
 
     it('should truncate corrupted line content to 100 chars', async () => {
@@ -292,10 +283,9 @@ describe('WAL', () => {
       const eventsPath = wal.getEventsPath();
       await fs.appendFile(eventsPath, longCorrupted + '\n', 'utf-8');
 
-      const result = await wal.readAllEvents();
-      expect(result.events).toHaveLength(0);
-      expect(result.corruptedLines).toHaveLength(1);
-      expect(result.corruptedLines[0]!.content).toHaveLength(100);
+      await expect(wal.readAllEvents()).rejects.toThrow(
+        `WAL_CORRUPT_INPUT:line=1:content=${'X'.repeat(100)}`,
+      );
     });
 
     it('should handle all lines corrupted', async () => {
@@ -304,14 +294,12 @@ describe('WAL', () => {
       await fs.appendFile(eventsPath, 'bad1\n', 'utf-8');
       await fs.appendFile(eventsPath, 'bad2\n', 'utf-8');
 
-      const result = await wal.readAllEvents();
-      expect(result.events).toHaveLength(0);
-      expect(result.corruptedLines).toHaveLength(2);
-      expect(result.corruptedLines[0]!.lineNumber).toBe(1);
-      expect(result.corruptedLines[1]!.lineNumber).toBe(2);
+      await expect(wal.readAllEvents()).rejects.toThrow(
+        'WAL_CORRUPT_INPUT:line=1:content=bad1',
+      );
     });
 
-    it('should still work with getLastEvent after corrupted lines', async () => {
+    it('should make getLastEvent fail closed after corrupted lines', async () => {
       await wal.initialize();
       const e1 = wal.createEvent('p1', 'state', 'state.transition', {});
       await wal.appendEvent(e1);
@@ -319,9 +307,9 @@ describe('WAL', () => {
       const eventsPath = wal.getEventsPath();
       await fs.appendFile(eventsPath, 'CORRUPTED\n', 'utf-8');
 
-      const last = await wal.getLastEvent();
-      expect(last).not.toBeNull();
-      expect(last!.eventId).toBe(e1.eventId);
+      await expect(wal.getLastEvent()).rejects.toThrow(
+        'WAL_CORRUPT_INPUT:line=2:content=CORRUPTED',
+      );
     });
 
     it('should return ReadAllEventsResult type with both fields', async () => {

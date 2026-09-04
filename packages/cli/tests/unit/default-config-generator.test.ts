@@ -3,13 +3,12 @@
  * 
  * Tests the generation of default config.yaml with:
  * - schema_version at the top
- * - All P1/P2 flags set to false
+ * - No runtime feature flags for capabilities outside the release boundary
  * - Valid YAML format
  */
 
 import { describe, it, expect } from 'vitest';
 import { generateDefaultConfig, validateGeneratedYaml } from '../../src/distribution/default-config-generator';
-import scopeGateExports from '../../src/distribution/scope-gate-bridge';
 
 describe('default-config-generator', () => {
   describe('generateDefaultConfig', () => {
@@ -28,15 +27,10 @@ describe('default-config-generator', () => {
       expect(lines[0]).toMatch(/^schema_version:\s*"?1\.0"?/);
     });
     
-    it('should set all P1/P2 flags to false', () => {
+    it('should not expose runtime feature flags for out-of-release capabilities', () => {
       const yaml = generateDefaultConfig();
-      const p1p2FlagKeys = scopeGateExports.p1p2FlagKeys;
-      
-      for (const flagKey of p1p2FlagKeys) {
-        // Check that the flag exists and is set to false
-        const flagPattern = new RegExp(`${flagKey}:\\s*false`, 'm');
-        expect(yaml).toMatch(flagPattern);
-      }
+
+      expect(yaml).not.toMatch(/^enable_[^:]+\s*:/m);
     });
     
     it('should include default configuration values', () => {
@@ -80,16 +74,12 @@ describe('default-config-generator', () => {
       expect(result.errors.some(e => e.includes('schema_version must be'))).toBe(true);
     });
     
-    it('should detect missing P1/P2 flags', () => {
-      const yaml = 'schema_version: "1.0"\nlogLevel: "info"\n';
+    it('should reject runtime feature flags outside the current release boundary', () => {
+      const yaml = 'schema_version: "1.0"\nenable_legacy_capability: false\n';
       const result = validateGeneratedYaml(yaml);
-      const p1p2FlagKeys = scopeGateExports.p1p2FlagKeys;
-      
-      if (p1p2FlagKeys.length > 0) {
-        expect(result.isValid).toBe(false);
-        expect(result.errors.some(e => e.includes('P1/P2 flag'))).toBe(true);
-      }
+
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some(e => e.includes('Runtime feature flag'))).toBe(true);
     });
   });
 });
-

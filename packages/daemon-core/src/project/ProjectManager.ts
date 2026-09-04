@@ -8,6 +8,8 @@ import { WAL } from '../wal/WAL';
 import { StateManager } from '../state/StateManager';
 import { IPathResolver } from '../daemon/path-resolver';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import type { SchemaDescriptorPrecheckResult } from '@specforge/migration';
+import { precheckProjectRegistrationSchemas } from './project-schema-descriptors';
 
 export interface ProjectContext {
   projectId: string;
@@ -31,6 +33,10 @@ interface DaemonManifest {
   projects: Record<string, { projectId: string; registeredAt: number }>;
 }
 
+export type ProjectSchemaPrecheck = (
+  projectPath: string,
+) => Promise<SchemaDescriptorPrecheckResult>;
+
 export class ProjectManager {
   private eventBus: EventBus;
   private pathResolver: IPathResolver;
@@ -39,11 +45,18 @@ export class ProjectManager {
   private projectStateManagers: Map<string, StateManager> = new Map();
   private projectLocks: Map<string, Lock> = new Map();
   private subscription: Subscription | null = null;
+  private readonly projectSchemaPrecheck: ProjectSchemaPrecheck;
 
-  constructor(eventBus: EventBus, pathResolver: IPathResolver, daemonStateManager: StateManager) {
+  constructor(
+    eventBus: EventBus,
+    pathResolver: IPathResolver,
+    daemonStateManager: StateManager,
+    projectSchemaPrecheck: ProjectSchemaPrecheck = precheckProjectRegistrationSchemas,
+  ) {
     this.eventBus = eventBus;
     this.pathResolver = pathResolver;
     this.daemonStateManager = daemonStateManager;
+    this.projectSchemaPrecheck = projectSchemaPrecheck;
   }
 
   getDaemonStateManager(): StateManager {
@@ -77,32 +90,39 @@ export class ProjectManager {
       return existing;
     }
 
-    // B2: Check if project is initialized before proceeding
+    // Current releases register only the authoritative V6 Project Spec layout.
+    // A root manifest belongs to the retired auto-detection path and must not
+    // be used to infer, repair, or register a project.
     const specDir = path.join(projectPath, SPEC_DIR_NAME);
-    const manifestPath = path.join(specDir, 'manifest.json');
-
-    const manifestExists = await fs.access(manifestPath).then(() => true).catch(() => false);
-
-    if (!manifestExists) {
-      // Check if .specforge/ directory exists (old project migration)
-      const specDirExists = await fs.access(specDir).then(() => true).catch(() => false);
-
-      if (specDirExists) {
-        // Old project migration: auto-create manifest.json
-        const manifest = {
-          schema_version: '6.0',
-          project_name: path.basename(projectPath),
-          created_at: new Date().toISOString().split('T')[0],
-        };
-        await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
-        // Continue with normal registration...
-      } else {
-        // Brand new project: reject registration
-        throw new Error('PROJECT_NOT_INITIALIZED');
-      }
+    const currentManifestPath = path.join(specDir, 'project', 'spec_manifest.json');
+    const retiredRootManifestPath = path.join(specDir, 'manifest.json');
+    const retiredRootManifestExists = await fs.access(retiredRootManifestPath)
+      .then(() => true)
+      .catch(() => false);
+    if (retiredRootManifestExists) {
+      throw new Error('UNSUPPORTED_PROJECT_LAYOUT');
     }
 
-    // manifest exists → normal registration
+    const currentManifestExists = await fs.access(currentManifestPath)
+      .then(() => true)
+      .catch(() => false);
+    if (!currentManifestExists) {
+      throw new Error('PROJECT_NOT_INITIALIZED');
+    }
+
+    // Schema precheck is deliberately before the first project write. Each
+    // persistent-file owner supplies its exact schema contract; no global
+    // version or directory discovery is used here.
+    const schemaPrecheck = await this.projectSchemaPrecheck(projectPath);
+    if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+      const details = schemaPrecheck.checks
+        .filter((check) => check.status === 'blocked' || check.status === 'migration_required')
+        .map((check) => `${check.descriptorId}:${check.errorCode ?? check.status}`)
+        .join(',');
+      throw new Error(`PROJECT_SCHEMA_PRECHECK_BLOCKED:${details}`);
+    }
+
+    // Authoritative current manifest exists → normal registration.
     const projectId = existing?.projectId ?? this.generateProjectId(projectPath);
     const dataDir = this.pathResolver.resolveProjectRuntimeDir(projectPath);
 

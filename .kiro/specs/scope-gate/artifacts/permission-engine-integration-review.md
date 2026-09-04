@@ -1,5 +1,7 @@
 # Permission Engine Integration Review Report
 
+> **Status: `HISTORICAL_EVIDENCE_ONLY`.** This review describes the superseded runtime feature-flag design. Current Scope Gate is a release validator and permission decisions cannot enable excluded capabilities; this file is not a current integration contract.
+
 **Spec**: scope-gate  
 **Task**: 19.3 - Check integration with Permission Engine  
 **Review Date**: 2025  

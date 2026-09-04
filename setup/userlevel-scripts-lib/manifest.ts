@@ -10,7 +10,7 @@
  */
 
 import { readFile, stat } from "node:fs/promises"
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync } from "node:fs"
 import { join } from "node:path"
 
 import type {
@@ -18,7 +18,6 @@ import type {
   FileEntry,
   ManagedComponentType,
   AgentConfig,
-  ComponentEntry,
   ExecutionResult,
   PendingDeleteEntry,
 } from "./types"
@@ -26,8 +25,6 @@ import { SUPPORTED_SCHEMA_VERSIONS } from "./types"
 import { InstallerError, InstallerErrorCode } from "./errors"
 import { computeSHA256, computeAgentConfigHash } from "./crypto"
 import { atomicWrite, atomicWriteFile } from "./atomic"
-import { SHARED_COMPONENT_REGISTRY } from "./registry"
-import { posixToNative } from "./paths"
 import type { DesiredState } from "./discovery"
 
 // ============================================================
@@ -146,7 +143,7 @@ export async function readUserManifest(
 const SHA256_REGEX = /^[0-9a-f]{64}$/i
 
 /** 有效的 ManagedComponentType 值 */
-const VALID_COMPONENT_TYPES: readonly string[] = ["agent", "tool", "tool_lib", "plugin", "skill"]
+const VALID_COMPONENT_TYPES: readonly string[] = ["agent", "tool", "tool_lib", "plugin", "skill", "workflow", "runtime"]
 
 /**
  * 读取并验证 Manifest（分层校验）
@@ -442,7 +439,18 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
 
   // files: Record<string, {sha256: string, size: number, type: string}>
   if (typeof obj.files !== "object" || obj.files === null) return false
-  const validTypes = ["agent", "tool", "tool_lib", "skill", "plugin"]
+  const validTypes: readonly ManagedComponentType[] = [
+    "agent",
+    "tool",
+    "tool_lib",
+    "plugin",
+    "skill",
+    "workflow",
+    "runtime",
+    "config",
+    "template",
+    "other",
+  ]
   for (const entry of Object.values(obj.files as Record<string, unknown>)) {
     if (typeof entry !== "object" || entry === null) return false
     const fileEntry = entry as Record<string, unknown>
@@ -458,18 +466,9 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
 // 构建函数
 // ============================================================
 
-/**
- * 从源目录 package.json 读取版本号
- */
-function getSourceVersion(sourceDir: string): string {
-  const pkgPath = join(sourceDir, "package.json")
-  if (!existsSync(pkgPath)) return "0.0.0"
-  try {
-    const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"))
-    return pkg.version || "0.0.0"
-  } catch {
-    return "0.0.0"
-  }
+export interface InstalledManifestFile {
+  targetPath: string
+  type: ManagedComponentType
 }
 
 /**
@@ -479,26 +478,26 @@ function getSourceVersion(sourceDir: string): string {
  *
  * @param userLevelDir User_Level_Directory 路径（已部署文件的目标目录）
  * @param sourceAgents Agent 配置映射
- * @param sourceDir 源目录路径（用于读取 package.json 版本）
+ * @param version 已验证 release manifest 中的版本
+ * @param installFiles 已验证 release manifest 中的安装集合
  * @returns 完整的 UserLevelManifest
  */
 export async function buildUserManifest(
   userLevelDir: string,
   sourceAgents: Record<string, AgentConfig>,
-  sourceDir: string
+  version: string,
+  installFiles: readonly InstalledManifestFile[]
 ): Promise<UserLevelManifest> {
-  const version = getSourceVersion(sourceDir)
   const now = new Date().toISOString()
 
-  // 遍历 SHARED_COMPONENT_REGISTRY，计算 sha256 + size
+  // 遍历已验证 release manifest 安装集合，计算 sha256 + size
   const files: Record<string, FileEntry> = {}
-  for (const entry of SHARED_COMPONENT_REGISTRY) {
-    const nativePath = posixToNative(entry.path)
-    const fullPath = join(userLevelDir, nativePath)
+  for (const entry of installFiles) {
+    const fullPath = join(userLevelDir, ...entry.targetPath.split("/"))
     if (existsSync(fullPath)) {
       const sha256 = await computeSHA256(fullPath)
       const fileStat = await stat(fullPath)
-      files[entry.path] = { sha256, size: fileStat.size, type: entry.type }
+      files[entry.targetPath] = { sha256, size: fileStat.size, type: entry.type }
     }
   }
 

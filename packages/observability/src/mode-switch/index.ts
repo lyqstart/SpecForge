@@ -4,9 +4,13 @@ const PAYLOAD_SIZE_LIMIT = 64 * 1024;
 
 const MINIMAL_ACTIONS: ReadonlySet<string> = new Set([
   'workflow.started',
-  'workflow.finished',
+  'workflow.completed',
+  'workflow.failed',
+  'workflow.transition',
   'permission.evaluated',
   'gate.checked',
+  'gate.passed',
+  'gate.failed',
 ]);
 
 export type { ObservabilityMode };
@@ -15,10 +19,6 @@ export function filterByMode(event: Event, mode: ObservabilityMode): boolean {
   switch (mode) {
     case 'minimal':
       if (!MINIMAL_ACTIONS.has(event.action)) return false;
-      if (event.action === 'permission.evaluated') {
-        const p = event.payload as { effect?: string } | undefined;
-        return p?.effect === 'deny';
-      }
       return true;
     case 'standard':
       return true;

@@ -6,28 +6,18 @@
  * - Tool Registry
  * - Workflow Loader
  * - Gate Registry
- * - Plugin Loader
  *
  * 这是一个统一入口，确保所有扩展在 Daemon 启动时正确初始化。
  */
 
 import path from 'path';
+import { existsSync } from 'fs';
 import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { EventBus } from '../event-bus/EventBus';
 import { Event } from '../types';
 
-// Lazy-load plugin-loader to avoid initialization issues during test import
-let PluginLoaderClass: any = null;
-let createPluginLoaderFn: any = null;
-
-async function getPluginLoader(): Promise<any> {
-  if (!PluginLoaderClass) {
-    const module = await import('@specforge/plugin-loader');
-    PluginLoaderClass = module.PluginLoader;
-    createPluginLoaderFn = module.createPluginLoader;
-  }
-  return { PluginLoaderClass, createPluginLoaderFn };
-}
+const CURRENT_WORKFLOW_FILE = 'feature_spec.json';
+const CURRENT_WORKFLOW_ID = 'feature_spec';
 
 /**
  * 扩展类型
@@ -36,8 +26,7 @@ export type ExtensionType =
   | 'skill' 
   | 'tool' 
   | 'workflow' 
-  | 'gate'
-  | 'plugin';
+  | 'gate';
 
 /**
  * 扩展加载状态
@@ -67,17 +56,10 @@ export interface ExtensionLoaderConfig {
   extensionsDir?: string;
   enabledExtensions?: {
     skill?: boolean;
-    tool?: boolean;
-    workflow?: boolean;
-    gate?: boolean;
-    plugin?: boolean;
-  };
-  pluginLoader?: {
-    pluginDir?: string;
-    grants?: string[];
-    enableStaticCheck?: boolean;
-    enablePermissionCheck?: boolean;
-  };
+     tool?: boolean;
+     workflow?: boolean;
+     gate?: boolean;
+   };
   workflowEngine?: any;
 }
 
@@ -89,17 +71,10 @@ export function createDefaultExtensionLoaderConfig(): Required<Omit<ExtensionLoa
     extensionsDir: './extensions',
     enabledExtensions: {
       skill: true,
-      tool: true,
-      workflow: true,
-      gate: true,
-      plugin: true,
-    },
-    pluginLoader: {
-      pluginDir: './plugins',
-      grants: ['filesystem.read', 'env.read'],
-      enableStaticCheck: true,
-      enablePermissionCheck: true,
-    },
+       tool: true,
+       workflow: true,
+       gate: true,
+     },
   };
 }
 
@@ -119,15 +94,12 @@ export const DEFAULT_EXTENSION_LOADER_CONFIG = createDefaultExtensionLoaderConfi
  * // 加载所有扩展
  * const result = await loader.loadAll();
  * 
- * // 或只加载插件
- * const pluginState = await loader.loadByType('plugin');
  * ```
  */
 export class ExtensionLoader {
   private config: Required<Omit<ExtensionLoaderConfig, 'workflowEngine'>> & { workflowEngine?: any };
   private eventBus: EventBus;
   private extensionStates: Map<string, ExtensionLoadState> = new Map();
-  private pluginLoaderInstance: any = null;
   private isLoaded: boolean = false;
   private workflowEngine: any;
 
@@ -138,10 +110,6 @@ export class ExtensionLoader {
         ...DEFAULT_EXTENSION_LOADER_CONFIG.enabledExtensions,
         ...config.enabledExtensions,
       },
-      pluginLoader: {
-        ...DEFAULT_EXTENSION_LOADER_CONFIG.pluginLoader,
-        ...config.pluginLoader,
-      },
     };
     
     this.eventBus = eventBus ?? new EventBus();
@@ -150,23 +118,6 @@ export class ExtensionLoader {
 
   setWorkflowEngine(engine: any): void {
     this.workflowEngine = engine;
-  }
-
-  /**
-   * 获取 Plugin Loader 实例（延迟初始化）
-   * 如果尚未初始化，先初始化
-   */
-  private async getPluginLoaderInstance(): Promise<any> {
-    if (!this.pluginLoaderInstance) {
-      const { createPluginLoaderFn } = await getPluginLoader();
-      this.pluginLoaderInstance = createPluginLoaderFn({
-        pluginDir: this.config.pluginLoader.pluginDir,
-        grants: this.config.pluginLoader.grants,
-        enableStaticCheck: this.config.pluginLoader.enableStaticCheck,
-        enablePermissionCheck: this.config.pluginLoader.enablePermissionCheck,
-      });
-    }
-    return this.pluginLoaderInstance;
   }
 
   /**
@@ -211,9 +162,7 @@ export class ExtensionLoader {
     const extensions: ExtensionLoadState[] = [];
     let allSuccess = true;
 
-    // 按依赖顺序加载各类型扩展
-    // Plugin 需要先于某些扩展加载
-    const loadOrder: ExtensionType[] = ['plugin', 'skill', 'tool', 'workflow', 'gate'];
+    const loadOrder: ExtensionType[] = ['skill', 'tool', 'workflow', 'gate'];
 
     for (const type of loadOrder) {
       if (this.config.enabledExtensions[type] !== false) {
@@ -262,9 +211,6 @@ export class ExtensionLoader {
       let state: ExtensionLoadState;
 
       switch (type) {
-        case 'plugin':
-          state = await this.loadPlugins();
-          break;
         case 'skill':
           state = await this.loadSkills();
           break;
@@ -299,33 +245,6 @@ export class ExtensionLoader {
       this.publishEvent(state);
 
       return state;
-    }
-  }
-
-  /**
-   * 加载插件扩展
-   * 
-   * 使用 Plugin Loader 加载所有插件
-   */
-  private async loadPlugins(): Promise<ExtensionLoadState> {
-    try {
-      const loader = await this.getPluginLoaderInstance();
-      
-      // 尝试加载插件目录中的所有插件
-      const result = await loader.loadPlugins();
-      
-      return {
-        type: 'plugin',
-        name: 'plugin-loader',
-        loaded: result.success || result.loaded.length > 0,
-      };
-    } catch (error) {
-      return {
-        type: 'plugin',
-        name: 'plugin-loader',
-        loaded: false,
-        error: error instanceof Error ? error : new Error(String(error)),
-      };
     }
   }
 
@@ -377,34 +296,31 @@ export class ExtensionLoader {
         path.resolve(process.cwd(), 'configs/workflows/builtin'),
         path.resolve(__dirname, '../../../../configs/workflows/builtin'),
       ];
-      const found = candidateDirs.find(d => {
-        try { require('fs').readdirSync(d); return true; } catch { return false; }
-      });
-      const builtinDir: string = found ?? candidateDirs[0]!;
+      const builtinDir = candidateDirs.find((directory) =>
+        existsSync(path.join(directory, CURRENT_WORKFLOW_FILE)),
+      );
+      if (!builtinDir) {
+        throw new Error(
+          `Current workflow ${CURRENT_WORKFLOW_FILE} not found in: ${candidateDirs.join(', ')}`,
+        );
+      }
 
-      const fs = await import('fs');
-      const files: string[] = await fs.promises.readdir(builtinDir);
-      const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
-
-      let loadedCount = 0;
-      for (const file of jsonFiles) {
-        try {
-          const filePath = path.join(builtinDir, file);
-          const def = await loader.loadFromFile(filePath);
-          if (this.workflowEngine) {
-            this.workflowEngine.registerDefinition(def);
-          }
-          loadedCount++;
-        } catch (err) {
-          console.warn(`[ExtensionLoader] Failed to load workflow ${file}:`, (err as Error).message);
-        }
+      const workflowPath = path.join(builtinDir, CURRENT_WORKFLOW_FILE);
+      const definition = await loader.loadFromFile(workflowPath);
+      if (definition.id !== CURRENT_WORKFLOW_ID) {
+        throw new Error(
+          `Current workflow id mismatch: expected ${CURRENT_WORKFLOW_ID}, received ${definition.id}`,
+        );
+      }
+      if (this.workflowEngine) {
+        this.workflowEngine.registerDefinition(definition);
       }
 
       return {
         type: 'workflow',
         name: 'workflow-loader',
         loaded: true,
-        count: loadedCount,
+        count: 1,
         loadTimeMs: Date.now() - startTs,
       };
     } catch (err) {
@@ -461,55 +377,6 @@ export class ExtensionLoader {
     return this.isLoaded;
   }
 
-  /**
-   * 获取 Plugin Loader 实例（供外部使用）
-   * 
-   * @returns Plugin Loader 实例
-   */
-  async getPluginLoaderInstanceAsync(): Promise<any> {
-    return this.getPluginLoaderInstance();
-  }
-
-  /**
-   * 更新插件授权集合
-   * 
-   * @param grants 新的授权集合
-   */
-  async updatePluginGrants(grants: string[]): Promise<void> {
-    const loader = await this.getPluginLoaderInstance();
-    loader.updateGrants(grants);
-  }
-
-  /**
-   * 获取当前插件授权集合
-   * 
-   * @returns 当前授权集合
-   */
-  async getPluginGrants(): Promise<string[]> {
-    const loader = await this.getPluginLoaderInstance();
-    return loader.getGrants();
-  }
-
-  /**
-   * 重新加载指定插件
-   * 
-   * @param pluginId 插件 ID
-   * @returns 加载结果
-   */
-  async reloadPlugin(pluginId: string) {
-    const loader = await this.getPluginLoaderInstance();
-    return loader.reloadPlugin(pluginId);
-  }
-
-  /**
-   * 卸载指定插件
-   * 
-   * @param pluginId 插件 ID
-   */
-  async unloadPlugin(pluginId: string): Promise<void> {
-    const loader = await this.getPluginLoaderInstance();
-    loader.unloadPlugin(pluginId);
-  }
 }
 
 /**

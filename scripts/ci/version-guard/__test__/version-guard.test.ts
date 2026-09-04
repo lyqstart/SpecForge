@@ -110,15 +110,14 @@ describe('runVersionGuard — violation aggregation', () => {
       matchedText: 'code_version: "6.0.0"',
     };
     const v2: Violation = {
-      ruleId: 'MIN_SCHEMA_DECREASED',
-      file: 'packages/version-unification/src/constants.ts',
-      details: { from: 3, to: 2 },
+      ruleId: 'CODE_VERSION_SOURCE_UNREADABLE',
+      file: 'package.json',
     };
     const v3: Violation = {
-      ruleId: 'DATA_SCHEMA_WRITE_OUTSIDE_DEDICATED_MODULE',
+      ruleId: 'CODE_VERSION_LITERAL_OUTSIDE_PACKAGE_JSON',
       file: 'b.ts',
       line: 14,
-      matchedText: 'data_schema_version = 5',
+      matchedText: 'code_version = "6.0.0"',
     };
 
     const { exitCode, report } = await runVersionGuard({
@@ -137,8 +136,8 @@ describe('runVersionGuard — violation aggregation', () => {
     const ids = report.violations.map((v) => v.ruleId).sort();
     expect(ids).toEqual([
       'CODE_VERSION_LITERAL_OUTSIDE_PACKAGE_JSON',
-      'DATA_SCHEMA_WRITE_OUTSIDE_DEDICATED_MODULE',
-      'MIN_SCHEMA_DECREASED',
+      'CODE_VERSION_LITERAL_OUTSIDE_PACKAGE_JSON',
+      'CODE_VERSION_SOURCE_UNREADABLE',
     ]);
     expect(report.infrastructureError).toBeUndefined();
   });

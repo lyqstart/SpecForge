@@ -1,5 +1,12 @@
 # Design Document: Self-Healing Subsystem
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-15, REQ-25, REQ-31 and V6-ADR-011.
+- **Classification / status**: stable target is `CURRENT_RELEASE_SUPPORTING`; current package remains `BUILT_NOT_ENABLED` until Daemon/Gate failure events consume Diagnose and the artifact is verified.
+- **Current scope**: read-only Diagnose plus structured diagnostic report.
+- **Excluded**: Propose, Approve, Apply and Verify implementations/interfaces must not enter current exports, build, registry, installer or runtime and cannot be enabled by feature flag.
+
 ## Overview
 
 ### Module Purpose

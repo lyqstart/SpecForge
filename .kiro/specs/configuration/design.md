@@ -1,5 +1,20 @@
 # Design Document: Configuration Subsystem
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-9, REQ-25, REQ-31 and design 0.3—0.6.
+- **Classification / status**: `CURRENT_RELEASE_SUPPORTING`; source is active and configuration becomes effective only after Daemon validation/acceptance.
+- **Current scope**: deterministic four-layer merge and sensitive-field boundaries for the current product; no legacy config-path discovery or compatibility projection.
+- **Dependency direction**: exposes neutral configuration results to Daemon/CLI and never owns Runtime or project state.
+
+```text
+PROJECT_CONFIG_AUTHORITY=.specforge/config/project.json
+PROJECT_CONFIG_COMPATIBILITY_ALIAS=UNSUPPORTED
+```
+
+- **Project source**: `loadProjectConfig(projectPath)` resolves `LAYOUT.configFiles.project` under `<project>/.specforge/`; it does not hard-code or discover another filename.
+- **Acceptance boundary**: Daemon project registration validates the owner descriptor before the project configuration can affect a new project context. Missing, malformed, unknown-schema, or invalid project configuration fails closed.
+
 ## Overview
 
 This design document specifies the implementation of the **Configuration Subsystem** module for SpecForge V6. The Configuration Subsystem manages the four-layer configuration model with deterministic merging, sensitive field protection, and hot-reload boundaries.

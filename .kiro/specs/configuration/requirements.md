@@ -8,6 +8,13 @@ This specification defines the **Configuration Subsystem** module for SpecForge 
 
 **Scope**: This is a **P0** specification, meaning its functionality is required for the V6.0 release.
 
+```text
+PROJECT_CONFIG_AUTHORITY=.specforge/config/project.json
+PROJECT_CONFIG_COMPATIBILITY_ALIAS=UNSUPPORTED
+```
+
+The current project configuration layer has one file contract only. It is loaded from `<project>/.specforge/config/project.json`, resolved through the shared directory-layout authority. `.specforge/config/.specforge.json`, retired root configuration, filename discovery, and fallback aliases are unsupported.
+
 ## Inherited Architectural Properties
 
 This specification inherits and must implement the following **Correctness Properties** from the parent V6 architecture specification:
@@ -30,7 +37,7 @@ This specification inherits and must implement the following **Correctness Prope
 
 #### Acceptance Criteria
 
-1. THE Configuration_Subsystem SHALL implement the four configuration layers in order: builtin defaults → user-level (`~/.specforge/`) → project-level (`<project>/.specforge/`) → runtime (CLI flags / environment variables).
+1. THE Configuration_Subsystem SHALL implement the four configuration layers in order: builtin defaults → user-level (`~/.specforge/`) → project-level (`<project>/.specforge/config/project.json`) → runtime (CLI flags / environment variables). The project path SHALL be resolved from the shared directory-layout authority and SHALL NOT probe aliases.
 2. THE Configuration_Subsystem SHALL implement the following merge rules:
    - Simple values: later layer overrides earlier layer.
    - Objects: deep merge.

@@ -1,5 +1,7 @@
 # SpecForge V6.0 开发路线图
 
+> **当前治理状态：`HISTORICAL_EVIDENCE_ONLY`。** 本文件记录早期 Wave 调度，不是当前发布范围、模块状态或执行顺序权威。当前范围/架构以同级 `requirements.md` / `design.md` 为准，当前执行进度以 `docs/implementation/architecture-consistency/current-release-boundary-and-module-convergence-progress.md` 和 `current-handoff.md` 为准。下文“P1/P2 默认关闭”等旧合同不得继续消费。
+
 > **性质**：本文档是 V6.0 全部 P0 模块 spec 的**并行执行调度计划**，基于依赖关系划分成波次（Wave），每个波次内的任务可并行推进。
 >
 > **维护者**：项目协调者（Orchestrator）根据每个 Wave 的完成情况推进下一个 Wave。

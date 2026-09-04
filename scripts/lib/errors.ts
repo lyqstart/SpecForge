@@ -19,7 +19,7 @@ export enum InstallerErrorCode {
   E_DISK_FULL = "E_DISK_FULL",
   /**
    * opencode.json / manifest.json 解析失败
-   * @suggestedFix 检查 JSON 语法，或从 .backup/ 恢复
+   * @suggestedFix 检查 JSON 语法，或从 backups/ 中对应事务证据恢复
    */
   E_INVALID_JSON = "E_INVALID_JSON",
   /**

@@ -6,23 +6,26 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Create mock for axios
-const mockRequest = vi.fn();
-const mockCreate = vi.fn(() => ({
-  request: mockRequest,
-  interceptors: {
-    request: {
-      use: vi.fn((fn: (config: { headers: Record<string, string> }) => { headers: Record<string, string> }) => {
-        // Apply the interceptor to initialize headers
-        fn({ headers: {} });
-        return 1;
-      }),
+// Create mock for axios. vi.mock factories are hoisted, so their state must
+// be initialized through vi.hoisted as well.
+const { mockRequest, mockCreate } = vi.hoisted(() => {
+  const mockRequest = vi.fn();
+  const mockCreate = vi.fn(() => ({
+    request: mockRequest,
+    interceptors: {
+      request: {
+        use: vi.fn((fn: (config: { headers: Record<string, string> }) => { headers: Record<string, string> }) => {
+          fn({ headers: {} });
+          return 1;
+        }),
+      },
+      response: {
+        use: vi.fn(),
+      },
     },
-    response: {
-      use: vi.fn(),
-    },
-  },
-}));
+  }));
+  return { mockRequest, mockCreate };
+});
 
 vi.mock('axios', () => ({
   default: {

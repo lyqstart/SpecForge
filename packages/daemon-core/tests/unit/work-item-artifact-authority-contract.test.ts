@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const repoRoot = resolve(import.meta.dirname, '../../../..');
@@ -11,7 +11,8 @@ function read(relativePath: string): string {
 describe('Work Item artifact authority contract', () => {
   it('declares Candidate-first resolution and placeholder rejection in the Path Service', () => {
     const layout = read('packages/types/src/directory-layout.ts');
-    expect(layout).toContain('Candidate 权威路径 → Work Item 顶层兼容路径');
+    expect(layout).toContain('当前发布权威读取路径');
+    expect(layout).not.toContain('legacyWorkItemSpecArtifact');
     expect(layout).toContain('isWorkItemSpecArtifactPlaceholder');
     expect(layout).toContain('Reason: Not yet analyzed');
   });
@@ -38,19 +39,11 @@ describe('Work Item artifact authority contract', () => {
     const semanticProvenance = read(
       'packages/daemon-core/src/tools/lib/semantic-closure-provenance.ts',
     );
-    const contextBuilder = read(
-      'packages/daemon-core/src/tools/lib/sf_context_build_core.ts',
-    );
-    const knowledgeGraph = read(
-      'packages/daemon-core/src/tools/lib/sf_knowledge_graph_core.ts',
-    );
 
     expect(closeGate).toContain('resolveWorkItemSpecArtifacts');
     expect(closeGate).toContain('close_artifact_${artifact.kind}_authoritative');
     expect(semanticClosure).toContain('resolveWorkItemSpecArtifacts');
     expect(semanticProvenance).toContain("'candidates/trace_delta.md'");
-    expect(contextBuilder).toContain('workItemSpecArtifactReadCandidates');
-    expect(knowledgeGraph).toContain('workItemSpecArtifactReadCandidates');
   });
 
   it('keeps Agent and workflow instructions on the canonical task path', () => {
@@ -63,25 +56,18 @@ describe('Work Item artifact authority contract', () => {
       '`candidates/tasks.md` 与 `candidates/trace_delta.md` 是新 Work Item 的唯一写入权威路径',
     );
 
-    const skillsRoot = join(repoRoot, 'setup/userlevel-opencode/skills');
-    const workflowSkills = readdirSync(skillsRoot, { withFileTypes: true })
-      .filter(entry => entry.isDirectory() && entry.name.startsWith('sf-workflow-'))
-      .map(entry => join(skillsRoot, entry.name, 'SKILL.md'));
-
-    for (const filePath of workflowSkills) {
-      const content = readFileSync(filePath, 'utf-8');
-      expect(content, filePath).not.toContain(
-        '.specforge/work-items/<work_item_id>/tasks.md',
-      );
-    }
+    const currentWorkflowSkill = read(
+      'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md',
+    );
+    expect(currentWorkflowSkill).not.toContain(
+      '.specforge/work-items/<work_item_id>/tasks.md',
+    );
   });
 
-  it('describes the legacy repair tool as a read-only audit', () => {
-    const wrapper = read(
-      'setup/userlevel-opencode/tools/sf_work_item_repair_closure.ts',
-    );
-    expect(wrapper).toContain('只读审计');
-    expect(wrapper).toContain('已停止修复写入');
-    expect(wrapper).not.toContain('才在根目录补一个骨架标记');
+  it('does not retain the legacy repair compatibility surface', () => {
+    expect(existsSync(join(repoRoot, 'setup/userlevel-opencode/tools/sf_work_item_repair_closure.ts')))
+      .toBe(false);
+    expect(read('packages/types/src/directory-layout.ts'))
+      .not.toContain('Closure-skeleton marker restored by sf_work_item_repair_closure');
   });
 });

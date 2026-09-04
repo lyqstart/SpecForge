@@ -15,8 +15,17 @@ SPEC_DIR_NAME = '.specforge'
 
 | Key | 路径 | 说明 |
 |-----|------|------|
+| config | `config` | 项目配置目录 — `<root>/.specforge/config/` |
 | project | `project` | 项目级正式规格目录 — `<root>/.specforge/project/` |
 | workItems | `work-items` | Work Item 事务根目录 — `<root>/.specforge/work-items/` |
+
+### configFiles 分组
+
+| Key | 路径 | 说明 |
+|-----|------|------|
+| configFiles.projectRules | `config/project-rules.md` | — |
+| configFiles.prodEnv | `config/prod-environment.md` | — |
+| configFiles.project | `config/project.json` | — |
 
 ### projectFiles 分组
 
@@ -30,6 +39,11 @@ SPEC_DIR_NAME = '.specforge'
 | projectFiles.glossary | `project/glossary.md` | — |
 | projectFiles.decisions | `project/decisions.md` | — |
 | projectFiles.traceMatrix | `project/trace_matrix.md` | — |
+| projectFiles.domainModel | `project/domain_model.md` | — |
+| projectFiles.contextMap | `project/context_map.md` | — |
+| projectFiles.crosscuttingConcepts | `project/crosscutting_concepts.md` | — |
+| projectFiles.architectureRisks | `project/architecture_risks.md` | — |
+| projectFiles.decisionsRoot | `project/decisions` | — |
 | projectFiles.modulesRoot | `project/modules` | — |
 
 ### workItemFiles 分组
@@ -41,12 +55,25 @@ SPEC_DIR_NAME = '.specforge'
 | workItemFiles.changeClassification | `change_classification.md` | — |
 | workItemFiles.impactAnalysis | `impact_analysis.md` | — |
 | workItemFiles.triggerResult | `trigger_result.json` | — |
+| workItemFiles.requirements | `requirements.md` | — |
+| workItemFiles.design | `design.md` | — |
 | workItemFiles.requirementsDelta | `requirements_delta.md` | — |
 | workItemFiles.designDelta | `design_delta.md` | — |
+| workItemFiles.domainAnalysis | `domain_analysis.md` | — |
+| workItemFiles.moduleBoundaryAnalysis | `module_boundary_analysis.md` | — |
+| workItemFiles.architectureMigrationMap | `architecture_migration_map.md` | — |
+| workItemFiles.projectSpecVersionBefore | `project_spec_version_before.json` | — |
+| workItemFiles.projectSpecVersionAfter | `project_spec_version_after.json` | — |
 | workItemFiles.tasks | `tasks.md` | — |
 | workItemFiles.traceDelta | `trace_delta.md` | — |
 | workItemFiles.candidateManifest | `candidate_manifest.json` | — |
 | workItemFiles.candidates | `candidates` | — |
+| workItemFiles.candidateFiles.project | `project` | — |
+| workItemFiles.candidateFiles.modulesRoot | `project/modules` | — |
+| workItemFiles.candidateFiles.requirements | `requirements.candidate.md` | — |
+| workItemFiles.candidateFiles.design | `design.candidate.md` | — |
+| workItemFiles.candidateFiles.tasks | `tasks.md` | — |
+| workItemFiles.candidateFiles.traceDelta | `trace_delta.md` | — |
 | workItemFiles.gates | `gates` | — |
 | workItemFiles.gateSummary | `gate_summary.md` | — |
 | workItemFiles.userDecision | `user_decision.json` | — |
@@ -72,43 +99,5 @@ SPEC_DIR_NAME = '.specforge'
 | runtimeFiles.checkpoints | `runtime/checkpoints` | — |
 | runtimeFiles.logs | `runtime/logs` | — |
 
-## Legacy Paths (read-only / deprecated)
-
-> ⚠️ 以下路径已从 LAYOUT 移除，仅供 legacy readers 读取，新代码不得使用这些路径进行写入。
-
-### 项目级 Legacy Paths
-
-| Key | 路径 | 说明 |
-|-----|------|------|
-| specsReadOnly | `specs` | 旧规格目录（legacy read-only）— `<root>/.specforge/specs/` |
-| manifest | `manifest.json` | 旧根级 manifest — `<root>/.specforge/manifest.json` |
-| config | `config` | 旧配置目录 — `<root>/.specforge/config/` |
-| knowledge | `knowledge` | 旧知识目录 — `<root>/.specforge/knowledge/` |
-| knowledgeGraph | `knowledge/graph.json` | 旧知识图谱 — `<root>/.specforge/knowledge/graph.json` |
-
-#### legacyPaths.configFiles 分组
-
-| Key | 路径 | 说明 |
-|-----|------|------|
-| configFiles.projectRules | `config/project-rules.md` | — |
-| configFiles.prodEnv | `config/prod-environment.md` | — |
-| configFiles.project | `config/project.json` | — |
-| configFiles.riskPolicy | `config/risk_policy.json` | — |
-| configFiles.skillFragments | `config/skill_fragments.json` | — |
-
-### 用户级 Legacy Paths (~/.specforge/)
-
-| Key | 路径 | 说明 |
-|-----|------|------|
-| runtime | `runtime` | 运行时状态目录 — `~/.specforge/runtime/` |
-| runtimeHandshake | `runtime/handshake.json` | 握手文件 — `~/.specforge/runtime/handshake.json` |
-| runtimeState | `runtime/state.json` | 持久化状态 — `~/.specforge/runtime/state.json` |
-| runtimeEvents | `runtime/events.jsonl` | 事件日志 — `~/.specforge/runtime/events.jsonl` |
-| runtimeDaemonLock | `runtime/daemon.lock` | Daemon 锁文件 — `~/.specforge/runtime/daemon.lock` |
-| hostProfile | `host-profile.json` | 主机配置文件 — `~/.specforge/host-profile.json` |
-| logs | `logs` | 日志目录 — `~/.specforge/logs/` |
-| projects | `projects` | 项目目录 — `~/.specforge/projects/` |
-| templates | `templates` | 模板目录 — `~/.specforge/templates/` |
-| backups | `backups` | 备份目录 — `~/.specforge/backups/` |
 
 ---

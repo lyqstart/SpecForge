@@ -236,22 +236,25 @@ export class StaticChecker {
   checkSourcesAndGenerateReport(files: Array<[string, string]>): ViolationReportData {
     const results = this.checkSources(files);
     return ViolationReporter.generateReportData(
-      results.map((result, index) => ({
-        filePath: files[index][0],
-        success: !result.error,
-        violations: result.violations?.map(v => ({
-          ruleId: v.api,
-          ruleName: v.api,
-          description: v.message,
-          severity: 'error' as const,
-          filePath: files[index][0],
-          line: v.line,
-          column: v.column,
-          apiName: v.api,
-          errorMessage: v.message,
-          requiredPermission: undefined,
-        })) || [],
-      }))
+      results.map((result, index) => {
+        const [filePath] = files[index]!;
+        return {
+          filePath,
+          success: !result.error,
+          violations: result.violations?.map(v => ({
+            ruleId: v.api,
+            ruleName: v.api,
+            description: v.message,
+            severity: 'error' as const,
+            filePath,
+            line: v.line,
+            column: v.column,
+            apiName: v.api,
+            errorMessage: v.message,
+            requiredPermission: undefined,
+          })) || [],
+        };
+      })
     );
   }
 

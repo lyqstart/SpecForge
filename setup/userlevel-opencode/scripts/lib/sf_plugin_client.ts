@@ -6,14 +6,13 @@
  * adapted to work without any @specforge/* or relative-package imports.
  *
  * All external types and constants are inlined so this single file can be
- * deployed to <OpenCode config>/sf-user/lib/ and imported by the plugin
+ * deployed to ~/.specforge/lib/ and imported by the project Thin Plugin
  * without requiring the full monorepo package tree.
  */
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { homedir } from "node:os";
-import { SPEC_DIR_NAME } from "./paths";
 
 // ── Inlined type (originally from packages/service-management/src/types/handshake.ts) ──
 
@@ -22,6 +21,7 @@ interface HandshakeFile {
   pid: number;
   port: number;
   token: string;
+  bound_to: '127.0.0.1' | '0.0.0.0';
   startedAt: number;
   version: string;
   serviceMode: boolean;
@@ -64,31 +64,11 @@ export interface ReconnectingDaemonClientOptions {
 
 // ── Defaults ──
 
-/**
- * Resolve the OpenCode user-level config root.
- * Same resolution order as scripts/lib/paths.ts resolveUserLevelDirectory():
- *   1. OPENCODE_CONFIG_DIR (explicit override for testing/CI)
- *   2. XDG_CONFIG_HOME/opencode
- *   3. ~/.config/opencode
- */
-function resolveOpenCodeConfigRoot(): string {
-  const { resolve, normalize } = require("node:path") as typeof import("node:path");
-  const configDir = process.env.OPENCODE_CONFIG_DIR;
-  if (configDir && configDir.trim() !== '') {
-    return resolve(normalize(configDir));
-  }
-  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
-  if (xdgConfigHome && xdgConfigHome.trim() !== '') {
-    return join(xdgConfigHome, 'opencode');
-  }
-  return join(homedir(), '.config', 'opencode');
-}
-
 const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
   initialDelayMs: 1000,
   backoffFactor: 2.0,
   maxCumulativeBackoffMs: 60000,
-  handshakePath: join(resolveOpenCodeConfigRoot(), "sf-user", "runtime", "handshake.json"),
+  handshakePath: join(homedir(), ".specforge", "runtime", "daemon.sock.json"),
   healthzUrl: "http://127.0.0.1",
 };
 
@@ -476,106 +456,6 @@ export class ReconnectingDaemonClient implements Disposable {
     }
   }
 
-  // ── Write Guard API ─────────────────────────────────────────────────────────
-
-  private async getDaemonUrl(): Promise<{ url: string; token: string } | null> {
-    let handshake = this.cachedHandshake;
-    if (!handshake) {
-      handshake = await readHandshake(this.options.handshakePath);
-      if (handshake) this.cachedHandshake = handshake;
-    }
-    if (!handshake) return null;
-    return { url: `${this.options.healthzUrl}:${handshake.port}`, token: handshake.token };
-  }
-
-  private async daemonPost(path: string, body: unknown): Promise<any> {
-    const conn = await this.getDaemonUrl();
-    if (!conn) throw new Error("Daemon handshake not found — fail closed");
-    const response = await fetch(`${conn.url}${path}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${conn.token}`,
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      throw new Error(`Daemon responded ${response.status}: ${text}`);
-    }
-    const json = await response.json();
-    return json.data ?? json;
-  }
-
-  async checkWrite(
-    targetPath: string,
-    callerRole: string,
-    context?: Record<string, unknown>
-  ): Promise<{ allowed: boolean; reason?: string }> {
-    try {
-      return await this.daemonPost("/api/v1/v11/write-guard/check", {
-        targetPath,
-        callerRole,
-        projectPath: context?.directory ?? context?.worktree ?? process.cwd(),
-        context,
-      });
-    } catch (err) {
-      // Fail closed: daemon unreachable → block
-      return { allowed: false, reason: `daemon_unreachable_fail_closed: ${(err as Error).message}` };
-    }
-  }
-
-  async bashGuard(
-    command: string,
-    expectedFiles: string[],
-    context?: Record<string, unknown>
-  ): Promise<{ allowed: boolean; reason?: string }> {
-    try {
-      return await this.daemonPost("/api/v1/v11/write-guard/bash", {
-        command,
-        expectedFiles,
-        projectPath: context?.directory ?? context?.worktree ?? process.cwd(),
-        context,
-      });
-    } catch (err) {
-      // Fail closed: daemon unreachable → block
-      return { allowed: false, reason: `daemon_unreachable_fail_closed: ${(err as Error).message}` };
-    }
-  }
-
-  async changedFilesAudit(params: {
-    command?: string;
-    expectedFiles?: string[];
-    changedFiles?: Array<{ path: string; operation: string }>;
-    tool?: string;
-  }): Promise<{ ok: boolean; reason?: string }> {
-    try {
-      const result = await this.daemonPost("/api/v1/v11/write-guard/changed-files-audit", {
-        ...params,
-        projectPath: process.cwd(),
-      });
-      return { ok: result.passed ?? true, reason: result.reason };
-    } catch (err) {
-      return { ok: false, reason: `daemon_unreachable: ${(err as Error).message}` };
-    }
-  }
-
-  async recordEscapedWrite(params: {
-    command?: string;
-    expectedFiles?: string[];
-    escapedWrites?: string[];
-  }): Promise<{ ok: boolean; reason?: string }> {
-    try {
-      const result = await this.daemonPost("/api/v1/v11/write-guard/escaped-write", {
-        ...params,
-        timestamp: new Date().toISOString(),
-      });
-      return { ok: true, reason: result.reason };
-    } catch (err) {
-      return { ok: false, reason: `daemon_unreachable: ${(err as Error).message}` };
-    }
-  }
 }
 
 export function createReconnectingDaemonClient(

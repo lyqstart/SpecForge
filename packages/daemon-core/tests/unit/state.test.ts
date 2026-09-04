@@ -57,9 +57,12 @@ describe('StateManager', () => {
       // Write a WAL event directly (WAL is the authoritative source,
       // state.json is a derived checkpoint)
       const event = JSON.stringify({
+        schema_version: '1.0',
         eventId: 'event-1',
         ts: 1000,
+        monotonicSeq: 1,
         projectId: tempDir,
+        actor: 'test',
         category: 'session',
         action: 'session.update',
         payload: { activeSessions: ['session-1'] },
@@ -81,9 +84,13 @@ describe('StateManager', () => {
   describe('appendEvent', () => {
     it('should update state after appending event', async () => {
       const event: Event = {
+        schema_version: '1.0',
         eventId: 'event-1',
         ts: 1000,
+        monotonicSeq: 1,
         projectId: 'test-project',
+        actor: 'test',
+        category: 'state',
         action: 'test.action',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'test' },
@@ -98,18 +105,26 @@ describe('StateManager', () => {
 
     it('should update state for multiple events', async () => {
       await stateManager.appendEvent({
+        schema_version: '1.0',
         eventId: 'event-1',
         ts: 1000,
+        monotonicSeq: 1,
         projectId: 'test',
+        actor: 'test',
+        category: 'state',
         action: 'action1',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'test' },
       });
       
       await stateManager.appendEvent({
+        schema_version: '1.0',
         eventId: 'event-2',
         ts: 2000,
+        monotonicSeq: 2,
         projectId: 'test',
+        actor: 'test',
+        category: 'state',
         action: 'action2',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'test' },
@@ -123,9 +138,13 @@ describe('StateManager', () => {
     it('should maintain WAL ordering (event first, then state)', async () => {
       // This test verifies the WAL ordering property is maintained
       const event1 = {
+        schema_version: '1.0' as const,
         eventId: 'event-1',
         ts: 1000,
+        monotonicSeq: 1,
         projectId: 'test',
+        actor: 'test',
+        category: 'state',
         action: 'action1',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'test' },
@@ -239,9 +258,13 @@ describe('StateManager', () => {
 
     it('should reflect updates from appendEvent', async () => {
       await stateManager.appendEvent({
+        schema_version: '1.0',
         eventId: 'test-event',
         ts: 5000,
+        monotonicSeq: 1,
         projectId: 'test',
+        actor: 'test',
+        category: 'state',
         action: 'test',
         payload: {},
         metadata: { schemaVersion: '1.0', source: 'test' },

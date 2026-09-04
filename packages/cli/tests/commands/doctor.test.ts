@@ -1,179 +1,86 @@
-/**
- * Doctor Command tests (version-unification spec, R10.3).
- *
- * 覆盖三种 mode：
- *  1) NORMAL_RW          —— project manifest 存在且 dsv 在支持范围内
- *  2) project 缺失        —— project manifest 不存在 → data_schema_version 显示 N/A
- *  3) DEGRADED_HIGHER_THAN_KNOWN
- *                        —— project manifest 的 dsv 高于 HIGHEST_KNOWN_SCHEMA
- *
- * 测试用真实临时目录 + 真实文件 IO（不 mock dynamic import），
- * 这样能验证 cli (CommonJS) 通过 dynamic import 消费 version-unification (ESM) 的
- * 端到端协议路径是工作的。
- */
-
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
 import * as os from 'node:os';
-import * as crypto from 'node:crypto';
+import * as path from 'node:path';
 
 import { runDoctorCommand } from '../../src/commands/doctor';
 
-interface CapturedOutput {
-  stdout: string;
-  stderr: string;
+const temporaryRoots: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(
+    temporaryRoots.splice(0).map(root => fs.rm(root, { recursive: true, force: true }))
+  );
+});
+
+async function makeProject(manifest?: unknown): Promise<string> {
+  const projectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-doctor-current-'));
+  temporaryRoots.push(projectDir);
+  if (manifest !== undefined) {
+    const manifestPath = path.join(projectDir, '.specforge', 'project', 'spec_manifest.json');
+    await fs.mkdir(path.dirname(manifestPath), { recursive: true });
+    await fs.writeFile(manifestPath, JSON.stringify(manifest), 'utf8');
+  }
+  return projectDir;
 }
 
-function makeCapture(): CapturedOutput & {
-  write: (chunk: string) => void;
-  writeErr: (chunk: string) => void;
-} {
-  const cap = {
-    stdout: '',
-    stderr: '',
-  } as CapturedOutput & {
-    write: (chunk: string) => void;
-    writeErr: (chunk: string) => void;
-  };
-  cap.write = (chunk: string) => {
-    cap.stdout += chunk;
-  };
-  cap.writeErr = (chunk: string) => {
-    cap.stderr += chunk;
-  };
-  return cap;
-}
-
-async function createTempProjectDir(): Promise<string> {
-  const tmpRoot = os.tmpdir();
-  const dirName = `sf-doctor-test-${crypto.randomUUID()}`;
-  const tmp = path.join(tmpRoot, dirName);
-  await fs.mkdir(path.join(tmp, 'specforge'), { recursive: true });
-  return tmp;
-}
-
-async function writeProjectManifest(
-  projectDir: string,
-  dataSchemaVersion: number
-): Promise<string> {
-  const now = new Date().toISOString();
-  const manifest = {
-    data_schema_version: dataSchemaVersion,
-    initialized_at: now,
-    updated_at: now,
-  };
-  const manifestPath = path.join(projectDir, 'specforge', 'manifest.json');
-  await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
-  return manifestPath;
-}
-
-async function rmrf(dir: string): Promise<void> {
-  await fs.rm(dir, { recursive: true, force: true }).catch(() => undefined);
-}
-
-describe('runDoctorCommand', () => {
-  let tempDirs: string[] = [];
-
-  beforeEach(() => {
-    tempDirs = [];
+async function run(projectDir: string): Promise<{ code: number; stdout: string; stderr: string }> {
+  let stdout = '';
+  let stderr = '';
+  const code = await runDoctorCommand({
+    projectDir,
+    userManifestPath: path.join(projectDir, 'user-manifest.json'),
+    write: chunk => {
+      stdout += chunk;
+    },
+    writeErr: chunk => {
+      stderr += chunk;
+    },
   });
+  return { code, stdout, stderr };
+}
 
-  afterEach(async () => {
-    for (const dir of tempDirs) {
-      await rmrf(dir);
-    }
-    tempDirs = [];
-  });
-
-  it('NORMAL_RW: 项目 manifest 存在且 dsv 在支持范围内时输出全部六行字段并 mode=NORMAL_RW', async () => {
-    const projectDir = await createTempProjectDir();
-    tempDirs.push(projectDir);
-
-    // dsv = 0 在 MIN_SUPPORTED_DATA_SCHEMA=0 / HIGHEST_KNOWN_SCHEMA=0 范围内
-    await writeProjectManifest(projectDir, 0);
-
-    const userManifestPath = path.join(projectDir, 'fake-user-manifest.json');
-    const cap = makeCapture();
-
-    const exitCode = await runDoctorCommand({
-      projectDir,
-      userManifestPath,
-      write: cap.write,
-      writeErr: cap.writeErr,
+describe('runDoctorCommand current project contract', () => {
+  it('reports a valid current Project Spec manifest', async () => {
+    const projectDir = await makeProject({
+      schema_version: '1.0',
+      project_spec_version: 'PSV-0001',
     });
 
-    expect(exitCode).toBe(0);
-    expect(cap.stderr).toBe('');
+    const result = await run(projectDir);
 
-    const out = cap.stdout;
-    // header
-    expect(out).toContain('SpecForge Doctor');
-    // 6 个字段
-    expect(out).toMatch(/code_version\s+:\s+\S+/);
-    expect(out).toMatch(/min_supported_data_schema\s+:\s+0/);
-    expect(out).toMatch(/data_schema_version\s+:\s+0/);
-    expect(out).toContain(`user_manifest_path        : ${userManifestPath}`);
-    expect(out).toContain(
-      `project_manifest_path     : ${path.join(
-        projectDir,
-        'specforge',
-        'manifest.json'
-      )}`
+    expect(result.code).toBe(0);
+    expect(result.stderr).toBe('');
+    expect(result.stdout).toMatch(/code_version\s+:\s+\S+/);
+    expect(result.stdout).toMatch(/schema_version\s+:\s+1\.0/);
+    expect(result.stdout).toMatch(/project_status\s+:\s+CURRENT/);
+    expect(result.stdout).toContain(
+      path.join(projectDir, '.specforge', 'project', 'spec_manifest.json')
     );
-    expect(out).toMatch(/mode\s+:\s+NORMAL_RW/);
   });
 
-  it('project manifest 缺失：data_schema_version 显示 N/A，mode 仍可输出，退出码 0', async () => {
-    const projectDir = await createTempProjectDir();
-    tempDirs.push(projectDir);
+  it('reports an uninitialized current project without creating files', async () => {
+    const projectDir = await makeProject();
 
-    // 故意不写 manifest.json
-    const userManifestPath = path.join(projectDir, 'fake-user-manifest.json');
-    const cap = makeCapture();
+    const result = await run(projectDir);
 
-    const exitCode = await runDoctorCommand({
-      projectDir,
-      userManifestPath,
-      write: cap.write,
-      writeErr: cap.writeErr,
-    });
-
-    expect(exitCode).toBe(0);
-    expect(cap.stderr).toBe('');
-
-    const out = cap.stdout;
-    expect(out).toContain('SpecForge Doctor');
-    expect(out).toMatch(/data_schema_version\s+:\s+N\/A/);
-    // mode 必须仍然作为最后一行输出（占位 NORMAL_RW，因为 dsv=N/A 不能调 startup checker）
-    expect(out).toMatch(/mode\s+:\s+\S+/);
-    // user/project 路径都要绝对路径
-    expect(path.isAbsolute(userManifestPath)).toBe(true);
-    expect(out).toContain(userManifestPath);
+    expect(result.code).toBe(0);
+    expect(result.stdout).toMatch(/schema_version\s+:\s+N\/A/);
+    expect(result.stdout).toMatch(
+      /project_status\s+:\s+PROJECT_NOT_INITIALIZED_OR_INVALID/
+    );
+    await expect(fs.stat(path.join(projectDir, '.specforge'))).rejects.toThrow();
   });
 
-  it('DEGRADED_HIGHER_THAN_KNOWN: dsv 高于 HIGHEST_KNOWN_SCHEMA 时 mode=DEGRADED_HIGHER_THAN_KNOWN', async () => {
-    const projectDir = await createTempProjectDir();
-    tempDirs.push(projectDir);
+  it('does not accept a manifest without the current schema_version field', async () => {
+    const projectDir = await makeProject({ data_schema_version: 999 });
 
-    // 当前 HIGHEST_KNOWN_SCHEMA = 0；写 dsv = 999 → DEGRADED_HIGHER_THAN_KNOWN
-    await writeProjectManifest(projectDir, 999);
+    const result = await run(projectDir);
 
-    const userManifestPath = path.join(projectDir, 'fake-user-manifest.json');
-    const cap = makeCapture();
-
-    const exitCode = await runDoctorCommand({
-      projectDir,
-      userManifestPath,
-      write: cap.write,
-      writeErr: cap.writeErr,
-    });
-
-    expect(exitCode).toBe(0);
-    expect(cap.stderr).toBe('');
-
-    const out = cap.stdout;
-    expect(out).toMatch(/data_schema_version\s+:\s+999/);
-    expect(out).toMatch(/mode\s+:\s+DEGRADED_HIGHER_THAN_KNOWN/);
+    expect(result.code).toBe(0);
+    expect(result.stdout).toMatch(/schema_version\s+:\s+N\/A/);
+    expect(result.stdout).toMatch(
+      /project_status\s+:\s+PROJECT_NOT_INITIALIZED_OR_INVALID/
+    );
   });
 });

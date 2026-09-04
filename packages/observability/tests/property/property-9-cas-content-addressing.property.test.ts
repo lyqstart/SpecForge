@@ -173,17 +173,15 @@ describe('Property 9: CAS Content Addressing (PBT)', () => {
     it('should produce different references for different binary content', async () => {
       await fc.assert(
         fc.asyncProperty(
-          fc.array(fc.integer().map(n => n % 256), { minLength: 1, maxLength: 1000 }),
-          fc.array(fc.integer().map(n => n % 256), { minLength: 1, maxLength: 1000 }),
+          fc.uint8Array({ minLength: 1, maxLength: 1000 }),
+          fc.uint8Array({ minLength: 1, maxLength: 1000 }),
           async (arr1, arr2) => {
-            // Skip if identical
-            if (JSON.stringify(arr1) === JSON.stringify(arr2)) {
+            // Skip only when the actual byte sequences are identical.
+            if (Buffer.from(arr1).equals(Buffer.from(arr2))) {
               return true;
             }
-            const content1 = new Uint8Array(arr1);
-            const content2 = new Uint8Array(arr2);
-            const ref1 = await cas.store(content1);
-            const ref2 = await cas.store(content2);
+            const ref1 = await cas.store(arr1);
+            const ref2 = await cas.store(arr2);
             expect(ref1).not.toBe(ref2);
           }
         ),

@@ -216,7 +216,7 @@ export async function writeArtifact(
     //     sf_artifact_write({file_type:"agent_run_result"}) 写 result.json，但实际
     //     执行中常被跳过，导致 archive 目录只有 work_log.md。这里腰带加吊带。
     //     - 若 Orchestrator 之后真的调用 agent_run_result，会覆盖本兜底版本（权威优先）
-    //     - 若没调用，至少 sf_state_read.readAgentRuns / sf_continuity 不会扫到空目录
+    //     - 若没调用，至少 sf_state_read.readAgentRuns 不会扫到空目录
     if (input.file_type === "work_log" && input.run_id) {
       try {
         const resultPath = join(dirname(absolutePath), "result.json");

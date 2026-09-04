@@ -14,6 +14,8 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+declare const __SPECFORGE_BUILD_VERSION__: string | undefined;
+
 /**
  * The code version string derived from repository root package.json.
  * This is cached after first read to avoid repeated file I/O.
@@ -37,6 +39,14 @@ export const CODE_VERSION: string = getCodeVersion();
  */
 export function getCodeVersion(): string {
   if (cachedCodeVersion !== undefined) {
+    return cachedCodeVersion;
+  }
+
+  if (typeof __SPECFORGE_BUILD_VERSION__ !== 'undefined') {
+    if (!/^\d+\.\d+\.\d+(-[A-Za-z0-9.-]+)?$/.test(__SPECFORGE_BUILD_VERSION__)) {
+      throw new Error(`Invalid build-time version: ${__SPECFORGE_BUILD_VERSION__}`);
+    }
+    cachedCodeVersion = __SPECFORGE_BUILD_VERSION__;
     return cachedCodeVersion;
   }
 

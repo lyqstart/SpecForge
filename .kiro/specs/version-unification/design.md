@@ -1,5 +1,25 @@
 # Design Document — version-unification
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-18、REQ-25、REQ-26、REQ-31，V6-ADR-014、V6-ADR-015。
+- **分类/状态**：`CURRENT_RELEASE_SUPPORTING`；当前版本/构建/安装 manifest 一致性保留，`legacy/**` 与兼容 adapter 必须退出当前 artifact。
+- **当前范围**：当前 manifest 的唯一字段集、版本真相、受支持当前 schema 链判断及 release/installer 一致性。
+- **排除**：旧 manifest 检测、双写、三周期兼容、启动 in-place 转换、`.legacy.bak` 兼容备份和 `migrate-manifest` 旧格式命令均为 `LEGACY_ONLY`。
+
+```text
+PROJECT_SCHEMA_MIGRATION_OWNER=@specforge/migration
+PROJECT_AGGREGATE_DATA_SCHEMA_VERSION=UNSUPPORTED
+PROJECT_SPEC_MANIFEST_OWNER=DAEMON_PROJECT_SPEC_SUBSYSTEM
+PROJECT_SPEC_MANIFEST_PATH=.specforge/project/spec_manifest.json
+OLD_PROJECT_MANIFEST_PATH=.specforge/manifest.json
+OLD_PROJECT_MANIFEST_DISPOSITION=LEGACY_ONLY_REMOVE_FROM_CURRENT_BUILD
+```
+
+当前 `@specforge/version-unification` 不拥有 Project Spec manifest、项目级聚合 schema 版本、项目 bootstrap 或 migration runner。当前实现只保留代码版本真相和 build / installer manifest 版本一致性；每文件 `schema_version` 的检测、备份、升级与失败恢复唯一委托给 `@specforge/migration`。本文后续三字段 `Project_Manifest` 与 `data_schema_version` 设计是待退出实现的追溯材料，不能驱动当前 artifact 或回归基线。
+
+> 本文后续 R11/R12、legacy 目录、Property 21—25 与 legacy-cycle 测试等旧兼容设计仅保留为历史实现线索，不是当前规范或发布证据。Step 6 必须依据本节和 V6 权威移除其构建、命令、测试与部署消费者。
+
 ## Overview
 
 本特性把 SpecForge 中散落在 user manifest / project manifest / shared 配置 / CLI / plugin 之间的 7 个版本字段（`shared_version`、`schema_version`、`runtime_schema_version`、`required_shared_version_range`、user-level `code_version`、project-level `code_version` 等），收敛为：
@@ -7,7 +27,7 @@
 - **User_Manifest**：`code_version` / `min_supported_data_schema` / `installed_at` / `updated_at` / `files`（5 个字段）
 - **Project_Manifest**：`data_schema_version` / `initialized_at` / `updated_at`（3 个字段）
 
-启动期不再做 semver range 比对，改用 **3 个整数 + 1 个 semver** 的单向数值比较，在 4.5 ms 量级内完成兼容性决策；跨 schema 升级由按目标版本严格递增的 migration 链顺序执行；所有"谁能写、什么时候写、写什么"的规则由 CI_Version_Guard 在 PR 阶段强制兜底；老格式 manifest 用"3 release cycle 渐进迁移 + 一键迁移命令 + 启动 in-place 转换 + `.legacy.bak` 备份"对最终用户透明。
+启动期不再做 semver range 比对，改用明确版本字段的单向数值比较；跨 schema 升级只沿受支持的当前产品 schema 链按目标版本严格递增执行；所有“谁能写、什么时候写、写什么”的规则由版本化 release guard 强制兜底。旧 manifest 格式不由当前产品检测、读取或转换。
 
 ### 设计目标的优先级（高→低）
 

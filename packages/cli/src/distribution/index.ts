@@ -7,14 +7,6 @@
 // 导出所有类型定义
 export * from './types.js';
 
-// 导出 Scope Gate Bridge（P1/P2 flag keys 真值来源）
-export type { ScopeGateExports } from './scope-gate-bridge.js';
-export { 
-  getP1P2FlagKeys, 
-  createScopeGateExports 
-} from './scope-gate-bridge.js';
-export { default as scopeGateExports } from './scope-gate-bridge.js';
-
 // 导出 PackageValidator（发布流水线验证器）
 export { validate } from './package-validator.js';
 

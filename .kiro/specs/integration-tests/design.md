@@ -1,5 +1,12 @@
 # W3 集成测试设计
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-27、REQ-30、REQ-31 与 design release gates。
+- **分类/状态**：`CURRENT_RELEASE_SUPPORTING` 验证表面；测试通过只证明其消费的当前合同，不能独立启用模块。
+- **当前范围**：只验证当前 artifact、`feature_spec` 主链路、Daemon 权威、当前 schema 安全和真实安装边界。
+- **排除**：legacy fixtures、P1/P2 runtime enablement 和未获批准 workflow 不得计入发布全量回归；历史回归可作为 `HISTORICAL_EVIDENCE_ONLY` 单独保留。
+
 ## 测试架构
 
 W3 集成测试分为三层：

@@ -133,8 +133,11 @@ export function stateMachineArb(minStates: number = 2, maxStates: number = 5): A
         schema_version: fc.constant("1.0" as const),
         initial: fc.constant(initialState),
         states: fc.record(
-          stateIds.reduce((acc, id) => {
-            const otherIds = stateIds.filter(i => i !== id);
+          stateIds.reduce((acc, id, index) => {
+            // A generated workflow must terminate. Restrict transitions to
+            // later states so the graph stays acyclic while still allowing
+            // early terminal states.
+            const forwardIds = stateIds.slice(index + 1);
             acc[id] = fc.record({
               schema_version: fc.constant("1.0" as const),
               agent: fc.string({ minLength: 1, maxLength: 30 }),
@@ -145,8 +148,8 @@ export function stateMachineArb(minStates: number = 2, maxStates: number = 5): A
                 name: fc.string({ minLength: 1, maxLength: 30 })
               }),
               skills: fc.array(fc.string({ minLength: 1, maxLength: 20 }), { maxLength: 3 }),
-              next: otherIds.length > 0 
-                ? fc.oneof(fc.constantFrom(...otherIds), fc.constant(undefined))
+              next: forwardIds.length > 0
+                ? fc.oneof(fc.constantFrom(...forwardIds), fc.constant(undefined))
                 : fc.constant(undefined)
             });
             return acc;

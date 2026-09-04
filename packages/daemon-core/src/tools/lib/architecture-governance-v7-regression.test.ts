@@ -11,7 +11,7 @@ describe('Architecture governance v7 closure', () => {
     const chain = source('src/tools/lib/gate-chain.ts');
     expect(runner).toContain("| 'formal_version_gate'");
     expect(runner).toContain("registerGate('formal_version_gate', 'hard_gate', true");
-    expect(chain).toContain("runAndWrite('formal_version_gate', ctx)");
+    expect(chain).toContain("runAndWrite('formal_version_gate', ctx, attempt)");
     expect(chain).not.toContain("'formal_version_gate' as GateIdV11");
   });
   it('requires new Modules to ship contracts.json and code_paths before merge', () => {
@@ -42,21 +42,6 @@ describe('Architecture governance v7 closure', () => {
     expect(governance).toContain('modules.length > 0');
     expect(governance).toContain('module.contracts_declared');
     expect(governance).toContain('module.code_paths.length > 0');
-  });
-  it('injects Impact Scope and authoritative upper-layer constraints into runtime context', () => {
-    const context = source('src/tools/lib/sf_context_build_core.ts');
-    expect(context).toContain('class ProjectGovernanceContextSource');
-    expect(context).toContain('resolveContextScope');
-    expect(context).toContain('governance_scope.json');
-    expect(context).toContain('trigger?.impact_scope');
-    expect(context).toContain('trigger?.impact_summary');
-    expect(context).toContain('Architecture [');
-    expect(context).toContain('Data Model [');
-    expect(context).toContain('Project Contracts');
-    expect(context).toContain('Module Contracts');
-    expect(context).toContain('Requirement ${moduleCode}');
-    expect(context).toContain('new ProjectGovernanceContextSource(baseDir)');
-    expect(context).toContain('{ heading: "## 治理约束", items: governance, priority: 5 }');
   });
   it('audits actual implementation ownership during Verification and Formal Version Gate', () => {
     const governance = source('src/tools/lib/project-governance-v2.ts');
@@ -104,6 +89,6 @@ describe('Architecture governance v7 closure', () => {
     expect(integrity).toContain('source_refs must contain at least one DD-* reference');
     expect(integrity).toContain('.enforcement is required');
     expect(integrity).toContain('owner_module must equal target module');
-    expect(integrity).toContain('Project Contract delta check is not applicable');
+    expect(integrity).toContain('Project Contract registry delta check is not applicable');
   });
 });

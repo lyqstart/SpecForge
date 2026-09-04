@@ -129,7 +129,7 @@ describe("Property 14: Schema Version Monotonicity", () => {
         const sign1 = Math.sign(comparison)
         const sign2 = Math.sign(reverseComparison)
         
-        expect(sign1).toBe(-sign2)
+        expect(sign1 === 0 && sign2 === 0 ? 0 : sign1).toBe(sign2 === 0 ? 0 : -sign2)
       }),
       { numRuns: 100 }
     )
@@ -148,7 +148,9 @@ describe("Property 14: Schema Version Monotonicity", () => {
               const comp1 = compareVersions(versions[i], versions[j])
               const comp2 = compareVersions(versions[j], versions[i])
               // Signs should be opposite (or both 0 if equal)
-              expect(Math.sign(comp1)).toBe(-Math.sign(comp2))
+              const sign1 = Math.sign(comp1)
+              const sign2 = Math.sign(comp2)
+              expect(sign1 === 0 && sign2 === 0 ? 0 : sign1).toBe(sign2 === 0 ? 0 : -sign2)
             }
           }
         }

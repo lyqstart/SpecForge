@@ -9,7 +9,6 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
-  legacyWorkItemSpecArtifact,
   workItemRoot,
 } from '@specforge/types/directory-layout';
 import type { GateResult, GateModeSpec } from './sf_gate_types';
@@ -19,10 +18,8 @@ import {
 } from './governance-invariants-v11';
 import { parseSections, collectDeclaredStatuses } from './sf_requirements_gate_core';
 import { buildTolerantHeaderRegex } from './sf_section_matcher';
-import { syncFromSpec, isKGEnabled } from './sf_knowledge_graph_core';
 import { tryCheckCompatibility, logErrorToFile } from './utils';
 import { isValidVerificationType } from './sf_verification_types';
-import type { SyncSummary } from './sf_knowledge_graph_core';
 import {
   evaluateSystemGovernanceRequirement,
   hasSystemGovernanceScope,
@@ -53,10 +50,7 @@ async function readFirstAvailable(
 }
 
 function modeDocumentReadPaths(baseDir: string, workItemId: string, fileName: string): string[] {
-  return [
-    join(workItemRoot(baseDir, workItemId), fileName),
-    legacyWorkItemSpecArtifact(baseDir, workItemId, fileName),
-  ];
+  return [join(workItemRoot(baseDir, workItemId), fileName)];
 }
 
 // Re-export GateResult for convenience
@@ -690,7 +684,6 @@ export async function checkDesignGate(
       },
     };
 
-    result.kg_sync = await syncDesignToKG(workItemId, baseDir, warnings);
     return result;
   } catch (err) {
     await logErrorToFile(baseDir, 'sf_design_gate_core', 'checkDesignGate', err);
@@ -959,25 +952,4 @@ function failResult(blockingIssues: string[]): GateResult {
     warnings: [],
     next_action: 'revise',
   };
-}
-
-async function syncDesignToKG(
-  workItemId: string,
-  baseDir: string,
-  warnings: string[]
-): Promise<SyncSummary | null> {
-  let kgSync: SyncSummary | null = null;
-  try {
-    if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, 'design');
-      if (kgResult.success && kgResult.summary) {
-        kgSync = kgResult.summary;
-      } else if (kgResult.error) {
-        warnings.push(`KG sync warning: ${kgResult.error}`);
-      }
-    }
-  } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`);
-  }
-  return kgSync;
 }

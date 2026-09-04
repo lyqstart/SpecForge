@@ -18,6 +18,11 @@ import { CRITICAL_STATES } from '@specforge/types/constants';
 
 import { ALL_STATES } from '../tools/lib/state_machine';
 import { WI_STATUSES_V11 } from '../tools/lib/state-machine-v11';
+import { precheckSchemaDescriptors } from '@specforge/migration';
+import {
+  RUNTIME_SCHEMA_DESCRIPTORS,
+  serializeRuntimeCheckpoint,
+} from './runtime-schema-descriptors';
 
 /**
  * Valid workflow states — sourced from the single authority in state_machine.ts.
@@ -101,16 +106,32 @@ export class StateManager {
    * 4. Persist rebuilt state to state.json
    */
   async initialize(): Promise<void> {
-    // Step 1: Initialize WAL
+    // Step 1: Validate any existing Runtime bytes before the first mkdir/read/write.
+    // Both files are optional for a new project, but existing empty, corrupt, or
+    // unknown-schema files must fail closed rather than being repaired implicitly.
+    const runtimeRoot = path.dirname(this.statePath);
+    const schemaPrecheck = await precheckSchemaDescriptors(
+      runtimeRoot,
+      RUNTIME_SCHEMA_DESCRIPTORS,
+    );
+    if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+      const details = schemaPrecheck.checks
+        .filter((check) => check.status === 'blocked' || check.status === 'migration_required')
+        .map((check) => `${check.descriptorId}:${check.errorCode ?? check.status}`)
+        .join(',');
+      throw new Error(`RUNTIME_SCHEMA_PRECHECK_BLOCKED:${details}`);
+    }
+
+    // Step 2: Initialize WAL without persisting an empty file
     await this.wal.initialize();
     
-    // Step 2: Ensure state directory exists
+    // Step 3: Ensure state directory exists
     await fs.mkdir(path.dirname(this.statePath), { recursive: true });
 
-    // Step 3: Rebuild in-memory state from WAL (authoritative source)
+    // Step 4: Rebuild in-memory state from WAL (authoritative source)
     await this.rebuildState();
 
-    // Step 4: Persist rebuilt in-memory state to state.json
+    // Step 5: Persist rebuilt in-memory state to state.json
     await this.persistState();
   }
 
@@ -511,7 +532,8 @@ export class StateManager {
       // Version matches — increment and write
       this._stateVersion++;
       state.stateVersion = this._stateVersion;
-      await fs.writeFile(this.statePath, JSON.stringify(state, null, 2), 'utf-8');
+      const persistedState = serializeRuntimeCheckpoint(state);
+      await fs.writeFile(this.statePath, JSON.stringify(persistedState, null, 2), 'utf-8');
       const handle = await fs.open(this.statePath, 'a');
       try {
         await handle.sync();
@@ -562,9 +584,11 @@ export class StateManager {
       const content = await fs.readFile(this.statePath, 'utf-8');
       const parsed = JSON.parse(content) as Partial<ProjectState>;
       return parsed.stateVersion ?? 0;
-    } catch {
-      // File doesn't exist or is corrupted → treat as version 0
-      return 0;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return 0;
+      throw new Error(
+        `RUNTIME_CHECKPOINT_READ_FAILED:${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 

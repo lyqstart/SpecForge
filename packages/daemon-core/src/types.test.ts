@@ -60,6 +60,7 @@ describe('Types', () => {
       pid: 12345,
       port: 8080,
       token: 'random-token-123',
+      bound_to: '127.0.0.1',
       startedAt: Date.now(),
       schema_version: '1.0',
       version: '1.0.0',
@@ -70,6 +71,7 @@ describe('Types', () => {
     };
     
     expect(handshake.pid).toBe(12345);
+    expect(handshake.bound_to).toBe('127.0.0.1');
     expect(handshake.schema_version).toBe('1.0');
   });
 

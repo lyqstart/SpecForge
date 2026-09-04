@@ -1,5 +1,9 @@
 # W3 集成测试需求
 
+## 当前发布对齐
+
+本 spec 只验证当前 V6 authority 与正式 release artifact。历史已完成标记不能证明当前合同；P1/P2、`BUILT_NOT_ENABLED`、`LEGACY_ONLY` 和未获批准 workflow 不得作为“默认关闭的运行时能力”进入当前集成基线。
+
 ## 概述
 
 W3 目标：在 W2 所有模块完成的基础上，进行跨模块集成联调，验证端到端场景，达成 V6.0 发版的核心质量门槛。
@@ -36,12 +40,12 @@ AND 恢复后的 workflow 可继续执行
 WHEN 各模块协同工作
 THE system SHALL 保证 permission-engine 权限检查在 workflow 执行前生效
 AND observability 模块记录所有 workflow 事件到 CAS
-AND scope-gate 验证 P1/P2 能力默认关闭
+AND scope-gate 验证 P1/P2 及其他 excluded capability 不存在于正式 artifact surfaces
 
 **验收标准**：
 - AC-1: workflow 执行前权限检查通过
 - AC-2: 事件写入 observability CAS 存储
-- AC-3: scope-gate 拦截 P1/P2 能力调用
+- AC-3: scope-gate 对 exports/build/registry/installer/manifest 中任一 P1/P2 命中失败关闭；stale caller 只能得到 `CAPABILITY_UNAVAILABLE`，实现不得加载
 
 ### REQ-W3-4: OpenClaw 模拟集成测试
 

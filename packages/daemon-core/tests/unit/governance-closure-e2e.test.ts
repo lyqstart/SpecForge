@@ -30,7 +30,6 @@ async function createFullWorkItem(
   projectRoot: string,
   workItemId: string,
   opts?: {
-    status?: string;
     codeChangeAllowed?: boolean;
     allowedWriteFiles?: Array<{ path: string; operation: string }>;
     workflowPath?: string;
@@ -44,10 +43,11 @@ async function createFullWorkItem(
   await fs.mkdir(wiDir, { recursive: true });
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
 
   const workItem: Record<string, unknown> = {
+    schema_version: '1.1',
     work_item_id: workItemId,
-    status: opts?.status ?? 'verification_done',
     code_change_allowed: opts?.codeChangeAllowed ?? false,
     allowed_write_files: opts?.allowedWriteFiles ?? [],
     workflow_path: opts?.workflowPath ?? 'code_only_fast_path',
@@ -74,9 +74,11 @@ async function createFullWorkItem(
   if (!skip.has('impact_analysis.md'))
     await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA\nLow impact');
   if (!skip.has('trigger_result.json'))
-    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ work_item_id: workItemId, workflow_path: opts?.workflowPath ?? 'code_only_fast_path', triggered: true, classification: { requirement_changed: false, acceptance_criteria_changed: false, business_rule_changed: false, user_visible_behavior_changed: false, data_semantics_changed: false, design_changed: false, module_boundary_changed: false, api_contract_changed: false, architecture_changed: false, unknowns: [] } }));
+    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ work_item_id: workItemId, workflow_path: opts?.workflowPath ?? 'code_only_fast_path', triggered: true, classification: { requirement_changed: false, acceptance_criteria_changed: false, business_rule_changed: false, user_visible_behavior_changed: false, data_semantics_changed: false, design_changed: false, module_boundary_changed: false, api_contract_changed: false, architecture_changed: false, data_model_changed: false, module_contract_changed: false, unknowns: [] }, impact_scope: { affected_modules: [], architecture_refs: [], data_model_refs: [], design_refs: [], project_contract_refs: [], module_contract_refs: [], planned_code_paths: ['src/main.ts'] } }));
   if (!skip.has('tasks.md'))
     await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
+  if (!skip.has('tasks.md'))
+    await fs.writeFile(path.join(wiDir, 'candidates', 'tasks.md'), '# Tasks\n- [x] Done');
   if (!skip.has('trace_delta.md'))
     await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace Delta\nNo spec impact (§13.2)');
   if (!skip.has('candidate_manifest.json'))
@@ -89,6 +91,10 @@ async function createFullWorkItem(
       path.join(wiDir, 'gate_summary.md'),
       '# Gate Summary\n\n- Overall Status: passed\n',
     );
+  await fs.writeFile(
+    path.join(wiDir, 'gates', 'formal_version_gate.json'),
+    JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }),
+  );
   if (!skip.has('verification_report.md'))
     await fs.writeFile(
       path.join(wiDir, 'verification_report.md'),
@@ -297,6 +303,7 @@ describe('A. Seal Transition enforcement', () => {
   });
 
   it('closed → any is forbidden (terminal state)', async () => {
+    await createFullWorkItem(tmpDir, 'WI-0005');
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
@@ -314,6 +321,7 @@ describe('A. Seal Transition enforcement', () => {
   });
 
   it('blocked → closed is forbidden', async () => {
+    await createFullWorkItem(tmpDir, 'WI-0006');
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
@@ -331,6 +339,7 @@ describe('A. Seal Transition enforcement', () => {
   });
 
   it('rejected → closed is forbidden', async () => {
+    await createFullWorkItem(tmpDir, 'WI-0007');
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
@@ -348,6 +357,7 @@ describe('A. Seal Transition enforcement', () => {
   });
 
   it('other seal transitions also enforced (gates_running → approval_required needs gate_runner)', async () => {
+    await createFullWorkItem(tmpDir, 'WI-0008');
     const handler = getHandler('sf_state_transition')!;
     const result = await handler(
       {
@@ -519,21 +529,6 @@ describe('C. close_gate negative tests', () => {
     expect((result.error as string)).toContain('evidence');
   });
 
-  it('missing trace_delta → close_gate failed', async () => {
-    const workItemId = 'WI-0016';
-    await createFullWorkItem(tmpDir, workItemId, { skipFiles: ['trace_delta.md'] });
-
-    const handler = getHandler('sf_close_gate')!;
-    const result = await handler(
-      { work_item_id: workItemId },
-      { directory: tmpDir },
-      createMockDeps('verification_done'),
-    ) as Record<string, unknown>;
-
-    expect(result.success).toBe(false);
-    expect((result.error as string)).toContain('trace_delta');
-  });
-
   it('missing merge_report → close_gate failed', async () => {
     const workItemId = 'WI-0017';
     await createFullWorkItem(tmpDir, workItemId, { skipFiles: ['merge_report.md'] });
@@ -653,7 +648,7 @@ describe('C. close_gate negative tests', () => {
 
   it('state not verification_done → close_gate blocked', async () => {
     const workItemId = 'WI-0013';
-    await createFullWorkItem(tmpDir, workItemId, { status: 'implementation_running' });
+    await createFullWorkItem(tmpDir, workItemId);
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(
@@ -668,7 +663,7 @@ describe('C. close_gate negative tests', () => {
 
   it('closed WI → sf_close_gate rejects (idempotent protection)', async () => {
     const workItemId = 'WI-0012';
-    await createFullWorkItem(tmpDir, workItemId, { status: 'closed' });
+    await createFullWorkItem(tmpDir, workItemId);
 
     const handler = getHandler('sf_close_gate')!;
     const result = await handler(

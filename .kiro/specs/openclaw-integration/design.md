@@ -1,5 +1,12 @@
 # Design Document - OpenClaw Integration Layer
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-11.6、REQ-16、REQ-26、REQ-31 与 V6-ADR-012。
+- **分类/状态**：`CURRENT_RELEASE_SUPPORTING` 外部集成边界；最终启用状态以 Step 5 的部署/消费者矩阵为准。
+- **当前范围**：OpenClaw 只能经 CLI 或 Daemon HTTP/SSE 接入；Telegram/IM 细节不进入 SpecForge Core。
+- **依赖方向**：OpenClaw → CLI/Daemon → OpenCodeAdapter → OpenCode；不得直连 OpenCode、写项目状态或复制 Permission/Workflow 规则。
+
 ## Overview
 
 本文档描述 OpenClaw Skill ↔ Daemon ↔ OpenCode 三层架构的详细设计方案。

@@ -1,5 +1,12 @@
 # Design Document: OpenCode Adapter
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-8, REQ-25, REQ-31 and V6-ADR-004.
+- **Classification / status**: stable target is `CURRENT_RELEASE_CORE`; current source has no proven production caller and therefore remains `BUILT_NOT_ENABLED` until wired to Daemon and deployed/tested.
+- **Current scope**: the sole OpenCode-specific implementation of the neutral `LLMKernelAdapter` contract.
+- **Dependency direction**: Daemon → neutral adapter contract → OpenCodeAdapter → OpenCode; OpenCode concepts must not leak into core contracts or project state.
+
 ## Overview
 
 This design document provides the technical design for the **OpenCode Adapter** module, which implements the `LLMKernelAdapter` interface for OpenCode. The adapter serves as an isolation layer between OpenCode's implementation details and SpecForge V6's Daemon core, absorbing OpenCode version changes while preventing concept leakage.

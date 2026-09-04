@@ -1,5 +1,12 @@
 # Design Document: Multimodal Message Layer
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-14, REQ-25, REQ-31 and V6-ADR-010.
+- **Classification / status**: stable target is `CURRENT_RELEASE_SUPPORTING`; it remains `BUILT_NOT_ENABLED` until Daemon ingestion/OpenCodeAdapter has a verified production consumer.
+- **Current scope**: unified `UserMessage`, text path and deterministic fail-closed rejection of non-text input.
+- **Excluded**: OCR, transcription, media parsing and other P2 behavior must not be exported, built, deployed, registered or enabled by feature flag.
+
 ## Overview
 
 This design document specifies the **Multimodal Message Layer** skeleton for SpecForge V6. The multimodal module provides the foundational framework for handling multi-modal content (images, audio, video, files, code snippets, documents) while enforcing V6.0 scope boundaries.

@@ -49,10 +49,12 @@ async function createFullWIDir(tmpDir: string, workItemId: string): Promise<stri
   await fs.mkdir(wiDir, { recursive: true });
   await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
   await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
+  await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
 
   const wi = {
+    schema_version: '1.1',
     work_item_id: workItemId,
-    status: 'verification_done',
+    workflow_type: 'quick_change',
     code_change_allowed: false,
     code_permission_revoked: true,
     allowed_write_files: [],
@@ -71,6 +73,7 @@ async function createFullWIDir(tmpDir: string, workItemId: string): Promise<stri
     }) + '\n'
   );
   await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
+  await fs.writeFile(path.join(wiDir, 'candidates', 'tasks.md'), '# Tasks\n- [x] Done');
   await fs.writeFile(
     path.join(wiDir, 'trace_delta.md'),
     '# Trace\nOUT-1 -> REQ-1 -> DD-1 -> TASK-1 -> EV-1'
@@ -144,7 +147,10 @@ describe('runCloseGate — extension_request.json check (Patch 1 §7.9)', () => 
       workItemDir: wiDir,
       projectRoot: tmpDir,
     });
-    expect(result.allChecksPassed).toBe(true);
+    expect(
+      result.allChecksPassed,
+      JSON.stringify(result.report.checks.filter(check => !check.passed), null, 2),
+    ).toBe(true);
     const extCheck = result.report.checks.find(
       c => c.check_id === 'close_extension_request_resolved'
     );

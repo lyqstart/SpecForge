@@ -13,6 +13,7 @@ import { executeMerge } from '../lib/merge-runner-v11';
 import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 
 function workflowTypeFromPath(workflowPath: string | undefined): string {
   switch (workflowPath) {
@@ -246,6 +247,17 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
   if (!workItemId) return { success: false, error: 'work_item_id is required' };
 
   const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+
+  try {
+    await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      status: 'failed',
+      error: error instanceof Error ? error.message : String(error),
+      work_item_id: workItemId,
+    };
+  }
 
   try {
     const result = await executeMerge({

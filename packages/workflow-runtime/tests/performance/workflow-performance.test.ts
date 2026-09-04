@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { WorkflowEngine, WorkflowEvent } from '../../src/engine/WorkflowEngine.js';
+import { WorkflowEngine, WorkflowEvent } from '../../src/WorkflowEngine.js';
 import { EventPublisher } from '../../src/events/EventPublisher.js';
 import { WorkflowDefinition, SimpleGateDefinition, CompositeGateDefinition } from '../../src/types.js';
 import { MockEventBus } from '../setup.js';
@@ -55,6 +55,13 @@ class PerformanceMetrics {
   }
 }
 
+const passingGateCheck = async () => ({
+  schema_version: '1.0' as const,
+  passed: true,
+  status: 'passed' as const,
+  reason: 'Deterministic passing gate for performance measurement',
+});
+
 describe('Workflow Runtime Performance Tests', () => {
   let engine: WorkflowEngine;
   let eventBus: MockEventBus;
@@ -97,6 +104,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
+                checkFn: passingGateCheck,
               } as SimpleGateDefinition,
               skills: [],
               next: 'state2',
@@ -187,6 +195,7 @@ describe('Workflow Runtime Performance Tests', () => {
             type: 'simple',
             id: `gate${i}`,
             name: `Gate ${i}`,
+            checkFn: passingGateCheck,
           } as SimpleGateDefinition,
           skills: [],
           next: i < 10 ? `state${i + 1}` : undefined,
@@ -567,6 +576,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate1',
                 name: 'Gate 1',
+                checkFn: passingGateCheck,
               } as SimpleGateDefinition,
               skills: [],
               next: 'state2',
@@ -579,6 +589,7 @@ describe('Workflow Runtime Performance Tests', () => {
                 type: 'simple',
                 id: 'gate2',
                 name: 'Gate 2',
+                checkFn: passingGateCheck,
               } as SimpleGateDefinition,
               skills: [],
               next: 'state3',

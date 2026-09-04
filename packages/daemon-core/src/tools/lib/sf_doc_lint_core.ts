@@ -9,7 +9,7 @@
 
 import { readFile } from "node:fs/promises"
 import { join, relative } from "node:path"
-import { legacyWorkItemSpecArtifact, workItemRoot } from "@specforge/types/directory-layout"
+import { workItemRoot } from "@specforge/types/directory-layout"
 import { resolveWorkItemSpecArtifacts } from "./governance-invariants-v11"
 import {
   parseTaskSections,
@@ -44,10 +44,7 @@ async function readBugfixDocument(
   workItemId: string,
   baseDir: string
 ): Promise<Array<{ path: string; content: string }>> {
-  const paths = [
-    join(workItemRoot(baseDir, workItemId), "bugfix.md"),
-    legacyWorkItemSpecArtifact(baseDir, workItemId, "bugfix.md"),
-  ]
+  const paths = [join(workItemRoot(baseDir, workItemId), "bugfix.md")]
   for (const candidatePath of paths) {
     try {
       return [{ path: candidatePath, content: await readFile(candidatePath, "utf-8") }]
@@ -171,7 +168,7 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
     issues.push({
       severity: "warning",
       message:
-        '需求标题未使用规范格式"### REQ-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
+        '需求标题未使用规范格式"### REQ-<MODULE_CODE>-<NNN> 标题"，治理追溯解析可能失败',
       location: fileName,
     })
   }
@@ -268,7 +265,7 @@ function lintDesign(content: string, fileName: string): DocLintResult {
     issues.push({
       severity: "warning",
       message:
-        '设计决策标题未使用规范格式"### DD-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
+        '设计决策标题未使用规范格式"### DD-<MODULE_CODE>-<NNN> 标题"，治理追溯解析可能失败',
       location: fileName,
     })
   }
@@ -949,7 +946,7 @@ function lintTasks(content: string, fileName: string): DocLintResult {
     issues.push({
       severity: "warning",
       message:
-        '任务标题未使用规范格式"### TASK-WI-<NNNN>-<NNN> 标题"，Knowledge Graph 解析可能失败',
+        '任务标题未使用规范格式"### TASK-WI-<NNNN>-<NNN> 标题"，治理追溯解析可能失败',
       location: fileName,
     })
   }

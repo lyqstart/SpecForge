@@ -4,7 +4,7 @@
  * Validates the complete behavior of the WAL/StateManager singleton refactoring:
  * - T1: Daemon startup/restart scenarios
  * - T2: WI state transitions with singleton WAL
- * - T3: events.jsonl integrity and backward compatibility
+ * - T3: current events.jsonl schema integrity
  * - T4: ProjectManager uses daemon global StateManager
  * - T5: RecoverySubsystem with injected WAL + StateManager
  *
@@ -25,7 +25,6 @@ import { StateManager } from '../../src/state/StateManager';
 import { ProjectManager } from '../../src/project/ProjectManager';
 import { RecoverySubsystem } from '../../src/recovery/RecoverySubsystem';
 import { EventBus } from '../../src/event-bus/EventBus';
-import type { Event } from '../../src/types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -87,31 +86,14 @@ async function fileExists(p: string): Promise<boolean> {
   }
 }
 
-/**
- * Create a "legacy" state.transition event with the old schema (no schema_version field).
- * Used for backward compatibility testing.
- */
-function legacyTransitionEvent(
-  workItemId: string,
-  fromState: string,
-  toState: string,
-  seq: number,
-): Event {
-  return {
-    eventId: `legacy-${seq}-${Date.now()}`,
-    ts: Date.now() + seq,
-    monotonicSeq: seq,
-    projectId: workItemId,
-    action: 'state.transition',
-    payload: {
-      work_item_id: workItemId,
-      from_state: fromState,
-      to_state: toState,
-      workflow_type: 'feature_spec',
-      transitioned_at: Date.now() + seq,
-    },
-    metadata: { schemaVersion: '1.0', source: 'daemon' },
-  };
+async function initializeCurrentProject(projectPath: string): Promise<void> {
+  const projectSpecDir = path.join(projectPath, '.specforge', 'project');
+  await fs.mkdir(projectSpecDir, { recursive: true });
+  await fs.writeFile(
+    path.join(projectSpecDir, 'spec_manifest.json'),
+    JSON.stringify({ schema_version: '1.0', project_id: path.basename(projectPath) }),
+    'utf-8',
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -148,21 +130,21 @@ describe('T1: Daemon startup/restart', () => {
     const e1 = wal.createEvent('WI-100', 'state', 'state.transition', {
       work_item_id: 'WI-100',
       from_state: '',
-      to_state: 'intake',
+      to_state: 'intake_ready',
     });
     await wal.appendEvent(e1);
 
     const e2 = wal.createEvent('WI-100', 'state', 'state.transition', {
       work_item_id: 'WI-100',
-      from_state: 'intake',
-      to_state: 'requirements',
+      from_state: 'intake_ready',
+      to_state: 'impact_analyzing',
     });
     await wal.appendEvent(e2);
 
     const e3 = wal.createEvent('WI-200', 'state', 'state.transition', {
       work_item_id: 'WI-200',
       from_state: '',
-      to_state: 'intake',
+      to_state: 'intake_ready',
     });
     await wal.appendEvent(e3);
 
@@ -180,11 +162,11 @@ describe('T1: Daemon startup/restart', () => {
     // WorkItems should be restored from WAL
     const wi100 = sm.getState('WI-100');
     expect(wi100).not.toBeNull();
-    expect(wi100!.current_state).toBe('requirements');
+    expect(wi100!.current_state).toBe('impact_analyzing');
 
     const wi200 = sm.getState('WI-200');
     expect(wi200).not.toBeNull();
-    expect(wi200!.current_state).toBe('intake');
+    expect(wi200!.current_state).toBe('intake_ready');
 
     // Verify state.json content
     const stateContent = JSON.parse(await fs.readFile(statePath, 'utf-8'));
@@ -197,9 +179,9 @@ describe('T1: Daemon startup/restart', () => {
     const sm1 = new StateManager(resolver, projectDir, true);
     await sm1.initialize();
 
-    await sm1.transition('WI-300', '', 'intake', 'system');
-    await sm1.transition('WI-300', 'intake', 'requirements', 'system');
-    await sm1.transition('WI-400', '', 'intake', 'system');
+    await sm1.transition('WI-300', '', 'intake_ready', 'system');
+    await sm1.transition('WI-300', 'intake_ready', 'impact_analyzing', 'system');
+    await sm1.transition('WI-400', '', 'intake_ready', 'system');
 
     // Both files should exist now
     expect(await fileExists(resolver.resolveDaemonStatePath())).toBe(true);
@@ -220,10 +202,10 @@ describe('T1: Daemon startup/restart', () => {
 
     // Verify workItems match events
     const wi300 = sm2.getState('WI-300');
-    expect(wi300!.current_state).toBe('requirements');
+    expect(wi300!.current_state).toBe('impact_analyzing');
 
     const wi400 = sm2.getState('WI-400');
-    expect(wi400!.current_state).toBe('intake');
+    expect(wi400!.current_state).toBe('intake_ready');
   });
 
   // T1.3: Old nested state.json detection → path not nested
@@ -248,8 +230,10 @@ describe('T1: Daemon startup/restart', () => {
     );
 
     await sm.initialize();
+    await sm.transition('WI-PATH', '', 'intake_ready', 'test');
 
-    // Verify the files actually exist at the expected locations
+    // A state snapshot exists after initialization; the WAL file is materialized
+    // by the first real event, at the already-verified non-nested path.
     expect(await fileExists(statePath)).toBe(true);
     expect(await fileExists(eventsPath)).toBe(true);
   });
@@ -302,18 +286,18 @@ describe('T2: WI state transitions with singleton WAL', () => {
   it('T2.1: single WI transitions with monotonicSeq incrementing', async () => {
     const wal = stateManager.getWal();
 
-    await stateManager.transition('WI-010', '', 'intake', 'test-runner');
+    await stateManager.transition('WI-010', '', 'intake_ready', 'test-runner');
     expect(wal.getCurrentSeq()).toBe(1);
 
-    await stateManager.transition('WI-010', 'intake', 'requirements', 'test-runner');
+    await stateManager.transition('WI-010', 'intake_ready', 'impact_analyzing', 'test-runner');
     expect(wal.getCurrentSeq()).toBe(2);
 
-    await stateManager.transition('WI-010', 'requirements', 'requirements_gate', 'test-runner');
+    await stateManager.transition('WI-010', 'impact_analyzing', 'impact_analyzed', 'test-runner');
     expect(wal.getCurrentSeq()).toBe(3);
 
     const wi = stateManager.getState('WI-010');
     expect(wi).not.toBeNull();
-    expect(wi!.current_state).toBe('requirements_gate');
+    expect(wi!.current_state).toBe('impact_analyzed');
     expect(wi!.work_item_id).toBe('WI-010');
     expect(wi!.workflow_type).toBe('feature_spec');
 
@@ -329,11 +313,11 @@ describe('T2: WI state transitions with singleton WAL', () => {
     const wal = stateManager.getWal();
 
     // Interleave transitions for WI-020 and WI-021
-    await stateManager.transition('WI-020', '', 'intake', 'test');
-    await stateManager.transition('WI-021', '', 'intake', 'test');
-    await stateManager.transition('WI-020', 'intake', 'requirements', 'test');
-    await stateManager.transition('WI-021', 'intake', 'design', 'test', 'feature_spec_design_first');
-    await stateManager.transition('WI-020', 'requirements', 'design', 'test');
+    await stateManager.transition('WI-020', '', 'intake_ready', 'test');
+    await stateManager.transition('WI-021', '', 'intake_ready', 'test');
+    await stateManager.transition('WI-020', 'intake_ready', 'impact_analyzing', 'test');
+    await stateManager.transition('WI-021', 'intake_ready', 'impact_analyzed', 'test', 'feature_spec_design_first');
+    await stateManager.transition('WI-020', 'impact_analyzing', 'impact_analyzed', 'test');
 
     // Verify all events
     const { events } = await wal.readAllEvents();
@@ -345,11 +329,11 @@ describe('T2: WI state transitions with singleton WAL', () => {
       return `${p.work_item_id}->${p.to_state}`;
     });
     expect(actions).toEqual([
-      'WI-020->intake',
-      'WI-021->intake',
-      'WI-020->requirements',
-      'WI-021->design',
-      'WI-020->design',
+      'WI-020->intake_ready',
+      'WI-021->intake_ready',
+      'WI-020->impact_analyzing',
+      'WI-021->impact_analyzed',
+      'WI-020->impact_analyzed',
     ]);
 
     // Verify monotonicSeq is strictly increasing
@@ -360,19 +344,19 @@ describe('T2: WI state transitions with singleton WAL', () => {
 
     // Verify final states
     const wi020 = stateManager.getState('WI-020');
-    expect(wi020!.current_state).toBe('design');
+    expect(wi020!.current_state).toBe('impact_analyzed');
 
     const wi021 = stateManager.getState('WI-021');
-    expect(wi021!.current_state).toBe('design');
+    expect(wi021!.current_state).toBe('impact_analyzed');
   });
 
   // T2.3: WI transition + simulated restart → rebuildState restores all WIs
   it('T2.3: simulated restart rebuildState restores all WIs', async () => {
     // Do some transitions
-    await stateManager.transition('WI-030', '', 'intake', 'test');
-    await stateManager.transition('WI-031', '', 'intake', 'test');
-    await stateManager.transition('WI-030', 'intake', 'requirements', 'test');
-    await stateManager.transition('WI-031', 'intake', 'design', 'test', 'feature_spec_design_first');
+    await stateManager.transition('WI-030', '', 'intake_ready', 'test');
+    await stateManager.transition('WI-031', '', 'intake_ready', 'test');
+    await stateManager.transition('WI-030', 'intake_ready', 'impact_analyzing', 'test');
+    await stateManager.transition('WI-031', 'intake_ready', 'impact_analyzed', 'test', 'feature_spec_design_first');
 
     // Get the events path for verification
     const eventsPath = stateManager.getWal().getEventsPath();
@@ -384,12 +368,12 @@ describe('T2: WI state transitions with singleton WAL', () => {
     // Verify all work items restored
     const wi030 = sm2.getState('WI-030');
     expect(wi030).not.toBeNull();
-    expect(wi030!.current_state).toBe('requirements');
+    expect(wi030!.current_state).toBe('impact_analyzing');
     expect(wi030!.workflow_type).toBe('feature_spec');
 
     const wi031 = sm2.getState('WI-031');
     expect(wi031).not.toBeNull();
-    expect(wi031!.current_state).toBe('design');
+    expect(wi031!.current_state).toBe('impact_analyzed');
     // workflow_type is set from the first transition ('') and preserved;
     // the second transition only updates current_state on an existing WI.
     expect(wi031!.workflow_type).toBe('feature_spec');
@@ -424,50 +408,13 @@ describe('T3: events.jsonl integrity', () => {
     await rmRF(tmpDir);
   });
 
-  // T3.1: Old events.jsonl → new StateManager rebuild → full recovery (backward compat)
-  it('T3.1: legacy events.jsonl fully recovered by new StateManager', async () => {
-    const eventsPath = resolver.resolveDaemonEventsPath();
-
-    // Write legacy-format events directly (no schema_version field)
-    const legacyEvents = [
-      legacyTransitionEvent('WI-LEG-1', '', 'intake', 1),
-      legacyTransitionEvent('WI-LEG-1', 'intake', 'requirements', 2),
-      legacyTransitionEvent('WI-LEG-1', 'requirements', 'design', 3),
-      legacyTransitionEvent('WI-LEG-2', '', 'intake', 4),
-    ];
-
-    await fs.mkdir(path.dirname(eventsPath), { recursive: true });
-    const lines = legacyEvents.map((e) => JSON.stringify(e)).join('\n') + '\n';
-    await fs.writeFile(eventsPath, lines, 'utf-8');
-
-    // Create StateManager and rebuild from legacy events
+  // T3.1: current WAL schema_version remains '1.0'
+  it('T3.1: current WAL events have schema_version 1.0', async () => {
     const sm = new StateManager(resolver, projectDir, true);
     await sm.initialize();
 
-    // Verify full recovery
-    const wi1 = sm.getState('WI-LEG-1');
-    expect(wi1).not.toBeNull();
-    expect(wi1!.current_state).toBe('design');
-    expect(wi1!.work_item_id).toBe('WI-LEG-1');
-
-    const wi2 = sm.getState('WI-LEG-2');
-    expect(wi2).not.toBeNull();
-    expect(wi2!.current_state).toBe('intake');
-
-    // Verify state.json was written correctly
-    const statePath = resolver.resolveDaemonStatePath();
-    const stateJson = JSON.parse(await fs.readFile(statePath, 'utf-8'));
-    expect(stateJson.workItems.length).toBe(2);
-    expect(stateJson.schemaVersion).toBe('1.0');
-  });
-
-  // T3.2: WAL schema_version remains '1.0'
-  it('T3.2: WAL events have schema_version 1.0', async () => {
-    const sm = new StateManager(resolver, projectDir, true);
-    await sm.initialize();
-
-    await sm.transition('WI-SV', '', 'intake', 'test');
-    await sm.transition('WI-SV', 'intake', 'requirements', 'test');
+    await sm.transition('WI-SV', '', 'intake_ready', 'test');
+    await sm.transition('WI-SV', 'intake_ready', 'impact_analyzing', 'test');
 
     const wal = sm.getWal();
     const { events } = await wal.readAllEvents();
@@ -477,7 +424,7 @@ describe('T3: events.jsonl integrity', () => {
     for (const event of events) {
       // Unified schema events should have schema_version
       expect(event.schema_version).toBe('1.0');
-      // Legacy metadata field should also be present
+      // Metadata schema version should remain consistent with the top-level field.
       expect(event.metadata.schemaVersion).toBe('1.0');
     }
 
@@ -515,7 +462,12 @@ describe('T4: ProjectManager with daemon global StateManager', () => {
     eventBus.start();
 
     // ProjectManager receives the daemon global StateManager
-    projectManager = new ProjectManager(eventBus, resolver, daemonStateManager);
+    projectManager = new ProjectManager(
+      eventBus,
+      resolver,
+      daemonStateManager,
+      async () => ({ ok: true, needsMigration: false, checks: [] }),
+    );
   });
 
   afterEach(async () => {
@@ -528,6 +480,7 @@ describe('T4: ProjectManager with daemon global StateManager', () => {
   it('T4.1: registered ProjectContext has no independent wal/stateManager', async () => {
     const projectA = path.join(tmpDir, 'project-a');
     fsSync.mkdirSync(projectA, { recursive: true });
+    await initializeCurrentProject(projectA);
 
     const ctx = await projectManager.registerProject(projectA);
 
@@ -542,8 +495,8 @@ describe('T4: ProjectManager with daemon global StateManager', () => {
   // T4.2: daemon global StateManager events written correctly
   it('T4.2: daemon global StateManager receives events for all projects', async () => {
     // Transition a work item via the daemon global StateManager
-    await daemonStateManager.transition('WI-PM-1', '', 'intake', 'test');
-    await daemonStateManager.transition('WI-PM-1', 'intake', 'requirements', 'test');
+    await daemonStateManager.transition('WI-PM-1', '', 'intake_ready', 'test');
+    await daemonStateManager.transition('WI-PM-1', 'intake_ready', 'impact_analyzing', 'test');
 
     // Events should be in the daemon global WAL
     const wal = daemonStateManager.getWal();
@@ -559,7 +512,7 @@ describe('T4: ProjectManager with daemon global StateManager', () => {
     // Verify ProjectManager returns the same daemonStateManager
     const sm = projectManager.getDaemonStateManager();
     expect(sm).toBe(daemonStateManager);
-    expect(sm.getState('WI-PM-1')!.current_state).toBe('requirements');
+    expect(sm.getState('WI-PM-1')!.current_state).toBe('impact_analyzing');
   });
 
   it('should support multiple project registrations sharing the same StateManager', async () => {
@@ -567,6 +520,8 @@ describe('T4: ProjectManager with daemon global StateManager', () => {
     const projB = path.join(tmpDir, 'proj-b');
     fsSync.mkdirSync(projA, { recursive: true });
     fsSync.mkdirSync(projB, { recursive: true });
+    await initializeCurrentProject(projA);
+    await initializeCurrentProject(projB);
 
     await projectManager.registerProject(projA);
     await projectManager.registerProject(projB);
@@ -577,9 +532,9 @@ describe('T4: ProjectManager with daemon global StateManager', () => {
 
     // Both use the same singleton StateManager
     const sm = projectManager.getDaemonStateManager();
-    await sm.transition('WI-MULTI', '', 'intake', 'test');
+    await sm.transition('WI-MULTI', '', 'intake_ready', 'test');
 
-    expect(sm.getState('WI-MULTI')!.current_state).toBe('intake');
+    expect(sm.getState('WI-MULTI')!.current_state).toBe('intake_ready');
   });
 });
 
@@ -612,9 +567,9 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
     const sm = new StateManager(resolver, projectDir, true);
     await sm.initialize();
 
-    await sm.transition('WI-REC-1', '', 'intake', 'test');
-    await sm.transition('WI-REC-1', 'intake', 'requirements', 'test');
-    await sm.transition('WI-REC-2', '', 'intake', 'test');
+    await sm.transition('WI-REC-1', '', 'intake_ready', 'test');
+    await sm.transition('WI-REC-1', 'intake_ready', 'impact_analyzing', 'test');
+    await sm.transition('WI-REC-2', '', 'intake_ready', 'test');
 
     // Create RecoverySubsystem with injected WAL + StateManager
     const recovery = new RecoverySubsystem(
@@ -633,14 +588,14 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
     expect(state.workItems.length).toBe(2);
 
     const wi1 = sm.getState('WI-REC-1');
-    expect(wi1!.current_state).toBe('requirements');
+    expect(wi1!.current_state).toBe('impact_analyzing');
 
     const wi2 = sm.getState('WI-REC-2');
-    expect(wi2!.current_state).toBe('intake');
+    expect(wi2!.current_state).toBe('intake_ready');
   });
 
   // T5.2: events.jsonl with corrupted lines → checkAndRepair handles gracefully
-  it('T5.2: corrupted lines in events.jsonl handled gracefully', async () => {
+  it('T5.2: corrupted events.jsonl fails closed without deleting evidence', async () => {
     const eventsPath = resolver.resolveDaemonEventsPath();
     await fs.mkdir(path.dirname(eventsPath), { recursive: true });
 
@@ -653,7 +608,7 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
     const e1 = wal.createEvent('WI-CORR-1', 'state', 'state.transition', {
       work_item_id: 'WI-CORR-1',
       from_state: '',
-      to_state: 'intake',
+      to_state: 'intake_ready',
     });
     await wal.appendEvent(e1);
 
@@ -663,25 +618,19 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
     // Append another valid event
     const e2 = wal.createEvent('WI-CORR-1', 'state', 'state.transition', {
       work_item_id: 'WI-CORR-1',
-      from_state: 'intake',
-      to_state: 'requirements',
+      from_state: 'intake_ready',
+      to_state: 'impact_analyzing',
     });
     await wal.appendEvent(e2);
 
-    // Create a new StateManager — WAL.readAllEvents() now skips corrupted
-    // lines and returns only valid events. The valid events before and after
-    // the corrupted line are still parsed successfully.
+    // Current runtime schema precheck must reject a corrupted authority before
+    // StateManager replays or rewrites any events.
     const sm2 = new StateManager(resolver, projectDir, true);
-    await sm2.initialize();
+    await expect(sm2.initialize()).rejects.toThrow(
+      'RUNTIME_SCHEMA_PRECHECK_BLOCKED:runtime-wal:FILE_PARSE_FAILED',
+    );
 
-    // Due to the corrupted line, the WAL skips it and recovers the valid events.
-    // WI-CORR-1 should be at 'requirements' state (from e1 and e2 transitions).
-    const allWi = sm2.listWorkItems();
-    expect(allWi).toHaveLength(1);
-    expect(allWi[0]!.work_item_id).toBe('WI-CORR-1');
-    expect(allWi[0]!.current_state).toBe('requirements');
-
-    // The corrupted events.jsonl file still exists (not deleted)
+    // The original evidence remains available for governed recovery.
     expect(await fileExists(eventsPath)).toBe(true);
 
     // A clean WAL (without corruption) should work fine
@@ -692,7 +641,7 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
     const smClean = new StateManager(cleanResolver, projectDir, true);
     await smClean.initialize();
 
-    await smClean.transition('WI-CLEAN', '', 'intake', 'test');
+    await smClean.transition('WI-CLEAN', '', 'intake_ready', 'test');
 
     const recovery = new RecoverySubsystem(
       cleanResolver,
@@ -710,9 +659,9 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
     await sm.initialize();
 
     // Create some transitions
-    await sm.transition('WI-RECOV', '', 'intake', 'test');
-    await sm.transition('WI-RECOV', 'intake', 'requirements', 'test');
-    await sm.transition('WI-RECOV', 'requirements', 'requirements_gate', 'test');
+    await sm.transition('WI-RECOV', '', 'intake_ready', 'test');
+    await sm.transition('WI-RECOV', 'intake_ready', 'impact_analyzing', 'test');
+    await sm.transition('WI-RECOV', 'impact_analyzing', 'impact_analyzed', 'test');
 
     // Recovery with injected components
     const recovery = new RecoverySubsystem(
@@ -731,7 +680,7 @@ describe('T5: RecoverySubsystem with injected WAL + StateManager', () => {
     // Verify the state is consistent
     const state = await sm.getCurrentState();
     expect(state.workItems.length).toBe(1);
-    expect(state.workItems[0]!.current_state).toBe('requirements_gate');
+    expect(state.workItems[0]!.current_state).toBe('impact_analyzed');
   });
 });
 
@@ -765,7 +714,7 @@ describe('WAL singleton: only one WAL instance per StateManager', () => {
     const wal = sm.getWal();
 
     // The WAL returned by getWal() should be the same as the one used for transitions
-    await sm.transition('WI-SINGLE', '', 'intake', 'test');
+    await sm.transition('WI-SINGLE', '', 'intake_ready', 'test');
 
     // Verify the event was written through the same WAL
     const { events } = await wal.readAllEvents();
@@ -791,7 +740,7 @@ describe('WAL singleton: only one WAL instance per StateManager', () => {
     const sm1 = new StateManager(resolver, projectDir, true);
     await sm1.initialize();
 
-    await sm1.transition('WI-SHARED-1', '', 'intake', 'test');
+    await sm1.transition('WI-SHARED-1', '', 'intake_ready', 'test');
 
     // Create second StateManager pointing to same daemon paths
     const sm2 = new StateManager(resolver, projectDir, true);
@@ -800,10 +749,10 @@ describe('WAL singleton: only one WAL instance per StateManager', () => {
     // sm2 should see WI-SHARED-1 from events.jsonl rebuild
     const wi = sm2.getState('WI-SHARED-1');
     expect(wi).not.toBeNull();
-    expect(wi!.current_state).toBe('intake');
+    expect(wi!.current_state).toBe('intake_ready');
 
     // Now add more events via sm2
-    await sm2.transition('WI-SHARED-2', '', 'intake', 'test');
+    await sm2.transition('WI-SHARED-2', '', 'intake_ready', 'test');
 
     // Verify both WIs are in the shared events file
     const eventsPath = resolver.resolveDaemonEventsPath();

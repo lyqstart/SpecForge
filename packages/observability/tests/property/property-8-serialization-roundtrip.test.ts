@@ -21,6 +21,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import * as fc from 'fast-check';
 import { generateEventId, MonotonicTimestamp } from '../../src/types/event-utils';
+import { DaemonWalFixtureEventLogger } from '../helpers/current-daemon-wal.js';
 
 /**
  * Generate a hex string of specified length
@@ -659,7 +660,7 @@ describe('Property 8: Serialization Round-trip', () => {
   // ============================================================
   describe('Property 8.7: Integration with EventLogger', () => {
     it('should serialize and deserialize events from WAL', async () => {
-      const logger = new EventLogger(tempDir);
+      const logger = new DaemonWalFixtureEventLogger(tempDir);
       await logger.initialize();
 
       // Create and append events

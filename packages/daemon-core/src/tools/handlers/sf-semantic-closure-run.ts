@@ -30,6 +30,7 @@ import {
 } from '../lib/verification-report-contract.js';
 import { resolveWorkItemSpecArtifacts } from '../lib/governance-invariants-v11.js';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 
 async function readTextIfExists(filePath: string): Promise<string | undefined> {
   try {
@@ -142,14 +143,22 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
   const reportPath = path.join(workItemDir, 'semantic_closure_report.md');
   const verificationReportPath = path.join(workItemDir, 'verification_report.md');
 
+  let workItem: Record<string, any>;
+  try {
+    workItem = await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      work_item_id: workItemId,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+
   const authoritativeState = await readAuthoritativeState({
     deps,
     projectRoot,
     workItemId,
   });
-  const workItem = await readJsonIfExists<Record<string, any>>(
-    path.join(workItemDir, 'work_item.json')
-  );
   const workflowType = String(workItem?.workflow_type ?? '');
   const frozenRecoveryTarget =
     workflowType === 'spec_migration' ? 'post_merge_verified' : 'implementation_ready';
@@ -243,14 +252,6 @@ registerHandler('sf_v11_semantic_closure_run', async (args, context, deps) => {
       retry_allowed: false,
       recovery:
         `No existing semantic closure is available to validate. Recover the Work Item to ${frozenRecoveryTarget}, regenerate semantic closure, then rerun verification_gate.`,
-    };
-  }
-
-  if (!workItem) {
-    return {
-      success: false,
-      work_item_id: workItemId,
-      error: `work_item.json not found at ${rel(projectRoot, path.join(workItemDir, 'work_item.json'))}`,
     };
   }
 

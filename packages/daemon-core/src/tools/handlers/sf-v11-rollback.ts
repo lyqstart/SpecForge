@@ -10,8 +10,11 @@ import {
   writeRollbackDelta,
 } from '../lib/rollback-runner-v11';
 import * as path from 'node:path';
+import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coordinator-v11';
+import { readWorkItemMetadata } from '../lib/work-item-metadata';
+import { resolveWorkflowTypeForPath, type WorkflowPath } from '../lib/state_machine';
 
-registerHandler('sf_v11_rollback', async (args, context, _deps) => {
+registerHandler('sf_v11_rollback', async (args, context, deps) => {
   const projectRoot = (context?.directory as string) || (context?.worktree as string) || process.cwd();
   const action = (args['action'] as string) || 'plan';
 
@@ -76,6 +79,44 @@ registerHandler('sf_v11_rollback', async (args, context, _deps) => {
 
       const workItemsRoot = path.join(projectRoot, '.specforge', 'work-items');
       const originalWiDir = path.join(workItemsRoot, originalWiId);
+      const metadata = await readWorkItemMetadata(originalWiDir, originalWiId);
+      const authoritativeState = await readAuthoritativeState({
+        deps,
+        projectRoot,
+        workItemId: originalWiId,
+      });
+      if (!authoritativeState.current_state) {
+        throw new Error(`AUTHORITATIVE_WORK_ITEM_STATE_NOT_FOUND: ${originalWiId}`);
+      }
+      if (authoritativeState.current_state === 'closed') {
+        throw new Error(`原 WI ${originalWiId} 已经 closed，不能 superseded。必须创建 repair WI。`);
+      }
+      const workflowPath = typeof metadata.workflow_path === 'string'
+        ? metadata.workflow_path as WorkflowPath
+        : undefined;
+      const workflowType = resolveWorkflowTypeForPath(
+        workflowPath,
+        typeof metadata.workflow_type === 'string' ? metadata.workflow_type : undefined,
+      );
+      if (!workflowType) {
+        throw new Error(`WORK_ITEM_WORKFLOW_METADATA_INVALID: ${originalWiId}`);
+      }
+      await transitionWithEvidence({
+        deps,
+        context,
+        projectRoot,
+        workItemId: originalWiId,
+        workItemDir: originalWiDir,
+        fromState: authoritativeState.current_state,
+        toState: 'superseded',
+        workflowType,
+        actorRole: typeof context?.agent === 'string' ? context.agent : 'sf-orchestrator',
+        evidence: `Rollback Work Item ${supersededByWiId} supersedes ${originalWiId}`,
+        transitionContext: {
+          source: 'sf_v11_rollback',
+          superseded_by_work_item_id: supersededByWiId,
+        },
+      });
       const result = await markOriginalSuperseded({
         originalWiDir,
         originalWorkItemId: originalWiId,

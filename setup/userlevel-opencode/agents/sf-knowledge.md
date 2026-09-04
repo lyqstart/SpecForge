@@ -113,7 +113,7 @@ If a requested action conflicts with this contract, stop and report the conflict
 
 # 完成的定义
 
-Layer 3 ✅：知识库新条目能通过 sf_knowledge_query 查到，且非重复。
+Layer 3 ✅：知识库新条目通过 `sf_knowledge_base` 受控写入，且非重复。
 
 ---
 
@@ -185,53 +185,14 @@ Layer 3 ✅：知识库新条目能通过 sf_knowledge_query 查到，且非重�
 - `.specforge/runtime/events.jsonl` — 状态流转事件
 - `.specforge/work-items/{work_item_id}/evidence/` — 子 Agent 执行结果
 - `.specforge/work-items/{work_item_id}/candidates/` — 需求/设计/任务文档
-- `.specforge/knowledge/graph.json` — Knowledge Graph（legacy read-only）
 - `.specforge/logs/trace.jsonl` — 运行痕迹
 - `.specforge/logs/gate.log` — Gate 调用日志
 
 ---
 
-# v1.1 知识增强概念
+# 当前发布知识边界
 
-> 本节定义 v1.1 标准中与知识提取直接相关的概念。Knowledge Agent 在执行会话复盘时
-> 必须理解 Knowledge Graph Sync Points、Evidence-based knowledge extraction 和 Trace references。
-
----
-
-## Knowledge Graph Sync Points (§20)
-
-**标准章节**：§20 — Knowledge Graph Sync
-
-v1.1 标准要求在 Work Item 的关键生命周期节点同步 Knowledge Graph，确保 KG 与实际产物保持一致。
-Knowledge Agent 在提取知识时必须理解这些同步点，并在对应的同步点执行 KG 更新。
-
-### 同步点定义
-
-| 同步点 | 触发时机 | KG 操作 | 负责人 |
-|--------|----------|---------|--------|
-| `post_requirements` | requirements.md 通过 Gate 后 | 同步 REQ/AC 节点 | Orchestrator |
-| `post_design` | design.md 通过 Gate 后 | 同步 DD 节点及依赖边 | Orchestrator |
-| `post_tasks` | tasks.md 通过 Gate 后 | 同步 TASK 节点及依赖/文件边 | Orchestrator |
-| `post_development` | 所有 TASK 执行完成后 | 同步 FILE/IMPLEMENTATION 节点 | Orchestrator |
-| `post_review` | review 通过后 | 添加 REVIEW 节点 | Orchestrator |
-| `post_verification` | verification 通过后 | 添加 EVIDENCE/VERIFY 节点 | Orchestrator |
-| `post_knowledge` | 知识提取完成后 | 添加 KNOWLEDGE 节点 | sf-knowledge |
-
-### Knowledge Agent 的同步职责
-
-Knowledge Agent 在 `post_knowledge` 同步点必须执行：
-
-1. **调用 `sf_knowledge_graph` 的 `sync_from_spec`**：将提取的知识条目与 KG 同步
-2. **添加 KNOWLEDGE 节点**：为每条新知识条目创建 KG 节点
-3. **建立追溯边**：将 KNOWLEDGE 节点关联到源 WI/Task/Evidence 节点
-
-### 同步验证
-
-同步完成后，Knowledge Agent 必须验证：
-
-- `sf_knowledge_query` 能查到新添加的节点
-- 新节点的 `edges` 正确关联到源节点
-- KG 中无孤立节点（所有节点至少有一条边）
+当前发布只保留 `sf_knowledge_base` 的有限知识骨架。完整 Knowledge Graph、图查询和生命周期自动同步属于 V6.1 P1，不得调用、模拟或通过项目文件旁路实现。
 
 ---
 
@@ -302,7 +263,7 @@ trace:<work_item_id>:<task_id>:<action>
 
 1. **验证知识真实性**：通过 Trace 确认知识所描述的事件确实发生过
 2. **定位知识上下文**：通过 Trace 找到知识产生的具体执行环境
-3. **关联知识链路**：通过 Trace 链将多条知识关联起来，形成知识图谱
+3. **关联知识链路**：通过 Trace 链将多条知识关联起来，形成可追溯的知识关联链
 
 ### Trace 读取操作
 

@@ -20,6 +20,7 @@ import { HTTPServer, type HTTPServerDeps } from '../src/http/HTTPServer';
 import { EventBus } from '../src/event-bus/EventBus';
 import { DaemonConfig } from '../src/daemon/DaemonConfig';
 import { ReconnectingDaemonClient } from '../../service-management/src/plugin/reconnecting-daemon-client';
+import { currentHandshake } from './helpers/current-daemon-test-config';
 
 describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
   let tempDir: string;
@@ -64,12 +65,7 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
 
     // Write handshake.json for ReconnectingDaemonClient
     handshakePath = join(tempDir, 'handshake.json');
-    writeFileSync(handshakePath, JSON.stringify({
-      port,
-      token,
-      pid: process.pid,
-      startedAt: Date.now(),
-    }));
+    writeFileSync(handshakePath, JSON.stringify(currentHandshake(port, token)));
 
     // Create REAL ReconnectingDaemonClient
     client = new ReconnectingDaemonClient({
@@ -158,9 +154,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       mkdirSync(wiDir, { recursive: true });
 
       writeFileSync(join(wiDir, 'work_item.json'), JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-FULL-001',
-        status: 'implementation_running',
         workflow_path: 'code_only_fast_path',
         code_change_allowed: true,
         allowed_write_files: [{ path: 'src/app.ts', operation: 'modify' }],
@@ -179,9 +174,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       mkdirSync(join(projectDir, 'src'), { recursive: true });
 
       writeFileSync(join(wiDir, 'work_item.json'), JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-FULL-002',
-        status: 'implementation_running',
         workflow_path: 'code_only_fast_path',
         code_change_allowed: true,
         allowed_write_files: [{ path: 'src/app.ts', operation: 'modify' }],
@@ -209,9 +203,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       mkdirSync(wiDir, { recursive: true });
 
       writeFileSync(join(wiDir, 'work_item.json'), JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-FULL-003',
-        status: 'implementation_running',
         workflow_path: 'code_only_fast_path',
         code_change_allowed: true,
         allowed_write_files: [{ path: 'src/app.ts', operation: 'modify' }],
@@ -230,9 +223,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       mkdirSync(join(projectDir, 'src'), { recursive: true });
 
       writeFileSync(join(wiDir, 'work_item.json'), JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-FULL-004',
-        status: 'implementation_running',
         workflow_path: 'code_only_fast_path',
         code_change_allowed: true,
         allowed_write_files: [{ path: 'src/app.ts', operation: 'modify' }],
@@ -257,9 +249,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       mkdirSync(wiDir, { recursive: true });
 
       writeFileSync(join(wiDir, 'work_item.json'), JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-FULL-005',
-        status: 'implementation_running',
         workflow_path: 'code_only_fast_path',
         code_change_allowed: true,
         allowed_write_files: [{ path: 'src/app.ts', operation: 'modify' }],
@@ -283,9 +274,8 @@ describe('v1.1 Full Daemon Startup Write Guard E2E', () => {
       mkdirSync(wiDir, { recursive: true });
 
       writeFileSync(join(wiDir, 'work_item.json'), JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-FULL-006',
-        status: 'implementation_running',
         workflow_path: 'code_only_fast_path',
         code_change_allowed: true,
         allowed_write_files: [{ path: 'src/app.ts', operation: 'modify' }],

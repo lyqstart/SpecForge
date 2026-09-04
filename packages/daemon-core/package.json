@@ -4,6 +4,9 @@
   "description": "Daemon Core module for SpecForge V6 - Central process and Single Source of Truth",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "specforged": "dist/specforged.js"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
@@ -36,17 +39,27 @@
     "vitest": "^3.0.7"
   },
   "dependencies": {
+    "@specforge/configuration": "workspace:*",
     "@specforge/permission-engine": "workspace:*",
     "@specforge/service-management": "workspace:*",
-    "@specforge/scope-gate": "workspace:*",
     "@specforge/opencode-adapter": "workspace:*",
     "@specforge/workflow-runtime": "workspace:*",
     "@specforge/observability": "workspace:*",
     "@specforge/plugin-loader": "workspace:*",
     "@specforge/types": "workspace:*",
+    "@specforge/version-unification": "workspace:*",
     "@specforge/host-profile": "workspace:*",
+    "@specforge/migration": "workspace:*",
     "typescript": "^5.8.2",
     "uuid": "^11.1.0"
+  },
+  "specforgeRelease": {
+    "cleanBuildIds": [
+      "tool:sf_work_item_create",
+      "tool:sf_rollback",
+      "tool:sf_handoff",
+      "tool:sf_verification"
+    ]
   },
   "schema_version": "1.0"
 }

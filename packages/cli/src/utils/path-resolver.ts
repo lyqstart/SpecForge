@@ -2,7 +2,7 @@
  * PathResolver - 跨平台路径解析工具
  * 
  * 职责：
- * - 解析安装根目录（<OpenCode config>/sf-user）
+ * - 解析当前 SpecForge 用户根目录（~/.specforge）
  * - 解析用户 HOME 目录（跨平台）
  * - 提供平台和架构信息
  * - 判断安装来源（npm-global / npm-local / dev）
@@ -24,7 +24,7 @@ export interface PathResolver {
   /**
    * 解析安装根目录
    * @param override 可选的覆盖路径（测试用）
-   * @returns <OpenCode config>/sf-user 的绝对路径
+   * @returns ~/.specforge 的绝对路径
    */
   resolveInstallRoot(override?: string): string;
 

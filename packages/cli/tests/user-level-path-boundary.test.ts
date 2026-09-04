@@ -1,4 +1,5 @@
 import * as path from 'node:path';
+import * as os from 'node:os';
 import { afterEach, describe, expect, it } from 'vitest';
 import { getDefaultHandshakePath, getRuntimeDirPath } from '../src/auth/AuthManager';
 import {
@@ -18,24 +19,25 @@ afterEach(() => {
 });
 
 describe('CLI user-level path boundary', () => {
-  it('routes CLI runtime and handshake under sf-user', () => {
+  it('routes CLI runtime and handshake under the current SpecForge user root', () => {
     const configRoot = path.join(process.cwd(), '.tmp-user-level-path-boundary');
     process.env.OPENCODE_CONFIG_DIR = configRoot;
+    const userRoot = path.join(os.homedir(), '.specforge');
 
-    expect(resolveSpecForgeUserRoot()).toBe(path.join(configRoot, 'sf-user'));
-    expect(getRuntimeDirPath()).toBe(path.join(configRoot, 'sf-user', 'runtime'));
+    expect(resolveSpecForgeUserRoot()).toBe(userRoot);
+    expect(getRuntimeDirPath()).toBe(path.join(userRoot, 'runtime'));
     expect(getDefaultHandshakePath()).toBe(
-      path.join(configRoot, 'sf-user', 'runtime', 'handshake.json'),
+      path.join(userRoot, 'runtime', 'daemon.sock.json'),
     );
-    expect(resolveSpecForgeUserPath('logs')).toBe(path.join(configRoot, 'sf-user', 'logs'));
+    expect(resolveSpecForgeUserPath('logs')).toBe(path.join(userRoot, 'logs'));
   });
 
-  it('keeps the manifest outside sf-user', () => {
+  it('keeps the manifest inside the current SpecForge user root', () => {
     const configRoot = path.join(process.cwd(), '.tmp-user-level-manifest-boundary');
     process.env.OPENCODE_CONFIG_DIR = configRoot;
 
     expect(resolveSpecForgeManifestPath()).toBe(
-      path.join(configRoot, 'specforge-manifest.json'),
+      path.join(os.homedir(), '.specforge', 'specforge-manifest.json'),
     );
   });
 });

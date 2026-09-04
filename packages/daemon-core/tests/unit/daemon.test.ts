@@ -7,6 +7,8 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { Daemon } from '../../src/daemon/Daemon';
+import { DaemonConfig } from '../../src/daemon/DaemonConfig';
+import type { IPathResolver } from '../../src/daemon/path-resolver';
 
 describe('Daemon', () => {
   const originalOpenCodeConfigDir = process.env.OPENCODE_CONFIG_DIR;
@@ -18,7 +20,23 @@ describe('Daemon', () => {
       path.join(os.tmpdir(), 'specforge-daemon-test-config-'),
     );
     process.env.OPENCODE_CONFIG_DIR = testOpenCodeConfigDir;
-    daemon = new Daemon();
+    const runtimeDir = path.join(testOpenCodeConfigDir, 'specforge-user', 'runtime');
+    const resolver: IPathResolver = {
+      resolveProjectRuntimeDir: projectPath => path.join(projectPath, '.specforge', 'runtime'),
+      resolveStatePath: projectPath => path.join(projectPath, '.specforge', 'runtime', 'state.json'),
+      resolveEventsPath: projectPath => path.join(projectPath, '.specforge', 'runtime', 'events.jsonl'),
+      resolveSessionsDir: projectPath => path.join(projectPath, '.specforge', 'runtime', 'sessions'),
+      resolveDaemonRuntimeDir: () => runtimeDir,
+      resolveHandshakePath: () => path.join(runtimeDir, 'daemon.sock.json'),
+      resolveDaemonJsonPath: () => path.join(testOpenCodeConfigDir, 'daemon.json'),
+      resolveDaemonStatePath: () => path.join(runtimeDir, 'state.json'),
+      resolveDaemonEventsPath: () => path.join(runtimeDir, 'events.jsonl'),
+    };
+    const config = new DaemonConfig([]);
+    vi.spyOn(config, 'getPathResolver').mockReturnValue(resolver);
+    vi.spyOn(config, 'getRuntimeDir').mockReturnValue(runtimeDir);
+    vi.spyOn(config, 'getHandshakeFile').mockReturnValue(resolver.resolveHandshakePath());
+    daemon = new Daemon(config);
   });
 
   afterEach(async () => {

@@ -149,7 +149,7 @@ function lintRequirements(content: string, fileName: string): DocLintResult {
     issues.push({
       severity: "warning",
       message:
-        '需求标题未使用规范格式"### REQ-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
+        '需求标题未使用规范格式"### REQ-<MODULE_CODE>-<NNN> 标题"，治理追溯解析可能失败',
       location: fileName,
     })
   }
@@ -246,7 +246,7 @@ function lintDesign(content: string, fileName: string): DocLintResult {
     issues.push({
       severity: "warning",
       message:
-        '设计决策标题未使用规范格式"### DD-<MODULE_CODE>-<NNN> 标题"，Knowledge Graph 解析可能失败',
+        '设计决策标题未使用规范格式"### DD-<MODULE_CODE>-<NNN> 标题"，治理追溯解析可能失败',
       location: fileName,
     })
   }
@@ -960,7 +960,7 @@ function lintTasks(content: string, fileName: string): DocLintResult {
     issues.push({
       severity: "warning",
       message:
-        '任务标题未使用规范格式"### TASK-WI-<NNNN>-<NNN> 标题"，Knowledge Graph 解析可能失败',
+        '任务标题未使用规范格式"### TASK-WI-<NNNN>-<NNN> 标题"，治理追溯解析可能失败',
       location: fileName,
     })
   }

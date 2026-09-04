@@ -12,7 +12,6 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { FINAL_STATES, FINAL_TRANSITIONS } from './state_machine';
 
@@ -119,116 +118,6 @@ export function isValidV11TransitionForWorkflow(
 // ---------------------------------------------------------------------------
 // §5.4 恢复机制
 // ---------------------------------------------------------------------------
-
-export interface ResumeCheckResult {
-  currentStatus: string;
-  requiredFilesExist: boolean;
-  missingFiles: string[];
-  artifactsValid: boolean;
-  codePermissionValid: boolean;
-  noOutOfBoundsWrites: boolean;
-  needsRollback: boolean;
-  rollbackTarget?: string;
-  canResume: boolean;
-}
-
-/**
- * v1.1 WI 必需文件列表（§4.3）。
- */
-export const V11_REQUIRED_FILES = [
-  'work_item.json',
-  'intake.md',
-  'change_classification.md',
-  'impact_analysis.md',
-  'trigger_result.json',
-  'candidate_manifest.json',
-  'gate_summary.md',
-  'verification_report.md',
-  'merge_report.md',
-  'evidence/evidence_manifest.json',
-];
-
-/**
- * 执行恢复检查（§5.4）。
- */
-export async function performResumeCheck(
-  workItemDir: string,
-): Promise<ResumeCheckResult> {
-  const missingFiles: string[] = [];
-
-  for (const file of V11_REQUIRED_FILES) {
-    const fullPath = path.join(workItemDir, file);
-    try {
-      await fs.access(fullPath);
-    } catch {
-      missingFiles.push(file);
-    }
-  }
-
-  for (const artifact of [
-    { kind: 'tasks' as const, file: 'tasks.md' },
-    { kind: 'trace_delta' as const, file: 'trace_delta.md' },
-  ]) {
-    let resolved = false;
-    for (const candidatePath of [
-      path.join(workItemDir, 'candidates', artifact.file),
-      path.join(workItemDir, artifact.file),
-    ]) {
-      try {
-        const content = await fs.readFile(candidatePath, 'utf-8');
-        if (!isWorkItemSpecArtifactPlaceholder(artifact.kind, content)) {
-          resolved = true;
-          break;
-        }
-      } catch {
-        // Continue to the read-only legacy fallback.
-      }
-    }
-    if (!resolved) missingFiles.push(`candidates/${artifact.file}`);
-  }
-
-  const requiredFilesExist = missingFiles.length === 0;
-
-  // 读取 work_item.json 获取当前状态
-  let currentStatus = 'unknown';
-  try {
-    const content = await fs.readFile(path.join(workItemDir, 'work_item.json'), 'utf-8');
-    const json = JSON.parse(content);
-    currentStatus = json.status ?? 'unknown';
-  } catch {
-    // 无法读取状态
-  }
-
-  // 简化的恢复判断逻辑
-  const needsRollback = !requiredFilesExist && currentStatus !== 'created' && currentStatus !== 'intake_ready';
-  let rollbackTarget: string | undefined;
-  if (needsRollback) {
-    // 根据缺失文件决定回退目标
-    if (missingFiles.includes('candidate_manifest.json')) {
-      rollbackTarget = 'candidate_preparing';
-    } else if (missingFiles.includes('gate_summary.md')) {
-      rollbackTarget = 'gates_running';
-    } else if (missingFiles.includes('verification_report.md')) {
-      rollbackTarget = 'implementation_ready';
-    } else {
-      rollbackTarget = 'workflow_selected';
-    }
-  }
-
-  const canResume = !needsRollback && currentStatus !== 'closed' && currentStatus !== 'rejected' && currentStatus !== 'superseded';
-
-  return {
-    currentStatus,
-    requiredFilesExist,
-    missingFiles,
-    artifactsValid: requiredFilesExist,
-    codePermissionValid: true, // 需要外部检查
-    noOutOfBoundsWrites: true, // 需要 Write Guard 检查
-    needsRollback,
-    rollbackTarget,
-    canResume,
-  };
-}
 
 // ---------------------------------------------------------------------------
 // §5.3 Evidence Prerequisites for Key States

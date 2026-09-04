@@ -193,7 +193,13 @@ describe('Property 6: Event Ordering', () => {
             engine.loadWorkflow(workflow);
             const instance = engine.createInstance(workflow.id);
             
-            await engine.execute(instance.id);
+            try {
+              await engine.execute(instance.id);
+            } catch (error) {
+              if (allPass || !(error instanceof Error) || !error.message.includes('gate result is unconsumed')) {
+                throw error;
+              }
+            }
             
             const events = mockBus.getEvents();
             

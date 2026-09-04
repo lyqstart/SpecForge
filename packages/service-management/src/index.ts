@@ -25,6 +25,7 @@ export type {
   ServiceStatusJsonEntry,
   ServiceOperationJsonPayload,
 } from './types/index.js';
+export { parseHandshakeFile } from './types/index.js';
 
 // Unit Generator (Phase 2)
 export * from './unit-generator/index.js';

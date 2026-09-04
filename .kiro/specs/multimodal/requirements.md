@@ -1,5 +1,9 @@
 # Requirements Document: Multimodal Message Layer
 
+## Current Release Alignment
+
+The stable target is `CURRENT_RELEASE_SUPPORTING`, but the module remains `BUILT_NOT_ENABLED` until Daemon ingestion/OpenCodeAdapter has a verified production consumer. The current artifact may contain only unified `UserMessage`, the text path and deterministic non-text rejection. Parser/OCR/transcription/media-processing interfaces and implementations described for P2 are future design notes and must not enter current exports, build, registry, installer or runtime.
+
 ## Introduction
 
 This specification defines the **Multimodal Message Layer** module for SpecForge V6. The Multimodal module handles ingestion, storage, and adaptation of multi-modal content (images, audio, video, files, code snippets, documents) for AI agent interactions, while enforcing V6.0 scope boundaries that limit full multimodal support to P2.

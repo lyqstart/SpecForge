@@ -24,9 +24,7 @@ export {
   isForbiddenTransition,
   isValidV11Transition,
   isAuthorizedAdvancementSubject,
-  performResumeCheck,
   WI_STATUSES_V11,
-  V11_REQUIRED_FILES,
   checkCloseGateEvidenceRequirements,
   CLOSE_GATE_REQUIRED_EVIDENCE,
 } from './tools/lib/state-machine-v11';
@@ -72,7 +70,6 @@ export type { WorkflowPath, ChangeClassification, TriggerResult } from './tools/
 export {
   createWorkItem,
   initializeClosureFiles,
-  updateWorkItemStatus,
 } from './tools/lib/work-item-lifecycle-v11';
 
 // Type exports
@@ -109,33 +106,3 @@ if (typeof require !== 'undefined' && require.main === module) {
 
   main();
 }
-
-export {
-  ProjectSpecStore,
-  ProjectSpecStoreError,
-  PROJECT_SPEC_STORE_SCHEMA_VERSION,
-  INITIAL_PROJECT_SPEC_VERSION,
-} from './project/ProjectSpecStore';
-export type {
-  CandidateManifestV12,
-  CandidateMergeEntry,
-  CandidateMergeMode,
-  CandidateValidationResult,
-  NoSpecImpactEvidence,
-  ProjectSpecManifestV12,
-  ProjectSpecMergeResult,
-  ProjectSpecStoreOptions,
-  ProjectSpecVersionEventV12,
-} from './project/ProjectSpecStore';
-export {
-  sfWriteGuardPreflight,
-  classifyShellWriteRisk,
-  checkCloseGateWriteGuard,
-  SF_WRITE_GUARD_PREFLIGHT_V12_CONTRACT,
-} from './tools/lib/write-guard-preflight-v12';
-export type {
-  V12WriteGuardPreflightInput,
-  V12WriteGuardPreflightResult,
-  V12ShellWriteRisk,
-  V12WriteGuardAuditEvent,
-} from './tools/lib/write-guard-preflight-v12';

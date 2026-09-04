@@ -33,12 +33,7 @@ const governanceHeadings = [
 ];
 
 const skillPaths = {
-  designFirst: 'setup/userlevel-opencode/skills/sf-workflow-design-first/SKILL.md',
   featureSpec: 'setup/userlevel-opencode/skills/sf-workflow-feature-spec/SKILL.md',
-  changeRequest: 'setup/userlevel-opencode/skills/sf-workflow-change-request/SKILL.md',
-  refactor: 'setup/userlevel-opencode/skills/sf-workflow-refactor/SKILL.md',
-  bugfixSpec: 'setup/userlevel-opencode/skills/sf-workflow-bugfix-spec/SKILL.md',
-  investigation: 'setup/userlevel-opencode/skills/sf-workflow-investigation/SKILL.md',
 } as const;
 
 describe('Design Governance contract alignment', () => {
@@ -75,9 +70,8 @@ describe('Design Governance contract alignment', () => {
     const standard = read('docs/standards/fused_standard.md');
     const agent = read('setup/userlevel-opencode/agents/sf-design.md');
     const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
-    const skill = read(skillPaths.designFirst);
 
-    for (const contract of [standard, agent, orchestrator, skill]) {
+    for (const contract of [standard, agent, orchestrator]) {
       expect(contract).toContain('SpecForge');
       expect(contract).toContain('capability_verdict');
       expect(contract).toContain('Design-Only');
@@ -88,8 +82,6 @@ describe('Design Governance contract alignment', () => {
     expect(standard).toContain('`capability_verdict` 的裁决对象必须是 **SpecForge 治理链**');
     expect(agent).toContain('`capability_verdict` 的裁决对象只能是 **SpecForge 治理链**');
     expect(orchestrator).toContain('分类对象描述的是**用户目标实现后的预期最终语义影响**');
-    expect(skill).toContain('分类必须按用户目标实现后的最终语义影响填写');
-    expect(skill).toContain('不得整表全 `true`/全 `false`');
     expect(agent).toContain('每个字段必须独立给出 `basis_refs`');
     expect(agent).toContain('不等于 `capability_verdict: extend_existing`');
   });
@@ -98,51 +90,12 @@ describe('Design Governance contract alignment', () => {
     const standard = read('docs/standards/fused_standard.md');
     const agent = read('setup/userlevel-opencode/agents/sf-design.md');
     const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
-    const skill = read(skillPaths.designFirst);
 
     expect(standard).toContain(
       'Candidate 的 `module_id` 是对 canonical `MODULE_CODE` 的引用'
     );
     expect(agent).toContain('写入前必须读取 `spec_manifest.json`');
     expect(orchestrator).toContain('生成 Candidate 前必须读取 `spec_manifest.json`');
-    expect(skill).toContain('`<MODULE>` 必须来自 `spec_manifest.json`');
-  });
-
-  it('forces design-first to use system_governance', () => {
-    const skill = read(skillPaths.designFirst);
-    expect(skill).toContain('本 Workflow 固定进入系统治理分析');
-    expect(skill).toContain('analysis_scope: system_governance');
-    expect(skill).toContain('capability_verdict');
-  });
-
-  it('keeps existing workflows and selects analysis scope instead of adding new skills', () => {
-    for (const skillPath of [
-      skillPaths.featureSpec,
-      skillPaths.changeRequest,
-      skillPaths.refactor,
-      skillPaths.bugfixSpec,
-    ]) {
-      const skill = read(skillPath);
-      expect(skill, skillPath).toContain('analysis_scope: solution_design');
-      expect(skill, skillPath).toContain('analysis_scope: system_governance');
-      expect(skill, skillPath).toContain('sf-design');
-    }
-
-    const investigation = read(skillPaths.investigation);
-    expect(investigation).toContain('workflow_type=investigation');
-    expect(investigation).toContain('workflow_path=requirement_change_path');
-    expect(investigation).toContain('sf-investigator');
-    expect(investigation).toContain('sf-design` 可以消费结论进行后续设计，但不得生成调查产物');
-  });
-
-  it('preserves workflow-specific escalation boundaries', () => {
-    expect(read(skillPaths.featureSpec)).toContain(
-      '新模块、模块边界、数据模型或数据语义、权限、状态机或状态权威、核心流程'
-    );
-    expect(read(skillPaths.changeRequest)).toContain('Runtime 行为或治理规则变化');
-    expect(read(skillPaths.refactor)).toContain('治理责任迁移或跨模块协议');
-    expect(read(skillPaths.bugfixSpec)).toContain('根因仍为未知、推测或未被证据验证时');
-    expect(read(skillPaths.investigation)).toContain('不得在 investigation 中直接实施');
   });
 
   it('extends the existing Path Service and routes every runtime Gate through one authority', () => {

@@ -8,6 +8,7 @@ import { setHardStop } from './hard-stop-latch';
 import { parseChangedFilesAuditVerdictPass } from './changed-files-audit-verdict';
 import { stripRemoteExecutionSegmentsForLocalWriteGuard } from './shell-command-write-intent';
 import { isCandidateFrozenState } from './candidate-freeze-v11';
+import { readWorkItemMetadataSync } from './work-item-metadata.js';
 
 export type RuntimeWriteOperation = 'create' | 'modify' | 'delete';
 
@@ -137,15 +138,6 @@ function toProjectRelative(projectRoot: string, cwd: string | undefined, targetP
   return { relative: normalizeSlashes(rel) };
 }
 
-function readWorkItem(projectRoot: string, workItemId: string): any | null {
-  try {
-    const wiPath = path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId, 'work_item.json');
-    return JSON.parse(fs.readFileSync(wiPath, 'utf-8'));
-  } catch {
-    return null;
-  }
-}
-
 function readRuntimeState(projectRoot: string): any | null {
   try {
     const statePath = path.join(projectRoot, SPEC_DIR_NAME, 'runtime', 'state.json');
@@ -213,9 +205,17 @@ export function enforceRuntimeWriteGuardForShell(input: {
     return { checked: true, allowed: false, targets, violations: ['no active work_item_id for shell write command'], hard_stop: false };
   }
 
-  const wi = readWorkItem(input.projectRoot, input.workItemId);
-  if (!wi) {
-    return { checked: true, allowed: false, targets, violations: ['work_item.json not found for shell write guard'], hard_stop: true };
+  let wi: any;
+  try {
+    wi = readWorkItemMetadataSync(workItemDir(input.projectRoot, input.workItemId), input.workItemId);
+  } catch (error) {
+    return {
+      checked: true,
+      allowed: false,
+      targets,
+      violations: [error instanceof Error ? error.message : String(error)],
+      hard_stop: false,
+    };
   }
 
   const actor = isKnownActorRole(input.callerRole) ? input.callerRole : ACTOR_ROLES.agent;

@@ -612,16 +612,18 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
   });
 
   it('full lifecycle: create WI → permission → write guard → audit → close_gate → closed', async () => {
-    const workItemId = 'WI-E2E-001';
+    const workItemId = 'WI-9001';
     const wiDir = path.join(tmpDir, '.specforge', 'work-items', workItemId);
     await fs.mkdir(wiDir, { recursive: true });
     await fs.mkdir(path.join(wiDir, 'evidence'), { recursive: true });
     await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
+    await fs.mkdir(path.join(wiDir, 'candidates'), { recursive: true });
 
     // --- Phase 1: Create WI ---
     const workItem: Record<string, unknown> = {
+      schema_version: '1.1',
       work_item_id: workItemId,
-      status: 'verification_done', // Pre-set for close_gate test
+      workflow_type: 'quick_change',
       code_change_allowed: true,
       allowed_write_files: [
         { path: 'src/main.ts', operation: 'modify' },
@@ -667,11 +669,43 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
     await fs.writeFile(path.join(wiDir, 'intake.md'), '# Intake');
     await fs.writeFile(path.join(wiDir, 'change_classification.md'), '# CC\ncode_only');
     await fs.writeFile(path.join(wiDir, 'impact_analysis.md'), '# IA');
-    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({ work_item_id: workItemId, workflow_path: 'code_only_fast_path', triggered: true, classification: { requirement_changed: false, acceptance_criteria_changed: false, business_rule_changed: false, user_visible_behavior_changed: false, data_semantics_changed: false, design_changed: false, module_boundary_changed: false, api_contract_changed: false, architecture_changed: false, unknowns: [] } }));
+    await fs.writeFile(path.join(wiDir, 'trigger_result.json'), JSON.stringify({
+      work_item_id: workItemId,
+      workflow_path: 'code_only_fast_path',
+      triggered: true,
+      classification: {
+        requirement_changed: false,
+        acceptance_criteria_changed: false,
+        business_rule_changed: false,
+        user_visible_behavior_changed: false,
+        data_semantics_changed: false,
+        design_changed: false,
+        module_boundary_changed: false,
+        api_contract_changed: false,
+        architecture_changed: false,
+        data_model_changed: false,
+        module_contract_changed: false,
+        unknowns: [],
+      },
+      impact_scope: {
+        affected_modules: [],
+        architecture_refs: [],
+        data_model_refs: [],
+        design_refs: [],
+        project_contract_refs: [],
+        module_contract_refs: [],
+        planned_code_paths: ['src/main.ts', 'src/helper.ts'],
+      },
+    }));
     await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
+    await fs.writeFile(path.join(wiDir, 'candidates', 'tasks.md'), '# Tasks\n- [x] Done');
     await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nNo spec impact');
     await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }));
     await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n- Overall Status: passed');
+    await fs.writeFile(
+      path.join(wiDir, 'gates', 'formal_version_gate.json'),
+      JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }),
+    );
     await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (3 entries, 2 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |\n| src/helper.ts | create | in_scope |');
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
@@ -688,7 +722,7 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
     ) as Record<string, unknown>;
 
     // --- Phase 5: Verify closure ---
-    expect(result.success).toBe(true);
+    expect(result.success, JSON.stringify(result, null, 2)).toBe(true);
     expect(result.state_advanced).toBe(true);
     expect(result.code_permission_revoked).toBe(true);
 

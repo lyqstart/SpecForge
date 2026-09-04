@@ -2,7 +2,7 @@
  * sf_state_transition handler unit tests
  *
  * Covers the current v1.1/v1.2 architecture:
- *  - project initialization guard (manifest.json) on the create transition
+ *  - project initialization guard (project/spec_manifest.json) on the create transition
  *  - StateManager authority: transitions route through
  *    projectManager.getProjectStateManager().transition() (NOT
  *    workflowEngine.transitionFull, which was removed to avoid a dual state writer)
@@ -61,7 +61,6 @@ async function writeManifest(
   const specforgeDir = path.join(dir, ".specforge");
   const projectDir = path.join(specforgeDir, "project");
   await fs.mkdir(projectDir, { recursive: true });
-  await fs.writeFile(path.join(specforgeDir, "manifest.json"), "{}");
   await fs.writeFile(
     path.join(projectDir, "spec_manifest.json"),
     JSON.stringify(
@@ -78,6 +77,28 @@ async function writeManifest(
 
 function wiDirFor(root: string, wiId: string): string {
   return path.join(root, ".specforge", "work-items", wiId);
+}
+
+async function writeCurrentWorkItem(
+  root: string,
+  workItemId: string,
+  workflowType = "feature_spec",
+  workflowPath = "requirement_change_path",
+): Promise<string> {
+  const wiDir = wiDirFor(root, workItemId);
+  await fs.mkdir(wiDir, { recursive: true });
+  await fs.writeFile(
+    path.join(wiDir, "work_item.json"),
+    JSON.stringify({
+      schema_version: "1.1",
+      work_item_id: workItemId,
+      workflow_type: workflowType,
+      workflow_path: workflowPath,
+      code_change_allowed: false,
+      allowed_write_files: [],
+    }, null, 2) + "\n",
+  );
+  return wiDir;
 }
 
 // =========================================================================
@@ -109,7 +130,7 @@ describe("sf_state_transition - project initialization guard", () => {
     }
   });
 
-  it("returns PROJECT_NOT_INITIALIZED when creating a WI (from=''->created) without manifest.json", async () => {
+  it("routes all create attempts to the dedicated Work Item create owner without writing", async () => {
     const { deps } = makeStateManagerDeps();
 
     const result = await handler(
@@ -119,8 +140,8 @@ describe("sf_state_transition - project initialization guard", () => {
     );
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("PROJECT_NOT_INITIALIZED");
-    expect(result.recovery_action).toBe("execute_startup_flow");
+    expect(result.code).toBe("WORK_ITEM_CREATE_TOOL_REQUIRED");
+    await expect(fs.access(wiDirFor(tempDir, "WI-0001"))).rejects.toBeTruthy();
   });
 
   it("rejects the legacy from=''->intake transition (v1.1 uses 'created')", async () => {
@@ -137,8 +158,9 @@ describe("sf_state_transition - project initialization guard", () => {
   });
 
   it("does NOT apply the init guard to a non-create transition (guard is create-only)", async () => {
-    // No manifest.json; a non-empty fromState must skip the manifest guard.
+    // No current Project Spec; a non-empty fromState must skip the create guard.
     const { deps, smTransition } = makeStateManagerDeps();
+    await writeCurrentWorkItem(tempDir, "WI-0001");
 
     const result = await handler(
       { work_item_id: "WI-0001", from_state: "intake_ready", to_state: "impact_analyzing" },
@@ -150,21 +172,6 @@ describe("sf_state_transition - project initialization guard", () => {
     expect(result.success).toBe(true);
     expect(smTransition).toHaveBeenCalledTimes(1);
   });
-
-  it("proceeds with creation when manifest.json exists", async () => {
-    await writeManifest(tempDir);
-    const { deps, smTransition } = makeStateManagerDeps();
-
-    const result = await handler(
-      { work_item_id: "WI-0001", from_state: "", to_state: "created", workflow_type: "feature_spec" },
-      { directory: tempDir },
-      deps,
-    );
-
-    expect(result.success).toBe(true);
-    expect(smTransition).toHaveBeenCalledTimes(1);
-  });
-
 
 });
 
@@ -188,6 +195,11 @@ describe("sf_state_transition - StateManager authority and transition contract",
     );
     await fs.mkdir(tempDir, { recursive: true });
     await writeManifest(tempDir);
+    await Promise.all(
+      ["WI-0001", "WI-0002", "WI-0003", "WI-0004", "WI-0007"].map(
+        workItemId => writeCurrentWorkItem(tempDir, workItemId),
+      ),
+    );
   });
 
   afterEach(async () => {
@@ -308,8 +320,7 @@ describe("sf_state_transition - StateManager authority and transition contract",
 
   it("blocks implementation_running -> implementation_done without a passing changed_files_audit.md", async () => {
     const { deps, smTransition } = makeStateManagerDeps();
-    // WI dir exists but has no changed_files_audit.md
-    await fs.mkdir(wiDirFor(tempDir, "WI-0004"), { recursive: true });
+    // Current WI exists but has no changed_files_audit.md.
 
     const result = await handler(
       {
@@ -363,8 +374,8 @@ describe("sf_state_transition - spec_migration verification recovery", () => {
       path.join(wiDir, "work_item.json"),
       JSON.stringify(
         {
+          schema_version: "1.1",
           work_item_id: workItemId,
-          status: "verification_done",
           workflow_type: "spec_migration",
           workflow_path: "spec_migration_path",
         },
@@ -484,6 +495,7 @@ describe("sf_state_transition - close (verification_done -> closed)", () => {
     );
     await fs.mkdir(tempDir, { recursive: true });
     await writeManifest(tempDir);
+    await writeCurrentWorkItem(tempDir, "WI-0001");
   });
 
   afterEach(async () => {
@@ -596,116 +608,6 @@ describe("sf_state_transition - close (verification_done -> closed)", () => {
     expect(result.seal_transition).toBe(true);
     expect(result.required_actor).toBe("close_gate");
     expect(smTransition).not.toHaveBeenCalled();
-  });
-});
-
-// =========================================================================
-// Regression: sf_state_transition create path (from=""->created) must
-// initialize lifecycle files without synthesizing duplicate root tasks/trace
-// placeholders. Those artifacts are authored only under candidates/.
-// =========================================================================
-
-describe("sf_state_transition - closure file initialization on create", () => {
-  let tempDir: string;
-  let handler: (...args: any[]) => Promise<any>;
-
-  beforeAll(() => {
-    handler = getHandler("sf_state_transition")!;
-    expect(handler).toBeDefined();
-  });
-
-  beforeEach(async () => {
-    tempDir = path.join(
-      os.tmpdir(),
-      `sf-st-closure-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-    );
-    await fs.mkdir(tempDir, { recursive: true });
-    // Simulate an initialized project (manifest.json present)
-    await writeManifest(tempDir);
-  });
-
-  afterEach(async () => {
-    try {
-      await fs.rm(tempDir, { recursive: true, force: true });
-    } catch {
-      // Ignore cleanup errors
-    }
-  });
-
-  // Non-Candidate lifecycle files initialized at the WI root.
-  const REQUIRED_ROOT_FILES = [
-    "work_item.json",
-    "change_classification.md",
-    "impact_analysis.md",
-    "trigger_result.json",
-    "candidate_manifest.json",
-    "gate_summary.md",
-    "merge_report.md",
-  ];
-
-  it("creates lifecycle files without duplicate root tasks/trace placeholders", async () => {
-    const { deps } = makeStateManagerDeps();
-
-    await handler(
-      { work_item_id: "WI-0001", from_state: "", to_state: "created", workflow_type: "feature_spec" },
-      { directory: tempDir },
-      deps,
-    );
-
-    const wiDir = wiDirFor(tempDir, "WI-0001");
-    for (const f of REQUIRED_ROOT_FILES) {
-      await fs.access(path.join(wiDir, f));
-    }
-    await expect(fs.access(path.join(wiDir, "tasks.md"))).rejects.toBeTruthy();
-    await expect(fs.access(path.join(wiDir, "trace_delta.md"))).rejects.toBeTruthy();
-    await expect(fs.access(path.join(wiDir, "verification_report.md"))).rejects.toBeTruthy();
-    await expect(
-      fs.access(path.join(wiDir, "evidence", "evidence_manifest.json")),
-    ).rejects.toBeTruthy();
-  });
-
-  it("backfills lifecycle files without synthesizing Candidate artifacts", async () => {
-    const wiDir = wiDirFor(tempDir, "WI-0002");
-    await fs.mkdir(wiDir, { recursive: true });
-    // Pre-existing work_item.json but NO closure files — reproduces the defect
-    // (and the manual-deletion recovery scenario).
-    await fs.writeFile(
-      path.join(wiDir, "work_item.json"),
-      JSON.stringify({ work_item_id: "WI-0002", workflow_type: "feature_spec" }),
-    );
-
-    const { deps } = makeStateManagerDeps();
-
-    await handler(
-      { work_item_id: "WI-0002", from_state: "", to_state: "created", workflow_type: "feature_spec" },
-      { directory: tempDir },
-      deps,
-    );
-
-    await expect(fs.access(path.join(wiDir, "tasks.md"))).rejects.toBeTruthy();
-    await expect(fs.access(path.join(wiDir, "trace_delta.md"))).rejects.toBeTruthy();
-  });
-
-  it("must NOT overwrite existing real closure content (create-if-missing)", async () => {
-    const wiDir = wiDirFor(tempDir, "WI-0003");
-    await fs.mkdir(wiDir, { recursive: true });
-    await fs.writeFile(
-      path.join(wiDir, "work_item.json"),
-      JSON.stringify({ work_item_id: "WI-0003" }),
-    );
-    const realTasks = "# Tasks\n\nTASK-1 real authored content";
-    await fs.writeFile(path.join(wiDir, "tasks.md"), realTasks);
-
-    const { deps } = makeStateManagerDeps();
-
-    await handler(
-      { work_item_id: "WI-0003", from_state: "", to_state: "created", workflow_type: "feature_spec" },
-      { directory: tempDir },
-      deps,
-    );
-
-    const after = await fs.readFile(path.join(wiDir, "tasks.md"), "utf-8");
-    expect(after).toBe(realTasks);
   });
 });
 

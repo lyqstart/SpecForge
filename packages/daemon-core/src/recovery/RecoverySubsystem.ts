@@ -18,12 +18,15 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { v7 as uuidv7 } from 'uuid';
 import { Event, ProjectState, ConsistencyCheckResult, ConsistencyIssue, RepairResult } from '../types';
 import { WAL } from '../wal';
 import { StateManager } from '../state/StateManager';
 import { IPathResolver } from '../daemon/path-resolver';
 import { SessionRegistry } from '../session/SessionRegistry';
+import {
+  deserializeRuntimeCheckpoint,
+  serializeRuntimeCheckpoint,
+} from '../state/runtime-schema-descriptors';
 
 export interface SessionReconnectResult {
   success: boolean;
@@ -254,22 +257,23 @@ export class RecoverySubsystem {
    * 2. missing_event: Remove stale state reference
    * 3. out_of_order: Reorder events and rebuild state
    * 
-   * CRITICAL: This method does NOT append repair events to events.jsonl.
-   * This ensures that after repair: rebuild(events) == s' holds.
-   * The repairEvents in the result are for audit/logging purposes only.
+   * Repair events are appended and fsynced through the Runtime WAL owner before
+   * the checkpoint is rebuilt. Therefore the repaired checkpoint includes the
+   * audit event and preserves rebuild(events) == s'.
    */
   async repairInconsistency(result: ConsistencyCheckResult): Promise<RepairResult> {
     const repairEvents: Event[] = [];
     
-    const { events } = this.wal
-      ? await this.wal.readAllEvents()
-      : { events: await this.loadEvents() };
+    const runtimeWal = this.wal ?? new WAL(this.getEventsPath());
+    if (!this.wal) await runtimeWal.initialize();
+    const { events: originalEvents } = await runtimeWal.readAllEvents();
 
     let repairedState: ProjectState;
 
     for (const issue of result.issues) {
-      const repairEvent = await this.applyRepairRule(issue, events);
+      const repairEvent = this.applyRepairRule(issue, originalEvents, runtimeWal);
       if (repairEvent) {
+        await runtimeWal.appendEvent(repairEvent);
         repairEvents.push(repairEvent);
       }
     }
@@ -277,7 +281,8 @@ export class RecoverySubsystem {
     if (this.stateManager) {
       repairedState = await this.stateManager.rebuildState();
     } else {
-      repairedState = await this.rebuildFromEvents(events);
+      const { events: repairedEvents } = await runtimeWal.readAllEvents();
+      repairedState = await this.rebuildFromEvents(repairedEvents);
     }
 
     await this.writeState(repairedState);
@@ -292,19 +297,19 @@ export class RecoverySubsystem {
   /**
    * Apply a specific repair rule based on issue type
    */
-  private async applyRepairRule(issue: ConsistencyIssue, events: Event[]): Promise<Event | null> {
+  private applyRepairRule(issue: ConsistencyIssue, events: Event[], wal: WAL): Event | null {
     switch (issue.type) {
       case 'state_mismatch':
         // Rebuild state from events - this is the authoritative repair
-        return this.createRepairEvent('state_mismatch', `Rebuilt state from ${events.length} events`);
+        return this.createRepairEvent(wal, 'state_mismatch', `Rebuilt state from ${events.length} events`);
         
       case 'missing_event':
         // Remove stale state reference by rebuilding from valid events
-        return this.createRepairEvent('missing_event', `Removed stale reference to ${issue.affectedEventId}`);
+        return this.createRepairEvent(wal, 'missing_event', `Removed stale reference to ${issue.affectedEventId}`);
         
       case 'out_of_order':
         // Events will be reordered during rebuild
-        return this.createRepairEvent('out_of_order', `Fixed event ordering issue`);
+        return this.createRepairEvent(wal, 'out_of_order', 'Fixed event ordering issue');
         
       default:
         return null;
@@ -314,21 +319,17 @@ export class RecoverySubsystem {
   /**
    * Create a repair event
    */
-  private createRepairEvent(issueType: string, description: string): Event {
-    return {
-      eventId: uuidv7(),
-      ts: Date.now(),
-      projectId: this.projectPath,
-      action: 'recovery.repaired',
-      payload: {
+  private createRepairEvent(wal: WAL, issueType: string, description: string): Event {
+    return wal.createEvent(
+      this.projectPath,
+      'system',
+      'recovery.repaired',
+      {
         issueType,
         description,
       },
-      metadata: {
-        schemaVersion: this.schemaVersion,
-        source: 'daemon',
-      },
-    };
+      'recovery-subsystem',
+    );
   }
 
   /**
@@ -503,7 +504,7 @@ export class RecoverySubsystem {
   async loadState(): Promise<ProjectState> {
     try {
       const content = await fs.readFile(this.getStatePath(), 'utf-8');
-      return JSON.parse(content);
+      return deserializeRuntimeCheckpoint(JSON.parse(content) as unknown);
     } catch (error) {
       return this.createEmptyState();
     }
@@ -519,7 +520,10 @@ export class RecoverySubsystem {
     }
     const statePath = this.getStatePath();
     await fs.mkdir(path.dirname(statePath), { recursive: true });
-    await fs.writeFile(statePath, JSON.stringify(state, null, 2));
+    await fs.writeFile(
+      statePath,
+      JSON.stringify(serializeRuntimeCheckpoint(state), null, 2),
+    );
     
     // fsync to ensure durability
     const handle = await fs.open(statePath, 'a');

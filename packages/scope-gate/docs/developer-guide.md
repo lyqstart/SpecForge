@@ -1,4 +1,6 @@
-# Scope Gate Developer Guide
+# Scope Gate Developer Guide (Historical)
+
+> **历史资料，不是当前实现指南。** 下述 runtime registry/feature-flag 扩展模型已退出当前发布；新实现只能扩展 release/build evidence validator 闭环。
 
 This guide explains how to extend the Scope Gate module to support new capabilities, feature flags, validation rules, and scope tags.
 

@@ -260,7 +260,7 @@ export class WorkflowLoader {
   static BUILTIN_DIR = 'configs/workflows/builtin';
 
   /**
-   * Load all 8 builtin workflow definitions from the default directory
+   * Load the current release builtin workflow from the default directory
    * Called by Daemon during startup
    * @param builtinDir Optional override for builtin directory path
    * @returns Array of loaded workflow definitions
@@ -268,8 +268,8 @@ export class WorkflowLoader {
   async loadBuiltinWorkflows(builtinDir?: string): Promise<WorkflowDefinition[]> {
     const dir = builtinDir || WorkflowLoader.BUILTIN_DIR;
     try {
-      const definitions = await this.loadFromDirectory(dir);
-      return definitions;
+      const definition = await this.loadFromFile(path.join(dir, 'feature_spec.json'));
+      return [definition];
     } catch (error) {
       // Log but don't throw - daemon should still start
       console.warn(`Failed to load builtin workflows from ${dir}:`, error);
@@ -286,7 +286,7 @@ export class WorkflowLoader {
   async hotReload(dirPath?: string): Promise<number> {
     const dir = dirPath || WorkflowLoader.BUILTIN_DIR;
     this.clearLoadedDefinitions();
-    const definitions = await this.loadFromDirectory(dir);
+    const definitions = await this.loadBuiltinWorkflows(dir);
     return definitions.length;
   }
 

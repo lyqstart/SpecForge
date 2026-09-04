@@ -24,6 +24,7 @@ export type { ShutdownPriority, ShutdownTask, ShutdownTaskEntry } from "./shutdo
 
 // Handshake
 export type { HandshakeFile } from "./handshake.js";
+export { parseHandshakeFile } from "./handshake.js";
 
 // Healthcheck
 export type { HealthCheckResponse } from "./healthcheck.js";

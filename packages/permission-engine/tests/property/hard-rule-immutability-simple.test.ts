@@ -17,29 +17,18 @@ describe('Property 3: Hard Rule Immutability (Simplified)', () => {
   
   // Test configurations that should conflict with hard rules
   const conflictingConfigs = [
-    // Hard rule 1 conflicts - simple exact matches
+    { rules: [{ action: 'sf_state_transition', resource: '*', effect: 'allow' }] },
+    { rules: [{ action: 'agent.dispatch', resource: '*', effect: 'allow' }] },
     { rules: [{ action: 'gate.bypass', resource: '*', effect: 'allow' }] },
-    { rules: [{ action: 'gate.bypass', resource: 'gate:*', effect: 'allow' }] },
-    
-    // Hard rule 2 conflicts
     { rules: [{ action: 'verification.forge', resource: '*', effect: 'allow' }] },
-    
-    // Hard rule 5 conflicts
-    { rules: [{ action: 'code.execute', resource: '*', effect: 'allow' }] },
-    
-    // Hard rule 8 conflicts
-    { rules: [{ action: 'system.shutdown', resource: '*', effect: 'allow' }] },
-    
-    // Hard rule 9 conflicts
-    { rules: [{ action: 'data.corrupt', resource: '*', effect: 'allow' }] },
-    
-    // Multiple rule conflicts
-    { 
-      rules: [
-        { action: 'gate.bypass', resource: '*', effect: 'allow' },
-        { action: 'verification.forge', resource: '*', effect: 'allow' }
-      ] 
-    },
+    { rules: [{ action: 'config.read', resource: 'system.config:*', effect: 'allow' }] },
+    { rules: [{ action: 'write', resource: 'file:/etc/*', effect: 'allow' }] },
+    { rules: [{ action: 'data.export', resource: 'user.data:*', effect: 'allow' }] },
+    { rules: [{ action: 'agent.impersonate', resource: '*', effect: 'allow' }] },
+    { rules: [
+      { action: 'gate.bypass', resource: '*', effect: 'allow' },
+      { action: 'verification.forge', resource: '*', effect: 'allow' }
+    ] },
   ];
   
   // Test configurations that should NOT conflict with hard rules
@@ -132,11 +121,14 @@ describe('Property 3: Hard Rule Immutability (Simplified)', () => {
     it('should detect conflicts with key Agent Constitution rules', () => {
       // Test key hard rules with exact matches
       const testCases = [
-        { ruleId: 'hard-001', action: 'gate.bypass', resource: '*' },
-        { ruleId: 'hard-002', action: 'verification.forge', resource: '*' },
-        { ruleId: 'hard-005', action: 'code.execute', resource: '*' },
-        { ruleId: 'hard-008', action: 'system.shutdown', resource: '*' },
-        { ruleId: 'hard-009', action: 'data.corrupt', resource: '*' },
+        { ruleId: 'hard-002', action: 'sf_state_transition', resource: '*' },
+        { ruleId: 'hard-003', action: 'agent.dispatch', resource: '*' },
+        { ruleId: 'hard-004', action: 'gate.bypass', resource: '*' },
+        { ruleId: 'hard-005', action: 'verification.forge', resource: '*' },
+        { ruleId: 'hard-006', action: 'config.read', resource: 'system.config:*' },
+        { ruleId: 'hard-007', action: 'write', resource: 'file:/etc/*' },
+        { ruleId: 'hard-008', action: 'data.export', resource: 'user.data:*' },
+        { ruleId: 'hard-009', action: 'agent.impersonate', resource: '*' },
       ];
       
       for (const testCase of testCases) {
@@ -168,10 +160,10 @@ describe('Property 3: Hard Rule Immutability (Simplified)', () => {
       // Create a config with multiple conflicting rules
       const config = {
         rules: [
-          { action: 'gate.bypass', resource: '*', effect: 'allow' }, // priority 100
-          { action: 'verification.forge', resource: '*', effect: 'allow' }, // priority 100
-          { action: 'system.shutdown', resource: '*', effect: 'allow' }, // priority 70
-          { action: 'data.corrupt', resource: '*', effect: 'allow' }, // priority 60
+          { action: 'sf_state_transition', resource: '*', effect: 'allow' }, // hard-002 priority 100
+          { action: 'agent.dispatch', resource: '*', effect: 'allow' }, // hard-003 priority 95
+          { action: 'gate.bypass', resource: '*', effect: 'allow' }, // hard-004 priority 90
+          { action: 'data.export', resource: 'user.data:*', effect: 'allow' }, // hard-008 priority 80
         ]
       };
       

@@ -106,7 +106,7 @@ Layer 3 ✅  下游消费方能基于此产物完成自己的工作    ← 这�
 | sf-debugger | 失败的 task 重新跑 verification_command 真通过 |
 | sf-reviewer | review_report.md 列出的所有 finding 都能被 sf-executor 修复 |
 | sf-verifier | verification_report.md 含真实命令输出，sf-orchestrator 能据此 pass/fail |
-| sf-knowledge | 知识库新条目能通过 sf_knowledge_query 查到且非重复 |
+| sf-knowledge | 知识库新条目通过 sf_knowledge_base 的受控接口写入且非重复 |
 
 ---
 

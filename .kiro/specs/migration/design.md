@@ -1,5 +1,29 @@
 # Design Document: Migration Subsystem
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-18, REQ-26, REQ-31, V6-ADR-014 and V6-ADR-015.
+- **Classification / status**: stable target is `CURRENT_RELEASE_SUPPORTING`; until Daemon startup and installer upgrade consume it, the package remains `BUILT_NOT_ENABLED`.
+- **Current scope**: explicit, versioned upgrades only inside the supported current-product schema chain, with backup, rollback, validation and fail-closed behavior.
+- **Excluded**: V5/legacy project detection, format guessing, old path import, compatibility write and implicit cleanup must not enter the current artifact.
+
+```text
+MIGRATION_SCRIPT_TRUST=RELEASE_MANIFEST_HASH_BOUND
+MIGRATION_FAILURE_POLICY=FAIL_CLOSED
+MIGRATION_PRECHECK_WRITE=FORBIDDEN
+MIGRATION_CHAIN_GAP=FAIL_CLOSED
+SCHEMA_VERSION_AUTHORITY=PER_FILE_CONTRACT
+```
+
+- **Trust boundary**: `~/.specforge/migrations/` is storage, not authority. Only installer-installed assets registered in the formal release manifest and verified by size and SHA-256 may execute; arbitrary directory discovery is outside the current release.
+- **Precheck boundary**: version detection and chain selection are read-only. Backup directories are created only after a complete continuous trusted chain has been selected.
+- **Failure boundary**: a missing/gapped chain, asset mismatch, backup failure, execution failure, validation failure, rollback failure, or audit failure blocks Daemon startup and installer upgrade commit.
+- **Version representation**: each persistent-file owner registers its exact current schema id and directed transitions. The coordinator has no global schema version and performs no generic semver or alias inference across file families.
+- **Implemented precheck API**: `precheckSchemaDescriptors(root, descriptors)` is read-only and returns one check per owner descriptor with `current`, `migration_required`, `missing_optional`, or `blocked`. Descriptor paths are constrained to the supplied root; duplicate IDs, invalid content, inconsistent JSONL schema IDs, ambiguous/cyclic/gapped transitions, and escaping paths fail closed.
+- **First production consumer**: `ProjectManager.registerProject(projectPath)` checks the Project Spec owner's `.specforge/project/spec_manifest.json@1.0` descriptor before creating the runtime directory. This is project registration, not process startup, because the shared Daemon has no project path at process start.
+- **Connected owners**: Project Spec manifest, project configuration, Project Registry, and the Observability policy are consumed by `ProjectManager.registerProject()`; Runtime checkpoint and WAL are consumed at the tighter `StateManager.initialize()` boundary before the first Runtime write.
+- **Remaining enablement**: Work Item, governance evidence, observability event/payload stores, and user-level owners still need explicit descriptors; installer upgrade still needs its verified transaction hook. Until those are covered, the subsystem is partially enabled rather than release-complete.
+
 ## Overview
 
 This design document specifies the implementation of the **Migration Subsystem** module for SpecForge V6. The Migration Subsystem handles schema versioning, automatic migration scripts, and recovery repair logic to ensure data consistency across version upgrades and system crashes.

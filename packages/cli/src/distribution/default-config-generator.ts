@@ -4,29 +4,27 @@
  * Generates the default config.yaml for fresh installations by:
  * 1. Building a base configuration from the configuration spec
  * 2. Injecting schema_version: "1.0" at the top
- * 3. Setting all P1/P2 feature flags to false (Property 15)
+ * 3. Omitting capabilities outside the current release boundary
  * 
  * Requirements: 4.2, 4.5
  * Property: 15 (Scope Boundary - P1/P2 flags default to false)
  */
 
 import { DEFAULT_CONFIG, CONFIG_SCHEMA_VERSION } from '@specforge/configuration';
-import scopeGateExports from './scope-gate-bridge';
 
 /**
  * 生成默认配置 YAML 字符串
  * 
- * 此函数是 `specforge init` 写入 <OpenCode config>/sf-user/config/config.yaml 的唯一来源。
+ * 此函数是 `specforge init` 写入 ~/.specforge/config/config.yaml 的唯一来源。
  * 
  * 流程：
  * 1. 从 @specforge/configuration 获取默认配置对象
  * 2. 强制注入 schema_version: "1.0" 到顶部
- * 3. 遍历 ScopeGateExports.p1p2FlagKeys，将每个 flag 设置为 false
- * 4. 序列化为 YAML 字符串
+ * 3. 序列化为 YAML 字符串
  * 
  * 约束：
  * - schema_version 必须在文件顶部（第一个键）
- * - 所有 P1/P2 flags 必须显式设置为 false（Property 15）
+ * - 当前发布范围外能力不得进入配置；运行时 feature flag 不能启用它们
  * - 输出必须是合法的 YAML（可被 yaml parser 解析）
  * 
  * @returns YAML 字符串，供 FilesystemAdapter.writeAtomic 写入
@@ -44,16 +42,8 @@ export function generateDefaultConfig(): string {
       ...baseConfig,
     };
     
-    // 3. 获取所有 P1/P2 feature flag keys
-    const p1p2FlagKeys = scopeGateExports.p1p2FlagKeys;
-    
-    // 4. 将所有 P1/P2 flags 设置为 false
-    // 这是 Property 15（Scope Boundary）的核心实现
-    for (const flagKey of p1p2FlagKeys) {
-      (configWithSchema as Record<string, unknown>)[flagKey] = false;
-    }
-    
-    // 5. 序列化为 YAML 字符串
+    // 3. 序列化为 YAML 字符串。范围外能力不会以关闭的运行时
+    // feature flag 形式写入配置；发布门禁在构建阶段阻止其进入 artifact。
     const yamlString = serializeToYaml(configWithSchema);
     
     return yamlString;
@@ -61,7 +51,7 @@ export function generateDefaultConfig(): string {
     const message = error instanceof Error ? error.message : String(error);
     throw new Error(
       `Failed to generate default configuration: ${message}. ` +
-      `This is a critical error as it prevents creating <OpenCode config>/sf-user/config/config.yaml.`
+      `This is a critical error as it prevents creating ~/.specforge/config/config.yaml.`
     );
   }
 }
@@ -158,7 +148,7 @@ function serializeKeyValue(key: string, value: unknown, indentLevel: number): st
  * 
  * 此函数用于测试和调试，确保生成的 YAML：
  * 1. schema_version 在第一行
- * 2. 所有 P1/P2 flags 都存在且为 false
+ * 2. 不包含可绕过构建期发布边界的 runtime enable_* flags
  * 
  * @param yamlString - 生成的 YAML 字符串
  * @returns 验证结果
@@ -189,12 +179,9 @@ export function validateGeneratedYaml(yamlString: string): {
     );
   }
   
-  // 检查所有 P1/P2 flags 是否存在且为 false
-  const p1p2FlagKeys = scopeGateExports.p1p2FlagKeys;
-  for (const flagKey of p1p2FlagKeys) {
-    const flagPattern = new RegExp(`^${flagKey}:\\s*false\\s*$`, 'm');
-    if (!flagPattern.test(yamlString)) {
-      errors.push(`P1/P2 flag '${flagKey}' must be set to false`);
+  for (const line of lines) {
+    if (/^enable_[^:]+\s*:/.test(line)) {
+      errors.push(`Runtime feature flag is outside the current release boundary: ${line}`);
     }
   }
   
@@ -208,4 +195,3 @@ export function validateGeneratedYaml(yamlString: string): {
  * 默认导出：生成默认配置的主函数
  */
 export default generateDefaultConfig;
-

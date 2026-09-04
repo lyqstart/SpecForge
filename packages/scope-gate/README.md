@@ -1,125 +1,26 @@
 # @specforge/scope-gate
 
-Scope Gate module for SpecForge V6 - Enforces P0/P1/P2 scope boundaries.
+`@specforge/scope-gate` 是 SpecForge V6 当前发布的构建期/发布期一致性门禁。
 
-## Overview
+它从 V6 requirements、design 和当前 release matrix 投影发布权威，并校验 package exports、clean build、运行时产物、安装清单、插件资产、动态 registry 与各 owner snapshot 是否属于同一个候选版本和同一份权威字节。
 
-The Scope Gate is a **P0 enforcement module** within the SpecForge V6 architecture. Its primary responsibility is to **enforce the P0/P1/P2 scope boundaries** defined in REQ-25 of the parent V6 architecture specification.
+## 当前职责
 
-## Features
+- 投影并绑定当前发布权威文件的 SHA256；
+- 归一化发布权威和 artifact inventory；
+- 构建 package、build artifact 和 owner snapshot 表面报告；
+- 对 missing、unexpected、重复、来源漂移和证据不完整执行 fail closed；
+- 为正式 release precheck 提供唯一 Scope Gate 判断入口。
 
-- **Scope Boundary Enforcement**: Ensures P1/P2 capabilities are disabled by default in V6.0
-- **Runtime Scope Checking**: Enforces scope boundaries at runtime with clear error messages
-- **Feature Flag Integration**: Supports enabling P1/P2 capabilities via explicit feature flags
-- **Audit Logging**: Logs all scope-related decisions and violations to events.jsonl
-- **Static Validation**: Performs static analysis to detect scope boundary violations
-- **Parent Spec Integration**: Integrates with parent V6 architecture specification
+## 非职责
 
-## Installation
+本包不进入业务 Runtime，不管理 capability registry，不提供 P1/P2 runtime feature flags，也不提供 scope-context、feature-flag 或 scope-tag CLI。范围外能力必须在构建/发布阶段退出 artifact，不能依赖“默认关闭”实现隔离。
 
-```bash
-bun install @specforge/scope-gate
-```
+当前权威边界见：
 
-## Usage
+- `.kiro/specs/v6-architecture-overview/requirements.md`
+- `.kiro/specs/v6-architecture-overview/design.md`
+- `docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md`
+- `docs/adr/ADR-013-current-release-boundary-and-no-legacy-compatibility.md`
 
-### Basic Usage
-
-```typescript
-import { ScopeRegistry, RuntimeScopeChecker } from '@specforge/scope-gate';
-
-// Initialize scope registry
-const registry = new ScopeRegistry();
-await registry.loadFromParentSpec('../v6-architecture-overview/requirements.md');
-
-// Check capability availability
-const context = {
-  releaseBranch: 'v6.0',
-  featureFlags: new Set(),
-  environment: 'production'
-};
-
-const result = registry.isAvailable('some-p1-capability', context);
-console.log(result.available); // false for P1/P2 capabilities in V6.0
-```
-
-### Runtime Scope Checking
-
-```typescript
-import { guardCapability } from '@specforge/scope-gate';
-
-class MyService {
-  @guardCapability('some-p1-capability')
-  async doSomething() {
-    // This method will throw ScopeError if capability is unavailable
-    return 'result';
-  }
-}
-```
-
-## Development Tools
-
-### CLI Tools
-
-The package provides four CLI tools for managing scope boundaries:
-
-| Tool | Purpose |
-|------|---------|
-| `capability-list` | List all registered capabilities with scope tags |
-| `feature-flag` | Manage feature flags for P1/P2 capabilities |
-| `scope-context` | Inspect current scope context |
-| `scope-validate` | Validate scope tags in code and specs |
-
-See [CLI Documentation](./docs/cli.md) for detailed usage.
-
-### Setup
-
-```bash
-# Install dependencies
-bun install
-
-# Build the project
-bun run build
-
-# Run tests
-bun run test
-
-# Run property-based tests
-bun run test:property
-
-# Run with watch mode
-bun run dev
-```
-
-### Testing Strategy
-
-This module uses comprehensive testing including:
-
-1. **Unit Tests**: Test individual components
-2. **Property-Based Tests**: Verify universal properties using fast-check
-3. **Integration Tests**: Test integration with other modules
-4. **End-to-End Tests**: Complete workflow scenarios
-
-### Property-Based Tests
-
-Key property-based tests include:
-
-- **Property 15**: P1/P2 capabilities disabled by default in V6.0
-- **Property SG-1**: Consistent scope tagging
-- **Property SG-2**: Feature flag determinism
-- **Property SG-3**: Audit trail completeness
-- **Property SG-4**: No silent failures
-
-## API Documentation
-
-See [CLI Documentation](./docs/cli.md) for CLI tool usage.
-
-See [API Documentation](./docs/api.md) for detailed API reference.
-
-## Contributing
-
-See [Contributing Guidelines](./CONTRIBUTING.md) for development guidelines.
-
-## License
-
-MIT
+历史 `docs/` 与 `artifacts/` 记录保留用于审计，不代表当前可执行产品表面。

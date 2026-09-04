@@ -10,9 +10,8 @@
  */
 
 import { readFile, stat } from "node:fs/promises"
-import { existsSync, readFileSync } from "node:fs"
-import { join, resolve } from "node:path"
-import { homedir } from "node:os"
+import { existsSync } from "node:fs"
+import { join } from "node:path"
 import type {
   UserLevelManifest,
   FileEntry,
@@ -25,8 +24,6 @@ import { SUPPORTED_SCHEMA_VERSIONS } from "./types"
 import { InstallerError, InstallerErrorCode } from "./errors"
 import { computeSHA256, computeAgentConfigHash } from "./crypto"
 import { atomicWrite, atomicWriteFile } from "./atomic"
-import { SHARED_COMPONENT_REGISTRY } from "./registry"
-import { posixToNative } from "./paths"
 import type { DesiredState } from "./discovery"
 
 export interface ManifestHeaderError {
@@ -62,46 +59,9 @@ export function getUserManifestPath(userLevelDir: string): string {
   return join(userLevelDir, "specforge-manifest.json")
 }
 
-function getHomeLegacyManifestPath(): string {
-  return join(homedir(), ".specforge", "specforge-manifest.json")
-}
-
-function getConfiguredUserLevelDirectory(): string {
-  const explicitConfigDir = process.env.OPENCODE_CONFIG_DIR?.trim()
-  if (explicitConfigDir) {
-    return resolve(explicitConfigDir)
-  }
-
-  const xdgConfigHome = process.env.XDG_CONFIG_HOME?.trim()
-  if (xdgConfigHome) {
-    return resolve(join(xdgConfigHome, "opencode"))
-  }
-
-  return resolve(join(homedir(), ".config", "opencode"))
-}
-
-function sameFilesystemPath(left: string, right: string): boolean {
-  const normalizedLeft = resolve(left)
-  const normalizedRight = resolve(right)
-
-  return process.platform === "win32"
-    ? normalizedLeft.toLowerCase() === normalizedRight.toLowerCase()
-    : normalizedLeft === normalizedRight
-}
-
-function mayReadHomeLegacyManifest(userLevelDir: string): boolean {
-  return sameFilesystemPath(userLevelDir, getConfiguredUserLevelDirectory())
-}
-
 function resolveExistingManifestPath(userLevelDir: string): string | null {
   const canonicalPath = getUserManifestPath(userLevelDir)
   if (existsSync(canonicalPath)) return canonicalPath
-
-  if (mayReadHomeLegacyManifest(userLevelDir)) {
-    const homeLegacyPath = getHomeLegacyManifestPath()
-    if (existsSync(homeLegacyPath)) return homeLegacyPath
-  }
-
   return null
 }
 
@@ -145,6 +105,8 @@ const VALID_COMPONENT_TYPES: readonly ManagedComponentType[] = [
   "tool_lib",
   "plugin",
   "skill",
+  "workflow",
+  "runtime",
   "config",
   "template",
   "other",
@@ -391,6 +353,8 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
     "tool_lib",
     "plugin",
     "skill",
+    "workflow",
+    "runtime",
     "config",
     "template",
     "other",
@@ -411,34 +375,27 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
   return true
 }
 
-function getSourceVersion(sourceDir: string): string {
-  const pkgPath = join(sourceDir, "package.json")
-  if (!existsSync(pkgPath)) return "0.0.0"
-  try {
-    const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"))
-    return pkg.version || "0.0.0"
-  } catch {
-    return "0.0.0"
-  }
+export interface InstalledManifestFile {
+  targetPath: string
+  type: ManagedComponentType
 }
 
 export async function buildUserManifest(
   userLevelDir: string,
   sourceAgents: Record<string, AgentConfig>,
-  sourceDir: string
+  version: string,
+  installFiles: readonly InstalledManifestFile[]
 ): Promise<UserLevelManifest> {
-  const version = getSourceVersion(sourceDir)
   const now = new Date().toISOString()
   const existingManifest = await readUserManifest(userLevelDir).catch(() => null)
 
   const files: Record<string, FileEntry> = {}
-  for (const entry of SHARED_COMPONENT_REGISTRY) {
-    const nativePath = posixToNative(entry.path)
-    const fullPath = join(userLevelDir, nativePath)
+  for (const entry of installFiles) {
+    const fullPath = join(userLevelDir, ...entry.targetPath.split("/"))
     if (existsSync(fullPath)) {
       const sha256 = await computeSHA256(fullPath)
       const fileStat = await stat(fullPath)
-      files[entry.path] = {
+      files[entry.targetPath] = {
         sha256,
         size: fileStat.size,
         type: entry.type,

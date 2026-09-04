@@ -46,13 +46,13 @@ interface SessionLifecycle {
  * consistent throughout the session lifecycle.
  */
 describe('Property 5: Session Identity Stability', () => {
-  it('should validate session identity stability across lifecycle', () => {
+  it('should validate session identity stability across lifecycle', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
     
     // Create a session
     const spawnIntentId = 'spawn-123';
-    const initialIdentity = registry.registerPending(
+    const initialIdentity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
@@ -68,7 +68,7 @@ describe('Property 5: Session Identity Stability', () => {
     expect(pendingLookup?.status).toBe('pending');
     
     // Activate the session
-    const activatedIdentity = registry.activate(sessionId, spawnIntentId);
+    const activatedIdentity = await registry.activate(sessionId, spawnIntentId);
     expect(activatedIdentity).toBeDefined();
     expect(activatedIdentity?.sessionId).toBe(sessionId);
     expect(activatedIdentity?.status).toBe('active');
@@ -80,7 +80,7 @@ describe('Property 5: Session Identity Stability', () => {
     expect(activeLookup?.status).toBe('active');
     
     // Terminate the session
-    const terminatedIdentity = registry.terminate(sessionId);
+    const terminatedIdentity = await registry.terminate(sessionId);
     expect(terminatedIdentity).toBeDefined();
     expect(terminatedIdentity?.sessionId).toBe(sessionId);
     expect(terminatedIdentity?.status).toBe('history');
@@ -96,13 +96,13 @@ describe('Property 5: Session Identity Stability', () => {
     expect(activeLookup?.sessionId).toBe(historyLookup?.sessionId);
   });
 
-  it('should not rely on agent field as identity key', () => {
+  it('should not rely on agent field as identity key', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
     
     // Create session with one agent role
     const spawnIntentId = 'spawn-123';
-    const identity1 = registry.registerPending(
+    const identity1 = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
@@ -110,11 +110,11 @@ describe('Property 5: Session Identity Stability', () => {
     );
     
     const sessionId = identity1.sessionId;
-    registry.activate(sessionId, spawnIntentId);
+    await registry.activate(sessionId, spawnIntentId);
     
     // Create another session with different agent role but same sessionId
     // (simulating what would happen if we used agent as key)
-    const identity2 = registry.registerPending(
+    const identity2 = await registry.registerPending(
       'sf-requirements',
       'spec-writer',
       'work-456',
@@ -134,13 +134,13 @@ describe('Property 5: Session Identity Stability', () => {
     expect(lookup2?.agentRole).toBe('sf-requirements');
   });
 
-  it('should maintain session tree via parentSessionId', () => {
+  it('should maintain session tree via parentSessionId', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
     
     // Create parent session
     const parentSpawnIntentId = 'parent-spawn-123';
-    const parentIdentity = registry.registerPending(
+    const parentIdentity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
@@ -149,7 +149,7 @@ describe('Property 5: Session Identity Stability', () => {
     
     // Create child session with parent
     const childSpawnIntentId = 'child-spawn-456';
-    const childIdentity = registry.registerPending(
+    const childIdentity = await registry.registerPending(
       'sf-orchestrator',
       'sub-agent',
       'work-123',
@@ -158,8 +158,8 @@ describe('Property 5: Session Identity Stability', () => {
     );
     
     // Activate both
-    registry.activate(parentIdentity.sessionId, parentSpawnIntentId);
-    registry.activate(childIdentity.sessionId, childSpawnIntentId);
+    await registry.activate(parentIdentity.sessionId, parentSpawnIntentId);
+    await registry.activate(childIdentity.sessionId, childSpawnIntentId);
     
     // Verify session tree
     const tree = registry.getSessionTree('work-123');
@@ -169,7 +169,7 @@ describe('Property 5: Session Identity Stability', () => {
     expect(tree[1].parentSessionId).toBe(parentIdentity.sessionId);
   });
 
-  it('should handle rapid session lifecycle transitions', () => {
+  it('should handle rapid session lifecycle transitions', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
     
@@ -178,7 +178,7 @@ describe('Property 5: Session Identity Stability', () => {
     
     for (let i = 0; i < 10; i++) {
       const spawnIntentId = `spawn-${i}`;
-      const identity = registry.registerPending(
+      const identity = await registry.registerPending(
         'sf-orchestrator',
         'requirements-phase-executor',
         `work-${i}`,
@@ -186,7 +186,7 @@ describe('Property 5: Session Identity Stability', () => {
       );
       
       sessions.push(identity);
-      registry.activate(identity.sessionId, spawnIntentId);
+      await registry.activate(identity.sessionId, spawnIntentId);
     }
     
     // Verify all sessions are active
@@ -202,13 +202,13 @@ describe('Property 5: Session Identity Stability', () => {
     }
   });
 
-  it('should maintain identity consistency after many operations', () => {
+  it('should maintain identity consistency after many operations', async () => {
     const eventBus = new EventBus();
     const registry = new SessionRegistry(eventBus);
     
     // Create a session
     const spawnIntentId = 'spawn-123';
-    const identity = registry.registerPending(
+    const identity = await registry.registerPending(
       'sf-orchestrator',
       'requirements-phase-executor',
       'work-123',
@@ -218,12 +218,12 @@ describe('Property 5: Session Identity Stability', () => {
     const sessionId = identity.sessionId;
     
     // Activate the session
-    const activated = registry.activate(sessionId, spawnIntentId);
+    const activated = await registry.activate(sessionId, spawnIntentId);
     expect(activated).toBeDefined();
     
     // Perform many operations
     for (let i = 0; i < 100; i++) {
-      registry.touch(sessionId);
+      await registry.touch(sessionId);
     }
     
     // Verify identity is still consistent

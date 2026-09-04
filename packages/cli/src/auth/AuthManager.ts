@@ -11,7 +11,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 
 // ============================================================================
 // Types
@@ -37,7 +37,7 @@ export interface DaemonHandshake {
  * Auth configuration options
  */
 export interface AuthManagerConfig {
-  /** Custom handshake file path (defaults to <OpenCode config>/sf-user/runtime/handshake.json) */
+  /** Custom handshake file path (defaults to ~/.specforge/runtime/daemon.sock.json) */
   handshakePath?: string;
   /** Skip file existence validation (for testing) */
   skipValidation?: boolean;
@@ -143,12 +143,11 @@ export class TokenExpiredError extends AuthError {
 // Constants
 // ============================================================================
 
-const DEFAULT_HANDSHAKE_FILENAME = 'handshake.json';
 /**
  * Get the default handshake file path
  */
 export function getDefaultHandshakePath(): string {
-  return path.join(getRuntimeDirPath(), DEFAULT_HANDSHAKE_FILENAME);
+  return resolveSpecForgeHandshakePath();
 }
 
 

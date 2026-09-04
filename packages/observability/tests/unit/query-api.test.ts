@@ -19,6 +19,18 @@ import { generateEventId } from '../../src/types/event-utils';
 import { mkdtemp, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
+import { DaemonWalFixtureEventLogger } from '../helpers/current-daemon-wal.js';
+
+function createActor(sessionId: string, agentRole = 'agent'): AgentIdentity {
+  return {
+    sessionId,
+    agentRole,
+    workflowRole: 'executor',
+    parentSessionId: null,
+    workItemId: 'work-item-1',
+    spawnIntentId: `spawn-${sessionId}`,
+  };
+}
 
 /**
  * Helper to create a test event
@@ -33,7 +45,7 @@ function createTestEvent(overrides: Partial<Event> = {}): Event {
     monotonicSeq: 1,
     projectId: 'test-project-1234',
     workItemId: 'work-item-1',
-    actor: { id: 'agent-1', name: 'TestAgent', type: 'test' },
+    actor: createActor('agent-1', 'test'),
     category: 'system',
     action: 'test.event',
     payload: { message: 'test' },
@@ -46,7 +58,7 @@ function createTestEvent(overrides: Partial<Event> = {}): Event {
  */
 function createPermissionDecisionEvent(overrides: Partial<PermissionDecisionEvent> = {}): PermissionDecisionEvent {
   const timestamp = Date.now() * 1_000_000;
-  const actor: AgentIdentity = { id: 'test-actor', name: 'TestActor', type: 'agent' };
+  const actor = createActor('test-actor');
   
   return {
     schema_version: '1.0',
@@ -76,7 +88,7 @@ function createPermissionDecisionEvent(overrides: Partial<PermissionDecisionEven
  */
 function createPermissionDenialEvent(overrides: Partial<PermissionDecisionEvent> = {}): PermissionDecisionEvent {
   const timestamp = Date.now() * 1_000_000;
-  const actor: AgentIdentity = { id: 'denied-actor', name: 'DeniedActor', type: 'agent' };
+  const actor = createActor('denied-actor');
   
   return {
     schema_version: '1.0',
@@ -112,7 +124,7 @@ describe('QueryAPI', () => {
     tempDir = await mkdtemp(join(tmpdir(), 'query-api-test-'));
     
     // Initialize EventLogger
-    eventLogger = new EventLogger(join(tempDir, 'events'));
+    eventLogger = new DaemonWalFixtureEventLogger(join(tempDir, 'events'));
     await eventLogger.initialize();
     
     // Initialize CAS
@@ -197,12 +209,12 @@ describe('QueryAPI', () => {
 
     it('should filter by actor id', async () => {
       const actorId = 'specific-actor';
-      await eventLogger.append(createTestEvent({ actor: { id: actorId, name: 'Specific', type: 'test' }, action: 'test.actor' }));
+      await eventLogger.append(createTestEvent({ actor: createActor(actorId, 'test'), action: 'test.actor' }));
       
-      const result = await queryAPI.queryEvents({ actor: { id: actorId } });
+      const result = await queryAPI.queryEvents({ actor: { sessionId: actorId } });
       
       expect(result.items.length).toBe(1);
-      expect(result.items[0].actor?.id).toBe(actorId);
+      expect(result.items[0].actor?.sessionId).toBe(actorId);
     });
 
     it('should apply pagination', async () => {
@@ -426,11 +438,11 @@ describe('QueryAPI', () => {
 
     it('should filter permission decisions by actor', async () => {
       const decisions = await queryAPI.queryPermissionDecisions({
-        actor: { id: 'test-actor' }
+        actor: { sessionId: 'test-actor' }
       });
       
       expect(decisions.length).toBe(1);
-      expect(decisions[0].payload.actor.id).toBe('test-actor');
+      expect(decisions[0].payload.actor.sessionId).toBe('test-actor');
     });
 
     it('should filter permission decisions by effect', async () => {

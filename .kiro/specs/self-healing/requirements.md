@@ -1,5 +1,9 @@
 # Requirements Document: Self-Healing Subsystem
 
+## Current Release Alignment
+
+The stable target is `CURRENT_RELEASE_SUPPORTING`, but the package remains `BUILT_NOT_ENABLED` until Daemon/Gate failure events consume its read-only Diagnose path. V6.0 artifact scope is Diagnose plus a structured report only. Propose/Approve/Apply/Verify states, rollback/application interfaces and P2 tests below are future design notes; they must not be exported, built, registered, installed or enabled by feature flag in the current release.
+
 ## Introduction
 
 This specification defines the **Self-Healing Subsystem** module for SpecForge V6. The Self-Healing Subsystem implements the automated diagnosis and repair capabilities for V6, following the `Diagnose → Propose → Approve → Apply → Verify` state machine defined in the parent architecture specification.

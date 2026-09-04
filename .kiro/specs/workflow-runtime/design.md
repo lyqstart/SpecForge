@@ -1,5 +1,12 @@
 # Design Document
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-22—REQ-25、REQ-31 与 V6-ADR-019。
+- **分类/状态**：`CURRENT_RELEASE_CORE`；源码活跃，但 stable 只允许部署并加载 `feature_spec`。
+- **当前范围**：`feature_spec` 编排、Gate 调度和 Work Item 状态推进；Candidate→Close 是共享治理生命周期，不是额外产品 workflow。
+- **依赖方向**：Daemon → workflow-runtime → 中立 Runtime contracts；必须移除 workflow-runtime → daemon-core 的实现反向依赖。其他 builtin workflow 属于 `BUILT_NOT_ENABLED`。
+
 ## Overview
 
 本设计文档描述 workflow runtime 的实现方案，专门实现 compositeGate 语义（Property 29）以及相关的基础 workflow 执行能力。

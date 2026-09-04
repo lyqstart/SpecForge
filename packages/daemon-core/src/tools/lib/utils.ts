@@ -236,27 +236,17 @@ export async function recordGateResult(
 }
 
 // ============================================================
-// Dynamic Import: Compatibility Check
+// Current Release Compatibility Boundary
 // ============================================================
 
 /**
- * Dynamically import and execute checkCompatibilityAtEntry.
- * On import or execution failure, logs the error and silently continues.
- * Never throws — safe to call at the start of any tool core function.
+ * Current releases have one supported project and user-level layout.
+ * Callers retain this hook while the tool surface converges, but it must not
+ * discover or execute retired compatibility adapters.
  */
 export async function tryCheckCompatibility(
-  baseDir: string,
-  component: string
+  _baseDir: string,
+  _component: string
 ): Promise<void> {
-  try {
-    // V6: compatibility check is handled by daemon, no-op here
-      const mod: any = null
-    if (mod && typeof mod.checkCompatibilityAtEntry === "function") {
-      mod.checkCompatibilityAtEntry(baseDir)
-    }
-  } catch (err) {
-    // Import or execution failed — log and silently continue
-    await logErrorToFile(baseDir, component, "dynamic_import_failed", err)
-  }
+  return
 }
-

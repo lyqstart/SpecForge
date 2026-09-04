@@ -1,5 +1,12 @@
 # Design Document: Observability
 
+## Current Release Alignment
+
+- **Parent authority**: V6 REQ-3, REQ-12, REQ-19, REQ-20, REQ-27, REQ-31 and design 0.3—0.6.
+- **Classification / status**: `CURRENT_RELEASE_CORE`; shared event/CAS contracts are active.
+- **Current scope**: structured telemetry, CAS contracts and diagnosis inputs; Daemon remains the sole owner of project WAL and `state.json`.
+- **Dependency direction**: capability packages may consume observability contracts, but observability must not create a second workflow or project-state authority.
+
 ## Overview
 
 This design document specifies the implementation of the **Observability** module for SpecForge V6. The Observability subsystem is a **first-class component** that provides comprehensive monitoring, logging, and analysis capabilities to achieve the North Star goal: "5 minutes from problem occurrence to root cause identification."

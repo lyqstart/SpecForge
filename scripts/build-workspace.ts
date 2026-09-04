@@ -1,27 +1,9 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { CURRENT_WORKSPACE_PACKAGES } from './lib/workspace-packages';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const bunExecutable = process.execPath;
-
-const packageBuildOrder = [
-  "types",
-  "version-unification",
-  "configuration",
-  "service-management",
-  "host-profile",
-  "self-healing",
-  "multimodal",
-  "observability",
-  "permission-engine",
-  "opencode-adapter",
-  "migration",
-  "scope-gate",
-  "workflow-runtime",
-  "plugin-loader",
-  "cli",
-  "daemon-core",
-];
 
 function runPackageBuild(packageName: string): void {
   const cwd = path.join(rootDir, "packages", packageName);
@@ -53,7 +35,7 @@ function runPackageBuild(packageName: string): void {
 console.log("[build-workspace] Deterministic workspace build start");
 console.log(`[build-workspace] Bun executable: ${bunExecutable}`);
 
-for (const packageName of packageBuildOrder) {
+for (const packageName of CURRENT_WORKSPACE_PACKAGES) {
   runPackageBuild(packageName);
 }
 

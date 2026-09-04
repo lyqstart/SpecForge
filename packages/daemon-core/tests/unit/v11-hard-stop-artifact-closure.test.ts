@@ -170,10 +170,10 @@ describe('7.1 hard_stop latch', () => {
     expect(guard.allowed).toBe(true);
   });
 
-  it('hard_stop allows sf_context_build', () => {
+  it('hard_stop does not special-case the removed sf_context_build tool', () => {
     setHardStop(projectRoot, 'WI-0001', 'BLOCKED', 'sf_code_permission');
     const guard = guardHardStop(projectRoot, 'WI-0001', 'sf_context_build');
-    expect(guard.allowed).toBe(true);
+    expect(guard.allowed).toBe(false);
   });
 
   it('hard_stop can be reset (admin action)', () => {
@@ -357,7 +357,7 @@ describe('7.2 artifact writer schema validation', () => {
 
     it('accepts valid metadata-only work_item.json', () => {
       const content = JSON.stringify({
-        schema_version: '1.0',
+        schema_version: '1.1',
         work_item_id: 'WI-0001',
       });
       const result = validateWorkItemJson(content, 'WI-0001');

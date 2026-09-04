@@ -1,6 +1,8 @@
 import { registerHandler, getHandler } from '../ToolDispatcher';
 import { getCurrentBranch } from '../lib/git-governance-core';
 
+const codePermissionHandler = getHandler('sf_v11_code_permission');
+
 function isReleaseLikeAction(action: string): boolean {
   return action === 'release' || action === 'enable' || action === 'extend' || action === 'append';
 }
@@ -24,7 +26,8 @@ registerHandler('sf_code_permission', async (args, context, deps) => {
     }
   }
 
-  const internal = getHandler('sf_v11_code_permission');
-  if (!internal) return { success: false, error: 'sf_v11_code_permission handler not registered' };
-  return internal(args, context, deps);
+  if (!codePermissionHandler) {
+    return { success: false, error: 'code permission implementation not registered' };
+  }
+  return codePermissionHandler(args, context, deps);
 });

@@ -1,5 +1,12 @@
 # Design Document
 
+## 当前发布对齐
+
+- **上游权威**：V6 REQ-25、REQ-27、REQ-31 与 design 0.3—0.7。
+- **分类/状态**：`CURRENT_RELEASE_SUPPORTING` 发布表面；当前安装集合尚未包含可验证的 `specforged`，因此不能宣称 stable。
+- **当前范围**：clean build、CLI/Daemon/Thin Plugin/获准资产的 manifest、安装、升级与真实烟雾验证。
+- **边界**：P1/P2 不得出现在正式 exports、build、installer、manifest 或 runtime；不存在“写成 false 后仍随包发布”的 feature-flag 例外。
+
 ## Overview
 
 Distribution（分发与安装）是 SpecForge V6.0 的 **W4 / M7** 模块，负责把 monorepo 中已实现的 `@specforge/*` 包打包发布到 npm registry，并在用户机器上通过 `specforge init` 一键搭起 `~/.specforge/` 目录骨架。
@@ -433,18 +440,9 @@ export interface InstallationRecord {
 
 写入路径：`~/.specforge/config/config.yaml`
 
-由 `configuration` spec 的 `buildDefaultConfig()` 生成，Distribution 不再自定义字段。本 spec 只在写入时**强制注入**：
-- `schema_version: "1.0"`（顶部，REQ-4.2 / Property 1）
-- 所有 P1/P2 feature flag 的初始值为 `false`（Property 15 / REQ-4.2）
+由 `configuration` spec 的 `buildDefaultConfig()` 生成，Distribution 不再自定义字段。本 spec 只在写入时强制注入 `schema_version: "1.0"`（顶部，REQ-4.2 / Property 1）。
 
-P1/P2 flag 列表来自父规范 REQ-25，由 `scope-gate` spec 暴露：
-
-```typescript
-export interface ScopeGateExports {
-  /** 父 REQ-25 中标记为 P1 / P2 的所有 feature flag 的稳定 key 列表 */
-  readonly p1p2FlagKeys: ReadonlyArray<string>;
-}
-```
+P1/P2 或其他 excluded capability 的配置 key 不得写入默认配置。Scope Gate 提供的是 release-set validation verdict，不向 Distribution 暴露可供运行时启用的 flag 列表；Distribution 必须用该 verdict 对 clean build、installer inputs 和 release manifest 失败关闭。
 
 Distribution 在生成默认 yaml 时遍历该列表逐个写 `<key>: false`（或省略；语义等价于关闭）。
 
@@ -563,7 +561,7 @@ Distribution 是一个混合特性：流水线层是纯函数（适合 PBT），
 按 prework 分类与 requirements.md "Testing Strategy" 的硬性锁定，本 spec **恰好 3 个 PBT**：
 
 1. Property 1（Schema Baseline Equality）— 承接父规范 Property 14 子条件
-2. Property 2（P1/P2 Default Off）— 承接父规范 Property 15
+2. Property 2（P1/P2 Artifact Exclusion）— 承接父规范 Property 15
 3. Property 3（Init Idempotency）— 本 spec 自有的合成属性
 
 其余 AC 由 EXAMPLE 单元测试、INTEGRATION 集成测试、SMOKE 配置审核覆盖（详见 Testing Strategy）。
@@ -588,22 +586,20 @@ Distribution 是一个混合特性：流水线层是纯函数（适合 PBT），
 - 验证写入侧用临时 HOME 跑 wizard，断言两个文件首尾的 `schema_version` 段
 - 验证校验侧用 `compareForHealthCheck` 纯函数
 
-### Property 2: P1/P2 Default Off
+### Property 2: P1/P2 Artifact Exclusion
 
-*For any* P1/P2 feature flag 集合 `F`（来自 `ScopeGateExports.p1p2FlagKeys`）和**任意** init 调用上下文 `c`（无 `--force` 或带 `--force` 但用户未自定义这些 key），`specforge init` 写入的默认 `config/config.yaml` 中：
+*For any* excluded capability `c` and artifact surface `s ∈ { exports, clean-build, registry, installer, release-manifest, default-config }`，将 `c` 注入 `s` 必须使 Distribution release validation 失败；对所有通过验证的产物，`c` 在全部表面均不存在。
 
-`∀ f ∈ F: parseYaml(yaml).getEffective(f) ∈ { false, undefined }`
-
-**含义**：未启用的 P1/P2 能力在用户可见路径上必须等价于"关闭"。`undefined`（key 完全不出现）等价于"关闭"，符合 configuration spec 的默认值合并语义。
+**含义**：当前发布边界由构建/安装集合强制，而不是由运行时默认值表达。`false` feature flag、不可达代码或未调用 export 都不等于退出 artifact。
 
 **Validates: Requirements 4.2**
 
-**Derived-From**: v6-architecture-overview Property 15。requirements.md 将"P1/P2 flag 默认关闭"具象化在 R4.2 默认 config 生成上（亦即 Inherited Architectural Properties 章节 Property 15 承接面）。
+**Derived-From**: v6-architecture-overview Property 15。requirements.md 将其具象化为 release-set 与 artifact surfaces 的精确一致。
 
-**测试落点**：`packages/cli/tests/property/distribution-property-15-scope-default-off.property.test.ts`，迭代 ≥ 100。
-- 用 `fast-check` 生成随机 P1/P2 flag 名称集合（含特殊字符、嵌套 key 如 `remote.api_key.enabled`）
-- 喂给 `wizard.generateDefaultConfig(flags)` 函数
-- 解析回 yaml，断言每个 flag 的 effective value 满足 `{ false, undefined }` 集合
+**测试落点**：Step 6 将旧 `distribution-property-15-scope-default-off.property.test.ts` 调整为 artifact-exclusion property test，迭代 ≥ 100；调整前的通过结果不构成当前合同证据。
+- 用 `fast-check` 生成 excluded capability × artifact surface 组合
+- 注入 release inventory 后断言 verdict 必定失败并精确指出 surface
+- 对通过的 default config 断言不存在可启用 excluded capability 的 key
 
 ### Property 3: Init Idempotency
 
@@ -625,7 +621,7 @@ Distribution 是一个混合特性：流水线层是纯函数（适合 PBT），
 | 候选 | 是否独立 | 处理 |
 |---|---|---|
 | Property 1（Baseline Equality） | ✅ 量词在 baseline × 磁盘状态 | 保留 |
-| Property 2（P1/P2 Default Off） | ✅ 量词在 P1/P2 flag 集合 | 保留 |
+| Property 2（P1/P2 Artifact Exclusion） | ✅ 量词在 excluded capability × artifact surface | 保留 |
 | Property 3（Init Idempotency） | ✅ 量词在预存 FS 状态 × flag 组合 | 保留 |
 | ~~"包格式验证"~~ | ❌ 收益不抵成本，行为是固定字段集合 + 正则 | 降级为 EXAMPLE 单元测 |
 | ~~"原子操作回滚"~~ | ❌ 不是 for-all 性质，是错误注入测 | 降级为 EDGE_CASE 单元测 |
@@ -734,7 +730,7 @@ if (verdict === "code_lower")  process.exit(4);   // 拒绝降级
 | 测试文件（`packages/cli/tests/property/`） | 承接 Property | 迭代 | Tag |
 |---|---|---|---|
 | `distribution-property-14-baseline-equality.property.test.ts` | Property 1 | ≥ 100 | `Feature: distribution, Property 1: Schema Baseline Equality; Derived-From: v6-architecture-overview Property 14` |
-| `distribution-property-15-scope-default-off.property.test.ts` | Property 2 | ≥ 100 | `Feature: distribution, Property 2: P1/P2 Default Off; Derived-From: v6-architecture-overview Property 15` |
+| Step 6 调整后的 artifact-exclusion PBT | Property 2 | ≥ 100 | `Feature: distribution, Property 2: P1/P2 Artifact Exclusion; Derived-From: v6-architecture-overview Property 15` |
 | `distribution-init-idempotent.property.test.ts` | Property 3 | ≥ 100 | `Feature: distribution, Property 3: Init Idempotency` |
 
 库选型：`fast-check`（与项目既有 PBT 一致，[lessons-injected.md] 推荐）。

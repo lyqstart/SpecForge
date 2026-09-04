@@ -7,7 +7,7 @@
 - **设计状态**：Accepted / AUTHORITATIVE
 - **产品实施状态**：动态状态不在本文件固化；以 `docs/implementation/architecture-consistency/current-handoff.md` 的当前执行状态和正式 Git / immutable evidence 为准。
 - **决策记录**：[`ADR-007-architecture-consistency-governance.md`](../adr/ADR-007-architecture-consistency-governance.md)、[`ADR-008-new-project-governance-bootstrap.md`](../adr/ADR-008-new-project-governance-bootstrap.md)
-- **权威性**：AUTHORITATIVE；唯一当前权威源定义见 1.2。
+- **权威性**：AUTHORITATIVE（仅限架构一致性治理与契约治理子系统）；与 V6 产品范围/产品架构的上下游边界见 1.2。
 - **取代**：`docs/archive/SpecForge治理架构完整修改方案-已取代.md`
 - **动态验证证据**：测试数量、commit、当前 Stage、Blocker、最新验证结果和实施进度属于运行事实，只进入 `current-handoff.md`、标准执行回执、Git 或 immutable evidence；不得复制到本权威文件形成会过期的“当前事实”。
 - **产品完成边界**：第 10 章 Phase 1—12 是首次实现本治理能力的一次性产品实施路线；首次宣布完成前必须通过 Phase 11 真实全新项目端到端验收，并在 Phase 12 固化最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
@@ -17,8 +17,9 @@
 > 状态：AUTHORITATIVE（唯一当前权威源）
 >
 > 本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。
+> 该唯一性只覆盖治理与契约治理子系统；V6 产品范围与产品架构分别由 V6 `requirements.md` / `design.md` 决定。
 > 其他设计草案、专项说明、实施报告、交接文件和决策记录，只保存历史背景、实施证据或决策原因，不得作为并列设计权威。
-> 任何其他文件与本文件冲突时，以本文件为准。任何新的架构或契约决策，必须先修订本文件，再修改实现。
+> 治理子系统内部的下游文件与本文件冲突时，以本文件为准；本文件与 V6 产品范围或产品架构冲突时，必须先报告并按上游产品权威修正本文件，不得用治理机制反向扩大当前产品范围。
 ### 1.2 唯一权威源
 
 **GOV-AUTH-001：** SpecForge 架构一致性治理和契约治理只保留一个当前权威源：
@@ -37,6 +38,27 @@ docs/design/specforge-design-governance-contract-model.md
 ```
 
 它们可以记录专项细节、实施事实、交接事项、备选方案和决策原因，但不能覆盖本文件。
+
+本文件自身是 V6 产品权威的治理消费者，固定权威链为：
+
+```text
+.kiro/specs/v6-architecture-overview/requirements.md（当前产品范围）
+→ .kiro/specs/v6-architecture-overview/design.md（当前产品架构）
+→ 本文件（治理子系统如何执行和阻断）
+→ Runtime / Tool / Gate / 测试（实现与验证）
+```
+
+**GOV-CURRENT-RELEASE-BOUNDARY-001：** 治理规则必须按当前发布归属分类，不得用历史规则、源码存在或恢复需要自动取得运行时启用资格：
+
+| 分类 | 在当前发布中的含义 | 处理规则 |
+|---|---|---|
+| `CURRENT_RELEASE_GOVERNANCE` | Candidate、Gate、User Decision、Merge、Verification、Close、Permission、WriteGuard、HardStop、Audit 等当前治理闭环 | 保留并按 V6 权威强制执行 |
+| `CURRENT_SCHEMA_SAFETY` | 当前布局/schema 校验、已声明当前 schema 链升级、备份回滚、WAL/同版本恢复 | 保留；只能处理当前产品线明确支持的输入 |
+| `HISTORICAL_EVIDENCE_ONLY` | immutable Gate Attempt、ERR、审计和既有交付证据 | 原样保留供审计；不得成为旧行为入口或可信 provenance 的无证据替代物 |
+| `BUILT_NOT_ENABLED` | 已实现但未被 V6 当前业务/部署批准的 workflow、handler 或扩展 | 禁止由 Runtime 加载；提升范围或退出 artifact 的结论由 V6 权威与模块矩阵决定 |
+| `LEGACY_ONLY` | 旧路径、旧 manifest、旧字段、旧项目兼容读取/写入/重建 | 当前发布禁止读取、导入、修复、写回或部署相关入口 |
+
+当前只批准 `feature_spec` 作为产品 workflow。`spec_migration` 等其他 workflow 规则在本文件中保留为已构建治理设计记录，但统一属于 `BUILT_NOT_ENABLED`；它们在 V6 requirements/design 明确提升范围并完成生产、部署和回归闭环前，不得被当前 Runtime 加载或执行。上述分类不删除当前发布的数据安全、失败关闭和历史审计证据。
 
 架构或契约决策可以通过多个 ADR 或专题文件记录原因，但决策文件必须：
 
@@ -1927,7 +1949,7 @@ Data Model 适用性不得通过“文件缺失”表达。新项目必须始终
 
 `STATUS=NOT_APPLICABLE` 只表示当前项目确实没有项目级数据模型内容，不允许用来绕过 Impact / Gate；后续需求一旦产生项目级数据语义，必须在同一个正式 WI 中把状态变为 `ACTIVE` 并形成正式 Data Model Candidate。
 
-兼容读取 `domain_model.md` 时，只能把它当作历史输入；不得发展成第二套正式数据治理体系，不双写、不双向同步。
+旧 `domain_model.md` 属于 `LEGACY_ONLY`：当前发布不得扫描、读取、导入、双写或据其重建 `data_model.md`。历史仓库中的该文件可作为 `HISTORICAL_EVIDENCE_ONLY` 由人工审计，但不能进入 Runtime 输入。
 
 #### 3.3.3 Module Design
 
@@ -2042,7 +2064,7 @@ BLOCK
 
 ### 3.6 spec_migration no-code 分支契约
 
-本节是 `spec_migration` spec-only / no-code 分支（含 Git 交付、恢复与 repair source）的唯一规范位置；3.1 Canonical Product Lifecycle 主线不受本节影响，本节只是该主线在无代码实现场景下的适用性分支契约。
+> **当前发布状态：`BUILT_NOT_ENABLED`。** 本节保留 `spec_migration` spec-only / no-code 分支已经形成的治理设计和审计语义，但不授权当前 Runtime 注册、加载或执行该 workflow。只有先在 V6 requirements/design 提升范围，并完成生产入口、部署集合和回归门禁后，本节才可转为当前运行契约。3.1 Canonical Product Lifecycle 的当前 `feature_spec` 主线不受本节影响。
 
 **GOV-SPEC-MIGRATION-NO-CODE-001：** `workflow_type=spec_migration` 且 `workflow_path=spec_migration_path` 是同一 Canonical Product Lifecycle 内的 **spec-only / no-code 适用性分支**，不是第二套 Workflow、Gate 或关闭流程。
 
@@ -3097,7 +3119,7 @@ Phase 11 必须在候选实现已经具备上述最终 Hard 行为时进行真�
 
 它们只表示“latest compatibility view”，供既有 Merge、Verification、Close 和读取消费者继续使用；它们不是历史审计真相源。历史审计必须读取 `gate_attempts/attempt-NNNN`。
 
-**GATE-MIGRATION-001：** 升级前已经存在 latest Gate 文件、但尚无 `gate_attempts` 时，第一次升级后 Gate 运行前，Runtime 必须先把现有 latest 文件完整复制为 `attempt-0001` legacy snapshot，再创建新的 Attempt。无法证明被更早覆盖的历史内容时必须标记 `INSUFFICIENT_EVIDENCE`，不得伪造或声称已恢复。
+**GATE-MIGRATION-001：** 仅当 Runtime 已证明输入属于 V6 权威声明的当前 schema 链时，若升级前已经存在 latest Gate 文件但尚无 `gate_attempts`，第一次升级后 Gate 运行前必须先把现有 latest 文件完整复制为 `attempt-0001` current-chain snapshot，再创建新的 Attempt。未知格式、旧产品项目或无法证明来源属于当前 schema 链时必须失败关闭并标记 `INSUFFICIENT_EVIDENCE`，不得复制、猜测、伪造或声称已恢复。
 <!-- SPECFORGE_GATE_ATTEMPT_EVIDENCE:END -->
 
 ### 7.5 Fast Path 的正确含义
@@ -3328,10 +3350,10 @@ Approved Governance Scope
 Changed Files Audit = FAILED
 ```
 
-**GOV-ATOMIC-MERGE-PROVENANCE-001：** Atomic Spec Merge 的所有正式 Project Spec 写入必须具有可由后续 Actual Scope Audit 验证的 producer provenance。`executeMerge()` 成功完成事务后，必须为当前仍存在的 `.specforge/project/**` 写入记录 `work_item_id + project_spec_version + path + sha256 + producer=sf_v11_merge`；其中 `spec_manifest.json` 的版本推进、`last_merged_*` 簿记和 Module registry 重建属于 Merge Runner 的正式隐式写入，不能因为它不来自 Candidate target 就回退归因为 `agent`。Changed Files Audit 必须只信任**当前文件 hash 与结构化 provenance 完全一致**的记录，hash 漂移继续 Fail Closed。旧项目缺少该结构化记录时，只允许一个兼容 Normalizer 对 `spec_manifest.json` 做 legacy reconstruction，并且必须同时匹配当前 `last_merged_work_item`、Project Spec Version、成功 `merge_report.md`、批准/豁免的 User Decision、同 WI Candidate manifest 与完整 `last_merged_targets`；任一条件不满足不得放行。该兼容路径不得扩展成通用 Spec 白名单，也不得把真实非 Merge Runner 写入降级为 warning。
+**GOV-ATOMIC-MERGE-PROVENANCE-001：** Atomic Spec Merge 的所有正式 Project Spec 写入必须具有可由后续 Actual Scope Audit 验证的 producer provenance。`executeMerge()` 成功完成事务后，必须为当前仍存在的 `.specforge/project/**` 写入记录 `work_item_id + project_spec_version + path + sha256 + producer=sf_v11_merge`；其中 `spec_manifest.json` 的版本推进、`last_merged_*` 簿记和 Module registry 重建属于 Merge Runner 的正式隐式写入，不能因为它不来自 Candidate target 就回退归因为 `agent`。Changed Files Audit 必须只信任**当前文件 hash 与结构化 provenance 完全一致**的记录，hash 漂移继续 Fail Closed。当前项目缺少、损坏或无法验证该结构化记录时必须失败关闭；不得从旧 manifest、路径、merge report 或其他间接材料重建可信 provenance，不得扩展成通用 Spec 白名单，也不得把真实非 Merge Runner 写入降级为 warning。
 
 
-**GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001：** Changed Files Audit 的 producer provenance 解析必须只有一个正式 Runtime 入口，公开 `sf_changed_files_audit`、Close Gate 初次审计、Close Gate 在 filesystem operation normalization 后的重审计以及其他后续消费者必须调用同一个 canonical resolver；不得由各 Handler 自行选择 Git governance、Atomic Spec Merge 或其他 producer 子集。canonical resolver 只负责聚合各正式 provenance reader 已经验证为可信的当前记录；每个底层 reader 的 schema、producer 身份、当前文件 hash、legacy reconstruction 和 Fail Closed 规则保持各自正式契约。任何一个审计入口缺少某类合法 producer provenance、导致同一事实在 Verification 与 Close 得到不同 verdict，属于治理契约错误，不得通过放宽 `spec_write_by_non_merge_runner`、路径白名单或跳过 Close 重审计修复。
+**GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001：** Changed Files Audit 的 producer provenance 解析必须只有一个正式 Runtime 入口，公开 `sf_changed_files_audit`、Close Gate 初次审计、Close Gate 在 filesystem operation normalization 后的重审计以及其他后续消费者必须调用同一个 canonical resolver；不得由各 Handler 自行选择 Git governance、Atomic Spec Merge 或其他 producer 子集。canonical resolver 只负责聚合各正式 provenance reader 已经验证为可信的当前记录；每个底层 reader 的 schema、producer 身份、当前文件 hash、当前 schema 恢复边界和 Fail Closed 规则保持各自正式契约。任何入口不得执行 legacy reconstruction。任何一个审计入口缺少某类合法 producer provenance、导致同一事实在 Verification 与 Close 得到不同 verdict，属于治理契约错误，不得通过放宽 `spec_write_by_non_merge_runner`、路径白名单或跳过 Close 重审计修复。
 
 **GOV-KNOWLEDGE-GRAPH-PROVENANCE-001：** `.specforge/knowledge/graph.json` 是 Knowledge Graph Runtime 从正式 Spec / Work Item 工件派生并由 `sf_knowledge_graph_core` 写入的治理控制面文件，不属于业务 Implementation Actual Scope。`loadGraphStore()` 首次创建和 `saveGraphStore()` 每次成功替换 `graph.json` 后，必须同步写入结构化 Runtime provenance，至少绑定 `schema_version + path=.specforge/knowledge/graph.json + producer=sf_knowledge_graph_core + sha256 + recorded_at`。Changed Files Audit 的 canonical resolver 只能在 provenance schema、唯一允许 producer、精确目标 path 与当前 `graph.json` 文件 hash 全部匹配时把该文件认定为 trusted control-plane write；provenance 缺失、格式错误、producer/path 不匹配、文件不存在或 hash 漂移时必须 Fail Closed。禁止把 `.specforge/knowledge/**` 目录整体加入白名单，禁止仅凭 actor/路径放行，也禁止为旧 `graph.json` 无证据重建可信 provenance。Gate `syncFromSpec`、Knowledge Graph CRUD 和首次空图创建必须复用同一写入 primitive/provenance 契约；公开 Changed Files Audit 与 Close Gate 重审计继续按 `GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` 使用同一 canonical resolver。
 
@@ -3494,39 +3516,24 @@ Git Merge BLOCK
 
 ## 9. 项目初始化、首次 WI 与后续 WI
 
-### 9.1 Project Spec 初始化与兼容
+### 9.1 Project Spec 初始化与当前 schema 安全
 
-Schema 修改采用向后兼容方式。
-
-新增字段解析阶段先允许旧项目缺失：
-
-```text
-project.data_model
-
-module.contracts
-
-module.code_paths
-```
-
-不能因为升级 SpecForge 就让旧项目立即无法读取。
-
-但是：
+当前发布只接受 V6 requirements/design 定义的 `.specforge` 布局、必需字段和明确声明的当前 schema 链：
 
 ```text
 新初始化项目
-→ 使用新结构
+→ 原子创建完整当前结构和必需字段
 
-完成 Spec Migration 的项目
-→ 使用新结构
+当前 schema 链内的较低版本
+→ 先备份，再按版本化步骤逐级升级并验证
+
+未知 schema / 旧产品布局 / 旧字段 / 缺失当前必需字段
+→ Fail Closed；不读取、不导入、不猜测、不兼容写回
 ```
 
-新治理规则只认：
+`project.data_model`、`module.contracts`、`module.code_paths` 以及正式 `data_model.md` 是当前结构的一部分；适用性必须通过明确状态表达，不能用缺失字段代表。当前 schema 升级、事务回滚、WAL 恢复和同版本损坏检测属于 `CURRENT_SCHEMA_SAFETY`，不构成旧项目兼容。
 
-```text
-data_model.md
-```
-
-旧 `domain_model.md` 只兼容读取。
+旧 `domain_model.md`、旧 `.specforge/specs/**`、legacy manifest/path adapter 和缺失 provenance reconstruction 属于 `LEGACY_ONLY`。它们可以留在 Git/ERR/immutable evidence 中供人工审计，但不能由当前 Runtime、安装器、迁移器或发布回归读取。
 
 ### 9.2 新项目首次治理自举
 
@@ -4400,6 +4407,7 @@ ORDINARY_TEST_PASS_SUBSTITUTES_GOVERNANCE_ACCEPTANCE=NO
 | `GATE-MIGRATION-001` | 7.4.1 Gate Attempt 证据不可变性 |
 | `GATE-RETRY-STATE-001` | 7.4 Gate 的硬阻断与产品完成边界 |
 | `GOV-AUTH-001` | 1.2 唯一权威源 |
+| `GOV-CURRENT-RELEASE-BOUNDARY-001` | 1.2 当前发布治理分类与 V6 产品权威边界 |
 | `GOV-CONT-001` | 2.7 Continuity 与当前用户授权边界 |
 | `GOV-CLOSELOOP-001` | 2.2 SpecForge 自身开发：修改前治理 |
 | `GOV-ATOMIC-MERGE-PROVENANCE-001` | 8.5 Actual Scope Audit：Merge Runner 写入归属证据 |

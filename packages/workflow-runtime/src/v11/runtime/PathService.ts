@@ -230,14 +230,9 @@ export class PathService {
     return this.posixJoin(this.runtimeDir(), 'wal.jsonl');
   }
 
-  // ---- Legacy paths (read-only) ----
+  // ---- Removed-path rejection ----
 
-  /** `.specforge/specs/` — legacy specs directory (read-only) */
-  legacySpecsDir(): string {
-    return this.posixJoin(this.specDir(), 'specs');
-  }
-
-  /** Check if a path is a legacy spec path */
+  /** Check if a path targets the removed specs directory. */
   isLegacySpecPath(inputPath: string): boolean {
     const normalized = inputPath.replace(/\\/g, '/');
     return normalized.includes('.specforge/specs/');

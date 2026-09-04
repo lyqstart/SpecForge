@@ -1,5 +1,7 @@
 # Implementation Plan: version-unification
 
+> **当前状态：** 当前版本/manifest 一致性任务仍由 requirements/design 约束；所有 legacy detector/migrator、三周期双写、`.legacy.bak`、`migrate-manifest` 与 legacy-cycle 测试任务均为 `LEGACY_ONLY` 历史实施记录，不得继续执行或计入当前回归。Step 6 负责从 build、命令、测试和安装集合移除其消费者。
+
 ## Overview
 
 把 SpecForge 中 7 个散落版本字段收敛到 `packages/version-unification/` 单一模块下，按 design.md 的模块拓扑落地。实施语言为 **TypeScript**（design 中已用 TS 接口签名 + `vitest.config.ts`，不需要二次确认）。运行时 / 包管理 / 测试一律用 **Bun**，符合 `project-structure.md` 规则 5。

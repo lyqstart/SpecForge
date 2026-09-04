@@ -110,6 +110,20 @@ export class EventLogger {
     }
 
     try {
+      const actorContext = decision.actorContext ?? { id: decision.actor };
+      const resourceContext = decision.resourceContext ?? { type: decision.resource };
+      const actorPayload = {
+        id: String(actorContext.id ?? decision.actor),
+        sessionId: actorContext.sessionId as string | undefined,
+        agentRole: actorContext.agentRole as string | undefined,
+        workflowRole: actorContext.workflowRole as string | undefined,
+        remoteIdentity: actorContext.remoteIdentity as string | undefined
+      };
+      const resourcePayload = {
+        type: String(resourceContext.type ?? decision.resource),
+        id: resourceContext.id as string | undefined,
+        path: resourceContext.path as string | undefined
+      };
       if (this.eventBus) {
         this.eventBus.publish({
           eventId: this.generateEventId(),
@@ -117,9 +131,9 @@ export class EventLogger {
           projectId: this.config.projectId,
           action: 'permission.evaluated',
           payload: {
-            actor: decision.actor,
+            actor: actorPayload,
             action: decision.action,
-            resource: decision.resource,
+            resource: resourcePayload,
             decision: decision.decision,
             matched_rule: decision.matched_rule,
             rule_layer: decision.rule_layer,
@@ -130,13 +144,14 @@ export class EventLogger {
 
       if (this.fileHandle) {
         const payload: PermissionDecisionEventPayload = {
-          actor: { id: decision.actor },
+          actor: actorPayload,
           action: decision.action,
-          resource: { type: decision.resource },
+          resource: resourcePayload,
           decision: decision.decision,
           matched_rule: decision.matched_rule,
           rule_layer: decision.rule_layer,
-          reason: decision.reason
+          reason: decision.reason,
+          context: decision.context
         };
 
         const validatedPayload = PermissionDecisionEventPayloadSchema.parse(payload);

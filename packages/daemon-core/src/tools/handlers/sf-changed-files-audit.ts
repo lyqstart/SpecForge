@@ -43,6 +43,7 @@ import {
   loadBaseline,
   reconcileLegacyBaselineWithGitPreflight,
 } from '../lib/filesystem-diff';
+import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 
 type ChangedFile = { path: string; operation: 'create' | 'modify' | 'delete' };
 type AllowedFile = { path: string; operation: string };
@@ -598,14 +599,12 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
 
   let wiJson: any;
   try {
-    wiJson = JSON.parse(await fs.readFile(join(workItemDir, 'work_item.json'), 'utf-8'));
-  } catch {
-    setHardStop(projectRoot, workItemId, 'WORK_ITEM_JSON_NOT_FOUND', 'sf_changed_files_audit');
+    wiJson = await readWorkItemMetadata(workItemDir, workItemId);
+  } catch (error) {
     return {
       success: false,
-      error:
-        'WORK_ITEM_JSON_NOT_FOUND: work_item.json does not exist — cannot perform audit without it',
-      hard_stop: true,
+      error: error instanceof Error ? error.message : String(error),
+      hard_stop: false,
     };
   }
 

@@ -3,7 +3,9 @@
  * Canonical user-level paths for SpecForge.
  *
  * Project-local governance data remains under <project>/.specforge/.
- * Current user-level runtime data MUST NOT be written to ~/.specforge/.
+ * Current user-level runtime data is rooted at ~/.specforge/.
+ * The OpenCode configuration root is a separate integration boundary and
+ * must not become a shadow SpecForge runtime root.
  */
 import * as os from "node:os";
 import * as path from "node:path";
@@ -46,7 +48,8 @@ export function resolveOpenCodeConfigRoot(
 export function resolveSpecForgeUserRoot(
   options: UserLevelPathOptions = {},
 ): string {
-  return path.join(resolveOpenCodeConfigRoot(options), "sf-user");
+  const homeDir = options.homeDir ?? os.homedir();
+  return path.join(homeDir, ".specforge");
 }
 
 /** Resolve a path under the current SpecForge user-level data root. */
@@ -56,12 +59,18 @@ export function resolveSpecForgeUserPath(
   return path.join(resolveSpecForgeUserRoot(), ...segments);
 }
 
+/** Current Daemon discovery and authentication file. */
+export function resolveSpecForgeHandshakePath(
+  options: UserLevelPathOptions = {},
+): string {
+  return path.join(resolveSpecForgeUserRoot(options), "runtime", "daemon.sock.json");
+}
+
 /**
- * Installer Manifest is intentionally outside sf-user.
- * This is the canonical path confirmed by ADR-010.
+ * Current installer manifest under the SpecForge user-level root.
  */
 export function resolveSpecForgeManifestPath(
   options: UserLevelPathOptions = {},
 ): string {
-  return path.join(resolveOpenCodeConfigRoot(options), "specforge-manifest.json");
+  return path.join(resolveSpecForgeUserRoot(options), "specforge-manifest.json");
 }

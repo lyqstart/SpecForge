@@ -121,6 +121,17 @@ describe('Investigation artifact ownership and professional gates', () => {
 
   beforeEach(async () => {
     projectRoot = await mkdtemp(path.join(tmpdir(), 'sf-investigation-artifact-'));
+    const workItemDir = path.join(projectRoot, '.specforge', 'work-items', 'WI-0001');
+    await mkdir(workItemDir, { recursive: true });
+    await writeFile(
+      path.join(workItemDir, 'work_item.json'),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: 'WI-0001',
+        workflow_type: 'investigation',
+        workflow_path: 'investigation_path',
+      }, null, 2) + '\n',
+    );
   });
 
   afterEach(async () => {

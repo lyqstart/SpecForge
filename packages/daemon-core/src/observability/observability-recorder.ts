@@ -92,9 +92,6 @@ function shouldRecord(
   force?: boolean,
 ): boolean {
   if (force) return true;
-  if (!config.enabled || config.level === "off") return false;
-  if (config.level === "error")
-    return category === "error" || category === "hardstop";
   return shouldRecordObservationByConfig(config, category, phase);
 }
 

@@ -1,16 +1,10 @@
 /**
  * sf_gate_types — 共享 Gate 类型定义
  *
- * GateResult 和 SyncSummary 类型从 sf_requirements_gate_core.ts 迁移到此独立文件，
- * 所有 Gate core 模块从此文件导入共享类型。
+ * GateResult 类型由所有 Gate core 模块从此文件共享。
  *
  * Requirements: REQ-8 AC-5
  */
-
-import type { SyncSummary } from "./sf_knowledge_graph_core"
-
-// Re-export SyncSummary for convenience
-export type { SyncSummary } from "./sf_knowledge_graph_core"
 
 // ============================================================
 // GateResult — 所有 Gate 工具的统一返回类型
@@ -21,7 +15,6 @@ export interface GateResult {
   blocking_issues: string[]
   warnings: string[]
   next_action: "continue" | "revise" | "ask_user"
-  kg_sync?: SyncSummary | null
   details?: Record<string, unknown> // V3.7 新增，可选
 }
 

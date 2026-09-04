@@ -154,6 +154,8 @@ export type ManagedComponentType =
   | "tool_lib"
   | "plugin"
   | "skill"
+  | "workflow"
+  | "runtime"
   | "config"
   | "template"
   | "other"
@@ -190,45 +192,23 @@ export interface AgentConfig {
 export interface ComponentEntry {
   path: string
   type: ManagedComponentType
+  /** Repository-relative source; defaults to setup/userlevel-opencode/<path>. */
+  sourcePath?: string
+  /** Append the platform executable suffix (for example .exe on Windows). */
+  platformExecutable?: boolean
 }
 
 /** User-level manifest (specforge-manifest.json) */
 export interface UserLevelManifest {
   schema_version: string
   shared_version: string
-  install_mode: "user_level" | "project_level"
+  install_mode: "user_level"
   installed_at: string
   updated_at: string
   managed_agents: string[]
   managed_agent_hashes: Record<string, string>
   files: Record<string, FileEntry>
   pending_deletes?: PendingDeleteEntry[]
-}
-
-/** Project-level manifest (specforge/manifest.json) */
-export interface ProjectLevelManifest {
-  schema_version: string
-  install_mode: "user_level" | "project_level"
-  required_shared_version_range?: string
-  initialized_at?: string
-  updated_at?: string
-}
-
-/** Runtime manifest (specforge/runtime-manifest.json) */
-export interface RuntimeManifest {
-  schema_version: string
-  runtime_schema_version: string
-  install_mode: string
-  required_shared_version_range: string
-  initialized_at: string
-  updated_at: string
-  project_files: Record<string, { sha256: string; size: number }>
-  recovery_required?: boolean
-  last_migration?: {
-    from_version: string
-    to_version: string
-    migrated_at: string
-  }
 }
 
 /** An entry pending deletion (orphan cleanup) */
@@ -338,23 +318,14 @@ export interface ExecutionResult {
   conflicts: string[]
 }
 
-/** Lock file content */
-export interface LockContent {
-  lock_id: string
-  pid: number
-  hostname: string
-  command: string
-  created_at: string
-  last_heartbeat: string
-}
-
-/** Install lock info (legacy install_lock.ts) */
+/** Current installer lock file contract */
 export interface InstallLockInfo {
+  schema_version: "1.0"
   lock_id: string
   pid: number
   hostname: string
-  command: string
-  created_at: string
+  command: "install" | "upgrade" | "uninstall"
+  acquired_at: string
   last_heartbeat: string
 }
 

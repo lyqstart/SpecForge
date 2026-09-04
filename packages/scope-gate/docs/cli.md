@@ -1,4 +1,6 @@
-# Scope Gate CLI Tools
+# Scope Gate CLI Tools (Historical)
+
+> **历史资料，不是当前 CLI 权威。** 下述 capability、feature-flag、scope-context 与 scope-validate 命令已退出当前发布；Scope Gate 只通过正式 release precheck 运行。
 
 This document describes the CLI tools available in the `@specforge/scope-gate` package for managing and validating scope boundaries.
 

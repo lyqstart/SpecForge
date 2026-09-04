@@ -4,10 +4,7 @@
  */
 
 import { mkdir, appendFile } from "node:fs/promises"
-import { dirname, join, normalize, resolve } from "node:path"
-import { homedir } from "node:os"
-import { existsSync, readFileSync } from "node:fs"
-import { pathToFileURL } from "node:url"
+import { dirname, join } from "node:path"
 
 /** SpecForge 项目级目录名 — 与 setup/userlevel-scripts-lib/paths.ts 的 SPEC_DIR_NAME 保持同步 */
 const SPEC_DIR_NAME = '.specforge' as const;
@@ -125,52 +122,17 @@ export async function logErrorToFile(
 }
 
 // ============================================================
-// Dynamic Import: Compatibility Check
+// Current Release Compatibility Boundary
 // ============================================================
 
 /**
- * Dynamically import and execute checkCompatibilityAtEntry.
- * On import or execution failure, logs the error and silently continues.
- * Never throws — safe to call at the start of any tool core function.
+ * Current releases have one supported project and user-level layout.
+ * Callers retain this hook while the tool surface converges, but it must not
+ * discover or execute retired compatibility adapters.
  */
 export async function tryCheckCompatibility(
-  baseDir: string,
-  component: string
+  _baseDir: string,
+  _component: string
 ): Promise<void> {
-  try {
-    // Resolve the canonical OpenCode config root and SpecForge user root.
-    const explicitConfigDir = process.env.OPENCODE_CONFIG_DIR?.trim()
-    const xdgConfigHome = process.env.XDG_CONFIG_HOME?.trim()
-    const home = homedir()
-    const configRoot = explicitConfigDir
-      ? resolve(normalize(explicitConfigDir))
-      : xdgConfigHome
-        ? join(xdgConfigHome, "opencode")
-        : join(home, ".config", "opencode")
-    const specForgeHome = join(configRoot, "sf-user")
-
-    // The legacy install record may be read for migration evidence only.
-    // It never changes the current executable/configuration root.
-    try {
-      const canonicalInstallPath = join(specForgeHome, "install.json")
-      const legacyInstallPath = join(home, ".specforge", "install.json")
-      const installPath = existsSync(canonicalInstallPath)
-        ? canonicalInstallPath
-        : existsSync(legacyInstallPath)
-          ? legacyInstallPath
-          : null
-      if (installPath) {
-        JSON.parse(readFileSync(installPath, "utf-8"))
-      }
-    } catch { /* ignore invalid install metadata */ }
-
-    const compatibilityPath = join(specForgeHome, "lib", "compatibility.ts")
-    const mod = await import(pathToFileURL(compatibilityPath).href)
-    if (mod && typeof mod.checkCompatibilityAtEntry === "function") {
-      mod.checkCompatibilityAtEntry(baseDir)
-    }
-  } catch (err) {
-    // Import or execution failed — log and silently continue
-    await logErrorToFile(baseDir, component, "dynamic_import_failed", err)
-  }
+  return
 }

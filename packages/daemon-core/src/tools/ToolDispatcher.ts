@@ -64,6 +64,10 @@ export function getHandler(toolName: string): ToolHandler | undefined {
   return HANDLER_TABLE[toolName];
 }
 
+export function unregisterHandler(toolName: string): void {
+  delete HANDLER_TABLE[toolName];
+}
+
 function extractWorkItemId(args: Record<string, unknown>): string | undefined {
   const candidates = [args.work_item_id, args.workItemId, args.work_item, args.wi, args.id];
   for (const candidate of candidates) {

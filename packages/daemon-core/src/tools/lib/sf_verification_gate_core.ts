@@ -13,9 +13,7 @@ import { join } from "node:path"
 import { workItemRoot } from "@specforge/types/directory-layout"
 import type { GateResult, GateModeSpec } from "./sf_gate_types"
 import { parseSections } from "./sf_requirements_gate_core"
-import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core"
 import { tryCheckCompatibility, logErrorToFile } from "./utils"
-import type { SyncSummary } from "./sf_knowledge_graph_core"
 import { resolveWorkItemSpecArtifacts } from "./governance-invariants-v11"
 
 // V3.7 imports
@@ -641,27 +639,11 @@ export async function checkVerificationGate(
         "tasks.md 包含混合格式 verification_commands（部分 typed、部分 legacy），建议统一迁移到类型化格式"
       )
 
-      // KG sync on pass
-      if (merged.status === "pass") {
-        const kgSync = await tryKGSync(workItemId, baseDir, merged.warnings)
-        if (kgSync) {
-          merged.kg_sync = kgSync
-        }
-      }
-
       return merged
     }
 
     // 纯 typed 格式
     const result = checkTypedVerificationResults(structuredReport, plannedTypes)
-
-    // KG sync on pass
-    if (result.status === "pass") {
-      const kgSync = await tryKGSync(workItemId, baseDir, result.warnings)
-      if (kgSync) {
-        return { ...result, kg_sync: kgSync }
-      }
-    }
 
     return result
   }
@@ -801,40 +783,12 @@ async function checkVerificationGateLegacy(
     }
   }
 
-  // ★ V4.0: KG sync on pass
-  const kgSync = await tryKGSync(workItemId, baseDir, warnings)
-
   return {
     status: "pass",
     blocking_issues: [],
     warnings,
     next_action: "continue",
-    kg_sync: kgSync,
   }
-}
-
-/**
- * 尝试执行 KG 同步（pass 后调用）
- * 失败时仅记录 warning，不影响 Gate 结果
- */
-async function tryKGSync(
-  workItemId: string,
-  baseDir: string,
-  warnings: string[]
-): Promise<SyncSummary | null> {
-  try {
-    if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, "verification")
-      if (kgResult.success && kgResult.summary) {
-        return kgResult.summary
-      } else if (kgResult.error) {
-        warnings.push(`KG sync warning: ${kgResult.error}`)
-      }
-    }
-  } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`)
-  }
-  return null
 }
 
 // ============================================================

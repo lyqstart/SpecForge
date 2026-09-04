@@ -29,7 +29,7 @@ function source(filePath: string): string {
 
 describe('OpenCode compaction checkpoint bridge', () => {
   it('subscribes to the official pre-compaction hook', () => {
-    expect(source(pluginPath)).toContain('"experimental.session.compacting"');
+    expect(source(pluginPath)).toMatch(/['"]experimental\.session\.compacting['"]/);
   });
 
   it('waits for a bounded daemon acknowledgement instead of fire-and-forget', () => {
@@ -48,17 +48,17 @@ describe('OpenCode compaction checkpoint bridge', () => {
     expect(registration).toBeGreaterThanOrEqual(0);
     expect(post).toBeGreaterThan(registration);
     expect(plugin).toContain('registration.sessionId');
-    expect(plugin).toContain('"session.compacting"');
+    expect(plugin).toMatch(/['"]session\.compacting['"]/);
     expect(plugin).toContain('opencodeSessionId');
   });
 
-  it('writes durable bridge diagnostics under sf-user/runtime', () => {
+  it('writes durable bridge diagnostics under the current user runtime root', () => {
     const plugin = source(pluginPath);
-    expect(plugin).toContain('"compaction-bridge.jsonl"');
-    expect(plugin).toContain('"compaction.hook.received"');
-    expect(plugin).toContain('"checkpoint.project.registered"');
-    expect(plugin).toContain('"checkpoint.event.result"');
-    expect(plugin).toContain('"compaction.hook.failed"');
+    expect(plugin).toContain("'.specforge', 'runtime', 'compaction-bridge.jsonl'");
+    expect(plugin).toMatch(/['"]compaction\.hook\.received['"]/);
+    expect(plugin).toMatch(/['"]checkpoint\.project\.registered['"]/);
+    expect(plugin).toMatch(/['"]checkpoint\.event\.result['"]/);
+    expect(plugin).toMatch(/['"]compaction\.hook\.failed['"]/);
   });
 
   it('refreshes the cached handshake after project registration', () => {

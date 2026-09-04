@@ -32,6 +32,7 @@ export {
   loadHostProfile,
   isCacheFresh,
   loadCachedProfile,
+  resolveHostUsername,
 } from './scanner.js';
 
 export type { ScanOptions, ScanResult } from './scanner.js';

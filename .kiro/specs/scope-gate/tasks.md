@@ -1,5 +1,7 @@
 # Implementation Plan: Scope Gate
 
+> **Current status:** Historical implementation checklist. Tasks that build runtime feature flags, default-off P1/P2 behavior or environment-specific bypasses are superseded by the current `requirements.md` / `design.md` and must not be executed as current work. Step 6 will create/adjust tasks for release-set and artifact-exclusion validation.
+
 ## Overview
 
 This implementation plan covers the development of the **Scope Gate** module for SpecForge V6. The Scope Gate is responsible for enforcing P0/P1/P2 scope boundaries as defined in REQ-25 of the parent V6 architecture specification.

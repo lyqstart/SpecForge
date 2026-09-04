@@ -1,6 +1,8 @@
 # V6.0 开发进度（驾驶舱）
 
-> **唯一事实来源（Wave 级）**。本文件只记 Wave 和 spec 级别的状态；单任务进度在各 spec 的 `tasks.md` checkbox 中。
+> **当前治理状态：`HISTORICAL_EVIDENCE_ONLY`。** 本文件是早期 Wave/spec 进度快照，不再是当前事实来源；checkbox 和历史测试数量不能证明当前发布状态。当前进度权威是 `docs/implementation/architecture-consistency/current-release-boundary-and-module-convergence-progress.md` 与 `current-handoff.md`，当前产品范围/架构以同级 `requirements.md` / `design.md` 为准。
+
+> **历史说明**：本文曾作为 Wave 级事实来源；该职责已由上述当前进度文件接替。单任务历史 checkbox 仅用于追溯。
 >
 > **更新时机**：
 > 1. 每次 Wave 切换（W0→W1 等）

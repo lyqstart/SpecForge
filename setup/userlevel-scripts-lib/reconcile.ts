@@ -34,8 +34,8 @@ import type { CommitResult, CommitOptions, DowngradeResult } from "./commit"
 import { readAndValidateManifest } from "./manifest"
 import type { ValidatedManifest } from "./manifest"
 import { preflightTarget, preflightPlan } from "./preflight"
-import { acquireLock } from "./lock"
-import type { LockHandle } from "./lock"
+import { acquireInstallLock } from "./install_lock"
+import type { InstallLockHandle } from "./install_lock"
 import { generatedFileHandler } from "./generated_files"
 import { parseVersion, compareVersions } from "./semver"
 import type { OpenCodeMergeOptions } from "./opencode_merge"
@@ -203,23 +203,17 @@ function detectDowngrade(sourceVersion: string, manifestVersion: string): boolea
 export async function reconcile(options: ReconcileOptions): Promise<ReconcileResult> {
   const { sourceDir, targetDir, force, mode, scope, provider, mergeOptions } = options
 
-  let lockHandle: LockHandle | undefined
+  let lockHandle: InstallLockHandle | undefined
 
   try {
     // ============================================================
     // Step 1: 获取锁（仅 CLI scope）
     // ============================================================
     if (shouldAcquireLock(mode, scope)) {
-      const lockResult = await acquireLock({
+      lockHandle = await acquireInstallLock(
         targetDir,
-        command: mode === "fresh_install" ? "install" : "upgrade",
-      })
-      if (!lockResult.acquired) {
-        return buildFailureResult(
-          `Failed to acquire lock: ${lockResult.reason}. Another operation may be in progress (PID: ${lockResult.holder.pid}).`
-        )
-      }
-      lockHandle = lockResult.handle
+        mode === "fresh_install" ? "install" : "upgrade",
+      )
     }
 
     // ============================================================

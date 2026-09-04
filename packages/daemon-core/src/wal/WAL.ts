@@ -9,6 +9,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { v7 as uuidv7 } from 'uuid';
 import { Event } from '../types';
+import { isCurrentRuntimeEvent } from '../state/runtime-schema-descriptors';
 
 const WAL_MAX_SIZE = 5 * 1024 * 1024; // 5MB threshold
 const WAL_MAX_ARCHIVE_FILES = 3;       // Keep at most 3 archive files
@@ -53,8 +54,9 @@ export class WAL {
         this._lastSeq = lastEvent.monotonicSeq;
       }
     } catch (error) {
-      // File doesn't exist, create empty file
-      await fs.writeFile(this.eventsPath, '');
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      // A missing WAL is the valid new-project state. The first durable event
+      // append creates the file; an empty JSONL file is never persisted.
     }
   }
 
@@ -66,6 +68,9 @@ export class WAL {
    * WAL ordering: events.jsonl is fsynced BEFORE any state.json update.
    */
   async appendEvent(event: Event): Promise<void> {
+    if (!isCurrentRuntimeEvent(event)) {
+      throw new Error('WAL_EVENT_SCHEMA_INVALID');
+    }
     // Serialise to JSONL line
     const line = JSON.stringify(event) + '\n';
     
@@ -144,7 +149,7 @@ export class WAL {
 
     try {
       const content = await fs.readFile(this.eventsPath, 'utf-8');
-      if (!content) return { events, corruptedLines };
+      if (!content) throw new Error('WAL_EMPTY_INPUT');
 
       const lines = content.split('\n').filter(line => line.trim().length > 0);
       for (let i = 0; i < lines.length; i++) {
@@ -155,16 +160,23 @@ export class WAL {
         } catch (parseError) {
           const lineNumber = i + 1;
           const truncated = line.substring(0, 100);
-          console.warn(`[WAL] Skipping corrupted line ${lineNumber}: ${truncated}`);
-          corruptedLines.push({
-            lineNumber,
-            content: truncated,
-            error: parseError instanceof Error ? parseError.message : String(parseError),
-          });
+          throw new Error(
+            `WAL_CORRUPT_INPUT:line=${lineNumber}:content=${truncated}:` +
+            (parseError instanceof Error ? parseError.message : String(parseError)),
+          );
         }
       }
     } catch (error) {
-      // File doesn't exist or is unreadable — both are normal
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return { events, corruptedLines };
+      }
+      if (error instanceof Error && error.message.startsWith('WAL_CORRUPT_INPUT:')) {
+        throw error;
+      }
+      if (error instanceof Error && error.message === 'WAL_EMPTY_INPUT') throw error;
+      throw new Error(
+        `WAL_READ_FAILED:${error instanceof Error ? error.message : String(error)}`,
+      );
     }
 
     return { events, corruptedLines };
@@ -233,8 +245,6 @@ export class WAL {
     const archivePath = path.join(archiveDir, archiveName);
 
     await fs.rename(this.eventsPath, archivePath);
-    await fs.writeFile(this.eventsPath, '');
-
     await this.cleanupOldArchives();
 
     console.log(`[WAL] Rotated events.jsonl → ${archivePath}`);

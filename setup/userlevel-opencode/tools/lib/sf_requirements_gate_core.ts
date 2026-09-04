@@ -9,18 +9,16 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { syncFromSpec, isKGEnabled } from "./sf_knowledge_graph_core";
 import { tryCheckCompatibility, logErrorToFile } from "./utils";
 import { parseAllVerificationStrategies } from "./sf_verification_types";
 import { resolveRequirementsPath, checkEarsCompliance } from "./sf_ears_parser";
 import { FILE_SIZE_LIMIT } from "./sf_ears_types";
-import type { SyncSummary } from "./sf_knowledge_graph_core";
 import type { GateResult, GateModeSpec } from "./sf_gate_types";
 
 const SPEC_DIR_NAME = ".specforge" as const;
 
 // 向后兼容 re-export：现有消费方可继续从此文件导入
-export type { GateResult, SyncSummary } from "./sf_gate_types";
+export type { GateResult } from "./sf_gate_types";
 export type { GateModeSpec } from "./sf_gate_types";
 
 /**
@@ -550,27 +548,11 @@ async function existingRequirementsGateCheck(
     };
   }
 
-  // ★ V4.0: KG sync on pass
-  let kgSync: SyncSummary | null = null;
-  try {
-    if (await isKGEnabled(baseDir)) {
-      const kgResult = await syncFromSpec(workItemId, baseDir, "requirements");
-      if (kgResult.success && kgResult.summary) {
-        kgSync = kgResult.summary;
-      } else if (kgResult.error) {
-        warnings.push(`KG sync warning: ${kgResult.error}`);
-      }
-    }
-  } catch (err) {
-    warnings.push(`KG sync failed: ${(err as Error).message}`);
-  }
-
   return {
     status: "pass",
     blocking_issues: [],
     warnings,
     next_action: "continue",
-    kg_sync: kgSync,
   };
 }
 
@@ -688,31 +670,11 @@ export async function checkBugfixGate(
       };
     }
 
-    // ★ V4.0: KG sync on pass
-    let kgSync: SyncSummary | null = null;
-    try {
-      if (await isKGEnabled(baseDir)) {
-        const kgResult = await syncFromSpec(
-          workItemId,
-          baseDir,
-          "requirements",
-        );
-        if (kgResult.success && kgResult.summary) {
-          kgSync = kgResult.summary;
-        } else if (kgResult.error) {
-          warnings.push(`KG sync warning: ${kgResult.error}`);
-        }
-      }
-    } catch (err) {
-      warnings.push(`KG sync failed: ${(err as Error).message}`);
-    }
-
     return {
       status: "pass",
       blocking_issues: [],
       warnings,
       next_action: "continue",
-      kg_sync: kgSync,
     };
   } catch (err) {
     await logErrorToFile(

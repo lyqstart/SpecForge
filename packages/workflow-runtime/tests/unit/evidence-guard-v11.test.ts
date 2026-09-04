@@ -23,6 +23,14 @@ import { WorkflowDefinition } from '../../src/types.js';
  */
 const passGate = async () => ({ schema_version: '1.0' as const, passed: true, reason: 'auto-pass' });
 
+function currentWorkItemMetadata(workItemDir: string, files = ['src/a.ts']): Record<string, unknown> {
+  return {
+    schema_version: '1.1',
+    work_item_id: path.basename(workItemDir),
+    allowed_write_files: files.map(file => ({ path: file, operation: 'modify' })),
+  };
+}
+
 /**
  * Minimal workflow definition that covers all critical states.
  * All gates have checkFn that returns passed=true so execute() can auto-advance.
@@ -974,7 +982,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       await fs.writeFile(path.join(qcDir, 'tasks.md'), '# Tasks\n- Task 1');
       await fs.writeFile(
         path.join(qcDir, 'work_item.json'),
-        JSON.stringify({ allowed_write_files: ['src/a.ts'] }),
+        JSON.stringify(currentWorkItemMetadata(qcDir)),
       );
 
       qcEngine.transition(instance.id, 'created', 'gates_running');
@@ -999,7 +1007,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       await fs.writeFile(path.join(qcDir, 'tasks.md'), '# Tasks\n- Task 1');
       await fs.writeFile(
         path.join(qcDir, 'work_item.json'),
-        JSON.stringify({ allowed_write_files: ['src/a.ts'] }),
+        JSON.stringify(currentWorkItemMetadata(qcDir)),
       );
       await fs.mkdir(path.join(qcDir, 'gates'), { recursive: true });
       await fs.writeFile(
@@ -1065,7 +1073,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       await fs.writeFile(path.join(qcDir, 'tasks.md'), '# Tasks\n- Task 1');
       await fs.writeFile(
         path.join(qcDir, 'work_item.json'),
-        JSON.stringify({ allowed_write_files: ['src/a.ts'] }),
+        JSON.stringify(currentWorkItemMetadata(qcDir)),
       );
       await fs.mkdir(path.join(qcDir, 'gates'), { recursive: true });
       // gate file with status=failed → enforceTransitionEvidence will reject
@@ -1760,7 +1768,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
         await fs.writeFile(path.join(dir, 'tasks.md'), '# Tasks\n- TASK-1: Implement feature');
       }
       if (omit !== 'work_item.json') {
-        await fs.writeFile(path.join(dir, 'work_item.json'), JSON.stringify({ allowed_write_files: ['src/a.ts', 'src/b.ts'] }));
+        await fs.writeFile(path.join(dir, 'work_item.json'), JSON.stringify(currentWorkItemMetadata(dir, ['src/a.ts', 'src/b.ts'])));
       }
       if (omit !== 'code_permission_release_gate') {
         await fs.mkdir(path.join(dir, 'gates'), { recursive: true });
@@ -1927,7 +1935,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       const pmDir = await makeWorkDir(inst.id);
       // Prepare tasks.md + work_item.json but gate file has status=not_enabled
       await fs.writeFile(path.join(pmDir, 'tasks.md'), '# Tasks\n- TASK-1');
-      await fs.writeFile(path.join(pmDir, 'work_item.json'), JSON.stringify({ allowed_write_files: ['src/a.ts'] }));
+      await fs.writeFile(path.join(pmDir, 'work_item.json'), JSON.stringify(currentWorkItemMetadata(pmDir)));
       await fs.mkdir(path.join(pmDir, 'gates'), { recursive: true });
       await fs.writeFile(path.join(pmDir, 'gates', 'code_permission_release_gate.json'), JSON.stringify({ status: 'not_enabled' }));
 

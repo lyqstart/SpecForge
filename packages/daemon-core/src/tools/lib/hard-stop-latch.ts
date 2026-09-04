@@ -8,6 +8,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { isValidWorkItemId as isCanonicalWorkItemId } from './work-item-id-validator';
 
 export type HardStopScope = 'work_item' | 'project';
 
@@ -61,16 +62,10 @@ export interface HardStopGuardResult {
 }
 
 const HARD_STOP_FILENAME = 'hard_stop.json';
-const VALID_WI_ID = /^WI-(\d{3,4}|\d{8}-\d{4})$/;
 const ALLOWED_TOOLS_WHEN_BLOCKED = new Set([
   'sf_state_read',
-  'sf_context_build',
-  'sf_continuity',
-  'sf_cost_report',
   'sf_doctor',
   'sf_knowledge_base',
-  'sf_knowledge_graph',
-  'sf_knowledge_query',
   'sf_batch_verify',
   'sf_doc_lint',
   'sf_trace_matrix',
@@ -84,7 +79,7 @@ function normalizeToolName(toolName: string): string {
 }
 
 function isValidWorkItemId(value: unknown): value is string {
-  return typeof value === 'string' && VALID_WI_ID.test(value);
+  return typeof value === 'string' && isCanonicalWorkItemId(value);
 }
 
 function workItemHardStopPath(projectRoot: string, workItemId: string): string {

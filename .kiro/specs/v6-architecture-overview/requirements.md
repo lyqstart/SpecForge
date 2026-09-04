@@ -13,9 +13,33 @@ V5 与 V6 的根本差别：
 
 后续每一个具体模块（daemon-core、observability、permission-engine、opencode-adapter、multimodal、self-healing 等）会有自己独立的 spec，本文档作为它们的权威参考。
 
+本文件中的**当前发布**特指经过架构收敛后准备形成 stable release 的 V6.0 产品基线。历史里程碑、仓库中已经存在的实现、能够通过单包测试的 package、默认关闭的 feature flag 或用户级部署残留，都不能单独把一项能力变成当前发布能力。能力必须同时被本文列入当前范围、被 design.md 纳入启用架构、进入正式构建与部署集合，并通过当前发布验证，才属于当前发布。
+
+当前发布持久化合同：
+
+```text
+PROJECT_CONFIG_AUTHORITY=.specforge/config/project.json
+PROJECT_CONFIG_COMPATIBILITY_ALIAS=UNSUPPORTED
+PROJECT_REGISTRY_AUTHORITY=.specforge/project/extension_registry.json
+PROJECT_REGISTRY_SCHEMA=1.0
+PROJECT_REGISTRY_OWNER=DAEMON_GOVERNED_PROJECT_SPEC_MERGE
+RUNTIME_SCHEMA_FIELD=schema_version
+RUNTIME_CORRUPT_INPUT_POLICY=FAIL_CLOSED
+EMPTY_WAL_PERSISTENCE=FORBIDDEN
+```
+
+- 项目配置只使用 `.specforge/config/project.json`；`.specforge/config/.specforge.json` 不是当前格式，也不得作为兼容读取或回退入口。
+- Project Registry 只使用上述路径和 `1.0` 合同，由 Daemon 的受治理 Project Spec candidate/merge 链写入；只有导出或测试消费者的重复初始化实现不能成为第二权威。
+- Runtime JSON 使用根字段 `schema_version`。`events.jsonl` 中每条持久化 Event 都必须满足当前 Event schema；没有事件时文件应不存在，不得创建无法携带 schema 的空 WAL 文件。读取失败、JSONL 损坏、缺失必填字段或 schema 不一致必须失败关闭，不能跳过后继续启动。
+
 ## Glossary
 
-- **SpecForge V6**：SpecForge 的第 6 个大版本，架构形态为独立 Daemon 引擎 + OpenCode 作为 LLM Kernel。不兼容 V5。
+- **SpecForge V6**：SpecForge 的第 6 个大版本，架构形态为独立 Daemon 引擎 + OpenCode 作为 LLM Kernel；不提供 V5、V5 以前版本或其他旧项目现场到当前发布的产品兼容承诺。
+- **当前发布 (Current Release)**：经过本轮架构收敛后准备形成 stable release 的 V6.0 产品基线。其能力集合由本文的当前范围和验收条件定义，由 design.md 映射到唯一启用架构。
+- **旧项目兼容 (Legacy Project Compatibility)**：当前发布识别、读取、转换、继续写入或模拟 V5、V5 以前版本、旧路径、旧状态、旧 ID、旧 Schema、旧 Manifest 或旧插件协议的产品能力。当前发布不提供该能力。
+- **历史治理证据 (Historical Governance Evidence)**：ERR 账本、不可变 Gate Attempt、审计记录、历史报告和 Git 历史。保留这些证据只服务追溯，不表示继续支持其记录的旧产品行为。
+- **Built Not Enabled**：源码或 package 已存在并可能被构建或测试，但没有同时进入当前发布生产入口、正式部署集合和业务闭环的能力。
+- **Enabled Module**：被本文列入当前发布范围、被 design.md 纳入启用模块图、存在真实生产调用和正式部署入口，并通过当前发布验证的模块。
 - **形态 A**：V5 及之前的架构形态，SpecForge 作为 OpenCode 插件寄生运行。
 - **形态 B**：V6 的架构形态，SpecForge 作为独立 Daemon 进程，OpenCode 降级为 LLM Kernel。
 - **Daemon**：SpecForge V6 的独立长生命周期进程。机器上只有一个 Daemon 实例，维护多个 project context，是所有状态、权限、工作流、事件的 Source of Truth。
@@ -30,7 +54,7 @@ V5 与 V6 的根本差别：
 - **AgentRole**：Agent 的静态角色（如 sf-orchestrator、sf-requirements），由配置文件定义权限。
 - **WorkflowRole**：Agent 在某个 workflow 实例里扮演的动态角色（如当前 feature_spec WI-042 的 requirements 阶段执行者）。
 - **Session Tree**：同一个 workItem 下多个 session 形成的父子关系树，通过 `parentSessionId` 串联，为未来 nested subagent 预留。
-- **Work Item**：工作项，对应 `.kiro/specs/{WI-XXX}/` 或 `.specforge/specs/{WI-XXX}/` 下的一个 spec 目录，拥有独立的 state machine。
+- **Work Item**：业务项目中的治理工作项，权威根目录为 `<project>/.specforge/work-items/<WI>/`。公开 `sf_work_item_create` 是唯一创建入口，必须一次性保存用户原始请求、分配完整目录和 schema 1.1 metadata，并通过 StateManager/WAL 建立初始 `intake_ready` 状态；`sf_state_transition` 只推进已存在 Work Item，不得分配 ID、创建目录或合成 metadata。`work_item.json` 只承载 Runtime-owned 元数据（身份、workflow、权限事实等），不得包含生命周期 `status`；独立 state machine 的唯一状态权威是 Daemon 写入的 WAL 事件。仓库内 `.kiro/specs/**` 是 SpecForge 产品规格文档，不是业务 Runtime 的 Work Item 根。
 - **Event Bus**：Daemon 内部的统一事件总线。所有跨层通信必须经过 Event Bus，不得直接函数调用跨越可观测性边界。
 - **events.jsonl**：Event Bus 的持久化落盘文件，采用 WAL（Write-Ahead Log）语义，是状态重建的唯一事实来源。
 - **state.json**：派生状态检查点文件，由 events.jsonl 推导得出，用于快速启动；崩溃恢复时以 events.jsonl 为准。
@@ -96,7 +120,10 @@ V5 与 V6 的根本差别：
    - 自动化部署 DevOps
    - LLM 评估 / 微调
 2. WHEN 后续模块 spec 或 ADR 中出现上述 6 项的实现计划，THE Review_Process SHALL 判定该 spec 或 ADR 需先修改本文档的"不做边界"章节后方可继续。
-3. THE Requirements_Document SHALL 声明 V5 遗留概念全部保留但重新组织位置（下沉到 Daemon 内部或作为扩展），不在 V6.0 删除任何 V5 既有语义。
+3. THE Requirements_Document SHALL 声明当前发布不承诺保留全部 V5 既有语义；只服务 V5、V5 以前版本或旧项目现场的状态、路径、ID、Schema、Manifest、插件协议和测试夹具不得作为当前发布能力保留。
+4. THE Current_Release SHALL 不提供旧项目自动识别、原位升级、自动迁移、兼容读取后继续写入或旧行为模拟；旧项目需要使用当前发布时必须新建当前格式项目，或由用户在 SpecForge 当前发布之外完成一次性手工数据整理。
+5. THE Current_Release SHALL 保留当前 Schema 的校验、同一当前产品线内的受控升级、损坏检测、备份、失败关闭和对未知更高版本的拒绝；这些数据安全能力不属于旧项目兼容。
+6. THE Requirements_Document SHALL 保留历史治理证据，但任何 Runtime、构建、部署或测试不得仅因历史证据引用了旧行为就重新启用该行为。
 
 ### Requirement 3: 北极星目标
 
@@ -222,9 +249,9 @@ V5 与 V6 的根本差别：
 #### Acceptance Criteria
 
 1. THE Requirements_Document SHALL 规定用户级根目录为 `~/.specforge/`，并包含以下顶层子目录：`config/`、`runtime/`、`knowledge/`、`observability/`、`skills/`、`agents/`、`tools/`、`migrations/`、`backups/`。
-2. THE Requirements_Document SHALL 规定项目级根目录为 `<project>/.specforge/`（带点，与 `.git` 风格一致），并包含以下顶层子目录：`config/`、`specs/{WI-XXX}/`、`runtime/`、`knowledge/`、`observability/`、`skills/`、`agents/`、`tools/`。
+2. THE Requirements_Document SHALL 规定项目级根目录为 `<project>/.specforge/`（带点，与 `.git` 风格一致），并包含以下顶层子目录：`config/`、`project/`、`work-items/<WI>/`、`runtime/`、`knowledge/`、`observability/`、`skills/`、`agents/`、`tools/`；`project/` 承载正式 Project Spec，`work-items/<WI>/` 承载 Work Item 状态、Candidate、Gate、Decision、Merge、Verification 与 Close 产物。
 3. THE `.opencode/` 目录 SHALL 在 V6 中仅保留 Thin Plugin，不再承载 agents / tools / skills / plugins / runtime 等 SpecForge 资产。
-4. THE Requirements_Document SHALL 声明 V5 的 `specforge/` 目录在 V6 中迁移到 `<project>/.specforge/`，并在 REQ-26 的"不做清单"中说明 V5→V6 自动迁移工具不做。
+4. THE Requirements_Document SHALL 声明当前发布只接受按本需求与 design.md 创建的 `<project>/.specforge/` 项目布局；V5 `specforge/` 目录不会被当前发布自动识别、迁移或作为兼容写入入口，并在 REQ-26 的"不做清单"中明确旧项目迁移不属于当前产品能力。
 5. IF 某资产同时存在于 `~/.specforge/` 和 `<project>/.specforge/`（如同名 skill），THEN THE Loader SHALL 按"内置 < 用户级 < 项目级"顺序覆盖。
 6. IF 项目级资产加载失败（例如文件损坏、schema 非法、解析错误），THEN THE Loader SHALL 报错并拒绝加载该资产，不得回退到用户级或内置版本；precedence 顺序必须始终被尊重。
 
@@ -334,9 +361,9 @@ V5 与 V6 的根本差别：
 3. THE Plugin_Loader SHALL 对插件源码执行静态检查，禁止以下敏感 API：直接 `child_process.exec`、`fs` 越界路径、未声明的网络访问。
 4. THE Requirements_Document SHALL 声明子进程隔离 + 资源限额 + 文件系统白名单属于 V6.x（P2），不在 V6.0 实现。
 
-### Requirement 18: 数据迁移框架
+### Requirement 18: 当前 Schema 演进框架
 
-**User Story:** 作为长期使用者，我希望 SpecForge 的持久化文件格式可演进，新旧版本切换不会破坏用户数据。
+**User Story:** 作为当前产品线的长期使用者，我希望 SpecForge 当前 Schema 的持久化文件格式可以受控演进，同时不把旧项目兼容重新引入产品。
 
 #### Acceptance Criteria
 
@@ -344,9 +371,17 @@ V5 与 V6 的根本差别：
 2. WHEN Daemon 启动且 `code_schema_version > file_schema_version`，THE Migration_Subsystem SHALL 自动运行迁移脚本。
 3. WHEN Daemon 启动且 `file_schema_version == code_schema_version`，THE Daemon SHALL 正常启动，不显示升级提示。
 4. IF `file_schema_version > code_schema_version`，THEN THE Daemon SHALL 先向用户显示升级提示（说明需要升级 SpecForge），再拒绝启动；仅在严格大于的情况下触发拒绝。
-5. THE Migration_Subsystem SHALL 在 `~/.specforge/migrations/` 查找版本间迁移脚本（例如 `v1.0-to-v1.1.ts`）。
+5. THE Migration_Subsystem SHALL 只从正式 release manifest 中登记且通过 size 与 SHA-256 校验的版本间迁移资产建立执行链；这些资产可以由 installer 安装到 `~/.specforge/migrations/`，但该目录中的未登记文件、用户新增脚本或校验不匹配文件均不得执行。`MIGRATION_SCRIPT_TRUST=RELEASE_MANIFEST_HASH_BOUND`。
 6. WHEN 迁移脚本执行前，THE Migration_Subsystem SHALL 把当前文件备份到 `~/.specforge/backups/<timestamp>/`。
-7. THE Requirements_Document SHALL 声明 V5→V6 的数据迁移工具不在本版本范围（REQ-26 不做清单）。
+7. THE Migration_Subsystem SHALL 只处理本文和 design.md 明确列入的当前产品线 Schema 版本链；V5、V5 以前版本、来源不明 Schema 或旧项目布局到当前发布的迁移工具不在产品范围（REQ-26 不做清单）。
+8. IF 持久化文件不属于受支持的当前产品线 Schema 版本链，THEN THE Migration_Subsystem SHALL 失败关闭并给出重新初始化或外部手工整理提示，不得猜测旧格式并继续写入。
+9. THE Current_Release SHALL 以每个持久化文件自身的 `schema_version` 作为该文件格式版本的唯一权威，不得创建或读取一个以 `data_schema_version` 代表整个项目所有持久化数据版本的聚合 Project Manifest。`NO_PROJECT_AGGREGATE_SCHEMA_MANIFEST`。
+10. THE `<project>/.specforge/project/spec_manifest.json` SHALL 仅作为 Project Spec 的模块目录与版本清单，并以其自身 `schema_version` 参与当前 schema 链；它不得被替换为三字段 `data_schema_version / initialized_at / updated_at` 文件。
+11. THE Current_Release SHALL 把 `<project>/.specforge/manifest.json` 视为不受支持的旧项目路径；当前项目初始化、Daemon startup、installer upgrade 与 migration 均不得创建、读取或更新该文件。当前 schema 迁移的唯一协调 package SHALL 是 `@specforge/migration`。
+12. THE Current_Release SHALL 由每个持久化文件族的 owner 以 descriptor 明确声明 path selector、精确 current schema id、validator 与允许的有向 migration transitions；不得假设所有文件共享一个全局 schema 版本或统一 semver 格式，也不得把不同字符串猜测为等价版本。`SCHEMA_VERSION_AUTHORITY=PER_FILE_CONTRACT`。
+13. BEFORE 确认存在从文件版本到代码版本的完整、连续且受信任迁移链，THE Migration_Subsystem SHALL 只读检测，不得创建 migration、backup 或其他目录，也不得修改输入。`MIGRATION_PRECHECK_WRITE=FORBIDDEN`。
+14. IF 完整受信任迁移链不存在、存在版本断点或存在歧义，THEN THE Migration_Subsystem SHALL 拒绝迁移并阻止 Daemon 启动或 installer upgrade 提交，不得把“没有发现脚本”视为成功。`MIGRATION_CHAIN_GAP=FAIL_CLOSED`。
+15. IF 任一迁移、验证、备份或恢复步骤失败，THEN THE Migration_Subsystem SHALL 回滚并阻止 Daemon 启动或 installer upgrade 提交，不得以 warning、默认配置或部分成功继续运行。`MIGRATION_FAILURE_POLICY=FAIL_CLOSED`。
 
 ### Requirement 19: 多机同步预留
 
@@ -409,7 +444,7 @@ V5 与 V6 的根本差别：
 2. THE Requirements_Document SHALL 规定用户自定义 Tool 必须包含以下字段：`id`、`displayName`、`version`、`permissions`、`inputSchema`、`outputSchema`、`execute`。
 3. THE Tool_Context SHALL 不暴露任何 OpenCode 特有概念（如 OpenCode `ctx`、`callID`）；所有跨层字段由 Adapter 翻译为 Daemon 中立字段。
 4. THE Agent_Role_Config SHALL 决定该 role 可用的 Tool 集合；Permission Engine 在每次调用时再次校验。
-5. THE Requirements_Document SHALL 声明用户自定义 Tool 在 V6.0 只提供"受限的只读 / 副作用可声明"子集作为默认发布能力；WHERE 用户自定义 Tool 的完整 Tier 2 能力已在代码库中实现，THE Tool_Runtime SHALL 允许用户访问并使用这些能力，即使在 V6.0 分支内；完整 Tier 2 能力的正式发版声明属于 V6.1（P1）。
+5. THE Requirements_Document SHALL 声明用户自定义 Tool 在 V6.0 只提供"受限的只读 / 副作用可声明"子集作为默认发布能力；完整 Tier 2 能力属于 V6.1（P1）。即使完整 Tier 2 已存在于代码库，THE Tool_Runtime SHALL 在本文完成范围提升、design.md 完成启用设计并通过当前发布验证以前保持不可用。
 
 ### Requirement 23: Workflow 数据驱动
 
@@ -449,8 +484,10 @@ V5 与 V6 的根本差别：
    - 分发（npm 包、安装向导、`schema_version` + 迁移框架，共 3 项）。
 2. THE Requirements_Document SHALL 以列表形式列出 V6.1 P1 项（共 15 项），包含 bugfix workflow、design-first workflow、quick change workflow、Knowledge Graph、全局知识库 + sf-knowledge、Context Builder、成本追踪、并行任务调度、跨会话续接、Telegram Webhook 通知、用户自定义 Tool、用户自定义 Skill、sf-debugger 自愈闭环、Workflow 数据驱动扩展、Gate 组合。
 3. THE Requirements_Document SHALL 以列表形式列出 V6.x P2 项，包含多模态完整支持、自愈完整闭环、V3.6 四工作流（change_request / refactor / ops_task / investigation）、插件沙箱、多机同步、Web UI、跨项目自动学习。
-4. WHEN 某项被明确列入 P1 或 P2，THE V6_0_Scope SHALL 禁止在 V6.0 交付该项。
-5. THE Requirements_Document SHALL 允许在 ADR（记录在 design.md）中调整 P0 / P1 / P2 归属，但必须同步更新本文档。
+4. WHEN 某项被明确列入 P1 或 P2，THE V6_0_Scope SHALL 禁止在 V6.0 构建为可发布能力、部署或运行时启用；仅有源码、测试、package 或默认关闭的 feature flag 不构成交付。
+5. THE Requirements_Document SHALL 允许 ADR 提议调整 P0 / P1 / P2 归属，但调整必须先同步更新本文档，再更新 design.md 和实现；ADR 或 design.md 不得单独覆盖本文的产品范围。
+6. WHERE 一个模块已构建但未被当前生产入口、部署集合和业务流程启用，THE Release_Process SHALL 将其分类为 `BUILT_NOT_ENABLED`，不得因代码已存在而默认纳入 V6.0。
+7. BEFORE V6.0 stable release，THE Release_Process SHALL 对每个 `BUILT_NOT_ENABLED` 模块完成唯一处置：通过本文范围变更与 design.md 启用设计将其提升为 Enabled Module，或从当前构建、部署和运行集合删除；不得无限期以半启用状态保留。
 
 ### Requirement 26: V6.0 不做清单
 
@@ -460,11 +497,15 @@ V5 与 V6 的根本差别：
 
 1. THE Requirements_Document SHALL 列出 V6 明确不做的项目：
    - V5→V6 数据迁移工具（用户需新项目启动或手动迁移）。
+   - V5、V5 以前版本或其他旧项目现场的兼容读取、原位升级、继续写入和行为模拟。
+   - 旧 Work Item ID、旧状态名、旧用户目录、旧插件协议、旧 Manifest 字段或旧测试夹具的兼容分支。
    - 国际化。
    - Web UI（V6.0）。
    - 多租户、云服务。
 2. THE Requirements_Document SHALL 说明"Telegram 直接集成"也不做；由 OpenClaw 桥接（与 REQ-16 呼应）。
 3. WHEN 后续需求提到"国际化"、"Web UI（V6.0 内）"或"多租户"，THE Review_Process SHALL 拒绝并指向本清单。
+4. THE Requirements_Document SHALL 区分历史治理证据与产品兼容支持；ERR、Gate Attempt、审计记录、历史报告和 Git 历史必须保留，但必须退出当前构建、部署和运行决策。
+5. IF 后续确需支持旧项目数据，THEN THE Product_Owner SHALL 另行批准一个版本明确、输入输出明确、可回滚的一次性外部迁移项目；该项目不得被当前实现中的隐式 compatibility fallback 替代。
 
 ### Requirement 27: V6.0 质量门槛
 
@@ -481,6 +522,10 @@ V5 与 V6 的根本差别：
    - 门槛 6：文档完整——架构文档 + 用户手册齐全。
 2. WHEN 任一门槛未通过，THE Release_Process SHALL 拒绝打出 V6.0 stable tag。
 3. THE Requirements_Document SHALL 允许 6 条门槛在 ADR 中细化阈值（如每秒事件数），但不得删除任何一条门槛。
+4. BEFORE V6.0 stable tag，THE Release_Process SHALL 证明源码模块集合、package 构建集合、installer/manifest 部署集合、实际启动入口和 design.md Enabled Module 集合一致。
+5. BEFORE V6.0 stable tag，THE Release_Process SHALL 从干净环境安装正式 release artifact，并证明 CLI、Daemon、OpenCode 集成、握手、核心 workflow、Gate、权限、状态恢复和卸载/重装路径形成可重复闭环。
+6. BEFORE V6.0 stable tag，THE Release_Process SHALL 执行可信全量回归；该回归只能消费当前权威和当前发布模块，不得通过恢复旧行为、忽略失败、删除现役断言或把 built-not-enabled 测试冒充发布能力测试来获得通过。
+7. IF 任一生产入口只在源码树可运行、没有正式 artifact producer、没有 installer/manifest 消费者或无法在干净环境启动，THEN THE Release_Process SHALL 判定当前发布未达到 stable 质量。
 
 ### Requirement 28: 平台与环境
 
@@ -540,7 +585,7 @@ V5 与 V6 的根本差别：
 12. **Adapter Version Alignment Property**：THE V6_Architecture SHALL 保证 `OpenCodeAdapter.version` 与兼容的 OpenCode major 版本区间一一对应；Daemon 启动时若检测到 OpenCode 版本超出 Adapter 支持区间，必须拒绝绑定并提示升级。
 13. **Modality Adaptation Determinism Property**：THE V6_Architecture SHALL 保证 `prepareMessageForModel(userMessage, modelCapabilities)` 对相同输入（同 blob 引用 + 同 capabilities）得到相同输出决策。
 14. **Schema Version Monotonicity Property**：THE V6_Architecture SHALL 保证同一文件的 `schema_version` 随版本演进单调不减；任何 migration 脚本执行后写入的 `schema_version` 必须等于或高于迁移前。
-15. **Scope Boundary Property**：THE V6_Architecture SHALL 保证 REQ-25 中标记为 P1 / P2 的能力不在 V6.0 发版分支中启用（可存在死代码或 feature flag，但默认关闭）。
+15. **Scope Boundary Property**：THE V6_Architecture SHALL 保证 REQ-25 中标记为 P1 / P2 的能力不在 V6.0 正式构建、部署或运行时中启用。收敛期间可以暂存为已分类的 `BUILT_NOT_ENABLED`，但在 stable release 前必须按 REQ-25.7 提升为 Enabled Module 或退出当前构建、部署和运行集合；不得把永久死代码或默认关闭的 feature flag 当作完成状态。
 
 16. **OpenClaw Integration Layer Property**（V6.0 P0）：THE V6_Architecture SHALL 保证 OpenClaw 集成遵循以下三层架构约束：
     - **Layer 1 - OpenClaw Skill（基础设施层）**：负责进程生命周期管理、端口分配、用户→项目路由。OpenClaw Skill 作为自动化平台的技能接口，不直接执行业务逻辑。
@@ -553,3 +598,19 @@ V5 与 V6 的根本差别：
     - Daemon 与 OpenCode 之间通过 OpenCodeAdapter 定义的 LLMKernelAdapter 接口通信。
 
     **验证方法**：架构审查确认无直接 OpenCode session API 调用从 OpenClaw Skill 发出；所有业务消息路径经过 Daemon HTTP API 或内部 Tool 调用。
+
+### Requirement 31: 当前发布边界与模块收敛
+
+**User Story:** 作为当前发布负责人，我希望业务范围、模块启用、部署内容和发布证据使用同一条边界，以便“源码已经存在”和“产品已经可发布”不再被混为一谈。
+
+#### Acceptance Criteria
+
+1. THE Current_Release SHALL 只包含以下业务闭环：项目初始化与当前目录布局；Work Item 从创建、Candidate、Gate、User Decision、Merge、Verification 到 Close 的治理生命周期；Permission、Write Guard、HardStop 与审计；Daemon、CLI 和 OpenCode 客户端之间的受控通信；events/WAL/state 恢复；当前配置、可观测性、安装、升级验证和服务生命周期。
+2. THE Current_Release SHALL 不包含旧项目兼容、REQ-2 的六项架构外能力、REQ-26 不做清单，以及尚未由本文从 P1/P2 提升到当前范围的能力。
+3. THE V6_Design SHALL 为每项当前发布能力给出唯一 Enabled Module、生产入口、直接依赖、状态权威、数据输入输出、artifact producer、installer/manifest consumer 和验证入口。
+4. THE V6_Design SHALL 把每个仓库 package、setup 模块、动态 registry 和运行入口唯一分类为 `CURRENT_RELEASE_CORE`、`CURRENT_RELEASE_SUPPORTING`、`BUILT_NOT_ENABLED`、`LEGACY_ONLY` 或 `HISTORICAL_EVIDENCE_ONLY`。
+5. THE Release_Process SHALL 只构建和部署 `CURRENT_RELEASE_CORE` 与 `CURRENT_RELEASE_SUPPORTING`；`BUILT_NOT_ENABLED` 必须在 stable 前启用或退出，`LEGACY_ONLY` 不得进入当前发布，`HISTORICAL_EVIDENCE_ONLY` 只保留不可变历史字节。
+6. THE Current_Release SHALL 不接受仅由 package 测试、历史 ERR、源码 import、feature flag 或用户级残留证明的能力；每项 Enabled Module 必须同时具有当前需求依据、设计映射、真实生产调用、正式部署入口和发布级验证。
+7. WHEN 当前代码、测试、安装器或部署现场与本文冲突，THE Development_Process SHALL 先报告冲突和权威来源，再按 requirements → design → governance/module specs → implementation/deployment → tests/documents 的顺序修复，不得用下游行为反向覆盖本文。
+8. THE Release_Process SHALL 保留全部历史治理证据，同时证明历史证据没有作为旧产品行为的运行时依赖进入当前发布。
+9. THE Current_Release SHALL 只通过公开 `sf_work_item_create` 创建 Work Item；该入口必须保存原始 user request 并把初始 lifecycle state 通过 StateManager/WAL 推进到 `intake_ready`。`sf_state_transition` SHALL 只推进已经存在且 metadata 通过当前 schema 校验的 Work Item，不得承担 ID 分配、目录创建、metadata 初始化或旧创建协议兼容。

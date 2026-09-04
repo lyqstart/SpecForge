@@ -290,13 +290,13 @@ describe('Property 10: Permission Decision Traceability', () => {
       // Test with specific hard rule triggering combinations
       // that actually match the hard rule conditions
       const hardRuleTestCases = [
-        // hard-001: bypass gate/validation
+        // hard-004: bypass gate/validation
         { action: 'gate.bypass', resourceType: 'gate' },
         { action: 'validation.skip', resourceType: 'validation' },
-        // hard-002: forge verification  
+        // hard-005: forge verification
         { action: 'verification.forge', resourceType: 'verification' },
         { action: 'signature.falsify', resourceType: 'signature' },
-        // hard-005: execute arbitrary code
+        // legacy non-hard actions below may be allowed; deny-path assertions are conditional
         { action: 'code.execute', resourceType: 'script' },
         { action: 'command.exec', resourceType: 'command' },
         // hard-008: disrupt system operations

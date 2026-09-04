@@ -2,7 +2,6 @@
  * SpecForge Installer Reconcile — Generated File Handler
  *
  * 管理安装器生成文件的清理：
- * - upgrade_journal.json: 旧安装器遗留，成功 Reconcile 后删除
  * - partial_commit.journal: 提交中断恢复后删除
  *
  * 在成功 Reconcile 完成后调用。
@@ -34,16 +33,13 @@ export interface GeneratedFileHandler {
 export interface GeneratedFileCleanupPlan {
   filesToDelete: Array<{
     path: string
-    reason: string  // "upgrade_journal_stale" | "partial_commit_recovered"
+    reason: string  // "partial_commit_recovered"
   }>
 }
 
 // ============================================================
 // 常量
 // ============================================================
-
-/** 旧安装器遗留的升级日志文件名 */
-const UPGRADE_JOURNAL_FILENAME = "upgrade_journal.json"
 
 /** 提交中断恢复日志文件名 */
 const PARTIAL_COMMIT_JOURNAL_FILENAME = "partial_commit.journal"
@@ -72,21 +68,11 @@ async function fileExists(filePath: string): Promise<boolean> {
  * 生成文件清理处理器实例
  *
  * 管理的生成文件：
- * - upgrade_journal.json: 旧安装器遗留，成功 Reconcile 后删除（R11.5）
  * - partial_commit.journal: 提交中断恢复后删除
  */
 export const generatedFileHandler: GeneratedFileHandler = {
   async checkForCleanup(targetDir: string): Promise<GeneratedFileCleanupPlan> {
     const filesToDelete: GeneratedFileCleanupPlan["filesToDelete"] = []
-
-    // 检查 upgrade_journal.json 是否存在
-    const upgradeJournalPath = join(targetDir, UPGRADE_JOURNAL_FILENAME)
-    if (await fileExists(upgradeJournalPath)) {
-      filesToDelete.push({
-        path: upgradeJournalPath,
-        reason: "upgrade_journal_stale",
-      })
-    }
 
     // 检查 partial_commit.journal 是否存在
     const partialCommitPath = join(targetDir, PARTIAL_COMMIT_JOURNAL_FILENAME)

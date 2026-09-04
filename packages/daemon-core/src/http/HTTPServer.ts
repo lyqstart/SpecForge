@@ -27,13 +27,22 @@ import { StateManager } from '../state/StateManager';
 import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
-import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
+import {
+  ensureProjectInit,
+  ensureProjectThinPlugin,
+} from '../tools/lib/sf_project_init_core';
 import { checkWrite, performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { appendWriteGuardLog } from '../tools/lib/write-guard-log';
 import { isCandidateFrozenState } from '../tools/lib/candidate-freeze-v11';
 import { JsonlAppender } from '../logs/JsonlAppender';
 import * as path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import { readWorkItemMetadata } from '../tools/lib/work-item-metadata';
+
+interface HTTPWriteGuardContext extends WriteGuardContext {
+  metadata_error?: string;
+  metadata_work_item_id?: string;
+}
 
 function isWALWriteError(err: unknown): err is WALWriteError {
   return err instanceof WALWriteError || (err instanceof Error && err.name === 'WALWriteError');
@@ -42,7 +51,7 @@ function isWALWriteError(err: unknown): err is WALWriteError {
 /**
  * Build a tool call record for JSONL logging.
  *
- * Fields align with ToolCallRecord from sf_continuity_core for consumer compatibility.
+ * Fields describe the daemon request observation contract.
  */
 function buildToolCallRecord(
   sessionId: string,
@@ -65,7 +74,7 @@ function buildToolCallRecord(
 /**
  * Build a conversation record for JSONL logging.
  *
- * Fields align with ConversationMessage from sf_continuity_core for consumer compatibility.
+ * Fields describe the daemon conversation observation contract.
  */
 function buildConversationRecord(
   eventType: string,
@@ -304,7 +313,6 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/v11/merge', this.handleV11Merge.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/decision', this.handleV11Decision.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/code-permission', this.handleV11CodePermission.bind(this));
-    this.addExactRoute('POST', '/api/v1/v11/spec-migration', this.handleV11SpecMigration.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/rollback', this.handleV11Rollback.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/handoff', this.handleV11Handoff.bind(this));
     this.addExactRoute('POST', '/api/v1/v11/extension', this.handleV11Extension.bind(this));
@@ -317,7 +325,7 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/v11/write-guard/escaped-write', this.handleV11WriteGuardEscapedWrite.bind(this));
 
     // Prefix routes for API v1 (fallback)
-    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin', 'project', 'v11'];
+    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin', 'project'];
     for (const segment of prefixes) {
       this.addPrefixRoute('GET', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
       this.addPrefixRoute('POST', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
@@ -1119,7 +1127,8 @@ export class HTTPServer {
 
     try {
       const result = await ensureProjectInit(projectPath, request.projectName);
-      this.sendJsonResponse(res, 200, this.successBody(result));
+      const thinPlugin = await ensureProjectThinPlugin(projectPath);
+      this.sendJsonResponse(res, 200, this.successBody({ ...result, thinPlugin }));
     } catch (err) {
       this.sendJsonResponse(res, 500, this.errorBody('INIT_FAILED', (err as Error).message));
     }
@@ -1595,7 +1604,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_work_item_create',
+        tool: 'sf_work_item_create',
         args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
@@ -1619,7 +1628,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_gate_run',
+        tool: 'sf_gate_run',
         args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
@@ -1643,7 +1652,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_merge',
+        tool: 'sf_merge_run',
         args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
@@ -1667,7 +1676,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_decision',
+        tool: 'sf_user_decision_record',
         args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
@@ -1691,7 +1700,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_code_permission',
+        tool: 'sf_code_permission',
         args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
@@ -1709,30 +1718,6 @@ export class HTTPServer {
   }
 
   /**
-   * v1.1 POST /api/v1/v11/spec-migration
-   */
-  private async handleV11SpecMigration(
-    req: http.IncomingMessage, res: http.ServerResponse, body: string,
-  ): Promise<void> {
-    const dispatcher = this.deps.toolDispatcher;
-    if (!dispatcher) {
-      this.sendJsonResponse(res, 503, { success: false, error: 'ToolDispatcher not available' });
-      return;
-    }
-    try {
-      const args = JSON.parse(body);
-      const result = await dispatcher.dispatch({
-        tool: 'sf_v11_spec_migration',
-        args,
-        context: { directory: this.getProjectPathFromRequest(req) },
-      });
-      this.sendJsonResponse(res, 200, result);
-    } catch (err: any) {
-      this.sendJsonResponse(res, 400, { success: false, error: err.message });
-    }
-  }
-
-  /**
    * v1.1 POST /api/v1/v11/rollback
    */
   private async handleV11Rollback(
@@ -1746,7 +1731,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_rollback', args,
+        tool: 'sf_rollback', args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);
@@ -1769,7 +1754,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_handoff', args,
+        tool: 'sf_handoff', args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);
@@ -1815,7 +1800,7 @@ export class HTTPServer {
     try {
       const args = JSON.parse(body);
       const result = await dispatcher.dispatch({
-        tool: 'sf_v11_verification', args,
+        tool: 'sf_verification', args,
         context: { directory: this.getProjectPathFromRequest(req) },
       });
       this.sendJsonResponse(res, 200, result);
@@ -1849,6 +1834,15 @@ export class HTTPServer {
     }
 
     const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, callerRole ?? 'agent');
+
+    if (wiCtx.metadata_error) {
+      this.sendJsonResponse(res, 200, this.successBody({
+        allowed: false,
+        reason: wiCtx.metadata_error,
+        violations: [wiCtx.metadata_error],
+      }));
+      return;
+    }
 
     // Block writes to .specforge/work-items/ — WI artifacts must use controlled tools
     const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
@@ -1898,6 +1892,15 @@ export class HTTPServer {
 
     // For bash guard: check each expected file
     const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, 'agent');
+
+    if (wiCtx.metadata_error) {
+      this.sendJsonResponse(res, 200, this.successBody({
+        allowed: false,
+        reason: wiCtx.metadata_error,
+        violations: [wiCtx.metadata_error],
+      }));
+      return;
+    }
 
     if (!wiCtx.hasActiveWI) {
       this.sendJsonResponse(res, 200, this.successBody({ allowed: false, reason: 'no active WI — call sf_code_permission enable first' }));
@@ -1968,6 +1971,14 @@ export class HTTPServer {
     }
 
     const wiCtx = await this.loadWriteGuardContext(resolvedProjectPath, 'agent');
+    if (wiCtx.metadata_error) {
+      this.sendJsonResponse(res, 200, this.successBody({
+        passed: false,
+        escapedWrites: [],
+        violations: [wiCtx.metadata_error],
+      }));
+      return;
+    }
     const allowedWriteFiles = wiCtx.workItem?.allowed_write_files ?? [];
 
     // Use changedFiles if provided, otherwise use expectedFiles as changed
@@ -2000,7 +2011,7 @@ export class HTTPServer {
   }
 
   // Helper: load WriteGuardContext from project filesystem
-  private async loadWriteGuardContext(projectPath: string, callerRole: string): Promise<WriteGuardContext> {
+  private async loadWriteGuardContext(projectPath: string, callerRole: string): Promise<HTTPWriteGuardContext> {
     const fs = require('node:fs');
     const pathModule = require('node:path');
 
@@ -2011,13 +2022,10 @@ export class HTTPServer {
     try {
       const stateManager = await this.deps.projectManager?.getProjectStateManager?.(projectPath);
       await stateManager?.rebuildFromEventsFile?.();
-      const dirs = fs.readdirSync(workItemsDir);
+      const dirs = fs.readdirSync(workItemsDir).sort();
       for (const dir of dirs) {
-        const wiPath = pathModule.join(workItemsDir, dir, 'work_item.json');
         try {
-          const content = fs.readFileSync(wiPath, 'utf-8');
-          const wi = JSON.parse(content);
-          const authoritative = await stateManager?.getState?.(wi.work_item_id);
+          const authoritative = await stateManager?.getState?.(dir);
           const currentState =
             typeof authoritative === 'string'
               ? authoritative
@@ -2027,13 +2035,26 @@ export class HTTPServer {
                 authoritative?.state;
           if (!currentState) continue;
           if (currentState !== 'closed' && currentState !== 'rejected' && currentState !== 'superseded') {
+            let wi: Awaited<ReturnType<typeof readWorkItemMetadata>>;
+            try {
+              wi = await readWorkItemMetadata(pathModule.join(workItemsDir, dir), dir);
+            } catch (error) {
+              return {
+                hasActiveWI: false,
+                workItem: undefined,
+                callerRole: callerRole as any,
+                isFrozen: true,
+                metadata_error: error instanceof Error ? error.message : String(error),
+                metadata_work_item_id: dir,
+              };
+            }
             hasActiveWI = true;
             activeWI = {
-              work_item_id: wi.work_item_id,
+              work_item_id: dir,
               status: currentState,
-              code_change_allowed: wi.code_change_allowed ?? false,
-              allowed_write_files: wi.allowed_write_files ?? [],
-              workflow_path: wi.workflow_path ?? null,
+              code_change_allowed: wi.code_change_allowed === true,
+              allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files as any : [],
+              workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null,
             };
             break;
           }

@@ -626,7 +626,7 @@ constrained_by: <约束来源>
 **Candidate 规则**（§8.2）：
 
 1. **必须是完整目标文件** — 不能是 diff / patch 格式。
-2. **路径位于权威 Candidate 子树** — `.specforge/work-items/<WI>/candidates/project/modules/<MODULE>/design.candidate.md`。Work Item 顶层 `design.md` 和旧 `.specforge/specs/<WI>/design.md` 只能作为 legacy 只读兼容路径，不得同步写入第二份。
+2. **路径位于权威 Candidate 子树** — `.specforge/work-items/<WI>/candidates/project/modules/<MODULE>/design.candidate.md`。当前发布不得读取或写入 Work Item 顶层 `design.md` 和旧 `.specforge/specs/<WI>/design.md`。
 3. **不能直接覆盖 `.specforge/project/**`\*\* — 必须通过 Gate → User Decision → Merge Runner 流程。
 4. **必须绑定 `base_spec_version`** — 记录基于哪个版本生成。
 5. **必须计算 hash** — 用于后续一致性校验。

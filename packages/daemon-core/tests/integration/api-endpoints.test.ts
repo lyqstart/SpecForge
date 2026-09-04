@@ -15,8 +15,11 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as http from 'http';
 import * as fs from 'fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { Daemon } from '../../src/daemon/Daemon';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
+import { CurrentTestDaemonConfig } from '../helpers/current-daemon-test-config';
 
 function httpRequest(
   options: http.RequestOptions,
@@ -64,10 +67,12 @@ describe('E1 API Endpoints', () => {
   let config: DaemonConfig;
   let port: number;
   let token: string;
+  let testRoot: string;
 
   beforeEach(async () => {
-    daemon = new Daemon();
-    config = new DaemonConfig();
+    testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-api-endpoints-'));
+    config = new CurrentTestDaemonConfig(testRoot);
+    daemon = new Daemon(config);
     await daemon.start();
 
     const handshakePath = config.getHandshakeFile();
@@ -81,6 +86,7 @@ describe('E1 API Endpoints', () => {
     if (daemon.isDaemonRunning()) {
       await daemon.stop();
     }
+    await fs.rm(testRoot, { recursive: true, force: true });
   }, 15000);
 
   describe('Authentication', () => {
@@ -116,7 +122,7 @@ describe('E1 API Endpoints', () => {
     it('should handle state/transition', async () => {
       const res = await httpRequest(
         makeOptions(port, 'POST', '/api/v1/state/transition', token, 'application/json'),
-        '{"workItemId":"WI-001","fromState":"","toState":"intake"}',
+        '{"workItemId":"WI-001","fromState":"","toState":"created"}',
       );
       expect(res.statusCode).toBe(200);
       const parsed = JSON.parse(res.body);

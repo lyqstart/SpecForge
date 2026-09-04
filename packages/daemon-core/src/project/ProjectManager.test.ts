@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as fs from 'fs/promises';
-import { ProjectManager } from './ProjectManager';
+import { ProjectManager, type ProjectSchemaPrecheck } from './ProjectManager';
 import { EventBus } from '../event-bus/EventBus';
 import type { IPathResolver } from '../daemon/path-resolver';
 import type { StateManager } from '../state/StateManager';
@@ -17,6 +17,7 @@ vi.mock('fs/promises', () => ({
 const mockAccess = fs.access as unknown as ReturnType<typeof vi.fn>;
 const mockMkdir = fs.mkdir as unknown as ReturnType<typeof vi.fn>;
 const mockWriteFile = fs.writeFile as unknown as ReturnType<typeof vi.fn>;
+const mockReadFile = fs.readFile as unknown as ReturnType<typeof vi.fn>;
 
 function createMockPathResolver(): IPathResolver {
   const base = '/mock';
@@ -44,45 +45,50 @@ function normalizePath(p: string): string {
 }
 
 /**
- * Set of project paths whose manifest.json should be treated as existing.
- * Uses path.join with the project path to build the expected manifest path
- * so that slash direction matches the runtime OS.
+ * Set of project paths whose authoritative Project Spec manifest exists.
  */
-function mockManifestExistsForPaths(projectPaths: string[]) {
+function mockCurrentManifestExistsForPaths(projectPaths: string[]) {
   const normalizedAllowed = projectPaths.map(normalizePath);
 
   mockAccess.mockImplementation((p: string) => {
     const np = normalizePath(p);
-    // Check if this is a manifest.json access for an allowed project
-    if (np.includes('.specforge/manifest.json')) {
+    if (np.endsWith('.specforge/project/spec_manifest.json')) {
       for (const ap of normalizedAllowed) {
         if (np.startsWith(ap)) return Promise.resolve();
       }
     }
     return Promise.reject(new Error('ENOENT'));
   });
+  mockReadFile.mockImplementation((p: string) => {
+    const np = normalizePath(p);
+    if (np.endsWith('.specforge/project/spec_manifest.json')) {
+      return Promise.resolve(JSON.stringify({
+        schema_version: '1.0',
+        project_spec_version: 'PSV-0001',
+        project_name: 'Test project',
+        default_module: 'main',
+        modules: [],
+        project: {},
+      }));
+    }
+    return Promise.reject(new Error('ENOENT'));
+  });
 }
 
 /**
- * Helper: configure fs.access to simulate "no manifest.json, no .specforge/"
+ * Helper: configure fs.access to simulate no supported current manifest.
  */
-function mockNoManifestNoSpecDir() {
+function mockNoCurrentManifest() {
   mockAccess.mockRejectedValue(new Error('ENOENT'));
 }
 
 /**
- * Helper: configure fs.access to simulate "no manifest.json but .specforge/ exists"
- * (old project migration scenario)
+ * Helper: configure fs.access to simulate the retired root manifest only.
  */
-function mockNoManifestButSpecDirExists() {
+function mockRetiredRootManifestExists() {
   mockAccess.mockImplementation((p: string) => {
     const np = normalizePath(p);
-    // manifest.json → does NOT exist
-    if (np.endsWith('manifest.json')) {
-      return Promise.reject(new Error('ENOENT'));
-    }
-    // .specforge/ directory → exists
-    if (np.includes('.specforge')) {
+    if (np.endsWith('.specforge/manifest.json')) {
       return Promise.resolve();
     }
     return Promise.reject(new Error('ENOENT'));
@@ -91,18 +97,29 @@ function mockNoManifestButSpecDirExists() {
 
 describe('ProjectManager', () => {
   let manager: ProjectManager;
+  let projectSchemaPrecheck: ReturnType<typeof vi.fn<ProjectSchemaPrecheck>>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    manager = new ProjectManager(new EventBus(), createMockPathResolver(), createMockStateManager());
+    projectSchemaPrecheck = vi.fn<ProjectSchemaPrecheck>().mockResolvedValue({
+      ok: true,
+      needsMigration: false,
+      checks: [],
+    });
+    manager = new ProjectManager(
+      new EventBus(),
+      createMockPathResolver(),
+      createMockStateManager(),
+      projectSchemaPrecheck,
+    );
   });
 
   // -----------------------------------------------------------------------
-  // Existing tests — fixed by mocking manifest.json as existing
+  // Existing behavior under the current Project Spec layout.
   // -----------------------------------------------------------------------
   describe('existing functionality', () => {
     beforeEach(() => {
-      mockManifestExistsForPaths(['/path/to/project', '/project/a', '/project/b']);
+      mockCurrentManifestExistsForPaths(['/path/to/project', '/project/a', '/project/b']);
     });
 
     it('should register and get project context', async () => {
@@ -176,41 +193,29 @@ describe('ProjectManager', () => {
   });
 
   // -----------------------------------------------------------------------
-  // New tests — manifest.json & migration scenarios (P0 from impact analysis)
+  // Current initialization boundary.
   // -----------------------------------------------------------------------
   describe('manifest initialization checks', () => {
-    it('should throw PROJECT_NOT_INITIALIZED when no manifest.json and no .specforge/', async () => {
-      mockNoManifestNoSpecDir();
+    it('should throw PROJECT_NOT_INITIALIZED when the current manifest is absent', async () => {
+      mockNoCurrentManifest();
 
       await expect(manager.registerProject('/uninitialized/project')).rejects.toThrow(
         'PROJECT_NOT_INITIALIZED',
       );
     });
 
-    it('should auto-create manifest.json when .specforge/ exists but manifest.json missing (old project migration)', async () => {
-      mockNoManifestButSpecDirExists();
+    it('should reject the retired root manifest without auto-creating current state', async () => {
+      mockRetiredRootManifestExists();
 
       const projectPath = '/old/project';
-      const context = await manager.registerProject(projectPath);
-
-      // Should have called writeFile to create the manifest
-      expect(mockWriteFile).toHaveBeenCalled();
-      const writeCall = mockWriteFile.mock.calls.find(
-        (call: unknown[]) => typeof call[0] === 'string' && normalizePath(call[0] as string).endsWith('manifest.json'),
+      await expect(manager.registerProject(projectPath)).rejects.toThrow(
+        'UNSUPPORTED_PROJECT_LAYOUT',
       );
-      expect(writeCall).toBeDefined();
-      // Verify the manifest content structure
-      const manifestContent = JSON.parse(writeCall![1] as string);
-      expect(manifestContent.schema_version).toBe('6.0');
-      expect(manifestContent.project_name).toBe('project');
-
-      // Registration should still succeed
-      expect(context.projectPath).toBe(projectPath);
-      expect(context.isFullyRegistered).toBe(true);
+      expect(mockWriteFile).not.toHaveBeenCalled();
     });
 
-    it('should register normally when manifest.json exists', async () => {
-      mockManifestExistsForPaths(['/initialized/project']);
+    it('should register normally when project/spec_manifest.json exists', async () => {
+      mockCurrentManifestExistsForPaths(['/initialized/project']);
 
       const projectPath = '/initialized/project';
       const context = await manager.registerProject(projectPath);
@@ -218,6 +223,35 @@ describe('ProjectManager', () => {
       expect(context.projectPath).toBe(projectPath);
       expect(context.projectId).toBeDefined();
       expect(context.isFullyRegistered).toBe(true);
+    });
+
+    it('should fail before runtime directory creation when the manifest schema is unregistered', async () => {
+      mockCurrentManifestExistsForPaths(['/future/project']);
+      mockReadFile.mockResolvedValue(JSON.stringify({
+        schema_version: '2.0',
+        project_spec_version: 'PSV-0001',
+      }));
+      projectSchemaPrecheck.mockResolvedValue({
+        ok: false,
+        needsMigration: false,
+        checks: [{
+          descriptorId: 'project-spec-manifest',
+          owner: '@specforge/daemon-core/project-spec',
+          relativePath: '.specforge/project/spec_manifest.json',
+          status: 'blocked',
+          observedSchemaId: '2.0',
+          currentSchemaId: '1.0',
+          transitionAssetIds: [],
+          errorCode: 'CHAIN_GAP',
+          error: 'no complete explicit transition chain',
+        }],
+      });
+
+      await expect(manager.registerProject('/future/project')).rejects.toThrow(
+        'PROJECT_SCHEMA_PRECHECK_BLOCKED',
+      );
+      expect(mockMkdir).not.toHaveBeenCalled();
+      expect(projectSchemaPrecheck).toHaveBeenCalledWith('/future/project');
     });
   });
 });

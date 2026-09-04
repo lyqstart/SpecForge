@@ -18,6 +18,7 @@ import { generateEventId } from '../../src/types/event-utils';
 import { mkdtemp, rm } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
+import { DaemonWalFixtureEventLogger } from '../helpers/current-daemon-wal.js';
 
 /**
  * Helper to create a test event with custom projectId
@@ -51,7 +52,7 @@ describe('Multi-Project Observability', () => {
     tempDir = await mkdtemp(join(tmpdir(), 'multi-project-test-'));
     
     // Initialize EventLogger
-    eventLogger = new EventLogger(join(tempDir, 'events'));
+    eventLogger = new DaemonWalFixtureEventLogger(join(tempDir, 'events'));
     await eventLogger.initialize();
     
     // Initialize CAS

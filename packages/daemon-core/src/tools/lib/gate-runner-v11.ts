@@ -793,16 +793,19 @@ registerGate('candidate_manifest_gate', 'hard_gate', true, async ctx => {
             const definition = JSON.parse(
               await fs.readFile(path.join(ctx.workItemDir, moduleDefinitionCandidate), 'utf-8')
             );
-            const identity = resolveSpecModuleIdentity(definition);
-            definitionValid = identity.valid && identity.moduleCode === moduleCode;
-            definitionDetails = identity.errors.join('; ');
+            const validation = validateModuleDefinitionCandidateJson(
+              JSON.stringify(definition),
+              moduleCode,
+            );
+            definitionValid = validation.valid;
+            definitionDetails = validation.errors.join('; ');
           } catch (error) {
             definitionDetails = (error as Error).message;
           }
         }
         checks.push({
           check_id: `new_module_${moduleCode}_definition`,
-          description: `New module ${moduleCode} module.json declares the same canonical module_code`,
+          description: `New module ${moduleCode} module.json satisfies schema_version=1.0, canonical module_code and flat code_paths`,
           passed: definitionValid,
           severity: definitionValid ? undefined : 'error',
           details: definitionDetails,

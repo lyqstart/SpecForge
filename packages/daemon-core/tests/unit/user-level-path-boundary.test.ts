@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import * as path from "node:path";
+import * as os from "node:os";
 
 import {
   resolveOpenCodeConfigRoot,
@@ -31,29 +32,28 @@ afterEach(() => {
 });
 
 describe("user-level path boundary", () => {
-  it("keeps Manifest at OpenCode root and runtime data under sf-user", () => {
+  it("keeps OpenCode and current SpecForge user roots separate", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
+    const userRoot = path.join(os.homedir(), ".specforge");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
     delete process.env.XDG_CONFIG_HOME;
 
     expect(resolveOpenCodeConfigRoot()).toBe(configRoot);
     expect(resolveSpecForgeManifestPath()).toBe(
-      path.join(configRoot, "specforge-manifest.json"),
+      path.join(userRoot, "specforge-manifest.json"),
     );
-    expect(resolveSpecForgeUserRoot()).toBe(
-      path.join(configRoot, "sf-user"),
-    );
+    expect(resolveSpecForgeUserRoot()).toBe(userRoot);
     expect(resolveSpecForgeUserPath("host-profile.json")).toBe(
-      path.join(configRoot, "sf-user", "host-profile.json"),
+      path.join(userRoot, "host-profile.json"),
     );
   });
 
-  it("keeps the global knowledge store under OpenCode sf-user/knowledge", () => {
+  it("keeps the global knowledge store under the current SpecForge user root", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
 
     expect(getGlobalStorePath()).toBe(
-      path.join(configRoot, "sf-user", "knowledge", "insights.json"),
+      path.join(os.homedir(), ".specforge", "knowledge", "insights.json"),
     );
   });
 
@@ -66,7 +66,7 @@ describe("user-level path boundary", () => {
     );
   });
 
-  it("moves Enterprise project runtime under OpenCode sf-user/projects", () => {
+  it("moves Enterprise project runtime under the current SpecForge projects root", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
 
@@ -74,21 +74,20 @@ describe("user-level path boundary", () => {
     const projectRoot = path.resolve("C:/tmp/project-b");
     const runtime = resolver.resolveProjectRuntimeDir(projectRoot);
 
-    expect(runtime.startsWith(path.join(configRoot, "sf-user", "projects"))).toBe(true);
-    expect(runtime.includes(`${path.sep}.specforge${path.sep}projects`)).toBe(false);
+    expect(runtime.startsWith(path.join(os.homedir(), ".specforge", "projects"))).toBe(true);
   });
 
-  it("keeps daemon runtime and handshake under OpenCode sf-user/runtime", () => {
+  it("keeps daemon runtime and handshake under the current SpecForge user root", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
 
     const resolver = new PersonalPathResolver();
 
     expect(resolver.resolveDaemonRuntimeDir()).toBe(
-      path.join(configRoot, "sf-user", "runtime"),
+      path.join(os.homedir(), ".specforge", "runtime"),
     );
     expect(resolver.resolveHandshakePath()).toBe(
-      path.join(configRoot, "sf-user", "runtime", "handshake.json"),
+      path.join(os.homedir(), ".specforge", "runtime", "daemon.sock.json"),
     );
   });
 });

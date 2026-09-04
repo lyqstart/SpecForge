@@ -98,7 +98,7 @@ describe('Daemon wiring — CP-1 / C1: WAL sole writer', () => {
     const sm = new StateManager(resolver, 'test-proj');
     await sm.initialize();
 
-    await sm.transition('WI-CP1', '', 'intake', 'cp1-actor');
+    await sm.transition('WI-CP1', '', 'intake_ready', 'cp1-actor');
 
     // Read events.jsonl directly — it should contain the transition event
     const eventsPath = (sm as any).wal.getEventsPath() as string;
@@ -111,7 +111,7 @@ describe('Daemon wiring — CP-1 / C1: WAL sole writer', () => {
     expect(lastEvent.action).toBe('state.transition');
     // payload should reference the work item
     expect(lastEvent.payload.work_item_id).toBe('WI-CP1');
-    expect(lastEvent.payload.to_state).toBe('intake');
+    expect(lastEvent.payload.to_state).toBe('intake_ready');
   });
 
   it('CP-1: events.jsonl contains event BEFORE state.json is updated (WAL ordering)', async () => {
@@ -119,7 +119,7 @@ describe('Daemon wiring — CP-1 / C1: WAL sole writer', () => {
     await sm.initialize();
 
     // transition() internally: appendEvent → WAL → writeStateFile
-    await sm.transition('WI-ORDER', '', 'design', 'test');
+    await sm.transition('WI-ORDER', '', 'intake_ready', 'test');
 
     const wal = (sm as any).wal;
     const eventsPath = wal.getEventsPath() as string;
@@ -139,7 +139,7 @@ describe('Daemon wiring — CP-1 / C1: WAL sole writer', () => {
     await sm.initialize();
     const eventsPath = (sm as any).wal.getEventsPath() as string;
 
-    await sm.transition('WI-SOLE', '', 'intake', 'test');
+    await sm.transition('WI-SOLE', '', 'intake_ready', 'test');
 
     // Count events in events.jsonl
     const raw = await fs.readFile(eventsPath, 'utf-8');
@@ -152,8 +152,8 @@ describe('Daemon wiring — CP-1 / C1: WAL sole writer', () => {
     const sm = new StateManager(resolver, 'test-proj');
     await sm.initialize();
 
-    await sm.transition('WI-D1', '', 'intake', 'test');
-    await sm.transition('WI-D1', 'intake', 'requirements', 'test');
+    await sm.transition('WI-D1', '', 'intake_ready', 'test');
+    await sm.transition('WI-D1', 'intake_ready', 'impact_analyzing', 'test');
 
     const eventsPath = (sm as any).wal.getEventsPath() as string;
     const raw = await fs.readFile(eventsPath, 'utf-8');
@@ -312,9 +312,9 @@ describe('Daemon wiring — M2: no duplicate events', () => {
     const sm = new StateManager(resolver, 'test-proj');
     await sm.initialize();
 
-    await sm.transition('WI-M2-1', '', 'intake', 'm2-test');
-    await sm.transition('WI-M2-1', 'intake', 'design', 'm2-test');
-    await sm.transition('WI-M2-2', '', 'requirements', 'm2-test');
+    await sm.transition('WI-M2-1', '', 'intake_ready', 'm2-test');
+    await sm.transition('WI-M2-1', 'intake_ready', 'impact_analyzing', 'm2-test');
+    await sm.transition('WI-M2-2', '', 'intake_ready', 'm2-test');
 
     const eventsPath = (sm as any).wal.getEventsPath() as string;
     const raw = await fs.readFile(eventsPath, 'utf-8');
@@ -344,7 +344,7 @@ describe('Daemon wiring — M2: no duplicate events', () => {
     await logger.initialize();
 
     // Step 1: StateManager writes to WAL
-    await sm.transition('WI-M2-INT', '', 'intake', 'test');
+    await sm.transition('WI-M2-INT', '', 'intake_ready', 'test');
     // Step 2: Simulate persistenceHook: trackEvent in-memory
     const obsEvent = makeObsEvent({
       eventId: 'simulated-hook',

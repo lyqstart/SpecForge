@@ -243,7 +243,9 @@ export class HardRuleEvaluator {
   }> {
     switch (hardRule.id) {
       case 'hard-001':
-        return [{ actionPattern: '*', resourcePattern: '*' }];
+        // Authentication identity is an actor dimension, not an action/resource grant.
+        // A static allow rule cannot relax this rule merely by existing.
+        return [];
       case 'hard-002':
         return [{ actionPattern: '*sf_state_transition*', resourcePattern: '*' }];
       case 'hard-003':
