@@ -353,6 +353,7 @@
       "name": "@specforge/workflow-runtime",
       "version": "0.1.0",
       "dependencies": {
+        "@specforge/migration": "workspace:*",
         "@specforge/types": "workspace:*",
         "fast-check": "^3.0.0",
         "uuid": "^10.0.0",

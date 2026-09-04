@@ -33,6 +33,7 @@
   "author": "SpecForge Team",
   "license": "MIT",
   "dependencies": {
+    "@specforge/migration": "workspace:*",
     "@specforge/types": "workspace:*",
     "fast-check": "^3.0.0",
     "uuid": "^10.0.0"

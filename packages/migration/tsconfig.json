@@ -30,6 +30,9 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "@specforge/types": [
+        "../types/dist/index.d.ts"
+      ],
       "@specforge/types/directory-layout": [
         "src/types/specforge-types-directory-layout.ts"
       ]

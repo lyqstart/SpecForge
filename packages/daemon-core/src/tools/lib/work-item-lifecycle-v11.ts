@@ -14,6 +14,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { WORK_ITEM_METADATA_SCHEMA_VERSION } from './artifact-schema-validation';
 import { formatWorkItemId, parseWorkItemSequence } from './work-item-id-validator';
+import { writeWorkItemMetadata, type WorkItemMetadata } from './work-item-metadata';
 
 // ---------------------------------------------------------------------------
 // Work Item 创建
@@ -66,7 +67,7 @@ export async function createWorkItem(input: CreateWorkItemInput): Promise<string
   const now = new Date().toISOString();
 
   // §4.4 work_item.json
-  const workItemJson = {
+  const workItemJson: WorkItemMetadata = {
     schema_version: WORK_ITEM_METADATA_SCHEMA_VERSION,
     work_item_id: input.workItemId,
     workflow_type: input.workflowType ?? 'quick_change',
@@ -77,11 +78,7 @@ export async function createWorkItem(input: CreateWorkItemInput): Promise<string
     updated_at: now,
     created_by: input.createdBy ?? 'sf-orchestrator',
   };
-  await fs.writeFile(
-    path.join(wiDir, 'work_item.json'),
-    JSON.stringify(workItemJson, null, 2) + '\n',
-    'utf-8',
-  );
+  await writeWorkItemMetadata(wiDir, input.workItemId, workItemJson);
 
   // §4.5 intake.md（必须原样保存用户原始请求）
   const intakeContent = [

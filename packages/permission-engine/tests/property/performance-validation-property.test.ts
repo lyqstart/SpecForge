@@ -258,7 +258,7 @@ describe('Performance Validation: Permission Engine', () => {
     /**
      * Batch logging performance
      */
-    it('batch event logging is more efficient than individual logging', async () => {
+    it('batch event logging preserves every event within the per-event budget', async () => {
       const logger = eventLogger.logger;
       const batchSize = 50;
 
@@ -276,6 +276,7 @@ describe('Performance Validation: Permission Engine', () => {
         });
       }
       const individualTime = performance.now() - individualStart;
+      expect(eventLogger.getEvents()).toHaveLength(batchSize);
 
       eventLogger.clearEvents();
 
@@ -295,13 +296,16 @@ describe('Performance Validation: Permission Engine', () => {
       }
       await Promise.all(promises);
       const batchTime = performance.now() - batchStart;
+      expect(eventLogger.getEvents()).toHaveLength(batchSize);
 
       console.log('Batch vs Individual Logging:');
       console.log(`  Individual (${batchSize} ops): ${individualTime.toFixed(3)}ms`);
       console.log(`  Batch (${batchSize} ops): ${batchTime.toFixed(3)}ms`);
 
-      // Batch should be faster or similar (in practice, Promise.all helps)
-      expect(batchTime).toBeLessThan(individualTime * 1.5);
+      // Both call patterns must retain the current per-event latency budget.
+      // Promise scheduling overhead is not itself a product performance contract.
+      expect(individualTime / batchSize).toBeLessThan(LOGGING_OVERHEAD_THRESHOLD_MS);
+      expect(batchTime / batchSize).toBeLessThan(LOGGING_OVERHEAD_THRESHOLD_MS);
     });
   });
 

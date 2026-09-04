@@ -39,7 +39,7 @@ Evidence labels follow the repository collaboration rules:
 | Runtime WAL | personal: `.specforge/runtime/events.jsonl`; enterprise: user-level project runtime | Daemon `WAL` owns validate/append/fsync/read; `StateManager` owns replay | every persisted record is validated as `schema_version=1.0`; missing is optional, existing empty/corrupt/unreadable input fails closed | registered as `runtime-wal` at `StateManager.initialize()` | `CONFIRMED / ENABLED` |
 | Runtime checkpoint | personal: `.specforge/runtime/state.json`; enterprise: user-level project runtime | Daemon `StateManager` derives and writes it after WAL fsync; Recovery uses the same serializer | persisted root `schema_version=1.0`; camel-case schema is confined to the in-memory API and never serialized | registered as `runtime-checkpoint` at `StateManager.initialize()` | `CONFIRMED / ENABLED` |
 | Work Item lifecycle state | `.specforge/runtime/events.jsonl` with `state.json` checkpoint | Daemon `StateManager` / state coordinator; create handler advances only through `StateManager.transition()` | Runtime Event/checkpoint schema 1.0 | covered by registered `runtime-wal` and `runtime-checkpoint` descriptors | `CONFIRMED / ENABLED`; `work_item.json.status`, filesystem status mutator and legacy resume reader removed |
-| Work Item metadata | `.specforge/work-items/<WI>/work_item.json` | Public `sf_work_item_create` is the sole identity/directory/original-request/metadata producer; controlled artifact/permission/rollback/Close owners may update assigned facts but cannot synthesize a Work Item; `sf_state_transition` only advances an existing WI | exact root `schema_version=1.1`; `work_item_id` required; lifecycle status and decision fields forbidden | exact artifact validator connected; create, state-transition, Artifact Writer, Gate Runner, Changed-files Audit, User Decision, Merge Runner, Semantic Closure, Safe Bash/Runtime Write Guard, permission, rollback, project-governance scope and Close first-read/write paths prechecked; dynamic migration descriptor registration remains blocked until the final inventory proves no additional current consumers | `PARTIALLY_SUPPORTED`; known producer/state/consumer boundaries are closed, final exhaustive reader/writer inventory remains before descriptor registration |
+| Work Item metadata | `.specforge/work-items/<WI>/work_item.json` | `@specforge/types` owns the exact metadata contract; `@specforge/migration` owns the per-WI descriptor factory; public `sf_work_item_create` is the sole identity/directory/original-request producer; Daemon controlled updates and Workflow Runtime transition evidence consume the same descriptor/validator | exact root `schema_version=1.1`; `work_item_id` must match the selected WI; lifecycle status and decision fields forbidden; no guessed migration transitions | dynamic descriptor `work-item-metadata-<WI>` is generated per validated directory identity; create/update share the metadata writer, Daemon async reads precheck the descriptor, Workflow Runtime prechecks before transition evidence reads; unknown earlier schemas fail `CHAIN_GAP` without mutation | `CONFIRMED / ENABLED`; exhaustive non-test package reference scan covers types/path declarations, CLI path helpers, Workflow Runtime and all Daemon HTTP/tool consumers |
 | Governance evidence | `.specforge/work-items/<WI>/**` gate, decision, permission, audit, merge and provenance artifacts | individual Daemon governance tools own separate files | heterogeneous exact ids (`1.0`, `1.2`, `1.2.8`, `1.3.0`, named `*.v1`) | not registered | `INSUFFICIENT_EVIDENCE`; each writer requires its own descriptor |
 | Observability event/payload store | `.specforge/observability/**` | Daemon observability recorder | event/payload contracts are owner-specific | not registered | `INSUFFICIENT_EVIDENCE` |
 | Rejected knowledge graph | `.specforge/knowledge/graph.json` plus former controlled-write provenance | all writers, query tools and Gate synchronization belonged to the excluded full Knowledge Graph capability; Semantic Closure explicitly uses governed evidence and trace chains instead | unsupported in current release | removed from shared layout, project bootstrap, daemon/setup implementations, Gate sync, trusted-write audit and agent/skill projections | `BUILT_NOT_ENABLED / REMOVED`; negative no-bypass guidance and historical records remain evidence only |
@@ -434,4 +434,22 @@ REPAIR_REMOVAL_DIRECT=3_FILES_34_PASS
 TYPES_DAEMON_BUILD=PASS
 D4B_STATUS=CLOSED_EXHAUSTIVE_PUBLIC_CONSUMER_PRECHECK
 NEXT_LEGAL_ACTION=ENTER_STEP7_LAYERED_TARGETED_VALIDATION
+```
+
+### Work Item metadata descriptor — final validation closure
+
+The exact `1.1` owner contract, per-Work-Item migration descriptor and all
+classified public consumers have now passed both package-level and root-level
+regression. Unknown earlier schemas still fail closed with `CHAIN_GAP`; no
+legacy transition, mutation or compatibility path was introduced.
+
+```text
+OWNER_FAMILY=WORK_ITEM_METADATA
+OWNER_FAMILY_STATUS=CLOSED_VALIDATED
+SCHEMA_AUTHORITY=@specforge/types/work-item-metadata
+DESCRIPTOR_AUTHORITY=@specforge/migration/work-item-metadata-schema-descriptor
+ROOT_BUILD=PASS_16_WORKSPACES
+ROOT_REGRESSION=PASS_16_WORKSPACES_EXIT_0
+ERR1013_PARENT_STATUS=OPEN
+NEXT_OWNER_FAMILY=HETEROGENEOUS_GOVERNANCE_EVIDENCE
 ```

@@ -40,6 +40,8 @@ describe('current WorkflowEngine owner', () => {
     const engine = new PublicWorkflowEngine();
     await expect(
       engine.enforceTransitionEvidencePublic('implementation_ready', workItemDir),
-    ).rejects.toThrow('WORK_ITEM_METADATA_INVALID: WI-0001');
+    ).rejects.toThrow(
+      /WORK_ITEM_METADATA_INVALID: WI-0001: WORK_ITEM_METADATA_SCHEMA_BLOCKED: CHAIN_GAP/,
+    );
   });
 });

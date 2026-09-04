@@ -163,6 +163,17 @@ const OPENCOD_EXCLUSIVE_FIELDS = [
   'context_window', // OpenCode naming (vs contextLength)
 ];
 
+function collectObjectKeys(value: unknown): string[] {
+  if (Array.isArray(value)) return value.flatMap(collectObjectKeys);
+  if (typeof value !== 'object' || value === null) return [];
+  return Object.entries(value).flatMap(([key, child]) => [key, ...collectObjectKeys(child)]);
+}
+
+function expectNoOpenCodeKeys(value: unknown): void {
+  const keys = new Set(collectObjectKeys(value));
+  expect(OPENCOD_EXCLUSIVE_FIELDS.filter((field) => keys.has(field))).toEqual([]);
+}
+
 // ============================================================
 // Property Tests
 // ============================================================
@@ -187,13 +198,7 @@ describe('AdapterEncapsulation Property Tests', () => {
 
           if (result.success) {
             const daemonContext: DaemonSessionContext = result.data;
-            const outputJson = JSON.stringify(daemonContext);
-
-            // Verify no OpenCode-specific fields leak
-            for (const field of OPENCOD_EXCLUSIVE_FIELDS) {
-              // Check that the field name doesn't appear as a key
-              expect(outputJson).not.toContain(`"${field}"`);
-            }
+            expectNoOpenCodeKeys(daemonContext);
 
             // Verify OpenCode fields are mapped correctly
             expect(daemonContext.sessionId).toBe(ocContext.oc_sid);
@@ -562,10 +567,7 @@ describe('AdapterEncapsulation Property Tests', () => {
 
             if (result.success) {
               // If successful, verify complete isolation - no OpenCode concepts
-              const outputJson = JSON.stringify(result.data);
-              for (const field of OPENCOD_EXCLUSIVE_FIELDS) {
-                expect(outputJson).not.toContain(`"${field}"`);
-              }
+              expectNoOpenCodeKeys(result.data);
             } else {
               // If failed, should be explicit unsupported
               expect(result.unsupported).toBe(true);
@@ -612,10 +614,7 @@ describe('AdapterEncapsulation Property Tests', () => {
                 expect(JSON.stringify(run1.data)).toBe(JSON.stringify(run2.data));
 
                 // Both should have no OpenCode concepts
-                const outputJson = JSON.stringify(run1.data);
-                for (const field of OPENCOD_EXCLUSIVE_FIELDS) {
-                  expect(outputJson).not.toContain(`"${field}"`);
-                }
+                expectNoOpenCodeKeys(run1.data);
               }
             }
           }

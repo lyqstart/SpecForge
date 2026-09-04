@@ -25,6 +25,10 @@ import {
 import { CRITICAL_STATES } from '@specforge/types/constants';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
 import { validateCurrentWorkItemMetadataJson } from '@specforge/types';
+import {
+  createWorkItemMetadataSchemaDescriptor,
+  precheckSchemaDescriptors,
+} from '@specforge/migration';
 
 export type EventHandler = (event: WorkflowEvent) => void | Promise<void>;
 
@@ -577,8 +581,17 @@ export class WorkflowEngine {
   private async requireAllowedWriteFiles(workItemDir: string): Promise<void> {
     const fullPath = path.join(workItemDir, 'work_item.json');
     try {
-      const content = await fs.readFile(fullPath, 'utf-8');
       const workItemId = path.basename(path.resolve(workItemDir));
+      const schemaPrecheck = await precheckSchemaDescriptors(workItemDir, [
+        createWorkItemMetadataSchemaDescriptor(workItemId),
+      ]);
+      const schemaCheck = schemaPrecheck.checks[0];
+      if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+        throw new Error(
+          `WORK_ITEM_METADATA_INVALID: ${workItemId}: WORK_ITEM_METADATA_SCHEMA_BLOCKED: ${schemaCheck?.errorCode ?? 'MIGRATION_REQUIRED'}: work_item.json`,
+        );
+      }
+      const content = await fs.readFile(fullPath, 'utf-8');
       const validation = validateCurrentWorkItemMetadataJson(content, workItemId);
       if (!validation.valid) {
         throw new Error(`WORK_ITEM_METADATA_INVALID: ${workItemId}: ${validation.errors.join('; ')}`);

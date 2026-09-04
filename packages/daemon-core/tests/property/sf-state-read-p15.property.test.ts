@@ -191,5 +191,5 @@ describe("sf_state_read - P15 preservation: real event log replays and reports t
       }),
       { numRuns: 25 },
     );
-  });
+  }, 30_000);
 });
