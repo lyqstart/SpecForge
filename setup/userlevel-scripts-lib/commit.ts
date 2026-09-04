@@ -46,7 +46,7 @@ const USER_MANIFEST_FILENAME = `${SPEC_DIR_NAME.slice(1)}-manifest.json`
 
 /**
  * N4 修复：降级结果接口（R15.4/R15.5）
- * 定义在此处供 commit 使用，后续由 reconcile.ts 重新导出
+ * 定义在此处供 commit 事务结果使用。
  */
 export interface DowngradeResult {
   previousVersion: string

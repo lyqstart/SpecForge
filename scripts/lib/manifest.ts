@@ -17,14 +17,26 @@ import type {
   FileEntry,
   ManagedComponentType,
   AgentConfig,
-  ExecutionResult,
+  DesiredStateEntry,
   PendingDeleteEntry,
 } from "./types"
 import { SUPPORTED_SCHEMA_VERSIONS } from "./types"
 import { InstallerError, InstallerErrorCode } from "./errors"
 import { computeSHA256, computeAgentConfigHash } from "./crypto"
 import { atomicWrite, atomicWriteFile } from "./atomic"
-import type { DesiredState } from "./discovery"
+
+interface ManifestDesiredState {
+  version: string
+  entries: ReadonlyMap<string, DesiredStateEntry>
+}
+
+interface ManifestExecutionResult {
+  executed: Array<{
+    relativePath: string
+    action: string
+    resultHash?: string
+  }>
+}
 
 export interface ManifestHeaderError {
   level: "header"
@@ -247,7 +259,7 @@ export async function readAndValidateManifest(
 
     if (
       typeof fileEntry.type !== "string" ||
-      !VALID_COMPONENT_TYPES.includes(fileEntry.type)
+      !VALID_COMPONENT_TYPES.includes(fileEntry.type as ManagedComponentType)
     ) {
       invalidEntries.push({ relativePath, reason: "invalid_type" })
       entryValid = false
@@ -366,7 +378,7 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
     if (typeof fileEntry.size !== "number") return false
     if (
       typeof fileEntry.type !== "string" ||
-      !validTypes.includes(fileEntry.type)
+      !validTypes.includes(fileEntry.type as ManagedComponentType)
     ) {
       return false
     }
@@ -432,8 +444,8 @@ export async function buildUserManifest(
 
 export interface ManifestWriteOptions {
   targetDir: string
-  desiredState: DesiredState
-  executionResult: ExecutionResult
+  desiredState: ManifestDesiredState
+  executionResult: ManifestExecutionResult
   pendingDeletes: PendingDeleteEntry[]
 }
 

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 interface WorkflowStateDef {
   agent: string;
@@ -286,4 +286,10 @@ function main(): void {
   }
 }
 
-main();
+const isMainModule = process.argv[1]
+  ? pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url
+  : false;
+
+if (isMainModule) {
+  main();
+}

@@ -23,18 +23,13 @@ const fastOptions = {
 };
 
 describe('current installer lock owner contract', () => {
-  it('keeps one lock implementation for installer and reconcile entry points', async () => {
+  it('keeps one lock implementation for the current installer entry point', async () => {
     const root = join(import.meta.dirname, '../../..');
     const installer = await readFile(join(root, 'scripts/sf-installer.ts'), 'utf8');
-    const reconcile = await readFile(join(root, 'scripts/lib/reconcile.ts'), 'utf8');
-    const setupReconcile = await readFile(
-      join(root, 'setup/userlevel-scripts-lib/reconcile.ts'),
-      'utf8',
-    );
 
     expect(installer.includes('from "./lib/install_lock"')).toBe(true);
-    expect(reconcile.includes('from "./install_lock"')).toBe(true);
-    expect(setupReconcile.includes('from "./install_lock"')).toBe(true);
+    expect(existsSync(join(root, 'scripts/lib/reconcile.ts'))).toBe(false);
+    expect(existsSync(join(root, 'setup/userlevel-scripts-lib/reconcile.ts'))).toBe(false);
     expect(existsSync(join(root, 'scripts/lib/lock.ts'))).toBe(false);
     expect(existsSync(join(root, 'setup/userlevel-scripts-lib/lock.ts'))).toBe(false);
   });

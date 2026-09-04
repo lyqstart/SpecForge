@@ -15,6 +15,7 @@
     "lint:layout": "bun scripts/lint/check-hardcoded-paths.ts",
     "typecheck:validator-contract": "tsc --noEmit -p scripts/tsconfig.validation-contract.json",
     "typecheck:release-owner-snapshot": "tsc --noEmit -p scripts/tsconfig.release-owner-snapshot.json",
+    "typecheck:installer": "tsc --noEmit -p scripts/tsconfig.installer.json",
     "build:release-runtimes": "bun scripts/build-release-runtime-artifacts.ts",
     "build:release-manifest": "bun scripts/build-release-manifest.ts",
     "precheck:release": "bun scripts/run-current-release-precheck.ts"

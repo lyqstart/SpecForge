@@ -23771,3 +23771,343 @@ PRODUCT_CODE_IMPACT=NONE
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1287_COMPOUND_GIT_ADD_SANDBOX_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR1288_WINDOWS_RG_PACKAGE_GLOB_REPEAT:START -->
+### ERR-1288：独立 ledger 待办消费者检索重复使用 Windows 位置参数 glob
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WINDOWS_PATH_GLOB_REPEAT`。
+- **事实证据**：消费者检索把 `packages/*/package.json` 作为 Windows `rg` 位置参数，返回 OS error 123；同次其他目录虽产生命中，但 package manifest 范围不完整，不能形成消费者完整性结论。
+- **正确做法**：废弃该次不完整 package 结果；以真实目录 `packages` 为根并用 `--glob '*/package.json'` 或先 `rg --files` 固化集合后重新检索。
+- **状态**：`CLOSED`。已改用真实目录 `packages` 与 `--glob '*/package.json'` 完成 package manifest 消费者检索；原不完整结果未用于架构结论。
+
+```text
+ERR1288_STATUS=CLOSED_CORRECT_DIRECTORY_AND_GLOB_SEARCH_COMPLETED
+REPEATED_ERROR_CLASS=ERR-903
+INVALID_RESULT_SCOPE=PACKAGE_MANIFEST_CONSUMER_SEARCH
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1288_WINDOWS_RG_PACKAGE_GLOB_REPEAT:END -->
+
+<!-- SPECFORGE_ERR1289_NONUNIQUE_LEDGER_STATUS_ANCHOR:START -->
+### ERR-1289：关闭 ERR-1288 时通用状态锚点误命中 ERR-879
+
+- **分类**：`GOVERNANCE_EDIT_ERROR / NON_UNIQUE_PATCH_ANCHOR_REPEAT`。
+- **事实证据**：关闭 ERR-1288 的补丁以通用 `- **状态**：IDENTIFIED` 为正文锚点；补丁成功后精确检索显示新增正文落在 ERR-879，而 ERR-1288 正文仍为 `IDENTIFIED`。ERR-1288 机器字段已按目标更新。
+- **正确做法**：先登记本错误；依据 ERR-879 自身后续机器证据恢复其原状态，再使用 ERR-1288 唯一标题、正确做法和机器字段共同构成窄补丁，最后分别读取两个完整区块复核。
+- **状态**：`CLOSED`。ERR-879 已恢复为其原始 `IDENTIFIED` 状态，ERR-1288 正文与机器字段均已用唯一边界收敛，并完成双区块复核。
+
+```text
+ERR1289_STATUS=CLOSED_HISTORICAL_ENTRY_RESTORED_AND_UNIQUE_PATCH_VERIFIED
+REPEATED_ERROR_CLASS=ERR-907
+AFFECTED_HISTORICAL_ENTRY=ERR-879
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=FAIL_THEN_RECORDED
+```
+<!-- SPECFORGE_ERR1289_NONUNIQUE_LEDGER_STATUS_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR1290_POWERSHELL_REGEX_QUOTE_PARSE:START -->
+### ERR-1290：消费者检索正则中的引号被 PowerShell 提前解析
+
+- **分类**：`VALIDATION_COMMAND_ERROR / POWERSHELL_QUOTING`。
+- **事实证据**：render-workflow-docs 与 reconcile 的两条组合 `rg` 命令在 PowerShell 解析阶段返回 `Missing type name after '['`，对应检索和 Node 定向检查均未执行；parent-spec 检索又因纳入历史大账本产生不可审计的超量噪声。
+- **正确做法**：废弃失败和超量输出；将消费者检查拆成固定字符串或不含嵌套引号的窄正则，并限定在现役源码、脚本和测试目录，随后单独执行目标脚本或测试。
+- **状态**：`CLOSED`。已改用固定字符串、窄目录和独立目标执行完成原检索；失败与超量输出均未用于结论。
+
+```text
+ERR1290_STATUS=CLOSED_FIXED_STRING_NARROW_SEARCH_COMPLETED
+FAILED_COMMAND_COUNT=2
+NOISY_RESULT_COUNT=1
+PRODUCT_TEST_STARTED=NO_FOR_FAILED_COMMANDS
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1290_POWERSHELL_REGEX_QUOTE_PARSE:END -->
+
+<!-- SPECFORGE_ERR1291_WINDOWS_DOC_FILENAME_GLOB_REPEAT:START -->
+### ERR-1291：实施/进度文件检索再次使用 Windows 位置参数 glob
+
+- **分类**：`VALIDATION_COMMAND_ERROR / WINDOWS_PATH_GLOB_REPEAT`。
+- **事实证据**：检索实施计划时把 `docs/implementation/architecture-consistency/*plan*.md` 与 `*progress*.md` 作为 `rg` 位置参数，返回 OS error 123；同次 handoff 和设计文档虽有命中，但文件集合不完整。
+- **正确做法**：废弃该次实施方案范围结果；先用 `rg --files docs/implementation/architecture-consistency` 获取真实路径，再对明确文件或目录配合 `--glob` 检索。
+- **状态**：`CLOSED`。已先枚举目录中的 8 个真实文件，再对明确权威文件执行检索；原不完整结果未用于判断。
+
+```text
+ERR1291_STATUS=CLOSED_EXPLICIT_DOCUMENT_SET_SEARCH_COMPLETED
+REPEATED_ERROR_CLASS=ERR-903,ERR-1288
+INVALID_RESULT_SCOPE=IMPLEMENTATION_PLAN_AND_PROGRESS_SEARCH
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=FAIL_THEN_RECORDED
+```
+<!-- SPECFORGE_ERR1291_WINDOWS_DOC_FILENAME_GLOB_REPEAT:END -->
+
+<!-- SPECFORGE_ERR1292_VITEST_ENTRY_ASSUMPTION:START -->
+### ERR-1292：定向测试误用不存在的仓库根 Vitest 入口
+
+- **分类**：`ENVIRONMENT_ERROR / TEST_RUNNER_ENTRY_PRECHECK_MISSING`。
+- **事实证据**：从 daemon-core 与 scope-gate 执行三组 `..\..\node_modules\.bin\vitest.exe` 命令时，PowerShell 均返回 command not recognized；Vitest 未启动，没有产品测试结果。
+- **正确做法**：停止原路径重试；先只读枚举 package-local 与仓库依赖入口，记录真实可执行路径及存在性，再以该入口执行同一测试集合。
+- **状态**：`CLOSED`。已确认 daemon-core 与 scope-gate 各自 package-local `vitest.exe`，同一测试集合随后全部通过。
+
+```text
+ERR1292_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_ENTRIES_VERIFIED
+FAILED_COMMAND_COUNT=3
+TEST_RUNNER_STARTED=NO
+PRODUCT_TEST_RESULT=NOT_PRODUCED
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CLASS=ERR-879
+REPEATED_ERROR_CHECK=FAIL_THEN_RECORDED
+```
+<!-- SPECFORGE_ERR1292_VITEST_ENTRY_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1293_GUESSED_REGISTRY_PATHS:START -->
+### ERR-1293：Reconcile 部署检索混入不存在的猜测目录与文件
+
+- **分类**：`VALIDATION_COMMAND_ERROR / UNVERIFIED_PATH_ASSUMPTION`。
+- **事实证据**：辅助检索直接指定不存在的 `scripts/lib/shared-component-registry.ts`、`setup/userlevel-plugin` 与 `setup/userlevel-config`，`rg` 返回 file/directory not found；该输出不能证明 Reconcile 的发布注册状态。
+- **正确做法**：先用 `rg --files scripts setup` 枚举实际 registry/manifest/installer 文件，再只对存在路径检索 Reconcile 的 source、target 与 consumer 关系。
+- **状态**：`CLOSED`。已枚举真实 registry/manifest/installer/reconcile 路径并完成消费者检索；确认 Reconcile 无生产调用且不属于当前 108 文件安装集合。
+
+```text
+ERR1293_STATUS=CLOSED_ACTUAL_PATH_ENUMERATION_AND_CONSUMER_SEARCH_COMPLETED
+INVALID_RESULT_SCOPE=RECONCILE_RELEASE_REGISTRATION
+PRODUCT_TEST_RESULT=UNAFFECTED
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1293_GUESSED_REGISTRY_PATHS:END -->
+
+<!-- SPECFORGE_ERR1294_RELEASE_PRECHECK_CANDIDATE_ID_MISSING:START -->
+### ERR-1294：当前发布 precheck 调用遗漏必需 candidate ID
+
+- **分类**：`VALIDATION_COMMAND_ERROR / REQUIRED_ARGUMENT_PRECHECK_MISSING`。
+- **事实证据**：直接执行 `scripts/run-current-release-precheck.ts` 返回 `CURRENT_RELEASE_PRECHECK_CANDIDATE_ID_REQUIRED`，校验阶段未启动，不能形成发布结果。
+- **正确做法**：读取脚本入口的真实参数合同，使用绑定当前 HEAD/工作树的唯一 candidate ID 重跑；不得把本次入口拒绝记为产品失败。
+- **状态**：`CLOSED`。已读取入口参数合同并以 `main-e28cd0f-working-tree-err1099` 重跑，正式 precheck 零错误通过。
+
+```text
+ERR1294_STATUS=CLOSED_VALID_CANDIDATE_PRECHECK_PASSED
+PRODUCT_VALIDATION_STARTED=NO
+PRODUCT_RESULT=NOT_PRODUCED
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1294_RELEASE_PRECHECK_CANDIDATE_ID_MISSING:END -->
+
+<!-- SPECFORGE_ERR1295_INSTALL_SET_COUNT_DOCUMENT_DRIFT:START -->
+### ERR-1295：持久化 owner inventory 仍记录旧的 109 文件安装集合
+
+- **分类**：`GOVERNANCE_DOCUMENT_DRIFT / DERIVED_COUNT_STALE`。
+- **事实证据**：当前 registry/release producer 驱动的隔离 install、upgrade 与 rollback 定向回归均实际部署 108 个共享组件，正式 current-release precheck 通过；`current-release-persistent-file-owner-inventory.md` 仍多处表述为 109 文件。
+- **权威归属**：可执行的 registry → release manifest producer → installer 消费链及其隔离验证是安装集合事实源；owner inventory 是派生治理说明，不得反向覆盖当前物理集合。
+- **正确做法**：只更新 inventory 中的派生计数为 108，并同步 Reconcile 已退出的 owner 说明；不增加、删除或伪造 manifest 项。
+- **状态**：`CLOSED`。当前 owner 表与现役 transaction/lock 说明已对齐 108 文件；历史候选 `step6d9` 的 109 文件记录保持原样。
+
+```text
+ERR1295_STATUS=CLOSED_CURRENT_DERIVED_COUNT_ALIGNED_TO_108
+AUTHORITATIVE_INSTALL_SET_COUNT=108
+STALE_DERIVED_COUNT=109
+PRODUCT_INSTALL_SET_CHANGE=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1295_INSTALL_SET_COUNT_DOCUMENT_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1296_OWNER_INVENTORY_LONG_LINE_PATCH_MISMATCH:START -->
+### ERR-1296：owner inventory 长表格组合补丁上下文不匹配
+
+- **分类**：`GOVERNANCE_EDIT_ERROR / PATCH_ANCHOR_MISMATCH`。
+- **事实证据**：同时更新 inventory、progress 与 handoff 的组合补丁在 Upgrade transaction journal 长表格行验证失败，工具拒绝整个补丁；没有任何目标文件产生该组合变更。
+- **正确做法**：拆分为按文件的窄补丁，使用唯一短语而非复制整条长表格行作为锚点；每个文件立即读取尾部或目标区块复核。
+- **状态**：`CLOSED`。已拆成 inventory、progress、handoff 的唯一边界补丁并逐项成功应用。
+
+```text
+ERR1296_STATUS=CLOSED_SPLIT_UNIQUE_BOUNDARY_PATCHES_APPLIED
+PARTIAL_CHANGE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1296_OWNER_INVENTORY_LONG_LINE_PATCH_MISMATCH:END -->
+
+<!-- SPECFORGE_INDEPENDENT_BACKLOG_RECONCILIATION_1:START -->
+### 2026-09-04：独立错误账本首轮对账与 ERR-1099 关闭
+
+- **ERR-902**：`CLOSED`。无效 allocation JSON 只剩 V6 历史 tasks/artifacts 自引用；当前 requirements/design、release precheck 与 Scope Gate 当前测试均不消费它。原 14 字节历史内容保留，不冒充发布证据。
+- **ERR-905**：`CLOSED`。stubbed `scripts/sf_v6_arch_check.ts` 已退出仓库和生产/测试入口；当前 V6 权威由 release precheck、authority projection 与 manifest boundary 直接校验，历史报告引用不构成消费者。
+- **ERR-978**：`CLOSED`。fixture 已使用唯一 `requirement_change_path`/`feature_spec` 当前合同，package-local 定向回归 1/1 通过。
+- **ERR-1099**：`CLOSED`。两份无生产消费者的 Reconcile 编排入口已删除；现役 installer 继续独占 install/upgrade/verify/uninstall，lock 与隔离 install/upgrade/rollback 3 files / 12 tests 通过，current-release precheck 零错误。
+- **ERR-885**：保持 `IDENTIFIED`。直接 CLI 已通过，但源码仍无 main-module guard，原条目要求的无副作用 ESM import 尚未满足。
+- **ERR-1013**：保持 `IDENTIFIED`。Work Item metadata 最终读写清单、异构 governance evidence 与 observability event/payload owner 尚未完成 descriptor 闭环。
+- **ERR-1102**：保持 `IDENTIFIED`。Bun 运行回归通过不等于完整 TypeScript 边界已证明，继续作为现役安装器类型基线处理。
+
+```text
+ERR902_STATUS=CLOSED_HISTORICAL_ARTIFACT_EXCLUDED_FROM_CURRENT_RELEASE_CONSUMERS
+ERR905_STATUS=CLOSED_OBSOLETE_STUB_CHECKER_REMOVED_CURRENT_RELEASE_VALIDATORS_ACTIVE
+ERR978_STATUS=CLOSED_CURRENT_WORKFLOW_FIXTURE_TARGET_PASS
+ERR1099_STATUS=CLOSED_BUILT_NOT_ENABLED_RECONCILE_ENTRIES_REMOVED
+ERR885_STATUS=IDENTIFIED_ESM_IMPORT_GUARD_REMAINS
+ERR1013_STATUS=IDENTIFIED_REMAINING_OWNER_FAMILIES
+ERR1102_STATUS=IDENTIFIED_ACTIVE_INSTALLER_TYPE_BASELINE
+TARGET_TESTS=DAEMON_1_PASS;DAEMON_RENDER_3_PASS;SCOPE_INSTALLER_12_PASS
+CURRENT_RELEASE_PRECHECK=PASS_main-e28cd0f-working-tree-err1099
+INSTALL_SET=108
+PRODUCT_DEPLOYMENT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_INDEPENDENT_BACKLOG_RECONCILIATION_1:END -->
+
+<!-- SPECFORGE_ERR1297_ROOT_TASK_WRONG_RUNTIME:START -->
+### ERR-1297：root workflow check 误用 Node 直接调用 Bun orchestrator
+
+- **分类**：`VALIDATION_COMMAND_ERROR / RUNTIME_ENTRY_MISMATCH`。
+- **事实证据**：`node scripts/run-root-task.mjs check-workflows` 在入口处返回 `ROOT_TASK_REQUIRES_BUN`；workflow checker 未由 root orchestrator 启动。此前独立 ESM import、直接 `--check` 与专属 Vitest 已成功。
+- **正确做法**：使用已验证的 Bun executable 执行 `bun run check-workflows`，并把入口失败与产品结果分开记录。
+- **状态**：`CLOSED`。已通过 Bun 1.4.0 正式 root task 入口重跑，workflow 同步检查通过。
+
+```text
+ERR1297_STATUS=CLOSED_BUN_ROOT_WORKFLOW_CHECK_PASSED
+PRODUCT_LOGIC_STARTED=NO_FOR_FAILED_ROOT_COMMAND
+EARLIER_TARGET_RESULTS=PASS
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1297_ROOT_TASK_WRONG_RUNTIME:END -->
+
+<!-- SPECFORGE_ERR885_ESM_IMPORT_GUARD_CLOSURE:START -->
+### ERR-885 关闭：文档生成器直接执行与无副作用 import 均成立
+
+- **修复**：`render-workflow-docs.ts` 以当前 `process.argv[1]` 的规范 file URL 与 `import.meta.url` 判定 main module，只在直接执行时调用 `main()`。
+- **验证**：Node 24 ESM import exit 0 且无输出；直接 `--check` 通过；专属回归 1 file / 3 tests 通过；Bun root `check-workflows` 通过。
+- **状态**：`CLOSED`。
+
+```text
+ERR885_STATUS=CLOSED_DIRECT_EXECUTION_AND_SIDE_EFFECT_FREE_ESM_IMPORT_VERIFIED
+NODE_ESM_IMPORT=PASS_ZERO_OUTPUT
+DIRECT_CHECK=PASS
+TARGET_TESTS=3_PASS
+ROOT_WORKFLOW_CHECK=PASS_BUN_1_4_0
+PRODUCT_DEPLOYMENT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR885_ESM_IMPORT_GUARD_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1298_SETUP_MANIFEST_MIRROR_PATCH_MISMATCH:START -->
+### ERR-1298：安装器 manifest 与 setup 镜像组合补丁文本不一致
+
+- **分类**：`IMPLEMENTATION_EDIT_ERROR / MIRROR_PATCH_ANCHOR_MISMATCH`。
+- **事实证据**：同时修改 installer、scripts manifest 与 setup manifest 的组合补丁在 setup 的 `VALID_COMPONENT_TYPES.includes` 上找不到预期行，工具拒绝整个补丁；三个目标均未形成该次修改。
+- **正确做法**：按现役 scripts 与 setup 镜像分别读取精确区块并拆分补丁；先验证现役类型边界，再验证镜像结构等价和相关安装回归。
+- **状态**：`CLOSED`。已拆分修复 scripts manifest，并按 setup 镜像真实结构同步；正式 installer typecheck 与安装器回归通过。
+
+```text
+ERR1298_STATUS=CLOSED_SPLIT_MIRROR_PATCH_AND_VALIDATION_PASSED
+PARTIAL_CHANGE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1298_SETUP_MANIFEST_MIRROR_PATCH_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1299_NODE_IMPORT_ON_BUN_INSTALLER:START -->
+### ERR-1299：对 Bun installer 误加 Node ESM import 验证
+
+- **分类**：`VALIDATION_ASSUMPTION_DEFECT / RUNTIME_BOUNDARY_MISMATCH`。
+- **事实证据**：Node 24 import `sf-installer.ts` 时因其 Bun bundler 合同允许的 extensionless `./lib/errors` 无法解析而失败；正式 installer TypeScript typecheck 已通过，CLI installer target 5/5 通过。
+- **正确做法**：不把 Node import 作为 Bun installer 发布门槛；使用正式 Bun 入口、TypeScript installer config、隔离安装事务和 release precheck 验证。
+- **状态**：`CLOSED`。运行时边界已重新归属，不修改 import 路径迎合错误验证器。
+
+```text
+ERR1299_STATUS=CLOSED_INVALID_NODE_IMPORT_GATE_DISCARDED
+PRODUCT_RUNTIME=BUN
+PRODUCT_CODE_DEFECT=NO_FROM_THIS_COMMAND
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1299_NODE_IMPORT_ON_BUN_INSTALLER:END -->
+
+<!-- SPECFORGE_ERR1300_NONCONFORMING_RELEASE_CANDIDATE_ID:START -->
+### ERR-1300：precheck 使用不符合安装器回归合同的 candidate ID 并重写 manifest
+
+- **分类**：`VALIDATION_STATE_MUTATION / CANDIDATE_ID_CONTRACT_MISMATCH`。
+- **事实证据**：precheck 接受并写入 `main-e28cd0f-working-tree-err1099`，随后 current repository installer 回归要求 `main-<sha>-working-tree-step<id>`，造成 3 files / 12 tests 中 1 fail；其余 11 pass，失败只在 manifest candidate identity。
+- **正确做法**：使用符合现有正则且绑定同一 HEAD/范围的 `main-e28cd0f-working-tree-step11err1099` 重新运行 producer/precheck，然后重跑完整 12-test 安装器集合；禁止修改测试放宽身份合同。
+- **状态**：`CLOSED`。manifest 已以符合完整合同的 `main-e28cd0f4-working-tree-step11err1099` 重建，precheck 和 12-test 安装器集合通过。
+
+```text
+ERR1300_STATUS=CLOSED_CONFORMING_CANDIDATE_REBUILT_AND_TESTED
+FAILED_TESTS=1
+PASSED_TESTS=11
+PRODUCT_LOGIC_FAILURE=CANDIDATE_ID_ONLY
+MANIFEST_MUTATED_BY_PRECHECK=YES
+REPEATED_ERROR_CHECK=PASS_AFTER_CLASSIFICATION
+```
+<!-- SPECFORGE_ERR1300_NONCONFORMING_RELEASE_CANDIDATE_ID:END -->
+
+<!-- SPECFORGE_ERR1301_CANDIDATE_REGEX_INFERRED_FROM_TRUNCATED_OUTPUT:START -->
+### ERR-1301：从截断断言推测 candidate ID 正则导致重复失败
+
+- **分类**：`VALIDATION_COMMAND_ERROR / CONTRACT_NOT_READ_BEFORE_RETRY`。
+- **事实证据**：将 candidate 改为 `main-e28cd0f-working-tree-step11err1099` 后，同一 identity 断言仍失败且其余 11 tests 通过；说明未读取完整测试合同就重试，ERR-1300 尚未关闭。
+- **正确做法**：先读取测试完整正则及 release manifest 当前值，再选择精确合法 candidate ID 重跑 producer/precheck 和 12-test 集合。
+- **状态**：`CLOSED`。读取完整正则后确认短 SHA 必须为 8 位，改用 `e28cd0f4` 并完成验证。
+
+```text
+ERR1301_STATUS=CLOSED_FULL_REGEX_READ_AND_EIGHT_CHAR_SHA_USED
+REPEATED_ERROR_CLASS=ERR-1300
+FAILED_TESTS=1
+PASSED_TESTS=11
+PRODUCT_TRANSACTION_FAILURES=0
+REPEATED_ERROR_CHECK=FAIL_THEN_RECORDED
+```
+<!-- SPECFORGE_ERR1301_CANDIDATE_REGEX_INFERRED_FROM_TRUNCATED_OUTPUT:END -->
+
+<!-- SPECFORGE_ERR1102_ACTIVE_INSTALLER_TYPE_CLOSURE:START -->
+### ERR-1102 关闭：现役安装器具有可重复 TypeScript 门禁
+
+- **修复**：installer main 判定改为标准 file URL，不再依赖未声明 Bun global；manifest 在运行时字符串检查后显式收窄 component type，并以自身最小写入合同替代对已退出 Reconcile discovery/execution 类型图的耦合；setup manifest 镜像同步。
+- **门禁**：新增 `scripts/tsconfig.installer.json` 与根命令 `typecheck:installer`，仅覆盖现役 installer 入口及其真实 import graph，Node types 下零诊断。
+- **验证**：正式 typecheck 通过；CLI installer root 5/5；Scope Gate lock、manifest boundary、隔离 install/upgrade/rollback 3 files / 12 tests；current-release precheck 零错误。
+- **状态**：`CLOSED`。
+
+```text
+ERR1102_STATUS=CLOSED_ACTIVE_INSTALLER_TYPECHECK_AND_RUNTIME_BOUNDARY_VERIFIED
+TYPECHECK_ENTRY=scripts/tsconfig.installer.json
+TYPECHECK_RESULT=PASS
+CLI_INSTALLER_TARGET=5_PASS
+SCOPE_INSTALLER_TARGET=12_PASS
+CURRENT_RELEASE_PRECHECK=PASS_main-e28cd0f4-working-tree-step11err1099
+PRODUCT_DEPLOYMENT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1102_ACTIVE_INSTALLER_TYPE_CLOSURE:END -->
+
+<!-- SPECFORGE_INDEPENDENT_BACKLOG_BATCH_VALIDATION_20260904:START -->
+### 独立账本修复批次可信回归证明
+
+- **范围**：ERR-885、ERR-902、ERR-905、ERR-978、ERR-1099、ERR-1102 的本地修复与事实关闭；ERR-1013 保持开放。
+- **结果**：根构建 16 个工作区通过；确定性根回归 16 个工作区退出码 0；其中 daemon-core 为 186 个测试文件、1688 项测试全部通过。
+- **发布边界**：未部署、未推送；历史设计备份未纳入修改或暂存。
+
+```text
+VALIDATION_STATUS=PASS
+ROOT_BUILD=PASS_16_WORKSPACES
+ROOT_REGRESSION=PASS_16_WORKSPACES_EXIT_0
+DAEMON_CORE=186_FILES_1688_TESTS_PASS
+CLOSED_ERRORS=ERR-885,ERR-902,ERR-905,ERR-978,ERR-1099,ERR-1102
+OPEN_ERRORS=ERR-1013
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_INDEPENDENT_BACKLOG_BATCH_VALIDATION_20260904:END -->
+
+<!-- SPECFORGE_ERR1302_GIT_INDEX_SANDBOX_PERMISSION:START -->
+### ERR-1302：本地暂存被 `.git/index.lock` 写权限拒绝
+
+- **分类**：`EXECUTION_ENVIRONMENT_PERMISSION / GIT_INDEX_WRITE_DENIED`。
+- **事实证据**：对精确计划文件执行 `git add -- ...` 时返回 `Unable to create '.git/index.lock': Permission denied`；随后状态显示所有计划文件仍未暂存，未形成部分 index 变更。
+- **正确做法**：保持同一精确暂存清单，使用已授权的 Git index 写权限重试；继续排除未跟踪历史备份。
+- **状态**：`CLOSED`。已通过授权 Git index 写入通道完成同一精确暂存清单，未跟踪历史备份仍被排除。
+
+```text
+ERR1302_STATUS=CLOSED_EXACT_STAGE_SUCCEEDED_WITH_AUTHORIZED_GIT_INDEX_WRITE
+PARTIAL_STAGE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1302_GIT_INDEX_SANDBOX_PERMISSION:END -->

@@ -14,7 +14,7 @@
 import * as fs from "node:fs"
 import * as path from "node:path"
 import * as crypto from "node:crypto"
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, pathToFileURL } from "node:url"
 
 import { InstallerError, InstallerErrorCode, EXIT_CODES } from "./lib/errors"
 import { resolveSpecForgeInstallRoot } from "./lib/paths"
@@ -730,9 +730,9 @@ export async function main(): Promise<void> {
 }
 
 // 直接执行时运行 main（被 import 时不执行）
-const isMainModule = typeof Bun !== "undefined"
-  ? Bun.main === import.meta.path
-  : import.meta.url.endsWith('sf-installer.ts') && process.argv.some(a => a.includes('sf-installer'))
+const isMainModule = process.argv[1]
+  ? pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url
+  : false
 
 if (isMainModule) {
   main()

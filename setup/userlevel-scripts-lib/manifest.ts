@@ -18,14 +18,26 @@ import type {
   FileEntry,
   ManagedComponentType,
   AgentConfig,
-  ExecutionResult,
+  DesiredStateEntry,
   PendingDeleteEntry,
 } from "./types"
 import { SUPPORTED_SCHEMA_VERSIONS } from "./types"
 import { InstallerError, InstallerErrorCode } from "./errors"
 import { computeSHA256, computeAgentConfigHash } from "./crypto"
 import { atomicWrite, atomicWriteFile } from "./atomic"
-import type { DesiredState } from "./discovery"
+
+interface ManifestDesiredState {
+  version: string
+  entries: ReadonlyMap<string, DesiredStateEntry>
+}
+
+interface ManifestExecutionResult {
+  executed: Array<{
+    relativePath: string
+    action: string
+    resultHash?: string
+  }>
+}
 
 // ============================================================
 // 路径常量
@@ -311,7 +323,7 @@ export async function readAndValidateManifest(targetDir: string): Promise<Manife
     }
 
     // 验证 type：必须是有效的 ManagedComponentType
-    if (typeof fileEntry.type !== "string" || !VALID_COMPONENT_TYPES.includes(fileEntry.type)) {
+    if (typeof fileEntry.type !== "string" || !VALID_COMPONENT_TYPES.includes(fileEntry.type as ManagedComponentType)) {
       invalidEntries.push({ relativePath, reason: "invalid_type" })
       entryValid = false
     }
@@ -456,7 +468,7 @@ export function validateUserManifest(data: unknown): data is UserLevelManifest {
     const fileEntry = entry as Record<string, unknown>
     if (typeof fileEntry.sha256 !== "string") return false
     if (typeof fileEntry.size !== "number") return false
-    if (typeof fileEntry.type !== "string" || !validTypes.includes(fileEntry.type)) return false
+    if (typeof fileEntry.type !== "string" || !validTypes.includes(fileEntry.type as ManagedComponentType)) return false
   }
 
   return true
@@ -545,8 +557,8 @@ export async function buildUserManifest(
  */
 export interface ManifestWriteOptions {
   targetDir: string
-  desiredState: DesiredState
-  executionResult: ExecutionResult
+  desiredState: ManifestDesiredState
+  executionResult: ManifestExecutionResult
   /** pending_delete 条目保留在 Manifest 中 */
   pendingDeletes: PendingDeleteEntry[]
 }
