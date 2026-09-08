@@ -24,8 +24,12 @@ import {
 } from './WorkflowErrorHandling.js';
 import { CRITICAL_STATES } from '@specforge/types/constants';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
-import { validateCurrentWorkItemMetadataJson } from '@specforge/types';
 import {
+  validateCurrentUserDecisionJson,
+  validateCurrentWorkItemMetadataJson,
+} from '@specforge/types';
+import {
+  createUserDecisionSchemaDescriptor,
   createWorkItemMetadataSchemaDescriptor,
   precheckSchemaDescriptors,
 } from '@specforge/migration';
@@ -563,7 +567,20 @@ export class WorkflowEngine {
   private async requireUserDecisionApproved(workItemDir: string): Promise<void> {
     const fullPath = path.join(workItemDir, 'user_decision.json');
     try {
+      const workItemId = path.basename(path.resolve(workItemDir));
+      const schemaPrecheck = await precheckSchemaDescriptors(workItemDir, [
+        createUserDecisionSchemaDescriptor(workItemId),
+      ]);
+      if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+        throw new Error(
+          `USER_DECISION_SCHEMA_BLOCKED: ${schemaPrecheck.checks[0]?.errorCode ?? 'MIGRATION_REQUIRED'}: user_decision.json`,
+        );
+      }
       const content = await fs.readFile(fullPath, 'utf-8');
+      const validation = validateCurrentUserDecisionJson(content, workItemId);
+      if (!validation.valid) {
+        throw new Error(`USER_DECISION_INVALID: ${validation.errors.join('; ')}`);
+      }
       const ud = JSON.parse(content);
       if (ud.decision_status !== 'approved' && ud.decision_status !== 'waived') {
         throw new Error(`user_decision status='${ud.decision_status ?? 'undefined'}', expected 'approved' or 'waived'`);
@@ -573,7 +590,15 @@ export class WorkflowEngine {
         throw new Error('user_decision content_hash has been invalidated');
       }
     } catch (err) {
-      if (err instanceof Error && (err.message.includes('status=') || err.message.includes('hash'))) throw err;
+      if (
+        err instanceof Error &&
+        (
+          err.message.includes('status=') ||
+          err.message.includes('hash') ||
+          err.message.includes('USER_DECISION_SCHEMA_BLOCKED') ||
+          err.message.includes('USER_DECISION_INVALID')
+        )
+      ) throw err;
       throw new Error('Transition evidence prerequisite missing: user_decision.json (required for → merge_ready)');
     }
   }

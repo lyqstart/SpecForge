@@ -6,7 +6,7 @@
  * - hard_gate waiver: 不允许
  */
 
-import type { UserDecisionStatus } from './user-decision.js';
+import type { UserDecisionStatus } from '@specforge/types';
 
 // ---------------------------------------------------------------------------
 // §10.6 WaiverRecord
@@ -69,4 +69,4 @@ export function validateWaiver(waiver: WaiverRecord): WaiverValidationResult {
 // Re-export for convenience (one-way dependency on user-decision)
 // ---------------------------------------------------------------------------
 
-export type { UserDecisionStatus } from './user-decision.js';
+export type { UserDecisionStatus } from '@specforge/types';

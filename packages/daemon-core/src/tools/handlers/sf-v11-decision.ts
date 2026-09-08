@@ -11,6 +11,8 @@ import { registerHandler } from '../ToolDispatcher';
 import {
   recordUserDecision,
   invalidateUserDecision,
+  precheckUserDecisionSchema,
+  userDecisionSchemaBlockCode,
 } from '../lib/user-decision-recorder-v11';
 import type { UserDecisionStatus } from '../lib/user-decision-recorder-v11';
 import { validateDecisionRecordPreconditions } from '../lib/governance-invariants-v11.js';
@@ -55,11 +57,6 @@ async function readJsonIfExists(filePath: string): Promise<any> {
   }
 }
 
-async function writeJson(filePath: string, value: any): Promise<void> {
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, JSON.stringify(value, null, 2) + '\n', 'utf-8');
-}
-
 async function writeJsonAtomic(filePath: string, value: any): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}`;
@@ -92,29 +89,6 @@ async function collectGateEvidence(workItemDir: string): Promise<Array<{ path: s
     // A missing summary is captured by the absent entry.
   }
   return result;
-}
-
-async function enrichDecisionAudit(input: {
-  workItemDir: string;
-  recordedBy: string;
-  decidedBy: string;
-  userResponseQuote?: string;
-  autoApprovalPolicyId?: string;
-}): Promise<void> {
-  const decisionPath = path.join(input.workItemDir, 'user_decision.json');
-  const decision = await readJsonIfExists(decisionPath);
-  if (!decision || typeof decision !== 'object') return;
-  decision.decided_by = input.decidedBy;
-  decision.recorded_by = input.recordedBy;
-  decision.recorder_role = 'user_decision_recorder';
-  decision.recorded_at = decision.recorded_at ?? new Date().toISOString();
-  if (input.userResponseQuote) {
-    decision.user_response_quote = input.userResponseQuote;
-  }
-  if (input.autoApprovalPolicyId) {
-    decision.auto_approval_policy_id = input.autoApprovalPolicyId;
-  }
-  await writeJson(decisionPath, decision);
 }
 
 async function readMergeReportSuccess(workItemDir: string): Promise<{
@@ -282,6 +256,16 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
+      work_item_id: workItemId,
+    };
+  }
+
+  const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+  const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);
+  if (decisionSchemaBlockCode) {
+    return {
+      success: false,
+      error: `USER_DECISION_SCHEMA_BLOCKED: ${decisionSchemaBlockCode}: user_decision.json`,
       work_item_id: workItemId,
     };
   }
@@ -517,6 +501,8 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
     const workflowPath = String(validation.facts?.workflowPath ?? requestedWorkflowPath ?? workflowFacts.workflowPath ?? '');
     const workflowType = workflowTypeForDecision(workflowPath, workflowFacts.workflowType);
 
+    const userResponseQuote = String(args['user_response_quote'] ?? '').trim() || undefined;
+    const autoApprovalPolicyId = String(args['auto_approval_policy_id'] ?? '').trim() || undefined;
     const decision = await recordUserDecision({
       workItemDir,
       workItemId,
@@ -529,14 +515,7 @@ registerHandler('sf_v11_decision', async (args, context, deps) => {
       decidedBy,
       decisionScope: (args['decision_scope'] as string) || 'full',
       waivers: args['waivers'] as any[],
-    });
-
-    const userResponseQuote = String(args['user_response_quote'] ?? '').trim() || undefined;
-    const autoApprovalPolicyId = String(args['auto_approval_policy_id'] ?? '').trim() || undefined;
-    await enrichDecisionAudit({
-      workItemDir,
       recordedBy,
-      decidedBy,
       userResponseQuote,
       autoApprovalPolicyId,
     });

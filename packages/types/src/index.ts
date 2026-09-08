@@ -155,6 +155,16 @@ export {
 } from "./work-item-metadata-contract.js";
 
 export {
+  USER_DECISION_SCHEMA_VERSION,
+  USER_DECISION_TYPES,
+  UserDecisionWaiverSchema,
+  validateCurrentUserDecisionValue,
+  validateCurrentUserDecisionJson,
+  type UserDecisionType,
+  type UserDecisionValidationResult,
+} from "./user-decision-contract.js";
+
+export {
   // §5 状态机
   WI_STATUSES,
   FORBIDDEN_TRANSITIONS,

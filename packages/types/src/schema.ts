@@ -23,8 +23,11 @@ import {
   WORKFLOW_PATHS,
   GATE_IDS,
   GATE_TYPES,
-  USER_DECISION_STATUSES,
 } from "./constants.js";
+export {
+  UserDecisionSchema,
+  type UserDecision,
+} from "./user-decision-contract.js";
 
 // ---------------------------------------------------------------------------
 // §4 work_item.json 最小结构
@@ -157,42 +160,6 @@ export type GateReport = z.infer<typeof GateReportSchema>;
  * User Decision schema（§10.2）。
  * 路径：.specforge/work-items/<WI-ID>/user_decision.json
  */
-export const UserDecisionSchema = z.object({
-  schema_version: z.literal("1.0"),
-  decision_id: z.string(),
-  work_item_id: z.string(),
-  workflow_path: z.enum(WORKFLOW_PATHS),
-  base_spec_version: z.string(),
-  candidate_manifest_path: z.string(),
-  manifest_hash: z.string(),
-  candidate_hash: z.string(),
-  gate_summary_path: z.string(),
-  gate_summary_hash: z.string(),
-  decision_status: z.enum(USER_DECISION_STATUSES),
-  decision_type: z.enum([
-    "auto_approved",
-    "user_approved",
-    "waived",
-    "rejected",
-  ]),
-  decided_by: z.string(),
-  decided_at: z.string().datetime(),
-  expires_at: z.string().datetime().optional(),
-  decision_scope: z.string(),
-  waivers: z.array(
-    z.object({
-      waiver_id: z.string(),
-      gate_id: z.string(),
-      reason: z.string(),
-      risk: z.string(),
-      expires_at: z.string().datetime().optional(),
-      follow_up_wi: z.string().optional(),
-    }),
-  ),
-});
-
-export type UserDecision = z.infer<typeof UserDecisionSchema>;
-
 // ---------------------------------------------------------------------------
 // §2 spec_manifest.json
 // ---------------------------------------------------------------------------

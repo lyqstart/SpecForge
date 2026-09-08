@@ -31,6 +31,7 @@ import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import '../../src/tools/handlers/sf-v11-close-gate.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
 import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
+import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -710,7 +711,20 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', type: 'log', path: 'test.log' }] }));
-    await fs.writeFile(path.join(wiDir, 'user_decision.json'), JSON.stringify({ decision_status: 'approved' }));
+    await recordUserDecision({
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'code_only_fast_path',
+      baseSpecVersion: 'PSV-0001',
+      candidateManifestPath: 'candidate_manifest.json',
+      gateSummaryPath: 'gate_summary.md',
+      decisionStatus: 'approved',
+      decisionType: 'user_approved',
+      decidedBy: 'user',
+      decisionScope: 'full',
+      recordedBy: 'sf-orchestrator',
+      userResponseQuote: 'approved current daemon closure fixture',
+    });
     await writeSemanticClosure(wiDir, workItemId);
 
     // --- Phase 4: Execute close_gate ---

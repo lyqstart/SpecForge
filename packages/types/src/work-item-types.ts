@@ -3,6 +3,12 @@
  */
 import { z } from "zod";
 import { ContractRegistrySchema } from "./contract-model.js";
+export {
+  USER_DECISION_STATUSES,
+  UserDecisionSchema,
+  type UserDecision,
+  type UserDecisionStatus,
+} from "./user-decision-contract.js";
 
 export const WI_STATUSES = [
   "created", "intake_ready", "impact_analyzing", "impact_analyzed", "workflow_selected",
@@ -112,24 +118,6 @@ export const GATE_SUMMARY_STATUSES = [
   "passed", "passed_with_waiver_required", "failed", "blocked", "expired", "invalidated",
 ] as const;
 export type GateSummaryStatus = (typeof GATE_SUMMARY_STATUSES)[number];
-
-export const USER_DECISION_STATUSES = [
-  "pending", "approved", "rejected", "request_changes", "waived", "expired", "invalidated",
-] as const;
-export type UserDecisionStatus = (typeof USER_DECISION_STATUSES)[number];
-export const UserDecisionSchema = z.object({
-  schema_version: z.literal("1.0"), decision_id: z.string(), work_item_id: z.string(),
-  workflow_path: z.enum(WORKFLOW_PATHS), base_spec_version: z.string(), candidate_manifest_path: z.string(),
-  manifest_hash: z.string(), candidate_hash: z.string(), gate_summary_path: z.string(), gate_summary_hash: z.string(),
-  decision_status: z.enum(USER_DECISION_STATUSES),
-  decision_type: z.enum(["auto_approved", "user_approved", "waived", "rejected"]),
-  decided_by: z.string(), decided_at: z.string().datetime(), expires_at: z.string().datetime().optional(),
-  decision_scope: z.string(), waivers: z.array(z.object({
-    waiver_id: z.string(), gate_id: z.string(), reason: z.string(), risk: z.string(),
-    expires_at: z.string().datetime().optional(), follow_up_wi: z.string().optional(),
-  })),
-});
-export type UserDecision = z.infer<typeof UserDecisionSchema>;
 
 export const SpecModuleEntrySchema = z.object({
   module_code: z.string().regex(/^[A-Z][A-Z0-9]{1,11}$/, "Module code must be MODULE_CODE"),

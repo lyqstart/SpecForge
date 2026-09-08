@@ -27,6 +27,7 @@ import {
   applyRevokedPermissionFacts,
   revokeCodePermission,
 } from '../../src/tools/lib/code-permission-service-v11.js';
+import { recordUserDecision } from '../../src/tools/lib/user-decision-recorder-v11.js';
 
 function semanticClosure(workItemId: string): SemanticClosureManifest {
   return {
@@ -229,14 +230,20 @@ async function createMinimalWorkItem(
       }],
     }) + '\n'
   );
-  await fs.writeFile(
-    path.join(wiDir, 'user_decision.json'),
-    JSON.stringify({
-      decision_status: 'approved',
-      workflow_path: 'code_only_fast_path',
-      timestamp: new Date().toISOString(),
-    }) + '\n'
-  );
+  await recordUserDecision({
+    workItemDir: wiDir,
+    workItemId,
+    workflowPath: 'code_only_fast_path',
+    baseSpecVersion: 'PSV-0001',
+    candidateManifestPath: 'candidate_manifest.json',
+    gateSummaryPath: 'gate_summary.md',
+    decisionStatus: 'approved',
+    decisionType: 'user_approved',
+    decidedBy: 'user',
+    decisionScope: 'full',
+    recordedBy: 'sf-orchestrator',
+    userResponseQuote: 'approved current close fixture',
+  });
 
   if (opts?.includeSemanticClosure !== false) {
     const closure = semanticClosure(workItemId);
@@ -371,6 +378,30 @@ describe('sf_close_gate handler', () => {
     expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
     await expect(fs.readFile(manifestPath, 'utf8')).resolves.toContain('"1.1"');
     await expect(fs.readFile(workItemPath, 'utf8')).resolves.toBe(workItemBefore);
+  });
+
+  it('rejects an unknown User Decision schema before Close mutations', async () => {
+    const workItemId = 'wi-close-unknown-decision-schema';
+    const wiDir = await createMinimalWorkItem(tmpDir, workItemId);
+    const decisionPath = path.join(wiDir, 'user_decision.json');
+    const unknown = JSON.parse(await fs.readFile(decisionPath, 'utf8'));
+    unknown.schema_version = '1.1';
+    const original = JSON.stringify(unknown, null, 2) + '\n';
+    await fs.writeFile(decisionPath, original, 'utf8');
+
+    const handler = getHandler('sf_close_gate')!;
+    const result = await handler(
+      { work_item_id: workItemId },
+      { directory: tmpDir, agent: 'sf-orchestrator' },
+      createMockDeps() as any,
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).error).toBe(
+      'USER_DECISION_SCHEMA_BLOCKED: CHAIN_GAP: user_decision.json',
+    );
+    await expect(fs.readFile(decisionPath, 'utf8')).resolves.toBe(original);
+    await expect(fs.access(path.join(wiDir, 'gates', 'close_gate.json'))).rejects.toBeTruthy();
   });
 
   it('should write close_gate evidence on success', async () => {

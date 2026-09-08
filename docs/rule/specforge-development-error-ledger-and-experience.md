@@ -24913,3 +24913,408 @@ PRODUCT_CODE_IMPACT=NONE
 REPEATED_ERROR_CHECK=PASS_REUSED_ERR1324_RECOVERY
 ```
 <!-- SPECFORGE_ERR1342_GIT_INDEX_SANDBOX_RETRY:END -->
+
+<!-- SPECFORGE_ERR1343_POWERSHELL_QUOTED_RG_REPEAT:START -->
+### ERR-1343：PowerShell 复杂引号中的 `rg` 组合模式重复触发解析失败
+
+- **分类**：`REPEATED_TOOL_INVOCATION_ERROR / EVIDENCE_COLLECTION_COMMAND`。
+- **事实证据**：包含转义双引号与多个 alternation 的 PowerShell 取证命令在 shell 解析阶段返回 `ParserError: Missing property name after reference operator`；命令主体未运行，没有读取结果，也没有写入项目文件。该错误重复了 ERR-1327 已识别的复杂 PowerShell 引号风险。
+- **防复发约束**：PowerShell 下不再把含转义引号的多个搜索表达式拼进单条 `rg` 命令；改为每次搜索一个单引号包裹的字面模式，或拆成多条无嵌套转义的只读命令。任何复杂模式先以单一目标验证，再扩大范围。
+- **处置**：已使用拆分后的字面搜索完成同一轮初步取证；失败命令没有观察者写入影响。
+- **状态**：`CLOSED`。
+
+```text
+ERR1343_STATUS=CLOSED_LITERAL_SEARCH_RULE_STRENGTHENED
+FAILED_COMMAND_PHASE=POWERSHELL_PARSE_BEFORE_EXECUTION
+PROJECT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_RULE_STRENGTHENING
+NEXT_LEGAL_ACTION=CONTINUE_USER_DECISION_READ_ONLY_ARCHITECTURE_RECONSTRUCTION_WITH_SPLIT_LITERAL_SEARCHES
+```
+<!-- SPECFORGE_ERR1343_POWERSHELL_QUOTED_RG_REPEAT:END -->
+
+<!-- SPECFORGE_ERR1344_BUN_NOT_ON_PATH:START -->
+### ERR-1344：定向测试首次调用了未加入 PATH 的 Bun
+
+- **分类**：`TOOL_INVOCATION_ENVIRONMENT / TEST_NOT_STARTED`。
+- **事实证据**：`bun x vitest run ...` 由 PowerShell 返回 `The term 'bun' is not recognized`；Vitest 和产品测试均未启动。
+- **处置**：复用本项目此前根构建与回归已验证的固定 Bun 1.4.0 可执行文件路径；本次结果不得记为产品红灯或回归失败。
+- **状态**：`CLOSED`。
+
+```text
+ERR1344_STATUS=CLOSED_USE_VERIFIED_BUN_ABSOLUTE_PATH
+PRODUCT_TEST_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_USER_DECISION_OWNER_EXPECTED_RED_WITH_VERIFIED_BUN_RUNTIME
+```
+<!-- SPECFORGE_ERR1344_BUN_NOT_ON_PATH:END -->
+
+<!-- SPECFORGE_ERR1345_BUN_DEFAULT_TEMP_EPERM:START -->
+### ERR-1345：固定 Bun 运行时访问默认临时目录被拒绝
+
+- **分类**：`TOOL_EXECUTION_ENVIRONMENT / TEST_NOT_STARTED / TEMP_PERMISSION`。
+- **事实证据**：固定 Bun 执行 `x vitest` 立即返回 `EPERM accessing temporary directory`，并明确要求设置 `BUN_TMPDIR` 或 `BUN_INSTALL`；Vitest 未进入收集阶段。
+- **处置**：复用已验证的仓库内 `D:\code\SpecForge\.tmp\bun`，同时设置任务专用 `TEMP`、`TMP`、`BUN_TMPDIR` 后重跑同一测试。
+- **状态**：`CLOSED`。
+
+```text
+ERR1345_STATUS=CLOSED_USE_WORKSPACE_BUN_TEMP
+PRODUCT_TEST_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_REUSED_VERIFIED_ROOT_REGRESSION_ENVIRONMENT
+NEXT_LEGAL_ACTION=RUN_UNCHANGED_USER_DECISION_OWNER_EXPECTED_RED_WITH_WORKSPACE_TEMP
+```
+<!-- SPECFORGE_ERR1345_BUN_DEFAULT_TEMP_EPERM:END -->
+
+<!-- SPECFORGE_ERR1346_BUN_X_IGNORES_WORKSPACE_TEMP:START -->
+### ERR-1346：`bun x` 在工作区临时目录配置下仍访问受限安装临时区
+
+- **分类**：`REPEATED_TOOL_EXECUTION_ENVIRONMENT / BUN_X_INSTALL_PATH`。
+- **事实证据**：显式设置 `TEMP`、`TMP`、`BUN_TMPDIR` 为工作区目录后，`bun x vitest` 仍立即返回同一 `EPERM accessing temporary directory`；此前验证只证明该环境适用于 `bun run`，不能外推到 `bun x`。
+- **防复发约束**：依赖已经安装时禁止使用 `bun x` 启动测试；直接调用仓库 `node_modules/.bin/vitest.exe`。只有缺少本地依赖且获得安装授权时才处理 Bun install cache。
+- **状态**：`CLOSED`。
+
+```text
+ERR1346_STATUS=CLOSED_USE_REPOSITORY_LOCAL_VITEST_EXECUTABLE
+PRODUCT_TEST_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_LAUNCHER_RULE_STRENGTHENING
+NEXT_LEGAL_ACTION=RUN_UNCHANGED_EXPECTED_RED_WITH_NODE_MODULES_VITEST
+```
+<!-- SPECFORGE_ERR1346_BUN_X_IGNORES_WORKSPACE_TEMP:END -->
+
+<!-- SPECFORGE_ERR1347_ROOT_VITEST_SHIM_ASSUMPTION:START -->
+### ERR-1347：误假设 Vitest Windows shim 位于仓库根
+
+- **分类**：`TOOL_INVOCATION_PATH_ERROR / TEST_NOT_STARTED`。
+- **事实证据**：仓库根 `node_modules/.bin/vitest.exe` 不存在；只读枚举确认实际可执行文件为 `packages/daemon-core/node_modules/.bin/vitest.exe`。PowerShell 在命令解析阶段即失败。
+- **防复发约束**：monorepo package 测试先使用该 package 自己实际存在的本地 shim，并以 package 目录作为工作目录；不得由其他测试命令的批准记录推断当前文件系统路径。
+- **状态**：`CLOSED`。
+
+```text
+ERR1347_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_CONFIRMED
+ACTUAL_EXECUTABLE=packages/daemon-core/node_modules/.bin/vitest.exe
+PRODUCT_TEST_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_OWNER_EXPECTED_RED_FROM_DAEMON_CORE_PACKAGE
+```
+<!-- SPECFORGE_ERR1347_ROOT_VITEST_SHIM_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1348_USER_DECISION_OWNER_EXPECTED_RED:START -->
+### ERR-1348：User Decision 没有统一 current contract 与 schema 边界
+
+- **分类**：`EXPECTED_RED / CONTRACT_CONFLICT / RUNTIME_DEFECT / ERR1013_OWNER_GAP`。
+- **事实证据**：owner 定向测试 1 file / 4 tests 全部按计划失败：共享 exact validator 与 per-file descriptor 不存在；Recorder 会覆盖 schema 1.1 的现存决策；失效动作会读取并改写 schema 1.1 决策。
+- **架构归属**：V6 design 指定 `@specforge/types` 持有跨 package Runtime Contract，Daemon User Decision Recorder 是 `user_decision.json` 唯一 producer。当前 types 两份 schema、daemon 两份接口以及 workflow-runtime 简化 Recorder 构成多重真相。
+- **修复边界**：建立共享 current contract；Daemon owner 提供 descriptor/precheck 并在记录、失效前 fail closed；随后接入真正的 Workflow/Gate/Merge/Close 公共读取边界并退出非生产 Recorder 导出。不增加旧 schema transition。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1348_STATUS=IDENTIFIED_EXPECTED_RED_4_FAIL
+CAPABILITY_ASSESSMENT=CONTRACT_CONFLICT_AND_RUNTIME_DEFECT
+CURRENT_SCHEMA=1.0
+UNKNOWN_SCHEMA_TRANSITIONS=NONE
+UNKNOWN_SCHEMA_MUTATED_BEFORE_FIX=YES_RECORD_AND_INVALIDATE
+TEST_CONTRACT_RELAXED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=IMPLEMENT_SHARED_TYPES_CONTRACT_AND_DAEMON_OWNER_PRECHECK
+```
+Closure evidence (2026-09-08): shared exact contract and descriptor are now the
+single source; Recorder record/invalidate and all public consumers fail closed
+for unknown schema without mutation. Owner target is 4/4 pass and daemon full
+regression is 190 files / 1710 tests pass.
+
+```text
+ERR1348_FINAL_STATUS=CLOSED_SHARED_OWNER_AND_PUBLIC_BOUNDARIES_VALIDATED
+UNKNOWN_SCHEMA_MUTATED_AFTER_FIX=NO
+DAEMON_FULL_REGRESSION=190_FILES_1710_PASS
+```
+<!-- SPECFORGE_ERR1348_USER_DECISION_OWNER_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1349_DECISION_HANDLER_PATCH_CONTEXT:START -->
+### ERR-1349：Decision handler 原子写收敛补丁上下文不匹配
+
+- **分类**：`PATCH_APPLICATION_ERROR / NO_PARTIAL_WRITE`。
+- **事实证据**：`apply_patch` 因 `writeJson` 的实际字符串拼接格式与补丁上下文不同而在 verification 阶段拒绝；目标 handler 未发生任何部分修改。
+- **处置**：读取精确局部内容，后续按 helper 删除与调用点替换拆分应用；不使用整文件重写。
+- **状态**：`CLOSED`。
+
+```text
+ERR1349_STATUS=CLOSED_EXACT_CONTEXT_CAPTURED
+PARTIAL_HANDLER_WRITE=NO
+SCOPE_CHANGE=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=APPLY_SMALL_EXACT_HANDLER_PATCHES
+```
+<!-- SPECFORGE_ERR1349_DECISION_HANDLER_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1350_TYPES_DIST_STALE_BEFORE_DAEMON_TEST:START -->
+### ERR-1350：跨包 owner 测试在重建 types 前读取了旧 dist
+
+- **分类**：`TEST_EXECUTION_ORDER / STALE_WORKSPACE_DEPENDENCY_BUILD`。
+- **事实证据**：Daemon owner 复跑时，新建 descriptor 函数本身可见，但从 `@specforge/types` 取得的 `USER_DECISION_SCHEMA_VERSION` 与 validator 为 `undefined`；源码已定义这些导出，说明 workspace package 解析到尚未重建的 types dist。
+- **处置**：先构建 `@specforge/types`，再原样复跑 owner 测试；本次 4 fail 不作为修复后的产品结果。
+- **状态**：`CLOSED`。
+
+```text
+ERR1350_STATUS=CLOSED_REBUILD_UPSTREAM_TYPES_FIRST
+FAILURE_ATTRIBUTION=STALE_TYPES_DIST
+TEST_CONTRACT_CHANGE=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=BUILD_TYPES_THEN_RERUN_USER_DECISION_OWNER_TEST
+```
+<!-- SPECFORGE_ERR1350_TYPES_DIST_STALE_BEFORE_DAEMON_TEST:END -->
+
+<!-- SPECFORGE_ERR1351_TYPES_PACKAGE_VITEST_SHIM_ASSUMPTION:START -->
+### ERR-1351：误假设 types 包安装了本地 Vitest shim
+
+- **分类**：`REPEATED_TOOL_INVOCATION_PATH_ERROR / TEST_NOT_STARTED`。
+- **事实证据**：`packages/types/node_modules/.bin/vitest.exe` 不存在；该包的 package manifest 只声明 TypeScript，没有 Vitest dev dependency。PowerShell 未启动测试。
+- **防复发约束**：执行 package 定向测试前先核对该 package manifest 和实际 shim；types 测试复用已经确认存在的 daemon-core Vitest executable，并保持 types 为工作目录。
+- **状态**：`CLOSED`。
+
+```text
+ERR1351_STATUS=CLOSED_REUSE_CONFIRMED_DAEMON_VITEST_BINARY
+PRODUCT_TEST_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_PACKAGE_MANIFEST_CHECK_RULE
+NEXT_LEGAL_ACTION=RUN_TYPES_TARGET_WITH_CONFIRMED_EXECUTABLE
+```
+<!-- SPECFORGE_ERR1351_TYPES_PACKAGE_VITEST_SHIM_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1352_CROSS_PACKAGE_VITEST_CONFIG_RESOLUTION:START -->
+### ERR-1352：跨包复用 Vitest binary 无法解析根配置依赖
+
+- **分类**：`TEST_LAUNCH_ENVIRONMENT / TEST_NOT_STARTED / CONFIG_RESOLUTION`。
+- **事实证据**：从 types 工作目录调用 daemon-core Vitest binary 时，启动器向上加载仓库根 `vitest.config.ts`，随后因根模块路径不存在 `vitest/config` 而在 startup 阶段退出；目标测试未收集。
+- **处置**：停止继续拼装非标准跨包 launcher。types TypeScript build 已通过；共享合同的运行行为由 daemon owner 测试覆盖，types 自身测试留给项目标准根回归统一执行。
+- **状态**：`CLOSED`。
+
+```text
+ERR1352_STATUS=CLOSED_DEFER_TYPES_SUITE_TO_STANDARD_ROOT_REGRESSION
+PRODUCT_TEST_STARTED=NO
+TYPES_BUILD=PASS
+OWNER_RUNTIME_TARGET=4_PASS
+REPEATED_ERROR_CHECK=PASS_STOPPED_LAUNCHER_GUESSING
+NEXT_LEGAL_ACTION=ADD_WORKFLOW_ENGINE_UNKNOWN_USER_DECISION_SCHEMA_EXPECTED_RED
+```
+<!-- SPECFORGE_ERR1352_CROSS_PACKAGE_VITEST_CONFIG_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR1353_WORKFLOW_USER_DECISION_SCHEMA_EXPECTED_RED:START -->
+### ERR-1353：WorkflowEngine 只读取 Decision 状态而不校验 owner schema
+
+- **分类**：`EXPECTED_RED / RUNTIME_DEFECT / CROSS_PACKAGE_CONSUMER`。
+- **事实证据**：WorkflowEngine 定向 1 file / 2 tests 为 1 pass / 1 fail；完整 schema 1.0 approved 决策可进入 `merge_ready`，但同一内容改为未知 schema 1.1 后仍被接受，文件保持未改但不受支持的审批事实已被消费。
+- **修复边界**：WorkflowEngine 通过 `@specforge/migration` 的共享 descriptor 和 `@specforge/types` exact validator 校验，保持依赖方向 `workflow-runtime → migration/types`，不依赖 daemon-core，不增加兼容 transition。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1353_STATUS=IDENTIFIED_EXPECTED_RED_1_FAIL_1_PASS
+FIRST_DEVIATION=WORKFLOW_ENGINE_REQUIRE_USER_DECISION_APPROVED
+UNKNOWN_SCHEMA_ACCEPTED_BEFORE_FIX=YES
+FILE_MUTATION=NO
+TEST_CONTRACT_RELAXED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=CONNECT_SHARED_USER_DECISION_DESCRIPTOR_AND_VALIDATOR_TO_WORKFLOW_ENGINE
+```
+Closure evidence (2026-09-08): WorkflowEngine now consumes the shared migration
+descriptor and exact types validator before `merge_ready`; boundary target is
+2/2 pass and workflow-runtime full regression is 71 files / 1564 tests pass.
+
+```text
+ERR1353_FINAL_STATUS=CLOSED_WORKFLOW_CONSUMER_FAILS_CLOSED
+UNKNOWN_SCHEMA_ACCEPTED_AFTER_FIX=NO
+WORKFLOW_RUNTIME_FULL_REGRESSION=71_FILES_1564_PASS
+```
+<!-- SPECFORGE_ERR1353_WORKFLOW_USER_DECISION_SCHEMA_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1354_POWERSHELL_RG_ALTERNATION_REPEATED:START -->
+### ERR-1354：PowerShell `rg` alternation 再次被解析为管道
+
+- **分类**：`REPEATED_TOOL_INVOCATION_ERROR / ERR1327_ERR1343_RULE_INSUFFICIENT`。
+- **事实证据**：用于一次检索四个 handler 名称的命令包含 `|` alternation，PowerShell 将其中片段作为命令执行并返回 `The term 'decision' is not recognized`；`rg` 主体未形成有效结果，项目文件未写入。
+- **根因修正**：此前“避免复杂引号、拆分搜索”的规则仍允许执行者误用 alternation。新硬约束为：PowerShell 下所有 `rg` 取证参数一次只包含一个纯字面 token，禁止任何 `|`，需要多目标时由多个独立进程或多次工具调用完成。
+- **状态**：`CLOSED`。
+
+```text
+ERR1354_STATUS=CLOSED_NO_RG_ALTERNATION_ALLOWED_IN_POWERSHELL
+FAILED_COMMAND_EXECUTED_AS_INTENDED=NO
+PROJECT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_HARD_RULE_STRENGTHENING
+NEXT_LEGAL_ACTION=SEARCH_EACH_PUBLIC_HANDLER_LITERAL_SEPARATELY
+```
+<!-- SPECFORGE_ERR1354_POWERSHELL_RG_ALTERNATION_REPEATED:END -->
+
+<!-- SPECFORGE_ERR1355_CLOSE_TEST_USER_DECISION_FIXTURE_DRIFT:START -->
+### ERR-1355：Close handler 回归夹具仍写入无 schema 的简化 User Decision
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_OWNER_CONTRACT`。
+- **事实证据**：Daemon 扩大定向 4 files / 51 tests 为 38 pass / 13 fail；13 项全部来自 `sf-v11-close-gate.test.ts`，且统一首先返回 `USER_DECISION_SCHEMA_BLOCKED: SCHEMA_ID_MISSING`。同轮 owner 4/4、current metadata owner 21/21、P0 真实主链 8/8 通过。
+- **必要性判断**：这 13 项验证撤销 code permission、Close 失败证据、恢复和 Formal Version 等当前发布能力，必须保留；仅其共享 fixture 的 Decision 结构已漂移。
+- **处置边界**：把共享 fixture 更新为 schema 1.0 的完整当前 Decision 绑定，不改变测试业务场景、预期结果或产品合同。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1355_STATUS=IDENTIFIED_CURRENT_TEST_FIXTURE_REPAIR_REQUIRED
+TARGET_RESULT=38_PASS_13_FAIL
+FAILURE_CONCENTRATION=SF_V11_CLOSE_GATE_SHARED_USER_DECISION_FIXTURE
+TESTS_TO_DELETE=0
+PRODUCT_CONTRACT_RELAXATION=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=UPDATE_ONLY_SHARED_CLOSE_DECISION_FIXTURE_TO_CURRENT_EXACT_CONTRACT
+```
+Closure evidence (2026-09-08): the shared close fixture now obtains Decision
+facts from the real Recorder and retains every original close/recovery scenario.
+The close target passes 19/19; no test was removed or weakened.
+
+```text
+ERR1355_FINAL_STATUS=CLOSED_CURRENT_RECORDER_FIXTURE
+CLOSE_TARGET=19_PASS
+TESTS_REMOVED_OR_SKIPPED=0
+```
+<!-- SPECFORGE_ERR1355_CLOSE_TEST_USER_DECISION_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1356_WORKFLOW_DECISION_FIXTURE_DRIFT:START -->
+### ERR-1356：Workflow 全量仍有三处简化 Decision 正向夹具
+
+- **分类**：`TEST_CONSUMER_DRIFT / CURRENT_OWNER_CONTRACT`。
+- **事实证据**：workflow-runtime 全量 71 files / 1564 tests 为 1561 pass / 3 fail；失败仅位于两个 Evidence Guard 测试文件的三个正向场景，均手写 `{decision_status:'approved'}` 等无 schema 简化对象并首先命中 `SCHEMA_ID_MISSING`。其余 69 files 全部通过。
+- **必要性判断**：这些测试验证当前 WorkflowEngine critical-state evidence guard，必须保留；应升级正向夹具，缺失/拒绝类场景保持原状。
+- **处置边界**：仅为三个正向场景提供完整 schema 1.0 Decision；不改变状态迁移、错误断言或产品 validator。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1356_STATUS=IDENTIFIED_THREE_CURRENT_FIXTURE_REPAIRS_REQUIRED
+FULL_RESULT=71_FILES_1561_PASS_3_FAIL
+FAILURE_FILES=AGENT_WORKFLOW_ENGINE_EVIDENCE_GUARD;EVIDENCE_GUARD_V11
+TESTS_TO_DELETE=0
+PRODUCT_CONTRACT_RELAXATION=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=UPDATE_THREE_POSITIVE_DECISION_FIXTURES_ONLY
+```
+Closure evidence (2026-09-08): the three positive fixtures now use the shared
+current Decision helper; negative missing/rejected scenarios remain unchanged.
+Workflow-runtime full regression passes 71 files / 1564 tests.
+
+```text
+ERR1356_FINAL_STATUS=CLOSED_THREE_CURRENT_FIXTURES_REPAIRED
+WORKFLOW_RUNTIME_FULL_REGRESSION=71_FILES_1564_PASS
+TESTS_REMOVED_OR_SKIPPED=0
+```
+<!-- SPECFORGE_ERR1356_WORKFLOW_DECISION_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1357_DAEMON_FULL_REGRESSION_SESSION_EVIDENCE_LOST:START -->
+### ERR-1357：Daemon 全量回归会话失效，最终退出码不可恢复
+
+- **分类**：`TEST_EVIDENCE_LOST / RESULT_NOT_CLAIMED / RERUN_REQUIRED`。
+- **事实证据**：此前全量测试返回会话 `55731`；恢复轮询时工具返回 `Unknown process id 55731`，因此无法取得最终摘要与退出码。
+- **处置**：不把已截断输出声明为通过或失败；使用已确认的 package-local Vitest 可执行文件原样重跑 daemon-core 全量测试，并保留可复核最终结果。
+- **状态**：`CLOSED`。
+
+```text
+ERR1357_STATUS=CLOSED_RERUN_REQUIRED
+LOST_SESSION_ID=55731
+DAEMON_FULL_RESULT=UNPROVEN
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_NO_RESULT_INFERENCE
+NEXT_LEGAL_ACTION=RERUN_DAEMON_CORE_FULL_REGRESSION_WITH_CONFIRMED_LOCAL_EXECUTABLE
+```
+<!-- SPECFORGE_ERR1357_DAEMON_FULL_REGRESSION_SESSION_EVIDENCE_LOST:END -->
+
+<!-- SPECFORGE_ERR1358_DAEMON_USER_DECISION_CONSUMER_FIXTURE_DRIFT:START -->
+### ERR-1358：Daemon 全量回归暴露三份 User Decision 消费测试漂移
+
+- **分类**：`FULL_REGRESSION_FAILURE / TEST_CONSUMER_DRIFT / INVESTIGATING`。
+- **事实证据**：daemon-core 标准全量回归完成并返回退出码 1；190 files 为 187 pass / 3 fail，1710 tests 为 1692 pass / 18 fail。已捕获的 `governance-closure-e2e.test.ts` 失败在公共 handler 读取旧的无 schema Decision 后提前 fail closed，导致旧断言和后续 audit 文件读取不成立；其余两个失败文件尚待安静报告模式确认。
+- **处置边界**：先精确列出三个失败文件和首次偏离点；只在确认是当前业务测试夹具漂移后升级夹具，不放宽 shared contract，不删除当前能力测试。
+- **状态**：`INVESTIGATING`。
+
+```text
+ERR1358_STATUS=INVESTIGATING_3_FILES_18_TESTS
+FULL_RESULT=190_FILES_187_PASS_3_FAIL;1710_TESTS_1692_PASS_18_FAIL
+KNOWN_FAILURE_FILE=GOVERNANCE_CLOSURE_E2E
+PRODUCT_CONTRACT_RELAXATION=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RERUN_DAEMON_FULL_WITH_QUIET_REPORTER_TO_CAPTURE_EXACT_FAILURE_SET
+```
+Closure evidence (2026-09-08): all 18 failures were confirmed in exactly three
+current lifecycle suites and were caused by direct legacy-shaped fixture writes.
+All three now call the sole Daemon Recorder; targeted tests pass 54/54 and the
+daemon full regression passes 190 files / 1710 tests.
+
+```text
+ERR1358_FINAL_STATUS=CLOSED_THREE_FIXTURES_USE_SOLE_RECORDER
+TARGET_REGRESSION=3_FILES_54_PASS
+DAEMON_FULL_REGRESSION=190_FILES_1710_PASS
+TESTS_REMOVED_OR_SKIPPED=0
+```
+<!-- SPECFORGE_ERR1358_DAEMON_USER_DECISION_CONSUMER_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1359_VALIDATION_TOOL_ARGUMENT_MISSING:START -->
+### ERR-1359：验证工具调用缺少必填 `cmd` 参数
+
+- **分类**：`TOOL_INVOCATION_ARGUMENT_ERROR / TEST_NOT_STARTED`。
+- **事实证据**：编排层在解析 `exec_command` 参数时返回 `missing field cmd`；没有启动 TypeScript 编译或测试，也没有产生项目写入。
+- **处置**：停止构造无意义占位调用；每个验证进程均传入完整、可读的命令与工作目录。
+- **状态**：`CLOSED`。
+
+```text
+ERR1359_STATUS=CLOSED_COMPLETE_COMMAND_ARGUMENT_REQUIRED
+PRODUCT_TEST_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_DAEMON_TYPESCRIPT_AND_THREE_TARGET_REGRESSIONS
+```
+<!-- SPECFORGE_ERR1359_VALIDATION_TOOL_ARGUMENT_MISSING:END -->
+
+<!-- SPECFORGE_ERR1360_LEDGER_CLOSURE_PATCH_CONTEXT:START -->
+### ERR-1360：多块错误闭环补丁上下文不匹配
+
+- **分类**：`PATCH_APPLICATION_ERROR / NO_PARTIAL_WRITE`。
+- **事实证据**：`apply_patch` 在校验 ERR-1356 的预期 `NEXT_LEGAL_ACTION` 时未找到完全匹配文本，整份补丁被拒绝；账本没有发生部分修改。
+- **处置**：读取各错误块精确尾部，按独立锚点分别追加 closure evidence。
+- **状态**：`CLOSED`。
+
+```text
+ERR1360_STATUS=CLOSED_SPLIT_EXACT_LEDGER_UPDATES
+PARTIAL_WRITE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=READ_EXACT_BLOCK_TAILS_THEN_APPEND_CLOSURE_EVIDENCE
+```
+<!-- SPECFORGE_ERR1360_LEDGER_CLOSURE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1361_REPEATED_MULTI_BLOCK_PATCH_TYPO:START -->
+### ERR-1361：多块账本补丁锚点出现人工拼写错误
+
+- **分类**：`REPEATED_PATCH_APPLICATION_ERROR / NO_PARTIAL_WRITE`。
+- **事实证据**：补丁最后一个锚点被错误写成含额外字符的文本，`apply_patch` 在 verification 阶段整体拒绝，未产生部分修改。
+- **防复发约束**：账本状态闭环一次只更新一个 ERR 块；锚点直接复制只读输出，不手工重组跨块上下文。
+- **状态**：`CLOSED`。
+
+```text
+ERR1361_STATUS=CLOSED_SINGLE_BLOCK_PATCH_ONLY
+PARTIAL_WRITE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_SINGLE_BLOCK_RULE
+NEXT_LEGAL_ACTION=APPEND_ONE_CLOSURE_BLOCK_PER_PATCH
+```
+<!-- SPECFORGE_ERR1361_REPEATED_MULTI_BLOCK_PATCH_TYPO:END -->
+
+<!-- SPECFORGE_ERR1362_MARKDOWN_FENCE_PATCH_ESCAPE:START -->
+### ERR-1362：治理进度补丁的 Markdown 围栏转义错误
+
+- **分类**：`REPEATED_PATCH_APPLICATION_ERROR / NO_PARTIAL_WRITE`。
+- **事实证据**：补丁把围栏锚点错误构造成带转义字符的文本，首个文件校验失败；顺序调用随即终止，三份进度文件均未发生本次部分更新。
+- **防复发约束**：治理文档补丁不再使用 Markdown 围栏作为上下文；只使用稳定的键值行或唯一 END marker，并逐文件应用。
+- **状态**：`CLOSED`。
+
+```text
+ERR1362_STATUS=CLOSED_STABLE_NON_FENCE_ANCHORS_REQUIRED
+PARTIAL_WRITE=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_ANCHOR_RULE_STRENGTHENING
+NEXT_LEGAL_ACTION=UPDATE_EACH_PROGRESS_FILE_WITH_UNIQUE_KEY_OR_END_MARKER
+```
+<!-- SPECFORGE_ERR1362_MARKDOWN_FENCE_PATCH_ESCAPE:END -->

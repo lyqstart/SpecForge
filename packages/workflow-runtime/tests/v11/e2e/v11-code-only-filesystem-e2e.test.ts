@@ -10,11 +10,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import {
-  CloseGate,
-  MergeRunner,
-  type V11CandidateManifest,
-} from '@/v11/index';
+import { CloseGate } from '@/v11/index';
 
 describe('v1.1 Code-Only Fast Path Filesystem E2E', () => {
   let tempDir: string;
@@ -186,7 +182,6 @@ describe('v1.1 Code-Only Fast Path Filesystem E2E', () => {
   });
 
   it('NEGATIVE: non-empty entries on code_only_fast_path must fail v1.1 manifest validation', () => {
-    const mergeRunner = new MergeRunner();
     const manifest = {
       schema_version: '1.0',
       work_item_id: WI_ID,
@@ -216,7 +211,6 @@ describe('v1.1 Code-Only Fast Path Filesystem E2E', () => {
   });
 
   it('NEGATIVE: merge_required=true on code_only_fast_path must be rejected', () => {
-    const mergeRunner = new MergeRunner();
     const manifest = {
       schema_version: '1.0',
       work_item_id: WI_ID,

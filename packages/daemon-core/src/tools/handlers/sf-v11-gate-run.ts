@@ -23,6 +23,10 @@ import {
   resolveWorkItemSpecArtifacts,
 } from '../lib/governance-invariants-v11';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import {
+  precheckUserDecisionSchema,
+  userDecisionSchemaBlockCode,
+} from '../lib/user-decision-recorder-v11.js';
 
 const VALID_GATE_IDS: readonly GateIdV11[] = [
   'entry_gate',
@@ -1194,6 +1198,18 @@ registerHandler('sf_v11_gate_run', async (args, context, deps) => {
       candidatePhase,
       workflowType
     );
+    if (normalized.gateIds.some(gateId => gateId === 'merge_ready_gate' || gateId === 'close_gate')) {
+      const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+      const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);
+      if (decisionSchemaBlockCode) {
+        return {
+          success: false,
+          error: `USER_DECISION_SCHEMA_BLOCKED: ${decisionSchemaBlockCode}: user_decision.json`,
+          work_item_id: workItemId,
+          normalized_gate_ids: normalized.gateIds,
+        };
+      }
+    }
     const ctx = {
       workItemId,
       workItemDir,

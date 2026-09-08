@@ -174,17 +174,10 @@ export type GateSummaryStatus = (typeof GATE_SUMMARY_STATUSES)[number];
 /**
  * User Decision 状态枚举（§10.3）。
  */
-export const USER_DECISION_STATUSES = [
-  'pending',
-  'approved',
-  'rejected',
-  'request_changes',
-  'waived',
-  'expired',
-  'invalidated',
-] as const;
-
-export type UserDecisionStatus = (typeof USER_DECISION_STATUSES)[number];
+export {
+  USER_DECISION_STATUSES,
+  type UserDecisionStatus,
+} from './user-decision-contract.js';
 
 // ---------------------------------------------------------------------------
 // §5 Evidence-guarded Critical States

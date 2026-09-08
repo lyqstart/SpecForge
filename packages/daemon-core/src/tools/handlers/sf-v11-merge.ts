@@ -14,6 +14,10 @@ import { readAuthoritativeState, transitionWithEvidence } from '../lib/state-coo
 import * as path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import {
+  precheckUserDecisionSchema,
+  userDecisionSchemaBlockCode,
+} from '../lib/user-decision-recorder-v11.js';
 
 function workflowTypeFromPath(workflowPath: string | undefined): string {
   switch (workflowPath) {
@@ -255,6 +259,17 @@ registerHandler('sf_v11_merge', async (args, context, deps) => {
       success: false,
       status: 'failed',
       error: error instanceof Error ? error.message : String(error),
+      work_item_id: workItemId,
+    };
+  }
+
+  const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+  const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);
+  if (decisionSchemaBlockCode) {
+    return {
+      success: false,
+      status: 'failed',
+      error: `USER_DECISION_SCHEMA_BLOCKED: ${decisionSchemaBlockCode}: user_decision.json`,
       work_item_id: workItemId,
     };
   }

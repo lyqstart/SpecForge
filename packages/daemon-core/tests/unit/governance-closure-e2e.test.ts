@@ -21,6 +21,10 @@ import { checkWrite, type WriteGuardContext } from '../../src/tools/lib/write-gu
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 import { captureSemanticClosureProvenance } from '../../src/tools/lib/semantic-closure-provenance.js';
+import {
+  recordUserDecision,
+  type UserDecisionStatus,
+} from '../../src/tools/lib/user-decision-recorder-v11.js';
 
 // ---------------------------------------------------------------------------
 // Test Helpers
@@ -36,7 +40,7 @@ async function createFullWorkItem(
     actualChangedFiles?: Array<{ path: string; operation: 'create' | 'modify' | 'delete' }>;
     writeGuardViolations?: string[];
     skipFiles?: string[];
-    userDecisionStatus?: string;
+    userDecisionStatus?: UserDecisionStatus;
   },
 ): Promise<string> {
   const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
@@ -81,16 +85,14 @@ async function createFullWorkItem(
     await fs.writeFile(path.join(wiDir, 'candidates', 'tasks.md'), '# Tasks\n- [x] Done');
   if (!skip.has('trace_delta.md'))
     await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace Delta\nNo spec impact (§13.2)');
-  if (!skip.has('candidate_manifest.json'))
-    await fs.writeFile(
-      path.join(wiDir, 'candidate_manifest.json'),
-      JSON.stringify({ work_item_id: workItemId, entries: [], schema_version: '1.0', workflow_path: opts?.workflowPath ?? 'code_only_fast_path' }),
-    );
-  if (!skip.has('gate_summary.md'))
-    await fs.writeFile(
-      path.join(wiDir, 'gate_summary.md'),
-      '# Gate Summary\n\n- Overall Status: passed\n',
-    );
+  await fs.writeFile(
+    path.join(wiDir, 'candidate_manifest.json'),
+    JSON.stringify({ work_item_id: workItemId, entries: [], schema_version: '1.0', workflow_path: opts?.workflowPath ?? 'code_only_fast_path' }),
+  );
+  await fs.writeFile(
+    path.join(wiDir, 'gate_summary.md'),
+    '# Gate Summary\n\n- Overall Status: passed\n',
+  );
   await fs.writeFile(
     path.join(wiDir, 'gates', 'formal_version_gate.json'),
     JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }),
@@ -127,10 +129,25 @@ async function createFullWorkItem(
       }),
     );
   if (!skip.has('user_decision.json'))
-    await fs.writeFile(
-      path.join(wiDir, 'user_decision.json'),
-      JSON.stringify({ decision_status: opts?.userDecisionStatus ?? 'approved', timestamp: new Date().toISOString() }),
-    );
+    await recordUserDecision({
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: opts?.workflowPath ?? 'code_only_fast_path',
+      baseSpecVersion: 'PSV-0001',
+      candidateManifestPath: 'candidate_manifest.json',
+      gateSummaryPath: 'gate_summary.md',
+      decisionStatus: opts?.userDecisionStatus ?? 'approved',
+      decisionType: opts?.userDecisionStatus === 'rejected' ? 'rejected' : 'user_approved',
+      decidedBy: 'user',
+      decisionScope: 'full',
+      recordedBy: 'sf-orchestrator',
+      userResponseQuote: 'current governance closure fixture decision',
+    });
+
+  if (skip.has('candidate_manifest.json'))
+    await fs.unlink(path.join(wiDir, 'candidate_manifest.json'));
+  if (skip.has('gate_summary.md'))
+    await fs.unlink(path.join(wiDir, 'gate_summary.md'));
 
   if (!skip.has('.semantic_closure.json'))
     await writeSemanticClosure(wiDir, workItemId);

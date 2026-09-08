@@ -24,6 +24,7 @@ import * as os from 'node:os';
 import { AgentWorkflowEngine, createAgentWorkflowEngine } from '../../src/engine/AgentWorkflowEngine.js';
 import { WorkflowAgentRunner, createWorkflowAgentRunner } from '../../src/AgentRunner.js';
 import { WorkflowDefinition } from '../../src/types.js';
+import { currentUserDecision } from '../helpers/current-user-decision.js';
 
 const passGate = async () => ({ schema_version: '1.0' as const, passed: true, reason: 'auto-pass' });
 const failGate = async () => ({ schema_version: '1.0' as const, passed: false, status: 'failed' as const, reason: 'auto-fail' });
@@ -270,7 +271,10 @@ describe('AgentWorkflowEngine.execute() — v1.1 Evidence Guard', () => {
     await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# summary\n');
     await fs.writeFile(path.join(wiDir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
     // approval_required → merge_ready (CRITICAL)
-    await fs.writeFile(path.join(wiDir, 'user_decision.json'), JSON.stringify({ decision_status: 'approved' }));
+    await fs.writeFile(
+      path.join(wiDir, 'user_decision.json'),
+      JSON.stringify(currentUserDecision(inst.id)),
+    );
     // merge_ready → merging (CRITICAL)
     await fs.writeFile(path.join(wiDir, 'gates', 'merge_ready_gate.json'), JSON.stringify({ status: 'passed' }));
     // merged → post_merge_verified (CRITICAL)

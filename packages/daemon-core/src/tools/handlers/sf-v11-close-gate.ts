@@ -51,6 +51,10 @@ import {
   precheckEvidenceManifestSchema,
 } from "../lib/evidence-manifest.js";
 import {
+  precheckUserDecisionSchema,
+  userDecisionSchemaBlockCode,
+} from "../lib/user-decision-recorder-v11.js";
+import {
   assertFormalVersionSnapshotForGitMerge,
   auditActualGovernanceScope,
   inspectFormalGitBinding,
@@ -715,6 +719,15 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       return {
         ...result,
         error: error instanceof Error ? error.message : String(error),
+      };
+    }
+
+    const decisionSchemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+    const decisionSchemaBlockCode = userDecisionSchemaBlockCode(decisionSchemaPrecheck);
+    if (decisionSchemaBlockCode) {
+      return {
+        ...result,
+        error: `USER_DECISION_SCHEMA_BLOCKED: ${decisionSchemaBlockCode}: user_decision.json`,
       };
     }
 

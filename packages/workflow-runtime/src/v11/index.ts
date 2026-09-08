@@ -11,28 +11,6 @@ export { PathPolicy, type ValidationResult, type DetailedValidationResult, type 
 // JSON Parser (Round 1)
 export { JsonParser, type ParseResult } from './runtime/JsonParser.js';
 
-// User Decision Recorder (Round 3)
-export {
-  UserDecisionRecorder,
-  type UserDecisionRecord,
-} from './runtime/UserDecisionRecorder.js';
-
-// Merge Runner (Round 3)
-export {
-  MergeRunner,
-  type V11ManifestEntry,
-  type V11CandidateManifest,
-  type V11MergeParams,
-  type V11MergeResult,
-  type V11MergedFile,
-  type V11MergeReportParams,
-  type CandidateEntry,
-  type CandidateManifest,
-  type MergedFile,
-  type MergeResult,
-  type MergePreconditionResult,
-} from './runtime/MergeRunner.js';
-
 // Write Guard (Round 4)
 export {
   WriteGuard,

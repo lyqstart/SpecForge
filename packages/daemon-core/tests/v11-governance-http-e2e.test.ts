@@ -23,6 +23,7 @@ import { DaemonConfig } from '../src/daemon/DaemonConfig';
 import { ToolDispatcher } from '../src/tools/ToolDispatcher';
 import { captureSemanticClosureProvenance } from '../src/tools/lib/semantic-closure-provenance.js';
 import { generateTriggerResult } from '../src/tools/lib/workflow-path-selector-v11';
+import { recordUserDecision } from '../src/tools/lib/user-decision-recorder-v11.js';
 
 // Import ALL handler registrations (side-effects)
 import '../src/tools/index';
@@ -269,7 +270,20 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', id: 'EV-1', type: 'log', path: 'test.log', status: 'passed' }] }));
-    await fs.writeFile(path.join(wiDir, 'user_decision.json'), JSON.stringify({ work_item_id: workItemId, decision_status: 'approved' }));
+    await recordUserDecision({
+      workItemDir: wiDir,
+      workItemId,
+      workflowPath: 'code_only_fast_path',
+      baseSpecVersion: 'PSV-0001',
+      candidateManifestPath: 'candidate_manifest.json',
+      gateSummaryPath: 'gate_summary.md',
+      decisionStatus: 'approved',
+      decisionType: 'user_approved',
+      decidedBy: 'user',
+      decisionScope: 'full',
+      recordedBy: 'sf-orchestrator',
+      userResponseQuote: 'approved current HTTP governance fixture',
+    });
     const _closure = {
       schema_version: '1.0',
       work_item_id: workItemId,

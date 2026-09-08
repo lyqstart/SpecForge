@@ -10,6 +10,7 @@ export * from './types'
 export * from './schema-detector'
 export * from './schema-descriptor-registry'
 export * from './work-item-metadata-schema-descriptor'
+export * from './user-decision-schema-descriptor'
 
 // Export schema validator (exclude types already exported from ./types)
 export * from './schema-validator'

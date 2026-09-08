@@ -487,3 +487,38 @@ ERR1328_STATUS=CLOSED
 ERR1013_PARENT_STATUS=OPEN
 NEXT_OWNER_FAMILY=NEXT_HETEROGENEOUS_GOVERNANCE_EVIDENCE_OWNER
 ```
+
+### User Decision file owner — single current producer and contract
+
+`user_decision.json` is a cross-package Runtime Contract. Its exact current
+schema is owned by `@specforge/types/user-decision-contract`; its per-file
+schema descriptor is owned by `@specforge/migration`; the Daemon User Decision
+Recorder is the sole producer. Workflow Runtime consumes the contract but does
+not write the file.
+
+The formerly exported Workflow Runtime `UserDecisionRecorder` and
+`MergeRunner`, plus the daemon-local duplicate Decision interface, had no
+production call path and duplicated the active Daemon ownership boundary. They
+and their implementation-specific tests are removed under the current-release
+no-legacy-compatibility decision. Current lifecycle, property, HTTP and
+filesystem tests remain and use the real owner or the shared exact fixture.
+
+```text
+OWNER_FAMILY=USER_DECISION
+PERSISTENT_PATH=user_decision.json
+SCHEMA_AUTHORITY=@specforge/types/user-decision-contract
+DESCRIPTOR_AUTHORITY=@specforge/migration/user-decision-schema-descriptor
+SOLE_PRODUCER=@specforge/daemon-core/user-decision-recorder-v11
+CURRENT_SCHEMA=1.0
+MIGRATION_TRANSITIONS=NONE
+PUBLIC_CONSUMERS=DECISION_HANDLER;GATE_RUNNER;MERGE_HANDLER;CLOSE_HANDLER;WORKFLOW_ENGINE
+REMOVED_NON_PRODUCTION_DUPLICATES=WORKFLOW_RUNTIME_USER_DECISION_RECORDER;WORKFLOW_RUNTIME_MERGE_RUNNER;DAEMON_LOCAL_USER_DECISION_INTERFACE
+UNKNOWN_SCHEMA_BEHAVIOR=CHAIN_GAP_FAIL_CLOSED_NO_MUTATION
+TARGET_REGRESSION=DAEMON_3_FILES_25_PASS;WORKFLOW_1_FILE_2_PASS;LIFECYCLE_FIXTURES_3_FILES_54_PASS
+PACKAGE_REGRESSION=WORKFLOW_RUNTIME_71_FILES_1564_PASS;DAEMON_CORE_190_FILES_1710_PASS
+ROOT_BUILD=PASS_16_WORKSPACES
+ROOT_REGRESSION=PASS_16_WORKSPACES_EXIT_0
+POST_DOCUMENT_GOVERNANCE_GATES=5_FILES_50_PASS
+ERR1013_PARENT_STATUS=OPEN_OTHER_GOVERNANCE_AND_OBSERVABILITY_OWNER_FAMILIES_REMAIN
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_THEN_CREATE_LOCAL_CHECKPOINT_COMMIT
+```

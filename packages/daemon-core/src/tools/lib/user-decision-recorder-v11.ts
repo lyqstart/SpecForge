@@ -11,52 +11,68 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
+import {
+  validateCurrentUserDecisionJson,
+  type UserDecision,
+  type UserDecisionStatus,
+  type UserDecisionType,
+} from '@specforge/types';
+import {
+  createUserDecisionSchemaDescriptor,
+  precheckSchemaDescriptors,
+  type SchemaDescriptorPrecheckResult,
+} from '@specforge/migration';
+
+export {
+  validateCurrentUserDecisionJson,
+  validateCurrentUserDecisionValue,
+  type UserDecisionStatus,
+} from '@specforge/types';
+export { createUserDecisionSchemaDescriptor } from '@specforge/migration';
 
 // ---------------------------------------------------------------------------
 // §10.3 状态枚举
 // ---------------------------------------------------------------------------
 
-export type UserDecisionStatus =
-  | 'pending'
-  | 'approved'
-  | 'rejected'
-  | 'request_changes'
-  | 'waived'
-  | 'expired'
-  | 'invalidated';
+export type UserDecisionV11 = UserDecision;
 
-// ---------------------------------------------------------------------------
-// §10.2 User Decision 结构
-// ---------------------------------------------------------------------------
+export async function precheckUserDecisionSchema(
+  workItemDir: string,
+  workItemId: string,
+): Promise<SchemaDescriptorPrecheckResult> {
+  return precheckSchemaDescriptors(workItemDir, [
+    createUserDecisionSchemaDescriptor(workItemId),
+  ]);
+}
 
-export interface UserDecisionV11 {
-  schema_version: '1.0';
-  decision_id: string;
-  work_item_id: string;
-  workflow_path: string;
-  base_spec_version: string;
-  candidate_manifest_path: string;
-  manifest_hash: string;
-  candidate_hash: string;
-  gate_summary_path: string;
-  gate_summary_hash: string;
-  decision_status: UserDecisionStatus;
-  decision_type: 'auto_approved' | 'user_approved' | 'waived' | 'rejected';
-  decided_by: string;
-  decided_at: string;
-  expires_at?: string;
-  decision_scope: string;
-  waivers: Array<{
-    waiver_id: string;
-    gate_id: string;
-    reason: string;
-    risk: string;
-    expires_at?: string;
-    follow_up_wi?: string;
-  }>;
-  previous_decision_status?: UserDecisionStatus;
-  invalidated_at?: string;
-  invalidation_reason?: string;
+export function userDecisionSchemaBlockCode(
+  result: SchemaDescriptorPrecheckResult,
+): string | undefined {
+  if (result.ok && !result.needsMigration) return undefined;
+  return result.checks[0]?.errorCode ?? 'MIGRATION_REQUIRED';
+}
+
+export async function readCurrentUserDecision(
+  workItemDir: string,
+  workItemId: string,
+): Promise<UserDecisionV11> {
+  const schemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+  const schemaBlockCode = userDecisionSchemaBlockCode(schemaPrecheck);
+  if (schemaBlockCode) {
+    throw new Error(`USER_DECISION_SCHEMA_BLOCKED: ${schemaBlockCode}: user_decision.json`);
+  }
+  const decisionPath = path.join(workItemDir, 'user_decision.json');
+  let content: string;
+  try {
+    content = await fs.readFile(decisionPath, 'utf-8');
+  } catch {
+    throw new Error('USER_DECISION_MISSING: user_decision.json');
+  }
+  const validation = validateCurrentUserDecisionJson(content, workItemId);
+  if (!validation.valid) {
+    throw new Error(`USER_DECISION_INVALID: ${validation.errors.join('; ')}`);
+  }
+  return JSON.parse(content) as UserDecisionV11;
 }
 
 // ---------------------------------------------------------------------------
@@ -71,9 +87,12 @@ export interface RecordDecisionInput {
   candidateManifestPath: string;
   gateSummaryPath: string;
   decisionStatus: UserDecisionStatus;
-  decisionType: 'auto_approved' | 'user_approved' | 'waived' | 'rejected';
+  decisionType: UserDecisionType;
   decidedBy: string;
   decisionScope: string;
+  recordedBy?: string;
+  userResponseQuote?: string;
+  autoApprovalPolicyId?: string;
   waivers?: Array<{
     waiver_id: string;
     gate_id: string;
@@ -89,6 +108,12 @@ export interface RecordDecisionInput {
  * 只有此函数可以生成 user_decision.json。
  */
 export async function recordUserDecision(input: RecordDecisionInput): Promise<UserDecisionV11> {
+  const schemaPrecheck = await precheckUserDecisionSchema(input.workItemDir, input.workItemId);
+  const schemaBlockCode = userDecisionSchemaBlockCode(schemaPrecheck);
+  if (schemaBlockCode) {
+    throw new Error(`USER_DECISION_SCHEMA_BLOCKED: ${schemaBlockCode}: user_decision.json`);
+  }
+
   // 计算 hash
   const manifestHash = await computeFileHash(path.join(input.workItemDir, input.candidateManifestPath));
   const gateSummaryHash = await computeFileHash(path.join(input.workItemDir, input.gateSummaryPath));
@@ -113,11 +138,20 @@ export async function recordUserDecision(input: RecordDecisionInput): Promise<Us
     decided_at: new Date().toISOString(),
     decision_scope: input.decisionScope,
     waivers: input.waivers ?? [],
+    ...(input.recordedBy ? {
+      recorded_by: input.recordedBy,
+      recorder_role: 'user_decision_recorder' as const,
+      recorded_at: new Date().toISOString(),
+    } : {}),
+    ...(input.userResponseQuote ? { user_response_quote: input.userResponseQuote } : {}),
+    ...(input.autoApprovalPolicyId ? { auto_approval_policy_id: input.autoApprovalPolicyId } : {}),
   };
 
   // 写入 user_decision.json
   const decisionPath = path.join(input.workItemDir, 'user_decision.json');
-  await fs.writeFile(decisionPath, JSON.stringify(decision, null, 2) + '\n', 'utf-8');
+  const tempPath = `${decisionPath}.tmp-${process.pid}-${Date.now()}`;
+  await fs.writeFile(tempPath, JSON.stringify(decision, null, 2) + '\n', 'utf-8');
+  await fs.rename(tempPath, decisionPath);
 
   return decision;
 }
@@ -131,11 +165,13 @@ export async function invalidateUserDecision(
   reason: string,
 ): Promise<{ before: UserDecisionV11; after: UserDecisionV11 }> {
   const decisionPath = path.join(workItemDir, 'user_decision.json');
-  const content = await fs.readFile(decisionPath, 'utf-8');
-  const decision = JSON.parse(content) as UserDecisionV11;
-  if (!decision.decision_id || !decision.work_item_id) {
-    throw new Error('USER_DECISION_INVALID: decision_id and work_item_id are required');
+  const workItemId = path.basename(path.resolve(workItemDir));
+  const schemaPrecheck = await precheckUserDecisionSchema(workItemDir, workItemId);
+  const schemaBlockCode = userDecisionSchemaBlockCode(schemaPrecheck);
+  if (schemaBlockCode) {
+    throw new Error(`USER_DECISION_SCHEMA_BLOCKED: ${schemaBlockCode}: user_decision.json`);
   }
+  const decision = await readCurrentUserDecision(workItemDir, workItemId);
   if (decision.decision_status !== 'approved' && decision.decision_status !== 'waived') {
     throw new Error(
       `USER_DECISION_INVALIDATION_REQUIRES_ACTIVE_APPROVAL: current=${decision.decision_status}`,
@@ -208,5 +244,4 @@ async function walkDir(dir: string): Promise<string[]> {
 // Re-export from extracted modules
 // ---------------------------------------------------------------------------
 
-export * from './user-decision.js';
 export * from './waiver.js';

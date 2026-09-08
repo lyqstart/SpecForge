@@ -16,6 +16,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { WorkflowEngine, requiresTransitionEvidence } from '../../src/WorkflowEngine.js';
 import { WorkflowDefinition } from '../../src/types.js';
+import { currentUserDecision } from '../helpers/current-user-decision.js';
 
 /**
  * Gate check function that always passes — used for execute() tests
@@ -326,7 +327,7 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
       const wiDir = await makeWorkDir(instance.id);
       await fs.writeFile(
         path.join(wiDir, 'user_decision.json'),
-        JSON.stringify({ decision_status: 'approved' }),
+        JSON.stringify(currentUserDecision(instance.id)),
       );
 
       engine.transition(instance.id, 'created', 'gates_running');
@@ -2037,7 +2038,10 @@ describe('v1.1 Evidence Guard — critical state enforcement', () => {
         await fs.writeFile(path.join(stdDir, 'gate_summary.md'), '# Gate Summary');
         await fs.mkdir(path.join(stdDir, 'gates'), { recursive: true });
         await fs.writeFile(path.join(stdDir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
-        await fs.writeFile(path.join(stdDir, 'user_decision.json'), JSON.stringify({ decision_status: 'approved', content_hash: 'abc123' }));
+        await fs.writeFile(
+          path.join(stdDir, 'user_decision.json'),
+          JSON.stringify(currentUserDecision(inst.id)),
+        );
 
         stdEngine.transition(inst.id, 'created', 'gates_running');
         const instObj = stdEngine.getInstance(inst.id);
