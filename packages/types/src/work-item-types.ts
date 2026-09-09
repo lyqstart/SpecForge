@@ -83,19 +83,7 @@ export const GATE_IDS = [
 export type GateId = (typeof GATE_IDS)[number];
 export const GATE_TYPES = ["hard_gate", "soft_gate"] as const;
 export type GateType = (typeof GATE_TYPES)[number];
-export const GateReportSchema = z.object({
-  schema_version: z.literal("1.0"), work_item_id: z.string(), gate_id: z.enum(GATE_IDS),
-  gate_type: z.enum(GATE_TYPES), required: z.boolean(),
-  status: z.enum(["passed", "failed", "skipped", "waived"]), input_files: z.array(z.string()),
-  checks: z.array(z.object({
-    check_id: z.string(), description: z.string(), passed: z.boolean(),
-    severity: z.enum(["error", "warning", "info"]).optional(), details: z.string().optional(),
-  })),
-  blocking_issues: z.array(z.string()), warnings: z.array(z.string()), waiver_allowed: z.boolean(),
-  waiver_required: z.boolean(), waiver_ids: z.array(z.string()), started_at: z.string().datetime(),
-  finished_at: z.string().datetime(), runner: z.string(),
-});
-export type GateReport = z.infer<typeof GateReportSchema>;
+export { GateReportSchema, type GateReport } from './gate-attempt-contract.js';
 
 export const GATE_SUMMARY_STATUSES = [
   "passed", "passed_with_waiver_required", "failed", "blocked", "expired", "invalidated",

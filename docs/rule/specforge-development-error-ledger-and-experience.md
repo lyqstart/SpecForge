@@ -25919,3 +25919,579 @@ REPEATED_ERROR_CHECK=PASS
 NEXT_LEGAL_ACTION=REMOVE_MISPLACED_BLOCK_THEN_INSERT_AFTER_UNIQUE_CANDIDATE_CLOSURE
 ```
 <!-- SPECFORGE_ERR1396_PROGRESS_RECEIPT_AMBIGUOUS_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR1397_GATE_ATTEMPT_OWNER_CONTRACT_CONFLICT:START -->
+### ERR-1397: Gate Attempt 事务存在 legacy snapshot 与持久合同缺口
+
+- **分类**：`ERR1013_OWNER_GAP / PARTIALLY_SUPPORTED / CONTRACT_CONFLICT / RUNTIME_DEFECT`。
+- **权威证据**：`GATE-ATTEMPT-001` 将每次 Gate 运行定义为追加式不可变事务；`GATE-LATEST-001` 将 latest 文件限定为可变兼容视图；当前发布边界明确不支持旧项目兼容。
+- **源码证据**：`gate-chain.ts` 已实现 attempt-NNNN、独占 start/report/summary/result 与历史不可覆盖；但 `snapshotLegacyLatest()` 会在没有来源证明时把任意 latest 文件包装为 `legacy_latest_snapshot`，真实 lifecycle 的 pending `gate_summary.md` 也可能触发该路径。已有 Attempt 在下一次运行前只枚举目录编号，不 exact-validate JSON 身份/schema/结构。
+- **合同证据**：Gate Report 1.0 interface 在 Daemon 与 Workflow Runtime 重复定义；Attempt start/input/result 没有共享 exact contract 或 migration descriptor；reconciliation 使用类型断言读取原始 JSON。
+- **能力判断**：保留现有 Gate Runner 与 append-only transaction，不重新设计 Gate 业务；移除 legacy snapshot 路径，以共享 current contract + per-file/dynamic descriptor 收敛事务和消费者。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1397_STATUS=IDENTIFIED_GATE_ATTEMPT_OWNER_PARTIALLY_SUPPORTED
+AUTHORITATIVE_OWNER=GATE_ATTEMPT_TRANSACTION
+EXISTING_APPEND_ONLY_TRANSACTION=SUPPORTED
+LEGACY_LATEST_SNAPSHOT=FORBIDDEN_CURRENT_RELEASE
+SHARED_EXACT_CONTRACT=MISSING
+DESCRIPTORS=MISSING
+UNKNOWN_EXISTING_ATTEMPT_SCHEMA_ZERO_WRITE=NOT_ENFORCED
+GATE_BUSINESS_RULE_CHANGE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=ADD_EXPECTED_RED_FOR_NO_LEGACY_SNAPSHOT_AND_UNKNOWN_EXISTING_ATTEMPT_ZERO_WRITE
+```
+<!-- SPECFORGE_ERR1397_GATE_ATTEMPT_OWNER_CONTRACT_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1398_GATE_ATTEMPT_OWNER_EXPECTED_RED:START -->
+### ERR-1398: Gate Attempt owner 两项边界缺陷预期红灯
+
+- **分类**：`EXPECTED_RED / ERR1397_CONFIRMED`。
+- **事实证据**：`gate-attempt-history.test.ts` 5 tests 为 3 pass / 2 fail。无 Attempt 但存在未证明 latest 文件时，当前实现先伪造 `attempt-0001`，导致真实运行成为 `attempt-0002`；已有 `attempt-result.json@9.9` 时，当前实现仍成功创建 `attempt-0002` 并更新 latest，而没有 fail closed。
+- **修复边界**：移除 current release 的 legacy latest snapshot；在创建新 Attempt 或写 latest 前验证现有 Attempt 的 current schema/身份/完整性。不得删除历史目录、猜测迁移或放宽断言。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1398_STATUS=CLOSED_AS_EXPECTED_RED_2_FAIL_3_PASS
+UNPROVEN_LATEST_PROMOTED_BEFORE_FIX=YES
+UNKNOWN_EXISTING_ATTEMPT_ACCEPTED_BEFORE_FIX=YES
+NEW_ATTEMPT_AND_LATEST_MUTATION_BEFORE_FIX=YES
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=IMPLEMENT_SHARED_GATE_ATTEMPT_CONTRACT_AND_PREFLIGHT_THEN_REMOVE_LEGACY_SNAPSHOT_PATH
+```
+<!-- SPECFORGE_ERR1398_GATE_ATTEMPT_OWNER_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1399_MIGRATION_SOURCE_PATH_ASSUMPTION:START -->
+### ERR-1399：Gate Attempt 取证时引用不存在的 migration 源文件
+
+- **发生时间**：2026-09-09
+- **分类**：`TOOL_COMMAND_PATH_ERROR / NO_REPOSITORY_STATE_CHANGE`。
+- **现象**：只读组合命令尝试读取 `packages/migration/src/persistent-file-schema.ts`，但仓库中不存在该文件，命令返回 `Cannot find path`。
+- **根因**：未先通过 `rg --files packages/migration/src` 核实 migration 包实际文件布局，直接按推测文件名读取。
+- **影响**：该命令只读，未修改仓库；同一命令的部分输出被截断，不能作为完整实现依据。
+- **修复**：先枚举 migration 源文件，再按真实入口读取 descriptor/precheck 实现；后续文件读取不再依赖推测路径。
+- **防复发**：读取未确认的包内文件前必须先用 `rg --files` 或已有 import 路径固化真实位置。
+
+```text
+ERR1399_STATUS=CLOSED_AS_READ_ONLY_PATH_ERROR
+REPOSITORY_WRITE_EFFECT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=USE_CONFIRMED_MIGRATION_SOURCE_PATHS_ONLY
+```
+<!-- SPECFORGE_ERR1399_MIGRATION_SOURCE_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1400_TYPES_EXPORT_PATCH_ANCHOR:START -->
+### ERR-1400：Gate Attempt types 导出补丁使用了不匹配锚点
+
+- **发生时间**：2026-09-09
+- **分类**：`PATCH_CONTEXT_MISMATCH / NO_FILE_CHANGE`。
+- **现象**：向 `packages/types/src/index.ts` 增加 Gate Attempt 契约导出时，补丁假定该文件直接导出 Candidate schema；实际该区块只导出 Candidate 专用版本与校验符号，补丁校验失败。
+- **根因**：沿用了 `schema.ts` 的导出排列作为 `index.ts` 锚点，没有先核实目标文件局部上下文。
+- **影响**：`apply_patch` 原子拒绝补丁，`index.ts` 未发生变化。
+- **修复与防复发**：已读取目标区块；改用 `candidate-manifest-contract.js` 导出块末尾作为精确锚点，单文件补丁后立即复核。
+
+```text
+ERR1400_STATUS=CLOSED_AS_ATOMIC_PATCH_REJECTION
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=APPLY_TYPES_EXPORT_WITH_VERIFIED_CONTEXT
+```
+<!-- SPECFORGE_ERR1400_TYPES_EXPORT_PATCH_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR1401_EXEC_ARGUMENT_TYPO:START -->
+### ERR-1401：只读检索工具参数键拼写错误
+
+- **发生时间**：2026-09-09
+- **分类**：`TOOL_INVOCATION_PARSE_ERROR / NO_COMMAND_EXECUTION`。
+- **现象**：一次计划执行的 `rg` 检索把 `cmd` 参数误写为 `cmdcmd`，工具在参数解析阶段拒绝调用。
+- **影响**：命令未执行，仓库与外部状态均无变化。
+- **修复与防复发**：后续使用最小标准 `exec_command({ cmd, workdir, ... })` 参数结构，不复制临时未完成调用。
+
+```text
+ERR1401_STATUS=CLOSED_AS_PRE_EXECUTION_PARSE_ERROR
+COMMAND_EXECUTED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RESUME_WITH_VALIDATED_EXEC_ARGUMENTS
+```
+<!-- SPECFORGE_ERR1401_EXEC_ARGUMENT_TYPO:END -->
+
+<!-- SPECFORGE_ERR1402_REDUNDANT_TYPES_EXPORT_CLEANUP:START -->
+### ERR-1402：重复执行已经满足的 Gate Report 导出清理补丁
+
+- **发生时间**：2026-09-09
+- **分类**：`PATCH_CONTEXT_MISMATCH / REDUNDANT_OPERATION`。
+- **现象**：尝试从 Gate Attempt 专用导出块删除 `GateReportSchema` 与 `GateReport` 时，补丁找不到目标行；复核显示这两个符号已不在该导出块中，当前文件已经是预期状态。
+- **根因**：在连续补丁后没有先复读目标区块，把已满足状态误判为仍待修改。
+- **影响**：补丁被原子拒绝，无文件变化；不存在重复导出。
+- **防复发**：连续编辑同一文件时，以每次补丁后的实际文件内容为下一步输入，不依赖先前屏幕快照。
+
+```text
+ERR1402_STATUS=CLOSED_AS_REDUNDANT_ATOMIC_REJECTION
+EXPECTED_STATE_ALREADY_PRESENT=YES
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=CONTINUE_DESCRIPTOR_IMPLEMENTATION
+```
+<!-- SPECFORGE_ERR1402_REDUNDANT_TYPES_EXPORT_CLEANUP:END -->
+
+<!-- SPECFORGE_ERR1404_DEFAULT_MODE_INTERACTION_AND_PATCH_NOISE:START -->
+### ERR-1404：连续调用不可用交互工具并生成无效补丁
+
+- **发生时间**：2026-09-09
+- **分类**：`TOOL_SELECTION_ERROR / PATCH_INPUT_ERROR / NO_PROJECT_STATE_CHANGE`。
+- **现象**：在用户已明确要求持续推进时，两次误调用 Default mode 不可用的 `request_user_input`；随后两次生成不完整或错误目标的 `apply_patch` 输入，其中一次空执行、一次被补丁校验拒绝。
+- **根因**：剩余上下文提示导致执行焦点偏离当前明确任务，并在恢复时未先校验补丁完整格式。
+- **影响**：交互工具调用均被模式门禁拒绝；无效补丁没有命中任何项目文件，仓库状态未被这些操作改变。
+- **修复与防复发**：不再请求已明确的继续授权；每个补丁只使用完整的 `Begin Patch / Update File / End Patch` 模板并指向已核实路径。
+
+```text
+ERR1404_STATUS=CLOSED_AS_TOOLING_NOISE_WITH_ZERO_PROJECT_WRITE
+USER_DIRECTION_ALREADY_CLEAR=CONTINUE
+PARTIAL_PROJECT_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=COMPLETE_GATE_ATTEMPT_PREFLIGHT_WITHOUT_FURTHER_INTERACTION
+```
+<!-- SPECFORGE_ERR1404_DEFAULT_MODE_INTERACTION_AND_PATCH_NOISE:END -->
+
+<!-- SPECFORGE_ERR1405_GATE_CHAIN_FUNCTION_ANCHOR_TYPO:START -->
+### ERR-1405：Gate Attempt preflight 补丁函数锚点拼写错误
+
+- **发生时间**：2026-09-09
+- **分类**：`PATCH_CONTEXT_TYPO / NO_FILE_CHANGE`。
+- **现象**：目标函数 `existingAttemptNumbers` 被误写为 `existingAttemptNumbersgelt`，`apply_patch` 找不到上下文并拒绝。
+- **影响**：无文件变化。
+- **防复发**：先读取 `existingAttemptNumbers` 到 `createGateAttempt` 的精确区段，再以真实相邻函数边界插入完整 preflight。
+
+```text
+ERR1405_STATUS=CLOSED_AS_ATOMIC_PATCH_REJECTION
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=READ_EXACT_GATE_CHAIN_INSERTION_REGION_THEN_PATCH
+```
+<!-- SPECFORGE_ERR1405_GATE_CHAIN_FUNCTION_ANCHOR_TYPO:END -->
+
+<!-- SPECFORGE_ERR1406_GATE_ATTEMPT_PREFLIGHT_TRANSCRIPTION:START -->
+### ERR-1406：Gate Attempt preflight 初稿存在路径字符与 descriptor 身份参数缺陷
+
+- **发生时间**：2026-09-09
+- **分类**：`IMPLEMENTATION_TRANSCRIPTION_DEFECT / PRE_VALIDATION_DETECTED`。
+- **现象**：复核刚写入的 preflight 时发现 `path.join` 被转录为包含异常字符的标识符；同时调用端传入 `attemptId`，而 Gate Report descriptor 工厂初稿尚未接收该参数。
+- **根因**：较长逻辑补丁中发生输入污染，且 descriptor 唯一身份设计在调用端与工厂端没有同步完成。
+- **影响**：缺陷尚未测试、提交或部署；预计会导致 TypeScript 构建失败。
+- **修复**：恢复标准 `path.join`；Gate Report descriptor 显式接收 `attemptId`，并把它纳入 descriptor ID，保持不同 Attempt 间身份唯一。
+- **防复发**：实现补丁后先进行静态字符/签名复核，再启动测试；descriptor 工厂的参数与 ID 组成必须一起评审。
+
+```text
+ERR1406_STATUS=FIX_IN_PROGRESS_PRE_VALIDATION
+COMMITTED=NO
+DEPLOYED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=FIX_PATH_CALL_AND_REPORT_DESCRIPTOR_SIGNATURE_THEN_BUILD_TYPES_MIGRATION_DAEMON
+```
+<!-- SPECFORGE_ERR1406_GATE_ATTEMPT_PREFLIGHT_TRANSCRIPTION:END -->
+
+<!-- SPECFORGE_ERR1407_UNICODE_LINE_REPAIR_AND_LEDGER_PATCH_FAILURE:START -->
+### ERR-1407：异常 Unicode 行修复未匹配，随后 ledger 补丁路径与 hunk 无效
+
+- **发生时间**：2026-09-09
+- **分类**：`PATCH_CONTEXT_MISMATCH / PATCH_INPUT_ERROR / NO_FILE_CHANGE`。
+- **现象**：首次修复使用正常 `path.join` 作为旧行上下文，无法匹配实际含异常 Unicode 的旧行；随后一次登记补丁误含错误路径且没有 hunk，被校验拒绝。
+- **影响**：两次 `apply_patch` 均原子失败，没有文件变化。
+- **修复与防复发**：已用 `rg -n summaryStat` 取得准确原始行；后续补丁严格复制该行作为删除上下文。ledger 补丁只复用已验证的绝对路径与完整 hunk。
+
+```text
+ERR1407_STATUS=CLOSED_AS_ATOMIC_PATCH_REJECTIONS
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=REPLACE_EXACT_UNICODE_SOURCE_LINE
+```
+<!-- SPECFORGE_ERR1407_UNICODE_LINE_REPAIR_AND_LEDGER_PATCH_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1408_APPLY_PATCH_WRAPPER_PLACEHOLDER:START -->
+### ERR-1408：descriptor 签名修复调用误用不存在的包装占位函数
+
+- **发生时间**：2026-09-09
+- **分类**：`TOOL_WRAPPER_REFERENCE_ERROR / PATCH_NOT_INVOKED`。
+- **现象**：补丁文本已构造，但执行包装误调用 `arbiter_placeholder()`，JavaScript 在调用 `apply_patch` 前抛出 `ReferenceError`。
+- **影响**：补丁工具未执行，目标文件无变化。
+- **修复与防复发**：后续仅使用 `text(await tools.apply_patch(patch))` 标准调用形式，不引入任何占位包装。
+
+```text
+ERR1408_STATUS=CLOSED_AS_PRE_PATCH_REFERENCE_ERROR
+PATCH_INVOKED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=APPLY_DESCRIPTOR_SIGNATURE_PATCH_DIRECTLY
+```
+<!-- SPECFORGE_ERR1408_APPLY_PATCH_WRAPPER_PLACEHOLDER:END -->
+
+<!-- SPECFORGE_ERR1409_PARALLEL_BUILD_SCRIPT_SYNTAX:START -->
+### ERR-1409：并行构建包装脚本含未闭合检索字符串
+
+- **发生时间**：2026-09-09
+- **分类**：`ORCHESTRATION_SCRIPT_SYNTAX_ERROR / COMMANDS_NOT_STARTED`。
+- **现象**：计划并行执行 types、migration 构建和源码检索时，第三个命令字符串未闭合，JavaScript 解析阶段整体失败。
+- **影响**：所有嵌套命令均未启动，未生成构建产物，也未改变仓库状态。
+- **修复与防复发**：取消该并行包装；构建与检索分别使用短小、独立的标准命令调用。
+
+```text
+ERR1409_STATUS=CLOSED_AS_PRE_EXECUTION_SYNTAX_ERROR
+NESTED_COMMANDS_STARTED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_MINIMAL_BUILD_COMMANDS_SEQUENTIALLY
+```
+<!-- SPECFORGE_ERR1409_PARALLEL_BUILD_SCRIPT_SYNTAX:END -->
+
+<!-- SPECFORGE_ERR1410_BUN_NOT_ON_PATH:START -->
+### ERR-1410：当前 PowerShell 会话的 PATH 中不存在 Bun
+
+- **发生时间**：2026-09-09
+- **分类**：`VALIDATION_ENVIRONMENT_COMMAND_NOT_FOUND`。
+- **现象**：在 `packages/types` 执行 `bun run build` 时，PowerShell 报告 `bun` 不是可识别的命令。
+- **影响**：构建未启动，没有形成产品验证结论。
+- **修复**：使用本项目此前已验证的临时 Bun runtime 绝对路径执行相同构建与测试命令。
+- **防复发**：本会话后续验证统一使用已核实的 Bun 绝对路径，不再假定 PATH 配置。
+
+```text
+ERR1410_STATUS=CLOSED_AS_ENVIRONMENT_INVOCATION_ERROR
+BUILD_STARTED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_BUILD_WITH_VERIFIED_BUN_ABSOLUTE_PATH
+```
+<!-- SPECFORGE_ERR1410_BUN_NOT_ON_PATH:END -->
+
+<!-- SPECFORGE_ERR1411_GATE_INPUT_SNAPSHOT_TYPE_DUPLICATE:START -->
+### ERR-1411：daemon Gate Attempt input snapshot 类型在收敛后重复声明
+
+- **发生时间**：2026-09-09
+- **分类**：`EXPECTED_INTEGRATION_BUILD_FAILURE / DUPLICATE_TYPE_OWNER`。
+- **现象**：types 与 migration 构建通过；daemon TypeScript 构建在 `gate-chain.ts(14,3)` 报 `TS2440`，共享 `GateAttemptInputSnapshotEntry` import 与旧本地 type 同名冲突。
+- **根因**：引入共享持久化契约时保留了 daemon 内原有类型声明。
+- **修复**：删除本地结构定义，继续从 `gate-chain.ts` 重新导出共享类型，避免破坏现有消费者。
+- **验证计划**：重跑 daemon build，再跑 Gate Attempt targeted tests。
+
+```text
+ERR1411_STATUS=FIX_IN_PROGRESS
+TYPES_BUILD=PASS
+MIGRATION_BUILD=PASS
+DAEMON_BUILD=FAIL_TS2440
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=REMOVE_DUPLICATE_LOCAL_TYPE_AND_REEXPORT_SHARED_TYPE
+```
+<!-- SPECFORGE_ERR1411_GATE_INPUT_SNAPSHOT_TYPE_DUPLICATE:END -->
+
+<!-- SPECFORGE_ERR1412_GATE_REPORT_WRITE_ORDER_PATCH_TYPO:START -->
+### ERR-1412：Gate Report 写入顺序补丁的上下文变量名被误写
+
+- **发生时间**：2026-09-09
+- **分类**：`PATCH_CONTEXT_TYPO / NO_FILE_CHANGE`。
+- **现象**：将 immutable attempt report 调整到 mutable latest 之前写入时，旧行上下文中的 `gatesDir` 被误写为 `gates RingDir`，补丁无法匹配。
+- **影响**：补丁原子拒绝，无文件变化。
+- **修复与防复发**：使用当前源码中的准确 `gatesDir` 行重新应用两行顺序交换；短补丁提交前逐字符复核变量名。
+
+```text
+ERR1412_STATUS=CLOSED_AS_ATOMIC_PATCH_REJECTION
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=REAPPLY_TWO_LINE_WRITE_ORDER_PATCH
+```
+<!-- SPECFORGE_ERR1412_GATE_REPORT_WRITE_ORDER_PATCH_TYPO:END -->
+
+<!-- SPECFORGE_ERR1413_GATE_REPORT_WRITE_ORDER_SECOND_PATCH_TYPO:START -->
+### ERR-1413：非必要 Gate Report 写入顺序优化的第二次补丁仍发生转录错误
+
+- **发生时间**：2026-09-09
+- **分类**：`PATCH_CONTEXT_TYPO / SCOPE_RETRACTION / NO_FILE_CHANGE`。
+- **现象**：第二次两行顺序补丁把 `JSON.stringify` 误写，补丁再次无法匹配。
+- **影响**：补丁原子拒绝；现有写入顺序未改变，不影响 ERR-1397 已确认的两个完成条件。
+- **处置**：撤回本轮非必要写入顺序优化，不扩大当前修复范围；继续验证已实现的 no-legacy-snapshot、existing-attempt preflight 与 exact consumer。
+
+```text
+ERR1413_STATUS=CLOSED_BY_SCOPE_RETRACTION
+PRODUCT_FILE_CHANGE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=VALIDATE_REQUIRED_GATE_ATTEMPT_OWNER_FIX_ONLY
+```
+<!-- SPECFORGE_ERR1413_GATE_REPORT_WRITE_ORDER_SECOND_PATCH_TYPO:END -->
+
+<!-- SPECFORGE_ERR1414_VERIFICATION_RECONCILE_INCOMPLETE_TEST_FIXTURE:START -->
+### ERR-1414：Verification reconciliation 测试夹具缺少 current Attempt Start
+
+- **发生时间**：2026-09-09
+- **分类**：`HISTORICAL_TEST_FIXTURE_CONTRACT_GAP / NO_PRODUCT_COMPATIBILITY_REQUIRED`。
+- **事实证据**：Gate Attempt、Candidate reconciliation 两组通过；Verification reconciliation 的 2 项中 1 项失败，报 `RECONCILE_ATTEMPT_START_INVALID ... ENOENT`。失败夹具创建 `attempt-result.json`、reports 与 input snapshot，但没有创建 GATE-ATTEMPT-001 要求的 `attempt-start.json`。
+- **判断**：产品消费者按 current exact contract 拒绝不完整历史证据是预期行为；用户已明确无需旧项目兼容，不应为该夹具恢复兼容分支。
+- **修复边界**：保留原测试业务目标和所有核心断言，只补齐 current `attempt-start.json` fixture，并确保 start/result 的时间与 requested gates 一致。
+- **验证计划**：重跑三份 Gate Attempt/reconciliation tests；新增 malformed current contract 拒绝测试。
+
+```text
+ERR1414_STATUS=FIX_TEST_FIXTURE_TO_CURRENT_AUTHORITATIVE_CONTRACT
+PRODUCT_CODE_ROLLBACK=NO
+LEGACY_COMPATIBILITY_ADDED=NO
+TEST_REMOVED_OR_SKIPPED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=ALIGN_VERIFICATION_RECONCILE_FIXTURE_WITH_GATE_ATTEMPT_001
+```
+<!-- SPECFORGE_ERR1414_VERIFICATION_RECONCILE_INCOMPLETE_TEST_FIXTURE:END -->
+
+<!-- SPECFORGE_ERR1415_GATE_ATTEMPT_CONTRACT_TEST_PLACEHOLDER:START -->
+### ERR-1415：新建 Gate Attempt 契约测试包含无效占位断言
+
+- **发生时间**：2026-09-09
+- **分类**：`TEST_AUTHORING_SYNTAX_DEFECT / PRE_RUN_DETECTED`。
+- **现象**：`gate-attempt-contract.test.ts` 初稿的断言行被写成无效占位表达式，无法编译。
+- **影响**：仅影响新建、未运行、未提交的测试文件；产品代码不受影响。
+- **修复**：用明确的 `safeParse` 成功/失败断言替换占位行，并补齐 Attempt Start 与 success/error result exact contract 测试。
+- **防复发**：测试文件新增后立即完整读取，再运行单文件测试；禁止任何占位标识进入磁盘。
+
+```text
+ERR1415_STATUS=FIX_IN_PROGRESS_PRE_TEST
+PRODUCT_CODE_EFFECT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=REPLACE_PLACEHOLDER_WITH_COMPLETE_CONTRACT_ASSERTIONS
+```
+<!-- SPECFORGE_ERR1415_GATE_ATTEMPT_CONTRACT_TEST_PLACEHOLDER:END -->
+
+<!-- SPECFORGE_ERR1416_TYPES_VITEST_BUN_TEMP_EPERM:START -->
+### ERR-1416：types Vitest 启动时 Bun 默认临时目录 EPERM
+
+- **发生时间**：2026-09-09
+- **分类**：`VALIDATION_ENVIRONMENT_TEMP_PERMISSION_ERROR / TEST_NOT_STARTED`。
+- **现象**：在 `packages/types` 运行目标 Vitest 时，Bun 返回 `EPERM accessing temporary directory`，要求设置 `BUN_TMPDIR` 或 `BUN_INSTALL`。
+- **影响**：测试未启动，没有测试结果；仓库文件无变化。
+- **修复**：使用项目内 `D:\code\SpecForge\.tmp\bun` 设置 `TEMP`、`TMP` 与 `BUN_TMPDIR` 后原命令重跑。
+
+```text
+ERR1416_STATUS=ENVIRONMENT_RECOVERY_IN_PROGRESS
+TEST_PROCESS_STARTED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RERUN_WITH_WORKSPACE_LOCAL_BUN_TEMP
+```
+<!-- SPECFORGE_ERR1416_TYPES_VITEST_BUN_TEMP_EPERM:END -->
+
+<!-- SPECFORGE_ERR1417_ERR1416_LEDGER_TEXT_CORRUPTION:START -->
+### ERR-1417：ERR-1416 登记文本污染及首次修复上下文不匹配
+
+- **发生时间**：2026-09-09
+- **分类**：`GOVERNANCE_RECORD_TRANSCRIPTION_DEFECT / PATCH_CONTEXT_MISMATCH / REPAIRED`。
+- **现象**：ERR-1416 初次写入时标题与影响字段被污染；首次修复又错误地假定标题含转义反斜杠，补丁未匹配。
+- **影响**：首次修复原子拒绝；运行时与测试无影响。账本文本已按实际 `://###` 原行修复。
+- **防复发**：治理记录异常字符必须先读取实际字节呈现，再构造修复上下文。
+
+```text
+ERR1417_STATUS=CLOSED_BY_VERIFIED_CONTEXT_REPAIR
+HISTORICAL_RECORD_DELETED=NO
+FAILED_REPAIR_PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RERUN_TYPES_TARGET_WITH_WORKSPACE_TEMP
+```
+<!-- SPECFORGE_ERR1417_ERR1416_LEDGER_TEXT_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1418_WORKSPACE_BUN_TEMP_STILL_EPERM:START -->
+### ERR-1418：设置工作区 Bun 临时目录后 Vitest 仍返回 EPERM
+
+- **发生时间**：2026-09-09
+- **分类**：`VALIDATION_ENVIRONMENT_TEMP_PATH_UNAVAILABLE / TEST_NOT_STARTED`。
+- **现象**：显式设置 `TEMP`、`TMP`、`BUN_TMPDIR` 为 `D:\code\SpecForge\.tmp\bun` 后，目标 Vitest 仍在启动前返回同一 EPERM。
+- **证据边界**：尚未证明是目录不存在、权限属性或 Bun 解析行为；当前结论为 `INSUFFICIENT_EVIDENCE`。
+- **影响**：测试未启动，仓库产品文件无变化。
+- **下一步取证**：只读检查该目录存在性与属性；若不存在，仅在工作区内创建该明确目录，再按相同命令复测。
+
+```text
+ERR1418_STATUS=OPEN_ENVIRONMENT_RECOVERY
+TEST_PROCESS_STARTED=NO
+ROOT_CAUSE=INSUFFICIENT_EVIDENCE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=VERIFY_AND_PREPARE_EXPLICIT_WORKSPACE_TEMP_DIRECTORY
+```
+<!-- SPECFORGE_ERR1418_WORKSPACE_BUN_TEMP_STILL_EPERM:END -->
+
+<!-- SPECFORGE_ERR1419_TEMP_DIRECTORY_INSPECTION_SCRIPT_CORRUPTION:START -->
+### ERR-1419：临时目录只读检查的工具参数被异常拼接
+
+- **发生时间**：2026-09-09
+- **分类**：`ORCHESTRATION_ARGUMENT_CORRUPTION / COMMAND_NOT_STARTED`。
+- **现象**：计划执行 `Get-Item` 时，工具参数中出现多个无效键和值，JavaScript 报 `Unexpected string`。
+- **影响**：命令未启动，仓库与文件系统无变化。
+- **处置**：停止复杂包装，只执行单一 `Test-Path -LiteralPath`；完成验证环境判断后结束本轮检查点，下一轮从已保存状态继续。
+
+```text
+ERR1419_STATUS=CLOSED_AS_PRE_EXECUTION_PARSE_ERROR
+COMMAND_STARTED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_SINGLE_MINIMAL_TEST_PATH_COMMAND
+```
+<!-- SPECFORGE_ERR1419_TEMP_DIRECTORY_INSPECTION_SCRIPT_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1420_ROOT_VITEST_EXE_NOT_PRESENT:START -->
+### ERR-1420：替代 Vitest Windows 可执行入口入口不存在
+
+- **发生时间**：2026-09-09
+- **分类**：`VALIDATION_RUNNER_PATH_NOT_FOUND / TEST_NOT_STARTED`。
+- **现象**：尝试使用 `.\node_modules\.bin\vitest.exe` 绕过 Bun 临时目录问题，但 PowerShell 报该入口不存在。
+- **影响**：测试未启动，仓库无变化。
+- **下一步**：只读枚举 `node_modules/.bin/vitest*` 实际 shim，再调用存在的入口；不安装、不联网、不改 lockfile。
+
+```text
+ERR1420_STATUS=OPEN_RUNNER_ENTRY_RECOVERY
+TEST_PROCESS_STARTED=NO
+DEPENDENCY_INSTALL_ACTION=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=ENUMERATE_EXISTING_VITEST_SHIMS
+```
+<!-- SPECFORGE_ERR1420_ROOT_VITEST_EXE_NOT_PRESENT:END -->
+
+<!-- SPECFORGE_ERR1421_DAEMON_VITEST_ROOT_EXCLUDED_TYPES:START -->
+### ERR-1421：借用 daemon Vitest 时 root/include 规则排除 types 测试
+
+- **发生时间**：2026-09-09
+- **分类**：`VALIDATION_RUNNER_SCOPE_MISMATCH / ZERO_TESTS_EXECUTED`。
+- **现象**：从 daemon 包调用 Vitest 并传入 `../types/tests/...` 后 runner 启动成功，但使用 daemon 的 `tests/**/*.test.ts, src/**/*.test.ts` include，相对外部 types 文件被排除，退出码 1。
+- **影响**：0 个测试执行，不能作为通过或失败证据；仓库无变化。
+- **修复**：保留已可用的 daemon Vitest 依赖入口，同时显式设置 `--root ../types` 后以 types 根相对路径运行。
+
+```text
+ERR1421_STATUS=OPEN_RUNNER_ROOT_RECOVERY
+TESTS_EXECUTED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RERUN_VITEST_WITH_EXPLICIT_TYPES_ROOT
+```
+<!-- SPECFORGE_ERR1421_DAEMON_VITEST_ROOT_EXCLUDED_TYPES:END -->
+
+<!-- SPECFORGE_ERR1422_ERR1421_MARKER_CORRUPTION:START -->
+### ERR-1422：ERR-1421 起始 marker 被异常字符污染
+
+- **发生时间**：2026-09-09
+- **分类**：`GOVERNANCE_MARKER_TRANSCRIPTION_DEFECT / IMMEDIATE_REPAIR`。
+- **现象**：ERR-1421 起始注释 marker 的 `SPECFORGE` 中混入异常字符，结束 marker 与正文未受影响。
+- **修复**：本补丁恢复为标准 `SPECFORGE_ERR1421...:START`；历史记录未删除。
+
+```text
+ERR1422_STATUS=CLOSED_BY_IN_PLACE_MARKER_REPAIR
+HISTORICAL_RECORD_DELETED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_TYPES_TEST_WITH_EXPLICIT_ROOT
+```
+<!-- SPECFORGE_ERR1422_ERR1421_MARKER_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1423_TYPES_TEST_RUNNER_BOUNDARY_AND_LEDGER_ANCHOR:START -->
+### ERR-1423：types 独立 Vitest runner 不可用且首次登记锚点写错
+
+- **发生时间**：2026-09-09
+- **分类**：`TEST_RUNNER_DEPENDENCY_BOUNDARY / PATCH_CONTEXT_MISMATCH`。
+- **事实证据**：从 daemon 的 Vitest 入口指定 types root 后，启动失败于仓库根 `vitest.config.ts` 无法解析 `vitest/config`；`packages/types/package.json` 未声明 Vitest。随后首次登记使用了不存在的 ERR-1422 marker，补丁被原子拒绝。
+- **判断**：共享契约应继续归属 types，但直接测试应在具备既有 Vitest runner 的 daemon 消费边界执行；不为 types 新增未经验证的测试依赖。
+- **处置**：原测试内容完整移动到 daemon-core unit tests，不删除断言；错误登记补丁未产生部分写入。
+
+```text
+ERR1423_STATUS=RECOVERY_IN_PROGRESS
+PRODUCT_CONTRACT_OWNER=SPEC_FORGE_TYPES
+TEST_RUNTIME_OWNER=DAEMON_CORE_EXISTING_VITEST
+TEST_ASSERTIONS_REMOVED=NO
+FAILED_LEDGER_PATCH_PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=MOVE_CONTRACT_TEST_TO_DAEMON_TEST_RUNTIME_AND_RUN
+```
+<!-- SPECFORGE_ERR1423_TYPES_TEST_RUNNER_BOUNDARY_AND_LEDGER_ANCHOR:END -->
+
+<!-- SPECFORGE_ERR1424_ERR1423_TEXT_TRANSCRIPTION:START -->
+### ERR-1424：ERR-1423 分类值和事实语句发生转录污染
+
+- **发生时间**：2026-09-09
+- **分类**：`GOVERNANCE_RECORD_TRANSCRIPTION_DEFECT / IMMEDIATE_REPAIR`。
+- **现象**：ERR-1423 的 `MISMATCH` 被异常字符污染，事实句出现多余词语。
+- **修复**：本补丁原位恢复标准分类值与正常语序；未删除或改变 ERR-1423 的事实与结论。
+
+```text
+ERR1424_STATUS=CLOSED_BY_IN_PLACE_TEXT_REPAIR
+HISTORICAL_FACTS_CHANGED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=MOVE_AND_RUN_CONTRACT_TEST
+```
+<!-- SPECFORGE_ERR1424_ERR1423_TEXT_TRANSCRIPTION:END -->
+
+<!-- SPECFORGE_ERR1403_GATE_CHAIN_EMPTY_PATCH_WRONG_PATH:START -->
+### ERR-1403：Gate chain 补丁草稿包含错误仓库路径与空 hunk
+
+- **发生时间**：2026-09-09
+- **分类**：`PATCH_TARGET_TYPO / INVALID_EMPTY_HUNK / NO_FILE_CHANGE`。
+- **现象**：一次未完成的补丁调用把仓库目录误写为 `SpecJenn`，且 Update File 没有变更 hunk；工具在校验阶段拒绝。
+- **影响**：目标路径不存在且补丁未执行，SpecForge 仓库无变化。
+- **修复与防复发**：后续补丁固定使用已验证绝对前缀 `D:\code\SpecForge`，并在调用前确认补丁同时包含目标上下文和增删内容。
+
+```text
+ERR1403_STATUS=CLOSED_AS_PRE_WRITE_PATCH_REJECTION
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=APPLY_COMPLETE_GATE_CHAIN_PATCH_TO_VERIFIED_TARGET
+```
+<!-- SPECFORGE_ERR1403_GATE_CHAIN_EMPTY_PATCH_WRONG_PATH:END -->
+
+<!-- SPECFORGE_ERR1425_GATE_ATTEMPT_OWNER_VALIDATED_CLOSURE:START -->
+### ERR-1425：Gate Attempt owner exact contract、preflight 与消费者闭环验证通过
+
+- **发生时间**：2026-09-09
+- **分类**：`ERR1397_CLOSURE / CURRENT_RELEASE_VALIDATED`。
+- **实现结果**：Gate Report、Attempt Start、Input Snapshot、Success/Error Result 使用共享严格 1.0 契约；migration 提供零 legacy transition descriptor；Gate transaction 在首次新写入前 fail-closed 预检既有 attempt；未证明 latest 不再提升为 immutable evidence；reconciliation 与 latest 聚合使用共享 exact validator。
+- **历史测试判断**：Verification reconciliation 夹具已对齐 current GATE-ATTEMPT-001，业务目标和断言保留；未增加旧项目兼容分支，未删除或跳过测试。
+- **验证证据**：types、migration、daemon build 均通过；目标 4 files / 15 tests 通过；migration 17 files / 406 tests 通过；daemon 192 files / 1720 tests 通过。
+- **环境恢复结论**：types 独立 Vitest runner 尝试不构成产品失败；共享契约测试完整移动到 daemon 既有 runner 并在目标与 daemon 全量回归中通过，因此 ERR-1416、ERR-1418、ERR-1420、ERR-1421、ERR-1423 均关闭。
+
+```text
+ERR1397_STATUS=CLOSED_GATE_ATTEMPT_OWNER_VALIDATED
+ERR1411_STATUS=CLOSED_DAEMON_BUILD_PASS
+ERR1414_STATUS=CLOSED_CURRENT_FIXTURE_ALIGNED
+ERR1415_STATUS=CLOSED_CONTRACT_TEST_3_PASS
+ERR1416_STATUS=CLOSED_BY_EXISTING_DAEMON_TEST_RUNTIME
+ERR1418_STATUS=CLOSED_NO_PRODUCT_VALIDATION_GAP
+ERR1420_STATUS=CLOSED_ALTERNATE_EXISTING_RUNNER_USED
+ERR1421_STATUS=CLOSED_TEST_MOVED_WITHOUT_ASSERTION_LOSS
+ERR1423_STATUS=CLOSED_TARGET_AND_FULL_DAEMON_PASS
+CURRENT_SCHEMA=1.0
+LEGACY_TRANSITIONS_ADDED=NONE
+TARGET_VALIDATION=4_FILES_15_PASS
+MIGRATION_VALIDATION=17_FILES_406_PASS
+DAEMON_VALIDATION=192_FILES_1720_PASS
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=UPDATE_PROGRESS_HANDOFF_INVENTORY_THEN_ROOT_REGRESSION
+```
+<!-- SPECFORGE_ERR1425_GATE_ATTEMPT_OWNER_VALIDATED_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1426_POST_DOCUMENT_BUN_PATH_TRANSCRIPTION:START -->
+### ERR-1426：post-document governance 命令的 Bun 绝对路径被转录污染
+
+- **发生时间**：2026-09-09
+- **分类**：`VALIDATION_COMMAND_PATH_ERROR / TEST_NOT_STARTED`。
+- **现象**：Bun 临时目录名和可执行目录名被错误缩写，PowerShell 报目标可执行文件不存在。
+- **影响**：治理回归未启动，仓库无变化；此前 root build 与 root regression 结论不受影响。
+- **修复**：复用已成功命令中的完整 Bun 绝对路径，原测试集合重跑。
+
+```text
+ERR1426_STATUS=RECOVERY_IN_PROGRESS
+TEST_PROCESS_STARTED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RERUN_POST_DOCUMENT_TARGET_WITH_VERIFIED_BUN_PATH
+```
+<!-- SPECFORGE_ERR1426_POST_DOCUMENT_BUN_PATH_TRANSCRIPTION:END -->
+
+<!-- SPECFORGE_ERR1427_GATE_ATTEMPT_ROOT_REGRESSION_CLOSURE:START -->
+### ERR-1427：Gate Attempt owner 根级可信回归与治理同步完成
+
+- **发生时间**：2026-09-09
+- **分类**：`ERR1013_SUBFAMILY_ROOT_VALIDATION_CLOSURE`。
+- **验证证据**：root deterministic build 16 workspaces 通过；root deterministic sequential regression 16 workspaces 退出码 0；daemon-core 192 files / 1720 tests 通过；post-document governance 8 files / 45 tests 通过。
+- **治理同步**：persistent owner inventory、progress tracker、current handoff 与 error ledger 已同步 Gate Attempt current owner、零 legacy transition、验证结果和下一合法动作。
+- **ERR-1426 处置**：使用已验证 Bun 绝对路径后相同 post-document 测试集合通过，故环境命令错误关闭。
+
+```text
+ERR1426_STATUS=CLOSED_POST_DOCUMENT_8_FILES_45_PASS
+ERR1427_STATUS=CLOSED_ROOT_REGRESSION_PASS
+ROOT_BUILD=PASS_16_WORKSPACES
+ROOT_REGRESSION=PASS_16_WORKSPACES_EXIT_0
+POST_DOCUMENT_GOVERNANCE=8_FILES_45_PASS
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=FINAL_GIT_DIFF_STATUS_AUDIT_AND_LOCAL_COMMIT
+```
+<!-- SPECFORGE_ERR1427_GATE_ATTEMPT_ROOT_REGRESSION_CLOSURE:END -->

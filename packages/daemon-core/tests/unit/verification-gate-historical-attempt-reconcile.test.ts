@@ -47,7 +47,7 @@ describe('Verification historical Gate Attempt reconciliation', () => {
     roots.push(projectRoot);
     const workItemId = 'WI-0004';
     const workItemDir = join(projectRoot, '.specforge', 'work-items', workItemId);
-    const attemptId = 'attempt-0006';
+    const attemptId = 'attempt-0001';
     const attemptPath = join(workItemDir, 'gate_attempts', attemptId);
     const attemptGates = join(attemptPath, 'gates');
     const latestGates = join(workItemDir, 'gates');
@@ -63,13 +63,31 @@ describe('Verification historical Gate Attempt reconciliation', () => {
     await writeFile(join(attemptPath, 'gate_summary.md'), summary, 'utf-8');
     await writeFile(join(workItemDir, 'gate_summary.md'), summary, 'utf-8');
     await writeFile(
-      join(attemptPath, 'attempt-result.json'),
+      join(attemptPath, 'attempt-start.json'),
       JSON.stringify({
+        schema_version: '1.0',
         attempt_id: attemptId,
         work_item_id: workItemId,
         source: 'gate_run',
-        summary_status: 'passed',
+        started_at: '2026-08-09T12:00:00.000Z',
+        requested_gate_ids: ['verification_gate', 'formal_version_gate'],
+      }, null, 2) + '\n',
+      'utf-8',
+    );
+    await writeFile(
+      join(attemptPath, 'attempt-result.json'),
+      JSON.stringify({
+        schema_version: '1.0',
+        attempt_id: attemptId,
+        work_item_id: workItemId,
+        source: 'gate_run',
+        started_at: '2026-08-09T12:00:00.000Z',
         completed_at: '2026-08-09T12:00:02.000Z',
+        requested_gate_ids: ['verification_gate', 'formal_version_gate'],
+        current_report_gate_ids: ['verification_gate', 'formal_version_gate'],
+        summary_report_gate_ids: ['verification_gate', 'formal_version_gate'],
+        summary_status: 'passed',
+        input_snapshot: 'input-snapshot.json',
       }, null, 2) + '\n',
       'utf-8',
     );

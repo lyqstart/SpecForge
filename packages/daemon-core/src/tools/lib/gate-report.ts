@@ -9,37 +9,17 @@
 
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import type {
+  GateReport as SharedGateReport,
+  GateReportCheck,
+} from '@specforge/types';
 
 // ---------------------------------------------------------------------------
 // §9.4 Gate Report
 // ---------------------------------------------------------------------------
 
-export interface GateReportCheck {
-  check_id: string;
-  description: string;
-  passed: boolean;
-  severity?: 'error' | 'warning' | 'info';
-  details?: string;
-}
-
-export interface GateReportV11 {
-  schema_version: '1.0';
-  work_item_id: string;
-  gate_id: GateIdV11;
-  gate_type: GateStrictness;
-  required: boolean;
-  status: 'passed' | 'failed' | 'skipped' | 'waived';
-  input_files: string[];
-  checks: GateReportCheck[];
-  blocking_issues: string[];
-  warnings: string[];
-  waiver_allowed: boolean;
-  waiver_required: boolean;
-  waiver_ids: string[];
-  started_at: string;
-  finished_at: string;
-  runner: string;
-}
+export type { GateReportCheck } from '@specforge/types';
+export type GateReportV11 = SharedGateReport;
 
 // ---------------------------------------------------------------------------
 // Gate 检查函数签名

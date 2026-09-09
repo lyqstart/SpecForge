@@ -7,6 +7,21 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
+import {
+  validateCurrentGateAttemptResultValue,
+  validateCurrentGateAttemptStartValue,
+  validateCurrentGateReportValue,
+  type GateAttemptInputSnapshotEntry,
+} from '@specforge/types';
+import {
+  createGateAttemptInputSnapshotSchemaDescriptor,
+  createGateAttemptResultSchemaDescriptor,
+  createGateAttemptStartSchemaDescriptor,
+  createGateAttemptReportSchemaDescriptor,
+  precheckSchemaDescriptors,
+  type SchemaDescriptorPrecheckResult,
+} from '@specforge/migration';
+export type { GateAttemptInputSnapshotEntry } from '@specforge/types';
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
 import {
   runGate,
@@ -82,88 +97,106 @@ async function existingAttemptNumbers(ctx: GateContext): Promise<number[]> {
       .map(entry => Number(entry.name.slice('attempt-'.length)))
       .filter(Number.isFinite)
       .sort((left, right) => left - right);
-  } catch {
-    return [];
-  }
-}
-
-function summaryStatusFromMarkdown(content: string): string {
-  return content.match(/^Overall Status:\s*(\S+)\s*$/m)?.[1] ?? 'unknown';
-}
-
-async function snapshotLegacyLatest(ctx: GateContext): Promise<void> {
-  if ((await existingAttemptNumbers(ctx)).length > 0) return;
-
-  const canonicalGatesPath = path.join(ctx.workItemDir, 'gates');
-  let gateNames: string[] = [];
-  try {
-    gateNames = (await fs.readdir(canonicalGatesPath))
-      .filter(name => name.endsWith('.json'))
-      .sort();
-  } catch {
-    gateNames = [];
-  }
-
-  const canonicalSummaryPath = path.join(ctx.workItemDir, 'gate_summary.md');
-  let summary: string | null = null;
-  try {
-    summary = await fs.readFile(canonicalSummaryPath, 'utf-8');
-  } catch {
-    summary = null;
-  }
-
-  if (gateNames.length === 0 && summary === null) return;
-
-  const root = gateAttemptsRoot(ctx);
-  await fs.mkdir(root, { recursive: true });
-  const attemptId = gateAttemptId(1);
-  const attemptPath = path.join(root, attemptId);
-  try {
-    await fs.mkdir(attemptPath);
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'EEXIST') return;
-    throw error;
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw new Error(
+      `GATE_ATTEMPTS_READ_FAILED: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
-  const gatesPath = path.join(attemptPath, 'gates');
-  await fs.mkdir(gatesPath);
+}
 
-  const capturedAt = new Date().toISOString();
-  await writeExclusiveJson(path.join(attemptPath, 'attempt-start.json'), {
-    schema_version: '1.0',
-    attempt_id: attemptId,
-    work_item_id: ctx.workItemId,
-    source: 'legacy_latest_snapshot',
-    started_at: capturedAt,
-    requested_gate_ids: [],
-  });
+function assertGateAttemptSchemaCurrent(
+  attemptId: string,
+  result: SchemaDescriptorPrecheckResult,
+): void {
+  if (result.ok && !result.needsMigration) return;
+  const failures = result.checks
+    .filter(check => check.status !== 'current')
+    .map(check => `${check.relativePath}:${check.errorCode ?? check.status}`)
+    .join(',');
+  throw new Error(`GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; ${failures}`);
+}
 
-  for (const name of gateNames) {
-    const bytes = await fs.readFile(path.join(canonicalGatesPath, name));
-    await writeExclusive(path.join(gatesPath, name), bytes);
+async function readValidatedGateAttemptJson(filePath: string): Promise<unknown> {
+  return JSON.parse(await fs.readFile(filePath, 'utf-8')) as unknown;
+}
+
+async function precheckExistingGateAttempts(ctx: GateContext): Promise<number[]> {
+  const attemptNumbers = await existingAttemptNumbers(ctx);
+  for (let index = 0; index < attemptNumbers.length; index += 1) {
+    if (attemptNumbers[index] !== index + 1) {
+      throw new Error(
+        `GATE_ATTEMPT_SCHEMA_BLOCKED: non-contiguous attempt sequence at ${gateAttemptId(index + 1)}`,
+      );
+    }
+
+    const attemptId = gateAttemptId(attemptNumbers[index]);
+    const attemptPath = path.join(gateAttemptsRoot(ctx), attemptId);
+    const basePrecheck = await precheckSchemaDescriptors(attemptPath, [
+      createGateAttemptStartSchemaDescriptor(ctx.workItemId, attemptId),
+      createGateAttemptResultSchemaDescriptor(ctx.workItemId, attemptId),
+    ]);
+    assertGateAttemptSchemaCurrent(attemptId, basePrecheck);
+
+    const startValidation = validateCurrentGateAttemptStartValue(
+      await readValidatedGateAttemptJson(path.join(attemptPath, 'attempt-start.json')),
+    );
+    const resultValidation = validateCurrentGateAttemptResultValue(
+      await readValidatedGateAttemptJson(path.join(attemptPath, 'attempt-result.json')),
+    );
+    if (!startValidation.value || !resultValidation.value) {
+      throw new Error(`GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; validation unavailable`);
+    }
+    const start = startValidation.value;
+    const result = resultValidation.value;
+    if (
+      start.started_at !== result.started_at
+      || JSON.stringify(start.requested_gate_ids) !== JSON.stringify(result.requested_gate_ids)
+    ) {
+      throw new Error(`GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; transaction identity mismatch`);
+    }
+
+    const reportIds = result.current_report_gate_ids;
+    if (new Set(reportIds).size !== reportIds.length) {
+      throw new Error(`GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; duplicate report ids`);
+    }
+    const reportPrecheck = await precheckSchemaDescriptors(
+      attemptPath,
+      reportIds.map(gateId =>
+        createGateAttemptReportSchemaDescriptor(ctx.workItemId, attemptId, gateId),
+      ),
+    );
+    assertGateAttemptSchemaCurrent(attemptId, reportPrecheck);
+
+    if ('summary_status' in result) {
+      const snapshotPrecheck = await precheckSchemaDescriptors(attemptPath, [
+        createGateAttemptInputSnapshotSchemaDescriptor(ctx.workItemId, attemptId),
+      ]);
+      assertGateAttemptSchemaCurrent(attemptId, snapshotPrecheck);
+      try {
+        const summaryStat = await fs.stat(path.join(attemptPath, 'gate_summary.md'));
+        if (!summaryStat.isFile()) throw new Error('not a file');
+      } catch (error) {
+        throw new Error(
+          `GATE_ATTEMPT_SCHEMA_BLOCKED: attempt=${attemptId}; gate_summary.md:${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    }
   }
-  if (summary !== null) {
-    await writeExclusive(path.join(attemptPath, 'gate_summary.md'), summary);
-  }
-  await writeExclusiveJson(path.join(attemptPath, 'attempt-result.json'), {
-    schema_version: '1.0',
-    attempt_id: attemptId,
-    work_item_id: ctx.workItemId,
-    source: 'legacy_latest_snapshot',
-    completed_at: capturedAt,
-    summary_status: summary === null ? 'unknown' : summaryStatusFromMarkdown(summary),
-    report_gate_ids: gateNames.map(name => name.replace(/\.json$/, '')),
-  });
+  return attemptNumbers;
 }
 
 async function createGateAttempt(
   ctx: GateContext,
   requestedGateIds: GateIdV11[],
 ): Promise<GateAttemptContext> {
-  await snapshotLegacyLatest(ctx);
+  const existingNumbers = await precheckExistingGateAttempts(ctx);
   const root = gateAttemptsRoot(ctx);
   await fs.mkdir(root, { recursive: true });
 
-  for (let sequence = 1; sequence <= 9999; sequence += 1) {
+  for (let sequence = (existingNumbers.at(-1) ?? 0) + 1; sequence <= 9999; sequence += 1) {
     const attemptId = gateAttemptId(sequence);
     const attemptPath = path.join(root, attemptId);
     try {
@@ -214,16 +247,18 @@ async function latestGateReports(
   try {
     for (const name of await fs.readdir(gatesDir)) {
       if (!name.endsWith('.json') || name === 'close_gate.json') continue;
-      try {
-        const report = JSON.parse(
-          await fs.readFile(path.join(gatesDir, name), 'utf-8'),
-        ) as GateReportV11;
-        if (report?.gate_id) byId.set(report.gate_id, report);
-      } catch {
-        // Invalid Gate JSON remains the responsibility of its owning Gate.
+      const reportValidation = validateCurrentGateReportValue(
+        await readValidatedGateAttemptJson(path.join(gatesDir, name)),
+      );
+      if (!reportValidation.value) {
+        throw new Error(
+          `GATE_LATEST_SCHEMA_BLOCKED: file=${name}; ${reportValidation.errors.join('; ')}`,
+        );
       }
+      byId.set(reportValidation.value.gate_id, reportValidation.value);
     }
-  } catch {
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
     // The current run may be creating the first Gate reports.
   }
   for (const report of currentReports) byId.set(report.gate_id, report);
@@ -251,15 +286,6 @@ async function writeGateSummary(
   await fs.writeFile(summaryPath, summaryContent, 'utf-8');
   return { summaryStatus, summaryPath, summaryContent, summaryReports };
 }
-
-export type GateAttemptInputSnapshotEntry = {
-  path: string;
-  exists: boolean;
-  kind: 'file' | 'directory' | 'other' | 'missing';
-  sha256?: string;
-  size?: number;
-  mtime_ms?: number;
-};
 
 function resolveGateAttemptInputPath(projectRoot: string, inputPath: string): string {
   return path.isAbsolute(inputPath)

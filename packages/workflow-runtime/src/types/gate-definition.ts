@@ -11,6 +11,11 @@
  * - §9.6 冻结规则
  */
 
+import type {
+  GateReport as SharedGateReport,
+  GateReportCheck as SharedGateReportCheck,
+} from '@specforge/types';
+
 // ---------------------------------------------------------------------------
 // §9.2 Gate ID 枚举
 // ---------------------------------------------------------------------------
@@ -33,6 +38,7 @@ export const GATE_IDS_V11 = [
   'merge_ready_gate',
   'post_merge_gate',
   'verification_gate',
+  'formal_version_gate',
   'close_gate',
 ] as const;
 
@@ -57,36 +63,13 @@ export type GateStrictness = (typeof GATE_STRICTNESS)[number];
 /**
  * Gate Report 单个检查项。
  */
-export interface GateReportCheck {
-  check_id: string;
-  description: string;
-  passed: boolean;
-  severity?: 'error' | 'warning' | 'info';
-  details?: string;
-}
+export type GateReportCheck = SharedGateReportCheck;
 
 /**
  * Gate Report 结构（§9.4）。
  * 路径：.specforge/work-items/<WI-ID>/gates/<gate_id>.json
  */
-export interface GateReportV11 {
-  schema_version: '1.0';
-  work_item_id: string;
-  gate_id: GateIdV11;
-  gate_type: GateStrictness;
-  required: boolean;
-  status: 'passed' | 'failed' | 'skipped' | 'waived';
-  input_files: string[];
-  checks: GateReportCheck[];
-  blocking_issues: string[];
-  warnings: string[];
-  waiver_allowed: boolean;
-  waiver_required: boolean;
-  waiver_ids: string[];
-  started_at: string;
-  finished_at: string;
-  runner: string;
-}
+export type GateReportV11 = SharedGateReport;
 
 // ---------------------------------------------------------------------------
 // §9.5 Gate Summary

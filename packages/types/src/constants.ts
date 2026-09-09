@@ -142,6 +142,7 @@ export const GATE_IDS = [
   'merge_ready_gate',
   'post_merge_gate',
   'verification_gate',
+  'formal_version_gate',
   'close_gate',
 ] as const;
 

@@ -19,6 +19,12 @@ import { createHash } from 'node:crypto';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { workItemCandidateManifest, workItemRoot } from '@specforge/types/directory-layout';
 import {
+  validateCurrentGateAttemptInputSnapshotValue,
+  validateCurrentGateAttemptResultValue,
+  validateCurrentGateAttemptStartValue,
+  validateCurrentGateReportValue,
+} from '@specforge/types';
+import {
   resolveFrozenManifestArtifacts,
   resolveWorkItemSpecArtifacts,
 } from '../lib/governance-invariants-v11';
@@ -810,10 +816,41 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   }
 
   const attemptPath = path.join(attemptsRoot, input.attemptId);
-  const attemptResult = await readJsonFile<Record<string, unknown>>(
+  const attemptStartValidation = validateCurrentGateAttemptStartValue(
+    await readJsonFile<unknown>(
+      path.join(attemptPath, 'attempt-start.json'),
+      'RECONCILE_ATTEMPT_START_INVALID',
+    ),
+  );
+  if (
+    !attemptStartValidation.value ||
+    attemptStartValidation.value.attempt_id !== input.attemptId ||
+    attemptStartValidation.value.work_item_id !== input.workItemId
+  ) {
+    throw new Error(
+      `RECONCILE_ATTEMPT_START_INVALID: attempt=${input.attemptId}; ${attemptStartValidation.errors.join('; ')}`,
+    );
+  }
+  const attemptResultRaw = await readJsonFile<unknown>(
     path.join(attemptPath, 'attempt-result.json'),
     'RECONCILE_ATTEMPT_RESULT_INVALID',
   );
+  const attemptResultValidation = validateCurrentGateAttemptResultValue(attemptResultRaw);
+  if (!attemptResultValidation.value || !('summary_status' in attemptResultValidation.value)) {
+    throw new Error(
+      `RECONCILE_ATTEMPT_RESULT_INVALID: attempt=${input.attemptId}; ${attemptResultValidation.errors.join('; ')}`,
+    );
+  }
+  const attemptResult = attemptResultValidation.value;
+  if (
+    attemptResult.started_at !== attemptStartValidation.value.started_at ||
+    JSON.stringify(attemptResult.requested_gate_ids) !==
+      JSON.stringify(attemptStartValidation.value.requested_gate_ids)
+  ) {
+    throw new Error(
+      `RECONCILE_ATTEMPT_IDENTITY_MISMATCH: attempt=${input.attemptId}`,
+    );
+  }
   if (
     attemptResult.attempt_id !== input.attemptId ||
     attemptResult.work_item_id !== input.workItemId ||
@@ -838,10 +875,22 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     .sort();
   const reports: GateReportV11[] = [];
   for (const name of gateNames) {
-    const report = await readJsonFile<GateReportV11>(
+    const reportRaw = await readJsonFile<unknown>(
       path.join(gatesPath, name),
       'RECONCILE_GATE_REPORT_INVALID',
     );
+    const reportValidation = validateCurrentGateReportValue(reportRaw);
+    if (!reportValidation.value) {
+      throw new Error(
+        `RECONCILE_GATE_REPORT_INVALID: file=${name}; ${reportValidation.errors.join('; ')}`,
+      );
+    }
+    const report = reportValidation.value;
+    if (`${report.gate_id}.json` !== name) {
+      throw new Error(
+        `RECONCILE_GATE_REPORT_IDENTITY_MISMATCH: file=${name}; gate_id=${report.gate_id}`,
+      );
+    }
     if (report.work_item_id !== input.workItemId) {
       throw new Error(
         `RECONCILE_GATE_REPORT_WORK_ITEM_MISMATCH: gate=${report.gate_id}; work_item_id=${report.work_item_id}`
@@ -925,15 +974,9 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
   }
 
   const inputSnapshotPath = path.join(attemptPath, 'input-snapshot.json');
-  let inputSnapshot: {
-    schema_version?: unknown;
-    attempt_id?: unknown;
-    work_item_id?: unknown;
-    captured_at?: unknown;
-    inputs?: unknown;
-  };
+  let inputSnapshotRaw: unknown;
   try {
-    inputSnapshot = await readJsonFile<typeof inputSnapshot>(
+    inputSnapshotRaw = await readJsonFile<unknown>(
       inputSnapshotPath,
       'RECONCILE_INPUT_SNAPSHOT_INVALID',
     );
@@ -946,26 +989,23 @@ export async function inspectCandidateGateAttemptForReconciliation(input: {
     throw error;
   }
 
+  const inputSnapshotValidation = validateCurrentGateAttemptInputSnapshotValue(
+    inputSnapshotRaw,
+  );
+  const inputSnapshot = inputSnapshotValidation.value;
   if (
-    inputSnapshot.schema_version !== '1.0' ||
+    !inputSnapshot ||
     inputSnapshot.attempt_id !== input.attemptId ||
-    inputSnapshot.work_item_id !== input.workItemId ||
-    !Array.isArray(inputSnapshot.inputs)
+    inputSnapshot.work_item_id !== input.workItemId
   ) {
     throw new Error(
-      `RECONCILE_INPUT_SNAPSHOT_SCHEMA_INVALID: attempt=${input.attemptId}`
+      `RECONCILE_INPUT_SNAPSHOT_SCHEMA_INVALID: attempt=${input.attemptId}; ${inputSnapshotValidation.errors.join('; ')}`
     );
   }
 
   const checkedInputFiles: string[] = [];
   const nonMaterializedInputPaths: string[] = [];
-  for (const raw of inputSnapshot.inputs) {
-    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-      throw new Error(
-        `RECONCILE_INPUT_SNAPSHOT_ENTRY_INVALID: attempt=${input.attemptId}`
-      );
-    }
-    const entry = raw as Record<string, unknown>;
+  for (const entry of inputSnapshot.inputs) {
     const inputPath = String(entry.path ?? '').trim();
     const resolvedInputPath = resolveGateInputPath(input.projectRoot, inputPath);
     const expectedExists = entry.exists === true;

@@ -109,7 +109,7 @@ describe('Gate Attempt immutable evidence', () => {
     ).toBe('failed');
   });
 
-  it('snapshots legacy canonical latest evidence before the first upgraded run', async () => {
+  it('does not promote unproven latest files into immutable current evidence', async () => {
     const ctx = await makeContext();
     const gatesDir = join(ctx.workItemDir, 'gates');
     await mkdir(gatesDir, { recursive: true });
@@ -145,20 +145,44 @@ describe('Gate Attempt immutable evidence', () => {
     await writeFile(join(ctx.workItemDir, 'gate_summary.md'), legacySummary, 'utf-8');
 
     const current = await runRequiredGates(['entry_gate'], ctx);
-    expect(current.attemptId).toBe('attempt-0002');
+    expect(current.attemptId).toBe('attempt-0001');
 
-    const legacyDir = join(ctx.workItemDir, 'gate_attempts', 'attempt-0001');
-    expect(await readFile(join(legacyDir, 'gates', 'entry_gate.json'), 'utf-8')).toBe(
+    const currentDir = join(ctx.workItemDir, 'gate_attempts', 'attempt-0001');
+    const currentResult = JSON.parse(
+      await readFile(join(currentDir, 'attempt-result.json'), 'utf-8'),
+    );
+    expect(currentResult.source).toBe('gate_run');
+    expect(await readFile(join(currentDir, 'gates', 'entry_gate.json'), 'utf-8')).not.toBe(
       legacyJson,
     );
-    expect(await readFile(join(legacyDir, 'gate_summary.md'), 'utf-8')).toBe(
+    expect(await readFile(join(currentDir, 'gate_summary.md'), 'utf-8')).not.toBe(
       legacySummary,
     );
-    const legacyResult = JSON.parse(
-      await readFile(join(legacyDir, 'attempt-result.json'), 'utf-8'),
+  });
+
+  it('blocks an unknown existing attempt schema before creating or updating evidence', async () => {
+    const ctx = await makeContext();
+    const attemptsRoot = join(ctx.workItemDir, 'gate_attempts');
+    const existingAttempt = join(attemptsRoot, 'attempt-0001');
+    await mkdir(existingAttempt, { recursive: true });
+    await writeFile(
+      join(existingAttempt, 'attempt-result.json'),
+      JSON.stringify({
+        schema_version: '9.9',
+        attempt_id: 'attempt-0001',
+        work_item_id: ctx.workItemId,
+      }),
+      'utf-8',
     );
-    expect(legacyResult.source).toBe('legacy_latest_snapshot');
-    expect(legacyResult.summary_status).toBe('failed');
+    const summaryPath = join(ctx.workItemDir, 'gate_summary.md');
+    const summaryBefore = '# existing latest\n';
+    await writeFile(summaryPath, summaryBefore, 'utf-8');
+
+    await expect(runRequiredGates(['entry_gate'], ctx)).rejects.toThrow(
+      'GATE_ATTEMPT_SCHEMA_BLOCKED',
+    );
+    expect((await readdir(attemptsRoot)).sort()).toEqual(['attempt-0001']);
+    expect(await readFile(summaryPath, 'utf-8')).toBe(summaryBefore);
   });
 
   it('returns a stable attempt path and never rewrites a completed attempt', async () => {

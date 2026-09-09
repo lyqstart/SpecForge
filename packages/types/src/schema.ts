@@ -21,8 +21,6 @@ import { ContractRegistrySchema } from "./contract-model.js";
 import {
   WI_STATUSES,
   WORKFLOW_PATHS,
-  GATE_IDS,
-  GATE_TYPES,
 } from "./constants.js";
 export {
   UserDecisionSchema,
@@ -34,6 +32,10 @@ export {
   type CandidateManifestEntry,
   type CandidateManifest,
 } from "./candidate-manifest-contract.js";
+export {
+  GateReportSchema,
+  type GateReport,
+} from "./gate-attempt-contract.js";
 
 // ---------------------------------------------------------------------------
 // §4 work_item.json 最小结构
@@ -83,42 +85,6 @@ export const WorkItemJsonSchema = z.object({
 export type WorkItemJson = z.infer<typeof WorkItemJsonSchema>;
 
 // ---------------------------------------------------------------------------
-// §9 Gate Report
-// ---------------------------------------------------------------------------
-
-/**
- * Gate Report schema（§9.4）。
- * 路径：.specforge/work-items/<WI-ID>/gates/<gate_id>.json
- */
-export const GateReportSchema = z.object({
-  schema_version: z.literal("1.0"),
-  work_item_id: z.string(),
-  gate_id: z.enum(GATE_IDS),
-  gate_type: z.enum(GATE_TYPES),
-  required: z.boolean(),
-  status: z.enum(["passed", "failed", "skipped", "waived"]),
-  input_files: z.array(z.string()),
-  checks: z.array(
-    z.object({
-      check_id: z.string(),
-      description: z.string(),
-      passed: z.boolean(),
-      severity: z.enum(["error", "warning", "info"]).optional(),
-      details: z.string().optional(),
-    }),
-  ),
-  blocking_issues: z.array(z.string()),
-  warnings: z.array(z.string()),
-  waiver_allowed: z.boolean(),
-  waiver_required: z.boolean(),
-  waiver_ids: z.array(z.string()),
-  started_at: z.string().datetime(),
-  finished_at: z.string().datetime(),
-  runner: z.string(),
-});
-
-export type GateReport = z.infer<typeof GateReportSchema>;
-
 // ---------------------------------------------------------------------------
 // §10 User Decision
 // ---------------------------------------------------------------------------

@@ -172,6 +172,30 @@ export {
   type CandidateManifestValidationResult,
 } from "./candidate-manifest-contract.js";
 
+// ---- Gate Attempt persistent evidence contract ----
+export {
+  GATE_ATTEMPT_SCHEMA_VERSION,
+  GateReportCheckSchema,
+  GateAttemptStartSchema,
+  GateAttemptInputSnapshotEntrySchema,
+  GateAttemptInputSnapshotSchema,
+  GateAttemptSuccessResultSchema,
+  GateAttemptErrorResultSchema,
+  GateAttemptResultSchema,
+  validateCurrentGateReportValue,
+  validateCurrentGateAttemptStartValue,
+  validateCurrentGateAttemptInputSnapshotValue,
+  validateCurrentGateAttemptResultValue,
+  type GateReportCheck,
+  type GateAttemptStart,
+  type GateAttemptInputSnapshotEntry,
+  type GateAttemptInputSnapshot,
+  type GateAttemptSuccessResult,
+  type GateAttemptErrorResult,
+  type GateAttemptResult,
+  type GateAttemptContractValidationResult,
+} from "./gate-attempt-contract.js";
+
 export {
   // §5 状态机
   WI_STATUSES,
