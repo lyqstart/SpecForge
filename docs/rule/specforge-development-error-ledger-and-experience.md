@@ -26495,3 +26495,75 @@ REPEATED_ERROR_CHECK=PASS
 NEXT_LEGAL_ACTION=FINAL_GIT_DIFF_STATUS_AUDIT_AND_LOCAL_COMMIT
 ```
 <!-- SPECFORGE_ERR1427_GATE_ATTEMPT_ROOT_REGRESSION_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1428_GIT_INDEX_LOCK_PERMISSION:START -->
+### ERR-1428：Gate Attempt governance record 暂存时无法创建 Git index.lock
+
+- **发生时间**：2026-09-09
+- **分类**：`GIT_INDEX_LOCK_PERMISSION_ERROR / STAGING_NOT_PERFORMED`。
+- **现象**：暂存 handoff 与 progress 时 Git 返回 `Unable to create .git/index.lock: Permission denied`；随后 status 显示两文件仍为 unstaged。
+- **证据边界**：当前尚未证明是残留锁文件、短暂占用还是权限策略；不得直接删除未知锁。
+- **影响**：实现提交 `ec6977e` 已安全存在；治理记录提交尚未创建，索引未变化。
+- **下一步**：只读检查 `.git/index.lock` 是否存在及 Git 进程状态；锁不存在时重试同一显式 `git add`，存在时先确认所有权与占用。
+
+```text
+ERR1428_STATUS=OPEN_GIT_STAGING_RECOVERY
+IMPLEMENTATION_COMMIT_SAFE=YES
+STAGING_PERFORMED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=READ_ONLY_INDEX_LOCK_AND_GIT_PROCESS_CHECK
+```
+<!-- SPECFORGE_ERR1428_GIT_INDEX_LOCK_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR1429_GIT_STAGING_RECOVERED:START -->
+### ERR-1429：Git staging 在无残留锁条件下重试成功
+
+- **发生时间**：2026-09-09
+- **分类**：`ERR1428_RECOVERY_CLOSURE`。
+- **事实证据**：`.git/index.lock` 检查为 `False`，未发现运行中的 Git 进程；随后使用相同显式文件列表执行 `git add` 成功。
+- **结论**：ERR-1428 属于短暂 index 写入冲突或权限瞬态；没有删除锁文件、终止进程或绕过 Git 安全边界。
+
+```text
+ERR1428_STATUS=CLOSED_BY_SAFE_RETRY
+ERR1429_STATUS=CLOSED_STAGING_RECOVERED
+LOCK_FILE_DELETED=NO
+PROCESS_TERMINATED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RESTAGE_LEDGER_REVIEW_CACHED_DIFF_AND_COMMIT_GOVERNANCE_RECORD
+```
+<!-- SPECFORGE_ERR1429_GIT_STAGING_RECOVERED:END -->
+
+<!-- SPECFORGE_ERR1430_GIT_INDEX_PERMISSION_RECURRED:START -->
+### ERR-1430：Git index.lock 创建权限错误在 ledger restage 时再次发生
+
+- **发生时间**：2026-09-09
+- **分类**：`RECURRING_GIT_INDEX_PERMISSION_BOUNDARY / ESCALATION_REQUIRED`。
+- **事实证据**：首次安全重试曾成功；补写 ERR-1429 后仅 restage ledger 时，同一 `Unable to create .git/index.lock: Permission denied` 再现。status 为 handoff/progress staged、ledger `MM`。
+- **判断**：重复发生已排除单纯残留锁解释；在当前受限执行环境下继续普通重试不可靠。不得删除锁或改变 index。
+- **处置**：仅对明确的 ledger `git add` 使用受控 Git 写权限提升，随后复核 staged diff。
+
+```text
+ERR1430_STATUS=OPEN_CONTROLLED_GIT_WRITE_ESCALATION
+LOCK_DELETION=FORBIDDEN_NOT_PERFORMED
+STAGED_FILES_PRESERVED=YES
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=ESCALATED_EXPLICIT_GIT_ADD_LEDGER_ONLY
+```
+<!-- SPECFORGE_ERR1430_GIT_INDEX_PERMISSION_RECURRED:END -->
+
+<!-- SPECFORGE_ERR1431_ESCALATED_LEDGER_STAGING_SUCCEEDED:START -->
+### ERR-1431：受控 Git 写权限下 ledger staging 成功
+
+- **发生时间**：2026-09-09
+- **分类**：`ERR1430_RECOVERY_CLOSURE`。
+- **事实证据**：仅对 `docs/rule/specforge-development-error-ledger-and-experience.md` 执行受控提升的 `git add`，命令成功；没有加入历史 backup 或其他路径。
+
+```text
+ERR1430_STATUS=CLOSED_BY_CONTROLLED_GIT_WRITE
+ERR1431_STATUS=CLOSED_LEDGER_STAGED
+STAGING_SCOPE=ERROR_LEDGER_ONLY
+EXCLUDED_BACKUP_STAGED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RESTAGE_THIS_CLOSURE_WITH_SAME_SCOPE_THEN_COMMIT
+```
+<!-- SPECFORGE_ERR1431_ESCALATED_LEDGER_STAGING_SUCCEEDED:END -->
