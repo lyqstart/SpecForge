@@ -333,7 +333,11 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
           blocked_target: '.specforge/**',
           policy_code: reason,
           blocked_step: String(args['blocked_step'] ?? 'protected_path_shell_access'),
-          last_successful_step: String(args['last_successful_step'] ?? ''),
+          last_successful_step:
+            typeof args['last_successful_step'] === 'string' &&
+            args['last_successful_step'].trim().length > 0
+              ? args['last_successful_step'].trim()
+              : undefined,
           resume_step: String(
             args['resume_step'] ?? 'repeat evidence collection with a controlled read tool'
           ),

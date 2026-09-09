@@ -10,6 +10,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import '../../src/tools/handlers/sf-changed-files-audit.js';
 import { getHandler } from '../../src/tools/ToolDispatcher.js';
+import { setHardStop } from '../../src/tools/lib/hard-stop-latch.js';
 
 async function createNoCodeWorkItem(projectRoot: string, workItemId = 'WI-0001'): Promise<string> {
   const wiDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
@@ -83,23 +84,11 @@ describe('sf_changed_files_audit no_code_change mode', () => {
 
   it('clears a CODE_PERMISSION_NOT_ENABLED hard_stop only after no-code audit passes', async () => {
     const wiDir = await createNoCodeWorkItem(tmpDir);
-    await fs.writeFile(
-      path.join(wiDir, 'hard_stop.json'),
-      JSON.stringify(
-        {
-          schema_version: '1.2',
-          hard_stop_id: 'HS-TEST',
-          scope: 'work_item',
-          work_item_id: 'WI-0001',
-          blocked: true,
-          reason: 'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.',
-          source_tool: 'sf_changed_files_audit',
-          created_at: new Date().toISOString(),
-          resolved: false,
-        },
-        null,
-        2,
-      ) + '\n',
+    setHardStop(
+      tmpDir,
+      'WI-0001',
+      'CODE_PERMISSION_NOT_ENABLED: code_permission was never enabled for this WI.',
+      'sf_changed_files_audit',
     );
 
     const handler = getHandler('sf_changed_files_audit')!;

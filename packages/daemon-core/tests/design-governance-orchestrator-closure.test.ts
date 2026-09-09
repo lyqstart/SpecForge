@@ -1017,27 +1017,25 @@ describe('Orchestrator governance execution closure', () => {
       entries: [],
     });
 
-    const hardStopId = 'HS-RESOLUTION-ONLY';
-    await writeFile(
-      path.join(wiDir, 'hard_stop_resolution.jsonl'),
-      `${JSON.stringify({
-        schema_version: '1.2.8',
-        resolved_at: new Date().toISOString(),
+    const hardStop = setHardStop(
+      projectRoot,
+      workItemId,
+      'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+      'sf_safe_bash'
+    );
+    const hardStopId = hardStop.hard_stop_id;
+    const resolved = (await getHandler('sf_hard_stop_resolve')!(
+      {
         work_item_id: workItemId,
         hard_stop_id: hardStopId,
         resolution_type: 'repaired',
         user_response_quote: '同意保留历史阻断并改用受控写入工具继续',
-        resolved_by: 'sf-orchestrator',
-        decision_source: 'sf-orchestrator_user_context',
-        original_hard_stop: {
-          hard_stop_id: hardStopId,
-          work_item_id: workItemId,
-          blocked: true,
-          reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
-          source_tool: 'sf_safe_bash',
-        },
-      })}\n`
-    );
+        reason: 'The controlled recovery preserves the blocked-write evidence.',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+    expect(resolved.success).toBe(true);
 
     const audit = (await getHandler('sf_changed_files_audit')!(
       { work_item_id: workItemId, mode: 'no_code_change' },

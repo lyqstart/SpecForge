@@ -75,6 +75,94 @@ describe('Recoverable HardStop protocol', () => {
     expect(guardHardStop(projectRoot, 'WI-0002', 'sf_artifact_write').allowed).toBe(true);
   });
 
+  it('fails closed without rewriting an unknown-schema active latch', async () => {
+    const latchPath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'hard_stop.json'
+    );
+    const unknown = JSON.stringify(
+      {
+        schema_version: '9.9',
+        hard_stop_id: 'HS-unknown',
+        scope: 'work_item',
+        work_item_id: workItemId,
+        blocked: true,
+        reason: 'unknown contract must remain blocking',
+        source_tool: 'test',
+        created_at: '2026-09-10T00:00:00.000Z',
+        resolved: false,
+        recovery_status: 'pending',
+      },
+      null,
+      2
+    ) + '\n';
+    await writeFile(latchPath, unknown, 'utf8');
+
+    expect(() => guardHardStop(projectRoot, workItemId, 'sf_artifact_write')).toThrow(
+      'HARD_STOP_CONTRACT_INVALID'
+    );
+    expect(readFileSync(latchPath, 'utf8')).toBe(unknown);
+  });
+
+  it('does not overwrite a malformed existing latch', async () => {
+    const latchPath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'hard_stop.json'
+    );
+    const malformed = '{not-json\n';
+    await writeFile(latchPath, malformed, 'utf8');
+
+    expect(() => setHardStop(projectRoot, workItemId, 'replacement', 'test')).toThrow(
+      'HARD_STOP_CONTRACT_INVALID'
+    );
+    expect(readFileSync(latchPath, 'utf8')).toBe(malformed);
+  });
+
+  it('does not append or clear the latch when resolution history is malformed', async () => {
+    const record = setHardStop(
+      projectRoot,
+      workItemId,
+      'SPEC_FORGE_RUNTIME_WRITE_FORBIDDEN',
+      'sf_safe_bash'
+    );
+    const resolutionPath = path.join(
+      projectRoot,
+      '.specforge',
+      'work-items',
+      workItemId,
+      'hard_stop_resolution.jsonl'
+    );
+    const malformed = '{broken-history\n';
+    await writeFile(resolutionPath, malformed, 'utf8');
+
+    const handler = getHandler('sf_hard_stop_resolve');
+    const result = (await handler!(
+      {
+        work_item_id: workItemId,
+        hard_stop_id: record.hard_stop_id,
+        resolution_type: 'repaired',
+        reason: 'The blocked operation was repaired without expanding its scope.',
+        evidence: ['repair evidence'],
+        blocked_action_disposition: 'retry_after_repair',
+        allowed_next_action: 'retry the repaired controlled operation',
+        resume_from_step: 'retry repaired operation',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('HARD_STOP_RESOLUTION_LOG_INVALID');
+    expect(readFileSync(resolutionPath, 'utf8')).toBe(malformed);
+    expect(checkHardStop(projectRoot, workItemId).blocked).toBe(true);
+  });
+
   it('resolves operator_error without user approval and returns a resumable checkpoint', async () => {
     const record = setHardStop(
       projectRoot,

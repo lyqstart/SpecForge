@@ -12,7 +12,13 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { registerHandler } from '../ToolDispatcher';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import { resetHardStop } from '../lib/hard-stop-latch';
+import {
+  HARD_STOP_RESOLUTION_SCHEMA_VERSION,
+  validateCurrentHardStopResolutionRecordValue,
+} from '@specforge/types';
+import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/migration';
+import { readWorkItemHardStop, resetHardStop } from '../lib/hard-stop-latch';
+import { readHardStopResolutionLog } from '../lib/hard-stop-resolution-log';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { appendWriteGuardAuthorization } from '../lib/write-guard-authorization-log';
 
@@ -211,10 +217,19 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   }
 
   const wiDir = path.join(baseDir, SPEC_DIR_NAME, 'work-items', workItemId);
-  const activePath = path.join(wiDir, 'hard_stop.json');
-  const active = readJsonIfExists(activePath);
+  let active;
+  try {
+    active = readWorkItemHardStop(baseDir, workItemId);
+  } catch (error) {
+    return {
+      success: false,
+      error: 'HARD_STOP_CONTRACT_INVALID',
+      message: error instanceof Error ? error.message : String(error),
+      retry_allowed: false,
+    };
+  }
 
-  if (!active || active.blocked !== true || active.resolved === true) {
+  if (!active) {
     return {
       success: false,
       error: 'NO_ACTIVE_HARD_STOP',
@@ -250,15 +265,15 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   const retryOriginalAction = args['retry_original_action'] === true;
 
   const entry = {
-    schema_version: '1.3.0',
+    schema_version: HARD_STOP_RESOLUTION_SCHEMA_VERSION,
     resolved_at: new Date().toISOString(),
     work_item_id: workItemId,
-    hard_stop_id: active.hard_stop_id ?? null,
+    hard_stop_id: active.hard_stop_id,
     resolution_type: resolutionType,
     user_decision_required: userDecisionRequired,
     user_response_quote: userQuote || undefined,
     reason: String(args['reason'] ?? ''),
-    scope: String(args['scope'] ?? active.scope ?? 'work_item'),
+    scope: active.scope,
     blocked_action_disposition: disposition ?? null,
     allowed_next_action: allowedNextAction ?? '',
     last_successful_step: lastSuccessfulStep ?? null,
@@ -274,8 +289,29 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
         ? 'sf-orchestrator_user_context'
         : 'sf-orchestrator_system_safe_recovery',
   };
+  const entryDescriptor = createHardStopResolutionLogSchemaDescriptor(workItemId);
+  if (
+    !validateCurrentHardStopResolutionRecordValue(entry).valid
+    || !entryDescriptor.validateCurrent(entry)
+  ) {
+    return {
+      success: false,
+      error: 'HARD_STOP_RESOLUTION_RECORD_INVALID',
+      retry_allowed: false,
+    };
+  }
 
   fs.mkdirSync(wiDir, { recursive: true });
+  try {
+    readHardStopResolutionLog(wiDir);
+  } catch (error) {
+    return {
+      success: false,
+      error: 'HARD_STOP_RESOLUTION_LOG_INVALID',
+      message: error instanceof Error ? error.message : String(error),
+      retry_allowed: false,
+    };
+  }
   fs.appendFileSync(
     path.join(wiDir, 'hard_stop_resolution.jsonl'),
     JSON.stringify(entry) + '\n',
@@ -285,7 +321,7 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   let authorization: any = null;
   if (shouldInstallAuthorization(args as Record<string, unknown>)) {
     authorization = appendWriteGuardAuthorization(baseDir, {
-      source_hard_stop_id: active.hard_stop_id ?? null,
+      source_hard_stop_id: active.hard_stop_id,
       work_item_id: workItemId,
       authorization_type:
         optionalString(args as Record<string, unknown>, 'authorization_type') ??
@@ -321,7 +357,7 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
   return {
     success: cleared,
     work_item_id: workItemId,
-    hard_stop_id: active.hard_stop_id ?? null,
+    hard_stop_id: active.hard_stop_id,
     resolution_type: resolutionType,
     user_decision_required: userDecisionRequired,
     cleared,

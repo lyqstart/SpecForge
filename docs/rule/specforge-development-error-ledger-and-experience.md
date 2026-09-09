@@ -26567,3 +26567,246 @@ REPEATED_ERROR_CHECK=PASS
 NEXT_LEGAL_ACTION=RESTAGE_THIS_CLOSURE_WITH_SAME_SCOPE_THEN_COMMIT
 ```
 <!-- SPECFORGE_ERR1431_ESCALATED_LEDGER_STAGING_SUCCEEDED:END -->
+
+<!-- SPECFORGE_ERR1432_STALE_PROGRESS_PATH:START -->
+### ERR-1432：续接调查使用了已不存在的进度文件名
+
+- **发生阶段**：ERR-1013 下一个持久化 owner 家族的只读重建。
+- **事实证据**：读取 `docs/implementation/architecture-consistency/current-release-boundary-implementation-progress.md` 返回 `Cannot find path`；`rg --files docs/implementation/architecture-consistency` 随后确认当前进度权威文件为 `current-release-boundary-and-module-convergence-progress.md`。
+- **分类**：`INVESTIGATION_TOOL_PATH_ERROR`，不是产品缺陷。
+- **根因**：沿用了过期摘要文件名，没有先从仓库文件清单解析真实路径。
+- **纠正**：停止使用猜测路径；后续进度读取只使用文件清单确认后的 current progress 文件。
+- **类防护**：复用 `EXP-001`、`EXP-007`、`EXP-008`、`EXP-060`。
+
+```text
+ERR1432_STATUS=CLOSED_BY_REPOSITORY_PATH_ENUMERATION
+PRODUCT_STATE_CHANGED=NO
+NEXT_LEGAL_ACTION=RECONSTRUCT_NEXT_HETEROGENEOUS_GOVERNANCE_OR_OBSERVABILITY_OWNER_FROM_CURRENT_INVENTORY_AND_PRODUCTION_SOURCE
+```
+<!-- SPECFORGE_ERR1432_STALE_PROGRESS_PATH:END -->
+
+<!-- SPECFORGE_ERR1433_ROOT_VITEST_SHIM_MISSING:START -->
+### ERR-1433：HardStop 预期红灯首次使用不存在的根级 Vitest shim
+
+- **发生阶段**：ERR-1013 HardStop owner 预期红灯验证。
+- **事实证据**：从仓库根执行 `.\\node_modules\\.bin\\vitest.exe` 返回命令不存在；只读枚举确认 Vitest shim 位于 `packages/daemon-core/node_modules/.bin/vitest.exe`。
+- **分类**：`TEST_LAUNCH_PATH_ERROR`，不是产品测试结果。
+- **根因**：未先按 package 所属关系解析测试运行器入口。
+- **纠正**：改用 Daemon package 的正式本地 Vitest shim，并显式传入目标测试文件。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-137`、`EXP-138`。
+
+```text
+ERR1433_STATUS=CLOSED_BY_PACKAGE_LOCAL_RUNNER_DISCOVERY
+PRODUCT_TEST_RESULT=NOT_OBTAINED_BY_FAILED_COMMAND
+NEXT_LEGAL_ACTION=RUN_HARD_STOP_EXPECTED_RED_WITH_DAEMON_PACKAGE_LOCAL_VITEST
+```
+<!-- SPECFORGE_ERR1433_ROOT_VITEST_SHIM_MISSING:END -->
+
+<!-- SPECFORGE_ERR1434_HARD_STOP_CONTRACT_PREFLIGHT_GAP:START -->
+### ERR-1434：HardStop latch 与 resolution log 缺少当前契约 preflight
+
+- **发生阶段**：ERR-1013 剩余异构治理证据 owner 重建。
+- **权威归属**：V6 Design 0.6 将 Permission / WriteGuard / HardStop 的 latch 与 resolution log 归属 Permission Engine + WriteGuard Runtime；当前实际唯一持久化 owner 位于 Daemon `hard-stop-latch` 与 `sf_hard_stop_resolve`。
+- **事实证据**：`hard_stop.json` 生产者写 `schema_version=1.2`，但本地接口绝大多数字段为可选；reader 捕获全部 JSON/字段错误并返回 `null`。`hard_stop_resolution.jsonl` 生产者写 `schema_version=1.3.0`，reader 同样捕获全部错误并返回空数组，resolver 在既有历史损坏时仍直接 append 并清除 latch。
+- **预期红灯**：`packages/daemon-core/tests/hard-stop-recovery-protocol.test.ts` 为 `9 tests / 6 pass / 3 fail`。失败分别证明未知 schema latch 未失败关闭、损坏 latch 被覆盖、损坏 resolution 历史后仍发生追加与解除阻断。
+- **能力判断**：`PARTIALLY_SUPPORTED / RUNTIME_DEFECT`。HardStop 业务路径存在，但持久化契约与 zero-write 边界不完整。
+- **修复边界**：建立共享 exact current contracts 与 owner descriptors；latch 在首次读/覆盖前严格 preflight；resolution log 在首次 append/消费前逐记录严格 preflight；未知、损坏或 identity 不匹配输入失败关闭且保持原始字节。
+- **兼容策略**：不添加旧 schema transition，不推断或改写旧格式。
+- **类防护**：复用 `EXP-001`、`EXP-004`、`EXP-007`、`EXP-017`、`EXP-044`、`EXP-060`、`EXP-086`。
+
+```text
+ERR1434_STATUS=OPEN_EXPECTED_RED_CONFIRMED
+PARENT_ERROR=ERR-1013
+CURRENT_SCHEMA_LATCH=1.2
+CURRENT_SCHEMA_RESOLUTION_RECORD=1.3.0
+LEGACY_TRANSITIONS_PLANNED=NONE
+NEXT_LEGAL_ACTION=IMPLEMENT_SHARED_HARD_STOP_CONTRACTS_DESCRIPTORS_AND_OWNER_PREFLIGHT
+```
+<!-- SPECFORGE_ERR1434_HARD_STOP_CONTRACT_PREFLIGHT_GAP:END -->
+
+<!-- SPECFORGE_ERR1435_HARD_STOP_CONTRACT_PATCH_MARKER:START -->
+### ERR-1435：HardStop 共享契约首次补丁残留 diff marker
+
+- **发生阶段**：ERR-1434 最小实现后的文本卫生检查。
+- **事实证据**：读取新建 `hard-stop-contract.ts` 发现返回对象结束行被写成字面量 `+  };`；该文件尚未进入编译或测试。
+- **分类**：`PATCH_REPRESENTATION_ERROR`，尚未形成已提交产品回归。
+- **根因**：新增文件补丁正文多保留了一个 diff 前缀字符。
+- **纠正**：在任何编译/测试前删除该单一字符，再执行 `git diff --check` 与 TypeScript 构建。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-019`、`EXP-144`。
+
+```text
+ERR1435_STATUS=CLOSED_BEFORE_BUILD_OR_TEST
+NEXT_LEGAL_ACTION=RUN_TEXT_HYGIENE_THEN_CONTINUE_OWNER_IMPLEMENTATION
+```
+<!-- SPECFORGE_ERR1435_HARD_STOP_CONTRACT_PATCH_MARKER:END -->
+
+<!-- SPECFORGE_ERR1436_STALE_LATCH_PATCH_CONTEXT:START -->
+### ERR-1436：HardStop latch 后续补丁使用了已变化的上下文
+
+- **发生阶段**：HardStop owner 实现。
+- **事实证据**：`apply_patch` 在查找旧的 `readHardStopFile(workItemHardStopPath(...))` 行时失败；随后的只读定位确认当前文件已经包含 `readWorkItemHardStop()`，且 `checkHardStop()`、`resetHardStop()` 已经调用该严格入口。
+- **分类**：`PATCH_CONTEXT_STALE`，没有文件被该失败补丁修改。
+- **纠正**：以当前文件为事实，不重复应用已经存在的变更；继续执行 diff hygiene 与构建验证。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-046`、`EXP-060`。
+
+```text
+ERR1436_STATUS=CLOSED_NO_CHANGE_REQUIRED
+PRODUCT_STATE_CHANGED_BY_FAILED_PATCH=NO
+NEXT_LEGAL_ACTION=RUN_DIFF_HYGIENE_AND_TARGET_BUILD_TESTS
+```
+<!-- SPECFORGE_ERR1436_STALE_LATCH_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1437_BUN_NOT_ON_PATH:START -->
+### ERR-1437：HardStop 验证首次直接调用未加入 PATH 的 Bun
+
+- **发生阶段**：HardStop owner types 构建验证。
+- **事实证据**：`bun run build` 返回 `The term 'bun' is not recognized`；本轮前置只读检查已确认系统 PATH 无 Bun，而既有已验证临时 Bun 可执行文件存在。
+- **分类**：`TEST_LAUNCH_PATH_ERROR`，不是构建结果。
+- **根因**：没有复用当前会话已确认的绝对 Bun 入口。
+- **纠正**：后续 Bun 命令统一使用已验证绝对路径，并保持 package 工作目录。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-135`、`EXP-137`。
+
+```text
+ERR1437_STATUS=CLOSED_BY_ABSOLUTE_BUN_ENTRY
+PRODUCT_BUILD_RESULT=NOT_OBTAINED_BY_FAILED_COMMAND
+NEXT_LEGAL_ACTION=RUN_TYPES_BUILD_WITH_VERIFIED_ABSOLUTE_BUN
+```
+<!-- SPECFORGE_ERR1437_BUN_NOT_ON_PATH:END -->
+
+<!-- SPECFORGE_ERR1438_BUN_ABSOLUTE_PATH_TRANSCRIPTION:START -->
+### ERR-1438：首次绝对 Bun 入口转录错误
+
+- **发生阶段**：HardStop owner types 构建验证重试。
+- **事实证据**：命令中的临时目录 token 被误写为 `...98ad3d...`，与已确认存在的 `...98a3d...` 不同，PowerShell 返回可执行文件不存在。
+- **分类**：`TEST_LAUNCH_PATH_TRANSCRIPTION_ERROR`，不是构建结果。
+- **纠正**：从本轮已确认输出逐字复用真实绝对路径，不再手工变形该 token。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-135`。
+
+```text
+ERR1438_STATUS=CLOSED_BY_EXACT_PATH_REUSE
+PRODUCT_BUILD_RESULT=NOT_OBTAINED_BY_FAILED_COMMAND
+NEXT_LEGAL_ACTION=RUN_TYPES_BUILD_WITH_EXACT_VERIFIED_BUN_PATH
+```
+<!-- SPECFORGE_ERR1438_BUN_ABSOLUTE_PATH_TRANSCRIPTION:END -->
+
+<!-- SPECFORGE_ERR1439_HARD_STOP_CONSUMER_SPREAD:START -->
+### ERR-1439：HardStop 严格契约扩散验证发现一个生产者归一化缺口和两个旧夹具消费者
+
+- **发生阶段**：HardStop owner 六文件定向扩散回归。
+- **事实证据**：`6 files / 90 tests / 87 pass / 3 fail`。`sf_safe_bash` 把缺省 `last_successful_step` 物化为空字符串，导致自己生成的 latch 不满足当前 exact contract；`no-code-changed-files-audit` 手写 latch 缺少当前 `recovery_status=pending`；`design-governance-orchestrator-closure` 手写 `schema_version=1.2.8` resolution 旧夹具。
+- **分类**：一个 `CURRENT_PRODUCER_NORMALIZATION_DEFECT`；两个 `TEST_CONSUMER_DRIFT`。严格 reader 正确失败关闭，不得为旧夹具放宽。
+- **纠正**：生产者不写空的 optional metadata；测试通过当前正式 producer 建立 latch/resolution，不再手写过期 schema。
+- **兼容策略**：不恢复 `1.2.8` 读取或迁移。
+- **类防护**：复用 `EXP-004`、`EXP-016`、`EXP-044`、`EXP-060`、`EXP-074`。
+
+```text
+ERR1439_STATUS=OPEN_TARGET_REPAIR
+PRODUCT_FAILURES=1
+TEST_CONSUMER_DRIFT=2
+NEXT_LEGAL_ACTION=NORMALIZE_SAFE_BASH_OPTIONAL_METADATA_AND_ALIGN_CURRENT_RELEASE_FIXTURES_TO_FORMAL_PRODUCERS
+```
+<!-- SPECFORGE_ERR1439_HARD_STOP_CONSUMER_SPREAD:END -->
+
+<!-- SPECFORGE_ERR1440_HARD_STOP_FIXTURE_PATCH_CONTEXT:START -->
+### ERR-1440：HardStop 消费者对齐补丁使用了错误 import 锚点
+
+- **发生阶段**：ERR-1439 定向修复。
+- **事实证据**：补丁假设 `ToolDispatcher` import 不带 `.js`，而当前测试真实 import 为 `../../src/tools/ToolDispatcher.js`，导致整次 patch verification 失败；复核确认产品与测试文件均未被该补丁修改。
+- **分类**：`PATCH_CONTEXT_STALE`。
+- **纠正**：重新读取最小上下文后，拆分产品归一化与两个测试消费者补丁，避免一个锚点失败阻断整组变更。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-046`、`EXP-060`。
+
+```text
+ERR1440_STATUS=CLOSED_BY_EXACT_CONTEXT_RECONSTRUCTION
+PRODUCT_STATE_CHANGED_BY_FAILED_PATCH=NO
+NEXT_LEGAL_ACTION=APPLY_THREE_SCOPED_PATCHES_AGAINST_CURRENT_SOURCE
+```
+<!-- SPECFORGE_ERR1440_HARD_STOP_FIXTURE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1441_MALFORMED_PATCH_TOOL_INPUT:START -->
+### ERR-1441：resolution-only 测试对齐时生成了无效补丁工具输入
+
+- **发生阶段**：ERR-1439 测试消费者对齐。
+- **事实证据**：补丁工具调用在解析阶段以 `SyntaxError: Unexpected token ')'` 失败，没有进入文件匹配或写入。
+- **分类**：`TOOL_INPUT_SYNTAX_ERROR`。
+- **纠正**：废弃该输入；从当前测试文件精确截取原块，使用普通 unified diff 单独替换。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-060`。
+
+```text
+ERR1441_STATUS=CLOSED_NO_FILE_WRITE
+PRODUCT_STATE_CHANGED_BY_FAILED_CALL=NO
+NEXT_LEGAL_ACTION=APPLY_EXACT_RESOLUTION_FIXTURE_PATCH
+```
+<!-- SPECFORGE_ERR1441_MALFORMED_PATCH_TOOL_INPUT:END -->
+
+<!-- SPECFORGE_ERR1442_MALFORMED_TEST_TOOL_INPUT:START -->
+### ERR-1442：HardStop descriptor 定向测试调用含无效工具参数源码
+
+- **发生阶段**：新增 descriptor 测试首次执行。
+- **事实证据**：工具编排层以 `SyntaxError: Unexpected identifier 'invalid'` 拒绝调用；命令未启动，测试没有运行。
+- **分类**：`TOOL_INPUT_SYNTAX_ERROR`，不是测试结果。
+- **纠正**：重新发出仅包含有效 `cmd/workdir/yield_time_ms/max_output_tokens` 的调用，不复用损坏输入。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-060`。
+
+```text
+ERR1442_STATUS=CLOSED_NO_COMMAND_EXECUTED
+PRODUCT_TEST_RESULT=NOT_OBTAINED
+NEXT_LEGAL_ACTION=RUN_DESCRIPTOR_TEST_WITH_VALID_TOOL_INPUT
+```
+<!-- SPECFORGE_ERR1442_MALFORMED_TEST_TOOL_INPUT:END -->
+
+<!-- SPECFORGE_ERR1443_ROOT_REGRESSION_BUN_PATH_CORRUPTED:START -->
+### ERR-1443：根回归命令中的绝对 Bun 路径再次被错误字符污染
+
+- **发生阶段**：HardStop owner 根级全量回归。
+- **事实证据**：命令路径尾部被错误写成 `bf5aeاندې295`，PowerShell 在启动前返回可执行文件不存在；根回归未开始。
+- **分类**：`TEST_LAUNCH_PATH_TRANSCRIPTION_ERROR`，不是产品回归。
+- **纠正**：逐字复用已经成功完成根构建的同一 Bun 绝对路径；不改变测试参数或产品文件。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-135`、`EXP-140`。
+
+```text
+ERR1443_STATUS=CLOSED_BY_REUSING_SUCCESSFUL_ROOT_BUILD_ENTRY
+ROOT_REGRESSION_RESULT=NOT_OBTAINED_BY_FAILED_COMMAND
+NEXT_LEGAL_ACTION=RUN_ROOT_REGRESSION_WITH_EXACT_SUCCESSFUL_BUN_ENTRY
+```
+<!-- SPECFORGE_ERR1443_ROOT_REGRESSION_BUN_PATH_CORRUPTED:END -->
+
+<!-- SPECFORGE_ERR1444_HARD_STOP_OWNER_CLOSURE:START -->
+### ERR-1444：HardStop owner 契约、descriptor 与 zero-write 边界完成可信闭环
+
+- **发生阶段**：ERR-1434 / ERR-1439 修复后的包级与根级验证。
+- **事实证据**：共享 latch `1.2` 与 resolution-record `1.3.0` exact contracts 已由 `@specforge/types` 提供；`@specforge/migration` 提供无 legacy transition 的动态 descriptor；Daemon latch 与 resolver owner 在覆盖、追加、解释或删除前执行严格 preflight。
+- **失败关闭证明**：未知或损坏 latch 不再被当作“无阻断”或被覆盖；损坏 resolution history 不再被追加，且关联 latch 不会被清除；原始字节保持不变。
+- **扩散纠正**：`sf_safe_bash` 不再把缺省 optional metadata 物化为空字符串；两个旧测试夹具改由当前正式 producer 建立，不放宽产品契约、不恢复 `1.2.8` 兼容读取。
+- **验证**：descriptor `1 file / 4 pass`；HardStop 扩散 `6 files / 90 pass`；Migration `18 files / 410 pass`；Daemon Core `192 files / 1723 pass`；根构建 `16 workspaces pass`；根确定性全量回归 `16 workspaces / exit 0`；post-document governance `9 files / 50 pass`。
+- **类防护**：复用 `EXP-001`、`EXP-004`、`EXP-007`、`EXP-016`、`EXP-017`、`EXP-044`、`EXP-060`、`EXP-074`、`EXP-086`。
+
+```text
+ERR1434_STATUS=CLOSED_BY_EXACT_CONTRACT_DESCRIPTOR_AND_OWNER_PREFLIGHT
+ERR1439_STATUS=CLOSED_BY_CURRENT_PRODUCER_NORMALIZATION_AND_FIXTURE_ALIGNMENT
+ERR1444_STATUS=CLOSED_VALIDATION_RECORD
+PARENT_ERROR=ERR-1013
+HARD_STOP_OWNER_FAMILY_STATUS=CLOSED
+LEGACY_TRANSITIONS_ADDED=NONE
+TESTS_REMOVED_OR_SKIPPED=0
+ERR1013_STATUS=OPEN_OTHER_GOVERNANCE_AND_OBSERVABILITY_OWNER_FAMILIES_REMAIN
+POST_DOCUMENT_GOVERNANCE=9_FILES_50_PASS
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_COMMIT
+```
+<!-- SPECFORGE_ERR1444_HARD_STOP_OWNER_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1445_POST_DOCUMENT_STATUS_PATCH_SYNTAX:START -->
+### ERR-1445：post-document 结果回填补丁包含无效 hunk 尾部
+
+- **发生阶段**：HardStop owner post-document governance 通过后的状态回填。
+- **事实证据**：`apply_patch` verification 在解析阶段报告 `Expected update hunk to start with a @@ context marker`；该失败补丁没有修改任何文件。
+- **分类**：`PATCH_INPUT_SYNTAX_ERROR`。
+- **纠正**：以当前文件精确上下文重建补丁；本记录与结果回填在失败后的首个写操作中一并完成。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-060`。
+
+```text
+ERR1445_STATUS=CLOSED_NO_FILE_WRITE_FROM_FAILED_PATCH
+PRODUCT_STATE_CHANGED_BY_FAILED_PATCH=NO
+NEXT_LEGAL_ACTION=COMPLETE_POST_DOCUMENT_STATUS_UPDATE_THEN_FINAL_DIFF_STATUS_AUDIT
+```
+<!-- SPECFORGE_ERR1445_POST_DOCUMENT_STATUS_PATCH_SYNTAX:END -->

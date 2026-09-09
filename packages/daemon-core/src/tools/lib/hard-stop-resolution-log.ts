@@ -1,5 +1,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import {
+  HARD_STOP_RESOLUTION_SCHEMA_VERSION,
+  type HardStopResolutionRecord,
+} from '@specforge/types';
+import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/migration';
 
 export type HardStopAuditResolutionType =
   | 'operator_error'
@@ -13,57 +18,41 @@ export type HardStopAuditResolutionType =
   | 'superseded'
   | string;
 
-export interface HardStopResolutionLogEntry {
-  schema_version?: string;
-  resolved_at?: string;
-  work_item_id?: string;
-  hard_stop_id?: string | null;
-  resolution_type?: HardStopAuditResolutionType;
-  user_decision_required?: boolean;
-  user_response_quote?: string;
-  reason?: string;
-  scope?: string;
-  blocked_action_disposition?: string | null;
-  allowed_next_action?: string;
-  last_successful_step?: string | null;
-  resume_from_step?: string | null;
-  retry_original_action?: boolean;
-  safe_alternative_tool?: string | null;
-  authoritative_state_at_resolution?: string | null;
-  evidence?: unknown[];
-  resolved_by?: string;
-  decision_source?: string;
-  original_hard_stop?: {
-    hard_stop_id?: string | null;
-    work_item_id?: string;
-    reason?: string;
-    source_tool?: string;
-    blocked?: boolean;
-    path?: string;
-    triggering_agent?: string;
-    blocked_action?: string;
-    blocked_target?: string;
-    policy_code?: string;
-    last_successful_step?: string;
-    blocked_step?: string;
-    resume_step?: string;
-    retry_original_action?: boolean;
-    safe_alternative_tool?: string;
-  };
-}
+export type HardStopResolutionLogEntry = HardStopResolutionRecord;
 
 export function readHardStopResolutionLog(workItemDir: string): HardStopResolutionLogEntry[] {
   const logPath = path.join(workItemDir, 'hard_stop_resolution.jsonl');
+  if (!fs.existsSync(logPath)) return [];
   try {
-    if (!fs.existsSync(logPath)) return [];
-    return fs
+    const entries = fs
       .readFileSync(logPath, 'utf-8')
       .split(/\r?\n/g)
       .map(line => line.trim())
       .filter(line => line.length > 0)
-      .map(line => JSON.parse(line) as HardStopResolutionLogEntry);
-  } catch {
-    return [];
+      .map(line => JSON.parse(line) as unknown);
+    if (entries.length === 0) {
+      throw new Error('FILE_PARSE_FAILED: JSONL file is empty');
+    }
+    const workItemId = path.basename(workItemDir);
+    const descriptor = createHardStopResolutionLogSchemaDescriptor(workItemId);
+    for (const entry of entries) {
+      const observed = typeof entry === 'object' && entry !== null && !Array.isArray(entry)
+        ? (entry as Record<string, unknown>).schema_version
+        : undefined;
+      if (observed !== HARD_STOP_RESOLUTION_SCHEMA_VERSION) {
+        throw new Error('CHAIN_GAP: unsupported hard_stop_resolution schema_version');
+      }
+      if (!descriptor.validateCurrent(entry)) {
+        throw new Error('VALIDATION_FAILED: invalid hard_stop_resolution record');
+      }
+    }
+    return entries as HardStopResolutionLogEntry[];
+  } catch (error) {
+    throw new Error(
+      `HARD_STOP_RESOLUTION_LOG_INVALID: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }
 

@@ -196,6 +196,21 @@ export {
   type GateAttemptContractValidationResult,
 } from "./gate-attempt-contract.js";
 
+// ---- HardStop persistent governance contract ----
+export {
+  HARD_STOP_SCHEMA_VERSION,
+  HARD_STOP_RESOLUTION_SCHEMA_VERSION,
+  HardStopScopeSchema,
+  HardStopRecordSchema,
+  HardStopResolutionRecordSchema,
+  validateCurrentHardStopRecordValue,
+  validateCurrentHardStopResolutionRecordValue,
+  type HardStopScope,
+  type HardStopRecord,
+  type HardStopResolutionRecord,
+  type HardStopContractValidationResult,
+} from "./hard-stop-contract.js";
+
 export {
   // §5 状态机
   WI_STATUSES,
