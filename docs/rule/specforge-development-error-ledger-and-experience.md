@@ -26810,3 +26810,69 @@ PRODUCT_STATE_CHANGED_BY_FAILED_PATCH=NO
 NEXT_LEGAL_ACTION=COMPLETE_POST_DOCUMENT_STATUS_UPDATE_THEN_FINAL_DIFF_STATUS_AUDIT
 ```
 <!-- SPECFORGE_ERR1445_POST_DOCUMENT_STATUS_PATCH_SYNTAX:END -->
+
+<!-- SPECFORGE_ERR1446_COMMIT_RECEIPT_PATCH_TOOL_INPUT:START -->
+### ERR-1446：HardStop 提交回执补丁未形成有效工具输入
+
+- **发生阶段**：实现检查点提交后的治理回执。
+- **事实证据**：工具编排层以 `SyntaxError: Invalid or unexpected token` 拒绝调用，补丁没有进入文件解析或写入。
+- **分类**：`TOOL_INPUT_SYNTAX_ERROR`。
+- **纠正**：废弃包含无效尾部字符的输入，以精确、完整的 unified diff 重建回执；本记录是失败后的首个写操作。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-060`。
+
+```text
+ERR1446_STATUS=CLOSED_NO_FILE_WRITE
+PRODUCT_STATE_CHANGED_BY_FAILED_CALL=NO
+NEXT_LEGAL_ACTION=WRITE_VERIFIED_LOCAL_COMMIT_RECEIPT
+```
+<!-- SPECFORGE_ERR1446_COMMIT_RECEIPT_PATCH_TOOL_INPUT:END -->
+
+<!-- SPECFORGE_ERR1447_HARD_STOP_OWNER_LOCAL_COMMIT:START -->
+### ERR-1447：HardStop owner 实现与治理检查点已提交
+
+- **发生阶段**：ERR-1013 HardStop owner 最终 diff/status 审计与本地提交。
+- **事实证据**：提交前 staged diff 为 16 个受控文件，`git diff --cached --check` 通过；历史设计备份未暂存；本地 `main` 创建提交 `c8b9427dd159dbc387c56cd75ac436d14dc948c6`。
+- **结果**：HardStop 子家族关闭；ERR-1013 父项继续保持打开，只代表其他 governance / observability owner 家族尚待重建。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-033`、`EXP-046`、`EXP-060`。
+
+```text
+ERR1447_STATUS=CLOSED_LOCAL_COMMIT_CREATED
+IMPLEMENTATION_AND_GOVERNANCE_COMMIT=c8b9427dd159dbc387c56cd75ac436d14dc948c6
+COMMIT_MESSAGE=fix(governance):_enforce_hard_stop_owner
+CURRENT_BRANCH=main
+LOCAL_COMMITS_AHEAD_AFTER_IMPLEMENTATION_COMMIT=17
+EXCLUDED_UNTRACKED_HISTORICAL_BACKUP=NOT_STAGED
+PUSH_DEPLOY=NOT_AUTHORIZED_NOT_PERFORMED
+NEXT_LEGAL_ACTION=COMMIT_GOVERNANCE_RECEIPT_THEN_RECONSTRUCT_NEXT_REMAINING_OWNER_FAMILY
+```
+<!-- SPECFORGE_ERR1447_HARD_STOP_OWNER_LOCAL_COMMIT:END -->
+
+<!-- SPECFORGE_ERR1448_GIT_INDEX_LOCK_PERMISSION:START -->
+### ERR-1448：HardStop 治理回执首次暂存无法创建 Git index lock
+
+- **发生阶段**：治理回执提交前暂存。
+- **事实证据**：`git add` 报 `Unable to create .git/index.lock: Permission denied`；紧接着只读检查确认 `.git/index.lock` 不存在，因此没有证据支持删除锁文件。
+- **影响**：三个回执文档仍未暂存；实现提交 `c8b9427` 不受影响；历史备份仍未暂存。
+- **分类**：`GIT_INDEX_LOCK_PERMISSION_TRANSIENT`。
+- **纠正**：不删除或改写 `.git` 内容；使用已授权的同范围 `git add` 单命令重试，再独立运行 cached diff/status 审计。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-033`、`EXP-135`。
+
+```text
+ERR1448_STATUS=RECOVERY_BY_SCOPED_GIT_ADD_RETRY
+INDEX_INDEX_LOCK_PRESENT=NO
+FILES_STAGED_BY_FAILED_COMMAND=NO
+NEXT_LEGAL_ACTION=RETRY_EXACT_THREE_FILE_GIT_ADD_THEN_AUDIT
+```
+<!-- SPECFORGE_ERR1448_GIT_INDEX_LOCK_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR1449_GIT_INDEX_LOCK_PERMISSION_RECOVERED:START -->
+### ERR-1449：HardStop 治理回执暂存重试成功
+
+- **事实证据**：对相同三个治理文档执行独立、限定范围的 `git add`，退出码为 0；没有删除锁文件，也没有纳入历史备份。
+
+```text
+ERR1448_STATUS=CLOSED_BY_SCOPED_GIT_ADD_RETRY
+ERR1449_STATUS=CLOSED_RECOVERY_RECORD
+NEXT_LEGAL_ACTION=RESTAGE_LEDGER_RECOVERY_RECORD_THEN_CACHED_DIFF_STATUS_AUDIT_AND_COMMIT
+```
+<!-- SPECFORGE_ERR1449_GIT_INDEX_LOCK_PERMISSION_RECOVERED:END -->
