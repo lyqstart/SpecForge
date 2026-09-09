@@ -77,6 +77,40 @@ describe('contract-authoring', () => {
 
   const wiDir = () => path.join(projectRoot, '.specforge', 'work-items', workItemId);
 
+  it('rejects an unknown Candidate Manifest schema before writing any Candidate bytes', async () => {
+    await fs.mkdir(wiDir(), { recursive: true });
+    const manifestPath = path.join(wiDir(), 'candidate_manifest.json');
+    const unknownManifest = JSON.stringify({
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'contract_change',
+      workflow_path: 'contract_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      entries: [],
+    }, null, 2) + '\n';
+    await fs.writeFile(manifestPath, unknownManifest, 'utf-8');
+
+    const result = await authorContractCandidate({
+      projectRoot,
+      workItemId,
+      kind: 'shared_enum',
+      entry: {
+        id: 'PhotoStatus',
+        owner_module: 'CORE',
+        value_type: 'string',
+        values: ['pending'],
+      },
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('CANDIDATE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect(await fs.readFile(manifestPath, 'utf-8')).toBe(unknownManifest);
+    await expect(
+      fs.access(path.join(wiDir(), 'candidates', 'project', 'extension_registry.json')),
+    ).rejects.toThrow();
+  });
+
   it('authors a candidate registry + valid manifest, and the intake officer echoes the entry', async () => {
     const res = await authorContractCandidate({
       projectRoot,
@@ -190,7 +224,14 @@ describe('contract-authoring', () => {
     await fs.mkdir(wiDir(), { recursive: true });
     await fs.writeFile(
       path.join(wiDir(), 'candidate_manifest.json'),
-      JSON.stringify({ workflow_path: 'requirement_change_path', entries: [] })
+      JSON.stringify({
+        schema_version: '1.0',
+        work_item_id: workItemId,
+        workflow_path: 'requirement_change_path',
+        base_spec_version: 'PSV-0001',
+        merge_required: true,
+        entries: [],
+      })
     );
     const result = await authorContractCandidate({
       projectRoot,
@@ -622,7 +663,7 @@ async function prepareRepairRelocationFixture(): Promise<void> {
   await fs.writeFile(
     path.join(wiDir(), 'candidate_manifest.json'),
     JSON.stringify({
-      schema_version: '1.1',
+      schema_version: '1.0',
       work_item_id: workItemId,
       workflow_type: 'spec_migration',
       workflow_path: 'spec_migration_path',

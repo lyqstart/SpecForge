@@ -75,6 +75,7 @@ describe('Candidate / approval / state governance', () => {
 
   it('uses one explicit candidate freeze policy', () => {
     for (const state of [
+      'candidate_prepared',
       'gates_running',
       'approval_required',
       'approved',
@@ -88,6 +89,47 @@ describe('Candidate / approval / state governance', () => {
     expect(isCandidateGovernancePath('candidates/project/requirements.md')).toBe(true);
     expect(isCandidateGovernancePath('candidate_manifest.json')).toBe(true);
     expect(isCandidateGovernancePath('gate_summary.md')).toBe(true);
+  });
+
+  it('rejects an unknown Candidate Manifest schema without writing it', async () => {
+    currentState = 'candidate_preparing';
+    const workItemId = 'WI-9899';
+    const workItemDir = path.join(projectRoot, '.specforge', 'work-items', workItemId);
+    await writeJson(path.join(workItemDir, 'work_item.json'), {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
+    });
+    await writeJson(path.join(workItemDir, 'trigger_result.json'), {
+      schema_version: '1.1',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
+      status: 'triggered',
+      triggered: true,
+      classification: {},
+      impact_scope: {},
+    });
+
+    const result = await invoke('sf_artifact_write', {
+      work_item_id: workItemId,
+      file_type: 'candidate_manifest',
+      content: JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: workItemId,
+        workflow_type: 'feature_spec',
+        workflow_path: 'requirement_change_path',
+        base_spec_version: 'PSV-0001',
+        merge_required: true,
+        entries: [],
+      }),
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('CANDIDATE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    await expect(fs.readFile(path.join(workItemDir, 'candidate_manifest.json'), 'utf-8'))
+      .rejects.toBeTruthy();
   });
 
   it('denies controlled Candidate writes from the authoritative approved state', async () => {
@@ -313,6 +355,8 @@ describe('Candidate / approval / state governance', () => {
       work_item_id: workItemId,
       workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
       project_spec_precondition_sha256: 'sha256:stale',
       entries: [
         {

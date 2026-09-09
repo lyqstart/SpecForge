@@ -163,14 +163,25 @@ const OPENCOD_EXCLUSIVE_FIELDS = [
   'context_window', // OpenCode naming (vs contextLength)
 ];
 
-function collectObjectKeys(value: unknown): string[] {
-  if (Array.isArray(value)) return value.flatMap(collectObjectKeys);
+const OPAQUE_BUSINESS_PAYLOAD_FIELDS = new Set([
+  'arguments',
+  'payload',
+  'result',
+  'error',
+  'env',
+]);
+
+function collectProtocolOwnedKeys(value: unknown): string[] {
+  if (Array.isArray(value)) return value.flatMap(collectProtocolOwnedKeys);
   if (typeof value !== 'object' || value === null) return [];
-  return Object.entries(value).flatMap(([key, child]) => [key, ...collectObjectKeys(child)]);
+  return Object.entries(value).flatMap(([key, child]) => [
+    key,
+    ...(OPAQUE_BUSINESS_PAYLOAD_FIELDS.has(key) ? [] : collectProtocolOwnedKeys(child)),
+  ]);
 }
 
 function expectNoOpenCodeKeys(value: unknown): void {
-  const keys = new Set(collectObjectKeys(value));
+  const keys = new Set(collectProtocolOwnedKeys(value));
   expect(OPENCOD_EXCLUSIVE_FIELDS.filter((field) => keys.has(field))).toEqual([]);
 }
 
@@ -277,12 +288,13 @@ describe('AdapterEncapsulation Property Tests', () => {
 
           if (result.success) {
             const daemonEvent: KernelEvent = result.data;
-            const outputJson = JSON.stringify(daemonEvent);
+            const envelopeKeys = Object.keys(daemonEvent);
 
-            // Verify no OpenCode-specific fields leak
-            expect(outputJson).not.toContain('"event_type"');
-            expect(outputJson).not.toContain('"sid"');
-            expect(outputJson).not.toContain('"ts"');
+            // Verify no OpenCode-specific protocol fields leak into the envelope.
+            // Payload keys are application data and must remain transparent.
+            expect(envelopeKeys).not.toContain('event_type');
+            expect(envelopeKeys).not.toContain('sid');
+            expect(envelopeKeys).not.toContain('ts');
 
             // Verify correct mapping
             expect(daemonEvent.sessionId).toBe(ocEvent.sid);
@@ -341,12 +353,9 @@ describe('AdapterEncapsulation Property Tests', () => {
 
             if (result.success) {
               const daemonToolCall: DaemonToolCall = result.data;
-              const outputJson = JSON.stringify(daemonToolCall);
-
-              // Verify no OpenCode-specific fields leak
-              // OpenCode uses 'id' but we should map to 'callId'
-              // The input might have 'id', but output should NOT have 'id'
-              expect(outputJson).not.toMatch(/"id":/);
+              // OpenCode's protocol-level id must map to callId. Tool argument
+              // keys are opaque application data and are intentionally preserved.
+              expect(Object.keys(daemonToolCall)).not.toContain('id');
 
               // Verify correct mapping
               expect(daemonToolCall.callId).toBeDefined();
@@ -370,6 +379,23 @@ describe('AdapterEncapsulation Property Tests', () => {
       );
     });
 
+    it('preserves business payload keys that match OpenCode protocol field names', () => {
+      const result = toolTranslator.translateToolCall({
+        name: 'business_tool',
+        arguments: { ts: null, id: 'domain-id', sid: 'domain-session' },
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.arguments).toEqual({
+          ts: null,
+          id: 'domain-id',
+          sid: 'domain-session',
+        });
+        expectNoOpenCodeKeys(result.data);
+      }
+    });
+
     it('should NOT leak OpenCode field names in successful tool result translations', () => {
       fc.assert(
         fc.property(
@@ -380,11 +406,9 @@ describe('AdapterEncapsulation Property Tests', () => {
 
             if (result.success) {
               const daemonToolResult: DaemonToolResult = result.data;
-              const outputJson = JSON.stringify(daemonToolResult);
-
-              // Verify no OpenCode-specific fields leak
-              // OpenCode uses 'call_id', Daemon uses 'callId'
-              expect(outputJson).not.toContain('"call_id"');
+              // OpenCode's protocol-level call_id must map to callId. Result
+              // payload keys are opaque application data.
+              expect(Object.keys(daemonToolResult)).not.toContain('call_id');
 
               // Verify correct mapping
               expect(daemonToolResult.callId).toBe(ocToolResult.call_id);

@@ -28,6 +28,12 @@ export {
   UserDecisionSchema,
   type UserDecision,
 } from "./user-decision-contract.js";
+export {
+  CandidateManifestEntrySchema,
+  CandidateManifestSchema,
+  type CandidateManifestEntry,
+  type CandidateManifest,
+} from "./candidate-manifest-contract.js";
 
 // ---------------------------------------------------------------------------
 // §4 work_item.json 最小结构
@@ -75,45 +81,6 @@ export const WorkItemJsonSchema = z.object({
 });
 
 export type WorkItemJson = z.infer<typeof WorkItemJsonSchema>;
-
-// ---------------------------------------------------------------------------
-// §8 Candidate Manifest
-// ---------------------------------------------------------------------------
-
-/**
- * 单个 Candidate Manifest Entry。
- */
-export const CandidateManifestEntrySchema = z.object({
-  candidate_path: z.string(),
-  target_path: z.string(),
-  operation: z.enum(["replace", "create", "delete"]),
-  candidate_hash: z.string(),
-  target_base_hash: z.string().optional(),
-  spec_type: z.string().optional(),
-  module: z.string().nullable().optional(),
-});
-
-export type CandidateManifestEntry = z.infer<
-  typeof CandidateManifestEntrySchema
->;
-
-/**
- * candidate_manifest.json schema（§8.3）。
- */
-export const CandidateManifestSchema = z.object({
-  schema_version: z.literal("1.0"),
-  work_item_id: z.string(),
-  workflow_path: z.enum(WORKFLOW_PATHS),
-  candidate_phase: z
-    .enum(["design", "requirements", "tasks", "full"])
-    .optional(),
-  base_spec_version: z.string(),
-  merge_required: z.boolean(),
-  entries: z.array(CandidateManifestEntrySchema),
-  manifest_hash: z.string().optional(),
-});
-
-export type CandidateManifest = z.infer<typeof CandidateManifestSchema>;
 
 // ---------------------------------------------------------------------------
 // §9 Gate Report

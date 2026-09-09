@@ -87,7 +87,7 @@ async function createFullWorkItem(
     await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace Delta\nNo spec impact (§13.2)');
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
-    JSON.stringify({ work_item_id: workItemId, entries: [], schema_version: '1.0', workflow_path: opts?.workflowPath ?? 'code_only_fast_path' }),
+    JSON.stringify({ work_item_id: workItemId, entries: [], schema_version: '1.0', workflow_path: opts?.workflowPath ?? 'code_only_fast_path', base_spec_version: 'PSV-0001', merge_required: (opts?.workflowPath ?? 'code_only_fast_path') !== 'code_only_fast_path' }),
   );
   await fs.writeFile(
     path.join(wiDir, 'gate_summary.md'),

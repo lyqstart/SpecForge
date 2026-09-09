@@ -16,6 +16,7 @@ import {
 } from './state-machine-v11';
 import { isSealTransition, getSealTransition } from '@specforge/types/seal-transitions';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { validateCurrentCandidateManifestValue } from '@specforge/types';
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance';
 
 export type AuthoritativeStateRead = {
@@ -73,6 +74,9 @@ export function isCanonicalNoCodeVerificationCandidateManifest(input: {
   workflowType: string;
 }): boolean {
   const manifest = input.manifest;
+  if (!validateCurrentCandidateManifestValue(manifest, input.workItemId).valid) {
+    return false;
+  }
   const integrationEffect = manifest.project_integration_effect;
   const entries = manifest.entries;
   if (input.workflowType === 'investigation') {
@@ -99,8 +103,7 @@ export function isCanonicalNoCodeVerificationCandidateManifest(input: {
     const baseSpecVersion = manifest.base_spec_version;
     const precondition = manifest.project_spec_precondition_sha256;
     const repairEvidencePaths = manifest.repair_evidence_paths;
-    return manifest.schema_version === '1.1' &&
-      manifest.work_item_id === input.workItemId &&
+    return manifest.work_item_id === input.workItemId &&
       manifest.workflow_type === 'spec_migration' &&
       manifest.workflow_path === 'spec_migration_path' &&
       typeof baseSpecVersion === 'string' &&

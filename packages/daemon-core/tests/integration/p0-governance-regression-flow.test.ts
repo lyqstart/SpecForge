@@ -315,10 +315,12 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
     '# Trace Delta\n\nOUT-1 -> REQ-001 -> DD-1 -> TASK-001 -> EV-1\n'
   );
   await writeJson(path.join(dir, 'candidate_manifest.json'), {
-    schema_version: '1.1',
+    schema_version: '1.0',
     work_item_id: workItemId,
     workflow_path: workflowPath,
     candidate_phase: 'requirements',
+    base_spec_version: 'PSV-0001',
+    merge_required: true,
     entries: [
       {
         candidate_path: 'candidates/requirements.md',
@@ -566,7 +568,7 @@ describe('SpecForge v1.1 Post-P0 governance regression flow', () => {
     const manifestPath = path.join(dir, 'candidate_manifest.json');
     const manifest = await readJson<Record<string, any>>(manifestPath);
     manifest.entries = manifest.entries.map((entry: Record<string, any>) => ({ ...entry, normalized: true }));
-    manifest.post_merge_normalization_marker = true;
+    manifest.reason = 'post-merge normalization changed the approved manifest bytes';
     await writeJson(manifestPath, manifest);
     await writeText(path.join(dir, 'gate_summary.md'), makeGateSummary(workItemId, 'passed') + '\nPost-merge close attempt regenerated this summary.\n');
 

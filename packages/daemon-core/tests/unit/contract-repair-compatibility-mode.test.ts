@@ -204,7 +204,7 @@ describe('ERR-218 repair relocation consumer proof in compatibility mode', () =>
     await fs.writeFile(
       path.join(wiDir(), 'candidate_manifest.json'),
       JSON.stringify({
-        schema_version: '1.1',
+        schema_version: '1.0',
         work_item_id: workItemId,
         workflow_type: 'spec_migration',
         workflow_path: 'spec_migration_path',

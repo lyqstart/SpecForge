@@ -7,6 +7,7 @@
  */
 
 export const CANDIDATE_FROZEN_STATES = new Set([
+  'candidate_prepared',
   'gates_running',
   'approval_required',
   'approved',

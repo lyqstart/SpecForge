@@ -9,6 +9,12 @@ export {
   type UserDecision,
   type UserDecisionStatus,
 } from "./user-decision-contract.js";
+export {
+  CandidateManifestEntrySchema,
+  CandidateManifestSchema,
+  type CandidateManifestEntry,
+  type CandidateManifest,
+} from "./candidate-manifest-contract.js";
 
 export const WI_STATUSES = [
   "created", "intake_ready", "impact_analyzing", "impact_analyzed", "workflow_selected",
@@ -67,29 +73,6 @@ export const WorkItemJsonSchema = z.object({
   superseded_by: z.string().optional(),
 }).passthrough();
 export type WorkItemJson = z.infer<typeof WorkItemJsonSchema>;
-
-export const CandidateManifestEntrySchema = z.object({
-  candidate_path: z.string(),
-  target_path: z.string(),
-  operation: z.enum(["replace", "create", "delete"]),
-  candidate_hash: z.string(),
-  target_base_hash: z.string().optional(),
-  spec_type: z.string().optional(),
-  module: z.string().nullable().optional(),
-});
-export type CandidateManifestEntry = z.infer<typeof CandidateManifestEntrySchema>;
-export const CandidateManifestSchema = z.object({
-  schema_version: z.literal("1.0"),
-  work_item_id: z.string(),
-  workflow_path: z.enum(WORKFLOW_PATHS),
-  workflow_type: z.string().optional(),
-  candidate_phase: z.enum(["design", "requirements", "tasks", "full"]).optional(),
-  base_spec_version: z.string(),
-  merge_required: z.boolean(),
-  entries: z.array(CandidateManifestEntrySchema),
-  manifest_hash: z.string().optional(),
-});
-export type CandidateManifest = z.infer<typeof CandidateManifestSchema>;
 
 export const GATE_IDS = [
   "entry_gate", "workflow_selection_gate", "required_files_gate", "candidate_manifest_gate",

@@ -701,7 +701,7 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
     await fs.writeFile(path.join(wiDir, 'tasks.md'), '# Tasks\n- [x] Done');
     await fs.writeFile(path.join(wiDir, 'candidates', 'tasks.md'), '# Tasks\n- [x] Done');
     await fs.writeFile(path.join(wiDir, 'trace_delta.md'), '# Trace\nNo spec impact');
-    await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path' }));
+    await fs.writeFile(path.join(wiDir, 'candidate_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [], workflow_path: 'code_only_fast_path', base_spec_version: 'PSV-0001', merge_required: false }));
     await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary\n- Overall Status: passed');
     await fs.writeFile(
       path.join(wiDir, 'gates', 'formal_version_gate.json'),

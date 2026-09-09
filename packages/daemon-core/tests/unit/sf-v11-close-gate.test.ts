@@ -189,9 +189,12 @@ async function createMinimalWorkItem(
   await fs.writeFile(
     path.join(wiDir, 'candidate_manifest.json'),
     JSON.stringify({
+      schema_version: '1.0',
       work_item_id: workItemId,
       entries: [],
       workflow_path: 'code_only_fast_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: false,
     }) + '\n'
   );
   await fs.writeFile(

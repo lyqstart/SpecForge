@@ -165,6 +165,14 @@ export {
 } from "./user-decision-contract.js";
 
 export {
+  CANDIDATE_MANIFEST_SCHEMA_VERSION,
+  CandidateManifestContractPromotionSchema,
+  validateCurrentCandidateManifestValue,
+  validateCurrentCandidateManifestJson,
+  type CandidateManifestValidationResult,
+} from "./candidate-manifest-contract.js";
+
+export {
   // §5 状态机
   WI_STATUSES,
   FORBIDDEN_TRANSITIONS,

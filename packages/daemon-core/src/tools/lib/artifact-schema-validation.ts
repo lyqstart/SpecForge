@@ -22,6 +22,7 @@ import {
   WORK_ITEM_METADATA_SCHEMA_VERSION as SHARED_WORK_ITEM_METADATA_SCHEMA_VERSION,
   findForbiddenWorkItemDecisionFields as findSharedForbiddenWorkItemDecisionFields,
   resolveSpecModuleIdentity,
+  validateCurrentCandidateManifestJson,
   validateCurrentWorkItemMetadataJson,
 } from '@specforge/types';
 import {
@@ -249,13 +250,17 @@ export function validateCandidateManifestJson(
   expectedWorkItemId: string,
   workflowPath?: string
 ): SchemaValidationResult {
-  const errors: string[] = [];
+  const sharedValidation = validateCurrentCandidateManifestJson(
+    content,
+    expectedWorkItemId,
+  );
+  const errors: string[] = [...sharedValidation.errors];
 
   let parsed: any;
   try {
     parsed = JSON.parse(content);
   } catch (e) {
-    return { valid: false, errors: ['INVALID_JSON: content is not valid JSON'] };
+    return { valid: false, errors };
   }
 
   if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {

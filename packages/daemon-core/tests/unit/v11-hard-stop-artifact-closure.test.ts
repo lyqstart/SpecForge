@@ -288,9 +288,12 @@ describe('7.2 artifact writer schema validation', () => {
 
     it('rejects non-empty entries for code_only_fast_path', () => {
       const content = JSON.stringify({
+        schema_version: '1.0',
         work_item_id: 'WI-0001',
-        entries: [{ candidate_path: 'some/path', target_path: 'some/target' }],
+        entries: [{ candidate_path: 'some/path', target_path: 'some/target', operation: 'replace' }],
         workflow_path: 'code_only_fast_path',
+        base_spec_version: 'PSV-0001',
+        merge_required: false,
       });
       const result = validateCandidateManifestJson(content, 'WI-0001', 'code_only_fast_path');
       expect(result.valid).toBe(false);
@@ -299,9 +302,12 @@ describe('7.2 artifact writer schema validation', () => {
 
     it('accepts empty entries for code_only_fast_path', () => {
       const content = JSON.stringify({
+        schema_version: '1.0',
         work_item_id: 'WI-0001',
         entries: [],
         workflow_path: 'code_only_fast_path',
+        base_spec_version: 'PSV-0001',
+        merge_required: false,
       });
       const result = validateCandidateManifestJson(content, 'WI-0001', 'code_only_fast_path');
       expect(result.valid).toBe(true);
@@ -309,9 +315,12 @@ describe('7.2 artifact writer schema validation', () => {
 
     it('accepts non-empty entries for requirement_change_path', () => {
       const content = JSON.stringify({
+        schema_version: '1.0',
         work_item_id: 'WI-0001',
-        entries: [{ candidate_path: 'candidates/x', target_path: '.specforge/project/x' }],
+        entries: [{ candidate_path: 'candidates/x', target_path: '.specforge/project/x', operation: 'replace' }],
         workflow_path: 'requirement_change_path',
+        base_spec_version: 'PSV-0001',
+        merge_required: true,
       });
       const result = validateCandidateManifestJson(content, 'WI-0001', 'requirement_change_path');
       expect(result.valid).toBe(true);

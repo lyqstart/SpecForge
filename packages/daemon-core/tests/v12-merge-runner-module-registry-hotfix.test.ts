@@ -65,10 +65,12 @@ describe('Project Spec governed module admission', () => {
     );
 
     await writeJson(join(workItemDir, 'candidate_manifest.json'), {
-      schema_version: '1.1',
+      schema_version: '1.0',
       work_item_id: workItemId,
       workflow_type: 'feature_spec',
       workflow_path: 'architecture_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
       entries: [
         {
           type: 'module_definition',

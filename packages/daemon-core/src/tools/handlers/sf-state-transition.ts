@@ -28,6 +28,10 @@ import {
   resolveCanonicalCandidateWorkflowPath,
 } from "../lib/artifact-schema-validation";
 import { readWorkItemMetadata, type WorkItemMetadata } from "../lib/work-item-metadata.js";
+import {
+  candidateManifestSchemaBlockCode,
+  precheckCandidateManifestSchema,
+} from "../lib/candidate-manifest-owner.js";
 
 async function readJsonIfExists(filePath: string): Promise<Record<string, any> | null> {
   try {
@@ -234,6 +238,13 @@ async function materializeCandidateManifestBeforePreparedTransition(
   const workItemDir = join(projectRoot, SPEC_DIR_NAME, "work-items", workItemId);
   const manifestPath = join(workItemDir, "candidate_manifest.json");
   const triggerPath = join(workItemDir, "trigger_result.json");
+  const schemaPrecheck = await precheckCandidateManifestSchema(workItemDir, workItemId);
+  const schemaBlockCode = candidateManifestSchemaBlockCode(schemaPrecheck);
+  if (schemaBlockCode) {
+    throw new Error(
+      `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}: candidate_manifest.json`,
+    );
+  }
   let previousManifestText = "";
   let manifest: Record<string, any> | null = null;
   try {
@@ -270,7 +281,7 @@ async function materializeCandidateManifestBeforePreparedTransition(
   );
   const normalized = {
     ...manifestForMaterialization,
-    schema_version: manifest.schema_version ?? "1.1",
+    schema_version: manifest.schema_version,
     work_item_id: workItemId,
     workflow_path: canonicalWorkflowPath,
     workflow_type: manifest.workflow_type ?? trigger.workflow_type,

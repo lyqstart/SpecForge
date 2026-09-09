@@ -176,6 +176,18 @@ async function writeBaseWorkItem(projectRoot: string, workItemId: string): Promi
       2
     )
   );
+  await writeFile(
+    path.join(wiDir, 'candidate_manifest.json'),
+    JSON.stringify({
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec_design_first',
+      workflow_path: 'design_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      entries: [],
+    }, null, 2),
+  );
 }
 
 function mockDeps(initialState = 'gates_running') {
@@ -247,11 +259,13 @@ describe('Design Governance live closure', () => {
         work_item_id: workItemId,
         file_type: 'candidate_manifest',
         content: JSON.stringify({
-          schema_version: '1.1',
+          schema_version: '1.0',
           work_item_id: workItemId,
           workflow_type: 'feature_spec_design_first',
           workflow_path: 'design_change_path',
           candidate_phase: 'design',
+          base_spec_version: 'PSV-0001',
+          merge_required: true,
           entries: [
             {
               path: 'design.md',
@@ -382,11 +396,13 @@ describe('Design Governance live closure', () => {
       workItemCandidateManifest(projectRoot, workItemId),
       JSON.stringify(
         {
-          schema_version: '1.1',
+          schema_version: '1.0',
           work_item_id: workItemId,
           workflow_path: 'design_change_path',
           workflow_type: 'feature_spec_design_first',
           candidate_phase: 'design',
+          base_spec_version: 'PSV-0001',
+          merge_required: true,
           entries: [
             {
               candidate_path: 'candidates/project/modules/core/design.candidate.md',

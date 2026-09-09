@@ -68,6 +68,15 @@ describe('new project governance bootstrap', () => {
       workflow_path: 'requirement_change_path',
       status: 'triggered',
     });
+    await writeJson(path.join(workItemDir, 'candidate_manifest.json'), {
+      schema_version: '1.0',
+      work_item_id: WI,
+      workflow_type: 'feature',
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      entries: [],
+    });
 
     const writer = getHandler('sf_artifact_write');
     expect(writer).toBeDefined();
@@ -143,10 +152,11 @@ describe('new project governance bootstrap', () => {
         file_type: 'candidate_manifest',
         content: JSON.stringify(
           {
-            schema_version: '1.1',
+            schema_version: '1.0',
             work_item_id: WI,
             workflow_type: 'feature',
             workflow_path: 'requirement_change_path',
+            base_spec_version: 'PSV-0001',
             merge_applicable: true,
             merge_required: true,
             entries: [],

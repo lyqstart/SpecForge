@@ -387,7 +387,7 @@ describe("sf_state_transition - spec_migration verification recovery", () => {
       path.join(wiDir, "candidate_manifest.json"),
       JSON.stringify(
         {
-          schema_version: "1.1",
+          schema_version: "1.0",
           work_item_id: workItemId,
           workflow_type: "spec_migration",
           workflow_path: "spec_migration_path",
@@ -717,6 +717,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
         workflow_type: "architecture_change",
         workflow_path: "architecture_change_path",
         base_spec_version: "PSV-0002",
+        merge_required: true,
         entries: [
           {
             candidate_path: "candidates/project/extension_registry.json",
@@ -793,6 +794,37 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     expect(
       manifest.entries.some((entry: any) => entry.type === "data_model"),
     ).toBe(false);
+  });
+
+  it("does not materialize or advance an unknown Candidate Manifest schema", async () => {
+    await writeCandidateContext();
+    const manifestPath = path.join(
+      wiDirFor(tempDir, "WI-0004"),
+      "candidate_manifest.json",
+    );
+    const unknown = JSON.stringify({
+      ...JSON.parse(await fs.readFile(manifestPath, "utf-8")),
+      schema_version: "1.1",
+    }, null, 2) + "\n";
+    await fs.writeFile(manifestPath, unknown, "utf-8");
+    const { deps, smTransition } = makeStateManagerDeps({ currentState: "candidate_preparing" });
+
+    const result = await handler(
+      {
+        work_item_id: "WI-0004",
+        from_state: "candidate_preparing",
+        to_state: "candidate_prepared",
+        workflow_type: "architecture_change",
+        workflow_path: "architecture_change_path",
+      },
+      { directory: tempDir, agent: "sf-orchestrator" },
+      deps,
+    );
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("CANDIDATE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP");
+    expect(smTransition).not.toHaveBeenCalled();
+    expect(await fs.readFile(manifestPath, "utf-8")).toBe(unknown);
   });
 
   it("materializes new-module requirements, trace and Project Contract before advancing", async () => {

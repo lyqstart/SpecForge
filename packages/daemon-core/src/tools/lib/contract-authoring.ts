@@ -27,6 +27,11 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { inspectProjectGovernanceContractConsumers } from './project-governance-v2.js';
+import {
+  candidateManifestContentBlockCode,
+  candidateManifestSchemaBlockCode,
+  precheckCandidateManifestSchema,
+} from './candidate-manifest-owner.js';
 
 export type ContractKind = 'shared_enum' | 'invariant' | 'public_interface' | 'extension_point';
 
@@ -1090,9 +1095,23 @@ async function writeContractCandidate(params: {
 
   let manifest: Record<string, any> | null = null;
   try {
+    await fs.access(manifestPath);
+    const schemaPrecheck = await precheckCandidateManifestSchema(wiDir, params.workItemId);
+    const schemaBlockCode = candidateManifestSchemaBlockCode(schemaPrecheck);
+    if (schemaBlockCode) {
+      return {
+        success: false,
+        error: `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}`,
+      };
+    }
     manifest = JSON.parse(await fs.readFile(manifestPath, 'utf-8'));
-  } catch {
-    manifest = null;
+  } catch (error: any) {
+    if (error?.code !== 'ENOENT') {
+      return {
+        success: false,
+        error: `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: INVALID_JSON`,
+      };
+    }
   }
   if (!manifest || typeof manifest !== 'object') {
     manifest = {
@@ -1137,14 +1156,6 @@ async function writeContractCandidate(params: {
     if (duplicate) return { success: false, error: `duplicate Contract promotion identity: ${params.promotion.from_contract_id} -> ${params.promotion.to_contract_id}` };
   }
 
-  await fs.mkdir(path.dirname(candidateAbs), { recursive: true });
-  await fs.writeFile(candidateAbs, JSON.stringify(params.registry, null, 2) + '\n', 'utf-8');
-  if (params.moduleCandidate) {
-    const moduleCandidateAbs = path.join(wiDir, params.moduleCandidate.candidatePath);
-    await fs.mkdir(path.dirname(moduleCandidateAbs), { recursive: true });
-    await fs.writeFile(moduleCandidateAbs, JSON.stringify(params.moduleCandidate.registry, null, 2) + '\n', 'utf-8');
-  }
-
   if (!Array.isArray(manifest.entries)) manifest.entries = [];
   manifest.work_item_id = params.workItemId;
   if (!manifest.schema_version) manifest.schema_version = '1.0';
@@ -1184,7 +1195,26 @@ async function writeContractCandidate(params: {
     manifest.workflow_type = 'spec_migration';
     manifest.workflow_path = 'spec_migration_path';
   }
-  await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n', 'utf-8');
+  const manifestText = JSON.stringify(manifest, null, 2) + '\n';
+  const contentBlockCode = candidateManifestContentBlockCode(
+    manifestText,
+    params.workItemId,
+  );
+  if (contentBlockCode) {
+    return {
+      success: false,
+      error: `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${contentBlockCode}`,
+    };
+  }
+
+  await fs.mkdir(path.dirname(candidateAbs), { recursive: true });
+  await fs.writeFile(candidateAbs, JSON.stringify(params.registry, null, 2) + '\n', 'utf-8');
+  if (params.moduleCandidate) {
+    const moduleCandidateAbs = path.join(wiDir, params.moduleCandidate.candidatePath);
+    await fs.mkdir(path.dirname(moduleCandidateAbs), { recursive: true });
+    await fs.writeFile(moduleCandidateAbs, JSON.stringify(params.moduleCandidate.registry, null, 2) + '\n', 'utf-8');
+  }
+  await fs.writeFile(manifestPath, manifestText, 'utf-8');
 
   return {
     success: true,

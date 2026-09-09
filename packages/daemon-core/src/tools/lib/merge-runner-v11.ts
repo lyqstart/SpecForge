@@ -26,6 +26,7 @@ import {
   extractModuleFromDdId,
   moduleCodeFromProjectSpecPath,
   resolveSpecModuleIdentity,
+  validateCurrentCandidateManifestValue,
 } from '@specforge/types';
 import { readUnifiedContracts } from './contracts-registry.js';
 import {
@@ -696,6 +697,20 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
       success: false,
       status: 'failed',
       errors: ['Cannot read candidate_manifest.json: ' + err.message],
+    };
+  }
+  const manifestValidation = validateCurrentCandidateManifestValue(
+    manifest,
+    input.workItemId,
+  );
+  if (!manifestValidation.valid) {
+    return {
+      ...result,
+      success: false,
+      status: 'failed',
+      errors: manifestValidation.errors.map(
+        error => `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${error}`,
+      ),
     };
   }
 

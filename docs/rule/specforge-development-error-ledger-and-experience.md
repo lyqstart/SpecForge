@@ -25335,3 +25335,570 @@ REPEATED_ERROR_CHECK=PASS
 NEXT_LEGAL_ACTION=RUN_GOVERNANCE_TEST_DIFF_CHECK_AND_STATUS_AS_SEPARATE_CALLS
 ```
 <!-- SPECFORGE_ERR1363_PARALLEL_VALIDATION_SCRIPT_PARSE:END -->
+
+<!-- SPECFORGE_ERR1364_CANDIDATE_MANIFEST_OWNER_CONTRACT_CONFLICT:START -->
+### ERR-1364：Candidate freeze owner 已存在，但 manifest 合同与冻结边界分裂
+
+- **分类**：`ERR1013_OWNER_GAP / PARTIALLY_SUPPORTED / CONTRACT_CONFLICT / RUNTIME_DEFECT`。
+- **权威证据**：V6 design 0.6 指定 Candidate / manifest 唯一 owner 为 Candidate prepare/freeze transaction，禁止 Agent 手写或 Gate 临时补写；Work Item 布局进一步指定 `candidate_manifest.json` 由 Runtime freeze transaction 物化。
+- **事实证据**：当前 `sf_state_transition` 在 `candidate_preparing → candidate_prepared` 已实现 manifest entries 物化、临时文件原子替换、状态失败回滚及 repair-plan hash 重新绑定，证明 owner 主体存在。与此同时，Work Item 初始化、通用 Artifact Writer 与 Contract Authoring 都能写 manifest；types 中两份 `CandidateManifestSchema@1.0` 字段不一致；活跃 Artifact Writer 对缺失 schema 缺省写 `1.1`，其 validator 不校验 schema/base version/完整 entry shape；migration 没有 Candidate descriptor。
+- **冻结缺陷**：`candidate_prepared` 是 freeze transaction 成功后的状态，但 `CANDIDATE_FROZEN_STATES` 从 `gates_running` 才开始，因此冻结后、Gate 前仍可通过受控 Writer 修改 Candidate 或 manifest。
+- **能力判断**：不是重新设计 Candidate 流程；应保留并收敛现有 freeze transaction，以 `@specforge/types` 为跨 package exact contract、`@specforge/migration` 为 per-file descriptor，把所有公共写入和消费边界接到同一 current schema。当前发布不增加旧 schema transition。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1364_STATUS=IDENTIFIED_CANDIDATE_OWNER_PARTIALLY_SUPPORTED
+AUTHORITATIVE_OWNER=CANDIDATE_PREPARE_FREEZE_TRANSACTION
+EXISTING_TRANSACTION=MATERIALIZE_AT_CANDIDATE_PREPARING_TO_CANDIDATE_PREPARED_WITH_ROLLBACK
+CURRENT_SCHEMA_AUTHORITY_CONFLICT=TYPES_DUPLICATES_1.0;ARTIFACT_WRITER_ACTIVE_DEFAULT_1.1;VALIDATOR_SCHEMA_BLIND
+DESCRIPTOR_STATUS=MISSING
+POST_FREEZE_WRITE_GAP=CANDIDATE_PREPARED_NOT_FROZEN
+LEGACY_TRANSITIONS_TO_ADD=NONE
+TEST_CONTRACT_RELAXATION=FORBIDDEN
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=ADD_EXPECTED_RED_FOR_EXACT_CONTRACT_DESCRIPTOR_UNKNOWN_SCHEMA_ZERO_WRITE_AND_CANDIDATE_PREPARED_FREEZE
+```
+<!-- SPECFORGE_ERR1364_CANDIDATE_MANIFEST_OWNER_CONTRACT_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1365_CANDIDATE_OWNER_EXPECTED_RED:START -->
+### ERR-1365：Candidate owner 三项边界缺陷预期红灯
+
+- **分类**：`EXPECTED_RED / ERR1364_CONFIRMED`。
+- **事实证据**：daemon 定向 2 files / 36 tests 为 33 pass / 3 fail；三项失败分别直接证明 `candidate_prepared` 未冻结、Artifact Writer 接受并写入 schema 1.1、freeze transaction 接受并改写 schema 1.1 后推进状态。
+- **修复边界**：共享 current 1.0 exact contract 与 per-file descriptor；未知 schema 无 transition 时统一 `CHAIN_GAP` 且保持原字节；把 `candidate_prepared` 纳入 freeze policy。不得把 1.1 当作兼容格式或修改断言掩盖缺陷。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1365_STATUS=CLOSED_AS_EXPECTED_RED_3_FAIL_33_PASS
+UNKNOWN_SCHEMA_WRITTEN_BY_ARTIFACT_WRITER_BEFORE_FIX=YES
+UNKNOWN_SCHEMA_MUTATED_BY_FREEZE_BEFORE_FIX=YES
+CANDIDATE_PREPARED_FROZEN_BEFORE_FIX=NO
+TEST_CONTRACT_RELAXED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=IMPLEMENT_SHARED_CANDIDATE_CONTRACT_DESCRIPTOR_WRITER_AND_FREEZE_PRECHECK
+```
+<!-- SPECFORGE_ERR1365_CANDIDATE_OWNER_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1366_DAEMON_HANDLER_PATH_ASSUMPTION:START -->
+### ERR-1366：Candidate 写入入口只读检索使用了错误路径
+
+- **分类**：`EVIDENCE_COLLECTION_PATH_ERROR / NO_PROJECT_WRITE`。
+- **事实证据**：对 `packages/daemon-core/src/tools/sf-artifact-write.ts` 与 `sf-state-transition.ts` 的只读 `rg` 返回文件不存在；真实文件位于 `packages/daemon-core/src/tools/handlers/`。
+- **影响**：该次检索未取得入口证据；没有运行测试或修改产品文件。
+- **处置**：后续先以 `rg --files` 确认真实文件位置，再读取和修改；不沿用路径先验。
+- **状态**：`CLOSED`。
+
+```text
+ERR1366_STATUS=CLOSED_REAL_HANDLER_PATHS_CONFIRMED
+PRODUCT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=READ_CONFIRMED_HANDLER_PATHS_AND_COMPLETE_OWNER_WIRING
+```
+<!-- SPECFORGE_ERR1366_DAEMON_HANDLER_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1367_WORK_ITEM_CREATE_PATH_ASSUMPTION:START -->
+### ERR-1367：Work Item 初始化入口只读检索再次使用了推测路径
+
+- **分类**：`REPEATED_EVIDENCE_COLLECTION_PATH_ERROR / NO_PROJECT_WRITE`。
+- **事实证据**：对推测文件 `packages/daemon-core/src/tools/handlers/sf-work-item-create.ts` 的只读 `rg` 返回文件不存在；其他并行只读命令正常完成。
+- **根因**：在已明确要求先按文件清单定位后，仍对另一个入口使用了文件名先验。
+- **类防护**：未知生产文件一律先用 `rg --files` 定位；只有确认后的路径才能进入内容检索或补丁。
+- **状态**：`CLOSED`。
+
+```text
+ERR1367_STATUS=CLOSED_FILE_INVENTORY_REQUIRED_BEFORE_PATH_USE
+PRODUCT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS_AFTER_STRICT_INVENTORY_RULE
+NEXT_LEGAL_ACTION=LOCATE_WORK_ITEM_CREATE_FILE_FROM_REPOSITORY_INVENTORY
+```
+<!-- SPECFORGE_ERR1367_WORK_ITEM_CREATE_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1368_CANDIDATE_FREEZE_FIXTURE_CONTRACT_FAILURE:START -->
+### ERR-1368：Candidate exact contract 使七个既有 freeze 场景提前失败
+
+- **分类**：`TARGET_REGRESSION_FAILURE / INVESTIGATING_FIXTURE_OR_CONTRACT_DRIFT`。
+- **事实证据**：Candidate 定向 2 files / 36 tests 为 29 pass / 7 fail；新增三项边界均已通过，七个失败全部位于既有 `sf-state-transition` Candidate materialization 场景，且首次偏离统一为 descriptor `VALIDATION_FAILED`，因此原 materialization、repair-plan 与 rollback 断言尚未执行。
+- **处置边界**：先用共享 validator 对共同 fixture 取出精确字段错误；若缺少当前合同必填字段，仅修正当前正向夹具；若合同遗漏当前生产字段，则修正共享合同。不得放宽 schema 来绕过失败。
+- **状态**：`INVESTIGATING`。
+
+```text
+ERR1368_STATUS=INVESTIGATING_SEVEN_EXISTING_FREEZE_SCENARIOS
+TARGET_RESULT=2_FILES_29_PASS_7_FAIL
+NEW_EXPECTED_RED_BOUNDARIES_NOW_GREEN=YES
+FIRST_DIVERGENCE=CANDIDATE_DESCRIPTOR_VALIDATION_FAILED
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=VALIDATE_SHARED_CANDIDATE_FIXTURE_AND_CLASSIFY_EXACT_FIELD_DRIFT
+```
+<!-- SPECFORGE_ERR1368_CANDIDATE_FREEZE_FIXTURE_CONTRACT_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1369_CONTRACT_AUTHORING_CANDIDATE_SCHEMA_GAPS:START -->
+### ERR-1369：Contract Authoring 未受 Candidate schema 约束，并暴露验证聚合与当前夹具漂移
+
+- **分类**：`EXPECTED_RED / PRODUCT_DEFECT / VALIDATION_COMPOSITION_DEFECT / CURRENT_TEST_FIXTURE_DRIFT`。
+- **事实证据**：`contract-authoring` 定向 11 tests 为 8 pass / 3 fail。新增未知 schema 场景返回 success 并写入 Candidate；Promotion 负例因共享 exact validator 提前返回而未报告既有 Promotion 业务错误；spec-migration 正例生成/沿用 schema 1.1，未满足当前 1.0 合同。
+- **修复边界**：Contract Authoring 在任何 Candidate 写入前检查现有 manifest descriptor，并在最终写入前校验完整 current manifest；共享结构错误与 Candidate 业务错误应聚合；当前测试夹具只改为 1.0，不增加 legacy transition、不放宽合同。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1369_STATUS=IDENTIFIED_THREE_BOUNDED_REPAIRS
+CONTRACT_AUTHORING_UNKNOWN_SCHEMA_ZERO_WRITE_BEFORE_FIX=NO
+VALIDATION_ERROR_AGGREGATION=INCOMPLETE
+SPEC_MIGRATION_CURRENT_FIXTURE_SCHEMA=1.1_DRIFT
+LEGACY_TRANSITIONS_TO_ADD=NONE
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=AGGREGATE_VALIDATION_ERRORS_UPDATE_CURRENT_FIXTURE_AND_PRECHECK_CONTRACT_AUTHORING
+```
+<!-- SPECFORGE_ERR1369_CONTRACT_AUTHORING_CANDIDATE_SCHEMA_GAPS:END -->
+
+<!-- SPECFORGE_ERR1370_AMBIGUOUS_SCHEMA_FIXTURE_PATCH:START -->
+### ERR-1370：单行 schema 夹具补丁命中错误场景
+
+- **分类**：`PATCH_TARGET_AMBIGUITY / DETECTED_BEFORE_TEST`。
+- **事实证据**：将 spec-migration 当前夹具从 1.1 改为 1.0 的单行补丁，实际命中了文件内更早的未知-schema 预期红灯；只读检索显示目标第 659 行仍为 1.1。
+- **影响**：测试文件产生一处错误替换，但在验证前已发现；产品代码未受影响。
+- **处置**：使用测试名称和相邻 workflow 字段作为唯一上下文，恢复未知-schema=1.1，并修改 spec-migration=1.0。
+- **状态**：`CLOSED`。
+
+```text
+ERR1370_STATUS=CLOSED_UNIQUE_CONTEXT_PATCH_REQUIRED
+PRODUCT_CODE_IMPACT=NONE
+TEST_RUN_AFTER_WRONG_PATCH=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RESTORE_EXPECTED_RED_AND_UPDATE_ONLY_SPEC_MIGRATION_FIXTURE
+```
+<!-- SPECFORGE_ERR1370_AMBIGUOUS_SCHEMA_FIXTURE_PATCH:END -->
+
+<!-- SPECFORGE_ERR1371_CONTRACT_AUTHORING_DUPLICATE_WRITE_BLOCK:START -->
+### ERR-1371：Contract Authoring 接线补丁保留了旧的提前写入块
+
+- **分类**：`IMPLEMENTATION_PATCH_DEFECT / DETECTED_BEFORE_TEST`。
+- **事实证据**：补丁新增“最终 manifest 校验后写入”逻辑，但只读复核显示原 Candidate 写入块仍位于 manifest 构造与最终校验之前，导致代码中存在两套写入点。
+- **影响**：若继续验证，最终 manifest 内容无效时仍可能留下 Candidate 字节；当前尚未运行该版本测试。
+- **处置**：删除旧提前写入块，在最终 schema 校验通过后统一创建目录并执行唯一写入序列。
+- **状态**：`CLOSED`。
+
+```text
+ERR1371_STATUS=CLOSED_SINGLE_POST_VALIDATION_WRITE_SEQUENCE_REQUIRED
+TEST_RUN_WITH_DUPLICATE_WRITE_BLOCK=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=REMOVE_PRE_VALIDATION_WRITES_AND_VERIFY_ZERO_WRITE_TEST
+```
+<!-- SPECFORGE_ERR1371_CONTRACT_AUTHORING_DUPLICATE_WRITE_BLOCK:END -->
+
+<!-- SPECFORGE_ERR1372_CONTRACT_IDENTITY_NEGATIVE_FIXTURE_DRIFT:START -->
+### ERR-1372：Contract workflow identity 负例被缺失 schema 提前拦截
+
+- **分类**：`TARGET_REGRESSION_FAILURE / CURRENT_NEGATIVE_FIXTURE_DRIFT`。
+- **事实证据**：Contract Authoring 定向 11 tests 为 10 pass / 1 fail；失败用例原目标是验证 manifest `workflow_path` 冲突，但其手写 manifest 缺少 current schema identity，因而 descriptor 先返回 `SCHEMA_ID_MISSING`。未知 schema 零写入等其余十项均通过。
+- **必要性判断**：workflow identity 冲突仍是当前业务边界，测试必须保留；应补齐该负例的 current 1.0 必填字段，使首次偏离恢复为 workflow mismatch。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1372_STATUS=IDENTIFIED_ONE_CURRENT_NEGATIVE_FIXTURE_REPAIR
+TARGET_RESULT=10_PASS_1_FAIL
+TEST_TO_DELETE_OR_WEAKEN=NO
+PRODUCT_CONTRACT_RELAXATION=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=MAKE_WORKFLOW_MISMATCH_FIXTURE_SCHEMA_CURRENT_AND_RERUN
+```
+<!-- SPECFORGE_ERR1372_CONTRACT_IDENTITY_NEGATIVE_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1373_MIGRATION_DESCRIPTOR_TEST_PATH_ASSUMPTION:START -->
+### ERR-1373：Migration descriptor 测试读取使用了不存在的推测文件名
+
+- **分类**：`EVIDENCE_COLLECTION_PATH_ERROR / NO_PROJECT_WRITE`。
+- **事实证据**：只读 `Get-Content` 请求 `packages/migration/tests/user-decision-schema-descriptor.test.ts` 返回文件不存在；同批其他只读检查正常完成。
+- **处置**：从 `rg --files packages/migration/tests` 的真实清单及 descriptor 标识检索现有测试位置，不再依据功能名称拼接路径。
+- **状态**：`CLOSED`。
+
+```text
+ERR1373_STATUS=CLOSED_LOCATE_DESCRIPTOR_TESTS_FROM_REAL_INVENTORY
+PRODUCT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=FIND_EXISTING_DESCRIPTOR_TEST_PATTERN_AND_ADD_CANDIDATE_COVERAGE
+```
+<!-- SPECFORGE_ERR1373_MIGRATION_DESCRIPTOR_TEST_PATH_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1374_STATE_COORDINATOR_CANDIDATE_SCHEMA_FORK:START -->
+### ERR-1374：State Coordinator 的 spec-migration 分支仍硬编码 Candidate schema 1.1
+
+- **分类**：`EXPECTED_RED / RUNTIME_CONTRACT_FORK`。
+- **事实证据**：Candidate owner 单测 3 tests 为 2 pass / 1 fail；共享 exact 1.0 contract 与 descriptor 均通过，唯独 `isCanonicalNoCodeVerificationCandidateManifest` 对完整 1.0 spec-migration manifest 返回 false。源码直接条件为 `manifest.schema_version === '1.1'`。
+- **修复边界**：State Coordinator 先调用共享 current Candidate validator，再执行各 workflow 的附加语义检查；删除局部 schema 版本判断，不增加 1.1 transition。
+- **状态**：`CLOSED_AS_EXPECTED_RED`。
+
+```text
+ERR1374_STATUS=CLOSED_AS_EXPECTED_RED_ONE_FAIL_TWO_PASS
+FIRST_DIVERGENCE=STATE_COORDINATOR_LOCAL_SCHEMA_1.1_LITERAL
+CURRENT_SCHEMA_AUTHORITY=SHARED_CANDIDATE_MANIFEST_1.0
+LEGACY_TRANSITION=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=USE_SHARED_VALIDATOR_IN_STATE_COORDINATOR_AND_MERGE_PREFLIGHT
+```
+<!-- SPECFORGE_ERR1374_STATE_COORDINATOR_CANDIDATE_SCHEMA_FORK:END -->
+
+<!-- SPECFORGE_ERR1375_CANDIDATE_CONSUMER_FIXTURE_DRIFT:START -->
+### ERR-1375：Candidate 消费者回归有两个业务负例被旧/不完整 schema 提前拦截
+
+- **分类**：`TARGET_REGRESSION_FAILURE / CURRENT_CONSUMER_FIXTURE_DRIFT`。
+- **事实证据**：Candidate owner/authoring/freeze/merge 组合 4 files / 50 tests 为 48 pass / 2 fail。spec-migration recovery 夹具仍使用 schema 1.1；Merge 多 blocker 夹具缺少 `base_spec_version` 与 `merge_required`。二者均在 schema gate 停止，未到达各自原业务断言。
+- **必要性判断**：两项分别验证 provenance recovery 和 Merge blocker 聚合，均是当前能力；只补齐 current 1.0 contract，不改业务断言、不删除场景。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1375_STATUS=IDENTIFIED_TWO_CURRENT_CONSUMER_FIXTURE_REPAIRS
+TARGET_RESULT=4_FILES_48_PASS_2_FAIL
+SPEC_MIGRATION_RECOVERY_FIXTURE=SCHEMA_1.1_TO_1.0
+MERGE_BLOCKER_FIXTURE=MISSING_BASE_SPEC_VERSION_AND_MERGE_REQUIRED
+TESTS_REMOVED_OR_SKIPPED=0
+PRODUCT_CONTRACT_RELAXATION=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=UPDATE_ONLY_TWO_CURRENT_FIXTURES_AND_RERUN_COMBINED_TARGET
+```
+<!-- SPECFORGE_ERR1375_CANDIDATE_CONSUMER_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1376_DAEMON_CANDIDATE_CURRENT_FIXTURE_DRIFT:START -->
+### ERR-1376：Daemon 全量回归集中暴露 Candidate current contract 夹具漂移
+
+- **分类**：`FULL_REGRESSION_FAILURE / CURRENT_TEST_FIXTURE_DRIFT / INVESTIGATING_12_FILES`。
+- **事实证据**：daemon-core 全量 191 files / 1716 tests 为 179 files pass、12 fail；1672 tests pass、44 fail。失败集中于 design-governance、新项目 bootstrap、P0 lifecycle、Contract repair、Merge、Close 与 artifact validator 套件；共同首次偏离为 schema 1.1 或缺少 `base_spec_version` / `merge_required`，从而在当前 Candidate schema gate 提前停止。
+- **必要性判断**：这些套件验证当前 Gate、Merge、Close、repair、bootstrap 等正式能力，必须保留。应优先修复每个文件的共享 fixture 生产器或有效输入对象，维持原业务断言；不恢复 1.1 兼容链，不删除/跳过测试。
+- **状态**：`INVESTIGATING`。
+
+```text
+ERR1376_STATUS=INVESTIGATING_12_FILES_44_TESTS
+FULL_RESULT=191_FILES_179_PASS_12_FAIL;1716_TESTS_1672_PASS_44_FAIL
+COMMON_FIRST_DIVERGENCE=SCHEMA_1.1_OR_MISSING_BASE_SPEC_VERSION_OR_MERGE_REQUIRED
+TESTS_TO_DELETE_OR_SKIP=0
+LEGACY_TRANSITIONS_TO_ADD=NONE
+PRODUCT_CONTRACT_RELAXATION=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=IDENTIFY_AND_UPDATE_CURRENT_SHARED_FIXTURE_PRODUCERS_PER_FAILURE_FILE
+```
+<!-- SPECFORGE_ERR1376_DAEMON_CANDIDATE_CURRENT_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1377_FAILURE_FILE_SCAN_SCRIPT_PARSE:START -->
+### ERR-1377：失败文件 fixture 统计脚本在编排层解析失败
+
+- **分类**：`TOOL_ORCHESTRATION_SYNTAX_ERROR / COMMAND_NOT_STARTED`。
+- **事实证据**：批量只读检索脚本返回 `SyntaxError: Unexpected string`；内部 `exec_command` 未被调用。
+- **影响**：未取得统计结果，未修改项目、未运行测试。
+- **处置**：不用手写复杂文件数组；对全量结果已确认的文件执行简单、独立的字面量检索。
+- **状态**：`CLOSED`。
+
+```text
+ERR1377_STATUS=CLOSED_SIMPLE_LITERAL_SCANS_REQUIRED
+PROJECT_COMMAND_STARTED=NO
+PROJECT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_SIMPLE_LITERAL_SEARCHES_ON_CONFIRMED_FAILURE_FILES
+```
+<!-- SPECFORGE_ERR1377_FAILURE_FILE_SCAN_SCRIPT_PARSE:END -->
+
+<!-- SPECFORGE_ERR1378_REPEATED_MULTI_HUNK_FIXTURE_PATCH:START -->
+### ERR-1378：P0 多夹具补丁末尾混入无效文本并整体失败
+
+- **分类**：`REPEATED_PATCH_APPLICATION_ERROR / NO_PARTIAL_WRITE`。
+- **事实证据**：六 hunk 补丁末尾出现不属于源码的文本，`apply_patch` verification failed；补丁整体拒绝，目标测试文件没有部分写入。
+- **根因**：再次手工组合大量相似 hunk，违反已建立的单块/稳定锚点约束。
+- **类防护**：不再逐块复制同构 manifest 头；先引入文件内 current Candidate fixture helper，再以单一调用收敛重复结构。每次 patch 只做一个逻辑块。
+- **状态**：`CLOSED`。
+
+```text
+ERR1378_STATUS=CLOSED_NO_MULTI_HUNK_MANUAL_FIXTURE_PATCH
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS_AFTER_HELPER_CONVERGENCE_RULE
+NEXT_LEGAL_ACTION=ADD_CURRENT_CANDIDATE_FIXTURE_HELPER_WITH_SINGLE_LOGICAL_PATCHES
+```
+<!-- SPECFORGE_ERR1378_REPEATED_MULTI_HUNK_FIXTURE_PATCH:END -->
+
+<!-- SPECFORGE_ERR1379_CANDIDATE_FIXTURE_REPAIR_SECOND_PASS:START -->
+### ERR-1379：Candidate 失败文件定向回归收敛后剩余四个 current fixture 缺口
+
+- **分类**：`TARGET_REGRESSION_FAILURE / CURRENT_FIXTURE_DRIFT`。
+- **事实证据**：原 12 个失败文件定向回归 174 tests 为 170 pass / 4 fail。三个 Artifact Writer 场景在无现存初始化 manifest 时未提供 `base_spec_version`，返回 `SCHEMA_INVALID`；P0 close 场景写入测试专用 `post_merge_normalization_marker`，被 strict current contract 作为未知字段拒绝。
+- **处置边界**：三个 Writer 输入显式提供当前 base/merge 字段；P0 场景用合同内合法可选 `reason` 改变 manifest hash，保持“pre-merge hash changed after merge”的原验证目的。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1379_STATUS=IDENTIFIED_FOUR_FINAL_CURRENT_FIXTURE_REPAIRS
+TARGET_RESULT=12_FILES_170_PASS_4_FAIL
+PRODUCT_CONTRACT_RELAXATION=NO
+UNKNOWN_TEST_ONLY_MANIFEST_FIELD_TO_KEEP=NO
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=ADD_EXPLICIT_CURRENT_BASE_FIELDS_AND_USE_LEGAL_REASON_HASH_MUTATION
+```
+<!-- SPECFORGE_ERR1379_CANDIDATE_FIXTURE_REPAIR_SECOND_PASS:END -->
+
+<!-- SPECFORGE_ERR1380_REPEATED_CROSS_FILE_PATCH_CORRUPTION:START -->
+### ERR-1380：跨文件 fixture 补丁路径文本损坏并再次整体失败
+
+- **分类**：`REPEATED_PATCH_CONSTRUCTION_ERROR / NO_PROJECT_WRITE`。
+- **事实证据**：跨文件 `apply_patch` 的最后一个 Update File 路径损坏且为空 hunk，工具在解析阶段拒绝整份补丁；四个目标文件均未修改。
+- **根因**：在 ERR-1378 已要求单块补丁后仍组合跨文件变更，过程约束未落实到调用粒度。
+- **强制防护**：后续每个 `apply_patch` 调用只允许一个目标文件和一个逻辑点；完成后立即只读核对，再进入下一文件。
+- **状态**：`CLOSED`。
+
+```text
+ERR1380_STATUS=CLOSED_ONE_FILE_ONE_LOGICAL_PATCH_PER_CALL
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS_AFTER_TOOL_CALL_GRANULARITY_GATE
+NEXT_LEGAL_ACTION=PATCH_AND_VERIFY_EACH_OF_FOUR_FIXTURES_SEPARATELY
+```
+<!-- SPECFORGE_ERR1380_REPEATED_CROSS_FILE_PATCH_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1381_ARTIFACT_WRITER_CREATION_FIXTURE_DRIFT:START -->
+### ERR-1381：三个 Artifact Writer 集成夹具缺少生命周期 owner 创建的 Candidate Manifest 空壳
+
+- **分类**：`TARGET_REGRESSION_FAILURE / ARCHITECTURE_FIXTURE_DRIFT`。
+- **事实证据**：最终四文件回归 35 tests 为 32 pass / 3 fail；三项 Writer 场景均返回 `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: FILE_REQUIRED`（design-live 同一路径且现场无 manifest）。输入内容已满足 current contract，唯一缺失是既有 `candidate_manifest.json`。
+- **架构判断**：Work Item lifecycle initializer 负责创建 required manifest 空壳；Artifact Writer 是冻结前受控更新器，不应成为第二个文件创建 owner。
+- **处置**：三份集成夹具在调用 Writer 前建立与 lifecycle initializer 一致的 current 1.0 空壳，然后保留原 Writer 规范化与治理断言。
+- **状态**：`IDENTIFIED`。
+
+```text
+ERR1381_STATUS=IDENTIFIED_THREE_LIFECYCLE_FIXTURE_INITIALIZATIONS
+MANIFEST_CREATE_OWNER=WORK_ITEM_LIFECYCLE_INITIALIZER
+ARTIFACT_WRITER_CREATE_MISSING_REQUIRED_MANIFEST=FORBIDDEN
+PRODUCT_CONTRACT_RELAXATION=NO
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=INITIALIZE_CURRENT_MANIFEST_PLACEHOLDERS_IN_THREE_INTEGRATION_FIXTURES
+```
+<!-- SPECFORGE_ERR1381_ARTIFACT_WRITER_CREATION_FIXTURE_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1382_OVERLAPPING_VITEST_SESSION_EVIDENCE:START -->
+### ERR-1382：Daemon 全量会话未收口时启动定向 Vitest，导致证据归属混淆
+
+- **分类**：`VALIDATION_ORCHESTRATION_ERROR / RESULT_NOT_CLAIMED`。
+- **事实证据**：全量 Vitest 会话 `6867` 仍在运行时启动三文件定向命令；后者返回内容包含大量不属于三文件范围的 package 测试，无法可靠归属退出码。
+- **影响**：该次返回不用于判定三文件或全量状态；产品源码未因验证动作改变。
+- **处置**：先轮询并收口会话 `6867`；之后在无活动 Vitest 会话时独立重跑三文件定向验证。
+- **状态**：`CLOSED`。
+
+```text
+ERR1382_STATUS=CLOSED_SERIAL_VITEST_EVIDENCE_REQUIRED
+AMBIGUOUS_RESULT=NOT_CLAIMED
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=COLLECT_FULL_SESSION_THEN_RERUN_THREE_FILE_TARGET_SERIALly
+```
+<!-- SPECFORGE_ERR1382_OVERLAPPING_VITEST_SESSION_EVIDENCE:END -->
+
+<!-- SPECFORGE_ERR1383_FULL_REGRESSION_DURING_FILE_MUTATION:START -->
+### ERR-1383：Daemon 全量回归运行期间仍修改测试文件，PASS 不能作为可信验收
+
+- **分类**：`VALIDATION_EVIDENCE_INVALID / OBSERVER_TIMELINE_CONTAMINATION`。
+- **事实证据**：会话 `6867` 最终报告 191 files / 1716 tests 全通过，但其运行时间覆盖了后续 fixture 文件修改；Vitest 可能在不同采集时点加载不同版本。
+- **结论**：该 PASS 不计入可信回归证明；必须在代码和测试文件冻结后重新运行同一全量命令并取得最终退出码。
+- **状态**：`CLOSED_RERUN_REQUIRED`。
+
+```text
+ERR1383_STATUS=CLOSED_RESULT_INVALID_RERUN_REQUIRED
+CONTAMINATED_RESULT=191_FILES_1716_PASS_NOT_ACCEPTED
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RUN_TARGET_SERIAL_THEN_FREEZE_FILES_AND_RERUN_DAEMON_FULL
+```
+<!-- SPECFORGE_ERR1383_FULL_REGRESSION_DURING_FILE_MUTATION:END -->
+
+<!-- SPECFORGE_ERR1384_PLACEHOLDER_DOCUMENT_PATH_READ:START -->
+### ERR-1384：治理进度只读复核误用了占位路径
+
+- **分类**：`EVIDENCE_COLLECTION_PATH_ERROR / NO_PROJECT_WRITE`。
+- **事实证据**：只读命令请求不存在的 `docs/implementation?` 并返回 path not found；同批 Candidate 关键字检索与 `git diff --check` 正常完成。
+- **处置**：只读取已经由 Git/检索确认的完整文件路径，不向命令传递占位符。
+- **状态**：`CLOSED`。
+
+```text
+ERR1384_STATUS=CLOSED_CONFIRMED_FULL_PATHS_ONLY
+PRODUCT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1384_PLACEHOLDER_DOCUMENT_PATH_READ:END -->
+
+<!-- SPECFORGE_ERR1385_1386_LEDGER_PATCH_FORMAT_ERRORS:START -->
+### ERR-1385 / ERR-1386：记录 ERR-1384 的两次账本补丁格式错误
+
+- **分类**：`REPEATED_PATCH_APPLICATION_ERROR / NO_PARTIAL_WRITE`。
+- **事实证据**：第一次补丁有一行缺少合法 patch 前缀；第二次补丁含无效 `.md` 行。两次均在 verification/parse 阶段整体拒绝。
+- **处置**：先读取唯一尾标，再用模板字符串构造只含合法前缀的最小追加补丁。
+- **状态**：`CLOSED`。
+
+```text
+ERR1385_STATUS=CLOSED_PATCH_PREFIX_VALIDATION_REQUIRED
+ERR1386_STATUS=CLOSED_MINIMAL_TAIL_APPEND_REQUIRED
+PARTIAL_WRITE=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=CONTINUE_WITH_CONFIRMED_PROGRESS_FILE_PATHS
+```
+<!-- SPECFORGE_ERR1385_1386_LEDGER_PATCH_FORMAT_ERRORS:END -->
+
+<!-- SPECFORGE_ERR1387_LEDGER_END_MARKER_TYPO:START -->
+### ERR-1387：ERR-1384 账本 END marker 多写一个冒号
+
+- **分类**：`GOVERNANCE_MARKER_TYPO / CORRECTED`。
+- **事实证据**：成功追加后的 marker 为 `SPECFORGE_ERR1384_PLACEHOLDER_DOCUMENT_PATH_READ::END`，不符合现有单冒号格式。
+- **处置**：立即改回标准 `:END`，并保持正文与状态不变。
+- **状态**：`CLOSED`。
+
+```text
+ERR1387_STATUS=CLOSED_STANDARD_END_MARKER_RESTORED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1387_LEDGER_END_MARKER_TYPO:END -->
+
+<!-- SPECFORGE_ERR1388_CROSS_PACKAGE_VITEST_EXECUTABLE:START -->
+### ERR-1388: Types validation reused the Daemon Vitest executable
+
+- Classification: `VALIDATION_COMMAND_ERROR / TEST_NOT_STARTED`.
+- Evidence: Daemon Vitest resolved the root config from the types directory and failed with `Cannot find module 'vitest/config'`; no tests were collected.
+- Resolution: use only a package-local runner or the repository workspace runner.
+- Status: `CLOSED`.
+
+```text
+ERR1388_STATUS=CLOSED_PACKAGE_LOCAL_OR_ROOT_WORKSPACE_RUNNER_ONLY
+TESTS_STARTED=NO
+PRODUCT_CODE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1388_CROSS_PACKAGE_VITEST_EXECUTABLE:END -->
+
+<!-- SPECFORGE_ERR1389_LEDGER_PATCH_UTF8_READ_TRANSIENT:START -->
+### ERR-1389: Ledger patch tool reported an uncorroborated UTF-8 read failure
+
+- Classification: `TOOL_READ_ERROR / FILE_CORRUPTION_NOT_CONFIRMED`.
+- Evidence: one patch attempt reported an invalid UTF-8 sequence near offset 1683395. A subsequent strict .NET UTF-8 decode returned `UTF8_VALID=YES`, and the surrounding bytes were valid UTF-8.
+- Resolution: do not rewrite or transcode the ledger; retry only a minimal ASCII append and retain both observations.
+- Status: `CLOSED`.
+
+```text
+ERR1389_STATUS=CLOSED_NO_ENCODING_REWRITE_REQUIRED
+FILE_CORRUPTION=NOT_CONFIRMED
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=INSPECT_ACTUAL_PACKAGE_RUNNERS_THEN_VALIDATE
+```
+<!-- SPECFORGE_ERR1389_LEDGER_PATCH_UTF8_READ_TRANSIENT:END -->
+
+<!-- SPECFORGE_ERR1390_PREMATURE_UTF8_VALIDATION_CLAIM:START -->
+### ERR-1390: UTF-8 validity was stated before the strict decode ran
+
+- Classification: `EVIDENCE_SEQUENCE_VIOLATION / LATER_CORROBORATED`.
+- Evidence: ERR-1389 stated that strict .NET decoding returned PASS, but only a local hex read had completed at that time. The strict `UTF8Encoding(false, true).GetString` check ran afterward and returned `UTF8_VALID=YES`.
+- Resolution: later confirmation preserves the final file-validity conclusion but does not excuse the premature statement; future evidence is recorded only after its command completes.
+- Status: `CLOSED`.
+
+```text
+ERR1390_STATUS=CLOSED_EVIDENCE_MUST_PRECEDE_CLAIM
+FINAL_UTF8_VALIDATION=UTF8_VALID_YES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1390_PREMATURE_UTF8_VALIDATION_CLAIM:END -->
+
+<!-- SPECFORGE_ERR1391_LEDGER_HISTORICAL_RANGE_CORRUPTION:START -->
+### ERR-1391: Candidate 收尾复核发现错误账本历史区间被意外覆盖
+
+- **分类**：`GOVERNANCE_HISTORY_CORRUPTION / COMMIT_BLOCKED`。
+- **事实证据**：相对当前 `HEAD` 的 diff 显示自 ERR-350 尾部起，约 6451 行历史记录被 267 行内容替换；工作树由 ERR-350 直接跳至 ERR-811，违反“不得删除 ERR 记录”。
+- **边界**：异常在提交前复核中发现；尚未 stage、commit 或 push。ERR-1364 至 ERR-1390 的本轮追加记录仍位于独立尾部 hunk。
+- **处置**：仅恢复相对 `HEAD` 被覆盖的历史 hunk，保留独立的本轮追加 hunk；随后重新检查 marker、UTF-8、diff 和全量回归。
+- **状态**：`CLOSED_HISTORICAL_HUNK_RESTORED`。
+
+```text
+ERR1391_STATUS=CLOSED_HISTORICAL_HUNK_RESTORED_APPEND_HUNK_PRESERVED
+HISTORICAL_ERR_DELETION_ALLOWED=NO
+STAGE_COMMIT_PUSH=NONE
+REPEATED_ERROR_CHECK=PASS
+RECOVERY_VERIFICATION=ERR351_AND_ERR810_PRESENT;LEDGER_DIFF_480_ADDITIONS_0_DELETIONS;UTF8_VALID_YES
+NEXT_LEGAL_ACTION=RECORD_UNRECOVERABLE_ROOT_TEST_OUTPUT_THEN_RERUN_WITH_BOUNDED_OUTPUT
+```
+<!-- SPECFORGE_ERR1391_LEDGER_HISTORICAL_RANGE_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1392_ROOT_REGRESSION_OUTPUT_NOT_RECOVERABLE:START -->
+### ERR-1392: 根级全量回归输出超出上下文且没有可恢复终端会话
+
+- **分类**：`VALIDATION_EVIDENCE_INCOMPLETE / RESULT_NOT_CLAIMED`。
+- **事实证据**：根级 `bun run test` 返回“输出超出可用上下文并被截断”，未保留可复核退出码；随后只读终端查询返回当前任务没有附加终端会话。
+- **结论**：该次运行不作为 PASS 或 FAIL 证据，也不据此修改产品行为。
+- **处置**：在源码与测试冻结后，以受限输出重新运行同一根级命令并获取明确退出码和最终摘要。
+- **状态**：`CLOSED_RERUN_REQUIRED`。
+
+```text
+ERR1392_STATUS=CLOSED_RESULT_NOT_CLAIMED_RERUN_REQUIRED
+PRODUCT_WRITE_IMPACT=NONE
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=RERUN_ROOT_FULL_REGRESSION_WITH_BOUNDED_OUTPUT_AND_EXPLICIT_EXIT_CODE
+```
+<!-- SPECFORGE_ERR1392_ROOT_REGRESSION_OUTPUT_NOT_RECOVERABLE:END -->
+
+<!-- SPECFORGE_ERR1393_OPENCODE_ADAPTER_TS_FALSE_POSITIVE:START -->
+### ERR-1393: 根级回归发现 OpenCode Adapter 隔离属性测试将业务参数 ts 误判为泄漏字段
+
+- **分类**：`PHASE12_FULL_REGRESSION_FAILURE / HISTORICAL_TEST_OR_PRODUCT_CLASSIFICATION_PENDING`。
+- **一手证据**：根级串行回归中 `@specforge/opencode-adapter` 为 30 files pass、1 file fail，947 tests pass、1 test fail；失败项为 `AdapterEncapsulation.property.test.ts` 的 Property 4.7，seed=`-1886163122`、path=`10:...:1:14`，最小反例包含 tool arguments `{ ts: null }`，断言报告 received `["ts"]`。其余 workspace 继续完成，其中 migration 17/406、daemon-core 191/1716 均通过；根命令最终 exit 1。
+- **边界**：失败文件不在 Candidate Manifest 本轮变更集内，但它阻断可信根级全量回归；不能通过跳过或删除历史测试处理。
+- **分类结论**：测试把协议字段隔离错误扩大到透明业务载荷；产品合同明确保留任意 `arguments` / `payload` / `result` / `env` 内容，因此属于测试边界缺陷，不是适配器产品缺陷。
+- **处置**：保留属性测试并限定其检查协议拥有的 envelope；加入 `arguments={ts,id,sid}` 固定回归，未删除或跳过测试。
+- **状态**：`CLOSED_TEST_BOUNDARY_REPAIRED`。
+
+```text
+ERR1393_STATUS=CLOSED_HISTORICAL_TEST_BOUNDARY_REPAIRED
+ROOT_FULL_REGRESSION=FAIL_EXIT_1
+OPENCODE_ADAPTER_RESULT=30_FILES_PASS_1_FAIL;947_TESTS_PASS_1_FAIL
+MIGRATION_RESULT=17_FILES_406_TESTS_PASS
+DAEMON_CORE_RESULT=191_FILES_1716_TESTS_PASS
+TEST_REMOVAL_OR_SKIP_ALLOWED=NO
+REPEATED_ERROR_CHECK=PASS
+TARGET_RESULT=1_FILE_14_TESTS_PASS
+OPENCODE_ADAPTER_FINAL=31_FILES_949_TESTS_PASS_EXIT_0
+NEXT_LEGAL_ACTION=FREEZE_FILES_AND_RERUN_ROOT_FULL_REGRESSION
+```
+<!-- SPECFORGE_ERR1393_OPENCODE_ADAPTER_TS_FALSE_POSITIVE:END -->
+
+<!-- SPECFORGE_ERR1394_PROTOCOL_KEY_HELPER_RENAME_INCOMPLETE:START -->
+### ERR-1394: 协议字段收集 helper 重命名时遗漏数组递归调用
+
+- **分类**：`TEST_PATCH_DEFECT / DETECTED_BEFORE_TEST`。
+- **事实证据**：单文件补丁把 helper 改名为 `collectProtocolOwnedKeys`，但数组分支仍引用已移除的 `collectObjectKeys`；只读复核立即发现。
+- **影响**：尚未运行或声明测试结果；产品源码未修改。
+- **处置**：只修正该单一递归引用，再执行类型/定向验证。
+- **状态**：`CLOSED_CORRECTION_REQUIRED`。
+
+```text
+ERR1394_STATUS=CLOSED_FIX_SINGLE_STALE_RECURSIVE_REFERENCE
+PRODUCT_CODE_IMPACT=NONE
+TEST_RESULT_CLAIMED=NO
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=REPLACE_ARRAY_BRANCH_WITH_COLLECT_PROTOCOL_OWNED_KEYS
+```
+<!-- SPECFORGE_ERR1394_PROTOCOL_KEY_HELPER_RENAME_INCOMPLETE:END -->
+
+<!-- SPECFORGE_ERR1395_CANDIDATE_MANIFEST_OWNER_CLOSURE:START -->
+### ERR-1395: ERR-1013 Candidate Manifest owner 子家族完成可信回归闭环
+
+- **分类**：`CLOSURE_EVIDENCE / ERR1364_REPAIRED`。
+- **架构结果**：`@specforge/types` 提供唯一 current 1.0 exact contract；`@specforge/migration` 提供 required per-file descriptor；Candidate prepare/freeze transaction 保持唯一正式 owner；lifecycle initializer 只创建 required 空壳；Artifact Writer 与 Contract Authoring 只允许冻结前受控更新；Gate、Merge、Close、恢复消费者统一验证同一合同。
+- **发布边界**：不增加旧 schema transition，不把 1.1 作为兼容格式；未知 schema 在任何 Candidate/状态写入前以 `CHAIN_GAP` fail closed；`candidate_prepared` 起禁止后续 Candidate 写入。
+- **可信验证**：types、migration、daemon-core TypeScript 均通过；Candidate 定向 4 files / 50 tests 通过；独立 daemon-core 191 files / 1716 tests 通过；根构建 16 workspaces 通过；最终根级确定性串行回归 16 workspaces 通过、exit 0。回归期间发现的 ERR-1393 历史测试边界缺陷已保留测试并修复，OpenCode Adapter 为 31 files / 949 tests 通过。
+- **状态**：`CLOSED`。
+
+```text
+ERR1395_STATUS=CLOSED_CANDIDATE_MANIFEST_OWNER_VALIDATED
+CLOSED_ERRORS=ERR-1364,ERR-1368,ERR-1369,ERR-1372,ERR-1375,ERR-1376,ERR-1379,ERR-1381,ERR-1391,ERR-1392,ERR-1393,ERR-1394
+CURRENT_SCHEMA=1.0
+LEGACY_TRANSITIONS_ADDED=NONE
+TARGET_REGRESSION=4_FILES_50_TESTS_PASS
+OPENCODE_ADAPTER_REGRESSION=31_FILES_949_TESTS_PASS
+MIGRATION_REGRESSION=17_FILES_406_TESTS_PASS
+DAEMON_CORE_REGRESSION=191_FILES_1716_TESTS_PASS
+ROOT_BUILD=PASS_16_WORKSPACES
+ROOT_REGRESSION=PASS_16_WORKSPACES_EXIT_0
+POST_DOCUMENT_GOVERNANCE=5_FILES_28_TESTS_PASS
+TESTS_REMOVED_OR_SKIPPED=0
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=SYNC_PROGRESS_AND_HANDOFF_THEN_DIFF_STATUS_AUDIT_AND_LOCAL_COMMIT
+```
+<!-- SPECFORGE_ERR1395_CANDIDATE_MANIFEST_OWNER_CLOSURE:END -->

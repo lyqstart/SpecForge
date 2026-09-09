@@ -610,6 +610,15 @@ describe('Orchestrator governance execution closure', () => {
       workflow_type: 'feature_spec',
       workflow_path: 'requirement_change_path',
     });
+    await writeJson(path.join(wiDir, 'candidate_manifest.json'), {
+      schema_version: '1.0',
+      work_item_id: workItemId,
+      workflow_type: 'feature_spec',
+      workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
+      merge_required: true,
+      entries: [],
+    });
     await mkdir(path.join(wiDir, 'candidates', 'project', 'modules', 'core'), {
       recursive: true,
     });
@@ -624,10 +633,11 @@ describe('Orchestrator governance execution closure', () => {
         work_item_id: workItemId,
         file_type: 'candidate_manifest',
         content: JSON.stringify({
-          schema_version: '1.1',
+          schema_version: '1.0',
           work_item_id: workItemId,
           workflow_type: 'feature_spec',
           workflow_path: 'requirement_change_path',
+          base_spec_version: 'PSV-0001',
           no_project_spec_change: true,
           project_integration_effect: 'evidence_only',
           merge_required: true,

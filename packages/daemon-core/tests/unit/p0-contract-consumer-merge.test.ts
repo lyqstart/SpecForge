@@ -121,6 +121,7 @@ describe('P0 Contract consumer atomic merge', () => {
       schema_version: '1.0',
       work_item_id: workItemId,
       workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
       merge_required: true,
       entries: [
         {
@@ -219,6 +220,7 @@ describe('P0 Contract consumer atomic merge', () => {
       schema_version: '1.0',
       work_item_id: workItemId,
       workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
       merge_required: true,
       entries: [
         {
@@ -284,6 +286,7 @@ describe('P0 Contract consumer atomic merge', () => {
       schema_version: '1.0',
       work_item_id: workItemId,
       workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
       merge_required: true,
       entries: [
         {
@@ -343,6 +346,7 @@ describe('P0 Contract consumer atomic merge', () => {
       schema_version: '1.0',
       work_item_id: workItemId,
       workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
       merge_required: true,
       entries: [
         {
@@ -398,6 +402,7 @@ describe('P0 Contract consumer atomic merge', () => {
       schema_version: '1.0',
       work_item_id: workItemId,
       workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
       merge_required: true,
       entries: [
         {
@@ -454,6 +459,7 @@ describe('P0 Contract consumer atomic merge', () => {
       schema_version: '1.0',
       work_item_id: workItemId,
       workflow_path: 'requirement_change_path',
+      base_spec_version: 'PSV-0001',
       merge_required: true,
       entries: [
         {

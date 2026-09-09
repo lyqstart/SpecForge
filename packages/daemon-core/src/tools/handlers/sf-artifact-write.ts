@@ -52,6 +52,12 @@ import {
   evidenceManifestSchemaBlockCode,
   precheckEvidenceManifestSchema,
 } from '../lib/evidence-manifest.js';
+import {
+  CANDIDATE_MANIFEST_SCHEMA_VERSION,
+  candidateManifestContentBlockCode,
+  candidateManifestSchemaBlockCode,
+  precheckCandidateManifestSchema,
+} from '../lib/candidate-manifest-owner.js';
 const V11_WI_ARTIFACT_FILES = new Set([
   'work_item.json',
   'intake.md',
@@ -644,6 +650,8 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
   // Gate, approval and Merge compare the same object.
   normalizedEntry.candidate_path = canonicalPath ?? candidatePath;
   delete normalizedEntry.path;
+  delete normalizedEntry.spec_type;
+  delete normalizedEntry.module;
   normalizedEntry.operation = normalizedEntry.operation ?? 'replace';
 
   if (!canonicalPath) return normalizedEntry;
@@ -652,6 +660,7 @@ function canonicalizeCandidateEntry(entry: any, baseDir: string, workItemId: str
   const candidateType = String(
     normalizedEntry.type ?? normalizedEntry.spec_type ?? ''
   ).toLowerCase();
+  if (candidateType) normalizedEntry.type = candidateType;
   if (candidateType === 'architecture') {
     normalizedEntry.target_path = '.specforge/project/architecture.md';
   }
@@ -807,6 +816,7 @@ function normalizeCoreJsonArtifact(
       workItemId
     );
     const wiDir = workItemRoot(baseDir, workItemId);
+    const existingManifest = readJsonIfExists(path.join(wiDir, 'candidate_manifest.json')) ?? {};
     const canonicalParsed: Record<string, unknown> = {
       ...(parsed as Record<string, unknown>),
     };
@@ -830,9 +840,14 @@ function normalizeCoreJsonArtifact(
     if (evidenceOnly || normalizedWorkflowPath === 'code_only_fast_path') {
       const normalized: Record<string, unknown> = {
         ...canonicalParsed,
-        schema_version: canonicalParsed.schema_version ?? '1.1',
+        schema_version:
+          canonicalParsed.schema_version ??
+          existingManifest.schema_version ??
+          CANDIDATE_MANIFEST_SCHEMA_VERSION,
         work_item_id: canonicalParsed.work_item_id ?? workItemId,
         workflow_path: normalizedWorkflowPath,
+        base_spec_version:
+          canonicalParsed.base_spec_version ?? existingManifest.base_spec_version,
         merge_applicable: false,
         merge_required: false,
         entries: [],
@@ -867,9 +882,16 @@ function normalizeCoreJsonArtifact(
       : rawEntries;
     const normalized: Record<string, unknown> = {
       ...canonicalParsed,
-      schema_version: canonicalParsed.schema_version ?? '1.1',
+      schema_version:
+        canonicalParsed.schema_version ??
+        existingManifest.schema_version ??
+        CANDIDATE_MANIFEST_SCHEMA_VERSION,
       work_item_id: canonicalParsed.work_item_id ?? workItemId,
       workflow_path: normalizedWorkflowPath,
+      base_spec_version:
+        canonicalParsed.base_spec_version ?? existingManifest.base_spec_version,
+      merge_required:
+        canonicalParsed.merge_required ?? existingManifest.merge_required ?? true,
       entries,
     };
 
@@ -1235,53 +1257,6 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
   }
-  if (targetFilename === 'evidence_manifest.json') {
-    const schemaPrecheck = await precheckEvidenceManifestSchema(
-      workItemRoot(baseDir, workItemId),
-      workItemId,
-    );
-    const schemaBlockCode = evidenceManifestSchemaBlockCode(schemaPrecheck);
-    if (schemaBlockCode) {
-      return {
-        success: false,
-        error: `EVIDENCE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}`,
-        hard_stop: true,
-        retry_allowed: false,
-      };
-    }
-  }
-  if (isJsonArtifact(targetFilename)) {
-    try {
-      content = normalizeCoreJsonArtifact(targetFilename, content, workItemId, baseDir);
-    } catch (error: any) {
-      return {
-        success: false,
-        error: `ARTIFACT_NORMALIZATION_FAILED: ${error?.message ?? String(error)}`,
-        hard_stop: false,
-        retry_allowed: true,
-      };
-    }
-    let workflowPath: string | undefined;
-    try {
-      const facts = inferWorkflowFacts(baseDir, workItemId, JSON.parse(content));
-      workflowPath = facts.workflowPath;
-    } catch {
-      // non-critical; validator can still validate with artifact content.
-    }
-    const validation = validateArtifactJson(targetFilename, content, workItemId, workflowPath);
-    if (validation && !validation.valid) {
-      return {
-        success: false,
-        error: 'INVALID_ARTIFACT_JSON',
-        hard_stop: false,
-        retry_allowed: true,
-        validation_errors: validation.errors,
-        message: `Artifact "${targetFilename}" failed schema validation and was NOT written to disk.\nCorrect the JSON and retry.`,
-        normalized_content_preview: content.slice(0, 2000),
-      };
-    }
-  }
-  const wiDir = workItemRoot(baseDir, workItemId);
   if (isCandidateGovernancePath(targetFilename)) {
     const state = await readAuthoritativeState({
       deps,
@@ -1312,6 +1287,77 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
       };
     }
   }
+  if (targetFilename === 'evidence_manifest.json') {
+    const schemaPrecheck = await precheckEvidenceManifestSchema(
+      workItemRoot(baseDir, workItemId),
+      workItemId,
+    );
+    const schemaBlockCode = evidenceManifestSchemaBlockCode(schemaPrecheck);
+    if (schemaBlockCode) {
+      return {
+        success: false,
+        error: `EVIDENCE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}`,
+        hard_stop: true,
+        retry_allowed: false,
+      };
+    }
+  }
+  if (isJsonArtifact(targetFilename)) {
+    try {
+      content = normalizeCoreJsonArtifact(targetFilename, content, workItemId, baseDir);
+    } catch (error: any) {
+      return {
+        success: false,
+        error: `ARTIFACT_NORMALIZATION_FAILED: ${error?.message ?? String(error)}`,
+        hard_stop: false,
+        retry_allowed: true,
+      };
+    }
+    if (targetFilename === 'candidate_manifest.json') {
+      const contentBlockCode = candidateManifestContentBlockCode(content, workItemId);
+      if (contentBlockCode) {
+        return {
+          success: false,
+          error: `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${contentBlockCode}`,
+          hard_stop: true,
+          retry_allowed: false,
+        };
+      }
+      const schemaPrecheck = await precheckCandidateManifestSchema(
+        metadataWorkItemDir,
+        workItemId,
+      );
+      const schemaBlockCode = candidateManifestSchemaBlockCode(schemaPrecheck);
+      if (schemaBlockCode) {
+        return {
+          success: false,
+          error: `CANDIDATE_MANIFEST_SCHEMA_BLOCKED: ${schemaBlockCode}`,
+          hard_stop: true,
+          retry_allowed: false,
+        };
+      }
+    }
+    let workflowPath: string | undefined;
+    try {
+      const facts = inferWorkflowFacts(baseDir, workItemId, JSON.parse(content));
+      workflowPath = facts.workflowPath;
+    } catch {
+      // non-critical; validator can still validate with artifact content.
+    }
+    const validation = validateArtifactJson(targetFilename, content, workItemId, workflowPath);
+    if (validation && !validation.valid) {
+      return {
+        success: false,
+        error: 'INVALID_ARTIFACT_JSON',
+        hard_stop: false,
+        retry_allowed: true,
+        validation_errors: validation.errors,
+        message: `Artifact "${targetFilename}" failed schema validation and was NOT written to disk.\nCorrect the JSON and retry.`,
+        normalized_content_preview: content.slice(0, 2000),
+      };
+    }
+  }
+  const wiDir = workItemRoot(baseDir, workItemId);
   fs.mkdirSync(wiDir, { recursive: true });
   let targetPath: string;
   if (targetFilename === 'evidence_manifest.json') {
