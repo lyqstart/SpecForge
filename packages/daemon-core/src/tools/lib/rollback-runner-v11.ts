@@ -15,6 +15,7 @@ import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { readWorkItemMetadata, writeWorkItemMetadata } from './work-item-metadata';
+import { evaluateMergeReport } from '@specforge/types';
 
 // ── Types ──
 
@@ -83,6 +84,12 @@ export async function generateRollbackPlan(params: {
   const mergeReportPath = join(originalWiDir, 'merge_report.md');
   if (!existsSync(mergeReportPath)) {
     risks.push('原 WI 没有 merge_report.md，无法确定合并了哪些文件');
+  } else {
+    const mergeReport = await readFile(mergeReportPath, 'utf-8');
+    const verdict = evaluateMergeReport(mergeReport, originalWorkItemId);
+    if (!verdict.valid || verdict.status !== 'success') {
+      risks.push(`原 WI 的 merge_report.md 无法证明成功合并：${verdict.reason ?? `status=${verdict.status}`}`);
+    }
   }
 
   // 读取原 WI 的 candidate_manifest

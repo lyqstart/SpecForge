@@ -7,6 +7,7 @@
  * Requirements: 7.1-7.14
  */
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
+import { evaluateMergeReport } from '@specforge/types';
 
 // ---- Types ----
 
@@ -208,14 +209,14 @@ export class CloseGate {
       !isWorkItemSpecArtifactPlaceholder('trace_delta', traceDeltaContent);
     const changedFilesAuditExists = params.fileExists(changedFilesAuditPath);
 
-    // For code_only_fast_path: validate merge_report contains "not_applicable"
+    // Validate the persistent report contract and bind it to the current Work Item.
     let mergeReportAllSuccess = false;
     let mergeReportExists = false;
     if (params.mergeReportContent !== null) {
       mergeReportExists = true;
-      // Merge is successful if it contains "merged" status OR "not_applicable"
-      mergeReportAllSuccess = params.mergeReportContent.includes('not_applicable') ||
-        params.mergeReportContent.includes('Merge Status: merged');
+      const verdict = evaluateMergeReport(params.mergeReportContent, params.workItemId);
+      mergeReportAllSuccess = verdict.valid &&
+        (verdict.status === 'success' || verdict.status === 'not_applicable');
     }
 
     const checks: CloseCheck[] = [];

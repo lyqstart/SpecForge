@@ -329,13 +329,13 @@ async function buildCompleteWI(
   if (workflowPath === 'code_only_fast_path') {
     await fs.writeFile(
       path.join(wiDir, 'merge_report.md'),
-      '# Merge Report\n\nWork Item: ' + wiId + '\nStatus: not_applicable\nReason: code_only_fast_path does not change project specs.\n',
+      '# Merge Report\n\nContract: merge-report/v1\nWork Item: ' + wiId + '\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n\nReason: code_only_fast_path does not change project specs.\n',
       'utf-8',
     );
   } else {
     await fs.writeFile(
       path.join(wiDir, 'merge_report.md'),
-      '# Merge Report\n\nWork Item: ' + wiId + '\nStatus: success\nTimestamp: ' + new Date().toISOString() + `\n\n## Summary\n- Total entries: ${manifestEntries.length}\n- Successful: ${manifestEntries.length}\n\n## Evidence\n- merge_runner_execution_log\n`,
+      '# Merge Report\n\nContract: merge-report/v1\nWork Item: ' + wiId + '\nStatus: success\nTimestamp: ' + new Date().toISOString() + `\n\n## Summary\n- Total entries: ${manifestEntries.length}\n- Successful: ${manifestEntries.length}\n- Failed: 0\n\n## Evidence\n- merge_runner_execution_log\n`,
       'utf-8',
     );
   }

@@ -268,7 +268,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     );
     await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: WI-0001\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n- Data Source: write_guard_log.jsonl (2 entries, 1 allowed writes)\n');
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
-    await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
+    await fs.writeFile(path.join(wiDir, 'merge_report.md'), `# Merge Report\n\nContract: merge-report/v1\nWork Item: ${workItemId}\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n`);
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', id: 'EV-1', type: 'log', path: 'test.log', status: 'passed' }] }));
     await recordUserDecision({
       workItemDir: wiDir,

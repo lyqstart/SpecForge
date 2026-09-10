@@ -11,6 +11,7 @@
  */
 
 import { registerHandler } from "../ToolDispatcher.js";
+import { evaluateMergeReport } from '@specforge/types';
 import { runCloseGate, type CloseGateResult } from "../lib/close-gate.js";
 import {
   runChangedFilesAudit,
@@ -830,13 +831,15 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
     const mergePath = path.join(workItemDir, "merge_report.md");
     try {
       const mergeReport = await fs.readFile(mergePath, "utf-8");
-      const statusMatch = mergeReport.match(/^Status:\s*(\S+)/im);
-      const mergeStatus = statusMatch ? statusMatch[1].toLowerCase() : "";
-      const validMergeStatus = mergeStatus === "success" || mergeStatus === "not_applicable";
+      const mergeVerdict = evaluateMergeReport(mergeReport, workItemId);
+      const mergeStatus = mergeVerdict.status;
+      const validMergeStatus = mergeVerdict.valid &&
+        (mergeStatus === "success" || mergeStatus === "not_applicable");
       if (!validMergeStatus) {
         return {
           ...result,
-          error: `merge_report.md must have a valid Status line (success or not_applicable); got: "${mergeStatus || "missing"}"`,
+          error: mergeVerdict.reason ??
+            `merge_report.md must have status success or not_applicable; got: "${mergeStatus}"`,
         };
       }
       if (workItem.workflow_path === "code_only_fast_path" && mergeStatus !== "not_applicable") {

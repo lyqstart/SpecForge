@@ -950,6 +950,20 @@ const PROFESSIONAL_ARTIFACT_OWNERS = new Map<string, string>([
   ['evidence_manifest', 'sf-verifier'],
 ]);
 const VERIFICATION_INPUT_ARTIFACT_TYPES = new Set(['verification_report', 'evidence_manifest']);
+const CONTROL_TOOL_OWNED_ARTIFACT_TYPES = new Set(['merge_report']);
+
+function rejectControlToolOwnedArtifact(fileType: string): any | null {
+  if (!CONTROL_TOOL_OWNED_ARTIFACT_TYPES.has(String(fileType ?? ''))) return null;
+  return {
+    success: false,
+    error: 'MERGE_REPORT_OWNED_BY_MERGE_RUNNER',
+    hard_stop: false,
+    policy_violation: true,
+    retry_allowed: false,
+    file_type: fileType,
+    message: 'merge_report.md is emitted only by the governed Merge Runner transaction.',
+  };
+}
 
 function rejectProfessionalArtifactOwnership(fileType: string, context: any): any | null {
   const requiredAgent = PROFESSIONAL_ARTIFACT_OWNERS.get(String(fileType ?? ''));
@@ -1020,6 +1034,8 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   let fileType = args['file_type'] as string;
   let content = stringifyArtifactContent(args['content'], args['agent_content']);
 
+  const initialControlOwnerRejection = rejectControlToolOwnedArtifact(fileType);
+  if (initialControlOwnerRejection) return initialControlOwnerRejection;
   const initialExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (initialExecutorRejection) return initialExecutorRejection;
   const initialOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);
@@ -1052,6 +1068,8 @@ registerHandler('sf_artifact_write', async (args, context, deps) => {
   const inferred = inferCanonicalFileType(args);
   if (inferred) fileType = inferred;
 
+  const inferredControlOwnerRejection = rejectControlToolOwnedArtifact(fileType);
+  if (inferredControlOwnerRejection) return inferredControlOwnerRejection;
   const inferredExecutorRejection = rejectExecutorGovernanceArtifact(fileType, context);
   if (inferredExecutorRejection) return inferredExecutorRejection;
   const inferredOwnershipRejection = rejectProfessionalArtifactOwnership(fileType, context);

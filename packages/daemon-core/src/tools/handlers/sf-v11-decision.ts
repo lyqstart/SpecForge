@@ -27,6 +27,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { evaluateMergeReport } from '@specforge/types';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
 
 type DecisionType = 'auto_approved' | 'user_approved' | 'waived' | 'rejected';
@@ -99,11 +100,12 @@ async function readMergeReportSuccess(workItemDir: string): Promise<{
   const mergeReportPath = path.join(workItemDir, 'merge_report.md');
   try {
     const text = await fs.readFile(mergeReportPath, 'utf-8');
-    const statusMatch = text.match(/Status:\s*([^\r\n]+)/i);
-    const successfulMatch = text.match(/Successful:\s*(\d+)/i);
-    const status = String(statusMatch?.[1] ?? '').trim().toLowerCase();
-    const successful = successfulMatch ? Number(successfulMatch[1]) : 0;
-    return { success: status === 'success' && successful > 0, successful, status };
+    const verdict = evaluateMergeReport(text, path.basename(workItemDir));
+    return {
+      success: verdict.valid && verdict.status === 'success',
+      successful: verdict.successful ?? 0,
+      status: verdict.status,
+    };
   } catch {
     return { success: false, successful: 0, status: 'missing' };
   }

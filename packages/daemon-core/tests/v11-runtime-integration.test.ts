@@ -307,7 +307,6 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
       'work_item.json', 'intake.md', 'change_classification.md',
       'impact_analysis.md', 'trigger_result.json',
       'candidate_manifest.json', 'gate_summary.md',
-      'merge_report.md',
     ];
 
     for (const file of requiredFiles) {
@@ -320,9 +319,8 @@ describe('v1.1 Work Item Lifecycle（§4）', () => {
       fs.access(path.join(wiDir, 'evidence', 'evidence_manifest.json')),
     ).rejects.toBeTruthy();
 
-    // code_only_fast_path 的 merge_report 应该是 not_applicable
-    const mergeReport = await fs.readFile(path.join(wiDir, 'merge_report.md'), 'utf-8');
-    expect(mergeReport).toContain('not_applicable');
+    // merge_report 由 Merge Runner 独占生成，生命周期初始化器不得预写。
+    await expect(fs.access(path.join(wiDir, 'merge_report.md'))).rejects.toBeTruthy();
   });
 
   it('keeps lifecycle status out of work item metadata', async () => {

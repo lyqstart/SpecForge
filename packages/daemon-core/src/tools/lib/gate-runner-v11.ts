@@ -46,6 +46,7 @@ import {
 } from '@specforge/types/directory-layout';
 import {
   ContractRegistrySchema,
+  evaluateMergeReport,
   moduleCodeFromProjectSpecPath,
   normalizeModuleCodeReference,
   resolveSpecModuleIdentity,
@@ -1442,19 +1443,23 @@ registerGate('close_gate', 'hard_gate', true, async ctx => {
 registerGate('post_merge_gate', 'hard_gate', true, async ctx => {
   const checks: GateReportCheck[] = [];
 
-  // 1. merge_report.md 存在
+  // 1. merge_report.md exists, is current, and belongs to this Work Item.
   const mergeReportPath = path.join(ctx.workItemDir, 'merge_report.md');
-  let mergeReportExists = false;
+  let mergeReportValid = false;
+  let mergeReportDetails = 'merge_report.md not found';
   try {
-    await fs.access(mergeReportPath);
-    mergeReportExists = true;
+    const mergeReport = await fs.readFile(mergeReportPath, 'utf-8');
+    const verdict = evaluateMergeReport(mergeReport, ctx.workItemId);
+    mergeReportValid = verdict.valid && verdict.status === 'success';
+    mergeReportDetails = verdict.reason ?? `status=${verdict.status}`;
   } catch {
-    mergeReportExists = false;
+    mergeReportValid = false;
   }
   checks.push({
-    check_id: 'post_merge_report_exists',
-    description: 'merge_report.md exists',
-    passed: mergeReportExists,
+    check_id: 'post_merge_report_valid',
+    description: 'merge_report.md is a valid successful report for this Work Item',
+    passed: mergeReportValid,
+    details: mergeReportDetails,
   });
 
   // 2. spec_manifest 已更新（检查 project 目录存在）

@@ -6,6 +6,7 @@ import { promisify } from 'node:util';
 import {
   ContractRegistrySchema,
   extractModuleFromDdId,
+  evaluateMergeReport,
   isValidDesignDecisionId,
   resolveSpecModuleIdentity,
 } from '@specforge/types';
@@ -233,6 +234,7 @@ export async function readSuccessfulProjectSpecMergeHistoryEvidence(input: {
   const decision = await readJson(path.join(input.workItemDir, 'user_decision.json'));
   const reportPath = path.join(input.workItemDir, 'merge_report.md');
   const report = await readText(reportPath);
+  const mergeVerdict = evaluateMergeReport(report, input.workItemId);
 
   const baseVersion = String(candidate?.base_spec_version ?? '');
   const resultVersion = mergeReportField(report, 'Project Spec Version');
@@ -243,8 +245,7 @@ export async function readSuccessfulProjectSpecMergeHistoryEvidence(input: {
   if (candidate?.merge_required !== true) return null;
   if (String(decision?.work_item_id ?? '') !== input.workItemId) return null;
   if (!['approved', 'waived'].includes(String(decision?.decision_status ?? ''))) return null;
-  if (!new RegExp(`^Work Item:\\s*${input.workItemId}\\s*$`, 'im').test(report)) return null;
-  if (!/^Status:\s*success\s*$/im.test(report)) return null;
+  if (!mergeVerdict.valid || mergeVerdict.status !== 'success') return null;
   if (!/^- Spec Manifest Updated:\s*true\s*$/im.test(report)) return null;
   if (successfulMergeRowCount(report) <= 0) return null;
   if (baseNumber === null || resultNumber === null || resultNumber !== baseNumber + 1) return null;
@@ -2656,12 +2657,13 @@ export async function checkFormalVersionEligibility(input: {
   if (formalMergeRequired) {
     const mergePath = path.join(input.workItemDir, 'merge_report.md');
     const merge = await readText(mergePath);
+    const mergeVerdict = evaluateMergeReport(merge, input.workItemId);
     inputFiles.push(mergePath);
     addCheck(
       checks,
       'formal_spec_merge',
       'Formal Spec Candidate merge succeeded',
-      /^Status:\s*success\s*$/im.test(merge),
+      mergeVerdict.valid && mergeVerdict.status === 'success',
     );
 
     const decisionPath = path.join(input.workItemDir, 'user_decision.json');

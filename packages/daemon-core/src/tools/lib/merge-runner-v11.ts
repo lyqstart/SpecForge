@@ -27,6 +27,7 @@ import {
   moduleCodeFromProjectSpecPath,
   resolveSpecModuleIdentity,
   validateCurrentCandidateManifestValue,
+  MERGE_REPORT_CONTRACT_ID,
 } from '@specforge/types';
 import { readUnifiedContracts } from './contracts-registry.js';
 import {
@@ -1110,6 +1111,7 @@ async function generateMergeReport(input: MergeInput, result: MergeResult): Prom
   const lines: string[] = [
     '# Merge Report',
     '',
+    'Contract: ' + MERGE_REPORT_CONTRACT_ID,
     'Work Item: ' + input.workItemId,
     'Status: ' + status,
     'Timestamp: ' + new Date().toISOString(),

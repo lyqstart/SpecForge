@@ -211,7 +211,7 @@ async function createMinimalWorkItem(
   );
   await fs.writeFile(
     path.join(wiDir, 'merge_report.md'),
-    '# Merge Report\n\nStatus: not_applicable'
+    `# Merge Report\n\nContract: merge-report/v1\nWork Item: ${workItemId}\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n`
   );
   await fs.writeFile(
     path.join(wiDir, 'changed_files_audit.md'),

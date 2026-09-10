@@ -34,6 +34,7 @@ import { validateSemanticClosure, type SemanticClosureManifest } from './semanti
 import { validateSemanticClosureProvenance } from './semantic-closure-provenance.js';
 import { evaluateChangedFilesAuditVerdict } from './changed-files-audit-verdict.js';
 import { isWorkItemSpecArtifactPlaceholder } from '@specforge/types/directory-layout';
+import { evaluateMergeReport } from '@specforge/types';
 import { specMigrationCandidateRequiresTraceDelta } from './spec-migration-trace-contract.js';
 
 export interface CloseGateResult {
@@ -724,15 +725,15 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
 
   try {
     const mr = await fs.readFile(path.join(ctx.workItemDir, 'merge_report.md'), 'utf-8');
-    const statusMatch = mr.match(/^Status:\s*(\S+)/im);
-    const mergeStatus = statusMatch ? statusMatch[1].toLowerCase() : '';
-    const validMergeStatus = mergeStatus === 'success' || mergeStatus === 'not_applicable';
+    const verdict = evaluateMergeReport(mr, ctx.workItemId);
+    const validMergeStatus = verdict.valid &&
+      (verdict.status === 'success' || verdict.status === 'not_applicable');
     checks.push({
       check_id: 'close_merge_report_valid',
-      description: 'merge_report has valid Status line (success or not_applicable) (§11)',
+      description: 'merge_report satisfies its current contract and belongs to this Work Item (§11)',
       passed: validMergeStatus,
       severity: validMergeStatus ? undefined : 'error',
-      details: `status=${mergeStatus || 'missing'}`,
+      details: verdict.reason ?? `status=${verdict.status}`,
     });
   } catch {
     // Covered by required files.

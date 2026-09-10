@@ -715,7 +715,7 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
     );
     await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), changedFilesAudit(workItemId, ['src/main.ts', 'src/helper.ts']));
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
-    await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
+    await fs.writeFile(path.join(wiDir, 'merge_report.md'), `# Merge Report\n\nContract: merge-report/v1\nWork Item: ${workItemId}\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n`);
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', type: 'log', path: 'test.log' }] }));
     await recordUserDecision({
       workItemDir: wiDir,

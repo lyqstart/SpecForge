@@ -14,6 +14,7 @@ import {
   type SemanticClosureValidationResult,
   type SemanticEvidence,
 } from './semantic-closure-core.js';
+import { evaluateMergeReport } from '@specforge/types';
 
 export interface SemanticClosureBuildInput {
   workItemId: string;
@@ -79,9 +80,10 @@ function normalizeProjectIntegrationStatus(
   workItem: Record<string, any> | null | undefined,
   mergeReportMd: string | undefined
 ): string {
-  const lower = String(mergeReportMd ?? '').toLowerCase();
-  if (lower.includes('not_applicable') || lower.includes('not applicable')) return 'not_applicable';
-  if (lower.includes('merged') || lower.includes('success')) return 'merged';
+  const workItemId = String(workItem?.work_item_id ?? '').trim() || undefined;
+  const verdict = evaluateMergeReport(String(mergeReportMd ?? ''), workItemId);
+  if (verdict.valid && verdict.status === 'not_applicable') return 'not_applicable';
+  if (verdict.valid && verdict.status === 'success') return 'merged';
   if (workItem?.workflow_path === 'code_only_fast_path') return 'not_applicable';
   return 'unknown';
 }

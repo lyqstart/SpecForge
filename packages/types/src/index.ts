@@ -402,3 +402,11 @@ export {
   REQUESTABLE_TRANSITIONS,
   type SealTransitionEntry,
 } from "./seal-transitions.js";
+
+// ---- Merge Report — persistent artifact contract ----
+export {
+  MERGE_REPORT_CONTRACT_ID,
+  evaluateMergeReport,
+  type MergeReportStatus,
+  type MergeReportVerdict,
+} from './merge-report-contract.js';

@@ -82,7 +82,7 @@ describe('v1.1 Code-Only Fast Path Filesystem E2E', () => {
     }, null, 2));
 
     writeFileSync(join(wiDir, 'merge_report.md'),
-      `# Merge Report\n\n**Merge Status**: not_applicable\n**Work Item**: ${WI_ID}\n**Reason**: This WI does not change project specs.\n`);
+      `# Merge Report\n\nContract: merge-report/v1\nWork Item: ${WI_ID}\nStatus: not_applicable\n\n## Summary\n- Total entries: 0\n- Successful: 0\n- Failed: 0\n\nReason: This WI does not change project specs.\n`);
 
     writeFileSync(join(wiDir, 'verification_report.md'),
       `# Verification Report: ${WI_ID}\n\n## Summary\nAll checks passed.\nSee evidence_manifest.json for details.\n`);

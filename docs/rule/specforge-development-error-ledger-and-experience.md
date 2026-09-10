@@ -27586,3 +27586,103 @@ ERR1498_STATUS=CLOSED_RECEIPT_CONTEXT_CORRECTED
 ERR1499_STATUS=CLOSED_NO_MUTATION_SHORT_STAGE_COMMAND_SELECTED
 ```
 <!-- SPECFORGE_ERR1499_RECEIPT_STAGE_COMMAND_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1500_MERGE_REPORT_OWNER_RED_SEQUENCE:START -->
+### ERR-1500：Merge Report owner 边界未先执行预期红
+
+- **事实证据**：通用 Artifact Writer 的 owner 拒绝实现先于对应 owner 测试执行，故该边界没有可声称的已执行预期红；源码 diff 只能证明修复前存在通用写入路径，不能替代红灯运行证据。
+- **纠正**：不伪造预期红；补充 direct 与 disguised 两类回归并验证为绿。消费者 Work Item 身份绑定另有真实预期红：修复前 `7 tests / 1 failed`，修复后通过。
+- **经验沉淀**：owner/权限边界必须先让真实公开入口测试失败，再实施代码；若次序违反，必须如实登记而不能用事后测试倒推红灯。
+
+```text
+ERR1500_STATUS=CLOSED_PROCESS_VIOLATION_RECORDED_AND_GREEN_REGRESSION_ADDED
+OWNER_EXPECTED_RED=NOT_EXECUTED
+CONSUMER_IDENTITY_EXPECTED_RED=7_TESTS_1_FAILED
+```
+<!-- SPECFORGE_ERR1500_MERGE_REPORT_OWNER_RED_SEQUENCE:END -->
+
+<!-- SPECFORGE_ERR1501_MERGE_REPORT_TEST_IMPORT_AND_TOOL_INPUT:START -->
+### ERR-1501：Merge Report 测试入口与工具输入生成错误
+
+- **事实证据**：初始 owner 测试引用了不存在的 `registry.js`；另有两次工具 wrapper 输入在底层调用前解析失败。
+- **影响判断**：错误入口没有改变产品状态；改为真实 `ToolDispatcher` 公开入口后，目标测试与构建通过。
+
+```text
+ERR1501_STATUS=CLOSED_REAL_PUBLIC_ENTRY_USED_AND_REVALIDATED
+```
+<!-- SPECFORGE_ERR1501_MERGE_REPORT_TEST_IMPORT_AND_TOOL_INPUT:END -->
+
+<!-- SPECFORGE_ERR1502_MERGE_REPORT_BYPASS_TEST_SETUP:START -->
+### ERR-1502：Merge Report disguised-write 测试现场构造错误
+
+- **事实证据**：首次使用无效 Work Item ID `WI-TEST`，随后又传入公开工具不支持的 `output_path`，分别触发 ID/不存在校验和路径解析错误，未到达 owner 边界。
+- **纠正**：重建真实临时 Work Item，通过 `file_type=work_log` 与 `run_id=merge-report` 形成规范路径推导，确认二次 canonical 类型检查拒绝伪装写入。
+
+```text
+ERR1502_STATUS=CLOSED_REAL_API_SETUP_RECONSTRUCTED_AND_OWNER_REJECTION_VERIFIED
+```
+<!-- SPECFORGE_ERR1502_MERGE_REPORT_BYPASS_TEST_SETUP:END -->
+
+<!-- SPECFORGE_ERR1503_MERGE_REPORT_CURRENT_FIXTURES:START -->
+### ERR-1503：严格 Merge Report 契约揭示现役测试夹具未表达当前格式
+
+- **事实证据**：首次 Daemon 完整回归有 `9 files / 34 tests` 失败；逐项核对显示均由正向测试夹具缺少 `merge-report/v1`、Work Item 身份或合并计数引起，不是产品调用链新增失败。
+- **纠正**：仅将仍在维护的正向夹具升级到当前正式契约，没有保留旧格式兼容分支、删除测试或降低断言。升级后相关集合 `9 files / 127 tests`、Daemon `195 files / 1740 tests` 及根级全量回归全部通过。
+
+```text
+ERR1503_STATUS=CLOSED_CURRENT_FIXTURES_ALIGNED_NO_LEGACY_COMPATIBILITY
+LEGACY_COMPATIBILITY_ADDED=NO
+```
+<!-- SPECFORGE_ERR1503_MERGE_REPORT_CURRENT_FIXTURES:END -->
+
+<!-- SPECFORGE_ERR1490_MERGE_REPORT_AUTHORITY_CLOSURE:START -->
+### ERR-1490 closure：Merge Report 当前格式与 owner 契约完成收敛
+
+- **权威决策**：V6 design 已与当前完整运行链对齐为 `merge_report.md`；这是当前发布边界，不新增 `merge_report.json` 或旧项目兼容路径。
+- **owner 闭环**：Merge Runner 是唯一生产者；生命周期不再预写；通用 Artifact Writer 拒绝直接和伪装写入；所有正式消费者使用 `@specforge/types/merge-report-contract` 校验契约、Work Item 身份、状态与计数。
+- **验证证据**：Merge Report owner `1 file / 4 tests`、相关消费者夹具 `9 files / 127 tests`、Workflow Runtime `71 files / 1564 tests`、Daemon `195 files / 1740 tests`、根构建与根级顺序全量回归均通过。
+
+```text
+ERR1490_STATUS=CLOSED_AUTHORITY_AND_OWNER_CONTRACT_VALIDATED
+ERR1013_MERGE_REPORT_STATUS=CLOSED
+ERR1013_STATUS=OPEN_OBSERVABILITY_OWNER_FAMILY_REMAINS
+OPEN_ERRORS=ERR-1013
+NEXT_LEGAL_ACTION=RUN_FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_CHECKPOINT_COMMIT
+```
+<!-- SPECFORGE_ERR1490_MERGE_REPORT_AUTHORITY_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1504_POST_DOCUMENT_TEST_ENTRY:START -->
+### ERR-1504：首次 post-document 治理测试使用错误相对入口
+
+- **事实证据**：从 `packages/daemon-core` 执行时错误使用根目录形式的 `..\\..\\node_modules\\.bin\\vitest.exe`，PowerShell 在测试启动前报告命令不存在。
+- **影响判断**：没有测试或产品写操作发生；只读定位包内真实入口后，以 `.\\node_modules\\.bin\\vitest.exe` 重跑，结果为 `10 files / 79 tests passed`。
+
+```text
+ERR1504_STATUS=CLOSED_REAL_PACKAGE_TEST_ENTRY_USED
+POST_DOCUMENT_GOVERNANCE=10_FILES_79_TESTS_PASS
+```
+<!-- SPECFORGE_ERR1504_POST_DOCUMENT_TEST_ENTRY:END -->
+
+<!-- SPECFORGE_ERR1505_TYPES_BUILD_ORDER:START -->
+### ERR-1505：共享契约源码变更后未先重建依赖产物
+
+- **事实证据**：收紧 `@specforge/types` 计数一致性后直接运行 Daemon 定向测试，Daemon 按 package exports 读取旧 `dist`，新增断言因此得到旧解析结果并出现 `2 files / 1 failed`。
+- **纠正**：先执行 types TypeScript 构建，再原样重跑目标集合，结果为 `2 files / 11 tests passed`。
+- **经验沉淀**：跨包共享契约改变后，消费者测试前必须先重建生产包，避免把陈旧构建产物误判为源码行为。
+
+```text
+ERR1505_STATUS=CLOSED_DEPENDENCY_REBUILT_TARGET_GREEN
+TARGET_AFTER_REBUILD=2_FILES_11_TESTS_PASS
+```
+<!-- SPECFORGE_ERR1505_TYPES_BUILD_ORDER:END -->
+
+<!-- SPECFORGE_ERR1506_MERGE_REPORT_STAGE_PERMISSION:START -->
+### ERR-1506：Merge Report 检查点首次暂存无法创建 Git index lock
+
+- **事实证据**：提交前执行 `git add -u` 及两个新文件的精确暂存时，均返回 `Unable to create .git/index.lock: Permission denied`；随后状态显示没有文件进入暂存区。
+- **影响判断**：产品与治理文件内容未改变；历史设计备份仍为排除的未跟踪文件。按已有 Git 暂存授权在沙箱外重试，并在提交前复核 staged diff。
+
+```text
+ERR1506_STATUS=CLOSED_EXACT_STAGE_SUCCEEDED_OUTSIDE_SANDBOX
+```
+<!-- SPECFORGE_ERR1506_MERGE_REPORT_STAGE_PERMISSION:END -->

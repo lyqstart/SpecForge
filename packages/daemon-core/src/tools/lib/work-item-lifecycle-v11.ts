@@ -218,17 +218,6 @@ export async function initializeClosureFiles(
     '> TODO: 由 Gate Runner 生成', '',
   ].join('\n'));
 
-  // merge_report.md
-  const mergeStatus = isCodeOnly || isTaskChange ? 'not_applicable' : 'pending';
-  await ensureFile(path.join(workItemDir, 'merge_report.md'), [
-    '# Merge Report', '',
-    `Work Item: ${workItemId}`,
-    `Status: ${mergeStatus}`, '',
-    isCodeOnly ? 'Reason: This WI does not change project specs (code_only_fast_path).' : '',
-    isTaskChange ? 'Reason: This WI does not change formal specs (task_change_path).' : '',
-    '',
-  ].filter(Boolean).join('\n'));
-
 }
 
 // ---------------------------------------------------------------------------

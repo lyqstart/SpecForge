@@ -16,6 +16,7 @@ import * as fs from 'node:fs/promises';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
 import { guardHardStop, setHardStop } from '../lib/hard-stop-latch';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import { evaluateMergeReport } from '@specforge/types';
 
 async function readJsonIfExists(filePath: string): Promise<any | null> {
   try {
@@ -31,11 +32,6 @@ async function readTextIfExists(filePath: string): Promise<string | null> {
   } catch {
     return null;
   }
-}
-
-function parseSuccessfulCount(report: string): number {
-  const match = report.match(/^-\s*Successful:\s*(\d+)\s*$/m) || report.match(/^Successful:\s*(\d+)\s*$/m);
-  return match ? Number(match[1]) : 0;
 }
 
 function workflowTypeFromPath(workflowPath: string | undefined): string {
@@ -78,11 +74,9 @@ async function assertMergeSucceededBeforeCode(workItemDir: string): Promise<{
   if (!mergeReport) {
     throw new Error('MERGE_REPORT_REQUIRED_BEFORE_CODE_PERMISSION: non-code-only workflow must merge specs before enabling code writes');
   }
-  if (!/^Status:\s*success\s*$/m.test(mergeReport)) {
-    throw new Error('MERGE_SUCCESS_REQUIRED_BEFORE_CODE_PERMISSION: merge_report.md status is not success');
-  }
-  if (parseSuccessfulCount(mergeReport) <= 0) {
-    throw new Error('MERGE_SUCCESSFUL_ENTRIES_REQUIRED_BEFORE_CODE_PERMISSION: merge_report.md has no successful merged entries');
+  const verdict = evaluateMergeReport(mergeReport, path.basename(workItemDir));
+  if (!verdict.valid || verdict.status !== 'success') {
+    throw new Error(`MERGE_SUCCESS_REQUIRED_BEFORE_CODE_PERMISSION: ${verdict.reason ?? `status is ${verdict.status}`}`);
   }
 
   return { workflowPath, workflowType, mergeReportStatus: 'success' };

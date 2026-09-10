@@ -1102,7 +1102,7 @@ type BlobRef = `blob://${string}`;   // 格式：blob://<sha256 hex>
 ├─ gates/
 │  └─ attempts/             (不可变 Gate attempts)
 ├─ user_decision.json       (User Decision Recorder 独占)
-├─ merge_report.json        (Merge Runner 独占)
+├─ merge_report.md          (Merge Runner 独占；当前契约必须绑定 Work Item、状态与合并摘要)
 └─ evidence/                (Verification / Close 证据与 manifest)
 ```
 
