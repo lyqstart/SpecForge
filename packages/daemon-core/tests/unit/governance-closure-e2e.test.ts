@@ -110,7 +110,7 @@ async function createFullWorkItem(
   if (!skip.has('changed_files_audit.md'))
     await fs.writeFile(
       path.join(wiDir, 'changed_files_audit.md'),
-      '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: work_item.actual_changed_files\n\nAll files in scope.',
+      `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n- Data Source: work_item.actual_changed_files\n`,
     );
   if (!skip.has('evidence/evidence_manifest.json'))
     await fs.writeFile(
@@ -748,7 +748,7 @@ describe('D. changed_files_audit data integrity', () => {
     // Audit should contain file entries
     expect(auditMd).toContain('src/index.ts');
     expect(auditMd).toContain('src/helper.ts');
-    expect(auditMd).toContain('PASSED');
+    expect(auditMd).toContain('## Result: PASS');
     expect(auditMd).toContain('Data Source');
     expect(auditMd).toContain('work_item.actual_changed_files');
     // Should show total count
@@ -780,7 +780,7 @@ describe('D. changed_files_audit data integrity', () => {
     expect(result.success).toBe(false);
 
     const auditMd = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'), 'utf-8');
-    expect(auditMd).toContain('FAILED');
+    expect(auditMd).toContain('## Result: FAIL');
     expect(auditMd).toContain('package.json');
     expect(auditMd).toContain('Out of scope');
     expect(auditMd).toContain('Violations');
@@ -807,7 +807,7 @@ describe('D. changed_files_audit data integrity', () => {
     expect(result.success).toBe(false);
 
     const auditMd = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'), 'utf-8');
-    expect(auditMd).toContain('FAILED');
+    expect(auditMd).toContain('## Result: FAIL');
     expect(auditMd).toContain('spec_write_by_non_merge_runner');
   });
 

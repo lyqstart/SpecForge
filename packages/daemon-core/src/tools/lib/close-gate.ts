@@ -283,7 +283,9 @@ function isNoCodeAuditAccepted(
   wi: Record<string, unknown> | null
 ): boolean {
   if (!auditText || !isNoCodeAuditText(auditText) || !isNoCodeWorkflow(wi)) return false;
-  const verdict = evaluateChangedFilesAuditVerdict(auditText);
+  const verdict = evaluateChangedFilesAuditVerdict(auditText, {
+    expectedWorkItemId: String(wi?.work_item_id ?? ''),
+  });
   return verdict.passed;
 }
 
@@ -737,7 +739,9 @@ export async function runCloseGate(ctx: GateContext): Promise<CloseGateResult> {
   }
 
   if (changedFilesAuditText !== null) {
-    const verdict = evaluateChangedFilesAuditVerdict(changedFilesAuditText);
+    const verdict = evaluateChangedFilesAuditVerdict(changedFilesAuditText, {
+      expectedWorkItemId: ctx.workItemId,
+    });
     checks.push({
       check_id: 'close_changed_files_audit_passed',
       description: noCodeAuditAccepted

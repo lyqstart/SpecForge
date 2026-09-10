@@ -40,7 +40,7 @@ describe('semantic closure provenance', () => {
       path.join(workItemDir, 'evidence', 'evidence_manifest.json'),
       '{"entries":[]}\n'
     );
-    await fs.writeFile(path.join(workItemDir, 'changed_files_audit.md'), 'Result: PASS\n');
+    await fs.writeFile(path.join(workItemDir, 'changed_files_audit.md'), '# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: WI-9201\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n');
   });
 
   afterEach(async () => {

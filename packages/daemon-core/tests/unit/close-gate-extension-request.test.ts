@@ -103,7 +103,7 @@ async function createFullWIDir(tmpDir: string, workItemId: string): Promise<stri
     '# Verification\nEvidence EV-1 passed.'
   );
   await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
-  await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Audit\n- Status: PASSED');
+  await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`);
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
     JSON.stringify({

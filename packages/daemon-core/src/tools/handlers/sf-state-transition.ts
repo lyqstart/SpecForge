@@ -657,7 +657,7 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
         retry_allowed: true,
       };
     }
-    const auditCheck = parseChangedFilesAuditPass(auditText);
+    const auditCheck = parseChangedFilesAuditPass(auditText, workItemId);
     if (!auditCheck.passed) {
       return {
         success: false,

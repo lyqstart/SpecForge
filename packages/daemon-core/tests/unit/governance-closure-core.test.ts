@@ -73,8 +73,14 @@ function makeV11Workflow() {
 
 async function createWorkItemEvidence(wiDir: string): Promise<void> {
   await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
-  await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Audit\n- Status: PASSED\n');
+  const workItemId = path.basename(wiDir);
+  await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), changedFilesAudit(workItemId));
   await fs.writeFile(path.join(wiDir, 'gates', 'close_gate.json'), JSON.stringify({ status: 'passed' }));
+}
+
+function changedFilesAudit(workItemId: string, files: string[] = []): string {
+  const entries = files.map(file => `- [modify] ${file} → in_scope`).join('\n');
+  return `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: ${files.length}\n- In scope: ${files.length}\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n- Data Source: write_guard_log.jsonl\n\n## Entries\n\n${entries}\n`;
 }
 
 // ---------------------------------------------------------------------------
@@ -187,7 +193,7 @@ describe('A. WorkflowEngine.transitionFull — seal transition enforcement (core
     const wiDir = path.join(tmpDir, 'WI-005');
     await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
     await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary');
-    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (3 entries, 2 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |\n| src/helper.ts | create | in_scope |\n\n## Write Guard Violations\n\n| Timestamp | Path | Reason |\n|-----------|------|--------|\n| T3 | src/unauthorized.ts | out_of_scope |');
+    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), changedFilesAudit('WI-005', ['src/main.ts', 'src/helper.ts']));
     await fs.writeFile(path.join(wiDir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
 
     await engine.transitionFull({
@@ -210,7 +216,7 @@ describe('A. WorkflowEngine.transitionFull — seal transition enforcement (core
     const wiDir = path.join(tmpDir, 'WI-006');
     await fs.mkdir(path.join(wiDir, 'gates'), { recursive: true });
     await fs.writeFile(path.join(wiDir, 'gate_summary.md'), '# Gate Summary');
-    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (3 entries, 2 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |\n| src/helper.ts | create | in_scope |\n\n## Write Guard Violations\n\n| Timestamp | Path | Reason |\n|-----------|------|--------|\n| T3 | src/unauthorized.ts | out_of_scope |');
+    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), changedFilesAudit('WI-006', ['src/main.ts', 'src/helper.ts']));
     await fs.writeFile(path.join(wiDir, 'gates', 'gate_summary_gate.json'), JSON.stringify({ status: 'passed' }));
 
     await engine.transitionFull({
@@ -707,7 +713,7 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
       path.join(wiDir, 'gates', 'formal_version_gate.json'),
       JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }),
     );
-    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (3 entries, 2 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |\n| src/helper.ts | create | in_scope |');
+    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), changedFilesAudit(workItemId, ['src/main.ts', 'src/helper.ts']));
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', type: 'log', path: 'test.log' }] }));
@@ -752,7 +758,7 @@ describe('D. Daemon-level E2E — code_only_fast_path lifecycle', () => {
     expect(auditMd).toContain('write_guard_log.jsonl');
     expect(auditMd).toContain('src/main.ts');
     expect(auditMd).toContain('src/helper.ts');
-    expect(auditMd).toContain('PASSED');
+    expect(auditMd).toContain('## Result: PASS');
     // Should NOT contain unauthorized file in File Entries table (only allowed writes)
     // But it MAY appear in Write Guard Violations section (that's expected)
     const fileEntriesSection = auditMd.split('## File Entries')[1] ?? '';

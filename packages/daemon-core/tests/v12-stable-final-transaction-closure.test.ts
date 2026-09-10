@@ -71,6 +71,8 @@ describe("v1.2 stable final transaction closure", () => {
     const auditText = [
       "# Changed Files Audit",
       "",
+      "Contract: changed-files-audit/v1",
+      "Work Item: WI-TEST",
       "## Result: FAIL",
       "",
       "- Out of scope: 1",
@@ -118,7 +120,7 @@ describe("v1.2 stable final transaction closure", () => {
 
     expect(runtimeGuardSource).toContain("parseChangedFilesAuditPass");
     expect(runtimeGuardSource).toContain("parseChangedFilesAuditVerdictPass");
-    expect(runtimeGuardSource).toContain("return parseChangedFilesAuditVerdictPass(auditText)");
+    expect(runtimeGuardSource).toContain("return parseChangedFilesAuditVerdictPass(auditText, { expectedWorkItemId })");
     expect(auditVerdictSource).toContain("Blocked write attempts");
   });
 });

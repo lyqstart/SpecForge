@@ -117,7 +117,7 @@ describe('verification governance contract', () => {
     await fs.writeFile(path.join(workItemDir, 'merge_report.md'), 'Status: not_applicable\n');
     await fs.writeFile(
       path.join(workItemDir, 'changed_files_audit.md'),
-      'Result: PASS\n- Out of scope: 0\n- Violations: 0\n'
+      `Contract: changed-files-audit/v1\nWork Item: ${workItemId}\nResult: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`
     );
     semanticClosure.provenance = await captureSemanticClosureProvenance({
       workItemDir,

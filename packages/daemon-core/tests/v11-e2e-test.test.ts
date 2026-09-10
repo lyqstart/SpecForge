@@ -236,7 +236,7 @@ describe('§22 End-to-end: requirement_change_path full chain', () => {
     expect(audit.passed).toBe(true);
     await fs.writeFile(
       path.join(wiDir, 'changed_files_audit.md'),
-      '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: explicit expected/actual comparison\n',
+      `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${wiId}\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n- Data Source: explicit expected/actual comparison\n`,
       'utf-8',
     );
 

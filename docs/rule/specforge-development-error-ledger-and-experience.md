@@ -27453,3 +27453,114 @@ POST_RECEIPT_GOVERNANCE=13_FILES_84_TESTS_PASS
 NEXT_LEGAL_ACTION=STAGE_EXACT_THREE_RECEIPT_FILES_AND_CREATE_LOCAL_COMMIT
 ```
 <!-- SPECFORGE_ERR1488_POST_RECEIPT_FINALIZATION:END -->
+
+<!-- SPECFORGE_ERR1489_CHANGED_FILES_AUDIT_DURABILITY:START -->
+### ERR-1489：Changed Files Audit 正常路径吞掉持久化失败
+
+- **事实证据**：`sf-changed-files-audit.ts` 的正常审计路径捕获 `changed_files_audit.md` 写入异常后不返回错误，随后仍返回 `success: true`；同一文件的 no-code 路径则要求写入成功后才返回结果。
+- **风险**：调用方可能收到通过结果，但 Work Item 中缺少或仍保留旧审计报告，无法形成可复核的可信回归证据。
+- **能力判断**：`RUNTIME_DEFECT`。
+- **修复边界**：先以真实 handler 证明写入失败时当前错误报成功，再令正常路径在持久化失败时 fail closed；依据当前版本不兼容旧项目的已批准发布边界，不保留旧审计格式旁路。
+
+```text
+ERR1489_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+PARENT_ERROR=ERR-1013
+NEXT_LEGAL_ACTION=COMPLETE_CHANGED_FILES_AUDIT_OWNER_VALIDATION
+```
+<!-- SPECFORGE_ERR1489_CHANGED_FILES_AUDIT_DURABILITY:END -->
+
+<!-- SPECFORGE_ERR1490_MERGE_REPORT_AUTHORITY_CONFLICT:START -->
+### ERR-1490：V6 Merge Report 路径权威与当前完整实现冲突
+
+- **权威证据**：`.kiro/specs/v6-architecture-overview/design.md` 的 Runtime 目录树声明 `merge_report.json` 且由 Merge Runner 独占。
+- **实现证据**：当前 Daemon Merge Runner、Work Item 生命周期、Close/Permission/Decision/Project Governance 消费者与现役回归统一使用 `merge_report.md`；Requirements 未另行规定扩展名。
+- **能力判断**：`CONTRACT_CONFLICT`。V6 design 是应然架构权威，现有 Runtime 全链路是实然架构证据；在确认当前格式前不得直接修改任一侧掩盖冲突。
+- **修复边界**：Changed Files Audit 所有者闭环完成后，先确认当前正式格式并修正权威冲突，再收敛 Merge Runner 独占写入和消费者契约。
+
+```text
+ERR1490_STATUS=OPEN_CONTRACT_CONFLICT
+PARENT_ERROR=ERR-1013
+NEXT_LEGAL_ACTION=RESOLVE_MERGE_REPORT_FORMAT_AUTHORITY_AFTER_AUDIT_OWNER_COMMIT
+```
+<!-- SPECFORGE_ERR1490_MERGE_REPORT_AUTHORITY_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1491_BUN_TEMP_STARTUP:START -->
+### ERR-1491：Bun 临时目录权限导致回归未启动
+
+- **事实证据**：两次 Daemon 定向回归在测试收集前因临时目录 `EPERM` 退出；没有测试执行，也没有产品状态变更。
+- **处理结果**：改用仓库现有 Vitest 可执行入口后测试正常启动；该事件归类为执行环境故障，不作为产品失败证据。
+
+```text
+ERR1491_STATUS=CLOSED_ENVIRONMENT_WORKAROUND_VERIFIED
+```
+<!-- SPECFORGE_ERR1491_BUN_TEMP_STARTUP:END -->
+
+<!-- SPECFORGE_ERR1492_LEDGER_TYPO:START -->
+### ERR-1492：新增错误账本标题前缀拼写错误
+
+- **事实证据**：首次追加 ERR-1490 时标题被误写为 `ERRC-1490`；检查后已更正，编号、事实内容和状态未发生变化。
+
+```text
+ERR1492_STATUS=CLOSED_TYPO_CORRECTED
+```
+<!-- SPECFORGE_ERR1492_LEDGER_TYPO:END -->
+
+<!-- SPECFORGE_ERR1493_CHANGED_FILES_AUDIT_EXPECTED_RED_GREEN:START -->
+### ERR-1493：Changed Files Audit 持久化与身份绑定预期红转绿
+
+- **持久化预期红**：新增真实 handler 用例令目标路径不可写；修复前 15 项中 1 项失败，证明 handler 错误返回成功。
+- **身份绑定预期红**：为 `WI-TEST` 提供声明 `WI-OTHER` 的通过审计；修复前 6 项中 1 项失败，证明消费者未校验 Work Item 身份。
+- **修复结果**：统一使用 `changed-files-audit/v1` 契约；生产者写入契约和 Work Item；消费者校验契约、身份、唯一结果与必要计数；写入失败记录 `CHANGED_FILES_AUDIT_WRITE_FAILED` HardStop 并 fail closed。
+- **回归证据**：Daemon 完整回归 `194 test files / 1735 tests passed`。
+
+```text
+ERR1493_STATUS=CLOSED_DAEMON_FULL_REGRESSION_PASS
+PARENT_ERROR=ERR-1013
+LEGACY_COMPATIBILITY_ADDED=NO
+DAEMON_REGRESSION=194_FILES_1735_TESTS_PASS
+```
+<!-- SPECFORGE_ERR1493_CHANGED_FILES_AUDIT_EXPECTED_RED_GREEN:END -->
+
+<!-- SPECFORGE_ERR1494_AUDIT_ORCHESTRATION_ERRORS:START -->
+### ERR-1494：Changed Files Audit 修改期间的命令编排错误
+
+- **事实证据**：一次测试命令使用不存在的工作目录并在 CreateProcess 阶段失败；两次组合补丁脚本分别在 JavaScript 解析阶段和未定义函数调用阶段失败；两次畸形或已失配的补丁被 `apply_patch` 拒绝。
+- **影响判断**：这些命令均在目标测试或补丁应用前退出，未改变产品状态；后续通过精确补丁、diff 检查、Daemon build 和完整回归重新验证实际工作区。
+- **经验沉淀**：复杂修改拆分为短小、单一职责的补丁；测试工作目录先以只读命令确认；补丁失败后先重新读取上下文，不盲目重放。
+
+```text
+ERR1494_STATUS=CLOSED_NO_PRODUCT_MUTATION_REVALIDATED
+```
+<!-- SPECFORGE_ERR1494_AUDIT_ORCHESTRATION_ERRORS:END -->
+
+<!-- SPECFORGE_ERR1495_TOOL_INPUT_SYNTAX:START -->
+### ERR-1495：Audit 收尾期间两次工具输入语法错误
+
+- **事实证据**：一次只读检查调用因生成了重复赋值而在 JavaScript 解析前退出；一次轮询调用输入了未定义标识符并在调用前退出。
+- **影响判断**：两次均未调用底层命令、未修改文件；随后使用短小单调用完成同一检查和轮询。
+
+```text
+ERR1495_STATUS=CLOSED_NO_TOOL_CALL_NO_MUTATION
+```
+<!-- SPECFORGE_ERR1495_TOOL_INPUT_SYNTAX:END -->
+
+<!-- SPECFORGE_ERR1496_GIT_INDEX_LOCK_PERMISSION:START -->
+### ERR-1496：Audit 检查点首次暂存无法创建 Git index lock
+
+- **事实证据**：提交前精确 `git add` 返回 `Unable to create .git/index.lock: Permission denied`，没有文件进入暂存区。
+- **影响判断**：工作区内容未改变；这是 Git 元数据写权限边界，不是产品回归失败。按已批准的精确 `git add` 权限在沙箱外重试，仍排除未跟踪历史备份。
+
+```text
+ERR1496_STATUS=CLOSED_EXACT_STAGE_SUCCEEDED_OUTSIDE_SANDBOX
+```
+<!-- SPECFORGE_ERR1496_GIT_INDEX_LOCK_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR1497_LEDGER_STATUS_PATCH_CONTEXT:START -->
+### ERR-1497：ERR-1496 状态收尾补丁上下文两次生成错误
+
+- **事实证据**：两次补丁包含不存在的上下文并被 `apply_patch` 拒绝；均未修改文件。重新读取文件尾后以真实上下文完成状态更新。
+
+```text
+ERR1497_STATUS=CLOSED_REREAD_CONTEXT_AND_APPLIED
+```
+<!-- SPECFORGE_ERR1497_LEDGER_STATUS_PATCH_CONTEXT:END -->

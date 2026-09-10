@@ -62,6 +62,7 @@ import {
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { CHANGED_FILES_AUDIT_CONTRACT_ID } from "../lib/changed-files-audit-verdict.js";
 
 interface FilesystemDiffSummary {
   baseline_timestamp?: string;
@@ -538,7 +539,12 @@ async function refreshChangedFilesAuditAfterOperationNormalization(
   if (!preserveExistingPassedReport || !auditResult.passed) {
     await fs.writeFile(
       changedFilesPath,
-      generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource),
+      generateChangedFilesAuditMd(
+        workItemId,
+        auditResult,
+        auditDataSource,
+        writeGuardSummary.blockedWrites.length,
+      ),
       "utf-8",
     );
   }
@@ -936,7 +942,12 @@ registerHandler("sf_close_gate", async (args, context, deps) => {
       result.changed_files_audit = auditResult;
       await fs.writeFile(
         changedFilesPath,
-        generateChangedFilesAuditMd(workItemId, auditResult, auditDataSource),
+        generateChangedFilesAuditMd(
+          workItemId,
+          auditResult,
+          auditDataSource,
+          writeGuardSummary.blockedWrites.length,
+        ),
         "utf-8",
       );
     } else {
@@ -1037,15 +1048,17 @@ function generateChangedFilesAuditMd(
   workItemId: string,
   audit: ChangedFilesAuditResult,
   dataSource?: string,
+  blockedWriteAttempts = 0,
 ): string {
   const violations = Array.isArray(audit.violations) ? audit.violations : [];
   const entries = Array.isArray(audit.entries) ? audit.entries : [];
   const lines: string[] = [
     "# Changed Files Audit",
     "",
-    `- Work Item: ${workItemId}`,
+    `Contract: ${CHANGED_FILES_AUDIT_CONTRACT_ID}`,
+    `Work Item: ${workItemId}`,
     `- Timestamp: ${new Date().toISOString()}`,
-    `- Status: ${audit.passed ? "PASSED" : "FAILED"}`,
+    `## Result: ${audit.passed ? "PASS" : "FAIL"}`,
     `- Data Source: ${dataSource ?? "pre-existing audit file"}`,
     `- Ignored Runtime Files: ${audit.ignored_runtime_files ?? 0}`,
     "",
@@ -1054,8 +1067,10 @@ function generateChangedFilesAuditMd(
     `- Total files: ${audit.total_files ?? entries.length}`,
     `- In scope: ${audit.in_scope ?? 0}`,
     `- Out of scope: ${audit.out_of_scope ?? 0}`,
+    `- Violations: ${violations.length}`,
     `- Spec writes: ${audit.spec_writes ?? 0}`,
     `- Side effects: ${audit.side_effects ?? 0}`,
+    `- Blocked write attempts: ${blockedWriteAttempts}`,
     "",
   ];
 

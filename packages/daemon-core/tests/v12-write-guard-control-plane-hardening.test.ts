@@ -14,12 +14,12 @@ describe('v1.2 write guard control plane hardening', () => {
   });
 
   it('rejects failed changed_files_audit before implementation_done', () => {
-    const result = parseChangedFilesAuditPass('# Changed Files Audit\n\n## Result: FAIL\n\n- Out of scope: 1\n- Violations: 1\n- Blocked write attempts: 0\n');
+    const result = parseChangedFilesAuditPass('# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: WI-TEST\n## Result: FAIL\n\n- Out of scope: 1\n- Violations: 1\n- Blocked write attempts: 0\n', 'WI-TEST');
     expect(result.passed).toBe(false);
   });
 
   it('accepts clean changed_files_audit before implementation_done', () => {
-    const result = parseChangedFilesAuditPass('# Changed Files Audit\n\n## Result: PASS\n\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n');
+    const result = parseChangedFilesAuditPass('# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: WI-TEST\n## Result: PASS\n\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n', 'WI-TEST');
     expect(result.passed).toBe(true);
   });
 });

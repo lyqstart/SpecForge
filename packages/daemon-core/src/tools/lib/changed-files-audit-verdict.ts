@@ -3,28 +3,32 @@
  *
  * Single authority for interpreting changed_files_audit results.
  *
- * v1.2.4 hotfix:
- * - Do not let governance consumers independently interpret raw
- *   blocked_write_attempts.
- * - Historical blocked attempts are allowed only when the audit report has the
- *   v1.2.3 resolved/unresolved classification fields and unresolved=0.
- * - Legacy reports with blocked_write_attempts>0 but no resolved/unresolved
- *   classification remain failing for safety.
+ * Current report contract:
+ * - Every report declares changed-files-audit/v1 and its Work Item identity.
+ * - Governance consumers bind that identity to their selected Work Item.
+ * - PASS requires safety summary counts; blocked attempts additionally require
+ *   explicit resolved/unresolved classification.
  */
 
 export type ChangedFilesAuditResultLabel = 'PASS' | 'FAIL' | 'UNKNOWN';
+export const CHANGED_FILES_AUDIT_CONTRACT_ID = 'changed-files-audit/v1' as const;
 
 export interface ChangedFilesAuditVerdict {
   passed: boolean;
   result: ChangedFilesAuditResultLabel;
   reason?: string;
+  contract_id: string | null;
+  work_item_id: string | null;
   out_of_scope: number | null;
   violations: number | null;
   blocked_write_attempts: number | null;
   historical_resolved_blocked_write_attempts: number | null;
   unresolved_blocked_write_attempts: number | null;
-  is_legacy_report: boolean;
-  legacy_blocked_write_failure: boolean;
+  incomplete_blocked_write_classification: boolean;
+}
+
+export interface ChangedFilesAuditVerdictOptions {
+  expectedWorkItemId?: string;
 }
 
 function readFirstNumber(text: string, patterns: RegExp[]): number | null {
@@ -36,16 +40,7 @@ function readFirstNumber(text: string, patterns: RegExp[]): number | null {
 }
 
 function readResult(text: string): ChangedFilesAuditResultLabel {
-  // The changed_files_audit.md report is emitted with a human-friendly
-  // "- Status: PASSED/FAILED" label (see generateChangedFilesAuditMd), while
-  // older/other producers use the canonical "Result: PASS/FAIL". As the single
-  // authority for interpreting the report, this parser must recognize BOTH so a
-  // genuinely-passing audit is not misread as UNKNOWN (which previously blocked
-  // close_gate with "changed_files_audit result is not PASS").
-  //
-  // Note: match PASSED before PASS / FAILED before FAIL so the \b boundary does
-  // not stop at the shorter alternative.
-  const label = /(?:^|\n)\s*[-#>\s]*\s*(?:Result|Status)\s*:\s*(PASSED|PASS|FAILED|FAIL)\b/i;
+  const label = /(?:^|\n)\s*[-#>\s]*\s*Result\s*:\s*(PASS|FAIL)\b/i;
   const match = label.exec(text);
   if (match) {
     return /^FAIL/i.test(match[1]) ? 'FAIL' : 'PASS';
@@ -53,7 +48,10 @@ function readResult(text: string): ChangedFilesAuditResultLabel {
   return 'UNKNOWN';
 }
 
-export function evaluateChangedFilesAuditVerdict(auditText: string): ChangedFilesAuditVerdict {
+export function evaluateChangedFilesAuditVerdict(
+  auditText: string,
+  options: ChangedFilesAuditVerdictOptions = {},
+): ChangedFilesAuditVerdict {
   const text = String(auditText ?? '');
 
   if (!text.trim()) {
@@ -61,16 +59,19 @@ export function evaluateChangedFilesAuditVerdict(auditText: string): ChangedFile
       passed: false,
       result: 'UNKNOWN',
       reason: 'changed_files_audit.md is empty',
+      contract_id: null,
+      work_item_id: null,
       out_of_scope: null,
       violations: null,
       blocked_write_attempts: null,
       historical_resolved_blocked_write_attempts: null,
       unresolved_blocked_write_attempts: null,
-      is_legacy_report: true,
-      legacy_blocked_write_failure: false,
+      incomplete_blocked_write_classification: false,
     };
   }
 
+  const contractId = /(?:^|\n)\s*Contract\s*:\s*([^\r\n]+)\s*$/im.exec(text)?.[1]?.trim() ?? null;
+  const workItemId = /(?:^|\n)\s*Work Item\s*:\s*([^\r\n]+)\s*$/im.exec(text)?.[1]?.trim() ?? null;
   const result = readResult(text);
   const outOfScope = readFirstNumber(text, [
     /-\s*Out of scope:\s*([0-9]+)/i,
@@ -96,13 +97,22 @@ export function evaluateChangedFilesAuditVerdict(auditText: string): ChangedFile
   ]);
 
   const hasClassificationFields = resolved !== null || unresolved !== null;
-  const isLegacyReport = blocked !== null && blocked > 0 && !hasClassificationFields;
-  const legacyBlockedWriteFailure = isLegacyReport;
+  const incompleteBlockedWriteClassification =
+    blocked !== null && blocked > 0 && !hasClassificationFields;
 
   let reason: string | undefined;
   let passed = true;
 
-  if (result === 'FAIL') {
+  if (contractId !== CHANGED_FILES_AUDIT_CONTRACT_ID) {
+    passed = false;
+    reason = `changed_files_audit Contract must be ${CHANGED_FILES_AUDIT_CONTRACT_ID}`;
+  } else if (!workItemId) {
+    passed = false;
+    reason = 'changed_files_audit Work Item is missing';
+  } else if (options.expectedWorkItemId && workItemId !== options.expectedWorkItemId) {
+    passed = false;
+    reason = `changed_files_audit Work Item mismatch: expected ${options.expectedWorkItemId}, got ${workItemId}`;
+  } else if (result === 'FAIL') {
     passed = false;
     reason = 'changed_files_audit result is FAIL';
   } else if (result !== 'PASS') {
@@ -117,26 +127,37 @@ export function evaluateChangedFilesAuditVerdict(auditText: string): ChangedFile
   } else if (unresolved !== null && unresolved > 0) {
     passed = false;
     reason = 'Unresolved blocked write attempts is ' + unresolved;
-  } else if (legacyBlockedWriteFailure) {
+  } else if (
+    outOfScope === null ||
+    violations === null ||
+    blocked === null
+  ) {
     passed = false;
-    reason = 'Legacy changed_files_audit report has blocked write attempts without resolved/unresolved classification';
+    reason = 'changed_files_audit required summary counts are missing';
+  } else if (incompleteBlockedWriteClassification) {
+    passed = false;
+    reason = 'Changed Files Audit has blocked write attempts without resolved/unresolved classification';
   }
 
   return {
     passed,
     result,
     reason,
+    contract_id: contractId,
+    work_item_id: workItemId,
     out_of_scope: outOfScope,
     violations,
     blocked_write_attempts: blocked,
     historical_resolved_blocked_write_attempts: resolved,
     unresolved_blocked_write_attempts: unresolved,
-    is_legacy_report: isLegacyReport,
-    legacy_blocked_write_failure: legacyBlockedWriteFailure,
+    incomplete_blocked_write_classification: incompleteBlockedWriteClassification,
   };
 }
 
-export function parseChangedFilesAuditVerdictPass(auditText: string): { passed: boolean; reason?: string } {
-  const verdict = evaluateChangedFilesAuditVerdict(auditText);
+export function parseChangedFilesAuditVerdictPass(
+  auditText: string,
+  options: ChangedFilesAuditVerdictOptions = {},
+): { passed: boolean; reason?: string } {
+  const verdict = evaluateChangedFilesAuditVerdict(auditText, options);
   return { passed: verdict.passed, reason: verdict.reason };
 }

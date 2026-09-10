@@ -90,6 +90,32 @@ describe('formal version Git closure regressions', () => {
     expect((provenNoChanges as any).data_source).toContain('0 observed project changes');
   });
 
+  it('fails closed when the durable Changed Files Audit report cannot be written', async () => {
+    await fs.writeFile(
+      path.join(workItemDir, 'work_item.json'),
+      JSON.stringify({
+        schema_version: '1.1',
+        work_item_id: 'WI-0002',
+        workflow_type: 'quick_change',
+        workflow_path: 'code_only_fast_path',
+        code_permission_revoked: true,
+        allowed_write_files_snapshot: [{ path: 'src/main.ts', operation: 'create' }],
+      }),
+    );
+    await fs.mkdir(path.join(workItemDir, 'changed_files_audit.md'));
+
+    const handler = getHandler('sf_changed_files_audit')!;
+    const result = await handler(
+      { work_item_id: 'WI-0002', actual_changed_files: [] },
+      { directory: projectRoot },
+      {},
+    );
+
+    expect((result as any).success).toBe(false);
+    expect((result as any).hard_stop).toBe(true);
+    expect((result as any).error).toContain('CHANGED_FILES_AUDIT_WRITE_FAILED');
+  });
+
   it('rejects observed implementation files until they are committed on the WI branch', async () => {
     await git(projectRoot, ['init', '-b', 'main']);
     await git(projectRoot, ['config', 'user.name', 'SpecForge Test']);
@@ -264,6 +290,7 @@ describe('formal version Git closure regressions', () => {
   it('recovers the Formal Version file set from a passed durable Changed Files Audit', () => {
     const audit = `# Changed Files Audit
 
+Contract: changed-files-audit/v1
 Work Item: WI-0001
 
 ## Result: PASS
@@ -272,6 +299,7 @@ Work Item: WI-0001
 - In scope: 4
 - Out of scope: 0
 - Violations: 0
+- Blocked write attempts: 0
 - Unresolved blocked write attempts: 0
 
 ## Entries
@@ -302,7 +330,15 @@ Work Item: WI-0001
       path.join(workItemDir, 'changed_files_audit.md'),
       `# Changed Files Audit
 
+Contract: changed-files-audit/v1
+Work Item: WI-0002
 ## Result: PASS
+
+- Total files: 4
+- In scope: 4
+- Out of scope: 0
+- Violations: 0
+- Blocked write attempts: 0
 
 ## Entries
 
@@ -363,7 +399,15 @@ Work Item: WI-0001
       path.join(workItemDir, 'changed_files_audit.md'),
       `# Changed Files Audit
 
+Contract: changed-files-audit/v1
+Work Item: WI-0002
 ## Result: PASS
+
+- Total files: 1
+- In scope: 1
+- Out of scope: 0
+- Violations: 0
+- Blocked write attempts: 0
 
 ## Entries
 
@@ -449,6 +493,8 @@ Work Item: WI-0001
     expect(
       extractPassedChangedFilesAuditEntries(`# Changed Files Audit
 
+Contract: changed-files-audit/v1
+Work Item: WI-0002
 ## Result: FAIL
 
 ## Entries

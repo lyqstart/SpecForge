@@ -44,7 +44,7 @@ describe('Close Gate governance fixes', () => {
       }),
       'verification_report.md': '# Verification Report\n\nConclusion: pass. All tests passed.\nEvidence: EV-001 unit tests.',
       'merge_report.md': '# Merge Report\n\nWork Item: WI-TEST\nStatus: success\nTimestamp: 2026-01-01T00:00:00Z\n\n## Summary\n\n- Total entries: 1\n- Successful: 1\n',
-      'changed_files_audit.md': '# Changed Files Audit\n\n**Verdict:** pass\nAll files within scope.\n',
+      'changed_files_audit.md': '# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: WI-TEST\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n',
       'evidence/evidence_manifest.json': JSON.stringify({
         schema_version: '1.1',
         work_item_id: 'WI-TEST',
@@ -132,6 +132,35 @@ describe('Close Gate governance fixes', () => {
     const mergeCheck = result.report.checks.find(c => c.check_id === 'close_merge_report_valid');
     expect(mergeCheck).toBeDefined();
     expect(mergeCheck!.passed).toBe(false);
+  });
+
+  it('rejects a passing Changed Files Audit bound to another Work Item', async () => {
+    await writeBaseFiles({
+      'changed_files_audit.md': [
+        '# Changed Files Audit',
+        '',
+        'Contract: changed-files-audit/v1',
+        'Work Item: WI-OTHER',
+        '## Result: PASS',
+        '- Total files: 0',
+        '- In scope: 0',
+        '- Out of scope: 0',
+        '- Violations: 0',
+        '- Blocked write attempts: 0',
+        '- Historical/resolved blocked write attempts: 0',
+        '- Unresolved blocked write attempts: 0',
+      ].join('\n'),
+    });
+    await writeUserDecision();
+
+    const result = await runCloseGate({ workItemId: 'WI-TEST', workItemDir, projectRoot } as any);
+    const auditCheck = result.report.checks.find(
+      c => c.check_id === 'close_changed_files_audit_passed',
+    );
+
+    expect(auditCheck).toBeDefined();
+    expect(auditCheck!.passed).toBe(false);
+    expect(auditCheck!.details).toContain('Work Item');
   });
 
   it('aggregates blocking issues from gates JSON, not gate_summary.md', async () => {

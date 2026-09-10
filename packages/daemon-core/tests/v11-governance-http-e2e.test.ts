@@ -266,7 +266,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
       path.join(wiDir, 'gates', 'formal_version_gate.json'),
       JSON.stringify({ gate_id: 'formal_version_gate', status: 'passed' }) + '\n',
     );
-    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n- Data Source: write_guard_log.jsonl (2 entries, 1 allowed writes)\n\n## File Entries\n\n| Path | Operation | Status |\n|------|-----------|--------|\n| src/main.ts | modify | in_scope |');
+    await fs.writeFile(path.join(wiDir, 'changed_files_audit.md'), '# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: WI-0001\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n- Data Source: write_guard_log.jsonl (2 entries, 1 allowed writes)\n');
     await fs.writeFile(path.join(wiDir, 'verification_report.md'), '# Verification\nAll evidence reviewed.');
     await fs.writeFile(path.join(wiDir, 'merge_report.md'), '# Merge\nStatus: not_applicable');
     await fs.writeFile(path.join(wiDir, 'evidence', 'evidence_manifest.json'), JSON.stringify({ schema_version: '1.0', work_item_id: workItemId, entries: [{ evidence_id: 'EV-1', id: 'EV-1', type: 'log', path: 'test.log', status: 'passed' }] }));
@@ -322,7 +322,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     // Verify changed_files_audit.md uses write_guard_log
     const auditMd = await fs.readFile(path.join(wiDir, 'changed_files_audit.md'), 'utf-8');
     expect(auditMd).toContain('write_guard_log.jsonl');
-    expect(auditMd).toContain('PASSED');
+    expect(auditMd).toContain('## Result: PASS');
 
     // Verify close_gate.json
     const gateJson = JSON.parse(await fs.readFile(path.join(wiDir, 'gates', 'close_gate.json'), 'utf-8'));

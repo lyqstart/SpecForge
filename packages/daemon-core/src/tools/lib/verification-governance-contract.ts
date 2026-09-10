@@ -318,7 +318,9 @@ export async function evaluateVerificationGovernanceContract(input: {
     severity: sideEffectsDeclared ? undefined : 'error',
   });
 
-  const auditVerdict = evaluateChangedFilesAuditVerdict(auditText ?? '');
+  const auditVerdict = evaluateChangedFilesAuditVerdict(auditText ?? '', {
+    expectedWorkItemId: evidenceWorkItemId,
+  });
   checks.push({
     check_id: 'verification_changed_files_audit_passed',
     description: 'changed_files_audit is complete and passed',

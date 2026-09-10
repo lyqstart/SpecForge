@@ -139,7 +139,7 @@ async function createCloseReadyWorkItem(tmpDir: string, workItemId: string): Pro
   );
   await fs.writeFile(
     path.join(wiDir, 'changed_files_audit.md'),
-    '# Changed Files Audit\n\n- Status: PASSED\n'
+    `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`
   );
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),

@@ -158,6 +158,8 @@ async function createCloseReadyNoCodeWorkItem(
     [
       '# Changed Files Audit',
       '',
+      'Contract: changed-files-audit/v1',
+      `Work Item: ${workItemId}`,
       'Mode: no_code_change / not_applicable',
       '',
       '## Result: PASS',

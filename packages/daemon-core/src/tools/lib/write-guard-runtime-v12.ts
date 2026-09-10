@@ -293,6 +293,9 @@ export function enforceRuntimeWriteGuardForShell(input: {
   return { checked: true, allowed: true, targets: normalizedTargets, violations: [] };
 }
 
-export function parseChangedFilesAuditPass(auditText: string): { passed: boolean; reason?: string } {
-  return parseChangedFilesAuditVerdictPass(auditText);
+export function parseChangedFilesAuditPass(
+  auditText: string,
+  expectedWorkItemId?: string,
+): { passed: boolean; reason?: string } {
+  return parseChangedFilesAuditVerdictPass(auditText, { expectedWorkItemId });
 }

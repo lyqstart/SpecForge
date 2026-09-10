@@ -282,7 +282,7 @@ async function createSpecChangingFixture(workItemId: string, options: FixtureOpt
   await writeText(path.join(dir, 'tasks.md'), '# Tasks\n- [x] Implement governed feature\n\nallowed_write_files:\n- src/index.ts\n');
   await writeText(path.join(dir, 'trace_delta.md'), '# Trace Delta\nREQ-001 -> TASK-001\n');
   await writeText(path.join(dir, 'verification_report.md'), '# Verification Report\nEvidence reviewed and pass.\n');
-  await writeText(path.join(dir, 'changed_files_audit.md'), '# Changed Files Audit\n\n- Status: PASSED\n');
+  await writeText(path.join(dir, 'changed_files_audit.md'), `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 0\n- In scope: 0\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`);
   await writeText(path.join(dir, 'gate_summary.md'), makeGateSummary(workItemId, gateSummaryStatus));
 
   await writeText(

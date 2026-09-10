@@ -215,7 +215,7 @@ async function createMinimalWorkItem(
   );
   await fs.writeFile(
     path.join(wiDir, 'changed_files_audit.md'),
-    '# Changed Files Audit\n\n- Status: PASSED\nAll files in scope.'
+    `# Changed Files Audit\n\nContract: changed-files-audit/v1\nWork Item: ${workItemId}\n## Result: PASS\n- Total files: 1\n- In scope: 1\n- Out of scope: 0\n- Violations: 0\n- Blocked write attempts: 0\n`
   );
   await fs.writeFile(
     path.join(wiDir, 'evidence', 'evidence_manifest.json'),
@@ -495,7 +495,7 @@ describe('sf_close_gate handler', () => {
 
     expect((result as any).success).toBe(false);
     expect((result as any).changed_files_audit?.passed).toBe(false);
-    expect(await fs.readFile(auditPath, 'utf-8')).toContain('- Status: FAILED');
+    expect(await fs.readFile(auditPath, 'utf-8')).toContain('## Result: FAIL');
   });
 
   it('blocks close when a Git-governed Work Item has a failed formal version gate', async () => {

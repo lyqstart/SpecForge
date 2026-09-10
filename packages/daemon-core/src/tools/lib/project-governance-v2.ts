@@ -1926,8 +1926,11 @@ function repositoryRelativePath(projectRoot: string, value: string): string {
  * producer contract for the implementation file set used by Formal Version.
  * Only PASS reports and explicit in_scope entries are accepted.
  */
-export function extractPassedChangedFilesAuditEntries(auditText: string): string[] {
-  if (!evaluateChangedFilesAuditVerdict(auditText).passed) return [];
+export function extractPassedChangedFilesAuditEntries(
+  auditText: string,
+  expectedWorkItemId?: string,
+): string[] {
+  if (!evaluateChangedFilesAuditVerdict(auditText, { expectedWorkItemId }).passed) return [];
 
   const entriesMatch = auditText.match(
     /(?:^|\n)## Entries\s*\r?\n([\s\S]*?)(?=\r?\n##\s|\s*$)/,
@@ -1955,7 +1958,7 @@ export async function deriveActualChangedFiles(
   // entries that do not describe the committed implementation file set.
   const auditPath = path.join(workItemDir, 'changed_files_audit.md');
   const auditFiles = normalizeFormalImplementationFiles(
-    extractPassedChangedFilesAuditEntries(await readText(auditPath)),
+    extractPassedChangedFilesAuditEntries(await readText(auditPath), path.basename(workItemDir)),
     projectRoot,
   );
   if (auditFiles.length > 0) {
@@ -2103,7 +2106,9 @@ export async function verifyProjectGovernanceAfterImplementation(input: {
   const contracts = await checkProjectGovernanceContracts(input);
   const trace = await checkProjectGovernanceTrace(input);
   const auditText = await readText(path.join(input.workItemDir, 'changed_files_audit.md'));
-  const auditPassed = evaluateChangedFilesAuditVerdict(auditText).passed;
+  const auditPassed = evaluateChangedFilesAuditVerdict(auditText, {
+    expectedWorkItemId: input.workItemId,
+  }).passed;
   const actualScope = await auditActualGovernanceScope({
     projectRoot: input.projectRoot,
     workItemDir: input.workItemDir,
@@ -2517,7 +2522,7 @@ export async function checkFormalVersionEligibility(input: {
     checks,
     'formal_changed_files_audit',
     'Changed Files Audit passed',
-    evaluateChangedFilesAuditVerdict(audit).passed,
+    evaluateChangedFilesAuditVerdict(audit, { expectedWorkItemId: input.workItemId }).passed,
   );
 
   const actualScope = await auditActualGovernanceScope({

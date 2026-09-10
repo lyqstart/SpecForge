@@ -44,6 +44,7 @@ import {
   reconcileLegacyBaselineWithGitPreflight,
 } from '../lib/filesystem-diff';
 import { readWorkItemMetadata } from '../lib/work-item-metadata.js';
+import { CHANGED_FILES_AUDIT_CONTRACT_ID } from '../lib/changed-files-audit-verdict.js';
 
 type ChangedFile = { path: string; operation: 'create' | 'modify' | 'delete' };
 type AllowedFile = { path: string; operation: string };
@@ -464,6 +465,7 @@ async function writeNoCodeAudit(input: {
   const auditMd = [
     '# Changed Files Audit',
     '',
+    `Contract: ${CHANGED_FILES_AUDIT_CONTRACT_ID}`,
     `Work Item: ${input.workItemId}`,
     `Command: ${input.command ?? 'N/A'}`,
     `Timestamp: ${new Date().toISOString()}`,
@@ -780,6 +782,7 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
   const auditMd = [
     '# Changed Files Audit',
     '',
+    `Contract: ${CHANGED_FILES_AUDIT_CONTRACT_ID}`,
     `Work Item: ${workItemId}`,
     `Command: ${command ?? 'N/A'}`,
     `Timestamp: ${new Date().toISOString()}`,
@@ -835,8 +838,19 @@ registerHandler('sf_changed_files_audit', async (args, context, deps) => {
 
   try {
     await fs.writeFile(join(workItemDir, 'changed_files_audit.md'), auditMd, 'utf-8');
-  } catch {
-    // Non-critical: audit result is returned even if file write fails.
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setHardStop(
+      projectRoot,
+      workItemId,
+      `CHANGED_FILES_AUDIT_WRITE_FAILED: ${message}`,
+      'sf_changed_files_audit'
+    );
+    return {
+      success: false,
+      error: `CHANGED_FILES_AUDIT_WRITE_FAILED: ${message}`,
+      hard_stop: true,
+    };
   }
 
   return {
