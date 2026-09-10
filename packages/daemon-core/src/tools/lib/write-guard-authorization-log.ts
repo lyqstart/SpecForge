@@ -9,38 +9,14 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import {
+  SPEC_DIR_NAME,
+  WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION,
+  type WriteGuardAuthorizationRecord,
+} from '@specforge/types';
+import { createWriteGuardAuthorizationLogSchemaDescriptor } from '@specforge/migration';
 
-export type WriteGuardAuthorizationScope = 'command' | 'task' | 'work_item' | 'project' | string;
-
-export type WriteGuardAuthorizationType =
-  | 'user_accepted_external_ops'
-  | 'user_authorized_retry'
-  | 'false_positive_pattern'
-  | 'expected_negative_test'
-  | string;
-
-export interface WriteGuardAuthorizationEntry {
-  schema_version?: string;
-  authorization_id?: string;
-  created_at?: string;
-  created_by?: string;
-  source_hard_stop_id?: string | null;
-  work_item_id?: string;
-  authorization_type?: WriteGuardAuthorizationType;
-  scope?: WriteGuardAuthorizationScope;
-  tool?: string;
-  intent?: string;
-  command_family?: string;
-  host_path_prefix?: string;
-  container_targets?: string[];
-  image?: string;
-  allowed_pattern?: Record<string, unknown>;
-  expires_when?: string;
-  max_uses?: number;
-  user_response_quote?: string;
-  reason?: string;
-}
+export type WriteGuardAuthorizationEntry = WriteGuardAuthorizationRecord;
 
 function policyDir(projectRoot: string): string {
   return path.join(projectRoot, SPEC_DIR_NAME, 'project', 'policies');
@@ -52,26 +28,45 @@ export function writeGuardAuthorizationLogPath(projectRoot: string): string {
 
 export function readWriteGuardAuthorizations(projectRoot: string): WriteGuardAuthorizationEntry[] {
   const logPath = writeGuardAuthorizationLogPath(projectRoot);
+  if (!fs.existsSync(logPath)) return [];
   try {
-    if (!fs.existsSync(logPath)) return [];
-    return fs
+    const entries = fs
       .readFileSync(logPath, 'utf-8')
       .split(/\r?\n/g)
       .map((line) => line.trim())
       .filter((line) => line.length > 0)
-      .map((line) => JSON.parse(line) as WriteGuardAuthorizationEntry);
-  } catch {
-    return [];
+      .map((line) => JSON.parse(line) as unknown);
+    if (entries.length === 0) throw new Error('FILE_PARSE_FAILED: JSONL file is empty');
+    const descriptor = createWriteGuardAuthorizationLogSchemaDescriptor();
+    for (const entry of entries) {
+      const observed = typeof entry === 'object' && entry !== null && !Array.isArray(entry)
+        ? (entry as Record<string, unknown>).schema_version
+        : undefined;
+      if (observed !== WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION) {
+        throw new Error('CHAIN_GAP: unsupported write_guard_authorization schema_version');
+      }
+      if (!descriptor.validateCurrent(entry)) {
+        throw new Error('VALIDATION_FAILED: invalid write_guard_authorization record');
+      }
+    }
+    return entries as WriteGuardAuthorizationEntry[];
+  } catch (error) {
+    throw new Error(
+      `WRITE_GUARD_AUTHORIZATION_LOG_INVALID: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }
 
 export function appendWriteGuardAuthorization(
   projectRoot: string,
-  entry: WriteGuardAuthorizationEntry,
+  entry: Record<string, unknown>,
 ): WriteGuardAuthorizationEntry {
+  readWriteGuardAuthorizations(projectRoot);
   const now = new Date().toISOString();
-  const completed: WriteGuardAuthorizationEntry = {
-    schema_version: '1.2.8',
+  const completed = {
+    schema_version: WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION,
     authorization_id: entry.authorization_id ?? `AUTH-${Date.now()}`,
     created_at: now,
     scope: entry.scope ?? 'work_item',
@@ -80,9 +75,14 @@ export function appendWriteGuardAuthorization(
     ...entry,
   };
 
+  const descriptor = createWriteGuardAuthorizationLogSchemaDescriptor();
+  if (!descriptor.validateCurrent(completed)) {
+    throw new Error('WRITE_GUARD_AUTHORIZATION_RECORD_INVALID');
+  }
+
   fs.mkdirSync(policyDir(projectRoot), { recursive: true });
   fs.appendFileSync(writeGuardAuthorizationLogPath(projectRoot), JSON.stringify(completed) + '\n', 'utf-8');
-  return completed;
+  return completed as WriteGuardAuthorizationEntry;
 }
 
 function normalize(value: unknown): string {

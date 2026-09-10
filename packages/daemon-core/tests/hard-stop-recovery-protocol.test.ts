@@ -163,6 +163,62 @@ describe('Recoverable HardStop protocol', () => {
     expect(checkHardStop(projectRoot, workItemId).blocked).toBe(true);
   });
 
+  it('does not record a resolution or clear the latch when authorization history is invalid', async () => {
+    const record = setHardStop(
+      projectRoot,
+      workItemId,
+      'external operation requires explicit authorization',
+      'sf_safe_bash'
+    );
+    const authorizationPath = path.join(
+      projectRoot,
+      '.specforge',
+      'project',
+      'policies',
+      'write_guard_authorizations.jsonl'
+    );
+    await mkdir(path.dirname(authorizationPath), { recursive: true });
+    const malformed = '{broken-authorization-history\n';
+    await writeFile(authorizationPath, malformed, 'utf8');
+
+    const handler = getHandler('sf_hard_stop_resolve');
+    const result = (await handler!(
+      {
+        work_item_id: workItemId,
+        hard_stop_id: record.hard_stop_id,
+        resolution_type: 'user_authorized_retry',
+        user_response_quote: '用户明确授权当前工作项内的 Docker 构建重试',
+        reason: 'The user explicitly authorized a bounded retry.',
+        install_authorization: true,
+        authorization_type: 'user_authorized_retry',
+        authorization_scope: 'work_item',
+        authorization_command_family: 'docker_run',
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      {} as any
+    )) as any;
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('WRITE_GUARD_AUTHORIZATION_LOG_INVALID');
+    expect(readFileSync(authorizationPath, 'utf8')).toBe(malformed);
+    expect(
+      readFileSync(
+        path.join(projectRoot, '.specforge', 'work-items', workItemId, 'hard_stop.json'),
+        'utf8'
+      )
+    ).toContain(record.hard_stop_id);
+    expect(
+      path.join(projectRoot, '.specforge', 'work-items', workItemId, 'hard_stop_resolution.jsonl')
+    ).not.toSatisfy((filePath: string) => {
+      try {
+        readFileSync(filePath, 'utf8');
+        return true;
+      } catch {
+        return false;
+      }
+    });
+  });
+
   it('resolves operator_error without user approval and returns a resumable checkpoint', async () => {
     const record = setHardStop(
       projectRoot,

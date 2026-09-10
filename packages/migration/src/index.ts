@@ -14,6 +14,7 @@ export * from './user-decision-schema-descriptor'
 export * from './candidate-manifest-schema-descriptor'
 export * from './gate-attempt-schema-descriptor'
 export * from './hard-stop-schema-descriptor'
+export * from './write-guard-authorization-schema-descriptor'
 
 // Export schema validator (exclude types already exported from ./types)
 export * from './schema-validator'

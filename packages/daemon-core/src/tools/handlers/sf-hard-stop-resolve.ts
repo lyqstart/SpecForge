@@ -20,7 +20,10 @@ import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/migratio
 import { readWorkItemHardStop, resetHardStop } from '../lib/hard-stop-latch';
 import { readHardStopResolutionLog } from '../lib/hard-stop-resolution-log';
 import { validateWorkItemId } from '../lib/work-item-id-validator';
-import { appendWriteGuardAuthorization } from '../lib/write-guard-authorization-log';
+import {
+  appendWriteGuardAuthorization,
+  readWriteGuardAuthorizations,
+} from '../lib/write-guard-authorization-log';
 
 const USER_DECISION_RESOLUTION_TYPES = new Set([
   'scope_expanded',
@@ -311,6 +314,18 @@ registerHandler('sf_hard_stop_resolve', async (args, context, _deps) => {
       message: error instanceof Error ? error.message : String(error),
       retry_allowed: false,
     };
+  }
+  if (shouldInstallAuthorization(args as Record<string, unknown>)) {
+    try {
+      readWriteGuardAuthorizations(baseDir);
+    } catch (error) {
+      return {
+        success: false,
+        error: 'WRITE_GUARD_AUTHORIZATION_LOG_INVALID',
+        message: error instanceof Error ? error.message : String(error),
+        retry_allowed: false,
+      };
+    }
   }
   fs.appendFileSync(
     path.join(wiDir, 'hard_stop_resolution.jsonl'),

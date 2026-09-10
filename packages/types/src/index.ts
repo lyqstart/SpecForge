@@ -211,6 +211,18 @@ export {
   type HardStopContractValidationResult,
 } from "./hard-stop-contract.js";
 
+// ---- WriteGuard Authorization persistent governance contract ----
+export {
+  WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION,
+  WriteGuardAuthorizationScopeSchema,
+  WriteGuardAuthorizationTypeSchema,
+  WriteGuardAuthorizationRecordSchema,
+  validateCurrentWriteGuardAuthorizationRecordValue,
+  type WriteGuardAuthorizationScope,
+  type WriteGuardAuthorizationType,
+  type WriteGuardAuthorizationRecord,
+} from "./write-guard-authorization-contract.js";
+
 export {
   // §5 状态机
   WI_STATUSES,

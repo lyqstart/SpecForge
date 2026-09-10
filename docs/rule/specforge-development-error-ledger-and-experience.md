@@ -26876,3 +26876,199 @@ ERR1449_STATUS=CLOSED_RECOVERY_RECORD
 NEXT_LEGAL_ACTION=RESTAGE_LEDGER_RECOVERY_RECORD_THEN_CACHED_DIFF_STATUS_AUDIT_AND_COMMIT
 ```
 <!-- SPECFORGE_ERR1449_GIT_INDEX_LOCK_PERMISSION_RECOVERED:END -->
+
+<!-- SPECFORGE_ERR1450_WRITE_GUARD_AUTHORIZATION_CONTRACT_GAP:START -->
+### ERR-1450：WriteGuard Authorization 项目级授权日志缺少 exact contract 与写前 preflight
+
+- **发生阶段**：ERR-1013 剩余 governance evidence owner 重建。
+- **架构权威**：V6 Design 0.6 将授权日志归属 Permission Engine + WriteGuard Runtime；当前生产唯一 writer 是 HardStop resolver 调用的 `appendWriteGuardAuthorization()`，Safe Bash 与 changed-files audit 是消费者。
+- **事实证据**：当前 `1.2.8` 本地接口所有字段可选且 scope/type 接受任意字符串；reader 捕获解析错误并返回空数组；append 不验证已有 JSONL 历史便直接追加。
+- **能力判断**：`PARTIALLY_SUPPORTED / RUNTIME_DEFECT`。业务闭环存在，但损坏、未知 schema 或不完整授权记录没有 fail-closed owner boundary。
+- **修复边界**：先以测试证明未知 schema、不完整 current schema、损坏历史均失败关闭且原字节不变；再建立共享 exact contract、无 legacy transition descriptor，以及 read/append 首次边界 preflight。
+- **类防护**：复用 `EXP-001`、`EXP-004`、`EXP-007`、`EXP-016`、`EXP-017`、`EXP-044`、`EXP-060`、`EXP-074`、`EXP-086`。
+
+```text
+ERR1450_STATUS=OPEN_EXPECTED_RED_TEST_ADDED_NOT_YET_RUN
+PARENT_ERROR=ERR-1013
+AUTHORITATIVE_OWNER=PERMISSION_ENGINE_WRITE_GUARD_RUNTIME_AUTHORIZATION_LOG
+CURRENT_OBSERVED_SCHEMA=1.2.8
+LEGACY_TRANSITIONS_PLANNED=NONE
+NEXT_LEGAL_ACTION=RUN_WRITE_GUARD_AUTHORIZATION_OWNER_EXPECTED_RED
+```
+<!-- SPECFORGE_ERR1450_WRITE_GUARD_AUTHORIZATION_CONTRACT_GAP:END -->
+
+<!-- SPECFORGE_ERR1452_PARALLEL_DEPENDENCY_BUILD_ORDER:START -->
+### ERR-1452：WriteGuard Authorization 首轮 package 构建违反依赖顺序
+
+- **发生阶段**：共享契约与 descriptor 实现后的构建验证。
+- **事实证据**：Types、Migration、Daemon 三个 build 被并行启动；Types 成功并最终产出新 export，但 Migration 在其完成前解析到旧 Types declarations 而失败，同时其 clean 删除 `migration/dist`，导致并行 Daemon 无法解析 Migration 并产生级联错误。
+- **分类**：`BUILD_ORCHESTRATION_ORDER_ERROR`，不能归类为产品编译失败。
+- **纠正**：按依赖拓扑严格顺序重跑 `types → migration → daemon-core`；不修改契约来掩盖时序错误。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-135`、`EXP-137`、`EXP-140`。
+
+```text
+ERR1452_STATUS=OPEN_SEQUENTIAL_RECOVERY
+TYPES_BUILD=PASS
+MIGRATION_RESULT=INVALIDATED_BY_PARALLEL_UPSTREAM_RACE
+DAEMON_RESULT=INVALIDATED_BY_PARALLEL_MIGRATION_CLEAN
+NEXT_LEGAL_ACTION=RUN_MIGRATION_BUILD_AFTER_CONFIRMED_TYPES_OUTPUT_THEN_DAEMON_BUILD
+```
+<!-- SPECFORGE_ERR1452_PARALLEL_DEPENDENCY_BUILD_ORDER:END -->
+
+<!-- SPECFORGE_ERR1453_AUTHORIZATION_DRAFT_TYPE_BOUNDARY:START -->
+### ERR-1453：严格授权记录类型不能直接作为未归一化 Tool 输入 draft
+
+- **发生阶段**：依赖顺序恢复后的 Daemon build。
+- **事实证据**：Migration 顺序构建通过；Daemon 在 HardStop resolver 的 `authorization_type`、`scope`、`tool` 三个动态字符串参数处产生类型错误。它证明持久化 exact record 与进入 owner 前的动态 draft 是两个边界。
+- **分类**：`CURRENT_PRODUCER_NORMALIZATION_BOUNDARY`，不是放宽契约的理由。
+- **纠正**：append owner 接受未信任的键值 draft，在内部补齐 owner 字段并以 exact descriptor 验证后才写入；返回值仍为 exact record。
+- **类防护**：复用 `EXP-004`、`EXP-016`、`EXP-044`、`EXP-060`。
+
+```text
+ERR1452_STATUS=CLOSED_BY_SEQUENTIAL_MIGRATION_BUILD_PASS
+ERR1453_STATUS=OPEN_TARGET_REPAIR
+NEXT_LEGAL_ACTION=SEPARATE_UNTRUSTED_DRAFT_INPUT_FROM_VALIDATED_PERSISTED_RECORD
+```
+<!-- SPECFORGE_ERR1453_AUTHORIZATION_DRAFT_TYPE_BOUNDARY:END -->
+
+<!-- SPECFORGE_ERR1454_AUTHORIZATION_RESOLUTION_TRANSACTION_ORDER:START -->
+### ERR-1454：授权历史 preflight 晚于 HardStop resolution append
+
+- **发生阶段**：WriteGuard Authorization owner 全包通过后的生产事务复核。
+- **事实证据**：`sf_hard_stop_resolve` 先 append `hard_stop_resolution.jsonl`，随后才调用授权 owner；严格 owner 遇到损坏授权历史会失败，但过去 resolution 已被改变，形成半事务。
+- **能力判断**：`RUNTIME_DEFECT`。单文件 owner 已严格，跨文件 resolver transaction 尚未保证 zero-write preflight。
+- **修复边界**：安装授权时必须在 resolution append、authorization append 和 latch clear 之前读取并验证既有授权历史；失败返回结构化错误并保持三个持久化面不变。
+- **类防护**：复用 `EXP-001`、`EXP-004`、`EXP-017`、`EXP-044`、`EXP-060`、`EXP-086`。
+
+```text
+ERR1453_STATUS=CLOSED_BY_UNTRUSTED_DRAFT_AND_EXACT_PERSISTED_RECORD_SPLIT
+ERR1454_STATUS=OPEN_EXPECTED_RED_ADDED
+NEXT_LEGAL_ACTION=RUN_TRANSACTION_ORDER_EXPECTED_RED_THEN_MOVE_AUTHORIZATION_PREFLIGHT_BEFORE_ANY_TRANSACTION_WRITE
+```
+<!-- SPECFORGE_ERR1454_AUTHORIZATION_RESOLUTION_TRANSACTION_ORDER:END -->
+
+<!-- SPECFORGE_ERR1455_AUTHORIZATION_TRANSACTION_EXPECTED_RED:START -->
+### ERR-1455：授权事务顺序预期红灯确认
+
+- **事实证据**：HardStop recovery `10 tests / 9 pass / 1 fail`；新增用例在 resolver 内抛出 `WRITE_GUARD_AUTHORIZATION_LOG_INVALID`，调用栈证明失败发生在 resolution 已追加之后的授权 append 阶段。
+- **结论**：ERR-1454 得到可复核证据；不是测试夹具漂移。
+
+```text
+ERR1455_STATUS=CLOSED_EXPECTED_RED_CONFIRMED
+EXPECTED_RED=HARD_STOP_RECOVERY_1_FILE_10_TESTS_9_PASS_1_FAIL
+NEXT_LEGAL_ACTION=PREFLIGHT_AUTHORIZATION_HISTORY_BEFORE_RESOLUTION_APPEND_AND_RETURN_STRUCTURED_FAILURE
+```
+<!-- SPECFORGE_ERR1455_AUTHORIZATION_TRANSACTION_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1456_WRITE_GUARD_AUTHORIZATION_OWNER_CLOSURE:START -->
+### ERR-1456：WriteGuard Authorization exact owner 与跨文件事务完成可信闭环
+
+- **事实证据**：`@specforge/types` 提供 `1.2.8` exact record；`@specforge/migration` 提供无 transition 的 JSONL descriptor；唯一 owner 在读取和追加前验证全部历史；HardStop resolver 在任何 resolution append、authorization append 或 latch clear 前完成授权历史 preflight。
+- **失败关闭证明**：未知 schema、不完整 current record、损坏 JSONL 均失败关闭并保持原字节；损坏授权历史不会产生 resolution 半事务，也不会清除 latch。
+- **验证**：owner `4 pass`；descriptor `2 pass`；扩散 `15 files / 244 pass`；事务定向 `2 files / 14 pass`；Migration `19 files / 412 pass`；Daemon `193 files / 1728 pass`；根构建与根确定性全量回归均为 16 workspaces 通过。
+- **兼容策略**：没有旧 schema transition，没有放宽为任意 scope/type/tool，没有删除或跳过测试。
+- **类防护**：复用 `EXP-001`、`EXP-004`、`EXP-007`、`EXP-016`、`EXP-017`、`EXP-044`、`EXP-060`、`EXP-074`、`EXP-086`。
+
+```text
+ERR1450_STATUS=CLOSED_BY_EXACT_CONTRACT_DESCRIPTOR_AND_OWNER_PREFLIGHT
+ERR1451_STATUS=CLOSED_EXPECTED_RED_EVIDENCE
+ERR1452_STATUS=CLOSED_BY_SEQUENTIAL_BUILD_RECOVERY
+ERR1453_STATUS=CLOSED_BY_DRAFT_PERSISTED_RECORD_BOUNDARY
+ERR1454_STATUS=CLOSED_BY_CROSS_FILE_PREFLIGHT_ORDER
+ERR1455_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+ERR1456_STATUS=CLOSED_VALIDATION_RECORD
+PARENT_ERROR=ERR-1013
+ERR1013_STATUS=OPEN_REMAINING_AUDIT_MERGE_PROVENANCE_AND_OBSERVABILITY_OWNER_FAMILIES
+NEXT_LEGAL_ACTION=RUN_POST_DOCUMENT_GOVERNANCE_GATES_THEN_FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_COMMIT
+```
+<!-- SPECFORGE_ERR1456_WRITE_GUARD_AUTHORIZATION_OWNER_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1451_WRITE_GUARD_AUTHORIZATION_EXPECTED_RED:START -->
+### ERR-1451：WriteGuard Authorization owner 三项 zero-write 契约红灯已确认
+
+- **测试证据**：`tests/unit/write-guard-authorization-owner.test.ts` 为 `1 file / 3 tests / 3 failed`。
+- **直接证明**：未知 schema 记录被接受；缺字段的 `1.2.8` 记录被接受；损坏 JSONL 后 append 没有失败并改变了文件。
+- **归因**：失败与 ERR-1450 描述的 reader/append owner 缺口一一对应，不是环境或旧项目兼容问题。
+
+```text
+ERR1450_STATUS=OPEN_EXPECTED_RED_CONFIRMED
+ERR1451_STATUS=CLOSED_EXPECTED_RED_EVIDENCE
+EXPECTED_RED=1_FILE_3_TESTS_3_FAIL
+NEXT_LEGAL_ACTION=IMPLEMENT_SHARED_AUTHORIZATION_CONTRACT_DESCRIPTOR_AND_READ_APPEND_PREFLIGHT
+```
+<!-- SPECFORGE_ERR1451_WRITE_GUARD_AUTHORIZATION_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1457_POST_DOCUMENT_GATE_SELECTION_TYPO:START -->
+### ERR-1457：WriteGuard Authorization 文档后治理门禁漏选 ERR-088 用例
+
+- **发生阶段**：WriteGuard Authorization owner 提交前文档治理门禁。
+- **事实证据**：命令将 `tests/unit/specforge-development-err088.test.ts` 误写为不存在的 `spectestforge-development-err088.test.ts`；Vitest 未以非零退出提示不存在的显式路径，实际仅执行 `8 files / 48 tests`，少于计划的 `9 files / 50 tests`。
+- **分类**：`VALIDATION_SELECTION_ERROR`；现有 48 项通过有效，但不能冒充完整治理门禁。
+- **纠正**：使用经过 `rg --files` 核对的准确文件名重跑完整 9 文件集合；在完整结果前不得提交。
+- **类防护**：复用 `EXP-007`、`EXP-008`、`EXP-135`、`EXP-140`。
+
+```text
+ERR1457_STATUS=OPEN_CORRECTED_RERUN_REQUIRED
+PARTIAL_RESULT=8_FILES_48_TESTS_PASS
+NEXT_LEGAL_ACTION=VERIFY_ERR088_TEST_PATH_AND_RERUN_ALL_9_GOVERNANCE_FILES
+```
+<!-- SPECFORGE_ERR1457_POST_DOCUMENT_GATE_SELECTION_TYPO:END -->
+
+<!-- SPECFORGE_ERR1458_LOCAL_ORCHESTRATION_SYNTAX_AND_PATCH_CONTEXT:START -->
+### ERR-1458：提交前本地编排出现两次脚本语法错误与一次 patch context 错误
+
+- **事实证据**：两次 `functions.exec` JavaScript 在调用仓库命令前分别因缺少初始化值和未定义标识符失败；随后一次多文件 patch 因账本 context 多写了不存在的 `PARENT_ERROR` 行而整体拒绝。三次动作均未执行仓库命令或落盘修改。
+- **分类**：`LOCAL_ORCHESTRATION_ERROR`；不属于产品缺陷，不能跳过记录。
+- **纠正**：先只读核对真实上下文，再以精确 context 应用补丁；后续继续执行 diff 与 Git 状态复核。
+
+```text
+ERR1457_STATUS=CLOSED_BY_CORRECTED_9_FILE_50_TEST_PASS
+ERR1458_STATUS=CLOSED_NO_REPOSITORY_MUTATION
+POST_DOCUMENT_GOVERNANCE=9_FILES_50_TESTS_PASS
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_COMMIT
+```
+<!-- SPECFORGE_ERR1458_LOCAL_ORCHESTRATION_SYNTAX_AND_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1459_WRITE_GUARD_AUTHORIZATION_GIT_INDEX_PERMISSION:START -->
+### ERR-1459：WriteGuard Authorization 检查点首次精确暂存被 Git index 权限拒绝
+
+- **发生阶段**：最终 diff/status 审计通过后的精确暂存。
+- **事实证据**：`git add -- <13 个限定文件>` 在创建 `.git/index.lock` 时返回 `Permission denied`；随后状态显示全部目标仍未暂存，排除的历史备份仍为 untracked。
+- **分类**：`GIT_INDEX_PERMISSION_DENIED`；与既有 ERR-1448 同类，不是产品或差异缺陷。
+- **恢复边界**：不删除锁文件，不重置索引；以同一限定文件清单执行已授权的 Git index 写入，再复核 cached diff/status。
+- **类防护**：复用 `EXP-007`、`EXP-140`、`EXP-144`。
+
+```text
+ERR1459_STATUS=OPEN_SCOPED_GIT_ADD_RETRY_REQUIRED
+FILES_STAGED=0
+EXCLUDED_HISTORICAL_BACKUP=UNCHANGED_UNTRACKED
+NEXT_LEGAL_ACTION=RETRY_EXACT_GIT_ADD_WITH_APPROVED_INDEX_WRITE_THEN_AUDIT_CACHED_DIFF_AND_STATUS
+```
+<!-- SPECFORGE_ERR1459_WRITE_GUARD_AUTHORIZATION_GIT_INDEX_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR1460_WRITE_GUARD_AUTHORIZATION_GIT_INDEX_RECOVERED:START -->
+### ERR-1460：WriteGuard Authorization 限定范围 Git index 写入恢复
+
+- **事实证据**：对相同 13 个目标文件执行限定 `git add` 返回退出码 0；未删除任何锁文件，历史设计备份未纳入暂存。
+
+```text
+ERR1459_STATUS=CLOSED_BY_SCOPED_GIT_ADD_RETRY
+ERR1460_STATUS=CLOSED_RECOVERY_RECORD
+NEXT_LEGAL_ACTION=RUN_FINAL_POST_LEDGER_GOVERNANCE_GATE_THEN_RESTAGE_LEDGER_AND_AUDIT_CACHED_DIFF_STATUS
+```
+<!-- SPECFORGE_ERR1460_WRITE_GUARD_AUTHORIZATION_GIT_INDEX_RECOVERED:END -->
+
+<!-- SPECFORGE_ERR1461_POST_LEDGER_TEMP_PATH_TYPO:START -->
+### ERR-1461：最终治理复跑的 TEMP 路径出现拼写错误
+
+- **事实证据**：`TEMP` 被误设为不存在且不可写的 `D:\codefér\SpecForge\.tmp\bun`；Vitest 9 个 worker 均在创建 `ssr` 临时目录时返回 `EPERM`，输出明确为 `no tests / 9 errors`。
+- **分类**：`TEST_ENVIRONMENT_PATH_TYPO`，测试未启动，不能作为产品失败或通过证据。
+- **纠正**：恢复为已验证的 `D:\code\SpecForge\.tmp\bun`，保持相同 9 文件清单重跑。
+
+```text
+ERR1461_STATUS=CLOSED_BY_CORRECTED_9_FILE_50_TEST_PASS
+INVALID_RUN=9_FILES_SELECTED_NO_TESTS_9_ENVIRONMENT_ERRORS
+CORRECTED_RUN=9_FILES_50_TESTS_PASS
+NEXT_LEGAL_ACTION=RESTAGE_LEDGER_THEN_FINAL_CACHED_DIFF_STATUS_AUDIT_AND_COMMIT
+```
+<!-- SPECFORGE_ERR1461_POST_LEDGER_TEMP_PATH_TYPO:END -->
