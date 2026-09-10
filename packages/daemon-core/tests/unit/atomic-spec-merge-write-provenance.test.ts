@@ -64,7 +64,7 @@ describe('Atomic Spec Merge write provenance', () => {
     expect(readTrustedAtomicSpecMergeProjectWrites(root)).toEqual([]);
   });
 
-  it('reconstructs only a strictly matched legacy spec_manifest Merge Runner write', async () => {
+  it('does not reconstruct trusted writes from legacy merge artifacts', async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-legacy-merge-provenance-'));
     roots.push(root);
     const wiDir = path.join(root, '.specforge', 'work-items', 'WI-0002');
@@ -106,15 +106,7 @@ describe('Atomic Spec Merge write provenance', () => {
       'utf-8',
     );
 
-    const trusted = readTrustedAtomicSpecMergeProjectWrites(root);
-    expect(trusted).toEqual([
-      expect.objectContaining({
-        path: '.specforge/project/spec_manifest.json',
-        producer: 'sf_v11_merge:legacy_reconstructed',
-        work_item_id: 'WI-0002',
-        project_spec_version: 'PSV-0003',
-      }),
-    ]);
+    expect(readTrustedAtomicSpecMergeProjectWrites(root)).toEqual([]);
 
     await writeJson(path.join(wiDir, 'user_decision.json'), {
       work_item_id: 'WI-0002',
@@ -132,6 +124,14 @@ describe('Atomic Spec Merge write provenance', () => {
         workItemId: 'WI-0002',
         projectSpecVersion: 'PSV-0003',
         relativePaths: ['src/index.ts'],
+      }),
+    ).toThrow('ATOMIC_SPEC_MERGE_PROVENANCE_PATH_FORBIDDEN');
+    expect(() =>
+      recordAtomicSpecMergeProjectWrites({
+        projectRoot: root,
+        workItemId: 'WI-0002',
+        projectSpecVersion: 'PSV-0003',
+        relativePaths: ['.specforge/project/../../src/index.ts'],
       }),
     ).toThrow('ATOMIC_SPEC_MERGE_PROVENANCE_PATH_FORBIDDEN');
   });

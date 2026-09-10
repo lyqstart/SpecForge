@@ -37,7 +37,10 @@ import {
   renderGovernanceTraceDocument,
   type GovernanceTraceEdge,
 } from './governance-trace-model.js';
-import { recordAtomicSpecMergeProjectWrites } from './atomic-spec-merge-write-provenance.js';
+import {
+  assertAtomicSpecMergeWriteProvenanceCurrent,
+  recordAtomicSpecMergeProjectWrites,
+} from './atomic-spec-merge-write-provenance.js';
 import { validateModuleDefinitionCandidateJson } from './artifact-schema-validation.js';
 
 export interface MergeInput {
@@ -850,6 +853,12 @@ export async function executeMerge(input: MergeInput): Promise<MergeResult> {
   });
   if (traceProjection.errors.length > 0) {
     preflightErrors.push(...traceProjection.errors.map(error => `TRACE_DELTA_INVALID: ${error}`));
+  }
+
+  try {
+    assertAtomicSpecMergeWriteProvenanceCurrent(input.projectRoot);
+  } catch (error) {
+    preflightErrors.push(error instanceof Error ? error.message : String(error));
   }
   const independentModuleTraceTargets = entries
     .map(entry => ({ entry, moduleCode: targetModuleTrace(entry.target_path) }))

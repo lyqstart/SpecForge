@@ -370,6 +370,12 @@ describe('Candidate / approval / state governance', () => {
         },
       ],
     });
+    await fs.mkdir(path.join(projectRoot, '.specforge', 'runtime'), { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, '.specforge', 'runtime', 'atomic_spec_merge_controlled_writes.json'),
+      '{broken-provenance\n',
+      'utf-8',
+    );
 
     const result = await executeMerge({
       projectRoot,
@@ -384,6 +390,7 @@ describe('Candidate / approval / state governance', () => {
     expect(errors).toContain('Only architecture_change_path or spec_migration_path');
     expect(errors).toContain('user_decision');
     expect(errors).toContain('Candidate file does not exist');
+    expect(errors).toContain('ATOMIC_SPEC_MERGE_PROVENANCE_INVALID');
     const specManifest = JSON.parse(
       await fs.readFile(path.join(projectDir, 'spec_manifest.json'), 'utf-8'),
     );

@@ -223,6 +223,23 @@ export {
   type WriteGuardAuthorizationRecord,
 } from "./write-guard-authorization-contract.js";
 
+// ---- Control-plane trusted-write provenance contracts ----
+export {
+  ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA_VERSION,
+  GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA_VERSION,
+  AtomicSpecMergeTrustedWriteSchema,
+  AtomicSpecMergeWriteProvenanceSchema,
+  GitGovernanceProjectMetadataPathSchema,
+  GitGovernanceTrustedWriteSchema,
+  GitGovernanceWriteProvenanceSchema,
+  validateAtomicSpecMergeWriteProvenanceValue,
+  validateGitGovernanceWriteProvenanceValue,
+  type AtomicSpecMergeTrustedWrite,
+  type AtomicSpecMergeWriteProvenance,
+  type GitGovernanceTrustedWrite,
+  type GitGovernanceWriteProvenance,
+} from "./control-plane-write-provenance-contract.js";
+
 export {
   // §5 状态机
   WI_STATUSES,

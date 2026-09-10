@@ -27111,3 +27111,251 @@ ERR1464_STATUS=CLOSED_NO_UNINTENDED_REPOSITORY_MUTATION
 NEXT_LEGAL_ACTION=RUN_POST_RECORD_GOVERNANCE_GATE_RESTAGE_LEDGER_AND_COMMIT_RECEIPT
 ```
 <!-- SPECFORGE_ERR1464_RECEIPT_COMMIT_LOCAL_ORCHESTRATION_RECOVERY:END -->
+
+<!-- SPECFORGE_ERR1465_PROVENANCE_SCAN_PATH_ERROR:START -->
+### ERR-1465：剩余 provenance owner 首轮 writer 扫描包含不存在的源码目录
+
+- **事实证据**：只读 `rg` 同时指定了真实 `packages/daemon-core/src/tools` 与不存在的 `packages/daemon-core/src/runtime`；前者返回 writer 结果，后者返回 `os error 2`，因此该轮只能作为线索，不能声明扫描范围完整。
+- **分类**：`EVIDENCE_SCAN_SCOPE_ERROR`；没有修改仓库。
+- **纠正**：后续仅扫描经 `rg --files` 证明存在的目录，并分别核对 writer、reader、consumer 与权威规则。
+- **附带记录**：此次记录首次补丁误插入占位文本，下一次精确 patch context 又被拒绝；两次均在本记录提交前发现并更正，没有作为治理事实使用。
+
+```text
+ERR1465_STATUS=CLOSED_BY_SCOPED_RESCAN
+REPEATED_ERROR_CHECK=PASS
+NEXT_LEGAL_ACTION=ADD_EXPECTED_RED_FOR_ATOMIC_AND_GIT_PROVENANCE_OWNER_GAPS
+```
+<!-- SPECFORGE_ERR1465_PROVENANCE_SCAN_PATH_ERROR:END -->
+
+<!-- SPECFORGE_ERR1466_CONTROL_PLANE_PROVENANCE_OWNER_GAP:START -->
+### ERR-1466：两类 control-plane provenance 缺少 exact owner fail-closed 边界
+
+- **发生阶段**：ERR-1013 剩余 Audit / Merge / Provenance owner 重建。
+- **架构权威**：`GOV-ATOMIC-MERGE-PROVENANCE-001` 要求缺失、损坏或无法验证的 Atomic Spec Merge provenance 失败关闭，并明确禁止 legacy reconstruction；`GOV-CHANGED-FILES-AUDIT-PROVENANCE-PARITY-001` 要求 canonical resolver 聚合由各 owner 严格验证的当前记录。
+- **事实证据**：Atomic 与 Git provenance reader 均把解析 JSON、未知 schema 或不完整结构降级为空记录；Atomic reader 还从旧 `spec_manifest + merge_report + user_decision + candidate_manifest` 重建 `sf_v11_merge:legacy_reconstructed` 信任；两个 writer 均可覆盖损坏历史。
+- **能力判断**：`CONTRACT_CONFLICT / RUNTIME_DEFECT`。可信写入聚合入口存在，但底层 owner 违反当前无旧兼容和 fail-closed 权威。
+- **修复边界**：先证明损坏 history、未知 schema、legacy reconstruction 与覆盖行为；再建立两份 shared exact contract、无 transition descriptor、read/write preflight，并保持 canonical resolver 只聚合已验证记录。
+- **类防护**：复用 `EXP-001`、`EXP-004`、`EXP-007`、`EXP-016`、`EXP-017`、`EXP-033`、`EXP-044`、`EXP-060`、`EXP-074`、`EXP-086`。
+
+```text
+ERR1466_STATUS=OPEN_EXPECTED_RED_ADDED_NOT_YET_RUN
+PARENT_ERROR=ERR-1013
+LEGACY_TRANSITIONS_PLANNED=NONE
+NEXT_LEGAL_ACTION=RUN_CONTROL_PLANE_PROVENANCE_OWNER_EXPECTED_RED
+```
+<!-- SPECFORGE_ERR1466_CONTROL_PLANE_PROVENANCE_OWNER_GAP:END -->
+
+<!-- SPECFORGE_ERR1467_EXPECTED_RED_PATCH_ARTIFACT:START -->
+### ERR-1467：Provenance 预期红灯测试补丁遗留文本伪影
+
+- **事实证据**：新增测试的 patch 文本在两个空行位置遗留了字面量 `+`，且账本字段误写为 `NEXT_NEXT_LEGAL_ACTION`；只读复核在测试执行前发现。
+- **分类**：`PATCH_TEXT_ARTIFACT`；尚未形成测试结果或产品行为变化。
+- **纠正**：删除两个字面量并校正控制字段，再运行预期红灯。
+
+```text
+ERR1467_STATUS=CLOSED_BEFORE_TEST_EXECUTION
+NEXT_LEGAL_ACTION=RUN_CONTROL_PLANE_PROVENANCE_OWNER_EXPECTED_RED
+```
+<!-- SPECFORGE_ERR1467_EXPECTED_RED_PATCH_ARTIFACT:END -->
+
+<!-- SPECFORGE_ERR1468_CONTROL_PLANE_PROVENANCE_EXPECTED_RED:START -->
+### ERR-1468：Control-plane provenance 四项 owner 红灯全部确认
+
+- **测试证据**：`control-plane-write-provenance-owner.test.ts` 为 `1 file / 4 tests / 4 failed`。
+- **直接证明**：Atomic 损坏文件未失败关闭；无结构化 provenance 时仍生成 `sf_v11_merge:legacy_reconstructed` 信任；Git 未知 schema 未失败关闭；Git writer 覆盖损坏历史而不报错。
+- **归因**：四项失败与 ERR-1466 的 reader、legacy 和 writer preflight 缺口一一对应，不是夹具或环境漂移。
+
+```text
+ERR1466_STATUS=OPEN_EXPECTED_RED_CONFIRMED
+ERR1468_STATUS=CLOSED_EXPECTED_RED_EVIDENCE
+EXPECTED_RED=1_FILE_4_TESTS_4_FAIL
+NEXT_LEGAL_ACTION=IMPLEMENT_TWO_EXACT_CONTRACTS_DESCRIPTORS_AND_OWNER_PREFLIGHTS_WITHOUT_LEGACY_RECONSTRUCTION
+```
+<!-- SPECFORGE_ERR1468_CONTROL_PLANE_PROVENANCE_EXPECTED_RED:END -->
+
+<!-- SPECFORGE_ERR1469_PROVENANCE_CONTRACT_PATCH_ARTIFACT:START -->
+### ERR-1469：Provenance shared contract 首轮补丁包含两个文本伪影
+
+- **事实证据**：`validateAtomicSpecMergeWriteProvenanceValue` 参数被重复为 `value(value`，Types barrel export 前遗留字面量 `7803?`；均在构建前复核发现。首次校正 patch 又因把 diff 前缀误当作文件正文 context 而被拒绝，没有产生额外修改。
+- **分类**：`PATCH_TEXT_ARTIFACT`；尚未产生编译或运行结论。
+- **纠正**：依据只读复核到的精确正文恢复合法函数签名并删除无效字面量，随后才执行依赖顺序构建。
+
+```text
+ERR1469_STATUS=CLOSED_BEFORE_BUILD
+NEXT_LEGAL_ACTION=COMPLETE_OWNER_INTEGRATION_THEN_BUILD_TYPES_MIGRATION_DAEMON_IN_ORDER
+```
+<!-- SPECFORGE_ERR1469_PROVENANCE_CONTRACT_PATCH_ARTIFACT:END -->
+
+<!-- SPECFORGE_ERR1470_PROVENANCE_OWNER_PATCH_CONTEXT:START -->
+### ERR-1470：Provenance owner 组合补丁因不精确 context 被整体拒绝
+
+- **事实证据**：Atomic owner 尾部函数 context 在补丁中混入了不存在的签名片段，`apply_patch` 无法匹配并整体拒绝；源码与 Git index 未被该动作改变。
+- **分类**：`PATCH_CONTEXT_ERROR`。
+- **纠正**：改为按文件、按小范围 context 应用，并在每次后只读检查。
+
+```text
+ERR1470_STATUS=CLOSED_NO_PARTIAL_PATCH_APPLIED
+NEXT_LEGAL_ACTION=PATCH_ATOMIC_AND_GIT_PROVENANCE_OWNERS_IN_SEPARATE_VERIFIED_STEPS
+```
+<!-- SPECFORGE_ERR1470_PROVENANCE_OWNER_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1471_PROVENANCE_OWNER_PATCH_RETRY_ERRORS:START -->
+### ERR-1471：Provenance owner 分段补丁重试仍出现 context 与补丁终止符错误
+
+- **事实证据**：一次 Atomic legacy block 删除补丁因期望文本中混入不存在内容而拒绝；随后精确重试成功。一次 Git owner import 补丁在发送前内容被截断，因缺少合法结束行而整体拒绝。
+- **分类**：`PATCH_COMPOSITION_ERROR`；两次失败均未产生局部修改。
+- **纠正**：继续使用短小、单文件、完整终止的 patch，并在每步后读取目标区域。
+
+```text
+ERR1471_STATUS=CLOSED_NO_PARTIAL_FAILED_PATCH_MUTATION
+NEXT_LEGAL_ACTION=PATCH_GIT_PROVENANCE_OWNER_IN_SMALL_VERIFIED_SEGMENTS
+```
+<!-- SPECFORGE_ERR1471_PROVENANCE_OWNER_PATCH_RETRY_ERRORS:END -->
+
+<!-- SPECFORGE_ERR1472_GIT_PROVENANCE_READ_PATCH_PATH:START -->
+### ERR-1472：Git provenance reader 补丁使用了无效占位路径
+
+- **事实证据**：一次 `apply_patch` 使用字面量 `D long?` 作为更新路径且 hunk 为空，工具拒绝；没有文件改变。
+- **分类**：`PATCH_PATH_ERROR`。
+
+```text
+ERR1472_STATUS=CLOSED_NO_MUTATION
+NEXT_LEGAL_ACTION=APPLY_EXACT_GIT_PROVENANCE_READER_PATCH
+```
+<!-- SPECFORGE_ERR1472_GIT_PROVENANCE_READ_PATCH_PATH:END -->
+
+<!-- SPECFORGE_ERR1473_PROVENANCE_SOURCE_REVIEW_PATHS:START -->
+### ERR-1473：Provenance 实现后源码复核命令包含无效路径参数
+
+- **事实证据**：`rg` 参数中混入缺不存在的文件名与非法问号路径，随后一个 `Get-Content` 目标也不存在；有效的 shared contract 文件仍被完整读取，命令未修改仓库。
+- **分类**：`READ_ONLY_COMMAND_ARGUMENT_ERROR`。
+- **纠正**：构建前使用仅含已验证真实路径的命令复核，不把本次部分输出作为完整扫描证据。
+
+```text
+ERR1473_STATUS=CLOSED_NO_MUTATION
+NEXT_LEGAL_ACTION=REVIEW_VERIFIED_OWNER_PATHS_THEN_BUILD_IN_DEPENDENCY_ORDER
+```
+<!-- SPECFORGE_ERR1473_PROVENANCE_SOURCE_REVIEW_PATHS:END -->
+
+<!-- SPECFORGE_ERR1474_GIT_PROVENANCE_PATH_NARROWING:START -->
+### ERR-1474：Git provenance 运行时 path 校验后未向 exact union 收窄
+
+- **事实证据**：Types 与 Migration 顺序构建通过；Daemon build 在 provenance `byPath.set()` 返回 TS2322，证明 `normalizeRelative()` 的普通 `string` 即使已通过允许路径 Set 检查，TypeScript 仍不能自动收窄为三个路径组成的 closed union。
+- **纠正**：保留运行时允许集合校验，并只在该校验后收窄为 exact path type；不得把 shared contract 放宽为任意字符串。
+- **附加编排记录**：首个组合修复 patch补丁缺少第二个文件的 hunk header，被 `apply_patch` 整体拒绝，未改变文件。
+
+```text
+ERR1474_STATUS=OPEN_TARGETED_TYPE_NARROWING
+TYPES_BUILD=PASS
+MIGRATION_BUILD=PASS
+DAEMON_BUILD=FAIL_TS2322_EXPECTED_TARGET_REPAIR
+NEXT_LEGAL_ACTION=NARROW_PATH_AFTER_RUNTIME_ALLOWLIST_CHECK_THEN_REBUILD_DAEMON
+```
+<!-- SPECFORGE_ERR1474_GIT_PROVENANCE_PATH_NARROWING:END -->
+
+<!-- SPECFORGE_ERR1475_PROVENANCE_OWNER_TARGET_REPAIR:START -->
+### ERR-1475：Provenance owner 首轮 target repair闭环并暴露 Git producer 事务待验证项
+
+- **验证证据**：Types、Migration 顺序构建通过；Git path 在运行时 allowlist 校验后收窄，Daemon build 恢复通过；owner 红灯由 `4 failed` 转为 `4 pass`，现有 Atomic/Git/canonical resolver 扩散为 `4 files / 16 tests pass`，descriptor 为 `1 file / 3 tests pass`。
+- **旧兼容处理**：原“重建 legacy provenance”测试改为负向断言；生产 legacy reconstruction 已删除，没有新增 transition。
+- **编排记录**：一次 owner 删除补丁因错误 context 被拒、一次测试组合补丁在 JavaScript 解析前失败、随后一次测试补丁遗留 `readLong?` 并在只读复核后修正；这些动作未被当作产品验证证证据。
+- **待验证事务**：Git adoption/ignore producer 当前先写项目元数据再记录 provenance；必须证明损坏 provenance 在业务目标首次写入前失败关闭。
+
+```text
+ERR1474_STATUS=CLOSED_BY_RUNTIME_ALLOWLIST_THEN_EXACT_TYPE_NARROWING
+ERR1470_STATUS=CLOSED_NO_PARTIAL_PATCH
+ERR1475_STATUS=OPEN_GIT_PRODUCER_ZERO_WRITE_EXPECTED_RED_NOT_YET_RUN
+NEXT_LEGAL_ACTION=ADD_AND_RUN_GIT_PROVENANCE_PRODUCER_ZERO_WRITE_EXPECTED_RED
+```
+<!-- SPECFORGE_ERR1475_PROVENANCE_OWNER_TARGET_REPAIR:END -->
+
+<!-- SPECFORGE_ERR1476_GIT_PROVENANCE_PRODUCER_TRANSACTION_RED:START -->
+### ERR-1476：Git governance producer 在 provenance 失败前已修改项目元数据
+
+- **预期红灯证据**：owner target 为 `5 tests / 4 pass / 1 fail`；`gitIgnoreDecisionRecord()` 最终因损坏 provenance 抛出，但 `git_ignore_decisions.json` 已包含新决策和时间戳，直接证明首次业务写入早于 provenance preflight。
+- **能力判断**：`RUNTIME_DEFECT`。底层 owner 已 fail closed，但生产事务边界尚未接入。
+- **修复边界**：Git adoption 与 ignore decision 两个 producer 在任何项目元数据写入前验证既有 provenance 结构和当前 hash；Atomic Spec Merge 在正式 Project Spec transaction 前执行同类 preflight。缺失文件允许创建，既有损坏/未知/不可信记录失败关闭。
+- **编排记录**：新增测试时一次 import patch 因错误标识符被拒，一次组合 patch 在 JavaScript 解析前失败，一次成功 patch 留下不完整调用并在执行前修正；一次只读 `Get-Content` 参数多出 `-` 而失败。均未被当作产品测试证据。
+
+```text
+ERR1475_STATUS=CLOSED_EXPECTED_RED_CONFIRMED
+ERR1476_STATUS=OPEN_PRODUCER_PREFLIGHT_REPAIR
+EXPECTED_RED=1_FILE_5_TESTS_4_PASS_1_FAIL
+NEXT_LEGAL_ACTION=ADD_PRODUCER_CURRENT_PROVENANCE_PREFLIGHT_BEFORE_GIT_AND_ATOMIC_WRITES
+```
+<!-- SPECFORGE_ERR1476_GIT_PROVENANCE_PRODUCER_TRANSACTION_RED:END -->
+
+<!-- SPECFORGE_ERR1477_PROVENANCE_TRANSACTION_REPAIR_AND_PATCH_RECOVERY:START -->
+### ERR-1477：Provenance producer 事务修复完成并记录本地编排恢复
+
+- **修复证据**：Git adoption 与 ignore decision producer 在首次项目元数据写入前调用 current provenance preflight；Atomic Merge 在 Project Spec 事务写入前将 provenance invalid 纳入 preflight errors。Git 事务红灯由 `5 tests / 4 pass / 1 fail` 转为 `5 pass`；扩散为 `5 files / 24 tests pass`，Daemon build 通过。
+- **路径边界**：Atomic provenance shared contract 与 writer 同时拒绝反斜杠和 `..` traversal，避免“字符串前缀合法但解析后逃逸 Project Spec root”。
+- **编排事实**：本轮另有一次测试 import patch context 错误、一次测试追加片段不完整、一次只读 `Get-Content` 参数错误、一次测试启动脚本解析错误、一次 `rg` Windows glob 参数错误和三次路径加固 patch 文本错误；均已在下一次写入前或本记录中固化，未作为产品结论。
+
+```text
+ERR1475_STATUS=CLOSED_BY_GIT_PRODUCER_PREFLIGHT
+ERR1476_STATUS=CLOSED_EXPECTED_RED_TO_GREEN
+ERR1477_STATUS=CLOSED_TARGET_REPAIR_RECORD
+NEXT_LEGAL_ACTION=REBUILD_TYPES_MIGRATION_DAEMON_THEN_RUN_DESCRIPTOR_TARGET_AND_PROVENANCE_SPREAD
+```
+<!-- SPECFORGE_ERR1477_PROVENANCE_TRANSACTION_REPAIR_AND_PATCH_RECOVERY:END -->
+
+<!-- SPECFORGE_ERR1478_ROOT_REGRESSION_ENVIRONMENT_FAILURE:START -->
+### ERR-1478：Root 全量回归在 service-management 阶段出现宿主资源错误
+
+- **发生阶段**：Control-plane provenance 修复后的 root 全量回归。
+- **原始证据**：`@specforge/service-management` 的 NSSM / systemd precheck 共 8 项测试在调用 Node `os.userInfo().username` 时失败，系统错误为 `uv_os_get_passwd returned ENOMEM (not enough memory)`；其余 workspace 仍继续执行。
+- **证据边界**：失败栈位于宿主用户信息读取，不经过本轮 provenance 调用链；但中断后的测试会话已失效，最终 root 汇总无法复取，因此既不能把该失败归为产品缺陷，也不能宣称 root 回归通过。
+- **能力判断**：`INSUFFICIENT_EVIDENCE`。须先单独复验 service-management，再重新执行可完整留证的 root 全量回归。
+- **本地编排记录**：恢复会话时 `write_stdin` 返回 unknown process id；另有若干补丁/命令参数组合错误已在 ERR-1477 汇总，均未作为产品验证证据。
+
+```text
+ERR1478_STATUS=OPEN_ISOLATION_REQUIRED
+ROOT_REGRESSION=NOT_PROVEN
+NEXT_LEGAL_ACTION=ISOLATE_SERVICE_MANAGEMENT_THEN_RERUN_ROOT_REGRESSION_WITH_COMPLETE_SUMMARY
+```
+<!-- SPECFORGE_ERR1478_ROOT_REGRESSION_ENVIRONMENT_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1479_CONTROL_PLANE_PROVENANCE_FULL_VALIDATION:START -->
+### ERR-1479：Control-plane provenance 子家族完成全量可信验证
+
+- **环境隔离证据**：沙箱内独立 `node os.userInfo()` 复现 `uv_os_get_passwd returned ENOMEM`；非沙箱同一只读调用成功，且 `@specforge/service-management` 隔离回归为 `16 files / 270 tests pass`。因此 ERR-1478 是受限执行环境故障，不需要修改产品或历史测试。
+- **全量证据**：在可正常读取宿主用户信息的环境重新执行 root 确定性串行回归，16 个 workspace 全部完成且退出码为 0；Migration `20 files / 415 tests pass`，Daemon Core `194 files / 1733 tests pass`。
+- **修复闭环**：Atomic Spec Merge 与 Git governance provenance 使用 shared exact contracts、无 transition descriptors、existing-history/current-hash preflight；legacy reconstruction 已删除；Merge/Git producer 在首个业务写入前失败关闭；canonical Changed Files Audit 只聚合 owner 已验证记录。
+- **编排记录**：更新治理文档时一次 JavaScript 因重复声明变量在调用 `apply_patch` 前失败，未修改仓库；后续改用单文件精确补丁。
+
+```text
+ERR1466_STATUS=CLOSED_BY_EXACT_CONTRACT_DESCRIPTOR_AND_OWNER_PREFLIGHT
+ERR1476_STATUS=CLOSED_BY_PRODUCER_ZERO_WRITE_PREFLIGHT
+ERR1478_STATUS=CLOSED_ENVIRONMENT_ISOLATED_ROOT_RERUN_PASS
+ERR1479_STATUS=CLOSED_FULL_VALIDATION_RECORD
+PARENT_ERROR=ERR-1013
+ERR1013_STATUS=OPEN_REMAINING_AUDIT_MERGE_REPORT_AND_OBSERVABILITY_OWNER_FAMILIES
+POST_DOCUMENT_GOVERNANCE=13_FILES_84_TESTS_PASS
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_COMMIT
+```
+<!-- SPECFORGE_ERR1479_CONTROL_PLANE_PROVENANCE_FULL_VALIDATION:END -->
+
+<!-- SPECFORGE_ERR1480_PROGRESS_PATCH_ORCHESTRATION_ERROR:START -->
+### ERR-1480：进度文档补丁编排在调用写入前失败
+
+- **事实证据**：两次进度文档补丁脚本分别因未定义变量与语法错误在 `apply_patch` 调用前失败，仓库未被这些动作修改。
+- **纠正**：改用短小单文件补丁，并在落盘后立即读取核对。
+
+```text
+ERR1480_STATUS=CLOSED_NO_REPOSITORY_MUTATION
+NEXT_LEGAL_ACTION=APPLY_AND_VERIFY_PROGRESS_DOCUMENT_PATCH
+```
+<!-- SPECFORGE_ERR1480_PROGRESS_PATCH_ORCHESTRATION_ERROR:END -->
+
+<!-- SPECFORGE_ERR1481_HANDOFF_TEXT_ARTIFACT_AND_REVIEW_COMMAND:START -->
+### ERR-1481：Handoff 补丁出现文本伪影且首次复核命令参数错误
+
+- **事实证据**：新增 handoff 的 `CURRENT_PHASE`、`CURRENT_BLOCKER` 和 `CAPABILITY_ASSESSMENT` 被混入无效文本；随后只读复核命令又包含多余 `-` 和不存在路径，未获得有效输出。
+- **纠正**：使用已知精确字段替换伪影并完成复核；后续一次只读搜索因正则包含空分支产生超量输出，但真实 handoff、progress 与 ledger 尾部仍被直接读出，未改变仓库。最终文档治理集合 `13 files / 84 tests` 通过。
+
+```text
+ERR1481_STATUS=CLOSED_BY_EXACT_TEXT_REPAIR_AND_13_FILE_84_TEST_GATE
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_COMMIT
+```
+<!-- SPECFORGE_ERR1481_HANDOFF_TEXT_ARTIFACT_AND_REVIEW_COMMAND:END -->

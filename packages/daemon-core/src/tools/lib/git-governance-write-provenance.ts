@@ -1,9 +1,16 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { createHash } from 'node:crypto';
-import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
+import {
+  GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA_VERSION,
+  SPEC_DIR_NAME,
+  type GitGovernanceTrustedWrite,
+  type GitGovernanceWriteProvenance,
+} from '@specforge/types';
+import { createGitGovernanceWriteProvenanceSchemaDescriptor } from '@specforge/migration';
 
-export const GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA = 'git_governance_controlled_writes.v1';
+export const GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA =
+  GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA_VERSION;
 
 export const GIT_GOVERNANCE_PROJECT_METADATA_PATHS = new Set([
   '.specforge/project/git_policy.json',
@@ -11,17 +18,7 @@ export const GIT_GOVERNANCE_PROJECT_METADATA_PATHS = new Set([
   '.specforge/project/git_adoption_report.md',
 ]);
 
-export interface TrustedGitGovernanceWrite {
-  path: string;
-  producer: string;
-  sha256: string;
-}
-
-interface GitGovernanceWriteProvenance {
-  schema_version: string;
-  updated_at: string;
-  writes: TrustedGitGovernanceWrite[];
-}
+export type TrustedGitGovernanceWrite = GitGovernanceTrustedWrite;
 
 function normalizeRelative(value: string): string {
   return String(value ?? '')
@@ -43,26 +40,44 @@ function sha256File(filePath: string): string {
   return createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
 }
 
+function writeAtomically(filePath: string, content: string): void {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const temp = `${filePath}.tmp-${process.pid}-${Date.now()}`;
+  fs.writeFileSync(temp, content, 'utf-8');
+  fs.renameSync(temp, filePath);
+}
+
 function readProvenance(projectRoot: string): GitGovernanceWriteProvenance {
-  try {
-    const parsed = JSON.parse(fs.readFileSync(provenancePath(projectRoot), 'utf-8'));
-    if (
-      parsed?.schema_version !== GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA ||
-      !Array.isArray(parsed?.writes)
-    ) {
-      return {
-        schema_version: GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA,
-        updated_at: new Date(0).toISOString(),
-        writes: [],
-      };
-    }
-    return parsed as GitGovernanceWriteProvenance;
-  } catch {
+  const filePath = provenancePath(projectRoot);
+  if (!fs.existsSync(filePath)) {
     return {
       schema_version: GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA,
       updated_at: new Date(0).toISOString(),
       writes: [],
     };
+  }
+  try {
+    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as unknown;
+    const descriptor = createGitGovernanceWriteProvenanceSchemaDescriptor();
+    if (!descriptor.validateCurrent(parsed)) {
+      throw new Error('VALIDATION_FAILED');
+    }
+    return parsed as GitGovernanceWriteProvenance;
+  } catch (error) {
+    throw new Error(
+      `GIT_GOVERNANCE_PROVENANCE_INVALID: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+export function assertGitGovernanceWriteProvenanceCurrent(projectRoot: string): void {
+  const provenance = readProvenance(projectRoot);
+  for (const entry of provenance.writes) {
+    const relative = normalizeRelative(entry.path);
+    const absolute = path.join(projectRoot, ...relative.split('/'));
+    if (!fs.existsSync(absolute) || sha256File(absolute) !== entry.sha256.toLowerCase()) {
+      throw new Error(`GIT_GOVERNANCE_PROVENANCE_INVALID: CURRENT_HASH_MISMATCH: ${relative}`);
+    }
   }
 }
 
@@ -86,7 +101,7 @@ export function recordGitGovernanceProjectWrites(
       throw new Error(`GIT_GOVERNANCE_PROVENANCE_TARGET_MISSING: ${relative}`);
     }
     byPath.set(relative, {
-      path: relative,
+      path: relative as GitGovernanceTrustedWrite['path'],
       producer,
       sha256: sha256File(absolute),
     });
@@ -100,8 +115,11 @@ export function recordGitGovernanceProjectWrites(
     ),
   };
   const output = provenancePath(projectRoot);
-  fs.mkdirSync(path.dirname(output), { recursive: true });
-  fs.writeFileSync(output, JSON.stringify(next, null, 2) + '\n', 'utf-8');
+  const descriptor = createGitGovernanceWriteProvenanceSchemaDescriptor();
+  if (!descriptor.validateCurrent(next)) {
+    throw new Error('GIT_GOVERNANCE_PROVENANCE_RECORD_INVALID');
+  }
+  writeAtomically(output, JSON.stringify(next, null, 2) + '\n');
   return next.writes;
 }
 

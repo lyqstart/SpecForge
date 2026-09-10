@@ -6,7 +6,10 @@ import * as path from 'node:path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
 import { analyzeIgnore, getCurrentBranch, getHeadCommit, normalizeRelativePath, preflight } from './git-governance-core';
-import { recordGitGovernanceProjectWrites } from './git-governance-write-provenance';
+import {
+  assertGitGovernanceWriteProvenanceCurrent,
+  recordGitGovernanceProjectWrites,
+} from './git-governance-write-provenance';
 
 const execFileAsync = promisify(execFile);
 
@@ -72,6 +75,7 @@ function inferProvider(url: string | undefined): string {
 
 export async function gitProjectAdopt(input: { projectRoot: string; defaultBranch?: string; confirmed?: boolean; writeReport?: boolean }) {
   if (input.confirmed !== true) throw new Error('PROJECT_ADOPTION_REQUIRES_USER_CONFIRMATION');
+  assertGitGovernanceWriteProvenanceCurrent(input.projectRoot);
   const defaultBranch = input.defaultBranch || 'main';
   const pf = await preflight(input.projectRoot, defaultBranch);
   const headCommit = await getHeadCommit(input.projectRoot).catch(() => '');
@@ -198,6 +202,7 @@ export async function gitAuthProfileConfig(input: { profileName: string; provide
 
 export async function gitIgnoreDecisionRecord(input: { projectRoot: string; decisions: Array<{ path: string; decision: 'track' | 'ignore' | 'ask' | 'hard_stop'; reason?: string }>; confirmed?: boolean }) {
   if (input.confirmed !== true) throw new Error('IGNORE_DECISION_RECORD_REQUIRES_USER_CONFIRMATION');
+  assertGitGovernanceWriteProvenanceCurrent(input.projectRoot);
   const decisionsPath = specProjectPath(input.projectRoot, 'git_ignore_decisions.json');
   const existing = await readJsonIfExists<any>(decisionsPath, { schema_version: 'git_ignore_decisions.v1', decisions: [] });
   const byPath = new Map<string, any>();
