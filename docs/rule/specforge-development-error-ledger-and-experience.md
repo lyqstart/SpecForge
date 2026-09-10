@@ -27564,3 +27564,25 @@ ERR1496_STATUS=CLOSED_EXACT_STAGE_SUCCEEDED_OUTSIDE_SANDBOX
 ERR1497_STATUS=CLOSED_REREAD_CONTEXT_AND_APPLIED
 ```
 <!-- SPECFORGE_ERR1497_LEDGER_STATUS_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1498_RECEIPT_PATCH_CONTEXT_ERRORS:START -->
+### ERR-1498：Audit 提交回执补丁上下文生成错误
+
+- **事实证据**：一项补丁指向不存在的 `current.md`；一项组合补丁包含错误的预期行；另一次回执补丁生成了一行无效状态标记。被拒绝的补丁未修改文件；无效标记经读取实际文件后已删除。
+- **影响判断**：产品源码和已创建提交 `d190236` 不受影响；最终回执通过治理测试后再独立提交。
+
+```text
+ERR1498_STATUS=CLOSED_RECEIPT_CONTEXT_CORRECTED
+```
+<!-- SPECFORGE_ERR1498_RECEIPT_PATCH_CONTEXT_ERRORS:END -->
+
+<!-- SPECFORGE_ERR1499_RECEIPT_STAGE_COMMAND_CORRUPTION:START -->
+### ERR-1499：Audit 回执暂存命令路径文本异常
+
+- **事实证据**：刷新暂存区的命令包含不存在的后缀路径，`git add` 因 pathspec 不存在退出；后续 PowerShell 将另一错误路径识别为未知命令。
+- **影响判断**：没有文件被暂存或修改；会话已终止。改用仅刷新已跟踪文件的短命令 `git add -u`，未跟踪历史备份不会进入暂存区。
+
+```text
+ERR1499_STATUS=CLOSED_NO_MUTATION_SHORT_STAGE_COMMAND_SELECTED
+```
+<!-- SPECFORGE_ERR1499_RECEIPT_STAGE_COMMAND_CORRUPTION:END -->
