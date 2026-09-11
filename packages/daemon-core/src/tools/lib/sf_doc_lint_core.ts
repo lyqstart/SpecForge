@@ -443,7 +443,7 @@ function checkV6ArchDesignPrinciples(content: string, fileName: string): DocLint
     "Daemon 是唯一的 Source of Truth",
     "SpecForge Runtime Contract 的优先级高于 OpenCode 内部行为",
     "程序硬控优先于 Prompt 控制（继承 V5）",
-    "可观测性是一级组件，不是附加能力",
+    "可观测性是一级能力，不是第二套状态系统",
     "扩展性优先于完备性"
   ]
   

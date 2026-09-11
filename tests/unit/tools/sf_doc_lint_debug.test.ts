@@ -29,7 +29,7 @@ SpecForge V6 架构文档。
 1. **Daemon 是唯一的 Source of Truth**：任何组件都不得绕过 Daemon 修改权威状态。
 2. **SpecForge Runtime Contract 的优先级高于 OpenCode 内部行为**：OpenCode 的 plugin hook、事件 schema、tool 参数变化被 Adapter 层吸收，不得泄漏到 Daemon 核心。
 3. **程序硬控优先于 Prompt 控制（继承 V5）**：能在代码里以 Gate / Permission / schema 硬约束的规则，不交给 prompt。
-4. **可观测性是一级组件，不是附加能力**：Event Bus、CAS、事件日志从 day-1 就是核心，不是"后期再接监控"。
+4. **可观测性是一级能力，不是第二套状态系统**：Daemon 内部 Event Bus、Runtime CAS、三级 policy 与分源诊断日志从 day-1 纳入真实入口；Runtime WAL/state 仍是唯一业务状态权威。
 5. **扩展性优先于完备性**：V6.0 先把 Adapter、Skill、Tool、Workflow、Gate、Config 的扩展点定死，再逐步补完内置实现。
 
 ### DD-1 核心模块设计

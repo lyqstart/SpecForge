@@ -102,7 +102,7 @@ EMPTY_WAL_PERSISTENCE=FORBIDDEN
    - 原则 1：Daemon 是唯一的 Source of Truth。
    - 原则 2：SpecForge Runtime Contract 的优先级高于 OpenCode 内部行为。
    - 原则 3：程序硬控优先于 Prompt 控制（继承 V5）。
-   - 原则 4：可观测性是一级组件，不是附加能力。
+   - 原则 4：可观测性是一级能力，不是第二套状态系统。
    - 原则 5：扩展性优先于完备性。
 3. WHERE 某个具体模块 spec 与本文档的 5 条核心设计原则冲突，THE Module_Spec SHALL 显式引用本文档并说明偏离理由，不得隐式偏离。
 4. IF 本文档的一句话定位在后续被修改，THEN THE Requirements_Document SHALL 在同一次修改中同步更新 Glossary 中 "SpecForge V6" 的定义。
