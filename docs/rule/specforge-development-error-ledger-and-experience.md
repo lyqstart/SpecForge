@@ -27884,3 +27884,46 @@ NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_CHECKPOINT_COMMIT
 ERR1519_STATUS=CLOSED_HISTORY_RESTORED_AND_GOVERNANCE_24_PASS
 ```
 <!-- SPECFORGE_ERR1519_PROGRESS_STATUS_PATCH_SCOPE:END -->
+
+<!-- SPECFORGE_ERR1013_OBSERVABILITY_OWNER_COMMIT_RECEIPT:START -->
+### ERR-1013 commit receipt：Observability owner 收敛本地提交
+
+- **提交事实**：已在本地 `main` 创建实现与治理提交 `d762887526b3e6328af281fcd40b45f014baa44a`，提交信息为 `fix(observability): enforce diagnostic owners`。
+- **工作区边界**：提交后仅保留明确排除的历史设计备份；未执行 push 或用户级部署。
+
+```text
+ERR1013_STATUS=CLOSED
+OPEN_ERRORS=NONE
+CURRENT_PHASE=ERR1013_GOVERNANCE_RECEIPT_LOCAL_COMMIT
+CURRENT_BLOCKER=NONE
+IMPLEMENTATION_AND_GOVERNANCE_COMMIT=d762887526b3e6328af281fcd40b45f014baa44a
+LOCAL_COMMITS_AHEAD_AFTER_IMPLEMENTATION_COMMIT=27
+NEXT_LEGAL_ACTION=RUN_POST_RECEIPT_GOVERNANCE_GATE_THEN_COMMIT_RECEIPT
+```
+<!-- SPECFORGE_ERR1013_OBSERVABILITY_OWNER_COMMIT_RECEIPT:END -->
+
+<!-- SPECFORGE_ERR1520_ROOT_VITEST_SHIM_ABSENT:START -->
+### ERR-1520：治理门禁首次使用了不存在的根级 Vitest shim
+
+- **事实证据**：`./node_modules/.bin/vitest.exe` 在仓库根不存在，PowerShell 在启动测试前返回 command-not-found；项目文件和运行状态未被测试命令修改。
+- **根因**：未先核对本仓库实际 package-local runner；`packages/daemon-core/node_modules/.bin/vitest.exe` 经只读检查确认存在。
+- **纠正**：改用已验证的 Daemon package-local Vitest 入口运行同一经验门禁。
+
+```text
+ERR1520_STATUS=CLOSED_NO_TEST_EXECUTION_NO_PRODUCT_MUTATION
+NEXT_LEGAL_ACTION=RUN_EXPERIENCE_GATE_WITH_VERIFIED_DAEMON_PACKAGE_LOCAL_VITEST
+```
+<!-- SPECFORGE_ERR1520_ROOT_VITEST_SHIM_ABSENT:END -->
+
+<!-- SPECFORGE_ERR1521_VITEST_WORKDIR_CONFIG_MISMATCH:START -->
+### ERR-1521：Daemon 本地 Vitest 从仓库根加载了错误配置边界
+
+- **事实证据**：package-local runner 从仓库根启动后加载根 `vitest.config.ts`，因根依赖布局不提供 `vitest/config` 而在测试收集前失败。
+- **根因**：runner 路径正确，但调用工作目录仍是仓库根，未进入 Daemon package 的依赖与配置边界。
+- **纠正**：将工作目录切换为 `packages/daemon-core`，使用其本地 runner 执行相对测试路径。
+
+```text
+ERR1521_STATUS=CLOSED_EXPERIENCE_GATE_1_FILE_5_PASS
+NEXT_LEGAL_ACTION=STAGE_EXACT_THREE_GOVERNANCE_RECEIPT_FILES_AND_COMMIT
+```
+<!-- SPECFORGE_ERR1521_VITEST_WORKDIR_CONFIG_MISMATCH:END -->
