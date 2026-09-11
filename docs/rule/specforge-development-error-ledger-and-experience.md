@@ -27954,3 +27954,160 @@ ERR1522_STATUS=CLOSED_EXACT_RETRY_SUCCEEDED_FINAL_STATE_COMMITTED
 NEXT_LEGAL_ACTION=SELECT_NEXT_AUTHORIZED_BACKLOG_ITEM_OR_EXPLICITLY_AUTHORIZE_PUSH
 ```
 <!-- SPECFORGE_ERR1522_FINAL_RECEIPT_INDEX_LOCK_PERMISSION:END -->
+
+<!-- SPECFORGE_ERR1523_V6_AUTHORITY_PRINCIPLE_CONSUMER_DRIFT:START -->
+### ERR-1523：V6 Observability 核心原则的权威文本与现役 Doc Lint 消费者漂移
+
+- **事实证据**：V6 requirements REQ-1.2 仍声明“可观测性是一级组件，不是附加能力”；V6 design 已声明“可观测性是一级能力，不是第二套状态系统”；Daemon 与 userlevel `sf_doc_lint_core.ts` 均硬编码前一旧句，旧根测试夹具也复制旧句。
+- **架构判断**：四份治理文件的职责链已经明确且没有并列权威冲突；缺陷发生在上游原则文字未原子同步到 design 和两个现役 linter 消费者。旧根测试的 `.opencode` import 不属于当前 release 入口，不能作为恢复旧部署或旧原则的依据。
+- **责任层**：Requirements → Design contract → Daemon/userlevel Tool consumer → regression test。
+- **防复发**：增加独立权威链与原则消费者对齐测试，稳定验证四份文件的非重叠职责，以及 REQ-1.2 原则 4 在两个现役 linter 中的一致投影。
+
+```text
+ERR1523_STATUS=CLOSED_TARGET_DAEMON_SCOPE_RELEASE_VALIDATED
+CAPABILITY_ASSESSMENT=CONTRACT_CONFLICT_AND_TEST_DRIFT
+NEXT_LEGAL_ACTION=RUN_TARGET_AUTHORITY_AND_DOC_LINT_REGRESSION_THEN_BUILD_AND_SCOPE_GATES
+```
+<!-- SPECFORGE_ERR1523_V6_AUTHORITY_PRINCIPLE_CONSUMER_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1524_DAEMON_BUILD_BUN_PATH:START -->
+### ERR-1524：Daemon 构建首次调用了 PATH 中不存在的 Bun
+
+- **事实证据**：从 Daemon package 执行 `bun run build` 时 PowerShell 在进程启动前返回 command-not-found；没有构建或项目写入发生。
+- **根因**：当前桌面会话没有全局 Bun PATH，未复用本线程已验证的 Bun 绝对路径。
+- **纠正**：使用已验证存在的隔离 Bun 绝对路径执行相同 package build。
+
+```text
+ERR1524_STATUS=CLOSED_NO_BUILD_EXECUTION_NO_PRODUCT_MUTATION
+NEXT_LEGAL_ACTION=RUN_DAEMON_BUILD_WITH_VERIFIED_ABSOLUTE_BUN_PATH
+```
+<!-- SPECFORGE_ERR1524_DAEMON_BUILD_BUN_PATH:END -->
+
+<!-- SPECFORGE_ERR1525_RELEASE_CANDIDATE_ID_REPEAT:START -->
+### ERR-1525：发布 Manifest 再次使用了不符合 step 格式的 candidate ID
+
+- **事实证据**：Scope Gate 三个真实 release consumer 一致拒绝 `main-4c26a70-working-tree-err1523authority`，要求 `^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$`。
+- **分类**：重复 ERR-1518；本轮在已知格式证据存在时仍凭语义名称构造 ID，违反 EXP-001、EXP-007 与重复错误检查。
+- **纠正与防复发**：使用 `main-4c26a70-working-tree-step1523authority` 重新运行正式 manifest producer；以真实 consumer 正向通过作为唯一验收，不修改格式测试。
+
+```text
+ERR1525_STATUS=CLOSED_SUPERSEDED_BY_EIGHT_HEX_CONFORMING_MANIFEST
+REPEATED_ERROR_CLASS=ERR-1518
+NEXT_LEGAL_ACTION=REBUILD_RELEASE_MANIFEST_WITH_CONFORMING_STEP_CANDIDATE_ID
+```
+<!-- SPECFORGE_ERR1525_RELEASE_CANDIDATE_ID_REPEAT:END -->
+
+<!-- SPECFORGE_ERR1526_SCOPE_GATE_LOCK_EPHEMERAL:START -->
+### ERR-1526：Scope Gate 全包中的 installer lock 测试发生 Windows 临时 rename EPERM
+
+- **事实证据**：`current-installer-lock-owner.test.ts` 的 heartbeat 临时文件 rename 在系统临时目录返回 EPERM；同次其余 110 项通过，失败路径不消费 V6 原则或 Doc Lint。
+- **分类**：环境/文件系统隔离失败，不能归因于当前补丁；需要按原命令隔离运行确认。
+- **纠正**：使用 workspace-local Bun 临时目录单独运行 7 项 lock owner 测试，再运行完整 Scope Gate 验证集合。
+
+```text
+ERR1526_STATUS=CLOSED_ISOLATED_7_PASS_AND_SCOPE_FULL_114_PASS
+NEXT_LEGAL_ACTION=RUN_INSTALLER_LOCK_OWNER_IN_WORKSPACE_LOCAL_TEMP
+```
+<!-- SPECFORGE_ERR1526_SCOPE_GATE_LOCK_EPHEMERAL:END -->
+
+<!-- SPECFORGE_ERR1527_RELEASE_CANDIDATE_SHORT_SHA_LENGTH:START -->
+### ERR-1527：修正后的 release candidate ID 仍使用了 7 位短 SHA
+
+- **事实证据**：三个真实 release consumer 拒绝 `main-4c26a70-working-tree-step1523authority`；正式正则要求 `main-` 后为 8 位十六进制，当前 HEAD 前 8 位是 `4c26a704`。
+- **根因**：只修正了 `step` 前缀，没有逐段验证完整正则；仍属于 ERR-1518/1525 同类重复错误。
+- **纠正**：使用 `main-4c26a704-working-tree-step1523authority` 重新生成 manifest，并在执行 producer 前按正式正则逐段核对。
+
+```text
+ERR1527_STATUS=CLOSED_CONFORMING_ID_AND_RELEASE_CONSUMERS_5_PASS
+REPEATED_ERROR_CLASS=ERR-1518,ERR-1525
+NEXT_LEGAL_ACTION=REBUILD_MANIFEST_WITH_EIGHT_HEX_HEAD_AND_RERUN_THREE_RELEASE_CONSUMERS
+```
+<!-- SPECFORGE_ERR1527_RELEASE_CANDIDATE_SHORT_SHA_LENGTH:END -->
+
+<!-- SPECFORGE_ERR1523_V6_AUTHORITY_CONSUMER_CLOSURE:START -->
+### ERR-1523 closure：四份治理文件职责确认与 V6 原则消费者收敛
+
+- **四份文件结论**：requirements 是业务目标、范围和验收权威；design 是模块、依赖、数据流、运行和部署权威；repository ADR-013 保存已批准决定及原因但不覆盖前两者；治理总方案只在架构一致性/契约治理子系统内定义如何执行和阻断。重叠的“不兼容旧项目”和 release boundary 是有方向的规范投影，不是并列真相源。
+- **实际修复**：REQ-1.2 原则 4 与 design 统一为“可观测性是一级能力，不是第二套状态系统”；Daemon 与 userlevel Doc Lint 同步消费；旧测试夹具文本同步但不恢复不存在的 `.opencode` 旧部署入口。
+- **验证**：预期红 `1 pass / 2 fail`；修复后独立回归 `3/3`，Daemon build 通过，Daemon 全包 `197 files / 1736 tests`，Scope Gate `24 files / 114 tests`，根构建 `16 workspaces`，108 文件 release install/upgrade/rollback 通过。
+
+```text
+ERR1523_STATUS=CLOSED
+ERR1524_STATUS=CLOSED
+ERR1525_STATUS=CLOSED
+ERR1526_STATUS=CLOSED
+ERR1527_STATUS=CLOSED
+OPEN_ERRORS=NONE
+CURRENT_PHASE=FOUR_DOCUMENT_GOVERNANCE_CONSUMER_ALIGNMENT_LOCAL_COMMIT
+CURRENT_BLOCKER=FINAL_DIFF_STATUS_AUDIT_AND_LOCAL_COMMIT_NOT_YET_COMPLETE
+RELEASE_CANDIDATE_ID=main-4c26a704-working-tree-step1523authority
+NEXT_LEGAL_ACTION=RUN_FINAL_EXPERIENCE_GATE_THEN_CREATE_LOCAL_CHECKPOINT_COMMIT
+```
+<!-- SPECFORGE_ERR1523_V6_AUTHORITY_CONSUMER_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1528_PROGRESS_AUTHORITY_MODEL_PATCH_INPUT:START -->
+### ERR-1528：进度文件权威模型措辞补丁的工具变量输入错误
+
+- **事实证据**：`apply_patch` 调用在 JavaScript 解析阶段因错误变量名失败，补丁未发送、文件未修改。
+- **纠正**：使用单一显式 patch 变量和单文件精确上下文重试；将 ADR 表达为决策记录，将 requirements→design 表达为规范产品链。
+
+```text
+ERR1528_STATUS=CLOSED_NO_TOOL_EXECUTION_PATCH_APPLIED_AND_VALIDATED
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_CHECKPOINT_COMMIT
+```
+<!-- SPECFORGE_ERR1528_PROGRESS_AUTHORITY_MODEL_PATCH_INPUT:END -->
+
+<!-- SPECFORGE_ERR1529_INCOMPLETE_DOC_LINT_FIXTURE_CONSUMER_SCAN:START -->
+### ERR-1529：首次 Doc Lint 原则消费者清单漏掉九个根测试夹具
+
+- **事实证据**：最终固定文本全仓检索在 `sf_doc_lint_debug.test.ts` 和 `sf_doc_lint.test.ts` 中发现九个旧原则命中；第一次修改只同步了 `sf_doc_lint_v6_architecture.test.ts`。
+- **根因**：修改前检索范围限定为一个已知测试文件，没有按旧生产者值反向扫描全部测试消费者，违反 EXP-087。
+- **纠正与防复发**：同步全部根测试夹具；独立回归读取三个 fixture 文件并断言旧原则零命中、新原则存在。
+
+```text
+ERR1529_STATUS=CLOSED_ALL_TEN_FIXTURE_CONSUMERS_ALIGNED
+NEXT_LEGAL_ACTION=RUN_FINAL_AUTHORITY_CONSUMER_AND_EXPERIENCE_GATES
+```
+<!-- SPECFORGE_ERR1529_INCOMPLETE_DOC_LINT_FIXTURE_CONSUMER_SCAN:END -->
+
+<!-- SPECFORGE_ERR1530_DEBUG_FIXTURE_PATCH_TEXT_CORRUPTION:START -->
+### ERR-1530：Debug fixture 补丁的预期原文被工具输入错误污染
+
+- **事实证据**：`apply_patch` 因预期行包含源文件不存在的额外字符而原子拒绝；目标文件未修改。
+- **纠正**：从只读 `rg` 输出复制精确完整原文，单文件替换并立即执行零旧文本检索。
+
+```text
+ERR1530_STATUS=CLOSED_ATOMIC_REJECTION_NO_MUTATION_EXACT_SOURCE_APPLIED
+NEXT_LEGAL_ACTION=CONTINUE_CONFIRMED_FIXTURE_CONSUMER_ALIGNMENT
+```
+<!-- SPECFORGE_ERR1530_DEBUG_FIXTURE_PATCH_TEXT_CORRUPTION:END -->
+
+### ERR-1531—ERR-1533：fixture 批处理与两次登记补丁输入失败
+
+- ERR-1531：九次串行 `apply_patch` 批处理超时；终止后只读核对证明四次成功、五处仍未修改。
+- ERR-1532：首次登记补丁路径被错误字符污染，原子失败。
+- ERR-1533：第二次登记补丁使用占位上下文，原子失败。
+- 纠正：不再批处理或使用占位文本；每次只处理一个已确认的剩余命中，并在每次后重新计数。
+
+```text
+ERR1531_STATUS=CLOSED_PARTIAL_EFFECT_RECONCILED_ALL_REMAINING_APPLIED
+ERR1532_STATUS=CLOSED_NO_MUTATION
+ERR1533_STATUS=CLOSED_NO_MUTATION
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_CHECKPOINT_COMMIT
+```
+
+<!-- SPECFORGE_ERR1523_FINAL_LOCAL_COMMIT_RECEIPT:START -->
+### ERR-1523 最终本地提交回执
+
+- **事实证据**：实现与测试已提交为 `b414cc0`；提交前差异检查通过，目标权威测试与经验门禁共 `2 files / 8 tests` 通过。
+- **最终状态**：四文件职责关系无冲突；Requirements 原则及其当前生产消费者、测试夹具已经对齐；无需修改 ADR-013、V6 Design 或治理实施方案正文。
+
+```text
+ERR1523_STATUS=CLOSED
+OPEN_ERRORS=NONE
+CURRENT_BLOCKER=NONE
+IMPLEMENTATION_COMMIT=b414cc0
+PUSH_DEPLOY=NOT_AUTHORIZED_NOT_PERFORMED
+NEXT_LEGAL_ACTION=SELECT_NEXT_AUTHORIZED_BACKLOG_ITEM_OR_EXPLICITLY_AUTHORIZE_PUSH
+```
+<!-- SPECFORGE_ERR1523_FINAL_LOCAL_COMMIT_RECEIPT:END -->
