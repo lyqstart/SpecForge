@@ -28111,3 +28111,47 @@ PUSH_DEPLOY=NOT_AUTHORIZED_NOT_PERFORMED
 NEXT_LEGAL_ACTION=SELECT_NEXT_AUTHORIZED_BACKLOG_ITEM_OR_EXPLICITLY_AUTHORIZE_PUSH
 ```
 <!-- SPECFORGE_ERR1523_FINAL_LOCAL_COMMIT_RECEIPT:END -->
+
+<!-- SPECFORGE_CURRENT_MAINTENANCE_REMOTE_DELIVERY_RECEIPT:START -->
+### 2026-09-11 当前维护批次远程交付回执
+
+- **动作事实**：用户明确授权后，`45a0cfee54306a3f29a8ca06dfa827b385b25e50..a3911aac54124ac1c6057afce08a045676bbc6d4` 已通过 `git push origin main` 推送到远程 `main`，命令退出码为 0。
+- **独立验证**：`git ls-remote origin refs/heads/main` 返回 `a3911aac54124ac1c6057afce08a045676bbc6d4`；本地 `main` 与 `origin/main` 为 `0 behind / 0 ahead`。
+- **边界**：本次未执行用户级部署，未创建 PR，未处理用户原有未跟踪设计备份。
+
+```text
+PUSH_ACTION=PERFORMED
+POST_PUSH_VERIFICATION=PASS
+REMOTE_MAIN=a3911aac54124ac1c6057afce08a045676bbc6d4
+OPEN_ERRORS=NONE
+CURRENT_BLOCKER=NONE
+NEXT_LEGAL_ACTION=COMMIT_AND_PUSH_THIS_GOVERNANCE_RECEIPT
+```
+<!-- SPECFORGE_CURRENT_MAINTENANCE_REMOTE_DELIVERY_RECEIPT:END -->
+
+<!-- SPECFORGE_ERR1534_REMOTE_RECEIPT_PATCH_INPUT_CORRUPTION:START -->
+### ERR-1534：远程交付回执补丁输入污染
+
+- **事实证据**：首次回执补丁成功写入后，只读 diff 发现提交范围、命令和远程名称包含重复及缺失字符；Git 推送事实和远程仓库未受影响。
+- **根因分类**：补丁输入生成错误，属于文档写入工具边界缺陷；归入 EXP-002、EXP-015、EXP-019。
+- **纠正与防复发**：从 Git 原始输出复制精确 SHA、命令和远程名称；使用单个短补丁修复，并在暂存前全文检索污染片段和运行经验门禁。
+
+```text
+ERR1534_STATUS=CLOSED
+PRODUCT_STATE_IMPACT=NONE
+PUSH_ACTION=PERFORMED
+NEXT_LEGAL_ACTION=VALIDATE_AND_COMMIT_REMOTE_DELIVERY_RECEIPT
+```
+<!-- SPECFORGE_ERR1534_REMOTE_RECEIPT_PATCH_INPUT_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1535_RECEIPT_VALIDATION_COMMAND_TYPO:START -->
+### ERR-1535：回执校验命令包含无效只读参数
+
+- **事实证据**：组合校验命令末尾的无效 `Get-Content` 参数导致退出码 1；此前文本检索无命中、diff check 无错误，命令未执行任何写操作。
+- **纠正与防复发**：不再追加无关读取动作；将污染检索、diff/status 和测试拆分执行。
+
+```text
+ERR1535_STATUS=CLOSED_NO_MUTATION
+NEXT_LEGAL_ACTION=RUN_SEPARATED_RECEIPT_VALIDATION
+```
+<!-- SPECFORGE_ERR1535_RECEIPT_VALIDATION_COMMAND_TYPO:END -->
