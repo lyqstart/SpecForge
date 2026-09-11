@@ -247,13 +247,13 @@ describe('filesystem-diff', () => {
       });
       const payloadSha = createHash('sha256').update(payload).digest('hex');
       const payloadRel =
-        `.specforge/logs/observability/payloads/by-sha256/` +
+        `.specforge/logs/observability/userlevel/payloads/by-sha256/` +
         `${payloadSha.slice(0, 2)}/${payloadSha}.json`;
       const payloadPath = path.join(tmpDir, ...payloadRel.split('/'));
       await fs.mkdir(path.dirname(payloadPath), { recursive: true });
       await fs.writeFile(payloadPath, payload);
       await fs.writeFile(
-        path.join(tmpDir, '.specforge', 'logs', 'observability', 'index.jsonl'),
+        path.join(tmpDir, '.specforge', 'logs', 'observability', 'userlevel', 'index.jsonl'),
         JSON.stringify({
           timestamp: preflightTimestamp,
           trace_id: 'trace-preflight',
@@ -316,12 +316,12 @@ describe('filesystem-diff', () => {
         status_entries: [{ path: 'tracked.txt', kind: 'modified' }],
       });
       const payloadSha = createHash('sha256').update(payload).digest('hex');
-      const payloadRel = '.specforge/logs/observability/payloads/preflight.json';
+      const payloadRel = '.specforge/logs/observability/userlevel/payloads/preflight.json';
       const payloadPath = path.join(tmpDir, ...payloadRel.split('/'));
       await fs.mkdir(path.dirname(payloadPath), { recursive: true });
       await fs.writeFile(payloadPath, payload);
       await fs.writeFile(
-        path.join(tmpDir, '.specforge', 'logs', 'observability', 'index.jsonl'),
+        path.join(tmpDir, '.specforge', 'logs', 'observability', 'userlevel', 'index.jsonl'),
         JSON.stringify({
           timestamp: new Date(stat.mtimeMs + 1_000).toISOString(),
           trace_id: 'trace-dirty',

@@ -55,11 +55,12 @@ EMPTY_WAL_PERSISTENCE=FORBIDDEN
 - **WorkflowRole**：Agent 在某个 workflow 实例里扮演的动态角色（如当前 feature_spec WI-042 的 requirements 阶段执行者）。
 - **Session Tree**：同一个 workItem 下多个 session 形成的父子关系树，通过 `parentSessionId` 串联，为未来 nested subagent 预留。
 - **Work Item**：业务项目中的治理工作项，权威根目录为 `<project>/.specforge/work-items/<WI>/`。公开 `sf_work_item_create` 是唯一创建入口，必须一次性保存用户原始请求、分配完整目录和 schema 1.1 metadata，并通过 StateManager/WAL 建立初始 `intake_ready` 状态；`sf_state_transition` 只推进已存在 Work Item，不得分配 ID、创建目录或合成 metadata。`work_item.json` 只承载 Runtime-owned 元数据（身份、workflow、权限事实等），不得包含生命周期 `status`；独立 state machine 的唯一状态权威是 Daemon 写入的 WAL 事件。仓库内 `.kiro/specs/**` 是 SpecForge 产品规格文档，不是业务 Runtime 的 Work Item 根。
-- **Event Bus**：Daemon 内部的统一事件总线。所有跨层通信必须经过 Event Bus，不得直接函数调用跨越可观测性边界。
-- **events.jsonl**：Event Bus 的持久化落盘文件，采用 WAL（Write-Ahead Log）语义，是状态重建的唯一事实来源。
+- **Event Bus**：Daemon 内部的统一事件总线；它不是 `@specforge/observability` 包内的第二个运行时实现。
+- **Diagnostic Recorder**：位于 Thin client/userlevel 与 Daemon 真实入口的非权威诊断记录器；两个 recorder 使用互不重叠的物理 owner 根，失败不得改变业务状态。
+- **events.jsonl**：Daemon StateManager/WAL 的持久化落盘文件，采用 WAL（Write-Ahead Log）语义，是状态重建的唯一事实来源。
 - **state.json**：派生状态检查点文件，由 events.jsonl 推导得出，用于快速启动；崩溃恢复时以 events.jsonl 为准。
 - **WAL**：Write-Ahead Log，先写日志再改状态的崩溃安全语义。
-- **CAS**：Content-Addressable Storage，内容寻址存储。以内容 SHA-256 为地址存储 blob。
+- **Runtime CAS / Diagnostic Payload Store**：Daemon Runtime CAS 服务业务 blob；诊断 payload 由各 recorder 在自己的 owner 根内以 SHA-256 寻址，两者不得共享 owner。
 - **blob**：一段二进制或文本数据，存储在 CAS 中，通过 SHA-256 引用。大内容（图片、音频、PDF、长文本）不内嵌到 HTTP body 和 event payload 中，一律以 blob 引用。
 - **UserMessage**：V6 统一的消息格式。`content` 为数组，元素类型包含 `text`、`image`、`audio`、`video`、`file`、`code`、`document`。
 - **ModelCapabilities**：声明一个 LLM model 支持哪些模态（text / image / audio / video / file 等）的结构体。
@@ -390,7 +391,7 @@ EMPTY_WAL_PERSISTENCE=FORBIDDEN
 #### Acceptance Criteria
 
 1. THE Requirements_Document SHALL 声明 V6.0 不实现多机同步能力。
-2. THE Requirements_Document SHALL 声明 Event Bus 与 events.jsonl 的 schema 在设计时必须支持未来多机同步（事件全局唯一 ID、单调时间戳、project 维度可聚合）。
+2. THE Requirements_Document SHALL 声明 Runtime events.jsonl 的 schema 在设计时必须支持未来多机同步（事件全局唯一 ID、单调时间戳、project 维度可聚合）；诊断日志不替代该状态权威。
 3. THE Requirements_Document SHALL 列出未来可能的多机同步路径（Git / CRDT / 中心服务器），作为架构演化参考，但不做实现选型。
 
 ### Requirement 20: Agent Roster（10 个内置 Agent）
@@ -480,7 +481,7 @@ EMPTY_WAL_PERSISTENCE=FORBIDDEN
 1. THE Requirements_Document SHALL 以列表形式列出 V6.0 P0 必做项（共 27 项），分组为：
    - 基础设施（Daemon、通信、Session Registry、Permission、Adapter、Config、Directory、CLI、Recovery、Multi-project，共 10 项）。
    - 核心能力（10 Agent、Feature Spec workflow、4 Gate、state.json、events.jsonl、Thin Plugin，共 6 项）。
-   - 可观测性基础（Event Bus、CAS、三级模式、基础日志、sf-analyst，共 5 项）。
+   - 可观测性基础（Daemon 内部 Event Bus、Daemon Runtime CAS、三级模式、分源基础日志、sf-analyst Agent，共 5 项）；诊断 payload 由实际 recorder 在各自 owner 根内按 SHA-256 寻址。
    - 扩展机制骨架（Skill 加载、Tool 注册、内置 Workflow，共 3 项）。
    - 分发（npm 包、安装向导、`schema_version` + 迁移框架，共 3 项）。
 2. THE Requirements_Document SHALL 以列表形式列出 V6.1 P1 项（共 15 项），包含 bugfix workflow、design-first workflow、quick change workflow、Knowledge Graph、全局知识库 + sf-knowledge、Context Builder、成本追踪、并行任务调度、跨会话续接、Telegram Webhook 通知、用户自定义 Tool、用户自定义 Skill、sf-debugger 自愈闭环、Workflow 数据驱动扩展、Gate 组合。
@@ -553,9 +554,9 @@ EMPTY_WAL_PERSISTENCE=FORBIDDEN
 1. THE Requirements_Document SHALL 列出 V6.0 的里程碑及其主题；基准里程碑为以下 9 个（M1–M9）：
    - M1：Daemon 骨架。
    - M2：身份与权限（Session Registry + Permission Engine）。
-   - M3：可观测性基础（Event Bus + CAS + 三级模式 + 基础日志）。
+   - M3：可观测性基础（Daemon 内部 Event Bus + Runtime CAS + 三级 policy + userlevel/daemon 分源日志）。
    - M4：核心工作流（10 Agent + feature_spec + 4 Gate + Thin Plugin）。
-   - M5：分析能力（sf-analyst + 基础 observability 查询）。
+   - M5：分析能力（sf-analyst Agent 基于分源日志与 payload 证据完成基础查询和定位验证）。
    - M6：崩溃恢复（WAL + 重连 + 一致性修复）。
    - M7：分发与迁移（npm 包 + 安装向导 + schema_version 框架）。
    - M8：Telegram 集成（CLI `--json` + webhook + OpenClaw 端到端）。
@@ -573,14 +574,14 @@ EMPTY_WAL_PERSISTENCE=FORBIDDEN
 #### Acceptance Criteria
 
 1. **Single Source of Truth Property**：THE V6_Architecture SHALL 保证任何组件（Thin Plugin / CLI / Web UI / Adapter / Tool）不得绕过 Daemon 直接修改权威状态；所有状态变更必须经由 Daemon 的 HTTP API 或内部 Tool 调用落入 events.jsonl。
-2. **Event Bus Traversal Property**：THE V6_Architecture SHALL 保证所有跨层通信（Agent→Daemon、Daemon→Observability、Daemon→自愈子系统）必须经过 Event Bus；不得通过直接函数调用跨越可观测性边界。
+2. **Event Bus Traversal and Diagnostic Boundary Property**：THE V6_Architecture SHALL 保证 Daemon 内部跨层业务通信经过 Daemon Event Bus；诊断记录不成为第二套业务状态通道，userlevel 与 Daemon recorder 写入互不重叠的 owner 根，任何诊断写入失败不得改变 Runtime WAL/state 事实。
 3. **Hard Rule Immutability Property**：THE V6_Architecture SHALL 保证 Permission Engine 的硬规则（Agent Constitution 9 条）不可被任何配置层覆盖；用户配置试图覆盖时必须被拒绝并记录。
 4. **Adapter Encapsulation Property**：THE V6_Architecture SHALL 保证 OpenCode 特有概念（OpenCode 的 `ctx`、`callID`、内部事件 schema 等）仅存在于 OpenCodeAdapter 内部；Daemon 核心与 Tool Context 不得引用这些概念。
 5. **Session Identity Stability Property**：THE V6_Architecture SHALL 保证身份由 `sessionId` 作为唯一键落入 Session Registry；不得依赖 OpenCode Plugin Hook 输入中未公开承诺的 `agent` 字段。
 6. **Idempotent Recovery Property**：THE V6_Architecture SHALL 保证重复回放 events.jsonl 得到相同 state.json；即 `rebuild(events) == rebuild(events)` 对任意一致状态成立。
 7. **WAL Ordering Property**：THE V6_Architecture SHALL 保证"先 events.jsonl fsync → 再 state.json 更新"的顺序不可颠倒；任何写路径违反此顺序即为架构违例。
 8. **Round-trip Property for Serialization**：对所有持久化文件（state.json、events.jsonl、spec.json、metadata.json 等）THE V6_Architecture SHALL 保证 `parse(serialize(x)) == x`（序列化-反序列化往返一致）。此属性在子模块 spec 中必须以 property-based test 验证。
-9. **CAS Content Addressing Property**：THE V6_Architecture SHALL 保证相同内容的 blob 具有相同的 SHA-256 地址；`store(content).id == sha256(content)` 恒成立。
+9. **CAS Content Addressing Property**：THE V6_Architecture SHALL 保证 Daemon Runtime CAS 中相同内容具有相同的 SHA-256 地址；同一 diagnostic recorder owner 根内相同 payload 也具有相同地址，且诊断 payload 文件不得冒充 Runtime CAS owner。
 10. **Permission Decision Traceability Property**：THE V6_Architecture SHALL 保证每一次 Permission Engine 决策都产生一条事件；给定任意 deny 结果，可以通过事件日志回溯到规则 ID、层级、匹配上下文。
 11. **Configuration Merge Monotonicity Property**：THE V6_Architecture SHALL 保证配置合并结果只依赖四层的内容与顺序，不依赖加载时间；即"相同四层输入永远得到相同合并结果"。
 12. **Adapter Version Alignment Property**：THE V6_Architecture SHALL 保证 `OpenCodeAdapter.version` 与兼容的 OpenCode major 版本区间一一对应；Daemon 启动时若检测到 OpenCode 版本超出 Adapter 支持区间，必须拒绝绑定并提示升级。

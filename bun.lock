@@ -151,9 +151,6 @@
     "packages/multimodal": {
       "name": "@specforge/multimodal",
       "version": "1.0.0",
-      "dependencies": {
-        "@specforge/observability": "workspace:*",
-      },
       "devDependencies": {
         "@types/node": "^22.13.14",
         "@typescript-eslint/eslint-plugin": "^8.28.0",
@@ -172,11 +169,7 @@
       "name": "@specforge/observability",
       "version": "0.1.0",
       "dependencies": {
-        "@specforge/daemon-core": "workspace:*",
         "@specforge/migration": "workspace:*",
-        "@specforge/permission-engine": "workspace:*",
-        "@specforge/types": "workspace:*",
-        "uuid": "^10.0.0",
       },
       "devDependencies": {
         "@types/node": "^20.0.0",
@@ -1500,8 +1493,6 @@
     "@specforge/observability/fast-check": ["fast-check@3.23.2", "", { "dependencies": { "pure-rand": "^6.1.0" } }, "sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A=="],
 
     "@specforge/observability/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
-
-    "@specforge/observability/uuid": ["uuid@10.0.0", "", { "bin": { "uuid": "dist/bin/uuid" } }, "sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ=="],
 
     "@specforge/opencode-adapter/@types/node": ["@types/node@22.19.19", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-dyh/xO2Fh5bYrfWaaqGrRQQGkNdmYw6AmaAUvYeUMNTWQtvb796ikLdmTchRmOlOiIJ1TDXfWgVx1QkUlQ6Hew=="],
 

@@ -623,16 +623,15 @@ NEXT_NON_DAEMON_PACKAGE=OBSERVABILITY
 
 ### 9.4 Observability
 
-Observability 是当前 Event/CAS/query/analysis 能力，但不是第二个 project WAL owner。Daemon 先持久化 `events.jsonl` 并确认，再由 EventLogger track/index；QueryAPI、sf-analyst 与 North Star 读取该权威日志。
+Observability 当前由两层组成：`@specforge/observability` 提供共享事件类型与三级 policy 契约；真实 Thin client 和 Daemon recorder 分别拥有不重叠的诊断日志根。Daemon `StateManager`/WAL 仍是 project workflow state 的唯一 owner。
 
 | 表面 | 判定 | 处理 |
 |---|---|---|
-| Event/CAS contract、ModeSwitch、QueryAPI、sf-analyst、North Star | `CURRENT_REQUIRED` | 保留；当前 consumer 测试模拟 Daemon WAL producer 顺序 |
-| EventLogger initialize/track/query/index | `CURRENT_SUPPORTING` | 保留；不得创建空 WAL，不得直接写 events/state；新增 3 项 owner 边界测试 |
-| EventLogger 自写/fsync/recovery WAL 的 crash/unit 测试 | `WRONG_OWNER_LEGACY` | 删除 4 个可执行测试文件；Daemon WAL/recovery 回归继续持有责任 |
-| root North Star report generation test | `INVALID_OR_DUPLICATE` | 删除 1 个固定仓库目录写入测试；integration 场景保留 |
-| Minimal decision action set | `CURRENT_REQUIRED` | 统一 Gate passed/failed/checked、Permission evaluated、Workflow start/complete/fail/transition |
-| Query actor filter fixtures | `CURRENT_FIXTURE_DRIFT` | 使用当前完整 AgentIdentity 与 sessionId，不增加旧 id 兼容 |
+| Event types 与 `observability.json` strict contract | `CURRENT_REQUIRED` | 保留；Daemon、Permission 与项目注册消费 |
+| userlevel diagnostic recorder | `CURRENT_REQUIRED` | 独占 `.specforge/logs/observability/userlevel/**`；Thin client 是生产入口 |
+| daemon diagnostic recorder | `CURRENT_REQUIRED` | 独占 `.specforge/logs/observability/daemon/**`；Dispatcher/handler/runtime 是生产入口 |
+| EventLogger、独立 CAS/Event Bus、ModeSwitch、QueryAPI、AnalystEngine、North Star runtime、SfAnalyst class | `BUILT_NOT_ENABLED / NO_CURRENT_CALLER` | 从 exports、源码、依赖和实现专属测试退出；不增加旧项目兼容 |
+| sf-analyst Agent | `CURRENT_AGENT_ROLE` | 保留为诊断证据消费者；不拥有日志、CAS 或 workflow state |
 
 ```text
 OBSERVABILITY_INITIAL=206_SUITES_458_TESTS_347_PASS_111_FAIL
@@ -640,10 +639,11 @@ RETIRED_OR_DUPLICATE_TEST_FILES_REMOVED=5
 CURRENT_OWNER_BOUNDARY_TESTS_ADDED=3
 INTERMEDIATE=169_SUITES_363_TESTS_316_PASS_47_FAIL
 CURRENT_CONSUMER_TARGET=136_TESTS_136_PASS
-OBSERVABILITY_FULL=169_SUITES_363_TESTS_ALL_PASS
+OBSERVABILITY_CURRENT_BASELINE=4_FILES_47_TESTS_ALL_PASS
 OBSERVABILITY_TYPECHECK=PASS
 OBSERVABILITY_BUILD=PASS
 SECOND_WAL_WRITER_RESTORED=NO
+DIAGNOSTIC_OWNER_ROOTS=USERLEVEL;DAEMON
 HISTORICAL_GOVERNANCE_RECORDS_REMOVED=0
 NEXT_NON_DAEMON_PACKAGE=SCOPE_GATE
 ```

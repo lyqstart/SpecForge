@@ -245,7 +245,7 @@ Get-ChildItem -Path .specforge -Recurse -Directory -ErrorAction SilentlyContinue
 | 旧路径不存在 | `Test-Path specforge` | `$false` |
 | 备份路径不存在 | `Test-Path .specforge-` | `$false`（除非任务声明保留） |
 | 带点路径存在 | `Test-Path .specforge` | `$true` |
-| 事件文件活跃 | `.specforge/observability/events.jsonl` 的 mtime > 修改前时间 | `$true` |
+| 工作流事件文件活跃 | `.specforge/runtime/events.jsonl` 的 mtime > 修改前时间 | `$true` |
 | Project Spec manifest 有效 | `Test-Path .specforge/project/spec_manifest.json` | `$true` |
 
 #### Step 4：证据归档

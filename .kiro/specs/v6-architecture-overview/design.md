@@ -21,7 +21,7 @@
 1. **Daemon 是唯一的 Source of Truth**：任何组件都不得绕过 Daemon 修改权威状态。
 2. **SpecForge Runtime Contract 的优先级高于 OpenCode 内部行为**：OpenCode 的 plugin hook、事件 schema、tool 参数变化被 Adapter 层吸收，不得泄漏到 Daemon 核心。
 3. **程序硬控优先于 Prompt 控制（继承 V5）**：能在代码里以 Gate / Permission / schema 硬约束的规则，不交给 prompt。
-4. **可观测性是一级组件，不是附加能力**：Event Bus、CAS、事件日志从 day-1 就是核心，不是"后期再接监控"。
+4. **可观测性是一级能力，不是第二套状态系统**：三级 policy、分源诊断日志和哈希寻址 payload 从 day-1 纳入真实入口；Runtime WAL/state 仍是唯一业务状态权威。
 5. **扩展性优先于完备性**：V6.0 先把 Adapter、Skill、Tool、Workflow、Gate、Config 的扩展点定死，再逐步补完内置实现。
 
 ### 形态对比
@@ -106,7 +106,7 @@ flowchart LR
 | `@specforge/cli` | `CURRENT_RELEASE_CORE` | 人/机双模式命令客户端；不持有业务状态 | `specforge` 命令，经 HTTP/SSE 调 Daemon | 源码活跃；移除与 Scope Gate 重复的本地真相 |
 | `@specforge/workflow-runtime` | `CURRENT_RELEASE_CORE` | `feature_spec` 编排、Gate 调度和 Work Item 状态推进 | Daemon | 源码活跃；必须去除对 `daemon-core` 的反向依赖，并只部署获准 workflow |
 | `@specforge/permission-engine` | `CURRENT_RELEASE_CORE` | Permission、WriteGuard 前置决策与可追溯拒绝 | Daemon Tool/写入口 | 源码活跃；所有写路径继续 fail closed |
-| `@specforge/observability` | `CURRENT_RELEASE_CORE` | 共享事件/CAS 契约与可观测记录能力 | Daemon、Permission、Plugin、Multimodal | 源码活跃；Daemon 仍是 WAL 和 project state 的唯一 owner |
+| `@specforge/observability` | `CURRENT_RELEASE_SUPPORTING` | 共享事件类型与三级 observability policy 契约 | Daemon、Permission | 只保留类型与配置契约；诊断写入由 Daemon/userlevel 真实入口各自拥有，独立 EventLogger/CAS/Query/Analyst runtime 已退出 |
 | `@specforge/opencode-adapter` | `CURRENT_RELEASE_CORE` | 隔离 OpenCode，提供唯一 LLMKernelAdapter 实现 | Daemon | 当前无生产调用；接入并验证前为 `BUILT_NOT_ENABLED` |
 | `@specforge/types` | `CURRENT_RELEASE_SUPPORTING` | 跨 package 中立类型、路径与 Runtime Contract | 所有需要共享契约的 package | 保留；不得放入业务状态机实现 |
 | `@specforge/configuration` | `CURRENT_RELEASE_SUPPORTING` | 四层配置合并与敏感字段边界 | Daemon、CLI | 源码活跃；配置结果由 Daemon 接纳后生效 |
@@ -139,17 +139,14 @@ flowchart LR
 ```mermaid
 flowchart TB
   TYPES["types / Runtime Contract"]
-  OBS["observability contracts"] --> TYPES
+  OBS["observability policy contract"] --> MIG
   CFG["configuration"] --> TYPES
   PERM["permission-engine"] --> TYPES
   WF["workflow-runtime"] --> TYPES
   HOST["host-profile"] --> TYPES
   SERVICE["service-management"] --> TYPES
   OCA["opencode-adapter"] --> TYPES
-  MODAL["multimodal P0"] --> OBS
-  HEAL["self-healing Diagnose"] --> OBS
   MIG["migration current schema"] --> TYPES
-  PL["plugin-loader P0 checks"] --> OBS
   DAEMON["daemon-core"] --> CFG
   DAEMON --> PERM
   DAEMON --> WF
@@ -283,7 +280,7 @@ flowchart TB
   subgraph Core["Daemon Core"]
     SessReg["Session Registry<br/>(pending/active/history)"]
     PermE["Permission Engine<br/>(硬规则 / 内置 / 用户)"]
-    EBus["Event Bus"]
+    EBus["Daemon Event Bus"]
     WFRuntime["Workflow Runtime<br/>(state machine + Gate runner)"]
     Cfg["Configuration Subsystem<br/>(4 层合并)"]
     Multi["Multi-project Manager<br/>(per-project 锁)"]
@@ -304,11 +301,12 @@ flowchart TB
     OCA["OpenCodeAdapter (V6.0 唯一实现)"]
   end
 
-  subgraph Obs["可观测性 & 存储"]
-    EvtLog["events.jsonl (WAL)"]
-    StateF["state.json (派生 checkpoint)"]
-    CAS["CAS Blob Store"]
-    Analyst["sf-analyst (读 observability)"]
+  subgraph Obs["状态权威 & 诊断"]
+    EvtLog["runtime/events.jsonl (WAL)"]
+    StateF["runtime/state.json (派生 checkpoint)"]
+    UObs["logs/observability/userlevel"]
+    DObs["logs/observability/daemon"]
+    RCAS["Daemon Runtime CAS"]
     Migrate["Migration Subsystem<br/>(schema_version)"]
   end
 
@@ -319,27 +317,26 @@ flowchart TB
   Core --> Adapter
   Core --> Loaders
   Core --> Obs
+  Core --> EBus
   EBus --> EvtLog
   WFRuntime --> StateF
-  Modal --> CAS
-  Heal --> EBus
-  PermE --> EBus
-  SessReg --> EBus
+  TP --> UObs
+  Core --> DObs
 ```
 
 **分层职责**：
 
 - **Edge 层**：承担 HTTP/SSE、握手文件、webhook 派发；唯一对外暴露面。
 - **认证 & 边界**：本地 Bearer Token（默认）+ 可选远程 API Key / IP 白名单（REQ-16）。
-- **Daemon Core**：Session Registry、Permission Engine、Event Bus、Workflow Runtime、Config、Multi-project、Self-healing、Modality Adapter。
+- **Daemon Core**：Session Registry、Permission Engine、内部 Event Bus、StateManager/WAL、Runtime CAS、Workflow Runtime、Config、Multi-project、Self-healing、Modality Adapter 与 Daemon diagnostic recorder。
 - **扩展加载器**：Skill / Tool / Workflow / Gate / Plugin 的注册与三层覆盖。
 - **Adapter 层**：把 OpenCode 特有概念隔离在一个版本化的模块里。
-- **可观测性 & 存储**：events.jsonl（WAL）+ state.json（派生 checkpoint）+ CAS blob + sf-analyst + Migration。
+- **状态权威 & 诊断**：Daemon WAL/state 承载业务事实；userlevel/daemon 分源目录承载非权威诊断记录；大 payload 在各自 owner 根内按 SHA-256 寻址；Migration 校验已登记的持久化契约。
 
 **架构不变式**（对齐 REQ-30）：
 
-- Edge 与 Loaders 的任何命令/请求要改变权威状态，必须经过 Core → Event Bus → events.jsonl（Single Source of Truth Property）。
-- 任何跨层通信必须通过 Event Bus（Event Bus Traversal Property）。
+- Edge 与 Loaders 的任何命令/请求要改变权威状态，必须经过 Core → StateManager/WAL → events.jsonl（Single Source of Truth Property）。
+- 诊断 recorder 不得推进业务状态；userlevel 与 Daemon 只能写各自的物理 owner 根。
 - OpenCode 特有概念（ctx / callID / 内部事件 schema）只能出现在 `Adapter/OpenCodeAdapter` 目录内（Adapter Encapsulation Property）。
 
 ### 3. 主要事件流：一次 feature_spec 工作流
@@ -387,24 +384,31 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  subgraph Emission["事件发射"]
-    Core2[Core / Adapter / Tool] -->|emit| EB[Event Bus]
+  subgraph Emission["真实观测入口"]
+    TP2[Thin client / Plugin] --> UREC[Userlevel recorder]
+    Core2[Daemon / Dispatcher / Handler] --> DREC[Daemon recorder]
   end
 
   subgraph ModeSwitch["三级模式"]
-    EB --> M1["minimal<br/>(只记决策事件)"]
-    EB --> M2["standard<br/>(全事件)"]
-    EB --> M3["deep<br/>(含 payload blob)"]
+    UREC --> M1["minimal<br/>(只记决策事件)"]
+    DREC --> M1
+    UREC --> M2["standard<br/>(常规诊断事件)"]
+    DREC --> M2
+    UREC --> M3["deep<br/>(含 payload 文件)"]
+    DREC --> M3
   end
 
-  M1 --> W[events.jsonl]
-  M2 --> W
-  M3 --> W
-  M3 --> C[CAS blob]
+  M1 --> U["userlevel/index.jsonl"]
+  M1 --> D["daemon/index.jsonl"]
+  M2 --> U
+  M2 --> D
+  M3 --> P["各 owner 根内 payloads/by-sha256"]
 
-  W --> Analyst["sf-analyst Agent"]
-  W --> Debugger["sf-debugger Agent"]
-  C --> Analyst
+  U --> Analyst["sf-analyst Agent"]
+  D --> Analyst
+  U --> Debugger["sf-debugger Agent"]
+  D --> Debugger
+  P --> Analyst
   Analyst --> Report["结构化分析结果"]
   Report --> User[用户 / 其他 Agent]
 ```
@@ -432,8 +436,8 @@ flowchart LR
 | V6-ADR-013 | 插件能力 V6.0 仅启用静态检查 + 权限声明验证；运行时隔离、热加载与资源治理留 P2 且不进入当前 artifact | REQ-17, REQ-25 | 备选：首版即启用完整插件运行时（超出当前发布边界） |
 | V6-ADR-014 | 持久化文件强制带 `schema_version`；只在受支持的当前 schema 链内执行 `code > file` 备份迁移，`file > code`、未知或旧产品格式拒绝启动 | REQ-18, REQ-26 | 备选：猜测未知格式继续写入（不可审计且有数据风险） |
 | V6-ADR-015 | 当前发布不提供任何 V5/旧项目识别、迁移或兼容写入 | REQ-10.4, REQ-18.7, REQ-26, REQ-31 | 备选：保留兼容分支（扩大当前发布边界并形成第二套状态语义） |
-| V6-ADR-016 | Event Bus 与 events.jsonl 从 day-1 预留多机同步字段（全局事件 ID、单调时间戳、project 维度） | REQ-19 | 备选：同步时再加（届时所有历史数据需重写） |
-| V6-ADR-017 | sf-analyst 与 sf-debugger 分离 | REQ-20.3 | 备选：合并（破坏 SRP：诊断代码 vs 分析架构是两种心智） |
+| V6-ADR-016 | Runtime WAL 与诊断日志分离；userlevel/daemon recorder 使用不重叠物理根，payload 在各自根内按 SHA-256 寻址 | REQ-19, REQ-25, REQ-30 | 备选：共享索引/CAS 或独立 EventLogger 状态链（产生多 owner 和第二状态源） |
+| V6-ADR-017 | sf-analyst Agent 与 sf-debugger 分工保留，但不启用未接入生产链的独立 QueryAPI/AnalystEngine runtime | REQ-20.3, REQ-31 | 备选：以 package 测试冒充已启用分析服务（缺少真实入口和部署闭环） |
 | V6-ADR-018 | sf-knowledge 在 V6.0 保留角色 + 提供基础骨架；完整能力 V6.1 | REQ-20.4 | 备选：V6.0 不做（Agent Roster 10 个不成立） |
 | V6-ADR-019 | 当前产品只部署内置 `feature_spec` workflow；Candidate→Close 治理生命周期由 Daemon 统一承载；其他 workflow 定义与 Gate 组合需先提升范围 | REQ-23.4, REQ-24.6, REQ-31 | 备选：把仓库已有的全部 workflow 当作当前发布（源码存在不等于产品启用） |
 | V6-ADR-021 | 当前发布不承担旧项目兼容；历史治理证据只读保留，并与 Runtime、构建和安装入口分离 | REQ-26, REQ-31 | 备选：以历史证据存在推导运行时兼容义务（混淆审计与产品行为） |
@@ -828,7 +832,7 @@ stateDiagram-v2
 ```ts
 interface ProjectContext {
   rootPath: string;              // 绝对路径作为隔离键
-  eventsFile: string;            // <rootPath>/.specforge/observability/events.jsonl
+  eventsFile: string;            // <rootPath>/.specforge/runtime/events.jsonl
   stateFile: string;
   runtimeDir: string;
   writeLock: Mutex;              // per-project 写锁
@@ -879,10 +883,12 @@ interface ModalityAdapter {
 - `standard`（默认）：全事件，不含大 payload。
 - `deep`：含 payload blob 引用。
 
+**当前 owner 边界**：`.specforge/runtime/events.jsonl` 只属于 Daemon WAL/StateManager；诊断日志是非权威证据，分别写入 `.specforge/logs/observability/userlevel/**` 与 `.specforge/logs/observability/daemon/**`。两个 recorder 的索引、类别流、payload 与 error 文件不共享物理写入路径。`@specforge/observability` 当前只提供共享事件类型和 `observability.json` 契约，不发布独立 EventLogger、CAS、Event Bus、QueryAPI 或分析引擎。
+
 **事件字段（基础）**：`eventId`（全局唯一）、`ts`（单调时间戳）、`projectId`、`workItemId?`、`actor?`、`action`、`payload` / `payloadBlobRef`、`schema_version`。
 事件 ID 与时间戳设计必须满足"多机同步预留"（REQ-19.2）。
 
-**sf-analyst Agent**（REQ-20.2）：职责为"读 observability → 生成结构化分析结果"；调度者 sf-debugger 和用户。与 sf-debugger 分工（REQ-20.3）：sf-debugger 修复代码；sf-analyst 做架构层感官分析。
+**sf-analyst Agent**（REQ-20.2）：职责为通过受控读取入口消费上述诊断证据并生成结构化分析结果；它是 Agent 角色，不是第二个日志/CAS owner。与 sf-debugger 分工（REQ-20.3）：sf-debugger 修复代码；sf-analyst 做架构层感官分析。
 
 ### 16. Migration Subsystem（REQ-18）
 
@@ -1136,9 +1142,9 @@ Work Item 创建只有一条公开业务路径：`sf_work_item_create(user_reque
 
 **Validates: Requirements 30.1, 1.1, 4.1**
 
-#### Property 2: Event Bus Traversal
+#### Property 2: Event Bus Traversal and Diagnostic Boundary
 
-*For all* 跨层通信消息 m（从 Agent 到 Daemon、从 Daemon 到 Observability、从 Daemon 到 Self-healing、从任一组件到另一组件的跨边界调用），m 必须经过 Event Bus；不得存在跨越可观测性边界的直接函数调用。
+*For all* Daemon 内部跨层业务消息 m，m 必须经过 Daemon Event Bus；对所有诊断记录 d，userlevel recorder 与 Daemon recorder 只能写入各自的物理 owner 根。d 不得推进权威状态，记录失败不得改变 Runtime WAL/state 的业务事实。
 
 **Validates: Requirements 30.2**
 
@@ -1408,13 +1414,13 @@ interface ErrorEvent extends Event {
 
 | 下游模块 spec | 承接的 Correctness Properties |
 |---|---|
-| `daemon-core` | 1 (SoT)、2 (Event Bus)、5 (Session Stability)、6 (Idempotent Recovery)、7 (WAL Ordering)、20 (Recovery Repair)、21 (Reconnect Scope)、22 (Project Isolation)、30 (Multi-sync Readiness) |
+| `daemon-core` | 1 (SoT)、2 (Event Bus / Diagnostic Boundary)、5 (Session Stability)、6 (Idempotent Recovery)、7 (WAL Ordering)、9 (Runtime CAS)、20 (Recovery Repair)、21 (Reconnect Scope)、22 (Project Isolation)、30 (Multi-sync Readiness) |
 | `permission-engine` | 3 (Hard Rule)、10 (Traceability)、16 (Bearer Token)、26 (Remote Guard)、28 (Plugin Permission) |
 | `opencode-adapter` | 4 (Encapsulation)、12 (Adapter Version) |
-| `observability` | 2 (Event Bus)、8 (Round-trip)、9 (CAS)、10 (Traceability)、30 (Multi-sync) |
+| `observability` | 2 (Diagnostic Boundary)、8 (配置契约 Round-trip)、10 (Traceability 类型契约) |
 | `configuration` | 11 (Merge Determinism)、19 (Hot-reload Boundary)、sensitive field denial |
 | `migration` | 14 (Schema Monotonicity)、当前 schema 链升级与未知/旧格式 fail-closed |
-| `multimodal` | 9 (CAS)、13 (Modality Determinism)、23 (V6.0 Rejection) |
+| `multimodal` | 13 (Modality Determinism)、23 (V6.0 Rejection)；业务 blob 归 Daemon Runtime CAS |
 | `self-healing` | 24 (Rollback Precondition)、25 (Iteration Bound) |
 | `workflow-runtime` | 29 (Composite Gate Semantics)、Gate 基础契约 |
 | `cli` | 18 (Async Command Contract)、17 (Payload Size)、CLI schema |

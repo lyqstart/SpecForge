@@ -52,11 +52,12 @@ describe('Project Structure', () => {
       expect(packageJson.scripts[script]).toBeDefined();
     }
 
-    // Check dependencies
-    expect(packageJson.dependencies['@specforge/types']).toBe('workspace:*');
-    expect(packageJson.dependencies['@specforge/daemon-core']).toBe('workspace:*');
-    expect(packageJson.dependencies['@specforge/permission-engine']).toBe('workspace:*');
-    expect(packageJson.dependencies.uuid).toBeDefined();
+    expect(packageJson.dependencies).toEqual({
+      '@specforge/migration': 'workspace:*',
+    });
+    expect(packageJson.dependencies['@specforge/daemon-core']).toBeUndefined();
+    expect(packageJson.dependencies['@specforge/permission-engine']).toBeUndefined();
+    expect(packageJson.dependencies.uuid).toBeUndefined();
   });
 
   it('should have valid tsconfig.json', () => {

@@ -121,7 +121,13 @@ export function recordDaemonObservation(
       return input.trace_id;
 
     const trace_id = input.trace_id ?? createSfTraceId();
-    const root = path.join(projectRoot, ".specforge", "logs", "observability");
+    const root = path.join(
+      projectRoot,
+      ".specforge",
+      "logs",
+      "observability",
+      "daemon",
+    );
 
     const payload = config.redact_secrets
       ? redactSecrets(input.payload)
@@ -188,6 +194,7 @@ export function recordDaemonObservation(
 
     appendJsonl(path.join(root, categoryFileName(input.category)), record);
     appendJsonl(path.join(root, "index.jsonl"), {
+      source: "daemon",
       timestamp: record.timestamp,
       trace_id,
       category: input.category,

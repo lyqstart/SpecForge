@@ -36,9 +36,6 @@
     "typescript": "^5.8.2",
     "vitest": "^3.0.7"
   },
-  "dependencies": {
-    "@specforge/observability": "workspace:*"
-  },
   "specforgeRelease": {
     "packageExportIds": ["multimodal:text-input", "multimodal:nontext-rejection"],
     "cleanBuildIds": ["multimodal:text-input", "multimodal:nontext-rejection"]

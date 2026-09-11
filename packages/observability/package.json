@@ -1,7 +1,7 @@
 {
   "name": "@specforge/observability",
   "version": "0.1.0",
-  "description": "Observability module for SpecForge V6 - Comprehensive monitoring, logging, and analysis capabilities",
+  "description": "SpecForge current-release observability types and policy contract",
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -33,11 +33,7 @@
   "author": "SpecForge Team",
   "license": "MIT",
   "dependencies": {
-    "@specforge/migration": "workspace:*",
-    "@specforge/types": "workspace:*",
-    "@specforge/daemon-core": "workspace:*",
-    "@specforge/permission-engine": "workspace:*",
-    "uuid": "^10.0.0"
+    "@specforge/migration": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

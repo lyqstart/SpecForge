@@ -356,7 +356,14 @@ function readLatestPreflightBeforeBaseline(
   payload: any;
   payloadSha256: string;
 } | null {
-  const indexPath = path.join(projectRoot, '.specforge', 'logs', 'observability', 'index.jsonl');
+  const indexPath = path.join(
+    projectRoot,
+    '.specforge',
+    'logs',
+    'observability',
+    'userlevel',
+    'index.jsonl'
+  );
   const baselineMs = Date.parse(baselineTimestamp);
   const maxPreflightAgeMs = 5 * 60 * 1000;
   if (!Number.isFinite(baselineMs)) return null;

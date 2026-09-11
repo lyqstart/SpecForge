@@ -147,7 +147,7 @@ function categoryFileName(category: SfObservationInput["category"]): string {
     case "rpc":
       return "rpc.jsonl";
     case "plugin":
-      return "index.jsonl";
+      return "plugin.jsonl";
     case "error":
       return "errors.jsonl";
     default:
@@ -161,6 +161,7 @@ export function getObservationRoot(projectRoot?: string): string {
     ".specforge",
     "logs",
     "observability",
+    "userlevel",
   );
 }
 
@@ -675,6 +676,7 @@ export function recordSfObservation(
 
     appendJsonl(path.join(root, categoryFileName(input.category)), record);
     appendJsonl(path.join(root, "index.jsonl"), {
+      source: "userlevel",
       timestamp: record.timestamp,
       trace_id,
       turn_id: record.turn_id,

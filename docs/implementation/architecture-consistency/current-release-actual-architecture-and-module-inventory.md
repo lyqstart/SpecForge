@@ -195,7 +195,7 @@ Step 1 的停止条件要求：证据不足时不得虚构最终 `DISPOSITION`�
 | `PKG-HOST` | Host profile 与项目初始化环境 | Daemon project init、installer exports | 主机能力输入，profile 输出 | 源码活跃 | 包测试；V6 host setup | `CURRENT_RELEASE_SUPPORTING / CORROBORATED / KEEP` |
 | `PKG-VERSION` | 版本统一与安装 manifest 迁移 | CLI dynamic import、installer import | 版本/manifest 输入输出 | userlevel installer 活跃 | 包测试；含 `src/legacy/**` | `CURRENT_RELEASE_SUPPORTING / CONFIRMED / SPLIT_CURRENT_FROM_LEGACY_NOT_FROZEN` |
 | `PKG-PLUGIN-LOADER` | 扩展发现与加载框架 | Daemon ExtensionLoader dynamic import/export | registry/extension metadata | framework 被构造；plugin loading 显式关闭 | 34 个相关历史测试；V6 extension registry | `CURRENT_RELEASE_SUPPORTING / CORROBORATED / PARTIAL_ENABLEMENT_NOT_FROZEN` |
-| `PKG-OBSERVABILITY` | 事件与可观测类型/辅助能力 | daemon/permission/plugin-loader 有类型或源码边 | 日志/事件结构 | Daemon 同时有内部 observability 实现 | 9 个定向 tests；V6 observability | `CURRENT_RELEASE_SUPPORTING / CORROBORATED / OWNERSHIP_NOT_FROZEN` |
+| `PKG-OBSERVABILITY` | 共享事件类型与三级 policy 契约 | daemon/permission 使用类型或配置契约 | 不直接写诊断或 Runtime 状态 | userlevel/daemon recorder 各自拥有分源诊断根 | current package 4 files / 47 tests；owner 回归 | `CURRENT_RELEASE_SUPPORTING / CONFIRMED / OWNER_FROZEN` |
 | `PKG-OPENCODE-ADAPTER` | Daemon 调用 OpenCode 的适配层 | 没有生产 AST 调用者 | 预期进程/请求适配 | 未接入 Daemon、未独立部署 | package tests；V6 design 明确要求 | `BUILT_NOT_ENABLED / CONFIRMED / ENABLE_OR_REMOVE_NOT_FROZEN` |
 | `PKG-SELF-HEALING` | 自愈策略 | 没有生产 AST 调用者；Daemon 使用自身 RecoverySubsystem | 未接入当前权威状态 | 构建但未部署/调用 | package tests；V6 design 列出 self-healing | `BUILT_NOT_ENABLED / CONFIRMED / CONSOLIDATE_OR_REMOVE_NOT_FROZEN` |
 | `PKG-MULTIMODAL` | 多模态输入 | 没有生产 AST 调用者 | 无当前主链数据输入 | 构建但未部署/调用 | package tests；当前发布范围待 Step 2 | `BUILT_NOT_ENABLED / CONFIRMED / REMOVE_OR_DEFER_NOT_FROZEN` |
@@ -279,7 +279,7 @@ Step 1 上述清单是历史事实快照，不再作为当前文件数量。当�
 | 修改能力组 | 当前架构归属 | Step 1 结论 |
 |---|---|---|
 | permission-engine、configuration、service-management、daemon-core 治理核心 | 当前 Daemon 源码主链或直接支撑 | 修复针对真实现役源码责任层，不能因 live daemon 未部署而撤回历史真实性 |
-| observability | 有生产依赖边，但 package 与 daemon 内部 observability 职责重叠 | 修复真实；package 最终所有权等待 Step 3/5 |
+| observability | package 只保留类型/policy；真实 userlevel 与 daemon recorder 写入不重叠诊断根；Runtime WAL 独立 | 当前职责和 owner 已收敛 |
 | migration、plugin-loader 测试修复 | 对应 ERR-723/725/726/731 的历史修复真实 | 模块是否进入当前发布仍需由 V6 权威决定，不能用未来模块删除反推历史修复无效 |
 | path resolver / StateManager 消费者修复 | Runtime/WAL 当前核心责任 | 属于现役状态权威链；禁止恢复旧状态或旧路径使测试通过 |
 

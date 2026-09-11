@@ -27703,3 +27703,184 @@ PUSH_DEPLOY=NOT_AUTHORIZED_NOT_PERFORMED
 NEXT_LEGAL_ACTION=RUN_POST_RECEIPT_GOVERNANCE_GATES_THEN_COMMIT_RECEIPT
 ```
 <!-- SPECFORGE_ERR1490_MERGE_REPORT_COMMIT_RECEIPT:END -->
+
+<!-- SPECFORGE_ERR1507_READONLY_SEARCH_COMMAND_SYNTAX:START -->
+### ERR-1507：Observability 取证期间只读搜索命令语法错误
+
+- **事实证据**：一次用于检索 Observability 引用的 PowerShell 命令因引号与正则表达式组合错误，在解析阶段退出。
+- **影响判断**：底层搜索未执行，没有文件写入或产品状态变化；后续改用短小、单一用途的只读命令完成取证。
+
+```text
+ERR1507_STATUS=CLOSED_NO_COMMAND_EXECUTION_NO_MUTATION
+```
+<!-- SPECFORGE_ERR1507_READONLY_SEARCH_COMMAND_SYNTAX:END -->
+
+<!-- SPECFORGE_ERR1508_GATE_COMMAND_INPUT_CORRUPTION:START -->
+### ERR-1508：Observability 本轮门禁命令输入被异常文本污染
+
+- **事实证据**：首次门禁组合命令包含错误的 Git 子命令、游离参数和非 PowerShell 文本；其中仅 `git status` 与当前分支读取成功，其余在实际目标读取前失败。
+- **影响判断**：该命令只执行了只读 Git 查询，没有修改文件、暂存区或运行时状态。后续将门禁拆分为短小的只读命令，并基于真实行号完整读取经验文件第三、四部分。
+
+```text
+ERR1508_STATUS=CLOSED_READONLY_EFFECT_VERIFIED_SHORT_COMMANDS_USED
+```
+<!-- SPECFORGE_ERR1508_GATE_COMMAND_INPUT_CORRUPTION:END -->
+
+<!-- SPECFORGE_ERR1509_IMPORT_AUDIT_REGEX_QUOTING:START -->
+### ERR-1509：Observability 跨包 import 审计正则引号失配
+
+- **事实证据**：组合只读命令中的 `rg` 正则在 PowerShell 参数边界形成未闭合字符类；前置 `Get-Content` 成功，搜索子命令未执行。
+- **影响判断**：没有文件写入或产品状态变化；后续 import 审计改用多个固定字符串搜索，不再通过 shell 传递含混合引号的正则。
+
+```text
+ERR1509_STATUS=CLOSED_READONLY_NO_MUTATION_FIXED_STRING_SEARCH_SELECTED
+```
+<!-- SPECFORGE_ERR1509_IMPORT_AUDIT_REGEX_QUOTING:END -->
+
+<!-- SPECFORGE_ERR1510_WINDOWS_RG_PATH_GLOB:START -->
+### ERR-1510：Windows 下将路径通配符错误传给 rg
+
+- **事实证据**：依赖审计把 `packages/*/package.json` 作为位置参数传给 Windows `rg`，被操作系统判为非法路径；同一组合命令前面的两个文件读取成功，搜索未执行。
+- **影响判断**：没有文件写入或产品状态变化；后续固定使用目录位置参数与 `--glob package.json` 组合限定文件集合。
+
+```text
+ERR1510_STATUS=CLOSED_READONLY_NO_MUTATION_DIRECTORY_AND_GLOB_FORM_SELECTED
+```
+<!-- SPECFORGE_ERR1510_WINDOWS_RG_PATH_GLOB:END -->
+
+<!-- SPECFORGE_ERR1511_OBSERVABILITY_REMOVAL_PATCH_CONTEXT:START -->
+### ERR-1511：Observability 退役实现组合补丁上下文失配
+
+- **事实证据**：组合补丁对 `packages/multimodal/package.json` 的依赖行假定了错误的尾随逗号上下文，`apply_patch` 在验证阶段拒绝整个补丁。
+- **影响判断**：补丁原子失败，没有源文件、测试或 package 元数据被部分修改；后续将元数据编辑与文件删除拆分，并使用重新读取的精确上下文。
+
+```text
+ERR1511_STATUS=CLOSED_ATOMIC_REJECTION_NO_MUTATION_SPLIT_PATCH_SELECTED
+```
+<!-- SPECFORGE_ERR1511_OBSERVABILITY_REMOVAL_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1512_OBSERVABILITY_PACKAGE_DEPENDENCY_TEST_DRIFT:START -->
+### ERR-1512：Observability 收敛后 package 结构测试仍要求退役依赖
+
+- **事实证据**：Observability 构建通过；首次包回归为 `4 files / 47 tests / 1 failed`，唯一失败仍断言 package 必须依赖已无生产 import 的 `@specforge/types`、`@specforge/daemon-core`、`@specforge/permission-engine` 和 `uuid`。
+- **根因判断**：固定 package 元数据测试未随当前“事件类型 + policy 契约”职责同步，是测试消费者漂移；恢复依赖会重新引入错误架构边。
+- **纠正**：测试改为精确断言当前 descriptor 所需的 `@specforge/migration`，并反向断言退役依赖不存在；随后原样重跑包回归。
+
+```text
+ERR1512_STATUS=FIX_IMPLEMENTED_AWAITING_TARGET_REVALIDATION
+```
+<!-- SPECFORGE_ERR1512_OBSERVABILITY_PACKAGE_DEPENDENCY_TEST_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1513_OBSERVABILITY_GOVERNANCE_PATCH_CONTEXT:START -->
+### ERR-1513：Observability 治理同步组合补丁插入点失配
+
+- **事实证据**：跨三个治理文档的组合补丁使用了与 owner inventory 实际换行不一致的长上下文，`apply_patch` 在验证阶段拒绝整个补丁。
+- **影响判断**：治理文件没有发生部分写入；后续固定为逐文件、小上下文补丁，并在每次应用后立即检索目标文本。
+
+```text
+ERR1513_STATUS=CLOSED_ATOMIC_REJECTION_NO_MUTATION_PER_FILE_PATCH_SELECTED
+```
+<!-- SPECFORGE_ERR1513_OBSERVABILITY_GOVERNANCE_PATCH_CONTEXT:END -->
+
+<!-- SPECFORGE_ERR1514_OBSERVABILITY_RELEASE_MANIFEST_HASH_DRIFT:START -->
+### ERR-1514：Observability setup 修改后 release manifest 哈希正确阻断
+
+- **事实证据**：Scope Gate 首轮中 installer manifest consumption 两项失败，精确报告 `agents/sf-verifier.md` 与 `tools/lib/sf-observability.ts` 的 release install set 哈希不匹配。
+- **根因判断**：setup 发布源已经改变，而正式 release artifact 尚未由 producer 重建；门禁按设计失败，不得修改消费者测试绕过。
+- **纠正**：通过正式 release runtime artifact producer 重建 manifest/runtime 产物，再原样重跑两项 installer consumption。
+
+```text
+ERR1514_STATUS=IDENTIFIED_AWAITING_RELEASE_ARTIFACT_REBUILD
+```
+<!-- SPECFORGE_ERR1514_OBSERVABILITY_RELEASE_MANIFEST_HASH_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1515_INSTALLER_LOCK_RECLAIM_REGRESSION:START -->
+### ERR-1515：Scope Gate 全包中的 installer stale-lock 回收测试超时
+
+- **事实证据**：同一 Scope Gate 运行中 `reclaims a stale lock whose PID is not alive` 对 PID `2147483647` 等待后返回 `E_LOCK_TIMEOUT`；其余 6 项 lock owner 测试通过。
+- **归因状态**：与 Observability 路径无直接调用边，但尚未完成独立复现，当前不得标记为无关或偶发。
+- **下一动作**：单独原样运行该测试文件；若失败则诊断进程存活判定，若通过则再以全包验证确认并记录并发/环境归因证据。
+
+```text
+ERR1515_STATUS=IDENTIFIED_AWAITING_ISOLATED_REPRODUCTION
+```
+<!-- SPECFORGE_ERR1515_INSTALLER_LOCK_RECLAIM_REGRESSION:END -->
+
+<!-- SPECFORGE_ERR1516_RELEASE_RUNTIME_BINARY_HASH_ORDER:START -->
+### ERR-1516：Release artifact 重建后 specforged 二进制哈希仍失配
+
+- **事实证据**：正式 runtime artifact producer 成功生成两个 Windows binary；随后 installer consumption 隔离测试 `1 file / 3 tests / 3 failed`，全部由 `release_install_set:hash_mismatch:bin/specforged.exe` 阻断。同期 stale-lock 隔离测试 `7/7` 通过。
+- **判断边界**：setup 源哈希失配已经消失，但 runtime binary 与 release manifest 的生成/固化顺序尚未闭环；不得手工填写哈希或修改门禁测试。
+- **下一动作**：只读核对 producer 与 manifest producer 的调用顺序，使用正式生产入口重新生成并验证最终字节。
+
+```text
+ERR1516_STATUS=IDENTIFIED_AWAITING_RELEASE_PRODUCER_SEQUENCE_RECONSTRUCTION
+```
+<!-- SPECFORGE_ERR1516_RELEASE_RUNTIME_BINARY_HASH_ORDER:END -->
+
+<!-- SPECFORGE_ERR1517_RELEASE_MANIFEST_CANDIDATE_ID_REQUIRED:START -->
+### ERR-1517：Release manifest producer 首次调用缺失 candidate ID
+
+- **事实证据**：直接运行 `build-release-manifest.ts` 时未传必需的 `--candidate-id`，producer 以 `RELEASE_CANDIDATE_ID_REQUIRED` 在写入前失败关闭。
+- **影响判断**：release manifest 未写入；runtime binaries 已由前一步正式 producer 生成。后续只读取得现有 manifest 的 candidate/release identity，再以完整参数调用同一 producer。
+
+```text
+ERR1517_STATUS=CLOSED_FAIL_CLOSED_NO_MANIFEST_WRITE_COMPLETE_ARGS_SELECTED
+```
+<!-- SPECFORGE_ERR1517_RELEASE_MANIFEST_CANDIDATE_ID_REQUIRED:END -->
+
+<!-- SPECFORGE_ERR1518_RELEASE_CANDIDATE_ID_FORMAT:START -->
+### ERR-1518：Observability release candidate ID 不符合当前命名契约
+
+- **事实证据**：release manifest 与所有文件哈希已通过验证，installer upgrade/rollback 两项通过；install exact-set 唯一失败是 candidate ID `main-a4611d35-working-tree-err1013-observability` 不匹配 `^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$`。
+- **根因判断**：调用者使用了描述性 ID，未遵循现有 producer consumer 的固定命名协议；不是产品实现或 release 字节缺陷。
+- **纠正**：使用同一 base SHA 和符合契约的 `step6d3observability` 标识重建 manifest，原样重跑 installer consumption。
+
+```text
+ERR1518_STATUS=FIX_IMPLEMENTED_AWAITING_MANIFEST_REGENERATION
+```
+<!-- SPECFORGE_ERR1518_RELEASE_CANDIDATE_ID_FORMAT:END -->
+
+<!-- SPECFORGE_ERR1013_OBSERVABILITY_OWNER_CLOSURE:START -->
+### ERR-1013 closure：Observability 最后 owner 家族完成收敛
+
+- **权威边界**：`.specforge/runtime/events.jsonl` 只属于 Daemon `StateManager`/WAL；Daemon 内部 Event Bus 与 Runtime CAS 保留为现役能力。诊断日志不承载业务状态。
+- **物理 owner**：Thin client recorder 独占 `.specforge/logs/observability/userlevel/**`；Daemon recorder 独占 `.specforge/logs/observability/daemon/**`。两者的 category、index、payload 和 error 写入目录不重叠。
+- **模块处置**：生产 import 审计证明 package-local EventLogger、CAS、Event Bus、ModeSwitch、QueryAPI、AnalystEngine、North Star runtime 与 SfAnalyst class 没有当前生产调用；已从 exports、源码、依赖和实现专属测试退出。`@specforge/observability` 保留共享事件类型与三级 policy 契约；sf-analyst Agent 角色保留。
+- **测试证据**：owner 路径预期红 `2/2 failed`，退役公开 runtime 预期红 `1/3 failed`；修复后 Observability `4 files / 47 tests`、Daemon 定向 `4 files / 24 tests`、isolated installer `3/3`、Scope Gate/installer lock 进入最终根回归，根构建与根级 16-workspace 顺序全量回归均退出 0。
+- **发布证据**：Windows CLI/Daemon runtime binary 已由正式 producer 重建；108 文件 release manifest 使用 candidate `main-a4611d35-working-tree-step6d3observability` 重新冻结并通过隔离安装、升级和回滚。
+
+```text
+ERR1507_STATUS=CLOSED_NO_COMMAND_EXECUTION_NO_MUTATION
+ERR1508_STATUS=CLOSED_READONLY_EFFECT_VERIFIED_SHORT_COMMANDS_USED
+ERR1509_STATUS=CLOSED_READONLY_NO_MUTATION_FIXED_STRING_SEARCH_SELECTED
+ERR1510_STATUS=CLOSED_READONLY_NO_MUTATION_DIRECTORY_AND_GLOB_FORM_SELECTED
+ERR1511_STATUS=CLOSED_ATOMIC_REJECTION_NO_MUTATION_SPLIT_PATCH_SELECTED
+ERR1512_STATUS=CLOSED_CURRENT_PACKAGE_DEPENDENCY_CONTRACT_VALIDATED_47_PASS
+ERR1513_STATUS=CLOSED_ATOMIC_REJECTION_NO_MUTATION_PER_FILE_PATCH_USED
+ERR1514_STATUS=CLOSED_RELEASE_MANIFEST_REBUILT_AND_INSTALLER_VALIDATED
+ERR1515_STATUS=CLOSED_ISOLATED_7_PASS_AND_ROOT_REGRESSION_PASS
+ERR1516_STATUS=CLOSED_RUNTIME_THEN_MANIFEST_PRODUCER_SEQUENCE_VALIDATED
+ERR1517_STATUS=CLOSED_FAIL_CLOSED_NO_MANIFEST_WRITE
+ERR1518_STATUS=CLOSED_CONFORMING_CANDIDATE_ID_AND_INSTALLER_3_PASS
+ERR1013_OBSERVABILITY_STATUS=CLOSED
+ERR1013_STATUS=CLOSED
+OPEN_ERRORS=NONE
+CURRENT_PHASE=ERR1013_OBSERVABILITY_OWNER_LOCAL_COMMIT
+CURRENT_BLOCKER=FINAL_DIFF_STATUS_AUDIT_AND_LOCAL_COMMIT_NOT_YET_COMPLETE
+POST_DOCUMENT_GOVERNANCE=SCOPE_GATE_24_FILES_114_PASS;DAEMON_GOVERNANCE_6_FILES_24_PASS
+NEXT_LEGAL_ACTION=FINAL_DIFF_STATUS_AUDIT_AND_CREATE_LOCAL_CHECKPOINT_COMMIT
+```
+<!-- SPECFORGE_ERR1013_OBSERVABILITY_OWNER_CLOSURE:END -->
+
+<!-- SPECFORGE_ERR1519_PROGRESS_STATUS_PATCH_SCOPE:START -->
+### ERR-1519：Observability 收尾状态补丁误命中历史 Step 0
+
+- **事实证据**：仅以 `STEP_STATUS=ISOLATED_VALIDATED` 为上下文的补丁命中了进度文件中最早的 Step 0，将其错误改为当前收尾状态；目标 Observability 区块仍保持原值。
+- **影响判断**：错误只存在于未提交工作区，产品源码不受影响；HEAD 一手字节证明 Step 0 原值为 `ISOLATED_VALIDATED`。
+- **纠正**：使用 `STEP_ID` 邻接上下文精确恢复 Step 0 并更新当前区块，随后运行固定文本治理测试和 diff 审计。
+
+```text
+ERR1519_STATUS=CLOSED_HISTORY_RESTORED_AND_GOVERNANCE_24_PASS
+```
+<!-- SPECFORGE_ERR1519_PROGRESS_STATUS_PATCH_SCOPE:END -->
