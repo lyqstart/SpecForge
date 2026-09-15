@@ -35,6 +35,8 @@ SpecForge 当前同时保留了三类材料：V6 产品架构、后续架构一�
 
 ## Authority boundary
 
+> **Supersession notice（2026-09-15）**：本节将 V6 Kiro 文件指定为当前产品权威的部分，已由 [`ADR-014`](ADR-014-authority-model-recovery-freeze.md) 暂停。保留以下文字用于说明本 ADR 当时的决策背景，不得再作为当前发布或产品架构的唯一依据。
+
 本 ADR 记录“为什么作出决定”和“决定了什么”，但不取代 V6 产品架构：
 
 1. `.kiro/specs/v6-architecture-overview/requirements.md`：业务目标、发布范围和验收条件权威；

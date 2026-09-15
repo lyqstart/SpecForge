@@ -28169,3 +28169,115 @@ FIRST_PUSH_ACTION=PERFORMED_AND_VERIFIED
 NEXT_LEGAL_ACTION=VALIDATE_COMMIT_AND_PUSH_CORRECTED_GOVERNANCE_RECEIPT
 ```
 <!-- SPECFORGE_ERR1536_REMOTE_RECEIPT_NEXT_ACTION_SCOPE:END -->
+
+<!-- SPECFORGE_ERR1537_AUTHORITY_SURVEY_COMMAND_CONSTRUCTION:START -->
+### ERR-1537：权威体系只读盘点命令构造错误
+
+- **事实证据**：Authority Model Recovery 的首次只读盘点中，Windows 路径通配符与 PowerShell 嵌套变量分别造成零计数和空路径；复核后以显式 Windows 路径及命名循环重新执行，未发生任何文件写入。
+- **影响**：最初统计结果不可采信；仓库、Git 索引、产品代码和部署现场均未改变。
+- **根因**：把 Unix 风格 glob 与嵌套管道变量作用域当作 Windows PowerShell 的稳定接口，未逐项验证统计命令的输入路径与样本计数。
+- **纠正与防复发**：只读盘点改用显式路径、具名循环变量和逐类结果复核；错误统计不得进入权威结论，直到第二种独立读取确认。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-019。
+
+```text
+ERR1537_STATUS=CLOSED_READONLY_NO_MUTATION_RECOUNTED_WITH_EXPLICIT_PATHS
+```
+<!-- SPECFORGE_ERR1537_AUTHORITY_SURVEY_COMMAND_CONSTRUCTION:END -->
+
+<!-- SPECFORGE_ERR1538_OVERSIZED_LEDGER_READ_RANGE:START -->
+### ERR-1538：经验台账读取范围过宽导致证据输出截断
+
+- **事实证据**：2026-09-15 的只读 `Get-Content` 范围超出实际章节边界，产生过大的输出并被工具截断；命令没有写入仓库或运行环境。
+- **影响**：该次输出不能证明已完整读取目标段落，不能作为修改前阅读证据。
+- **根因**：未先精确定位章节终止行，直接使用过宽的行号范围。
+- **纠正与防复发**：按标题精确定位并分段读取第三、四部分；只接受未截断的片段作为门禁证据。
+- **适用经验**：EXP-001、EXP-007、EXP-020、EXP-021。
+
+```text
+ERR1538_STATUS=CLOSED_READONLY_NO_MUTATION_PRECISE_SECTION_READ_REQUIRED
+```
+<!-- SPECFORGE_ERR1538_OVERSIZED_LEDGER_READ_RANGE:END -->
+
+<!-- SPECFORGE_ERR1539_REPEATED_LEDGER_OUTPUT_TRUNCATION:START -->
+### ERR-1539：经验台账分段读取仍超过工具输出上限
+
+- **事实证据**：ERR-1538 后首次分段读取仍把多个 300 行区间合并到同一命令，输出再次被截断；没有仓库或环境写入。
+- **根因**：只缩小了单段范围，未校验合并命令的总输出预算，属于 ERR-1538 的重复类错误。
+- **纠正与防复发**：每次只读取一个不超过 150 行的片段，片段间独立执行；只有所有片段未截断才记录完整阅读通过。
+- **适用经验**：EXP-007、EXP-019、EXP-020、EXP-021。
+
+```text
+ERR1539_STATUS=CLOSED_READONLY_NO_MUTATION_SINGLE_SMALL_CHUNK_REQUIRED
+REPEATED_ERROR_CLASS=ERR-1538
+```
+<!-- SPECFORGE_ERR1539_REPEATED_LEDGER_OUTPUT_TRUNCATION:END -->
+
+<!-- SPECFORGE_ERR1540_DAEMON_TEST_RUNNER_RELATIVE_PATH:START -->
+### ERR-1540：Daemon 定向测试在已切换工作目录后重复拼接路径
+
+- **事实证据**：在 `packages/daemon-core` 工作目录运行验证时，命令仍使用 `packages/daemon-core/node_modules/...` 路径；PowerShell 在进程启动前把首段解释为模块名，Vitest 未启动。
+- **影响**：没有执行测试、没有修改仓库或运行环境。
+- **根因**：runner 路径没有与实际 `workdir` 一起归一化，重复了目录前缀。
+- **纠正与防复发**：固定“仓库根绝对/相对路径”与“package 工作目录本地路径”两种调用形式；进入 package 后只使用 `./node_modules/.bin/vitest.exe`。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-019。
+
+```text
+ERR1540_STATUS=CLOSED_NO_TEST_EXECUTION_PACKAGE_LOCAL_RUNNER_REQUIRED
+```
+<!-- SPECFORGE_ERR1540_DAEMON_TEST_RUNNER_RELATIVE_PATH:END -->
+
+<!-- SPECFORGE_ERR1541_AUTHORITY_RECOVERY_TEST_EXPECTATION_DRIFT:START -->
+### ERR-1541：权威恢复定向测试断言与正式 ADR 链接句式不一致
+
+- **事实证据**：`v6-authority-consumer-alignment.test.ts` 首次运行 3 项中 2 项通过；唯一失败断言要求治理方案包含“已由 ADR-014 暂停”，而正式文档实际使用“ADR-014 已暂停”。
+- **影响**：未改动产品实现；失败仅说明新测试消费者没有精确消费刚写入的正式文档文本。
+- **根因**：测试期望从记忆重建，未从已写入的正式文档原文复制。
+- **纠正与防复发**：用正式文档中的完整稳定片段替换断言；重跑同一独立测试文件。
+- **适用经验**：EXP-001、EXP-007、EXP-022、EXP-043、EXP-068。
+
+```text
+ERR1541_STATUS=CLOSED_TARGETED_REGRESSION_3_OF_3_PASS
+```
+<!-- SPECFORGE_ERR1541_AUTHORITY_RECOVERY_TEST_EXPECTATION_DRIFT:END -->
+
+<!-- SPECFORGE_ERR1542_LEDGER_READ_WORKDIR_MISMATCH:START -->
+### ERR-1542：包级验证命令把仓库根台账路径用于 package 工作目录
+
+- **事实证据**：在 `packages/daemon-core` 工作目录中，验证命令先读取 `docs/rule/...`，PowerShell 返回路径不存在；随后同一命令的 package-local Vitest 正常执行并通过 3/3。
+- **影响**：台账读取未执行；测试结果有效且无仓库写入。
+- **根因**：只修正了 Vitest runner 路径，遗漏了同一命令中仓库根文档路径的相对基准。
+- **纠正与防复发**：package 工作目录中的仓库文档读取必须使用 `../../docs/...` 或独立在仓库根执行；不得把不同根的操作混在一个命令中。
+- **适用经验**：EXP-002、EXP-007、EXP-019、EXP-020。
+
+```text
+ERR1542_STATUS=CLOSED_NO_MUTATION_REPOSITORY_AND_PACKAGE_ROOTS_SEPARATED
+```
+<!-- SPECFORGE_ERR1542_LEDGER_READ_WORKDIR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1543_AUTHORITY_RECOVERY_STATUS_CLOSURE_GAP:START -->
+### ERR-1543：权威恢复状态文件遗漏同轮已关闭 ERR
+
+- **事实证据**：提交前审计发现 `authority-model-recovery.md` 的 `CLOSED_ERRORS` 仅列出 ERR-1537—1539，遗漏了已经关闭的 ERR-1540—1542。
+- **影响**：未提交工作区中的动态状态不完整；产品代码、Git 历史和部署现场未受影响。
+- **根因**：状态摘要在后续验证错误关闭后没有原子同步。
+- **纠正与防复发**：在提交前审计中对账台账尾部 ERR 与动态状态 `CLOSED_ERRORS`；本次同步完整列表。
+- **适用经验**：EXP-033、EXP-035、EXP-043、EXP-058、EXP-087。
+
+```text
+ERR1543_STATUS=CLOSED_CURRENT_STATUS_RECONCILED_BEFORE_COMMIT
+```
+<!-- SPECFORGE_ERR1543_AUTHORITY_RECOVERY_STATUS_CLOSURE_GAP:END -->
+
+<!-- SPECFORGE_ERR1544_AUTHORITY_RECOVERY_STAGE_INDEX_LOCK:START -->
+### ERR-1544：权威恢复提交的首次精确暂存被 Git index lock 权限拒绝
+
+- **事实证据**：`git add --` 对八个明确治理文件返回 `Unable to create .git/index.lock: Permission denied`；随后 `git status` 显示所有目标仍未暂存。
+- **影响**：没有 Git 索引或工作区内容变更；用户原有未跟踪备份仍未被暂存。
+- **根因**：受限环境未授予 Git 索引写权限，不是文件范围或内容缺陷。
+- **纠正与防复发**：仅在确认精确路径集合后使用受控 Git 暂存权限重试；禁止 `git add -A`。
+- **适用经验**：EXP-002、EXP-006、EXP-015、EXP-032、EXP-089。
+
+```text
+ERR1544_STATUS=CLOSED_EXACT_STAGE_RETRY_SUCCEEDED_EIGHT_FILES
+```
+<!-- SPECFORGE_ERR1544_AUTHORITY_RECOVERY_STAGE_INDEX_LOCK:END -->

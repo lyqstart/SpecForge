@@ -20,6 +20,17 @@ REPEATED_ERROR_CHECK=PASS
 
 本门禁只约束 SpecForge 产品自身的直接开发；不得启动 SpecForge 自身的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程。
 
+## 权威体系恢复门禁
+
+在当前产品需求、产品架构、发布范围、模块去留、用户级路径、daemon 生命周期或文档清理作出判断前，必须读取：
+
+```text
+docs/adr/ADR-014-authority-model-recovery-freeze.md
+docs/implementation/architecture-consistency/authority-model-recovery.md
+```
+
+`.kiro/` 不是当前产品权威目录；在正式 authority registry 经产品负责人裁决并建立前，不得把 `.kiro`、旧测试、README、handoff、实施方案或现有代码单独当作产品决定依据。冲突必须报告为 `AUTHORITY_CONFLICT`，证据不足必须报告为 `INSUFFICIENT_EVIDENCE`。
+
 ## 证据先行与结论可追溯原则
 
 本项目中的事实判断、架构判断、根因判断和解决方案，必须以用户提供的证据或可复核的一手证据为依据。不得把经验、可能性、相似案例、未验证推断或“很可能”表述当作事实和结论。

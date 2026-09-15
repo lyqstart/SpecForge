@@ -1,11 +1,10 @@
 # SpecForge 架构一致性治理当前交接提示词
 
 > **文件性质**：非权威当前交接文件
-> **唯一产品设计依据**：`docs/design/SpecForge架构一致性治理最终实施方案.md`
-> **当前主线活动实施文件**：`docs/implementation/architecture-consistency/P0-contract-consumer-closure.md`
-> **已关闭独立缺陷实施文件**：`docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md`
-> **本轮已验证实现提交**：`main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9`
-> **重要说明**：新会话开始时必须重新读取 GitHub `main` 当前 HEAD，不得把上述 SHA 当成永远不变的基线。
+> **当前恢复决策**：[`ADR-014-authority-model-recovery-freeze.md`](../../adr/ADR-014-authority-model-recovery-freeze.md)
+> **当前活动状态**：[`authority-model-recovery.md`](authority-model-recovery.md)
+> **重要说明**：`.kiro/` 不是产品权威目录；在正式 authority registry 建立前，本文件、旧实施方案和旧 V6 链均不能单独决定产品架构。
+> **新会话基线**：必须重新读取 GitHub `main` 当前 HEAD，不得把本文件中的历史 SHA 或阶段文字当成当前事实。
 
 继续 SpecForge 架构一致性治理能力的开发和验证。
 
@@ -91,10 +90,13 @@ main
 在分析、设计、修改或给出操作命令前，必须先从 GitHub 当前远程 `main` 读取：
 
 ```text
-docs/design/SpecForge架构一致性治理最终实施方案.md
+AGENTS.md
+docs/adr/ADR-014-authority-model-recovery-freeze.md
+docs/implementation/architecture-consistency/authority-model-recovery.md
+docs/rule/specforge-development-error-ledger-and-experience.md
 ```
 
-该文件是开发 SpecForge 架构一致性治理与契约治理能力的唯一当前产品设计依据。
+在 authority registry 建立前，上述文件只规定恢复任务、证据边界和接续顺序；不得据此虚构新的产品架构权威。
 
 同时读取当前主线活动实施文件和当前阻断缺陷实施文件：
 

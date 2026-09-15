@@ -22,6 +22,8 @@
 > 治理子系统内部的下游文件与本文件冲突时，以本文件为准；本文件与 V6 产品范围或产品架构冲突时，必须先报告并按上游产品权威修正本文件，不得用治理机制反向扩大当前产品范围。
 ### 1.2 唯一权威源
 
+> **Authority recovery override（2026-09-15）**：[`ADR-014`](../adr/ADR-014-authority-model-recovery-freeze.md) 已暂停本节中把 `.kiro/specs/v6-architecture-overview/requirements.md` 与 `design.md` 作为当前产品权威的旧链。该旧链仅保留为历史证据；在产品负责人裁决正式 authority registry 前，本文件不得单独推导产品范围或产品架构。
+
 **GOV-AUTH-001：** SpecForge 架构一致性治理和契约治理只保留一个当前权威源：
 
 ```text
@@ -39,7 +41,7 @@ docs/design/specforge-design-governance-contract-model.md
 
 它们可以记录专项细节、实施事实、交接事项、备选方案和决策原因，但不能覆盖本文件。
 
-本文件自身是 V6 产品权威的治理消费者，固定权威链为：
+本文件曾把下列链定义为固定权威链；该链现已由 ADR-014 暂停：
 
 ```text
 .kiro/specs/v6-architecture-overview/requirements.md（当前产品范围）
