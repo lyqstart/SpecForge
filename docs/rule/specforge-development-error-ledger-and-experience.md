@@ -28281,3 +28281,19 @@ ERR1543_STATUS=CLOSED_CURRENT_STATUS_RECONCILED_BEFORE_COMMIT
 ERR1544_STATUS=CLOSED_EXACT_STAGE_RETRY_SUCCEEDED_EIGHT_FILES
 ```
 <!-- SPECFORGE_ERR1544_AUTHORITY_RECOVERY_STAGE_INDEX_LOCK:END -->
+
+<!-- SPECFORGE_ERR1545_POST_PUSH_LS_REMOTE_NETWORK_FAILURE:START -->
+### ERR-1545：权威恢复提交推送后独立远程引用查询遭遇网络失败
+
+- **事实证据**：`git push origin main` 返回成功并报告 `641fc9d..dbacb2d main -> main`；随后独立 `git ls-remote origin refs/heads/main` 因无法连接 github.com:443 返回失败。当地 `main...origin/main` 记录为 `0 0`。
+- **影响**：推送动作已经发生；后续独立远程读取不可用，不能把它表述为新的 live-ref 查询成功证据。
+- **根因**：当前环境网络连接失败，非提交内容或 Git 推送失败。
+- **纠正与防复发**：保留 push 原始成功输出与本地追踪状态；不因同一网络故障盲目重试查询。新会话在首次有副作用动作前仍必须重新读取 live remote ref。
+- **适用经验**：EXP-002、EXP-007、EXP-016、EXP-037、EXP-082。
+
+```text
+ERR1545_STATUS=CLOSED_PUSH_PERFORMED_REMOTE_READ_EVIDENCE_UNAVAILABLE
+PUSH_ACTION=PERFORMED
+POST_PUSH_LIVE_REF_VERIFICATION=INSUFFICIENT_EVIDENCE_NETWORK_FAILURE
+```
+<!-- SPECFORGE_ERR1545_POST_PUSH_LS_REMOTE_NETWORK_FAILURE:END -->
