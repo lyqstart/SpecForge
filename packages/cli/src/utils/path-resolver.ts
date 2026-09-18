@@ -24,7 +24,7 @@ export interface PathResolver {
   /**
    * 解析安装根目录
    * @param override 可选的覆盖路径（测试用）
-   * @returns ~/.specforge 的绝对路径
+   * @returns <OpenCode config>/sf-user 的绝对路径
    */
   resolveInstallRoot(override?: string): string;
 
