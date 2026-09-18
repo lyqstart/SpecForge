@@ -11,26 +11,22 @@ function dependencies(overrides: Partial<ThinPluginDependencies> = {}): {
   deps: ThinPluginDependencies;
   messages: string[];
   postEvent: ReturnType<typeof vi.fn>;
-  startDaemon: ReturnType<typeof vi.fn>;
 } {
   const messages: string[] = [];
   const postEvent = vi.fn(async () => ({ ok: true, dropped: false, reason: 'success' as const }));
-  const startDaemon = vi.fn(async () => undefined);
   const deps: ThinPluginDependencies = {
     client: {
       register: vi.fn(async () => ({ sessionId: 'session-1', projectId: 'project-1', mode: 'personal' as const })),
       postEvent,
     },
-    startDaemon,
-    wait: async () => undefined,
     notify: (message) => messages.push(message),
     ...overrides,
   };
-  return { deps, messages, postEvent, startDaemon };
+  return { deps, messages, postEvent };
 }
 
 describe('current SpecForge Thin Plugin', () => {
-  it('starts specforged on first connection failure and reports OpenCode events', async () => {
+  it('never starts Daemon and can recover on a later event after initial connection failure', async () => {
     const setup = dependencies();
     const register = vi.fn()
       .mockRejectedValueOnce(new Error('handshake missing'))
@@ -41,16 +37,18 @@ describe('current SpecForge Thin Plugin', () => {
       { directory: 'D:/business/project' } as never,
       setup.deps,
     );
+
+    expect(setup.messages.some((message) => message.includes('lifecycle is externally managed'))).toBe(true);
+
     await hooks.event({ event: { type: 'session.updated', properties: { sessionID: 'oc-1' } } });
 
-    expect(setup.startDaemon).toHaveBeenCalledTimes(1);
     expect(register).toHaveBeenCalledWith('D:/business/project');
     expect(setup.postEvent).toHaveBeenCalledWith(
       'session-1',
       'opencode.session.updated',
       expect.objectContaining({ properties: { sessionID: 'oc-1' } }),
     );
-    expect(setup.messages.some((message) => message.includes('started and connected'))).toBe(true);
+    expect(setup.messages.some((message) => message.includes('connection recovered'))).toBe(true);
   });
 
   it('shows degraded and recovered connection states without exposing business tools', async () => {
@@ -81,6 +79,10 @@ describe('current SpecForge Thin Plugin', () => {
     expect(source).not.toContain('.specforge/work-items');
     expect(source).not.toContain('checkWrite(');
     expect(source).not.toContain('bashGuard(');
+    expect(source).not.toContain("from 'node:child_process'");
+    expect(source).not.toContain('spawn(');
+    expect(source).not.toContain('startInstalledDaemon');
+    expect(source).not.toContain('startDaemon');
     expect(source).toContain('resolveOpenCodeConfigRoot');
     expect(source).toContain('resolveSpecForgePrivateRoot');
     expect(source).toContain('sf-user');

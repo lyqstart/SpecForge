@@ -557,7 +557,6 @@ export async function produceRuntimeEntrySurfaceReport(
       'release:installer',
       'runtime:specforge',
       'runtime:specforged',
-      'thin-plugin:daemon-start',
       'thin-plugin:event-reporting',
       'thin-plugin:recovery-display',
     ];

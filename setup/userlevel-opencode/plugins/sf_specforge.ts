@@ -3,13 +3,12 @@
  *
  * Current-release responsibilities are deliberately limited to:
  * 1. report OpenCode runtime events to the Daemon;
- * 2. start the installed specforged artifact when the Daemon is unavailable;
+ * 2. connect only to an independently managed Daemon;
  * 3. display connection degradation and recovery state.
  *
  * Business state, WriteGuard decisions and filesystem tools remain Daemon-owned.
  */
-import { appendFileSync, existsSync, mkdirSync } from 'node:fs';
-import { spawn } from 'node:child_process';
+import { appendFileSync, mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -37,8 +36,6 @@ export interface ThinPluginDaemonClient {
 
 export interface ThinPluginDependencies {
   client: ThinPluginDaemonClient;
-  startDaemon: () => Promise<void>;
-  wait: (milliseconds: number) => Promise<void>;
   notify: (message: string) => void;
 }
 
@@ -105,21 +102,6 @@ async function awaitWithTimeout<T>(
   }
 }
 
-async function startInstalledDaemon(): Promise<void> {
-  const executableName = process.platform === 'win32' ? 'specforged.exe' : 'specforged';
-  const executablePath = resolve(resolveSpecForgePrivateRoot(), 'bin', executableName);
-  if (!existsSync(executablePath)) {
-    throw new Error(`SPECFORGED_ARTIFACT_MISSING: ${executablePath}`);
-  }
-
-  const child = spawn(executablePath, ['start', '--foreground'], {
-    detached: true,
-    stdio: 'ignore',
-    windowsHide: true,
-  });
-  child.unref();
-}
-
 async function createDefaultDependencies(): Promise<ThinPluginDependencies> {
   const clientModuleUrl = pathToFileURL(
     resolve(resolveSpecForgePrivateRoot(), 'lib', 'sf_plugin_client.ts'),
@@ -131,8 +113,6 @@ async function createDefaultDependencies(): Promise<ThinPluginDependencies> {
       maxCumulativeBackoffMs: 5000,
       backoffFactor: 2,
     }),
-    startDaemon: startInstalledDaemon,
-    wait: (milliseconds) => new Promise((resolveWait) => setTimeout(resolveWait, milliseconds)),
     notify: (message) => console.log(`[sf:specforge] ${message}`),
   };
 }
@@ -193,28 +173,8 @@ export async function createSpecForgeThinPlugin(
   }
 
   const bootstrap = async (): Promise<void> => {
-    try {
-      await register();
-      dependencies.notify('Daemon connected.');
-      return;
-    } catch {
-      await dependencies.startDaemon();
-    }
-
-    let lastError: unknown;
-    for (let attempt = 0; attempt < 20; attempt += 1) {
-      try {
-        await register();
-        dependencies.notify('Daemon started and connected.');
-        return;
-      } catch (error) {
-        lastError = error;
-        await dependencies.wait(250);
-      }
-    }
-    throw new Error(
-      `SPECFORGED_START_TIMEOUT: ${lastError instanceof Error ? lastError.message : String(lastError)}`,
-    );
+    await register();
+    dependencies.notify('Daemon connected.');
   };
 
   try {
@@ -222,7 +182,7 @@ export async function createSpecForgeThinPlugin(
   } catch (error) {
     state = 'degraded';
     dependencies.notify(
-      `Daemon reconnecting: ${error instanceof Error ? error.message : String(error)}`,
+      `Daemon unavailable; lifecycle is externally managed: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 

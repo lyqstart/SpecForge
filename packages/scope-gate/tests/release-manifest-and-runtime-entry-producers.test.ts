@@ -106,7 +106,6 @@ describe('release manifest and runtime entry producers', () => {
       'runtime:current-config',
       'runtime:specforge',
       'runtime:specforged',
-      'thin-plugin:daemon-start',
       'thin-plugin:event-reporting',
       'thin-plugin:recovery-display',
       'workflow:feature_spec',
@@ -204,7 +203,6 @@ describe('release manifest and runtime entry producers', () => {
       'runtime:handshake',
       'runtime:specforge',
       'runtime:specforged',
-      'thin-plugin:daemon-start',
       'thin-plugin:event-reporting',
       'thin-plugin:recovery-display',
     ]);

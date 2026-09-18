@@ -202,7 +202,6 @@ export function resolveRegistryReleaseItemIds(
     if (pluginName === "sf_specforge") {
       return [
         "plugin:sf_specforge",
-        "thin-plugin:daemon-start",
         "thin-plugin:event-reporting",
         "thin-plugin:recovery-display",
       ]
