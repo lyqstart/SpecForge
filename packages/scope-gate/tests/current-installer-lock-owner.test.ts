@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   acquireInstallLock,
+  getInstallLockPath,
   parseInstallLock,
 } from '../../../scripts/lib/install_lock';
 
@@ -56,9 +57,10 @@ describe('current installer lock owner contract', () => {
 
   it('serializes owners and permits acquisition after the owning handle releases', async () => {
     const root = await createRoot();
+    expect(getInstallLockPath(root)).toBe(join(root, 'sf-user', '.specforge.lock'));
     const first = await acquireInstallLock(root, 'upgrade', fastOptions);
     const lock = parseInstallLock(JSON.parse(
-      await readFile(join(root, '.specforge.lock'), 'utf8'),
+      await readFile(join(root, 'sf-user', '.specforge.lock'), 'utf8'),
     ));
     expect(lock.schema_version).toBe('1.0');
 
@@ -69,12 +71,12 @@ describe('current installer lock owner contract', () => {
 
     const second = await acquireInstallLock(root, 'install', fastOptions);
     await second.release();
-    expect(existsSync(join(root, '.specforge.lock'))).toBe(false);
+    expect(existsSync(join(root, 'sf-user', '.specforge.lock'))).toBe(false);
   });
 
   it('does not let an obsolete handle release a replacement owner lock', async () => {
     const root = await createRoot();
-    const lockPath = join(root, '.specforge.lock');
+    const lockPath = join(root, 'sf-user', '.specforge.lock');
     const obsolete = await acquireInstallLock(root, 'upgrade', {
       ...fastOptions,
       heartbeatIntervalMs: 60_000,
@@ -99,7 +101,7 @@ describe('current installer lock owner contract', () => {
   it('does not reclaim a stale heartbeat while the same-host PID is alive', async () => {
     const root = await createRoot();
     const old = new Date(Date.now() - 60_000).toISOString();
-    await writeFile(join(root, '.specforge.lock'), JSON.stringify({
+    await writeFile(join(root, 'sf-user', '.specforge.lock'), JSON.stringify({
       schema_version: '1.0',
       lock_id: 'live-owner',
       pid: process.pid,
@@ -113,14 +115,14 @@ describe('current installer lock owner contract', () => {
       code: 'E_LOCK_TIMEOUT',
     });
     expect(parseInstallLock(JSON.parse(
-      await readFile(join(root, '.specforge.lock'), 'utf8'),
+      await readFile(join(root, 'sf-user', '.specforge.lock'), 'utf8'),
     )).lock_id).toBe('live-owner');
   });
 
   it('reclaims a stale lock whose PID is not alive', async () => {
     const root = await createRoot();
     const old = new Date(Date.now() - 60_000).toISOString();
-    await writeFile(join(root, '.specforge.lock'), JSON.stringify({
+    await writeFile(join(root, 'sf-user', '.specforge.lock'), JSON.stringify({
       schema_version: '1.0',
       lock_id: 'dead-owner',
       pid: 2_147_483_647,
@@ -132,14 +134,14 @@ describe('current installer lock owner contract', () => {
 
     const handle = await acquireInstallLock(root, 'install', fastOptions);
     expect(parseInstallLock(JSON.parse(
-      await readFile(join(root, '.specforge.lock'), 'utf8'),
+      await readFile(join(root, 'sf-user', '.specforge.lock'), 'utf8'),
     )).lock_id).not.toBe('dead-owner');
     await handle.release();
   });
 
   it('fails closed without deleting malformed lock content', async () => {
     const root = await createRoot();
-    const lockPath = join(root, '.specforge.lock');
+    const lockPath = join(root, 'sf-user', '.specforge.lock');
     await writeFile(lockPath, '{malformed');
 
     await expect(acquireInstallLock(root, 'upgrade', fastOptions)).rejects.toMatchObject({

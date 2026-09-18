@@ -1,10 +1,10 @@
-import * as os from 'node:os';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
   resolveSpecForgeInstallRoot,
+  resolveSpecForgePrivateRoot,
   resolveUserLevelDirectory,
 } from '../../../scripts/lib/paths';
 
@@ -19,19 +19,22 @@ afterEach(() => {
 });
 
 describe('current release installer root contract', () => {
-  it('separates the OpenCode integration root from the SpecForge install root', () => {
+  it('uses the OpenCode config root as the installer coordinate root', () => {
     const openCodeRoot = path.resolve('C:/tmp/specforge-opencode-boundary');
     process.env.OPENCODE_CONFIG_DIR = openCodeRoot;
 
     expect(resolveUserLevelDirectory()).toBe(openCodeRoot);
-    expect(resolveSpecForgeInstallRoot()).toBe(path.join(os.homedir(), '.specforge'));
+    expect(resolveSpecForgeInstallRoot()).toBe(openCodeRoot);
+    expect(resolveSpecForgePrivateRoot()).toBe(path.join(openCodeRoot, 'sf-user'));
   });
 
-  it('does not let XDG_CONFIG_HOME create an sf-user runtime root', () => {
-    process.env.XDG_CONFIG_HOME = path.resolve('C:/tmp/specforge-xdg-boundary');
+  it('uses XDG_CONFIG_HOME/opencode with a private sf-user subtree', () => {
+    const xdg = path.resolve('C:/tmp/specforge-xdg-boundary');
+    delete process.env.OPENCODE_CONFIG_DIR;
+    process.env.XDG_CONFIG_HOME = xdg;
 
-    expect(resolveSpecForgeInstallRoot()).toBe(path.join(os.homedir(), '.specforge'));
-    expect(resolveSpecForgeInstallRoot()).not.toContain('sf-user');
+    expect(resolveSpecForgeInstallRoot()).toBe(path.join(xdg, 'opencode'));
+    expect(resolveSpecForgePrivateRoot()).toBe(path.join(xdg, 'opencode', 'sf-user'));
   });
 
   it('makes the installer consume only the current root without legacy migration branches', () => {
@@ -52,9 +55,10 @@ describe('current release installer root contract', () => {
     expect(installer).not.toContain('mergeOpenCodeJsonUserLevel');
     expect(installer).not.toContain('removeSfAgentsFromOpenCodeJson');
     expect(installer).not.toContain('backupFile(userLevelDir, "opencode.json")');
-    expect(registry).toContain('integrations/opencode/sf_specforge.ts');
-    expect(registry).not.toMatch(/path:\s*["']plugins\/sf_specforge\.ts/);
-    expect(registry).not.toMatch(/path:\s*["']sf-user\//);
+    expect(registry).toMatch(/path:\s*["']plugins\/sf_specforge\.ts/);
+    expect(registry).toMatch(/path:\s*["']sf-user\/bin\/specforged/);
+    expect(registry).toMatch(/path:\s*["']sf-user\/lib\/sf_plugin_client\.ts/);
+    expect(registry).not.toContain('integrations/opencode/sf_specforge.ts');
   });
 
   it('keeps current installer state independent from removed legacy compatibility adapters', () => {

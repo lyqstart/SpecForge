@@ -10,6 +10,7 @@ let mockUserLevelDir: string
 vi.mock("../../../scripts/lib/paths", () => {
   return {
     resolveUserLevelDirectory: () => mockUserLevelDir,
+    resolveSpecForgeInstallRoot: () => mockUserLevelDir,
     posixToNative: (path: string) => path.replace(/\//g, "\\"),
     toPosix: (path: string) => path.replace(/\\/g, "/"),
     toNative: (path: string) => path.replace(/\//g, "\\"),
@@ -168,7 +169,7 @@ describe("cmdVerify", () => {
     expect(exitSpy).toHaveBeenCalledWith(6)
   })
 
-  it("should warn when .specforge.lock exists but NOT acquire the lock", async () => {
+  it("should warn when sf-user/.specforge.lock exists but NOT acquire the lock", async () => {
     const content = "test"
     const hash = computeHash(content)
 
@@ -178,8 +179,9 @@ describe("cmdVerify", () => {
       content
     )
 
+    mkdirSync(join(mockUserLevelDir, "sf-user"), { recursive: true })
     writeFileSync(
-      join(mockUserLevelDir, ".specforge.lock"),
+      join(mockUserLevelDir, "sf-user", ".specforge.lock"),
       JSON.stringify({
         lock_id: "test",
         pid: 9999,

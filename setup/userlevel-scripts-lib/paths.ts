@@ -172,9 +172,14 @@ export function resolveUserLevelDirectory(): string {
   return pathModule.join(osModule.homedir(), '.config', 'opencode');
 }
 
-/** Current SpecForge user-level install and runtime root. */
+/** Current installer coordinate root (the OpenCode configuration root). */
 export function resolveSpecForgeInstallRoot(): string {
-  return pathModule.join(osModule.homedir(), '.specforge');
+  return resolveUserLevelDirectory();
+}
+
+/** Current private SpecForge user subtree below the OpenCode config root. */
+export function resolveSpecForgePrivateRoot(): string {
+  return pathModule.join(resolveSpecForgeInstallRoot(), 'sf-user');
 }
 
 /**
@@ -196,14 +201,14 @@ export function toPosix(nativePath: string): string {
 /** SpecForge 项目级治理目录名 */
 export const SPEC_DIR_NAME = ".specforge" as const;
 
-/** SpecForge 当前用户级安装目录名 */
-export const SPEC_USER_DIR_NAME = ".specforge" as const;
+/** SpecForge 当前私有用户级目录名 */
+export const SPEC_USER_DIR_NAME = "sf-user" as const;
 
 /**
- * SpecForge 当前用户级安装根目录。
+ * SpecForge 当前私有用户级根目录。
  * Legacy ~/.specforge/install.json may be read by dedicated migration code only;
  * it must never redirect current writes or executable loading.
  */
 export function resolveSpecForgeHome(): string {
-  return resolveSpecForgeInstallRoot();
+  return resolveSpecForgePrivateRoot();
 }

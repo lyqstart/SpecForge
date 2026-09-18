@@ -17,17 +17,19 @@ describe('current release installer manifest boundary', () => {
     expect(source).not.toContain('path.join(userLevelDir, "install.json")');
   });
 
-  it('binds the project Thin Plugin to the current SpecForge user root only', async () => {
+  it('binds the first-party Thin Plugin to the OpenCode config root plus sf-user private subtree', async () => {
     const plugin = await readFile(
       resolve(ROOT, 'setup/userlevel-opencode/plugins/sf_specforge.ts'),
       'utf8',
     );
 
-    expect(plugin).toContain("homedir(), '.specforge'");
+    expect(plugin).toContain('resolveOpenCodeConfigRoot');
+    expect(plugin).toContain('resolveSpecForgePrivateRoot');
+    expect(plugin).toContain('OPENCODE_CONFIG_DIR');
+    expect(plugin).toContain('XDG_CONFIG_HOME');
+    expect(plugin).toContain("'sf-user'");
     expect(plugin).toContain("'lib', 'sf_plugin_client.ts'");
     expect(plugin).toContain("'bin', executableName");
-    expect(plugin).not.toContain('sf-user');
-    expect(plugin).not.toContain('OPENCODE_CONFIG_DIR');
-    expect(plugin).not.toContain('XDG_CONFIG_HOME');
+    expect(plugin).not.toContain("'.specforge'");
   });
 });

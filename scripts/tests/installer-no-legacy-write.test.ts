@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import * as os from 'node:os';
 import * as path from 'node:path';
 
 import {
   resolveSpecForgeInstallRoot,
+  resolveSpecForgePrivateRoot,
   resolveUserLevelDirectory,
 } from '../lib/paths';
 
@@ -23,13 +23,16 @@ describe('current release installer root', () => {
     process.env.OPENCODE_CONFIG_DIR = openCodeRoot;
 
     expect(resolveUserLevelDirectory()).toBe(openCodeRoot);
-    expect(resolveSpecForgeInstallRoot()).toBe(path.join(os.homedir(), '.specforge'));
+    expect(resolveSpecForgeInstallRoot()).toBe(openCodeRoot);
+    expect(resolveSpecForgePrivateRoot()).toBe(path.join(openCodeRoot, 'sf-user'));
   });
 
-  it('does not let XDG_CONFIG_HOME redirect SpecForge runtime assets', () => {
-    process.env.XDG_CONFIG_HOME = path.resolve('C:/tmp/specforge-xdg-boundary');
+  it('uses XDG_CONFIG_HOME for the OpenCode root and keeps private assets under sf-user', () => {
+    const xdg = path.resolve('C:/tmp/specforge-xdg-boundary');
+    delete process.env.OPENCODE_CONFIG_DIR;
+    process.env.XDG_CONFIG_HOME = xdg;
 
-    expect(resolveSpecForgeInstallRoot()).toBe(path.join(os.homedir(), '.specforge'));
-    expect(resolveSpecForgeInstallRoot()).not.toContain('sf-user');
+    expect(resolveSpecForgeInstallRoot()).toBe(path.join(xdg, 'opencode'));
+    expect(resolveSpecForgePrivateRoot()).toBe(path.join(xdg, 'opencode', 'sf-user'));
   });
 });

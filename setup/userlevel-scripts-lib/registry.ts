@@ -2,7 +2,7 @@
  * SpecForge V3.5.0 — 共享组件注册表与 Agent 定义
  *
  * V3.5 架构：
- * - SHARED_COMPONENT_REGISTRY: 部署到 User_Level_Directory 的共享组件（含 type 字段）
+ * - SHARED_COMPONENT_REGISTRY: 部署到 OpenCode config root 坐标系的共享组件；SpecForge 私有资产显式使用 sf-user/ 前缀（含 type 字段）
  * - SPECFORGE_AGENT_DEFINITIONS: 内置 Agent 配置
  *
  * 已移除：USER_LEVEL_REGISTRY（string[]）、PROJECT_LEVEL_REGISTRY、RUNTIME_DIRECTORIES、
@@ -15,7 +15,7 @@ import type { AgentConfig, ComponentEntry } from "./types"
 
 // ============================================================
 // 共享组件注册表：部署到 User_Level_Directory 的文件
-// 路径为相对于 User_Level_Directory 的 POSIX 风格路径
+// 路径为相对于 OpenCode config root 的 POSIX 风格路径
 //
 // 注意：opencode.json 不纳入此注册表（混合所有权文件，
 // 由 managed_agent_hashes 机制单独管理）
@@ -25,13 +25,13 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   // Release runtime artifacts. Both source and target resolve to the same
   // platform-specific executable name.
   {
-    path: "bin/specforge",
+    path: "sf-user/bin/specforge",
     type: "runtime",
     sourcePath: "release/bin/specforge",
     platformExecutable: true,
   },
   {
-    path: "bin/specforged",
+    path: "sf-user/bin/specforged",
     type: "runtime",
     sourcePath: "release/bin/specforged",
     platformExecutable: true,
@@ -95,19 +95,19 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
 
   // Plugin（1 个 — 统一 Plugin，替代原来的 5 个 + daemon-spawn 已删除）
   {
-    path: "integrations/opencode/sf_specforge.ts",
+    path: "plugins/sf_specforge.ts",
     type: "plugin",
     sourcePath: "setup/userlevel-opencode/plugins/sf_specforge.ts",
   },
   {
-    path: "lib/sf_plugin_client.ts",
+    path: "sf-user/lib/sf_plugin_client.ts",
     type: "tool_lib",
     sourcePath: "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
   },
 
   // Current release builtin workflow (single source remains configs/workflows/builtin)
   {
-    path: "workflows/builtin/feature_spec.json",
+    path: "sf-user/workflows/builtin/feature_spec.json",
     type: "workflow",
     sourcePath: "configs/workflows/builtin/feature_spec.json",
   },
@@ -123,25 +123,25 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/sf-intake/SKILL.md", type: "skill" },  // intake 阶段提问脚本
 
   // Current project-rule templates consumed by sf-intake.
-  { path: "templates/README.md", type: "template", sourcePath: "setup/userlevel-templates/README.md" },
-  { path: "templates/dev-environment.md", type: "template", sourcePath: "setup/userlevel-templates/dev-environment.md" },
-  { path: "templates/prod-environment.md", type: "template", sourcePath: "setup/userlevel-templates/prod-environment.md" },
-  { path: "templates/project-rules/_BASE.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/_BASE.md" },
-  { path: "templates/project-rules/databases/mongodb.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mongodb.md" },
-  { path: "templates/project-rules/databases/mysql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mysql.md" },
-  { path: "templates/project-rules/databases/postgresql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/postgresql.md" },
-  { path: "templates/project-rules/databases/redis.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/redis.md" },
-  { path: "templates/project-rules/databases/sqlite.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/sqlite.md" },
-  { path: "templates/project-rules/frameworks/fastapi.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/fastapi.md" },
-  { path: "templates/project-rules/frameworks/react.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/react.md" },
-  { path: "templates/project-rules/frameworks/spring-boot.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/spring-boot.md" },
-  { path: "templates/project-rules/frameworks/vue.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/vue.md" },
-  { path: "templates/project-rules/infra/ci-github-actions.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/ci-github-actions.md" },
-  { path: "templates/project-rules/infra/docker.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/docker.md" },
-  { path: "templates/project-rules/languages/go.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/go.md" },
-  { path: "templates/project-rules/languages/java.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/java.md" },
-  { path: "templates/project-rules/languages/nodejs.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/nodejs.md" },
-  { path: "templates/project-rules/languages/python.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/python.md" },
+  { path: "sf-user/templates/README.md", type: "template", sourcePath: "setup/userlevel-templates/README.md" },
+  { path: "sf-user/templates/dev-environment.md", type: "template", sourcePath: "setup/userlevel-templates/dev-environment.md" },
+  { path: "sf-user/templates/prod-environment.md", type: "template", sourcePath: "setup/userlevel-templates/prod-environment.md" },
+  { path: "sf-user/templates/project-rules/_BASE.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/_BASE.md" },
+  { path: "sf-user/templates/project-rules/databases/mongodb.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mongodb.md" },
+  { path: "sf-user/templates/project-rules/databases/mysql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mysql.md" },
+  { path: "sf-user/templates/project-rules/databases/postgresql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/postgresql.md" },
+  { path: "sf-user/templates/project-rules/databases/redis.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/redis.md" },
+  { path: "sf-user/templates/project-rules/databases/sqlite.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/sqlite.md" },
+  { path: "sf-user/templates/project-rules/frameworks/fastapi.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/fastapi.md" },
+  { path: "sf-user/templates/project-rules/frameworks/react.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/react.md" },
+  { path: "sf-user/templates/project-rules/frameworks/spring-boot.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/spring-boot.md" },
+  { path: "sf-user/templates/project-rules/frameworks/vue.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/vue.md" },
+  { path: "sf-user/templates/project-rules/infra/ci-github-actions.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/ci-github-actions.md" },
+  { path: "sf-user/templates/project-rules/infra/docker.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/docker.md" },
+  { path: "sf-user/templates/project-rules/languages/go.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/go.md" },
+  { path: "sf-user/templates/project-rules/languages/java.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/java.md" },
+  { path: "sf-user/templates/project-rules/languages/nodejs.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/nodejs.md" },
+  { path: "sf-user/templates/project-rules/languages/python.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/python.md" },
 ]
 
 function withExecutableSuffix(value: string, platform: NodeJS.Platform): string {

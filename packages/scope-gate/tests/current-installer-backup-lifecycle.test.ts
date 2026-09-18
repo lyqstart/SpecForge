@@ -64,7 +64,7 @@ describe('current installer backup lifecycle', () => {
 
     const backup = await createUpgradeBackup()(root, journal, 'existing.txt');
 
-    expect(backup.backup_path.startsWith('backups/')).toBe(true);
+    expect(backup.backup_path.startsWith('sf-user/backups/')).toBe(true);
     expect(backup.backup_path.includes(journal.transaction_id)).toBe(true);
     expect(backup.backup_sha256).toBe(sha256('old bytes'));
     expect(await readFile(join(root, ...backup.backup_path.split('/')), 'utf8')).toBe('old bytes');
@@ -103,7 +103,7 @@ describe('current installer backup lifecycle', () => {
     });
     await upgradeJournal.markUpgradeMutationApplied(root, journal, index);
     const backupSession = dirname(join(root, ...backup.backup_path.split('/')));
-    const unrelatedBackup = join(root, 'backups', 'unrelated-session', 'evidence.bak');
+    const unrelatedBackup = join(root, 'sf-user', 'backups', 'unrelated-session', 'evidence.bak');
     await mkdir(dirname(unrelatedBackup), { recursive: true });
     await writeFile(unrelatedBackup, 'unrelated');
 
@@ -111,7 +111,7 @@ describe('current installer backup lifecycle', () => {
 
     expect(existsSync(backupSession)).toBe(false);
     expect(await readFile(unrelatedBackup, 'utf8')).toBe('unrelated');
-    expect(existsSync(join(root, 'upgrade_journal.json'))).toBe(false);
+    expect(existsSync(join(root, 'sf-user', 'upgrade_journal.json'))).toBe(false);
   });
 
   it('retains rolled-back evidence until the next retry then clears the transaction session', async () => {
@@ -135,6 +135,6 @@ describe('current installer backup lifecycle', () => {
 
     await expect(upgradeJournal.recoverInterruptedUpgrade(root)).resolves.toBe('cleared_rolled_back');
     expect(existsSync(backupSession)).toBe(false);
-    expect(existsSync(join(root, 'upgrade_journal.json'))).toBe(false);
+    expect(existsSync(join(root, 'sf-user', 'upgrade_journal.json'))).toBe(false);
   });
 });

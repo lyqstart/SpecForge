@@ -81,9 +81,11 @@ describe('current SpecForge Thin Plugin', () => {
     expect(source).not.toContain('.specforge/work-items');
     expect(source).not.toContain('checkWrite(');
     expect(source).not.toContain('bashGuard(');
-    expect(source).toContain("homedir(), '.specforge'");
-    expect(source).not.toContain('sf-user');
-    expect(source).not.toContain('OPENCODE_CONFIG_DIR');
-    expect(source).not.toContain('XDG_CONFIG_HOME');
+    expect(source).toContain('resolveOpenCodeConfigRoot');
+    expect(source).toContain('resolveSpecForgePrivateRoot');
+    expect(source).toContain('sf-user');
+    expect(source).toContain('OPENCODE_CONFIG_DIR');
+    expect(source).toContain('XDG_CONFIG_HOME');
+    expect(source).not.toContain("'.specforge'");
   });
 });

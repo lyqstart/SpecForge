@@ -10,11 +10,11 @@
 import { existsSync, readFileSync, statSync } from "node:fs"
 import { join } from "node:path"
 import { LAYOUT, SPEC_DIR_NAME } from "@specforge/types/directory-layout"
-import { resolveSpecForgeUserRoot } from "@specforge/types/user-level-paths"
+import { resolveOpenCodeConfigRoot, resolveSpecForgeUserRoot } from "@specforge/types/user-level-paths"
 import { logErrorToFile } from "./utils"
 
 function resolveUserLevelDirectory(): string {
-  return resolveSpecForgeUserRoot()
+  return resolveOpenCodeConfigRoot()
 }
 
 // ============================================================
@@ -38,11 +38,11 @@ export interface UserLevelDoctorReport {
 
 /** User-level directory key files to verify */
 const USER_LEVEL_KEY_FILES = [
-  process.platform === "win32" ? "bin/specforge.exe" : "bin/specforge",
-  process.platform === "win32" ? "bin/specforged.exe" : "bin/specforged",
+  process.platform === "win32" ? "sf-user/bin/specforge.exe" : "sf-user/bin/specforge",
+  process.platform === "win32" ? "sf-user/bin/specforged.exe" : "sf-user/bin/specforged",
   "specforge-manifest.json",
   "agents/sf-orchestrator.md",
-  "integrations/opencode/sf_specforge.ts",
+  "plugins/sf_specforge.ts",
 ]
 
 /** Project runtime key files to verify */
@@ -64,7 +64,7 @@ const PROJECT_RUNTIME_KEY_FILES = [
  */
 export async function checkUserLevelInstallation(
   baseDir: string,
-  userRoot?: string,
+  installRoot?: string,
 ): Promise<UserLevelDoctorReport> {
   try {
     const checks: DoctorCheckItem[] = []
@@ -72,7 +72,7 @@ export async function checkUserLevelInstallation(
     // --- 1. 用户级目录关键文件检查 ---
     let userLevelDir: string
     try {
-      userLevelDir = userRoot ?? resolveUserLevelDirectory()
+      userLevelDir = installRoot ?? resolveUserLevelDirectory()
     } catch {
       checks.push({
         name: "用户级目录解析",
@@ -118,7 +118,8 @@ export async function checkUserLevelInstallation(
     }
 
     // --- 3. 初始化完整性检查 ---
-    const initChecks = checkInitializationCompleteness(baseDir, userLevelDir)
+    const privateUserRoot = installRoot ? join(installRoot, "sf-user") : resolveSpecForgeUserRoot()
+    const initChecks = checkInitializationCompleteness(baseDir, privateUserRoot)
     checks.push(...initChecks)
 
     return { checks, overall: deriveOverall(checks) }
@@ -133,7 +134,7 @@ export async function checkUserLevelInstallation(
  *
  * 检查：
  * 1. project/spec_manifest.json — 当前 Project Spec 权威
- * 2. host-profile.json — 主机环境配置（~/.specforge/host-profile.json）
+ * 2. host-profile.json — 主机环境配置（<OpenCode config>/sf-user/host-profile.json）
  * 3. prod-environment.md — 生产环境配置
  * 4. project-rules.md — 项目规则
  */
@@ -152,7 +153,7 @@ function checkInitializationCompleteness(
     checks.push({ name: "初始化: spec_manifest.json", status: "error", detail: "项目未初始化（project/spec_manifest.json 不存在）" })
   }
 
-  // host-profile.json（用户级：~/.specforge/host-profile.json）
+  // host-profile.json（用户级：<OpenCode config>/sf-user/host-profile.json）
   const hostProfilePath = join(userLevelDir, 'host-profile.json')
   if (existsSync(hostProfilePath)) {
     // 检查新鲜度（30 天）。优先使用档案自身的 scanned_at，

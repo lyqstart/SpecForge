@@ -9,13 +9,13 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   // Release runtime artifacts. Both source and target resolve to the same
   // platform-specific executable name.
   {
-    path: "bin/specforge",
+    path: "sf-user/bin/specforge",
     type: "runtime",
     sourcePath: "release/bin/specforge",
     platformExecutable: true,
   },
   {
-    path: "bin/specforged",
+    path: "sf-user/bin/specforged",
     type: "runtime",
     sourcePath: "release/bin/specforged",
     platformExecutable: true,
@@ -117,19 +117,19 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
 
   // Plugin
   {
-    path: "integrations/opencode/sf_specforge.ts",
+    path: "plugins/sf_specforge.ts",
     type: "plugin",
     sourcePath: "setup/userlevel-opencode/plugins/sf_specforge.ts",
   },
   {
-    path: "lib/sf_plugin_client.ts",
+    path: "sf-user/lib/sf_plugin_client.ts",
     type: "tool_lib",
     sourcePath: "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
   },
 
   // Current release builtin workflow (single source remains configs/workflows/builtin)
   {
-    path: "workflows/builtin/feature_spec.json",
+    path: "sf-user/workflows/builtin/feature_spec.json",
     type: "workflow",
     sourcePath: "configs/workflows/builtin/feature_spec.json",
   },
@@ -145,25 +145,25 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "skills/sf-intake/SKILL.md", type: "skill" },
 
   // Current project-rule templates consumed by sf-intake.
-  { path: "templates/README.md", type: "template", sourcePath: "setup/userlevel-templates/README.md" },
-  { path: "templates/dev-environment.md", type: "template", sourcePath: "setup/userlevel-templates/dev-environment.md" },
-  { path: "templates/prod-environment.md", type: "template", sourcePath: "setup/userlevel-templates/prod-environment.md" },
-  { path: "templates/project-rules/_BASE.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/_BASE.md" },
-  { path: "templates/project-rules/databases/mongodb.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mongodb.md" },
-  { path: "templates/project-rules/databases/mysql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mysql.md" },
-  { path: "templates/project-rules/databases/postgresql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/postgresql.md" },
-  { path: "templates/project-rules/databases/redis.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/redis.md" },
-  { path: "templates/project-rules/databases/sqlite.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/sqlite.md" },
-  { path: "templates/project-rules/frameworks/fastapi.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/fastapi.md" },
-  { path: "templates/project-rules/frameworks/react.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/react.md" },
-  { path: "templates/project-rules/frameworks/spring-boot.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/spring-boot.md" },
-  { path: "templates/project-rules/frameworks/vue.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/vue.md" },
-  { path: "templates/project-rules/infra/ci-github-actions.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/ci-github-actions.md" },
-  { path: "templates/project-rules/infra/docker.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/docker.md" },
-  { path: "templates/project-rules/languages/go.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/go.md" },
-  { path: "templates/project-rules/languages/java.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/java.md" },
-  { path: "templates/project-rules/languages/nodejs.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/nodejs.md" },
-  { path: "templates/project-rules/languages/python.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/python.md" },
+  { path: "sf-user/templates/README.md", type: "template", sourcePath: "setup/userlevel-templates/README.md" },
+  { path: "sf-user/templates/dev-environment.md", type: "template", sourcePath: "setup/userlevel-templates/dev-environment.md" },
+  { path: "sf-user/templates/prod-environment.md", type: "template", sourcePath: "setup/userlevel-templates/prod-environment.md" },
+  { path: "sf-user/templates/project-rules/_BASE.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/_BASE.md" },
+  { path: "sf-user/templates/project-rules/databases/mongodb.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mongodb.md" },
+  { path: "sf-user/templates/project-rules/databases/mysql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/mysql.md" },
+  { path: "sf-user/templates/project-rules/databases/postgresql.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/postgresql.md" },
+  { path: "sf-user/templates/project-rules/databases/redis.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/redis.md" },
+  { path: "sf-user/templates/project-rules/databases/sqlite.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/databases/sqlite.md" },
+  { path: "sf-user/templates/project-rules/frameworks/fastapi.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/fastapi.md" },
+  { path: "sf-user/templates/project-rules/frameworks/react.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/react.md" },
+  { path: "sf-user/templates/project-rules/frameworks/spring-boot.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/spring-boot.md" },
+  { path: "sf-user/templates/project-rules/frameworks/vue.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/frameworks/vue.md" },
+  { path: "sf-user/templates/project-rules/infra/ci-github-actions.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/ci-github-actions.md" },
+  { path: "sf-user/templates/project-rules/infra/docker.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/infra/docker.md" },
+  { path: "sf-user/templates/project-rules/languages/go.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/go.md" },
+  { path: "sf-user/templates/project-rules/languages/java.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/java.md" },
+  { path: "sf-user/templates/project-rules/languages/nodejs.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/nodejs.md" },
+  { path: "sf-user/templates/project-rules/languages/python.md", type: "template", sourcePath: "setup/userlevel-templates/project-rules/languages/python.md" },
 ]
 
 function withExecutableSuffix(value: string, platform: NodeJS.Platform): string {

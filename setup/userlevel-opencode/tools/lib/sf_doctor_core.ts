@@ -7,14 +7,18 @@
  */
 
 import { existsSync } from "node:fs"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 import { homedir } from "node:os"
 import { logErrorToFile } from "./utils"
 
 const SPEC_DIR_NAME = '.specforge' as const;
 
 function resolveUserLevelDirectory(): string {
-  return join(homedir(), ".specforge")
+  const explicit = process.env.OPENCODE_CONFIG_DIR?.trim()
+  if (explicit) return resolve(explicit)
+  const xdg = process.env.XDG_CONFIG_HOME?.trim()
+  if (xdg) return join(xdg, "opencode")
+  return join(homedir(), ".config", "opencode")
 }
 
 // ============================================================
@@ -38,11 +42,11 @@ export interface UserLevelDoctorReport {
 
 /** User-level directory key files to verify */
 const USER_LEVEL_KEY_FILES = [
-  process.platform === "win32" ? "bin/specforge.exe" : "bin/specforge",
-  process.platform === "win32" ? "bin/specforged.exe" : "bin/specforged",
+  process.platform === "win32" ? "sf-user/bin/specforge.exe" : "sf-user/bin/specforge",
+  process.platform === "win32" ? "sf-user/bin/specforged.exe" : "sf-user/bin/specforged",
   "specforge-manifest.json",
   "agents/sf-orchestrator.md",
-  "integrations/opencode/sf_specforge.ts",
+  "plugins/sf_specforge.ts",
 ]
 
 /** Project runtime key files to verify */
@@ -64,7 +68,7 @@ const PROJECT_RUNTIME_KEY_FILES = [
  */
 export async function checkUserLevelInstallation(
   baseDir: string,
-  userRoot?: string,
+  installRoot?: string,
 ): Promise<UserLevelDoctorReport> {
   try {
     const checks: DoctorCheckItem[] = []
@@ -72,7 +76,7 @@ export async function checkUserLevelInstallation(
     // --- 1. 用户级目录关键文件检查 ---
     let userLevelDir: string
     try {
-      userLevelDir = userRoot ?? resolveUserLevelDirectory()
+      userLevelDir = installRoot ?? resolveUserLevelDirectory()
     } catch {
       checks.push({
         name: "用户级目录解析",

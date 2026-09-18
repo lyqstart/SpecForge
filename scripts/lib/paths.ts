@@ -189,12 +189,18 @@ export function resolveUserLevelDirectory(): string {
 }
 
 /**
- * Resolve the current SpecForge user-level install and runtime root.
- * OpenCode/XDG configuration overrides belong only to the OpenCode integration
- * boundary and must not redirect SpecForge-owned state.
+ * Resolve the current installer coordinate root.
+ *
+ * Public OpenCode assets and the root-level SpecForge manifest are installed
+ * relative to the OpenCode configuration root.
  */
 export function resolveSpecForgeInstallRoot(): string {
-  return pathModule.join(osModule.homedir(), '.specforge');
+  return resolveUserLevelDirectory();
+}
+
+/** Resolve the private SpecForge user subtree below the OpenCode config root. */
+export function resolveSpecForgePrivateRoot(): string {
+  return pathModule.join(resolveSpecForgeInstallRoot(), 'sf-user');
 }
 
 /**

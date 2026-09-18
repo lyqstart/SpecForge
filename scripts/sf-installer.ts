@@ -18,7 +18,7 @@ import { fileURLToPath, pathToFileURL } from "node:url"
 
 import { InstallerError, InstallerErrorCode, EXIT_CODES } from "./lib/errors"
 import { resolveSpecForgeInstallRoot } from "./lib/paths"
-import { acquireInstallLock } from "./lib/install_lock"
+import { acquireInstallLock, getInstallLockPath } from "./lib/install_lock"
 import { readUserManifest, writeUserManifest, buildUserManifest, getUserManifestPath } from "./lib/manifest"
 import { computeSHA256 } from "./lib/crypto"
 import { getAgentDefinitions } from "./lib/registry"
@@ -184,7 +184,7 @@ function showSuccessSummary(fileCount: number, userLevelDir: string, action: "�
   console.log("")
   console.log(`✅ ${action}完成`)
   console.log(`   已部署: ${fileCount} 个共享组件文件`)
-  console.log(`   目录: ${userLevelDir}`)
+  console.log(`   OpenCode 配置根: ${userLevelDir}`)
   console.log(`   提示: 需要重启 OpenCode 才能加载新版 Plugin`)
 }
 
@@ -200,7 +200,7 @@ export async function cmdInstall(
   const installSet = await requireVerifiedInstallSet(sourceDir)
 
   console.log("📦 正在安装 SpecForge 共享组件...")
-  console.log(`   目标目录: ${userLevelDir}`)
+  console.log(`   OpenCode 配置根: ${userLevelDir}`)
   console.log("")
 
   const installLock = await acquireInstallLock(userLevelDir, "install")
@@ -303,7 +303,7 @@ export async function cmdUpgrade(
     if (recovery === "rolled_back") {
       throw new InstallerError(
         InstallerErrorCode.E_INVALID_JSON,
-        "检测到上次升级未完成，已保持或完成回滚；请检查 upgrade_journal.json 后重新运行升级"
+        "检测到上次升级未完成，已保持或完成回滚；请检查 sf-user/upgrade_journal.json 后重新运行升级"
       )
     }
 
@@ -441,7 +441,7 @@ export async function cmdUpgrade(
         await rollbackUpgradeJournal(userLevelDir, journal)
         console.warn("  ✅ 回滚完成")
       } catch (rollbackError) {
-        console.warn("  ⚠️ 回滚失败，请检查 backups/ 事务目录和 upgrade_journal.json")
+        console.warn("  ⚠️ 回滚失败，请检查 sf-user/backups/ 事务目录和 sf-user/upgrade_journal.json")
         throw rollbackError
       }
     }
@@ -460,11 +460,11 @@ export async function cmdVerify(
 ): Promise<void> {
 
   console.log("🔍 正在校验 SpecForge 共享组件完整性...")
-  console.log(`   目录: ${userLevelDir}`)
+  console.log(`   OpenCode 配置根: ${userLevelDir}`)
   console.log("")
 
   // 不获取锁，但检查锁是否存在
-  const lockPath = path.join(userLevelDir, ".specforge.lock")
+  const lockPath = getInstallLockPath(userLevelDir)
   if (fs.existsSync(lockPath)) {
     console.warn("  ⚠️ 安装正在进行，校验结果可能不准确")
     console.log("")
@@ -501,7 +501,7 @@ export async function cmdUninstall(
 ): Promise<void> {
 
   console.log("🗑️ 正在卸载 SpecForge 共享组件...")
-  console.log(`   目录: ${userLevelDir}`)
+  console.log(`   OpenCode 配置根: ${userLevelDir}`)
   console.log("")
 
   const installLock = await acquireInstallLock(userLevelDir, "uninstall")

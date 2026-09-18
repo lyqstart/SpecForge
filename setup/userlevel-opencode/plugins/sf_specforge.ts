@@ -50,8 +50,20 @@ export interface ThinPluginHooks {
 type ConnectionState = 'disconnected' | 'connected' | 'degraded';
 const COMPACTION_BRIDGE_TIMEOUT_MS = 6000;
 
+function resolveOpenCodeConfigRoot(): string {
+  const explicit = process.env.OPENCODE_CONFIG_DIR?.trim();
+  if (explicit) return resolve(explicit);
+  const xdg = process.env.XDG_CONFIG_HOME?.trim();
+  if (xdg) return resolve(xdg, 'opencode');
+  return resolve(homedir(), '.config', 'opencode');
+}
+
+function resolveSpecForgePrivateRoot(): string {
+  return resolve(resolveOpenCodeConfigRoot(), 'sf-user');
+}
+
 function resolveCompactionBridgeLogPath(): string {
-  return resolve(homedir(), '.specforge', 'runtime', 'compaction-bridge.jsonl');
+  return resolve(resolveSpecForgePrivateRoot(), 'runtime', 'compaction-bridge.jsonl');
 }
 
 function appendCompactionBridgeEvent(
@@ -95,7 +107,7 @@ async function awaitWithTimeout<T>(
 
 async function startInstalledDaemon(): Promise<void> {
   const executableName = process.platform === 'win32' ? 'specforged.exe' : 'specforged';
-  const executablePath = resolve(homedir(), '.specforge', 'bin', executableName);
+  const executablePath = resolve(resolveSpecForgePrivateRoot(), 'bin', executableName);
   if (!existsSync(executablePath)) {
     throw new Error(`SPECFORGED_ARTIFACT_MISSING: ${executablePath}`);
   }
@@ -110,7 +122,7 @@ async function startInstalledDaemon(): Promise<void> {
 
 async function createDefaultDependencies(): Promise<ThinPluginDependencies> {
   const clientModuleUrl = pathToFileURL(
-    resolve(homedir(), '.specforge', 'lib', 'sf_plugin_client.ts'),
+    resolve(resolveSpecForgePrivateRoot(), 'lib', 'sf_plugin_client.ts'),
   ).href;
   const { createReconnectingDaemonClient } = await import(clientModuleUrl);
   return {

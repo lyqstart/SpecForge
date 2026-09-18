@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, unlink, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -77,7 +77,7 @@ describe('current upgrade journal transaction contract', () => {
     });
 
     const persisted = parseUpgradeJournal(JSON.parse(
-      await readFile(join(root, 'upgrade_journal.json'), 'utf8'),
+      await readFile(join(root, 'sf-user', 'upgrade_journal.json'), 'utf8'),
     ));
     expect(persisted.mutations).toEqual([
       expect.objectContaining({ path: 'existing.txt', state: 'planned' }),
@@ -153,10 +153,11 @@ describe('current upgrade journal transaction contract', () => {
     await expect(recoverInterruptedUpgrade(root)).resolves.toBe('rolled_back');
     expect(existsSync(join(root, 'new.txt'))).toBe(false);
     await expect(recoverInterruptedUpgrade(root)).resolves.toBe('cleared_rolled_back');
-    expect(existsSync(join(root, 'upgrade_journal.json'))).toBe(false);
+    expect(existsSync(join(root, 'sf-user', 'upgrade_journal.json'))).toBe(false);
 
     const malformedRoot = await createRoot();
-    await writeFile(join(malformedRoot, 'upgrade_journal.json'), '{}');
+    await mkdir(join(malformedRoot, 'sf-user'), { recursive: true });
+    await writeFile(join(malformedRoot, 'sf-user', 'upgrade_journal.json'), '{}');
     await expect(recoverInterruptedUpgrade(malformedRoot)).rejects.toThrow(/schema_version/);
   });
 });

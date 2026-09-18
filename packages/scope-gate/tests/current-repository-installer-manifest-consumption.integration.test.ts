@@ -17,7 +17,7 @@ describe('current repository installer manifest consumption', () => {
   it('installs exactly the verified physical release set into an isolated SpecForge root', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'specforge-current-installer-'));
     tempRoots.push(tempRoot);
-    const installRoot = join(tempRoot, '.specforge');
+    const installRoot = join(tempRoot, 'opencode');
     const releaseIdentity = JSON.parse(
       await readFile(join(candidateRoot, 'release', 'release-manifest.json'), 'utf8'),
     ) as { candidateId: string };
@@ -51,12 +51,13 @@ describe('current repository installer manifest consumption', () => {
     await expect(readFile(join(installRoot, 'install.json'), 'utf8')).rejects.toMatchObject({
       code: 'ENOENT',
     });
+    expect((await stat(join(installRoot, 'sf-user'))).isDirectory()).toBe(true);
   });
 
   it('upgrades the isolated current release through the crash-safe transaction owner', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'specforge-current-upgrade-'));
     tempRoots.push(tempRoot);
-    const installRoot = join(tempRoot, '.specforge');
+    const installRoot = join(tempRoot, 'opencode');
     const release = await loadVerifiedReleaseInstallSet({
       candidateRoot,
       expectedReleaseId: 'specforge-v6-current',
@@ -75,7 +76,7 @@ describe('current repository installer manifest consumption', () => {
       installRoot,
     );
 
-    await expect(readFile(join(installRoot, 'upgrade_journal.json'), 'utf8')).rejects.toMatchObject({
+    await expect(readFile(join(installRoot, 'sf-user', 'upgrade_journal.json'), 'utf8')).rejects.toMatchObject({
       code: 'ENOENT',
     });
     await expect(readFile(join(installRoot, 'tools', 'sf_obsolete.ts'), 'utf8')).rejects.toMatchObject({
@@ -91,7 +92,7 @@ describe('current repository installer manifest consumption', () => {
   it('rolls back earlier replacements when a later current upgrade mutation fails', async () => {
     const tempRoot = await mkdtemp(join(tmpdir(), 'specforge-current-upgrade-failure-'));
     tempRoots.push(tempRoot);
-    const installRoot = join(tempRoot, '.specforge');
+    const installRoot = join(tempRoot, 'opencode');
     const release = await loadVerifiedReleaseInstallSet({
       candidateRoot,
       expectedReleaseId: 'specforge-v6-current',
@@ -120,7 +121,7 @@ describe('current repository installer manifest consumption', () => {
     expect(await readFile(restoredPath, 'utf8')).toBe('user-local-state');
     expect((await stat(blockedPath)).isDirectory()).toBe(true);
     const journal = JSON.parse(
-      await readFile(join(installRoot, 'upgrade_journal.json'), 'utf8'),
+      await readFile(join(installRoot, 'sf-user', 'upgrade_journal.json'), 'utf8'),
     ) as { schema_version: string; status: string };
     expect(journal.schema_version).toBe('1.0');
     expect(journal.status).toBe('rolled_back');
@@ -130,7 +131,7 @@ describe('current repository installer manifest consumption', () => {
       { subcommand: 'upgrade', force: true, showVersion: false },
       installRoot,
     );
-    await expect(readFile(join(installRoot, 'upgrade_journal.json'), 'utf8')).rejects.toMatchObject({
+    await expect(readFile(join(installRoot, 'sf-user', 'upgrade_journal.json'), 'utf8')).rejects.toMatchObject({
       code: 'ENOENT',
     });
   });

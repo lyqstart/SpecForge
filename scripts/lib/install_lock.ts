@@ -2,7 +2,7 @@
  * Current SpecForge installer lock owner.
  *
  * Serializes install, upgrade, uninstall, and CLI-scope reconcile writes to a
- * user-level SpecForge root. The on-disk file is a transient current contract,
+ * OpenCode install coordinate root. The lock itself lives under sf-user/ and is a transient current contract,
  * not a legacy compatibility surface.
  */
 
@@ -101,8 +101,8 @@ export function parseInstallLock(value: unknown): InstallLockInfo {
   }
 }
 
-function getLockPath(userLevelDir: string): string {
-  return join(userLevelDir, INSTALL_LOCK_FILENAME)
+export function getInstallLockPath(installRoot: string): string {
+  return join(installRoot, "sf-user", INSTALL_LOCK_FILENAME)
 }
 
 async function readLock(lockPath: string): Promise<LockReadResult> {
@@ -271,7 +271,7 @@ export async function acquireInstallLock(
   const heartbeatIntervalMs = options.heartbeatIntervalMs ?? HEARTBEAT_INTERVAL_MS
   const staleThresholdMs = options.staleThresholdMs ?? INSTALL_LOCK_TIMEOUT_MS
   const staleRecheckDelayMs = options.staleRecheckDelayMs ?? STALE_RECHECK_DELAY_MS
-  const lockPath = getLockPath(userLevelDir)
+  const lockPath = getInstallLockPath(userLevelDir)
   const startedAt = Date.now()
   let lastHolder: InstallLockInfo | undefined
 

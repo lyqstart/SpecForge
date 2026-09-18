@@ -96,7 +96,7 @@ function backupSessionRelativePath(
   startedAt: string,
 ): string {
   const timestamp = startedAt.replace(/[-:.]/g, "")
-  return `backups/${timestamp}-${transactionId}`
+  return `sf-user/backups/${timestamp}-${transactionId}`
 }
 
 function expectedBackupRelativePath(
@@ -224,8 +224,8 @@ export function parseUpgradeJournal(value: unknown): UpgradeJournal {
   }
 }
 
-function journalPath(userLevelDir: string): string {
-  return resolve(userLevelDir, UPGRADE_JOURNAL_FILENAME)
+export function getUpgradeJournalPath(installRoot: string): string {
+  return resolve(installRoot, "sf-user", UPGRADE_JOURNAL_FILENAME)
 }
 
 function resolveInsideRoot(userLevelDir: string, journalRelativePath: string): string {
@@ -245,7 +245,7 @@ async function persistUpgradeJournal(
 ): Promise<void> {
   const validated = parseUpgradeJournal(journal)
   await atomicWriteFile(
-    journalPath(userLevelDir),
+    getUpgradeJournalPath(userLevelDir),
     `${JSON.stringify(validated, null, 2)}\n`,
   )
 }
@@ -257,7 +257,7 @@ export async function beginUpgradeJournal(
 ): Promise<UpgradeJournal> {
   requireNonEmptyString(fromVersion, "from_version")
   requireNonEmptyString(toVersion, "to_version")
-  if (existsSync(journalPath(userLevelDir))) {
+  if (existsSync(getUpgradeJournalPath(userLevelDir))) {
     throw new Error("Existing upgrade journal must be recovered before upgrade")
   }
 
@@ -275,7 +275,7 @@ export async function beginUpgradeJournal(
 }
 
 export async function readUpgradeJournal(userLevelDir: string): Promise<UpgradeJournal> {
-  const raw = await readFile(journalPath(userLevelDir), "utf-8")
+  const raw = await readFile(getUpgradeJournalPath(userLevelDir), "utf-8")
   let value: unknown
   try {
     value = JSON.parse(raw)
@@ -419,23 +419,23 @@ export async function commitUpgradeJournal(
   journal.status = "success"
   await persistUpgradeJournal(userLevelDir, journal)
   await cleanupUpgradeBackups(userLevelDir, journal)
-  await unlink(journalPath(userLevelDir))
+  await unlink(getUpgradeJournalPath(userLevelDir))
 }
 
 export async function recoverInterruptedUpgrade(
   userLevelDir: string,
 ): Promise<UpgradeRecoveryResult> {
-  if (!existsSync(journalPath(userLevelDir))) return "none"
+  if (!existsSync(getUpgradeJournalPath(userLevelDir))) return "none"
 
   const journal = await readUpgradeJournal(userLevelDir)
   if (journal.status === "success") {
     await cleanupUpgradeBackups(userLevelDir, journal)
-    await unlink(journalPath(userLevelDir))
+    await unlink(getUpgradeJournalPath(userLevelDir))
     return "committed"
   }
   if (journal.status === "rolled_back") {
     await cleanupUpgradeBackups(userLevelDir, journal)
-    await unlink(journalPath(userLevelDir))
+    await unlink(getUpgradeJournalPath(userLevelDir))
     return "cleared_rolled_back"
   }
 

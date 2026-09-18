@@ -15,30 +15,30 @@ const tempRoots: string[] = [];
 
 const registry: ComponentEntry[] = [
   {
-    path: 'bin/specforge',
+    path: 'sf-user/bin/specforge',
     type: 'runtime',
     sourcePath: 'release/bin/specforge',
     platformExecutable: true,
   },
   {
-    path: 'bin/specforged',
+    path: 'sf-user/bin/specforged',
     type: 'runtime',
     sourcePath: 'release/bin/specforged',
     platformExecutable: true,
   },
   {
-    path: 'integrations/opencode/sf_specforge.ts',
+    path: 'plugins/sf_specforge.ts',
     type: 'plugin',
     sourcePath: 'setup/userlevel-opencode/plugins/sf_specforge.ts',
   },
   {
-    path: 'lib/sf_plugin_client.ts',
+    path: 'sf-user/lib/sf_plugin_client.ts',
     type: 'tool_lib',
     sourcePath: 'setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts',
   },
   { path: 'AGENTS.md', type: 'config' },
   {
-    path: 'workflows/builtin/feature_spec.json',
+    path: 'sf-user/workflows/builtin/feature_spec.json',
     type: 'workflow',
     sourcePath: 'configs/workflows/builtin/feature_spec.json',
   },
@@ -115,11 +115,11 @@ describe('release manifest and runtime entry producers', () => {
     expect(result.document.artifacts.every((artifact) => artifact.size > 0)).toBe(true);
     expect(result.document.installFiles.map((file) => file.targetPath)).toEqual([
       'AGENTS.md',
-      'bin/specforge.exe',
-      'bin/specforged.exe',
-      'integrations/opencode/sf_specforge.ts',
-      'lib/sf_plugin_client.ts',
-      'workflows/builtin/feature_spec.json',
+      'plugins/sf_specforge.ts',
+      'sf-user/bin/specforge.exe',
+      'sf-user/bin/specforged.exe',
+      'sf-user/lib/sf_plugin_client.ts',
+      'sf-user/workflows/builtin/feature_spec.json',
     ]);
     expect(result.document.installFiles.every((file) => file.sha256.length === 64)).toBe(true);
     expect(result.report.complete).toBe(true);
@@ -145,11 +145,11 @@ describe('release manifest and runtime entry producers', () => {
     expect(verified.version).toBe('6.0.0');
     expect(verified.files.map((file) => file.targetPath)).toEqual([
       'AGENTS.md',
-      'bin/specforge.exe',
-      'bin/specforged.exe',
-      'integrations/opencode/sf_specforge.ts',
-      'lib/sf_plugin_client.ts',
-      'workflows/builtin/feature_spec.json',
+      'plugins/sf_specforge.ts',
+      'sf-user/bin/specforge.exe',
+      'sf-user/bin/specforged.exe',
+      'sf-user/lib/sf_plugin_client.ts',
+      'sf-user/workflows/builtin/feature_spec.json',
     ]);
 
     await writeFile(join(root, 'setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts'), 'tampered');
@@ -159,7 +159,7 @@ describe('release manifest and runtime entry producers', () => {
     });
     expect(drifted.ok).toBe(false);
     expect(drifted.errors).toContain(
-      'release_install_set:hash_mismatch:lib/sf_plugin_client.ts',
+      'release_install_set:hash_mismatch:sf-user/lib/sf_plugin_client.ts',
     );
   });
 

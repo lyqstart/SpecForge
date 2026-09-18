@@ -4,7 +4,7 @@
  * Tests the initialization completeness check that verifies
  * 4 key items:
  * 1. project/spec_manifest.json（项目级）
- * 2. host-profile.json（用户级 ~/.specforge/）
+ * 2. host-profile.json（用户级 <OpenCode config>/sf-user/）
  * 3. prod-environment.md（项目级）
  * 4. project-rules.md（项目级）
  */
@@ -18,21 +18,21 @@ import { checkUserLevelInstallation } from "../../src/tools/lib/sf_doctor_core"
 
 describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () => {
   let testDir: string
-  let userRoot: string
+  let installRoot: string
 
   beforeEach(() => {
     testDir = join(tmpdir(), `sf-doctor-init-test-${Date.now()}`)
-    userRoot = join(testDir, "user-root")
+    installRoot = join(testDir, "opencode")
     const runtimeName = process.platform === "win32" ? "specforge.exe" : "specforge"
     const daemonName = process.platform === "win32" ? "specforged.exe" : "specforged"
-    mkdirSync(join(userRoot, "bin"), { recursive: true })
-    mkdirSync(join(userRoot, "agents"), { recursive: true })
-    mkdirSync(join(userRoot, "integrations", "opencode"), { recursive: true })
-    writeFileSync(join(userRoot, "bin", runtimeName), "runtime")
-    writeFileSync(join(userRoot, "bin", daemonName), "daemon")
-    writeFileSync(join(userRoot, "specforge-manifest.json"), "{}")
-    writeFileSync(join(userRoot, "agents", "sf-orchestrator.md"), "# test")
-    writeFileSync(join(userRoot, "integrations", "opencode", "sf_specforge.ts"), "export {}")
+    mkdirSync(join(installRoot, "sf-user", "bin"), { recursive: true })
+    mkdirSync(join(installRoot, "agents"), { recursive: true })
+    mkdirSync(join(installRoot, "plugins"), { recursive: true })
+    writeFileSync(join(installRoot, "sf-user", "bin", runtimeName), "runtime")
+    writeFileSync(join(installRoot, "sf-user", "bin", daemonName), "daemon")
+    writeFileSync(join(installRoot, "specforge-manifest.json"), "{}")
+    writeFileSync(join(installRoot, "agents", "sf-orchestrator.md"), "# test")
+    writeFileSync(join(installRoot, "plugins", "sf_specforge.ts"), "export {}")
   })
 
   afterEach(() => {
@@ -43,7 +43,7 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     // Create .specforge without the current Project Spec.
     mkdirSync(join(testDir, ".specforge"), { recursive: true })
 
-    const report = await checkUserLevelInstallation(testDir, userRoot)
+    const report = await checkUserLevelInstallation(testDir, installRoot)
 
     const initChecks = report.checks.filter((c) => c.name.startsWith("初始化:"))
 
@@ -77,13 +77,13 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     writeFileSync(join(testDir, ".opencode", "plugins", "sf_specforge.ts"), "export {}")
 
     // Create host-profile.json under the isolated canonical user root.
-    writeFileSync(join(userRoot, "host-profile.json"), JSON.stringify({
+    writeFileSync(join(installRoot, "sf-user", "host-profile.json"), JSON.stringify({
       scanner_version: "1.0.0",
       scanned_at: new Date().toISOString(),
       os: { platform: "test" },
     }))
 
-    const report = await checkUserLevelInstallation(testDir, userRoot)
+    const report = await checkUserLevelInstallation(testDir, installRoot)
 
     // All initialization checks should be ok
     const initChecks = report.checks.filter((c) => c.name.startsWith("初始化:"))
@@ -101,7 +101,7 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     // Only create the retired root manifest; it is not accepted as initialized.
     writeFileSync(join(specDir, "manifest.json"), '{"schema_version":"6.0"}')
 
-    const report = await checkUserLevelInstallation(testDir, userRoot)
+    const report = await checkUserLevelInstallation(testDir, installRoot)
 
     const initChecks = report.checks.filter((c) => c.name.startsWith("初始化:"))
 
@@ -129,7 +129,7 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     mkdirSync(specDir, { recursive: true })
     writeFileSync(join(specDir, "manifest.json"), '{"schema_version":"6.0"}')
 
-    const report = await checkUserLevelInstallation(testDir, userRoot)
+    const report = await checkUserLevelInstallation(testDir, installRoot)
 
     const manifestCheck = report.checks.find((c) => c.name.includes("初始化: spec_manifest.json"))
     expect(manifestCheck).toBeDefined()
@@ -151,13 +151,13 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     writeFileSync(join(testDir, ".opencode", "plugins", "sf_specforge.ts"), "export {}")
 
     // Create stale host-profile.json under the isolated canonical user root.
-    writeFileSync(join(userRoot, "host-profile.json"), JSON.stringify({
+    writeFileSync(join(installRoot, "sf-user", "host-profile.json"), JSON.stringify({
       scanner_version: "1.0.0",
       scanned_at: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(), // 40 days ago
       os: { platform: "test" },
     }))
 
-    const report = await checkUserLevelInstallation(testDir, userRoot)
+    const report = await checkUserLevelInstallation(testDir, installRoot)
 
     const hostProfileCheck = report.checks.find((c) => c.name.includes("host-profile.json"))
     expect(hostProfileCheck).toBeDefined()
