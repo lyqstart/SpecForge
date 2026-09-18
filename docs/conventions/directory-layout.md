@@ -39,11 +39,6 @@ SPEC_DIR_NAME = '.specforge'
 | projectFiles.glossary | `project/glossary.md` | — |
 | projectFiles.decisions | `project/decisions.md` | — |
 | projectFiles.traceMatrix | `project/trace_matrix.md` | — |
-| projectFiles.domainModel | `project/domain_model.md` | — |
-| projectFiles.contextMap | `project/context_map.md` | — |
-| projectFiles.crosscuttingConcepts | `project/crosscutting_concepts.md` | — |
-| projectFiles.architectureRisks | `project/architecture_risks.md` | — |
-| projectFiles.decisionsRoot | `project/decisions` | — |
 | projectFiles.modulesRoot | `project/modules` | — |
 
 ### workItemFiles 分组
