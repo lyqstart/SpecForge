@@ -45,7 +45,6 @@
     "@specforge/opencode-adapter": "workspace:*",
     "@specforge/workflow-runtime": "workspace:*",
     "@specforge/observability": "workspace:*",
-    "@specforge/plugin-loader": "workspace:*",
     "@specforge/types": "workspace:*",
     "@specforge/version-unification": "workspace:*",
     "@specforge/host-profile": "workspace:*",

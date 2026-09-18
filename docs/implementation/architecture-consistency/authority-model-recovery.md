@@ -19,8 +19,8 @@ PRODUCT_SPECIFICATION=docs/product-specification/specforge-product-specification
 PRODUCT_SPEC_VERSION=SPS-1.0
 PRODUCT_OWNER_DECISIONS=PO-001,D01,D02,D03,D04,D05,D06,D07,D08,D09
 AUTHORITY_ROOT_ESTABLISHED=YES
-CURRENT_BLOCKER=MIGRATION_PACKAGE_STILL_OWNS_ACTIVE_SCHEMA_VALIDATION_INFRASTRUCTURE
-NEXT_LEGAL_ACTION=MIGRATE_ACTIVE_SCHEMA_VALIDATION_INFRASTRUCTURE_OUT_OF_MIGRATION_PACKAGE
+CURRENT_BLOCKER=FUTURE_PACKAGES_STILL_PRESENT_IN_CURRENT_WORKSPACE_AND_RELEASE_SURFACES
+NEXT_LEGAL_ACTION=REMOVE_MULTIMODAL_SELF_HEALING_PLUGIN_LOADER_FROM_CURRENT_WORKSPACE
 ~~~
 
 ## 已完成产品裁决
@@ -53,8 +53,8 @@ NEXT_LEGAL_ACTION=MIGRATE_ACTIVE_SCHEMA_VALIDATION_INFRASTRUCTURE_OUT_OF_MIGRATI
 3. Daemon lifecycle：Thin Plugin auto-start ownership 已删除。
 4. runtime state contract：wal.jsonl current contract 已删除。
 5. Project Spec Core：D09 deferred paths 已移出当前 Layout/API。
-6. Migration removal：先迁出 schema validation infrastructure，再去 package/release surface。
-7. future package removal：Multimodal / Self-Healing / Plugin Loader current release surface。
+6. Migration removal：COMPLETED；schema validation 已迁入 `@specforge/types/schema-contract`，Migration package 已物理删除。
+7. future package removal：正在移除 Multimodal / Self-Healing / Plugin Loader current workspace/build/release surface。
 8. OpenCode Adapter production wiring。
 9. Workflow Runtime / Daemon dependency and Permission/Write Guard responsibility convergence。
 10. installer / service / CLI / documentation end-to-end acceptance。
@@ -92,3 +92,12 @@ NEXT_LEGAL_ACTION=MIGRATE_ACTIVE_SCHEMA_VALIDATION_INFRASTRUCTURE_OUT_OF_MIGRATI
 - `7884453c75b30d7b00bee90460be49a0bd10b7e9`：D09 deferred multi-view Project Spec paths 从当前 Layout/API 移除；历史 v1.3 设计继续保留于 Future Capability Registry 来源体系。
 - `SOURCE_CONVERGENCE=YES`。
 - `CI_VALIDATION=NOT_AVAILABLE`；GitHub 未返回这些提交的 CI status，本阶段不声称自动化测试全绿或真实 user-level redeploy 已完成。
+
+
+## 2026-09-18 Migration Removal Convergence
+
+- `add2a99b7c64543fc4f37b478fe349e9c0351eaa`：current-schema descriptor/precheck 迁入 `@specforge/types/schema-contract`；删除 transition graph、`migration_required`、`needsMigration` 和 CHAIN_* 语义，unknown/old schema 统一 fail closed 为 `SCHEMA_VERSION_MISMATCH`。
+- `d0e95560044231420fd44683fe77a5d0108eec38`：删除 `packages/migration/**`、workspace dependencies 和 `migration:current-schema` 当前构建 surface；SPS-1.0 继续保留旧 ID 为 `LEGACY_ONLY` 历史分类。
+- `MIGRATION_CURRENT_PRODUCT=REMOVED`。
+- `CURRENT_SCHEMA_VALIDATION_OWNER=@specforge/types/schema-contract + per-file owners`。
+- GitHub 未返回 CI status；当前证据为 source-level convergence，不宣称全仓测试或真实部署已验证。

@@ -19,7 +19,7 @@ function read(path: string): string {
 }
 
 describe('current repository release manifest and runtime entry surfaces', () => {
-  it('reports deferred-package drift on the release manifest while runtime entries stay aligned', async () => {
+  it('keeps release manifest and runtime entries aligned after deferred packages exit the workspace', async () => {
     const releaseId = 'specforge-v6-current';
     const candidateId = (JSON.parse(read('release/release-manifest.json')) as {
       candidateId: string;
@@ -58,11 +58,7 @@ describe('current repository release manifest and runtime entry surfaces', () =>
       )),
     }).toEqual({
       missingRequired: [],
-      unexpectedExcluded: [
-        '@specforge/multimodal@release_manifest',
-        '@specforge/plugin-loader@release_manifest',
-        '@specforge/self-healing@release_manifest',
-      ],
+      unexpectedExcluded: [],
     });
   });
 });

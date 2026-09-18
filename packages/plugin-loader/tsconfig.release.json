@@ -1,7 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "include": [
-    "src/current-release.ts",
-    "src/types/@typescript-eslint-types.d.ts"
-  ]
-}

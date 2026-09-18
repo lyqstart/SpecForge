@@ -12,27 +12,17 @@ const candidateId = (JSON.parse(
 ) as { candidateId: string }).candidateId;
 
 describe('current repository formal release precheck', () => {
-  it('uses SPS-1.0 and reports the known deferred-package release drift', async () => {
+  it('uses SPS-1.0 and passes once deferred packages are absent from current release surfaces', async () => {
     expect(candidateId).toMatch(/^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$/);
     const outcome = await runCurrentReleasePrecheck({ candidateRoot, releaseId, candidateId });
 
     expect(outcome.producerErrors).toEqual([]);
     expect(outcome.inventoryErrors).toEqual([]);
-    expect(outcome.passed).toBe(false);
-    expect(outcome.result?.status).toBe('failed');
-    expect(outcome.result?.errorCode).toBe('SCOPE_BOUNDARY_VIOLATION');
+    expect(outcome.passed).toBe(true);
+    expect(outcome.result?.status).toBe('passed');
+    expect(outcome.result?.errorCode).toBeUndefined();
     expect(outcome.result?.authorityErrors).toEqual([]);
     expect(outcome.result?.verdict.missingRequired).toEqual([]);
-    expect(outcome.result?.verdict.unexpectedExcluded).toEqual([
-      '@specforge/multimodal@clean_build',
-      '@specforge/multimodal@package_export',
-      '@specforge/multimodal@release_manifest',
-      '@specforge/plugin-loader@clean_build',
-      '@specforge/plugin-loader@package_export',
-      '@specforge/plugin-loader@release_manifest',
-      '@specforge/self-healing@clean_build',
-      '@specforge/self-healing@package_export',
-      '@specforge/self-healing@release_manifest',
-    ]);
+    expect(outcome.result?.verdict.unexpectedExcluded).toEqual([]);
   });
 });
