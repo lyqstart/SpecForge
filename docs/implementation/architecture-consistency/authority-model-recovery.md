@@ -1,34 +1,67 @@
 # SpecForge 权威体系恢复：当前决策与接续状态
 
-> **文件性质**：动态任务状态与证据索引，不是产品需求、产品架构或全局 authority registry。
-> **稳定决策依据**：[`ADR-014-authority-model-recovery-freeze.md`](../../adr/ADR-014-authority-model-recovery-freeze.md)。
-> **更新时间**：2026-09-15。
+> 文件性质：动态任务状态与证据索引，不是产品需求、产品架构或全局 authority registry。
+>
+> Authority Registry：docs/product-specification/authority-registry.md
+>
+> 当前唯一产品规格：docs/product-specification/specforge-product-specification.md
+>
+> 更新时间：2026-09-18。
 
-## 新会话必须先做什么
+## 当前阶段
 
-1. 读取 `AGENTS.md`、错误台账第三/四部分、本文件、ADR-014，并实时读取 Git `main` HEAD。
-2. 只读完成规格与消费者矩阵；将每个文件分类为正式候选、ADR、治理设计、实施计划、动态状态、Kiro 工作规格、历史证据或待裁决冲突。
-3. 向产品负责人提交冲突和处置建议；在裁决前不移动、删除或建立替代产品规格文件。
+Authority Model Recovery 的“产品范围裁决 + 唯一产品权威建立”已完成。
 
-## 已确认事实
+~~~text
+CURRENT_PHASE=AUTHORITY_MODEL_RECOVERY_CONSUMER_CONVERGENCE
+PRODUCT_AUTHORITY_REGISTRY=docs/product-specification/authority-registry.md
+PRODUCT_SPECIFICATION=docs/product-specification/specforge-product-specification.md
+PRODUCT_SPEC_VERSION=SPS-1.0
+PRODUCT_OWNER_DECISIONS=PO-001,D01,D02,D03,D04,D05,D06,D07,D08,D09
+AUTHORITY_ROOT_ESTABLISHED=YES
+CURRENT_BLOCKER=DOWNSTREAM_CONSUMERS_AND_IMPLEMENTATION_STILL_REFERENCE_SUPERSEDED_MODELS
+NEXT_LEGAL_ACTION=CONVERGE_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_TO_SPS-1.0
+~~~
 
-- 产品负责人已明确 `.kiro/` 不是产品权威目录。
-- ADR-013、治理实施方案、发布预检和多组测试仍把 V6 Kiro 文件当作权威，属于待修复消费者或被覆盖的历史边界。
-- ADR-010/011 与实际 `~/.specforge` 用户级写入冲突；ADR-009 与 Plugin 自动启动 daemon 冲突。
-- `docs/standards/fused_standard.md`、`docs/standards/v1.3/` 与其他治理材料的规范地位尚未完成统一裁决。
+## 已完成产品裁决
 
-## 当前状态
+- Migration 当前产品移除；schema validation 作为文件 owner / contract 能力保留。
+- events.jsonl 为持久化 workflow state authority；state.json 为 projection/checkpoint。
+- Daemon 独立共享运行；Thin Plugin 不拥有生命周期。
+- 用户级正式根为 <OpenCode config>/sf-user；~/.specforge 退役。
+- user-level installer 为正式部署模型；npm-global CLI + specforge init ~/.specforge 退出当前部署合同。
+- OpenCode Adapter 保留为当前核心目标，但完成真实 production wiring 前为 REQUIRED_NOT_YET_ENABLED。
+- OpenClaw、Multimodal、Self-Healing、third-party Plugin Loader 退出当前产品并进入 Future Capability Registry。
+- 当前不启用完整 v1.3 multi-view Project Spec；只保留成熟 Core。
+- Scope Gate 定位为 Release / Build Governance，不是业务 Runtime。
 
-```text
-CURRENT_PHASE=AUTHORITY_MODEL_RECOVERY_INVENTORY
-CURRENT_BLOCKER=PRODUCT_AUTHORITY_ROOT_AND_DOCUMENT_PRECEDENCE_NOT_YET_DECIDED
-OPEN_ERRORS=NONE
-CLOSED_ERRORS=ERR-1537,ERR-1538,ERR-1539,ERR-1540,ERR-1541,ERR-1542,ERR-1543,ERR-1544,ERR-1545
-NEXT_LEGAL_ACTION=BUILD_AUTHORITY_CONSUMER_CONFLICT_MATRIX_AND_REQUEST_PRODUCT_OWNER_DECISIONS
-```
+## 当前权威关系
+
+- .kiro/**：非产品权威。
+- docs/standards/fused_standard.md：历史融合标准 / 规格来源材料，非当前产品权威。
+- docs/standards/v1.3/**：候选/未来设计来源，非当前产品权威。
+- ADR：架构决策记录，必须服从/同步当前 Product Specification。
+- implementation/reports/audit/handoff：状态和证据，不是产品权威。
+- code/tests：实现和消费者证据，不是产品权威。
+
+## 下一阶段工作
+
+按 SPS-1.0 §20 的 Conformance Gaps 收敛，优先顺序：
+
+1. authority consumer：release precheck / Scope Gate / tests / README / standard headers。
+2. user-level path + handshake consumers。
+3. Daemon lifecycle：删除 Thin Plugin auto-start ownership。
+4. runtime state contract：删除 wal.jsonl current contract。
+5. Project Spec Core：移出 D09 deferred paths。
+6. Migration removal：先迁出 schema validation infrastructure，再去 package/release surface。
+7. future package removal：Multimodal / Self-Healing / Plugin Loader current release surface。
+8. OpenCode Adapter production wiring。
+9. Workflow Runtime / Daemon dependency and Permission/Write Guard responsibility convergence。
+10. installer / service / CLI / documentation end-to-end acceptance。
 
 ## 禁止事项
 
-- 不得重新把 `.kiro` 设为产品权威，或以其单独决定产品范围。
-- 不得因旧测试或历史标准仍存在而恢复旧路径、旧兼容或旧 daemon 生命周期。
-- 不得删除历史 ADR、ERR、审计证据或报告。
+- 不得重新以 .kiro、fused standard、v1.3 或代码现状覆盖 SPS-1.0。
+- 不得把 Future Capability Registry 作为当前 release scope。
+- 不得为了旧测试通过恢复 ~/.specforge、Plugin auto-start、state.json authority、Migration current product 等已裁决旧模型。
+- 不删除历史 ADR、ERR、审计和报告；需要降级时标记角色和 supersession。
