@@ -8,7 +8,7 @@ import { WAL } from '../wal/WAL';
 import { StateManager } from '../state/StateManager';
 import { IPathResolver } from '../daemon/path-resolver';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
-import type { SchemaDescriptorPrecheckResult } from '@specforge/migration';
+import type { SchemaDescriptorPrecheckResult } from '@specforge/types/schema-contract';
 import { precheckProjectRegistrationSchemas } from './project-schema-descriptors';
 
 export interface ProjectContext {
@@ -114,9 +114,9 @@ export class ProjectManager {
     // persistent-file owner supplies its exact schema contract; no global
     // version or directory discovery is used here.
     const schemaPrecheck = await this.projectSchemaPrecheck(projectPath);
-    if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+    if (!schemaPrecheck.ok) {
       const details = schemaPrecheck.checks
-        .filter((check) => check.status === 'blocked' || check.status === 'migration_required')
+        .filter((check) => check.status === 'blocked')
         .map((check) => `${check.descriptorId}:${check.errorCode ?? check.status}`)
         .join(',');
       throw new Error(`PROJECT_SCHEMA_PRECHECK_BLOCKED:${details}`);

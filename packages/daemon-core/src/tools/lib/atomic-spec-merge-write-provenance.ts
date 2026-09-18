@@ -6,7 +6,7 @@ import {
   type AtomicSpecMergeTrustedWrite,
   type AtomicSpecMergeWriteProvenance,
 } from '@specforge/types';
-import { createAtomicSpecMergeWriteProvenanceSchemaDescriptor } from '@specforge/migration';
+import { createAtomicSpecMergeWriteProvenanceSchemaDescriptor } from '@specforge/types/schema-contract';
 
 export const ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA =
   ATOMIC_SPEC_MERGE_WRITE_PROVENANCE_SCHEMA_VERSION;

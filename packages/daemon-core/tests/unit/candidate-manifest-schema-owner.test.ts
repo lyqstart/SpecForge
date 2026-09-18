@@ -34,7 +34,7 @@ describe('Candidate Manifest persistent-file owner', () => {
     expect(candidateManifestContentBlockCode(
       JSON.stringify({ ...currentManifest(), schema_version: '1.1' }),
       'WI-7002',
-    )).toBe('CHAIN_GAP');
+    )).toBe('SCHEMA_VERSION_MISMATCH');
     expect(validateCurrentCandidateManifestJson(
       JSON.stringify({ ...currentManifest(), unsupported_shadow: true }),
       'WI-7002',
@@ -51,7 +51,6 @@ describe('Candidate Manifest persistent-file owner', () => {
       relativePath: 'candidate_manifest.json',
       required: true,
       currentSchemaId: '1.0',
-      transitions: [],
     });
   });
 

@@ -127,7 +127,7 @@ describe('Candidate / approval / state governance', () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain('CANDIDATE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect(result.error).toContain('CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
     await expect(fs.readFile(path.join(workItemDir, 'candidate_manifest.json'), 'utf-8'))
       .rejects.toBeTruthy();
   });

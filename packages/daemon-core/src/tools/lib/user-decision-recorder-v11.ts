@@ -21,14 +21,14 @@ import {
   createUserDecisionSchemaDescriptor,
   precheckSchemaDescriptors,
   type SchemaDescriptorPrecheckResult,
-} from '@specforge/migration';
+} from '@specforge/types/schema-contract';
 
 export {
   validateCurrentUserDecisionJson,
   validateCurrentUserDecisionValue,
   type UserDecisionStatus,
 } from '@specforge/types';
-export { createUserDecisionSchemaDescriptor } from '@specforge/migration';
+export { createUserDecisionSchemaDescriptor } from '@specforge/types/schema-contract';
 
 // ---------------------------------------------------------------------------
 // §10.3 状态枚举
@@ -48,8 +48,8 @@ export async function precheckUserDecisionSchema(
 export function userDecisionSchemaBlockCode(
   result: SchemaDescriptorPrecheckResult,
 ): string | undefined {
-  if (result.ok && !result.needsMigration) return undefined;
-  return result.checks[0]?.errorCode ?? 'MIGRATION_REQUIRED';
+  if (result.ok) return undefined;
+  return result.checks[0]?.errorCode ?? 'SCHEMA_VERSION_MISMATCH';
 }
 
 export async function readCurrentUserDecision(

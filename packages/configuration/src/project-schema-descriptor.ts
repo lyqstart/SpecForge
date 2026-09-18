@@ -1,4 +1,4 @@
-import type { PersistentFileSchemaDescriptor } from '@specforge/migration'
+import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract'
 
 import { CONFIG_SCHEMA_VERSION } from './constants'
 
@@ -18,5 +18,4 @@ export const PROJECT_CONFIG_SCHEMA_DESCRIPTOR: PersistentFileSchemaDescriptor = 
   required: true,
   currentSchemaId: CONFIG_SCHEMA_VERSION,
   validateCurrent: isRecord,
-  transitions: [],
 }

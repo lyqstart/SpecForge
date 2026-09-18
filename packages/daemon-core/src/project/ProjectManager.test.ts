@@ -103,7 +103,6 @@ describe('ProjectManager', () => {
     vi.clearAllMocks();
     projectSchemaPrecheck = vi.fn<ProjectSchemaPrecheck>().mockResolvedValue({
       ok: true,
-      needsMigration: false,
       checks: [],
     });
     manager = new ProjectManager(
@@ -233,7 +232,6 @@ describe('ProjectManager', () => {
       }));
       projectSchemaPrecheck.mockResolvedValue({
         ok: false,
-        needsMigration: false,
         checks: [{
           descriptorId: 'project-spec-manifest',
           owner: '@specforge/daemon-core/project-spec',
@@ -241,9 +239,8 @@ describe('ProjectManager', () => {
           status: 'blocked',
           observedSchemaId: '2.0',
           currentSchemaId: '1.0',
-          transitionAssetIds: [],
-          errorCode: 'CHAIN_GAP',
-          error: 'no complete explicit transition chain',
+          errorCode: 'SCHEMA_VERSION_MISMATCH',
+          error: 'unsupported schema_version "2.0"; expected "1.0"',
         }],
       });
 

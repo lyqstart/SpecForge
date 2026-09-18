@@ -35,7 +35,6 @@
     "vitest": "^1.2.0"
   },
   "dependencies": {
-    "@specforge/migration": "workspace:*",
     "@specforge/types": "workspace:*",
     "chokidar": "^3.5.3",
     "fast-check": "^3.13.0",

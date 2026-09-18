@@ -20,7 +20,7 @@ import {
   createGateAttemptReportSchemaDescriptor,
   precheckSchemaDescriptors,
   type SchemaDescriptorPrecheckResult,
-} from '@specforge/migration';
+} from '@specforge/types/schema-contract';
 export type { GateAttemptInputSnapshotEntry } from '@specforge/types';
 import type { GateIdV11, GateStrictness } from './gate-runner-v11.js';
 import {
@@ -109,7 +109,7 @@ function assertGateAttemptSchemaCurrent(
   attemptId: string,
   result: SchemaDescriptorPrecheckResult,
 ): void {
-  if (result.ok && !result.needsMigration) return;
+  if (result.ok) return;
   const failures = result.checks
     .filter(check => check.status !== 'current')
     .map(check => `${check.relativePath}:${check.errorCode ?? check.status}`)

@@ -7,7 +7,7 @@ import {
   type GitGovernanceTrustedWrite,
   type GitGovernanceWriteProvenance,
 } from '@specforge/types';
-import { createGitGovernanceWriteProvenanceSchemaDescriptor } from '@specforge/migration';
+import { createGitGovernanceWriteProvenanceSchemaDescriptor } from '@specforge/types/schema-contract';
 
 export const GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA =
   GIT_GOVERNANCE_WRITE_PROVENANCE_SCHEMA_VERSION;

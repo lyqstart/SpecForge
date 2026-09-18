@@ -14,7 +14,7 @@ import {
   WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION,
   type WriteGuardAuthorizationRecord,
 } from '@specforge/types';
-import { createWriteGuardAuthorizationLogSchemaDescriptor } from '@specforge/migration';
+import { createWriteGuardAuthorizationLogSchemaDescriptor } from '@specforge/types/schema-contract';
 
 export type WriteGuardAuthorizationEntry = WriteGuardAuthorizationRecord;
 
@@ -43,7 +43,7 @@ export function readWriteGuardAuthorizations(projectRoot: string): WriteGuardAut
         ? (entry as Record<string, unknown>).schema_version
         : undefined;
       if (observed !== WRITE_GUARD_AUTHORIZATION_SCHEMA_VERSION) {
-        throw new Error('CHAIN_GAP: unsupported write_guard_authorization schema_version');
+        throw new Error('SCHEMA_VERSION_MISMATCH: unsupported write_guard_authorization schema_version');
       }
       if (!descriptor.validateCurrent(entry)) {
         throw new Error('VALIDATION_FAILED: invalid write_guard_authorization record');

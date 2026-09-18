@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { precheckSchemaDescriptors } from '@specforge/migration';
+import { precheckSchemaDescriptors } from '@specforge/types/schema-contract';
 import { getHandler } from '../../src/tools/ToolDispatcher';
 import '../../src/tools/handlers/sf-artifact-write';
 import '../../src/tools/handlers/sf-v11-verification';
@@ -68,7 +68,7 @@ describe('Evidence Manifest schema owner', () => {
     }), 'WI-0001')).toMatchObject({ valid: false });
   });
 
-  it('declares an optional per-Work-Item descriptor with no guessed transitions', () => {
+  it('declares an optional per-Work-Item descriptor with the current-schema-only descriptor', () => {
     expect(createEvidenceManifestSchemaDescriptor('WI-0001')).toMatchObject({
       id: 'evidence-manifest-WI-0001',
       owner: '@specforge/daemon-core/evidence-manifest',
@@ -76,7 +76,6 @@ describe('Evidence Manifest schema owner', () => {
       format: 'json',
       required: false,
       currentSchemaId: '1.0',
-      transitions: [],
     });
   });
 
@@ -95,7 +94,7 @@ describe('Evidence Manifest schema owner', () => {
     expect(result.checks[0]).toMatchObject({
       status: 'blocked',
       observedSchemaId: '1.1',
-      errorCode: 'CHAIN_GAP',
+      errorCode: 'SCHEMA_VERSION_MISMATCH',
     });
     await expect(readFile(manifestPath, 'utf8')).resolves.toBe(historical);
   });
@@ -134,7 +133,7 @@ describe('Evidence Manifest schema owner', () => {
       stateDeps,
     );
     expect(result.success).toBe(false);
-    expect(result.error).toContain('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect(result.error).toContain('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
     await expect(readFile(manifestPath, 'utf8')).resolves.toBe(original);
   });
 
@@ -152,7 +151,7 @@ describe('Evidence Manifest schema owner', () => {
       stateDeps,
     );
     expect(result.success).toBe(false);
-    expect(result.error).toContain('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect(result.error).toContain('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
     await expect(readFile(manifestPath, 'utf8')).resolves.toBe(original);
   });
 
@@ -170,7 +169,7 @@ describe('Evidence Manifest schema owner', () => {
       stateDeps,
     );
     expect(result.success).toBe(false);
-    expect(result.error).toContain('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect(result.error).toContain('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
     await expect(readFile(manifestPath, 'utf8')).resolves.toBe(original);
   });
 

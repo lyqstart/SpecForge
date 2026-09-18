@@ -70,7 +70,6 @@ describe('User Decision persistent-file owner', () => {
       relativePath: 'user_decision.json',
       required: false,
       currentSchemaId: '1.0',
-      transitions: [],
     });
   });
 
@@ -91,7 +90,7 @@ describe('User Decision persistent-file owner', () => {
       decisionType: 'user_approved',
       decidedBy: 'user',
       decisionScope: 'full',
-    })).rejects.toThrow(/USER_DECISION_SCHEMA_BLOCKED.*CHAIN_GAP/);
+    })).rejects.toThrow(/USER_DECISION_SCHEMA_BLOCKED.*SCHEMA_VERSION_MISMATCH/);
 
     expect(await readFile(decisionPath, 'utf8')).toBe(original);
   });
@@ -103,7 +102,7 @@ describe('User Decision persistent-file owner', () => {
     await writeFile(decisionPath, original, 'utf8');
 
     await expect(invalidateUserDecision(workItemDir, 'candidate changed'))
-      .rejects.toThrow(/USER_DECISION_SCHEMA_BLOCKED.*CHAIN_GAP/);
+      .rejects.toThrow(/USER_DECISION_SCHEMA_BLOCKED.*SCHEMA_VERSION_MISMATCH/);
     expect(await readFile(decisionPath, 'utf8')).toBe(original);
   });
 });

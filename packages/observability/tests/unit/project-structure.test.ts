@@ -53,7 +53,7 @@ describe('Project Structure', () => {
     }
 
     expect(packageJson.dependencies).toEqual({
-      '@specforge/migration': 'workspace:*',
+      '@specforge/types': 'workspace:*',
     });
     expect(packageJson.dependencies['@specforge/daemon-core']).toBeUndefined();
     expect(packageJson.dependencies['@specforge/permission-engine']).toBeUndefined();

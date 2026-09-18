@@ -16,7 +16,7 @@ import {
   HARD_STOP_RESOLUTION_SCHEMA_VERSION,
   validateCurrentHardStopResolutionRecordValue,
 } from '@specforge/types';
-import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/migration';
+import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/types/schema-contract';
 import { readWorkItemHardStop, resetHardStop } from '../lib/hard-stop-latch';
 import { readHardStopResolutionLog } from '../lib/hard-stop-resolution-log';
 import { validateWorkItemId } from '../lib/work-item-id-validator';

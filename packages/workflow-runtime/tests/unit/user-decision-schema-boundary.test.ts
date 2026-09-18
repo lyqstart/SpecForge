@@ -43,7 +43,7 @@ describe('WorkflowEngine User Decision schema boundary', () => {
     await writeFile(decisionPath, original);
 
     await expect(new WorkflowEngine().enforceTransitionEvidencePublic('merge_ready', dir))
-      .rejects.toThrow(/USER_DECISION_SCHEMA_BLOCKED.*CHAIN_GAP/);
+      .rejects.toThrow(/USER_DECISION_SCHEMA_BLOCKED.*SCHEMA_VERSION_MISMATCH/);
     expect(await readFile(decisionPath, 'utf8')).toBe(original);
   });
 });

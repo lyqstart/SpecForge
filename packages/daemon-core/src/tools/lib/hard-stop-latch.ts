@@ -13,7 +13,7 @@ import {
   type HardStopRecord,
   type HardStopScope,
 } from '@specforge/types';
-import { createHardStopLatchSchemaDescriptor } from '@specforge/migration';
+import { createHardStopLatchSchemaDescriptor } from '@specforge/types/schema-contract';
 import { isValidWorkItemId as isCanonicalWorkItemId } from './work-item-id-validator';
 
 export type { HardStopRecord, HardStopScope } from '@specforge/types';
@@ -91,7 +91,7 @@ function readHardStopFile(
     const observed = typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
       ? (parsed as Record<string, unknown>).schema_version
       : undefined;
-    const code = observed === HARD_STOP_SCHEMA_VERSION ? 'VALIDATION_FAILED' : 'CHAIN_GAP';
+    const code = observed === HARD_STOP_SCHEMA_VERSION ? 'VALIDATION_FAILED' : 'SCHEMA_VERSION_MISMATCH';
     throw new Error(`HARD_STOP_CONTRACT_INVALID: ${code}: ${filePath}`);
   }
   return parsed as HardStopRecord;

@@ -1,4 +1,4 @@
-import type { PersistentFileSchemaDescriptor } from '@specforge/migration'
+import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract'
 import type { ProjectState } from '../types'
 
 const RUNTIME_SCHEMA_VERSION = '1.0' as const
@@ -67,7 +67,6 @@ export const RUNTIME_SCHEMA_DESCRIPTORS: readonly PersistentFileSchemaDescriptor
         && typeof value.lastEventTs === 'number'
       )
     },
-    transitions: [],
   },
   {
     id: 'runtime-wal',
@@ -77,6 +76,5 @@ export const RUNTIME_SCHEMA_DESCRIPTORS: readonly PersistentFileSchemaDescriptor
     required: false,
     currentSchemaId: RUNTIME_SCHEMA_VERSION,
     validateCurrent: isCurrentRuntimeEvent,
-    transitions: [],
   },
 ]

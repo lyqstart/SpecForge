@@ -32,7 +32,7 @@ import {
   createUserDecisionSchemaDescriptor,
   createWorkItemMetadataSchemaDescriptor,
   precheckSchemaDescriptors,
-} from '@specforge/migration';
+} from '@specforge/types/schema-contract';
 
 export type EventHandler = (event: WorkflowEvent) => void | Promise<void>;
 
@@ -571,9 +571,9 @@ export class WorkflowEngine {
       const schemaPrecheck = await precheckSchemaDescriptors(workItemDir, [
         createUserDecisionSchemaDescriptor(workItemId),
       ]);
-      if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+      if (!schemaPrecheck.ok) {
         throw new Error(
-          `USER_DECISION_SCHEMA_BLOCKED: ${schemaPrecheck.checks[0]?.errorCode ?? 'MIGRATION_REQUIRED'}: user_decision.json`,
+          `USER_DECISION_SCHEMA_BLOCKED: ${schemaPrecheck.checks[0]?.errorCode ?? 'SCHEMA_VERSION_MISMATCH'}: user_decision.json`,
         );
       }
       const content = await fs.readFile(fullPath, 'utf-8');
@@ -611,9 +611,9 @@ export class WorkflowEngine {
         createWorkItemMetadataSchemaDescriptor(workItemId),
       ]);
       const schemaCheck = schemaPrecheck.checks[0];
-      if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+      if (!schemaPrecheck.ok) {
         throw new Error(
-          `WORK_ITEM_METADATA_INVALID: ${workItemId}: WORK_ITEM_METADATA_SCHEMA_BLOCKED: ${schemaCheck?.errorCode ?? 'MIGRATION_REQUIRED'}: work_item.json`,
+          `WORK_ITEM_METADATA_INVALID: ${workItemId}: WORK_ITEM_METADATA_SCHEMA_BLOCKED: ${schemaCheck?.errorCode ?? 'SCHEMA_VERSION_MISMATCH'}: work_item.json`,
         );
       }
       const content = await fs.readFile(fullPath, 'utf-8');

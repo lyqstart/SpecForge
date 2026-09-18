@@ -104,7 +104,7 @@ describe('contract-authoring', () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain('CANDIDATE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect(result.error).toContain('CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
     expect(await fs.readFile(manifestPath, 'utf-8')).toBe(unknownManifest);
     await expect(
       fs.access(path.join(wiDir(), 'candidates', 'project', 'extension_registry.json')),

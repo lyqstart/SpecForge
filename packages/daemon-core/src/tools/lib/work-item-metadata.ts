@@ -6,7 +6,7 @@ import {
   createWorkItemMetadataSchemaDescriptor,
   precheckSchemaDescriptors,
   type SchemaDescriptorPrecheckResult,
-} from '@specforge/migration';
+} from '@specforge/types/schema-contract';
 
 import { validateWorkItemJson } from './artifact-schema-validation';
 
@@ -15,7 +15,7 @@ export type WorkItemMetadata = Record<string, unknown> & {
   work_item_id: string;
 };
 
-export { createWorkItemMetadataSchemaDescriptor } from '@specforge/migration';
+export { createWorkItemMetadataSchemaDescriptor } from '@specforge/types/schema-contract';
 
 export async function precheckWorkItemMetadataSchema(
   workItemDir: string,
@@ -36,12 +36,12 @@ export async function readWorkItemMetadata(
 ): Promise<WorkItemMetadata> {
   const schemaPrecheck = await precheckWorkItemMetadataSchema(workItemDir, workItemId);
   const schemaCheck = schemaPrecheck.checks[0];
-  if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+  if (!schemaPrecheck.ok) {
     if (schemaCheck?.errorCode === 'FILE_REQUIRED') {
       throw new Error(`WORK_ITEM_NOT_FOUND: ${workItemId}`);
     }
     throw new Error(
-      `WORK_ITEM_METADATA_INVALID: ${workItemId}: WORK_ITEM_METADATA_SCHEMA_BLOCKED: ${schemaCheck?.errorCode ?? 'MIGRATION_REQUIRED'}`,
+      `WORK_ITEM_METADATA_INVALID: ${workItemId}: WORK_ITEM_METADATA_SCHEMA_BLOCKED: ${schemaCheck?.errorCode ?? 'SCHEMA_VERSION_MISMATCH'}`,
     );
   }
   const metadataPath = path.join(workItemDir, 'work_item.json');

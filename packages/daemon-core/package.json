@@ -49,7 +49,6 @@
     "@specforge/types": "workspace:*",
     "@specforge/version-unification": "workspace:*",
     "@specforge/host-profile": "workspace:*",
-    "@specforge/migration": "workspace:*",
     "typescript": "^5.8.2",
     "uuid": "^11.1.0"
   },

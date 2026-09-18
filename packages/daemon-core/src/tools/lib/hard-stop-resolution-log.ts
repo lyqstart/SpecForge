@@ -4,7 +4,7 @@ import {
   HARD_STOP_RESOLUTION_SCHEMA_VERSION,
   type HardStopResolutionRecord,
 } from '@specforge/types';
-import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/migration';
+import { createHardStopResolutionLogSchemaDescriptor } from '@specforge/types/schema-contract';
 
 export type HardStopAuditResolutionType =
   | 'operator_error'
@@ -40,7 +40,7 @@ export function readHardStopResolutionLog(workItemDir: string): HardStopResoluti
         ? (entry as Record<string, unknown>).schema_version
         : undefined;
       if (observed !== HARD_STOP_RESOLUTION_SCHEMA_VERSION) {
-        throw new Error('CHAIN_GAP: unsupported hard_stop_resolution schema_version');
+        throw new Error('SCHEMA_VERSION_MISMATCH: unsupported hard_stop_resolution schema_version');
       }
       if (!descriptor.validateCurrent(entry)) {
         throw new Error('VALIDATION_FAILED: invalid hard_stop_resolution record');

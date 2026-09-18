@@ -822,7 +822,7 @@ describe("sf_state_transition - Candidate Manifest materialization", () => {
     );
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain("CANDIDATE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP");
+    expect(result.error).toContain("CANDIDATE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH");
     expect(smTransition).not.toHaveBeenCalled();
     expect(await fs.readFile(manifestPath, "utf-8")).toBe(unknown);
   });

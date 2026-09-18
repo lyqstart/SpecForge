@@ -18,7 +18,7 @@ import { CRITICAL_STATES } from '@specforge/types/constants';
 
 import { ALL_STATES } from '../tools/lib/state_machine';
 import { WI_STATUSES_V11 } from '../tools/lib/state-machine-v11';
-import { precheckSchemaDescriptors } from '@specforge/migration';
+import { precheckSchemaDescriptors } from '@specforge/types/schema-contract';
 import {
   RUNTIME_SCHEMA_DESCRIPTORS,
   serializeRuntimeCheckpoint,
@@ -114,9 +114,9 @@ export class StateManager {
       runtimeRoot,
       RUNTIME_SCHEMA_DESCRIPTORS,
     );
-    if (!schemaPrecheck.ok || schemaPrecheck.needsMigration) {
+    if (!schemaPrecheck.ok) {
       const details = schemaPrecheck.checks
-        .filter((check) => check.status === 'blocked' || check.status === 'migration_required')
+        .filter((check) => check.status === 'blocked')
         .map((check) => `${check.descriptorId}:${check.errorCode ?? check.status}`)
         .join(',');
       throw new Error(`RUNTIME_SCHEMA_PRECHECK_BLOCKED:${details}`);

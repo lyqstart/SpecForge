@@ -1,5 +1,5 @@
-import type { PersistentFileSchemaDescriptor } from '@specforge/migration'
-import { precheckSchemaDescriptors, type SchemaDescriptorPrecheckResult } from '@specforge/migration'
+import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract'
+import { precheckSchemaDescriptors, type SchemaDescriptorPrecheckResult } from '@specforge/types/schema-contract'
 import { PROJECT_CONFIG_SCHEMA_DESCRIPTOR } from '@specforge/configuration'
 import { OBSERVABILITY_CONFIG_SCHEMA_DESCRIPTOR } from '@specforge/observability'
 import { MODULE_CODE_PATTERN } from '@specforge/types'
@@ -64,7 +64,6 @@ export const PROJECT_REGISTRATION_SCHEMA_DESCRIPTORS: readonly PersistentFileSch
     required: true,
     currentSchemaId: PROJECT_SPEC_MANIFEST_SCHEMA_VERSION,
     validateCurrent: isCurrentProjectSpecManifest,
-    transitions: [],
   },
   PROJECT_CONFIG_SCHEMA_DESCRIPTOR,
   OBSERVABILITY_CONFIG_SCHEMA_DESCRIPTOR,
@@ -84,7 +83,6 @@ export const PROJECT_REGISTRATION_SCHEMA_DESCRIPTORS: readonly PersistentFileSch
         && isRecord(value.contracts)
       )
     },
-    transitions: [],
   },
 ]
 
@@ -106,7 +104,6 @@ export function createProjectModuleSchemaDescriptors(
         && value.module_code === moduleCode
         && !LEGACY_MODULE_IDENTITY_FIELDS.some((field) => field in value)
       ),
-      transitions: [],
     }
   })
 }
@@ -118,7 +115,7 @@ export async function precheckProjectRegistrationSchemas(
     projectPath,
     PROJECT_REGISTRATION_SCHEMA_DESCRIPTORS,
   )
-  if (!staticResult.ok || staticResult.needsMigration) return staticResult
+  if (!staticResult.ok) return staticResult
 
   const manifest = JSON.parse(await readFile(
     join(projectPath, '.specforge', 'project', 'spec_manifest.json'),
@@ -130,7 +127,6 @@ export async function precheckProjectRegistrationSchemas(
   )
   return {
     ok: moduleResult.ok,
-    needsMigration: moduleResult.needsMigration,
     checks: [...staticResult.checks, ...moduleResult.checks],
   }
 }

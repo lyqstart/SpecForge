@@ -1,5 +1,5 @@
 import type { ObservabilityMode } from './types/index.js';
-import type { PersistentFileSchemaDescriptor } from '@specforge/migration';
+import type { PersistentFileSchemaDescriptor } from '@specforge/types/schema-contract';
 
 export const OBSERVABILITY_CONFIG_SCHEMA_VERSION = '1.0' as const;
 
@@ -55,5 +55,4 @@ export const OBSERVABILITY_CONFIG_SCHEMA_DESCRIPTOR: PersistentFileSchemaDescrip
       return false;
     }
   },
-  transitions: [],
 };

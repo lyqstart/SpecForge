@@ -65,7 +65,7 @@ describe('User Decision public schema boundaries', () => {
     );
     expect(result).toMatchObject({
       success: false,
-      error: 'USER_DECISION_SCHEMA_BLOCKED: CHAIN_GAP: user_decision.json',
+      error: 'USER_DECISION_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH: user_decision.json',
     });
     expect(await readFile(fixture.decisionPath, 'utf8')).toBe(fixture.original);
   });
@@ -79,7 +79,7 @@ describe('User Decision public schema boundaries', () => {
     );
     expect(result).toMatchObject({
       success: false,
-      error: 'USER_DECISION_SCHEMA_BLOCKED: CHAIN_GAP: user_decision.json',
+      error: 'USER_DECISION_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH: user_decision.json',
     });
     expect(await readFile(fixture.decisionPath, 'utf8')).toBe(fixture.original);
   });
@@ -93,7 +93,7 @@ describe('User Decision public schema boundaries', () => {
     );
     expect(result).toMatchObject({
       success: false,
-      error: 'USER_DECISION_SCHEMA_BLOCKED: CHAIN_GAP: user_decision.json',
+      error: 'USER_DECISION_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH: user_decision.json',
     });
     expect(await readFile(fixture.decisionPath, 'utf8')).toBe(fixture.original);
     await expect(readFile(join(fixture.workItemDir, 'gates', 'attempts', 'index.json'), 'utf8'))

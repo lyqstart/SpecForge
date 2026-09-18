@@ -279,7 +279,7 @@ describe('verification governance contract', () => {
     expect(report.status).toBe('failed');
     expect(
       report.checks.find(check => check.check_id === 'evidence_manifest_schema_current'),
-    ).toMatchObject({ passed: false, details: 'CHAIN_GAP' });
+    ).toMatchObject({ passed: false, details: 'SCHEMA_VERSION_MISMATCH' });
   });
 
   it('makes the active verification gate fail when semantic closure is missing', async () => {

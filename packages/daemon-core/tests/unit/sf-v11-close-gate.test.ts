@@ -378,7 +378,7 @@ describe('sf_close_gate handler', () => {
     );
 
     expect((result as any).success).toBe(false);
-    expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
     await expect(fs.readFile(manifestPath, 'utf8')).resolves.toContain('"1.1"');
     await expect(fs.readFile(workItemPath, 'utf8')).resolves.toBe(workItemBefore);
   });
@@ -401,7 +401,7 @@ describe('sf_close_gate handler', () => {
 
     expect((result as any).success).toBe(false);
     expect((result as any).error).toBe(
-      'USER_DECISION_SCHEMA_BLOCKED: CHAIN_GAP: user_decision.json',
+      'USER_DECISION_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH: user_decision.json',
     );
     await expect(fs.readFile(decisionPath, 'utf8')).resolves.toBe(original);
     await expect(fs.access(path.join(wiDir, 'gates', 'close_gate.json'))).rejects.toBeTruthy();

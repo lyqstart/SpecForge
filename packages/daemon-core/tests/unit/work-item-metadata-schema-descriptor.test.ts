@@ -23,7 +23,7 @@ async function projectRoot(): Promise<string> {
 }
 
 describe('Work Item metadata schema owner', () => {
-  it('declares the exact owner, instance path, schema and no guessed migration edges', () => {
+  it('declares the exact owner, instance path, schema and a current-schema-only contract', () => {
     const descriptor = createWorkItemMetadataSchemaDescriptor('WI-0042');
 
     expect(descriptor).toMatchObject({
@@ -33,7 +33,6 @@ describe('Work Item metadata schema owner', () => {
       format: 'json',
       required: true,
       currentSchemaId: '1.1',
-      transitions: [],
     });
     expect(descriptor.validateCurrent({
       schema_version: '1.1',
@@ -56,7 +55,6 @@ describe('Work Item metadata schema owner', () => {
 
     const precheck = await precheckWorkItemMetadataSchema(workItemDir, workItemId);
     expect(precheck.ok).toBe(true);
-    expect(precheck.needsMigration).toBe(false);
     expect(precheck.checks[0].status).toBe('current');
     await expect(readWorkItemMetadata(workItemDir, workItemId)).resolves.toMatchObject({
       schema_version: '1.1',
@@ -77,7 +75,7 @@ describe('Work Item metadata schema owner', () => {
     expect(precheck.checks[0]).toMatchObject({
       status: 'blocked',
       observedSchemaId: '1.0',
-      errorCode: 'CHAIN_GAP',
+      errorCode: 'SCHEMA_VERSION_MISMATCH',
     });
     await expect(readWorkItemMetadata(workItemDir, workItemId))
       .rejects.toThrow('WORK_ITEM_METADATA_SCHEMA_BLOCKED');

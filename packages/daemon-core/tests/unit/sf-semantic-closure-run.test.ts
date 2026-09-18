@@ -315,7 +315,7 @@ describe('sf_semantic_closure_run handler', () => {
     );
 
     expect((result as any).success).toBe(false);
-    expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: CHAIN_GAP');
+    expect((result as any).error).toBe('EVIDENCE_MANIFEST_SCHEMA_BLOCKED: SCHEMA_VERSION_MISMATCH');
     await expect(fs.access(path.join(wiDir, '.semantic_closure.json'))).rejects.toThrow();
     await expect(fs.access(path.join(wiDir, 'semantic_closure_report.md'))).rejects.toThrow();
     await expect(fs.readFile(manifestPath, 'utf8')).resolves.toBe(original);

@@ -9,7 +9,7 @@ import {
   precheckSchemaDescriptors,
   type PersistentFileSchemaDescriptor,
   type SchemaDescriptorPrecheckResult,
-} from '@specforge/migration';
+} from '@specforge/types/schema-contract';
 
 export interface EvidenceManifest {
   schema_version: '1.0';
@@ -100,7 +100,6 @@ export function createEvidenceManifestSchemaDescriptor(
     currentSchemaId: '1.0',
     validateCurrent: (value: unknown): boolean =>
       validateEvidenceManifestValue(value, workItemId).valid,
-    transitions: [],
   };
 }
 
@@ -116,6 +115,6 @@ export async function precheckEvidenceManifestSchema(
 export function evidenceManifestSchemaBlockCode(
   result: SchemaDescriptorPrecheckResult,
 ): string | undefined {
-  if (result.ok && !result.needsMigration) return undefined;
-  return result.checks[0]?.errorCode ?? 'MIGRATION_REQUIRED';
+  if (result.ok) return undefined;
+  return result.checks[0]?.errorCode ?? 'SCHEMA_VERSION_MISMATCH';
 }

@@ -11,7 +11,6 @@ describe('current project configuration schema descriptor', () => {
       format: 'json',
       required: true,
       currentSchemaId: '1.0',
-      transitions: [],
     })
   })
 

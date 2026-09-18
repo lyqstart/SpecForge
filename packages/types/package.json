@@ -45,13 +45,21 @@
       "types": "./dist/seal-transitions.d.ts",
       "import": "./dist/seal-transitions.js",
       "require": "./dist/seal-transitions.js"
+    },
+    "./schema-contract": {
+      "types": "./dist/schema-contract.d.ts",
+      "import": "./dist/schema-contract.js",
+      "require": "./dist/schema-contract.js"
     }
   },
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist"
   },
-  "keywords": ["specforge", "types"],
+  "keywords": [
+    "specforge",
+    "types"
+  ],
   "author": "SpecForge Team",
   "license": "MIT",
   "dependencies": {
@@ -71,6 +79,9 @@
       ],
       "*": [
         "dist/*"
+      ],
+      "schema-contract": [
+        "dist/schema-contract.d.ts"
       ]
     }
   }
