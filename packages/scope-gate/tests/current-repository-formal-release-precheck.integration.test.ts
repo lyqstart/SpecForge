@@ -24,9 +24,6 @@ describe('current repository formal release precheck', () => {
     expect(outcome.result?.authorityErrors).toEqual([]);
     expect(outcome.result?.verdict.missingRequired).toEqual([]);
     expect(outcome.result?.verdict.unexpectedExcluded).toEqual([
-      '@specforge/migration@clean_build',
-      '@specforge/migration@package_export',
-      '@specforge/migration@release_manifest',
       '@specforge/multimodal@clean_build',
       '@specforge/multimodal@package_export',
       '@specforge/multimodal@release_manifest',

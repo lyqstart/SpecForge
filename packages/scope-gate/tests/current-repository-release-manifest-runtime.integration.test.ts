@@ -59,7 +59,6 @@ describe('current repository release manifest and runtime entry surfaces', () =>
     }).toEqual({
       missingRequired: [],
       unexpectedExcluded: [
-        '@specforge/migration@release_manifest',
         '@specforge/multimodal@release_manifest',
         '@specforge/plugin-loader@release_manifest',
         '@specforge/self-healing@release_manifest',

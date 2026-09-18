@@ -858,8 +858,7 @@ Scope Gate 只能从本块读取 current release classification，并将 source 
       "ids": [
         "@specforge/plugin-loader",
         "@specforge/self-healing",
-        "@specforge/multimodal",
-        "@specforge/migration"
+        "@specforge/multimodal"
       ],
       "classification": "BUILT_NOT_ENABLED",
       "requiredSurfaces": [],
@@ -1306,9 +1305,10 @@ Scope Gate 只能从本块读取 current release classification，并将 source 
     },
     {
       "ids": [
+        "@specforge/migration",
         "migration:current-schema"
       ],
-      "classification": "BUILT_NOT_ENABLED",
+      "classification": "LEGACY_ONLY",
       "requiredSurfaces": [],
       "dependencies": [],
       "authoritySources": [
@@ -1457,20 +1457,20 @@ SpecForge 要被声明为符合 SPS-1.0，至少必须满足：
 
 以下是 SPS-1.0 建立时的已知实现差距，不改变产品裁决：
 
-- CG-001：packages/types/src/user-level-paths.ts 仍把 ~/.specforge 定义为 current user root，并使用 daemon.sock.json。
-- CG-002：部分 Thin Plugin / thin-client / CLI / service-management 代码仍读取 ~/.specforge。
-- CG-003：当前 Thin Plugin 仍包含自动 spawn Daemon 行为。
-- CG-004：packages/types/src/directory-layout.ts 仍定义 runtime/wal.jsonl。
-- CG-005：directory-layout.ts 已提前加入 domain_model/context_map/crosscutting/architecture_risks/decisionsRoot 等 D09 deferred paths。
-- CG-006：Migration package 仍存在，且 daemon-core/configuration/observability/workflow-runtime 仍复用其中 schema descriptor/precheck infrastructure。
+- CG-001【RESOLVED】：canonical user root 与 handshake 已统一为 `<OpenCode config>/sf-user` 和 `runtime/handshake.json`。
+- CG-002【RESOLVED】：Thin Plugin、thin-client、CLI、service-management 的 current user-path consumers 已完成收敛。
+- CG-003【RESOLVED】：Thin Plugin 已移除 Daemon auto-start / spawn 生命周期责任。
+- CG-004【RESOLVED】：`runtime/wal.jsonl` current contract 已退役，统一为 `runtime/events.jsonl`。
+- CG-005【RESOLVED】：D09 deferred multi-view paths 已从 current Layout/API 移出。
+- CG-006【RESOLVED】：current schema validation 已迁入 `@specforge/types/schema-contract`；Migration package 及 current workspace/release surface 已退出。
 - CG-007：Multimodal、Self-Healing、Plugin Loader 源码/package 仍存在，需从 current release surface 收敛。
 - CG-008：OpenCode Adapter package 存在但尚无已确认的 Daemon production instantiation/caller。
 - CG-009：Distribution Kiro spec 仍描述 npm global + specforge init + ~/.specforge。
-- CG-010：release precheck、Scope Gate 及部分测试仍消费 V6 Kiro authority path。
+- CG-010【RESOLVED】：release precheck / Scope Gate 已直接消费 SPS-1.0 hash-bound release authority projection。
 - CG-011：fused_standard.md 和 v1.3 文档仍包含旧的 final/standard authority 自述，需要降级标识。
 - CG-012：Workflow Runtime 与 Daemon 的部分依赖/测试结构仍需消除概念或构建反向依赖。
 - CG-013：Permission/Write Guard enforcement 仍分散在多处 handler，需要收敛到统一 decision + enforcement boundary。
-- CG-014：用户级 handshake 文件名和路径的旧 daemon.sock.json 消费者尚未统一到 sf-user/runtime/handshake.json。
+- CG-014【RESOLVED】：current handshake consumers 已统一到 `<OpenCode config>/sf-user/runtime/handshake.json`。
 
 这些 gap 的后续修改属于“使实现符合产品规格”，不需要重新开启产品范围裁决，除非实际实施发现新的产品级冲突。
 

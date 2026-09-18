@@ -33,7 +33,7 @@ describe('current release authority projection', () => {
     expect(byId.get('@specforge/plugin-loader')?.classification).toBe('BUILT_NOT_ENABLED');
     expect(byId.get('@specforge/self-healing')?.classification).toBe('BUILT_NOT_ENABLED');
     expect(byId.get('@specforge/multimodal')?.classification).toBe('BUILT_NOT_ENABLED');
-    expect(byId.get('@specforge/migration')?.classification).toBe('BUILT_NOT_ENABLED');
+    expect(byId.get('@specforge/migration')?.classification).toBe('LEGACY_ONLY');
     expect(byId.get('thin-plugin:daemon-start')?.classification).toBe('LEGACY_ONLY');
     expect(byId.get('legacy:cli-legacy-paths')?.classification).toBe('LEGACY_ONLY');
     expect(byId.get('history:error-ledger')?.classification).toBe('HISTORICAL_EVIDENCE_ONLY');

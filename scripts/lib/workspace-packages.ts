@@ -9,7 +9,6 @@ export const CURRENT_WORKSPACE_PACKAGES = Object.freeze([
   'observability',
   'permission-engine',
   'opencode-adapter',
-  'migration',
   'scope-gate',
   'workflow-runtime',
   'plugin-loader',
