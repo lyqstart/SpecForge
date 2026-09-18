@@ -1,5 +1,20 @@
 # SpecForge 当前发布边界与模块收敛进度
 
+> **AUTHORITY SUPERSESSION — 2026-09-18**：本文件包含大量按时间追加的历史执行快照。历史块中的 `AUTHORITY_USER_ROOT=~/.specforge`、`daemon.sock.json`、V6 Kiro authority 等文字只证明当时采用过该模型，已被 SPS-1.0 与后续产品负责人裁决取代。
+> 当前唯一产品规格：`docs/product-specification/specforge-product-specification.md`；当前实施状态以 `docs/implementation/architecture-consistency/authority-model-recovery.md` 的 2026-09-18 overlay 为准。
+
+## 2026-09-18 Authority Recovery Overlay
+
+```text
+CURRENT_PRODUCT_SPEC=SPS-1.0
+CURRENT_USER_ROOT=<OpenCode config>/sf-user
+CURRENT_MANIFEST=<OpenCode config>/specforge-manifest.json
+CURRENT_HANDSHAKE=<OpenCode config>/sf-user/runtime/handshake.json
+PATH_SOURCE_CONVERGENCE=fedabb7bb0c5032f6741f79f966edbafa8a35ec4;ee40d40f30b18772adf55386a5b326e6c7fd9494
+PATH_EXECUTION_VALIDATION=NOT_RUN
+NEXT_CONVERGENCE=INSTALLER_PHYSICAL_LAYOUT_THEN_THIN_PLUGIN_LIFECYCLE
+```
+
 ## 1. 文件职责
 
 本文是 `current-release-boundary-and-module-convergence-plan.md` 的唯一专题进度投影，只记录已完成事实、当前步骤、阻断和下一动作。

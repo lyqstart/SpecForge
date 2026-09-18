@@ -19,8 +19,8 @@ PRODUCT_SPECIFICATION=docs/product-specification/specforge-product-specification
 PRODUCT_SPEC_VERSION=SPS-1.0
 PRODUCT_OWNER_DECISIONS=PO-001,D01,D02,D03,D04,D05,D06,D07,D08,D09
 AUTHORITY_ROOT_ESTABLISHED=YES
-CURRENT_BLOCKER=PERIPHERAL_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_STILL_REFERENCE_SUPERSEDED_MODELS
-NEXT_LEGAL_ACTION=CONVERGE_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_TO_SPS-1.0
+CURRENT_BLOCKER=INSTALLER_PHYSICAL_LAYOUT_AND_THIN_PLUGIN_LIFECYCLE_STILL_REFERENCE_SUPERSEDED_USER_MODEL
+NEXT_LEGAL_ACTION=CONVERGE_INSTALLER_PHYSICAL_LAYOUT_TO_OPENCODE_ROOT_PLUS_SF_USER
 ~~~
 
 ## 已完成产品裁决
@@ -73,3 +73,12 @@ NEXT_LEGAL_ACTION=CONVERGE_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_TO_SPS-1.0
 - SPS-1.0 已内置唯一 `SPECFORGE_RELEASE_AUTHORITY_ITEMS` 机器投影；旧 implementation matrix 的投影不再是 authority。
 - current formal precheck 预期先暴露 Migration / Multimodal / Self-Healing / Plugin Loader 仍残留 release surfaces 的真实 conformance drift；不得通过重新启用这些模块使测试变绿。
 - GitHub 当前未返回该提交的 CI status/workflow run，因此测试执行状态为 `NOT_VERIFIED_BY_CI`，不声称全绿。
+
+
+## 2026-09-18 User-Level Path / Handshake Convergence
+
+- `fedabb7bb0c5032f6741f79f966edbafa8a35ec4`：canonical user path API、Daemon/CLI/Service Management handshake consumers、installed thin client 与 sf_plugin_client 已切换到 `<OpenCode config>/sf-user/runtime/handshake.json`；Manifest helper 切换到 `<OpenCode config>/specforge-manifest.json`。
+- `ee40d40f30b18772adf55386a5b326e6c7fd9494`：修正 CLI path-resolver 遗留的 `~/.specforge` 文档消费者。
+- `PATH_CLOSURE_1=SOURCE_CONVERGED`。
+- `RUNTIME_DEPLOYMENT_VALIDATION=NOT_RUN`；GitHub 未返回 CI status，不宣称测试或真实部署已通过。
+- Installer 仍采用单一旧 install root；Thin Plugin 仍存在旧私有资产路径和 Daemon auto-start。它们分别属于下一闭环，不由本次 source convergence 隐式宣告完成。
