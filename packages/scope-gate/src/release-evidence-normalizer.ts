@@ -7,10 +7,7 @@ import type {
 } from './release-set-validator';
 import { z } from 'zod';
 
-export type ReleaseAuthorityRole =
-  | 'v6_requirements'
-  | 'v6_design'
-  | 'module_disposition_matrix';
+export type ReleaseAuthorityRole = 'product_specification';
 
 export interface ReleaseAuthoritySource {
   role: ReleaseAuthorityRole;
@@ -51,9 +48,7 @@ export interface NormalizedArtifactInventory {
 }
 
 const AUTHORITY_ROLES = [
-  'module_disposition_matrix',
-  'v6_design',
-  'v6_requirements',
+  'product_specification',
 ] as const satisfies readonly ReleaseAuthorityRole[];
 
 const RELEASE_CLASSIFICATIONS = [
@@ -159,9 +154,10 @@ function normalizeAuthorityItem(item: ApprovedReleaseItem): ApprovedReleaseItem 
 }
 
 /**
- * Validates the machine-readable projection of the three declared V6 release
- * authorities. It never infers scope from packages, tests, configuration,
- * feature flags, Git history, or a runtime registry.
+ * Validates the machine-readable release projection from the single canonical
+ * SpecForge Product Specification. It never infers scope from packages, tests,
+ * configuration, feature flags, Git history, implementation matrices, Kiro,
+ * or a runtime registry.
  */
 export function normalizeReleaseAuthority(
   input: unknown,

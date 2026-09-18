@@ -6,25 +6,17 @@ import {
   type ReleaseAuthorityDocument,
 } from '../src/release-evidence-normalizer';
 
+const PRODUCT_SPEC_PATH = 'docs/product-specification/specforge-product-specification.md';
+
 const authority: ReleaseAuthorityDocument = {
   schemaVersion: '1.0',
   releaseId: 'specforge-v6-current',
   complete: true,
   sources: [
     {
-      role: 'v6_requirements',
-      path: '.kiro/specs/v6-architecture-overview/requirements.md',
+      role: 'product_specification',
+      path: PRODUCT_SPEC_PATH,
       sha256: 'a'.repeat(64),
-    },
-    {
-      role: 'v6_design',
-      path: '.kiro/specs/v6-architecture-overview/design.md',
-      sha256: 'b'.repeat(64),
-    },
-    {
-      role: 'module_disposition_matrix',
-      path: 'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-      sha256: 'c'.repeat(64),
     },
   ],
   items: [
@@ -33,19 +25,14 @@ const authority: ReleaseAuthorityDocument = {
       classification: 'CURRENT_RELEASE_SUPPORTING',
       requiredSurfaces: ['release_manifest', 'clean_build', 'package_export'],
       dependencies: [],
-      authoritySources: [
-        '.kiro/specs/v6-architecture-overview/design.md',
-        'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-      ],
+      authoritySources: [PRODUCT_SPEC_PATH],
     },
     {
       id: 'workflow:bugfix_spec',
       classification: 'BUILT_NOT_ENABLED',
       requiredSurfaces: [],
       dependencies: [],
-      authoritySources: [
-        'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-      ],
+      authoritySources: [PRODUCT_SPEC_PATH],
     },
   ],
 };
@@ -109,17 +96,17 @@ describe('normalizeReleaseAuthority', () => {
     expect(result.errors).toContain('authority_document:items:invalid');
   });
 
-  it('accepts exactly the three declared authorities and returns byte-stable ordering', () => {
+  it('accepts exactly the canonical product specification source and returns byte-stable ordering', () => {
     const first = normalizeReleaseAuthority(authority);
     const second = normalizeReleaseAuthority({
       ...authority,
-      sources: [...authority.sources].reverse(),
       items: [...authority.items].reverse(),
     });
 
     expect(first).toEqual(second);
     expect(first.ok).toBe(true);
     expect(first.errors).toEqual([]);
+    expect(first.sources).toEqual(authority.sources);
     expect(first.items.map((item) => item.id)).toEqual([
       '@specforge/types',
       'workflow:bugfix_spec',
@@ -131,14 +118,14 @@ describe('normalizeReleaseAuthority', () => {
     ]);
   });
 
-  it('fails closed when one authority role is missing', () => {
+  it('fails closed when the product specification authority role is missing', () => {
     const result = normalizeReleaseAuthority({
       ...authority,
-      sources: authority.sources.filter((source) => source.role !== 'v6_design'),
+      sources: [],
     });
 
     expect(result.ok).toBe(false);
-    expect(result.errors).toContain('authority_role:v6_design:missing');
+    expect(result.errors).toContain('authority_role:product_specification:missing');
   });
 
   it('rejects duplicate IDs even when classifications match', () => {

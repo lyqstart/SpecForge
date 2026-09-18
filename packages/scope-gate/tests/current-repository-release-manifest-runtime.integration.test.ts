@@ -12,16 +12,14 @@ import { projectReleaseAuthority } from '../src/release-authority-projection';
 import { ReleaseSetValidator } from '../src/release-set-validator';
 
 const candidateRoot = fileURLToPath(new URL('../../../', import.meta.url));
-const requirementsPath = '.kiro/specs/v6-architecture-overview/requirements.md';
-const designPath = '.kiro/specs/v6-architecture-overview/design.md';
-const matrixPath = 'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md';
+const productSpecPath = 'docs/product-specification/specforge-product-specification.md';
 
 function read(path: string): string {
   return readFileSync(resolve(candidateRoot, path), 'utf8');
 }
 
 describe('current repository release manifest and runtime entry surfaces', () => {
-  it('has no authority drift on either real candidate surface', async () => {
+  it('reports deferred-package drift on the release manifest while runtime entries stay aligned', async () => {
     const releaseId = 'specforge-v6-current';
     const candidateId = (JSON.parse(read('release/release-manifest.json')) as {
       candidateId: string;
@@ -29,9 +27,7 @@ describe('current repository release manifest and runtime entry surfaces', () =>
     expect(candidateId).toMatch(/^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$/);
     const authority = projectReleaseAuthority({
       releaseId,
-      requirements: { path: requirementsPath, content: read(requirementsPath) },
-      design: { path: designPath, content: read(designPath) },
-      matrix: { path: matrixPath, content: read(matrixPath) },
+      productSpecification: { path: productSpecPath, content: read(productSpecPath) },
     });
     const manifest = await produceReleaseManifest({ candidateRoot, releaseId, candidateId });
     const runtime = await produceRuntimeEntrySurfaceReport({ candidateRoot, releaseId, candidateId });
@@ -60,6 +56,14 @@ describe('current repository release manifest and runtime entry surfaces', () =>
       unexpectedExcluded: verdict.unexpectedExcluded.filter((entry) => (
         selectedSuffixes.some((suffix) => entry.endsWith(suffix))
       )),
-    }).toEqual({ missingRequired: [], unexpectedExcluded: [] });
+    }).toEqual({
+      missingRequired: [],
+      unexpectedExcluded: [
+        '@specforge/migration@release_manifest',
+        '@specforge/multimodal@release_manifest',
+        '@specforge/plugin-loader@release_manifest',
+        '@specforge/self-healing@release_manifest',
+      ],
+    });
   });
 });

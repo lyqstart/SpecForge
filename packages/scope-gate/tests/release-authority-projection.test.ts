@@ -7,12 +7,13 @@ import {
 
 const START = '<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:START -->';
 const END = '<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:END -->';
+const PRODUCT_SPEC_PATH = 'docs/product-specification/specforge-product-specification.md';
 
 function sha256(value: string): string {
   return createHash('sha256').update(value, 'utf8').digest('hex');
 }
 
-function matrixBlock(overrides: Record<string, unknown> = {}): string {
+function productSpecBlock(overrides: Record<string, unknown> = {}): string {
   const payload = {
     schemaVersion: '1.0',
     releaseId: 'specforge-v6-current',
@@ -23,38 +24,27 @@ function matrixBlock(overrides: Record<string, unknown> = {}): string {
         classification: 'CURRENT_RELEASE_SUPPORTING',
         requiredSurfaces: ['package_export'],
         dependencies: [],
-        authoritySources: [
-          '.kiro/specs/v6-architecture-overview/design.md',
-          'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-        ],
+        authoritySources: [PRODUCT_SPEC_PATH],
       },
     ],
     ...overrides,
   };
-  return `matrix-before\n${START}\n\u0060\u0060\u0060json\n${JSON.stringify(payload)}\n\u0060\u0060\u0060\n${END}\nmatrix-after\n`;
+  return `product-spec-before\n${START}\n\u0060\u0060\u0060json\n${JSON.stringify(payload)}\n\u0060\u0060\u0060\n${END}\nproduct-spec-after\n`;
 }
 
-function input(matrixContent = matrixBlock()): ReleaseAuthorityProjectionInput {
+function input(content = productSpecBlock()): ReleaseAuthorityProjectionInput {
   return {
     releaseId: 'specforge-v6-current',
-    requirements: {
-      path: '.kiro/specs/v6-architecture-overview/requirements.md',
-      content: 'requirements-current-bytes\n',
-    },
-    design: {
-      path: '.kiro/specs/v6-architecture-overview/design.md',
-      content: 'design-current-bytes\n',
-    },
-    matrix: {
-      path: 'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-      content: matrixContent,
+    productSpecification: {
+      path: PRODUCT_SPEC_PATH,
+      content,
     },
   };
 }
 
 describe('projectReleaseAuthority', () => {
   it('expands explicit ID groups into individual approved release items', () => {
-    const result = projectReleaseAuthority(input(matrixBlock({
+    const result = projectReleaseAuthority(input(productSpecBlock({
       items: undefined,
       itemGroups: [
         {
@@ -62,10 +52,7 @@ describe('projectReleaseAuthority', () => {
           classification: 'CURRENT_RELEASE_SUPPORTING',
           requiredSurfaces: ['package_export'],
           dependencies: [],
-          authoritySources: [
-            '.kiro/specs/v6-architecture-overview/design.md',
-            'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-          ],
+          authoritySources: [PRODUCT_SPEC_PATH],
         },
       ],
     })));
@@ -78,13 +65,13 @@ describe('projectReleaseAuthority', () => {
   });
 
   it('rejects payloads that mix individual items and item groups', () => {
-    const result = projectReleaseAuthority(input(matrixBlock({
+    const result = projectReleaseAuthority(input(productSpecBlock({
       itemGroups: [{
         ids: ['@specforge/configuration'],
         classification: 'CURRENT_RELEASE_SUPPORTING',
         requiredSurfaces: ['package_export'],
         dependencies: [],
-        authoritySources: ['.kiro/specs/v6-architecture-overview/design.md'],
+        authoritySources: [PRODUCT_SPEC_PATH],
       }],
     })));
 
@@ -93,14 +80,14 @@ describe('projectReleaseAuthority', () => {
   });
 
   it('rejects an empty explicit ID group', () => {
-    const result = projectReleaseAuthority(input(matrixBlock({
+    const result = projectReleaseAuthority(input(productSpecBlock({
       items: undefined,
       itemGroups: [{
         ids: [],
         classification: 'CURRENT_RELEASE_SUPPORTING',
         requiredSurfaces: ['package_export'],
         dependencies: [],
-        authoritySources: ['.kiro/specs/v6-architecture-overview/design.md'],
+        authoritySources: [PRODUCT_SPEC_PATH],
       }],
     })));
 
@@ -108,7 +95,7 @@ describe('projectReleaseAuthority', () => {
     expect(result.errors).toContain('authority_projection:item_group:0:ids_empty');
   });
 
-  it('derives one complete document and binds all three source byte hashes', () => {
+  it('derives one complete document bound only to the product specification bytes', () => {
     const source = input();
     const result = projectReleaseAuthority(source);
 
@@ -118,32 +105,22 @@ describe('projectReleaseAuthority', () => {
     expect(result.document?.items.map((item) => item.id)).toEqual(['@specforge/types']);
     expect(result.document?.sources).toEqual([
       {
-        role: 'module_disposition_matrix',
-        path: source.matrix.path,
-        sha256: sha256(source.matrix.content),
-      },
-      {
-        role: 'v6_design',
-        path: source.design.path,
-        sha256: sha256(source.design.content),
-      },
-      {
-        role: 'v6_requirements',
-        path: source.requirements.path,
-        sha256: sha256(source.requirements.content),
+        role: 'product_specification',
+        path: source.productSpecification.path,
+        sha256: sha256(source.productSpecification.content),
       },
     ]);
   });
 
-  it('fails closed when the matrix machine block is missing', () => {
-    const result = projectReleaseAuthority(input('matrix without machine projection\n'));
+  it('fails closed when the product specification machine block is missing', () => {
+    const result = projectReleaseAuthority(input('product spec without machine projection\n'));
 
     expect(result.ok).toBe(false);
     expect(result.errors).toContain('authority_projection:marker_pair_missing');
   });
 
-  it('fails closed when the matrix contains duplicate machine blocks', () => {
-    const block = matrixBlock();
+  it('fails closed when the product specification contains duplicate machine blocks', () => {
+    const block = productSpecBlock();
     const result = projectReleaseAuthority(input(block + block));
 
     expect(result.ok).toBe(false);
@@ -158,7 +135,7 @@ describe('projectReleaseAuthority', () => {
   });
 
   it('fails closed when the projected release differs from the requested release', () => {
-    const result = projectReleaseAuthority(input(matrixBlock({ releaseId: 'other-release' })));
+    const result = projectReleaseAuthority(input(productSpecBlock({ releaseId: 'other-release' })));
 
     expect(result.ok).toBe(false);
     expect(result.errors).toContain(
@@ -166,8 +143,8 @@ describe('projectReleaseAuthority', () => {
     );
   });
 
-  it('fails closed when the matrix declares an incomplete projection', () => {
-    const result = projectReleaseAuthority(input(matrixBlock({ complete: false })));
+  it('fails closed when the product specification declares an incomplete projection', () => {
+    const result = projectReleaseAuthority(input(productSpecBlock({ complete: false })));
 
     expect(result.ok).toBe(false);
     expect(result.errors).toContain('authority:producer_reported_incomplete');

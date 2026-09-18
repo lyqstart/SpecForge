@@ -5,25 +5,17 @@ import {
   type ReleaseAuthorityDocument,
 } from '../src';
 
+const PRODUCT_SPEC_PATH = 'docs/product-specification/specforge-product-specification.md';
+
 const authority: ReleaseAuthorityDocument = {
   schemaVersion: '1.0',
   releaseId: 'specforge-v6-current',
   complete: true,
   sources: [
     {
-      role: 'v6_requirements',
-      path: '.kiro/specs/v6-architecture-overview/requirements.md',
+      role: 'product_specification',
+      path: PRODUCT_SPEC_PATH,
       sha256: 'a'.repeat(64),
-    },
-    {
-      role: 'v6_design',
-      path: '.kiro/specs/v6-architecture-overview/design.md',
-      sha256: 'b'.repeat(64),
-    },
-    {
-      role: 'module_disposition_matrix',
-      path: 'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-      sha256: 'c'.repeat(64),
     },
   ],
   items: [
@@ -32,16 +24,14 @@ const authority: ReleaseAuthorityDocument = {
       classification: 'CURRENT_RELEASE_SUPPORTING',
       requiredSurfaces: ['package_export'],
       dependencies: [],
-      authoritySources: ['.kiro/specs/v6-architecture-overview/design.md'],
+      authoritySources: [PRODUCT_SPEC_PATH],
     },
     {
       id: 'workflow:bugfix_spec',
       classification: 'BUILT_NOT_ENABLED',
       requiredSurfaces: [],
       dependencies: [],
-      authoritySources: [
-        'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
-      ],
+      authoritySources: [PRODUCT_SPEC_PATH],
     },
   ],
 };
@@ -85,12 +75,12 @@ describe('runScopeReleasePrecheck', () => {
   it('reports SCOPE_AUTHORITY_CONFLICT before evaluating untrusted inventory', () => {
     const result = runScopeReleasePrecheck({
       ...authority,
-      sources: authority.sources.filter((source) => source.role !== 'v6_design'),
+      sources: [],
     }, inventory);
 
     expect(result.status).toBe('failed');
     expect(result.errorCode).toBe('SCOPE_AUTHORITY_CONFLICT');
-    expect(result.authorityErrors).toContain('authority_role:v6_design:missing');
+    expect(result.authorityErrors).toContain('authority_role:product_specification:missing');
   });
 
   it('reports SCOPE_EVIDENCE_INSUFFICIENT for incomplete producer enumeration', () => {

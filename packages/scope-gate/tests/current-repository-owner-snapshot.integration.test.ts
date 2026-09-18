@@ -9,9 +9,7 @@ import { projectReleaseAuthority } from '../src/release-authority-projection';
 import { ReleaseSetValidator } from '../src/release-set-validator';
 
 const candidateRoot = fileURLToPath(new URL('../../../', import.meta.url));
-const requirementsPath = '.kiro/specs/v6-architecture-overview/requirements.md';
-const designPath = '.kiro/specs/v6-architecture-overview/design.md';
-const matrixPath = 'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md';
+const productSpecPath = 'docs/product-specification/specforge-product-specification.md';
 
 function read(relativePath: string): string {
   return readFileSync(resolve(candidateRoot, relativePath), 'utf8');
@@ -52,9 +50,7 @@ describe('current repository owner snapshot producers', () => {
   it('has no current authority drift on dynamic registry and installer asset surfaces', async () => {
     const authority = projectReleaseAuthority({
       releaseId: 'specforge-v6-current',
-      requirements: { path: requirementsPath, content: read(requirementsPath) },
-      design: { path: designPath, content: read(designPath) },
-      matrix: { path: matrixPath, content: read(matrixPath) },
+      productSpecification: { path: productSpecPath, content: read(productSpecPath) },
     });
     const produced = await produceRepositoryOwnerSnapshotReports({
       candidateRoot,

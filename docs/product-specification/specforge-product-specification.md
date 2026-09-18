@@ -801,6 +801,631 @@ Package existence does not override this status table.
 
 ---
 
+## 18.1 Current Release Machine Projection
+
+下列机器块是本 Product Specification 的 release-surface 投影。它与本文件属于同一权威源，不是独立 release scope 文档。
+
+Scope Gate 只能从本块读取 current release classification，并将 source hash 绑定到本 Product Specification 当前字节。implementation matrix、Kiro、代码和测试不得成为替代 source。
+
+<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:START -->
+```json
+{
+  "schemaVersion": "1.0",
+  "releaseId": "specforge-v6-current",
+  "complete": true,
+  "itemGroups": [
+    {
+      "ids": [
+        "@specforge/daemon-core",
+        "@specforge/cli",
+        "@specforge/workflow-runtime",
+        "@specforge/permission-engine",
+        "@specforge/observability",
+        "@specforge/opencode-adapter"
+      ],
+      "classification": "CURRENT_RELEASE_CORE",
+      "requiredSurfaces": [
+        "package_export",
+        "clean_build",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "@specforge/types",
+        "@specforge/configuration",
+        "@specforge/service-management",
+        "@specforge/host-profile",
+        "@specforge/version-unification",
+        "@specforge/scope-gate"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "package_export",
+        "clean_build",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "@specforge/plugin-loader",
+        "@specforge/self-healing",
+        "@specforge/multimodal",
+        "@specforge/migration"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "runtime:specforged",
+        "runtime:specforge",
+        "plugin:sf_specforge"
+      ],
+      "classification": "CURRENT_RELEASE_CORE",
+      "requiredSurfaces": [
+        "clean_build",
+        "installer_asset",
+        "release_manifest",
+        "runtime_entry"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "release:installer",
+        "release:release-manifest"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "clean_build",
+        "release_manifest",
+        "runtime_entry"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "runtime:current-config"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "installer_asset",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "runtime:handshake"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "runtime_entry"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "workflow:feature_spec"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "dynamic_registry",
+        "installer_asset",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "workflow:architecture_change",
+        "workflow:bugfix_spec",
+        "workflow:change_request",
+        "workflow:contract_change",
+        "workflow:feature_spec_design_first",
+        "workflow:investigation",
+        "workflow:ops_task",
+        "workflow:quick_change",
+        "workflow:refactor",
+        "workflow:spec_migration"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "agent:sf-orchestrator",
+        "agent:sf-requirements",
+        "agent:sf-design",
+        "agent:sf-task-planner",
+        "agent:sf-executor",
+        "agent:sf-debugger",
+        "agent:sf-reviewer",
+        "agent:sf-verifier",
+        "agent:sf-knowledge",
+        "agent:sf-analyst"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "dynamic_registry",
+        "installer_asset",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "agent-template:_AGENT_BASE"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "installer_asset",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "agent:sf-investigator",
+        "agent:sf-evidence-collector",
+        "agent:sf-extension"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "skill:sf-intake",
+        "skill:sf-workflow-feature-spec",
+        "skill:superpowers-brainstorming",
+        "skill:superpowers-writing-plans",
+        "skill:superpowers-systematic-debugging",
+        "skill:superpowers-code-review",
+        "skill:superpowers-verification-before-completion",
+        "skill:superpowers-knowledge-extraction"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "dynamic_registry",
+        "installer_asset",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "skill:sf-workflow-architecture-change",
+        "skill:sf-workflow-bugfix-spec",
+        "skill:sf-workflow-change-request",
+        "skill:sf-workflow-contract-change",
+        "skill:sf-workflow-design-first",
+        "skill:sf-workflow-investigation",
+        "skill:sf-workflow-ops-task",
+        "skill:sf-workflow-quick-change",
+        "skill:sf-workflow-refactor",
+        "skill:sf-workflow-spec-migration",
+        "skill:superpowers-subagent-driven-development",
+        "skill:superpowers-tdd",
+        "skill:superpowers-engineering-lessons"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_artifact_write",
+        "tool:sf_batch_verify",
+        "tool:sf_changed_files_audit",
+        "tool:sf_close_gate",
+        "tool:sf_code_permission",
+        "tool:sf_contract_register",
+        "tool:sf_design_gate",
+        "tool:sf_doc_lint",
+        "tool:sf_doctor",
+        "tool:sf_gate_run",
+        "tool:sf_hard_stop_resolve",
+        "tool:sf_knowledge_base",
+        "tool:sf_merge_run",
+        "tool:sf_project_init",
+        "tool:sf_requirements_gate",
+        "tool:sf_safe_bash",
+        "tool:sf_semantic_closure_run",
+        "tool:sf_state_read",
+        "tool:sf_state_transition",
+        "tool:sf_tasks_gate",
+        "tool:sf_trace_matrix",
+        "tool:sf_user_decision_record",
+        "tool:sf_verification_gate"
+      ],
+      "classification": "CURRENT_RELEASE_CORE",
+      "requiredSurfaces": [
+        "dynamic_registry",
+        "installer_asset",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_git_agent_lock_acquire",
+        "tool:sf_git_agent_lock_release",
+        "tool:sf_git_auth_profile_config",
+        "tool:sf_git_branch_plan",
+        "tool:sf_git_branch_create",
+        "tool:sf_git_checkpoint_commit",
+        "tool:sf_git_ignore_analyze",
+        "tool:sf_git_ignore_decision_record",
+        "tool:sf_git_merge_plan",
+        "tool:sf_git_merge_run",
+        "tool:sf_git_post_merge_verify",
+        "tool:sf_git_preflight",
+        "tool:sf_git_push_branch",
+        "tool:sf_git_release_tag_plan",
+        "tool:sf_git_release_tag_create",
+        "tool:sf_git_remote_config",
+        "tool:sf_git_remote_probe"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "dynamic_registry",
+        "installer_asset",
+        "release_manifest"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_work_item_create",
+        "tool:sf_rollback",
+        "tool:sf_handoff",
+        "tool:sf_verification"
+      ],
+      "classification": "CURRENT_RELEASE_CORE",
+      "requiredSurfaces": [
+        "dynamic_registry",
+        "clean_build"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_context_build",
+        "tool:sf_continuity",
+        "tool:sf_cost_report",
+        "tool:sf_knowledge_graph",
+        "tool:sf_knowledge_query"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_spec_migration",
+        "tool:sf_v11_spec_migration",
+        "tool:sf_work_item_repair_closure"
+      ],
+      "classification": "LEGACY_ONLY",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_git_pr_plan",
+        "tool:sf_git_stacked_branch_plan",
+        "tool:sf_git_worktree_plan",
+        "tool:sf_git_worktree_create"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_git_project_adopt"
+      ],
+      "classification": "LEGACY_ONLY",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_git_changed_files_audit",
+        "tool:sf_write_guard_preflight"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "tool:sf_v11_work_item_create",
+        "tool:sf_v11_gate_run",
+        "tool:sf_v11_merge",
+        "tool:sf_v11_decision",
+        "tool:sf_v11_code_permission",
+        "tool:sf_v11_rollback",
+        "tool:sf_v11_handoff",
+        "tool:sf_v11_verification",
+        "tool:sf_v11_semantic_closure_run"
+      ],
+      "classification": "LEGACY_ONLY",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "plugin-loader:static-check"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "plugin-loader:runtime-registry",
+        "plugin-loader:hot-reload",
+        "plugin-loader:sandbox-ipc",
+        "plugin-loader:process-manager"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "self-healing:diagnose"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "self-healing:propose",
+        "self-healing:approve",
+        "self-healing:apply",
+        "self-healing:verify"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "multimodal:text-input",
+        "multimodal:nontext-rejection"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "multimodal:ocr",
+        "multimodal:parser",
+        "multimodal:transcription"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "migration:current-schema"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "migration:legacy-discovery",
+        "migration:legacy-heuristic"
+      ],
+      "classification": "LEGACY_ONLY",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "scope-gate:release-validator"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "package_export",
+        "clean_build"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "scope-gate:runtime-feature-flags"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "thin-plugin:event-reporting",
+        "thin-plugin:recovery-display"
+      ],
+      "classification": "CURRENT_RELEASE_SUPPORTING",
+      "requiredSurfaces": [
+        "installer_asset",
+        "release_manifest",
+        "runtime_entry"
+      ],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "thin-plugin:daemon-start"
+      ],
+      "classification": "LEGACY_ONLY",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "thin-plugin:local-writeguard",
+        "thin-plugin:shadow-state",
+        "thin-plugin:business-state"
+      ],
+      "classification": "BUILT_NOT_ENABLED",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "legacy:daemon-project-auto-detection",
+        "legacy:cli-legacy-paths",
+        "legacy:setup-compatibility-cleanup",
+        "legacy:version-manifest-adapter",
+        "legacy:migration-project-discovery"
+      ],
+      "classification": "LEGACY_ONLY",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    },
+    {
+      "ids": [
+        "history:error-ledger",
+        "history:gate-attempts",
+        "history:audit",
+        "history:reports"
+      ],
+      "classification": "HISTORICAL_EVIDENCE_ONLY",
+      "requiredSurfaces": [],
+      "dependencies": [],
+      "authoritySources": [
+        "docs/product-specification/specforge-product-specification.md"
+      ]
+    }
+  ]
+}
+```
+<!-- SPECFORGE_RELEASE_AUTHORITY_ITEMS:END -->
+
 # 19. 当前产品验收标准
 
 SpecForge 要被声明为符合 SPS-1.0，至少必须满足：

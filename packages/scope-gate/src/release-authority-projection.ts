@@ -12,9 +12,7 @@ export interface AuthoritySourceBytes {
 
 export interface ReleaseAuthorityProjectionInput {
   releaseId: string;
-  requirements: AuthoritySourceBytes;
-  design: AuthoritySourceBytes;
-  matrix: AuthoritySourceBytes;
+  productSpecification: AuthoritySourceBytes;
 }
 
 export interface ReleaseAuthorityProjectionResult {
@@ -38,9 +36,9 @@ function sortedUnique(values: Iterable<string>): string[] {
   return [...new Set(values)].sort((left, right) => left.localeCompare(right));
 }
 
-function extractPayload(matrixContent: string): { payload?: unknown; errors: string[] } {
-  const startCount = occurrenceCount(matrixContent, START_MARKER);
-  const endCount = occurrenceCount(matrixContent, END_MARKER);
+function extractPayload(productSpecificationContent: string): { payload?: unknown; errors: string[] } {
+  const startCount = occurrenceCount(productSpecificationContent, START_MARKER);
+  const endCount = occurrenceCount(productSpecificationContent, END_MARKER);
   if (startCount === 0 && endCount === 0) {
     return { errors: ['authority_projection:marker_pair_missing'] };
   }
@@ -48,13 +46,13 @@ function extractPayload(matrixContent: string): { payload?: unknown; errors: str
     return { errors: ['authority_projection:marker_pair_not_unique'] };
   }
 
-  const start = matrixContent.indexOf(START_MARKER) + START_MARKER.length;
-  const end = matrixContent.indexOf(END_MARKER);
+  const start = productSpecificationContent.indexOf(START_MARKER) + START_MARKER.length;
+  const end = productSpecificationContent.indexOf(END_MARKER);
   if (end <= start) {
     return { errors: ['authority_projection:marker_order_invalid'] };
   }
 
-  const block = matrixContent.slice(start, end).trim();
+  const block = productSpecificationContent.slice(start, end).trim();
   const lines = block.split(/\r?\n/);
   if (lines[0]?.trim() !== '```json' || lines.at(-1)?.trim() !== '```') {
     return { errors: ['authority_projection:json_fence_invalid'] };
@@ -69,13 +67,14 @@ function extractPayload(matrixContent: string): { payload?: unknown; errors: str
 }
 
 /**
- * Creates a hash-bound derivative from the matrix-owned machine block. The
- * projection contains no independently maintained classification source.
+ * Creates a hash-bound release-set projection from the single authoritative
+ * SpecForge Product Specification. No implementation matrix, Kiro document,
+ * source tree, test or runtime registry may independently define release scope.
  */
 export function projectReleaseAuthority(
   input: ReleaseAuthorityProjectionInput,
 ): ReleaseAuthorityProjectionResult {
-  const extracted = extractPayload(input.matrix.content);
+  const extracted = extractPayload(input.productSpecification.content);
   if (extracted.errors.length > 0) {
     return { ok: false, errors: extracted.errors };
   }
@@ -100,19 +99,9 @@ export function projectReleaseAuthority(
 
   const sources: ReleaseAuthoritySource[] = [
     {
-      role: 'module_disposition_matrix',
-      path: input.matrix.path,
-      sha256: sha256(input.matrix.content),
-    },
-    {
-      role: 'v6_design',
-      path: input.design.path,
-      sha256: sha256(input.design.content),
-    },
-    {
-      role: 'v6_requirements',
-      path: input.requirements.path,
-      sha256: sha256(input.requirements.content),
+      role: 'product_specification',
+      path: input.productSpecification.path,
+      sha256: sha256(input.productSpecification.content),
     },
   ];
 
