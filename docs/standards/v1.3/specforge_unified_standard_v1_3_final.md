@@ -1,5 +1,9 @@
 # SpecForge Unified Standard v1.3 Final Review Candidate（最终审查候选版）
 
+> **AUTHORITY SUPERSESSION — 2026-09-18**: 本文件为未来/候选设计来源，不是当前运行标准；完整 multi-view 能力已进入 Future Capability Registry。
+> 当前唯一产品规格：`docs/product-specification/specforge-product-specification.md`；权威关系：`docs/product-specification/authority-registry.md`。
+> 本文件后文原有的 “final / executable-standard / authority” 等自述仅代表其历史阶段角色，不再具有当前产品权威效力。
+
 > 状态：final-review-candidate / design-freeze-candidate
 > 用途：作为 SpecForge v1.3 设计冻结候选标准，不直接替代 v1.2-stable 运行基线。
 > 裁决原则：以 v1.1 final executable-standard 的控制面 hard rules 为主干，吸收 v1.14 Project Spec 多视角与架构治理内容；任何新增视角、专题文件、专题 Gate、artifact_type、workflow_path 都必须受 extension_registry.json 管控。

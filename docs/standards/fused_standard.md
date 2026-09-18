@@ -1,5 +1,9 @@
 # SpecForge 最终融合标准 v1.1（中文版）
 
+> **AUTHORITY SUPERSESSION — 2026-09-18**: 本文件已降级为历史融合标准与 SPS-1.0 的来源材料。
+> 当前唯一产品规格：`docs/product-specification/specforge-product-specification.md`；权威关系：`docs/product-specification/authority-registry.md`。
+> 本文件后文原有的 “final / executable-standard / authority” 等自述仅代表其历史阶段角色，不再具有当前产品权威效力。
+
 > 状态：final / executable-standard  
 > 适用对象：SpecForge Runtime、sf-orchestrator、各专业 Agent、Gate Runner、User Decision Recorder、Merge Runner、code_permission_service、Write Guard、施工手册与后续代码实现。  
 > 来源依据：`specforge_final_standard_discussion_decisions_v0_48_normalized_review.md` 的最终有效规则。  

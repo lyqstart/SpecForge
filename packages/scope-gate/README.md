@@ -1,26 +1,43 @@
 # @specforge/scope-gate
 
-`@specforge/scope-gate` 是 SpecForge V6 当前发布的构建期/发布期一致性门禁。
+`@specforge/scope-gate` 是 SpecForge 当前发布的 **Release / Build Governance** 门禁，不属于业务 Runtime。
 
-它从 V6 requirements、design 和当前 release matrix 投影发布权威，并校验 package exports、clean build、运行时产物、安装清单、插件资产、动态 registry 与各 owner snapshot 是否属于同一个候选版本和同一份权威字节。
+## 当前产品权威
+
+当前唯一产品规格：
+
+- `docs/product-specification/specforge-product-specification.md`
+
+Authority Registry：
+
+- `docs/product-specification/authority-registry.md`
+
+Scope Gate 从 Product Specification 内的 `SPECFORGE_RELEASE_AUTHORITY_ITEMS` 机器投影读取批准的 release set，并把投影绑定到 Product Specification 当前字节 SHA256。
+
+它不得从 `.kiro/**`、implementation matrix、package 存在性、测试、feature flag 或 runtime registry 推导产品范围。
 
 ## 当前职责
 
-- 投影并绑定当前发布权威文件的 SHA256；
-- 归一化发布权威和 artifact inventory；
-- 构建 package、build artifact 和 owner snapshot 表面报告；
-- 对 missing、unexpected、重复、来源漂移和证据不完整执行 fail closed；
-- 为正式 release precheck 提供唯一 Scope Gate 判断入口。
+- 从唯一 Product Specification 投影 current release set；
+- 归一化 release authority 与 artifact inventory；
+- 枚举 package export、clean build、dynamic registry、installer asset、release manifest、runtime entry 等发布表面；
+- 比较批准集合与实际候选集合；
+- 对 missing、unexpected、非法依赖、来源漂移和证据不完整执行 fail closed；
+- 为正式 release precheck 提供 Scope Gate 判断内核。
 
 ## 非职责
 
-本包不进入业务 Runtime，不管理 capability registry，不提供 P1/P2 runtime feature flags，也不提供 scope-context、feature-flag 或 scope-tag CLI。范围外能力必须在构建/发布阶段退出 artifact，不能依赖“默认关闭”实现隔离。
+Scope Gate 不负责：
 
-当前权威边界见：
+- 业务 Runtime capability registry；
+- P1/P2 runtime feature flag；
+- 产品需求或模块范围定义；
+- workflow state；
+- Permission / Write Guard；
+- 通过“默认关闭”把范围外能力留在正式 artifact。
 
-- `.kiro/specs/v6-architecture-overview/requirements.md`
-- `.kiro/specs/v6-architecture-overview/design.md`
-- `docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md`
-- `docs/adr/ADR-013-current-release-boundary-and-no-legacy-compatibility.md`
+产品范围变化必须先由产品负责人更新 Product Specification，再由 Scope Gate 验证新的 release mapping。
 
-历史 `docs/` 与 `artifacts/` 记录保留用于审计，不代表当前可执行产品表面。
+## 历史资料
+
+`docs/cli.md`、`docs/error-codes.md`、`docs/developer-guide.md` 中仍保留早期 runtime scope / feature-flag 模型，作为历史设计证据。其旧命令、REQ-25 和 Kiro 路径不得作为当前操作指南。

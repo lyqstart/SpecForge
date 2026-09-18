@@ -35,7 +35,7 @@ SpecForge 当前同时保留了三类材料：V6 产品架构、后续架构一�
 
 ## Authority boundary
 
-> **Supersession notice（2026-09-15）**：本节将 V6 Kiro 文件指定为当前产品权威的部分，已由 [`ADR-014`](ADR-014-authority-model-recovery-freeze.md) 暂停。保留以下文字用于说明本 ADR 当时的决策背景，不得再作为当前发布或产品架构的唯一依据。
+> **Supersession notice（更新于 2026-09-18）**：ADR-014 的 authority recovery 已建立正式 Registry 与 SPS-1.0。当前唯一产品规格是 `docs/product-specification/specforge-product-specification.md`，Registry 是 `docs/product-specification/authority-registry.md`。本节以下把 V6 Kiro 文件指定为产品权威的文字仅保留为本 ADR 当时的历史背景，不得作为当前发布或产品架构依据。
 
 本 ADR 记录“为什么作出决定”和“决定了什么”，但不取代 V6 产品架构：
 

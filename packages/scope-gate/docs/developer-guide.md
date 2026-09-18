@@ -1,6 +1,8 @@
 # Scope Gate Developer Guide (Historical)
 
-> **历史资料，不是当前实现指南。** 下述 runtime registry/feature-flag 扩展模型已退出当前发布；新实现只能扩展 release/build evidence validator 闭环。
+> **SUPERSEDED / HISTORICAL — 2026-09-18.** 当前扩展只能扩展 release/build evidence validator 闭环，不能恢复 runtime scope registry。
+> 当前唯一产品规格：`docs/product-specification/specforge-product-specification.md`；Authority Registry：`docs/product-specification/authority-registry.md`。
+> 下文中的 REQ-25、Kiro authority、runtime feature-flag、capability registry 命令和旧路径仅保留为历史证据，**不得作为当前操作步骤执行**。
 
 This guide explains how to extend the Scope Gate module to support new capabilities, feature flags, validation rules, and scope tags.
 

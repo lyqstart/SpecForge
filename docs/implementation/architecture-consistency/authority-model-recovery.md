@@ -19,7 +19,7 @@ PRODUCT_SPECIFICATION=docs/product-specification/specforge-product-specification
 PRODUCT_SPEC_VERSION=SPS-1.0
 PRODUCT_OWNER_DECISIONS=PO-001,D01,D02,D03,D04,D05,D06,D07,D08,D09
 AUTHORITY_ROOT_ESTABLISHED=YES
-CURRENT_BLOCKER=DOWNSTREAM_CONSUMERS_AND_IMPLEMENTATION_STILL_REFERENCE_SUPERSEDED_MODELS
+CURRENT_BLOCKER=PERIPHERAL_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_STILL_REFERENCE_SUPERSEDED_MODELS
 NEXT_LEGAL_ACTION=CONVERGE_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_TO_SPS-1.0
 ~~~
 
@@ -48,7 +48,7 @@ NEXT_LEGAL_ACTION=CONVERGE_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_TO_SPS-1.0
 
 按 SPS-1.0 §20 的 Conformance Gaps 收敛，优先顺序：
 
-1. authority consumer：release precheck / Scope Gate / tests / README / standard headers。
+1. authority consumer：release precheck / Scope Gate 核心代码已切换 SPS-1.0；当前继续清理外围 tests / README / historical standard headers。
 2. user-level path + handshake consumers。
 3. Daemon lifecycle：删除 Thin Plugin auto-start ownership。
 4. runtime state contract：删除 wal.jsonl current contract。
@@ -65,3 +65,11 @@ NEXT_LEGAL_ACTION=CONVERGE_AUTHORITY_CONSUMERS_AND_IMPLEMENTATION_TO_SPS-1.0
 - 不得把 Future Capability Registry 作为当前 release scope。
 - 不得为了旧测试通过恢复 ~/.specforge、Plugin auto-start、state.json authority、Migration current product 等已裁决旧模型。
 - 不删除历史 ADR、ERR、审计和报告；需要降级时标记角色和 supersession。
+
+
+## 2026-09-18 Authority Consumer Convergence
+
+- `1d1604372d92ea1aa05959b9aa60655d397e7fa4`：Scope Gate release authority projection、normalizer、current release precheck 与直接测试已切换为只消费 SPS-1.0。
+- SPS-1.0 已内置唯一 `SPECFORGE_RELEASE_AUTHORITY_ITEMS` 机器投影；旧 implementation matrix 的投影不再是 authority。
+- current formal precheck 预期先暴露 Migration / Multimodal / Self-Healing / Plugin Loader 仍残留 release surfaces 的真实 conformance drift；不得通过重新启用这些模块使测试变绿。
+- GitHub 当前未返回该提交的 CI status/workflow run，因此测试执行状态为 `NOT_VERIFIED_BY_CI`，不声称全绿。

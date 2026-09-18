@@ -66,47 +66,28 @@ describe('current release version-unification boundary', () => {
     }
   });
 
-  it('assigns current schema migration to per-file schema_version without a project aggregate manifest', async () => {
-    const v6Requirements = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/v6-architecture-overview/requirements.md'),
-      'utf8',
-    );
-    const v6Design = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/v6-architecture-overview/design.md'),
-      'utf8',
-    );
-    const moduleRequirements = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/version-unification/requirements.md'),
-      'utf8',
-    );
-    const moduleDesign = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/version-unification/design.md'),
-      'utf8',
-    );
-    const dispositionMatrix = await readFile(
+  it('takes its current responsibility from SPS-1.0 and stays out of schema migration ownership', async () => {
+    const productSpec = await readFile(
       resolve(
         REPOSITORY_ROOT,
-        'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
+        'docs/product-specification/specforge-product-specification.md',
       ),
       'utf8',
     );
+    const section = productSpec
+      .split('# 16. Version Unification')[1]
+      ?.split('# 17. Release Governance / Scope Gate')[0] ?? '';
+    const index = await readFile(resolve(PACKAGE_ROOT, 'src/index.ts'), 'utf8');
 
-    for (const authority of [v6Requirements, v6Design]) {
-      expect(authority).toContain('NO_PROJECT_AGGREGATE_SCHEMA_MANIFEST');
-      expect(authority).toContain('.specforge/project/spec_manifest.json');
-      expect(authority).toContain('@specforge/migration');
-    }
-    for (const moduleSpec of [moduleRequirements, moduleDesign]) {
-      expect(moduleSpec).toContain('PROJECT_SCHEMA_MIGRATION_OWNER=@specforge/migration');
-      expect(moduleSpec).toContain('PROJECT_AGGREGATE_DATA_SCHEMA_VERSION=UNSUPPORTED');
-    }
-    expect(v6Design).toContain(
-      '| `@specforge/version-unification` | `CURRENT_RELEASE_SUPPORTING` | 仓库代码版本唯一读取入口',
+    expect(section).toContain(
+      'Version Unification 当前只负责仓库/运行 artifact 的 code version 单一读取与必要的一致性检查。',
     );
-    expect(dispositionMatrix).toContain(
-      '| `@specforge/version-unification` | 仓库代码版本唯一读取入口',
-    );
-    expect(v6Design).toContain('getCodeVersion()');
-    expect(dispositionMatrix).toContain('getCodeVersion()');
+    expect(section).toContain('它不负责：');
+    expect(section).toContain('Project schema migration');
+    expect(section).toContain('installer manifest ownership');
+    expect(section).toContain('release scope ownership');
+    expect(index).toContain("export { getCodeVersion } from './code-version.js';");
+    expect(index).not.toContain('MigrationRunner');
+    expect(index).not.toContain('ProjectManifest');
   });
 });

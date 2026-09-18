@@ -4,75 +4,28 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const REPOSITORY_ROOT = resolve(import.meta.dirname, '../../..')
+const PRODUCT_SPEC_PATH = resolve(
+  REPOSITORY_ROOT,
+  'docs/product-specification/specforge-product-specification.md',
+)
 
-describe('current release migration authority boundary', () => {
-  it('requires a release-bound, fail-closed and write-free migration precheck', async () => {
-    const authorityFiles = await Promise.all(
-      [
-        '.kiro/specs/v6-architecture-overview/requirements.md',
-        '.kiro/specs/v6-architecture-overview/design.md',
-        '.kiro/specs/migration/requirements.md',
-        '.kiro/specs/migration/design.md',
-      ].map((relativePath) =>
-        readFile(resolve(REPOSITORY_ROOT, relativePath), 'utf8'),
-      ),
-    )
+describe('deferred migration package boundary', () => {
+  it('takes current product scope from SPS-1.0 and keeps schema validation separate from Migration', async () => {
+    const productSpec = await readFile(PRODUCT_SPEC_PATH, 'utf8')
 
-    for (const authority of authorityFiles) {
-      expect(authority).toContain(
-        'MIGRATION_SCRIPT_TRUST=RELEASE_MANIFEST_HASH_BOUND',
-      )
-      expect(authority).toContain('MIGRATION_FAILURE_POLICY=FAIL_CLOSED')
-      expect(authority).toContain('MIGRATION_PRECHECK_WRITE=FORBIDDEN')
-      expect(authority).toContain('MIGRATION_CHAIN_GAP=FAIL_CLOSED')
-      expect(authority).toContain('SCHEMA_VERSION_AUTHORITY=PER_FILE_CONTRACT')
-    }
-  })
-
-  it('freezes the current config, project registry, and runtime schema owners', async () => {
-    const v6Requirements = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/v6-architecture-overview/requirements.md'),
-      'utf8',
+    expect(productSpec).toContain(
+      '| @specforge/migration | REMOVE_CURRENT | Not a current product module |',
     )
-    const v6Design = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/v6-architecture-overview/design.md'),
-      'utf8',
+    expect(productSpec).toContain('# 15. Persistent Schema Validation')
+    expect(productSpec).toContain(
+      '当前产品保留 schema validation，但不保留 Migration 产品模块。',
     )
-    const configurationRequirements = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/configuration/requirements.md'),
-      'utf8',
+    expect(productSpec).toContain(
+      'schema validation contract 可以由中立 foundation 或各 file owner 共享实现，但不得因为复用代码而恢复 Migration 产品责任。',
     )
-    const configurationDesign = await readFile(
-      resolve(REPOSITORY_ROOT, '.kiro/specs/configuration/design.md'),
-      'utf8',
+    expect(productSpec).toContain(
+      '"ids": [\n        "@specforge/plugin-loader",\n        "@specforge/self-healing",\n        "@specforge/multimodal",\n        "@specforge/migration"\n      ],\n      "classification": "BUILT_NOT_ENABLED"',
     )
-
-    for (const authority of [
-      v6Requirements,
-      v6Design,
-      configurationRequirements,
-      configurationDesign,
-    ]) {
-      expect(authority).toContain(
-        'PROJECT_CONFIG_AUTHORITY=.specforge/config/project.json',
-      )
-      expect(authority).toContain(
-        'PROJECT_CONFIG_COMPATIBILITY_ALIAS=UNSUPPORTED',
-      )
-    }
-
-    for (const authority of [v6Requirements, v6Design]) {
-      expect(authority).toContain(
-        'PROJECT_REGISTRY_AUTHORITY=.specforge/project/extension_registry.json',
-      )
-      expect(authority).toContain('PROJECT_REGISTRY_SCHEMA=1.0')
-      expect(authority).toContain(
-        'PROJECT_REGISTRY_OWNER=DAEMON_GOVERNED_PROJECT_SPEC_MERGE',
-      )
-      expect(authority).toContain('RUNTIME_SCHEMA_FIELD=schema_version')
-      expect(authority).toContain('RUNTIME_CORRUPT_INPUT_POLICY=FAIL_CLOSED')
-      expect(authority).toContain('EMPTY_WAL_PERSISTENCE=FORBIDDEN')
-    }
   })
 
   it('does not expose filesystem script discovery or an unapproved sample chain', async () => {
@@ -124,5 +77,4 @@ describe('current release migration authority boundary', () => {
       expect(distFiles).not.toContain(removedOutput)
     }
   })
-
 })

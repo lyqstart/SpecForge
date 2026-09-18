@@ -1,5 +1,9 @@
 # SpecForge 当前发布模块与修改处置矩阵
 
+> **AUTHORITY SUPERSESSION — 2026-09-18**：本文件是历史/实施 disposition 证据，不再定义 current release scope。
+> 当前 release classification 的唯一机器投影位于 `docs/product-specification/specforge-product-specification.md` 的 `SPECFORGE_RELEASE_AUTHORITY_ITEMS` 块，并由 Scope Gate 直接消费。
+> 下文原有 V6 Kiro authority source 与 machine projection 保留用于历史对账，不得被当前代码、测试或 release precheck 再次作为产品 authority 消费。
+
 ## 1. 文件职责
 
 本文是《当前发布边界与模块收敛详细实施方案》Step 5 的冻结产物，负责把已经确认的 V6 当前发布边界转成可执行的模块、运行入口、部署资产和既有修改处置结论。
