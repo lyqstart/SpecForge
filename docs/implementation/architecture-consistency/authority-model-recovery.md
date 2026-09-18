@@ -19,8 +19,8 @@ PRODUCT_SPECIFICATION=docs/product-specification/specforge-product-specification
 PRODUCT_SPEC_VERSION=SPS-1.0
 PRODUCT_OWNER_DECISIONS=PO-001,D01,D02,D03,D04,D05,D06,D07,D08,D09
 AUTHORITY_ROOT_ESTABLISHED=YES
-CURRENT_BLOCKER=FUTURE_PACKAGES_STILL_PRESENT_IN_CURRENT_WORKSPACE_AND_RELEASE_SURFACES
-NEXT_LEGAL_ACTION=REMOVE_MULTIMODAL_SELF_HEALING_PLUGIN_LOADER_FROM_CURRENT_WORKSPACE
+CURRENT_BLOCKER=OPENCODE_ADAPTER_REQUIRED_NOT_YET_ENABLED_WITHOUT_PRODUCTION_WIRING
+NEXT_LEGAL_ACTION=CONNECT_OPENCODE_ADAPTER_TO_REAL_DAEMON_PRODUCTION_BOUNDARY
 ~~~
 
 ## 已完成产品裁决
@@ -54,7 +54,7 @@ NEXT_LEGAL_ACTION=REMOVE_MULTIMODAL_SELF_HEALING_PLUGIN_LOADER_FROM_CURRENT_WORK
 4. runtime state contract：wal.jsonl current contract 已删除。
 5. Project Spec Core：D09 deferred paths 已移出当前 Layout/API。
 6. Migration removal：COMPLETED；schema validation 已迁入 `@specforge/types/schema-contract`，Migration package 已物理删除。
-7. future package removal：正在移除 Multimodal / Self-Healing / Plugin Loader current workspace/build/release surface。
+7. future package removal：COMPLETED；Multimodal / Self-Healing / Plugin Loader 已退出 current workspace/build/release surface。
 8. OpenCode Adapter production wiring。
 9. Workflow Runtime / Daemon dependency and Permission/Write Guard responsibility convergence。
 10. installer / service / CLI / documentation end-to-end acceptance。
@@ -101,3 +101,12 @@ NEXT_LEGAL_ACTION=REMOVE_MULTIMODAL_SELF_HEALING_PLUGIN_LOADER_FROM_CURRENT_WORK
 - `MIGRATION_CURRENT_PRODUCT=REMOVED`。
 - `CURRENT_SCHEMA_VALIDATION_OWNER=@specforge/types/schema-contract + per-file owners`。
 - GitHub 未返回 CI status；当前证据为 source-level convergence，不宣称全仓测试或真实部署已验证。
+
+
+## 2026-09-18 Future Capability Package Removal
+
+- `5cb20d31e4facc517c20115fc9220803a6c31859`：物理删除 `packages/multimodal/**`、`packages/self-healing/**`、`packages/plugin-loader/**`，并同步 `CURRENT_WORKSPACE_PACKAGES`、`bun.lock`、Daemon 空依赖和 Scope Gate current-release 期望。
+- 三个能力在 SPS-1.0 / Future Capability Registry 中继续保留未来分类，但不再具有 current package/build/release surface。
+- 新增 `packages/types/tests/schema-contract.test.ts`，独立覆盖 current-schema 接受、old/unknown schema fail-closed、optional missing、malformed JSON 与 path traversal。
+- `FUTURE_PACKAGE_CURRENT_SURFACE=REMOVED`。
+- GitHub 未返回 CI status；当前不宣称该提交的自动化测试已执行。
