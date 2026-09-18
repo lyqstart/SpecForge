@@ -19,8 +19,8 @@ PRODUCT_SPECIFICATION=docs/product-specification/specforge-product-specification
 PRODUCT_SPEC_VERSION=SPS-1.0
 PRODUCT_OWNER_DECISIONS=PO-001,D01,D02,D03,D04,D05,D06,D07,D08,D09
 AUTHORITY_ROOT_ESTABLISHED=YES
-CURRENT_BLOCKER=INSTALLER_PHYSICAL_LAYOUT_AND_THIN_PLUGIN_LIFECYCLE_STILL_REFERENCE_SUPERSEDED_USER_MODEL
-NEXT_LEGAL_ACTION=CONVERGE_INSTALLER_PHYSICAL_LAYOUT_TO_OPENCODE_ROOT_PLUS_SF_USER
+CURRENT_BLOCKER=MIGRATION_PACKAGE_STILL_OWNS_ACTIVE_SCHEMA_VALIDATION_INFRASTRUCTURE
+NEXT_LEGAL_ACTION=MIGRATE_ACTIVE_SCHEMA_VALIDATION_INFRASTRUCTURE_OUT_OF_MIGRATION_PACKAGE
 ~~~
 
 ## 已完成产品裁决
@@ -49,10 +49,10 @@ NEXT_LEGAL_ACTION=CONVERGE_INSTALLER_PHYSICAL_LAYOUT_TO_OPENCODE_ROOT_PLUS_SF_US
 按 SPS-1.0 §20 的 Conformance Gaps 收敛，优先顺序：
 
 1. authority consumer：release precheck / Scope Gate 核心代码已切换 SPS-1.0；当前继续清理外围 tests / README / historical standard headers。
-2. user-level path + handshake consumers。
-3. Daemon lifecycle：删除 Thin Plugin auto-start ownership。
-4. runtime state contract：删除 wal.jsonl current contract。
-5. Project Spec Core：移出 D09 deferred paths。
+2. user-level path + handshake consumers：SOURCE_CONVERGED。
+3. Daemon lifecycle：Thin Plugin auto-start ownership 已删除。
+4. runtime state contract：wal.jsonl current contract 已删除。
+5. Project Spec Core：D09 deferred paths 已移出当前 Layout/API。
 6. Migration removal：先迁出 schema validation infrastructure，再去 package/release surface。
 7. future package removal：Multimodal / Self-Healing / Plugin Loader current release surface。
 8. OpenCode Adapter production wiring。
@@ -82,3 +82,13 @@ NEXT_LEGAL_ACTION=CONVERGE_INSTALLER_PHYSICAL_LAYOUT_TO_OPENCODE_ROOT_PLUS_SF_US
 - `PATH_CLOSURE_1=SOURCE_CONVERGED`。
 - `RUNTIME_DEPLOYMENT_VALIDATION=NOT_RUN`；GitHub 未返回 CI status，不宣称测试或真实部署已通过。
 - Installer 仍采用单一旧 install root；Thin Plugin 仍存在旧私有资产路径和 Daemon auto-start。它们分别属于下一闭环，不由本次 source convergence 隐式宣告完成。
+
+
+## 2026-09-18 Installer / Lifecycle / Runtime Contract Convergence
+
+- `d602874d5ea163e3a694ce7d08b9ec38f2f409d5`：Installer 物理安装坐标统一为 `<OpenCode config>`；公共 OpenCode 资产位于根级目录，SpecForge 私有运行/事务资产位于 `sf-user/**`。Manifest 保持根级，lock/journal/backups 收入 `sf-user/**`。
+- `82a6f9e780132eaff2e8eec21679feb2ffd4a846`：Thin Plugin 删除 Daemon auto-start / spawn / lifecycle ownership；连接失败进入 degraded，后续仅重连外部管理的 Daemon。
+- `30150d042942716d86354f43f3a27407ad45ce27`：删除当前 `runtime/wal.jsonl` 第二合同；共享 Layout 与 Workflow Runtime 统一 `events.jsonl`。
+- `7884453c75b30d7b00bee90460be49a0bd10b7e9`：D09 deferred multi-view Project Spec paths 从当前 Layout/API 移除；历史 v1.3 设计继续保留于 Future Capability Registry 来源体系。
+- `SOURCE_CONVERGENCE=YES`。
+- `CI_VALIDATION=NOT_AVAILABLE`；GitHub 未返回这些提交的 CI status，本阶段不声称自动化测试全绿或真实 user-level redeploy 已完成。
