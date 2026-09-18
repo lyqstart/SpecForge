@@ -74,7 +74,7 @@ export interface ServiceLifecycleEvent {
  * Options for lifecycle event emitter
  */
 export interface LifecycleEventEmitterOptions {
-  /** Handshake file path. Defaults to ~/.specforge/runtime/daemon.sock.json */
+  /** Handshake file path. Defaults to <OpenCode config>/sf-user/runtime/handshake.json */
   handshakePath?: string;
   /** HTTP request timeout in milliseconds */
   requestTimeoutMs?: number;

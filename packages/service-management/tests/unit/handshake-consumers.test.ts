@@ -21,7 +21,7 @@ describe('service-management handshake consumers', () => {
 
   async function malformedHandshakePath(): Promise<string> {
     root = await mkdtemp(join(tmpdir(), 'specforge-handshake-consumer-'));
-    const handshakePath = join(root, 'daemon.sock.json');
+    const handshakePath = join(root, 'handshake.json');
     await writeFile(
       handshakePath,
       JSON.stringify({ schema_version: '1.0', port: 3847, token: 'token' }),

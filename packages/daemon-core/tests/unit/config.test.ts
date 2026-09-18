@@ -55,7 +55,7 @@ describe('DaemonConfig', () => {
       const config = new DaemonConfig();
       const handshakeFile = config.getHandshakeFile();
 
-      expect(handshakeFile).toBe(resolveSpecForgeUserPath('runtime', 'daemon.sock.json'));
+      expect(handshakeFile).toBe(resolveSpecForgeUserPath('runtime', 'handshake.json'));
     });
 
     it('should set max payload size to 64 KiB', () => {

@@ -30,22 +30,27 @@ describe('Daemon handshake path governance', () => {
     ['personal', () => new PersonalPathResolver()],
     ['enterprise', () => new EnterprisePathResolver()],
   ])('%s mode uses the single current SpecForge handshake path', (_mode, createResolver) => {
+    const configRoot = path.join(os.tmpdir(), 'specforge-opencode-config');
+    process.env.OPENCODE_CONFIG_DIR = configRoot;
+    delete process.env.XDG_CONFIG_HOME;
+
     const resolver = createResolver();
-    const runtimeDir = path.join(os.homedir(), '.specforge', 'runtime');
+    const runtimeDir = path.join(configRoot, 'sf-user', 'runtime');
 
     expect(resolver.resolveDaemonRuntimeDir()).toBe(runtimeDir);
     expect(resolver.resolveHandshakePath()).toBe(
-      path.join(runtimeDir, 'daemon.sock.json'),
+      path.join(runtimeDir, 'handshake.json'),
     );
   });
 
-  it('does not redirect the SpecForge handshake into the OpenCode config root', () => {
-    process.env.OPENCODE_CONFIG_DIR = path.join(os.tmpdir(), 'alternate-opencode-config');
+  it('honors OPENCODE_CONFIG_DIR ahead of XDG_CONFIG_HOME', () => {
+    const configRoot = path.join(os.tmpdir(), 'alternate-opencode-config');
+    process.env.OPENCODE_CONFIG_DIR = configRoot;
     process.env.XDG_CONFIG_HOME = path.join(os.tmpdir(), 'alternate-xdg-config');
 
     const resolver = new PersonalPathResolver();
     expect(resolver.resolveHandshakePath()).toBe(
-      path.join(os.homedir(), '.specforge', 'runtime', 'daemon.sock.json'),
+      path.join(configRoot, 'sf-user', 'runtime', 'handshake.json'),
     );
   });
 });

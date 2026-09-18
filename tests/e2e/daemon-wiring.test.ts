@@ -18,13 +18,16 @@ describe('Daemon Wiring Integrity', () => {
     expect(content).not.toContain('daemon.sock.json');
   });
 
-  it('path-resolver owns the userlevel runtime handshake location', () => {
-    const content = readRepoFile('packages/daemon-core/src/daemon/path-resolver.ts');
+  it('canonical user-level paths own the sf-user runtime handshake location', () => {
+    const pathResolver = readRepoFile('packages/daemon-core/src/daemon/path-resolver.ts');
+    const userLevelPaths = readRepoFile('packages/types/src/user-level-paths.ts');
 
-    expect(content).toContain('resolveUserLevelDirectory');
-    expect(content).toContain('sf-user');
-    expect(content).toContain('runtime');
-    expect(content).toContain('handshake.json');
+    expect(pathResolver).toContain('resolveSpecForgeHandshakePath');
+    expect(pathResolver).toContain("resolveSpecForgeUserPath('runtime')");
+    expect(userLevelPaths).toContain('resolveOpenCodeConfigRoot');
+    expect(userLevelPaths).toContain('"sf-user"');
+    expect(userLevelPaths).toContain('"runtime", "handshake.json"');
+    expect(userLevelPaths).toContain('"specforge-manifest.json"');
   });
 
   it('Daemon composes the current cross-package runtime subsystems', () => {

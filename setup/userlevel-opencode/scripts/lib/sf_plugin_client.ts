@@ -6,12 +6,12 @@
  * adapted to work without any @specforge/* or relative-package imports.
  *
  * All external types and constants are inlined so this single file can be
- * deployed to ~/.specforge/lib/ and imported by the project Thin Plugin
+ * deployed to <OpenCode config>/sf-user/lib/ and imported by the first-party Thin Plugin
  * without requiring the full monorepo package tree.
  */
 
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, normalize, resolve } from "node:path";
 import { homedir } from "node:os";
 
 // ── Inlined type (originally from packages/service-management/src/types/handshake.ts) ──
@@ -64,11 +64,29 @@ export interface ReconnectingDaemonClientOptions {
 
 // ── Defaults ──
 
+function resolveOpenCodeConfigRoot(): string {
+  const explicit = process.env.OPENCODE_CONFIG_DIR?.trim();
+  if (explicit) {
+    return resolve(normalize(explicit));
+  }
+
+  const xdg = process.env.XDG_CONFIG_HOME?.trim();
+  if (xdg) {
+    return join(xdg, "opencode");
+  }
+
+  return join(homedir(), ".config", "opencode");
+}
+
+function resolveHandshakePath(): string {
+  return join(resolveOpenCodeConfigRoot(), "sf-user", "runtime", "handshake.json");
+}
+
 const DEFAULT_OPTIONS: Required<ReconnectingDaemonClientOptions> = {
   initialDelayMs: 1000,
   backoffFactor: 2.0,
   maxCumulativeBackoffMs: 60000,
-  handshakePath: join(homedir(), ".specforge", "runtime", "daemon.sock.json"),
+  handshakePath: resolveHandshakePath(),
   healthzUrl: "http://127.0.0.1",
 };
 

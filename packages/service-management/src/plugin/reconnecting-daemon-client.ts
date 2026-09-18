@@ -57,7 +57,7 @@ export interface ReconnectingDaemonClientOptions {
   backoffFactor?: number;
   /** Maximum cumulative backoff time in milliseconds (default: 60000) */
   maxCumulativeBackoffMs?: number;
-  /** Path to daemon.sock.json (defaults to ~/.specforge/runtime/daemon.sock.json) */
+  /** Path to handshake.json (defaults to <OpenCode config>/sf-user/runtime/handshake.json) */
   handshakePath?: string;
   /** Base URL for daemon health check endpoint */
   healthzUrl?: string;

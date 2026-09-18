@@ -19,7 +19,7 @@ let testOpenCodeConfigDir: string;
 function createTestConfig(): DaemonConfig {
   const config = new DaemonConfig();
   vi.spyOn(config, 'getHandshakeFile').mockReturnValue(
-    path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'daemon.sock.json'),
+    path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'handshake.json'),
   );
   return config;
 }

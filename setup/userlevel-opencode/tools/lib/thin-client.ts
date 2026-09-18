@@ -37,8 +37,26 @@ interface DaemonResponse<T = unknown> {
   error?: { code: string; message: string; details?: Record<string, unknown> };
 }
 
+function resolveOpenCodeConfigRoot(): string {
+  const explicit = process.env.OPENCODE_CONFIG_DIR?.trim();
+  if (explicit) {
+    return path.resolve(path.normalize(explicit));
+  }
+
+  const xdg = process.env.XDG_CONFIG_HOME?.trim();
+  if (xdg) {
+    return path.join(xdg, "opencode");
+  }
+
+  return path.join(os.homedir(), ".config", "opencode");
+}
+
+function resolveHandshakePath(): string {
+  return path.join(resolveOpenCodeConfigRoot(), "sf-user", "runtime", "handshake.json");
+}
+
 function readHandshake(): HandshakeFile {
-  const handshakePath = path.join(os.homedir(), ".specforge", "runtime", "daemon.sock.json");
+  const handshakePath = resolveHandshakePath();
   if (!fs.existsSync(handshakePath)) {
     throw new Error("Daemon handshake file not found. Is the SpecForge daemon running?");
   }

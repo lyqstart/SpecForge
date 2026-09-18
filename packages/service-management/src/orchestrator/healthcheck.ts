@@ -31,7 +31,7 @@ import {
  * Health check options
  */
 export interface HealthCheckOptions {
-  /** Handshake file path. Defaults to ~/.specforge/runtime/daemon.sock.json */
+  /** Handshake file path. Defaults to <OpenCode config>/sf-user/runtime/handshake.json */
   handshakePath?: string;
   /** HTTP request timeout in milliseconds */
   requestTimeoutMs?: number;

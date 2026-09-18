@@ -27,7 +27,7 @@ class TestPathResolver implements IPathResolver {
   }
 
   resolveHandshakePath(): string {
-    return path.join(this.resolveDaemonRuntimeDir(), 'daemon.sock.json');
+    return path.join(this.resolveDaemonRuntimeDir(), 'handshake.json');
   }
 
   resolveDaemonJsonPath(): string {

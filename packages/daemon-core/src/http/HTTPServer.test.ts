@@ -25,7 +25,7 @@ class HTTPTestDaemonConfig extends DaemonConfig {
       resolveEventsPath: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'events.jsonl'),
       resolveSessionsDir: (projectPath) => path.join(projectPath, '.specforge', 'runtime', 'sessions'),
       resolveDaemonRuntimeDir: () => runtime,
-      resolveHandshakePath: () => path.join(runtime, 'daemon.sock.json'),
+      resolveHandshakePath: () => path.join(runtime, 'handshake.json'),
       resolveDaemonJsonPath: () => path.join(root, 'opencode', 'daemon.json'),
       resolveDaemonStatePath: () => path.join(runtime, 'state.json'),
       resolveDaemonEventsPath: () => path.join(runtime, 'events.jsonl'),
@@ -57,7 +57,7 @@ describe('HTTPServer', () => {
 
   it('isolates daemon configuration from the active user-level runtime', () => {
     expect(config.getHandshakeFile()).toBe(
-      path.join(testRoot, 'specforge-user', 'runtime', 'daemon.sock.json')
+      path.join(testRoot, 'specforge-user', 'runtime', 'handshake.json')
     );
   });
 

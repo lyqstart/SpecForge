@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it } from "vitest";
 import * as path from "node:path";
-import * as os from "node:os";
 
 import {
   resolveOpenCodeConfigRoot,
+  resolveSpecForgeHandshakePath,
   resolveSpecForgeManifestPath,
   resolveSpecForgeUserPath,
   resolveSpecForgeUserRoot,
@@ -32,28 +32,32 @@ afterEach(() => {
 });
 
 describe("user-level path boundary", () => {
-  it("keeps OpenCode and current SpecForge user roots separate", () => {
+  it("nests SpecForge private user data under the OpenCode config root", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
-    const userRoot = path.join(os.homedir(), ".specforge");
+    const userRoot = path.join(configRoot, "sf-user");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
     delete process.env.XDG_CONFIG_HOME;
 
     expect(resolveOpenCodeConfigRoot()).toBe(configRoot);
     expect(resolveSpecForgeManifestPath()).toBe(
-      path.join(userRoot, "specforge-manifest.json"),
+      path.join(configRoot, "specforge-manifest.json"),
     );
     expect(resolveSpecForgeUserRoot()).toBe(userRoot);
     expect(resolveSpecForgeUserPath("host-profile.json")).toBe(
       path.join(userRoot, "host-profile.json"),
     );
+    expect(resolveSpecForgeHandshakePath()).toBe(
+      path.join(userRoot, "runtime", "handshake.json"),
+    );
   });
 
-  it("keeps the global knowledge store under the current SpecForge user root", () => {
+  it("keeps the global knowledge store under the canonical sf-user root", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
+    delete process.env.XDG_CONFIG_HOME;
 
     expect(getGlobalStorePath()).toBe(
-      path.join(os.homedir(), ".specforge", "knowledge", "insights.json"),
+      path.join(configRoot, "sf-user", "knowledge", "insights.json"),
     );
   });
 
@@ -66,28 +70,30 @@ describe("user-level path boundary", () => {
     );
   });
 
-  it("moves Enterprise project runtime under the current SpecForge projects root", () => {
+  it("moves Enterprise project runtime under the canonical sf-user projects root", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
+    delete process.env.XDG_CONFIG_HOME;
 
     const resolver = new EnterprisePathResolver();
     const projectRoot = path.resolve("C:/tmp/project-b");
     const runtime = resolver.resolveProjectRuntimeDir(projectRoot);
 
-    expect(runtime.startsWith(path.join(os.homedir(), ".specforge", "projects"))).toBe(true);
+    expect(runtime.startsWith(path.join(configRoot, "sf-user", "projects"))).toBe(true);
   });
 
-  it("keeps daemon runtime and handshake under the current SpecForge user root", () => {
+  it("keeps daemon runtime and handshake under the canonical sf-user root", () => {
     const configRoot = path.resolve("C:/tmp/specforge-opencode-test");
     process.env.OPENCODE_CONFIG_DIR = configRoot;
+    delete process.env.XDG_CONFIG_HOME;
 
     const resolver = new PersonalPathResolver();
 
     expect(resolver.resolveDaemonRuntimeDir()).toBe(
-      path.join(os.homedir(), ".specforge", "runtime"),
+      path.join(configRoot, "sf-user", "runtime"),
     );
     expect(resolver.resolveHandshakePath()).toBe(
-      path.join(os.homedir(), ".specforge", "runtime", "daemon.sock.json"),
+      path.join(configRoot, "sf-user", "runtime", "handshake.json"),
     );
   });
 });

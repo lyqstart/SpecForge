@@ -49,7 +49,7 @@ async function createTempHandshakeFile(
   const runtimeDir = path.join(tempDir, '.specforge', 'runtime');
   await mkdir(runtimeDir, { recursive: true });
   
-  const handshakePath = path.join(runtimeDir, 'daemon.sock.json');
+  const handshakePath = path.join(runtimeDir, 'handshake.json');
   const handshake = createMockHandshake(port, token);
   
   await writeFile(handshakePath, JSON.stringify(handshake, null, 2));
@@ -124,7 +124,7 @@ describe('CLI ↔ Daemon Integration', () => {
 
     it('should throw error when handshake file not found', async () => {
       const auth = new AuthManager({
-        handshakePath: path.join(tempDir, 'nonexistent', 'daemon.sock.json'),
+        handshakePath: path.join(tempDir, 'nonexistent', 'handshake.json'),
       });
 
       await expect(auth.readHandshake()).rejects.toThrow('找不到握手文件');
@@ -134,7 +134,7 @@ describe('CLI ↔ Daemon Integration', () => {
       const runtimeDir = path.join(tempDir, '.specforge', 'runtime');
       await mkdir(runtimeDir, { recursive: true });
       
-      const handshakePath = path.join(runtimeDir, 'daemon.sock.json');
+      const handshakePath = path.join(runtimeDir, 'handshake.json');
       await writeFile(handshakePath, 'invalid json {');
       
       const auth = new AuthManager({
@@ -148,7 +148,7 @@ describe('CLI ↔ Daemon Integration', () => {
       const runtimeDir = path.join(tempDir, '.specforge', 'runtime');
       await mkdir(runtimeDir, { recursive: true });
       
-      const handshakePath = path.join(runtimeDir, 'daemon.sock.json');
+      const handshakePath = path.join(runtimeDir, 'handshake.json');
       await writeFile(handshakePath, JSON.stringify({ bound_to: '127.0.0.1' })); // Missing port and token
       
       const auth = new AuthManager({
@@ -175,7 +175,7 @@ describe('CLI ↔ Daemon Integration', () => {
       const runtimeDir = path.join(tempDir, '.specforge', 'runtime');
       await mkdir(runtimeDir, { recursive: true });
       
-      const handshakePath = path.join(runtimeDir, 'daemon.sock.json');
+      const handshakePath = path.join(runtimeDir, 'handshake.json');
       const handshake = createMockHandshake(3847);
       handshake.bound_to = '0.0.0.0';
       
@@ -640,7 +640,7 @@ describe('CLI ↔ Daemon Integration', () => {
 
     it('should handle concurrent authentication and client creation', async () => {
       const handshakePath1 = await createTempHandshakeFile(tempDir, 3847, 'token1');
-      const handshakePath2 = path.join(tempDir, '.specforge2', 'runtime', 'daemon.sock.json');
+      const handshakePath2 = path.join(tempDir, '.specforge2', 'runtime', 'handshake.json');
       
       // Create second handshake file
       const runtimeDir2 = path.dirname(handshakePath2);

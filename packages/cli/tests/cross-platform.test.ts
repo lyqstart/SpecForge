@@ -21,7 +21,7 @@ import * as path from 'path';
 import * as os from 'os';
 import { ModeSwitch, formatData, formatError } from '../src/mode-switch';
 import { getDefaultHandshakePath, getRuntimeDirPath } from '../src/auth/AuthManager';
-import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
+import { resolveOpenCodeConfigRoot, resolveSpecForgeUserPath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 
 // Mock platform detection helpers
 const originalPlatform = os.platform;
@@ -83,7 +83,7 @@ describe('Cross-Platform Path Handling', () => {
       expect(path.isAbsolute(handshakePath)).toBe(true);
       
       // Should correctly join all parts
-      const expectedParts = ['.specforge', 'runtime', 'daemon.sock.json'];
+      const expectedParts = ['sf-user', 'runtime', 'handshake.json'];
       for (const part of expectedParts) {
         expect(handshakePath).toContain(part);
       }
@@ -323,7 +323,7 @@ describe('Cross-Platform File Operations Simulation', () => {
     expect(path.isAbsolute(handshakePath)).toBe(true);
     
     // Should end with the correct filename
-    expect(handshakePath.endsWith('daemon.sock.json')).toBe(true);
+    expect(handshakePath.endsWith('handshake.json')).toBe(true);
   });
 
   it('should handle runtime directory path correctly', () => {
@@ -337,14 +337,10 @@ describe('Cross-Platform File Operations Simulation', () => {
   });
 
   it('should handle config directory path correctly', () => {
-    const getConfigDir = () => {
-      const homeDir = os.homedir();
-      return path.join(homeDir, '.specforge');
-    };
+    const configDir = resolveSpecForgeUserRoot();
     
-    const configDir = getConfigDir();
-    
-    // Should be absolute
+    // Private SpecForge user data lives below the OpenCode config root.
     expect(path.isAbsolute(configDir)).toBe(true);
+    expect(configDir).toBe(path.join(resolveOpenCodeConfigRoot(), 'sf-user'));
   });
 });

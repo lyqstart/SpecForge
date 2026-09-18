@@ -3,9 +3,9 @@
  * Canonical user-level paths for SpecForge.
  *
  * Project-local governance data remains under <project>/.specforge/.
- * Current user-level runtime data is rooted at ~/.specforge/.
- * The OpenCode configuration root is a separate integration boundary and
- * must not become a shadow SpecForge runtime root.
+ * Current user-level private data is rooted at <OpenCode config>/sf-user/.
+ * OpenCode-managed assets (agents/tools/plugins/skills) and the installer
+ * manifest remain rooted at the OpenCode configuration root.
  */
 import * as os from "node:os";
 import * as path from "node:path";
@@ -44,15 +44,20 @@ export function resolveOpenCodeConfigRoot(
   return path.join(homeDir, ".config", "opencode");
 }
 
-/** Current SpecForge user-level data root. */
+/** Current SpecForge private user-level data root. */
 export function resolveSpecForgeUserRoot(
   options: UserLevelPathOptions = {},
 ): string {
-  const homeDir = options.homeDir ?? os.homedir();
-  return path.join(homeDir, ".specforge");
+  return path.join(resolveOpenCodeConfigRoot(options), "sf-user");
 }
 
-/** Resolve a path under the current SpecForge user-level data root. */
+/**
+ * Resolve a path under the current SpecForge private user-level data root.
+ *
+ * This convenience function follows the current process environment. Call
+ * resolveSpecForgeUserRoot(options) directly when an explicit environment/home
+ * override is required.
+ */
 export function resolveSpecForgeUserPath(
   ...segments: string[]
 ): string {
@@ -63,14 +68,12 @@ export function resolveSpecForgeUserPath(
 export function resolveSpecForgeHandshakePath(
   options: UserLevelPathOptions = {},
 ): string {
-  return path.join(resolveSpecForgeUserRoot(options), "runtime", "daemon.sock.json");
+  return path.join(resolveSpecForgeUserRoot(options), "runtime", "handshake.json");
 }
 
-/**
- * Current installer manifest under the SpecForge user-level root.
- */
+/** Current installer manifest at the OpenCode configuration root. */
 export function resolveSpecForgeManifestPath(
   options: UserLevelPathOptions = {},
 ): string {
-  return path.join(resolveSpecForgeUserRoot(options), "specforge-manifest.json");
+  return path.join(resolveOpenCodeConfigRoot(options), "specforge-manifest.json");
 }

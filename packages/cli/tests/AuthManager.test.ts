@@ -62,7 +62,7 @@ describe('AuthManager', () => {
 
   describe('getDefaultHandshakePath', () => {
     it('should return correct default path', () => {
-      const expected = path.join(resolveSpecForgeUserRoot(), 'runtime', 'daemon.sock.json');
+      const expected = path.join(resolveSpecForgeUserRoot(), 'runtime', 'handshake.json');
       expect(getDefaultHandshakePath()).toBe(expected);
     });
   });

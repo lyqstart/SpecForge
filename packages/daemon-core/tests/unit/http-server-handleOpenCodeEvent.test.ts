@@ -85,7 +85,7 @@ describe('HTTPServer.handleOpenCodeEvent — sessionId merge into payload', () =
   beforeEach(async () => {
     config = new DaemonConfig();
     vi.spyOn(config, 'getHandshakeFile').mockReturnValue(
-      path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'daemon.sock.json'),
+      path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'handshake.json'),
     );
     eventBus = new EventBus();
     handshakeManager = new HandshakeManager(config);
@@ -118,7 +118,7 @@ describe('HTTPServer.handleOpenCodeEvent — sessionId merge into payload', () =
 
   it('isolates handshake writes from the active user-level daemon runtime', () => {
     expect(config.getHandshakeFile()).toBe(
-      path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'daemon.sock.json')
+      path.join(testOpenCodeConfigDir, '.specforge', 'runtime', 'handshake.json')
     );
   });
 

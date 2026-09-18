@@ -46,7 +46,7 @@ describe('IPathResolver', () => {
     expect(dr).toBe(resolveSpecForgeUserPath('runtime'));
 
     const hp = resolver.resolveHandshakePath();
-    expect(hp).toContain('daemon.sock.json');
+    expect(hp).toContain('handshake.json');
     expect(hp.startsWith(dr)).toBe(true);
 
     const dj = resolver.resolveDaemonJsonPath();
@@ -119,9 +119,9 @@ describe('PersonalPathResolver', () => {
   });
 
   describe('resolveHandshakePath', () => {
-    it('returns daemon.sock.json inside the daemon runtime dir', () => {
+    it('returns handshake.json inside the daemon runtime dir', () => {
       const p = resolver.resolveHandshakePath();
-      const expected = resolveSpecForgeUserPath('runtime', 'daemon.sock.json');
+      const expected = resolveSpecForgeUserPath('runtime', 'handshake.json');
       expect(p).toBe(expected);
     });
   });
@@ -193,9 +193,9 @@ describe('EnterprisePathResolver', () => {
   });
 
   describe('resolveHandshakePath', () => {
-    it('returns daemon.sock.json inside the daemon runtime dir (same as personal)', () => {
+    it('returns handshake.json inside the daemon runtime dir (same as personal)', () => {
       const p = resolver.resolveHandshakePath();
-      const expected = resolveSpecForgeUserPath('runtime', 'daemon.sock.json');
+      const expected = resolveSpecForgeUserPath('runtime', 'handshake.json');
       expect(p).toBe(expected);
     });
   });

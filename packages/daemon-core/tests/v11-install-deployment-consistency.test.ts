@@ -194,10 +194,13 @@ describe('v1.1.6 install/deployment consistency', () => {
   it('keeps installed tools on the current SpecForge handshake path only', () => {
     const userlevelClient = read('setup/userlevel-opencode/tools/lib/thin-client.ts');
 
-    expect(userlevelClient).toContain('path.join(os.homedir(), ".specforge", "runtime", "daemon.sock.json")');
+    expect(userlevelClient).toContain('process.env.OPENCODE_CONFIG_DIR');
+    expect(userlevelClient).toContain('process.env.XDG_CONFIG_HOME');
+    expect(userlevelClient).toContain('"sf-user", "runtime", "handshake.json"');
     expect(userlevelClient).toContain('schema_version: "1.0"');
     expect(userlevelClient).toContain("bound_to: '127.0.0.1' | '0.0.0.0'");
-    expect(userlevelClient).not.toContain('sf-user", "runtime", "handshake.json');
+    expect(userlevelClient).not.toContain('".specforge", "runtime"');
+    expect(userlevelClient).not.toContain('daemon.sock.json');
   });
 
   it('exposes and enforces artifact protocol versions across daemon and userlevel client', () => {

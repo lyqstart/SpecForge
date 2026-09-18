@@ -37,7 +37,7 @@ export interface DaemonHandshake {
  * Auth configuration options
  */
 export interface AuthManagerConfig {
-  /** Custom handshake file path (defaults to ~/.specforge/runtime/daemon.sock.json) */
+  /** Custom handshake file path (defaults to <OpenCode config>/sf-user/runtime/handshake.json) */
   handshakePath?: string;
   /** Skip file existence validation (for testing) */
   skipValidation?: boolean;
