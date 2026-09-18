@@ -110,11 +110,11 @@ Work Item 在各阶段生成的文档，通过 `sf_artifact_write` 工具写入�
 
 ## W
 
-### WAL（Write-Ahead Log，写前日志）
+### Runtime Event Log（运行时事件日志）
 
-位于 `.specforge/runtime/wal.jsonl`（gitignored）的追加写入日志。所有状态变更先写入 WAL，再更新内存状态，确保 daemon 崩溃后可通过 WAL 重放恢复。
+`.specforge/runtime/events.jsonl` 是项目工作流状态的持久化事实源。StateManager 追加事件并在启动时重放恢复内存状态；`runtime/state.json` 只是可重建 checkpoint/projection。
 
-**WAL 事件类别：** 包括 state updates、session bindings 等操作类型。
+旧文件名 `runtime/wal.jsonl` 已退役，不得再作为当前写入目标或第二事件事实源。
 
 ### Work Item / WI（工作项）
 

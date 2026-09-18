@@ -72,8 +72,8 @@ describe('LAYOUT — top-level keys (gitignored area)', () => {
     expect(LAYOUT.runtime).toBe('runtime');
   });
 
-  it('runtimeWal === "runtime/wal.jsonl"', () => {
-    expect(LAYOUT.runtimeWal).toBe('runtime/wal.jsonl');
+  it('runtimeFiles.events === "runtime/events.jsonl"', () => {
+    expect(LAYOUT.runtimeFiles.events).toBe('runtime/events.jsonl');
   });
 
   it('runtimeState === "runtime/state.json"', () => {

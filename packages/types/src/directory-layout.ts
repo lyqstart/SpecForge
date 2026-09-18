@@ -44,7 +44,7 @@ export const SPEC_DIR_NAME = ".specforge" as const;
  * - **knowledge**：当前项目 Knowledge foundation（committed）
  * - **project**：项目级正式规格真相源（§2.1）（committed）
  * - **workItems**：Work Item 事务目录（§4.2）（committed）
- * - **runtime**：运行时数据（gitignored），下设 wal / state / checkpoints / logs
+ * - **runtime**：运行时数据（gitignored），下设 events / state / checkpoints / logs
  *
  * 尚未完成移除的旧路径隔离到 `legacyPaths`，不得作为当前写入目标。
  */
@@ -182,8 +182,8 @@ export const LAYOUT = {
 
   /** 运行时文件的"分组键空间" */
   runtimeFiles: {
-    /** 写前日志 — `<root>/.specforge/runtime/wal.jsonl` */
-    wal: "runtime/wal.jsonl",
+    /** 权威工作流事件日志 — `<root>/.specforge/runtime/events.jsonl` */
+    events: "runtime/events.jsonl",
     /** 持久化状态 — `<root>/.specforge/runtime/state.json` */
     state: "runtime/state.json",
     /** 状态快照目录 — `<root>/.specforge/runtime/checkpoints/` */

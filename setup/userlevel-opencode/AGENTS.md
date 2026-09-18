@@ -179,7 +179,7 @@ SPEC_DIR_NAME = '.specforge'
 | Key | 路径 | 说明 |
 |-----|------|------|
 | runtime | `runtime` | 运行时状态目录（gitignored）— `<root>/.specforge/runtime/` |
-| runtimeWal | `runtime/wal.jsonl` | 写前日志（gitignored）— `<root>/.specforge/runtime/wal.jsonl` |
+| runtimeEvents | `runtime/events.jsonl` | 权威工作流事件日志（gitignored）— `<root>/.specforge/runtime/events.jsonl` |
 | runtimeState | `runtime/state.json` | 持久化状态（gitignored）— `<root>/.specforge/runtime/state.json` |
 | runtimeCheckpoints | `runtime/checkpoints` | 状态快照目录（gitignored）— `<root>/.specforge/runtime/checkpoints/` |
 | logs | `logs` | 日志目录（gitignored）— `<root>/.specforge/logs/` |

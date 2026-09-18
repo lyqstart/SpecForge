@@ -107,7 +107,7 @@
 | `tool_calls.jsonl` | 工具调用日志 |
 | `cost.jsonl` | 成本日志 |
 | `conversations.jsonl` | 会话日志 |
-| `wal.jsonl` | 写前日志 |
+| `events.jsonl` | 权威工作流事件日志 |
 
 ## 命名原则
 

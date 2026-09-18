@@ -225,11 +225,6 @@ export class PathService {
     return this.posixJoin(this.runtimeDir(), 'logs');
   }
 
-  /** `.specforge/runtime/wal.jsonl` */
-  runtimeWalPath(): string {
-    return this.posixJoin(this.runtimeDir(), 'wal.jsonl');
-  }
-
   // ---- Removed-path rejection ----
 
   /** Check if a path targets the removed specs directory. */

@@ -43,7 +43,7 @@ export const LAYOUT = {
 
   runtime: 'runtime',
   runtimeFiles: {
-    wal: 'runtime/wal.jsonl',
+    events: 'runtime/events.jsonl',
     state: 'runtime/state.json',
     checkpoints: 'runtime/checkpoints',
     logs: 'runtime/logs',

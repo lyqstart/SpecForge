@@ -94,7 +94,7 @@ SPEC_DIR_NAME = '.specforge'
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| runtimeFiles.wal | `runtime/wal.jsonl` | — |
+| runtimeFiles.events | `runtime/events.jsonl` | authoritative workflow event log |
 | runtimeFiles.state | `runtime/state.json` | — |
 | runtimeFiles.checkpoints | `runtime/checkpoints` | — |
 | runtimeFiles.logs | `runtime/logs` | — |

@@ -156,9 +156,6 @@ describe('PathService', () => {
       expect(ps.runtimeLogsDir()).toBe('/project/.specforge/runtime/logs');
     });
 
-    it('should generate runtimeWalPath', () => {
-      expect(ps.runtimeWalPath()).toBe('/project/.specforge/runtime/wal.jsonl');
-    });
   });
 
   describe('Path helpers', () => {
