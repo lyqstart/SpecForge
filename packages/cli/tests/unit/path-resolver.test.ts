@@ -33,29 +33,29 @@ describe("PathResolver", () => {
   });
 
   describe("resolveInstallRoot", () => {
-    it("应该返回 ~/.specforge 的绝对路径（无 override）", () => {
+    it("无 override 时应该返回 OpenCode 配置目录下的 sf-user", () => {
       const result = resolver.resolveInstallRoot();
 
-      expect(result).toBe(path.join(os.homedir(), ".specforge"));
+      expect(result).toBe(path.join(os.homedir(), ".config", "opencode", "sf-user"));
       expect(path.isAbsolute(result)).toBe(true);
     });
 
-    it("不把 OPENCODE_CONFIG_DIR 当作 SpecForge 用户根", () => {
+    it("应该把 OPENCODE_CONFIG_DIR 下的 sf-user 作为 SpecForge 用户根", () => {
       const configRoot = path.resolve("/tmp/opencode-config");
       process.env.OPENCODE_CONFIG_DIR = configRoot;
       process.env.HOME = "";
       process.env.USERPROFILE = "";
 
-      expect(resolver.resolveInstallRoot()).toBe(path.join(os.homedir(), ".specforge"));
+      expect(resolver.resolveInstallRoot()).toBe(path.join(configRoot, "sf-user"));
     });
 
-    it("不把 XDG_CONFIG_HOME 当作 SpecForge 用户根", () => {
+    it("应该把 XDG_CONFIG_HOME/opencode 下的 sf-user 作为 SpecForge 用户根", () => {
       const xdgRoot = path.resolve("/tmp/xdg-config");
       process.env.XDG_CONFIG_HOME = xdgRoot;
       process.env.HOME = "";
       process.env.USERPROFILE = "";
 
-      expect(resolver.resolveInstallRoot()).toBe(path.join(os.homedir(), ".specforge"));
+      expect(resolver.resolveInstallRoot()).toBe(path.join(xdgRoot, "opencode", "sf-user"));
     });
 
     it("应该支持 override 参数", () => {

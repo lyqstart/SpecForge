@@ -280,7 +280,7 @@ describe('formal version Git closure regressions', () => {
     }
 
     const rbacModel = await fs.readFile(
-      path.join(repositoryRoot, 'docs', 'design', 'workflow-runtime-rbac-model.md'),
+      path.join(repositoryRoot, 'docs', 'archive', 'design', 'workflow-runtime-rbac-model.md'),
       'utf-8',
     );
     expect(rbacModel).toContain('terminal for normal workflow transitions');

@@ -70,8 +70,8 @@ cd packages/cli && bun test tests/foo.test.ts
 
 往哪里加约束让 AI 自动避开？比如：
 
-- 加到 `.kiro/steering/<file>.md` 让 Kiro 主 agent 看到
 - 加到 `.opencode/agents/<role>.md` 让 OpenCode sub-agent 看到
+- 加到仓库 `AGENTS.md` 让支持该约定的开发会话读取
 - 在 lint 规则里加检测
 - 在 CI 加 grep 扫描
 
@@ -94,9 +94,9 @@ cd packages/cli && bun test tests/foo.test.ts
 
 ```markdown
 ---
-id: kiro-execute-pwsh-cd-forbidden
+id: controlled-shell-cd-forbidden
 scope: tool-specific
-tool: kiro
+tool: opencode
 roles: [executor, orchestrator]
 severity: high
 tags: [shell, command-execution]
@@ -104,7 +104,7 @@ created: 2026-05-16
 updated: 2026-05-16
 ---
 
-# Kiro execute_pwsh 禁用 `cd` 命令
+# 受控 Shell 禁止用 `cd` 改变工作目录
 
 ## 症状
 
@@ -112,13 +112,13 @@ sub-agent 跑 `cd packages/cli && bun run build` 时报错……
 
 ## 根因
 
-Kiro 内置的 `execute_pwsh` 是受控壳……
+受控命令工具要求通过 `cwd` 参数指定工作目录……
 
 ## 解决方案
 
 ✅ 用 `cwd` 参数：
 \`\`\`
-execute_pwsh(command="bun run build", cwd="<repo>/packages/cli")
+execute(command="bun run build", cwd="<repo>/packages/cli")
 \`\`\`
 
 ❌ 不要：
@@ -128,7 +128,7 @@ execute_pwsh(command="cd packages/cli && bun run build")
 
 ## 预防机制
 
-加到 `.kiro/steering/v6-development-workflow.md` 的"禁止事项"段……
+加到仓库 `AGENTS.md` 或 OpenCode agent 的“禁止事项”段……
 
 ## 相关错误
 

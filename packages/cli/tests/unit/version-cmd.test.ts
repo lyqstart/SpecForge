@@ -140,7 +140,7 @@ describe('Version Command', () => {
       await runVersionCommand({ json: true });
       const payload = JSON.parse(capturedOutput[0]) as VersionInfoPayload;
 
-      const expectedRoot = path.join(os.homedir(), '.specforge');
+      const expectedRoot = path.join(os.homedir(), '.config', 'opencode', 'sf-user');
       expect(payload.installRoot).toBe(expectedRoot);
     });
 
@@ -153,7 +153,7 @@ describe('Version Command', () => {
       await runVersionCommand({ json: true });
       const payload = JSON.parse(capturedOutput[0]) as VersionInfoPayload;
 
-      const expectedRoot = path.join(os.homedir(), '.specforge');
+      const expectedRoot = path.join(os.homedir(), '.config', 'opencode', 'sf-user');
       expect(payload.installRoot).toBe(expectedRoot);
     });
 

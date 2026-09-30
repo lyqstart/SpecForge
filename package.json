@@ -18,7 +18,9 @@
     "typecheck:installer": "tsc --noEmit -p scripts/tsconfig.installer.json",
     "build:release-runtimes": "bun scripts/build-release-runtime-artifacts.ts",
     "build:release-manifest": "bun scripts/build-release-manifest.ts",
-    "precheck:release": "bun scripts/run-current-release-precheck.ts"
+    "precheck:release": "bun scripts/run-current-release-precheck.ts",
+    "bootstrap:project": "node scripts/project-session-bootstrap.mjs",
+    "test:project-bootstrap": "bun --cwd packages/daemon-core run test -- tests/unit/project-session-bootstrap.test.ts"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",

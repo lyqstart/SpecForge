@@ -199,7 +199,7 @@ async function main(): Promise<number> {
 
   const footerLines = [
     '',
-    `<!-- ${filtered.length} 条经验 / 来自 docs/engineering-lessons/ / 详细规则见 .kiro/steering/lessons-injected.md -->`,
+    `<!-- ${filtered.length} 条经验 / 来源与详细规则：docs/engineering-lessons/ -->`,
   ];
 
   const output = [...headerLines, ...itemLines, ...footerLines].join('\n');

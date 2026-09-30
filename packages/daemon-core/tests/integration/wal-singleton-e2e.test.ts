@@ -466,7 +466,7 @@ describe('T4: ProjectManager with daemon global StateManager', () => {
       eventBus,
       resolver,
       daemonStateManager,
-      async () => ({ ok: true,, checks: [] }),
+      async () => ({ ok: true, checks: [] }),
     );
   });
 

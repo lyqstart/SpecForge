@@ -28297,3 +28297,119 @@ PUSH_ACTION=PERFORMED
 POST_PUSH_LIVE_REF_VERIFICATION=INSUFFICIENT_EVIDENCE_NETWORK_FAILURE
 ```
 <!-- SPECFORGE_ERR1545_POST_PUSH_LS_REMOTE_NETWORK_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1546_BUN_NOT_ON_PATH:START -->
+### ERR-1546：Project Bootstrap 定向测试首次调用未解析 Bundled Bun
+
+- **事实证据**：在仓库根执行 `bun x vitest run scripts/tests/project-session-bootstrap.test.ts` 时，PowerShell 返回 `bun` 不是可识别的命令；Vitest 未启动。只读核验确认工作区 `PATH` 没有 Bun，而已固定的 Bundled Bun `C:\Users\lyq\AppData\Local\Temp\specforge-bun-b8df248d3b794d98a3d00305bf5ae295\bun-windows-x64\bun.exe` 存在并返回版本 `1.4.0`。
+- **影响**：定向测试没有执行；仓库内容、运行时和外部状态没有被该失败改变。
+- **根因**：验证命令错误假定 `bun` 已加入当前 PowerShell 的 `PATH`，没有先解析本项目已验证的 Bundled Bun 绝对路径。
+- **纠正与防复发**：后续 Bun 验证统一使用已核验的绝对可执行文件路径；任何新环境在首次测试前先执行版本探测，不再直接调用裸 `bun`。
+- **适用经验**：EXP-002、EXP-007、EXP-019、EXP-060。
+
+```text
+ERR1546_STATUS=CLOSED_NO_TEST_EXECUTION_BUNDLED_BUN_REQUIRED
+```
+<!-- SPECFORGE_ERR1546_BUN_NOT_ON_PATH:END -->
+
+<!-- SPECFORGE_ERR1547_BUN_TEMP_DIRECTORY_EPERM:START -->
+### ERR-1547：Bundled Bun 启动 Vitest 前因默认临时目录不可写失败
+
+- **事实证据**：改用已核验的 Bundled Bun 绝对路径后，`bun x vitest run scripts/tests/project-session-bootstrap.test.ts` 返回 `EPERM accessing temporary directory. Please set $BUN_TMPDIR or $BUN_INSTALL`；随后显式把 `TEMP`、`TMP`、`BUN_TMPDIR` 固定到已核验的工作区目录并禁用 transpiler cache，仍返回同一错误。两次调用均未启动 Vitest。只读入口审计确认根 `node_modules` 没有 Vitest，而 `packages/daemon-core/node_modules/.bin/vitest.exe` 已存在。
+- **影响**：没有形成测试结果，没有修改运行时或外部状态。
+- **根因**：首次判断不完整。失败发生在 `bun x` 的包执行/解析边界，不是目标测试；显式临时目录仍未使该入口可用。仓库已经安装 package-local Vitest，继续使用 `bun x` 属于重复选择错误入口。
+- **纠正与防复发**：停止重试 `bun x`；使用已存在的 `packages/daemon-core/node_modules/.bin/vitest.exe` 直接运行独立测试。验证前必须先枚举真实 runner，不得在本地 runner 已存在时触发包解析入口。
+- **适用经验**：EXP-002、EXP-007、EXP-013、EXP-019、EXP-060。
+
+```text
+ERR1547_STATUS=CLOSED_AFTER_REPEATED_FAILURE_PACKAGE_LOCAL_RUNNER_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1547_BUN_TEMP_DIRECTORY_EPERM:END -->
+
+<!-- SPECFORGE_ERR1548_ROOT_VITEST_MODULE_RESOLUTION:START -->
+### ERR-1548：Package-local Vitest 从仓库根启动时错误消费根配置
+
+- **事实证据**：`packages/daemon-core/node_modules/.bin/vitest.exe` 已成功启动，但从仓库根运行 `scripts/tests/project-session-bootstrap.test.ts` 时加载根 `vitest.config.ts`，随后因根 `node_modules` 无法解析 `vitest/config` 退出；测试用例没有执行。
+- **影响**：没有测试结果，也没有产品或外部副作用。
+- **根因**：独立测试放在根 `scripts/tests`，却使用 daemon-core 的 package-local runner；runner 工作目录和配置归属不一致。
+- **纠正与防复发**：将 Bootstrap 回归测试归属到 `packages/daemon-core/tests/unit/`，在 `packages/daemon-core` 工作目录使用本地 Vitest 配置和 runner；测试目标通过仓库相对路径导入纯 Bootstrap 模块。
+- **适用经验**：EXP-002、EXP-004、EXP-010、EXP-019、EXP-060。
+
+```text
+ERR1548_STATUS=CLOSED_NO_TEST_CASE_EXECUTION_PACKAGE_OWNERSHIP_REQUIRED
+```
+<!-- SPECFORGE_ERR1548_ROOT_VITEST_MODULE_RESOLUTION:END -->
+
+<!-- SPECFORGE_ERR1549_ARCHIVE_GIT_INDEX_LOCK:START -->
+### ERR-1549：历史文档首次归档移动被 Git index lock 权限拒绝
+
+- **事实证据**：在逐项验证 11 个源目录存在、对应 `docs/archive/**` 目标不存在且归档根位于仓库内之后，首次执行 `git mv docs/audit docs/archive/audit` 返回 `Unable to create .git/index.lock: Permission denied`，循环立即停止；随后 `git status --short` 未出现重命名记录。
+- **影响**：任何目录和文件均未移动，Git 索引未改变；用户未跟踪备份仍保持原位且未被触碰。
+- **根因**：受限执行环境没有 Git 索引写权限，不是归档路径、范围或文件冲突。
+- **纠正与防复发**：保留已验证的显式源—目标清单，只以受控 Git 索引写权限重试同一组移动；继续禁止通配符移动、`git add -A` 或绕过 Git 的不透明批量搬运。
+- **适用经验**：EXP-002、EXP-006、EXP-015、EXP-032、EXP-089。
+
+```text
+ERR1549_STATUS=CLOSED_EXACT_GIT_MOVE_SUCCEEDED_WITH_INDEX_WRITE_PERMISSION
+```
+<!-- SPECFORGE_ERR1549_ARCHIVE_GIT_INDEX_LOCK:END -->
+
+<!-- SPECFORGE_ERR1550_AUTHORITY_ARCHIVE_TARGETED_TEST_SPLIT:START -->
+### ERR-1550：权威归档定向测试混合了过时文档断言与未构建 workspace 依赖
+
+- **事实证据**：12 个定向测试文件共执行 46 项测试，7 个文件通过、44 项断言通过；`v6-authority-consumer-alignment.test.ts` 仍要求 ADR-013 包含旧的“ADR-014 已暂停”精确措辞，`specforge-development-experience-gate.test.ts` 仍要求历史 handoff 固定出现 `main@95befe...`。另有 3 个运行时测试文件在收集阶段因本地无法解析 `@specforge/types/schema-contract` 而未执行用例。
+- **影响**：Bootstrap、Authority Registry、从属治理合同、Project Status 与历史路径对齐的已执行测试有效；2 项旧文档断言需要迁移；3 个运行时测试没有产生归档路径验证结果。仓库外部状态未改变。
+- **根因**：同一批验证同时包含纯文档消费者和依赖 workspace 构建产物的运行时消费者；其中两项测试仍把旧 handoff 的瞬时文本或已更新 ADR 措辞当成当前固定合同，另三项缺少本地 package export 构建前提。
+- **纠正与防复发**：把当前权威测试改为断言 Registry/SPS/Project Status 的稳定角色，不再固定历史 handoff SHA；运行时测试必须在 workspace 依赖可解析后单独执行，未满足前提时标记 `INSUFFICIENT_EVIDENCE`，不得把 collection failure 说成产品回归。
+- **适用经验**：EXP-002、EXP-004、EXP-010、EXP-019、EXP-043、EXP-087。
+
+```text
+ERR1550_STATUS=CLOSED_STALE_ASSERTIONS_ALIGNED_TYPES_BUILT_ALL_TWELVE_FILES_SIXTY_THREE_TESTS_PASS
+```
+<!-- SPECFORGE_ERR1550_AUTHORITY_ARCHIVE_TARGETED_TEST_SPLIT:END -->
+
+<!-- SPECFORGE_ERR1551_BOOTSTRAP_REMOTE_NETWORK_UNAVAILABLE:START -->
+### ERR-1551：在线 Project Bootstrap 在沙箱内无法连接 GitHub 远程引用
+
+- **事实证据**：执行 `node scripts/project-session-bootstrap.mjs` 时，本地 HEAD、分支、工作树、状态块、必需规则、归档状态和根 `.kiro` 检查均完成；`git ls-remote origin refs/heads/main` 因 `Failed to connect to github.com:443` 失败，Bootstrap 正确返回 `BOOTSTRAP_STATUS=BLOCKED` 与 `REMOTE_MAIN_UNAVAILABLE`。
+- **影响**：没有取得本轮 live remote main 证据；没有仓库、远程或运行时副作用。离线 Bootstrap 的结构验证结果不等于在线基线验证。
+- **根因**：受限沙箱没有 GitHub 网络连接，不是 Bootstrap parser、仓库结构或 authority 文件缺陷。
+- **纠正与防复发**：仅使用已批准的只读 `git ls-remote origin refs/heads/main` 外部网络权限独立核验；若仍失败则保持 `INSUFFICIENT_EVIDENCE`，不得把本地 tracking ref 当 live remote。
+- **适用经验**：EXP-002、EXP-007、EXP-016、EXP-037、EXP-082。
+
+```text
+ERR1551_STATUS=CLOSED_APPROVED_LS_REMOTE_CONFIRMED_MAIN_AT_DC5A2E53934F76DFECFCEE8C2A9F3C5B4D7F9A9E
+```
+<!-- SPECFORGE_ERR1551_BOOTSTRAP_REMOTE_NETWORK_UNAVAILABLE:END -->
+
+<!-- SPECFORGE_ERR1552_AUTHORITY_ARCHIVE_FULL_TEST_CONSUMER_GAPS:START -->
+### ERR-1552：权威归档全量测试暴露未迁移消费者与基线测试缺陷
+
+- **事实证据**：根级全量测试最终退出码为 1。`@specforge/cli` 有 4 项路径断言仍期待 `~/.specforge`，与 ADR-010/ADR-011 及现有实现的 OpenCode 配置目录 `sf-user` 冲突；`@specforge/daemon-core` 有 3 项测试仍读取已归档的 `docs/standards/fused_standard.md`、`docs/reports/**` 和 `docs/design/workflow-runtime-rbac-model.md`。此外，两项 integration 测试因 `({ ok: true,, checks: [] })` 无法转换；`git show HEAD:<path>` 证明这两处语法错误已存在于本轮基线 HEAD，不是本轮归档产生。Scope Gate 的具体失败输出未被总日志保留，需要独立取证。
+- **影响**：全量测试不能作为本轮变更通过证据；已通过的 workspace 与测试仍是局部有效证据。归档路径测试和 CLI 路径测试需要按已裁决权威同步；两处基线语法错误必须单独标记，不能归因于本轮变更。
+- **根因**：消费者清单遗漏了 3 个仅在全量套件触发的历史文档路径断言，并且既有 CLI 测试没有随用户级目录裁决更新；全量验证同时发现两个与本轮 diff 无关的基线语法缺陷。
+- **纠正与防复发**：先迁移已确认的归档消费者和用户级路径测试，再分别执行 CLI、daemon-core 与 Scope Gate 定向测试；基线语法缺陷若为完成全量验证所必需，只做最小语法修复并保留 `git show HEAD` 证据。最后重新执行根级全量测试。
+- **适用经验**：EXP-002、EXP-004、EXP-010、EXP-019、EXP-043、EXP-087、EXP-113。
+
+```text
+ERR1552_STATUS=CLOSED_AUTHORITY_CONSUMERS_ALIGNED_CLI_1027_AND_DAEMON_CORE_1742_PASS
+REMAINING_SCOPE_GATE_BASELINE=9_FAILURES_OUTSIDE_AUTHORITY_RECOVERY_SCOPE
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1552_AUTHORITY_ARCHIVE_FULL_TEST_CONSUMER_GAPS:END -->
+
+<!-- SPECFORGE_ERR1553_CLI_VITEST_WORKER_OPTION_CONFLICT:START -->
+### ERR-1553：CLI 全包复验错误复用了 Vitest 3 的 worker 参数
+
+- **事实证据**：直接使用 CLI package-local Vitest 1.6.1 执行 `vitest run --maxWorkers=1` 时，在收集前返回 `options.minThreads and options.maxThreads must not conflict`，测试文件和测试用例均为 0；并行执行的 daemon-core 使用 Vitest 3.2.4，可接受同一参数并最终通过 198/198 文件、1742/1742 测试。
+- **影响**：CLI 全包没有执行；此前 CLI 定向 2 文件、46 项测试通过的证据不受影响。daemon-core 全包结果有效。
+- **根因**：验证命令把 daemon-core 的 Vitest 3 参数直接复用到配置不同的 CLI Vitest 1，而没有以各 package 自身的 `test` 脚本为边界。
+- **纠正与防复发**：CLI 使用其 package 标准入口 `vitest run`，不附加跨版本 worker 参数；不同 package 的测试 runner 主版本与配置必须分别核验。
+- **适用经验**：EXP-002、EXP-007、EXP-019、EXP-060。
+
+```text
+ERR1553_STATUS=CLOSED_CLI_STANDARD_RUN_51_FILES_1027_TESTS_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1553_CLI_VITEST_WORKER_OPTION_CONFLICT:END -->

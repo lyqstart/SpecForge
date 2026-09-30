@@ -154,31 +154,31 @@ describe('Orchestrator governance execution closure', () => {
       path.join(repoRoot(), 'setup', 'userlevel-opencode', 'agents', 'sf-orchestrator.md'),
       'utf8'
     ).replace(/\r\n/g, '\n');
-    const standard = readFileSync(
-      path.join(repoRoot(), 'docs', 'standards', 'fused_standard.md'),
+    const historicalStandard = readFileSync(
+      path.join(repoRoot(), 'docs', 'archive', 'standards', 'fused_standard.md'),
       'utf8'
     ).replace(/\r\n/g, '\n');
 
-    expect(standard).toContain(
+    expect(historicalStandard).toContain(
       '纯知识咨询、SpecForge 使用说明和不触发项目写入的只读状态查询不创建业务 WI'
     );
-    expect(standard).toContain('所有需要读取项目真实状态并形成受治理分析产物');
-    expect(standard).toContain('`StateManager/events.jsonl` 是工作流状态的唯一权威来源');
-    expect(standard).toContain('其中 `StateManager/events.jsonl` 为状态权威');
-    expect(standard).toContain('### 14.6 HardStop 角色所有权与恢复闭包');
-    expect(standard).toContain('#### 8.2.1 专业候选产物所有权');
-    expect(standard).toContain('`ARTIFACT_OWNER_MISMATCH`');
-    expect(standard).toContain('`created → intake_ready` 必须校验 `intake.md` 非空');
-    expect(standard).toContain('只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`');
-    expect(standard).toContain('若两处存在同一 `hard_stop_id`，必须去重后计数');
-    expect(standard).toContain('`.specforge/runtime/state.json` 只是可重建投影缓存');
-    expect(standard).toContain('`work_item.json` 只保存工作项身份、分类、范围和权限等元数据');
-    expect(standard).not.toContain('"status": "created"');
+    expect(historicalStandard).toContain('所有需要读取项目真实状态并形成受治理分析产物');
+    expect(historicalStandard).toContain('`StateManager/events.jsonl` 是工作流状态的唯一权威来源');
+    expect(historicalStandard).toContain('其中 `StateManager/events.jsonl` 为状态权威');
+    expect(historicalStandard).toContain('### 14.6 HardStop 角色所有权与恢复闭包');
+    expect(historicalStandard).toContain('#### 8.2.1 专业候选产物所有权');
+    expect(historicalStandard).toContain('`ARTIFACT_OWNER_MISMATCH`');
+    expect(historicalStandard).toContain('`created → intake_ready` 必须校验 `intake.md` 非空');
+    expect(historicalStandard).toContain('只有 `sf-orchestrator` 可以调用 `sf_hard_stop_resolve`');
+    expect(historicalStandard).toContain('若两处存在同一 `hard_stop_id`，必须去重后计数');
+    expect(historicalStandard).toContain('`.specforge/runtime/state.json` 只是可重建投影缓存');
+    expect(historicalStandard).toContain('`work_item.json` 只保存工作项身份、分类、范围和权限等元数据');
+    expect(historicalStandard).not.toContain('"status": "created"');
     expect(orchestrator).not.toContain('sf_continuity');
-    expect(standard).toContain('`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容');
-    expect(standard).toContain('当前 Runtime 只接受 V6 当前项目布局');
-    expect(standard).toContain('`.specforge/manifest.json`');
-    expect(standard).not.toContain('允许 `sf_project_init` 创建或维护 `.specforge/manifest.json`');
+    expect(historicalStandard).toContain('`resume_check` 与 `resume_plan` 是快照中的恢复检查和恢复计划内容');
+    expect(historicalStandard).toContain('当前 Runtime 只接受 V6 当前项目布局');
+    expect(historicalStandard).toContain('`.specforge/manifest.json`');
+    expect(historicalStandard).not.toContain('允许 `sf_project_init` 创建或维护 `.specforge/manifest.json`');
   });
 
   it('requires professional agents to hand HardStop evidence back to the Orchestrator', () => {

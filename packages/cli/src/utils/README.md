@@ -72,4 +72,4 @@ bun test packages/cli/tests/unit/path-resolver.test.ts
 
 ### 设计文档
 
-详细设计参见：`.kiro/specs/distribution/design.md` § "Components and Interfaces" § 5
+当前产品边界参见：`docs/product-specification/specforge-product-specification.md`；旧 Distribution 设计仅保存在 `docs/archive/kiro/specs/distribution/design.md` 供追溯。

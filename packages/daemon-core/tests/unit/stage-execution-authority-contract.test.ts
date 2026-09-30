@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 const authorityPath = resolve(repoRoot, 'docs/design/SpecForge架构一致性治理最终实施方案.md');
-const handoffPath = resolve(repoRoot, 'docs/implementation/architecture-consistency/current-handoff.md');
+const projectStatusPath = resolve(repoRoot, 'docs/project-status.md');
 
 function ruleSection(authority: string, ruleId: string): string {
   const marker = `**${ruleId}：**`;
@@ -99,10 +99,10 @@ const stageRuleIds = [
   'GOV-STAGE-AUTHORITY-BOOTSTRAP-FAIL-TEMPLATE-001',
 ];
 
-describe('Stage Execution Contract authority', () => {
-  it('keeps canonical stage rule markers in the unique authority', async () => {
+describe('Stage Execution Contract alignment', () => {
+  it('keeps canonical stage rule markers in the subordinate technical contract', async () => {
     const authority = await readFile(authorityPath, 'utf8');
-    expect(authority).toContain('本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。');
+    expect(authority).toContain('SUBORDINATE_TECHNICAL_GOVERNANCE_CONTRACT');
     expect(authority).toContain('## 2. SpecForge 自身开发与执行治理协议');
 
     for (const ruleId of stageRuleIds) {
@@ -222,35 +222,28 @@ describe('Stage Execution Contract authority', () => {
     }
   });
 
-  it('keeps exactly one current execution state block in handoff', async () => {
-    const handoff = await readFile(handoffPath, 'utf8');
-    expect(handoff.split('<!-- SPECFORGE_CURRENT_EXECUTION_STATE:START -->').length - 1).toBe(1);
-    expect(handoff.split('<!-- SPECFORGE_CURRENT_EXECUTION_STATE:END -->').length - 1).toBe(1);
+  it('keeps exactly one resumable project-status block', async () => {
+    const status = await readFile(projectStatusPath, 'utf8');
+    expect(status.split('<!-- SPECFORGE_PROJECT_STATUS:START -->').length - 1).toBe(1);
+    expect(status.split('<!-- SPECFORGE_PROJECT_STATUS:END -->').length - 1).toBe(1);
     for (const field of [
-      'GLOBAL_GOAL=',
-      'CURRENT_STAGE=',
-      'CURRENT_STAGE_STATUS=',
-      'LAST_COMPLETED_STAGE=',
+      'PROJECT_STATUS_SCHEMA=',
+      'PROJECT_STATUS_DECLARATION=',
+      'ACTIVE_INITIATIVE=',
+      'OBJECTIVE=',
+      'CURRENT_PHASE=',
+      'OWNER_DECISIONS=',
+      'LAST_COMPLETED_CHECKPOINT=',
       'CURRENT_BLOCKER=',
-      'REMOTE_HEAD_BASELINE=',
-      'AUTHORITY_BASELINE_COMMIT=',
-      'VALIDATION_PROJECT=',
-      'CURRENT_WI=',
-      'AUTHORITATIVE_WI_STATE=',
-      'LATEST_IMMUTABLE_EVIDENCE=',
-      'LATEST_PRODUCT_FIX=',
-      'OPERATION_BOUNDARY=',
-      'FORBIDDEN_ACTIONS=',
-      'NEXT_STAGE=',
       'NEXT_LEGAL_ACTION=',
-      'STOP_CONDITION=',
-      'PERMANENT_INSUFFICIENT_EVIDENCE=',
-      'LOCAL_COMMAND_SHELL=',
-      'DOWNLOAD_PACKAGE_DIR=',
-      'LOCAL_PATH_QUOTING=',
+      'ALLOWED_SCOPE=',
+      'PROHIBITED=',
+      'REQUIRED_RULES=',
+      'REQUIRED_VALIDATION=',
     ]) {
-      expect(handoff, field).toContain(field);
+      expect(status, field).toContain(field);
     }
+    expect(status).not.toMatch(/^(?:REMOTE_HEAD|LOCAL_HEAD|CURRENT_HEAD)=/m);
   });
   it('keeps Rule section parsing aligned with the V2 structural boundary matrix', async () => {
     const authority = await readFile(authorityPath, 'utf8');

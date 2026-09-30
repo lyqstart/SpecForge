@@ -1,7 +1,7 @@
 /**
  * Bug condition exploration test — P10: `rebuilt_from_events` reflects reality
  *
- * Spec: .kiro/specs/investigation-gate-contract-fix
+ * Historical origin: docs/archive/kiro/specs/investigation-gate-contract-fix
  * Property 5 (Bug Condition): For any `sf_state_read(all)` call in a project with
  * NO existing project-level event log, the handler SHALL report
  * `rebuilt_from_events: false` so the flag reflects whether an event log actually

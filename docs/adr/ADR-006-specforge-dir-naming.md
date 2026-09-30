@@ -4,8 +4,8 @@
 
 **Accepted** (2026-05-29)
 
-- **Source**: WI-010 / [`docs/proposals/2026-05-29-directory-structure-governance.md`](../proposals/2026-05-29-directory-structure-governance.md)
-- **Related**: `.kiro/specs/v6-architecture-overview/design.md` L251（原始 ADR 索引行）
+- **Source**: WI-010 / [`docs/archive/proposals/2026-05-29-directory-structure-governance.md`](../archive/proposals/2026-05-29-directory-structure-governance.md)
+- **Related**: `docs/archive/kiro/specs/v6-architecture-overview/design.md` L251（原始 ADR 索引行）
 - **Supersedes**: 无
 - **Superseded by**: 无
 
@@ -97,9 +97,9 @@ SpecForge V6 项目长期存在**目录路径命名的系统性混乱**，根因
 
 ## 引用
 
-- 主提案：[`docs/proposals/2026-05-29-directory-structure-governance.md`](../proposals/2026-05-29-directory-structure-governance.md)
+- 主提案：[`docs/archive/proposals/2026-05-29-directory-structure-governance.md`](../archive/proposals/2026-05-29-directory-structure-governance.md)
 - 关联实证：[`.specforge/specs/WI-004/impact_analysis.md`](../../.specforge/specs/WI-004/impact_analysis.md)
 - 本 WI 的 refactor_analysis：[`.specforge/specs/WI-010/refactor_analysis.md`](../../.specforge/specs/WI-010/refactor_analysis.md)
 - 本 WI 的 refactor_plan：[`.specforge/specs/WI-010/refactor_plan.md`](../../.specforge/specs/WI-010/refactor_plan.md)
-- 原始 ADR 索引行：`.kiro/specs/v6-architecture-overview/design.md` L251
-- 工程治理框架（关联方案）：[`docs/proposals/2026-05-29-engineering-playbook-framework.md`](../proposals/2026-05-29-engineering-playbook-framework.md)
+- 原始 ADR 索引行：`docs/archive/kiro/specs/v6-architecture-overview/design.md` L251
+- 工程治理框架（关联方案）：[`docs/archive/proposals/2026-05-29-engineering-playbook-framework.md`](../archive/proposals/2026-05-29-engineering-playbook-framework.md)

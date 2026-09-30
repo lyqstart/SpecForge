@@ -12,7 +12,9 @@ const read = (path: string): string => readFileSync(resolve(repoRoot, path), 'ut
 const decision = read('docs/adr/ADR-013-current-release-boundary-and-no-legacy-compatibility.md');
 const recoveryDecision = read('docs/adr/ADR-014-authority-model-recovery-freeze.md');
 const governance = read('docs/design/SpecForge架构一致性治理最终实施方案.md');
-const recoveryState = read('docs/implementation/architecture-consistency/authority-model-recovery.md');
+const registry = read('docs/product-specification/authority-registry.md');
+const productSpecification = read('docs/product-specification/specforge-product-specification.md');
+const projectStatus = read('docs/project-status.md');
 const daemonLint = read('packages/daemon-core/src/tools/lib/sf_doc_lint_core.ts');
 const userlevelLint = read('setup/userlevel-opencode/tools/lib/sf_doc_lint_core.ts');
 const rootLintFixtures = [
@@ -22,13 +24,16 @@ const rootLintFixtures = [
 ].map(read).join('\n');
 
 describe('authority recovery consumer alignment', () => {
-  it('freezes the obsolete Kiro authority chain without inventing a replacement product authority', () => {
+  it('binds current consumers to the established product authority and project status', () => {
     expect(recoveryDecision).toContain('`.kiro/` 不是 SpecForge 当前产品需求或产品架构的权威根目录');
     expect(recoveryDecision).toContain('本 ADR 不创建新的产品需求或产品架构事实源');
-    expect(decision).toContain('已由 [`ADR-014`](ADR-014-authority-model-recovery-freeze.md) 暂停');
-    expect(governance).toContain('[`ADR-014`](../adr/ADR-014-authority-model-recovery-freeze.md) 已暂停');
-    expect(recoveryState).toContain('CURRENT_PHASE=AUTHORITY_MODEL_RECOVERY_INVENTORY');
-    expect(recoveryState).toContain('PRODUCT_AUTHORITY_ROOT_AND_DOCUMENT_PRECEDENCE_NOT_YET_DECIDED');
+    expect(decision).toContain('ADR-014 的 authority recovery 已建立正式 Registry 与 SPS-1.0');
+    expect(governance).toContain('SUBORDINATE_TECHNICAL_GOVERNANCE_CONTRACT');
+    expect(registry).toContain('docs/product-specification/specforge-product-specification.md');
+    expect(registry).toContain('docs/project-status.md');
+    expect(productSpecification).toContain('SPECFORGE_RELEASE_AUTHORITY_ITEMS:START');
+    expect(projectStatus).toContain('PROJECT_STATUS_DECLARATION=ACTIVE');
+    expect(projectStatus).toContain('AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS');
   });
 
   it('projects the current Observability principle into both active Doc Lint implementations', () => {

@@ -37,7 +37,6 @@ test-results.txt
 
 # Kiro PBT runtime state (written to spec dirs by update_pbt_status /
 # set-pbt; runtime only, not source of truth)
-.kiro/specs/**/tasks.meta.json
 
 # OS files
 .DS_Store

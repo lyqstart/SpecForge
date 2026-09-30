@@ -131,7 +131,7 @@ OpenCode
 - OpenClaw must not duplicate Permission, Workflow, Gate, or state-machine rules.
 - OpenClaw must not directly couple to OpenCode internals when a stable SpecForge contract exists.
 - The bridge should remain an integration layer, not become a second SpecForge runtime.
-- Existing `.kiro/specs/openclaw-integration/**`, `.kiro/specs/openclaw-skill-bridge/**`, and related CLI integration documents are historical/future design sources only.
+- Existing `docs/archive/kiro/specs/openclaw-integration/**`, `docs/archive/kiro/specs/openclaw-skill-bridge/**`, and archived CLI integration documents are historical/future design sources only.
 
 ### Re-entry criteria
 

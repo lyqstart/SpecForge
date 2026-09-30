@@ -40,4 +40,4 @@ Scope Gate 不负责：
 
 ## 历史资料
 
-`docs/cli.md`、`docs/error-codes.md`、`docs/developer-guide.md` 中仍保留早期 runtime scope / feature-flag 模型，作为历史设计证据。其旧命令、REQ-25 和 Kiro 路径不得作为当前操作指南。
+早期 runtime scope / feature-flag 文档已统一归档到 `docs/archive/package-docs/scope-gate/`。其旧命令、REQ-25 和 Kiro 路径不得作为当前操作指南。

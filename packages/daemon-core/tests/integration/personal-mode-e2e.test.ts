@@ -88,7 +88,7 @@ function createTestProjectManager(eventBus: EventBus, resolver: IPathResolver): 
     eventBus,
     resolver,
     undefined as any,
-    async () => ({ ok: true,, checks: [] }),
+    async () => ({ ok: true, checks: [] }),
   );
 }
 

@@ -117,9 +117,9 @@ describe('ERR-088—ERR-124 real title and validation regression governance', ()
   });
 
   it('keeps the WorkDesk evidence and no-second-run boundary exact', () => {
-    const handoff = read('docs/implementation/architecture-consistency/current-handoff.md');
+    const handoff = read('docs/archive/implementation/architecture-consistency/current-handoff.md');
     const p0 = read(
-      'docs/implementation/architecture-consistency/P0-contract-consumer-closure.md'
+      'docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md'
     );
 
     expect(handoff).toContain('## V43真实重验、V44失败与V45边界（2026-08-04）');

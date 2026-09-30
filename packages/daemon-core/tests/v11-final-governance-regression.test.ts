@@ -279,12 +279,13 @@ describe('v1.1.3 final governance regression coverage', () => {
   });
 
   describe('final regression report guardrails', () => {
-    it('keeps the v1.1.3 validation report in docs/reports', () => {
+    it('keeps the v1.1.3 validation report in the historical archive', () => {
       const reportPath = path.join(
         ROOT,
         '..',
         '..',
         'docs',
+        'archive',
         'reports',
         'specforge-v1.1.3-daemon-state-control-plane-test-report.md',
       );

@@ -1,7 +1,7 @@
 /**
  * Preservation property test — P15: state read WITH a real event log
  *
- * Spec: .kiro/specs/investigation-gate-contract-fix
+ * Historical origin: docs/archive/kiro/specs/investigation-gate-contract-fix
  * Property 15 (Preservation): For any `sf_state_read(all)` call in a project that
  * DOES have a project-level event log, the handler SHALL replay that log and
  * report `rebuilt_from_events: true` with correct `work_items`.

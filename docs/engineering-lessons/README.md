@@ -64,7 +64,7 @@ docs/engineering-lessons/
 沉淀经验：[错误描述 + 错误信息原文 + 触发上下文]
 ```
 
-AI 会按 [`ARCHITECTURE.md §3`](ARCHITECTURE.md) 流程自动：
+维护经验时应按以下流程：
 1. 搜库找重复
 2. 5 Whys 根因分析
 3. 决策树判断处理方式（新建 / 合并 / supersedes / 跳过）
@@ -75,26 +75,21 @@ AI 会按 [`ARCHITECTURE.md §3`](ARCHITECTURE.md) 流程自动：
 ### §2.2 跑适配器（手工触发）
 
 ```bash
-# Kiro：渲染到 .kiro/steering/lessons-injected.md
-bun run scripts/lessons/render-kiro-steering.ts
-
 # OpenCode：渲染到 .opencode/skills/superpowers-engineering-lessons/SKILL.md
 bun run scripts/lessons/render-opencode-skill.ts
 
 # 仅校验，不写文件（CI 用）
-bun run scripts/lessons/render-kiro-steering.ts --check
 bun run scripts/lessons/render-opencode-skill.ts --check
 
 # 复制到其他项目时，不含本项目专属经验
-bun run scripts/lessons/render-kiro-steering.ts --no-project
 bun run scripts/lessons/render-opencode-skill.ts --no-project
 ```
 
-完整命令清单见 [`ARCHITECTURE.md §2`](ARCHITECTURE.md)。
+旧的 Kiro 注入架构与适配器已归档到 `docs/archive/engineering-lessons/` 和 `docs/archive/kiro/tooling/`。
 
 ### §2.3 跨项目复用
 
-参考 [`ARCHITECTURE.md §7`](ARCHITECTURE.md)，三步：复制源 + 删项目专属 + 跑 `--no-project` 适配器。
+三步：复制源、删除项目专属经验、运行 OpenCode 适配器的 `--no-project` 模式。
 
 ---
 
@@ -106,10 +101,6 @@ bun run scripts/lessons/render-opencode-skill.ts --no-project
 - [javascript-explicit-resource-management.md](universal/javascript-explicit-resource-management.md) ⚠️ HIGH — JS 没有析构函数；Disposable 协议 + 默认安全 + 自检 API + 测试断言四层防护体系
 - [shell-command-execution.md](universal/shell-command-execution.md) ⚠️ HIGH — Shell 命令执行规范（跨平台 shell 选择 + UTF-8 强制 + 危险命令拦截 + 双层超时 + 结构化返回 + 审计日志）
 - [host-environment-detection.md](universal/host-environment-detection.md) ⚠️ HIGH — 宿主机环境探测与 host-profile 规范（OS / locale / shell / 工具版本扫描，Windows 优先 pwsh）
-
-### AI Tools / Kiro
-
-- [execute-pwsh-constraints.md](ai-tools/kiro/execute-pwsh-constraints.md) ⚠️ HIGH — Kiro `execute_pwsh` 受控壳的硬约束（禁用 cd、heredoc、单行限制等）
 
 ### AI Tools / OpenCode
 
@@ -125,14 +116,14 @@ bun run scripts/lessons/render-opencode-skill.ts --no-project
 
 | 指标 | 值 |
 |------|-----|
-| 经验数 | 6 篇 |
-| 适配器数 | 3 个（render-kiro-steering、render-opencode-skill、render-prompt-block） |
-| 支持工具 | Kiro、OpenCode |
+| 经验数 | 5 篇 |
+| 适配器数 | 2 个（render-opencode-skill、render-prompt-block） |
+| 支持工具 | OpenCode；Kiro 历史材料已归档 |
 | 角色定义 | 6 个（executor / orchestrator / reviewer / debugger / architect / *） |
-| 生成产物 | `.kiro/steering/lessons-injected.md`、`.opencode/skills/superpowers-engineering-lessons/SKILL.md` |
+| 生成产物 | `.opencode/skills/superpowers-engineering-lessons/SKILL.md`、prompt block |
 | 依赖 | 零（手写 YAML 解析） |
 
-完整路线图（P0-P3 共 13 项）见 [`ARCHITECTURE.md §15`](ARCHITECTURE.md)。
+旧路线图见 `docs/archive/engineering-lessons/ARCHITECTURE.md`，仅供历史追溯。
 
 ---
 

@@ -29,11 +29,11 @@ describe('v1.2 integration RC hardening', () => {
   });
 
   it('preserves v1.2 design evidence while current disposition owns implementation scope', () => {
-    const matrix = expectRepoFile('docs/design/specforge-v1.2-acceptance-matrix.md');
-    const projectSpec = expectRepoFile('docs/design/specforge-v1.2-project-spec-architecture.md');
-    const extension = expectRepoFile('docs/design/specforge-v1.2-extension-subflow-design.md');
+    const matrix = expectRepoFile('docs/archive/design/specforge-v1.2-acceptance-matrix.md');
+    const projectSpec = expectRepoFile('docs/archive/design/specforge-v1.2-project-spec-architecture.md');
+    const extension = expectRepoFile('docs/archive/design/specforge-v1.2-extension-subflow-design.md');
     const currentDisposition = expectRepoFile(
-      'docs/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
+      'docs/archive/implementation/architecture-consistency/current-release-module-and-change-disposition-matrix.md',
     );
 
     expect(matrix).toContain('PSA-P1');
@@ -45,9 +45,9 @@ describe('v1.2 integration RC hardening', () => {
   });
 
   it('keeps the v1.2 slice reports present as release evidence', () => {
-    const projectReport = expectRepoFile('docs/reports/specforge-v1.2-project-spec-store-slice-report.md');
-    const writeGuardReport = expectRepoFile('docs/reports/specforge-v1.2-write-guard-preflight-slice-report.md');
-    const extensionReport = expectRepoFile('docs/reports/specforge-v1.2-extension-subflow-slice-report.md');
+    const projectReport = expectRepoFile('docs/archive/reports/specforge-v1.2-project-spec-store-slice-report.md');
+    const writeGuardReport = expectRepoFile('docs/archive/reports/specforge-v1.2-write-guard-preflight-slice-report.md');
+    const extensionReport = expectRepoFile('docs/archive/reports/specforge-v1.2-extension-subflow-slice-report.md');
 
     expect(projectReport).toMatch(/PASSED|Result/i);
     expect(writeGuardReport).toContain('PASSED');

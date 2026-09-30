@@ -208,13 +208,13 @@ describe('Gate Attempt immutable evidence', () => {
       'utf-8',
     );
     const handoff = await readFile(
-      join(repoRoot, 'docs/implementation/architecture-consistency/current-handoff.md'),
+      join(repoRoot, 'docs/archive/implementation/architecture-consistency/current-handoff.md'),
       'utf-8',
     );
     const closure = await readFile(
       join(
         repoRoot,
-        'docs/implementation/architecture-consistency/P0-contract-consumer-closure.md',
+        'docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md',
       ),
       'utf-8',
     );

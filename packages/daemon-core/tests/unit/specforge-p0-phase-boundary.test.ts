@@ -5,11 +5,11 @@ import { join, resolve } from 'node:path';
 const repoRoot = resolve(import.meta.dirname, '../../../..');
 const handoffPath = join(
   repoRoot,
-  'docs/implementation/architecture-consistency/current-handoff.md',
+  'docs/archive/implementation/architecture-consistency/current-handoff.md',
 );
 const p0Path = join(
   repoRoot,
-  'docs/implementation/architecture-consistency/P0-contract-consumer-closure.md',
+  'docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md',
 );
 const experiencePath = join(
   repoRoot,

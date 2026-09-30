@@ -1,28 +1,36 @@
 # SpecForge 架构一致性治理最终实施方案
 
+> `DOCUMENT_ROLE=SUBORDINATE_TECHNICAL_GOVERNANCE_CONTRACT`
+>
+> 本文件只定义架构一致性与契约治理的技术规则，服从
+> `docs/product-specification/specforge-product-specification.md` 与
+> `docs/product-specification/authority-registry.md`，不构成产品需求、产品架构或发布范围权威。
+>
+> **AR-DEC-01 / AR-DEC-04 覆盖声明（2026-10-01）**：本文件中把自身称为“产品权威/唯一当前权威”、把 `.kiro` V6 文件称为上游产品权威，或要求以 `current-handoff.md` 恢复新会话的旧表述，均已失效，只保留为规则演进背景。当前产品权威只由 SPS 与 Authority Registry 定义；当前执行状态只由 `docs/project-status.md` 承载；新会话只从根 `AGENTS.md` 调用 `scripts/project-session-bootstrap.mjs` 恢复。
+
 ## 1. 文档定位、权威边界与设计原则
 
 ### 1.1 文档状态
 
-- **设计状态**：Accepted / AUTHORITATIVE
-- **产品实施状态**：动态状态不在本文件固化；以 `docs/implementation/architecture-consistency/current-handoff.md` 的当前执行状态和正式 Git / immutable evidence 为准。
+- **设计状态**：Accepted / SUBORDINATE_TECHNICAL_GOVERNANCE_CONTRACT
+- **产品实施状态**：动态状态不在本文件固化；以 `docs/project-status.md` 的当前执行状态和正式 Git / immutable evidence 为准。
 - **决策记录**：[`ADR-007-architecture-consistency-governance.md`](../adr/ADR-007-architecture-consistency-governance.md)、[`ADR-008-new-project-governance-bootstrap.md`](../adr/ADR-008-new-project-governance-bootstrap.md)
-- **权威性**：AUTHORITATIVE（仅限架构一致性治理与契约治理子系统）；与 V6 产品范围/产品架构的上下游边界见 1.2。
+- **权威性**：SUBORDINATE（仅限架构一致性治理与契约治理子系统的技术契约，并服从 SPS 与 Authority Registry）。
 - **取代**：`docs/archive/SpecForge治理架构完整修改方案-已取代.md`
-- **动态验证证据**：测试数量、commit、当前 Stage、Blocker、最新验证结果和实施进度属于运行事实，只进入 `current-handoff.md`、标准执行回执、Git 或 immutable evidence；不得复制到本权威文件形成会过期的“当前事实”。
+- **动态验证证据**：当前 Stage、Blocker、下一合法动作只进入 `docs/project-status.md`；测试输出、commit 和详细证据进入 Git 或 immutable evidence；不得复制到本文件形成会过期的“当前事实”。
 - **产品完成边界**：第 10 章 Phase 1—12 是首次实现本治理能力的一次性产品实施路线；首次宣布完成前必须通过 Phase 11 真实全新项目端到端验收，并在 Phase 12 固化最终 Hard Enforcement。旧项目迁移不是当前版本交付目标。
 
 > 本文件只保存稳定目标架构、稳定治理契约、实施路线定义和验收标准，不保存会随开发推进变化的测试计数、HEAD、当前缺陷或“尚未完成”状态。
 
-> 状态：AUTHORITATIVE（唯一当前权威源）
+> 状态：SUBORDINATE_TECHNICAL_GOVERNANCE_CONTRACT
 >
-> 本文件是 SpecForge 架构一致性治理（包括契约治理）的唯一当前权威源。
-> 该唯一性只覆盖治理与契约治理子系统；V6 产品范围与产品架构分别由 V6 `requirements.md` / `design.md` 决定。
+> 本文件是 SpecForge 架构一致性治理（包括契约治理）的单一当前技术合同，但不是产品权威。
+> 产品范围与产品架构由 SPS 定义，文件角色与解释优先级由 Authority Registry 定义。
 > 其他设计草案、专项说明、实施报告、交接文件和决策记录，只保存历史背景、实施证据或决策原因，不得作为并列设计权威。
-> 治理子系统内部的下游文件与本文件冲突时，以本文件为准；本文件与 V6 产品范围或产品架构冲突时，必须先报告并按上游产品权威修正本文件，不得用治理机制反向扩大当前产品范围。
+> 治理子系统内部的下游实现与本文件冲突时，以本文件为技术合同；本文件与 SPS 或 Authority Registry 冲突时，必须按上游产品权威修正本文件，不得用治理机制反向扩大当前产品范围。
 ### 1.2 唯一权威源
 
-> **Authority recovery override（2026-09-15）**：[`ADR-014`](../adr/ADR-014-authority-model-recovery-freeze.md) 已暂停本节中把 `.kiro/specs/v6-architecture-overview/requirements.md` 与 `design.md` 作为当前产品权威的旧链。该旧链仅保留为历史证据；在产品负责人裁决正式 authority registry 前，本文件不得单独推导产品范围或产品架构。
+> **Authority recovery closure（2026-10-01）**：[`ADR-014`](../adr/ADR-014-authority-model-recovery-freeze.md) 冻结的问题已由 SPS 与 Authority Registry 建立正式产品权威而关闭。原 `.kiro` V6 链已归档至 `docs/archive/kiro/`，不得作为当前消费者输入。
 
 **GOV-AUTH-001：** SpecForge 架构一致性治理和契约治理只保留一个当前权威源：
 
@@ -44,8 +52,8 @@ docs/design/specforge-design-governance-contract-model.md
 本文件曾把下列链定义为固定权威链；该链现已由 ADR-014 暂停：
 
 ```text
-.kiro/specs/v6-architecture-overview/requirements.md（当前产品范围）
-→ .kiro/specs/v6-architecture-overview/design.md（当前产品架构）
+docs/archive/kiro/specs/v6-architecture-overview/requirements.md（历史产品范围来源）
+→ docs/archive/kiro/specs/v6-architecture-overview/design.md（历史产品架构来源）
 → 本文件（治理子系统如何执行和阻断）
 → Runtime / Tool / Gate / 测试（实现与验证）
 ```
@@ -884,39 +892,33 @@ AMBIGUOUS_SIDE_EFFECT
 
 新增问题改变 Architecture、Contract、Module、Producer/Consumer、Workflow/Gate/Runtime 或批准文件范围时，按 `GOV-SCOPE-001` 重新做影响分析；非 Blocker 不得无因果扩大任务。
 
-**GOV-STAGE-HANDOFF-001：** 稳定规则写入本权威文件；current-handoff 只保存一个当前执行动态状态区。
+**GOV-STAGE-HANDOFF-001：** 稳定规则写入登记技术合同；`docs/project-status.md` 只保存一个当前执行动态状态区。
 
-`docs/implementation/architecture-consistency/current-handoff.md` 是非权威动态交接，不得形成第二套治理规则。唯一 `CURRENT EXECUTION STATE` 至少包含：
+`docs/project-status.md` 是非权威的唯一当前执行状态，不得形成第二套治理规则。唯一 `SPECFORGE_PROJECT_STATUS` 块至少包含：
 ```text
-GLOBAL_GOAL=
-CURRENT_STAGE=
-CURRENT_STAGE_STATUS=
-LAST_COMPLETED_STAGE=
+PROJECT_STATUS_SCHEMA=
+PROJECT_STATUS_DECLARATION=
+ACTIVE_INITIATIVE=
+OBJECTIVE=
+CURRENT_PHASE=
+OWNER_DECISIONS=
+LAST_COMPLETED_CHECKPOINT=
 CURRENT_BLOCKER=
-REMOTE_HEAD_BASELINE=
-AUTHORITY_BASELINE_COMMIT=
-VALIDATION_PROJECT=
-CURRENT_WI=
-AUTHORITATIVE_WI_STATE=
-LATEST_IMMUTABLE_EVIDENCE=
-LATEST_PRODUCT_FIX=
-OPERATION_BOUNDARY=
-FORBIDDEN_ACTIONS=
-NEXT_STAGE=
 NEXT_LEGAL_ACTION=
-STOP_CONDITION=
-PERMANENT_INSUFFICIENT_EVIDENCE=
+ALLOWED_SCOPE=
+PROHIBITED=
+REQUIRED_RULES=
+REQUIRED_VALIDATION=
 ```
 
 新会话固定恢复顺序：
 ```text
-1. 从 GitHub 当前远程分支读取本权威文件并固定 AUTHORITY_HEAD
-2. 读取 current-handoff 唯一 CURRENT EXECUTION STATE
-3. 用当前持久化 Work Item 状态和 immutable evidence 对账 handoff
-4. 应用最新用户 OPERATION_BOUNDARY
-5. 输出完整 GOVERNANCE PRECONCLUSION + canonical Stage Input
-6. 按 GOV-STAGE-RECOVERY-ACCEPT-001 执行 Recovery Acceptance
-7. RECOVERY_ACCEPTED=YES 后才允许执行被接受的 NEXT_LEGAL_ACTION；否则 Fail Closed
+1. 从仓库根 AGENTS.md 进入并运行 scripts/project-session-bootstrap.mjs
+2. Bootstrap 核验 live remote main、本地 HEAD、工作树、必需规则、唯一状态块、并行状态路径与根 .kiro 缺失
+3. 读取 docs/project-status.md 的 NEXT_LEGAL_ACTION 与边界
+4. 对账当前持久化 Work Item 状态和 immutable evidence（如任务适用）
+5. 应用最新用户操作边界并执行适用治理前置检查
+6. Bootstrap 或对账失败时 Fail Closed；通过后才执行 NEXT_LEGAL_ACTION
 ```
 
 冲突时以远程权威规则 + 当前持久化事实 + 最新用户授权为准，不得用模型记忆、旧 Prompt 或旧 handoff 覆盖当前事实。

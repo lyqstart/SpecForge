@@ -200,6 +200,6 @@ bun test packages/cli/tests/unit/error-payload.test.ts
 
 ## 相关文档
 
-- [Distribution Requirements](../../../../.kiro/specs/distribution/requirements.md)
-- [Distribution Design](../../../../.kiro/specs/distribution/design.md)
+- [Current Product Specification](../../../../docs/product-specification/specforge-product-specification.md)
+- [Historical Distribution Material](../../../../docs/archive/kiro/specs/distribution/)
 - [Distribution Types](./types.ts)

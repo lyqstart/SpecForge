@@ -340,7 +340,7 @@ if (findings.length === 0) {
   console.log(`\n${GREEN}✓ 所有检查通过！${RESET}\n`);
 } else {
   console.log(`\n完整经验文档：docs/engineering-lessons/async-resource-lifecycle.md`);
-  console.log(`规范文档：.kiro/steering/async-resource-coding-standards.md`);
+  console.log(`规范文档：docs/engineering-lessons/universal/async-resource-lifecycle.md`);
   if (!FIX_CONFIG && errors.some(f => f.rule === 'T3')) {
     console.log(`\n提示：运行 ${CYAN}bun run scripts/audit-async-resources.ts --fix-config${RESET} 可自动修复 vitest.config.ts`);
   }

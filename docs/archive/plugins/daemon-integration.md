@@ -487,5 +487,5 @@ await daemon.start();
 - [插件开发指南](./developer-guide.md)
 - [权限配置文档](./permission-config.md)
 - [API 参考](./api-reference.md)
-- [plugin-loader 设计文档](../../.kiro/specs/plugin-loader/design.md)
-- [daemon-core 设计文档](../../.kiro/specs/daemon-core/design.md)
+- [历史 plugin-loader 设计](../kiro/specs/plugin-loader/design.md)
+- [历史 daemon-core 设计](../kiro/specs/daemon-core/design.md)

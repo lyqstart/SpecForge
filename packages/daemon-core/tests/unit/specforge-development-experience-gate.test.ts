@@ -9,15 +9,15 @@ const experiencePath = join(
 );
 const currentHandoffPath = join(
   repoRoot,
-  'docs/implementation/architecture-consistency/current-handoff.md',
+  'docs/archive/implementation/architecture-consistency/current-handoff.md',
 );
 const psvImplementationPath = join(
   repoRoot,
-  'docs/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md',
+  'docs/archive/implementation/architecture-consistency/P0-project-spec-version-binding-defect.md',
 );
 const p0ContractClosurePath = join(
   repoRoot,
-  'docs/implementation/architecture-consistency/P0-contract-consumer-closure.md',
+  'docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md',
 );
 const rootAgentsPath = join(repoRoot, 'AGENTS.md');
 const userLevelAgentsPath = join(repoRoot, 'setup/userlevel-opencode/AGENTS.md');
@@ -335,7 +335,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(document).toContain('一个错误必须产生一个类防护');
   });
 
-  it('requires every delivery round to use one complete downloadable bundle', () => {
+  it('preserves the historical delivery-bundle evidence without making it current authority', () => {
     const handoff = readFileSync(currentHandoffPath, 'utf-8');
     const experience = readFileSync(experiencePath, 'utf-8');
     const psvImplementation = readFileSync(psvImplementationPath, 'utf-8');
@@ -367,7 +367,7 @@ describe('SpecForge development experience pre-read gate', () => {
     expect(handoff).toContain('不得在应用成功后再要求用户第二次下载验证文件');
     expect(handoff).toContain('只能包含预期的仓库替换文件');
     expect(handoff).toContain('本轮已验证实现提交');
-    expect(handoff).toContain('main@95befe8b35812aeb09e4d9e68f4497e12b3ac2a9');
+    expect(handoff).toContain('文件性质**：非权威当前交接文件');
     expect(handoff).toContain('当前远程 HEAD：每次新会话实时读取');
     expect(handoff).toContain('用户级安装升级：完成');
     expect(handoff).toContain('安装 Manifest、Tool、Skill、Agent 与源码一致性：119/119');

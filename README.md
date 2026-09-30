@@ -200,14 +200,12 @@ opencode
 
 ```
 SpecForge/                        # 仓库根目录
-├── .kiro/
-│   ├── specs/                   # 设计文档（requirements/design/tasks）
-│   │   ├── v6-architecture-overview/  # 父规范
-│   │   ├── daemon-core/         # 各模块 spec（只放文档）
-│   │   ├── configuration/
-│   │   ├── ...
-│   │   └── _archive/            # 历史 spec（V1–V5）
-│   └── steering/                # AI 开发规则
+├── AGENTS.md                    # 新 AI 会话稳定入口
+├── docs/
+│   ├── product-specification/   # 当前产品规格与权威登记
+│   ├── project-status.md        # 唯一当前执行状态
+│   ├── design/                  # 已登记的从属技术合同
+│   └── archive/                 # 旧规格、设计、标准、报告与 Kiro 历史材料
 ├── packages/                    # V6 模块源码（monorepo）
 │   ├── daemon-core/
 │   ├── configuration/
@@ -219,7 +217,7 @@ SpecForge/                        # 仓库根目录
 ├── .opencode/                   # SpecForge 框架（Agent/Tool/Skill/Plugin）
 ├── scripts/                     # 安装器脚本
 ├── tests/                       # 跨模块集成/e2e 测试
-└── docs/archive/                # 历史设计文档
+└── scripts/project-session-bootstrap.mjs # 新会话只读恢复器
 ```
 
 ### 安装后（用户项目视角）

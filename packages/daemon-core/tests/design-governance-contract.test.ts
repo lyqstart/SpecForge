@@ -4,10 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 function locateRepoRoot(): string {
   const cwd = process.cwd();
-  if (existsSync(path.join(cwd, 'docs', 'standards', 'fused_standard.md'))) return cwd;
+  if (existsSync(path.join(cwd, 'docs', 'product-specification', 'authority-registry.md'))) return cwd;
 
   const fromDaemonCore = path.resolve(cwd, '..', '..');
-  if (existsSync(path.join(fromDaemonCore, 'docs', 'standards', 'fused_standard.md'))) {
+  if (existsSync(path.join(fromDaemonCore, 'docs', 'product-specification', 'authority-registry.md'))) {
     return fromDaemonCore;
   }
 
@@ -37,18 +37,14 @@ const skillPaths = {
 } as const;
 
 describe('Design Governance contract alignment', () => {
-  it('defines the governance method once in the authoritative standard', () => {
-    const standard = read('docs/standards/fused_standard.md');
-    expect(standard).toContain('### 14.5 Design Governance（设计治理）');
-    expect(standard).toContain('analysis_scope: solution_design');
-    expect(standard).toContain('analysis_scope: system_governance');
-    expect(standard).toContain(
-      'capability_verdict: reuse_existing | extend_existing | new_capability_required | blocked'
-    );
-    expect(standard).toContain(
-      'Standard → Contract → Workflow Skill → Agent → Tool → Runtime → Audit'
-    );
-    for (const heading of governanceHeadings) expect(standard).toContain(heading);
+  it('registers one product authority and one subordinate technical governance contract', () => {
+    const registry = read('docs/product-specification/authority-registry.md');
+    const specification = read('docs/product-specification/specforge-product-specification.md');
+    const governance = read('docs/design/SpecForge架构一致性治理最终实施方案.md');
+    expect(registry).toContain('当前唯一产品规格');
+    expect(registry).toContain('架构一致性与契约治理的从属技术合同');
+    expect(specification).toContain('# 22. 仓库权威与跨会话连续性');
+    expect(governance).toContain('DOCUMENT_ROLE=SUBORDINATE_TECHNICAL_GOVERNANCE_CONTRACT');
   });
 
   it('makes sf-design responsible for both ordinary design and system governance', () => {
@@ -67,11 +63,10 @@ describe('Design Governance contract alignment', () => {
   });
 
   it('keeps phase boundaries, target-change classification, and governance capability verdict separate', () => {
-    const standard = read('docs/standards/fused_standard.md');
     const agent = read('setup/userlevel-opencode/agents/sf-design.md');
     const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
 
-    for (const contract of [standard, agent, orchestrator]) {
+    for (const contract of [agent, orchestrator]) {
       expect(contract).toContain('SpecForge');
       expect(contract).toContain('capability_verdict');
       expect(contract).toContain('Design-Only');
@@ -79,7 +74,6 @@ describe('Design Governance contract alignment', () => {
       expect(contract).toContain('unknowns');
     }
 
-    expect(standard).toContain('`capability_verdict` 的裁决对象必须是 **SpecForge 治理链**');
     expect(agent).toContain('`capability_verdict` 的裁决对象只能是 **SpecForge 治理链**');
     expect(orchestrator).toContain('分类对象描述的是**用户目标实现后的预期最终语义影响**');
     expect(agent).toContain('每个字段必须独立给出 `basis_refs`');
@@ -87,13 +81,9 @@ describe('Design Governance contract alignment', () => {
   });
 
   it('requires module routing to follow spec_manifest instead of source directory names', () => {
-    const standard = read('docs/standards/fused_standard.md');
     const agent = read('setup/userlevel-opencode/agents/sf-design.md');
     const orchestrator = read('setup/userlevel-opencode/agents/sf-orchestrator.md');
 
-    expect(standard).toContain(
-      'Candidate 的 `module_id` 是对 canonical `MODULE_CODE` 的引用'
-    );
     expect(agent).toContain('写入前必须读取 `spec_manifest.json`');
     expect(orchestrator).toContain('生成 Candidate 前必须读取 `spec_manifest.json`');
   });
@@ -147,7 +137,6 @@ describe('Design Governance contract alignment', () => {
     ).toBe(false);
 
     const allChangedContracts = [
-      read('docs/standards/fused_standard.md'),
       read('setup/userlevel-opencode/agents/sf-design.md'),
       ...Object.values(skillPaths).map(read),
     ].join('\n');

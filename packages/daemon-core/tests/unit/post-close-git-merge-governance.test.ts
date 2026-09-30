@@ -286,9 +286,9 @@ describe('post-close formal Git merge governance', () => {
     const [orchestrator, postMergeTool, handoff, experience, p0] = await Promise.all([
       read('setup/userlevel-opencode/agents/sf-orchestrator.md'),
       read('setup/userlevel-opencode/tools/sf_git_post_merge_verify.ts'),
-      read('docs/implementation/architecture-consistency/current-handoff.md'),
+      read('docs/archive/implementation/architecture-consistency/current-handoff.md'),
       read('docs/rule/specforge-development-error-ledger-and-experience.md'),
-      read('docs/implementation/architecture-consistency/P0-contract-consumer-closure.md'),
+      read('docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md'),
     ]);
 
     for (const content of [orchestrator]) {

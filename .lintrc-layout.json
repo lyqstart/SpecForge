@@ -12,8 +12,6 @@
     "scripts/render-specs-readme.ts",
     "scripts/render-meta-schema.ts",
     "docs/adr/**",
-    "docs/audit/**",
-    "docs/proposals/**",
     ".specforge/specs/**/*.md",
     "docs/conventions/**",
     "README.md",

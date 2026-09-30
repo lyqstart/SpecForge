@@ -122,7 +122,7 @@ if (!acquired) {
 
 ### copyFile + unlink 模式
 
-`proper-lockfile` 使用 `copyFile + unlink` 而非 `rename`，避免 Windows 上的 EPERM 错误（与 `scripts/sync-task-status.ts` 同款策略）。
+`proper-lockfile` 使用 `copyFile + unlink` 而非 `rename`，避免 Windows 上的 EPERM 错误。
 
 ## 测试覆盖
 

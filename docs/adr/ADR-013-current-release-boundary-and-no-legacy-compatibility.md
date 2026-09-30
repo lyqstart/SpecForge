@@ -76,5 +76,5 @@ SpecForge 当前同时保留了三类材料：V6 产品架构、后续架构一�
 
 详细执行顺序、验收门禁和停止条件见：
 
-- `docs/implementation/architecture-consistency/current-release-boundary-and-module-convergence-plan.md`
-- `docs/implementation/architecture-consistency/current-release-boundary-and-module-convergence-progress.md`
+- `docs/archive/implementation/architecture-consistency/current-release-boundary-and-module-convergence-plan.md`
+- `docs/archive/implementation/architecture-consistency/current-release-boundary-and-module-convergence-progress.md`

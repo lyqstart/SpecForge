@@ -29,7 +29,9 @@ describe('current release installer manifest boundary', () => {
     expect(plugin).toContain('XDG_CONFIG_HOME');
     expect(plugin).toContain("'sf-user'");
     expect(plugin).toContain("'lib', 'sf_plugin_client.ts'");
-    expect(plugin).toContain("'bin', executableName");
+    expect(plugin).not.toContain("'bin', executableName");
+    expect(plugin).not.toContain('startInstalledDaemon');
+    expect(plugin).not.toContain('startDaemon');
     expect(plugin).not.toContain("'.specforge'");
   });
 });

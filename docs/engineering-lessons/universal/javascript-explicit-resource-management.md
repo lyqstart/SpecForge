@@ -386,7 +386,7 @@ test: {
 grep -rn "constructor" packages/*/src/ -A 30 | grep -E "setInterval|setTimeout|createReadStream|\.on\(|spawn|connect"
 ```
 
-每条命中记录到 `docs/audit/constructor-side-effects.md`，逐条评估是否要改 opt-in。
+每条命中记录到当前任务的审计证据，逐条评估是否要改 opt-in；不要恢复已归档的 `docs/audit/` 当前目录。
 
 #### 步骤 2（必做）：统一 Disposable 协议
 
@@ -483,9 +483,9 @@ test: {
 4. 测试如何验证已释放？（哪个 afterEach + 哪个断言）
 ```
 
-### Steering 注入
+### Agent 规则注入
 
-在 `.kiro/steering/` 注入这条经验后，AI 派单 / 写代码时会主动遵循。本文档由经验库适配器自动同步到 `.kiro/steering/lessons-injected.md`。
+通过 OpenCode 经验 Skill 或仓库 `AGENTS.md` 注入后，AI 派单与写代码时会主动遵循。
 
 ### 派单 prompt 强化
 
@@ -516,7 +516,7 @@ orchestrator 派 sub-agent 写新 class 时，prompt 顶部应包含：
 | while 循环依赖外部信号无超时兜底 | [async-resource-lifecycle](async-resource-lifecycle.md) A2 |
 | 测试用 setTimeout 轮询慢且不稳 | [async-resource-lifecycle](async-resource-lifecycle.md) T3 |
 | 异步流测试中途异常没清理 | [async-resource-lifecycle](async-resource-lifecycle.md) T1 |
-| 派 sub-agent 跑测试卡死无反馈 | [kiro/execute-pwsh-constraints](../ai-tools/kiro/execute-pwsh-constraints.md) |
+| 派 sub-agent 跑测试卡死无反馈 | [shell-command-execution](shell-command-execution.md) |
 
 **判断本文 vs async-resource-lifecycle 的标准**：
 - 你在**写新类**、决定 API 形态、设计构造器 → 本文（架构层）

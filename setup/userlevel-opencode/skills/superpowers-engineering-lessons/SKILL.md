@@ -1503,7 +1503,7 @@ test: {
 grep -rn "constructor" packages/*/src/ -A 30 | grep -E "setInterval|setTimeout|createReadStream|\.on\(|spawn|connect"
 ```
 
-每条命中记录到 `docs/audit/constructor-side-effects.md`，逐条评估是否要改 opt-in。
+每条命中记录到当前任务的审计证据，逐条评估是否要改 opt-in；不要恢复已归档的 `docs/audit/` 当前目录。
 
 #### 步骤 2（必做）：统一 Disposable 协议
 
@@ -1600,9 +1600,9 @@ test: {
 4. 测试如何验证已释放？（哪个 afterEach + 哪个断言）
 ```
 
-### Steering 注入
+### Agent 规则注入
 
-在 `.kiro/steering/` 注入这条经验后，AI 派单 / 写代码时会主动遵循。本文档由经验库适配器自动同步到 `.kiro/steering/lessons-injected.md`。
+通过 OpenCode 经验 Skill 或仓库 `AGENTS.md` 注入后，AI 派单与写代码时会主动遵循。
 
 ### 派单 prompt 强化
 
@@ -1633,7 +1633,7 @@ orchestrator 派 sub-agent 写新 class 时，prompt 顶部应包含：
 | while 循环依赖外部信号无超时兜底 | [async-resource-lifecycle](async-resource-lifecycle.md) A2 |
 | 测试用 setTimeout 轮询慢且不稳 | [async-resource-lifecycle](async-resource-lifecycle.md) T3 |
 | 异步流测试中途异常没清理 | [async-resource-lifecycle](async-resource-lifecycle.md) T1 |
-| 派 sub-agent 跑测试卡死无反馈 | [kiro/execute-pwsh-constraints](../ai-tools/kiro/execute-pwsh-constraints.md) |
+| 派 sub-agent 跑测试卡死无反馈 | shell-command-execution |
 
 **判断本文 vs async-resource-lifecycle 的标准**：
 - 你在**写新类**、决定 API 形态、设计构造器 → 本文（架构层）
@@ -1660,7 +1660,7 @@ orchestrator 派 sub-agent 写新 class 时，prompt 顶部应包含：
 
 > **来源**：SpecForge V6 中 agent 调用 shell 频繁出错（cd 不被支持、命令卡死、中文乱码、找不到工具）的根因抽象。
 > **适用范围**：所有需要 AI agent 执行 shell 命令的项目，不限工具（Kiro / OpenCode / Cursor / Cline / Codex 等）。
-> **与 [kiro-execute-pwsh-constraints](../ai-tools/kiro/execute-pwsh-constraints.md) 关系**：本文是更上层的通用规则；Kiro 那篇是具体工具实现层的约束。本文给出"应该怎么设计 shell 工具"，对方给出"碰到 Kiro 的工具该怎么用"。
+> 旧 Kiro 工具专属约束已归档；本文是当前通用 Shell 执行规则。
 > **与 [host-environment-detection](host-environment-detection.md) 关系**：本文规定**怎么执行命令**，对方规定**怎么探测环境**。两者一起用：先探测、写入档案，本工具读档案后按档案执行。
 
 ---
@@ -2202,7 +2202,7 @@ permission:
 #### 步骤 4（推荐）：审计 agent prompt 是否有"用 cd"等错误示例
 
 ```bash
-grep -rn "cd\s\+.*&&\|cd\s\+.*;" .opencode/agents/ .kiro/steering/
+grep -rn "cd\s\+.*&&\|cd\s\+.*;" .opencode/agents/ AGENTS.md
 ```
 
 发现就改成 cwd 参数示例。
@@ -2226,7 +2226,7 @@ prompt 是辅助提醒，**真正不让 agent 翻车的是代码**。
 
 | 症状 | 解决参考 |
 |------|---------|
-| Kiro execute_pwsh 报"cd is not supported" | [kiro-execute-pwsh-constraints](../ai-tools/kiro/execute-pwsh-constraints.md) |
+| 受控 Shell 报工作目录切换不受支持 | 本节“使用 cwd 参数” |
 | `bun test` 卡死不返回 | 本文 + [async-resource-lifecycle](async-resource-lifecycle.md) D2 |
 | 中文输出乱码 | 本文"编码强制 UTF-8" |
 | 找不到 git/bun 等命令 | 本文 + [host-environment-detection](host-environment-detection.md) |

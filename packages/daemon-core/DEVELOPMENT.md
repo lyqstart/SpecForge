@@ -64,11 +64,11 @@ bun run test:coverage
 
 ## Architecture
 
-See the spec design document: `.kiro/specs/daemon-core/design.md`
+See the current Product Specification: `docs/product-specification/specforge-product-specification.md`.
 
 ## Requirements
 
-See the spec requirements document: `.kiro/specs/daemon-core/requirements.md`
+See the authority roles in `docs/product-specification/authority-registry.md`. Historical daemon-core material is under `docs/archive/kiro/specs/daemon-core/`.
 
 ## Correctness Properties
 

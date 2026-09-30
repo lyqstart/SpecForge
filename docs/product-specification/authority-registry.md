@@ -2,9 +2,9 @@
 
 > Status: ACTIVE / AUTHORITY_REGISTRY
 >
-> Effective date: 2026-09-18
+> Effective date: 2026-10-01
 >
-> Registry version: 1.0
+> Registry version: 1.1
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -38,16 +38,17 @@ SPS-1.0
 | docs/product-specification/specforge-product-specification.md | 当前唯一产品规格 | YES |
 | docs/product-specification/authority-registry.md | 权威登记与文件角色 | REGISTRY ONLY |
 | docs/adr/** | 架构决策记录；必须与当前产品规格一致 | NO |
-| docs/standards/fused_standard.md | 历史融合标准 / 当前规格来源材料 | NO |
-| docs/standards/v1.3/** | 后续设计候选与未来能力来源 | NO |
-| docs/design/** | 设计来源、历史设计与专题设计 | NO |
-| docs/implementation/** | 实施计划、动态状态和收敛记录 | NO |
-| docs/reports/**, docs/audit/**, docs/audits/** | 验证、审计和历史证据 | NO |
-| .kiro/specs/** | Kiro 工作规格、历史需求/设计来源 | NO |
+| docs/project-status.md | 唯一当前执行状态与下一合法动作；不承载产品决定 | NO |
+| docs/design/SpecForge架构一致性治理最终实施方案.md | 架构一致性与契约治理的从属技术合同 | NO |
+| docs/archive/** | 旧规格、旧标准、旧设计、实施记录、报告、审计与 Kiro 材料的统一历史归档 | NO |
+| docs/design/**（除上列从属合同外） | 当前不得新增并行设计权威；新增设计必须先登记角色 | NO |
+| .kiro/** | 根目录禁止存在；历史内容只可位于 docs/archive/kiro/** | FORBIDDEN ROOT |
 | docs/roadmap/future-capability-registry.md | 未来能力登记册 | NO |
 | packages/**, setup/**, scripts/** | 当前实现和消费者证据 | NO |
 | tests/** | 验证消费者与证据 | NO |
-| README / handoff / prompts | 导航、交接或使用说明 | NO |
+| README / prompts | 导航或使用说明 | NO |
+
+`docs/archive/**` 中的文件必须保持可追溯，但不得作为当前需求、设计或执行状态输入。测试若读取归档文件，只能验证历史证据未丢失，不能据此约束当前产品行为。
 
 ## 4. 当前产品负责人裁决
 
@@ -65,6 +66,10 @@ SPS-1.0
 | D07 | Multimodal、Self-Healing 不属于当前产品；进入 Future Capability Registry |
 | D08 | 第三方 Plugin Loader / runtime plugin system 不属于当前产品；Thin Plugin 作为第一方 OpenCode 接入组件继续保留 |
 | D09 | 当前不启用完整 v1.3 多视角 Project Spec；只吸收成熟 Core 规则，views/ADR Detail/ATAM/DDD/SRE 等进入 Future Capability Registry |
+| AR-DEC-01 | 《SpecForge 架构一致性治理最终实施方案》保留为从属技术治理合同，服从 SPS 与 Authority Registry，不再自称产品权威 |
+| AR-DEC-02 | 旧规格、旧设计、旧标准、实施文件、报告和审计统一进入 docs/archive/**，不再散布为并行当前目录 |
+| AR-DEC-03 | 仓库根 .kiro 退役；可复用内容必须进入当前权威或实现合同，剩余材料归档至 docs/archive/kiro/** |
+| AR-DEC-04 | 根 AGENTS.md 是新会话稳定入口；scripts/project-session-bootstrap.mjs 是只读恢复器；docs/project-status.md 是唯一当前执行状态文件 |
 
 ## 5. 解释优先级
 
@@ -73,10 +78,10 @@ SPS-1.0
 1. 已写入当前 Product Specification 的产品负责人裁决。
 2. 当前 Product Specification。
 3. 与 Product Specification 一致的 Accepted ADR。
-4. 与上位规则一致的模块设计、标准和 Contract。
+4. 与上位规则一致且已登记角色的模块设计和 Contract。
 5. 当前实现代码。
 6. 自动化测试与发布消费者。
-7. 历史报告、handoff、Kiro 工作规格和其他来源材料。
+7. `docs/archive/**` 中的历史报告、handoff、旧标准、Kiro 工作规格和其他来源材料。
 
 如果第 3 至第 7 层与第 1 至第 2 层冲突，应记录为 conformance gap 并修改下游消费者；不得反向修改当前产品规格以迁就旧实现。
 

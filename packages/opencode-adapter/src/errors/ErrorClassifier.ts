@@ -13,7 +13,7 @@
  *                  (when applicable), the original detail, and a concrete
  *                  `suggestion`
  *
- * Categories (per `.kiro/specs/opencode-adapter/design.md` §5.1):
+ * Stable adapter error categories retained by the current implementation:
  *   1. Version Incompatibility   — `VERSION_MISMATCH` from spawnAgent and
  *                                  the AdapterError hierarchy
  *   2. Translation Failure       — `unsupported: true` results from

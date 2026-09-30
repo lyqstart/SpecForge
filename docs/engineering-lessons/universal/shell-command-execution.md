@@ -13,7 +13,7 @@ related: [host-environment-detection, async-resource-lifecycle, kiro-execute-pws
 
 > **来源**：SpecForge V6 中 agent 调用 shell 频繁出错（cd 不被支持、命令卡死、中文乱码、找不到工具）的根因抽象。
 > **适用范围**：所有需要 AI agent 执行 shell 命令的项目，不限工具（Kiro / OpenCode / Cursor / Cline / Codex 等）。
-> **与 [kiro-execute-pwsh-constraints](../ai-tools/kiro/execute-pwsh-constraints.md) 关系**：本文是更上层的通用规则；Kiro 那篇是具体工具实现层的约束。本文给出"应该怎么设计 shell 工具"，对方给出"碰到 Kiro 的工具该怎么用"。
+> 旧 Kiro 工具专属约束已归档；本文是当前通用 Shell 执行规则。
 > **与 [host-environment-detection](host-environment-detection.md) 关系**：本文规定**怎么执行命令**，对方规定**怎么探测环境**。两者一起用：先探测、写入档案，本工具读档案后按档案执行。
 
 ---
@@ -555,7 +555,7 @@ permission:
 #### 步骤 4（推荐）：审计 agent prompt 是否有"用 cd"等错误示例
 
 ```bash
-grep -rn "cd\s\+.*&&\|cd\s\+.*;" .opencode/agents/ .kiro/steering/
+grep -rn "cd\s\+.*&&\|cd\s\+.*;" .opencode/agents/ AGENTS.md
 ```
 
 发现就改成 cwd 参数示例。
@@ -579,7 +579,7 @@ prompt 是辅助提醒，**真正不让 agent 翻车的是代码**。
 
 | 症状 | 解决参考 |
 |------|---------|
-| Kiro execute_pwsh 报"cd is not supported" | [kiro-execute-pwsh-constraints](../ai-tools/kiro/execute-pwsh-constraints.md) |
+| 受控 Shell 报工作目录切换不受支持 | 本文“使用 cwd 参数” |
 | `bun test` 卡死不返回 | 本文 + [async-resource-lifecycle](async-resource-lifecycle.md) D2 |
 | 中文输出乱码 | 本文"编码强制 UTF-8" |
 | 找不到 git/bun 等命令 | 本文 + [host-environment-detection](host-environment-detection.md) |

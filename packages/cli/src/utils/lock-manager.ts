@@ -74,7 +74,7 @@ export interface LockManager extends AsyncDisposable {
  * LockManager 默认实现
  * 
  * 使用 proper-lockfile（copyFile + unlink 模式）绕开 Windows EPERM rename 风险
- * （与 scripts/sync-task-status.ts 同款策略）
+ * （copyFile + unlink 的 Windows-safe 原子写策略）
  */
 export class DefaultLockManager implements LockManager {
   private lockPath: string;

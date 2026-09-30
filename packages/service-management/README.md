@@ -39,6 +39,6 @@ bun test:watch
 
 ## Documentation
 
-- [Requirements](../.kiro/specs/service-management/requirements.md)
-- [Design](../.kiro/specs/service-management/design.md)
-- [Tasks](../.kiro/specs/service-management/tasks.md)
+- [Current Product Specification](../../docs/product-specification/specforge-product-specification.md)
+- [Authority Registry](../../docs/product-specification/authority-registry.md)
+- Historical Kiro material: `docs/archive/kiro/specs/service-management/`

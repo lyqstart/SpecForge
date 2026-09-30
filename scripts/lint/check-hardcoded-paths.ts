@@ -156,7 +156,7 @@ export function shouldSkipLine(trimmedLine: string, fileExt: string = '.ts'): bo
 /** 递归收集目录下所有 .ts 和 .md 文件（排除 node_modules、.git、dist） */
 function collectTargetFiles(rootDir: string): string[] {
   const results: string[] = [];
-  const excludeDirs = new Set(['node_modules', '.git', '.kiro', 'dist']);
+  const excludeDirs = new Set(['node_modules', '.git', 'dist']);
 
   function walk(dir: string): void {
     let entries: fs.Dirent[];

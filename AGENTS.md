@@ -20,16 +20,32 @@ REPEATED_ERROR_CHECK=PASS
 
 本门禁只约束 SpecForge 产品自身的直接开发；不得启动 SpecForge 自身的 Work Item、Workflow、Candidate、Gate、User Decision、Merge Runner、Code Permission 或 Close 流程。
 
-## 权威体系恢复门禁
+## 新会话与恢复前置门禁
 
-在当前产品需求、产品架构、发布范围、模块去留、用户级路径、daemon 生命周期或文档清理作出判断前，必须读取：
+仓库根 `AGENTS.md` 是所有新会话的稳定入口，不承载动态项目状态。任何新会话在分析、诊断、修改或验证前，必须先运行只读 Bootstrap：
 
 ```text
-docs/adr/ADR-014-authority-model-recovery-freeze.md
-docs/implementation/architecture-consistency/authority-model-recovery.md
+node scripts/project-session-bootstrap.mjs
 ```
 
-`.kiro/` 不是当前产品权威目录；在正式 authority registry 经产品负责人裁决并建立前，不得把 `.kiro`、旧测试、README、handoff、实施方案或现有代码单独当作产品决定依据。冲突必须报告为 `AUTHORITY_CONFLICT`，证据不足必须报告为 `INSUFFICIENT_EVIDENCE`。
+随后必须完整读取 Bootstrap 输出的 `REQUIRED_RULES`，并从唯一状态文件：
+
+```text
+docs/project-status.md
+```
+
+所记录的 `NEXT_LEGAL_ACTION` 恢复。`BOOTSTRAP_STATUS=BLOCKED`、远端 `main` 不可核验、本地与远端 HEAD 不一致、存在未分类工作树变更、必需规则缺失或出现并行当前状态文件时，必须 fail closed。工作树有变化时必须先区分用户已有变化与当前任务变化，未经确认不得覆盖。
+
+禁止创建新的 handoff、current-status、recovery-status 或按会话命名的当前状态文件。动态历史进入 Git 与 `docs/archive/`；产品裁决必须进入 Product Specification 与 Authority Registry，不得只保存在聊天、状态文件、实现或测试中。
+
+当前产品需求、架构、发布范围、模块去留、用户级路径和 daemon 生命周期的唯一产品依据为：
+
+```text
+docs/product-specification/authority-registry.md
+docs/product-specification/specforge-product-specification.md
+```
+
+`.kiro/` 不是当前产品权威目录并应从仓库根退役；旧测试、README、handoff、实施方案、历史标准或现有代码不得单独决定产品行为。冲突必须报告为 `AUTHORITY_CONFLICT`，证据不足必须报告为 `INSUFFICIENT_EVIDENCE`。
 
 ## 证据先行与结论可追溯原则
 

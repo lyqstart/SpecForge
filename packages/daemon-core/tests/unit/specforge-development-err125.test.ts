@@ -21,8 +21,8 @@ function read(relativePath: string): string {
 describe('ERR-125—ERR-126 build output and generated workflow documentation governance', () => {
   it('records both failures and their class-level prevention rules', () => {
     const ledger = read('docs/rule/specforge-development-error-ledger-and-experience.md');
-    const handoff = read('docs/implementation/architecture-consistency/current-handoff.md');
-    const p0 = read('docs/implementation/architecture-consistency/P0-contract-consumer-closure.md');
+    const handoff = read('docs/archive/implementation/architecture-consistency/current-handoff.md');
+    const p0 = read('docs/archive/implementation/architecture-consistency/P0-contract-consumer-closure.md');
 
     expect(ledger).toContain('### ERR-125：V74全仓构建生成范围外Skill，但验证器在提交前未执行完整修改集合审计');
     expect(ledger).toContain('## EXP-102：每个有文件副作用的验证动作后必须立即重算精确修改集合');

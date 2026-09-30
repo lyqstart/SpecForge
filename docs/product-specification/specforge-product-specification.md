@@ -1495,8 +1495,22 @@ fresh evidence / architecture review
 
 ---
 
+# 22. 仓库权威与跨会话连续性
+
+以下规则是产品负责人对产品开发权威链和持续维护方式的正式裁决：
+
+1. `AGENTS.md` 是新 AI 会话进入 SpecForge 仓库的稳定入口；它必须要求在分析、修改或验证前运行只读 `scripts/project-session-bootstrap.mjs`。
+2. `docs/project-status.md` 是唯一当前执行状态文件，只保存当前目标、阶段、阻塞、下一合法动作和验证要求；不得保存会自引用失效的 commit/HEAD 值。
+3. Product Specification 与 Authority Registry 是产品决定的唯一入口；状态文件、实现、测试、聊天或历史文档不得创造产品需求。
+4. `docs/design/SpecForge架构一致性治理最终实施方案.md` 是从属技术治理合同，必须服从本规格和 Authority Registry。
+5. 旧规格、旧设计、旧标准、实施记录、报告与审计统一保存在 `docs/archive/**`；历史证据不得删除，也不得因为仍被测试读取而恢复为当前权威。
+6. 仓库根不得存在 `.kiro/**`。旧 Kiro 内容统一保存在 `docs/archive/kiro/**`；只有已经明确合并进本规格、登记合同或当前实现的内容才可继续约束产品。
+7. 新会话恢复器必须核验本地/远端 Git 基线、必需文件、唯一状态块、并行状态文件、根 `.kiro` 缺失及工作树变化，并在证据不足或冲突时 fail closed。
+
+---
+
 # Appendix A — 已吸收的产品裁决
 
-SPS-1.0 已吸收 Authority Model Recovery 阶段的 PO-001、D01—D09。完整裁决登记见 authority-registry.md。
+SPS-1.0 已吸收 Authority Model Recovery 阶段的 PO-001、D01—D09 与 AR-DEC-01—AR-DEC-04。完整裁决登记见 authority-registry.md。
 
 本 Appendix 只用于可追溯，不建立第二套规则。
