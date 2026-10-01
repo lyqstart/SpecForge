@@ -28653,3 +28653,63 @@ ERR1569_STATUS=CLOSED_5_TARGETED_RUNS_AND_SCOPE_GATE_24_FILES_115_TESTS_PASS
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1569_WINDOWS_ATOMIC_RENAME_TRANSIENT_EPERM:END -->
+
+<!-- SPECFORGE_ERR1570_CIM_PROCESS_QUERY_ACCESS_DENIED:START -->
+### ERR-1570：CG-008 真实运行取证的 CIM 进程查询被系统拒绝
+
+- **事实证据**：`Get-CimInstance Win32_Process` 返回“拒绝访问”，同一只读命令中的 `Get-Command opencode` 未产生可执行文件结果。
+- **影响**：该 CIM 查询不能证明 OpenCode 或 SpecForge 进程不存在；本轮没有据此推进真实端到端结论。
+- **根因**：当前 Windows 会话无权读取 Win32_Process CIM 类的完整进程信息。
+- **纠正与防复发**：改用成功且可解析的完整 `Get-Process` 快照，并分别记录快照数量、名称匹配数与 `Get-Command` 结果；任何查询失败继续标记 `INSUFFICIENT_EVIDENCE`，不得转换为 `false`。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-038、EXP-060。
+
+```text
+ERR1570_STATUS=CLOSED_ALTERNATE_PROCESS_SNAPSHOT_320_PROCESSES_ZERO_NAME_MATCHES
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1570_CIM_PROCESS_QUERY_ACCESS_DENIED:END -->
+
+<!-- SPECFORGE_ERR1571_OPENCODE_REAL_CONFIG_EEXIST:START -->
+### ERR-1571：临时 OpenCode binary 首次运行触达真实用户配置并因 `EEXIST` 失败
+
+- **事实证据**：临时目录中的 OpenCode 1.18.34 执行 `--version` 时返回 `EEXIST: file already exists, mkdir 'C:\\Users\\lyq\\.config\\opencode'`，退出码 1。
+- **影响**：尚未获得真实 binary 版本或 server 证据；不得在真实用户配置路径直接重试，也不得把安装成功等同运行成功。
+- **根因**：启动前未隔离 OpenCode 的 XDG 配置/数据/缓存/状态边界，二进制访问了用户现有配置坐标。
+- **纠正与防复发**：后续真实 binary 取证显式把 `XDG_CONFIG_HOME`、`XDG_DATA_HOME`、`XDG_CACHE_HOME`、`XDG_STATE_HOME` 全部指向独立临时根，再验证真实配置路径未变化。
+- **适用经验**：EXP-002、EXP-006、EXP-008、EXP-015、EXP-018、EXP-020、EXP-060。
+
+```text
+ERR1571_STATUS=CLOSED_ISOLATED_XDG_BINARY_1_18_34_AND_REAL_E2E_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1571_OPENCODE_REAL_CONFIG_EEXIST:END -->
+
+<!-- SPECFORGE_ERR1572_CROSS_FILE_PATCH_PARTIAL_APPLICATION:START -->
+### ERR-1572：跨文件补丁因第三个文件上下文不匹配而留下前两个文件的部分修改
+
+- **事实证据**：一次同时更新 `project-status.md`、产品规格和经验账本的 `apply_patch` 在账本的预期状态行上报告上下文不匹配；随后 `git diff` 证明前两个文件已更新，而账本未更新。
+- **影响**：项目状态与产品规格已经记录真实 E2E，ERR-1571 状态仍停留在“等待重试”；若误认为补丁整体回滚，会遗漏现有工作区变更并产生不一致提交。
+- **根因**：错误假设跨文件 `apply_patch` 失败具有事务性，并在修改前没有重新读取三个目标的精确当前上下文。
+- **纠正与防复发**：跨文件治理更新必须逐文件应用并在每次后立即检查 diff；任何补丁失败都先读取 `git status`、目标精确上下文和 diff，禁止凭工具错误文本推断整体无修改。
+- **适用经验**：EXP-003、EXP-004、EXP-015、EXP-020、EXP-060、EXP-065。
+
+```text
+ERR1572_STATUS=CLOSED_EXACT_DIFF_RECONCILED_AND_LEDGER_COMPLETED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1572_CROSS_FILE_PATCH_PARTIAL_APPLICATION:END -->
+
+<!-- SPECFORGE_ERR1573_BUN_CWD_USAGE_FALSE_ZERO:START -->
+### ERR-1573：Bun 定向测试命令只输出帮助页却返回退出码 0
+
+- **事实证据**：`bun --cwd packages/daemon-core run test -- tests/unit/project-session-bootstrap.test.ts` 输出完整 `bun run` usage 和脚本清单，没有 Vitest 测试结果，但进程退出码为 0。
+- **影响**：该命令不能作为测试通过证据；没有测试或仓库状态变更。
+- **根因**：当前 Bun CLI 不接受该位置的 `--cwd` 组合，且帮助路径的零退出码会造成伪成功。
+- **纠正与防复发**：从目标 package 目录执行 `bun run test -- <file>`；测试成功必须同时具备测试框架摘要、目标文件/用例计数与退出码 0，不能只看退出码。
+- **适用经验**：EXP-002、EXP-007、EXP-015、EXP-020、EXP-038、EXP-060。
+
+```text
+ERR1573_STATUS=CLOSED_RERUN_FROM_PACKAGE_WORKDIR_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1573_BUN_CWD_USAGE_FALSE_ZERO:END -->

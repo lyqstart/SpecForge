@@ -1464,7 +1464,7 @@ SpecForge 要被声明为符合 SPS-1.0，至少必须满足：
 - CG-005【RESOLVED】：D09 deferred multi-view paths 已从 current Layout/API 移出。
 - CG-006【RESOLVED】：current schema validation 已迁入 `@specforge/types/schema-contract`；Migration package 及 current workspace/release surface 已退出。
 - CG-007：Multimodal、Self-Healing、Plugin Loader 源码/package 仍存在，需从 current release surface 收敛。
-- CG-008【PARTIALLY_RESOLVED】：Daemon production instantiation/caller、neutral contract 与 OpenCode HTTP transport 已实现并通过跨包验证；因当前主机无真实 OpenCode binary，部署链及真实 binary 端到端证据仍不足，状态保持 `REQUIRED_NOT_YET_ENABLED`。
+- CG-008【IMPLEMENTED_AWAITING_OWNER_CONFIRMATION】：Daemon production instantiation/caller、neutral contract 与 OpenCode HTTP transport 已实现；OpenCode 1.18.34 real binary 已通过 release `specforged` 的 session create、no-reply system prompt、session read 与 abort 端到端验证。产品负责人确认状态升级前保持 `REQUIRED_NOT_YET_ENABLED`。
 - CG-009：Distribution Kiro spec 仍描述 npm global + specforge init + ~/.specforge。
 - CG-010【RESOLVED】：release precheck / Scope Gate 已直接消费 SPS-1.0 hash-bound release authority projection。
 - CG-011：fused_standard.md 和 v1.3 文档仍包含旧的 final/standard authority 自述，需要降级标识。
