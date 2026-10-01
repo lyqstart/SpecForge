@@ -1,12 +1,9 @@
 /**
  * bash-guard.ts — Bash command safety guard
  *
- * Blocks dangerous shell commands and checks file-modifying commands
- * against the write policy before execution.
+ * Blocks commands that are unsafe regardless of write authorization.
+ * Write authorization is evaluated separately by the runtime write guard.
  */
-
-import type { WritePolicyRule } from './write-guard-v11.js'
-import { isCandidateFrozenState } from './candidate-freeze-v11.js'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -50,85 +47,20 @@ const DANGEROUS_PATTERNS: ReadonlyArray<{
   { pattern: /\b(format\s+[A-Za-z]:|diskpart)\b/i, reason: 'dangerous: disk formatting commands are not allowed' },
 ]
 
-/** File-modifying command patterns (checked against write policy) */
-const FILE_MODIFYING_PATTERNS: ReadonlyArray<{
-  pattern: RegExp
-  extractPath: (match: RegExpMatchArray) => string | null
-  operation: 'create' | 'modify' | 'delete'
-}> = [
-  // redirection to file: > file or >> file
-  {
-    pattern: />>?\s*["']?([^\s"';&|]+)["']?/,
-    extractPath: (m) => m[1],
-    operation: 'modify',
-  },
-  // tee filename
-  {
-    pattern: /\btee\s+["']?([^\s"';&|]+)["']?/,
-    extractPath: (m) => m[1],
-    operation: 'modify',
-  },
-]
-
 // ---------------------------------------------------------------------------
 // guardBashCommand
 // ---------------------------------------------------------------------------
 
-export interface BashGuardOptions {
-  /** Optional caller role — defaults to 'agent' for backward compatibility */
-  callerRole?: string
-  /** Authoritative StateManager state. Missing state freezes governed Candidate paths. */
-  currentState?: string
-}
-
 /**
- * Check a bash command against safety rules and write policy.
+ * Check a bash command against unconditional safety rules.
  *
  * @param command The raw bash command string to check
- * @param policy The write policy rule to evaluate file-modifying commands against
- * @param options Optional configuration including callerRole
  * @returns BashGuardCheck with allowed=true if the command passes all checks
  */
-export function guardBashCommand(
-  command: string,
-  policy: WritePolicyRule,
-  options?: BashGuardOptions,
-): BashGuardCheck {
-  const callerRole = options?.callerRole ?? 'agent'
-  // 1. Check always-dangerous patterns
+export function guardBashCommand(command: string): BashGuardCheck {
   for (const { pattern, reason } of DANGEROUS_PATTERNS) {
     if (pattern.test(command)) {
       return { command, allowed: false, reason }
-    }
-  }
-
-  // 2. Check file-modifying commands against the write policy
-  for (const { pattern, extractPath, operation } of FILE_MODIFYING_PATTERNS) {
-    const match = pattern.exec(command)
-    if (match) {
-      const targetPath = extractPath(match)
-      if (targetPath) {
-        // Use a minimal context for policy check (command-level guard
-        // focuses on path safety; full context evaluation is done by
-        // the write guard itself when the actual write occurs)
-        const violation = policy.check(
-          {
-            hasActiveWI: true,
-            callerRole: callerRole as import('./write-guard-v11.js').WriteGuardContext['callerRole'],
-            isFrozen: options?.currentState
-              ? isCandidateFrozenState(options.currentState)
-              : true,
-          },
-          targetPath,
-        )
-        if (violation !== null) {
-          return {
-            command,
-            allowed: false,
-            reason: `write policy violation: ${violation}`,
-          }
-        }
-      }
     }
   }
 

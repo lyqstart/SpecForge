@@ -31,7 +31,6 @@ import {
   type WriteDecisionContext,
   type WriteDecisionResult,
 } from '@specforge/permission-engine'
-import { isCandidateFrozenState } from './candidate-freeze-v11'
 
 // ---------------------------------------------------------------------------
 // Core types — canonical definitions
@@ -47,24 +46,6 @@ export type WriteGuardContext = WriteDecisionContext;
  * Result of a write-permission check.
  */
 export type WriteCheckResult = WriteDecisionResult;
-
-/**
- * Path-policy adapters use the same result shape as the canonical guard.
- */
-export type WritePolicyResult = WriteCheckResult;
-
-// ---------------------------------------------------------------------------
-// Rule-engine types (for extensibility / audit)
-// ---------------------------------------------------------------------------
-
-/**
- * A single write-policy rule that can be evaluated independently.
- */
-export interface WritePolicyRule {
-  id: string;
-  description: string;
-  check: (ctx: WriteGuardContext, targetPath: string, operation?: 'create' | 'modify' | 'delete') => string | null;
-}
 
 // ---------------------------------------------------------------------------
 // checkWrite — CANONICAL single judgment entry point (§12.5-§12.6)
@@ -87,54 +68,6 @@ export function checkWrite(
   operation: 'create' | 'modify' | 'delete',
 ): WriteCheckResult {
   return decideWritePermission(ctx, targetPath, operation);
-}
-
-// ---------------------------------------------------------------------------
-// enforceWritePolicy — adapter for path-policy.ts consumers
-// ---------------------------------------------------------------------------
-
-/**
- * Enforce write policy based on actor + path + operation + WI status.
- *
- * This is a convenience adapter that translates the flat-parameter calling
- * convention (used by path-policy.ts) into the canonical `checkWrite()` call.
- * ALL logic lives in `checkWrite()`; this function only maps parameters.
- */
-export function enforceWritePolicy(params: {
-  actor: string;
-  filePath: string;
-  operation: 'read' | 'write' | 'delete';
-  wiStatus?: string;
-  codePermission?: boolean;
-  allowedWriteFiles?: string[];
-}): WritePolicyResult {
-  const { actor, filePath, operation, wiStatus, codePermission, allowedWriteFiles } = params;
-
-  // Reads are always allowed
-  if (operation === 'read') {
-    return { allowed: true, violations: [] };
-  }
-
-  // Map flat params to WriteGuardContext
-  const ctx: WriteGuardContext = {
-    hasActiveWI: wiStatus !== undefined && wiStatus !== 'closed',
-    workItem: wiStatus !== undefined
-      ? {
-          work_item_id: '',
-          status: wiStatus,
-          code_change_allowed: codePermission !== false,
-          allowed_write_files: (allowedWriteFiles ?? []).map(f => ({ path: f, operation: 'modify' })),
-          workflow_path: null,
-        }
-      : undefined,
-    callerRole: actor as WriteGuardContext['callerRole'],
-    isFrozen: isCandidateFrozenState(wiStatus),
-  };
-
-  const mappedOp: 'create' | 'modify' | 'delete' =
-    operation === 'delete' ? 'delete' : 'modify';
-
-  return checkWrite(ctx, filePath, mappedOp);
 }
 
 // ---------------------------------------------------------------------------

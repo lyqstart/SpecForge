@@ -67,8 +67,25 @@ describe('current Permission and Write Guard ownership boundary', () => {
       resolve(ROOT, 'packages/daemon-core/src/tools/lib/write-guard-v11.ts'),
       'utf8',
     );
-    expect(daemonWriteGuard).toContain('export interface WritePolicyRule');
+    expect(daemonWriteGuard).not.toContain('export interface WritePolicyRule');
+    expect(daemonWriteGuard).not.toContain('export function enforceWritePolicy(');
     expect(daemonWriteGuard).not.toContain('DEFAULT_WRITE_POLICY_RULES');
     expect(daemonWriteGuard).not.toContain('export function evaluatePolicy(');
+
+    const pathPolicy = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/path-policy.ts'),
+      'utf8',
+    );
+    const bashGuard = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/bash-guard.ts'),
+      'utf8',
+    );
+    const safeBashCore = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/sf_safe_bash_core.ts'),
+      'utf8',
+    );
+    expect(pathPolicy).not.toContain('enforceWritePolicy');
+    expect(bashGuard).not.toContain('WritePolicyRule');
+    expect(safeBashCore).not.toContain('DEFAULT_BASH_WRITE_POLICY');
   });
 });

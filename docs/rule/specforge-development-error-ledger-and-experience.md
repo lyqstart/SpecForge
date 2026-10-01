@@ -29076,3 +29076,99 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1602_STATUS=CLOSED_RETRY_WITH_EXPLICIT_PATHS_AND_CONTROLLED_GIT_METADATA_PERMISSION
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1602_GIT_INDEX_SANDBOX_PERMISSION_DENIED:END -->
+
+<!-- SPECFORGE_ERR1603_EXPERIENCE_HEADING_ASSUMPTION_RECURRED:START -->
+### ERR-1603：经验章节标题假设在新会话复发
+
+- **事实证据**：本轮首次门禁读取再次用不存在的 `## 三、工程经验总则` 和 `## 五、` 作为 `IndexOf` 边界，PowerShell 因起始索引为负而失败；随后 `rg` 证明真实边界仍是一级标题 `# 第三部分：工程经验总则`、`# 第四部分：修改前强制检查`、`# 第五部分：错误台账维护规则`。该失败与 ERR-1594 属于同一模式。
+- **影响**：首次调用没有读取经验正文，不能形成门禁证据；在按真实标题和行号完整重读前，CG-013 下一切片保持 fail closed，没有修改产品代码。
+- **根因**：新会话恢复时没有复用 ERR-1594 已验证的标题发现步骤，仍从自然语言要求重建了一个脆弱的精确标题。
+- **纠正与防复发**：门禁读取固定分成两步：先用 `rg` 发现真实一级标题及行号，再按已确认的 `[1903, 2944]` 内容区间分块读取；禁止在未发现标题前调用带猜测 startIndex 的字符串切片。补录后重新完整读取第三、第四部分，并将本次复发纳入适用经验映射。
+- **适用经验**：EXP-001、EXP-007、EXP-015、EXP-019、EXP-020、EXP-021、EXP-060、EXP-065、EXP-087。
+- ERR1603_STATUS=CLOSED_REAL_HEADING_DISCOVERY_REUSED_BEFORE_SECTION_READ
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1603_EXPERIENCE_HEADING_ASSUMPTION_RECURRED:END -->
+
+<!-- SPECFORGE_ERR1604_POWERSHELL_REGEX_QUOTE_COLLISION:START -->
+### ERR-1604：生产消费者检索命令发生 PowerShell 正则引号冲突
+
+- **事实证据**：把包含 `['\"]` 的正则放入 PowerShell 双引号命令并与第二个 `rg` 串联时，PowerShell 在 `--glob "*.ts"` 附近报告 `You must provide a value expression following the '*' operator`；命令未执行检索。
+- **影响**：该调用没有形成 import、调用点或文件写入入口证据；CG-013 前置检查分类仍须依赖后续成功的独立检索。
+- **根因**：在 JSON、PowerShell 与正则三层中复用双引号，未先选择稳定的单引号参数边界。
+- **纠正与防复发**：把 import/call 与文件写入检索拆成独立命令，正则使用 PowerShell 单引号，glob 使用普通双引号；只采信成功退出的输出并与源码段落交叉验证。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-060、EXP-065。
+- ERR1604_STATUS=CLOSED_COMMAND_SPLIT_AND_SINGLE_QUOTED_REGEX_REQUIRED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1604_POWERSHELL_REGEX_QUOTE_COLLISION:END -->
+
+<!-- SPECFORGE_ERR1605_WINDOWS_RG_LITERAL_ADR_GLOB_RECURRED:START -->
+### ERR-1605：ADR 权威检索再次把通配符作为 Windows 路径参数
+
+- **事实证据**：本轮向 `rg` 直接传入 `docs/adr/ADR-006*.md` 至 `ADR-013*.md`，Windows 对八个路径均返回“文件名、目录名或卷标语法不正确”；两个明确的 SPS/Registry 文件仍返回结果，但 ADR-006—013 没有形成覆盖证据。该模式与 ERR-1597 相同。
+- **影响**：当前只能采信 SPS 明确文件的命中，不能宣称已对 ADR 消费者完成权威交叉检查；修改范围继续保持未冻结。
+- **根因**：虽然已有仓库根加 `--glob` 的防复发规则，本轮仍把 shell glob 展开当作跨平台前提。
+- **纠正与防复发**：所有后续仓库检索只以真实目录或仓库根为输入，并用多个 `--glob` 过滤；ADR 文件名先由 `rg --files docs/adr` 取得，再读取明确路径。通配路径报错的同一调用不得作为完整证据。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-019、EXP-040、EXP-046、EXP-060、EXP-065、EXP-087。
+- ERR1605_STATUS=CLOSED_REPOSITORY_ROOT_AND_RG_GLOB_FILTER_REQUIRED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1605_WINDOWS_RG_LITERAL_ADR_GLOB_RECURRED:END -->
+
+<!-- SPECFORGE_ERR1606_SAFE_BASH_TEST_LARGE_PATCH_ANCHOR_MISMATCH:START -->
+### ERR-1606：旧 Safe Bash 测试大段补丁锚点不匹配
+
+- **事实证据**：两次尝试以长连续锚点删除 `safe-bash-caller-role.test.ts` 中测试专用 `WritePolicyRule` helper、Part 1 与 Part 3 时，`apply_patch` 均报 `Failed to find expected lines`；工具原子失败，该文件没有部分删除，之前已成功的其他文件补丁保持可审计。
+- **影响**：源码已移除测试专用策略接口后，该测试暂时仍消费旧类型，当前构建/测试预期不通过；必须先同步这个真实测试消费者。
+- **根因**：对较长旧测试使用了过大的连续文本锚点，其中 import 行扩展名等细节与真实文件字节不一致。
+- **纠正与防复发**：读取文件带行号的真实边界后，短 import 补丁独立完成；对于大比例废止的测试内容，改用 `apply_patch` 原子删除并添加完整目标文件，随后检索旧标识。禁止继续扩大连续文本锚点。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-014、EXP-015、EXP-019、EXP-022、EXP-060、EXP-063、EXP-065。
+- ERR1606_STATUS=CLOSED_SMALL_REAL_BYTE_ANCHORS_REQUIRED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1606_SAFE_BASH_TEST_LARGE_PATCH_ANCHOR_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1607_BUN_DEFAULT_TEMP_DIRECTORY_EPERM:START -->
+### ERR-1607：定向测试被 Bun 默认临时目录权限阻断
+
+- **事实证据**：使用已存在的 Bun 运行三项定向 Vitest 文件时，Bun 在测试收集前返回 `EPERM accessing temporary directory. Please set $BUN_TMPDIR or $BUN_INSTALL`；显式把 `TEMP`、`TMP`、`BUN_TMPDIR` 指向已存在的 `D:\code\SpecForge\.tmp\bun` 后原样重跑仍返回同一错误，均没有产生测试结果。
+- **影响**：该调用只能证明测试环境未准备好，不能归因为产品或测试回归；当前修改仍未验证。
+- **根因**：`CORROBORATED` 为当前受限执行环境阻止 Bun 访问其临时资源，而非单纯缺少环境变量；目录存在且环境变量方案未改变结果。更细粒度的 Bun 内部访问目标尚无证据。
+- **纠正与防复发**：停止在相同沙箱中调整同一组变量；使用已经验证的 Bun 命令和仓库临时目录申请受控执行权限，再运行完全相同的定向测试。环境失败与产品失败分别记录。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-011、EXP-015、EXP-016、EXP-019、EXP-052、EXP-060。
+- ERR1607_STATUS=CLOSED_CONTROLLED_EXECUTION_REMOVED_TEMP_ACCESS_BLOCK
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1607_BUN_DEFAULT_TEMP_DIRECTORY_EPERM:END -->
+
+<!-- SPECFORGE_ERR1608_BUNX_FLOATING_VITEST_WITHOUT_LOCAL_INSTALL:START -->
+### ERR-1608：本地依赖缺失时 bun x 解析到浮动 Vitest
+
+- **事实证据**：受控执行 `bun x vitest run <three files>` 时输出 `Resolving dependencies`、`vitest@latest` 临时目录和 `Could not resolve 'vitest/config'`，在加载配置阶段失败；随后只读检查确认 `node_modules/vitest/package.json` 不存在，`git diff -- bun.lock` 为空，未产生锁文件内容变化。
+- **影响**：该调用没有运行测试，不能作为产品回归结果；浮动最新版也不是仓库锁定工具链证据。
+- **根因**：在本地依赖未安装时使用 `bun x`，允许工具自动解析临时最新版，而不是先满足仓库 workspace 的锁定依赖前置条件。
+- **纠正与防复发**：先按现有 `bun.lock` 执行离线安装，再通过各 package 的 `bun run test -- <files>` 或本地明确版本运行；本地 Vitest 不存在时禁止 `bun x vitest`。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-019、EXP-052、EXP-060。
+- ERR1608_STATUS=CLOSED_LOCKED_OFFLINE_INSTALL_AND_PACKAGE_LOCAL_TESTS_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1608_BUNX_FLOATING_VITEST_WITHOUT_LOCAL_INSTALL:END -->
+
+<!-- SPECFORGE_ERR1609_BUN_CWD_SCRIPT_ARGUMENT_ORDER:START -->
+### ERR-1609：Bun 1.4 package 测试命令参数顺序错误
+
+- **事实证据**：离线依赖恢复后执行 `bun --cwd packages/daemon-core run test -- ...`，Bun 只输出 `Usage: bun run [flags] <file or script>` 与脚本列表，没有启动 Vitest。
+- **影响**：该调用没有测试结果，不能证明通过或失败；源码状态不受影响。
+- **根因**：根据其他 CLI 的习惯猜测 Bun 1.4 `--cwd` 与 `run` 顺序，没有复用已安装的包内可执行入口。
+- **纠正与防复发**：直接在目标 package 工作目录运行其明确存在的 `node_modules/.bin/vitest.exe run <paths>`；不同 package 分开执行，避免 cwd 与参数转发歧义。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-019、EXP-026、EXP-060。
+- ERR1609_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_ENTRY_REQUIRED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1609_BUN_CWD_SCRIPT_ARGUMENT_ORDER:END -->
+
+<!-- SPECFORGE_ERR1610_PARALLEL_FULL_SUITE_INSTALLER_TIMEOUTS:START -->
+### ERR-1610：并行全量回归使 Scope Gate 安装集成测试超时
+
+- **事实证据**：Daemon 与 Scope Gate 全量测试并行运行时，Daemon `198 files / 1728 tests` 全部通过；Scope Gate 仅 `current-repository-installer-manifest-consumption.integration.test.ts` 的 install、upgrade 两项在固定 10000ms 超时，结果为 `27 passed / 1 failed files`、`125 passed / 2 failed tests`。失败文件不 import 本次修改的 Bash/Write Guard 文件。
+- **影响**：Scope Gate 全量回归尚不能记为通过；在隔离重跑前也不能把超时归因于资源竞争或产品回归。
+- **根因**：`CORROBORATED` 为两个完整测试集并发造成安装集成测试资源竞争：失败文件独立运行 `3/3` 通过，随后 Scope Gate 无并发全量运行 `28 files / 127 tests` 通过；没有支持产品回归的复现证据。
+- **纠正与防复发**：失败文件已隔离通过，Scope Gate 已串行全量通过；包含真实构建/安装子进程和固定超时的重型套件不得与 Daemon 全量并发作为最终证据。
+- **适用经验**：EXP-001、EXP-007、EXP-008、EXP-009、EXP-011、EXP-015、EXP-016、EXP-019、EXP-060。
+- ERR1610_STATUS=CLOSED_ISOLATED_3_PASS_AND_SERIAL_SCOPE_FULL_127_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1610_PARALLEL_FULL_SUITE_INSTALLER_TIMEOUTS:END -->

@@ -25,13 +25,6 @@ import type { SafeBashArgs, SafeBashResult } from "./sf_safe_bash_types"
 import { applyRules } from "./sf_safe_bash_rules"
 import { executeCommand, resolveCwd } from "./sf_safe_bash_executor"
 import { guardBashCommand } from "./bash-guard"
-import type { WritePolicyRule } from "./write-guard-v11"
-
-const DEFAULT_BASH_WRITE_POLICY: WritePolicyRule = {
-  id: 'sf-safe-bash-default',
-  description: 'Default bash write policy — allows all (enforcement is at write-guard level)',
-  check: () => null,
-}
 
 interface HostProfile {
   schema_version: string
@@ -139,11 +132,7 @@ export async function safeBashExecute(
     }
   }
 
-  const bashGuardResult = guardBashCommand(
-    effectiveCommand,
-    DEFAULT_BASH_WRITE_POLICY,
-    { callerRole: args.callerRole },
-  )
+  const bashGuardResult = guardBashCommand(effectiveCommand)
   if (!bashGuardResult.allowed) {
     return {
       success: false,

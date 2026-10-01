@@ -4,10 +4,6 @@ import { isAbsolute } from 'node:path';
 import { resolveSpecModuleIdentity } from '@specforge/types';
 import { projectSpecManifest } from '@specforge/types/directory-layout';
 import { MVP_FORBIDDEN_DIRS } from './project-layout.js';
-import {
-  enforceWritePolicy as canonicalEnforceWritePolicy,
-  type WritePolicyResult,
-} from './write-guard-v11.js';
 
 export interface PathPolicyResult { valid: boolean; violations: string[]; }
 const MODULE_SPEC_TARGET_KEYS = new Set([
@@ -75,5 +71,3 @@ export function enforcePathPolicy(filePath: string): PathPolicyResult {
   }
   return { valid: violations.length === 0, violations };
 }
-export type { WritePolicyResult } from './write-guard-v11.js';
-export const enforceWritePolicy = canonicalEnforceWritePolicy;
