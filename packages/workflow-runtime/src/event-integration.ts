@@ -1,13 +1,12 @@
 /**
  * Event Bus Integration Module
- * Provides utilities for integrating workflow runtime with daemon-core Event Bus
+ * Provides utilities for integrating workflow runtime with an injected Event Bus port.
  * 
  * Feature: Workflow Event System Integration
  * Property 6: Event Ordering - For all workflow instances w, events must be ordered by time
  * Validates: Requirements 4.1, 4.2, 4.3
  */
 
-import { EventBus } from '@specforge/daemon-core/src/event-bus/EventBus';
 import { EventPublisher, createEventPublisher } from './events/EventPublisher.js';
 import { WorkflowEngine } from './WorkflowEngine.js';
 import type { IEventBus } from './types.js';
@@ -17,13 +16,13 @@ import type { IEventBus } from './types.js';
  */
 export interface EventBusIntegrationConfig {
   projectId: string;
-  eventBus?: IEventBus;
+  eventBus: IEventBus;
   source?: 'daemon' | 'client' | 'adapter';
 }
 
 /**
  * Initialize Event Bus integration for workflow runtime
- * Creates an EventPublisher and optionally creates an EventBus if not provided
+ * Creates an EventPublisher around the Event Bus supplied by the composition layer.
  * 
  * @param config Configuration for Event Bus integration
  * @returns Object containing EventBus, EventPublisher, and WorkflowEngine
@@ -35,10 +34,9 @@ export function initializeEventBusIntegration(
   eventPublisher: EventPublisher;
   workflowEngine: WorkflowEngine;
 } {
-  // Create or use provided EventBus
-  const eventBus = config.eventBus || (new EventBus() as unknown as IEventBus);
+  const eventBus = config.eventBus;
 
-  // Start EventBus if it's a daemon-core EventBus instance
+  // Start the injected implementation when it exposes the lifecycle port.
   if (eventBus && typeof (eventBus as any).start === 'function') {
     (eventBus as any).start();
   }

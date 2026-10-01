@@ -28896,3 +28896,15 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1587_STATUS=CLOSED_IGNORED_GENERATED_EVIDENCE_CONFIRMED
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1587_GIT_SHOW_IGNORED_RELEASE_MANIFEST:END -->
+
+<!-- SPECFORGE_ERR1588_COMBINED_VALIDATION_OUTPUT_TRUNCATED:START -->
+### ERR-1588：组合验证输出被截断导致结果不可判定
+
+- **事实证据**：同一工具调用顺序执行 Workflow Runtime 构建、Daemon 构建和 Workflow Runtime 完整测试后，返回内容因输出超过上下文限制而被截断；当前可见记录没有各命令的退出码和最终摘要。
+- **影响**：这些命令可能已经执行，但无法据此声明任何构建或测试通过；CG-012 首个生产依赖反转切片仍缺正式验证证据。
+- **根因**：把多个可能产生较多输出的验证命令合并进单次调用，且没有为每项结果保留独立退出状态和有界输出。
+- **纠正与防复发**：构建和完整测试分别调用、分别记录退出码；高输出验证使用足够但有界的单项输出预算，不再把多个完整验证聚合进同一输出通道。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-031、EXP-087。
+- ERR1588_STATUS=CLOSED_SPLIT_BUILDS_AND_FULL_RUNTIME_TEST_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1588_COMBINED_VALIDATION_OUTPUT_TRUNCATED:END -->
