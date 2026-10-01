@@ -95,11 +95,11 @@ Event bus instance for publishing workflow events.
 - **Required**: No
 
 ```typescript
-import { EventBus } from '@specforge/daemon-core';
+import type { IEventBus } from '@specforge/workflow-runtime';
 
-const eventBus = new EventBus();
+const eventBus: IEventBus = compositionRoot.eventBus;
 const engine = new WorkflowEngine({
-  eventBus: eventBus
+  eventBus
 });
 ```
 

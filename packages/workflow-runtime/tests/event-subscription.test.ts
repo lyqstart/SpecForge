@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { EventBus } from '../../daemon-core/src/event-bus/EventBus.js';
+import { TestEventBus } from './helpers/test-event-bus.js';
 import {
   EventSubscriptionManager,
   createEventSubscriptionManager,
@@ -22,13 +22,13 @@ import {
 import type { Event } from '../src/types.js';
 
 describe('EventSubscriptionManager', () => {
-  let eventBus: EventBus;
+  let eventBus: TestEventBus;
   let manager: EventSubscriptionManager;
   // 规则 D3 + T1：动态追踪列表
   const trackedSubscriptions: EventSubscription[] = [];
 
   beforeEach(() => {
-    eventBus = new EventBus();
+    eventBus = new TestEventBus();
     eventBus.start();
     manager = createEventSubscriptionManager(eventBus);
   });

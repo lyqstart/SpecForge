@@ -12,7 +12,7 @@
 
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { STATE_ADVANCEMENT_SUBJECTS } from '@specforge/workflow-runtime';
 import { FINAL_STATES, FINAL_TRANSITIONS } from './state_machine';
 
 // ---------------------------------------------------------------------------
@@ -54,21 +54,11 @@ export function isForbiddenTransition(from: string, to: string): boolean {
 // §5.3 状态推进主体
 // ---------------------------------------------------------------------------
 
-export const STATE_ADVANCEMENT_SUBJECTS = new Set([
-  ACTOR_ROLES.orchestrator,
-  'Runtime State Machine',
-  ACTOR_ROLES.gateRunner,
-  ACTOR_ROLES.userDecisionRecorder,
-  ACTOR_ROLES.mergeRunner,
-  ACTOR_ROLES.codePermissionService,
-  ACTOR_ROLES.closeGate,
-]);
-
 /**
  * 校验主体是否有权推进 WI 状态（§5.3）。
  */
 export function isAuthorizedAdvancementSubject(subject: string): boolean {
-  return STATE_ADVANCEMENT_SUBJECTS.has(subject);
+  return (STATE_ADVANCEMENT_SUBJECTS as readonly string[]).includes(subject);
 }
 
 // ---------------------------------------------------------------------------

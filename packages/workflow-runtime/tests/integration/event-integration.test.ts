@@ -8,13 +8,12 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { EventBus } from '@specforge/daemon-core/src/event-bus/EventBus';
+import { TestEventBus } from '../helpers/test-event-bus.js';
 import { WorkflowEngine } from '../../src/WorkflowEngine.js';
 import { EventPublisher } from '../../src/events/EventPublisher.js';
 import type {
   WorkflowDefinition,
   WorkflowInstance,
-  IEventBus,
   Event,
   GateResult,
 } from '../../src/types.js';
@@ -113,13 +112,13 @@ function createConditionalWorkflow(): WorkflowDefinition {
 }
 
 describe('Workflow Event System Integration', () => {
-  let eventBus: EventBus;
+  let eventBus: TestEventBus;
   let engine: WorkflowEngine;
   let publisher: EventPublisher;
   let publishedEvents: Event[];
 
   beforeEach(() => {
-    eventBus = new EventBus();
+    eventBus = new TestEventBus();
     eventBus.start();
 
     // Capture all published events
@@ -130,7 +129,7 @@ describe('Workflow Event System Integration', () => {
 
     publisher = new EventPublisher({
       projectId: 'integration-test',
-      eventBus: eventBus as unknown as IEventBus,
+      eventBus,
       source: 'daemon',
     });
 
@@ -550,7 +549,7 @@ describe('Workflow Event System Integration', () => {
     it('should respect custom project ID in events', () => {
       const customPublisher = new EventPublisher({
         projectId: 'custom-project-123',
-        eventBus: eventBus as unknown as IEventBus,
+        eventBus,
         source: 'daemon',
       });
 
@@ -569,7 +568,7 @@ describe('Workflow Event System Integration', () => {
     it('should respect custom source in events', () => {
       const customPublisher = new EventPublisher({
         projectId: 'test-project',
-        eventBus: eventBus as unknown as IEventBus,
+        eventBus,
         source: 'client',
       });
 

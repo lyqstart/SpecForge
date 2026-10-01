@@ -35,6 +35,8 @@ export {
 } from './EventPublisher.js';
 export type { GateCancellationPayload } from './events/EventTypes.js';
 export type { IEventBus, Event, Subscription } from './types.js';
+export { STATE_ADVANCEMENT_SUBJECTS } from './types/state-machine.js';
+export type { StateAdvancementSubject } from './types/state-machine.js';
 
 // Event Subscription exports
 export {

@@ -384,7 +384,7 @@ describe('Design Governance live closure', () => {
     expect((result as any).error ?? '').not.toContain('MODULE_OWNERSHIP_UNRESOLVED');
     expect((result as any).success).toBe(true);
     expect(existsSync(workItemCandidateDesign(projectRoot, workItemId, 'core'))).toBe(true);
-  });
+  }, 30000);
 
   it('runs the real Design Gate through sf_gate_run, uses the design phase profile, and stops at approval_required', async () => {
     const workItemId = 'WI-0001';

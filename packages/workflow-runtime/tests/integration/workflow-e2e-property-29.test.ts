@@ -19,14 +19,13 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { EventBus } from '@specforge/daemon-core/src/event-bus/EventBus';
+import { TestEventBus } from '../helpers/test-event-bus.js';
 import { WorkflowEngine } from '../../src/WorkflowEngine.js';
 import { EventPublisher } from '../../src/events/EventPublisher.js';
 import { CompositeGateRunner } from '../../src/GateRunner.js';
 import type {
   WorkflowDefinition,
   WorkflowInstance,
-  IEventBus,
   Event,
   GateResult,
   CompositeGateDefinition,
@@ -267,13 +266,13 @@ function createCompositeGateDefinition(
 }
 
 describe('Task 5.1: End-to-End Tests for Property 29 (compositeGate Semantics)', () => {
-  let eventBus: EventBus;
+  let eventBus: TestEventBus;
   let engine: WorkflowEngine;
   let publisher: EventPublisher;
   let publishedEvents: Event[];
 
   beforeEach(() => {
-    eventBus = new EventBus();
+    eventBus = new TestEventBus();
     eventBus.start();
 
     // Capture all published events
@@ -284,7 +283,7 @@ describe('Task 5.1: End-to-End Tests for Property 29 (compositeGate Semantics)',
 
     publisher = new EventPublisher({
       projectId: 'e2e-test',
-      eventBus: eventBus as unknown as IEventBus,
+      eventBus,
       source: 'daemon',
     });
 

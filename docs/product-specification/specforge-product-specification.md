@@ -1468,7 +1468,7 @@ SpecForge 要被声明为符合 SPS-1.0，至少必须满足：
 - CG-009【RESOLVED】：Distribution Kiro spec 已归档；release CLI 已移除 `specforge init` 注册与 npm-global smoke runner，当前 CLI/installer 帮助不再宣称 `~/.specforge`。不可达的 init/wizard、installation writer、daemon healthcheck、install-source 判断、CLI 专用 lock/filesystem adapter 及旧 distribution 测试均已退出；发布验证器与 schema 单调性检查按独立 build consumer 保留，`version --json` 仅对当前 `sf-user` 下的旧安装记录执行无写入探测。
 - CG-010【RESOLVED】：release precheck / Scope Gate 已直接消费 SPS-1.0 hash-bound release authority projection。
 - CG-011【RESOLVED】：fused standard 与 v1.3 文档已归档并降级；current types、workflow-runtime、daemon governance 源码与 `sf-design` Agent 已统一声明 SPS-1.0 负责产品边界、当前模块/Tool/Gate/schema 与回归测试负责可执行合同，归档 v1.1 仅作历史证据。v11 名称继续作为实现版本标识，不构成权威来源声明。
-- CG-012【PARTIALLY_RESOLVED】：Workflow Runtime 的生产事件集成已改为只依赖注入的 `IEventBus` port，不再导入或构造 Daemon `EventBus`；测试层仍直接导入 Daemon `EventBus` / RBAC subject authority，且 package devDependency 尚未退出，仍需继续收敛。
+- CG-012【RESOLVED】：Workflow Runtime 的生产事件集成只依赖注入的 `IEventBus` port；测试使用包内 port test double，package/dev lock、当前部署文档均不再消费 Daemon。`STATE_ADVANCEMENT_SUBJECTS` 由 Workflow Runtime 单一定义并从包根导出，Daemon 沿合法的 Daemon → Workflow Runtime 方向消费。
 - CG-013：Permission/Write Guard enforcement 仍分散在多处 handler，需要收敛到统一 decision + enforcement boundary。
 - CG-014【RESOLVED】：current handshake consumers 已统一到 `<OpenCode config>/sf-user/runtime/handshake.json`。
 

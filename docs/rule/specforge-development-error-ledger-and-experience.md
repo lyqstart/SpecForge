@@ -28908,3 +28908,51 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1588_STATUS=CLOSED_SPLIT_BUILDS_AND_FULL_RUNTIME_TEST_PASS
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1588_COMBINED_VALIDATION_OUTPUT_TRUNCATED:END -->
+
+<!-- SPECFORGE_ERR1589_LOCKFILE_AMBIGUOUS_DEPENDENCY_PATCH:START -->
+### ERR-1589：锁文件无上下文依赖补丁命中错误 package
+
+- **事实证据**：移除 Workflow Runtime 的 daemon-core devDependency 时，bun.lock 补丁只包含同名依赖行；git diff 显示实际删除发生在 packages/permission-engine 区块，而 Workflow Runtime 区块仍保留该依赖。
+- **影响**：工作区暂时误删 Permission Engine 的合法锁文件依赖，尚未提交或推送；Workflow Runtime 依赖收敛也尚未完成。
+- **根因**：bun.lock 中存在多个完全相同的 workspace 依赖行，补丁缺少 package 区块上下文，apply_patch 按首个匹配位置修改。
+- **纠正与防复发**：立即在明确的 packages/permission-engine 上下文恢复该行，并只在 packages/workflow-runtime 上下文删除目标行；对锁文件重复键的手工补丁必须包含 owner 区块且用 diff 复核。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-031、EXP-087。
+- ERR1589_STATUS=CLOSED_PERMISSION_DEPENDENCY_RESTORED_WORKFLOW_DEPENDENCY_REMOVED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1589_LOCKFILE_AMBIGUOUS_DEPENDENCY_PATCH:END -->
+
+<!-- SPECFORGE_ERR1590_WORKFLOW_ROOT_MISSING_STATE_SUBJECT_EXPORT:START -->
+### ERR-1590：Workflow Runtime 包根未导出状态推进主体常量
+
+- **事实证据**：Daemon 改为从 @specforge/workflow-runtime 导入 STATE_ADVANCEMENT_SUBJECTS 后，两个定向测试文件共 6 项因该值为 undefined 失败；源码检查显示常量仅由 src/types/index.ts 导出，而包根 src/index.ts 的 ./types.js 指向平级 src/types.ts。
+- **影响**：42/48 项通过；Daemon 尚不能消费 Workflow Runtime 的单一主体清单，CG-012 双源收敛未闭环。
+- **根因**：把目录 types/index.ts 的导出误认为包根现有 export * from './types.js' 的一部分，未验证同名文件与目录的解析目标。
+- **纠正与防复发**：在 Workflow Runtime 包根显式导出 STATE_ADVANCEMENT_SUBJECTS 及对应类型，先重建该包，再重跑 Daemon 定向测试和跨包构建；公共合同迁移必须验证真实 package entry，而不是只检查内部 barrel。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-031、EXP-060、EXP-087。
+- ERR1590_STATUS=CLOSED_PUBLIC_EXPORT_ADDED_AND_DAEMON_TARGET_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1590_WORKFLOW_ROOT_MISSING_STATE_SUBJECT_EXPORT:END -->
+
+<!-- SPECFORGE_ERR1591_OVERLAPPING_DAEMON_FULL_TEST_RETRY:START -->
+### ERR-1591：未确认首个 Daemon 全量测试终止即启动静默重试
+
+- **事实证据**：首个 Daemon 全量测试在 30 秒后返回超长截断输出但会话标识不可见；随后启动的静默全量测试以独立 session 继续运行，并最终仅有 design-governance-live-closure 一项在 10 秒超时，结果为 197/198 文件、1742/1743 测试通过。
+- **影响**：不能排除两次全量套件短时并发造成资源竞争；当前失败既不能归因于 CG-012 改动，也不能作为可忽略的偶发失败，完整 Daemon 回归尚未通过。
+- **根因**：看到首个调用的结果摘要不可见后，没有先证明其进程已经结束，就直接以静默模式重新启动完整套件。
+- **纠正与防复发**：先只读核对遗留 Vitest/Node 命令行；确认无重叠后单独运行失败文件，再在需要时仅执行一次静默全量套件并保留 session id 直到结束。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-020、EXP-031、EXP-087。
+- ERR1591_STATUS=CLOSED_SCENARIO_TIMEOUT_SCOPED_AND_DAEMON_FULL_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1591_OVERLAPPING_DAEMON_FULL_TEST_RETRY:END -->
+
+<!-- SPECFORGE_ERR1592_GIT_INDEX_LOCK_CREATE_DENIED:START -->
+### ERR-1592：组合提交前审计中的 git add 无法创建 index.lock
+
+- **事实证据**：包含 git add 与后续 diff/status 的组合命令在第一步报告 Unable to create .git/index.lock: Permission denied；随后只读检查确认 index.lock 不存在，git status 显示全部目标文件仍未暂存。
+- **影响**：没有部分暂存、提交或推送；CG-012 已验证变更仍完整保留在工作区。
+- **根因**：该次组合调用未获得写入 Git index 所需权限；不存在可归因于遗留锁文件的证据。
+- **纠正与防复发**：使用已批准且独立的 git add 调用暂存明确文件列表，再以只读调用执行 cached diff/status；不得删除不存在的锁或把权限错误误判为仓库锁竞争。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-031、EXP-040、EXP-087。
+- ERR1592_STATUS=CLOSED_INDEPENDENT_APPROVED_STAGE_SUCCEEDED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1592_GIT_INDEX_LOCK_CREATE_DENIED:END -->
