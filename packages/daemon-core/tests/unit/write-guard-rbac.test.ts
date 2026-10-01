@@ -5,11 +5,7 @@
  * enableRBAC=false 时旧行为不变。
  */
 import { describe, it, expect } from 'vitest';
-import {
-  checkWrite,
-  evaluatePolicy,
-  DEFAULT_WRITE_POLICY_RULES,
-} from '../../src/tools/lib/write-guard-v11.js';
+import { checkWrite } from '../../src/tools/lib/write-guard-v11.js';
 import type { WriteGuardContext } from '../../src/tools/lib/write-guard-v11.js';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 

@@ -34,7 +34,7 @@ import { isCandidateFrozenState } from './candidate-freeze-v11'
 
 /**
  * Context for the canonical write guard check.
- * All write-policy consumers MUST use this type (or the WritePolicyContext alias).
+ * All write-policy consumers MUST use this type.
  */
 export interface WriteGuardContext {
   /** Whether there is an active Work Item */
@@ -69,16 +69,9 @@ export interface WriteCheckResult {
 }
 
 /**
- * Alias for backward compatibility — consumers that imported WritePolicyResult
- * from write-policy.ts or path-policy.ts get the same shape.
+ * Path-policy adapters use the same result shape as the canonical guard.
  */
 export type WritePolicyResult = WriteCheckResult;
-
-/**
- * Alias for backward compatibility — WritePolicyContext is structurally
- * identical to WriteGuardContext.
- */
-export type WritePolicyContext = WriteGuardContext;
 
 // ---------------------------------------------------------------------------
 // Rule-engine types (for extensibility / audit)
@@ -90,169 +83,7 @@ export type WritePolicyContext = WriteGuardContext;
 export interface WritePolicyRule {
   id: string;
   description: string;
-  check: (ctx: WritePolicyContext, targetPath: string, operation?: 'create' | 'modify' | 'delete') => string | null;
-}
-
-// ---------------------------------------------------------------------------
-// Built-in rules (§12.6)
-// ---------------------------------------------------------------------------
-
-/** Rule 10: closed WI cannot be written */
-const ruleClosedWI: WritePolicyRule = {
-  id: 'closed-wi',
-  description: 'closed WI cannot be written',
-  check(ctx, _targetPath) {
-    if (ctx.workItem && ctx.workItem.status === 'closed') {
-      return `closed WI cannot be written: ${ctx.workItem.work_item_id}`;
-    }
-    return null;
-  },
-};
-
-/** Rule 1: no active WI → no code writes */
-const ruleNoActiveWI: WritePolicyRule = {
-  id: 'no-active-wi',
-  description: 'no active WI, cannot write code',
-  check(ctx, targetPath) {
-    const normalized = targetPath.replace(/\\/g, '/');
-    if (!ctx.hasActiveWI && !normalized.startsWith('.specforge/')) {
-      return `no active WI, cannot write code: ${targetPath}`;
-    }
-    return null;
-  },
-};
-
-/** Rule 4: .specforge/project/ only writable by merge_runner */
-const ruleSpecForgeProject: WritePolicyRule = {
-  id: 'specforge-project-access',
-  description: '.specforge/project/ only writable by merge_runner',
-  check(ctx, targetPath) {
-    const normalized = targetPath.replace(/\\/g, '/');
-    if (!normalized.startsWith('.specforge/project/')) return null;
-    if (ctx.callerRole === ACTOR_ROLES.mergeRunner) return null;
-    return `only merge_runner may write .specforge/project/: ${targetPath}`;
-  },
-};
-
-/** Rule 5: user_decision.json only writable by user_decision_recorder */
-const ruleUserDecision: WritePolicyRule = {
-  id: 'user-decision-access',
-  description: 'user_decision.json only writable by user_decision_recorder',
-  check(ctx, targetPath) {
-    const normalized = targetPath.replace(/\\/g, '/');
-    if (!normalized.includes('user_decision.json')) return null;
-    if (ctx.callerRole === ACTOR_ROLES.userDecisionRecorder) return null;
-    return `only user_decision_recorder may write user_decision.json`;
-  },
-};
-
-/** Rules 6-8: gates/ only gate_runner, gate_summary.md only gate_runner, merge_report.md only merge_runner */
-const ruleRestrictedFiles: WritePolicyRule = {
-  id: 'restricted-files-access',
-  description: 'gates/ only gate_runner, gate_summary.md only gate_runner, merge_report.md only merge_runner',
-  check(ctx, targetPath) {
-    const normalized = targetPath.replace(/\\/g, '/');
-    if (normalized.includes('/gates/') && ctx.callerRole !== ACTOR_ROLES.gateRunner) {
-      return `only gate_runner may write gates/: ${targetPath}`;
-    }
-    if (normalized.endsWith('gate_summary.md') && ctx.callerRole !== ACTOR_ROLES.gateRunner) {
-      return `only gate_runner may write gate_summary.md`;
-    }
-    if (normalized.endsWith('merge_report.md') && ctx.callerRole !== ACTOR_ROLES.mergeRunner) {
-      return `only merge_runner may write merge_report.md`;
-    }
-    return null;
-  },
-};
-
-/** Rule 9: frozen state restrictions */
-const ruleFrozen: WritePolicyRule = {
-  id: 'frozen',
-  description: 'frozen: cannot modify candidates/manifest/gate_summary',
-  check(ctx, targetPath) {
-    if (!ctx.isFrozen) return null;
-    const normalized = targetPath.replace(/\\/g, '/');
-    if (normalized.includes('/candidates/')) return `frozen: cannot modify candidates/: ${targetPath}`;
-    if (normalized.endsWith('candidate_manifest.json')) return `frozen: cannot modify candidate_manifest.json`;
-    if (normalized.endsWith('gate_summary.md')) return `frozen: cannot modify gate_summary.md`;
-    return null;
-  },
-};
-
-/** Rules 2-3: code write permission + allowed_write_files (path + operation match) */
-const ruleCodeWritePermission: WritePolicyRule = {
-  id: 'code-write-permission',
-  description: 'code_change_allowed and allowed_write_files (path + operation) check',
-  check(ctx, targetPath, operation) {
-    if (!ctx.workItem) return null;
-    const normalized = targetPath.replace(/\\/g, '/');
-    if (normalized.startsWith('.specforge/')) return null;
-
-    if (!ctx.workItem.code_change_allowed) {
-      return `code_change_allowed=false, cannot write: ${targetPath}`;
-    }
-
-    const allowed = ctx.workItem.allowed_write_files ?? [];
-    if (allowed.length > 0) {
-      const matchByPathAndOp = allowed.some(
-        (f) => {
-          const normalizedAllowed = f.path.replace(/\\/g, '/');
-          const pathMatch = normalized === normalizedAllowed || normalized.startsWith(normalizedAllowed + '/');
-          const opMatch = f.operation === operation || f.operation === 'any';
-          return pathMatch && opMatch;
-        },
-      );
-      if (!matchByPathAndOp) {
-        return `file+operation not in allowed_write_files: ${targetPath} (${operation})`;
-      }
-    }
-    return null;
-  },
-};
-
-/**
- * Default rule set (ordered by priority).
- * Exported so that consumers (e.g. bash-guard) can reference individual rules.
- */
-export const DEFAULT_WRITE_POLICY_RULES: WritePolicyRule[] = [
-  ruleClosedWI,
-  ruleNoActiveWI,
-  ruleSpecForgeProject,
-  ruleUserDecision,
-  ruleRestrictedFiles,
-  ruleFrozen,
-  ruleCodeWritePermission,
-];
-
-// ---------------------------------------------------------------------------
-// evaluatePolicy — rule-engine evaluation
-// ---------------------------------------------------------------------------
-
-/**
- * Evaluate a set of write-policy rules against the given context and target.
- *
- * Returns the first violation from each rule (short-circuit per rule),
- * but continues checking all rules to collect the full set of violations.
- */
-export function evaluatePolicy(
-  ctx: WritePolicyContext,
-  targetPath: string,
-  operation: 'create' | 'modify' | 'delete',
-  rules: WritePolicyRule[] = DEFAULT_WRITE_POLICY_RULES,
-): WritePolicyResult {
-  const violations: string[] = [];
-
-  for (const rule of rules) {
-    const violation = rule.check(ctx, targetPath, operation);
-    if (violation !== null) {
-      violations.push(violation);
-    }
-  }
-
-  return {
-    allowed: violations.length === 0,
-    violations,
-  };
+  check: (ctx: WriteGuardContext, targetPath: string, operation?: 'create' | 'modify' | 'delete') => string | null;
 }
 
 // ---------------------------------------------------------------------------

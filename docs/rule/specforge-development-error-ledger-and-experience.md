@@ -29016,3 +29016,39 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1597_STATUS=CLOSED_ASSERTION_MATCHES_STABLE_ROUTE_VALUE
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1597_OVER_SPECIFIC_PLUGIN_ROUTE_ASSERTION:END -->
+
+<!-- SPECFORGE_ERR1598_WINDOWS_RG_LITERAL_GLOB_PATH:START -->
+### ERR-1598：PowerShell 下把双星号 glob 作为 rg 输入路径
+
+- **事实证据**：检索 Daemon 导出消费者时把 `packages/daemon-core/src/tools/**/*.ts` 直接作为 `rg` 输入路径；Windows 返回“文件名、目录名或卷标语法不正确”。同一命令的其他明确文件输入未形成该 glob 的覆盖证据。
+- **影响**：该调用不能证明 tools 子树的消费者或导出关系；CG-013 第二切片在重新执行仓库根检索前保持只读。
+- **根因**：假设 shell 会把 `**` 展开为文件列表，未遵循本项目在 Windows 上用仓库根加 `--glob` 过滤的稳定检索方式。
+- **纠正与防复发**：以仓库根 `.` 为唯一输入并用 `--glob` 限定 TypeScript 文件、排除 dist/archive；只有新检索结果可用于无消费者判断。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-017、EXP-060、EXP-084、EXP-087。
+- ERR1598_STATUS=CLOSED_REPOSITORY_ROOT_SEARCH_USED_WITH_RG_GLOB_FILTERS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1598_WINDOWS_RG_LITERAL_GLOB_PATH:END -->
+
+<!-- SPECFORGE_ERR1599_RETAINED_RULE_INTERFACE_STALE_CONTEXT_ALIAS:START -->
+### ERR-1599：保留的 Bash 规则接口仍引用已移除的上下文别名
+
+- **事实证据**：删除无消费者 `evaluatePolicy` 与 `WritePolicyContext` 后，Daemon 构建在 `write-guard-v11.ts` 的 `WritePolicyRule.check` 报 TS2304，仍引用 `WritePolicyContext`。
+- **影响**：Scope Gate 边界测试已绿，但 Daemon 尚不能构建；第二收敛切片不得提交。
+- **根因**：确认 `WritePolicyRule` 仍被 bash 安全检查消费时，只保留了接口本身，没有把其参数类型从兼容别名同步改为等价的 canonical `WriteGuardContext`。
+- **纠正与防复发**：将保留接口直接绑定 `WriteGuardContext`；重新执行 Daemon 构建、相关定向测试和全量回归。删除类型别名时必须检索定义体中的所有引用，而不只检索外部消费者。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-031、EXP-060、EXP-087。
+- ERR1599_STATUS=CLOSED_RULE_INTERFACE_BOUND_TO_CANONICAL_CONTEXT
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1599_RETAINED_RULE_INTERFACE_STALE_CONTEXT_ALIAS:END -->
+
+<!-- SPECFORGE_ERR1600_INVALID_RELEASE_CANDIDATE_ID_FORMAT:START -->
+### ERR-1600：CG-013 发布证据使用不符合合同的 candidate ID
+
+- **事实证据**：Scope Gate 全量测试有 3 项失败，均显示生成的 `main-3d850ca0-cg013-slice1` 不匹配 `^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$`；失败分别来自 release manifest/runtime、formal precheck 与 installer manifest consumption 集成测试。
+- **影响**：第二切片的 Scope Gate 全量回归未通过；当前生成型发布证据不能作为正式候选证据，但产品源码与 Daemon 1743 项测试不受该 ID 格式影响。
+- **根因**：手工构造 candidate ID 时沿用描述性切片名，没有先读取集成测试固定的当前候选命名合同，并且仍用了提交前的旧 HEAD 前缀。
+- **纠正与防复发**：按当前 HEAD `de534491` 重新生成 `main-de534491-working-tree-stepcg013b`，随后重跑 Scope Gate 全量测试和正式发布预检；以后生成前先从当前集成合同读取格式并实时取 HEAD。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-031、EXP-040、EXP-087。
+- ERR1600_STATUS=CLOSED_CURRENT_HEAD_CONFORMING_CANDIDATE_REGENERATED_AND_VALIDATED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1600_INVALID_RELEASE_CANDIDATE_ID_FORMAT:END -->

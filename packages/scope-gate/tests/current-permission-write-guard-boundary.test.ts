@@ -43,4 +43,23 @@ describe('current Permission and Write Guard ownership boundary', () => {
     expect(daemonHttp).toContain('const result = checkWrite(wiCtx, targetPath');
     expect(pluginClient).toContain('/api/v1/v11/write-guard/check');
   });
+
+  it('does not retain an unconsumed parallel Daemon write-policy evaluator', () => {
+    const retiredDaemonSurfaces = [
+      'packages/daemon-core/src/tools/lib/command-write-audit.ts',
+      'packages/daemon-core/src/tools/lib/write-policy.ts',
+    ] as const;
+
+    for (const relativePath of retiredDaemonSurfaces) {
+      expect(existsSync(resolve(ROOT, relativePath)), relativePath).toBe(false);
+    }
+
+    const daemonWriteGuard = readFileSync(
+      resolve(ROOT, 'packages/daemon-core/src/tools/lib/write-guard-v11.ts'),
+      'utf8',
+    );
+    expect(daemonWriteGuard).toContain('export interface WritePolicyRule');
+    expect(daemonWriteGuard).not.toContain('DEFAULT_WRITE_POLICY_RULES');
+    expect(daemonWriteGuard).not.toContain('export function evaluatePolicy(');
+  });
 });
