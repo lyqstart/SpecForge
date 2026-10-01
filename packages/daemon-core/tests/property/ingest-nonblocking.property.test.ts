@@ -5,7 +5,7 @@
  * Derived-From: TASK-11 (ingest event routing)
  *
  * Property: For all 7 supported ingest event types
- * (tool.invoking, tool.invoked, opencode.event, session.compacting,
+ * (opencode.tool.invoking, tool.invoked, opencode.event, session.compacting,
  *  chat.params, chat.headers, shell.env), handleIngestEvent must return
  * an HTTP response within 15 s — even when subsystems are unavailable.
  *
@@ -25,7 +25,7 @@ import { DaemonConfig } from '../../src/daemon/DaemonConfig';
 // ── Constants ──
 
 const INGEST_EVENT_TYPES = [
-  'tool.invoking',
+  'opencode.tool.invoking',
   'tool.invoked',
   'opencode.event',
   'session.compacting',

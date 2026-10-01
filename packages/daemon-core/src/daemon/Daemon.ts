@@ -88,7 +88,6 @@ export class Daemon {
       eventBus: this.eventBus,
       stateManager: undefined as any,
       wal: undefined as any,
-      permissionEngine: this.permissionEngine,
       workflowEngine: this.workflowEngine,
       eventLogger: undefined,
       sessionRegistry: this.sessionRegistry,

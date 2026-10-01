@@ -113,7 +113,6 @@ export interface HTTPServerDeps {
   stateManager: StateManager;
   wal: WAL;
   projectManager?: any;
-  permissionEngine?: any;
   workflowEngine?: any;
   eventLogger?: any;
   sessionRegistry?: any;
@@ -1386,9 +1385,6 @@ export class HTTPServer {
     }
 
     switch (type) {
-      case 'tool.invoking':
-        await this.handleToolInvoking(sessionId, data, ts);
-        break;
       case 'tool.invoked':
         await this.handleToolInvoked(sessionId, data, ts);
         break;
@@ -1427,59 +1423,6 @@ export class HTTPServer {
   }
 
   // ── Event Type Handlers ──
-
-  /**
-   * Handle tool.invoking events — PermissionEngine evaluation + SessionRegistry touch.
-   * Timeout: 5 s. On timeout → default allow (phase 1: only log, never intercept).
-   */
-  private async handleToolInvoking(
-    sessionId: string, data: unknown, _ts: number
-  ): Promise<void> {
-    const payload = (data ?? {}) as { tool?: string; callID?: string; args?: Record<string, unknown> };
-
-    // 1. Update session activity (non-critical)
-    try {
-      await this.deps.sessionRegistry?.touch?.(sessionId);
-    } catch (err) {
-      if (isWALWriteError(err)) {
-        console.warn(`[INGEST] WAL write error during touch for session ${sessionId}: ${err.message}`);
-      }
-      // non-blocking
-    }
-
-    // 2. PermissionEngine evaluation (phase 1: log only, don't intercept)
-    if (this.deps.permissionEngine && payload.tool) {
-      try {
-        const allowed = await this.withTimeout(
-          this.deps.permissionEngine.checkPermission(
-            sessionId,
-            'tool.invoking',
-            payload.tool,
-            { args: payload.args ?? {}, callID: payload.callID },
-          ),
-          5_000,
-          true,  // default allow on timeout
-        );
-
-        // Phase 1: log the evaluation result
-        await this.deps.eventLogger?.append?.({
-          eventId: this.generateEventId(),
-          ts: Date.now(),
-          projectId: this.deps.sessionRegistry?.getProjectPath?.(sessionId) ?? '',
-          category: 'permission' as any,
-          action: 'permission.evaluated',
-          payload: {
-            tool: payload.tool,
-            decision: allowed ? 'allow' : 'deny',
-            sessionId,
-          },
-          metadata: { schemaVersion: '1.0', source: 'daemon' },
-        });
-      } catch (err) {
-        console.error(`[INGEST] PermissionEngine error for ${payload.tool}:`, err);
-      }
-    }
-  }
 
   /**
    * Handle tool.invoked events — log via EventLogger.

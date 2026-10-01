@@ -9,13 +9,13 @@
 <!-- SPECFORGE_PROJECT_STATUS:START -->
 PROJECT_STATUS_SCHEMA=1
 PROJECT_STATUS_DECLARATION=ACTIVE
-ACTIVE_INITIATIVE=CG013_PERMISSION_WRITE_GUARD_ENFORCEMENT_CONVERGENCE
-OBJECTIVE=Converge distributed Permission and Write Guard enforcement onto one explicit decision and enforcement boundary without weakening current authorization or audit behavior.
-CURRENT_PHASE=CG013_NON_WRITE_TOOL_PERMISSION_CHARACTERIZATION
+ACTIVE_INITIATIVE=AUTHORITY_MODEL_IMPLEMENTATION_CONVERGENCE
+OBJECTIVE=Confirm that every SPS-1.0 conformance gap is closed and identify any remaining current-release mismatch before authorizing another implementation initiative.
+CURRENT_PHASE=SPS_CONFORMANCE_GAP_CLOSURE_AUDIT
 OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;D05:OPENCODE_ADAPTER_ENABLED
-LAST_COMPLETED_CHECKPOINT=CG013 seventh slice moved shell implementation_running, permission-revoked, and explicit directory-preparation authorization into the canonical Permission Engine decision. Daemon supplies authoritative state, classifies only explicit New-Item -ItemType Directory targets, and retains enforcement, dangerous-command safety, HardStop, scoped authorization validation, and audit. Normal file create cannot borrow directory ancestor allowance. Permission Engine 21 files/375 tests, Daemon 199 files/1733 tests, and Scope Gate 28 files/127 tests pass; Permission Engine, Daemon, and Scope Gate builds pass; the formal release precheck passes.
+LAST_COMPLETED_CHECKPOINT=CG013 final slice retired the producerless bare tool.invoking Phase 1 record-only pseudo-authorization route and its HTTP PermissionEngine injection surface. Current Plugin opencode.tool.invoking events remain observability-only through SessionRegistry; write authorization continues through the canonical Permission Engine decision and Daemon enforcement boundary. Targeted Daemon tests (39), Daemon full regression (199 files/1731 tests), Scope Gate boundary tests (4), and Scope Gate full regression (28 files/127 tests) pass; Daemon and Scope Gate builds pass; formal release precheck passes for candidate main-44df0693-working-tree-stepcg013toolingest.
 CURRENT_BLOCKER=NONE
-NEXT_LEGAL_ACTION=Characterize the remaining non-write tool.invoking record-only and timeout-default-allow path against the SPS Permission boundary; distinguish observability-only events from authorization decisions before proposing any implementation change.
+NEXT_LEGAL_ACTION=Perform a read-only SPS conformance-gap audit and report any remaining current-release mismatch before proposing a new implementation initiative.
 ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;scripts/**;setup/**;packages/permission-engine/src/**;packages/daemon-core/src/**;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
 PROHIBITED=Changing SPS product scope without a new product-owner decision;deleting ADR ERR audit or report evidence;touching the untracked architecture-plan backup;creating another active handoff current-status or recovery-status file
 REQUIRED_RULES=docs/rule/specforge-development-error-ledger-and-experience.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md

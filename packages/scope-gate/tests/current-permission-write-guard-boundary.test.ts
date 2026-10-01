@@ -56,6 +56,8 @@ describe('current Permission and Write Guard ownership boundary', () => {
     expect(daemonHttp).toContain('const result = checkWrite(wiCtx, targetPath');
     expect(daemonHttp).toContain('decideWorkItemArtifactWriteBoundary(command)');
     expect(daemonHttp).not.toContain('const wiArtifactPattern =');
+    expect(daemonHttp).not.toContain("case 'tool.invoking':");
+    expect(daemonHttp).not.toContain('handleToolInvoking(');
     expect(pluginClient).toContain('/api/v1/v11/write-guard/check');
   });
 

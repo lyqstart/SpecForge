@@ -29396,3 +29396,33 @@ REPEATED_ERROR_CHECK=PASS
 - **适用经验**：EXP-001、EXP-004、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-022、EXP-025、EXP-043、EXP-044、EXP-060、EXP-074。
 - ERR1631_STATUS=CLOSED_WITH_TARGET_DETAILS_CONTRACT_ASSERTIONS
 - REPEATED_ERROR_CHECK=PASS
+
+### ERR-1632：tool.invoking 消费者检索再次使用不稳定的复合正则引号
+
+- **事实证据**：读取 HTTP 测试 fixture 后，同一命令末尾用 PowerShell 双引号承载包含单引号、双引号和转义反斜杠的 `rg` 复合正则，`rg` 返回 `regex parse error: unclosed group`；前面的精确 `Get-Content` 与简单 `rg` 输出有效，但该最终消费者检索没有执行。
+- **影响**：裸 `tool.invoking` 的当前消费者集合尚未由该命令证明完整；在重新检索前不得冻结退役范围或修改生产路由。
+- **根因**：`CONFIRMED` 为重复 ERR-1604/ERR-1619 的跨 PowerShell 正则引号问题，为一次查询组合多个字面形式而引入了不必要的转义层。
+- **纠正与防复发**：停止使用复合 alternation；分别以 `rg -F` 检索 `tool.invoking` 和 `handleToolInvoking` 两个纯字面量，并只用精确目录参数。补录后重新完整阅读经验第三、第四部分，再冻结消费者清单。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065、EXP-069。
+- ERR1632_STATUS=CLOSED_WITH_LITERAL_CONSUMER_RESCAN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1633：PowerShell 下把 `rg --glob` 排除参数错误拆成路径
+
+- **事实证据**：完成 `tool.invoking` 与 `handleToolInvoking` 的成功字面量全仓检索后，附加命令试图在 PowerShell 中用多个 `--glob '!path'` 排除已知文件；`rg` 将 `--glob` 和排除模式报告为不存在的文件或路径，并返回退出码 1。该附加排除检索失败，先前不带排除参数的精确全仓检索仍有效。
+- **影响**：不能把该附加命令作为“排除后零结果”的证据；消费者分类必须直接依据已经成功的完整结果逐路径完成。生产文件尚未修改。
+- **根因**：`CONFIRMED` 为在当前 PowerShell/PTY 参数传递环境中再次采用了未经验证的复杂选项组合，违反先用最简单稳定命令取证的经验。
+- **纠正与防复发**：不再重试排除式 glob；保留成功的 `rg -F` 完整输出，并按返回路径人工分类。后续检索只使用单字面量与明确目录，不在同一命令中加入否定 glob。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065、EXP-069。
+- ERR1633_STATUS=CLOSED_WITH_SUCCESSFUL_FULL_RESULT_CLASSIFICATION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1634：跨文件补丁使用了未经核对的测试变量声明顺序
+
+- **事实证据**：首次退役裸 `tool.invoking` 分支的跨文件 `apply_patch` 在验证 `http.test.ts` 锚点时失败，提示找不到预期声明序列；随后读取当前文件确认 `mockEventLogger` 位于 `mockPermissionEngine` 之前，与补丁预期顺序不同。`git diff` 证明四个目标代码/测试文件均未被该失败补丁修改。
+- **影响**：生产修改尚未开始；若跳过核对直接放宽锚点，可能误删相邻测试 fixture。
+- **根因**：`CONFIRMED` 为把分别读取到的变量名按记忆重新组合成大锚点，没有使用当前文件中的原始连续字节。
+- **纠正与防复发**：改为每个文件、每个连续代码块单独应用补丁；所有锚点直接复制自刚读取的当前内容，补丁后立即检查目标 diff 和残余字面量。
+- **适用经验**：EXP-004、EXP-008、EXP-014、EXP-015、EXP-019、EXP-020、EXP-060、EXP-063、EXP-065。
+- ERR1634_STATUS=CLOSED_WITH_EXACT_SMALL_PATCHES
+- REPEATED_ERROR_CHECK=PASS

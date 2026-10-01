@@ -418,10 +418,8 @@ describe('HTTPServer Ingest Event Endpoint', () => {
   let mockProjectManager: any;
   let mockSessionRegistry: any;
   let mockEventLogger: any;
-  let mockPermissionEngine: any;
   let mockRecoverySubsystem: any;
   let loggedEvents: any[];
-  let permissionEvaluations: any[];
   let openCodeEvents: any[];
   let checkpoints: Map<string, { data: unknown; projectPath: string }>;
   let projectPathMap: Map<string, string>;
@@ -439,7 +437,6 @@ describe('HTTPServer Ingest Event Endpoint', () => {
 
     // Reset tracking state
     loggedEvents = [];
-    permissionEvaluations = [];
     openCodeEvents = [];
     checkpoints = new Map();
     projectPathMap = new Map();
@@ -461,18 +458,6 @@ describe('HTTPServer Ingest Event Endpoint', () => {
     mockEventLogger = {
       append: async (event: any) => {
         loggedEvents.push(event);
-      },
-    };
-
-    // Mock PermissionEngine (phase 1: only log, don't intercept)
-    mockPermissionEngine = {
-      evaluate: async (params: any) => {
-        permissionEvaluations.push(params);
-        return { decision: 'allow' };
-      },
-      checkPermission: async (sessionId: string, action: string, tool: string, context: any) => {
-        permissionEvaluations.push({ sessionId, action, tool, ...context });
-        return { decision: 'allow' };
       },
     };
 
@@ -533,7 +518,6 @@ describe('HTTPServer Ingest Event Endpoint', () => {
       wal: undefined as any,
       projectManager: mockProjectManager,
       sessionRegistry: mockSessionRegistry,
-      permissionEngine: mockPermissionEngine,
       eventLogger: mockEventLogger,
       recoverySubsystem: mockRecoverySubsystem,
       toolCallsLogger,
@@ -587,29 +571,30 @@ describe('HTTPServer Ingest Event Endpoint', () => {
     expect(response.error.code).toBe('INVALID_JSON');
   });
 
-  it('should handle tool.invoking event', async () => {
-    const result = await sendEvent('test-session-1', 'tool.invoking', {
-      tool: 'bash',
-      callID: 'call-123',
-      args: { command: 'ls' },
+  it('should route opencode.tool.invoking as an observability event', async () => {
+    const result = await sendEvent('test-session-1', 'opencode.tool.invoking', {
+      type: 'tool.invoking',
+      properties: {
+        tool: 'bash',
+        callID: 'call-123',
+        args: { command: 'ls' },
+      },
     });
 
     expect(result.statusCode).toBe(200);
     const response = JSON.parse(result.body);
     expect(response.success).toBe(true);
     expect(response.data.received).toBe(true);
-    expect(response.data.type).toBe('tool.invoking');
-
-    // Verify PermissionEngine was called
-    expect(permissionEvaluations.length).toBe(1);
-    expect(permissionEvaluations[0].tool).toBe('bash');
-
-    // Verify SessionRegistry.touch was called
-    expect(touchedSessions).toContain('test-session-1');
-
-    // Verify event was logged (phase 1)
+    expect(response.data.type).toBe('opencode.tool.invoking');
+    expect(openCodeEvents).toEqual([
+      expect.objectContaining({
+        subType: 'tool.invoking',
+        data: expect.objectContaining({ sessionId: 'test-session-1' }),
+      }),
+    ]);
+    expect(touchedSessions).not.toContain('test-session-1');
     const permissionEvents = loggedEvents.filter(e => e.action === 'permission.evaluated');
-    expect(permissionEvents.length).toBe(1);
+    expect(permissionEvents).toHaveLength(0);
   });
 
   it('should handle tool.invoked event', async () => {
@@ -749,52 +734,6 @@ describe('HTTPServer Ingest Event Endpoint', () => {
     expect(response.data.received).toBe(true);
   });
 
-  it('should return 200 even when subsystem fails', async () => {
-    // Replace permissionEngine with one that throws
-    const failingPE = {
-      evaluate: async () => { throw new Error('Permission engine crashed'); },
-    };
-    // Create new server with failing deps
-    const failingDeps: HTTPServerDeps = {
-      config,
-      eventBus,
-      stateManager: undefined as any,
-      wal: undefined as any,
-      projectManager: mockProjectManager,
-      sessionRegistry: mockSessionRegistry,
-      permissionEngine: failingPE,
-      eventLogger: mockEventLogger,
-      recoverySubsystem: mockRecoverySubsystem,
-    };
-    const failingServer = new HTTPServer(failingDeps);
-    failingServer.setToken(token);
-    await failingServer.start();
-
-    try {
-      const result = await makeRequest(failingServer, {
-        method: 'POST',
-        path: '/api/v1/ingest/event',
-        headers: {
-          authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sessionId: 'test-session',
-          type: 'tool.invoking',
-          data: { tool: 'bash', callID: 'c1', args: {} },
-          ts: Date.now(),
-        }),
-      });
-
-      expect(result.statusCode).toBe(200);
-      const response = JSON.parse(result.body);
-      expect(response.success).toBe(true);
-      expect(response.data.received).toBe(true);
-    } finally {
-      await failingServer.stop();
-    }
-  });
-
   it('should require authentication', async () => {
     const result = await makeRequest(server, {
       method: 'POST',
@@ -884,7 +823,6 @@ describe('HTTPServer Ingest Event Endpoint', () => {
       wal: undefined as any,
       projectManager: mockProjectManager,
       sessionRegistry: mockSessionRegistry,
-      permissionEngine: mockPermissionEngine,
       eventLogger: mockEventLogger,
       recoverySubsystem: mockRecoverySubsystem,
       // toolCallsLogger and conversationsLogger intentionally omitted
@@ -1183,46 +1121,6 @@ describe('HTTPServer WALWriteError fail-fast', () => {
     }
   });
 
-  it('handleToolInvoking touch WALWriteError should be non-critical (200 response)', async () => {
-    const touchedSessions: string[] = [];
-    const mockSessionRegistry = {
-      touch: async () => {
-        throw new WALWriteError('touch wal fail', new Error('cause'));
-      },
-      getProjectPath: () => '',
-    };
-    const deps: HTTPServerDeps = {
-      config,
-      eventBus,
-      stateManager: undefined as any,
-      wal: undefined as any,
-      sessionRegistry: mockSessionRegistry,
-    };
-    server = new HTTPServer(deps);
-    server.setToken(token);
-    await server.start();
-
-    const result = await makeRequest(server, {
-      method: 'POST',
-      path: '/api/v1/ingest/event',
-      headers: {
-        authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        sessionId: 'test-session-touch-wal',
-        type: 'tool.invoking',
-        data: { tool: 'read_file', callID: 'c1', args: {} },
-        ts: Date.now(),
-      }),
-    });
-
-    // Touch failure is non-critical → should still return 200
-    expect(result.statusCode).toBe(200);
-    const response = JSON.parse(result.body);
-    expect(response.success).toBe(true);
-    expect(response.data.received).toBe(true);
-  });
 });
 
 /**
