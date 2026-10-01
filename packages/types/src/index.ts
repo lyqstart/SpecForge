@@ -410,3 +410,17 @@ export {
   type MergeReportStatus,
   type MergeReportVerdict,
 } from './merge-report-contract.js';
+
+// ---- Neutral LLM Kernel boundary ----
+export type {
+  LLMKernelAdapter,
+  UserMessage,
+  KernelEvent,
+  SpawnAgentParams,
+  SessionSpawnOptions,
+  SpawnAgentResult,
+  SessionInfo,
+  SessionStatus,
+  ModelCapabilities,
+  OutputFormat,
+} from './llm-kernel-contract.js';

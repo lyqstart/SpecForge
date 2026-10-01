@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { hostname, tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -12,7 +12,9 @@ import {
 } from '../../../scripts/lib/install_lock';
 
 async function createRoot(): Promise<string> {
-  return mkdtemp(join(tmpdir(), 'specforge-installer-lock-'));
+  const root = await mkdtemp(join(tmpdir(), 'specforge-installer-lock-'));
+  await mkdir(join(root, 'sf-user'));
+  return root;
 }
 
 const fastOptions = {
@@ -132,7 +134,10 @@ describe('current installer lock owner contract', () => {
       last_heartbeat: old,
     }));
 
-    const handle = await acquireInstallLock(root, 'install', fastOptions);
+    const handle = await acquireInstallLock(root, 'install', {
+      ...fastOptions,
+      isPidAlive: () => false,
+    });
     expect(parseInstallLock(JSON.parse(
       await readFile(join(root, 'sf-user', '.specforge.lock'), 'utf8'),
     )).lock_id).not.toBe('dead-owner');

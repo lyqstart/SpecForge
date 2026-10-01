@@ -43,6 +43,24 @@ function computeContentHash(content: string | Buffer | Uint8Array): string {
   return hash.digest("hex")
 }
 
+async function renameWithTransientRetry(
+  sourcePath: string,
+  targetPath: string,
+): Promise<void> {
+  const retryableCodes = new Set(["EPERM", "EBUSY", "EACCES"])
+  const maxAttempts = process.platform === "win32" ? 5 : 1
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      await rename(sourcePath, targetPath)
+      return
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code
+      if (attempt === maxAttempts || !code || !retryableCodes.has(code)) throw error
+      await new Promise(resolve => setTimeout(resolve, attempt * 10))
+    }
+  }
+}
+
 async function cleanupTempFile(tempPath: string): Promise<void> {
   try {
     await unlink(tempPath)
@@ -83,7 +101,7 @@ export async function atomicWrite(
       await options.faultHook.beforeRename()
     }
 
-    await rename(tempPath, targetPath)
+    await renameWithTransientRetry(tempPath, targetPath)
     return { success: true, hash: actualHash }
   } catch (err) {
     await cleanupTempFile(tempPath)

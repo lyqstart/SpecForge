@@ -59,7 +59,6 @@ export const DEFAULT_CONFIG: AdapterConfig = {
   translationStrictness: 'lenient',
   communicationTimeout: 30000,
   verboseLogging: false,
-  autoStartDaemon: true,
 };
 
 /**
@@ -164,13 +163,6 @@ function loadConfigFromEnv(): Partial<AdapterConfig> | null {
     hasConfig = true;
   }
 
-  // Auto-start daemon
-  const autoStart = process.env[`${CONFIG_ENV_PREFIX}AUTO_START_DAEMON`];
-  if (autoStart !== undefined) {
-    envConfig.autoStartDaemon = autoStart === 'true' || autoStart === '1';
-    hasConfig = true;
-  }
-
   // Thin Plugin endpoint
   const endpoint = process.env[`${CONFIG_ENV_PREFIX}THIN_PLUGIN_ENDPOINT`];
   if (endpoint) {
@@ -216,10 +208,6 @@ function loadConfigFromFile(filePath: string): Partial<AdapterConfig> | null {
 
     if (typeof parsed.verboseLogging === 'boolean') {
       fileConfig.verboseLogging = parsed.verboseLogging;
-    }
-
-    if (typeof parsed.autoStartDaemon === 'boolean') {
-      fileConfig.autoStartDaemon = parsed.autoStartDaemon;
     }
 
     if (parsed.thinPluginEndpoint && typeof parsed.thinPluginEndpoint === 'string') {
@@ -271,11 +259,6 @@ export function validateConfig(config: Partial<AdapterConfig>): { valid: boolean
     errors.push('verboseLogging must be a boolean');
   }
 
-  // Validate autoStartDaemon
-  if (config.autoStartDaemon !== undefined && typeof config.autoStartDaemon !== 'boolean') {
-    errors.push('autoStartDaemon must be a boolean');
-  }
-
   // Validate thinPluginEndpoint
   if (config.thinPluginEndpoint !== undefined) {
     if (typeof config.thinPluginEndpoint !== 'string') {
@@ -316,7 +299,6 @@ export function getEnvVarName(configKey: keyof AdapterConfig): string {
     translationStrictness: 'TRANSLATION_STRICTNESS',
     communicationTimeout: 'INTEGRATION_TIMEOUT_MS',
     verboseLogging: 'VERBOSE_LOGGING',
-    autoStartDaemon: 'AUTO_START_DAEMON',
     thinPluginEndpoint: 'THIN_PLUGIN_ENDPOINT',
   };
 
@@ -332,7 +314,6 @@ export function getAllEnvVarNames(): Record<keyof AdapterConfig, string> {
     translationStrictness: getEnvVarName('translationStrictness'),
     communicationTimeout: getEnvVarName('communicationTimeout'),
     verboseLogging: getEnvVarName('verboseLogging'),
-    autoStartDaemon: getEnvVarName('autoStartDaemon'),
     thinPluginEndpoint: getEnvVarName('thinPluginEndpoint'),
   };
 }

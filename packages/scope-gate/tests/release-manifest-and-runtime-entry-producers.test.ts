@@ -85,6 +85,24 @@ afterEach(async () => {
 });
 
 describe('release manifest and runtime entry producers', () => {
+  it('ignores retired package directories that no longer contain package.json', async () => {
+    const root = await candidate();
+    await mkdir(join(root, 'packages/retired-build-remnant/dist'), { recursive: true });
+    await writeFile(join(root, 'packages/retired-build-remnant/dist/index.js'), 'stale build output');
+
+    const result = await produceReleaseManifest({
+      candidateRoot: root,
+      releaseId: 'specforge-v6-current',
+      candidateId: 'candidate-1',
+      platform: 'win32',
+      registry,
+    });
+
+    expect(result.errors).toEqual([]);
+    expect(result.document.complete).toBe(true);
+    expect(result.document.artifacts.some((artifact) => artifact.path.includes('retired-build-remnant'))).toBe(false);
+  });
+
   it('writes a deterministic hash/size manifest from package builds and installer-owned assets', async () => {
     const root = await candidate();
     const result = await produceReleaseManifest({

@@ -50,6 +50,11 @@
       "types": "./dist/schema-contract.d.ts",
       "import": "./dist/schema-contract.js",
       "require": "./dist/schema-contract.js"
+    },
+    "./llm-kernel-contract": {
+      "types": "./dist/llm-kernel-contract.d.ts",
+      "import": "./dist/llm-kernel-contract.js",
+      "require": "./dist/llm-kernel-contract.js"
     }
   },
   "scripts": {
@@ -82,6 +87,9 @@
       ],
       "schema-contract": [
         "dist/schema-contract.d.ts"
+      ],
+      "llm-kernel-contract": [
+        "dist/llm-kernel-contract.d.ts"
       ]
     }
   }

@@ -130,7 +130,6 @@ export async function createSpecForgeThinPlugin(
   const register = async (): Promise<void> => {
     const registration = await dependencies.client.register(projectPath);
     daemonSessionId = registration.sessionId;
-    state = 'connected';
   };
 
   async function forwardCompactionCheckpoint(

@@ -22,6 +22,8 @@ import {
   createGracefulShutdownHandler,
   ShutdownPriority,
 } from '@specforge/service-management';
+import { OpenCodeAdapter, OpenCodeHttpRuntimeClient } from '@specforge/opencode-adapter';
+import type { LLMKernelAdapter } from '@specforge/types/llm-kernel-contract';
 
 export class Daemon {
   private httpServer: HTTPServer;
@@ -37,8 +39,12 @@ export class Daemon {
   private permissionEngine: PermissionEngine;
   private workflowEngine: WorkflowEngine;
   private gracefulShutdownHandler: GracefulShutdownHandler;
+  private llmKernelAdapter: LLMKernelAdapter;
 
-  constructor(config: DaemonConfig = new DaemonConfig()) {
+  constructor(
+    config: DaemonConfig = new DaemonConfig(),
+    llmKernelAdapter?: LLMKernelAdapter,
+  ) {
     this.config = config;
     this.eventBus = new EventBus();
     // Shared path resolver for all subsystems (TASK-8)
@@ -70,6 +76,11 @@ export class Daemon {
     this.extensionLoader.setWorkflowEngine(this.workflowEngine);
 
     this.permissionEngine = new PermissionEngine({ projectId: 'default-project' });
+    this.llmKernelAdapter = llmKernelAdapter ?? new OpenCodeAdapter({
+      runtimeClient: new OpenCodeHttpRuntimeClient({
+        baseUrl: process.env.OPENCODE_SERVER_URL?.trim() || 'http://127.0.0.1:4096',
+      }),
+    });
     // NOTE: workflowEngine is already created above — do NOT create a second instance
 
     this.httpServer = new HTTPServer({
@@ -83,6 +94,7 @@ export class Daemon {
       sessionRegistry: this.sessionRegistry,
       projectManager: this.projectManager,
       recoverySubsystem: this.recoverySubsystem,
+      llmKernelAdapter: this.llmKernelAdapter,
       toolDispatcher: new ToolDispatcher({
         stateManager: undefined,
         workflowEngine: this.workflowEngine,
@@ -249,6 +261,10 @@ export class Daemon {
 
   isDaemonRunning(): boolean {
     return this.isRunning;
+  }
+
+  getLLMKernelAdapter(): LLMKernelAdapter {
+    return this.llmKernelAdapter;
   }
 
   /**

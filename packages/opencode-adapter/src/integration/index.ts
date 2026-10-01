@@ -9,7 +9,6 @@
 
 export { ThinPluginClient, ThinPluginClientError, ThinPluginClientErrorCode } from './ThinPluginClient';
 export { SessionRegistry, SessionRegistryError } from './SessionRegistry';
-export { DaemonStartupManager, DaemonStartupError, DaemonStartupErrorCode, createDaemonStartupManager, ensureDaemonRunning } from './DaemonStartupManager';
 
 export type {
   ThinPluginClientConfig,
@@ -24,10 +23,6 @@ export type {
   CommandResult,
   ThinPluginHealthCheckResponse,
   ThinPluginErrorResponse,
-  DaemonStartupConfig,
-  DaemonStatus,
-  StartupResult,
-  DaemonHealthCheckResult,
 } from './types';
 
 export type {

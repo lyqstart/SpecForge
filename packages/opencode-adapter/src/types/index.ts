@@ -8,131 +8,31 @@
  */
 
 import { z } from 'zod';
+import type {
+  LLMKernelAdapter,
+  UserMessage,
+  KernelEvent,
+  SpawnAgentParams,
+  SessionSpawnOptions,
+  SpawnAgentResult,
+  SessionInfo,
+  SessionStatus,
+  ModelCapabilities,
+  OutputFormat,
+} from '@specforge/types/llm-kernel-contract';
 
-/**
- * User message structure for sending prompts
- */
-export interface UserMessage {
-  /** Message role */
-  role: 'user' | 'assistant' | 'system';
-  /** Message content */
-  content: string;
-  /** Optional message ID */
-  messageId?: string;
-  /** Optional timestamp */
-  timestamp?: Date;
-}
-
-/**
- * Kernel event structure
- * This is the Daemon-neutral event format exposed to the public API
- */
-export interface KernelEvent {
-  /** Event type */
-  type: string;
-  /** Event payload */
-  payload: unknown;
-  /** Session ID */
-  sessionId: string;
-  /** Timestamp */
-  timestamp: Date;
-  /** Optional metadata */
-  metadata?: Record<string, unknown>;
-}
-
-/**
- * LLMKernelAdapter interface - required by SpecForge V6 architecture
- *
- * This interface defines the contract that all LLM kernel adapters must implement.
- * Each adapter is responsible for translating between the kernel's specific
- * communication protocol and Daemon's neutral protocol.
- *
- * Requirements: 1.1, 1.2
- */
-export interface LLMKernelAdapter {
-  /** Version string of the adapter - aligned with OpenCode major version */
-  readonly version: string;
-
-  /** Compatible kernel version range (e.g., "opencode ^1.14") */
-  readonly compatibleKernelRange: string;
-
-  /**
-   * Spawn a new agent session
-   * @param params - Spawn parameters
-   */
-  spawnAgent(params: SpawnAgentParams): Promise<SpawnAgentResult>;
-
-  /**
-   * Get session information
-   * @param sessionId - The session to query
-   */
-  getSession(sessionId: string): Promise<SessionInfo | null>;
-
-  /**
-   * Cancel/terminate a session
-   * @param sessionId - The session to cancel
-   * @param reason - Reason for cancellation
-   */
-  cancelSession(sessionId: string, reason: string): Promise<void>;
-
-  /**
-   * Send a prompt to a session
-   * @param sessionId - Target session
-   * @param message - Message to send
-   */
-  sendPrompt(sessionId: string, message: UserMessage): Promise<void>;
-
-  /**
-   * Subscribe to session events
-   * @param sessionId - Target session
-   * @returns Async iterable of kernel events
-   */
-  subscribeEvents(sessionId: string): AsyncIterable<KernelEvent>;
-
-  /**
-   * Get model capabilities
-   * @param model - Model identifier
-   */
-  getCapabilities(model: string): Promise<ModelCapabilities>;
-}
-
-/**
- * Parameters for spawning an agent
- */
-export interface SpawnAgentParams {
-  /** Agent role/identifier */
-  agentRole: string;
-  /** Unique spawn intent ID */
-  spawnIntentId: string;
-  /** System prompt to inject */
-  systemPrompt?: string;
-  /** Working directory */
-  cwd?: string;
-  /** Additional model configuration */
-  model?: string;
-  /** Additional options */
-  options?: SessionSpawnOptions;
-}
-
-/**
- * Session spawn options
- */
-export interface SessionSpawnOptions {
-  /** Timeout in milliseconds */
-  timeout?: number;
-  /** Environment variables */
-  env?: Record<string, string>;
-  /** Enable verbose logging */
-  verbose?: boolean;
-}
-
-/**
- * Result of spawnAgent
- */
-export interface SpawnAgentResult {
-  /** Unique session identifier */
-  sessionId: string;
-}
+export type {
+  LLMKernelAdapter,
+  UserMessage,
+  KernelEvent,
+  SpawnAgentParams,
+  SessionSpawnOptions,
+  SpawnAgentResult,
+  SessionInfo,
+  SessionStatus,
+  ModelCapabilities,
+  OutputFormat,
+};
 
 /**
  * Session configuration options
@@ -163,24 +63,6 @@ export interface SpawnResult {
 /**
  * Session information
  */
-export interface SessionInfo {
-  /** Session ID */
-  sessionId: string;
-  /** Current status */
-  status: SessionStatus;
-  /** When the session was created */
-  createdAt: Date;
-  /** Last activity timestamp */
-  lastActivityAt: Date;
-  /** Model being used */
-  model?: string;
-}
-
-/**
- * Session status enum
- */
-export type SessionStatus = 'pending' | 'active' | 'completed' | 'cancelled' | 'error';
-
 /**
  * Result of cancelSession
  */
@@ -230,26 +112,6 @@ export interface DaemonEvent {
 /**
  * Model capabilities
  */
-export interface ModelCapabilities {
-  /** Supports streaming */
-  streaming: boolean;
-  /** Maximum context length */
-  maxContextLength: number;
-  /** Supported tools */
-  tools: boolean;
-  /** Supports vision/multimodal */
-  vision: boolean;
-  /** Supports function calling */
-  functionCalling: boolean;
-  /** Supported output formats */
-  outputFormats: OutputFormat[];
-}
-
-/**
- * Output format enum
- */
-export type OutputFormat = 'text' | 'json' | 'markdown';
-
 /**
  * Version compatibility result
  */
@@ -356,8 +218,6 @@ export interface AdapterConfig {
   verboseLogging: boolean;
   /** Thin Plugin endpoint */
   thinPluginEndpoint?: string;
-  /** Auto-start daemon if not running */
-  autoStartDaemon: boolean;
 }
 
 /**
@@ -368,7 +228,6 @@ export const DEFAULT_ADAPTER_CONFIG: AdapterConfig = {
   translationStrictness: 'lenient',
   communicationTimeout: 30000,
   verboseLogging: false,
-  autoStartDaemon: true,
 };
 
 // ============================================================

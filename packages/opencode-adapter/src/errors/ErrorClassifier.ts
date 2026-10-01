@@ -22,10 +22,7 @@
  *   3. OpenCode Communication    — spawnAgent transport + timeout +
  *                                  sendPrompt delivery + AdapterError
  *                                  CommunicationError subclasses
- *   4. Thin Plugin Integration   — every ThinPluginClientError code, every
- *                                  DaemonStartupError code (on-demand
- *                                  daemon spawn is part of the Thin Plugin
- *                                  integration surface, see Req 4.3)
+ *   4. Thin Plugin Integration   — every ThinPluginClientError code
  *
  * D2 ("超时透明原则") — see `docs/engineering-lessons/async-resource-lifecycle.md` §D2:
  * superficial "timeout" messages shift the diagnosis cost onto the user,
@@ -48,10 +45,6 @@ import {
   ThinPluginClientError,
   ThinPluginClientErrorCode,
 } from '../integration/ThinPluginClient';
-import {
-  DaemonStartupError,
-  DaemonStartupErrorCode,
-} from '../integration/DaemonStartupManager';
 
 // Re-export ErrorCategory so callers can do
 // `import { ErrorCategory, classifyError } from '.../ErrorClassifier'`
@@ -428,61 +421,6 @@ function classifyThinPluginClientError(err: ThinPluginClientError): ClassifiedEr
   };
 }
 
-function classifyDaemonStartupError(err: DaemonStartupError): ClassifiedError {
-  const operation = 'daemonStartup';
-  let retryable = false;
-  let suggestion = 'Inspect daemon logs and configuration.';
-
-  switch (err.code) {
-    case DaemonStartupErrorCode.STARTUP_TIMEOUT:
-    case DaemonStartupErrorCode.HEALTH_CHECK_FAILED:
-    case DaemonStartupErrorCode.STARTUP_FAILED:
-      retryable = true;
-      suggestion =
-        'Check daemon command, working directory, and required ports; ' +
-        'startup is idempotent (no daemon yet) so retry is safe.';
-      break;
-    case DaemonStartupErrorCode.CONFIG_ERROR:
-      retryable = false;
-      suggestion =
-        'Fix DaemonStartupManager configuration (daemonCommand and daemonArgs are required).';
-      break;
-    case DaemonStartupErrorCode.DAEMON_NOT_FOUND:
-      retryable = false;
-      suggestion = 'Install the daemon binary or fix the daemonCommand path.';
-      break;
-    case DaemonStartupErrorCode.PERMISSION_DENIED:
-      retryable = false;
-      suggestion = 'Run with the necessary permissions or change the binary file mode.';
-      break;
-    case DaemonStartupErrorCode.ALREADY_RUNNING:
-      retryable = false;
-      suggestion = 'The daemon is already running; reuse the existing instance.';
-      break;
-    case DaemonStartupErrorCode.PROCESS_ERROR:
-      retryable = true;
-      suggestion = 'The daemon process crashed; inspect daemon logs and retry.';
-      break;
-  }
-
-  return {
-    category: ErrorCategory.THIN_PLUGIN,
-    retryable,
-    recordEvent: true,
-    eventType: 'adapter.error',
-    code: err.code,
-    message: buildMessage({
-      category: ErrorCategory.THIN_PLUGIN,
-      operation,
-      suggestion,
-      detail: err.message,
-    }),
-    operation,
-    suggestion,
-    originalError: err,
-  };
-}
-
 function classifyAdapterError(err: AdapterError): ClassifiedError {
   // The AdapterError hierarchy already self-classifies; we only adapt it
   // into a `ClassifiedError` and apply event/operation rules.
@@ -589,10 +527,6 @@ export function classifyError(err: unknown): ClassifiedError {
 
   if (err instanceof ThinPluginClientError) {
     return classifyThinPluginClientError(err);
-  }
-
-  if (err instanceof DaemonStartupError) {
-    return classifyDaemonStartupError(err);
   }
 
   if (err instanceof AdapterError) {

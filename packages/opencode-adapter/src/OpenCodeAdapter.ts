@@ -27,7 +27,7 @@ import { VersionChecker } from './version/VersionChecker';
 import { EventTranslator } from './translators/EventTranslator';
 import { CapabilityTranslator } from './translators/CapabilityTranslator';
 import { SessionRegistry } from './integration/SessionRegistry';
-import { DaemonStartupManager } from './integration/DaemonStartupManager';
+import type { OpenCodeRuntimeClient } from './integration/OpenCodeHttpRuntimeClient';
 import { DiagnosticsLogger, type DiagnosticsConfig } from './diagnostics';
 import { EventLogger } from './event-logger/EventLogger';
 
@@ -45,6 +45,11 @@ interface SessionRecord {
   cwd?: string;
   model?: string;
   capabilities?: ModelCapabilities;
+}
+
+export interface OpenCodeAdapterOptions extends Partial<AdapterConfig> {
+  diagnostics?: Partial<DiagnosticsConfig>;
+  runtimeClient?: OpenCodeRuntimeClient;
 }
 
 /**
@@ -118,13 +123,8 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
   // Session binding registry (first-contact binding strategy)
   private sessionRegistry: SessionRegistry;
   
-  // Daemon startup manager (on-demand startup support - Requirement 4.3)
-  private daemonStartupManager?: DaemonStartupManager;
-  
   // Event logger for logging adapter events (Task 7.2: Event logging)
   private eventLogger: EventLogger;
-  
-  private _autoStartDaemon: boolean;
   
   // Event streaming infrastructure
   private eventControllers: Map<string, AbortController> = new Map();
@@ -135,6 +135,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
   
   // Diagnostics logger for translation logs, performance metrics, and compatibility warnings
   private diagnosticsLogger: DiagnosticsLogger;
+  private readonly runtimeClient?: OpenCodeRuntimeClient;
   
   // Reconnection state - used in production for event stream reconnection
   private reconnectAttempts: Map<string, number> = new Map();
@@ -165,14 +166,15 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     return this._reconnectDelayMs;
   }
 
-  constructor(config: Partial<AdapterConfig> & { diagnostics?: Partial<DiagnosticsConfig> } = {}) {
+  constructor(options: OpenCodeAdapterOptions = {}) {
+    const { diagnostics, runtimeClient, ...config } = options;
     this.config = { ...DEFAULT_ADAPTER_CONFIG, ...config };
+    this.runtimeClient = runtimeClient;
     this.compatibleKernelRange = this.config.compatibleKernelRange;
     this.versionChecker = new VersionChecker(this.config.compatibleKernelRange);
     this.eventTranslator = new EventTranslator();
     this.capabilityTranslator = new CapabilityTranslator();
     this.sessionRegistry = new SessionRegistry();
-    this._autoStartDaemon = this.config.autoStartDaemon ?? true;
     
     // Initialize diagnostics logger
     const diagnosticsConfig: DiagnosticsConfig = {
@@ -186,7 +188,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     };
     this.diagnosticsLogger = new DiagnosticsLogger({
       ...diagnosticsConfig,
-      ...config.diagnostics,
+      ...diagnostics,
     });
     
     // Initialize event logger for Task 7.2: Event logging
@@ -255,7 +257,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     }
 
     // Step 3: Create session record
-    const sessionId = this.generateSessionId(params.spawnIntentId);
+    let sessionId = this.generateSessionId(params.spawnIntentId);
     const now = new Date();
 
     const sessionRecord: SessionRecord = {
@@ -273,21 +275,26 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     // Store session
     this.sessions.set(sessionId, sessionRecord);
 
-    // Register spawn intent in session registry (first-contact binding)
-    this.sessionRegistry.registerPending({
-      spawnIntentId: params.spawnIntentId,
-      agentRole: params.agentRole,
-      metadata: {
-        sessionId,
-        systemPrompt: params.systemPrompt,
-        cwd: params.cwd,
-        model: params.model,
-      },
-    });
-
     // Step 4: Start OpenCode session with injected prompt
     try {
       await this.startOpenCodeSession(sessionRecord);
+      if (sessionRecord.sessionId !== sessionId) {
+        this.sessions.delete(sessionId);
+        sessionId = sessionRecord.sessionId;
+        this.sessions.set(sessionId, sessionRecord);
+      }
+      // Register only after OpenCode accepted the session. A failed remote
+      // creation must not leave a pending first-contact binding behind.
+      this.sessionRegistry.registerPending({
+        spawnIntentId: params.spawnIntentId,
+        agentRole: params.agentRole,
+        metadata: {
+          sessionId,
+          systemPrompt: params.systemPrompt,
+          cwd: params.cwd,
+          model: params.model,
+        },
+      });
     } catch (error) {
       // Clean up session on failure
       this.sessions.delete(sessionId);
@@ -364,6 +371,7 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
    * For now, returns a default version for testing
    */
   private async detectOpenCodeVersion(): Promise<string> {
+    if (this.runtimeClient) return this.runtimeClient.getVersion();
     // In production, this would be:
     // 1. Query OpenCode via Thin Plugin
     // 2. Read from OpenCode's package.json or runtime API
@@ -385,6 +393,25 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
    * @param sessionRecord - Session configuration
    */
   private async startOpenCodeSession(sessionRecord: SessionRecord): Promise<void> {
+    if (this.runtimeClient) {
+      const created = await this.runtimeClient.createSession({
+        title: `SpecForge ${sessionRecord.agentRole} (${sessionRecord.spawnIntentId})`,
+        directory: sessionRecord.cwd,
+      });
+      sessionRecord.sessionId = created.id;
+      sessionRecord.createdAt = created.createdAt ?? sessionRecord.createdAt;
+      sessionRecord.lastActivityAt = created.updatedAt ?? created.createdAt ?? new Date();
+      if (sessionRecord.systemPrompt) {
+        await this.runtimeClient.sendPrompt(created.id, {
+          content: sessionRecord.systemPrompt,
+          agent: sessionRecord.agentRole,
+          model: sessionRecord.model,
+          noReply: true,
+        }, sessionRecord.cwd);
+      }
+      sessionRecord.status = 'active';
+      return;
+    }
     // In production, this would:
     // 1. Send request to OpenCode via Thin Plugin
     // 2. Include the system prompt injection
@@ -518,6 +545,9 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
       return;
     }
 
+    if (this.runtimeClient) {
+      await this.runtimeClient.abortSession(sessionId, session.cwd);
+    }
     session.status = 'cancelled';
     session.lastActivityAt = new Date();
     this.sessions.set(sessionId, session);
@@ -695,6 +725,15 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     session: SessionRecord,
     message: OpenCodePromptMessage
   ): Promise<void> {
+    if (this.runtimeClient) {
+      await this.runtimeClient.sendPrompt(session.sessionId, {
+        content: message.content,
+        messageId: message._meta.messageId,
+        agent: session.agentRole,
+        model: session.model,
+      }, session.cwd);
+      return;
+    }
     // In production, this would:
     // 1. Send the message to OpenCode via Thin Plugin HTTP endpoint
     // 2. Wait for acknowledgment
@@ -1210,197 +1249,5 @@ export class OpenCodeAdapter implements LLMKernelAdapter {
     return this.sessionRegistry.release(sessionId);
   }
 
-  // ============================================================
-  // On-Demand Daemon Startup API (Requirements: 4.3)
-  // ============================================================
-
-  /**
-   * Initialize the Daemon startup manager
-   *
-   * Creates the startup manager with optional custom configuration.
-   * This is called lazily when first needed.
-   *
-   * @param config - Optional startup manager configuration
-   */
-  initializeDaemonStartup(config?: {
-    daemonCommand?: string;
-    daemonArgs?: string[];
-    startupTimeout?: number;
-    healthCheckUrl?: string;
-  }): void {
-    if (!this.daemonStartupManager) {
-      this.daemonStartupManager = new DaemonStartupManager({
-        daemonCommand: config?.daemonCommand ?? 'bun',
-        daemonArgs: config?.daemonArgs ?? ['run', 'daemon-core/src/index.ts'],
-        startupTimeout: config?.startupTimeout ?? 30000,
-        healthCheckUrl: config?.healthCheckUrl ?? 'http://localhost:3000/health',
-        maxRetries: 3,
-        retryDelay: 2000,
-      });
-    }
-  }
-
-  /**
-   * Check if Daemon needs to be started
-   *
-   * Detects whether Daemon is running and needs startup.
-   * Uses health check endpoint to determine availability.
-   *
-   * @returns Promise resolving to true if Daemon needs to be started
-   */
-  async daemonNeedsStartup(): Promise<boolean> {
-    // Initialize if not already done
-    this.initializeDaemonStartup();
-    
-    return this.daemonStartupManager!.needsStartup();
-  }
-
-  /**
-   * Start the Daemon process
-   *
-   * Implements on-demand startup with:
-   * - Process detection
-   * - Startup with retries
-   * - Health check verification
-   * - Failure handling
-   *
-   * @returns Promise resolving to startup result
-   */
-  async startDaemon(): Promise<{
-    success: boolean;
-    error?: string;
-    pid?: number;
-    attempts?: number;
-    alreadyRunning?: boolean;
-  }> {
-    // Initialize if not already done
-    this.initializeDaemonStartup();
-    
-    try {
-      const result = await this.daemonStartupManager!.startDaemon();
-      
-      // Log the result if verbose logging is enabled
-      if (this.config.verboseLogging) {
-        if (result.success) {
-          console.log(`[OpenCodeAdapter] Daemon started successfully`, {
-            pid: result.pid,
-            attempts: result.attempts,
-          });
-        } else {
-          console.error(`[OpenCodeAdapter] Daemon startup failed`, {
-            error: result.error,
-            attempts: result.attempts,
-          });
-        }
-      }
-      
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
-      if (this.config.verboseLogging) {
-        console.error(`[OpenCodeAdapter] Daemon startup error`, { error: errorMessage });
-      }
-      
-      return {
-        success: false,
-        error: errorMessage,
-      };
-    }
-  }
-
-  /**
-   * Ensure Daemon is running
-   *
-   * Checks if Daemon is running, and if not, starts it.
-   * This is the main entry point for on-demand startup.
-   *
-   * @returns Promise resolving to true if Daemon is running or was started successfully
-   */
-  async ensureDaemonRunning(): Promise<boolean> {
-    // First check if already running
-    if (await this.isDaemonRunning()) {
-      return true;
-    }
-
-    // Try to start
-    const result = await this.startDaemon();
-    return result.success;
-  }
-
-  /**
-   * Check if Daemon is running
-   *
-   * @returns Promise resolving to true if Daemon is running
-   */
-  async isDaemonRunning(): Promise<boolean> {
-    // Initialize if not already done
-    this.initializeDaemonStartup();
-    
-    return this.daemonStartupManager!.isRunning();
-  }
-
-  /**
-   * Get Daemon status
-   *
-   * @returns Current Daemon status
-   */
-  async getDaemonStatus(): Promise<{
-    state: 'stopped' | 'starting' | 'running' | 'error';
-    running: boolean;
-    uptime?: number;
-    pid?: number;
-  }> {
-    // Initialize if not already done
-    this.initializeDaemonStartup();
-    
-    return this.daemonStartupManager!.getStatus();
-  }
-
-  /**
-   * Stop the Daemon process
-   *
-   * @param force - Force kill if graceful shutdown fails
-   */
-  async stopDaemon(force: boolean = false): Promise<void> {
-    if (this.daemonStartupManager) {
-      await this.daemonStartupManager.stopDaemon(force);
-    }
-  }
-
-  /**
-   * Check Daemon health
-   *
-   * @returns Health check result
-   */
-  async checkDaemonHealth(): Promise<{
-    healthy: boolean;
-    statusCode?: number;
-    latency?: number;
-    error?: string;
-  }> {
-    // Initialize if not already done
-    this.initializeDaemonStartup();
-    
-    return this.daemonStartupManager!.checkHealth();
-  }
-
-  /**
-   * Set auto-start Daemon flag
-   *
-   * @param autoStart - Whether to automatically start Daemon when needed
-   */
-  setAutoStartDaemon(autoStart: boolean): void {
-    this._autoStartDaemon = autoStart;
-  }
-
-  /**
-   * Get auto-start Daemon setting
-   *
-   * @returns Current auto-start setting
-   */
-  getAutoStartDaemon(): boolean {
-    return this._autoStartDaemon;
-  }
 }
 /* eslint-enable @typescript-eslint/require-await */

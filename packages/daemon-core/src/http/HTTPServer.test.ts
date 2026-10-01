@@ -12,6 +12,7 @@ import * as http from 'http';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import type { LLMKernelAdapter } from '@specforge/types/llm-kernel-contract';
 
 class HTTPTestDaemonConfig extends DaemonConfig {
   private readonly resolver: IPathResolver;
@@ -81,6 +82,66 @@ describe('HTTPServer', () => {
     // This test would require SSE client setup
     // For now, just verify the method exists
     expect(typeof server.broadcastEvent).toBe('function');
+  });
+});
+
+describe('LLM Kernel production HTTP boundary', () => {
+  it('routes neutral daemon requests to the injected adapter', async () => {
+    const testRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'specforge-http-kernel-'));
+    const config = new HTTPTestDaemonConfig(testRoot);
+    const adapter: LLMKernelAdapter = {
+      version: 'test',
+      compatibleKernelRange: '>=1.14.0 <2.0.0',
+      spawnAgent: vi.fn(async () => ({ sessionId: 'oc-session-1' })),
+      getSession: vi.fn(async (sessionId) => ({
+        sessionId,
+        status: 'active' as const,
+        createdAt: new Date(0),
+        lastActivityAt: new Date(0),
+      })),
+      cancelSession: vi.fn(async () => undefined),
+      sendPrompt: vi.fn(async () => undefined),
+      subscribeEvents: vi.fn(() => ({
+        async *[Symbol.asyncIterator]() { /* empty test stream */ },
+      })),
+      getCapabilities: vi.fn(async () => ({
+        streaming: true,
+        maxContextLength: 1,
+        tools: true,
+        vision: false,
+        functionCalling: true,
+        outputFormats: ['text' as const],
+      })),
+    };
+    const server = new HTTPServer({
+      config,
+      eventBus: new EventBus(),
+      stateManager: undefined as never,
+      wal: undefined as never,
+      llmKernelAdapter: adapter,
+    });
+    server.setToken('kernel-test-token');
+    try {
+      const { port } = await server.start();
+      const response = await fetch(`http://127.0.0.1:${port}/api/v1/kernel/session/spawn`, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer kernel-test-token',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ agentRole: 'dev', spawnIntentId: 'intent-1', cwd: 'D:/project' }),
+      });
+      expect(response.status).toBe(201);
+      expect(await response.json()).toMatchObject({ success: true, data: { sessionId: 'oc-session-1' } });
+      expect(adapter.spawnAgent).toHaveBeenCalledWith({
+        agentRole: 'dev',
+        spawnIntentId: 'intent-1',
+        cwd: 'D:/project',
+      });
+    } finally {
+      await server.stop();
+      await fs.rm(testRoot, { recursive: true, force: true });
+    }
   });
 });
 

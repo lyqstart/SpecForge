@@ -166,6 +166,17 @@ async function packageArtifacts(
   for (const entry of [...entries].sort((left, right) => left.name.localeCompare(right.name))) {
     if (!entry.isDirectory()) continue;
     const manifestPath = `packages/${entry.name}/package.json`;
+    const manifestAbsolutePath = resolveCandidatePath(candidateRoot, manifestPath);
+    if (!manifestAbsolutePath) continue;
+    try {
+      const manifestInfo = await stat(manifestAbsolutePath);
+      if (!manifestInfo.isFile()) continue;
+    } catch {
+      // A directory without package.json is not a current package. This also
+      // permits ignored build remnants from retired packages to coexist with
+      // the current workspace without re-entering the release surface.
+      continue;
+    }
     const manifestArtifact = await readBoundArtifact(
       candidateRoot,
       manifestPath,

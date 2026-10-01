@@ -38,6 +38,7 @@ import { JsonlAppender } from '../logs/JsonlAppender';
 import * as path from 'path';
 import { SPEC_DIR_NAME } from '@specforge/types/directory-layout';
 import { readWorkItemMetadata } from '../tools/lib/work-item-metadata';
+import type { LLMKernelAdapter, UserMessage } from '@specforge/types/llm-kernel-contract';
 
 interface HTTPWriteGuardContext extends WriteGuardContext {
   metadata_error?: string;
@@ -119,6 +120,7 @@ export interface HTTPServerDeps {
   toolDispatcher?: ToolDispatcher;
   toolCallsLogger?: JsonlAppender;
   conversationsLogger?: JsonlAppender;
+  llmKernelAdapter?: LLMKernelAdapter;
 }
 
 // ── Route Types ──
@@ -299,6 +301,10 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/cas/store', this.handleCasStore.bind(this));
     this.addExactRoute('GET', '/api/v1/cas/retrieve', this.handleCasRetrieve.bind(this));
     this.addExactRoute('GET', '/api/v1/session/list', this.handleSessionList.bind(this));
+    this.addExactRoute('POST', '/api/v1/kernel/session/spawn', this.handleKernelSessionSpawn.bind(this));
+    this.addExactRoute('POST', '/api/v1/kernel/session/prompt', this.handleKernelSessionPrompt.bind(this));
+    this.addExactRoute('POST', '/api/v1/kernel/session/cancel', this.handleKernelSessionCancel.bind(this));
+    this.addExactRoute('GET', '/api/v1/kernel/session', this.handleKernelSessionGet.bind(this));
     this.addExactRoute('POST', '/api/v1/tool/invoke', this.handleToolInvoke.bind(this));
     this.addExactRoute('POST', '/api/v1/admin/stop', this.handleAdminStop.bind(this));
     this.addExactRoute('POST', '/api/v1/ingest/register', this.handleIngestRegister.bind(this));
@@ -325,7 +331,7 @@ export class HTTPServer {
     this.addExactRoute('POST', '/api/v1/v11/write-guard/escaped-write', this.handleV11WriteGuardEscapedWrite.bind(this));
 
     // Prefix routes for API v1 (fallback)
-    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'admin', 'project'];
+    const prefixes = ['state', 'event', 'workflow', 'blob', 'tool', 'ingest', 'cas', 'session', 'kernel', 'admin', 'project'];
     for (const segment of prefixes) {
       this.addPrefixRoute('GET', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
       this.addPrefixRoute('POST', `/api/v1/${segment}/`, this.handleApiEndpoint.bind(this));
@@ -1017,6 +1023,132 @@ export class HTTPServer {
       message: 'session/list placeholder',
       sessions: [],
     }));
+  }
+
+  private async handleKernelSessionSpawn(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string,
+  ): Promise<void> {
+    const adapter = this.deps.llmKernelAdapter;
+    if (!adapter) {
+      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      return;
+    }
+    let request: Record<string, unknown>;
+    try {
+      request = body ? JSON.parse(body) as Record<string, unknown> : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+    if (typeof request.agentRole !== 'string' || typeof request.spawnIntentId !== 'string') {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'agentRole and spawnIntentId are required'));
+      return;
+    }
+    try {
+      const result = await adapter.spawnAgent({
+        agentRole: request.agentRole,
+        spawnIntentId: request.spawnIntentId,
+        ...(typeof request.systemPrompt === 'string' ? { systemPrompt: request.systemPrompt } : {}),
+        ...(typeof request.cwd === 'string' ? { cwd: request.cwd } : {}),
+        ...(typeof request.model === 'string' ? { model: request.model } : {}),
+      });
+      this.sendJsonResponse(res, 201, this.successBody(result));
+    } catch (error) {
+      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+    }
+  }
+
+  private async handleKernelSessionPrompt(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string,
+  ): Promise<void> {
+    const adapter = this.deps.llmKernelAdapter;
+    if (!adapter) {
+      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      return;
+    }
+    let request: Record<string, unknown>;
+    try {
+      request = body ? JSON.parse(body) as Record<string, unknown> : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+    if (typeof request.sessionId !== 'string' || typeof request.content !== 'string') {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId and content are required'));
+      return;
+    }
+    const role = request.role === 'assistant' || request.role === 'system' ? request.role : 'user';
+    const message: UserMessage = {
+      role,
+      content: request.content,
+      ...(typeof request.messageId === 'string' ? { messageId: request.messageId } : {}),
+    };
+    try {
+      await adapter.sendPrompt(request.sessionId, message);
+      this.sendJsonResponse(res, 200, this.successBody({ sessionId: request.sessionId, accepted: true }));
+    } catch (error) {
+      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+    }
+  }
+
+  private async handleKernelSessionCancel(
+    _req: http.IncomingMessage,
+    res: http.ServerResponse,
+    body: string,
+  ): Promise<void> {
+    const adapter = this.deps.llmKernelAdapter;
+    if (!adapter) {
+      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      return;
+    }
+    let request: Record<string, unknown>;
+    try {
+      request = body ? JSON.parse(body) as Record<string, unknown> : {};
+    } catch {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_JSON', 'Invalid JSON in request body'));
+      return;
+    }
+    if (typeof request.sessionId !== 'string') {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId is required'));
+      return;
+    }
+    try {
+      await adapter.cancelSession(
+        request.sessionId,
+        typeof request.reason === 'string' ? request.reason : 'Cancelled by Daemon client',
+      );
+      this.sendJsonResponse(res, 200, this.successBody({ sessionId: request.sessionId, cancelled: true }));
+    } catch (error) {
+      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+    }
+  }
+
+  private async handleKernelSessionGet(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+    const adapter = this.deps.llmKernelAdapter;
+    if (!adapter) {
+      this.sendJsonResponse(res, 503, this.errorBody('LLM_KERNEL_UNAVAILABLE', 'LLM kernel adapter is not configured'));
+      return;
+    }
+    const url = new URL(req.url ?? '/', `http://localhost:${this.port ?? 0}`);
+    const sessionId = url.searchParams.get('sessionId');
+    if (!sessionId) {
+      this.sendJsonResponse(res, 400, this.errorBody('INVALID_KERNEL_REQUEST', 'sessionId query parameter is required'));
+      return;
+    }
+    try {
+      const session = await adapter.getSession(sessionId);
+      if (!session) {
+        this.sendJsonResponse(res, 404, this.errorBody('KERNEL_SESSION_NOT_FOUND', `Session not found: ${sessionId}`));
+        return;
+      }
+      this.sendJsonResponse(res, 200, this.successBody(session));
+    } catch (error) {
+      this.sendJsonResponse(res, 502, this.errorBody('LLM_KERNEL_ERROR', error instanceof Error ? error.message : String(error)));
+    }
   }
 
   private async handleToolInvoke(_req: http.IncomingMessage, res: http.ServerResponse, body: string): Promise<void> {

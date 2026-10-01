@@ -58,7 +58,6 @@ describe('Configuration System', () => {
       expect(result.config).toHaveProperty('translationStrictness');
       expect(result.config).toHaveProperty('communicationTimeout');
       expect(result.config).toHaveProperty('verboseLogging');
-      expect(result.config).toHaveProperty('autoStartDaemon');
     });
   });
 
@@ -106,14 +105,6 @@ describe('Configuration System', () => {
       const result = loadConfig({ useEnv: true, useFile: false });
 
       expect(result.config.verboseLogging).toBe(true);
-    });
-
-    it('should load autoStartDaemon from environment', () => {
-      process.env[`${CONFIG_ENV_PREFIX}AUTO_START_DAEMON`] = 'false';
-
-      const result = loadConfig({ useEnv: true, useFile: false });
-
-      expect(result.config.autoStartDaemon).toBe(false);
     });
 
     it('should load thinPluginEndpoint from environment', () => {
@@ -188,7 +179,6 @@ describe('Configuration System', () => {
         translationStrictness: 'strict',
         communicationTimeout: 30000,
         verboseLogging: true,
-        autoStartDaemon: true,
       };
 
       const result = validateConfig(config);
@@ -258,15 +248,6 @@ describe('Configuration System', () => {
 
       expect(result.valid).toBe(false);
       expect(result.errors).toContain('verboseLogging must be a boolean');
-    });
-
-    it('should reject non-boolean autoStartDaemon', () => {
-      const config = { autoStartDaemon: 1 };
-
-      const result = validateConfig(config);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain('autoStartDaemon must be a boolean');
     });
 
     it('should reject empty thinPluginEndpoint', () => {
@@ -367,11 +348,6 @@ describe('Configuration System', () => {
       expect(result).toBe(`${CONFIG_ENV_PREFIX}VERBOSE_LOGGING`);
     });
 
-    it('should return correct env var name for autoStartDaemon', () => {
-      const result = getEnvVarName('autoStartDaemon');
-      expect(result).toBe(`${CONFIG_ENV_PREFIX}AUTO_START_DAEMON`);
-    });
-
     it('should return correct env var name for thinPluginEndpoint', () => {
       const result = getEnvVarName('thinPluginEndpoint');
       expect(result).toBe(`${CONFIG_ENV_PREFIX}THIN_PLUGIN_ENDPOINT`);
@@ -390,15 +366,14 @@ describe('Configuration System', () => {
       expect(result.translationStrictness).toBe(`${CONFIG_ENV_PREFIX}TRANSLATION_STRICTNESS`);
       expect(result.communicationTimeout).toBe(`${CONFIG_ENV_PREFIX}INTEGRATION_TIMEOUT_MS`);
       expect(result.verboseLogging).toBe(`${CONFIG_ENV_PREFIX}VERBOSE_LOGGING`);
-      expect(result.autoStartDaemon).toBe(`${CONFIG_ENV_PREFIX}AUTO_START_DAEMON`);
       expect(result.thinPluginEndpoint).toBe(`${CONFIG_ENV_PREFIX}THIN_PLUGIN_ENDPOINT`);
     });
 
-    it('should return 6 config keys', () => {
+    it('should return 5 config keys', () => {
       const result = getAllEnvVarNames();
       const keys = Object.keys(result);
 
-      expect(keys).toHaveLength(6);
+      expect(keys).toHaveLength(5);
     });
   });
 
@@ -412,7 +387,6 @@ describe('Configuration System', () => {
       expect(DEFAULT_CONFIG.translationStrictness).toBe('lenient');
       expect(DEFAULT_CONFIG.communicationTimeout).toBe(30000);
       expect(DEFAULT_CONFIG.verboseLogging).toBe(false);
-      expect(DEFAULT_CONFIG.autoStartDaemon).toBe(true);
     });
 
     it('should have correct schema version', () => {
@@ -460,8 +434,6 @@ describe('Configuration System', () => {
       expect(result.config.compatibleKernelRange).toBe('>=1.14.0 <2.0.0');
       expect(result.config.translationStrictness).toBe('strict');
 
-      // Defaults for unspecified fields
-      expect(result.config.autoStartDaemon).toBe(DEFAULT_CONFIG.autoStartDaemon);
     });
 
     it('should track all config sources used', () => {

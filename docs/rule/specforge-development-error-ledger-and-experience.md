@@ -28413,3 +28413,243 @@ ERR1553_STATUS=CLOSED_CLI_STANDARD_RUN_51_FILES_1027_TESTS_PASS
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1553_CLI_VITEST_WORKER_OPTION_CONFLICT:END -->
+
+<!-- SPECFORGE_ERR1554_POWERSHELL_RG_GLOB_ARGUMENT:START -->
+### ERR-1554：PowerShell 中把未展开的 ADR 通配符直接传给 rg
+
+- **事实证据**：只读权威检索命令把 `docs/adr/*.md` 作为 `rg` 路径参数传入；Windows 返回“文件名、目录名或卷标语法不正确 (os error 123)”。同批 Scope Gate 基线测试和其他显式目录检索已独立完成，但 ADR 检索没有执行。
+- **影响**：ADR 消费者证据不完整；仓库文件、索引、运行时和外部状态均未被该失败改变。
+- **根因**：错误假定 PowerShell 会按类 Unix shell 语义为原生命令展开路径通配符。
+- **纠正与防复发**：向 `rg` 传递真实目录 `docs/adr`，由 `rg --glob '*.md'` 负责文件过滤；不得把 shell 是否展开通配符作为跨平台命令前提。
+- **适用经验**：EXP-002、EXP-007、EXP-019、EXP-060。
+
+```text
+ERR1554_STATUS=CLOSED_NO_MUTATION_DIRECTORY_ARGUMENT_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1554_POWERSHELL_RG_GLOB_ARGUMENT:END -->
+
+<!-- SPECFORGE_ERR1555_REPEATED_POWERSHELL_RG_GLOB_ARGUMENT:START -->
+### ERR-1555：记录防复发规则后仍在后续检索中残留 PowerShell 通配符参数
+
+- **事实证据**：ERR-1554 已明确要求向 `rg` 传递目录并使用 `--glob` 过滤后，后续只读检索命令仍在末尾保留 `packages/opencode-adapter/src/integration/*.ts`，Windows 再次返回 `os error 123`；同一命令此前使用目录参数的检索部分已正常返回。
+- **影响**：OpenCode Adapter integration 目录的该次补充检索未执行；没有修改仓库文件、Git 索引、运行时或外部状态。
+- **根因**：纠正命令时只替换了最先发现的通配符参数，没有对完整命令的所有路径参数执行同类扫描，导致已记录错误立即重复。
+- **纠正与防复发**：每次执行 Windows `rg` 前检查完整参数列表，路径位置只允许显式文件或目录；所有文件名过滤统一放入 `--glob`。本轮后续检索不得再传入任何含 `*` 或 `?` 的路径参数。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-019、EXP-060。
+
+```text
+ERR1555_STATUS=CLOSED_REPEATED_PATTERN_IDENTIFIED_FULL_ARGUMENT_SCAN_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1555_REPEATED_POWERSHELL_RG_GLOB_ARGUMENT:END -->
+
+<!-- SPECFORGE_ERR1556_WEB_QUERY_JAVASCRIPT_QUOTE_ESCAPE:START -->
+### ERR-1556：官方 OpenCode API 检索的 JavaScript 字符串含未转义双引号
+
+- **事实证据**：`web.run` 编排脚本在解析阶段返回 `SyntaxError: Unexpected identifier 'site'`；错误来自查询字符串内部嵌套的双引号，没有实际发出检索请求。
+- **影响**：该次 OpenCode health/version endpoint 取证未执行；仓库、Git、运行时和外部服务状态均未改变。
+- **根因**：在 JavaScript 双引号字符串中直接嵌入了用于搜索精确短语的双引号，没有改用单引号字符串或移除不必要的精确短语标记。
+- **纠正与防复发**：后续 web 查询使用对象字面量中的单引号字符串，或只使用不含嵌套引号的关键词；调用前先完成 JavaScript 语法检查。
+- **适用经验**：EXP-002、EXP-007、EXP-019、EXP-060。
+
+```text
+ERR1556_STATUS=CLOSED_NO_REQUEST_SENT_SAFE_QUERY_LITERAL_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1556_WEB_QUERY_JAVASCRIPT_QUOTE_ESCAPE:END -->
+
+<!-- SPECFORGE_ERR1557_UNGUARDED_OPENCODE_VERSION_PROBE:START -->
+### ERR-1557：本机 OpenCode 版本探针在命令缺失时仍无条件执行
+
+- **事实证据**：`Get-Command opencode -ErrorAction SilentlyContinue` 未返回命令，但同一 PowerShell 语句随后仍执行 `opencode --version`，产生 `CommandNotFoundException`。
+- **影响**：已确认当前主机 PATH 中没有 OpenCode 可执行文件，因此本轮不能取得真实 OpenCode binary E2E 证据；没有仓库、Git、运行时或外部服务副作用。
+- **根因**：存在性探针与版本命令之间缺少条件分支，把“可选依赖不存在”错误变成了命令失败。
+- **纠正与防复发**：所有可选外部二进制探针先保存 `Get-Command` 结果，仅在非空时执行版本或启动命令；缺失时记录 `INSUFFICIENT_EVIDENCE`，使用可复核的协议级集成测试但不得冒充真实 binary E2E。
+- **适用经验**：EXP-002、EXP-007、EXP-016、EXP-019、EXP-060。
+
+```text
+ERR1557_STATUS=CLOSED_BINARY_ABSENCE_CONFIRMED_PROTOCOL_E2E_ONLY
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1557_UNGUARDED_OPENCODE_VERSION_PROBE:END -->
+
+<!-- SPECFORGE_ERR1558_BUN_NOT_ON_CURRENT_PATH:START -->
+### ERR-1558：修改后构建错误假定当前 PowerShell PATH 已提供 Bun
+
+- **事实证据**：依次执行三个 `bun --cwd <package> run build` 时，PowerShell 均在进程启动前返回 `bun is not recognized`；本轮此前环境记录已提供可用的显式 Bun 可执行文件路径。
+- **影响**：types、opencode-adapter、daemon-core 三个构建均未执行，不能形成通过或失败结论；命令前 `git status --short` 已记录本轮修改与受保护备份，文件没有被该失败进一步改变。
+- **根因**：验证命令没有复用已知工具链路径，又没有先做 `Get-Command bun` 条件探针。
+- **纠正与防复发**：本轮统一使用已验证的绝对 Bun 路径；外部工具调用前先确认可执行文件存在，不再假定 PATH。
+- **适用经验**：EXP-002、EXP-007、EXP-019、EXP-060、EXP-075。
+
+```text
+ERR1558_STATUS=CLOSED_EXPLICIT_BUN_RUNTIME_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1558_BUN_NOT_ON_CURRENT_PATH:END -->
+
+<!-- SPECFORGE_ERR1559_BUN_CWD_FLAG_DID_NOT_RUN_SCRIPT:START -->
+### ERR-1559：显式 Bun 路径重试使用的 cwd 参数形式只输出帮助页
+
+- **事实证据**：Bun 可执行文件存在并成功启动，但三次 `bun --cwd packages/<name> run build` 只打印 CLI usage 与目标 package scripts，没有执行 `tsc`；PowerShell 最终未得到构建输出。
+- **影响**：三个 package build 仍未执行，不能形成代码质量结论；该命令未修改仓库文件。
+- **根因**：把工作目录切换交给了当前 Bun CLI 参数解析，而没有使用执行工具自身稳定的 `workdir` 边界。
+- **纠正与防复发**：每个 package 验证调用分别设置进程 `workdir`，命令仅使用标准 `bun run <script>`；不得再依赖此环境中未验证的 Bun cwd 参数形式。
+- **适用经验**：EXP-002、EXP-007、EXP-019、EXP-060、EXP-075。
+
+```text
+ERR1559_STATUS=CLOSED_EXECUTOR_WORKDIR_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1559_BUN_CWD_FLAG_DID_NOT_RUN_SCRIPT:END -->
+
+<!-- SPECFORGE_ERR1560_DEPENDENT_PACKAGE_BUILDS_RAN_IN_PARALLEL:START -->
+### ERR-1560：新增 workspace export 后仍并行构建 types、Adapter 与 Daemon
+
+- **事实证据**：`@specforge/types` 构建通过；并行启动的 Adapter 同时报告新 subpath 无法解析和 TS4111 严格索引访问错误，Daemon 同时报告 Adapter 新导出及 types 新 subpath 不存在。types 的新 dist 在同批执行结束时已经生成，说明依赖包消费者读取了构建前产物；TS4111 则是独立的本轮源码缺陷。
+- **影响**：types build 有效；Adapter 与 Daemon build 失败，尚不能验证生产接线。没有运行安装器或改变外部状态。
+- **根因**：对存在明确编译产物依赖的 package 错误使用并行构建，没有遵守 foundation → adapter → consumer 顺序；同时新 HTTP client 未按 `noPropertyAccessFromIndexSignature` 使用方括号访问动态记录。
+- **纠正与防复发**：修复全部 TS4111 后，严格串行执行 types、opencode-adapter、daemon-core 构建；新增 workspace export 的首次验证不得并行。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-019、EXP-060、EXP-075。
+
+```text
+ERR1560_STATUS=CLOSED_STRICT_INDEX_ACCESS_AND_SERIAL_BUILD_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1560_DEPENDENT_PACKAGE_BUILDS_RAN_IN_PARALLEL:END -->
+
+<!-- SPECFORGE_ERR1561_NEW_TYPES_SUBPATH_NOT_RESOLVED_AFTER_SERIAL_BUILD:START -->
+### ERR-1561：串行构建后 Adapter 仍无法解析新增 types subpath
+
+- **事实证据**：按 `types → opencode-adapter` 串行构建时 types 再次退出 0，随后 Adapter 唯一错误仍为 `Cannot find module '@specforge/types/llm-kernel-contract'`；并行竞态已被排除。
+- **影响**：中立合同源码和 types dist 已生成，但 Adapter build 未通过，Daemon build 未继续执行；没有安装或外部状态变更。
+- **根因**：当前证据只证明消费者的模块解析图尚未识别新增 subpath；是 package link 未刷新、export 可见性还是解析器行为需继续通过实际 node_modules 链接与 dist 文件核验，当前标记 `INSUFFICIENT_EVIDENCE`。
+- **纠正与防复发**：先只读核验 package 链接、package.json 与 dist；优先使用已存在的根导出边界，只有依赖链接确实缺失时才执行离线依赖图刷新。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-016、EXP-019、EXP-060。
+
+```text
+ERR1561_STATUS=CLOSED_OFFLINE_WORKSPACE_LINK_REFRESH_TYPES_ADAPTER_DAEMON_BUILD_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1561_NEW_TYPES_SUBPATH_NOT_RESOLVED_AFTER_SERIAL_BUILD:END -->
+
+<!-- SPECFORGE_ERR1562_SCOPE_GATE_VITEST1_WORKER_EXIT_DURING_PARALLEL_VALIDATION:START -->
+### ERR-1562：Scope Gate Vitest 1 在跨包并行验证时 worker 异常退出
+
+- **事实证据**：同批并行验证中 Adapter 1 文件 2 项和 Daemon 1 文件 13 项全部通过；Scope Gate 的 Vitest 1.6.1 在列出任何测试结果前由 Tinypool 报 `Worker exited unexpectedly` 并退出 1。
+- **影响**：Thin Plugin 与 installer lock 两个 Scope Gate 文件没有产生通过/失败断言证据；Adapter 与 Daemon 的通过结果独立有效。
+- **根因**：当前输出未给出 worker 子进程退出根因；跨三个 package 同时启动 fork worker 是本次与此前稳定单包运行的主要环境差异，暂标记 `HYPOTHESIS`。
+- **纠正与防复发**：Scope Gate 单独运行，不与其他 package fork pool 竞争；若仍失败，再使用该 Vitest 1 版本支持的显式 pool 配置取证，不复用 Vitest 3 参数。
+- **适用经验**：EXP-002、EXP-007、EXP-016、EXP-019、EXP-060、EXP-075。
+
+```text
+ERR1562_STATUS=CLOSED_ISOLATED_SCOPE_GATE_RETRY_2_FILES_10_TESTS_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1562_SCOPE_GATE_VITEST1_WORKER_EXIT_DURING_PARALLEL_VALIDATION:END -->
+
+<!-- SPECFORGE_ERR1563_AUTOSTART_CONFIG_PATCH_CONTEXT_MISMATCH:START -->
+### ERR-1563：移除 Adapter autoStartDaemon 配置的补丁上下文不精确
+
+- **事实证据**：`apply_patch` 在查找 environment loader 片段时报告 expected lines not found；补丁为原子操作，`autoStartDaemon` 在 types 与 configuration 中的全部原始引用随后仍可检索到。
+- **影响**：该次补丁未修改任何文件；OpenCodeAdapter 类的生命周期方法移除已由前一补丁完成，但废弃配置合同仍待清理。
+- **根因**：补丁预期片段遗漏了实际代码中的 `hasConfig = true`，没有先读取目标上下文。
+- **纠正与防复发**：根据 `rg -C` 返回的精确上下文逐段删除，并用全目录消费者扫描验证不再存在活动配置引用。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-019、EXP-060。
+
+```text
+ERR1563_STATUS=CLOSED_EXACT_CONTEXT_CAPTURED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1563_AUTOSTART_CONFIG_PATCH_CONTEXT_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1564_ADAPTER_CONFIG_TESTS_REQUIRED_PROHIBITED_AUTOSTART:START -->
+### ERR-1564：Adapter 全包测试仍要求已禁止的 Daemon auto-start 配置
+
+- **事实证据**：OpenCode Adapter 全包执行 32 文件、945 项测试；31 文件、938 项通过，唯一失败文件 `configuration.test.ts` 的 7 项断言全部要求 `autoStartDaemon` 默认值、环境变量、校验器或 key 计数继续存在。
+- **影响**：Adapter 全包暂未通过；真实 HTTP transport、Adapter 生产调用、版本/翻译/session/Thin Plugin 等其余 938 项通过证据有效。
+- **根因**：产品配置已按 D05/SPS 移除禁止能力，但配置消费者测试仍固化旧合同。
+- **纠正与防复发**：删除反向要求禁止能力的测试断言，保留其余配置覆盖；不得为了通过旧测试恢复 `autoStartDaemon`。
+- **适用经验**：EXP-004、EXP-008、EXP-010、EXP-019、EXP-031、EXP-087。
+
+```text
+ERR1564_STATUS=CLOSED_STALE_AUTOSTART_ASSERTIONS_REMOVED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1564_ADAPTER_CONFIG_TESTS_REQUIRED_PROHIBITED_AUTOSTART:END -->
+
+<!-- SPECFORGE_ERR1565_POWERSHELL_RG_GLOB_REPEATED:START -->
+### ERR-1565：再次把 PowerShell 未展开通配符作为 `rg` 路径参数
+
+- **事实证据**：`rg ... packages/*/package.json` 与 `packages/*/tsconfig.json` 在 Windows 返回“文件名、目录名或卷标语法不正确”。
+- **影响**：只读结构检索失败一次，未修改文件；随后改用固定目录加 `-g` 文件过滤成功。
+- **根因**：重复了 ERR-1554/ERR-1555 已记录的 Windows PowerShell 路径通配符错误，执行前未完成重复错误检查的命令级落实。
+- **纠正与防复发**：后续仓库检索统一使用 `rg <pattern> packages -g '<name>'`，不再给 `rg` 传入含 `*` 的路径参数。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-045、EXP-060。
+
+```text
+ERR1565_STATUS=CLOSED_FIXED_ROOT_PLUS_GLOB_FILTER
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1565_POWERSHELL_RG_GLOB_REPEATED:END -->
+
+<!-- SPECFORGE_ERR1566_ADAPTER_PACKAGE_MODULE_FORMAT_MISMATCH:START -->
+### ERR-1566：Adapter 首次被 Daemon 生产消费后暴露包模块格式冲突
+
+- **事实证据**：Daemon 全包测试有 6 个 suite 在加载 `packages/opencode-adapter/dist/types/index.js` 时失败，Node 报 `exports is not defined in ES module scope`；Adapter 的 `package.json` 声明 `type: module`，而 `tsconfig.json` 明确生成 CommonJS。
+- **影响**：Adapter 自包测试通过，但 Daemon 不能加载其构建产物，证明此前缺少真实跨包消费者验证。
+- **根因**：包元数据和编译输出格式长期不一致；在 Adapter 未被生产链路引用时被隔离测试掩盖。
+- **纠正与防复发**：将包类型与现有 CommonJS 编译输出对齐，并以 Daemon 全包测试作为跨包加载验证；发布清单在最终源码稳定后重建。
+- **适用经验**：EXP-004、EXP-008、EXP-010、EXP-015、EXP-020、EXP-031、EXP-074、EXP-087。
+
+```text
+ERR1566_STATUS=CLOSED_DAEMON_BUILD_AND_198_FILES_1743_TESTS_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1566_ADAPTER_PACKAGE_MODULE_FORMAT_MISMATCH:END -->
+
+<!-- SPECFORGE_ERR1567_MANIFEST_RETIRED_PACKAGE_REMNANTS:START -->
+### ERR-1567：Release manifest producer 将退役包的构建残留目录误判为当前包
+
+- **事实证据**：官方 manifest 生成脚本报告四个 `source_missing:packages/{migration,multimodal,plugin-loader,self-healing}/package.json`；只读检查确认这些退役路径只剩被忽略的 `dist/node_modules/src/tests` 残留，`package.json` 已退出当前仓库。
+- **影响**：运行产物构建成功，但 manifest 与 runtime-entry 证据不能生成，Scope Gate 的 5 项发布验证无法收口。
+- **根因**：producer 以 `packages/` 下任意目录作为包，而不是以包清单存在作为包身份边界。
+- **纠正与防复发**：只有存在普通文件 `package.json` 的目录才进入 package artifact 枚举；增加退役构建残留目录回归测试，不删除历史/本地残留。
+- **适用经验**：EXP-004、EXP-008、EXP-010、EXP-015、EXP-031、EXP-052、EXP-087。
+
+```text
+ERR1567_STATUS=CLOSED_MANIFEST_PRECHECK_AND_SCOPE_GATE_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1567_MANIFEST_RETIRED_PACKAGE_REMNANTS:END -->
+
+<!-- SPECFORGE_ERR1568_WINDOWS_DEAD_PID_TEST_NONDETERMINISTIC:START -->
+### ERR-1568：安装锁 dead-PID 测试依赖 Windows 对虚构 PID 的平台行为
+
+- **事实证据**：Scope Gate 完整测试仅 `reclaims a stale lock whose PID is not alive` 失败；测试使用 PID `2147483647`，本机 `process.kill(pid, 0)` 未按测试假设判定死亡，最终超时。此前同文件隔离运行曾通过，证明该断言具有环境/时序不确定性。
+- **影响**：发布清单相关 5 项失败已消除，但 Scope Gate 115 项中仍有 1 项不稳定失败。
+- **根因**：测试用任意 PID 模拟进程存活状态，未控制 OS 进程探测边界。
+- **纠正与防复发**：为锁获取选项注入只读 PID 存活探针，生产默认仍使用 `process.kill(pid, 0)`；dead-PID 测试显式返回 false，保持回收逻辑确定性。
+- **适用经验**：EXP-004、EXP-008、EXP-010、EXP-020、EXP-031、EXP-087。
+
+```text
+ERR1568_STATUS=CLOSED_SCOPE_GATE_24_FILES_115_TESTS_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1568_WINDOWS_DEAD_PID_TEST_NONDETERMINISTIC:END -->
+
+<!-- SPECFORGE_ERR1569_WINDOWS_ATOMIC_RENAME_TRANSIENT_EPERM:START -->
+### ERR-1569：Windows 高频锁心跳原子替换偶发 `EPERM`
+
+- **事实证据**：最终 Scope Gate 重跑时，锁 owner 串行化用例在 `atomicWriteFile` 的 temp-file rename 阶段返回 `EPERM`；同一套件前两次已通过，失败发生在 10ms 心跳更新期间。
+- **影响**：114/115 项通过，但一次瞬时文件占用使锁 handle 记录 heartbeat failure 并导致套件失败；生产环境同类短暂占用也可能造成不必要的锁失效。
+- **根因**：Windows rename 边界未容忍杀毒、索引或文件系统造成的短暂 `EPERM/EBUSY/EACCES`，一次失败即永久终止心跳。
+- **纠正与防复发**：保持 temp+rename 原子写模型，仅在 Windows 对三类瞬时错误执行最多 5 次有界退避；非 Windows 和非瞬时错误仍立即失败关闭。
+- **适用经验**：EXP-004、EXP-008、EXP-010、EXP-020、EXP-031、EXP-052、EXP-087。
+
+```text
+ERR1569_STATUS=CLOSED_5_TARGETED_RUNS_AND_SCOPE_GATE_24_FILES_115_TESTS_PASS
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1569_WINDOWS_ATOMIC_RENAME_TRANSIENT_EPERM:END -->

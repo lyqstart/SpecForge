@@ -44,6 +44,16 @@ export type {
 
 // Export integration components (Thin Plugin communication)
 export { ThinPluginClient, ThinPluginClientError, ThinPluginClientErrorCode } from './integration/ThinPluginClient';
+export {
+  OpenCodeHttpRuntimeClient,
+  OpenCodeRuntimeError,
+} from './integration/OpenCodeHttpRuntimeClient';
+export type {
+  OpenCodeRuntimeClient,
+  OpenCodeRuntimeSession,
+  OpenCodeRuntimePrompt,
+  OpenCodeHttpRuntimeClientOptions,
+} from './integration/OpenCodeHttpRuntimeClient';
 export type {
   ThinPluginClientConfig,
   ThinPluginEventReportRequest,

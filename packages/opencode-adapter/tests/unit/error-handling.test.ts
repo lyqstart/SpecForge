@@ -9,7 +9,7 @@
  *
  * These tests complement the per-component unit suites (OpenCodeAdapter,
  * sendPrompt, subscribeEvents, getCapabilities, ThinPluginClient,
- * DaemonStartupManager, translators, version-checker) by exercising each
+ * translators and version-checker) by exercising each
  * error category as a single contract. They prove that:
  *
  *   • Errors are surfaced as the correct typed Error subclass with the
@@ -33,11 +33,6 @@ import {
   ThinPluginClientError,
   ThinPluginClientErrorCode,
 } from '../../src/integration/ThinPluginClient';
-import {
-  DaemonStartupManager,
-  DaemonStartupError,
-  DaemonStartupErrorCode,
-} from '../../src/integration/DaemonStartupManager';
 import { ContextTranslator } from '../../src/translators/ContextTranslator';
 import { EventTranslator } from '../../src/translators/EventTranslator';
 import { ToolTranslator } from '../../src/translators/ToolTranslator';
@@ -498,37 +493,6 @@ describe('Error Handling / Thin Plugin Integration Errors', () => {
     }
   });
 
-  it('DaemonStartupManager throws DaemonStartupError(CONFIG_ERROR) on empty command', () => {
-    expect(
-      () =>
-        new DaemonStartupManager({
-          daemonCommand: '',
-          daemonArgs: ['x'],
-        })
-    ).toThrow(DaemonStartupError);
-
-    try {
-      new DaemonStartupManager({ daemonCommand: '', daemonArgs: ['x'] });
-    } catch (err) {
-      const e = err as DaemonStartupError;
-      expect(e.code).toBe(DaemonStartupErrorCode.CONFIG_ERROR);
-    }
-  });
-
-  it('DaemonStartupManager throws DaemonStartupError(CONFIG_ERROR) on empty args', () => {
-    try {
-      new DaemonStartupManager({
-        daemonCommand: 'bun',
-        daemonArgs: [],
-      });
-      expect.fail('Expected DaemonStartupError');
-    } catch (err) {
-      const e = err as DaemonStartupError;
-      expect(e).toBeInstanceOf(DaemonStartupError);
-      expect(e.code).toBe(DaemonStartupErrorCode.CONFIG_ERROR);
-    }
-  });
-
   it('typed errors carry a discriminator code so callers can branch without parsing messages', () => {
     // This is a contract test: every adapter-layer error class exposes a
     // string `code` property that is part of the public type. If any of the
@@ -537,16 +501,13 @@ describe('Error Handling / Thin Plugin Integration Errors', () => {
     expect(SessionInitializationError.prototype).toBeInstanceOf(Error);
     expect(PromptDeliveryError.prototype).toBeInstanceOf(Error);
     expect(ThinPluginClientError.prototype).toBeInstanceOf(Error);
-    expect(DaemonStartupError.prototype).toBeInstanceOf(Error);
 
     const a = new SessionInitializationError('x', 'INVALID_PARAMS');
     const b = new PromptDeliveryError('x', 'INVALID_MESSAGE');
     const c = new ThinPluginClientError('x', ThinPluginClientErrorCode.CONFIG_ERROR);
-    const d = new DaemonStartupError('x', DaemonStartupErrorCode.CONFIG_ERROR);
 
     expect(a.code).toBe('INVALID_PARAMS');
     expect(b.code).toBe('INVALID_MESSAGE');
     expect(c.code).toBe(ThinPluginClientErrorCode.CONFIG_ERROR);
-    expect(d.code).toBe(DaemonStartupErrorCode.CONFIG_ERROR);
   });
 });

@@ -26,7 +26,6 @@
  *     • AdapterError CommunicationTimeoutError
  *   Category 4 — Thin Plugin Integration
  *     • Every ThinPluginClientErrorCode value
- *     • Every DaemonStartupErrorCode value
  *   Fallback
  *     • Plain Error / unknown / non-Error throw values
  *   D2 message contract
@@ -43,10 +42,6 @@ import {
   ThinPluginClientError,
   ThinPluginClientErrorCode,
 } from '../../src/integration/ThinPluginClient';
-import {
-  DaemonStartupError,
-  DaemonStartupErrorCode,
-} from '../../src/integration/DaemonStartupManager';
 import {
   classifyError,
   ErrorCategory,
@@ -450,51 +445,6 @@ describe('classifyError / Thin Plugin Integration', () => {
     expect(out.recordEvent).toBe(false);
   });
 
-  it('classifies DaemonStartupError(STARTUP_TIMEOUT) as THIN_PLUGIN (retryable)', () => {
-    const err = new DaemonStartupError(
-      'daemon did not become healthy',
-      DaemonStartupErrorCode.STARTUP_TIMEOUT,
-    );
-
-    const out = classifyError(err);
-
-    expect(out.category).toBe(ErrorCategory.THIN_PLUGIN);
-    expect(out.retryable).toBe(true);
-    expect(out.recordEvent).toBe(true);
-    expect(out.operation).toBe('daemonStartup');
-    expectD2Compliant(out.message, {
-      category: ErrorCategory.THIN_PLUGIN,
-      operation: 'daemonStartup',
-    });
-  });
-
-  it('classifies DaemonStartupError(CONFIG_ERROR) as THIN_PLUGIN (non-retryable)', () => {
-    const err = new DaemonStartupError(
-      'daemonCommand required',
-      DaemonStartupErrorCode.CONFIG_ERROR,
-    );
-    const out = classifyError(err);
-    expect(out.category).toBe(ErrorCategory.THIN_PLUGIN);
-    expect(out.retryable).toBe(false);
-  });
-
-  it('classifies every DaemonStartupErrorCode value as THIN_PLUGIN', () => {
-    const codes = Object.values(DaemonStartupErrorCode);
-    expect(codes.length).toBeGreaterThan(0);
-    for (const code of codes) {
-      const out = classifyError(new DaemonStartupError(`test:${code}`, code));
-      expect(out.category, `code=${code}`).toBe(ErrorCategory.THIN_PLUGIN);
-      // recordEvent must be true for every daemon-startup failure (operators
-      // need visibility regardless of retryability).
-      expect(out.recordEvent, `code=${code}`).toBe(true);
-      // D2: every classified error carries operation + suggestion.
-      expectD2Compliant(out.message, {
-        category: ErrorCategory.THIN_PLUGIN,
-        operation: 'daemonStartup',
-      });
-    }
-  });
-
   it('classifies every ThinPluginClientErrorCode value as THIN_PLUGIN', () => {
     const codes = Object.values(ThinPluginClientErrorCode);
     expect(codes.length).toBeGreaterThan(0);
@@ -566,7 +516,6 @@ describe('classifyError / D2 invariants', () => {
     { name: 'DELIVERY_FAILED', value: new PromptDeliveryError('x', 'DELIVERY_FAILED', 's', { timeoutMs: 1234 }) },
     { name: 'SESSION_NOT_FOUND', value: new PromptDeliveryError('x', 'SESSION_NOT_FOUND', 's') },
     { name: 'NETWORK_ERROR', value: new ThinPluginClientError('x', ThinPluginClientErrorCode.NETWORK_ERROR) },
-    { name: 'STARTUP_TIMEOUT', value: new DaemonStartupError('x', DaemonStartupErrorCode.STARTUP_TIMEOUT) },
     { name: 'unsupported-translation', value: { success: false, unsupported: true, reason: 'r' } },
     { name: 'plain-Error', value: new Error('plain') },
     { name: 'string-throw', value: 'literal' },

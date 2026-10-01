@@ -29,6 +29,7 @@ export interface InstallLockOptions {
   heartbeatIntervalMs?: number
   staleThresholdMs?: number
   staleRecheckDelayMs?: number
+  isPidAlive?: (pid: number) => boolean
 }
 
 export interface InstallLockHandle {
@@ -142,8 +143,11 @@ function isPidAlive(pid: number): boolean {
   }
 }
 
-function canReclaim(lock: InstallLockInfo): boolean {
-  return lock.hostname !== hostname() || !isPidAlive(lock.pid)
+function canReclaim(
+  lock: InstallLockInfo,
+  pidIsAlive: (pid: number) => boolean,
+): boolean {
+  return lock.hostname !== hostname() || !pidIsAlive(lock.pid)
 }
 
 function sleep(ms: number): Promise<void> {
@@ -271,6 +275,7 @@ export async function acquireInstallLock(
   const heartbeatIntervalMs = options.heartbeatIntervalMs ?? HEARTBEAT_INTERVAL_MS
   const staleThresholdMs = options.staleThresholdMs ?? INSTALL_LOCK_TIMEOUT_MS
   const staleRecheckDelayMs = options.staleRecheckDelayMs ?? STALE_RECHECK_DELAY_MS
+  const pidIsAlive = options.isPidAlive ?? isPidAlive
   const lockPath = getInstallLockPath(userLevelDir)
   const startedAt = Date.now()
   let lastHolder: InstallLockInfo | undefined
@@ -297,14 +302,14 @@ export async function acquireInstallLock(
     if (existing.status === "missing") continue
     lastHolder = existing.lock
 
-    if (isHeartbeatStale(existing.lock, staleThresholdMs) && canReclaim(existing.lock)) {
+    if (isHeartbeatStale(existing.lock, staleThresholdMs) && canReclaim(existing.lock, pidIsAlive)) {
       await sleep(staleRecheckDelayMs)
       const recheck = await readLock(lockPath)
       if (
         recheck.status === "valid"
         && recheck.lock.lock_id === existing.lock.lock_id
         && isHeartbeatStale(recheck.lock, staleThresholdMs)
-        && canReclaim(recheck.lock)
+        && canReclaim(recheck.lock, pidIsAlive)
       ) {
         await unlink(lockPath).catch(() => undefined)
         continue
