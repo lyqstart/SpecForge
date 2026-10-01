@@ -1463,11 +1463,11 @@ SpecForge 要被声明为符合 SPS-1.0，至少必须满足：
 - CG-004【RESOLVED】：`runtime/wal.jsonl` current contract 已退役，统一为 `runtime/events.jsonl`。
 - CG-005【RESOLVED】：D09 deferred multi-view paths 已从 current Layout/API 移出。
 - CG-006【RESOLVED】：current schema validation 已迁入 `@specforge/types/schema-contract`；Migration package 及 current workspace/release surface 已退出。
-- CG-007：Multimodal、Self-Healing、Plugin Loader 源码/package 仍存在，需从 current release surface 收敛。
+- CG-007【RESOLVED】：Multimodal、Self-Healing、Plugin Loader 已无 Git 跟踪源码/package、workspace 或 current release surface；本地忽略的构建残留目录不构成产品模块。
 - CG-008【RESOLVED】：Daemon production instantiation/caller、neutral contract 与 OpenCode HTTP transport 已实现；OpenCode 1.18.34 real binary 已通过 release `specforged` 的 session create、no-reply system prompt、session read 与 abort 端到端验证；产品负责人已批准状态升级为 `ENABLED`。
-- CG-009：Distribution Kiro spec 仍描述 npm global + specforge init + ~/.specforge。
+- CG-009【PARTIALLY_RESOLVED】：Distribution Kiro spec 已归档且不再是消费者；但 current CLI 入口、帮助、distribution 实现和测试仍保留 npm-global + `specforge init` + `~/.specforge` 旧部署合同，需要按 D03/D04 收敛。
 - CG-010【RESOLVED】：release precheck / Scope Gate 已直接消费 SPS-1.0 hash-bound release authority projection。
-- CG-011：fused_standard.md 和 v1.3 文档仍包含旧的 final/standard authority 自述，需要降级标识。
+- CG-011【PARTIALLY_RESOLVED】：fused standard 与 v1.3 文档已归档并降级；但 `@specforge/types` 源码注释和 current `sf-design` Agent 仍把 v1.1 融合标准表述为现行“依据”，需要改为 SPS/正式合同来源或明确历史来源。
 - CG-012：Workflow Runtime 与 Daemon 的部分依赖/测试结构仍需消除概念或构建反向依赖。
 - CG-013：Permission/Write Guard enforcement 仍分散在多处 handler，需要收敛到统一 decision + enforcement boundary。
 - CG-014【RESOLVED】：current handshake consumers 已统一到 `<OpenCode config>/sf-user/runtime/handshake.json`。

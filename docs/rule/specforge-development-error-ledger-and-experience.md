@@ -28728,3 +28728,18 @@ ERR1574_STATUS=CLOSED_ARCHIVED_PATH_LOCATED_AND_READ_AS_HISTORY
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1574_ARCHIVED_RECOVERY_DOCUMENT_OLD_PATH:END -->
+
+<!-- SPECFORGE_ERR1575_POWERSHELL_REGEX_QUOTE_PARSE_FAILURE:START -->
+### ERR-1575：活动 CLI 消费者检索因 PowerShell 内嵌正则引号解析失败
+
+- **事实证据**：把包含单引号、双引号、转义括号和字符类的正则直接嵌入 PowerShell 命令后，解析器在 `[` 处报告 `Missing type name`，检索未执行。
+- **影响**：该命令没有形成 CLI import/注册关系证据；没有修改文件，也没有把失败输出解释为零消费者。
+- **根因**：在 Shell 命令层混合了复杂正则与两套引号转义，没有选择更简单的固定字符串调查方式。
+- **纠正与防复发**：消费者初筛拆成多个 `rg -F` 固定字符串检索；只有固定检索不足时才使用存入文件或经实际解析验证的正则，禁止把复杂跨层转义作为首选。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-060。
+
+```text
+ERR1575_STATUS=CLOSED_SPLIT_FIXED_STRING_SEARCH_REQUIRED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1575_POWERSHELL_REGEX_QUOTE_PARSE_FAILURE:END -->

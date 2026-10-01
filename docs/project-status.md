@@ -9,13 +9,13 @@
 <!-- SPECFORGE_PROJECT_STATUS:START -->
 PROJECT_STATUS_SCHEMA=1
 PROJECT_STATUS_DECLARATION=ACTIVE
-ACTIVE_INITIATIVE=CONFORMANCE_GAP_REASSESSMENT
-OBJECTIVE=Verify the remaining SPS conformance gaps against current repository facts and select the next implementation target.
-CURRENT_PHASE=CG008_RESOLVED_REMAINING_GAPS_REASSESSMENT
+ACTIVE_INITIATIVE=CG009_LEGACY_CLI_DISTRIBUTION_CONVERGENCE
+OBJECTIVE=Remove the active npm-global, specforge init, and user-home ~/.specforge deployment contract from current CLI consumers while preserving only explicitly authorized legacy read/migration behavior.
+CURRENT_PHASE=CG007_RESOLVED_CG009_SELECTED_CG011_PARTIALLY_RESOLVED
 OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;D05:OPENCODE_ADAPTER_ENABLED
-LAST_COMPLETED_CHECKPOINT=Product owner approved OpenCode Adapter enablement after OpenCode 1.18.34 real-binary E2E; D05 and CG-008 now record ENABLED and RESOLVED while preserving the Adapter lifecycle boundary.
+LAST_COMPLETED_CHECKPOINT=Remaining-gap audit confirmed CG-007 resolved, CG-009 still active in real CLI production and test consumers, and CG-011 partially resolved with residual authority wording in current source and the deployed sf-design Agent.
 CURRENT_BLOCKER=NONE
-NEXT_LEGAL_ACTION=Audit CG-007, CG-009, and CG-011 against the current repository, distinguish active consumers from archived historical evidence, then select the highest-priority confirmed remaining gap.
+NEXT_LEGAL_ACTION=Reconstruct the CG-009 CLI command/import/write-path consumer graph, classify each legacy surface as remove or authorized read-only migration, then add expected-red tests before implementation.
 ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;scripts/**;setup/**;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
 PROHIBITED=Changing SPS product scope without a new product-owner decision;deleting ADR ERR audit or report evidence;touching the untracked architecture-plan backup;creating another active handoff current-status or recovery-status file
 REQUIRED_RULES=docs/rule/specforge-development-error-ledger-and-experience.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md
