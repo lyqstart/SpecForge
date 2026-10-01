@@ -29628,6 +29628,46 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1654_STATUS=RECORDED_PENDING_DETERMINISTIC_EXAMPLES
 - REPEATED_ERROR_CHECK=PASS
 
+### ERR-1655：发布前检检索混入已迁移路径和 PowerShell 不展开的字面量 glob
+
+- **事实证据**：本轮首次检索 installer、产品规格与测试消费者时，把已迁移后的旧路径 `docs/product-spec.md`、`docs/authority-registry.md`、根 `tests/current-release-shared-directory-layout.test.ts`、`tests/installer-no-legacy-write.test.ts` 直接传给 `rg`；后续 release 文件检索又包含不存在的 `dist`，ADR 检索则把 `docs/adr/ADR-009*` 等字面量 glob 传给 Windows `rg`。这些命令均返回路径不存在或文件名语法错误，不能作为完整消费者集合证据。
+- **影响**：只读检索的部分有效输出仍可作为线索，但不能据此声明覆盖完整；没有产品文件或用户环境被修改。
+- **根因**：`CONFIRMED` 为没有先以 `rg --files` / 字面量目录枚举重建当前路径，再把旧会话路径和 shell glob 直接带入 Windows 命令。
+- **纠正与防复发**：已改用 `rg --files`、`Get-ChildItem -LiteralPath` 和当前真实文件路径分步检索；后续禁止把未经存在性核对的旧路径或依赖 shell 展开的 glob 传给 Windows `rg`。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-040、EXP-060、EXP-065、EXP-069。
+- ERR1655_STATUS=CLOSED_WITH_CURRENT_PATH_ENUMERATION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1656：沙箱内用户级现场检查把访问拒绝暂时显示为不存在
+
+- **事实证据**：首次检查 `C:\Users\lyq\.config\opencode` 时，`Test-Path` 明确报告 `Access to the path ... is denied`，字符串插值随后显示 `ROOT_EXISTS=False`、`SF_USER_EXISTS=False`；同一只读命令经受控沙箱外执行后证明两者均存在，Manifest 为 `6.0.0-dev`、119 个文件。
+- **影响**：沙箱内的 False 不能作为安装不存在证据；在权限外复核前没有据此执行安装、删除或服务操作。
+- **根因**：`CONFIRMED` 为观察权限边界，而不是目标不存在；PowerShell 字符串插值弱化了 `Test-Path` 的错误状态。
+- **纠正与防复发**：用户目录现场检查必须保留错误流并把 `AccessDenied` 与 `NotFound` 分开；需要时以精确只读范围受控升级权限，禁止把权限错误转写成不存在事实。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-016、EXP-020、EXP-060。
+- ERR1656_STATUS=CLOSED_WITH_CONTROLLED_READ_ONLY_PREFLIGHT
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1657：Thin Plugin 定向回归再次交给根 Vitest 导致零测试收集
+
+- **事实证据**：从仓库根执行 Vitest 4.1.5 并同时传入 Scope Gate、service-management、CLI 与 scripts 自有测试，根配置只 include 根 `tests/**`，因此输出 `No test files found`、exit 1，零测试被收集。
+- **影响**：该命令不构成 Thin Plugin、路径边界或 installer 回归结果；隔离 installer 生命周期 PASS 证据不受影响。
+- **根因**：`CONFIRMED` 为重复 ERR-1650：忽略测试 owner 和各 workspace 的正式 runner，把 package-owned 测试错误交给根 runner。
+- **纠正与防复发**：按 owner 分别从 `packages/scope-gate`、`packages/service-management`、`packages/cli` 的正式入口运行；scripts 测试使用当前根测试角色登记和对应正式入口，证据必须包含实际收集的文件数与测试数。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-015、EXP-019、EXP-020、EXP-052、EXP-055、EXP-060、EXP-074。
+- ERR1657_STATUS=CLOSED_WITH_OWNER_SCOPED_RERUN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1658：scripts 的 Vitest 4 定向命令错误沿用旧版 minWorkers 参数
+
+- **事实证据**：使用 `scripts/vitest.config.js` 启动 Vitest 4.1.5 时同时传入 `--maxWorkers=1 --minWorkers=1`，CLI 在收集前以 `CACError: Unknown option --minWorkers` 退出。
+- **影响**：两个 scripts 路径回归尚无本轮结果；Scope Gate 5/5、service-management 5/5、CLI 2/2 的已通过证据不受影响。
+- **根因**：`CONFIRMED` 为忽略仓库已建立的 Vitest 版本分支规则，把 Vitest 1.x 需要成对设置 min/max 的参数直接用于 Vitest 4.1.5。
+- **纠正与防复发**：Vitest 4 定向运行只使用其当前 CLI 支持的 worker 参数；不同 major 的参数不得跨 package 复制，必须先读取实际 runner 版本或复用正式编排器。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-015、EXP-019、EXP-020、EXP-055、EXP-060。
+- ERR1658_STATUS=CLOSED_WITH_VITEST4_RERUN
+- REPEATED_ERROR_CHECK=PASS
+
 ROOT_TEST_ROLE_CLASSIFICATION_CLOSURE=CONFIRMED
 ROOT_TEST_ROLE_COUNTS=CURRENT_HERMETIC:59;CURRENT_ENVIRONMENTAL:2;MIGRATED_DUPLICATE:14;HISTORICAL_EVIDENCE:110
 FORMAL_ROOT_TEST_RESULT=59_FILES_765_TESTS_PASS
