@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-01
 >
-> Registry version: 1.1
+> Registry version: 1.2
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -61,7 +61,7 @@ SPS-1.0
 | D02 | Daemon 是独立共享服务；生命周期由部署环境、CLI 或 service manager 管理；Thin Plugin 不启动/停止/重启 Daemon |
 | D03 | 当前用户级数据根为 <OpenCode config>/sf-user；用户主目录 ~/.specforge 退役为非当前写入目标 |
 | D04 | SpecForge user-level installer 是正式部署模型；npm-global CLI + specforge init ~/.specforge 不是当前产品部署合同 |
-| D05 | OpenCode Adapter 保留为当前核心目标架构，但在真实 Daemon 生产接入完成前状态为 REQUIRED_NOT_YET_ENABLED；不得管理 Daemon 生命周期 |
+| D05 | OpenCode Adapter 是当前已启用的核心集成模块；真实 Daemon production consumer、release `specforged` 部署链和 OpenCode 1.18.34 端到端验证已完成。Adapter 不得管理 Daemon 生命周期 |
 | D06 | OpenClaw 不属于当前产品；进入 Future Capability Registry |
 | D07 | Multimodal、Self-Healing 不属于当前产品；进入 Future Capability Registry |
 | D08 | 第三方 Plugin Loader / runtime plugin system 不属于当前产品；Thin Plugin 作为第一方 OpenCode 接入组件继续保留 |

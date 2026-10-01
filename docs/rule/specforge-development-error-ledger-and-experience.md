@@ -28713,3 +28713,18 @@ ERR1573_STATUS=CLOSED_RERUN_FROM_PACKAGE_WORKDIR_REQUIRED
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1573_BUN_CWD_USAGE_FALSE_ZERO:END -->
+
+<!-- SPECFORGE_ERR1574_ARCHIVED_RECOVERY_DOCUMENT_OLD_PATH:START -->
+### ERR-1574：权威恢复文档归档后仍按旧实施路径读取
+
+- **事实证据**：读取 `docs/implementation/architecture-consistency/authority-model-recovery.md` 返回路径不存在；仓库清单证明该文件现位于 `docs/archive/implementation/architecture-consistency/authority-model-recovery.md`，ADR-014 同时声明旧恢复状态已归档。
+- **影响**：首次门禁命令没有读到该历史恢复记录；没有修改文件，也没有把读取失败解释为文档不存在或权威缺失。
+- **根因**：沿用了 Authority Model Recovery 冻结期的旧路径，没有先从当前 HEAD 的文件清单和 Authority Registry 解析归档后的角色与位置。
+- **纠正与防复发**：新会话以 `AGENTS.md`、当前 Authority Registry 和 `project-status.md` 为入口；必须读取历史恢复记录时，先通过当前仓库清单定位，且只按历史证据角色消费，不恢复为当前状态入口。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-015、EXP-017、EXP-040、EXP-060、EXP-065。
+
+```text
+ERR1574_STATUS=CLOSED_ARCHIVED_PATH_LOCATED_AND_READ_AS_HISTORY
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1574_ARCHIVED_RECOVERY_DOCUMENT_OLD_PATH:END -->

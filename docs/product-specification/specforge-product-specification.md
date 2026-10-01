@@ -631,10 +631,10 @@ OpenCode-specific type 不得泄漏到 Daemon core contract、Project Spec 或 w
 状态：
 
 ~~~text
-REQUIRED_NOT_YET_ENABLED
+ENABLED
 ~~~
 
-在 Daemon 存在真实生产 consumer、部署链和端到端验证前，不得宣称该能力已启用。
+Daemon production consumer、release `specforged` 部署链和 OpenCode 1.18.34 端到端验证已经完成；OpenCode Adapter 当前作为正式集成能力启用。
 
 OpenCode Adapter 同样不得管理 Daemon 生命周期。
 
@@ -782,7 +782,7 @@ Release precheck 的产品范围输入必须来自本 Product Specification / Au
 | @specforge/permission-engine | CURRENT_CORE | Permission decisions / write policy decisions |
 | @specforge/configuration | CURRENT_SUPPORTING | Deterministic configuration |
 | @specforge/observability | CURRENT_SUPPORTING | Neutral diagnostics / event contracts |
-| @specforge/opencode-adapter | REQUIRED_NOT_YET_ENABLED | OpenCode isolation adapter |
+| @specforge/opencode-adapter | ENABLED | OpenCode isolation adapter |
 | @specforge/cli | CURRENT_CLIENT | User/machine client and deployment operations |
 | @specforge/types | CURRENT_FOUNDATION | Neutral shared types/path contracts |
 | @specforge/host-profile | CURRENT_FOUNDATION | Host capability facts |
@@ -1464,7 +1464,7 @@ SpecForge 要被声明为符合 SPS-1.0，至少必须满足：
 - CG-005【RESOLVED】：D09 deferred multi-view paths 已从 current Layout/API 移出。
 - CG-006【RESOLVED】：current schema validation 已迁入 `@specforge/types/schema-contract`；Migration package 及 current workspace/release surface 已退出。
 - CG-007：Multimodal、Self-Healing、Plugin Loader 源码/package 仍存在，需从 current release surface 收敛。
-- CG-008【IMPLEMENTED_AWAITING_OWNER_CONFIRMATION】：Daemon production instantiation/caller、neutral contract 与 OpenCode HTTP transport 已实现；OpenCode 1.18.34 real binary 已通过 release `specforged` 的 session create、no-reply system prompt、session read 与 abort 端到端验证。产品负责人确认状态升级前保持 `REQUIRED_NOT_YET_ENABLED`。
+- CG-008【RESOLVED】：Daemon production instantiation/caller、neutral contract 与 OpenCode HTTP transport 已实现；OpenCode 1.18.34 real binary 已通过 release `specforged` 的 session create、no-reply system prompt、session read 与 abort 端到端验证；产品负责人已批准状态升级为 `ENABLED`。
 - CG-009：Distribution Kiro spec 仍描述 npm global + specforge init + ~/.specforge。
 - CG-010【RESOLVED】：release precheck / Scope Gate 已直接消费 SPS-1.0 hash-bound release authority projection。
 - CG-011：fused_standard.md 和 v1.3 文档仍包含旧的 final/standard authority 自述，需要降级标识。
