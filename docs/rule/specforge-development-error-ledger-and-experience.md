@@ -29172,3 +29172,58 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1610_STATUS=CLOSED_ISOLATED_3_PASS_AND_SERIAL_SCOPE_FULL_127_PASS
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1610_PARALLEL_FULL_SUITE_INSTALLER_TIMEOUTS:END -->
+
+### ERR-1611：CRLF 文件使用严格行尾锚点导致经验章节标题检索为空
+
+- **事实证据**：本轮首次用 `rg` 正则 `^# ...$` 同时检索第三、第四、第五部分标题时，命令退出成功但没有返回标题；改用不含行尾 `$` 的同一组标题关键词后，立即得到第 1903、2811、2945 行，且随后已按这些真实边界完整读取第三、第四部分正文。
+- **影响**：首次门禁命令没有证明章节位置；在改用已验证边界并完整读取正文前，不得开始产品文件修改。本次失败发生在任何产品修改之前，没有改变产品状态。
+- **根因**：`CONFIRMED` 为检索表达式对 Windows CRLF 物理行尾作了未经验证的严格假设；`$` 前仍存在 `\r`，导致文本可见标题与正则行尾条件不一致。
+- **纠正与防复发**：标题发现先使用唯一标题关键词或固定字符串检索，再核对返回的完整标题文本与顺序；只有已经验证换行语义时才使用严格行尾锚点。正文读取仍按真实标题边界切片并检查非空内容。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-021、EXP-060、EXP-065、EXP-067。
+- ERR1611_STATUS=CLOSED_WITH_CRLF_TOLERANT_HEADING_DISCOVERY_AND_FULL_SECTION_READ
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1611_CRLF_HEADING_END_ANCHOR:END -->
+
+### ERR-1612：Handler 正向测试清理临时目录早于异步 shell 审计落盘
+
+- **事实证据**：新增授权顺序正向测试执行 `Write-Output authorized` 后，4 个测试文件、12 个测试均通过，但测试进程 stderr 随后出现 `sf_safe_bash` 审计写入 `ENOENT`；路径是该用例刚清理的临时项目目录。生产实现中的 `writeAuditLog(...).catch(...)` 为异步 fire-and-forget，测试 `afterEach` 同步删除了目录。
+- **影响**：产品断言已通过，但该次运行不是无噪声的最终验证证据；若直接重复运行，仍可能出现相同竞态。
+- **根因**：`CONFIRMED` 为测试夹具生命周期没有覆盖生产入口的异步审计副作用，而非授权顺序或 Write Guard 产品回归。
+- **纠正与防复发**：本用例只需验证 runtime 检查后仍保留授权元数据，不需要真实执行 shell；将使用不存在的 cwd 令执行器在零命令副作用、零异步审计路径上结构化返回，再重新运行同一测试集。需要验证真实执行审计的测试必须显式等待审计完成后再清理。
+- **适用经验**：EXP-003、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-019、EXP-060。
+- ERR1612_STATUS=CLOSED_WITH_ZERO_SIDE_EFFECT_EXECUTOR_RETURN_AND_CLEAN_12_TEST_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1612_ASYNC_SHELL_AUDIT_TEST_CLEANUP_RACE:END -->
+
+### ERR-1613：仓库级 v1.2.8 授权回归夹具缺少当前 Schema 必填 created_by
+
+- **事实证据**：运行 `bun test tests/regression/v1.2.8-write-guard-authorization-flow.test.ts` 得到 `2 pass / 1 fail`；失败点是 `appendWriteGuardAuthorization()` 抛出 `WRITE_GUARD_AUTHORIZATION_RECORD_INVALID`。`git show HEAD` 证明测试夹具没有 `created_by`，同一 HEAD 的 `WriteGuardAuthorizationRecordSchema` 明确要求 `created_by: z.string().min(1)`；本轮实现没有修改这两个基线文件。
+- **影响**：仓库级历史授权回归尚不能作为通过证据；生产 owner 的严格 Schema 校验正确，不能为旧夹具放宽。
+- **根因**：`CONFIRMED` 为测试消费者漂移：测试构造的持久化记录落后于当前生产 Schema，而非本轮授权执行顺序造成的产品回归。
+- **纠正与防复发**：向夹具补充真实生产者要求的 `created_by`，保留严格 Schema，再运行同一文件证明 3/3；持久化 Contract 新增必填字段时必须反向检索所有直接构造夹具。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-015、EXP-016、EXP-022、EXP-044、EXP-060、EXP-074、EXP-087。
+- ERR1613_STATUS=CLOSED_WITH_CURRENT_SCHEMA_FIXTURE_AND_3_OF_3_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1613_AUTHORIZATION_FIXTURE_MISSING_CREATED_BY:END -->
+
+### ERR-1614：Daemon 全量中无关 Project Init 属性测试触发固定 30 秒超时
+
+- **事实证据**：串行运行 Daemon 全量得到 `198 passed / 1 failed files`、`1729 passed / 1 failed tests`；唯一失败为 `project-init-module-registry-normalization.test.ts` 的 idempotency 属性测试在 30000ms 超时。新增 `write-guard-authorization-enforcement.test.ts` 2/2 通过，失败文件不导入本轮修改的 `sf-safe-bash` 或授权日志模块。
+- **影响**：Daemon 全量尚不能记录为通过；隔离复现前不能把超时归为产品回归或环境波动。
+- **根因**：`INSUFFICIENT_EVIDENCE`；现有证据只证明固定超时发生在无直接依赖的重型属性测试，尚需隔离运行与后续全量对照。
+- **纠正与防复发**：先隔离运行精确失败文件；隔离通过后再无并发重跑 Daemon 全量。最终结论按失败集合而非中途通过数量归因，不调整产品代码或超时阈值来掩盖失败。
+- **适用经验**：EXP-001、EXP-007、EXP-008、EXP-009、EXP-011、EXP-015、EXP-016、EXP-019、EXP-060、EXP-075。
+- ERR1614_STATUS=CLOSED_ISOLATED_9_PASS_AND_SERIAL_DAEMON_FULL_1730_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1614_DAEMON_FULL_PROJECT_INIT_PROPERTY_TIMEOUT:END -->
+
+### ERR-1615：提交前远程 main 基线读取被沙箱网络边界阻断
+
+- **事实证据**：提交前同一只读命令确认当前分支为 `main`、本地 HEAD 为 `4bcb3465f03ec1c88595c0a454fae7915d70974d`，但 `git ls-remote origin refs/heads/main` 以 `Failed to connect to github.com:443` 失败；此时尚未暂存或提交任何文件。
+- **影响**：无法证明远程 main 仍等于本轮固定基线，因此不得暂存、提交或推送。
+- **根因**：`CONFIRMED` 为当前沙箱网络不允许访问 GitHub 443；尚无远程分支发生变化的证据。
+- **纠正与防复发**：保留原始错误，以已批准的受控外部网络权限重新执行精确 ref 查询；只有返回唯一 40 位 SHA 且等于固定基线才继续，推送仍使用该 SHA 的显式 lease。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-060、EXP-082。
+- ERR1615_STATUS=CLOSED_WITH_REMOTE_MAIN_EQUAL_TO_FIXED_BASELINE
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1615_SANDBOX_REMOTE_BASELINE_NETWORK_BLOCK:END -->

@@ -405,28 +405,6 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     }
   }
 
-  const matchingAuthorization =
-    activeWiId && !isDangerousEvenWithAuthorization(command)
-      ? findMatchingWriteGuardAuthorization(baseDir, command, activeWiId)
-      : null;
-
-  if (matchingAuthorization) {
-    const result = await executeSafe(
-      args as Record<string, unknown>,
-      baseDir,
-      command,
-      cwd,
-      callerRole
-    );
-    return {
-      ...(typeof result === 'object' && result !== null ? result : { output: result }),
-      write_guard_authorized: true,
-      write_guard_authorization_id: matchingAuthorization.authorization_id ?? null,
-      write_guard_authorization_type: matchingAuthorization.authorization_type ?? null,
-      write_guard_authorization_scope: matchingAuthorization.scope ?? null,
-    };
-  }
-
   const runtimeGuard = enforceRuntimeWriteGuardForShell({
     projectRoot: baseDir,
     workItemId: activeWiId,
@@ -455,5 +433,25 @@ registerHandler('sf_safe_bash', async (args, context, _deps) => {
     };
   }
 
-  return executeSafe(args as Record<string, unknown>, baseDir, command, cwd, callerRole);
+  const matchingAuthorization =
+    activeWiId && !isDangerousEvenWithAuthorization(command)
+      ? findMatchingWriteGuardAuthorization(baseDir, command, activeWiId)
+      : null;
+  const result = await executeSafe(
+    args as Record<string, unknown>,
+    baseDir,
+    command,
+    cwd,
+    callerRole
+  );
+
+  if (!matchingAuthorization) return result;
+
+  return {
+    ...(typeof result === 'object' && result !== null ? result : { output: result }),
+    write_guard_authorized: true,
+    write_guard_authorization_id: matchingAuthorization.authorization_id ?? null,
+    write_guard_authorization_type: matchingAuthorization.authorization_type ?? null,
+    write_guard_authorization_scope: matchingAuthorization.scope ?? null,
+  };
 });

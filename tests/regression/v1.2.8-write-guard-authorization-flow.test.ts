@@ -24,6 +24,7 @@ describe('v1.2.8 write_guard authorization flow', () => {
       host_path_prefix: '/mnt/1t_back/project/fj1/fj-android',
       container_targets: ['/build', '/workspace'],
       image: 'fj-builder:react-native-0.74',
+      created_by: 'sf-orchestrator',
       user_response_quote: '同意授权当前 WI 内 Docker 构建命令继续执行',
       reason: 'Docker volume mount is a user-authorized external operation for APK build.',
     });
