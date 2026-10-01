@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 1,
+  "evidenceStatus": "CONFIRMED",
+  "authorityBoundary": "This registry is a downstream test-entry classification. It does not define product requirements or architecture.",
+  "roles": {
+    "CURRENT_HERMETIC": {
+      "execution": "default",
+      "rationale": "Maintained root tests that run without host service dependencies.",
+      "paths": [
+        "tests/architecture/directory-layout.test.ts",
+        "tests/e2e/feature-spec-e2e.test.ts",
+        "tests/e2e/installer_reconcile_e2e.test.ts",
+        "tests/e2e/tool-dispatcher-e2e.test.ts",
+        "tests/e2e/tool-http-shells.test.ts",
+        "tests/helpers/generators.test.ts",
+        "tests/integration/cli-daemon-integration.test.ts",
+        "tests/integration/cli_flow.test.ts",
+        "tests/integration/service-management/cross-platform-equivalence.test.ts",
+        "tests/integration/service-management/dependency-order-real.test.ts",
+        "tests/integration/service-management/graceful-shutdown-real.test.ts",
+        "tests/integration/service-management/precheck-blocking.test.ts",
+        "tests/integration/service-management/upgrade-restart-cycle.test.ts",
+        "tests/integration/version-guard-1000-files.test.ts",
+        "tests/property/atomic.property.test.ts",
+        "tests/property/intent_routing.property.test.ts",
+        "tests/property/investigation-gate-declaration-count.property.test.ts",
+        "tests/property/investigation-gate-evidence-id-form.property.test.ts",
+        "tests/property/investigation-gate-genuine-missing-section.property.test.ts",
+        "tests/property/investigation-gate-orchestration-success-preservation.property.test.ts",
+        "tests/property/investigation-gate-partial-hypothesis-confirmation.property.test.ts",
+        "tests/property/investigation-gate-premise-observer-gating.property.test.ts",
+        "tests/property/investigation-gate-section-boundary.property.test.ts",
+        "tests/property/investigation-gate-section-detection.property.test.ts",
+        "tests/property/investigation-gate-single-declaration-preservation.property.test.ts",
+        "tests/property/investigation-gate-two-competing-hypotheses.property.test.ts",
+        "tests/property/investigation-gate-two-evidence-rule.property.test.ts",
+        "tests/property/investigation-gate-verdict-vocabulary.property.test.ts",
+        "tests/property/manifest.property.test.ts",
+        "tests/property/opencode_merge.property.test.ts",
+        "tests/property/planner.property.test.ts",
+        "tests/property/semver.property.test.ts",
+        "tests/property/version-unification-property-14.property.test.ts",
+        "tests/property/version-unification-property-18.property.test.ts",
+        "tests/unit/ci-workflow-trigger.test.ts",
+        "tests/unit/installer/atomic.test.ts",
+        "tests/unit/installer/canonicalize.test.ts",
+        "tests/unit/installer/cli_args.test.ts",
+        "tests/unit/installer/cmdInstall.test.ts",
+        "tests/unit/installer/cmdVerify.test.ts",
+        "tests/unit/installer/commit.test.ts",
+        "tests/unit/installer/deploy-version-unification.test.ts",
+        "tests/unit/installer/installer_manifest_path_contract.test.ts",
+        "tests/unit/installer/manifest_canonical_location.test.ts",
+        "tests/unit/installer/manifest_validate.test.ts",
+        "tests/unit/installer/manifest_write.test.ts",
+        "tests/unit/installer/opencode_merge.test.ts",
+        "tests/unit/installer/opencode_merge_v2.test.ts",
+        "tests/unit/installer/opencode_verify.test.ts",
+        "tests/unit/installer/parseArgs.test.ts",
+        "tests/unit/installer/paths.test.ts",
+        "tests/unit/installer/preflight.test.ts",
+        "tests/unit/installer/semver.test.ts",
+        "tests/unit/installer/state.test.ts",
+        "tests/unit/installer/state_pending_deletes.test.ts",
+        "tests/unit/installer/upgrade.test.ts",
+        "tests/unit/installer/verify-tool-schemas.test.ts",
+        "tests/unit/installer/verify.test.ts",
+        "tests/unit/installer/verify_new.test.ts"
+      ]
+    },
+    "CURRENT_ENVIRONMENTAL": {
+      "execution": "opt-in",
+      "rationale": "Maintained lifecycle acceptance tests that require the matching host operating system and service manager.",
+      "entries": [
+        {
+          "path": "tests/integration/service-management/linux-systemd-full-lifecycle.test.ts",
+          "platform": "linux",
+          "requirements": "Linux host with systemd user-service lifecycle support."
+        },
+        {
+          "path": "tests/integration/service-management/windows-nssm-full-lifecycle.test.ts",
+          "platform": "win32",
+          "requirements": "Windows host with NSSM installed and permission to exercise the service lifecycle."
+        }
+      ]
+    },
+    "MIGRATED_DUPLICATE": {
+      "execution": "excluded",
+      "rationale": "Evidence is retained at the old path; the current contract has an explicit package-owned replacement.",
+      "entries": [
+        {
+          "path": "tests/e2e/crash-recovery-e2e.test.ts",
+          "replacement": [
+            "packages/daemon-core/tests/integration/chaos-recovery.test.ts",
+            "packages/daemon-core/tests/unit/recovery-session-replay.test.ts"
+          ],
+          "rationale": "Daemon recovery ownership moved to daemon-core and now exercises the current event-log/recovery contracts."
+        },
+        {
+          "path": "tests/e2e/daemon-wiring.test.ts",
+          "replacement": [
+            "packages/daemon-core/tests/unit/daemon-wiring.test.ts"
+          ],
+          "rationale": "The package-owned test is the maintained copy of the daemon wiring contract."
+        },
+        {
+          "path": "tests/e2e/plugin-integrity.test.ts",
+          "replacement": [
+            "packages/scope-gate/tests/current-thin-plugin.test.ts",
+            "packages/opencode-adapter/tests/integration/thin-plugin-integration.test.ts"
+          ],
+          "rationale": "Current thin-plugin integrity is owned by Scope Gate and the OpenCode adapter."
+        },
+        {
+          "path": "tests/e2e/workflow-json-definitions.test.ts",
+          "replacement": [
+            "packages/workflow-runtime/tests/unit/current-release-builtin-workflow.test.ts",
+            "packages/workflow-runtime/tests/unit/current-workflow-engine-owner.test.ts"
+          ],
+          "rationale": "Workflow definitions and their current schema are package-owned by workflow-runtime."
+        },
+        {
+          "path": "tests/integration/concurrent_lock.test.ts",
+          "replacement": [
+            "packages/scope-gate/tests/current-installer-lock-owner.test.ts",
+            "tests/unit/installer/state_pending_deletes.test.ts"
+          ],
+          "rationale": "The current installer lock owner and transaction behavior are covered by maintained contract tests."
+        },
+        {
+          "path": "tests/integration/service-management/plugin-reconnect-real.test.ts",
+          "replacement": [
+            "packages/service-management/tests/unit/reconnecting-daemon-client.test.ts",
+            "packages/opencode-adapter/tests/integration/session-lifecycle.integration.test.ts"
+          ],
+          "rationale": "Reconnect ownership moved to service-management and the OpenCode adapter."
+        },
+        {
+          "path": "tests/integration/wal-consistency.test.ts",
+          "replacement": [
+            "packages/daemon-core/tests/integration/wal-singleton-e2e.test.ts",
+            "packages/daemon-core/tests/unit/wal.test.ts"
+          ],
+          "rationale": "The old wal.jsonl contract was replaced by daemon-core event-log/WAL ownership."
+        },
+        {
+          "path": "tests/integration/workflow-permission-integration.test.ts",
+          "replacement": [
+            "packages/permission-engine/tests/integration/e2e-permission-flow.test.ts",
+            "packages/workflow-runtime/tests/unit/rbac/RBACEngine.test.ts"
+          ],
+          "rationale": "Permission flow and workflow RBAC now have separate package owners."
+        },
+        {
+          "path": "tests/integration/workflow-state-recovery.test.ts",
+          "replacement": [
+            "packages/workflow-runtime/tests/integration/crash-recovery.test.ts",
+            "packages/workflow-runtime/tests/unit/StateRecoveryManager.test.ts"
+          ],
+          "rationale": "Workflow state recovery moved to workflow-runtime."
+        },
+        {
+          "path": "tests/property/paths.property.test.ts",
+          "replacement": [
+            "packages/cli/tests/unit/path-resolver.test.ts",
+            "packages/daemon-core/tests/property/path-resolver.property.test.ts",
+            "tests/unit/installer/paths.test.ts"
+          ],
+          "rationale": "The old installer path API was split across current CLI, daemon, and installer path owners."
+        },
+        {
+          "path": "tests/unit/installer/install_lock.test.ts",
+          "replacement": [
+            "packages/scope-gate/tests/current-installer-lock-owner.test.ts"
+          ],
+          "rationale": "The maintained test validates the current installer lock API and owner."
+        },
+        {
+          "path": "tests/unit/installer/manifest.test.ts",
+          "replacement": [
+            "packages/scope-gate/tests/current-release-installer-manifest-boundary.test.ts",
+            "tests/unit/installer/manifest_validate.test.ts",
+            "tests/unit/installer/manifest_write.test.ts"
+          ],
+          "rationale": "The old manifest signature is superseded by current boundary, validation, and write tests."
+        },
+        {
+          "path": "tests/unit/release-precheck.test.ts",
+          "replacement": [
+            "scripts/ci/__test__/release-precheck.test.ts",
+            "packages/scope-gate/tests/current-repository-formal-release-precheck.integration.test.ts"
+          ],
+          "rationale": "Release precheck ownership moved to the CI script test and current Scope Gate integration."
+        },
+        {
+          "path": "tests/unit/workflow-schema-consistency.test.ts",
+          "replacement": [
+            "packages/workflow-runtime/tests/unit/WorkflowDefinitionLoader.test.ts",
+            "packages/workflow-runtime/tests/unit/current-release-builtin-workflow.test.ts"
+          ],
+          "rationale": "Workflow schema consistency is maintained by workflow-runtime against the current schema."
+        }
+      ]
+    },
+    "HISTORICAL_EVIDENCE": {
+      "execution": "excluded",
+      "rationale": "Retained evidence for retired .opencode, V5/V6, legacy workflow, skill, plugin, or installer contracts; it is not a current product decision source.",
+      "paths": [
+        "tests/e2e/e2e_sync_from_spec.test.ts",
+        "tests/e2e/full-feature-spec-flow.test.ts",
+        "tests/e2e/openclaw-mock-e2e.test.ts",
+        "tests/e2e/skill-autoload-strategies.test.ts",
+        "tests/e2e/v5-cleanup-verification.test.ts",
+        "tests/final-governance-alignment/final-governance-static.test.ts",
+        "tests/integration/kg_knowledge_integration.test.ts",
+        "tests/integration/output_format_regression.test.ts",
+        "tests/integration/plugin_degraded.test.ts",
+        "tests/integration/sf_verifier_v37.test.ts",
+        "tests/integration/workflow_routing.test.ts",
+        "tests/property/continuity.property.test.ts",
+        "tests/property/design_gate.property.test.ts",
+        "tests/property/discovery.property.test.ts",
+        "tests/property/ears-ac-extraction-codeblock.property.test.ts",
+        "tests/property/ears-complex-order.property.test.ts",
+        "tests/property/ears-empty-document.property.test.ts",
+        "tests/property/ears-empty-subject-response.property.test.ts",
+        "tests/property/ears-error-no-absolute-path.property.test.ts",
+        "tests/property/ears-invalid-format-value.property.test.ts",
+        "tests/property/ears-label-mismatch.property.test.ts",
+        "tests/property/ears-legacy-nonblocking.property.test.ts",
+        "tests/property/ears-path-safety.property.test.ts",
+        "tests/property/ears-pattern-classification.property.test.ts",
+        "tests/property/ears-robustness.property.test.ts",
+        "tests/property/ears-strict-blocking.property.test.ts",
+        "tests/property/ears-strict-incomplete-ac.property.test.ts",
+        "tests/property/ears-structural-errors.property.test.ts",
+        "tests/property/ears-validation-mode.property.test.ts",
+        "tests/property/executor.property.test.ts",
+        "tests/property/gate_mode.property.test.ts",
+        "tests/property/investigation-gate-orchestrator-independence.property.test.ts",
+        "tests/property/kg_types.property.test.ts",
+        "tests/property/lock.property.test.ts",
+        "tests/property/reconcile.property.test.ts",
+        "tests/property/scope.property.test.ts",
+        "tests/property/typed_commands.property.test.ts",
+        "tests/property/verification_gate.property.test.ts",
+        "tests/property/verification_strategy.property.test.ts",
+        "tests/property/version-unification-property-15.property.test.ts",
+        "tests/regression/backward_compat.test.ts",
+        "tests/regression/changed-files-audit-verdict-status-label.test.ts",
+        "tests/regression/v1.2.2-write-guard-runtime-hotfix.test.ts",
+        "tests/regression/v1.2.3-changed-files-audit-historical-blocks.test.ts",
+        "tests/regression/v1.2.4-changed-files-audit-verdict-unification.test.ts",
+        "tests/regression/v1.2.5-remote-ops-boundary-and-hard-stop.test.ts",
+        "tests/regression/v1.2.6-plugin-hard-stop-resolve-pass-through.test.ts",
+        "tests/regression/v1.2.7-safe-bash-context-audit-resolution.test.ts",
+        "tests/regression/v1.2.8-write-guard-authorization-flow.test.ts",
+        "tests/regression/v1.2.9-plugin-hard-stop-idempotency.test.ts",
+        "tests/regression/v36_backward_compat.test.ts",
+        "tests/skills/workflow-skills-governance-policy.test.ts",
+        "tests/unit/installer/cmdUninstall.test.ts",
+        "tests/unit/installer/discovery.test.ts",
+        "tests/unit/installer/downgrade.test.ts",
+        "tests/unit/installer/executor-plan.test.ts",
+        "tests/unit/installer/executor.test.ts",
+        "tests/unit/installer/generated_files.test.ts",
+        "tests/unit/installer/lock.test.ts",
+        "tests/unit/installer/planner.test.ts",
+        "tests/unit/installer/reconcile_modes.test.ts",
+        "tests/unit/installer/reconcile_recovery.test.ts",
+        "tests/unit/knowledge_base/core.test.ts",
+        "tests/unit/tools/ears-detect-pattern.test.ts",
+        "tests/unit/tools/ears-extract-acceptance-criteria.test.ts",
+        "tests/unit/tools/ears-gate-integration.test.ts",
+        "tests/unit/tools/ears-parse-validation-mode.test.ts",
+        "tests/unit/tools/ears-performance.test.ts",
+        "tests/unit/tools/ears-resolve-requirements-path.test.ts",
+        "tests/unit/tools/ears-strip-prefixes.test.ts",
+        "tests/unit/tools/ears-validate-ac.test.ts",
+        "tests/unit/tools/ears-validate-all-acs.test.ts",
+        "tests/unit/tools/lib/gate_mode.test.ts",
+        "tests/unit/tools/lib/gate_result_recording.test.ts",
+        "tests/unit/tools/lib/sf_context_build_core.test.ts",
+        "tests/unit/tools/lib/sf_continuity_core.test.ts",
+        "tests/unit/tools/lib/sf_conversation_recorder_core.test.ts",
+        "tests/unit/tools/lib/sf_cost_report_core.test.ts",
+        "tests/unit/tools/lib/sf_design_gate_core.test.ts",
+        "tests/unit/tools/lib/sf_design_gate_v37.test.ts",
+        "tests/unit/tools/lib/sf_doc_lint_v37.test.ts",
+        "tests/unit/tools/lib/sf_knowledge_graph_core.test.ts",
+        "tests/unit/tools/lib/sf_knowledge_query_core.test.ts",
+        "tests/unit/tools/lib/sf_markdown_verification_parser.test.ts",
+        "tests/unit/tools/lib/sf_requirements_gate_core.test.ts",
+        "tests/unit/tools/lib/sf_requirements_gate_v37.test.ts",
+        "tests/unit/tools/lib/sf_state_transition_core.test.ts",
+        "tests/unit/tools/lib/sf_tasks_gate_core.test.ts",
+        "tests/unit/tools/lib/sf_tasks_gate_v37.test.ts",
+        "tests/unit/tools/lib/sf_verification_gate_core.test.ts",
+        "tests/unit/tools/lib/sf_verification_gate_fastcheck.test.ts",
+        "tests/unit/tools/lib/sf_verification_gate_v37.test.ts",
+        "tests/unit/tools/lib/sf_verification_types.test.ts",
+        "tests/unit/tools/lib/sf_verifier_execution_core.test.ts",
+        "tests/unit/tools/lib/utils.test.ts",
+        "tests/unit/tools/sf_artifact_write.test.ts",
+        "tests/unit/tools/sf_batch_verify.test.ts",
+        "tests/unit/tools/sf_design_gate.test.ts",
+        "tests/unit/tools/sf_doc_lint.test.ts",
+        "tests/unit/tools/sf_doc_lint_additional.test.ts",
+        "tests/unit/tools/sf_doc_lint_debug.test.ts",
+        "tests/unit/tools/sf_doc_lint_v6_architecture.test.ts",
+        "tests/unit/tools/sf_doc_lint_v6_direct.test.ts",
+        "tests/unit/tools/sf_doc_lint_v6_scope_lists.test.ts",
+        "tests/unit/tools/sf_requirements_gate.test.ts",
+        "tests/unit/tools/sf_state_read.test.ts",
+        "tests/unit/tools/sf_state_transition.test.ts",
+        "tests/unit/tools/sf_tasks_gate.test.ts",
+        "tests/unit/tools/sf_trace_matrix.test.ts",
+        "tests/unit/tools/sf_verification_gate.test.ts"
+      ]
+    }
+  }
+}

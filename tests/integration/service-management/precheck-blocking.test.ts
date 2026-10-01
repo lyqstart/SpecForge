@@ -506,7 +506,7 @@ describe('Precheck blocking', () => {
       {
         code: 'NSSM_NOT_FOUND',
         message: 'NSSM executable not found',
-        suggestion: 'Install NSSM to ~/.specforge/bin/nssm.exe.',
+        suggestion: 'Install NSSM to <OpenCode config>/sf-user/bin/nssm.exe.',
       },
       {
         code: 'NOT_ELEVATED',

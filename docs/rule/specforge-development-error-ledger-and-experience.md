@@ -29426,3 +29426,217 @@ REPEATED_ERROR_CHECK=PASS
 - **适用经验**：EXP-004、EXP-008、EXP-014、EXP-015、EXP-019、EXP-020、EXP-060、EXP-063、EXP-065。
 - ERR1634_STATUS=CLOSED_WITH_EXACT_SMALL_PATCHES
 - REPEATED_ERROR_CHECK=PASS
+
+### ERR-1635：只读 Bootstrap 将受保护备份与瞬时远程失败合并为恢复阻断
+
+- **事实证据**：在 `main@fe0f0eb2e877d68a9e804d019a16812fd9d5a7a6` 执行 `node scripts/project-session-bootstrap.mjs` 时，Bootstrap 因产品负责人要求保留且禁止触碰的未跟踪架构方案备份报告工作区 dirty，同时其内部远程探测返回无法连接 `github.com:443`；同轮独立 `git ls-remote` 已成功取得远程 `main` 为相同 SHA。
+- **影响**：该次 Bootstrap 不能作为完整恢复 PASS 证据，但本地 HEAD、分支、权威文件和独立远程 SHA 已由分离的一手证据固定；只读 SPS 审计没有因此扩大为写操作。
+- **根因**：`CONFIRMED` 为恢复器没有区分受保护且允许存在的用户备份与未知工作区污染，并把一次远程探测失败直接并入总体阻断；远程持续不可达没有被证明。
+- **纠正与防复发**：本轮先保留原始失败并分别解释工作区与远程证据，不修改恢复器；后续若调整 Bootstrap，必须为“允许的受保护 untracked 路径”和“独立远程探测结果”建立显式、可审计合同，不能静默忽略任意未跟踪文件。
+- **适用经验**：EXP-001、EXP-003、EXP-007、EXP-008、EXP-015、EXP-016、EXP-020、EXP-039、EXP-041、EXP-060。
+- ERR1635_STATUS=RECORDED_AWAITING_SEPARATE_BOOTSTRAP_DECISION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1636：PowerShell 审计命令使用不存在的 Select-String -First 参数
+
+- **事实证据**：检查 `release/release-manifest.json` 时，命令同时尝试 `git show HEAD:release/release-manifest.json` 和 `Select-String -Pattern 'candidateId' -First 1`；前者证明该本地文件不在 HEAD，后者因当前 PowerShell 的 `Select-String` 不支持 `-First` 而失败。随后使用 `Select-String ... | Select-Object -First 1` 成功读取 candidateId，并由 `git check-ignore -v` 证明该文件受 `.gitignore` 管理。
+- **影响**：首次命令不能作为 candidateId 提取证据；Manifest 的 tracked/ignored 分类已由后续简单命令补齐，产品文件未修改。
+- **根因**：`CONFIRMED` 为把 `Select-Object` 的参数按记忆套用到另一 cmdlet，且在同一命令中混合了 Git 对象检查和内容筛选。
+- **纠正与防复发**：PowerShell 单条结果选择固定使用管道到 `Select-Object -First 1`；Git tracked/ignored 判断与文件内容读取分开执行。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-060、EXP-065。
+- ERR1636_STATUS=CLOSED_WITH_SIMPLE_SEPARATE_COMMANDS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1637：根级定向测试连续选择了不可用的 Bun 临时目录与 Vitest shim
+
+- **事实证据**：首次用临时 Bun 执行 `bun x vitest run tests/unit/installer/paths.test.ts` 因临时目录 EPERM 退出；设置仓库内 `TEMP`、`TMP`、`BUN_TMPDIR` 后仍返回相同错误；随后尝试仓库根 `.\\node_modules\\.bin\\vitest.exe`，该入口不存在。三次均未收集任何测试。
+- **补充事实**：枚举实际入口后使用 `packages/daemon-core/node_modules/.bin/vitest.exe --root .`，runner 已启动但根 `vitest.config.ts` 无法解析 `vitest/config`，再次在测试收集前退出。这证明根测试入口同时缺少正式依赖解析合同，不能通过借用 package-local runner 形成可靠基线。
+- **影响**：不能声称根级旧路径测试已实际失败或通过；静态一手证据只证明测试断言与生产函数返回值矛盾。产品文件在这些失败期间未修改。
+- **根因**：`CONFIRMED` 为重复 ERR-1607/ERR-1618：未先枚举可用 runner 就连续尝试 `bun x` 和猜测的根 shim；环境准备失败与测试结论必须分离。
+- **纠正与防复发**：停止继续猜测入口。实施阶段先读取 lockfile、实际 `node_modules/.bin` 与 package-local scripts，选择仓库已有确定 runner；若无入口，先修复正式测试编排，再执行根级测试。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-011、EXP-015、EXP-016、EXP-019、EXP-020、EXP-060、EXP-065、EXP-069。
+- ERR1637_STATUS=RECORDED_PENDING_FORMAL_ROOT_TEST_RUNNER
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1638：把全部 Git 跟踪路径展开为 rg 参数导致 Windows 命令行过长
+
+- **事实证据**：为排除 archive 与错误账本后检索 `runtime/wal.jsonl`，命令先用 `git ls-files` 枚举大量文件，再通过 PowerShell 命令替换把全部路径作为 `rg` 参数；进程创建失败并报告“文件名或扩展名太长”。随后一次 `git grep` 又把已跟踪 `.specforge/cas/**` 历史 payload 纳入结果，产生超大无分类输出。
+- **影响**：两次命令均不能证明当前消费者集合完整；已改用明确当前目录的字面量检索并按运行、测试、文档、历史角色分类。
+- **根因**：`CONFIRMED` 为违反 EXP-040/EXP-069，在 Windows 参数长度边界内展开全仓文件列表，并用宽泛 tracked 集合替代先验角色分区。
+- **纠正与防复发**：消费者检索固定使用纯字面量和明确目录集合；历史目录、Runtime payload 与当前生产目录分批查询，禁止把全量文件名展开成单个进程参数。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-040、EXP-060、EXP-065、EXP-069。
+- ERR1638_STATUS=CLOSED_WITH_ROLE_SCOPED_LITERAL_SEARCH
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1639：经验文件分块读取的 exec JavaScript 混入了 PowerShell 语句
+
+- **事实证据**：首次调用 `functions.exec` 进行分块读取时，把 PowerShell 变量声明放在 JavaScript 源码顶层，V8 在工具执行前返回 `SyntaxError: Unexpected string`；没有文件读取或写入发生。随后改为纯 JavaScript 循环逐次调用 `exec_command`，完成固定行区间读取。
+- **影响**：首次调用不能计入经验门禁读取；写操作继续保持关闭，直至成功读取并补录本条。
+- **根因**：`CONFIRMED` 为跨运行时语法边界混淆，属于 EXP-002/EXP-065 已覆盖的工具构造错误。
+- **纠正与防复发**：`functions.exec` 顶层只写 JavaScript；PowerShell 代码只作为 `exec_command.cmd` 字符串传入。复杂循环优先在 JavaScript 中编排固定的小命令。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-060、EXP-065。
+- ERR1639_STATUS=CLOSED_WITH_RUNTIME_SEPARATION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1640：借用 package-local Vitest 不能满足根配置依赖解析
+
+- **事实证据**：确认 `packages/daemon-core/node_modules/.bin/vitest.exe` 存在后，以 `--root .` 启动根级定向测试；Vitest 在加载仓库根 `vitest.config.ts` 时因无法从根依赖图解析 `vitest/config` 退出，零测试被收集。
+- **影响**：CG-018 的基线从“正式命令未调用根测试”扩展为“根测试配置没有可独立解析的正式 runner 依赖”；不得把 package-local runner 启动成功误报为根测试已可执行。
+- **根因**：`CONFIRMED` 为根配置与根 package dependency contract 不闭合；package-local Vitest 的可执行文件不能自动把其模块解析上下文提供给根配置。
+- **纠正与防复发**：为根测试建立由根 package 显式声明、正式 `bun run test` 调用的入口；先运行最小路径测试，再扩展根 suite，并与 workspace suite 串行编排。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-017、EXP-020、EXP-052、EXP-074。
+- ERR1640_STATUS=RECORDED_FOR_ROOT_TEST_ENTRY_CLOSURE
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1641：补录 ERR-1637 时手工锚点漏掉空格
+
+- **事实证据**：首次补充 ERR-1637 时，`apply_patch` 锚点写成“临时 Bun执行”，而当前文件真实字节是“临时 Bun 执行”，补丁校验失败且未修改文件；随后读取目标段落取得精确连续内容。
+- **影响**：失败补丁没有写入台账或产品文件；在使用精确锚点成功补录前，产品修改继续关闭。
+- **根因**：`CONFIRMED` 为再次根据记忆手工重建长中文锚点，属于 EXP-063/EXP-065 已覆盖的补丁锚点错误。
+- **纠正与防复发**：长段落补丁必须先读取目标连续字节；优先使用短且唯一的标题或状态行定位，避免重写整句自然语言作为锚点。
+- **适用经验**：EXP-008、EXP-014、EXP-015、EXP-019、EXP-020、EXP-060、EXP-063、EXP-065。
+- ERR1641_STATUS=CLOSED_WITH_EXACT_CURRENT_ANCHOR
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1642：多文件产品补丁再次被未经核对的 package.json 顺序锚点阻断
+
+- **事实证据**：首次同步 Skill、README、测试、根脚本与 Scope Gate 的单个 `apply_patch`，在根 `package.json` 查找 `prettier` 后紧跟 `fast-check` 的锚点失败；当前文件真实顺序不同。`apply_patch` 整体校验失败，产品目标文件均未修改。
+- **影响**：四项收口实施尚未开始；若继续扩大或放宽同一跨文件补丁，会增加误改相邻依赖和消费者的风险。
+- **根因**：`CONFIRMED` 为重复 ERR-1634：虽然读取过完整文件，仍按记忆重组了跨文件大锚点，没有逐目标使用当前连续字节。
+- **纠正与防复发**：改为逐文件小补丁；根 `package.json` 使用刚读取的精确 scripts 与 devDependencies 局部顺序，新增文件单独创建；每个补丁后立即检查 diff。
+- **适用经验**：EXP-004、EXP-008、EXP-014、EXP-015、EXP-019、EXP-020、EXP-060、EXP-063、EXP-065。
+- ERR1642_STATUS=CLOSED_WITH_PER_FILE_PATCH_PLAN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1643：根依赖 lockfile 更新再次被 Bun 默认临时目录 EPERM 阻断
+
+- **事实证据**：加入根 Vitest 显式依赖后，直接执行已定位 Bun 的 `install --lockfile-only --offline`；Bun 1.4.0 在解析依赖前报告 `EPERM accessing temporary directory` 并退出 1，`bun.lock` 未改变。
+- **影响**：根 `package.json` 与 lockfile 暂时不一致，不能运行正式根测试或进入提交验证。
+- **根因**：`CONFIRMED` 为重复 ERR-1607/ERR-1637 的 Windows 临时目录权限边界；命令没有沿用此前已验证的仓库内 TEMP/TMP/BUN_TMPDIR 组合。
+- **纠正与防复发**：保留失败证据后，只使用仓库内 `.tmp/bun` 的 TEMP、TMP、BUN_TMPDIR 组合执行 offline lockfile 更新；更新后立即检查 `bun.lock` diff 和 Git 范围。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-011、EXP-015、EXP-019、EXP-020、EXP-052、EXP-060。
+- ERR1643_STATUS=RECORDED_PENDING_SCOPED_TEMP_RETRY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1644：仓库内 Bun 临时目录变量在当前沙箱仍未越过 EPERM
+
+- **事实证据**：补录 ERR-1643 后设置 `TEMP`、`TMP`、`BUN_TMPDIR` 均为已存在的 `D:\\code\\SpecForge\\.tmp\\bun`，再次执行 offline lockfile 更新仍在依赖解析前返回相同 EPERM；后续只读检查确认目录存在且 `bun.lock` 无 diff。
+- **影响**：不能继续把该环境变量组合描述为当前会话已验证方案；lockfile 仍未同步，产品验证尚未开始。
+- **根因**：`INSUFFICIENT_EVIDENCE`：已排除“目标目录不存在”，但 Bun 还访问哪个受限临时位置尚未由错误输出证明。继续改变更多变量属于盲试。
+- **纠正与防复发**：停止沙箱内重试，保留当前无 lockfile 写入证据；对完全相同、明确离线且只更新仓库 lockfile 的命令请求受控沙箱外执行。若仍失败，再以 Bun 诊断证据设计后续动作。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-011、EXP-015、EXP-019、EXP-020、EXP-052、EXP-060。
+- ERR1644_STATUS=RECORDED_PENDING_CONTROLLED_OUT_OF_SANDBOX_RUN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1645：根安装路径测试包含 26 项已退役 API 消费者
+
+- **事实证据**：根 Vitest 依赖安装后，定向运行 `tests/unit/installer/paths.test.ts`，实际收集 41 项并得到 15 passed / 26 failed。全部失败均为调用不存在的 `nativeToPosix`、`normalizeLongPathForWindows`、`toNative`、`normalizeSeparators`、`resolveTargetDir`；当前 `scripts/lib/paths.ts` 不再导出这些旧 API。已修正的 `resolveSpecForgeInstallRoot` 当前路径断言在 15 个通过项中。
+- **影响**：该根测试文件不能作为当前安装器合同；正式根 suite 接入后会正确阻断 `bun run test`，不得通过移除根测试入口恢复假绿。
+- **根因**：`CONFIRMED` 为测试消费者长期未进入正式测试编排，旧辅助 API 退役时未同步删除其当前断言，属于 EXP-022/EXP-074/EXP-087 的消费者漂移。
+- **纠正与防复发**：保留 Git 历史证据，当前测试文件只覆盖 `scripts/lib/paths.ts` 真实导出；删除不存在 API 的 import 与 describe 块，不在生产代码中恢复兼容别名。修正后原样重跑同一 41 项文件，再运行根 suite 取得下一层真实失败集合。
+- **适用经验**：EXP-001、EXP-004、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-020、EXP-022、EXP-026、EXP-060、EXP-074、EXP-087。
+- ERR1645_STATUS=RECORDED_PENDING_TEST_CONSUMER_CLOSURE
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1646：Scope Gate 定向测试再次使用错误的 Bun 1.4 --cwd 参数位置
+
+- **事实证据**：命令使用 `bun --cwd packages/scope-gate run test -- ...`，Bun 1.4 输出完整 `bun run` 帮助和 package scripts，并以 0 退出；没有 Vitest RUN、测试文件或测试数量输出。
+- **影响**：该 exit 0 不是测试通过证据，新增 Scope Gate 回归仍未执行。
+- **根因**：`CONFIRMED` 为重复 ERR-1609：沿用旧参数位置，没有使用执行工具的 `workdir` 固定 package cwd。
+- **纠正与防复发**：从 `packages/scope-gate` 工作目录执行 `bun run test -- tests/current-release-path-projections.test.ts --maxWorkers=1`；测试证据必须同时包含 Vitest RUN、文件数和测试数。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-015、EXP-019、EXP-020、EXP-060。
+- ERR1646_STATUS=RECORDED_PENDING_CORRECT_CWD_RUN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1647：Vitest 1.6 定向命令只传 maxWorkers 导致线程上下限冲突
+
+- **事实证据**：从正确 Scope Gate cwd 启动 Vitest 1.6.1 后，传入 `--maxWorkers=1` 导致 `options.minThreads and options.maxThreads must not conflict`；输出明确为 `Test Files no tests`、`Tests no tests`、exit 1。
+- **影响**：新增回归仍未收集；该失败是 runner 参数合同问题，不是测试实现失败。
+- **根因**：`CONFIRMED` 为对 Vitest 1.x 只设置最大 worker，没有同步最小 worker；仓库经验已要求 v1 同时使用 `--maxWorkers=1 --minWorkers=1`。
+- **纠正与防复发**：定向重跑使用与 `scripts/test-workspace.ts` 相同的版本分支参数，为 Vitest 1.x 同时传入 min/max；证据必须包含实际收集数量。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-015、EXP-019、EXP-020、EXP-055、EXP-060。
+- ERR1647_STATUS=RECORDED_PENDING_V1_WORKER_PAIR_RUN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1648：首次正式根 suite 基线证明当前与历史测试混合且大规模漂移
+
+- **事实证据**：根 Vitest 4.1.5 实际收集 185 files / 1173 tests，最终为 63 passed、121 failed、1 skipped files，881 passed、270 failed、22 skipped tests，exit 1。失败至少包含 103 个 suite import/collection failures、大量已退役 `.opencode/**` 与 `bun:test` 消费者、旧 installer API、旧 workflow/skill 集合、需要真实 NSSM/管理员环境的测试，以及与当前事件模型不一致的 WAL 测试。
+- **影响**：CG-018 已证实不是简单把 185 文件加入 `bun run test` 即可关闭。当前根 suite 混合当前验证、历史兼容证据、已迁移 package 测试和环境依赖 E2E；未经角色分类直接作为发布门禁会永久阻断正确的当前发布。与此同时，保持完全不执行又会继续制造假绿。
+- **根因**：`CONFIRMED` 为根测试目录长期没有正式 owner 与生命周期分类；产品模块和 userlevel 部署结构多轮收口后，测试消费者没有同步迁移、归档或声明环境前置。具体 270 项失败的逐项归属仍需分类，不能从总数推断单一根因。
+- **纠正与防复发**：冻结“全量根 suite 已接入即完成”的假设。下一步建立根测试角色清单：CURRENT_HERMETIC 进入正式 `bun run test`；CURRENT_ENVIRONMENTAL 进入显式 opt-in 验证；MIGRATED_DUPLICATE 指向 package owner 后退役根副本；HISTORICAL_EVIDENCE 归档保留。每一类先按路径和 import 一手证据分类，再调整正式 include，不删除历史证据。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-009、EXP-010、EXP-011、EXP-015、EXP-016、EXP-017、EXP-020、EXP-022、EXP-026、EXP-033、EXP-040、EXP-045、EXP-060、EXP-074、EXP-086、EXP-087。
+- ERR1648_STATUS=IDENTIFIED_PENDING_ROOT_TEST_ROLE_CLASSIFICATION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1649：验证根测试登记表时直接调用了不在 PATH 中的 Bun
+
+- **事实证据**：完成根测试角色登记表与 runner 初稿后，验证命令直接执行 `bun run test:root:registry` 和 `bun x vitest ...`；当前 PowerShell 对两次调用均报告 `bun` 不是可识别的命令，未启动登记校验或测试收集。
+- **影响**：该次命令不构成登记表或测试结果证据；新增文件已经写入工作区，但尚未通过运行验证。
+- **根因**：`CONFIRMED` 为重复 ERR-1637 的 runner 定位错误：本会话已有可用 Bun 绝对路径证据，仍错误假设其已加入当前 `PATH`。
+- **纠正与防复发**：后续命令固定使用已确认的 Bun 1.4 绝对路径；根登记脚本自身使用 Node 与根 `node_modules/vitest/vitest.mjs`，不再通过 `bun x` 猜测 shim。完成登记校验、定向回归和默认根测试后再评价实现。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-069。
+- ERR1649_STATUS=RECORDED_PENDING_ABSOLUTE_RUNNER_RETRY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1650：用根 Vitest 配置定向运行 package-owned Scope Gate 测试
+
+- **事实证据**：`node scripts/run-root-tests.mjs validate` 已成功验证 185 个路径按 59/2/14/110 完整且唯一分类；随后从仓库根调用根 Vitest 4.1.5 并传入两个 `packages/scope-gate/tests/**` 文件，runner 因根 `vitest.config.ts` 只 include `tests/**/*.test.ts` 与 `tests/**/*.property.test.ts` 报告 `No test files found`，exit 1，零测试被收集。
+- **影响**：登记完整性已有成功证据，但两个 Scope Gate 回归尚无本轮运行结果；根配置没有发生异常，也不能把零收集误报为测试失败。
+- **根因**：`CONFIRMED` 为忽略了根 Vitest 的明确作用域，把 package-owned 测试错误交给根 runner，重复违反测试入口按 owner 选择的要求。
+- **纠正与防复发**：从 `packages/scope-gate` 工作目录使用该 package 的正式 Vitest 入口，并按 Vitest 1.x 同时设置 min/max worker；根 runner 只运行登记为根 `CURRENT_HERMETIC` 的文件。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-019、EXP-020、EXP-052、EXP-055、EXP-060、EXP-074。
+- ERR1650_STATUS=RECORDED_PENDING_PACKAGE_OWNED_RERUN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1651：当前根测试生成器在 Fast-check 4 下生成 Invalid Date
+
+- **事实证据**：默认根入口完成 59 个 `CURRENT_HERMETIC` 文件的实际收集，结果为 58 passed / 1 failed files、764 passed / 1 failed tests。唯一失败位于 `tests/helpers/generators.test.ts`；`arbManifest` 使用 `fc.date().map(d => d.toISOString())`，Fast-check 4.8.0 生成无效日期后由 `toISOString()` 抛出 `RangeError: Invalid time value`。
+- **影响**：根默认测试尚未闭环；失败发生在测试数据生成阶段，未证明当前 Manifest 生产逻辑失败。其余 58 个当前根文件已通过。
+- **根因**：`CONFIRMED` 为共享测试生成器没有声明只生成有效日期，而当前依赖版本允许 `fc.date()` 产生 Invalid Date；这是当前测试基础设施缺陷，不应通过把该文件改列历史证据绕过。
+- **纠正与防复发**：为日期 arbitrary 显式设置 `noInvalidDate: true`；先重跑生成器文件，再原样重跑 59 文件默认根入口。登记角色保持不变。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-020、EXP-022、EXP-060、EXP-074。
+- ERR1651_STATUS=RECORDED_PENDING_GENERATOR_CONSTRAINT_FIX
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1652：首次全量正式测试发现根 runner 与 release manifest 消费者未同步
+
+- **事实证据**：修正日期生成器后，定向生成器测试 7/7 与默认根入口 59 files / 765 tests 全部通过。随后正式 `bun run test` 进入全部 workspace；Scope Gate 的 `current-repository-installer-manifest-consumption.integration.test.ts` 3 项均因 `skills/sf-intake/SKILL.md` 哈希与现有 release manifest 不一致失败，daemon-core 的 `specforge-development-err125.test.ts` 1 项仍期望 test task 只有 workspace 步骤，而实际已新增根测试步骤。最终失败 package 为 Scope Gate 与 daemon-core。
+- **影响**：正式全量测试尚未闭环；前者证明部署源修改后发布清单消费者已正确 fail closed，后者证明 runner 合同回归需要同步。不能把根入口单独通过误报为完整发布验证通过。
+- **根因**：`CONFIRMED` 为实施同步范围漏掉两个真实消费者：发布物哈希清单与根 task 编排合同测试；未发现需要改变产品架构的证据。
+- **纠正与防复发**：更新 daemon-core 合同断言以包含根测试前置步骤；读取现有 release identity 后用正式 manifest builder 重建清单并验证只有预期源哈希变化；分别定向重跑失败测试，再重跑正式全量入口。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-020、EXP-022、EXP-026、EXP-052、EXP-060、EXP-074、EXP-087。
+- ERR1652_STATUS=RECORDED_PENDING_CONSUMER_SYNCHRONIZATION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1653：正式 lint 被既有多 package 配置缺口与 681 项基线错误阻断
+
+- **事实证据**：正式 `bun run build` 完成全部 workspace 编译并通过；同轮 `bun run lint` 的 workflow 文档同步检查通过，但 package lint 阶段失败。CLI 与 service-management 的 ESLint 8 找不到配置；version-unification 的 ESLint 9 找不到 flat config；permission-engine 缺少 `@eslint/js`；configuration 报告 681 项既有 Prettier/unused 错误。输出未指向本次新增 root registry、runner、路径测试或文档改动。
+- **影响**：构建证据有效，正式全仓 lint 不能声明通过；该失败是跨 package 的既有 lint 基线，不应在根测试分类任务中通过批量格式化或补齐所有 package 工具链顺带修复。
+- **根因**：`CORROBORATED` 为仓库 lint 编排与各 package ESLint 版本/配置没有形成统一闭环；681 项具体历史来源未逐项取证，不能进一步归因。
+- **纠正与防复发**：保留完整失败为独立治理债务；本轮使用 `git diff --check`、TypeScript 全 workspace build、正式全量 tests 和与变更直接相关的定向回归作为范围内验证。后续如治理 lint，需单独建立 package 配置/版本矩阵，禁止在本任务批量 `--fix`。
+- **适用经验**：EXP-001、EXP-007、EXP-008、EXP-009、EXP-010、EXP-011、EXP-015、EXP-016、EXP-020、EXP-033、EXP-040、EXP-052、EXP-060。
+- ERR1653_STATUS=RECORDED_AS_PREEXISTING_CROSS_PACKAGE_LINT_BASELINE
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1654：根生成器测试用随机命中率断言组合覆盖导致偶发失败
+
+- **事实证据**：环境角色加入 host platform 选择后，登记回归 4/4 通过；默认根入口第三次运行时，`arbFileReconcileInput generates all hash combinations` 在 500 次随机样本中未命中“三个 hash 全部 undefined”，导致 58 passed / 1 failed files。相同测试此前在两次完整根入口中通过，失败断言只检查布尔命中标记，不是生成值违反结构约束。
+- **影响**：默认根门禁存在随机假红；角色选择器本身已由独立 Scope Gate 回归通过，但本轮根复跑不能声明通过。
+- **根因**：`CONFIRMED` 为测试把概率覆盖当作必然覆盖；三个独立 `fc.option` 同时为 undefined 的组合不能保证在有限随机样本中出现。
+- **纠正与防复发**：通过 Fast-check `examples` 显式注入全定义、全未定义、混合三类合法输入，同时保留 500 次随机属性检查；并为同文件另一个映射到 ISO 字符串的日期 arbitrary 加上 `noInvalidDate`。重跑生成器文件与完整默认根入口。
+- **适用经验**：EXP-001、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-020、EXP-022、EXP-055、EXP-060、EXP-074。
+- ERR1654_STATUS=RECORDED_PENDING_DETERMINISTIC_EXAMPLES
+- REPEATED_ERROR_CHECK=PASS
+
+ROOT_TEST_ROLE_CLASSIFICATION_CLOSURE=CONFIRMED
+ROOT_TEST_ROLE_COUNTS=CURRENT_HERMETIC:59;CURRENT_ENVIRONMENTAL:2;MIGRATED_DUPLICATE:14;HISTORICAL_EVIDENCE:110
+FORMAL_ROOT_TEST_RESULT=59_FILES_765_TESTS_PASS
+FORMAL_FULL_TEST_RESULT=PASS
+FULL_WORKSPACE_BUILD_RESULT=PASS
+CURRENT_RELEASE_PRECHECK_RESULT=PASS
+FULL_LINT_RESULT=KNOWN_PREEXISTING_BASELINE_FAILURE_ERR1653
+ERR1648_STATUS=CLOSED_WITH_PATH_LEVEL_ROLE_REGISTRY
+ERR1651_STATUS=CLOSED_WITH_VALID_DATE_ARBITRARIES
+ERR1652_STATUS=CLOSED_WITH_SYNCHRONIZED_CONSUMERS
+ERR1654_STATUS=CLOSED_WITH_DETERMINISTIC_EXAMPLES
+REPEATED_ERROR_CHECK=PASS

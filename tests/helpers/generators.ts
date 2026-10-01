@@ -126,7 +126,7 @@ export function arbManifest(): fc.Arbitrary<UserLevelManifest> {
   const arbPendingDelete = (): fc.Arbitrary<PendingDeleteEntry> =>
     fc.record({
       relativePath: arbRelativePath(),
-      failedAt: fc.date().map((d) => d.toISOString()),
+      failedAt: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
       reason: fc.constantFrom(
         "permission_denied",
         "file_locked",
@@ -142,7 +142,7 @@ export function arbManifest(): fc.Arbitrary<UserLevelManifest> {
     )
     .map(([major, minor, patch]) => `${major}.${minor}.${patch}`)
 
-  const arbIso8601 = fc.date().map((d) => d.toISOString())
+  const arbIso8601 = fc.date({ noInvalidDate: true }).map((d) => d.toISOString())
 
   const arbAgentName = fc
     .stringMatching(/^[a-z_]{3,15}$/)

@@ -6,7 +6,10 @@ import { fileURLToPath } from 'node:url';
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const TASK_STEPS = Object.freeze({
-  test: [['scripts/test-workspace.ts']],
+  test: [
+    ['run', 'test:root', '--', '--maxWorkers=1'],
+    ['scripts/test-workspace.ts'],
+  ],
   build: [
     ['scripts/render-workflow-docs.ts'],
     ['scripts/build-workspace.ts'],

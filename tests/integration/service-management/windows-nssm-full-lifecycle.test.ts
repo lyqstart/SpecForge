@@ -12,7 +12,7 @@
  *
  * Platform: Windows only (skip on non-Windows)
  * Privileges: Requires Administrator (elevated) session
- * Dependency: NSSM at ~/.specforge/bin/nssm.exe
+ * Dependency: NSSM at <OpenCode config>/sf-user/bin/nssm.exe
  */
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import * as path from 'node:path';

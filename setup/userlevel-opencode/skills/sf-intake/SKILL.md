@@ -160,7 +160,7 @@ intake 阶段不是只记录用户一句话，而是为后续 requirements / des
 
 > **注意**：主机环境扫描（原 A2 步骤）已迁移到 `sf_project_init` 工具。
 > 在 OpenCode 启动时自动执行，无需在 intake 阶段处理。
-> 扫描结果存储在 `~/.specforge/host-profile.json`（用户级，非项目级）。
+> 扫描结果存储在 `<OpenCode config>/sf-user/host-profile.json`（用户级，非项目级）。
 
 ---
 

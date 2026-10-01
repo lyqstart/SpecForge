@@ -87,6 +87,7 @@ describe('ERR-125—ERR-126 build output and generated workflow documentation go
       ['scripts/build-workspace.ts'],
     ]);
     expect(runner.rootTaskSteps('test')).toEqual([
+      ['run', 'test:root', '--', '--maxWorkers=1'],
       ['scripts/test-workspace.ts'],
     ]);
   });

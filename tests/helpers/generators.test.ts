@@ -97,6 +97,12 @@ describe("fast-check generators", () => {
     let hasAllDefined = false
     let hasAllUndefined = false
     let hasMixed = false
+    const hash = "a".repeat(64)
+    const baseInput = {
+      relativePath: "agents/sf-test.md",
+      componentType: "agent" as const,
+      isManagedComponent: true,
+    }
 
     fc.assert(
       fc.property(arbFileReconcileInput(), (input) => {
@@ -112,7 +118,14 @@ describe("fast-check generators", () => {
         else if (defined === 0) hasAllUndefined = true
         else hasMixed = true
       }),
-      { numRuns: 500 }
+      {
+        numRuns: 500,
+        examples: [
+          [{ ...baseInput, sourceHash: hash, currentHash: hash, manifestHash: hash }],
+          [{ ...baseInput, sourceHash: undefined, currentHash: undefined, manifestHash: undefined }],
+          [{ ...baseInput, sourceHash: hash, currentHash: undefined, manifestHash: hash }],
+        ],
+      }
     )
 
     // Verify diverse combinations are generated

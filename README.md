@@ -257,7 +257,7 @@ project-root/                    # 项目级（Plugin 自动初始化）
     │       └── ...
     ├── runtime/                 # 运行时状态（gitignored）
     │   ├── state.json
-    │   ├── wal.jsonl
+    │   ├── events.jsonl
     │   ├── checkpoints/
     │   └── logs/
     ├── config/                  # [LEGACY READ-ONLY §1.7] — 新流程不走此目录
@@ -370,7 +370,7 @@ SPEC_DIR_NAME = '.specforge'
 
 | Key | 路径 | 说明 |
 |-----|------|------|
-| runtimeFiles.wal | `runtime/wal.jsonl` | — |
+| runtimeFiles.events | `runtime/events.jsonl` | authoritative workflow event log |
 | runtimeFiles.state | `runtime/state.json` | — |
 | runtimeFiles.checkpoints | `runtime/checkpoints` | — |
 | runtimeFiles.logs | `runtime/logs` | — |
