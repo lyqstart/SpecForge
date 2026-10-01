@@ -504,6 +504,8 @@ Daemon 生命周期属于部署层。
 - OS/service manager
 - controlled deployment process
 
+当前发布的 OS service registration 仅支持 Linux `systemd --user`。Windows 当前只支持由 user/operator、SpecForge CLI 或受控部署进程直接启动独立 Daemon 进程，不提供 Windows 系统服务注册或开机自启动能力。NSSM 不属于当前产品、安装器、发布物或运行依赖；未来引入任何 Windows 服务宿主必须先取得新的产品负责人裁决。
+
 Thin Plugin 和 OpenCode Adapter 不得：
 
 - auto-start Daemon
@@ -695,6 +697,8 @@ verify 证明安装完整性；是否为最新版本必须通过显式版本/升
 Service Management 负责部署层 Daemon/service lifecycle、health check、graceful shutdown 和必要的 reconnect policy。
 
 它不得让 Thin Plugin 获得共享 Daemon lifecycle ownership。
+
+当前 Service Management 的 OS service lifecycle 范围仅为 Linux `systemd --user`。Windows 上的直接 Daemon 进程启动不等同于 Windows 系统服务管理；当前产品不集成、下载、分发或要求 NSSM。
 
 ## 13.2 Host Profile
 

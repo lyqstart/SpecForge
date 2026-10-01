@@ -419,14 +419,14 @@ describe('install failure: exit code 1 (business) vs 2 (precheck blockers)', () 
       false,
       [],
       {
-        code: 'SVC_NSSM_NOT_FOUND',
-        message: 'NSSM not found',
-        suggestion: 'Install NSSM to manage Windows services',
+        code: 'SVC_PLATFORM_NOT_SUPPORTED',
+        message: 'OS service management is not supported on platform: win32',
+        suggestion: 'Start the daemon as a direct process on Windows',
       }
     );
     const formatted = formatOperationJson(result);
     expect(formatted.success).toBe(false);
-    expect(formatted.error?.code).toBe('SVC_NSSM_NOT_FOUND');
+    expect(formatted.error?.code).toBe('SVC_PLATFORM_NOT_SUPPORTED');
   });
 
   it('precheck blocker for systemd unavailable should have appropriate code', () => {
@@ -467,9 +467,9 @@ describe('install failure: exit code 1 (business) vs 2 (precheck blockers)', () 
       false,
       [],
       {
-        code: 'SVC_NOT_ELEVATED',
-        message: 'Not running as administrator',
-        suggestion: 'Run as administrator',
+        code: 'SVC_PLATFORM_NOT_SUPPORTED',
+        message: 'OS service management is not supported on this platform',
+        suggestion: 'Use Linux systemd user services',
       }
     );
     const formatted = formatOperationJson(result);

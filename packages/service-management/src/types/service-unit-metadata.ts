@@ -10,7 +10,7 @@ export interface ServiceUnitMetadata {
   generatedAt: string;
   /** The specforge version when this unit was installed */
   specforgeVersion: string;
-  /** Service name (matches unit file name / NSSM service name) */
+  /** Service name (matches the unit file name) */
   serviceName: string;
   /** Binary absolute path (for diagnostics: "is binary still there?") */
   binaryPath: string;

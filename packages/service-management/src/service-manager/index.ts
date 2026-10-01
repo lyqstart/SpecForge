@@ -23,9 +23,6 @@ export { isServiceManager } from './service-manager.js';
 export { SystemdServiceManager } from './systemd-service-manager.js';
 export type { SystemdOptions } from './systemd-service-manager.js';
 
-// NSSM implementation (Windows)
-export { NssmServiceManager } from './nssm-service-manager.js';
-export type { NssmOptions } from './nssm-service-manager.js';
 
 // Factory
 // export { createServiceManager } from './factory.js';

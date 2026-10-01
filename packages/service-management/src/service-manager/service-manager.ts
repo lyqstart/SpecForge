@@ -1,8 +1,8 @@
 /**
  * Service Manager Interface
  *
- * Cross-platform abstraction for OS service management.
- * Implemented by SystemdServiceManager (Linux) and NssmServiceManager (Windows).
+ * Abstraction for the currently supported OS service manager.
+ * Implemented by SystemdServiceManager (Linux).
  *
  * Implementation requirements:
  * - All methods must be idempotent (success when target state already satisfied)
@@ -92,8 +92,6 @@ export interface RestartResult {
 export interface ServiceManagerOptions {
   /** Unit files directory (systemd: ~/.config/systemd/user/) */
   unitDir?: string;
-  /** Binary directory for helper tools (NSSM, etc.) */
-  binDir?: string;
   /** Default timeout for operations in milliseconds */
   timeoutMs?: number;
 }
@@ -155,7 +153,7 @@ export interface ServiceManager extends Disposable {
 /**
  * Platform-specific service manager implementations
  */
-export type ServiceManagerType = 'systemd' | 'nssm';
+export type ServiceManagerType = 'systemd';
 
 /**
  * Factory options for creating a service manager

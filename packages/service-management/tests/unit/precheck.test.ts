@@ -4,7 +4,6 @@
  * Tests cover:
  * - darwin platform immediate rejection with PLATFORM_NOT_SUPPORTED
  * - Linux (systemd) distribution returns correct structure
- * - Windows (NSSM) distribution returns correct structure
  * - schema_version: "1.0" field exists
  * - blockers/warnings array structure
  *
@@ -15,7 +14,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { SystemdServiceManager } from "../../src/service-manager/systemd-service-manager.js";
-import { NssmServiceManager } from "../../src/service-manager/nssm-service-manager.js";
 import type { EnvironmentPrecheck } from "../../src/types/environment-precheck.js";
 
 // Vitest hoists vi.mock factories, so referenced mocks must be created with vi.hoisted.
@@ -174,12 +172,6 @@ describe("precheck functionality", () => {
       expect(result).toHaveProperty("lingerEnabled");
       expect(result).toHaveProperty("systemdUserUnitDir");
 
-      // Windows-specific fields should be null
-      expect(result.isElevated).toBeNull();
-      expect(result.nssmAvailable).toBeNull();
-      expect(result.nssmExePath).toBeNull();
-      expect(result.nssmVersion).toBeNull();
-
       // currentUserName should be populated
       expect(result.currentUserName).toBe("testuser");
     });
@@ -227,109 +219,6 @@ describe("precheck functionality", () => {
     });
   });
 
-  describe("Windows (NSSM) distribution", () => {
-    let manager: NssmServiceManager;
-
-    beforeEach(() => {
-      vi.clearAllMocks();
-
-      // Set platform to win32
-      mockPlatform.mockReturnValue("win32");
-
-      // Default mock implementations
-      mockAccess.mockResolvedValue(undefined);
-      mockWriteFile.mockResolvedValue(undefined);
-      mockRename.mockResolvedValue(undefined);
-      mockUnlink.mockResolvedValue(undefined);
-      mockMkdir.mockResolvedValue(undefined);
-
-      // Default spawn for whoami /groups
-      mockSpawn.mockImplementation((cmd: string) => {
-        if (cmd === "whoami" || cmd.endsWith("whoami.exe")) {
-          return createMockChild("", "S-1-5-32-544", 0);
-        }
-        if (cmd === "nssm" || cmd.endsWith("nssm.exe")) {
-          return createMockChild("nssm 2.2", "", 0);
-        }
-        return createMockChild("", "", 0);
-      });
-
-      manager = new NssmServiceManager({
-        binDir: "C:\\Users\\test\\.specforge\\bin",
-        timeoutMs: 5000,
-      });
-    });
-
-    afterEach(async () => {
-      await manager.dispose();
-    });
-
-    it("should return correct EnvironmentPrecheck structure for Windows", async () => {
-      const result = await manager.precheckEnvironment();
-
-      // Verify schema_version field
-      expect(result).toHaveProperty("schema_version");
-      expect(result.schema_version).toBe("1.0");
-
-      // Verify platform
-      expect(result.platform).toBe("win32");
-
-      // Verify blockers/warnings arrays
-      expect(result).toHaveProperty("blockers");
-      expect(result).toHaveProperty("warnings");
-      expect(Array.isArray(result.blockers)).toBe(true);
-      expect(Array.isArray(result.warnings)).toBe(true);
-
-      // Windows-specific fields should be present
-      expect(result).toHaveProperty("isElevated");
-      expect(result).toHaveProperty("nssmAvailable");
-      expect(result).toHaveProperty("nssmExePath");
-      expect(result).toHaveProperty("nssmVersion");
-      expect(result).toHaveProperty("currentUserName");
-
-      // Linux-specific fields should be null
-      expect(result.systemdAvailable).toBeNull();
-      expect(result.systemdVersion).toBeNull();
-      expect(result.lingerEnabled).toBeNull();
-      expect(result.systemdUserUnitDir).toBeNull();
-    });
-
-    it("should include NOT_ELEVATED blocker when not running as administrator", async () => {
-      // Mock not elevated
-      mockSpawn.mockImplementation((cmd: string) => {
-        if (cmd === "whoami" || cmd.endsWith("whoami.exe")) {
-          // No Administrators group
-          return createMockChild("", "S-1-5-32-545", 0); // Users group, not admins
-        }
-        if (cmd === "nssm" || cmd.endsWith("nssm.exe")) {
-          return createMockChild("nssm 2.2", "", 0);
-        }
-        return createMockChild("", "", 0);
-      });
-
-      const result = await manager.precheckEnvironment();
-
-      // Should have blockers array with NOT_ELEVATED
-      const elevatedBlocker = result.blockers.find(b => b.code === "NOT_ELEVATED");
-      expect(elevatedBlocker).toBeDefined();
-      expect(elevatedBlocker?.code).toBe("NOT_ELEVATED");
-      expect(elevatedBlocker?.message).toContain("Administrator");
-    });
-
-    it("should include NSSM_NOT_FOUND blocker when NSSM is not available", async () => {
-      // Mock NSSM not found
-      mockAccess.mockRejectedValue(new Error("ENOENT"));
-
-      const result = await manager.precheckEnvironment();
-
-      // Should have blockers array with NSSM_NOT_FOUND
-      const nssmBlocker = result.blockers.find(b => b.code === "NSSM_NOT_FOUND");
-      expect(nssmBlocker).toBeDefined();
-      expect(nssmBlocker?.code).toBe("NSSM_NOT_FOUND");
-      expect(nssmBlocker?.message).toContain("NSSM");
-    });
-  });
-
   describe("schema_version and array structure verification", () => {
     it("should always have schema_version: '1.0' regardless of platform", async () => {
       // Test Linux
@@ -344,16 +233,6 @@ describe("precheck functionality", () => {
       const linuxResult = await linuxManager.precheckEnvironment();
       expect(linuxResult.schema_version).toBe("1.0");
       await linuxManager.dispose();
-
-      // Test Windows
-      mockPlatform.mockReturnValue("win32");
-      const windowsManager = new NssmServiceManager({
-        binDir: "C:\\test",
-        timeoutMs: 5000,
-      });
-      const windowsResult = await windowsManager.precheckEnvironment();
-      expect(windowsResult.schema_version).toBe("1.0");
-      await windowsManager.dispose();
 
       // Test Darwin
       mockPlatform.mockReturnValue("darwin");

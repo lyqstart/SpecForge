@@ -88,10 +88,10 @@ describe('ServiceError', () => {
 
   describe('ServiceError.toJSON()', () => {
     it('should serialize to JSON correctly', () => {
-      const error = createServiceError('SVC_NSSM_NOT_FOUND');
+      const error = createServiceError('SVC_PLATFORM_NOT_SUPPORTED', { platform: 'win32' });
       const json = error.toJSON();
 
-      expect(json.code).toBe('SVC_NSSM_NOT_FOUND');
+      expect(json.code).toBe('SVC_PLATFORM_NOT_SUPPORTED');
       expect(json.message).toBeDefined();
       expect(json.suggestion).toBeDefined();
       expect(json.exitCode).toBe(2);
@@ -182,8 +182,7 @@ describe('ServiceError', () => {
     const errorCodes = [
       'SVC_SYSTEMD_NOT_AVAILABLE',
       'SVC_LINGER_NOT_ENABLED',
-      'SVC_NSSM_NOT_FOUND',
-      'SVC_NOT_ELEVATED',
+      'SVC_PLATFORM_NOT_SUPPORTED',
       'SVC_BINARY_MISSING',
       'SVC_PORT_IN_USE',
       'SVC_OPENCODE_SERVER_BINARY_MISSING',
@@ -191,7 +190,6 @@ describe('ServiceError', () => {
       'SVC_GRACEFUL_TIMEOUT',
       'SVC_INSTALL_ROLLBACK_FAILED',
       'SVC_HEALTH_CHECK_FAILED',
-      'SVC_NSSM_REQUIRES_USER_PASSWORD',
       'SVC_AUTO_RECONNECT_GAVE_UP',
     ] as const;
 

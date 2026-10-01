@@ -6,12 +6,11 @@ Service Management subsystem for SpecForge V6 - OS service lifecycle management 
 
 This package provides cross-platform service management capabilities:
 - **Linux**: systemd --user unit management
-- **Windows**: NSSM (Non-Sucking Service Manager) integration
 
 ## Features
 
 - Service install/uninstall/start/stop/restart/status
-- Cross-platform abstraction (systemd/NSSM)
+- Linux systemd user-service abstraction
 - Service lifecycle orchestration with dependency management
 - Graceful shutdown handling
 - Environment pre-check before installation

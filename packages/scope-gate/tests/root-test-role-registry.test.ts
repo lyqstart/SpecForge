@@ -14,8 +14,8 @@ describe('root test role registry', () => {
     const tracked = listTrackedRootTests();
 
     expect(validateRootTestRoleRegistry(registry, tracked)).toEqual({
-      CURRENT_HERMETIC: 59,
-      CURRENT_ENVIRONMENTAL: 2,
+      CURRENT_HERMETIC: 58,
+      CURRENT_ENVIRONMENTAL: 1,
       MIGRATED_DUPLICATE: 14,
       HISTORICAL_EVIDENCE: 110,
     });
@@ -27,7 +27,6 @@ describe('root test role registry', () => {
     const selected = new Set(selectRootTests(registry, 'current'));
 
     expect(selected).toEqual(new Set(roles.CURRENT_HERMETIC));
-    expect(selected.has('tests/integration/service-management/windows-nssm-full-lifecycle.test.ts')).toBe(false);
     expect(selected.has('tests/e2e/daemon-wiring.test.ts')).toBe(false);
     expect(selected.has('tests/e2e/v5-cleanup-verification.test.ts')).toBe(false);
   });
@@ -44,9 +43,7 @@ describe('root test role registry', () => {
   it('selects only environmental tests compatible with the requested host', () => {
     const registry = loadRootTestRoleRegistry();
 
-    expect(selectRootTests(registry, 'environmental', 'win32')).toEqual([
-      'tests/integration/service-management/windows-nssm-full-lifecycle.test.ts',
-    ]);
+    expect(selectRootTests(registry, 'environmental', 'win32')).toEqual([]);
     expect(selectRootTests(registry, 'environmental', 'linux')).toEqual([
       'tests/integration/service-management/linux-systemd-full-lifecycle.test.ts',
     ]);

@@ -1,8 +1,7 @@
 /**
  * Unit Generator Module
  *
- * Generates systemd unit files and NSSM command sequences
- * for service management on Linux and Windows respectively.
+ * Generates systemd unit files for Linux user-service management.
  */
 
 export type { ServiceUnitGenerator } from "./service-unit-generator.js";

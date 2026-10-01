@@ -2,7 +2,7 @@
  * Service state enumeration - closed union type.
  *
  * States:
- * - uninstalled: Unit file / NSSM service does not exist
+ * - uninstalled: Unit file does not exist
  * - stopped: Registered, not running
  * - starting: Process spawned but not passed HealthCheck
  * - running: Process spawned + HealthCheck passed

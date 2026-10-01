@@ -11,10 +11,7 @@ import * as os from 'os';
 import * as path from 'path';
 import {
   ServiceLifecycleOrchestrator,
-  SystemdServiceManager,
-  NssmServiceManager,
 } from '@specforge/service-management';
-import type { ServiceManager } from '@specforge/service-management';
 import { ModeSwitch } from '../../mode-switch';
 import { toCliError } from '../../errors';
 import {
@@ -22,6 +19,7 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServiceOperationJsonPayload } from '@specforge/service-management';
+import { createServiceManager } from '../services/platform-service-manager';
 import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 /**
  * Get the binary directory path under the canonical SpecForge user root
@@ -60,20 +58,6 @@ function getOpenCodeServerServiceSpec(): {
   };
 }
 
-/**
- * Create service manager based on platform
- */
-function createServiceManager(): ServiceManager {
-  const platform = process.platform;
-  if (platform === 'win32') {
-    return new NssmServiceManager({
-      binDir: getBinDir(),
-    });
-  }
-  return new SystemdServiceManager({
-    unitDir: path.join(os.homedir(), '.config', 'systemd', 'user'),
-  });
-}
 
 /**
  * Handle opencode-server install-service command

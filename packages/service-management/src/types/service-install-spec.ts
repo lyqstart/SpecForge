@@ -1,6 +1,6 @@
 /**
  * Service installation specification.
- * Contains all configuration needed to install a service with systemd or NSSM.
+ * Contains all configuration needed to install a systemd user service.
  */
 export interface ServiceInstallSpec {
   /** Service name (OS-visible identifier, e.g., specforge-daemon) */

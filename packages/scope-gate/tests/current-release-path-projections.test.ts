@@ -28,7 +28,6 @@ describe('current-release path projections', () => {
     const currentConsumers = await Promise.all(
       [
         'tests/unit/installer/paths.test.ts',
-        'tests/integration/service-management/windows-nssm-full-lifecycle.test.ts',
         'tests/integration/service-management/precheck-blocking.test.ts',
       ].map((path) => readFile(resolve(ROOT, path), 'utf8')),
     );

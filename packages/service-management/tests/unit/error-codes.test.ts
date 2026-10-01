@@ -10,17 +10,16 @@ import {
 } from '../../src/errors/error-codes.js';
 
 describe('ErrorCode', () => {
-  it('should have exactly 13 error codes', () => {
+  it('should have exactly 11 error codes', () => {
     const codes = getAllErrorCodes();
-    expect(codes).toHaveLength(13);
+    expect(codes).toHaveLength(11);
   });
 
   it('should contain all required error codes', () => {
     const codes = getAllErrorCodes();
     expect(codes).toContain('SVC_SYSTEMD_NOT_AVAILABLE');
     expect(codes).toContain('SVC_LINGER_NOT_ENABLED');
-    expect(codes).toContain('SVC_NSSM_NOT_FOUND');
-    expect(codes).toContain('SVC_NOT_ELEVATED');
+    expect(codes).toContain('SVC_PLATFORM_NOT_SUPPORTED');
     expect(codes).toContain('SVC_BINARY_MISSING');
     expect(codes).toContain('SVC_PORT_IN_USE');
     expect(codes).toContain('SVC_OPENCODE_SERVER_BINARY_MISSING');
@@ -28,7 +27,6 @@ describe('ErrorCode', () => {
     expect(codes).toContain('SVC_GRACEFUL_TIMEOUT');
     expect(codes).toContain('SVC_INSTALL_ROLLBACK_FAILED');
     expect(codes).toContain('SVC_HEALTH_CHECK_FAILED');
-    expect(codes).toContain('SVC_NSSM_REQUIRES_USER_PASSWORD');
     expect(codes).toContain('SVC_AUTO_RECONNECT_GAVE_UP');
   });
 

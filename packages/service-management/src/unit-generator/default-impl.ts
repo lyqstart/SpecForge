@@ -1,14 +1,11 @@
 /**
  * Default ServiceUnitGenerator Implementation
  *
- * Generates:
- * - systemd unit files for Linux
- * - NSSM command sequences for Windows
+ * Generates systemd unit files for Linux.
  */
 
 import type { ServiceInstallSpec } from "../types/service-install-spec.js";
 import type { ServiceUnitMetadata } from "../types/service-unit-metadata.js";
-import type { NssmCommand } from "../types/nssm-command.js";
 import type { ServiceUnitGenerator } from "./service-unit-generator.js";
 
 /**
@@ -67,96 +64,6 @@ export class DefaultServiceUnitGenerator implements ServiceUnitGenerator {
     const installSection = "[Install]\nWantedBy=default.target";
 
     return [metadata, unitSection, serviceSection, installSection].join("\n");
-  }
-
-  /**
-   * Generate NSSM command sequence for Windows
-   */
-  generateNssmCommands(spec: ServiceInstallSpec, nssmExePath: string): NssmCommand[] {
-    const commands: NssmCommand[] = [];
-
-    // 1. Install the service
-    commands.push({
-      subcommand: "install",
-      args: [
-        spec.name,
-        spec.binaryPath,
-        ...spec.args,
-      ],
-      allowFailure: false, // install should succeed or fail clearly
-    });
-
-    // 2. Set AppDirectory
-    commands.push({
-      subcommand: "set",
-      args: ["AppDirectory", spec.workingDirectory],
-      allowFailure: true, // idempotent
-    });
-
-    // 3. Set AppEnvironmentExtra
-    const envEntries = Object.entries(spec.environment).map(
-      ([key, value]) => `${key}=${value}`
-    );
-    if (envEntries.length > 0) {
-      commands.push({
-        subcommand: "set",
-        args: ["AppEnvironmentExtra", ...envEntries],
-        allowFailure: true, // idempotent
-      });
-    }
-
-    // 4. Set Start SERVICE_AUTO_START
-    commands.push({
-      subcommand: "set",
-      args: ["Start", "SERVICE_AUTO_START"],
-      allowFailure: true, // idempotent
-    });
-
-    // 5. Set DependOnService
-    if (spec.dependsOn.length > 0) {
-      commands.push({
-        subcommand: "set",
-        args: ["DependOnService", ...spec.dependsOn],
-        allowFailure: true, // idempotent
-      });
-    }
-
-    // 6. Set AppStdout
-    commands.push({
-      subcommand: "set",
-      args: ["AppStdout", spec.stdoutLogPath],
-      allowFailure: true, // idempotent
-    });
-
-    // 7. Set AppStderr
-    commands.push({
-      subcommand: "set",
-      args: ["AppStderr", spec.stderrLogPath],
-      allowFailure: true, // idempotent
-    });
-
-    // 8. Set AppExit Default Restart
-    commands.push({
-      subcommand: "set",
-      args: ["AppExit", "Default", "Restart"],
-      allowFailure: true, // idempotent
-    });
-
-    // 9. Set AppRestartDelay 5000
-    commands.push({
-      subcommand: "set",
-      args: ["AppRestartDelay", "5000"],
-      allowFailure: true, // idempotent
-    });
-
-    // 10. Set AppStopMethodSkip 0
-    commands.push({
-      subcommand: "set",
-      args: ["AppStopMethodSkip", "0"],
-      allowFailure: true, // idempotent
-    });
-
-    return commands;
   }
 
   /**

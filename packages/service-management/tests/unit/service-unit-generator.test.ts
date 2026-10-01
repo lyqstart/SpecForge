@@ -3,7 +3,6 @@
  *
  * Tests cover:
  * - systemd unit file rendering (with metadata 6 fields, Wants=/After=, KillSignal, etc.)
- * - NSSM command sequence (each command has subcommand/args/allowFailure, dependency)
  * - parseMetadata in complete block, missing fields, corrupted block cases
  * - Idempotency (rendering twice produces byte-equal output)
  */
@@ -100,93 +99,6 @@ describe("ServiceUnitGenerator", () => {
       // Should not have any Environment= lines
       const serviceSection = output.split("[Service]")[1].split("[Install]")[0];
       expect(serviceSection).not.toContain("Environment=");
-    });
-  });
-
-  describe("generateNssmCommands", () => {
-    it("should generate complete NSSM command sequence", () => {
-      const commands = generator.generateNssmCommands(baseSpec, "C:\\specforge\\bin\\nssm.exe");
-
-      // Check we have all expected commands
-      expect(commands.length).toBeGreaterThanOrEqual(10);
-
-      // 1. Install command
-      const installCmd = commands.find(c => c.subcommand === "install");
-      expect(installCmd).toBeDefined();
-      expect(installCmd!.args).toContain("specforge-daemon");
-      expect(installCmd!.allowFailure).toBe(false);
-
-      // 2. AppDirectory
-      const appDirCmd = commands.find(c => c.args.includes("AppDirectory"));
-      expect(appDirCmd).toBeDefined();
-      expect(appDirCmd!.args).toContain("/home/user/.specforge");
-
-      // 3. AppEnvironmentExtra
-      const envCmd = commands.find(c => c.args.includes("AppEnvironmentExtra"));
-      expect(envCmd).toBeDefined();
-      expect(envCmd!.args).toContain("SPECFORGE_RUN_MODE=service");
-
-      // 4. Start SERVICE_AUTO_START
-      const startCmd = commands.find(c => c.args.includes("Start"));
-      expect(startCmd).toBeDefined();
-      expect(startCmd!.args).toContain("SERVICE_AUTO_START");
-
-      // 5. DependOnService
-      const depCmd = commands.find(c => c.args.includes("DependOnService"));
-      expect(depCmd).toBeDefined();
-      expect(depCmd!.args).toContain("opencode-server");
-
-      // 6. AppStdout
-      const stdoutCmd = commands.find(c => c.args.includes("AppStdout"));
-      expect(stdoutCmd).toBeDefined();
-      expect(stdoutCmd!.args).toContain("/home/user/.specforge/logs/specforge-daemon.log");
-
-      // 7. AppStderr
-      const stderrCmd = commands.find(c => c.args.includes("AppStderr"));
-      expect(stderrCmd).toBeDefined();
-      expect(stderrCmd!.args).toContain("/home/user/.specforge/logs/specforge-daemon.err");
-
-      // 8. AppExit Default Restart
-      const exitCmd = commands.find(c => c.args.includes("AppExit"));
-      expect(exitCmd).toBeDefined();
-      expect(exitCmd!.args).toContain("Default");
-      expect(exitCmd!.args).toContain("Restart");
-
-      // 9. AppRestartDelay
-      const delayCmd = commands.find(c => c.args.includes("AppRestartDelay"));
-      expect(delayCmd).toBeDefined();
-      expect(delayCmd!.args).toContain("5000");
-
-      // 10. AppStopMethodSkip
-      const stopMethodCmd = commands.find(c => c.args.includes("AppStopMethodSkip"));
-      expect(stopMethodCmd).toBeDefined();
-      expect(stopMethodCmd!.args).toContain("0");
-    });
-
-    it("should set allowFailure=true for idempotent commands", () => {
-      const commands = generator.generateNssmCommands(baseSpec, "C:\\specforge\\bin\\nssm.exe");
-
-      // All commands except install should allow failure
-      const nonInstallCommands = commands.filter(c => c.subcommand !== "install");
-      for (const cmd of nonInstallCommands) {
-        expect(cmd.allowFailure).toBe(true);
-      }
-    });
-
-    it("should handle spec with no dependencies", () => {
-      const specNoDeps = { ...baseSpec, dependsOn: [] };
-      const commands = generator.generateNssmCommands(specNoDeps, "C:\\specforge\\bin\\nssm.exe");
-
-      const depCmd = commands.find(c => c.args.includes("DependOnService"));
-      expect(depCmd).toBeUndefined();
-    });
-
-    it("should handle spec with no environment variables", () => {
-      const specNoEnv = { ...baseSpec, environment: {} };
-      const commands = generator.generateNssmCommands(specNoEnv, "C:\\specforge\\bin\\nssm.exe");
-
-      const envCmd = commands.find(c => c.args.includes("AppEnvironmentExtra"));
-      expect(envCmd).toBeUndefined();
     });
   });
 

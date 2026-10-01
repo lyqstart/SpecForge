@@ -30,6 +30,8 @@ export interface ServiceErrorContext {
   dependencyName?: string;
   /** Path to log files for debugging */
   logPath?: string;
+  /** Platform rejected by the service-management boundary */
+  platform?: string;
   /** Additional context specific to the error */
   details?: Record<string, unknown>;
 }
@@ -138,13 +140,9 @@ const ErrorMessages: Record<ErrorCode, { message: (ctx: ServiceErrorContext) => 
     message: () => 'linger is not enabled for the current user',
     suggestion: () => 'Run "loginctl enable-linger $USER" to enable user services to run after logout.',
   },
-  SVC_NSSM_NOT_FOUND: {
-    message: () => 'NSSM executable not found',
-    suggestion: () => 'NSSM (Non-Sucking Service Manager) is required for Windows service management. It should be installed at <OpenCode config>/sf-user/bin/nssm.exe.',
-  },
-  SVC_NOT_ELEVATED: {
-    message: () => 'Administrator privileges are required',
-    suggestion: () => 'Please run the command in an elevated PowerShell or Command Prompt (Run as Administrator).',
+  SVC_PLATFORM_NOT_SUPPORTED: {
+    message: (ctx) => `OS service management is not supported on platform: ${ctx.platform ?? 'unknown'}`,
+    suggestion: () => 'Current OS service registration supports Linux systemd user services only. Start the daemon as a direct process on Windows.',
   },
   SVC_BINARY_MISSING: {
     message: (ctx) => `Service binary not found: ${ctx.binaryPath ?? 'unknown'}`,
@@ -175,10 +173,6 @@ const ErrorMessages: Record<ErrorCode, { message: (ctx: ServiceErrorContext) => 
   SVC_HEALTH_CHECK_FAILED: {
     message: (ctx) => `Health check failed for service: ${ctx.serviceName ?? 'unknown'}`,
     suggestion: (ctx) => `Service did not become healthy within the expected time. Check logs at: ${ctx.logPath ?? '<OpenCode config>/sf-user/logs/<service>.err'}`,
-  },
-  SVC_NSSM_REQUIRES_USER_PASSWORD: {
-    message: () => 'NSSM requires user password to run service as current user',
-    suggestion: () => 'NSSM will run the service under LocalSystem account. To run as your user, provide credentials when prompted or configure manually.',
   },
   SVC_AUTO_RECONNECT_GAVE_UP: {
     message: () => 'Plugin auto-reconnect gave up after cumulative timeout',

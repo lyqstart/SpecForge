@@ -29668,12 +29668,94 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1658_STATUS=CLOSED_WITH_VITEST4_RERUN
 - REPEATED_ERROR_CHECK=PASS
 
+### ERR-1659：把既有 NSSM 实现与环境测试错误上推为产品供应链决定
+
+- **事实证据**：真实前检证明当前 Windows 代码和环境测试依赖 `NssmServiceManager`，同时 release manifest、本机正式 `sf-user/bin` 与退役 `~/.specforge` 均没有 `nssm.exe`。上一轮据此建议把 NSSM 2.24-101 纳入 release；产品负责人追问后复核 SPS 与 Authority Registry，确认它们只规定 daemon 生命周期属于用户、CLI、OS/service manager 或受控部署，并未指定 NSSM。产品负责人随后明确裁决删除 NSSM 相关代码。
+- **影响**：错误建议尚未进入产品规格、代码、release、真实安装或服务；只在系统临时目录下载官方 ZIP 做过只读取证，未复制进仓库。若未纠正，会由第五至第六层实现/测试反向创造第一至第二层产品决定，并引入不必要的第三方二进制供应链。
+- **根因**：`CONFIRMED` 为把“现有实现选择”误当成“产品必须具备的部署合同”，没有在提出供应方案前先证明 SPS 存在 NSSM 产品要求。
+- **纠正与防复发**：产品依赖新增必须先引用 SPS 的明确产品行为；代码、测试和错误文案只能证明实现现状。若 SPS 仅要求抽象能力，具体第三方依赖必须报告为 `INSUFFICIENT_EVIDENCE` 并取得产品负责人裁决，不得默认补齐既有实现。当前按产品裁决先更新 SPS/Authority Registry，再删除 NSSM 生产代码、CLI 消费者和当前测试消费者，历史 ADR/ERR/审计证据保留。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-015、EXP-016、EXP-017、EXP-020、EXP-022、EXP-026、EXP-040、EXP-044、EXP-060、EXP-074。
+- ERR1659_STATUS=CLOSED_WITH_PRODUCT_DECISION_AND_NSSM_CONSUMER_REMOVAL
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1660：包级定向测试未先固定 Bun 临时目录
+
+- **事实证据**：在仓库根执行 `bun x --cwd packages/service-management vitest run ...` 时，Bun 在测试收集前以 `EPERM accessing temporary directory` 退出，并明确要求设置 `BUN_TMPDIR` 或 `BUN_INSTALL`。随后把 `TEMP`、`TMP`、`BUN_TMPDIR` 全部固定到仓库内 `.tmp/bun` 后重试，`bun x` 仍以同一错误在收集前退出。
+- **影响**：该次命令没有运行 service-management 包级测试；此前 TypeScript 构建和根配置实际收集到的 3 个测试文件结果不受影响。
+- **根因**：首次失败可确认未复用仓库内临时目录设置；第二次失败进一步确认 `bun x` 自身仍访问了受限的安装/缓存位置，单独设置三个临时目录不足以使该调用方式可用。
+- **纠正与防复发**：不再通过 `bun x` 启动已安装工具；改为从各 package 工作目录直接调用仓库 `node_modules/.bin/vitest.exe`。后续 Bun 构建和正式根编排仍复用仓库内临时目录环境。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-020、EXP-055、EXP-060。
+- ERR1660_STATUS=CLOSED_WITH_DIRECT_VITEST_AND_FORMAL_RUNNER_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1661：删除错误码后遗漏固定总数断言
+
+- **事实证据**：service-management 定向测试实际运行 8 个文件、92 个测试，唯一失败为 `error-codes.test.ts` 仍断言 13 个错误码；当前已删除两个 NSSM 专属错误码并新增一个通用平台不支持错误码，实际闭合枚举为 11 个。
+- **影响**：生产构建已通过，错误码成员断言均通过；仅固定总数测试与当前枚举不同步。
+- **根因**：`CONFIRMED` 为修改成员消费者时遗漏了同文件中的聚合数量消费者。
+- **纠正与防复发**：把总数更新为 11，并重跑同一完整定向集合；后续删除闭合枚举成员时同时搜索成员名与 `toHaveLength` 等聚合约束。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-055、EXP-060、EXP-074。
+- ERR1661_STATUS=CLOSED_WITH_ENUM_COUNT_UPDATE_AND_92_TEST_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1662：删除根测试后在索引未同步状态运行角色注册验证
+
+- **事实证据**：Scope Gate 定向测试 2 个文件、7 个测试中 6 个通过；唯一失败由 `listTrackedRootTests()` 的 `git ls-files` 结果仍包含工作树中已删除但尚未暂存的 `cross-platform-equivalence.test.ts` 和 `windows-nssm-full-lifecycle.test.ts` 引起，注册表已正确移除二者。
+- **影响**：角色注册验证在 Git 索引同步前报告两个 `missing`；另一项当前路径测试通过，service-management 92/92 与 CLI 48/48 不受影响。
+- **根因**：`CONFIRMED` 为验证器以 Git 索引而非工作树存在性定义“tracked”，而本轮在暂存删除前运行了验证。
+- **纠正与防复发**：仅暂存这两个明确删除的测试文件以同步索引，再原样重跑 Scope Gate；不得借此暂存用户备份或尚未复核的其他改动。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-020、EXP-030、EXP-055、EXP-060、EXP-074。
+- ERR1662_STATUS=CLOSED_WITH_INDEX_SYNC_AND_SCOPE_GATE_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1663：索引写入被沙箱拒绝后仍继续执行依赖该前置条件的测试
+
+- **事实证据**：从 package 工作目录执行暂存与测试组合命令时，`git add` 因无法创建 `.git/index.lock` 返回 `Permission denied`；命令仍继续运行 Scope Gate，因索引未变化而重复报告 ERR-1662 的两个 `missing`。
+- **影响**：没有文件被意外暂存，测试结果没有新增产品缺陷证据；浪费了一次重复验证并延迟闭环。
+- **根因**：`CONFIRMED` 为 Git 索引写入需要沙箱外权限，同时组合命令没有 fail-fast，错误地让依赖前置状态的后续步骤继续执行。
+- **纠正与防复发**：从仓库根对四个明确删除路径单独执行经批准的 `git add`，确认索引状态成功后再发起独立测试命令；存在状态依赖的命令不得用会在前项失败后继续的分隔方式组合。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-020、EXP-030、EXP-055、EXP-060、EXP-074。
+- ERR1663_STATUS=CLOSED_WITH_EXPLICIT_INDEX_SYNC_AND_INDEPENDENT_RERUN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1664：多文件清理补丁包含空 hunk
+
+- **事实证据**：用于删除 CLI 未使用导入的 `apply_patch` 在应用前返回 `invalid hunk`，指出文件切换标记前的 hunk 没有任何带 `+/-/空格` 前缀的内容；检查状态确认补丁未应用。
+- **影响**：没有文件被部分修改；仅未使用导入清理尚未完成。
+- **根因**：`CONFIRMED` 为把只删除文件头导入的多个更新段写成了空 `@@` hunk。
+- **纠正与防复发**：按文件组拆分补丁，每个 hunk 均包含明确上下文和删除行，再复核源码残留。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-020、EXP-055、EXP-060。
+- ERR1664_STATUS=CLOSED_WITH_CONTEXTUAL_PATCH_AND_SOURCE_RESCAN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1665：并行运行三个完整包回归引入宿主资源与既有 CLI 基线噪声
+
+- **事实证据**：同时运行 service-management、CLI、Scope Gate 完整包测试时，Scope Gate 30 files / 134 tests 全通过；service-management 15 files 中仅 `systemd-service-manager.test.ts` 3 项在 `os.userInfo()` 抛出 `uv_os_get_passwd ENOMEM`（与既有 ERR-1078、ERR-1478 相同）；CLI 39 files 中 3 项为既有 Vitest 4 `vi.fn(() => mockClient)` 不可作为构造器，另 1 项性能断言在并行负载下得到 22.9ms、阈值为 10ms。
+- **影响**：受本次 NSSM 删除直接影响的 service-management 8 files / 92 tests、CLI services 48 tests、Scope Gate 134 tests 已通过；扩大包级结果尚不能作为完整绿色证据。
+- **根因**：`CONFIRMED`：service-management 三项是已登记的沙箱 `os.userInfo()` 环境故障；CLI 构造器三项与本次变更文件无调用关系，并在串行单文件复跑中稳定为 11 pass / 3 fail。CLI 性能项串行单文件复跑为 21/21，通过后确认先前 22.9ms 超时来自并行竞争噪声。
+- **纠正与防复发**：扩大回归改为串行运行；先定向复跑失败文件区分稳定基线与并行噪声，再使用仓库正式根编排器给出最终结果，不修改无关生产代码或放宽阈值。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-015、EXP-020、EXP-026、EXP-055、EXP-060、EXP-074。
+- ERR1665_STATUS=CLOSED_WITH_FORMAL_SEQUENTIAL_FULL_SUITE_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1666：在预提交脏工作区运行会 fail closed 的会话恢复入口
+
+- **事实证据**：`node scripts/project-session-bootstrap.mjs` 正确解析了更新后的单一项目状态块及全部必填字段，但因本轮受控改动尚未提交而报告 `WORKTREE_STATUS=DIRTY`，同时沙箱网络无法连接 GitHub 导致 `REMOTE_HEAD=NOT_CHECKED`，最终按设计返回 `BOOTSTRAP_STATUS=BLOCKED` 与 exit 1。
+- **影响**：状态入口的结构与内容已获得直接解析证据；该命令没有修改仓库。非零退出不能作为 NSSM 移除或产品运行缺陷证据，也不能替代提交后的干净工作区恢复验证。
+- **根因**：`CONFIRMED` 为在必然脏的预提交阶段调用了面向新会话写入就绪检查的 fail-closed 入口，并处于无法访问远端的沙箱网络环境。
+- **纠正与防复发**：预提交阶段只用定向契约测试验证状态文档结构；bootstrap 的写入就绪结论在提交并推送后的干净工作区重新获取。若需要远端一致性，使用获准的 Git 远端只读命令，不把网络隔离误报为产品缺陷。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-020、EXP-030、EXP-055、EXP-060、EXP-074。
+- ERR1666_STATUS=RECORDED_PENDING_POST_PUSH_CLEAN_BOOTSTRAP
+- REPEATED_ERROR_CHECK=PASS
+
 ROOT_TEST_ROLE_CLASSIFICATION_CLOSURE=CONFIRMED
-ROOT_TEST_ROLE_COUNTS=CURRENT_HERMETIC:59;CURRENT_ENVIRONMENTAL:2;MIGRATED_DUPLICATE:14;HISTORICAL_EVIDENCE:110
-FORMAL_ROOT_TEST_RESULT=59_FILES_765_TESTS_PASS
+ROOT_TEST_ROLE_COUNTS=CURRENT_HERMETIC:58;CURRENT_ENVIRONMENTAL:1;MIGRATED_DUPLICATE:14;HISTORICAL_EVIDENCE:110
+FORMAL_ROOT_TEST_RESULT=58_FILES_757_TESTS_PASS
 FORMAL_FULL_TEST_RESULT=PASS
 FULL_WORKSPACE_BUILD_RESULT=PASS
-CURRENT_RELEASE_PRECHECK_RESULT=PASS
+CURRENT_RELEASE_RUNTIME_ARTIFACTS_RESULT=PASS_WIN32_X64
+CURRENT_RELEASE_PRECHECK_RESULT=PASS_main-aeb56603-remove-nssm-prepush
+ACTIVE_NSSM_SOURCE_TEST_BINARY_RESIDUE_SCAN=PASS_ZERO_MATCHES
 FULL_LINT_RESULT=KNOWN_PREEXISTING_BASELINE_FAILURE_ERR1653
 ERR1648_STATUS=CLOSED_WITH_PATH_LEVEL_ROLE_REGISTRY
 ERR1651_STATUS=CLOSED_WITH_VALID_DATE_ARBITRARIES

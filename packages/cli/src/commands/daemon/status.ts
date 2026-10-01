@@ -6,18 +6,12 @@
  *
  * @packageDocumentation
  */
-import * as os from 'os';
-import * as path from 'path';
 import * as fs from 'fs';
 import {
   ServiceLifecycleOrchestrator,
-  SystemdServiceManager,
-  NssmServiceManager,
 } from '@specforge/service-management';
-import type { ServiceManager } from '@specforge/service-management';
 import {
   resolveSpecForgeHandshakePath,
-  resolveSpecForgeUserPath,
 } from '@specforge/types/user-level-paths';
 import { ModeSwitch } from '../../mode-switch';
 import { toCliError } from '../../errors';
@@ -26,28 +20,10 @@ import {
   sanitizeForJson,
 } from '../services/json-payload';
 import type { ServicesStatusJsonPayload } from '@specforge/service-management';
-/** Canonical user-level binary directory. */
-function getBinDir(): string {
-  return resolveSpecForgeUserPath('bin');
-}
-
+import { createServiceManager } from '../services/platform-service-manager';
 /** Canonical daemon handshake file path. */
 function getHandshakePath(): string {
   return resolveSpecForgeHandshakePath();
-}
-/**
- * Create service manager based on platform
- */
-function createServiceManager(): ServiceManager {
-  const platform = process.platform;
-  if (platform === 'win32') {
-    return new NssmServiceManager({
-      binDir: getBinDir(),
-    });
-  }
-  return new SystemdServiceManager({
-    unitDir: path.join(os.homedir(), '.config', 'systemd', 'user'),
-  });
 }
 /** Get state icon for display. */
 function getStateIcon(state: string): string {

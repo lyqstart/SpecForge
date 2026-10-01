@@ -2,9 +2,9 @@
  * Error Code to Exit Code Mapping
  *
  * Maps service management error codes to process exit codes:
- * - 2: Environment/Input error (blockers like missing systemd, NSSM not found, etc.)
+ * - 2: Environment/Input error (blockers like an unsupported platform or missing systemd)
  * - 1: Business failure (service failed to start, timeout, health check failed, etc.)
- * - 0: Success / Warning-only (linger not enabled, NSSM fallback warning, etc.)
+ * - 0: Success / Warning-only (for example, linger not enabled)
  */
 
 import type { ErrorCode } from './error-codes.js';
@@ -47,8 +47,7 @@ export const ExitCodeMap: ReadonlyMap<ErrorCode, ExitCode> = new Map([
   // These are blockers that prevent the operation from proceeding
   ['SVC_SYSTEMD_NOT_AVAILABLE', 2],
   ['SVC_LINGER_NOT_ENABLED', 0], // This is a warning, not a blocker
-  ['SVC_NSSM_NOT_FOUND', 2],
-  ['SVC_NOT_ELEVATED', 2],
+  ['SVC_PLATFORM_NOT_SUPPORTED', 2],
   ['SVC_BINARY_MISSING', 2],
   ['SVC_PORT_IN_USE', 2],
   ['SVC_OPENCODE_SERVER_BINARY_MISSING', 2],
@@ -56,7 +55,6 @@ export const ExitCodeMap: ReadonlyMap<ErrorCode, ExitCode> = new Map([
   ['SVC_GRACEFUL_TIMEOUT', 1], // Business failure - timeout
   ['SVC_INSTALL_ROLLBACK_FAILED', 1], // Business failure - rollback error
   ['SVC_HEALTH_CHECK_FAILED', 1], // Business failure - health check
-  ['SVC_NSSM_REQUIRES_USER_PASSWORD', 0], // Warning - fallback to LocalSystem
   ['SVC_AUTO_RECONNECT_GAVE_UP', 1], // Business failure - plugin reconnect
 ] as const);
 

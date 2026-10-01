@@ -129,7 +129,7 @@ export class GracefulShutdownHandler implements AsyncDisposable {
       this._signalHandlers.set('SIGTERM', handleSignal);
       this._signalHandlers.set('SIGINT', handleSignal);
     } else {
-      // On Windows, we handle SIGTERM as well since NSSM can send it
+      // Handle SIGTERM consistently when the host process forwards it.
       process.on('SIGTERM', () => handleSignal('SIGTERM'));
       this._signalHandlers.set('SIGTERM', handleSignal);
     }

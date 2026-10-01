@@ -16,9 +16,6 @@ export type { Platform, PrecheckIssueCode, PrecheckIssue, EnvironmentPrecheck } 
 // Orchestration
 export type { OrchestrationResult, serializeServiceStatusMap, deserializeServiceStatusMap } from "./orchestration-result.js";
 
-// NSSM
-export type { NssmCommand } from "./nssm-command.js";
-
 // Shutdown
 export type { ShutdownPriority, ShutdownTask, ShutdownTaskEntry } from "./shutdown.js";
 

@@ -15,7 +15,6 @@
         "tests/helpers/generators.test.ts",
         "tests/integration/cli-daemon-integration.test.ts",
         "tests/integration/cli_flow.test.ts",
-        "tests/integration/service-management/cross-platform-equivalence.test.ts",
         "tests/integration/service-management/dependency-order-real.test.ts",
         "tests/integration/service-management/graceful-shutdown-real.test.ts",
         "tests/integration/service-management/precheck-blocking.test.ts",
@@ -76,11 +75,6 @@
           "path": "tests/integration/service-management/linux-systemd-full-lifecycle.test.ts",
           "platform": "linux",
           "requirements": "Linux host with systemd user-service lifecycle support."
-        },
-        {
-          "path": "tests/integration/service-management/windows-nssm-full-lifecycle.test.ts",
-          "platform": "win32",
-          "requirements": "Windows host with NSSM installed and permission to exercise the service lifecycle."
         }
       ]
     },

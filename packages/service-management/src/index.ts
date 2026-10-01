@@ -16,7 +16,6 @@ export type {
   EnvironmentPrecheck,
   PrecheckIssue,
   OrchestrationResult,
-  NssmCommand,
   ShutdownTask,
   ShutdownTaskEntry,
   HandshakeFile,

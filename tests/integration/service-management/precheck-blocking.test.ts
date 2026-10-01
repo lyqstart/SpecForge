@@ -6,13 +6,11 @@
  *
  * Scenarios:
  *   1. Missing systemd (SYSTEMD_NOT_AVAILABLE) → exit code 2
- *   2. Missing NSSM (NSSM_NOT_FOUND) → exit code 2
- *   3. Not elevated (NOT_ELEVATED) → exit code 2
- *   4. Darwin platform (PLATFORM_NOT_SUPPORTED) → exit code 2
- *   5. Warnings-only (LINGER_NOT_ENABLED) → exit code 0, install proceeds
- *   6. No blockers → install proceeds normally
- *   7. schema_version is always "1.0" in precheck results
- *   8. Mixed blockers and warnings categorization
+ *   2. Unsupported platform (PLATFORM_NOT_SUPPORTED) → exit code 2
+ *   3. Warnings-only (LINGER_NOT_ENABLED) → exit code 0, install proceeds
+ *   4. No blockers → install proceeds normally
+ *   5. schema_version is always "1.0" in precheck results
+ *   6. Mixed blockers and warnings categorization
  *
  * Validates Requirements 1.4, 7.1, 7.2, 7.4, 7.5, 7.6
  */
@@ -68,29 +66,6 @@ function createCleanLinuxPrecheck(): EnvironmentPrecheck {
     systemdVersion: '256',
     lingerEnabled: true,
     systemdUserUnitDir: '/home/test/.config/systemd/user',
-    isElevated: null,
-    nssmAvailable: null,
-    nssmExePath: null,
-    nssmVersion: null,
-    currentUserName: 'testuser',
-    blockers: [],
-    warnings: [],
-  };
-}
-
-/** Build a clean Windows precheck result with no blockers or warnings. */
-function createCleanWin32Precheck(): EnvironmentPrecheck {
-  return {
-    schema_version: '1.0',
-    platform: 'win32',
-    systemdAvailable: null,
-    systemdVersion: null,
-    lingerEnabled: null,
-    systemdUserUnitDir: null,
-    isElevated: true,
-    nssmAvailable: true,
-    nssmExePath: 'C:\\Users\\test\\.specforge\\bin\\nssm.exe',
-    nssmVersion: '2.24',
     currentUserName: 'testuser',
     blockers: [],
     warnings: [],
@@ -190,74 +165,6 @@ describe('Precheck blocking', () => {
   });
 
   // =========================================================================
-  // 2. Missing NSSM → blockers → exit code 2
-  // =========================================================================
-
-  it('blocks install when NSSM_NOT_FOUND blocker is present', async () => {
-    const blocker: PrecheckIssue = {
-      code: 'NSSM_NOT_FOUND',
-      message: 'NSSM executable not found',
-      suggestion: 'NSSM (Non-Sucking Service Manager) is required for Windows service management.',
-    };
-    const precheck: EnvironmentPrecheck = {
-      ...createCleanWin32Precheck(),
-      nssmAvailable: false,
-      nssmExePath: null,
-      nssmVersion: null,
-      blockers: [blocker],
-    };
-
-    const manager = createMockManagerWithPrecheck(precheck);
-    const orchestrator = createOrchestrator(manager);
-
-    const result = await manager.precheckEnvironment();
-
-    expect(result.blockers).toHaveLength(1);
-    expect(result.blockers[0].code).toBe('NSSM_NOT_FOUND');
-
-    const exitCode = determineExitCodeFromPrecheck(result);
-    expect(exitCode).toBe(2);
-
-    expect(getExitCode(ErrorCode.SVC_NSSM_NOT_FOUND)).toBe(2);
-    expect(isBlockingError(ErrorCode.SVC_NSSM_NOT_FOUND)).toBe(true);
-
-    expect(manager.install).not.toHaveBeenCalled();
-  });
-
-  // =========================================================================
-  // 3. Not elevated → blockers → exit code 2
-  // =========================================================================
-
-  it('blocks install when NOT_ELEVATED blocker is present', async () => {
-    const blocker: PrecheckIssue = {
-      code: 'NOT_ELEVATED',
-      message: 'Administrator privileges are required for service installation',
-      suggestion: 'Please run the command in an elevated PowerShell or Command Prompt.',
-    };
-    const precheck: EnvironmentPrecheck = {
-      ...createCleanWin32Precheck(),
-      isElevated: false,
-      blockers: [blocker],
-    };
-
-    const manager = createMockManagerWithPrecheck(precheck);
-    const orchestrator = createOrchestrator(manager);
-
-    const result = await manager.precheckEnvironment();
-
-    expect(result.blockers).toHaveLength(1);
-    expect(result.blockers[0].code).toBe('NOT_ELEVATED');
-
-    const exitCode = determineExitCodeFromPrecheck(result);
-    expect(exitCode).toBe(2);
-
-    expect(getExitCode(ErrorCode.SVC_NOT_ELEVATED)).toBe(2);
-    expect(isBlockingError(ErrorCode.SVC_NOT_ELEVATED)).toBe(true);
-
-    expect(manager.install).not.toHaveBeenCalled();
-  });
-
-  // =========================================================================
   // 4. Darwin platform → PLATFORM_NOT_SUPPORTED blocker → exit code 2
   // =========================================================================
 
@@ -266,19 +173,15 @@ describe('Precheck blocking', () => {
     const blocker: PrecheckIssue = {
       code: 'PLATFORM_NOT_SUPPORTED',
       message: 'macOS (darwin) is not supported for service management',
-      suggestion: 'Service management is only supported on Linux (systemd) and Windows (NSSM).',
+      suggestion: 'OS service management is supported on Linux systemd only.',
     };
     const precheck: EnvironmentPrecheck = {
       schema_version: '1.0',
-      platform: 'linux', // Platform type only allows "linux" | "win32", but the blocker code is PLATFORM_NOT_SUPPORTED
+      platform: 'linux',
       systemdAvailable: null,
       systemdVersion: null,
       lingerEnabled: null,
       systemdUserUnitDir: null,
-      isElevated: null,
-      nssmAvailable: null,
-      nssmExePath: null,
-      nssmVersion: null,
       currentUserName: null,
       blockers: [blocker],
       warnings: [],
@@ -375,10 +278,6 @@ describe('Precheck blocking', () => {
     const linuxPrecheck = createCleanLinuxPrecheck();
     expect(linuxPrecheck.schema_version).toBe('1.0');
 
-    // Windows precheck
-    const win32Precheck = createCleanWin32Precheck();
-    expect(win32Precheck.schema_version).toBe('1.0');
-
     // Darwin (unsupported) precheck
     const darwinPrecheck: EnvironmentPrecheck = {
       schema_version: '1.0',
@@ -387,12 +286,8 @@ describe('Precheck blocking', () => {
       systemdVersion: null,
       lingerEnabled: null,
       systemdUserUnitDir: null,
-      isElevated: null,
-      nssmAvailable: null,
-      nssmExePath: null,
-      nssmVersion: null,
       currentUserName: null,
-      blockers: [{ code: 'PLATFORM_NOT_SUPPORTED', message: 'Not supported', suggestion: 'Use Linux or Windows' }],
+      blockers: [{ code: 'PLATFORM_NOT_SUPPORTED', message: 'Not supported', suggestion: 'Use Linux systemd' }],
       warnings: [],
     };
     expect(darwinPrecheck.schema_version).toBe('1.0');
@@ -475,8 +370,7 @@ describe('Precheck blocking', () => {
   it('maps all environment error codes to exit code 2', () => {
     const blockingCodes: ErrorCode[] = [
       ErrorCode.SVC_SYSTEMD_NOT_AVAILABLE,
-      ErrorCode.SVC_NSSM_NOT_FOUND,
-      ErrorCode.SVC_NOT_ELEVATED,
+      ErrorCode.SVC_PLATFORM_NOT_SUPPORTED,
       ErrorCode.SVC_BINARY_MISSING,
       ErrorCode.SVC_PORT_IN_USE,
       ErrorCode.SVC_OPENCODE_SERVER_BINARY_MISSING,
@@ -494,47 +388,5 @@ describe('Precheck blocking', () => {
 
   it('maps warning-only error codes to exit code 0', () => {
     expect(getExitCode(ErrorCode.SVC_LINGER_NOT_ENABLED)).toBe(0);
-    expect(getExitCode(ErrorCode.SVC_NSSM_REQUIRES_USER_PASSWORD)).toBe(0);
-  });
-
-  // =========================================================================
-  // 11. Multiple blockers combined (NSSM + not elevated)
-  // =========================================================================
-
-  it('blocks install when multiple blockers are present (NSSM + not elevated)', async () => {
-    const blockers: PrecheckIssue[] = [
-      {
-        code: 'NSSM_NOT_FOUND',
-        message: 'NSSM executable not found',
-        suggestion: 'Install NSSM to <OpenCode config>/sf-user/bin/nssm.exe.',
-      },
-      {
-        code: 'NOT_ELEVATED',
-        message: 'Administrator privileges required',
-        suggestion: 'Run as Administrator.',
-      },
-    ];
-    const precheck: EnvironmentPrecheck = {
-      ...createCleanWin32Precheck(),
-      nssmAvailable: false,
-      nssmExePath: null,
-      isElevated: false,
-      blockers,
-      warnings: [],
-    };
-
-    const manager = createMockManagerWithPrecheck(precheck);
-    const orchestrator = createOrchestrator(manager);
-
-    const result = await manager.precheckEnvironment();
-
-    expect(result.blockers).toHaveLength(2);
-    expect(result.blockers.map(b => b.code)).toContain('NSSM_NOT_FOUND');
-    expect(result.blockers.map(b => b.code)).toContain('NOT_ELEVATED');
-
-    const exitCode = determineExitCodeFromPrecheck(result);
-    expect(exitCode).toBe(2);
-
-    expect(manager.install).not.toHaveBeenCalled();
   });
 });
