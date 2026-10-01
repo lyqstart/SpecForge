@@ -24,7 +24,7 @@ const ctxWithWI = (role: string, extra?: Partial<WriteGuardContext>): WriteGuard
   callerRole: role as WriteGuardContext['callerRole'],
   workItem: {
     work_item_id: 'WI-TEST',
-    status: 'verification_done',
+    status: 'implementation_running',
     code_change_allowed: true,
     allowed_write_files: [
       { path: 'src/test.ts', operation: 'modify' },

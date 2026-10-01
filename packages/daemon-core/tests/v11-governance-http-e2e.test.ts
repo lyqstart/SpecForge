@@ -75,6 +75,7 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
   let port: number;
   const token = `test-gov-e2e-${Date.now()}`;
   let tempDir: string;
+  let httpTestState = 'implementation_ready';
   const workItemId = 'WI-0001';
 
   beforeAll(async () => {
@@ -94,7 +95,6 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     await git(tempDir, ['switch', '-c', 'feature/work-item-wi-0001']);
 
     // Create a real ToolDispatcher with real handlers
-    let httpTestState = 'verification_done';
     const mockProjectManager = {
       getProjectStateManager: async () => ({
         rebuildFromEventsFile: async () => {},
@@ -316,6 +316,9 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     };
     _closure.provenance = await captureSemanticClosureProvenance({ workItemDir: wiDir, source: 'test_fixture', manifest: _closure as any });
     await fs.writeFile(path.join(wiDir, '.semantic_closure.json'), JSON.stringify(_closure, null, 2));
+
+    // The implementation write phase is complete and its evidence has been verified.
+    httpTestState = 'verification_done';
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // Step 6: Execute close_gate via HTTP (tool/invoke)

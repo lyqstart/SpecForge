@@ -2164,6 +2164,7 @@ export class HTTPServer {
               work_item_id: dir,
               status: currentState,
               code_change_allowed: wi.code_change_allowed === true,
+              code_permission_revoked: wi.code_permission_revoked === true,
               allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files as any : [],
               workflow_path: typeof wi.workflow_path === 'string' ? wi.workflow_path : null,
             };

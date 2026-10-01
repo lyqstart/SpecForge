@@ -110,6 +110,49 @@ describe('canonical write decision', () => {
     });
   });
 
+  it('requires authoritative implementation_running state for code writes', () => {
+    expect(decide('src/app.ts', 'modify', {
+      workItem: { ...baseContext.workItem!, status: 'implementation_ready' },
+    })).toEqual({
+      allowed: false,
+      violations: ['write requires implementation_running state: current=implementation_ready'],
+    });
+
+    expect(decide('src/app.ts', 'modify', {
+      workItem: { ...baseContext.workItem!, status: '' },
+    })).toEqual({
+      allowed: false,
+      violations: ['authoritative runtime state unavailable; write denied'],
+    });
+  });
+
+  it('allows only explicit in-scope directory preparation', () => {
+    expect(decideWritePermission(baseContext, 'src', 'create', { kind: 'directory' })).toEqual({
+      allowed: true,
+      violations: [],
+    });
+
+    expect(decideWritePermission(baseContext, 'other', 'create', { kind: 'directory' })).toEqual({
+      allowed: false,
+      violations: ['directory preparation not in allowed_write_files scope: other'],
+    });
+
+    expect(decide('src', 'create')).toEqual({
+      allowed: false,
+      violations: ['file+operation not in allowed_write_files: src (create)'],
+    });
+  });
+
+  it('denies directory preparation after code permission is revoked', () => {
+    expect(decideWritePermission({
+      ...baseContext,
+      workItem: { ...baseContext.workItem!, code_permission_revoked: true },
+    }, 'src', 'create', { kind: 'directory' })).toEqual({
+      allowed: false,
+      violations: ['code permission revoked, cannot write: src'],
+    });
+  });
+
   it('preserves protected-file RBAC decisions', () => {
     expect(decide('.specforge/specs/WI-TEST/requirements.md', 'modify', {
       enableRBAC: true,

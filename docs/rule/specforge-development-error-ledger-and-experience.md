@@ -29326,3 +29326,73 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1624_STATUS=CLOSED_WITH_CONSUMER_CONTRACT_CANDIDATE_ID
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1624_RELEASE_CANDIDATE_ID_FORMAT:END -->
+
+### ERR-1625：Permission Engine 调查使用了未经枚举的猜测类型文件路径
+
+- **事实证据**：本轮只读调查把 `packages/permission-engine/src/types.ts` 作为字面路径传给 `Get-Content`，PowerShell 返回文件不存在；随后从仓库根执行 `rg --files packages/permission-engine/src`，确认真实类型入口是 `packages/permission-engine/src/types/index.ts`，写入决策类型当前直接定义在 `write-decision.ts`。同一批命令中的其他精确文件已读取，但不能替代该失败路径的证据。
+- **影响**：第一次类型所有权调查不完整；在读取真实入口并重新核对导出、生产者和消费者前，不得冻结实现方案或修改产品代码。
+- **根因**：`CONFIRMED` 为根据常见目录布局猜测文件名，没有先枚举当前 HEAD 的真实路径，重复了 ERR-1617 已记录的路径记忆问题。
+- **纠正与防复发**：源码目录首次取证必须先用 `rg --files <精确目录>` 枚举，再把返回的精确路径交给读取命令；不存在的候选路径不得与其他读取合并后被后续成功掩盖。本轮先登记错误，再读取真实类型入口与 package export。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065。
+- ERR1625_STATUS=CLOSED_WITH_CURRENT_HEAD_SOURCE_ENUMERATION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1626：Write Guard 取证再次把通配符放入 Windows 字面路径参数
+
+- **事实证据**：为检索 `allowed_write_files` 的 metadata owner，本轮把 `packages/daemon-core/src/tools/lib/work-item-metadata*` 作为 `rg` 路径参数，Windows 返回 OS error 123；同一命令中的精确 `packages/types/src`、handler 与测试读取有有效输出，但 wildcard 目标没有完成取证。
+- **影响**：Work Item metadata producer/normalizer 消费链尚未查全，当前不得冻结 canonical directory-preparation 方案或修改产品代码。
+- **根因**：`CONFIRMED` 为再次违反 ERR-1616/EXP-020 已建立的 Windows 路径规则：把 glob 当成文件系统路径，而不是先枚举真实文件或使用 `--glob`。
+- **纠正与防复发**：立即停止产品修改；完整重读经验文件第三、第四部分；从仓库根用 `rg --files packages/daemon-core/src/tools/lib` 枚举精确文件，再用返回的真实路径检索。后续本轮所有路径参数禁止含 `*`/`?`。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065。
+- ERR1626_STATUS=CLOSED_AFTER_GATE_REREAD_AND_EXACT_PATH_REDISCOVERY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1627：精确枚举后仍追加了不存在的源码扩展路径
+
+- **事实证据**：`rg --files packages/daemon-core/src/tools/lib | rg "work-item-metadata"` 已唯一返回 `packages/daemon-core/src/tools/lib/work-item-metadata.ts`；紧接着的检索却又手工追加 `work-item-metadata.js`，`rg` 返回文件不存在。有效命中来自其他精确路径，不能覆盖该失败。
+- **影响**：metadata owner 检索再次产生噪声，且证明本轮对“先枚举再读取”的执行约束仍不充分；在重新执行经验门禁并只消费枚举结果前不得改产品代码。
+- **根因**：`CONFIRMED` 为把 TypeScript 源码中的 `.js` import 约定误当作仓库源码物理文件，并在已取得唯一真实路径后仍追加推测候选；这是 ERR-1617/ERR-1625 的重复。
+- **纠正与防复发**：本轮后续命令路径参数建立强约束：只能逐字复制当前 HEAD 的 `rg --files` 输出或已成功读取的精确路径；不得因 import specifier、惯例或记忆补充扩展名候选。错误回填后重新完整阅读第三、第四部分，并仅检索枚举返回的 `.ts` 文件。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065。
+- ERR1627_STATUS=CLOSED_WITH_ENUMERATED_PATHS_ONLY_COMMAND_POLICY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1628：New-Item 目录分类回归同时暴露测试的偶然顺序断言
+
+- **事实证据**：Permission Engine 定向测试与 build 通过后，Daemon 三文件定向回归得到 `2 passed / 1 failed files`、`28 passed / 2 failed tests`。一项实际输出把 `New-Item -ItemType Directory` 目标标为普通 create，令既有合法父目录准备从 allow 变为 deny；另一项新测试按 shell 源码顺序期待目标数组，但生产 parser 按命令类别归集，实际先返回 `Set-Content` 再返回 `New-Item`。
+- **影响**：当前补丁不能进入扩大回归；合法目录准备发生产品回归，新增测试还混入了没有权威依据的顺序约束。
+- **根因**：`CONFIRMED` 为新目录类型识别表达式没有在真实 parser 运行值上完成最小验证，同时测试把集合语义写成数组顺序语义，违反 EXP-025/EXP-055。具体正则边界仍需用无副作用的实际输入取证后确认。
+- **纠正与防复发**：先用目标 Node/Bun 对真实命令片段输出 segment、类型匹配和提取结果；修正分类器后，把测试拆为“包含明确 directory target”和“包含普通 file target”的集合断言，不固定跨命令类别顺序；原样重跑同一三文件集合。
+- **适用经验**：EXP-001、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-019、EXP-020、EXP-022、EXP-025、EXP-055、EXP-060、EXP-074。
+- ERR1628_STATUS=CLOSED_WITH_TOKEN_CLASSIFICATION_AND_ORDER_INDEPENDENT_ASSERTION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1629：跨 PowerShell 与 node -e 的内联正则诊断静默失真
+
+- **事实证据**：为诊断 ERR-1628 执行的 `node -e` 预期至少输出 segment JSON 与布尔数组，命令退出 0 却返回空 stdout/stderr；命令文本同时跨越 PowerShell 双引号、JavaScript 字符串与正则反斜杠边界，无法证明实际执行的表达式等于源码表达式。
+- **影响**：该诊断没有提供任何可采信证据，不得据此修改 parser 或关闭 ERR-1628。
+- **根因**：`CONFIRMED` 为选择了已经被 EXP-002/EXP-069 识别为高风险的跨运行时内联转义方式，而不是直接调用项目编译模块或测试入口。
+- **纠正与防复发**：放弃内联 `node -e` 正则诊断；使用包内 Vitest 调用真实 `extractShellWriteTargets`，并直接读取当前源码检查数据流。若需要额外观测，只在现有独立测试中加入结构化断言，不创建临时文件，不再跨 shell 重建正则。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-010、EXP-015、EXP-019、EXP-020、EXP-055、EXP-060、EXP-069。
+- ERR1629_STATUS=CLOSED_WITH_PACKAGE_RUNTIME_DIAGNOSTIC_ONLY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1630：Daemon 全量回归暴露两个生命周期测试消费者仍把非实施状态当作可写状态
+
+- **事实证据**：Permission Engine 全量与 Daemon 定向回归通过后，Daemon 全量得到 `197 passed / 2 failed files`、`1731 passed / 2 failed tests`。`write-guard-rbac.test.ts` 的共享夹具固定 `status: 'verification_done'`，仍期待普通源码写入允许；`v11-governance-http-e2e.test.ts` 从第一步即把 StateManager 状态固定为 `verification_done`，随后释放权限并期待实现写入允许。当前正式生命周期仅允许非 Merge Runner 在 `implementation_running` 写实现文件，Permission Engine 的定向正反例已通过。
+- **影响**：当前补丁不能进入 Scope Gate 与发布预检；两个旧测试把实现阶段和验证/关闭阶段折叠，无法验证真实生命周期顺序。没有证据支持放宽产品授权规则。
+- **根因**：`CONFIRMED` 为测试 fixture 没有随集中化生命周期授权契约同步，属于 EXP-022/EXP-029/EXP-074 定义的消费者漂移；HTTP E2E 为便于后续直接 Close，从测试开始就伪造后期状态，令前半段写入场景失真。
+- **纠正与防复发**：RBAC 测试的普通源码正例使用 `implementation_running`，并保留独立非运行状态拒绝测试；HTTP E2E 从 `implementation_ready` 开始，让正式 code-permission handler 推进到 `implementation_running`，在进入 Close Gate 前再由可观察测试 StateManager 显式置为 `verification_done`。修正后先原样重跑两个失败文件和三文件 shell runtime 集，再重跑 Daemon 全量。
+- **适用经验**：EXP-001、EXP-004、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-022、EXP-025、EXP-029、EXP-031、EXP-060、EXP-074。
+- ERR1630_STATUS=CLOSED_WITH_LIFECYCLE_ACCURATE_TEST_FIXTURES
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1631：Scope Gate 固定文本消费者仍要求 Permission 委托器的旧三参数签名
+
+- **事实证据**：Daemon 串行全量 `199 files / 1733 tests` 通过后，Scope Gate 全量得到 `27 passed / 1 failed files`、`126 passed / 1 failed tests`。唯一失败 `current-permission-write-guard-boundary.test.ts` 精确要求 `return decideWritePermission(ctx, targetPath, operation);`，而当前 Daemon 适配器为透传已验证的目录目标分类，正式实现是 `return decideWritePermission(ctx, targetPath, operation, targetDetails);`；同一测试仍确认 import 来自 `@specforge/permission-engine`。
+- **影响**：Scope Gate 尚不能记录为通过，发布预检不得开始；没有证据表明 Permission/Daemon 所有权方向发生倒退。
+- **根因**：`CONFIRMED` 为结构测试把旧函数调用的完整字面量当成架构合同，遗漏新增可选目标详情参数这一合法消费者变化，属于 EXP-022/EXP-025/EXP-043 定义的固定文本消费者漂移。
+- **纠正与防复发**：同步 Scope Gate 消费者，分别断言 `checkWrite` 接收 `WriteTargetDetails`、默认空详情，并把四参数完整透传给 `decideWritePermission`；不得放宽为只检查函数名。随后独立重跑该测试，再重跑 Scope Gate 全量和构建。
+- **适用经验**：EXP-001、EXP-004、EXP-008、EXP-010、EXP-011、EXP-015、EXP-016、EXP-022、EXP-025、EXP-043、EXP-044、EXP-060、EXP-074。
+- ERR1631_STATUS=CLOSED_WITH_TARGET_DETAILS_CONTRACT_ASSERTIONS
+- REPEATED_ERROR_CHECK=PASS

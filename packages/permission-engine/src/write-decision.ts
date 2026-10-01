@@ -8,6 +8,7 @@ export interface WriteDecisionContext {
     work_item_id: string;
     status: string;
     code_change_allowed: boolean;
+    code_permission_revoked?: boolean;
     allowed_write_files: Array<{ path: string; operation: string }>;
     workflow_path: string | null;
   };
@@ -21,6 +22,10 @@ export interface WriteDecisionResult {
   violations: string[];
   reason?: string;
   hard_stop?: true;
+}
+
+export interface WriteTargetDetails {
+  kind?: 'file' | 'directory';
 }
 
 export const WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL =
@@ -77,6 +82,24 @@ function extractBasename(normalizedPath: string): string {
   return index >= 0 ? normalizedPath.slice(index + 1) : normalizedPath;
 }
 
+function normalizeScopePath(value: string): string {
+  return value.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
+}
+
+function isAllowedDirectoryPreparation(
+  normalizedDirectory: string,
+  allowedWriteFiles: Array<{ path: string; operation: string }>,
+): boolean {
+  const directory = normalizeScopePath(normalizedDirectory).toLowerCase();
+  if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
+
+  return allowedWriteFiles.some(file => {
+    if (file.operation === 'delete') return false;
+    const allowedPath = normalizeScopePath(file.path).toLowerCase();
+    return allowedPath !== directory && allowedPath.startsWith(directory + '/');
+  });
+}
+
 function detectProtectedResource(normalizedPath: string): string | undefined {
   const basename = extractBasename(normalizedPath);
   if (RBAC_SPEC_FILES.has(basename)) return 'spec_file';
@@ -118,6 +141,7 @@ export function decideWritePermission(
   ctx: WriteDecisionContext,
   targetPath: string,
   operation: WriteOperation,
+  targetDetails: WriteTargetDetails = {},
 ): WriteDecisionResult {
   const violations: string[] = [];
   const normalized = targetPath.replace(/\\/g, '/');
@@ -199,12 +223,41 @@ export function decideWritePermission(
   }
 
   if (ctx.workItem && !normalized.startsWith('.specforge/')) {
+    if (!ctx.workItem.status) {
+      violations.push('authoritative runtime state unavailable; write denied');
+      return { allowed: false, violations };
+    }
+
+    if (
+      ctx.callerRole !== ACTOR_ROLES.mergeRunner &&
+      ctx.workItem.status !== 'implementation_running'
+    ) {
+      violations.push(`write requires implementation_running state: current=${ctx.workItem.status}`);
+      return { allowed: false, violations };
+    }
+
     if (!ctx.workItem.code_change_allowed) {
       violations.push(`code_change_allowed=false, cannot write: ${targetPath}`);
       return { allowed: false, violations };
     }
 
+    if (ctx.workItem.code_permission_revoked === true) {
+      violations.push(`code permission revoked, cannot write: ${targetPath}`);
+      return { allowed: false, violations };
+    }
+
     const allowed = ctx.workItem.allowed_write_files ?? [];
+    if (targetDetails.kind === 'directory') {
+      if (
+        operation !== 'create' ||
+        !isAllowedDirectoryPreparation(normalized, allowed)
+      ) {
+        violations.push(`directory preparation not in allowed_write_files scope: ${targetPath}`);
+        return { allowed: false, violations };
+      }
+      return { allowed: true, violations: [] };
+    }
+
     if (allowed.length > 0) {
       const matchByPathAndOperation = allowed.some(file => {
         const normalizedAllowed = file.path.replace(/\\/g, '/');

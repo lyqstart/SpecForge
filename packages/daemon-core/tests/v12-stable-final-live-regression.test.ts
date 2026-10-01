@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { enforceRuntimeWriteGuardForShell } from '../src/tools/lib/write-guard-runtime-v12';
+import {
+  enforceRuntimeWriteGuardForShell,
+  extractShellWriteTargets,
+} from '../src/tools/lib/write-guard-runtime-v12';
 import { setHardStop } from '../src/tools/lib/hard-stop-latch';
 import { findActiveWorkItemIdForWrite } from '../src/tools/handlers/sf-safe-bash';
 
@@ -51,6 +54,50 @@ describe('v1.2 stable final live acceptance regressions', () => {
     expect(result.checked).toBe(true);
     expect(result.allowed).toBe(true);
     expect(fs.existsSync(path.join(root, '.specforge', 'work-items', 'WI-0001', 'hard_stop.json'))).toBe(false);
+  });
+
+  it('marks only explicit New-Item Directory targets as directory preparation', () => {
+    const targets = extractShellWriteTargets(
+      'New-Item -ItemType Directory -Force -Path src\\todos | Out-Null; Set-Content -Path src -Value bad',
+    );
+    expect(targets).toHaveLength(2);
+    expect(targets).toEqual(expect.arrayContaining([
+      { path: 'src/todos', operation: 'create', kind: 'directory' },
+      { path: 'src', operation: 'create' },
+    ]));
+  });
+
+  it('does not let a normal file create borrow the directory-preparation allowance', () => {
+    const root = makeProject();
+    const result = enforceRuntimeWriteGuardForShell({
+      projectRoot: root,
+      workItemId: 'WI-0001',
+      command: 'Set-Content -Path src -Value bad',
+      tool: 'sf_safe_bash',
+    });
+
+    expect(result.allowed).toBe(false);
+    expect(result.violations).toContain('file+operation not in allowed_write_files: src (create)');
+    expect(fs.existsSync(path.join(root, '.specforge', 'work-items', 'WI-0001', 'hard_stop.json'))).toBe(true);
+  });
+
+  it('enforces implementation_running through the canonical decision', () => {
+    const root = makeProject();
+    fs.writeFileSync(path.join(root, '.specforge', 'runtime', 'state.json'), JSON.stringify({
+      workItems: [{ work_item_id: 'WI-0001', current_state: 'implementation_ready' }],
+    }, null, 2));
+
+    const result = enforceRuntimeWriteGuardForShell({
+      projectRoot: root,
+      workItemId: 'WI-0001',
+      command: 'Set-Content -Path src\\todos\\stable-native-write-authorized.md -Value bad',
+      tool: 'sf_safe_bash',
+    });
+
+    expect(result.allowed).toBe(false);
+    expect(result.violations).toEqual([
+      'write requires implementation_running state: current=implementation_ready',
+    ]);
   });
 
   it('does not select a hard-stopped WI-A when WI-B owns the write target', () => {

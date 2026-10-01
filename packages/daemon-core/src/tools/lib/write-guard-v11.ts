@@ -30,6 +30,7 @@ import {
   decideWritePermission,
   type WriteDecisionContext,
   type WriteDecisionResult,
+  type WriteTargetDetails,
 } from '@specforge/permission-engine'
 
 // ---------------------------------------------------------------------------
@@ -66,8 +67,9 @@ export function checkWrite(
   ctx: WriteGuardContext,
   targetPath: string,
   operation: 'create' | 'modify' | 'delete',
+  targetDetails: WriteTargetDetails = {},
 ): WriteCheckResult {
-  return decideWritePermission(ctx, targetPath, operation);
+  return decideWritePermission(ctx, targetPath, operation, targetDetails);
 }
 
 // ---------------------------------------------------------------------------

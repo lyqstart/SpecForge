@@ -15,6 +15,7 @@ export type RuntimeWriteOperation = 'create' | 'modify' | 'delete';
 export interface RuntimeWriteTarget {
   path: string;
   operation: RuntimeWriteOperation;
+  kind?: 'directory';
 }
 
 export interface RuntimeWriteGuardResult {
@@ -40,7 +41,11 @@ function uniqueTargets(targets: RuntimeWriteTarget[]): RuntimeWriteTarget[] {
     const key = target.operation + ':' + normalizeSlashes(target.path).toLowerCase();
     if (seen.has(key)) continue;
     seen.add(key);
-    result.push({ path: normalizeSlashes(target.path), operation: target.operation });
+    result.push({
+      path: normalizeSlashes(target.path),
+      operation: target.operation,
+      ...(target.kind ? { kind: target.kind } : {}),
+    });
   }
   return result;
 }
@@ -87,10 +92,31 @@ function isShellRedirectionSink(rawTarget: string): boolean {
   return false;
 }
 
-function pushShellTarget(targets: RuntimeWriteTarget[], rawPath: string, operation: RuntimeWriteOperation): void {
+function pushShellTarget(
+  targets: RuntimeWriteTarget[],
+  rawPath: string,
+  operation: RuntimeWriteOperation,
+  kind?: 'directory',
+): void {
   const cleaned = stripQuotes(rawPath);
   if (!cleaned || isShellRedirectionSink(cleaned)) return;
-  targets.push({ path: cleaned, operation });
+  targets.push({ path: cleaned, operation, ...(kind ? { kind } : {}) });
+}
+
+function extractPowerShellNewItemTargets(command: string): RuntimeWriteTarget[] {
+  const results: RuntimeWriteTarget[] = [];
+  const segments = command.match(/\bNew-Item\b[^;|\r\n]*/gi) ?? [];
+  for (const segment of segments) {
+    const tokens = segment.replace(/["']/g, ' ').trim().split(/\s+/);
+    const itemTypeIndex = tokens.findIndex(token => token.toLowerCase() === '-itemtype');
+    const kind = itemTypeIndex >= 0 && tokens[itemTypeIndex + 1]?.toLowerCase() === 'directory'
+      ? 'directory'
+      : undefined;
+    for (const targetPath of extractPowerShellArgument(segment, 'New-Item', ['Path', 'LiteralPath', 'Name'])) {
+      pushShellTarget(results, targetPath, 'create', kind);
+    }
+  }
+  return results;
 }
 
 export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] {
@@ -101,7 +127,7 @@ export function extractShellWriteTargets(command: string): RuntimeWriteTarget[] 
   for (const p of extractPowerShellArgument(text, 'Set-Content', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'create');
   for (const p of extractPowerShellArgument(text, 'Add-Content', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'modify');
   for (const p of extractPowerShellArgument(text, 'Out-File', ['FilePath', 'LiteralPath'])) pushShellTarget(targets, p, 'create');
-  for (const p of extractPowerShellArgument(text, 'New-Item', ['Path', 'LiteralPath', 'Name'])) pushShellTarget(targets, p, 'create');
+  targets.push(...extractPowerShellNewItemTargets(text));
   for (const p of extractPowerShellArgument(text, 'Remove-Item', ['Path', 'LiteralPath'])) pushShellTarget(targets, p, 'delete');
   for (const p of extractPowerShellArgument(text, 'Copy-Item', ['Destination'])) pushShellTarget(targets, p, 'create');
   for (const p of extractPowerShellArgument(text, 'Move-Item', ['Destination'])) pushShellTarget(targets, p, 'create');
@@ -156,32 +182,6 @@ function authoritativeWorkItemState(projectRoot: string, workItemId: string): st
     : null;
 }
 
-function normalizeForCompare(value: string): string {
-  return normalizeSlashes(String(value ?? '')).replace(/^\.\//, '').replace(/\/+$/, '').toLowerCase();
-}
-
-function allowedPathToProjectRelative(projectRoot: string, cwd: string | undefined, value: string): string | null {
-  const resolved = toProjectRelative(projectRoot, cwd, value);
-  if (resolved.relative) return resolved.relative;
-  const cleaned = stripQuotes(value);
-  return cleaned ? normalizeSlashes(cleaned) : null;
-}
-
-function isAllowedDirectoryPreparation(projectRoot: string, cwd: string | undefined, wi: any, targetRelative: string): boolean {
-  if (wi?.code_change_allowed !== true || wi?.code_permission_revoked === true) return false;
-  const allowed = Array.isArray(wi?.allowed_write_files) ? wi.allowed_write_files : [];
-  const directory = normalizeForCompare(targetRelative);
-  if (!directory || directory === '.' || directory.startsWith('.specforge/')) return false;
-  return allowed.some((entry: any) => {
-    const raw = typeof entry === 'string' ? entry : entry?.path;
-    if (typeof raw !== 'string' || raw.trim() === '') return false;
-    const allowedRelative = allowedPathToProjectRelative(projectRoot, cwd, raw);
-    if (!allowedRelative) return false;
-    const allowedPath = normalizeForCompare(allowedRelative);
-    return allowedPath !== directory && allowedPath.startsWith(directory + '/');
-  });
-}
-
 function workItemDir(projectRoot: string, workItemId: string): string {
   return path.join(projectRoot, SPEC_DIR_NAME, 'work-items', workItemId);
 }
@@ -219,6 +219,7 @@ export function enforceRuntimeWriteGuardForShell(input: {
   }
 
   const actor = isKnownActorRole(input.callerRole) ? input.callerRole : ACTOR_ROLES.agent;
+  const currentState = authoritativeWorkItemState(input.projectRoot, input.workItemId);
   const allViolations: string[] = [];
   const normalizedTargets: RuntimeWriteTarget[] = [];
 
@@ -226,33 +227,24 @@ export function enforceRuntimeWriteGuardForShell(input: {
     const targetViolations: string[] = [];
     const resolved = toProjectRelative(input.projectRoot, input.cwd, target.path);
     const relative = resolved.relative ?? target.path;
-    const normalizedTarget = { path: relative, operation: target.operation };
+    const normalizedTarget = {
+      path: relative,
+      operation: target.operation,
+      ...(target.kind ? { kind: target.kind } : {}),
+    };
     normalizedTargets.push(normalizedTarget);
 
     if (resolved.violation) targetViolations.push(resolved.violation);
 
-    const currentState = authoritativeWorkItemState(input.projectRoot, input.workItemId);
-    if (!currentState) {
-      targetViolations.push('authoritative runtime state unavailable; write denied');
-    }
-    if (actor !== ACTOR_ROLES.mergeRunner && currentState !== 'implementation_running') {
-      targetViolations.push('write requires implementation_running state: current=' + currentState);
-    }
-
-    const directoryPreparationAllowed =
-      target.operation === 'create' &&
-      !resolved.violation &&
-      currentState === 'implementation_running' &&
-      isAllowedDirectoryPreparation(input.projectRoot, input.cwd, wi, relative);
-
-    if (!resolved.violation && !directoryPreparationAllowed) {
+    if (!resolved.violation) {
       const check = checkWrite(
         {
           hasActiveWI: true,
           workItem: {
             work_item_id: String(wi.work_item_id ?? input.workItemId),
-            status: currentState ?? 'unknown',
+            status: currentState ?? '',
             code_change_allowed: wi.code_change_allowed === true,
+            code_permission_revoked: wi.code_permission_revoked === true,
             allowed_write_files: Array.isArray(wi.allowed_write_files) ? wi.allowed_write_files : [],
             workflow_path: wi.workflow_path ?? null,
           },
@@ -261,6 +253,7 @@ export function enforceRuntimeWriteGuardForShell(input: {
         },
         relative,
         target.operation,
+        { kind: target.kind ?? 'file' },
       );
       if (!check.allowed) targetViolations.push(...check.violations);
     }

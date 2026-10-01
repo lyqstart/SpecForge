@@ -48,7 +48,11 @@ describe('current Permission and Write Guard ownership boundary', () => {
     );
 
     expect(daemonWriteGuard).toContain("from '@specforge/permission-engine'");
-    expect(daemonWriteGuard).toContain('return decideWritePermission(ctx, targetPath, operation);');
+    expect(daemonWriteGuard).toContain('type WriteTargetDetails,');
+    expect(daemonWriteGuard).toContain('targetDetails: WriteTargetDetails = {},');
+    expect(daemonWriteGuard).toContain(
+      'return decideWritePermission(ctx, targetPath, operation, targetDetails);',
+    );
     expect(daemonHttp).toContain('const result = checkWrite(wiCtx, targetPath');
     expect(daemonHttp).toContain('decideWorkItemArtifactWriteBoundary(command)');
     expect(daemonHttp).not.toContain('const wiArtifactPattern =');
