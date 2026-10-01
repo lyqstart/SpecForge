@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
 import {
   decideWritePermission,
+  decideWorkItemArtifactWriteBoundary,
   type WriteDecisionContext,
   type WriteOperation,
 } from '../../src/write-decision';
@@ -71,12 +72,30 @@ describe('canonical write decision', () => {
     })).toEqual({ allowed: true, violations: [] });
   });
 
+  it('requires controlled tools for Work Item artifact references', () => {
+    const expected = {
+      allowed: false,
+      reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+      violations: ['WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL'],
+      hard_stop: true,
+    };
+
+    expect(decide('.specforge/work-items/WI-TEST/intake.md')).toEqual(expected);
+    expect(decide('.specforge\\work-items\\WI-TEST\\intake.md')).toEqual(expected);
+    expect(decideWorkItemArtifactWriteBoundary(
+      'echo x > .specforge/work-items/WI-TEST/intake.md',
+    )).toEqual(expected);
+    expect(decideWorkItemArtifactWriteBoundary('src/app.ts')).toBeNull();
+  });
+
   it('denies frozen Candidate changes', () => {
     expect(decide('.specforge/work-items/WI-TEST/candidates/design.md', 'modify', {
       isFrozen: true,
     })).toEqual({
       allowed: false,
-      violations: ['frozen: cannot modify candidates/: .specforge/work-items/WI-TEST/candidates/design.md'],
+      reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+      violations: ['WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL'],
+      hard_stop: true,
     });
   });
 

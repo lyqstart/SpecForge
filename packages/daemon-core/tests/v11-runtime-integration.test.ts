@@ -14,6 +14,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import { WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL } from '@specforge/permission-engine';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -151,7 +152,7 @@ describe('v1.1 Write Guard（§12）', () => {
     const ctx = { ...baseCtx, isFrozen: true };
     const result = checkWrite(ctx, '.specforge/work-items/WI-0001/candidates/project/test.md', 'modify');
     expect(result.allowed).toBe(false);
-    expect(result.violations[0]).toContain('frozen');
+    expect(result.violations).toEqual([WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL]);
   });
 
   it('blocks closed WI', () => {

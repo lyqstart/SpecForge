@@ -50,6 +50,8 @@ describe('current Permission and Write Guard ownership boundary', () => {
     expect(daemonWriteGuard).toContain("from '@specforge/permission-engine'");
     expect(daemonWriteGuard).toContain('return decideWritePermission(ctx, targetPath, operation);');
     expect(daemonHttp).toContain('const result = checkWrite(wiCtx, targetPath');
+    expect(daemonHttp).toContain('decideWorkItemArtifactWriteBoundary(command)');
+    expect(daemonHttp).not.toContain('const wiArtifactPattern =');
     expect(pluginClient).toContain('/api/v1/v11/write-guard/check');
   });
 

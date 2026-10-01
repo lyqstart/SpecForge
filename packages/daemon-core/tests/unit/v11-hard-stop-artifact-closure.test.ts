@@ -11,6 +11,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { tmpdir } from 'node:os';
+import { isWorkItemArtifactReference } from '@specforge/permission-engine';
 import {
   setHardStop,
   checkHardStop,
@@ -532,46 +533,40 @@ describe('7.4 WI artifact bash/write blocking', () => {
   });
 
   it('bash command targeting .specforge/work-items/ should be detected as WI artifact write', () => {
-    const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
-
     // PowerShell Set-Content
     expect(
-      wiArtifactPattern.test(
+      isWorkItemArtifactReference(
         'powershell Set-Content .specforge/work-items/WI-0001/trigger_result.json'
       )
     ).toBe(true);
 
     // bash echo redirect
-    expect(wiArtifactPattern.test('echo "{}" > .specforge/work-items/WI-0001/tasks.md')).toBe(true);
+    expect(isWorkItemArtifactReference('echo "{}" > .specforge/work-items/WI-0001/tasks.md')).toBe(true);
 
     // node fs.writeFileSync
     expect(
-      wiArtifactPattern.test(
+      isWorkItemArtifactReference(
         "node -e \"require('fs').writeFileSync('.specforge/work-items/WI-0001/intake.md', 'test')\""
       )
     ).toBe(true);
 
     // python open().write
     expect(
-      wiArtifactPattern.test(
+      isWorkItemArtifactReference(
         "python -c \"open('.specforge/work-items/WI-0001/intake.md', 'w').write('x')\""
       )
     ).toBe(true);
   });
 
   it('write/edit tool targeting .specforge/work-items/ should be detected', () => {
-    const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
-
-    expect(wiArtifactPattern.test('.specforge/work-items/WI-0001/trigger_result.json')).toBe(true);
-    expect(wiArtifactPattern.test('.specforge\\work-items\\WI-0001\\tasks.md')).toBe(true);
+    expect(isWorkItemArtifactReference('.specforge/work-items/WI-0001/trigger_result.json')).toBe(true);
+    expect(isWorkItemArtifactReference('.specforge\\work-items\\WI-0001\\tasks.md')).toBe(true);
   });
 
   it('non-WI paths should NOT be blocked by WI artifact pattern', () => {
-    const wiArtifactPattern = /\.specforge[\\/]work-items[\\/]/i;
-
-    expect(wiArtifactPattern.test('src/index.html')).toBe(false);
-    expect(wiArtifactPattern.test('.specforge/project/spec_manifest.json')).toBe(false);
-    expect(wiArtifactPattern.test('.specforge/runtime/state.json')).toBe(false);
+    expect(isWorkItemArtifactReference('src/index.html')).toBe(false);
+    expect(isWorkItemArtifactReference('.specforge/project/spec_manifest.json')).toBe(false);
+    expect(isWorkItemArtifactReference('.specforge/runtime/state.json')).toBe(false);
   });
 
   it('sf_artifact_write handler validates WI ID before writing', () => {
@@ -617,47 +612,45 @@ describe('7.4 WI artifact bash/write blocking', () => {
 // ===========================================================================
 
 describe('7.5 sf_safe_bash WI artifact path blocking (real failure fix)', () => {
-  const WI_ARTIFACT_PATTERN = /\.specforge[\\/]work-items[\\/]/i;
-
   it('sf_safe_bash New-Item .specforge/work-items/WI-0001 is detected', () => {
     const cmd =
       'New-Item -ItemType Directory -Path "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" -Force';
-    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+    expect(isWorkItemArtifactReference(cmd)).toBe(true);
   });
 
   it('sf_safe_bash mkdir .specforge/work-items/WI-0001 is detected', () => {
     const cmd = 'mkdir .specforge/work-items/WI-0001';
-    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+    expect(isWorkItemArtifactReference(cmd)).toBe(true);
   });
 
   it('sf_safe_bash ls .specforge/work-items/WI-0001 is detected', () => {
     const cmd =
       'ls "D:\\code\\temp\\test4\\.specforge\\work-items\\WI-0001" 2>nul || echo "Directory does not exist"';
-    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+    expect(isWorkItemArtifactReference(cmd)).toBe(true);
   });
 
   it('sf_safe_bash Set-Content .specforge/work-items/ is detected', () => {
     const cmd =
       'powershell Set-Content .specforge/work-items/WI-0001/trigger_result.json -Value "{}"';
-    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+    expect(isWorkItemArtifactReference(cmd)).toBe(true);
   });
 
   it('sf_safe_bash node fs.writeFileSync .specforge/work-items/ is detected', () => {
     const cmd =
       "node -e \"require('fs').writeFileSync('.specforge/work-items/WI-0001/tasks.md', '# Tasks')\"";
-    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+    expect(isWorkItemArtifactReference(cmd)).toBe(true);
   });
 
   it('sf_safe_bash python open .specforge/work-items/ is detected', () => {
     const cmd = "python -c \"open('.specforge/work-items/WI-0001/intake.md', 'w').write('test')\"";
-    expect(WI_ARTIFACT_PATTERN.test(cmd)).toBe(true);
+    expect(isWorkItemArtifactReference(cmd)).toBe(true);
   });
 
   it('normal commands NOT targeting .specforge/work-items/ are allowed', () => {
-    expect(WI_ARTIFACT_PATTERN.test('ls src/')).toBe(false);
-    expect(WI_ARTIFACT_PATTERN.test('mkdir src/components')).toBe(false);
-    expect(WI_ARTIFACT_PATTERN.test('node -e "console.log(1)"')).toBe(false);
-    expect(WI_ARTIFACT_PATTERN.test('cat .specforge/project/spec_manifest.json')).toBe(false);
+    expect(isWorkItemArtifactReference('ls src/')).toBe(false);
+    expect(isWorkItemArtifactReference('mkdir src/components')).toBe(false);
+    expect(isWorkItemArtifactReference('node -e "console.log(1)"')).toBe(false);
+    expect(isWorkItemArtifactReference('cat .specforge/project/spec_manifest.json')).toBe(false);
   });
 
   it('hard_stop after sf_safe_bash WI artifact blocks sf_state_transition', () => {

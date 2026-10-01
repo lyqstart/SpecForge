@@ -13,6 +13,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
+import { WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL } from '@specforge/permission-engine';
 
 import { selectWorkflowPath, generateTriggerResult } from '../src/tools/lib/workflow-path-selector-v11';
 import type { ChangeClassification, WorkflowPath, TriggerResult } from '../src/tools/lib/workflow-path-selector-v11';
@@ -983,9 +984,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
 
     const result = checkWrite(ctx, '.specforge/work-items/WI-0404/user_decision.json', 'modify');
     expect(result.allowed).toBe(false);
-    expect(result.violations).toEqual(
-      expect.arrayContaining([expect.stringContaining('user_decision.json')]),
-    );
+    expect(result.violations).toEqual([WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL]);
   });
 
   it('should block agent from writing gates/', () => {
@@ -1004,9 +1003,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
 
     const result = checkWrite(ctx, '.specforge/work-items/WI-0405/gates/entry_gate.json', 'create');
     expect(result.allowed).toBe(false);
-    expect(result.violations).toEqual(
-      expect.arrayContaining([expect.stringContaining('gates/')]),
-    );
+    expect(result.violations).toEqual([WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL]);
   });
 
   it('should block agent from writing gate_summary.md', () => {
@@ -1025,9 +1022,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
 
     const result = checkWrite(ctx, '.specforge/work-items/WI-0406/gate_summary.md', 'create');
     expect(result.allowed).toBe(false);
-    expect(result.violations).toEqual(
-      expect.arrayContaining([expect.stringContaining('gate_summary.md')]),
-    );
+    expect(result.violations).toEqual([WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL]);
   });
 
   it('should block agent from writing merge_report.md', () => {
@@ -1046,9 +1041,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
 
     const result = checkWrite(ctx, '.specforge/work-items/WI-0407/merge_report.md', 'create');
     expect(result.allowed).toBe(false);
-    expect(result.violations).toEqual(
-      expect.arrayContaining([expect.stringContaining('merge_report.md')]),
-    );
+    expect(result.violations).toEqual([WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL]);
   });
 
   it('should block frozen modifications to candidates/', () => {
@@ -1067,9 +1060,7 @@ describe('§21.4 Acceptance: Out-of-bounds Write', () => {
 
     const result = checkWrite(ctx, '.specforge/work-items/WI-0408/candidates/requirements.md', 'modify');
     expect(result.allowed).toBe(false);
-    expect(result.violations).toEqual(
-      expect.arrayContaining([expect.stringContaining('frozen')]),
-    );
+    expect(result.violations).toEqual([WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL]);
   });
 
   it('should block writes to closed WI', () => {

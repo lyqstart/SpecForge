@@ -29227,3 +29227,102 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1615_STATUS=CLOSED_WITH_REMOTE_MAIN_EQUAL_TO_FIXED_BASELINE
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1615_SANDBOX_REMOTE_BASELINE_NETWORK_BLOCK:END -->
+
+### ERR-1616：HTTP Write Guard 调查再次使用 Windows 字面 ADR 通配路径
+
+- **事实证据**：本轮只读调查命令把 `docs/adr/ADR-007*` 与 `docs/adr/ADR-008*` 作为字面路径传给 Windows 文件系统，两项均返回 OS error 123；同一命令中的其他检索有输出，但 ADR-007/008 证据实际未被读取。错误发生后尚未修改产品代码、测试、配置或治理状态。
+- **影响**：该次输出不具备完整 ADR 证据，不能据此判断 HTTP Work Item 直写规则的架构归属或实施方案。
+- **根因**：`CONFIRMED` 为命令构造未复用 ERR-1605 已规定的 Windows 路径检索方式，在已知错误模式上发生重复。
+- **纠正与防复发**：已用精确目录枚举确认完整文件名；后续仅把精确文件路径传给读取命令，或使用目录根配合 `--glob`，不再把通配符放入 Windows 字面路径参数。完成本条回填后，重新完整阅读经验文件第三、第四部分，再读取精确 ADR 文件并重新取证。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065。
+- ERR1616_STATUS=CLOSED_WITH_EXACT_PATH_REDISCOVERY_AND_GATE_RESTART
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1616_WINDOWS_LITERAL_ADR_WILDCARD_RECURRENCE:END -->
+
+### ERR-1617：消费者检索使用了按记忆构造的产品规格路径
+
+- **事实证据**：本轮消费者检索把 `docs/product-specification/SpecForge产品规格.md` 作为路径参数，`rg` 返回“系统找不到指定的文件”；随后以 `rg --files docs/product-specification` 枚举确认当前 HEAD 的真实文件为 `docs/product-specification/specforge-product-specification.md`。同一命令的代码侧命中有效，但产品规格侧没有被读取。
+- **影响**：原检索不能证明产品规格与代码消费者之间的对应关系；在用真实路径重新读取前，不得冻结 HTTP Work Item 直写规则的修改范围。
+- **根因**：`CONFIRMED` 为命令构造使用了记忆中的展示名称，而没有先从当前 HEAD 枚举真实路径，违反 EXP-001 与 EXP-065。
+- **纠正与防复发**：产品规格、ADR、设计和实施文件在首次读取前一律先用 `rg --files <目录>` 获取当前 HEAD 的真实路径，再把精确路径传给读取或检索命令；本轮用真实规格路径重新执行消费者检索并交叉核对源码。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065。
+- ERR1617_STATUS=CLOSED_WITH_CURRENT_HEAD_PATH_ENUMERATION
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1617_REMEMBERED_PRODUCT_SPEC_PATH:END -->
+
+### ERR-1618：定向回归再次调用不存在的仓库根 Vitest shim
+
+- **事实证据**：从仓库根执行 `.\\node_modules\\.bin\\vitest.exe run ...`，PowerShell 在测试启动前返回命令不存在；只读枚举确认根 `.bin` 没有 Vitest，已验证 bundled Bun 存在，既有 ERR-1280/ERR-1520 已明确要求先使用 package-local runner。
+- **影响**：四个目标测试均未启动，没有产品测试结果；命令没有产生新的产品文件写入。
+- **根因**：`CONFIRMED` 为本轮测试计划复用了旧会话摘要中的失效根级入口，未在执行前落实既有 package-local runner 前置检查，是 ERR-1280/ERR-1520 的重复。
+- **纠正与防复发**：Daemon 与 Permission 测试从 `packages/daemon-core` 工作目录使用其已枚举的 package-local Vitest；Scope Gate 从 `packages/scope-gate` 工作目录使用其 package-local Vitest。跨包测试按 runner 所属 package 分开执行，执行前先 `Test-Path -LiteralPath`。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-011、EXP-015、EXP-019、EXP-020、EXP-052、EXP-060、EXP-065。
+- ERR1618_STATUS=CLOSED_WITH_PACKAGE_LOCAL_RUNNER_PRECONDITION
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1618_ROOT_VITEST_SHIM_RECURRENCE:END -->
+
+### ERR-1619：旧错误定位检索使用了不稳定的复合正则命令
+
+- **事实证据**：为定位既有 Vitest 错误而执行的 `rg` 命令包含 PowerShell 双引号、反引号文本及复合正则，`rg` 返回 `the literal "\\n" is not allowed in a regex`；该检索没有产生有效定位结果，也没有修改产品文件。
+- **影响**：第一次旧错误定位证据无效，但随后用简单的单引号精确标题检索和固定行段读取确认了 ERR-1280 与 ERR-1520。
+- **根因**：`CONFIRMED` 为证据命令不必要地组合多种转义边界，没有采用已经足够的精确标题或固定行段读取。
+- **纠正与防复发**：台账定位固定使用单一精确标题检索或 `Get-Content` 固定行段；禁止为一次标题定位组合 PowerShell 插值、Markdown 反引号和多分支正则。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-046、EXP-060、EXP-065。
+- ERR1619_STATUS=CLOSED_WITH_SIMPLE_EXACT_LEDGER_LOOKUP
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1619_UNSTABLE_LEDGER_REGEX_COMMAND:END -->
+
+### ERR-1620：共享 Permission 契约变更后跨包测试仍读取旧 dist
+
+- **事实证据**：Permission Engine 源码单测 `1 file / 9 tests passed`；紧接着 Daemon 定向测试中，10 个 helper 用例报告 `isWorkItemArtifactReference is not a function`，HTTP E2E 返回旧行为 `{ allowed: true }`。`@specforge/permission-engine/package.json` 明确把 `main`/`types` 指向 `dist/src/index.js` 与 `dist/src/index.d.ts`，说明 Daemon 消费的是未重建的旧产物。
+- **影响**：Daemon 结果只证明验证拓扑错误，不能作为新源码行为结论；没有证据表明 canonical 规则本身失败。该错误重复了 ERR-1505 已记录的共享契约构建顺序问题。
+- **根因**：`CONFIRMED` 为跨包测试前未按 EXP-052 重建发生导出变化的 Permission Engine，导致消费者加载 stale dist。
+- **纠正与防复发**：先使用 package-local TypeScript 构建 Permission Engine，确认新 helper 同时存在于 JS 与声明产物，再原样重跑相同 Daemon 测试集合；今后共享 package 导出变化的固定顺序为“生产包单测 → 生产包 build → 消费包测试”。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-011、EXP-015、EXP-016、EXP-019、EXP-020、EXP-031、EXP-052、EXP-060。
+- ERR1620_STATUS=CLOSED_WITH_DEPENDENCY_BUILD_BEFORE_CONSUMER_TESTS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1620_PERMISSION_STALE_DIST_RECURRENCE:END -->
+
+### ERR-1621：在 Daemon 工作目录用错误相对路径检查 Permission dist
+
+- **事实证据**：从 `packages/daemon-core` 工作目录执行的构建产物检查读取 `dist/src/write-decision.js` 与 `.d.ts`，两项均返回路径不存在；该路径实际指向 Daemon 自身 dist，而目标产物属于相邻的 `packages/permission-engine/dist`。同一命令随后执行的 Daemon 回归独立取得 `2 files / 56 tests passed`。
+- **影响**：构建产物的文本存在性尚未由该 `rg` 段证明；后续测试成功证明运行时已经加载新导出，但不能倒推错误路径检索本身有效。
+- **根因**：`CONFIRMED` 为命令工作目录与相对目标路径不匹配，未在执行前解析目标绝对位置。
+- **纠正与防复发**：跨 package 产物检查固定使用仓库根下的精确路径，或从当前 package 使用明确的 `../permission-engine/dist/...`；测试与产物检查拆成独立命令，避免一个子命令失败被后续成功退出码遮蔽。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-039、EXP-060、EXP-065。
+- ERR1621_STATUS=CLOSED_WITH_EXACT_CROSS_PACKAGE_DIST_PATH
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1621_WRONG_CWD_PERMISSION_DIST_CHECK:END -->
+
+### ERR-1622：六个旧 Write Guard 测试仍断言被统一边界取代的下游文案
+
+- **事实证据**：在 Permission Engine build 与最小 Daemon 回归通过后，四文件扩展回归为 `97 pass / 6 fail`；失败精确位于 `v11-runtime-integration` 的 frozen 文案断言，以及 `v11-section21-acceptance` 的 user decision、gates、gate summary、merge report、frozen 文案断言。六项实际值均为 canonical `WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL`，同集合其余 97 项通过。
+- **影响**：旧测试仍把已下沉规则之后的局部 RBAC/freeze 诊断当作直接写入口首要错误，和 SPS“Work Item 产物必须走受控 Tool”以及统一 Permission 决策顺序冲突。
+- **根因**：`CONFIRMED` 为测试消费者漂移；生产者的新错误码由 Permission Engine 单测和真实 HTTP E2E 共同验证，旧断言未随规则所有权迁移同步。
+- **纠正与防复发**：只把六个直接 Work Item 路径断言同步为结构化 canonical 错误码；不放宽拒绝、不删除测试，并原样重跑四文件集合。关闭 WI、Project Spec、code scope 等其他测试继续验证各自独立语义。
+- **适用经验**：EXP-004、EXP-007、EXP-010、EXP-011、EXP-015、EXP-016、EXP-022、EXP-025、EXP-030、EXP-031、EXP-060、EXP-074、EXP-087。
+- ERR1622_STATUS=CLOSED_WITH_CANONICAL_ERROR_CODE_TEST_SYNC
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1622_WRITE_GUARD_TEST_CONSUMER_DRIFT:END -->
+
+### ERR-1623：跨包静态扫描再次在 package cwd 使用仓库根路径
+
+- **事实证据**：从 `packages/daemon-core` 工作目录执行 `rg` 时传入 `packages/daemon-core`、`packages/permission-engine`、`packages/scope-gate`，三项均返回路径不存在；同一复合命令后的 Daemon TypeScript 构建退出 0，但不能使前置扫描有效。
+- **影响**：重复正则的静态清零尚未由该扫描证明；Daemon 编译成功证据独立有效。该错误与 ERR-1621 同类且在本轮再次重复。
+- **根因**：`CONFIRMED` 为跨包命令没有落实已记录的 cwd/path 约束，并把两个不同验证动作合并，导致后一个成功可能遮蔽前一个失败。
+- **纠正与防复发**：从现在起跨包 `rg`、Git 与范围审计一律在仓库根单独执行；package cwd 只运行该 package 的 runner/build，命令不再混合。每个验证动作独立采集退出码。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-039、EXP-060、EXP-065。
+- ERR1623_STATUS=CLOSED_WITH_ROOT_ONLY_CROSS_PACKAGE_SCANS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1623_PACKAGE_CWD_ROOT_PATH_RECURRENCE:END -->
+
+### ERR-1624：发布候选 ID 未遵守 current repository 消费者格式
+
+- **事实证据**：使用 `main-2be6d866-cg013-http` 生成 release manifest 后，正式预检返回 passed，但 Scope Gate 全包为 `124 pass / 3 fail`；三个失败均精确要求 `/^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$/`，实际值不含 `working-tree-step` 段。
+- **影响**：该 candidate ID 不能作为最终发布验证证据；产品权限实现、其余 124 项 Scope Gate 和先前全包回归没有因此失败。
+- **根因**：`CONFIRMED` 为候选 ID 根据语义自行命名，没有先读取真实消费者合同；同时 precheck 未校验该格式，单独的 passed 结果不足以覆盖 repository integration consumers。
+- **纠正与防复发**：按真实合同使用 `main-2be6d866-working-tree-stepcg013http` 重新生成同一工作树候选，依次重跑 Scope Gate 28 文件与正式预检；今后 candidate ID 必须先从当前测试/生产者读取格式，不凭记忆构造。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-011、EXP-015、EXP-019、EXP-020、EXP-025、EXP-044、EXP-060、EXP-065。
+- ERR1624_STATUS=CLOSED_WITH_CONSUMER_CONTRACT_CANDIDATE_ID
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1624_RELEASE_CANDIDATE_ID_FORMAT:END -->

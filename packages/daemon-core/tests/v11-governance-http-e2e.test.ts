@@ -210,19 +210,39 @@ describe('v1.1 Governance HTTP Round-Trip E2E', () => {
     expect(blockedWriteRes.json?.data?.allowed).toBe(false);
     expect(blockedWriteRes.json?.data?.violations?.length).toBeGreaterThan(0);
 
+    const blockedWorkItemWriteRes = await httpPost(port, token, '/api/v1/v11/write-guard/check', {
+      targetPath: `.specforge/work-items/${workItemId}/intake.md`,
+      callerRole: 'agent',
+      projectPath: tempDir,
+    });
+    expect(blockedWorkItemWriteRes.json?.success).toBe(true);
+    expect(blockedWorkItemWriteRes.json?.data).toMatchObject({
+      allowed: false,
+      reason: 'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL',
+      violations: ['WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL'],
+      hard_stop: true,
+    });
+
     // Verify write_guard_log.jsonl was written
     const logPath = path.join(wiDir, 'write_guard_log.jsonl');
     const logExists = fsSync.existsSync(logPath);
     expect(logExists).toBe(true);
     const logContent = fsSync.readFileSync(logPath, 'utf-8');
     const logEntries = logContent.trim().split('\n').map(l => JSON.parse(l));
-    expect(logEntries.length).toBeGreaterThanOrEqual(2);
+    expect(logEntries.length).toBeGreaterThanOrEqual(3);
     // First entry: allowed
     const allowedEntry = logEntries.find((e: any) => e.path === 'src/main.ts');
     expect(allowedEntry?.allowed).toBe(true);
     // Second entry: blocked
     const blockedEntry = logEntries.find((e: any) => e.path === 'src/unauthorized.ts');
     expect(blockedEntry?.allowed).toBe(false);
+    const blockedWorkItemEntry = logEntries.find(
+      (e: any) => e.path === `.specforge/work-items/${workItemId}/intake.md`,
+    );
+    expect(blockedWorkItemEntry).toMatchObject({
+      allowed: false,
+      violations: ['WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL'],
+    });
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // Step 4: Simulate actual file writes (only allowed ones succeed in real system)

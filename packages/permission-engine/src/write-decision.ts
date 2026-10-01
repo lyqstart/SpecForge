@@ -19,6 +19,27 @@ export interface WriteDecisionContext {
 export interface WriteDecisionResult {
   allowed: boolean;
   violations: string[];
+  reason?: string;
+  hard_stop?: true;
+}
+
+export const WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL =
+  'WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL';
+
+export function isWorkItemArtifactReference(value: string): boolean {
+  return value.replace(/\\/g, '/').toLowerCase().includes('.specforge/work-items/');
+}
+
+export function decideWorkItemArtifactWriteBoundary(
+  value: string,
+): WriteDecisionResult | null {
+  if (!isWorkItemArtifactReference(value)) return null;
+  return {
+    allowed: false,
+    reason: WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL,
+    violations: [WI_ARTIFACT_WRITE_REQUIRES_CONTROLLED_TOOL],
+    hard_stop: true,
+  };
 }
 
 const VALID_ROLES = new Set<string>(Object.values(ACTOR_ROLES));
@@ -110,6 +131,9 @@ export function decideWritePermission(
     violations.push(`closed WI cannot be written: ${ctx.workItem.work_item_id}`);
     return { allowed: false, violations };
   }
+
+  const workItemArtifactBoundary = decideWorkItemArtifactWriteBoundary(targetPath);
+  if (workItemArtifactBoundary) return workItemArtifactBoundary;
 
   if (!ctx.hasActiveWI && !normalized.startsWith('.specforge/')) {
     violations.push(`no active WI, cannot write code: ${targetPath}`);
