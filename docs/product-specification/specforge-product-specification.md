@@ -1469,7 +1469,7 @@ SpecForge 要被声明为符合 SPS-1.0，至少必须满足：
 - CG-010【RESOLVED】：release precheck / Scope Gate 已直接消费 SPS-1.0 hash-bound release authority projection。
 - CG-011【RESOLVED】：fused standard 与 v1.3 文档已归档并降级；current types、workflow-runtime、daemon governance 源码与 `sf-design` Agent 已统一声明 SPS-1.0 负责产品边界、当前模块/Tool/Gate/schema 与回归测试负责可执行合同，归档 v1.1 仅作历史证据。v11 名称继续作为实现版本标识，不构成权威来源声明。
 - CG-012【RESOLVED】：Workflow Runtime 的生产事件集成只依赖注入的 `IEventBus` port；测试使用包内 port test double，package/dev lock、当前部署文档均不再消费 Daemon。`STATE_ADVANCEMENT_SUBJECTS` 由 Workflow Runtime 单一定义并从包根导出，Daemon 沿合法的 Daemon → Workflow Runtime 方向消费。
-- CG-013【PARTIALLY_RESOLVED】：Workflow Runtime 内无生产消费者的第二套 WriteGuard、CodePermissionService 与 ChangedFilesAudit 已退出，其专属测试和旧 v11 导出同步移除；Daemon 内无消费者且与 canonical 语义不同的 `evaluatePolicy`、默认规则副本、`command-write-audit` 和兼容 `write-policy` barrel 也已退出。当前真实写入决策仍由 Daemon 的 `checkWrite` 及其 HTTP/shell enforcement consumers 执行，Permission Engine 的 `tool.invoking` 路径仍仅记录且超时默认允许。后续仍需在不改变现有 fail-closed 写入语义的前提下，把真实 Permission 决策与 Daemon enforcement 收敛到一个显式边界。
+- CG-013【PARTIALLY_RESOLVED】：Workflow Runtime 内无生产消费者的第二套 WriteGuard、CodePermissionService 与 ChangedFilesAudit 已退出，其专属测试和旧 v11 导出同步移除；Daemon 内无消费者且与 canonical 语义不同的 `evaluatePolicy`、默认规则副本、`command-write-audit` 和兼容 `write-policy` barrel 也已退出。Canonical、无副作用的 `decideWritePermission` 现由 Permission Engine 拥有，Permission Engine 不再反向依赖 Daemon；Daemon 保留 `checkWrite` enforcement adapter，现有 HTTP/shell/path-policy 消费者和审计副作用保持不变。后续仍需分类并收敛 HTTP/shell/runtime adapter 中位于 canonical decision 之外的前置拒绝分支，并处理旧 `tool.invoking` 仅记录、超时默认允许的非写入权限路径。
 - CG-014【RESOLVED】：current handshake consumers 已统一到 `<OpenCode config>/sf-user/runtime/handshake.json`。
 
 这些 gap 的后续修改属于“使实现符合产品规格”，不需要重新开启产品范围裁决，除非实际实施发现新的产品级冲突。

@@ -1,0 +1,108 @@
+import { describe, expect, it } from 'vitest';
+import { ACTOR_ROLES } from '@specforge/types/actor-roles';
+import {
+  decideWritePermission,
+  type WriteDecisionContext,
+  type WriteOperation,
+} from '../../src/write-decision';
+
+const baseContext: WriteDecisionContext = {
+  hasActiveWI: true,
+  callerRole: ACTOR_ROLES.agent,
+  isFrozen: false,
+  workItem: {
+    work_item_id: 'WI-TEST',
+    status: 'implementation_running',
+    code_change_allowed: true,
+    allowed_write_files: [{ path: 'src/app.ts', operation: 'modify' }],
+    workflow_path: null,
+  },
+};
+
+function decide(
+  path: string,
+  operation: WriteOperation = 'modify',
+  overrides: Partial<WriteDecisionContext> = {},
+) {
+  return decideWritePermission({ ...baseContext, ...overrides }, path, operation);
+}
+
+describe('canonical write decision', () => {
+  it('allows an authorized code write', () => {
+    expect(decide('src/app.ts')).toEqual({ allowed: true, violations: [] });
+  });
+
+  it('denies unknown actors before evaluating paths', () => {
+    expect(decide('src/app.ts', 'modify', { callerRole: 'unknown' as never })).toEqual({
+      allowed: false,
+      violations: ['unknown actor role: unknown, write denied'],
+    });
+  });
+
+  it('denies writes after the Work Item is closed', () => {
+    expect(decide('src/app.ts', 'modify', {
+      workItem: { ...baseContext.workItem!, status: 'closed' },
+    })).toEqual({
+      allowed: false,
+      violations: ['closed WI cannot be written: WI-TEST'],
+    });
+  });
+
+  it('denies code writes without an active Work Item', () => {
+    expect(decideWritePermission({
+      hasActiveWI: false,
+      callerRole: ACTOR_ROLES.agent,
+      isFrozen: false,
+    }, 'src/app.ts', 'modify')).toEqual({
+      allowed: false,
+      violations: ['no active WI, cannot write code: src/app.ts'],
+    });
+  });
+
+  it('enforces controlled governance writers', () => {
+    expect(decide('.specforge/project/modules/CORE/design.md')).toEqual({
+      allowed: false,
+      violations: [
+        'only merge_runner may write .specforge/project/: .specforge/project/modules/CORE/design.md (actor: agent)',
+      ],
+    });
+    expect(decide('.specforge/project/modules/CORE/design.md', 'modify', {
+      callerRole: ACTOR_ROLES.mergeRunner,
+    })).toEqual({ allowed: true, violations: [] });
+  });
+
+  it('denies frozen Candidate changes', () => {
+    expect(decide('.specforge/work-items/WI-TEST/candidates/design.md', 'modify', {
+      isFrozen: true,
+    })).toEqual({
+      allowed: false,
+      violations: ['frozen: cannot modify candidates/: .specforge/work-items/WI-TEST/candidates/design.md'],
+    });
+  });
+
+  it('enforces code permission and path-operation scope', () => {
+    expect(decide('src/app.ts', 'modify', {
+      workItem: { ...baseContext.workItem!, code_change_allowed: false },
+    }).violations).toEqual(['code_change_allowed=false, cannot write: src/app.ts']);
+
+    expect(decide('src/other.ts')).toEqual({
+      allowed: false,
+      violations: ['file+operation not in allowed_write_files: src/other.ts (modify)'],
+    });
+  });
+
+  it('preserves protected-file RBAC decisions', () => {
+    expect(decide('.specforge/specs/WI-TEST/requirements.md', 'modify', {
+      enableRBAC: true,
+    })).toEqual({
+      allowed: false,
+      violations: [
+        'RBAC: agent is not authorized to modify spec_file: .specforge/specs/WI-TEST/requirements.md',
+      ],
+    });
+
+    expect(decide('.specforge/specs/WI-TEST/verification_report.md', 'create', {
+      enableRBAC: true,
+    })).toEqual({ allowed: true, violations: [] });
+  });
+});

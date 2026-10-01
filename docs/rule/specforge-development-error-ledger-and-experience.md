@@ -29052,3 +29052,27 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1600_STATUS=CLOSED_CURRENT_HEAD_CONFORMING_CANDIDATE_REGENERATED_AND_VALIDATED
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1600_INVALID_RELEASE_CANDIDATE_ID_FORMAT:END -->
+
+<!-- SPECFORGE_ERR1601_PERMISSION_README_INVALID_UTF8_PATCH_BLOCK:START -->
+### ERR-1601：Permission Engine README 非法 UTF-8 阻断原子补丁
+
+- **事实证据**：尝试原子同步 package、lock、README、PROJECT_STRUCTURE 与边界测试时，`apply_patch` 在读取 `packages/permission-engine/README.md` 的 byte 1019 处报告 invalid utf-8 sequence；随后 `git status` 与目标 diff 证明整组补丁没有部分应用，仅此前新增的红灯测试存在。
+- **影响**：不能在未确认原编码和逐字节转换结果前同步 README 展示文字；Permission Engine 反向依赖的机器合同仍可独立收敛，文档编码修复不能用绕过补丁工具的写法夹带完成。
+- **根因**：把源码依赖闭环和已存在编码异常的展示文档放入同一原子补丁，没有先验证所有目标文件可由标准补丁工具安全解析。
+- **纠正与防复发**：本切片只修改有效 UTF-8 的 package/lock 与机器边界测试；README/PROJECT_STRUCTURE 的编码和陈旧描述作为独立消费者债务，后续先识别源编码、证明转换前后语义等价，再单独处理。多文件补丁前先验证每个目标的可解析性。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-007、EXP-008、EXP-015、EXP-026、EXP-060、EXP-087、EXP-092。
+- ERR1601_STATUS=CLOSED_MACHINE_CONTRACT_SCOPED_SEPARATELY_DOCUMENT_ENCODING_DEFERRED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1601_PERMISSION_README_INVALID_UTF8_PATCH_BLOCK:END -->
+
+<!-- SPECFORGE_ERR1602_GIT_INDEX_SANDBOX_PERMISSION_DENIED:START -->
+### ERR-1602：提交前显式暂存被 Git 元数据沙箱权限阻断
+
+- **事实证据**：对 CG-013 第三切片的 10 个明确文件执行 `git add -- <explicit paths>` 时，Git 返回 `Unable to create 'D:/code/SpecForge/.git/index.lock': Permission denied`；紧随其后的 `git status --short` 显示全部目标仍未暂存，受保护备份仍为未跟踪状态。
+- **影响**：工作树内容不受影响且没有部分暂存，但在取得仅限 Git 元数据写入的批准前不能提交。
+- **根因**：当前工作区允许写产品文件，但 `.git` 在默认沙箱中只读；首次暂存未显式请求已获准的 Git 元数据写权限。
+- **纠正与防复发**：保持相同的明确文件清单，以受控提权重新执行 `git add`，随后复核 cached diff 与 status；不得用目录级或全仓暂存绕过边界，也不得包含用户备份文件。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-010、EXP-017、EXP-031、EXP-046、EXP-060、EXP-087。
+- ERR1602_STATUS=CLOSED_RETRY_WITH_EXPLICIT_PATHS_AND_CONTROLLED_GIT_METADATA_PERMISSION
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1602_GIT_INDEX_SANDBOX_PERMISSION_DENIED:END -->

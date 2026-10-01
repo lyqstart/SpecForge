@@ -5,6 +5,14 @@ import { describe, expect, it } from 'vitest';
 const ROOT = resolve(import.meta.dirname, '../../..');
 
 describe('current Permission and Write Guard ownership boundary', () => {
+  it('keeps Permission Engine independent of Daemon implementation', () => {
+    const permissionPackage = JSON.parse(
+      readFileSync(resolve(ROOT, 'packages/permission-engine/package.json'), 'utf8'),
+    ) as { dependencies?: Record<string, string> };
+
+    expect(permissionPackage.dependencies).not.toHaveProperty('@specforge/daemon-core');
+  });
+
   it('keeps write enforcement out of Workflow Runtime', () => {
     const retiredWorkflowRuntimeSurfaces = [
       'packages/workflow-runtime/src/v11/runtime/WriteGuard.ts',
@@ -39,7 +47,8 @@ describe('current Permission and Write Guard ownership boundary', () => {
       'utf8',
     );
 
-    expect(daemonWriteGuard).toContain('export function checkWrite(');
+    expect(daemonWriteGuard).toContain("from '@specforge/permission-engine'");
+    expect(daemonWriteGuard).toContain('return decideWritePermission(ctx, targetPath, operation);');
     expect(daemonHttp).toContain('const result = checkWrite(wiCtx, targetPath');
     expect(pluginClient).toContain('/api/v1/v11/write-guard/check');
   });

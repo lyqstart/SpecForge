@@ -9,6 +9,7 @@ export * from './types';
 export * from './models';
 export * from './services';
 export * from './utils';
+export * from './write-decision';
 
 // Re-export Plugin Loader Integration for convenience
 export {
