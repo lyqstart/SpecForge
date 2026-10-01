@@ -85,7 +85,7 @@ describe('Version Command', () => {
     });
 
     it('当 .installation.json 不存在时，installRootSchemaVersion 应为 null', async () => {
-      // 这是默认情况（测试环境通常没有 ~/.specforge/.installation.json）
+      // 这是默认情况（当前 sf-user 根通常没有旧 .installation.json）
       await runVersionCommand({ json: true });
 
       const payload = JSON.parse(capturedOutput[0]) as VersionInfoPayload;

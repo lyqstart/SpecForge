@@ -28773,3 +28773,78 @@ ERR1577_STATUS=CLOSED_ROOT_BOOTSTRAP_AND_PACKAGE_TEST_SEPARATED
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1577_BOOTSTRAP_WRONG_PACKAGE_WORKDIR:END -->
+
+<!-- SPECFORGE_ERR1578_SCOPE_GATE_VITEST_WRONG_ROOT_PATH:START -->
+### ERR-1578：从仓库根调用了不存在的 Vitest 可执行路径
+
+- **事实证据**：执行 `.\\node_modules\\.bin\\vitest.exe run packages/scope-gate/tests/current-cli-no-legacy-deployment.test.ts` 时 PowerShell 报该命令不存在；只读检查确认根路径为 `False`，`packages/scope-gate/node_modules/.bin/vitest.exe` 为 `True`。
+- **影响**：expected-red 测试未启动，退出码 1 不能作为断言失败证据；仓库除已经写入的 Scope Gate 测试外没有因该命令产生修改。
+- **根因**：沿用了另一轮根级依赖布局记忆，没有在运行前核验当前包的真实测试可执行入口。
+- **纠正与防复发**：Scope Gate 测试固定从 `packages/scope-gate` 工作目录调用其包级 `node_modules/.bin/vitest.exe`；测试证据必须包含 Vitest 文件和用例摘要，不能只依据退出码。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-020、EXP-060。
+
+```text
+ERR1578_STATUS=CLOSED_PACKAGE_LOCAL_VITEST_ENTRY_VERIFIED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1578_SCOPE_GATE_VITEST_WRONG_ROOT_PATH:END -->
+
+<!-- SPECFORGE_ERR1579_EMPTY_DIRECTORY_ACCESS_FALSE_FAILURE:START -->
+### ERR-1579：Scope Gate 用目录 access 断言 Git 文件删除导致假失败
+
+- **事实证据**：删除旧 init 与 distribution 集成测试的全部 tracked 文件后，目标 Scope Gate 仍在目录 access 上报告 promise resolved；静态消费者审计已证明旧源码文件引用只剩负向测试自身。
+- **影响**：目标测试 3 项中 1 项失败；CLI build 与 3 个相关测试文件 31 项已独立通过，但尚不能宣告 Scope Gate 收口。
+- **根因**：测试把 Windows 工作区中的空目录存在等同于仓库仍保留退役实现；Git 不跟踪空目录，两者语义不一致。
+- **纠正与防复发**：对每个退役 tracked 文件逐项断言不可访问，不再用父目录存在性代表 Git 内容；重新执行同一目标测试和完整 Scope Gate。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-020、EXP-031、EXP-087。
+- ERR1579_STATUS=CLOSED_TRACKED_FILE_ASSERTIONS_AND_TARGET_TEST_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1579_EMPTY_DIRECTORY_ACCESS_FALSE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1580_APPLY_PATCH_TEMPLATE_LITERAL_PARSE_FAILURE:START -->
+### ERR-1580：补丁文本中的反引号破坏 JavaScript 模板字符串解析
+
+- **事实证据**：构造 ERR-1579 补丁时，工具脚本在执行 apply_patch 前报告 SyntaxError: Unexpected identifier access；账本尾部未写入 ERR-1579。
+- **影响**：该调用没有修改仓库；ERR-1579 与本条仍需补录后才能继续修正测试。
+- **根因**：把包含 Markdown 反引号的补丁正文直接嵌入 JavaScript 反引号模板字符串，未隔离两层定界符。
+- **纠正与防复发**：包含 Markdown 反引号的补丁不使用 JavaScript 模板字符串；工具脚本语法失败不得解释为 apply_patch 失败或部分写入。
+- **适用经验**：EXP-002、EXP-003、EXP-007、EXP-015、EXP-019、EXP-020、EXP-060。
+- ERR1580_STATUS=CLOSED_PLAIN_ESCAPED_PATCH_STRING_REQUIRED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1580_APPLY_PATCH_TEMPLATE_LITERAL_PARSE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1581_APPLY_PATCH_LINE_ARRAY_NAN:START -->
+### ERR-1581：逐行补丁数组在校验阶段产生 NaN 行
+
+- **事实证据**：改用逐行字符串数组补录 ERR-1579/1580 时，apply_patch 在第 19 行报告 Expected update hunk，实际收到 NaN；账本仍未写入新条目。
+- **影响**：第二次补录仍为零写入，测试修正继续阻断。
+- **根因**：当前工具编排层对该数组构造未形成稳定的纯字符串补丁；具体转换点证据不足，不继续猜测。
+- **纠正与防复发**：本轮补丁改用单个普通双引号转义字符串，正文不含 Markdown 代码围栏；后续先用最小单文件补丁验证成功。
+- **适用经验**：EXP-002、EXP-003、EXP-007、EXP-015、EXP-019、EXP-020、EXP-060。
+- ERR1581_STATUS=CLOSED_SINGLE_ESCAPED_STRING_REQUIRED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1581_APPLY_PATCH_LINE_ARRAY_NAN:END -->
+
+<!-- SPECFORGE_ERR1582_STALE_LOCK_RECLAIM_POST_UNLINK_TIMEOUT:START -->
+### ERR-1582：完整 Scope Gate 中 stale-lock 回收在删除后因过短总超时未重试创建
+
+- **事实证据**：完整 Scope Gate 25 文件、118 项中仅 dead-PID 回收用例失败；测试已显式注入 isPidAlive 返回 false，生产实现也真实消费该探针。失败耗时 476ms，而共享 fastOptions 的总 timeoutMs 仅 40ms，错误仍携带原 dead-owner，说明 stale 复核与删除完成后已超过总窗口，未进入下一轮创建。
+- **影响**：117 项通过；CG-009 目标边界 3 项已通过，但完整 Scope Gate 尚未通过。
+- **根因**：ERR-1568 已消除 OS PID 判断不确定性，却仍把需要 stale 双读、延时、删除、再创建的成功路径绑定到 40ms 竞争失败窗口；完整并发负载下该时限不代表业务语义。
+- **纠正与防复发**：只为 dead-owner 成功回收用例提供更宽的总超时；保留其他锁竞争失败测试的 40ms 快速窗口，不修改生产锁语义。
+- **适用经验**：EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-020、EXP-031、EXP-087。
+- ERR1582_STATUS=CLOSED_DEAD_OWNER_SUCCESS_TIMEOUT_SEPARATED_AND_TARGET_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1582_STALE_LOCK_RECLAIM_POST_UNLINK_TIMEOUT:END -->
+
+<!-- SPECFORGE_ERR1583_BOOTSTRAP_DIRTY_AND_REMOTE_UNAVAILABLE:START -->
+### ERR-1583：提交前 bootstrap 因实施中工作区和远程网络不可达返回 BLOCKED
+
+- **事实证据**：根入口正确解析 CG011 状态、当前本地 HEAD 与三份权威哈希，但输出 WORKTREE_STATUS=DIRTY、REMOTE_HEAD=NOT_CHECKED，并因 GitHub 443 连接失败返回 BOOTSTRAP_STATUS=BLOCKED、退出码 1。
+- **影响**：新的项目状态字段已被解析，但该次执行不是 bootstrap 通过证据，也未证明远程 main 仍等于本地基线。
+- **根因**：实施尚未提交时工作区必然需要 review，同时 bootstrap 的单一远程入口遭遇当前网络不可达；两项均按 fail-closed 聚合为 BLOCKED。
+- **纠正与防复发**：提交前用独立 git ls-remote 入口复核远程 SHA；提交并推送后在干净工作区重新运行 bootstrap，只有退出 0 才作为最终恢复入口证据。
+- **适用经验**：EXP-002、EXP-007、EXP-015、EXP-017、EXP-020、EXP-040、EXP-060、EXP-082。
+- ERR1583_STATUS=CLOSED_REMOTE_MAIN_BASELINE_VERIFIED_BY_INDEPENDENT_GIT_ENTRY
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1583_BOOTSTRAP_DIRTY_AND_REMOTE_UNAVAILABLE:END -->

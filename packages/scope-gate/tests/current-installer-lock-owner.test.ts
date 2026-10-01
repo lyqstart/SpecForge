@@ -136,6 +136,7 @@ describe('current installer lock owner contract', () => {
 
     const handle = await acquireInstallLock(root, 'install', {
       ...fastOptions,
+      timeoutMs: 1_000,
       isPidAlive: () => false,
     });
     expect(parseInstallLock(JSON.parse(

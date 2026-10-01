@@ -9,13 +9,13 @@
 <!-- SPECFORGE_PROJECT_STATUS:START -->
 PROJECT_STATUS_SCHEMA=1
 PROJECT_STATUS_DECLARATION=ACTIVE
-ACTIVE_INITIATIVE=CG009_LEGACY_CLI_DISTRIBUTION_CONVERGENCE
-OBJECTIVE=Remove the active npm-global, specforge init, and user-home ~/.specforge deployment contract from current CLI consumers while preserving only explicitly authorized legacy read/migration behavior.
-CURRENT_PHASE=CG009_PUBLIC_RELEASE_ENTRY_CONVERGED_LEGACY_LIBRARY_AUDIT_PENDING
+ACTIVE_INITIATIVE=CG011_CURRENT_STANDARD_SOURCE_ALIGNMENT
+OBJECTIVE=Replace remaining current-source claims that treat the archived v1.1 fused standard as present authority with the SPS or the owning formal contract, while preserving historical evidence.
+CURRENT_PHASE=CG009_RESOLVED_CG011_CONSUMER_AUDIT_PENDING
 OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;D05:OPENCODE_ADAPTER_ENABLED
-LAST_COMPLETED_CHECKPOINT=Expected-red coverage now proves the release CLI does not expose specforge init or user-home deployment guidance; the init registration and help entries were removed, npm-global smoke runner code/tests were retired, and CLI build/full tests plus Scope Gate pass.
+LAST_COMPLETED_CHECKPOINT=CG009 is resolved: unreachable init/wizard and old distribution runtime code/tests were removed, publish tooling and the version command's read-only legacy probe were retained, CLI build plus 39 files/781 tests pass, and Scope Gate 25 files/118 tests pass.
 CURRENT_BLOCKER=NONE
-NEXT_LEGAL_ACTION=Audit the now-unreachable CLI init/wizard, installation-record, daemon-healthcheck, path-resolver install-source branch, and their tests; retain only independently consumed build tooling or explicit read-only migration support, then remove the remaining retired deployment code.
+NEXT_LEGAL_ACTION=Audit every current source, Agent, prompt, generated template, and test consumer that cites the archived v1.1 fused standard; classify historical references separately, then bind each current claim to SPS or its owning formal contract without rewriting archived evidence.
 ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;scripts/**;setup/**;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
 PROHIBITED=Changing SPS product scope without a new product-owner decision;deleting ADR ERR audit or report evidence;touching the untracked architecture-plan backup;creating another active handoff current-status or recovery-status file
 REQUIRED_RULES=docs/rule/specforge-development-error-ledger-and-experience.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md

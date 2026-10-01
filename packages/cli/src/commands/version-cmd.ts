@@ -8,7 +8,7 @@
  * 功能：
  * - 读取 CLI 版本（package.json#version）
  * - 读取 schema_version baseline（SchemaVersionManager.baseline）
- * - 读取磁盘安装记录（~/.specforge/.installation.json#schema_version，可能不存在/损坏）
+ * - 只读探测当前用户根中的旧安装记录（可能不存在/损坏）
  * - JSON 模式：输出 VersionInfoPayload 单行 JSON
  * - 非 JSON 模式：输出 <cliVersion>\n<schema_version>
  */
@@ -16,7 +16,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { SchemaVersionManager } from '../distribution/schema-version-manager.js';
-import type { VersionInfoPayload, InstallationRecord } from '../distribution/types.js';
+import type { VersionInfoPayload } from '../distribution/types.js';
 import { pathResolver } from '../utils/path-resolver.js';
 
 /**
@@ -28,7 +28,8 @@ export interface VersionCommandOptions {
 }
 
 /**
- * 读取 ~/.specforge/.installation.json 的 schema_version 字段
+ * 只读探测当前用户根中旧 .installation.json 的 schema_version 字段。
+ * 本命令不会创建、修复或迁移该文件。
  * 
  * 处理三种失败情况：
  * - missing: 文件不存在
@@ -45,7 +46,7 @@ async function loadInstallationSchemaVersion(): Promise<string | null> {
     const content = await fs.readFile(installationPath, 'utf-8');
     
     // 尝试解析 JSON
-    const record = JSON.parse(content) as InstallationRecord;
+    const record = JSON.parse(content) as { schema_version?: unknown };
     
     // 检查 schema_version 字段是否存在
     if (!record.schema_version || typeof record.schema_version !== 'string') {
