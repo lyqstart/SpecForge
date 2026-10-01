@@ -28968,3 +28968,51 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1593_STATUS=CLOSED_REAL_FILE_INVENTORY_REQUIRED_FOR_NEXT_QUERY
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1593_ASSUMED_PACKAGES_TOOLS_SOURCE_PATH:END -->
+
+<!-- SPECFORGE_ERR1594_EXPERIENCE_SECTION_HEADING_ASSUMPTION:START -->
+### ERR-1594：经验门禁按不存在的二级标题格式切片
+
+- **事实证据**：首次读取用 ^## 三、/^## 四、/^## 五、定位章节，三个行号均为空；数组切片因此只输出账本尾部，没有读取第三、第四部分正文。真实标题为一级标题“# 第三部分：工程经验总则”和“# 第四部分：修改前强制检查”。
+- **影响**：首次调用不能作为经验门禁通过证据；在按真实标题分块完整重读前保持 fail-closed，没有开始 CG-013 代码修改。
+- **根因**：根据自然语言章节编号假设 Markdown 标题层级和标点，没有先检查真实结构，重复了只凭预期结构定位门禁内容的错误模式。
+- **纠正与防复发**：先用固定关键词发现真实章节边界，再按已确认行号分块读取至下一部分；任何空行号或输出截断均不得记录 EXPERIENCE_FILE_READ=YES。
+- **适用经验**：EXP-001、EXP-007、EXP-015、EXP-020、EXP-021、EXP-060、EXP-065、EXP-087。
+- ERR1594_STATUS=CLOSED_REAL_HEADINGS_DISCOVERED_AND_SECTIONS_FULLY_REREAD
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1594_EXPERIENCE_SECTION_HEADING_ASSUMPTION:END -->
+
+<!-- SPECFORGE_ERR1595_ASSUMED_ROOT_SRC_SEARCH_PATH:START -->
+### ERR-1595：CG-013 消费者检索再次假设仓库根 src 存在
+
+- **事实证据**：针对 `evaluatePolicy` 与 `checkWrite` 生产消费者的检索同时传入 `packages/daemon-core/src`、`packages/service-management/src`、`packages/cli/src` 和仓库根 `src`；`rg` 对最后一项报告“系统找不到指定的文件”，其余真实路径仍返回有效匹配。
+- **影响**：不存在的仓库根 `src` 没有形成任何覆盖证据；当前消费者图仅能使用真实存在路径的结果，且该调用不能作为全仓无遗漏声明。
+- **根因**：虽然 ERR-1593 已要求从真实文件清单构造检索范围，本次仍手工追加了未经文件清单验证的概念性根路径，属于同类错误复发。
+- **纠正与防复发**：后续全仓消费者检索直接以仓库根 `.` 配合明确排除项，或只使用已由 `rg --files` 确认的目录；不再手工猜测候选源码根。对本次结果只采信真实路径命中。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-017、EXP-060、EXP-084、EXP-087。
+- ERR1595_STATUS=CLOSED_SEARCH_SCOPE_CHANGED_TO_REPOSITORY_ROOT_WITH_EXCLUSIONS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1595_ASSUMED_ROOT_SRC_SEARCH_PATH:END -->
+
+<!-- SPECFORGE_ERR1596_STALE_GOVERNANCE_DOCUMENT_PATHS:START -->
+### ERR-1596：CG-013 状态检索沿用归档前治理文档路径
+
+- **事实证据**：定位 CG-013 时检索了已不存在的 `docs/standards/specforge-product-scope.md`、`docs/implementation/architecture-consistency/current-handoff.md` 和 `docs/implementation/architecture-consistency/authority-model-recovery.md`，三个路径均报不存在；真实清单显示当前产品规格为 `docs/product-specification/specforge-product-specification.md`，handoff 与恢复报告已在 `docs/archive/implementation/architecture-consistency/`。
+- **影响**：该调用不能证明当前产品规格或项目状态内容；源码消费者证据不受影响，且未据此修改产品文件。
+- **根因**：复用了权威恢复实施前的路径记忆，没有先以当前 HEAD 的文件清单解析治理文件位置。
+- **纠正与防复发**：当前产品判断只从 `docs/product-specification/specforge-product-specification.md` 与 `docs/project-status.md` 读取；归档 handoff/恢复报告仅作历史证据。后续路径引用先经 `rg --files` 验证。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-017、EXP-040、EXP-060、EXP-084、EXP-087。
+- ERR1596_STATUS=CLOSED_CURRENT_SPS_AND_STATUS_PATHS_CONFIRMED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1596_STALE_GOVERNANCE_DOCUMENT_PATHS:END -->
+
+<!-- SPECFORGE_ERR1597_OVER_SPECIFIC_PLUGIN_ROUTE_ASSERTION:START -->
+### ERR-1597：CG-013 边界测试把 Plugin 路由误写为单引号精确片段
+
+- **事实证据**：新增边界测试首次红灯运行有两项失败；旧 Workflow Runtime WriteGuard 存在是预期红灯，但 Plugin 正向边界断言期待 `'/api/v1/v11/write-guard/check'`，真实源码在 fetch 模板字符串中使用该路由，因引号形式不同而失败。
+- **影响**：首次红灯混入一项与架构边界无关的测试失败，不能作为单一失败原因证据；产品源码尚未因该失败修改。
+- **根因**：断言把 TypeScript 字面量书写形式当成业务路由合同，而没有只匹配稳定的路由值。
+- **纠正与防复发**：正向消费者断言只匹配 `/api/v1/v11/write-guard/check` 路由文本；重新运行红灯测试，必须仅剩待退休 Workflow Runtime 表面导致的失败后才实施删除。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-007、EXP-010、EXP-015、EXP-017、EXP-031、EXP-087。
+- ERR1597_STATUS=CLOSED_ASSERTION_MATCHES_STABLE_ROUTE_VALUE
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1597_OVER_SPECIFIC_PLUGIN_ROUTE_ASSERTION:END -->
