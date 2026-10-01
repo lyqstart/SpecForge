@@ -9,13 +9,13 @@
 <!-- SPECFORGE_PROJECT_STATUS:START -->
 PROJECT_STATUS_SCHEMA=1
 PROJECT_STATUS_DECLARATION=ACTIVE
-ACTIVE_INITIATIVE=CG011_CURRENT_STANDARD_SOURCE_ALIGNMENT
-OBJECTIVE=Replace remaining current-source claims that treat the archived v1.1 fused standard as present authority with the SPS or the owning formal contract, while preserving historical evidence.
-CURRENT_PHASE=CG009_RESOLVED_CG011_CONSUMER_AUDIT_PENDING
+ACTIVE_INITIATIVE=CG012_RUNTIME_DAEMON_DEPENDENCY_CONVERGENCE
+OBJECTIVE=Eliminate conceptual or build-time reverse dependencies between Workflow Runtime and Daemon while preserving the current formal contracts and runtime behavior.
+CURRENT_PHASE=CG011_RESOLVED_CG012_CONSUMER_GRAPH_PENDING
 OWNER_DECISIONS=AR-DEC-01:APPROVED;AR-DEC-02:APPROVED_WITH_ARCHIVE_CONSOLIDATION;AR-DEC-03:APPROVED_WITH_KIRO_RETIREMENT;AR-DEC-04:APPROVED_WITH_SINGLE_PROJECT_STATUS;D05:OPENCODE_ADAPTER_ENABLED
-LAST_COMPLETED_CHECKPOINT=CG009 is resolved: unreachable init/wizard and old distribution runtime code/tests were removed, publish tooling and the version command's read-only legacy probe were retained, CLI build plus 39 files/781 tests pass, and Scope Gate 25 files/118 tests pass.
+LAST_COMPLETED_CHECKPOINT=CG011 is resolved: current source and sf-design authority claims now bind product scope to SPS-1.0 and executable behavior to current module/Tool/Gate contracts; three builds, 27 Agent contract tests, and Scope Gate 26 files/120 tests pass.
 CURRENT_BLOCKER=NONE
-NEXT_LEGAL_ACTION=Audit every current source, Agent, prompt, generated template, and test consumer that cites the archived v1.1 fused standard; classify historical references separately, then bind each current claim to SPS or its owning formal contract without rewriting archived evidence.
+NEXT_LEGAL_ACTION=Build the complete Workflow Runtime and Daemon import/build/test consumer graph, distinguish production dependencies from test-only and historical coupling, then remove the first confirmed reverse dependency without changing runtime behavior.
 ALLOWED_SCOPE=AGENTS.md;README.md;.gitattributes;.gitignore;docs/project-status.md;docs/product-specification/**;docs/design/SpecForge架构一致性治理最终实施方案.md;docs/archive/**;docs/adr/**;docs/cli/**;docs/plugins/**;docs/tools/**;docs/engineering-lessons/**;scripts/**;setup/**;packages/**/README.md;packages/**/DEVELOPMENT.md;packages/**/docs/**;packages/**/src/**/*.md;packages/**/tests/**;tests/**
 PROHIBITED=Changing SPS product scope without a new product-owner decision;deleting ADR ERR audit or report evidence;touching the untracked architecture-plan backup;creating another active handoff current-status or recovery-status file
 REQUIRED_RULES=docs/rule/specforge-development-error-ledger-and-experience.md;docs/product-specification/authority-registry.md;docs/product-specification/specforge-product-specification.md;docs/design/SpecForge架构一致性治理最终实施方案.md

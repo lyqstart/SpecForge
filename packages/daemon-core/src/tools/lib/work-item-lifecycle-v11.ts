@@ -1,7 +1,7 @@
 /**
  * work-item-lifecycle-v11.ts — v1.1 标准 Work Item 生命周期管理
  *
- * 依据：SpecForge 最终融合标准 v1.1
+ * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
  *
  * 负责：
  * - §4.2 WI 目录创建

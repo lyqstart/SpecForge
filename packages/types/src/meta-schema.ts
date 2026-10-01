@@ -1,7 +1,7 @@
 /**
  * meta-schema.ts — SpecForge v1.1 权威 schema 定义
  *
- * 依据：SpecForge 最终融合标准 v1.1（specforge_final_fused_standard_v1_1_patch1_zh.md）
+ * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
  *
  * 本模块定义：
  * - v1.1 状态机阶段枚举（§5）

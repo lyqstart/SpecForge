@@ -28848,3 +28848,51 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1583_STATUS=CLOSED_REMOTE_MAIN_BASELINE_VERIFIED_BY_INDEPENDENT_GIT_ENTRY
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1583_BOOTSTRAP_DIRTY_AND_REMOTE_UNAVAILABLE:END -->
+
+<!-- SPECFORGE_ERR1584_AGENT_ASSET_MANIFEST_HASH_STALE:START -->
+### ERR-1584：当前 Agent 模板变更后 release manifest 哈希未同步
+
+- **事实证据**：完整 Scope Gate 26 文件、120 项中 117 项通过；installer manifest consumption 的 3 个场景均以 release_install_set:hash_mismatch:agents/sf-design.md 失败。
+- **影响**：源码权威边界测试、三层构建和 4 个 Agent 合同文件 27 项均通过，但当前 release install set 尚未闭环，不能提交。
+- **根因**：sf-design.md 是 release manifest 管理的物理安装资产；修改模板后尚未运行官方 manifest producer 重算哈希和 runtime-entry 证据。
+- **纠正与防复发**：使用官方 build-release-manifest producer 和新的不可变 candidate id 重建清单，随后重跑完整 Scope Gate；禁止手改单项哈希。
+- **适用经验**：EXP-004、EXP-008、EXP-010、EXP-015、EXP-031、EXP-052、EXP-074、EXP-077、EXP-087。
+- ERR1584_STATUS=CLOSED_OFFICIAL_MANIFEST_REBUILT_AND_SCOPE_GATE_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1584_AGENT_ASSET_MANIFEST_HASH_STALE:END -->
+
+<!-- SPECFORGE_ERR1585_ASSUMED_RELEASE_IDENTITY_FILE:START -->
+### ERR-1585：只读取证错误假设 release-identity.json 存在
+
+- **事实证据**：组合读取命令成功读取 release/release-manifest.json 与 producer 源码，但 Get-Content 对 release/release-identity.json 报路径不存在。
+- **影响**：该分支没有形成 identity 文件证据，也没有仓库写入；manifest 自身已直接提供 releaseId/candidateId。
+- **根因**：根据其他发布体系惯例猜测存在独立 identity 文件，没有先用仓库清单确认。
+- **纠正与防复发**：本轮 release identity 仅从正式 manifest schema 和 producer 参数读取；任何额外身份文件先用 rg --files 确认，缺失不得直接重试。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-017、EXP-060、EXP-084。
+- ERR1585_STATUS=CLOSED_MANIFEST_IS_IDENTITY_SOURCE
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1585_ASSUMED_RELEASE_IDENTITY_FILE:END -->
+
+<!-- SPECFORGE_ERR1586_RELEASE_CANDIDATE_ID_CONSUMER_FORMAT_MISSED:START -->
+### ERR-1586：重建 release manifest 时遗漏 candidateId 消费者格式合同
+
+- **事实证据**：官方 producer 以 main-2b832815-cg011-authority-source 成功生成清单且资产哈希失败消失；完整 Scope Gate 仍有 3 项失败，均要求 candidateId 匹配 main-8位SHA-working-tree-step字母数字。
+- **影响**：117/120 项通过；release manifest/runtime、formal precheck 和 installer consumption 的身份前置断言未通过，不能提交当前清单。
+- **根因**：只读取了 producer 对 candidateId 非空的输入检查，没有在生成前读取三个正式消费者的更窄格式合同。
+- **纠正与防复发**：使用满足当前消费者正则的 main-2b832815-working-tree-stepcg011authoritysource 重新生成；以后 manifest producer 输入必须先取 producer 与全部身份消费者约束的交集。
+- **适用经验**：EXP-004、EXP-007、EXP-010、EXP-015、EXP-026、EXP-031、EXP-060、EXP-074、EXP-087。
+- ERR1586_STATUS=CLOSED_CONSUMER_FORMAT_APPLIED_AND_SCOPE_GATE_PASS
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1586_RELEASE_CANDIDATE_ID_CONSUMER_FORMAT_MISSED:END -->
+
+<!-- SPECFORGE_ERR1587_GIT_SHOW_IGNORED_RELEASE_MANIFEST:START -->
+### ERR-1587：对未跟踪的生成型 release manifest 执行 git show
+
+- **事实证据**：git ls-files 对 release/release-manifest.json 无输出，git check-ignore 明确命中 .gitignore 第 7 行；随后 git show HEAD:release/release-manifest.json 报文件存在于磁盘但不在 HEAD。
+- **影响**：该命令未形成历史 blob 证据且没有写入；官方 producer 生成的 manifest 仍作为本地发布预检证据被 Scope Gate 消费。
+- **根因**：在已可由 ls-files/check-ignore 判定文件角色后，仍假设它可能存在 HEAD 版本并执行 git show。
+- **纠正与防复发**：生成型 release manifest 以 producer 输出、当前文件哈希和正式消费者验证为证据，不加入提交；只有 git ls-files 确认 tracked 后才使用 git show HEAD:path。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-017、EXP-040、EXP-060、EXP-077。
+- ERR1587_STATUS=CLOSED_IGNORED_GENERATED_EVIDENCE_CONFIRMED
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1587_GIT_SHOW_IGNORED_RELEASE_MANIFEST:END -->

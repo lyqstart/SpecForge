@@ -568,15 +568,15 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 
 ---
 
-# v1.1 Standard Concepts
+# Current Design Governance Concepts
 
-以下概念来自 SpecForge v1.1 标准（`specforge_final_fused_standard_v1_1_patch1_zh.md`）。设计 Agent 必须理解这些概念以支持 change_request / refactor 等增量工作流。
+产品边界由 SPS-1.0 定义。当前可执行合同由 Candidate classification、受控 `sf_artifact_write`、`sf_design_gate` 与对应 schema / 回归测试共同固定。以下术语保留其历史名称以支持 change_request / refactor 等增量工作流；归档 v1.1 标准仅作历史证据，不得覆盖当前合同。
 
 ---
 
 ## Design Delta（§8.1）
 
-**标准章节**：§8.1 Delta
+**当前合同位置**：Design Candidate classification、受控 artifact writer 与 Design Gate
 
 **定义**：Design Delta（`design_delta.md`）解释设计变化，是增量变更的说明文档，不是最终写入对象。
 
@@ -598,7 +598,8 @@ capability_verdict: reuse_existing | extend_existing | new_capability_required |
 > Work Item: <WI-ID>
 > Workflow Path: <workflow_path>
 > Base Spec Version: <PSV-ID 或 "current">
-> 标准依据: specforge_final_fused_standard_v1_1_patch1_zh.md
+> 产品边界: SPS-1.0
+> 当前可执行合同: Design Candidate classification / sf_artifact_write / sf_design_gate
 
 ## 1. 增量设计描述
 

@@ -1,7 +1,7 @@
 /**
  * Gate Definition Interface — v1.1 标准
  *
- * 依据：SpecForge 最终融合标准 v1.1（§9 Gate、Gate Report 与 Gate Summary）
+ * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
  *
  * v1.1 新增：
  * - §9.2 Gate 分类枚举
