@@ -28956,3 +28956,15 @@ REPEATED_ERROR_CHECK=PASS
 - ERR1592_STATUS=CLOSED_INDEPENDENT_APPROVED_STAGE_SUCCEEDED
 - REPEATED_ERROR_CHECK=PASS
 <!-- SPECFORGE_ERR1592_GIT_INDEX_LOCK_CREATE_DENIED:END -->
+
+<!-- SPECFORGE_ERR1593_ASSUMED_PACKAGES_TOOLS_SOURCE_PATH:START -->
+### ERR-1593：CG-013 初始检索假设 packages/tools/src 存在
+
+- **事实证据**：Permission/Write Guard 初始消费者检索对 packages/tools/src 报路径不存在；同一命令仍从 Daemon、Permission Engine、Workflow Runtime、setup 和 scripts 返回有效匹配。
+- **影响**：不存在的路径没有形成覆盖证据；CG-013 消费者图只能声明已覆盖真实存在的其余输入，不能据此声称 packages/tools/src 已检查。
+- **根因**：根据概念上的 tools 层推断仓库存在对应 package source 目录，没有先用 rg --files 或目录清单确认。
+- **纠正与防复发**：后续先从仓库真实文件清单提取 Write Guard/Permission 文件，再对存在的路径逐一分类；不存在的概念层只作为架构分类，不构造文件路径。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-015、EXP-017、EXP-060、EXP-084。
+- ERR1593_STATUS=CLOSED_REAL_FILE_INVENTORY_REQUIRED_FOR_NEXT_QUERY
+- REPEATED_ERROR_CHECK=PASS
+<!-- SPECFORGE_ERR1593_ASSUMED_PACKAGES_TOOLS_SOURCE_PATH:END -->
