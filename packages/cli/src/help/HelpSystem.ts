@@ -448,53 +448,6 @@ export function createDefaultHelpSystem(): HelpSystem {
     ],
     commands: [
       {
-        name: 'init',
-        description: 'Initialize SpecForge installation',
-        parameters: [
-          {
-            name: '--force',
-            type: 'boolean',
-            required: false,
-            description: 'Overwrite existing config files',
-            default: false,
-          },
-          {
-            name: '--install-root',
-            type: 'string',
-            required: false,
-            description: 'Custom installation root directory',
-          },
-        ],
-        examples: [
-          {
-            description: 'Initialize SpecForge (first-time setup)',
-            command: 'specforge init',
-          },
-          {
-            description: 'Force re-initialization (overwrite config)',
-            command: 'specforge init --force',
-          },
-          {
-            description: 'Initialize with custom root directory',
-            command: 'specforge init --install-root /custom/path',
-          },
-          {
-            description: 'Initialize and output JSON',
-            command: 'specforge init --json',
-          },
-        ],
-        troubleshooting: [
-          {
-            problem: 'Installation directory already exists',
-            solution: 'Use --force flag to overwrite existing configuration: `specforge init --force`',
-          },
-          {
-            problem: 'Permission denied',
-            solution: 'Ensure you have write permissions to ~/.specforge/ or use --install-root to specify a different location',
-          },
-        ],
-      },
-      {
         name: 'daemon',
         description: 'Manage the SpecForge daemon',
         subcommands: [
@@ -656,7 +609,7 @@ export function createDefaultHelpSystem(): HelpSystem {
         troubleshooting: [
           {
             problem: 'Spec fails to start',
-            solution: 'Check daemon logs under ~/.specforge/logs/daemon.log',
+            solution: 'Check daemon diagnostics through the current user-level SpecForge service tooling',
           },
           {
             problem: 'Spec times out',

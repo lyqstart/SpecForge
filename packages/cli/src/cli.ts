@@ -38,7 +38,6 @@ import { addPluginCommands } from './commands/plugin';
 import { addServicesCommands } from './commands/services';
 import { runVersionCommand } from './commands/version';
 import { runDoctorCommand } from './commands/doctor';
-import { initCommandHandler } from './commands/init';
 
 /**
  * Output mode types
@@ -436,31 +435,6 @@ function formatJobStatus(
 }
 
 /**
- * Init command definitions
- */
-function addInitCommands(yargsInstance: Argv): Argv {
-  return yargsInstance.command(
-    'init',
-    'Initialize SpecForge installation',
-    (yargsInstance: Argv) => {
-      return yargsInstance
-        .option('force', {
-          type: 'boolean',
-          describe: 'Overwrite existing config files',
-          default: false,
-        })
-        .option('install-root', {
-          type: 'string',
-          describe: 'Custom installation root directory',
-        });
-    },
-    async (argv: Arguments) => {
-      await initCommandHandler(argv);
-    }
-  );
-}
-
-/**
  * Doctor command definition
  *
  * Reports the CLI version and the current Project Spec manifest status.
@@ -475,10 +449,10 @@ function addDoctorCommands(yargsInstance: Argv): Argv {
           type: 'string',
           describe: 'Project directory (defaults to cwd)',
         })
-        .option('user-manifest-path', {
-          type: 'string',
-          describe: 'Path to user manifest (defaults to ~/.specforge/specforge-manifest.json)',
-        });
+         .option('user-manifest-path', {
+           type: 'string',
+           describe: 'Path to user manifest (defaults to <OpenCode config>/specforge-manifest.json)',
+         });
     },
     async (argv: Arguments) => {
       const projectDirOpt = argv['project-dir'] as string | undefined;
@@ -638,15 +612,13 @@ export async function runCli(argv: string[] = hideBin(process.argv)): Promise<vo
     addServicesCommands(
       addOpenCodeServerCommands(
         addDaemonCommands(
-          addInitCommands(
-            addDoctorCommands(
-              addSpecCommands(
-                addPluginCommands(
-                  addWorkflowCommands(
-                    addJobCommands(
-                      addWebhookCommands(
-                        addUtilityCommands(parser)
-                      )
+          addDoctorCommands(
+            addSpecCommands(
+              addPluginCommands(
+                addWorkflowCommands(
+                  addJobCommands(
+                    addWebhookCommands(
+                      addUtilityCommands(parser)
                     )
                   )
                 )

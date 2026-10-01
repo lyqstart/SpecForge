@@ -113,7 +113,7 @@ SpecForge 安装器 V3.5 — 用户级共享组件管理
   bun scripts/sf-installer.ts <subcommand> [options]
 
 子命令:
-  install           部署共享组件到 ~/.specforge/
+  install           部署共享组件到 OpenCode 配置目录
   upgrade           原子升级共享组件
   verify            校验共享组件完整性（SHA-256）
   uninstall         卸载共享组件
