@@ -28743,3 +28743,33 @@ ERR1575_STATUS=CLOSED_SPLIT_FIXED_STRING_SEARCH_REQUIRED
 REPEATED_ERROR_CHECK=PASS
 ```
 <!-- SPECFORGE_ERR1575_POWERSHELL_REGEX_QUOTE_PARSE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1576_REPEATED_POWERSHELL_REGEX_QUOTE_FAILURE:START -->
+### ERR-1576：记录 ERR-1575 后再次使用复合 PowerShell 正则导致同类解析失败
+
+- **事实证据**：ERR-1575 已要求拆成 `rg -F` 固定字符串检索；下一条调用图命令仍包含带引号、管道符和转义括号的复合正则，PowerShell 再次报告 `An empty pipe element is not allowed`。
+- **影响**：CG-009 调用图检索再次未执行；没有仓库修改，但证明上一条防复发要求尚未落实到命令构造。
+- **根因**：为减少工具调用而重新合并多模式检索，违反刚建立的固定字符串分拆规则。
+- **纠正与防复发**：本轮后续 `rg` 每次只使用一个 `-F` 模式；多个模式用多条无正则命令顺序执行，Shell 层不再出现 `|` 正则或嵌套引号模式。
+- **适用经验**：EXP-002、EXP-007、EXP-015、EXP-019、EXP-020、EXP-060。
+
+```text
+ERR1576_STATUS=CLOSED_FIXED_STRING_ONLY_COMMAND_SHAPE_ENFORCED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1576_REPEATED_POWERSHELL_REGEX_QUOTE_FAILURE:END -->
+
+<!-- SPECFORGE_ERR1577_BOOTSTRAP_WRONG_PACKAGE_WORKDIR:START -->
+### ERR-1577：在 Daemon package 工作目录运行仓库根 bootstrap 相对路径
+
+- **事实证据**：从 `packages/daemon-core` 执行 `node scripts/project-session-bootstrap.mjs` 时，Node 尝试加载 `packages/daemon-core/scripts/project-session-bootstrap.mjs` 并报告 `MODULE_NOT_FOUND`；同一串行调用后的 Vitest 仍独立通过 6/6。
+- **影响**：该次 bootstrap 未执行，后续测试通过不能把前一命令失败改写为整体成功；没有仓库写入。
+- **根因**：为了复用 package 测试工作目录，把仓库根入口和包级测试合并到同一次命令，遗漏了两者不同的 cwd 合同。
+- **纠正与防复发**：仓库 bootstrap 固定从仓库根单独运行；package 测试固定从 package cwd 单独运行，不再合并具有不同工作目录的入口。
+- **适用经验**：EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-060。
+
+```text
+ERR1577_STATUS=CLOSED_ROOT_BOOTSTRAP_AND_PACKAGE_TEST_SEPARATED
+REPEATED_ERROR_CHECK=PASS
+```
+<!-- SPECFORGE_ERR1577_BOOTSTRAP_WRONG_PACKAGE_WORKDIR:END -->
