@@ -787,7 +787,7 @@ export class HTTPServer {
     this.sendJsonResponse(res, 200, this.successBody({
       status: 'ok',
       service: 'daemon-core',
-      version: '1.0.0',
+      version: this.config.getDaemonVersion(),
       uptime: uptimeSeconds,
     }));
   }
@@ -834,7 +834,7 @@ export class HTTPServer {
       schema_version: '1.0',
       status,
       pid: process.pid,
-      version: '1.0.0',
+      version: this.config.getDaemonVersion(),
       startedAt: this.startTime,
       uptimeSec: uptimeSeconds,
       activeClients,

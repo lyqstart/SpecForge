@@ -169,6 +169,11 @@ describe('E1 Daemon Lifecycle', () => {
     const parsed = JSON.parse(body);
     expect(parsed.success).toBe(true);
     expect(parsed.data.status).toBe('ok');
+    expect(parsed.data.version).toBe(config.getDaemonVersion());
+
+    const healthz = await httpGet(`http://127.0.0.1:${port}/api/v1/healthz`);
+    expect(healthz.statusCode).toBe(200);
+    expect(JSON.parse(healthz.body).version).toBe(config.getDaemonVersion());
 
     await daemon.stop();
   });

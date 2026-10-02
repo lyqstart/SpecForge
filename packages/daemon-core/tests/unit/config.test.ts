@@ -6,6 +6,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DaemonConfig } from '../../src/daemon/DaemonConfig';
 import { PersonalPathResolver, EnterprisePathResolver } from '../../src/daemon/path-resolver';
 import { resolveSpecForgeUserPath } from '@specforge/types/user-level-paths';
+import { getCodeVersion } from '@specforge/version-unification';
 
 describe('DaemonConfig', () => {
   // -----------------------------------------------------------------------
@@ -70,6 +71,11 @@ describe('DaemonConfig', () => {
       const schemaVersion = config.getSchemaVersion();
 
       expect(schemaVersion).toBe('1.0');
+    });
+
+    it('should derive daemon version from the current product code version', () => {
+      const config = new DaemonConfig();
+      expect(config.getDaemonVersion()).toBe(getCodeVersion());
     });
   });
 

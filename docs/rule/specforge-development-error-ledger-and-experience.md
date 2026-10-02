@@ -30211,3 +30211,23 @@ REPEATED_ERROR_CHECK=PASS
 - **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-013、EXP-015、EXP-019、EXP-020、EXP-060、EXP-084、EXP-087。
 - ERR1708_STATUS=CLOSED_WITH_VALID_CANDIDATE_AND_FORMAL_PRECHECK
 - REPEATED_ERROR_CHECK=PASS
+
+### ERR-1709：1.0.1 真实 daemon 健康端点与握手仍投影硬编码 1.0.0
+
+- **事实证据**：`238c6cac` 的 1.0.1 候选通过完整构建、全量回归、正式 release precheck、109 文件真实升级与 installer verify；随后真实启动已安装 `specforged.exe`，认证读取 `/health` 得到 `service=daemon-core`、`version=1.0.0`。源码复核确认 `HTTPServer.handleHealth`、`handleHealthZ` 和 `DaemonConfig.daemonVersion` 均硬编码 `1.0.0`，而 `specforged --version` 已使用 `@specforge/version-unification#getCodeVersion`。
+- **影响**：安装字节与 Plugin 修复本身未被否定，但运行时自报版本、healthz 与 handshake 会错误标识旧版本，当前不得完成 1.0.1 真实环境验收、打 Tag 或恢复试点。
+- **根因**：`CONFIRMED` 为版本升级消费者集合漏掉 daemon 运行时投影；现有版本合同只覆盖 package/CLI/release，没有断言真实 health、healthz 与 handshake 共享同一代码版本。
+- **纠正与防复发**：`DaemonConfig` 从唯一 `getCodeVersion()` 读取版本，HTTP 健康端点从同一 config 消费；增加 config 与 daemon lifecycle 回归，重建 runtime/manifest、重跑完整验证并重新升级真实安装后再验收。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-006、EXP-011、EXP-013、EXP-017、EXP-019、EXP-020、EXP-031、EXP-060、EXP-084、EXP-085、EXP-087。
+- ERR1709_STATUS=IDENTIFIED
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1710：健康端点首次版本修复误从可选依赖容器读取必有 config
+
+- **事实证据**：ERR-1709 定向测试 38/38 通过后，正式 workspace build 在 `HTTPServer.ts` 两处报 TS2532 `Object is possibly 'undefined'`。类定义显示 `deps` 是为兼容构造方式保留的 `Partial<HTTPServerDeps>`，而构造函数无论哪种方式都会初始化必有字段 `this.config`。
+- **影响**：正式构建失败，候选未重建、未重新安装；定向 Vitest 的转译路径未执行同等静态类型检查，因此不能替代 build。
+- **根因**：`CONFIRMED` 为版本消费者选择了可选 `this.deps.config` 而非 HTTPServer 自有的必有 `this.config`。
+- **纠正与防复发**：两处健康端点改为 `this.config.getDaemonVersion()`，重新执行完整 build 后再生成 runtime/manifest；保留定向测试与正式 TypeScript build 两层证据。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-013、EXP-017、EXP-019、EXP-020、EXP-060、EXP-084。
+- ERR1710_STATUS=CLOSED_WITH_REQUIRED_CONFIG_FIELD_AND_FULL_BUILD
+- REPEATED_ERROR_CHECK=PASS

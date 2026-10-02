@@ -3,6 +3,7 @@
  */
 
 import { IPathResolver, PersonalPathResolver, EnterprisePathResolver } from './path-resolver';
+import { getCodeVersion } from '@specforge/version-unification';
 
 /** Daemon operation mode */
 export type DaemonMode = 'personal' | 'enterprise';
@@ -27,7 +28,7 @@ export class DaemonConfig {
     this.schemaVersion = '1.0';
     this.foreground = this.parseForeground(args);
     this.serviceMode = this.parseServiceMode(args);
-    this.daemonVersion = '1.0.0'; // TODO: read from package.json version
+    this.daemonVersion = getCodeVersion();
   }
 
   /**
