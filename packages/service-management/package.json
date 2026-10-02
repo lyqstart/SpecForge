@@ -1,6 +1,6 @@
 {
   "name": "@specforge/service-management",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Service Management subsystem for SpecForge - OS service lifecycle management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

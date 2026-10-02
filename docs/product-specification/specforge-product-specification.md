@@ -619,6 +619,12 @@ Thin Plugin 是 OpenCode 侧第一方连接组件，只负责：
 
 Thin Plugin 不等于第三方 Plugin Loader。
 
+部署边界：
+
+- Thin Plugin 只安装在 `<OpenCode config>/plugins/sf_specforge.ts`，作为用户级全局插件被 OpenCode 发现。
+- 项目初始化不得向 `<project>/.opencode/plugins/` 复制或生成 SpecForge Plugin，避免同一进程重复注册 hooks、事件或工具。
+- 可测试的依赖注入实现位于 `<OpenCode config>/sf-user/lib/`；OpenCode 自动发现入口只能暴露一个唯一 Plugin 函数值。
+
 ## 10.2 OpenCode Adapter
 
 OpenCode Adapter 是当前目标架构中唯一 OpenCode-specific LLM Kernel adapter。
@@ -689,6 +695,7 @@ Installer 必须：
 - 使用 release manifest 定义唯一安装集合。
 - 验证 source/install bytes 和哈希。
 - 将 OpenCode 侧资产安装到 OpenCode config root 的对应 agents/tools/plugins/skills 位置。
+- First-party Thin Plugin 只安装到 OpenCode config root 的 plugins 目录，不生成项目级副本。
 - 将 SpecForge 私有用户级资产安装到 sf-user。
 - 将 specforge-manifest.json 写在 OpenCode config root。
 - 支持 install / upgrade / verify / uninstall 的清晰边界。

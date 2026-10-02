@@ -30101,3 +30101,113 @@ REPEATED_ERROR_CHECK=PASS
 - **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-019、EXP-020、EXP-033、EXP-060、EXP-074、EXP-085、EXP-087。
 - ERR1697_STATUS=CLOSED_WITH_PACKAGE_SCOPED_TEST_ENTRY
 - REPEATED_ERROR_CHECK=PASS
+
+### ERR-1698：真实项目试点基线进程查询使用了当前权限不可用的 CIM 接口
+
+- **事实证据**：试点首次只读基线命令调用 `Get-CimInstance Win32_Process` 时返回“拒绝访问”并以 exit 1 结束；同批安装器帮助与 Git/tag 基线读取成功，但用户级目录枚举因 fail-fast 未执行。
+- **影响**：没有文件、进程或安装状态被改变；进程快照未成功取得，因此不得据此声称 SpecForge daemon 正在运行或未运行，用户级部署现场也仍待独立读取。
+- **根因**：`CONFIRMED` 为基线脚本在执行前没有验证 Win32_Process CIM 查询所需权限，把可能受限的管理接口当作普通用户只读接口。
+- **纠正与防复发**：改用普通用户可执行且结果可解析的 `Get-Process` 获取 PID/名称/路径，再以当前权威握手文件和安装 Manifest 作独立交叉验证；任一查询失败继续标记 `INSUFFICIENT_EVIDENCE`，不得转换成“不存在”。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-038、EXP-060、EXP-085。
+- ERR1698_STATUS=CLOSED_WITH_GET_PROCESS_PARSEABLE_SNAPSHOT
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1699：沙箱拒绝用户配置目录访问时路径插值仍输出不存在
+
+- **事实证据**：读取 `C:\Users\lyq\.config\opencode` 与 `%APPDATA%\opencode` 的只读命令中，`Test-Path` 报告 access denied，但命令仍继续输出 `EXISTS=False`；同一沙箱边界内的安装器 `--version` 也输出“SpecForge 未安装”。提权只读复核随后证明配置根与 Manifest 存在，`--version` 正确显示 `6.0.0-dev`。
+- **影响**：沙箱内的 `EXISTS=False` 与“未安装”均为无效观察，不能作为目录或安装不存在的证据；提权复核前用户级目录内容、Manifest 和 daemon 握手现场均属 `INSUFFICIENT_EVIDENCE`。没有用户级文件被该失败命令写入。
+- **根因**：`CONFIRMED` 为当前 workspace 沙箱不允许读取用户配置根，同时命令未设置 fail-fast，导致错误后的默认布尔结果进入展示输出。
+- **纠正与防复发**：使用明确批准的非沙箱只读命令，并为每个目标设置 `-ErrorAction Stop`；只有命令成功时才输出 EXISTS 与目录内容。安装判断以安装器结果、Manifest读取和目录枚举三者对账。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-038、EXP-039、EXP-060、EXP-085。
+- ERR1699_STATUS=CLOSED_WITH_ESCALATED_FAIL_FAST_READ
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1700：PowerShell Manifest 文件计数表达式输出属性逐项 Count 而非总数
+
+- **事实证据**：非沙箱用户级基线读取成功，但 `MANIFEST_FILE_COUNT=$($m.files.PSObject.Properties.Count)` 输出连续多个 `1`，没有产生单个文件总数；同一输出证明配置根和 Manifest 存在、握手文件不存在。
+- **影响**：Manifest 集合规模尚未证明；安装器 `--version` 报告“未安装”与 Manifest 文件存在形成待解释差异，当前不能判断其是否为有效现行安装。
+- **根因**：`CONFIRMED` 为 PowerShell 成员枚举语义使 `.Count` 作用于每个属性对象，而不是先把属性集合物化后求总数。
+- **纠正与防复发**：使用 `@($m.files.PSObject.Properties).Count` 取得单一计数，并只输出根字段名、版本字段候选和集合类型；随后由正式安装器 `verify` 独立验证，不用临时解析替代产品校验器。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-020、EXP-039、EXP-060、EXP-084。
+- ERR1700_STATUS=CLOSED_WITH_MATERIALIZED_PROPERTY_COUNT_AND_FORMAL_VERIFY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1701：真实试点默认假设 OpenCode CLI 已加入 PATH
+
+- **事实证据**：daemon 1.0.0 健康验证通过后，`Get-Command opencode -ErrorAction Stop` 返回 command not recognized，命令 exit 1。
+- **影响**：尚不能从当前终端创建真实 OpenCode 会话并加载新版 Plugin；这不证明 OpenCode 应用未安装，也不影响已经运行的 daemon。没有项目文件或治理状态被写入。
+- **根因**：`CONFIRMED` 为试点执行计划把“用户使用 OpenCode”隐式等同于“当前 PowerShell PATH 可发现 opencode CLI”，未先核对实际入口。
+- **纠正与防复发**：先只读检查当前进程快照、常见安装目录和用户配置依赖，定位可复核的 OpenCode 可执行入口；找不到时报告 `INSUFFICIENT_EVIDENCE` 并要求用户从真实应用入口开启新会话，禁止用内部 Tool Handler 或手写 `.specforge` 绕过 Plugin。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-007、EXP-008、EXP-015、EXP-018、EXP-020、EXP-060、EXP-085。
+- ERR1701_STATUS=CLOSED_WITH_EXPLICIT_NPM_ENTRY_1_18_34
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1702：真实试点 OpenCode 会话使用了账户无权访问的默认模型
+
+- **事实证据**：`opencode run --agent sf-orchestrator` 成功启动 OpenCode 1.18.34 并显示 `sf-orchestrator · glm-5.3-highspeed`，随后返回“当前订阅套餐暂未开放 GLM-5.3-Highspeed 权限”并 exit 1。
+- **影响**：会话在模型调用入口失败，尚未调用 `sf_project_init`，`D:\code\t1` 仍应保持空业务树与基线提交；daemon 运行状态不受影响。
+- **根因**：`CONFIRMED` 为非交互试点依赖了 OpenCode 当前默认模型，但未在首次运行前验证该模型是否属于账户可用集合。
+- **纠正与防复发**：先通过 OpenCode 官方模型枚举入口读取当前可用模型，再用显式 `--model provider/model` 启动会话；模型权限失败不得原样重试，也不得归因于 SpecForge Plugin 或 daemon。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-060、EXP-085。
+- ERR1702_STATUS=CLOSED_WITH_EXPLICIT_STANDARD_MODEL_SESSION_ENTRY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1703：1.0.0 真实项目初始化依赖安装清单未部署的 Thin Plugin 私有源路径
+
+- **事实证据**：显式 `glm-5.3` 的真实 `sf-orchestrator` 会话成功进入 Tool 阶段；`sf_project_init` 返回 `INIT_FAILED: SPECFORGE_THIN_PLUGIN_SOURCE_MISSING: C:\Users\lyq\.config\opencode\sf-user\integrations\opencode\sf_specforge.ts`。随后对 `sf-user` 的只读 Glob 未找到任何 `sf_specforge.ts`。同一会话前的 OpenCode 日志还记录公共 `plugins/sf_specforge.ts` 加载失败：`dependencies.client` 为 undefined。
+- **影响**：`D:\code\t1` 无法通过正式 Tool 完成项目初始化，业务试点被阻断；不得手写 `.specforge` 绕过。初始化失败过程中会话报告产生了 `.specforge/runtime/state.json`，其真实 Git/文件现场仍需核对。daemon 和用户级安装完整性此前均通过。
+- **根因**：`CONFIRMED` 为生产者—消费者合同冲突：安装 Registry 与真实 Manifest 只部署 `<OpenCode config>/plugins/sf_specforge.ts`，`ensureProjectThinPlugin` 却只读取 `<OpenCode config>/sf-user/integrations/opencode/sf_specforge.ts`。同时 `/api/v1/project/ensure` 先调用 `ensureProjectInit` 写完整骨架，再调用 `ensureProjectThinPlugin`，所以后置前置条件失败会留下部分成功状态。
+- **纠正与防复发**：统一 Thin Plugin 安装真相源与项目投影消费者；在任何项目写入前读取并验证源字节，或把初始化与项目 Plugin 投影纳入可回滚的原子事务。增加真实安装 Manifest → daemon `/project/ensure` 集成回归，并验证缺源时项目目录零写入、成功时幂等。
+- **适用经验**：EXP-001、EXP-004、EXP-006、EXP-007、EXP-008、EXP-015、EXP-017、EXP-020、EXP-022、EXP-026、EXP-031、EXP-040、EXP-047、EXP-060、EXP-084、EXP-085、EXP-087。
+- ERR1703_STATUS=IDENTIFIED
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1704：1.0.0 Thin Plugin 的多个函数导出被 OpenCode 1.18.34 全部当作 Plugin 执行
+
+- **事实证据**：真实 OpenCode 日志记录正式安装字节 `plugins/sf_specforge.ts` 加载失败：`undefined is not an object (evaluating 'dependencies.client')`；仓库与已安装文件 SHA-256 同为 `48C8C552...8B3775`。该文件运行时导出 `createSpecForgeThinPlugin`、`sf_specforge` 和 default。OpenCode 官方 `v1.18.34/packages/opencode/src/plugin/index.ts` 的 `getLegacyPlugins` 遍历 `Object.values(mod)`，把每个未重复函数作为 Plugin 调用，`applyPlugin` 仅传 `input` 与 options；因此 `createSpecForgeThinPlugin(input, dependencies)` 的 `dependencies` 实际收到 undefined。
+- **影响**：全局 Thin Plugin 初始化失败，daemon `activeClients=0`，OpenCode 事件与 compaction checkpoint 无法经 Plugin 上报；独立 Tool 文件仍可能调用 daemon，容易产生“Tool 可用但 Plugin 已失效”的假健康状态。
+- **根因**：`CONFIRMED` 为可复用测试 helper 与正式 Plugin 入口放在同一自动加载模块并作为运行时函数导出，违反 OpenCode 1.18.34 的多函数导出契约；现有测试直接 import named exports，却没有真实加载器兼容性回归。
+- **纠正与防复发**：自动加载入口只保留一个唯一函数值（default 与 named 若并存必须引用同一函数，或把 helper/依赖注入实现移入非入口模块）；增加针对 OpenCode 1.18.34 `Object.values` 加载语义的独立回归和真实 CLI 启动日志断言，要求 Plugin 注册后 daemon `activeClients>0`。
+- **适用经验**：EXP-001、EXP-004、EXP-006、EXP-007、EXP-008、EXP-010、EXP-015、EXP-017、EXP-022、EXP-026、EXP-031、EXP-046、EXP-060、EXP-074、EXP-087、EXP-090。
+- ERR1704_STATUS=IDENTIFIED
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1705：补丁定向验证从仓库根使用了 CLI 包内相对测试路径
+
+- **事实证据**：根 Vitest 成功完成 `tests/unit/current-product-version-contract.test.ts` 的 5 项验证；随后同一根入口接收 `tests/current-release-installer-root.test.ts` 时输出 `No test files found` 并 exit 1。真实文件位于 `packages/cli/tests/current-release-installer-root.test.ts`，CLI 包拥有独立测试入口。
+- **影响**：产品版本合同测试已经通过；CLI installer root 合同尚未由该命令执行，不能宣称通过。该失败没有修改运行时或业务项目文件。
+- **根因**：`CONFIRMED` 为定向测试命令混用了根测试坐标和 package-local 测试坐标，没有先按 package runner 的 cwd 解析过滤参数。
+- **纠正与防复发**：从 `packages/cli` 目录使用该包 Vitest 入口和 `tests/current-release-installer-root.test.ts` 路径重跑；后续多包定向测试分别使用各自 cwd，不把根 Vitest 的 include 规则假定为 workspace 递归发现。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-015、EXP-019、EXP-020、EXP-060、EXP-084。
+- ERR1705_STATUS=CLOSED_WITH_PACKAGE_LOCAL_TARGETED_AND_FULL_REGRESSION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1706：1.0.1 首轮全量回归发现版本、Plugin 测试入口与发布哈希消费者未同步
+
+- **事实证据**：根测试 60 files / 763 tests 通过；workspace 回归中 observability 的 1 项与 CLI 的 2 项仍断言产品版本 `1.0.0`；scope-gate 的 Thin Plugin 测试仍从自动发现入口导入 `createSpecForgeThinPlugin`，边界测试仍要求旧入口中的私有根 helper 名；daemon-core 的 6 项测试仍要求入口保留 daemon-owned 声明；release install-set 因 Plugin 与 Doctor 字节已变而报告旧 Manifest hash mismatch。
+- **影响**：构建通过，但全量测试未绿，当前不得形成 1.0.1 release candidate。失败均发生在测试或发布清单验证阶段，没有更新用户级安装或 `D:\code\t1`。
+- **根因**：`CONFIRMED` 为本次职责拆分和补丁版本升级尚未同步所有真实测试消费者与派生 release manifest；不是产品实现调用链的新缺陷。
+- **纠正与防复发**：版本断言升级到 1.0.1；依赖注入测试改从非发现模块导入；入口保留明确的 daemon-owned 边界声明与私有根命名函数；随后重建 release runtime/manifest，再重跑定向与完整回归。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-006、EXP-011、EXP-013、EXP-015、EXP-017、EXP-019、EXP-020、EXP-031、EXP-060、EXP-084、EXP-087、EXP-090。
+- ERR1706_STATUS=CLOSED_WITH_SYNCHRONIZED_CONSUMERS_AND_FULL_REGRESSION
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1707：切换 Thin Plugin 测试导入路径时补丁残留了第二个 from 子句
+
+- **事实证据**：修改后立即读取文件头，发现旧 `from .../plugins/sf_specforge` 后又出现独立的 `} from .../scripts/lib/sf_thin_plugin`，形成无效 TypeScript；该问题在任何测试或构建执行前由修改后检查发现。
+- **影响**：仅短暂存在于工作区，未提交、未构建、未安装；用户级环境与试点项目均未受影响。
+- **根因**：`CONFIRMED` 为替换多行 import 时只追加了新来源行，没有在同一补丁中完整替换旧来源行。
+- **纠正与防复发**：立即将整个 import 尾部收敛为单一 helper 模块来源；多行 import 修改后先读取文件头并执行定向编译/测试。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-013、EXP-015、EXP-017、EXP-060、EXP-084。
+- ERR1707_STATUS=CLOSED_WITH_IMPORT_BLOCK_REREAD
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1708：重建 release manifest 时使用了不符合当前候选 ID 合同的命名
+
+- **事实证据**：安装集合哈希验证与 install/upgrade/rollback 行为均已通过，但 integration test 要求 `candidateId` 匹配 `^main-[0-9a-f]{8}-working-tree-step[0-9a-z]+$`；本次生成值 `main-426cb649-step1706` 缺少 `working-tree-`，导致 3 项中 1 项失败。
+- **影响**：release manifest 内容与 109 个安装文件哈希有效，但候选身份格式不合法，不能进入正式预检；用户级真实安装尚未更新。
+- **根因**：`CONFIRMED` 为重建命令沿用了旧的自由命名习惯，没有先读取当前 integration contract 的候选 ID 正则。
+- **纠正与防复发**：使用 `main-426cb649-working-tree-step1708` 重新生成 Manifest，并重跑该 integration test；发布候选命名以后以当前测试/producer contract 为准。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-013、EXP-015、EXP-019、EXP-020、EXP-060、EXP-084、EXP-087。
+- ERR1708_STATUS=CLOSED_WITH_VALID_CANDIDATE_AND_FORMAL_PRECHECK
+- REPEATED_ERROR_CHECK=PASS

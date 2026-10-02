@@ -26,6 +26,7 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     const runtimeName = process.platform === "win32" ? "specforge.exe" : "specforge"
     const daemonName = process.platform === "win32" ? "specforged.exe" : "specforged"
     mkdirSync(join(installRoot, "sf-user", "bin"), { recursive: true })
+    mkdirSync(join(installRoot, "sf-user", "lib"), { recursive: true })
     mkdirSync(join(installRoot, "agents"), { recursive: true })
     mkdirSync(join(installRoot, "plugins"), { recursive: true })
     writeFileSync(join(installRoot, "sf-user", "bin", runtimeName), "runtime")
@@ -33,6 +34,7 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     writeFileSync(join(installRoot, "specforge-manifest.json"), "{}")
     writeFileSync(join(installRoot, "agents", "sf-orchestrator.md"), "# test")
     writeFileSync(join(installRoot, "plugins", "sf_specforge.ts"), "export {}")
+    writeFileSync(join(installRoot, "sf-user", "lib", "sf_thin_plugin.ts"), "export {}")
   })
 
   afterEach(() => {
@@ -73,8 +75,6 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     // Create runtime files so other checks don't error
     mkdirSync(join(specDir, "runtime"), { recursive: true })
     writeFileSync(join(specDir, "runtime", "state.json"), "{}")
-    mkdirSync(join(testDir, ".opencode", "plugins"), { recursive: true })
-    writeFileSync(join(testDir, ".opencode", "plugins", "sf_specforge.ts"), "export {}")
 
     // Create host-profile.json under the isolated canonical user root.
     writeFileSync(join(installRoot, "sf-user", "host-profile.json"), JSON.stringify({
@@ -147,8 +147,6 @@ describe("checkInitializationCompleteness (via checkUserLevelInstallation)", () 
     writeFileSync(join(specDir, "config", "project-rules.md"), "# Project Rules")
     mkdirSync(join(specDir, "runtime"), { recursive: true })
     writeFileSync(join(specDir, "runtime", "state.json"), "{}")
-    mkdirSync(join(testDir, ".opencode", "plugins"), { recursive: true })
-    writeFileSync(join(testDir, ".opencode", "plugins", "sf_specforge.ts"), "export {}")
 
     // Create stale host-profile.json under the isolated canonical user root.
     writeFileSync(join(installRoot, "sf-user", "host-profile.json"), JSON.stringify({

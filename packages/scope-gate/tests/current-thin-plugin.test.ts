@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   createSpecForgeThinPlugin,
   type ThinPluginDependencies,
-} from '../../../setup/userlevel-opencode/plugins/sf_specforge';
+} from '../../../setup/userlevel-opencode/scripts/lib/sf_thin_plugin';
 
 function dependencies(overrides: Partial<ThinPluginDependencies> = {}): {
   deps: ThinPluginDependencies;

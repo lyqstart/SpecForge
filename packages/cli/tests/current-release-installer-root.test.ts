@@ -58,6 +58,7 @@ describe('current release installer root contract', () => {
     expect(registry).toMatch(/path:\s*["']plugins\/sf_specforge\.ts/);
     expect(registry).toMatch(/path:\s*["']sf-user\/bin\/specforged/);
     expect(registry).toMatch(/path:\s*["']sf-user\/lib\/sf_plugin_client\.ts/);
+    expect(registry).toMatch(/path:\s*["']sf-user\/lib\/sf_thin_plugin\.ts/);
     expect(registry).not.toContain('integrations/opencode/sf_specforge.ts');
   });
 

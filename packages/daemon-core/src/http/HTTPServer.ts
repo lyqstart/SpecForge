@@ -27,10 +27,7 @@ import { StateManager } from '../state/StateManager';
 import { WAL } from '../wal/WAL';
 import { ToolDispatcher } from '../tools';
 import { WALWriteError } from '../session/SessionRegistry';
-import {
-  ensureProjectInit,
-  ensureProjectThinPlugin,
-} from '../tools/lib/sf_project_init_core';
+import { ensureProjectInit } from '../tools/lib/sf_project_init_core';
 import { checkWrite, performChangedFilesAudit, type WriteGuardContext } from '../tools/lib/write-guard-v11';
 import { appendWriteGuardLog } from '../tools/lib/write-guard-log';
 import { isCandidateFrozenState } from '../tools/lib/candidate-freeze-v11';
@@ -1271,8 +1268,7 @@ export class HTTPServer {
 
     try {
       const result = await ensureProjectInit(projectPath, request.projectName);
-      const thinPlugin = await ensureProjectThinPlugin(projectPath);
-      this.sendJsonResponse(res, 200, this.successBody({ ...result, thinPlugin }));
+      this.sendJsonResponse(res, 200, this.successBody(result));
     } catch (err) {
       this.sendJsonResponse(res, 500, this.errorBody('INIT_FAILED', (err as Error).message));
     }

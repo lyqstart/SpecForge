@@ -47,13 +47,13 @@ const USER_LEVEL_KEY_FILES = [
   "specforge-manifest.json",
   "agents/sf-orchestrator.md",
   "plugins/sf_specforge.ts",
+  "sf-user/lib/sf_thin_plugin.ts",
 ]
 
 /** Project runtime key files to verify */
 const PROJECT_RUNTIME_KEY_FILES = [
   `${SPEC_DIR_NAME}/project/spec_manifest.json`,
   `${SPEC_DIR_NAME}/runtime/state.json`,
-  ".opencode/plugins/sf_specforge.ts",
 ]
 
 // ============================================================

@@ -1,5 +1,5 @@
 /**
- * SpecForge 1.0.0 — 共享组件注册表与 Agent 定义
+ * SpecForge current release — 共享组件注册表与 Agent 定义
  *
  * 当前用户级架构：
  * - SHARED_COMPONENT_REGISTRY: 部署到 OpenCode config root 坐标系的共享组件；SpecForge 私有资产显式使用 sf-user/ 前缀（含 type 字段）
@@ -103,6 +103,11 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
     path: "sf-user/lib/sf_plugin_client.ts",
     type: "tool_lib",
     sourcePath: "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
+  },
+  {
+    path: "sf-user/lib/sf_thin_plugin.ts",
+    type: "tool_lib",
+    sourcePath: "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
   },
 
   // Current release builtin workflow (single source remains configs/workflows/builtin)

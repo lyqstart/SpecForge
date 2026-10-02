@@ -126,6 +126,11 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
     type: "tool_lib",
     sourcePath: "setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts",
   },
+  {
+    path: "sf-user/lib/sf_thin_plugin.ts",
+    type: "tool_lib",
+    sourcePath: "setup/userlevel-opencode/scripts/lib/sf_thin_plugin.ts",
+  },
 
   // Current release builtin workflow (single source remains configs/workflows/builtin)
   {

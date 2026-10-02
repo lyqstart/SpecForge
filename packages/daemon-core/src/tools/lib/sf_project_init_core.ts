@@ -6,7 +6,7 @@
  * repaired by the current release.
  */
 
-import { mkdir, writeFile, access, readFile, readdir, rename, unlink } from 'node:fs/promises';
+import { mkdir, writeFile, access, readFile, readdir } from 'node:fs/promises';
 import { join, extname, dirname } from 'node:path';
 import { existsSync, statSync } from 'node:fs';
 import { LAYOUT, SPEC_DIR_NAME } from '@specforge/types/directory-layout';
@@ -16,58 +16,7 @@ import {
   resolveSpecModuleIdentity,
 } from '@specforge/types';
 import { scanHostProfile, PROFILE_TTL_MS, getHostProfilePath } from '@specforge/host-profile';
-import { resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
 import { serializeObservabilityConfigDocument } from '@specforge/observability';
-
-export interface ProjectThinPluginDeploymentResult {
-  status: 'installed' | 'updated' | 'unchanged';
-  targetPath: string;
-}
-
-/**
- * Deploy the installer-owned Thin Plugin source into the only current OpenCode
- * runtime boundary: <project>/.opencode/plugins/sf_specforge.ts.
- *
- * The source is validated before any project path is created. This keeps a
- * missing or incomplete installation fail-closed and prevents a partial
- * project integration directory from being mistaken for a valid deployment.
- */
-export async function ensureProjectThinPlugin(
-  projectRoot: string,
-  userRoot: string = resolveSpecForgeUserRoot(),
-): Promise<ProjectThinPluginDeploymentResult> {
-  const sourcePath = join(userRoot, 'integrations', 'opencode', 'sf_specforge.ts');
-  let source: string;
-  try {
-    source = await readFile(sourcePath, 'utf8');
-  } catch {
-    throw new Error(`SPECFORGE_THIN_PLUGIN_SOURCE_MISSING: ${sourcePath}`);
-  }
-  if (!source.trim()) {
-    throw new Error(`SPECFORGE_THIN_PLUGIN_SOURCE_EMPTY: ${sourcePath}`);
-  }
-
-  const targetPath = join(projectRoot, '.opencode', 'plugins', 'sf_specforge.ts');
-  let existed = false;
-  try {
-    const current = await readFile(targetPath, 'utf8');
-    existed = true;
-    if (current === source) return { status: 'unchanged', targetPath };
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-  }
-
-  await mkdir(dirname(targetPath), { recursive: true });
-  const tempPath = `${targetPath}.tmp.${process.pid}.${Date.now()}`;
-  try {
-    await writeFile(tempPath, source, 'utf8');
-    await rename(tempPath, targetPath);
-  } catch (error) {
-    await unlink(tempPath).catch(() => undefined);
-    throw error;
-  }
-  return { status: existed ? 'updated' : 'installed', targetPath };
-}
 
 export interface InitEntry {
   /** Relative path from project root, including .specforge */
