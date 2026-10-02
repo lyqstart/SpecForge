@@ -1,5 +1,5 @@
 /**
- * SpecForge V3.5.0 — 共享组件注册表与 Agent 定义
+ * SpecForge current release — 共享组件注册表与 Agent 定义
  */
 import { existsSync, readFileSync } from "node:fs"
 import { basename, join } from "node:path"

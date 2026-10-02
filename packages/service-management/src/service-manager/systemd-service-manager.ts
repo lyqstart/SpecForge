@@ -19,6 +19,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import * as os from 'node:os';
 import { randomUUID } from 'node:crypto';
+import { getCodeVersion } from '@specforge/version-unification';
 import { ServiceUnitGenerator } from '../unit-generator/service-unit-generator.js';
 import { DefaultServiceUnitGenerator } from '../unit-generator/default-impl.js';
 import type { ServiceInstallSpec } from '../types/service-install-spec.js';
@@ -37,9 +38,9 @@ import type {
 import { createServiceError, ErrorCode } from '../errors/service-error.js';
 
 /**
- * Package version - could be read from package.json at runtime
+ * Product version from the shared version authority.
  */
-const PACKAGE_VERSION = '0.1.0';
+const PACKAGE_VERSION = getCodeVersion();
 
 /**
  * Default timeout for systemctl commands (30 seconds)

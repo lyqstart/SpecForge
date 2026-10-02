@@ -1,5 +1,5 @@
 /**
- * SpecForge V6 Thin Plugin.
+ * SpecForge 1.0.0 Thin Plugin.
  *
  * Current-release responsibilities are deliberately limited to:
  * 1. report OpenCode runtime events to the Daemon;

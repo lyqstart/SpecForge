@@ -10,7 +10,7 @@ const PRODUCT_SPEC_PATH = 'docs/product-specification/specforge-product-specific
 
 const authority: ReleaseAuthorityDocument = {
   schemaVersion: '1.0',
-  releaseId: 'specforge-v6-current',
+  releaseId: 'specforge-current',
   complete: true,
   sources: [
     {
@@ -39,7 +39,7 @@ const authority: ReleaseAuthorityDocument = {
 
 const inventory: ArtifactInventoryDocument = {
   schemaVersion: '1.0',
-  releaseId: 'specforge-v6-current',
+  releaseId: 'specforge-current',
   candidateId: 'candidate-sha256',
   producer: 'clean-release-candidate-builder',
   complete: true,
@@ -199,7 +199,7 @@ describe('normalizeArtifactInventory', () => {
 
     expect(result.ok).toBe(false);
     expect(result.errors).toContain(
-      'inventory_release_id:specforge-v6-current:expected:different-release',
+      'inventory_release_id:specforge-current:expected:different-release',
     );
   });
 

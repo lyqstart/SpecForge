@@ -1,6 +1,6 @@
 # Configuration Examples
 
-This document provides comprehensive usage examples for the SpecForge V6 Configuration Subsystem, covering CLI configuration, programmatic API, and hot-reload scenarios.
+This document provides comprehensive usage examples for the SpecForge Configuration Subsystem, covering CLI configuration, programmatic API, and hot-reload scenarios.
 
 **schema_version: 1.0**
 

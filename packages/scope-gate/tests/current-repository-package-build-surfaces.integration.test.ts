@@ -15,7 +15,7 @@ describe('current repository package build surfaces', () => {
   it('uses distributable package entrypoints and has every declared main/types artifact', async () => {
     const options = {
       candidateRoot,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'main-45a0cfee-working-tree',
     };
     const packageExport = await producePackageExportSurfaceReport(options);

@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 /**
- * SpecForge V3.5.0 — Unified Installer CLI
+ * SpecForge — Unified Installer CLI
  *
  * 纯用户级操作工具。CLI 仅负责共享组件的 install/upgrade/verify/uninstall。
- * 项目级运行时由 Unified Plugin 自动初始化。
+ * 安装器不管理 Daemon 生命周期；Daemon 由部署环境、CLI 或 service manager 管理。
  *
  * 子命令: install | upgrade | verify | uninstall
  * 选项: --force | --version
@@ -26,6 +26,7 @@ import {
   loadVerifiedReleaseInstallSet,
   type ReleaseInstallFile,
 } from "./lib/release-manifest-producer"
+import { loadProductIdentity } from "./lib/product-identity"
 import { posixToNative } from "./lib/paths"
 import type { CLIOptions, UserLevelManifest } from "./lib/types"
 import {
@@ -47,15 +48,15 @@ import {
 const REMOVED_PARAMS: Record<string, { error: string; hint: string }> = {
   "--target": {
     error: "参数 --target 已不再支持。",
-    hint: "V3.5 起所有组件统一部署到用户级目录。",
+    hint: "当前安装器只支持 OpenCode 配置目录下的用户级安装。",
   },
   "--project-level": {
     error: "参数 --project-level 已不再支持。",
-    hint: "V3.5 起项目级运行时由 Plugin 自动初始化，无需手动操作。",
+    hint: "当前安装器不管理项目级运行时；Daemon 生命周期由部署环境、CLI 或 service manager 管理。",
   },
   "--runtime-only": {
     error: "参数 --runtime-only 已不再支持。",
-    hint: "V3.5 起项目级运行时由 Plugin 自动初始化，无需手动操作。",
+    hint: "当前安装器不管理项目级运行时；Daemon 生命周期由部署环境、CLI 或 service manager 管理。",
   },
 }
 
@@ -107,7 +108,7 @@ export function parseArgs(args: string[]): CLIOptions {
 
 function showUsage(): void {
   console.log(`
-SpecForge 安装器 V3.5 — 用户级共享组件管理
+SpecForge 安装器 — 用户级共享组件管理
 
 用法:
   bun scripts/sf-installer.ts <subcommand> [options]
@@ -160,15 +161,14 @@ function getSourceDir(): string {
   return path.resolve(path.dirname(thisFile), "..")
 }
 
-const CURRENT_RELEASE_ID = "specforge-v6-current"
-
 async function requireVerifiedInstallSet(sourceDir: string): Promise<{
   version: string
   files: readonly ReleaseInstallFile[]
 }> {
+  const identity = await loadProductIdentity(sourceDir)
   const result = await loadVerifiedReleaseInstallSet({
     candidateRoot: sourceDir,
-    expectedReleaseId: CURRENT_RELEASE_ID,
+    expectedReleaseId: identity.releaseId,
   })
   if (!result.ok) {
     throw new InstallerError(

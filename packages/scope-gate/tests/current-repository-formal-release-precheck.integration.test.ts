@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { runCurrentReleasePrecheck } from '../../../scripts/lib/current-release-precheck';
 
 const candidateRoot = resolve(import.meta.dirname, '../../..');
-const releaseId = 'specforge-v6-current';
+const releaseId = 'specforge-current';
 const candidateId = (JSON.parse(
   readFileSync(resolve(candidateRoot, 'release/release-manifest.json'), 'utf8'),
 ) as { candidateId: string }).candidateId;

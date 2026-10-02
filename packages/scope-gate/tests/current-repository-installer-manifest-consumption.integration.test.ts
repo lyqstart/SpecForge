@@ -25,7 +25,7 @@ describe('current repository installer manifest consumption', () => {
 
     const release = await loadVerifiedReleaseInstallSet({
       candidateRoot,
-      expectedReleaseId: 'specforge-v6-current',
+      expectedReleaseId: 'specforge-current',
       expectedCandidateId: releaseIdentity.candidateId,
     });
     expect(release.ok, release.errors.join('\n')).toBe(true);
@@ -60,7 +60,7 @@ describe('current repository installer manifest consumption', () => {
     const installRoot = join(tempRoot, 'opencode');
     const release = await loadVerifiedReleaseInstallSet({
       candidateRoot,
-      expectedReleaseId: 'specforge-v6-current',
+      expectedReleaseId: 'specforge-current',
     });
     expect(release.ok, release.errors.join('\n')).toBe(true);
 
@@ -95,7 +95,7 @@ describe('current repository installer manifest consumption', () => {
     const installRoot = join(tempRoot, 'opencode');
     const release = await loadVerifiedReleaseInstallSet({
       candidateRoot,
-      expectedReleaseId: 'specforge-v6-current',
+      expectedReleaseId: 'specforge-current',
     });
     expect(release.ok, release.errors.join('\n')).toBe(true);
     expect(release.files.length).toBeGreaterThan(1);

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **North Star Goal** for SpecForge V6 is: **"5 minutes from problem occurrence to root cause identification"** across 10 troubleshooting scenarios.
+The **North Star Goal** for SpecForge is: **"5 minutes from problem occurrence to root cause identification"** across 10 troubleshooting scenarios.
 
 This guide explains how to use the Observability module to analyze each scenario and achieve the North Star goal.
 

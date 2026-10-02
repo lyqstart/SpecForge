@@ -1,6 +1,6 @@
 # @specforge/daemon-core
 
-Daemon Core module for SpecForge V6 - Central process and Single Source of Truth
+Daemon Core module for SpecForge - Central process and Single Source of Truth
 
 ## Overview
 

@@ -15,6 +15,7 @@ import {
   resolveSpecForgeUserPath,
   resolveSpecForgeUserRoot,
 } from '@specforge/types/user-level-paths';
+import { getCodeVersion } from '@specforge/version-unification';
 import type { HostProfile, UserInfo, SpecForgePaths } from './types.js';
 import { probeOs, probeLocale, detectCI } from './probe-os.js';
 import { probeAllShells } from './probe-shells.js';
@@ -23,7 +24,7 @@ import { buildShellRules } from './build-rules.js';
 import { atomicWriteJson, safeReadJson } from './probe-utils.js';
 
 /** 当前扫描器版本 */
-export const SCANNER_VERSION = '6.0.0';
+export const SCANNER_VERSION = getCodeVersion();
 
 /** 扫描结果有效期（30 天） */
 export const PROFILE_TTL_MS = 30 * 24 * 60 * 60 * 1000;

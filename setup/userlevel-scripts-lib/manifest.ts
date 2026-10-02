@@ -1,5 +1,5 @@
 /**
- * SpecForge V3.5.0 — Manifest 管理模块
+ * SpecForge 1.0.0 — Manifest 管理模块
  *
  * 负责用户级 Manifest 的读写、校验、构建。
  * 已移除：项目级 Manifest 相关函数（由 Plugin 管理）

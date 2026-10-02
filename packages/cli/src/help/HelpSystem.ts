@@ -1,3 +1,5 @@
+import { getCodeVersion } from '@specforge/version-unification';
+
 /**
  * Help System for SpecForge CLI
  * 
@@ -411,7 +413,7 @@ export class HelpSystem {
 export function createDefaultHelpSystem(): HelpSystem {
   const config: HelpSystemConfig = {
     appName: 'SpecForge',
-    version: '0.1.0',
+    version: getCodeVersion(),
     globalFlags: [
       {
         name: '--json',

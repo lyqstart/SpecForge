@@ -13,7 +13,7 @@ function read(relativePath: string): string {
 describe('current release authority projection', () => {
   it('expands SPS-1.0 into the complete hash-bound release set', () => {
     const result = projectReleaseAuthority({
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       productSpecification: {
         path: productSpecPath,
         content: read(productSpecPath),

@@ -1,6 +1,6 @@
 {
   "name": "specforge",
-  "version": "6.0.0-dev",
+  "version": "1.0.0",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -44,6 +44,9 @@
     "zod": "^4.4.3"
   },
   "specforgeRelease": {
+    "releaseId": "specforge-current",
+    "tagPrefix": "specforge-v",
+    "versionEpoch": 1,
     "cleanBuildFiles": [
       { "id": "runtime:specforge", "path": "release/bin/specforge.exe" },
       { "id": "runtime:specforged", "path": "release/bin/specforged.exe" },

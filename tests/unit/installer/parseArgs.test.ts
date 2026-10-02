@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { parseArgs } from "../../../scripts/sf-installer"
 import { InstallerError, InstallerErrorCode } from "../../../scripts/lib/errors"
 
-describe("parseArgs — V3.5 简化版", () => {
+describe("parseArgs — current installer", () => {
   let mockExit: ReturnType<typeof vi.spyOn>
   let mockStderr: ReturnType<typeof vi.spyOn>
 
@@ -90,20 +90,20 @@ describe("parseArgs — V3.5 简化版", () => {
       expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("已不再支持"))
     })
 
-    it("should output hint about V3.5 changes for --target", () => {
+    it("should output the current user-level install boundary for --target", () => {
       expect(() => parseArgs(["--target", "user"])).toThrow()
-      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("V3.5"))
-      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("用户级目录"))
+      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("当前安装器"))
+      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("用户级安装"))
     })
 
-    it("should output hint about Plugin 自动初始化 for --project-level", () => {
+    it("should output the daemon lifecycle boundary for --project-level", () => {
       expect(() => parseArgs(["--project-level"])).toThrow()
-      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("Plugin 自动初始化"))
+      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("Daemon 生命周期"))
     })
 
-    it("should output hint about Plugin 自动初始化 for --runtime-only", () => {
+    it("should output the daemon lifecycle boundary for --runtime-only", () => {
       expect(() => parseArgs(["--runtime-only"])).toThrow()
-      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("Plugin 自动初始化"))
+      expect(mockStderr).toHaveBeenCalledWith(expect.stringContaining("Daemon 生命周期"))
     })
   })
 

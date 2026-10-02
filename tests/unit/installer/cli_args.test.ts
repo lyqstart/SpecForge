@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { parseArgs } from "../../../scripts/sf-installer"
 import { InstallerError, InstallerErrorCode } from "../../../scripts/lib/errors"
 
-describe("parseArgs — V3.5 已移除参数错误提示", () => {
+describe("parseArgs — 当前已移除参数错误提示", () => {
   let mockExit: ReturnType<typeof vi.spyOn>
   let mockStderr: ReturnType<typeof vi.spyOn>
 
@@ -27,7 +27,7 @@ describe("parseArgs — V3.5 已移除参数错误提示", () => {
     it("should output error message with '已不再支持' and hint about 用户级目录", () => {
       expect(() => parseArgs(["install", "--target", "/tmp"])).toThrow()
       expect(mockStderr).toHaveBeenCalledWith("错误: 参数 --target 已不再支持。")
-      expect(mockStderr).toHaveBeenCalledWith("V3.5 起所有组件统一部署到用户级目录。")
+      expect(mockStderr).toHaveBeenCalledWith("当前安装器只支持 OpenCode 配置目录下的用户级安装。")
     })
   })
 
@@ -37,10 +37,10 @@ describe("parseArgs — V3.5 已移除参数错误提示", () => {
       expect(mockExit).toHaveBeenCalledWith(1)
     })
 
-    it("should output error message mentioning Plugin 自动初始化", () => {
+    it("should output the current daemon lifecycle boundary", () => {
       expect(() => parseArgs(["install", "--project-level"])).toThrow()
       expect(mockStderr).toHaveBeenCalledWith("错误: 参数 --project-level 已不再支持。")
-      expect(mockStderr).toHaveBeenCalledWith("V3.5 起项目级运行时由 Plugin 自动初始化，无需手动操作。")
+      expect(mockStderr).toHaveBeenCalledWith("当前安装器不管理项目级运行时；Daemon 生命周期由部署环境、CLI 或 service manager 管理。")
     })
   })
 
@@ -50,10 +50,10 @@ describe("parseArgs — V3.5 已移除参数错误提示", () => {
       expect(mockExit).toHaveBeenCalledWith(1)
     })
 
-    it("should output error message mentioning Plugin 自动初始化", () => {
+    it("should output the current daemon lifecycle boundary", () => {
       expect(() => parseArgs(["install", "--runtime-only"])).toThrow()
       expect(mockStderr).toHaveBeenCalledWith("错误: 参数 --runtime-only 已不再支持。")
-      expect(mockStderr).toHaveBeenCalledWith("V3.5 起项目级运行时由 Plugin 自动初始化，无需手动操作。")
+      expect(mockStderr).toHaveBeenCalledWith("当前安装器不管理项目级运行时；Daemon 生命周期由部署环境、CLI 或 service manager 管理。")
     })
   })
 

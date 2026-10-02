@@ -1,6 +1,6 @@
 # @specforge/opencode-adapter
 
-OpenCode Adapter module for SpecForge V6 - Implements LLMKernelAdapter interface for OpenCode.
+OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode.
 
 ## Overview
 

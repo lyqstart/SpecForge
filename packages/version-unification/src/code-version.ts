@@ -34,7 +34,7 @@ export const CODE_VERSION: string = getCodeVersion();
  * This is the ONLY runtime entry point for accessing the code version.
  * Returns the semantic version string from the repository root package.json.
  *
- * @returns The code version string (e.g., "6.0.0-dev")
+ * @returns The code version string (e.g., "1.0.0")
  * @throws Error if version cannot be read or parsed
  */
 export function getCodeVersion(): string {

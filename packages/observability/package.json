@@ -1,6 +1,6 @@
 {
   "name": "@specforge/observability",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "SpecForge current-release observability types and policy contract",
   "type": "module",
   "main": "dist/src/index.js",
@@ -27,7 +27,6 @@
     "monitoring",
     "logging",
     "analysis",
-    "v6",
     "architecture"
   ],
   "author": "SpecForge Team",

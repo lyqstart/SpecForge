@@ -19,7 +19,7 @@ describe('current repository owner snapshot producers', () => {
   it('enumerates actual daemon, workflow and installer owners with source hashes', async () => {
     const produced = await produceRepositoryOwnerSnapshotReports({
       candidateRoot,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'main-45a0cfee',
     });
 
@@ -49,12 +49,12 @@ describe('current repository owner snapshot producers', () => {
 
   it('has no current authority drift on dynamic registry and installer asset surfaces', async () => {
     const authority = projectReleaseAuthority({
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       productSpecification: { path: productSpecPath, content: read(productSpecPath) },
     });
     const produced = await produceRepositoryOwnerSnapshotReports({
       candidateRoot,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'main-45a0cfee',
     });
     const surfaces = produceOwnerSnapshotSurfaceReports(produced.reports);

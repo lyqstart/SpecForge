@@ -29991,3 +29991,113 @@ CURRENT_RELEASE_CANDIDATE_ID=main-eb1fc830-working-tree-step1684
 CURRENT_RELEASE_PRECHECK_RESULT=PASS
 GOVERNANCE_DOCUMENT_IMPACT=PROJECT_STATUS_AND_ERROR_LEDGER_ONLY_NO_SPS_OR_ADR_DECISION_CHANGE
 REPEATED_ERROR_CHECK=PASS
+
+### ERR-1687：版本体系调查再次把 Windows glob 当作路径参数
+
+- **事实证据**：只读版本调查把 `packages/*/package.json` 作为位置参数传给 Windows `rg`，返回 `文件名、目录名或卷标语法不正确 (os error 123)`；同一调用仍成功读取根 `package.json` 与 release manifest，但不能证明 package 版本集合完整。
+- **影响**：没有修改文件、Tag、版本或发布状态；首次 package 版本清单无效。随后改为传入真实 `packages` 目录并使用 `--glob 'package.json'`，成功取得全部 package 版本。
+- **根因**：`CONFIRMED` 为重复了 ERR-1673/ERR-1685 的 Windows shell glob 假设，没有复用已经登记的“真实目录 + `--glob`”模式。
+- **纠正与防复发**：后续版本消费者调查只传真实目录并使用 `--glob` 过滤；版本收敛范围必须由成功的全仓清单派生，不使用失败调用的部分输出。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-087。
+- ERR1687_STATUS=CLOSED_WITH_DIRECTORY_SCOPED_RESCAN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1688：版本消费者扫描传入两个已退役目录
+
+- **事实证据**：版本消费者只读扫描同时传入 `docs/specs` 与 `docs/standards`，Windows `rg` 对两者分别返回“系统找不到指定的文件 (os error 2)”；随后枚举 `docs` 的真实一级目录，确认当前存在 `product-specification` 等目录而不存在上述两个路径。
+- **影响**：该次命令对 `scripts`、`packages`、`tests` 与 `README.md` 的匹配输出有效，但文档范围不完整；没有据此作出文档无残留结论，也没有在失败后继续产品文件修改。
+- **根因**：`CONFIRMED` 为扫描前复用了已经退役的历史目录名，没有先从当前文件树建立真实输入集合。
+- **纠正与防复发**：后续版本扫描先用 `rg --files docs` 或真实 `docs` 根目录建立范围，再通过 `--glob` 排除历史目录、ADR、经验账本和受保护备份；不得把不存在路径产生的部分输出当作全仓结果。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-087。
+- ERR1688_STATUS=CLOSED_WITH_EXISTING_ROOT_DIRECTORY_RESCAN
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1689：辅助版本查询再次混入退役目录与未展开 glob
+
+- **事实证据**：完成 ERR-1688 登记后的复查中，主扫描已经使用真实 `docs` 根目录，但同一只读命令的辅助查询仍传入不存在的 `docs/implementation`，并把 `docs/project-status*` 作为 Windows `rg` 位置参数，分别返回 os error 2 与 os error 123。
+- **影响**：主版本扫描及显式读取 `package.json`、版本检查脚本和安装器均成功；辅助权威文档定位结果不完整，不能作为完整文档消费者清单。失败后未继续修改产品文件。
+- **根因**：`CONFIRMED` 为纠正只覆盖了主扫描参数，没有逐项审查同一命令中后续辅助查询的全部位置参数，重复了 ERR-1687/ERR-1688 已登记的路径假设。
+- **纠正与防复发**：本任务后续搜索命令只接受三类输入：已由目录枚举确认存在的根目录、`rg --files` 返回的路径、已明确验证存在的单文件；不再向 Windows `rg` 传递任何位置参数 glob。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-087、EXP-094。
+- ERR1689_STATUS=CLOSED_WITH_VERIFIED_INPUT_PATH_POLICY
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1690：品牌文案批量补丁包含非 UTF-8 README
+
+- **事实证据**：包含多个当前包文案的 `apply_patch` 在读取 `packages/permission-engine/README.md` 时以 `invalid utf-8 sequence` 失败；`git diff --name-only` 证明该批补丁未部分落盘，`Format-Hex` 证明文件包含非 UTF-8 字节。
+- **影响**：产品身份、发布入口等此前已成功修改的文件不受影响；本次品牌文案补丁没有生效。受影响 README 只是说明性消费者，不是版本真相源或正式发布阻断项。
+- **根因**：`CONFIRMED` 为批量补丁前没有验证全部目标文本文件的编码，并假设仓库 Markdown 都是 UTF-8。
+- **纠正与防复发**：非 UTF-8 README 不纳入本次版本体系的必要修改范围，不为品牌替换擅自转码；后续补丁按已验证可读的文件分组，历史/说明性文本保留不影响产品版本合同。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-015、EXP-017、EXP-020、EXP-060、EXP-065、EXP-087。
+- ERR1690_STATUS=CLOSED_WITH_ENCODING_BOUNDARY_PRESERVED
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1691：临时 JSON 校验假设每个 packages 子目录都有 manifest
+
+- **事实证据**：工作区 JSON 复核脚本枚举所有 `packages` 子目录后直接读取 `package.json`，在保留的 `packages/migration/` 目录返回 ENOENT；同一命令此前已成功输出 git 状态和 diff，后续残留扫描也执行完成，但 `JSON_PARSE=PASS` 未产生。
+- **影响**：没有 JSON 文件被该只读检查修改；当前产品身份读取器本身对无 manifest 目录已有明确 ENOENT 跳过逻辑，本次失败只说明临时校验脚本范围假设错误，不能用来否定或证明 JSON 完整性。
+- **根因**：`CONFIRMED` 为把“packages 下的目录”错误等同于“当前 workspace package”，没有先验证 manifest 存在性。
+- **纠正与防复发**：后续 manifest 校验先以 `Test-Path`/`existsSync` 过滤真实 `package.json`，或直接复用 `assertWorkspaceVersionAlignment`；不得对目录结构作隐式 package 假设。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-015、EXP-019、EXP-020、EXP-060、EXP-065、EXP-087。
+- ERR1691_STATUS=CLOSED_WITH_MANIFEST_EXISTENCE_FILTER
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1692：新版本合同定向测试发现安装器旧生命周期说明与断言词组未同步
+
+- **事实证据**：定向 Vitest 共 35 项，33 项通过、2 项失败；`current-product-version-contract` 发现 `sf-installer.ts` 顶部仍写“项目级运行时由 Unified Plugin 自动初始化”，`parseArgs.test.ts` 仍要求提示包含“用户级目录”，而当前提示已改为“用户级安装”。同一批 installer TypeScript noEmit 校验通过。
+- **影响**：产品身份读取、releaseId 和安装器类型合同没有失败；旧顶部说明仍与 D02/当前 Daemon 生命周期边界冲突，测试文本也未完全同步，因此本轮定向验证尚不能宣告通过。
+- **根因**：`CONFIRMED` 为首次文案补丁只修改了参数提示和帮助标题，遗漏文件头说明，并在测试中保留了与新文案不完全相同的词组断言。
+- **纠正与防复发**：将文件头改为安装器不管理 Daemon 生命周期，并让测试断言当前实际提示“用户级安装”；修正后使用完全相同的定向命令重跑全部 35 项。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-017、EXP-020、EXP-060、EXP-074、EXP-087。
+- ERR1692_STATUS=CLOSED_WITH_TARGETED_AND_FULL_REGRESSION_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1693：新增 workspace 依赖后只更新 lockfile，正式 build 缺少本地链接
+
+- **事实证据**：正式 `bun run build` 中 types、version-unification、configuration 构建通过，service-management 的两处 `getCodeVersion` import 均报 TS2307，无法解析 `@specforge/version-unification`；此前只运行了 `bun install --lockfile-only --offline`。
+- **影响**：正式 workspace build exit 2，当前不得宣称构建通过；失败发生在编译阶段，没有生成正式 release candidate 或改变用户级安装。
+- **根因**：`CORROBORATED` 为 manifest/lockfile 已增加依赖但现有 node_modules workspace 链接未刷新；仍需检查链接现场并通过完整离线 install 验证。若刷新后仍失败，则说明 package exports/resolution 另有缺陷。
+- **纠正与防复发**：只要 package dependency graph 改变，lockfile 更新后必须执行完整离线 install 刷新 workspace links，再从根 build 入口完整重跑；不能把 lockfile-only 当作可编译安装状态。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-017、EXP-020、EXP-033、EXP-060、EXP-074、EXP-087。
+- ERR1693_STATUS=CLOSED_WITH_OFFLINE_WORKSPACE_LINK_REFRESH_AND_BUILD_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1694：新增根测试只登记角色，未先核对发现器准入合同
+
+- **事实证据**：正式 `bun run test` 在执行测试前由 `ROOT_TEST_REGISTRY_INVALID` fail closed，报告 `unknown=[tests/unit/current-product-version-contract.test.ts]`，同时报告现存但未登记的 `missing=[tests/unit/installer/orphan-skill-discovery.test.ts]`；没有测试断言被执行。
+- **影响**：正式全量测试 exit 1，不能作为产品失败或测试通过证据；发布 precheck 此前已通过，但发布闭环仍被全量测试门禁阻断。
+- **根因**：`CONFIRMED` 为新增测试前只查看并修改了角色 Registry 内容，没有完整读取 `run-root-tests.mjs` 的测试发现与允许路径合同；现存 orphan-skill 测试的漏登也被本次严格校验暴露。
+- **纠正与防复发**：完整读取根测试发现器，按其实际角色/发现规则决定新测试合法位置或登记方式，同时将现存当前测试纳入唯一角色；先运行 registry validate，再从正式全量入口完整重跑。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-017、EXP-019、EXP-020、EXP-033、EXP-060、EXP-074、EXP-085、EXP-087。
+- ERR1694_STATUS=CLOSED_WITH_ROOT_TEST_REGISTRY_RECONCILIATION_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1695：根测试准入 staging 未提权且失败后仍串行执行 validate
+
+- **事实证据**：为让 `git ls-files` 识别新根测试而执行 `git add` 时，沙箱拒绝创建 `.git/index.lock`；同一 PowerShell 命令使用分号继续运行 registry validate，因此再次报告新测试 unknown。随后 `git status` 证明新测试仍是 untracked。
+- **影响**：Git index 未变化、文件内容未丢失；第二次 validate 不能证明角色修正无效，只证明 staging 前置条件没有满足。正式全量测试仍未恢复。
+- **根因**：`CONFIRMED` 为已知 `.git` 写入需要显式提权却使用默认沙箱，并把有依赖的 staging、validate、status 用无 fail-fast 的分号串接。
+- **纠正与防复发**：Git index 写操作使用明确批准的 escalated `git add` 独立调用；仅在成功后单独执行 registry validate。具有前置依赖的验证步骤不得用 PowerShell 分号串联。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-010、EXP-015、EXP-017、EXP-019、EXP-020、EXP-033、EXP-060、EXP-065、EXP-074、EXP-085、EXP-087。
+- ERR1695_STATUS=CLOSED_WITH_EXPLICIT_STAGE_AND_REGISTRY_VALIDATION_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1696：首次正式全量测试暴露版本消费者与双模块导出未完整同步
+
+- **事实证据**：正式根测试 60 文件/762 项通过；workspace 测试最终因三个 package 失败而 exit 1。Scope Gate 仅 `root-test-role-registry.test.ts` 仍断言 CURRENT_HERMETIC=58、实际为 60。CLI 中 help-system 两项仍期待 0.1.0；CLI/Daemon 共七个 suite 因 service-management CommonJS 消费链无法匹配 version-unification 仅有 `import` 的 exports 而加载失败；CLI 性能测试一次测得 52.2404ms 超过 50ms；Daemon Core 一项设计合同因目录布局头注释从固定短语“单一真相源”改为“单一实现真相源”失败。其余 Scope Gate 133 项、CLI 764 项、Daemon Core 1672 项及其他已完成 package 测试均通过。
+- **影响**：正式全量测试失败，不能发布或打 Tag；release precheck 的通过不替代全量测试。确定性消费者同步缺口与一项待复验性能波动必须分别处理。
+- **根因**：`CONFIRMED` 的同步缺口包括角色计数、CLI 旧版本断言、固定治理短语，以及 version-unification 缺少 CommonJS/default export 条件；性能失败现为 `HYPOTHESIS`：单次运行负载抖动，需相同定向测试重复验证，不能直接放宽阈值。
+- **纠正与防复发**：同步三个确定性测试合同；为 version-unification 提供与 CommonJS workspace 消费者兼容的发布入口并做定向加载/构建验证；性能测试保持原阈值先定向复跑；全部通过后从正式全量入口完整重跑。
+- **适用经验**：EXP-001、EXP-004、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-017、EXP-020、EXP-026、EXP-030、EXP-033、EXP-040、EXP-060、EXP-074、EXP-085、EXP-087。
+- ERR1696_STATUS=CLOSED_WITH_CONSUMER_EXPORT_AND_FULL_REGRESSION_PASS
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1697：用根 Vitest 配置定向运行 package-owned 测试
+
+- **事实证据**：修正 ERR-1696 后，从仓库根执行 `vitest run packages/...`，根配置的 include 仅为 `tests/**/*.test.ts` 与 `tests/**/*.property.test.ts`，因此返回 `No test files found`，五个 package 测试均未执行。
+- **影响**：没有新增代码失败证据，构建仍为通过；本次 exit 1 只证明测试入口选择错误，不能用于判断 exports 或消费者修正结果。
+- **根因**：`CONFIRMED` 为忽略了 workspace 每个 package 独立 Vitest 配置/工作目录的既有测试所有权，错误使用根 runner 执行 package 路径。
+- **纠正与防复发**：package-owned 测试必须在相应 package cwd 中运行，或使用仓库正式 workspace runner；根 Vitest 只用于根 Registry 允许的 `tests/**`。
+- **适用经验**：EXP-001、EXP-002、EXP-007、EXP-008、EXP-010、EXP-011、EXP-015、EXP-019、EXP-020、EXP-033、EXP-060、EXP-074、EXP-085、EXP-087。
+- ERR1697_STATUS=CLOSED_WITH_PACKAGE_SCOPED_TEST_ENTRY
+- REPEATED_ERROR_CHECK=PASS

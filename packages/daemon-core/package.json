@@ -1,7 +1,7 @@
 {
   "name": "@specforge/daemon-core",
   "version": "1.0.0",
-  "description": "Daemon Core module for SpecForge V6 - Central process and Single Source of Truth",
+  "description": "Daemon Core module for SpecForge - Central process and Single Source of Truth",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -21,8 +21,7 @@
   },
   "keywords": [
     "specforge",
-    "daemon",
-    "v6"
+    "daemon"
   ],
   "author": "SpecForge Team",
   "license": "MIT",

@@ -1,6 +1,6 @@
 # @specforge/configuration
 
-SpecForge V6 Configuration Subsystem
+SpecForge Configuration Subsystem
 
 Manages four-layer configuration merging with deterministic behavior and sensitive field protection.
 

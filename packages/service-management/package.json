@@ -1,7 +1,7 @@
 {
   "name": "@specforge/service-management",
-  "version": "0.1.0",
-  "description": "Service Management subsystem for SpecForge V6 - OS service lifecycle management",
+  "version": "1.0.0",
+  "description": "Service Management subsystem for SpecForge - OS service lifecycle management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -37,8 +37,7 @@
   "keywords": [
     "specforge",
     "service-management",
-    "systemd",
-    "v6"
+    "systemd"
   ],
   "author": "SpecForge Team",
   "license": "MIT",
@@ -61,6 +60,7 @@
     "@specforge/configuration": "workspace:*",
     "@specforge/cli": "workspace:*",
     "@specforge/types": "workspace:*",
+    "@specforge/version-unification": "workspace:*",
     "zod": "^3.22.4"
   },
   "schema_version": "1.0"

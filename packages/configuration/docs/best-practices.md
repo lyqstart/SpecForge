@@ -1,6 +1,6 @@
 # Configuration Best Practices
 
-This document provides best practices for managing configuration in SpecForge V6.
+This document provides best practices for managing configuration in SpecForge.
 
 **schema_version: 1.0**
 

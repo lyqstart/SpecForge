@@ -1,7 +1,7 @@
 {
   "name": "@specforge/opencode-adapter",
   "version": "1.0.0",
-  "description": "OpenCode Adapter module for SpecForge V6 - Implements LLMKernelAdapter interface for OpenCode",
+  "description": "OpenCode Adapter module for SpecForge - Implements LLMKernelAdapter interface for OpenCode",
   "type": "commonjs",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -42,8 +42,7 @@
   "keywords": [
     "specforge",
     "opencode",
-    "adapter",
-    "v6"
+    "adapter"
   ],
   "author": "SpecForge Team",
   "license": "MIT",

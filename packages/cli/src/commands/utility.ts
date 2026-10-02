@@ -17,6 +17,7 @@ import { DaemonClient } from '../http/DaemonClient';
 import { ModeSwitch, formatError } from '../mode-switch';
 import { toCliError } from '../errors';
 import { resolveSpecForgeHandshakePath, resolveSpecForgeUserRoot } from '@specforge/types/user-level-paths';
+import { getCodeVersion } from '@specforge/version-unification';
 /**
  * Runtime directory path under the canonical SpecForge user root
  */
@@ -114,7 +115,7 @@ export function getCliConfig(): {
   return {
     daemon: daemonConfig,
     cli: {
-      version: '0.1.0', // Should match package.json
+      version: getCodeVersion(),
       configDir,
       runtimeDir,
     },

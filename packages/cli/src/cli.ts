@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * SpecForge CLI - Command Line Interface for SpecForge V6
+ * SpecForge CLI - Command Line Interface for SpecForge
  * 
  * Provides dual-mode access to the Daemon:
  * - Interactive mode: colorful, human-readable output

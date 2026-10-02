@@ -128,7 +128,7 @@ SpecForge 项目管理的基本单元。每个 WI 对应 `.specforge/specs/` 下
 
 ### Workflow Type（工作流类型）
 
-定义 Work Item 的阶段流转路径。SpecForge V6 支持 8 种工作流类型：
+定义 Work Item 的阶段流转路径。SpecForge 当前支持 8 种工作流类型：
 
 1. `feature_spec` — 标准需求驱动
 2. `bugfix_spec` — 缺陷修复

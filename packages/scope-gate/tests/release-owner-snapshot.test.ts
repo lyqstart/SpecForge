@@ -8,7 +8,7 @@ function reports(): OwnerReleaseSnapshotReport[] {
   return [
     {
       schemaVersion: '1.0',
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-sha256',
       owner: 'daemon_tool_registry',
       producer: 'daemon-tool-registry-owner-snapshot',
@@ -25,7 +25,7 @@ function reports(): OwnerReleaseSnapshotReport[] {
     },
     {
       schemaVersion: '1.0',
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-sha256',
       owner: 'workflow_registry',
       producer: 'workflow-runtime-owner-snapshot',
@@ -42,7 +42,7 @@ function reports(): OwnerReleaseSnapshotReport[] {
     },
     {
       schemaVersion: '1.0',
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-sha256',
       owner: 'installer_registry',
       producer: 'installer-registry-owner-snapshot',
@@ -107,7 +107,7 @@ describe('buildReleaseOwnerSnapshot', () => {
 
     expect(result.ok).toBe(false);
     expect(result.errors).toContain(
-      'owner_snapshot:workflow_registry:release_id:other-release:expected:specforge-v6-current',
+      'owner_snapshot:workflow_registry:release_id:other-release:expected:specforge-current',
     );
     expect(result.errors).toContain(
       'owner_snapshot:workflow_registry:candidate_id:other-candidate:expected:candidate-sha256',

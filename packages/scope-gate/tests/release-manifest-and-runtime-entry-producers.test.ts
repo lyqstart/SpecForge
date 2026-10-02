@@ -92,7 +92,7 @@ describe('release manifest and runtime entry producers', () => {
 
     const result = await produceReleaseManifest({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
       platform: 'win32',
       registry,
@@ -107,7 +107,7 @@ describe('release manifest and runtime entry producers', () => {
     const root = await candidate();
     const result = await produceReleaseManifest({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
       platform: 'win32',
       registry,
@@ -147,7 +147,7 @@ describe('release manifest and runtime entry producers', () => {
     const root = await candidate();
     await produceReleaseManifest({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
       platform: 'win32',
       registry,
@@ -155,7 +155,7 @@ describe('release manifest and runtime entry producers', () => {
 
     const verified = await loadVerifiedReleaseInstallSet({
       candidateRoot: root,
-      expectedReleaseId: 'specforge-v6-current',
+      expectedReleaseId: 'specforge-current',
     });
     expect(verified.ok).toBe(true);
     expect(verified.errors).toEqual([]);
@@ -172,7 +172,7 @@ describe('release manifest and runtime entry producers', () => {
     await writeFile(join(root, 'setup/userlevel-opencode/scripts/lib/sf_plugin_client.ts'), 'tampered');
     const drifted = await loadVerifiedReleaseInstallSet({
       candidateRoot: root,
-      expectedReleaseId: 'specforge-v6-current',
+      expectedReleaseId: 'specforge-current',
     });
     expect(drifted.ok).toBe(false);
     expect(drifted.errors).toContain(
@@ -186,7 +186,7 @@ describe('release manifest and runtime entry producers', () => {
 
     const result = await produceReleaseManifest({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
       platform: 'win32',
       registry,
@@ -201,14 +201,14 @@ describe('release manifest and runtime entry producers', () => {
     const root = await candidate();
     const manifest = await produceReleaseManifest({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
       platform: 'win32',
       registry,
     });
     const runtime = await produceRuntimeEntrySurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 
@@ -230,7 +230,7 @@ describe('release manifest and runtime entry producers', () => {
     const root = await candidate();
     await produceReleaseManifest({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
       platform: 'win32',
       registry,
@@ -239,7 +239,7 @@ describe('release manifest and runtime entry producers', () => {
 
     const runtime = await produceRuntimeEntrySurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 

@@ -1,5 +1,5 @@
 /**
- * directory-layout.ts — SpecForge V6 项目目录布局的单一真相源（Single Source of Truth）
+ * directory-layout.ts — SpecForge 项目目录布局的单一真相源（Single Source of Truth），属于实现合同
  *
  * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
  *

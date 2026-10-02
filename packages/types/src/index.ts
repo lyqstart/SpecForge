@@ -1,5 +1,5 @@
 /**
- * @specforge/types - Shared type definitions for SpecForge V6 modules
+ * @specforge/types - Shared type definitions for SpecForge modules
  *
  * 产品边界：SPS-1.0。当前可执行合同由本模块导出、Runtime 消费者与回归测试固定；归档 v1.1 标准仅作历史证据。
  *

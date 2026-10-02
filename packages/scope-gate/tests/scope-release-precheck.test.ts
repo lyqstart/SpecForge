@@ -9,7 +9,7 @@ const PRODUCT_SPEC_PATH = 'docs/product-specification/specforge-product-specific
 
 const authority: ReleaseAuthorityDocument = {
   schemaVersion: '1.0',
-  releaseId: 'specforge-v6-current',
+  releaseId: 'specforge-current',
   complete: true,
   sources: [
     {
@@ -38,7 +38,7 @@ const authority: ReleaseAuthorityDocument = {
 
 const inventory: ArtifactInventoryDocument = {
   schemaVersion: '1.0',
-  releaseId: 'specforge-v6-current',
+  releaseId: 'specforge-current',
   candidateId: 'candidate-sha256',
   producer: 'clean-release-candidate-builder',
   complete: true,

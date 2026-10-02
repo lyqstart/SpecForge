@@ -1,6 +1,6 @@
 # @specforge/observability
 
-Observability module for SpecForge V6 - Comprehensive monitoring, logging, and analysis capabilities.
+Observability module for SpecForge - Comprehensive monitoring, logging, and analysis capabilities.
 
 ## Overview
 

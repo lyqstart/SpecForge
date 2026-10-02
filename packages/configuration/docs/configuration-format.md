@@ -1,6 +1,6 @@
 # Configuration Format Documentation
 
-This document describes the JSON schema and configuration structure for the SpecForge V6 Configuration Subsystem.
+This document describes the JSON schema and configuration structure for the SpecForge Configuration Subsystem.
 
 **schema_version: 1.0**
 

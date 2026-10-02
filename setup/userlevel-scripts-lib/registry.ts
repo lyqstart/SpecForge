@@ -1,7 +1,7 @@
 /**
- * SpecForge V3.5.0 — 共享组件注册表与 Agent 定义
+ * SpecForge 1.0.0 — 共享组件注册表与 Agent 定义
  *
- * V3.5 架构：
+ * 当前用户级架构：
  * - SHARED_COMPONENT_REGISTRY: 部署到 OpenCode config root 坐标系的共享组件；SpecForge 私有资产显式使用 sf-user/ 前缀（含 type 字段）
  * - SPECFORGE_AGENT_DEFINITIONS: 内置 Agent 配置
  *

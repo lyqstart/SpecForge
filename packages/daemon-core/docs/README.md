@@ -1,6 +1,6 @@
 # Daemon Core API Documentation
 
-Welcome to the Daemon Core API documentation. This section covers all public APIs, endpoints, event schemas, and error codes for the SpecForge V6 Daemon Core module.
+Welcome to the Daemon Core API documentation. This section covers all public APIs, endpoints, event schemas, and error codes for the SpecForge Daemon Core module.
 
 ## Table of Contents
 

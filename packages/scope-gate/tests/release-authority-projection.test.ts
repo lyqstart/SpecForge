@@ -16,7 +16,7 @@ function sha256(value: string): string {
 function productSpecBlock(overrides: Record<string, unknown> = {}): string {
   const payload = {
     schemaVersion: '1.0',
-    releaseId: 'specforge-v6-current',
+    releaseId: 'specforge-current',
     complete: true,
     items: [
       {
@@ -34,7 +34,7 @@ function productSpecBlock(overrides: Record<string, unknown> = {}): string {
 
 function input(content = productSpecBlock()): ReleaseAuthorityProjectionInput {
   return {
-    releaseId: 'specforge-v6-current',
+    releaseId: 'specforge-current',
     productSpecification: {
       path: PRODUCT_SPEC_PATH,
       content,
@@ -139,7 +139,7 @@ describe('projectReleaseAuthority', () => {
 
     expect(result.ok).toBe(false);
     expect(result.errors).toContain(
-      'authority_projection:release_id:other-release:expected:specforge-v6-current',
+      'authority_projection:release_id:other-release:expected:specforge-current',
     );
   });
 

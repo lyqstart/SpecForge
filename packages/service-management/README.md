@@ -1,6 +1,6 @@
 # @specforge/service-management
 
-Service Management subsystem for SpecForge V6 - OS service lifecycle management for daemon and opencode-server.
+Service Management subsystem for SpecForge - OS service lifecycle management for daemon and opencode-server.
 
 ## Overview
 

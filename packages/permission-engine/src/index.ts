@@ -1,7 +1,7 @@
 /**
  * @specforge/permission-engine
  * 
- * Permission Engine module for SpecForge V6 architecture.
+ * Permission Engine module for SpecForge architecture.
  * Provides fine-grained access control and authorization capabilities.
  */
 

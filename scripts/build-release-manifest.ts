@@ -4,6 +4,7 @@ import {
   produceReleaseManifest,
   produceRuntimeEntrySurfaceReport,
 } from './lib/release-manifest-producer';
+import { loadProductIdentity } from './lib/product-identity';
 
 function option(name: string): string | undefined {
   const index = process.argv.indexOf(name);
@@ -16,7 +17,14 @@ if (!candidateId) {
   throw new Error('RELEASE_CANDIDATE_ID_REQUIRED: pass --candidate-id <immutable-candidate-id>');
 }
 
-const releaseId = option('--release-id') ?? 'specforge-v6-current';
+const identity = await loadProductIdentity(process.cwd());
+const requestedReleaseId = option('--release-id');
+if (requestedReleaseId && requestedReleaseId !== identity.releaseId) {
+  throw new Error(
+    `RELEASE_ID_MISMATCH:requested:${requestedReleaseId}:authoritative:${identity.releaseId}`,
+  );
+}
+const releaseId = identity.releaseId;
 const manifest = await produceReleaseManifest({
   candidateRoot: process.cwd(),
   releaseId,

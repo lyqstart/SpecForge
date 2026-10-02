@@ -1,10 +1,10 @@
 # @specforge/permission-engine
 
-Permission Engine module for SpecForge V6 architecture.
+Permission Engine module for SpecForge architecture.
 
 ## Overview
 
-The Permission Engine provides fine-grained access control and authorization capabilities for the SpecForge V6 architecture. It handles user permissions, role-based access control (RBAC), and resource-level authorization.
+The Permission Engine provides fine-grained access control and authorization capabilities for the SpecForge architecture. It handles user permissions, role-based access control (RBAC), and resource-level authorization.
 
 ## Features
 

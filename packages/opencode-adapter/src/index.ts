@@ -1,5 +1,5 @@
 /**
- * OpenCode Adapter for SpecForge V6
+ * OpenCode Adapter for SpecForge
  *
  * This module implements the LLMKernelAdapter interface for OpenCode,
  * providing isolation between OpenCode implementation details and Daemon core.

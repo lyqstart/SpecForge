@@ -1,7 +1,9 @@
+import { getCodeVersion } from '@specforge/version-unification';
+
 /**
  * @specforge/service-management
  *
- * Service Management subsystem for SpecForge V6
+ * Service Management subsystem for SpecForge
  * Provides cross-platform OS service lifecycle management
  */
 
@@ -48,4 +50,4 @@ export * from './errors/index.js';
 /**
  * Package version
  */
-export const SERVICE_MANAGEMENT_VERSION = '0.1.0';
+export const SERVICE_MANAGEMENT_VERSION = getCodeVersion();

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `@specforge/observability` module provides comprehensive monitoring, logging, and analysis capabilities for SpecForge V6. This document covers the complete API for all public interfaces.
+The `@specforge/observability` module provides comprehensive monitoring, logging, and analysis capabilities for SpecForge. This document covers the complete API for all public interfaces.
 
 **North Star Goal**: "5 minutes from problem occurrence to root cause identification" across 10 troubleshooting scenarios.
 

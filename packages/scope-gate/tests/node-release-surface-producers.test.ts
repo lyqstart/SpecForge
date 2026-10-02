@@ -57,7 +57,7 @@ describe('Node release surface producers', () => {
 
     const result = await producePackageExportSurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 
@@ -87,7 +87,7 @@ describe('Node release surface producers', () => {
 
     const result = await produceCleanBuildSurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 
@@ -105,7 +105,7 @@ describe('Node release surface producers', () => {
     const root = await fixtureRoot();
     const result = await producePackageExportSurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 
@@ -118,7 +118,7 @@ describe('Node release surface producers', () => {
     await write(root, 'packages/bad/package.json', '{bad\n');
     const result = await producePackageExportSurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 
@@ -136,7 +136,7 @@ describe('Node release surface producers', () => {
     await write(root, 'packages/types/src/index.ts', 'export {};\n');
     const result = await produceCleanBuildSurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 
@@ -159,7 +159,7 @@ describe('Node release surface producers', () => {
     await write(root, 'packages/types/dist/index.js', 'export {};\n');
     const result = await produceCleanBuildSurfaceReport({
       candidateRoot: root,
-      releaseId: 'specforge-v6-current',
+      releaseId: 'specforge-current',
       candidateId: 'candidate-1',
     });
 

@@ -1,5 +1,5 @@
 /**
- * @specforge/observability - Observability module for SpecForge V6
+ * @specforge/observability - Observability module for SpecForge
  * 
  * Current-release shared event types and observability policy contract.
  */

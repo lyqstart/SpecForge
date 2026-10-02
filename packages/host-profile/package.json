@@ -1,6 +1,6 @@
 {
   "name": "@specforge/host-profile",
-  "version": "6.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "main": "dist/index.js",
@@ -17,7 +17,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@specforge/types": "workspace:*"
+    "@specforge/types": "workspace:*",
+    "@specforge/version-unification": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",

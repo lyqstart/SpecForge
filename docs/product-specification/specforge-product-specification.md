@@ -4,6 +4,10 @@
 >
 > Specification ID: SPS-1.0
 >
+> Product release version: 1.0.0
+>
+> Product version epoch: 1
+>
 > Effective date: 2026-09-18
 >
 > Authority registry: docs/product-specification/authority-registry.md
@@ -19,6 +23,15 @@
 本文件吸收经产品负责人裁决的有效内容。旧 fused standard、v1.3、Kiro specs、design、implementation、README、代码和测试均不得与本文件并列成为产品权威。
 
 本规格描述“产品现在应当是什么”。当前代码与本规格不一致时，差异属于 conformance gap，而不是新的产品需求来源。
+
+## 0.1 产品版本合同
+
+1. 当前 SpecForge 开启独立的新产品版本纪元，首个正式产品版本为 `1.0.0`。这不是旧 V6 产品线的延续声明，也不承诺兼容旧版本。
+2. 根 `package.json#version` 是产品版本的唯一实现身份；当前 workspace packages 采用固定版本策略，必须与根产品版本一致。
+3. 新产品 Git Tag 固定使用 `specforge-v<semver>`。既有 `v*` Tag 是历史证据，必须保留，但不参与新纪元版本排序或当前产品身份判断。
+4. 当前稳定 release identity 为 `specforge-current`。它标识当前发布通道，不等于产品 SemVer；发布清单中的产品版本必须来自根 `package.json#version`。
+5. schemaVersion、HTTP/API 协议版本、事件格式版本、工作流格式版本和 SPS Specification ID 都是独立技术合同版本，不随产品版本机械重排。
+6. 当前实现、发布脚本、安装器和面向用户的当前说明不得继续把 V6 或 V3.5 当作产品品牌。ADR、迁移脚本、Derived-From、旧测试与报告中的旧版本引用按历史证据保留。
 
 ---
 
@@ -815,7 +828,7 @@ Scope Gate 只能从本块读取 current release classification，并将 source 
 ```json
 {
   "schemaVersion": "1.0",
-  "releaseId": "specforge-v6-current",
+  "releaseId": "specforge-current",
   "complete": true,
   "itemGroups": [
     {

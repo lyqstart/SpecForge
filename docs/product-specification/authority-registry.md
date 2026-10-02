@@ -4,7 +4,7 @@
 >
 > Effective date: 2026-10-01
 >
-> Registry version: 1.3
+> Registry version: 1.4
 >
 > Product owner: SpecForge 产品负责人
 >
@@ -71,6 +71,10 @@ SPS-1.0
 | AR-DEC-02 | 旧规格、旧设计、旧标准、实施文件、报告和审计统一进入 docs/archive/**，不再散布为并行当前目录 |
 | AR-DEC-03 | 仓库根 .kiro 退役；可复用内容必须进入当前权威或实现合同，剩余材料归档至 docs/archive/kiro/** |
 | AR-DEC-04 | 根 AGENTS.md 是新会话稳定入口；scripts/project-session-bootstrap.mjs 是只读恢复器；docs/project-status.md 是唯一当前执行状态文件 |
+| VR-DEC-01 | 当前 SpecForge 开启新的产品版本纪元，首个正式产品版本为 1.0.0；旧版本号只保留历史证据，不表达兼容或产品谱系承诺 |
+| VR-DEC-02 | 新产品 Git Tag 使用 `specforge-v<semver>`；既有 `v*` Tag 保留为历史，不删除、不改写 |
+| VR-DEC-03 | 产品版本与 schema、协议、工作流格式等技术合同版本独立演进；不得因产品版本重排而机械修改技术合同版本 |
+| VR-DEC-04 | 当前产品与发布消费者中的 V6/V3.5 品牌和发布身份收敛到新纪元；ADR、迁移脚本、Derived-From、旧测试与报告中的版本引用作为历史证据保留，禁止全仓机械替换 |
 
 ## 5. 解释优先级
 

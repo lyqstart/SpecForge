@@ -6,7 +6,7 @@
 ## 概述
 
 每个 Work Item 的 `.specforge/specs/<WI-ID>/_meta.json` 文件记录该工作项的元数据，
-是 SpecForge V6 架构中"Schema 层"的核心交付物之一。
+是 SpecForge 当前架构中"Schema 层"的核心交付物之一。
 
 该文件通过 `WorkItemMetaSchema`（zod schema）在运行期校验，并通过 `WorkItemMeta`（TypeScript 类型）
 在编译期同步，实现"运行期校验 + 编译期类型"双重防线。
@@ -17,7 +17,7 @@
 |--------|------|----------|------|------|
 | `id` | `string` | **必填** | Work Item ID，必须匹配 `WI-<digits>` 模式 | `"WI-010"` |
 | `workflow_type` | `enum` | **必填** | 8 类工作流之一（见下表） | `"feature_spec"` |
-| `title` | `string` | **必填** | Work Item 标题，非空字符串 | `"SpecForge V6 目录结构治理 P0"` |
+| `title` | `string` | **必填** | Work Item 标题，非空字符串 | `"SpecForge 目录结构治理 P0"` |
 | `summary` | `string` | **必填** | 摘要，≤ 500 字符 | `"建立单一真相源 Schema..."` |
 | `key_decisions` | `string[]` | **必填** | 关键决策列表，可为空数组 | `["采用方案 A", "SPEC_DIR_NAME = '.specforge'"]` |
 | `current_stage` | `enum` | **必填** | 当前所处阶段（见下表） | `"development"` |
@@ -68,7 +68,7 @@
 {
   "id": "WI-010",
   "workflow_type": "refactor",
-  "title": "SpecForge V6 目录结构治理 P0",
+  "title": "SpecForge 目录结构治理 P0",
   "summary": "建立单一真相源 Schema（directory-layout.ts + meta-schema.ts），引入路径构造函数，创建迁移/备份脚本，记录 ADR-006 决策。风险路径 low，development 直跳 verification。",
   "key_decisions": [
     "采用方案 A（Schema 层 + 工具层 + 代码层 三层架构）",

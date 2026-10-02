@@ -20,7 +20,7 @@ function read(path: string): string {
 
 describe('current repository release manifest and runtime entry surfaces', () => {
   it('keeps release manifest and runtime entries aligned after deferred packages exit the workspace', async () => {
-    const releaseId = 'specforge-v6-current';
+    const releaseId = 'specforge-current';
     const candidateId = (JSON.parse(read('release/release-manifest.json')) as {
       candidateId: string;
     }).candidateId;

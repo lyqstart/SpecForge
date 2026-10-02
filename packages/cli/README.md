@@ -1,6 +1,6 @@
 # @specforge/cli
 
-Command Line Interface for SpecForge V6.
+Command Line Interface for SpecForge.
 
 ## Installation
 

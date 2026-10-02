@@ -183,7 +183,7 @@ export function isForbiddenTransition(from: string, to: string): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * SpecForge V6 已部署的全部工作流类型枚举。
+ * SpecForge 当前已部署的全部工作流类型枚举。
  * 保留向后兼容的旧工作流类型。
  */
 export const WORKFLOW_TYPES = [

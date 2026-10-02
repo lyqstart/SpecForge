@@ -1,6 +1,6 @@
 # @specforge/configuration
 
-Configuration subsystem documentation for SpecForge V6.
+Configuration subsystem documentation for SpecForge.
 
 ## Documentation Structure
 

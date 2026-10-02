@@ -17,7 +17,7 @@ const surfaces: readonly ArtifactSurface[] = [
 function reports(): ArtifactSurfaceReport[] {
   return surfaces.map((surface) => ({
     schemaVersion: '1.0',
-    releaseId: 'specforge-v6-current',
+    releaseId: 'specforge-current',
     candidateId: 'candidate-sha256',
     surface,
     producer: `${surface}-producer`,
