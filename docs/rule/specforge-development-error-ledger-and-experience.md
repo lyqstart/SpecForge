@@ -30271,3 +30271,13 @@ REPEATED_ERROR_CHECK=PASS
 - **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-013、EXP-015、EXP-019、EXP-020、EXP-060、EXP-084、EXP-087、EXP-090。
 - ERR1714_STATUS=CLOSED_WITH_MANIFEST_REBUILD_TARGETED_RERUN_AND_CLEAN_FULL_REGRESSION
 - REPEATED_ERROR_CHECK=FAIL_REPEATED_ERR1706_SEQUENCE
+
+### ERR-1715：Work Item 薄工具发布后仍未公开 daemon 的真实变更分类契约
+
+- **事实证据**：1.0.2 真实升级后，`D:\code\t1` 的 `sf-orchestrator` 已发现并调用 `sf_work_item_create`。第一次调用因缺少 `unknowns` 失败；后三次传入工具说明允许的 `intent`、`change_type`、`workflow_type` 或显式 `workflow_path`，但 daemon 始终只按 `requirement_changed` 等事实字段推导路径，最终落入与当前 `feature_spec` 不兼容的 `task_change_path`。仓库核对确认薄工具把 classification 暴露为任意 record，并错误描述为可包含上述路由字段；真实 `ChangeClassification` 则要求九个布尔事实字段和字符串数组 `unknowns`。
+- **影响**：1.0.2 已修复能力不可见，但真实模型仍无法从公开 Tool 合同构造合法的新功能分类；试点没有创建 Work Item，也没有写入业务源代码。用户随后明确授权本次试点把需求、源码、Git 元数据和 `.specforge` 治理状态通过 OpenCode 发送给 `zhipuai-coding-plan/glm-5.3`。
+- **根因**：`CONFIRMED` 为 Tool Schema、Agent 指引与 daemon 输入合同不一致；薄工具把受控事实分类降级为开放对象并宣传 daemon 不消费的覆盖字段。daemon 从事实分类推导路径的责任边界正确，调用方直接覆盖 `workflow_path` 不应成为修复方式。
+- **纠正与防复发**：1.0.3 将薄工具 classification 改为显式字段对象，在 orchestrator 与 workflow skill 中列出同一机器契约和新增功能分类规则；daemon 在任何 Work Item 目录创建前校验完整字段并返回结构化 `INVALID_CHANGE_CLASSIFICATION` HardStop；发布边界与 handler 回归同时覆盖显式 schema、错误路由提示移除、合法新功能路由和不完整分类零写入。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-006、EXP-011、EXP-013、EXP-015、EXP-017、EXP-019、EXP-020、EXP-031、EXP-060、EXP-084、EXP-085、EXP-087、EXP-090。
+- ERR1715_STATUS=VERIFIED_1_0_3_PATCH_AWAITING_REAL_DEPLOYMENT
+- REPEATED_ERROR_CHECK=PASS

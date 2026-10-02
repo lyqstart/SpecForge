@@ -16,6 +16,10 @@ import {
 } from '../lib/work-item-lifecycle-v11';
 import { selectWorkflowPath, generateTriggerResult } from '../lib/workflow-path-selector-v11';
 import {
+  validateChangeClassification,
+  type ChangeClassification,
+} from '../lib/change-classification';
+import {
   WORKFLOW_TYPE_TO_PATH,
   resolveWorkflowTypeForPath,
   type WorkflowPath,
@@ -105,7 +109,19 @@ registerHandler('sf_v11_work_item_create', async (args, context, deps) => {
 
     // Resolve workflow identity before allocating the Work Item root. Invalid
     // classification must not leave a partial governed directory behind.
-    const classification = args['classification'] as any;
+    const classification = args['classification'] as ChangeClassification | undefined;
+    if (classification) {
+      const classificationErrors = validateChangeClassification(classification);
+      if (classificationErrors.length > 0) {
+        return {
+          success: false,
+          code: 'INVALID_CHANGE_CLASSIFICATION',
+          error: `INVALID_CHANGE_CLASSIFICATION: ${classificationErrors.join('; ')}`,
+          validation_errors: classificationErrors,
+          hard_stop: true,
+        };
+      }
+    }
     const workflowPath = classification ? selectWorkflowPath(classification) : null;
     const workflowType = inferWorkflowTypeFromClassification(classification, workflowPath);
 

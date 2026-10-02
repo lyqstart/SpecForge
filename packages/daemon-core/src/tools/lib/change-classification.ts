@@ -17,6 +17,48 @@ export interface ChangeClassification {
   unknowns: string[];
 }
 
+export const REQUIRED_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS = [
+  'requirement_changed',
+  'acceptance_criteria_changed',
+  'business_rule_changed',
+  'user_visible_behavior_changed',
+  'data_semantics_changed',
+  'design_changed',
+  'module_boundary_changed',
+  'api_contract_changed',
+  'architecture_changed',
+] as const;
+
+export const OPTIONAL_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS = [
+  'data_model_changed',
+  'module_contract_changed',
+  'contract_registry_only',
+] as const;
+
+export function validateChangeClassification(value: unknown): string[] {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return ['classification must be an object'];
+  }
+
+  const classification = value as Record<string, unknown>;
+  const errors: string[] = [];
+  for (const field of REQUIRED_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS) {
+    if (typeof classification[field] !== 'boolean') {
+      errors.push(`${field} must be boolean`);
+    }
+  }
+  for (const field of OPTIONAL_CHANGE_CLASSIFICATION_BOOLEAN_FIELDS) {
+    if (classification[field] !== undefined && typeof classification[field] !== 'boolean') {
+      errors.push(`${field} must be boolean when provided`);
+    }
+  }
+  if (!Array.isArray(classification.unknowns) ||
+      classification.unknowns.some(item => typeof item !== 'string')) {
+    errors.push('unknowns must be an array of strings');
+  }
+  return errors;
+}
+
 export function canUseCodeOnlyFastPath(classification: ChangeClassification): boolean {
   return (
     classification.requirement_changed === false &&

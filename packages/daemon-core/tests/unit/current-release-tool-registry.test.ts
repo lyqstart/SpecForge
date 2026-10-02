@@ -42,6 +42,22 @@ describe('current release daemon tool registry', () => {
     const toolSource = readFileSync(toolPath, 'utf8');
     expect(toolSource).toContain('daemon.invokeTool("sf_work_item_create"');
     expect(toolSource).toContain('user_request: tool.schema');
+    for (const field of [
+      'requirement_changed',
+      'acceptance_criteria_changed',
+      'business_rule_changed',
+      'user_visible_behavior_changed',
+      'data_semantics_changed',
+      'design_changed',
+      'module_boundary_changed',
+      'api_contract_changed',
+      'architecture_changed',
+      'unknowns',
+    ]) {
+      expect(toolSource, field).toContain(`${field}: tool.schema`);
+    }
+    expect(toolSource).not.toContain('.record(tool.schema.string(), tool.schema.any())');
+    expect(toolSource).not.toContain('可包含 workflow_type、intent、change_type');
 
     for (const relativePath of [
       'scripts/lib/registry.ts',

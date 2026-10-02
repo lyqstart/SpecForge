@@ -29,6 +29,22 @@ import { EventBus } from '../../src/event-bus/EventBus';
 
 const roots: string[] = [];
 
+function classification(overrides: Record<string, unknown> = {}) {
+  return {
+    requirement_changed: false,
+    acceptance_criteria_changed: false,
+    business_rule_changed: false,
+    user_visible_behavior_changed: false,
+    data_semantics_changed: false,
+    design_changed: false,
+    module_boundary_changed: false,
+    api_contract_changed: false,
+    architecture_changed: false,
+    unknowns: [],
+    ...overrides,
+  };
+}
+
 async function makeProjectRoot(): Promise<string> {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'sf-current-wi-owner-'));
   roots.push(root);
@@ -99,12 +115,7 @@ describe('current Work Item metadata owner', () => {
       {
         work_item_id: 'WI-0002',
         user_request: 'Create a governed feature Work Item.',
-        classification: {
-          requirement_changed: true,
-          design_changed: false,
-          architecture_changed: false,
-          unknowns: [],
-        },
+        classification: classification({ requirement_changed: true }),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       { projectManager: { getProjectStateManager: vi.fn().mockResolvedValue({ transition }) } },
@@ -140,12 +151,7 @@ describe('current Work Item metadata owner', () => {
     const result = await handler(
       {
         user_request: originalRequest,
-        classification: {
-          requirement_changed: false,
-          design_changed: false,
-          architecture_changed: false,
-          unknowns: [],
-        },
+        classification: classification(),
       },
       { directory: projectRoot, agent: 'sf-orchestrator' },
       { projectManager: { getProjectStateManager: vi.fn().mockResolvedValue({ transition }) } },
@@ -168,6 +174,33 @@ describe('current Work Item metadata owner', () => {
       path.join(projectRoot, '.specforge', 'work-items', 'WI-0001', 'intake.md'),
       'utf8',
     )).resolves.toContain(originalRequest);
+  });
+
+  it('fails closed before creating a directory when classification fields are incomplete', async () => {
+    const projectRoot = await makeProjectRoot();
+    const result = await handler(
+      {
+        work_item_id: 'WI-0099',
+        user_request: 'Create a new user-visible feature.',
+        classification: {
+          workflow_path: 'requirement_change_path',
+          workflow_type: 'feature_spec',
+          unknowns: [],
+        },
+      },
+      { directory: projectRoot, agent: 'sf-orchestrator' },
+      { projectManager: { getProjectStateManager: vi.fn() } },
+    );
+
+    expect(result).toMatchObject({
+      success: false,
+      code: 'INVALID_CHANGE_CLASSIFICATION',
+      hard_stop: true,
+    });
+    expect(result.validation_errors).toContain('requirement_changed must be boolean');
+    await expect(fs.stat(
+      path.join(projectRoot, '.specforge', 'work-items', 'WI-0099'),
+    )).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('fails closed instead of overwriting an existing Work Item directory', async () => {

@@ -1,6 +1,6 @@
 {
   "name": "@specforge/daemon-core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Daemon Core module for SpecForge - Central process and Single Source of Truth",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
