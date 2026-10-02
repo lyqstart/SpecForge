@@ -30159,7 +30159,7 @@ REPEATED_ERROR_CHECK=PASS
 - **根因**：`CONFIRMED` 为生产者—消费者合同冲突：安装 Registry 与真实 Manifest 只部署 `<OpenCode config>/plugins/sf_specforge.ts`，`ensureProjectThinPlugin` 却只读取 `<OpenCode config>/sf-user/integrations/opencode/sf_specforge.ts`。同时 `/api/v1/project/ensure` 先调用 `ensureProjectInit` 写完整骨架，再调用 `ensureProjectThinPlugin`，所以后置前置条件失败会留下部分成功状态。
 - **纠正与防复发**：统一 Thin Plugin 安装真相源与项目投影消费者；在任何项目写入前读取并验证源字节，或把初始化与项目 Plugin 投影纳入可回滚的原子事务。增加真实安装 Manifest → daemon `/project/ensure` 集成回归，并验证缺源时项目目录零写入、成功时幂等。
 - **适用经验**：EXP-001、EXP-004、EXP-006、EXP-007、EXP-008、EXP-015、EXP-017、EXP-020、EXP-022、EXP-026、EXP-031、EXP-040、EXP-047、EXP-060、EXP-084、EXP-085、EXP-087。
-- ERR1703_STATUS=IDENTIFIED
+- ERR1703_STATUS=CLOSED_WITH_REAL_1_0_1_IDEMPOTENT_PROJECT_INIT
 - REPEATED_ERROR_CHECK=PASS
 
 ### ERR-1704：1.0.0 Thin Plugin 的多个函数导出被 OpenCode 1.18.34 全部当作 Plugin 执行
@@ -30169,7 +30169,7 @@ REPEATED_ERROR_CHECK=PASS
 - **根因**：`CONFIRMED` 为可复用测试 helper 与正式 Plugin 入口放在同一自动加载模块并作为运行时函数导出，违反 OpenCode 1.18.34 的多函数导出契约；现有测试直接 import named exports，却没有真实加载器兼容性回归。
 - **纠正与防复发**：自动加载入口只保留一个唯一函数值（default 与 named 若并存必须引用同一函数，或把 helper/依赖注入实现移入非入口模块）；增加针对 OpenCode 1.18.34 `Object.values` 加载语义的独立回归和真实 CLI 启动日志断言，要求 Plugin 注册后 daemon `activeClients>0`。
 - **适用经验**：EXP-001、EXP-004、EXP-006、EXP-007、EXP-008、EXP-010、EXP-015、EXP-017、EXP-022、EXP-026、EXP-031、EXP-046、EXP-060、EXP-074、EXP-087、EXP-090。
-- ERR1704_STATUS=IDENTIFIED
+- ERR1704_STATUS=CLOSED_WITH_REAL_OPENCODE_SINGLE_PLUGIN_LOAD
 - REPEATED_ERROR_CHECK=PASS
 
 ### ERR-1705：补丁定向验证从仓库根使用了 CLI 包内相对测试路径
@@ -30219,7 +30219,7 @@ REPEATED_ERROR_CHECK=PASS
 - **根因**：`CONFIRMED` 为版本升级消费者集合漏掉 daemon 运行时投影；现有版本合同只覆盖 package/CLI/release，没有断言真实 health、healthz 与 handshake 共享同一代码版本。
 - **纠正与防复发**：`DaemonConfig` 从唯一 `getCodeVersion()` 读取版本，HTTP 健康端点从同一 config 消费；增加 config 与 daemon lifecycle 回归，重建 runtime/manifest、重跑完整验证并重新升级真实安装后再验收。
 - **适用经验**：EXP-001、EXP-002、EXP-004、EXP-006、EXP-011、EXP-013、EXP-017、EXP-019、EXP-020、EXP-031、EXP-060、EXP-084、EXP-085、EXP-087。
-- ERR1709_STATUS=IDENTIFIED
+- ERR1709_STATUS=CLOSED_WITH_REAL_HANDSHAKE_HEALTH_AND_HEALTHZ_1_0_1
 - REPEATED_ERROR_CHECK=PASS
 
 ### ERR-1710：健康端点首次版本修复误从可选依赖容器读取必有 config
@@ -30230,4 +30230,24 @@ REPEATED_ERROR_CHECK=PASS
 - **纠正与防复发**：两处健康端点改为 `this.config.getDaemonVersion()`，重新执行完整 build 后再生成 runtime/manifest；保留定向测试与正式 TypeScript build 两层证据。
 - **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-013、EXP-017、EXP-019、EXP-020、EXP-060、EXP-084。
 - ERR1710_STATUS=CLOSED_WITH_REQUIRED_CONFIG_FIELD_AND_FULL_BUILD
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1711：把 healthz `activeClients` 误当成 Thin Plugin 注册成功判据
+
+- **事实证据**：真实 OpenCode 1.18.34 明确输出 `[sf:specforge] Daemon connected.`，并通过 `/ingest/register` 幂等补全 `D:\code\t1\.specforge`；但运行期间 healthz 仍为 `activeClients=0`。源码证明 `registerPluginSession` 按合同创建 `pending` Plugin 身份，而 `getActiveSessionCount()` 明确只统计经 spawn-intent 激活的 Agent session，不统计 pending；该字段不能证明 Plugin 是否已连接。
+- **影响**：ERR-1704 的真实 Plugin 加载与 ERR-1703 的真实项目初始化已经成功，但错误验收指标会制造假阴性；若把 pending 强行计为 active，还会把没有断连租约的持久注册错误显示为实时在线。
+- **根因**：`CONFIRMED` 为验收计划把“Plugin client 连接”与“Agent session 激活”混为同一生命周期概念，未先读取 SessionRegistry 状态语义。
+- **纠正与防复发**：Thin Plugin 验收使用真实加载日志、成功 register 响应所触发的幂等项目初始化、事件进入 daemon 和无 loader error 的组合证据；`activeClients` 继续只表示 active Agent sessions。未来若需要实时 Plugin 在线数，必须另行设计带断连/租约的连接生命周期，不能复用持久 pending session。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-006、EXP-011、EXP-017、EXP-020、EXP-031、EXP-060、EXP-084、EXP-085、EXP-090。
+- ERR1711_STATUS=CLOSED_WITH_CORRECT_LIFECYCLE_EVIDENCE
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1712：未取得明确数据出境授权就请求外部模型只读盘点试点仓库
+
+- **事实证据**：尝试让 `zhipuai-coding-plan/glm-5.3` 在 `D:\code\t1` 只读检查 Git 与 `.specforge` 现场时，执行在进程创建前被安全策略拒绝；原因是该动作会把具体本地仓库状态发送给外部模型提供方，而现有“同意继续试点”没有明确覆盖这些数据的外发。
+- **影响**：命令未执行、没有数据发送、没有文件修改；业务试点仍停在已恢复的 `.specforge` 初始化状态，等待用户明确授权。
+- **根因**：`CONFIRMED` 为把项目试点授权误当成第三方模型数据出境授权，没有在首次发送具体仓库内容前单独确认提供方与数据范围。
+- **纠正与防复发**：向用户明确说明接收方、数据类型与用途并取得显式同意后，才可让外部模型读取试点需求、代码、Git 和 `.specforge` 状态；若不同意，只能改用获准的本地模型或由当前代理在不调用该外部模型的范围内工作。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-017、EXP-020、EXP-060、EXP-084。
+- ERR1712_STATUS=WAITING_FOR_EXPLICIT_DATA_EGRESS_AUTHORIZATION
 - REPEATED_ERROR_CHECK=PASS
