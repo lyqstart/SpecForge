@@ -345,8 +345,8 @@ registerHandler("sf_state_transition", async (args, context, deps) => {
       code: "LEGACY_INTAKE_STATE_FORBIDDEN",
       retry_allowed: true,
       remediation:
-        "Create a v1.1 Work Item with from_state='' and to_state='created'. " +
-        "After intake.md is written, transition created -> intake_ready.",
+        "Call sf_work_item_create with the original user_request. " +
+        "sf_state_transition only advances an existing Work Item.",
     };
   }
 

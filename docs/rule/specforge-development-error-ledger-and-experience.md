@@ -30251,3 +30251,23 @@ REPEATED_ERROR_CHECK=PASS
 - **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-017、EXP-020、EXP-060、EXP-084。
 - ERR1712_STATUS=WAITING_FOR_EXPLICIT_DATA_EGRESS_AUTHORIZATION
 - REPEATED_ERROR_CHECK=PASS
+
+### ERR-1713：daemon 已提供 Work Item 创建能力，但 OpenCode 发布面漏装唯一合法入口
+
+- **事实证据**：用户明确授权后，真实 `D:\code\t1` 的 `sf-orchestrator` 会话完成项目状态与 Git 预检，确认不存在既有 Work Item。编排器先受 `sf_state_transition` 前端错误说明影响尝试空状态创建，daemon 正确返回 `WORK_ITEM_CREATE_TOOL_REQUIRED`；随后会话发现可调用 Tool 列表中没有 `sf_work_item_create`。仓库核对确认 SPS、orchestrator、daemon handler、公开别名和 HTTP dispatcher 均要求或提供该能力，但 `setup/userlevel-opencode/tools/sf_work_item_create.ts` 不存在，两份安装注册表也没有该条目。
+- **影响**：新项目无法通过合法治理路径创建第一个 Work Item，真实试点在业务代码实施前停止；没有 Work Item 或业务源代码写入。会话尝试只读检查安装目录时被权限策略拒绝，该尝试同样没有造成写入。
+- **根因**：`CONFIRMED` 为后端 capability 与 OpenCode 发布投影之间的完整性缺口；现有发布检查只确认 daemon 注册了公开名称和 clean-build ID，没有验证每个由 Agent 强制依赖的公开 Tool 同时存在薄客户端文件和安装注册项。`sf_state_transition` 薄工具仍残留已被 daemon 禁止的创建说明，进一步诱导了错误入口。
+- **纠正与防复发**：新增只调用 daemon 公开能力的 `sf_work_item_create` 薄 Tool，同步生产与保留证据注册表；把 `sf_state_transition` 说明收敛为仅推进既有 Work Item，并修正 daemon 的旧 intake remediation；新增从 daemon public name 到 Tool 文件、两个注册表和调用目标的发布边界回归。由于 1.0.1 已发布并打不可变标签，本修复形成 1.0.2 补丁，完成全量验证、真实升级后再恢复同一试点。
+- **适用经验**：EXP-001、EXP-002、EXP-004、EXP-006、EXP-011、EXP-013、EXP-015、EXP-017、EXP-019、EXP-020、EXP-031、EXP-060、EXP-084、EXP-085、EXP-087、EXP-090。
+- ERR1713_STATUS=IMPLEMENTING_1_0_2_TOOL_PROJECTION_PATCH
+- REPEATED_ERROR_CHECK=PASS
+
+### ERR-1714：1.0.2 首轮全量回归在重建发布清单前运行，重复触发旧哈希失败
+
+- **事实证据**：定向合同与完整 build 均通过；首轮全量回归中根套件 60/60 files、767/767 tests 通过，daemon-core 199/199 files、1736/1736 tests 通过，其余已执行工作区也通过。仅 scope-gate 的 `current-repository-installer-manifest-consumption.integration.test.ts` 3 项失败，错误一致为 `release_install_set:hash_mismatch:tools/sf_state_transition.ts`。该文件本轮已修改，而 release manifest 尚未重建。
+- **影响**：实现与编译证据未被否定，但当前发布集合不自洽，不能形成 1.0.2 候选或执行真实升级。失败只发生在仓库验证，没有改动用户级安装或 `D:\code\t1`。
+- **根因**：`CONFIRMED` 为验证顺序重复了 ERR-1706 已记录的错误：在发布集合源文件变化后、派生 manifest 重建前运行依赖当前 manifest 哈希的完整回归。修改前重复错误检查虽覆盖了发布消费者同步，却没有把“先重建派生发布物再跑包含发布清单的全量测试”落实到执行顺序。
+- **纠正与防复发**：立即重建 release runtime artifacts 与使用合法 candidate ID 的 release manifest，先重跑 scope-gate 安装事务和正式预检，再重跑完整测试。以后发布面任一受管文件变化后，验证顺序固定为 build → runtime/manifest rebuild → manifest-dependent targeted tests → full regression → precheck。
+- **适用经验**：EXP-001、EXP-002、EXP-006、EXP-011、EXP-013、EXP-015、EXP-019、EXP-020、EXP-060、EXP-084、EXP-087、EXP-090。
+- ERR1714_STATUS=CLOSED_WITH_MANIFEST_REBUILD_TARGETED_RERUN_AND_CLEAN_FULL_REGRESSION
+- REPEATED_ERROR_CHECK=FAIL_REPEATED_ERR1706_SEQUENCE

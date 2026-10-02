@@ -60,6 +60,7 @@ export const SHARED_COMPONENT_REGISTRY: ComponentEntry[] = [
   { path: "tools/sf_requirements_gate.ts", type: "tool" },
   { path: "tools/sf_state_read.ts", type: "tool" },
   { path: "tools/sf_state_transition.ts", type: "tool" },
+  { path: "tools/sf_work_item_create.ts", type: "tool" },
   { path: "tools/sf_tasks_gate.ts", type: "tool" },
   { path: "tools/sf_trace_matrix.ts", type: "tool" },
   { path: "tools/sf_verification_gate.ts", type: "tool" },

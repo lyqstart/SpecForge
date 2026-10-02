@@ -3,15 +3,15 @@ import { daemon } from "./lib/thin-client";
 
 export default tool({
   description:
-    "执行 Work Item 的状态流转，验证合法性并更新权威状态。v1.1 的 WI ID 固定为 WI-NNNN，例如 WI-0001。创建新 WI 时建议省略 work_item_id，由 daemon 自动分配；禁止使用 WI-YYYYMMDD-NNNN。",
+    "推进已存在 Work Item 的状态，验证合法性并更新权威状态。新 Work Item 必须使用 sf_work_item_create 创建；本工具不负责创建。WI ID 固定为 WI-NNNN，例如 WI-0001。",
   args: {
     work_item_id: tool.schema
       .string()
       .optional()
-      .describe("Work Item ID。v1.1 固定格式 WI-NNNN，例如 WI-0001。创建新 WI 时可省略，由 daemon 自动分配。"),
+      .describe("已存在的 Work Item ID，固定格式 WI-NNNN，例如 WI-0001。"),
     from_state: tool.schema
       .string()
-      .describe("当前状态（用于乐观锁验证），空字符串表示创建新 Work Item"),
+      .describe("当前状态，用于乐观锁验证；不得用空字符串创建 Work Item"),
     to_state: tool.schema.string().describe("目标状态"),
     evidence: tool.schema
       .string()
@@ -20,7 +20,7 @@ export default tool({
     workflow_type: tool.schema
       .string()
       .optional()
-      .describe('工作流类型，仅创建新 Work Item 时使用，默认 "feature_spec"'),
+      .describe("工作流类型；状态推进通常不需要提供"),
     workflow_path: tool.schema
       .string()
       .optional()

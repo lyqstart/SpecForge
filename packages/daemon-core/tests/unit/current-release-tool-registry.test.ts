@@ -32,6 +32,33 @@ describe('current release daemon tool registry', () => {
       .toEqual([]);
   });
 
+  it('projects the public Work Item creation capability into the OpenCode release', () => {
+    const toolPath = resolve(
+      repositoryRoot,
+      'setup/userlevel-opencode/tools/sf_work_item_create.ts',
+    );
+    expect(existsSync(toolPath)).toBe(true);
+
+    const toolSource = readFileSync(toolPath, 'utf8');
+    expect(toolSource).toContain('daemon.invokeTool("sf_work_item_create"');
+    expect(toolSource).toContain('user_request: tool.schema');
+
+    for (const relativePath of [
+      'scripts/lib/registry.ts',
+      'setup/userlevel-scripts-lib/registry.ts',
+    ]) {
+      const registrySource = readFileSync(resolve(repositoryRoot, relativePath), 'utf8');
+      expect(registrySource, relativePath).toContain('tools/sf_work_item_create.ts');
+    }
+
+    const transitionTool = readFileSync(
+      resolve(repositoryRoot, 'setup/userlevel-opencode/tools/sf_state_transition.ts'),
+      'utf8',
+    );
+    expect(transitionTool).toContain('sf_work_item_create');
+    expect(transitionTool).not.toContain('空字符串表示创建新 Work Item');
+  });
+
   it('does not register capabilities excluded from the current release', () => {
     const excluded = [
       'sf_context_build',
